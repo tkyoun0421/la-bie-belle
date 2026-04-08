@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>라비에벨 예도팀 Tablet Dashboard Preview</title>
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdnjs.cloudflare.com/ajax/libs/pretendard/1.3.9/static/pretendard.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --canvas: #eef3f8;
+        --frame: #ffffff;
+        --surface: #ffffff;
+        --surface-soft: #f7faff;
+        --surface-tint: #eef6ff;
+        --border: #e5eaf0;
+        --border-strong: #d6dee8;
+        --text: #191f28;
+        --text-subtle: #4e5968;
+        --text-muted: #8b95a1;
+        --primary: #2b7fff;
+        --primary-strong: #1d6ef2;
+        --accent: #eaf4ff;
+        --success: #16a34a;
+        --warning: #d97706;
+        --error: #dc2626;
+        --chrome: #111318;
+        --chrome-soft: #191c23;
+        --shadow-frame: none;
+        --shadow-card: none;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top right, rgba(43, 127, 255, 0.12), transparent 24%),
+          linear-gradient(180deg, #f7faff 0%, #eef3f8 100%);
+        color: var(--text);
+        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      .page {
+        min-height: 100vh;
+        padding: 0;
+      }
+
+      .tablet-frame {
+        width: min(1120px, 100%);
+        margin: 0 auto;
+        min-height: 100vh;
+        border-radius: 0;
+        border: 1px solid rgba(17, 19, 24, 0.08);
+        background: var(--frame);
+        box-shadow: var(--shadow-frame);
+        overflow: hidden;
+      }
+
+      .chrome {
+        padding: 16px 22px 14px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 100%),
+          linear-gradient(180deg, #14171d 0%, #111318 100%);
+        color: #f7f9fb;
+      }
+
+      .chrome-top,
+      .chrome-actions,
+      .section-head,
+      .summary-grid,
+      .event-head,
+      .event-meta,
+      .notice-row,
+      .quick-grid,
+      .my-meta,
+      .tool-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .chrome-top {
+        justify-content: space-between;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        border-radius: 0;
+        background: linear-gradient(135deg, #7ab3ff 0%, #2b7fff 60%, #1657c8 100%);
+      }
+
+      .brand-copy small {
+        display: block;
+        margin-bottom: 2px;
+        color: rgba(247, 249, 251, 0.62);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .brand-copy strong {
+        font-size: 18px;
+        letter-spacing: -0.02em;
+      }
+
+      .chrome-actions {
+        color: rgba(247, 249, 251, 0.75);
+        font-size: 13px;
+      }
+
+      .icon-pill,
+      .top-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        border-radius: 0;
+        padding: 0 12px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .icon-pill {
+        min-width: 34px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .top-pill {
+        background: rgba(43, 127, 255, 0.2);
+        color: #cfe1ff;
+      }
+
+      .quick-search {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 54px;
+        margin-top: 12px;
+        border-radius: 0;
+        padding: 0 16px;
+        background: #ffffff;
+        color: var(--text-muted);
+      }
+
+      .tab-strip {
+        display: flex;
+        gap: 18px;
+        margin-top: 14px;
+        overflow: auto;
+        padding-bottom: 2px;
+        color: rgba(247, 249, 251, 0.72);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .tab {
+        position: relative;
+        white-space: nowrap;
+        padding: 4px 0 10px;
+      }
+
+      .tab.active {
+        color: #ffffff;
+      }
+
+      .tab.active::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3px;
+        border-radius: 0;
+        background: var(--primary);
+      }
+
+      .app-body {
+        padding: 18px;
+        background:
+          radial-gradient(circle at top right, rgba(43, 127, 255, 0.08), transparent 18%),
+          linear-gradient(180deg, #fbfdff 0%, #f4f8fc 100%);
+      }
+
+      .hero,
+      .time-shelf,
+      .section,
+      .my-card,
+      .tool-card,
+      .gate-card {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: var(--shadow-card);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.25fr 0.9fr;
+        gap: 18px;
+        border-radius: 0;
+        padding: 20px;
+        background:
+          radial-gradient(circle at top right, rgba(43, 127, 255, 0.14), transparent 24%),
+          linear-gradient(180deg, #ffffff 0%, #f4f9ff 100%);
+      }
+
+      .eyebrow {
+        margin-bottom: 10px;
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .hero h1 {
+        font-size: clamp(28px, 3.5vw, 40px);
+        line-height: 1.14;
+        letter-spacing: -0.04em;
+      }
+
+      .hero p {
+        margin-top: 12px;
+        max-width: 58ch;
+        color: var(--text-subtle);
+        line-height: 1.7;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        border-radius: 0;
+        padding: 0 16px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .btn.primary {
+        background: var(--primary);
+        color: #f8fbff;
+      }
+
+      .btn.secondary {
+        border: 1px solid var(--border);
+        background: #ffffff;
+        color: var(--text);
+      }
+
+      .hero-side {
+        display: grid;
+        gap: 12px;
+        align-content: start;
+      }
+
+      .mini-stat {
+        border-radius: 0;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(214, 222, 232, 0.95);
+      }
+
+      .mini-stat span {
+        display: block;
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .mini-stat strong {
+        display: block;
+        margin-top: 6px;
+        font-size: 28px;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .time-shelf {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+        border-radius: 0;
+        padding: 12px;
+      }
+
+      .time-chip {
+        border-radius: 0;
+        padding: 14px 12px;
+        background: var(--surface-soft);
+      }
+
+      .time-chip strong {
+        display: block;
+        font-size: 16px;
+        margin-bottom: 6px;
+      }
+
+      .time-chip span {
+        color: var(--text-subtle);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .time-chip.active {
+        background: var(--accent);
+        border: 1px solid #cfe2ff;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1.18fr 0.82fr;
+        gap: 18px;
+        margin-top: 14px;
+      }
+
+      .left-stack,
+      .right-stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .section,
+      .my-card,
+      .tool-card,
+      .gate-card {
+        border-radius: 0;
+        padding: 18px;
+      }
+
+      .section-head {
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+
+      .section-head h2,
+      .my-card h2,
+      .tool-card h2,
+      .gate-card h2 {
+        font-size: 22px;
+        line-height: 1.25;
+      }
+
+      .section-head span,
+      .my-card p,
+      .tool-card p,
+      .gate-card p {
+        color: var(--text-subtle);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .event-list,
+      .notice-list,
+      .tool-list,
+      .check-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .event-row,
+      .notice-row,
+      .tool-row,
+      .check-row {
+        border: 1px solid var(--border);
+        border-radius: 0;
+        background: var(--surface);
+      }
+
+      .event-row {
+        padding: 16px;
+      }
+
+      .event-head {
+        justify-content: space-between;
+      }
+
+      .event-title {
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      .event-sub {
+        margin-top: 8px;
+        color: var(--text-subtle);
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .event-meta {
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        border-radius: 0;
+        padding: 0 10px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .tag.blue {
+        background: var(--accent);
+        color: var(--primary-strong);
+      }
+
+      .tag.green {
+        background: #eaf8ee;
+        color: var(--success);
+      }
+
+      .tag.orange {
+        background: #fff4e7;
+        color: var(--warning);
+      }
+
+      .notice-row,
+      .tool-row,
+      .check-row {
+        justify-content: space-between;
+        padding: 14px 16px;
+      }
+
+      .notice-copy strong,
+      .tool-copy strong,
+      .check-copy strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 15px;
+      }
+
+      .notice-copy p,
+      .tool-copy p,
+      .check-copy p {
+        color: var(--text-subtle);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .my-card,
+      .tool-card {
+        background:
+          linear-gradient(180deg, rgba(234, 244, 255, 0.76) 0%, rgba(255, 255, 255, 0.96) 42%),
+          #ffffff;
+      }
+
+      .my-pay {
+        margin-top: 16px;
+        font-size: 34px;
+        line-height: 1;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        font-family: "IBM Plex Mono", ui-monospace, monospace;
+      }
+
+      .my-meta {
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+
+      .quick-grid {
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+
+      .tool-row .tag,
+      .notice-row .tag {
+        flex-shrink: 0;
+      }
+
+      .state {
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .state.done {
+        color: var(--success);
+      }
+
+      .state.todo {
+        color: var(--warning);
+      }
+
+      @media (max-width: 1080px) {
+        .hero,
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .time-shelf {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 720px) {
+        .tablet-frame {
+          border-radius: 0;
+        }
+
+        .chrome,
+        .app-body {
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+
+        .chrome-top,
+        .hero-actions,
+        .section-head,
+        .notice-row,
+        .tool-row,
+        .check-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .time-shelf {
+          grid-template-columns: 1fr;
+        }
+
+        .chrome-actions {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="tablet-frame">
+        <header class="chrome">
+          <div class="chrome-top">
+            <div class="brand">
+              <div class="brand-mark"></div>
+              <div class="brand-copy">
+                <small>Wedding Hall Ops</small>
+                <strong>라비에벨 예도팀</strong>
+              </div>
+            </div>
+            <div class="chrome-actions">
+              <span class="top-pill">오늘 예식 12건</span>
+              <span class="icon-pill">알림</span>
+              <span class="icon-pill">내 정보</span>
+            </div>
+          </div>
+
+          <div class="quick-search">
+            <span>11:00 예식, 내 근무, 공지, 관리 페이지 바로가기</span>
+            <span>이동</span>
+          </div>
+
+          <nav class="tab-strip">
+            <div class="tab active">홈</div>
+            <div class="tab">오늘 예식</div>
+            <div class="tab">내 근무</div>
+            <div class="tab">체크인</div>
+            <div class="tab">예상 급여</div>
+            <div class="tab">관리</div>
+          </nav>
+        </header>
+
+        <main class="app-body">
+          <section class="hero">
+            <div>
+              <div class="eyebrow">Shared Tablet Dashboard</div>
+              <h1>웹 페이지처럼 넓게 퍼지지 않고, 태블릿 앱 프레임 안에서 오늘 상태를 바로 봅니다.</h1>
+              <p>
+                어드민과 근무자는 같은 홈에서 `오늘 예식`, `내 상태`, `공지`, `빠른 진입`을 먼저 봅니다.
+                그다음 어드민은 관리 페이지로, 팀장은 운영 작업으로, 팀원은 체크인과 내 급여 화면으로 이동합니다.
+              </p>
+              <div class="hero-actions">
+                <div class="btn primary">오늘 예식 보기</div>
+                <div class="btn secondary">내 근무 보기</div>
+                <div class="btn secondary">관리 페이지</div>
+              </div>
+            </div>
+
+            <div class="hero-side">
+              <div class="mini-stat">
+                <span>오늘 예식</span>
+                <strong>12</strong>
+              </div>
+              <div class="mini-stat">
+                <span>내 근무</span>
+                <strong>11:00</strong>
+              </div>
+              <div class="mini-stat">
+                <span>팀 공지</span>
+                <strong>1</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="time-shelf">
+            <div class="time-chip active">
+              <strong>11:00 예식</strong>
+              <span>정규 9 / 10, 체크인 예정 7명</span>
+            </div>
+            <div class="time-chip">
+              <strong>12:00 예식</strong>
+              <span>충원 완료, 공지 반영 완료</span>
+            </div>
+            <div class="time-chip">
+              <strong>14:00 예식</strong>
+              <span>공지 변경 1건</span>
+            </div>
+            <div class="time-chip">
+              <strong>16:00 예식</strong>
+              <span>대기 상태</span>
+            </div>
+            <div class="time-chip">
+              <strong>관리</strong>
+              <span>승인 대기 5건</span>
+            </div>
+          </section>
+
+          <section class="dashboard-grid">
+            <div class="left-stack">
+              <section class="section">
+                <div class="section-head">
+                  <h2>오늘 예식</h2>
+                  <span>공통 홈에서 모두가 보는 핵심 섹션</span>
+                </div>
+                <div class="event-list">
+                  <div class="event-row">
+                    <div class="event-head">
+                      <div class="event-title">11:00 예식</div>
+                      <div class="tag blue">보충 필요</div>
+                    </div>
+                    <p class="event-sub">첫 식 11:00, 막식 18:00. 현재 수프 포지션 1명 보충이 필요하고 체크인 예정은 7명입니다.</p>
+                    <div class="event-meta">
+                      <div class="tag">정규 9 / 10</div>
+                      <div class="tag orange">교육 1명 필요</div>
+                      <div class="tag">내 배정 있음</div>
+                    </div>
+                  </div>
+
+                  <div class="event-row">
+                    <div class="event-head">
+                      <div class="event-title">12:00 예식</div>
+                      <div class="tag green">안정</div>
+                    </div>
+                    <p class="event-sub">정규와 교육 인원 모두 채워졌고, 공지 전달과 체크인 준비가 끝난 상태입니다.</p>
+                    <div class="event-meta">
+                      <div class="tag">정규 8 / 8</div>
+                      <div class="tag">교육 1 / 1</div>
+                      <div class="tag">공지 반영 완료</div>
+                    </div>
+                  </div>
+
+                  <div class="event-row">
+                    <div class="event-head">
+                      <div class="event-title">14:00 예식</div>
+                      <div class="tag orange">변경 있음</div>
+                    </div>
+                    <p class="event-sub">예식 동선 변경 공지가 1건 있고, 홈에서 바로 확인한 뒤 역할별 작업 화면으로 들어갑니다.</p>
+                    <div class="event-meta">
+                      <div class="tag">정규 5 / 5</div>
+                      <div class="tag">공지 1건</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="section">
+                <div class="section-head">
+                  <h2>공지와 바로 처리할 일</h2>
+                  <span>공통 정보 + 역할별 진입</span>
+                </div>
+                <div class="notice-list">
+                  <div class="notice-row">
+                    <div class="notice-copy">
+                      <strong>공지: 12:00 예식 동선 변경</strong>
+                      <p>모든 역할이 같은 홈에서 오늘 변경된 운영 공지를 먼저 확인합니다.</p>
+                    </div>
+                    <span class="tag blue">확인</span>
+                  </div>
+                  <div class="notice-row">
+                    <div class="notice-copy">
+                      <strong>팀장 빠른 진입</strong>
+                      <p>대타 승인 대기, 체크인 예외, 배정 화면으로 바로 들어갑니다.</p>
+                    </div>
+                    <span class="tag blue">이동</span>
+                  </div>
+                  <div class="notice-row">
+                    <div class="notice-copy">
+                      <strong>어드민 빠른 진입</strong>
+                      <p>승인 대기, 포지션 자격, 템플릿, 급여 규칙은 별도 관리 페이지에서 수정합니다.</p>
+                    </div>
+                    <span class="tag blue">관리</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div class="right-stack">
+              <section class="my-card">
+                <div class="eyebrow">My Status</div>
+                <h2>오늘 11:00 예식 배정됨</h2>
+                <p>공통 홈에서도 내 근무는 가장 크게 보입니다. 배정이 없으면 신청 가능한 예식이 같은 위치에 들어옵니다.</p>
+                <div class="my-pay">₩ 103,500</div>
+                <div class="my-meta">
+                  <span class="tag blue">내 상태</span>
+                  <span class="tag">09:00 시작</span>
+                  <span class="tag">20:00 종료 기준</span>
+                </div>
+                <div class="hero-actions" style="margin-top: 16px;">
+                  <div class="btn primary">체크인 하기</div>
+                  <div class="btn secondary">내 근무 보기</div>
+                </div>
+              </section>
+
+              <section class="tool-card">
+                <div class="eyebrow">Role Shortcuts</div>
+                <h2>역할별 빠른 진입</h2>
+                <p>홈 구조는 공통으로 유지하고, 실제 작업은 각 역할에 맞는 세부 화면으로 나눕니다.</p>
+                <div class="tool-list" style="margin-top: 16px;">
+                  <div class="tool-row">
+                    <div class="tool-copy">
+                      <strong>어드민</strong>
+                      <p>승인 대기와 규칙 관리는 관리 페이지에서 처리</p>
+                    </div>
+                    <span class="tag blue">관리</span>
+                  </div>
+                  <div class="tool-row">
+                    <div class="tool-copy">
+                      <strong>팀장</strong>
+                      <p>대타 승인, 배정, 체크인 예외 처리 화면으로 이동</p>
+                    </div>
+                    <span class="tag blue">운영</span>
+                  </div>
+                  <div class="tool-row">
+                    <div class="tool-copy">
+                      <strong>팀원</strong>
+                      <p>내 근무, 체크인, 예상 급여 화면으로 이동</p>
+                    </div>
+                    <span class="tag blue">내 화면</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="gate-card">
+                <div class="eyebrow">Check-in / Onboarding</div>
+                <h2>필수 상태 확인</h2>
+                <div class="check-list" style="margin-top: 16px;">
+                  <div class="check-row">
+                    <div class="check-copy">
+                      <strong>홈 화면 설치</strong>
+                      <p>PWA 기본 요구 사항</p>
+                    </div>
+                    <div class="state done">완료</div>
+                  </div>
+                  <div class="check-row">
+                    <div class="check-copy">
+                      <strong>웹 푸시 허용</strong>
+                      <p>대타 요청 수신용</p>
+                    </div>
+                    <div class="state todo">필수</div>
+                  </div>
+                  <div class="check-row">
+                    <div class="check-copy">
+                      <strong>위치 체크인</strong>
+                      <p>행사장 기준 150m 반경에서 수동 인증</p>
+                    </div>
+                    <div class="state done">활성</div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

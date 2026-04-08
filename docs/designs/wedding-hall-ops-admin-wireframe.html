@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>라비에벨 예도팀 Admin Console Wireframe</title>
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdnjs.cloudflare.com/ajax/libs/pretendard/1.3.9/static/pretendard.css"
+    />
+    <style>
+      :root {
+        --canvas: #f6f9fc;
+        --surface: #ffffff;
+        --surface-soft: #f8fbff;
+        --surface-tint: #eef6ff;
+        --border: #e5eaf0;
+        --border-strong: #d6dee8;
+        --text: #191f28;
+        --text-subtle: #4e5968;
+        --text-muted: #8b95a1;
+        --primary: #2b7fff;
+        --primary-strong: #1d6ef2;
+        --accent: #eaf4ff;
+        --success: #16a34a;
+        --warning: #d97706;
+        --error: #dc2626;
+        --shadow: none;
+        --radius: 0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top right, rgba(43, 127, 255, 0.09), transparent 24%),
+          linear-gradient(180deg, #f9fbff 0%, #f6f9fc 24%, #f6f9fc 100%);
+        color: var(--text);
+        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      .page {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 0;
+      }
+
+      .shell {
+        display: grid;
+        grid-template-columns: 264px minmax(0, 1fr);
+        gap: 16px;
+        min-height: 100vh;
+      }
+
+      .sidebar,
+      .main-card,
+      .summary-card,
+      .section-card,
+      .mini-card {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: var(--shadow);
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        align-self: start;
+        border-radius: 0;
+        padding: 20px;
+      }
+
+      .brand {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 22px;
+      }
+
+      .brand small {
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .brand strong {
+        font-size: 22px;
+        line-height: 1.15;
+      }
+
+      .brand p {
+        color: var(--text-subtle);
+        line-height: 1.6;
+        font-size: 14px;
+      }
+
+      .nav {
+        display: grid;
+        gap: 8px;
+      }
+
+      .nav-item {
+        display: grid;
+        gap: 4px;
+        min-height: 64px;
+        border-radius: 0;
+        padding: 14px 16px;
+        color: var(--text-subtle);
+        background: transparent;
+      }
+
+      .nav-item.active {
+        border: 1px solid #cfe2ff;
+        background: linear-gradient(180deg, #f5faff 0%, #ecf5ff 100%);
+        color: var(--text);
+      }
+
+      .nav-item strong {
+        font-size: 15px;
+      }
+
+      .nav-item span {
+        font-size: 13px;
+      }
+
+      .sidebar-foot {
+        margin-top: 18px;
+        border-top: 1px solid var(--border);
+        padding-top: 18px;
+      }
+
+      .sidebar-foot .mini-card {
+        border-radius: 0;
+        padding: 14px;
+        background: var(--surface-soft);
+      }
+
+      .sidebar-foot strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+      }
+
+      .sidebar-foot p {
+        color: var(--text-subtle);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .main {
+        display: grid;
+        gap: 14px;
+      }
+
+      .main-card {
+        border-radius: 0;
+        padding: 24px;
+        background:
+          radial-gradient(circle at top right, rgba(43, 127, 255, 0.14), transparent 26%),
+          linear-gradient(180deg, #fbfdff 0%, #f4f9ff 100%);
+      }
+
+      .eyebrow {
+        margin-bottom: 10px;
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .headline {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .headline-copy {
+        max-width: 760px;
+      }
+
+      .headline-copy h1 {
+        font-size: clamp(30px, 4vw, 42px);
+        line-height: 1.12;
+        letter-spacing: -0.045em;
+      }
+
+      .headline-copy p {
+        margin-top: 12px;
+        color: var(--text-subtle);
+        line-height: 1.7;
+      }
+
+      .quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        border-radius: 0;
+        padding: 0 16px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .btn.primary {
+        background: var(--primary);
+        color: #f8fbff;
+      }
+
+      .btn.secondary {
+        border: 1px solid var(--border);
+        background: #ffffff;
+        color: var(--text);
+      }
+
+      .hero-side {
+        display: grid;
+        gap: 12px;
+        min-width: 260px;
+      }
+
+      .mini-stat {
+        border-radius: 0;
+        padding: 16px 18px;
+        border: 1px solid rgba(214, 222, 232, 0.9);
+        background: rgba(255, 255, 255, 0.82);
+      }
+
+      .mini-stat span {
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .mini-stat strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 28px;
+        line-height: 1;
+      }
+
+      .summary-grid,
+      .dual-grid {
+        display: grid;
+        gap: 18px;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .summary-card {
+        border-radius: 0;
+        padding: 18px;
+      }
+
+      .summary-card small {
+        display: block;
+        color: var(--text-muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .summary-card strong {
+        display: block;
+        margin-top: 10px;
+        font-size: 30px;
+        line-height: 1;
+      }
+
+      .summary-card p {
+        margin-top: 8px;
+        color: var(--text-subtle);
+        line-height: 1.6;
+      }
+
+      .dual-grid {
+        grid-template-columns: 1.15fr 0.85fr;
+      }
+
+      .section-card {
+        border-radius: 0;
+        padding: 22px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .section-head h2 {
+        font-size: 22px;
+        line-height: 1.25;
+      }
+
+      .section-head span {
+        color: var(--text-muted);
+        font-size: 13px;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .field {
+        display: inline-flex;
+        align-items: center;
+        min-height: 42px;
+        border-radius: 0;
+        border: 1px solid var(--border);
+        background: #ffffff;
+        padding: 0 14px;
+        color: var(--text-subtle);
+        font-size: 14px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 14px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+      }
+
+      th {
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      td strong {
+        font-size: 15px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        border-radius: 0;
+        padding: 0 10px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .tag.blue {
+        background: var(--accent);
+        color: var(--primary-strong);
+      }
+
+      .tag.green {
+        background: #eaf8ee;
+        color: var(--success);
+      }
+
+      .tag.orange {
+        background: #fff4e7;
+        color: var(--warning);
+      }
+
+      .matrix {
+        display: grid;
+        gap: 10px;
+      }
+
+      .matrix-row,
+      .template-row,
+      .rule-row,
+      .log-row {
+        display: grid;
+        gap: 12px;
+        align-items: center;
+        border: 1px solid var(--border);
+        border-radius: 0;
+        background: var(--surface);
+        padding: 14px 16px;
+      }
+
+      .matrix-row {
+        grid-template-columns: 1.2fr 1fr auto;
+      }
+
+      .matrix-copy strong,
+      .template-copy strong,
+      .rule-row strong,
+      .log-row strong {
+        display: block;
+        font-size: 15px;
+        margin-bottom: 5px;
+      }
+
+      .matrix-copy p,
+      .template-copy p,
+      .rule-row p,
+      .log-row p {
+        color: var(--text-subtle);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .matrix-tags,
+      .row-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      .template-list,
+      .rule-list,
+      .log-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .template-row {
+        grid-template-columns: 1fr auto;
+      }
+
+      .rule-row {
+        grid-template-columns: 1fr auto;
+      }
+
+      .log-row {
+        grid-template-columns: 1fr auto;
+      }
+
+      .muted {
+        color: var(--text-muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 1180px) {
+        .shell,
+        .dual-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+        }
+
+        .summary-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 720px) {
+        .summary-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .headline,
+        .section-head,
+        .matrix-row,
+        .template-row,
+        .rule-row,
+        .log-row {
+          grid-template-columns: 1fr;
+          flex-direction: column;
+        }
+
+        .hero-side {
+          min-width: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="shell">
+        <aside class="sidebar">
+          <div class="brand">
+            <small>Admin Console</small>
+            <strong>라비에벨 예도팀</strong>
+            <p>승인, 포지션 자격, 예식 템플릿, 급여 규칙처럼 저빈도 고권한 작업만 여기서 다룹니다.</p>
+          </div>
+
+          <nav class="nav">
+            <div class="nav-item active">
+              <strong>승인 대기</strong>
+              <span>새로 로그인한 팀원 승인과 거절</span>
+            </div>
+            <div class="nav-item">
+              <strong>팀원-포지션 자격</strong>
+              <span>가능 / 교육중 상태 관리</span>
+            </div>
+            <div class="nav-item">
+              <strong>예식 템플릿</strong>
+              <span>11시, 12시, 14시 예식 템플릿 관리</span>
+            </div>
+            <div class="nav-item">
+              <strong>급여 규칙</strong>
+              <span>첫 식 -2시간, 막식 +2시간, 9시간 초과 1.5배</span>
+            </div>
+            <div class="nav-item">
+              <strong>감사 로그</strong>
+              <span>규칙 수정과 예외 승인 추적</span>
+            </div>
+          </nav>
+
+          <div class="sidebar-foot">
+            <div class="mini-card">
+              <strong>와이어 기준</strong>
+              <p>이 프리뷰는 픽셀 최종본이 아니라 섹션 구조, 우선순위, 화면 밀도를 확인하는 어드민 콘솔 와이어입니다.</p>
+            </div>
+          </div>
+        </aside>
+
+        <main class="main">
+          <section class="main-card">
+            <div class="headline">
+              <div class="headline-copy">
+                <div class="eyebrow">Admin Overview</div>
+                <h1>운영 홈과 분리된 설정 콘솔에서 승인과 기준값만 정리합니다.</h1>
+                <p>
+                  팀장과 팀원이 쓰는 실제 운영 화면과 섞지 않고, 어드민이 드물지만 중요한 작업만 처리하는 구조입니다.
+                  색감은 운영 앱과 같은 계열을 유지하되, 레이아웃은 더 단정하고 테이블 중심으로 갑니다.
+                </p>
+                <div class="quick-actions">
+                  <div class="btn primary">승인 대기 처리</div>
+                  <div class="btn secondary">예식 템플릿 추가</div>
+                  <div class="btn secondary">급여 규칙 보기</div>
+                </div>
+              </div>
+
+              <div class="hero-side">
+                <div class="mini-stat">
+                  <span>승인 대기</span>
+                  <strong>5건</strong>
+                </div>
+                <div class="mini-stat">
+                  <span>자격 미설정</span>
+                  <strong>2명</strong>
+                </div>
+                <div class="mini-stat">
+                  <span>활성 템플릿</span>
+                  <strong>4개</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="summary-grid">
+            <div class="summary-card">
+              <small>승인 대기</small>
+              <strong>5</strong>
+              <p>신규 로그인 사용자가 아직 팀 멤버십을 받지 못한 상태입니다.</p>
+            </div>
+            <div class="summary-card">
+              <small>포지션 자격 누락</small>
+              <strong>2</strong>
+              <p>자격이 비어 있어서 대타 필터나 배정에서 빠질 수 있는 팀원입니다.</p>
+            </div>
+            <div class="summary-card">
+              <small>예식 템플릿</small>
+              <strong>4</strong>
+              <p>11시, 12시, 14시, 16시 예식 기본 템플릿이 저장돼 있습니다.</p>
+            </div>
+            <div class="summary-card">
+              <small>최근 규칙 수정</small>
+              <strong>1</strong>
+              <p>급여 규칙 또는 체크인 예외 기준이 최근 7일 안에 수정됐습니다.</p>
+            </div>
+          </section>
+
+          <section class="dual-grid">
+            <div class="section-card">
+              <div class="section-head">
+                <h2>승인 대기</h2>
+                <span>빠르게 처리해야 운영 앱 진입 가능</span>
+              </div>
+              <div class="toolbar">
+                <div class="field">이름 또는 이메일 검색</div>
+                <div class="field">오늘 가입</div>
+                <div class="field">전체 상태</div>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>이름</th>
+                    <th>이메일</th>
+                    <th>요청 시각</th>
+                    <th>상태</th>
+                    <th>액션</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>김민수</strong></td>
+                    <td>minsu@example.com</td>
+                    <td>2026-04-08 09:14</td>
+                    <td><span class="tag orange">대기</span></td>
+                    <td><span class="tag blue">승인</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>최지은</strong></td>
+                    <td>jieun@example.com</td>
+                    <td>2026-04-08 09:33</td>
+                    <td><span class="tag orange">대기</span></td>
+                    <td><span class="tag blue">승인</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>박준호</strong></td>
+                    <td>junho@example.com</td>
+                    <td>2026-04-08 10:02</td>
+                    <td><span class="tag orange">대기</span></td>
+                    <td><span class="tag blue">승인</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="section-card">
+              <div class="section-head">
+                <h2>최근 변경 로그</h2>
+                <span>감사 추적</span>
+              </div>
+              <div class="log-list">
+                <div class="log-row">
+                  <div>
+                    <strong>급여 규칙 수정</strong>
+                    <p>첫 식 시작 -2시간, 막식 종료 +2시간 규칙 확인</p>
+                  </div>
+                  <div class="muted">오늘 08:42</div>
+                </div>
+                <div class="log-row">
+                  <div>
+                    <strong>포지션 자격 변경</strong>
+                    <p>이수현 · 수프 포지션 `training` → `qualified`</p>
+                  </div>
+                  <div class="muted">어제 18:11</div>
+                </div>
+                <div class="log-row">
+                  <div>
+                    <strong>템플릿 수정</strong>
+                    <p>12:00 예식 템플릿 포지션 슬롯 조정</p>
+                  </div>
+                  <div class="muted">어제 16:20</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="dual-grid">
+            <div class="section-card">
+              <div class="section-head">
+                <h2>팀원-포지션 자격</h2>
+                <span>대타 필터와 배정 품질의 기준값</span>
+              </div>
+              <div class="matrix">
+                <div class="matrix-row">
+                  <div class="matrix-copy">
+                    <strong>이수현</strong>
+                    <p>현재 가능한 포지션과 교육중 포지션을 함께 관리합니다.</p>
+                  </div>
+                  <div class="matrix-tags">
+                    <span class="tag green">수프 · 가능</span>
+                    <span class="tag blue">음료 · 교육중</span>
+                  </div>
+                  <div class="row-actions">
+                    <span class="tag blue">편집</span>
+                  </div>
+                </div>
+                <div class="matrix-row">
+                  <div class="matrix-copy">
+                    <strong>정다은</strong>
+                    <p>예식 운영 시 바로 알림 대상으로 포함될 자격 조합입니다.</p>
+                  </div>
+                  <div class="matrix-tags">
+                    <span class="tag green">수프 · 가능</span>
+                    <span class="tag green">홀서빙 · 가능</span>
+                  </div>
+                  <div class="row-actions">
+                    <span class="tag blue">편집</span>
+                  </div>
+                </div>
+                <div class="matrix-row">
+                  <div class="matrix-copy">
+                    <strong>박준호</strong>
+                    <p>자격 누락이 있으면 대타 필터나 배정에서 빠지므로 바로 보이게 둡니다.</p>
+                  </div>
+                  <div class="matrix-tags">
+                    <span class="tag orange">자격 미설정</span>
+                  </div>
+                  <div class="row-actions">
+                    <span class="tag blue">설정</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-head">
+                <h2>급여 규칙</h2>
+                <span>운영 앱 계산 기준</span>
+              </div>
+              <div class="rule-list">
+                <div class="rule-row">
+                  <div>
+                    <strong>근무 인정 시간</strong>
+                    <p>첫 식 시작 시각 기준 -2시간부터, 막식 종료 시각 기준 +2시간까지</p>
+                  </div>
+                  <span class="tag blue">활성</span>
+                </div>
+                <div class="rule-row">
+                  <div>
+                    <strong>초과 근무 계산</strong>
+                    <p>총 인정 근무시간이 9시간을 넘으면 초과분은 1.5배로 계산</p>
+                  </div>
+                  <span class="tag blue">활성</span>
+                </div>
+                <div class="rule-row">
+                  <div>
+                    <strong>수동 수정 정책</strong>
+                    <p>팀장만 예외 케이스에서 수정 가능, 모든 변경은 감사 로그로 남김</p>
+                  </div>
+                  <span class="tag orange">감사 추적</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section-card">
+            <div class="section-head">
+              <h2>예식 템플릿</h2>
+              <span>단일 홀, 시간 라벨 중심 운영</span>
+            </div>
+            <div class="template-list">
+              <div class="template-row">
+                <div class="template-copy">
+                  <strong>11:00 예식 템플릿</strong>
+                  <p>첫 식 11:00, 막식 18:00, 기본 정규 슬롯 10명, 교육 슬롯은 행사 생성 시 추가</p>
+                </div>
+                <div class="row-actions">
+                  <span class="tag blue">복제</span>
+                  <span class="tag blue">편집</span>
+                </div>
+              </div>
+              <div class="template-row">
+                <div class="template-copy">
+                  <strong>12:00 예식 템플릿</strong>
+                  <p>첫 식 12:00, 막식 19:00, 예도팀 기본 포지션 슬롯 그대로 재사용</p>
+                </div>
+                <div class="row-actions">
+                  <span class="tag blue">복제</span>
+                  <span class="tag blue">편집</span>
+                </div>
+              </div>
+              <div class="template-row">
+                <div class="template-copy">
+                  <strong>14:00 예식 템플릿</strong>
+                  <p>오후 예식 기준, 막식 시간과 마감 인력만 다르게 관리하는 버전</p>
+                </div>
+                <div class="row-actions">
+                  <span class="tag blue">복제</span>
+                  <span class="tag blue">편집</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
