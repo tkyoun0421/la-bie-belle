@@ -17,11 +17,14 @@ Date: 2026-04-09
 ```text
 src/
   app/
-    app/
+    _providers/
     admin/
+    events/
+    replacements/
+    check-in/
+    pay/
     auth/
     api/
-    providers/
   flows/
   mutations/
   queries/
@@ -42,18 +45,16 @@ public/
 ```
 
 ## Route Tree
+Non-route support folders under `src/app` must use a private `_` prefix, for example `_providers/`.
+
 ```text
 src/app/
   layout.tsx
   page.tsx
-
-  app/
-    layout.tsx
-    page.tsx
-    events/[eventId]/page.tsx
-    replacements/page.tsx
-    check-in/page.tsx
-    pay/page.tsx
+  events/[eventId]/page.tsx
+  replacements/page.tsx
+  check-in/page.tsx
+  pay/page.tsx
 
   admin/
     layout.tsx
@@ -74,11 +75,11 @@ src/app/
 ```
 
 ## Route To Flow Mapping
-- `/app` -> `flows/dashboard`
-- `/app/events/[eventId]` -> `flows/event-detail`
-- `/app/replacements` -> `flows/replacements`
-- `/app/check-in` -> `flows/check-in`
-- `/app/pay` -> `flows/pay`
+- `/` -> `flows/dashboard`
+- `/events/[eventId]` -> `flows/event-detail`
+- `/replacements` -> `flows/replacements`
+- `/check-in` -> `flows/check-in`
+- `/pay` -> `flows/pay`
 - `/admin` -> `flows/admin-dashboard`
 - `/admin/requests` -> `flows/admin-requests`
 - `/admin/users` -> `flows/admin-users`
@@ -142,7 +143,7 @@ src/mutations/replacements/approve-replacement/
 2. page는 대응하는 `flows/*`를 렌더한다.
 3. `flows/*`는 필요한 `queries/*` 결과와 `mutations/*` action을 조합한다.
 4. 상태 변경은 `mutations/*/*/actions/action.ts`로 들어간다.
-5. React 전용 wiring은 해당 유스케이스 또는 flow의 `hooks/`에 둔다.
+5. TanStack Query hook과 React 전용 wiring은 해당 유스케이스 또는 flow의 `hooks/`에 둔다.
 
 ## Naming
 - 폴더 이름은 `kebab-case`
@@ -156,11 +157,16 @@ src/mutations/replacements/approve-replacement/
 - Next.js 예약 파일은 `page.tsx`, `layout.tsx`, `route.ts` 같은 framework naming을 그대로 쓴다
 
 ## State Management Policy
-- 전역 store는 v1에서 두지 않는다.
+- 전역 client store는 `Zustand`만 사용한다.
+- `Zustand`는 drawer, filter, selected item, temporary compose state 같은 UI 상태에만 쓴다.
+- 서버 데이터의 source of truth는 `TanStack Query` 또는 server render 결과다.
 - 서버 데이터는 `flows -> queries` 경로로 읽는다.
-- UI 로컬 상태는 컴포넌트 상태나 form state로만 관리한다.
+- client-side server state는 `TanStack Query`로 관리한다.
+- polling과 cache invalidation은 `TanStack Query` 기준으로 구현한다.
+- UI 로컬 상태는 컴포넌트 상태, form state, 또는 `Zustand`로 관리한다.
 - URL에 남아야 하는 상태만 search params로 올린다.
-- polling은 먼저 query를 만들고, hook이 그 query를 React에서 감싼다.
+- query hook은 가능하면 `queries/*/hooks`에 둔다.
+- Zustand store는 가능하면 해당 flow 또는 유스케이스 아래 `hooks/`에서 감싼다.
 
 ## Test Placement
 ```text
@@ -187,5 +193,5 @@ src/mutations/**/tests/
 3. `tsconfig`에 `#/* -> ./src/*` path alias 설정
 4. 대표 샘플로 `flows/dashboard`, `queries/users/get-my-profile`, `mutations/auth/logout` 생성
 5. 각 유스케이스에 필요한 `actions / components / hooks / models / tests`만 추가
-6. `/app`과 `/admin` 레이아웃 분리
+6. root work routes와 `/admin` 레이아웃 분리
 7. no-barrel, no-cross-domain, no-relative-internal-import, no-direct-db-from-route 규칙을 lint/리뷰 기준으로 반영

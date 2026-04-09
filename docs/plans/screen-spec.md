@@ -14,16 +14,16 @@ Date: 2026-04-09
 ## App IA
 
 ### Shared Dashboard And Work Pages
-- 기본 진입점은 `/app`
+- 기본 진입점은 `/`
 - 모든 역할은 공통 대시보드에서 시작한다
 - 이후 역할에 따라 강조 카드와 빠른 액션만 달라진다
 
 주요 경로:
-- `/app`
-- `/app/events/[eventId]`
-- `/app/replacements`
-- `/app/check-in`
-- `/app/pay`
+- `/`
+- `/events/[eventId]`
+- `/replacements`
+- `/check-in`
+- `/pay`
 
 ### Admin Console
 - 운영 설정과 승인 업무는 `/admin`으로 분리한다

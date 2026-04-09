@@ -14,25 +14,25 @@
 ## SSOT Map
 
 ### Product And Scope
-- 범위, 고정 결정, shipping slice: [build-plan.md](C:/code/la-bie-belle/docs/plans/build-plan.md)
+- 범위, 고정 결정, shipping slice: [build-plan.md](./docs/plans/build-plan.md)
 
 ### Architecture
-- 데이터 모델, 권한, 상태 전이, DB/query 규칙: [architecture-spec.md](C:/code/la-bie-belle/docs/plans/architecture-spec.md)
-- 화면 구조, 핵심 흐름, 실패 시 fallback: [screen-spec.md](C:/code/la-bie-belle/docs/plans/screen-spec.md)
+- 데이터 모델, 권한, 상태 전이, DB/query 규칙: [architecture-spec.md](./docs/plans/architecture-spec.md)
+- 화면 구조, 핵심 흐름, 실패 시 fallback: [screen-spec.md](./docs/plans/screen-spec.md)
 
 ### Codebase
-- canonical tree, route-flow 매핑, 의존 규칙: [codebase-architecture.md](C:/code/la-bie-belle/docs/plans/codebase-architecture.md)
-- personalized FSD 규칙, import/naming 규칙: [fsd-profile.md](C:/code/la-bie-belle/docs/plans/fsd-profile.md)
+- canonical tree, route-flow 매핑, 의존 규칙: [codebase-architecture.md](./docs/plans/codebase-architecture.md)
+- personalized FSD 규칙, import/naming 규칙: [fsd-profile.md](./docs/plans/fsd-profile.md)
 
 ### Stack
-- 프레임워크, 런타임, 라이브러리 결정과 결정 시점: [stack-spec.md](C:/code/la-bie-belle/docs/plans/stack-spec.md)
+- 프레임워크, 런타임, 라이브러리 결정과 결정 시점: [stack-spec.md](./docs/plans/stack-spec.md)
 
 ### Execution
-- phase, slice, 테스트 전략, checkpoint 운영: [execution-plan.md](C:/code/la-bie-belle/docs/plans/execution-plan.md)
+- phase, slice, 테스트 전략, checkpoint 운영: [execution-plan.md](./docs/plans/execution-plan.md)
 
 ### Design
-- 시각 시스템의 최상위 SSOT: [DESIGN.md](C:/code/la-bie-belle/DESIGN.md)
-- 제품 화면 의도와 참고 흐름: [pwa.md](C:/code/la-bie-belle/docs/designs/pwa.md)
+- 시각 시스템의 최상위 SSOT: [DESIGN.md](./DESIGN.md)
+- 제품 화면 의도와 참고 흐름: [pwa.md](./docs/designs/pwa.md)
 
 ## Priority Rule
 문서가 충돌하면 아래 순서를 따른다.
@@ -54,10 +54,11 @@
 ## Working Rules
 
 ### Read Before Coding
-- 범용 구현 전에는 [build-plan.md](C:/code/la-bie-belle/docs/plans/build-plan.md), [execution-plan.md](C:/code/la-bie-belle/docs/plans/execution-plan.md), [codebase-architecture.md](C:/code/la-bie-belle/docs/plans/codebase-architecture.md)를 먼저 본다
-- 데이터나 권한을 만지면 [architecture-spec.md](C:/code/la-bie-belle/docs/plans/architecture-spec.md)를 본다
-- UI를 만지면 [DESIGN.md](C:/code/la-bie-belle/DESIGN.md)와 [screen-spec.md](C:/code/la-bie-belle/docs/plans/screen-spec.md)를 본다
-- 라이브러리를 추가하거나 교체하기 전에는 [stack-spec.md](C:/code/la-bie-belle/docs/plans/stack-spec.md)를 본다
+- 범용 구현 전에는 [build-plan.md](./docs/plans/build-plan.md), [execution-plan.md](./docs/plans/execution-plan.md), [codebase-architecture.md](./docs/plans/codebase-architecture.md)를 먼저 본다
+- 데이터나 권한을 만지면 [architecture-spec.md](./docs/plans/architecture-spec.md)를 본다
+- UI를 만지면 [DESIGN.md](./DESIGN.md)와 [screen-spec.md](./docs/plans/screen-spec.md)를 본다
+- 라이브러리를 추가하거나 교체하기 전에는 [stack-spec.md](./docs/plans/stack-spec.md)를 본다
+- 새로운 phase를 시작하기 전에는 먼저 `docs/plans/phases/*` 아래 phase 문서를 만들고 user review를 받는다
 
 ### Work Unit
 - 구현은 항상 `phase -> slice -> task` 순서로 진행한다
@@ -82,9 +83,12 @@
 - route와 UI 컴포넌트에서 DB를 직접 호출하지 않는다
 - 읽기는 query 경계, 쓰기는 mutation 경계로만 처리한다
 - privileged write는 Next.js `server actions` 또는 `route handlers`로만 처리한다
+- client-side server state는 TanStack Query를 기준으로 처리한다
+- client-only UI state는 Zustand를 기준으로 처리한다
+- 공용 UI primitive는 shadcn/ui를 기준으로 처리한다
 
 ## Design Rule
-모든 시각적 결정은 [DESIGN.md](C:/code/la-bie-belle/DESIGN.md)를 따른다.
+모든 시각적 결정은 [DESIGN.md](./DESIGN.md)를 따른다.
 
 - 폰트, 컬러, 간격, 레이아웃, 모션은 DESIGN 기준을 우선한다
 - 명시적 승인 없이는 DESIGN에서 벗어나지 않는다

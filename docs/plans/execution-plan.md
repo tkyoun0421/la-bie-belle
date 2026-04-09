@@ -61,6 +61,25 @@ v1에서 먼저 닫아야 할 운영 루프:
 - 여러 role과 여러 화면을 한 번에 묶는 slice는 피한다
 - slice 경계는 "이 작업이 끝나면 데모 가능한가?"로 판단한다
 
+## Phase Review Gate
+각 phase는 구현 전에 먼저 상세 문서를 만든다.
+
+- 위치: `docs/plans/phases/*`
+- 목적: 구현 전에 범위, slice, touched routes, queries, mutations, tests를 검토 가능하게 만드는 것
+- 원칙: phase 문서가 먼저, 구현은 그 다음
+- user review가 끝나기 전에는 다음 phase 코딩을 시작하지 않는다
+
+phase 문서 최소 항목:
+- goal
+- in scope / out of scope
+- stack assumptions
+- route and flow impact
+- slice breakdown
+- query / mutation / schema touch points
+- test plan
+- risks and open questions
+- definition of done
+
 ## Pause And Resume Rule
 작업은 slice 경계에서 멈추는 것을 기본으로 한다.
 

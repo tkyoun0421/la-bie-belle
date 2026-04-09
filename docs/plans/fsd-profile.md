@@ -36,6 +36,8 @@ src/
 
 ## Layer Responsibilities
 
+App-layer support folders under `src/app` must use a private `_` prefix.
+
 ### App
 - route segment와 Next.js 예약 파일만 둔다
 - layout, provider, auth bootstrap까지만 가진다

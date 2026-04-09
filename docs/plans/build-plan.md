@@ -26,6 +26,7 @@ Date: 2026-04-09
 - [Codebase Architecture](./codebase-architecture.md): `src/` 구조, route to flow 매핑, 의존 규칙
 - [FSD Profile](./fsd-profile.md): 개인화된 FSD 규칙, naming, import, 내부 폴더 기준
 - [Execution Plan](./execution-plan.md): 테스트 전략, 구현 phase, build 순서
+- `docs/plans/phases/*`: phase 착수 전 검토용 상세 구현 문서
 
 ## Locked Decisions
 - 배포 형태는 비공개 PWA

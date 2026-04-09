@@ -35,6 +35,9 @@ Date: 2026-04-09
 | Lint | ESLint flat config | import 경계와 구조 규칙을 강제하기 쉽다 |
 | Format | Prettier | 포맷팅을 lint와 분리해서 단순하게 유지한다 |
 | Styling | Tailwind CSS v4 + shadcn/ui + CSS variables | DESIGN 방향과 가장 잘 맞고 Next/App Router 기본 흐름과도 잘 맞다 |
+| UI primitives | shadcn/ui | 운영 앱에 필요한 기본 컴포넌트를 빠르게 일관되게 만들 수 있다 |
+| Server state | TanStack Query | polling, cache, invalidation, optimistic UX를 표준화할 수 있다 |
+| Client state | Zustand | 클라이언트 UI 상태를 가볍게 분리할 수 있다 |
 | Forms | Server Action-first form + `useActionState` | App Router 구조와 잘 맞고 초반 복잡도를 낮춘다 |
 | Validation | Zod 4 | form, mutation, env schema를 한 방식으로 통일할 수 있다 |
 | Date/time | date-fns | 가볍고 함수형이며 행사 시간 계산 범위에 충분하다 |
@@ -47,6 +50,9 @@ Date: 2026-04-09
 - `packageManager` 필드는 `package.json` 생성 시 `pnpm` 기준으로 기록한다
 - Node 기준 파일은 bootstrap 때 `.nvmrc`로 고정한다
 - ESLint는 structure rule까지 포함하고, Prettier는 포맷팅만 담당한다
+- shadcn/ui는 공용 UI primitive 기준으로 사용한다
+- TanStack Query는 client-side server state, polling, cache invalidation에 사용한다
+- Zustand는 client-only UI state에만 사용하고, 서버 데이터의 source of truth로 쓰지 않는다
 - 폼은 기본적으로 server action을 직접 호출하고, Zod schema로 검증한다
 - React Hook Form은 기본 스택에 넣지 않는다
 - env는 `NEXT_PUBLIC_*`만 클라이언트로 노출한다
@@ -61,7 +67,7 @@ Date: 2026-04-09
 | Modal or dialog | 승인/확정/종료 확인 UI가 생길 때 |
 | Table or data grid | admin 목록 화면이 커질 때 |
 | Date picker | 행사 생성 UI를 실제로 붙일 때 |
-| Icons | 공용 UI 컴포넌트를 만들 때 |
+| Icons | shadcn/ui 공용 컴포넌트를 확장할 때 |
 | Chart | 대시보드 분석 요소가 필요할 때 |
 | Map or geo UI helper | 체크인 위치 UX를 만들 때 |
 | Push helper wrapper | 푸시 구독/해제 slice를 만들 때 |
