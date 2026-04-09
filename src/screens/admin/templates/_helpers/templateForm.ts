@@ -5,10 +5,6 @@ import type { CreateEventTemplateInput } from "#/mutations/events/schemas/create
 
 export type TemplateFieldName = "firstServiceAt" | "lastServiceEndAt" | "name";
 export type TemplateFormSlot = CreateEventTemplateInput["slotDefaults"][number];
-export type TemplateFormState = Pick<
-  CreateEventTemplateInput,
-  TemplateFieldName | "isPrimary"
->;
 export type TemplatePositionOption = {
   defaultRequiredCount: number;
   label: string;
@@ -17,17 +13,6 @@ export type TemplatePositionOption = {
 };
 export type TemplateSlotRow = TemplateFormSlot & {
   _key: string;
-};
-export type TemplateSlotFieldErrors = {
-  positionId: string | null;
-  requiredCount: string | null;
-};
-export type TemplateFieldErrors = {
-  firstServiceAt: string | null;
-  lastServiceEndAt: string | null;
-  name: string | null;
-  slotDefaults: string | null;
-  slotRows: TemplateSlotFieldErrors[];
 };
 
 export const templateSaveErrorMessage =
@@ -126,14 +111,14 @@ export function createTemplateSlot(
 }
 
 export function createTemplateSlotRows(
-  fields: Array<{ id: string }>,
+  fields: Array<{ _key?: string; id?: string }>,
   slotDefaults: TemplateFormSlot[] | undefined,
   defaultPositionId: string,
   defaultRequiredCountByPositionId: Record<string, number>,
   fallbackDefaultRequiredCount = 2
 ): TemplateSlotRow[] {
   return fields.map((field, index) => ({
-    _key: field.id,
+    _key: field._key ?? field.id ?? `slot-row-${index + 1}`,
     ...(slotDefaults?.[index] ??
       createTemplateSlot(
         defaultPositionId,

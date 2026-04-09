@@ -1,3 +1,4 @@
+import { useFormState, useWatch, type FieldArrayWithId, type UseFormReturn } from "react-hook-form";
 import Link from "next/link";
 import { GripVertical } from "lucide-react";
 import { FormFieldError } from "#/shared/components/common/FormFieldError";
@@ -14,19 +15,22 @@ import {
 import { getReorderDropIndicatorPosition } from "#/shared/lib/drag-and-drop/getReorderDropIndicatorPosition";
 import { setDragPreview } from "#/shared/lib/drag-and-drop/setDragPreview";
 import { cn } from "#/shared/lib/utils";
-import type {
-  TemplateFormSlot,
-  TemplatePositionOption,
-  TemplateSlotFieldErrors,
-  TemplateSlotRow,
+import type { CreateEventTemplateInput } from "#/mutations/events/schemas/createEventTemplate";
+import {
+  createTemplateSlotRows,
+  type TemplateFormSlot,
+  type TemplatePositionOption,
 } from "#/screens/admin/templates/_helpers/templateForm";
 import { TemplateField } from "#/screens/admin/templates/_components/TemplateField";
 
 type TemplateSlotDefaultsSectionProps = {
   canManageSlots: boolean;
+  defaultPositionId: string;
+  defaultRequiredCount: number;
+  defaultRequiredCountByPositionId: Record<string, number>;
   draggingSlotKey: string | null;
   dropTargetSlotKey: string | null;
-  error: string | null;
+  form: UseFormReturn<CreateEventTemplateInput>;
   onAddSlotRow: () => void;
   onRemoveSlotRow: (slotIndex: number) => void;
   onSlotDragEnd: () => void;
@@ -39,15 +43,21 @@ type TemplateSlotDefaultsSectionProps = {
     nextValue: string
   ) => void;
   positionOptions: TemplatePositionOption[];
-  slotErrors: TemplateSlotFieldErrors[];
-  slotRows: TemplateSlotRow[];
+  slotFields: FieldArrayWithId<
+    CreateEventTemplateInput,
+    "slotDefaults",
+    "_key"
+  >[];
 };
 
 export function TemplateSlotDefaultsSection({
   canManageSlots,
+  defaultPositionId,
+  defaultRequiredCount,
+  defaultRequiredCountByPositionId,
   draggingSlotKey,
   dropTargetSlotKey,
-  error,
+  form,
   onAddSlotRow,
   onRemoveSlotRow,
   onSlotDragEnd,
@@ -56,12 +66,28 @@ export function TemplateSlotDefaultsSection({
   onSlotDropTargetChange,
   onUpdateSlot,
   positionOptions,
-  slotErrors,
-  slotRows,
+  slotFields,
 }: Readonly<TemplateSlotDefaultsSectionProps>) {
+  const slotDefaults = useWatch({
+    control: form.control,
+    name: "slotDefaults",
+  });
+  const { errors } = useFormState({
+    control: form.control,
+    name: "slotDefaults",
+  });
+  const slotRows = createTemplateSlotRows(
+    slotFields,
+    slotDefaults,
+    defaultPositionId,
+    defaultRequiredCountByPositionId,
+    defaultRequiredCount
+  );
   const selectedPositionIds = new Set(
     slotRows.map((slot) => slot.positionId).filter(Boolean)
   );
+  const slotErrors = createSlotFieldErrors(errors.slotDefaults, slotRows.length);
+  const sectionError = readFieldArrayErrorMessage(errors.slotDefaults);
   const canAddSlot = canManageSlots && slotRows.length < positionOptions.length;
   const canReorderSlots = slotRows.length > 1;
   const draggingSlotIndex = draggingSlotKey
@@ -79,9 +105,9 @@ export function TemplateSlotDefaultsSection({
             포지션 기본값
           </h3>
           <p className="text-sm text-[var(--text-subtle)]">
-            생성 시 그대로 복사되는 템플릿용 기본 포지션 구성입니다.
+            생성 시 그대로 복사되는 템플릿용 기본 포지션 구성을 설정합니다.
           </p>
-          <FormFieldError className="mt-2" message={error} />
+          <FormFieldError className="mt-2" message={sectionError} />
         </div>
         <Button
           disabled={!canAddSlot}
@@ -118,11 +144,15 @@ export function TemplateSlotDefaultsSection({
                 dropTargetSlotIndex
               )
             : null;
+          const rowError = slotErrors[index];
+          const hasDesktopRowError = Boolean(
+            rowError?.positionId || rowError?.requiredCount
+          );
 
           return (
             <div
               className={cn(
-                "relative grid gap-3 border-t border-[var(--border-soft)] p-4 first:border-t-0 md:grid-cols-[40px_minmax(0,1.4fr)_160px_auto]",
+                "relative border-t border-[var(--border-soft)] first:border-t-0",
                 "transition-opacity transition-transform",
                 isDropTarget &&
                   "z-[1] bg-[#f5faff] ring-2 ring-inset ring-[#9ac2ff]",
@@ -158,90 +188,178 @@ export function TemplateSlotDefaultsSection({
                 <ReorderDropIndicator position={dropIndicatorPosition} />
               ) : null}
 
-              <div className="flex items-end">
-                <button
-                  aria-label="슬롯 순서 이동"
-                  className="inline-flex size-8 cursor-grab items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-soft)] hover:text-[var(--foreground)] active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40"
-                  disabled={!canReorderSlots}
-                  draggable={canReorderSlots}
-                  onDragEnd={onSlotDragEnd}
-                  onDragStart={(event) => {
-                    if (!canReorderSlots) {
-                      return;
+              <div className="grid gap-3 p-4 md:grid-cols-[40px_minmax(0,1.4fr)_160px_auto]">
+                <div className="flex items-end">
+                  <button
+                    aria-label="포지션 순서 이동"
+                    className="inline-flex size-8 cursor-grab items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-soft)] hover:text-[var(--foreground)] active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={!canReorderSlots}
+                    draggable={canReorderSlots}
+                    onDragEnd={onSlotDragEnd}
+                    onDragStart={(event) => {
+                      if (!canReorderSlots) {
+                        return;
+                      }
+
+                      event.dataTransfer.effectAllowed = "move";
+                      event.dataTransfer.setData("text/plain", slot._key);
+                      setDragPreview(event);
+                      onSlotDragStart(slot._key);
+                    }}
+                    type="button"
+                  >
+                    <GripVertical className="size-4" />
+                  </button>
+                </div>
+
+                <TemplateField
+                  error={rowError?.positionId}
+                  errorClassName="md:hidden"
+                  label="포지션"
+                >
+                  <Select
+                    onValueChange={(value) =>
+                      onUpdateSlot(index, "positionId", value)
                     }
+                    value={slot.positionId}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="포지션 선택" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {positionOptions.map((position) => {
+                        const isTakenByOtherSlot =
+                          position.value !== slot.positionId &&
+                          selectedPositionIds.has(position.value);
 
-                    event.dataTransfer.effectAllowed = "move";
-                    event.dataTransfer.setData("text/plain", slot._key);
-                    setDragPreview(event);
-                    onSlotDragStart(slot._key);
-                  }}
-                  type="button"
+                        return (
+                          <SelectItem
+                            disabled={isTakenByOtherSlot}
+                            key={position.value}
+                            value={position.value}
+                          >
+                            {position.label}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                </TemplateField>
+
+                <TemplateField
+                  error={rowError?.requiredCount}
+                  errorClassName="md:hidden"
+                  label="필수 인원"
                 >
-                  <GripVertical className="size-4" />
-                </button>
+                  <Input
+                    min="1"
+                    onChange={(event) =>
+                      onUpdateSlot(index, "requiredCount", event.target.value)
+                    }
+                    type="number"
+                    value={slot.requiredCount}
+                  />
+                </TemplateField>
+
+                <div className="flex items-end">
+                  <Button
+                    className="text-[var(--foreground)]"
+                    onClick={() => onRemoveSlotRow(index)}
+                    type="button"
+                    variant="outline"
+                  >
+                    제거
+                  </Button>
+                </div>
               </div>
 
-              <TemplateField
-                error={slotErrors[index]?.positionId}
-                label="포지션"
-              >
-                <Select
-                  onValueChange={(value) =>
-                    onUpdateSlot(index, "positionId", value)
-                  }
-                  value={slot.positionId}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="포지션 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {positionOptions.map((position) => {
-                      const isTakenByOtherSlot =
-                        position.value !== slot.positionId &&
-                        selectedPositionIds.has(position.value);
-
-                      return (
-                        <SelectItem
-                          disabled={isTakenByOtherSlot}
-                          key={position.value}
-                          value={position.value}
-                        >
-                          {position.label}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              </TemplateField>
-
-              <TemplateField
-                error={slotErrors[index]?.requiredCount}
-                label="필수 인원"
-              >
-                <Input
-                  min="1"
-                  onChange={(event) =>
-                    onUpdateSlot(index, "requiredCount", event.target.value)
-                  }
-                  type="number"
-                  value={slot.requiredCount}
-                />
-              </TemplateField>
-
-              <div className="flex items-end">
-                <Button
-                  className="text-[var(--foreground)]"
-                  onClick={() => onRemoveSlotRow(index)}
-                  type="button"
-                  variant="outline"
-                >
-                  제거
-                </Button>
-              </div>
+              {hasDesktopRowError ? (
+                <div className="hidden px-4 pb-4 md:grid md:grid-cols-[40px_minmax(0,1.4fr)_160px_auto] md:gap-3">
+                  <div />
+                  <FormFieldError message={rowError?.positionId} />
+                  <FormFieldError message={rowError?.requiredCount} />
+                  <div />
+                </div>
+              ) : null}
             </div>
           );
         })}
       </div>
     </div>
   );
+}
+
+function createSlotFieldErrors(
+  slotDefaultErrors: unknown,
+  slotCount: number
+) {
+  return Array.from({ length: slotCount }, (_, index) => {
+    const rowError = Array.isArray(slotDefaultErrors)
+      ? slotDefaultErrors[index]
+      : null;
+
+    return {
+      positionId: readNestedFieldErrorMessage(rowError, "positionId"),
+      requiredCount: readNestedFieldErrorMessage(rowError, "requiredCount"),
+    };
+  });
+}
+
+function readFieldArrayErrorMessage(slotDefaultErrors: unknown) {
+  if (!slotDefaultErrors || Array.isArray(slotDefaultErrors)) {
+    return readRootFieldErrorMessage(slotDefaultErrors);
+  }
+
+  if (
+    typeof slotDefaultErrors === "object" &&
+    "message" in slotDefaultErrors &&
+    typeof slotDefaultErrors.message === "string"
+  ) {
+    return slotDefaultErrors.message;
+  }
+
+  return null;
+}
+
+function readRootFieldErrorMessage(slotDefaultErrors: unknown) {
+  if (
+    slotDefaultErrors &&
+    typeof slotDefaultErrors === "object" &&
+    "root" in slotDefaultErrors
+  ) {
+    const root = slotDefaultErrors.root;
+
+    if (root && typeof root === "object" && "message" in root) {
+      return typeof root.message === "string" ? root.message : null;
+    }
+  }
+
+  return null;
+}
+
+function readNestedFieldErrorMessage(
+  rowError: unknown,
+  field: "positionId" | "requiredCount"
+) {
+  if (
+    !rowError ||
+    typeof rowError !== "object" ||
+    !(field in rowError)
+  ) {
+    return null;
+  }
+
+  const nextFieldError = (rowError as Record<string, unknown>)[field];
+
+  if (
+    nextFieldError &&
+    typeof nextFieldError === "object" &&
+    "message" in nextFieldError
+  ) {
+    return typeof nextFieldError.message === "string"
+      ? nextFieldError.message
+      : null;
+  }
+
+  return null;
 }

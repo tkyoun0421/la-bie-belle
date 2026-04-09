@@ -1,3 +1,4 @@
+import type { FieldArrayWithId, UseFormReturn } from "react-hook-form";
 import {
   Card,
   CardContent,
@@ -10,22 +11,20 @@ import { TemplateBasicsFields } from "#/screens/admin/templates/_components/Temp
 import { TemplateEditorActions } from "#/screens/admin/templates/_components/TemplateEditorActions";
 import { TemplateSlotDefaultsSection } from "#/screens/admin/templates/_components/TemplateSlotDefaultsSection";
 import type {
-  TemplateFieldErrors,
   TemplateFieldName,
-  TemplateFormState,
+  TemplateFormSlot,
   TemplatePositionOption,
-  TemplateSlotRow,
 } from "#/screens/admin/templates/_helpers/templateForm";
-
-type TemplateFormSlot = CreateEventTemplateInput["slotDefaults"][number];
 
 type EventTemplateEditorCardProps = {
   canManageSlots: boolean;
+  defaultPositionId: string;
+  defaultRequiredCount: number;
+  defaultRequiredCountByPositionId: Record<string, number>;
   draggingSlotKey: string | null;
   dropTargetSlotKey: string | null;
   editingTemplateId: string | null;
-  fieldErrors: TemplateFieldErrors;
-  formState: TemplateFormState;
+  form: UseFormReturn<CreateEventTemplateInput>;
   isPrimaryLocked: boolean;
   isSaving: boolean;
   onAddSlotRow: () => void;
@@ -45,16 +44,22 @@ type EventTemplateEditorCardProps = {
   ) => void;
   positionOptions: TemplatePositionOption[];
   serverError: string | null;
-  slotRows: TemplateSlotRow[];
+  slotFields: FieldArrayWithId<
+    CreateEventTemplateInput,
+    "slotDefaults",
+    "_key"
+  >[];
 };
 
 export function EventTemplateEditorCard({
   canManageSlots,
+  defaultPositionId,
+  defaultRequiredCount,
+  defaultRequiredCountByPositionId,
   draggingSlotKey,
   dropTargetSlotKey,
   editingTemplateId,
-  fieldErrors,
-  formState,
+  form,
   isPrimaryLocked,
   isSaving,
   onAddSlotRow,
@@ -70,7 +75,7 @@ export function EventTemplateEditorCard({
   onUpdateSlot,
   positionOptions,
   serverError,
-  slotRows,
+  slotFields,
 }: Readonly<EventTemplateEditorCardProps>) {
   return (
     <Card className="bg-white shadow-xl">
@@ -79,7 +84,7 @@ export function EventTemplateEditorCard({
           {editingTemplateId ? "템플릿 수정" : "새 템플릿 만들기"}
         </CardTitle>
         <CardDescription>
-          템플릿 이름과 서비스 시간, 포지션 기본 구성을 저장합니다.
+          템플릿 이름과 서비스 시간, 포지션 기본 구성을 함께 설정합니다.
         </CardDescription>
       </CardHeader>
 
@@ -92,8 +97,7 @@ export function EventTemplateEditorCard({
           }}
         >
           <TemplateBasicsFields
-            fieldErrors={fieldErrors}
-            formState={formState}
+            form={form}
             isPrimaryLocked={isPrimaryLocked}
             onFieldChange={onFieldChange}
             onPrimaryChange={onPrimaryChange}
@@ -101,9 +105,12 @@ export function EventTemplateEditorCard({
 
           <TemplateSlotDefaultsSection
             canManageSlots={canManageSlots}
+            defaultPositionId={defaultPositionId}
+            defaultRequiredCount={defaultRequiredCount}
+            defaultRequiredCountByPositionId={defaultRequiredCountByPositionId}
             draggingSlotKey={draggingSlotKey}
             dropTargetSlotKey={dropTargetSlotKey}
-            error={fieldErrors.slotDefaults}
+            form={form}
             onAddSlotRow={onAddSlotRow}
             onRemoveSlotRow={onRemoveSlotRow}
             onSlotDragEnd={onSlotDragEnd}
@@ -112,8 +119,7 @@ export function EventTemplateEditorCard({
             onSlotDropTargetChange={onSlotDropTargetChange}
             onUpdateSlot={onUpdateSlot}
             positionOptions={positionOptions}
-            slotErrors={fieldErrors.slotRows}
-            slotRows={slotRows}
+            slotFields={slotFields}
           />
 
           <TemplateEditorActions

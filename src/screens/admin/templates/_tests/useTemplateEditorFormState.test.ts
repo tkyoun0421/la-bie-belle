@@ -68,14 +68,14 @@ describe("useTemplateEditorFormState", () => {
     );
 
     expect(result.current.isPrimaryLocked).toBe(true);
-    expect(result.current.formState.isPrimary).toBe(true);
+    expect(result.current.form.getValues("isPrimary")).toBe(true);
 
     act(() => {
       result.current.updatePrimary(false);
     });
 
     await waitFor(() => {
-      expect(result.current.formState.isPrimary).toBe(true);
+      expect(result.current.form.getValues("isPrimary")).toBe(true);
     });
   });
 
@@ -114,7 +114,7 @@ describe("useTemplateEditorFormState", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.fieldErrors.name).toBeTruthy();
+      expect(result.current.form.getFieldState("name").error?.message).toBeTruthy();
       expect(result.current.serverError).toBeNull();
     });
   });
@@ -155,7 +155,7 @@ describe("useTemplateEditorFormState", () => {
 
     await waitFor(() => {
       expect(result.current.pendingBelowDefaultRequiredCount).not.toBeNull();
-      expect(result.current.slotRows[0]?.requiredCount).toBe(2);
+      expect(result.current.form.getValues("slotDefaults.0.requiredCount")).toBe(2);
     });
 
     act(() => {
@@ -164,7 +164,7 @@ describe("useTemplateEditorFormState", () => {
 
     await waitFor(() => {
       expect(result.current.pendingBelowDefaultRequiredCount).toBeNull();
-      expect(result.current.slotRows[0]?.requiredCount).toBe(1);
+      expect(result.current.form.getValues("slotDefaults.0.requiredCount")).toBe(1);
     });
   });
 

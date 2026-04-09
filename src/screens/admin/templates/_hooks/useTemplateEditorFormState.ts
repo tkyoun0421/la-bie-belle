@@ -1,11 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  type Control,
   useFieldArray,
   useForm,
   type UseFormReturn,
-  useWatch,
 } from "react-hook-form";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { useCreateEventTemplateMutation } from "#/mutations/events/hooks/useCreateEventTemplateMutation";
@@ -16,21 +14,14 @@ import {
 } from "#/mutations/events/schemas/createEventTemplate";
 import {
   createTemplateSlot,
-  createTemplateSlotRows,
   findNextAvailablePositionId,
   readDefaultRequiredCount,
   shouldConfirmBelowDefaultRequiredCount,
-  type TemplateFieldErrors,
   type TemplateFieldName,
   type TemplateFormSlot,
-  type TemplateFormState,
   templateSaveErrorMessage,
 } from "#/screens/admin/templates/_helpers/templateForm";
 import { useDragReorderState } from "#/shared/hooks/useDragReorderState";
-import {
-  readErrorMessage,
-  readOwnErrorMessage,
-} from "#/shared/lib/forms/readErrorMessage";
 
 type UseTemplateEditorFormStateOptions = {
   defaultPositionId: string;
@@ -75,37 +66,13 @@ export function useTemplateEditorFormState({
   });
   const slotFieldArray = useFieldArray({
     control: form.control,
+    keyName: "_key",
     name: "slotDefaults",
   });
-  const { formState, slotDefaults } = useTemplateFormSnapshot(form.control);
-  const slotRows = createTemplateSlotRows(
-    slotFieldArray.fields,
-    slotDefaults,
-    defaultPositionId,
-    defaultRequiredCountByPositionId,
-    defaultRequiredCount
-  );
   const isPrimaryLocked =
     templatesCount === 0 || Boolean(initialTemplate?.isPrimary);
   const isSaving =
     createTemplateMutation.isPending || updateTemplateMutation.isPending;
-  const fieldErrors = useMemo<TemplateFieldErrors>(
-    () => ({
-      firstServiceAt: readErrorMessage(form.formState.errors.firstServiceAt),
-      lastServiceEndAt: readErrorMessage(form.formState.errors.lastServiceEndAt),
-      name: readErrorMessage(form.formState.errors.name),
-      slotDefaults: readOwnErrorMessage(form.formState.errors.slotDefaults),
-      slotRows: slotRows.map((_, index) => ({
-        positionId: readErrorMessage(
-          form.formState.errors.slotDefaults?.[index]?.positionId
-        ),
-        requiredCount: readErrorMessage(
-          form.formState.errors.slotDefaults?.[index]?.requiredCount
-        ),
-      })),
-    }),
-    [form.formState.errors, slotRows]
-  );
   const {
     clearDragState: clearSlotDragState,
     draggingItemId: draggingSlotKey,
@@ -326,10 +293,12 @@ export function useTemplateEditorFormState({
       return;
     }
 
-    const sourceIndex = slotRows.findIndex(
+    const sourceIndex = slotFieldArray.fields.findIndex(
       (slot) => slot._key === draggingSlotKey
     );
-    const targetIndex = slotRows.findIndex((slot) => slot._key === slotKey);
+    const targetIndex = slotFieldArray.fields.findIndex(
+      (slot) => slot._key === slotKey
+    );
 
     if (sourceIndex === -1 || targetIndex === -1) {
       clearSlotDragState();
@@ -348,53 +317,19 @@ export function useTemplateEditorFormState({
     draggingSlotKey,
     dropOnSlot,
     dropTargetSlotKey,
-    fieldErrors,
-    formState,
+    form,
     isPrimaryLocked,
     isSaving,
     pendingBelowDefaultRequiredCount,
     serverError: submitError,
     removeSlotRow,
     setSlotDropTarget,
-    slotRows,
+    slotFields: slotFieldArray.fields,
     startSlotDrag,
     submit,
     updateField,
     updatePrimary,
     updateSlot,
-  };
-}
-
-function useTemplateFormSnapshot(control: Control<CreateEventTemplateInput>) {
-  const firstServiceAt = useWatch({
-    control,
-    name: "firstServiceAt",
-  });
-  const isPrimary = useWatch({
-    control,
-    name: "isPrimary",
-  });
-  const lastServiceEndAt = useWatch({
-    control,
-    name: "lastServiceEndAt",
-  });
-  const name = useWatch({
-    control,
-    name: "name",
-  });
-  const slotDefaults = useWatch({
-    control,
-    name: "slotDefaults",
-  });
-
-  return {
-    formState: {
-      firstServiceAt: firstServiceAt ?? "",
-      isPrimary: isPrimary ?? false,
-      lastServiceEndAt: lastServiceEndAt ?? "",
-      name: name ?? "",
-    } satisfies TemplateFormState,
-    slotDefaults,
   };
 }
 

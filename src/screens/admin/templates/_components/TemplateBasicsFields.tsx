@@ -1,71 +1,103 @@
+import { useFormState, useWatch, type UseFormReturn } from "react-hook-form";
 import { cn } from "#/shared/lib/utils";
+import { FormFieldError } from "#/shared/components/common/FormFieldError";
 import { Input } from "#/shared/components/ui/input";
-import type {
-  TemplateFieldErrors,
-  TemplateFieldName,
-  TemplateFormState,
-} from "#/screens/admin/templates/_helpers/templateForm";
+import type { CreateEventTemplateInput } from "#/mutations/events/schemas/createEventTemplate";
+import type { TemplateFieldName } from "#/screens/admin/templates/_helpers/templateForm";
 import { TemplateField } from "#/screens/admin/templates/_components/TemplateField";
 
 type TemplateBasicsFieldsProps = {
-  fieldErrors: Pick<
-    TemplateFieldErrors,
-    "firstServiceAt" | "lastServiceEndAt" | "name"
-  >;
-  formState: TemplateFormState;
+  form: UseFormReturn<CreateEventTemplateInput>;
   isPrimaryLocked: boolean;
   onFieldChange: (field: TemplateFieldName, value: string) => void;
   onPrimaryChange: (nextValue: boolean) => void;
 };
 
 export function TemplateBasicsFields({
-  fieldErrors,
-  formState,
+  form,
   isPrimaryLocked,
   onFieldChange,
   onPrimaryChange,
 }: Readonly<TemplateBasicsFieldsProps>) {
+  const [name, firstServiceAt, lastServiceEndAt, isPrimary] = useWatch({
+    control: form.control,
+    name: ["name", "firstServiceAt", "lastServiceEndAt", "isPrimary"],
+  });
+  const { errors } = useFormState({
+    control: form.control,
+    name: ["name", "firstServiceAt", "lastServiceEndAt"],
+  });
+  const nameError = readFieldErrorMessage(errors.name?.message);
+  const firstServiceAtError = readFieldErrorMessage(
+    errors.firstServiceAt?.message
+  );
+  const lastServiceEndAtError = readFieldErrorMessage(
+    errors.lastServiceEndAt?.message
+  );
+  const hasDesktopFieldError = Boolean(
+    nameError || firstServiceAtError || lastServiceEndAtError
+  );
+
   return (
-    <div className="grid gap-4 md:grid-cols-3">
-      <TemplateField error={fieldErrors.name} label="템플릿 이름">
-        <Input
-          onChange={(event) => onFieldChange("name", event.target.value)}
-          placeholder="예: 주말 프리미엄 웨딩"
-          value={formState.name}
-        />
-      </TemplateField>
+    <div className="grid gap-4">
+      <div className="grid gap-4 md:grid-cols-3">
+        <TemplateField
+          error={nameError}
+          errorClassName="md:hidden"
+          label="템플릿 이름"
+        >
+          <Input
+            onChange={(event) => onFieldChange("name", event.target.value)}
+            placeholder="예: 주말 프리미엄 웨딩"
+            value={name}
+          />
+        </TemplateField>
 
-      <TemplateField error={fieldErrors.firstServiceAt} label="첫 서비스 시작">
-        <Input
-          onChange={(event) =>
-            onFieldChange("firstServiceAt", event.target.value)
-          }
-          type="time"
-          value={formState.firstServiceAt}
-        />
-      </TemplateField>
+        <TemplateField
+          error={firstServiceAtError}
+          errorClassName="md:hidden"
+          label="첫 서비스 시작"
+        >
+          <Input
+            onChange={(event) =>
+              onFieldChange("firstServiceAt", event.target.value)
+            }
+            type="time"
+            value={firstServiceAt}
+          />
+        </TemplateField>
 
-      <TemplateField
-        error={fieldErrors.lastServiceEndAt}
-        label="마지막 서비스 종료"
-      >
-        <Input
-          onChange={(event) =>
-            onFieldChange("lastServiceEndAt", event.target.value)
-          }
-          type="time"
-          value={formState.lastServiceEndAt}
-        />
-      </TemplateField>
+        <TemplateField
+          error={lastServiceEndAtError}
+          errorClassName="md:hidden"
+          label="마지막 서비스 종료"
+        >
+          <Input
+            onChange={(event) =>
+              onFieldChange("lastServiceEndAt", event.target.value)
+            }
+            type="time"
+            value={lastServiceEndAt}
+          />
+        </TemplateField>
+      </div>
+
+      {hasDesktopFieldError ? (
+        <div className="hidden md:grid md:grid-cols-3 md:gap-4">
+          <FormFieldError message={nameError} />
+          <FormFieldError message={firstServiceAtError} />
+          <FormFieldError message={lastServiceEndAtError} />
+        </div>
+      ) : null}
 
       <label
         className={cn(
-          "md:col-span-3 flex items-start gap-3 rounded-xl border border-[var(--border-soft)] bg-[var(--surface-soft)] px-4 py-3",
+          "flex items-start gap-3 rounded-xl border border-[var(--border-soft)] bg-[var(--surface-soft)] px-4 py-3",
           isPrimaryLocked ? "cursor-not-allowed opacity-80" : "cursor-pointer"
         )}
       >
         <input
-          checked={formState.isPrimary}
+          checked={Boolean(isPrimary)}
           className="mt-0.5 size-4 rounded border border-[var(--border-strong)]"
           disabled={isPrimaryLocked}
           onChange={(event) => onPrimaryChange(event.target.checked)}
@@ -88,4 +120,8 @@ export function TemplateBasicsFields({
       </label>
     </div>
   );
+}
+
+function readFieldErrorMessage(message: unknown) {
+  return typeof message === "string" ? message : null;
 }

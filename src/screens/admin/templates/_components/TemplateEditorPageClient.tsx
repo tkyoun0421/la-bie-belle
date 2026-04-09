@@ -71,15 +71,14 @@ export function TemplateEditorPageClient({
     draggingSlotKey,
     dropOnSlot,
     dropTargetSlotKey,
-    fieldErrors,
-    formState,
+    form,
     isPrimaryLocked,
     isSaving,
     pendingBelowDefaultRequiredCount,
     removeSlotRow,
     serverError,
     setSlotDropTarget,
-    slotRows,
+    slotFields,
     startSlotDrag,
     submit,
     updateField,
@@ -103,11 +102,13 @@ export function TemplateEditorPageClient({
     <>
       <EventTemplateEditorCard
         canManageSlots={positionOptions.length > 0}
+        defaultPositionId={defaultPositionId}
+        defaultRequiredCount={defaultRequiredCount}
+        defaultRequiredCountByPositionId={defaultRequiredCountByPositionId}
         draggingSlotKey={draggingSlotKey}
         dropTargetSlotKey={dropTargetSlotKey}
         editingTemplateId={initialTemplate?.id ?? null}
-        fieldErrors={fieldErrors}
-        formState={formState}
+        form={form}
         isPrimaryLocked={isPrimaryLocked}
         isSaving={isSaving}
         onAddSlotRow={addSlotRow}
@@ -123,14 +124,14 @@ export function TemplateEditorPageClient({
         onUpdateSlot={updateSlot}
         positionOptions={positionOptions}
         serverError={serverError}
-        slotRows={slotRows}
+        slotFields={slotFields}
       />
 
       <ConfirmDialog
         confirmLabel="계속 진행"
         description={
           pendingBelowDefaultRequiredCount
-            ? `${pendingBelowDefaultRequiredCount.positionName}의 기본 필수 인원은 ${pendingBelowDefaultRequiredCount.positionDefaultRequiredCount}명입니다. ${pendingBelowDefaultRequiredCount.nextRequiredCount}명으로 저장하면 이 템플릿에만 별도 값이 적용됩니다. 계속할까요?`
+            ? `${pendingBelowDefaultRequiredCount.positionName}의 기본 필수 인원은 ${pendingBelowDefaultRequiredCount.positionDefaultRequiredCount}명입니다. ${pendingBelowDefaultRequiredCount.nextRequiredCount}명으로 낮추면 이 템플릿에만 별도 값이 적용됩니다. 계속할까요?`
             : "기본 필수 인원보다 낮게 설정하면 이 템플릿에만 별도 값이 저장됩니다."
         }
         onConfirm={confirmBelowDefaultRequiredCount}
