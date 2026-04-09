@@ -18,9 +18,6 @@ import type {
 
 type EventTemplateEditorCardProps = {
   canManageSlots: boolean;
-  defaultPositionId: string;
-  defaultRequiredCount: number;
-  defaultRequiredCountByPositionId: Record<string, number>;
   draggingSlotKey: string | null;
   dropTargetSlotKey: string | null;
   editingTemplateId: string | null;
@@ -53,9 +50,6 @@ type EventTemplateEditorCardProps = {
 
 export function EventTemplateEditorCard({
   canManageSlots,
-  defaultPositionId,
-  defaultRequiredCount,
-  defaultRequiredCountByPositionId,
   draggingSlotKey,
   dropTargetSlotKey,
   editingTemplateId,
@@ -105,9 +99,6 @@ export function EventTemplateEditorCard({
 
           <TemplateSlotDefaultsSection
             canManageSlots={canManageSlots}
-            defaultPositionId={defaultPositionId}
-            defaultRequiredCount={defaultRequiredCount}
-            defaultRequiredCountByPositionId={defaultRequiredCountByPositionId}
             draggingSlotKey={draggingSlotKey}
             dropTargetSlotKey={dropTargetSlotKey}
             form={form}

@@ -1,33 +1,16 @@
 import { useFormState, useWatch, type FieldArrayWithId, type UseFormReturn } from "react-hook-form";
 import Link from "next/link";
-import { GripVertical } from "lucide-react";
-import { FormFieldError } from "#/shared/components/common/FormFieldError";
-import { ReorderDropIndicator } from "#/shared/components/drag-and-drop/ReorderDropIndicator";
 import { Button } from "#/shared/components/ui/button";
-import { Input } from "#/shared/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "#/shared/components/ui/select";
-import { getReorderDropIndicatorPosition } from "#/shared/lib/drag-and-drop/getReorderDropIndicatorPosition";
-import { setDragPreview } from "#/shared/lib/drag-and-drop/setDragPreview";
-import { cn } from "#/shared/lib/utils";
+import { FormFieldError } from "#/shared/components/common/FormFieldError";
 import type { CreateEventTemplateInput } from "#/mutations/events/schemas/createEventTemplate";
-import {
-  createTemplateSlotRows,
-  type TemplateFormSlot,
-  type TemplatePositionOption,
+import type {
+  TemplateFormSlot,
+  TemplatePositionOption,
 } from "#/screens/admin/templates/_helpers/templateForm";
-import { TemplateField } from "#/screens/admin/templates/_components/TemplateField";
+import { TemplateSlotDefaultRow } from "#/screens/admin/templates/_components/TemplateSlotDefaultRow";
 
 type TemplateSlotDefaultsSectionProps = {
   canManageSlots: boolean;
-  defaultPositionId: string;
-  defaultRequiredCount: number;
-  defaultRequiredCountByPositionId: Record<string, number>;
   draggingSlotKey: string | null;
   dropTargetSlotKey: string | null;
   form: UseFormReturn<CreateEventTemplateInput>;
@@ -52,9 +35,6 @@ type TemplateSlotDefaultsSectionProps = {
 
 export function TemplateSlotDefaultsSection({
   canManageSlots,
-  defaultPositionId,
-  defaultRequiredCount,
-  defaultRequiredCountByPositionId,
   draggingSlotKey,
   dropTargetSlotKey,
   form,
@@ -68,33 +48,28 @@ export function TemplateSlotDefaultsSection({
   positionOptions,
   slotFields,
 }: Readonly<TemplateSlotDefaultsSectionProps>) {
-  const slotDefaults = useWatch({
+  const watchedPositionIds = useWatch({
     control: form.control,
-    name: "slotDefaults",
+    name: slotFields.map(
+      (_, index) => `slotDefaults.${index}.positionId` as const
+    ),
   });
   const { errors } = useFormState({
     control: form.control,
+    exact: true,
     name: "slotDefaults",
   });
-  const slotRows = createTemplateSlotRows(
-    slotFields,
-    slotDefaults,
-    defaultPositionId,
-    defaultRequiredCountByPositionId,
-    defaultRequiredCount
+  const selectedPositionIds = (watchedPositionIds ?? []).filter(
+    (positionId): positionId is string => Boolean(positionId)
   );
-  const selectedPositionIds = new Set(
-    slotRows.map((slot) => slot.positionId).filter(Boolean)
-  );
-  const slotErrors = createSlotFieldErrors(errors.slotDefaults, slotRows.length);
   const sectionError = readFieldArrayErrorMessage(errors.slotDefaults);
-  const canAddSlot = canManageSlots && slotRows.length < positionOptions.length;
-  const canReorderSlots = slotRows.length > 1;
+  const canAddSlot = canManageSlots && slotFields.length < positionOptions.length;
+  const canReorderSlots = slotFields.length > 1;
   const draggingSlotIndex = draggingSlotKey
-    ? slotRows.findIndex((slot) => slot._key === draggingSlotKey)
+    ? slotFields.findIndex((slot) => slot._key === draggingSlotKey)
     : -1;
   const dropTargetSlotIndex = dropTargetSlotKey
-    ? slotRows.findIndex((slot) => slot._key === dropTargetSlotKey)
+    ? slotFields.findIndex((slot) => slot._key === dropTargetSlotKey)
     : -1;
 
   return (
@@ -134,175 +109,30 @@ export function TemplateSlotDefaultsSection({
       </div>
 
       <div className="overflow-hidden rounded-xl border border-[var(--border-soft)] bg-[var(--surface-soft)]">
-        {slotRows.map((slot, index) => {
-          const isDragging = draggingSlotKey === slot._key;
-          const isDropTarget = dropTargetSlotKey === slot._key;
-          const showRowAccent = !isDropTarget && index % 2 === 0;
-          const dropIndicatorPosition = isDropTarget
-            ? getReorderDropIndicatorPosition(
-                draggingSlotIndex,
-                dropTargetSlotIndex
-              )
-            : null;
-          const rowError = slotErrors[index];
-          const hasDesktopRowError = Boolean(
-            rowError?.positionId || rowError?.requiredCount
-          );
-
-          return (
-            <div
-              className={cn(
-                "relative border-t border-[var(--border-soft)] first:border-t-0",
-                "transition-opacity transition-transform",
-                isDropTarget &&
-                  "z-[1] bg-[#f5faff] ring-2 ring-inset ring-[#9ac2ff]",
-                isDragging && "scale-[0.99] opacity-45"
-              )}
-              data-drag-preview
-              key={slot._key}
-              onDragOver={(event) => {
-                if (!canReorderSlots) {
-                  return;
-                }
-
-                event.preventDefault();
-                onSlotDropTargetChange(slot._key);
-              }}
-              onDrop={(event) => {
-                if (!canReorderSlots) {
-                  return;
-                }
-
-                event.preventDefault();
-                onSlotDrop(slot._key);
-              }}
-            >
-              {showRowAccent ? (
-                <div
-                  aria-hidden="true"
-                  className="absolute top-3 bottom-3 left-0 w-[3px] rounded-r-full bg-[rgba(15,23,42,0.12)]"
-                />
-              ) : null}
-
-              {dropIndicatorPosition ? (
-                <ReorderDropIndicator position={dropIndicatorPosition} />
-              ) : null}
-
-              <div className="grid gap-3 p-4 md:grid-cols-[40px_minmax(0,1.4fr)_160px_auto]">
-                <div className="flex items-end">
-                  <button
-                    aria-label="포지션 순서 이동"
-                    className="inline-flex size-8 cursor-grab items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-soft)] hover:text-[var(--foreground)] active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40"
-                    disabled={!canReorderSlots}
-                    draggable={canReorderSlots}
-                    onDragEnd={onSlotDragEnd}
-                    onDragStart={(event) => {
-                      if (!canReorderSlots) {
-                        return;
-                      }
-
-                      event.dataTransfer.effectAllowed = "move";
-                      event.dataTransfer.setData("text/plain", slot._key);
-                      setDragPreview(event);
-                      onSlotDragStart(slot._key);
-                    }}
-                    type="button"
-                  >
-                    <GripVertical className="size-4" />
-                  </button>
-                </div>
-
-                <TemplateField
-                  error={rowError?.positionId}
-                  errorClassName="md:hidden"
-                  label="포지션"
-                >
-                  <Select
-                    onValueChange={(value) =>
-                      onUpdateSlot(index, "positionId", value)
-                    }
-                    value={slot.positionId}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="포지션 선택" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {positionOptions.map((position) => {
-                        const isTakenByOtherSlot =
-                          position.value !== slot.positionId &&
-                          selectedPositionIds.has(position.value);
-
-                        return (
-                          <SelectItem
-                            disabled={isTakenByOtherSlot}
-                            key={position.value}
-                            value={position.value}
-                          >
-                            {position.label}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                </TemplateField>
-
-                <TemplateField
-                  error={rowError?.requiredCount}
-                  errorClassName="md:hidden"
-                  label="필수 인원"
-                >
-                  <Input
-                    min="1"
-                    onChange={(event) =>
-                      onUpdateSlot(index, "requiredCount", event.target.value)
-                    }
-                    type="number"
-                    value={slot.requiredCount}
-                  />
-                </TemplateField>
-
-                <div className="flex items-end">
-                  <Button
-                    className="text-[var(--foreground)]"
-                    onClick={() => onRemoveSlotRow(index)}
-                    type="button"
-                    variant="outline"
-                  >
-                    제거
-                  </Button>
-                </div>
-              </div>
-
-              {hasDesktopRowError ? (
-                <div className="hidden px-4 pb-4 md:grid md:grid-cols-[40px_minmax(0,1.4fr)_160px_auto] md:gap-3">
-                  <div />
-                  <FormFieldError message={rowError?.positionId} />
-                  <FormFieldError message={rowError?.requiredCount} />
-                  <div />
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
+        {slotFields.map((slotField, index) => (
+          <TemplateSlotDefaultRow
+            canReorderSlots={canReorderSlots}
+            draggingSlotIndex={draggingSlotIndex}
+            draggingSlotKey={draggingSlotKey}
+            dropTargetSlotIndex={dropTargetSlotIndex}
+            dropTargetSlotKey={dropTargetSlotKey}
+            fieldKey={slotField._key}
+            form={form}
+            key={slotField._key}
+            onRemoveSlotRow={onRemoveSlotRow}
+            onSlotDragEnd={onSlotDragEnd}
+            onSlotDragStart={onSlotDragStart}
+            onSlotDrop={onSlotDrop}
+            onSlotDropTargetChange={onSlotDropTargetChange}
+            onUpdateSlot={onUpdateSlot}
+            positionOptions={positionOptions}
+            selectedPositionIds={selectedPositionIds}
+            slotIndex={index}
+          />
+        ))}
       </div>
     </div>
   );
-}
-
-function createSlotFieldErrors(
-  slotDefaultErrors: unknown,
-  slotCount: number
-) {
-  return Array.from({ length: slotCount }, (_, index) => {
-    const rowError = Array.isArray(slotDefaultErrors)
-      ? slotDefaultErrors[index]
-      : null;
-
-    return {
-      positionId: readNestedFieldErrorMessage(rowError, "positionId"),
-      requiredCount: readNestedFieldErrorMessage(rowError, "requiredCount"),
-    };
-  });
 }
 
 function readFieldArrayErrorMessage(slotDefaultErrors: unknown) {
@@ -332,33 +162,6 @@ function readRootFieldErrorMessage(slotDefaultErrors: unknown) {
     if (root && typeof root === "object" && "message" in root) {
       return typeof root.message === "string" ? root.message : null;
     }
-  }
-
-  return null;
-}
-
-function readNestedFieldErrorMessage(
-  rowError: unknown,
-  field: "positionId" | "requiredCount"
-) {
-  if (
-    !rowError ||
-    typeof rowError !== "object" ||
-    !(field in rowError)
-  ) {
-    return null;
-  }
-
-  const nextFieldError = (rowError as Record<string, unknown>)[field];
-
-  if (
-    nextFieldError &&
-    typeof nextFieldError === "object" &&
-    "message" in nextFieldError
-  ) {
-    return typeof nextFieldError.message === "string"
-      ? nextFieldError.message
-      : null;
   }
 
   return null;

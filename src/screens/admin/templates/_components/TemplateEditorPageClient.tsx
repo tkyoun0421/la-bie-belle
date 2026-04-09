@@ -102,9 +102,6 @@ export function TemplateEditorPageClient({
     <>
       <EventTemplateEditorCard
         canManageSlots={positionOptions.length > 0}
-        defaultPositionId={defaultPositionId}
-        defaultRequiredCount={defaultRequiredCount}
-        defaultRequiredCountByPositionId={defaultRequiredCountByPositionId}
         draggingSlotKey={draggingSlotKey}
         dropTargetSlotKey={dropTargetSlotKey}
         editingTemplateId={initialTemplate?.id ?? null}

@@ -56,7 +56,7 @@ export function TemplateBasicsFields({
         <TemplateField
           error={firstServiceAtError}
           errorClassName="md:hidden"
-          label="첫 서비스 시작"
+          label="첫 식 시작"
         >
           <Input
             onChange={(event) =>
@@ -70,7 +70,7 @@ export function TemplateBasicsFields({
         <TemplateField
           error={lastServiceEndAtError}
           errorClassName="md:hidden"
-          label="마지막 서비스 종료"
+          label="마지막 식 시작"
         >
           <Input
             onChange={(event) =>
