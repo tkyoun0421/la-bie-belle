@@ -156,6 +156,25 @@ foreach ($labelSeed in $seed.labels) {
   Write-Host "created label: $($labelSeed.name)"
 }
 
+$desiredLabelNames = @{}
+foreach ($labelSeed in $seed.labels) {
+  $desiredLabelNames[$labelSeed.name] = $true
+}
+
+foreach ($existingLabelName in $existingLabels.Keys) {
+  if ($desiredLabelNames.ContainsKey($existingLabelName)) {
+    continue
+  }
+
+  if (-not $existingLabelName.StartsWith("phase:")) {
+    continue
+  }
+
+  $encodedLabelName = [System.Uri]::EscapeDataString($existingLabelName)
+  Invoke-GitHubRest -Method Delete -Uri "https://api.github.com/repos/$Owner/$Repo/labels/$encodedLabelName" -Headers $headers -Body $null | Out-Null
+  Write-Host "deleted obsolete label: $existingLabelName"
+}
+
 $remoteMilestones = @(Invoke-GitHubRest -Method Get -Uri "https://api.github.com/repos/$Owner/$Repo/milestones?state=all&per_page=100" -Headers $headers -Body $null)
 $remoteMilestones = @($remoteMilestones | ForEach-Object { $_ } | Sort-Object number)
 $milestoneNumberByTitle = @{}

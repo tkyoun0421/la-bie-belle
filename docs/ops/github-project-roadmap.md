@@ -13,7 +13,7 @@
 
 - 새 작업은 milestone 없는 ad-hoc branch로 시작하지 않는다
 - 먼저 issue를 만들고, PR은 해당 issue를 닫도록 연결한다
-- 구현 단위는 `phase -> milestone -> issue -> PR` 순서로 간다
+- 구현 단위는 `phase milestone -> issue -> PR` 순서로 간다
 - issue 본문에는 목표, 범위, 완료 조건, 테스트 계획이 있어야 한다
 - PR 본문에는 연결 이슈, 변경 이유, TDD 기록, 검증 결과가 있어야 한다
 - TDD 규칙은 [CLAUDE.md](../../CLAUDE.md)와 [execution-plan.md](../plans/execution-plan.md)를 따른다
@@ -24,30 +24,33 @@
 
 이 문서에 적힌 milestone은 현재 릴리즈 기준이다. 이후 릴리즈도 같은 project와 같은 스크립트 구조를 계속 사용하고, 필요하면 별도 릴리즈 라벨을 추가해서 분기한다.
 
-### M1. 행사 세팅
+### Phase 1. Event + Template
 
 - Slice 1. 행사 템플릿 기반
 - Slice 2. 매니저 행사 생성
 
-### M2. 신청과 배정
+### Phase 2. Application + Assignment
 
 - Slice 3. 멤버 행사 신청과 취소
 - Slice 4. 매니저 멤버 배정
 
-### M3. 대타 흐름
+### Phase 3. Replacement
 
 - Slice 5. 배정 취소와 대타 요청 생성
 - Slice 6. 대타 지원과 승인
 
-### M4. 체크인과 급여 미리보기
+### Phase 4. Check-in
 
-- Phase 4. 체크인 검증과 예외 처리
-- Phase 5. 급여 미리보기와 오버라이드 감사 로그
+- Slice 7. 체크인 검증과 예외 처리
 
-### M5. 인증과 런치 게이트
+### Phase 5. Payroll Preview
 
-- Phase 6. Google 로그인과 승인 대기 온보딩
-- Phase 6. 디바이스와 푸시 구독 런치 게이트
+- Slice 8. 급여 미리보기와 오버라이드 감사 로그
+
+### Phase 6. Auth + PWA Onboarding
+
+- Slice 9. Google 로그인과 승인 대기 온보딩
+- Slice 10. 디바이스와 푸시 구독 런치 게이트
 
 ## 포함된 파일
 
@@ -116,6 +119,17 @@ powershell -ExecutionPolicy Bypass -File .\scripts\github\bootstrap-project-road
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\github\bootstrap-project-roadmap.ps1 -DryRun
 ```
+
+## 5. Repository Projects 탭에 보이게 하기
+
+bootstrap으로 생성되는 project는 사용자 소유 GitHub Project다. 그래서 생성 직후에는 저장소의 `Projects` 탭에 자동으로 나타나지 않을 수 있다.
+
+repo `Projects` 탭에도 보이게 하려면 둘 중 하나를 해야 한다.
+
+1. 저장소 `Projects` 탭에서 `Link a project`로 `La Bie Belle Product Roadmap`을 연결한다
+2. project 설정에서 `Default repository`를 `la-bie-belle`로 지정한다
+
+둘 중 하나만 해도 저장소 `Projects` 탭에서 접근할 수 있다.
 
 ## 내가 직접 세팅해야 하는 것
 
