@@ -4,7 +4,8 @@ Closes #
 
 ## 대상 브랜치
 
-- 기본값: `develop`
+- head: `develop`
+- base: `master`
 
 ## 대상 Phase
 
@@ -82,7 +83,8 @@ Closes #
 
 - [ ] 이 PR은 연결된 이슈가 있다
 - [ ] 연결한 이슈와 실제 변경 범위가 일치한다
-- [ ] 이 PR의 base branch는 `develop`이다
+- [ ] 이 PR의 head branch는 `develop`이다
+- [ ] 이 PR의 base branch는 `master`이다
 - [ ] 이 PR은 하나의 phase만 다룬다
 - [ ] 변경된 동작에 맞는 테스트를 추가하거나 갱신했다
 - [ ] 계약, 흐름, 범위가 바뀌었다면 관련 문서를 함께 갱신했다

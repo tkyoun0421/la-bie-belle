@@ -75,9 +75,9 @@
 - task는 slice 내부의 세부 구현 단계다
 
 ### Branch And PR Rule
-- 통합 브랜치는 `develop`이다
-- 새 작업 브랜치는 항상 `develop`에서 분기한다
-- PR 기본 대상 브랜치도 `develop`이다
+- 작업 브랜치는 `develop`이다
+- 구현은 기본적으로 `develop`에서 직접 진행한다
+- phase가 끝나면 PR은 `develop -> master`로 올린다
 - 하나의 PR은 하나의 `phase`만 다룬다
 - 하나의 phase 안에 여러 slice가 있더라도, phase 완료 후 하나의 PR로 올린다
 - `master`는 release 또는 배포 기준 브랜치로 유지한다

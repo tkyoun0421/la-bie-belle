@@ -45,22 +45,23 @@ v1에서 먼저 닫아야 할 운영 루프:
 - schema만 바꾸는 작업도 바로 이어지는 use case가 있을 때만 연다
 
 ## Branch Strategy
-- 기본 통합 브랜치는 `develop`
-- 새 작업은 `develop`에서 feature branch를 분기해서 진행한다
-- PR 기본 대상은 `develop`
+- 일상 구현 브랜치는 `develop`
+- 구현은 기본적으로 `develop`에서 직접 진행한다
+- phase가 끝나면 `develop`에서 `master`로 PR을 올린다
 - `master`는 release 또는 배포 기준 브랜치로 유지한다
 
 예시:
-- `develop`
-- `feat/phase-1-event-template`
-- `feat/phase-4-check-in`
+- 작업: `develop`
+- PR head: `develop`
+- PR base: `master`
 
 ## PR Rule
 - PR 단위는 slice가 아니라 phase다
 - 하나의 PR은 하나의 phase만 다룬다
 - 하나의 phase 안에 포함된 slice들은 같은 PR에서 함께 닫는다
 - phase PR 본문에는 포함된 slice 목록과 닫는 issue 목록이 함께 있어야 한다
-- 다음 phase 브랜치는 이전 phase PR이 `develop`에 머지된 뒤 시작한다
+- phase PR의 head는 `develop`, base는 `master`다
+- 다음 phase 작업은 이전 phase PR이 `master`에 머지된 뒤 같은 `develop`에서 이어간다
 
 ## TDD Operating Rule
 이 프로젝트의 기본 구현 방식은 TDD다.
