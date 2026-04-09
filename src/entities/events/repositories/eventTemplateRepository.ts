@@ -12,17 +12,19 @@ import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 const eventTemplateSelect = `
   id,
   name,
+  is_primary,
   time_label,
   first_service_at,
   last_service_end_at,
   created_at,
   event_template_position_slots (
     position_id,
-    required_count,
+    required_count_override,
     training_count,
     positions (
       id,
-      name
+      name,
+      default_required_count
     )
   )
 `;
@@ -38,6 +40,7 @@ export async function readEventTemplates(
   const { data, error } = await client
     .from("event_templates")
     .select(eventTemplateSelect)
+    .order("is_primary", { ascending: false })
     .order("created_at", { ascending: false });
 
   if (error) {

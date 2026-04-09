@@ -3,13 +3,23 @@ import {
   type EventTemplate,
 } from "#/entities/events/models/schemas/eventTemplate";
 
+export type EventTemplateSlotPositionRow =
+  | {
+      default_required_count: number;
+      id: string;
+      name: string;
+    }
+  | {
+      default_required_count: number;
+      id: string;
+      name: string;
+    }[]
+  | null;
+
 export type EventTemplateSlotRow = {
   position_id: string;
-  positions:
-    | { id: string; name: string }
-    | { id: string; name: string }[]
-    | null;
-  required_count: number;
+  positions: EventTemplateSlotPositionRow;
+  required_count_override: number | null;
   training_count: number;
 };
 
@@ -18,6 +28,7 @@ export type EventTemplateRow = {
   event_template_position_slots: EventTemplateSlotRow[];
   first_service_at: string;
   id: string;
+  is_primary: boolean;
   last_service_end_at: string;
   name: string;
   time_label: string;
@@ -28,6 +39,7 @@ export function mapEventTemplateRow(row: EventTemplateRow): EventTemplate {
     createdAt: row.created_at,
     firstServiceAt: row.first_service_at.slice(0, 5),
     id: row.id,
+    isPrimary: row.is_primary,
     lastServiceEndAt: row.last_service_end_at.slice(0, 5),
     name: row.name,
     slotDefaults: row.event_template_position_slots.map((slot) => {
@@ -38,7 +50,8 @@ export function mapEventTemplateRow(row: EventTemplateRow): EventTemplate {
       return {
         positionId: slot.position_id,
         positionName: position?.name ?? "알 수 없는 포지션",
-        requiredCount: slot.required_count,
+        requiredCount:
+          slot.required_count_override ?? position?.default_required_count ?? 1,
         trainingCount: slot.training_count,
       };
     }),

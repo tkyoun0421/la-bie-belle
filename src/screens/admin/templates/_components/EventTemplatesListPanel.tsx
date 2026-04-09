@@ -1,3 +1,4 @@
+import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { Button } from "#/shared/components/ui/button";
 import {
   Card,
@@ -7,7 +8,6 @@ import {
   CardTitle,
 } from "#/shared/components/ui/card";
 import { Input } from "#/shared/components/ui/input";
-import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { EventTemplateListItem } from "#/screens/admin/templates/_components/EventTemplateListItem";
 
 type EventTemplatesListPanelProps = {
@@ -35,14 +35,15 @@ export function EventTemplatesListPanel({
 }: Readonly<EventTemplatesListPanelProps>) {
   return (
     <Card>
-      <CardHeader className="flex-row items-end justify-between gap-4">
+      <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <CardTitle>템플릿 목록</CardTitle>
           <CardDescription>
-            저장된 템플릿과 슬롯 기본값을 확인하고 수정할 수 있습니다.
+            저장한 템플릿과 포지션 기본 구성을 확인하고 수정할 수 있습니다.
+            대표 템플릿은 목록 상단에 먼저 정렬됩니다.
           </CardDescription>
         </div>
-        <Button onClick={onCreate} type="button">
+        <Button className="self-end" onClick={onCreate} type="button">
           새 템플릿 추가
         </Button>
       </CardHeader>
@@ -66,6 +67,7 @@ export function EventTemplatesListPanel({
         <div className="grid gap-3">
           {templates.map((template) => (
             <EventTemplateListItem
+              canDelete={!template.isPrimary}
               deletePending={deletePending}
               isEditing={template.id === editingTemplateId}
               isHighlighted={template.id === highlightedTemplateId}

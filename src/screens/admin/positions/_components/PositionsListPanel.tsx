@@ -1,4 +1,7 @@
 import { GripVertical } from "lucide-react";
+import { formatPositionAllowedGenderLabel } from "#/entities/positions/models/constants/allowedGender";
+import type { Position } from "#/entities/positions/models/schemas/position";
+import { ReorderDropIndicator } from "#/shared/components/drag-and-drop/ReorderDropIndicator";
 import { Badge } from "#/shared/components/ui/badge";
 import { Button } from "#/shared/components/ui/button";
 import {
@@ -9,8 +12,8 @@ import {
   CardTitle,
 } from "#/shared/components/ui/card";
 import { Input } from "#/shared/components/ui/input";
-import { formatPositionAllowedGenderLabel } from "#/entities/positions/models/constants/allowedGender";
-import type { Position } from "#/entities/positions/models/schemas/position";
+import { getReorderDropIndicatorPosition } from "#/shared/lib/drag-and-drop/getReorderDropIndicatorPosition";
+import { setDragPreview } from "#/shared/lib/drag-and-drop/setDragPreview";
 import { cn } from "#/shared/lib/utils";
 
 type PositionsListPanelProps = {
@@ -50,9 +53,16 @@ export function PositionsListPanel({
   onEdit,
   onSearchTermChange,
 }: Readonly<PositionsListPanelProps>) {
+  const draggingPositionIndex = draggingPositionId
+    ? positions.findIndex((position) => position.id === draggingPositionId)
+    : -1;
+  const dropTargetPositionIndex = dropTargetPositionId
+    ? positions.findIndex((position) => position.id === dropTargetPositionId)
+    : -1;
+
   return (
     <Card>
-      <CardHeader className="flex-row items-end justify-between gap-4">
+      <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <CardTitle>포지션 목록</CardTitle>
           <CardDescription>
@@ -60,7 +70,7 @@ export function PositionsListPanel({
             드래그로 순서를 바꿀 수 있습니다.
           </CardDescription>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex self-end items-center gap-4">
           <strong className="text-sm font-semibold text-[var(--text-subtle)]">
             총 {totalCount}개
           </strong>
@@ -90,7 +100,7 @@ export function PositionsListPanel({
             </p>
           ) : (
             <p className="text-xs text-[var(--text-muted)]">
-              왼쪽 핸들을 잡고 드래그해서 순서를 변경하세요.
+              왼쪽 핸들을 잡고 드래그해 순서를 바꿔 보세요.
             </p>
           )}
         </div>
@@ -99,17 +109,23 @@ export function PositionsListPanel({
           {positions.map((position) => {
             const isDragging = draggingPositionId === position.id;
             const isDropTarget = dropTargetPositionId === position.id;
+            const dropIndicatorPosition = isDropTarget
+              ? getReorderDropIndicatorPosition(
+                  draggingPositionIndex,
+                  dropTargetPositionIndex
+                )
+              : null;
 
             return (
               <Card
                 className={cn(
-                  "transition-opacity",
-                  isDropTarget
-                    ? "border-[#9ac2ff] bg-[#f5faff] shadow-none"
-                    : "bg-white shadow-none",
+                  "relative transition-opacity transition-transform",
+                  isDropTarget &&
+                    "z-[1] border-[#9ac2ff] bg-[#f5faff] ring-2 ring-inset ring-[#9ac2ff] shadow-none",
+                  !isDropTarget && "bg-white shadow-none",
                   isDragging && "scale-[0.99] opacity-45"
                 )}
-                data-position-card
+                data-drag-preview
                 key={position.id}
                 onDragOver={(event) => {
                   if (!canReorder) {
@@ -124,6 +140,10 @@ export function PositionsListPanel({
                   onDrop(position.id);
                 }}
               >
+                {dropIndicatorPosition ? (
+                  <ReorderDropIndicator position={dropIndicatorPosition} />
+                ) : null}
+
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3">
@@ -148,13 +168,13 @@ export function PositionsListPanel({
                           {position.name}
                         </h3>
                         <p className="mt-1 text-sm text-[var(--text-subtle)]">
-                          기본 필수 인원 {position.defaultRequiredCount}명
+                          기본 필수 {position.defaultRequiredCount}명
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <Button
-                        className="h-auto p-0 text-[var(--text-muted)] underline underline-offset-4 hover:text-[var(--foreground)]"
+                        className="h-auto p-0 text-[var(--text-muted)] hover:text-[var(--foreground)] hover:underline hover:underline-offset-4"
                         onClick={() => onEdit(position)}
                         type="button"
                         variant="link"
@@ -176,9 +196,6 @@ export function PositionsListPanel({
                     <Badge variant="secondary">
                       {formatPositionAllowedGenderLabel(position.allowedGender)}
                     </Badge>
-                    <Badge variant="outline">
-                      기본 {position.defaultRequiredCount}명
-                    </Badge>
                   </div>
                 </CardContent>
               </Card>
@@ -194,36 +211,4 @@ export function PositionsListPanel({
       </CardContent>
     </Card>
   );
-}
-
-function setDragPreview(event: React.DragEvent<HTMLButtonElement>) {
-  const positionCard = event.currentTarget.closest("[data-position-card]");
-
-  if (!(positionCard instanceof HTMLElement)) {
-    return;
-  }
-
-  const preview = positionCard.cloneNode(true);
-
-  if (!(preview instanceof HTMLElement)) {
-    return;
-  }
-
-  const { left, top, width } = positionCard.getBoundingClientRect();
-
-  preview.style.position = "fixed";
-  preview.style.top = "-1000px";
-  preview.style.left = "-1000px";
-  preview.style.width = `${width}px`;
-  preview.style.opacity = "0.55";
-  preview.style.pointerEvents = "none";
-  preview.style.transform = "scale(0.99)";
-  preview.style.boxShadow = "0 20px 48px rgba(15, 23, 42, 0.14)";
-
-  document.body.appendChild(preview);
-  event.dataTransfer.setDragImage(preview, event.clientX - left, event.clientY - top);
-
-  window.setTimeout(() => {
-    preview.remove();
-  }, 0);
 }

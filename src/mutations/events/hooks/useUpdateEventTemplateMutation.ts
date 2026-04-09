@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { upsertEventTemplateCollection } from "#/entities/events/models/normalizeEventTemplateCollection";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { updateEventTemplateAction } from "#/mutations/events/actions/updateEventTemplate";
 import type { UpdateEventTemplateInput } from "#/mutations/events/schemas/updateEventTemplate";
@@ -18,9 +19,7 @@ export function useUpdateEventTemplateMutation() {
       queryClient.setQueryData<EventTemplate[]>(
         eventTemplateQueryKeys.collection(),
         (currentTemplates = []) =>
-          currentTemplates.map((currentTemplate) =>
-            currentTemplate.id === template.id ? template : currentTemplate
-          )
+          upsertEventTemplateCollection(currentTemplates, template)
       );
     },
   });

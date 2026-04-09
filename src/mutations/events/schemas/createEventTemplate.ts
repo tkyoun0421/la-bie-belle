@@ -1,17 +1,14 @@
 import { z } from "zod";
-
-const timeValueSchema = z
-  .string()
-  .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "시간은 HH:mm 형식이어야 합니다.");
+import { timeValueSchema } from "#/entities/events/models/schemas/eventTemplate";
 
 const createEventTemplateSlotInputSchema = z.object({
   positionId: z.string().uuid("포지션을 선택해 주세요."),
   requiredCount: z.number().int().min(1, "필수 인원은 1명 이상이어야 합니다."),
-  trainingCount: z.number().int().min(0, "교육 인원은 0명 이상이어야 합니다."),
 });
 
 const createEventTemplateBaseSchema = z.object({
   name: z.string().trim().min(2, "템플릿 이름은 두 글자 이상이어야 합니다."),
+  isPrimary: z.boolean().default(false),
   firstServiceAt: timeValueSchema,
   lastServiceEndAt: timeValueSchema,
   slotDefaults: z
@@ -49,7 +46,7 @@ export const createEventTemplateInputSchema = createEventTemplateBaseSchema
     slotDefaults: value.slotDefaults.map((slot) => ({
       positionId: slot.positionId,
       requiredCount: slot.requiredCount,
-      trainingCount: slot.trainingCount,
+      trainingCount: 0,
     })),
   }));
 

@@ -11,6 +11,7 @@ import {
   type CreatePositionInput,
 } from "#/mutations/positions/schemas/createPosition";
 import { usePositionCollectionState } from "#/queries/positions/hooks/usePositionCollectionState";
+import { useDragReorderState } from "#/shared/hooks/useDragReorderState";
 
 const defaultPositionFormValues: CreatePositionInput = {
   allowedGender: "all",
@@ -21,16 +22,12 @@ const defaultPositionFormValues: CreatePositionInput = {
 export function useAdminPositionsScreenState() {
   const { filteredPositions, positions, searchTerm, setSearchTerm } =
     usePositionCollectionState();
-  const [draggingPositionId, setDraggingPositionId] = useState<string | null>(
-    null
-  );
-  const [dropTargetPositionId, setDropTargetPositionId] = useState<string | null>(
-    null
-  );
   const [editingPositionId, setEditingPositionId] = useState<string | null>(
     null
   );
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [pendingDeletePosition, setPendingDeletePosition] =
+    useState<Position | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const createPositionMutation = useCreatePositionMutation();
   const updatePositionMutation = useUpdatePositionMutation();
@@ -56,6 +53,15 @@ export function useAdminPositionsScreenState() {
     createPositionMutation.isPending || updatePositionMutation.isPending;
   const isReordering = reorderPositionsMutation.isPending;
   const canReorder = searchTerm.trim().length === 0 && !isReordering;
+  const {
+    clearDragState,
+    draggingItemId: draggingPositionId,
+    dropTargetItemId: dropTargetPositionId,
+    setDropTarget,
+    startDrag,
+  } = useDragReorderState({
+    disabled: !canReorder,
+  });
   const validationError = readFirstErrorMessage(form.formState.errors);
   const error = submitError ?? validationError;
 
@@ -89,6 +95,7 @@ export function useAdminPositionsScreenState() {
 
   function openCreate() {
     setEditingPositionId(null);
+    setPendingDeletePosition(null);
     setSubmitError(null);
     form.reset(defaultPositionFormValues);
     setIsEditorOpen(true);
@@ -96,6 +103,7 @@ export function useAdminPositionsScreenState() {
 
   function startEdit(position: Position) {
     setEditingPositionId(position.id);
+    setPendingDeletePosition(null);
     setSubmitError(null);
     form.reset({
       allowedGender: position.allowedGender,
@@ -105,7 +113,18 @@ export function useAdminPositionsScreenState() {
     setIsEditorOpen(true);
   }
 
-  async function remove(position: Position) {
+  function requestRemove(position: Position) {
+    setSubmitError(null);
+    setPendingDeletePosition(position);
+  }
+
+  async function confirmRemove() {
+    if (!pendingDeletePosition) {
+      return;
+    }
+
+    const position = pendingDeletePosition;
+    setPendingDeletePosition(null);
     setSubmitError(null);
 
     try {
@@ -121,6 +140,10 @@ export function useAdminPositionsScreenState() {
           : "포지션을 삭제하지 못했습니다."
       );
     }
+  }
+
+  function cancelRemove() {
+    setPendingDeletePosition(null);
   }
 
   async function dropOnPosition(targetPositionId: string) {
@@ -157,33 +180,10 @@ export function useAdminPositionsScreenState() {
     }
   }
 
-  function startDrag(positionId: string) {
-    if (!canReorder) {
-      return;
-    }
-
-    setDraggingPositionId(positionId);
-    setDropTargetPositionId(null);
-  }
-
-  function setDropTarget(positionId: string) {
-    if (!draggingPositionId || draggingPositionId === positionId || !canReorder) {
-      return;
-    }
-
-    setDropTargetPositionId(positionId);
-  }
-
-  function clearDragState() {
-    setDraggingPositionId(null);
-    setDropTargetPositionId(null);
-  }
-
   function closeEditor() {
     setIsEditorOpen(false);
-    setEditingPositionId(null);
+    setPendingDeletePosition(null);
     setSubmitError(null);
-    form.reset(defaultPositionFormValues);
   }
 
   function handleOpenChange(nextOpen: boolean) {
@@ -236,9 +236,11 @@ export function useAdminPositionsScreenState() {
     isSaving,
     name: name ?? "",
     onAllowedGenderChange: setAllowedGender,
+    onCancelDelete: cancelRemove,
     onCloseEditor: closeEditor,
+    onConfirmDelete: confirmRemove,
     onDefaultRequiredCountChange: setDefaultRequiredCount,
-    onDelete: remove,
+    onDelete: requestRemove,
     onDragEnd: clearDragState,
     onDragStart: startDrag,
     onDrop: dropOnPosition,
@@ -249,6 +251,7 @@ export function useAdminPositionsScreenState() {
     onOpenCreate: openCreate,
     onSearchTermChange: setSearchTerm,
     onSubmit: submit,
+    pendingDeletePosition,
     positions,
     searchTerm,
   };

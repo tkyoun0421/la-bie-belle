@@ -1,5 +1,6 @@
 "use client";
 
+import { ConfirmDialog } from "#/shared/components/common/ConfirmDialog";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +27,9 @@ export function AdminPositionsClient() {
     isSaving,
     name,
     onAllowedGenderChange,
+    onCancelDelete,
     onCloseEditor,
+    onConfirmDelete,
     onDefaultRequiredCountChange,
     onDelete,
     onDragEnd,
@@ -39,6 +42,7 @@ export function AdminPositionsClient() {
     onOpenCreate,
     onSearchTermChange,
     onSubmit,
+    pendingDeletePosition,
     positions,
     searchTerm,
   } = useAdminPositionsScreenState();
@@ -92,6 +96,23 @@ export function AdminPositionsClient() {
           />
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        confirmLabel="삭제"
+        description={
+          pendingDeletePosition
+            ? `"${pendingDeletePosition.name}" 포지션을 삭제합니다. 이 작업은 되돌릴 수 없습니다.`
+            : "선택한 포지션을 삭제합니다. 이 작업은 되돌릴 수 없습니다."
+        }
+        onConfirm={onConfirmDelete}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) {
+            onCancelDelete();
+          }
+        }}
+        open={pendingDeletePosition !== null}
+        title="포지션을 삭제할까요?"
+      />
     </>
   );
 }

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const timeValueSchema = z
+export const timeValueSchema = z
   .string()
   .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "시간은 HH:mm 형식이어야 합니다.");
 
@@ -14,6 +14,7 @@ export const eventTemplateSlotSchema = z.object({
 export const eventTemplateSchema = z.object({
   id: z.string().uuid(),
   name: z.string().trim().min(1),
+  isPrimary: z.boolean(),
   timeLabel: z.string().min(1),
   firstServiceAt: timeValueSchema,
   lastServiceEndAt: timeValueSchema,

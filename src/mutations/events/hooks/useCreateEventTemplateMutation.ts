@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { upsertEventTemplateCollection } from "#/entities/events/models/normalizeEventTemplateCollection";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { createEventTemplateAction } from "#/mutations/events/actions/createEventTemplate";
 import type { CreateEventTemplateInput } from "#/mutations/events/schemas/createEventTemplate";
@@ -17,7 +18,8 @@ export function useCreateEventTemplateMutation() {
       );
       queryClient.setQueryData<EventTemplate[]>(
         eventTemplateQueryKeys.collection(),
-        (currentTemplates = []) => [template, ...currentTemplates]
+        (currentTemplates = []) =>
+          upsertEventTemplateCollection(currentTemplates, template)
       );
     },
   });

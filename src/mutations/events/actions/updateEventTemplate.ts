@@ -26,6 +26,7 @@ export async function updateEventTemplateAction(
     {
       p_template_id: values.id,
       p_name: values.name,
+      p_is_primary: values.isPrimary,
       p_first_service_at: values.firstServiceAt,
       p_last_service_end_at: values.lastServiceEndAt,
       p_slot_defaults: values.slotDefaults.map((slot) => ({
@@ -45,7 +46,7 @@ export async function updateEventTemplateAction(
   }
 
   if (!templateId || typeof templateId !== "string") {
-    throw new Error("수정된 행사 템플릿 식별자를 확인하지 못했습니다.");
+    throw new Error("수정한 행사 템플릿 식별자를 확인하지 못했습니다.");
   }
 
   return readById(templateId, { client });

@@ -4,22 +4,40 @@ import { parseCreateEventTemplateInput } from "#/mutations/events/schemas/create
 describe("parseCreateEventTemplateInput", () => {
   it("normalizes valid template input", () => {
     const template = parseCreateEventTemplateInput({
-      name: "  토요일 프리미엄 웨딩  ",
+      name: "  주요 프리미엄 웨딩  ",
+      isPrimary: true,
       firstServiceAt: "10:30",
       lastServiceEndAt: "16:00",
       slotDefaults: [
         {
           positionId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
           requiredCount: 2,
-          trainingCount: 1,
         },
       ],
     });
 
-    expect(template.name).toBe("토요일 프리미엄 웨딩");
+    expect(template.name).toBe("주요 프리미엄 웨딩");
+    expect(template.isPrimary).toBe(true);
     expect(template.slotDefaults[0]?.positionId).toBe(
       "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
     );
+    expect(template.slotDefaults[0]?.trainingCount).toBe(0);
+  });
+
+  it("defaults the primary flag to false when omitted", () => {
+    const template = parseCreateEventTemplateInput({
+      name: "서브 템플릿",
+      firstServiceAt: "10:30",
+      lastServiceEndAt: "16:00",
+      slotDefaults: [
+        {
+          positionId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+          requiredCount: 2,
+        },
+      ],
+    });
+
+    expect(template.isPrimary).toBe(false);
   });
 
   it("rejects duplicate positions in one template", () => {
@@ -32,12 +50,10 @@ describe("parseCreateEventTemplateInput", () => {
           {
             positionId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
             requiredCount: 2,
-            trainingCount: 0,
           },
           {
             positionId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
             requiredCount: 1,
-            trainingCount: 0,
           },
         ],
       })
