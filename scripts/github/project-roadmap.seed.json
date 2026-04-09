@@ -1,7 +1,7 @@
 {
   "projectTitle": "La Bie Belle Product Roadmap",
   "projectDescription": "docs/plans/* 기준으로 milestone, issue, PR을 추적하는 제품 로드맵 보드",
-  "repositoryProjectVariable": "GITHUB_PROJECT_URL",
+  "repositoryProjectVariable": "ROADMAP_PROJECT_URL",
   "labels": [
     {
       "name": "track:roadmap",

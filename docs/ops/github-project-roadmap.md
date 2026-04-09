@@ -85,7 +85,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\github\bootstrap-project-road
 - repo milestones 생성
 - seed issue 생성
 - 생성한 issue를 project에 추가
-- repo variable `GITHUB_PROJECT_URL` 설정
+- repo variable `ROADMAP_PROJECT_URL` 설정
 
 ## 2. 자동 추가 워크플로 활성화
 
@@ -97,7 +97,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\github\bootstrap-project-road
 
 필수 repo variable:
 
-- `GITHUB_PROJECT_URL`: bootstrap script가 자동으로 채운다
+- `ROADMAP_PROJECT_URL`: bootstrap script가 자동으로 채운다
 
 이후에는 `track:roadmap` 라벨이 붙은 issue와 PR이 자동으로 project에 들어간다.
 

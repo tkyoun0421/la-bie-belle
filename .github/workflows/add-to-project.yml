@@ -18,10 +18,10 @@ permissions:
 
 jobs:
   add-to-project:
-    if: ${{ vars.GITHUB_PROJECT_URL != '' }}
+    if: ${{ vars.ROADMAP_PROJECT_URL != '' }}
     runs-on: ubuntu-latest
     env:
-      PROJECT_URL: ${{ vars.GITHUB_PROJECT_URL }}
+      PROJECT_URL: ${{ vars.ROADMAP_PROJECT_URL }}
       ROADMAP_PROJECT_TOKEN: ${{ secrets.ROADMAP_PROJECT_TOKEN }}
 
     steps:
