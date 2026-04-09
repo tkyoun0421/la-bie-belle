@@ -137,4 +137,25 @@ describe("useAdminPositionsScreenState", () => {
       expect(result.current.name).toBe("");
     });
   });
+
+  it("exposes validation errors on the matching position fields", async () => {
+    positionCollectionStateMock.filteredPositions = [];
+    positionCollectionStateMock.positions = [];
+    const { result } = renderHook(() => useAdminPositionsScreenState());
+
+    act(() => {
+      result.current.onOpenCreate();
+    });
+
+    await act(async () => {
+      await result.current.onSubmit();
+    });
+
+    await waitFor(() => {
+      expect(result.current.fieldErrors.name).toBe(
+        "포지션 이름을 입력해 주세요."
+      );
+      expect(result.current.serverError).toBeNull();
+    });
+  });
 });

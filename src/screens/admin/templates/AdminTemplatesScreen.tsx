@@ -1,10 +1,12 @@
 import { AdminTemplatesClient } from "#/screens/admin/templates/_components/AdminTemplatesClient";
 
 type AdminTemplatesScreenProps = {
+  initialHighlightedTemplateId: string | null;
   initialTemplateCount: number;
 };
 
 export function AdminTemplatesScreen({
+  initialHighlightedTemplateId,
   initialTemplateCount,
 }: AdminTemplatesScreenProps) {
   return (
@@ -34,7 +36,9 @@ export function AdminTemplatesScreen({
         </div>
       </section>
 
-      <AdminTemplatesClient />
+      <AdminTemplatesClient
+        initialHighlightedTemplateId={initialHighlightedTemplateId}
+      />
     </main>
   );
 }

@@ -12,6 +12,7 @@ import {
 } from "#/mutations/positions/schemas/createPosition";
 import { usePositionCollectionState } from "#/queries/positions/hooks/usePositionCollectionState";
 import { useDragReorderState } from "#/shared/hooks/useDragReorderState";
+import { readErrorMessage } from "#/shared/lib/forms/readErrorMessage";
 
 const defaultPositionFormValues: CreatePositionInput = {
   allowedGender: "all",
@@ -52,7 +53,8 @@ export function useAdminPositionsScreenState() {
   const isSaving =
     createPositionMutation.isPending || updatePositionMutation.isPending;
   const isReordering = reorderPositionsMutation.isPending;
-  const canReorder = searchTerm.trim().length === 0 && !isReordering;
+  const isSearchActive = searchTerm.trim().length > 0;
+  const canReorder = !isSearchActive && !isReordering;
   const {
     clearDragState,
     draggingItemId: draggingPositionId,
@@ -62,8 +64,13 @@ export function useAdminPositionsScreenState() {
   } = useDragReorderState({
     disabled: !canReorder,
   });
-  const validationError = readFirstErrorMessage(form.formState.errors);
-  const error = submitError ?? validationError;
+  const fieldErrors = {
+    allowedGender: readErrorMessage(form.formState.errors.allowedGender),
+    defaultRequiredCount: readErrorMessage(
+      form.formState.errors.defaultRequiredCount
+    ),
+    name: readErrorMessage(form.formState.errors.name),
+  };
 
   const submit = form.handleSubmit(
     async (values) => {
@@ -228,11 +235,12 @@ export function useAdminPositionsScreenState() {
     draggingPositionId,
     dropTargetPositionId,
     editingPositionId,
-    error,
+    fieldErrors,
     filteredPositions,
     isDeleting: deletePositionMutation.isPending,
     isEditorOpen,
     isReordering,
+    isSearchActive,
     isSaving,
     name: name ?? "",
     onAllowedGenderChange: setAllowedGender,
@@ -254,6 +262,7 @@ export function useAdminPositionsScreenState() {
     pendingDeletePosition,
     positions,
     searchTerm,
+    serverError: submitError,
   };
 }
 
@@ -274,42 +283,4 @@ function movePositionIds(
   nextPositionIds.splice(targetIndex, 0, movedPositionId);
 
   return nextPositionIds;
-}
-
-function readFirstErrorMessage(value: unknown): string | null {
-  if (!value) {
-    return null;
-  }
-
-  if (typeof value === "object") {
-    if (
-      "message" in value &&
-      typeof value.message === "string" &&
-      value.message.length > 0
-    ) {
-      return value.message;
-    }
-
-    if (Array.isArray(value)) {
-      for (const nextValue of value) {
-        const nextMessage = readFirstErrorMessage(nextValue);
-
-        if (nextMessage) {
-          return nextMessage;
-        }
-      }
-
-      return null;
-    }
-
-    for (const nextValue of Object.values(value)) {
-      const nextMessage = readFirstErrorMessage(nextValue);
-
-      if (nextMessage) {
-        return nextMessage;
-      }
-    }
-  }
-
-  return null;
 }

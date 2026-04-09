@@ -10,8 +10,7 @@ Date: 2026-04-10
 
 ## Purpose
 
-이 문서는 현재 repository의 canonical tree와 route-to-screen 매핑을 기록한다.  
-레이어 책임 자체는 [Folder Hierarchy](./folder-hierarchy.md)를 source of truth로 본다.
+이 문서는 현재 repository 의 canonical tree 와 route-to-screen 대응을 기록한다.
 
 ## Top-Level Layout
 
@@ -46,6 +45,8 @@ src/app/
     positions/page.tsx
     requests/page.tsx
     templates/page.tsx
+    templates/new/page.tsx
+    templates/[templateId]/edit/page.tsx
     users/page.tsx
 
   events/[eventId]/page.tsx
@@ -76,99 +77,74 @@ src/app/
 - `/admin/users` -> `screens/admin/users`
 - `/admin/positions` -> `screens/admin/positions`
 - `/admin/templates` -> `screens/admin/templates`
+- `/admin/templates/new` -> `screens/admin/templates/new`
+- `/admin/templates/[templateId]/edit` -> `screens/admin/templates/[templateId]/edit`
 - `/admin/payroll-rules` -> `screens/admin/payroll-rules`
 
-## Canonical Module Shapes
-
-### Screens
+## Current Template Screen Shape
 
 ```text
 src/screens/admin/templates/
   AdminTemplatesScreen.tsx
   _components/
     AdminTemplatesClient.tsx
-    EventTemplateEditorCard.tsx
+    EventTemplateListItem.tsx
     EventTemplatesListPanel.tsx
+    TemplateEditorPageClient.tsx
+    TemplateEditorPageSection.tsx
+    EventTemplateEditorCard.tsx
+    TemplateBasicsFields.tsx
+    TemplateEditorActions.tsx
+    TemplateField.tsx
+    TemplateSlotDefaultsSection.tsx
+  _helpers/
+    templateForm.ts
   _hooks/
     useAdminTemplatesScreenState.ts
+    useTemplateEditorFormState.ts
+  _tests/
+    templateForm.test.ts
+    useTemplateEditorFormState.test.ts
+  new/
+    AdminTemplateCreateScreen.tsx
+  [templateId]/
+    edit/
+      AdminTemplateEditScreen.tsx
 ```
 
-### Mutations
+정리 기준:
+
+- 목록 전용 코드는 `templates` 루트에 둔다.
+- `new` 와 `[templateId]/edit` 가 공유하는 editor 코드는 부모 `templates` 폴더에 둔다.
+- `new` 전용 또는 `edit` 전용 코드가 생기면 각 route 폴더 아래 `_components/_hooks/_helpers` 로 내리고, 테스트는 해당 route 폴더 루트의 `_tests` 로 둔다.
+
+## Current Position Screen Shape
 
 ```text
-src/mutations/events/
-  actions/
-  hooks/
-  schemas/
-  tests/
-```
-
-### Queries
-
-```text
-src/queries/events/
-  constants/
-  options/
-  hooks/
-  services/
-  tests/
-```
-
-### Entities
-
-```text
-src/entities/events/
-  models/
-  repositories/
-  tests/
-```
-
-### Shared
-
-```text
-src/shared/
-  components/
-  config/
-  lib/
-  tests/
+src/screens/admin/positions/
+  AdminPositionsScreen.tsx
+  _components/
+    AdminPositionsClient.tsx
+    PositionEditorCard.tsx
+    PositionsListPanel.tsx
+  _hooks/
+    useAdminPositionsScreenState.ts
+  _tests/
+    useAdminPositionsScreenState.test.ts
 ```
 
 ## Rendering And Data Flow
 
-현재 기본 데이터 흐름은 아래와 같다.
-
-1. `app/*/page.tsx`가 server component로 시작한다.
-2. route entry가 `entities/*/repositories/*`로 server read를 수행한다.
-3. route entry가 query cache를 hydrate한다.
-4. route entry가 `screens/*` screen shell을 렌더한다.
-5. `screens/*/_components/*Client.tsx`가 필요한 범위만 client island로 동작한다.
-6. client island가 `queries/*/hooks`와 `mutations/*/hooks`를 사용한다.
-7. write는 `mutations/*/actions/*.ts`로 들어가고, read/write data access는 `entities/*/repositories/*`에서 끝난다.
-
-## Current Domain Snapshot
-
-현재 구조상 먼저 정리된 도메인은 아래와 같다.
-
-- `events`
-  - templates CRUD
-- `positions`
-  - positions CRUD
-- `users`
-  - profile read legacy leaf
-- `auth`
-  - logout legacy leaf
-
-## Legacy Notes
-
-아직 완전히 정리되지 않은 legacy 경로가 있다.
-
-- `src/queries/users/get-my-profile/*`
-- `src/mutations/auth/logout/*`
-
-이 두 경로는 현재 canonical naming과 다르게 남아 있는 과도기 구조다.  
-새 구현은 이 패턴을 따라 늘리지 않는다.
+1. `app/*/page.tsx` 가 server component 로 시작한다.
+2. route entry 가 `entities/*/repositories/*` 로 server read 를 수행한다.
+3. route entry 가 query cache 를 hydrate 한다.
+4. route entry 가 `screens/*` screen shell 을 렌더한다.
+5. 필요한 부분만 `screens/*/_components/*Client.tsx` 에서 client island 로 동작한다.
+6. client island 는 `queries/*/hooks` 와 `mutations/*/hooks` 를 사용한다.
+7. read/write data access 는 `entities/*/repositories/*` 에서 끝난다.
 
 ## Current Rule
 
-- 새 폴더를 만들기 전에는 먼저 [Folder Hierarchy](./folder-hierarchy.md)를 본다.
-- 현재 repo의 실제 route 배치와 screen 매핑은 이 문서를 기준으로 본다.
+- `screens` 는 `app` 구조를 따라간다.
+- 공용 코드만 부모 screen 폴더에 둔다.
+- 새 테스트는 owner 폴더 아래 `_tests` 로 colocate 한다.

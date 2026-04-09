@@ -8,7 +8,14 @@ import { createQueryClient } from "#/shared/lib/tanstack-query/createQueryClient
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminTemplatesPage() {
+type AdminTemplatesPageProps = {
+  searchParams: Promise<{ highlight?: string }>;
+};
+
+export default async function AdminTemplatesPage({
+  searchParams,
+}: AdminTemplatesPageProps) {
+  const { highlight } = await searchParams;
   const [templates, positions] = await Promise.all([
     readEventTemplates(),
     readPositions(),
@@ -23,7 +30,10 @@ export default async function AdminTemplatesPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <AdminTemplatesScreen initialTemplateCount={templates.length} />
+      <AdminTemplatesScreen
+        initialHighlightedTemplateId={highlight ?? null}
+        initialTemplateCount={templates.length}
+      />
     </HydrationBoundary>
   );
 }

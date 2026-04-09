@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GripVertical } from "lucide-react";
+import { FormFieldError } from "#/shared/components/common/FormFieldError";
 import { ReorderDropIndicator } from "#/shared/components/drag-and-drop/ReorderDropIndicator";
 import { Button } from "#/shared/components/ui/button";
 import { Input } from "#/shared/components/ui/input";
@@ -16,6 +17,7 @@ import { cn } from "#/shared/lib/utils";
 import type {
   TemplateFormSlot,
   TemplatePositionOption,
+  TemplateSlotFieldErrors,
   TemplateSlotRow,
 } from "#/screens/admin/templates/_helpers/templateForm";
 import { TemplateField } from "#/screens/admin/templates/_components/TemplateField";
@@ -24,6 +26,7 @@ type TemplateSlotDefaultsSectionProps = {
   canManageSlots: boolean;
   draggingSlotKey: string | null;
   dropTargetSlotKey: string | null;
+  error: string | null;
   onAddSlotRow: () => void;
   onRemoveSlotRow: (slotIndex: number) => void;
   onSlotDragEnd: () => void;
@@ -36,6 +39,7 @@ type TemplateSlotDefaultsSectionProps = {
     nextValue: string
   ) => void;
   positionOptions: TemplatePositionOption[];
+  slotErrors: TemplateSlotFieldErrors[];
   slotRows: TemplateSlotRow[];
 };
 
@@ -43,6 +47,7 @@ export function TemplateSlotDefaultsSection({
   canManageSlots,
   draggingSlotKey,
   dropTargetSlotKey,
+  error,
   onAddSlotRow,
   onRemoveSlotRow,
   onSlotDragEnd,
@@ -51,6 +56,7 @@ export function TemplateSlotDefaultsSection({
   onSlotDropTargetChange,
   onUpdateSlot,
   positionOptions,
+  slotErrors,
   slotRows,
 }: Readonly<TemplateSlotDefaultsSectionProps>) {
   const selectedPositionIds = new Set(
@@ -73,8 +79,9 @@ export function TemplateSlotDefaultsSection({
             포지션 기본값
           </h3>
           <p className="text-sm text-[var(--text-subtle)]">
-            행사 생성 시 그대로 복사되는 템플릿용 기본 포지션 구성입니다.
+            생성 시 그대로 복사되는 템플릿용 기본 포지션 구성입니다.
           </p>
+          <FormFieldError className="mt-2" message={error} />
         </div>
         <Button
           disabled={!canAddSlot}
@@ -82,15 +89,15 @@ export function TemplateSlotDefaultsSection({
           type="button"
           variant="outline"
         >
-          슬롯 추가
+          포지션 추가
         </Button>
       </div>
 
       <div className="flex items-center justify-between gap-4">
         <p className="text-xs text-[var(--text-muted)]">
           {canReorderSlots
-            ? "왼쪽 핸들을 잡고 드래그해 슬롯 순서를 바꿔 보세요."
-            : "슬롯이 2개 이상일 때 순서를 바꿀 수 있습니다."}
+            ? "왼쪽 핸들을 잡고 드래그해 포지션 순서를 바꿔 보세요."
+            : "포지션이 2개 이상일 때 순서를 바꿀 수 있습니다."}
         </p>
         <Link
           className="text-sm font-semibold text-[var(--primary)] underline-offset-4 hover:underline"
@@ -104,6 +111,7 @@ export function TemplateSlotDefaultsSection({
         {slotRows.map((slot, index) => {
           const isDragging = draggingSlotKey === slot._key;
           const isDropTarget = dropTargetSlotKey === slot._key;
+          const showRowAccent = !isDropTarget && index % 2 === 0;
           const dropIndicatorPosition = isDropTarget
             ? getReorderDropIndicatorPosition(
                 draggingSlotIndex,
@@ -139,6 +147,13 @@ export function TemplateSlotDefaultsSection({
                 onSlotDrop(slot._key);
               }}
             >
+              {showRowAccent ? (
+                <div
+                  aria-hidden="true"
+                  className="absolute top-3 bottom-3 left-0 w-[3px] rounded-r-full bg-[rgba(15,23,42,0.12)]"
+                />
+              ) : null}
+
               {dropIndicatorPosition ? (
                 <ReorderDropIndicator position={dropIndicatorPosition} />
               ) : null}
@@ -166,7 +181,10 @@ export function TemplateSlotDefaultsSection({
                 </button>
               </div>
 
-              <TemplateField label="포지션">
+              <TemplateField
+                error={slotErrors[index]?.positionId}
+                label="포지션"
+              >
                 <Select
                   onValueChange={(value) =>
                     onUpdateSlot(index, "positionId", value)
@@ -196,7 +214,10 @@ export function TemplateSlotDefaultsSection({
                 </Select>
               </TemplateField>
 
-              <TemplateField label="필수 인원">
+              <TemplateField
+                error={slotErrors[index]?.requiredCount}
+                label="필수 인원"
+              >
                 <Input
                   min="1"
                   onChange={(event) =>

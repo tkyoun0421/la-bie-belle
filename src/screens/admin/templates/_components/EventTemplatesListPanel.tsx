@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { Button } from "#/shared/components/ui/button";
 import {
@@ -12,11 +13,8 @@ import { EventTemplateListItem } from "#/screens/admin/templates/_components/Eve
 
 type EventTemplatesListPanelProps = {
   deletePending: boolean;
-  editingTemplateId: string | null;
   highlightedTemplateId: string | null;
-  onCreate: () => void;
   onDelete: (template: EventTemplate) => void;
-  onEdit: (template: EventTemplate) => void;
   onSearchTermChange: (value: string) => void;
   searchTerm: string;
   templates: EventTemplate[];
@@ -24,11 +22,8 @@ type EventTemplatesListPanelProps = {
 
 export function EventTemplatesListPanel({
   deletePending,
-  editingTemplateId,
   highlightedTemplateId,
-  onCreate,
   onDelete,
-  onEdit,
   onSearchTermChange,
   searchTerm,
   templates,
@@ -43,8 +38,8 @@ export function EventTemplatesListPanel({
             대표 템플릿은 목록 상단에 먼저 정렬됩니다.
           </CardDescription>
         </div>
-        <Button className="self-end" onClick={onCreate} type="button">
-          새 템플릿 추가
+        <Button asChild className="self-end" type="button">
+          <Link href="/admin/templates/new">새 템플릿 추가</Link>
         </Button>
       </CardHeader>
 
@@ -69,11 +64,10 @@ export function EventTemplatesListPanel({
             <EventTemplateListItem
               canDelete={!template.isPrimary}
               deletePending={deletePending}
-              isEditing={template.id === editingTemplateId}
+              editHref={`/admin/templates/${template.id}/edit`}
               isHighlighted={template.id === highlightedTemplateId}
               key={template.id}
               onDelete={onDelete}
-              onEdit={onEdit}
               template={template}
             />
           ))}

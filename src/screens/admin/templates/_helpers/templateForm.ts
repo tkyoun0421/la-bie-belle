@@ -1,4 +1,3 @@
-import type { FieldErrors } from "react-hook-form";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { formatPositionAllowedGenderLabel } from "#/entities/positions/models/constants/allowedGender";
 import type { Position } from "#/entities/positions/models/schemas/position";
@@ -18,6 +17,17 @@ export type TemplatePositionOption = {
 };
 export type TemplateSlotRow = TemplateFormSlot & {
   _key: string;
+};
+export type TemplateSlotFieldErrors = {
+  positionId: string | null;
+  requiredCount: string | null;
+};
+export type TemplateFieldErrors = {
+  firstServiceAt: string | null;
+  lastServiceEndAt: string | null;
+  name: string | null;
+  slotDefaults: string | null;
+  slotRows: TemplateSlotFieldErrors[];
 };
 
 export const templateSaveErrorMessage =
@@ -164,44 +174,4 @@ export function shouldConfirmBelowDefaultRequiredCount({
     nextRequiredCount < positionDefaultRequiredCount &&
     currentRequiredCount >= positionDefaultRequiredCount
   );
-}
-
-export function readFirstErrorMessage(
-  value: FieldErrors<CreateEventTemplateInput> | unknown
-): string | null {
-  if (!value) {
-    return null;
-  }
-
-  if (typeof value === "object") {
-    if (
-      "message" in value &&
-      typeof value.message === "string" &&
-      value.message.length > 0
-    ) {
-      return value.message;
-    }
-
-    if (Array.isArray(value)) {
-      for (const nextValue of value) {
-        const nextMessage = readFirstErrorMessage(nextValue);
-
-        if (nextMessage) {
-          return nextMessage;
-        }
-      }
-
-      return null;
-    }
-
-    for (const nextValue of Object.values(value)) {
-      const nextMessage = readFirstErrorMessage(nextValue);
-
-      if (nextMessage) {
-        return nextMessage;
-      }
-    }
-  }
-
-  return null;
 }

@@ -1,107 +1,62 @@
-import { useMemo } from "react";
-import type { Position } from "#/entities/positions/models/schemas/position";
+import { useState } from "react";
+import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
+import { useDeleteEventTemplateMutation } from "#/mutations/events/hooks/useDeleteEventTemplateMutation";
 import { useEventTemplateCollectionState } from "#/queries/events/hooks/useEventTemplateCollectionState";
-import { usePositionsQuery } from "#/queries/positions/hooks/usePositionsQuery";
-import {
-  createDefaultTemplateFormValues,
-  createPositionDefaultRequiredCountMap,
-  createPositionNameMap,
-  createTemplatePositionOptions,
-} from "#/screens/admin/templates/_helpers/templateForm";
-import { useTemplateEditorState } from "#/screens/admin/templates/_hooks/useTemplateEditorState";
 
-const emptyPositions: Position[] = [];
+type UseAdminTemplatesScreenStateOptions = {
+  initialHighlightedTemplateId: string | null;
+};
 
-export function useAdminTemplatesScreenState() {
-  const positions = usePositionsQuery().data ?? emptyPositions;
+export function useAdminTemplatesScreenState({
+  initialHighlightedTemplateId,
+}: UseAdminTemplatesScreenStateOptions) {
   const {
     filteredTemplates,
     highlightedTemplateId,
     searchTerm,
     setHighlightedTemplateId,
     setSearchTerm,
-    templates,
-  } = useEventTemplateCollectionState();
-  const defaultPositionId = positions[0]?.id ?? "";
-  const defaultRequiredCount = positions[0]?.defaultRequiredCount ?? 2;
-  const positionIds = useMemo(
-    () => positions.map((position) => position.id),
-    [positions]
-  );
-  const defaultRequiredCountByPositionId = useMemo(
-    () => createPositionDefaultRequiredCountMap(positions),
-    [positions]
-  );
-  const positionNameById = useMemo(
-    () => createPositionNameMap(positions),
-    [positions]
-  );
-  const positionOptions = useMemo(
-    () => createTemplatePositionOptions(positions),
-    [positions]
-  );
-  const defaultTemplateValues = useMemo(
-    () =>
-      createDefaultTemplateFormValues(
-        positions,
-        defaultPositionId,
-        defaultRequiredCount,
-        templates.length === 0
-      ),
-    [positions, defaultPositionId, defaultRequiredCount, templates.length]
-  );
-  const editorState = useTemplateEditorState({
-    defaultPositionId,
-    defaultRequiredCount,
-    defaultRequiredCountByPositionId,
-    defaultTemplateValues,
-    highlightedTemplateId,
-    positionIds,
-    positionNameById,
-    setHighlightedTemplateId,
-    setSearchTerm,
-    templates,
-  });
+  } = useEventTemplateCollectionState(initialHighlightedTemplateId);
+  const [pendingDeleteTemplate, setPendingDeleteTemplate] =
+    useState<EventTemplate | null>(null);
+  const deleteTemplateMutation = useDeleteEventTemplateMutation();
+
+  function requestDelete(template: EventTemplate) {
+    if (template.isPrimary) {
+      return;
+    }
+
+    setPendingDeleteTemplate(template);
+  }
+
+  async function confirmDelete() {
+    if (!pendingDeleteTemplate) {
+      return;
+    }
+
+    const template = pendingDeleteTemplate;
+    setPendingDeleteTemplate(null);
+
+    await deleteTemplateMutation.mutateAsync({ id: template.id });
+
+    if (highlightedTemplateId === template.id) {
+      setHighlightedTemplateId(null);
+    }
+  }
+
+  function cancelDelete() {
+    setPendingDeleteTemplate(null);
+  }
 
   return {
-    deletePending: editorState.deletePending,
-    draggingSlotKey: editorState.draggingSlotKey,
-    dropTargetSlotKey: editorState.dropTargetSlotKey,
-    editingTemplateId: editorState.editingTemplateId,
-    error: editorState.error,
+    deletePending: deleteTemplateMutation.isPending,
     filteredTemplates,
-    formState: editorState.formState,
     highlightedTemplateId,
-    isEditorOpen: editorState.isEditorOpen,
-    isPrimaryLocked: editorState.isPrimaryLocked,
-    isSaving: editorState.isSaving,
-    onAddSlotRow: editorState.addSlotRow,
-    onCancelBelowDefaultRequiredCount:
-      editorState.cancelBelowDefaultRequiredCount,
-    onCancelDelete: editorState.cancelRemove,
-    onCloseEditor: editorState.closeEditor,
-    onConfirmBelowDefaultRequiredCount:
-      editorState.confirmBelowDefaultRequiredCount,
-    onConfirmDelete: editorState.confirmRemove,
-    onDelete: editorState.remove,
-    onEdit: editorState.startEdit,
-    onFieldChange: editorState.updateField,
-    onOpenChange: editorState.onOpenChange,
-    onOpenCreate: editorState.openCreate,
-    onPrimaryChange: editorState.updatePrimary,
-    onRemoveSlotRow: editorState.removeSlotRow,
+    onCancelDelete: cancelDelete,
+    onConfirmDelete: confirmDelete,
+    onDelete: requestDelete,
     onSearchTermChange: setSearchTerm,
-    onSlotDragEnd: editorState.clearSlotDragState,
-    onSlotDragStart: editorState.startSlotDrag,
-    onSlotDrop: editorState.dropOnSlot,
-    onSlotDropTargetChange: editorState.setSlotDropTarget,
-    onSubmit: editorState.submit,
-    onUpdateSlot: editorState.updateSlot,
-    pendingDeleteTemplate: editorState.pendingDeleteTemplate,
-    pendingBelowDefaultRequiredCount:
-      editorState.pendingBelowDefaultRequiredCount,
-    positionOptions,
+    pendingDeleteTemplate,
     searchTerm,
-    slotRows: editorState.slotRows,
   };
 }

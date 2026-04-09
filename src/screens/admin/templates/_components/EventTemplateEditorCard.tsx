@@ -1,4 +1,3 @@
-import { Alert, AlertDescription } from "#/shared/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -11,6 +10,7 @@ import { TemplateBasicsFields } from "#/screens/admin/templates/_components/Temp
 import { TemplateEditorActions } from "#/screens/admin/templates/_components/TemplateEditorActions";
 import { TemplateSlotDefaultsSection } from "#/screens/admin/templates/_components/TemplateSlotDefaultsSection";
 import type {
+  TemplateFieldErrors,
   TemplateFieldName,
   TemplateFormState,
   TemplatePositionOption,
@@ -24,7 +24,7 @@ type EventTemplateEditorCardProps = {
   draggingSlotKey: string | null;
   dropTargetSlotKey: string | null;
   editingTemplateId: string | null;
-  error: string | null;
+  fieldErrors: TemplateFieldErrors;
   formState: TemplateFormState;
   isPrimaryLocked: boolean;
   isSaving: boolean;
@@ -44,6 +44,7 @@ type EventTemplateEditorCardProps = {
     nextValue: string
   ) => void;
   positionOptions: TemplatePositionOption[];
+  serverError: string | null;
   slotRows: TemplateSlotRow[];
 };
 
@@ -52,7 +53,7 @@ export function EventTemplateEditorCard({
   draggingSlotKey,
   dropTargetSlotKey,
   editingTemplateId,
-  error,
+  fieldErrors,
   formState,
   isPrimaryLocked,
   isSaving,
@@ -68,6 +69,7 @@ export function EventTemplateEditorCard({
   onSubmit,
   onUpdateSlot,
   positionOptions,
+  serverError,
   slotRows,
 }: Readonly<EventTemplateEditorCardProps>) {
   return (
@@ -90,6 +92,7 @@ export function EventTemplateEditorCard({
           }}
         >
           <TemplateBasicsFields
+            fieldErrors={fieldErrors}
             formState={formState}
             isPrimaryLocked={isPrimaryLocked}
             onFieldChange={onFieldChange}
@@ -100,6 +103,7 @@ export function EventTemplateEditorCard({
             canManageSlots={canManageSlots}
             draggingSlotKey={draggingSlotKey}
             dropTargetSlotKey={dropTargetSlotKey}
+            error={fieldErrors.slotDefaults}
             onAddSlotRow={onAddSlotRow}
             onRemoveSlotRow={onRemoveSlotRow}
             onSlotDragEnd={onSlotDragEnd}
@@ -108,20 +112,16 @@ export function EventTemplateEditorCard({
             onSlotDropTargetChange={onSlotDropTargetChange}
             onUpdateSlot={onUpdateSlot}
             positionOptions={positionOptions}
+            slotErrors={fieldErrors.slotRows}
             slotRows={slotRows}
           />
-
-          {error ? (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          ) : null}
 
           <TemplateEditorActions
             canManageSlots={canManageSlots}
             editingTemplateId={editingTemplateId}
             isSaving={isSaving}
             onCancel={onCancel}
+            serverError={serverError}
           />
         </form>
       </CardContent>

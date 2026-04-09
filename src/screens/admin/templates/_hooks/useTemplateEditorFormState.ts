@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { startTransition, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   type Control,
   useFieldArray,
@@ -9,40 +9,39 @@ import {
 } from "react-hook-form";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { useCreateEventTemplateMutation } from "#/mutations/events/hooks/useCreateEventTemplateMutation";
-import { useDeleteEventTemplateMutation } from "#/mutations/events/hooks/useDeleteEventTemplateMutation";
 import { useUpdateEventTemplateMutation } from "#/mutations/events/hooks/useUpdateEventTemplateMutation";
 import {
   createEventTemplateInputSchema,
   type CreateEventTemplateInput,
 } from "#/mutations/events/schemas/createEventTemplate";
 import {
-  createTemplateFormValuesFromTemplate,
   createTemplateSlot,
   createTemplateSlotRows,
   findNextAvailablePositionId,
-  primaryTemplateDeleteErrorMessage,
   readDefaultRequiredCount,
-  readFirstErrorMessage,
   shouldConfirmBelowDefaultRequiredCount,
-  templateDeleteErrorMessage,
+  type TemplateFieldErrors,
   type TemplateFieldName,
   type TemplateFormSlot,
   type TemplateFormState,
   templateSaveErrorMessage,
 } from "#/screens/admin/templates/_helpers/templateForm";
 import { useDragReorderState } from "#/shared/hooks/useDragReorderState";
+import {
+  readErrorMessage,
+  readOwnErrorMessage,
+} from "#/shared/lib/forms/readErrorMessage";
 
-type UseTemplateEditorStateOptions = {
+type UseTemplateEditorFormStateOptions = {
   defaultPositionId: string;
   defaultRequiredCount: number;
   defaultRequiredCountByPositionId: Record<string, number>;
   defaultTemplateValues: CreateEventTemplateInput;
-  highlightedTemplateId: string | null;
+  initialTemplate: EventTemplate | null;
+  onSubmitted: (templateId: string) => void;
   positionIds: string[];
   positionNameById: Record<string, string>;
-  setHighlightedTemplateId: (value: string | null) => void;
-  setSearchTerm: (value: string) => void;
-  templates: EventTemplate[];
+  templatesCount: number;
 };
 
 type PendingBelowDefaultRequiredCount = {
@@ -52,32 +51,24 @@ type PendingBelowDefaultRequiredCount = {
   slotIndex: number;
 };
 
-export function useTemplateEditorState({
+export function useTemplateEditorFormState({
   defaultPositionId,
   defaultRequiredCount,
   defaultRequiredCountByPositionId,
   defaultTemplateValues,
-  highlightedTemplateId,
+  initialTemplate,
+  onSubmitted,
   positionIds,
   positionNameById,
-  setHighlightedTemplateId,
-  setSearchTerm,
-  templates,
-}: UseTemplateEditorStateOptions) {
-  const [editingTemplateId, setEditingTemplateId] = useState<string | null>(
-    null
-  );
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  templatesCount,
+}: UseTemplateEditorFormStateOptions) {
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [pendingDeleteTemplate, setPendingDeleteTemplate] =
-    useState<EventTemplate | null>(null);
   const [
     pendingBelowDefaultRequiredCount,
     setPendingBelowDefaultRequiredCount,
   ] = useState<PendingBelowDefaultRequiredCount | null>(null);
   const createTemplateMutation = useCreateEventTemplateMutation();
   const updateTemplateMutation = useUpdateEventTemplateMutation();
-  const deleteTemplateMutation = useDeleteEventTemplateMutation();
   const form = useForm<CreateEventTemplateInput>({
     defaultValues: defaultTemplateValues,
     resolver: zodResolver(createEventTemplateInputSchema),
@@ -94,17 +85,27 @@ export function useTemplateEditorState({
     defaultRequiredCountByPositionId,
     defaultRequiredCount
   );
-  const editingTemplate = useMemo(
-    () =>
-      editingTemplateId
-        ? templates.find((template) => template.id === editingTemplateId) ?? null
-        : null,
-    [editingTemplateId, templates]
-  );
-  const isPrimaryLocked = templates.length === 0 || Boolean(editingTemplate?.isPrimary);
+  const isPrimaryLocked =
+    templatesCount === 0 || Boolean(initialTemplate?.isPrimary);
   const isSaving =
     createTemplateMutation.isPending || updateTemplateMutation.isPending;
-  const error = submitError ?? readFirstErrorMessage(form.formState.errors);
+  const fieldErrors = useMemo<TemplateFieldErrors>(
+    () => ({
+      firstServiceAt: readErrorMessage(form.formState.errors.firstServiceAt),
+      lastServiceEndAt: readErrorMessage(form.formState.errors.lastServiceEndAt),
+      name: readErrorMessage(form.formState.errors.name),
+      slotDefaults: readOwnErrorMessage(form.formState.errors.slotDefaults),
+      slotRows: slotRows.map((_, index) => ({
+        positionId: readErrorMessage(
+          form.formState.errors.slotDefaults?.[index]?.positionId
+        ),
+        requiredCount: readErrorMessage(
+          form.formState.errors.slotDefaults?.[index]?.requiredCount
+        ),
+      })),
+    }),
+    [form.formState.errors, slotRows]
+  );
   const {
     clearDragState: clearSlotDragState,
     draggingItemId: draggingSlotKey,
@@ -129,18 +130,14 @@ export function useTemplateEditorState({
       setSubmitError(null);
 
       try {
-        const template = editingTemplateId
+        const template = initialTemplate
           ? await updateTemplateMutation.mutateAsync({
-              id: editingTemplateId,
+              id: initialTemplate.id,
               ...values,
             })
           : await createTemplateMutation.mutateAsync(values);
 
-        startTransition(() => {
-          closeEditor();
-          setSearchTerm("");
-          setHighlightedTemplateId(template.id);
-        });
+        onSubmitted(template.id);
       } catch (nextError) {
         setSubmitError(
           nextError instanceof Error
@@ -153,15 +150,6 @@ export function useTemplateEditorState({
       setSubmitError(null);
     }
   );
-
-  function openCreate() {
-    setEditingTemplateId(null);
-    clearSlotDragState();
-    setPendingBelowDefaultRequiredCount(null);
-    setSubmitError(null);
-    form.reset(defaultTemplateValues);
-    setIsEditorOpen(true);
-  }
 
   function updateField(field: TemplateFieldName, value: string) {
     setPendingBelowDefaultRequiredCount(null);
@@ -352,103 +340,23 @@ export function useTemplateEditorState({
     clearSlotDragState();
   }
 
-  function startEdit(template: EventTemplate) {
-    setEditingTemplateId(template.id);
-    clearSlotDragState();
-    setPendingBelowDefaultRequiredCount(null);
-    setSubmitError(null);
-    setHighlightedTemplateId(template.id);
-    form.reset(createTemplateFormValuesFromTemplate(template));
-    setIsEditorOpen(true);
-  }
-
-  function remove(template: EventTemplate) {
-    if (template.isPrimary) {
-      setSubmitError(primaryTemplateDeleteErrorMessage);
-      return;
-    }
-
-    clearSlotDragState();
-    setPendingBelowDefaultRequiredCount(null);
-    setSubmitError(null);
-    setPendingDeleteTemplate(template);
-  }
-
-  async function confirmRemove() {
-    if (!pendingDeleteTemplate) {
-      return;
-    }
-
-    const template = pendingDeleteTemplate;
-    setPendingDeleteTemplate(null);
-    clearSlotDragState();
-    setPendingBelowDefaultRequiredCount(null);
-    setSubmitError(null);
-
-    try {
-      await deleteTemplateMutation.mutateAsync({ id: template.id });
-
-      if (highlightedTemplateId === template.id) {
-        setHighlightedTemplateId(null);
-      }
-
-      if (editingTemplateId === template.id) {
-        closeEditor();
-      }
-    } catch (nextError) {
-      setSubmitError(
-        nextError instanceof Error
-          ? nextError.message
-          : templateDeleteErrorMessage
-      );
-    }
-  }
-
-  function cancelRemove() {
-    setPendingDeleteTemplate(null);
-  }
-
-  function closeEditor() {
-    setIsEditorOpen(false);
-    setPendingDeleteTemplate(null);
-    clearSlotDragState();
-    setPendingBelowDefaultRequiredCount(null);
-    setSubmitError(null);
-  }
-
-  function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen) {
-      closeEditor();
-    }
-  }
-
   return {
     addSlotRow,
     cancelBelowDefaultRequiredCount,
-    cancelRemove,
     clearSlotDragState,
-    closeEditor,
     confirmBelowDefaultRequiredCount,
-    confirmRemove,
-    deletePending: deleteTemplateMutation.isPending,
     draggingSlotKey,
     dropOnSlot,
     dropTargetSlotKey,
-    editingTemplateId,
-    error,
+    fieldErrors,
     formState,
-    isEditorOpen,
     isPrimaryLocked,
     isSaving,
-    onOpenChange: handleOpenChange,
-    openCreate,
-    pendingDeleteTemplate,
     pendingBelowDefaultRequiredCount,
-    remove,
+    serverError: submitError,
     removeSlotRow,
     setSlotDropTarget,
     slotRows,
-    startEdit,
     startSlotDrag,
     submit,
     updateField,

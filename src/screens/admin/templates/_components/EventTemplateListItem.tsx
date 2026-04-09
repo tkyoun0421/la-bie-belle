@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { Badge } from "#/shared/components/ui/badge";
 import { Button } from "#/shared/components/ui/button";
@@ -7,20 +8,18 @@ import { cn } from "#/shared/lib/utils";
 type EventTemplateListItemProps = {
   canDelete: boolean;
   deletePending: boolean;
-  isEditing: boolean;
+  editHref: string;
   isHighlighted: boolean;
   onDelete: (template: EventTemplate) => void;
-  onEdit: (template: EventTemplate) => void;
   template: EventTemplate;
 };
 
 export function EventTemplateListItem({
   canDelete,
   deletePending,
-  isEditing,
+  editHref,
   isHighlighted,
   onDelete,
-  onEdit,
   template,
 }: Readonly<EventTemplateListItemProps>) {
   return (
@@ -52,16 +51,14 @@ export function EventTemplateListItem({
           </div>
 
           <div className="flex items-center gap-3">
-            <Badge>
-              {isEditing ? "수정 중" : isHighlighted ? "방금 저장됨" : "저장됨"}
-            </Badge>
+            <Badge>{isHighlighted ? "방금 저장됨" : "저장됨"}</Badge>
             <Button
+              asChild
               className="h-auto p-0 text-[var(--text-muted)] hover:text-[var(--foreground)] hover:underline hover:underline-offset-4"
-              onClick={() => onEdit(template)}
               type="button"
               variant="link"
             >
-              수정
+              <Link href={editHref}>수정</Link>
             </Button>
             {canDelete ? (
               <Button

@@ -22,6 +22,7 @@ type PositionsListPanelProps = {
   dropTargetPositionId: string | null;
   isDeleting: boolean;
   isReordering: boolean;
+  isSearchActive: boolean;
   positions: Position[];
   searchTerm: string;
   totalCount: number;
@@ -41,6 +42,7 @@ export function PositionsListPanel({
   dropTargetPositionId,
   isDeleting,
   isReordering,
+  isSearchActive,
   positions,
   searchTerm,
   totalCount,
@@ -66,7 +68,7 @@ export function PositionsListPanel({
         <div>
           <CardTitle>포지션 목록</CardTitle>
           <CardDescription>
-            현재 등록된 포지션과 기본 필수 인원입니다. 검색이 비어 있으면
+            현재 등록된 포지션과 기본 필수 인원입니다. 검색어가 비어 있으면
             드래그로 순서를 바꿀 수 있습니다.
           </CardDescription>
         </div>
@@ -94,7 +96,7 @@ export function PositionsListPanel({
             placeholder="포지션 이름 또는 성별"
             value={searchTerm}
           />
-          {!canReorder ? (
+          {isSearchActive ? (
             <p className="text-xs text-[var(--text-muted)]">
               검색 중에는 순서 변경이 비활성화됩니다.
             </p>
