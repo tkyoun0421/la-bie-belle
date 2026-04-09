@@ -1,4 +1,4 @@
-import { CheckInScreen } from "#/flows/check-in/components/CheckInScreen";
+import { CheckInScreen } from "#/flows/check-in/CheckInScreen";
 
 export default function CheckInPage() {
   return <CheckInScreen />;

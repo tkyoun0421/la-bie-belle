@@ -1,4 +1,4 @@
-import { AdminUsersScreen } from "#/flows/admin-users/components/AdminUsersScreen";
+import { AdminUsersScreen } from "#/flows/admin/users/AdminUsersScreen";
 
 export default function AdminUsersPage() {
   return <AdminUsersScreen />;

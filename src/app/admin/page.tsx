@@ -1,4 +1,4 @@
-import { AdminDashboardScreen } from "#/flows/admin-dashboard/components/AdminDashboardScreen";
+import { AdminDashboardScreen } from "#/flows/admin/dashboard/AdminDashboardScreen";
 
 export default function AdminDashboardPage() {
   return <AdminDashboardScreen />;

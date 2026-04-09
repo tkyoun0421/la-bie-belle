@@ -1,4 +1,4 @@
-import { AdminPayrollRulesScreen } from "#/flows/admin-payroll-rules/components/AdminPayrollRulesScreen";
+import { AdminPayrollRulesScreen } from "#/flows/admin/payroll-rules/AdminPayrollRulesScreen";
 
 export default function AdminPayrollRulesPage() {
   return <AdminPayrollRulesScreen />;
