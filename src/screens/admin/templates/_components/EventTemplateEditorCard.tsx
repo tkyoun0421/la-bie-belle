@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { CreateEventTemplateInput } from "#/mutations/events/schemas/createEventTemplate";
 
 type TemplateFormSlot = CreateEventTemplateInput["slotDefaults"][number];
+type TemplateSlotRow = TemplateFormSlot & {
+  _key: string;
+};
 
 type EventTemplateEditorCardProps = {
   canManageSlots: boolean;
@@ -11,7 +14,6 @@ type EventTemplateEditorCardProps = {
     firstServiceAt: string;
     lastServiceEndAt: string;
     name: string;
-    slotDefaults: TemplateFormSlot[];
   };
   isSaving: boolean;
   positionOptions: Array<{
@@ -31,6 +33,7 @@ type EventTemplateEditorCardProps = {
     field: keyof TemplateFormSlot,
     nextValue: string
   ) => void;
+  slotRows: TemplateSlotRow[];
 };
 
 export function EventTemplateEditorCard({
@@ -46,6 +49,7 @@ export function EventTemplateEditorCard({
   onRemoveSlotRow,
   onSubmit,
   onUpdateSlot,
+  slotRows,
 }: EventTemplateEditorCardProps) {
   return (
     <section className="rounded-[28px] border border-[var(--border-soft)] bg-[var(--surface)] p-6 shadow-[0_14px_42px_rgba(15,23,42,0.06)]">
@@ -126,10 +130,10 @@ export function EventTemplateEditorCard({
           </div>
 
           <div className="grid gap-3">
-            {formState.slotDefaults.map((slot, index) => (
+            {slotRows.map((slot, index) => (
               <div
                 className="grid gap-3 rounded-[24px] border border-[var(--border-soft)] bg-[var(--surface-soft)] p-4 md:grid-cols-[minmax(0,1.2fr)_140px_140px_auto]"
-                key={`slot-row-${index + 1}`}
+                key={slot._key}
               >
                 <Field label="포지션">
                   <select

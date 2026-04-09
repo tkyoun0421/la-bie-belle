@@ -89,6 +89,8 @@ src/screens/admin/templates/
     AdminTemplatesClient.tsx
     EventTemplateEditorCard.tsx
     EventTemplatesListPanel.tsx
+  _hooks/
+    useAdminTemplatesScreenState.ts
 ```
 
 ### Mutations
