@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getMyProfile } from "#/queries/users/get-my-profile/models/services/getMyProfile";
+import { getMyProfile } from "#/queries/users/get-my-profile/services/getMyProfile";
 
 describe("getMyProfile", () => {
   it("returns null in bootstrap state", async () => {

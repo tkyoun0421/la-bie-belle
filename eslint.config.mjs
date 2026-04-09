@@ -3,6 +3,21 @@ import boundaries from "eslint-plugin-boundaries";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTypeScript from "eslint-config-next/typescript";
 
+const screenTypes = ["screen-root", "screen-group"];
+const mutationTypes = [
+  "mutation-actions",
+  "mutation-hooks",
+  "mutation-models",
+  "mutation-tests",
+];
+const queryTypes = [
+  "query-constants",
+  "query-services",
+  "query-hooks",
+  "query-tests",
+];
+const entityTypes = ["entity-models", "entity-repositories", "entity-tests"];
+
 const noRelativeInternalImportsPattern = {
   group: ["./*", "../*"],
   message: "Use the #/* absolute import alias for internal source imports.",
@@ -28,7 +43,7 @@ export default defineConfig([
     "node_modules/**",
     "playwright-report/**",
     "supabase/**",
-    "test-results/**"
+    "test-results/**",
   ]),
   {
     files: ["src/**/*.{ts,tsx}"],
@@ -39,19 +54,43 @@ export default defineConfig([
       "boundaries/elements": [
         { type: "app", pattern: "src/app/**/*" },
         {
-          type: "flows",
-          pattern: "src/flows/*/**/*",
+          type: "screen-group",
+          pattern: "src/screens/*/*/**/*",
+          capture: ["scope", "screen"],
+        },
+        {
+          type: "screen-root",
+          pattern: "src/screens/*/**/*",
+          capture: ["screen"],
+        },
+        {
+          type: "mutation-actions",
+          pattern: "src/mutations/*/actions/**/*",
           capture: ["domain"],
         },
         {
-          type: "query-core",
-          pattern:
-            "src/queries/*/models/{constants,mappers,repositories,schemas,types}/**/*",
+          type: "mutation-hooks",
+          pattern: "src/mutations/*/hooks/**/*",
+          capture: ["domain"],
+        },
+        {
+          type: "mutation-models",
+          pattern: "src/mutations/*/models/**/*",
+          capture: ["domain"],
+        },
+        {
+          type: "mutation-tests",
+          pattern: "src/mutations/*/tests/**/*",
+          capture: ["domain"],
+        },
+        {
+          type: "query-constants",
+          pattern: "src/queries/*/constants/**/*",
           capture: ["domain"],
         },
         {
           type: "query-services",
-          pattern: "src/queries/*/models/services/**/*",
+          pattern: "src/queries/*/services/**/*",
           capture: ["domain"],
         },
         {
@@ -60,18 +99,23 @@ export default defineConfig([
           capture: ["domain"],
         },
         {
-          type: "query-components",
-          pattern: "src/queries/*/components/**/*",
-          capture: ["domain"],
-        },
-        {
           type: "query-tests",
           pattern: "src/queries/*/tests/**/*",
           capture: ["domain"],
         },
         {
-          type: "mutations",
-          pattern: "src/mutations/*/**/*",
+          type: "entity-models",
+          pattern: "src/entities/*/models/**/*",
+          capture: ["domain"],
+        },
+        {
+          type: "entity-repositories",
+          pattern: "src/entities/*/repositories/**/*",
+          capture: ["domain"],
+        },
+        {
+          type: "entity-tests",
+          pattern: "src/entities/*/tests/**/*",
           capture: ["domain"],
         },
         { type: "shared", pattern: "src/shared/**/*" },
@@ -85,105 +129,139 @@ export default defineConfig([
           default: "allow",
           rules: [
             {
-              from: { type: "flows" },
+              from: { type: "screen-root" },
               disallow: {
                 to: [
                   { type: "app" },
                   {
-                    type: "flows",
-                    captured: { domain: "!{{ from.captured.domain }}" },
+                    type: "screen-root",
+                    captured: { screen: "!{{ from.captured.screen }}" },
                   },
                 ],
               },
               message:
-                "The flows layer cannot depend on the app layer or another flow domain.",
+                "A root screen can depend only on itself, lower layers, and shared code.",
             },
             {
-              from: {
-                type: [
-                  "query-core",
-                  "query-services",
-                  "query-hooks",
-                  "query-components",
-                  "query-tests",
-                ],
-              },
+              from: { type: "screen-group" },
               disallow: {
                 to: [
                   { type: "app" },
-                  { type: "flows" },
-                  { type: "mutations" },
                   {
-                    type: [
-                      "query-core",
-                      "query-services",
-                      "query-hooks",
-                      "query-components",
-                      "query-tests",
-                    ],
-                    captured: { domain: "!{{ from.captured.domain }}" },
+                    type: "screen-group",
+                    captured: { scope: "!{{ from.captured.scope }}" },
+                  },
+                  {
+                    type: "screen-group",
+                    captured: { screen: "!{{ from.captured.screen }}" },
                   },
                 ],
               },
               message:
-                "The queries layer cannot depend on app, flows, mutations, or another query domain.",
+                "A grouped screen can depend only on its own screen subtree, lower layers, and shared code.",
             },
             {
-              from: { type: "query-core" },
-              disallow: {
-                to: [
-                  {
-                    type: [
-                      "query-services",
-                      "query-hooks",
-                      "query-components",
-                      "query-tests",
-                    ],
-                  },
-                ],
-              },
-              message:
-                "The query core must stay pure and cannot depend on query hooks, components, services, or tests.",
-            },
-            {
-              from: { type: "mutations" },
+              from: { type: queryTypes },
               disallow: {
                 to: [
                   { type: "app" },
-                  { type: "flows" },
+                  { type: screenTypes },
+                  { type: mutationTypes },
                   {
-                    type: [
-                      "query-services",
-                      "query-hooks",
-                      "query-components",
-                      "query-tests",
-                    ],
-                  },
-                  {
-                    type: "query-core",
+                    type: queryTypes,
                     captured: { domain: "!{{ from.captured.domain }}" },
                   },
                   {
-                    type: "mutations",
+                    type: entityTypes,
                     captured: { domain: "!{{ from.captured.domain }}" },
                   },
                 ],
               },
               message:
-                "The mutations layer can depend only on shared or same-domain query core.",
+                "The queries layer can depend only on same-domain query modules, same-domain entities, and shared code.",
+            },
+            {
+              from: { type: "query-constants" },
+              disallow: {
+                to: [{ type: ["query-services", "query-hooks", "query-tests"] }],
+              },
+              message:
+                "Query constants must stay pure and cannot depend on query services, hooks, or tests.",
+            },
+            {
+              from: { type: "query-services" },
+              disallow: {
+                to: [{ type: ["query-hooks", "query-tests"] }],
+              },
+              message:
+                "Query services cannot depend on query hooks or tests.",
+            },
+            {
+              from: { type: mutationTypes },
+              disallow: {
+                to: [
+                  { type: "app" },
+                  { type: screenTypes },
+                  {
+                    type: mutationTypes,
+                    captured: { domain: "!{{ from.captured.domain }}" },
+                  },
+                  { type: ["query-services", "query-hooks", "query-tests"] },
+                  {
+                    type: "query-constants",
+                    captured: { domain: "!{{ from.captured.domain }}" },
+                  },
+                  {
+                    type: entityTypes,
+                    captured: { domain: "!{{ from.captured.domain }}" },
+                  },
+                ],
+              },
+              message:
+                "The mutations layer can depend only on same-domain query constants, same-domain entities, and shared code.",
+            },
+            {
+              from: { type: entityTypes },
+              disallow: {
+                to: [
+                  { type: "app" },
+                  { type: screenTypes },
+                  { type: queryTypes },
+                  { type: mutationTypes },
+                  {
+                    type: entityTypes,
+                    captured: { domain: "!{{ from.captured.domain }}" },
+                  },
+                ],
+              },
+              message:
+                "The entities layer can depend only on same-domain entity modules and shared code.",
+            },
+            {
+              from: { type: "entity-models" },
+              disallow: {
+                to: [{ type: ["entity-repositories", "entity-tests"] }],
+              },
+              message:
+                "Entity models must stay pure and cannot depend on repositories or tests.",
+            },
+            {
+              from: { type: "entity-repositories" },
+              disallow: {
+                to: [{ type: ["entity-tests"] }],
+              },
+              message:
+                "Entity repositories cannot depend on entity tests.",
             },
             {
               from: { type: "shared" },
               disallow: {
                 to: [
                   { type: "app" },
-                  { type: "flows" },
-                  { type: "query-core" },
-                  { type: "query-services" },
-                  { type: "query-hooks" },
-                  { type: "query-components" },
-                  { type: "query-tests" },
-                  { type: "mutations" },
+                  { type: screenTypes },
+                  { type: mutationTypes },
+                  { type: queryTypes },
+                  { type: entityTypes },
                 ],
               },
               message:
@@ -192,6 +270,6 @@ export default defineConfig([
           ],
         },
       ],
-    }
+    },
   },
 ]);

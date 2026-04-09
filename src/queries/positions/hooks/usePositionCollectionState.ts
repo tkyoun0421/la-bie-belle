@@ -1,6 +1,6 @@
 import { useDeferredValue, useState } from "react";
-import { formatPositionAllowedGenderLabel } from "#/queries/positions/models/constants/allowedGender";
-import type { Position } from "#/queries/positions/models/schemas/position";
+import { formatPositionAllowedGenderLabel } from "#/entities/positions/models/constants/allowedGender";
+import type { Position } from "#/entities/positions/models/schemas/position";
 import { usePositionsQuery } from "#/queries/positions/hooks/usePositionsQuery";
 
 const emptyPositions: Position[] = [];

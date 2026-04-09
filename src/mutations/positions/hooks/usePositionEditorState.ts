@@ -2,7 +2,7 @@ import { useState } from "react";
 import type {
   Position,
   PositionAllowedGender,
-} from "#/queries/positions/models/schemas/position";
+} from "#/entities/positions/models/schemas/position";
 import { useCreatePositionMutation } from "#/mutations/positions/hooks/useCreatePositionMutation";
 import { useDeletePositionMutation } from "#/mutations/positions/hooks/useDeletePositionMutation";
 import { useUpdatePositionMutation } from "#/mutations/positions/hooks/useUpdatePositionMutation";

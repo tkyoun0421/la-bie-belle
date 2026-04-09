@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readPositions } from "#/queries/positions/models/repositories/positionRepository";
+import { readPositions } from "#/entities/positions/repositories/positionRepository";
 
 export async function GET() {
   const positions = await readPositions();

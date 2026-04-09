@@ -1,8 +1,8 @@
 "use server";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { mapPositionRow } from "#/queries/positions/models/mappers/mapPositionRow";
-import type { Position } from "#/queries/positions/models/schemas/position";
+import { mapPositionRow } from "#/entities/positions/models/mappers/mapPositionRow";
+import type { Position } from "#/entities/positions/models/schemas/position";
 import {
   parseCreatePositionInput,
   type CreatePositionInput,

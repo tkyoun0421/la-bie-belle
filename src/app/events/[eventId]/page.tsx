@@ -1,4 +1,4 @@
-import { EventDetailScreen } from "#/flows/events/detail/EventDetailScreen";
+import { EventDetailScreen } from "#/screens/events/detail/EventDetailScreen";
 
 type EventDetailPageProps = {
   params: Promise<{ eventId: string }>;

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { positionQueryKeys } from "#/queries/positions/models/constants/positionQueryKeys";
-import type { Position } from "#/queries/positions/models/schemas/position";
+import type { Position } from "#/entities/positions/models/schemas/position";
 import { deletePositionAction } from "#/mutations/positions/actions/deletePosition";
 import type { DeletePositionInput } from "#/mutations/positions/models/schemas/deletePosition";
+import { positionQueryKeys } from "#/queries/positions/constants/positionQueryKeys";
 
 export function useDeletePositionMutation() {
   const queryClient = useQueryClient();

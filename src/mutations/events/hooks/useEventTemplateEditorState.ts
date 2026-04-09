@@ -1,5 +1,5 @@
 import { startTransition, useState } from "react";
-import type { EventTemplate } from "#/queries/events/models/schemas/eventTemplate";
+import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { useCreateEventTemplateMutation } from "#/mutations/events/hooks/useCreateEventTemplateMutation";
 import { useDeleteEventTemplateMutation } from "#/mutations/events/hooks/useDeleteEventTemplateMutation";
 import { useUpdateEventTemplateMutation } from "#/mutations/events/hooks/useUpdateEventTemplateMutation";

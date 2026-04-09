@@ -1,5 +1,5 @@
 import { useDeferredValue, useState } from "react";
-import type { EventTemplate } from "#/queries/events/models/schemas/eventTemplate";
+import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { useEventTemplatesQuery } from "#/queries/events/hooks/useEventTemplatesQuery";
 
 const emptyTemplates: EventTemplate[] = [];

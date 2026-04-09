@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readEventTemplates } from "#/queries/events/models/repositories/eventTemplateRepository";
+import { readEventTemplates } from "#/entities/events/repositories/eventTemplateRepository";
 
 export async function GET() {
   const templates = await readEventTemplates();

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { positionAllowedGenderSchema } from "#/queries/positions/models/schemas/position";
+import { positionAllowedGenderSchema } from "#/entities/positions/models/schemas/position";
 
 export const createPositionInputSchema = z
   .object({

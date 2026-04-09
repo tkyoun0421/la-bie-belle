@@ -1,4 +1,4 @@
-import { ReplacementsScreen } from "#/flows/replacements/ReplacementsScreen";
+import { ReplacementsScreen } from "#/screens/replacements/ReplacementsScreen";
 
 export default function ReplacementsPage() {
   return <ReplacementsScreen />;

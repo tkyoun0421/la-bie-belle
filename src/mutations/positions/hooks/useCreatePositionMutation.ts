@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { positionQueryKeys } from "#/queries/positions/models/constants/positionQueryKeys";
-import type { Position } from "#/queries/positions/models/schemas/position";
+import type { Position } from "#/entities/positions/models/schemas/position";
 import { createPositionAction } from "#/mutations/positions/actions/createPosition";
 import type { CreatePositionInput } from "#/mutations/positions/models/schemas/createPosition";
+import { positionQueryKeys } from "#/queries/positions/constants/positionQueryKeys";
 
 export function useCreatePositionMutation() {
   const queryClient = useQueryClient();

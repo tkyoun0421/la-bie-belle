@@ -1,8 +1,8 @@
 "use server";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { readEventTemplateById } from "#/queries/events/models/repositories/eventTemplateRepository";
-import type { EventTemplate } from "#/queries/events/models/schemas/eventTemplate";
+import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
+import { readEventTemplateById } from "#/entities/events/repositories/eventTemplateRepository";
 import {
   parseCreateEventTemplateInput,
   type CreateEventTemplateInput,
