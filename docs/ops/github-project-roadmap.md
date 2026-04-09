@@ -13,10 +13,19 @@
 
 - 새 작업은 milestone 없는 ad-hoc branch로 시작하지 않는다
 - 먼저 issue를 만들고, PR은 해당 issue를 닫도록 연결한다
-- 구현 단위는 `phase milestone -> issue -> PR` 순서로 간다
-- issue 본문에는 목표, 범위, 완료 조건, 테스트 계획이 있어야 한다
-- PR 본문에는 연결 이슈, 변경 이유, TDD 기록, 검증 결과가 있어야 한다
+- 구현 단위는 `phase milestone -> issue -> phase PR` 순서로 간다
+- issue 본문에는 배경, 목표, 기대 사용자 흐름, 포함/제외 범위, 영향 영역, 완료 조건, 테스트 계획, 리스크가 있어야 한다
+- PR 본문에는 연결 이슈, 배경, 기대 사용자 흐름, 포함/제외 범위, 영향 영역, TDD 기록, 검증 근거, 리스크가 있어야 한다
 - TDD 규칙은 [CLAUDE.md](../../CLAUDE.md)와 [execution-plan.md](../plans/execution-plan.md)를 따른다
+- 브랜치 전략은 `develop` 기준으로 운영한다
+
+## 브랜치 전략
+
+- 일상 구현 브랜치는 `develop`
+- 구현은 기본적으로 `develop`에서 직접 진행한다
+- phase가 끝나면 PR을 `develop -> master`로 올린다
+- 하나의 PR은 하나의 phase만 다룬다
+- `master`는 release 또는 배포 기준 브랜치로 유지한다
 
 ## 현재 릴리즈 Milestones
 
@@ -108,9 +117,10 @@ powershell -ExecutionPolicy Bypass -File .\scripts\github\bootstrap-project-road
 
 1. milestone에서 다음 issue를 고른다
 2. issue 본문에 테스트 계획이 부족하면 먼저 보강한다
-3. branch를 만들고 TDD로 구현한다
-4. PR 본문에 `Closes #번호`를 넣는다
-5. merge 후 project status를 다음 단계로 옮긴다
+3. `develop`에서 phase 구현을 진행한다
+4. phase 안의 slice를 모두 닫은 뒤 PR을 `master`로 올린다
+5. PR 본문에 포함된 slice와 `Closes #번호` 목록을 넣는다
+6. merge 후 project status를 다음 단계로 옮긴다
 
 ## 4. 원격 생성 전 점검
 
