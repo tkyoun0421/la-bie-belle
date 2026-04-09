@@ -1,5 +1,96 @@
+# CLAUDE.md
 
-## Skill routing
+## Purpose
+이 문서는 이 프로젝트에서 에이전트가 따라야 하는 운영 기준서다.
+
+역할은 세 가지다.
+- 문서 SSOT 라우터
+- 구현 운영 규칙
+- skill routing 기준
+
+세부 제품/기술 내용의 source of truth는 `docs/plans/*`와 `DESIGN.md`에 둔다.  
+이 문서는 그 문서들을 어떤 순서로 읽고, 어떻게 따라야 하는지를 정의한다.
+
+## SSOT Map
+
+### Product And Scope
+- 범위, 고정 결정, shipping slice: [build-plan.md](C:/code/la-bie-belle/docs/plans/build-plan.md)
+
+### Architecture
+- 데이터 모델, 권한, 상태 전이, DB/query 규칙: [architecture-spec.md](C:/code/la-bie-belle/docs/plans/architecture-spec.md)
+- 화면 구조, 핵심 흐름, 실패 시 fallback: [screen-spec.md](C:/code/la-bie-belle/docs/plans/screen-spec.md)
+
+### Codebase
+- canonical tree, route-flow 매핑, 의존 규칙: [codebase-architecture.md](C:/code/la-bie-belle/docs/plans/codebase-architecture.md)
+- personalized FSD 규칙, import/naming 규칙: [fsd-profile.md](C:/code/la-bie-belle/docs/plans/fsd-profile.md)
+
+### Stack
+- 프레임워크, 런타임, 라이브러리 결정과 결정 시점: [stack-spec.md](C:/code/la-bie-belle/docs/plans/stack-spec.md)
+
+### Execution
+- phase, slice, 테스트 전략, checkpoint 운영: [execution-plan.md](C:/code/la-bie-belle/docs/plans/execution-plan.md)
+
+### Design
+- 시각 시스템의 최상위 SSOT: [DESIGN.md](C:/code/la-bie-belle/DESIGN.md)
+- 제품 화면 의도와 참고 흐름: [pwa.md](C:/code/la-bie-belle/docs/designs/pwa.md)
+
+## Priority Rule
+문서가 충돌하면 아래 순서를 따른다.
+
+1. 현재 사용자 지시
+2. 이 파일의 운영 규칙
+3. 가장 구체적인 SSOT 문서
+4. 더 일반적인 계획 문서
+
+구체적인 충돌 해석:
+- 범위 충돌: `build-plan` 우선
+- 데이터/권한/상태 충돌: `architecture-spec` 우선
+- 화면 책임/흐름 충돌: `screen-spec` 우선
+- 라이브러리/도구 선택 충돌: `stack-spec` 우선
+- 폴더 구조/import/naming 충돌: `fsd-profile`과 `codebase-architecture` 우선
+- 구현 순서와 작업 단위 충돌: `execution-plan` 우선
+- 시각 표현 충돌: `DESIGN.md` 우선
+
+## Working Rules
+
+### Read Before Coding
+- 범용 구현 전에는 [build-plan.md](C:/code/la-bie-belle/docs/plans/build-plan.md), [execution-plan.md](C:/code/la-bie-belle/docs/plans/execution-plan.md), [codebase-architecture.md](C:/code/la-bie-belle/docs/plans/codebase-architecture.md)를 먼저 본다
+- 데이터나 권한을 만지면 [architecture-spec.md](C:/code/la-bie-belle/docs/plans/architecture-spec.md)를 본다
+- UI를 만지면 [DESIGN.md](C:/code/la-bie-belle/DESIGN.md)와 [screen-spec.md](C:/code/la-bie-belle/docs/plans/screen-spec.md)를 본다
+- 라이브러리를 추가하거나 교체하기 전에는 [stack-spec.md](C:/code/la-bie-belle/docs/plans/stack-spec.md)를 본다
+
+### Work Unit
+- 구현은 항상 `phase -> slice -> task` 순서로 진행한다
+- phase는 큰 단계다
+- slice는 실제로 데모 가능한 작은 사용자 가치 단위다
+- task는 slice 내부의 세부 구현 단계다
+
+### Progress Reporting
+- 작업 중에는 가능하면 현재 `phase`, 현재 `slice`, 다음 `slice`를 짧게 유지한다
+- 공통 scaffold만 만들고 끝나는 작업은 피한다
+- 한 slice가 끝나면 최소 happy path는 닫혀 있어야 한다
+
+### Pause And Resume
+- 세션을 끝내기 전 또는 긴 중단 전에는 `/checkpoint {작업명}` 저장을 우선 고려한다
+- 복귀 시에는 `/checkpoint resume`으로 마지막 작업과 다음 작업을 복구한다
+- checkpoint가 여러 개면 `/checkpoint list`, `/checkpoint list --all`을 쓴다
+
+## Code Rules
+- 내부 소스 import는 모두 `#/*` 절대 경로를 사용한다
+- `./`, `../` 상대 import는 내부 소스 코드에서 사용하지 않는다
+- barrel file `index.ts`는 사용하지 않는다
+- route와 UI 컴포넌트에서 DB를 직접 호출하지 않는다
+- 읽기는 query 경계, 쓰기는 mutation 경계로만 처리한다
+- privileged write는 Next.js `server actions` 또는 `route handlers`로만 처리한다
+
+## Design Rule
+모든 시각적 결정은 [DESIGN.md](C:/code/la-bie-belle/DESIGN.md)를 따른다.
+
+- 폰트, 컬러, 간격, 레이아웃, 모션은 DESIGN 기준을 우선한다
+- 명시적 승인 없이는 DESIGN에서 벗어나지 않는다
+- 디자인 QA에서는 DESIGN과 다른 코드를 버그로 본다
+
+## Skill Routing
 
 When the user's request matches an available skill, ALWAYS invoke it using the Skill
 tool as your FIRST action. Do NOT answer directly, do NOT use other tools first.
@@ -18,9 +109,3 @@ Key routing rules:
 - Architecture review -> invoke plan-eng-review
 - Save progress, checkpoint, resume -> invoke checkpoint
 - Code quality, health check -> invoke health
-
-## Design System
-Always read DESIGN.md before making any visual or UI decisions.
-All font choices, colors, spacing, layout, and motion direction are defined there.
-Do not deviate without explicit user approval.
-In QA or design review mode, flag any code that does not match DESIGN.md.
