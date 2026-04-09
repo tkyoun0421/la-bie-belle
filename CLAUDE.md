@@ -74,6 +74,14 @@
 - slice는 실제로 데모 가능한 작은 사용자 가치 단위다
 - task는 slice 내부의 세부 구현 단계다
 
+### Branch And PR Rule
+- 통합 브랜치는 `develop`이다
+- 새 작업 브랜치는 항상 `develop`에서 분기한다
+- PR 기본 대상 브랜치도 `develop`이다
+- 하나의 PR은 하나의 `phase`만 다룬다
+- 하나의 phase 안에 여러 slice가 있더라도, phase 완료 후 하나의 PR로 올린다
+- `master`는 release 또는 배포 기준 브랜치로 유지한다
+
 ### Progress Reporting
 - 작업 중에는 가능하면 현재 `phase`, 현재 `slice`, 다음 `slice`를 짧게 유지한다
 - 공통 scaffold만 만들고 끝나는 작업은 피한다

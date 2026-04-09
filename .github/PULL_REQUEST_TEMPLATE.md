@@ -2,6 +2,19 @@
 
 Closes #
 
+## 대상 브랜치
+
+- 기본값: `develop`
+
+## 대상 Phase
+
+- 예: `Phase 2. Application + Assignment`
+
+## 포함된 Slice
+
+- Slice 3
+- Slice 4
+
 ## 한 줄 요약
 
 - 이 PR이 해결하는 문제를 한 줄로 적어주세요.
@@ -69,6 +82,7 @@ Closes #
 
 - [ ] 이 PR은 연결된 이슈가 있다
 - [ ] 연결한 이슈와 실제 변경 범위가 일치한다
-- [ ] 이 PR은 하나의 milestone 또는 하나의 roadmap ticket 범위를 넘기지 않는다
+- [ ] 이 PR의 base branch는 `develop`이다
+- [ ] 이 PR은 하나의 phase만 다룬다
 - [ ] 변경된 동작에 맞는 테스트를 추가하거나 갱신했다
 - [ ] 계약, 흐름, 범위가 바뀌었다면 관련 문서를 함께 갱신했다
