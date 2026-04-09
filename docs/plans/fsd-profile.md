@@ -28,7 +28,7 @@ app -> screens -> mutations -> queries -> entities -> shared
 - `mutations`
   - write use case, server action, mutation hook
 - `queries`
-  - read use case, query key, fetcher, query hook
+  - read use case, query key, query options, fetcher, query hook
 - `entities`
   - domain core, repository, schema, mapper, formatter, policy
 - `shared`
@@ -43,6 +43,7 @@ app -> screens -> mutations -> queries -> entities -> shared
 - `entities`는 `shared`만 import할 수 있다.
 - `queries`는 `entities`, `shared`만 import할 수 있다.
 - `mutations`는 `entities`, `shared`, 그리고 같은 도메인의 `queries/constants`를 import할 수 있다.
+- `queries/options`는 query key와 fetcher를 묶는 canonical read contract이고 `mutations`에서는 import하지 않는다.
 - `screens`는 `mutations`, `queries`, `entities`, `shared`를 조합할 수 있다.
 - `app`은 route entry로서 `screens`, `mutations`, `queries`, `entities`, `shared`를 import할 수 있다.
 - `app`과 `screens`만 여러 도메인을 조합할 수 있다.
@@ -53,7 +54,7 @@ app -> screens -> mutations -> queries -> entities -> shared
 - `app`, `screens`의 private support folder는 `_` prefix를 사용한다.
 - 예: `_components`, `_providers`, `_tests`
 - `mutations`, `queries`, `entities`, `shared`는 `_` prefix 대신 의미가 드러나는 일반 폴더명을 쓴다.
-- 예: `actions`, `hooks`, `models`, `services`, `repositories`, `constants`, `tests`
+- 예: `actions`, `hooks`, `schemas`, `services`, `repositories`, `constants`, `options`, `tests`
 
 ## UI Rules
 

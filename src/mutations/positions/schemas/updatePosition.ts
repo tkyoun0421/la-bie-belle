@@ -3,7 +3,7 @@ import {
   parseCreatePositionInput,
   type CreatePositionInput,
   type CreatePositionValues,
-} from "#/mutations/positions/models/schemas/createPosition";
+} from "#/mutations/positions/schemas/createPosition";
 
 const updatePositionIdSchema = z.object({
   id: z.string().uuid("수정할 포지션을 찾지 못했습니다."),

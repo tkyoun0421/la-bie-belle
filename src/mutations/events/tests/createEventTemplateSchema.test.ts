@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseCreateEventTemplateInput } from "#/mutations/events/models/schemas/createEventTemplate";
+import { parseCreateEventTemplateInput } from "#/mutations/events/schemas/createEventTemplate";
 
 describe("parseCreateEventTemplateInput", () => {
   it("normalizes valid template input", () => {

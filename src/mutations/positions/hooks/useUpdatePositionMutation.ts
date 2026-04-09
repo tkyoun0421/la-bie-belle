@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Position } from "#/entities/positions/models/schemas/position";
 import { updatePositionAction } from "#/mutations/positions/actions/updatePosition";
-import type { UpdatePositionInput } from "#/mutations/positions/models/schemas/updatePosition";
+import type { UpdatePositionInput } from "#/mutations/positions/schemas/updatePosition";
 import { positionQueryKeys } from "#/queries/positions/constants/positionQueryKeys";
 
 function sortPositions(positions: Position[]) {

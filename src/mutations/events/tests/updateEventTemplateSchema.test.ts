@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseUpdateEventTemplateInput } from "#/mutations/events/models/schemas/updateEventTemplate";
+import { parseUpdateEventTemplateInput } from "#/mutations/events/schemas/updateEventTemplate";
 
 describe("parseUpdateEventTemplateInput", () => {
   it("normalizes a valid update payload", () => {

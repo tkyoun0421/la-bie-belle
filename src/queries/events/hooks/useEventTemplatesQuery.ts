@@ -1,10 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { eventTemplateQueryKeys } from "#/queries/events/constants/eventTemplateQueryKeys";
-import { fetchEventTemplates } from "#/queries/events/services/fetchEventTemplates";
+import { getEventTemplateCollectionQueryOptions } from "#/queries/events/options/getEventTemplateCollectionQueryOptions";
 
 export function useEventTemplatesQuery() {
-  return useQuery({
-    queryKey: eventTemplateQueryKeys.collection(),
-    queryFn: fetchEventTemplates,
-  });
+  return useQuery(getEventTemplateCollectionQueryOptions());
 }

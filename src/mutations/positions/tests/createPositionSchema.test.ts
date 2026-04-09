@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseCreatePositionInput } from "#/mutations/positions/models/schemas/createPosition";
+import { parseCreatePositionInput } from "#/mutations/positions/schemas/createPosition";
 
 describe("parseCreatePositionInput", () => {
   it("trims a valid position name", () => {

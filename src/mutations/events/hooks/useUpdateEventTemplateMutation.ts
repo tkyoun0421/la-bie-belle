@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { updateEventTemplateAction } from "#/mutations/events/actions/updateEventTemplate";
-import type { UpdateEventTemplateInput } from "#/mutations/events/models/schemas/updateEventTemplate";
+import type { UpdateEventTemplateInput } from "#/mutations/events/schemas/updateEventTemplate";
 import { eventTemplateQueryKeys } from "#/queries/events/constants/eventTemplateQueryKeys";
 
 export function useUpdateEventTemplateMutation() {

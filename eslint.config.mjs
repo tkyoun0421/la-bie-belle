@@ -7,11 +7,12 @@ const screenTypes = ["screen-root", "screen-group"];
 const mutationTypes = [
   "mutation-actions",
   "mutation-hooks",
-  "mutation-models",
+  "mutation-schemas",
   "mutation-tests",
 ];
 const queryTypes = [
   "query-constants",
+  "query-options",
   "query-services",
   "query-hooks",
   "query-tests",
@@ -74,8 +75,8 @@ export default defineConfig([
           capture: ["domain"],
         },
         {
-          type: "mutation-models",
-          pattern: "src/mutations/*/models/**/*",
+          type: "mutation-schemas",
+          pattern: "src/mutations/*/schemas/**/*",
           capture: ["domain"],
         },
         {
@@ -86,6 +87,11 @@ export default defineConfig([
         {
           type: "query-constants",
           pattern: "src/queries/*/constants/**/*",
+          capture: ["domain"],
+        },
+        {
+          type: "query-options",
+          pattern: "src/queries/*/options/**/*",
           capture: ["domain"],
         },
         {
@@ -183,18 +189,35 @@ export default defineConfig([
             {
               from: { type: "query-constants" },
               disallow: {
-                to: [{ type: ["query-services", "query-hooks", "query-tests"] }],
+                to: [
+                  {
+                    type: [
+                      "query-options",
+                      "query-services",
+                      "query-hooks",
+                      "query-tests",
+                    ],
+                  },
+                ],
               },
               message:
-                "Query constants must stay pure and cannot depend on query services, hooks, or tests.",
+                "Query constants must stay pure and cannot depend on query options, services, hooks, or tests.",
             },
             {
-              from: { type: "query-services" },
+              from: { type: "query-options" },
               disallow: {
                 to: [{ type: ["query-hooks", "query-tests"] }],
               },
               message:
-                "Query services cannot depend on query hooks or tests.",
+                "Query options cannot depend on query hooks or tests.",
+            },
+            {
+              from: { type: "query-services" },
+              disallow: {
+                to: [{ type: ["query-options", "query-hooks", "query-tests"] }],
+              },
+              message:
+                "Query services cannot depend on query options, hooks, or tests.",
             },
             {
               from: { type: mutationTypes },
@@ -206,7 +229,14 @@ export default defineConfig([
                     type: mutationTypes,
                     captured: { domain: "!{{ from.captured.domain }}" },
                   },
-                  { type: ["query-services", "query-hooks", "query-tests"] },
+                  {
+                    type: [
+                      "query-options",
+                      "query-services",
+                      "query-hooks",
+                      "query-tests",
+                    ],
+                  },
                   {
                     type: "query-constants",
                     captured: { domain: "!{{ from.captured.domain }}" },

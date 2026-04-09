@@ -3,7 +3,7 @@ import type { EventTemplate } from "#/entities/events/models/schemas/eventTempla
 import { useCreateEventTemplateMutation } from "#/mutations/events/hooks/useCreateEventTemplateMutation";
 import { useDeleteEventTemplateMutation } from "#/mutations/events/hooks/useDeleteEventTemplateMutation";
 import { useUpdateEventTemplateMutation } from "#/mutations/events/hooks/useUpdateEventTemplateMutation";
-import type { CreateEventTemplateInput } from "#/mutations/events/models/schemas/createEventTemplate";
+import type { CreateEventTemplateInput } from "#/mutations/events/schemas/createEventTemplate";
 
 type TemplateFormSlot = CreateEventTemplateInput["slotDefaults"][number];
 

@@ -6,7 +6,7 @@ import { readEventTemplateById } from "#/entities/events/repositories/eventTempl
 import {
   parseUpdateEventTemplateInput,
   type UpdateEventTemplateInput,
-} from "#/mutations/events/models/schemas/updateEventTemplate";
+} from "#/mutations/events/schemas/updateEventTemplate";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type UpdateEventTemplateDependencies = {

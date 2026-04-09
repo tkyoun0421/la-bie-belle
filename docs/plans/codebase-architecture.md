@@ -97,7 +97,7 @@ src/screens/admin/templates/
 src/mutations/events/
   actions/
   hooks/
-  models/
+  schemas/
   tests/
 ```
 
@@ -106,6 +106,7 @@ src/mutations/events/
 ```text
 src/queries/events/
   constants/
+  options/
   hooks/
   services/
   tests/

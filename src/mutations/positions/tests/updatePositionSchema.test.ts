@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseUpdatePositionInput } from "#/mutations/positions/models/schemas/updatePosition";
+import { parseUpdatePositionInput } from "#/mutations/positions/schemas/updatePosition";
 
 describe("parseUpdatePositionInput", () => {
   it("normalizes a valid update payload", () => {

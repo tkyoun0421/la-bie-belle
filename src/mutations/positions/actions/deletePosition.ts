@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   parseDeletePositionInput,
   type DeletePositionInput,
-} from "#/mutations/positions/models/schemas/deletePosition";
+} from "#/mutations/positions/schemas/deletePosition";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type DeletePositionDependencies = {

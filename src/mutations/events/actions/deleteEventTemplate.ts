@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   parseDeleteEventTemplateInput,
   type DeleteEventTemplateInput,
-} from "#/mutations/events/models/schemas/deleteEventTemplate";
+} from "#/mutations/events/schemas/deleteEventTemplate";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type DeleteEventTemplateDependencies = {

@@ -7,7 +7,7 @@ export async function fetchEventTemplates() {
   });
 
   if (!response.ok) {
-    throw new Error("행사 템플릿 목록을 불러오지 못했습니다.");
+    throw new Error("Failed to fetch event templates.");
   }
 
   const data = await response.json();

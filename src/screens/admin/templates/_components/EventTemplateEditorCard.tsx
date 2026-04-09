@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { CreateEventTemplateInput } from "#/mutations/events/models/schemas/createEventTemplate";
+import type { CreateEventTemplateInput } from "#/mutations/events/schemas/createEventTemplate";
 
 type TemplateFormSlot = CreateEventTemplateInput["slotDefaults"][number];
 

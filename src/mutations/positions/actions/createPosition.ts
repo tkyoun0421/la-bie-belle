@@ -6,7 +6,7 @@ import type { Position } from "#/entities/positions/models/schemas/position";
 import {
   parseCreatePositionInput,
   type CreatePositionInput,
-} from "#/mutations/positions/models/schemas/createPosition";
+} from "#/mutations/positions/schemas/createPosition";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type CreatePositionDependencies = {

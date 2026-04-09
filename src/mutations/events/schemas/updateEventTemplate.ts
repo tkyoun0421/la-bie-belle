@@ -3,7 +3,7 @@ import {
   parseCreateEventTemplateInput,
   type CreateEventTemplateInput,
   type CreateEventTemplateValues,
-} from "#/mutations/events/models/schemas/createEventTemplate";
+} from "#/mutations/events/schemas/createEventTemplate";
 
 const updateEventTemplateIdSchema = z.object({
   id: z.string().uuid("수정할 템플릿을 찾지 못했습니다."),
