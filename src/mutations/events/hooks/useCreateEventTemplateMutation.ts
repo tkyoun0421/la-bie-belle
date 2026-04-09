@@ -11,6 +11,10 @@ export function useCreateEventTemplateMutation() {
     mutationFn: (input: CreateEventTemplateInput) =>
       createEventTemplateAction(input),
     onSuccess(template) {
+      queryClient.setQueryData(
+        eventTemplateQueryKeys.detail(template.id),
+        template
+      );
       queryClient.setQueryData<EventTemplate[]>(
         eventTemplateQueryKeys.collection(),
         (currentTemplates = []) => [template, ...currentTemplates]

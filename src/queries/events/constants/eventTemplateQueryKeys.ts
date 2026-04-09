@@ -1,7 +1,6 @@
-export const eventTemplateQueryKeys = {
-  all: ["events", "templates"] as const,
-  collection: () =>
-    [...eventTemplateQueryKeys.all, "collection"] as const,
-  detail: (templateId: string) =>
-    [...eventTemplateQueryKeys.all, "detail", templateId] as const,
-};
+import { createQueryKeyFactory } from "#/shared/lib/tanstack-query/createQueryKeyFactory";
+
+export const eventTemplateQueryKeys = createQueryKeyFactory(
+  "events",
+  "templates"
+);

@@ -10,6 +10,9 @@ export function useDeletePositionMutation() {
   return useMutation({
     mutationFn: (input: DeletePositionInput) => deletePositionAction(input),
     onSuccess(deletedPositionId) {
+      queryClient.removeQueries({
+        queryKey: positionQueryKeys.detail(deletedPositionId),
+      });
       queryClient.setQueryData<Position[]>(
         positionQueryKeys.collection(),
         (current = []) =>

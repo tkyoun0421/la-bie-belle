@@ -11,6 +11,9 @@ export function useDeleteEventTemplateMutation() {
     mutationFn: (input: DeleteEventTemplateInput) =>
       deleteEventTemplateAction(input),
     onSuccess(deletedTemplateId) {
+      queryClient.removeQueries({
+        queryKey: eventTemplateQueryKeys.detail(deletedTemplateId),
+      });
       queryClient.setQueryData<EventTemplate[]>(
         eventTemplateQueryKeys.collection(),
         (currentTemplates = []) =>

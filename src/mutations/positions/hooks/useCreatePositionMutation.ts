@@ -10,6 +10,7 @@ export function useCreatePositionMutation() {
   return useMutation({
     mutationFn: (input: CreatePositionInput) => createPositionAction(input),
     onSuccess(position) {
+      queryClient.setQueryData(positionQueryKeys.detail(position.id), position);
       queryClient.setQueryData<Position[]>(
         positionQueryKeys.collection(),
         (current = []) =>
