@@ -20,7 +20,7 @@ export function AdminTemplatesScreen({
             </h1>
             <p className="mt-3 text-sm leading-7 text-[var(--text-subtle)] md:text-base">
               템플릿 CRUD와 슬롯 기본값이 Supabase에 바로 반영되고, 화면은
-              hydration된 query cache를 기준으로 갱신됩니다.
+              hydration과 query cache를 기준으로 갱신됩니다.
             </p>
           </div>
           <div className="grid gap-3 rounded-[24px] border border-[var(--border-soft)] bg-white/80 p-4">

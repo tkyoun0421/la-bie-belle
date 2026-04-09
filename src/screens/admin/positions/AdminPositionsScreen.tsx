@@ -17,11 +17,11 @@ export function AdminPositionsScreen({
         <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
             <h1 className="text-3xl font-extrabold tracking-tight text-[var(--foreground)] md:text-4xl">
-              포지션 이름과 가능 성별을 실제 데이터로 관리합니다.
+              포지션 이름, 성별, 기본 인원, 노출 순서를 한 번에 관리합니다.
             </h1>
             <p className="mt-3 text-sm leading-7 text-[var(--text-subtle)] md:text-base">
-              여기서 정의한 포지션은 템플릿과 이후 행사 생성 화면에서 그대로
-              재사용됩니다.
+              여기서 정한 순서와 기본 필수 인원은 템플릿 화면과 이후 행사 생성
+              화면에서 그대로 사용됩니다.
             </p>
           </div>
           <div className="flex items-end gap-3">

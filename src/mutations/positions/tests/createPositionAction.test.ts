@@ -6,8 +6,10 @@ describe("createPositionAction", () => {
     const single = vi.fn().mockResolvedValue({
       data: {
         allowed_gender: "female",
+        default_required_count: 3,
         id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa5",
-        name: "신부 대기실 안내",
+        name: "로비 대기 동선 안내",
+        sort_order: 5,
       },
       error: null,
     });
@@ -16,19 +18,26 @@ describe("createPositionAction", () => {
     const from = vi.fn().mockReturnValue({ insert });
 
     const result = await createPositionAction(
-      { allowedGender: "female", name: "  신부 대기실 안내  " },
+      {
+        allowedGender: "female",
+        defaultRequiredCount: 3,
+        name: "  로비 대기 동선 안내  ",
+      },
       { client: { from } as never }
     );
 
     expect(from).toHaveBeenCalledWith("positions");
     expect(insert).toHaveBeenCalledWith({
       allowed_gender: "female",
-      name: "신부 대기실 안내",
+      default_required_count: 3,
+      name: "로비 대기 동선 안내",
     });
     expect(result).toEqual({
       allowedGender: "female",
+      defaultRequiredCount: 3,
       id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa5",
-      name: "신부 대기실 안내",
+      name: "로비 대기 동선 안내",
+      sortOrder: 5,
     });
   });
 
@@ -45,7 +54,11 @@ describe("createPositionAction", () => {
 
     await expect(
       createPositionAction(
-        { allowedGender: "all", name: "예도 메인" },
+        {
+          allowedGender: "all",
+          defaultRequiredCount: 2,
+          name: "안내 메인",
+        },
         { client: { from } as never }
       )
     ).rejects.toThrow("같은 이름의 포지션이 이미 있습니다.");

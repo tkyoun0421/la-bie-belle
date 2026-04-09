@@ -1,23 +1,21 @@
 import type { PositionAllowedGender } from "#/entities/positions/models/schemas/position";
 
+const POSITION_ALLOWED_GENDER_LABELS: Record<PositionAllowedGender, string> = {
+  all: "전체 가능",
+  female: "여성만 가능",
+  male: "남성만 가능",
+};
+
 export const positionAllowedGenderOptions: Array<{
   label: string;
   value: PositionAllowedGender;
-}> = [
-  { label: "전체 가능", value: "all" },
-  { label: "여성만 가능", value: "female" },
-  { label: "남성만 가능", value: "male" },
-];
+}> = Object.entries(POSITION_ALLOWED_GENDER_LABELS).map(([value, label]) => ({
+  label,
+  value: value as PositionAllowedGender,
+}));
 
 export function formatPositionAllowedGenderLabel(
   allowedGender: PositionAllowedGender
 ) {
-  switch (allowedGender) {
-    case "female":
-      return "여성만 가능";
-    case "male":
-      return "남성만 가능";
-    default:
-      return "전체 가능";
-  }
+  return POSITION_ALLOWED_GENDER_LABELS[allowedGender];
 }

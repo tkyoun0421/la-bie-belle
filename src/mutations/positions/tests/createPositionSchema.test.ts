@@ -6,11 +6,13 @@ describe("parseCreatePositionInput", () => {
     expect(
       parseCreatePositionInput({
         allowedGender: "all",
-        name: "  예도 메인  ",
+        defaultRequiredCount: 2,
+        name: "  안내 메인  ",
       })
     ).toEqual({
       allowedGender: "all",
-      name: "예도 메인",
+      defaultRequiredCount: 2,
+      name: "안내 메인",
     });
   });
 
@@ -18,6 +20,7 @@ describe("parseCreatePositionInput", () => {
     expect(() =>
       parseCreatePositionInput({
         allowedGender: "all",
+        defaultRequiredCount: 2,
         name: "   ",
       })
     ).toThrow("포지션 이름을 입력해 주세요.");

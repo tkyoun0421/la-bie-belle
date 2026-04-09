@@ -2,30 +2,40 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import type { Position } from "#/entities/positions/models/schemas/position";
+import { useCreatePositionMutation } from "#/mutations/positions/hooks/useCreatePositionMutation";
+import { useDeletePositionMutation } from "#/mutations/positions/hooks/useDeletePositionMutation";
+import { useReorderPositionsMutation } from "#/mutations/positions/hooks/useReorderPositionsMutation";
+import { useUpdatePositionMutation } from "#/mutations/positions/hooks/useUpdatePositionMutation";
 import {
   createPositionInputSchema,
   type CreatePositionInput,
 } from "#/mutations/positions/schemas/createPosition";
-import { useCreatePositionMutation } from "#/mutations/positions/hooks/useCreatePositionMutation";
-import { useDeletePositionMutation } from "#/mutations/positions/hooks/useDeletePositionMutation";
-import { useUpdatePositionMutation } from "#/mutations/positions/hooks/useUpdatePositionMutation";
 import { usePositionCollectionState } from "#/queries/positions/hooks/usePositionCollectionState";
 
 const defaultPositionFormValues: CreatePositionInput = {
   allowedGender: "all",
+  defaultRequiredCount: 2,
   name: "",
 };
 
 export function useAdminPositionsScreenState() {
   const { filteredPositions, positions, searchTerm, setSearchTerm } =
     usePositionCollectionState();
+  const [draggingPositionId, setDraggingPositionId] = useState<string | null>(
+    null
+  );
+  const [dropTargetPositionId, setDropTargetPositionId] = useState<string | null>(
+    null
+  );
   const [editingPositionId, setEditingPositionId] = useState<string | null>(
     null
   );
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const createPositionMutation = useCreatePositionMutation();
   const updatePositionMutation = useUpdatePositionMutation();
   const deletePositionMutation = useDeletePositionMutation();
+  const reorderPositionsMutation = useReorderPositionsMutation();
   const form = useForm<CreatePositionInput>({
     defaultValues: defaultPositionFormValues,
     resolver: zodResolver(createPositionInputSchema),
@@ -38,8 +48,14 @@ export function useAdminPositionsScreenState() {
     control: form.control,
     name: "allowedGender",
   });
+  const defaultRequiredCount = useWatch({
+    control: form.control,
+    name: "defaultRequiredCount",
+  });
   const isSaving =
     createPositionMutation.isPending || updatePositionMutation.isPending;
+  const isReordering = reorderPositionsMutation.isPending;
+  const canReorder = searchTerm.trim().length === 0 && !isReordering;
   const validationError = readFirstErrorMessage(form.formState.errors);
   const error = submitError ?? validationError;
 
@@ -57,12 +73,12 @@ export function useAdminPositionsScreenState() {
           await createPositionMutation.mutateAsync(values);
         }
 
-        resetForm();
+        closeEditor();
       } catch (nextError) {
         setSubmitError(
           nextError instanceof Error
             ? nextError.message
-            : "?ъ??섏쓣 ??ν븯吏 紐삵뻽?듬땲??"
+            : "포지션을 저장하지 못했습니다."
         );
       }
     },
@@ -71,51 +87,126 @@ export function useAdminPositionsScreenState() {
     }
   );
 
+  function openCreate() {
+    setEditingPositionId(null);
+    setSubmitError(null);
+    form.reset(defaultPositionFormValues);
+    setIsEditorOpen(true);
+  }
+
   function startEdit(position: Position) {
     setEditingPositionId(position.id);
     setSubmitError(null);
     form.reset({
       allowedGender: position.allowedGender,
+      defaultRequiredCount: position.defaultRequiredCount,
       name: position.name,
     });
+    setIsEditorOpen(true);
   }
 
   async function remove(position: Position) {
-    const shouldDelete = window.confirm(
-      `"${position.name}" ?ъ??섏쓣 ??젣?좉퉴??`
-    );
-
-    if (!shouldDelete) {
-      return;
-    }
-
     setSubmitError(null);
 
     try {
       await deletePositionMutation.mutateAsync({ id: position.id });
 
       if (editingPositionId === position.id) {
-        resetForm();
+        closeEditor();
       }
     } catch (nextError) {
       setSubmitError(
         nextError instanceof Error
           ? nextError.message
-          : "?ъ??섏쓣 ??젣?섏? 紐삵뻽?듬땲??"
+          : "포지션을 삭제하지 못했습니다."
       );
     }
   }
 
-  function resetForm() {
+  async function dropOnPosition(targetPositionId: string) {
+    if (
+      !draggingPositionId ||
+      draggingPositionId === targetPositionId ||
+      !canReorder
+    ) {
+      clearDragState();
+      return;
+    }
+
+    const orderedIds = movePositionIds(
+      positions.map((position) => position.id),
+      draggingPositionId,
+      targetPositionId
+    );
+
+    if (orderedIds.length === 0) {
+      clearDragState();
+      return;
+    }
+
+    try {
+      await reorderPositionsMutation.mutateAsync({ positionIds: orderedIds });
+    } catch (nextError) {
+      setSubmitError(
+        nextError instanceof Error
+          ? nextError.message
+          : "포지션 순서를 저장하지 못했습니다."
+      );
+    } finally {
+      clearDragState();
+    }
+  }
+
+  function startDrag(positionId: string) {
+    if (!canReorder) {
+      return;
+    }
+
+    setDraggingPositionId(positionId);
+    setDropTargetPositionId(null);
+  }
+
+  function setDropTarget(positionId: string) {
+    if (!draggingPositionId || draggingPositionId === positionId || !canReorder) {
+      return;
+    }
+
+    setDropTargetPositionId(positionId);
+  }
+
+  function clearDragState() {
+    setDraggingPositionId(null);
+    setDropTargetPositionId(null);
+  }
+
+  function closeEditor() {
+    setIsEditorOpen(false);
     setEditingPositionId(null);
     setSubmitError(null);
     form.reset(defaultPositionFormValues);
   }
 
-  function setAllowedGender(nextAllowedGender: CreatePositionInput["allowedGender"]) {
+  function handleOpenChange(nextOpen: boolean) {
+    if (!nextOpen) {
+      closeEditor();
+    }
+  }
+
+  function setAllowedGender(
+    nextAllowedGender: CreatePositionInput["allowedGender"]
+  ) {
     setSubmitError(null);
     form.clearErrors("allowedGender");
     form.setValue("allowedGender", nextAllowedGender, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  }
+
+  function setDefaultRequiredCount(nextCount: number) {
+    setSubmitError(null);
+    form.clearErrors("defaultRequiredCount");
+    form.setValue("defaultRequiredCount", nextCount, {
       shouldDirty: true,
       shouldValidate: true,
     });
@@ -132,22 +223,54 @@ export function useAdminPositionsScreenState() {
 
   return {
     allowedGender: allowedGender ?? "all",
+    canReorder,
+    defaultRequiredCount: defaultRequiredCount ?? 2,
+    draggingPositionId,
+    dropTargetPositionId,
     editingPositionId,
     error,
     filteredPositions,
     isDeleting: deletePositionMutation.isPending,
+    isEditorOpen,
+    isReordering,
     isSaving,
     name: name ?? "",
     onAllowedGenderChange: setAllowedGender,
-    onCancel: resetForm,
+    onCloseEditor: closeEditor,
+    onDefaultRequiredCountChange: setDefaultRequiredCount,
     onDelete: remove,
+    onDragEnd: clearDragState,
+    onDragStart: startDrag,
+    onDrop: dropOnPosition,
+    onDropTargetChange: setDropTarget,
     onEdit: startEdit,
     onNameChange: setName,
+    onOpenChange: handleOpenChange,
+    onOpenCreate: openCreate,
     onSearchTermChange: setSearchTerm,
     onSubmit: submit,
     positions,
     searchTerm,
   };
+}
+
+function movePositionIds(
+  positionIds: string[],
+  sourcePositionId: string,
+  targetPositionId: string
+) {
+  const nextPositionIds = [...positionIds];
+  const sourceIndex = nextPositionIds.indexOf(sourcePositionId);
+  const targetIndex = nextPositionIds.indexOf(targetPositionId);
+
+  if (sourceIndex === -1 || targetIndex === -1) {
+    return [];
+  }
+
+  const [movedPositionId] = nextPositionIds.splice(sourceIndex, 1);
+  nextPositionIds.splice(targetIndex, 0, movedPositionId);
+
+  return nextPositionIds;
 }
 
 function readFirstErrorMessage(value: unknown): string | null {

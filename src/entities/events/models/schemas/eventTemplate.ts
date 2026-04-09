@@ -17,7 +17,7 @@ export const eventTemplateSchema = z.object({
   timeLabel: z.string().min(1),
   firstServiceAt: timeValueSchema,
   lastServiceEndAt: timeValueSchema,
-  createdAt: z.string().datetime(),
+  createdAt: z.string().datetime({ offset: true }),
   slotDefaults: z.array(eventTemplateSlotSchema).min(1),
 });
 

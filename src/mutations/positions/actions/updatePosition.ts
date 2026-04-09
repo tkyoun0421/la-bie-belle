@@ -23,10 +23,11 @@ export async function updatePositionAction(
     .from("positions")
     .update({
       allowed_gender: values.allowedGender,
+      default_required_count: values.defaultRequiredCount,
       name: values.name,
     })
     .eq("id", values.id)
-    .select("id, name, allowed_gender")
+    .select("id, name, allowed_gender, default_required_count, sort_order")
     .single();
 
   if (error) {

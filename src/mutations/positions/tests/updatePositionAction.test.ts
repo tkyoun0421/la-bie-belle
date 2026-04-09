@@ -5,9 +5,11 @@ describe("updatePositionAction", () => {
   it("updates a position and returns the saved row", async () => {
     const single = vi.fn().mockResolvedValue({
       data: {
-        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
-        name: "폐백 진행",
         allowed_gender: "male",
+        default_required_count: 4,
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+        name: "서명대 진행",
+        sort_order: 2,
       },
       error: null,
     });
@@ -20,23 +22,27 @@ describe("updatePositionAction", () => {
       {
         id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
         allowedGender: "male",
-        name: "  폐백 진행  ",
+        defaultRequiredCount: 4,
+        name: "  서명대 진행  ",
       },
       { client: { from } as never }
     );
 
     expect(update).toHaveBeenCalledWith({
       allowed_gender: "male",
-      name: "폐백 진행",
+      default_required_count: 4,
+      name: "서명대 진행",
     });
     expect(eq).toHaveBeenCalledWith(
       "id",
       "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
     );
     expect(result).toEqual({
-      id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
-      name: "폐백 진행",
       allowedGender: "male",
+      defaultRequiredCount: 4,
+      id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+      name: "서명대 진행",
+      sortOrder: 2,
     });
   });
 });

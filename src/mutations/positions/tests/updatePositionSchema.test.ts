@@ -7,12 +7,14 @@ describe("parseUpdatePositionInput", () => {
       parseUpdatePositionInput({
         id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
         allowedGender: "male",
-        name: "  폐백 진행  ",
+        defaultRequiredCount: 4,
+        name: "  서명대 진행  ",
       })
     ).toEqual({
       id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
       allowedGender: "male",
-      name: "폐백 진행",
+      defaultRequiredCount: 4,
+      name: "서명대 진행",
     });
   });
 });

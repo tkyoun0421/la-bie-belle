@@ -6,6 +6,8 @@ export const positionSchema = z.object({
   id: z.string().uuid(),
   name: z.string().trim().min(1),
   allowedGender: positionAllowedGenderSchema,
+  defaultRequiredCount: z.number().int().min(1),
+  sortOrder: z.number().int().min(1),
 });
 
 export const positionsResponseSchema = z.object({

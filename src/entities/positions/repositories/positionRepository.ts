@@ -16,7 +16,8 @@ export async function readPositions(
   const client = options.client ?? createSupabaseAdminClient();
   const { data, error } = await client
     .from("positions")
-    .select("id, name, allowed_gender")
+    .select("id, name, allowed_gender, default_required_count, sort_order")
+    .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 
   if (error) {

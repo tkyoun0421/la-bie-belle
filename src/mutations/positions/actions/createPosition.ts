@@ -23,9 +23,10 @@ export async function createPositionAction(
     .from("positions")
     .insert({
       allowed_gender: values.allowedGender,
+      default_required_count: values.defaultRequiredCount,
       name: values.name,
     })
-    .select("id, name, allowed_gender")
+    .select("id, name, allowed_gender, default_required_count, sort_order")
     .single();
 
   if (error) {

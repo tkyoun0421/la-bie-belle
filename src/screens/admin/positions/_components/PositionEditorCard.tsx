@@ -1,112 +1,141 @@
+import { Alert, AlertDescription } from "#/shared/components/ui/alert";
+import { Button } from "#/shared/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "#/shared/components/ui/card";
+import { Input } from "#/shared/components/ui/input";
+import { Label } from "#/shared/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "#/shared/components/ui/select";
 import { positionAllowedGenderOptions } from "#/entities/positions/models/constants/allowedGender";
-import type { PositionAllowedGender } from "#/entities/positions/models/schemas/position";
+import {
+  positionAllowedGenderSchema,
+  type PositionAllowedGender,
+} from "#/entities/positions/models/schemas/position";
 
 type PositionEditorCardProps = {
   allowedGender: PositionAllowedGender;
+  defaultRequiredCount: number;
   error: string | null;
   isEditing: boolean;
   isSaving: boolean;
   name: string;
   onAllowedGenderChange: (value: PositionAllowedGender) => void;
   onCancel: () => void;
+  onDefaultRequiredCountChange: (value: number) => void;
   onNameChange: (value: string) => void;
   onSubmit: () => void;
 };
 
 export function PositionEditorCard({
   allowedGender,
+  defaultRequiredCount,
   error,
   isEditing,
   isSaving,
   name,
   onAllowedGenderChange,
   onCancel,
+  onDefaultRequiredCountChange,
   onNameChange,
   onSubmit,
-}: PositionEditorCardProps) {
+}: Readonly<PositionEditorCardProps>) {
   return (
-    <section className="rounded-[28px] border border-[var(--border-soft)] bg-[var(--surface)] p-6 shadow-[0_14px_42px_rgba(15,23,42,0.06)]">
-      <div>
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">
-          {isEditing ? "포지션 수정" : "새 포지션 추가"}
-        </h2>
-        <p className="mt-2 text-sm leading-6 text-[var(--text-subtle)]">
-          중복 이름은 막고, 저장 결과는 목록과 템플릿 선택지에 바로 반영됩니다.
-        </p>
-      </div>
+    <Card className="bg-white shadow-xl">
+      <CardHeader>
+        <CardTitle>{isEditing ? "포지션 수정" : "새 포지션 추가"}</CardTitle>
+        <CardDescription>
+          포지션 이름, 가능 성별, 기본 필수 인원을 설정합니다. 여기서 정한 기본
+          인원은 템플릿 슬롯 기본값으로 사용됩니다.
+        </CardDescription>
+      </CardHeader>
 
-      <form
-        className="mt-6 grid gap-4"
-        onSubmit={(event) => {
-          event.preventDefault();
-          onSubmit();
-        }}
-      >
-        <label className="grid gap-2">
-          <span className="text-sm font-semibold text-[var(--foreground)]">
-            포지션 이름
-          </span>
-          <input
-            className={inputClassName}
-            onChange={(event) => onNameChange(event.target.value)}
-            placeholder="예: 안내 데스크"
-            value={name}
-          />
-        </label>
+      <CardContent>
+        <form
+          className="grid gap-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onSubmit();
+          }}
+        >
+          <label className="grid gap-2">
+            <Label>포지션 이름</Label>
+            <Input
+              onChange={(event) => onNameChange(event.target.value)}
+              placeholder="예: 안내"
+              value={name}
+            />
+          </label>
 
-        <label className="grid gap-2">
-          <span className="text-sm font-semibold text-[var(--foreground)]">
-            가능 성별
-          </span>
-          <select
-            className={inputClassName}
-            onChange={(event) =>
-              onAllowedGenderChange(event.target.value as PositionAllowedGender)
-            }
-            value={allowedGender}
-          >
-            {positionAllowedGenderOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        {error ? (
-          <p className="rounded-2xl border border-[#f7d4d1] bg-[#fff4f3] px-4 py-3 text-sm text-[#a5352c]">
-            {error}
-          </p>
-        ) : null}
-
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            className={primaryButtonClassName}
-            disabled={isSaving}
-            type="submit"
-          >
-            {isSaving ? "저장 중..." : isEditing ? "포지션 수정" : "포지션 저장"}
-          </button>
-          {isEditing ? (
-            <button
-              className={secondaryButtonClassName}
-              onClick={onCancel}
-              type="button"
+          <label className="grid gap-2">
+            <Label>가능 성별</Label>
+            <Select
+              onValueChange={(value) => {
+                const parsed = positionAllowedGenderSchema.safeParse(value);
+                if (parsed.success) {
+                  onAllowedGenderChange(parsed.data);
+                }
+              }}
+              value={allowedGender}
             >
-              수정 취소
-            </button>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="가능 성별 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                {positionAllowedGenderOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </label>
+
+          <label className="grid gap-2">
+            <Label>기본 필수 인원</Label>
+            <Input
+              min="1"
+              onChange={(event) =>
+                onDefaultRequiredCountChange(
+                  Number.isFinite(event.target.valueAsNumber)
+                    ? event.target.valueAsNumber
+                    : 0
+                )
+              }
+              type="number"
+              value={defaultRequiredCount}
+            />
+          </label>
+
+          {error ? (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           ) : null}
-        </div>
-      </form>
-    </section>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Button disabled={isSaving} type="submit">
+              {isSaving
+                ? "저장 중..."
+                : isEditing
+                  ? "포지션 수정"
+                  : "포지션 저장"}
+            </Button>
+            <Button onClick={onCancel} type="button" variant="outline">
+              취소
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
-
-const inputClassName =
-  "h-11 rounded-2xl border border-[var(--border-strong)] bg-white px-4 text-sm text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgba(43,127,255,0.16)]";
-
-const primaryButtonClassName =
-  "inline-flex min-h-11 items-center justify-center rounded-2xl border border-[var(--primary)] bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--primary-hover)] disabled:cursor-not-allowed disabled:opacity-50";
-
-const secondaryButtonClassName =
-  "inline-flex min-h-11 items-center justify-center rounded-2xl border border-[var(--border-strong)] bg-white px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-50";

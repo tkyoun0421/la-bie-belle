@@ -1,14 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Position } from "#/entities/positions/models/schemas/position";
+import { sortPositions } from "#/entities/positions/models/helpers/sortPositions";
 import { updatePositionAction } from "#/mutations/positions/actions/updatePosition";
 import type { UpdatePositionInput } from "#/mutations/positions/schemas/updatePosition";
 import { positionQueryKeys } from "#/queries/positions/constants/positionQueryKeys";
-
-function sortPositions(positions: Position[]) {
-  return [...positions].sort((left, right) =>
-    left.name.localeCompare(right.name, "ko")
-  );
-}
 
 export function useUpdatePositionMutation() {
   const queryClient = useQueryClient();
