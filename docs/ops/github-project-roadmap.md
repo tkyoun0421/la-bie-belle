@@ -15,7 +15,7 @@
 - 먼저 issue를 만들고, PR은 해당 issue를 닫도록 연결한다
 - 구현 단위는 `phase milestone -> issue -> phase PR` 순서로 간다
 - issue 본문에는 배경, 목표, 기대 사용자 흐름, 포함/제외 범위, 영향 영역, 완료 조건, 테스트 계획, 리스크가 있어야 한다
-- PR 본문에는 연결 이슈, 변경 이유, TDD 기록, 검증 결과가 있어야 한다
+- PR 본문에는 연결 이슈, 배경, 기대 사용자 흐름, 포함/제외 범위, 영향 영역, TDD 기록, 검증 근거, 리스크가 있어야 한다
 - TDD 규칙은 [CLAUDE.md](../../CLAUDE.md)와 [execution-plan.md](../plans/execution-plan.md)를 따른다
 - 브랜치 전략은 `develop` 기준으로 운영한다
 
