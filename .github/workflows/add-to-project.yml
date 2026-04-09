@@ -1,0 +1,35 @@
+name: Add To Roadmap Project
+
+on:
+  issues:
+    types:
+      - opened
+      - reopened
+      - transferred
+      - labeled
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - labeled
+
+permissions:
+  contents: read
+
+jobs:
+  add-to-project:
+    if: ${{ vars.GITHUB_PROJECT_URL != '' }}
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_URL: ${{ vars.GITHUB_PROJECT_URL }}
+      ROADMAP_PROJECT_TOKEN: ${{ secrets.ROADMAP_PROJECT_TOKEN }}
+
+    steps:
+      - name: Add issue or PR to project
+        if: ${{ env.ROADMAP_PROJECT_TOKEN != '' }}
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: ${{ env.PROJECT_URL }}
+          github-token: ${{ env.ROADMAP_PROJECT_TOKEN }}
+          labeled: track:roadmap
+          label-operator: OR

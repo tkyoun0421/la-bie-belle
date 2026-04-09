@@ -60,6 +60,14 @@
 - 라이브러리를 추가하거나 교체하기 전에는 [stack-spec.md](./docs/plans/stack-spec.md)를 본다
 - 새로운 phase를 시작하기 전에는 먼저 `docs/plans/phases/*` 아래 phase 문서를 만들고 user review를 받는다
 
+### TDD Rule
+- 기본 작업 순서는 `test -> implement -> refactor`다
+- 새 동작을 만들 때는 먼저 실패하는 테스트를 추가하고, 그 다음 구현으로 테스트를 통과시킨다
+- 버그 수정은 재현 테스트를 먼저 추가한 뒤 수정한다
+- 테스트는 가능한 한 가장 가까운 경계에 둔다. 순서는 `unit -> integration -> e2e` 우선이다
+- slice를 닫을 때는 happy path와 핵심 예외가 자동 테스트로 재현되어야 한다
+- 탐색용 스캐폴드나 단순 문서 작업은 예외로 둘 수 있지만, user-facing 동작을 닫기 전에는 테스트가 먼저 있어야 한다
+
 ### Work Unit
 - 구현은 항상 `phase -> slice -> task` 순서로 진행한다
 - phase는 큰 단계다

@@ -1,0 +1,230 @@
+{
+  "projectTitle": "La Bie Belle Product Roadmap",
+  "projectDescription": "docs/plans/* 기준으로 milestone, issue, PR을 추적하는 제품 로드맵 보드",
+  "repositoryProjectVariable": "GITHUB_PROJECT_URL",
+  "labels": [
+    {
+      "name": "track:roadmap",
+      "color": "0e8a16",
+      "description": "메인 로드맵에서 추적됨"
+    },
+    {
+      "name": "track:current-release",
+      "color": "b60205",
+      "description": "현재 릴리즈 범위에 포함됨"
+    },
+    {
+      "name": "kind:feature",
+      "color": "1d76db",
+      "description": "기능 구현 작업"
+    },
+    {
+      "name": "kind:planning",
+      "color": "5319e7",
+      "description": "계획 또는 범위 정의 작업"
+    },
+    {
+      "name": "area:events",
+      "color": "bfd4f2",
+      "description": "행사 템플릿과 행사 관리"
+    },
+    {
+      "name": "area:applications",
+      "color": "c5def5",
+      "description": "멤버 신청"
+    },
+    {
+      "name": "area:assignments",
+      "color": "d4c5f9",
+      "description": "배정과 로스터 결정"
+    },
+    {
+      "name": "area:replacements",
+      "color": "f9d0c4",
+      "description": "대타 요청과 승인"
+    },
+    {
+      "name": "area:check-in",
+      "color": "fef2c0",
+      "description": "체크인 검증과 예외 처리"
+    },
+    {
+      "name": "area:payroll",
+      "color": "f9c2e3",
+      "description": "급여 미리보기와 오버라이드"
+    },
+    {
+      "name": "area:auth",
+      "color": "d93f0b",
+      "description": "로그인과 승인 게이트"
+    },
+    {
+      "name": "area:pwa",
+      "color": "fbca04",
+      "description": "디바이스와 푸시 구독 게이트"
+    },
+    {
+      "name": "phase:0.5",
+      "color": "0052cc",
+      "description": "Phase 0.5 핵심 운영 루프"
+    },
+    {
+      "name": "phase:4",
+      "color": "6f42c1",
+      "description": "Phase 4 체크인"
+    },
+    {
+      "name": "phase:5",
+      "color": "7f8c8d",
+      "description": "Phase 5 급여 미리보기"
+    },
+    {
+      "name": "phase:6",
+      "color": "c2e0c6",
+      "description": "Phase 6 인증과 PWA 온보딩"
+    }
+  ],
+  "milestones": [
+    {
+      "title": "M1. 행사 세팅",
+      "description": "매니저가 행사 템플릿을 만들고 그 템플릿으로 실제 행사를 생성할 수 있다. 근거: docs/plans/phases/phase-0-5-core-operational-loop.md, docs/plans/execution-plan.md",
+      "issues": [
+        {
+          "title": "Slice 1. 행사 템플릿 기반",
+          "body": "## 목표\n매니저가 행사 템플릿을 만들고, 만든 직후 템플릿 목록에서 바로 확인할 수 있어야 한다.\n\n## 범위\n- 템플릿 schema\n- 행사 템플릿 생성 mutation\n- 행사 템플릿 목록 query\n- 매니저/관리자 입력 UI\n- unit, integration 테스트\n\n## 완료 조건\n- 새 템플릿이 저장되고 수동 새로고침 없이 목록에 보인다\n- query와 mutation 경계가 docs/plans/codebase-architecture.md 규칙을 따른다\n- `pnpm lint`, `pnpm typecheck`, `pnpm test` 통과\n\n## 근거 문서\n- docs/plans/phases/phase-0-5-core-operational-loop.md\n- docs/plans/execution-plan.md",
+          "labels": [
+            "track:roadmap",
+            "track:current-release",
+            "kind:feature",
+            "area:events",
+            "phase:0.5"
+          ]
+        },
+        {
+          "title": "Slice 2. 매니저 행사 생성",
+          "body": "## 목표\n매니저가 기존 템플릿을 골라 실제 행사를 만들고, 바로 사용할 수 있는 행사 상세 화면으로 이동할 수 있어야 한다.\n\n## 범위\n- 행사 생성 mutation\n- 행사 목록과 상세 query\n- 템플릿의 기본 포지션 슬롯 복사\n- `/events/[eventId]` 기본 상세 UI\n- unit, integration 테스트\n\n## 완료 조건\n- 매니저가 템플릿을 선택해 행사를 생성할 수 있다\n- 행사 상세에서 복사된 슬롯과 핵심 메타데이터가 보인다\n- `pnpm lint`, `pnpm typecheck`, `pnpm test` 통과\n\n## 근거 문서\n- docs/plans/phases/phase-0-5-core-operational-loop.md\n- docs/plans/execution-plan.md",
+          "labels": [
+            "track:roadmap",
+            "track:current-release",
+            "kind:feature",
+            "area:events",
+            "phase:0.5"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "M2. 신청과 배정",
+      "description": "멤버는 행사에 신청할 수 있고, 매니저는 중복 경고를 보면서 배정할 수 있다. 근거: docs/plans/phases/phase-0-5-core-operational-loop.md, docs/plans/execution-plan.md",
+      "issues": [
+        {
+          "title": "Slice 3. 멤버 행사 신청과 취소",
+          "body": "## 목표\n멤버가 행사 목록을 보고 신청하고, 신청 상태를 즉시 확인하고, 다시 취소할 수 있어야 한다.\n\n## 범위\n- TanStack Query 기반 행사 목록 query hook\n- 신청 mutation\n- 신청 취소 mutation\n- 대시보드와 행사 상세의 신청 상태 렌더링\n- unit, integration, smoke UI 테스트\n\n## 완료 조건\n- 신청과 취소가 모두 화면 상태에 즉시 반영된다\n- 서버 상태는 ad-hoc 로컬 캐시가 아니라 TanStack Query를 사용한다\n- `pnpm lint`, `pnpm typecheck`, `pnpm test` 통과\n\n## 근거 문서\n- docs/plans/phases/phase-0-5-core-operational-loop.md\n- docs/plans/stack-spec.md",
+          "labels": [
+            "track:roadmap",
+            "track:current-release",
+            "kind:feature",
+            "area:applications",
+            "phase:0.5"
+          ]
+        },
+        {
+          "title": "Slice 4. 매니저 멤버 배정",
+          "body": "## 목표\n매니저가 행사 포지션에 멤버를 배정하고, 최종 확정 전에 중복 배정 경고를 볼 수 있어야 한다.\n\n## 범위\n- 배정 생성 mutation\n- 배정 목록 query\n- 중복 배정 경고 rule\n- 행사 상세 배정 UI\n- unit, integration 테스트\n\n## 완료 조건\n- 배정 생성 뒤 행사 상세에 배정 결과가 보인다\n- 중복 충돌은 최종 결정 전에 경고로 노출된다\n- `pnpm lint`, `pnpm typecheck`, `pnpm test` 통과\n\n## 근거 문서\n- docs/plans/phases/phase-0-5-core-operational-loop.md\n- docs/plans/architecture-spec.md",
+          "labels": [
+            "track:roadmap",
+            "track:current-release",
+            "kind:feature",
+            "area:assignments",
+            "phase:0.5"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "M3. 대타 흐름",
+      "description": "배정된 멤버는 취소를 요청할 수 있고, 다른 멤버를 대타로 승인할 수 있다. 근거: docs/plans/phases/phase-0-5-core-operational-loop.md, docs/plans/execution-plan.md",
+      "issues": [
+        {
+          "title": "Slice 5. 배정 취소와 대타 요청 생성",
+          "body": "## 목표\n배정된 멤버가 취소하면 시스템이 대타 요청을 열고, 대타 목록에서 바로 보여줘야 한다.\n\n## 범위\n- 배정 취소 mutation\n- 대타 요청 생성 로직\n- 대타 목록 query\n- `/replacements` 기본 목록 UI\n- integration 테스트\n\n## 완료 조건\n- 취소 시 대타 요청이 정확히 한 번 생성된다\n- 생성된 대타 요청이 목록에 보인다\n- `pnpm lint`, `pnpm typecheck`, `pnpm test` 통과\n\n## 근거 문서\n- docs/plans/phases/phase-0-5-core-operational-loop.md\n- docs/plans/execution-plan.md",
+          "labels": [
+            "track:roadmap",
+            "track:current-release",
+            "kind:feature",
+            "area:replacements",
+            "phase:0.5"
+          ]
+        },
+        {
+          "title": "Slice 6. 대타 지원과 승인",
+          "body": "## 목표\n다른 멤버가 대타 자리에 지원하고, 매니저가 그 지원자를 새 배정으로 승인할 수 있어야 한다.\n\n## 범위\n- 대타 후보 필터 query\n- 대타 지원 mutation\n- 대타 승인 mutation\n- 승인 시 새 assignment 생성\n- 대타 요청 transaction 종료 처리\n- transaction, integration 테스트\n\n## 완료 조건\n- 대타 승인 시 새 배정이 생성되고 요청이 닫힌다\n- 중복 승인이나 stale 승인 경로가 막힌다\n- `pnpm lint`, `pnpm typecheck`, `pnpm test` 통과\n\n## 근거 문서\n- docs/plans/phases/phase-0-5-core-operational-loop.md\n- docs/plans/architecture-spec.md",
+          "labels": [
+            "track:roadmap",
+            "track:current-release",
+            "kind:feature",
+            "area:replacements",
+            "area:assignments",
+            "phase:0.5"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "M4. 체크인과 급여 미리보기",
+      "description": "운영 루프를 체크인과 급여 미리보기까지 닫는다. 근거: docs/plans/build-plan.md, docs/plans/execution-plan.md",
+      "issues": [
+        {
+          "title": "Phase 4. 체크인 검증과 예외 처리",
+          "body": "## 목표\n멤버가 허용된 위치 범위 안에서 체크인할 수 있고, 체크인이 실패하면 예외 요청 경로로 이어져야 한다.\n\n## 범위\n- 위치 기반 체크인 happy path\n- 검증 실패 시 예외 요청 흐름\n- 매니저와 멤버용 체크인 상태 렌더링\n- 핵심 경로의 unit, integration, E2E 테스트\n\n## 완료 조건\n- 유효한 체크인이 설정된 거리 기준 안에서 성공한다\n- 유효하지 않은 체크인은 조용히 실패하지 않고 예외 처리 경로로 연결된다\n- `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:e2e` 통과\n\n## 근거 문서\n- docs/plans/build-plan.md\n- docs/plans/execution-plan.md",
+          "labels": [
+            "track:roadmap",
+            "track:current-release",
+            "kind:feature",
+            "area:check-in",
+            "phase:4"
+          ]
+        },
+        {
+          "title": "Phase 5. 급여 미리보기와 오버라이드 감사 로그",
+          "body": "## 목표\n매니저가 서비스 시간 기준의 급여 미리보기를 볼 수 있고, 필요한 경우 명시적 오버라이드를 남길 수 있어야 한다.\n\n## 범위\n- 급여 미리보기 read model\n- 초과근무 계산과 배치 미리보기\n- audit log가 남는 override 경로\n- 계산과 override 동작의 unit, integration 테스트\n\n## 완료 조건\n- 미리보기는 event와 assignment 데이터에서 read-time으로 계산된다\n- override 경로는 명시적이고 추적 가능하다\n- `pnpm lint`, `pnpm typecheck`, `pnpm test` 통과\n\n## 근거 문서\n- docs/plans/build-plan.md\n- docs/plans/execution-plan.md",
+          "labels": [
+            "track:roadmap",
+            "track:current-release",
+            "kind:feature",
+            "area:payroll",
+            "phase:5"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "M5. 인증과 런치 게이트",
+      "description": "로그인, 승인 게이트, 디바이스와 푸시 선행 조건을 런치 가능한 상태로 만든다. 근거: docs/plans/build-plan.md, docs/plans/execution-plan.md",
+      "issues": [
+        {
+          "title": "Phase 6. Google 로그인과 승인 대기 온보딩",
+          "body": "## 목표\n새 사용자가 Google로 로그인하고 승인 대기 상태에 들어간 뒤, 승인 전에는 운영 기능에 접근할 수 없어야 한다.\n\n## 범위\n- Google auth callback과 session 흐름\n- 승인 대기 온보딩 상태\n- 승인 후 role 기반 라우팅\n- 승인 게이트 동작 테스트\n\n## 완료 조건\n- 승인 전 사용자는 운영 기능에 접근할 수 없다\n- 승인된 사용자는 role에 맞는 영역으로 라우팅된다\n- `pnpm lint`, `pnpm typecheck`, `pnpm test` 통과\n\n## 근거 문서\n- docs/plans/build-plan.md\n- docs/plans/execution-plan.md",
+          "labels": [
+            "track:roadmap",
+            "track:current-release",
+            "kind:feature",
+            "area:auth",
+            "phase:6"
+          ]
+        },
+        {
+          "title": "Phase 6. 디바이스와 푸시 구독 런치 게이트",
+          "body": "## 목표\n런치 전에 앱이 디바이스 준비 상태와 푸시 구독 선행 조건을 강제해야 한다.\n\n## 범위\n- 디바이스 준비 상태 게이트\n- 푸시 구독과 구독 해제 경로\n- 알림 의존 흐름 진입 전 라우트 게이트\n- 차단 상태와 준비 상태 테스트\n\n## 완료 조건\n- 필요한 디바이스 또는 푸시 설정을 마치지 않은 사용자는 게이트된 흐름에 들어갈 수 없다\n- 푸시 구독 상태는 저장되고 되돌릴 수 있다\n- `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:e2e` 통과\n\n## 근거 문서\n- docs/plans/build-plan.md\n- docs/plans/execution-plan.md",
+          "labels": [
+            "track:roadmap",
+            "track:current-release",
+            "kind:feature",
+            "area:pwa",
+            "phase:6"
+          ]
+        }
+      ]
+    }
+  ]
+}
