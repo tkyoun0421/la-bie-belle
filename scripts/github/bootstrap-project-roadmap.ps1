@@ -111,8 +111,9 @@ function Invoke-GitHubRest {
   }
 
   if ($null -ne $Body) {
-    $params.ContentType = "application/json"
-    $params.Body = ($Body | ConvertTo-Json -Depth 100)
+    $json = $Body | ConvertTo-Json -Depth 100
+    $params.ContentType = "application/json; charset=utf-8"
+    $params.Body = [System.Text.Encoding]::UTF8.GetBytes($json)
   }
 
   return Invoke-RestMethod @params
@@ -125,10 +126,12 @@ function Invoke-GitHubGraphQL {
     [hashtable]$Variables
   )
 
-  $response = Invoke-RestMethod -Method Post -Uri "https://api.github.com/graphql" -Headers $Headers -ContentType "application/json" -Body (@{
+  $json = @{
       query = $Query
       variables = $Variables
-    } | ConvertTo-Json -Depth 100)
+    } | ConvertTo-Json -Depth 100
+
+  $response = Invoke-RestMethod -Method Post -Uri "https://api.github.com/graphql" -Headers $Headers -ContentType "application/json; charset=utf-8" -Body ([System.Text.Encoding]::UTF8.GetBytes($json))
 
   if ($response.errors) {
     $messages = $response.errors | ForEach-Object { $_.message }
@@ -149,12 +152,12 @@ function Ensure-Label {
   )
 
   if ($ExistingLabels.ContainsKey($Label.name)) {
-    Write-Output "label exists: $($Label.name)"
+    Write-Host "label exists: $($Label.name)"
     return
   }
 
   if ($DryRun) {
-    Write-Output "dry-run create label: $($Label.name)"
+    Write-Host "dry-run create label: $($Label.name)"
     return
   }
 
@@ -164,7 +167,7 @@ function Ensure-Label {
     description = $Label.description
   } | Out-Null
 
-  Write-Output "created label: $($Label.name)"
+  Write-Host "created label: $($Label.name)"
 }
 
 function Ensure-Milestone {
@@ -178,12 +181,12 @@ function Ensure-Milestone {
   )
 
   if ($ExistingMilestones.ContainsKey($Milestone.title)) {
-    Write-Output "milestone exists: $($Milestone.title)"
+    Write-Host "milestone exists: $($Milestone.title)"
     return $ExistingMilestones[$Milestone.title]
   }
 
   if ($DryRun) {
-    Write-Output "dry-run create milestone: $($Milestone.title)"
+    Write-Host "dry-run create milestone: $($Milestone.title)"
     return [pscustomobject]@{
       number = -1
       title = $Milestone.title
@@ -197,7 +200,7 @@ function Ensure-Milestone {
     state = "open"
   }
 
-  Write-Output "created milestone: $($Milestone.title)"
+  Write-Host "created milestone: $($Milestone.title)"
   return $created
 }
 
@@ -213,12 +216,12 @@ function Ensure-Issue {
   )
 
   if ($ExistingIssues.ContainsKey($Issue.title)) {
-    Write-Output "issue exists: $($Issue.title)"
+    Write-Host "issue exists: $($Issue.title)"
     return $ExistingIssues[$Issue.title]
   }
 
   if ($DryRun) {
-    Write-Output "dry-run create issue: $($Issue.title)"
+    Write-Host "dry-run create issue: $($Issue.title)"
     return [pscustomobject]@{
       title = $Issue.title
       html_url = "dry-run://issue/$($Issue.title)"
@@ -233,7 +236,7 @@ function Ensure-Issue {
     milestone = $Milestone.number
   }
 
-  Write-Output "created issue: $($Issue.title)"
+  Write-Host "created issue: $($Issue.title)"
   return $created
 }
 
@@ -248,7 +251,7 @@ function Ensure-RepositoryVariable {
   )
 
   if ($DryRun) {
-    Write-Output "dry-run set repo variable: $Name=$Value"
+    Write-Host "dry-run set repo variable: $Name=$Value"
     return
   }
 
@@ -258,7 +261,7 @@ function Ensure-RepositoryVariable {
       value = $Value
     } | Out-Null
 
-    Write-Output "updated repo variable: $Name"
+    Write-Host "updated repo variable: $Name"
   }
   catch {
     Invoke-GitHubRest -Method Post -Uri "https://api.github.com/repos/$Owner/$Repo/actions/variables" -Headers $Headers -Body @{
@@ -266,7 +269,7 @@ function Ensure-RepositoryVariable {
       value = $Value
     } | Out-Null
 
-    Write-Output "created repo variable: $Name"
+    Write-Host "created repo variable: $Name"
   }
 }
 
@@ -278,7 +281,7 @@ function Get-OrCreate-Project {
   )
 
   if ($DryRun) {
-    Write-Output "dry-run ensure project: $ProjectTitle"
+    Write-Host "dry-run ensure project: $ProjectTitle"
     return [pscustomobject]@{
       id = "dry-run-project"
       title = $ProjectTitle
@@ -306,7 +309,7 @@ query {
 
   $existingProject = $viewer.viewer.projectsV2.nodes | Where-Object { $_.title -eq $ProjectTitle } | Select-Object -First 1
   if ($existingProject) {
-    Write-Output "project exists: $ProjectTitle"
+    Write-Host "project exists: $ProjectTitle"
     return $existingProject
   }
 
@@ -326,7 +329,7 @@ mutation($ownerId: ID!, $title: String!) {
     title = $ProjectTitle
   }
 
-  Write-Output "created project: $ProjectTitle"
+  Write-Host "created project: $ProjectTitle"
   return $createdProject.createProjectV2.projectV2
 }
 
@@ -339,7 +342,7 @@ function Add-Issue-ToProject {
   )
 
   if ($DryRun) {
-    Write-Output "dry-run add issue to project: $IssueNodeId"
+    Write-Host "dry-run add issue to project: $IssueNodeId"
     return
   }
 
@@ -357,10 +360,10 @@ mutation($projectId: ID!, $contentId: ID!) {
       contentId = $IssueNodeId
     } | Out-Null
 
-    Write-Output "added issue to project"
+    Write-Host "added issue to project"
   }
   catch {
-    Write-Output "skip add to project: $($_.Exception.Message)"
+    Write-Host "skip add to project: $($_.Exception.Message)"
   }
 }
 
