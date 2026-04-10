@@ -6,13 +6,13 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "#": path.resolve(__dirname, "src")
-    }
+      "#": path.resolve(__dirname, "src"),
+    },
   },
   test: {
     environment: "jsdom",
     globals: true,
-    setupFiles: ["./src/shared/tests/setup/vitest.setup.ts"],
-    include: ["src/**/*.test.ts", "src/**/*.test.tsx"]
-  }
+    setupFiles: ["./src/shared/_tests/setup/vitest.setup.ts"],
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+  },
 });

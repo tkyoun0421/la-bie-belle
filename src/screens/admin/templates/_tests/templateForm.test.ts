@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { shouldConfirmEventTemplateRequiredCountOverride } from "#/entities/events/models/policies/eventTemplatePolicy";
 import {
   createDefaultTemplateFormValues,
-  shouldConfirmBelowDefaultRequiredCount,
 } from "#/screens/admin/templates/_helpers/templateForm";
 
 describe("createDefaultTemplateFormValues", () => {
@@ -60,10 +60,10 @@ describe("createDefaultTemplateFormValues", () => {
   });
 });
 
-describe("shouldConfirmBelowDefaultRequiredCount", () => {
+describe("shouldConfirmEventTemplateRequiredCountOverride", () => {
   it("asks for confirmation when the user goes below the position default for the first time", () => {
     expect(
-      shouldConfirmBelowDefaultRequiredCount({
+      shouldConfirmEventTemplateRequiredCountOverride({
         currentRequiredCount: 2,
         nextRequiredCount: 1,
         positionDefaultRequiredCount: 2,
@@ -73,7 +73,7 @@ describe("shouldConfirmBelowDefaultRequiredCount", () => {
 
   it("does not ask again when the slot is already below the default", () => {
     expect(
-      shouldConfirmBelowDefaultRequiredCount({
+      shouldConfirmEventTemplateRequiredCountOverride({
         currentRequiredCount: 1,
         nextRequiredCount: 1,
         positionDefaultRequiredCount: 2,
@@ -83,7 +83,7 @@ describe("shouldConfirmBelowDefaultRequiredCount", () => {
 
   it("does not ask when the next value stays at or above the default", () => {
     expect(
-      shouldConfirmBelowDefaultRequiredCount({
+      shouldConfirmEventTemplateRequiredCountOverride({
         currentRequiredCount: 2,
         nextRequiredCount: 2,
         positionDefaultRequiredCount: 2,

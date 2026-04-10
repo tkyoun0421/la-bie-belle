@@ -81,7 +81,7 @@ export default defineConfig([
         },
         {
           type: "mutation-tests",
-          pattern: "src/mutations/*/tests/**/*",
+          pattern: "src/mutations/*/**/_tests/**/*",
           capture: ["domain"],
         },
         {
@@ -106,7 +106,7 @@ export default defineConfig([
         },
         {
           type: "query-tests",
-          pattern: "src/queries/*/tests/**/*",
+          pattern: "src/queries/*/**/_tests/**/*",
           capture: ["domain"],
         },
         {
@@ -121,7 +121,7 @@ export default defineConfig([
         },
         {
           type: "entity-tests",
-          pattern: "src/entities/*/tests/**/*",
+          pattern: "src/entities/*/**/_tests/**/*",
           capture: ["domain"],
         },
         { type: "shared", pattern: "src/shared/**/*" },
@@ -208,8 +208,7 @@ export default defineConfig([
               disallow: {
                 to: [{ type: ["query-hooks", "query-tests"] }],
               },
-              message:
-                "Query options cannot depend on query hooks or tests.",
+              message: "Query options cannot depend on query hooks or tests.",
             },
             {
               from: { type: "query-services" },
@@ -280,8 +279,7 @@ export default defineConfig([
               disallow: {
                 to: [{ type: ["entity-tests"] }],
               },
-              message:
-                "Entity repositories cannot depend on entity tests.",
+              message: "Entity repositories cannot depend on entity tests.",
             },
             {
               from: { type: "shared" },

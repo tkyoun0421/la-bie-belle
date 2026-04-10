@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { findDuplicateEventTemplateSlotPositionIds } from "#/entities/events/models/policies/eventTemplatePolicy";
 import { timeValueSchema } from "#/entities/events/models/schemas/eventTemplate";
 
 const createEventTemplateSlotInputSchema = z.object({
@@ -26,11 +27,9 @@ export const createEventTemplateInputSchema = createEventTemplateBaseSchema
       });
     }
 
-    const duplicatePositionIds = value.slotDefaults
-      .map((slot) => slot.positionId)
-      .filter(
-        (positionId, index, array) => array.indexOf(positionId) !== index
-      );
+    const duplicatePositionIds = findDuplicateEventTemplateSlotPositionIds(
+      value.slotDefaults
+    );
 
     if (duplicatePositionIds.length > 0) {
       context.addIssue({

@@ -13,10 +13,13 @@ import {
   type CreateEventTemplateInput,
 } from "#/mutations/events/schemas/createEventTemplate";
 import {
+  isPrimaryTemplateToggleLocked,
+  shouldConfirmEventTemplateRequiredCountOverride,
+} from "#/entities/events/models/policies/eventTemplatePolicy";
+import {
   createTemplateSlot,
   findNextAvailablePositionId,
   readDefaultRequiredCount,
-  shouldConfirmBelowDefaultRequiredCount,
   type TemplateFieldName,
   type TemplateFormSlot,
   templateSaveErrorMessage,
@@ -69,8 +72,10 @@ export function useTemplateEditorFormState({
     keyName: "_key",
     name: "slotDefaults",
   });
-  const isPrimaryLocked =
-    templatesCount === 0 || Boolean(initialTemplate?.isPrimary);
+  const isPrimaryLocked = isPrimaryTemplateToggleLocked({
+    initialTemplateIsPrimary: Boolean(initialTemplate?.isPrimary),
+    templatesCount,
+  });
   const isSaving =
     createTemplateMutation.isPending || updateTemplateMutation.isPending;
   const {
@@ -199,7 +204,7 @@ export function useTemplateEditorFormState({
 
       if (
         nextNumber >= 1 &&
-        shouldConfirmBelowDefaultRequiredCount({
+        shouldConfirmEventTemplateRequiredCountOverride({
           currentRequiredCount: currentSlot.requiredCount,
           nextRequiredCount: nextNumber,
           positionDefaultRequiredCount,

@@ -12,6 +12,12 @@ Date: 2026-04-10
 
 이 문서는 현재 repository 의 canonical tree 와 route-to-screen 대응을 기록한다.
 
+목표:
+
+- 현재 `src/` 구조를 한눈에 보여주기
+- route 와 screen 의 대응을 고정하기
+- 템플릿/포지션 화면처럼 이미 구조가 잡힌 영역의 실제 배치를 기록하기
+
 ## Top-Level Layout
 
 ```text
@@ -88,14 +94,15 @@ src/screens/admin/templates/
   AdminTemplatesScreen.tsx
   _components/
     AdminTemplatesClient.tsx
+    EventTemplateEditorCard.tsx
     EventTemplateListItem.tsx
     EventTemplatesListPanel.tsx
-    TemplateEditorPageClient.tsx
-    TemplateEditorPageSection.tsx
-    EventTemplateEditorCard.tsx
     TemplateBasicsFields.tsx
     TemplateEditorActions.tsx
+    TemplateEditorPageClient.tsx
+    TemplateEditorPageSection.tsx
     TemplateField.tsx
+    TemplateSlotDefaultRow.tsx
     TemplateSlotDefaultsSection.tsx
   _helpers/
     templateForm.ts
@@ -114,9 +121,10 @@ src/screens/admin/templates/
 
 정리 기준:
 
-- 목록 전용 코드는 `templates` 루트에 둔다.
-- `new` 와 `[templateId]/edit` 가 공유하는 editor 코드는 부모 `templates` 폴더에 둔다.
-- `new` 전용 또는 `edit` 전용 코드가 생기면 각 route 폴더 아래 `_components/_hooks/_helpers` 로 내리고, 테스트는 해당 route 폴더 루트의 `_tests` 로 둔다.
+- 목록 전용 코드는 `templates` 루트 아래에 둔다.
+- `new` 와 `edit` 가 공용으로 쓰는 editor 관련 support code 도 `templates` 루트 아래에 둔다.
+- `new` 전용 또는 `edit` 전용 코드가 생기면 각 route 폴더 아래로 내린다.
+- 템플릿 관련 테스트는 현재 owner 루트인 `templates/_tests` 에 둔다.
 
 ## Current Position Screen Shape
 
@@ -133,6 +141,32 @@ src/screens/admin/positions/
     useAdminPositionsScreenState.test.ts
 ```
 
+## Current Event Entity Shape
+
+```text
+src/entities/events/
+  models/
+    mappers/
+      mapEventTemplateRow.ts
+    policies/
+      eventTemplatePolicy.ts
+    schemas/
+      eventTemplate.ts
+    normalizeEventTemplateCollection.ts
+  repositories/
+    eventTemplateRepository.ts
+  _tests/
+    eventTemplatePolicy.test.ts
+    mapEventTemplateRow.test.ts
+    normalizeEventTemplateCollection.test.ts
+```
+
+핵심:
+
+- 이벤트 도메인 규칙은 `models/policies` 로 간다.
+- read/write persistence 진입점은 `repositories` 가 맡는다.
+- 화면 전용 규칙은 `screens` 로 가고, 도메인 규칙은 `entities` 로 간다.
+
 ## Rendering And Data Flow
 
 1. `app/*/page.tsx` 가 server component 로 시작한다.
@@ -141,10 +175,11 @@ src/screens/admin/positions/
 4. route entry 가 `screens/*` screen shell 을 렌더한다.
 5. 필요한 부분만 `screens/*/_components/*Client.tsx` 에서 client island 로 동작한다.
 6. client island 는 `queries/*/hooks` 와 `mutations/*/hooks` 를 사용한다.
-7. read/write data access 는 `entities/*/repositories/*` 에서 끝난다.
+7. domain rule 은 `entities/*/models/policies/*` 에서 관리한다.
+8. read/write data access 는 `entities/*/repositories/*` 에서 관리한다.
 
 ## Current Rule
 
-- `screens` 는 `app` 구조를 따라간다.
-- 공용 코드만 부모 screen 폴더에 둔다.
-- 새 테스트는 owner 폴더 아래 `_tests` 로 colocate 한다.
+- `screens` 는 `app` 구조를 그대로 따라간다.
+- 공용 support code 는 가장 가까운 부모 screen 아래에 둔다.
+- 테스트는 모든 레이어에서 `_tests` 로 통일한다.
