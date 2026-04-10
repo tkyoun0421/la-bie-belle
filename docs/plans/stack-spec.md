@@ -57,6 +57,7 @@ Date: 2026-04-10
 - 상위 레벨의 과한 `useWatch`, 넓은 client island, 잘못된 state ownership은 계속 직접 정리해야 한다.
 - shadcn/ui 는 컴포넌트 구조와 접근성 패턴의 베이스로 사용하고, 색/폰트는 theme token으로 덮어쓴다.
 - form 은 `react-hook-form`으로 관리하고, 저장은 server action + mutation hook 조합으로 연결한다.
+- `react-hook-form` 은 dialog/page leaf 쪽에 최대한 가깝게 둔다. screen root 에 올려서 list panel 과 같이 리렌더링시키지 않는다.
 - Supabase Next.js 연동은 `@supabase/supabase-js`와 `@supabase/ssr` 조합을 기준으로 한다.
 
 ## Decide When First Slice Needs It

@@ -198,6 +198,24 @@ src/screens/admin/templates/
 - `new` 전용 코드가 생기면 `screens/admin/templates/new/_components` 같은 구조로 내린다.
 - `edit` 전용 코드가 생기면 `screens/admin/templates/[templateId]/edit/_components` 같은 구조로 내린다.
 
+## Form State Ownership Rule
+
+`screens` 안에서 form state 는 아무 곳에나 두지 않는다.
+
+- screen root 훅은 목록, 검색어, 선택된 id, dialog open/close, pending delete 같은 orchestration state 만 가진다.
+- `react-hook-form`, `useWatch`, field error, submit error 같은 자주 바뀌는 form state 는 leaf editor component 또는 leaf dialog 전용 훅으로 내린다.
+- sibling list panel 이 함께 붙어 있는 화면에서 screen root 훅이 `useForm` 또는 넓은 `useWatch` 를 직접 가지면 안 된다.
+- create/edit 전환으로 form reset 이 필요하면 screen root 에서 `requestKey` 같은 session key 만 바꾸고, 실제 reset 은 leaf editor remount 로 처리한다.
+
+기준 예시:
+
+- `screens/admin/positions/_hooks/useAdminPositionsScreenState.ts`
+  - 목록 orchestration 전용
+- `screens/admin/positions/_components/PositionEditorDialog.tsx`
+  - leaf dialog shell
+- `screens/admin/positions/_hooks/usePositionEditorDialogState.ts`
+  - form state 전용
+
 ## mutations Rule
 
 기본 구조:
@@ -270,7 +288,7 @@ src/entities/events/
     mappers/
     errors/
     policies/
-    normalizeEventTemplateCollection.ts
+    helpers/
   repositories/
   _tests/
 ```
@@ -289,6 +307,9 @@ src/entities/events/
   - 예: 대표 템플릿 삭제 가능 여부
   - 예: 슬롯 포지션 중복 허용 여부
   - 예: 기본 인원보다 낮출 때 confirm 필요 여부
+- `models/helpers`
+  - domain-level pure collection helper
+  - 예: 정렬, upsert, reorder 같은 컬렉션 계산
 - `repositories`
   - domain-level data access layer
   - read/write persistence 진입점

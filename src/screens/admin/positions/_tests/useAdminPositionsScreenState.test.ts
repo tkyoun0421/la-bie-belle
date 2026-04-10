@@ -1,21 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  positionErrors,
-  positionErrorCodes,
-} from "#/entities/positions/models/errors/positionError";
 import type { Position } from "#/entities/positions/models/schemas/position";
 import { useAdminPositionsScreenState } from "#/screens/admin/positions/_hooks/useAdminPositionsScreenState";
-
-const createPositionMutation = {
-  isPending: false,
-  mutateAsync: vi.fn(),
-};
-
-const updatePositionMutation = {
-  isPending: false,
-  mutateAsync: vi.fn(),
-};
 
 const deletePositionMutation = {
   isPending: false,
@@ -34,14 +20,6 @@ const positionCollectionStateMock = {
   searchTerm: "",
   setSearchTerm: vi.fn(),
 };
-
-vi.mock("#/mutations/positions/hooks/useCreatePositionMutation", () => ({
-  useCreatePositionMutation: () => createPositionMutation,
-}));
-
-vi.mock("#/mutations/positions/hooks/useUpdatePositionMutation", () => ({
-  useUpdatePositionMutation: () => updatePositionMutation,
-}));
 
 vi.mock("#/mutations/positions/hooks/useDeletePositionMutation", () => ({
   useDeletePositionMutation: () => deletePositionMutation,
@@ -77,13 +55,13 @@ describe("useAdminPositionsScreenState", () => {
     positionCollectionStateMock.searchTerm = "";
   });
 
-  it("keeps edit mode while the dialog is closing after editing", async () => {
+  it("keeps the editing target while the dialog is closing after editing", async () => {
     positionCollectionStateMock.filteredPositions = [
       {
         allowedGender: "all",
         defaultRequiredCount: 2,
         id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
-        name: "안내",
+        name: "main",
         sortOrder: 1,
       },
     ];
@@ -92,7 +70,7 @@ describe("useAdminPositionsScreenState", () => {
         allowedGender: "all",
         defaultRequiredCount: 2,
         id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
-        name: "안내",
+        name: "main",
         sortOrder: 1,
       },
     ];
@@ -107,7 +85,7 @@ describe("useAdminPositionsScreenState", () => {
       expect(result.current.editingPositionId).toBe(
         "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
       );
-      expect(result.current.name).toBe("안내");
+      expect(result.current.editorInitialPosition?.name).toBe("main");
     });
 
     act(() => {
@@ -120,76 +98,22 @@ describe("useAdminPositionsScreenState", () => {
     );
   });
 
-  it("keeps the current form values while the dialog is closing and resets on the next create open", async () => {
+  it("increments the editor request key when a new create session opens", () => {
     const { result } = renderHook(() => useAdminPositionsScreenState());
+
+    expect(result.current.editorRequestKey).toBe(0);
 
     act(() => {
       result.current.onOpenCreate();
     });
 
-    act(() => {
-      result.current.onNameChange("메인 안내");
-    });
-
-    await waitFor(() => {
-      expect(result.current.name).toBe("메인 안내");
-    });
+    expect(result.current.editorRequestKey).toBe(1);
 
     act(() => {
       result.current.onCloseEditor();
-    });
-
-    expect(result.current.isEditorOpen).toBe(false);
-    expect(result.current.name).toBe("메인 안내");
-
-    act(() => {
       result.current.onOpenCreate();
     });
 
-    await waitFor(() => {
-      expect(result.current.name).toBe("");
-    });
-  });
-
-  it("exposes validation errors on the matching position fields", async () => {
-    const { result } = renderHook(() => useAdminPositionsScreenState());
-
-    act(() => {
-      result.current.onOpenCreate();
-    });
-
-    await act(async () => {
-      await result.current.onSubmit();
-    });
-
-    await waitFor(() => {
-      expect(result.current.fieldErrors.name).toBe(
-        "포지션 이름을 입력해 주세요."
-      );
-      expect(result.current.editorError).toBeNull();
-    });
-  });
-
-  it("maps position save error codes to editor messages", async () => {
-    createPositionMutation.mutateAsync.mockRejectedValueOnce(
-      positionErrors.create(positionErrorCodes.duplicateName)
-    );
-
-    const { result } = renderHook(() => useAdminPositionsScreenState());
-
-    act(() => {
-      result.current.onOpenCreate();
-      result.current.onNameChange("안내");
-    });
-
-    await act(async () => {
-      await result.current.onSubmit();
-    });
-
-    await waitFor(() => {
-      expect(result.current.editorError).toBe(
-        "같은 이름의 포지션이 이미 있습니다."
-      );
-    });
+    expect(result.current.editorRequestKey).toBe(2);
   });
 });

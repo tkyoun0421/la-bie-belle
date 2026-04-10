@@ -133,13 +133,24 @@ src/screens/admin/positions/
   AdminPositionsScreen.tsx
   _components/
     AdminPositionsClient.tsx
+    PositionEditorDialog.tsx
     PositionEditorCard.tsx
     PositionsListPanel.tsx
   _hooks/
     useAdminPositionsScreenState.ts
+    usePositionEditorDialogState.ts
   _tests/
+    AdminPositionsClient.test.tsx
     useAdminPositionsScreenState.test.ts
+    usePositionEditorDialogState.test.ts
 ```
+
+정리 기준:
+
+- 목록과 검색 orchestration 은 `useAdminPositionsScreenState.ts` 에 둔다.
+- editor dialog shell 은 `PositionEditorDialog.tsx` 로 분리한다.
+- `react-hook-form`, `useWatch`, validation, submit error 는 `usePositionEditorDialogState.ts` 로 내린다.
+- 이 구조의 목적은 dialog 입력 중 `PositionsListPanel` 이 함께 리렌더링되지 않게 만드는 것이다.
 
 ## Current Event Entity Shape
 
@@ -182,6 +193,14 @@ src/entities/events/
 6. client island 는 `queries/*/hooks` 와 `mutations/*/hooks` 를 사용한다.
 7. domain rule 은 `entities/*/models/policies/*` 에서 관리한다.
 8. read/write data access 는 `entities/*/repositories/*` 에서 관리한다.
+
+## Client State Ownership Rule
+
+- screen root client component 는 list/search/open/close 같은 orchestration state 만 가진다.
+- 입력 중 자주 변하는 form state 는 leaf dialog 또는 leaf page section 아래로 내린다.
+- `react-hook-form` 과 `useWatch` 는 가능한 가장 좁은 owner 에 둔다.
+- sibling panel 이 있는 화면에서 root client component 가 form state 를 가지면 리렌더 범위가 넓어지므로 금지한다.
+- 새 create/edit 세션 시작은 `requestKey` 같은 session key 로 분리하고, leaf subtree remount 로 초기화한다.
 
 ## Current Rule
 

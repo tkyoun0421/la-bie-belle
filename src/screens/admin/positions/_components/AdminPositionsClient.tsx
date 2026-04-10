@@ -1,43 +1,34 @@
 "use client";
 
 import { ConfirmDialog } from "#/shared/components/common/ConfirmDialog";
-import { PositionEditorCard } from "#/screens/admin/positions/_components/PositionEditorCard";
+import { PositionEditorDialog } from "#/screens/admin/positions/_components/PositionEditorDialog";
 import { PositionsListPanel } from "#/screens/admin/positions/_components/PositionsListPanel";
 import { useAdminPositionsScreenState } from "#/screens/admin/positions/_hooks/useAdminPositionsScreenState";
 
 export function AdminPositionsClient() {
   const {
-    allowedGender,
     canReorder,
-    defaultRequiredCount,
     draggingPositionId,
     dropTargetPositionId,
-    editorError,
-    editingPositionId,
-    fieldErrors,
+    editorInitialPosition,
+    editorRequestKey,
     filteredPositions,
     isDeleting,
     isEditorOpen,
     isReordering,
     isSearchActive,
-    isSaving,
     listError,
-    name,
-    onAllowedGenderChange,
     onCancelDelete,
-    onCloseEditor,
     onConfirmDelete,
-    onDefaultRequiredCountChange,
     onDelete,
     onDragEnd,
     onDragStart,
     onDrop,
     onDropTargetChange,
     onEdit,
-    onNameChange,
+    onOpenChange,
     onOpenCreate,
     onSearchTermChange,
-    onSubmit,
     pendingDeletePosition,
     positions,
     searchTerm,
@@ -68,24 +59,13 @@ export function AdminPositionsClient() {
         />
       </section>
 
-      {isEditorOpen ? (
-        <section>
-          <PositionEditorCard
-            allowedGender={allowedGender}
-            defaultRequiredCount={defaultRequiredCount}
-            fieldErrors={fieldErrors}
-            isEditing={editingPositionId !== null}
-            isSaving={isSaving}
-            name={name}
-            onAllowedGenderChange={onAllowedGenderChange}
-            onCancel={onCloseEditor}
-            onDefaultRequiredCountChange={onDefaultRequiredCountChange}
-            onNameChange={onNameChange}
-            onSubmit={onSubmit}
-            serverError={editorError}
-          />
-        </section>
-      ) : null}
+      <PositionEditorDialog
+        initialPosition={editorInitialPosition}
+        key={editorRequestKey}
+        onOpenChange={onOpenChange}
+        open={isEditorOpen}
+        requestKey={editorRequestKey}
+      />
 
       <ConfirmDialog
         confirmLabel="삭제"

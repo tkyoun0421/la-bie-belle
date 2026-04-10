@@ -97,6 +97,10 @@ lower layer 도 테스트 폴더는 `_tests` 로 통일한다.
 - read-side state 는 `queries/*/hooks`
 - write execution 은 `mutations/*/hooks`
 - route-local interaction state 는 `screens/*/_hooks` 또는 leaf client component
+- screen root state 는 orchestration 위주로 제한한다.
+- `react-hook-form`, `useWatch`, field error, submit error 는 leaf dialog 또는 leaf editor 전용 훅으로 내린다.
+- 목록과 editor 가 공존하는 화면에서 root client component 가 form state 를 직접 가지면 안 된다.
+- create/edit reset 은 root 에서 form 값을 직접 비우는 대신 session key 변경 + leaf remount 패턴을 기본으로 쓴다.
 
 ## Domain Rule Rule
 
