@@ -4,16 +4,15 @@ import {
   positionsResponseSchema,
   type Position,
 } from "#/entities/positions/models/schemas/position";
-import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type PositionRepositoryOptions = {
-  client?: SupabaseClient;
+  client: SupabaseClient;
 };
 
 export async function readPositions(
-  options: PositionRepositoryOptions = {}
+  options: PositionRepositoryOptions
 ): Promise<Position[]> {
-  const client = options.client ?? createSupabaseAdminClient();
+  const { client } = options;
   const { data, error } = await client
     .from("positions")
     .select("id, name, allowed_gender, default_required_count, sort_order")

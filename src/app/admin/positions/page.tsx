@@ -2,12 +2,14 @@ import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { readPositions } from "#/entities/positions/repositories/positionRepository";
 import { getPositionCollectionQueryOptions } from "#/queries/positions/options/getPositionCollectionQueryOptions";
 import { AdminPositionsScreen } from "#/screens/admin/positions/AdminPositionsScreen";
+import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 import { createQueryClient } from "#/shared/lib/tanstack-query/createQueryClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPositionsPage() {
-  const positions = await readPositions();
+  const client = createSupabaseAdminClient();
+  const positions = await readPositions({ client });
   const queryClient = createQueryClient();
   const positionCollectionQuery = getPositionCollectionQueryOptions();
 

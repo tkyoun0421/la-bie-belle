@@ -7,7 +7,6 @@ import {
   eventTemplatesResponseSchema,
   type EventTemplate,
 } from "#/entities/events/models/schemas/eventTemplate";
-import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 const eventTemplateSelect = `
   id,
@@ -30,13 +29,13 @@ const eventTemplateSelect = `
 `;
 
 type EventTemplateRepositoryOptions = {
-  client?: SupabaseClient;
+  client: SupabaseClient;
 };
 
 export async function readEventTemplates(
-  options: EventTemplateRepositoryOptions = {}
+  options: EventTemplateRepositoryOptions
 ): Promise<EventTemplate[]> {
-  const client = options.client ?? createSupabaseAdminClient();
+  const { client } = options;
   const { data, error } = await client
     .from("event_templates")
     .select(eventTemplateSelect)
@@ -56,9 +55,9 @@ export async function readEventTemplates(
 
 export async function readEventTemplateById(
   templateId: string,
-  options: EventTemplateRepositoryOptions = {}
+  options: EventTemplateRepositoryOptions
 ): Promise<EventTemplate> {
-  const client = options.client ?? createSupabaseAdminClient();
+  const { client } = options;
   const { data, error } = await client
     .from("event_templates")
     .select(eventTemplateSelect)

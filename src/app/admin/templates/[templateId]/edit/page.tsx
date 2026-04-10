@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { readEventTemplates } from "#/entities/events/repositories/eventTemplateRepository";
 import { readPositions } from "#/entities/positions/repositories/positionRepository";
 import { AdminTemplateEditScreen } from "#/screens/admin/templates/[templateId]/edit/AdminTemplateEditScreen";
+import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type AdminTemplateEditPageProps = {
   params: Promise<{ templateId: string }>;
@@ -13,9 +14,10 @@ export default async function AdminTemplateEditPage({
   params,
 }: AdminTemplateEditPageProps) {
   const { templateId } = await params;
+  const client = createSupabaseAdminClient();
   const [templates, positions] = await Promise.all([
-    readEventTemplates(),
-    readPositions(),
+    readEventTemplates({ client }),
+    readPositions({ client }),
   ]);
   const template = templates.find((item) => item.id === templateId) ?? null;
 
