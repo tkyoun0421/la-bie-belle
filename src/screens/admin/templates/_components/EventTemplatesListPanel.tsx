@@ -40,8 +40,14 @@ export function EventTemplatesListPanel({
             대표 템플릿은 목록 상단에 먼저 정렬됩니다.
           </CardDescription>
         </div>
-        <Button asChild className="self-end" type="button">
-          <Link href="/admin/templates/new">새 템플릿 추가</Link>
+        <Button
+          asChild
+          className="self-end !text-[var(--primary-foreground)] hover:!text-[var(--primary-foreground)]"
+          type="button"
+        >
+          <Link href="/admin/templates/new" prefetch>
+            새 템플릿 추가
+          </Link>
         </Button>
       </CardHeader>
 

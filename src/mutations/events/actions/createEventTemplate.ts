@@ -1,6 +1,10 @@
 "use server";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import {
+  eventTemplateErrors,
+  eventTemplateErrorCodes,
+} from "#/entities/events/models/errors/eventTemplateError";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import {
   readEventTemplateById,
@@ -43,5 +47,13 @@ export async function createEventTemplateAction(
     { client }
   );
 
-  return readById(templateId, { client });
+  const template = await readById(templateId, { client });
+
+  if (!template) {
+    throw eventTemplateErrors.create(
+      eventTemplateErrorCodes.createResultMissing
+    );
+  }
+
+  return template;
 }

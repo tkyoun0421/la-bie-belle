@@ -58,18 +58,22 @@ export async function readEventTemplates(
 export async function readEventTemplateById(
   templateId: string,
   options: EventTemplateRepositoryOptions
-): Promise<EventTemplate> {
+): Promise<EventTemplate | null> {
   const { client } = options;
   const { data, error } = await client
     .from("event_templates")
     .select(eventTemplateSelect)
     .eq("id", templateId)
-    .single();
+    .maybeSingle();
 
   if (error) {
     throw eventTemplateErrors.create(eventTemplateErrorCodes.readFailed, {
       cause: error,
     });
+  }
+
+  if (!data) {
+    return null;
   }
 
   return mapEventTemplateRow(data);

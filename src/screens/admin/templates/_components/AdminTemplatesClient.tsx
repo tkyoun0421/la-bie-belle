@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "#/shared/components/common/ConfirmDialog";
 import { EventTemplatesListPanel } from "#/screens/admin/templates/_components/EventTemplatesListPanel";
 import { useAdminTemplatesScreenState } from "#/screens/admin/templates/_hooks/useAdminTemplatesScreenState";
@@ -11,6 +13,8 @@ type AdminTemplatesClientProps = {
 export function AdminTemplatesClient({
   initialHighlightedTemplateId,
 }: Readonly<AdminTemplatesClientProps>) {
+  const router = useRouter();
+  const prefetchedHrefsRef = useRef<Set<string>>(new Set());
   const {
     deletePending,
     filteredTemplates,
@@ -25,6 +29,24 @@ export function AdminTemplatesClient({
   } = useAdminTemplatesScreenState({
     initialHighlightedTemplateId,
   });
+
+  useEffect(() => {
+    const nextHrefs = [
+      "/admin/templates/new",
+      ...filteredTemplates
+        .slice(0, 6)
+        .map((template) => `/admin/templates/${template.id}/edit`),
+    ];
+
+    nextHrefs.forEach((href) => {
+      if (prefetchedHrefsRef.current.has(href)) {
+        return;
+      }
+
+      prefetchedHrefsRef.current.add(href);
+      router.prefetch(href);
+    });
+  }, [filteredTemplates, router]);
 
   return (
     <>

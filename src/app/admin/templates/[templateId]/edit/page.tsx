@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
-import { readEventTemplates } from "#/entities/events/repositories/readEventTemplateRepository";
+import {
+  readEventTemplateById,
+} from "#/entities/events/repositories/readEventTemplateRepository";
+import { countEventTemplateRecords } from "#/entities/events/repositories/writeEventTemplateRepository";
 import { readPositions } from "#/entities/positions/repositories/readPositionRepository";
 import { AdminTemplateEditScreen } from "#/screens/admin/templates/[templateId]/edit/AdminTemplateEditScreen";
 import { requireAdminPageActor } from "#/shared/lib/auth/adminActor";
@@ -17,11 +20,11 @@ export default async function AdminTemplateEditPage({
   await requireAdminPageActor();
   const { templateId } = await params;
   const client = createSupabaseAdminClient();
-  const [templates, positions] = await Promise.all([
-    readEventTemplates({ client }),
+  const [template, templatesCount, positions] = await Promise.all([
+    readEventTemplateById(templateId, { client }),
+    countEventTemplateRecords({ client }),
     readPositions({ client }),
   ]);
-  const template = templates.find((item) => item.id === templateId) ?? null;
 
   if (!template) {
     notFound();
@@ -31,7 +34,7 @@ export default async function AdminTemplateEditPage({
     <AdminTemplateEditScreen
       positions={positions}
       template={template}
-      templatesCount={templates.length}
+      templatesCount={templatesCount}
     />
   );
 }

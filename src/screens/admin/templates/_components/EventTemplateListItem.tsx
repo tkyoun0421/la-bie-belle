@@ -27,7 +27,7 @@ export function EventTemplateListItem({
       className={cn(
         "relative overflow-visible border-[var(--border-soft)] bg-white transition-colors",
         template.isPrimary &&
-          "border-2 border-[var(--primary)] bg-[#f8fbff] shadow-[0_12px_30px_rgba(43,127,255,0.10)]",
+          "border-2 border-[var(--primary)] bg-white shadow-[0_12px_30px_rgba(43,127,255,0.10)]",
         isHighlighted &&
           "bg-[#f5faff] shadow-[0_16px_38px_rgba(43,127,255,0.12)]",
         isHighlighted && template.isPrimary && "border-[#2b7fff]"
@@ -51,15 +51,15 @@ export function EventTemplateListItem({
           </div>
 
           <div className="flex items-center gap-3">
-            <Badge>{isHighlighted ? "방금 저장됨" : "저장됨"}</Badge>
-            <Button
-              asChild
-              className="h-auto p-0 text-[var(--text-muted)] hover:text-[var(--foreground)] hover:underline hover:underline-offset-4"
-              type="button"
-              variant="link"
+            <Link
+              className="group inline-flex h-auto items-center justify-center p-0 text-sm font-medium"
+              href={editHref}
+              prefetch
             >
-              <Link href={editHref}>수정</Link>
-            </Button>
+              <span className="text-muted-foreground underline-offset-4 transition-colors group-hover:text-foreground group-hover:underline">
+                수정
+              </span>
+            </Link>
             {canDelete ? (
               <Button
                 className="h-auto p-0 text-[var(--foreground)] hover:bg-transparent hover:text-[var(--foreground)] hover:underline hover:underline-offset-4"
