@@ -102,7 +102,9 @@ Date: 2026-04-10
 - privileged write는 브라우저에서 직접 호출하지 않는다.
 - service-role client는 server-only 경로에서만 사용한다.
 - service-role 호출은 `shared` 인프라와 `entities/*/repositories`, `mutations/*/actions` 내부에서만 닫는다.
-- 정식 회원/권한 모델 전까지는 admin privileged path를 perimeter protection 또는 bootstrap admin gate 뒤에 둔다.
+- 정식 회원/권한 모델 전까지는 admin privileged path를 bootstrap admin gate 뒤에 둔다.
+- bootstrap admin gate는 `BOOTSTRAP_ADMIN_EMAILS` env allowlist를 기준으로 동작한다.
+- `BOOTSTRAP_ADMIN_EMAILS` 가 비어 있고 production 이 아니면 개발용 bypass 를 허용한다.
 
 ## Rendering Boundary
 

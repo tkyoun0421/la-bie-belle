@@ -11,12 +11,14 @@ import {
   parseDeleteEventTemplateInput,
   type DeleteEventTemplateInput,
 } from "#/mutations/events/schemas/deleteEventTemplate";
+import { requireAdminActor } from "#/shared/lib/auth/adminActor";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type DeleteEventTemplateDependencies = {
   client?: SupabaseClient;
   countRecords?: typeof countEventTemplateRecords;
   deleteRecord?: typeof deleteEventTemplateRecord;
+  requireActor?: typeof requireAdminActor;
   readDeleteSnapshot?: typeof readEventTemplateDeleteSnapshot;
 };
 
@@ -25,6 +27,8 @@ export async function deleteEventTemplateAction(
   dependencies: DeleteEventTemplateDependencies = {}
 ) {
   const values = parseDeleteEventTemplateInput(input);
+  const requireActor = dependencies.requireActor ?? requireAdminActor;
+  await requireActor();
   const client = dependencies.client ?? createSupabaseAdminClient();
   const countRecords =
     dependencies.countRecords ?? countEventTemplateRecords;

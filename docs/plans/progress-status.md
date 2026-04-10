@@ -11,12 +11,13 @@ Date: 2026-04-10
 
 ## Completed Foundations
 
-- TDD 운영 규칙을 문서화했고 slice 기준 `red -> green -> refactor`를 기본 루프로 고정했다.
-- GitHub Actions CI를 추가해서 `lint`, `typecheck`, `test`, `build`, `test:e2e`를 자동 검증한다.
-- GitHub roadmap 운영 레일, issue 템플릿, PR 템플릿, `develop -> master` phase PR 규칙을 정리했다.
-- Supabase 프로젝트를 초기화하고 baseline migration과 seed를 다시 잡았다.
-- TanStack Query provider와 hydration 기반 read path를 연결했다.
-- `src/` 계층 규칙을 `app -> screens -> mutations -> queries -> entities -> shared`로 재정의했다.
+- TDD 운영 규칙과 `red -> green -> refactor` 루프를 문서화했다.
+- GitHub Actions CI에 `lint`, `typecheck`, `test`, `build`, `test:e2e`를 연결했다.
+- GitHub roadmap, phase PR 규칙, issue/PR 템플릿을 정리했다.
+- Supabase 프로젝트를 초기화하고 baseline migration과 seed를 다시 적용했다.
+- `src/` 레이어 구조를 `app -> screens -> mutations -> queries -> entities -> shared`로 고정했다.
+- `events`, `positions` 도메인의 CRUD와 admin 화면을 Supabase 기준으로 연결했다.
+- React Query hydration, query key factory, React Compiler를 적용했다.
 
 ## Implemented Product Surface
 
@@ -24,23 +25,27 @@ Date: 2026-04-10
 
 - `/admin/positions`
   - 포지션 생성, 수정, 삭제
-  - 포지션별 가능 성별 지정
+  - 기본 필수 인원 설정
+  - 드래그 정렬
 - `/admin/templates`
-  - 행사 템플릿 생성, 수정, 삭제
-  - 포지션 슬롯 기본값 저장
-
-현재 이 두 화면은 실제 Supabase DB를 사용하고, mock 데이터는 제거된 상태다.
+  - 템플릿 목록
+  - 대표 템플릿 관리
+  - 템플릿 생성 / 수정 전용 페이지
+  - 슬롯 드래그 정렬
+  - 포지션 기본값 기반 슬롯 구성
 
 ## Current Architecture Decisions
 
-- top-level layer는 `app / screens / mutations / queries / entities / shared`
-- `screens`는 화면 조합만 담당한다.
-- `mutations`와 `queries`에는 UI component를 두지 않는다.
-- `entities`는 현재 기준으로 non-UI domain core다.
+- `screens`는 `app` route 구조를 그대로 따른다.
+- `mutations`와 `queries`에는 UI 컴포넌트를 두지 않는다.
+- `entities`는 non-UI domain core와 persistence를 담당한다.
 - `entities/repositories`는 domain-level data access layer다.
-- `screens/*/_components`에 screen-local dumb UI와 client island를 둔다.
-- server state는 server hydration + TanStack Query를 기준으로 관리한다.
-- client-only local state는 React built-in state와 domain hook을 우선 사용한다.
+- repository는 필요 시 `read*Repository.ts`, `write*Repository.ts`로 분리한다.
+- `mutations/actions`는 raw Supabase 호출 대신 repository orchestration만 맡는다.
+- server state는 server hydration + TanStack Query를 기본으로 관리한다.
+- client-only local state는 screen-local hook과 React built-in state를 우선 사용한다.
+- admin privileged path는 bootstrap admin gate 뒤에 둔다.
+- bootstrap gate는 `BOOTSTRAP_ADMIN_EMAILS` allowlist를 기준으로 하고, non-production에서는 development bypass를 기본 허용한다.
 
 ## Current Stack Snapshot
 
@@ -49,10 +54,12 @@ Date: 2026-04-10
 - TanStack Query
 - Zod
 - Tailwind CSS v4
+- shadcn/ui
 - Vitest + Playwright
 
 ## Next Priority
 
 - Phase 1 / Slice 2: 템플릿 기반 행사 생성
-- admin bootstrap gate 또는 perimeter protection 정리
-- event/application/assignment/replacement happy path 확장
+- auth callback / 로그인 진입점 구현
+- event / application / assignment / replacement happy path 확장
+- lower layer 에러를 코드 중심으로 정리하고 화면에서 문구를 매핑하는 구조로 이동

@@ -6,11 +6,13 @@ import {
   parseDeletePositionInput,
   type DeletePositionInput,
 } from "#/mutations/positions/schemas/deletePosition";
+import { requireAdminActor } from "#/shared/lib/auth/adminActor";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type DeletePositionDependencies = {
   client?: SupabaseClient;
   deleteRecord?: typeof deletePositionRecord;
+  requireActor?: typeof requireAdminActor;
 };
 
 export async function deletePositionAction(
@@ -18,6 +20,8 @@ export async function deletePositionAction(
   dependencies: DeletePositionDependencies = {}
 ) {
   const values = parseDeletePositionInput(input);
+  const requireActor = dependencies.requireActor ?? requireAdminActor;
+  await requireActor();
   const client = dependencies.client ?? createSupabaseAdminClient();
   const deleteRecord = dependencies.deleteRecord ?? deletePositionRecord;
 

@@ -10,12 +10,14 @@ import {
   parseCreateEventTemplateInput,
   type CreateEventTemplateInput,
 } from "#/mutations/events/schemas/createEventTemplate";
+import { requireAdminActor } from "#/shared/lib/auth/adminActor";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type CreateEventTemplateDependencies = {
   client?: SupabaseClient;
   createRecord?: typeof createEventTemplateRecord;
   readById?: typeof readEventTemplateById;
+  requireActor?: typeof requireAdminActor;
 };
 
 export async function createEventTemplateAction(
@@ -23,6 +25,8 @@ export async function createEventTemplateAction(
   dependencies: CreateEventTemplateDependencies = {}
 ): Promise<EventTemplate> {
   const values = parseCreateEventTemplateInput(input);
+  const requireActor = dependencies.requireActor ?? requireAdminActor;
+  await requireActor();
   const client = dependencies.client ?? createSupabaseAdminClient();
   const createRecord = dependencies.createRecord ?? createEventTemplateRecord;
   const readById = dependencies.readById ?? readEventTemplateById;

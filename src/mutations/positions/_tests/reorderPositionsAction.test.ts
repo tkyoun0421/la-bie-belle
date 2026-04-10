@@ -4,6 +4,12 @@ import { reorderPositionsAction } from "#/mutations/positions/actions/reorderPos
 describe("reorderPositionsAction", () => {
   it("delegates the reorder request to the write repository", async () => {
     const client = {} as never;
+    const requireActor = vi.fn().mockResolvedValue({
+      email: null,
+      kind: "development_bypass",
+      source: "development_bypass",
+      userId: null,
+    });
     const reorderRecords = vi.fn().mockResolvedValue([
       "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
       "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
@@ -16,9 +22,10 @@ describe("reorderPositionsAction", () => {
           "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
         ],
       },
-      { client, reorderRecords }
+      { client, reorderRecords, requireActor }
     );
 
+    expect(requireActor).toHaveBeenCalled();
     expect(reorderRecords).toHaveBeenCalledWith(
       [
         "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",

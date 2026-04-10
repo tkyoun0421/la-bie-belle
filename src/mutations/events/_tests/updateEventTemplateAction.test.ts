@@ -4,6 +4,12 @@ import { updateEventTemplateAction } from "#/mutations/events/actions/updateEven
 describe("updateEventTemplateAction", () => {
   it("updates a template record and returns the updated template", async () => {
     const client = {} as never;
+    const requireActor = vi.fn().mockResolvedValue({
+      email: null,
+      kind: "development_bypass",
+      source: "development_bypass",
+      userId: null,
+    });
     const updateRecord = vi
       .fn()
       .mockResolvedValue("99999999-9999-4999-8999-999999999999");
@@ -42,10 +48,12 @@ describe("updateEventTemplateAction", () => {
       {
         client,
         readById,
+        requireActor,
         updateRecord,
       }
     );
 
+    expect(requireActor).toHaveBeenCalled();
     expect(updateRecord).toHaveBeenCalledWith(
       {
         firstServiceAt: "10:30",

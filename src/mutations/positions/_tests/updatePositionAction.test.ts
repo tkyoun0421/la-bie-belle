@@ -4,6 +4,12 @@ import { updatePositionAction } from "#/mutations/positions/actions/updatePositi
 describe("updatePositionAction", () => {
   it("updates a position through the write repository", async () => {
     const client = {} as never;
+    const requireActor = vi.fn().mockResolvedValue({
+      email: null,
+      kind: "development_bypass",
+      source: "development_bypass",
+      userId: null,
+    });
     const updateRecord = vi.fn().mockResolvedValue({
       allowedGender: "male",
       defaultRequiredCount: 4,
@@ -19,9 +25,10 @@ describe("updatePositionAction", () => {
         defaultRequiredCount: 4,
         name: "  설명과 진행  ",
       },
-      { client, updateRecord }
+      { client, requireActor, updateRecord }
     );
 
+    expect(requireActor).toHaveBeenCalled();
     expect(updateRecord).toHaveBeenCalledWith(
       {
         allowedGender: "male",

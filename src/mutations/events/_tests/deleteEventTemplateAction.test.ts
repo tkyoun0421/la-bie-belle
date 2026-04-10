@@ -4,6 +4,12 @@ import { deleteEventTemplateAction } from "#/mutations/events/actions/deleteEven
 describe("deleteEventTemplateAction", () => {
   it("deletes a non-representative template and returns its id", async () => {
     const client = {} as never;
+    const requireActor = vi.fn().mockResolvedValue({
+      email: null,
+      kind: "development_bypass",
+      source: "development_bypass",
+      userId: null,
+    });
     const readDeleteSnapshot = vi.fn().mockResolvedValue({
       id: "99999999-9999-4999-8999-999999999999",
       isPrimary: false,
@@ -19,10 +25,12 @@ describe("deleteEventTemplateAction", () => {
           countRecords,
           deleteRecord,
           readDeleteSnapshot,
+          requireActor,
         }
       )
     ).resolves.toBe("99999999-9999-4999-8999-999999999999");
 
+    expect(requireActor).toHaveBeenCalled();
     expect(readDeleteSnapshot).toHaveBeenCalledWith(
       "99999999-9999-4999-8999-999999999999",
       { client }
@@ -48,6 +56,12 @@ describe("deleteEventTemplateAction", () => {
             id: "99999999-9999-4999-8999-999999999999",
             isPrimary: true,
           }),
+          requireActor: vi.fn().mockResolvedValue({
+            email: null,
+            kind: "development_bypass",
+            source: "development_bypass",
+            userId: null,
+          }),
         }
       )
     ).rejects.toThrow("대표 템플릿은 삭제할 수 없습니다.");
@@ -68,6 +82,12 @@ describe("deleteEventTemplateAction", () => {
           readDeleteSnapshot: vi.fn().mockResolvedValue({
             id: "99999999-9999-4999-8999-999999999999",
             isPrimary: false,
+          }),
+          requireActor: vi.fn().mockResolvedValue({
+            email: null,
+            kind: "development_bypass",
+            source: "development_bypass",
+            userId: null,
           }),
         }
       )

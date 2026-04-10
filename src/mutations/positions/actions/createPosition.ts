@@ -7,11 +7,13 @@ import {
   parseCreatePositionInput,
   type CreatePositionInput,
 } from "#/mutations/positions/schemas/createPosition";
+import { requireAdminActor } from "#/shared/lib/auth/adminActor";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type CreatePositionDependencies = {
   client?: SupabaseClient;
   createRecord?: typeof createPositionRecord;
+  requireActor?: typeof requireAdminActor;
 };
 
 export async function createPositionAction(
@@ -19,6 +21,8 @@ export async function createPositionAction(
   dependencies: CreatePositionDependencies = {}
 ): Promise<Position> {
   const values = parseCreatePositionInput(input);
+  const requireActor = dependencies.requireActor ?? requireAdminActor;
+  await requireActor();
   const client = dependencies.client ?? createSupabaseAdminClient();
   const createRecord = dependencies.createRecord ?? createPositionRecord;
 

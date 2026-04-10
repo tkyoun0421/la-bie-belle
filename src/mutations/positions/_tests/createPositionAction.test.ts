@@ -4,6 +4,12 @@ import { createPositionAction } from "#/mutations/positions/actions/createPositi
 describe("createPositionAction", () => {
   it("creates a position through the write repository", async () => {
     const client = {} as never;
+    const requireActor = vi.fn().mockResolvedValue({
+      email: null,
+      kind: "development_bypass",
+      source: "development_bypass",
+      userId: null,
+    });
     const createRecord = vi.fn().mockResolvedValue({
       allowedGender: "female",
       defaultRequiredCount: 3,
@@ -18,9 +24,10 @@ describe("createPositionAction", () => {
         defaultRequiredCount: 3,
         name: "  로비 대기 동선 안내  ",
       },
-      { client, createRecord }
+      { client, createRecord, requireActor }
     );
 
+    expect(requireActor).toHaveBeenCalled();
     expect(createRecord).toHaveBeenCalledWith(
       {
         allowedGender: "female",
@@ -40,6 +47,7 @@ describe("createPositionAction", () => {
 
   it("surfaces validation errors before hitting the repository", async () => {
     const createRecord = vi.fn();
+    const requireActor = vi.fn();
 
     await expect(
       createPositionAction(
@@ -51,10 +59,12 @@ describe("createPositionAction", () => {
         {
           client: {} as never,
           createRecord,
+          requireActor,
         }
       )
     ).rejects.toThrow("기본 필수 인원");
 
+    expect(requireActor).not.toHaveBeenCalled();
     expect(createRecord).not.toHaveBeenCalled();
   });
 });

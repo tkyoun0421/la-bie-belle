@@ -7,10 +7,12 @@ import {
   parseUpdatePositionInput,
   type UpdatePositionInput,
 } from "#/mutations/positions/schemas/updatePosition";
+import { requireAdminActor } from "#/shared/lib/auth/adminActor";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type UpdatePositionDependencies = {
   client?: SupabaseClient;
+  requireActor?: typeof requireAdminActor;
   updateRecord?: typeof updatePositionRecord;
 };
 
@@ -19,6 +21,8 @@ export async function updatePositionAction(
   dependencies: UpdatePositionDependencies = {}
 ): Promise<Position> {
   const values = parseUpdatePositionInput(input);
+  const requireActor = dependencies.requireActor ?? requireAdminActor;
+  await requireActor();
   const client = dependencies.client ?? createSupabaseAdminClient();
   const updateRecord = dependencies.updateRecord ?? updatePositionRecord;
 

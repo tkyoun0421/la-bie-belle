@@ -4,6 +4,12 @@ import { createEventTemplateAction } from "#/mutations/events/actions/createEven
 describe("createEventTemplateAction", () => {
   it("creates a template record and returns the created template", async () => {
     const client = {} as never;
+    const requireActor = vi.fn().mockResolvedValue({
+      email: null,
+      kind: "development_bypass",
+      source: "development_bypass",
+      userId: null,
+    });
     const createRecord = vi
       .fn()
       .mockResolvedValue("99999999-9999-4999-8999-999999999999");
@@ -42,9 +48,11 @@ describe("createEventTemplateAction", () => {
         client,
         createRecord,
         readById,
+        requireActor,
       }
     );
 
+    expect(requireActor).toHaveBeenCalled();
     expect(createRecord).toHaveBeenCalledWith(
       {
         createdBy: null,
@@ -71,6 +79,7 @@ describe("createEventTemplateAction", () => {
 
   it("rejects invalid service time before hitting the repository", async () => {
     const createRecord = vi.fn();
+    const requireActor = vi.fn();
 
     await expect(
       createEventTemplateAction(
@@ -88,10 +97,12 @@ describe("createEventTemplateAction", () => {
         {
           client: {} as never,
           createRecord,
+          requireActor,
         }
       )
     ).rejects.toThrow("마지막 서비스 종료 시간");
 
+    expect(requireActor).not.toHaveBeenCalled();
     expect(createRecord).not.toHaveBeenCalled();
   });
 });
