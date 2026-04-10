@@ -93,6 +93,9 @@
 - 구현은 기본적으로 `develop`에서 진행한다
 - phase가 끝나면 PR은 `develop -> master`
 - 하나의 PR은 하나의 phase만 다룬다
+- PR 본문에는 반드시 `Closes #...` linked issue가 있어야 한다
+- linked issue들은 모두 같은 milestone에 속해야 한다
+- PR milestone은 linked issue의 milestone과 같아야 한다
 - `master`는 release 기준 브랜치다
 
 ### Progress Reporting
