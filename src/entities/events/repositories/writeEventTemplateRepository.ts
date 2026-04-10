@@ -53,7 +53,7 @@ export async function createEventTemplateRecord(
       required_count: slot.requiredCount,
       training_count: slot.trainingCount,
     })),
-    p_created_by: input.createdBy,
+    p_created_by: input.createdBy ?? undefined,
   });
 
   if (error) {

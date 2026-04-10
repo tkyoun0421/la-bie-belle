@@ -46,7 +46,7 @@ describe("writeEventTemplateRepository", () => {
           training_count: 0,
         },
       ],
-      p_created_by: null,
+      p_created_by: undefined,
     });
   });
 

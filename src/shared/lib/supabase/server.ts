@@ -3,7 +3,15 @@ import { createServerClient } from "@supabase/ssr";
 import { getPublicEnv } from "#/shared/config/env";
 import type { Database } from "#/shared/types/database";
 
-export async function createSupabaseServerClient() {
+type CreateSupabaseServerClientOptions = {
+  canSetCookies?: boolean;
+};
+
+export async function createSupabaseServerClient(
+  _options: CreateSupabaseServerClientOptions = {}
+) {
+  void _options;
+
   const cookieStore = await cookies();
   const env = getPublicEnv();
 
@@ -20,11 +28,16 @@ export async function createSupabaseServerClient() {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, options, value }) => {
-            cookieStore.set(name, value, options);
-          });
-        }
-      }
+          try {
+            cookiesToSet.forEach(({ name, options, value }) => {
+              cookieStore.set(name, value, options);
+            });
+          } catch {
+            // Server Components cannot mutate cookies directly.
+            // Proxy refreshes the session before render.
+          }
+        },
+      },
     }
   );
 }

@@ -27,6 +27,10 @@ export class AdminAccessError extends Error {
   }
 }
 
+type ResolveAdminActorAccessOptions = {
+  canSetCookies?: boolean;
+};
+
 export async function getCurrentAdminActor(): Promise<AdminActor | null> {
   const result = await resolveAdminActorAccess();
 
@@ -38,7 +42,9 @@ export async function getCurrentAdminActor(): Promise<AdminActor | null> {
 }
 
 export async function requireAdminActor(): Promise<AdminActor> {
-  const result = await resolveAdminActorAccess();
+  const result = await resolveAdminActorAccess({
+    canSetCookies: true,
+  });
 
   if ("error" in result) {
     throw result.error;
@@ -49,7 +55,13 @@ export async function requireAdminActor(): Promise<AdminActor> {
 
 export async function requireAdminPageActor() {
   try {
-    return await requireAdminActor();
+    const result = await resolveAdminActorAccess();
+
+    if ("error" in result) {
+      throw result.error;
+    }
+
+    return result.actor;
   } catch (error) {
     if (error instanceof AdminAccessError) {
       redirect("/");
@@ -82,11 +94,12 @@ function isDevelopmentAdminBypassEnabled(configuredValue?: boolean) {
   return process.env.NODE_ENV !== "production";
 }
 
-async function resolveAdminActorAccess(): Promise<
-  { actor: AdminActor } | { error: AdminAccessError }
-> {
+async function resolveAdminActorAccess(
+  options: ResolveAdminActorAccessOptions = {}
+): Promise<{ actor: AdminActor } | { error: AdminAccessError }> {
   const env = getServerEnv();
   const allowlist = parseBootstrapAdminEmails(env.BOOTSTRAP_ADMIN_EMAILS);
+  const { canSetCookies = false } = options;
 
   if (
     allowlist.length === 0 &&
@@ -112,7 +125,9 @@ async function resolveAdminActorAccess(): Promise<
     };
   }
 
-  const client = await createSupabaseServerClient();
+  const client = await createSupabaseServerClient({
+    canSetCookies,
+  });
   const {
     data: { user },
     error,

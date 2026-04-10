@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getCurrentAdminActor,
   requireAdminActor,
+  requireAdminPageActor,
 } from "#/shared/lib/auth/adminActor";
 import { createSupabaseServerClient } from "#/shared/lib/supabase/server";
 
@@ -59,6 +60,10 @@ describe("adminActor", () => {
       source: "email_allowlist",
       userId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
     });
+
+    expect(mockedCreateSupabaseServerClient).toHaveBeenCalledWith({
+      canSetCookies: false,
+    });
   });
 
   it("throws unauthenticated when allowlist exists but no user is signed in", async () => {
@@ -78,6 +83,10 @@ describe("adminActor", () => {
       code: "unauthenticated",
       status: 401,
     });
+
+    expect(mockedCreateSupabaseServerClient).toHaveBeenCalledWith({
+      canSetCookies: true,
+    });
   });
 
   it("throws unconfigured when bypass is disabled and no allowlist exists", async () => {
@@ -86,6 +95,34 @@ describe("adminActor", () => {
     await expect(requireAdminActor()).rejects.toMatchObject({
       code: "unconfigured",
       status: 503,
+    });
+  });
+
+  it("uses a read-only Supabase client for admin pages", async () => {
+    process.env.BOOTSTRAP_ADMIN_EMAILS = "admin@example.com";
+    mockedCreateSupabaseServerClient.mockResolvedValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              email: "admin@example.com",
+              id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+            },
+          },
+          error: null,
+        }),
+      },
+    } as never);
+
+    await expect(requireAdminPageActor()).resolves.toEqual({
+      email: "admin@example.com",
+      kind: "bootstrap_admin",
+      source: "email_allowlist",
+      userId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+    });
+
+    expect(mockedCreateSupabaseServerClient).toHaveBeenCalledWith({
+      canSetCookies: false,
     });
   });
 });

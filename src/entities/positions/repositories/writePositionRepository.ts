@@ -8,7 +8,7 @@ import type {
   Position,
   PositionAllowedGender,
 } from "#/entities/positions/models/schemas/position";
-import type { Database } from "#/shared/types/database";
+import type { Database, TableInsert } from "#/shared/types/database";
 
 type PositionRepositoryOptions = {
   client: SupabaseClient<Database>;
@@ -29,13 +29,14 @@ export async function createPositionRecord(
   options: PositionRepositoryOptions
 ): Promise<Position> {
   const { client } = options;
+  const insertValues: TableInsert<"positions"> = {
+    allowed_gender: input.allowedGender,
+    default_required_count: input.defaultRequiredCount,
+    name: input.name,
+  };
   const { data, error } = await client
     .from("positions")
-    .insert({
-      allowed_gender: input.allowedGender,
-      default_required_count: input.defaultRequiredCount,
-      name: input.name,
-    })
+    .insert(insertValues)
     .select("id, name, allowed_gender, default_required_count, sort_order")
     .single();
 
