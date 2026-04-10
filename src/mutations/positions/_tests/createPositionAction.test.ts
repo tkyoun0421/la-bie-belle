@@ -2,20 +2,15 @@ import { describe, expect, it, vi } from "vitest";
 import { createPositionAction } from "#/mutations/positions/actions/createPosition";
 
 describe("createPositionAction", () => {
-  it("inserts a position and returns the created row", async () => {
-    const single = vi.fn().mockResolvedValue({
-      data: {
-        allowed_gender: "female",
-        default_required_count: 3,
-        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa5",
-        name: "로비 대기 동선 안내",
-        sort_order: 5,
-      },
-      error: null,
+  it("creates a position through the write repository", async () => {
+    const client = {} as never;
+    const createRecord = vi.fn().mockResolvedValue({
+      allowedGender: "female",
+      defaultRequiredCount: 3,
+      id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa5",
+      name: "로비 대기 동선 안내",
+      sortOrder: 5,
     });
-    const select = vi.fn().mockReturnValue({ single });
-    const insert = vi.fn().mockReturnValue({ select });
-    const from = vi.fn().mockReturnValue({ insert });
 
     const result = await createPositionAction(
       {
@@ -23,15 +18,17 @@ describe("createPositionAction", () => {
         defaultRequiredCount: 3,
         name: "  로비 대기 동선 안내  ",
       },
-      { client: { from } as never }
+      { client, createRecord }
     );
 
-    expect(from).toHaveBeenCalledWith("positions");
-    expect(insert).toHaveBeenCalledWith({
-      allowed_gender: "female",
-      default_required_count: 3,
-      name: "로비 대기 동선 안내",
-    });
+    expect(createRecord).toHaveBeenCalledWith(
+      {
+        allowedGender: "female",
+        defaultRequiredCount: 3,
+        name: "로비 대기 동선 안내",
+      },
+      { client }
+    );
     expect(result).toEqual({
       allowedGender: "female",
       defaultRequiredCount: 3,
@@ -41,26 +38,23 @@ describe("createPositionAction", () => {
     });
   });
 
-  it("surfaces a duplicate-name error", async () => {
-    const single = vi.fn().mockResolvedValue({
-      data: null,
-      error: {
-        code: "23505",
-      },
-    });
-    const select = vi.fn().mockReturnValue({ single });
-    const insert = vi.fn().mockReturnValue({ select });
-    const from = vi.fn().mockReturnValue({ insert });
+  it("surfaces validation errors before hitting the repository", async () => {
+    const createRecord = vi.fn();
 
     await expect(
       createPositionAction(
         {
           allowedGender: "all",
-          defaultRequiredCount: 2,
+          defaultRequiredCount: 0,
           name: "안내 메인",
         },
-        { client: { from } as never }
+        {
+          client: {} as never,
+          createRecord,
+        }
       )
-    ).rejects.toThrow("같은 이름의 포지션이 이미 있습니다.");
+    ).rejects.toThrow("기본 필수 인원");
+
+    expect(createRecord).not.toHaveBeenCalled();
   });
 });

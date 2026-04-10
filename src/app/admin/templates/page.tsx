@@ -1,6 +1,6 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
-import { readEventTemplates } from "#/entities/events/repositories/eventTemplateRepository";
-import { readPositions } from "#/entities/positions/repositories/positionRepository";
+import { readEventTemplates } from "#/entities/events/repositories/readEventTemplateRepository";
+import { readPositions } from "#/entities/positions/repositories/readPositionRepository";
 import { getEventTemplateCollectionQueryOptions } from "#/queries/events/options/getEventTemplateCollectionQueryOptions";
 import { getPositionCollectionQueryOptions } from "#/queries/positions/options/getPositionCollectionQueryOptions";
 import { AdminTemplatesScreen } from "#/screens/admin/templates/AdminTemplatesScreen";

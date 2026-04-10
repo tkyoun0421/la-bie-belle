@@ -215,6 +215,8 @@ src/mutations/events/
 - `actions/`
   - server action entry
   - write orchestration
+  - repository call coordination only
+  - raw Supabase query/RPC code is not placed here
 - `hooks/`
   - mutation hook
   - cache invalidation
@@ -286,6 +288,8 @@ src/entities/events/
 - `repositories`
   - domain-level data access layer
   - read/write persistence 진입점
+  - raw Supabase query/RPC code lives here
+  - file size나 책임이 커지면 `readXRepository.ts`, `writeXRepository.ts` 로 나눈다
 - `_tests/`
   - entity layer 테스트
 
@@ -352,6 +356,7 @@ src/shared/
 - test: `camelCase.test.ts`
 - query fetch 함수: `fetch*`
 - repository read 함수: `read*`
+- repository write 함수: `create*`, `update*`, `delete*`, `reorder*`
 
 ## Current Practical Rule
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readPositions } from "#/entities/positions/repositories/positionRepository";
+import { readPositions } from "#/entities/positions/repositories/readPositionRepository";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 export async function GET() {

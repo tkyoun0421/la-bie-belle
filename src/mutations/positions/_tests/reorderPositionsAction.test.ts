@@ -2,8 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 import { reorderPositionsAction } from "#/mutations/positions/actions/reorderPositions";
 
 describe("reorderPositionsAction", () => {
-  it("calls rpc with the ordered ids", async () => {
-    const rpc = vi.fn().mockResolvedValue({ error: null });
+  it("delegates the reorder request to the write repository", async () => {
+    const client = {} as never;
+    const reorderRecords = vi.fn().mockResolvedValue([
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+    ]);
 
     const result = await reorderPositionsAction(
       {
@@ -12,15 +16,16 @@ describe("reorderPositionsAction", () => {
           "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
         ],
       },
-      { client: { rpc } as never }
+      { client, reorderRecords }
     );
 
-    expect(rpc).toHaveBeenCalledWith("reorder_positions", {
-      p_position_ids: [
+    expect(reorderRecords).toHaveBeenCalledWith(
+      [
         "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
         "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
       ],
-    });
+      { client }
+    );
     expect(result).toEqual([
       "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
       "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",

@@ -154,17 +154,20 @@ src/entities/events/
       eventTemplate.ts
     normalizeEventTemplateCollection.ts
   repositories/
-    eventTemplateRepository.ts
+    readEventTemplateRepository.ts
+    writeEventTemplateRepository.ts
   _tests/
     eventTemplatePolicy.test.ts
     mapEventTemplateRow.test.ts
     normalizeEventTemplateCollection.test.ts
+    writeEventTemplateRepository.test.ts
 ```
 
 핵심:
 
 - 이벤트 도메인 규칙은 `models/policies` 로 간다.
 - read/write persistence 진입점은 `repositories` 가 맡는다.
+- `mutations/actions` 는 raw Supabase 호출 대신 repository orchestration 만 맡는다.
 - 화면 전용 규칙은 `screens` 로 가고, 도메인 규칙은 `entities` 로 간다.
 
 ## Rendering And Data Flow

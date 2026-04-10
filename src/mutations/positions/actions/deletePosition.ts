@@ -1,6 +1,7 @@
 "use server";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { deletePositionRecord } from "#/entities/positions/repositories/writePositionRepository";
 import {
   parseDeletePositionInput,
   type DeletePositionInput,
@@ -9,6 +10,7 @@ import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type DeletePositionDependencies = {
   client?: SupabaseClient;
+  deleteRecord?: typeof deletePositionRecord;
 };
 
 export async function deletePositionAction(
@@ -17,26 +19,7 @@ export async function deletePositionAction(
 ) {
   const values = parseDeletePositionInput(input);
   const client = dependencies.client ?? createSupabaseAdminClient();
-  const { data, error } = await client
-    .from("positions")
-    .delete()
-    .eq("id", values.id)
-    .select("id")
-    .maybeSingle();
+  const deleteRecord = dependencies.deleteRecord ?? deletePositionRecord;
 
-  if (error) {
-    if ("code" in error && error.code === "23503") {
-      throw new Error(
-        "템플릿이나 행사에서 사용 중인 포지션은 삭제할 수 없습니다."
-      );
-    }
-
-    throw new Error("포지션을 삭제하지 못했습니다.");
-  }
-
-  if (!data?.id) {
-    throw new Error("삭제할 포지션을 찾지 못했습니다.");
-  }
-
-  return data.id;
+  return deleteRecord(values.id, { client });
 }

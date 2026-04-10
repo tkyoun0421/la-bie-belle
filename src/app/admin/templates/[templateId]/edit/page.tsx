@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { readEventTemplates } from "#/entities/events/repositories/eventTemplateRepository";
-import { readPositions } from "#/entities/positions/repositories/positionRepository";
+import { readEventTemplates } from "#/entities/events/repositories/readEventTemplateRepository";
+import { readPositions } from "#/entities/positions/repositories/readPositionRepository";
 import { AdminTemplateEditScreen } from "#/screens/admin/templates/[templateId]/edit/AdminTemplateEditScreen";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 

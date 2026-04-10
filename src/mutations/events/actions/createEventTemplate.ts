@@ -2,7 +2,10 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
-import { readEventTemplateById } from "#/entities/events/repositories/eventTemplateRepository";
+import {
+  readEventTemplateById,
+} from "#/entities/events/repositories/readEventTemplateRepository";
+import { createEventTemplateRecord } from "#/entities/events/repositories/writeEventTemplateRepository";
 import {
   parseCreateEventTemplateInput,
   type CreateEventTemplateInput,
@@ -11,6 +14,7 @@ import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type CreateEventTemplateDependencies = {
   client?: SupabaseClient;
+  createRecord?: typeof createEventTemplateRecord;
   readById?: typeof readEventTemplateById;
 };
 
@@ -20,31 +24,19 @@ export async function createEventTemplateAction(
 ): Promise<EventTemplate> {
   const values = parseCreateEventTemplateInput(input);
   const client = dependencies.client ?? createSupabaseAdminClient();
+  const createRecord = dependencies.createRecord ?? createEventTemplateRecord;
   const readById = dependencies.readById ?? readEventTemplateById;
-
-  const { data: templateId, error } = await client.rpc(
-    "create_event_template",
+  const templateId = await createRecord(
     {
-      p_name: values.name,
-      p_is_primary: values.isPrimary,
-      p_first_service_at: values.firstServiceAt,
-      p_last_service_end_at: values.lastServiceEndAt,
-      p_slot_defaults: values.slotDefaults.map((slot) => ({
-        position_id: slot.positionId,
-        required_count: slot.requiredCount,
-        training_count: slot.trainingCount,
-      })),
-      p_created_by: null,
-    }
+      createdBy: null,
+      firstServiceAt: values.firstServiceAt,
+      isPrimary: values.isPrimary,
+      lastServiceEndAt: values.lastServiceEndAt,
+      name: values.name,
+      slotDefaults: values.slotDefaults,
+    },
+    { client }
   );
-
-  if (error) {
-    throw new Error("행사 템플릿을 저장하지 못했습니다.");
-  }
-
-  if (!templateId || typeof templateId !== "string") {
-    throw new Error("생성한 행사 템플릿 식별자를 확인하지 못했습니다.");
-  }
 
   return readById(templateId, { client });
 }

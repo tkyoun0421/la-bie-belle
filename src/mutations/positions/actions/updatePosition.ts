@@ -1,7 +1,7 @@
 "use server";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { mapPositionRow } from "#/entities/positions/models/mappers/mapPositionRow";
+import { updatePositionRecord } from "#/entities/positions/repositories/writePositionRepository";
 import type { Position } from "#/entities/positions/models/schemas/position";
 import {
   parseUpdatePositionInput,
@@ -11,6 +11,7 @@ import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 
 type UpdatePositionDependencies = {
   client?: SupabaseClient;
+  updateRecord?: typeof updatePositionRecord;
 };
 
 export async function updatePositionAction(
@@ -19,28 +20,15 @@ export async function updatePositionAction(
 ): Promise<Position> {
   const values = parseUpdatePositionInput(input);
   const client = dependencies.client ?? createSupabaseAdminClient();
-  const { data, error } = await client
-    .from("positions")
-    .update({
-      allowed_gender: values.allowedGender,
-      default_required_count: values.defaultRequiredCount,
+  const updateRecord = dependencies.updateRecord ?? updatePositionRecord;
+
+  return updateRecord(
+    {
+      allowedGender: values.allowedGender,
+      defaultRequiredCount: values.defaultRequiredCount,
+      id: values.id,
       name: values.name,
-    })
-    .eq("id", values.id)
-    .select("id, name, allowed_gender, default_required_count, sort_order")
-    .single();
-
-  if (error) {
-    if ("code" in error && error.code === "23505") {
-      throw new Error("같은 이름의 포지션이 이미 있습니다.");
-    }
-
-    throw new Error("포지션을 수정하지 못했습니다.");
-  }
-
-  if (!data) {
-    throw new Error("수정된 포지션을 확인하지 못했습니다.");
-  }
-
-  return mapPositionRow(data);
+    },
+    { client }
+  );
 }

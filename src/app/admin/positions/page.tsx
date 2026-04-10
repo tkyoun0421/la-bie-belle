@@ -1,5 +1,5 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
-import { readPositions } from "#/entities/positions/repositories/positionRepository";
+import { readPositions } from "#/entities/positions/repositories/readPositionRepository";
 import { getPositionCollectionQueryOptions } from "#/queries/positions/options/getPositionCollectionQueryOptions";
 import { AdminPositionsScreen } from "#/screens/admin/positions/AdminPositionsScreen";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";

@@ -2,7 +2,10 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
-import { readEventTemplateById } from "#/entities/events/repositories/eventTemplateRepository";
+import {
+  readEventTemplateById,
+} from "#/entities/events/repositories/readEventTemplateRepository";
+import { updateEventTemplateRecord } from "#/entities/events/repositories/writeEventTemplateRepository";
 import {
   parseUpdateEventTemplateInput,
   type UpdateEventTemplateInput,
@@ -12,6 +15,7 @@ import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
 type UpdateEventTemplateDependencies = {
   client?: SupabaseClient;
   readById?: typeof readEventTemplateById;
+  updateRecord?: typeof updateEventTemplateRecord;
 };
 
 export async function updateEventTemplateAction(
@@ -21,33 +25,18 @@ export async function updateEventTemplateAction(
   const values = parseUpdateEventTemplateInput(input);
   const client = dependencies.client ?? createSupabaseAdminClient();
   const readById = dependencies.readById ?? readEventTemplateById;
-  const { data: templateId, error } = await client.rpc(
-    "update_event_template",
+  const updateRecord = dependencies.updateRecord ?? updateEventTemplateRecord;
+  const templateId = await updateRecord(
     {
-      p_template_id: values.id,
-      p_name: values.name,
-      p_is_primary: values.isPrimary,
-      p_first_service_at: values.firstServiceAt,
-      p_last_service_end_at: values.lastServiceEndAt,
-      p_slot_defaults: values.slotDefaults.map((slot) => ({
-        position_id: slot.positionId,
-        required_count: slot.requiredCount,
-        training_count: slot.trainingCount,
-      })),
-    }
+      firstServiceAt: values.firstServiceAt,
+      id: values.id,
+      isPrimary: values.isPrimary,
+      lastServiceEndAt: values.lastServiceEndAt,
+      name: values.name,
+      slotDefaults: values.slotDefaults,
+    },
+    { client }
   );
-
-  if (error) {
-    if ("code" in error && error.code === "P0002") {
-      throw new Error("수정할 행사 템플릿을 찾지 못했습니다.");
-    }
-
-    throw new Error("행사 템플릿을 수정하지 못했습니다.");
-  }
-
-  if (!templateId || typeof templateId !== "string") {
-    throw new Error("수정한 행사 템플릿 식별자를 확인하지 못했습니다.");
-  }
 
   return readById(templateId, { client });
 }

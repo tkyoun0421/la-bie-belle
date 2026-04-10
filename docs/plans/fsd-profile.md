@@ -48,6 +48,8 @@ app -> screens -> mutations -> queries -> entities -> shared
 - sibling route 가 공용으로 쓰는 코드는 가장 가까운 부모 screen 아래에 둔다.
 - `screens` 는 화면 조합과 상호작용 orchestration 을 담당한다.
 - 도메인 정책 자체는 `entities` 로 보낸다.
+- `mutations/actions` 는 repository call orchestration 을 맡고 raw persistence 코드는 두지 않는다.
+- `entities/repositories` 가 커지면 `read*Repository.ts` 와 `write*Repository.ts` 로 분리한다.
 
 예시:
 
