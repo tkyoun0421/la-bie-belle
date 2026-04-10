@@ -1,4 +1,8 @@
 import { positionsResponseSchema } from "#/entities/positions/models/schemas/position";
+import {
+  createAppError,
+  readApiErrorCode,
+} from "#/shared/lib/errors/appError";
 
 export async function fetchPositions() {
   const response = await fetch("/api/positions", {
@@ -7,6 +11,13 @@ export async function fetchPositions() {
   });
 
   if (!response.ok) {
+    const payload = await response.json().catch(() => null);
+    const errorCode = readApiErrorCode(payload);
+
+    if (errorCode) {
+      throw createAppError(errorCode);
+    }
+
     throw new Error("Failed to fetch positions.");
   }
 

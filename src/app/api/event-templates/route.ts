@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import {
+  eventTemplateErrorCodes,
+  readEventTemplateErrorCode,
+} from "#/entities/events/models/errors/eventTemplateError";
 import { readEventTemplates } from "#/entities/events/repositories/readEventTemplateRepository";
 import {
   AdminAccessError,
@@ -25,7 +29,11 @@ export async function GET() {
     console.error("[GET /api/event-templates]", error);
 
     return NextResponse.json(
-      { error: "행사 템플릿 목록을 불러오지 못했습니다." },
+      {
+        errorCode:
+          readEventTemplateErrorCode(error) ??
+          eventTemplateErrorCodes.listFailed,
+      },
       { status: 500 }
     );
   }

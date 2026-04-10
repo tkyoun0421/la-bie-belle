@@ -11,6 +11,12 @@ import {
   type CreatePositionInput,
 } from "#/mutations/positions/schemas/createPosition";
 import { usePositionCollectionState } from "#/queries/positions/hooks/usePositionCollectionState";
+import {
+  readPositionDeleteErrorMessage,
+  readPositionListErrorMessage,
+  readPositionReorderErrorMessage,
+  readPositionSaveErrorMessage,
+} from "#/screens/admin/positions/_helpers/positionError";
 import { useDragReorderState } from "#/shared/hooks/useDragReorderState";
 import { readErrorMessage } from "#/shared/lib/forms/readErrorMessage";
 
@@ -21,15 +27,21 @@ const defaultPositionFormValues: CreatePositionInput = {
 };
 
 export function useAdminPositionsScreenState() {
-  const { filteredPositions, positions, searchTerm, setSearchTerm } =
-    usePositionCollectionState();
+  const {
+    filteredPositions,
+    positions,
+    positionsQuery,
+    searchTerm,
+    setSearchTerm,
+  } = usePositionCollectionState();
   const [editingPositionId, setEditingPositionId] = useState<string | null>(
     null
   );
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [pendingDeletePosition, setPendingDeletePosition] =
     useState<Position | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [editorError, setEditorError] = useState<string | null>(null);
+  const [listError, setListError] = useState<string | null>(null);
   const createPositionMutation = useCreatePositionMutation();
   const updatePositionMutation = useUpdatePositionMutation();
   const deletePositionMutation = useDeletePositionMutation();
@@ -55,6 +67,11 @@ export function useAdminPositionsScreenState() {
   const isReordering = reorderPositionsMutation.isPending;
   const isSearchActive = searchTerm.trim().length > 0;
   const canReorder = !isSearchActive && !isReordering;
+  const resolvedListError =
+    listError ??
+    (positionsQuery.error
+      ? readPositionListErrorMessage(positionsQuery.error)
+      : null);
   const {
     clearDragState,
     draggingItemId: draggingPositionId,
@@ -74,7 +91,7 @@ export function useAdminPositionsScreenState() {
 
   const submit = form.handleSubmit(
     async (values) => {
-      setSubmitError(null);
+      setEditorError(null);
 
       try {
         if (editingPositionId) {
@@ -88,22 +105,18 @@ export function useAdminPositionsScreenState() {
 
         closeEditor();
       } catch (nextError) {
-        setSubmitError(
-          nextError instanceof Error
-            ? nextError.message
-            : "포지션을 저장하지 못했습니다."
-        );
+        setEditorError(readPositionSaveErrorMessage(nextError));
       }
     },
     () => {
-      setSubmitError(null);
+      setEditorError(null);
     }
   );
 
   function openCreate() {
     setEditingPositionId(null);
     setPendingDeletePosition(null);
-    setSubmitError(null);
+    setEditorError(null);
     form.reset(defaultPositionFormValues);
     setIsEditorOpen(true);
   }
@@ -111,7 +124,7 @@ export function useAdminPositionsScreenState() {
   function startEdit(position: Position) {
     setEditingPositionId(position.id);
     setPendingDeletePosition(null);
-    setSubmitError(null);
+    setEditorError(null);
     form.reset({
       allowedGender: position.allowedGender,
       defaultRequiredCount: position.defaultRequiredCount,
@@ -121,7 +134,7 @@ export function useAdminPositionsScreenState() {
   }
 
   function requestRemove(position: Position) {
-    setSubmitError(null);
+    setListError(null);
     setPendingDeletePosition(position);
   }
 
@@ -132,7 +145,7 @@ export function useAdminPositionsScreenState() {
 
     const position = pendingDeletePosition;
     setPendingDeletePosition(null);
-    setSubmitError(null);
+    setListError(null);
 
     try {
       await deletePositionMutation.mutateAsync({ id: position.id });
@@ -141,11 +154,7 @@ export function useAdminPositionsScreenState() {
         closeEditor();
       }
     } catch (nextError) {
-      setSubmitError(
-        nextError instanceof Error
-          ? nextError.message
-          : "포지션을 삭제하지 못했습니다."
-      );
+      setListError(readPositionDeleteErrorMessage(nextError));
     }
   }
 
@@ -175,13 +184,10 @@ export function useAdminPositionsScreenState() {
     }
 
     try {
+      setListError(null);
       await reorderPositionsMutation.mutateAsync({ positionIds: orderedIds });
     } catch (nextError) {
-      setSubmitError(
-        nextError instanceof Error
-          ? nextError.message
-          : "포지션 순서를 저장하지 못했습니다."
-      );
+      setListError(readPositionReorderErrorMessage(nextError));
     } finally {
       clearDragState();
     }
@@ -190,7 +196,7 @@ export function useAdminPositionsScreenState() {
   function closeEditor() {
     setIsEditorOpen(false);
     setPendingDeletePosition(null);
-    setSubmitError(null);
+    setEditorError(null);
   }
 
   function handleOpenChange(nextOpen: boolean) {
@@ -202,7 +208,7 @@ export function useAdminPositionsScreenState() {
   function setAllowedGender(
     nextAllowedGender: CreatePositionInput["allowedGender"]
   ) {
-    setSubmitError(null);
+    setEditorError(null);
     form.clearErrors("allowedGender");
     form.setValue("allowedGender", nextAllowedGender, {
       shouldDirty: true,
@@ -211,7 +217,7 @@ export function useAdminPositionsScreenState() {
   }
 
   function setDefaultRequiredCount(nextCount: number) {
-    setSubmitError(null);
+    setEditorError(null);
     form.clearErrors("defaultRequiredCount");
     form.setValue("defaultRequiredCount", nextCount, {
       shouldDirty: true,
@@ -220,7 +226,7 @@ export function useAdminPositionsScreenState() {
   }
 
   function setName(nextName: string) {
-    setSubmitError(null);
+    setEditorError(null);
     form.clearErrors("name");
     form.setValue("name", nextName, {
       shouldDirty: true,
@@ -234,6 +240,7 @@ export function useAdminPositionsScreenState() {
     defaultRequiredCount: defaultRequiredCount ?? 2,
     draggingPositionId,
     dropTargetPositionId,
+    editorError,
     editingPositionId,
     fieldErrors,
     filteredPositions,
@@ -242,6 +249,7 @@ export function useAdminPositionsScreenState() {
     isReordering,
     isSearchActive,
     isSaving,
+    listError: resolvedListError,
     name: name ?? "",
     onAllowedGenderChange: setAllowedGender,
     onCancelDelete: cancelRemove,
@@ -262,7 +270,6 @@ export function useAdminPositionsScreenState() {
     pendingDeletePosition,
     positions,
     searchTerm,
-    serverError: submitError,
   };
 }
 

@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import {
+  positionErrorCodes,
+  readPositionErrorCode,
+} from "#/entities/positions/models/errors/positionError";
 import { readPositions } from "#/entities/positions/repositories/readPositionRepository";
 import {
   AdminAccessError,
@@ -25,7 +29,10 @@ export async function GET() {
     console.error("[GET /api/positions]", error);
 
     return NextResponse.json(
-      { error: "포지션 목록을 불러오지 못했습니다." },
+      {
+        errorCode:
+          readPositionErrorCode(error) ?? positionErrorCodes.listFailed,
+      },
       { status: 500 }
     );
   }

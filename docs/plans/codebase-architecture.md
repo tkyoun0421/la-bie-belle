@@ -146,6 +146,7 @@ src/screens/admin/positions/
 ```text
 src/entities/events/
   models/
+    errors/
     mappers/
       mapEventTemplateRow.ts
     policies/
@@ -166,6 +167,7 @@ src/entities/events/
 핵심:
 
 - 이벤트 도메인 규칙은 `models/policies` 로 간다.
+- recoverable domain error codes are defined in `models/errors`.
 - read/write persistence 진입점은 `repositories` 가 맡는다.
 - `mutations/actions` 는 raw Supabase 호출 대신 repository orchestration 만 맡는다.
 - 화면 전용 규칙은 `screens` 로 가고, 도메인 규칙은 `entities` 로 간다.

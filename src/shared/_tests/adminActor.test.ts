@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  AdminAccessError,
   getCurrentAdminActor,
   requireAdminActor,
 } from "#/shared/lib/auth/adminActor";

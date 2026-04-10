@@ -15,6 +15,7 @@ export function AdminTemplatesClient({
     deletePending,
     filteredTemplates,
     highlightedTemplateId,
+    listError,
     onCancelDelete,
     onConfirmDelete,
     onDelete,
@@ -31,6 +32,7 @@ export function AdminTemplatesClient({
         <EventTemplatesListPanel
           deletePending={deletePending}
           highlightedTemplateId={highlightedTemplateId}
+          listError={listError}
           onDelete={onDelete}
           onSearchTermChange={onSearchTermChange}
           searchTerm={searchTerm}

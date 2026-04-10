@@ -1,4 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
+import {
+  eventTemplateErrorCodes,
+  readEventTemplateErrorCode,
+} from "#/entities/events/models/errors/eventTemplateError";
 import { deleteEventTemplateAction } from "#/mutations/events/actions/deleteEventTemplate";
 
 describe("deleteEventTemplateAction", () => {
@@ -45,7 +49,7 @@ describe("deleteEventTemplateAction", () => {
   it("rejects deleting the representative template", async () => {
     const deleteRecord = vi.fn();
 
-    await expect(
+    await expectEventTemplateErrorCode(
       deleteEventTemplateAction(
         { id: "99999999-9999-4999-8999-999999999999" },
         {
@@ -63,8 +67,9 @@ describe("deleteEventTemplateAction", () => {
             userId: null,
           }),
         }
-      )
-    ).rejects.toThrow("대표 템플릿은 삭제할 수 없습니다.");
+      ),
+      eventTemplateErrorCodes.deletePrimaryForbidden
+    );
 
     expect(deleteRecord).not.toHaveBeenCalled();
   });
@@ -72,7 +77,7 @@ describe("deleteEventTemplateAction", () => {
   it("rejects deleting the last remaining template", async () => {
     const deleteRecord = vi.fn();
 
-    await expect(
+    await expectEventTemplateErrorCode(
       deleteEventTemplateAction(
         { id: "99999999-9999-4999-8999-999999999999" },
         {
@@ -90,9 +95,22 @@ describe("deleteEventTemplateAction", () => {
             userId: null,
           }),
         }
-      )
-    ).rejects.toThrow("마지막 템플릿은 삭제할 수 없습니다.");
+      ),
+      eventTemplateErrorCodes.deleteLastForbidden
+    );
 
     expect(deleteRecord).not.toHaveBeenCalled();
   });
 });
+
+async function expectEventTemplateErrorCode(
+  promise: Promise<unknown>,
+  expectedCode: (typeof eventTemplateErrorCodes)[keyof typeof eventTemplateErrorCodes]
+) {
+  try {
+    await promise;
+    throw new Error("Expected promise to reject.");
+  } catch (error) {
+    expect(readEventTemplateErrorCode(error)).toBe(expectedCode);
+  }
+}

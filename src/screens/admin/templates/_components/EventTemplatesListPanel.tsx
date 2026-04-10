@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
+import { EventTemplateListItem } from "#/screens/admin/templates/_components/EventTemplateListItem";
 import { Button } from "#/shared/components/ui/button";
 import {
   Card,
@@ -9,11 +10,11 @@ import {
   CardTitle,
 } from "#/shared/components/ui/card";
 import { Input } from "#/shared/components/ui/input";
-import { EventTemplateListItem } from "#/screens/admin/templates/_components/EventTemplateListItem";
 
 type EventTemplatesListPanelProps = {
   deletePending: boolean;
   highlightedTemplateId: string | null;
+  listError: string | null;
   onDelete: (template: EventTemplate) => void;
   onSearchTermChange: (value: string) => void;
   searchTerm: string;
@@ -23,6 +24,7 @@ type EventTemplatesListPanelProps = {
 export function EventTemplatesListPanel({
   deletePending,
   highlightedTemplateId,
+  listError,
   onDelete,
   onSearchTermChange,
   searchTerm,
@@ -34,7 +36,7 @@ export function EventTemplatesListPanel({
         <div>
           <CardTitle>템플릿 목록</CardTitle>
           <CardDescription>
-            저장한 템플릿과 포지션 기본 구성을 확인하고 수정할 수 있습니다.
+            등록한 템플릿과 포지션 기본 구성을 확인하고 수정할 수 있습니다.
             대표 템플릿은 목록 상단에 먼저 정렬됩니다.
           </CardDescription>
         </div>
@@ -57,6 +59,11 @@ export function EventTemplatesListPanel({
             placeholder="템플릿 이름 또는 포지션 이름"
             value={searchTerm}
           />
+          {listError ? (
+            <p className="text-sm font-medium text-[var(--destructive)]">
+              {listError}
+            </p>
+          ) : null}
         </div>
 
         <div className="grid gap-3">

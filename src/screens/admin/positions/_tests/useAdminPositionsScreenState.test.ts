@@ -1,5 +1,9 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  createPositionError,
+  positionErrorCodes,
+} from "#/entities/positions/models/errors/positionError";
 import type { Position } from "#/entities/positions/models/schemas/position";
 import { useAdminPositionsScreenState } from "#/screens/admin/positions/_hooks/useAdminPositionsScreenState";
 
@@ -26,7 +30,7 @@ const reorderPositionsMutation = {
 const positionCollectionStateMock = {
   filteredPositions: [] as Position[],
   positions: [] as Position[],
-  positionsQuery: { data: [] as Position[] },
+  positionsQuery: { data: [] as Position[], error: null as unknown },
   searchTerm: "",
   setSearchTerm: vi.fn(),
 };
@@ -62,6 +66,17 @@ vi.mock("#/shared/hooks/useDragReorderState", () => ({
 }));
 
 describe("useAdminPositionsScreenState", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    positionCollectionStateMock.filteredPositions = [];
+    positionCollectionStateMock.positions = [];
+    positionCollectionStateMock.positionsQuery = {
+      data: [],
+      error: null,
+    };
+    positionCollectionStateMock.searchTerm = "";
+  });
+
   it("keeps edit mode while the dialog is closing after editing", async () => {
     positionCollectionStateMock.filteredPositions = [
       {
@@ -106,8 +121,6 @@ describe("useAdminPositionsScreenState", () => {
   });
 
   it("keeps the current form values while the dialog is closing and resets on the next create open", async () => {
-    positionCollectionStateMock.filteredPositions = [];
-    positionCollectionStateMock.positions = [];
     const { result } = renderHook(() => useAdminPositionsScreenState());
 
     act(() => {
@@ -139,8 +152,6 @@ describe("useAdminPositionsScreenState", () => {
   });
 
   it("exposes validation errors on the matching position fields", async () => {
-    positionCollectionStateMock.filteredPositions = [];
-    positionCollectionStateMock.positions = [];
     const { result } = renderHook(() => useAdminPositionsScreenState());
 
     act(() => {
@@ -155,7 +166,30 @@ describe("useAdminPositionsScreenState", () => {
       expect(result.current.fieldErrors.name).toBe(
         "포지션 이름을 입력해 주세요."
       );
-      expect(result.current.serverError).toBeNull();
+      expect(result.current.editorError).toBeNull();
+    });
+  });
+
+  it("maps position save error codes to editor messages", async () => {
+    createPositionMutation.mutateAsync.mockRejectedValueOnce(
+      createPositionError(positionErrorCodes.duplicateName)
+    );
+
+    const { result } = renderHook(() => useAdminPositionsScreenState());
+
+    act(() => {
+      result.current.onOpenCreate();
+      result.current.onNameChange("안내");
+    });
+
+    await act(async () => {
+      await result.current.onSubmit();
+    });
+
+    await waitFor(() => {
+      expect(result.current.editorError).toBe(
+        "같은 이름의 포지션이 이미 있습니다."
+      );
     });
   });
 });

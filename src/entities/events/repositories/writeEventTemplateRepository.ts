@@ -1,4 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import {
+  createEventTemplateError,
+  eventTemplateErrorCodes,
+} from "#/entities/events/models/errors/eventTemplateError";
 
 type EventTemplateRepositoryOptions = {
   client: SupabaseClient;
@@ -52,11 +56,15 @@ export async function createEventTemplateRecord(
   });
 
   if (error) {
-    throw new Error("행사 템플릿을 저장하지 못했습니다.");
+    throw createEventTemplateError(eventTemplateErrorCodes.createFailed, {
+      cause: error,
+    });
   }
 
   if (!data || typeof data !== "string") {
-    throw new Error("생성된 행사 템플릿 ID를 확인하지 못했습니다.");
+    throw createEventTemplateError(
+      eventTemplateErrorCodes.createResultMissing
+    );
   }
 
   return data;
@@ -82,14 +90,23 @@ export async function updateEventTemplateRecord(
 
   if (error) {
     if ("code" in error && error.code === "P0002") {
-      throw new Error("수정할 행사 템플릿을 찾지 못했습니다.");
+      throw createEventTemplateError(
+        eventTemplateErrorCodes.updateTargetNotFound,
+        {
+          cause: error,
+        }
+      );
     }
 
-    throw new Error("행사 템플릿을 수정하지 못했습니다.");
+    throw createEventTemplateError(eventTemplateErrorCodes.updateFailed, {
+      cause: error,
+    });
   }
 
   if (!data || typeof data !== "string") {
-    throw new Error("수정된 행사 템플릿 ID를 확인하지 못했습니다.");
+    throw createEventTemplateError(
+      eventTemplateErrorCodes.updateResultMissing
+    );
   }
 
   return data;
@@ -107,7 +124,12 @@ export async function readEventTemplateDeleteSnapshot(
     .maybeSingle();
 
   if (error) {
-    throw new Error("삭제할 행사 템플릿을 찾지 못했습니다.");
+    throw createEventTemplateError(
+      eventTemplateErrorCodes.deleteTargetNotFound,
+      {
+        cause: error,
+      }
+    );
   }
 
   if (!data?.id) {
@@ -129,7 +151,9 @@ export async function countEventTemplateRecords(
     .select("id", { count: "exact", head: true });
 
   if (error) {
-    throw new Error("행사 템플릿 개수를 확인하지 못했습니다.");
+    throw createEventTemplateError(eventTemplateErrorCodes.countFailed, {
+      cause: error,
+    });
   }
 
   return count ?? 0;
@@ -146,6 +170,8 @@ export async function deleteEventTemplateRecord(
     .eq("id", templateId);
 
   if (error) {
-    throw new Error("행사 템플릿을 삭제하지 못했습니다.");
+    throw createEventTemplateError(eventTemplateErrorCodes.deleteFailed, {
+      cause: error,
+    });
   }
 }

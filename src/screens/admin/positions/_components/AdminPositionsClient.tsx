@@ -12,6 +12,7 @@ export function AdminPositionsClient() {
     defaultRequiredCount,
     draggingPositionId,
     dropTargetPositionId,
+    editorError,
     editingPositionId,
     fieldErrors,
     filteredPositions,
@@ -20,6 +21,7 @@ export function AdminPositionsClient() {
     isReordering,
     isSearchActive,
     isSaving,
+    listError,
     name,
     onAllowedGenderChange,
     onCancelDelete,
@@ -39,7 +41,6 @@ export function AdminPositionsClient() {
     pendingDeletePosition,
     positions,
     searchTerm,
-    serverError,
   } = useAdminPositionsScreenState();
 
   return (
@@ -52,6 +53,7 @@ export function AdminPositionsClient() {
           isDeleting={isDeleting}
           isReordering={isReordering}
           isSearchActive={isSearchActive}
+          listError={listError}
           onCreate={onOpenCreate}
           onDelete={onDelete}
           onDragEnd={onDragEnd}
@@ -80,7 +82,7 @@ export function AdminPositionsClient() {
             onDefaultRequiredCountChange={onDefaultRequiredCountChange}
             onNameChange={onNameChange}
             onSubmit={onSubmit}
-            serverError={serverError}
+            serverError={editorError}
           />
         </section>
       ) : null}

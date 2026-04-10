@@ -3,6 +3,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getEventTemplateDeleteBlockReason } from "#/entities/events/models/policies/eventTemplatePolicy";
 import {
+  createEventTemplateError,
+  eventTemplateErrorCodes,
+} from "#/entities/events/models/errors/eventTemplateError";
+import {
   countEventTemplateRecords,
   deleteEventTemplateRecord,
   readEventTemplateDeleteSnapshot,
@@ -38,7 +42,9 @@ export async function deleteEventTemplateAction(
   const targetTemplate = await readDeleteSnapshot(values.id, { client });
 
   if (!targetTemplate?.id) {
-    throw new Error("삭제할 행사 템플릿을 찾지 못했습니다.");
+    throw createEventTemplateError(
+      eventTemplateErrorCodes.deleteTargetNotFound
+    );
   }
 
   const templatesCount = await countRecords({ client });
@@ -48,11 +54,15 @@ export async function deleteEventTemplateAction(
   });
 
   if (deleteBlockReason === "primary") {
-    throw new Error("대표 템플릿은 삭제할 수 없습니다.");
+    throw createEventTemplateError(
+      eventTemplateErrorCodes.deletePrimaryForbidden
+    );
   }
 
   if (deleteBlockReason === "last-template") {
-    throw new Error("마지막 템플릿은 삭제할 수 없습니다.");
+    throw createEventTemplateError(
+      eventTemplateErrorCodes.deleteLastForbidden
+    );
   }
 
   await deleteRecord(values.id, { client });

@@ -1,4 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import {
+  createEventTemplateError,
+  eventTemplateErrorCodes,
+} from "#/entities/events/models/errors/eventTemplateError";
 import { mapEventTemplateRow } from "#/entities/events/models/mappers/mapEventTemplateRow";
 import {
   eventTemplatesResponseSchema,
@@ -40,7 +44,9 @@ export async function readEventTemplates(
     .order("created_at", { ascending: false });
 
   if (error) {
-    throw new Error("행사 템플릿 목록을 불러오지 못했습니다.");
+    throw createEventTemplateError(eventTemplateErrorCodes.listFailed, {
+      cause: error,
+    });
   }
 
   const templates = (data ?? []).map((row) => mapEventTemplateRow(row));
@@ -60,7 +66,9 @@ export async function readEventTemplateById(
     .single();
 
   if (error) {
-    throw new Error("행사 템플릿을 다시 불러오지 못했습니다.");
+    throw createEventTemplateError(eventTemplateErrorCodes.readFailed, {
+      cause: error,
+    });
   }
 
   return mapEventTemplateRow(data);

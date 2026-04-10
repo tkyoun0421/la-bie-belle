@@ -23,9 +23,7 @@ type PositionsListPanelProps = {
   isDeleting: boolean;
   isReordering: boolean;
   isSearchActive: boolean;
-  positions: Position[];
-  searchTerm: string;
-  totalCount: number;
+  listError: string | null;
   onCreate: () => void;
   onDelete: (position: Position) => void;
   onDragEnd: () => void;
@@ -34,6 +32,9 @@ type PositionsListPanelProps = {
   onDropTargetChange: (positionId: string) => void;
   onEdit: (position: Position) => void;
   onSearchTermChange: (value: string) => void;
+  positions: Position[];
+  searchTerm: string;
+  totalCount: number;
 };
 
 export function PositionsListPanel({
@@ -43,9 +44,7 @@ export function PositionsListPanel({
   isDeleting,
   isReordering,
   isSearchActive,
-  positions,
-  searchTerm,
-  totalCount,
+  listError,
   onCreate,
   onDelete,
   onDragEnd,
@@ -54,6 +53,9 @@ export function PositionsListPanel({
   onDropTargetChange,
   onEdit,
   onSearchTermChange,
+  positions,
+  searchTerm,
+  totalCount,
 }: Readonly<PositionsListPanelProps>) {
   const draggingPositionIndex = draggingPositionId
     ? positions.findIndex((position) => position.id === draggingPositionId)
@@ -105,6 +107,11 @@ export function PositionsListPanel({
               왼쪽 핸들을 잡고 드래그해 순서를 바꿔 보세요.
             </p>
           )}
+          {listError ? (
+            <p className="text-sm font-medium text-[var(--destructive)]">
+              {listError}
+            </p>
+          ) : null}
         </div>
 
         <div className="grid gap-3">

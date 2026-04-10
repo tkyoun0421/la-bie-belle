@@ -1,6 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { mapPositionRow } from "#/entities/positions/models/mappers/mapPositionRow";
 import {
+  createPositionError,
+  positionErrorCodes,
+} from "#/entities/positions/models/errors/positionError";
+import {
   positionsResponseSchema,
   type Position,
 } from "#/entities/positions/models/schemas/position";
@@ -20,7 +24,9 @@ export async function readPositions(
     .order("name", { ascending: true });
 
   if (error) {
-    throw new Error("포지션 목록을 불러오지 못했습니다.");
+    throw createPositionError(positionErrorCodes.listFailed, {
+      cause: error,
+    });
   }
 
   const positions = (data ?? []).map(mapPositionRow);

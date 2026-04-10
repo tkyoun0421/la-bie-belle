@@ -1,5 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { mapPositionRow } from "#/entities/positions/models/mappers/mapPositionRow";
+import {
+  createPositionError,
+  positionErrorCodes,
+} from "#/entities/positions/models/errors/positionError";
 import type {
   Position,
   PositionAllowedGender,
@@ -36,14 +40,18 @@ export async function createPositionRecord(
 
   if (error) {
     if ("code" in error && error.code === "23505") {
-      throw new Error("같은 이름의 포지션이 이미 있습니다.");
+      throw createPositionError(positionErrorCodes.duplicateName, {
+        cause: error,
+      });
     }
 
-    throw new Error("포지션을 저장하지 못했습니다.");
+    throw createPositionError(positionErrorCodes.createFailed, {
+      cause: error,
+    });
   }
 
   if (!data) {
-    throw new Error("생성된 포지션을 확인하지 못했습니다.");
+    throw createPositionError(positionErrorCodes.createResultMissing);
   }
 
   return mapPositionRow(data);
@@ -67,14 +75,18 @@ export async function updatePositionRecord(
 
   if (error) {
     if ("code" in error && error.code === "23505") {
-      throw new Error("같은 이름의 포지션이 이미 있습니다.");
+      throw createPositionError(positionErrorCodes.duplicateName, {
+        cause: error,
+      });
     }
 
-    throw new Error("포지션을 수정하지 못했습니다.");
+    throw createPositionError(positionErrorCodes.updateFailed, {
+      cause: error,
+    });
   }
 
   if (!data) {
-    throw new Error("수정된 포지션을 확인하지 못했습니다.");
+    throw createPositionError(positionErrorCodes.updateResultMissing);
   }
 
   return mapPositionRow(data);
@@ -94,16 +106,18 @@ export async function deletePositionRecord(
 
   if (error) {
     if ("code" in error && error.code === "23503") {
-      throw new Error(
-        "템플릿이나 행사에서 사용 중인 포지션은 삭제할 수 없습니다."
-      );
+      throw createPositionError(positionErrorCodes.deleteInUse, {
+        cause: error,
+      });
     }
 
-    throw new Error("포지션을 삭제하지 못했습니다.");
+    throw createPositionError(positionErrorCodes.deleteFailed, {
+      cause: error,
+    });
   }
 
   if (!data?.id) {
-    throw new Error("삭제할 포지션을 찾지 못했습니다.");
+    throw createPositionError(positionErrorCodes.deleteTargetNotFound);
   }
 
   return data.id;
@@ -119,7 +133,9 @@ export async function reorderPositionRecords(
   });
 
   if (error) {
-    throw new Error("포지션 순서를 저장하지 못했습니다.");
+    throw createPositionError(positionErrorCodes.reorderFailed, {
+      cause: error,
+    });
   }
 
   return positionIds;

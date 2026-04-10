@@ -15,11 +15,6 @@ export type TemplateSlotRow = TemplateFormSlot & {
   _key: string;
 };
 
-export const templateSaveErrorMessage =
-  "행사 템플릿을 저장하지 못했습니다.";
-export const templateDeleteErrorMessage =
-  "행사 템플릿을 삭제하지 못했습니다.";
-
 export function createTemplatePositionOptions(
   positions: Position[]
 ): TemplatePositionOption[] {

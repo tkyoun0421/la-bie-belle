@@ -5,6 +5,10 @@ import {
   useForm,
   type UseFormReturn,
 } from "react-hook-form";
+import {
+  isPrimaryTemplateToggleLocked,
+  shouldConfirmEventTemplateRequiredCountOverride,
+} from "#/entities/events/models/policies/eventTemplatePolicy";
 import type { EventTemplate } from "#/entities/events/models/schemas/eventTemplate";
 import { useCreateEventTemplateMutation } from "#/mutations/events/hooks/useCreateEventTemplateMutation";
 import { useUpdateEventTemplateMutation } from "#/mutations/events/hooks/useUpdateEventTemplateMutation";
@@ -12,17 +16,13 @@ import {
   createEventTemplateInputSchema,
   type CreateEventTemplateInput,
 } from "#/mutations/events/schemas/createEventTemplate";
-import {
-  isPrimaryTemplateToggleLocked,
-  shouldConfirmEventTemplateRequiredCountOverride,
-} from "#/entities/events/models/policies/eventTemplatePolicy";
+import { readTemplateSaveErrorMessage } from "#/screens/admin/templates/_helpers/templateError";
 import {
   createTemplateSlot,
   findNextAvailablePositionId,
   readDefaultRequiredCount,
   type TemplateFieldName,
   type TemplateFormSlot,
-  templateSaveErrorMessage,
 } from "#/screens/admin/templates/_helpers/templateForm";
 import { useDragReorderState } from "#/shared/hooks/useDragReorderState";
 
@@ -111,11 +111,7 @@ export function useTemplateEditorFormState({
 
         onSubmitted(template.id);
       } catch (nextError) {
-        setSubmitError(
-          nextError instanceof Error
-            ? nextError.message
-            : templateSaveErrorMessage
-        );
+        setSubmitError(readTemplateSaveErrorMessage(nextError));
       }
     },
     () => {
@@ -326,8 +322,8 @@ export function useTemplateEditorFormState({
     isPrimaryLocked,
     isSaving,
     pendingBelowDefaultRequiredCount,
-    serverError: submitError,
     removeSlotRow,
+    serverError: submitError,
     setSlotDropTarget,
     slotFields: slotFieldArray.fields,
     startSlotDrag,

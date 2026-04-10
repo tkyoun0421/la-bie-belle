@@ -268,6 +268,7 @@ src/entities/events/
   models/
     schemas/
     mappers/
+    errors/
     policies/
     normalizeEventTemplateCollection.ts
   repositories/
@@ -280,6 +281,9 @@ src/entities/events/
   - domain schema
 - `models/mappers`
   - DB row -> domain model 변환
+- `models/errors`
+  - domain error code catalog
+  - lower layer throws code-based errors only
 - `models/policies`
   - domain rule
   - 예: 대표 템플릿 삭제 가능 여부
