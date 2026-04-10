@@ -15,7 +15,9 @@
 - 먼저 issue를 만들고, PR은 해당 issue를 닫도록 연결한다
 - 구현 단위는 `phase milestone -> issue -> phase PR` 순서로 간다
 - issue 본문에는 배경, 목표, 기대 사용자 흐름, 포함/제외 범위, 영향 영역, 완료 조건, 테스트 계획, 리스크가 있어야 한다
-- PR 본문에는 연결 이슈, 배경, 기대 사용자 흐름, 포함/제외 범위, 영향 영역, TDD 기록, 검증 근거, 리스크가 있어야 한다
+- PR 본문에는 연결 이슈, 목적, 배경, 기대 사용자 흐름, 주요 변경, 포함/제외 범위, 영향 영역, TDD 기록, 검증 근거, 다음 단계, 리스크가 있어야 한다
+- PR 본문에는 반드시 `Closes #...` 연결 이슈가 있어야 하고, 연결한 issue들은 모두 같은 milestone에 속해야 한다
+- PR milestone은 linked issue의 milestone으로 자동 동기화된다
 - TDD 규칙은 [CLAUDE.md](../../CLAUDE.md)와 [execution-plan.md](../plans/execution-plan.md)를 따른다
 - 브랜치 전략은 `develop` 기준으로 운영한다
 
@@ -66,6 +68,7 @@
 - [project-roadmap.seed.json](../../scripts/github/project-roadmap.seed.json): milestone, label, issue 시드
 - [bootstrap-project-roadmap.ps1](../../scripts/github/bootstrap-project-roadmap.ps1): GitHub project, milestone, issue를 생성하는 스크립트
 - [add-to-project.yml](../../.github/workflows/add-to-project.yml): `track:roadmap` 라벨이 붙은 issue/PR을 project에 자동 추가하는 workflow
+- [sync-pr-milestone.yml](../../.github/workflows/sync-pr-milestone.yml): PR 본문의 linked issue를 기준으로 milestone을 자동 동기화하는 workflow
 - [roadmap-work-item.yml](../../.github/ISSUE_TEMPLATE/roadmap-work-item.yml): 새 로드맵 이슈 작성 템플릿
 - [PULL_REQUEST_TEMPLATE.md](../../.github/PULL_REQUEST_TEMPLATE.md): 이슈 기반 PR 작성 템플릿
 
@@ -120,7 +123,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\github\bootstrap-project-road
 3. `develop`에서 phase 구현을 진행한다
 4. phase 안의 slice를 모두 닫은 뒤 PR을 `master`로 올린다
 5. PR 본문에 포함된 slice와 `Closes #번호` 목록을 넣는다
-6. merge 후 project status를 다음 단계로 옮긴다
+6. linked issue milestone이 PR milestone으로 자동 동기화되는지 확인한다
+7. merge 후 project status를 다음 단계로 옮긴다
 
 ## 4. 원격 생성 전 점검
 
@@ -153,6 +157,7 @@ repo `Projects` 탭에도 보이게 하려면 둘 중 하나를 해야 한다.
 
 - milestone/issue 시드 구조
 - project 자동 추가 workflow
+- PR milestone 자동 동기화 workflow
 - 이슈 템플릿
 - PR 템플릿
 

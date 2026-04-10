@@ -1,177 +1,139 @@
-# FSD Profile: 웨딩홀 근무 운영 PWA
+# FSD Profile
 
 Build Plan: [./build-plan.md](./build-plan.md)  
 Architecture: [./architecture-spec.md](./architecture-spec.md)  
 Codebase: [./codebase-architecture.md](./codebase-architecture.md)  
+Folder Hierarchy: [./folder-hierarchy.md](./folder-hierarchy.md)  
 Execution: [./execution-plan.md](./execution-plan.md)  
 Status: ACTIVE  
-Date: 2026-04-09
+Date: 2026-04-10
 
 ## Purpose
-이 문서는 이 프로젝트에서 쓰는 개인화된 FSD 규칙을 고정한다.  
-반복 예시는 줄이고, 실제로 코드베이스를 자를 때 필요한 규칙만 남긴다.
 
-## Layer Model
+이 문서는 현재 프로젝트의 실제 FSD 운영 규칙을 고정한다.
+
+세부 폴더 배치는 [Folder Hierarchy](./folder-hierarchy.md)를 source of truth 로 보고,
+이 문서는 레이어 의미와 운영 규칙에 집중한다.
+
+## Layer Order
+
+```text
+app -> screens -> mutations -> queries -> entities -> shared
+```
+
 - `app`
-  - route, layout, provider, auth/session bootstrap, 최상위 context
-- `flows`
-  - 화면 조합 전용 레이어
+  - route, layout, provider, hydration entry
+- `screens`
+  - 화면 조합
 - `mutations`
-  - 쓰기 유스케이스 완결 레이어
+  - write use case
 - `queries`
-  - 읽기 유스케이스 완결 레이어
+  - read use case
+- `entities`
+  - domain core, policy, repository
 - `shared`
-  - 공용 로직과 공용 UI
+  - primitive UI, infra, generic helper
 
-기본 뼈대:
+## Core Rules
 
-```text
-src/
-  app/
-  flows/
-  mutations/
-  queries/
-  shared/
-```
+- 내부 import 는 `#/*` 절대 경로만 사용한다.
+- `app` 과 `screens` 만 여러 도메인을 조합한다.
+- `mutations`, `queries`, `entities` 는 같은 레이어 안에서 다른 도메인을 import 하지 않는다.
+- `shared` 는 상위 레이어를 import 하지 않는다.
 
-## Layer Responsibilities
+## screens Rule
 
-App-layer support folders under `src/app` must use a private `_` prefix.
-
-### App
-- route segment와 Next.js 예약 파일만 둔다
-- layout, provider, auth bootstrap까지만 가진다
-- 화면 조합 로직은 두지 않는다
-
-### Flows
-- 화면 기준으로 자른다
-- 여러 `queries`, `mutations`, `shared`를 조합한다
-- business logic은 두지 않는다
-- section ordering, empty state, action wiring 같은 화면 조합 로직만 둔다
-
-### Mutations
-- 도메인 기준으로 자른다
-- 권한 검사, 도메인 검증, 상태 전이 검증, 트랜잭션, audit log, side effect까지 포함한다
-- 얇은 command wrapper로 두지 않는다
-
-### Queries
-- 도메인 기준으로 자른다
-- 권한/가시성 필터, join, aggregation, view model 조립까지 포함한다
-- raw read wrapper로 두지 않는다
-
-### Shared
-- 도메인에 속하지 않는 공용 요소를 둔다
-- 세션/auth 같은 cross-cutting concern도 여기서 다룬다
-
-## Partition Rule
-- `flows`는 화면 기준
-- `queries`와 `mutations`는 도메인 기준
-- `flows` 아래에 도메인 트리를 복제하지 않는다
-
-초기 도메인 집합:
-- `auth`
-- `users`
-- `events`
-- `assignments`
-- `replacements`
-- `checkins`
-- `payroll`
-- `workflow`
-
-## Shared Structure
-```text
-src/shared/
-  components/
-  lib/
-  config/
-  api/
-  models/
-  utils/
-  types/
-```
-
-## Import Rules
-- 같은 도메인 내부 import는 자유롭게 허용한다
-- barrel file `index.ts`는 쓰지 않는다
-- 프로젝트 내부 소스 import는 모두 `#/*` 절대 경로를 사용한다
-- `./`, `../` 기반 상대 경로 import는 내부 소스 코드에서 금지한다
-- `flows`는 여러 도메인을 조합할 수 있다
-- `queries`와 `mutations`의 cross-domain import는 기본 금지다
-- 사용자 세션 정보는 `shared/lib/auth` 같은 shared 경계에서 처리한다
-- 실제 사용자 도메인 데이터는 `queries/users/*`를 통해서만 읽는다
-- `app`은 `flows`와 `shared`만 본다
+- `screens` 는 `app` 의 route 구조를 따른다.
+- route 전용 코드는 해당 route screen 아래에 둔다.
+- sibling route 가 공용으로 쓰는 코드는 가장 가까운 부모 screen 아래에 둔다.
+- `screens` 는 화면 조합과 상호작용 orchestration 을 담당한다.
+- 도메인 정책 자체는 `entities` 로 보낸다.
+- `mutations/actions` 는 repository call orchestration 을 맡고 raw persistence 코드는 두지 않는다.
+- `entities/repositories` 가 커지면 `read*Repository.ts` 와 `write*Repository.ts` 로 분리한다.
 
 예시:
-- `#/flows/dashboard/components/DashboardScreen`
-- `#/queries/users/get-my-profile/models/services/getMyProfile`
-- `#/shared/lib/auth/getSessionActor`
-- 외부 패키지는 `react`, `next/navigation`, `zod`처럼 package import를 그대로 쓴다
 
-## Internal Shape
+- `app/admin/templates/new/page.tsx`
+- `screens/admin/templates/new/AdminTemplateCreateScreen.tsx`
+- `app/admin/templates/[templateId]/edit/page.tsx`
+- `screens/admin/templates/[templateId]/edit/AdminTemplateEditScreen.tsx`
 
-### Flows
-```text
-src/flows/dashboard/
-  components/
-  hooks/
-  models/
-  tests/
-```
+## Support Folder Rule
 
-- `components`: 화면 조합용 UI
-- `hooks`: polling, form wiring, action binding 같은 React 전용 로직
-- `models`: 화면 조합 로직
-- `tests`: flow 조합 테스트
+`app` 과 `screens` 의 private support folder 는 `_` prefix 를 사용한다.
 
-### Queries And Mutations
-```text
-src/mutations/replacements/approve-replacement/
-  actions/
-  components/
-  hooks/
-  models/
-  tests/
-```
+- `_components`
+- `_hooks`
+- `_helpers`
+- `_tests`
 
-- `actions`: 진입점
-- `components`: 유스케이스 전용 UI가 있을 때만 추가
-- `hooks`: React 전용 wiring
-- `models`: 유스케이스 로직
-- `tests`: 해당 유스케이스 테스트
+lower layer 도 테스트 폴더는 `_tests` 로 통일한다.
 
-### Models Subfolders
-- `services`
-- `schemas`
-- `types`
-- `constants`
+즉 현재 기준:
 
-모든 하위 폴더는 강제가 아니라 필요할 때만 만든다.
+- `screens/*/_tests`
+- `mutations/*/_tests`
+- `queries/*/_tests`
+- `entities/*/_tests`
+- `shared/_tests`
 
-## Server Boundary Rule
-- server action 파일은 최상위 `actions` 레이어를 만들지 않는다
-- 각 mutation 유스케이스 내부 `actions/`에 둔다
-- 기본 파일명은 `actions/action.ts`
-- `app`은 action을 정의하지 않고 호출만 한다
+## UI Rule
 
-## Hooks Rule
-- hook은 해당 flow 또는 유스케이스의 `hooks/` 아래에 둔다
-- route 근처에 ad-hoc hook을 만들지 않는다
-- 순수 business logic은 hook이 아니라 같은 유스케이스의 `models/`로 내린다
+- `shared/components/ui`
+  - primitive dumb UI
+- `shared/components/common`
+  - domain-neutral reusable UI
+- `screens/*/_components`
+  - route-local dumb UI
+  - client island
+- `mutations`, `queries`
+  - UI component 를 두지 않는다
+- `entities`
+  - 현재 기준 non-UI 레이어다
+
+## State Rule
+
+- server state 는 server render + TanStack Query hydration 을 기본으로 둔다.
+- read-side state 는 `queries/*/hooks`
+- write execution 은 `mutations/*/hooks`
+- route-local interaction state 는 `screens/*/_hooks` 또는 leaf client component
+- screen root state 는 orchestration 위주로 제한한다.
+- `react-hook-form`, `useWatch`, field error, submit error 는 leaf dialog 또는 leaf editor 전용 훅으로 내린다.
+- 목록과 editor 가 공존하는 화면에서 root client component 가 form state 를 직접 가지면 안 된다.
+- create/edit reset 은 root 에서 form 값을 직접 비우는 대신 session key 변경 + leaf remount 패턴을 기본으로 쓴다.
+
+## Domain Rule Rule
+
+도메인 규칙은 `entities/*/models/policies` 로 간다.
+
+예:
+
+- 대표 템플릿 삭제 가능 여부
+- 대표 템플릿 토글 잠금 여부
+- 슬롯 포지션 중복 허용 여부
+- 기본 인원보다 낮출 때 confirm 필요 여부
+
+즉 화면 helper 나 mutation action 에 흩어진 규칙을 `entities` 로 올리는 방향이 현재 기준이다.
 
 ## Test Rule
-- 테스트는 각 flow 또는 유스케이스 폴더 내부 `tests/`에 colocate한다
-- global `tests/`를 기본값으로 두지 않는다
-- cross-flow E2E가 커질 때만 별도 `e2e/`를 검토한다
 
-## Naming
-- 폴더는 `kebab-case`
-- React 컴포넌트 파일은 `PascalCase.tsx`
-- 일반 파일은 `camelCase.ts` 또는 `camelCase.tsx`
-- hook 파일은 `useXxx.ts` 또는 `useXxx.tsx`
-- test 파일은 `camelCase.test.ts` 또는 `camelCase.test.tsx`
-- Next.js 예약 파일은 framework naming을 그대로 따른다
-- import 경로는 내부 소스 기준 항상 `#/*` 절대 경로를 사용한다
+- 새 테스트는 모든 레이어에서 `_tests` 규칙을 따른다.
+- 테스트는 가장 가까운 owner 폴더 아래에 colocate 한다.
+- legacy `tests/` 는 더 이상 유지하지 않는다.
+
+예:
+
+- `src/screens/admin/templates/_tests/useTemplateEditorFormState.test.ts`
+- `src/mutations/events/_tests/createEventTemplateAction.test.ts`
+- `src/queries/events/_tests/getEventTemplateCollectionQueryOptions.test.ts`
+- `src/entities/events/_tests/eventTemplatePolicy.test.ts`
+- `src/shared/_tests/createQueryKeyFactory.test.ts`
 
 ## Current Rule
-- 현재 canonical tree는 [Codebase Architecture](./codebase-architecture.md)를 따른다
-- 새 케이스가 애매하면 먼저 기존 규칙에 맞춰 최소 구조로 추가하고, 반복 패턴이 생길 때만 규칙을 확장한다
+
+- route 를 먼저 보고 `app` 과 `screens` 위치를 정한다.
+- 공용이면 부모 폴더, 전용이면 해당 route 폴더 아래로 둔다.
+- 도메인 규칙은 `entities`
+- read 흐름은 `queries`
+- write 흐름은 `mutations`
+- 테스트는 `_tests`

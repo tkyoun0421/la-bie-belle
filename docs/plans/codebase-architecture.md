@@ -1,197 +1,209 @@
-# Codebase Architecture Plan: 웨딩홀 근무 운영 PWA
+# Codebase Architecture
 
 Build Plan: [./build-plan.md](./build-plan.md)  
 Architecture: [./architecture-spec.md](./architecture-spec.md)  
 Screens: [./screen-spec.md](./screen-spec.md)  
-Execution: [./execution-plan.md](./execution-plan.md)  
 FSD Profile: [./fsd-profile.md](./fsd-profile.md)  
-Design: [../designs/pwa.md](../designs/pwa.md)  
+Folder Hierarchy: [./folder-hierarchy.md](./folder-hierarchy.md)  
 Status: ACTIVE  
-Date: 2026-04-09
+Date: 2026-04-10
 
 ## Purpose
-이 문서는 실제 코드베이스의 canonical tree와 경계 규칙을 정리한다.  
-세부 FSD 규칙은 [FSD Profile](./fsd-profile.md)이 source of truth이고, 이 문서는 그 규칙을 현재 프로젝트 구조에 적용한 결과다.
+
+이 문서는 현재 repository 의 canonical tree 와 route-to-screen 대응을 기록한다.
+
+목표:
+
+- 현재 `src/` 구조를 한눈에 보여주기
+- route 와 screen 의 대응을 고정하기
+- 템플릿/포지션 화면처럼 이미 구조가 잡힌 영역의 실제 배치를 기록하기
 
 ## Top-Level Layout
+
 ```text
 src/
   app/
-    _providers/
-    admin/
-    events/
-    replacements/
-    check-in/
-    pay/
-    auth/
-    api/
-  flows/
+  screens/
   mutations/
   queries/
+  entities/
   shared/
-    components/
-    lib/
-    config/
-    api/
-    models/
-    utils/
-    types/
 
 supabase/
   migrations/
-  seed/
+  seed.sql
 
 public/
 ```
 
-## Route Tree
-Non-route support folders under `src/app` must use a private `_` prefix, for example `_providers/`.
+## Current Route Tree
 
 ```text
 src/app/
   layout.tsx
   page.tsx
+  _providers/
+
+  admin/
+    layout.tsx
+    page.tsx
+    payroll-rules/page.tsx
+    positions/page.tsx
+    requests/page.tsx
+    templates/page.tsx
+    templates/new/page.tsx
+    templates/[templateId]/edit/page.tsx
+    users/page.tsx
+
   events/[eventId]/page.tsx
   replacements/page.tsx
   check-in/page.tsx
   pay/page.tsx
 
-  admin/
-    layout.tsx
-    page.tsx
-    requests/page.tsx
-    users/page.tsx
-    positions/page.tsx
-    templates/page.tsx
-    payroll-rules/page.tsx
-
   auth/
     callback/route.ts
 
   api/
+    event-templates/route.ts
+    health/route.ts
+    positions/route.ts
     push/subscribe/route.ts
     push/unsubscribe/route.ts
-    health/route.ts
 ```
 
-## Route To Flow Mapping
-- `/` -> `flows/dashboard`
-- `/events/[eventId]` -> `flows/event-detail`
-- `/replacements` -> `flows/replacements`
-- `/check-in` -> `flows/check-in`
-- `/pay` -> `flows/pay`
-- `/admin` -> `flows/admin-dashboard`
-- `/admin/requests` -> `flows/admin-requests`
-- `/admin/users` -> `flows/admin-users`
-- `/admin/positions` -> `flows/admin-positions`
-- `/admin/templates` -> `flows/admin-templates`
-- `/admin/payroll-rules` -> `flows/admin-payroll-rules`
+## Route To Screen Mapping
 
-## Canonical Module Shape
+- `/` -> `screens/dashboard`
+- `/events/[eventId]` -> `screens/events/detail`
+- `/replacements` -> `screens/replacements`
+- `/check-in` -> `screens/check-in`
+- `/pay` -> `screens/pay`
+- `/admin` -> `screens/admin/dashboard`
+- `/admin/requests` -> `screens/admin/requests`
+- `/admin/users` -> `screens/admin/users`
+- `/admin/positions` -> `screens/admin/positions`
+- `/admin/templates` -> `screens/admin/templates`
+- `/admin/templates/new` -> `screens/admin/templates/new`
+- `/admin/templates/[templateId]/edit` -> `screens/admin/templates/[templateId]/edit`
+- `/admin/payroll-rules` -> `screens/admin/payroll-rules`
 
-### Flows
+## Current Template Screen Shape
+
 ```text
-src/flows/dashboard/
-  components/
-  hooks/
-  models/
-  tests/
+src/screens/admin/templates/
+  AdminTemplatesScreen.tsx
+  _components/
+    AdminTemplatesClient.tsx
+    EventTemplateEditorCard.tsx
+    EventTemplateListItem.tsx
+    EventTemplatesListPanel.tsx
+    TemplateBasicsFields.tsx
+    TemplateEditorActions.tsx
+    TemplateEditorPageClient.tsx
+    TemplateEditorPageSection.tsx
+    TemplateField.tsx
+    TemplateSlotDefaultRow.tsx
+    TemplateSlotDefaultsSection.tsx
+  _helpers/
+    templateForm.ts
+  _hooks/
+    useAdminTemplatesScreenState.ts
+    useTemplateEditorFormState.ts
+  _tests/
+    templateForm.test.ts
+    useTemplateEditorFormState.test.ts
+  new/
+    AdminTemplateCreateScreen.tsx
+  [templateId]/
+    edit/
+      AdminTemplateEditScreen.tsx
 ```
 
-### Queries And Mutations
+정리 기준:
+
+- 목록 전용 코드는 `templates` 루트 아래에 둔다.
+- `new` 와 `edit` 가 공용으로 쓰는 editor 관련 support code 도 `templates` 루트 아래에 둔다.
+- `new` 전용 또는 `edit` 전용 코드가 생기면 각 route 폴더 아래로 내린다.
+- 템플릿 관련 테스트는 현재 owner 루트인 `templates/_tests` 에 둔다.
+
+## Current Position Screen Shape
+
 ```text
-src/queries/users/get-my-profile/
-  actions/
-  components/
-  hooks/
-  models/
-  tests/
-
-src/mutations/replacements/approve-replacement/
-  actions/
-  components/
-  hooks/
-  models/
-  tests/
+src/screens/admin/positions/
+  AdminPositionsScreen.tsx
+  _components/
+    AdminPositionsClient.tsx
+    PositionEditorDialog.tsx
+    PositionEditorCard.tsx
+    PositionsListPanel.tsx
+  _hooks/
+    useAdminPositionsScreenState.ts
+    usePositionEditorDialogState.ts
+  _tests/
+    AdminPositionsClient.test.tsx
+    useAdminPositionsScreenState.test.ts
+    usePositionEditorDialogState.test.ts
 ```
 
-### Initial Domains
-- `auth`
-- `users`
-- `events`
-- `assignments`
-- `replacements`
-- `checkins`
-- `payroll`
-- `workflow`
+정리 기준:
 
-## Dependency Rules
-- `app`은 `flows`와 `shared`만 import한다.
-- `flows`는 여러 `queries`, `mutations`, `shared`를 조합할 수 있다.
-- `queries`와 `mutations`는 같은 도메인 내부에서만 자유 import를 허용한다.
-- `queries`와 `mutations`의 cross-domain import는 기본 금지다.
-- 사용자 세션 정보는 `shared/lib/auth` 같은 cross-cutting concern으로 처리한다.
-- 실제 사용자 도메인 데이터는 `queries/users/*`에서만 읽는다.
-- `shared`는 상위 레이어를 import하지 않는다.
-- barrel file `index.ts`는 사용하지 않는다.
-- 프로젝트 내부 소스 import는 모두 `#/*` 절대 경로를 사용한다.
-- `./`, `../` 기반 상대 경로 import는 내부 소스 코드에서 사용하지 않는다.
-- route 파일과 UI 컴포넌트에서 DB를 직접 호출하지 않는다.
+- 목록과 검색 orchestration 은 `useAdminPositionsScreenState.ts` 에 둔다.
+- editor dialog shell 은 `PositionEditorDialog.tsx` 로 분리한다.
+- `react-hook-form`, `useWatch`, validation, submit error 는 `usePositionEditorDialogState.ts` 로 내린다.
+- 이 구조의 목적은 dialog 입력 중 `PositionsListPanel` 이 함께 리렌더링되지 않게 만드는 것이다.
+
+## Current Event Entity Shape
+
+```text
+src/entities/events/
+  models/
+    errors/
+    mappers/
+      mapEventTemplateRow.ts
+    policies/
+      eventTemplatePolicy.ts
+    schemas/
+      eventTemplate.ts
+    normalizeEventTemplateCollection.ts
+  repositories/
+    readEventTemplateRepository.ts
+    writeEventTemplateRepository.ts
+  _tests/
+    eventTemplatePolicy.test.ts
+    mapEventTemplateRow.test.ts
+    normalizeEventTemplateCollection.test.ts
+    writeEventTemplateRepository.test.ts
+```
+
+핵심:
+
+- 이벤트 도메인 규칙은 `models/policies` 로 간다.
+- recoverable domain error codes are defined in `models/errors`.
+- read/write persistence 진입점은 `repositories` 가 맡는다.
+- `mutations/actions` 는 raw Supabase 호출 대신 repository orchestration 만 맡는다.
+- 화면 전용 규칙은 `screens` 로 가고, 도메인 규칙은 `entities` 로 간다.
 
 ## Rendering And Data Flow
-1. 각 route는 server component로 시작한다.
-2. page는 대응하는 `flows/*`를 렌더한다.
-3. `flows/*`는 필요한 `queries/*` 결과와 `mutations/*` action을 조합한다.
-4. 상태 변경은 `mutations/*/*/actions/action.ts`로 들어간다.
-5. TanStack Query hook과 React 전용 wiring은 해당 유스케이스 또는 flow의 `hooks/`에 둔다.
 
-## Naming
-- 폴더 이름은 `kebab-case`
-- React 컴포넌트 파일은 `PascalCase.tsx`
-- 일반 파일은 `camelCase.ts` 또는 `camelCase.tsx`
-- hook 파일은 `useXxx.ts` 또는 `useXxx.tsx`
-- test 파일은 `camelCase.test.ts` 또는 `camelCase.test.tsx`
-- query 폴더는 `get-*`, `list-*`
-- mutation 폴더는 `create-*`, `assign-*`, `approve-*`, `request-*`, `close-*`
-- 내부 소스 import는 `#/* -> src/*` alias를 사용한다
-- Next.js 예약 파일은 `page.tsx`, `layout.tsx`, `route.ts` 같은 framework naming을 그대로 쓴다
+1. `app/*/page.tsx` 가 server component 로 시작한다.
+2. route entry 가 `entities/*/repositories/*` 로 server read 를 수행한다.
+3. route entry 가 query cache 를 hydrate 한다.
+4. route entry 가 `screens/*` screen shell 을 렌더한다.
+5. 필요한 부분만 `screens/*/_components/*Client.tsx` 에서 client island 로 동작한다.
+6. client island 는 `queries/*/hooks` 와 `mutations/*/hooks` 를 사용한다.
+7. domain rule 은 `entities/*/models/policies/*` 에서 관리한다.
+8. read/write data access 는 `entities/*/repositories/*` 에서 관리한다.
 
-## State Management Policy
-- 전역 client store는 `Zustand`만 사용한다.
-- `Zustand`는 drawer, filter, selected item, temporary compose state 같은 UI 상태에만 쓴다.
-- 서버 데이터의 source of truth는 `TanStack Query` 또는 server render 결과다.
-- 서버 데이터는 `flows -> queries` 경로로 읽는다.
-- client-side server state는 `TanStack Query`로 관리한다.
-- polling과 cache invalidation은 `TanStack Query` 기준으로 구현한다.
-- UI 로컬 상태는 컴포넌트 상태, form state, 또는 `Zustand`로 관리한다.
-- URL에 남아야 하는 상태만 search params로 올린다.
-- query hook은 가능하면 `queries/*/hooks`에 둔다.
-- Zustand store는 가능하면 해당 flow 또는 유스케이스 아래 `hooks/`에서 감싼다.
+## Client State Ownership Rule
 
-## Test Placement
-```text
-src/flows/**/tests/
-src/queries/**/tests/
-src/mutations/**/tests/
-```
+- screen root client component 는 list/search/open/close 같은 orchestration state 만 가진다.
+- 입력 중 자주 변하는 form state 는 leaf dialog 또는 leaf page section 아래로 내린다.
+- `react-hook-form` 과 `useWatch` 는 가능한 가장 좁은 owner 에 둔다.
+- sibling panel 이 있는 화면에서 root client component 가 form state 를 가지면 리렌더 범위가 넓어지므로 금지한다.
+- 새 create/edit 세션 시작은 `requestKey` 같은 session key 로 분리하고, leaf subtree remount 로 초기화한다.
 
-- 테스트는 가능한 한 유스케이스 가까이에 둔다.
-- 화면 조합 테스트는 `flows/*/tests`
-- 도메인 읽기/쓰기 테스트는 각 유스케이스의 `tests`
-- truly cross-flow E2E가 늘어나면 별도 `e2e/`를 추가한다
+## Current Rule
 
-## Infra Placement
-- DB schema와 index는 `supabase/migrations`
-- seed 데이터는 `supabase/seed`
-- push helper는 `src/shared/lib/push`
-- auth/session helper는 `src/shared/lib/auth`
-- geolocation helper는 `src/shared/lib/geo`
-
-## Bootstrap Checklist
-1. `src/app`, `src/flows`, `src/mutations`, `src/queries`, `src/shared` 생성
-2. `src/shared` 하위 공용 디렉터리 생성
-3. `tsconfig`에 `#/* -> ./src/*` path alias 설정
-4. 대표 샘플로 `flows/dashboard`, `queries/users/get-my-profile`, `mutations/auth/logout` 생성
-5. 각 유스케이스에 필요한 `actions / components / hooks / models / tests`만 추가
-6. root work routes와 `/admin` 레이아웃 분리
-7. no-barrel, no-cross-domain, no-relative-internal-import, no-direct-db-from-route 규칙을 lint/리뷰 기준으로 반영
+- `screens` 는 `app` 구조를 그대로 따라간다.
+- 공용 support code 는 가장 가까운 부모 screen 아래에 둔다.
+- 테스트는 모든 레이어에서 `_tests` 로 통일한다.

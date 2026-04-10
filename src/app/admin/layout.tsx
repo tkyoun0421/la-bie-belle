@@ -1,7 +1,11 @@
+import { requireAdminPageActor } from "#/shared/lib/auth/adminActor";
+
 type AdminLayoutProps = Readonly<{
   children: React.ReactNode;
 }>;
 
-export default function AdminLayout({ children }: AdminLayoutProps) {
+export default async function AdminLayout({ children }: AdminLayoutProps) {
+  await requireAdminPageActor();
+
   return children;
 }

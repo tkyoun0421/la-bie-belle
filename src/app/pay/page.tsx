@@ -1,4 +1,4 @@
-import { PayScreen } from "#/flows/pay/components/PayScreen";
+import { PayScreen } from "#/screens/pay/PayScreen";
 
 export default function PayPage() {
   return <PayScreen />;

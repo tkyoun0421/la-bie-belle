@@ -1,0 +1,134 @@
+name: Sync PR Milestone
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+      - ready_for_review
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  sync-pr-milestone:
+    name: Sync PR Milestone
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sync linked issue milestone to PR
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            if (!pr) {
+              core.setFailed("pull_request payload is missing.");
+              return;
+            }
+
+            if (pr.draft) {
+              core.notice("Draft PR은 milestone sync를 건너뜁니다.");
+              return;
+            }
+
+            const body = pr.body ?? "";
+            const closingKeywordPattern =
+              /\b(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s+#(\d+)\b/gi;
+
+            const issueNumbers = [
+              ...new Set(
+                Array.from(body.matchAll(closingKeywordPattern), (match) =>
+                  Number(match[1])
+                )
+              ),
+            ];
+
+            if (issueNumbers.length === 0) {
+              core.setFailed(
+                "PR 본문에 `Closes #이슈번호`가 필요합니다. milestone sync도 이 연결을 기준으로 동작합니다."
+              );
+              return;
+            }
+
+            const issues = await Promise.all(
+              issueNumbers.map(async (issueNumber) => {
+                const response = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                });
+
+                return response.data;
+              })
+            );
+
+            const linkedPullRequests = issues.filter((issue) => issue.pull_request);
+
+            if (linkedPullRequests.length > 0) {
+              core.setFailed(
+                `연결 이슈에는 PR이 아닌 issue만 사용할 수 있습니다: ${linkedPullRequests
+                  .map((issue) => `#${issue.number}`)
+                  .join(", ")}`
+              );
+              return;
+            }
+
+            const issuesWithoutMilestone = issues.filter(
+              (issue) => issue.milestone == null
+            );
+
+            if (issuesWithoutMilestone.length > 0) {
+              core.setFailed(
+                `연결한 issue에는 milestone이 반드시 있어야 합니다: ${issuesWithoutMilestone
+                  .map((issue) => `#${issue.number}`)
+                  .join(", ")}`
+              );
+              return;
+            }
+
+            const uniqueMilestones = [
+              ...new Map(
+                issues.map((issue) => [
+                  issue.milestone.number,
+                  {
+                    number: issue.milestone.number,
+                    title: issue.milestone.title,
+                  },
+                ])
+              ).values(),
+            ];
+
+            if (uniqueMilestones.length !== 1) {
+              core.setFailed(
+                `연결한 issue들은 모두 같은 milestone을 가져야 합니다. 현재 milestone: ${uniqueMilestones
+                  .map((milestone) => `${milestone.title} (#${milestone.number})`)
+                  .join(", ")}`
+              );
+              return;
+            }
+
+            const targetMilestone = uniqueMilestones[0];
+            const currentMilestoneNumber = pr.milestone?.number ?? null;
+
+            if (currentMilestoneNumber === targetMilestone.number) {
+              core.notice(
+                `PR milestone이 이미 \`${targetMilestone.title}\`로 맞춰져 있습니다.`
+              );
+              return;
+            }
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              milestone: targetMilestone.number,
+            });
+
+            core.notice(
+              `PR milestone을 \`${targetMilestone.title}\` (#${targetMilestone.number}) 로 동기화했습니다.`
+            );
