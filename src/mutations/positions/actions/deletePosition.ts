@@ -8,9 +8,10 @@ import {
 } from "#/mutations/positions/schemas/deletePosition";
 import { requireAdminActor } from "#/shared/lib/auth/adminActor";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
+import type { Database } from "#/shared/types/database";
 
 type DeletePositionDependencies = {
-  client?: SupabaseClient;
+  client?: SupabaseClient<Database>;
   deleteRecord?: typeof deletePositionRecord;
   requireActor?: typeof requireAdminActor;
 };

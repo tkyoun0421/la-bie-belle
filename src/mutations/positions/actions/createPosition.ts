@@ -9,9 +9,10 @@ import {
 } from "#/mutations/positions/schemas/createPosition";
 import { requireAdminActor } from "#/shared/lib/auth/adminActor";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
+import type { Database } from "#/shared/types/database";
 
 type CreatePositionDependencies = {
-  client?: SupabaseClient;
+  client?: SupabaseClient<Database>;
   createRecord?: typeof createPositionRecord;
   requireActor?: typeof requireAdminActor;
 };

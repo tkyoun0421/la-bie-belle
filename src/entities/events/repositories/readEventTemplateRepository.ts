@@ -8,6 +8,7 @@ import {
   eventTemplatesResponseSchema,
   type EventTemplate,
 } from "#/entities/events/models/schemas/eventTemplate";
+import type { Database } from "#/shared/types/database";
 
 const eventTemplateSelect = `
   id,
@@ -30,7 +31,7 @@ const eventTemplateSelect = `
 `;
 
 type EventTemplateRepositoryOptions = {
-  client: SupabaseClient;
+  client: SupabaseClient<Database>;
 };
 
 export async function readEventTemplates(

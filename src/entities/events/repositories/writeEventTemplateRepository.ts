@@ -3,9 +3,10 @@ import {
   eventTemplateErrors,
   eventTemplateErrorCodes,
 } from "#/entities/events/models/errors/eventTemplateError";
+import type { Database } from "#/shared/types/database";
 
 type EventTemplateRepositoryOptions = {
-  client: SupabaseClient;
+  client: SupabaseClient<Database>;
 };
 
 type EventTemplateSlotWriteRecord = {

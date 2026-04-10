@@ -12,9 +12,10 @@ import {
 } from "#/mutations/events/schemas/createEventTemplate";
 import { requireAdminActor } from "#/shared/lib/auth/adminActor";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
+import type { Database } from "#/shared/types/database";
 
 type CreateEventTemplateDependencies = {
-  client?: SupabaseClient;
+  client?: SupabaseClient<Database>;
   createRecord?: typeof createEventTemplateRecord;
   readById?: typeof readEventTemplateById;
   requireActor?: typeof requireAdminActor;

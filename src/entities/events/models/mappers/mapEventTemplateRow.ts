@@ -2,36 +2,31 @@ import {
   eventTemplateSchema,
   type EventTemplate,
 } from "#/entities/events/models/schemas/eventTemplate";
+import type { TableRow } from "#/shared/types/database";
 
 export type EventTemplateSlotPositionRow =
-  | {
-      default_required_count: number;
-      id: string;
-      name: string;
-    }
-  | {
-      default_required_count: number;
-      id: string;
-      name: string;
-    }[]
+  | Pick<TableRow<"positions">, "default_required_count" | "id" | "name">
+  | Pick<TableRow<"positions">, "default_required_count" | "id" | "name">[]
   | null;
 
-export type EventTemplateSlotRow = {
-  position_id: string;
+export type EventTemplateSlotRow = Pick<
+  TableRow<"event_template_position_slots">,
+  "position_id" | "required_count_override" | "training_count"
+> & {
   positions: EventTemplateSlotPositionRow;
-  required_count_override: number | null;
-  training_count: number;
 };
 
-export type EventTemplateRow = {
-  created_at: string;
+export type EventTemplateRow = Pick<
+  TableRow<"event_templates">,
+  | "created_at"
+  | "first_service_at"
+  | "id"
+  | "is_primary"
+  | "last_service_end_at"
+  | "name"
+  | "time_label"
+> & {
   event_template_position_slots: EventTemplateSlotRow[];
-  first_service_at: string;
-  id: string;
-  is_primary: boolean;
-  last_service_end_at: string;
-  name: string;
-  time_label: string;
 };
 
 export function mapEventTemplateRow(row: EventTemplateRow): EventTemplate {

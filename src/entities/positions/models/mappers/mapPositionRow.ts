@@ -2,14 +2,12 @@ import {
   positionSchema,
   type Position,
 } from "#/entities/positions/models/schemas/position";
+import type { TableRow } from "#/shared/types/database";
 
-export type PositionRow = {
-  allowed_gender: Position["allowedGender"];
-  default_required_count: number;
-  id: string;
-  name: string;
-  sort_order: number;
-};
+export type PositionRow = Pick<
+  TableRow<"positions">,
+  "allowed_gender" | "default_required_count" | "id" | "name" | "sort_order"
+>;
 
 export function mapPositionRow(row: PositionRow): Position {
   return positionSchema.parse({

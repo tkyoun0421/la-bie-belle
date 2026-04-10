@@ -8,9 +8,10 @@ import type {
   Position,
   PositionAllowedGender,
 } from "#/entities/positions/models/schemas/position";
+import type { Database } from "#/shared/types/database";
 
 type PositionRepositoryOptions = {
-  client: SupabaseClient;
+  client: SupabaseClient<Database>;
 };
 
 export type CreatePositionRecordInput = {

@@ -309,6 +309,7 @@ src/shared/
   config/
   hooks/
   lib/
+  types/
   _tests/
 ```
 
@@ -325,6 +326,9 @@ src/shared/
   - Supabase client
   - TanStack Query helper
   - generic utility
+- `types`
+  - shared external contract types
+  - Supabase `Database` type
 - `hooks`
   - domain-neutral shared hook
 - `_tests/`

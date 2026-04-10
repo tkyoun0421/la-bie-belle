@@ -8,9 +8,10 @@ import {
 } from "#/mutations/positions/schemas/reorderPositions";
 import { requireAdminActor } from "#/shared/lib/auth/adminActor";
 import { createSupabaseAdminClient } from "#/shared/lib/supabase/admin";
+import type { Database } from "#/shared/types/database";
 
 type ReorderPositionsDependencies = {
-  client?: SupabaseClient;
+  client?: SupabaseClient<Database>;
   requireActor?: typeof requireAdminActor;
   reorderRecords?: typeof reorderPositionRecords;
 };

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import { getPublicEnv } from "#/shared/config/env";
+import type { Database } from "#/shared/types/database";
 
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
@@ -10,7 +11,7 @@ export async function createSupabaseServerClient() {
     throw new Error("Missing public Supabase environment variables.");
   }
 
-  return createServerClient(
+  return createServerClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
