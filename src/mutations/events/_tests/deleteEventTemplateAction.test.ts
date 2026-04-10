@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  eventTemplateErrors,
   eventTemplateErrorCodes,
-  readEventTemplateErrorCode,
 } from "#/entities/events/models/errors/eventTemplateError";
 import { deleteEventTemplateAction } from "#/mutations/events/actions/deleteEventTemplate";
 
@@ -111,6 +111,6 @@ async function expectEventTemplateErrorCode(
     await promise;
     throw new Error("Expected promise to reject.");
   } catch (error) {
-    expect(readEventTemplateErrorCode(error)).toBe(expectedCode);
+    expect(eventTemplateErrors.read(error)).toBe(expectedCode);
   }
 }

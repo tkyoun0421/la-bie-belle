@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  createPositionError,
+  positionErrors,
   positionErrorCodes,
 } from "#/entities/positions/models/errors/positionError";
 import type { Position } from "#/entities/positions/models/schemas/position";
@@ -172,7 +172,7 @@ describe("useAdminPositionsScreenState", () => {
 
   it("maps position save error codes to editor messages", async () => {
     createPositionMutation.mutateAsync.mockRejectedValueOnce(
-      createPositionError(positionErrorCodes.duplicateName)
+      positionErrors.create(positionErrorCodes.duplicateName)
     );
 
     const { result } = renderHook(() => useAdminPositionsScreenState());

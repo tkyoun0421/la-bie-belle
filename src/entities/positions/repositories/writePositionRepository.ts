@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { mapPositionRow } from "#/entities/positions/models/mappers/mapPositionRow";
 import {
-  createPositionError,
+  positionErrors,
   positionErrorCodes,
 } from "#/entities/positions/models/errors/positionError";
 import type {
@@ -40,18 +40,18 @@ export async function createPositionRecord(
 
   if (error) {
     if ("code" in error && error.code === "23505") {
-      throw createPositionError(positionErrorCodes.duplicateName, {
+      throw positionErrors.create(positionErrorCodes.duplicateName, {
         cause: error,
       });
     }
 
-    throw createPositionError(positionErrorCodes.createFailed, {
+    throw positionErrors.create(positionErrorCodes.createFailed, {
       cause: error,
     });
   }
 
   if (!data) {
-    throw createPositionError(positionErrorCodes.createResultMissing);
+    throw positionErrors.create(positionErrorCodes.createResultMissing);
   }
 
   return mapPositionRow(data);
@@ -75,18 +75,18 @@ export async function updatePositionRecord(
 
   if (error) {
     if ("code" in error && error.code === "23505") {
-      throw createPositionError(positionErrorCodes.duplicateName, {
+      throw positionErrors.create(positionErrorCodes.duplicateName, {
         cause: error,
       });
     }
 
-    throw createPositionError(positionErrorCodes.updateFailed, {
+    throw positionErrors.create(positionErrorCodes.updateFailed, {
       cause: error,
     });
   }
 
   if (!data) {
-    throw createPositionError(positionErrorCodes.updateResultMissing);
+    throw positionErrors.create(positionErrorCodes.updateResultMissing);
   }
 
   return mapPositionRow(data);
@@ -106,18 +106,18 @@ export async function deletePositionRecord(
 
   if (error) {
     if ("code" in error && error.code === "23503") {
-      throw createPositionError(positionErrorCodes.deleteInUse, {
+      throw positionErrors.create(positionErrorCodes.deleteInUse, {
         cause: error,
       });
     }
 
-    throw createPositionError(positionErrorCodes.deleteFailed, {
+    throw positionErrors.create(positionErrorCodes.deleteFailed, {
       cause: error,
     });
   }
 
   if (!data?.id) {
-    throw createPositionError(positionErrorCodes.deleteTargetNotFound);
+    throw positionErrors.create(positionErrorCodes.deleteTargetNotFound);
   }
 
   return data.id;
@@ -133,7 +133,7 @@ export async function reorderPositionRecords(
   });
 
   if (error) {
-    throw createPositionError(positionErrorCodes.reorderFailed, {
+    throw positionErrors.create(positionErrorCodes.reorderFailed, {
       cause: error,
     });
   }

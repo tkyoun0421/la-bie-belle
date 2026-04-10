@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
-  createEventTemplateError,
+  eventTemplateErrors,
   eventTemplateErrorCodes,
 } from "#/entities/events/models/errors/eventTemplateError";
 
@@ -56,13 +56,13 @@ export async function createEventTemplateRecord(
   });
 
   if (error) {
-    throw createEventTemplateError(eventTemplateErrorCodes.createFailed, {
+    throw eventTemplateErrors.create(eventTemplateErrorCodes.createFailed, {
       cause: error,
     });
   }
 
   if (!data || typeof data !== "string") {
-    throw createEventTemplateError(
+    throw eventTemplateErrors.create(
       eventTemplateErrorCodes.createResultMissing
     );
   }
@@ -90,7 +90,7 @@ export async function updateEventTemplateRecord(
 
   if (error) {
     if ("code" in error && error.code === "P0002") {
-      throw createEventTemplateError(
+      throw eventTemplateErrors.create(
         eventTemplateErrorCodes.updateTargetNotFound,
         {
           cause: error,
@@ -98,13 +98,13 @@ export async function updateEventTemplateRecord(
       );
     }
 
-    throw createEventTemplateError(eventTemplateErrorCodes.updateFailed, {
+    throw eventTemplateErrors.create(eventTemplateErrorCodes.updateFailed, {
       cause: error,
     });
   }
 
   if (!data || typeof data !== "string") {
-    throw createEventTemplateError(
+    throw eventTemplateErrors.create(
       eventTemplateErrorCodes.updateResultMissing
     );
   }
@@ -124,7 +124,7 @@ export async function readEventTemplateDeleteSnapshot(
     .maybeSingle();
 
   if (error) {
-    throw createEventTemplateError(
+    throw eventTemplateErrors.create(
       eventTemplateErrorCodes.deleteTargetNotFound,
       {
         cause: error,
@@ -151,7 +151,7 @@ export async function countEventTemplateRecords(
     .select("id", { count: "exact", head: true });
 
   if (error) {
-    throw createEventTemplateError(eventTemplateErrorCodes.countFailed, {
+    throw eventTemplateErrors.create(eventTemplateErrorCodes.countFailed, {
       cause: error,
     });
   }
@@ -170,7 +170,7 @@ export async function deleteEventTemplateRecord(
     .eq("id", templateId);
 
   if (error) {
-    throw createEventTemplateError(eventTemplateErrorCodes.deleteFailed, {
+    throw eventTemplateErrors.create(eventTemplateErrorCodes.deleteFailed, {
       cause: error,
     });
   }

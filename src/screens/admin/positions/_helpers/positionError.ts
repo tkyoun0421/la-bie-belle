@@ -1,6 +1,6 @@
 import {
+  positionErrors,
   positionErrorCodes,
-  readPositionErrorCode,
 } from "#/entities/positions/models/errors/positionError";
 
 export const positionDeleteErrorMessage = "포지션을 삭제하지 못했습니다.";
@@ -10,7 +10,7 @@ export const positionReorderErrorMessage =
 export const positionSaveErrorMessage = "포지션을 저장하지 못했습니다.";
 
 export function readPositionDeleteErrorMessage(error: unknown) {
-  const errorCode = readPositionErrorCode(error);
+  const errorCode = positionErrors.read(error);
 
   switch (errorCode) {
     case positionErrorCodes.deleteInUse:
@@ -23,7 +23,7 @@ export function readPositionDeleteErrorMessage(error: unknown) {
 }
 
 export function readPositionListErrorMessage(error: unknown) {
-  const errorCode = readPositionErrorCode(error);
+  const errorCode = positionErrors.read(error);
 
   switch (errorCode) {
     case positionErrorCodes.listFailed:
@@ -34,7 +34,7 @@ export function readPositionListErrorMessage(error: unknown) {
 }
 
 export function readPositionReorderErrorMessage(error: unknown) {
-  const errorCode = readPositionErrorCode(error);
+  const errorCode = positionErrors.read(error);
 
   switch (errorCode) {
     case positionErrorCodes.reorderFailed:
@@ -45,7 +45,7 @@ export function readPositionReorderErrorMessage(error: unknown) {
 }
 
 export function readPositionSaveErrorMessage(error: unknown) {
-  const errorCode = readPositionErrorCode(error);
+  const errorCode = positionErrors.read(error);
 
   switch (errorCode) {
     case positionErrorCodes.duplicateName:

@@ -1,6 +1,6 @@
 import {
+  eventTemplateErrors,
   eventTemplateErrorCodes,
-  readEventTemplateErrorCode,
 } from "#/entities/events/models/errors/eventTemplateError";
 
 export const templateDeleteErrorMessage =
@@ -11,7 +11,7 @@ export const templateSaveErrorMessage =
   "행사 템플릿을 저장하지 못했습니다.";
 
 export function readTemplateDeleteErrorMessage(error: unknown) {
-  const errorCode = readEventTemplateErrorCode(error);
+  const errorCode = eventTemplateErrors.read(error);
 
   switch (errorCode) {
     case eventTemplateErrorCodes.deletePrimaryForbidden:
@@ -26,7 +26,7 @@ export function readTemplateDeleteErrorMessage(error: unknown) {
 }
 
 export function readTemplateListErrorMessage(error: unknown) {
-  const errorCode = readEventTemplateErrorCode(error);
+  const errorCode = eventTemplateErrors.read(error);
 
   switch (errorCode) {
     case eventTemplateErrorCodes.listFailed:
@@ -37,7 +37,7 @@ export function readTemplateListErrorMessage(error: unknown) {
 }
 
 export function readTemplateSaveErrorMessage(error: unknown) {
-  const errorCode = readEventTemplateErrorCode(error);
+  const errorCode = eventTemplateErrors.read(error);
 
   switch (errorCode) {
     case eventTemplateErrorCodes.updateTargetNotFound:

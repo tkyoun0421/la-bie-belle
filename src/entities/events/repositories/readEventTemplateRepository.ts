@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
-  createEventTemplateError,
+  eventTemplateErrors,
   eventTemplateErrorCodes,
 } from "#/entities/events/models/errors/eventTemplateError";
 import { mapEventTemplateRow } from "#/entities/events/models/mappers/mapEventTemplateRow";
@@ -44,7 +44,7 @@ export async function readEventTemplates(
     .order("created_at", { ascending: false });
 
   if (error) {
-    throw createEventTemplateError(eventTemplateErrorCodes.listFailed, {
+    throw eventTemplateErrors.create(eventTemplateErrorCodes.listFailed, {
       cause: error,
     });
   }
@@ -66,7 +66,7 @@ export async function readEventTemplateById(
     .single();
 
   if (error) {
-    throw createEventTemplateError(eventTemplateErrorCodes.readFailed, {
+    throw eventTemplateErrors.create(eventTemplateErrorCodes.readFailed, {
       cause: error,
     });
   }

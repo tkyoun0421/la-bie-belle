@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import {
+  eventTemplateErrors,
   eventTemplateErrorCodes,
-  readEventTemplateErrorCode,
 } from "#/entities/events/models/errors/eventTemplateError";
 import { readEventTemplates } from "#/entities/events/repositories/readEventTemplateRepository";
 import {
@@ -31,8 +31,7 @@ export async function GET() {
     return NextResponse.json(
       {
         errorCode:
-          readEventTemplateErrorCode(error) ??
-          eventTemplateErrorCodes.listFailed,
+          eventTemplateErrors.read(error) ?? eventTemplateErrorCodes.listFailed,
       },
       { status: 500 }
     );

@@ -21,6 +21,11 @@ export function createAppError<Code extends string>(
   return new AppError(code, options);
 }
 
+type ErrorCodeMap = Record<string, string>;
+
+type ErrorCodeValue<TCodeMap extends ErrorCodeMap> =
+  TCodeMap[keyof TCodeMap];
+
 export function readAppErrorCode<Code extends string = string>(
   error: unknown
 ): Code | null {
@@ -54,4 +59,25 @@ export function readApiErrorCode(payload: unknown) {
   }
 
   return null;
+}
+
+export function createDomainErrorHelpers<TCodeMap extends ErrorCodeMap>(
+  errorCodes: TCodeMap
+) {
+  const errorCodeSet = new Set<string>(Object.values(errorCodes));
+
+  return {
+    create(code: ErrorCodeValue<TCodeMap>, options?: ErrorOptions) {
+      return createAppError(code, options);
+    },
+    read(error: unknown): ErrorCodeValue<TCodeMap> | null {
+      const code = readAppErrorCode(error);
+
+      if (!code || !errorCodeSet.has(code)) {
+        return null;
+      }
+
+      return code as ErrorCodeValue<TCodeMap>;
+    },
+  };
 }

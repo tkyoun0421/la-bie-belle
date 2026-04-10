@@ -1,7 +1,4 @@
-import {
-  createAppError,
-  readAppErrorCode,
-} from "#/shared/lib/errors/appError";
+import { createDomainErrorHelpers } from "#/shared/lib/errors/appError";
 
 export const positionErrorCodes = {
   createFailed: "POSITION_CREATE_FAILED",
@@ -19,23 +16,4 @@ export const positionErrorCodes = {
 export type PositionErrorCode =
   (typeof positionErrorCodes)[keyof typeof positionErrorCodes];
 
-const positionErrorCodeSet = new Set<string>(Object.values(positionErrorCodes));
-
-export function createPositionError(
-  code: PositionErrorCode,
-  options?: ErrorOptions
-) {
-  return createAppError(code, options);
-}
-
-export function readPositionErrorCode(
-  error: unknown
-): PositionErrorCode | null {
-  const code = readAppErrorCode(error);
-
-  if (!code || !positionErrorCodeSet.has(code)) {
-    return null;
-  }
-
-  return code as PositionErrorCode;
-}
+export const positionErrors = createDomainErrorHelpers(positionErrorCodes);

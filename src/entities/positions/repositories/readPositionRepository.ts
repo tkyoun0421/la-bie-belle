@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { mapPositionRow } from "#/entities/positions/models/mappers/mapPositionRow";
 import {
-  createPositionError,
+  positionErrors,
   positionErrorCodes,
 } from "#/entities/positions/models/errors/positionError";
 import {
@@ -24,7 +24,7 @@ export async function readPositions(
     .order("name", { ascending: true });
 
   if (error) {
-    throw createPositionError(positionErrorCodes.listFailed, {
+    throw positionErrors.create(positionErrorCodes.listFailed, {
       cause: error,
     });
   }

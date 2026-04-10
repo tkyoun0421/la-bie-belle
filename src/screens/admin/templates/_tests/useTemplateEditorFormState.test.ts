@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  createEventTemplateError,
+  eventTemplateErrors,
   eventTemplateErrorCodes,
 } from "#/entities/events/models/errors/eventTemplateError";
 import { useTemplateEditorFormState } from "#/screens/admin/templates/_hooks/useTemplateEditorFormState";
@@ -220,7 +220,7 @@ describe("useTemplateEditorFormState", () => {
 
   it("maps template error codes to editor messages", async () => {
     updateTemplateMutation.mutateAsync.mockRejectedValueOnce(
-      createEventTemplateError(eventTemplateErrorCodes.updateTargetNotFound)
+      eventTemplateErrors.create(eventTemplateErrorCodes.updateTargetNotFound)
     );
 
     const { result } = renderHook(() =>

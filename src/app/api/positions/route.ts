@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import {
+  positionErrors,
   positionErrorCodes,
-  readPositionErrorCode,
 } from "#/entities/positions/models/errors/positionError";
 import { readPositions } from "#/entities/positions/repositories/readPositionRepository";
 import {
@@ -31,7 +31,7 @@ export async function GET() {
     return NextResponse.json(
       {
         errorCode:
-          readPositionErrorCode(error) ?? positionErrorCodes.listFailed,
+          positionErrors.read(error) ?? positionErrorCodes.listFailed,
       },
       { status: 500 }
     );

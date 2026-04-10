@@ -1,7 +1,4 @@
-import {
-  createAppError,
-  readAppErrorCode,
-} from "#/shared/lib/errors/appError";
+import { createDomainErrorHelpers } from "#/shared/lib/errors/appError";
 
 export const eventTemplateErrorCodes = {
   countFailed: "EVENT_TEMPLATE_COUNT_FAILED",
@@ -21,25 +18,5 @@ export const eventTemplateErrorCodes = {
 export type EventTemplateErrorCode =
   (typeof eventTemplateErrorCodes)[keyof typeof eventTemplateErrorCodes];
 
-const eventTemplateErrorCodeSet = new Set<string>(
-  Object.values(eventTemplateErrorCodes)
-);
-
-export function createEventTemplateError(
-  code: EventTemplateErrorCode,
-  options?: ErrorOptions
-) {
-  return createAppError(code, options);
-}
-
-export function readEventTemplateErrorCode(
-  error: unknown
-): EventTemplateErrorCode | null {
-  const code = readAppErrorCode(error);
-
-  if (!code || !eventTemplateErrorCodeSet.has(code)) {
-    return null;
-  }
-
-  return code as EventTemplateErrorCode;
-}
+export const eventTemplateErrors =
+  createDomainErrorHelpers(eventTemplateErrorCodes);

@@ -3,7 +3,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getEventTemplateDeleteBlockReason } from "#/entities/events/models/policies/eventTemplatePolicy";
 import {
-  createEventTemplateError,
+  eventTemplateErrors,
   eventTemplateErrorCodes,
 } from "#/entities/events/models/errors/eventTemplateError";
 import {
@@ -42,7 +42,7 @@ export async function deleteEventTemplateAction(
   const targetTemplate = await readDeleteSnapshot(values.id, { client });
 
   if (!targetTemplate?.id) {
-    throw createEventTemplateError(
+    throw eventTemplateErrors.create(
       eventTemplateErrorCodes.deleteTargetNotFound
     );
   }
@@ -54,13 +54,13 @@ export async function deleteEventTemplateAction(
   });
 
   if (deleteBlockReason === "primary") {
-    throw createEventTemplateError(
+    throw eventTemplateErrors.create(
       eventTemplateErrorCodes.deletePrimaryForbidden
     );
   }
 
   if (deleteBlockReason === "last-template") {
-    throw createEventTemplateError(
+    throw eventTemplateErrors.create(
       eventTemplateErrorCodes.deleteLastForbidden
     );
   }
