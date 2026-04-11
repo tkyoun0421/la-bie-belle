@@ -1,7 +1,69 @@
 import { describe, expect, it, vi } from "vitest";
-import { readEventById } from "#/entities/events/repositories/readEventRepository";
+import {
+  readEventById,
+  readEvents,
+} from "#/entities/events/repositories/readEventRepository";
 
 describe("readEventRepository", () => {
+  it("reads ordered event summaries for the dashboard", async () => {
+    const thirdOrder = vi.fn().mockResolvedValue({
+      data: [
+        {
+          event_date: "2026-04-20",
+          first_service_at: "10:30:00",
+          id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          status: "draft",
+          time_label: "10:30 - 16:00",
+          title: "4월 20일 주말 웨딩",
+        },
+        {
+          event_date: "2026-04-21",
+          first_service_at: "11:00:00",
+          id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          status: "recruiting",
+          time_label: "11:00 - 17:00",
+          title: "4월 21일 연회 행사",
+        },
+      ],
+      error: null,
+    });
+    const secondOrder = vi.fn().mockReturnValue({ order: thirdOrder });
+    const firstOrder = vi.fn().mockReturnValue({ order: secondOrder });
+    const select = vi.fn().mockReturnValue({ order: firstOrder });
+    const from = vi.fn().mockReturnValue({ select });
+
+    await expect(
+      readEvents({
+        client: { from } as never,
+      })
+    ).resolves.toEqual([
+      {
+        eventDate: "2026-04-20",
+        firstServiceAt: "10:30",
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        status: "draft",
+        timeLabel: "10:30 - 16:00",
+        title: "4월 20일 주말 웨딩",
+      },
+      {
+        eventDate: "2026-04-21",
+        firstServiceAt: "11:00",
+        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        status: "recruiting",
+        timeLabel: "11:00 - 17:00",
+        title: "4월 21일 연회 행사",
+      },
+    ]);
+
+    expect(firstOrder).toHaveBeenCalledWith("event_date", { ascending: true });
+    expect(secondOrder).toHaveBeenCalledWith("first_service_at", {
+      ascending: true,
+    });
+    expect(thirdOrder).toHaveBeenCalledWith("created_at", {
+      ascending: false,
+    });
+  });
+
   it("reads an event detail with copied position slots", async () => {
     const maybeSingle = vi.fn().mockResolvedValue({
       data: {

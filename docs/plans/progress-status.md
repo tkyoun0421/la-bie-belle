@@ -7,7 +7,7 @@ Folder Hierarchy: [./folder-hierarchy.md](./folder-hierarchy.md)
 Execution: [./execution-plan.md](./execution-plan.md)  
 Phase Plan: [./phases/phase-0-5-core-operational-loop.md](./phases/phase-0-5-core-operational-loop.md)  
 Status: ACTIVE  
-Date: 2026-04-10
+Date: 2026-04-11
 
 ## Completed Foundations
 
@@ -34,6 +34,21 @@ Date: 2026-04-10
   - 슬롯 드래그 정렬
   - 포지션 기본값 기반 슬롯 구성
 
+### Phase 1 / Slice 2
+
+- `/admin/templates/[templateId]/create-event`
+  - 템플릿 기반 행사 생성 폼
+  - 생성 후 행사 상세 화면 리다이렉트
+  - 템플릿 시간 / 슬롯 기본값 요약
+- `/`
+  - 행사 목록 기본 대시보드
+  - 날짜 / 시간 / 상태 요약
+  - 빈 상태에서 템플릿 관리 진입
+- `/events/[eventId]`
+  - 행사 메타데이터 detail read model
+  - 템플릿에서 복사된 포지션 슬롯 표시
+  - 다음 slice 연결용 신청 / 배정 placeholder
+
 ## Current Architecture Decisions
 
 - `screens`는 `app` route 구조를 그대로 따른다.
@@ -59,7 +74,7 @@ Date: 2026-04-10
 
 ## Next Priority
 
-- Phase 1 / Slice 2: 템플릿 기반 행사 생성
+- Phase 1 / Slice 3: 멤버 행사 신청 / 취소
 - auth callback / 로그인 진입점 구현
 - event / application / assignment / replacement happy path 확장
 - lower layer 에러를 코드 중심으로 정리하고 화면에서 문구를 매핑하는 구조로 이동

@@ -7,6 +7,7 @@ Stack: [./stack-spec.md](./stack-spec.md)
 Codebase: [./codebase-architecture.md](./codebase-architecture.md)  
 Folder Hierarchy: [./folder-hierarchy.md](./folder-hierarchy.md)  
 FSD Profile: [./fsd-profile.md](./fsd-profile.md)  
+Refactoring: [./refactoring-guide.md](./refactoring-guide.md)  
 Design: [../designs/pwa.md](../designs/pwa.md)  
 Status: ACTIVE  
 Date: 2026-04-10
@@ -69,6 +70,7 @@ v1에서 먼저 닫아야 하는 운영 루프:
 - task를 시작할 때 먼저 실패하는 테스트를 만든다
 - 구현은 그 테스트를 통과시키는 최소 변경으로 시작한다
 - green 이후에만 refactor한다
+- refactor 기준과 금지선은 [Refactoring Guide](./refactoring-guide.md)를 따른다
 - 기본 우선순위는 `unit -> integration -> e2e`
 - 버그 수정은 재현 테스트를 먼저 추가한다
 - slice를 닫을 때는 happy path와 핵심 예외가 자동 테스트로 재현돼야 한다

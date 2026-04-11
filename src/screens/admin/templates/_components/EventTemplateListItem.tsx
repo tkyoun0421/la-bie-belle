@@ -7,6 +7,7 @@ import { cn } from "#/shared/lib/utils";
 
 type EventTemplateListItemProps = {
   canDelete: boolean;
+  createEventHref: string;
   deletePending: boolean;
   editHref: string;
   isHighlighted: boolean;
@@ -16,6 +17,7 @@ type EventTemplateListItemProps = {
 
 export function EventTemplateListItem({
   canDelete,
+  createEventHref,
   deletePending,
   editHref,
   isHighlighted,
@@ -51,10 +53,15 @@ export function EventTemplateListItem({
           </div>
 
           <div className="flex items-center gap-3">
+            <Button asChild size="sm" type="button" variant="secondary">
+              <Link href={createEventHref} prefetch={false}>
+                행사 생성
+              </Link>
+            </Button>
             <Link
               className="group inline-flex h-auto items-center justify-center p-0 text-sm font-medium"
               href={editHref}
-              prefetch
+              prefetch={false}
             >
               <span className="text-muted-foreground underline-offset-4 transition-colors group-hover:text-foreground group-hover:underline">
                 수정

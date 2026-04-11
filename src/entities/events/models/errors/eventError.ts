@@ -4,6 +4,7 @@ export const eventErrorCodes = {
   createFailed: "EVENT_CREATE_FAILED",
   createResultMissing: "EVENT_CREATE_RESULT_MISSING",
   createTemplateNotFound: "EVENT_CREATE_TEMPLATE_NOT_FOUND",
+  listFailed: "EVENT_LIST_FAILED",
   readFailed: "EVENT_READ_FAILED",
 } as const;
 

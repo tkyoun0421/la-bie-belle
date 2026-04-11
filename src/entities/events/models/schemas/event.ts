@@ -21,6 +21,19 @@ export const eventPositionSlotSchema = z.object({
   trainingCount: z.number().int().min(0),
 });
 
+export const eventListItemSchema = z.object({
+  eventDate: eventDateValueSchema,
+  firstServiceAt: timeValueSchema,
+  id: z.string().uuid(),
+  status: eventStatusSchema,
+  timeLabel: z.string().trim().min(1),
+  title: z.string().trim().min(1),
+});
+
+export const eventListResponseSchema = z.object({
+  events: z.array(eventListItemSchema),
+});
+
 export const eventDetailSchema = z.object({
   createdAt: z.string().datetime({ offset: true }),
   eventDate: eventDateValueSchema,
@@ -36,4 +49,5 @@ export const eventDetailSchema = z.object({
 
 export type EventStatus = z.infer<typeof eventStatusSchema>;
 export type EventPositionSlot = z.infer<typeof eventPositionSlotSchema>;
+export type EventListItem = z.infer<typeof eventListItemSchema>;
 export type EventDetail = z.infer<typeof eventDetailSchema>;

@@ -52,6 +52,7 @@ src/app/
     requests/page.tsx
     templates/page.tsx
     templates/new/page.tsx
+    templates/[templateId]/create-event/page.tsx
     templates/[templateId]/edit/page.tsx
     users/page.tsx
 
@@ -84,6 +85,7 @@ src/app/
 - `/admin/positions` -> `screens/admin/positions`
 - `/admin/templates` -> `screens/admin/templates`
 - `/admin/templates/new` -> `screens/admin/templates/new`
+- `/admin/templates/[templateId]/create-event` -> `screens/admin/templates/[templateId]/create-event`
 - `/admin/templates/[templateId]/edit` -> `screens/admin/templates/[templateId]/edit`
 - `/admin/payroll-rules` -> `screens/admin/payroll-rules`
 
@@ -115,6 +117,8 @@ src/screens/admin/templates/
   new/
     AdminTemplateCreateScreen.tsx
   [templateId]/
+    create-event/
+      AdminTemplateEventCreateScreen.tsx
     edit/
       AdminTemplateEditScreen.tsx
 ```
@@ -158,18 +162,24 @@ src/screens/admin/positions/
 src/entities/events/
   models/
     errors/
+      eventError.ts
     mappers/
+      mapEventRow.ts
       mapEventTemplateRow.ts
     policies/
       eventTemplatePolicy.ts
     schemas/
+      event.ts
       eventTemplate.ts
     normalizeEventTemplateCollection.ts
   repositories/
+    readEventRepository.ts
     readEventTemplateRepository.ts
+    writeEventRepository.ts
     writeEventTemplateRepository.ts
   _tests/
     eventTemplatePolicy.test.ts
+    readEventRepository.test.ts
     mapEventTemplateRow.test.ts
     normalizeEventTemplateCollection.test.ts
     writeEventTemplateRepository.test.ts

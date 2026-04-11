@@ -29,6 +29,7 @@
 - 폴더 계층 책임과 import 방향: [folder-hierarchy.md](./docs/plans/folder-hierarchy.md)
 - canonical tree, route-to-screen 매핑: [codebase-architecture.md](./docs/plans/codebase-architecture.md)
 - naming, import, 테스트, private folder 규칙: [fsd-profile.md](./docs/plans/fsd-profile.md)
+- refactor entry 기준, SOLID 적용, over-engineering guardrail: [refactoring-guide.md](./docs/plans/refactoring-guide.md)
 
 ### Stack
 
@@ -67,6 +68,7 @@
 ### Read Before Coding
 
 - 일반 구현 전에는 [build-plan.md](./docs/plans/build-plan.md), [execution-plan.md](./docs/plans/execution-plan.md), [folder-hierarchy.md](./docs/plans/folder-hierarchy.md)를 먼저 본다
+- 구조 정리나 넓은 cleanup 전에는 [refactoring-guide.md](./docs/plans/refactoring-guide.md)를 먼저 본다
 - 데이터나 권한을 만지면 [architecture-spec.md](./docs/plans/architecture-spec.md)를 본다
 - UI를 만지면 [DESIGN.md](./DESIGN.md)와 [screen-spec.md](./docs/plans/screen-spec.md)를 본다
 - 라이브러리를 추가하거나 교체하기 전에는 [stack-spec.md](./docs/plans/stack-spec.md)를 본다
@@ -78,6 +80,7 @@
 - 새 동작은 실패하는 테스트부터 시작한다
 - 버그 수정은 재현 테스트부터 시작한다
 - 테스트 우선순위는 `unit -> integration -> e2e`
+- refactor 기준과 over-engineering guardrail 은 [refactoring-guide.md](./docs/plans/refactoring-guide.md)를 따른다
 - slice를 닫을 때는 happy path와 핵심 예외가 자동 테스트로 재현돼야 한다
 
 ### Work Unit

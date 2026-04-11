@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { Alert, AlertDescription, AlertTitle } from "#/shared/components/ui/alert";
 import { ConfirmDialog } from "#/shared/components/common/ConfirmDialog";
 import { EventTemplatesListPanel } from "#/screens/admin/templates/_components/EventTemplatesListPanel";
 import { useAdminTemplatesScreenState } from "#/screens/admin/templates/_hooks/useAdminTemplatesScreenState";
+import { useTemplateDeleteDialogState } from "#/screens/admin/templates/_hooks/useTemplateDeleteDialogState";
 
 type AdminTemplatesClientProps = {
   initialHighlightedTemplateId: string | null;
@@ -13,50 +13,47 @@ type AdminTemplatesClientProps = {
 export function AdminTemplatesClient({
   initialHighlightedTemplateId,
 }: Readonly<AdminTemplatesClientProps>) {
-  const router = useRouter();
-  const prefetchedHrefsRef = useRef<Set<string>>(new Set());
   const {
-    deletePending,
+    clearHighlightedTemplate,
     filteredTemplates,
     highlightedTemplateId,
-    listError,
-    onCancelDelete,
-    onConfirmDelete,
-    onDelete,
     onSearchTermChange,
-    pendingDeleteTemplate,
+    queryError,
     searchTerm,
   } = useAdminTemplatesScreenState({
     initialHighlightedTemplateId,
   });
-
-  useEffect(() => {
-    const nextHrefs = [
-      "/admin/templates/new",
-      ...filteredTemplates
-        .slice(0, 6)
-        .map((template) => `/admin/templates/${template.id}/edit`),
-    ];
-
-    nextHrefs.forEach((href) => {
-      if (prefetchedHrefsRef.current.has(href)) {
-        return;
+  const {
+    deleteError,
+    isDeletePending,
+    onCancelDelete,
+    onConfirmDelete,
+    onDelete,
+    templateToDelete,
+  } = useTemplateDeleteDialogState({
+    onDeleted(deletedTemplateId) {
+      if (highlightedTemplateId === deletedTemplateId) {
+        clearHighlightedTemplate();
       }
-
-      prefetchedHrefsRef.current.add(href);
-      router.prefetch(href);
-    });
-  }, [filteredTemplates, router]);
+    },
+  });
 
   return (
     <>
-      <section>
+      <section className="grid gap-4">
+        {deleteError ? (
+          <Alert variant="destructive">
+            <AlertTitle>템플릿을 삭제할 수 없습니다</AlertTitle>
+            <AlertDescription>{deleteError}</AlertDescription>
+          </Alert>
+        ) : null}
+
         <EventTemplatesListPanel
-          deletePending={deletePending}
+          deletePending={isDeletePending}
           highlightedTemplateId={highlightedTemplateId}
-          listError={listError}
           onDelete={onDelete}
           onSearchTermChange={onSearchTermChange}
+          queryError={queryError}
           searchTerm={searchTerm}
           templates={filteredTemplates}
         />
@@ -65,8 +62,8 @@ export function AdminTemplatesClient({
       <ConfirmDialog
         confirmLabel="삭제"
         description={
-          pendingDeleteTemplate
-            ? `"${pendingDeleteTemplate.name}" 템플릿을 삭제합니다. 이 작업은 되돌릴 수 없습니다.`
+          templateToDelete
+            ? `"${templateToDelete.name}" 템플릿을 삭제합니다. 이 작업은 되돌릴 수 없습니다.`
             : "선택한 템플릿을 삭제합니다. 이 작업은 되돌릴 수 없습니다."
         }
         onConfirm={onConfirmDelete}
@@ -75,7 +72,7 @@ export function AdminTemplatesClient({
             onCancelDelete();
           }
         }}
-        open={pendingDeleteTemplate !== null}
+        open={templateToDelete !== null}
         title="템플릿을 삭제할까요?"
       />
     </>

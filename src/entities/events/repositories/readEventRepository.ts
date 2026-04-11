@@ -1,8 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { eventErrors, eventErrorCodes } from "#/entities/events/models/errors/eventError";
-import type { EventDetail } from "#/entities/events/models/schemas/event";
+import type {
+  EventDetail,
+  EventListItem,
+} from "#/entities/events/models/schemas/event";
 import {
   mapEventDetailRow,
+  mapEventListItemRow,
 } from "#/entities/events/models/mappers/mapEventRow";
 import type { Database } from "#/shared/types/database";
 
@@ -28,9 +32,38 @@ const eventDetailSelect = `
   )
 `;
 
+const eventListSelect = `
+  id,
+  title,
+  time_label,
+  event_date,
+  first_service_at,
+  status
+`;
+
 type EventRepositoryOptions = {
   client: SupabaseClient<Database>;
 };
+
+export async function readEvents(
+  options: EventRepositoryOptions
+): Promise<EventListItem[]> {
+  const { client } = options;
+  const { data, error } = await client
+    .from("events")
+    .select(eventListSelect)
+    .order("event_date", { ascending: true })
+    .order("first_service_at", { ascending: true })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw eventErrors.create(eventErrorCodes.listFailed, {
+      cause: error,
+    });
+  }
+
+  return (data ?? []).map(mapEventListItemRow);
+}
 
 export async function readEventById(
   eventId: string,

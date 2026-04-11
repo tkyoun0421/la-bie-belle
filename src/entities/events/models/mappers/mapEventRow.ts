@@ -1,6 +1,8 @@
 import {
   eventDetailSchema,
+  eventListItemSchema,
   type EventDetail,
+  type EventListItem,
 } from "#/entities/events/models/schemas/event";
 import type { TableRow } from "#/shared/types/database";
 
@@ -31,10 +33,26 @@ export type EventDetailRow = Pick<
   event_position_slots: EventPositionSlotRow[];
 };
 
+export type EventListItemRow = Pick<
+  TableRow<"events">,
+  "event_date" | "first_service_at" | "id" | "status" | "time_label" | "title"
+>;
+
 function resolvePosition(
   position: EventSlotPositionRow
 ): Pick<TableRow<"positions">, "id" | "name" | "sort_order"> | null {
   return Array.isArray(position) ? (position[0] ?? null) : position;
+}
+
+export function mapEventListItemRow(row: EventListItemRow): EventListItem {
+  return eventListItemSchema.parse({
+    eventDate: row.event_date,
+    firstServiceAt: row.first_service_at.slice(0, 5),
+    id: row.id,
+    status: row.status,
+    timeLabel: row.time_label,
+    title: row.title,
+  });
 }
 
 export function mapEventDetailRow(row: EventDetailRow): EventDetail {

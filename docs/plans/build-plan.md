@@ -7,6 +7,7 @@ Stack: [./stack-spec.md](./stack-spec.md)
 Codebase: [./codebase-architecture.md](./codebase-architecture.md)  
 Folder Hierarchy: [./folder-hierarchy.md](./folder-hierarchy.md)  
 FSD Profile: [./fsd-profile.md](./fsd-profile.md)  
+Refactoring: [./refactoring-guide.md](./refactoring-guide.md)  
 Execution: [./execution-plan.md](./execution-plan.md)  
 Status: ACTIVE  
 Date: 2026-04-10
@@ -37,6 +38,8 @@ Date: 2026-04-10
   - 실제 `src/` 구조와 route-to-screen 매핑
 - [FSD Profile](./fsd-profile.md)
   - naming, import, 테스트, private folder 규칙
+- [Refactoring Guide](./refactoring-guide.md)
+  - refactor entry 조건, SOLID 적용 방식, over-engineering guardrail
 - [Execution Plan](./execution-plan.md)
   - phase, slice, 테스트 원칙, 구현 순서
 - `docs/plans/phases/*`
