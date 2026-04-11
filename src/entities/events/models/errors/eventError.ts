@@ -1,0 +1,13 @@
+import { createDomainErrorHelpers } from "#/shared/lib/errors/appError";
+
+export const eventErrorCodes = {
+  createFailed: "EVENT_CREATE_FAILED",
+  createResultMissing: "EVENT_CREATE_RESULT_MISSING",
+  createTemplateNotFound: "EVENT_CREATE_TEMPLATE_NOT_FOUND",
+  readFailed: "EVENT_READ_FAILED",
+} as const;
+
+export type EventErrorCode =
+  (typeof eventErrorCodes)[keyof typeof eventErrorCodes];
+
+export const eventErrors = createDomainErrorHelpers(eventErrorCodes);
