@@ -156,8 +156,7 @@ export function EventDetailScreen({
               </ul>
             ) : (
               <div className="rounded-2xl border border-dashed border-border/70 bg-muted/15 px-4 py-6 text-sm leading-6 text-muted-foreground">
-                아직 복사된 슬롯이 없습니다. 이후 create action은 템플릿 슬롯을
-                이 영역으로 복사해야 합니다.
+                이 행사에는 아직 표시할 포지션 슬롯 정보가 없습니다.
               </div>
             )}
           </CardContent>

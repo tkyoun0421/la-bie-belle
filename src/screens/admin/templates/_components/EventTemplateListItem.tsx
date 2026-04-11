@@ -10,7 +10,6 @@ type EventTemplateListItemProps = {
   createEventHref: string;
   deletePending: boolean;
   editHref: string;
-  isHighlighted: boolean;
   onDelete: (template: EventTemplate) => void;
   template: EventTemplate;
 };
@@ -20,7 +19,6 @@ export function EventTemplateListItem({
   createEventHref,
   deletePending,
   editHref,
-  isHighlighted,
   onDelete,
   template,
 }: Readonly<EventTemplateListItemProps>) {
@@ -29,10 +27,7 @@ export function EventTemplateListItem({
       className={cn(
         "relative overflow-visible border-[var(--border-soft)] bg-white transition-colors",
         template.isPrimary &&
-          "border-2 border-[var(--primary)] bg-white shadow-[0_12px_30px_rgba(43,127,255,0.10)]",
-        isHighlighted &&
-          "bg-[#f5faff] shadow-[0_16px_38px_rgba(43,127,255,0.12)]",
-        isHighlighted && template.isPrimary && "border-[#2b7fff]"
+          "border-2 border-[var(--primary)] bg-white shadow-[0_12px_30px_rgba(43,127,255,0.10)]"
       )}
     >
       {template.isPrimary ? (

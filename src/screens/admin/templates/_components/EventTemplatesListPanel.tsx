@@ -13,7 +13,6 @@ import { Input } from "#/shared/components/ui/input";
 
 type EventTemplatesListPanelProps = {
   deletePending: boolean;
-  highlightedTemplateId: string | null;
   onDelete: (template: EventTemplate) => void;
   onSearchTermChange: (value: string) => void;
   queryError: string | null;
@@ -23,7 +22,6 @@ type EventTemplatesListPanelProps = {
 
 export function EventTemplatesListPanel({
   deletePending,
-  highlightedTemplateId,
   onDelete,
   onSearchTermChange,
   queryError,
@@ -79,7 +77,6 @@ export function EventTemplatesListPanel({
               createEventHref={`/admin/templates/${template.id}/create-event`}
               deletePending={deletePending}
               editHref={`/admin/templates/${template.id}/edit`}
-              isHighlighted={template.id === highlightedTemplateId}
               key={template.id}
               onDelete={onDelete}
               template={template}

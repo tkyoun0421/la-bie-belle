@@ -4,12 +4,7 @@ import { useEventTemplatesQuery } from "#/queries/events/hooks/useEventTemplates
 
 const emptyTemplates: EventTemplate[] = [];
 
-export function useEventTemplateCollectionState(
-  initialHighlightedTemplateId: string | null = null
-) {
-  const [highlightedTemplateId, setHighlightedTemplateId] = useState<
-    string | null
-  >(initialHighlightedTemplateId);
+export function useEventTemplateCollectionState() {
   const [searchTerm, setSearchTerm] = useState("");
   const deferredSearchTerm = useDeferredValue(searchTerm);
   const templatesQuery = useEventTemplatesQuery();
@@ -31,9 +26,7 @@ export function useEventTemplateCollectionState(
 
   return {
     filteredTemplates,
-    highlightedTemplateId,
     searchTerm,
-    setHighlightedTemplateId,
     setSearchTerm,
     templates,
     templatesQuery,

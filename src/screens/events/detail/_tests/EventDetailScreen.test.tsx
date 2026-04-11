@@ -55,6 +55,8 @@ describe("EventDetailScreen", () => {
       />
     );
 
-    expect(screen.getByText(/아직 복사된 슬롯이 없습니다/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/이 행사에는 아직 표시할 포지션 슬롯 정보가 없습니다/)
+    ).toBeInTheDocument();
   });
 });

@@ -54,14 +54,10 @@ describe("useTemplateDeleteDialogState", () => {
     expect(result.current.templateToDelete?.id).toBe(template.id);
   });
 
-  it("confirms deletion through the mutation and notifies the caller", async () => {
-    const onDeleted = vi.fn();
-
+  it("closes the dialog after a successful deletion", async () => {
     deleteTemplateMutation.mutateAsync.mockResolvedValueOnce(template.id);
 
-    const { result } = renderHook(() =>
-      useTemplateDeleteDialogState({ onDeleted })
-    );
+    const { result } = renderHook(() => useTemplateDeleteDialogState());
 
     act(() => {
       result.current.onDelete(template);
@@ -75,8 +71,27 @@ describe("useTemplateDeleteDialogState", () => {
       expect(deleteTemplateMutation.mutateAsync).toHaveBeenCalledWith({
         id: template.id,
       });
-      expect(onDeleted).toHaveBeenCalledWith(template.id);
       expect(result.current.templateToDelete).toBeNull();
+    });
+  });
+
+  it("keeps the dialog open when deletion fails", async () => {
+    deleteTemplateMutation.mutateAsync.mockRejectedValueOnce(
+      eventTemplateErrors.create(eventTemplateErrorCodes.deleteLastForbidden)
+    );
+
+    const { result } = renderHook(() => useTemplateDeleteDialogState());
+
+    act(() => {
+      result.current.onDelete(template);
+    });
+
+    await act(async () => {
+      await result.current.onConfirmDelete();
+    });
+
+    await waitFor(() => {
+      expect(result.current.templateToDelete?.id).toBe(template.id);
     });
   });
 

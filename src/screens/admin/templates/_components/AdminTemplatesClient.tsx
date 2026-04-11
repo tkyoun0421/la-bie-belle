@@ -6,23 +6,13 @@ import { EventTemplatesListPanel } from "#/screens/admin/templates/_components/E
 import { useAdminTemplatesScreenState } from "#/screens/admin/templates/_hooks/useAdminTemplatesScreenState";
 import { useTemplateDeleteDialogState } from "#/screens/admin/templates/_hooks/useTemplateDeleteDialogState";
 
-type AdminTemplatesClientProps = {
-  initialHighlightedTemplateId: string | null;
-};
-
-export function AdminTemplatesClient({
-  initialHighlightedTemplateId,
-}: Readonly<AdminTemplatesClientProps>) {
+export function AdminTemplatesClient() {
   const {
-    clearHighlightedTemplate,
     filteredTemplates,
-    highlightedTemplateId,
     onSearchTermChange,
     queryError,
     searchTerm,
-  } = useAdminTemplatesScreenState({
-    initialHighlightedTemplateId,
-  });
+  } = useAdminTemplatesScreenState();
   const {
     deleteError,
     isDeletePending,
@@ -30,13 +20,7 @@ export function AdminTemplatesClient({
     onConfirmDelete,
     onDelete,
     templateToDelete,
-  } = useTemplateDeleteDialogState({
-    onDeleted(deletedTemplateId) {
-      if (highlightedTemplateId === deletedTemplateId) {
-        clearHighlightedTemplate();
-      }
-    },
-  });
+  } = useTemplateDeleteDialogState();
 
   return (
     <>
@@ -50,7 +34,6 @@ export function AdminTemplatesClient({
 
         <EventTemplatesListPanel
           deletePending={isDeletePending}
-          highlightedTemplateId={highlightedTemplateId}
           onDelete={onDelete}
           onSearchTermChange={onSearchTermChange}
           queryError={queryError}

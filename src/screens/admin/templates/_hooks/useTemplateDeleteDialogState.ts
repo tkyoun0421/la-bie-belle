@@ -3,13 +3,7 @@ import type { EventTemplate } from "#/entities/events/models/schemas/eventTempla
 import { useDeleteEventTemplateMutation } from "#/mutations/events/hooks/useDeleteEventTemplateMutation";
 import { readTemplateDeleteErrorMessage } from "#/screens/admin/templates/_helpers/templateError";
 
-type UseTemplateDeleteDialogStateOptions = {
-  onDeleted?: (deletedTemplateId: string) => void;
-};
-
-export function useTemplateDeleteDialogState({
-  onDeleted,
-}: UseTemplateDeleteDialogStateOptions = {}) {
+export function useTemplateDeleteDialogState() {
   const [templateToDelete, setTemplateToDelete] = useState<EventTemplate | null>(
     null
   );
@@ -33,11 +27,10 @@ export function useTemplateDeleteDialogState({
     }
 
     const template = templateToDelete;
-    setTemplateToDelete(null);
 
     try {
       await deleteTemplateMutation.mutateAsync({ id: template.id });
-      onDeleted?.(template.id);
+      setTemplateToDelete(null);
     } catch {
       // The mutation state is the source of truth for delete failures.
     }
