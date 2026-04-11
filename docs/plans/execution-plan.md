@@ -10,7 +10,7 @@ FSD Profile: [./fsd-profile.md](./fsd-profile.md)
 Refactoring: [./refactoring-guide.md](./refactoring-guide.md)  
 Design: [../designs/pwa.md](../designs/pwa.md)  
 Status: ACTIVE  
-Date: 2026-04-10
+Date: 2026-04-11
 
 ## Purpose
 
@@ -144,7 +144,7 @@ phase 문서 최소 항목:
 ### Integration
 
 - 가입 요청 -> 승인 -> 역할 생성
-- 행사 생성 -> 신청 -> 배정 -> 확정
+- 관리자 달력 날짜 선택 -> 행사 생성 -> 신청 -> 배정 -> 확정
 - 취소 -> 대타 알림 -> 지원 -> 승인
 - 중복 신청, 중복 checkin, 중복 replacement request 제약 검증
 - 모집 종료 후 추가 지원 차단
@@ -154,7 +154,7 @@ phase 문서 최소 항목:
 ### E2E
 
 - 로그인 -> 승인 대기 -> 승인 후 기능 해제
-- 관리자 행사 생성 -> 멤버 신청 -> 관리자 배정
+- 관리자 달력 스케줄 생성 -> 멤버 달력 신청 -> 관리자 배정
 - 취소 발생 -> 대타 승인
 - 체크인 성공 -> 예상 급여 확인
 - 체크인 실패 -> 예외 요청 -> 승인

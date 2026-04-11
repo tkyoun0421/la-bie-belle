@@ -28,6 +28,7 @@ export const eventListItemSchema = z.object({
   status: eventStatusSchema,
   timeLabel: z.string().trim().min(1),
   title: z.string().trim().min(1),
+  viewerApplicationStatus: z.enum(["applied", "cancelled"]).nullable().default(null),
 });
 
 export const eventListResponseSchema = z.object({
@@ -45,6 +46,7 @@ export const eventDetailSchema = z.object({
   templateId: z.string().uuid().nullable(),
   timeLabel: z.string().trim().min(1),
   title: z.string().trim().min(1),
+  viewerApplicationStatus: z.enum(["applied", "cancelled"]).nullable().default(null),
 });
 
 export type EventStatus = z.infer<typeof eventStatusSchema>;

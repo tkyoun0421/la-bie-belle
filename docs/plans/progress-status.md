@@ -40,14 +40,18 @@ Date: 2026-04-11
   - 템플릿 기반 행사 생성 폼
   - 생성 후 행사 상세 화면 리다이렉트
   - 템플릿 시간 / 슬롯 기본값 요약
+
+### Phase 1 / Slice 3
+
 - `/`
-  - 행사 목록 기본 대시보드
-  - 날짜 / 시간 / 상태 요약
+  - `react-day-picker` 기반 달력 대시보드
+  - 열린 스케줄 날짜 multi-select
+  - 선택 날짜 기준 bulk 신청 / 취소
   - 빈 상태에서 템플릿 관리 진입
 - `/events/[eventId]`
   - 행사 메타데이터 detail read model
   - 템플릿에서 복사된 포지션 슬롯 표시
-  - 다음 slice 연결용 신청 / 배정 placeholder
+  - 신청 상태 fallback panel
 
 ## Current Architecture Decisions
 
@@ -74,7 +78,9 @@ Date: 2026-04-11
 
 ## Next Priority
 
-- Phase 1 / Slice 3: 멤버 행사 신청 / 취소
+- Slice 2 follow-up: event-owned 관리자 생성 화면으로 옮기고 템플릿 기본값 import + 달력 multi-select 스케줄 생성으로 재정렬
+- 관리자 생성에서 duplicate-date guard와 결과 확인 표면 정리
+- 현재 달력 범위는 explicit date select까지만 포함하고 반복 규칙 자동 생성은 제외
 - auth callback / 로그인 진입점 구현
 - event / application / assignment / replacement happy path 확장
 - lower layer 에러를 코드 중심으로 정리하고 화면에서 문구를 매핑하는 구조로 이동

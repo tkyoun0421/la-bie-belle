@@ -61,6 +61,7 @@ describe("mapEventDetailRow", () => {
       templateId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
       timeLabel: "10:30 - 16:00",
       title: "4월 20일 주말 웨딩",
+      viewerApplicationStatus: null,
     });
   });
 });

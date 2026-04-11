@@ -1,24 +1,31 @@
+import { QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createQueryClient } from "#/shared/lib/tanstack-query/createQueryClient";
 
 const {
   mockedCreateSupabaseServerClient,
+  mockedGetCurrentAppActor,
   mockedDashboardScreen,
-  mockedReadEvents,
+  mockedReadEventCollectionWithApplicationStatus,
 } = vi.hoisted(() => ({
   mockedCreateSupabaseServerClient: vi.fn(),
-  mockedDashboardScreen: vi.fn(({ events }: { events: Array<{ title: string }> }) => (
-    <div>{events.map((event) => event.title).join(", ")}</div>
-  )),
-  mockedReadEvents: vi.fn(),
+  mockedGetCurrentAppActor: vi.fn(),
+  mockedDashboardScreen: vi.fn(() => <div>dashboard</div>),
+  mockedReadEventCollectionWithApplicationStatus: vi.fn(),
 }));
 
-vi.mock("#/entities/events/repositories/readEventRepository", () => ({
-  readEvents: mockedReadEvents,
+vi.mock("#/queries/events/services/readEventCollectionWithApplicationStatus", () => ({
+  readEventCollectionWithApplicationStatus:
+    mockedReadEventCollectionWithApplicationStatus,
 }));
 
 vi.mock("#/screens/dashboard/DashboardScreen", () => ({
   DashboardScreen: mockedDashboardScreen,
+}));
+
+vi.mock("#/shared/lib/auth/appActor", () => ({
+  getCurrentAppActor: mockedGetCurrentAppActor,
 }));
 
 vi.mock("#/shared/lib/supabase/server", () => ({
@@ -36,23 +43,29 @@ describe("RootPage", () => {
     const client = { auth: {} };
 
     mockedCreateSupabaseServerClient.mockResolvedValue(client);
-    mockedReadEvents.mockResolvedValue([
-      {
-        eventDate: "2026-04-20",
-        firstServiceAt: "10:30",
-        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-        status: "draft",
-        timeLabel: "10:30 - 16:00",
-        title: "4월 20일 주말 웨딩",
-      },
-    ]);
+    mockedGetCurrentAppActor.mockResolvedValue({
+      email: "member1@labiebelle.local",
+      kind: "development_member",
+      name: "팀원1",
+      role: "member",
+      source: "development_seed",
+      userId: "33333333-3333-4333-8333-333333333333",
+    });
+    mockedReadEventCollectionWithApplicationStatus.mockResolvedValue([]);
 
     const result = await RootPage();
+    const queryClient = createQueryClient();
 
-    render(result);
+    render(
+      <QueryClientProvider client={queryClient}>{result}</QueryClientProvider>
+    );
 
     expect(mockedCreateSupabaseServerClient).toHaveBeenCalledTimes(1);
-    expect(mockedReadEvents).toHaveBeenCalledWith({ client });
-    expect(screen.getByText("4월 20일 주말 웨딩")).toBeInTheDocument();
+    expect(mockedGetCurrentAppActor).toHaveBeenCalledWith({ client });
+    expect(mockedReadEventCollectionWithApplicationStatus).toHaveBeenCalledWith({
+      client,
+      viewerId: "33333333-3333-4333-8333-333333333333",
+    });
+    expect(screen.getByText("dashboard")).toBeInTheDocument();
   });
 });

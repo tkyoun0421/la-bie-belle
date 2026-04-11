@@ -44,6 +44,7 @@ describe("readEventRepository", () => {
         status: "draft",
         timeLabel: "10:30 - 16:00",
         title: "4월 20일 주말 웨딩",
+        viewerApplicationStatus: null,
       },
       {
         eventDate: "2026-04-21",
@@ -52,6 +53,7 @@ describe("readEventRepository", () => {
         status: "recruiting",
         timeLabel: "11:00 - 17:00",
         title: "4월 21일 연회 행사",
+        viewerApplicationStatus: null,
       },
     ]);
 
@@ -117,6 +119,7 @@ describe("readEventRepository", () => {
       templateId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
       timeLabel: "10:30 - 16:00",
       title: "4월 20일 주말 웨딩",
+      viewerApplicationStatus: null,
     });
 
     expect(eq).toHaveBeenCalledWith(

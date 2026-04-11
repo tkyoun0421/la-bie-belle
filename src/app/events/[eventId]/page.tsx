@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { readEventById } from "#/entities/events/repositories/readEventRepository";
+import { readEventDetailWithApplicationStatus } from "#/queries/events/services/readEventDetailWithApplicationStatus";
 import { EventDetailScreen } from "#/screens/events/detail/EventDetailScreen";
+import { getCurrentAppActor } from "#/shared/lib/auth/appActor";
 import { createSupabaseServerClient } from "#/shared/lib/supabase/server";
 
 type EventDetailPageProps = {
@@ -14,7 +15,12 @@ export default async function EventDetailPage({
 }: EventDetailPageProps) {
   const { eventId } = await params;
   const client = await createSupabaseServerClient();
-  const event = await readEventById(eventId, { client });
+  const actor = await getCurrentAppActor({ client });
+  const event = await readEventDetailWithApplicationStatus({
+    client,
+    eventId,
+    viewerId: actor?.userId ?? null,
+  });
 
   if (!event) {
     notFound();

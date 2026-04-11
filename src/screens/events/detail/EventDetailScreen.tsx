@@ -5,6 +5,7 @@ import type {
   EventDetail,
   EventStatus,
 } from "#/entities/events/models/schemas/event";
+import { EventApplicationPanel } from "#/screens/events/detail/_components/EventApplicationPanel";
 import { Badge } from "#/shared/components/ui/badge";
 import { Button } from "#/shared/components/ui/button";
 import {
@@ -162,6 +163,12 @@ export function EventDetailScreen({
           </CardContent>
         </Card>
       </section>
+
+      <EventApplicationPanel
+        eventId={event.id}
+        eventStatus={event.status}
+        initialApplicationStatus={event.viewerApplicationStatus}
+      />
 
       <Card className="border border-dashed border-border/70 bg-background/92">
         <CardHeader>
