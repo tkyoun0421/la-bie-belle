@@ -7,7 +7,7 @@ Folder Hierarchy: [./folder-hierarchy.md](./folder-hierarchy.md)
 Execution: [./execution-plan.md](./execution-plan.md)  
 Phase Plan: [./phases/phase-0-5-core-operational-loop.md](./phases/phase-0-5-core-operational-loop.md)  
 Status: ACTIVE  
-Date: 2026-04-10
+Date: 2026-04-11
 
 ## Completed Foundations
 
@@ -34,6 +34,25 @@ Date: 2026-04-10
   - 슬롯 드래그 정렬
   - 포지션 기본값 기반 슬롯 구성
 
+### Phase 1 / Slice 2
+
+- `/admin/templates/[templateId]/create-event`
+  - 템플릿 기반 행사 생성 폼
+  - 생성 후 행사 상세 화면 리다이렉트
+  - 템플릿 시간 / 슬롯 기본값 요약
+
+### Phase 1 / Slice 3
+
+- `/`
+  - `react-day-picker` 기반 달력 대시보드
+  - 열린 스케줄 날짜 multi-select
+  - 선택 날짜 기준 bulk 신청 / 취소
+  - 빈 상태에서 템플릿 관리 진입
+- `/events/[eventId]`
+  - 행사 메타데이터 detail read model
+  - 템플릿에서 복사된 포지션 슬롯 표시
+  - 신청 상태 fallback panel
+
 ## Current Architecture Decisions
 
 - `screens`는 `app` route 구조를 그대로 따른다.
@@ -59,7 +78,9 @@ Date: 2026-04-10
 
 ## Next Priority
 
-- Phase 1 / Slice 2: 템플릿 기반 행사 생성
+- Slice 2 follow-up: event-owned 관리자 생성 화면으로 옮기고 템플릿 기본값 import + 달력 multi-select 스케줄 생성으로 재정렬
+- 관리자 생성에서 duplicate-date guard와 결과 확인 표면 정리
+- 현재 달력 범위는 explicit date select까지만 포함하고 반복 규칙 자동 생성은 제외
 - auth callback / 로그인 진입점 구현
 - event / application / assignment / replacement happy path 확장
 - lower layer 에러를 코드 중심으로 정리하고 화면에서 문구를 매핑하는 구조로 이동

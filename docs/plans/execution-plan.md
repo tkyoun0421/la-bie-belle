@@ -7,9 +7,10 @@ Stack: [./stack-spec.md](./stack-spec.md)
 Codebase: [./codebase-architecture.md](./codebase-architecture.md)  
 Folder Hierarchy: [./folder-hierarchy.md](./folder-hierarchy.md)  
 FSD Profile: [./fsd-profile.md](./fsd-profile.md)  
+Refactoring: [./refactoring-guide.md](./refactoring-guide.md)  
 Design: [../designs/pwa.md](../designs/pwa.md)  
 Status: ACTIVE  
-Date: 2026-04-10
+Date: 2026-04-11
 
 ## Purpose
 
@@ -69,6 +70,7 @@ v1에서 먼저 닫아야 하는 운영 루프:
 - task를 시작할 때 먼저 실패하는 테스트를 만든다
 - 구현은 그 테스트를 통과시키는 최소 변경으로 시작한다
 - green 이후에만 refactor한다
+- refactor 기준과 금지선은 [Refactoring Guide](./refactoring-guide.md)를 따른다
 - 기본 우선순위는 `unit -> integration -> e2e`
 - 버그 수정은 재현 테스트를 먼저 추가한다
 - slice를 닫을 때는 happy path와 핵심 예외가 자동 테스트로 재현돼야 한다
@@ -142,7 +144,7 @@ phase 문서 최소 항목:
 ### Integration
 
 - 가입 요청 -> 승인 -> 역할 생성
-- 행사 생성 -> 신청 -> 배정 -> 확정
+- 관리자 달력 날짜 선택 -> 행사 생성 -> 신청 -> 배정 -> 확정
 - 취소 -> 대타 알림 -> 지원 -> 승인
 - 중복 신청, 중복 checkin, 중복 replacement request 제약 검증
 - 모집 종료 후 추가 지원 차단
@@ -152,7 +154,7 @@ phase 문서 최소 항목:
 ### E2E
 
 - 로그인 -> 승인 대기 -> 승인 후 기능 해제
-- 관리자 행사 생성 -> 멤버 신청 -> 관리자 배정
+- 관리자 달력 스케줄 생성 -> 멤버 달력 신청 -> 관리자 배정
 - 취소 발생 -> 대타 승인
 - 체크인 성공 -> 예상 급여 확인
 - 체크인 실패 -> 예외 요청 -> 승인

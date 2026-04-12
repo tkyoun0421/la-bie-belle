@@ -8,7 +8,7 @@ Codebase: [../codebase-architecture.md](../codebase-architecture.md)
 Folder Hierarchy: [../folder-hierarchy.md](../folder-hierarchy.md)  
 Execution: [../execution-plan.md](../execution-plan.md)  
 Status: REVIEW_REQUIRED  
-Date: 2026-04-10
+Date: 2026-04-11
 
 ## Goal
 
@@ -17,7 +17,7 @@ Date: 2026-04-10
 이 phase가 끝나면 아래 happy path가 이어져야 한다.
 
 - 관리자가 행사 템플릿을 만든다.
-- 관리자가 템플릿 기반으로 행사를 생성한다.
+- 관리자가 행사 생성 화면에서 템플릿 기본값을 불러와 달력 스케줄을 생성한다.
 - 멤버가 행사에 신청한다.
 - 관리자가 멤버를 배정한다.
 - 배정된 멤버가 취소를 요청한다.
@@ -29,7 +29,7 @@ Date: 2026-04-10
 ## In Scope
 
 - 행사 템플릿 CRUD
-- 행사 생성과 조회
+- 달력 기반 행사 생성과 조회
 - 행사 신청과 취소
 - 멤버 배정
 - 취소 요청과 replacement request 생성
@@ -55,6 +55,14 @@ Date: 2026-04-10
 - read transport: `queries/*`
 - data access: `entities/*/repositories`
 
+## Calendar-First Adjustment
+
+- 관리자 행사 생성과 멤버 신청의 1차 진입 표면은 리스트가 아니라 달력으로 맞춘다.
+- 달력은 선택 UI이고 실제 domain record 단위는 계속 `event`, `application`, `assignment`다.
+- 관리자 생성은 event-owned 화면에서 템플릿 기본값 import + 명시적 날짜 multi-select bulk create까지만 포함한다.
+- 반복 규칙, 매주 자동 생성, drag 기반 편집기는 이 phase 범위에서 제외한다.
+- `/events/[eventId]`는 상세 확인과 예외 처리용 fallback 화면으로 유지한다.
+
 ## Route And Screen Impact
 
 ### Routes
@@ -62,6 +70,7 @@ Date: 2026-04-10
 - `/`
 - `/events/[eventId]`
 - `/replacements`
+- `/admin/events/new`
 - `/admin/templates`
 - `/admin/positions`
 
@@ -70,6 +79,7 @@ Date: 2026-04-10
 - `screens/dashboard`
 - `screens/events/detail`
 - `screens/replacements`
+- `screens/admin/events/new`
 - `screens/admin/templates`
 - `screens/admin/positions`
 
@@ -141,11 +151,16 @@ Date: 2026-04-10
 
 목표:
 
-- 템플릿 기반으로 행사를 만들 수 있다.
+- 행사 생성 화면에서 템플릿 기본값을 불러와 달력 스케줄을 만들 수 있다.
 
 포함:
 
 - event create mutation
+- event-owned create screen
+- template defaults import
+- calendar multi-select UI
+- explicit multi-date create orchestration
+- duplicate-date guard
 - event list/detail query
 - slot 기본값 복사
 - `/events/[eventId]` 기본 detail 화면
@@ -153,17 +168,20 @@ Date: 2026-04-10
 
 완료 기준:
 
-- 템플릿을 골라 행사 생성 후 상세 화면으로 이동할 수 있다.
+- 행사 생성 화면에서 템플릿 기본값을 불러오고 날짜를 여러 개 선택해 스케줄을 만들 수 있다.
 
 ### Slice 3. Member Apply To Event
 
 목표:
 
-- 멤버가 행사 목록을 보고 신청/취소할 수 있다.
+- 멤버가 달력에서 열린 날짜를 여러 개 고르고 행사에 신청/취소할 수 있다.
 
 포함:
 
 - event list query hook
+- dashboard calendar surface
+- multi-date open-schedule selection
+- selected-date event list
 - apply mutation
 - cancel application mutation
 - dashboard와 event detail에 신청 상태 표시
@@ -171,7 +189,25 @@ Date: 2026-04-10
 
 완료 기준:
 
-- 멤버가 신청/취소를 반복할 수 있고 상태가 화면에 즉시 반영된다.
+- 멤버가 열린 날짜를 여러 개 선택해 신청/취소를 반복할 수 있고 상태가 화면에 즉시 반영된다.
+
+## Current Work Cut
+
+### Work Chunk A. Member Calendar Apply/Cancel
+
+- `/`를 달력 우선 화면으로 바꾼다.
+- 열린 스케줄이 있는 날짜만 선택 가능하게 둔다.
+- 선택한 날짜들의 행사 목록에서 신청/취소를 처리한다.
+- 근무자는 여러 날짜를 한 번에 골라 bulk apply / cancel 할 수 있다.
+- event detail에는 동일 상태를 fallback으로 유지한다.
+- 이 범위에서 신청 단위는 계속 `event_id`다.
+
+### Work Chunk B. Manager Calendar Schedule Create
+
+- event-owned 생성 화면으로 진입 구조를 옮기고 템플릿 import를 붙인다.
+- 기존 `/admin/templates/[templateId]/create-event`는 transitional route로 보고 제거 대상에 둔다.
+- 선택 날짜에 대한 bulk create 결과를 확인 가능하게 만든다.
+- 반복 규칙과 자동 스케줄 생성은 넣지 않는다.
 
 ### Slice 4. Manager Assign Member
 

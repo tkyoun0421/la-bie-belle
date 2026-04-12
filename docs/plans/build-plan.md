@@ -7,9 +7,10 @@ Stack: [./stack-spec.md](./stack-spec.md)
 Codebase: [./codebase-architecture.md](./codebase-architecture.md)  
 Folder Hierarchy: [./folder-hierarchy.md](./folder-hierarchy.md)  
 FSD Profile: [./fsd-profile.md](./fsd-profile.md)  
+Refactoring: [./refactoring-guide.md](./refactoring-guide.md)  
 Execution: [./execution-plan.md](./execution-plan.md)  
 Status: ACTIVE  
-Date: 2026-04-10
+Date: 2026-04-11
 
 ## Goal
 
@@ -37,6 +38,8 @@ Date: 2026-04-10
   - 실제 `src/` 구조와 route-to-screen 매핑
 - [FSD Profile](./fsd-profile.md)
   - naming, import, 테스트, private folder 규칙
+- [Refactoring Guide](./refactoring-guide.md)
+  - refactor entry 조건, SOLID 적용 방식, over-engineering guardrail
 - [Execution Plan](./execution-plan.md)
   - phase, slice, 테스트 원칙, 구현 순서
 - `docs/plans/phases/*`
@@ -55,6 +58,9 @@ Date: 2026-04-10
 - 대타 승인 시 기존 assignment를 되살리지 않고 새 assignment를 만든다
 - 예상 급여는 read-time 계산, 예외만 `payroll_overrides`에 저장
 - 중복 배정은 기본 경고 정책
+- 관리자 행사 생성과 멤버 신청의 1차 진입 표면은 달력을 우선한다
+- 달력은 UI 선택 표면이고 write 단위는 계속 `event`, `application`, `assignment`를 유지한다
+- 관리자 행사 생성은 event-owned 화면에서 템플릿 기본값을 불러오고 명시적 날짜 multi-select bulk create로 처리한다
 - 구조는 `app -> screens -> mutations -> queries -> entities -> shared`
 - 테스트 스택은 `Vitest + Playwright`
 
@@ -68,6 +74,7 @@ Date: 2026-04-10
 
 - 앱스토어 배포
 - 카카오/SMS 백업 알림
+- 반복 규칙 기반 자동 일정 생성
 - 생체 체크인
 - 체크인 이후 근태 심화 기능
 - 교통비, 차감, 고급 급여 규칙
@@ -78,8 +85,8 @@ Date: 2026-04-10
 
 첫 배포에서 반드시 들어갈 최소 운영 루프는 아래와 같다.
 
-- 관리자 행사 생성
-- 멤버 행사 신청
+- 관리자 달력 스케줄 생성
+- 멤버 달력 행사 신청
 - 관리자 배정
 - 취소 요청과 대타 승인
 - 위치 기반 체크인
@@ -88,8 +95,8 @@ Date: 2026-04-10
 ## Build Order Summary
 
 1. 기본 DB schema와 `users / positions / member_positions` seed
-2. 행사 템플릿과 행사 생성
-3. 신청과 배정
+2. 행사 템플릿과 달력 기반 스케줄 생성
+3. 달력 기반 신청과 배정
 4. 취소와 대타 승인
 5. 체크인
 6. 예상 급여 계산

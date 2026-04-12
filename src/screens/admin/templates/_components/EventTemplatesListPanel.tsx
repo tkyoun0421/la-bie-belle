@@ -13,20 +13,18 @@ import { Input } from "#/shared/components/ui/input";
 
 type EventTemplatesListPanelProps = {
   deletePending: boolean;
-  highlightedTemplateId: string | null;
-  listError: string | null;
   onDelete: (template: EventTemplate) => void;
   onSearchTermChange: (value: string) => void;
+  queryError: string | null;
   searchTerm: string;
   templates: EventTemplate[];
 };
 
 export function EventTemplatesListPanel({
   deletePending,
-  highlightedTemplateId,
-  listError,
   onDelete,
   onSearchTermChange,
+  queryError,
   searchTerm,
   templates,
 }: Readonly<EventTemplatesListPanelProps>) {
@@ -45,7 +43,7 @@ export function EventTemplatesListPanel({
           className="self-end !text-[var(--primary-foreground)] hover:!text-[var(--primary-foreground)]"
           type="button"
         >
-          <Link href="/admin/templates/new" prefetch>
+          <Link href="/admin/templates/new" prefetch={false}>
             새 템플릿 추가
           </Link>
         </Button>
@@ -65,9 +63,9 @@ export function EventTemplatesListPanel({
             placeholder="템플릿 이름 또는 포지션 이름"
             value={searchTerm}
           />
-          {listError ? (
+          {queryError ? (
             <p className="text-sm font-medium text-[var(--destructive)]">
-              {listError}
+              {queryError}
             </p>
           ) : null}
         </div>
@@ -76,9 +74,9 @@ export function EventTemplatesListPanel({
           {templates.map((template) => (
             <EventTemplateListItem
               canDelete={!template.isPrimary}
+              createEventHref={`/admin/templates/${template.id}/create-event`}
               deletePending={deletePending}
               editHref={`/admin/templates/${template.id}/edit`}
-              isHighlighted={template.id === highlightedTemplateId}
               key={template.id}
               onDelete={onDelete}
               template={template}

@@ -822,6 +822,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_event: {
+        Args: {
+          p_created_by?: string
+          p_event_date: string
+          p_template_id: string
+          p_title: string
+        }
+        Returns: string
+      }
       create_event_template:
         | {
             Args: {

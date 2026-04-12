@@ -8,8 +8,21 @@ import type {
 
 type PublicSchema = GeneratedDatabase["public"];
 type PositionsTable = PublicSchema["Tables"]["positions"];
+type CreateEventFunction = PublicSchema["Functions"]["create_event"];
 type CreateEventTemplateFunction =
   PublicSchema["Functions"]["create_event_template"];
+
+type NormalizedCreateEventFunction = CreateEventFunction extends {
+  Args: infer TArgs;
+  Returns: infer TReturns;
+}
+  ? {
+      Args: Omit<TArgs, "p_created_by"> & {
+        p_created_by?: string | null;
+      };
+      Returns: TReturns;
+    }
+  : never;
 
 type NormalizedCreateEventTemplateFunction = CreateEventTemplateFunction extends {
   Args: infer TArgs;
@@ -25,7 +38,11 @@ type NormalizedCreateEventTemplateFunction = CreateEventTemplateFunction extends
 
 export type Database = Omit<GeneratedDatabase, "public"> & {
   public: Omit<PublicSchema, "Functions" | "Tables"> & {
-    Functions: Omit<PublicSchema["Functions"], "create_event_template"> & {
+    Functions: Omit<
+      PublicSchema["Functions"],
+      "create_event" | "create_event_template"
+    > & {
+      create_event: NormalizedCreateEventFunction;
       create_event_template: NormalizedCreateEventTemplateFunction;
     };
     Tables: Omit<PublicSchema["Tables"], "positions"> & {

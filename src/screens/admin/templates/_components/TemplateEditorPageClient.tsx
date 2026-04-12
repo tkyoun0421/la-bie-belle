@@ -91,7 +91,8 @@ export function TemplateEditorPageClient({
     defaultTemplateValues,
     initialTemplate,
     onSubmitted(templateId) {
-      router.push(`/admin/templates?highlight=${templateId}`);
+      void templateId;
+      router.push("/admin/templates");
     },
     positionIds,
     positionNameById,

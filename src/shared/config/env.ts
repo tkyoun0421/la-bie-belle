@@ -36,6 +36,14 @@ export function getPublicEnv() {
   });
 }
 
+export function hasPublicSupabaseEnv() {
+  const env = getPublicEnv();
+
+  return Boolean(
+    env.NEXT_PUBLIC_SUPABASE_URL && env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+}
+
 export function getServerEnv() {
   return serverEnvSchema.parse({
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
