@@ -14,7 +14,7 @@ describe("readAssignmentRepository", () => {
         in: vi.fn().mockReturnThis(),
         single: vi.fn(),
         order: vi.fn().mockReturnThis(),
-      } as never;
+      };
 
       mockClient.single.mockResolvedValueOnce({ data: { event_date: mockDate }, error: null });
 
@@ -44,7 +44,7 @@ describe("readAssignmentRepository", () => {
         error: null
       });
 
-      const result = await readEventApplicants(mockEventId, { client: mockClient });
+      const result = await readEventApplicants(mockEventId, { client: mockClient as never });
 
       expect(result).toHaveLength(2);
       expect(result.find(a => a.userId === "22222222-2222-4222-a222-222222222222")?.hasConflict).toBe(true);

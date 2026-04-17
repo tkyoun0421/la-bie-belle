@@ -19,18 +19,20 @@ describe("approveReplacementAction", () => {
     cancelledUserId: "88888888-8888-4888-a888-888888888888",
   };
 
+  const mockClient = {
+    from: vi.fn().mockReturnThis(),
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    single: vi.fn().mockResolvedValue({ data: { event_id: mockEventId }, error: null }),
+  };
+
   const mockDependencies = {
     requireActor: vi.fn().mockResolvedValue(mockActor),
     readRequest: vi.fn().mockResolvedValue(mockRequest),
     updateRequestStatus: vi.fn().mockResolvedValue(undefined),
     updateAssignmentStatus: vi.fn().mockResolvedValue(undefined),
     createAssignment: vi.fn().mockResolvedValue(mockNewAssignmentId),
-    client: {
-      from: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({ data: { event_id: mockEventId }, error: null }),
-    } as never,
+    client: mockClient as never,
   };
 
   it("should approve replacement successfully", async () => {
