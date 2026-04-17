@@ -68,11 +68,63 @@ export async function readEventAssignments(
   );
 }
 
+export async function readUserIdsWithConflictsOnDate(
+  date: string,
+  excludedEventId: string,
+  options: AssignmentRepositoryOptions
+): Promise<Set<string>> {
+  const { client } = options;
+  const { data, error } = await client
+    .from("assignments")
+    .select(
+      `
+      user_id,
+      event_id,
+      events!inner (
+        event_date
+      )
+    `
+    )
+    .eq("events.event_date", date)
+    .in("status", ["assigned", "confirmed", "cancel_requested", "checked_in"]);
+
+  if (error) {
+    throw assignmentErrors.create(assignmentErrorCodes.listFailed, {
+      cause: error,
+    });
+  }
+
+  return new Set(
+    (data ?? [])
+      .filter((row) => row.event_id !== excludedEventId)
+      .map((row) => row.user_id)
+  );
+}
+
 export async function readEventApplicants(
   eventId: string,
   options: AssignmentRepositoryOptions
 ): Promise<Applicant[]> {
   const { client } = options;
+
+  const { data: eventData, error: eventError } = await client
+    .from("events")
+    .select("event_date")
+    .eq("id", eventId)
+    .single();
+
+  if (eventError || !eventData) {
+    throw assignmentErrors.create(assignmentErrorCodes.listFailed, {
+      cause: eventError,
+    });
+  }
+
+  const userIdsWithConflict = await readUserIdsWithConflictsOnDate(
+    eventData.event_date,
+    eventId,
+    options
+  );
+
   const { data, error } = await client
     .from("applications")
     .select(
@@ -106,6 +158,7 @@ export async function readEventApplicants(
       userName: user?.name ?? "",
       userEmail: user?.email ?? "",
       appliedAt: row.applied_at,
+      hasConflict: userIdsWithConflict.has(row.user_id),
     });
   });
 }

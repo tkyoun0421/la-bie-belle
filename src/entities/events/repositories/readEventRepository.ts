@@ -65,6 +65,25 @@ export async function readEvents(
   return (data ?? []).map(mapEventListItemRow);
 }
 
+export async function readEventsByDates(
+  dates: string[],
+  options: EventRepositoryOptions
+): Promise<EventListItem[]> {
+  const { client } = options;
+  const { data, error } = await client
+    .from("events")
+    .select(eventListSelect)
+    .in("event_date", dates);
+
+  if (error) {
+    throw eventErrors.create(eventErrorCodes.listFailed, {
+      cause: error,
+    });
+  }
+
+  return (data ?? []).map(mapEventListItemRow);
+}
+
 export async function readEventById(
   eventId: string,
   options: EventRepositoryOptions

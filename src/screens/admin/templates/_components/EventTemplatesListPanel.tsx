@@ -74,7 +74,7 @@ export function EventTemplatesListPanel({
           {templates.map((template) => (
             <EventTemplateListItem
               canDelete={!template.isPrimary}
-              createEventHref={`/admin/templates/${template.id}/create-event`}
+              createEventHref={`/admin/events/new?templateId=${template.id}`}
               deletePending={deletePending}
               editHref={`/admin/templates/${template.id}/edit`}
               key={template.id}

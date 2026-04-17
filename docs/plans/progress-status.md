@@ -36,10 +36,13 @@ Date: 2026-04-11
 
 ### Phase 1 / Slice 2
 
-- `/admin/templates/[templateId]/create-event`
-  - 템플릿 기반 행사 생성 폼
-  - 생성 후 행사 상세 화면 리다이렉트
-  - 템플릿 시간 / 슬롯 기본값 요약
+- `/admin/events/new`
+  - 템플릿 기반 대량 행사 생성
+  - 달력 multi-select 날짜 선택
+  - 중복 날짜 방지 (duplicate-date guard)
+  - 생성 결과 확인 UI
+  - 템플릿 기본값(시간, 슬롯) 자동 복사
+- 기존 `/admin/templates/[templateId]/create-event` 제거 (transitional route)
 
 ### Phase 1 / Slice 3
 
@@ -52,6 +55,22 @@ Date: 2026-04-11
   - 행사 메타데이터 detail read model
   - 템플릿에서 복사된 포지션 슬롯 표시
   - 신청 상태 fallback panel
+
+### Phase 1 / Slice 4, 5, 6
+
+- `/events/[eventId]` (Admin/Manager view)
+  - 신청자 목록 조회 및 포지션 배정
+  - 중복 배정 경고 표시
+  - 배정 취소 및 대타 요청 생성 루프
+- `/replacements`
+  - 진행 중인 대타 요청 목록 조회
+  - 대타 지원 (Member)
+  - 대타 지원자 목록 조회 및 승인 (Admin/Manager)
+  - 승인 시 기존 배정 취소 및 새 배정 생성 자동화
+- Domain Invariants
+  - 본인 취소 건에 대한 대타 지원 방지
+  - 자격(member_positions) 보유자만 대타 지원 가능
+  - 대타 승인 시 상태 전이 원자성 확보 (assignment: cancel_requested -> cancelled, new assignment: assigned)
 
 ## Current Architecture Decisions
 
@@ -78,8 +97,6 @@ Date: 2026-04-11
 
 ## Next Priority
 
-- Slice 2 follow-up: event-owned 관리자 생성 화면으로 옮기고 템플릿 기본값 import + 달력 multi-select 스케줄 생성으로 재정렬
-- 관리자 생성에서 duplicate-date guard와 결과 확인 표면 정리
 - 현재 달력 범위는 explicit date select까지만 포함하고 반복 규칙 자동 생성은 제외
 - auth callback / 로그인 진입점 구현
 - event / application / assignment / replacement happy path 확장
