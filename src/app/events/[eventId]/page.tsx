@@ -26,5 +26,5 @@ export default async function EventDetailPage({
     notFound();
   }
 
-  return <EventDetailScreen event={event} />;
+  return <EventDetailScreen event={event} viewerRole={actor?.role} />;
 }

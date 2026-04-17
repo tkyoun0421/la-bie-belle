@@ -45,7 +45,7 @@ describe("EventDetailScreen", () => {
     expect(screen.getByText("안내")).toBeInTheDocument();
     expect(screen.getByText("정규 2명")).toBeInTheDocument();
     expect(screen.getByText("교육 1명")).toBeInTheDocument();
-    expect(screen.getAllByText("신청 상태")).toHaveLength(2);
+    expect(screen.getByText("신청 상태")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "신청" })).toBeInTheDocument();
   });
 
