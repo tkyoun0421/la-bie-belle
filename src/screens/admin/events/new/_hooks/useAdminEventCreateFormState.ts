@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,10 +11,9 @@ import {
 } from "#/mutations/events/schemas/createBulkEvents";
 import { useEventsQuery } from "#/queries/events/hooks/useEventsQuery";
 import { useEventTemplatesQuery } from "#/queries/events/hooks/useEventTemplatesQuery";
-import { readCreateEventErrorMessage } from "#/screens/admin/templates/_helpers/createEventError";
+import { readCreateEventErrorMessage } from "#/entities/events/models/errors/eventErrorMessages";
 
 export function useAdminEventCreateFormState() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const initialTemplateId = searchParams.get("templateId") ?? "";
 
@@ -35,6 +34,7 @@ export function useAdminEventCreateFormState() {
     resolver: zodResolver(createBulkEventsInputSchema),
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const selectedTemplateId = form.watch("templateId");
   const selectedTemplate = templatesQuery.data?.find(
     (t) => t.id === selectedTemplateId

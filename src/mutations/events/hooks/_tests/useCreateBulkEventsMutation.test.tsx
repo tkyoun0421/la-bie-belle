@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useCreateBulkEventsMutation } from "../useCreateBulkEventsMutation";
-import { createBulkEventsAction } from "../../actions/createBulkEvents";
+import { useCreateBulkEventsMutation } from "#/mutations/events/hooks/useCreateBulkEventsMutation";
+import { createBulkEventsAction } from "#/mutations/events/actions/createBulkEvents";
 
 vi.mock("../../actions/createBulkEvents", () => ({
   createBulkEventsAction: vi.fn(),
@@ -31,8 +31,7 @@ describe("useCreateBulkEventsMutation", () => {
       expect.objectContaining({
         eventDates: ["2026-05-01", "2026-05-02"],
         templateId: "template-1",
-      }),
-      {} // Dependencies should be empty by default
+      })
     );
   });
 });

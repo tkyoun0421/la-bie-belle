@@ -2,7 +2,7 @@
 
 import { format, parseISO } from "date-fns";
 import { ko } from "date-fns/locale";
-import { Loader2, Users, Calendar, Clock, MapPin, CheckCircle2 } from "lucide-react";
+import { Loader2, Users, Calendar, Clock } from "lucide-react";
 import { useReplacementsQuery } from "#/queries/replacements/hooks/useReplacementsQuery";
 import { useReplacementApplicationsQuery } from "#/queries/replacements/hooks/useReplacementApplicationsQuery";
 import { useApplyToReplacementMutation } from "#/mutations/replacements/hooks/useApplyToReplacementMutation";
@@ -18,6 +18,7 @@ import {
 } from "#/shared/components/ui/card";
 import { ConfirmDialog } from "#/shared/components/common/ConfirmDialog";
 import { useState } from "react";
+import type { ReplacementListItem } from "#/entities/replacements/models/schemas/replacementRequest";
 
 export function ReplacementsScreen() {
   const actor = { userId: "mock-user-id", role: "admin" };
@@ -76,7 +77,6 @@ export function ReplacementsScreen() {
                   isSelected={selectedRequestId === replacement.id}
                   onClick={() => setSelectedRequestId(replacement.id)}
                   isManager={isAdminOrManager}
-                  currentUserId={actor?.userId}
                 />
               ))}
             </div>
@@ -112,13 +112,11 @@ function ReplacementCard({
   isSelected, 
   onClick,
   isManager,
-  currentUserId
 }: { 
-  replacement: any; 
+  replacement: ReplacementListItem; 
   isSelected: boolean;
   onClick: () => void;
   isManager: boolean;
-  currentUserId?: string;
 }) {
   const applyMutation = useApplyToReplacementMutation();
   
@@ -179,12 +177,20 @@ function ReplacementCard({
   );
 }
 
+interface ReplacementCandidate {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  appliedAt: string;
+}
+
 function ReplacementCandidatesPanel({ requestId, isManager }: { requestId: string; isManager: boolean }) {
   const candidatesQuery = useReplacementApplicationsQuery(requestId);
   const approveMutation = useApproveReplacementMutation();
-  const [candidateToApprove, setCandidateToApprove] = useState<any>(null);
+  const [candidateToApprove, setCandidateToApprove] = useState<ReplacementCandidate | null>(null);
 
-  const candidates = candidatesQuery.data ?? [];
+  const candidates = (candidatesQuery.data ?? []) as ReplacementCandidate[];
 
   const handleApproveConfirm = () => {
     if (!candidateToApprove) return;

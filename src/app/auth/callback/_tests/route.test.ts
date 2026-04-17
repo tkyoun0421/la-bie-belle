@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { GET } from "../route";
+import { GET } from "#/app/auth/callback/route";
 import { createSupabaseServerClient } from "#/shared/lib/supabase/server";
 import { NextRequest } from "next/server";
 
@@ -15,7 +15,7 @@ describe("GET /auth/callback", () => {
     const mockClient = {
       auth: mockAuth,
     };
-    vi.mocked(createSupabaseServerClient).mockResolvedValue(mockClient as any);
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(mockClient as never);
 
     const url = new URL("http://localhost/auth/callback?code=test-code");
     const request = new NextRequest(url);

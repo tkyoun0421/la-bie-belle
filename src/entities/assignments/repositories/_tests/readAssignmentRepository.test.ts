@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { readEventApplicants } from "../readAssignmentRepository";
+import { readEventApplicants } from "#/entities/assignments/repositories/readAssignmentRepository";
 
 describe("readAssignmentRepository", () => {
   describe("readEventApplicants", () => {
@@ -14,7 +14,7 @@ describe("readAssignmentRepository", () => {
         in: vi.fn().mockReturnThis(),
         single: vi.fn(),
         order: vi.fn().mockReturnThis(),
-      } as any;
+      } as never;
 
       mockClient.single.mockResolvedValueOnce({ data: { event_date: mockDate }, error: null });
 

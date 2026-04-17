@@ -16,6 +16,6 @@ export function readCreateEventErrorMessage(error: unknown) {
     case eventErrorCodes.createResultMissing:
       return "생성된 행사 정보를 다시 불러오지 못했습니다.";
     default:
-      return eventCreateErrorMessage;
+      return (error as Error)?.message ?? eventCreateErrorMessage;
   }
 }

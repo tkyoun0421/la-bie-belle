@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { approveReplacementAction } from "../actions/approveReplacement";
+import { approveReplacementAction } from "#/mutations/replacements/actions/approveReplacement";
 import { replacementErrorCodes } from "#/entities/replacements/models/errors/replacementError";
 
 describe("approveReplacementAction", () => {
@@ -30,7 +30,7 @@ describe("approveReplacementAction", () => {
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       single: vi.fn().mockResolvedValue({ data: { event_id: mockEventId }, error: null }),
-    } as any,
+    } as never,
   };
 
   it("should approve replacement successfully", async () => {
