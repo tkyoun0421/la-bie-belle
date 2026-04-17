@@ -56,6 +56,22 @@ Date: 2026-04-11
   - 템플릿에서 복사된 포지션 슬롯 표시
   - 신청 상태 fallback panel
 
+### Phase 1 / Slice 4, 5, 6
+
+- `/events/[eventId]` (Admin/Manager view)
+  - 신청자 목록 조회 및 포지션 배정
+  - 중복 배정 경고 표시
+  - 배정 취소 및 대타 요청 생성 루프
+- `/replacements`
+  - 진행 중인 대타 요청 목록 조회
+  - 대타 지원 (Member)
+  - 대타 지원자 목록 조회 및 승인 (Admin/Manager)
+  - 승인 시 기존 배정 취소 및 새 배정 생성 자동화
+- Domain Invariants
+  - 본인 취소 건에 대한 대타 지원 방지
+  - 자격(member_positions) 보유자만 대타 지원 가능
+  - 대타 승인 시 상태 전이 원자성 확보 (assignment: cancel_requested -> cancelled, new assignment: assigned)
+
 ## Current Architecture Decisions
 
 - `screens`는 `app` route 구조를 그대로 따른다.

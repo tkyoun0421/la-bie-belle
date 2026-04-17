@@ -48,3 +48,21 @@ export async function createAssignmentRecord(
 
   return data.id;
 }
+
+export async function updateAssignmentStatus(
+  assignmentId: string,
+  status: Database["public"]["Enums"]["assignment_status"],
+  options: AssignmentRepositoryOptions
+): Promise<void> {
+  const { client } = options;
+  const { error } = await client
+    .from("assignments")
+    .update({ status })
+    .eq("id", assignmentId);
+
+  if (error) {
+    throw assignmentErrors.create(assignmentErrorCodes.createFailed, {
+      cause: error,
+    });
+  }
+}

@@ -8,9 +8,9 @@ export function useCreateAssignmentMutation() {
 
   return useMutation({
     mutationFn: (input: CreateAssignmentInput) => createAssignmentAction(input),
-    onSuccess(result) {
+    onSuccess() {
       void queryClient.invalidateQueries({
-        queryKey: assignmentQueryKeys.detail(result.eventId),
+        queryKey: assignmentQueryKeys.all,
       });
     },
   });

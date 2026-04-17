@@ -6,7 +6,11 @@ export function useCreateBulkEventsMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createBulkEventsAction,
+    mutationFn: (input: {
+      eventDates: string[];
+      templateId: string;
+      title: string;
+    }) => createBulkEventsAction(input),
     onSuccess: async () => {
       await queryClient.invalidateQueries(getEventCollectionQueryOptions());
     },

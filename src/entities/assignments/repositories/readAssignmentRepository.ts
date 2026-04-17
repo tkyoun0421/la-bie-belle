@@ -73,6 +73,47 @@ export async function readEventApplicants(
   options: AssignmentRepositoryOptions
 ): Promise<Applicant[]> {
   const { client } = options;
+
+  const { data: eventData, error: eventError } = await client
+    .from("events")
+    .select("event_date")
+    .eq("id", eventId)
+    .single();
+
+  if (eventError || !eventData) {
+    throw assignmentErrors.create(assignmentErrorCodes.listFailed, {
+      cause: eventError,
+    });
+  }
+
+  const targetDate = eventData.event_date;
+
+  const { data: conflictData, error: conflictError } = await client
+    .from("assignments")
+    .select(
+      `
+      user_id,
+      event_id,
+      events!inner (
+        event_date
+      )
+    `
+    )
+    .eq("events.event_date", targetDate)
+    .in("status", ["assigned", "confirmed", "cancel_requested", "checked_in"]);
+
+  if (conflictError) {
+    throw assignmentErrors.create(assignmentErrorCodes.listFailed, {
+      cause: conflictError,
+    });
+  }
+
+  const userIdsWithConflict = new Set(
+    (conflictData ?? [])
+      .filter((row) => row.event_id !== eventId)
+      .map((row) => row.user_id)
+  );
+
   const { data, error } = await client
     .from("applications")
     .select(
@@ -106,6 +147,7 @@ export async function readEventApplicants(
       userName: user?.name ?? "",
       userEmail: user?.email ?? "",
       appliedAt: row.applied_at,
+      hasConflict: userIdsWithConflict.has(row.user_id),
     });
   });
 }
