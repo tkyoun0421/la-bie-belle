@@ -33,19 +33,20 @@ type EventAssignmentPanelProps = {
   positionSlots: EventDetail["positionSlots"];
 };
 
+const assignmentErrorMessageMap: Record<string, string> = {
+  [assignmentErrorCodes.createDuplicateActive]: "이 멤버는 이미 이 포지션에 배정되었습니다.",
+  [assignmentErrorCodes.createEventNotFound]: "행사를 찾을 수 없습니다.",
+  [assignmentErrorCodes.unauthorizedRole]: "배정 권한이 없습니다.",
+};
+
 function readAssignmentErrorMessage(error: unknown) {
   const code = assignmentErrors.read(error);
 
-  switch (code) {
-    case assignmentErrorCodes.createDuplicateActive:
-      return "이 멤버는 이미 이 포지션에 배정되었습니다.";
-    case assignmentErrorCodes.createEventNotFound:
-      return "행사를 찾을 수 없습니다.";
-    case assignmentErrorCodes.unauthorizedRole:
-      return "배정 권한이 없습니다.";
-    default:
-      return (error as Error)?.message ?? "배정 중 오류가 발생했습니다.";
+  if (code && code in assignmentErrorMessageMap) {
+    return assignmentErrorMessageMap[code];
   }
+
+  return (error as Error)?.message ?? "배정 중 오류가 발생했습니다.";
 }
 
 export function EventAssignmentPanel({
