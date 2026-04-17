@@ -36,10 +36,13 @@ Date: 2026-04-11
 
 ### Phase 1 / Slice 2
 
-- `/admin/templates/[templateId]/create-event`
-  - 템플릿 기반 행사 생성 폼
-  - 생성 후 행사 상세 화면 리다이렉트
-  - 템플릿 시간 / 슬롯 기본값 요약
+- `/admin/events/new`
+  - 템플릿 기반 대량 행사 생성
+  - 달력 multi-select 날짜 선택
+  - 중복 날짜 방지 (duplicate-date guard)
+  - 생성 결과 확인 UI
+  - 템플릿 기본값(시간, 슬롯) 자동 복사
+- 기존 `/admin/templates/[templateId]/create-event` 제거 (transitional route)
 
 ### Phase 1 / Slice 3
 
@@ -78,8 +81,6 @@ Date: 2026-04-11
 
 ## Next Priority
 
-- Slice 2 follow-up: event-owned 관리자 생성 화면으로 옮기고 템플릿 기본값 import + 달력 multi-select 스케줄 생성으로 재정렬
-- 관리자 생성에서 duplicate-date guard와 결과 확인 표면 정리
 - 현재 달력 범위는 explicit date select까지만 포함하고 반복 규칙 자동 생성은 제외
 - auth callback / 로그인 진입점 구현
 - event / application / assignment / replacement happy path 확장
