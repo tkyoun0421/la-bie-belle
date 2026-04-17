@@ -6,6 +6,7 @@ import type {
   EventStatus,
 } from "#/entities/events/models/schemas/event";
 import { EventApplicationPanel } from "#/screens/events/detail/_components/EventApplicationPanel";
+import { EventAssignmentPanel } from "#/screens/events/detail/_components/EventAssignmentPanel";
 import { Badge } from "#/shared/components/ui/badge";
 import { Button } from "#/shared/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import {
 
 type EventDetailScreenProps = {
   event: EventDetail;
+  viewerRole?: "admin" | "manager" | "member";
 };
 
 const eventStatusCopy: Record<EventStatus, string> = {
@@ -37,6 +39,7 @@ function formatEventDate(value: string) {
 
 export function EventDetailScreen({
   event,
+  viewerRole,
 }: Readonly<EventDetailScreenProps>) {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col gap-6 px-4 py-8 md:px-8">
@@ -170,29 +173,12 @@ export function EventDetailScreen({
         initialApplicationStatus={event.viewerApplicationStatus}
       />
 
-      <Card className="border border-dashed border-border/70 bg-background/92">
-        <CardHeader>
-          <CardTitle>다음 연결 지점</CardTitle>
-          <CardDescription>
-            Slice 3과 Slice 4에서 이 detail 화면에 신청 상태와 배정 결과가
-            붙습니다.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-3 md:grid-cols-2">
-          <div className="rounded-2xl border border-border/60 bg-muted/20 p-4">
-            <p className="font-semibold text-foreground">신청 상태</p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              멤버 신청/취소 상태와 모집 가능 여부가 이 영역에 표시될 예정입니다.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-border/60 bg-muted/20 p-4">
-            <p className="font-semibold text-foreground">배정 상태</p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              포지션별 배정 결과, 중복 경고, 대타 연결 포인트가 여기서 열립니다.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      {viewerRole === "admin" || viewerRole === "manager" ? (
+        <EventAssignmentPanel
+          eventId={event.id}
+          positionSlots={event.positionSlots}
+        />
+      ) : null}
     </main>
   );
 }
