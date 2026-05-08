@@ -25,7 +25,8 @@ GitHub Issue 하나를 AI 멀티 에이전트 흐름으로 처리하고, Draft P
 ## 단계
 
 Pre-Issue. 이슈 생성 승인
-   - 새 GitHub Issue가 필요한 경우 먼저 계획안, 이슈 제목, 본문, 라벨을 사람에게 제시한다.
+   - PRD 기반 새 GitHub Issue가 필요한 경우 먼저 계획안, 이슈 제목, 본문, 라벨을 사람에게 제시한다.
+   - 작업 중 떠오른 수시 발생 작업은 `ai-harness-capture`로 이슈 초안을 만들고 Project Inbox에 캡처한다.
    - 사람이 승인하기 전에는 GitHub Issue를 생성하지 않는다.
    - 승인 후에만 GitHub Issue를 생성하고 다음 단계로 진행한다.
 

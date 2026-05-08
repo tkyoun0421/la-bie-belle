@@ -52,6 +52,7 @@ agents:
       - draft-pr.md
 
 workflows:
+  product_roadmap: workflows/product-roadmap.workflow.md
   issue_execution: workflows/issue-execution.workflow.md
   harness_improvement: workflows/harness-improvement.workflow.md
 
