@@ -1,0 +1,22 @@
+{
+  "run_id": "issue-23",
+  "issue": {
+    "number": 23,
+    "title": "[AI Harness] 프로젝트 뼈대 생성",
+    "url": "https://github.com/tkyoun0421/la-bie-belle/issues/23"
+  },
+  "status": "planned",
+  "attempt": 1,
+  "artifacts": {
+    "task_spec": "task-spec.md",
+    "plan": "plan.md",
+    "implementation_notes": "implementation-notes.md",
+    "verification": "verification.md",
+    "review_score": "review-score.json",
+    "review": "review.md"
+  },
+  "changed_files": [],
+  "scores": [],
+  "created_at": "2026-05-08T08:38:43.742Z",
+  "updated_at": "2026-05-08T08:38:43.742Z"
+}

@@ -1,0 +1,78 @@
+{
+  "score_id": "issue-23-review-attempt-1",
+  "rubric": {
+    "name": "issue_execution",
+    "version": 1
+  },
+  "total_score": 0,
+  "decision": "FAIL",
+  "categories": [
+    {
+      "id": "requirement_fulfillment",
+      "score": 0,
+      "max_score": 25,
+      "evidence": [],
+      "deductions": []
+    },
+    {
+      "id": "scope_control",
+      "score": 0,
+      "max_score": 15,
+      "evidence": [],
+      "deductions": []
+    },
+    {
+      "id": "implementation_quality",
+      "score": 0,
+      "max_score": 15,
+      "evidence": [],
+      "deductions": []
+    },
+    {
+      "id": "verification_sufficiency",
+      "score": 0,
+      "max_score": 10,
+      "evidence": [],
+      "deductions": []
+    },
+    {
+      "id": "risk_and_safety",
+      "score": 0,
+      "max_score": 5,
+      "evidence": [],
+      "deductions": []
+    },
+    {
+      "id": "requirement_interpretation",
+      "score": 0,
+      "max_score": 10,
+      "evidence": [],
+      "deductions": []
+    },
+    {
+      "id": "plan_appropriateness",
+      "score": 0,
+      "max_score": 8,
+      "evidence": [],
+      "deductions": []
+    },
+    {
+      "id": "context_usage",
+      "score": 0,
+      "max_score": 6,
+      "evidence": [],
+      "deductions": []
+    },
+    {
+      "id": "handoff_quality",
+      "score": 0,
+      "max_score": 6,
+      "evidence": [],
+      "deductions": []
+    }
+  ],
+  "strengths": [],
+  "weaknesses": [],
+  "recommended_next_action": "작성 필요.",
+  "scored_at": "2026-05-08T08:38:43.742Z"
+}
