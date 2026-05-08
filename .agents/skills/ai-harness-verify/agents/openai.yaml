@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-verify"
+  short_description: "구현 결과를 검증하고 기록 파일을 작성합니다."
+  default_prompt: "ai-harness-verify로 검증 단계만 진행해줘."

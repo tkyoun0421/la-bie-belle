@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-review"
+  short_description: "리뷰어 점수를 산출하고 게이트를 결정합니다."
+  default_prompt: "ai-harness-review로 리뷰 단계만 진행해줘."

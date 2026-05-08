@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-dashboard"
+  short_description: "실행 기록을 대시보드 데이터로 변환합니다."
+  default_prompt: "ai-harness-dashboard로 대시보드만 갱신해줘."

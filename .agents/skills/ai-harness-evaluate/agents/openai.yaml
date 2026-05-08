@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-evaluate"
+  short_description: "하네스 건강도를 평가하고 개선안을 제안합니다."
+  default_prompt: "ai-harness-evaluate로 하네스 건강도 평가 단계만 진행해줘."

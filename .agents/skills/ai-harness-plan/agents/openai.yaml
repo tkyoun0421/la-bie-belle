@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-plan"
+  short_description: "이슈를 작업 명세와 계획으로 변환합니다."
+  default_prompt: "ai-harness-plan으로 계획 단계만 진행해줘."

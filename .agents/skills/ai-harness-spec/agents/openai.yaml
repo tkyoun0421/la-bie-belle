@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-spec"
+  short_description: "이슈를 상세 스펙과 테스트 케이스로 구체화합니다."
+  default_prompt: "ai-harness-spec으로 상세 스펙을 작성해줘."
