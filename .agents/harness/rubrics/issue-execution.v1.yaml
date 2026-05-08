@@ -1,0 +1,96 @@
+version: 1
+name: issue_execution
+total_points: 100
+decision_thresholds:
+  pass:
+    min: 80
+    max: 100
+  rework:
+    min: 65
+    max: 79
+  fail:
+    min: 0
+    max: 64
+
+inputs:
+  - original_github_issue
+  - task-spec.md
+  - plan.md
+  - implementation-notes.md
+  - git_diff
+  - verification.md
+  - test_lint_build_log_summary
+
+categories:
+  - id: result_quality
+    label: 결과물 품질
+    points: 70
+    criteria:
+      - id: requirement_fulfillment
+        label: 요구사항 충족도
+        points: 25
+        score_by:
+          excellent: 명시된 완료 기준을 실질적인 누락 없이 모두 충족한다.
+          acceptable: 핵심 요청은 충족하지만, 진행을 막지 않는 작은 공백이 있다.
+          poor: 중요한 요구사항을 놓쳤거나 다른 문제를 해결했다.
+      - id: scope_control
+        label: 범위 준수
+        points: 15
+        score_by:
+          excellent: 필요한 변경만 수행하고 제외 범위를 지킨다.
+          acceptable: 작은 인접 변경이 있지만 근거가 명확하다.
+          poor: 필요한 범위를 누락했거나 관련 없는 작업을 추가했다.
+      - id: implementation_quality
+        label: 구현 품질
+        points: 15
+        score_by:
+          excellent: 코드가 기존 패턴을 따르고 유지보수 가능하며 불필요한 추상화를 피한다.
+          acceptable: 코드는 이해 가능하지만 작은 스타일 또는 구조 문제가 있다.
+          poor: 코드가 취약하거나 일관성이 없거나 과도하게 복잡하며 회귀 위험이 크다.
+      - id: verification_sufficiency
+        label: 검증 충분성
+        points: 10
+        score_by:
+          excellent: 관련 검증을 실행했고 완료 기준과의 연결이 명확하다.
+          acceptable: 기본 검증을 실행했고 남은 리스크를 기록했다.
+          poor: 중요한 검증을 건너뛰었거나 근거가 부족하다.
+      - id: risk_and_safety
+        label: 리스크와 안전성
+        points: 5
+        score_by:
+          excellent: 리스크를 식별하고 범위를 제한했으며 완화했다.
+          acceptable: 리스크를 기록했지만 완화가 충분하지 않다.
+          poor: 위험한 동작, 데이터 처리, 파괴적 변경이 다뤄지지 않았다.
+
+  - id: process_quality
+    label: 작업 과정 품질
+    points: 30
+    criteria:
+      - id: requirement_interpretation
+        label: 요구사항 해석 품질
+        points: 10
+        score_by:
+          excellent: 작업 명세가 이슈를 실행 가능한 요구사항으로 정확히 변환한다.
+          acceptable: 작업 명세가 대체로 정확하지만 작은 모호함이 남아 있다.
+          poor: 작업 명세가 의도를 바꾸거나 큰 모호함을 해결하지 못했다.
+      - id: plan_appropriateness
+        label: 계획 적절성
+        points: 8
+        score_by:
+          excellent: 계획의 순서와 범위가 적절하고 저장소 패턴과 맞다.
+          acceptable: 계획은 실행 가능하지만 순서나 리스크 설명이 일부 부족하다.
+          poor: 계획이 모호하거나 방향이 틀렸거나 작업과 맞지 않는다.
+      - id: context_usage
+        label: 컨텍스트 활용
+        points: 6
+        score_by:
+          excellent: 관련 파일, 관례, 이전 맥락을 정확히 활용한다.
+          acceptable: 작업에 필요한 컨텍스트는 활용했지만 작은 신호를 놓쳤다.
+          poor: 중요한 프로젝트 맥락을 무시했거나 근거 없는 패턴을 가정했다.
+      - id: handoff_quality
+        label: 기록과 인수인계 품질
+        points: 6
+        score_by:
+          excellent: 노트, 검증, 리뷰 근거가 완전하고 감사하기 쉽다.
+          acceptable: 인수인계는 가능하지만 일부 보조 정보가 부족하다.
+          poor: 리뷰나 재현에 필요한 정보가 부족하다.

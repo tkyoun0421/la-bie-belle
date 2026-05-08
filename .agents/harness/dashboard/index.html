@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI 하네스 대시보드</title>
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --panel: #ffffff;
+        --text: #20242a;
+        --muted: #68717d;
+        --line: #d9dee5;
+        --pass: #0f7b4f;
+        --pass-bg: #e4f4ec;
+        --rework: #9a6200;
+        --rework-bg: #fff1ce;
+        --fail: #b42318;
+        --fail-bg: #ffe4df;
+        --accent: #2857a4;
+        --accent-bg: #e8f0ff;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        background: var(--panel);
+      }
+
+      .wrap {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 68px;
+        gap: 16px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 760;
+      }
+
+      .subtle {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 6px;
+        padding: 14px 0 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .tab {
+        border: 1px solid transparent;
+        border-bottom: 0;
+        background: transparent;
+        padding: 10px 14px;
+        min-height: 38px;
+        cursor: pointer;
+        color: var(--muted);
+        font-weight: 650;
+      }
+
+      .tab[aria-selected="true"] {
+        color: var(--text);
+        background: var(--panel);
+        border-color: var(--line);
+        border-radius: 8px 8px 0 0;
+      }
+
+      main {
+        padding: 24px 0 40px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .summary {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .metric {
+        padding: 16px;
+      }
+
+      .metric .value {
+        display: block;
+        margin-top: 8px;
+        font-size: 28px;
+        font-weight: 780;
+      }
+
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin: 20px 0 12px;
+      }
+
+      .filters {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .filter {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 999px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-weight: 650;
+        color: var(--muted);
+      }
+
+      .filter.active {
+        color: var(--accent);
+        border-color: #8fabdb;
+        background: var(--accent-bg);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 14px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        font-size: 14px;
+      }
+
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0;
+      }
+
+      tr[data-clickable="true"] {
+        cursor: pointer;
+      }
+
+      tr[data-clickable="true"]:hover {
+        background: #fafbfc;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 74px;
+        border-radius: 999px;
+        padding: 5px 9px;
+        font-size: 12px;
+        font-weight: 760;
+      }
+
+      .badge.pass {
+        color: var(--pass);
+        background: var(--pass-bg);
+      }
+
+      .badge.rework {
+        color: var(--rework);
+        background: var(--rework-bg);
+      }
+
+      .badge.fail {
+        color: var(--fail);
+        background: var(--fail-bg);
+      }
+
+      .score {
+        font-weight: 780;
+      }
+
+      .bar {
+        width: 100%;
+        height: 8px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #e8ebef;
+      }
+
+      .bar > span {
+        display: block;
+        height: 100%;
+        background: var(--accent);
+      }
+
+      .detail {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .section {
+        padding: 18px;
+      }
+
+      .section h2 {
+        margin: 0 0 12px;
+        font-size: 17px;
+      }
+
+      .section h3 {
+        margin: 20px 0 8px;
+        font-size: 14px;
+      }
+
+      .list {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+      }
+
+      .list li {
+        margin: 7px 0;
+      }
+
+      .category-row {
+        display: grid;
+        grid-template-columns: minmax(120px, 1fr) 70px;
+        gap: 12px;
+        align-items: center;
+        margin: 12px 0;
+      }
+
+      .category-row .label {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .trend-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .proposal {
+        padding: 14px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .proposal:first-of-type {
+        border-top: 0;
+      }
+
+      .proposal strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      @media (max-width: 880px) {
+        .summary,
+        .trend-grid,
+        .detail {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar,
+        .toolbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        table {
+          min-width: 760px;
+        }
+
+        .table-scroll {
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <div class="topbar">
+          <div>
+            <h1>AI 하네스 대시보드</h1>
+            <div class="subtle">이슈 실행 점수와 하네스 건강도를 함께 확인합니다.</div>
+          </div>
+          <div class="subtle" id="generatedAt"></div>
+        </div>
+        <nav class="tabs" aria-label="대시보드 보기">
+          <button class="tab" data-view="issues" aria-selected="true">이슈 목록</button>
+          <button class="tab" data-view="trends" aria-selected="false">추세</button>
+          <button class="tab" data-view="harness" aria-selected="false">하네스 건강도</button>
+          <button class="tab" data-view="agents" aria-selected="false">에이전트</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section id="issuesView">
+        <div class="grid summary" id="summaryCards"></div>
+        <div class="toolbar">
+          <div>
+            <strong>이슈별 실행 결과</strong>
+            <div class="subtle">행을 선택하면 Reviewer의 근거와 감점 사유를 볼 수 있습니다.</div>
+          </div>
+          <div class="filters" aria-label="결정 필터">
+            <button class="filter active" data-filter="ALL">전체</button>
+            <button class="filter" data-filter="PASS">PASS</button>
+            <button class="filter" data-filter="REWORK">REWORK</button>
+            <button class="filter" data-filter="FAIL">FAIL</button>
+          </div>
+        </div>
+        <div class="panel table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Issue</th>
+                <th>결정</th>
+                <th>실행 점수</th>
+                <th>하네스 점수</th>
+                <th>시도</th>
+                <th>주요 감점 사유</th>
+              </tr>
+            </thead>
+            <tbody id="runRows"></tbody>
+          </table>
+        </div>
+        <div class="detail" id="issueDetail"></div>
+      </section>
+
+      <section id="trendsView" class="hidden">
+        <div class="grid trend-grid">
+          <div class="panel section">
+            <h2>반복 감점 항목</h2>
+            <div id="deductionTrends"></div>
+          </div>
+          <div class="panel section">
+            <h2>결정 분포</h2>
+            <div id="decisionDistribution"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="harnessView" class="hidden">
+        <div class="grid trend-grid">
+          <div class="panel section">
+            <h2>하네스 건강도</h2>
+            <div id="harnessHealth"></div>
+          </div>
+          <div class="panel section">
+            <h2>AI 개선 제안</h2>
+            <div id="proposals"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="agentsView" class="hidden">
+        <div class="grid trend-grid">
+          <div class="panel section">
+            <h2>멀티 에이전트</h2>
+            <div id="agentCards"></div>
+          </div>
+          <div class="panel section">
+            <h2>실행 흐름</h2>
+            <div id="workflowSteps"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./data/runs.js"></script>
+    <script src="./data/sample-runs.js"></script>
+    <script>
+      const data = window.AI_HARNESS_RUNS?.runs?.length
+        ? window.AI_HARNESS_RUNS
+        : window.AI_HARNESS_SAMPLE_RUNS;
+      let currentFilter = "ALL";
+      let selectedIssue = data.runs[0]?.issue_number || null;
+
+      const decisionClass = (decision) => decision.toLowerCase();
+      const percent = (score, max) => Math.round((score / max) * 100);
+      const fmtDate = (value) => new Intl.DateTimeFormat("ko-KR", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(new Date(value));
+
+      function renderSummary() {
+        const cards = [
+          ["총 이슈", data.summary.issue_count],
+          ["평균 실행 점수", data.summary.average_issue_score],
+          ["PASS", data.summary.pass_count],
+          ["REWORK", data.summary.rework_count],
+          ["FAIL", data.summary.fail_count],
+          ["하네스 평균", data.summary.average_harness_score]
+        ];
+
+        document.querySelector("#summaryCards").innerHTML = cards.map(([label, value]) => `
+          <div class="panel metric">
+            <span class="subtle">${label}</span>
+            <span class="value">${value}</span>
+          </div>
+        `).join("");
+      }
+
+      function renderRows() {
+        const rows = data.runs.filter((run) => currentFilter === "ALL" || run.decision === currentFilter);
+        if (rows.length === 0) {
+          document.querySelector("#runRows").innerHTML = `
+            <tr>
+              <td colspan="6">표시할 실행 기록이 없습니다. <code>start-issue.mjs</code>로 실행 디렉터리를 만든 뒤 <code>build-dashboard-data.mjs</code>를 실행하세요.</td>
+            </tr>
+          `;
+          return;
+        }
+        document.querySelector("#runRows").innerHTML = rows.map((run) => `
+          <tr data-clickable="true" data-issue="${run.issue_number}">
+            <td>
+              <strong>#${run.issue_number}</strong>
+              <div>${run.title}</div>
+              <div class="subtle">${fmtDate(run.updated_at)}</div>
+            </td>
+            <td><span class="badge ${decisionClass(run.decision)}">${run.decision}</span></td>
+            <td>
+              <span class="score">${run.total_score}</span> / 100
+              <div class="bar" aria-hidden="true"><span style="width:${run.total_score}%"></span></div>
+            </td>
+            <td>
+              <span class="score">${run.harness_score}</span> / 100
+              <div class="bar" aria-hidden="true"><span style="width:${run.harness_score}%"></span></div>
+            </td>
+            <td>${run.attempt}</td>
+            <td>${run.deductions.slice(0, 2).map((item) => item.reason).join("<br>")}</td>
+          </tr>
+        `).join("");
+
+        document.querySelectorAll("tr[data-issue]").forEach((row) => {
+          row.addEventListener("click", () => {
+            selectedIssue = Number(row.dataset.issue);
+            renderDetail();
+          });
+        });
+      }
+
+      function renderDetail() {
+        if (!selectedIssue) {
+          document.querySelector("#issueDetail").innerHTML = "";
+          return;
+        }
+        const run = data.runs.find((item) => item.issue_number === selectedIssue) || data.runs[0];
+        document.querySelector("#issueDetail").innerHTML = `
+          <div class="panel section">
+            <h2>#${run.issue_number} ${run.title}</h2>
+            <div class="subtle">Reviewer 결정: <span class="badge ${decisionClass(run.decision)}">${run.decision}</span></div>
+            <h3>항목별 점수</h3>
+            ${run.categories.map((item) => `
+              <div class="category-row">
+                <div>
+                  <div class="label">${item.label}</div>
+                  <div class="bar" aria-hidden="true"><span style="width:${percent(item.score, item.max)}%"></span></div>
+                </div>
+                <strong>${item.score}/${item.max}</strong>
+              </div>
+            `).join("")}
+          </div>
+          <div class="panel section">
+            <h2>Reviewer 근거</h2>
+            <h3>잘된 부분</h3>
+            <ul class="list">${run.strengths.map((item) => `<li>${item}</li>`).join("")}</ul>
+            <h3>부족한 부분</h3>
+            <ul class="list">${run.weaknesses.map((item) => `<li>${item}</li>`).join("")}</ul>
+            <h3>감점 사유</h3>
+            <ul class="list">${run.deductions.map((item) => `<li><strong>${item.category}</strong>: -${item.points}점, ${item.reason}</li>`).join("")}</ul>
+          </div>
+        `;
+      }
+
+      function renderTrends() {
+        const counts = {};
+        data.runs.flatMap((run) => run.deductions).forEach((item) => {
+          counts[item.category] = (counts[item.category] || 0) + 1;
+        });
+
+        document.querySelector("#deductionTrends").innerHTML = Object.entries(counts)
+          .sort((a, b) => b[1] - a[1])
+          .map(([label, count]) => `
+            <div class="category-row">
+              <div>
+                <div class="label">${label}</div>
+                <div class="bar" aria-hidden="true"><span style="width:${Math.min(count * 24, 100)}%"></span></div>
+              </div>
+              <strong>${count}회</strong>
+            </div>
+          `).join("");
+
+        const decisions = [
+          ["PASS", data.summary.pass_count],
+          ["REWORK", data.summary.rework_count],
+          ["FAIL", data.summary.fail_count]
+        ];
+
+        document.querySelector("#decisionDistribution").innerHTML = decisions.map(([label, count]) => `
+          <div class="category-row">
+            <div>
+              <div class="label">${label}</div>
+              <div class="bar" aria-hidden="true"><span style="width:${Math.round((count / data.summary.issue_count) * 100)}%"></span></div>
+            </div>
+            <strong>${count}건</strong>
+          </div>
+        `).join("");
+      }
+
+      function renderHarness() {
+        const harnessCategories = data.harness_health.categories || [];
+        const proposals = data.harness_health.proposals || [];
+        document.querySelector("#harnessHealth").innerHTML = `
+          <div class="score" style="font-size:32px;margin-bottom:14px;">${data.harness_health.total_score} / 100</div>
+          ${harnessCategories.length ? harnessCategories.map((item) => `
+            <div class="category-row">
+              <div>
+                <div class="label">${item.label}</div>
+                <div class="bar" aria-hidden="true"><span style="width:${percent(item.score, item.max)}%"></span></div>
+              </div>
+              <strong>${item.score}/${item.max}</strong>
+            </div>
+          `).join("") : "<p class=\"subtle\">아직 하네스 건강도 기록이 없습니다.</p>"}
+        `;
+
+        document.querySelector("#proposals").innerHTML = proposals.length ? proposals.map((item) => `
+          <div class="proposal">
+            <strong>${item.title}</strong>
+            <div class="subtle">${item.target_area}</div>
+            <p>${item.reason}</p>
+            <p><strong>기대 효과:</strong> ${item.expected_impact}</p>
+          </div>
+        `).join("") : "<p class=\"subtle\">아직 개선 제안이 없습니다.</p>";
+      }
+
+      function renderAgents() {
+        const agents = data.agents || [];
+        const workflow = data.workflow || [];
+        document.querySelector("#agentCards").innerHTML = agents.length ? agents.map((agent) => `
+          <div class="proposal">
+            <strong>${agent.name}</strong>
+            <div class="subtle">${agent.file}</div>
+            <p>${agent.purpose}</p>
+            <p><strong>산출물:</strong> ${agent.outputs.join(", ")}</p>
+            <p><strong>핸드오프:</strong> ${agent.handoff}</p>
+          </div>
+        `).join("") : "<p class=\"subtle\">에이전트 정의 데이터가 없습니다.</p>";
+
+        document.querySelector("#workflowSteps").innerHTML = workflow.length ? workflow.map((item) => `
+          <div class="proposal">
+            <strong>${item.step}. ${item.name}</strong>
+            <p>${item.status}</p>
+          </div>
+        `).join("") : "<p class=\"subtle\">워크플로우 데이터가 없습니다.</p>";
+      }
+
+      function switchView(view) {
+        document.querySelectorAll(".tab").forEach((tab) => {
+          tab.setAttribute("aria-selected", String(tab.dataset.view === view));
+        });
+        document.querySelector("#issuesView").classList.toggle("hidden", view !== "issues");
+        document.querySelector("#trendsView").classList.toggle("hidden", view !== "trends");
+        document.querySelector("#harnessView").classList.toggle("hidden", view !== "harness");
+        document.querySelector("#agentsView").classList.toggle("hidden", view !== "agents");
+      }
+
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => switchView(tab.dataset.view));
+      });
+
+      document.querySelectorAll(".filter").forEach((button) => {
+        button.addEventListener("click", () => {
+          currentFilter = button.dataset.filter;
+          document.querySelectorAll(".filter").forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          renderRows();
+        });
+      });
+
+      document.querySelector("#generatedAt").textContent = `데이터 생성: ${fmtDate(data.generated_at)}`;
+      renderSummary();
+      renderRows();
+      renderDetail();
+      renderTrends();
+      renderHarness();
+      renderAgents();
+    </script>
+  </body>
+</html>

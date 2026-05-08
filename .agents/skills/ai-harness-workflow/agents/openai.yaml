@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-workflow"
+  short_description: "이 프로젝트의 이슈를 단계별 스킬로 나눠 진행합니다."
+  default_prompt: "ai-harness-workflow로 사용할 하네스 스킬을 안내해줘."

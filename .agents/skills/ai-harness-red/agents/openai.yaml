@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-red"
+  short_description: "실패 테스트를 작성하고 실패 상태를 확인합니다."
+  default_prompt: "ai-harness-red로 Red 단계만 진행해줘."

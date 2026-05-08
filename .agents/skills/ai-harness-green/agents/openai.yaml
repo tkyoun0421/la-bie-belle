@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-green"
+  short_description: "실패 테스트를 통과시키는 최소 구현을 합니다."
+  default_prompt: "ai-harness-green으로 Green 단계만 진행해줘."

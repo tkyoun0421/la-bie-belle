@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI 하네스 개선 제안",
+  "type": "object",
+  "required": ["proposal_id", "source", "target_area", "problem", "proposal", "status"],
+  "properties": {
+    "proposal_id": { "type": "string" },
+    "source": {
+      "type": "object",
+      "properties": {
+        "run_id": { "type": "string" },
+        "issue_number": { "type": "integer" },
+        "harness_health_score_id": { "type": "string" }
+      }
+    },
+    "target_area": {
+      "type": "string",
+      "enum": [
+        "task_spec",
+        "context_injection",
+        "role_handoff",
+        "verification_gate",
+        "scoring_rubric",
+        "record_dashboard",
+        "other"
+      ]
+    },
+    "problem": { "type": "string" },
+    "proposal": { "type": "string" },
+    "expected_impact": { "type": "string" },
+    "risk": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["proposed", "accepted", "rejected", "implemented"]
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "decided_at": { "type": "string", "format": "date-time" }
+  }
+}
