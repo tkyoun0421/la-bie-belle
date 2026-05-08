@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-refactor"
+  short_description: "동작 변경 없이 구조 개선만 수행합니다."
+  default_prompt: "ai-harness-refactor로 리팩토링 단계만 진행해줘."

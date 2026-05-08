@@ -1,0 +1,104 @@
+name: AI 하네스 작업
+description: AI 멀티 에이전트 하네스로 처리할 개발 작업을 등록합니다.
+title: ""
+labels:
+  - ai-harness
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        AI 하네스 작업은 Planner가 실행 가능한 작업 명세로 변환할 수 있도록 충분한 입력이 필요합니다.
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: 목표
+      description: 이 이슈로 달성하려는 결과를 한두 문장으로 적어주세요.
+      placeholder: 예) 대시보드가 실제 run-record 데이터를 읽어 이슈별 점수를 표시하게 한다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: 범위
+      description: 포함할 작업을 구체적으로 적어주세요.
+      placeholder: |
+        - 실행 기록 JSON을 읽어 대시보드 데이터 생성
+        - 이슈 목록과 상세 점수 표시
+    validations:
+      required: true
+
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: 제외 범위
+      description: 이번 이슈에서 하지 않을 작업을 적어주세요.
+      placeholder: |
+        - GitHub Actions 자동 실행
+        - PR 자동 머지
+    validations:
+      required: true
+
+  - type: textarea
+    id: related_files_or_areas
+    attributes:
+      label: 관련 파일 또는 영역
+      description: 알고 있는 관련 파일, 디렉터리, 기능 영역을 적어주세요.
+      placeholder: |
+        - .agents/harness/dashboard/
+        - .agents/harness/scripts/
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification_method
+    attributes:
+      label: 검증 방법
+      description: 어떤 명령, 테스트, 수동 확인으로 완료 여부를 확인할지 적어주세요.
+      placeholder: |
+        - node --check 대상 스크립트
+        - 대시보드 HTML에서 이슈 목록 확인
+    validations:
+      required: true
+
+  - type: textarea
+    id: completion_criteria
+    attributes:
+      label: 완료 기준
+      description: Reviewer가 PASS 여부를 판단할 수 있는 기준을 체크리스트로 적어주세요.
+      placeholder: |
+        - [ ] 실제 runs.js가 생성된다.
+        - [ ] 대시보드가 실제 데이터 우선, 샘플 데이터 fallback으로 동작한다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: 리스크
+      description: 회귀, 데이터, 보안, UX, 운영상 주의할 점을 적어주세요.
+      placeholder: |
+        - 실행 데이터가 비어 있을 때 대시보드가 깨질 수 있음
+        - 점수 계산 오류가 잘못된 PASS를 만들 수 있음
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: ai_impact
+    attributes:
+      label: AI-impact 여부
+      description: 이 변경이 AI의 입력, 판단, 출력, 평가, 권한, 안전 경계에 영향을 주면 체크하세요.
+      options:
+        - label: AI-impact 변경입니다.
+          required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: 추가 맥락
+      description: 참고할 링크, 스크린샷, 이전 결정, 관련 이슈가 있으면 적어주세요.
+      placeholder: 예) 관련 결정은 .agents/harness/README.md 참고
+    validations:
+      required: false

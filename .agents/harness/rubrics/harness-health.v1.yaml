@@ -1,0 +1,45 @@
+version: 1
+name: harness_health
+total_points: 100
+
+inputs:
+  - recent_run_records
+  - issue_execution_scores
+  - reviewer_feedback
+  - failed_or_reworked_runs
+  - harness_configuration
+
+categories:
+  - id: task_spec_quality
+    label: 작업 명세 품질
+    points: 20
+    evaluates: 이슈가 명확하고 완전하며 실행 가능한 작업 명세로 일관되게 변환되는지 평가한다.
+  - id: context_injection_quality
+    label: 컨텍스트 주입 품질
+    points: 20
+    evaluates: 에이전트가 작업 전에 필요한 저장소, 제품, 디자인, 도메인 맥락을 충분히 받는지 평가한다.
+  - id: role_handoff_quality
+    label: 역할 분리와 인수인계 품질
+    points: 15
+    evaluates: Planner, Implementer, Verifier, Reviewer 산출물이 근거 누락 없이 자연스럽게 이어지는지 평가한다.
+  - id: verification_gate_quality
+    label: 검증 게이트 품질
+    points: 20
+    evaluates: Draft PR 생성 전에 의미 있는 결함을 검증 게이트가 잡아내는지 평가한다.
+  - id: scoring_rubric_quality
+    label: 스코어링 루브릭 품질
+    points: 15
+    evaluates: 루브릭이 일관되고 설명 가능하며 유용한 점수를 산출하는지 평가한다.
+  - id: record_and_dashboard_quality
+    label: 기록과 대시보드 품질
+    points: 10
+    evaluates: 실행 데이터가 시각적 점검, 추세 분석, 개선 의사결정을 지원하는지 평가한다.
+
+improvement_policy:
+  propose_when_category_below: 70_percent
+  proposal_statuses:
+    - proposed
+    - accepted
+    - rejected
+    - implemented
+  accepted_proposals_create_draft_pr: true

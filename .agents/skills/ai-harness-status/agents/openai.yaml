@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-status"
+  short_description: "중단된 이슈의 현재 단계와 다음 작업을 찾습니다."
+  default_prompt: "ai-harness-status로 현재 상태와 다음 진행 단계를 알려줘."

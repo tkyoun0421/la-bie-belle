@@ -1,0 +1,4 @@
+interface:
+  display_name: "ai-harness-implement"
+  short_description: "계획된 작업을 구현하고 구현 기록을 남깁니다."
+  default_prompt: "ai-harness-implement로 구현 단계를 안내해줘."

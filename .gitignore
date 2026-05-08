@@ -1,9 +1,4 @@
-.agents/
 .playwright-mcp/
-
-cgv-home.png
-musinsa-tablet-ref.png
-toss-jobs.png
 
 node_modules/
 .next/

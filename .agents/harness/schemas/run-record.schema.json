@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI 하네스 실행 기록",
+  "type": "object",
+  "required": ["run_id", "issue", "status", "artifacts", "scores"],
+  "properties": {
+    "run_id": { "type": "string" },
+    "issue": {
+      "type": "object",
+      "required": ["number", "title", "url"],
+      "properties": {
+        "number": { "type": "integer" },
+        "title": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "implemented", "verified", "reviewed", "pass", "rework", "fail", "draft_pr_created"]
+    },
+    "attempt": { "type": "integer", "minimum": 1, "default": 1 },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "changed_files": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "scores": {
+      "type": "array",
+      "items": { "$ref": "score-record.schema.json" }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  }
+}

@@ -1,0 +1,104 @@
+version: 1
+
+work_unit:
+  source: github_issue
+  required_task_spec_fields:
+    - goal
+    - scope
+    - out_of_scope
+    - related_files_or_areas
+    - verification_method
+    - completion_criteria
+    - risks
+
+agents:
+  planner:
+    definition: agents/planner.agent.md
+    prompt: prompts/planner.md
+    outputs:
+      - task-spec.md
+      - plan.md
+  spec:
+    prompt: prompts/spec.md
+    outputs:
+      - spec.md
+  implementer:
+    definition: agents/implementer.agent.md
+    prompt: prompts/implementer.md
+    outputs:
+      - implementation-notes.md
+  verifier:
+    definition: agents/verifier.agent.md
+    prompt: prompts/verifier.md
+    outputs:
+      - verification.md
+  reviewer:
+    definition: agents/reviewer.agent.md
+    prompt: prompts/reviewer.md
+    rubric: rubrics/issue-execution.v1.yaml
+    outputs:
+      - review-score.json
+      - review.md
+  harness_evaluator:
+    definition: agents/harness-evaluator.agent.md
+    prompt: prompts/harness-evaluator.md
+    rubric: rubrics/harness-health.v1.yaml
+    outputs:
+      - harness-health-score.json
+      - harness-improvements.md
+  draft_pr:
+    definition: agents/draft-pr.agent.md
+    outputs:
+      - draft-pr.md
+
+workflows:
+  issue_execution: workflows/issue-execution.workflow.md
+  harness_improvement: workflows/harness-improvement.workflow.md
+
+run_records:
+  root: .agents/runs
+  issue_directory_pattern: issue-{issue_number}
+  schemas:
+    run_record: schemas/run-record.schema.json
+    score_record: schemas/score-record.schema.json
+    improvement: schemas/improvement.schema.json
+
+scripts:
+  start_issue: scripts/start-issue.mjs
+  validate_score: scripts/validate-score.mjs
+  build_dashboard_data: scripts/build-dashboard-data.mjs
+
+templates:
+  task_spec: templates/task-spec.md
+  plan: templates/plan.md
+  spec: templates/spec.md
+  implementation_notes: templates/implementation-notes.md
+  verification: templates/verification.md
+  review: templates/review.md
+  review_score: templates/review-score.json
+
+gates:
+  draft_pr:
+    scorer: reviewer
+    pass_min_score: 80
+    rework_min_score: 65
+    fail_max_score: 64
+    max_rework_attempts: 1
+    require_human_on_fail: true
+
+harness_health:
+  lightweight_evaluation:
+    trigger: after_each_issue
+  aggregate_evaluation:
+    triggers:
+      - every_10_issues
+      - weekly
+
+dashboard:
+  first_screen: issue_execution_list
+  views:
+    - issue_execution_list
+    - issue_detail
+    - trends
+    - harness_health
+    - improvement_proposals
