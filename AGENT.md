@@ -10,7 +10,10 @@
 ## 기본 작업 단위
 
 - 기본 작업 단위는 GitHub Issue다.
-- 새 GitHub Issue를 만들기 전에는 `ai-harness-idea`로 다음 할 일을 정하고, `ai-harness-plan`으로 이슈 초안을 만든 뒤 사람의 승인을 받는다.
+- 제품 전체 방향은 `product-prd`로 `docs/product/prd.md`에 정리한다.
+- 제품 로드맵은 하나의 GitHub Project로 관리하고, MVP 구분은 Project의 `MVP` 필드로 한다.
+- PRD 기반 새 GitHub Issue를 만들기 전에는 `ai-harness-idea`로 다음 할 일을 정하고, `ai-harness-plan`으로 이슈 초안을 만든 뒤 사람의 승인을 받는다.
+- 작업 중 떠오른 수시 발생 작업은 `ai-harness-capture`로 즉시 이슈 초안을 만들고, 기본값 `MVP=Backlog`, `Type=Idea`, `Source=Ad-hoc`, `Status=Inbox`로 Project에 넣는다.
 - 승인 없이 GitHub Issue를 생성하지 않는다.
 - 작업은 `.agents/runs/issue-{issue_number}/`에 기록한다.
 - 대화만으로 끝내지 말고 필요한 산출물을 파일로 남긴다.
@@ -20,6 +23,8 @@
 작업은 전체 자동 실행이 아니라 단계별 스킬로 나누어 진행한다.
 
 - 현재 상태 확인: `ai-harness-status`
+- 제품 PRD 정리: `product-prd`
+- 수시 작업 캡처: `ai-harness-capture`
 - 아이디어 정리: `ai-harness-idea`
 - 계획과 이슈 초안: `ai-harness-plan`
 - 상세 스펙 작성: `ai-harness-spec`

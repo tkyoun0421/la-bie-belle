@@ -9,11 +9,14 @@
 
 기본 흐름:
 
-1. Planner가 GitHub Issue를 작업 명세와 계획으로 변환한다.
-2. Implementer가 코드 또는 설정을 변경한다.
-3. Verifier가 필요한 검증을 실행하고 근거를 기록한다.
-4. Reviewer가 Draft PR 생성 전에 이슈 실행 점수를 산출한다.
-5. Harness Evaluator가 각 이슈 종료 후, 그리고 주기적으로 하네스 설정을 평가한다.
+0. `product-prd`가 제품 전체 PRD와 MVP 기준을 정리한다.
+1. PRD 기반 작업은 `ai-harness-idea`와 `ai-harness-plan`으로 이슈 초안을 만든다.
+2. 수시 발생 작업은 `ai-harness-capture`로 즉시 GitHub Issue와 Project Inbox에 캡처한다.
+3. Planner가 GitHub Issue를 작업 명세와 계획으로 변환한다.
+4. Implementer가 코드 또는 설정을 변경한다.
+5. Verifier가 필요한 검증을 실행하고 근거를 기록한다.
+6. Reviewer가 Draft PR 생성 전에 이슈 실행 점수를 산출한다.
+7. Harness Evaluator가 각 이슈 종료 후, 그리고 주기적으로 하네스 설정을 평가한다.
 
 Reviewer 게이트:
 
@@ -32,6 +35,20 @@ Reviewer 게이트:
 - `기능 요청`: 새 기능이나 개선 아이디어를 등록한다. AI 하네스 처리 여부와 AI-impact 여부를 체크할 수 있다.
 
 Planner는 `AI 하네스 작업` 폼의 입력을 우선적으로 `task-spec.md`로 변환한다. 버그와 기능 요청은 triage 이후 AI 하네스 작업으로 전환하거나 그대로 하네스로 실행할 수 있다.
+
+## GitHub Project 로드맵
+
+제품 로드맵은 하나의 GitHub Project에서 관리한다. MVP별로 Project를 나누지 않고 `MVP` 필드로 구분한다.
+
+권장 필드는 다음과 같다.
+
+- `MVP`: `MVP 1`, `MVP 1.1`, `MVP 2`, `Backlog`
+- `Type`: `Product`, `Bug`, `Ops`, `Harness`, `Idea`
+- `Source`: `PRD`, `Ad-hoc`, `Review`, `User Feedback`
+- `Priority`: `P0`, `P1`, `P2`, `P3`
+- `Status`: `Inbox`, `Ready`, `In Progress`, `Review`, `Done`, `Blocked`
+
+작업 중 떠오른 수시 발생 작업은 기본값 `MVP=Backlog`, `Type=Idea`, `Source=Ad-hoc`, `Status=Inbox`로 등록하고, triage 전에는 구현하지 않는다. 자세한 운영 방식은 `docs/product/roadmap-workflow.md`를 따른다.
 
 ## 실행 명령
 

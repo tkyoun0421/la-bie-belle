@@ -1,0 +1,4 @@
+interface:
+  display_name: "product-prd"
+  short_description: "제품 전체 PRD와 MVP 기준을 정리합니다."
+  default_prompt: "product-prd로 제품 전체 PRD를 정리하자."
