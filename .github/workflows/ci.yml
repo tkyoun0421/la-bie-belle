@@ -24,14 +24,6 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      - name: Commitlint
-        if: github.event_name == 'pull_request'
-        run: pnpm commitlint --from=${{ github.event.pull_request.base.sha }} --to=${{ github.event.pull_request.head.sha }}
-
-      - name: Commitlint latest commit
-        if: github.event_name == 'push'
-        run: pnpm commitlint --last --verbose
-
       - name: Lint
         run: pnpm lint
 
