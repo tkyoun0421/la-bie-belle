@@ -1,0 +1,16 @@
+{
+  "id": "2026-05-10-dashboard-health-missing-state",
+  "status": "proposed",
+  "source": "issue-24-harness-health",
+  "category": "record_and_dashboard_quality",
+  "title": "대시보드가 하네스 건강도 미평가 상태를 0점과 구분해 표시한다",
+  "problem": "harness-health-score.json이 없을 때 대시보드는 average_harness_score와 harness_health.total_score를 0으로 표시한다. 이 값은 실제 0점인지 평가 미실행인지 구분하기 어렵다.",
+  "proposal": [
+    "대시보드 데이터 생성 단계에서 건강도 산출물이 없으면 missing 상태를 별도 필드로 기록한다.",
+    "ai-harness-dashboard 단계는 건강도 산출물 부재를 보고하고 ai-harness-evaluate를 다음 단계로 안내한다.",
+    "대시보드 UI는 0점 대신 '평가 전' 또는 'missing' 상태를 표시한다."
+  ],
+  "expected_effect": "대시보드가 누락 산출물을 조기에 드러내고, 사용자가 건강도 평가를 놓치지 않는다.",
+  "risk": "기존 dashboard data shape을 쓰는 화면이 있다면 missing 필드 추가 시 호환성을 확인해야 한다.",
+  "approval_required": true
+}

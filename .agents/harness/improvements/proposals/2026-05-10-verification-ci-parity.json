@@ -1,0 +1,16 @@
+{
+  "id": "2026-05-10-verification-ci-parity",
+  "status": "proposed",
+  "source": "issue-24-harness-health",
+  "category": "verification_gate_quality",
+  "title": "PR CI 조건을 검증 단계에서 사전 확인한다",
+  "problem": "issue-24는 로컬 검증을 통과했지만 PR 생성 후 GitHub Actions commitlint revision range 오류가 발생했다. Windows 줄끝과 Prettier check 불일치도 PR 브랜치에서 뒤늦게 발견됐다.",
+  "proposal": [
+    "Verify 단계가 로컬 명령 결과와 PR CI 조건의 차이를 별도 항목으로 기록하게 한다.",
+    "CI workflow가 base/head revision을 직접 참조하는 경우 checkout depth, fetch-depth, fallback 조건을 확인하도록 체크리스트를 추가한다.",
+    "format check는 Windows checkout과 CI checkout의 줄끝 정책을 함께 고려해 검증하도록 명시한다."
+  ],
+  "expected_effect": "PR 생성 후 CI에서 발견되는 설정성 실패를 줄이고, PR이 생성될 때 바로 머지 가능한 상태에 가까워진다.",
+  "risk": "첫 실행 하나에서 나온 문제이므로 전역 자동화 규칙을 과하게 늘리면 Verify 단계가 무거워질 수 있다.",
+  "approval_required": true
+}
