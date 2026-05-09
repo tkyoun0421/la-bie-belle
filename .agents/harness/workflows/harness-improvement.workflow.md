@@ -11,7 +11,7 @@ AI가 하네스 설정을 평가하고 개선안을 제안하되, 사람 승인 
 3. 개선안은 `.agents/harness/improvements/proposals/`에 저장한다.
 4. 사람이 대시보드에서 개선안을 승인하거나 기각한다.
 5. 승인된 제안은 `.agents/harness/improvements/accepted/`로 이동한다.
-6. AI는 승인된 제안만 별도 Draft PR로 구현한다.
+6. AI는 승인된 제안만 별도 일반 PR로 구현한다.
 7. 구현 후 다음 누적 평가에서 하네스 점수 변화가 추적된다.
 
 ## 개선안 필수 내용

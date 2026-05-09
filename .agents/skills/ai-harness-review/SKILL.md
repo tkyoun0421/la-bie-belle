@@ -31,11 +31,11 @@ node .agents/harness/scripts/validate-score.mjs .agents/runs/issue-{issue_number
 
 ## 게이트
 
-- `PASS`: 80-100점. 초안 PR 생성 가능.
+- `PASS`: 80-100점. 바로 리뷰/머지 가능한 일반 PR 생성 가능.
 - `REWORK`: 65-79점. 구현 재작업 필요.
 - `FAIL`: 0-64점. 사람 확인 필요.
 
 ## 금지
 
 - 코드를 수정하지 않는다.
-- 초안 PR을 만들지 않는다.
+- PR을 만들지 않는다.

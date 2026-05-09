@@ -1,4 +1,4 @@
 interface:
   display_name: "ai-harness-capture"
-  short_description: "떠오른 작업을 즉시 이슈와 Project Inbox로 캡처합니다."
-  default_prompt: "ai-harness-capture로 방금 떠오른 작업을 이슈화하자."
+  short_description: "inbox 항목을 이슈와 Project Inbox로 승격합니다."
+  default_prompt: "ai-harness-capture로 inbox 항목을 이슈화하자."

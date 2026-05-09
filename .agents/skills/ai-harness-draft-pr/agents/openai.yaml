@@ -1,4 +1,4 @@
 interface:
   display_name: "ai-harness-draft-pr"
-  short_description: "PASS된 작업을 초안 PR로 정리합니다."
-  default_prompt: "ai-harness-draft-pr로 초안 PR 단계만 진행해줘."
+  short_description: "PASS된 작업을 바로 머지 가능한 일반 PR로 정리합니다."
+  default_prompt: "ai-harness-draft-pr로 PR 생성 단계만 진행해줘."

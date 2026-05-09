@@ -8,6 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../../..");
 const runsRoot = join(repoRoot, ".agents", "runs");
 const dashboardDataPath = join(repoRoot, ".agents", "harness", "dashboard", "data", "runs.js");
+const proposalsRoot = join(repoRoot, ".agents", "harness", "improvements", "proposals");
 
 function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
@@ -17,6 +18,25 @@ function safeReadScore(runDir, artifactPath) {
   if (!artifactPath) return null;
   const path = join(runDir, artifactPath);
   return existsSync(path) ? readJson(path) : null;
+}
+
+function readImprovementProposals() {
+  if (!existsSync(proposalsRoot)) return [];
+
+  return readdirSync(proposalsRoot, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
+    .map((entry) => {
+      const proposal = readJson(join(proposalsRoot, entry.name));
+      return {
+        target_area: proposal.category || proposal.target_area || "harness",
+        title: proposal.title,
+        reason: proposal.problem || proposal.reason || "",
+        expected_impact: proposal.expected_effect || proposal.expected_impact || "",
+        status: proposal.status || "proposed",
+        file: `.agents/harness/improvements/proposals/${entry.name}`
+      };
+    })
+    .sort((a, b) => a.title.localeCompare(b.title));
 }
 
 function labelForCategory(id) {
@@ -29,7 +49,13 @@ function labelForCategory(id) {
     requirement_interpretation: "요구사항 해석 품질",
     plan_appropriateness: "계획 적절성",
     context_usage: "컨텍스트 활용",
-    handoff_quality: "기록과 인수인계 품질"
+    handoff_quality: "기록과 인수인계 품질",
+    task_spec_quality: "작업 명세 품질",
+    context_injection_quality: "컨텍스트 주입 품질",
+    role_handoff_quality: "역할 분리와 인수인계 품질",
+    verification_gate_quality: "검증 게이트 품질",
+    scoring_rubric_quality: "스코어링 루브릭 품질",
+    record_and_dashboard_quality: "기록과 대시보드 품질"
   };
   return labels[id] || id;
 }
@@ -57,7 +83,10 @@ for (const runDir of runDirs) {
 
   const record = readJson(runRecordPath);
   const reviewScore = safeReadScore(runDir, record.artifacts?.review_score);
-  const harnessScore = safeReadScore(runDir, record.artifacts?.harness_health_score);
+  const harnessScore = safeReadScore(
+    runDir,
+    record.artifacts?.harness_health_score || "harness-health-score.json"
+  );
 
   if (harnessScore) harnessScores.push(harnessScore);
 
@@ -94,6 +123,7 @@ for (const runDir of runDirs) {
 runs.sort((a, b) => b.issue_number - a.issue_number);
 
 const issueCount = runs.length;
+const proposals = readImprovementProposals();
 const passCount = runs.filter((run) => run.decision === "PASS").length;
 const reworkCount = runs.filter((run) => run.decision === "REWORK").length;
 const failCount = runs.filter((run) => run.decision === "FAIL").length;
@@ -110,13 +140,15 @@ const harnessHealth = latestHarnessScore ? {
   categories: latestHarnessScore.categories.map((category) => ({
     label: labelForCategory(category.id),
     score: category.score,
-    max: category.max_score
+    max: category.max_score,
+    evidence: category.evidence || [],
+    deductions: category.deductions || []
   })),
-  proposals: []
+  proposals
 } : {
   total_score: averageHarnessScore,
   categories: [],
-  proposals: []
+  proposals
 };
 
 const dashboardData = {
@@ -170,23 +202,23 @@ const dashboardData = {
     {
       name: "Reviewer",
       file: ".agents/harness/agents/reviewer.agent.md",
-      purpose: "100점 루브릭으로 자동 채점하고 Draft PR 전 게이트 결정",
+      purpose: "100점 루브릭으로 자동 채점하고 PR 전 게이트 결정",
       outputs: ["review-score.json", "review.md"],
-      handoff: "PASS는 Draft PR, REWORK는 Implementer, FAIL은 사람 확인으로 전달"
+      handoff: "PASS는 PR 생성, REWORK는 Implementer, FAIL은 사람 확인으로 전달"
     },
     {
-      name: "Draft PR",
+      name: "PR",
       file: ".agents/harness/agents/draft-pr.agent.md",
-      purpose: "PASS된 작업을 Draft PR로 정리",
+      purpose: "PASS된 작업을 바로 리뷰/머지 가능한 일반 PR로 정리",
       outputs: ["draft-pr.md"],
-      handoff: "Ready 전환, 머지, 배포는 사람 승인 대기"
+      handoff: "머지와 배포는 사람 승인 대기"
     },
     {
       name: "Harness Evaluator",
       file: ".agents/harness/agents/harness-evaluator.agent.md",
       purpose: "하네스 건강도를 평가하고 개선안을 제안",
       outputs: ["harness-health-score.json", "harness-improvements.md"],
-      handoff: "개선안은 사람 승인 후 별도 Draft PR로 구현"
+      handoff: "개선안은 사람 승인 후 별도 일반 PR로 구현"
     }
   ],
   workflow: [
@@ -198,7 +230,7 @@ const dashboardData = {
     { step: "6", name: "Verifier", status: "검증 실행 / verification.md 생성" },
     { step: "7", name: "Reviewer", status: "자동 채점 / PASS, REWORK, FAIL 결정" },
     { step: "8", name: "Rework Loop", status: "REWORK면 재작업 후 재채점" },
-    { step: "9", name: "Draft PR", status: "PASS일 때만 Draft PR 생성" },
+    { step: "9", name: "PR", status: "PASS일 때만 일반 PR 생성" },
     { step: "10", name: "Harness Evaluator", status: "하네스 건강도 평가 / 개선안 제안" }
   ]
 };

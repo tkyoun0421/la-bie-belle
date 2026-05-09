@@ -25,7 +25,7 @@ categories:
   - id: verification_gate_quality
     label: 검증 게이트 품질
     points: 20
-    evaluates: Draft PR 생성 전에 의미 있는 결함을 검증 게이트가 잡아내는지 평가한다.
+    evaluates: PR 생성 전에 의미 있는 결함을 검증 게이트가 잡아내는지 평가한다.
   - id: scoring_rubric_quality
     label: 스코어링 루브릭 품질
     points: 15
