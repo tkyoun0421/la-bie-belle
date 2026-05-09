@@ -170,23 +170,23 @@ const dashboardData = {
     {
       name: "Reviewer",
       file: ".agents/harness/agents/reviewer.agent.md",
-      purpose: "100점 루브릭으로 자동 채점하고 Draft PR 전 게이트 결정",
+      purpose: "100점 루브릭으로 자동 채점하고 PR 전 게이트 결정",
       outputs: ["review-score.json", "review.md"],
-      handoff: "PASS는 Draft PR, REWORK는 Implementer, FAIL은 사람 확인으로 전달"
+      handoff: "PASS는 PR 생성, REWORK는 Implementer, FAIL은 사람 확인으로 전달"
     },
     {
-      name: "Draft PR",
+      name: "PR",
       file: ".agents/harness/agents/draft-pr.agent.md",
-      purpose: "PASS된 작업을 Draft PR로 정리",
+      purpose: "PASS된 작업을 바로 리뷰/머지 가능한 일반 PR로 정리",
       outputs: ["draft-pr.md"],
-      handoff: "Ready 전환, 머지, 배포는 사람 승인 대기"
+      handoff: "머지와 배포는 사람 승인 대기"
     },
     {
       name: "Harness Evaluator",
       file: ".agents/harness/agents/harness-evaluator.agent.md",
       purpose: "하네스 건강도를 평가하고 개선안을 제안",
       outputs: ["harness-health-score.json", "harness-improvements.md"],
-      handoff: "개선안은 사람 승인 후 별도 Draft PR로 구현"
+      handoff: "개선안은 사람 승인 후 별도 일반 PR로 구현"
     }
   ],
   workflow: [
@@ -198,7 +198,7 @@ const dashboardData = {
     { step: "6", name: "Verifier", status: "검증 실행 / verification.md 생성" },
     { step: "7", name: "Reviewer", status: "자동 채점 / PASS, REWORK, FAIL 결정" },
     { step: "8", name: "Rework Loop", status: "REWORK면 재작업 후 재채점" },
-    { step: "9", name: "Draft PR", status: "PASS일 때만 Draft PR 생성" },
+    { step: "9", name: "PR", status: "PASS일 때만 일반 PR 생성" },
     { step: "10", name: "Harness Evaluator", status: "하네스 건강도 평가 / 개선안 제안" }
   ]
 };

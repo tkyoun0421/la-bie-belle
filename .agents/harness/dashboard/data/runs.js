@@ -64,21 +64,21 @@ window.AI_HARNESS_RUNS = {
     {
       "name": "Reviewer",
       "file": ".agents/harness/agents/reviewer.agent.md",
-      "purpose": "100점 루브릭으로 자동 채점하고 Draft PR 전 게이트 결정",
+      "purpose": "100점 루브릭으로 자동 채점하고 PR 전 게이트 결정",
       "outputs": [
         "review-score.json",
         "review.md"
       ],
-      "handoff": "PASS는 Draft PR, REWORK는 Implementer, FAIL은 사람 확인으로 전달"
+      "handoff": "PASS는 PR 생성, REWORK는 Implementer, FAIL은 사람 확인으로 전달"
     },
     {
-      "name": "Draft PR",
+      "name": "PR",
       "file": ".agents/harness/agents/draft-pr.agent.md",
-      "purpose": "PASS된 작업을 Draft PR로 정리",
+      "purpose": "PASS된 작업을 바로 리뷰/머지 가능한 일반 PR로 정리",
       "outputs": [
         "draft-pr.md"
       ],
-      "handoff": "Ready 전환, 머지, 배포는 사람 승인 대기"
+      "handoff": "머지와 배포는 사람 승인 대기"
     },
     {
       "name": "Harness Evaluator",
@@ -88,7 +88,7 @@ window.AI_HARNESS_RUNS = {
         "harness-health-score.json",
         "harness-improvements.md"
       ],
-      "handoff": "개선안은 사람 승인 후 별도 Draft PR로 구현"
+      "handoff": "개선안은 사람 승인 후 별도 일반 PR로 구현"
     }
   ],
   "workflow": [
@@ -134,8 +134,8 @@ window.AI_HARNESS_RUNS = {
     },
     {
       "step": "9",
-      "name": "Draft PR",
-      "status": "PASS일 때만 Draft PR 생성"
+      "name": "PR",
+      "status": "PASS일 때만 일반 PR 생성"
     },
     {
       "step": "10",
