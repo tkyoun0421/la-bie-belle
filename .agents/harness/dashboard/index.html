@@ -263,6 +263,37 @@
         color: var(--muted);
       }
 
+      .category-detail {
+        border-top: 1px solid var(--line);
+        padding: 12px 0;
+      }
+
+      .category-detail:first-of-type {
+        border-top: 0;
+      }
+
+      .category-detail summary {
+        cursor: pointer;
+        list-style: none;
+      }
+
+      .category-detail summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .category-detail summary:hover .label {
+        color: var(--accent);
+      }
+
+      .category-detail[open] .bar > span {
+        background: var(--pass);
+      }
+
+      .category-notes {
+        margin-top: 10px;
+        padding-left: 0;
+      }
+
       .trend-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -547,13 +578,21 @@
         document.querySelector("#harnessHealth").innerHTML = `
           <div class="score" style="font-size:32px;margin-bottom:14px;">${data.harness_health.total_score} / 100</div>
           ${harnessCategories.length ? harnessCategories.map((item) => `
-            <div class="category-row">
-              <div>
-                <div class="label">${item.label}</div>
-                <div class="bar" aria-hidden="true"><span style="width:${percent(item.score, item.max)}%"></span></div>
+            <details class="category-detail">
+              <summary class="category-row">
+                <div>
+                  <div class="label">${item.label}</div>
+                  <div class="bar" aria-hidden="true"><span style="width:${percent(item.score, item.max)}%"></span></div>
+                </div>
+                <strong>${item.score}/${item.max}</strong>
+              </summary>
+              <div class="category-notes">
+                <h3>감점 사유</h3>
+                ${item.deductions?.length ? `<ul class="list">${item.deductions.map((reason) => `<li>${reason}</li>`).join("")}</ul>` : "<p class=\"subtle\">감점 사유가 없습니다.</p>"}
+                <h3>근거</h3>
+                ${item.evidence?.length ? `<ul class="list">${item.evidence.map((reason) => `<li>${reason}</li>`).join("")}</ul>` : "<p class=\"subtle\">기록된 근거가 없습니다.</p>"}
               </div>
-              <strong>${item.score}/${item.max}</strong>
-            </div>
+            </details>
           `).join("") : "<p class=\"subtle\">아직 하네스 건강도 기록이 없습니다.</p>"}
         `;
 
