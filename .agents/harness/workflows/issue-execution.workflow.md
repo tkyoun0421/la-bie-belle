@@ -70,6 +70,8 @@ Pre-Issue. 이슈 생성 승인
 9. PR
    - Reviewer 결정이 `PASS`일 때만 GitHub Draft 상태가 아닌 일반 PR을 생성한다.
    - PR 생성 전 원본 이슈 완료 기준, 작업 중 추가된 사항, 현재 이슈 관련 inbox 항목을 확인한다.
+   - PR 본문에는 머지 시 원본 이슈가 자동 종료되도록 `Closes #이슈번호`를 포함한다.
+   - PR 본문은 `.github/pull_request_template.md` 섹션을 유지해 작성한다.
    - 머지와 배포는 사람이 결정한다.
 
 10. Harness Evaluator
