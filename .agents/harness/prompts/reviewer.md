@@ -1,6 +1,6 @@
 # Reviewer 프롬프트
 
-Draft PR 생성 전에 AI의 이슈 실행 결과를 채점한다.
+PR 생성 전에 AI의 이슈 실행 결과를 채점한다.
 
 입력:
 
@@ -15,7 +15,7 @@ Draft PR 생성 전에 AI의 이슈 실행 결과를 채점한다.
 필수 산출물:
 
 - `schemas/score-record.schema.json`을 따르는 `review-score.json`.
-- 요약, 잘된 점, 부족한 점, 필요한 재작업, Draft PR 게이트 결정을 담은 `review.md`.
+- 요약, 잘된 점, 부족한 점, 필요한 재작업, PR 게이트 결정을 담은 `review.md`.
 
 채점:
 

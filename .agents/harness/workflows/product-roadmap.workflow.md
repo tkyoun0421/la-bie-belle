@@ -9,7 +9,7 @@
 - 제품 전체 기준은 `docs/product/prd.md`에 둔다.
 - 로드맵은 하나의 GitHub Project에서 관리한다.
 - MVP별로 Project를 나누지 않고 `MVP` 필드로 구분한다.
-- 떠오른 작업은 즉시 GitHub Issue로 캡처하되, 기본적으로 Inbox에 둔다.
+- 떠오른 작업은 `.agents/inbox.md`에 자동 캡처하고, 승격이 결정된 항목만 GitHub Issue로 만든다.
 - Inbox 작업은 triage 전 구현하지 않는다.
 
 ## 단계
@@ -27,7 +27,8 @@
    - 승인 후 GitHub Issue를 생성하고 Project에 추가한다.
 
 3. 수시 발생 작업
-   - `ai-harness-capture`로 이슈 초안을 만든다.
+   - 기본적으로 `.agents/inbox.md`에 자동 캡처한다.
+   - 승격이 결정되면 `ai-harness-capture`로 이슈 초안을 만든다.
    - 승인 후 GitHub Issue를 생성하고 Project Inbox에 추가한다.
    - 기본 필드는 `MVP=Backlog`, `Type=Idea`, `Source=Ad-hoc`, `Status=Inbox`다.
 

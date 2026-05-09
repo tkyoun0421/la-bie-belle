@@ -11,20 +11,20 @@
 
 0. `product-prd`가 제품 전체 PRD와 MVP 기준을 정리한다.
 1. PRD 기반 작업은 `ai-harness-idea`와 `ai-harness-plan`으로 이슈 초안을 만든다.
-2. 수시 발생 작업은 `ai-harness-capture`로 즉시 GitHub Issue와 Project Inbox에 캡처한다.
+2. 수시 발생 작업은 `.agents/inbox.md`에 자동 캡처하고, 승격이 결정된 항목만 `ai-harness-capture`로 GitHub Issue와 Project Inbox에 등록한다.
 3. Planner가 GitHub Issue를 작업 명세와 계획으로 변환한다.
 4. Implementer가 코드 또는 설정을 변경한다.
 5. Verifier가 필요한 검증을 실행하고 근거를 기록한다.
-6. Reviewer가 Draft PR 생성 전에 이슈 실행 점수를 산출한다.
+6. Reviewer가 PR 생성 전에 이슈 실행 점수를 산출한다.
 7. Harness Evaluator가 각 이슈 종료 후, 그리고 주기적으로 하네스 설정을 평가한다.
 
 Reviewer 게이트:
 
-- `PASS`: 80-100점. Draft PR을 생성할 수 있다.
+- `PASS`: 80-100점. 바로 리뷰/머지 가능한 일반 PR을 생성할 수 있다.
 - `REWORK`: 65-79점. Implementer가 재작업하고 Reviewer가 다시 채점해야 한다.
 - `FAIL`: 0-64점. 계속 진행하기 전에 사람의 확인이 필요하다.
 
-하네스 개선안은 AI가 제안하고, 사람이 승인, 기각, 보류를 결정한다. 승인된 개선안은 별도의 Draft PR로 구현할 수 있다.
+하네스 개선안은 AI가 제안하고, 사람이 승인, 기각, 보류를 결정한다. 승인된 개선안은 별도의 일반 PR로 구현할 수 있다.
 
 ## GitHub Issue Form
 
