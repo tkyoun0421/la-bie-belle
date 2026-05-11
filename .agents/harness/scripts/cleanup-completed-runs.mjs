@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../../..");
 const runsRoot = join(repoRoot, ".agents", "runs");
+const historyPath = join(repoRoot, ".agents", "harness", "history", "runs.json");
 const apply = process.argv.includes("--apply");
 
 function readJson(path) {
@@ -37,6 +38,8 @@ const runDirs = existsSync(runsRoot)
 
 const candidates = [];
 const skipped = [];
+const history = readJson(historyPath) || { schema_version: 1, runs: [] };
+const archivedRunIds = new Set((history.runs || []).map((run) => run.run_id));
 
 for (const runDir of runDirs) {
   const runRecord = readJson(join(runDir, "run-record.json"));
@@ -54,15 +57,17 @@ for (const runDir of runDirs) {
     path: runDir
   };
 
-  if (stage === "reviewed" && terminal) {
+  if (stage === "reviewed" && terminal && archivedRunIds.has(item.run_id)) {
     candidates.push({
       ...item,
-      reason: "review artifacts and terminal decision exist"
+      reason: "review artifacts and terminal decision exist, and run is archived in history"
     });
   } else {
     skipped.push({
       ...item,
-      reason: "run is not reviewed with a terminal decision"
+      reason: stage === "reviewed" && terminal
+        ? "run is terminal but not archived in history"
+        : "run is not reviewed with a terminal decision"
     });
   }
 }

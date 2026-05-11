@@ -1,6 +1,6 @@
 ---
 name: ai-harness-status
-description: 이 프로젝트에서 현재 AI 하네스 이슈와 다음 추천 스킬을 진단할 때 사용한다. 로컬 diagnose-status 스크립트, .agents/runs/**, state.json, inbox, dashboard data, GitHub Issue 본문/코멘트/라벨을 확인한다. 상태 진단만 수행하며 산출물, 코드, GitHub Issue, inbox를 수정하지 않는다.
+description: 이 프로젝트에서 현재 AI 하네스 이슈와 다음 추천 스킬을 진단할 때 사용한다. 로컬 diagnose-status 스크립트, .agents/runs/**, state.json, run history, inbox, dashboard data, GitHub Issue 본문/코멘트/라벨을 확인한다. 상태 진단만 수행하며 산출물, 코드, GitHub Issue, inbox를 수정하지 않는다.
 ---
 
 # AI Harness Status
@@ -39,6 +39,7 @@ If the script fails, report the failure and fall back to manual file inspection.
 - `.agents/runs/issue-*/verification.md`
 - `.agents/runs/issue-*/review-score.json`
 - `.agents/runs/issue-*/review.md`
+- `.agents/harness/history/runs.json`
 - `.agents/harness/dashboard/data/runs.js`
 - `.agents/inbox.md`
 - current GitHub Issue body, comments, and labels
@@ -102,7 +103,7 @@ Warnings:
 - If `state.json` is missing for an old run, report it as legacy/fallback mode, not as something to mutate automatically.
 - If `run-record.status`, `state.json.stage`, and artifact-inferred stage differ, report the drift.
 - Empty templates are not complete artifacts.
-- If `cleanup_candidate` is true, report that the local run can be removed from the active queue by a distinct cleanup action. Do not delete it during status.
+- If `cleanup_candidate` is true, report that the local run can be removed from the active queue only after it is archived in run history by a distinct archive/cleanup action. Do not archive or delete it during status.
 
 ## Next Skill Recommendation
 
@@ -116,7 +117,7 @@ Warnings:
 - review complete + `REWORK`: `ai-harness-implement`
 - review complete + `FAIL`: ask for human confirmation
 - dashboard older than run data: `ai-harness-dashboard`
-- completed run cleanup candidate: run `cleanup-completed-runs.mjs` dry-run; a separate cleanup task may apply it when prerequisites are satisfied
+- completed run cleanup candidate: run `archive-completed-runs.mjs` dry-run before `cleanup-completed-runs.mjs` dry-run; a separate cleanup task may apply both when prerequisites are satisfied
 - prior decision required: ask the user before implementation
 - unresolved inbox candidates and no selected next work: `ai-harness-idea`
 - unresolved inbox candidates should become GitHub Issue drafts: `ai-harness-capture`

@@ -9,6 +9,7 @@ const repoRoot = resolve(__dirname, "../../..");
 const runsRoot = join(repoRoot, ".agents", "runs");
 const dashboardDataPath = join(repoRoot, ".agents", "harness", "dashboard", "data", "runs.js");
 const proposalsRoot = join(repoRoot, ".agents", "harness", "improvements", "proposals");
+const historyPath = join(repoRoot, ".agents", "harness", "history", "runs.json");
 
 function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
@@ -90,6 +91,7 @@ const runDirs = existsSync(runsRoot)
 
 const runs = [];
 const harnessScores = [];
+const history = safeReadJson(historyPath) || { schema_version: 1, runs: [] };
 
 for (const runDir of runDirs) {
   const runRecordPath = join(runDir, "run-record.json");
@@ -141,6 +143,20 @@ for (const runDir of runDirs) {
   });
 }
 
+const activeRunIds = new Set(runs.map((run) => `issue-${run.issue_number}`));
+for (const historicalRun of history.runs || []) {
+  if (activeRunIds.has(historicalRun.run_id)) continue;
+
+  runs.push({
+    ...historicalRun,
+    archived: true
+  });
+
+  if (historicalRun.harness_health?.total_score !== null && historicalRun.harness_health?.total_score !== undefined) {
+    harnessScores.push(historicalRun.harness_health);
+  }
+}
+
 runs.sort((a, b) => b.issue_number - a.issue_number);
 
 const issueCount = runs.length;
@@ -158,7 +174,7 @@ const averageHarnessScore = harnessScores.length
 const latestHarnessScore = harnessScores[harnessScores.length - 1];
 const harnessHealth = latestHarnessScore ? {
   total_score: latestHarnessScore.total_score,
-  categories: latestHarnessScore.categories.map((category) => ({
+  categories: (latestHarnessScore.categories || []).map((category) => ({
     label: labelForCategory(category.id),
     score: category.score,
     max: category.max_score,

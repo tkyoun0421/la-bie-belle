@@ -34,6 +34,7 @@
 - `update-dashboard`: run 기록을 dashboard data로 투영한다.
 - `evaluate-harness`: 하네스 건강도를 평가하고 개선안을 제안한다.
 - `draft-pr`: PASS run을 일반 PR로 정리한다.
+- `archive-completed-runs`: 완료된 run의 핵심 평가 이력을 장기 기록으로 압축한다.
 - `cleanup-completed-runs`: 완료된 로컬 run 디렉터리를 active queue에서 제거한다.
 
 ## 포트와 어댑터
@@ -42,6 +43,7 @@
 - `ProjectBoardPort`: MVP, Type, Source, Status, Priority.
 - `InboxStore`: `.agents/inbox.md`.
 - `RunArtifactStore`: `.agents/runs/issue-*`.
+- `RunHistoryStore`: `.agents/harness/history/runs.json`.
 - `DashboardStore`: `.agents/harness/dashboard/data/runs.js`.
 - `GitPort`: diff, status, commit, PR 준비 상태.
 - `VerificationPort`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`.
@@ -55,7 +57,9 @@
 - dashboard data는 상태 원천이 아니라 projection이다.
 - inbox는 임시 active queue이며 영구 기록이 아니다.
 - `.agents/runs/issue-*`는 active execution queue이며 영구 아카이브가 아니다.
-- 오래 보존할 기록은 GitHub Issue, PR, commit, dashboard snapshot에 남긴다.
+- 오래 보존할 로컬 평가 기록은 `.agents/harness/history/runs.json`에 남긴다.
+- dashboard data는 active runs와 run history를 합쳐서 생성한다.
+- GitHub Issue, PR, commit은 외부 추적과 변경 맥락의 장기 기록이다.
 - Project Priority가 원본이면 priority label은 목록 가시성을 위한 mirror다.
 
 ## 상태 전이
@@ -100,22 +104,27 @@ planned -> specified -> red -> green -> verified -> reviewed -> dashboarded -> p
 
 ## 완료 Run 정리
 
-완료된 run 산출물은 durable record가 다른 곳에 남은 뒤 active queue에서 제거한다.
+완료된 run 산출물은 장기 기록으로 아카이브한 뒤 active queue에서 제거한다.
+`.agents/runs/issue-*`를 삭제해도 평가 이력은 `.agents/harness/history/runs.json`과 dashboard projection에 남아야 한다.
 
 삭제 조건:
 
 - `review-score.json`과 `review.md`가 있다.
 - 리뷰 결정이 `PASS`, `REWORK`, `FAIL` 중 하나다.
-- 완료 후 dashboard data가 갱신되었다.
+- `archive-completed-runs.mjs --apply`로 run history에 저장되었다.
+- 완료 후 dashboard data가 active runs와 history 기준으로 갱신되었다.
 - GitHub Issue, PR, commit history 중 하나에 최종 결과가 남아 있다.
 - 현재 진행 중인 작업이 아니다.
 
 정리 흐름:
 
 1. `node .agents/harness/scripts/diagnose-status.mjs`로 `cleanup_candidate`를 확인한다.
-2. `node .agents/harness/scripts/cleanup-completed-runs.mjs`로 dry-run 계획을 확인한다.
-3. 에이전트가 삭제 조건을 만족한다고 판단하면 `node .agents/harness/scripts/cleanup-completed-runs.mjs --apply`를 실행한다.
-4. status 진단 중에는 삭제하지 않는다. cleanup은 별도 작업으로 수행한다.
+2. `node .agents/harness/scripts/archive-completed-runs.mjs`로 아카이브 dry-run을 확인한다.
+3. 에이전트가 완료 조건을 만족한다고 판단하면 `node .agents/harness/scripts/archive-completed-runs.mjs --apply`를 실행한다.
+4. `node .agents/harness/scripts/build-dashboard-data.mjs`로 dashboard projection을 갱신한다.
+5. `node .agents/harness/scripts/cleanup-completed-runs.mjs`로 삭제 dry-run을 확인한다.
+6. run history에 저장된 run만 `node .agents/harness/scripts/cleanup-completed-runs.mjs --apply`로 active queue에서 제거한다.
+7. status 진단 중에는 삭제하지 않는다. archive와 cleanup은 별도 작업으로 수행한다.
 
 ## 개선안 Lifecycle
 
@@ -129,7 +138,7 @@ planned -> specified -> red -> green -> verified -> reviewed -> dashboarded -> p
 
 - status 진단 중 inbox 항목을 수정하거나 삭제하지 않는다.
 - GitHub label은 명시적인 apply 작업이 아니면 변경하지 않는다.
-- run 디렉터리는 dry-run과 별도 cleanup 작업 없이 삭제하지 않는다.
+- run 디렉터리는 run history 저장, dry-run, 별도 cleanup 작업 없이 삭제하지 않는다.
 - dashboard에서 missing score와 실제 0점을 구분한다.
 - 로컬 검증과 CI 검증의 차이는 `verification.md`에 기록한다.
 - proposal만으로 prompt, rubric, gate, permission을 바꾸지 않는다.
