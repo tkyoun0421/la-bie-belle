@@ -1,16 +1,29 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AI 하네스 개선 제안",
+  "title": "AI Harness Improvement Proposal",
   "type": "object",
-  "required": ["proposal_id", "source", "target_area", "problem", "proposal", "status"],
+  "additionalProperties": false,
+  "required": [
+    "proposal_id",
+    "source",
+    "target_area",
+    "problem",
+    "proposal",
+    "expected_impact",
+    "risk",
+    "status",
+    "created_at"
+  ],
   "properties": {
     "proposal_id": { "type": "string" },
     "source": {
       "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id"],
       "properties": {
         "run_id": { "type": "string" },
-        "issue_number": { "type": "integer" },
-        "harness_health_score_id": { "type": "string" }
+        "issue_number": { "type": ["integer", "null"] },
+        "harness_health_score_id": { "type": ["string", "null"] }
       }
     },
     "target_area": {
@@ -34,6 +47,6 @@
       "enum": ["proposed", "accepted", "rejected", "implemented"]
     },
     "created_at": { "type": "string", "format": "date-time" },
-    "decided_at": { "type": "string", "format": "date-time" }
+    "decided_at": { "type": ["string", "null"], "format": "date-time" }
   }
 }

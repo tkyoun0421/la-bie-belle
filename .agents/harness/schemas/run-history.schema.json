@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Harness Run History",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "runs"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "run_id",
+          "issue_number",
+          "title",
+          "stage",
+          "decision",
+          "total_score",
+          "harness_score",
+          "attempt",
+          "updated_at",
+          "archived_at",
+          "source"
+        ],
+        "properties": {
+          "run_id": { "type": "string" },
+          "issue_number": { "type": "integer" },
+          "title": { "type": "string" },
+          "stage": { "type": "string" },
+          "decision": { "type": ["string", "null"] },
+          "total_score": { "type": ["integer", "null"] },
+          "harness_score": { "type": ["integer", "null"] },
+          "priority": { "type": ["string", "null"] },
+          "blocked": { "type": "boolean" },
+          "blockers": { "type": "array" },
+          "inbox_refs": { "type": "array", "items": { "type": "string" } },
+          "attempt": { "type": "integer" },
+          "updated_at": { "type": "string" },
+          "archived_at": { "type": "string" },
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "path"],
+            "properties": {
+              "type": { "type": "string", "enum": ["local-run"] },
+              "path": { "type": "string" }
+            }
+          },
+          "strengths": { "type": "array" },
+          "weaknesses": { "type": "array" },
+          "deductions": { "type": "array" },
+          "categories": { "type": "array" },
+          "harness_health": { "type": ["object", "null"] }
+        }
+      }
+    }
+  }
+}

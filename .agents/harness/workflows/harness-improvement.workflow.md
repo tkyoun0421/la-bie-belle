@@ -1,32 +1,37 @@
-# 하네스 개선 워크플로우
+# Harness Improvement Workflow
 
-## 목적
+## Purpose
 
-AI가 하네스 설정을 평가하고 개선안을 제안하되, 사람 승인 기반으로만 설정 변경을 진행한다.
+The harness can propose improvements to its own process, but configuration changes require an explicit human decision.
 
-## 단계
+## Steps
 
-1. Harness Evaluator가 최근 실행 기록과 하네스 설정을 평가한다.
-2. 항목 점수가 70% 미만이면 개선안을 작성한다.
-3. 개선안은 `.agents/harness/improvements/proposals/`에 저장한다.
-4. 사람이 대시보드에서 개선안을 승인하거나 기각한다.
-5. 승인된 제안은 `.agents/harness/improvements/accepted/`로 이동한다.
-6. AI는 승인된 제안만 별도 일반 PR로 구현한다.
-7. 구현 후 다음 누적 평가에서 하네스 점수 변화가 추적된다.
+1. Evaluate recent run artifacts and harness health.
+2. If a concrete improvement is needed, create a proposal JSON file in `.agents/harness/improvements/proposals/`.
+3. Validate the proposal shape against `.agents/harness/schemas/improvement.schema.json`.
+4. Human triage decides one of three outcomes:
+   - Implement now.
+   - Promote to a GitHub Issue.
+   - Reject or defer.
+5. If implemented now, include the proposal id in the commit or PR body, then remove the proposal file from the active queue.
+6. If promoted, create or update the GitHub Issue with the proposal id, then remove the proposal file from the active queue.
+7. If rejected or deferred, record the reason in the relevant issue, PR, or review note, then remove the proposal file from the active queue.
+8. The next harness evaluation should judge the result from commits, issues, run artifacts, and dashboard data instead of stale proposal files.
 
-## 개선안 필수 내용
+## Required Proposal Content
 
-- 대상 영역
-- 문제
-- 제안
-- 기대 효과
-- 리스크
-- 관련 실행 기록 또는 점수 근거
+- `proposal_id`
+- `source`
+- `target_area`
+- `problem`
+- `proposal`
+- `expected_impact`
+- `risk`
+- `status`
+- `created_at`
 
-## 승인 전 금지
+## Guardrails
 
-- 프롬프트 변경
-- 루브릭 변경
-- 검증 게이트 변경
-- 자동화 권한 변경
-- 대시보드 판정 로직 변경
+- Do not change prompts, rubrics, verification gates, permissions, or dashboard scoring logic without human approval.
+- Keep active proposal files short-lived.
+- Prefer one small implementation per accepted proposal.

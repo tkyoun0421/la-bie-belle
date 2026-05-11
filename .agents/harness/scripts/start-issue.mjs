@@ -17,7 +17,7 @@ const urlArg = args.find((arg) => arg.startsWith("--url="));
 const force = args.includes("--force");
 
 if (!Number.isInteger(issueNumber) || issueNumber <= 0) {
-  console.error("사용법: node .agents/harness/scripts/start-issue.mjs <issue-number> [--title=제목] [--url=URL] [--force]");
+  console.error("Usage: node .agents/harness/scripts/start-issue.mjs <issue-number> [--title=TITLE] [--url=URL] [--force]");
   process.exit(1);
 }
 
@@ -28,8 +28,8 @@ const runDir = join(runsRoot, runId);
 const now = new Date().toISOString();
 
 if (existsSync(runDir) && !force) {
-  console.error(`이미 실행 디렉터리가 있습니다: ${runDir}`);
-  console.error("--force를 붙이면 누락된 템플릿만 보강합니다.");
+  console.error(`Run directory already exists: ${runDir}`);
+  console.error("Use --force to restore missing templates and overwrite run metadata.");
   process.exit(1);
 }
 
@@ -86,5 +86,22 @@ if (!existsSync(runRecordPath) || force) {
   writeFileSync(runRecordPath, `${JSON.stringify(runRecord, null, 2)}\n`);
 }
 
-console.log(`생성 완료: ${runDir}`);
-console.log("다음 단계: Planner가 task-spec.md와 plan.md를 채웁니다.");
+const statePath = join(runDir, "state.json");
+if (!existsSync(statePath) || force) {
+  const runState = {
+    run_id: runId,
+    issue_number: issueNumber,
+    stage: "planned",
+    decision: null,
+    priority: null,
+    blocked: false,
+    blockers: [],
+    inbox_refs: [],
+    dashboard_synced_at: null,
+    updated_at: now
+  };
+  writeFileSync(statePath, `${JSON.stringify(runState, null, 2)}\n`);
+}
+
+console.log(`Created: ${runDir}`);
+console.log("Next step: fill task-spec.md and plan.md.");
