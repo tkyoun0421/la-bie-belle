@@ -147,6 +147,8 @@ function diagnoseRun(runDir) {
 
   const reviewScore = readJson(join(runDir, "review-score.json"));
   const inferredStage = artifactStage(artifacts);
+  const decision = reviewScore?.decision ?? state?.decision ?? null;
+  const cleanupCandidate = inferredStage === "reviewed" && ["PASS", "REWORK", "FAIL"].includes(decision);
   const warnings = [];
 
   if (!state) warnings.push("missing state.json");
@@ -162,7 +164,11 @@ function diagnoseRun(runDir) {
     run_record_status: runRecord?.status ?? null,
     state_stage: state?.stage ?? null,
     inferred_artifact_stage: inferredStage,
-    decision: reviewScore?.decision ?? state?.decision ?? null,
+    decision,
+    cleanup_candidate: cleanupCandidate,
+    cleanup_reason: cleanupCandidate
+      ? "review artifacts and terminal decision exist; run can be removed from active local queue after dashboard/issue/PR record is confirmed"
+      : null,
     artifacts,
     warnings
   };
