@@ -1,81 +1,81 @@
-# AI Harness Architecture
+# AI 하네스 아키텍처
 
-This document treats the AI harness as an agentic system separate from product code. The goal is to keep state, workflow, and automation understandable as the project grows.
+이 문서는 AI 하네스를 제품 코드와 분리된 agentic system으로 보고 관리하기 위한 기준이다. 목표는 작업 상태, 실행 흐름, 자동화 책임을 명확히 유지하는 것이다.
 
-## Goals
+## 목표
 
-- Separate task selection, issue execution, verification, review, dashboard projection, and cleanup.
-- Reduce state drift between GitHub Issues, Project fields, labels, inbox, run artifacts, and dashboard data.
-- Keep skills focused on use cases instead of tool-specific response shapes.
-- Add structured state gradually, while preserving fallback behavior for legacy runs.
+- 다음 작업 선택, 이슈 실행, 검증, 리뷰, 대시보드 반영, 완료 run 정리를 분리한다.
+- GitHub Issue, Project 필드, 라벨, inbox, run 산출물, dashboard data 사이의 상태 불일치를 줄인다.
+- 스킬은 특정 도구 응답 형식보다 하네스 유스케이스 규칙을 따르게 한다.
+- 구조화 상태는 새 run부터 점진 도입하고, 과거 run은 산출물 기반 fallback으로 읽는다.
 
-## Domain Model
+## 도메인 모델
 
-- `Issue`: executable work tracked in GitHub.
-- `InboxItem`: temporary candidate, follow-up, or risk not yet promoted to an Issue.
-- `Run`: local execution record for one Issue.
+- `Issue`: GitHub에서 추적하는 실행 가능한 작업 단위.
+- `InboxItem`: 아직 GitHub Issue로 승격되지 않은 임시 후보, 후속 작업, 리스크.
+- `Run`: 하나의 Issue를 로컬 하네스 흐름으로 실행한 기록.
 - `Stage`: `planned`, `specified`, `red`, `green`, `verified`, `reviewed`, `dashboarded`, `pr-drafted`.
-- `Artifact`: stage output such as `task-spec.md`, `spec.md`, `verification.md`, or `review-score.json`.
-- `Decision`: `PASS`, `REWORK`, `FAIL`, `blocked`, or `needs-triage`.
+- `Artifact`: 단계별 산출물. 예: `task-spec.md`, `spec.md`, `verification.md`, `review-score.json`.
+- `Decision`: `PASS`, `REWORK`, `FAIL`, `blocked`, `needs-triage`.
 - `Priority`: `P0`, `P1`, `P2`, `P3`.
-- `Blocker`: a policy decision, dependency, or environment issue that prevents progress.
+- `Blocker`: 진행 전에 해결해야 하는 정책 결정, 의존 작업, 환경 문제.
 
-## Use Cases
+## 유스케이스
 
-- `diagnose-status`: read local state, inbox, dashboard, and GitHub state to recommend the next step.
-- `choose-next-work`: compare open Issues and inbox candidates.
-- `capture-inbox-item`: promote inbox work into a GitHub Issue draft.
-- `plan-issue`: turn an Issue into `task-spec.md` and `plan.md`.
-- `write-spec`: clarify decisions and write `spec.md`.
-- `run-red`: create or record the failing condition.
-- `run-green`: implement the minimum passing change.
-- `verify-run`: run checks and write `verification.md`.
-- `review-run`: score the result and decide PASS/REWORK/FAIL.
-- `update-dashboard`: project run records into dashboard data.
-- `evaluate-harness`: score harness health and propose process improvements.
-- `draft-pr`: turn a PASS run into a normal PR.
-- `cleanup-completed-runs`: remove completed local run directories from the active queue.
+- `diagnose-status`: 로컬 상태, inbox, dashboard, GitHub 상태를 읽고 다음 단계를 추천한다.
+- `choose-next-work`: 열린 Issue와 inbox 후보를 비교한다.
+- `capture-inbox-item`: inbox 항목을 GitHub Issue 초안으로 승격한다.
+- `plan-issue`: Issue를 `task-spec.md`와 `plan.md`로 구체화한다.
+- `write-spec`: 구현 전 결정을 확정하고 `spec.md`를 작성한다.
+- `run-red`: 실패 조건을 만들거나 기록한다.
+- `run-green`: 실패 조건을 통과시키는 최소 구현을 한다.
+- `verify-run`: 검증 명령을 실행하고 `verification.md`를 작성한다.
+- `review-run`: 결과를 채점하고 PASS/REWORK/FAIL을 결정한다.
+- `update-dashboard`: run 기록을 dashboard data로 투영한다.
+- `evaluate-harness`: 하네스 건강도를 평가하고 개선안을 제안한다.
+- `draft-pr`: PASS run을 일반 PR로 정리한다.
+- `cleanup-completed-runs`: 완료된 로컬 run 디렉터리를 active queue에서 제거한다.
 
-## Ports And Adapters
+## 포트와 어댑터
 
-- `IssueTrackerPort`: GitHub Issue body, comments, labels, open/closed state.
+- `IssueTrackerPort`: GitHub Issue 본문, 코멘트, 라벨, open/closed 상태.
 - `ProjectBoardPort`: MVP, Type, Source, Status, Priority.
 - `InboxStore`: `.agents/inbox.md`.
 - `RunArtifactStore`: `.agents/runs/issue-*`.
 - `DashboardStore`: `.agents/harness/dashboard/data/runs.js`.
-- `GitPort`: diff, status, commit, PR readiness.
+- `GitPort`: diff, status, commit, PR 준비 상태.
 - `VerificationPort`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`.
-- `UserDecisionPort`: explicit user decisions and approvals.
+- `UserDecisionPort`: 사용자 결정과 승인.
 
-Current adapters are `gh api`, local markdown/JSON files, git, pnpm, and skill output.
+현재 어댑터는 `gh api`, 로컬 markdown/JSON 파일, git, pnpm, 스킬 출력이다.
 
-## Dependency Rule
+## 의존성 규칙
 
-- Harness policy belongs in skills, scripts, schemas, and docs, not in dashboard display code alone.
-- Dashboard data is a projection, not the source of truth.
-- Inbox is an active temporary queue, not a permanent record.
-- `.agents/runs/issue-*` is an active execution queue, not a permanent archive.
-- GitHub Issues, PRs, commits, and dashboard snapshots are the durable history.
-- Project Priority can be the source of truth; priority labels are a mirror for list visibility.
+- 하네스 정책은 dashboard 표시 코드에만 있으면 안 되고, 스킬, 스크립트, 스키마, 문서에 명시되어야 한다.
+- dashboard data는 상태 원천이 아니라 projection이다.
+- inbox는 임시 active queue이며 영구 기록이 아니다.
+- `.agents/runs/issue-*`는 active execution queue이며 영구 아카이브가 아니다.
+- 오래 보존할 기록은 GitHub Issue, PR, commit, dashboard snapshot에 남긴다.
+- Project Priority가 원본이면 priority label은 목록 가시성을 위한 mirror다.
 
-## State Machine
+## 상태 전이
 
 ```txt
 planned -> specified -> red -> green -> verified -> reviewed -> dashboarded -> pr-drafted
 ```
 
-Exception states:
+예외 상태:
 
-- `needs-triage`: priority, scope, owner, or blocked state is not settled.
-- `blocked`: external decision or dependency prevents progress.
-- `rework`: review requires implementation work.
-- `failed`: review requires human confirmation.
+- `needs-triage`: priority, scope, owner, blocked 여부가 확정되지 않음.
+- `blocked`: 외부 결정이나 의존 작업 때문에 진행 불가.
+- `rework`: 리뷰 결과 구현 재작업 필요.
+- `failed`: 사람 확인 필요.
 
-## Structured State
+## 구조화 상태
 
-New runs created by `start-issue.mjs` should include `state.json`.
+새 run은 `start-issue.mjs`가 생성할 때 `state.json`을 포함해야 한다.
 
-Expected fields:
+예상 필드:
 
 ```json
 {
@@ -92,44 +92,44 @@ Expected fields:
 }
 ```
 
-Compatibility rule:
+호환 규칙:
 
-- If `state.json` exists, status and dashboard scripts should prefer it.
-- If `state.json` is missing, scripts should infer status from legacy artifacts.
-- Do not backfill old completed runs just to silence missing state warnings.
+- `state.json`이 있으면 status와 dashboard 스크립트는 이를 우선 읽는다.
+- `state.json`이 없으면 기존 산출물에서 상태를 추론한다.
+- 과거 완료 run에 `state.json`이 없다는 이유만으로 백필하지 않는다.
 
-## Completed Run Cleanup
+## 완료 Run 정리
 
-Completed run artifacts should be removed from the active queue after the durable record exists elsewhere.
+완료된 run 산출물은 durable record가 다른 곳에 남은 뒤 active queue에서 제거한다.
 
-Cleanup prerequisites:
+삭제 조건:
 
-- `review-score.json` and `review.md` exist.
-- The review decision is terminal: `PASS`, `REWORK`, or `FAIL`.
-- Dashboard data has been regenerated after the run completed.
-- The GitHub Issue, PR, or commit history contains the final outcome.
-- The run is not the current active work.
+- `review-score.json`과 `review.md`가 있다.
+- 리뷰 결정이 `PASS`, `REWORK`, `FAIL` 중 하나다.
+- 완료 후 dashboard data가 갱신되었다.
+- GitHub Issue, PR, commit history 중 하나에 최종 결과가 남아 있다.
+- 현재 진행 중인 작업이 아니다.
 
-Cleanup flow:
+정리 흐름:
 
-1. Run `node .agents/harness/scripts/diagnose-status.mjs` and inspect `cleanup_candidate`.
-2. Run `node .agents/harness/scripts/cleanup-completed-runs.mjs` for a dry-run plan.
-3. Apply deletion only with explicit approval and `--apply`.
-4. Never delete a run directory from status diagnosis alone.
+1. `node .agents/harness/scripts/diagnose-status.mjs`로 `cleanup_candidate`를 확인한다.
+2. `node .agents/harness/scripts/cleanup-completed-runs.mjs`로 dry-run 계획을 확인한다.
+3. 에이전트가 삭제 조건을 만족한다고 판단하면 `node .agents/harness/scripts/cleanup-completed-runs.mjs --apply`를 실행한다.
+4. status 진단 중에는 삭제하지 않는다. cleanup은 별도 작업으로 수행한다.
 
-## Improvement Proposal Lifecycle
+## 개선안 Lifecycle
 
-`.agents/harness/improvements/proposals` is an active queue.
+`.agents/harness/improvements/proposals`는 active queue다.
 
-- Keep only pending proposals there.
-- If a proposal is implemented, promoted to an Issue, rejected, or deferred with a recorded reason, remove it from the active queue.
-- Long-term history should live in commits, Issues, PRs, run artifacts while active, or dashboard snapshots.
+- pending proposal만 둔다.
+- 구현, GitHub Issue 승격, 반려, 보류 사유 기록 중 하나가 끝나면 active queue에서 제거한다.
+- 장기 기록은 commit, Issue, PR, 활성 run 산출물, dashboard snapshot에 둔다.
 
-## Guardrails
+## 안전 규칙
 
-- Do not edit or delete inbox items during status diagnosis.
-- Do not mutate GitHub labels unless the command is explicitly an apply operation.
-- Do not delete run directories without a dry-run and explicit approval.
-- Distinguish missing dashboard scores from real zero scores.
-- Record local and CI verification differences in `verification.md`.
-- Do not change prompts, rubrics, gates, or permissions from a proposal alone.
+- status 진단 중 inbox 항목을 수정하거나 삭제하지 않는다.
+- GitHub label은 명시적인 apply 작업이 아니면 변경하지 않는다.
+- run 디렉터리는 dry-run과 별도 cleanup 작업 없이 삭제하지 않는다.
+- dashboard에서 missing score와 실제 0점을 구분한다.
+- 로컬 검증과 CI 검증의 차이는 `verification.md`에 기록한다.
+- proposal만으로 prompt, rubric, gate, permission을 바꾸지 않는다.

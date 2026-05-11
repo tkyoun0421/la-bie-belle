@@ -102,7 +102,7 @@ Warnings:
 - If `state.json` is missing for an old run, report it as legacy/fallback mode, not as something to mutate automatically.
 - If `run-record.status`, `state.json.stage`, and artifact-inferred stage differ, report the drift.
 - Empty templates are not complete artifacts.
-- If `cleanup_candidate` is true, report that the local run can be removed from the active queue after durable records are confirmed. Do not delete it during status.
+- If `cleanup_candidate` is true, report that the local run can be removed from the active queue by a distinct cleanup action. Do not delete it during status.
 
 ## Next Skill Recommendation
 
@@ -116,7 +116,7 @@ Warnings:
 - review complete + `REWORK`: `ai-harness-implement`
 - review complete + `FAIL`: ask for human confirmation
 - dashboard older than run data: `ai-harness-dashboard`
-- completed run cleanup candidate: run `cleanup-completed-runs.mjs` dry-run, then ask before `--apply`
+- completed run cleanup candidate: run `cleanup-completed-runs.mjs` dry-run; a separate cleanup task may apply it when prerequisites are satisfied
 - prior decision required: ask the user before implementation
 - unresolved inbox candidates and no selected next work: `ai-harness-idea`
 - unresolved inbox candidates should become GitHub Issue drafts: `ai-harness-capture`
