@@ -1,11 +1,16 @@
-# 하네스 개선안
+# Harness Improvements
 
-개선안은 Harness Evaluator가 생성하고 사람이 결정한다.
+This directory is an active queue for proposed changes to the AI harness.
 
-상태:
+## Lifecycle
 
-- `proposals/`: 결정 대기 중인 제안.
-- `accepted/`: 구현을 승인한 제안.
-- `rejected/`: 의도적으로 기각한 제안.
+- `proposals/`: pending proposals that still need a decision or implementation.
+- A proposal file is temporary. Once the proposal is accepted and implemented, rejected, or promoted to a GitHub Issue, remove it from the active queue.
+- Long-term history should live in git commits, PRs, GitHub Issues, run artifacts, or dashboard data, not in stale queue files.
 
-승인된 제안은 AI가 별도의 일반 PR로 구현할 수 있다.
+## Rules
+
+- Keep proposal JSON files aligned with `.agents/harness/schemas/improvement.schema.json`.
+- Do not change prompts, rubrics, gates, or automation permissions from a proposal alone.
+- If a proposal is implemented directly, mention the proposal id in the commit or PR body before removing the file.
+- If a proposal is rejected, record the reason in the relevant issue, PR, or review note before removing the file.

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Harness Run State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "issue_number",
+    "stage",
+    "decision",
+    "priority",
+    "blocked",
+    "blockers",
+    "inbox_refs",
+    "dashboard_synced_at",
+    "updated_at"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "pattern": "^issue-[0-9]+$"
+    },
+    "issue_number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "specified",
+        "red",
+        "green",
+        "verified",
+        "reviewed",
+        "dashboarded",
+        "pr-drafted"
+      ]
+    },
+    "decision": {
+      "type": ["string", "null"],
+      "enum": [null, "PASS", "REWORK", "FAIL"]
+    },
+    "priority": {
+      "type": ["string", "null"],
+      "enum": [null, "P0", "P1", "P2", "P3"]
+    },
+    "blocked": {
+      "type": "boolean"
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "reason", "source"],
+        "properties": {
+          "id": { "type": "string" },
+          "reason": { "type": "string" },
+          "source": {
+            "type": "string",
+            "enum": ["github", "inbox", "artifact", "local", "user"]
+          }
+        }
+      }
+    },
+    "inbox_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "dashboard_synced_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
