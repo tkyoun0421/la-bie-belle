@@ -434,9 +434,7 @@
     <script src="./data/runs.js"></script>
     <script src="./data/sample-runs.js"></script>
     <script>
-      const data = window.AI_HARNESS_RUNS?.runs?.length
-        ? window.AI_HARNESS_RUNS
-        : window.AI_HARNESS_SAMPLE_RUNS;
+      const data = window.AI_HARNESS_RUNS || window.AI_HARNESS_SAMPLE_RUNS;
       let currentFilter = "ALL";
       let selectedIssue = data.runs[0]?.issue_number || null;
 
