@@ -1,0 +1,15 @@
+{
+  "proposal_id": "2026-05-11-agentic-state-boundaries",
+  "source": {
+    "run_id": "ad-hoc",
+    "issue_number": 0,
+    "harness_health_score_id": ""
+  },
+  "target_area": "record_dashboard",
+  "problem": "The harness currently spreads state across GitHub issues, Project fields, labels, .agents/inbox.md, run artifacts, and dashboard data. Status diagnosis must infer the current truth from multiple sources, which makes stale dashboard data, unresolved inbox items, run-record status drift, and missing priority labels easy to miss.",
+  "proposal": "Manage the agentic system with explicit architecture boundaries. Treat skills as use-case runners, GitHub/inbox/run artifacts/dashboard as adapters, and introduce a small structured state.json per run after the architecture document is accepted. ai-harness-status should keep reporting conflicts instead of mutating sources automatically.",
+  "expected_impact": "Status diagnosis becomes more reliable, dashboard generation can distinguish missing state from actual zero values, and future automation can read one structured run state while still falling back to existing markdown artifacts.",
+  "risk": "Adding another state file can create yet another source of truth if scripts and skills do not follow a clear migration order. The first implementation should be schema-only plus fallback reads before any gate logic depends on state.json.",
+  "status": "proposed",
+  "created_at": "2026-05-11T00:00:00.000Z"
+}
