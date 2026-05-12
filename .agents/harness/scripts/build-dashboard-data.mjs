@@ -24,6 +24,45 @@ function safeReadScore(runDir, artifactPath) {
   return safeReadJson(join(runDir, artifactPath));
 }
 
+function readText(path) {
+  return readFileSync(path, "utf8");
+}
+
+function isMarkdownTemplate(path) {
+  if (!existsSync(path)) return true;
+  const text = readText(path).trim();
+  const placeholderLines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line === "작성 필요." || line === "- 작성 필요.");
+  return !text || placeholderLines.length > 0;
+}
+
+function isReviewScoreTemplate(score) {
+  if (!score) return true;
+
+  const hasEvidence = (score.categories || []).some(
+    (category) => (category.evidence || []).length > 0 || (category.deductions || []).length > 0
+  );
+
+  return (
+    score.score_id === "issue-000-review-attempt-1" ||
+    score.scored_at === "1970-01-01T00:00:00.000Z" ||
+    String(score.recommended_next_action || "").includes("작성 필요") ||
+    (score.decision === "FAIL" && score.total_score === 0 && !hasEvidence)
+  );
+}
+
+function completeReviewScore(runDir, artifactPath) {
+  const score = safeReadScore(runDir, artifactPath);
+  return isReviewScoreTemplate(score) ? null : score;
+}
+
+function artifactComplete(runDir, artifactPath) {
+  if (!artifactPath) return false;
+  return !isMarkdownTemplate(join(runDir, artifactPath));
+}
+
 function readImprovementProposals() {
   if (!existsSync(proposalsRoot)) return [];
 
@@ -46,21 +85,23 @@ function readImprovementProposals() {
 
 function labelForCategory(id) {
   const labels = {
-    requirement_fulfillment: "Requirement fulfillment",
-    scope_control: "Scope control",
-    implementation_quality: "Implementation quality",
-    verification_sufficiency: "Verification sufficiency",
-    risk_and_safety: "Risk and safety",
-    requirement_interpretation: "Requirement interpretation",
-    plan_appropriateness: "Plan appropriateness",
-    context_usage: "Context usage",
-    handoff_quality: "Handoff quality",
-    task_spec_quality: "Task spec quality",
-    context_injection_quality: "Context injection quality",
-    role_handoff_quality: "Role handoff quality",
-    verification_gate_quality: "Verification gate quality",
-    scoring_rubric_quality: "Scoring rubric quality",
-    record_and_dashboard_quality: "Record and dashboard quality"
+    requirement_fulfillment: "요구사항 충족",
+    scope_control: "범위 통제",
+    implementation_quality: "구현 품질",
+    verification_sufficiency: "검증 충분성",
+    risk_and_safety: "리스크와 안전",
+    requirement_interpretation: "요구사항 해석",
+    plan_appropriateness: "계획 적절성",
+    context_usage: "컨텍스트 활용",
+    handoff_quality: "인수인계 품질",
+    result_quality: "결과 품질",
+    process_quality: "프로세스 품질",
+    task_spec_quality: "작업 명세 품질",
+    context_injection_quality: "컨텍스트 주입 품질",
+    role_handoff_quality: "역할 분리와 인수인계 품질",
+    verification_gate_quality: "검증 게이트 품질",
+    scoring_rubric_quality: "스코어링 루브릭 품질",
+    record_and_dashboard_quality: "기록과 대시보드 품질"
   };
   return labels[id] || id;
 }
@@ -71,15 +112,15 @@ function decisionFromStatus(status, score, state) {
   if (status === "pass" || status === "draft_pr_created") return "PASS";
   if (status === "rework") return "REWORK";
   if (status === "fail") return "FAIL";
-  return "FAIL";
+  return null;
 }
 
-function stageFromArtifacts(runDir) {
-  if (existsSync(join(runDir, "review-score.json")) && existsSync(join(runDir, "review.md"))) return "reviewed";
-  if (existsSync(join(runDir, "verification.md"))) return "verified";
-  if (existsSync(join(runDir, "implementation-notes.md"))) return "green";
-  if (existsSync(join(runDir, "spec.md"))) return "specified";
-  if (existsSync(join(runDir, "task-spec.md")) && existsSync(join(runDir, "plan.md"))) return "planned";
+function stageFromArtifacts(runDir, record, reviewScore) {
+  if (reviewScore && artifactComplete(runDir, record.artifacts?.review)) return "reviewed";
+  if (artifactComplete(runDir, record.artifacts?.verification)) return "verified";
+  if (artifactComplete(runDir, record.artifacts?.implementation_notes)) return "green";
+  if (artifactComplete(runDir, record.artifacts?.spec)) return "specified";
+  if (artifactComplete(runDir, record.artifacts?.task_spec) && artifactComplete(runDir, record.artifacts?.plan)) return "planned";
   return "unplanned";
 }
 
@@ -91,6 +132,7 @@ const runDirs = existsSync(runsRoot)
 
 const runs = [];
 const harnessScores = [];
+const activeHarnessScores = [];
 const history = safeReadJson(historyPath) || { schema_version: 1, runs: [] };
 
 for (const runDir of runDirs) {
@@ -99,13 +141,16 @@ for (const runDir of runDirs) {
 
   const record = readJson(runRecordPath);
   const state = safeReadJson(join(runDir, "state.json"));
-  const reviewScore = safeReadScore(runDir, record.artifacts?.review_score);
+  const reviewScore = completeReviewScore(runDir, record.artifacts?.review_score);
   const harnessScore = safeReadScore(
     runDir,
     record.artifacts?.harness_health_score || "harness-health-score.json"
   );
 
-  if (harnessScore) harnessScores.push(harnessScore);
+  if (harnessScore) {
+    harnessScores.push(harnessScore);
+    activeHarnessScores.push(harnessScore);
+  }
 
   const categories = (reviewScore?.categories || []).map((category) => ({
     id: category.id,
@@ -122,12 +167,23 @@ for (const runDir of runDirs) {
     }))
   );
 
+  const inferredStage = stageFromArtifacts(runDir, record, reviewScore);
+  if (inferredStage === "unplanned") continue;
+
+  const dataQualityWarnings = [];
+  if (!reviewScore) dataQualityWarnings.push("review score is missing or still an unfilled template");
+  if (record.artifacts?.review && isMarkdownTemplate(join(runDir, record.artifacts.review))) {
+    dataQualityWarnings.push("review artifact is missing or still an unfilled template");
+  }
+
   runs.push({
     issue_number: record.issue.number,
     title: record.issue.title,
-    stage: state?.stage || stageFromArtifacts(runDir),
+    stage: state?.stage || inferredStage,
     decision: decisionFromStatus(record.status, reviewScore, state),
-    total_score: reviewScore?.total_score ?? 0,
+    total_score: reviewScore?.total_score ?? null,
+    review_complete: Boolean(reviewScore),
+    data_quality_warnings: dataQualityWarnings,
     harness_score: harnessScore?.total_score ?? null,
     priority: state?.priority ?? null,
     blocked: state?.blocked ?? false,
@@ -149,6 +205,14 @@ for (const historicalRun of history.runs || []) {
 
   runs.push({
     ...historicalRun,
+    deductions: (historicalRun.deductions || []).map((deduction) => ({
+      ...deduction,
+      category: labelForCategory(deduction.category)
+    })),
+    categories: (historicalRun.categories || []).map((category) => ({
+      ...category,
+      label: labelForCategory(category.id)
+    })),
     archived: true
   });
 
@@ -159,19 +223,20 @@ for (const historicalRun of history.runs || []) {
 
 runs.sort((a, b) => b.issue_number - a.issue_number);
 
-const issueCount = runs.length;
+const scoredRuns = runs.filter((run) => run.review_complete);
+const issueCount = scoredRuns.length;
 const proposals = readImprovementProposals();
-const passCount = runs.filter((run) => run.decision === "PASS").length;
-const reworkCount = runs.filter((run) => run.decision === "REWORK").length;
-const failCount = runs.filter((run) => run.decision === "FAIL").length;
+const passCount = scoredRuns.filter((run) => run.decision === "PASS").length;
+const reworkCount = scoredRuns.filter((run) => run.decision === "REWORK").length;
+const failCount = scoredRuns.filter((run) => run.decision === "FAIL").length;
 const averageIssueScore = issueCount
-  ? Math.round(runs.reduce((sum, run) => sum + run.total_score, 0) / issueCount)
-  : 0;
-const averageHarnessScore = harnessScores.length
-  ? Math.round(harnessScores.reduce((sum, score) => sum + score.total_score, 0) / harnessScores.length)
+  ? Math.round(scoredRuns.reduce((sum, run) => sum + run.total_score, 0) / issueCount)
+  : null;
+const averageHarnessScore = activeHarnessScores.length
+  ? Math.round(activeHarnessScores.reduce((sum, score) => sum + score.total_score, 0) / activeHarnessScores.length)
   : null;
 
-const latestHarnessScore = harnessScores[harnessScores.length - 1];
+const latestHarnessScore = activeHarnessScores[activeHarnessScores.length - 1];
 const harnessHealth = latestHarnessScore ? {
   total_score: latestHarnessScore.total_score,
   categories: (latestHarnessScore.categories || []).map((category) => ({
@@ -205,55 +270,55 @@ const dashboardData = {
     {
       name: "Planner",
       file: ".agents/harness/agents/planner.agent.md",
-      purpose: "Convert a GitHub Issue into task-spec.md and plan.md.",
+      purpose: "GitHub Issue를 task-spec.md와 plan.md로 변환한다.",
       outputs: ["task-spec.md", "plan.md"],
-      handoff: "Pass a concrete task spec and plan to implementation."
+      handoff: "구체화된 작업 명세와 계획을 구현 단계로 넘긴다."
     },
     {
       name: "Spec",
       file: ".agents/skills/ai-harness-spec/SKILL.md",
-      purpose: "Clarify decisions and write spec.md before implementation.",
+      purpose: "구현 전에 미확정 결정을 정리하고 spec.md를 작성한다.",
       outputs: ["spec.md"],
-      handoff: "Pass detailed scenarios and Red priorities to Red."
+      handoff: "상세 시나리오와 Red 우선순위를 Red 단계로 넘긴다."
     },
     {
       name: "Implementer",
       file: ".agents/harness/agents/implementer.agent.md",
-      purpose: "Implement code or configuration changes.",
+      purpose: "코드 또는 설정 변경을 구현한다.",
       outputs: ["implementation-notes.md"],
-      handoff: "Pass changed files and notes to verification."
+      handoff: "변경 파일과 구현 기록을 검증 단계로 넘긴다."
     },
     {
       name: "Verifier",
       file: ".agents/harness/agents/verifier.agent.md",
-      purpose: "Run verification commands and record evidence.",
+      purpose: "검증 명령을 실행하고 근거를 기록한다.",
       outputs: ["verification.md"],
-      handoff: "Pass verification evidence and diff context to review."
+      handoff: "검증 근거와 diff 맥락을 리뷰 단계로 넘긴다."
     },
     {
       name: "Reviewer",
       file: ".agents/harness/agents/reviewer.agent.md",
-      purpose: "Score the run and decide PASS, REWORK, or FAIL.",
+      purpose: "실행 결과를 채점하고 PASS, REWORK, FAIL을 결정한다.",
       outputs: ["review-score.json", "review.md"],
-      handoff: "PASS goes to PR, REWORK returns to implementation, FAIL waits for human review."
+      handoff: "PASS는 PR 단계로, REWORK는 구현 재작업으로, FAIL은 사람 확인으로 넘긴다."
     },
     {
       name: "Harness Evaluator",
       file: ".agents/harness/agents/harness-evaluator.agent.md",
-      purpose: "Evaluate harness health and propose improvements.",
+      purpose: "하네스 건강도를 평가하고 개선안을 제안한다.",
       outputs: ["harness-health-score.json", "harness-improvements.md"],
-      handoff: "Approved improvements are implemented separately."
+      handoff: "승인된 개선안은 별도 작업으로 구현한다."
     }
   ],
   workflow: [
-    { step: "1", name: "Planner", status: "Create task-spec.md and plan.md" },
-    { step: "2", name: "Spec", status: "Create spec.md and Red priorities" },
-    { step: "3", name: "Red", status: "Write or record failing tests" },
-    { step: "4", name: "Green", status: "Implement the minimum passing change" },
-    { step: "5", name: "Verify", status: "Run verification and write verification.md" },
-    { step: "6", name: "Review", status: "Score and decide PASS, REWORK, or FAIL" },
-    { step: "7", name: "Dashboard", status: "Project run state into dashboard data" },
-    { step: "8", name: "PR", status: "Draft a PR only for PASS runs" }
+    { step: "1", name: "Planner", status: "task-spec.md와 plan.md 작성" },
+    { step: "2", name: "Spec", status: "spec.md와 Red 우선순위 작성" },
+    { step: "3", name: "Red", status: "실패 테스트를 작성하거나 실패 근거 기록" },
+    { step: "4", name: "Green", status: "통과에 필요한 최소 변경 구현" },
+    { step: "5", name: "Verify", status: "검증 실행 후 verification.md 작성" },
+    { step: "6", name: "Review", status: "점수 산정 후 PASS, REWORK, FAIL 결정" },
+    { step: "7", name: "Dashboard", status: "run 상태를 dashboard data로 변환" },
+    { step: "8", name: "PR", status: "PASS run만 PR로 정리" }
   ]
 };
 

@@ -1,0 +1,16 @@
+{
+  "proposal_id": "2026-05-12-template-artifact-regression-tests",
+  "source": {
+    "run_id": "issue-45",
+    "issue_number": 45,
+    "harness_health_score_id": "issue-45-harness-health"
+  },
+  "target_area": "verification_gate",
+  "problem": "템플릿 판별 로직이 diagnose-status와 build-dashboard-data에 중복되어 있고, 자동 테스트가 없어 빈 템플릿을 다시 FAIL로 집계하는 회귀를 놓칠 수 있다.",
+  "proposal": "새 run 템플릿, 실제 PASS review, 실제 0점 FAIL review fixture를 만들어 diagnose-status와 build-dashboard-data의 판별 결과를 자동 검증한다. 가능하면 템플릿 판별 헬퍼를 공통 모듈로 분리한다.",
+  "expected_impact": "dashboard/status가 누락 데이터와 실제 실패를 안정적으로 구분하고, 후속 템플릿 변경에도 회귀를 빨리 잡을 수 있다.",
+  "risk": "fixture 기반 테스트가 실제 run 파일 구조 변경을 따라가지 못하면 유지보수 비용이 생길 수 있다.",
+  "status": "proposed",
+  "created_at": "2026-05-12T05:55:00.000Z",
+  "decided_at": null
+}
