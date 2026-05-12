@@ -1,0 +1,116 @@
+{
+  "score_id": "issue-44-review-attempt-1",
+  "rubric": {
+    "name": "issue_execution",
+    "version": 1
+  },
+  "total_score": 92,
+  "decision": "PASS",
+  "categories": [
+    {
+      "id": "requirement_fulfillment",
+      "score": 24,
+      "max_score": 25,
+      "evidence": [
+        "Added `.agents/harness/inbox-policy.md` with classification tags, PR-time outcomes, completion/removal rules, and status interpretation rules.",
+        "Updated `.agents/inbox.md`, draft-pr docs, capture skill, status skill, and issue workflow to reference the policy."
+      ],
+      "deductions": [
+        "No automated enforcement was added, matching scope but leaving compliance to skill execution."
+      ]
+    },
+    {
+      "id": "scope_control",
+      "score": 15,
+      "max_score": 15,
+      "evidence": [
+        "Changes were limited to harness documentation, skills, and issue-44 run artifacts.",
+        "No product code, dashboard behavior, GitHub label sync, or automation scripts were changed."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "implementation_quality",
+      "score": 14,
+      "max_score": 15,
+      "evidence": [
+        "The policy separates unresolved classification tags from PR-time outcomes.",
+        "The policy keeps `.agents/inbox.md` as an active queue instead of a long-term archive."
+      ],
+      "deductions": [
+        "The policy is English while several harness docs are Korean, which is acceptable but slightly mixed."
+      ]
+    },
+    {
+      "id": "verification_sufficiency",
+      "score": 9,
+      "max_score": 10,
+      "evidence": [
+        "Verified policy file existence, required term coverage with `rg`, inbox parsing with `diagnose-status.mjs`, and diff scope."
+      ],
+      "deductions": [
+        "Build/test/lint were skipped because this is documentation-only."
+      ]
+    },
+    {
+      "id": "risk_and_safety",
+      "score": 5,
+      "max_score": 5,
+      "evidence": [
+        "No destructive operations or production-affecting code changes were made.",
+        "Inbox removal rules require a durable record before removal."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "requirement_interpretation",
+      "score": 10,
+      "max_score": 10,
+      "evidence": [
+        "The user explicitly selected separate policy documentation and removal-after-recording behavior; both were implemented."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "plan_appropriateness",
+      "score": 8,
+      "max_score": 8,
+      "evidence": [
+        "Planner, spec, Red, Green, verification, and review stages were followed for the harness task."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "context_usage",
+      "score": 4,
+      "max_score": 6,
+      "evidence": [
+        "Existing inbox, workflow, draft-pr, capture, and status docs were inspected and aligned."
+      ],
+      "deductions": [
+        "An issue-38 run was accidentally started before the user redirected to #44; it was not modified after the redirect."
+      ]
+    },
+    {
+      "id": "handoff_quality",
+      "score": 3,
+      "max_score": 6,
+      "evidence": [
+        "Run artifacts describe decisions, verification, and remaining risk."
+      ],
+      "deductions": [
+        "The accidental issue-38 run remains in the active run directory and may need separate cleanup."
+      ]
+    }
+  ],
+  "strengths": [
+    "Clear central policy was added for inbox classification, PR-time handling, and removal.",
+    "Existing skills and workflow docs now point to the same policy instead of using loose wording."
+  ],
+  "weaknesses": [
+    "No automated enforcement exists yet.",
+    "A mistakenly started issue-38 run remains as local harness noise."
+  ],
+  "recommended_next_action": "Create a PR for issue #44 after confirming whether to clean up the accidental issue-38 run separately.",
+  "scored_at": "2026-05-12T05:28:00.000Z"
+}

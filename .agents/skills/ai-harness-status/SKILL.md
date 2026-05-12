@@ -74,10 +74,11 @@ If the script fails, report the failure and fall back to manual file inspection.
 
 ## Inbox Rules
 
+- Apply `.agents/harness/inbox-policy.md` when interpreting inbox routing and cleanup state.
 - Treat `.agents/inbox.md` as an active queue.
 - Unresolved `current issue: #number` or `current issue: issue-number` items are blockers or follow-ups for that issue.
 - Unresolved `current issue: none` plus `candidate-issue` items are next-work candidates.
-- Completed or implemented items should not remain as long-term records in inbox.
+- Completed, included, promoted, deferred, or discarded items should not remain as long-term records in inbox.
 - Do not delete or edit inbox entries during status.
 
 ## Stage Rules
