@@ -14,7 +14,9 @@
     "implementation_notes": "implementation-notes.md",
     "verification": "verification.md",
     "review_score": "review-score.json",
-    "review": "review.md"
+    "review": "review.md",
+    "harness_health_score": "harness-health-score.json",
+    "harness_improvements": "harness-improvements.md"
   },
   "changed_files": [
     ".agents/harness/scripts/diagnose-status.mjs",
@@ -27,6 +29,12 @@
       "total_score": 91,
       "decision": "PASS",
       "file": "review-score.json"
+    },
+    {
+      "score_id": "issue-45-harness-health",
+      "total_score": 82,
+      "decision": "HEALTH_RECORDED",
+      "file": "harness-health-score.json"
     }
   ],
   "created_at": "2026-05-12T05:28:11.698Z",

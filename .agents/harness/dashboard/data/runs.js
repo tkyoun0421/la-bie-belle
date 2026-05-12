@@ -1,12 +1,12 @@
 window.AI_HARNESS_RUNS = {
-  "generated_at": "2026-05-12T05:43:54.119Z",
+  "generated_at": "2026-05-12T05:47:02.560Z",
   "summary": {
     "issue_count": 2,
     "average_issue_score": 92,
     "pass_count": 2,
     "rework_count": 0,
     "fail_count": 0,
-    "average_harness_score": null
+    "average_harness_score": 82
   },
   "runs": [
     {
@@ -17,14 +17,14 @@ window.AI_HARNESS_RUNS = {
       "total_score": 91,
       "review_complete": true,
       "data_quality_warnings": [],
-      "harness_score": null,
+      "harness_score": 82,
       "priority": null,
       "blocked": false,
       "blockers": [],
       "inbox_refs": [],
       "dashboard_synced_at": null,
       "attempt": 1,
-      "updated_at": "2026-05-12T05:50:00.000Z",
+      "updated_at": "2026-05-12T05:55:00.000Z",
       "strengths": [
         "템플릿만 있는 run이 더 이상 reviewed FAIL 결과로 표시되지 않는다.",
         "dashboard 요약이 누락된 review 데이터와 실제 0점을 구분한다."
@@ -373,9 +373,82 @@ window.AI_HARNESS_RUNS = {
     }
   ],
   "harness_health": {
-    "total_score": null,
-    "missing": true,
-    "categories": [],
+    "total_score": 82,
+    "categories": [
+      {
+        "label": "작업 명세 품질",
+        "score": 18,
+        "max": 20,
+        "evidence": [
+          "#45는 dashboard/status/review 표시 기준의 문제를 명확히 제기했고, 실제 템플릿 run과 작성된 run을 구분하는 완료 기준으로 구체화됐다.",
+          "Red 단계에서 false reviewed/FAIL 문제를 재현하도록 작업 명세와 스펙이 이어졌다."
+        ],
+        "deductions": [
+          "초기 이슈 본문에는 dashboard, status, review 중 어느 범위까지 포함할지 확인 필요가 남아 있어 계획 단계에서 범위를 확정해야 했다."
+        ]
+      },
+      {
+        "label": "컨텍스트 주입 품질",
+        "score": 17,
+        "max": 20,
+        "evidence": [
+          "기존 start-issue 템플릿, #38 accidental run, #44 PASS run, dashboard data를 함께 사용해 재현 조건을 잡았다.",
+          "과거 archived #24의 harness health 점수가 현재 평균처럼 보이는 문제도 후속 보정에서 확인됐다."
+        ],
+        "deductions": [
+          "열린 PR #50과 develop 브랜치 상태가 실행 도중 혼재되어 PR 반영 전략을 다시 조정해야 했다."
+        ]
+      },
+      {
+        "label": "역할 분리와 인수인계 품질",
+        "score": 12,
+        "max": 15,
+        "evidence": [
+          "task-spec, plan, spec, implementation-notes, verification, review가 모두 남아 있고 #45 PASS 판단으로 이어졌다.",
+          "사용자 피드백 이후 dashboard 문구와 하네스 점수 표시 보정도 verification에 추가 기록됐다."
+        ],
+        "deductions": [
+          "하네스 평가 단계가 PR 생성 이후 사용자 지적을 받은 뒤 수행되어 순서가 매끄럽지 않았다."
+        ]
+      },
+      {
+        "label": "검증 게이트 품질",
+        "score": 14,
+        "max": 20,
+        "evidence": [
+          "diagnose-status, build-dashboard-data, validate-score를 실행해 템플릿 false FAIL과 dashboard 집계 개선을 확인했다.",
+          "dashboard data에서 평균 실행 점수와 하네스 평균의 null 처리까지 확인했다."
+        ],
+        "deductions": [
+          "템플릿 판별과 dashboard summary 기준을 검증하는 별도 자동 테스트가 없어 회귀 방지가 약하다.",
+          "dashboard 문구 언어 문제와 하네스 평균 이상 표시를 첫 검증 단계에서 잡지 못했다."
+        ]
+      },
+      {
+        "label": "스코어링 루브릭 품질",
+        "score": 12,
+        "max": 15,
+        "evidence": [
+          "issue execution 점수는 91점 PASS로 산출됐고, template-only run과 review-missing run의 차이를 리뷰 근거에 반영했다.",
+          "감점 사유가 템플릿 판별 중복과 테스트 부재로 구체화됐다."
+        ],
+        "deductions": [
+          "하네스 건강도 평가는 사용자 지적 전에는 누락되어 PR 본문과 dashboard에 처음부터 포함되지 않았다."
+        ]
+      },
+      {
+        "label": "기록과 대시보드 품질",
+        "score": 9,
+        "max": 10,
+        "evidence": [
+          "dashboard data가 review 완료 run만 집계하고, 활성 harness health가 없으면 평가 없음으로 표시하도록 개선됐다.",
+          "리뷰 근거, 감점 사유, 카테고리 라벨, 개선 제안, agent/workflow 설명이 한글로 정리됐다."
+        ],
+        "deductions": [
+          "dashboard UI 자체의 데이터 품질 경고 시각화는 아직 제한적이다."
+        ]
+      }
+    ],
     "proposals": [
       {
         "proposal_id": "2026-05-10-dashboard-health-missing-state",
@@ -394,6 +467,15 @@ window.AI_HARNESS_RUNS = {
         "expected_impact": "PR 생성 전에 CI 전용 실패 가능성을 고려하므로 리뷰 직후 머지 가능한 PR 비율이 높아진다.",
         "status": "proposed",
         "file": ".agents/harness/improvements/proposals/2026-05-10-verification-ci-parity.json"
+      },
+      {
+        "proposal_id": "2026-05-12-template-artifact-regression-tests",
+        "target_area": "verification_gate",
+        "title": "2026-05-12-template-artifact-regression-tests",
+        "reason": "템플릿 판별 로직이 diagnose-status와 build-dashboard-data에 중복되어 있고, 자동 테스트가 없어 빈 템플릿을 다시 FAIL로 집계하는 회귀를 놓칠 수 있다.",
+        "expected_impact": "dashboard/status가 누락 데이터와 실제 실패를 안정적으로 구분하고, 후속 템플릿 변경에도 회귀를 빨리 잡을 수 있다.",
+        "status": "proposed",
+        "file": ".agents/harness/improvements/proposals/2026-05-12-template-artifact-regression-tests.json"
       }
     ]
   },
