@@ -440,6 +440,8 @@
 
       const decisionClass = (decision) => decision.toLowerCase();
       const percent = (score, max) => Math.round((score / max) * 100);
+      const scoreText = (score) => score === null || score === undefined ? "평가 없음" : score;
+      const scorePercent = (score) => score === null || score === undefined ? 0 : score;
       const fmtDate = (value) => new Intl.DateTimeFormat("ko-KR", {
         dateStyle: "medium",
         timeStyle: "short"
@@ -458,7 +460,7 @@
         document.querySelector("#summaryCards").innerHTML = cards.map(([label, value]) => `
           <div class="panel metric">
             <span class="subtle">${label}</span>
-            <span class="value">${value}</span>
+            <span class="value">${scoreText(value)}</span>
           </div>
         `).join("");
       }
@@ -482,12 +484,12 @@
             </td>
             <td><span class="badge ${decisionClass(run.decision)}">${run.decision}</span></td>
             <td>
-              <span class="score">${run.total_score}</span> / 100
-              <div class="bar" aria-hidden="true"><span style="width:${run.total_score}%"></span></div>
+              <span class="score">${scoreText(run.total_score)}</span>${run.total_score === null || run.total_score === undefined ? "" : " / 100"}
+              <div class="bar" aria-hidden="true"><span style="width:${scorePercent(run.total_score)}%"></span></div>
             </td>
             <td>
-              <span class="score">${run.harness_score}</span> / 100
-              <div class="bar" aria-hidden="true"><span style="width:${run.harness_score}%"></span></div>
+              <span class="score">${scoreText(run.harness_score)}</span>${run.harness_score === null || run.harness_score === undefined ? "" : " / 100"}
+              <div class="bar" aria-hidden="true"><span style="width:${scorePercent(run.harness_score)}%"></span></div>
             </td>
             <td>${run.attempt}</td>
             <td>${run.deductions.slice(0, 2).map((item) => item.reason).join("<br>")}</td>
@@ -574,7 +576,7 @@
         const harnessCategories = data.harness_health.categories || [];
         const proposals = data.harness_health.proposals || [];
         document.querySelector("#harnessHealth").innerHTML = `
-          <div class="score" style="font-size:32px;margin-bottom:14px;">${data.harness_health.total_score} / 100</div>
+          <div class="score" style="font-size:32px;margin-bottom:14px;">${scoreText(data.harness_health.total_score)}${data.harness_health.total_score === null || data.harness_health.total_score === undefined ? "" : " / 100"}</div>
           ${harnessCategories.length ? harnessCategories.map((item) => `
             <details class="category-detail">
               <summary class="category-row">

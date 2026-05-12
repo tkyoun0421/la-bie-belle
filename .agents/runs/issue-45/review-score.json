@@ -12,11 +12,11 @@
       "score": 24,
       "max_score": 25,
       "evidence": [
-        "Status diagnosis now marks template artifacts with `complete`, `template`, and `quality_warnings` and does not infer terminal decisions from template review scores.",
-        "Dashboard data now uses complete review scores for summary counts and averages, with null score and warnings for review-missing runs."
+        "status 진단이 템플릿 산출물에 `complete`, `template`, `quality_warnings`를 표시하고, 템플릿 review 점수에서 최종 결정을 추론하지 않게 됐다.",
+        "dashboard 데이터가 작성 완료된 review 점수만 요약 카운트와 평균에 사용하고, review가 없는 run은 null 점수와 경고로 표시한다."
       ],
       "deductions": [
-        "Dashboard UI rendering was not updated; this issue focused on generated data and status output."
+        "dashboard UI 전면 렌더링 개편은 하지 않았고, 이번 이슈는 생성 데이터와 status 출력 기준에 집중했다."
       ]
     },
     {
@@ -24,8 +24,8 @@
       "score": 15,
       "max_score": 15,
       "evidence": [
-        "Changes were limited to harness scripts, dashboard data, and issue-45 run artifacts.",
-        "No product code or unrelated GitHub labels/Project fields were changed."
+        "변경 범위를 하네스 스크립트, dashboard 데이터, issue-45 run 산출물로 제한했다.",
+        "제품 코드나 관련 없는 GitHub 라벨/Project 필드는 변경하지 않았다."
       ],
       "deductions": []
     },
@@ -34,11 +34,11 @@
       "score": 14,
       "max_score": 15,
       "evidence": [
-        "Template detection avoids using score value alone, so a real 0-point FAIL can still be valid when sentinel values are removed and evidence exists.",
-        "Template-only runs are excluded from dashboard runs while review-missing active runs remain visible with data quality warnings."
+        "템플릿 판별이 점수값만 보지 않으므로, sentinel 값이 제거되고 근거가 작성된 실제 0점 FAIL은 유효 결과로 남을 수 있다.",
+        "템플릿만 있는 run은 dashboard 목록에서 제외하고, review가 아직 없는 활성 run은 데이터 품질 경고와 함께 표시한다."
       ],
       "deductions": [
-        "Template detection is duplicated between the two scripts instead of extracted to a shared module."
+        "템플릿 판별 로직이 공통 모듈로 분리되지 않고 두 스크립트에 중복되어 있다."
       ]
     },
     {
@@ -46,11 +46,11 @@
       "score": 9,
       "max_score": 10,
       "evidence": [
-        "Verified diagnose-status output for template issue-38, PASS issue-44, and in-progress issue-45.",
-        "Verified dashboard summary no longer counts template/incomplete review scores as zero-point failures."
+        "템플릿 issue-38, PASS issue-44, 진행 중 issue-45에 대한 diagnose-status 출력을 확인했다.",
+        "dashboard 요약이 템플릿/미완료 review 점수를 0점 실패로 집계하지 않는 것을 확인했다."
       ],
       "deductions": [
-        "No separate automated unit test file was added."
+        "별도 자동화 단위 테스트 파일은 추가하지 않았다."
       ]
     },
     {
@@ -58,8 +58,8 @@
       "score": 5,
       "max_score": 5,
       "evidence": [
-        "No destructive operations were performed.",
-        "The accidental issue-38 directory remains untracked and is not committed."
+        "파괴적인 작업은 수행하지 않았다.",
+        "실수로 생성된 issue-38 디렉터리는 추적하지 않았고 커밋에 포함하지 않았다."
       ],
       "deductions": []
     },
@@ -68,7 +68,7 @@
       "score": 10,
       "max_score": 10,
       "evidence": [
-        "The issue's dashboard/status/review display scope was addressed through status output, dashboard data, and review score validity rules."
+        "이슈의 dashboard/status/review 표시 기준 범위를 status 출력, dashboard 데이터, review 점수 유효성 규칙으로 처리했다."
       ],
       "deductions": []
     },
@@ -77,7 +77,7 @@
       "score": 8,
       "max_score": 8,
       "evidence": [
-        "Red captured the existing false FAIL behavior before Green fixed the status and dashboard criteria."
+        "Red 단계에서 기존 false FAIL 동작을 먼저 확인한 뒤 Green 단계에서 status와 dashboard 기준을 수정했다."
       ],
       "deductions": []
     },
@@ -86,10 +86,10 @@
       "score": 4,
       "max_score": 6,
       "evidence": [
-        "The implementation used the existing start-issue templates, diagnose-status behavior, dashboard data generation, and issue-44 PASS run as fixtures."
+        "기존 start-issue 템플릿, diagnose-status 동작, dashboard 데이터 생성, issue-44 PASS run을 검증 기준으로 활용했다."
       ],
       "deductions": [
-        "The open PR #50 on develop means additional commits to develop may update that PR unless handled separately."
+        "작업 당시 develop 기반 PR #50이 열려 있어 추가 커밋이 같은 PR에 반영될 수 있는 상황이었다."
       ]
     },
     {
@@ -97,21 +97,21 @@
       "score": 2,
       "max_score": 6,
       "evidence": [
-        "Run artifacts record the Red evidence, implementation decisions, verification, and review outcome."
+        "run 산출물에 Red 근거, 구현 결정, 검증 결과, 리뷰 결정을 기록했다."
       ],
       "deductions": [
-        "The issue-38 accidental local run remains as a known local cleanup item."
+        "실수로 생성된 issue-38 로컬 run은 별도 정리 항목으로 남아 있었다."
       ]
     }
   ],
   "strengths": [
-    "Template-only runs no longer appear as reviewed FAIL results.",
-    "Dashboard summary now distinguishes missing review data from real zero scores."
+    "템플릿만 있는 run이 더 이상 reviewed FAIL 결과로 표시되지 않는다.",
+    "dashboard 요약이 누락된 review 데이터와 실제 0점을 구분한다."
   ],
   "weaknesses": [
-    "Template detection is duplicated in two scripts.",
-    "No dedicated automated unit tests were added."
+    "템플릿 판별 로직이 두 스크립트에 중복되어 있다.",
+    "전용 자동화 단위 테스트는 추가하지 않았다."
   ],
-  "recommended_next_action": "Commit issue #45 changes on develop and decide whether to update the open PR or create a separate follow-up flow after merge.",
+  "recommended_next_action": "issue #45 변경을 PR에 반영하고 CI 결과를 확인한다.",
   "scored_at": "2026-05-12T05:50:00.000Z"
 }
