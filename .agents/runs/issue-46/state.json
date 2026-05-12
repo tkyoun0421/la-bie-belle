@@ -1,0 +1,13 @@
+{
+  "run_id": "issue-46",
+  "issue_number": 46,
+  "stage": "reviewed",
+  "decision": "PASS",
+  "priority": null,
+  "blocked": false,
+  "blockers": [],
+  "inbox_refs": [],
+  "dashboard_synced_at": null,
+  "harness_health_score": 84,
+  "updated_at": "2026-05-12T06:25:00.000Z"
+}

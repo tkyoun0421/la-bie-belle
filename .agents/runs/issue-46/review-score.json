@@ -1,0 +1,118 @@
+{
+  "score_id": "issue-46-review-attempt-1",
+  "rubric": {
+    "name": "issue_execution",
+    "version": 1
+  },
+  "total_score": 90,
+  "decision": "PASS",
+  "categories": [
+    {
+      "id": "requirement_fulfillment",
+      "score": 24,
+      "max_score": 25,
+      "evidence": [
+        "`state.json.inbox_refs` 사용 기준과 PR 본문 `Included follow-ups` 기록 규칙을 inbox policy에 추가했다.",
+        "PR template과 draft-pr 문서가 같은 PR에 포함된 follow-up을 기록할 위치와 절차를 제공한다."
+      ],
+      "deductions": [
+        "자동으로 PR 본문을 채우는 구현은 범위에서 제외했다."
+      ]
+    },
+    {
+      "id": "scope_control",
+      "score": 15,
+      "max_score": 15,
+      "evidence": [
+        "변경 범위를 하네스 문서, PR template, run-state schema, issue-46 산출물로 제한했다.",
+        "제품 코드와 GitHub 자동화 구현은 변경하지 않았다."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "implementation_quality",
+      "score": 13,
+      "max_score": 15,
+      "evidence": [
+        "`inbox_refs`는 id 목록, 상세 설명은 PR 본문/run 산출물이라는 역할 분리가 명확하다.",
+        "PR template은 follow-up이 없을 때도 `없음`을 명시하도록 기본값을 제공한다."
+      ],
+      "deductions": [
+        "규칙은 문서 기반이라 PR 작성자가 누락할 수 있다.",
+        "schema는 id 형식만 검증하고 PR 본문과의 일치 여부까지 검증하지는 않는다."
+      ]
+    },
+    {
+      "id": "verification_sufficiency",
+      "score": 9,
+      "max_score": 10,
+      "evidence": [
+        "`rg`로 관련 용어와 섹션이 PR template, inbox policy, draft-pr 문서, workflow, schema에 반영됐는지 확인했다.",
+        "`diagnose-status.mjs`로 run 상태와 inbox 파싱을 확인했다."
+      ],
+      "deductions": [
+        "PR 본문과 `state.json.inbox_refs` 일치 여부를 자동 검증하는 테스트는 없다."
+      ]
+    },
+    {
+      "id": "risk_and_safety",
+      "score": 5,
+      "max_score": 5,
+      "evidence": [
+        "파괴적인 작업이나 제품 동작 변경은 없었다.",
+        "기존 inbox 제거 정책을 유지하면서 장기 기록 위치를 더 명확히 했다."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "requirement_interpretation",
+      "score": 10,
+      "max_score": 10,
+      "evidence": [
+        "이슈의 확인 필요 항목은 자동화가 아니라 PR 생성 스킬의 수동 확인 규칙으로 확정했다."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "plan_appropriateness",
+      "score": 8,
+      "max_score": 8,
+      "evidence": [
+        "Red로 기존 섹션/규칙 부재를 확인한 뒤 Green에서 정책, schema, template, skill 문서를 정리했다."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "context_usage",
+      "score": 4,
+      "max_score": 6,
+      "evidence": [
+        "기존 #44 inbox policy와 draft-pr 문서, PR template, run-state schema를 모두 기준으로 삼았다."
+      ],
+      "deductions": [
+        "실제 포함 follow-up이 있는 PR fixture는 아직 없다."
+      ]
+    },
+    {
+      "id": "handoff_quality",
+      "score": 2,
+      "max_score": 6,
+      "evidence": [
+        "task-spec, plan, spec, implementation notes, verification, review 기록이 남았다."
+      ],
+      "deductions": [
+        "자동화가 아니라 수동 기록 규칙이므로 다음 PR 생성자가 섹션을 정확히 채워야 한다."
+      ]
+    }
+  ],
+  "strengths": [
+    "`inbox_refs`와 PR 본문 추적 위치가 명확해졌다.",
+    "PR template에 follow-up 기록 섹션이 생겨 누락 가능성이 줄었다."
+  ],
+  "weaknesses": [
+    "PR 본문과 `state.json.inbox_refs`의 일치 여부는 아직 자동 검증하지 않는다.",
+    "실제 follow-up 포함 사례 fixture가 없다."
+  ],
+  "recommended_next_action": "PR을 생성하고 후속으로 PR 본문과 inbox_refs 일치 검증 자동화를 검토한다.",
+  "scored_at": "2026-05-12T06:20:00.000Z"
+}

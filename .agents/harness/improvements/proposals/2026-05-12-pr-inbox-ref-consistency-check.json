@@ -1,0 +1,16 @@
+{
+  "proposal_id": "2026-05-12-pr-inbox-ref-consistency-check",
+  "source": {
+    "run_id": "issue-46",
+    "issue_number": 46,
+    "harness_health_score_id": "issue-46-harness-health"
+  },
+  "target_area": "verification_gate",
+  "problem": "같은 PR에 포함된 follow-up은 `state.json.inbox_refs`와 PR 본문 `Included follow-ups`에 함께 기록해야 하지만 현재는 수동 규칙이라 누락될 수 있다.",
+  "proposal": "PR 생성 전 검증 또는 draft-pr 단계에서 `state.json.inbox_refs`와 PR 본문 `Included follow-ups` 섹션을 비교해 누락, 불일치, 섹션 생략을 경고한다.",
+  "expected_impact": "같은 PR에 포함된 로컬 발견 작업의 추적 누락을 줄이고, inbox 항목이 중복으로 남거나 장기 기록 없이 제거되는 위험을 낮춘다.",
+  "risk": "PR 본문 형식이 바뀌면 단순 문자열 검사가 취약할 수 있으므로 템플릿 섹션 기반으로 좁게 검증해야 한다.",
+  "status": "proposed",
+  "created_at": "2026-05-12T06:25:00.000Z",
+  "decided_at": null
+}

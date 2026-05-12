@@ -1,0 +1,45 @@
+{
+  "run_id": "issue-46",
+  "issue": {
+    "number": 46,
+    "title": "[Harness] PR 포함 follow-up 추적 연결",
+    "url": "https://github.com/tkyoun0421/la-bie-belle/issues/46"
+  },
+  "status": "reviewed",
+  "attempt": 1,
+  "artifacts": {
+    "task_spec": "task-spec.md",
+    "plan": "plan.md",
+    "spec": "spec.md",
+    "implementation_notes": "implementation-notes.md",
+    "verification": "verification.md",
+    "review_score": "review-score.json",
+    "review": "review.md",
+    "harness_health_score": "harness-health-score.json",
+    "harness_improvements": "harness-improvements.md"
+  },
+  "changed_files": [
+    ".agents/harness/inbox-policy.md",
+    ".agents/skills/ai-harness-draft-pr/SKILL.md",
+    ".agents/harness/agents/draft-pr.agent.md",
+    ".agents/harness/workflows/issue-execution.workflow.md",
+    ".agents/harness/schemas/run-state.schema.json",
+    ".github/pull_request_template.md"
+  ],
+  "scores": [
+    {
+      "score_id": "issue-46-review-attempt-1",
+      "total_score": 90,
+      "decision": "PASS",
+      "file": "review-score.json"
+    },
+    {
+      "score_id": "issue-46-harness-health",
+      "total_score": 84,
+      "decision": "HEALTH_RECORDED",
+      "file": "harness-health-score.json"
+    }
+  ],
+  "created_at": "2026-05-12T05:49:22.659Z",
+  "updated_at": "2026-05-12T06:20:00.000Z"
+}
