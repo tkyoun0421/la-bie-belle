@@ -13,7 +13,7 @@ PR 생성 단계만 수행한다. 스킬 이름은 호환성을 위해 `ai-harne
 - `validate-score.mjs` 검증을 통과해야 한다.
 - 원본 GitHub Issue의 완료 기준이 산출물과 검증 기록에서 충족되었는지 확인해야 한다.
 - 작업 중 추가된 작업 사항이 현재 이슈에 반영되었는지, 별도 후속 작업으로 분리되었는지 확인해야 한다.
-- `.agents/inbox.md`에 현재 이슈와 관련된 미처리 항목이 있으면 완료 기준 반영, 후속 이슈 승격, 명시적 보류 중 하나로 정리해야 한다.
+- `.agents/inbox.md`에 현재 이슈와 관련된 미처리 항목이 있으면 `.agents/harness/inbox-policy.md`에 따라 `included-in-pr`, `promoted-to-issue`, `deferred` 중 하나로 정리해야 한다.
 - PR 본문에 원본 이슈를 자동 종료하는 `Closes #이슈번호` closing keyword를 포함해야 한다.
 - `.github/pull_request_template.md`를 기준으로 PR 본문을 작성해야 한다.
 
@@ -22,9 +22,10 @@ PR 생성 단계만 수행한다. 스킬 이름은 호환성을 위해 `ai-harne
 1. 원본 이슈, 작업 명세, 계획, 구현 기록, 검증 기록, 리뷰 기록, `.agents/inbox.md`를 읽는다.
 2. 원본 이슈 완료 기준을 체크리스트로 대조하고, 충족 여부와 근거를 확인한다.
 3. 작업 중 추가된 사항과 현재 이슈 관련 inbox 항목을 확인한다.
-   - 현재 이슈 완료 기준에 포함되어야 하는 항목은 반영 완료 여부를 확인한다.
-   - 현재 PR 범위 밖 항목은 후속 작업 또는 보류 사유로 정리한다.
-   - 반영 완료 또는 GitHub Issue로 승격된 inbox 항목은 `.agents/inbox.md`에서 제거한다.
+   - 현재 이슈 완료 기준에 포함되어야 하는 항목은 `included-in-pr`로 기록한다.
+   - 현재 PR 범위 밖 항목은 `promoted-to-issue` 또는 `deferred`로 정리한다.
+   - 처리 결과는 PR 본문, GitHub Issue, run 산출물 중 하나에 남긴다.
+   - 처리된 inbox 항목은 `.agents/inbox.md`에서 제거한다.
 4. `.github/pull_request_template.md`를 읽고 템플릿의 섹션을 유지한 채 PR 본문을 작성한다.
 5. 변경 범위를 확인하고 커밋 메시지를 작성한다.
 6. PR 본문 첫 부분에 `Closes #이슈번호`를 넣어 머지 시 원본 이슈가 자동 종료되도록 한다.

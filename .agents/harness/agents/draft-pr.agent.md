@@ -25,6 +25,8 @@ Reviewer가 `PASS`를 결정한 작업을 바로 리뷰/머지 가능한 일반 
 ## 책임
 
 - 원본 이슈 완료 기준, 작업 중 추가된 사항, 현재 이슈 관련 inbox 항목이 완료/승격/보류 중 하나로 정리되었는지 확인한다.
+- inbox 항목 처리 기준은 `.agents/harness/inbox-policy.md`를 따르며, 현재 이슈 관련 항목은 `included-in-pr`, `promoted-to-issue`, `deferred` 중 하나로 기록한다.
+- 처리된 inbox 항목은 PR 본문, GitHub Issue, run 산출물 중 하나에 장기 기록을 남긴 뒤 `.agents/inbox.md`에서 제거한다.
 - `.github/pull_request_template.md`를 읽고 해당 섹션 구조를 유지해 PR 본문을 작성한다.
 - PR 본문 첫 부분에 `Closes #이슈번호`를 넣어 머지 시 원본 Issue가 자동 종료되도록 한다.
 - PR 본문에 목표, 변경 요약, 완료 기준 체크 결과, 추가 작업 처리 결과, inbox 확인 결과, 검증 결과, Reviewer 점수, 남은 리스크를 포함한다.
