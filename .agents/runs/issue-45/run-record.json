@@ -1,0 +1,34 @@
+{
+  "run_id": "issue-45",
+  "issue": {
+    "number": 45,
+    "title": "[Harness] 실제 실행 run 기준으로 상태 표시 개선",
+    "url": "https://github.com/tkyoun0421/la-bie-belle/issues/45"
+  },
+  "status": "reviewed",
+  "attempt": 1,
+  "artifacts": {
+    "task_spec": "task-spec.md",
+    "plan": "plan.md",
+    "spec": "spec.md",
+    "implementation_notes": "implementation-notes.md",
+    "verification": "verification.md",
+    "review_score": "review-score.json",
+    "review": "review.md"
+  },
+  "changed_files": [
+    ".agents/harness/scripts/diagnose-status.mjs",
+    ".agents/harness/scripts/build-dashboard-data.mjs",
+    ".agents/harness/dashboard/data/runs.js"
+  ],
+  "scores": [
+    {
+      "score_id": "issue-45-review-attempt-1",
+      "total_score": 91,
+      "decision": "PASS",
+      "file": "review-score.json"
+    }
+  ],
+  "created_at": "2026-05-12T05:28:11.698Z",
+  "updated_at": "2026-05-12T05:50:00.000Z"
+}

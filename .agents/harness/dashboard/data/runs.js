@@ -1,14 +1,230 @@
 window.AI_HARNESS_RUNS = {
-  "generated_at": "2026-05-11T05:35:56.581Z",
+  "generated_at": "2026-05-12T05:32:48.206Z",
   "summary": {
-    "issue_count": 1,
-    "average_issue_score": 89,
-    "pass_count": 1,
+    "issue_count": 2,
+    "average_issue_score": 92,
+    "pass_count": 2,
     "rework_count": 0,
     "fail_count": 0,
     "average_harness_score": 74
   },
   "runs": [
+    {
+      "issue_number": 45,
+      "title": "[Harness] 실제 실행 run 기준으로 상태 표시 개선",
+      "stage": "reviewed",
+      "decision": "PASS",
+      "total_score": 91,
+      "review_complete": true,
+      "data_quality_warnings": [],
+      "harness_score": null,
+      "priority": null,
+      "blocked": false,
+      "blockers": [],
+      "inbox_refs": [],
+      "dashboard_synced_at": null,
+      "attempt": 1,
+      "updated_at": "2026-05-12T05:50:00.000Z",
+      "strengths": [
+        "Template-only runs no longer appear as reviewed FAIL results.",
+        "Dashboard summary now distinguishes missing review data from real zero scores."
+      ],
+      "weaknesses": [
+        "Template detection is duplicated in two scripts.",
+        "No dedicated automated unit tests were added."
+      ],
+      "deductions": [
+        {
+          "category": "Requirement fulfillment",
+          "points": 1,
+          "reason": "Dashboard UI rendering was not updated; this issue focused on generated data and status output."
+        },
+        {
+          "category": "Implementation quality",
+          "points": 1,
+          "reason": "Template detection is duplicated between the two scripts instead of extracted to a shared module."
+        },
+        {
+          "category": "Verification sufficiency",
+          "points": 1,
+          "reason": "No separate automated unit test file was added."
+        },
+        {
+          "category": "Context usage",
+          "points": 2,
+          "reason": "The open PR #50 on develop means additional commits to develop may update that PR unless handled separately."
+        },
+        {
+          "category": "Handoff quality",
+          "points": 4,
+          "reason": "The issue-38 accidental local run remains as a known local cleanup item."
+        }
+      ],
+      "categories": [
+        {
+          "id": "requirement_fulfillment",
+          "label": "Requirement fulfillment",
+          "score": 24,
+          "max": 25
+        },
+        {
+          "id": "scope_control",
+          "label": "Scope control",
+          "score": 15,
+          "max": 15
+        },
+        {
+          "id": "implementation_quality",
+          "label": "Implementation quality",
+          "score": 14,
+          "max": 15
+        },
+        {
+          "id": "verification_sufficiency",
+          "label": "Verification sufficiency",
+          "score": 9,
+          "max": 10
+        },
+        {
+          "id": "risk_and_safety",
+          "label": "Risk and safety",
+          "score": 5,
+          "max": 5
+        },
+        {
+          "id": "requirement_interpretation",
+          "label": "Requirement interpretation",
+          "score": 10,
+          "max": 10
+        },
+        {
+          "id": "plan_appropriateness",
+          "label": "Plan appropriateness",
+          "score": 8,
+          "max": 8
+        },
+        {
+          "id": "context_usage",
+          "label": "Context usage",
+          "score": 4,
+          "max": 6
+        },
+        {
+          "id": "handoff_quality",
+          "label": "Handoff quality",
+          "score": 2,
+          "max": 6
+        }
+      ]
+    },
+    {
+      "issue_number": 44,
+      "title": "[Harness] Inbox 처리 정책 문서화",
+      "stage": "reviewed",
+      "decision": "PASS",
+      "total_score": 92,
+      "review_complete": true,
+      "data_quality_warnings": [],
+      "harness_score": null,
+      "priority": null,
+      "blocked": false,
+      "blockers": [],
+      "inbox_refs": [],
+      "dashboard_synced_at": null,
+      "attempt": 1,
+      "updated_at": "2026-05-12T05:30:00.000Z",
+      "strengths": [
+        "Clear central policy was added for inbox classification, PR-time handling, and removal.",
+        "Existing skills and workflow docs now point to the same policy instead of using loose wording."
+      ],
+      "weaknesses": [
+        "No automated enforcement exists yet.",
+        "A mistakenly started issue-38 run remains as local harness noise."
+      ],
+      "deductions": [
+        {
+          "category": "Requirement fulfillment",
+          "points": 1,
+          "reason": "No automated enforcement was added, matching scope but leaving compliance to skill execution."
+        },
+        {
+          "category": "Implementation quality",
+          "points": 1,
+          "reason": "The policy is English while several harness docs are Korean, which is acceptable but slightly mixed."
+        },
+        {
+          "category": "Verification sufficiency",
+          "points": 1,
+          "reason": "Build/test/lint were skipped because this is documentation-only."
+        },
+        {
+          "category": "Context usage",
+          "points": 2,
+          "reason": "An issue-38 run was accidentally started before the user redirected to #44; it was not modified after the redirect."
+        },
+        {
+          "category": "Handoff quality",
+          "points": 3,
+          "reason": "The accidental issue-38 run remains in the active run directory and may need separate cleanup."
+        }
+      ],
+      "categories": [
+        {
+          "id": "requirement_fulfillment",
+          "label": "Requirement fulfillment",
+          "score": 24,
+          "max": 25
+        },
+        {
+          "id": "scope_control",
+          "label": "Scope control",
+          "score": 15,
+          "max": 15
+        },
+        {
+          "id": "implementation_quality",
+          "label": "Implementation quality",
+          "score": 14,
+          "max": 15
+        },
+        {
+          "id": "verification_sufficiency",
+          "label": "Verification sufficiency",
+          "score": 9,
+          "max": 10
+        },
+        {
+          "id": "risk_and_safety",
+          "label": "Risk and safety",
+          "score": 5,
+          "max": 5
+        },
+        {
+          "id": "requirement_interpretation",
+          "label": "Requirement interpretation",
+          "score": 10,
+          "max": 10
+        },
+        {
+          "id": "plan_appropriateness",
+          "label": "Plan appropriateness",
+          "score": 8,
+          "max": 8
+        },
+        {
+          "id": "context_usage",
+          "label": "Context usage",
+          "score": 4,
+          "max": 6
+        },
+        {
+          "id": "handoff_quality",
+          "label": "Handoff quality",
+          "score": 3,
+          "max": 6
+        }
+      ]
+    },
     {
       "run_id": "issue-24",
       "issue_number": 24,

@@ -1,0 +1,117 @@
+{
+  "score_id": "issue-45-review-attempt-1",
+  "rubric": {
+    "name": "issue_execution",
+    "version": 1
+  },
+  "total_score": 91,
+  "decision": "PASS",
+  "categories": [
+    {
+      "id": "requirement_fulfillment",
+      "score": 24,
+      "max_score": 25,
+      "evidence": [
+        "Status diagnosis now marks template artifacts with `complete`, `template`, and `quality_warnings` and does not infer terminal decisions from template review scores.",
+        "Dashboard data now uses complete review scores for summary counts and averages, with null score and warnings for review-missing runs."
+      ],
+      "deductions": [
+        "Dashboard UI rendering was not updated; this issue focused on generated data and status output."
+      ]
+    },
+    {
+      "id": "scope_control",
+      "score": 15,
+      "max_score": 15,
+      "evidence": [
+        "Changes were limited to harness scripts, dashboard data, and issue-45 run artifacts.",
+        "No product code or unrelated GitHub labels/Project fields were changed."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "implementation_quality",
+      "score": 14,
+      "max_score": 15,
+      "evidence": [
+        "Template detection avoids using score value alone, so a real 0-point FAIL can still be valid when sentinel values are removed and evidence exists.",
+        "Template-only runs are excluded from dashboard runs while review-missing active runs remain visible with data quality warnings."
+      ],
+      "deductions": [
+        "Template detection is duplicated between the two scripts instead of extracted to a shared module."
+      ]
+    },
+    {
+      "id": "verification_sufficiency",
+      "score": 9,
+      "max_score": 10,
+      "evidence": [
+        "Verified diagnose-status output for template issue-38, PASS issue-44, and in-progress issue-45.",
+        "Verified dashboard summary no longer counts template/incomplete review scores as zero-point failures."
+      ],
+      "deductions": [
+        "No separate automated unit test file was added."
+      ]
+    },
+    {
+      "id": "risk_and_safety",
+      "score": 5,
+      "max_score": 5,
+      "evidence": [
+        "No destructive operations were performed.",
+        "The accidental issue-38 directory remains untracked and is not committed."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "requirement_interpretation",
+      "score": 10,
+      "max_score": 10,
+      "evidence": [
+        "The issue's dashboard/status/review display scope was addressed through status output, dashboard data, and review score validity rules."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "plan_appropriateness",
+      "score": 8,
+      "max_score": 8,
+      "evidence": [
+        "Red captured the existing false FAIL behavior before Green fixed the status and dashboard criteria."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "context_usage",
+      "score": 4,
+      "max_score": 6,
+      "evidence": [
+        "The implementation used the existing start-issue templates, diagnose-status behavior, dashboard data generation, and issue-44 PASS run as fixtures."
+      ],
+      "deductions": [
+        "The open PR #50 on develop means additional commits to develop may update that PR unless handled separately."
+      ]
+    },
+    {
+      "id": "handoff_quality",
+      "score": 2,
+      "max_score": 6,
+      "evidence": [
+        "Run artifacts record the Red evidence, implementation decisions, verification, and review outcome."
+      ],
+      "deductions": [
+        "The issue-38 accidental local run remains as a known local cleanup item."
+      ]
+    }
+  ],
+  "strengths": [
+    "Template-only runs no longer appear as reviewed FAIL results.",
+    "Dashboard summary now distinguishes missing review data from real zero scores."
+  ],
+  "weaknesses": [
+    "Template detection is duplicated in two scripts.",
+    "No dedicated automated unit tests were added."
+  ],
+  "recommended_next_action": "Commit issue #45 changes on develop and decide whether to update the open PR or create a separate follow-up flow after merge.",
+  "scored_at": "2026-05-12T05:50:00.000Z"
+}

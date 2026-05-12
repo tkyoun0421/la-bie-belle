@@ -24,6 +24,45 @@ function safeReadScore(runDir, artifactPath) {
   return safeReadJson(join(runDir, artifactPath));
 }
 
+function readText(path) {
+  return readFileSync(path, "utf8");
+}
+
+function isMarkdownTemplate(path) {
+  if (!existsSync(path)) return true;
+  const text = readText(path).trim();
+  const placeholderLines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line === "작성 필요." || line === "- 작성 필요.");
+  return !text || placeholderLines.length > 0;
+}
+
+function isReviewScoreTemplate(score) {
+  if (!score) return true;
+
+  const hasEvidence = (score.categories || []).some(
+    (category) => (category.evidence || []).length > 0 || (category.deductions || []).length > 0
+  );
+
+  return (
+    score.score_id === "issue-000-review-attempt-1" ||
+    score.scored_at === "1970-01-01T00:00:00.000Z" ||
+    String(score.recommended_next_action || "").includes("작성 필요") ||
+    (score.decision === "FAIL" && score.total_score === 0 && !hasEvidence)
+  );
+}
+
+function completeReviewScore(runDir, artifactPath) {
+  const score = safeReadScore(runDir, artifactPath);
+  return isReviewScoreTemplate(score) ? null : score;
+}
+
+function artifactComplete(runDir, artifactPath) {
+  if (!artifactPath) return false;
+  return !isMarkdownTemplate(join(runDir, artifactPath));
+}
+
 function readImprovementProposals() {
   if (!existsSync(proposalsRoot)) return [];
 
@@ -71,15 +110,15 @@ function decisionFromStatus(status, score, state) {
   if (status === "pass" || status === "draft_pr_created") return "PASS";
   if (status === "rework") return "REWORK";
   if (status === "fail") return "FAIL";
-  return "FAIL";
+  return null;
 }
 
-function stageFromArtifacts(runDir) {
-  if (existsSync(join(runDir, "review-score.json")) && existsSync(join(runDir, "review.md"))) return "reviewed";
-  if (existsSync(join(runDir, "verification.md"))) return "verified";
-  if (existsSync(join(runDir, "implementation-notes.md"))) return "green";
-  if (existsSync(join(runDir, "spec.md"))) return "specified";
-  if (existsSync(join(runDir, "task-spec.md")) && existsSync(join(runDir, "plan.md"))) return "planned";
+function stageFromArtifacts(runDir, record, reviewScore) {
+  if (reviewScore && artifactComplete(runDir, record.artifacts?.review)) return "reviewed";
+  if (artifactComplete(runDir, record.artifacts?.verification)) return "verified";
+  if (artifactComplete(runDir, record.artifacts?.implementation_notes)) return "green";
+  if (artifactComplete(runDir, record.artifacts?.spec)) return "specified";
+  if (artifactComplete(runDir, record.artifacts?.task_spec) && artifactComplete(runDir, record.artifacts?.plan)) return "planned";
   return "unplanned";
 }
 
@@ -99,7 +138,7 @@ for (const runDir of runDirs) {
 
   const record = readJson(runRecordPath);
   const state = safeReadJson(join(runDir, "state.json"));
-  const reviewScore = safeReadScore(runDir, record.artifacts?.review_score);
+  const reviewScore = completeReviewScore(runDir, record.artifacts?.review_score);
   const harnessScore = safeReadScore(
     runDir,
     record.artifacts?.harness_health_score || "harness-health-score.json"
@@ -122,12 +161,23 @@ for (const runDir of runDirs) {
     }))
   );
 
+  const inferredStage = stageFromArtifacts(runDir, record, reviewScore);
+  if (inferredStage === "unplanned") continue;
+
+  const dataQualityWarnings = [];
+  if (!reviewScore) dataQualityWarnings.push("review score is missing or still an unfilled template");
+  if (record.artifacts?.review && isMarkdownTemplate(join(runDir, record.artifacts.review))) {
+    dataQualityWarnings.push("review artifact is missing or still an unfilled template");
+  }
+
   runs.push({
     issue_number: record.issue.number,
     title: record.issue.title,
-    stage: state?.stage || stageFromArtifacts(runDir),
+    stage: state?.stage || inferredStage,
     decision: decisionFromStatus(record.status, reviewScore, state),
-    total_score: reviewScore?.total_score ?? 0,
+    total_score: reviewScore?.total_score ?? null,
+    review_complete: Boolean(reviewScore),
+    data_quality_warnings: dataQualityWarnings,
     harness_score: harnessScore?.total_score ?? null,
     priority: state?.priority ?? null,
     blocked: state?.blocked ?? false,
@@ -159,14 +209,15 @@ for (const historicalRun of history.runs || []) {
 
 runs.sort((a, b) => b.issue_number - a.issue_number);
 
-const issueCount = runs.length;
+const scoredRuns = runs.filter((run) => run.review_complete);
+const issueCount = scoredRuns.length;
 const proposals = readImprovementProposals();
-const passCount = runs.filter((run) => run.decision === "PASS").length;
-const reworkCount = runs.filter((run) => run.decision === "REWORK").length;
-const failCount = runs.filter((run) => run.decision === "FAIL").length;
+const passCount = scoredRuns.filter((run) => run.decision === "PASS").length;
+const reworkCount = scoredRuns.filter((run) => run.decision === "REWORK").length;
+const failCount = scoredRuns.filter((run) => run.decision === "FAIL").length;
 const averageIssueScore = issueCount
-  ? Math.round(runs.reduce((sum, run) => sum + run.total_score, 0) / issueCount)
-  : 0;
+  ? Math.round(scoredRuns.reduce((sum, run) => sum + run.total_score, 0) / issueCount)
+  : null;
 const averageHarnessScore = harnessScores.length
   ? Math.round(harnessScores.reduce((sum, score) => sum + score.total_score, 0) / harnessScores.length)
   : null;
