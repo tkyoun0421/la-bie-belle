@@ -34,6 +34,20 @@ Before creating a PR, every inbox item tied to the current issue must have one o
 
 If an item is partly included and partly follow-up, record the included part in the PR and promote or defer the remaining part separately.
 
+## Run State And PR Body
+
+Use `state.json.inbox_refs` as the compact list of inbox ids connected to the current PR. It should contain stable ids such as `inbox-2026-05-11-011`, not full descriptions.
+
+When an item is `included-in-pr`, record it in all three places:
+
+- `state.json.inbox_refs`: add the inbox id.
+- run artifacts: describe what was included and where it was verified.
+- PR body `Included follow-ups`: list the id, outcome, and evidence location.
+
+When an item is `promoted-to-issue` or `deferred`, keep it out of `inbox_refs` unless part of it was also included in the PR. Record the new GitHub Issue number or deferral reason in the PR body's additional work section.
+
+If there are no included follow-ups, write `없음` in the PR body `Included follow-ups` section. Do not omit the section.
+
 ## Completion And Removal
 
 `completed` is an outcome, not a reason to keep closed items in `.agents/inbox.md`.

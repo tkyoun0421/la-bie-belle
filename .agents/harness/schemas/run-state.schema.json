@@ -65,15 +65,22 @@
       }
     },
     "inbox_refs": {
+      "description": "Stable inbox ids included in or directly tied to the current PR. Detailed outcomes belong in run artifacts and the PR body.",
       "type": "array",
       "items": {
-        "type": "string"
+        "type": "string",
+        "pattern": "^inbox-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3}$"
       },
       "uniqueItems": true
     },
     "dashboard_synced_at": {
       "type": ["string", "null"],
       "format": "date-time"
+    },
+    "harness_health_score": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 100
     },
     "updated_at": {
       "type": "string",

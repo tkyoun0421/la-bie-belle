@@ -1,0 +1,94 @@
+{
+  "score_id": "issue-46-harness-health",
+  "rubric": {
+    "name": "harness_health",
+    "version": 1
+  },
+  "total_score": 84,
+  "categories": [
+    {
+      "id": "task_spec_quality",
+      "score": 18,
+      "max_score": 20,
+      "evidence": [
+        "#46은 `inbox_refs`, PR 본문 follow-up 기록, inbox 중복 제거라는 목표가 명확했다.",
+        "스펙에서 included/promoted/deferred 흐름과 빈 상태까지 구분했다."
+      ],
+      "deductions": [
+        "초기 이슈 본문에는 자동화 여부 결정이 남아 있어 계획 단계에서 범위를 수동 규칙으로 확정해야 했다."
+      ]
+    },
+    {
+      "id": "context_injection_quality",
+      "score": 17,
+      "max_score": 20,
+      "evidence": [
+        "#44 inbox policy, draft-pr skill, PR template, run-state schema를 함께 확인해 변경 지점을 잡았다.",
+        "기존 `inbox_refs`가 dashboard/history에 이미 투영되는 점을 고려했다."
+      ],
+      "deductions": [
+        "실제 follow-up 포함 PR fixture가 없어 문서 규칙 중심으로 판단했다."
+      ]
+    },
+    {
+      "id": "role_handoff_quality",
+      "score": 13,
+      "max_score": 15,
+      "evidence": [
+        "task-spec, plan, spec, implementation-notes, verification, review, harness evaluation이 순서대로 남았다.",
+        "PR 생성자가 확인해야 하는 규칙이 skill, agent, PR template에 반영됐다."
+      ],
+      "deductions": [
+        "자동 검증이 없어 다음 PR 생성자가 수동으로 섹션과 `inbox_refs`를 맞춰야 한다."
+      ]
+    },
+    {
+      "id": "verification_gate_quality",
+      "score": 14,
+      "max_score": 20,
+      "evidence": [
+        "`rg`로 관련 용어와 섹션이 필요한 문서에 반영됐는지 확인했다.",
+        "`diagnose-status.mjs`로 run 상태와 inbox 파싱을 확인했다."
+      ],
+      "deductions": [
+        "PR 본문 `Included follow-ups`와 `state.json.inbox_refs`의 일치 여부를 자동 검증하지 않는다.",
+        "schema는 id 형식만 검증하고 실제 PR 본문 내용과 연결하지 않는다."
+      ]
+    },
+    {
+      "id": "scoring_rubric_quality",
+      "score": 13,
+      "max_score": 15,
+      "evidence": [
+        "issue execution score는 수동 규칙 확정에 따른 남은 리스크를 감점으로 반영했다.",
+        "후속 자동 검증 필요가 명확히 드러났다."
+      ],
+      "deductions": [
+        "문서 규칙 변경의 효과를 실제 PR 사례로 아직 측정하지 못했다."
+      ]
+    },
+    {
+      "id": "record_and_dashboard_quality",
+      "score": 9,
+      "max_score": 10,
+      "evidence": [
+        "run state와 PR 본문 기록 위치가 정리되어 dashboard/history의 `inbox_refs`가 더 의미 있는 값이 됐다.",
+        "PR template에 `Included follow-ups` 기본 섹션이 생겼다."
+      ],
+      "deductions": [
+        "dashboard가 `inbox_refs` 상세 설명까지 표시하지는 않는다."
+      ]
+    }
+  ],
+  "proposals": [
+    {
+      "proposal_id": "2026-05-12-pr-inbox-ref-consistency-check",
+      "target_area": "verification_gate",
+      "title": "PR 본문과 inbox_refs 일치 검증 추가",
+      "reason": "같은 PR에 포함된 follow-up은 `state.json.inbox_refs`와 PR 본문 `Included follow-ups`에 함께 기록해야 하지만 현재는 수동 규칙이라 누락될 수 있다.",
+      "expected_impact": "PR 생성 전 follow-up 추적 누락을 자동으로 잡아 같은 PR에 포함된 로컬 발견 작업의 추적성을 높인다.",
+      "status": "proposed"
+    }
+  ],
+  "scored_at": "2026-05-12T06:25:00.000Z"
+}

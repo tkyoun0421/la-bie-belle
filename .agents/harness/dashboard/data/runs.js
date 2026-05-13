@@ -1,14 +1,127 @@
 window.AI_HARNESS_RUNS = {
-  "generated_at": "2026-05-12T05:47:02.560Z",
+  "generated_at": "2026-05-12T05:55:29.293Z",
   "summary": {
-    "issue_count": 2,
-    "average_issue_score": 92,
-    "pass_count": 2,
+    "issue_count": 3,
+    "average_issue_score": 91,
+    "pass_count": 3,
     "rework_count": 0,
     "fail_count": 0,
-    "average_harness_score": 82
+    "average_harness_score": 83
   },
   "runs": [
+    {
+      "issue_number": 46,
+      "title": "[Harness] PR 포함 follow-up 추적 연결",
+      "stage": "reviewed",
+      "decision": "PASS",
+      "total_score": 90,
+      "review_complete": true,
+      "data_quality_warnings": [],
+      "harness_score": 84,
+      "priority": null,
+      "blocked": false,
+      "blockers": [],
+      "inbox_refs": [],
+      "dashboard_synced_at": null,
+      "attempt": 1,
+      "updated_at": "2026-05-12T06:25:00.000Z",
+      "strengths": [
+        "`inbox_refs`와 PR 본문 추적 위치가 명확해졌다.",
+        "PR template에 follow-up 기록 섹션이 생겨 누락 가능성이 줄었다."
+      ],
+      "weaknesses": [
+        "PR 본문과 `state.json.inbox_refs`의 일치 여부는 아직 자동 검증하지 않는다.",
+        "실제 follow-up 포함 사례 fixture가 없다."
+      ],
+      "deductions": [
+        {
+          "category": "요구사항 충족",
+          "points": 1,
+          "reason": "자동으로 PR 본문을 채우는 구현은 범위에서 제외했다."
+        },
+        {
+          "category": "구현 품질",
+          "points": 2,
+          "reason": "규칙은 문서 기반이라 PR 작성자가 누락할 수 있다."
+        },
+        {
+          "category": "구현 품질",
+          "points": 2,
+          "reason": "schema는 id 형식만 검증하고 PR 본문과의 일치 여부까지 검증하지는 않는다."
+        },
+        {
+          "category": "검증 충분성",
+          "points": 1,
+          "reason": "PR 본문과 `state.json.inbox_refs` 일치 여부를 자동 검증하는 테스트는 없다."
+        },
+        {
+          "category": "컨텍스트 활용",
+          "points": 2,
+          "reason": "실제 포함 follow-up이 있는 PR fixture는 아직 없다."
+        },
+        {
+          "category": "인수인계 품질",
+          "points": 4,
+          "reason": "자동화가 아니라 수동 기록 규칙이므로 다음 PR 생성자가 섹션을 정확히 채워야 한다."
+        }
+      ],
+      "categories": [
+        {
+          "id": "requirement_fulfillment",
+          "label": "요구사항 충족",
+          "score": 24,
+          "max": 25
+        },
+        {
+          "id": "scope_control",
+          "label": "범위 통제",
+          "score": 15,
+          "max": 15
+        },
+        {
+          "id": "implementation_quality",
+          "label": "구현 품질",
+          "score": 13,
+          "max": 15
+        },
+        {
+          "id": "verification_sufficiency",
+          "label": "검증 충분성",
+          "score": 9,
+          "max": 10
+        },
+        {
+          "id": "risk_and_safety",
+          "label": "리스크와 안전",
+          "score": 5,
+          "max": 5
+        },
+        {
+          "id": "requirement_interpretation",
+          "label": "요구사항 해석",
+          "score": 10,
+          "max": 10
+        },
+        {
+          "id": "plan_appropriateness",
+          "label": "계획 적절성",
+          "score": 8,
+          "max": 8
+        },
+        {
+          "id": "context_usage",
+          "label": "컨텍스트 활용",
+          "score": 4,
+          "max": 6
+        },
+        {
+          "id": "handoff_quality",
+          "label": "인수인계 품질",
+          "score": 2,
+          "max": 6
+        }
+      ]
+    },
     {
       "issue_number": 45,
       "title": "[Harness] 실제 실행 run 기준으로 상태 표시 개선",
@@ -373,18 +486,18 @@ window.AI_HARNESS_RUNS = {
     }
   ],
   "harness_health": {
-    "total_score": 82,
+    "total_score": 84,
     "categories": [
       {
         "label": "작업 명세 품질",
         "score": 18,
         "max": 20,
         "evidence": [
-          "#45는 dashboard/status/review 표시 기준의 문제를 명확히 제기했고, 실제 템플릿 run과 작성된 run을 구분하는 완료 기준으로 구체화됐다.",
-          "Red 단계에서 false reviewed/FAIL 문제를 재현하도록 작업 명세와 스펙이 이어졌다."
+          "#46은 `inbox_refs`, PR 본문 follow-up 기록, inbox 중복 제거라는 목표가 명확했다.",
+          "스펙에서 included/promoted/deferred 흐름과 빈 상태까지 구분했다."
         ],
         "deductions": [
-          "초기 이슈 본문에는 dashboard, status, review 중 어느 범위까지 포함할지 확인 필요가 남아 있어 계획 단계에서 범위를 확정해야 했다."
+          "초기 이슈 본문에는 자동화 여부 결정이 남아 있어 계획 단계에서 범위를 수동 규칙으로 확정해야 했다."
         ]
       },
       {
@@ -392,23 +505,23 @@ window.AI_HARNESS_RUNS = {
         "score": 17,
         "max": 20,
         "evidence": [
-          "기존 start-issue 템플릿, #38 accidental run, #44 PASS run, dashboard data를 함께 사용해 재현 조건을 잡았다.",
-          "과거 archived #24의 harness health 점수가 현재 평균처럼 보이는 문제도 후속 보정에서 확인됐다."
+          "#44 inbox policy, draft-pr skill, PR template, run-state schema를 함께 확인해 변경 지점을 잡았다.",
+          "기존 `inbox_refs`가 dashboard/history에 이미 투영되는 점을 고려했다."
         ],
         "deductions": [
-          "열린 PR #50과 develop 브랜치 상태가 실행 도중 혼재되어 PR 반영 전략을 다시 조정해야 했다."
+          "실제 follow-up 포함 PR fixture가 없어 문서 규칙 중심으로 판단했다."
         ]
       },
       {
         "label": "역할 분리와 인수인계 품질",
-        "score": 12,
+        "score": 13,
         "max": 15,
         "evidence": [
-          "task-spec, plan, spec, implementation-notes, verification, review가 모두 남아 있고 #45 PASS 판단으로 이어졌다.",
-          "사용자 피드백 이후 dashboard 문구와 하네스 점수 표시 보정도 verification에 추가 기록됐다."
+          "task-spec, plan, spec, implementation-notes, verification, review, harness evaluation이 순서대로 남았다.",
+          "PR 생성자가 확인해야 하는 규칙이 skill, agent, PR template에 반영됐다."
         ],
         "deductions": [
-          "하네스 평가 단계가 PR 생성 이후 사용자 지적을 받은 뒤 수행되어 순서가 매끄럽지 않았다."
+          "자동 검증이 없어 다음 PR 생성자가 수동으로 섹션과 `inbox_refs`를 맞춰야 한다."
         ]
       },
       {
@@ -416,24 +529,24 @@ window.AI_HARNESS_RUNS = {
         "score": 14,
         "max": 20,
         "evidence": [
-          "diagnose-status, build-dashboard-data, validate-score를 실행해 템플릿 false FAIL과 dashboard 집계 개선을 확인했다.",
-          "dashboard data에서 평균 실행 점수와 하네스 평균의 null 처리까지 확인했다."
+          "`rg`로 관련 용어와 섹션이 필요한 문서에 반영됐는지 확인했다.",
+          "`diagnose-status.mjs`로 run 상태와 inbox 파싱을 확인했다."
         ],
         "deductions": [
-          "템플릿 판별과 dashboard summary 기준을 검증하는 별도 자동 테스트가 없어 회귀 방지가 약하다.",
-          "dashboard 문구 언어 문제와 하네스 평균 이상 표시를 첫 검증 단계에서 잡지 못했다."
+          "PR 본문 `Included follow-ups`와 `state.json.inbox_refs`의 일치 여부를 자동 검증하지 않는다.",
+          "schema는 id 형식만 검증하고 실제 PR 본문 내용과 연결하지 않는다."
         ]
       },
       {
         "label": "스코어링 루브릭 품질",
-        "score": 12,
+        "score": 13,
         "max": 15,
         "evidence": [
-          "issue execution 점수는 91점 PASS로 산출됐고, template-only run과 review-missing run의 차이를 리뷰 근거에 반영했다.",
-          "감점 사유가 템플릿 판별 중복과 테스트 부재로 구체화됐다."
+          "issue execution score는 수동 규칙 확정에 따른 남은 리스크를 감점으로 반영했다.",
+          "후속 자동 검증 필요가 명확히 드러났다."
         ],
         "deductions": [
-          "하네스 건강도 평가는 사용자 지적 전에는 누락되어 PR 본문과 dashboard에 처음부터 포함되지 않았다."
+          "문서 규칙 변경의 효과를 실제 PR 사례로 아직 측정하지 못했다."
         ]
       },
       {
@@ -441,11 +554,11 @@ window.AI_HARNESS_RUNS = {
         "score": 9,
         "max": 10,
         "evidence": [
-          "dashboard data가 review 완료 run만 집계하고, 활성 harness health가 없으면 평가 없음으로 표시하도록 개선됐다.",
-          "리뷰 근거, 감점 사유, 카테고리 라벨, 개선 제안, agent/workflow 설명이 한글로 정리됐다."
+          "run state와 PR 본문 기록 위치가 정리되어 dashboard/history의 `inbox_refs`가 더 의미 있는 값이 됐다.",
+          "PR template에 `Included follow-ups` 기본 섹션이 생겼다."
         ],
         "deductions": [
-          "dashboard UI 자체의 데이터 품질 경고 시각화는 아직 제한적이다."
+          "dashboard가 `inbox_refs` 상세 설명까지 표시하지는 않는다."
         ]
       }
     ],
@@ -467,6 +580,15 @@ window.AI_HARNESS_RUNS = {
         "expected_impact": "PR 생성 전에 CI 전용 실패 가능성을 고려하므로 리뷰 직후 머지 가능한 PR 비율이 높아진다.",
         "status": "proposed",
         "file": ".agents/harness/improvements/proposals/2026-05-10-verification-ci-parity.json"
+      },
+      {
+        "proposal_id": "2026-05-12-pr-inbox-ref-consistency-check",
+        "target_area": "verification_gate",
+        "title": "2026-05-12-pr-inbox-ref-consistency-check",
+        "reason": "같은 PR에 포함된 follow-up은 `state.json.inbox_refs`와 PR 본문 `Included follow-ups`에 함께 기록해야 하지만 현재는 수동 규칙이라 누락될 수 있다.",
+        "expected_impact": "같은 PR에 포함된 로컬 발견 작업의 추적 누락을 줄이고, inbox 항목이 중복으로 남거나 장기 기록 없이 제거되는 위험을 낮춘다.",
+        "status": "proposed",
+        "file": ".agents/harness/improvements/proposals/2026-05-12-pr-inbox-ref-consistency-check.json"
       },
       {
         "proposal_id": "2026-05-12-template-artifact-regression-tests",

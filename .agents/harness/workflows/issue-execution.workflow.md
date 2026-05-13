@@ -72,6 +72,7 @@ Pre-Issue. 이슈 생성 승인
    - Reviewer 결정이 `PASS`일 때만 GitHub Draft 상태가 아닌 일반 PR을 생성한다.
    - PR 생성 전 원본 이슈 완료 기준, 작업 중 추가된 사항, 현재 이슈 관련 inbox 항목을 확인한다.
    - 현재 이슈 관련 inbox 항목은 `included-in-pr`, `promoted-to-issue`, `deferred` 중 하나로 처리하고, 장기 기록을 PR 본문, GitHub Issue, run 산출물에 남긴 뒤 inbox에서 제거한다.
+   - `included-in-pr` 항목은 `state.json.inbox_refs`와 PR 본문 `Included follow-ups` 섹션에 함께 기록한다.
    - PR 본문에는 머지 시 원본 이슈가 자동 종료되도록 `Closes #이슈번호`를 포함한다.
    - PR 본문은 `.github/pull_request_template.md` 섹션을 유지해 작성한다.
    - 머지와 배포는 사람이 결정한다.
