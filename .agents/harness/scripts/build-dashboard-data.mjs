@@ -370,42 +370,42 @@ const dashboardData = {
   harness_health: harnessHealth,
   agents: [
     {
-      name: "Planner",
+      name: "계획",
       file: ".agents/harness/agents/planner.agent.md",
       purpose: "GitHub Issue를 task-spec.md와 plan.md로 변환한다.",
       outputs: ["task-spec.md", "plan.md"],
       handoff: "구체화된 작업 명세와 계획을 구현 단계로 넘긴다."
     },
     {
-      name: "Spec",
+      name: "스펙",
       file: ".agents/skills/ai-harness-spec/SKILL.md",
       purpose: "구현 전에 미확정 결정을 정리하고 spec.md를 작성한다.",
       outputs: ["spec.md"],
       handoff: "상세 시나리오와 Red 우선순위를 Red 단계로 넘긴다."
     },
     {
-      name: "Implementer",
+      name: "구현",
       file: ".agents/harness/agents/implementer.agent.md",
       purpose: "코드 또는 설정 변경을 구현한다.",
       outputs: ["implementation-notes.md"],
       handoff: "변경 파일과 구현 기록을 검증 단계로 넘긴다."
     },
     {
-      name: "Verifier",
+      name: "검증",
       file: ".agents/harness/agents/verifier.agent.md",
       purpose: "검증 명령을 실행하고 근거를 기록한다.",
       outputs: ["verification.md"],
       handoff: "검증 근거와 diff 맥락을 리뷰 단계로 넘긴다."
     },
     {
-      name: "Reviewer",
+      name: "리뷰",
       file: ".agents/harness/agents/reviewer.agent.md",
       purpose: "실행 결과를 채점하고 PASS, REWORK, FAIL을 결정한다.",
       outputs: ["review-score.json", "review.md"],
       handoff: "PASS는 PR 단계로, REWORK는 구현 재작업으로, FAIL은 사람 확인으로 넘긴다."
     },
     {
-      name: "Harness Evaluator",
+      name: "하네스 평가",
       file: ".agents/harness/agents/harness-evaluator.agent.md",
       purpose: "하네스 건강도를 평가하고 개선안을 제안한다.",
       outputs: ["harness-health-score.json", "harness-improvements.md"],
@@ -413,16 +413,16 @@ const dashboardData = {
     }
   ],
   workflow: [
-    { step: "1", name: "Planner", status: "task-spec.md와 plan.md 작성" },
-    { step: "2", name: "Spec", status: "spec.md와 Red 우선순위 작성" },
+    { step: "1", name: "계획", status: "task-spec.md와 plan.md 작성" },
+    { step: "2", name: "스펙", status: "spec.md와 Red 우선순위 작성" },
     { step: "3", name: "Red", status: "실패 테스트를 작성하거나 실패 근거 기록" },
     { step: "4", name: "Green", status: "통과에 필요한 최소 변경 구현" },
-    { step: "5", name: "Verify", status: "검증 실행 후 verification.md 작성" },
-    { step: "6", name: "Review", status: "점수 산정 후 PASS, REWORK, FAIL 결정" },
-    { step: "7", name: "Dashboard", status: "run 상태를 dashboard data로 변환" },
+    { step: "5", name: "검증", status: "검증 실행 후 verification.md 작성" },
+    { step: "6", name: "리뷰", status: "점수 산정 후 PASS, REWORK, FAIL 결정" },
+    { step: "7", name: "대시보드", status: "run 상태를 dashboard data로 변환" },
     { step: "8", name: "PR", status: "PASS run만 PR로 정리" }
   ]
 };
 
 writeFileSync(dashboardDataPath, `window.AI_HARNESS_RUNS = ${JSON.stringify(dashboardData, null, 2)};\n`);
-console.log(`Dashboard data written: ${dashboardDataPath}`);
+console.log(`대시보드 데이터 생성 완료: ${dashboardDataPath}`);

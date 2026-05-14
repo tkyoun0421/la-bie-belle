@@ -1,5 +1,5 @@
 window.AI_HARNESS_RUNS = {
-  "generated_at": "2026-05-14T00:22:22.393Z",
+  "generated_at": "2026-05-14T00:40:34.124Z",
   "summary": {
     "issue_count": 5,
     "average_issue_score": 90,
@@ -195,60 +195,60 @@ window.AI_HARNESS_RUNS = {
       "attempt": 1,
       "updated_at": "2026-05-14T00:15:30.000Z",
       "strengths": [
-        "Dashboard data now clearly distinguishes active and archived runs.",
-        "Next work candidates include GitHub open issues and inbox candidates as requested.",
-        "A reusable dashboard data validator protects the new data contract."
+        "대시보드 데이터가 활성 실행과 보관 실행을 명확히 구분한다.",
+        "요청대로 GitHub 열린 이슈와 inbox 항목이 다음 작업 후보에 포함됐다.",
+        "새 데이터 계약을 보호하는 재사용 가능한 대시보드 데이터 검증기가 추가됐다."
       ],
       "weaknesses": [
-        "Some existing dashboard copy remains mojibake.",
-        "Browser-level verification was partial.",
-        "The process required correction after an initially premature spec decision."
+        "기존 대시보드 문구 일부에 인코딩 깨짐이 남아 있다.",
+        "브라우저 수준 검증은 부분적으로만 완료됐다.",
+        "처음에 사용자 결정 전에 spec을 작성하는 절차 오류가 있었다."
       ],
       "deductions": [
         {
           "category": "요구사항 충족",
           "points": 2,
-          "reason": "The dashboard UI still keeps some pre-existing mojibake text, so the visual output is not fully polished."
+          "reason": "기존 대시보드 문구 일부에 인코딩 깨짐이 남아 있어 시각적 결과가 완전히 정돈되지는 않았다."
         },
         {
           "category": "구현 품질",
           "points": 2,
-          "reason": "Inbox candidate parsing is intentionally simple and may need a structured parser if inbox entries become more complex."
+          "reason": "inbox 후보 파싱은 의도적으로 단순해서 inbox 항목이 복잡해지면 구조화 파서가 필요할 수 있다."
         },
         {
           "category": "구현 품질",
           "points": 2,
-          "reason": "Dashboard rendering still uses the existing inline JavaScript structure rather than a more testable shared renderer."
+          "reason": "대시보드 렌더링은 기존 인라인 JavaScript 구조를 유지해, 공유 렌더러로 분리된 형태보다 테스트하기 어렵다."
         },
         {
           "category": "검증 충분성",
           "points": 2,
-          "reason": "Playwright accessibility snapshot could not be captured because the browser session closed during navigation."
+          "reason": "브라우저 세션이 이동 중 종료되어 Playwright 접근성 스냅샷을 캡처하지 못했다."
         },
         {
           "category": "검증 충분성",
           "points": 2,
-          "reason": "No automated browser assertion was added for the rendered dashboard DOM."
+          "reason": "렌더링된 대시보드 DOM에 대한 자동 브라우저 단언은 추가되지 않았다."
         },
         {
           "category": "컨텍스트 활용",
           "points": 1,
-          "reason": "The implementation did not fully normalize existing archived history text that was already mojibake."
+          "reason": "이미 보관된 히스토리 텍스트의 인코딩 깨짐까지 완전히 정규화하지는 않았다."
         },
         {
           "category": "인수인계 품질",
           "points": 5,
-          "reason": "The work initially wrote a spec before the user decision and had to be corrected."
+          "reason": "사용자 결정 전에 spec을 먼저 작성했다가 수정하는 절차 오류가 있었다."
         },
         {
           "category": "인수인계 품질",
           "points": 5,
-          "reason": "Rendered dashboard verification is documented as partial because Playwright snapshot failed."
+          "reason": "Playwright 스냅샷 실패 때문에 렌더링 검증이 부분 완료로 기록됐다."
         },
         {
           "category": "인수인계 품질",
           "points": 5,
-          "reason": "The handoff still leaves known UI text cleanup as residual work."
+          "reason": "대시보드 문구 정리는 남은 작업으로 이어졌다."
         }
       ],
       "categories": [
@@ -969,11 +969,11 @@ window.AI_HARNESS_RUNS = {
         "score": 18,
         "max": 20,
         "evidence": [
-          "#47 task-spec and plan clearly separated confirmed active/archived dashboard work from the still-open next-work candidate decision.",
-          "The final spec captured the explicit user decision to include GitHub open issues and inbox candidates."
+          "#47의 task-spec과 plan은 확정된 active/archived 대시보드 작업과 아직 결정되지 않은 다음 작업 후보 범위를 분리했다.",
+          "최종 spec은 GitHub 열린 이슈와 inbox 후보를 포함한다는 사용자 결정을 반영했다."
         ],
         "deductions": [
-          "The first spec was written before the user decision and had to be corrected."
+          "첫 spec이 사용자 결정 전에 작성되었고 이후 수정이 필요했다."
         ]
       },
       {
@@ -981,11 +981,11 @@ window.AI_HARNESS_RUNS = {
         "score": 16,
         "max": 20,
         "evidence": [
-          "The run used issue #47, dashboard generator code, dashboard HTML, history data, inbox state, priority labels, and PR #53 context.",
-          "Existing archive/history state was reflected in dashboard data and active/archived counts."
+          "#47 이슈, 대시보드 생성기 코드, 대시보드 HTML, history 데이터, inbox 상태, priority 라벨, PR #53 맥락을 사용했다.",
+          "기존 archive/history 상태가 dashboard data와 active/archived 개수에 반영됐다."
         ],
         "deductions": [
-          "Existing mojibake in historical records and dashboard copy was noted but not fully normalized, leaving some context quality issues visible."
+          "기존 history와 dashboard 문구의 인코딩 깨짐을 완전히 정리하지 않아 일부 맥락 품질 문제가 계속 보인다."
         ]
       },
       {
@@ -993,12 +993,12 @@ window.AI_HARNESS_RUNS = {
         "score": 10,
         "max": 15,
         "evidence": [
-          "Task spec, plan, spec, implementation notes, verification, review score, and review summary exist and are linked in PR #53.",
-          "The user correction about premature spec decisions was incorporated into the final artifacts."
+          "task-spec, plan, spec, implementation-notes, verification, review-score, review가 있고 PR #53에 연결됐다.",
+          "사용자가 지적한 spec 선작성 문제를 최종 산출물에 반영했다."
         ],
         "deductions": [
-          "The workflow allowed a spec artifact to be created before a required user decision was confirmed.",
-          "The dashboard PR was initially created before harness health evaluation and needed a follow-up update."
+          "필수 사용자 결정이 확정되기 전에 spec 산출물이 만들어지는 흐름이 허용됐다.",
+          "대시보드 PR이 처음 만들어질 때 하네스 건강도 평가가 빠져 후속 갱신이 필요했다."
         ]
       },
       {
@@ -1006,12 +1006,12 @@ window.AI_HARNESS_RUNS = {
         "score": 15,
         "max": 20,
         "evidence": [
-          "A dedicated dashboard data contract validator was added and used in verification.",
-          "Syntax checks, dashboard data generation, diagnose-status, review-score validation, and local HTTP 200 checks were run."
+          "대시보드 데이터 계약을 검증하는 전용 검증 스크립트를 추가하고 검증에 사용했다.",
+          "문법 검사, dashboard data 생성, diagnose-status, review-score 검증, 로컬 HTTP 200 확인을 실행했다."
         ],
         "deductions": [
-          "Playwright accessibility snapshot failed and no replacement DOM-level browser assertion was added.",
-          "CI result was not yet reflected in local verification at the time of harness evaluation."
+          "Playwright accessibility snapshot이 실패했고 이를 대체하는 DOM 수준 브라우저 검증이 추가되지 않았다.",
+          "하네스 평가 시점에는 CI 결과가 아직 로컬 검증 기록에 반영되지 않았다."
         ]
       },
       {
@@ -1019,11 +1019,11 @@ window.AI_HARNESS_RUNS = {
         "score": 12,
         "max": 15,
         "evidence": [
-          "Issue execution review captured the process correction, partial browser verification, and residual copy cleanup risk.",
-          "PASS decision remained defensible because the data contract and dashboard behavior were implemented."
+          "이슈 실행 리뷰가 프로세스 수정, 부분 브라우저 검증, 남은 문구 정리 리스크를 기록했다.",
+          "데이터 계약과 대시보드 동작이 구현됐기 때문에 PASS 결정은 방어 가능했다."
         ],
         "deductions": [
-          "The handoff-quality category absorbed several process issues, but the rubric still does not distinguish decision-order violations from ordinary documentation gaps."
+          "기존 루브릭은 사용자 결정 순서 위반과 일반 문서화 부족을 충분히 구분하지 못했다."
         ]
       },
       {
@@ -1031,11 +1031,11 @@ window.AI_HARNESS_RUNS = {
         "score": 9,
         "max": 10,
         "evidence": [
-          "Dashboard now reports active/archived state, data-quality warnings, and GitHub/inbox next-work candidates.",
-          "Issue #47 run artifacts and PR #53 include the completed harness trail."
+          "대시보드가 active/archived 상태, 데이터 품질 경고, GitHub/inbox 다음 작업 후보를 표시한다.",
+          "#47 run 산출물과 PR #53에 완료된 하네스 흐름이 남아 있다."
         ],
         "deductions": [
-          "Dashboard copy still has some pre-existing encoding cleanup debt."
+          "대시보드 문구에는 기존 인코딩 정리 부채가 일부 남아 있다."
         ]
       }
     ],
@@ -1077,19 +1077,28 @@ window.AI_HARNESS_RUNS = {
         "file": ".agents/harness/improvements/proposals/2026-05-12-template-artifact-regression-tests.json"
       },
       {
+        "proposal_id": "2026-05-14-harness-korean-output-default",
+        "target_area": "scoring_rubric",
+        "title": "2026-05-14-harness-korean-output-default",
+        "reason": "#47 리뷰 점수와 하네스 건강도 평가 일부가 영어 설명 문장으로 작성됐다. 파일명과 상태값은 영어를 유지해야 하지만, 근거와 감점 사유까지 영어로 남으면 한국어 운영 문서 흐름이 깨지고 사용자가 다시 정리해야 한다.",
+        "expected_impact": "리뷰, 건강도 평가, 개선 제안, 대시보드에 노출되는 설명이 일관되게 한국어로 남아 후속 판단과 PR 검토가 쉬워진다.",
+        "status": "implemented",
+        "file": ".agents/harness/improvements/proposals/2026-05-14-harness-korean-output-default.json"
+      },
+      {
         "proposal_id": "2026-05-14-pre-spec-decision-gate",
         "target_area": "role_handoff",
         "title": "2026-05-14-pre-spec-decision-gate",
-        "reason": "Issue #47에서 사용자 결정이 필요한 질문이 남아 있었는데도 spec.md가 먼저 작성되었다가 사용자 지적으로 수정됐다. 현재 하네스는 spec 단계에서 미확정 결정을 발견해도 산출물 생성을 기계적으로 막는 장치가 약하다.",
+        "reason": "Issue #47에서 사용자 결정이 필요한 질문이 남아 있었는데도 spec.md가 먼저 작성되었다가 사용자 지적으로 수정됐다. 기존 규칙은 미확정 결정이 있으면 질문해야 한다고 말하지만, spec 산출물 생성을 명시적으로 금지하는 문구가 부족했다.",
         "expected_impact": "미확정 결정이 있는 작업에서 잘못 확정된 spec이 생기는 일을 줄이고, plan -> spec -> implement 인수인계의 신뢰도를 높인다.",
-        "status": "proposed",
+        "status": "implemented",
         "file": ".agents/harness/improvements/proposals/2026-05-14-pre-spec-decision-gate.json"
       }
     ]
   },
   "agents": [
     {
-      "name": "Planner",
+      "name": "계획",
       "file": ".agents/harness/agents/planner.agent.md",
       "purpose": "GitHub Issue를 task-spec.md와 plan.md로 변환한다.",
       "outputs": [
@@ -1099,7 +1108,7 @@ window.AI_HARNESS_RUNS = {
       "handoff": "구체화된 작업 명세와 계획을 구현 단계로 넘긴다."
     },
     {
-      "name": "Spec",
+      "name": "스펙",
       "file": ".agents/skills/ai-harness-spec/SKILL.md",
       "purpose": "구현 전에 미확정 결정을 정리하고 spec.md를 작성한다.",
       "outputs": [
@@ -1108,7 +1117,7 @@ window.AI_HARNESS_RUNS = {
       "handoff": "상세 시나리오와 Red 우선순위를 Red 단계로 넘긴다."
     },
     {
-      "name": "Implementer",
+      "name": "구현",
       "file": ".agents/harness/agents/implementer.agent.md",
       "purpose": "코드 또는 설정 변경을 구현한다.",
       "outputs": [
@@ -1117,7 +1126,7 @@ window.AI_HARNESS_RUNS = {
       "handoff": "변경 파일과 구현 기록을 검증 단계로 넘긴다."
     },
     {
-      "name": "Verifier",
+      "name": "검증",
       "file": ".agents/harness/agents/verifier.agent.md",
       "purpose": "검증 명령을 실행하고 근거를 기록한다.",
       "outputs": [
@@ -1126,7 +1135,7 @@ window.AI_HARNESS_RUNS = {
       "handoff": "검증 근거와 diff 맥락을 리뷰 단계로 넘긴다."
     },
     {
-      "name": "Reviewer",
+      "name": "리뷰",
       "file": ".agents/harness/agents/reviewer.agent.md",
       "purpose": "실행 결과를 채점하고 PASS, REWORK, FAIL을 결정한다.",
       "outputs": [
@@ -1136,7 +1145,7 @@ window.AI_HARNESS_RUNS = {
       "handoff": "PASS는 PR 단계로, REWORK는 구현 재작업으로, FAIL은 사람 확인으로 넘긴다."
     },
     {
-      "name": "Harness Evaluator",
+      "name": "하네스 평가",
       "file": ".agents/harness/agents/harness-evaluator.agent.md",
       "purpose": "하네스 건강도를 평가하고 개선안을 제안한다.",
       "outputs": [
@@ -1149,12 +1158,12 @@ window.AI_HARNESS_RUNS = {
   "workflow": [
     {
       "step": "1",
-      "name": "Planner",
+      "name": "계획",
       "status": "task-spec.md와 plan.md 작성"
     },
     {
       "step": "2",
-      "name": "Spec",
+      "name": "스펙",
       "status": "spec.md와 Red 우선순위 작성"
     },
     {
@@ -1169,17 +1178,17 @@ window.AI_HARNESS_RUNS = {
     },
     {
       "step": "5",
-      "name": "Verify",
+      "name": "검증",
       "status": "검증 실행 후 verification.md 작성"
     },
     {
       "step": "6",
-      "name": "Review",
+      "name": "리뷰",
       "status": "점수 산정 후 PASS, REWORK, FAIL 결정"
     },
     {
       "step": "7",
-      "name": "Dashboard",
+      "name": "대시보드",
       "status": "run 상태를 dashboard data로 변환"
     },
     {
