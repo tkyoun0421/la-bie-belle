@@ -1,14 +1,313 @@
 window.AI_HARNESS_RUNS = {
-  "generated_at": "2026-05-13T23:56:35.602Z",
+  "generated_at": "2026-05-14T00:15:53.382Z",
   "summary": {
-    "issue_count": 0,
-    "average_issue_score": null,
-    "pass_count": 0,
+    "issue_count": 5,
+    "average_issue_score": 90,
+    "pass_count": 5,
     "rework_count": 0,
     "fail_count": 0,
-    "average_harness_score": null
+    "average_harness_score": null,
+    "active_count": 1,
+    "archived_count": 4
+  },
+  "data_quality_warnings": [
+    "#47: terminal reviewed run is still active and may need archive/cleanup"
+  ],
+  "next_work": {
+    "github_issues": [
+      {
+        "number": 28,
+        "title": "[MVP 1] 앱 기반 구조와 PWA 셸 구성",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/28",
+        "labels": [
+          "priority:p0"
+        ],
+        "priority": "P0",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:53:54Z"
+      },
+      {
+        "number": 29,
+        "title": "[MVP 1] 초대 링크와 구글 로그인 가입 흐름 구현",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/29",
+        "labels": [
+          "priority:p0"
+        ],
+        "priority": "P0",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:53:55Z"
+      },
+      {
+        "number": 30,
+        "title": "[MVP 1] 사용자 역할과 팀원 프로필 관리 구현",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/30",
+        "labels": [
+          "priority:p0"
+        ],
+        "priority": "P0",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:53:56Z"
+      },
+      {
+        "number": 31,
+        "title": "[MVP 1] 근무일 생성과 모집 신청 흐름 구현",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/31",
+        "labels": [
+          "priority:p0"
+        ],
+        "priority": "P0",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:53:57Z"
+      },
+      {
+        "number": 32,
+        "title": "[MVP 1] 포지션 템플릿과 하루 단위 배정 구현",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/32",
+        "labels": [
+          "priority:p0"
+        ],
+        "priority": "P0",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:53:57Z"
+      },
+      {
+        "number": 33,
+        "title": "[MVP 1] 예식 시간 선택과 출퇴근 시간 자동 계산 구현",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/33",
+        "labels": [
+          "priority:p0"
+        ],
+        "priority": "P0",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:53:58Z"
+      },
+      {
+        "number": 34,
+        "title": "[MVP 1] 근무 확정과 팀원 확인 상태 구현",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/34",
+        "labels": [
+          "priority:p1"
+        ],
+        "priority": "P1",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:53:59Z"
+      },
+      {
+        "number": 35,
+        "title": "[MVP 1] 앱 내부 알림과 PWA 푸시 알림 구현",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/35",
+        "labels": [
+          "priority:p1"
+        ],
+        "priority": "P1",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:54:00Z"
+      },
+      {
+        "number": 36,
+        "title": "[MVP 1] 근무 자동 완료와 이력 데이터 구현",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/36",
+        "labels": [
+          "priority:p1"
+        ],
+        "priority": "P1",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:54:01Z"
+      },
+      {
+        "number": 37,
+        "title": "[MVP 1] MVP 1 통합 검증과 출시 기준 정리",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/37",
+        "labels": [
+          "priority:p1"
+        ],
+        "priority": "P1",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:54:01Z"
+      },
+      {
+        "number": 38,
+        "title": "[MVP 1] 열린 정책 질문 확정",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/38",
+        "labels": [
+          "priority:p1"
+        ],
+        "priority": "P1",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:54:02Z"
+      },
+      {
+        "number": 49,
+        "title": "[Product] PRD와 디자인 시스템 결정 작업 분리",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/49",
+        "labels": [
+          "priority:p1"
+        ],
+        "priority": "P1",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:54:06Z"
+      },
+      {
+        "number": 47,
+        "title": "[Harness] 대시보드 상태 구분과 데이터 품질 경고 개선",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/47",
+        "labels": [
+          "priority:p2"
+        ],
+        "priority": "P2",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:54:04Z"
+      },
+      {
+        "number": 48,
+        "title": "[Harness] 리뷰 점수 루브릭 세분화",
+        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/48",
+        "labels": [
+          "priority:p2"
+        ],
+        "priority": "P2",
+        "blocked": false,
+        "updated_at": "2026-05-13T23:54:05Z"
+      }
+    ],
+    "inbox_candidates": [],
+    "warnings": []
   },
   "runs": [
+    {
+      "issue_number": 47,
+      "title": "[Harness] 대시보드 상태 구분과 데이터 품질 경고 개선",
+      "stage": "reviewed",
+      "decision": "PASS",
+      "total_score": 88,
+      "review_complete": true,
+      "data_quality_warnings": [
+        "terminal reviewed run is still active and may need archive/cleanup"
+      ],
+      "run_state": "active",
+      "archived": false,
+      "harness_score": null,
+      "priority": "P2",
+      "blocked": false,
+      "blockers": [],
+      "inbox_refs": [],
+      "dashboard_synced_at": null,
+      "attempt": 1,
+      "updated_at": "2026-05-14T00:15:30.000Z",
+      "strengths": [
+        "Dashboard data now clearly distinguishes active and archived runs.",
+        "Next work candidates include GitHub open issues and inbox candidates as requested.",
+        "A reusable dashboard data validator protects the new data contract."
+      ],
+      "weaknesses": [
+        "Some existing dashboard copy remains mojibake.",
+        "Browser-level verification was partial.",
+        "The process required correction after an initially premature spec decision."
+      ],
+      "deductions": [
+        {
+          "category": "요구사항 충족",
+          "points": 2,
+          "reason": "The dashboard UI still keeps some pre-existing mojibake text, so the visual output is not fully polished."
+        },
+        {
+          "category": "구현 품질",
+          "points": 2,
+          "reason": "Inbox candidate parsing is intentionally simple and may need a structured parser if inbox entries become more complex."
+        },
+        {
+          "category": "구현 품질",
+          "points": 2,
+          "reason": "Dashboard rendering still uses the existing inline JavaScript structure rather than a more testable shared renderer."
+        },
+        {
+          "category": "검증 충분성",
+          "points": 2,
+          "reason": "Playwright accessibility snapshot could not be captured because the browser session closed during navigation."
+        },
+        {
+          "category": "검증 충분성",
+          "points": 2,
+          "reason": "No automated browser assertion was added for the rendered dashboard DOM."
+        },
+        {
+          "category": "컨텍스트 활용",
+          "points": 1,
+          "reason": "The implementation did not fully normalize existing archived history text that was already mojibake."
+        },
+        {
+          "category": "인수인계 품질",
+          "points": 5,
+          "reason": "The work initially wrote a spec before the user decision and had to be corrected."
+        },
+        {
+          "category": "인수인계 품질",
+          "points": 5,
+          "reason": "Rendered dashboard verification is documented as partial because Playwright snapshot failed."
+        },
+        {
+          "category": "인수인계 품질",
+          "points": 5,
+          "reason": "The handoff still leaves known UI text cleanup as residual work."
+        }
+      ],
+      "categories": [
+        {
+          "id": "requirement_fulfillment",
+          "label": "요구사항 충족",
+          "score": 23,
+          "max": 25
+        },
+        {
+          "id": "scope_control",
+          "label": "범위 통제",
+          "score": 15,
+          "max": 15
+        },
+        {
+          "id": "implementation_quality",
+          "label": "구현 품질",
+          "score": 13,
+          "max": 15
+        },
+        {
+          "id": "verification_sufficiency",
+          "label": "검증 충분성",
+          "score": 8,
+          "max": 10
+        },
+        {
+          "id": "risk_and_safety",
+          "label": "리스크와 안전",
+          "score": 5,
+          "max": 5
+        },
+        {
+          "id": "requirement_interpretation",
+          "label": "요구사항 해석",
+          "score": 10,
+          "max": 10
+        },
+        {
+          "id": "plan_appropriateness",
+          "label": "계획 적절성",
+          "score": 8,
+          "max": 8
+        },
+        {
+          "id": "context_usage",
+          "label": "컨텍스트 활용",
+          "score": 5,
+          "max": 6
+        },
+        {
+          "id": "handoff_quality",
+          "label": "인수인계 품질",
+          "score": 1,
+          "max": 6
+        }
+      ]
+    },
     {
       "run_id": "issue-46",
       "issue_number": 46,
@@ -202,7 +501,9 @@ window.AI_HARNESS_RUNS = {
           }
         ]
       },
-      "archived": true
+      "archived": true,
+      "run_state": "archived",
+      "data_quality_warnings": []
     },
     {
       "run_id": "issue-45",
@@ -392,7 +693,9 @@ window.AI_HARNESS_RUNS = {
           }
         ]
       },
-      "archived": true
+      "archived": true,
+      "run_state": "archived",
+      "data_quality_warnings": []
     },
     {
       "run_id": "issue-44",
@@ -505,7 +808,9 @@ window.AI_HARNESS_RUNS = {
         }
       ],
       "harness_health": null,
-      "archived": true
+      "archived": true,
+      "run_state": "archived",
+      "data_quality_warnings": []
     },
     {
       "run_id": "issue-24",
@@ -651,7 +956,9 @@ window.AI_HARNESS_RUNS = {
           }
         ]
       },
-      "archived": true
+      "archived": true,
+      "run_state": "archived",
+      "data_quality_warnings": []
     }
   ],
   "harness_health": {

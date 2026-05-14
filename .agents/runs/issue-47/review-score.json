@@ -1,0 +1,121 @@
+{
+  "score_id": "issue-47-review-attempt-1",
+  "rubric": {
+    "name": "issue_execution",
+    "version": 1
+  },
+  "total_score": 88,
+  "decision": "PASS",
+  "categories": [
+    {
+      "id": "requirement_fulfillment",
+      "score": 23,
+      "max_score": 25,
+      "evidence": [
+        "Dashboard data now exposes active_count, archived_count, per-run run_state, data_quality_warnings, and next_work candidate arrays.",
+        "GitHub open issues are collected as best-effort candidates and inbox candidates are represented even when empty."
+      ],
+      "deductions": [
+        "The dashboard UI still keeps some pre-existing mojibake text, so the visual output is not fully polished."
+      ]
+    },
+    {
+      "id": "scope_control",
+      "score": 15,
+      "max_score": 15,
+      "evidence": [
+        "Changes are limited to harness dashboard generation, dashboard rendering, validation script, and issue #47 artifacts."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "implementation_quality",
+      "score": 13,
+      "max_score": 15,
+      "evidence": [
+        "The generator keeps local dashboard generation working when GitHub collection fails.",
+        "A focused validation script checks the new dashboard data contract."
+      ],
+      "deductions": [
+        "Inbox candidate parsing is intentionally simple and may need a structured parser if inbox entries become more complex.",
+        "Dashboard rendering still uses the existing inline JavaScript structure rather than a more testable shared renderer."
+      ]
+    },
+    {
+      "id": "verification_sufficiency",
+      "score": 8,
+      "max_score": 10,
+      "evidence": [
+        "Ran syntax checks, dashboard data generation, dashboard data validation, status diagnosis, data shape inspection, and local static HTTP response check."
+      ],
+      "deductions": [
+        "Playwright accessibility snapshot could not be captured because the browser session closed during navigation.",
+        "No automated browser assertion was added for the rendered dashboard DOM."
+      ]
+    },
+    {
+      "id": "risk_and_safety",
+      "score": 5,
+      "max_score": 5,
+      "evidence": [
+        "GitHub collection failure is captured as a warning instead of failing dashboard generation.",
+        "No product code or GitHub issue mutation was included."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "requirement_interpretation",
+      "score": 10,
+      "max_score": 10,
+      "evidence": [
+        "The initially missing user decision was corrected, and the final spec reflects the explicit choice to include GitHub open issues."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "plan_appropriateness",
+      "score": 8,
+      "max_score": 8,
+      "evidence": [
+        "Plan separated the unresolved next-work candidate decision from implementation and then proceeded after confirmation."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "context_usage",
+      "score": 5,
+      "max_score": 6,
+      "evidence": [
+        "Used issue #47, existing dashboard generator, history data, diagnose-status output, and prior priority labels."
+      ],
+      "deductions": [
+        "The implementation did not fully normalize existing archived history text that was already mojibake."
+      ]
+    },
+    {
+      "id": "handoff_quality",
+      "score": 1,
+      "max_score": 6,
+      "evidence": [
+        "Task spec, plan, spec, implementation notes, verification, and review artifacts are present."
+      ],
+      "deductions": [
+        "The work initially wrote a spec before the user decision and had to be corrected.",
+        "Rendered dashboard verification is documented as partial because Playwright snapshot failed.",
+        "The handoff still leaves known UI text cleanup as residual work."
+      ]
+    }
+  ],
+  "strengths": [
+    "Dashboard data now clearly distinguishes active and archived runs.",
+    "Next work candidates include GitHub open issues and inbox candidates as requested.",
+    "A reusable dashboard data validator protects the new data contract."
+  ],
+  "weaknesses": [
+    "Some existing dashboard copy remains mojibake.",
+    "Browser-level verification was partial.",
+    "The process required correction after an initially premature spec decision."
+  ],
+  "recommended_next_action": "PASS. Create a PR after optionally deciding whether to handle the remaining dashboard copy encoding cleanup as a separate issue.",
+  "scored_at": "2026-05-14T00:15:30.000Z"
+}

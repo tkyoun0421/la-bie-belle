@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -26,6 +27,78 @@ function safeReadScore(runDir, artifactPath) {
 
 function readText(path) {
   return readFileSync(path, "utf8");
+}
+
+function parsePriorityFromText(text) {
+  const match = String(text || "").match(/Priority:\s*(P[0-3])/i);
+  return match ? match[1].toUpperCase() : null;
+}
+
+function priorityFromLabels(labels, body) {
+  const names = labels || [];
+  const priorityLabel = names.find((name) => /^priority:p[0-3]$/i.test(name));
+  if (priorityLabel) return priorityLabel.split(":")[1].toUpperCase();
+  return parsePriorityFromText(body);
+}
+
+function readInboxCandidates() {
+  const inboxPath = join(repoRoot, ".agents", "inbox.md");
+  if (!existsSync(inboxPath)) return [];
+
+  const text = readText(inboxPath);
+  const openSection = text.split(/^##\s+/m).find((section) => section.startsWith("Open"));
+  if (!openSection) return [];
+
+  return openSection
+    .split(/\r?\n(?=-\s+)/)
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.startsWith("-") && entry.includes("candidate-issue"))
+    .map((entry) => {
+      const id = entry.match(/id:\s*([a-zA-Z0-9-]+)/)?.[1] || null;
+      const currentIssue = entry.match(/current issue:\s*([^,\n]+)/i)?.[1]?.trim() || null;
+      return {
+        id,
+        current_issue: currentIssue,
+        text: entry.replace(/\s+/g, " ")
+      };
+    });
+}
+
+function readGithubIssueCandidates() {
+  const warnings = [];
+  try {
+    const output = execFileSync("gh", ["api", "repos/tkyoun0421/la-bie-belle/issues?state=open&per_page=100"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    const issues = JSON.parse(output);
+    return {
+      warnings,
+      issues: issues
+        .filter((issue) => !issue.pull_request)
+        .map((issue) => {
+          const labels = (issue.labels || []).map((label) => label.name);
+          return {
+            number: issue.number,
+            title: issue.title,
+            url: issue.html_url,
+            labels,
+            priority: priorityFromLabels(labels, issue.body),
+            blocked: labels.includes("status:blocked"),
+            updated_at: issue.updated_at
+          };
+        })
+        .sort((a, b) => {
+          const priorityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
+          const priorityDiff = (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9);
+          return priorityDiff || a.number - b.number;
+        })
+    };
+  } catch (error) {
+    warnings.push(`GitHub issue candidates could not be loaded: ${error.message}`);
+    return { warnings, issues: [] };
+  }
 }
 
 function isMarkdownTemplate(path) {
@@ -134,6 +207,7 @@ const runs = [];
 const harnessScores = [];
 const activeHarnessScores = [];
 const history = safeReadJson(historyPath) || { schema_version: 1, runs: [] };
+const dataQualityWarnings = [];
 
 for (const runDir of runDirs) {
   const runRecordPath = join(runDir, "run-record.json");
@@ -176,14 +250,21 @@ for (const runDir of runDirs) {
     dataQualityWarnings.push("review artifact is missing or still an unfilled template");
   }
 
+  const decision = decisionFromStatus(record.status, reviewScore, state);
+  if ((state?.stage || inferredStage) === "reviewed" && ["PASS", "REWORK", "FAIL"].includes(decision)) {
+    dataQualityWarnings.push("terminal reviewed run is still active and may need archive/cleanup");
+  }
+
   runs.push({
     issue_number: record.issue.number,
     title: record.issue.title,
     stage: state?.stage || inferredStage,
-    decision: decisionFromStatus(record.status, reviewScore, state),
+    decision,
     total_score: reviewScore?.total_score ?? null,
     review_complete: Boolean(reviewScore),
     data_quality_warnings: dataQualityWarnings,
+    run_state: "active",
+    archived: false,
     harness_score: harnessScore?.total_score ?? null,
     priority: state?.priority ?? null,
     blocked: state?.blocked ?? false,
@@ -213,7 +294,9 @@ for (const historicalRun of history.runs || []) {
       ...category,
       label: labelForCategory(category.id)
     })),
-    archived: true
+    archived: true,
+    run_state: "archived",
+    data_quality_warnings: historicalRun.data_quality_warnings || []
   });
 
   if (historicalRun.harness_health?.total_score !== null && historicalRun.harness_health?.total_score !== undefined) {
@@ -223,7 +306,7 @@ for (const historicalRun of history.runs || []) {
 
 runs.sort((a, b) => b.issue_number - a.issue_number);
 
-const scoredRuns = runs.filter((run) => run.review_complete);
+const scoredRuns = runs.filter((run) => run.review_complete || run.total_score !== null && run.total_score !== undefined);
 const issueCount = scoredRuns.length;
 const proposals = readImprovementProposals();
 const passCount = scoredRuns.filter((run) => run.decision === "PASS").length;
@@ -237,6 +320,17 @@ const averageHarnessScore = activeHarnessScores.length
   : null;
 
 const latestHarnessScore = activeHarnessScores[activeHarnessScores.length - 1];
+const activeCount = runs.filter((run) => run.run_state === "active").length;
+const archivedCount = runs.filter((run) => run.run_state === "archived").length;
+const githubCandidates = readGithubIssueCandidates();
+const inboxCandidates = readInboxCandidates();
+
+for (const run of runs) {
+  for (const warning of run.data_quality_warnings || []) {
+    dataQualityWarnings.push(`#${run.issue_number}: ${warning}`);
+  }
+}
+
 const harnessHealth = latestHarnessScore ? {
   total_score: latestHarnessScore.total_score,
   categories: (latestHarnessScore.categories || []).map((category) => ({
@@ -262,7 +356,15 @@ const dashboardData = {
     pass_count: passCount,
     rework_count: reworkCount,
     fail_count: failCount,
-    average_harness_score: averageHarnessScore
+    average_harness_score: averageHarnessScore,
+    active_count: activeCount,
+    archived_count: archivedCount
+  },
+  data_quality_warnings: dataQualityWarnings,
+  next_work: {
+    github_issues: githubCandidates.issues,
+    inbox_candidates: inboxCandidates,
+    warnings: githubCandidates.warnings
   },
   runs,
   harness_health: harnessHealth,
