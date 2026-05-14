@@ -1,0 +1,23 @@
+{
+  "run_id": "issue-48",
+  "issue": {
+    "number": 48,
+    "title": "[Harness] 리뷰 점수 루브릭 세분화",
+    "url": "https://github.com/tkyoun0421/la-bie-belle/issues/48"
+  },
+  "status": "reviewed",
+  "attempt": 1,
+  "artifacts": {
+    "task_spec": "task-spec.md",
+    "plan": "plan.md",
+    "spec": "spec.md",
+    "implementation_notes": "implementation-notes.md",
+    "verification": "verification.md",
+    "review_score": "review-score.json",
+    "review": "review.md"
+  },
+  "changed_files": [],
+  "scores": [],
+  "created_at": "2026-05-14T00:44:57.023Z",
+  "updated_at": "2026-05-14T01:02:00.000Z"
+}

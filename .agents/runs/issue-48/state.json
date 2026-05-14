@@ -1,0 +1,12 @@
+{
+  "run_id": "issue-48",
+  "issue_number": 48,
+  "stage": "reviewed",
+  "decision": "PASS",
+  "priority": "P2",
+  "blocked": false,
+  "blockers": [],
+  "inbox_refs": [],
+  "dashboard_synced_at": null,
+  "updated_at": "2026-05-14T01:02:00.000Z"
+}

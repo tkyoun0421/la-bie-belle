@@ -13,7 +13,7 @@ const proposalsRoot = join(repoRoot, ".agents", "harness", "improvements", "prop
 const historyPath = join(repoRoot, ".agents", "harness", "history", "runs.json");
 
 function readJson(path) {
-  return JSON.parse(readFileSync(path, "utf8"));
+  return JSON.parse(readFileSync(path, "utf8").replace(/^\uFEFF/, ""));
 }
 
 function safeReadJson(path) {
@@ -179,6 +179,25 @@ function labelForCategory(id) {
   return labels[id] || id;
 }
 
+function normalizeDeduction(category, deduction) {
+  const fallbackPoints = Math.max(0, category.max_score - category.score);
+  if (typeof deduction === "string") {
+    return {
+      category: labelForCategory(category.id),
+      points: fallbackPoints,
+      reason: deduction
+    };
+  }
+
+  return {
+    category: labelForCategory(category.id),
+    points: deduction?.points ?? fallbackPoints,
+    reason: deduction?.reason || "",
+    follow_up: deduction?.follow_up || null,
+    severity: deduction?.severity || null
+  };
+}
+
 function decisionFromStatus(status, score, state) {
   if (state?.decision) return state.decision;
   if (score?.decision) return score.decision;
@@ -234,11 +253,7 @@ for (const runDir of runDirs) {
   }));
 
   const deductions = (reviewScore?.categories || []).flatMap((category) =>
-    (category.deductions || []).map((reason) => ({
-      category: labelForCategory(category.id),
-      points: Math.max(0, category.max_score - category.score),
-      reason
-    }))
+    (category.deductions || []).map((deduction) => normalizeDeduction(category, deduction))
   );
 
   const inferredStage = stageFromArtifacts(runDir, record, reviewScore);

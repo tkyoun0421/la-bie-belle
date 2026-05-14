@@ -20,23 +20,7 @@
     },
     "categories": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "score", "max_score", "evidence", "deductions"],
-        "properties": {
-          "id": { "type": "string" },
-          "score": { "type": "number" },
-          "max_score": { "type": "number" },
-          "evidence": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "deductions": {
-            "type": "array",
-            "items": { "type": "string" }
-          }
-        }
-      }
+      "items": { "$ref": "#/$defs/scored_item" }
     },
     "strengths": {
       "type": "array",
@@ -48,5 +32,60 @@
     },
     "recommended_next_action": { "type": "string" },
     "scored_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "deduction": {
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "required": ["reason"],
+          "properties": {
+            "reason": { "type": "string" },
+            "points": { "type": "number", "exclusiveMinimum": 0 },
+            "follow_up": { "type": "string" },
+            "severity": {
+              "type": "string",
+              "enum": ["low", "medium", "high"]
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "scored_item": {
+      "type": "object",
+      "required": ["id", "score", "max_score", "evidence", "deductions"],
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "group": { "type": "string" },
+        "score": { "type": "number" },
+        "max_score": { "type": "number" },
+        "evidence": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "deductions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/deduction" }
+        },
+        "subcriteria": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scored_item" }
+        },
+        "quality_levels": {
+          "type": "object",
+          "required": ["full", "partial", "minimal", "zero"],
+          "properties": {
+            "full": { "type": "string" },
+            "partial": { "type": "string" },
+            "minimal": { "type": "string" },
+            "zero": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
   }
 }
