@@ -1,0 +1,93 @@
+{
+  "score_id": "issue-47-harness-health-attempt-1",
+  "rubric": {
+    "name": "harness_health",
+    "version": 1
+  },
+  "total_score": 80,
+  "categories": [
+    {
+      "id": "task_spec_quality",
+      "score": 18,
+      "max_score": 20,
+      "evidence": [
+        "#47 task-spec and plan clearly separated confirmed active/archived dashboard work from the still-open next-work candidate decision.",
+        "The final spec captured the explicit user decision to include GitHub open issues and inbox candidates."
+      ],
+      "deductions": [
+        "The first spec was written before the user decision and had to be corrected."
+      ]
+    },
+    {
+      "id": "context_injection_quality",
+      "score": 16,
+      "max_score": 20,
+      "evidence": [
+        "The run used issue #47, dashboard generator code, dashboard HTML, history data, inbox state, priority labels, and PR #53 context.",
+        "Existing archive/history state was reflected in dashboard data and active/archived counts."
+      ],
+      "deductions": [
+        "Existing mojibake in historical records and dashboard copy was noted but not fully normalized, leaving some context quality issues visible."
+      ]
+    },
+    {
+      "id": "role_handoff_quality",
+      "score": 10,
+      "max_score": 15,
+      "evidence": [
+        "Task spec, plan, spec, implementation notes, verification, review score, and review summary exist and are linked in PR #53.",
+        "The user correction about premature spec decisions was incorporated into the final artifacts."
+      ],
+      "deductions": [
+        "The workflow allowed a spec artifact to be created before a required user decision was confirmed.",
+        "The dashboard PR was initially created before harness health evaluation and needed a follow-up update."
+      ]
+    },
+    {
+      "id": "verification_gate_quality",
+      "score": 15,
+      "max_score": 20,
+      "evidence": [
+        "A dedicated dashboard data contract validator was added and used in verification.",
+        "Syntax checks, dashboard data generation, diagnose-status, review-score validation, and local HTTP 200 checks were run."
+      ],
+      "deductions": [
+        "Playwright accessibility snapshot failed and no replacement DOM-level browser assertion was added.",
+        "CI result was not yet reflected in local verification at the time of harness evaluation."
+      ]
+    },
+    {
+      "id": "scoring_rubric_quality",
+      "score": 12,
+      "max_score": 15,
+      "evidence": [
+        "Issue execution review captured the process correction, partial browser verification, and residual copy cleanup risk.",
+        "PASS decision remained defensible because the data contract and dashboard behavior were implemented."
+      ],
+      "deductions": [
+        "The handoff-quality category absorbed several process issues, but the rubric still does not distinguish decision-order violations from ordinary documentation gaps."
+      ]
+    },
+    {
+      "id": "record_and_dashboard_quality",
+      "score": 9,
+      "max_score": 10,
+      "evidence": [
+        "Dashboard now reports active/archived state, data-quality warnings, and GitHub/inbox next-work candidates.",
+        "Issue #47 run artifacts and PR #53 include the completed harness trail."
+      ],
+      "deductions": [
+        "Dashboard copy still has some pre-existing encoding cleanup debt."
+      ]
+    }
+  ],
+  "proposals": [
+    {
+      "proposal_id": "2026-05-14-pre-spec-decision-gate",
+      "target_area": "role_handoff",
+      "status": "proposed",
+      "file": ".agents/harness/improvements/proposals/2026-05-14-pre-spec-decision-gate.json"
+    }
+  ],
+  "evaluated_at": "2026-05-14T00:24:00.000Z"
+}

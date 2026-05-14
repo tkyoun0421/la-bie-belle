@@ -1,12 +1,12 @@
 window.AI_HARNESS_RUNS = {
-  "generated_at": "2026-05-14T00:15:53.382Z",
+  "generated_at": "2026-05-14T00:22:22.393Z",
   "summary": {
     "issue_count": 5,
     "average_issue_score": 90,
     "pass_count": 5,
     "rework_count": 0,
     "fail_count": 0,
-    "average_harness_score": null,
+    "average_harness_score": 80,
     "active_count": 1,
     "archived_count": 4
   },
@@ -186,7 +186,7 @@ window.AI_HARNESS_RUNS = {
       ],
       "run_state": "active",
       "archived": false,
-      "harness_score": null,
+      "harness_score": 80,
       "priority": "P2",
       "blocked": false,
       "blockers": [],
@@ -962,9 +962,83 @@ window.AI_HARNESS_RUNS = {
     }
   ],
   "harness_health": {
-    "total_score": null,
-    "missing": true,
-    "categories": [],
+    "total_score": 80,
+    "categories": [
+      {
+        "label": "작업 명세 품질",
+        "score": 18,
+        "max": 20,
+        "evidence": [
+          "#47 task-spec and plan clearly separated confirmed active/archived dashboard work from the still-open next-work candidate decision.",
+          "The final spec captured the explicit user decision to include GitHub open issues and inbox candidates."
+        ],
+        "deductions": [
+          "The first spec was written before the user decision and had to be corrected."
+        ]
+      },
+      {
+        "label": "컨텍스트 주입 품질",
+        "score": 16,
+        "max": 20,
+        "evidence": [
+          "The run used issue #47, dashboard generator code, dashboard HTML, history data, inbox state, priority labels, and PR #53 context.",
+          "Existing archive/history state was reflected in dashboard data and active/archived counts."
+        ],
+        "deductions": [
+          "Existing mojibake in historical records and dashboard copy was noted but not fully normalized, leaving some context quality issues visible."
+        ]
+      },
+      {
+        "label": "역할 분리와 인수인계 품질",
+        "score": 10,
+        "max": 15,
+        "evidence": [
+          "Task spec, plan, spec, implementation notes, verification, review score, and review summary exist and are linked in PR #53.",
+          "The user correction about premature spec decisions was incorporated into the final artifacts."
+        ],
+        "deductions": [
+          "The workflow allowed a spec artifact to be created before a required user decision was confirmed.",
+          "The dashboard PR was initially created before harness health evaluation and needed a follow-up update."
+        ]
+      },
+      {
+        "label": "검증 게이트 품질",
+        "score": 15,
+        "max": 20,
+        "evidence": [
+          "A dedicated dashboard data contract validator was added and used in verification.",
+          "Syntax checks, dashboard data generation, diagnose-status, review-score validation, and local HTTP 200 checks were run."
+        ],
+        "deductions": [
+          "Playwright accessibility snapshot failed and no replacement DOM-level browser assertion was added.",
+          "CI result was not yet reflected in local verification at the time of harness evaluation."
+        ]
+      },
+      {
+        "label": "스코어링 루브릭 품질",
+        "score": 12,
+        "max": 15,
+        "evidence": [
+          "Issue execution review captured the process correction, partial browser verification, and residual copy cleanup risk.",
+          "PASS decision remained defensible because the data contract and dashboard behavior were implemented."
+        ],
+        "deductions": [
+          "The handoff-quality category absorbed several process issues, but the rubric still does not distinguish decision-order violations from ordinary documentation gaps."
+        ]
+      },
+      {
+        "label": "기록과 대시보드 품질",
+        "score": 9,
+        "max": 10,
+        "evidence": [
+          "Dashboard now reports active/archived state, data-quality warnings, and GitHub/inbox next-work candidates.",
+          "Issue #47 run artifacts and PR #53 include the completed harness trail."
+        ],
+        "deductions": [
+          "Dashboard copy still has some pre-existing encoding cleanup debt."
+        ]
+      }
+    ],
     "proposals": [
       {
         "proposal_id": "2026-05-10-dashboard-health-missing-state",
@@ -1001,6 +1075,15 @@ window.AI_HARNESS_RUNS = {
         "expected_impact": "dashboard/status가 누락 데이터와 실제 실패를 안정적으로 구분하고, 후속 템플릿 변경에도 회귀를 빨리 잡을 수 있다.",
         "status": "proposed",
         "file": ".agents/harness/improvements/proposals/2026-05-12-template-artifact-regression-tests.json"
+      },
+      {
+        "proposal_id": "2026-05-14-pre-spec-decision-gate",
+        "target_area": "role_handoff",
+        "title": "2026-05-14-pre-spec-decision-gate",
+        "reason": "Issue #47에서 사용자 결정이 필요한 질문이 남아 있었는데도 spec.md가 먼저 작성되었다가 사용자 지적으로 수정됐다. 현재 하네스는 spec 단계에서 미확정 결정을 발견해도 산출물 생성을 기계적으로 막는 장치가 약하다.",
+        "expected_impact": "미확정 결정이 있는 작업에서 잘못 확정된 spec이 생기는 일을 줄이고, plan -> spec -> implement 인수인계의 신뢰도를 높인다.",
+        "status": "proposed",
+        "file": ".agents/harness/improvements/proposals/2026-05-14-pre-spec-decision-gate.json"
       }
     ]
   },

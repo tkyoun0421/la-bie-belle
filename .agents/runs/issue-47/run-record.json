@@ -14,7 +14,9 @@
     "implementation_notes": "implementation-notes.md",
     "verification": "verification.md",
     "review_score": "review-score.json",
-    "review": "review.md"
+    "review": "review.md",
+    "harness_health_score": "harness-health-score.json",
+    "harness_improvements": "harness-improvements.md"
   },
   "changed_files": [],
   "scores": [],
