@@ -1,0 +1,100 @@
+{
+  "score_id": "issue-47-harness-health-attempt-1",
+  "rubric": {
+    "name": "harness_health",
+    "version": 1
+  },
+  "total_score": 80,
+  "decision": "PASS",
+  "categories": [
+    {
+      "id": "task_spec_quality",
+      "score": 18,
+      "max_score": 20,
+      "evidence": [
+        "#47의 task-spec과 plan은 확정된 active/archived 대시보드 작업과 아직 결정되지 않은 다음 작업 후보 범위를 분리했다.",
+        "최종 spec은 GitHub 열린 이슈와 inbox 후보를 포함한다는 사용자 결정을 반영했다."
+      ],
+      "deductions": [
+        "첫 spec이 사용자 결정 전에 작성되었고 이후 수정이 필요했다."
+      ]
+    },
+    {
+      "id": "context_injection_quality",
+      "score": 16,
+      "max_score": 20,
+      "evidence": [
+        "#47 이슈, 대시보드 생성기 코드, 대시보드 HTML, history 데이터, inbox 상태, priority 라벨, PR #53 맥락을 사용했다.",
+        "기존 archive/history 상태가 dashboard data와 active/archived 개수에 반영됐다."
+      ],
+      "deductions": [
+        "기존 history와 dashboard 문구의 인코딩 깨짐을 완전히 정리하지 않아 일부 맥락 품질 문제가 계속 보인다."
+      ]
+    },
+    {
+      "id": "role_handoff_quality",
+      "score": 10,
+      "max_score": 15,
+      "evidence": [
+        "task-spec, plan, spec, implementation-notes, verification, review-score, review가 있고 PR #53에 연결됐다.",
+        "사용자가 지적한 spec 선작성 문제를 최종 산출물에 반영했다."
+      ],
+      "deductions": [
+        "필수 사용자 결정이 확정되기 전에 spec 산출물이 만들어지는 흐름이 허용됐다.",
+        "대시보드 PR이 처음 만들어질 때 하네스 건강도 평가가 빠져 후속 갱신이 필요했다."
+      ]
+    },
+    {
+      "id": "verification_gate_quality",
+      "score": 15,
+      "max_score": 20,
+      "evidence": [
+        "대시보드 데이터 계약을 검증하는 전용 검증 스크립트를 추가하고 검증에 사용했다.",
+        "문법 검사, dashboard data 생성, diagnose-status, review-score 검증, 로컬 HTTP 200 확인을 실행했다."
+      ],
+      "deductions": [
+        "Playwright accessibility snapshot이 실패했고 이를 대체하는 DOM 수준 브라우저 검증이 추가되지 않았다.",
+        "하네스 평가 시점에는 CI 결과가 아직 로컬 검증 기록에 반영되지 않았다."
+      ]
+    },
+    {
+      "id": "scoring_rubric_quality",
+      "score": 12,
+      "max_score": 15,
+      "evidence": [
+        "이슈 실행 리뷰가 프로세스 수정, 부분 브라우저 검증, 남은 문구 정리 리스크를 기록했다.",
+        "데이터 계약과 대시보드 동작이 구현됐기 때문에 PASS 결정은 방어 가능했다."
+      ],
+      "deductions": [
+        "기존 루브릭은 사용자 결정 순서 위반과 일반 문서화 부족을 충분히 구분하지 못했다."
+      ]
+    },
+    {
+      "id": "record_and_dashboard_quality",
+      "score": 9,
+      "max_score": 10,
+      "evidence": [
+        "대시보드가 active/archived 상태, 데이터 품질 경고, GitHub/inbox 다음 작업 후보를 표시한다.",
+        "#47 run 산출물과 PR #53에 완료된 하네스 흐름이 남아 있다."
+      ],
+      "deductions": [
+        "대시보드 문구에는 기존 인코딩 정리 부채가 일부 남아 있다."
+      ]
+    }
+  ],
+  "proposals": [
+    {
+      "proposal_id": "2026-05-14-pre-spec-decision-gate",
+      "target_area": "role_handoff",
+      "status": "implemented",
+      "file": ".agents/harness/improvements/proposals/2026-05-14-pre-spec-decision-gate.json"
+    },
+    {
+      "proposal_id": "2026-05-14-harness-korean-output-default",
+      "target_area": "scoring_rubric",
+      "status": "implemented",
+      "file": ".agents/harness/improvements/proposals/2026-05-14-harness-korean-output-default.json"
+    }
+  ],
+  "evaluated_at": "2026-05-14T00:24:00.000Z"
+}

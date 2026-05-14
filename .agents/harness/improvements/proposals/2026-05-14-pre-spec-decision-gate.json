@@ -1,0 +1,16 @@
+{
+  "proposal_id": "2026-05-14-pre-spec-decision-gate",
+  "target_area": "role_handoff",
+  "title": "Spec 단계 전 사용자 결정 게이트 강화",
+  "problem": "Issue #47에서 사용자 결정이 필요한 질문이 남아 있었는데도 spec.md가 먼저 작성되었다가 사용자 지적으로 수정됐다. 기존 규칙은 미확정 결정이 있으면 질문해야 한다고 말하지만, spec 산출물 생성을 명시적으로 금지하는 문구가 부족했다.",
+  "expected_impact": "미확정 결정이 있는 작업에서 잘못 확정된 spec이 생기는 일을 줄이고, plan -> spec -> implement 인수인계의 신뢰도를 높인다.",
+  "implemented_changes": [
+    "ai-harness-spec 스킬에 '미확정 결정이 있으면 spec.md를 생성, 수정, 부분 작성하지 않는다'는 강제 규칙을 추가한다.",
+    "issue-execution workflow의 Spec 단계에 같은 게이트를 추가한다.",
+    "spec 산출물은 사용자 답변으로 확정된 결정만 반영하도록 명시한다."
+  ],
+  "status": "implemented",
+  "source_issue": 47,
+  "created_at": "2026-05-14T00:24:00.000Z",
+  "implemented_at": "2026-05-14T00:32:00.000Z"
+}

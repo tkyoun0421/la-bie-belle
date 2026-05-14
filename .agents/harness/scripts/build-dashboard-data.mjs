@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -26,6 +27,78 @@ function safeReadScore(runDir, artifactPath) {
 
 function readText(path) {
   return readFileSync(path, "utf8");
+}
+
+function parsePriorityFromText(text) {
+  const match = String(text || "").match(/Priority:\s*(P[0-3])/i);
+  return match ? match[1].toUpperCase() : null;
+}
+
+function priorityFromLabels(labels, body) {
+  const names = labels || [];
+  const priorityLabel = names.find((name) => /^priority:p[0-3]$/i.test(name));
+  if (priorityLabel) return priorityLabel.split(":")[1].toUpperCase();
+  return parsePriorityFromText(body);
+}
+
+function readInboxCandidates() {
+  const inboxPath = join(repoRoot, ".agents", "inbox.md");
+  if (!existsSync(inboxPath)) return [];
+
+  const text = readText(inboxPath);
+  const openSection = text.split(/^##\s+/m).find((section) => section.startsWith("Open"));
+  if (!openSection) return [];
+
+  return openSection
+    .split(/\r?\n(?=-\s+)/)
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.startsWith("-") && entry.includes("candidate-issue"))
+    .map((entry) => {
+      const id = entry.match(/id:\s*([a-zA-Z0-9-]+)/)?.[1] || null;
+      const currentIssue = entry.match(/current issue:\s*([^,\n]+)/i)?.[1]?.trim() || null;
+      return {
+        id,
+        current_issue: currentIssue,
+        text: entry.replace(/\s+/g, " ")
+      };
+    });
+}
+
+function readGithubIssueCandidates() {
+  const warnings = [];
+  try {
+    const output = execFileSync("gh", ["api", "repos/tkyoun0421/la-bie-belle/issues?state=open&per_page=100"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    const issues = JSON.parse(output);
+    return {
+      warnings,
+      issues: issues
+        .filter((issue) => !issue.pull_request)
+        .map((issue) => {
+          const labels = (issue.labels || []).map((label) => label.name);
+          return {
+            number: issue.number,
+            title: issue.title,
+            url: issue.html_url,
+            labels,
+            priority: priorityFromLabels(labels, issue.body),
+            blocked: labels.includes("status:blocked"),
+            updated_at: issue.updated_at
+          };
+        })
+        .sort((a, b) => {
+          const priorityOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
+          const priorityDiff = (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9);
+          return priorityDiff || a.number - b.number;
+        })
+    };
+  } catch (error) {
+    warnings.push(`GitHub issue candidates could not be loaded: ${error.message}`);
+    return { warnings, issues: [] };
+  }
 }
 
 function isMarkdownTemplate(path) {
@@ -134,6 +207,7 @@ const runs = [];
 const harnessScores = [];
 const activeHarnessScores = [];
 const history = safeReadJson(historyPath) || { schema_version: 1, runs: [] };
+const dataQualityWarnings = [];
 
 for (const runDir of runDirs) {
   const runRecordPath = join(runDir, "run-record.json");
@@ -176,14 +250,21 @@ for (const runDir of runDirs) {
     dataQualityWarnings.push("review artifact is missing or still an unfilled template");
   }
 
+  const decision = decisionFromStatus(record.status, reviewScore, state);
+  if ((state?.stage || inferredStage) === "reviewed" && ["PASS", "REWORK", "FAIL"].includes(decision)) {
+    dataQualityWarnings.push("terminal reviewed run is still active and may need archive/cleanup");
+  }
+
   runs.push({
     issue_number: record.issue.number,
     title: record.issue.title,
     stage: state?.stage || inferredStage,
-    decision: decisionFromStatus(record.status, reviewScore, state),
+    decision,
     total_score: reviewScore?.total_score ?? null,
     review_complete: Boolean(reviewScore),
     data_quality_warnings: dataQualityWarnings,
+    run_state: "active",
+    archived: false,
     harness_score: harnessScore?.total_score ?? null,
     priority: state?.priority ?? null,
     blocked: state?.blocked ?? false,
@@ -213,7 +294,9 @@ for (const historicalRun of history.runs || []) {
       ...category,
       label: labelForCategory(category.id)
     })),
-    archived: true
+    archived: true,
+    run_state: "archived",
+    data_quality_warnings: historicalRun.data_quality_warnings || []
   });
 
   if (historicalRun.harness_health?.total_score !== null && historicalRun.harness_health?.total_score !== undefined) {
@@ -223,7 +306,7 @@ for (const historicalRun of history.runs || []) {
 
 runs.sort((a, b) => b.issue_number - a.issue_number);
 
-const scoredRuns = runs.filter((run) => run.review_complete);
+const scoredRuns = runs.filter((run) => run.review_complete || run.total_score !== null && run.total_score !== undefined);
 const issueCount = scoredRuns.length;
 const proposals = readImprovementProposals();
 const passCount = scoredRuns.filter((run) => run.decision === "PASS").length;
@@ -237,6 +320,17 @@ const averageHarnessScore = activeHarnessScores.length
   : null;
 
 const latestHarnessScore = activeHarnessScores[activeHarnessScores.length - 1];
+const activeCount = runs.filter((run) => run.run_state === "active").length;
+const archivedCount = runs.filter((run) => run.run_state === "archived").length;
+const githubCandidates = readGithubIssueCandidates();
+const inboxCandidates = readInboxCandidates();
+
+for (const run of runs) {
+  for (const warning of run.data_quality_warnings || []) {
+    dataQualityWarnings.push(`#${run.issue_number}: ${warning}`);
+  }
+}
+
 const harnessHealth = latestHarnessScore ? {
   total_score: latestHarnessScore.total_score,
   categories: (latestHarnessScore.categories || []).map((category) => ({
@@ -262,48 +356,56 @@ const dashboardData = {
     pass_count: passCount,
     rework_count: reworkCount,
     fail_count: failCount,
-    average_harness_score: averageHarnessScore
+    average_harness_score: averageHarnessScore,
+    active_count: activeCount,
+    archived_count: archivedCount
+  },
+  data_quality_warnings: dataQualityWarnings,
+  next_work: {
+    github_issues: githubCandidates.issues,
+    inbox_candidates: inboxCandidates,
+    warnings: githubCandidates.warnings
   },
   runs,
   harness_health: harnessHealth,
   agents: [
     {
-      name: "Planner",
+      name: "계획",
       file: ".agents/harness/agents/planner.agent.md",
       purpose: "GitHub Issue를 task-spec.md와 plan.md로 변환한다.",
       outputs: ["task-spec.md", "plan.md"],
       handoff: "구체화된 작업 명세와 계획을 구현 단계로 넘긴다."
     },
     {
-      name: "Spec",
+      name: "스펙",
       file: ".agents/skills/ai-harness-spec/SKILL.md",
       purpose: "구현 전에 미확정 결정을 정리하고 spec.md를 작성한다.",
       outputs: ["spec.md"],
       handoff: "상세 시나리오와 Red 우선순위를 Red 단계로 넘긴다."
     },
     {
-      name: "Implementer",
+      name: "구현",
       file: ".agents/harness/agents/implementer.agent.md",
       purpose: "코드 또는 설정 변경을 구현한다.",
       outputs: ["implementation-notes.md"],
       handoff: "변경 파일과 구현 기록을 검증 단계로 넘긴다."
     },
     {
-      name: "Verifier",
+      name: "검증",
       file: ".agents/harness/agents/verifier.agent.md",
       purpose: "검증 명령을 실행하고 근거를 기록한다.",
       outputs: ["verification.md"],
       handoff: "검증 근거와 diff 맥락을 리뷰 단계로 넘긴다."
     },
     {
-      name: "Reviewer",
+      name: "리뷰",
       file: ".agents/harness/agents/reviewer.agent.md",
       purpose: "실행 결과를 채점하고 PASS, REWORK, FAIL을 결정한다.",
       outputs: ["review-score.json", "review.md"],
       handoff: "PASS는 PR 단계로, REWORK는 구현 재작업으로, FAIL은 사람 확인으로 넘긴다."
     },
     {
-      name: "Harness Evaluator",
+      name: "하네스 평가",
       file: ".agents/harness/agents/harness-evaluator.agent.md",
       purpose: "하네스 건강도를 평가하고 개선안을 제안한다.",
       outputs: ["harness-health-score.json", "harness-improvements.md"],
@@ -311,16 +413,16 @@ const dashboardData = {
     }
   ],
   workflow: [
-    { step: "1", name: "Planner", status: "task-spec.md와 plan.md 작성" },
-    { step: "2", name: "Spec", status: "spec.md와 Red 우선순위 작성" },
+    { step: "1", name: "계획", status: "task-spec.md와 plan.md 작성" },
+    { step: "2", name: "스펙", status: "spec.md와 Red 우선순위 작성" },
     { step: "3", name: "Red", status: "실패 테스트를 작성하거나 실패 근거 기록" },
     { step: "4", name: "Green", status: "통과에 필요한 최소 변경 구현" },
-    { step: "5", name: "Verify", status: "검증 실행 후 verification.md 작성" },
-    { step: "6", name: "Review", status: "점수 산정 후 PASS, REWORK, FAIL 결정" },
-    { step: "7", name: "Dashboard", status: "run 상태를 dashboard data로 변환" },
+    { step: "5", name: "검증", status: "검증 실행 후 verification.md 작성" },
+    { step: "6", name: "리뷰", status: "점수 산정 후 PASS, REWORK, FAIL 결정" },
+    { step: "7", name: "대시보드", status: "run 상태를 dashboard data로 변환" },
     { step: "8", name: "PR", status: "PASS run만 PR로 정리" }
   ]
 };
 
 writeFileSync(dashboardDataPath, `window.AI_HARNESS_RUNS = ${JSON.stringify(dashboardData, null, 2)};\n`);
-console.log(`Dashboard data written: ${dashboardDataPath}`);
+console.log(`대시보드 데이터 생성 완료: ${dashboardDataPath}`);

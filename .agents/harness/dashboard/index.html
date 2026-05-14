@@ -201,6 +201,12 @@
         background: var(--fail-bg);
       }
 
+      .badge.state,
+      .badge.none {
+        color: var(--accent);
+        background: var(--accent-bg);
+      }
+
       .score {
         font-weight: 780;
       }
@@ -312,6 +318,13 @@
         margin-bottom: 6px;
       }
 
+      .warning-panel {
+        margin: 16px 0;
+        padding: 14px 18px;
+        border-color: #f2c16b;
+        background: #fff8e8;
+      }
+
       .hidden {
         display: none;
       }
@@ -361,6 +374,7 @@
     <main class="wrap">
       <section id="issuesView">
         <div class="grid summary" id="summaryCards"></div>
+        <div id="qualityWarnings"></div>
         <div class="toolbar">
           <div>
             <strong>이슈별 실행 결과</strong>
@@ -378,6 +392,7 @@
             <thead>
               <tr>
                 <th>Issue</th>
+                <th>상태</th>
                 <th>결정</th>
                 <th>실행 점수</th>
                 <th>하네스 점수</th>
@@ -389,6 +404,7 @@
           </table>
         </div>
         <div class="detail" id="issueDetail"></div>
+        <div class="panel section" id="nextWork"></div>
       </section>
 
       <section id="trendsView" class="hidden">
@@ -438,7 +454,7 @@
       let currentFilter = "ALL";
       let selectedIssue = data.runs[0]?.issue_number || null;
 
-      const decisionClass = (decision) => decision.toLowerCase();
+      const decisionClass = (decision) => decision ? decision.toLowerCase() : "none";
       const percent = (score, max) => Math.round((score / max) * 100);
       const scoreText = (score) => score === null || score === undefined ? "평가 없음" : score;
       const scorePercent = (score) => score === null || score === undefined ? 0 : score;
@@ -454,7 +470,9 @@
           ["PASS", data.summary.pass_count],
           ["REWORK", data.summary.rework_count],
           ["FAIL", data.summary.fail_count],
-          ["하네스 평균", data.summary.average_harness_score]
+          ["하네스 평균", data.summary.average_harness_score],
+          ["Active", data.summary.active_count],
+          ["Archived", data.summary.archived_count]
         ];
 
         document.querySelector("#summaryCards").innerHTML = cards.map(([label, value]) => `
@@ -465,12 +483,26 @@
         `).join("");
       }
 
+      function renderWarnings() {
+        const warnings = [
+          ...(data.data_quality_warnings || []),
+          ...((data.next_work && data.next_work.warnings) || [])
+        ];
+
+        document.querySelector("#qualityWarnings").innerHTML = warnings.length ? `
+          <div class="panel warning-panel">
+            <strong>데이터 품질 경고</strong>
+            <ul class="list">${warnings.map((warning) => `<li>${warning}</li>`).join("")}</ul>
+          </div>
+        ` : "";
+      }
+
       function renderRows() {
         const rows = data.runs.filter((run) => currentFilter === "ALL" || run.decision === currentFilter);
         if (rows.length === 0) {
           document.querySelector("#runRows").innerHTML = `
             <tr>
-              <td colspan="6">표시할 실행 기록이 없습니다. <code>start-issue.mjs</code>로 실행 디렉터리를 만든 뒤 <code>build-dashboard-data.mjs</code>를 실행하세요.</td>
+              <td colspan="7">표시할 실행 기록이 없습니다. <code>start-issue.mjs</code>로 실행 디렉터리를 만든 뒤 <code>build-dashboard-data.mjs</code>를 실행하세요.</td>
             </tr>
           `;
           return;
@@ -482,7 +514,8 @@
               <div>${run.title}</div>
               <div class="subtle">${fmtDate(run.updated_at)}</div>
             </td>
-            <td><span class="badge ${decisionClass(run.decision)}">${run.decision}</span></td>
+            <td><span class="badge state">${run.run_state === "archived" ? "Archived" : "Active"}</span></td>
+            <td><span class="badge ${decisionClass(run.decision)}">${run.decision || "없음"}</span></td>
             <td>
               <span class="score">${scoreText(run.total_score)}</span>${run.total_score === null || run.total_score === undefined ? "" : " / 100"}
               <div class="bar" aria-hidden="true"><span style="width:${scorePercent(run.total_score)}%"></span></div>
@@ -534,6 +567,26 @@
             <h3>감점 사유</h3>
             <ul class="list">${run.deductions.map((item) => `<li><strong>${item.category}</strong>: -${item.points}점, ${item.reason}</li>`).join("")}</ul>
           </div>
+        `;
+      }
+
+      function renderNextWork() {
+        const githubIssues = data.next_work?.github_issues || [];
+        const inboxCandidates = data.next_work?.inbox_candidates || [];
+
+        document.querySelector("#nextWork").innerHTML = `
+          <h2>다음 작업 후보</h2>
+          <h3>GitHub 열린 이슈</h3>
+          ${githubIssues.length ? `<ul class="list">${githubIssues.map((issue) => `
+            <li>
+              <strong>#${issue.number} ${issue.title}</strong>
+              <div class="subtle">${issue.priority || "우선순위 없음"}${issue.blocked ? " · blocked" : ""}</div>
+            </li>
+          `).join("")}</ul>` : "<p class=\"subtle\">열린 GitHub 이슈 후보가 없습니다.</p>"}
+          <h3>Inbox 후보</h3>
+          ${inboxCandidates.length ? `<ul class="list">${inboxCandidates.map((item) => `
+            <li><strong>${item.id || "id 없음"}</strong>: ${item.text}</li>
+          `).join("")}</ul>` : "<p class=\"subtle\">미해결 inbox 후보가 없습니다.</p>"}
         `;
       }
 
@@ -652,8 +705,10 @@
 
       document.querySelector("#generatedAt").textContent = `데이터 생성: ${fmtDate(data.generated_at)}`;
       renderSummary();
+      renderWarnings();
       renderRows();
       renderDetail();
+      renderNextWork();
       renderTrends();
       renderHarness();
       renderAgents();

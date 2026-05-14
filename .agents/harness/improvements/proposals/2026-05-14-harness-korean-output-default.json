@@ -1,0 +1,16 @@
+{
+  "proposal_id": "2026-05-14-harness-korean-output-default",
+  "target_area": "scoring_rubric",
+  "title": "하네스 평가 산출물 한국어 기본값 강화",
+  "problem": "#47 리뷰 점수와 하네스 건강도 평가 일부가 영어 설명 문장으로 작성됐다. 파일명과 상태값은 영어를 유지해야 하지만, 근거와 감점 사유까지 영어로 남으면 한국어 운영 문서 흐름이 깨지고 사용자가 다시 정리해야 한다.",
+  "expected_impact": "리뷰, 건강도 평가, 개선 제안, 대시보드에 노출되는 설명이 일관되게 한국어로 남아 후속 판단과 PR 검토가 쉬워진다.",
+  "implemented_changes": [
+    "ai-harness-review와 ai-harness-evaluate 스킬에 평가 산출물 한국어 작성 규칙을 추가했다.",
+    "reviewer와 harness-evaluator 프롬프트에 같은 언어 규칙을 추가했다.",
+    "issue-execution workflow와 encoding guide에 하네스 산출물 설명 문장은 기본 한국어라는 공통 규칙을 추가했다."
+  ],
+  "status": "implemented",
+  "source_issue": 47,
+  "created_at": "2026-05-14T00:36:00.000Z",
+  "implemented_at": "2026-05-14T00:36:00.000Z"
+}

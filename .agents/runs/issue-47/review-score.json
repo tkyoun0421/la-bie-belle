@@ -1,0 +1,121 @@
+{
+  "score_id": "issue-47-review-attempt-1",
+  "rubric": {
+    "name": "issue_execution",
+    "version": 1
+  },
+  "total_score": 88,
+  "decision": "PASS",
+  "categories": [
+    {
+      "id": "requirement_fulfillment",
+      "score": 23,
+      "max_score": 25,
+      "evidence": [
+        "대시보드 데이터가 active_count, archived_count, 실행별 run_state, data_quality_warnings, next_work 후보 배열을 제공한다.",
+        "GitHub 열린 이슈는 실패해도 전체 생성을 막지 않는 후보로 수집되고, inbox 후보도 비어 있는 상태까지 표현된다."
+      ],
+      "deductions": [
+        "기존 대시보드 문구 일부에 인코딩 깨짐이 남아 있어 시각적 결과가 완전히 정돈되지는 않았다."
+      ]
+    },
+    {
+      "id": "scope_control",
+      "score": 15,
+      "max_score": 15,
+      "evidence": [
+        "변경 범위가 하네스 대시보드 데이터 생성, 대시보드 렌더링, 검증 스크립트, #47 산출물로 제한됐다."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "implementation_quality",
+      "score": 13,
+      "max_score": 15,
+      "evidence": [
+        "GitHub 수집이 실패해도 로컬 대시보드 생성은 계속 동작하도록 구현됐다.",
+        "새 대시보드 데이터 계약을 확인하는 전용 검증 스크립트가 추가됐다."
+      ],
+      "deductions": [
+        "inbox 후보 파싱은 의도적으로 단순해서 inbox 항목이 복잡해지면 구조화 파서가 필요할 수 있다.",
+        "대시보드 렌더링은 기존 인라인 JavaScript 구조를 유지해, 공유 렌더러로 분리된 형태보다 테스트하기 어렵다."
+      ]
+    },
+    {
+      "id": "verification_sufficiency",
+      "score": 8,
+      "max_score": 10,
+      "evidence": [
+        "문법 확인, 대시보드 데이터 생성, 대시보드 데이터 검증, 상태 진단, 데이터 구조 확인, 로컬 정적 HTTP 응답 확인을 실행했다."
+      ],
+      "deductions": [
+        "브라우저 세션이 이동 중 종료되어 Playwright 접근성 스냅샷을 캡처하지 못했다.",
+        "렌더링된 대시보드 DOM에 대한 자동 브라우저 단언은 추가되지 않았다."
+      ]
+    },
+    {
+      "id": "risk_and_safety",
+      "score": 5,
+      "max_score": 5,
+      "evidence": [
+        "GitHub 수집 실패는 대시보드 생성을 실패시키지 않고 경고로 기록된다.",
+        "제품 코드나 GitHub 이슈 변경은 포함하지 않았다."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "requirement_interpretation",
+      "score": 10,
+      "max_score": 10,
+      "evidence": [
+        "처음 누락된 사용자 결정을 바로잡았고, 최종 spec은 GitHub 열린 이슈를 포함한다는 명시적 선택을 반영한다."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "plan_appropriateness",
+      "score": 8,
+      "max_score": 8,
+      "evidence": [
+        "다음 작업 후보에 대한 미확정 결정을 구현과 분리했고, 사용자 확인 후 진행했다."
+      ],
+      "deductions": []
+    },
+    {
+      "id": "context_usage",
+      "score": 5,
+      "max_score": 6,
+      "evidence": [
+        "#47 이슈, 기존 대시보드 생성기, 히스토리 데이터, diagnose-status 출력, 기존 우선순위 라벨을 활용했다."
+      ],
+      "deductions": [
+        "이미 보관된 히스토리 텍스트의 인코딩 깨짐까지 완전히 정규화하지는 않았다."
+      ]
+    },
+    {
+      "id": "handoff_quality",
+      "score": 1,
+      "max_score": 6,
+      "evidence": [
+        "task-spec, plan, spec, implementation notes, verification, review 산출물이 모두 존재한다."
+      ],
+      "deductions": [
+        "사용자 결정 전에 spec을 먼저 작성했다가 수정하는 절차 오류가 있었다.",
+        "Playwright 스냅샷 실패 때문에 렌더링 검증이 부분 완료로 기록됐다.",
+        "대시보드 문구 정리는 남은 작업으로 이어졌다."
+      ]
+    }
+  ],
+  "strengths": [
+    "대시보드 데이터가 활성 실행과 보관 실행을 명확히 구분한다.",
+    "요청대로 GitHub 열린 이슈와 inbox 항목이 다음 작업 후보에 포함됐다.",
+    "새 데이터 계약을 보호하는 재사용 가능한 대시보드 데이터 검증기가 추가됐다."
+  ],
+  "weaknesses": [
+    "기존 대시보드 문구 일부에 인코딩 깨짐이 남아 있다.",
+    "브라우저 수준 검증은 부분적으로만 완료됐다.",
+    "처음에 사용자 결정 전에 spec을 작성하는 절차 오류가 있었다."
+  ],
+  "recommended_next_action": "PASS. PR을 생성해도 되지만, 남은 대시보드 문구 인코딩 정리는 별도 이슈로 처리할지 결정하는 것이 좋다.",
+  "scored_at": "2026-05-14T00:15:30.000Z"
+}

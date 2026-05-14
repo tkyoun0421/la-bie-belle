@@ -1,0 +1,25 @@
+{
+  "run_id": "issue-47",
+  "issue": {
+    "number": 47,
+    "title": "[Harness] 대시보드 상태 구분과 데이터 품질 경고 개선",
+    "url": "https://github.com/tkyoun0421/la-bie-belle/issues/47"
+  },
+  "status": "reviewed",
+  "attempt": 1,
+  "artifacts": {
+    "task_spec": "task-spec.md",
+    "plan": "plan.md",
+    "spec": "spec.md",
+    "implementation_notes": "implementation-notes.md",
+    "verification": "verification.md",
+    "review_score": "review-score.json",
+    "review": "review.md",
+    "harness_health_score": "harness-health-score.json",
+    "harness_improvements": "harness-improvements.md"
+  },
+  "changed_files": [],
+  "scores": [],
+  "created_at": "2026-05-13T23:59:58.912Z",
+  "updated_at": "2026-05-14T00:15:30.000Z"
+}
