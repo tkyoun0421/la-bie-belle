@@ -20,22 +20,25 @@ PR 생성 전에 AI의 이슈 실행 결과를 채점한다.
 
 언어 규칙:
 
-- `review-score.json`의 `evidence`, `deductions`, `strengths`, `weaknesses`, `recommended_next_action` 값은 한국어로 작성한다.
+- `review-score.json`의 `label`, `evidence`, `deductions`, `follow_up`, `strengths`, `weaknesses`, `recommended_next_action` 값은 한국어로 작성한다.
 - `review.md`는 한국어로 작성한다.
-- 파일명, JSON 키, 상태값(`PASS`, `REWORK`, `FAIL`), 명령어, 코드 식별자, 라이브러리명은 원문 영어를 유지할 수 있다.
-- 사용자가 영어 작성을 명시적으로 요청한 경우에만 영어 설명 문장을 사용한다.
+- 파일명, JSON 키, 상태값(`PASS`, `REWORK`, `FAIL`), 명령어, 코드 식별자, 라이브러리명은 영문 표기를 유지할 수 있다.
 
 채점:
 
 - `rubrics/issue-execution.v1.yaml`을 사용한다.
 - 결과물 품질 70점, 작업 과정 품질 30점으로 채점한다.
+- 상위 카테고리 점수는 `subcriteria[]` 하위 항목 점수 합계로 산출한다.
+- `subcriteria[]`가 있는 경우 하위 항목의 `score` 합계와 `max_score` 합계가 상위 카테고리와 일치해야 한다.
+- 각 하위 항목은 `quality_levels.full`, `partial`, `minimal`, `zero` 기준을 보고 점수를 준다.
+- 감점이 있으면 `deductions`에 기록한다. 다음 개선 작업으로 이어질 수 있으면 객체형 감점 `{ "reason": "...", "points": n, "follow_up": "...", "severity": "low|medium|high" }`을 사용한다.
 - 80-100점은 `PASS`, 65-79점은 `REWORK`, 0-64점은 `FAIL`로 결정한다.
 
 규칙:
 
 - 확신이 아니라 근거 기반 점수를 매긴다.
 - 검증되지 않은 주장에는 감점한다.
-- 유용해 보여도 관련 없는 범위 변경에는 감점한다.
+- 사용자가 요청하지 않은 범위 변경에는 감점한다.
 - 결정이 `REWORK`이면 `PASS`에 도달하기 위한 가장 작은 변경을 명시한다.
-- 결정이 `FAIL`이면 사람의 검토가 필요한 이유를 설명한다.
+- 결정이 `FAIL`이면 사람 검토가 필요한 이유를 설명한다.
 - 미확정 사용자 결정이 남아 있었는데 산출물이 먼저 작성된 흔적이 있으면 인수인계 품질에서 감점한다.

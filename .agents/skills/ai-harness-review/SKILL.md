@@ -19,19 +19,23 @@ description: 이 프로젝트에서 AI 하네스 리뷰 단계만 수행할 때 
 
 ## 강제 규칙
 
-- `review-score.json`의 `evidence`, `deductions`, `strengths`, `weaknesses`, `recommended_next_action` 값은 한국어로 작성한다.
+- `review-score.json`의 `label`, `evidence`, `deductions`, `follow_up`, `strengths`, `weaknesses`, `recommended_next_action` 값은 한국어로 작성한다.
 - `review.md`는 한국어로 작성한다.
-- 파일명, JSON 키, 상태값(`PASS`, `REWORK`, `FAIL`), 명령어, 코드 식별자, 라이브러리명은 원문 영어를 유지할 수 있다.
-- 검증되지 않은 주장이나 추측을 좋은 점으로 쓰지 않는다.
+- 파일명, JSON 키, 상태값(`PASS`, `REWORK`, `FAIL`), 명령어, 코드 식별자, 라이브러리명은 영문 표기를 유지할 수 있다.
+- 검증되지 않은 주장이나 추측은 좋은 점으로 쓰지 않는다.
 - 미확정 사용자 결정이 남아 있었는데 산출물이 먼저 작성된 흔적이 있으면 인수인계 품질에서 감점한다.
+- `review-score.json.categories[]`에 `subcriteria[]`가 있으면 상위 점수는 하위 점수 합계로 산출한다.
+- `subcriteria[]` 점수는 각 항목의 `quality_levels.full`, `partial`, `minimal`, `zero` 기준에 맞춰 부여한다.
+- 감점이 다음 개선 작업으로 이어질 수 있으면 객체형 감점에 `follow_up`을 기록한다.
 
 ## 절차
 
 1. 원본 이슈, 산출물, 변경 diff, 검증 기록을 읽는다.
 2. `.agents/harness/rubrics/issue-execution.v1.yaml` 기준으로 채점한다.
 3. 결과물 품질 70점, 작업 과정 품질 30점으로 분리해 판단한다.
-4. `review-score.json`과 `review.md`를 작성한다.
-5. 점수 기록을 검증한다.
+4. 각 상위 카테고리는 루브릭의 하위 항목별 배점으로 먼저 채점한 뒤 합산한다.
+5. `review-score.json`과 `review.md`를 작성한다.
+6. 점수 기록을 검증한다.
 
 ```bash
 node .agents/harness/scripts/validate-score.mjs .agents/runs/issue-{issue_number}/review-score.json

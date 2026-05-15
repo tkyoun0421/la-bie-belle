@@ -12,7 +12,7 @@ const apply = process.argv.includes("--apply");
 
 function readJson(path) {
   if (!existsSync(path)) return null;
-  return JSON.parse(readFileSync(path, "utf8"));
+  return JSON.parse(readFileSync(path, "utf8").replace(/^\uFEFF/, ""));
 }
 
 function artifactStage(runDir) {

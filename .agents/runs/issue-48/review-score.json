@@ -1,27 +1,39 @@
 {
-  "score_id": "issue-000-review-attempt-1",
+  "score_id": "issue-48-review-attempt-1",
   "rubric": {
     "name": "issue_execution",
     "version": 1
   },
-  "total_score": 0,
-  "decision": "FAIL",
+  "total_score": 94,
+  "decision": "PASS",
   "categories": [
     {
       "id": "requirement_fulfillment",
       "label": "요구사항 충족도",
       "group": "result_quality",
-      "score": 0,
+      "score": 24,
       "max_score": 25,
-      "evidence": [],
-      "deductions": [],
+      "evidence": [
+        "9개 상위 카테고리를 31개 하위 항목으로 나누고 검증 스크립트가 합계를 강제한다.",
+        "내부 품질 기준 quality_levels까지 템플릿과 검증에 반영했다."
+      ],
+      "deductions": [
+        {
+          "reason": "대시보드 UI에 하위 항목 상세 표시는 아직 포함하지 않았다.",
+          "points": 1,
+          "follow_up": "후속 이슈에서 dashboard detail에 subcriteria 표시를 추가한다.",
+          "severity": "low"
+        }
+      ],
       "subcriteria": [
         {
           "id": "explicit_requirements",
           "label": "명시 요구사항 반영",
-          "score": 0,
+          "score": 10,
           "max_score": 10,
-          "evidence": [],
+          "evidence": [
+            "명시 요구사항 반영 기준을 10/10점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "10점: 항목을 근거와 함께 온전히 충족한다.",
@@ -33,9 +45,11 @@
         {
           "id": "acceptance_criteria",
           "label": "완료 기준 충족",
-          "score": 0,
+          "score": 7,
           "max_score": 7,
-          "evidence": [],
+          "evidence": [
+            "완료 기준 충족 기준을 7/7점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "7점: 항목을 근거와 함께 온전히 충족한다.",
@@ -47,9 +61,11 @@
         {
           "id": "user_intent_priority",
           "label": "사용자 의도와 우선순위 반영",
-          "score": 0,
+          "score": 5,
           "max_score": 5,
-          "evidence": [],
+          "evidence": [
+            "사용자 의도와 우선순위 반영 기준을 5/5점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "5점: 항목을 근거와 함께 온전히 충족한다.",
@@ -61,9 +77,11 @@
         {
           "id": "no_missing_or_regression",
           "label": "누락/회귀 없음",
-          "score": 0,
+          "score": 2,
           "max_score": 3,
-          "evidence": [],
+          "evidence": [
+            "누락/회귀 없음 기준을 2/3점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "3점: 항목을 근거와 함께 온전히 충족한다.",
@@ -78,17 +96,28 @@
       "id": "scope_control",
       "label": "범위 준수",
       "group": "result_quality",
-      "score": 0,
+      "score": 14,
       "max_score": 15,
-      "evidence": [],
-      "deductions": [],
+      "evidence": [
+        "변경 범위가 리뷰 루브릭, 점수 스키마, 검증, 리뷰어 지침, #48 산출물에 집중됐다."
+      ],
+      "deductions": [
+        {
+          "reason": "issue-48 실행 폴더의 초기 review-score 템플릿은 새 템플릿으로 강제 갱신하지 못했다.",
+          "points": 1,
+          "follow_up": "start-issue 재실행 또는 템플릿 복사 경로의 파일 쓰기 방식을 점검한다.",
+          "severity": "low"
+        }
+      ],
       "subcriteria": [
         {
           "id": "requested_scope_only",
           "label": "요청 범위 안에서 해결",
-          "score": 0,
+          "score": 7,
           "max_score": 7,
-          "evidence": [],
+          "evidence": [
+            "요청 범위 안에서 해결 기준을 7/7점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "7점: 항목을 근거와 함께 온전히 충족한다.",
@@ -100,9 +129,11 @@
         {
           "id": "minimal_unrelated_changes",
           "label": "불필요한 변경 최소화",
-          "score": 0,
+          "score": 3,
           "max_score": 4,
-          "evidence": [],
+          "evidence": [
+            "불필요한 변경 최소화 기준을 3/4점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "4점: 항목을 근거와 함께 온전히 충족한다.",
@@ -114,9 +145,11 @@
         {
           "id": "out_of_scope_respected",
           "label": "제외 범위 준수",
-          "score": 0,
+          "score": 4,
           "max_score": 4,
-          "evidence": [],
+          "evidence": [
+            "제외 범위 준수 기준을 4/4점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "4점: 항목을 근거와 함께 온전히 충족한다.",
@@ -131,17 +164,29 @@
       "id": "implementation_quality",
       "label": "구현 품질",
       "group": "result_quality",
-      "score": 0,
+      "score": 14,
       "max_score": 15,
-      "evidence": [],
-      "deductions": [],
+      "evidence": [
+        "기존 validate-score 흐름을 유지하면서 재귀 검증 함수로 하위 항목 검증을 추가했다.",
+        "대시보드/아카이브 소비 지점도 객체형 감점에 맞춰 정규화했다."
+      ],
+      "deductions": [
+        {
+          "reason": "검증 스크립트는 스키마 파일 자체를 JSON Schema 엔진으로 검증하지는 않는다.",
+          "points": 1,
+          "follow_up": "JSON Schema 기반 검증 테스트를 추가한다.",
+          "severity": "low"
+        }
+      ],
       "subcriteria": [
         {
           "id": "existing_patterns",
           "label": "기존 패턴과 구조 활용",
-          "score": 0,
+          "score": 5,
           "max_score": 5,
-          "evidence": [],
+          "evidence": [
+            "기존 패턴과 구조 활용 기준을 5/5점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "5점: 항목을 근거와 함께 온전히 충족한다.",
@@ -153,9 +198,11 @@
         {
           "id": "maintainable_code",
           "label": "단순하고 유지보수 가능한 코드",
-          "score": 0,
+          "score": 5,
           "max_score": 5,
-          "evidence": [],
+          "evidence": [
+            "단순하고 유지보수 가능한 코드 기준을 5/5점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "5점: 항목을 근거와 함께 온전히 충족한다.",
@@ -167,9 +214,11 @@
         {
           "id": "boundaries_and_errors",
           "label": "오류 처리와 경계 조건 고려",
-          "score": 0,
+          "score": 2,
           "max_score": 3,
-          "evidence": [],
+          "evidence": [
+            "오류 처리와 경계 조건 고려 기준을 2/3점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "3점: 항목을 근거와 함께 온전히 충족한다.",
@@ -181,9 +230,11 @@
         {
           "id": "low_duplication",
           "label": "중복/임시방편 최소화",
-          "score": 0,
+          "score": 2,
           "max_score": 2,
-          "evidence": [],
+          "evidence": [
+            "중복/임시방편 최소화 기준을 2/2점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "2점: 항목을 근거와 함께 온전히 충족한다.",
@@ -198,17 +249,21 @@
       "id": "verification_sufficiency",
       "label": "검증 충분성",
       "group": "result_quality",
-      "score": 0,
+      "score": 10,
       "max_score": 10,
-      "evidence": [],
+      "evidence": [
+        "validate-score, node --check, pnpm test/lint/typecheck/build, dashboard data 검증을 실행했다."
+      ],
       "deductions": [],
       "subcriteria": [
         {
           "id": "automated_checks",
           "label": "자동 검증 실행",
-          "score": 0,
+          "score": 4,
           "max_score": 4,
-          "evidence": [],
+          "evidence": [
+            "자동 검증 실행 기준을 4/4점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "4점: 항목을 근거와 함께 온전히 충족한다.",
@@ -220,9 +275,11 @@
         {
           "id": "requirement_traceability",
           "label": "요구사항별 검증 연결",
-          "score": 0,
+          "score": 3,
           "max_score": 3,
-          "evidence": [],
+          "evidence": [
+            "요구사항별 검증 연결 기준을 3/3점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "3점: 항목을 근거와 함께 온전히 충족한다.",
@@ -234,9 +291,11 @@
         {
           "id": "residual_risk_recorded",
           "label": "실패/잔여 리스크 기록",
-          "score": 0,
+          "score": 2,
           "max_score": 2,
-          "evidence": [],
+          "evidence": [
+            "실패/잔여 리스크 기록 기준을 2/2점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "2점: 항목을 근거와 함께 온전히 충족한다.",
@@ -248,9 +307,11 @@
         {
           "id": "manual_check_judgement",
           "label": "수동 확인 필요성 판단",
-          "score": 0,
+          "score": 1,
           "max_score": 1,
-          "evidence": [],
+          "evidence": [
+            "수동 확인 필요성 판단 기준을 1/1점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "1점: 항목을 근거와 함께 온전히 충족한다.",
@@ -265,17 +326,21 @@
       "id": "risk_and_safety",
       "label": "리스크와 안전성",
       "group": "result_quality",
-      "score": 0,
+      "score": 5,
       "max_score": 5,
-      "evidence": [],
+      "evidence": [
+        "기존 점수 파일은 subcriteria 없이도 통과하도록 하위 호환성을 유지했다."
+      ],
       "deductions": [],
       "subcriteria": [
         {
           "id": "data_state_permission_safety",
           "label": "데이터/상태/권한 위험 회피",
-          "score": 0,
+          "score": 2,
           "max_score": 2,
-          "evidence": [],
+          "evidence": [
+            "데이터/상태/권한 위험 회피 기준을 2/2점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "2점: 항목을 근거와 함께 온전히 충족한다.",
@@ -287,9 +352,11 @@
         {
           "id": "user_flow_preserved",
           "label": "기존 사용자 흐름 보호",
-          "score": 0,
+          "score": 2,
           "max_score": 2,
-          "evidence": [],
+          "evidence": [
+            "기존 사용자 흐름 보호 기준을 2/2점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "2점: 항목을 근거와 함께 온전히 충족한다.",
@@ -301,9 +368,11 @@
         {
           "id": "destructive_actions_avoided",
           "label": "파괴적 작업 회피",
-          "score": 0,
+          "score": 1,
           "max_score": 1,
-          "evidence": [],
+          "evidence": [
+            "파괴적 작업 회피 기준을 1/1점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "1점: 항목을 근거와 함께 온전히 충족한다.",
@@ -318,17 +387,28 @@
       "id": "requirement_interpretation",
       "label": "요구사항 해석 품질",
       "group": "process_quality",
-      "score": 0,
+      "score": 9,
       "max_score": 10,
-      "evidence": [],
-      "deductions": [],
+      "evidence": [
+        "이슈의 확인 필요 사항을 기존 스키마 유지와 하위 항목 확장으로 반영했다."
+      ],
+      "deductions": [
+        {
+          "reason": "사용자의 2번 답변을 이전 선택지 맥락으로 해석했으나 이슈 코멘트에는 별도 기록하지 않았다.",
+          "points": 1,
+          "follow_up": "확정 결정은 이슈 댓글 또는 run 기록에 더 명시적으로 남긴다.",
+          "severity": "low"
+        }
+      ],
       "subcriteria": [
         {
           "id": "issue_and_comments_reflected",
           "label": "이슈 본문과 댓글 반영",
-          "score": 0,
+          "score": 4,
           "max_score": 4,
-          "evidence": [],
+          "evidence": [
+            "이슈 본문과 댓글 반영 기준을 4/4점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "4점: 항목을 근거와 함께 온전히 충족한다.",
@@ -340,9 +420,11 @@
         {
           "id": "undecided_items_identified",
           "label": "미확정 결정 식별",
-          "score": 0,
+          "score": 3,
           "max_score": 3,
-          "evidence": [],
+          "evidence": [
+            "미확정 결정 식별 기준을 3/3점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "3점: 항목을 근거와 함께 온전히 충족한다.",
@@ -354,9 +436,11 @@
         {
           "id": "confirmed_decisions_only",
           "label": "확정된 결정만 구현에 반영",
-          "score": 0,
+          "score": 2,
           "max_score": 3,
-          "evidence": [],
+          "evidence": [
+            "확정된 결정만 구현에 반영 기준을 2/3점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "3점: 항목을 근거와 함께 온전히 충족한다.",
@@ -371,17 +455,21 @@
       "id": "plan_appropriateness",
       "label": "계획 적절성",
       "group": "process_quality",
-      "score": 0,
+      "score": 8,
       "max_score": 8,
-      "evidence": [],
+      "evidence": [
+        "세부 점수화와 검증 강제를 중심으로 계획을 조정했다."
+      ],
       "deductions": [],
       "subcriteria": [
         {
           "id": "execution_order",
           "label": "작업 순서 적절성",
-          "score": 0,
+          "score": 3,
           "max_score": 3,
-          "evidence": [],
+          "evidence": [
+            "작업 순서 적절성 기준을 3/3점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "3점: 항목을 근거와 함께 온전히 충족한다.",
@@ -393,9 +481,11 @@
         {
           "id": "verification_strategy",
           "label": "검증 전략 포함",
-          "score": 0,
+          "score": 3,
           "max_score": 3,
-          "evidence": [],
+          "evidence": [
+            "검증 전략 포함 기준을 3/3점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "3점: 항목을 근거와 함께 온전히 충족한다.",
@@ -407,9 +497,11 @@
         {
           "id": "risks_and_non_goals",
           "label": "리스크와 제외 범위 명시",
-          "score": 0,
+          "score": 2,
           "max_score": 2,
-          "evidence": [],
+          "evidence": [
+            "리스크와 제외 범위 명시 기준을 2/2점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "2점: 항목을 근거와 함께 온전히 충족한다.",
@@ -424,17 +516,28 @@
       "id": "context_usage",
       "label": "컨텍스트 활용",
       "group": "process_quality",
-      "score": 0,
+      "score": 5,
       "max_score": 6,
-      "evidence": [],
-      "deductions": [],
+      "evidence": [
+        "#47 기존 리뷰 점수와 하네스 스크립트 소비 지점을 확인했다."
+      ],
+      "deductions": [
+        {
+          "reason": "PowerShell UTF-8 JSON 처리 문제를 확인했지만 별도 자동 방어는 추가하지 않았다.",
+          "points": 1,
+          "follow_up": "하네스 JSON 조작은 Node 스크립트를 사용하도록 운영 규칙을 보강한다.",
+          "severity": "low"
+        }
+      ],
       "subcriteria": [
         {
           "id": "relevant_files_checked",
           "label": "관련 파일과 기존 패턴 확인",
-          "score": 0,
+          "score": 3,
           "max_score": 3,
-          "evidence": [],
+          "evidence": [
+            "관련 파일과 기존 패턴 확인 기준을 3/3점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "3점: 항목을 근거와 함께 온전히 충족한다.",
@@ -446,9 +549,11 @@
         {
           "id": "prior_runs_and_rules",
           "label": "이전 run/하네스 규칙 반영",
-          "score": 0,
+          "score": 1,
           "max_score": 2,
-          "evidence": [],
+          "evidence": [
+            "이전 run/하네스 규칙 반영 기준을 1/2점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "2점: 항목을 근거와 함께 온전히 충족한다.",
@@ -460,9 +565,11 @@
         {
           "id": "latest_remote_issue_state",
           "label": "최신 원격/이슈 상태 확인",
-          "score": 0,
+          "score": 1,
           "max_score": 1,
-          "evidence": [],
+          "evidence": [
+            "최신 원격/이슈 상태 확인 기준을 1/1점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "1점: 항목을 근거와 함께 온전히 충족한다.",
@@ -477,17 +584,28 @@
       "id": "handoff_quality",
       "label": "기록과 인수인계 품질",
       "group": "process_quality",
-      "score": 0,
+      "score": 5,
       "max_score": 6,
-      "evidence": [],
-      "deductions": [],
+      "evidence": [
+        "task-spec, plan, spec, implementation-notes, verification, review 산출물을 작성했다."
+      ],
+      "deductions": [
+        {
+          "reason": "대시보드 하위 항목 표시가 제외 범위로 남아 후속 작업 연결이 필요하다.",
+          "points": 1,
+          "follow_up": "하위 항목 점수 표시 개선 이슈를 후보로 등록한다.",
+          "severity": "low"
+        }
+      ],
       "subcriteria": [
         {
           "id": "artifact_completeness",
           "label": "산출물 완성도",
-          "score": 0,
+          "score": 2,
           "max_score": 2,
-          "evidence": [],
+          "evidence": [
+            "산출물 완성도 기준을 2/2점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "2점: 항목을 근거와 함께 온전히 충족한다.",
@@ -499,9 +617,11 @@
         {
           "id": "change_reason_and_result",
           "label": "변경 이유와 결과 기록",
-          "score": 0,
+          "score": 2,
           "max_score": 2,
-          "evidence": [],
+          "evidence": [
+            "변경 이유와 결과 기록 기준을 2/2점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "2점: 항목을 근거와 함께 온전히 충족한다.",
@@ -513,9 +633,11 @@
         {
           "id": "next_work_from_deductions",
           "label": "다음 작업/감점 사유 연결",
-          "score": 0,
+          "score": 1,
           "max_score": 2,
-          "evidence": [],
+          "evidence": [
+            "다음 작업/감점 사유 연결 기준을 1/2점으로 평가했다."
+          ],
           "deductions": [],
           "quality_levels": {
             "full": "2점: 항목을 근거와 함께 온전히 충족한다.",
@@ -527,8 +649,15 @@
       ]
     }
   ],
-  "strengths": [],
-  "weaknesses": [],
-  "recommended_next_action": "작성 필요.",
-  "scored_at": "1970-01-01T00:00:00.000Z"
+  "strengths": [
+    "하위 배점 31개와 내부 품질 기준을 실제 검증 가능한 구조로 만들었다.",
+    "기존 점수 파일 호환성을 유지하면서 새 템플릿에는 세부 점수화를 강제했다.",
+    "감점 객체가 후속 개선 작업으로 이어지도록 follow_up을 보존한다."
+  ],
+  "weaknesses": [
+    "대시보드 UI는 아직 하위 항목을 직접 표시하지 않는다.",
+    "PowerShell 기본 인코딩으로 UTF-8 JSON을 다룰 때 깨짐이 발생할 수 있다."
+  ],
+  "recommended_next_action": "PASS. PR 생성 가능. 후속으로 대시보드에 subcriteria 표시를 추가하면 세부 점수화의 가시성이 더 좋아진다.",
+  "scored_at": "2026-05-14T01:01:00.000Z"
 }

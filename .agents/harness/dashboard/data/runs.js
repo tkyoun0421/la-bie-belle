@@ -1,16 +1,17 @@
 window.AI_HARNESS_RUNS = {
-  "generated_at": "2026-05-14T00:40:34.124Z",
+  "generated_at": "2026-05-14T01:06:59.620Z",
   "summary": {
-    "issue_count": 5,
-    "average_issue_score": 90,
-    "pass_count": 5,
+    "issue_count": 6,
+    "average_issue_score": 91,
+    "pass_count": 6,
     "rework_count": 0,
     "fail_count": 0,
     "average_harness_score": 80,
-    "active_count": 1,
+    "active_count": 2,
     "archived_count": 4
   },
   "data_quality_warnings": [
+    "#48: terminal reviewed run is still active and may need archive/cleanup",
     "#47: terminal reviewed run is still active and may need archive/cleanup"
   ],
   "next_work": {
@@ -148,17 +149,6 @@ window.AI_HARNESS_RUNS = {
         "updated_at": "2026-05-13T23:54:06Z"
       },
       {
-        "number": 47,
-        "title": "[Harness] 대시보드 상태 구분과 데이터 품질 경고 개선",
-        "url": "https://github.com/tkyoun0421/la-bie-belle/issues/47",
-        "labels": [
-          "priority:p2"
-        ],
-        "priority": "P2",
-        "blocked": false,
-        "updated_at": "2026-05-13T23:54:04Z"
-      },
-      {
         "number": 48,
         "title": "[Harness] 리뷰 점수 루브릭 세분화",
         "url": "https://github.com/tkyoun0421/la-bie-belle/issues/48",
@@ -174,6 +164,136 @@ window.AI_HARNESS_RUNS = {
     "warnings": []
   },
   "runs": [
+    {
+      "issue_number": 48,
+      "title": "[Harness] 리뷰 점수 루브릭 세분화",
+      "stage": "reviewed",
+      "decision": "PASS",
+      "total_score": 94,
+      "review_complete": true,
+      "data_quality_warnings": [
+        "terminal reviewed run is still active and may need archive/cleanup"
+      ],
+      "run_state": "active",
+      "archived": false,
+      "harness_score": null,
+      "priority": "P2",
+      "blocked": false,
+      "blockers": [],
+      "inbox_refs": [],
+      "dashboard_synced_at": null,
+      "attempt": 1,
+      "updated_at": "2026-05-14T01:02:00.000Z",
+      "strengths": [
+        "하위 배점 31개와 내부 품질 기준을 실제 검증 가능한 구조로 만들었다.",
+        "기존 점수 파일 호환성을 유지하면서 새 템플릿에는 세부 점수화를 강제했다.",
+        "감점 객체가 후속 개선 작업으로 이어지도록 follow_up을 보존한다."
+      ],
+      "weaknesses": [
+        "대시보드 UI는 아직 하위 항목을 직접 표시하지 않는다.",
+        "PowerShell 기본 인코딩으로 UTF-8 JSON을 다룰 때 깨짐이 발생할 수 있다."
+      ],
+      "deductions": [
+        {
+          "category": "요구사항 충족",
+          "points": 1,
+          "reason": "대시보드 UI에 하위 항목 상세 표시는 아직 포함하지 않았다.",
+          "follow_up": "후속 이슈에서 dashboard detail에 subcriteria 표시를 추가한다.",
+          "severity": "low"
+        },
+        {
+          "category": "범위 통제",
+          "points": 1,
+          "reason": "issue-48 실행 폴더의 초기 review-score 템플릿은 새 템플릿으로 강제 갱신하지 못했다.",
+          "follow_up": "start-issue 재실행 또는 템플릿 복사 경로의 파일 쓰기 방식을 점검한다.",
+          "severity": "low"
+        },
+        {
+          "category": "구현 품질",
+          "points": 1,
+          "reason": "검증 스크립트는 스키마 파일 자체를 JSON Schema 엔진으로 검증하지는 않는다.",
+          "follow_up": "JSON Schema 기반 검증 테스트를 추가한다.",
+          "severity": "low"
+        },
+        {
+          "category": "요구사항 해석",
+          "points": 1,
+          "reason": "사용자의 2번 답변을 이전 선택지 맥락으로 해석했으나 이슈 코멘트에는 별도 기록하지 않았다.",
+          "follow_up": "확정 결정은 이슈 댓글 또는 run 기록에 더 명시적으로 남긴다.",
+          "severity": "low"
+        },
+        {
+          "category": "컨텍스트 활용",
+          "points": 1,
+          "reason": "PowerShell UTF-8 JSON 처리 문제를 확인했지만 별도 자동 방어는 추가하지 않았다.",
+          "follow_up": "하네스 JSON 조작은 Node 스크립트를 사용하도록 운영 규칙을 보강한다.",
+          "severity": "low"
+        },
+        {
+          "category": "인수인계 품질",
+          "points": 1,
+          "reason": "대시보드 하위 항목 표시가 제외 범위로 남아 후속 작업 연결이 필요하다.",
+          "follow_up": "하위 항목 점수 표시 개선 이슈를 후보로 등록한다.",
+          "severity": "low"
+        }
+      ],
+      "categories": [
+        {
+          "id": "requirement_fulfillment",
+          "label": "요구사항 충족",
+          "score": 24,
+          "max": 25
+        },
+        {
+          "id": "scope_control",
+          "label": "범위 통제",
+          "score": 14,
+          "max": 15
+        },
+        {
+          "id": "implementation_quality",
+          "label": "구현 품질",
+          "score": 14,
+          "max": 15
+        },
+        {
+          "id": "verification_sufficiency",
+          "label": "검증 충분성",
+          "score": 10,
+          "max": 10
+        },
+        {
+          "id": "risk_and_safety",
+          "label": "리스크와 안전",
+          "score": 5,
+          "max": 5
+        },
+        {
+          "id": "requirement_interpretation",
+          "label": "요구사항 해석",
+          "score": 9,
+          "max": 10
+        },
+        {
+          "id": "plan_appropriateness",
+          "label": "계획 적절성",
+          "score": 8,
+          "max": 8
+        },
+        {
+          "id": "context_usage",
+          "label": "컨텍스트 활용",
+          "score": 5,
+          "max": 6
+        },
+        {
+          "id": "handoff_quality",
+          "label": "인수인계 품질",
+          "score": 5,
+          "max": 6
+        }
+      ]
+    },
     {
       "issue_number": 47,
       "title": "[Harness] 대시보드 상태 구분과 데이터 품질 경고 개선",

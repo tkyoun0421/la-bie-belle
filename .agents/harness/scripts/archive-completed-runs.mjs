@@ -13,7 +13,7 @@ const apply = process.argv.includes("--apply");
 
 function readJson(path) {
   if (!existsSync(path)) return null;
-  return JSON.parse(readFileSync(path, "utf8"));
+  return JSON.parse(readFileSync(path, "utf8").replace(/^\uFEFF/, ""));
 }
 
 function writeJson(path, value) {
@@ -50,6 +50,25 @@ function labelForCategory(id) {
   return labels[id] || id;
 }
 
+function normalizeDeduction(category, deduction) {
+  const fallbackPoints = Math.max(0, category.max_score - category.score);
+  if (typeof deduction === "string") {
+    return {
+      category: labelForCategory(category.id),
+      points: fallbackPoints,
+      reason: deduction
+    };
+  }
+
+  return {
+    category: labelForCategory(category.id),
+    points: deduction?.points ?? fallbackPoints,
+    reason: deduction?.reason || "",
+    follow_up: deduction?.follow_up || null,
+    severity: deduction?.severity || null
+  };
+}
+
 function compactRun(runDir) {
   const record = readJson(join(runDir, "run-record.json"));
   if (!record) return null;
@@ -71,11 +90,7 @@ function compactRun(runDir) {
   }));
 
   const deductions = (reviewScore?.categories || []).flatMap((category) =>
-    (category.deductions || []).map((reason) => ({
-      category: labelForCategory(category.id),
-      points: Math.max(0, category.max_score - category.score),
-      reason
-    }))
+    (category.deductions || []).map((deduction) => normalizeDeduction(category, deduction))
   );
 
   return {

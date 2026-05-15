@@ -12,7 +12,7 @@ const dashboardPath = join(repoRoot, ".agents", "harness", "dashboard", "data", 
 
 function readJson(path) {
   if (!existsSync(path)) return null;
-  return JSON.parse(readFileSync(path, "utf8"));
+  return JSON.parse(readFileSync(path, "utf8").replace(/^\uFEFF/, ""));
 }
 
 function readText(path) {
