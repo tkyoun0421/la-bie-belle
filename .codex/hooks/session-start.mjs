@@ -11,8 +11,8 @@ function activeTask(root) {
 const input = JSON.parse(readFileSync(0, "utf8"));
 const task = activeTask(input.cwd);
 const context = task
-  ? `${task.id} is in progress (test_mode=${task.test_mode}). Read AGENTS.md, its phase document, and spec_refs before editing. ${task.test_mode === "tdd" ? "Record an assertion-failing RED, then the same passing GREEN command with tdd-guard before commit." : "Use its registered check_ids and record verification evidence before commit."}`
-  : "No task is in progress. Select and mark exactly one task in progress before implementation.";
+  ? `${task.id} 작업이 진행 중입니다 (검증 방식: ${task.test_mode}). 편집 전 AGENTS.md, 해당 phase 문서, spec_refs를 읽으세요. ${task.test_mode === "tdd" ? "커밋 전 tdd-guard로 단언 실패 RED와 같은 명령의 통과 GREEN을 기록하세요." : "등록된 check_ids를 실행하고 커밋 전 검증 증거를 기록하세요."}`
+  : "진행 중인 작업이 없습니다. 구현 전 하나의 작업만 선택해 in_progress로 변경하세요.";
 
 console.log(JSON.stringify({
   hookSpecificOutput: {

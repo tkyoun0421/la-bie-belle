@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task_id": "P0-T23",
+  "spec_refs": [
+    "DOCS:SDD",
+    "ADR:0008"
+  ],
+  "red": {
+    "argv": [
+      "node",
+      ".agents/harness/scripts/codex-hook-self-test.mjs"
+    ],
+    "exit_code": 1,
+    "output_sha256": "18e5cbeab7eef7acf237cdab4d2aa83d711cb62ee89df925163271e560be37f8",
+    "recorded_at": "2026-07-23T11:13:08.116Z",
+    "tree": {
+      "head": "1a3e67e2ec1180b59226f8848291f75584a8d1a8",
+      "status": "M .agents/dashboard/index.html\n M .agents/harness/checks.json\n M .agents/harness/scripts/codex-hook-self-test.mjs\n M .agents/harness/scripts/dashboard-smoke.mjs\n M .agents/harness/scripts/dashboard.mjs\n M .agents/harness/scripts/development-guard.mjs\n M .agents/harness/scripts/pre-commit.mjs\n M .codex/hooks.json\n M .codex/hooks/pre-tool-use.mjs\n M .codex/hooks/session-start.mjs\n M docs/phases/00-foundation.md\n M docs/phases/index.jsonl\n?? .agents/harness/scripts/localization-self-test.mjs\n?? .agents/runs/P0-T22/checks/dashboard-data.log\n?? .agents/runs/P0-T22/checks/dashboard-smoke.log\n?? .agents/runs/P0-T22/checks/index-schema.log\n?? .agents/runs/P0-T22/checks/localization-self-test.log\n?? .agents/runs/P0-T22/radio.md\n?? .agents/runs/P0-T22/verification.json\n?? .agents/runs/P0-T23/radio.md",
+      "status_sha256": "16723c9debcbc421be67803829ae6617c70f3075b7473936fc49db4838e76354"
+    },
+    "assertion_failure": true
+  },
+  "green": {
+    "argv": [
+      "node",
+      ".agents/harness/scripts/codex-hook-self-test.mjs"
+    ],
+    "exit_code": 0,
+    "output_sha256": "94c852f48fc5f6b09a79e49723bd0f1a516f72d3c90da755f6bd8a6772599f23",
+    "recorded_at": "2026-07-23T11:14:21.047Z",
+    "tree": {
+      "head": "1a3e67e2ec1180b59226f8848291f75584a8d1a8",
+      "status": "M .agents/dashboard/index.html\n M .agents/harness/checks.json\n M .agents/harness/scripts/codex-hook-self-test.mjs\n M .agents/harness/scripts/dashboard-smoke.mjs\n M .agents/harness/scripts/dashboard.mjs\n M .agents/harness/scripts/development-guard.mjs\n M .agents/harness/scripts/pre-commit.mjs\n M .codex/hooks.json\n M .codex/hooks/pre-tool-use.mjs\n M .codex/hooks/session-start.mjs\n M docs/phases/00-foundation.md\n M docs/phases/index.jsonl\n?? .agents/harness/scripts/localization-self-test.mjs\n?? .agents/runs/P0-T22/checks/dashboard-data.log\n?? .agents/runs/P0-T22/checks/dashboard-smoke.log\n?? .agents/runs/P0-T22/checks/index-schema.log\n?? .agents/runs/P0-T22/checks/localization-self-test.log\n?? .agents/runs/P0-T22/radio.md\n?? .agents/runs/P0-T22/verification.json\n?? .agents/runs/P0-T23/radio.md\n?? .agents/runs/P0-T23/tdd.json",
+      "status_sha256": "257c3dca7a511bd04280560fcba6a60d18a307f03afdd0f3d41f72e8d971afd3"
+    }
+  }
+}

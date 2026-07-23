@@ -1,5 +1,5 @@
 {
-  "description": "La Vie Belle task, commit, and TDD guardrails for Codex.",
+  "description": "라비에벨 작업·커밋·TDD 가드레일",
   "hooks": {
     "SessionStart": [
       {
@@ -9,7 +9,7 @@
             "type": "command",
             "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/session-start.mjs\"",
             "timeout": 10,
-            "statusMessage": "Loading task and TDD rules"
+            "statusMessage": "작업과 TDD 규칙을 불러오는 중"
           }
         ]
       }
@@ -22,7 +22,7 @@
             "type": "command",
             "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/pre-tool-use.mjs\"",
             "timeout": 30,
-            "statusMessage": "Checking task commit and TDD evidence"
+            "statusMessage": "작업 커밋과 TDD 증거를 확인하는 중"
           }
         ]
       },
@@ -33,7 +33,7 @@
             "type": "command",
             "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/pre-tool-use.mjs\"",
             "timeout": 10,
-            "statusMessage": "Checking TDD workflow"
+            "statusMessage": "TDD 작업 흐름을 확인하는 중"
           }
         ]
       }
