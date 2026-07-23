@@ -1,0 +1,15 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { loadIndex, repoRootFrom } from "./lib/index.mjs";
+
+const root = repoRootFrom(import.meta.url);
+const reportPath = join(root, ".agents/reports/ai-readiness/latest.json");
+const report = existsSync(reportPath) ? JSON.parse(readFileSync(reportPath, "utf8")) : null;
+const { entries } = loadIndex(root);
+const execution = { current_task: entries.find((entry) => entry.kind === "task" && entry.status === "in_progress")?.id ?? null, tasks: entries.filter((entry) => entry.kind === "task").map(({ id, phase, title, status }) => ({ id, phase, title, status })) };
+const data = { report, execution };
+const encoded = JSON.stringify(data).replace(/</g, "\\u003c");
+const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Codex Harness Dashboard</title><style>body{font:16px system-ui,sans-serif;max-width:1100px;margin:0 auto;padding:24px;background:#f5f7fb;color:#18202a}main{display:grid;gap:16px}.card{background:white;border:1px solid #dfe5ee;border-radius:12px;padding:18px;box-shadow:0 2px 8px #18202a12}.score{font-size:48px;font-weight:700}.bar{height:10px;background:#e8edf4;border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:#3568d4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px;border-bottom:1px solid #e8edf4}.muted{color:#667085}</style></head><body><main><div class="card"><h1>Codex Harness</h1><p class="muted">실행 상태와 AI Readiness는 각각 index와 평가 JSON에서 투영됩니다.</p><div id="root"></div></div><div class="card"><h2>Phase / Task</h2><div id="tasks"></div></div></main><script type="application/json" id="dashboard-data">${encoded}</script><script>const d=JSON.parse(document.getElementById('dashboard-data').textContent);const root=document.getElementById('root');if(!d.report){root.innerHTML='<p>AI Readiness 평가 데이터가 없습니다. 샘플 데이터는 표시하지 않습니다.</p>'}else{root.innerHTML='<div class="score">'+d.report.total_score+' / 100</div><p>'+d.report.rubric_version+' · '+d.report.evaluated_commit+'</p><div class="grid">'+d.report.categories.map(c=>'<section><b>'+c.name+'</b><p>'+c.score+' / '+c.max_score+'</p><div class="bar"><i style="width:'+((c.score/c.max_score)*100)+'%"></i></div></section>').join('')+'</div><h2>ROI 개선안</h2><table><tr><th>제안</th><th>ROI</th><th>상태</th></tr>'+d.report.proposals.map(p=>'<tr><td>'+p.title+'</td><td>'+p.roi.toFixed(2)+'</td><td>승인 대기</td></tr>').join('')+'</table>'}document.getElementById('tasks').innerHTML='<p>현재 task: '+(d.execution.current_task||'없음')+'</p><table><tr><th>ID</th><th>Phase</th><th>상태</th></tr>'+d.execution.tasks.map(t=>'<tr><td>'+t.id+'</td><td>'+t.phase+'</td><td>'+t.status+'</td></tr>').join('')+'</table>';</script></body></html>`;
+mkdirSync(join(root, ".agents/dashboard"), { recursive: true });
+writeFileSync(join(root, ".agents/dashboard/index.html"), html);
+console.log(join(root, ".agents/dashboard/index.html"));

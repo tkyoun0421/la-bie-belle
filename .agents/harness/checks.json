@@ -1,5 +1,8 @@
 {
   "harness-self-test": ["node", ".agents/harness/scripts/self-test.mjs"],
   "index-schema": ["node", ".agents/harness/scripts/validate-index.mjs"],
-  "hook-bypass": ["node", ".agents/harness/scripts/pre-commit.mjs", "--self-test"]
+  "hook-bypass": ["node", ".agents/harness/scripts/pre-commit.mjs", "--self-test"],
+  "readiness-rubric": ["node", ".agents/harness/scripts/ai-readiness.mjs"],
+  "dashboard-data": ["node", ".agents/harness/scripts/dashboard.mjs"],
+  "dashboard-smoke": ["node", ".agents/harness/scripts/dashboard-smoke.mjs"]
 }
