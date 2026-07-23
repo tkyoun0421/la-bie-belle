@@ -18,7 +18,7 @@ function git(cwd, args, options = {}) {
     env: options.env ? { ...process.env, ...options.env } : process.env
   });
   if (!options.allowFailure && result.status !== 0) {
-    throw new Error(`git ${args.join(" ")} failed in ${cwd}\n${result.stdout ?? ""}${result.stderr ?? ""}`);
+    throw new Error(`${cwd}에서 git ${args.join(" ")} 명령이 실패했습니다\n${result.stdout ?? ""}${result.stderr ?? ""}`);
   }
   return result;
 }
@@ -30,14 +30,14 @@ export function gitOutput(cwd, args) {
 export function loadHarnessConfig(root) {
   const config = JSON.parse(readFileSync(join(root, ".agents/harness/config.json"), "utf8"));
   if (!Number.isInteger(config.max_attempts) || config.max_attempts < 1) {
-    throw new Error("harness config requires a positive integer max_attempts");
+    throw new Error("하네스 설정의 max_attempts는 양의 정수여야 합니다");
   }
   return config;
 }
 
 export function ensureCleanIntegration(root) {
   const changes = gitOutput(root, ["status", "--porcelain"]);
-  if (changes) throw new Error(`integration worktree must be clean before execution\n${changes}`);
+  if (changes) throw new Error(`실행 전 통합 worktree가 깨끗해야 합니다\n${changes}`);
 }
 
 function commonStateDirectory(root) {
@@ -90,10 +90,10 @@ export function prepareTaskWorktree(root, task, config, options = {}) {
   const existing = readRunnerState(root, task.id);
   if (existing) {
     normalizeInterruptedAttempt(existing);
-    if (existing.status !== "in_progress") throw new Error(`${task.id}: runner state is ${existing.status}`);
-    if (!existsSync(existing.worktree_path)) throw new Error(`${task.id}: recorded worktree is missing at ${existing.worktree_path}`);
+    if (existing.status !== "in_progress") throw new Error(`${task.id}: 실행기 상태는 ${existing.status}입니다`);
+    if (!existsSync(existing.worktree_path)) throw new Error(`${task.id}: 기록된 worktree가 없습니다: ${existing.worktree_path}`);
     if (gitOutput(root, ["rev-parse", "HEAD"]) !== existing.base_sha) {
-      throw new Error(`${task.id}: integration HEAD changed since the task worktree was created`);
+      throw new Error(`${task.id}: 작업 worktree 생성 후 통합 HEAD가 변경되었습니다`);
     }
     writeRunnerState(root, existing);
     return existing;
@@ -102,7 +102,7 @@ export function prepareTaskWorktree(root, task, config, options = {}) {
   const worktreeRoot = options.worktreeRoot ?? config.worktree_root ?? tmpdir();
   mkdirSync(worktreeRoot, { recursive: true });
   const worktreePath = taskWorktreePath(root, task.id, worktreeRoot);
-  if (existsSync(worktreePath)) throw new Error(`${task.id}: worktree path already exists: ${worktreePath}`);
+  if (existsSync(worktreePath)) throw new Error(`${task.id}: worktree 경로가 이미 있습니다: ${worktreePath}`);
   const branch = `codex/task-${task.id.toLowerCase()}`;
   const baseSha = gitOutput(root, ["rev-parse", "HEAD"]);
   const branchExists = git(root, ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], { allowFailure: true }).status === 0;
@@ -129,7 +129,7 @@ export function prepareTaskWorktree(root, task, config, options = {}) {
 export function beginAttempt(root, state) {
   normalizeInterruptedAttempt(state);
   if (state.attempts.length >= state.max_attempts) {
-    throw new Error(`${state.task_id}: maximum ${state.max_attempts} attempts exhausted`);
+    throw new Error(`${state.task_id}: 최대 ${state.max_attempts}회 시도를 모두 사용했습니다`);
   }
   const attempt = {
     number: state.attempts.length + 1,
@@ -196,29 +196,29 @@ export function validateSuccessfulTask(task, state) {
   const errors = validateIndex(entries);
   if (errors.length) throw new Error(errors.join("; "));
   const completed = findTask(entries, task.id);
-  if (completed.status !== "done") throw new Error(`${task.id}: successful Codex exit requires task status done`);
+  if (completed.status !== "done") throw new Error(`${task.id}: Codex가 성공 종료하려면 작업 상태가 done이어야 합니다`);
 
   const verificationPath = join(state.worktree_path, ".agents/runs", task.id, "verification.json");
-  if (!existsSync(verificationPath)) throw new Error(`${task.id}: verification evidence is missing`);
+  if (!existsSync(verificationPath)) throw new Error(`${task.id}: 검증 증거가 없습니다`);
   const verification = JSON.parse(readFileSync(verificationPath, "utf8"));
-  if (verification.status !== "passed") throw new Error(`${task.id}: verification evidence did not pass`);
+  if (verification.status !== "passed") throw new Error(`${task.id}: 검증 증거를 통과하지 못했습니다`);
   const missingSpecs = task.spec_refs.filter((spec) => !verification.spec_refs?.includes(spec));
-  if (missingSpecs.length) throw new Error(`${task.id}: verification is missing spec_refs ${missingSpecs.join(", ")}`);
+  if (missingSpecs.length) throw new Error(`${task.id}: 검증에 spec_refs가 없습니다: ${missingSpecs.join(", ")}`);
 
   const changes = gitOutput(state.worktree_path, ["status", "--porcelain"]);
-  if (changes) throw new Error(`${task.id}: successful task worktree must be clean\n${changes}`);
+  if (changes) throw new Error(`${task.id}: 성공한 작업 worktree는 깨끗해야 합니다\n${changes}`);
   const commitCount = Number(gitOutput(state.worktree_path, ["rev-list", "--count", `${state.base_sha}..HEAD`]));
-  if (commitCount !== 1) throw new Error(`${task.id}: expected exactly one task commit, found ${commitCount}`);
+  if (commitCount !== 1) throw new Error(`${task.id}: 작업 커밋은 정확히 하나여야 합니다. 현재: ${commitCount}`);
   const commit = gitOutput(state.worktree_path, ["rev-parse", "HEAD"]);
   const subject = gitOutput(state.worktree_path, ["log", "-1", "--pretty=%s"]);
-  if (!subject.includes(task.id)) throw new Error(`${task.id}: commit subject must contain task ID`);
+  if (!subject.includes(task.id)) throw new Error(`${task.id}: 커밋 제목에 작업 ID가 있어야 합니다`);
   return { commit, verification_path: verificationPath };
 }
 
 export function integrateSuccessfulTask(root, state, success) {
   ensureCleanIntegration(root);
   if (gitOutput(root, ["rev-parse", "HEAD"]) !== state.base_sha) {
-    throw new Error(`${state.task_id}: integration HEAD changed before cherry-pick`);
+    throw new Error(`${state.task_id}: cherry-pick 전에 통합 HEAD가 변경되었습니다`);
   }
   git(root, ["cherry-pick", success.commit]);
   state.status = "done";
@@ -234,7 +234,7 @@ function blockedRunDirectory(state) {
 
 export function integrateBlockedTask(root, task, state) {
   if (state.attempts.length !== state.max_attempts) {
-    throw new Error(`${task.id}: blocked integration requires exactly ${state.max_attempts} attempts`);
+    throw new Error(`${task.id}: blocked 통합에는 정확히 ${state.max_attempts}회 시도가 필요합니다`);
   }
   const runDir = blockedRunDirectory(state);
   mkdirSync(runDir, { recursive: true });
@@ -273,7 +273,7 @@ export function integrateBlockedTask(root, task, state) {
 
   ensureCleanIntegration(root);
   if (gitOutput(root, ["rev-parse", "HEAD"]) !== state.base_sha) {
-    throw new Error(`${task.id}: integration HEAD changed before blocked status cherry-pick`);
+    throw new Error(`${task.id}: blocked 상태 cherry-pick 전에 통합 HEAD가 변경되었습니다`);
   }
   git(root, ["cherry-pick", blockedCommit]);
   state.status = "blocked";

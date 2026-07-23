@@ -1,22 +1,22 @@
 import assert from "node:assert/strict";
 import { evaluate, isGitCommit } from "../../../.codex/hooks/pre-tool-use.mjs";
 
-if (!isGitCommit("git commit -m 'test'")) throw new Error("plain git commit must match");
-if (!isGitCommit("git -c user.name=test commit -m test")) throw new Error("git option commit must match");
-if (isGitCommit("git status")) throw new Error("non-commit command must not match");
+if (!isGitCommit("git commit -m 'test'")) throw new Error("일반 git commit 명령을 감지해야 합니다");
+if (!isGitCommit("git -c user.name=test commit -m test")) throw new Error("옵션이 있는 git commit 명령을 감지해야 합니다");
+if (isGitCommit("git status")) throw new Error("커밋이 아닌 명령을 감지하면 안 됩니다");
 
 const deny = evaluate(process.cwd(), { tool_name: "Bash", tool_input: { command: "git commit -m test" } }, () => ({ status: 1, stderr: "TDD evidence missing" }));
-if (deny.hookSpecificOutput?.permissionDecision !== "deny") throw new Error("failed guard must deny a Codex git commit");
+if (deny.hookSpecificOutput?.permissionDecision !== "deny") throw new Error("실패한 가드는 Codex git commit을 거부해야 합니다");
 
 const allow = evaluate(process.cwd(), { tool_name: "Bash", tool_input: { command: "git commit -m test" } }, () => ({ status: 0 }));
-if (Object.keys(allow).length !== 0) throw new Error("passing guard must allow a Codex git commit");
+if (Object.keys(allow).length !== 0) throw new Error("통과한 가드는 Codex git commit을 허용해야 합니다");
 
 const doneTaskCommit = evaluate(
   process.cwd(),
   { tool_name: "Bash", tool_input: { command: "HARNESS_TASK_ID=P0-T21 git commit -m test" } },
   (_root, taskId) => taskId === "P0-T21" ? { status: 0 } : { status: 1 }
 );
-if (Object.keys(doneTaskCommit).length !== 0) throw new Error("task-scoped commit must pass its HARNESS_TASK_ID to the guard");
+if (Object.keys(doneTaskCommit).length !== 0) throw new Error("작업 범위 커밋은 HARNESS_TASK_ID를 가드에 전달해야 합니다");
 
 const tddContext = evaluate(
   process.cwd(),
@@ -25,7 +25,7 @@ const tddContext = evaluate(
   () => ({ id: "P1-T01", test_mode: "tdd" })
 );
 if (!tddContext.hookSpecificOutput?.additionalContext?.includes("TDD")) {
-  throw new Error("TDD edit context must mention TDD");
+  throw new Error("TDD 편집 문맥에는 TDD가 표시되어야 합니다");
 }
 
 const redRequired = evaluate(
@@ -90,4 +90,4 @@ for (const command of ["git status", "pnpm harness:self-test", "git commit -m 's
   assert.notEqual(result.hookSpecificOutput?.permissionDecision, "deny", `ordinary command must not be denied: ${command}`);
 }
 
-console.log("Codex hook self-test ok");
+console.log("Codex 훅 자체 검사를 통과했습니다");

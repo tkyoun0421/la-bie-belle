@@ -22,7 +22,7 @@ import {
 
 function command(cwd, executable, args) {
   const result = spawnSync(executable, args, { cwd, encoding: "utf8" });
-  if (result.status !== 0) throw new Error(`${executable} ${args.join(" ")} failed\n${result.stdout ?? ""}${result.stderr ?? ""}`);
+  if (result.status !== 0) throw new Error(`${executable} ${args.join(" ")} 명령이 실패했습니다\n${result.stdout ?? ""}${result.stderr ?? ""}`);
   return result.stdout.trim();
 }
 
@@ -120,7 +120,7 @@ function successScenario() {
     assert(existsSync(join(fixture.root, "src/success.txt")), "successful task artifact was not integrated");
     assert(command(fixture.root, "git", ["status", "--porcelain"]) === "", "integration worktree is dirty after success");
     assert(readRunnerState(fixture.root, fixture.task.id).attempts.length === 1, "success attempt count is incorrect");
-    console.log("runner lifecycle success self-test ok");
+    console.log("실행기 수명주기 성공 자체 검사를 통과했습니다");
   } finally {
     rmSync(fixture.fixture, { recursive: true, force: true });
   }
@@ -152,7 +152,7 @@ function blockedScenario() {
     try {
       beginAttempt(fixture.root, state);
     } catch (error) {
-      fourthAttemptRejected = error.message.includes("maximum 3 attempts exhausted");
+      fourthAttemptRejected = error.message.includes("최대 3회 시도를 모두 사용했습니다");
     }
     assert(fourthAttemptRejected, "runner allowed a fourth attempt");
     integrateBlockedTask(fixture.root, fixture.task, state);
@@ -171,13 +171,13 @@ function blockedScenario() {
     assert(command(state.worktree_path, "git", ["diff", "--cached", "--name-only"]) === "", "failed implementation remained staged after blocked commit");
     assert(command(fixture.root, "git", ["status", "--porcelain"]) === "", "integration worktree is dirty after blocked integration");
     assert(readRunnerState(fixture.root, fixture.task.id).attempts.length === 3, "blocked attempt count is incorrect");
-    console.log("runner blocked-state self-test ok");
+    console.log("실행기 blocked 상태 자체 검사를 통과했습니다");
   } finally {
     rmSync(fixture.fixture, { recursive: true, force: true });
   }
 }
 
 const scenario = process.argv[2] ?? "all";
-if (!["all", "success", "blocked"].includes(scenario)) throw new Error("Usage: runner-lifecycle-self-test.mjs [all|success|blocked]");
+if (!["all", "success", "blocked"].includes(scenario)) throw new Error("사용법: runner-lifecycle-self-test.mjs [all|success|blocked]");
 if (scenario === "all" || scenario === "success") successScenario();
 if (scenario === "all" || scenario === "blocked") blockedScenario();

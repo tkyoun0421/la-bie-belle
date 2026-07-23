@@ -16,7 +16,7 @@ const [mode, taskId, ...rest] = process.argv.slice(2);
 const commandIndex = rest.indexOf("--");
 const argv = commandIndex >= 0 ? rest.slice(commandIndex + 1) : [];
 if (!mode || !taskId || !["red", "green", "check"].includes(mode)) {
-  console.error("Usage: tdd-guard.mjs <red|green|check> <task-id> [-- command args]");
+  console.error("사용법: tdd-guard.mjs <red|green|check> <task-id> [-- 명령 인수]");
   process.exit(2);
 }
 const { entries } = loadIndex(root);
@@ -40,11 +40,11 @@ if (mode === "check") {
     console.error(evidenceErrors.map((error) => `${taskId}: ${error}`).join("\n"));
     process.exit(1);
   }
-  console.log(`${taskId}: TDD evidence valid`);
+  console.log(`${taskId}: TDD 증거가 유효합니다`);
   process.exit(0);
 }
 
-if (!argv.length) throw new Error("a command is required after --");
+if (!argv.length) throw new Error("-- 뒤에 실행할 명령이 필요합니다");
 const result = spawnSync(argv[0], argv.slice(1), { cwd: root, encoding: "utf8" });
 const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
 const record = {
@@ -56,7 +56,7 @@ const record = {
 };
 if (mode === "red") {
   if (record.exit_code === 0 || isInfrastructureFailure(output) || !isAssertionFailure(output)) {
-    console.error(`${taskId}: RED must be an assertion failure, not infrastructure failure`);
+    console.error(`${taskId}: RED는 인프라 오류가 아닌 assertion 실패여야 합니다`);
     process.exit(1);
   }
   record.assertion_failure = true;
@@ -64,15 +64,15 @@ if (mode === "red") {
   previous.green = null;
 } else {
   if (!previous.red) {
-    console.error(`${taskId}: GREEN requires recorded RED evidence`);
+    console.error(`${taskId}: GREEN 실행에는 기록된 RED 증거가 필요합니다`);
     process.exit(1);
   }
   if (!sameCommand(previous.red.argv, argv)) {
-    console.error(`${taskId}: GREEN must run the same command as RED`);
+    console.error(`${taskId}: GREEN은 RED와 동일한 명령을 실행해야 합니다`);
     process.exit(1);
   }
   if (record.exit_code !== 0) {
-    console.error(`${taskId}: GREEN command failed\n${output}`);
+    console.error(`${taskId}: GREEN 명령이 실패했습니다\n${output}`);
     process.exit(record.exit_code || 1);
   }
   previous.green = record;
@@ -81,4 +81,4 @@ previous.task_id = taskId;
 previous.schema_version = 1;
 previous.spec_refs = task.spec_refs;
 writeFileSync(evidencePath, `${JSON.stringify(previous, null, 2)}\n`);
-console.log(`${mode} recorded for ${taskId}`);
+console.log(`${taskId}: ${mode.toUpperCase()} 증거를 기록했습니다`);

@@ -1,9 +1,26 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { repoRootFrom } from "./lib/index.mjs";
 
 const root = repoRootFrom(import.meta.url);
+
+function harnessScriptPaths(directory) {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) return harnessScriptPaths(path);
+    return entry.isFile() && entry.name.endsWith(".mjs") ? [path] : [];
+  });
+}
+
+for (const path of harnessScriptPaths(join(root, ".agents/harness/scripts"))) {
+  const source = readFileSync(path, "utf8");
+  const messages = source.matchAll(/(?:throw new Error|console\.error)\(\s*(["'])(.*?)\1/g);
+  for (const match of messages) {
+    if (!/[가-힣]/.test(match[2])) throw new Error(`하네스 오류 문구는 한국어여야 합니다: ${path}`);
+  }
+}
+
 const hooks = JSON.parse(readFileSync(join(root, ".codex/hooks.json"), "utf8"));
 for (const message of hooks.hooks.SessionStart.flatMap((entry) => entry.hooks).map((hook) => hook.statusMessage)) {
   if (!/[가-힣]/.test(message)) throw new Error("Codex 훅 상태 메시지는 한국어여야 합니다");

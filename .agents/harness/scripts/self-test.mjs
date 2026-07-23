@@ -17,11 +17,11 @@ const required = [
   ".agents/harness/scripts/pre-commit.mjs",
   ".agents/harness/scripts/development-guard.mjs"
 ];
-for (const path of required) if (!existsSync(join(root, path))) throw new Error(`missing ${path}`);
+for (const path of required) if (!existsSync(join(root, path))) throw new Error(`필수 파일이 없습니다: ${path}`);
 const checks = JSON.parse(readFileSync(join(root, ".agents/harness/checks.json"), "utf8"));
 for (const id of ["harness-self-test", "development-guard", "skill-validators", "index-schema", "hook-bypass", "task-contracts", "runner-contract-refusal", "tdd-guard-acceptance", "runner-lifecycle", "runner-blocked", "readiness-runner-capability", "harness-regression"]) {
-  if (!Array.isArray(checks[id])) throw new Error(`missing check ${id}`);
+  if (!Array.isArray(checks[id])) throw new Error(`필수 검사 항목이 없습니다: ${id}`);
 }
 const developmentGuard = spawnSync("node", [".agents/harness/scripts/development-guard.mjs", "--self-test"], { cwd: root, encoding: "utf8" });
-if (developmentGuard.status !== 0) throw new Error(developmentGuard.stderr || developmentGuard.stdout || "development guard self-test failed");
-console.log("harness self-test ok");
+if (developmentGuard.status !== 0) throw new Error(developmentGuard.stderr || developmentGuard.stdout || "개발 가드 자체 검사가 실패했습니다");
+console.log("하네스 자체 검사를 통과했습니다");

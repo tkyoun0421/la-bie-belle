@@ -7,4 +7,4 @@ if (errors.length) {
   console.error(errors.map((error) => `- ${error}`).join("\n"));
   process.exit(1);
 }
-console.log(`index ok: ${entries.length} records`);
+console.log(`작업 인덱스가 유효합니다: ${entries.length}개 항목`);

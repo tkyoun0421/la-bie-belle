@@ -149,9 +149,9 @@ try {
   writeFileSync(join(fixtureRoot, "test/state.json"), `${JSON.stringify({ pass: true })}\n`);
   const mismatchedGreen = run(fixtureRoot, process.execPath, [guardPath, "green", "P9-T05", "--", "node", "-e", "process.exit(0)"]);
   assert.notEqual(mismatchedGreen.status, 0);
-  assert.match(`${mismatchedGreen.stdout}${mismatchedGreen.stderr}`, /same command as RED/);
+  assert.match(`${mismatchedGreen.stdout}${mismatchedGreen.stderr}`, /RED와 GREEN은 동일한 명령/);
 } finally {
   rmSync(fixture, { recursive: true, force: true });
 }
 
-console.log("tdd guard acceptance self-test ok");
+console.log("TDD 가드 수용 자체 검사를 통과했습니다");

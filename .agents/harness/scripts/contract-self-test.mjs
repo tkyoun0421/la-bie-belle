@@ -9,11 +9,11 @@ const { entries } = loadIndex(root);
 const incomplete = entries.filter((entry) =>
   entry.kind === "task" && ["planned", "in_progress", "blocked", "verification_pending"].includes(entry.status)
 );
-if (incomplete.length === 0) throw new Error("expected incomplete task fixtures");
+if (incomplete.length === 0) throw new Error("미완료 작업 fixture가 필요합니다");
 const errors = validateIndex(entries);
 if (errors.length) throw new Error(errors.join("; "));
 if (incomplete.some((task) => !task.test_mode || !Array.isArray(task.check_ids) || task.check_ids.length === 0)) {
-  throw new Error("incomplete task without execution contract");
+  throw new Error("실행 계약이 없는 미완료 작업이 있습니다");
 }
 
 const fixtureEntries = structuredClone(entries);
@@ -22,7 +22,7 @@ delete target.test_mode;
 delete target.check_ids;
 const fixtureErrors = validateIndex(fixtureEntries);
 if (!fixtureErrors.some((error) => error.includes("P0-T01") && error.includes("test_mode"))) {
-  throw new Error(`validator accepted missing task contract: ${fixtureErrors.join("; ")}`);
+  throw new Error(`검사기가 누락된 작업 계약을 허용했습니다: ${fixtureErrors.join("; ")}`);
 }
 
 const fixtureDir = mkdtempSync(join(tmpdir(), "la-bie-belle-contract-"));
@@ -36,7 +36,7 @@ try {
     });
     const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
     if (result.status === 0 || !output.includes("P0-T01") || !output.includes("test_mode")) {
-      throw new Error(`runner accepted missing contract for ${args.includes("--task") ? "explicit" : "automatic"} selection\n${output}`);
+      throw new Error(`실행기가 ${args.includes("--task") ? "명시적" : "자동"} 선택에서 누락된 계약을 허용했습니다\n${output}`);
     }
   }
 } finally {
@@ -44,5 +44,5 @@ try {
 }
 
 const schema = JSON.parse(readFileSync(join(root, "docs/phases/index.schema.json"), "utf8"));
-if (schema.properties?.check_ids?.minItems !== 1) throw new Error("schema must require non-empty check_ids when present");
-console.log(`task contract self-test ok: ${incomplete.length} incomplete tasks covered`);
+if (schema.properties?.check_ids?.minItems !== 1) throw new Error("스키마는 check_ids가 있으면 비어 있지 않도록 요구해야 합니다");
+console.log(`작업 계약 자체 검사를 통과했습니다: 미완료 작업 ${incomplete.length}개를 확인했습니다`);

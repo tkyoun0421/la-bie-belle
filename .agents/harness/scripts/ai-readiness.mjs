@@ -46,7 +46,7 @@ let commit = "unknown";
 try { commit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(); } catch {}
 const report = { rubric_version: rubric.version, evaluated_commit: commit, evaluated_at: new Date().toISOString(), total_score: total, categories, proposals, pending_manual_checks: [], facts };
 if (process.argv.includes("--check-runner")) {
-  if (!facts["worktree runner"] || !facts["attempt limit"]) throw new Error("readiness runner capability evidence failed");
+  if (!facts["worktree runner"] || !facts["attempt limit"]) throw new Error("readiness 실행기 역량 증거 검사가 실패했습니다");
   console.log(JSON.stringify({ worktree_runner: facts["worktree runner"], attempt_limit: facts["attempt limit"] }, null, 2));
   process.exit(0);
 }

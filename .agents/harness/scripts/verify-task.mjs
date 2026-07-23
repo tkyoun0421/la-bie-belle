@@ -5,7 +5,7 @@ import { findTask, loadIndex, repoRootFrom, validateIndex } from "./lib/index.mj
 
 const root = repoRootFrom(import.meta.url);
 const taskId = process.argv[2];
-if (!taskId) throw new Error("Usage: verify-task.mjs <task-id>");
+if (!taskId) throw new Error("사용법: verify-task.mjs <task-id>");
 const { entries } = loadIndex(root);
 const errors = validateIndex(entries);
 if (errors.length) throw new Error(errors.join("; "));
