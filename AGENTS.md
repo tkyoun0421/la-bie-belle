@@ -3,17 +3,18 @@
 이 저장소에서 작업을 시작할 때 다음 순서를 지킵니다.
 
 1. `README.md`와 `docs/PRD.md`의 MVP 범위·불변 규칙을 읽습니다.
-2. `docs/ARCHITECTURE.md`와 관련 ADR을 읽습니다.
-3. `docs/phases/index.jsonl`에서 `status`가 `planned`, `in_progress`, `blocked`인 작업과 의존성을 확인합니다.
-4. 선택한 작업의 `docs/phases/*.md` 상세 설명과 인수 조건을 읽습니다.
+2. `docs/DOMAIN.md`, `docs/ARCHITECTURE.md`와 관련 ADR을 읽습니다.
+3. `docs/phases/index.jsonl`에서 `status`가 `planned`, `in_progress`, `blocked`인 task와 의존성·`spec_refs`를 확인합니다.
+4. 선택한 task의 `docs/phases/*.md` 상세 설명과 인수 조건, `spec_refs`가 가리키는 원문을 읽습니다.
 5. 한 번에 하나의 task ID만 `in_progress`로 변경하고 구현합니다.
-6. 검증 명령과 인수 조건을 모두 통과한 뒤에만 `done`으로 변경합니다.
+6. 검증 명령과 인수 조건을 모두 통과하고 관련 spec ID를 검증 증거에 남긴 뒤에만 `done`으로 변경합니다.
 
 ## 작업 인덱스 규칙
 
 - `docs/phases/index.jsonl`은 한 줄에 하나의 유효한 JSON 객체만 둡니다.
 - task ID, 의존성, 상태를 임의로 재사용하거나 삭제하지 않습니다.
-- 범위가 바뀌면 PRD 또는 ADR을 먼저 갱신하고 작업 인덱스를 동기화합니다.
+- 모든 task는 하나 이상의 유효한 `spec_refs`를 가져야 합니다.
+- 제품 범위는 PRD, 공통 언어·도메인 경계는 Domain 문서, 되돌리기 어려운 결정은 ADR을 먼저 갱신하고 작업 인덱스를 동기화합니다.
 - 구현 중 새 작업이 발견되면 기존 task에 몰래 포함하지 말고 새 task ID를 추가합니다.
 - `done` 작업의 인수 조건을 깨는 변경은 해당 task를 다시 `in_progress`로 열거나 새 회귀 task를 추가합니다.
 

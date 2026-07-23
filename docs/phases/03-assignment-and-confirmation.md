@@ -7,6 +7,7 @@
 ## 진입 조건
 
 - P2 완료.
+- 관련 spec: [PRD](../PRD.md) `INV-STAFF-01`~`03`, `AC-03`~`05`, [Domain](../DOMAIN.md) `DOMAIN:SCHEDULING`, [ADR-0003](../adr/0003-schedule-lifecycle-and-snapshots.md).
 
 ## 작업
 

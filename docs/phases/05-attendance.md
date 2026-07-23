@@ -7,6 +7,7 @@
 ## 진입 조건
 
 - P4 완료.
+- 관련 spec: [PRD](../PRD.md) `INV-ATT-01`, `AC-07`, `AC-08`, [Domain](../DOMAIN.md) `DOMAIN:ATTENDANCE`, [ADR-0004](../adr/0004-immutable-attendance-events.md).
 
 ## 작업
 

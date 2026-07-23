@@ -7,6 +7,7 @@ Google OAuth 가입부터 관리자 승인, 역할, 개인정보, 시급, 가능
 ## 진입 조건
 
 - P0 완료.
+- 관련 spec: [PRD](../PRD.md) `AC-12`, [Domain](../DOMAIN.md) `DOMAIN:IDENTITY`, [ADR-0002](../adr/0002-authorization-boundaries.md), [ADR-0007](../adr/0007-offboarding-and-history-recovery.md).
 
 ## 작업
 

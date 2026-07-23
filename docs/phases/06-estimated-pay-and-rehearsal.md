@@ -8,6 +8,7 @@
 
 - P3 완료.
 - 알림 기반과 공통 앱 셸을 재사용하기 위해 P4 완료를 권장한다.
+- 관련 spec: [PRD](../PRD.md) `INV-PAY-01`, `INV-REH-01`, `AC-09`, `AC-10`, [Domain](../DOMAIN.md) `DOMAIN:PAY`, `DOMAIN:ATTENDANCE`, [ADR-0006](../adr/0006-estimated-pay-not-payroll.md).
 
 ## 작업
 
@@ -26,7 +27,7 @@
 ### P6-T02. 일반 근무 예상 급여 조회
 
 - assignment 시급 스냅샷과 예정 출퇴근으로 금액을 계산한다.
-- 결근 assignment는 0원으로 표시한다.
+- Attendance context의 결근 projection을 조회해 결근 assignment를 0원으로 표시한다.
 - 날짜별 상세와 월별 합계를 제공한다.
 - 실제 출퇴근 원본은 공식에 사용하지 않는다.
 
