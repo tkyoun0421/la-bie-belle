@@ -1,0 +1,42 @@
+{
+  "task_id": "P0-T11",
+  "status": "passed",
+  "spec_refs": [
+    "DOCS:SDD"
+  ],
+  "checks": [
+    {
+      "check_id": "runner-blocked",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/runner-lifecycle-self-test.mjs",
+        "blocked"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t11/.agents/runs/P0-T11/checks/runner-blocked.log"
+    },
+    {
+      "check_id": "hook-bypass",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/pre-commit.mjs",
+        "--self-test"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t11/.agents/runs/P0-T11/checks/hook-bypass.log"
+    },
+    {
+      "check_id": "harness-regression",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/self-test.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t11/.agents/runs/P0-T11/checks/harness-regression.log"
+    }
+  ],
+  "recorded_at": "2026-07-23T10:30:07.663Z"
+}

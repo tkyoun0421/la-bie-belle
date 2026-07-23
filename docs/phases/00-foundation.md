@@ -165,6 +165,19 @@
 - dashboard가 `P0-T09`, `P0-T10`을 done으로 표시하고 현재 task를 비운다.
 - 정적 smoke와 실제 모바일 Chromium 렌더링에 오류가 없다.
 
+### P0-T11. blocked 상태 커밋의 staged 변경 격리
+
+- 최대 시도 실패 후 task worktree에 남은 staged 구현 파일을 working tree 내용 손실 없이 unstage한다.
+- index, attempts evidence, manual summary만 다시 stage하고 blocked 상태 커밋 hook을 통과한다.
+- 실패 구현 파일은 task worktree에 그대로 보존하고 통합 worktree에는 포함하지 않는다.
+
+인수 조건:
+
+- 실제 Git fixture가 실패 구현 파일을 미리 stage한 상태에서도 blocked 상태를 통합한다.
+- 통합 커밋에는 index와 두 실행 요약 파일만 포함된다.
+- 실패 구현 파일의 내용은 task worktree에 남고 통합 worktree에는 존재하지 않는다.
+- blocked commit policy가 production 경로의 직접 stage를 계속 거부한다.
+
 ## 종료 조건
 
 - P0의 모든 task가 `done`.

@@ -264,6 +264,7 @@ export function integrateBlockedTask(root, task, state) {
 
   const relativeAttempts = `.agents/runs/${task.id}/attempts.json`;
   const relativeSummary = `.agents/runs/${task.id}/manual-summary.md`;
+  git(state.worktree_path, ["restore", "--staged", "."]);
   git(state.worktree_path, ["add", "docs/phases/index.jsonl", relativeAttempts, relativeSummary]);
   git(state.worktree_path, ["commit", "-m", `chore(${task.id}): record blocked harness execution`], {
     env: { HARNESS_TASK_ID: task.id }

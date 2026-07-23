@@ -142,6 +142,8 @@ function blockedScenario() {
 
     mkdirSync(join(state.worktree_path, "src"), { recursive: true });
     writeFileSync(join(state.worktree_path, "src/failed-change.txt"), "must remain isolated\n");
+    command(state.worktree_path, "git", ["add", "src/failed-change.txt"]);
+    assert(command(state.worktree_path, "git", ["diff", "--cached", "--name-only"]) === "src/failed-change.txt", "fixture failed change was not staged");
     for (let number = 2; number <= config.max_attempts; number += 1) {
       const attempt = beginAttempt(fixture.root, state);
       finishAttempt(fixture.root, state, attempt, { exitCode: 1, outcome: "codex_failed", error: `fixture failure ${number}` });
@@ -160,6 +162,13 @@ function blockedScenario() {
     assert(existsSync(join(fixture.root, ".agents/runs", fixture.task.id, "attempts.json")), "attempt evidence was not integrated");
     assert(existsSync(join(fixture.root, ".agents/runs", fixture.task.id, "manual-summary.md")), "manual summary was not integrated");
     assert(existsSync(join(state.worktree_path, "src/failed-change.txt")), "failed worktree change was not preserved");
+    const integratedPaths = command(fixture.root, "git", ["show", "--pretty=", "--name-only", "HEAD"]).split(/\r?\n/).filter(Boolean).sort();
+    assert(JSON.stringify(integratedPaths) === JSON.stringify([
+      `.agents/runs/${fixture.task.id}/attempts.json`,
+      `.agents/runs/${fixture.task.id}/manual-summary.md`,
+      "docs/phases/index.jsonl"
+    ].sort()), `blocked commit contained unexpected paths: ${integratedPaths.join(", ")}`);
+    assert(command(state.worktree_path, "git", ["diff", "--cached", "--name-only"]) === "", "failed implementation remained staged after blocked commit");
     assert(command(fixture.root, "git", ["status", "--porcelain"]) === "", "integration worktree is dirty after blocked integration");
     assert(readRunnerState(fixture.root, fixture.task.id).attempts.length === 3, "blocked attempt count is incorrect");
     console.log("runner blocked-state self-test ok");
