@@ -151,6 +151,20 @@
 - pre-commit hook은 blocked 상태에서 index와 실행 요약만 포함한 상태 커밋만 허용한다.
 - AI Readiness의 worktree·재시도 점수는 파일 존재가 아니라 runner 구현과 등록된 수명주기 검사를 근거로 계산한다.
 
+### P0-T10. runner 회귀 수정 후 readiness 기준선 갱신
+
+- `P0-T09` 통합 커밋을 평가 대상으로 `ai-readiness.v1` 보고서를 다시 생성한다.
+- worktree runner와 시도 제한 항목이 실제 구현·등록 검사 근거로 통과하는지 확인한다.
+- ROI 제안은 승인 대기로만 표시하고 작업 인덱스에 자동 추가하지 않는다.
+- 갱신된 보고서와 최신 task 상태로 정적 dashboard를 다시 생성한다.
+
+인수 조건:
+
+- 보고서의 `evaluated_commit`이 `P0-T09` 통합 커밋을 가리킨다.
+- readiness 보고서에서 worktree runner와 attempt limit 근거가 모두 true다.
+- dashboard가 `P0-T09`, `P0-T10`을 done으로 표시하고 현재 task를 비운다.
+- 정적 smoke와 실제 모바일 Chromium 렌더링에 오류가 없다.
+
 ## 종료 조건
 
 - P0의 모든 task가 `done`.
