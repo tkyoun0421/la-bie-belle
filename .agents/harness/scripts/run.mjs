@@ -1,10 +1,20 @@
-import { spawn } from "node:child_process";
 import { assertExecutionContract, findTask, loadIndex, repoRootFrom, selectNext, validateIndex } from "./lib/index.mjs";
+import {
+  beginAttempt,
+  finishAttempt,
+  integrateBlockedTask,
+  integrateSuccessfulTask,
+  loadHarnessConfig,
+  prepareTaskWorktree,
+  runCodexAttempt,
+  validateSuccessfulTask
+} from "./lib/orchestrator.mjs";
 
 const root = repoRootFrom(import.meta.url);
 const args = process.argv.slice(2);
 const indexArgument = args.includes("--index") ? args[args.indexOf("--index") + 1] : undefined;
 if (args.includes("--index") && !indexArgument) throw new Error("--index requires a path");
+if (args.includes("--execute") && indexArgument) throw new Error("--index is test-only and cannot be combined with --execute");
 const { entries } = loadIndex(root, indexArgument);
 const errors = validateIndex(entries);
 if (errors.length) throw new Error(errors.join("; "));
@@ -13,6 +23,31 @@ if (!task) { console.log(JSON.stringify({ status: "idle", reason: "no runnable t
 if (!["planned", "in_progress"].includes(task.status)) throw new Error(`${task.id}: runner requires planned or in_progress status, got ${task.status}`);
 console.log(JSON.stringify({ status: "selected", task_id: task.id, title: task.title, test_mode: task.test_mode, check_ids: task.check_ids }, null, 2));
 if (!args.includes("--execute")) process.exit(0);
-const prompt = `Implement task ${task.id}: ${task.title}. Read AGENTS.md, the phase document, and all spec_refs. Follow test_mode=${task.test_mode} and satisfy check_ids=${task.check_ids.join(",")}. Register missing check commands in .agents/harness/checks.json before verification. Use the repository tdd-guard skill when applicable. Do not push, deploy, or change unrelated tasks.`;
-const child = spawn("codex", ["exec", "-C", root, "--sandbox", "workspace-write", "--ask-for-approval", "never", prompt], { cwd: root, stdio: "inherit" });
-child.on("exit", (code) => process.exit(code ?? 1));
+const config = loadHarnessConfig(root);
+const state = prepareTaskWorktree(root, task, config);
+while (state.attempts.length < state.max_attempts) {
+  const attempt = beginAttempt(root, state);
+  const result = runCodexAttempt(root, task, state, attempt);
+  if (result.exitCode !== 0) {
+    finishAttempt(root, state, attempt, { exitCode: result.exitCode, outcome: "codex_failed", error: result.error });
+    continue;
+  }
+  try {
+    const success = validateSuccessfulTask(task, state);
+    finishAttempt(root, state, attempt, { exitCode: 0, outcome: "passed" });
+    const integratedCommit = integrateSuccessfulTask(root, state, success);
+    console.log(JSON.stringify({ status: "done", task_id: task.id, attempts: state.attempts.length, commit: integratedCommit }, null, 2));
+    process.exit(0);
+  } catch (error) {
+    finishAttempt(root, state, attempt, { exitCode: 1, outcome: "validation_failed", error: error.message });
+  }
+}
+const blockedCommit = integrateBlockedTask(root, task, state);
+console.error(JSON.stringify({
+  status: "blocked",
+  task_id: task.id,
+  attempts: state.attempts.length,
+  commit: blockedCommit,
+  worktree: state.worktree_path
+}, null, 2));
+process.exit(1);

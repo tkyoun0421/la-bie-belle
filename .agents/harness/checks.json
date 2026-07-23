@@ -7,5 +7,8 @@
   "dashboard-smoke": ["node", ".agents/harness/scripts/dashboard-smoke.mjs"],
   "task-contracts": ["node", ".agents/harness/scripts/validate-index.mjs"],
   "runner-contract-refusal": ["node", ".agents/harness/scripts/contract-self-test.mjs"],
+  "runner-lifecycle": ["node", ".agents/harness/scripts/runner-lifecycle-self-test.mjs", "success"],
+  "runner-blocked": ["node", ".agents/harness/scripts/runner-lifecycle-self-test.mjs", "blocked"],
+  "readiness-runner-capability": ["node", ".agents/harness/scripts/ai-readiness.mjs", "--check-runner"],
   "harness-regression": ["node", ".agents/harness/scripts/self-test.mjs"]
 }

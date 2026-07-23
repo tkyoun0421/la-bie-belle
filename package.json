@@ -7,6 +7,7 @@
     "harness:next": "node .agents/harness/scripts/run.mjs",
     "harness:self-test": "node .agents/harness/scripts/self-test.mjs",
     "harness:test-contracts": "node .agents/harness/scripts/contract-self-test.mjs",
+    "harness:test-runner": "node .agents/harness/scripts/runner-lifecycle-self-test.mjs",
     "harness:validate-index": "node .agents/harness/scripts/validate-index.mjs",
     "harness:verify-task": "node .agents/harness/scripts/verify-task.mjs"
   }

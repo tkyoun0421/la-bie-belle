@@ -134,6 +134,23 @@
 - 명시적으로 선택한 task와 자동 선택된 task 모두 runner 경계에서 계약 누락을 거부한다.
 - 하네스 self-test와 기존 완료 task 검증이 회귀 없이 통과한다.
 
+### P0-T09. 격리 worktree 실행 수명주기 회귀 수정
+
+- runner는 통합 worktree가 깨끗한지 확인하고 task별 브랜치와 임시 worktree를 생성하거나 중단 상태에서 복구한다.
+- task worktree에서만 `in_progress` 전환과 `codex exec`를 수행하고 통합 worktree에는 성공 또는 blocked 상태 커밋만 반영한다.
+- 설정의 `max_attempts=3`을 실제 실행 횟수에 적용하며 각 시도의 종료 코드와 요약을 Git 공통 상태에 기록한다.
+- 성공 시 관련 spec이 포함된 verification, task `done`, task ID 커밋, 단일 task 커밋을 검사한 뒤 cherry-pick한다.
+- 3회 실패 시 실패한 변경은 임시 worktree에 보존하고 상태·시도 기록·수동 확인 요약만 별도 blocked 커밋으로 통합한다.
+
+인수 조건:
+
+- 실제 임시 Git 저장소 검증에서 통합 worktree는 task 실행 중 오염되지 않는다.
+- 성공 경로는 정확히 하나의 task 커밋만 통합하고 검증 증거의 `spec_refs`를 확인한다.
+- 실패 경로는 세 번만 실행하고 실패 변경을 통합하지 않은 채 task를 `blocked`로 표시한다.
+- 재실행은 기록된 worktree와 시도 횟수에서 복구하고 네 번째 실행을 시작하지 않는다.
+- pre-commit hook은 blocked 상태에서 index와 실행 요약만 포함한 상태 커밋만 허용한다.
+- AI Readiness의 worktree·재시도 점수는 파일 존재가 아니라 runner 구현과 등록된 수명주기 검사를 근거로 계산한다.
+
 ## 종료 조건
 
 - P0의 모든 task가 `done`.
