@@ -4,5 +4,17 @@
     "evaluated_commit": "a10d688b7d0acca050a3c223360833f1057b6cbc",
     "evaluated_at": "2026-07-23T09:57:17.410Z",
     "total_score": 91.67
+  },
+  {
+    "rubric_version": "ai-readiness.v1",
+    "evaluated_commit": "919f8e573d606e633233ceb82871cee5429b841a",
+    "evaluated_at": "2026-07-23T09:59:26.038Z",
+    "total_score": 91.67
+  },
+  {
+    "rubric_version": "ai-readiness.v1",
+    "evaluated_commit": "919f8e573d606e633233ceb82871cee5429b841a",
+    "evaluated_at": "2026-07-23T09:59:47.554Z",
+    "total_score": 91.67
   }
 ]

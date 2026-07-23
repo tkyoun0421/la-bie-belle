@@ -15,7 +15,7 @@
       ],
       "status": "passed",
       "exit_code": 0,
-      "log": "/private/tmp/la-bie-belle-p0-t07/.agents/runs/P0-T07/checks/readiness-rubric.log"
+      "log": "/private/tmp/la-bie-belle-p0-t07-projection-fix/.agents/runs/P0-T07/checks/readiness-rubric.log"
     },
     {
       "check_id": "dashboard-data",
@@ -25,7 +25,7 @@
       ],
       "status": "passed",
       "exit_code": 0,
-      "log": "/private/tmp/la-bie-belle-p0-t07/.agents/runs/P0-T07/checks/dashboard-data.log"
+      "log": "/private/tmp/la-bie-belle-p0-t07-projection-fix/.agents/runs/P0-T07/checks/dashboard-data.log"
     },
     {
       "check_id": "dashboard-smoke",
@@ -35,8 +35,8 @@
       ],
       "status": "passed",
       "exit_code": 0,
-      "log": "/private/tmp/la-bie-belle-p0-t07/.agents/runs/P0-T07/checks/dashboard-smoke.log"
+      "log": "/private/tmp/la-bie-belle-p0-t07-projection-fix/.agents/runs/P0-T07/checks/dashboard-smoke.log"
     }
   ],
-  "recorded_at": "2026-07-23T09:57:17.479Z"
+  "recorded_at": "2026-07-23T09:59:47.616Z"
 }
