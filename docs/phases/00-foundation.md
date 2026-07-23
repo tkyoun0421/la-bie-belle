@@ -120,6 +120,20 @@
 - 대시보드가 실제 JSON이 없을 때 샘플 점수를 표시하지 않고 누락 상태를 표시한다.
 - readiness 결과는 advisory이며 phase 진행이나 배포를 직접 허용하지 않는다.
 
+### P0-T08. task 실행 검증 계약 완성
+
+- 모든 `planned`, `in_progress`, `blocked`, `verification_pending` task에 `test_mode`와 하나 이상의 `check_ids`를 명시한다.
+- 문서만 변경하는 task는 `docs_only`, 기능 동작을 추가하는 task는 `tdd`, 기반 설정·검증·운영 task는 `verification`을 사용한다.
+- 아직 구현되지 않은 check는 task 구현 중 `.agents/harness/checks.json`에 실제 명령으로 등록하고 검증 증거를 생성한다.
+- runner는 실행 계약이 없거나 비어 있는 task를 선택·실행하지 않고 이해 가능한 오류를 반환한다.
+
+인수 조건:
+
+- 작업 인덱스의 미완료 task가 모두 명시적인 실행 검증 계약을 가진다.
+- 인덱스 validator가 누락되거나 빈 `test_mode`·`check_ids`를 검출한다.
+- 명시적으로 선택한 task와 자동 선택된 task 모두 runner 경계에서 계약 누락을 거부한다.
+- 하네스 self-test와 기존 완료 task 검증이 회귀 없이 통과한다.
+
 ## 종료 조건
 
 - P0의 모든 task가 `done`.

@@ -4,5 +4,8 @@
   "hook-bypass": ["node", ".agents/harness/scripts/pre-commit.mjs", "--self-test"],
   "readiness-rubric": ["node", ".agents/harness/scripts/ai-readiness.mjs"],
   "dashboard-data": ["node", ".agents/harness/scripts/dashboard.mjs"],
-  "dashboard-smoke": ["node", ".agents/harness/scripts/dashboard-smoke.mjs"]
+  "dashboard-smoke": ["node", ".agents/harness/scripts/dashboard-smoke.mjs"],
+  "task-contracts": ["node", ".agents/harness/scripts/validate-index.mjs"],
+  "runner-contract-refusal": ["node", ".agents/harness/scripts/contract-self-test.mjs"],
+  "harness-regression": ["node", ".agents/harness/scripts/self-test.mjs"]
 }

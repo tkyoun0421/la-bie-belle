@@ -2,6 +2,9 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+export const CONTRACT_STATUSES = new Set(["planned", "in_progress", "blocked", "verification_pending"]);
+export const TEST_MODES = new Set(["docs_only", "verification", "tdd"]);
+
 export function repoRootFrom(metaUrl) {
   let current = dirname(fileURLToPath(metaUrl));
   while (current !== dirname(current)) {
@@ -13,8 +16,8 @@ export function repoRootFrom(metaUrl) {
   throw new Error(`cannot locate repository root from ${metaUrl}`);
 }
 
-export function loadIndex(repoRoot) {
-  const path = resolve(repoRoot, "docs/phases/index.jsonl");
+export function loadIndex(repoRoot, indexPath = "docs/phases/index.jsonl") {
+  const path = resolve(repoRoot, indexPath);
   const lines = readFileSync(path, "utf8").trim().split(/\r?\n/).filter(Boolean);
   const entries = lines.map((line, lineNumber) => {
     try {
@@ -24,6 +27,22 @@ export function loadIndex(repoRoot) {
     }
   });
   return { path, entries };
+}
+
+export function executionContractError(task) {
+  if (!TEST_MODES.has(task.test_mode)) {
+    return `${task.id}: runnable task requires test_mode (${[...TEST_MODES].join(", ")})`;
+  }
+  if (!Array.isArray(task.check_ids) || task.check_ids.length === 0 || task.check_ids.some((id) => typeof id !== "string" || id.length === 0)) {
+    return `${task.id}: runnable task requires non-empty check_ids`;
+  }
+  return null;
+}
+
+export function assertExecutionContract(task) {
+  const error = executionContractError(task);
+  if (error) throw new Error(error);
+  return task;
 }
 
 export function validateIndex(entries) {
@@ -39,8 +58,9 @@ export function validateIndex(entries) {
         errors.push(`${entry.id}: missing dependency ${dependency}`);
       }
     }
-    if (entry.kind === "task" && entry.status === "in_progress" && (!entry.test_mode || !Array.isArray(entry.check_ids))) {
-      errors.push(`${entry.id}: in_progress task requires test_mode and check_ids`);
+    if (entry.kind === "task" && CONTRACT_STATUSES.has(entry.status)) {
+      const contractError = executionContractError(entry);
+      if (contractError) errors.push(contractError);
     }
   }
   const active = tasks.filter((entry) => entry.status === "in_progress");
@@ -56,9 +76,13 @@ export function findTask(entries, taskId) {
 
 export function selectNext(entries) {
   const active = entries.find((entry) => entry.kind === "task" && entry.status === "in_progress");
-  if (active) return active;
+  if (active) return assertExecutionContract(active);
   const done = new Set(entries.filter((entry) => entry.status === "done").map((entry) => entry.id));
-  return entries
+  return (entries
     .filter((entry) => entry.kind === "task" && entry.status === "planned" && (entry.depends_on ?? []).every((id) => done.has(id)))
-    .sort((a, b) => ({ must: 0, should: 1, could: 2 }[a.priority] - ({ must: 0, should: 1, could: 2 }[b.priority]) || a.id.localeCompare(b.id)))[0] ?? null;
+    .sort((a, b) => {
+      const priority = { must: 0, should: 1, could: 2 };
+      return priority[a.priority] - priority[b.priority] || a.id.localeCompare(b.id);
+    })
+    .map(assertExecutionContract)[0] ?? null);
 }
