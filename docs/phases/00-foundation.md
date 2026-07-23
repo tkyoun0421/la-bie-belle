@@ -178,6 +178,22 @@
 - 실패 구현 파일의 내용은 task worktree에 남고 통합 worktree에는 존재하지 않는다.
 - blocked commit policy가 production 경로의 직접 stage를 계속 거부한다.
 
+### P0-T12. 하네스 전체 기능 수용 테스트
+
+- TDD guard가 assertion RED, 동일 명령 GREEN, tree 상태, 종료 코드와 `spec_refs` 증거를 구조적으로 재검증한다.
+- index 계약 누락 거부, runner 성공·중단 복구·3회 실패·blocked 격리, commit hook을 전체 회귀 실행한다.
+- 두 저장소 로컬 Skill을 공식 validator로 검사한다.
+- AI Readiness 점수·ROI 제안과 최신 task 상태 dashboard를 정적 검사와 모바일 브라우저로 검증한다.
+
+인수 조건:
+
+- TDD 증거가 없거나 변조됐거나 RED/GREEN 명령이 다르면 guard가 실패한다.
+- runner의 성공·blocked fixture와 네 번째 시도 거부가 모두 통과한다.
+- 모든 미완료 task가 실행 계약을 가지며 명시·자동 선택 모두 누락 계약을 거부한다.
+- Skill validator, readiness capability, dashboard smoke가 통과한다.
+- 모바일 Chromium에서 dashboard task 상태와 점수가 렌더링되고 console/page 오류가 없다.
+- 제품 MVP 기능은 아직 구현되지 않았음을 결과에 명확히 구분한다.
+
 ## 종료 조건
 
 - P0의 모든 task가 `done`.
