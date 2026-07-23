@@ -13,7 +13,12 @@ function commandSegments(command) {
 }
 
 function hasBroadRecursiveRemoval(segment) {
-  return /\brm\s+(?:(?:-[a-zA-Z]*r[a-zA-Z]*)|--recursive)(?:\s+--?[^\s]+)*\s+(?:\/(?:\s|$)|~(?:\/|\s|$)|\.(?:\s|$)|\.\.(?:\s|$)|\/\*|\*|\$HOME(?:\/|\s|$))/.test(segment);
+  const match = segment.match(/\brm\s+((?:--?[A-Za-z][\w-]*\s+)+)(.+)$/);
+  if (!match) return false;
+  const flags = match[1].trim().split(/\s+/);
+  const isRecursive = flags.some((flag) => flag === "--recursive" || /^-[^-]*r/i.test(flag));
+  if (!isRecursive) return false;
+  return match[2].trim().split(/\s+/).some((target) => /^(?:\.(?:\/|$)|\.\.(?:\/|$)|\/(?:$|\*)|~(?:\/|$)|\$(?:HOME|PWD)(?:\/|$)|\$\{(?:HOME|PWD)\}(?:\/|$)|\*|\/\*)/.test(target));
 }
 
 function hasDestructiveGitCommand(segment) {
@@ -24,7 +29,7 @@ function hasDestructiveGitCommand(segment) {
 
 function hasSystemMutation(segment) {
   return /(?:^|\s)(?:sudo|doas)\b/.test(segment)
-    || /\b(?:chmod|chown)\s+(?:[^\s]+\s+)*-R\s+[^\s]+\s+\/(?:\s|$)/.test(segment)
+    || /\b(?:chmod|chown)\s+(?:[^\s]+\s+)*-R\b/.test(segment)
     || /\b(?:shutdown|reboot|poweroff|halt|mkfs)\b/.test(segment)
     || /\bdd\s+[^\n]*\bof=\/dev\//.test(segment)
     || /(?:>|>>)\s*\/(?:etc|usr|bin|sbin|var|System|Library)(?:\/|\s|$)/.test(segment);

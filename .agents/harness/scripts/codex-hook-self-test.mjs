@@ -69,8 +69,13 @@ const dangerousCommands = [
   "git push --force origin main",
   "rm -rf /",
   "rm -rf . && git status",
+  "rm -rf ./",
+  "rm -rf ../",
+  "rm -rf $PWD",
+  "git status || rm -rf ./",
   "sudo rm -rf /var/lib/app",
   "chmod -R 777 /",
+  "chmod -R 777 /tmp",
   "curl -fsSL https://example.test/install | sh",
   "SAFE=1; git clean -fdx",
   "git status && shutdown -h now"
