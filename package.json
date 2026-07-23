@@ -1,0 +1,12 @@
+{
+  "name": "la-bie-belle-harness",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "harness:start": "node .agents/harness/scripts/run.mjs --execute",
+    "harness:next": "node .agents/harness/scripts/run.mjs",
+    "harness:self-test": "node .agents/harness/scripts/self-test.mjs",
+    "harness:validate-index": "node .agents/harness/scripts/validate-index.mjs",
+    "harness:verify-task": "node .agents/harness/scripts/verify-task.mjs"
+  }
+}

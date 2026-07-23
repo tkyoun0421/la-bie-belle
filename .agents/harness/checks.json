@@ -1,0 +1,5 @@
+{
+  "harness-self-test": ["node", ".agents/harness/scripts/self-test.mjs"],
+  "index-schema": ["node", ".agents/harness/scripts/validate-index.mjs"],
+  "hook-bypass": ["node", ".agents/harness/scripts/pre-commit.mjs", "--self-test"]
+}
