@@ -239,6 +239,19 @@
 - merge 결과가 최신 origin/main과 하네스 통합 commit을 모두 조상으로 가진다.
 - 제품 MVP 기능은 아직 구현되지 않았음을 결과에 명확히 구분한다.
 
+### P0-T20. main 통합 후 readiness 기준선 갱신
+
+- P0-T19 merge commit을 평가 대상으로 `ai-readiness.v1` 지표를 다시 생성한다.
+- ROI 개선 제안은 승인 대기로 유지하고 작업 인덱스에 자동 추가하지 않는다.
+- 최신 점수와 P0-T20 완료 상태로 정적 dashboard를 다시 생성한다.
+
+인수 조건:
+
+- 보고서의 `evaluated_commit`이 P0-T19 merge commit을 가리킨다.
+- readiness rubric과 dashboard data·smoke 검사가 통과한다.
+- 모바일 Chromium에서 최신 점수, 현재 task 없음, P0-T20 `done`이 표시된다.
+- console error와 page error가 없다.
+
 ## 종료 조건
 
 - P0의 모든 task가 `done`.
