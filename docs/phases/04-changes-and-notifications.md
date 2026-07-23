@@ -7,6 +7,7 @@
 ## 진입 조건
 
 - P3 완료.
+- 관련 spec: [PRD](../PRD.md) `AC-06`, `AC-11`, [Domain](../DOMAIN.md) `DOMAIN:SCHEDULING`, `DOMAIN:NOTIFICATIONS`, [ADR-0005](../adr/0005-transactional-notification-outbox.md).
 
 ## 작업
 

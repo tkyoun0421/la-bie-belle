@@ -2,7 +2,7 @@
 
 - 상태: MVP 기준
 - 기준일: 2026-07-23
-- 관련 문서: [PRD](PRD.md), [ADR](adr/README.md), [Phase](phases/README.md)
+- 관련 문서: [PRD](PRD.md), [Domain](DOMAIN.md), [ADR](adr/README.md), [Phase](phases/README.md)
 
 ## 1. 아키텍처 목표
 
@@ -81,6 +81,8 @@ flowchart LR
 - 재시도 횟수와 마지막 오류를 기록하며 중복 발송을 막는다.
 
 ## 5. 핵심 도메인 모델
+
+공통 언어, 논리적 context, aggregate 경계는 [Domain 문서](DOMAIN.md)를 기준으로 한다. 아래 모델은 그 경계를 PostgreSQL 관계로 구현한 현재 구조다.
 
 ```mermaid
 erDiagram

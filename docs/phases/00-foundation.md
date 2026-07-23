@@ -7,8 +7,26 @@
 ## 진입 조건
 
 - PRD, Architecture, ADR이 승인되어 있다.
+- 관련 spec: [PRD](../PRD.md) `AC-12`, [Domain](../DOMAIN.md), [ADR-0001](../adr/0001-nextjs-supabase-vercel.md), [ADR-0002](../adr/0002-authorization-boundaries.md).
 
 ## 작업
+
+### P0-T00. 하네스 실행기와 TDD 품질 가드
+
+- `docs/phases/index.jsonl`을 유일한 실행 상태 원본으로 사용한다.
+- task별 임시 worktree에서 새 `codex exec`를 실행하고 성공한 commit만 통합 worktree에 반영한다.
+- `test_mode`와 `check_ids`에 따라 문서 검사, 일반 검증, RED→GREEN TDD를 선택한다.
+- RED 실패 증거, GREEN 통과 결과, 관련 `spec_refs`를 task 실행 기록에 남긴다.
+- worktree 전용 Git hook과 CI가 `--no-verify` 우회를 다시 검사한다.
+- task당 최대 3회 실행하고 실패하면 `blocked`와 수동 확인 요약을 남긴다.
+
+인수 조건:
+
+- 의존성이 충족된 task를 하나만 `in_progress`로 전환하고 재실행 시 마지막 상태에서 복구한다.
+- 실패한 임시 worktree가 통합 worktree를 오염시키지 않는다.
+- `test_mode=tdd` task는 RED 증거 없이 commit할 수 없다.
+- task 검증 통과 시 관련 spec ID가 증거에 기록되고 task별 commit이 생성된다.
+- phase의 자동 검증 통과 후 수동 증거가 없으면 phase가 `verification_pending`으로 남는다.
 
 ### P0-T01. Next.js 모바일 PWA 프로젝트 생성
 
@@ -61,13 +79,46 @@
 ### P0-T05. CI와 문서 인덱스 검증
 
 - lint, typecheck, unit, build, migration 검증을 CI에 연결한다.
-- `docs/phases/index.jsonl`의 JSON 파싱, schema, ID 중복, 의존성 존재 여부를 검사하는 스크립트를 만든다.
+- `docs/phases/index.jsonl`의 JSON 파싱, schema, ID 중복, 의존성 존재 여부와 순환을 검사하는 스크립트를 만든다.
+- task ID·Phase·제목·문서 heading의 일치, 유효한 `spec_refs`, 최대 한 개의 진행 task를 검사한다.
 - 깨진 Markdown 내부 링크를 검사한다.
 
 인수 조건:
 
-- 잘못된 JSONL 한 줄, 중복 task ID, 존재하지 않는 의존성이 CI를 실패시킨다.
+- 잘못된 JSONL 한 줄, 중복 task ID, 존재하지 않거나 순환하는 의존성이 CI를 실패시킨다.
+- task와 Phase 문서의 제목 불일치, 잘못된 spec 참조, 복수 진행 task가 CI를 실패시킨다.
 - 깨진 내부 문서 링크가 CI를 실패시킨다.
+
+### P0-T06. SDD·DDD 문서 구조 정비
+
+- 제품 불변 규칙과 인수 조건에 안정적인 spec ID를 부여한다.
+- 공통 언어, 논리적 도메인 경계, aggregate 일관성 경계를 문서화한다.
+- task가 관련 spec과 ADR을 `spec_refs`로 추적하게 한다.
+- 문서별 책임, 충돌 처리, task 상태 규칙을 하나의 기준으로 정리한다.
+- Phase 문서와 작업 인덱스의 ID·제목·의존성을 교차 검증한다.
+
+인수 조건:
+
+- 제품 규칙에서 task와 검증까지 양방향으로 추적할 수 있다.
+- DDD 경계가 모듈형 모놀리스 안의 논리적 경계이며 별도 서비스 분리를 강제하지 않는다.
+- 상세 인수 조건은 Phase 문서, 실행 상태와 검증 항목은 작업 인덱스가 소유한다.
+- 문서 간 제목 불일치, 잘못된 spec 참조, 복수 진행 task를 검출한다.
+
+### P0-T07. Codex AI Readiness 평가와 실행 대시보드
+
+- Codex가 저장소를 안전하고 재현 가능하게 변경할 수 있는 준비도를 `ai-readiness.v1` 루브릭으로 평가한다.
+- 지침·컨텍스트, task 결정성, 검증·CI, 아키텍처·ADR, 변경 격리, 환경 재현성, 권한 경계를 점수화한다.
+- 파일·명령·검증 결과를 근거로 점수와 ROI순 개선 제안을 생성한다.
+- 승인되지 않은 개선안을 `index.jsonl`에 자동 추가하지 않는다.
+- 실행 상태와 AI Readiness를 함께 보여주는 로컬 정적 HTML 대시보드를 JSON 원본에서 생성한다.
+
+인수 조건:
+
+- baseline과 phase gate 시점에 같은 rubric 버전으로 점수 추세를 계산한다.
+- 점수의 각 항목에 파일 또는 실행 증거가 연결된다.
+- `영향도 × 확신도 ÷ 작업 비용`으로 ROI를 계산하고 제안 순서를 재현한다.
+- 대시보드가 실제 JSON이 없을 때 샘플 점수를 표시하지 않고 누락 상태를 표시한다.
+- readiness 결과는 advisory이며 phase 진행이나 배포를 직접 허용하지 않는다.
 
 ## 종료 조건
 

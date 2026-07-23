@@ -7,6 +7,7 @@
 ## 진입 조건
 
 - P1 완료.
+- 관련 spec: [PRD](../PRD.md) `AC-01`, `AC-02`, [Domain](../DOMAIN.md) `DOMAIN:SCHEDULING`, [ADR-0003](../adr/0003-schedule-lifecycle-and-snapshots.md).
 
 ## 작업
 

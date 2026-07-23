@@ -7,6 +7,7 @@
 ## 진입 조건
 
 - P4, P5, P6 완료.
+- 관련 spec: [PRD](../PRD.md) `AC-01`~`12`, [Domain](../DOMAIN.md) `DOMAIN:IDENTITY`, [ADR-0007](../adr/0007-offboarding-and-history-recovery.md).
 
 ## 작업
 
