@@ -10,6 +10,7 @@
   "runner-contract-refusal": ["node", ".agents/harness/scripts/contract-self-test.mjs"],
   "tdd-guard-acceptance": ["node", ".agents/harness/scripts/tdd-guard-self-test.mjs"],
   "tdd-hook-gate-acceptance": ["node", ".agents/harness/scripts/codex-hook-self-test.mjs"],
+  "dangerous-command-hook-acceptance": ["node", ".agents/harness/scripts/codex-hook-self-test.mjs"],
   "runner-lifecycle": ["node", ".agents/harness/scripts/runner-lifecycle-self-test.mjs", "success"],
   "runner-blocked": ["node", ".agents/harness/scripts/runner-lifecycle-self-test.mjs", "blocked"],
   "readiness-runner-capability": ["node", ".agents/harness/scripts/ai-readiness.mjs", "--check-runner"],

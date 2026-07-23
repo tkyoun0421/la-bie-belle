@@ -8,6 +8,39 @@ export function isGitCommit(command) {
   return /(^|[;&|]\s*)git\b(?:(?![;&|]).)*\bcommit\b/.test(command);
 }
 
+function commandSegments(command) {
+  return command.split(/[;|&\n]+/).map((segment) => segment.trim()).filter(Boolean);
+}
+
+function hasBroadRecursiveRemoval(segment) {
+  return /\brm\s+(?:(?:-[a-zA-Z]*r[a-zA-Z]*)|--recursive)(?:\s+--?[^\s]+)*\s+(?:\/(?:\s|$)|~(?:\/|\s|$)|\.(?:\s|$)|\.\.(?:\s|$)|\/\*|\*|\$HOME(?:\/|\s|$))/.test(segment);
+}
+
+function hasDestructiveGitCommand(segment) {
+  return /\bgit\b[^\n]*\breset\s+(?:[^\n]*\s)?--hard\b/.test(segment)
+    || /\bgit\b[^\n]*\bclean\s+[^\n]*(?:--force|-[-a-z]*f[-a-z]*)/.test(segment)
+    || /\bgit\b[^\n]*\bpush\s+[^\n]*(?:--force(?:-with-lease)?|-[-a-z]*f[-a-z]*|\+[^\s]+)/.test(segment);
+}
+
+function hasSystemMutation(segment) {
+  return /(?:^|\s)(?:sudo|doas)\b/.test(segment)
+    || /\b(?:chmod|chown)\s+(?:[^\s]+\s+)*-R\s+[^\s]+\s+\/(?:\s|$)/.test(segment)
+    || /\b(?:shutdown|reboot|poweroff|halt|mkfs)\b/.test(segment)
+    || /\bdd\s+[^\n]*\bof=\/dev\//.test(segment)
+    || /(?:>|>>)\s*\/(?:etc|usr|bin|sbin|var|System|Library)(?:\/|\s|$)/.test(segment);
+}
+
+export function dangerousCommandDecision(command) {
+  const segments = commandSegments(command);
+  if (segments.some((segment) => hasDestructiveGitCommand(segment)
+    || hasBroadRecursiveRemoval(segment)
+    || hasSystemMutation(segment))
+    || /\b(?:curl|wget)\b[^\n|]*\|\s*(?:sh|bash|zsh)\b/.test(command)) {
+    return "복구가 어렵거나 시스템·원격 이력에 영향을 주는 명령은 Codex 훅에서 실행할 수 없습니다. 필요한 경우 안전한 범위의 대안으로 바꾸거나 사용자가 직접 명시적으로 실행하세요.";
+  }
+  return null;
+}
+
 export function activeTask(root) {
   const indexPath = resolve(root, "docs/phases/index.jsonl");
   if (!existsSync(indexPath)) return null;
@@ -79,6 +112,18 @@ function runPreCommit(root, taskId) {
 export function evaluate(root, input, runGuard = runPreCommit, findActiveTask = activeTask, inspectTddState = tddState) {
   const command = input.tool_input?.command ?? "";
   const task = findActiveTask(root) ?? requestedTask(root, command);
+  if (input.tool_name === "Bash") {
+    const reason = dangerousCommandDecision(command);
+    if (reason) {
+      return {
+        hookSpecificOutput: {
+          hookEventName: "PreToolUse",
+          permissionDecision: "deny",
+          permissionDecisionReason: reason
+        }
+      };
+    }
+  }
   if (input.tool_name === "Bash" && isGitCommit(command)) {
     const reason = commitDecision(root, task, runGuard);
     return reason
