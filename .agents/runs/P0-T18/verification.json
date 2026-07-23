@@ -1,0 +1,94 @@
+{
+  "task_id": "P0-T18",
+  "status": "passed",
+  "spec_refs": [
+    "DOCS:SDD"
+  ],
+  "checks": [
+    {
+      "check_id": "tdd-guard-acceptance",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/tdd-guard-self-test.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t12/.agents/runs/P0-T18/checks/tdd-guard-acceptance.log"
+    },
+    {
+      "check_id": "runner-contract-refusal",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/contract-self-test.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t12/.agents/runs/P0-T18/checks/runner-contract-refusal.log"
+    },
+    {
+      "check_id": "runner-lifecycle",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/runner-lifecycle-self-test.mjs",
+        "success"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t12/.agents/runs/P0-T18/checks/runner-lifecycle.log"
+    },
+    {
+      "check_id": "runner-blocked",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/runner-lifecycle-self-test.mjs",
+        "blocked"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t12/.agents/runs/P0-T18/checks/runner-blocked.log"
+    },
+    {
+      "check_id": "hook-bypass",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/pre-commit.mjs",
+        "--self-test"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t12/.agents/runs/P0-T18/checks/hook-bypass.log"
+    },
+    {
+      "check_id": "readiness-runner-capability",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/ai-readiness.mjs",
+        "--check-runner"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t12/.agents/runs/P0-T18/checks/readiness-runner-capability.log"
+    },
+    {
+      "check_id": "dashboard-smoke",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/dashboard-smoke.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t12/.agents/runs/P0-T18/checks/dashboard-smoke.log"
+    },
+    {
+      "check_id": "harness-regression",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/self-test.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t12/.agents/runs/P0-T18/checks/harness-regression.log"
+    }
+  ],
+  "recorded_at": "2026-07-23T10:39:33.836Z"
+}

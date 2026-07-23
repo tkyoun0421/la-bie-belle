@@ -1,0 +1,4 @@
+interface:
+  display_name: "TDD Guard"
+  short_description: "Enforce RED-GREEN task execution for Codex"
+  default_prompt: "Use $tdd-guard for functional tasks and preserve RED evidence before implementation."

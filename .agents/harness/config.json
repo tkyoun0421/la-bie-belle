@@ -1,0 +1,6 @@
+{
+  "max_attempts": 3,
+  "index_path": "docs/phases/index.jsonl",
+  "runs_path": ".agents/runs",
+  "checks_path": ".agents/harness/checks.json"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex AI Readiness"
+  short_description: "Measure Codex readiness and prioritize ROI improvements"
+  default_prompt: "Use $ai-readiness to score this Codex repository from evidence and rank approved improvements by ROI."

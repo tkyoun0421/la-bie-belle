@@ -1,0 +1,40 @@
+{
+  "task_id": "P0-T16",
+  "status": "passed",
+  "spec_refs": [
+    "DOCS:SDD"
+  ],
+  "checks": [
+    {
+      "check_id": "readiness-rubric",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/ai-readiness.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t10/.agents/runs/P0-T16/checks/readiness-rubric.log"
+    },
+    {
+      "check_id": "dashboard-data",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/dashboard.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t10/.agents/runs/P0-T16/checks/dashboard-data.log"
+    },
+    {
+      "check_id": "dashboard-smoke",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/dashboard-smoke.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t10/.agents/runs/P0-T16/checks/dashboard-smoke.log"
+    }
+  ],
+  "recorded_at": "2026-07-23T10:27:33.734Z"
+}

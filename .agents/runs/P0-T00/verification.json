@@ -1,0 +1,43 @@
+{
+  "task_id": "P0-T00",
+  "status": "passed",
+  "spec_refs": [
+    "DOCS:SDD",
+    "DOCS:DDD",
+    "ADR:0001"
+  ],
+  "checks": [
+    {
+      "check_id": "harness-self-test",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/self-test.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t00-v2/.agents/runs/P0-T00/checks/harness-self-test.log"
+    },
+    {
+      "check_id": "index-schema",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/validate-index.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t00-v2/.agents/runs/P0-T00/checks/index-schema.log"
+    },
+    {
+      "check_id": "hook-bypass",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/pre-commit.mjs",
+        "--self-test"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/private/tmp/la-bie-belle-p0-t00-v2/.agents/runs/P0-T00/checks/hook-bypass.log"
+    }
+  ],
+  "recorded_at": "2026-07-23T09:48:56.075Z"
+}

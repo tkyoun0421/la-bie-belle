@@ -1,0 +1,10 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { repoRootFrom } from "./lib/index.mjs";
+const root = repoRootFrom(import.meta.url);
+const path = join(root, ".agents/dashboard/index.html");
+if (!existsSync(path)) throw new Error("dashboard html missing");
+const html = readFileSync(path, "utf8");
+if (!html.includes("dashboard-data") || !html.includes("Codex Harness")) throw new Error("dashboard contract missing");
+if (html.includes("sample-runs") || html.includes("sample data")) throw new Error("sample fallback detected");
+console.log("dashboard smoke ok");
