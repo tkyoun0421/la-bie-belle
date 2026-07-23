@@ -11,6 +11,7 @@ ADR은 구현자가 임의로 바꾸면 데이터 호환성, 보안 또는 운�
 | [0005](0005-transactional-notification-outbox.md) | 앱 내 알림과 푸시에 outbox 사용 | Accepted |
 | [0006](0006-estimated-pay-not-payroll.md) | 급여는 스냅샷 기반 예상치로만 제공 | Accepted |
 | [0007](0007-offboarding-and-history-recovery.md) | 탈퇴 정보 분리 보관과 관리자 복구 연결 | Accepted |
+| [0008](0008-fsd-server-first-development-guards.md) | FSD, server-first, RADIO 개발 가드 | Accepted |
 
 ## 상태
 

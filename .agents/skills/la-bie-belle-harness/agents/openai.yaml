@@ -1,0 +1,4 @@
+interface:
+  display_name: "La Vie Belle Harness"
+  short_description: "FSD와 RADIO를 강제하는 프로젝트 개발 하네스"
+  default_prompt: "Use $la-bie-belle-harness to implement one tracked task under the project development rules."

@@ -7,6 +7,7 @@
 - [제품 요구사항](docs/PRD.md)
 - [도메인 언어와 경계](docs/DOMAIN.md)
 - [시스템 아키텍처](docs/ARCHITECTURE.md)
+- [개발 규칙과 하네스](docs/DEVELOPMENT.md)
 - [제품 디자인 시스템](docs/DESIGN.md)
 - [Architecture Decision Records](docs/adr/README.md)
 - [Phase 실행 계획](docs/phases/README.md)

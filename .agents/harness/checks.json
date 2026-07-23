@@ -11,5 +11,7 @@
   "runner-lifecycle": ["node", ".agents/harness/scripts/runner-lifecycle-self-test.mjs", "success"],
   "runner-blocked": ["node", ".agents/harness/scripts/runner-lifecycle-self-test.mjs", "blocked"],
   "readiness-runner-capability": ["node", ".agents/harness/scripts/ai-readiness.mjs", "--check-runner"],
-  "harness-regression": ["node", ".agents/harness/scripts/self-test.mjs"]
+  "harness-regression": ["node", ".agents/harness/scripts/self-test.mjs"],
+  "development-guard": ["node", ".agents/harness/scripts/development-guard.mjs"],
+  "skill-validators": ["node", ".agents/harness/scripts/skill-validator.mjs"]
 }

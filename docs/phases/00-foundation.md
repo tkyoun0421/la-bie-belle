@@ -252,6 +252,20 @@
 - 모바일 Chromium에서 최신 점수, 현재 task 없음, P0-T20 `done`이 표시된다.
 - console error와 page error가 없다.
 
+### P0-T21. FSD·RADIO 개발 규칙과 가드 스킬
+
+- FSD 레이어, server-first 경계, entity·feature 책임, Zod 계약, Result 오류 규칙과 TanStack Query hydration 전략을 개발 기준 문서와 ADR로 확정한다.
+- 프로젝트 전용 harness skill이 task 시작부터 RADIO 기록, 검증 모드 선택, 민감 변경의 구현 후 사용자 확인, commit까지 안내하게 한다.
+- harness가 RADIO 문서 구조, server-only 경계와 기본 FSD 구조를 검사하고 task check로 실행한다.
+- 포맷·lint 도입은 후속 P0-T02에서 실제 앱 기반과 함께 구현하되, 이 task는 필요한 정책과 검증 인터페이스만 정의한다.
+
+인수 조건:
+
+- 개발 문서와 ADR이 FSD, server-first, 데이터 모델, 인터페이스, TanStack Query, TDD/RADIO 및 사용자 확인 규칙을 충돌 없이 설명한다.
+- repository-local skill이 공식 validator를 통과하고 existing harness 명령·증거 경로를 사용한다.
+- RADIO validator가 문서 누락 또는 필수 섹션 누락을 실패로 보고하며 self-test가 통과한다.
+- task index와 harness check가 새 skill·validator를 실행 계약으로 추적한다.
+
 ## 종료 조건
 
 - P0의 모든 task가 `done`.

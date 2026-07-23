@@ -5,6 +5,7 @@
 | [PRD](PRD.md) | 사용자, 범위, 요구사항, 비즈니스 규칙 | 기술 구현 세부사항 |
 | [Domain](DOMAIN.md) | 공통 언어, 논리적 도메인 경계, aggregate와 domain event | 배포 구조와 서비스 분리 |
 | [Architecture](ARCHITECTURE.md) | 시스템 경계, 데이터 모델, 보안, 배포 | 제품 우선순위 |
+| [개발 규칙과 하네스](DEVELOPMENT.md) | FSD, server-first, RADIO, task 검증 규칙 | 제품 요구사항 원문 |
 | [Design](DESIGN.md) | 시각 기반, 상호작용 패턴, 컴포넌트, 역할별 화면 흐름 | 제품 동작과 서버 권한 규칙 |
 | [ADR](adr/README.md) | 중요한 기술·도메인 결정과 근거 | 작업 체크리스트 |
 | [Phase 계획](phases/README.md) | 구현 순서, task 상세 범위와 인수 조건 | 요구사항 원문 반복 |

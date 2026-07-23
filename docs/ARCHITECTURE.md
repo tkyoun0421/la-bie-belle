@@ -66,6 +66,10 @@ flowchart LR
 - VAPID 비밀키와 Supabase service role 키를 브라우저에 노출하지 않는다.
 - 요청 사용자의 계정 상태와 역할을 다시 확인한다.
 
+### 코드 구조와 개발 가드
+
+- 구현의 FSD 계층, server-first 경계, RADIO 기록과 검증 흐름은 [개발 규칙](DEVELOPMENT.md)과 [ADR-0008](adr/0008-fsd-server-first-development-guards.md)을 따른다.
+
 ### PostgreSQL
 
 - 도메인 데이터의 단일 진실 공급원이다.
