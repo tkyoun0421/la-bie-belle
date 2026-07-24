@@ -1,52 +1,52 @@
 ---
 name: la-bie-belle-deep-interview
-description: Run the user-led deep-interview track for La Vie Belle product management, project planning, MVP scope, domain, architecture, data, security, UX, acceptance criteria, and task design. Use when a decision is unclear or unapproved, when reviewing existing proposed plans, or when development discovers a scope or design question that must return to the user before implementation.
+description: 라비에벨의 제품 관리, 프로젝트 계획, MVP 범위, 도메인, 아키텍처, 데이터, 보안, UX, 인수 조건과 작업 설계를 사용자 주도 딥인터뷰로 진행한다. 결정이 불명확하거나 승인되지 않았을 때, 기존 proposed 계획을 검토할 때, 개발 중 구현 전에 사용자에게 돌려보낼 범위·설계 질문이 발견됐을 때 사용한다.
 ---
 
-# La Vie Belle Deep Interview
+# 라비에벨 딥인터뷰
 
-Use this skill to produce approved design inputs, not product code.
+이 스킬은 승인된 설계 입력을 만드는 데 사용하며 제품 코드를 구현하지 않는다.
 
-## Prepare
+## 준비
 
-1. Read `AGENTS.md`, `docs/WORKFLOW.md`, `README.md`, and the documents related to the requested decision.
-2. Inspect `docs/phases/index.jsonl` for related `proposed` tasks and dependencies.
-3. Treat existing unapproved content as interview material, not as the answer.
-4. Name one decision topic for the current interview cycle and state what remains outside it.
+1. `AGENTS.md`, `docs/WORKFLOW.md`, `README.md`와 요청한 결정에 관련된 문서를 읽는다.
+2. `docs/phases/index.jsonl`에서 관련 `proposed` 작업과 의존성을 확인한다.
+3. 승인되지 않은 기존 내용은 정답이 아니라 인터뷰 재료로 취급한다.
+4. 현재 인터뷰 사이클에서 다룰 결정 주제 하나를 명시하고 이번 범위 밖의 항목을 밝힌다.
 
-## Run the interview loop
+## 인터뷰 루프 진행
 
-1. Ask exactly one primary question per user-facing interview turn. Do not bundle subquestions or request multiple decisions at once; carry dependent questions into later turns.
-2. Present the question in this format:
-   - **Question**: ask for one fact, correction, choice, or approval;
-   - **Options**: when a real choice exists, give two or three distinct options with benefits, costs, and reversibility;
-   - **Recommended answer**: provide one concrete proposed answer with a short rationale and its main tradeoff, so the user can reply with `approve recommendation`, choose another option, or revise it.
-3. For factual or real-context questions, do not invent the user's facts. Label the recommendation as a `current-document answer draft` or provide a recommended response shape, and state the assumption the user should correct.
-4. Reflect the user's answer under four mental buckets: confirmed fact, interpretation, assumption, and open question. Surface contradictions instead of smoothing them over.
-5. Apply the approved hybrid depth strategy:
-   - cover the common minimum lenses for every decision: actors and authority; preconditions, state and time boundaries; data ownership, lifecycle, invariants and recovery; effects, notifications, audit and operations; normal flow, failures, manual escape hatches; MVP boundary, dependencies and success evidence;
-   - add topic-specific edge-case packs when the decision touches authorization, privacy, money, immutable attendance, irreversible actions, external services, time-based automation or concurrent changes;
-   - probe the applicable edge generators: boundary values; multiple roles and self-action; concurrency, duplicate, stale and out-of-order requests; state changes and missing data; partial failure; immutable-record conflicts; abuse and operator mistakes; device, network and accessibility differences; suspension, departure, cancellation and expiry.
-6. Summarize the proposed decision, reasons, non-goals, unresolved items, and affected documents.
-7. Ask for explicit approval, revision, or deferral as the single question for that turn. A recommendation, silence, or implied agreement is not approval.
-8. Repeat until the decision is precise enough that implementation requires no new product judgment.
+1. 사용자에게 보이는 한 번의 인터뷰 응답에서는 주 질문을 정확히 하나만 한다. 하위 질문을 묶거나 여러 결정을 동시에 요구하지 않고, 의존하는 질문은 다음 차례로 넘긴다.
+2. 질문을 다음 형식으로 제시한다.
+   - **질문**: 사실, 정정, 선택 또는 승인 하나를 묻는다.
+   - **선택지**: 실제 선택이 있을 때 장점, 비용과 되돌릴 수 있는 정도가 다른 두세 가지 안을 제시한다.
+   - **추천 답변**: 사용자가 `추천안 승인`, 다른 안 선택 또는 수정을 답할 수 있도록 구체적인 제안 하나와 짧은 근거, 핵심 트레이드오프를 함께 제시한다.
+3. 사실이나 실제 맥락을 묻는 질문에서는 사용자의 사실을 지어내지 않는다. 추천안을 `현재 문서 기준 답변 초안`으로 표시하거나 추천 답변 형식을 제공하고, 사용자가 고쳐야 할 가정을 밝힌다.
+4. 사용자의 답변을 확인된 사실, 해석, 가정, 미결 질문의 네 범주로 나누어 반영한다. 모순을 뭉개지 않고 드러낸다.
+5. 승인된 혼합형 깊이 전략을 적용한다.
+   - 모든 결정에 공통 최소 렌즈를 적용한다: 행위자와 권한, 전제조건·상태·시간 경계, 데이터 소유권·수명주기·불변 규칙·복구, 영향·알림·감사·운영, 정상 흐름·실패·수동 탈출구, MVP 경계·의존성·성공 증거.
+   - 결정이 권한, 개인정보, 금액, 불변 출퇴근, 불가역 작업, 외부 서비스, 시간 기반 자동화 또는 동시 변경을 다루면 주제별 엣지 케이스 팩을 추가한다.
+   - 적용 가능한 경계 생성기를 탐색한다: 경계값, 복수 역할과 자기 자신 처리, 동시·중복·오래된·역순 요청, 상태 변경과 누락 데이터, 부분 실패, 불변 원본 충돌, 악용과 운영자 실수, 기기·네트워크·접근성 차이, 휴면·탈퇴·취소·만료.
+6. 제안한 결정, 이유, 비목표, 미결 사항과 영향받는 문서를 요약한다.
+7. 그 차례의 유일한 질문으로 명시적 승인, 수정 또는 보류를 요청한다. 추천, 침묵 또는 암묵적 동의는 승인이 아니다.
+8. 구현에 새 제품 판단이 필요 없을 만큼 결정이 정밀해질 때까지 반복한다.
 
-Keep each turn focused enough for the user to answer thoughtfully. Supporting explanation may be detailed, but it must lead to only one answerable question. Do not dump a fixed questionnaire or reopen already approved product structure without a contradiction or uncovered gap.
+사용자가 충분히 생각해 답할 수 있도록 각 차례의 초점을 좁게 유지한다. 보조 설명은 자세할 수 있지만 답할 질문 하나로 이어져야 한다. 고정 질문지를 한꺼번에 쏟아내거나 모순·미확인 공백 없이 이미 승인된 제품 구조를 다시 열지 않는다.
 
-A decision is complete only when the applicable normal flow, representative edge cases, failure and recovery behavior, manual escape hatch, data history, explicit non-goals and verifiable acceptance evidence are precise enough that implementation requires no new product judgment.
+적용 가능한 정상 흐름, 대표 엣지 케이스, 실패·복구 동작, 수동 탈출구, 데이터 이력, 명시적 비목표와 검증 가능한 인수 증거가 충분히 정해져 구현에 새 제품 판단이 필요 없을 때만 결정이 완료된다.
 
-## Record an approved decision
+## 승인된 결정 기록
 
-Only after explicit user approval:
+사용자의 명시적 승인 후에만 다음을 수행한다.
 
-1. Update canonical documents in this order as applicable: PRD, Domain, ADR, Architecture, Design, Phase.
-2. Preserve stable spec IDs and record supersession instead of silently changing established meanings.
-3. Create or refine one task with goal, non-goals, edge cases, acceptance criteria, dependencies, `spec_refs`, `test_mode`, and `check_ids`.
-4. Set the task to `planned` with `approved_by: "user"` and `approved_at`.
-5. Tell the user exactly what was approved and what remains `proposed`.
+1. 해당하는 기준 문서를 PRD → Domain → ADR → Architecture → Design → Phase 순서로 갱신한다.
+2. 안정적인 spec ID를 보존하고 기존 의미를 조용히 바꾸는 대신 대체 관계를 기록한다.
+3. 목표, 비목표, 엣지 케이스, 인수 조건, 의존성, `spec_refs`, `test_mode`, `check_ids`가 있는 작업 하나를 만들거나 구체화한다.
+4. 작업을 `approved_by: "user"`, `approved_at`이 있는 `planned` 상태로 둔다.
+5. 무엇이 승인됐고 무엇이 여전히 `proposed`인지 사용자에게 정확히 알린다.
 
-Do not mark a task `in_progress` or run the engineering harness in this track.
+이 트랙에서는 작업을 `in_progress`로 바꾸거나 개발 하네스를 실행하지 않는다.
 
-## Hand off to engineering
+## 개발 트랙으로 인계
 
-Hand off only when all conditions in `docs/WORKFLOW.md` are satisfied. Provide the approved task ID and recommend explicit execution with `$la-bie-belle-harness`. If implementation exposes a new design decision, resume this skill with the decision signal supplied by the engineering loop.
+`docs/WORKFLOW.md`의 모든 조건을 충족할 때만 인계한다. 승인된 작업 ID를 제공하고 `$la-bie-belle-harness`로 명시적인 실행을 요청하도록 안내한다. 구현에서 새 설계 결정이 드러나면 개발 루프가 전달한 결정 신호와 함께 이 스킬을 다시 시작한다.

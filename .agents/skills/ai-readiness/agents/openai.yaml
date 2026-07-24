@@ -1,4 +1,4 @@
 interface:
-  display_name: "Codex AI Readiness"
-  short_description: "Measure Codex readiness and prioritize ROI improvements"
-  default_prompt: "Use $ai-readiness to score this Codex repository from evidence and rank approved improvements by ROI."
+  display_name: "Codex AI 준비도"
+  short_description: "저장소 변경 준비도를 근거로 평가하고 ROI 개선안을 정렬합니다"
+  default_prompt: "$ai-readiness를 사용해 이 Codex 저장소의 준비도를 근거로 평가하고 승인할 개선안을 ROI 순으로 정리하세요."

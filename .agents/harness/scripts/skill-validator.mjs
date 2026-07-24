@@ -1,17 +1,19 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { assertSkillLanguage } from "./lib/skill-language.mjs";
 
 const root = resolve(new URL("../../..", import.meta.url).pathname);
 const skills = [
   {
     name: "la-bie-belle-deep-interview",
-    required: ["Run the interview loop", "explicit approval", "planned", "Do not mark a task `in_progress`"]
+    required: ["인터뷰 루프 진행", "명시적 승인", "`planned`", "`in_progress`로 바꾸거나"]
   },
   {
     name: "la-bie-belle-harness",
-    required: ["Autonomous Engineering Loop", "RADIO", "TDD", "commit", "Never select the next task automatically"]
+    required: ["자율 개발 루프", "RADIO", "TDD", "커밋", "다음 작업을 선택하거나 시작하지"]
   }
 ];
+assertSkillLanguage(resolve(root, ".agents/skills"));
 for (const definition of skills) {
   const path = resolve(root, `.agents/skills/${definition.name}/SKILL.md`);
   const metadataPath = resolve(root, `.agents/skills/${definition.name}/agents/openai.yaml`);
@@ -27,4 +29,4 @@ for (const definition of skills) {
     if (!metadata.includes(required)) throw new Error(`스킬 검사기: ${definition.name} 메타데이터에 필수 항목이 없습니다: ${required}`);
   }
 }
-console.log("딥인터뷰와 자율 개발 스킬 검사를 통과했습니다");
+console.log("repository-local 스킬 구조와 한국어 언어 검사를 통과했습니다");

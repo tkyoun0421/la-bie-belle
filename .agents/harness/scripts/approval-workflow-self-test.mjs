@@ -8,8 +8,8 @@ const root = repoRootFrom(import.meta.url);
 const requiredText = new Map([
   ["docs/WORKFLOW.md", ["딥인터뷰 설계 루프", "자율 개발 루프", "다음 task를 자동 선택하지 않는다"]],
   ["AGENTS.md", ["트랙 A: 딥인터뷰 설계", "트랙 B: 자율 개발 루프"]],
-  [".agents/skills/la-bie-belle-deep-interview/SKILL.md", ["Run the interview loop", "Do not mark a task `in_progress`"]],
-  [".agents/skills/la-bie-belle-harness/SKILL.md", ["Execute autonomously", "Never select the next task automatically"]]
+  [".agents/skills/la-bie-belle-deep-interview/SKILL.md", ["인터뷰 루프 진행", "작업을 `in_progress`로 바꾸거나"]],
+  [".agents/skills/la-bie-belle-harness/SKILL.md", ["자율 실행", "다음 작업을 선택하거나 시작하지 않는다"]]
 ]);
 for (const [path, fragments] of requiredText) {
   const source = readFileSync(join(root, path), "utf8");

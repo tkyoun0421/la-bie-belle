@@ -1,25 +1,25 @@
 ---
 name: ai-readiness
-description: Measure how safely and reproducibly Codex can change this repository, using evidence-backed rubric scores and ROI-ranked improvement proposals. Use for baseline, phase-gate, or MVP readiness evaluations.
+description: 증거 기반 루브릭 점수와 ROI 순위 개선 제안으로 Codex가 이 저장소를 얼마나 안전하고 재현 가능하게 변경할 수 있는지 평가한다. 기준선, 단계 통과 또는 MVP 준비도 평가에 사용한다.
 ---
 
-# Codex AI Readiness
+# Codex AI 준비도
 
-Run the repository evaluator and inspect its evidence before proposing changes. The score is advisory: never modify `docs/phases/index.jsonl` or implementation files from a readiness report.
+변경을 제안하기 전에 저장소 평가기를 실행하고 근거를 확인한다. 점수는 참고 지표이므로 준비도 보고서만을 근거로 `docs/phases/index.jsonl`이나 구현 파일을 수정하지 않는다.
 
-## Workflow
+## 진행 절차
 
-1. Read `AGENTS.md`, the document map, the phase index, and the current harness report.
-2. Run `node .agents/harness/scripts/ai-readiness.mjs` to collect deterministic facts.
-3. Check every category's evidence path and command result; do not award points for an unverified claim.
-4. Use the fixed `ai-readiness.v1` weights and calculate ROI as `(impact * confidence) / cost`.
-5. Write only evidence-backed proposals to the report. The user must approve a proposal before it becomes a new task.
-6. Regenerate the static dashboard from the JSON report; never use sample fallback data.
+1. `AGENTS.md`, 문서 지도, 작업 인덱스와 현재 하네스 보고서를 읽는다.
+2. `node .agents/harness/scripts/ai-readiness.mjs`를 실행해 결정적인 사실을 수집한다.
+3. 모든 범주의 근거 경로와 명령 결과를 확인한다. 검증되지 않은 주장에는 점수를 부여하지 않는다.
+4. 고정된 `ai-readiness.v1` 가중치를 사용하고 ROI를 `(impact * confidence) / cost`로 계산한다.
+5. 근거가 있는 제안만 보고서에 기록한다. 새 작업으로 만들기 전에 사용자의 승인을 받는다.
+6. JSON 보고서에서 정적 대시보드를 다시 생성한다. 샘플 대체 데이터는 사용하지 않는다.
 
-## Categories
+## 평가 범주
 
-Score Codex-specific context discovery, task determinism, verification/CI, architecture/ADR navigation, change isolation, environment reproducibility, and safety boundaries. Prefer `AGENTS.md` and repository-local skills for this Codex project.
+Codex 전용 맥락 탐색, 작업 결정성, 검증·CI, 아키텍처·ADR 탐색, 변경 격리, 환경 재현성과 안전 경계를 평가한다. 이 프로젝트에서는 `AGENTS.md`와 repository-local 스킬을 우선한다.
 
-## Output contract
+## 출력 계약
 
-Reports must include rubric version, evaluated commit, timestamp, weighted category scores, evidence paths, ROI proposals, and pending manual checks. Keep historical reports so phase-to-phase changes are visible.
+보고서에는 루브릭 버전, 평가한 커밋, 시각, 가중 범주 점수, 근거 경로, ROI 제안과 대기 중인 수동 검사를 포함한다. 단계 사이의 변화를 확인할 수 있도록 과거 보고서를 보존한다.
