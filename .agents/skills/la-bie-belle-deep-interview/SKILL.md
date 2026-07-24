@@ -16,21 +16,24 @@ Use this skill to produce approved design inputs, not product code.
 
 ## Run the interview loop
 
-1. Ask a small set of connected questions about the user's real context, current workflow, actors, frequency, pain, constraints, failure cost, and desired outcome.
-2. Reflect the answer under four mental buckets: confirmed fact, interpretation, assumption, and open question. Surface contradictions instead of smoothing them over.
-3. Deepen the topic across the dimensions that materially apply:
-   - user and operator workflow;
-   - roles, authorization, privacy, and audit;
-   - data ownership, lifecycle, invariants, and recovery;
-   - normal flow, edge cases, failures, and manual escape hatches;
-   - MVP boundary, dependency, rollout, and success evidence;
-   - architecture, interface, performance, and operational tradeoffs.
-4. When a real choice exists, present two or three distinct options with benefits, costs, reversibility, and a recommendation. Do not turn the recommendation into a decision.
-5. Summarize the proposed decision, reasons, non-goals, unresolved items, and affected documents.
-6. Ask for explicit approval, revision, or deferral. Silence and implied agreement are not approval.
-7. Repeat until the decision is precise enough that implementation requires no new product judgment.
+1. Ask exactly one primary question per user-facing interview turn. Do not bundle subquestions or request multiple decisions at once; carry dependent questions into later turns.
+2. Present the question in this format:
+   - **Question**: ask for one fact, correction, choice, or approval;
+   - **Options**: when a real choice exists, give two or three distinct options with benefits, costs, and reversibility;
+   - **Recommended answer**: provide one concrete proposed answer with a short rationale and its main tradeoff, so the user can reply with `approve recommendation`, choose another option, or revise it.
+3. For factual or real-context questions, do not invent the user's facts. Label the recommendation as a `current-document answer draft` or provide a recommended response shape, and state the assumption the user should correct.
+4. Reflect the user's answer under four mental buckets: confirmed fact, interpretation, assumption, and open question. Surface contradictions instead of smoothing them over.
+5. Apply the approved hybrid depth strategy:
+   - cover the common minimum lenses for every decision: actors and authority; preconditions, state and time boundaries; data ownership, lifecycle, invariants and recovery; effects, notifications, audit and operations; normal flow, failures, manual escape hatches; MVP boundary, dependencies and success evidence;
+   - add topic-specific edge-case packs when the decision touches authorization, privacy, money, immutable attendance, irreversible actions, external services, time-based automation or concurrent changes;
+   - probe the applicable edge generators: boundary values; multiple roles and self-action; concurrency, duplicate, stale and out-of-order requests; state changes and missing data; partial failure; immutable-record conflicts; abuse and operator mistakes; device, network and accessibility differences; suspension, departure, cancellation and expiry.
+6. Summarize the proposed decision, reasons, non-goals, unresolved items, and affected documents.
+7. Ask for explicit approval, revision, or deferral as the single question for that turn. A recommendation, silence, or implied agreement is not approval.
+8. Repeat until the decision is precise enough that implementation requires no new product judgment.
 
-Keep each turn focused enough for the user to answer thoughtfully. Do not dump a fixed questionnaire.
+Keep each turn focused enough for the user to answer thoughtfully. Supporting explanation may be detailed, but it must lead to only one answerable question. Do not dump a fixed questionnaire or reopen already approved product structure without a contradiction or uncovered gap.
+
+A decision is complete only when the applicable normal flow, representative edge cases, failure and recovery behavior, manual escape hatch, data history, explicit non-goals and verifiable acceptance evidence are precise enough that implementation requires no new product judgment.
 
 ## Record an approved decision
 

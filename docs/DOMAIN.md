@@ -1,7 +1,7 @@
 # 라비에벨 도메인 언어와 경계
 
 - 상태: 딥인터뷰 재검토 기준안
-- 기준일: 2026-07-23
+- 기준일: 2026-07-24
 - 관련 문서: [PRD](PRD.md), [Architecture](ARCHITECTURE.md), [ADR](adr/README.md)
 
 이 문서는 기존 설계를 보존한 인터뷰 출발점이다. 관련 경계는 task 인계 전에 사용자와 재확인한다.
@@ -31,6 +31,9 @@
 | 출결 상태 | `attendance_projection` | 원본과 현장 확인을 합성한 조회 결과. 원본 데이터가 아니다. |
 | 예상 급여 | `estimated_pay` | 예정 시간 또는 리허설 자기기록으로 계산한 참고 금액. 실제 정산이 아니다. |
 | 리허설 | `rehearsal_entry` | 일반 스케줄·공식 출퇴근과 분리된 근무자 자기기록. |
+| 휴면 | `DORMANT` | 인정 활동 후 3개월이 지나고 활성 신청·배정이 없을 때 사용하는 본인·관리자 해제 가능 계정 상태. |
+| 인정 활동 시각 | `inactivity_anchor_at` | 정상 저장된 출근 신청, 최초 활성 승인 또는 재활성화 중 가장 최근 사건의 서버 시각. |
+| 변경 필요 배정 | `assignment.change_required` | 탈퇴자가 남긴 진행 중·미래 확정 배정을 필요 인원에서 제외하고 대체가 필요함을 나타내는 표시. |
 | 완전 삭제 | `permanent_deletion` | 앱 밖에서 직접 요청받아 관리자가 복구 정보를 파기하고 과거 기록을 익명화하는 비가역 command. |
 
 새 용어를 도입할 때 기존 용어로 표현할 수 있는지 먼저 확인한다. 같은 개념에 여러 이름을 붙이거나 `관리자`와 `매니저`, `출퇴근 원본`과 `출결 상태`를 섞어 쓰지 않는다.
@@ -39,7 +42,7 @@
 
 | ID | 책임 | 소유 데이터 | 외부에서 받는 정보 |
 | --- | --- | --- | --- |
-| `DOMAIN:IDENTITY` | 가입, 승인, 역할, 개인정보, 시급, 가능 포지션, 탈퇴 복구 | profile, role, eligibility, departed vault | Google 인증 결과 |
+| `DOMAIN:IDENTITY` | 가입, 승인, 휴면, 역할, 개인정보, 시급, 가능 포지션, 탈퇴 복구 | profile, role, eligibility, departed vault | Google 인증 결과와 신청·배정 차단 여부 |
 | `DOMAIN:SCHEDULING` | 모집, 신청, 예식, 필요 인원, 배정, 확정, 취소·교대 | schedule, application, ceremony, requirement, assignment, change request | 활성 계정과 포지션 자격 |
 | `DOMAIN:ATTENDANCE` | GPS·QR 인증, 불변 원본, 팀장 확인, 출결 projection | attendance event, attestation, QR key | 확정 배정과 예정 시간 |
 | `DOMAIN:NOTIFICATIONS` | 앱 내 알림, 푸시 구독, outbox, 재시도 | notification, subscription, outbox | 다른 도메인의 사건 |
@@ -72,8 +75,10 @@ flowchart LR
 
 ### Profile
 
-- 승인 상태, 역할, 개인 시급, 가능 포지션의 소유자다.
-- 역할 변경, 계정 복구, 완전 삭제는 서버 command에서 권한 확인과 감사 기록을 함께 저장한다.
+- 승인·활성·휴면·탈퇴 상태, 인정 활동 시각, 역할, 개인 시급, 가능 포지션의 소유자다.
+- 역할 변경, 휴면·재활성화, 계정 복구, 탈퇴·완전 삭제는 서버 command에서 권한 확인과 감사 기록을 함께 저장한다.
+- 정상 저장된 출근 신청과 최초 활성 승인, 본인·관리자의 재활성화만 인정 활동 시각을 갱신한다. 관리자의 수동 휴면과 로그인은 갱신하지 않는다.
+- 활성 신청 또는 진행 중·미래 활성 배정은 휴면과 자동 탈퇴의 차단 조건이며, Identity command가 Scheduling의 현재 사실을 잠그고 함께 확인한다.
 - 근무자는 일반 탈퇴만 직접 실행한다. 완전 삭제 command는 관리자만 실행할 수 있고 대상 이름 재입력을 검증한다.
 - 다른 도메인은 profile을 직접 변경하지 않고 활성 상태와 자격만 조회한다.
 
@@ -83,6 +88,8 @@ flowchart LR
 - 확정과 확정 후 변경은 하나의 트랜잭션 command로 처리한다.
 - 부족 인원은 경고 결과이며 트랜잭션 실패 조건이 아니다.
 - 신청과 변경 요청은 별도 생명주기를 가지지만 승인 시 WorkSchedule을 잠그고 재검증한다.
+- 탈퇴 command는 활성 신청을 철회하고 대기 변경 요청을 무효화한다. 진행 중·미래 확정 배정은 삭제하지 않고 `change_required`로 표시해 필요 인원에서 제외한다.
+- 대체 근무자 지정은 같은 배정의 근무자를 바꾸고 `change_required`를 해제하며 이전·이후 값과 처리자를 감사 기록에 남긴다.
 
 ### Attendance stream
 
@@ -106,7 +113,10 @@ flowchart LR
 - `ChangeRequestResolved`
 - `AttendanceRecorded`
 - `AttendanceMissingDetected`
+- `AccountDormant`
+- `AccountReactivated`
 - `AccountDeparted`
+- `UnapprovedAccountDeleted`
 - `AccountHistoryRestored`
 - `AccountPermanentlyDeleted`
 

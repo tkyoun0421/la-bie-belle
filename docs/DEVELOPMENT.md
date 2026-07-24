@@ -59,6 +59,8 @@ src/
 
 - `.codex/hooks.json`의 `SessionStart`는 현재 task와 TDD·검증 계약을 Codex에 전달한다. `PreToolUse`는 Codex가 실행하는 `git commit` 전에 `.agents/harness/scripts/pre-commit.mjs`를 실행하고, 실패하면 commit tool call을 거부한다.
 - `test_mode=tdd` task에서 Codex의 파일 편집 전에는 RED → GREEN 증거 규칙을 상기시하고, commit 전에는 `tdd-guard check`를 강제한다. 이는 Git pre-commit hook과 같은 검증기를 사용한다.
+- repository-local 스킬을 새로 만들거나 수정할 때는 사용자에게 보이는 `SKILL.md` 본문과 `agents/openai.yaml`의 `display_name`, `short_description`, `default_prompt`를 한국어로 작성한다. 식별자 `name`, 파일명, `$skill-name` 참조와 코드·명령어는 호환성을 위해 영문 형식을 유지한다.
+- 스킬 언어 가드는 `.agents/skills/**`만 검사한다. Codex가 제공하거나 외부 플러그인이 소유하는 스킬은 프로젝트가 수정·검증 대상에 포함하지 않는다.
 - Codex hook은 신뢰된 프로젝트에서만 로드된다. Codex를 다시 시작한 뒤 `/hooks`에서 repository hook을 검토·신뢰해야 한다.
 - `.githooks/pre-commit`과 `.githooks/commit-msg`는 Codex 밖에서 만든 commit과 `--no-verify`가 아닌 일반 Git 경로의 최종 방어선이다. 원격 우회 방지는 P0-T05의 CI가 담당한다.
 
