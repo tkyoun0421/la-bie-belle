@@ -2,11 +2,12 @@
 
 | 문서 | 책임 | 포함하지 않는 내용 |
 | --- | --- | --- |
-| [운영 계약](WORKFLOW.md) | 딥인터뷰 설계, 승인 인계, 자율 개발 루프의 경계 | 제품 요구사항 원문 |
+| [운영 계약](WORKFLOW.md) | 기획 인터뷰, RADIO 개발 인터뷰, 승인 인계와 자율 개발 루프의 경계 | 제품 요구사항 원문 |
 | [PRD](PRD.md) | 사용자, 범위, 요구사항, 비즈니스 규칙 | 기술 구현 세부사항 |
 | [Domain](DOMAIN.md) | 공통 언어, 논리적 도메인 경계, aggregate와 domain event | 배포 구조와 서비스 분리 |
 | [Architecture](ARCHITECTURE.md) | 시스템 경계, 데이터 모델, 보안, 배포 | 제품 우선순위 |
-| [개발 규칙과 하네스](DEVELOPMENT.md) | FSD, server-first, RADIO, task 검증 규칙 | 제품 요구사항 원문 |
+| [개발 규칙과 하네스](DEVELOPMENT.md) | `DEV-*` 컨벤션, FSD, server-first, RADIO와 task 검증 규칙 | 제품 요구사항 원문 |
+| [task별 개발 설계](development/README.md) | 승인된 RADIO 정본과 작성 형식 | 공통 컨벤션 원문 |
 | [Design](DESIGN.md) | 시각 기반, 상호작용 패턴, 컴포넌트, 역할별 화면 흐름 | 제품 동작과 서버 권한 규칙 |
 | [ADR](adr/README.md) | 중요한 기술·도메인 결정과 근거 | 작업 체크리스트 |
 | [Phase 계획](phases/README.md) | 구현 순서, task 상세 범위와 인수 조건 | 요구사항 원문 반복 |
@@ -14,12 +15,13 @@
 
 ## Spec-driven development (`DOCS:SDD`)
 
-1. 사용자와 딥인터뷰로 문제, 제약, 선택지와 완료 모습을 확인합니다.
+1. 사용자와 기획 인터뷰로 문제, 제약, 선택지와 완료 모습을 확인합니다.
 2. 사용자가 승인한 제품 동작만 PRD의 불변 규칙 또는 제품 인수 조건에 반영합니다.
 3. 용어나 업무 경계가 바뀌면 Domain, 되돌리기 어려운 결정이면 ADR을 함께 수정합니다.
 4. Architecture와 Design을 승인된 결정에 맞추고 Phase task의 상세 범위와 인수 조건을 작성합니다.
-5. 승인된 task에 `spec_refs`, 실행 계약과 승인 기록을 연결한 뒤 `planned`로 인계합니다.
-6. 구현과 회귀 테스트는 관련 spec ID를 테스트 이름, 주석 또는 검증 증거에 남깁니다.
+5. 기획 승인 task를 `design_pending`으로 두고 개발 인터뷰에서 task별 RADIO를 승인합니다.
+6. `product_approval`, `development_approval`, `radio_ref`, `spec_refs`와 실행 계약을 연결한 뒤 `planned`로 인계합니다.
+7. 구현과 회귀 테스트는 관련 spec ID를 테스트 이름, 주석 또는 검증 증거에 남깁니다.
 
 PRD의 `INV-*`, `AC-*` ID는 한번 사용하면 의미를 바꾸거나 재사용하지 않습니다. 요구가 폐기되면 삭제해 번호를 재사용하지 않고 폐기 사실과 대체 ID를 기록합니다.
 

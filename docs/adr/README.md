@@ -14,6 +14,7 @@ ADR은 구현자가 임의로 바꾸면 데이터 호환성, 보안 또는 운�
 | [0008](0008-fsd-server-first-development-guards.md) | FSD, server-first, RADIO 개발 가드 | Accepted |
 | [0009](0009-two-track-interview-and-engineering-loop.md) | 딥인터뷰 설계와 자율 개발 루프 분리 | Accepted |
 | [0010](0010-dormancy-and-automatic-account-lifecycle.md) | 휴면과 자동 계정 생명주기 | Accepted |
+| [0011](0011-planning-radio-development-contract.md) | 기획 승인, RADIO 개발 설계와 개발 컨벤션 계약 | Accepted |
 
 ## 상태
 

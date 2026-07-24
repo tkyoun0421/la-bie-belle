@@ -70,7 +70,9 @@ flowchart LR
 
 ### 코드 구조와 개발 가드
 
-- 구현의 FSD 계층, server-first 경계, RADIO 기록과 검증 흐름은 [개발 규칙](DEVELOPMENT.md)과 [ADR-0008](adr/0008-fsd-server-first-development-guards.md)을 따른다.
+- 구현의 FSD 계층, server-first 경계, 공통 `DEV-*` 규칙과 RADIO 승인·검증 흐름은 [개발 컨벤션](DEVELOPMENT.md), [ADR-0008](adr/0008-fsd-server-first-development-guards.md)과 [ADR-0011](adr/0011-planning-radio-development-contract.md)을 따른다.
+- 모든 사용자에게 같은 public 조회만 TTL·무효화 조건을 가진 cache를 기본 허용한다. private 조회는 공유·영속 cache를 금지하고 필요한 상호작용 동안 현재 세션 메모리에서만 유지한다.
+- 오프라인 영속 cache는 앱 셸과 public 리소스로 제한하며 private 업무 데이터와 mutation queue를 저장하지 않는다.
 
 ### PostgreSQL
 
