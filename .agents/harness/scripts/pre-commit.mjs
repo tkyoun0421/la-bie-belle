@@ -9,7 +9,8 @@ if (process.argv.includes("--self-test")) {
   const allowed = [
     "docs/phases/index.jsonl",
     ".agents/runs/P0-T09/attempts.json",
-    ".agents/runs/P0-T09/manual-summary.md"
+    ".agents/runs/P0-T09/manual-summary.md",
+    ".agents/runs/P0-T09/decision-signal.json"
   ];
   if (blockedCommitPolicy("P0-T09", allowed)) throw new Error("차단 작업 커밋 정책이 허용 경로를 거부했습니다");
   if (!blockedCommitPolicy("P0-T09", [...allowed, "src/app.ts"])) throw new Error("차단 작업 커밋 정책이 제품 파일을 허용했습니다");

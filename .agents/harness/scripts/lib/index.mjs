@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { EXECUTABLE_STATUSES, EXECUTION_CONTRACT_STATUSES, executionContractIssues, formatIssues, runnableIssues, taskContractIssues } from "./workflow-contract.mjs";
 
-export const CONTRACT_STATUSES = new Set(["planned", "in_progress", "blocked", "verification_pending"]);
-export const TEST_MODES = new Set(["docs_only", "verification", "tdd"]);
-export const RUNNABLE_STATUSES = new Set(["planned", "in_progress"]);
+export const CONTRACT_STATUSES = EXECUTION_CONTRACT_STATUSES;
+export const RUNNABLE_STATUSES = EXECUTABLE_STATUSES;
 
 export function repoRootFrom(metaUrl) {
   let current = dirname(fileURLToPath(metaUrl));
@@ -31,13 +31,7 @@ export function loadIndex(repoRoot, indexPath = "docs/phases/index.jsonl") {
 }
 
 export function executionContractError(task) {
-  if (!TEST_MODES.has(task.test_mode)) {
-    return `${task.id}: 실행 가능한 작업에는 test_mode가 필요합니다 (${[...TEST_MODES].join(", ")})`;
-  }
-  if (!Array.isArray(task.check_ids) || task.check_ids.length === 0 || task.check_ids.some((id) => typeof id !== "string" || id.length === 0)) {
-    return `${task.id}: 실행 가능한 작업에는 비어 있지 않은 check_ids가 필요합니다`;
-  }
-  return null;
+  return executionContractIssues(task)[0]?.message ?? null;
 }
 
 export function assertExecutionContract(task) {
@@ -46,28 +40,9 @@ export function assertExecutionContract(task) {
   return task;
 }
 
-export function approvalError(task) {
-  if (task.approved_by !== "user") {
-    return `${task.id}: 실행 가능한 작업에는 approved_by: "user"가 필요합니다`;
-  }
-  if (typeof task.approved_at !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(task.approved_at)) {
-    return `${task.id}: 실행 가능한 작업에는 YYYY-MM-DD 형식의 approved_at이 필요합니다`;
-  }
-  return null;
-}
-
-export function assertRunnableTask(entries, task) {
-  if (!RUNNABLE_STATUSES.has(task.status)) {
-    throw new Error(`${task.id}: ${task.status} 작업은 실행할 수 없습니다. 딥인터뷰 승인 후 planned 상태로 인계하세요`);
-  }
-  assertExecutionContract(task);
-  const taskApprovalError = approvalError(task);
-  if (taskApprovalError) throw new Error(taskApprovalError);
-  const done = new Set(entries.filter((entry) => entry.status === "done").map((entry) => entry.id));
-  const missingDependencies = (task.depends_on ?? []).filter((id) => !done.has(id));
-  if (missingDependencies.length) {
-    throw new Error(`${task.id}: 완료되지 않은 의존 작업이 있습니다: ${missingDependencies.join(", ")}`);
-  }
+export function assertRunnableTask(entries, task, root) {
+  const issues = runnableIssues(entries, task, root);
+  if (issues.length) throw new Error(formatIssues(issues));
   return task;
 }
 
@@ -84,12 +59,8 @@ export function validateIndex(entries) {
         errors.push(`${entry.id}: 의존 작업이 없습니다: ${dependency}`);
       }
     }
-    if (entry.kind === "task" && CONTRACT_STATUSES.has(entry.status)) {
-      const contractError = executionContractError(entry);
-      if (contractError) errors.push(contractError);
-      const taskApprovalError = approvalError(entry);
-      if (taskApprovalError) errors.push(taskApprovalError);
-    }
+    if (entry.schema_version !== 3) errors.push(`${entry.id}: schema_version은 3이어야 합니다`);
+    if (entry.kind === "task") errors.push(...taskContractIssues(entry).map(({ code, message }) => `[${code}] ${message}`));
   }
   const active = tasks.filter((entry) => entry.status === "in_progress");
   if (active.length > 1) errors.push(`in_progress 작업이 여러 개입니다: ${active.map((entry) => entry.id).join(", ")}`);

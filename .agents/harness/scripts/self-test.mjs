@@ -17,11 +17,12 @@ const required = [
   ".agents/harness/scripts/pre-commit.mjs",
   ".agents/harness/scripts/development-guard.mjs",
   ".agents/harness/scripts/skill-language-self-test.mjs",
-  ".agents/harness/scripts/approval-workflow-self-test.mjs"
+  ".agents/harness/scripts/approval-workflow-self-test.mjs",
+  ".agents/harness/scripts/workflow-contract-self-test.mjs"
 ];
 for (const path of required) if (!existsSync(join(root, path))) throw new Error(`필수 파일이 없습니다: ${path}`);
 const checks = JSON.parse(readFileSync(join(root, ".agents/harness/checks.json"), "utf8"));
-for (const id of ["harness-self-test", "development-guard", "skill-language-guard", "skill-validators", "approval-workflow", "index-schema", "hook-bypass", "task-contracts", "runner-contract-refusal", "tdd-guard-acceptance", "runner-lifecycle", "runner-blocked", "readiness-runner-capability", "harness-regression"]) {
+for (const id of ["harness-self-test", "development-guard", "skill-language-guard", "skill-validators", "approval-workflow", "workflow-contract", "index-schema", "hook-bypass", "task-contracts", "runner-contract-refusal", "tdd-guard-acceptance", "runner-lifecycle", "runner-blocked", "readiness-runner-capability", "harness-regression"]) {
   if (!Array.isArray(checks[id])) throw new Error(`필수 검사 항목이 없습니다: ${id}`);
 }
 const developmentGuard = spawnSync("node", [".agents/harness/scripts/development-guard.mjs", "--self-test"], { cwd: root, encoding: "utf8" });

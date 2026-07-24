@@ -5,8 +5,12 @@ import { assertSkillLanguage } from "./lib/skill-language.mjs";
 const root = resolve(new URL("../../..", import.meta.url).pathname);
 const skills = [
   {
-    name: "la-bie-belle-deep-interview",
-    required: ["인터뷰 루프 진행", "명시적 승인", "`planned`", "`in_progress`로 바꾸거나"]
+    name: "la-bie-belle-product-interview",
+    required: ["한 차례에 결정 주제 하나", "2~3개 선택지", "명시적으로 확인", "`design_pending`"]
+  },
+  {
+    name: "la-bie-belle-development-interview",
+    required: ["Requirements, Architecture, Data model, Interface, Optimizations", "`DEV-*`", "SHA-256", "`planned`"]
   },
   {
     name: "la-bie-belle-harness",
@@ -28,5 +32,8 @@ for (const definition of skills) {
   for (const required of ["display_name:", "short_description:", "default_prompt:", `$${definition.name}`]) {
     if (!metadata.includes(required)) throw new Error(`스킬 검사기: ${definition.name} 메타데이터에 필수 항목이 없습니다: ${required}`);
   }
+}
+if (existsSync(resolve(root, ".agents/skills/la-bie-belle-deep-interview"))) {
+  throw new Error("스킬 검사기: 전환 완료 후 기존 통합 딥인터뷰 스킬은 없어야 합니다");
 }
 console.log("repository-local 스킬 구조와 한국어 언어 검사를 통과했습니다");

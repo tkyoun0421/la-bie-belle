@@ -1,4 +1,0 @@
-interface:
-  display_name: "라비에벨 딥인터뷰"
-  short_description: "제품·프로젝트·개발 설계를 사용자와 깊게 인터뷰하고 승인"
-  default_prompt: "$la-bie-belle-deep-interview를 사용해 질문을 하나씩 진행하고 승인된 결정을 개발 작업으로 인계하세요."

@@ -18,8 +18,10 @@ if (incomplete.some((task) => !task.test_mode || !Array.isArray(task.check_ids) 
 const fixtureEntries = structuredClone(entries);
 const target = fixtureEntries.find((entry) => entry.id === "P0-T01");
 target.status = "planned";
-target.approved_by = "user";
-target.approved_at = "2026-07-24";
+target.approval_contract = "dual-approval-v3";
+target.product_approval = { by: "user", at: "2026-07-24" };
+target.development_approval = { by: "user", at: "2026-07-24", radio_revision: 1, radio_sha256: "a".repeat(64) };
+target.radio_ref = "docs/development/P0-T01-radio.md";
 delete target.test_mode;
 delete target.check_ids;
 const fixtureErrors = validateIndex(fixtureEntries);

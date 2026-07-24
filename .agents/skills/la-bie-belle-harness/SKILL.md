@@ -5,13 +5,13 @@ description: 명시적으로 지정되고 사용자가 승인한 라비에벨 �
 
 # 라비에벨 자율 개발 루프
 
-승인된 구현에는 이 스킬을 사용한다. 제품, 프로젝트 또는 개발 설계가 아직 미결이면 `$la-bie-belle-deep-interview`를 사용한다.
+승인된 구현에는 이 스킬을 사용한다. 제품·프로젝트 설계가 미결이면 `$la-bie-belle-product-interview`, 기술 설계가 미결이면 `$la-bie-belle-development-interview`를 사용한다.
 
 ## 인계 계약 검증
 
 1. `AGENTS.md`, `docs/WORKFLOW.md`, `README.md`, `docs/PRD.md`, `docs/DOMAIN.md`, `docs/ARCHITECTURE.md`, `docs/DEVELOPMENT.md`, 관련 ADR과 `docs/phases/index.jsonl`을 읽는다.
 2. 명시적으로 지정된 작업을 요구한다. 다음 작업을 자동 선택하지 않는다.
-3. 작업이 `planned` 또는 재개할 수 있는 `in_progress`이고, `approved_by: "user"`와 `approved_at`이 있으며, 의존성이 완료됐고, `spec_refs`, 상세 인수 조건, `test_mode`, 등록된 `check_ids`가 있는지 확인한다.
+3. 작업이 `planned` 또는 재개할 수 있는 `in_progress`이고, `product_approval`, revision·SHA-256이 있는 `development_approval`, 안전한 `radio_ref`, 완료된 의존성, `spec_refs`, 상세 인수 조건, `test_mode`, 등록된 `check_ids`가 있는지 확인한다.
 4. `proposed` 작업은 거부하고 누락된 제품·설계 결정을 딥인터뷰 트랙으로 돌려보낸다.
 5. 정확히 한 작업만 `in_progress`로 유지한다.
 
@@ -25,7 +25,7 @@ description: 명시적으로 지정되고 사용자가 승인한 라비에벨 �
 4. 기술적 실패를 진단하고 시도 중인 작업을 보존하며 `.agents/harness/config.json`의 한도 안에서 재시도한다.
 5. 모든 `spec_ref`와 함께 `.agents/runs/<task-id>/verification.json`을 기록한다.
 
-일반적인 구현 선택은 사용자에게 반복해서 묻지 않고 계속 진행한다. 다음 상황에서는 멈추고 `$la-bie-belle-deep-interview`에 구조화된 결정 신호를 반환한다.
+일반적인 구현 선택은 사용자에게 반복해서 묻지 않고 계속 진행한다. 다음 상황에서는 `blocked`로 안전 중단하고 제품 판단은 `$la-bie-belle-product-interview`, 기술 판단은 `$la-bie-belle-development-interview`에 구조화된 결정 신호를 반환한다.
 
 - 기준 문서가 서로 충돌한다.
 - 인수 조건을 만족하려면 제품, 범위, 권한, 데이터 수명주기, 아키텍처 또는 UX 결정이 필요하다.

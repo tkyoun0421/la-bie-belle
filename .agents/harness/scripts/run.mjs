@@ -22,7 +22,7 @@ if (args.includes("--execute") && indexArgument) throw new Error("--index는 테
 const { entries } = loadIndex(root, indexArgument);
 const errors = validateIndex(entries);
 if (errors.length) throw new Error(errors.join("; "));
-const task = assertRunnableTask(entries, findTask(entries, taskArgument));
+const task = assertRunnableTask(entries, findTask(entries, taskArgument), root);
 console.log(JSON.stringify({ status: "selected", task_id: task.id, title: task.title, test_mode: task.test_mode, check_ids: task.check_ids }, null, 2));
 if (!args.includes("--execute")) process.exit(0);
 const config = loadHarnessConfig(root);

@@ -15,6 +15,7 @@ import {
   integrateBlockedTask,
   integrateSuccessfulTask,
   prepareTaskWorktree,
+  preserveDecisionSignal,
   readRunnerState,
   updateTaskStatus,
   validateSuccessfulTask
@@ -37,7 +38,7 @@ function createFixture(taskId) {
   mkdirSync(join(root, ".agents/harness"), { recursive: true });
   const entries = [
     {
-      schema_version: 2,
+      schema_version: 3,
       kind: "task",
       id: "P0-T00",
       phase: "P0",
@@ -53,11 +54,10 @@ function createFixture(taskId) {
       check_ids: ["fixture"],
       tags: ["fixture"],
       updated_at: "2026-07-23",
-      approved_by: "user",
-      approved_at: "2026-07-23"
+      approval_contract: "legacy-v2"
     },
     {
-      schema_version: 2,
+      schema_version: 3,
       kind: "task",
       id: taskId,
       phase: "P9",
@@ -72,7 +72,11 @@ function createFixture(taskId) {
       test_mode: "verification",
       check_ids: ["fixture"],
       tags: ["fixture"],
-      updated_at: "2026-07-23"
+      updated_at: "2026-07-23",
+      approval_contract: "dual-approval-v3",
+      product_approval: { by: "user", at: "2026-07-23" },
+      development_approval: { by: "user", at: "2026-07-23", radio_revision: 1, radio_sha256: "a".repeat(64) },
+      radio_ref: `docs/development/${taskId}-radio.md`
     }
   ];
   writeFileSync(join(root, "docs/phases/index.jsonl"), `${entries.map((entry) => JSON.stringify(entry)).join("\n")}\n`);
@@ -144,6 +148,13 @@ function blockedScenario() {
 
     mkdirSync(join(state.worktree_path, "src"), { recursive: true });
     writeFileSync(join(state.worktree_path, "src/failed-change.txt"), "must remain isolated\n");
+    preserveDecisionSignal(state.worktree_path, fixture.task, {
+      decision_area: "architecture",
+      reason: "fixture decision",
+      affected_refs: ["ADR:0008"],
+      confirmed: ["격리 작업물을 보존한다"],
+      unresolved: ["구현 구조 확인"]
+    });
     command(state.worktree_path, "git", ["add", "src/failed-change.txt"]);
     assert(command(state.worktree_path, "git", ["diff", "--cached", "--name-only"]) === "src/failed-change.txt", "fixture failed change was not staged");
     for (let number = 2; number <= config.max_attempts; number += 1) {
@@ -163,10 +174,12 @@ function blockedScenario() {
     assert(!existsSync(join(fixture.root, "src/failed-change.txt")), "failed production change leaked into integration");
     assert(existsSync(join(fixture.root, ".agents/runs", fixture.task.id, "attempts.json")), "attempt evidence was not integrated");
     assert(existsSync(join(fixture.root, ".agents/runs", fixture.task.id, "manual-summary.md")), "manual summary was not integrated");
+    assert(existsSync(join(fixture.root, ".agents/runs", fixture.task.id, "decision-signal.json")), "decision signal was not integrated");
     assert(existsSync(join(state.worktree_path, "src/failed-change.txt")), "failed worktree change was not preserved");
     const integratedPaths = command(fixture.root, "git", ["show", "--pretty=", "--name-only", "HEAD"]).split(/\r?\n/).filter(Boolean).sort();
     assert(JSON.stringify(integratedPaths) === JSON.stringify([
       `.agents/runs/${fixture.task.id}/attempts.json`,
+      `.agents/runs/${fixture.task.id}/decision-signal.json`,
       `.agents/runs/${fixture.task.id}/manual-summary.md`,
       "docs/phases/index.jsonl"
     ].sort()), `blocked commit contained unexpected paths: ${integratedPaths.join(", ")}`);

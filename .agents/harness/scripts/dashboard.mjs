@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { loadIndex, repoRootFrom } from "./lib/index.mjs";
+import { runnableIssues } from "./lib/workflow-contract.mjs";
 
 const root = repoRootFrom(import.meta.url);
 const reportPath = join(root, ".agents/reports/ai-readiness/latest.json");
@@ -8,7 +9,13 @@ const report = existsSync(reportPath) ? JSON.parse(readFileSync(reportPath, "utf
 const { entries } = loadIndex(root);
 const execution = {
   current_task: entries.find((entry) => entry.kind === "task" && entry.status === "in_progress")?.id ?? null,
-  tasks: entries.filter((entry) => entry.kind === "task").map(({ id, phase, title, status }) => ({ id, phase, title, status }))
+  tasks: entries.filter((entry) => entry.kind === "task").map((task) => ({
+    id: task.id,
+    phase: task.phase,
+    title: task.title,
+    status: task.status,
+    blockers: task.status === "done" ? [] : runnableIssues(entries, task, root).map(({ code, message }) => ({ code, message }))
+  }))
 };
 const encoded = JSON.stringify({ report, execution }).replace(/</g, "\\u003c");
 const html = `<!doctype html>
@@ -43,7 +50,7 @@ const html = `<!doctype html>
     const readiness=document.getElementById('readiness');
     if(!d.report){readiness.innerHTML='<p class="empty">아직 AI 준비도 평가 결과가 없습니다. 평가를 실행하면 이곳에 표시됩니다.</p>'}else{const r=d.report;readiness.innerHTML='<div class="score-panel"><div><div class="score-value">'+escape(r.total_score)+' <small>/ 100</small></div><p class="score-meta">평가 기준 '+escape(r.rubric_version)+'<br>기준 커밋 '+escape(r.evaluated_commit)+'</p></div><div class="category-grid">'+r.categories.map(c=>{const ratio=Math.max(0,Math.min(100,(c.score/c.max_score)*100));return '<div class="category"><div class="category-top"><span>'+escape(categoryNames[c.id]||c.name)+'</span><span>'+escape(c.score)+' / '+escape(c.max_score)+'</span></div><div class="progress" aria-label="'+escape(categoryNames[c.id]||c.name)+' '+escape(c.score)+'점 / '+escape(c.max_score)+'점"><i style="width:'+ratio+'%"></i></div></div>'}).join('')+'</div></div>'}
     const proposals=d.report?.proposals||[];document.getElementById('proposals').innerHTML=proposals.length?'<div class="roi-grid">'+proposals.map(p=>{const impact=Number(p.impact),confidence=Number(p.confidence),cost=Number(p.cost);return '<article class="roi-card"><div class="roi-top"><div class="proposal">'+escape(proposalNames[p.title]||p.title)+'</div><div class="roi-score">'+escape(Number(p.roi).toFixed(2))+'</div></div><p class="roi-formula">ROI = 영향 × 확신 ÷ 비용 · '+badge('verification_pending')+'</p><div class="metric"><span>영향</span><div class="progress"><i style="width:'+impact*20+'%"></i></div><b>'+impact+'</b></div><div class="metric"><span>확신</span><div class="progress"><i style="width:'+confidence*20+'%"></i></div><b>'+confidence+'</b></div><div class="metric cost"><span>비용</span><div class="progress"><i style="width:'+cost*20+'%"></i></div><b>'+cost+'</b></div></article>'}).join('')+'</div>':'<p class="empty">현재 등록된 개선안이 없습니다.</p>';
-    const phases=Object.values(d.execution.tasks.reduce((all,t)=>{(all[t.phase]??=[]).push(t);return all},{}));document.getElementById('tasks').innerHTML='<div class="phase-list">'+phases.map(group=>{const done=group.filter(t=>t.status==='done').length;const active=group.some(t=>t.id===d.execution.current_task);const phase=group[0].phase;return '<details class="phase"'+(active?' open':'')+'><summary><span><span class="phase-title">'+escape(phase)+' 단계</span><span class="caption"> · '+escape(group.length)+'개 작업</span></span><span class="phase-meta"><span>'+done+' / '+group.length+' 완료</span>'+badge(active?'in_progress':done===group.length?'done':'planned')+'</span></summary><div class="phase-tasks">'+group.map(t=>'<div class="task-row"><span class="number">'+escape(t.id)+'</span><span class="proposal">'+escape(t.title)+'</span>'+badge(t.status)+'</div>').join('')+'</div></details>'}).join('')+'</div>';
+    const phases=Object.values(d.execution.tasks.reduce((all,t)=>{(all[t.phase]??=[]).push(t);return all},{}));document.getElementById('tasks').innerHTML='<div class="phase-list">'+phases.map(group=>{const done=group.filter(t=>t.status==='done').length;const active=group.some(t=>t.id===d.execution.current_task);const phase=group[0].phase;return '<details class="phase"'+(active?' open':'')+'><summary><span><span class="phase-title">'+escape(phase)+' 단계</span><span class="caption"> · '+escape(group.length)+'개 작업</span></span><span class="phase-meta"><span>'+done+' / '+group.length+' 완료</span>'+badge(active?'in_progress':done===group.length?'done':'planned')+'</span></summary><div class="phase-tasks">'+group.map(t=>'<div class="task-row"><span class="number">'+escape(t.id)+'</span><span class="proposal">'+escape(t.title)+(t.blockers?.length?'<p class="caption">'+t.blockers.map(b=>escape('['+b.code+'] '+b.message)).join('<br>')+'</p>':'')+'</span>'+badge(t.status)+'</div>').join('')+'</div></details>'}).join('')+'</div>';
   </script>
 </body>
 </html>`;

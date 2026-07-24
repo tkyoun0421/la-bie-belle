@@ -18,5 +18,6 @@
   "development-guard": ["node", ".agents/harness/scripts/development-guard.mjs"],
   "skill-language-guard": ["node", ".agents/harness/scripts/skill-language-self-test.mjs"],
   "skill-validators": ["node", ".agents/harness/scripts/skill-validator.mjs"],
-  "approval-workflow": ["node", ".agents/harness/scripts/approval-workflow-self-test.mjs"]
+  "approval-workflow": ["node", ".agents/harness/scripts/approval-workflow-self-test.mjs"],
+  "workflow-contract": ["node", ".agents/harness/scripts/workflow-contract-self-test.mjs"]
 }

@@ -74,6 +74,18 @@ export function updateTaskStatus(root, taskId, status) {
   return task;
 }
 
+export function preserveDecisionSignal(root, task, decision) {
+  const runDir = join(root, ".agents/runs", task.id);
+  mkdirSync(runDir, { recursive: true });
+  const required = ["decision_area", "reason", "affected_refs", "confirmed", "unresolved"];
+  const missing = required.filter((key) => decision?.[key] === undefined);
+  if (missing.length) throw new Error(`${task.id}: 결정 신호에 필수 항목이 없습니다: ${missing.join(", ")}`);
+  const signal = { task_id: task.id, detected_at: new Date().toISOString(), ...decision };
+  writeFileSync(join(runDir, "decision-signal.json"), `${JSON.stringify(signal, null, 2)}\n`);
+  updateTaskStatus(root, task.id, "blocked");
+  return signal;
+}
+
 function taskWorktreePath(root, taskId, worktreeRoot) {
   const repositoryName = basename(realpathSync(root));
   return join(worktreeRoot, `${repositoryName}-${taskId.toLowerCase()}`);
@@ -269,8 +281,11 @@ export function integrateBlockedTask(root, task, state) {
 
   const relativeAttempts = `.agents/runs/${task.id}/attempts.json`;
   const relativeSummary = `.agents/runs/${task.id}/manual-summary.md`;
+  const relativeDecisionSignal = `.agents/runs/${task.id}/decision-signal.json`;
   git(state.worktree_path, ["restore", "--staged", "."]);
-  git(state.worktree_path, ["add", "docs/phases/index.jsonl", relativeAttempts, relativeSummary]);
+  const blockedArtifacts = ["docs/phases/index.jsonl", relativeAttempts, relativeSummary];
+  if (existsSync(join(runDir, "decision-signal.json"))) blockedArtifacts.push(relativeDecisionSignal);
+  git(state.worktree_path, ["add", ...blockedArtifacts]);
   git(state.worktree_path, ["commit", "-m", `chore(${task.id}): record blocked harness execution`], {
     env: { HARNESS_TASK_ID: task.id }
   });

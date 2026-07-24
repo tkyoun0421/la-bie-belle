@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "task_id": "P0-T28",
+  "spec_refs": [
+    "DOCS:SDD",
+    "DOCS:DDD",
+    "ADR:0008",
+    "ADR:0009",
+    "ADR:0011"
+  ],
+  "red": {
+    "argv": [
+      "node",
+      ".agents/harness/scripts/workflow-contract-self-test.mjs"
+    ],
+    "exit_code": 1,
+    "output_sha256": "34c0606e9764ddfa6c9700496eac5b11141aea67b1a6b438a9e3d0ab5e6a4ac3",
+    "recorded_at": "2026-07-24T07:08:55.911Z",
+    "tree": {
+      "head": "c4f96bce6aed1092cafa886b054f255461d80b3d",
+      "status": "?? .agents/harness/scripts/workflow-contract-self-test.mjs",
+      "status_sha256": "0a56d14f9abb7f4d434a3d960f7330675172bab86e936c092171d5cbb9da1501"
+    },
+    "assertion_failure": true
+  },
+  "green": {
+    "argv": [
+      "node",
+      ".agents/harness/scripts/workflow-contract-self-test.mjs"
+    ],
+    "exit_code": 0,
+    "output_sha256": "f64b700d577676693e725b0fb58ed4c57c7ababfa6c7cf9829005a1ef1149cd3",
+    "recorded_at": "2026-07-24T07:10:15.808Z",
+    "tree": {
+      "head": "c4f96bce6aed1092cafa886b054f255461d80b3d",
+      "status": "M .agents/harness/scripts/lib/index.mjs\n M .agents/harness/scripts/run.mjs\n?? .agents/harness/scripts/lib/workflow-contract.mjs\n?? .agents/harness/scripts/workflow-contract-self-test.mjs\n?? .agents/runs/P0-T28/tdd.json",
+      "status_sha256": "d4a0302be3fcee8f65218427362f44181f1f7a302fe7112078dd7bd403eaf19e"
+    }
+  }
+}
