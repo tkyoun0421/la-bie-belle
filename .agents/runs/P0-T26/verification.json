@@ -1,0 +1,124 @@
+{
+  "task_id": "P0-T26",
+  "status": "passed",
+  "spec_refs": [
+    "DOCS:SDD",
+    "ADR:0008",
+    "ADR:0009"
+  ],
+  "checks": [
+    {
+      "check_id": "approval-workflow",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/approval-workflow-self-test.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/Users/yuntaegwan/Desktop/projects/la-bie-belle/.agents/runs/P0-T26/checks/approval-workflow.log"
+    },
+    {
+      "check_id": "runner-contract-refusal",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/contract-self-test.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/Users/yuntaegwan/Desktop/projects/la-bie-belle/.agents/runs/P0-T26/checks/runner-contract-refusal.log"
+    },
+    {
+      "check_id": "runner-lifecycle",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/runner-lifecycle-self-test.mjs",
+        "success"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/Users/yuntaegwan/Desktop/projects/la-bie-belle/.agents/runs/P0-T26/checks/runner-lifecycle.log"
+    },
+    {
+      "check_id": "runner-blocked",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/runner-lifecycle-self-test.mjs",
+        "blocked"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/Users/yuntaegwan/Desktop/projects/la-bie-belle/.agents/runs/P0-T26/checks/runner-blocked.log"
+    },
+    {
+      "check_id": "tdd-guard-acceptance",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/tdd-guard-self-test.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/Users/yuntaegwan/Desktop/projects/la-bie-belle/.agents/runs/P0-T26/checks/tdd-guard-acceptance.log"
+    },
+    {
+      "check_id": "tdd-hook-gate-acceptance",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/codex-hook-self-test.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/Users/yuntaegwan/Desktop/projects/la-bie-belle/.agents/runs/P0-T26/checks/tdd-hook-gate-acceptance.log"
+    },
+    {
+      "check_id": "harness-regression",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/self-test.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/Users/yuntaegwan/Desktop/projects/la-bie-belle/.agents/runs/P0-T26/checks/harness-regression.log"
+    },
+    {
+      "check_id": "index-schema",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/validate-index.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/Users/yuntaegwan/Desktop/projects/la-bie-belle/.agents/runs/P0-T26/checks/index-schema.log"
+    },
+    {
+      "check_id": "skill-validators",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/skill-validator.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/Users/yuntaegwan/Desktop/projects/la-bie-belle/.agents/runs/P0-T26/checks/skill-validators.log"
+    },
+    {
+      "check_id": "dashboard-data",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/dashboard.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/Users/yuntaegwan/Desktop/projects/la-bie-belle/.agents/runs/P0-T26/checks/dashboard-data.log"
+    },
+    {
+      "check_id": "dashboard-smoke",
+      "argv": [
+        "node",
+        ".agents/harness/scripts/dashboard-smoke.mjs"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "/Users/yuntaegwan/Desktop/projects/la-bie-belle/.agents/runs/P0-T26/checks/dashboard-smoke.log"
+    }
+  ],
+  "recorded_at": "2026-07-24T03:54:55.248Z"
+}

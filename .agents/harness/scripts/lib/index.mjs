@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 export const CONTRACT_STATUSES = new Set(["planned", "in_progress", "blocked", "verification_pending"]);
 export const TEST_MODES = new Set(["docs_only", "verification", "tdd"]);
+export const RUNNABLE_STATUSES = new Set(["planned", "in_progress"]);
 
 export function repoRootFrom(metaUrl) {
   let current = dirname(fileURLToPath(metaUrl));
@@ -45,6 +46,31 @@ export function assertExecutionContract(task) {
   return task;
 }
 
+export function approvalError(task) {
+  if (task.approved_by !== "user") {
+    return `${task.id}: 실행 가능한 작업에는 approved_by: "user"가 필요합니다`;
+  }
+  if (typeof task.approved_at !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(task.approved_at)) {
+    return `${task.id}: 실행 가능한 작업에는 YYYY-MM-DD 형식의 approved_at이 필요합니다`;
+  }
+  return null;
+}
+
+export function assertRunnableTask(entries, task) {
+  if (!RUNNABLE_STATUSES.has(task.status)) {
+    throw new Error(`${task.id}: ${task.status} 작업은 실행할 수 없습니다. 딥인터뷰 승인 후 planned 상태로 인계하세요`);
+  }
+  assertExecutionContract(task);
+  const taskApprovalError = approvalError(task);
+  if (taskApprovalError) throw new Error(taskApprovalError);
+  const done = new Set(entries.filter((entry) => entry.status === "done").map((entry) => entry.id));
+  const missingDependencies = (task.depends_on ?? []).filter((id) => !done.has(id));
+  if (missingDependencies.length) {
+    throw new Error(`${task.id}: 완료되지 않은 의존 작업이 있습니다: ${missingDependencies.join(", ")}`);
+  }
+  return task;
+}
+
 export function validateIndex(entries) {
   const ids = new Set();
   const errors = [];
@@ -61,6 +87,8 @@ export function validateIndex(entries) {
     if (entry.kind === "task" && CONTRACT_STATUSES.has(entry.status)) {
       const contractError = executionContractError(entry);
       if (contractError) errors.push(contractError);
+      const taskApprovalError = approvalError(entry);
+      if (taskApprovalError) errors.push(taskApprovalError);
     }
   }
   const active = tasks.filter((entry) => entry.status === "in_progress");
@@ -72,17 +100,4 @@ export function findTask(entries, taskId) {
   const task = entries.find((entry) => entry.kind === "task" && entry.id === taskId);
   if (!task) throw new Error(`알 수 없는 작업입니다: ${taskId}`);
   return task;
-}
-
-export function selectNext(entries) {
-  const active = entries.find((entry) => entry.kind === "task" && entry.status === "in_progress");
-  if (active) return assertExecutionContract(active);
-  const done = new Set(entries.filter((entry) => entry.status === "done").map((entry) => entry.id));
-  return (entries
-    .filter((entry) => entry.kind === "task" && entry.status === "planned" && (entry.depends_on ?? []).every((id) => done.has(id)))
-    .sort((a, b) => {
-      const priority = { must: 0, should: 1, could: 2 };
-      return priority[a.priority] - priority[b.priority] || a.id.localeCompare(b.id);
-    })
-    .map(assertExecutionContract)[0] ?? null);
 }

@@ -32,6 +32,9 @@ export function loadHarnessConfig(root) {
   if (!Number.isInteger(config.max_attempts) || config.max_attempts < 1) {
     throw new Error("하네스 설정의 max_attempts는 양의 정수여야 합니다");
   }
+  for (const key of ["require_explicit_task", "require_user_approval", "auto_retry_technical_failures", "stop_after_task"]) {
+    if (config[key] !== true) throw new Error(`하네스 설정의 ${key}는 true여야 합니다`);
+  }
   return config;
 }
 
@@ -155,13 +158,15 @@ export function codexPrompt(task, attemptNumber, maxAttempts) {
   return [
     `Implement task ${task.id}: ${task.title}.`,
     `This is attempt ${attemptNumber} of ${maxAttempts} in the task-only worktree.`,
-    "Read AGENTS.md, the phase document, and all spec_refs.",
+    "Use the autonomous engineering track in AGENTS.md and docs/WORKFLOW.md.",
+    "Read the phase document and all spec_refs.",
     `Follow test_mode=${task.test_mode} and satisfy check_ids=${task.check_ids.join(",")}.`,
     "Register missing check commands in .agents/harness/checks.json before verification.",
     "Use the repository tdd-guard skill when applicable.",
     "Preserve failed-attempt work and continue from the current worktree state.",
+    "If implementation needs a new product, project, scope, permission, data, architecture, or UX decision, stop and return a structured decision signal for the deep-interview track instead of inventing it.",
     "On success, record verification evidence with every spec_ref, mark only this task done, and create exactly one commit whose subject contains the task ID.",
-    "Do not push, deploy, use --no-verify, or change unrelated tasks."
+    "Do not push, deploy, use --no-verify, change unrelated tasks, or start a next task."
   ].join(" ");
 }
 

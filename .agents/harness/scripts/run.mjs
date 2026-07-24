@@ -1,4 +1,4 @@
-import { assertExecutionContract, findTask, loadIndex, repoRootFrom, selectNext, validateIndex } from "./lib/index.mjs";
+import { assertRunnableTask, findTask, loadIndex, repoRootFrom, validateIndex } from "./lib/index.mjs";
 import {
   beginAttempt,
   finishAttempt,
@@ -13,14 +13,16 @@ import {
 const root = repoRootFrom(import.meta.url);
 const args = process.argv.slice(2);
 const indexArgument = args.includes("--index") ? args[args.indexOf("--index") + 1] : undefined;
+const taskArgument = args.includes("--task") ? args[args.indexOf("--task") + 1] : undefined;
 if (args.includes("--index") && !indexArgument) throw new Error("--index에는 경로가 필요합니다");
+if (!taskArgument || taskArgument.startsWith("--")) {
+  throw new Error("사용법: run.mjs --task <승인된-task-id> [--execute]. 다음 작업은 자동 선택하지 않습니다");
+}
 if (args.includes("--execute") && indexArgument) throw new Error("--index는 테스트 전용이므로 --execute와 함께 사용할 수 없습니다");
 const { entries } = loadIndex(root, indexArgument);
 const errors = validateIndex(entries);
 if (errors.length) throw new Error(errors.join("; "));
-const task = args.includes("--task") ? assertExecutionContract(findTask(entries, args[args.indexOf("--task") + 1])) : selectNext(entries);
-if (!task) { console.log(JSON.stringify({ status: "idle", reason: "no runnable task" })); process.exit(0); }
-if (!["planned", "in_progress"].includes(task.status)) throw new Error(`${task.id}: 실행기는 planned 또는 in_progress 상태가 필요합니다. 현재 상태: ${task.status}`);
+const task = assertRunnableTask(entries, findTask(entries, taskArgument));
 console.log(JSON.stringify({ status: "selected", task_id: task.id, title: task.title, test_mode: task.test_mode, check_ids: task.check_ids }, null, 2));
 if (!args.includes("--execute")) process.exit(0);
 const config = loadHarnessConfig(root);

@@ -2,6 +2,7 @@
 
 - 상태: Accepted
 - 날짜: 2026-07-23
+- 후속 운영 경계: [ADR-0009](0009-two-track-interview-and-engineering-loop.md)
 
 ## Context
 
@@ -18,6 +19,7 @@ MVP는 개인정보, 권한, 출퇴근, 예상 급여를 다룬다. UI 편의 �
 - task마다 Requirements, Architecture, Data model, Interface, Optimizations(RADIO)를 기록한다. 민감 변경은 구현·검증 후 사용자 확인을 거쳐 완료·커밋한다.
 - repository-local harness skill과 guard는 RADIO 구조, server-only, 기본 FSD 경계를 검사한다. 동작 변경은 TDD, 문서·설정 변경은 verification으로 검증한다.
 - Codex lifecycle hook은 `SessionStart`에 현재 task 계약을 제공하고, `PreToolUse`에서 Codex의 `git commit`을 기존 task/TDD pre-commit guard로 재검증한다. Git hook은 Codex 밖 commit의 동일한 최종 방어선으로 유지한다.
+- 이 개발 가드는 ADR-0009의 딥인터뷰와 사용자 승인 인계를 통과한 단일 task에만 적용한다.
 
 ## Consequences
 

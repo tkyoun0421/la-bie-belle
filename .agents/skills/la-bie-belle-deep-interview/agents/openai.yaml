@@ -1,0 +1,4 @@
+interface:
+  display_name: "La Vie Belle Deep Interview"
+  short_description: "제품·프로젝트·개발 설계를 사용자와 깊게 인터뷰하고 승인"
+  default_prompt: "Use $la-bie-belle-deep-interview to deeply interview me and turn approved decisions into an engineering handoff."

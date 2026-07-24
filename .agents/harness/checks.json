@@ -16,5 +16,6 @@
   "readiness-runner-capability": ["node", ".agents/harness/scripts/ai-readiness.mjs", "--check-runner"],
   "harness-regression": ["node", ".agents/harness/scripts/self-test.mjs"],
   "development-guard": ["node", ".agents/harness/scripts/development-guard.mjs"],
-  "skill-validators": ["node", ".agents/harness/scripts/skill-validator.mjs"]
+  "skill-validators": ["node", ".agents/harness/scripts/skill-validator.mjs"],
+  "approval-workflow": ["node", ".agents/harness/scripts/approval-workflow-self-test.mjs"]
 }

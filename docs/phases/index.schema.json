@@ -44,7 +44,7 @@
       "minLength": 1
     },
     "status": {
-      "enum": ["planned", "in_progress", "blocked", "verification_pending", "done", "skipped"]
+      "enum": ["proposed", "planned", "in_progress", "blocked", "verification_pending", "done", "skipped"]
     },
     "priority": {
       "enum": ["must", "should", "could"]
@@ -89,6 +89,13 @@
         "type": "string",
         "pattern": "^[a-z0-9][a-z0-9-]*$"
       }
+    },
+    "approved_by": {
+      "const": "user"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date"
     },
     "tags": {
       "type": "array",
@@ -150,6 +157,22 @@
       },
       "then": {
         "required": ["test_mode", "check_ids"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "task"
+          },
+          "status": {
+            "enum": ["planned", "in_progress", "blocked", "verification_pending"]
+          }
+        },
+        "required": ["kind", "status"]
+      },
+      "then": {
+        "required": ["approved_by", "approved_at"]
       }
     }
   ]

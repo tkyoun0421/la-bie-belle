@@ -55,7 +55,7 @@ assert.equal(isAssertionFailure("Error: process exited with code 1"), false);
 
 const mismatched = structuredClone(evidence);
 mismatched.green.argv = ["node", "--test", "test/other.test.mjs"];
-assert.ok(validateTddEvidence(task, mismatched).includes("RED and GREEN must use the same command"));
+assert.ok(validateTddEvidence(task, mismatched).includes("RED와 GREEN은 동일한 명령을 사용해야 합니다"));
 
 const tamperedExit = structuredClone(evidence);
 tamperedExit.green.exit_code = 1;
@@ -63,11 +63,11 @@ assert.ok(validateTddEvidence(task, tamperedExit).some((error) => error.includes
 
 const tamperedTree = structuredClone(evidence);
 tamperedTree.red.tree.status = " M src/tampered.mjs";
-assert.ok(validateTddEvidence(task, tamperedTree).some((error) => error.includes("tree status digest")));
+assert.ok(validateTddEvidence(task, tamperedTree).some((error) => error.includes("tree 상태 digest")));
 
 const missingSpec = structuredClone(evidence);
 missingSpec.spec_refs = [];
-assert.ok(validateTddEvidence(task, missingSpec).includes("TDD evidence spec_refs do not match task"));
+assert.ok(validateTddEvidence(task, missingSpec).includes("TDD 증거의 spec_refs가 작업과 일치하지 않습니다"));
 
 function run(cwd, executable, args) {
   return spawnSync(executable, args, { cwd, encoding: "utf8" });
@@ -100,7 +100,9 @@ try {
     test_mode: "tdd",
     check_ids: ["fixture"],
     tags: ["fixture"],
-    updated_at: "2026-07-23"
+    updated_at: "2026-07-23",
+    approved_by: "user",
+    approved_at: "2026-07-23"
   });
   const fixtureEntries = [
     taskFixture("P9-T03", "in_progress"),
@@ -141,7 +143,7 @@ try {
 
   const infraRed = run(fixtureRoot, process.execPath, [guardPath, "red", "P9-T04", "--", "node", "test/missing.mjs"]);
   assert.notEqual(infraRed.status, 0);
-  assert.match(`${infraRed.stdout}${infraRed.stderr}`, /RED must be an assertion failure/);
+  assert.match(`${infraRed.stdout}${infraRed.stderr}`, /RED는 인프라 오류가 아닌 assertion 실패/);
 
   writeFileSync(join(fixtureRoot, "test/state.json"), `${JSON.stringify({ pass: false })}\n`);
   const secondRed = run(fixtureRoot, process.execPath, [guardPath, "red", "P9-T05", "--", ...testCommand]);
@@ -149,7 +151,7 @@ try {
   writeFileSync(join(fixtureRoot, "test/state.json"), `${JSON.stringify({ pass: true })}\n`);
   const mismatchedGreen = run(fixtureRoot, process.execPath, [guardPath, "green", "P9-T05", "--", "node", "-e", "process.exit(0)"]);
   assert.notEqual(mismatchedGreen.status, 0);
-  assert.match(`${mismatchedGreen.stdout}${mismatchedGreen.stderr}`, /RED와 GREEN은 동일한 명령/);
+  assert.match(`${mismatchedGreen.stdout}${mismatchedGreen.stderr}`, /GREEN은 RED와 동일한 명령/);
 } finally {
   rmSync(fixture, { recursive: true, force: true });
 }

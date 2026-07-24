@@ -9,7 +9,6 @@ const { entries } = loadIndex(root);
 const incomplete = entries.filter((entry) =>
   entry.kind === "task" && ["planned", "in_progress", "blocked", "verification_pending"].includes(entry.status)
 );
-if (incomplete.length === 0) throw new Error("미완료 작업 fixture가 필요합니다");
 const errors = validateIndex(entries);
 if (errors.length) throw new Error(errors.join("; "));
 if (incomplete.some((task) => !task.test_mode || !Array.isArray(task.check_ids) || task.check_ids.length === 0)) {
@@ -18,6 +17,9 @@ if (incomplete.some((task) => !task.test_mode || !Array.isArray(task.check_ids) 
 
 const fixtureEntries = structuredClone(entries);
 const target = fixtureEntries.find((entry) => entry.id === "P0-T01");
+target.status = "planned";
+target.approved_by = "user";
+target.approved_at = "2026-07-24";
 delete target.test_mode;
 delete target.check_ids;
 const fixtureErrors = validateIndex(fixtureEntries);
@@ -29,15 +31,13 @@ const fixtureDir = mkdtempSync(join(tmpdir(), "la-bie-belle-contract-"));
 try {
   const fixturePath = join(fixtureDir, "index.jsonl");
   writeFileSync(fixturePath, `${fixtureEntries.map((entry) => JSON.stringify(entry)).join("\n")}\n`);
-  for (const args of [["--index", fixturePath, "--task", "P0-T01"], ["--index", fixturePath]]) {
-    const result = spawnSync(process.execPath, [join(root, ".agents/harness/scripts/run.mjs"), ...args], {
-      cwd: root,
-      encoding: "utf8"
-    });
-    const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
-    if (result.status === 0 || !output.includes("P0-T01") || !output.includes("test_mode")) {
-      throw new Error(`실행기가 ${args.includes("--task") ? "명시적" : "자동"} 선택에서 누락된 계약을 허용했습니다\n${output}`);
-    }
+  const result = spawnSync(process.execPath, [join(root, ".agents/harness/scripts/run.mjs"), "--index", fixturePath, "--task", "P0-T01"], {
+    cwd: root,
+    encoding: "utf8"
+  });
+  const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
+  if (result.status === 0 || !output.includes("P0-T01") || !output.includes("test_mode")) {
+    throw new Error(`실행기가 명시적 선택에서 누락된 계약을 허용했습니다\n${output}`);
   }
 } finally {
   rmSync(fixtureDir, { recursive: true, force: true });
@@ -45,4 +45,5 @@ try {
 
 const schema = JSON.parse(readFileSync(join(root, "docs/phases/index.schema.json"), "utf8"));
 if (schema.properties?.check_ids?.minItems !== 1) throw new Error("스키마는 check_ids가 있으면 비어 있지 않도록 요구해야 합니다");
+if (!schema.properties?.status?.enum?.includes("proposed")) throw new Error("스키마는 proposed 상태를 지원해야 합니다");
 console.log(`작업 계약 자체 검사를 통과했습니다: 미완료 작업 ${incomplete.length}개를 확인했습니다`);

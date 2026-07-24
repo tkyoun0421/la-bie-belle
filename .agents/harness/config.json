@@ -1,5 +1,9 @@
 {
   "max_attempts": 3,
+  "require_explicit_task": true,
+  "require_user_approval": true,
+  "auto_retry_technical_failures": true,
+  "stop_after_task": true,
   "index_path": "docs/phases/index.jsonl",
   "runs_path": ".agents/runs",
   "checks_path": ".agents/harness/checks.json"

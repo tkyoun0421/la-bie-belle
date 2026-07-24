@@ -36,7 +36,7 @@ const html = `<!doctype html>
     const d=JSON.parse(document.getElementById('dashboard-data').textContent);
     const categoryNames={context:'문맥 탐색',workflow:'작업 결정성',verification:'검증과 CI',architecture:'아키텍처',isolation:'변경 격리',reproducibility:'환경 재현성',safety:'안전 경계'};
     const proposalNames={'Add a CI workflow invoking the same harness checks':'동일한 하네스 검사를 실행하는 CI 추가','Add a committed dependency lockfile':'의존성 잠금 파일 커밋'};
-    const statusNames={planned:'예정',in_progress:'진행 중',done:'완료',blocked:'차단됨',verification_pending:'검증 대기'};
+    const statusNames={proposed:'인터뷰 제안',planned:'실행 승인됨',in_progress:'진행 중',done:'완료',blocked:'차단됨',verification_pending:'검증 대기'};
     const escape=v=>String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     const badge=s=>'<span class="badge badge-'+(s==='in_progress'?'progress':s==='done'?'done':s==='blocked'?'blocked':s==='verification_pending'?'pending':'planned')+'">'+escape(statusNames[s]||s)+'</span>';
     document.getElementById('current-task').textContent=d.execution.current_task||'없음';

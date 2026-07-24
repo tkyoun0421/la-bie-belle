@@ -52,7 +52,9 @@ function createFixture(taskId) {
       test_mode: "verification",
       check_ids: ["fixture"],
       tags: ["fixture"],
-      updated_at: "2026-07-23"
+      updated_at: "2026-07-23",
+      approved_by: "user",
+      approved_at: "2026-07-23"
     },
     {
       schema_version: 2,

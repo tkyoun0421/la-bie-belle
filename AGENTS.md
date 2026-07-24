@@ -1,22 +1,41 @@
 # AI 작업 지침
 
-이 저장소에서 작업을 시작할 때 다음 순서를 지킵니다.
+이 저장소는 [딥인터뷰 설계 트랙과 자율 개발 트랙](docs/WORKFLOW.md)을 분리합니다. AI는 설계를 임의로 확정하지 않고, 사용자는 승인된 설계의 구현 세부 반복을 매번 지시하지 않습니다.
 
-1. `README.md`와 `docs/PRD.md`의 MVP 범위·불변 규칙을 읽습니다.
-2. `docs/DOMAIN.md`, `docs/ARCHITECTURE.md`와 관련 ADR을 읽습니다.
-3. `docs/phases/index.jsonl`에서 `status`가 `planned`, `in_progress`, `blocked`인 task와 의존성·`spec_refs`를 확인합니다.
-4. 선택한 task의 `docs/phases/*.md` 상세 설명과 인수 조건, `spec_refs`가 가리키는 원문을 읽습니다.
-5. 한 번에 하나의 task ID만 `in_progress`로 변경하고 구현합니다.
-6. 검증 명령과 인수 조건을 모두 통과하고 관련 spec ID를 검증 증거에 남긴 뒤에만 `done`으로 변경합니다.
+## 트랙 A: 딥인터뷰 설계
+
+제품 관리, 프로젝트 계획, 제품·도메인·아키텍처·UX 설계, 범위 또는 인수 조건을 결정하거나 재검토하는 요청은 이 트랙에서 시작합니다.
+
+1. `README.md`, `docs/WORKFLOW.md`와 관련 기준 문서를 읽습니다.
+2. 기존 문서와 `proposed` task를 정답이 아니라 인터뷰 출발점으로 취급합니다.
+3. 한 번에 하나의 결정 주제를 깊게 다룹니다. 현재 이해, 사용자 답변, 충돌, 선택지와 트레이드오프, 미결 사항을 구분합니다.
+4. 중요한 선택을 AI가 묵시적으로 확정하지 않습니다. 사용자의 명시적 승인 전에는 제품 코드 구현, task `in_progress` 전환, 개발 runner 실행을 하지 않습니다.
+5. 승인 후에만 PRD → Domain → ADR → Architecture·Design → Phase 순서로 정합화합니다.
+6. 실행 가능한 task에 상세 인수 조건, `spec_refs`, `test_mode`, `check_ids`, `approved_by: "user"`, `approved_at`을 기록하고 `planned`로 인계합니다.
+
+## 트랙 B: 자율 개발 루프
+
+명시적으로 승인된 단일 task를 구현하라는 요청은 이 트랙을 사용합니다.
+
+1. `README.md`, `docs/PRD.md`의 MVP 범위·불변 규칙을 읽습니다.
+2. `docs/DOMAIN.md`, `docs/ARCHITECTURE.md`, 관련 ADR과 `docs/DEVELOPMENT.md`를 읽습니다.
+3. 사용자가 지정한 task의 의존성, 승인 기록, `spec_refs`, Phase 상세와 인수 조건을 확인합니다.
+4. 정확히 하나의 승인된 task만 `in_progress`로 두고 `.agents/runs/<task-id>/radio.md`를 작성합니다.
+5. task의 `test_mode`에 따라 TDD 또는 등록 검증을 수행하고 기술적 실패는 하네스 한도 안에서 자동 반복합니다.
+6. 범위·제품 동작·설계 결정이 새로 필요하면 추측해서 확장하지 않고 트랙 A로 반환합니다.
+7. 인수 조건과 검증을 모두 통과하고 관련 spec ID를 증거에 남긴 뒤에만 `done`으로 변경합니다.
+8. 완료 결과를 사용자에게 인계한 뒤 다음 task를 자동 선택하지 않습니다.
 
 ## 작업 인덱스 규칙
 
 - `docs/phases/index.jsonl`은 한 줄에 하나의 유효한 JSON 객체만 둡니다.
+- `proposed`는 인터뷰 대상이며 실행할 수 없습니다.
+- `planned`는 사용자 승인과 실행 계약이 기록된 구현 대기 상태입니다.
 - task ID, 의존성, 상태를 임의로 재사용하거나 삭제하지 않습니다.
 - 모든 task는 하나 이상의 유효한 `spec_refs`를 가져야 합니다.
-- 제품 범위는 PRD, 공통 언어·도메인 경계는 Domain 문서, 되돌리기 어려운 결정은 ADR을 먼저 갱신하고 작업 인덱스를 동기화합니다.
-- 구현 중 새 작업이 발견되면 기존 task에 몰래 포함하지 말고 새 task ID를 추가합니다.
-- `done` 작업의 인수 조건을 깨는 변경은 해당 task를 다시 `in_progress`로 열거나 새 회귀 task를 추가합니다.
+- 한 번에 `in_progress` task는 최대 하나입니다.
+- 구현 중 새 작업이 발견되면 현재 task에 몰래 포함하지 않고 트랙 A의 제안으로 기록합니다.
+- `done` 작업의 인수 조건을 깨는 변경은 사용자와 회귀 범위를 합의해 새 task로 인계합니다.
 
 ## 제품 불변 규칙
 
@@ -30,6 +49,6 @@
 ## 구현 원칙
 
 - MVP 밖 기능은 만들지 않습니다.
-- 개인정보와 권한 검사는 UI가 아니라 데이터베이스 정책과 서버 경계에서도 강제합니다.
+- 개인정보와 권한 검사는 UI뿐 아니라 데이터베이스 정책과 서버 경계에서도 강제합니다.
 - 권한, 급여, 출퇴근, 계정 복구 변경에는 회귀 테스트를 추가합니다.
-- 디자인 구현은 사용자가 제공할 `DESIGN.md` 이후에 확정합니다.
+- 디자인 구현은 딥인터뷰에서 승인된 Design 범위만 따릅니다.

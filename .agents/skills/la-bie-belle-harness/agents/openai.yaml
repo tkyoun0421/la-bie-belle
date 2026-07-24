@@ -1,4 +1,4 @@
 interface:
-  display_name: "La Vie Belle Harness"
-  short_description: "FSD와 RADIO를 강제하는 프로젝트 개발 하네스"
-  default_prompt: "Use $la-bie-belle-harness to implement one tracked task under the project development rules."
+  display_name: "La Vie Belle Engineering Loop"
+  short_description: "승인된 단일 작업을 TDD·검증·재시도로 자율 실행"
+  default_prompt: "Use $la-bie-belle-harness to autonomously implement and verify one explicitly approved task."

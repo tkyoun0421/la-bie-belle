@@ -1,6 +1,14 @@
 # 개발 규칙과 하네스
 
-이 문서는 라비에벨에서 구현을 시작하고 완료하는 개발 규칙의 기준이다. 제품 의미는 [PRD](PRD.md), 도메인 언어는 [Domain](DOMAIN.md), 기술 결정은 [ADR-0008](adr/0008-fsd-server-first-development-guards.md), 실행 상태는 [작업 인덱스](phases/index.jsonl)가 소유한다.
+이 문서는 라비에벨에서 승인된 구현을 시작하고 완료하는 개발 규칙의 기준이다. 설계와 실행의 경계는 [운영 계약](WORKFLOW.md)과 [ADR-0009](adr/0009-two-track-interview-and-engineering-loop.md), 제품 의미는 [PRD](PRD.md), 도메인 언어는 [Domain](DOMAIN.md), 기술 가드는 [ADR-0008](adr/0008-fsd-server-first-development-guards.md), 실행 상태는 [작업 인덱스](phases/index.jsonl)가 소유한다.
+
+## 투트랙 경계
+
+- 제품 관리, 프로젝트 계획, 제품·도메인·아키텍처·UX 설계와 task 범위 결정은 `la-bie-belle-deep-interview` 스킬의 딥인터뷰 트랙에서 수행한다.
+- 개발은 사용자 승인 기록이 있는 `planned` task와 명시적인 task ID를 입력으로 `la-bie-belle-harness` 스킬의 자율 루프에서 수행한다.
+- `proposed` task는 인터뷰 재료이며 구현, worktree 생성, `in_progress` 전환 대상이 아니다.
+- 개발 runner는 다음 task를 자동 선택하지 않는다. 한 task가 끝나면 결과를 사용자에게 인계하고 멈춘다.
+- 구현 중 새 설계 판단이 필요하면 기술적 실패로 재시도하지 않고 딥인터뷰 트랙으로 반환한다.
 
 ## FSD와 서버 경계
 
@@ -37,7 +45,7 @@ src/
 
 ## RADIO와 검증
 
-task 시작 시 `.agents/runs/<task-id>/radio.md`에 아래 heading을 작성한다.
+승인된 task 시작 시 `.agents/runs/<task-id>/radio.md`에 아래 heading을 작성한다.
 
 1. `## Requirements`: spec refs, 범위, 불변 규칙
 2. `## Architecture`: FSD slice, 서버 경계, 권한 영향
@@ -56,4 +64,4 @@ task 시작 시 `.agents/runs/<task-id>/radio.md`에 아래 heading을 작성한
 
 ## 실행
 
-`$la-bie-belle-harness`를 사용해 task를 진행한다. 하네스는 index의 실행 계약, TDD 증거, check 결과와 task commit을 검사한다. 포맷과 lint의 실제 package·hook 도입은 P0-T02에서 이 문서의 인터페이스를 따른다.
+설계에는 `$la-bie-belle-deep-interview`, 승인된 구현에는 `$la-bie-belle-harness`를 사용한다. 실행 명령은 `pnpm harness:start -- --task <ID>`이며 하네스는 승인, 의존성, 실행 계약, TDD 증거, check 결과와 task commit을 검사하고 기술적 실패를 최대 설정 횟수까지 반복한다. 포맷과 lint의 실제 package·hook 도입은 P0-T02에서 이 문서의 인터페이스를 따른다.
