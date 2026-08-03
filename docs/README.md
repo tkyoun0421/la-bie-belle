@@ -4,7 +4,7 @@
 
 | 레이어 | 디렉터리 | 책임 |
 | --- | --- | --- |
-| L1 협업 | [`workflow/`](workflow/WORKFLOW.md) (+ 루트 `CLAUDE.md`, `AGENTS.md`, `.claude/`) | 작업 방식, 단계 경계, 승인 규칙, handoff |
+| L1 협업 | [`workflow/`](workflow/WORKFLOW.md) (+ 루트 `CLAUDE.md`, `.claude/`) | 작업 방식, 단계 경계, 승인 규칙, handoff |
 | L2 제품·도메인 | [`product/`](product/PRD.md) | 무엇을 왜 만드는가 |
 | L3 기술 기준 | [`standards/`](standards/ARCHITECTURE.md) | 어떻게 만드는가의 공통 기준과 되돌리기 어려운 결정 |
 | L4 계획·실행 | [`execution/`](execution/phases/README.md) | 무엇을 언제 하는가, 실행 상태와 증거 |

@@ -3,6 +3,8 @@
 - 상태: Accepted
 - 날짜: 2026-07-24
 - 세 단계 승인으로 부분 대체: [ADR-0011](0011-planning-radio-development-contract.md)
+- 5단계 파이프라인과 연속 루프로 부분 대체: [ADR-0013](0013-project-layer-structure.md)
+- 아래 Decision의 트랙 명칭, `--task <ID>` 단일 실행과 "한 task 완료 후 정지" 항목은 ADR-0013이 대체했다. 본문은 당시 결정의 역사 기록으로 보존한다.
 
 ## Context
 

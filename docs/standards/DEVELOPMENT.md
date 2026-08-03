@@ -1,6 +1,6 @@
-# 개발 컨벤션과 하네스
+# 개발 컨벤션
 
-이 문서는 라비에벨의 공통 개발 규칙과 안정적인 `DEV-*` ID의 정본이다. 설계·승인·실행 경계는 [운영 계약](../workflow/WORKFLOW.md)과 [ADR-0011](adr/0011-planning-radio-development-contract.md), 제품 의미는 [PRD](../product/PRD.md), 도메인 언어는 [Domain](../product/DOMAIN.md), 시스템 구조는 [Architecture](ARCHITECTURE.md), task별 기술 설계는 [`docs/development`](../execution/radio/README.md), 실행 상태는 [작업 인덱스](../execution/phases/index.jsonl)가 소유한다.
+이 문서는 라비에벨의 공통 개발 규칙과 안정적인 `DEV-*` ID의 정본이다. 설계·승인·실행 경계는 [운영 계약](../workflow/WORKFLOW.md)과 [ADR-0013](adr/0013-project-layer-structure.md), [ADR-0011](adr/0011-planning-radio-development-contract.md), 제품 의미는 [PRD](../product/PRD.md), 도메인 언어는 [Domain](../product/DOMAIN.md), 시스템 구조는 [Architecture](ARCHITECTURE.md), task별 기술 설계는 [task별 개발 설계](../execution/radio/README.md), 실행 상태는 [작업 인덱스](../execution/phases/index.jsonl)가 소유한다.
 
 ## 규칙 등급과 예외
 
@@ -15,12 +15,12 @@ RADIO는 공통 규칙을 복사하지 않는다. 관련 ID마다 `기본 적용
 - 제품·프로젝트·도메인·UX와 제품 인수 조건은 기획 단계에서 승인한다.
 - `design_pending` task의 구현 구조와 기술 인수 조건은 설계 단계에서 승인한다.
 - 승인된 RADIO 정본은 `docs/execution/radio/<task-id>-radio.md`가 소유한다.
-- 개발은 두 승인과 `radio_ref`가 있는 `planned` task 하나를 사용자가 ID로 명시했을 때만 시작한다.
+- 개발은 두 승인과 `radio_ref`가 있고 의존 task가 모두 `done`인 `planned` task에서만 시작한다.
 - `docs/execution/runs/<task-id>/radio.md`는 설계 정본이 아니라 승인된 설계의 적용 결과와 실행 중 차이를 기록한다.
 - 개발 승인은 RADIO revision과 정확한 전체 UTF-8 바이트 SHA-256에 결속하며 경로 이탈, 심볼릭 링크, 누락 파일과 해시 불일치는 실행을 차단한다.
-- 상태·승인·RADIO 무결성과 실행 가능성은 공통 계약 모듈 하나가 판정하고 모든 하네스 소비자는 안정적인 사유 코드를 사용한다.
+- 상태·승인·RADIO 무결성과 실행 가능성은 공통 계약 모듈 하나가 판정하고 모든 소비자는 안정적인 사유 코드를 사용한다.
 - 제품 결정이 새로 필요하면 기획 단계, 기술 결정이 새로 필요하면 설계 단계로 반환한다.
-- 개발 runner는 다음 task를 자동 선택하지 않는다.
+- 개발 루프는 `planned` 큐가 빌 때까지 의존성 순서로 task를 연속 실행하고 `in_progress`는 언제나 최대 하나다. 새 결정이 필요하거나 재시도 한도를 넘긴 task는 `blocked`로 두고 의존 관계가 없는 다음 task로 진행한다. 정본 규칙은 [운영 계약의 연속 루프 규칙](../workflow/WORKFLOW.md#연속-루프-규칙)이 소유한다.
 
 ## FSD와 서버 경계
 
@@ -235,12 +235,11 @@ RADIO를 재설계하면 고정 경로에서 revision을 증가시키고 `Draft`
 - `.claude/settings.json`의 `PreToolUse`는 `Write`·`Edit`·`MultiEdit`마다 `.claude/hooks/tdd-guard.sh`를 실행한다.
 - TDD guard는 `src/` 아래 비즈니스 로직 파일에 대응 테스트가 없으면 편집을 차단한다. `src/app/**` route adapter, `**/ui/**`·`**/components/**` 표시 계층, `**/types/**`, `*.d.ts`, `*.config.*`, slice `index.ts` barrel과 비소스 파일은 예외다.
 - `test_mode=tdd` task는 편집 전 RED → GREEN 증거를 남기고 commit 전 동일 검증기를 통과한다.
-- repository-local 스킬의 `SKILL.md` 본문과 `agents/openai.yaml` 사용자 노출 필드는 한국어로 작성한다. 식별자, 경로, 코드와 명령어는 영문 호환 형식을 유지한다.
 - 에이전트 hook은 신뢰된 프로젝트에서만 로드한다.
-- Git hook은 에이전트 밖 commit의 동일한 최종 방어선이며 원격 우회 방지는 CI가 담당한다.
+- Git hook은 에이전트 밖 commit의 동일한 최종 방어선이며 원격 우회 방지는 CI가 담당한다. `.githooks/commit-msg`는 task ID 형식을 검사한다.
 
 ## 실행
 
-P0-T28이 완료되기 전에는 전환용 `$la-bie-belle-deep-interview`를 사용한다. 완료 후 기획에는 `$la-bie-belle-product-interview`, 개발 설계에는 `$la-bie-belle-development-interview`, 승인된 구현에는 `$la-bie-belle-harness`를 사용한다.
+구조 재편 과정에서 기존 하네스와 repository-local 스킬이 제거되어 현재 실행 명령은 없다. 5단계 파이프라인과 [연속 루프](../workflow/WORKFLOW.md#연속-루프-규칙)를 강제하는 새 실행 하네스와 명령은 **P0-T31**에서 다시 만든다. 그때까지 단계 순서, 승인 게이트와 루프 규칙은 문서 계약으로 지키고 사람이 확인한다.
 
-실행 명령은 `pnpm harness:start -- --task <ID>`다. 하네스는 두 승인, RADIO, 의존성, 실행 계약, TDD 증거, check 결과와 task commit을 검사하고 기술적 실패를 설정된 횟수 안에서 반복한다. 포맷, lint, TypeScript strict와 실제 앱 테스트 도구는 P0-T02에서 구성한다.
+새 하네스는 두 승인, RADIO 해시, 의존성, 실행 계약, TDD 증거, check 결과와 task commit을 검사하고 기술적 실패를 설정된 횟수 안에서 재시도한다. 포맷, lint, TypeScript strict와 실제 앱 테스트 도구는 P0-T02에서 구성한다.

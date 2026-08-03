@@ -12,17 +12,17 @@ Upper layers govern lower layers. When documents conflict, the upper layer wins.
 
 | Layer | Location | Owns |
 |-------|----------|------|
-| L1 Collaboration | `CLAUDE.md`, `AGENTS.md`, `.claude/`, `docs/workflow/` | How work is done: stages, approvals, handoff |
+| L1 Collaboration | `CLAUDE.md`, `.claude/`, `docs/workflow/` | How work is done: stages, approvals, handoff |
 | L2 Product/Domain | `docs/product/` | What is built and why: PRD, DOMAIN, DESIGN |
 | L3 Standards | `docs/standards/` | ARCHITECTURE, DEVELOPMENT (`DEV-*`), `adr/` |
 | L4 Planning/Execution | `docs/execution/` | `phases/`, `radio/`, `runs/` — state and evidence |
 | L5 Code | `src/`, `tests/` (future) | Implementation and tests |
 
-`CLAUDE.md`, `AGENTS.md`, and `.claude/` stay at the repo root because tooling requires it, but they belong to L1 logically. They are summaries — `docs/workflow/` is the authoritative source.
+`CLAUDE.md` and `.claude/` stay at the repo root because tooling requires it, but they belong to L1 logically. This file is a summary — `docs/workflow/` is the authoritative source.
 
 ## Five-Stage Pipeline
 
-Every task moves through one sequential pipeline. **Read `docs/workflow/WORKFLOW.md` and `AGENTS.md` first.** There are no parallel tracks; the former Track A1/A2/B naming is retired.
+Every task moves through one sequential pipeline. **Read `docs/workflow/WORKFLOW.md` first.** There are no parallel tracks; the former Track A1/A2/B naming is retired.
 
 `기획 (Planning) → 설계 (Design) → 개발 (Development) → 검증 (Verification) → 리팩토링 (Refactoring)`
 
@@ -35,20 +35,47 @@ Every task moves through one sequential pipeline. **Read `docs/workflow/WORKFLOW
 | 5. Refactoring | AI execution | none | `done` |
 
 - Only stages 1 and 2 have approval gates. AI must never advance a task without explicit user approval.
-- Stages 3–5 run only on a user-specified task ID. No auto-selection of the next task.
+- User control lives at the two approval gates, not in per-task execution orders.
 - Interviews do not produce code. Execution does not make design decisions — it returns to stage 1 (product) or stage 2 (technical).
 - Record a handoff at every stage boundary per `docs/workflow/HANDOFF.md`: harness runs write `docs/execution/runs/<task-id>/handoff.md`, interviews write `docs/execution/runs/interviews/<date-topic>.md`.
+
+## Continuous Engineering Loop
+
+Stages 3–5 do not stop after one task. The loop runs `planned` tasks continuously in dependency order until the queue is empty. Authoritative rule: `docs/workflow/WORKFLOW.md` (연속 루프 규칙), rationale: ADR-0013 §4.
+
+- At most one `in_progress` task at a time — the loop is sequential, never parallel.
+- Candidates are `planned` tasks with both approvals, a valid execution contract, and all `depends_on` tasks `done`.
+- Queue empty → end the loop normally and report all results at once.
+- A task needing a new product/technical decision, or exceeding the retry limit, is marked `blocked` with a decision signal and handoff; the loop then continues with the next `planned` task that does not depend on it.
+- At loop end, report the collected `blocked` list with reasons. Blocked tasks re-enter the queue only after the relevant interview stage resolves and re-approves them.
+- An explicit user instruction to run a single task ID overrides the loop.
 
 ## Task Lifecycle
 
 `proposed` → `design_pending` → `planned` → `in_progress` → `done`
+(`blocked`, `verification_pending`, `skipped` are also valid states — see `docs/execution/phases/README.md`.)
 
 - Task index: `docs/execution/phases/index.jsonl` (one JSON object per line)
 - Schema: `docs/execution/phases/index.schema.json`
-- At most one `in_progress` task at a time
+- At most one `in_progress` task at a time, repo-wide
 - All current/new tasks use `dual-approval-v3` (product + RADIO approval required)
 - Approved RADIO documents live at `docs/execution/radio/<task-id>-radio.md`
 - Commit messages must contain task ID matching `P[0-9]+-T[0-9]{2}`
+
+### Index rules
+
+- Every task needs at least one valid `spec_refs` entry. `spec_refs` are tracking links, not copied requirements.
+- Never reuse or delete task IDs, dependencies, or statuses. Abandoned tasks keep their ID and history.
+- Work discovered mid-implementation is recorded as a proposal for the right stage, never folded silently into the current task.
+- Changes that break a `done` task's acceptance criteria go into a new task with an agreed regression scope.
+- Completed tasks' execution history and approval hashes are never altered retroactively.
+
+## Implementation Principles
+
+- Do not build anything outside MVP scope. Deferred items need explicit approval before entering a phase.
+- PII and authority checks are enforced at the server boundary and in DB policy, not just the UI.
+- Changes to authority, estimated pay, attendance, or account recovery require regression tests.
+- Design implementation follows only the Design scope approved in the planning stage.
 
 ## Commands
 

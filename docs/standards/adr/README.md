@@ -18,6 +18,14 @@ ADR은 구현자가 임의로 바꾸면 데이터 호환성, 보안 또는 운�
 | [0012](0012-static-operations-dashboard.md) | 정적 운영 대시보드의 안내·최신화 계약 | 보류(재검토 예정) |
 | [0013](0013-project-layer-structure.md) | 5레이어 프로젝트 구조와 5단계 개발 파이프라인 | Accepted |
 
+일부 ADR은 폐기되지 않은 채 뒤의 ADR에 부분 대체되었습니다. 충돌하면 뒤의 ADR이 기준입니다.
+
+| 원 ADR | 부분 대체한 ADR | 대체된 범위 |
+| --- | --- | --- |
+| [0009](0009-two-track-interview-and-engineering-loop.md) | [0011](0011-planning-radio-development-contract.md) | 설계 트랙을 기획 인터뷰와 RADIO 개발 인터뷰로 세분화 |
+| [0009](0009-two-track-interview-and-engineering-loop.md) | [0013](0013-project-layer-structure.md) | 트랙 명칭 → 5단계 파이프라인, 단일 task 실행·정지 → 연속 루프 |
+| [0011](0011-planning-radio-development-contract.md) | [0013](0013-project-layer-structure.md) | 문서 위치와 단계 이름 |
+
 ## 상태
 
 - `Proposed`: 논의 중이며 구현 근거로 사용하지 않는다.

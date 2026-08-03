@@ -14,6 +14,8 @@
 
 또한 세션이 끊기면 진행 맥락이 사라져 인터뷰와 실행 모두 처음부터 다시 설명해야 했다. 하네스 실행 기록과 인터뷰 기록의 형식도 서로 달라 재개 비용이 컸다.
 
+실행 방식에도 문제가 있었다. 기존 규칙은 task 하나를 끝낼 때마다 보고하고 정지했고 다음 task를 자동 선택하지 못했다. 승인 게이트에서 이미 무엇을 왜 어떻게 만들지 확정했는데도 사용자가 task마다 실행을 다시 지시해야 했고, 실행 지시가 통제가 아니라 반복 작업이 되었다.
+
 ## Decision
 
 ### 1. 5레이어 구조
@@ -22,7 +24,7 @@
 
 | 레이어 | 이름 | 책임 | 소속 파일 |
 | --- | --- | --- | --- |
-| L1 | 협업 | AI와 사용자의 작업 방식, 승인 규칙, 단계 경계, handoff | `CLAUDE.md`, `AGENTS.md`, `.claude/`, `docs/workflow/WORKFLOW.md`, `docs/workflow/HANDOFF.md` |
+| L1 | 협업 | AI와 사용자의 작업 방식, 승인 규칙, 단계 경계, handoff | `CLAUDE.md`, `.claude/`, `docs/workflow/WORKFLOW.md`, `docs/workflow/HANDOFF.md` |
 | L2 | 제품·도메인 | 무엇을 왜 만드는가. 제품 동작, 불변 규칙, 공통 언어, UX | `docs/product/PRD.md`, `docs/product/DOMAIN.md`, `docs/product/DESIGN.md`, `docs/product/design/` |
 | L3 | 기술 기준 | 어떻게 만드는가의 공통 기준. 되돌리기 어려운 결정 | `docs/standards/ARCHITECTURE.md`, `docs/standards/DEVELOPMENT.md`, `docs/standards/adr/` |
 | L4 | 계획·실행 | 무엇을 언제 하는가. task 상태, 승인 기록, task별 설계, 실행 증거 | `docs/execution/phases/`, `docs/execution/radio/`, `docs/execution/runs/` |
@@ -38,7 +40,9 @@
 
 ### 2. 루트 고정 파일의 논리적 소속
 
-`CLAUDE.md`, `AGENTS.md`, `.claude/`는 도구 규약상 저장소 루트에 있어야 인식되므로 물리적으로 이동하지 않는다. 그러나 **논리적으로는 L1에 속한다**. 이 파일들은 L1 정본(`docs/workflow/`)의 요약과 도구 연결이며, 두 곳이 충돌하면 `docs/workflow/`가 기준이다.
+`CLAUDE.md`, `.claude/`는 도구 규약상 저장소 루트에 있어야 인식되므로 물리적으로 이동하지 않는다. 그러나 **논리적으로는 L1에 속한다**. 이 파일들은 L1 정본(`docs/workflow/`)의 요약과 도구 연결이며, 두 곳이 충돌하면 `docs/workflow/`가 기준이다.
+
+루트 요약은 도구별로 하나만 둔다. 같은 내용을 여러 루트 파일에 중복하면 정본이 흐려지므로, 새 도구 규약 파일이 필요할 때만 추가하고 규범 내용은 `docs/workflow/`에 둔 뒤 참조한다.
 
 `package.json`, `.githooks/`도 같은 이유로 루트에 남고 L1의 도구 연결로 취급한다. 루트에 새 도구 설정이 생기면 같은 규칙을 적용한다.
 
@@ -68,18 +72,37 @@ flowchart LR
 | 5. 리팩토링 | AI 실행 | 동작 변경 없는 구조 정리와 재검증 | `in_progress` → `done` |
 
 - 승인 게이트는 1단계와 2단계 종료 지점 두 곳뿐이다. `dual-approval-v3`의 의미론(제품 승인 + RADIO SHA-256 결속 개발 승인)은 그대로 유지한다.
-- 3~5단계는 하나의 `in_progress` 구간이며 사용자가 task ID를 명시했을 때만 시작한다. 하네스는 다음 task를 자동 선택하지 않는다.
+- 3~5단계는 하나의 `in_progress` 구간이며, 개발 루프는 `planned` 큐가 빌 때까지 이 구간을 연속 실행한다(아래 4번).
 - 하네스 파이프라인 내부의 "설계" 단계는 **승인된 RADIO를 구현 세부(파일 목록, 테스트 목록, 작업 순서)로 구체화하는 것만** 담당한다. 새 제품 결정은 1단계, 새 기술 결정은 2단계로 반환하며 실행 중에는 먼저 `blocked`로 안전 중단한다.
 - 리팩토링은 별도 task가 아니라 모든 작업의 마지막 단계다. 동작을 바꾸지 않으며, 바꿔야 한다면 2단계로 반환한다.
 
-### 4. handoff 원칙
+### 4. 연속 루프 엔지니어링
+
+개발 루프는 task 하나를 끝낼 때마다 정지하지 않는다. **`planned` 큐가 빌 때까지 의존성 순서로 연속 실행한다.** 사용자 통제 지점은 매 task의 실행 지시가 아니라 1·2단계의 승인 게이트다.
+
+- `in_progress`는 여전히 한 번에 최대 하나다. 연속 실행은 순차 처리이며 병렬 실행이 아니다.
+- 후보는 두 승인과 실행 계약이 있고 의존 task가 모두 `done`인 `planned` task다.
+
+루프의 멈춤·건너뛰기 조건은 세 가지뿐이다.
+
+| 조건 | 처리 |
+| --- | --- |
+| `planned` 큐 소진 | 루프를 정상 종료하고 전체 결과를 일괄 보고한다. |
+| 새 제품·기술 결정이 필요 | 해당 task만 `blocked`로 두고 결정 신호와 handoff를 기록한 뒤, 그 task에 의존하지 않는 다음 `planned` task로 계속 진행한다. |
+| 기술적 실패가 재시도 한도 초과 | 위와 같이 해당 task만 `blocked` 처리하고 루프를 계속한다. |
+
+- `blocked` task에 직접·간접으로 의존하는 task는 후보에서 제외한다.
+- 루프 종료 시 `blocked` 목록과 차단 사유를 모아 보고하고, 인터뷰로 해소·재승인된 뒤 다시 큐에 투입한다.
+- 이중 승인 게이트, 승인 없는 task의 실행 금지, 단계 경계 handoff, 인터뷰 반환 원칙은 이 규칙으로 바뀌지 않는다.
+
+### 5. handoff 원칙
 
 - 단계 경계마다 handoff를 기록한다. 세션이 끊겨도 다음 세션이 handoff만 읽고 이어갈 수 있어야 한다.
 - 하네스 실행과 인터뷰는 **같은 포맷**을 사용한다. 형식과 최소 필드는 [handoff 계약](../../workflow/HANDOFF.md)이 소유한다.
 - 기록 위치: 하네스 실행은 `docs/execution/runs/<task-id>/handoff.md`, 인터뷰는 `docs/execution/runs/interviews/<날짜-주제>.md`.
 - handoff는 승인 기록이 아니다. 승인의 정본은 `docs/execution/phases/index.jsonl`이며 handoff는 그 상태를 설명하는 실행 증거다.
 
-### 5. 전환 처리
+### 6. 전환 처리
 
 - P0-T29(운영 대시보드)는 제품 승인을 보존한 채 `design_pending`으로 반환한다. 개발 승인과 `radio_ref`는 무효화한다.
 - [ADR-0012](0012-static-operations-dashboard.md)는 `보류` 상태로 두고 구조 재편 후 재검토한다.
@@ -93,3 +116,14 @@ flowchart LR
 - 모든 문서 상호 링크와 `index.jsonl`의 `doc`·`radio_ref` 경로, `index.schema.json`의 경로 패턴이 한 번에 바뀐다. 경로를 참조하는 도구는 새 경로를 따라야 한다.
 - 기존 하네스가 제거된 상태이므로 5단계 파이프라인과 handoff의 자동 강제는 P0-T31 완료 전까지 문서 계약으로만 존재한다.
 - 완료된 task의 실행 이력과 승인 해시는 소급 변경하지 않는다. `docs/execution/radio/P0-T28-radio.md`는 승인 SHA-256 결속을 유지하기 위해 본문을 수정하지 않으며 옛 경로 표기를 역사 기록으로 남긴다.
+- 연속 루프로 사용자 개입 횟수가 task 수에 비례하지 않고 승인 게이트 수에만 비례한다. 대신 승인 단계에서 범위와 의존성을 더 정확히 확정해야 하며, 잘못 승인된 설계의 영향 범위도 그만큼 커진다.
+- `blocked`가 루프 종료 신호가 아니라 건너뛰기 신호가 되므로, 차단 사유와 재투입 조건을 handoff에 남기는 일이 필수가 된다.
+
+## 개정 이력
+
+| 날짜 | 변경 | 승인 |
+| --- | --- | --- |
+| 2026-08-03 | 최초 채택. 5레이어 구조, 5단계 파이프라인, handoff 원칙. | user, 2026-08-03 |
+| 2026-08-03 | 결정 4번 연속 루프 엔지니어링 추가. `planned` 큐 소진까지 연속 실행하며, 기존 "task 하나 완료 후 정지·다음 task 자동 선택 금지" 규칙을 대체한다. | user, 2026-08-03 |
+| 2026-08-03 | 루트 `AGENTS.md` 삭제. 고유 규범(작업 인덱스 규칙, 구현 원칙)은 `docs/workflow/WORKFLOW.md`와 `CLAUDE.md`로 이관하고 L1 소속 파일 목록에서 제외한다. | user, 2026-08-03 |
+| 2026-08-03 | 제거된 하네스의 codex 연동 잔재를 현행 규범 문서에서 정리한다. 완료 task의 역사 기록과 Accepted ADR 본문의 codex 언급은 보존한다. | user, 2026-08-03 |
