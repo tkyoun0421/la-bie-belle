@@ -67,7 +67,7 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "pattern": "^(?:PRD:(?:INV-[A-Z]+-[0-9]{2}|AC-[0-9]{2})|DOMAIN:[A-Z][A-Z0-9-]*|ADR:[0-9]{4}|DOCS:(?:SDD|DDD))$"
+        "pattern": "^(?:PRD:(?:(?:INV|ACCT)-[A-Z]+-[0-9]{2}|AC-[0-9]{2})|DOMAIN:[A-Z][A-Z0-9-]*|ADR:[0-9]{4}|DOCS:(?:SDD|DDD))$"
       }
     },
     "verification": {

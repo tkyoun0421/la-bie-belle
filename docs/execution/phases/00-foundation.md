@@ -404,6 +404,10 @@
 - 재편 근거를 [ADR-0013](../../standards/adr/0013-project-layer-structure.md)으로 남기고, [ADR-0012](../../standards/adr/0012-static-operations-dashboard.md)를 보류로 표시한다.
 - P0-T29는 제품 승인을 보존한 채 `design_pending`으로 반환하고 개발 승인과 `radio_ref`를 무효화한다.
 - 새 하네스 코드 구현은 이 task의 범위가 아니며 P0-T31로 넘긴다.
+- 실행 중 사용자 승인(user, 2026-08-03)으로 범위가 확장되어 연속 루프 엔지니어링 규칙 문서화, 루트 `AGENTS.md` 삭제와 고유 규범 이관, 제거된 하네스의 codex 잔재 정리를 포함한다.
+- 연속 루프 엔지니어링 규칙을 문서화한다. task 하나 완료 후 정지하던 기존 규칙을 폐기하고 `planned` 큐가 빌 때까지 의존성 순서로 연속 실행하며, 사용자 통제 지점을 매 task 실행 지시가 아니라 기획·설계 두 승인 게이트로 옮긴다. `docs/workflow/WORKFLOW.md`, [ADR-0013](../../standards/adr/0013-project-layer-structure.md), `CLAUDE.md`에 반영한다.
+- 루트 `AGENTS.md`를 삭제한다. 고유 규범(작업 인덱스 규칙, 구현 원칙)만 `docs/workflow/WORKFLOW.md`와 `CLAUDE.md`로 이관하고, 나머지는 기존 문서와 중복이므로 버린다.
+- 제거된 하네스의 codex 연동 잔재를 현행 규범 문서에서 정리한다. 완료 task 이력과 Accepted ADR 본문의 codex 언급은 역사 기록으로 보존한다.
 
 인수 조건:
 
@@ -412,6 +416,10 @@
 - `index.jsonl`의 모든 줄이 유효한 JSON이고 `doc`·`radio_ref`가 새 경로 패턴을 만족한다.
 - 운영 계약 문서만 읽고 5단계와 두 승인 게이트, handoff 기록 시점을 판단할 수 있다.
 - 이 재편 자체의 handoff가 새 포맷으로 `docs/execution/runs/P0-T30/handoff.md`에 남는다.
+- 연속 루프 규칙이 `docs/workflow/WORKFLOW.md`, ADR-0013, `CLAUDE.md`에서 "`planned` 큐 소진까지 연속 실행하고 `blocked`는 건너뛰기 신호"로 일관되게 설명된다.
+- `AGENTS.md`가 삭제되고 고유 규범이 `docs/workflow/WORKFLOW.md`·`CLAUDE.md`로 이관되며, 현행 규범 문서에 `AGENTS.md` 참조가 남지 않는다.
+- 현행 규범 문서에 codex 잔재가 남지 않고, 완료 task 이력과 Accepted ADR 본문의 codex 언급만 역사 기록으로 보존된다.
+- 위 세 확장 범위는 user, 2026-08-03 승인으로 유효하다.
 
 ### P0-T31. 5단계 하네스 구현(설계→개발→검증→리팩토링 + handoff)
 

@@ -1,6 +1,6 @@
 # ADR-0009: 딥인터뷰 설계와 자율 개발 루프 분리
 
-- 상태: Accepted
+- 상태: Superseded (ADR-0013으로 대체, 2026-08-03)
 - 날짜: 2026-07-24
 - 세 단계 승인으로 부분 대체: [ADR-0011](0011-planning-radio-development-contract.md)
 - 5단계 파이프라인과 연속 루프로 부분 대체: [ADR-0013](0013-project-layer-structure.md)
