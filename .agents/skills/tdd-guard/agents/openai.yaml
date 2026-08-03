@@ -1,4 +1,0 @@
-interface:
-  display_name: "TDD 가드"
-  short_description: "Codex 기능 작업의 RED-GREEN 실행과 증거를 강제합니다"
-  default_prompt: "$tdd-guard를 사용해 기능 작업을 진행하고 구현 전에 RED 증거를 보존하세요."

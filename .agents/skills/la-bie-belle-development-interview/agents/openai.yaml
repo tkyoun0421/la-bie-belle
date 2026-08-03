@@ -1,4 +1,0 @@
-interface:
-  display_name: "라비에벨 RADIO 개발 인터뷰"
-  short_description: "승인된 기획을 RADIO 기술 설계로 인계합니다"
-  default_prompt: "$la-bie-belle-development-interview를 사용해 task의 RADIO 결정을 하나씩 승인하세요."
