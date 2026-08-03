@@ -423,15 +423,31 @@
 
 ### P0-T31. 5단계 하네스 구현(설계→개발→검증→리팩토링 + handoff)
 
-- 기획·설계 승인 검증, 개발, 검증, 리팩토링과 handoff 기록을 수행하는 실행 하네스를 다시 만든다.
-- 승인 게이트, RADIO SHA-256 결속, `design_pending` 실행 차단, 단일 `in_progress` 제약을 코드 경계에서 강제한다.
-- 단계 경계마다 [handoff 계약](../../workflow/HANDOFF.md)의 최소 필드를 기록하고, 중단 후 재개가 가능하게 한다.
+- 경량 게이트형 하네스를 만든다. 연속 루프 진행과 handoff 작성은 AI 세션이 [WORKFLOW](../../workflow/WORKFLOW.md) 규칙대로 수행하고, 하네스는 계약 위반을 검증·차단하는 게이트만 담당한다.
+- 게이트 6종을 구현한다.
+  - index 게이트: `index.jsonl` 전 줄 스키마와 상태 규칙(단일 `in_progress`, 승인 없는 `planned` 금지, 의존성 실재, `spec_refs` 최소 1개)을 검사한다.
+  - RADIO 해시 게이트: `planned` 이상 task의 `radio_sha256`과 실제 RADIO 파일 해시의 일치를 검사한다.
+  - handoff 게이트: 단계 전환 시 [handoff 계약](../../workflow/HANDOFF.md)의 필수 필드를 검사한다.
+  - commit-msg 훅: 커밋 메시지의 task ID 형식을 검사한다.
+  - TDD 증거 게이트: `test_mode`가 `tdd`인 task의 RED→GREEN 기록을 검사한다.
+  - 커밋 범위 게이트: 커밋 파일이 task RADIO에 선언된 변경 허용 경로 안인지 검사한다.
+- 게이트는 커밋 시(git hook)와 단계 전환 시(명령 실행) 발동한다.
+- RADIO 포맷에 기계 판독 가능한 변경 허용 경로 섹션을 추가한다. 형식은 설계 단계에서 확정한다.
 - 하네스 코드·검사·산출물의 위치, commit hook 연결과 `package.json` 실행 명령을 이 task의 설계 단계에서 확정한다.
 - 보류 중인 [ADR-0012](../../standards/adr/0012-static-operations-dashboard.md)와 P0-T29 대시보드 재설계는 이 task 완료 이후에 다시 다룬다.
 
+비목표:
+
+- 대시보드 재생성(P0-T29의 범위), readiness 리포트, 스킬 검증기, 풀 러너 오케스트레이션.
+
 인수 조건:
 
-- 기획 단계에서 범위와 인수 조건을 승인받은 뒤 RADIO를 작성한다. 현재 상태는 `proposed`이며 승인 전에는 실행할 수 없다.
+- 게이트 6종 각각에 위반 입력 차단과 정상 입력 통과를 확인하는 셀프테스트가 있고 단일 명령으로 실행된다.
+- 깨진 `.githooks`가 새 훅으로 교체되어 `--no-verify` 없이 정상 커밋이 된다.
+- 현재 저장소 상태가 게이트 전체를 통과한다.
+- 실행 명령이 `CLAUDE.md`에 문서화된다.
+
+기획 승인: user, 2026-08-03.
 
 ## 종료 조건
 
