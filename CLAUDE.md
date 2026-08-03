@@ -79,7 +79,25 @@ Stages 3–5 do not stop after one task. The loop runs `planned` tasks continuou
 
 ## Commands
 
-The previous harness was removed during the structure reorganization, so `package.json` currently has no scripts. The five-stage execution harness and its commands are rebuilt in **P0-T31**. Until then, stage order and approval gates are enforced by document contract, not tooling.
+The five-stage pipeline is enforced by a lightweight gate harness in `harness/` (P0-T31). It has zero runtime dependencies and runs TypeScript directly via Node 22 type stripping (`node --experimental-strip-types`), so `engines.node` requires Node >= 22.6.
+
+```bash
+pnpm gate:index          # index.jsonl: JSON lines + index.schema.json + state rules
+pnpm gate:radio          # planned/in_progress tasks: radio_sha256 == actual RADIO file hash
+pnpm gate:handoff        # handoff.md exists with the 7 required fields (optional arg: task ID)
+pnpm gate:tdd            # tdd.json of a test_mode=tdd task proves RED before GREEN per command
+pnpm gate:scope          # staged files stay inside the current task RADIO's 변경 허용 경로 globs
+pnpm gate:all            # the five gates above in one run
+pnpm harness:self-test   # node:test suite for all six gates, incl. hook acceptance in a temp repo
+pnpm harness:typecheck   # tsc --noEmit over harness/
+```
+
+- Gate state rules: at most one `in_progress` task, no `planned`/`in_progress` task without both approvals and `radio_ref`, every `depends_on` id exists, every record has at least one `spec_refs` entry.
+- A gate that passes prints nothing and exits 0. Violations go to stderr in Korean with the offending file and a fix hint, exit code 1.
+- The current task is the single `in_progress` task. With none, the TDD and commit-scope gates pass so workflow meta commits stay possible; the index and RADIO hash gates always run.
+- `gate:handoff`, `gate:tdd`, and `gate:scope` target the current `in_progress` task when given no argument.
+- Layout: `harness/gates/` (entry points), `harness/lib/` (judgement logic, pure functions plus thin IO), `harness/self-test/` (fixtures and tests).
+- Commit scope comes from the `## 변경 허용 경로` section of the task's approved RADIO: the first fenced code block, one glob per line, sealed by the approval SHA-256.
 
 No production app build/lint/test commands exist yet — the project is in Phase 0 (foundation/planning).
 
@@ -163,8 +181,11 @@ When documents conflict, do not silently pick one. Stop and reconcile in order:
 
 ## Git Hooks
 
-- **commit-msg:** Validates task ID format (`P[0-9]+-T[0-9]{2}`)
-- **pre-commit:** Currently calls the removed harness guard and will fail. It is rewired in P0-T31; until then commits may need `--no-verify`.
+`core.hooksPath` is `.githooks`.
+
+- **pre-commit:** Runs `harness/gates/pre-commit.ts` — index, RADIO hash, TDD evidence, and commit scope gates. All four run so every violation is reported at once.
+- **commit-msg:** Requires a task ID matching `P[0-9]+-T[0-9]{2}` in the message body; comment lines do not count.
+- Local hooks are still bypassable with `--no-verify`. That is a git limitation, compensated by re-running `pnpm gate:all` in CI (P0-T05).
 
 ## Claude Code Hooks
 

@@ -1,0 +1,94 @@
+{
+  "entries": [
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/index-gate.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T09:22:35.099Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/index-gate.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T09:24:00.806Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/radio-gate.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T09:24:36.054Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/radio-gate.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T09:24:57.146Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/handoff-gate.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T09:25:25.742Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/handoff-gate.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T09:25:53.658Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/handoff-gate.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T09:26:44.679Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/commit-msg-gate.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T09:27:10.195Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/commit-msg-gate.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T09:27:31.290Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/tdd-gate.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T09:28:05.711Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/tdd-gate.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T09:28:40.159Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/scope-gate.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T09:29:16.509Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/scope-gate.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T09:30:16.724Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/hook-acceptance.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T09:31:16.984Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/hook-acceptance.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T09:32:35.268Z",
+      "phase": "green"
+    }
+  ]
+}

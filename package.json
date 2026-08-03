@@ -1,5 +1,22 @@
 {
   "name": "la-bie-belle",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">=22.6"
+  },
+  "scripts": {
+    "gate:index": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/index.ts",
+    "gate:radio": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/radio.ts",
+    "gate:handoff": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/handoff.ts",
+    "gate:tdd": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/tdd.ts",
+    "gate:scope": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/scope.ts",
+    "gate:all": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/all.ts",
+    "harness:self-test": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/run.ts",
+    "harness:typecheck": "tsc --noEmit --project harness/tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "typescript": "^7.0.2"
+  }
 }

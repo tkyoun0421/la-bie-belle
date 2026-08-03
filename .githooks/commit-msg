@@ -1,3 +1,5 @@
 #!/bin/sh
 set -eu
-grep -Eq 'P[0-9]+-T[0-9]{2}' "$1" || { echo 'commit message must contain a task ID (for example P0-T00)' >&2; exit 1; }
+repo_root=$(cd "$(dirname "$0")/.." && pwd)
+exec node --experimental-strip-types --disable-warning=ExperimentalWarning \
+  "$repo_root/harness/gates/commit-msg.ts" "$1"
