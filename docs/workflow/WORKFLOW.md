@@ -3,7 +3,7 @@
 - 상태: Accepted
 - 기준일: 2026-08-03
 - 관련 결정: [ADR-0013](../standards/adr/0013-project-layer-structure.md), [ADR-0011](../standards/adr/0011-planning-radio-development-contract.md), [ADR-0009](../standards/adr/0009-two-track-interview-and-engineering-loop.md)
-- 관련 문서: [handoff 계약](HANDOFF.md)
+- 관련 문서: [handoff 계약](HANDOFF.md), [교차 검증 계약](REVIEW.md)
 
 ## 목적
 
@@ -41,7 +41,7 @@ flowchart LR
 | 1. 기획 | 사용자 + AI 인터뷰 | PRD·Domain·Design 정합화, task 목표·비목표·제품 인수 조건, `spec_refs`, `product_approval` | **기획 승인** → `design_pending` | 승인 직후 |
 | 2. 설계 | 사용자 + AI 인터뷰 | `docs/execution/radio/<task-id>-radio.md`, `development_approval`, `radio_ref`, `test_mode`, `check_ids` | **RADIO 승인** → `planned` | 승인 직후 |
 | 3. 개발 | AI 실행 | 구현, 테스트, 실행 증거 | 없음 (`in_progress`) | 단계 종료 시 |
-| 4. 검증 | AI 실행 | 등록 check 결과, 인수 조건 증거 | 없음 (`in_progress`) | 단계 종료 시 |
+| 4. 검증 | AI 실행 | 등록 check 결과, 교차 검증 결과, 인수 조건 증거 | 없음 (`in_progress`) | 단계 종료 시 |
 | 5. 리팩토링 | AI 실행 | 동작 변경 없는 구조 정리와 재검증 | 없음 → `done` | 단계 종료 시 |
 
 - 승인 게이트는 1단계와 2단계 종료 지점 두 곳뿐이다. AI는 승인 없이 다음 단계로 넘어가지 않는다.
@@ -146,9 +146,11 @@ flowchart LR
 ## 4단계: 검증
 
 1. task에 등록된 `check_ids`와 관련 회귀 검사를 실행한다.
-2. 인수 조건 충족 증거에 관련 spec ID를 남긴다.
-3. 검증 실패가 구현 결함이면 3단계로 돌아간다. 인수 조건이나 기술 계약 자체의 문제이면 해당 인터뷰 단계로 반환한다.
-4. 증거는 `docs/execution/runs/<task-id>/`에 남기고 사후 편집하지 않는다.
+2. [교차 검증 계약](REVIEW.md)에 따라 이 task의 변경분을 메인·Codex·Opus 3자로 교차 검증하고, 확정 발견과 영역 점수를 `docs/execution/reviews/<task-id>-review.json`에 남긴다. 절차, 점수 산정, 중요도 정의와 결과·backlog 형식은 그 문서가 소유한다.
+3. 확정 발견의 중요도별 처리는 [교차 검증 계약의 중요도와 에스컬레이션](REVIEW.md#중요도와-에스컬레이션)이 소유한다. `critical`의 안전 중단은 [연속 루프 규칙](#연속-루프-규칙)의 `blocked` 경로와 같다.
+4. 인수 조건 충족 증거에 관련 spec ID를 남긴다.
+5. 검증 실패가 구현 결함이면 3단계로 돌아간다. 인수 조건이나 기술 계약 자체의 문제이면 해당 인터뷰 단계로 반환한다.
+6. 증거는 `docs/execution/runs/<task-id>/`에 남기고 사후 편집하지 않는다.
 
 ## 5단계: 리팩토링
 

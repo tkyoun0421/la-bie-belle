@@ -1,0 +1,60 @@
+{
+  "task_id": "P0-T99",
+  "at": "2026-08-03T09:45:00Z",
+  "base_commit": "b033b9d826ca2c0dc53b7f04b8ff19623859148a",
+  "participants": ["main", "codex", "opus"],
+  "participants_note": "",
+  "scores": {
+    "code_quality": 82,
+    "tests": 74,
+    "security": 90,
+    "performance": 88,
+    "architecture": 86
+  },
+  "score_rationale": {
+    "code_quality": "중복 로직 1건(medium)만 확정되어 감점 폭이 작다.",
+    "tests": "권한 실패 경로의 회귀 테스트가 없어 high 1건이 확정됐다.",
+    "security": "서버 권한 검사는 있으나 오류 응답에 내부 식별자가 노출되는 critical 1건이 확정됐다.",
+    "performance": "확정 발견 없음. 조회 경로가 단건이고 반복 호출이 없다.",
+    "architecture": "FSD 의존 방향은 지켜졌고 명명 규칙 low 1건만 남았다."
+  },
+  "total": 84,
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "critical",
+      "area": "security",
+      "title": "배정 실패 응답이 내부 사용자 식별자를 그대로 반환한다",
+      "description": "권한이 없는 요청의 오류 응답 본문에 대상 근무자의 내부 식별자가 포함된다. 호출자가 권한 없이 인원 구성을 추론할 수 있어 개인정보 노출 경로가 된다. 안전한 오류 코드만 반환해야 한다.",
+      "file": "src/features/assignment/api/assign-position.ts",
+      "agreed_by": ["main", "codex", "opus"]
+    },
+    {
+      "id": "F-02",
+      "severity": "high",
+      "area": "tests",
+      "title": "매니저가 아닌 사용자의 확정 시도에 대한 회귀 테스트가 없다",
+      "description": "정상 경로 테스트만 있고 권한 실패 경로가 없다. 서버 검사가 제거돼도 테스트가 통과한다. 중요도는 opus가 medium, main과 codex가 high로 판단해 더 높은 쪽을 택했다.",
+      "file": "src/features/schedule/api/confirm-schedule.test.ts",
+      "agreed_by": ["main", "codex"]
+    },
+    {
+      "id": "F-03",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "근무 시간 계산 로직이 두 곳에 복제돼 있다",
+      "description": "예상 급여 계산과 근무표 표시가 같은 시간 계산식을 각자 구현한다. 한쪽만 고치면 두 화면의 값이 어긋난다. entity의 순수 규칙 하나로 합쳐야 한다.",
+      "file": "src/entities/shift/model/duration.ts",
+      "agreed_by": ["main", "opus"]
+    },
+    {
+      "id": "F-04",
+      "severity": "low",
+      "area": "architecture",
+      "title": "widget 파일 이름이 slice 명명 규칙과 다르다",
+      "description": "다른 widget은 kebab-case 파일명을 쓰는데 이 파일만 PascalCase다. 동작에는 영향이 없고 탐색 일관성만 떨어진다.",
+      "file": "src/widgets/shift-board/ui/ShiftBoard.tsx",
+      "agreed_by": ["codex", "opus"]
+    }
+  ]
+}
