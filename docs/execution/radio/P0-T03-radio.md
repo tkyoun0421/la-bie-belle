@@ -1,15 +1,16 @@
 # P0-T03 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-04
-- 개발 설계 승인: user, 2026-08-04 (revision 1)
+- 개발 설계 승인: user, 2026-08-04 (revision 2 재승인)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-04 | 최초 작성. |
+| 2 | 2026-08-04 | 구현 착수 후 드러난 두 가지를 정정해 재승인했다(사용자 결정). ①`check_in_rules`를 구간표에서 **정확 대응표**로 바꿨다. PRD의 초기 규칙이 점 값 두 개뿐이라 구간으로 만들면 PRD에 없는 경계를 설계가 지어내야 했다. `EXCLUDE USING gist`는 `UNIQUE` 하나로 대체된다. ②RLS 기본 거부의 인수 조건 문구를 실제 Postgres 동작에 맞게 고쳤다. Supabase가 `anon`·`authenticated`에 테이블 권한을 기본 부여하므로 읽기는 에러가 아니라 0행이 되고 쓰기만 `42501`로 거부된다. |
 
 - 관련 spec: PRD:INV-STAFF-02, DOMAIN:SCHEDULING, DOMAIN:ATTENDANCE, ADR:0001
 - 적용 깊이: 심화 (DB·권한·참조 데이터)
@@ -38,7 +39,7 @@
 - 운영 경로(`supabase db push`, migration만 적용)로도 포지션 9종과 venue 설정이 들어가며, 같은 migration을 다시 적용해도 행이 중복되지 않는다.
 - `team_lead` 포지션의 `DELETE`와 `is_active = false` UPDATE가 DB에서 실패한다.
 - `venue_settings`가 GPS 반경 100m·위치 정확도 한도 100m를, `check_in_rules`가 PRD의 지각 기준(예정 출근 시각 1분 초과)을 담는다.
-- 세 테이블 모두 RLS가 켜져 있고 정책이 0개라, `anon`과 `authenticated`에서 읽기·쓰기가 모두 실패한다.
+- 세 테이블 모두 RLS가 켜져 있고 정책이 0개라, `anon`과 `authenticated`의 **읽기는 0행이고 쓰기는 `42501`로 거부**된다.
 
 ### 위험 기반 테스트
 
@@ -49,7 +50,7 @@
 | Happy path — 스키마와 seed가 PRD와 일치 | 실제 PostgreSQL | pgTAP: 컬럼·타입·행 값 대조 |
 | 주요 실패 — 시스템 포지션 삭제·비활성화 | 실제 PostgreSQL | pgTAP: `throws_ok`로 DELETE와 UPDATE 각각 |
 | 경계값 — GPS 반경·정확도 한도의 `CHECK` 하한·상한 | 실제 PostgreSQL | pgTAP: 경계 안팎 각 1건 |
-| 권한 — RLS 기본 거부 | 실제 PostgreSQL | pgTAP: `anon`·`authenticated` role로 전환해 SELECT·INSERT 모두 거부 확인 |
+| 권한 — RLS 기본 거부 | 실제 PostgreSQL | pgTAP: `anon`·`authenticated` role로 전환해 SELECT는 0행, INSERT는 `42501` 확인 |
 | 중복 요청 — migration·seed 재실행 | 실제 PostgreSQL | 재실행 후 행 수와 값 불변 확인 |
 | 동시성 | 해당 없음 | 참조 데이터이고 이 task에 동시 변경 경로가 없다 |
 
@@ -141,12 +142,13 @@ ARCHITECTURE가 정의한 "첫 예식 시작 시각과 추천 출근 시각의 �
 | 컬럼 | 타입 | 제약 |
 | --- | --- | --- |
 | `id` | uuid | PK |
-| `first_ceremony_from` | time | `NOT NULL` |
-| `first_ceremony_to` | time | `NOT NULL`, `CHECK (first_ceremony_to > first_ceremony_from)` |
+| `first_ceremony_at` | time | `NOT NULL`, `UNIQUE` |
 | `recommended_check_in` | time | `NOT NULL` |
 | `created_at`·`updated_at` | timestamptz | 공통 규약 |
 
-- 구간이 겹치지 않도록 `EXCLUDE USING gist` 제약을 건다. 겹치면 같은 예식 시각에 추천 출근이 둘이 되어 규칙표가 함수가 아니게 된다.
+- 첫 예식 시각 하나에 추천 출근 시각 하나가 대응하는 정확 대응표다. `UNIQUE`가 표를 함수로 만든다.
+- 구간표로 만들지 않는다(revision 2). PRD 「시간 추천」의 초기 규칙은 첫 예식 `10:00` → 출근 `08:20`, `11:00` → `09:10` 두 점뿐이다. 구간으로 옮기려면 PRD에 없는 경계를 설계가 지어내야 하고, 그것은 승인 범위 밖의 제품 결정이다.
+- 표에 없는 첫 예식 시각(예: `10:30`)을 어떻게 다룰지는 시간 추천 로직이 정한다. P3-T01 범위다.
 - 지각 판정(예정 출근 1분 초과)은 이 표가 아니라 출결 계산이 소유한다. P5-T05 범위이며 여기서는 규칙표 값만 둔다.
 
 ### RLS
