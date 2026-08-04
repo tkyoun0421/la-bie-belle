@@ -10,10 +10,18 @@ import { isPlainObject } from "../lib/json-value.ts";
 export const REVIEWS_DIRECTORY = "docs/execution/reviews";
 export const BACKLOG_PATH = "docs/execution/reviews/backlog.md";
 
-/** Only `<task-id>-review.json` files are real results (REVIEW.md 결과 파일 형식). */
-const REVIEW_FILE_NAME = /^P[0-9]+-T[0-9]{2}-review\.json$/u;
+/**
+ * Only `<task-id>-review.json` and `scan-<YYYY-MM-DD>-review.json` files are real
+ * results (REVIEW.md 결과 파일 형식). The two names carry different rules: a task
+ * result owns `task_id`, a manual full scan owns `scope` instead.
+ */
+const REVIEW_FILE_NAME = /^(P[0-9]+-T[0-9]{2})-review\.json$/u;
+const SCAN_FILE_NAME = /^scan-([0-9]{4}-[0-9]{2}-[0-9]{2})-review\.json$/u;
 const TASK_ID = /^P[0-9]+-T[0-9]{2}$/u;
 const COMMIT_SHA1 = /^[0-9a-f]{40}$/u;
+const SCAN_SCOPE = "full-scan";
+/** Display prefix of a manual full scan result (approved RADIO wording). */
+const SCAN_LABEL = "전체 스캔";
 
 export const SEVERITY_ORDER = ["critical", "high", "medium", "low"] as const;
 export type Severity = (typeof SEVERITY_ORDER)[number];
@@ -31,7 +39,9 @@ export const AREA_LABELS: Readonly<Record<string, string>> = {
 
 /** Backlog accumulates only the two lower severities. */
 const BACKLOG_SEVERITIES: readonly string[] = ["medium", "low"];
-const REVIEWERS: readonly string[] = ["main", "codex", "opus"];
+/** `main` is kept for the results written before it became a coordinator-only role. */
+const REVIEWERS: readonly string[] = ["main", "codex", "opus", "opus-2"];
+const REVIEWER_LIST = REVIEWERS.join("·");
 
 export type ReviewFinding = {
   readonly id: string;
@@ -93,8 +103,30 @@ export type ReviewsSummary = {
   readonly backlog: BacklogSummary;
 };
 
+/**
+ * Which name rule the file matched, plus the identity its name carries: a task
+ * result must repeat that task ID in `task_id`, a scan result is displayed under
+ * the date in its name.
+ */
+type ReviewSource =
+  /** `taskId` is null when the caller has no file name to compare against. */
+  | { readonly kind: "task"; readonly taskId: string | null }
+  | { readonly kind: "scan"; readonly date: string };
+
+/** Identity of a result parsed outside the reviews directory (unit tests). */
+const UNNAMED_TASK_SOURCE: ReviewSource = { kind: "task", taskId: null };
+
+function reviewSourceOf(fileName: string): ReviewSource | null {
+  const task = REVIEW_FILE_NAME.exec(fileName);
+  if (task !== null) {
+    return { kind: "task", taskId: task[1] as string };
+  }
+  const scan = SCAN_FILE_NAME.exec(fileName);
+  return scan === null ? null : { kind: "scan", date: scan[1] as string };
+}
+
 export function isReviewFileName(fileName: string): boolean {
-  return REVIEW_FILE_NAME.test(fileName);
+  return reviewSourceOf(fileName) !== null;
 }
 
 function readString(
@@ -125,7 +157,7 @@ function readReviewerList(value: unknown, label: string, minimum: number, errors
   }
   for (const name of names) {
     if (!REVIEWERS.includes(name)) {
-      errors.push(`${label}의 "${name}"은 main·codex·opus 중 하나가 아닙니다.`);
+      errors.push(`${label}의 "${name}"은 ${REVIEWER_LIST} 중 하나가 아닙니다.`);
     }
   }
   if (names.length < minimum) {
@@ -173,7 +205,14 @@ function readRationale(value: unknown, errors: string[]): Record<string, string>
   return rationale;
 }
 
-function readFinding(raw: unknown, position: number, errors: string[]): ReviewFinding | null {
+function readFinding(
+  raw: unknown,
+  position: number,
+  /** Null when `participants` itself failed to parse: the subset check would only
+   * repeat that one cause once per reviewer of every finding. */
+  participants: readonly string[] | null,
+  errors: string[],
+): ReviewFinding | null {
   const label = `findings[${position}]`;
   if (!isPlainObject(raw)) {
     errors.push(`${label}는 객체여야 합니다.`);
@@ -196,6 +235,13 @@ function readFinding(raw: unknown, position: number, errors: string[]): ReviewFi
     errors.push(`${label}.area는 평가 영역 5개 중 하나여야 합니다.`);
   }
   const agreedBy = readReviewerList(source["agreed_by"], `${label}.agreed_by`, 2, errors);
+  if (participants !== null) {
+    for (const name of agreedBy) {
+      if (!participants.includes(name)) {
+        errors.push(`${label}.agreed_by의 "${name}"은 participants에 없는 리뷰어입니다.`);
+      }
+    }
+  }
 
   if (errors.length !== before) {
     return null;
@@ -211,8 +257,71 @@ function readFinding(raw: unknown, position: number, errors: string[]): ReviewFi
   };
 }
 
+/**
+ * Reads the result identity: a task result owns `task_id`, a manual full scan owns
+ * `scope: "full-scan"` and is displayed under the id taken from its file name.
+ */
+function readIdentity(
+  source: Record<string, unknown>,
+  reviewSource: ReviewSource,
+  errors: string[],
+): string {
+  const scope = source["scope"];
+  if (reviewSource.kind === "scan") {
+    if ("task_id" in source) {
+      errors.push("수동 전체 스캔 결과 파일에는 task_id 대신 scope를 둡니다.");
+    }
+    if (scope !== SCAN_SCOPE) {
+      errors.push(`수동 전체 스캔 결과 파일의 scope는 "${SCAN_SCOPE}"이어야 합니다.`);
+    }
+    return `${SCAN_LABEL} ${reviewSource.date}`;
+  }
+
+  if (scope !== undefined) {
+    errors.push("scope는 수동 전체 스캔 결과 파일에만 쓰는 필드입니다.");
+  }
+  const taskId = readString(source, "task_id", errors);
+  if (taskId.length === 0) {
+    return taskId;
+  }
+  if (!TASK_ID.test(taskId)) {
+    errors.push("task_id는 P[0-9]+-T[0-9]{2} 형식이어야 합니다.");
+    return taskId;
+  }
+  if (reviewSource.taskId !== null && taskId !== reviewSource.taskId) {
+    errors.push(`task_id는 파일 이름의 ${reviewSource.taskId}와 같아야 합니다.`);
+  }
+  return taskId;
+}
+
+/**
+ * Checks `total` against the rule REVIEW.md owns: the rounded arithmetic mean of
+ * the five area scores. Only comparable when all five scores parsed.
+ */
+function checkTotal(total: unknown, scores: Record<string, number>, errors: string[]): void {
+  if (typeof total !== "number" || !Number.isInteger(total) || total < 0 || total > 100) {
+    errors.push("total은 0~100 정수여야 합니다.");
+    return;
+  }
+  const values: number[] = [];
+  for (const area of REVIEW_AREAS) {
+    const score = scores[area];
+    if (score === undefined) {
+      return;
+    }
+    values.push(score);
+  }
+  const expected = Math.round(values.reduce((sum, score) => sum + score, 0) / values.length);
+  if (total !== expected) {
+    errors.push(`total은 5개 영역 점수의 평균을 반올림한 ${expected}이어야 합니다.`);
+  }
+}
+
 /** Parses one result file's text into a review result or a list of format errors. */
-export function parseReviewDocument(text: string): ReviewParse {
+export function parseReviewDocument(
+  text: string,
+  reviewSource: ReviewSource = UNNAMED_TASK_SOURCE,
+): ReviewParse {
   let decoded: unknown;
   try {
     decoded = JSON.parse(text);
@@ -226,10 +335,7 @@ export function parseReviewDocument(text: string): ReviewParse {
   const source = decoded as Record<string, unknown>;
   const errors: string[] = [];
 
-  const taskId = readString(source, "task_id", errors);
-  if (taskId.length > 0 && !TASK_ID.test(taskId)) {
-    errors.push("task_id는 P[0-9]+-T[0-9]{2} 형식이어야 합니다.");
-  }
+  const taskId = readIdentity(source, reviewSource, errors);
   const at = readString(source, "at", errors);
   if (at.length > 0 && Number.isNaN(Date.parse(at))) {
     errors.push("at은 ISO 8601 시각이어야 합니다.");
@@ -239,19 +345,19 @@ export function parseReviewDocument(text: string): ReviewParse {
     errors.push("base_commit은 40자리 SHA-1이어야 합니다.");
   }
 
-  const participants = readReviewerList(source["participants"], "participants", 2, errors);
+  const rawParticipants = source["participants"];
+  const participants = readReviewerList(rawParticipants, "participants", 2, errors);
+  const knownParticipants = Array.isArray(rawParticipants) ? participants : null;
   const participantsNote = source["participants_note"];
   if (typeof participantsNote !== "string") {
-    errors.push("participants_note는 문자열이어야 합니다. 3자 전부면 빈 문자열입니다.");
+    errors.push("participants_note는 문자열이어야 합니다. 리뷰어 2자 전부면 빈 문자열입니다.");
   }
 
   const scores = readScores(source["scores"], errors);
   const scoreRationale = readRationale(source["score_rationale"], errors);
 
   const total = source["total"];
-  if (typeof total !== "number" || !Number.isInteger(total) || total < 0 || total > 100) {
-    errors.push("total은 0~100 정수여야 합니다.");
-  }
+  checkTotal(total, scores, errors);
 
   const rawFindings = source["findings"];
   const findings: ReviewFinding[] = [];
@@ -259,7 +365,7 @@ export function parseReviewDocument(text: string): ReviewParse {
     errors.push("findings는 배열이어야 합니다. 확정 발견이 없으면 빈 배열입니다.");
   } else {
     rawFindings.forEach((raw, position) => {
-      const finding = readFinding(raw, position, errors);
+      const finding = readFinding(raw, position, knownParticipants, errors);
       if (finding !== null) {
         findings.push(finding);
       }
@@ -350,7 +456,8 @@ export function summarizeReviews(
   const invalid: { file: string; errors: readonly string[] }[] = [];
 
   for (const document of documents) {
-    const parsed = parseReviewDocument(document.text);
+    const fileName = document.file.slice(document.file.lastIndexOf("/") + 1);
+    const parsed = parseReviewDocument(document.text, reviewSourceOf(fileName) ?? UNNAMED_TASK_SOURCE);
     if (parsed.ok) {
       results.push({ file: document.file, result: parsed.result });
     } else {

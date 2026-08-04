@@ -109,6 +109,10 @@ pnpm dashboard           # regenerate docs/execution/dashboard/index.html (read-
 - Read-only derivation. It never writes to `index.jsonl`, `runs/`, or `reviews/`, and never approves or transitions anything. Missing or malformed sources render as 누락 / 결과 없음 / 형식 오류 instead of guessed values; generation failure is advisory and never blocks a task.
 - Regenerate after a task reaches `done`/`blocked`/`skipped` or a phase boundary changes.
 
+### Cross review (P0-T33)
+
+`.claude/skills/verify/SKILL.md` owns the cross review procedure run in stage 4; `docs/workflow/REVIEW.md` owns its rules. Reviewers are exactly two — the `reviewer` sub agent (Opus, `.claude/agents/reviewer.md`) and the Codex CLI (`codex exec`), replaced by `opus`/`opus-2` when Codex is unavailable. The main agent is the coordinator only: it never produces an independent review, and a finding is confirmed only when every participating reviewer agrees.
+
 No production app build/lint/test commands exist yet — the project is in Phase 0 (foundation/planning).
 
 ## Tech Stack

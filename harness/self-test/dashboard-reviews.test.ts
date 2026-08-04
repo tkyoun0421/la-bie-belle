@@ -27,6 +27,18 @@ function exampleObject(): Record<string, unknown> {
   return JSON.parse(exampleText()) as Record<string, unknown>;
 }
 
+/** The example fixture reshaped into a manual full scan result. */
+function scanObject(): Record<string, unknown> {
+  const scan = exampleObject();
+  delete scan["task_id"];
+  scan["scope"] = "full-scan";
+  return scan;
+}
+
+function scanDocument(date: string, value: unknown): ReviewDocument {
+  return { file: `${REVIEWS_DIRECTORY}/scan-${date}-review.json`, text: JSON.stringify(value) };
+}
+
 test("reviews — 계약 예시 파일을 정상 파싱한다", () => {
   const parsed = parseReviewDocument(exampleText());
 
@@ -49,7 +61,150 @@ test("reviews — 계약 예시 파일을 정상 파싱한다", () => {
     parsed.result.findings.map((finding) => finding.severity),
     ["critical", "high", "medium", "low"],
   );
-  assert.equal(parsed.result.participants.length, 3);
+  assert.deepEqual(parsed.result.participants, ["opus", "codex"]);
+});
+
+test("reviews — 저장소의 실제 결과 파일은 개정 규칙을 통과한다", () => {
+  const path = "docs/execution/reviews/P0-T29-review.json";
+  const text = readTextFile(resolveRepoRoot(), path);
+  assert.ok(text !== null, `${path}를 읽을 수 있어야 한다`);
+
+  const parsed = parseReviewDocument(text);
+
+  assert.ok(parsed.ok, `기존 결과 파일 파싱 실패: ${parsed.ok ? "" : parsed.errors.join(", ")}`);
+  if (parsed.ok) {
+    assert.equal(parsed.result.taskId, "P0-T29");
+    assert.equal(parsed.result.total, 91);
+  }
+});
+
+test("reviews — total이 5영역 평균의 반올림 정수가 아니면 형식 오류다", () => {
+  const wrongTotal = exampleObject();
+  wrongTotal["total"] = 85;
+  const parsed = parseReviewDocument(JSON.stringify(wrongTotal));
+
+  assert.equal(parsed.ok, false);
+  if (!parsed.ok) {
+    assert.match(parsed.errors.join("\n"), /total/u);
+  }
+});
+
+test("reviews — total이 5영역 평균의 반올림 정수면 통과한다", () => {
+  const rounded = exampleObject();
+  rounded["scores"] = {
+    code_quality: 90,
+    tests: 89,
+    security: 90,
+    performance: 90,
+    architecture: 90,
+  };
+  rounded["total"] = 90;
+
+  assert.equal(parseReviewDocument(JSON.stringify(rounded)).ok, true);
+});
+
+test("reviews — 대체 리뷰어 opus-2를 인정한다", () => {
+  const replaced = exampleObject();
+  replaced["participants"] = ["opus", "opus-2"];
+  replaced["participants_note"] = "Codex CLI를 쓸 수 없어 독립 Opus 서브 에이전트 2자로 진행했다.";
+  const findings = replaced["findings"] as Record<string, unknown>[];
+  replaced["findings"] = findings.map((finding) => ({ ...finding, agreed_by: ["opus", "opus-2"] }));
+
+  const parsed = parseReviewDocument(JSON.stringify(replaced));
+
+  assert.ok(parsed.ok, `opus-2 참여 파싱 실패: ${parsed.ok ? "" : parsed.errors.join(", ")}`);
+});
+
+test("reviews — agreed_by는 participants의 부분집합이어야 한다", () => {
+  const outsider = exampleObject();
+  const findings = outsider["findings"] as Record<string, unknown>[];
+  outsider["findings"] = [{ ...findings[0], agreed_by: ["opus", "opus-2"] }];
+
+  const parsed = parseReviewDocument(JSON.stringify(outsider));
+
+  assert.equal(parsed.ok, false);
+  if (!parsed.ok) {
+    assert.match(parsed.errors.join("\n"), /participants/u);
+  }
+});
+
+test("reviews — 수동 전체 스캔 결과 파일 이름도 실제 결과로 인정한다", () => {
+  assert.equal(isReviewFileName("scan-2026-08-04-review.json"), true);
+  assert.equal(isReviewFileName("scan-2026-8-4-review.json"), false);
+  assert.equal(isReviewFileName("scan-review.json"), false);
+  assert.equal(isReviewFileName("scan-2026-08-04-review.md"), false);
+});
+
+test("reviews — 수동 전체 스캔 결과는 전체 스캔 <날짜>로 표시한다", () => {
+  const summary = summarizeReviews([scanDocument("2026-08-04", scanObject())], null);
+
+  assert.equal(summary.status, "ok");
+  assert.deepEqual(summary.invalid, []);
+  assert.equal(summary.latest?.taskId, "전체 스캔 2026-08-04");
+});
+
+test("reviews — 스캔 결과의 task_id와 잘못된 scope는 형식 오류다", () => {
+  const withTaskId = scanObject();
+  withTaskId["task_id"] = "P0-T99";
+  const taskIdSummary = summarizeReviews([scanDocument("2026-08-04", withTaskId)], null);
+  assert.equal(taskIdSummary.invalid.length, 1);
+
+  const withoutScope = scanObject();
+  delete withoutScope["scope"];
+  assert.equal(summarizeReviews([scanDocument("2026-08-04", withoutScope)], null).invalid.length, 1);
+
+  const wrongScope = scanObject();
+  wrongScope["scope"] = "partial";
+  assert.equal(summarizeReviews([scanDocument("2026-08-04", wrongScope)], null).invalid.length, 1);
+});
+
+test("reviews — task 결과의 task_id는 파일 이름의 task ID와 같아야 한다", () => {
+  const mismatched = exampleObject();
+  mismatched["task_id"] = "P0-T99";
+  const summary = summarizeReviews(
+    [{ file: `${REVIEWS_DIRECTORY}/P0-T33-review.json`, text: JSON.stringify(mismatched) }],
+    null,
+  );
+
+  assert.equal(summary.status, "none", "파일 이름과 다른 task_id는 결과로 인정하지 않는다");
+  assert.equal(summary.invalid.length, 1);
+  assert.match(summary.invalid[0]?.errors.join("\n") ?? "", /파일 이름/u);
+
+  const matched = exampleObject();
+  matched["task_id"] = "P0-T33";
+  assert.equal(
+    summarizeReviews(
+      [{ file: `${REVIEWS_DIRECTORY}/P0-T33-review.json`, text: JSON.stringify(matched) }],
+      null,
+    ).status,
+    "ok",
+  );
+});
+
+test("reviews — participants를 읽지 못하면 발견마다 원인을 오인하는 오류를 내지 않는다", () => {
+  const broken = exampleObject();
+  broken["participants"] = "opus, codex";
+
+  const parsed = parseReviewDocument(JSON.stringify(broken));
+
+  assert.equal(parsed.ok, false);
+  if (!parsed.ok) {
+    const subsetErrors = parsed.errors.filter((error) => error.includes("participants에 없는 리뷰어"));
+    assert.deepEqual(subsetErrors, [], "participants 파싱 실패가 agreed_by 오류로 번졌다");
+    assert.match(parsed.errors.join("\n"), /participants는 배열이어야 합니다/u);
+  }
+});
+
+test("reviews — task 결과 파일의 scope 필드는 형식 오류다", () => {
+  const scoped = exampleObject();
+  scoped["scope"] = "full-scan";
+
+  const parsed = parseReviewDocument(JSON.stringify(scoped));
+
+  assert.equal(parsed.ok, false);
+  if (!parsed.ok) {
+    assert.match(parsed.errors.join("\n"), /scope/u);
+  }
 });
 
 test("reviews — 결과 파일 이름 규칙만 실제 결과로 인정한다", () => {
@@ -206,8 +361,11 @@ test("reviews — 저장소의 실제 backlog는 코드블록 예시를 항목�
 
   const backlog = parseBacklog(markdown);
 
-  assert.equal(backlog.open.length, 0);
-  assert.equal(backlog.resolved.length, 0);
+  assert.deepEqual(backlog.malformed, [], "코드블록 예시가 항목으로 세어졌다");
+  assert.ok(
+    markdown.includes("- [ ] [severity] [task-id]"),
+    "코드블록 예시 줄이 남아 있어야 이 회귀 테스트가 의미를 갖는다",
+  );
 });
 
 test("reviews — backlog 파일이 없으면 빈 목록으로 처리한다", () => {

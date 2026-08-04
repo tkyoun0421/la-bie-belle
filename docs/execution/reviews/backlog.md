@@ -17,4 +17,9 @@
 - [x] [low] [P0-T29] next-action 근거 문구를 실제 판정 기준(index 등록 순서)으로 정정 — harness/dashboard/next-action.ts
 - [x] [low] [P0-T29] HEAD subject·body 조회를 git 프로세스 1회로 병합 — harness/dashboard/collect.ts
 - [ ] [low] [P0-T29] 미결 부채 집계가 마지막 handoff 절의 전체 재기술 가정에 의존 — harness/dashboard/collect.ts
-- [ ] [medium] [P0-T29] reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts
+- [x] [medium] [P0-T33] task 결과 파일명과 task_id 일치 미검증 — harness/dashboard/reviews.ts
+- [x] [medium] [P0-T33] 스캔 결과 표시가 승인 문구 전체 스캔 <날짜>와 다름 — harness/dashboard/reviews.ts
+- [x] [low] [P0-T33] 해소된 F-09 backlog 항목이 미완료로 남음 — docs/execution/reviews/backlog.md
+- [x] [low] [P0-T33] backlog 회귀 테스트의 도달 불가능한 단언 — harness/self-test/dashboard-reviews.test.ts
+- [x] [low] [P0-T33] participants 파싱 실패가 발견마다 연쇄 오탐을 만듦 — harness/dashboard/reviews.ts
+- [x] [medium] [P0-T29] reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts
