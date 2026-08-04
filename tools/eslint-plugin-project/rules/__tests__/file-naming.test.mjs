@@ -45,6 +45,16 @@ describe("file-naming", () => {
         code: CODE,
       },
       {
+        name: "tdd-guard가 안내하는 __tests__ 폴더는 예외다",
+        filename: "src/entities/shift-assignment/model/__tests__/rules.test.ts",
+        code: CODE,
+      },
+      {
+        name: "__tests__ 안에서는 파일 이름 규칙도 묻지 않는다",
+        filename: "src/entities/shift-assignment/model/__tests__/ShiftCard.test.tsx",
+        code: CODE,
+      },
+      {
         name: "shadcn 관리 구역은 예외다",
         filename: "src/shared/ui/button.tsx",
         code: CODE,
@@ -61,6 +71,18 @@ describe("file-naming", () => {
       },
     ],
     invalid: [
+      {
+        name: "예외는 __tests__ 하나이고 다른 밑줄 폴더는 계속 막는다",
+        filename: "src/entities/shift-assignment/model/__mocks__/rules.ts",
+        code: CODE,
+        errors: [{ messageId: "folder" }],
+      },
+      {
+        name: "__tests__와 이름이 비슷한 폴더는 예외가 아니다",
+        filename: "src/entities/shift-assignment/model/__tests__helper/rules.ts",
+        code: CODE,
+        errors: [{ messageId: "folder" }],
+      },
       {
         name: "ui 세그먼트의 kebab-case 컴포넌트를 막는다",
         filename: "src/views/shift-request/ui/shift-card.tsx",

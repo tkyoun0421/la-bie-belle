@@ -17,7 +17,7 @@
     "format:check": "prettier --check src",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "verify": "pnpm format:check && pnpm lint:ci && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e && pnpm gate:all",
+    "verify": "pnpm format:check && pnpm lint:ci && pnpm typecheck && pnpm test && pnpm harness:typecheck && pnpm harness:self-test && pnpm build && pnpm test:e2e && pnpm gate:all",
     "prepare": "git config core.hooksPath .githooks",
     "gate:index": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/index.ts",
     "gate:radio": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/radio.ts",

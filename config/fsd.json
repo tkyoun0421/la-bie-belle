@@ -60,6 +60,6 @@
     "file": "kebab-case",
     "componentFile": "PascalCase",
     "hookFile": "useCamelCase",
-    "exceptions": ["src/app/**", "src/shared/ui/**"]
+    "exceptions": ["src/app/**", "src/shared/ui/**", "**/__tests__/**"]
   }
 }

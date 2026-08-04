@@ -7,11 +7,11 @@ export default defineConfig({
         test: {
           name: "node",
           environment: "node",
-          include: [
-            "tools/**/*.test.mjs",
-            "src/**/model/**/*.test.{ts,tsx}",
-            "src/**/lib/**/*.test.{ts,tsx}",
-            "src/**/api/**/*.test.{ts,tsx}",
+          include: ["tools/**/*.test.mjs", "src/**/*.test.{ts,tsx}"],
+          exclude: [
+            "**/node_modules/**",
+            "src/**/ui/**/*.test.{ts,tsx}",
+            "src/**/hooks/**/*.test.{ts,tsx}",
           ],
         },
       },

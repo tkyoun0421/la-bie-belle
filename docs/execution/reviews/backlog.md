@@ -27,3 +27,19 @@
 - [x] [medium] [P0-T01] views 개명이 상위 ADR-0008·phase 문서와 충돌 — docs/standards/adr/0008-fsd-server-first-development-guards.md
 - [x] [low] [P0-T01] 서버 경계 파일의 이름과 내용이 어긋남 — src/shared/config/server-only.config.ts
 - [x] [medium] [P0-T29] reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts
+- [ ] [medium] [P0-T02] tdd-guard.sh에 자동 테스트가 하나도 없음 — .claude/hooks/tdd-guard.sh
+- [ ] [medium] [P0-T02] tests/와 루트 테스트 설정 파일이 타입·린트·포맷 대상 밖 — tsconfig.json
+- [ ] [medium] [P0-T02] Playwright reuseExistingServer가 항상 true — playwright.config.ts
+- [ ] [medium] [P0-T02] tdd-guard의 테스트 탐색이 이름만 맞으면 통과시킴 — .claude/hooks/tdd-guard.sh
+- [ ] [medium] [P0-T02] tdd-guard가 세그먼트 없는 파일의 파일명을 세그먼트로 오독 — .claude/hooks/tdd-guard.sh
+- [ ] [medium] [P0-T02] 동적 import()가 어떤 구조 규칙의 검사도 받지 않음 — tools/eslint-plugin-project/rules/layer-direction.mjs
+- [ ] [medium] [P0-T02] tdd-guard.sh에 설명 주석이 남아 자기 인수 조건을 충족하지 못함 — .claude/hooks/tdd-guard.sh
+- [ ] [medium] [P0-T02] pnpm verify가 서버·클라이언트 경계 검사(check:app-build)를 돌리지 않음 — package.json
+- [ ] [medium] [P0-T02] no-console이 warn이라 어떤 명령도 실패시키지 않음 — eslint.config.mjs
+- [ ] [medium] [P0-T02] 승인된 RADIO가 문서 안에서 자기 모순이고 기획 문서도 드리프트 — docs/execution/radio/P0-T02-radio.md
+- [x] [medium] [P0-T02] handoff가 승인 revision과 봉인 해시를 틀리게 확정 사실로 적음 — docs/execution/runs/P0-T02/handoff.md
+- [ ] [medium] [P0-T02] DEVELOPMENT.md가 제거된 옛 tdd-guard 면제 목록을 그대로 서술 — docs/standards/DEVELOPMENT.md
+- [ ] [medium] [P0-T02] DEV-NAME-03이 MUST로 신설됐지만 기계 강제가 없음 — tools/eslint-plugin-project/rules/file-naming.mjs
+- [ ] [medium] [P0-T02] 슬라이스 없는 계층 지식이 계약이 아니라 코드 두 곳에 하드코딩 — .claude/hooks/tdd-guard.sh
+- [ ] [medium] [P0-T02] 계약 파일을 파일마다 규칙마다 다시 읽고 다시 파싱 — tools/eslint-plugin-project/lib/contract.mjs
+- [ ] [low] [P0-T02] pnpm verify가 production 빌드를 두 번 직렬로 돌림 — package.json

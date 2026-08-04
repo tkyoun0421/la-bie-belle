@@ -1,9 +1,9 @@
 # P0-T02 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 5
+- revision: 7
 - 기획 승인: user, 2026-08-04
-- 개발 설계 승인: user, 2026-08-04 (revision 5 재승인)
+- 개발 설계 승인: user, 2026-08-04 (revision 7 재승인)
 
 ## 개정 이력
 
@@ -14,6 +14,8 @@
 | 3        | 2026-08-04 | 훅 파일명을 `use-kebab-case`에서 **`useCamelCase`**로 바꿨다(사용자 결정). 파일 이름과 export 이름이 일치해 컴포넌트 규칙(`ShiftCard.tsx` → `ShiftCard`)과 같은 형태가 된다. |
 | 4 | 2026-08-04 | 구현 중 드러난 네 가지를 반영해 재승인했다. ①`runtimeExports`를 불리언에서 `true`/`false`/`"constants"` 세 값으로 확장 ②`appLayer`를 계약에 추가해 `route.ts`가 테스트를 요구하도록 정정 ③Prettier·ESLint 적용 범위를 `src/`로 한정(사용자 결정) ④pre-commit이 의존성 없는 환경에서 프로젝트 검사를 건너뛰되 그 사실을 알리도록 변경. |
 | 5 | 2026-08-04 | 변경 허용 경로에 `docs/execution/phases/00-foundation.md`를 추가했다. 훅 파일명 결정(revision 3)을 기획 문서의 네이밍 표에 반영해야 하는데 그 경로가 봉인 범위 밖이었다. |
+| 6 | 2026-08-04 | 검증 단계에서 두 도구의 판정이 어긋나는 것을 발견해 `naming.exceptions`에 **`**/__tests__/**`**를 추가했다(사용자 결정). `tdd-guard.sh`가 테스트 경로로 안내하는 `__tests__` 폴더를 `file-naming`이 kebab-case 위반으로 막고 있었다. 아래 [테스트 폴더 예외](#테스트-폴더-예외-revision-6) 참고. |
+| 7 | 2026-08-04 | 교차 검증의 확정 `high` 3건을 해소했다(사용자 결정). ①`vitest.config.ts`의 수집 범위를 `tdd-guard.sh`가 인정하는 경로와 맞췄다 ②`pnpm verify`에 `harness:typecheck`와 `harness:self-test`를 넣었다 ③pre-commit 인수 조건 문구를 실제 거동에 맞게 정정했다. 아래 [교차 검증 high 해소](#교차-검증-high-해소-revision-7) 참고. |
 
 - 관련 spec: ADR:0001, ADR:0008, ADR:0013, ADR:0014, DOCS:SDD
 - 적용 깊이: 일반
@@ -176,6 +178,35 @@ Prettier와 ESLint는 **`src/` 안의 애플리케이션 코드만** 대상으�
 - 첫 구현은 저장소 전체를 대상으로 했는데, 포맷이 문서 21개와 봉인된 RADIO까지 건드려 `gate:radio`가 해시 불일치를 잡아냈다. 승인 해시에 결속된 문서를 도구가 수정하면 안 된다.
 - 받아들이는 비용: `harness/`의 주석 재발을 자동으로 막지 못한다. 이번에 정리한 128건의 상태는 유지되지만 앞으로는 사람과 교차 검증이 지킨다. `DEV-CODE-07` 자체는 여전히 저장소 전체에 적용되는 `MUST`이며 달라진 것은 기계 강제 범위뿐이다.
 
+### 테스트 폴더 예외 (revision 6)
+
+`naming.exceptions`에 `**/__tests__/**`를 추가한다(사용자 결정, 2026-08-04).
+
+- 검증 단계에서 두 도구의 판정이 갈리는 것이 드러났다. `tdd-guard.sh`는 테스트가 없을 때 `<dir>/__tests__/<stem>.test.ts`를 예상 경로로 안내하고 그 위치의 테스트를 유효한 것으로 인정하는데, `file-naming`은 같은 폴더를 kebab-case 위반으로 막았다. 훅이 시킨 대로 만들면 커밋이 거부되는 상태였고, 이 task의 핵심 주장인 "두 도구가 같은 정본을 읽어 판정이 갈리지 않는다"가 실제로는 성립하지 않았다.
+- 계약 파일 한 줄로 해소한다. 규칙 코드에 테스트 폴더 지식을 넣지 않으므로 정본은 `config/fsd.json` 하나로 남는다.
+- 예외는 `__tests__` 하나뿐이다. `__mocks__`와 `__tests__helper` 같은 유사 폴더는 계속 막히며 반례 테스트로 고정했다.
+- 받아들이는 비용: `__tests__` 안에서는 파일 이름 규칙도 묻지 않는다. 테스트 파일명은 대상 파일이 결정하므로 독립된 판단 재료가 아니다.
+
+### 교차 검증 high 해소 (revision 7)
+
+교차 검증에서 리뷰어 2자가 모두 인정한 `high` 3건을 해소한다(사용자 결정, 2026-08-04). 근거는 `docs/execution/reviews/P0-T02-review.json`의 F-01·F-02·F-03이다.
+
+**F-02 — vitest 수집 범위를 훅과 맞춘다.**
+
+`tdd-guard.sh`는 형제 테스트, `<dir>/__tests__/`, `<parent>/__tests__/`, `src/__tests__/`를 유효한 테스트로 인정하는데 `vitest.config.ts`는 `model`·`lib`·`api`·`ui`·`hooks` 세그먼트 안만 수집했다. revision 4가 일부러 테스트를 요구하게 만든 `src/app/**/route.ts`와 `src/proxy.ts`의 테스트가 한 번도 실행되지 않는 상태였다. 훅이 통과시키고 러너가 돌리지 않으면 "테스트가 있다"가 "테스트가 돈다"를 뜻하지 않는다.
+
+- `node` 프로젝트는 `src/**/*.test.{ts,tsx}` 전체를 수집하고 `ui`·`hooks` 세그먼트만 제외한다. `dom` 프로젝트가 그 둘을 jsdom 환경으로 가져간다. 두 프로젝트의 합집합이 `src/` 전체이고 교집합은 비어 있다.
+- 루트 `tests/` 트리는 수집 대상에 넣지 않는다. Playwright 스펙이 있는 곳이라 vitest가 가져가면 안 된다. 훅이 그 트리를 단위 테스트로 인정하는 문제는 별도 발견(F-07)으로 backlog에 있다.
+- 받아들이는 비용: 슬라이스 바로 아래 `__tests__/`에 둔 컴포넌트 테스트는 node 환경으로 간다. 컴포넌트 테스트의 자연스러운 위치는 `ui/` 안이며, 수집되지 않던 이전 상태보다는 낫다.
+
+**F-03 — harness 회귀 안전망을 단일 검증 명령에 넣는다.**
+
+이 task는 `harness/` 32개 파일에서 주석 128건을 제거하고 이름을 바꿨다. 그 안전망으로 선언한 `harness:self-test`(131개)와 `harness:typecheck`가 `pnpm verify`에도 pre-commit에도 없어, 가장 크게 손댄 코드의 회귀 보호가 사람이 별도 명령을 기억할 때만 작동했다. `verify`의 `pnpm test` 뒤에 둘을 넣는다. `tsconfig.json`이 `harness`를 exclude하고 vitest가 `harness/`를 수집하지 않는 구조는 그대로 두며, harness는 자체 tsconfig와 self-test 러너가 담당한다.
+
+**F-01 — pre-commit 인수 조건 문구를 실제 거동에 맞게 정정한다.**
+
+인수 조건은 "포맷·린트·타입·테스트 실패 커밋의 pre-commit 거부"였으나 `lint-staged`가 `prettier --write`라서 포맷 위반은 거부가 아니라 자동 수정 후 통과한다. 설계는 바꾸지 않는다 — `lint-staged`에 `prettier --write`와 `eslint --fix`를 거는 것은 이 RADIO가 승인받은 결정이고, `project/*` 규칙 7종은 `meta.fixable`을 정의하지 않아 구조 위반은 실제로 커밋을 막으며, 타입과 테스트도 그 뒤에서 거부한다. 거부형 포맷 검사는 `verify`의 `format:check`가 담당한다. 실제와 다른 쪽은 문구이므로 `index.jsonl`의 인수 조건을 고친다.
+
 ### harness 주석 정리
 
 `DEV-CODE-07`은 `MUST`라 RADIO에서 면제할 수 없다. 규칙이 P0-T01에서 신설될 때 기존 코드를 정리하지 않아 `harness/`에 JSDoc 141개와 줄 주석 9개가 남았고, 이는 방치된 규칙 위반이다. 강제 범위에 예외를 두면 규칙이 복잡해지고 예외가 굳는다.
@@ -241,7 +272,7 @@ pre-commit에서 단위 테스트 전체를 돌리기로 했으므로 도메인 
     "file": "kebab-case",
     "componentFile": "PascalCase",
     "hookFile": "useCamelCase",
-    "exceptions": ["src/app/**", "src/shared/ui/**"],
+    "exceptions": ["src/app/**", "src/shared/ui/**", "**/__tests__/**"],
   },
 }
 ```
