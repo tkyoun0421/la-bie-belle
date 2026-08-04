@@ -132,7 +132,9 @@ erDiagram
 - `profiles`: 프로필, 계정 상태, 인정 활동 시각, 상태 변경 시각, 이름, 휴대폰, 성별, 생년월일, 시급.
 - `user_roles`: `worker`, `admin`, `super_admin`. 관리자는 worker 권한을 포함한다.
 - `departed_profile_vault`: 탈퇴 후 3년간 분리·암호화한 복구 정보.
-- `positions`: 이름, 기본 필요 인원, 성별 조건, 기본 포지션 여부.
+- `positions`: 표시명, 기본 필요 인원, 성별 조건, 기본 포지션 여부, 활성 여부, 시스템 식별 code. 관리자 CRUD 대상이며 고정 목록이 아니다.
+  - 권한 파생과 RLS는 표시명이 아니라 code로 판정한다. code가 있는 시스템 포지션(현재 `team_lead`)은 삭제도 비활성화도 할 수 없다.
+  - **`positions`를 참조하는 모든 FK는 `ON DELETE RESTRICT`를 쓴다.** 배정이나 가능 포지션에 쓰인 포지션이 삭제되지 않게 하는 규칙의 정본이 FK 하나로 남게 하기 위한 규약이며, 참조 테이블을 새로 만드는 task가 함께 지킨다.
 - `worker_position_eligibilities`: 개인별 정식 수행 가능 포지션.
 
 ### 장소와 설정
