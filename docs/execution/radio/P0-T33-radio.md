@@ -1,9 +1,9 @@
 # P0-T33 RADIO 개발 설계
 
-- 상태: Draft
+- 상태: Approved
 - revision: 1
 - 기획 승인: user, 2026-08-03
-- 개발 설계 승인: (승인 대기)
+- 개발 설계 승인: user, 2026-08-04
 - 관련 spec: DOCS:SDD, ADR:0011, ADR:0013
 - 적용 깊이: 일반
 - test mode: tdd
@@ -31,15 +31,17 @@
 - `.claude/skills/verify/SKILL.md` — 절차의 정본. 대상 확정(기준 커밋·변경 파일·spec/RADIO 링크) → 리뷰어 2자 병렬 호출 → 결과 병합 → 확정·중요도 판독 → 기록 → 에스컬레이션 순서를 지시문으로 소유한다. REVIEW.md를 참조하고 절차를 중복 기술하지 않는다.
 - `.claude/agents/reviewer.md` — Opus 리뷰어 서브 에이전트 정의. 입력은 대상 범위와 평가 영역 5종뿐이며(조정자의 의견 전달 금지), 출력은 아래 Data model의 리뷰어 결과 JSON이다.
 - Codex 리뷰어 — 플러그인 명령이 아니라 Codex CLI를 비대화식으로 직접 호출한다(모델 미지정). 같은 리뷰 지시문을 전달하고 같은 형식의 결과를 회수한다. 정확한 호출 플래그는 실행 직전 구체화가 정한다.
+- Codex CLI 사용 불가 시(사용자 확정, 2026-08-04): 독립 Opus 서브 에이전트 2자로 대체해 검증을 중단하지 않는다. 두 번째 Opus 리뷰어의 식별자는 `opus-2`이고, `participants_note`에 대체 사유를 남긴다.
 - 메인 에이전트(조정자) — 호출·병합·확정(리뷰어 2자 모두 인정한 발견만)·중요도 판독·최종 영역 점수 판정·기록. 독립 리뷰 산출 금지를 SKILL.md와 REVIEW.md 양쪽에 명시한다.
 
 ## Data model
 
 - 리뷰어 결과 JSON(서브 에이전트·Codex 공통): `{ "findings": [{ "title", "severity_candidate", "area", "description", "file" }], "scores": {5영역}, "score_rationale": {5영역} }`.
-- 결과 파일(`<task-id>-review.json`)은 기존 형식을 유지하되 규칙을 개정한다.
-  - `participants`: 실제 리뷰를 산출한 리뷰어만(`opus`, `codex`). 조정자 `main`은 포함하지 않고, 조정 사실은 REVIEW.md가 계약으로 소유한다. (대안: `main` 포함 유지 — 승인 시 확정)
-  - `agreed_by`: 리뷰어 2자 전원. 최소 인원 규칙은 "참여 리뷰어 전원"으로 개정한다.
+- 결과 파일(`<task-id>-review.json`)은 기존 형식을 유지하되 규칙을 개정한다(사용자 확정, 2026-08-04).
+  - `participants`: 실제 리뷰를 산출한 리뷰어만(`opus`, `codex`, 대체 진행 시 `opus`·`opus-2`). 조정자 `main`은 포함하지 않고, 조정 사실은 REVIEW.md가 계약으로 소유한다. 파서의 리뷰어 식별자 목록에 `opus-2`를 추가하되 `main`은 기존 결과 파일(P0-T29 등) 호환을 위해 유지한다.
+  - `agreed_by`: 리뷰어 2자 전원. 최소 2명 규칙에 더해 `agreed_by ⊆ participants` 검증을 추가한다.
   - `total`: 5영역 평균 반올림 정수 — 파서가 실제로 검증한다(F-09 해소).
+- 수동 전체 스캔 결과 파일(사용자 확정, 2026-08-04): 이름 `scan-<YYYY-MM-DD>-review.json`. 스키마는 task 결과와 같되 `task_id` 대신 `scope: "full-scan"` 필수. 파서가 인정 목록에 추가해 대시보드에 "전체 스캔 <날짜>"로 표시한다. 최신 결과 선택은 기존대로 `at` 기준이다.
 - `example-review.json`을 개정 규칙에 맞게 갱신하고, 위반 fixture 케이스를 `dashboard-reviews.test.ts`에 추가한다.
 
 ## Interface
@@ -70,6 +72,4 @@ CLAUDE.md
 
 ## 미결 사항
 
-- Codex CLI 사용 불가 시 리뷰어 2자 확보 대체 규칙 — 제안: 독립 Opus 서브 에이전트 2자로 대체하고 `participants_note`에 사유를 남긴다 — 결정 주체: 사용자(승인 시 확정).
-- `participants`에 조정자 `main` 포함 여부 — 제안: 미포함(위 Data model) — 결정 주체: 사용자(승인 시 확정).
-- 수동 전체 스캔 결과 파일명 규칙(P0-T32 잔여) — 제안: `scan-<YYYY-MM-DD>-review.json`을 파서 인정 목록에 추가 — 결정 주체: 사용자(승인 시 확정).
+- 없음. 승인 전 미결 3건(Codex 불가 시 Opus 2자 대체, `participants`에 `main` 미포함, 수동 스캔 파일명 `scan-<YYYY-MM-DD>-review.json`)은 2026-08-04 사용자 결정으로 본문에 확정 반영했다.

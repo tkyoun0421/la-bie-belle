@@ -29,3 +29,28 @@
 - `docs/execution/phases/00-foundation.md` (P0-T33 절)
 - `docs/execution/phases/index.jsonl` (P0-T33 = `design_pending`)
 - `docs/execution/radio/P0-T33-radio.md` (Draft)
+
+## 2026-08-04 · 설계(RADIO) 종료
+
+- 작업 식별자: P0-T33
+- 현재 단계: 설계 종료 → 다음 개발
+- 기준 시각: 2026-08-04
+
+### 확정된 사실
+
+- 사용자가 RADIO revision 1을 승인했다(user, 2026-08-04). SHA-256 `d52d147989745a91e521fc55feebbb111b87d867a07b4aa0b1c8a7bfb77e9e49`을 `index.jsonl`에 기록하고 P0-T33을 `planned`로 전환했다.
+- 미결 3건이 사용자 결정으로 확정됐다: ①Codex CLI 불가 시 독립 Opus 서브 에이전트 2자 대체(두 번째 식별자 `opus-2`, `participants_note`에 사유) ②`participants`는 리뷰어만(조정자 `main` 미포함, 기존 파일 호환 위해 파서 식별자 목록의 `main`은 유지) ③수동 전체 스캔 결과 파일명 `scan-<YYYY-MM-DD>-review.json`(`task_id` 대신 `scope: "full-scan"`).
+- 실행 방식 지시(user, 2026-08-04): 개발 단계 구현은 Opus 모델 서브 에이전트에 위임한다. 검증·기록·커밋은 메인이 담당한다.
+
+### 미결 사항
+
+- 없음
+
+### 다음 행동
+
+1. P0-T33을 `in_progress`로 두고 개발 단계를 시작한다(구현은 Opus 서브 에이전트 위임, TDD 증거는 `docs/execution/runs/P0-T33/tdd.json`).
+
+### 증거·산출물 경로
+
+- `docs/execution/radio/P0-T33-radio.md` (Approved, revision 1)
+- `docs/execution/phases/index.jsonl` (P0-T33 = `planned`)
