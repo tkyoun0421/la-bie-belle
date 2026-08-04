@@ -33,7 +33,7 @@
 ### P0-T01. Next.js 모바일 앱 프로젝트 생성
 
 - pnpm 기반 Next.js App Router와 TypeScript를 생성한다.
-- `src/` 아래에 FSD 6계층(`app`·`pages`·`widgets`·`features`·`entities`·`shared`) 디렉터리 골격과 절대 경로 alias를 만든다. 계층 정의의 정본은 [개발 컨벤션](../../standards/DEVELOPMENT.md)이다.
+- `src/` 아래 FSD 계층(`app`·`views`·`widgets`·`features`·`entities`·`shared`)의 절대 경로 alias를 만들고, 디렉터리는 처음 쓰이는 계층부터 만든다. 계층 이름의 정본은 [ADR-0014](../../standards/adr/0014-fsd-view-layer-naming.md), 계층 정의의 정본은 [개발 컨벤션](../../standards/DEVELOPMENT.md)이다. P0-T01 종료 시점의 실제 디렉터리는 `app`·`views`·`shared` 셋이다.
 - 서버·클라이언트 경계 규약을 세운다. 서버 모듈의 `import "server-only"` 선언 지점을 정하고 서버 전용 값이 클라이언트 번들에 들어가지 않음을 확인한다.
 - 모바일 viewport, 한국어 metadata와 문서 언어를 설정한다.
 - Tailwind CSS를 설치하고 설정 파일 골격만 만든다. 토큰 값은 P0-T34가 채운다.

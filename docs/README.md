@@ -16,6 +16,8 @@
 | --- | --- | --- | --- |
 | [운영 계약](workflow/WORKFLOW.md) | L1 | 기획·설계·개발·검증·리팩토링 5단계, 승인 게이트, 반환 규칙 | 제품 요구사항 원문 |
 | [handoff 계약](workflow/HANDOFF.md) | L1 | 단계 경계 인계 기록의 공통 포맷과 위치 | 승인 기록 정본 |
+| [교차 검증 계약](workflow/REVIEW.md) | L1 | 리뷰어 구성, 점수 산정, 중요도 정의, 결과·backlog 형식 | 실행 절차(정본은 `verify` 스킬) |
+| [명령과 도구 연결](workflow/TOOLING.md) | L1 | 앱·하네스·대시보드 명령, 게이트 판정 규칙, git·Claude Code 훅 | 각 명령이 강제하는 규칙의 근거 |
 | [PRD](product/PRD.md) | L2 | 사용자, 범위, 요구사항, 비즈니스 규칙 | 기술 구현 세부사항 |
 | [Domain](product/DOMAIN.md) | L2 | 공통 언어, 논리적 도메인 경계, aggregate와 domain event | 배포 구조와 서비스 분리 |
 | [Design](product/DESIGN.md) | L2 | 시각 기반, 상호작용 패턴, 컴포넌트, 역할별 화면 흐름 | 제품 동작과 서버 권한 규칙 |

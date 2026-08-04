@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="base-commit" content="149ee22dc51dcf84ab7193a569fb5dcd5749b70c">
+<meta name="base-commit" content="44d993ff0544d81dd86b80023e5557acbeb8e620">
 <title>라비에벨 운영 의사결정 대시보드</title>
 <style>:root{color-scheme:light;--ink:#0a0b0d;--muted:#5b616e;--line:#dee1e6;--surface:#f7f7f7;--action:#0052ff;--action-bg:#eef4ff;--success:#087a4b;--success-bg:#e8f8f1;--warning:#765500;--warning-bg:#fff7d6;--danger:#b01825;--danger-bg:#fff0f1}
 *{box-sizing:border-box}
@@ -60,9 +60,9 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <p class="eyebrow">라비에벨 운영 대시보드 · 읽기 전용 파생물</p>
 <h1>운영 의사결정 대시보드</h1>
 <dl class="meta">
-<div><dt>기준 시각</dt><dd class="mono">2026-08-04T07:07:26.840Z</dd></div>
-<div><dt>기준 커밋</dt><dd><span class="mono">149ee22dc51dcf84ab7193a569fb5dcd5749b70c</span><span class="sub">docs(P0-T01): approve project bootstrap plan and record commit-hook requirement</span></dd></div>
-<div><dt>작업 트리</dt><dd>커밋되지 않은 변경 15건 — 표시 내용에 기준 커밋 이후의 작업 트리 상태가 섞여 있다.</dd></div>
+<div><dt>기준 시각</dt><dd class="mono">2026-08-04T07:24:59.107Z</dd></div>
+<div><dt>기준 커밋</dt><dd><span class="mono">44d993ff0544d81dd86b80023e5557acbeb8e620</span><span class="sub">feat(P0-T01): bootstrap the Next.js app skeleton</span></dd></div>
+<div><dt>작업 트리</dt><dd>커밋되지 않은 변경 9건 — 표시 내용에 기준 커밋 이후의 작업 트리 상태가 섞여 있다.</dd></div>
 </dl>
 
 </header>
@@ -112,7 +112,7 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <span class="meter"><span class="meter-fill" style="width:73%"></span></span>
 <ul class="rubric-items"><li>
 <p class="row"><span>재생성 준수</span><span class="score mono">7/7</span></p>
-<p class="evidence">기존 산출물 기준 커밋 21538e1 이후 재생성이 필요한 상태 변경 커밋이 없다.</p>
+<p class="evidence">기존 산출물 기준 커밋 149ee22 이후 재생성이 필요한 상태 변경 커밋이 없다.</p>
 </li><li>
 <p class="row"><span>보류 ADR 0건</span><span class="score mono">4/4</span></p>
 <p class="evidence">보류 상태 ADR 0건.</p>
@@ -215,11 +215,11 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 </li></ul>
 </div>
 <h3>미완료 backlog</h3>
-<ul><li>[low] P0-T29 미결 부채 집계가 마지막 handoff 절의 전체 재기술 가정에 의존 — harness/dashboard/collect.ts</li><li>[medium] P0-T01 views 개명이 상위 ADR-0008·phase 문서와 충돌 — docs/standards/adr/0008-fsd-server-first-development-guards.md</li></ul>
+<ul><li>[low] P0-T29 미결 부채 집계가 마지막 handoff 절의 전체 재기술 가정에 의존 — harness/dashboard/collect.ts</li></ul>
 
 <details>
-<summary>해결된 backlog 15건</summary>
-<ul><li>[medium] P0-T29 계약 준수 40점 분모를 저장소 게이트 4종으로 한정(상수 점수 제거) — harness/dashboard/collect.ts</li><li>[medium] P0-T29 게이트 실행 예외를 격리해 생성 중단 대신 실행 실패로 표시 — harness/dashboard/collect.ts</li><li>[medium] P0-T29 collect·main 생성 명령 수준 테스트 신설 — harness/self-test/dashboard-collect.test.ts</li><li>[medium] P0-T29 수정 반영 후 tdd.json RED→GREEN 재기록 — docs/execution/runs/P0-T29/tdd.json</li><li>[low] P0-T29 next-action 근거 문구를 실제 판정 기준(index 등록 순서)으로 정정 — harness/dashboard/next-action.ts</li><li>[low] P0-T29 HEAD subject·body 조회를 git 프로세스 1회로 병합 — harness/dashboard/collect.ts</li><li>[medium] P0-T33 task 결과 파일명과 task_id 일치 미검증 — harness/dashboard/reviews.ts</li><li>[medium] P0-T33 스캔 결과 표시가 승인 문구 전체 스캔 &lt;날짜&gt;와 다름 — harness/dashboard/reviews.ts</li><li>[low] P0-T33 해소된 F-09 backlog 항목이 미완료로 남음 — docs/execution/reviews/backlog.md</li><li>[low] P0-T33 backlog 회귀 테스트의 도달 불가능한 단언 — harness/self-test/dashboard-reviews.test.ts</li><li>[low] P0-T33 participants 파싱 실패가 발견마다 연쇄 오탐을 만듦 — harness/dashboard/reviews.ts</li><li>[medium] P0-T01 app-build 검증이 서버 경계를 판별하지 못함 — docs/execution/runs/P0-T01/handoff.md</li><li>[medium] P0-T01 필요한 설정 파일이 봉인된 변경 허용 경로 밖 — postcss.config.mjs</li><li>[low] P0-T01 서버 경계 파일의 이름과 내용이 어긋남 — src/shared/config/server-only.config.ts</li><li>[medium] P0-T29 reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts</li></ul>
+<summary>해결된 backlog 16건</summary>
+<ul><li>[medium] P0-T29 계약 준수 40점 분모를 저장소 게이트 4종으로 한정(상수 점수 제거) — harness/dashboard/collect.ts</li><li>[medium] P0-T29 게이트 실행 예외를 격리해 생성 중단 대신 실행 실패로 표시 — harness/dashboard/collect.ts</li><li>[medium] P0-T29 collect·main 생성 명령 수준 테스트 신설 — harness/self-test/dashboard-collect.test.ts</li><li>[medium] P0-T29 수정 반영 후 tdd.json RED→GREEN 재기록 — docs/execution/runs/P0-T29/tdd.json</li><li>[low] P0-T29 next-action 근거 문구를 실제 판정 기준(index 등록 순서)으로 정정 — harness/dashboard/next-action.ts</li><li>[low] P0-T29 HEAD subject·body 조회를 git 프로세스 1회로 병합 — harness/dashboard/collect.ts</li><li>[medium] P0-T33 task 결과 파일명과 task_id 일치 미검증 — harness/dashboard/reviews.ts</li><li>[medium] P0-T33 스캔 결과 표시가 승인 문구 전체 스캔 &lt;날짜&gt;와 다름 — harness/dashboard/reviews.ts</li><li>[low] P0-T33 해소된 F-09 backlog 항목이 미완료로 남음 — docs/execution/reviews/backlog.md</li><li>[low] P0-T33 backlog 회귀 테스트의 도달 불가능한 단언 — harness/self-test/dashboard-reviews.test.ts</li><li>[low] P0-T33 participants 파싱 실패가 발견마다 연쇄 오탐을 만듦 — harness/dashboard/reviews.ts</li><li>[medium] P0-T01 app-build 검증이 서버 경계를 판별하지 못함 — docs/execution/runs/P0-T01/handoff.md</li><li>[medium] P0-T01 필요한 설정 파일이 봉인된 변경 허용 경로 밖 — postcss.config.mjs</li><li>[medium] P0-T01 views 개명이 상위 ADR-0008·phase 문서와 충돌 — docs/standards/adr/0008-fsd-server-first-development-guards.md</li><li>[low] P0-T01 서버 경계 파일의 이름과 내용이 어긋남 — src/shared/config/server-only.config.ts</li><li>[medium] P0-T29 reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts</li></ul>
 </details>
 </section>
 </main>

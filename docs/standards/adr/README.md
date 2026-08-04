@@ -17,6 +17,7 @@ ADR은 구현자가 임의로 바꾸면 데이터 호환성, 보안 또는 운�
 | [0011](0011-planning-radio-development-contract.md) | 기획 승인, RADIO 개발 설계와 개발 컨벤션 계약 | Accepted |
 | [0012](0012-static-operations-dashboard.md) | 정적 운영 대시보드의 안내·최신화 계약 | Accepted (revision 2) |
 | [0013](0013-project-layer-structure.md) | 5레이어 프로젝트 구조와 5단계 개발 파이프라인 | Accepted |
+| [0014](0014-fsd-view-layer-naming.md) | FSD 화면 조합 계층 이름 `views` | Accepted |
 
 일부 ADR은 폐기되지 않은 채 뒤의 ADR에 부분 대체되었습니다. 충돌하면 뒤의 ADR이 기준입니다.
 
@@ -25,6 +26,7 @@ ADR은 구현자가 임의로 바꾸면 데이터 호환성, 보안 또는 운�
 | [0009](0009-two-track-interview-and-engineering-loop.md) | [0011](0011-planning-radio-development-contract.md) | 설계 트랙을 기획 인터뷰와 RADIO 개발 인터뷰로 세분화 |
 | [0009](0009-two-track-interview-and-engineering-loop.md) | [0013](0013-project-layer-structure.md) | 트랙 명칭 → 5단계 파이프라인, 단일 task 실행·정지 → 연속 루프 |
 | [0011](0011-planning-radio-development-contract.md) | [0013](0013-project-layer-structure.md) | 문서 위치와 단계 이름 |
+| [0008](0008-fsd-server-first-development-guards.md) | [0014](0014-fsd-view-layer-naming.md) | FSD 화면 조합 계층 이름 `pages` → `views`, 계층 디렉터리 선생성 요구 제거 |
 
 ## 상태
 

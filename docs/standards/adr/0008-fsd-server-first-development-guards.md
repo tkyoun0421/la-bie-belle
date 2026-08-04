@@ -4,6 +4,7 @@
 - 날짜: 2026-07-23
 - 후속 운영 경계: [ADR-0009](0009-two-track-interview-and-engineering-loop.md)
 - RADIO 승인 시점과 공통 컨벤션 후속 결정: [ADR-0011](0011-planning-radio-development-contract.md)
+- FSD 레이어 이름 부분 대체: [ADR-0014](0014-fsd-view-layer-naming.md) — 아래 Decision의 `pages`는 `views`로 읽는다
 
 ## Context
 
