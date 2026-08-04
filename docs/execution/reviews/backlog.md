@@ -22,4 +22,8 @@
 - [x] [low] [P0-T33] 해소된 F-09 backlog 항목이 미완료로 남음 — docs/execution/reviews/backlog.md
 - [x] [low] [P0-T33] backlog 회귀 테스트의 도달 불가능한 단언 — harness/self-test/dashboard-reviews.test.ts
 - [x] [low] [P0-T33] participants 파싱 실패가 발견마다 연쇄 오탐을 만듦 — harness/dashboard/reviews.ts
+- [x] [medium] [P0-T01] app-build 검증이 서버 경계를 판별하지 못함 — docs/execution/runs/P0-T01/handoff.md
+- [x] [medium] [P0-T01] 필요한 설정 파일이 봉인된 변경 허용 경로 밖 — postcss.config.mjs
+- [ ] [medium] [P0-T01] views 개명이 상위 ADR-0008·phase 문서와 충돌 — docs/standards/adr/0008-fsd-server-first-development-guards.md
+- [x] [low] [P0-T01] 서버 경계 파일의 이름과 내용이 어긋남 — src/shared/config/server-only.config.ts
 - [x] [medium] [P0-T29] reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts

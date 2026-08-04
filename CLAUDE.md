@@ -79,6 +79,26 @@ Stages 3–5 do not stop after one task. The loop runs `planned` tasks continuou
 
 ## Commands
 
+### Application (P0-T01)
+
+Next.js 16 App Router with Turbopack as the default bundler for both dev and build. React 19.2, Tailwind CSS v4 (CSS-first: the theme lives in `src/app/globals.css`, there is no `tailwind.config.js`).
+
+```bash
+pnpm dev                 # dev server (Turbopack)
+pnpm build               # production build (Turbopack)
+pnpm start               # production server
+pnpm typecheck           # next typegen + tsc --noEmit (typegen keeps the scope identical before and after a build)
+pnpm check:app-build     # build, then fail if a server-only value reached the client bundle
+```
+
+Import paths use per-layer aliases (`@/views/*`, `@/shared/*`, …) without file extensions. The `.ts`/`.tsx` extension convention applies only to `harness/`, which runs under Node type stripping.
+
+Code carries no explanatory comments — intent lives in names and structure, rationale in the task's RADIO and handoff (`DEV-CODE-07`).
+
+`next dev` injects a `<!-- BEGIN:nextjs-agent-rules -->` block into this file on every run. It is an npm dependency writing into an L1 instruction file, so it is removed rather than committed; the isolation option (a root `AGENTS.md`, which `next` writes to instead) needs a user decision — tracked in the P0-T01 review backlog.
+
+### Harness
+
 The five-stage pipeline is enforced by a lightweight gate harness in `harness/` (P0-T31). It has zero runtime dependencies and runs TypeScript directly via Node 22 type stripping (`node --experimental-strip-types`), so `engines.node` requires Node >= 22.6.
 
 ```bash
@@ -136,12 +156,14 @@ Feature Sliced Design with unidirectional imports (top → bottom only):
 ```
 src/
   app/        # Next.js routes, layouts, providers (thin adapters only)
-  pages/      # Route-level screen composition
+  views/      # Route-level screen composition (FSD "pages", renamed)
   widgets/    # Independent screen blocks
   features/   # User actions, Server Actions, mutations
   entities/   # Domain models, pure rules, DTOs
   shared/     # Reusable UI, config, common server client base
 ```
+
+The FSD `pages` layer is called `views` here because Next.js treats `src/pages/` as the Pages Router directory. Responsibilities and import direction are unchanged. Layer directories are created when first used, not upfront.
 
 Key rules (`DEV-ARCH` from `docs/standards/DEVELOPMENT.md`):
 - UI never imports DB, secrets, or server modules
@@ -209,3 +231,4 @@ When documents conflict, do not silently pick one. Stop and reconcile in order:
 - **`.claude/hooks/tdd-guard.sh`:** Denies edits to business-logic source under `src/` when no matching test file exists. Exempt: `src/app/**` (route adapters), `**/ui/**` and `**/components/**` (presentation), `**/types/**`, `*.d.ts`, `*.config.*`, slice `index.ts` barrels, and non-source files. Test lookup order: sibling `*.test.*`/`*.spec.*` → `__tests__/` (same or parent dir) → `src/__tests__/` → root `tests/` tree.
 
 Requires `jq`. Without it the hook warns on stderr and allows the edit.
+

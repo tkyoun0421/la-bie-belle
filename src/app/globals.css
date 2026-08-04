@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+/* 토큰은 P0-T34가 docs/product/design/FOUNDATIONS.md에서 채운다. */
+@theme {
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  -webkit-text-size-adjust: 100%;
+}

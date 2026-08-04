@@ -27,12 +27,16 @@ RADIO는 공통 규칙을 복사하지 않는다. 관련 ID마다 `기본 적용
 ```text
 src/
   app/       Next.js route, layout, provider, 얇은 route adapter
-  pages/     route 화면 조합
+  views/     route 화면 조합
   widgets/   독립적인 화면 블록
   features/  사용자 행위, Server Action, mutation 상태
   entities/  도메인 모델, 순수 규칙, DTO, entity 조회
   shared/    재사용 UI, 설정, 공통 서버 client 기반
 ```
+
+FSD 표준의 `pages` 계층을 `views`로 부른다. Next.js가 `src/pages/`를 Pages Router 디렉터리로 해석해 그 아래 모든 파일을 라우트로 만들려 하기 때문이다(P0-T01, 2026-08-04). 계층의 책임과 의존 방향은 표준과 같고 이름만 다르다.
+
+계층 디렉터리는 실제로 쓰일 때 만든다. 비어 있는 계층을 미리 만들어 두지 않는다(`DEV-CODE-04`).
 
 - `DEV-ARCH-01` `MUST`: 의존은 상위 FSD 레이어에서 하위 레이어로만 향하고 `app`만 Next.js route 파일을 가진다.
 - `DEV-ARCH-02` `MUST`: UI는 표시와 이벤트 전달을 맡고 DB, 비밀값과 server module을 import하지 않는다.
@@ -114,6 +118,7 @@ private 데이터의 제한적 오프라인 열람이 실제 현장 요구가 �
 - `DEV-CODE-04` `SHOULD`: 실제 대체 구현, 외부 경계 또는 테스트 격리 요구 없이 인터페이스와 중간 계층을 만들지 않는다.
 - `DEV-CODE-05` `SHOULD`: 상속보다 조합과 명시적인 데이터 흐름을 우선한다.
 - `DEV-CODE-06` `SHOULD`: 함수·파일 줄 수 자체가 아니라 이름, 응집도, 변경 이유와 테스트 가능성으로 분리한다.
+- `DEV-CODE-07` `MUST`: 코드에 설명 주석과 JSDoc 블록을 쓰지 않는다. 의도는 이름과 구조로 드러내고 설계 근거는 RADIO와 handoff가 소유한다. 예외는 코드로 표현할 수 없는 제약(외부 명세 링크, 우회 사유)뿐이며 한 줄로 최소화한다.
 
 모든 entity에 repository·service를 만드는 식의 기계적 SOLID 적용과 MVP 밖 기능을 위한 선행 추상화는 하지 않는다.
 
