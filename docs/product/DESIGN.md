@@ -13,7 +13,7 @@
 
 실제 CSS·Tailwind 토큰은 구현 시 이 문서에서 파생한다. 별도 토큰 JSON을 두어 기준을 중복하지 않는다.
 
-저장소의 정적 운영 대시보드는 현재 구현체가 없고 근거 결정 [ADR-0012](../standards/adr/0012-static-operations-dashboard.md)도 보류 상태다. 다시 만들 때는 제품 PWA 화면 범위에 포함하지 않되 이 문서의 상태 색상·모바일 우선 정보 위계·접근성 원칙을 재사용한다.
+저장소의 정적 운영 대시보드(`pnpm dashboard` → `docs/execution/dashboard/index.html`, 근거 결정 [ADR-0012](../standards/adr/0012-static-operations-dashboard.md))는 제품 PWA 화면 범위가 아니다. 다만 이 문서의 상태 색상·모바일 우선 정보 위계·접근성 원칙을 재사용한다.
 
 ## 제품 인상
 

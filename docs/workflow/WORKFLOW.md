@@ -146,7 +146,7 @@ flowchart LR
 ## 4단계: 검증
 
 1. task에 등록된 `check_ids`와 관련 회귀 검사를 실행한다.
-2. [교차 검증 계약](REVIEW.md)에 따라 이 task의 변경분을 메인·Codex·Opus 3자로 교차 검증하고, 확정 발견과 영역 점수를 `docs/execution/reviews/<task-id>-review.json`에 남긴다. 절차, 점수 산정, 중요도 정의와 결과·backlog 형식은 그 문서가 소유한다.
+2. [교차 검증 계약](REVIEW.md)에 따라 이 task의 변경분을 리뷰어 2자(`opus`·`codex`)로 교차 검증하고, 확정 발견과 영역 점수를 `docs/execution/reviews/<task-id>-review.json`에 남긴다. 메인 에이전트는 리뷰어가 아니라 조정자로서 호출·병합·확정·중요도 판독·점수 판정을 맡는다. 실행 절차의 정본은 [`verify` 스킬](../../.claude/skills/verify/SKILL.md), 규칙(점수 산정, 중요도 정의, 결과·backlog 형식)의 정본은 교차 검증 계약이다.
 3. 확정 발견의 중요도별 처리는 [교차 검증 계약의 중요도와 에스컬레이션](REVIEW.md#중요도와-에스컬레이션)이 소유한다. `critical`의 안전 중단은 [연속 루프 규칙](#연속-루프-규칙)의 `blocked` 경로와 같다.
 4. 인수 조건 충족 증거에 관련 spec ID를 남긴다.
 5. 검증 실패가 구현 결함이면 3단계로 돌아간다. 인수 조건이나 기술 계약 자체의 문제이면 해당 인터뷰 단계로 반환한다.

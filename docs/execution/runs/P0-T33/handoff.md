@@ -115,3 +115,29 @@
 - `docs/execution/runs/P0-T33/tdd.json` (4건)
 - `docs/execution/dashboard/index.html`
 - `docs/execution/phases/index.jsonl` (P0-T33 = `done`)
+
+## 2026-08-04 · 후속 문서 정합 (F-01 해소)
+
+- 작업 식별자: P0-T33 (종결 후 후속 조치)
+- 현재 단계: 없음 — task는 이미 `done`이며 문서 정합만 처리했다
+- 기준 시각: 2026-08-04
+
+### 확정된 사실
+
+- 사용자 결정(2026-08-04): F-01은 변경 규모가 작아 별도 task를 만들지 않고 워크플로우 메타 커밋으로 처리한다.
+- `docs/workflow/WORKFLOW.md` 4단계 2번을 리뷰어 2자(`opus`·`codex`) 구조로 고치고, 메인 에이전트가 조정자임과 실행 절차의 정본이 `verify` 스킬임을 명시했다. 이로써 F-01의 L1 계약 충돌이 해소됐다.
+- 같은 성격의 이월 미결 2건도 함께 정리했다. `docs/product/DESIGN.md`와 `docs/standards/ARCHITECTURE.md`의 "대시보드 구현체 없음 / ADR-0012 보류" 서술을 실제 상태(구현 완료, ADR-0012 revision 2 Accepted)로 바꿨다.
+- 저장소 전체에서 "3자"·"메인·Codex·Opus" 잔여 표현과 대시보드 "보류" 표현이 없음을 확인했다. 완료 task의 기획 기록(`00-foundation.md`의 P0-T32 절)에 남은 3자 서술은 그 시점의 승인 범위를 담은 역사 기록이라 소급 수정하지 않았다.
+- `pnpm gate:all` 종료 코드 0.
+
+### 미결 사항
+
+- P0-T29가 남긴 F-08(low, 미결 부채 집계가 handoff 마지막 절의 전체 재기술 가정에 의존)만 backlog에서 계속 추적한다.
+
+### 다음 행동
+
+1. 다음 실행 후보는 P1-T06(휴면 계정 상태와 접근 차단)의 설계(RADIO) 인터뷰다. 기반 구축(P0-T01~T05)을 먼저 다루려면 그 기획 인터뷰부터 시작한다.
+
+### 증거·산출물 경로
+
+- `docs/workflow/WORKFLOW.md`, `docs/product/DESIGN.md`, `docs/standards/ARCHITECTURE.md`
