@@ -1,0 +1,105 @@
+{
+  "task_id": "P0-T29",
+  "at": "2026-08-04T05:36:00Z",
+  "base_commit": "ac68f255b2e4e2e36bc3d13e504edfb73b9d2c0e",
+  "participants": ["main", "opus"],
+  "participants_note": "codex는 설치된 플러그인 명령이 모델의 직접 호출을 금지해 참여하지 못했다. REVIEW.md의 2자 진행 규칙에 따라 main·opus 두 리뷰어가 모두 인정한 발견만 확정했다.",
+  "scores": {
+    "code_quality": 90,
+    "tests": 88,
+    "security": 96,
+    "performance": 92,
+    "architecture": 88
+  },
+  "score_rationale": {
+    "code_quality": "F-03(게이트 예외 격리)·F-06·F-07을 수정 반영해 해소했고 IO와 순수 계산의 모듈 분리가 유지된다. F-08의 handoff 마지막 절 가정이 남아 만점이 아니다.",
+    "tests": "F-04(collect·main 생성 명령 수준 테스트 신설)와 F-05(수정 반영 후 RED→GREEN 재기록)를 해소해 셀프테스트 120개 전부 통과했다. IO 경계(게이트 실행 실패 경로)는 대표 케이스 수준 커버리지다.",
+    "security": "모든 원본 문자열이 escapeHtml을 거쳐 출력되고 비밀값·개인정보를 수집·기록하지 않는 것을 확인했다. 정적 산출물이라 위협 표면 자체가 좁다.",
+    "performance": "F-07(HEAD subject·body 중복 git 프로세스)을 1회 호출로 병합했다. 재생성 준수 판정이 상태 변경 커밋당 diff-tree 1회를 추가하지만 대상 커밋 수가 작아 영향이 미미하다.",
+    "architecture": "F-01(재생성 준수 실측)·F-02(저장소 게이트 4종 채점) 해소로 ADR-0012 문구와 실제 판정 로직이 일치하게 됐다. F-09(total 평균 규칙 미검증)가 남아 만점이 아니다."
+  },
+  "total": 91,
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "high",
+      "area": "architecture",
+      "title": "문서 신선도 '기준 커밋 최신' 7점이 구조상 상시 만점",
+      "description": "생성기가 같은 HEAD 값을 비교 양쪽에 전달해 비교가 죽은 코드였고, '재생성을 잊으면 점수로 드러난다'는 ADR-0012 문구와 모순됐다. 사용자 결정(2026-08-03)대로 커밋된 기존 산출물의 base-commit marker 이후 재생성 없는 상태 변경 커밋을 실측하는 방식으로 수정 반영 완료.",
+      "file": "harness/dashboard/main.ts",
+      "agreed_by": ["main", "opus"]
+    },
+    {
+      "id": "F-02",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "계약 준수 40점 중 약 13점이 생성 맥락에서 실패 불가한 상수",
+      "description": "scope·commit-msg 게이트는 대시보드 생성 시점에 사실상 실패할 수 없어 통과율을 부풀렸다. 사용자 결정(2026-08-03)대로 분모를 저장소 게이트 4종(index·radio·handoff·tdd)으로 한정하고 커밋 문맥 2종은 참고 표시로 옮겨 수정 반영 완료.",
+      "file": "harness/dashboard/collect.ts",
+      "agreed_by": ["main", "opus"]
+    },
+    {
+      "id": "F-03",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "게이트 실행이 예외 격리 없이 돌아 생성 전체를 중단시킬 수 있음",
+      "description": "게이트 하나가 던지면(git 부재 등) RADIO의 '누락 표시 후 계속' 원칙을 어기고 생성이 통째로 실패했다. 게이트별 try/catch로 격리해 실행 실패를 통과 아님 + 수집 알림으로 표시하도록 수정 반영 완료.",
+      "file": "harness/dashboard/collect.ts",
+      "agreed_by": ["main", "opus"]
+    },
+    {
+      "id": "F-04",
+      "severity": "medium",
+      "area": "tests",
+      "title": "collect·main에 테스트가 없어 생성 명령 수준 검증 부재",
+      "description": "RADIO가 약속한 생성 명령 수준 테스트가 없었다. dashboard-collect.test.ts를 신설해 비git 환경의 안전 동작, 게이트 실행 실패 격리, 재생성 준수 판정, 임시 저장소에서의 main 실행(산출물·marker·경로 출력)을 검증하도록 수정 반영 완료.",
+      "file": "harness/self-test/dashboard-collect.test.ts",
+      "agreed_by": ["main", "opus"]
+    },
+    {
+      "id": "F-05",
+      "severity": "medium",
+      "area": "tests",
+      "title": "tdd.json 마지막 GREEN이 리팩토링 이후 최종 코드를 덮지 않음",
+      "description": "리팩토링(10:38Z 이후) 뒤 GREEN 재기록이 없어 최종 코드의 증거가 비었다. 이번 교차 검증 수정 반영에서 단위별 RED→GREEN을 다시 기록하고 전체 셀프테스트 통과를 확인해 해소 완료.",
+      "file": "docs/execution/runs/P0-T29/tdd.json",
+      "agreed_by": ["main", "opus"]
+    },
+    {
+      "id": "F-06",
+      "severity": "low",
+      "area": "code_quality",
+      "title": "next-action 근거 문구가 계산하지 않는 '의존성 순서'를 단정",
+      "description": "추천 로직은 index 등록 순서로 첫 후보를 고르는데 근거 문구는 의존성 순서를 주장했다. 실제 판정 기준(index 등록 순서)으로 문구를 정정하고 테스트로 고정해 수정 반영 완료.",
+      "file": "harness/dashboard/next-action.ts",
+      "agreed_by": ["main", "opus"]
+    },
+    {
+      "id": "F-07",
+      "severity": "low",
+      "area": "performance",
+      "title": "HEAD subject와 body를 별도 git 프로세스로 중복 조회",
+      "description": "%s와 %B를 각각 실행해 프로세스가 하나 더 떴다. %B 한 번으로 읽고 subject는 첫 줄에서 파생하도록 병합해 수정 반영 완료.",
+      "file": "harness/dashboard/collect.ts",
+      "agreed_by": ["main", "opus"]
+    },
+    {
+      "id": "F-08",
+      "severity": "low",
+      "area": "code_quality",
+      "title": "미결 부채 집계가 '마지막 handoff 절이 전체를 재기술한다'는 비보장 가정에 의존",
+      "description": "handoff의 마지막 미결 사항 절만 읽으므로, 이전 절의 부채를 재기술하지 않는 기록이 생기면 집계가 누락된다. 형식 계약(HANDOFF.md)에 재기술 의무가 명문화되어 있지 않다. 미해결 — backlog로 추적한다.",
+      "file": "harness/dashboard/collect.ts",
+      "agreed_by": ["main", "opus"]
+    },
+    {
+      "id": "F-09",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "reviews 파서가 total=5영역 평균 규칙을 검증하지 않음",
+      "description": "REVIEW.md는 total을 5개 영역 점수 산술 평균의 반올림 정수로 명문화했지만 파서는 0~100 정수만 확인한다. 교차 검증 당시 M-1로 추적된 발견이다. 미해결 — P0-T33의 REVIEW.md·파서 개정과 함께 처리한다.",
+      "file": "harness/dashboard/reviews.ts",
+      "agreed_by": ["main", "opus"]
+    }
+  ]
+}

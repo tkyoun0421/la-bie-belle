@@ -10,4 +10,11 @@
 
 ## 목록
 
-(비어 있음)
+- [x] [medium] [P0-T29] 계약 준수 40점 분모를 저장소 게이트 4종으로 한정(상수 점수 제거) — harness/dashboard/collect.ts
+- [x] [medium] [P0-T29] 게이트 실행 예외를 격리해 생성 중단 대신 실행 실패로 표시 — harness/dashboard/collect.ts
+- [x] [medium] [P0-T29] collect·main 생성 명령 수준 테스트 신설 — harness/self-test/dashboard-collect.test.ts
+- [x] [medium] [P0-T29] 수정 반영 후 tdd.json RED→GREEN 재기록 — docs/execution/runs/P0-T29/tdd.json
+- [x] [low] [P0-T29] next-action 근거 문구를 실제 판정 기준(index 등록 순서)으로 정정 — harness/dashboard/next-action.ts
+- [x] [low] [P0-T29] HEAD subject·body 조회를 git 프로세스 1회로 병합 — harness/dashboard/collect.ts
+- [ ] [low] [P0-T29] 미결 부채 집계가 마지막 handoff 절의 전체 재기술 가정에 의존 — harness/dashboard/collect.ts
+- [ ] [medium] [P0-T29] reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts

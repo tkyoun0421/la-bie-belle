@@ -1,0 +1,112 @@
+{
+  "entries": [
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-rubric.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T10:23:40.428Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-rubric.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T10:24:32.759Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-reviews.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T10:25:45.880Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-reviews.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T10:26:57.444Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-progress.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T10:28:11.859Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-progress.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T10:29:10.196Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-render.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T10:29:59.209Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-render.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T10:32:07.373Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-rubric.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-03T10:34:07.516Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-rubric.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-03T10:34:29.073Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-rubric.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-04T05:29:19.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-rubric.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-04T05:30:13.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-render.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-04T05:31:58.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-collect.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-04T05:31:58.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-render.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-04T05:33:02.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-collect.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-04T05:33:41.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-progress.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-04T05:33:59.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/dashboard-progress.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-04T05:34:09.000Z",
+      "phase": "green"
+    }
+  ]
+}

@@ -159,6 +159,7 @@ flowchart LR
 3. 동작을 바꿔야 개선되는 항목은 여기서 처리하지 않고 2단계로 반환하거나 새 task로 기록한다.
 4. 단일 commit 계약과 task 상태를 확인한 뒤 통합하고 `done`으로 갱신한다.
 5. handoff를 기록하고 [연속 루프 규칙](#연속-루프-규칙)에 따라 다음 `planned` task로 이어간다. 사용자 보고는 루프가 끝날 때 일괄로 한다.
+6. task가 최종 상태로 바뀌었으므로 [운영 대시보드](#운영-대시보드)를 재생성한다.
 
 ## 연속 루프 규칙
 
@@ -263,6 +264,15 @@ proposed
 - 하네스 실행: `docs/execution/runs/<task-id>/handoff.md`
 - 인터뷰: `docs/execution/runs/interviews/<날짜-주제>.md`
 - handoff는 승인 기록이 아니다. 승인의 정본은 `docs/execution/phases/index.jsonl`이며 handoff는 그 상태를 설명하는 실행 증거다.
+
+## 운영 대시보드
+
+현재 상태를 한 곳에서 읽는 읽기 전용 진입점이다. 계약의 정본은 [ADR-0012](../standards/adr/0012-static-operations-dashboard.md)이며 이 절은 실행 위치만 요약한다.
+
+- 생성: `pnpm dashboard`. 산출물은 `docs/execution/dashboard/index.html` 한 파일이며 저장소에 커밋한다.
+- 표시: 진행도, 준비도 루브릭, 검증, 다음 행동·차단의 섹션 4종과 상단의 기준 시각·기준 커밋.
+- 재생성 시점: task가 `done`·`blocked`·`skipped`로 바뀌거나 phase 경계 상태가 바뀐 뒤 AI 세션이 실행한다. 훅·게이트로 강제하지 않는다.
+- 대시보드는 파생 표시물이다. 승인, 상태 전환, 실행 순서를 바꾸지 않으며 이 계약의 게이트를 대신하지 않는다. 생성 실패는 task 결과를 막지 않는다.
 
 ## 전환 규칙
 

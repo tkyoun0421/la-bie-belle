@@ -12,11 +12,18 @@
     "gate:tdd": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/tdd.ts",
     "gate:scope": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/scope.ts",
     "gate:all": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/all.ts",
+    "dashboard": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/dashboard/main.ts",
     "harness:self-test": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/run.ts",
     "harness:typecheck": "tsc --noEmit --project harness/tsconfig.json"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
     "typescript": "^7.0.2"
-  }
+  },
+  "browserslist": [
+    "last 2 versions",    
+    "> 0.5%",              
+    "not dead",             
+    "not op_mini all"       
+  ]
 }

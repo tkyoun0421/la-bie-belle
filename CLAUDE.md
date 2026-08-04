@@ -15,7 +15,7 @@ Upper layers govern lower layers. When documents conflict, the upper layer wins.
 | L1 Collaboration | `CLAUDE.md`, `.claude/`, `docs/workflow/` | How work is done: stages, approvals, handoff |
 | L2 Product/Domain | `docs/product/` | What is built and why: PRD, DOMAIN, DESIGN |
 | L3 Standards | `docs/standards/` | ARCHITECTURE, DEVELOPMENT (`DEV-*`), `adr/` |
-| L4 Planning/Execution | `docs/execution/` | `phases/`, `radio/`, `runs/` — state and evidence |
+| L4 Planning/Execution | `docs/execution/` | `phases/`, `radio/`, `runs/`, `reviews/`, `dashboard/` — state, evidence and derived views |
 | L5 Code | `src/`, `tests/` (future) | Implementation and tests |
 
 `CLAUDE.md` and `.claude/` stay at the repo root because tooling requires it, but they belong to L1 logically. This file is a summary — `docs/workflow/` is the authoritative source.
@@ -90,14 +90,24 @@ pnpm gate:scope          # staged files stay inside the current task RADIO's 변
 pnpm gate:all            # the five gates above in one run
 pnpm harness:self-test   # node:test suite for all six gates, incl. hook acceptance in a temp repo
 pnpm harness:typecheck   # tsc --noEmit over harness/
+pnpm dashboard           # regenerate docs/execution/dashboard/index.html (read-only ops dashboard)
 ```
 
 - Gate state rules: at most one `in_progress` task, no `planned`/`in_progress` task without both approvals and `radio_ref`, every `depends_on` id exists, every record has at least one `spec_refs` entry.
 - A gate that passes prints nothing and exits 0. Violations go to stderr in Korean with the offending file and a fix hint, exit code 1.
 - The current task is the single `in_progress` task. With none, the TDD and commit-scope gates pass so workflow meta commits stay possible; the index and RADIO hash gates always run.
 - `gate:handoff`, `gate:tdd`, and `gate:scope` target the current `in_progress` task when given no argument.
-- Layout: `harness/gates/` (entry points), `harness/lib/` (judgement logic, pure functions plus thin IO), `harness/self-test/` (fixtures and tests).
+- Layout: `harness/gates/` (entry points), `harness/lib/` (judgement logic, pure functions plus thin IO), `harness/dashboard/` (dashboard generator), `harness/self-test/` (fixtures and tests).
 - Commit scope comes from the `## 변경 허용 경로` section of the task's approved RADIO: the first fenced code block, one glob per line, sealed by the approval SHA-256.
+
+### Operations dashboard (P0-T29)
+
+`pnpm dashboard` writes one self-contained HTML file — inline CSS, zero external resources, mobile first — to `docs/execution/dashboard/index.html`. Contract: `docs/standards/adr/0012-static-operations-dashboard.md`.
+
+- Four sections: 진행도, 준비도 루브릭, 검증, 다음 행동·차단, plus the base time and base commit at the top.
+- Readiness is machine judged out of 100: contract compliance 40 (repository-gate pass rate over index·radio·handoff·tdd, reusing `harness/lib` gates; scope and commit-msg are shown as reference only), evidence completeness 25, execution readiness 20, document freshness 15 (regeneration compliance is measured against the `base-commit` marker of the previously committed artifact). Grades: 90+ 우수, 70–89 양호, below 70 주의. Every score shows the numbers behind it.
+- Read-only derivation. It never writes to `index.jsonl`, `runs/`, or `reviews/`, and never approves or transitions anything. Missing or malformed sources render as 누락 / 결과 없음 / 형식 오류 instead of guessed values; generation failure is advisory and never blocks a task.
+- Regenerate after a task reaches `done`/`blocked`/`skipped` or a phase boundary changes.
 
 No production app build/lint/test commands exist yet — the project is in Phase 0 (foundation/planning).
 
@@ -172,12 +182,13 @@ When documents conflict, do not silently pick one. Stop and reconcile in order:
 | `docs/product/PRD.md` | Product behavior, scope, invariants |
 | `docs/product/DOMAIN.md` | Shared language, aggregate boundaries |
 | `docs/product/DESIGN.md` | Visual language, interaction patterns, component specs |
-| `docs/standards/adr/*.md` | Irreversible architectural decisions (0013 accepted; 0012 on hold) |
+| `docs/standards/adr/*.md` | Irreversible architectural decisions (0012 and 0013 accepted) |
 | `docs/standards/ARCHITECTURE.md` | System structure, data models, tech stack |
 | `docs/standards/DEVELOPMENT.md` | DEV-* conventions, FSD rules, testing, RADIO format |
 | `docs/execution/radio/<id>-radio.md` | Task-specific technical design |
 | `docs/execution/phases/index.jsonl` | Execution state, dependencies, verification |
 | `docs/execution/runs/` | Execution evidence and stage handoffs |
+| `docs/execution/dashboard/index.html` | Generated read-only operations view (derived, never a source of truth) |
 
 ## Git Hooks
 

@@ -15,7 +15,7 @@ ADR은 구현자가 임의로 바꾸면 데이터 호환성, 보안 또는 운�
 | [0009](0009-two-track-interview-and-engineering-loop.md) | 딥인터뷰 설계와 자율 개발 루프 분리 | Superseded (ADR-0013) |
 | [0010](0010-dormancy-and-automatic-account-lifecycle.md) | 휴면과 자동 계정 생명주기 | Accepted |
 | [0011](0011-planning-radio-development-contract.md) | 기획 승인, RADIO 개발 설계와 개발 컨벤션 계약 | Accepted |
-| [0012](0012-static-operations-dashboard.md) | 정적 운영 대시보드의 안내·최신화 계약 | 보류(재검토 예정) |
+| [0012](0012-static-operations-dashboard.md) | 정적 운영 대시보드의 안내·최신화 계약 | Accepted (revision 2) |
 | [0013](0013-project-layer-structure.md) | 5레이어 프로젝트 구조와 5단계 개발 파이프라인 | Accepted |
 
 일부 ADR은 폐기되지 않은 채 뒤의 ADR에 부분 대체되었습니다. 충돌하면 뒤의 ADR이 기준입니다.
