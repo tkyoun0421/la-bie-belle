@@ -55,29 +55,89 @@
 
 ### P0-T02. 코드 품질과 테스트 도구 구성
 
-- ESLint로 코드 컨벤션을 **강제**한다. 취향 규칙이 아니라 [개발 컨벤션](../../standards/DEVELOPMENT.md)의 구조 규칙을 기계가 막게 한다: FSD 계층의 단방향 import(위 → 아래만), UI 계층의 DB·비밀값·서버 모듈 import 금지, 서버 모듈의 `import "server-only"` 선언.
-- formatter와 TypeScript strict를 구성한다.
-- Vitest와 Testing Library를 구성한다.
-- Playwright 모바일 프로젝트를 구성한다.
-- 테스트·lint·typecheck 명령을 package scripts로 제공한다.
-- **커밋 시 자동 검사**를 건다. staged 파일의 포맷·린트와 프로젝트 타입 검사를 커밋 전에 실행해 위반이 있으면 커밋을 막는다.
-  - 훅은 기존 `.githooks/pre-commit`에 이어 붙인다. husky는 쓰지 않는다. husky는 설치 시 `core.hooksPath`를 자기 디렉터리로 바꾸는데, 그러면 그 경로에 있던 harness 게이트 4종(index·RADIO 해시·TDD 증거·커밋 범위)이 조용히 실행되지 않는다. 승인 계약을 지키는 검사를 포맷터 편의와 바꾸지 않는다.
-  - 팀원이 `pnpm install`만으로 훅을 얻도록 `prepare` 스크립트가 `core.hooksPath`를 `.githooks`로 설정한다. husky가 제공하는 자동 설치 이점은 이 한 줄로 대체된다.
-  - staged 파일만 검사하는 부분은 lint-staged를 쓴다. 부분 stage된 파일 처리 같은 함정을 직접 구현하지 않는다.
+목표: [개발 컨벤션](../../standards/DEVELOPMENT.md)의 구조 규칙을 사람의 주의력이 아니라 기계가 막게 하고, 이후 모든 task가 딛고 설 검증 명령을 완성한다.
+
+**1. FSD 구조 계약의 단일 정본**
+
+계층·세그먼트와 각 세그먼트의 규칙을 파일 하나(`config/fsd.json`)에 정의하고, ESLint와 `.claude/hooks/tdd-guard.sh`가 **같은 파일을 읽는다**. 지금은 같은 구조 지식이 훅의 셸 패턴과 린트 설정 두 곳에 하드코딩되어 `DEV-SSOT-01`을 어기고, 실제로 어긋나 있다(훅은 `types`·`components`를 예외 처리하는데 세그먼트 목록에는 없다). 훅이 이미 `jq`를 요구하므로 새 의존성은 없다.
+
+| 세그먼트 | 책임 | 단위 테스트 | 런타임 코드 | import 제약 |
+| --- | --- | --- | --- | --- |
+| `ui` | 표시와 이벤트 전달 | 면제 (컴포넌트·E2E로 검증) | 허용 | DB·서버 모듈·비밀값 금지 |
+| `hooks` | React 훅, 클라이언트 상태, TanStack Query | 필수 | 허용 | 서버 모듈 금지 |
+| `model` | 도메인 모델, 순수 규칙, 상태 전이, Zod 스키마 | 필수 | 허용 | **React 금지** |
+| `api` | 서버 요청, Server Action | 필수 | 허용 | `server-only` 필수 |
+| `lib` | 범용 유틸 | 필수 | 허용 | 도메인 지식 금지 |
+| `config` | 상수, 설정 | 면제 | **금지** | — |
+| `types` | 타입 선언 | 면제 | **금지** | — |
+
+- **면제 구역에는 잠금을 건다.** 단위 테스트를 면제하는 `config`·`types`는 런타임 export를 금지해 우회 통로가 되지 않게 한다. 면제는 "로직이 없을 것"이라는 가정 위에 서 있는데, 지금은 그 가정을 강제하는 것이 없다.
+- `ui`의 면제는 검증 포기가 아니라 **위임**이다. `verifiedBy`에 검증 계층(컴포넌트·E2E)을 명시하고, 비어 있으면 검증 계획 없는 면제 구역으로 드러난다(`DEV-TEST-01`).
+- `model`의 React 금지가 `DEV-CODE-02`("도메인 규칙을 UI와 데이터 접근 코드에 섞지 않는다")를 기계 검사 대상으로 만든다. `hooks`를 분리했기에 가능하다.
+- 코드 생성물(Supabase DB 타입)은 세그먼트가 아니라 `api/generated/`에 두고 `exemptPaths`로 처리한다.
+- **barrel(`index.ts`)을 쓰지 않는다.** Next.js에서 빌드 성능 문제를 만들고 순환 의존의 주 통로다. 슬라이스 public API 대신 직접 경로로 import하며, 지켜야 할 계층 방향은 ESLint가 직접 강제한다. 기존 `src/views/bootstrap/index.ts`를 제거하고 `tdd-guard.sh`의 `*/index.ts` 예외도 함께 없앤다.
+
+**2. 네이밍 컨벤션** — `DEVELOPMENT.md`에 `DEV-NAME-*`로 신설한 뒤 ESLint로 강제한다. `MUST` 규칙 변경은 설계 단계가 아니라 L3에서 먼저 처리한다([ADR-0013](../../standards/adr/0013-project-layer-structure.md)).
+
+| 대상 | 규칙 |
+| --- | --- |
+| 폴더(레이어·슬라이스·세그먼트) | kebab-case |
+| 일반 파일 | kebab-case |
+| React 컴포넌트 파일 | PascalCase (`ShiftCard.tsx`) |
+| 컴포넌트 export | PascalCase |
+| 훅 | 파일 `use-*.ts`, export `useXxx` |
+| 타입·인터페이스 | PascalCase |
+| 테스트 | `*.test.ts(x)` 형제 배치 |
+| 예외 | Next.js 예약 파일명(`page.tsx`·`layout.tsx`·`route.ts`·`loading.tsx`·`error.tsx`·`not-found.tsx`), shadcn 관리 구역 `shared/ui/**` |
+
+**3. ESLint 규칙** (Flat Config. Next 16에서 `next lint`가 제거되어 CLI를 직접 구성한다)
+
+- 구조: FSD 단방향 import(`DEV-ARCH-01`·`DEV-CODE-03`), UI의 DB·비밀값·서버 모듈 import 금지(`DEV-ARCH-02`), 서버 모듈의 `import "server-only"` 선언(`DEV-ARCH-03`), 세그먼트별 import 제약과 런타임 코드 잠금
+- 규칙 기계화: 주석·JSDoc 금지(`DEV-CODE-07`, 로컬 커스텀 규칙 — 주석은 AST 노드가 아니라 토큰이라 기성 규칙이 없다), `shared/config/env` 밖 `process.env` 접근 차단(`DEV-SEC-02`), `no-console`(`DEV-SEC-04`·`DEV-OBS-02`), `import/no-cycle`
+- 정확성: `@next/eslint-plugin-next`, `react-hooks`, `consistent-type-imports`
+- **CI 전용 설정으로 분리**: `no-floating-promises`, `no-misused-promises`, `no-explicit-any`, `no-unsafe-*`. 타입 정보를 요구해 린트가 타입 검사만큼 느려지고 변경 파일만 검사하는 방식과 상성이 나쁘다.
+- 넣지 않는 것: 스타일 프리셋(Airbnb 등)은 취향 규칙 덩어리라 formatter와 충돌하고, 함수 줄 수·복잡도 제한은 `DEV-CODE-06`이 명시적으로 반대한다.
+
+**4. 도구** — formatter, TypeScript strict, Vitest + Testing Library, Playwright 모바일 프로젝트, 그리고 테스트·lint·typecheck와 CI용 단일 검증 명령을 package scripts로 제공한다.
+
+**5. 검사 배치**
+
+| 단계 | 검사 |
+| --- | --- |
+| pre-commit | harness 게이트 4종 + lint-staged(변경 파일만) + `tsc --incremental` + 단위 테스트 전체 |
+| pre-push (신설) | `pnpm build` |
+| CI (P0-T05) | 위 전부 + Playwright E2E + type-aware 린트 + `pnpm gate:all` |
+
+- 커밋 시점에 테스트를 돌려도 TDD 흐름과 충돌하지 않는다. `gate:tdd`는 테스트를 실행하지 않고 `tdd.json`의 RED→GREEN **기록**만 검사하며, task당 단일 commit 계약상 커밋 시점은 이미 GREEN이다.
+- 훅은 기존 `.githooks/pre-commit`에 이어 붙인다. husky는 쓰지 않는다. husky는 설치 시 `core.hooksPath`를 자기 디렉터리로 바꾸는데, 그러면 그 경로에 있던 harness 게이트 4종(index·RADIO 해시·TDD 증거·커밋 범위)이 조용히 실행되지 않는다. 승인 계약을 지키는 검사를 포맷터 편의와 바꾸지 않는다.
+- 팀원이 `pnpm install`만으로 훅을 얻도록 `prepare` 스크립트가 `core.hooksPath`를 `.githooks`로 설정한다. husky가 제공하는 자동 설치 이점은 이 한 줄로 대체된다.
+- staged 파일만 검사하는 부분은 lint-staged를 쓴다. 부분 stage된 파일 처리 같은 함정을 직접 구현하지 않는다.
+- 타입 검사와 build는 변경 파일만 검사할 수 없다. TypeScript는 파일이 아니라 프로그램 단위로 검사하고 파일 목록을 직접 주면 `tsconfig.json` 옵션이 무시된다. 증분 캐시로 실제 작업량만 줄인다.
 
 비목표:
 
-- CI 파이프라인 구성(P0-T05). 이 task는 로컬 커밋 경로만 다룬다.
+- CI 파이프라인 구성(P0-T05). 이 task는 로컬 커밋·푸시 경로와 검증 명령까지만 다룬다.
+- 커버리지 임계값 정책. `DEV-TEST-05`가 커버리지 수치만으로 완료를 판단하지 못하게 한다.
+- Supabase 연동과 DB 테스트 환경(P0-T03).
+- 디자인 토큰과 컴포넌트(P0-T34).
 
 인수 조건:
 
-- 의도적인 샘플 단위 테스트와 모바일 E2E smoke test가 통과한다.
-- CI에서 사용할 단일 검증 명령이 존재한다.
-- FSD 역방향 import와 UI 계층의 서버 모듈 import가 ESLint 오류로 차단된다.
-- 포맷 위반·린트 오류·타입 오류가 있는 커밋이 pre-commit에서 거부되고, 같은 훅에서 harness 게이트 4종도 그대로 실행된다.
+- 다음이 각각 ESLint 오류로 차단된다: FSD 역방향 import, UI 계층의 서버 모듈 import, 설명 주석, `shared/config/env` 밖 `process.env` 접근, `config`·`types` 세그먼트의 런타임 export, `model`의 React import, 네이밍 규칙 위반. 각각 의도적 위반 fixture로 차단을 확인한다.
+- `config/fsd.json`의 세그먼트 하나를 바꾸면 ESLint와 `tdd-guard.sh`의 판정이 함께 바뀐다. 두 도구가 같은 정본을 읽는다는 증거를 남긴다.
+- 포맷 위반·린트 오류·타입 오류·테스트 실패가 있는 커밋이 pre-commit에서 거부되고, 같은 훅에서 harness 게이트 4종도 그대로 실행된다.
+- build가 실패하는 push가 pre-push에서 거부된다.
 - 새로 clone한 저장소에서 `pnpm install` 후 별도 명령 없이 훅이 동작한다.
+- 의도적인 샘플 단위 테스트가 통과하고, 모바일 뷰포트 E2E smoke test가 부트스트랩 화면 렌더를 확인한다. 통과만 하는 빈 테스트가 아님을 대조군으로 증명한다.
+- CI에서 사용할 단일 검증 명령이 존재한다.
 
-기획 승인 대기.
+주요 경계 사례:
+
+- `--no-verify` 우회는 git의 한계다. CI가 `pnpm gate:all`로 보완한다(P0-T05).
+- `tdd-guard.sh`의 테스트 탐색 경로(형제 `*.test.*` → `__tests__/` → `src/__tests__/` → `tests/`)와 새 Vitest 배치가 어긋나면 테스트가 있는데도 편집이 거부된다.
+- shadcn CLI는 레지스트리에 정의된 파일명(`button.tsx`)을 그대로 쓰고 `components.json`에 파일명 옵션이 없다. `shared/ui/**`를 예외 구역으로 두고 실제 개명 정책은 shadcn을 설치하는 P0-T34에서 확정한다.
+
+기획 승인: user, 2026-08-04.
 
 ### P0-T03. Supabase 로컬 개발과 초기 스키마
 
