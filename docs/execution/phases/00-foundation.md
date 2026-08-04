@@ -30,29 +30,54 @@
 - task 검증 통과 시 관련 spec ID가 증거에 기록되고 task별 commit이 생성된다.
 - phase의 자동 검증 통과 후 수동 증거가 없으면 phase가 `verification_pending`으로 남는다.
 
-### P0-T01. Next.js 모바일 PWA 프로젝트 생성
+### P0-T01. Next.js 모바일 앱 프로젝트 생성
 
 - pnpm 기반 Next.js App Router와 TypeScript를 생성한다.
-- `src/` 구조, 절대 경로 alias, 서버·클라이언트 경계를 정한다.
-- 모바일 viewport와 기본 한국어 metadata를 설정한다.
-- `DESIGN.md`의 Foundations와 모바일 우선 원칙을 기본 스타일에 반영하되 기능별 화면은 해당 Phase에서 구현한다.
+- `src/` 아래에 FSD 6계층(`app`·`pages`·`widgets`·`features`·`entities`·`shared`) 디렉터리 골격과 절대 경로 alias를 만든다. 계층 정의의 정본은 [개발 컨벤션](../../standards/DEVELOPMENT.md)이다.
+- 서버·클라이언트 경계 규약을 세운다. 서버 모듈의 `import "server-only"` 선언 지점을 정하고 서버 전용 값이 클라이언트 번들에 들어가지 않음을 확인한다.
+- 모바일 viewport, 한국어 metadata와 문서 언어를 설정한다.
+- Tailwind CSS를 설치하고 설정 파일 골격만 만든다. 토큰 값은 P0-T34가 채운다.
+- 부트스트랩 확인용 최소 화면 하나를 렌더한다.
+
+비목표:
+
+- 디자인 토큰과 컴포넌트(P0-T34), PWA manifest·아이콘(P0-T04), service worker와 Web Push(P4-T02).
+- lint·formatter·테스트 도구(P0-T02), Supabase 연동(P0-T03).
 
 인수 조건:
 
 - 개발 서버가 실행되고 기본 모바일 화면이 렌더링된다.
 - production build와 typecheck가 성공한다.
+- `src/` 디렉터리 골격이 개발 컨벤션의 FSD 계층과 이름·순서에서 일치한다.
+- 서버 전용 모듈이 클라이언트 번들에 포함되지 않는다.
+
+기획 승인: user, 2026-08-04.
 
 ### P0-T02. 코드 품질과 테스트 도구 구성
 
-- ESLint, formatter, TypeScript strict를 구성한다.
+- ESLint로 코드 컨벤션을 **강제**한다. 취향 규칙이 아니라 [개발 컨벤션](../../standards/DEVELOPMENT.md)의 구조 규칙을 기계가 막게 한다: FSD 계층의 단방향 import(위 → 아래만), UI 계층의 DB·비밀값·서버 모듈 import 금지, 서버 모듈의 `import "server-only"` 선언.
+- formatter와 TypeScript strict를 구성한다.
 - Vitest와 Testing Library를 구성한다.
 - Playwright 모바일 프로젝트를 구성한다.
 - 테스트·lint·typecheck 명령을 package scripts로 제공한다.
+- **커밋 시 자동 검사**를 건다. staged 파일의 포맷·린트와 프로젝트 타입 검사를 커밋 전에 실행해 위반이 있으면 커밋을 막는다.
+  - 훅은 기존 `.githooks/pre-commit`에 이어 붙인다. husky는 쓰지 않는다. husky는 설치 시 `core.hooksPath`를 자기 디렉터리로 바꾸는데, 그러면 그 경로에 있던 harness 게이트 4종(index·RADIO 해시·TDD 증거·커밋 범위)이 조용히 실행되지 않는다. 승인 계약을 지키는 검사를 포맷터 편의와 바꾸지 않는다.
+  - 팀원이 `pnpm install`만으로 훅을 얻도록 `prepare` 스크립트가 `core.hooksPath`를 `.githooks`로 설정한다. husky가 제공하는 자동 설치 이점은 이 한 줄로 대체된다.
+  - staged 파일만 검사하는 부분은 lint-staged를 쓴다. 부분 stage된 파일 처리 같은 함정을 직접 구현하지 않는다.
+
+비목표:
+
+- CI 파이프라인 구성(P0-T05). 이 task는 로컬 커밋 경로만 다룬다.
 
 인수 조건:
 
 - 의도적인 샘플 단위 테스트와 모바일 E2E smoke test가 통과한다.
 - CI에서 사용할 단일 검증 명령이 존재한다.
+- FSD 역방향 import와 UI 계층의 서버 모듈 import가 ESLint 오류로 차단된다.
+- 포맷 위반·린트 오류·타입 오류가 있는 커밋이 pre-commit에서 거부되고, 같은 훅에서 harness 게이트 4종도 그대로 실행된다.
+- 새로 clone한 저장소에서 `pnpm install` 후 별도 명령 없이 훅이 동작한다.
+
+기획 승인 대기.
 
 ### P0-T03. Supabase 로컬 개발과 초기 스키마
 
