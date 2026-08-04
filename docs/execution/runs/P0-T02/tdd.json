@@ -1,0 +1,118 @@
+{
+  "entries": [
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/lib/__tests__/contract.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-04T08:10:08.802137Z",
+      "phase": "red"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/lib/__tests__/contract.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-04T08:11:06.934034Z",
+      "phase": "green"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/lib/__tests__/contract.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-04T08:12:14.777758Z",
+      "phase": "green"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/lib/__tests__/contract.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-04T08:15:13.767796Z",
+      "phase": "green"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/layer-direction.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-04T08:17:36.783856Z",
+      "phase": "red"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/layer-direction.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-04T08:17:36.783856Z",
+      "phase": "red"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/layer-direction.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-04T08:18:39.936617Z",
+      "phase": "green"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/segment-name.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-04T08:20:17.721975Z",
+      "phase": "red"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/segment-imports.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-04T08:20:17.721975Z",
+      "phase": "red"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/no-runtime-export.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-04T08:20:17.721975Z",
+      "phase": "red"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/require-server-only.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-04T08:20:17.721975Z",
+      "phase": "red"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/no-comments.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-04T08:20:17.721975Z",
+      "phase": "red"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/file-naming.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-04T08:20:17.721975Z",
+      "phase": "red"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/segment-name.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-04T08:24:18.311576Z",
+      "phase": "green"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/segment-imports.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-04T08:24:18.311576Z",
+      "phase": "green"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/no-runtime-export.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-04T08:24:18.311576Z",
+      "phase": "green"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/require-server-only.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-04T08:24:18.311576Z",
+      "phase": "green"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/no-comments.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-04T08:24:18.311576Z",
+      "phase": "green"
+    },
+    {
+      "command": "npx vitest run tools/eslint-plugin-project/rules/__tests__/file-naming.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-04T08:24:18.311576Z",
+      "phase": "green"
+    }
+  ]
+}

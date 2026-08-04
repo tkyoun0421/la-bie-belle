@@ -1,10 +1,3 @@
-/**
- * Reads every source of truth the dashboard displays.
- *
- * This module owns all file system and git access; the calculation modules stay
- * pure. Nothing here writes: the dashboard is a derived, read only view. A
- * source that cannot be read becomes a notice, never a guessed value.
- */
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -25,10 +18,8 @@ const INTERVIEWS_DIRECTORY = "interviews";
 const PHASES_DIRECTORY = "docs/execution/phases";
 const DASHBOARD_DIRECTORY = "docs/execution/dashboard";
 
-/** Repository gates whose pass rate makes up the contract compliance score. */
 const SCORED_GATE_IDS: readonly string[] = ["gate:index", "gate:radio", "gate:handoff", "gate:tdd"];
 
-/** Base commit a generated artifact records for the next generation to read. */
 const BASE_COMMIT_MARKER = /<meta name="base-commit" content="([0-9a-f]{40})">/u;
 
 export type GitSnapshot = {
@@ -53,9 +44,7 @@ export type Collection = {
   readonly generatedAt: string;
   readonly git: GitSnapshot;
   readonly records: readonly IndexRecord[];
-  /** Scored repository gates (index, radio, handoff, tdd). */
   readonly gates: readonly GateOutcome[];
-  /** Commit-context gates (scope, commit-msg): reference display only. */
   readonly referenceGates: readonly GateOutcome[];
   readonly freshness: ArtifactFreshness;
   readonly evidence: readonly EvidenceItem[];
@@ -68,8 +57,6 @@ export type Collection = {
 
 function git(root: string, args: readonly string[]): string | null {
   try {
-    // A missing HEAD or artifact is an expected state ("누락"), so git's own
-    // stderr message must not leak into the generator output.
     return execFileSync("git", ["-C", root, ...args], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
@@ -104,7 +91,6 @@ function readGit(root: string, notices: string[]): GitSnapshot {
   };
 }
 
-/** Runs one gate; a gate that cannot run becomes a not-passed outcome, never an abort. */
 function runGate(id: string, run: () => number, notices: string[]): GateOutcome {
   try {
     const violations = run();
@@ -116,16 +102,14 @@ function runGate(id: string, run: () => number, notices: string[]): GateOutcome 
   }
 }
 
-/**
- * Runs every repository gate plus commit-msg over the HEAD commit message, split
- * into the scored repository gates and the commit-context reference gates.
- */
 function runGates(
   root: string,
   headMessage: string | null,
   notices: string[],
 ): { scored: GateOutcome[]; reference: GateOutcome[] } {
-  const outcomes = REPOSITORY_GATES.map((gate) => runGate(gate.id, () => gate.run(root).length, notices));
+  const outcomes = REPOSITORY_GATES.map((gate) =>
+    runGate(gate.id, () => gate.run(root).length, notices),
+  );
 
   if (headMessage === null) {
     notices.push("HEAD 커밋 메시지를 읽지 못해 commit-msg 게이트를 통과로 볼 수 없습니다.");
@@ -139,11 +123,6 @@ function runGates(
   };
 }
 
-/**
- * Judges the ADR-0012 regeneration rule: reads the base commit recorded in the
- * previously committed artifact and checks whether any commit since then changed
- * `docs/execution/phases/` without also regenerating the dashboard.
- */
 export function artifactFreshness(root: string, headCommit: string | null): ArtifactFreshness {
   if (headCommit === null) {
     return { kind: "no-head" };
@@ -168,7 +147,10 @@ export function artifactFreshness(root: string, headCommit: string | null): Arti
     .filter((line) => line.trim().length > 0)
     .filter((commit) => {
       const files = git(root, ["diff-tree", "--no-commit-id", "--name-only", "-r", commit]);
-      return files === null || !files.split("\n").some((file) => file.startsWith(`${DASHBOARD_DIRECTORY}/`));
+      return (
+        files === null ||
+        !files.split("\n").some((file) => file.startsWith(`${DASHBOARD_DIRECTORY}/`))
+      );
     })
     .map((commit) => commit.slice(0, 7));
   if (missedCommits.length === 0) {
@@ -190,7 +172,6 @@ function readIndexRecords(root: string, notices: string[]): IndexRecord[] {
   return parsed.entries.map((entry) => entry.record);
 }
 
-/** Existence of the run artifacts each completed task must carry. */
 function collectEvidence(root: string, records: readonly IndexRecord[]): EvidenceItem[] {
   return selectEvidenceTasks(records).flatMap((task) => {
     const items: EvidenceItem[] = [
@@ -222,7 +203,6 @@ function listDirectory(root: string, relativePath: string): string[] {
 const ADR_STATE_LINE = /^-\s*상태:\s*(.+?)\s*$/mu;
 const ADR_TITLE_LINE = /^#\s+(.+?)\s*$/mu;
 
-/** ADRs whose state line says 보류: they are not a current implementation basis. */
 function collectPendingAdrs(root: string): PendingAdr[] {
   return listDirectory(root, ADR_DIRECTORY)
     .filter((fileName) => fileName.endsWith(".md") && fileName !== "README.md")
@@ -244,11 +224,6 @@ const UNRESOLVED_HEADING = /^#{2,6}\s*미결 사항\s*$/u;
 const HEADING = /^#{1,6}\s/u;
 const LIST_ITEM = /^[-*]\s+(.+)$/u;
 
-/**
- * Reads the last `미결 사항` section of a handoff. Only the newest stage record
- * counts: earlier sections describe debt that a later record already restated or
- * resolved. A single `없음` item means no debt.
- */
 export function parseOpenDebtItems(markdown: string): string[] {
   const lines = markdown.split("\n");
   let start = -1;
@@ -332,7 +307,6 @@ function collectReviewDocuments(root: string, notices: string[]): ReviewDocument
     });
 }
 
-/** Gathers one consistent snapshot of the repository at `now`. */
 export function collect(root: string, now: Date): Collection {
   const notices: string[] = [];
   const gitSnapshot = readGit(root, notices);

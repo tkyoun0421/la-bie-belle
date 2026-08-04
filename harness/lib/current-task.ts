@@ -11,10 +11,6 @@ export type CurrentTaskLoad =
   | { readonly ok: true; readonly task: IndexEntry | null }
   | { readonly ok: false; readonly violation: Violation };
 
-/**
- * Reads the task index for gates that only need decoded records. Malformed lines
- * are skipped here on purpose: reporting them belongs to the index gate.
- */
 export function loadIndexEntries(root: string, gate: string): IndexLoad {
   const indexText = readTextFile(root, INDEX_PATH);
   if (indexText === null) {
@@ -31,11 +27,6 @@ export function loadIndexEntries(root: string, gate: string): IndexLoad {
   return { ok: true, entries: parseIndexJsonl(indexText).entries };
 }
 
-/**
- * Resolves the task the pipeline is currently executing: the single
- * `in_progress` task. Returns null when there is none, and also when there is
- * more than one — that ambiguity is the index gate's violation to report.
- */
 export function loadCurrentTask(root: string, gate: string): CurrentTaskLoad {
   const loaded = loadIndexEntries(root, gate);
   if (!loaded.ok) {

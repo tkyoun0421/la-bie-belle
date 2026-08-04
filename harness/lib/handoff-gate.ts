@@ -5,9 +5,7 @@ import type { Violation } from "./violation.ts";
 
 const GATE = "gate:handoff";
 
-/** Inline `- <label>: <value>` fields required by docs/workflow/HANDOFF.md. */
 export const REQUIRED_HANDOFF_LABELS: readonly string[] = ["작업 식별자", "현재 단계", "기준 시각"];
-/** `### <label>` sections required by docs/workflow/HANDOFF.md. */
 export const REQUIRED_HANDOFF_SECTIONS: readonly string[] = [
   "확정된 사실",
   "미결 사항",
@@ -20,9 +18,9 @@ function escapeForRegExp(value: string): string {
 }
 
 function hasFilledLabel(markdown: string, label: string): boolean {
-  // Character classes stay line local on purpose: `\s` would match a newline and
-  // let the value of the next line satisfy an empty field.
-  return new RegExp(`^[ \\t]*[-*][ \\t]*${escapeForRegExp(label)}[ \\t]*:[ \\t]*\\S`, "mu").test(markdown);
+  return new RegExp(`^[ \\t]*[-*][ \\t]*${escapeForRegExp(label)}[ \\t]*:[ \\t]*\\S`, "mu").test(
+    markdown,
+  );
 }
 
 function hasFilledSection(markdown: string, label: string): boolean {
@@ -45,10 +43,6 @@ function hasFilledSection(markdown: string, label: string): boolean {
   return false;
 }
 
-/**
- * Returns Korean descriptions of the handoff contract fields that are missing or
- * empty. An empty array means the document satisfies the minimum contract.
- */
 export function checkHandoffDocument(markdown: string): string[] {
   const missing: string[] = [];
   for (const label of REQUIRED_HANDOFF_LABELS) {
@@ -79,10 +73,6 @@ function resolveTargetTask(root: string, taskId?: string): TargetTask {
   return { ok: true, taskId: loaded.task === null ? null : recordId(loaded.task.record) };
 }
 
-/**
- * Checks the handoff of `taskId`, or of the single `in_progress` task when no id
- * is given. With no target there is nothing to check, so the gate passes.
- */
 export function runHandoffGate(root: string, taskId?: string): Violation[] {
   const target = resolveTargetTask(root, taskId);
   if (!target.ok) {

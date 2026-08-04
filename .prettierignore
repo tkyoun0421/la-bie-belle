@@ -1,0 +1,4 @@
+# Prettier는 src/ 안의 애플리케이션 코드만 포맷한다.
+# 도구(harness·tools·scripts), 문서, 실행 증거는 대상이 아니다.
+/*
+!/src

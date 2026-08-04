@@ -9,7 +9,6 @@ import {
 } from "../dashboard/rubric.ts";
 import { makePhase, makeTask } from "./fixture.ts";
 
-/** Scored repository gates (F-02: scope and commit-msg are reference only). */
 const SCORED_GATE_IDS = ["gate:index", "gate:radio", "gate:handoff", "gate:tdd"];
 
 function gates(passedCount: number): RubricInput["gates"] {
@@ -54,7 +53,11 @@ function section(readiness: Readiness, id: string): Readiness["sections"][number
   return found;
 }
 
-function itemOf(readiness: Readiness, sectionId: string, itemId: string): { earned: number; evidence: string } {
+function itemOf(
+  readiness: Readiness,
+  sectionId: string,
+  itemId: string,
+): { earned: number; evidence: string } {
   const found = section(readiness, sectionId).items.find((candidate) => candidate.id === itemId);
   assert.ok(found !== undefined, `항목 ${itemId}가 없다`);
   return found;
@@ -72,7 +75,9 @@ test("rubric — 만점 입력은 100점 우수 등급이다", () => {
 });
 
 test("rubric — 총점은 4개 영역 배점 합과 같다", () => {
-  const readiness = computeReadiness(perfectInput({ gates: gates(2), blockedCount: 2, pendingAdrCount: 1 }));
+  const readiness = computeReadiness(
+    perfectInput({ gates: gates(2), blockedCount: 2, pendingAdrCount: 1 }),
+  );
   const sum = readiness.sections.reduce((accumulator, entry) => accumulator + entry.earned, 0);
 
   assert.equal(readiness.total, sum);
@@ -87,7 +92,11 @@ test("rubric — 계약 준수는 저장소 게이트 4종 통과율에 비례�
   assert.equal(section(computeReadiness(perfectInput({ gates: gates(0) })), "contract").earned, 0);
   assert.equal(section(computeReadiness(perfectInput({ gates: gates(3) })), "contract").earned, 30);
 
-  const evidence = itemOf(computeReadiness(perfectInput({ gates: gates(3) })), "contract", "gate-pass-rate").evidence;
+  const evidence = itemOf(
+    computeReadiness(perfectInput({ gates: gates(3) })),
+    "contract",
+    "gate-pass-rate",
+  ).evidence;
   assert.match(evidence, /3\s*\/\s*4/u);
 });
 
@@ -163,11 +172,18 @@ test("rubric — 실행 준비도는 실행 가능 planned와 blocked 0건을 �
 test("rubric — 재생성 준수 7점은 기존 산출물의 기준 커밋으로 실측한다", () => {
   const fresh = computeReadiness(perfectInput());
   assert.equal(itemOf(fresh, "freshness", "base-commit").earned, 7);
-  assert.match(itemOf(fresh, "freshness", "base-commit").evidence, new RegExp(COMMIT.slice(0, 7), "u"));
+  assert.match(
+    itemOf(fresh, "freshness", "base-commit").evidence,
+    new RegExp(COMMIT.slice(0, 7), "u"),
+  );
 
   const stale = computeReadiness(
     perfectInput({
-      freshness: { kind: "stale", recordedCommit: COMMIT, missedCommits: ["b".repeat(7), "c".repeat(7)] },
+      freshness: {
+        kind: "stale",
+        recordedCommit: COMMIT,
+        missedCommits: ["b".repeat(7), "c".repeat(7)],
+      },
     }),
   );
   assert.equal(itemOf(stale, "freshness", "base-commit").earned, 0);
@@ -215,7 +231,10 @@ test("rubric — 보류 ADR과 미결 부채는 근거에 출처를 함께 남�
       pendingAdrCount: 1,
       pendingAdrDetail: ["ADR-0012 정적 운영 대시보드"],
       openDebtCount: 5,
-      openDebtDetail: ["docs/execution/runs/P0-T30/handoff.md 3건", "docs/execution/runs/P0-T32/handoff.md 2건"],
+      openDebtDetail: [
+        "docs/execution/runs/P0-T30/handoff.md 3건",
+        "docs/execution/runs/P0-T32/handoff.md 2건",
+      ],
     }),
   );
 
@@ -252,7 +271,12 @@ test("rubric — 등급 경계는 90과 70이다", () => {
 test("rubric — 증거 대상은 재편 기준 이후의 완료 task만이다", () => {
   const selected = selectEvidenceTasks([
     makePhase(),
-    makeTask({ id: "P0-T13", status: "done", approval_contract: "legacy-v2", test_mode: "verification" }),
+    makeTask({
+      id: "P0-T13",
+      status: "done",
+      approval_contract: "legacy-v2",
+      test_mode: "verification",
+    }),
     makeTask({ id: "P0-T28", status: "done", test_mode: "tdd" }),
     makeTask({ id: "P0-T30", status: "done", test_mode: "docs_only" }),
     makeTask({ id: "P0-T31", status: "done", test_mode: "tdd" }),

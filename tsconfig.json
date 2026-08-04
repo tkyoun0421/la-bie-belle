@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "ES2022"
-    ],
+    "lib": ["dom", "dom.iterable", "ES2022"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
@@ -25,24 +21,12 @@
       }
     ],
     "paths": {
-      "@/app/*": [
-        "./src/app/*"
-      ],
-      "@/views/*": [
-        "./src/views/*"
-      ],
-      "@/widgets/*": [
-        "./src/widgets/*"
-      ],
-      "@/features/*": [
-        "./src/features/*"
-      ],
-      "@/entities/*": [
-        "./src/entities/*"
-      ],
-      "@/shared/*": [
-        "./src/shared/*"
-      ]
+      "@/app/*": ["./src/app/*"],
+      "@/views/*": ["./src/views/*"],
+      "@/widgets/*": ["./src/widgets/*"],
+      "@/features/*": ["./src/features/*"],
+      "@/entities/*": ["./src/entities/*"],
+      "@/shared/*": ["./src/shared/*"]
     }
   },
   "include": [
@@ -54,8 +38,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "harness"
-  ]
+  "exclude": ["node_modules", "harness"]
 }

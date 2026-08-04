@@ -81,7 +81,10 @@ test("progress — 승인이 빠진 planned는 실행 가능이 아니다", () =
 
   assert.deepEqual(progress.runnable, []);
   assert.equal(progress.waiting.length, 2);
-  assert.match(progress.waiting[0]?.blockers.join("\n") ?? "", /개발 설계 승인|development_approval/u);
+  assert.match(
+    progress.waiting[0]?.blockers.join("\n") ?? "",
+    /개발 설계 승인|development_approval/u,
+  );
   assert.match(progress.waiting[1]?.blockers.join("\n") ?? "", /radio_ref|RADIO/u);
 });
 
@@ -133,8 +136,6 @@ test("next-action — 실행 가능한 planned가 있으면 index 등록 순서�
   assert.equal(action.taskId, "P0-T02");
   assert.deepEqual(action.alternatives, ["P0-T03"]);
   assert.deepEqual(action.blockers, []);
-  // F-06: 근거 문구는 실제 판정 기준(index 등록 순서)을 말해야 하고,
-  // 계산하지 않는 "의존성 순서"를 단정하면 안 된다.
   assert.match(action.rationale, /index 등록 순서/u);
   assert.doesNotMatch(action.rationale, /의존성 순서/u);
 });

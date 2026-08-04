@@ -1,11 +1,3 @@
-/**
- * Renders the collected state into one self contained HTML document.
- *
- * Constraints from the approved RADIO and ADR-0012:
- * - single file, inline CSS, zero external resources (no font, no script host)
- * - mobile first: the decision information is read before the detail
- * - never invent a value; a missing source is shown as missing
- */
 import type { NextAction } from "./next-action.ts";
 import type { PhaseSummary, PlannedCandidate, ProgressSummary, TaskSummary } from "./progress.ts";
 import { STATUS_LABELS } from "./progress.ts";
@@ -14,7 +6,6 @@ import { AREA_LABELS, REVIEW_AREAS } from "./reviews.ts";
 import type { Readiness, ScoreSection } from "./rubric.ts";
 
 export type DashboardView = {
-  /** ISO 8601 generation time shown at the top. */
   readonly generatedAt: string;
   readonly baseCommit: string | null;
   readonly baseCommitSubject: string | null;
@@ -23,11 +14,9 @@ export type DashboardView = {
   readonly progress: ProgressSummary;
   readonly nextAction: NextAction;
   readonly reviews: ReviewsSummary;
-  /** Korean notes about sources that could not be read. */
   readonly notices: readonly string[];
 };
 
-/** Repository relative path of the generated artifact. */
 export const DASHBOARD_PATH = "docs/execution/dashboard/index.html";
 
 export const SECTION_TITLES = {
@@ -61,7 +50,6 @@ function escapeHtml(value: string): string {
     .replace(/'/gu, "&#39;");
 }
 
-/** Renders a list, or the empty-state sentence. An empty sentence renders nothing. */
 function list(items: readonly string[], emptyText: string): string {
   if (items.length === 0) {
     return emptyText.length === 0 ? "" : `<p class="empty">${escapeHtml(emptyText)}</p>`;
@@ -84,7 +72,9 @@ function header(view: DashboardView): string {
     view.baseCommit === null
       ? `<span class="missing">${MISSING}</span>`
       : `<span class="mono">${escapeHtml(view.baseCommit)}</span>${
-          view.baseCommitSubject === null ? "" : `<span class="sub">${escapeHtml(view.baseCommitSubject)}</span>`
+          view.baseCommitSubject === null
+            ? ""
+            : `<span class="sub">${escapeHtml(view.baseCommitSubject)}</span>`
         }`;
   const notices =
     view.notices.length === 0
@@ -104,7 +94,8 @@ ${notices}
 }
 
 function nextActionSection(action: NextAction): string {
-  const target = action.taskId === null ? "" : `<p class="target mono">${escapeHtml(action.taskId)}</p>`;
+  const target =
+    action.taskId === null ? "" : `<p class="target mono">${escapeHtml(action.taskId)}</p>`;
   return `<section id="next-action" class="card highlight">
 <h2>${SECTION_TITLES.nextAction}</h2>
 ${target}
@@ -326,10 +317,11 @@ summary{cursor:pointer;font-size:14px;color:var(--action)}
 footer{margin-top:16px;font-size:13px;color:var(--muted)}
 @media (min-width:720px){body{max-width:880px;margin:0 auto;padding:32px}h1{font-size:26px}}`;
 
-/** Builds the whole document. Pure: the same view always renders the same text. */
 export function renderDashboard(view: DashboardView): string {
   const baseCommitMarker =
-    view.baseCommit === null ? "" : `\n<meta name="base-commit" content="${escapeHtml(view.baseCommit)}">`;
+    view.baseCommit === null
+      ? ""
+      : `\n<meta name="base-commit" content="${escapeHtml(view.baseCommit)}">`;
   return `<!doctype html>
 <html lang="ko">
 <head>

@@ -44,7 +44,10 @@ test("commit-msg — 메시지 파일이 없으면 차단한다", () => {
 });
 
 test("commit-msg — task ID 자릿수 규칙을 지킨다", () => {
-  assert.ok(checkCommitMessage("feat(P0-T1): 자릿수 부족").length > 0, "T 뒤 두 자리가 아니면 위반");
+  assert.ok(
+    checkCommitMessage("feat(P0-T1): 자릿수 부족").length > 0,
+    "T 뒤 두 자리가 아니면 위반",
+  );
   assert.ok(checkCommitMessage("feat(PO-T01): 문자 오타").length > 0, "phase는 숫자여야 한다");
   assert.deepEqual(checkCommitMessage("docs(P12-T07): 정상"), []);
 });

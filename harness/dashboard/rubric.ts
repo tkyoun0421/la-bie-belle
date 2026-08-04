@@ -1,19 +1,13 @@
 import type { IndexRecord } from "../lib/task-index.ts";
 import { isTask, readStringField, recordId, recordStatus } from "../lib/task-index.ts";
 
-/** One gate execution result. `passed` means the gate reported no violation. */
 export type GateOutcome = {
   readonly id: string;
   readonly passed: boolean;
   readonly violations: number;
-  /** True when the gate itself could not run. Counted as not passed. */
   readonly errored?: boolean;
 };
 
-/**
- * Whether the regeneration rule (ADR-0012) was followed: measured against the
- * base commit recorded inside the previously committed dashboard artifact.
- */
 export type ArtifactFreshness =
   | { readonly kind: "no-head" }
   | { readonly kind: "no-previous" }
@@ -22,13 +16,11 @@ export type ArtifactFreshness =
   | {
       readonly kind: "stale";
       readonly recordedCommit: string;
-      /** Short SHAs of state-changing commits that were never regenerated over. */
       readonly missedCommits: readonly string[];
     };
 
 export type EvidenceRequirement = "handoff" | "tdd";
 
-/** One required run artifact of a completed task and whether it exists. */
 export type EvidenceItem = {
   readonly taskId: string;
   readonly requirement: EvidenceRequirement;
@@ -41,9 +33,7 @@ export type EvidenceTask = {
 };
 
 export type RubricInput = {
-  /** Repository gates that make up the score (index, radio, handoff, tdd). */
   readonly gates: readonly GateOutcome[];
-  /** Commit-context gates (scope, commit-msg): shown as reference, never scored. */
   readonly referenceGates: readonly GateOutcome[];
   readonly evidence: readonly EvidenceItem[];
   readonly runnablePlannedCount: number;
@@ -51,7 +41,6 @@ export type RubricInput = {
   readonly freshness: ArtifactFreshness;
   readonly pendingAdrCount: number;
   readonly openDebtCount: number;
-  /** Optional sources behind the counts, appended to the evidence sentence. */
   readonly pendingAdrDetail?: readonly string[];
   readonly openDebtDetail?: readonly string[];
 };
@@ -61,7 +50,6 @@ export type ScoreItem = {
   readonly label: string;
   readonly earned: number;
   readonly max: number;
-  /** Korean sentence with the numbers the score was derived from. */
   readonly evidence: string;
 };
 
@@ -81,14 +69,8 @@ export type Readiness = {
   readonly sections: readonly ScoreSection[];
 };
 
-/**
- * First task of the five-layer restructure (ADR-0013). Tasks completed before it
- * predate the current run-evidence contract, so their missing `runs/**` records
- * are history, not debt.
- */
 export const EVIDENCE_BASELINE_TASK_ID = "P0-T30";
 
-/** Approval contract of tasks closed before the dual approval transition. */
 const LEGACY_APPROVAL_CONTRACT = "legacy-v2";
 
 const GRADE_EXCELLENT_MIN = 90;
@@ -103,7 +85,6 @@ export function gradeOf(total: number): Grade {
 
 const TASK_ID_PARTS = /^P([0-9]+)-T([0-9]+)$/u;
 
-/** Sort key of a task ID, or null when the ID has another shape. */
 function taskOrder(taskId: string): readonly [number, number] | null {
   const parts = TASK_ID_PARTS.exec(taskId);
   if (parts === null) {
@@ -112,7 +93,6 @@ function taskOrder(taskId: string): readonly [number, number] | null {
   return [Number(parts[1]), Number(parts[2])];
 }
 
-/** True when `taskId` is at or after `baselineId` in phase then task order. */
 function isAtOrAfter(taskId: string, baselineId: string): boolean {
   const left = taskOrder(taskId);
   const right = taskOrder(baselineId);
@@ -122,10 +102,6 @@ function isAtOrAfter(taskId: string, baselineId: string): boolean {
   return left[0] !== right[0] ? left[0] > right[0] : left[1] >= right[1];
 }
 
-/**
- * Completed tasks that must carry run evidence: `done` tasks from the
- * restructure baseline onward, excluding the `legacy-v2` approval contract.
- */
 export function selectEvidenceTasks(records: readonly IndexRecord[]): EvidenceTask[] {
   return records
     .filter(
@@ -163,7 +139,6 @@ const BASE_COMMIT_MAX = 7;
 const PENDING_ADR_MAX = 4;
 const OPEN_DEBT_MAX = 4;
 
-/** One-word Korean state of a gate outcome, for the evidence sentence. */
 function gateState(gate: GateOutcome): string {
   if (gate.errored === true) {
     return `${gate.id} 실행 실패`;
@@ -187,7 +162,9 @@ function contractSection(
     ]);
   }
   const passed = gates.filter((gate) => gate.passed);
-  const violatedIds = gates.filter((gate) => !gate.passed && gate.errored !== true).map((gate) => gate.id);
+  const violatedIds = gates
+    .filter((gate) => !gate.passed && gate.errored !== true)
+    .map((gate) => gate.id);
   const erroredIds = gates.filter((gate) => gate.errored === true).map((gate) => gate.id);
 
   let evidence = `저장소 게이트 ${passed.length}/${gates.length} 통과.`;
@@ -265,7 +242,13 @@ function freshnessItem(freshness: ArtifactFreshness): ScoreItem {
   const LABEL = "재생성 준수";
   switch (freshness.kind) {
     case "no-head":
-      return item("base-commit", LABEL, 0, BASE_COMMIT_MAX, "git HEAD 누락 — 재생성 준수를 확인할 수 없다.");
+      return item(
+        "base-commit",
+        LABEL,
+        0,
+        BASE_COMMIT_MAX,
+        "git HEAD 누락 — 재생성 준수를 확인할 수 없다.",
+      );
     case "no-previous":
       return item(
         "base-commit",
@@ -301,9 +284,10 @@ function freshnessItem(freshness: ArtifactFreshness): ScoreItem {
   }
 }
 
-/** Appends the sources behind a count, when the caller knows them. */
 function withDetail(sentence: string, detail: readonly string[] | undefined): string {
-  return detail === undefined || detail.length === 0 ? sentence : `${sentence} ${detail.join(", ")}.`;
+  return detail === undefined || detail.length === 0
+    ? sentence
+    : `${sentence} ${detail.join(", ")}.`;
 }
 
 function freshnessSection(input: RubricInput): ScoreSection {
@@ -326,11 +310,6 @@ function freshnessSection(input: RubricInput): ScoreSection {
   ]);
 }
 
-/**
- * Machine judged readiness over four areas: contract compliance 40, evidence
- * completeness 25, execution readiness 20 and document freshness 15. Every item
- * carries the numbers it was derived from so no score is unexplained.
- */
 export function computeReadiness(input: RubricInput): Readiness {
   const sections = [
     contractSection(input.gates, input.referenceGates),

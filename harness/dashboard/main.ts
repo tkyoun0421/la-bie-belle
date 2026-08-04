@@ -1,10 +1,3 @@
-/**
- * `pnpm dashboard` entry point.
- *
- * Collects the sources of truth, computes the read only view and writes one self
- * contained HTML file. Generation failure is advisory: it reports in Korean and
- * exits 1 without touching any source of truth.
- */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { repoPath, resolveRepoRoot } from "../lib/repo.ts";
@@ -25,7 +18,6 @@ function adrDetail(collection: Collection): string[] {
   return collection.pendingAdrs.map((adr) => `${adr.file} (${adr.state})`);
 }
 
-/** Turns one collected snapshot into the view the renderer draws. */
 export function buildView(collection: Collection): DashboardView {
   const progress = summarizeProgress(collection.records);
   const openDebtCount = collection.openDebts.reduce((total, debt) => total + debt.items.length, 0);

@@ -7,7 +7,6 @@ import type { Violation } from "./violation.ts";
 
 const GATE = "gate:scope";
 
-/** Returns one Korean description per staged path outside the approved globs. */
 export function checkStagedPaths(
   stagedPaths: readonly string[],
   allowedGlobs: readonly string[],
@@ -17,11 +16,6 @@ export function checkStagedPaths(
     .map((path) => `${path}는 승인된 변경 허용 경로 밖입니다.`);
 }
 
-/**
- * Checks that staged files stay inside the commit scope sealed into the current
- * task's approved RADIO. With no task in flight the gate passes so workflow meta
- * commits stay possible.
- */
 export function runScopeGate(root: string): Violation[] {
   const loaded = loadCurrentTask(root, GATE);
   if (!loaded.ok) {

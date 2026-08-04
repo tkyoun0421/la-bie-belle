@@ -22,7 +22,12 @@ function stagedFixture(allowedPaths: readonly string[], stagedPath: string): str
   writeIndexRecords(root, [
     makeTask({
       status: "in_progress",
-      development_approval: { by: "user", at: "2026-08-03", radio_revision: 1, radio_sha256: sha256 },
+      development_approval: {
+        by: "user",
+        at: "2026-08-03",
+        radio_revision: 1,
+        radio_sha256: sha256,
+      },
     }),
   ]);
   writeFixtureFile(root, stagedPath, "내용\n");
@@ -48,7 +53,11 @@ test("gate:scope — 허용 경로 밖의 staged 파일을 차단한다", () => 
 test("gate:scope — 변경 허용 경로 절이 없으면 차단한다", () => {
   const root = createFixtureRoot();
   initGitRepo(root);
-  writeFixtureFile(root, "docs/execution/radio/P0-T01-radio.md", "# RADIO\n\n## Requirements\n\n- 없음\n");
+  writeFixtureFile(
+    root,
+    "docs/execution/radio/P0-T01-radio.md",
+    "# RADIO\n\n## Requirements\n\n- 없음\n",
+  );
   writeIndexRecords(root, [makeTask({ status: "in_progress" })]);
 
   const violations = runScopeGate(root);

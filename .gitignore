@@ -11,3 +11,7 @@ tsconfig.tsbuildinfo
 .env
 .env.*
 !.env.example
+coverage/
+playwright-report/
+test-results/
+.probe/

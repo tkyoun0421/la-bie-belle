@@ -1,9 +1,20 @@
 # P0-T02 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 5
 - 기획 승인: user, 2026-08-04
-- 개발 설계 승인: user, 2026-08-04
+- 개발 설계 승인: user, 2026-08-04 (revision 5 재승인)
+
+## 개정 이력
+
+| revision | 날짜       | 내용                                                                                                                                                                         |
+| -------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1        | 2026-08-04 | 최초 승인.                                                                                                                                                                   |
+| 2        | 2026-08-04 | 개발 착수 직후 `typescript-eslint`가 TypeScript 7을 지원하지 않아 실행이 막혔다. TypeScript를 7.0.2에서 **6.0.3**으로 내리는 결정을 반영해 재승인했다(사용자 결정).          |
+| 3        | 2026-08-04 | 훅 파일명을 `use-kebab-case`에서 **`useCamelCase`**로 바꿨다(사용자 결정). 파일 이름과 export 이름이 일치해 컴포넌트 규칙(`ShiftCard.tsx` → `ShiftCard`)과 같은 형태가 된다. |
+| 4 | 2026-08-04 | 구현 중 드러난 네 가지를 반영해 재승인했다. ①`runtimeExports`를 불리언에서 `true`/`false`/`"constants"` 세 값으로 확장 ②`appLayer`를 계약에 추가해 `route.ts`가 테스트를 요구하도록 정정 ③Prettier·ESLint 적용 범위를 `src/`로 한정(사용자 결정) ④pre-commit이 의존성 없는 환경에서 프로젝트 검사를 건너뛰되 그 사실을 알리도록 변경. |
+| 5 | 2026-08-04 | 변경 허용 경로에 `docs/execution/phases/00-foundation.md`를 추가했다. 훅 파일명 결정(revision 3)을 기획 문서의 네이밍 표에 반영해야 하는데 그 경로가 봉인 범위 밖이었다. |
+
 - 관련 spec: ADR:0001, ADR:0008, ADR:0013, ADR:0014, DOCS:SDD
 - 적용 깊이: 일반
 - test mode: tdd
@@ -74,15 +85,15 @@
 - 순수 ESM JavaScript(`.mjs`)로 작성한다. harness는 `node --experimental-strip-types`로 직접 실행하지만 ESLint 플러그인은 ESLint가 로드하므로 type stripping 경로를 탈 수 없다. TypeScript 설정 파일 지원(`eslint.config.ts`)은 추가 로더를 요구하므로 쓰지 않는다.
 - 제공하는 규칙은 일곱 개다.
 
-| 규칙 | 강제 대상 | 근거 |
-| --- | --- | --- |
-| `project/layer-direction` | 계층 단방향 import (위 → 아래) | `DEV-ARCH-01`, `DEV-CODE-03` |
-| `project/segment-name` | `fsd.json`에 없는 세그먼트 디렉터리 금지 | `DEV-ARCH-05` |
-| `project/segment-imports` | 세그먼트별 `forbidImports` | `DEV-ARCH-02`, `DEV-CODE-02` |
-| `project/no-runtime-export` | `runtimeExports: false` 세그먼트의 런타임 export 금지 | 면제 구역 잠금 |
-| `project/require-server-only` | `requireServerOnly: true` 세그먼트의 첫 import 선언 | `DEV-ARCH-03` |
-| `project/file-naming` | 폴더·파일·컴포넌트 네이밍 | `DEV-NAME-*` |
-| `project/no-comments` | 설명 주석과 JSDoc 금지 | `DEV-CODE-07` |
+| 규칙                          | 강제 대상                                             | 근거                         |
+| ----------------------------- | ----------------------------------------------------- | ---------------------------- |
+| `project/layer-direction`     | 계층 단방향 import (위 → 아래)                        | `DEV-ARCH-01`, `DEV-CODE-03` |
+| `project/segment-name`        | `fsd.json`에 없는 세그먼트 디렉터리 금지              | `DEV-ARCH-05`                |
+| `project/segment-imports`     | 세그먼트별 `forbidImports`                            | `DEV-ARCH-02`, `DEV-CODE-02` |
+| `project/no-runtime-export`   | `runtimeExports: false` 세그먼트의 런타임 export 금지 | 면제 구역 잠금               |
+| `project/require-server-only` | `requireServerOnly: true` 세그먼트의 첫 import 선언   | `DEV-ARCH-03`                |
+| `project/file-naming`         | 폴더·파일·컴포넌트 네이밍                             | `DEV-NAME-*`                 |
+| `project/no-comments`         | 설명 주석과 JSDoc 금지                                | `DEV-CODE-07`                |
 
 - `project/no-comments`가 기성 규칙으로 불가능한 이유: 주석은 AST 노드가 아니라 토큰이라 일반 셀렉터로 잡히지 않는다. `SourceCode.getAllComments()`를 직접 순회한다. 예외는 `eslint-disable*`, `@ts-expect-error`/`@ts-ignore`, shebang뿐이다.
 - 경로에서 계층·슬라이스·세그먼트를 뽑는 규칙은 한 곳(`tools/eslint-plugin-project/lib/resolve-path.mjs`)에 두고 일곱 규칙이 공유한다. 같은 파싱을 일곱 번 구현하면 `DEV-REUSE-01`을 어긴다.
@@ -92,6 +103,22 @@ src/<layer>/<slice>/<segment>/<file>   views · widgets · features · entities
 src/shared/<segment>/<file>            shared는 슬라이스가 없다
 src/app/**                             Next.js 라우트, 세그먼트 판정 대상 아님
 ```
+
+### TypeScript 버전 (revision 2)
+
+TypeScript **6.0.3**을 쓴다. 7.0.2에서 내린다.
+
+`typescript-eslint` 8.66.0(최신, `next` 태그 없음)은 TS 7에서 **경고가 아니라 에러로 중단한다**: `typescript-eslint does not support TS 7.0`. `.ts` 파일을 파싱할 다른 실질적 파서가 없으므로 이 블록은 우회할 수 없다. 추적 이슈는 [typescript-eslint#10940](https://github.com/typescript-eslint/typescript-eslint/issues/10940)이다.
+
+내리는 쪽을 고른 근거는 다음과 같다.
+
+- Next.js 16은 `typescript`를 peer dependency로 요구하지 않는다. TS 7이 필수가 아니다.
+- P0-T01은 TS 7을 적극 선택하지 않았다. handoff에 "TypeScript는 기존 7.0.2를 그대로 쓴다"고 적혀 있어 관성이었지 승인된 결정이 아니다.
+- 잃는 것은 TS 7의 Go 재작성 성능인데, 현 규모의 `tsc --noEmit`이 0.46s라 체감이 없다.
+- MS가 안내하는 TS 6 side-by-side 설치는 두 컴파일러를 공존시켜 타입 검사와 린트가 서로 다른 판단을 할 여지를 만든다. 이 규모에서 감당할 복잡도가 아니다.
+- 되돌림 조건: `typescript-eslint`가 TS 7을 지원하면 올린다. `package.json` 한 줄이다.
+
+전환 후 기존 검증이 전부 통과함을 확인했다 — `typescript-eslint` 파서 동작(위반을 실제로 검출), `pnpm typecheck`, `pnpm harness:typecheck`, `pnpm harness:self-test`, `pnpm build` 모두 정상이다.
 
 ### 외부 ESLint 의존
 
@@ -125,6 +152,30 @@ ESLint **10**을 쓴다. 그에 따라 다음이 확정된다.
 - FSD의 슬라이스 public API 개념은 잃지만, 실제로 지켜야 할 계층 방향은 `project/layer-direction`이 직접 강제하므로 손실이 없다.
 - 파일명이 `bootstrap-screen.tsx` → `BootstrapScreen.tsx`로 바뀐다(네이밍 규칙 적용).
 
+### 세그먼트 런타임 코드의 세 단계 (revision 4)
+
+`runtimeExports`를 불리언으로 두면 `config` 세그먼트가 상수조차 export할 수 없어 존재 이유를 잃는다. 구현 중 테스트가 이 결함을 드러냈다. 세 값으로 나눈다.
+
+| 값 | 의미 | 적용 |
+| --- | --- | --- |
+| `true` | 제한 없음 | `ui` `hooks` `model` `api` `lib` |
+| `"constants"` | 값 선언만 허용. 함수·클래스·화살표 함수 초기값 금지 | `config` |
+| `false` | 런타임 export 전면 금지 | `types` |
+
+### app 계층과 src 최상위 (revision 4)
+
+`src/app/**`를 통째로 면제하면 **`route.ts`(Route Handler = API 엔드포인트)** 가 테스트 없이 통과한다. 면제가 우회 통로가 되지 않게 하려는 이 task의 취지와 어긋난다.
+
+- `appLayer.unitTest`는 `required`가 기본이고, `appLayer.exemptFiles`에 나열한 Next.js 예약 표현 파일(`page`·`layout`·`loading`·`error`·`global-error`·`not-found`·`template`·`default`)만 면제한다.
+- `src/` 바로 아래 파일도 테스트를 요구한다. Next.js 16은 `middleware.ts`를 **deprecated 처리하고 `proxy.ts`로 개명**했으며, 위치는 프로젝트 루트 또는 `src/` 바로 아래(`app`과 같은 레벨)다. 계층 밖이지만 요청을 가로채는 서버 코드다. 근거: `node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/proxy.md`.
+
+### 포맷·린트 적용 범위 (revision 4)
+
+Prettier와 ESLint는 **`src/` 안의 애플리케이션 코드만** 대상으로 한다(사용자 결정, 2026-08-04).
+
+- 첫 구현은 저장소 전체를 대상으로 했는데, 포맷이 문서 21개와 봉인된 RADIO까지 건드려 `gate:radio`가 해시 불일치를 잡아냈다. 승인 해시에 결속된 문서를 도구가 수정하면 안 된다.
+- 받아들이는 비용: `harness/`의 주석 재발을 자동으로 막지 못한다. 이번에 정리한 128건의 상태는 유지되지만 앞으로는 사람과 교차 검증이 지킨다. `DEV-CODE-07` 자체는 여전히 저장소 전체에 적용되는 `MUST`이며 달라진 것은 기계 강제 범위뿐이다.
+
 ### harness 주석 정리
 
 `DEV-CODE-07`은 `MUST`라 RADIO에서 면제할 수 없다. 규칙이 P0-T01에서 신설될 때 기존 코드를 정리하지 않아 `harness/`에 JSDoc 141개와 줄 주석 9개가 남았고, 이는 방치된 규칙 위반이다. 강제 범위에 예외를 두면 규칙이 복잡해지고 예외가 굳는다.
@@ -138,10 +189,10 @@ ESLint **10**을 쓴다. 그에 따라 다음이 확정된다.
 
 Vitest를 두 환경으로 나눈다.
 
-| 대상 | 환경 | 이유 |
-| --- | --- | --- |
-| `model` · `lib` · `api` | `node` | React를 import하지 않으므로 jsdom이 불필요하다. `model`의 React 금지 규칙이 이것을 보장한다. |
-| `ui` · `hooks` | `jsdom` | 렌더와 훅 실행에 DOM이 필요하다. |
+| 대상                    | 환경    | 이유                                                                                         |
+| ----------------------- | ------- | -------------------------------------------------------------------------------------------- |
+| `model` · `lib` · `api` | `node`  | React를 import하지 않으므로 jsdom이 불필요하다. `model`의 React 금지 규칙이 이것을 보장한다. |
+| `ui` · `hooks`          | `jsdom` | 렌더와 훅 실행에 DOM이 필요하다.                                                             |
 
 pre-commit에서 단위 테스트 전체를 돌리기로 했으므로 도메인 규칙 테스트가 jsdom을 띄우지 않는 것이 직접적인 이득이다.
 
@@ -154,13 +205,33 @@ pre-commit에서 단위 테스트 전체를 돌리기로 했으므로 도메인 
   "layers": ["app", "views", "widgets", "features", "entities", "shared"],
 
   "segments": {
-    "ui":     { "unitTest": "exempt",   "verifiedBy": ["component", "e2e"], "runtimeExports": true,  "forbidImports": ["server-only", "**/api/**"] },
-    "hooks":  { "unitTest": "required", "verifiedBy": ["unit"],             "runtimeExports": true,  "forbidImports": ["server-only"] },
-    "model":  { "unitTest": "required", "verifiedBy": ["unit"],             "runtimeExports": true,  "forbidImports": ["react", "react-dom", "server-only"] },
-    "api":    { "unitTest": "required", "verifiedBy": ["unit"],             "runtimeExports": true,  "requireServerOnly": true },
-    "lib":    { "unitTest": "required", "verifiedBy": ["unit"],             "runtimeExports": true },
-    "config": { "unitTest": "exempt",   "verifiedBy": [],                   "runtimeExports": false },
-    "types":  { "unitTest": "exempt",   "verifiedBy": [],                   "runtimeExports": false }
+    "ui": {
+      "unitTest": "exempt",
+      "verifiedBy": ["component", "e2e"],
+      "runtimeExports": true,
+      "forbidImports": ["server-only", "**/api/**"],
+    },
+    "hooks": {
+      "unitTest": "required",
+      "verifiedBy": ["unit"],
+      "runtimeExports": true,
+      "forbidImports": ["server-only"],
+    },
+    "model": {
+      "unitTest": "required",
+      "verifiedBy": ["unit"],
+      "runtimeExports": true,
+      "forbidImports": ["react", "react-dom", "server-only"],
+    },
+    "api": {
+      "unitTest": "required",
+      "verifiedBy": ["unit"],
+      "runtimeExports": true,
+      "requireServerOnly": true,
+    },
+    "lib": { "unitTest": "required", "verifiedBy": ["unit"], "runtimeExports": true },
+    "config": { "unitTest": "exempt", "verifiedBy": [], "runtimeExports": false },
+    "types": { "unitTest": "exempt", "verifiedBy": [], "runtimeExports": false },
   },
 
   "exemptPaths": ["**/generated/**"],
@@ -169,9 +240,9 @@ pre-commit에서 단위 테스트 전체를 돌리기로 했으므로 도메인 
     "folder": "kebab-case",
     "file": "kebab-case",
     "componentFile": "PascalCase",
-    "hookFile": "use-kebab-case",
-    "exceptions": ["src/app/**", "src/shared/ui/**"]
-  }
+    "hookFile": "useCamelCase",
+    "exceptions": ["src/app/**", "src/shared/ui/**"],
+  },
 }
 ```
 
@@ -185,26 +256,26 @@ pre-commit에서 단위 테스트 전체를 돌리기로 했으므로 도메인 
 
 ### package scripts
 
-| 명령 | 내용 |
-| --- | --- |
-| `pnpm lint` | `eslint .` (기본 설정, type-aware 제외) |
-| `pnpm lint:ci` | `eslint . -c eslint.config.ci.mjs` (type-aware 포함) |
-| `pnpm format` | `prettier --write .` |
-| `pnpm format:check` | `prettier --check .` |
-| | Prettier 설정에 `prettier-plugin-tailwindcss`와 `tailwindStylesheet: "./src/app/globals.css"`를 둔다. Tailwind v4는 CSS-first라 이 옵션으로 CSS 진입점을 알려줘야 `@theme`의 커스텀 토큰까지 정렬된다. 실측으로 확인했다(0.8.1 + Tailwind 4). |
-| `pnpm test` | `vitest run` |
-| `pnpm test:e2e` | `playwright test` |
-| `pnpm verify` | CI용 단일 검증 명령 |
+| 명령                | 내용                                                                                                                                                                                                                                          |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm lint`         | `eslint .` (기본 설정, type-aware 제외)                                                                                                                                                                                                       |
+| `pnpm lint:ci`      | `eslint . -c eslint.config.ci.mjs` (type-aware 포함)                                                                                                                                                                                          |
+| `pnpm format`       | `prettier --write .`                                                                                                                                                                                                                          |
+| `pnpm format:check` | `prettier --check .`                                                                                                                                                                                                                          |
+|                     | Prettier 설정에 `prettier-plugin-tailwindcss`와 `tailwindStylesheet: "./src/app/globals.css"`를 둔다. Tailwind v4는 CSS-first라 이 옵션으로 CSS 진입점을 알려줘야 `@theme`의 커스텀 토큰까지 정렬된다. 실측으로 확인했다(0.8.1 + Tailwind 4). |
+| `pnpm test`         | `vitest run`                                                                                                                                                                                                                                  |
+| `pnpm test:e2e`     | `playwright test`                                                                                                                                                                                                                             |
+| `pnpm verify`       | CI용 단일 검증 명령                                                                                                                                                                                                                           |
 
 `pnpm verify` = `format:check` → `lint:ci` → `typecheck` → `test` → `build` → `test:e2e` → `gate:all`. 앞의 검사가 실패하면 뒤를 돌리지 않아 CI 피드백이 빨라진다.
 
 ### 훅
 
-| 훅 | 실행 |
-| --- | --- |
-| `.githooks/pre-commit` | harness 게이트 4종 → `lint-staged` → `tsc --incremental` → `vitest run` |
-| `.githooks/pre-push` (신설) | `pnpm build` |
-| `commit-msg` | 현행 유지 |
+| 훅                          | 실행                                                                    |
+| --------------------------- | ----------------------------------------------------------------------- |
+| `.githooks/pre-commit`      | harness 게이트 4종 → `lint-staged` → `tsc --incremental` → `vitest run` |
+| `.githooks/pre-push` (신설) | `pnpm build`                                                            |
+| `commit-msg`                | 현행 유지                                                               |
 
 - harness 게이트를 **먼저** 돌린다. 가장 빠르고(0.09s) 승인 계약 위반은 포맷 문제보다 먼저 알아야 한다.
 - `prepare` 스크립트가 `git config core.hooksPath .githooks`를 실행한다. husky는 쓰지 않는다 — 설치 시 `core.hooksPath`를 자기 디렉터리로 바꿔 harness 게이트 4종을 조용히 무력화한다.
@@ -213,14 +284,14 @@ pre-commit에서 단위 테스트 전체를 돌리기로 했으므로 도메인 
 
 ### 등록 check
 
-| check ID | 판정 |
-| --- | --- |
-| `fsd-contract` | `config/fsd.json`의 세그먼트 정의를 바꾸면 ESLint와 `tdd-guard.sh`의 판정이 함께 바뀐다. 두 도구가 같은 정본을 읽는다는 증거를 남긴다. |
-| `lint` | 위반 fixture 전부가 차단되고 정상 코드는 통과한다(오탐 대조군 포함). |
-| `unit` | `pnpm test` 통과. 샘플 단위 테스트가 실제 동작을 검증한다. |
-| `mobile-e2e` | 모바일 뷰포트에서 부트스트랩 화면 렌더 확인. 화면을 깨뜨리면 실패하는지 대조군으로 증명한다. |
-| `git-hooks` | 위반 커밋이 pre-commit에서, build 실패 push가 pre-push에서 거부된다. 새로 clone한 임시 저장소에서 `pnpm install` 후 훅이 도는 것까지 확인한다. |
-| `harness-regression` | `harness/` 주석 제거와 개명 후 `pnpm harness:self-test` 131개와 `pnpm harness:typecheck`가 통과한다. |
+| check ID             | 판정                                                                                                                                           |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fsd-contract`       | `config/fsd.json`의 세그먼트 정의를 바꾸면 ESLint와 `tdd-guard.sh`의 판정이 함께 바뀐다. 두 도구가 같은 정본을 읽는다는 증거를 남긴다.         |
+| `lint`               | 위반 fixture 전부가 차단되고 정상 코드는 통과한다(오탐 대조군 포함).                                                                           |
+| `unit`               | `pnpm test` 통과. 샘플 단위 테스트가 실제 동작을 검증한다.                                                                                     |
+| `mobile-e2e`         | 모바일 뷰포트에서 부트스트랩 화면 렌더 확인. 화면을 깨뜨리면 실패하는지 대조군으로 증명한다.                                                   |
+| `git-hooks`          | 위반 커밋이 pre-commit에서, build 실패 push가 pre-push에서 거부된다. 새로 clone한 임시 저장소에서 `pnpm install` 후 훅이 도는 것까지 확인한다. |
+| `harness-regression` | `harness/` 주석 제거와 개명 후 `pnpm harness:self-test` 131개와 `pnpm harness:typecheck`가 통과한다.                                           |
 
 ## Optimizations
 
@@ -256,6 +327,7 @@ docs/execution/radio/P0-T02-radio.md
 docs/execution/runs/P0-T02/**
 docs/execution/reviews/**
 docs/execution/phases/index.jsonl
+docs/execution/phases/00-foundation.md
 docs/execution/dashboard/**
 ```
 

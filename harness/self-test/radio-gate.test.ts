@@ -11,7 +11,10 @@ import {
   writeRadio,
 } from "./fixture.ts";
 
-function taskWithHash(sha256: string, overrides: Record<string, unknown> = {}): Record<string, unknown> {
+function taskWithHash(
+  sha256: string,
+  overrides: Record<string, unknown> = {},
+): Record<string, unknown> {
   return makeTask({
     development_approval: { by: "user", at: "2026-08-03", radio_revision: 1, radio_sha256: sha256 },
     ...overrides,

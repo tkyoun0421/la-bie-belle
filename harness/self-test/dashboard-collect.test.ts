@@ -23,7 +23,6 @@ import {
 const NOW = new Date("2026-08-04T00:00:00.000Z");
 const SCORED_GATE_IDS = ["gate:index", "gate:radio", "gate:handoff", "gate:tdd"];
 
-/** Minimal committed artifact carrying only the base-commit marker contract. */
 function markerHtml(commit: string): string {
   return `<!doctype html>\n<html lang="ko"><head>\n<meta name="base-commit" content="${commit}">\n</head><body></body></html>\n`;
 }
@@ -54,14 +53,17 @@ test("collect — git 저장소가 아니어도 생성을 중단하지 않는다
 });
 
 test("collect — 실행이 깨진 게이트는 실행 실패로 남고 나머지 수집은 계속된다", () => {
-  // 유효한 in_progress task를 두면 scope 게이트가 staged 파일 조회까지 가고,
-  // git 저장소가 아니므로 그 조회가 실패한다 — F-03의 실행 실패 경로.
   const root = createFixtureRoot();
   const radioSha256 = writeRadio(root, "P0-T01", ["src/**"]);
   writeIndexRecords(root, [
     makeTask({
       status: "in_progress",
-      development_approval: { by: "user", at: "2026-08-03", radio_revision: 1, radio_sha256: radioSha256 },
+      development_approval: {
+        by: "user",
+        at: "2026-08-03",
+        radio_revision: 1,
+        radio_sha256: radioSha256,
+      },
     }),
   ]);
   writeFixtureJson(root, "docs/execution/runs/P0-T01/tdd.json", makeTddEvidence());
@@ -102,7 +104,11 @@ test("collect — 재생성 준수는 기존 산출물의 기록 커밋으로 �
   const fourth = commitAll(root, "state and regen P0-T00");
   assert.equal(artifactFreshness(root, fourth).kind, "fresh");
 
-  writeFixtureFile(root, DASHBOARD_PATH, "<!doctype html><html><head></head><body></body></html>\n");
+  writeFixtureFile(
+    root,
+    DASHBOARD_PATH,
+    "<!doctype html><html><head></head><body></body></html>\n",
+  );
   commitAll(root, "marker broken P0-T00");
   const collection = collect(root, NOW);
   assert.equal(collection.freshness.kind, "unreadable");

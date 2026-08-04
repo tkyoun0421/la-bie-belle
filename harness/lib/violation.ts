@@ -1,19 +1,8 @@
-/**
- * Violation record shared by every gate.
- *
- * Gates never throw for contract breaches: they collect violations and let the
- * entry point decide how to report and which exit code to use.
- */
 export type Violation = {
-  /** Gate name as used in package.json scripts, e.g. "gate:index". */
   readonly gate: string;
-  /** Korean description of what is wrong. */
   readonly message: string;
-  /** Repository relative path of the offending file, when there is one. */
   readonly file?: string;
-  /** 1-based line number inside `file`, when the violation is line scoped. */
   readonly line?: number;
-  /** Korean hint describing how to fix the violation. */
   readonly hint?: string;
 };
 
@@ -37,10 +26,6 @@ export function formatViolations(violations: readonly Violation[]): string {
   return `${body}\n게이트 위반 ${violations.length}건이 발견되어 중단합니다.`;
 }
 
-/**
- * Writes violations to stderr and returns the process exit code.
- * Returns 0 without writing anything when there is no violation.
- */
 export function reportViolations(violations: readonly Violation[]): number {
   if (violations.length === 0) {
     return 0;

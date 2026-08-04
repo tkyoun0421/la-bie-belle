@@ -11,6 +11,14 @@
     "start": "next start",
     "typecheck": "next typegen && tsc --noEmit",
     "check:app-build": "node scripts/check-app-build.mjs",
+    "lint": "eslint src",
+    "lint:ci": "eslint src -c eslint.config.ci.mjs",
+    "format": "prettier --write src",
+    "format:check": "prettier --check src",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "verify": "pnpm format:check && pnpm lint:ci && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e && pnpm gate:all",
+    "prepare": "git config core.hooksPath .githooks",
     "gate:index": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/index.ts",
     "gate:radio": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/radio.ts",
     "gate:handoff": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/handoff.ts",
@@ -22,13 +30,28 @@
     "harness:typecheck": "tsc --noEmit --project harness/tsconfig.json"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "16",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.3",
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
+    "@vitest/coverage-v8": "4",
+    "eslint": "10",
+    "eslint-plugin-import-x": "4",
+    "eslint-plugin-react-hooks": "7",
+    "jsdom": "^30.0.1",
+    "lint-staged": "16",
     "postcss": "^8.5.25",
+    "prettier": "3",
+    "prettier-plugin-tailwindcss": "0.8",
     "tailwindcss": "^4.3.3",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "8",
+    "vitest": "4"
   },
   "browserslist": [
     "last 2 versions",
@@ -41,5 +64,14 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "server-only": "^0.0.1"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "src/**/*.css": [
+      "prettier --write"
+    ]
   }
 }

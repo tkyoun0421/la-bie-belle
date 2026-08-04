@@ -27,7 +27,6 @@ function exampleObject(): Record<string, unknown> {
   return JSON.parse(exampleText()) as Record<string, unknown>;
 }
 
-/** The example fixture reshaped into a manual full scan result. */
 function scanObject(): Record<string, unknown> {
   const scan = exampleObject();
   delete scan["task_id"];
@@ -151,7 +150,10 @@ test("reviews — 스캔 결과의 task_id와 잘못된 scope는 형식 오류�
 
   const withoutScope = scanObject();
   delete withoutScope["scope"];
-  assert.equal(summarizeReviews([scanDocument("2026-08-04", withoutScope)], null).invalid.length, 1);
+  assert.equal(
+    summarizeReviews([scanDocument("2026-08-04", withoutScope)], null).invalid.length,
+    1,
+  );
 
   const wrongScope = scanObject();
   wrongScope["scope"] = "partial";
@@ -189,7 +191,9 @@ test("reviews — participants를 읽지 못하면 발견마다 원인을 오인
 
   assert.equal(parsed.ok, false);
   if (!parsed.ok) {
-    const subsetErrors = parsed.errors.filter((error) => error.includes("participants에 없는 리뷰어"));
+    const subsetErrors = parsed.errors.filter((error) =>
+      error.includes("participants에 없는 리뷰어"),
+    );
     assert.deepEqual(subsetErrors, [], "participants 파싱 실패가 agreed_by 오류로 번졌다");
     assert.match(parsed.errors.join("\n"), /participants는 배열이어야 합니다/u);
   }
@@ -308,7 +312,10 @@ test("reviews — 최신 결과는 확정 시각이 가장 늦은 것이다", ()
   newer["task_id"] = "P0-T31";
   newer["at"] = "2026-08-02T00:00:00Z";
 
-  const summary = summarizeReviews([documentOf("P0-T31", newer), documentOf("P0-T30", older)], null);
+  const summary = summarizeReviews(
+    [documentOf("P0-T31", newer), documentOf("P0-T30", older)],
+    null,
+  );
 
   assert.equal(summary.status, "ok");
   assert.equal(summary.latest?.taskId, "P0-T31");

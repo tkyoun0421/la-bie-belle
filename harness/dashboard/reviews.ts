@@ -1,32 +1,25 @@
-/**
- * Parser for the cross review results owned by docs/workflow/REVIEW.md.
- *
- * The dashboard only displays these files, so every rule here is a read side
- * check: a malformed result must be reported as a format error instead of
- * failing generation or being silently repaired.
- */
 import { isPlainObject } from "../lib/json-value.ts";
 
 export const REVIEWS_DIRECTORY = "docs/execution/reviews";
 export const BACKLOG_PATH = "docs/execution/reviews/backlog.md";
 
-/**
- * Only `<task-id>-review.json` and `scan-<YYYY-MM-DD>-review.json` files are real
- * results (REVIEW.md 결과 파일 형식). The two names carry different rules: a task
- * result owns `task_id`, a manual full scan owns `scope` instead.
- */
 const REVIEW_FILE_NAME = /^(P[0-9]+-T[0-9]{2})-review\.json$/u;
 const SCAN_FILE_NAME = /^scan-([0-9]{4}-[0-9]{2}-[0-9]{2})-review\.json$/u;
 const TASK_ID = /^P[0-9]+-T[0-9]{2}$/u;
 const COMMIT_SHA1 = /^[0-9a-f]{40}$/u;
 const SCAN_SCOPE = "full-scan";
-/** Display prefix of a manual full scan result (approved RADIO wording). */
 const SCAN_LABEL = "전체 스캔";
 
 export const SEVERITY_ORDER = ["critical", "high", "medium", "low"] as const;
 export type Severity = (typeof SEVERITY_ORDER)[number];
 
-export const REVIEW_AREAS = ["code_quality", "tests", "security", "performance", "architecture"] as const;
+export const REVIEW_AREAS = [
+  "code_quality",
+  "tests",
+  "security",
+  "performance",
+  "architecture",
+] as const;
 export type ReviewArea = (typeof REVIEW_AREAS)[number];
 
 export const AREA_LABELS: Readonly<Record<string, string>> = {
@@ -37,9 +30,7 @@ export const AREA_LABELS: Readonly<Record<string, string>> = {
   architecture: "아키텍처 정합",
 };
 
-/** Backlog accumulates only the two lower severities. */
 const BACKLOG_SEVERITIES: readonly string[] = ["medium", "low"];
-/** `main` is kept for the results written before it became a coordinator-only role. */
 const REVIEWERS: readonly string[] = ["main", "codex", "opus", "opus-2"];
 const REVIEWER_LIST = REVIEWERS.join("·");
 
@@ -94,7 +85,6 @@ export type SeverityGroup = {
 };
 
 export type ReviewsSummary = {
-  /** `none` means there is no valid result to show — display "결과 없음". */
   readonly status: "none" | "ok";
   readonly latest: ReviewResult | null;
   readonly results: readonly { readonly file: string; readonly result: ReviewResult }[];
@@ -103,17 +93,10 @@ export type ReviewsSummary = {
   readonly backlog: BacklogSummary;
 };
 
-/**
- * Which name rule the file matched, plus the identity its name carries: a task
- * result must repeat that task ID in `task_id`, a scan result is displayed under
- * the date in its name.
- */
 type ReviewSource =
-  /** `taskId` is null when the caller has no file name to compare against. */
   | { readonly kind: "task"; readonly taskId: string | null }
   | { readonly kind: "scan"; readonly date: string };
 
-/** Identity of a result parsed outside the reviews directory (unit tests). */
 const UNNAMED_TASK_SOURCE: ReviewSource = { kind: "task", taskId: null };
 
 function reviewSourceOf(fileName: string): ReviewSource | null {
@@ -143,7 +126,12 @@ function readString(
   return value;
 }
 
-function readReviewerList(value: unknown, label: string, minimum: number, errors: string[]): string[] {
+function readReviewerList(
+  value: unknown,
+  label: string,
+  minimum: number,
+  errors: string[],
+): string[] {
   if (!Array.isArray(value)) {
     errors.push(`${label}는 배열이어야 합니다.`);
     return [];
@@ -208,8 +196,6 @@ function readRationale(value: unknown, errors: string[]): Record<string, string>
 function readFinding(
   raw: unknown,
   position: number,
-  /** Null when `participants` itself failed to parse: the subset check would only
-   * repeat that one cause once per reviewer of every finding. */
   participants: readonly string[] | null,
   errors: string[],
 ): ReviewFinding | null {
@@ -257,10 +243,6 @@ function readFinding(
   };
 }
 
-/**
- * Reads the result identity: a task result owns `task_id`, a manual full scan owns
- * `scope: "full-scan"` and is displayed under the id taken from its file name.
- */
 function readIdentity(
   source: Record<string, unknown>,
   reviewSource: ReviewSource,
@@ -294,10 +276,6 @@ function readIdentity(
   return taskId;
 }
 
-/**
- * Checks `total` against the rule REVIEW.md owns: the rounded arithmetic mean of
- * the five area scores. Only comparable when all five scores parsed.
- */
 function checkTotal(total: unknown, scores: Record<string, number>, errors: string[]): void {
   if (typeof total !== "number" || !Number.isInteger(total) || total < 0 || total > 100) {
     errors.push("total은 0~100 정수여야 합니다.");
@@ -317,7 +295,6 @@ function checkTotal(total: unknown, scores: Record<string, number>, errors: stri
   }
 }
 
-/** Parses one result file's text into a review result or a list of format errors. */
 export function parseReviewDocument(
   text: string,
   reviewSource: ReviewSource = UNNAMED_TASK_SOURCE,
@@ -395,10 +372,6 @@ const BACKLOG_LINE = /^-\s*\[( |x)\]\s*\[([^\]]+)\]\s*\[([^\]]+)\]\s*(.+?)\s+—
 const BACKLOG_CANDIDATE = /^-\s*\[( |x)\]/u;
 const FENCE = /^\s*```/u;
 
-/**
- * Reads backlog lines outside fenced code blocks, so the format example inside
- * the document is never counted as a real item.
- */
 export function parseBacklog(markdown: string | null): BacklogSummary {
   if (markdown === null) {
     return { open: [], resolved: [], malformed: [] };
@@ -443,11 +416,6 @@ function groupBySeverity(findings: readonly ReviewFinding[]): SeverityGroup[] {
   })).filter((group) => group.findings.length > 0);
 }
 
-/**
- * Builds the verification section view: the newest valid result, its findings by
- * severity, every format error and the backlog. Format errors never remove the
- * other content.
- */
 export function summarizeReviews(
   documents: readonly ReviewDocument[],
   backlogMarkdown: string | null,
@@ -457,7 +425,10 @@ export function summarizeReviews(
 
   for (const document of documents) {
     const fileName = document.file.slice(document.file.lastIndexOf("/") + 1);
-    const parsed = parseReviewDocument(document.text, reviewSourceOf(fileName) ?? UNNAMED_TASK_SOURCE);
+    const parsed = parseReviewDocument(
+      document.text,
+      reviewSourceOf(fileName) ?? UNNAMED_TASK_SOURCE,
+    );
     if (parsed.ok) {
       results.push({ file: document.file, result: parsed.result });
     } else {

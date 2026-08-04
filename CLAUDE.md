@@ -41,7 +41,8 @@ Start every task by reading [WORKFLOW](docs/workflow/WORKFLOW.md). It owns the f
 - **Never reuse or delete** task IDs, dependencies, or statuses. Never retroactively edit a `done` task's history or approval hashes.
 - **Work discovered mid-implementation** becomes a proposal for the right stage — never folded silently into the current task.
 - **Authority and PII are enforced at the server boundary and in DB policy**, not just the UI. Server modules declare `import "server-only"` as their first import.
-- **Code carries no explanatory comments.** Intent lives in names and structure; rationale in the task's RADIO and handoff (`DEV-CODE-07`).
+- **Code carries no explanatory comments.** Intent lives in names and structure; rationale in the task's RADIO and handoff (`DEV-CODE-07`). Enforced by lint inside `src/`; elsewhere it still applies but is kept by review.
+- **No barrel files.** Import through the real path — `@/views/shift/ui/ShiftCard`, not a slice `index.ts`.
 - **Nothing outside MVP scope.** Deferred items need explicit approval before entering a phase.
 - **Commit messages must contain a task ID** matching `P[0-9]+-T[0-9]{2}`.
 
@@ -51,18 +52,21 @@ Full reference, gate semantics, and hook behavior: [TOOLING](docs/workflow/TOOLI
 
 ```bash
 pnpm dev / build / start      # Next.js 16 + Turbopack
+pnpm lint / format            # ESLint · Prettier — src/ only
+pnpm test / test:e2e          # Vitest · Playwright (mobile)
 pnpm typecheck                # next typegen + tsc --noEmit
-pnpm check:app-build          # build, then fail if a server-only value reached the client bundle
+pnpm verify                   # the single CI command: format → lint → types → test → build → e2e → gates
 
 pnpm gate:all                 # index · RADIO hash · handoff · TDD evidence · commit scope
 pnpm harness:self-test        # harness test suite
-pnpm harness:typecheck        # tsc --noEmit over harness/
 pnpm dashboard                # regenerate the read-only ops dashboard
 ```
 
+Structure rules live in `config/fsd.json` — layer order, per-segment test/export/import rules. **ESLint and `.claude/hooks/tdd-guard.sh` both read that one file**, so changing it moves both. Rule meanings: [DEVELOPMENT](docs/standards/DEVELOPMENT.md) (`DEV-NAME-*`).
+
 Individual gates (`gate:index`, `gate:radio`, `gate:handoff`, `gate:tdd`, `gate:scope`) run standalone; a passing gate prints nothing and exits 0.
 
-Git hooks (`core.hooksPath` = `.githooks`) run the four repo gates pre-commit and require a task ID in the commit message. A Claude Code `PreToolUse` hook (`.claude/hooks/tdd-guard.sh`) denies edits to `src/` business logic that has no matching test file.
+Git hooks (`core.hooksPath` = `.githooks`): pre-commit runs the four repo gates → lint-staged → incremental typecheck → unit tests; pre-push runs the build; commit-msg requires a task ID. A Claude Code `PreToolUse` hook (`.claude/hooks/tdd-guard.sh`) denies edits to `src/` code whose segment requires a test that does not exist.
 
 **Next.js 16 differs from most training data.** Read the relevant guide under `node_modules/next/dist/docs/` before writing framework code.
 

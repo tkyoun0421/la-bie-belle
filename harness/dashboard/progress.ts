@@ -1,10 +1,11 @@
-/**
- * Execution progress derived from the task index. Pure: every function takes
- * decoded index records and returns display facts without touching the file
- * system, so the dashboard can never write back to the source of truth.
- */
 import type { IndexRecord } from "../lib/task-index.ts";
-import { isTask, readObjectField, readStringField, recordId, recordStatus } from "../lib/task-index.ts";
+import {
+  isTask,
+  readObjectField,
+  readStringField,
+  recordId,
+  recordStatus,
+} from "../lib/task-index.ts";
 
 export type TaskSummary = {
   readonly id: string;
@@ -25,11 +26,9 @@ export type PhaseSummary = {
   readonly status: string;
   readonly total: number;
   readonly done: number;
-  /** Completion percentage rounded to an integer. */
   readonly rate: number;
 };
 
-/** A `planned` task with the reasons it cannot start. Empty blockers = runnable. */
 export type PlannedCandidate = {
   readonly task: TaskSummary;
   readonly blockers: readonly string[];
@@ -55,7 +54,6 @@ export type ProgressSummary = {
   readonly proposed: readonly TaskSummary[];
 };
 
-/** Lifecycle order used for status tallies (docs/execution/phases/README.md). */
 export const STATUS_ORDER: readonly string[] = [
   "proposed",
   "design_pending",
@@ -80,7 +78,9 @@ export const STATUS_LABELS: Readonly<Record<string, string>> = {
 
 function readStringArray(record: IndexRecord, key: string): string[] {
   const value = record[key];
-  return Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === "string") : [];
+  return Array.isArray(value)
+    ? value.filter((entry): entry is string => typeof entry === "string")
+    : [];
 }
 
 function toTaskSummary(record: IndexRecord): TaskSummary {
@@ -118,7 +118,10 @@ function countStatuses(tasks: readonly TaskSummary[]): StatusCount[] {
   return [...known, ...unknown];
 }
 
-function summarizePhases(records: readonly IndexRecord[], tasks: readonly TaskSummary[]): PhaseSummary[] {
+function summarizePhases(
+  records: readonly IndexRecord[],
+  tasks: readonly TaskSummary[],
+): PhaseSummary[] {
   return records
     .filter((record) => !isTask(record))
     .map((record) => {
@@ -136,7 +139,6 @@ function summarizePhases(records: readonly IndexRecord[], tasks: readonly TaskSu
     });
 }
 
-/** Reasons a `planned` task cannot be picked up: approvals first, then dependencies. */
 function candidateBlockers(task: TaskSummary, doneIds: ReadonlySet<string>): string[] {
   const blockers: string[] = [];
   if (!task.hasProductApproval) {
@@ -155,7 +157,6 @@ function candidateBlockers(task: TaskSummary, doneIds: ReadonlySet<string>): str
   return blockers;
 }
 
-/** Builds every progress fact the dashboard shows from the decoded index. */
 export function summarizeProgress(records: readonly IndexRecord[]): ProgressSummary {
   const tasks = records.filter(isTask).map(toTaskSummary);
   const doneIds = new Set(tasks.filter((task) => task.status === "done").map((task) => task.id));
@@ -164,7 +165,8 @@ export function summarizeProgress(records: readonly IndexRecord[]): ProgressSumm
     .filter((task) => task.status === "planned")
     .map((task) => ({ task, blockers: candidateBlockers(task, doneIds) }));
 
-  const withStatus = (status: string): TaskSummary[] => tasks.filter((task) => task.status === status);
+  const withStatus = (status: string): TaskSummary[] =>
+    tasks.filter((task) => task.status === status);
 
   return {
     tasks,

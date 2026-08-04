@@ -3,10 +3,8 @@ import type { Violation } from "./violation.ts";
 
 const GATE = "commit-msg";
 
-/** Task ID shape required by docs/workflow/WORKFLOW.md. */
 export const TASK_ID_PATTERN = /P[0-9]+-T[0-9]{2}/u;
 
-/** Drops git comment lines and everything after the `--verbose` scissors line. */
 function stripComments(message: string): string {
   return message
     .split("\n")
@@ -14,7 +12,6 @@ function stripComments(message: string): string {
     .join("\n");
 }
 
-/** Returns Korean descriptions of commit message rule breaches. */
 export function checkCommitMessage(message: string): string[] {
   const body = stripComments(message).trim();
   if (body.length === 0) {

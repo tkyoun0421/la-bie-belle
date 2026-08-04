@@ -85,7 +85,7 @@
 | 일반 파일 | kebab-case |
 | React 컴포넌트 파일 | PascalCase (`ShiftCard.tsx`) |
 | 컴포넌트 export | PascalCase |
-| 훅 | 파일 `use-*.ts`, export `useXxx` |
+| 훅 | 파일 `useXxx.ts`, export `useXxx` |
 | 타입·인터페이스 | PascalCase |
 | 테스트 | `*.test.ts(x)` 형제 배치 |
 | 예외 | Next.js 예약 파일명(`page.tsx`·`layout.tsx`·`route.ts`·`loading.tsx`·`error.tsx`·`not-found.tsx`), shadcn 관리 구역 `shared/ui/**` |

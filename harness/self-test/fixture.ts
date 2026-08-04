@@ -23,11 +23,6 @@ function registerCleanup(): void {
   });
 }
 
-/**
- * Creates a throwaway repository-shaped directory that already contains the real
- * `index.schema.json`, so schema behaviour in tests matches the real contract.
- * Every fixture root is removed when the test process exits.
- */
 export function createFixtureRoot(): string {
   registerCleanup();
   const root = mkdtempSync(join(tmpdir(), "lbb-gate-"));
@@ -51,22 +46,18 @@ function toJsonLines(records: readonly unknown[]): string {
   return `${records.map((record) => JSON.stringify(record)).join("\n")}\n`;
 }
 
-/** Writes `index.jsonl` with one JSON object per line. */
 export function writeIndexRecords(root: string, records: readonly unknown[]): void {
   writeFixtureFile(root, INDEX_PATH, toJsonLines(records));
 }
 
-/** Parses records into index entries without touching the file system. */
 export function indexEntriesOf(records: readonly unknown[]): readonly IndexEntry[] {
   return parseIndexJsonl(toJsonLines(records)).entries;
 }
 
-/** Joins violation messages so assertions can match on the whole report. */
 export function joinMessages(violations: readonly Violation[]): string {
   return violations.map((violation) => violation.message).join("\n");
 }
 
-/** Writes raw `index.jsonl` text, for malformed-input fixtures. */
 export function writeIndexText(root: string, text: string): void {
   writeFixtureFile(root, INDEX_PATH, text);
 }
@@ -145,7 +136,6 @@ export function makeRadioMarkdown(allowedPaths: readonly string[]): string {
   ].join("\n");
 }
 
-/** Writes a RADIO document for `taskId` and returns its SHA-256. */
 export function writeRadio(root: string, taskId: string, allowedPaths: readonly string[]): string {
   const markdown = makeRadioMarkdown(allowedPaths);
   writeFixtureFile(root, radioPathOf(taskId), markdown);
@@ -201,7 +191,6 @@ export function git(root: string, args: readonly string[]): string {
   return execFileSync("git", ["-C", root, ...args], { encoding: "utf8" });
 }
 
-/** Initialises a git repository with a deterministic identity for commit tests. */
 export function initGitRepo(root: string): void {
   git(root, ["init", "--initial-branch=main"]);
   git(root, ["config", "user.email", "gate-self-test@example.com"]);

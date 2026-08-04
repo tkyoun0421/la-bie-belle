@@ -54,16 +54,15 @@ function readEntry(raw: unknown, position: number): { entry: TddEntry } | { erro
   }
 
   return {
-    entry: { command: command as string, exitCode: typedExitCode, at: timestamp, phase: typedPhase },
+    entry: {
+      command: command as string,
+      exitCode: typedExitCode,
+      at: timestamp,
+      phase: typedPhase,
+    },
   };
 }
 
-/**
- * Returns Korean descriptions of TDD evidence rule breaches.
- *
- * The contract is: for every command that reached GREEN there must be an earlier
- * RED run of the same command, and at least one such RED → GREEN pair exists.
- */
 export function checkTddEvidence(evidence: unknown): string[] {
   if (!isPlainObject(evidence) || !Array.isArray(evidence["entries"])) {
     return ["tdd.json은 entries 배열을 가져야 합니다."];
@@ -105,10 +104,6 @@ export function checkTddEvidence(evidence: unknown): string[] {
   return errors;
 }
 
-/**
- * Checks the TDD evidence of the single `in_progress` task. With no task in
- * flight there is nothing to prove, so workflow meta commits pass.
- */
 export function runTddGate(root: string): Violation[] {
   const loaded = loadCurrentTask(root, GATE);
   if (!loaded.ok) {

@@ -13,7 +13,10 @@ import {
 
 const EVIDENCE_PATH = "docs/execution/runs/P0-T01/tdd.json";
 
-function fixtureWithEvidence(evidence: unknown | null, taskOverrides: Record<string, unknown> = {}): string {
+function fixtureWithEvidence(
+  evidence: unknown | null,
+  taskOverrides: Record<string, unknown> = {},
+): string {
   const root = createFixtureRoot();
   writeIndexRecords(root, [makeTask({ status: "in_progress", ...taskOverrides })]);
   if (evidence !== null) {
@@ -68,7 +71,9 @@ test("gate:tdd — 기록이 비면 차단한다", () => {
 
 test("gate:tdd — GREEN만 있으면 차단한다", () => {
   const errors = checkTddEvidence({
-    entries: [{ command: "pnpm test", exit_code: 0, at: "2026-08-03T10:00:00+09:00", phase: "green" }],
+    entries: [
+      { command: "pnpm test", exit_code: 0, at: "2026-08-03T10:00:00+09:00", phase: "green" },
+    ],
   });
 
   assert.ok(errors.length > 0, "RED 없는 GREEN은 위반이어야 한다");
@@ -100,7 +105,9 @@ test("gate:tdd — 다른 command의 RED는 인정하지 않는다", () => {
 
 test("gate:tdd — phase와 exit_code가 어긋나면 차단한다", () => {
   const red = checkTddEvidence({
-    entries: [{ command: "pnpm test", exit_code: 0, at: "2026-08-03T10:00:00+09:00", phase: "red" }],
+    entries: [
+      { command: "pnpm test", exit_code: 0, at: "2026-08-03T10:00:00+09:00", phase: "red" },
+    ],
   });
   const green = checkTddEvidence({
     entries: [
@@ -128,7 +135,9 @@ test("gate:tdd — 기록 형식이 잘못되면 차단한다", () => {
   );
   assert.ok(
     checkTddEvidence({
-      entries: [{ command: "pnpm test", exit_code: 1, at: "2026-08-03T10:00:00+09:00", phase: "yellow" }],
+      entries: [
+        { command: "pnpm test", exit_code: 1, at: "2026-08-03T10:00:00+09:00", phase: "yellow" },
+      ],
     }).length > 0,
     "알 수 없는 phase 위반",
   );

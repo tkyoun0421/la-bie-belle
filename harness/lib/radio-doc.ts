@@ -1,15 +1,9 @@
-/** Heading that owns the machine readable commit scope declaration. */
 export const ALLOWED_PATHS_HEADING = "## 변경 허용 경로";
 
 const HEADING_PATTERN = /^##[ \t]+변경 허용 경로[ \t]*$/u;
 const SECTION_PATTERN = /^##[ \t]/u;
 const FENCE_PATTERN = /^[ \t]*```/u;
 
-/**
- * Reads the glob list from the first fenced code block under
- * `## 변경 허용 경로`. Returns an empty array when the section or its code block
- * is missing, which the commit scope gate treats as a violation.
- */
 export function parseAllowedPaths(markdown: string): string[] {
   const lines = markdown.split("\n");
   const headingIndex = lines.findIndex((line) => HEADING_PATTERN.test(line));

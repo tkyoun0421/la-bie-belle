@@ -19,7 +19,23 @@ pnpm build               # 프로덕션 빌드 (Turbopack)
 pnpm start               # 프로덕션 서버
 pnpm typecheck           # next typegen + tsc --noEmit
 pnpm check:app-build     # 빌드 후 서버 전용 값이 클라이언트 번들에 샜는지 검사
+
+pnpm lint                # ESLint (src 대상)
+pnpm lint:ci             # ESLint + type-aware 규칙
+pnpm format              # Prettier 적용 (src 대상)
+pnpm format:check        # 포맷 위반만 확인
+pnpm test                # Vitest 단위·컴포넌트 테스트
+pnpm test:e2e            # Playwright 모바일 E2E
+pnpm verify              # CI용 단일 검증 명령
 ```
+
+`pnpm verify`는 `format:check → lint:ci → typecheck → test → build → test:e2e → gate:all` 순서로 돈다. 앞이 실패하면 뒤를 돌리지 않아 CI 피드백이 빠르다.
+
+**Prettier와 ESLint는 `src/` 안의 애플리케이션 코드만 대상으로 한다.** 도구(`harness/`·`tools/`·`scripts/`), 문서, 실행 증거는 대상이 아니다. 저장소 전체를 포맷하면 승인 SHA-256에 결속된 RADIO 문서까지 바뀌어 `gate:radio`가 막는다.
+
+### TypeScript 버전
+
+`typescript-eslint`가 TypeScript 7을 지원하지 않아(에러로 중단) TypeScript **6.x**를 쓴다. 추적 이슈는 [typescript-eslint#10940](https://github.com/typescript-eslint/typescript-eslint/issues/10940)이며, 지원되면 올린다. Next.js 16은 `typescript`를 peer dependency로 요구하지 않으므로 프레임워크 제약은 없다.
 
 - `typecheck`가 `next typegen`을 먼저 도는 이유: `next-env.d.ts`와 `.next/types/**`는 gitignore 대상이라, 빌드 전 환경(새로 clone한 CI)에서는 ambient·라우트 타입이 빠진 채 조용히 축소된 범위만 검사된다. typegen을 앞에 두면 빌드 전후의 검사 범위가 같아진다.
 - `check:app-build`(`scripts/check-app-build.mjs`)는 빌드 산출물에서 서버 전용 표식을 찾는다. `.next/static/`에 0건, `.next/server/`에 존재가 정상이다. 후자가 대조군이라 이 검사에 판별력이 있다.
@@ -85,9 +101,16 @@ pnpm dashboard           # docs/execution/dashboard/index.html 재생성
 
 `core.hooksPath`는 `.githooks`다.
 
-- **pre-commit**: `harness/gates/pre-commit.ts`를 실행한다. 인덱스·RADIO 해시·TDD 증거·커밋 범위 네 게이트가 모두 돌아 위반을 한 번에 보고한다.
-- **commit-msg**: 메시지 본문에 `P[0-9]+-T[0-9]{2}`와 일치하는 task ID를 요구한다. 주석 줄은 세지 않는다.
-- 로컬 훅은 `--no-verify`로 우회할 수 있다. git의 한계이며 CI에서 `pnpm gate:all`을 다시 돌려 보완한다(P0-T05).
+| 훅 | 실행 |
+| --- | --- |
+| pre-commit | harness 게이트 4종 → `lint-staged` → `tsc --incremental` → `vitest run` |
+| pre-push | `pnpm build` |
+| commit-msg | 메시지 본문의 `P[0-9]+-T[0-9]{2}` task ID 확인 |
+
+- harness 게이트(인덱스·RADIO 해시·TDD 증거·커밋 범위)를 **가장 먼저** 돌린다. 0.09초로 가장 빠르고, 승인 계약 위반은 포맷 문제보다 먼저 알아야 한다.
+- `package.json`이나 `node_modules`가 없으면 pre-commit이 뒤의 세 검사를 건너뛰고 그 사실을 stderr에 알린다. 하네스 수용 테스트가 의존성 없는 임시 저장소에서 훅을 돌리기 때문이다. 조용히 건너뛰지 않는다.
+- `prepare` 스크립트가 `git config core.hooksPath .githooks`를 실행하므로 `pnpm install`만으로 훅이 붙는다. husky는 쓰지 않는다 — 설치 시 `core.hooksPath`를 자기 디렉터리로 바꿔 harness 게이트를 조용히 무력화한다.
+- 로컬 훅은 `--no-verify`로 우회할 수 있다. git의 한계이며 CI에서 `pnpm verify`를 다시 돌려 보완한다(P0-T05).
 
 ## Claude Code 훅
 
@@ -95,6 +118,21 @@ pnpm dashboard           # docs/execution/dashboard/index.html 재생성
 
 **`.claude/hooks/tdd-guard.sh`**는 대응 테스트 파일이 없는 `src/` 아래 비즈니스 로직 편집을 거부한다.
 
-- 예외: `src/app/**`(라우트 어댑터), `**/ui/**`와 `**/components/**`(표현 계층), `**/types/**`, `*.d.ts`, `*.config.*`, 슬라이스 `index.ts` barrel, 그리고 소스가 아닌 파일.
+**면제 판정의 정본은 `config/fsd.json`이다.** 훅은 계층·세그먼트 목록을 자체 보관하지 않고 `jq`로 그 파일을 읽으며, ESLint의 `project/*` 규칙도 같은 파일을 읽는다. 계약을 한 줄 바꾸면 두 도구의 판정이 함께 바뀐다(`DEV-SSOT-01`).
+
+- 세그먼트의 `unitTest`가 `exempt`면 면제한다. 현재 `ui`·`config`·`types`가 해당한다.
+- `app` 계층은 `appLayer.exemptFiles`의 Next.js 예약 표현 파일만 면제한다. `route.ts`는 API 엔드포인트이므로 테스트를 요구한다.
+- `src/` 바로 아래 파일(`proxy.ts`·`instrumentation.ts`)도 테스트를 요구한다. 계층 밖이지만 요청을 다루는 서버 코드다. Next.js 16에서 `middleware.ts`는 deprecated되고 `proxy.ts`로 이름이 바뀌었다.
+- `exemptPaths`(현재 `**/generated/**`)에 걸리는 코드 생성물은 면제한다.
+- 계약과 무관하게 면제하는 것: 테스트 파일 자체, `*.d.ts`, `*.config.*`, 소스가 아닌 파일.
 - 테스트 탐색 순서: 형제 `*.test.*`/`*.spec.*` → `__tests__/`(같은 디렉터리 또는 상위) → `src/__tests__/` → 루트 `tests/` 트리.
-- `jq`가 필요하다. 없으면 훅이 stderr에 경고만 남기고 편집을 허용한다.
+- `jq`가 없거나 계약 파일을 읽지 못하면 훅이 stderr에 경고만 남기고 편집을 허용한다. 계약을 못 읽는다고 작업을 막으면 훅이 단일 장애점이 된다.
+
+## 구조 계약
+
+`config/fsd.json`은 FSD 계층·세그먼트 구조의 기계 판독 정본이다. 값의 **의미**는 [개발 컨벤션](../standards/DEVELOPMENT.md)의 `DEV-NAME-*`가 소유하고, 이 파일은 도구가 읽는 값만 갖는다.
+
+- `layers` 배열의 **순서가 의존 방향**이다. 앞의 계층이 뒤의 계층을 import할 수 있다.
+- `segments`의 각 항목은 `unitTest`, `runtimeExports`, `verifiedBy`, `forbidImports`, `requireServerOnly`를 갖는다.
+- `verifiedBy`는 도구가 강제하지 않지만, 비어 있으면 검증 계획 없는 면제 구역이라는 사실이 파일에서 바로 보인다.
+- 규칙 구현은 `tools/eslint-plugin-project/`에 있다. 규칙 일곱 개가 `lib/contract.mjs`를 통해 이 파일을 읽는다.

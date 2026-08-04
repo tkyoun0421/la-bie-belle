@@ -1,10 +1,3 @@
-/**
- * Minimal JSON Schema validator covering exactly the keyword subset that
- * `docs/execution/phases/index.schema.json` uses. No external dependency.
- *
- * Any keyword outside that subset is reported as an error instead of being
- * ignored, so extending the schema can never silently weaken the index gate.
- */
 import { isPlainObject } from "./json-value.ts";
 
 type SchemaObject = Readonly<Record<string, unknown>>;
@@ -224,7 +217,6 @@ function validateNode(schema: unknown, data: unknown, path: string, root: unknow
   return errors;
 }
 
-/** Returns Korean error descriptions; an empty array means the data is valid. */
 export function validateAgainstSchema(schema: unknown, data: unknown, path = ""): string[] {
   return validateNode(schema, data, path, schema);
 }

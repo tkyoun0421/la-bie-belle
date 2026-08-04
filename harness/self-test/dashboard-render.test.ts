@@ -67,7 +67,10 @@ test("render — 기준 커밋을 읽지 못하면 누락으로 표시하고 값
 
 test("render — 다음 생성이 읽을 기준 커밋 marker를 심는다", () => {
   const html = renderDashboard(viewOf());
-  assert.ok(html.includes(`<meta name="base-commit" content="${BASE_COMMIT}">`), "기준 커밋 marker가 없다");
+  assert.ok(
+    html.includes(`<meta name="base-commit" content="${BASE_COMMIT}">`),
+    "기준 커밋 marker가 없다",
+  );
 
   const missing = renderDashboard(viewOf({ baseCommit: null, baseCommitSubject: null }));
   assert.doesNotMatch(missing, /base-commit/u, "커밋을 모르면 marker를 만들지 않아야 한다");
@@ -162,8 +165,14 @@ test("render — 생성된 산출물이 같은 계약을 만족한다", () => {
   }
   assert.match(html, /<meta name="viewport" content="width=device-width, initial-scale=1">/u);
   assert.match(html, /<meta name="base-commit" content="[0-9a-f]{40}">/u);
-  assert.match(html, /<dt>기준 시각<\/dt><dd class="mono">[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:.]+Z<\/dd>/u);
-  assert.match(html, /<dt>기준 커밋<\/dt><dd>(<span class="mono">[0-9a-f]{40}<\/span>|<span class="missing">누락)/u);
+  assert.match(
+    html,
+    /<dt>기준 시각<\/dt><dd class="mono">[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:.]+Z<\/dd>/u,
+  );
+  assert.match(
+    html,
+    /<dt>기준 커밋<\/dt><dd>(<span class="mono">[0-9a-f]{40}<\/span>|<span class="missing">누락)/u,
+  );
   for (const pattern of [/https?:\/\//u, /<link\b/u, /\bsrc\s*=/u, /@import/u, /url\(/u]) {
     assert.doesNotMatch(html, pattern, `산출물에 외부 리소스 참조가 있다: ${String(pattern)}`);
   }

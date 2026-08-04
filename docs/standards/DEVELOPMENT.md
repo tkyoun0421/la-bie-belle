@@ -122,6 +122,32 @@ private 데이터의 제한적 오프라인 열람이 실제 현장 요구가 �
 
 모든 entity에 repository·service를 만드는 식의 기계적 SOLID 적용과 MVP 밖 기능을 위한 선행 추상화는 하지 않는다.
 
+## 이름 규칙
+
+구조 계약의 기계 판독 정본은 `config/fsd.json`이다. ESLint의 `project/*` 규칙과 `.claude/hooks/tdd-guard.sh`가 같은 파일을 읽으므로 두 도구의 판정이 갈리지 않는다. 이 절은 그 값의 의미를 소유한다.
+
+- `DEV-NAME-01` `MUST`: 폴더 이름은 kebab-case를 쓴다. 계층, 슬라이스, 세그먼트 모두 같다.
+- `DEV-NAME-02` `MUST`: 파일 이름은 kebab-case를 기본으로 하되 `ui` 세그먼트의 컴포넌트는 PascalCase, `hooks` 세그먼트는 useCamelCase를 쓴다.
+- `DEV-NAME-03` `MUST`: 파일 이름과 그 파일의 주 export 이름을 일치시킨다. `ShiftCard.tsx`는 `ShiftCard`를, `useShiftList.ts`는 `useShiftList`를 export한다.
+- `DEV-NAME-04` `MUST`: 세그먼트 디렉터리는 `config/fsd.json`의 `segments`에 정의된 이름만 쓴다. 새 세그먼트가 필요하면 규칙(`unitTest`, `runtimeExports`, `verifiedBy`, import 제약)을 함께 정의해 추가한다.
+- `DEV-NAME-05` `MAY`: 프레임워크나 외부 도구가 파일명을 정하는 구역은 예외로 둔다. 예외 목록은 `config/fsd.json`의 `naming.exceptions`가 소유하며 현재는 Next.js 예약 파일명(`src/app/**`)과 shadcn 관리 구역(`src/shared/ui/**`)이다.
+
+세그먼트별 책임과 잠금 규칙은 다음과 같다. `unitTest`가 `exempt`인 구역은 런타임 코드를 제한해 면제가 우회 통로가 되지 않게 한다.
+
+| 세그먼트 | 단위 테스트 | 런타임 export | import 제약 |
+| --- | --- | --- | --- |
+| `ui` | 면제 (컴포넌트·E2E로 검증) | 허용 | 서버 모듈·`api` 세그먼트 금지 |
+| `hooks` | 필수 | 허용 | 서버 모듈 금지 |
+| `model` | 필수 | 허용 | React 금지 |
+| `api` | 필수 | 허용 | `import "server-only"` 필수 |
+| `lib` | 필수 | 허용 | — |
+| `config` | 면제 | 상수만 (함수·클래스 금지) | — |
+| `types` | 면제 | 금지 | — |
+
+`app` 계층은 세그먼트를 갖지 않는다. Next.js 예약 표현 파일(`page`·`layout`·`loading`·`error`·`global-error`·`not-found`·`template`·`default`)만 단위 테스트를 면제하고, `route.ts` 같은 엔드포인트와 `src/` 바로 아래의 `proxy.ts`·`instrumentation.ts`는 서버 코드이므로 테스트를 요구한다.
+
+슬라이스 public API를 barrel(`index.ts`)로 만들지 않는다. Next.js에서 빌드 성능 문제를 만들고 순환 의존의 통로가 되며, 계층 방향은 `project/layer-direction`이 직접 강제하므로 barrel 없이도 규약이 유지된다.
+
 ## 재사용
 
 - `DEV-REUSE-01` `MUST`: 도메인·보안·금액·시간 규칙은 하나의 구현만 소유한다.

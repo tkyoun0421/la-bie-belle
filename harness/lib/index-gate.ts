@@ -21,14 +21,12 @@ function violation(message: string, line: number | undefined, hint: string): Vio
     : { gate: GATE, file: INDEX_PATH, line, message, hint };
 }
 
-/**
- * State rules that the JSON schema alone cannot express, plus a clearer message
- * for the approval rules the schema also guards.
- */
 export function checkIndexStateRules(entries: readonly IndexEntry[]): Violation[] {
   const violations: Violation[] = [];
   const knownIds = new Set(
-    entries.map((entry) => readStringField(entry.record, "id")).filter((id): id is string => id !== null),
+    entries
+      .map((entry) => readStringField(entry.record, "id"))
+      .filter((id): id is string => id !== null),
   );
 
   const inProgress = findInProgressTasks(entries);
@@ -112,7 +110,6 @@ export function checkIndexStateRules(entries: readonly IndexEntry[]): Violation[
   return violations;
 }
 
-/** Validates every index line against `index.schema.json`. */
 export function checkIndexSchema(entries: readonly IndexEntry[], schema: unknown): Violation[] {
   return entries.flatMap((entry) =>
     validateAgainstSchema(schema, entry.record).map((message) =>

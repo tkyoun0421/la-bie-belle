@@ -13,13 +13,6 @@ import type { Violation } from "./violation.ts";
 
 const GATE = "gate:radio";
 
-/**
- * Checks that every task waiting to run or already running is still bound to the
- * exact RADIO document the user approved.
- *
- * `hashOf` returns the SHA-256 of a repository file, or null when it is missing,
- * so the rule itself stays free of file system access.
- */
 export function checkRadioBindings(
   entries: readonly IndexEntry[],
   hashOf: (relativePath: string) => string | null,
@@ -43,7 +36,10 @@ export function checkRadioBindings(
       continue;
     }
 
-    const approvedHash = readStringField(readObjectField(record, "development_approval") ?? {}, "radio_sha256");
+    const approvedHash = readStringField(
+      readObjectField(record, "development_approval") ?? {},
+      "radio_sha256",
+    );
     if (approvedHash === null) {
       violations.push({
         gate: GATE,

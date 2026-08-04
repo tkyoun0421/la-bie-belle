@@ -14,7 +14,11 @@ import {
 
 test("gate:index — 정상 index는 위반 없이 통과한다", () => {
   const root = createFixtureRoot();
-  writeIndexRecords(root, [makePhase(), makeTask(), makeTask({ id: "P0-T02", depends_on: ["P0-T01"] })]);
+  writeIndexRecords(root, [
+    makePhase(),
+    makeTask(),
+    makeTask({ id: "P0-T02", depends_on: ["P0-T01"] }),
+  ]);
 
   assert.deepEqual(runIndexGate(root), []);
 });
@@ -150,19 +154,37 @@ test("스키마 검증기 — const·enum·pattern·minItems·uniqueItems를 검
       kind: { const: "task" },
       id: { type: "string", pattern: "^P[0-9]+$" },
       status: { enum: ["planned", "done"] },
-      tags: { type: "array", minItems: 1, uniqueItems: true, items: { type: "string", minLength: 1 } },
+      tags: {
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: { type: "string", minLength: 1 },
+      },
       count: { type: "integer", minimum: 1 },
     },
   };
 
-  assert.deepEqual(validateAgainstSchema(schema, { kind: "task", id: "P0", tags: ["a"], count: 1 }), []);
-  assert.ok(validateAgainstSchema(schema, { kind: "phase", id: "P0", tags: ["a"] }).length > 0, "const 위반");
-  assert.ok(validateAgainstSchema(schema, { kind: "task", id: "X", tags: ["a"] }).length > 0, "pattern 위반");
+  assert.deepEqual(
+    validateAgainstSchema(schema, { kind: "task", id: "P0", tags: ["a"], count: 1 }),
+    [],
+  );
   assert.ok(
-    validateAgainstSchema(schema, { kind: "task", id: "P0", tags: ["a"], status: "wip" }).length > 0,
+    validateAgainstSchema(schema, { kind: "phase", id: "P0", tags: ["a"] }).length > 0,
+    "const 위반",
+  );
+  assert.ok(
+    validateAgainstSchema(schema, { kind: "task", id: "X", tags: ["a"] }).length > 0,
+    "pattern 위반",
+  );
+  assert.ok(
+    validateAgainstSchema(schema, { kind: "task", id: "P0", tags: ["a"], status: "wip" }).length >
+      0,
     "enum 위반",
   );
-  assert.ok(validateAgainstSchema(schema, { kind: "task", id: "P0", tags: [] }).length > 0, "minItems 위반");
+  assert.ok(
+    validateAgainstSchema(schema, { kind: "task", id: "P0", tags: [] }).length > 0,
+    "minItems 위반",
+  );
   assert.ok(
     validateAgainstSchema(schema, { kind: "task", id: "P0", tags: ["a", "a"] }).length > 0,
     "uniqueItems 위반",
@@ -171,7 +193,10 @@ test("스키마 검증기 — const·enum·pattern·minItems·uniqueItems를 검
     validateAgainstSchema(schema, { kind: "task", id: "P0", tags: ["a"], count: 0 }).length > 0,
     "minimum 위반",
   );
-  assert.ok(validateAgainstSchema(schema, { kind: "task", id: "P0", tags: ["a"], x: 1 }).length > 0, "추가 필드");
+  assert.ok(
+    validateAgainstSchema(schema, { kind: "task", id: "P0", tags: ["a"], x: 1 }).length > 0,
+    "추가 필드",
+  );
 });
 
 test("스키마 검증기 — if·then·not·$ref·format을 검사한다", () => {
@@ -205,10 +230,14 @@ test("스키마 검증기 — if·then·not·$ref·format을 검사한다", () =
     "$ref const 위반",
   );
   assert.ok(
-    validateAgainstSchema(schema, { kind: "task", approval: { by: "user" }, at: "2026-08-03" }).length > 0,
+    validateAgainstSchema(schema, { kind: "task", approval: { by: "user" }, at: "2026-08-03" })
+      .length > 0,
     "not 위반",
   );
-  assert.ok(validateAgainstSchema({ type: "string", format: "date" }, "2026-8-3").length > 0, "date 형식 위반");
+  assert.ok(
+    validateAgainstSchema({ type: "string", format: "date" }, "2026-8-3").length > 0,
+    "date 형식 위반",
+  );
 });
 
 test("스키마 검증기 — 지원하지 않는 keyword를 조용히 통과시키지 않는다", () => {

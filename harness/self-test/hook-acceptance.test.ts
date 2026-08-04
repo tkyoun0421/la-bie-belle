@@ -19,24 +19,28 @@ import {
 
 const ALLOWED_GLOBS = ["docs/execution/runs/**", "src/allowed/**"];
 
-/**
- * Builds a throwaway repository that carries a copy of this harness and of the
- * real git hooks, so commits can be attempted for real without touching the
- * working repository.
- */
 function createHookRepo(): string {
   const root = createFixtureRoot();
   const source = resolveRepoRoot();
   initGitRepo(root);
   cpSync(join(source, "harness"), join(root, "harness"), { recursive: true });
   cpSync(join(source, ".githooks"), join(root, ".githooks"), { recursive: true });
-  writeFixtureFile(root, "package.json", `${JSON.stringify({ name: "hook-fixture", private: true, type: "module" }, null, 2)}\n`);
+  writeFixtureFile(
+    root,
+    "package.json",
+    `${JSON.stringify({ name: "hook-fixture", private: true, type: "module" }, null, 2)}\n`,
+  );
 
   const radioSha256 = writeRadio(root, "P0-T01", ALLOWED_GLOBS);
   writeIndexRecords(root, [
     makeTask({
       status: "in_progress",
-      development_approval: { by: "user", at: "2026-08-03", radio_revision: 1, radio_sha256: radioSha256 },
+      development_approval: {
+        by: "user",
+        at: "2026-08-03",
+        radio_revision: 1,
+        radio_sha256: radioSha256,
+      },
     }),
   ]);
   writeFixtureJson(root, "docs/execution/runs/P0-T01/tdd.json", makeTddEvidence());

@@ -2,13 +2,6 @@ function escapeRegExpChar(char: string): string {
   return /[.*+?^${}()|[\]\\]/u.test(char) ? `\\${char}` : char;
 }
 
-/**
- * Translates a path glob into an anchored regular expression.
- *
- * - `*` matches any run of characters inside one path segment
- * - `?` matches a single character inside one path segment
- * - `**` matches across segments; `**\/` also matches zero segments
- */
 export function globToRegExp(glob: string): RegExp {
   let pattern = "";
   let cursor = 0;
