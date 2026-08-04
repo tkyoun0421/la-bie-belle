@@ -20,6 +20,8 @@
 | 당일 팀장 | `day_lead` | 전역 역할이 아니라 해당 날짜의 `팀장` 확정 배정에서 파생되는 권한. |
 | 모집 | `work_schedule` in `OPEN` | 근무일과 신청 마감일을 공개해 가능 근무자를 받는 과정. |
 | 신청 | `schedule_application` | 근무 가능 여부. 희망 포지션을 뜻하지 않는다. |
+| 포지션 | `position` | 배정이 충족하는 역할 구분. 관리자가 추가·수정하는 관리 데이터이며 고정 목록이 아니다. |
+| 비활성 포지션 | `position.is_active = false` | 쓰인 적이 있어 삭제할 수 없고 새 배정·필요 인원에서만 제외한 포지션. 과거 기록은 그대로 남는다. |
 | 필요 인원 | `position_requirement` | 스케줄과 포지션별로 필요한 정식 담당자 수의 스냅샷. |
 | 배정 | `assignment` | 한 근무자가 하루 스케줄에 참여한다는 기록. |
 | 담당 포지션 | `assignment_position` | 한 배정이 충족하는 하나 이상의 포지션. |
@@ -43,7 +45,7 @@
 | ID | 책임 | 소유 데이터 | 외부에서 받는 정보 |
 | --- | --- | --- | --- |
 | `DOMAIN:IDENTITY` | 가입, 승인, 휴면, 역할, 개인정보, 시급, 가능 포지션, 탈퇴 복구 | profile, role, eligibility, departed vault | Google 인증 결과와 신청·배정 차단 여부 |
-| `DOMAIN:SCHEDULING` | 모집, 신청, 예식, 필요 인원, 배정, 확정, 취소·교대 | schedule, application, ceremony, requirement, assignment, change request | 활성 계정과 포지션 자격 |
+| `DOMAIN:SCHEDULING` | 포지션 목록, 모집, 신청, 예식, 필요 인원, 배정, 확정, 취소·교대 | position, schedule, application, ceremony, requirement, assignment, change request | 활성 계정과 포지션 자격 |
 | `DOMAIN:ATTENDANCE` | GPS·QR 인증, 불변 원본, 팀장 확인, 출결 projection | attendance event, attestation, QR key | 확정 배정과 예정 시간 |
 | `DOMAIN:NOTIFICATIONS` | 앱 내 알림, 푸시 구독, outbox, 재시도 | notification, subscription, outbox | 다른 도메인의 사건 |
 | `DOMAIN:PAY` | 예정 급여 조회와 리허설 자기기록 | pay projection, rehearsal entry | 배정 스냅샷과 결근 projection |
