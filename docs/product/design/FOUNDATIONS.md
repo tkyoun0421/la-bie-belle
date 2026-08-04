@@ -45,7 +45,11 @@
 
 ## 타이포그래피
 
-모든 화면은 `Pretendard Variable` 하나를 사용한다. 로드 실패 시 `-apple-system`, `BlinkMacSystemFont`, `"Segoe UI"`, sans-serif 순으로 대체한다.
+모든 화면은 `Wanted Sans Variable` 하나를 사용한다. 로드 실패 시 `Wanted Sans`, `-apple-system`, `BlinkMacSystemFont`, `system-ui`, `"Segoe UI"`, `"Apple SD Gothic Neo"`, sans-serif 순으로 대체한다.
+
+- 글꼴 자산은 [wanteddev/wanted-sans](https://github.com/wanteddev/wanted-sans)가 SIL Open Font License로 배포한다. 글꼴 단독 판매와 라이선스 변경을 제외한 상업적 사용·수정·재배포가 가능하다.
+- 자산은 앱에서 직접 호스팅한다. 외부 CDN을 런타임에 의존하면 렌더가 외부 가용성에 묶이고, 오프라인 규칙이 허용하는 public 리소스 캐시 범위를 벗어난다.
+- variable 축 하나로 아래 표의 굵기(400·600·700)를 모두 표현한다. 정적 웨이트 파일을 굵기마다 따로 싣지 않는다.
 
 | 스타일 | 크기/행간 | 굵기 | 사용 |
 | --- | --- | ---: | --- |
