@@ -1,5 +1,5 @@
 begin;
-select plan(15);
+select plan(30);
 
 select is(
   (select relrowsecurity from pg_class where oid = 'public.positions'::regclass),
@@ -93,6 +93,84 @@ select throws_ok(
 );
 
 reset role;
+
+select is(
+  (select count(*)::int from pg_policies where schemaname = 'public' and tablename = 'positions'),
+  0,
+  'positions has zero policies'
+);
+select is(
+  (select count(*)::int from pg_policies where schemaname = 'public' and tablename = 'venue_settings'),
+  0,
+  'venue_settings has zero policies'
+);
+select is(
+  (select count(*)::int from pg_policies where schemaname = 'public' and tablename = 'check_in_rules'),
+  0,
+  'check_in_rules has zero policies'
+);
+
+set local role anon;
+
+select lives_ok(
+  $$update positions set name = name || ' 변조'$$,
+  'anon update positions raises no error because rows are filtered, not denied'
+);
+select lives_ok(
+  $$delete from positions where code is null$$,
+  'anon delete positions raises no error because rows are filtered, not denied'
+);
+select lives_ok(
+  $$update venue_settings set gps_radius_m = 1$$,
+  'anon update venue_settings raises no error because rows are filtered, not denied'
+);
+select lives_ok(
+  $$delete from check_in_rules$$,
+  'anon delete check_in_rules raises no error because rows are filtered, not denied'
+);
+
+reset role;
+set local role authenticated;
+
+select lives_ok(
+  $$update positions set name = name || ' 변조'$$,
+  'authenticated update positions raises no error because rows are filtered, not denied'
+);
+select lives_ok(
+  $$delete from positions where code is null$$,
+  'authenticated delete positions raises no error because rows are filtered, not denied'
+);
+select lives_ok(
+  $$update venue_settings set gps_radius_m = 1$$,
+  'authenticated update venue_settings raises no error because rows are filtered, not denied'
+);
+select lives_ok(
+  $$delete from check_in_rules$$,
+  'authenticated delete check_in_rules raises no error because rows are filtered, not denied'
+);
+
+reset role;
+
+select is(
+  (select count(*)::int from positions where name like '% 변조'),
+  0,
+  'no position name was modified through rls'
+);
+select is(
+  (select count(*)::int from positions),
+  9,
+  'no position row was deleted through rls'
+);
+select is(
+  (select gps_radius_m from venue_settings),
+  100,
+  'venue settings stayed unchanged through rls'
+);
+select is(
+  (select count(*)::int from check_in_rules),
+  2,
+  'check-in rules stayed intact through rls'
+);
 
 select * from finish();
 rollback;

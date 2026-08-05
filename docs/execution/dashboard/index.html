@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="base-commit" content="45a9a7615948a3a80d5218382545139416b02a81">
+<meta name="base-commit" content="b8f3fbde3f950c320752dbdcfecfc184323333d6">
 <title>라비에벨 운영 의사결정 대시보드</title>
 <style>:root{color-scheme:light;--ink:#0a0b0d;--muted:#5b616e;--line:#dee1e6;--surface:#f7f7f7;--action:#0052ff;--action-bg:#eef4ff;--success:#087a4b;--success-bg:#e8f8f1;--warning:#765500;--warning-bg:#fff7d6;--danger:#b01825;--danger-bg:#fff0f1}
 *{box-sizing:border-box}
@@ -60,28 +60,28 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <p class="eyebrow">라비에벨 운영 대시보드 · 읽기 전용 파생물</p>
 <h1>운영 의사결정 대시보드</h1>
 <dl class="meta">
-<div><dt>기준 시각</dt><dd class="mono">2026-08-05T04:49:16.779Z</dd></div>
-<div><dt>기준 커밋</dt><dd><span class="mono">45a9a7615948a3a80d5218382545139416b02a81</span><span class="sub">feat(P0-T03): build the database foundation with pgTAP-verified schema</span></dd></div>
-<div><dt>작업 트리</dt><dd>커밋되지 않은 변경 1건 — 표시 내용에 기준 커밋 이후의 작업 트리 상태가 섞여 있다.</dd></div>
+<div><dt>기준 시각</dt><dd class="mono">2026-08-05T05:20:12.826Z</dd></div>
+<div><dt>기준 커밋</dt><dd><span class="mono">b8f3fbde3f950c320752dbdcfecfc184323333d6</span><span class="sub">docs(P0-T37): register error contract and PWA skew policy proposals</span></dd></div>
+<div><dt>작업 트리</dt><dd>커밋되지 않은 변경 12건 — 표시 내용에 기준 커밋 이후의 작업 트리 상태가 섞여 있다.</dd></div>
 </dl>
 
 </header>
 <main>
 <section id="next-action" class="card highlight">
 <h2>다음 행동·차단</h2>
-<p class="target mono">P0-T03</p>
-<p class="headline">P0-T03 Supabase 로컬 개발과 초기 스키마의 개발·검증·리팩토링을 마치고 done으로 전환한다.</p>
-<p class="rationale">in_progress task는 저장소 전체에서 하나뿐이며, 끝내기 전에는 다음 task를 시작할 수 없다.</p>
+<p class="target mono">P0-T34</p>
+<p class="headline">P0-T34 디자인 시스템 코드 구현의 설계(RADIO) 인터뷰를 진행한다.</p>
+<p class="rationale">실행 큐가 비었고 기획 승인만 있는 task가 있다. RADIO 승인이 planned 진입 조건이다.</p>
 <h3>직접 선행 조건</h3>
-<ul><li>P0-T03의 등록 check와 교차 검증 통과</li></ul>
+<ul><li>승인된 기획 범위 확인</li><li>docs/execution/radio/&lt;task-id&gt;-radio.md 작성과 SHA-256 기록</li></ul>
 <h3>차단 사유</h3>
 <p class="empty">차단 사유 없음</p>
 <h3>대안 후보</h3>
-<p class="empty">대안 후보 없음</p>
+<ul><li>P0-T35</li><li>P1-T06</li><li>P7-T01</li></ul>
 </section>
 <section id="readiness" class="card">
 <h2>준비도 루브릭</h2>
-<p class="total"><span class="total-score mono">79</span><span class="total-max">/100</span><span class="grade action">양호</span></p>
+<p class="total"><span class="total-score mono">86</span><span class="total-max">/100</span><span class="grade action">양호</span></p>
 <p class="caption">등급 경계: 90 이상 우수, 70~89 양호, 70 미만 주의. 모든 점수는 아래 근거 수치로 기계 판정한다.</p>
 <ul class="rubric"><li class="rubric-area">
 <p class="row"><strong>계약 준수</strong><span class="score mono">40/40</span></p>
@@ -108,36 +108,36 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <p class="evidence">blocked task 0건.</p>
 </li></ul>
 </li><li class="rubric-area">
-<p class="row"><strong>문서 신선도</strong><span class="score mono">4/15</span></p>
-<span class="meter"><span class="meter-fill" style="width:27%"></span></span>
+<p class="row"><strong>문서 신선도</strong><span class="score mono">11/15</span></p>
+<span class="meter"><span class="meter-fill" style="width:73%"></span></span>
 <ul class="rubric-items"><li>
-<p class="row"><span>재생성 준수</span><span class="score mono">0/7</span></p>
-<p class="evidence">기존 산출물 기준 커밋 4c2de27 이후 재생성 없이 상태 변경 커밋 1건(45a9a76)이 쌓였다.</p>
+<p class="row"><span>재생성 준수</span><span class="score mono">7/7</span></p>
+<p class="evidence">기존 산출물 기준 커밋 45a9a76 이후 재생성이 필요한 상태 변경 커밋이 없다.</p>
 </li><li>
 <p class="row"><span>보류 ADR 0건</span><span class="score mono">4/4</span></p>
 <p class="evidence">보류 상태 ADR 0건.</p>
 </li><li>
 <p class="row"><span>미결 부채 0건</span><span class="score mono">0/4</span></p>
-<p class="evidence">최신 handoff의 미결 항목 40건. docs/execution/runs/P0-T01/handoff.md 3건, docs/execution/runs/P0-T02/handoff.md 4건, docs/execution/runs/P0-T03/handoff.md 7건, docs/execution/runs/P0-T29/handoff.md 3건, docs/execution/runs/P0-T30/handoff.md 4건, docs/execution/runs/P0-T31/handoff.md 2건, docs/execution/runs/P0-T32/handoff.md 6건, docs/execution/runs/P0-T33/handoff.md 1건, docs/execution/runs/interviews/2026-08-04-p0-t02-planning.md 4건, docs/execution/runs/interviews/2026-08-04-p0-t03-design.md 2건, docs/execution/runs/interviews/2026-08-04-p0-t03-planning.md 2건, docs/execution/runs/interviews/2026-08-04-publishing-first.md 2건.</p>
+<p class="evidence">최신 handoff의 미결 항목 35건. docs/execution/runs/P0-T01/handoff.md 3건, docs/execution/runs/P0-T02/handoff.md 4건, docs/execution/runs/P0-T03/handoff.md 2건, docs/execution/runs/P0-T29/handoff.md 3건, docs/execution/runs/P0-T30/handoff.md 4건, docs/execution/runs/P0-T31/handoff.md 2건, docs/execution/runs/P0-T32/handoff.md 6건, docs/execution/runs/P0-T33/handoff.md 1건, docs/execution/runs/interviews/2026-08-04-p0-t02-planning.md 4건, docs/execution/runs/interviews/2026-08-04-p0-t03-design.md 2건, docs/execution/runs/interviews/2026-08-04-p0-t03-planning.md 2건, docs/execution/runs/interviews/2026-08-04-publishing-first.md 2건.</p>
 </li></ul>
 </li></ul>
 </section>
 <section id="progress" class="card">
 <h2>진행도</h2>
-<p class="row"><strong>전체 완료율</strong><span class="score mono">27/84 · 32%</span></p>
-<span class="meter"><span class="meter-fill" style="width:32%"></span></span>
+<p class="row"><strong>전체 완료율</strong><span class="score mono">28/84 · 33%</span></p>
+<span class="meter"><span class="meter-fill" style="width:33%"></span></span>
 <h3>상태별 집계</h3>
-<ul class="chips"><li class="chip">기획 미승인 <span class="mono">52</span></li><li class="chip">설계 대기 <span class="mono">4</span></li><li class="chip">진행 중 <span class="mono">1</span></li><li class="chip">완료 <span class="mono">27</span></li></ul>
+<ul class="chips"><li class="chip">기획 미승인 <span class="mono">52</span></li><li class="chip">설계 대기 <span class="mono">4</span></li><li class="chip">완료 <span class="mono">28</span></li></ul>
 <h3>현재 진행</h3>
-<ul class="plain"><li><span class="mono">P0-T03</span> Supabase 로컬 개발과 초기 스키마 <span class="chip">진행 중</span></li></ul>
+<p class="empty">진행 중인 task 없음</p>
 <h3>다음 후보</h3>
 <p class="empty">실행 가능한 planned task 없음</p>
 <details>
 <summary>phase별 진행과 의존성 대기 상세</summary>
 <h3>phase별 완료율</h3>
 <ul class="plain"><li>
-<p class="row"><span><span class="mono">P0</span> 프로젝트 기반과 품질 게이트</span><span class="score mono">27/34 · 79%</span></p>
-<span class="meter"><span class="meter-fill" style="width:79%"></span></span>
+<p class="row"><span><span class="mono">P0</span> 프로젝트 기반과 품질 게이트</span><span class="score mono">28/34 · 82%</span></p>
+<span class="meter"><span class="meter-fill" style="width:82%"></span></span>
 </li><li>
 <p class="row"><span><span class="mono">P1</span> 인증, 승인, 역할, 근무자 관리</span><span class="score mono">0/7 · 0%</span></p>
 <span class="meter"><span class="meter-fill" style="width:0%"></span></span>
@@ -167,137 +167,79 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <section id="reviews" class="card">
 <h2>검증</h2>
 
-<p class="row"><strong>최신 결과 <span class="mono">P0-T02</span></strong><span class="score mono">종합 72</span></p>
-<p class="caption mono">2026-08-04T09:17:16Z · 기준 커밋 b2288bba84602628d29aabf82177161c39d287b5 · 참여 opus, codex</p>
+<p class="row"><strong>최신 결과 <span class="mono">P0-T03</span></strong><span class="score mono">종합 88</span></p>
+<p class="caption mono">2026-08-05T05:09:15Z · 기준 커밋 92cb8857364009e96e0b28ddb92603ce1544fd81 · 참여 opus, codex</p>
 
 <ul class="plain"><li>
-<p class="row"><span>코드 품질</span><span class="score mono">72</span></p>
-<p class="evidence">플러그인 7개 규칙이 공유 lib으로 중복을 눌렀고 오류 메시지가 행동 지침을 담아 우수하다. 자동 수정 가능한 위반을 pre-commit이 거부하지 않는 high 1건과 tdd-guard의 파일명-세그먼트 오독·동적 import 미검사·자기 파일 주석 잔존 medium 3건을 감점했다.</p>
+<p class="row"><span>코드 품질</span><span class="score mono">90</span></p>
+<p class="evidence">명명·구조·주석 규칙은 지켜졌으나 참조 데이터 멱등성이 UNIQUE 두 개 중 name만 다루는 확정 결함(F-05) 하나를 반영했다.</p>
 </li><li>
-<p class="row"><span>테스트</span><span class="score mono">60</span></p>
-<p class="evidence">확정 발견 6건(high 2, medium 4)이 몰린 최저 영역이다. 규칙 테스트 109개는 오탐 대조군과 유사 폴더 반례까지 갖춰 모범적이나, 계약을 소비하는 나머지 절반인 tdd-guard.sh에 자동 테스트가 0건이고, 훅이 인정하는 테스트 경로를 vitest가 수집하지 않으며, 이 task 최대 리팩토링 대상의 회귀 안전망(harness:self-test)이 단일 검증 명령 밖에 있다.</p>
+<p class="row"><span>테스트</span><span class="score mono">75</span></p>
+<p class="evidence">pgTAP 70건과 오탐 대조군 배치는 실질적이지만 인수 조건 2건의 회귀 보호 부재(F-03·F-04), CHECK 거부 케이스 공백(F-06)과 증거 식별 문제(F-08)를 반영했다.</p>
 </li><li>
-<p class="row"><span>보안</span><span class="score mono">82</span></p>
-<p class="evidence">비밀값·개인정보 노출과 권한 우회는 발견되지 않았고 process.env 차단과 require-server-only의 강제 위치는 적절하다. 실제 번들 유출을 확인하는 유일한 검사(check:app-build)가 verify에서 빠졌고 no-console이 warn이라 차단력이 없는 medium 2건을 감점했다.</p>
+<p class="row"><span>보안</span><span class="score mono">95</span></p>
+<p class="evidence">확정된 보안 영역 결함은 없고 RLS 기본 거부·시스템 포지션 보호가 실제 DB에서 확인됐으나, 그 불변의 회귀 보호 공백(F-04)이 지속 보증을 약화시켜 만점을 주지 않았다.</p>
 </li><li>
-<p class="row"><span>성능</span><span class="score mono">80</span></p>
-<p class="evidence">근거 없는 최적화를 피하고 type-aware 린트 분리를 실측으로 정당화한 판단은 옳다. 다만 승인된 RADIO가 이점으로 내세운 계약 파싱 공유가 구현되지 않아 (파일 × 규칙)만큼 파일 읽기가 반복되는 medium 1건이 설계 근거 자체와 어긋난다.</p>
+<p class="row"><span>성능</span><span class="score mono">100</span></p>
+<p class="evidence">변경분에 애플리케이션 코드·조회 경로가 없어 성능 판단 재료가 없다는 두 리뷰어의 평가에 결함 근거가 없어 100으로 두었다.</p>
 </li><li>
-<p class="row"><span>아키텍처 정합</span><span class="score mono">68</span></p>
-<p class="evidence">config/fsd.json 단일 정본, FSD 의존 방향 강제, barrel 제거는 실제로 성립했다. 그러나 봉인된 RADIO의 자기 모순, DEVELOPMENT.md의 제거된 옛 훅 동작 서술, handoff의 승인 revision·해시 오기, DEV-NAME-03 미강제, 계층 지식 하드코딩으로 문서 계층의 정본 정합이 다섯 곳에서 깨졌다.</p>
+<p class="row"><span>아키텍처 정합</span><span class="score mono">78</span></p>
+<p class="evidence">구현 자체는 승인 RADIO와 일치하나 승인 변경의 미봉인(F-01), 문서 간 모순의 미조정(F-02)과 업무 초기값의 정본 관계 미기록(F-07)을 반영했다.</p>
 </li></ul>
 <h3>확정 발견</h3>
 <div class="severity">
-<h4>high (즉시 보고) · 3건</h4>
+<h4>medium (backlog) · 7건</h4>
 <ul class="plain"><li>
-<p class="row"><span class="mono">F-01</span><span class="chip">코드 품질</span></p>
-<p class="finding-title">pre-commit이 자동 수정 가능한 포맷·린트 위반을 거부하지 않는다</p>
-<p class="evidence">인수 조건 3은 &#39;포맷·린트·타입·테스트 실패 커밋의 pre-commit 거부&#39;인데, .githooks/pre-commit이 부르는 lint-staged 설정은 prettier --write와 eslint --fix다. 포맷만 어긋난 커밋은 훅이 파일을 고쳐 다시 stage한 뒤 성공하므로 &#39;거부&#39;를 문자 그대로 시연할 수 없다. 중요도가 갈려(codex high, opus low) 계약에 따라 높은 쪽을 택했다. opus의 완화 근거는 기록해 둔다 — 이 task가 만든 project/* 규칙 7종은 meta.fixable도 fix도 정의하지 않아 전부 자동 수정 불가이므로 구조 위반은 eslint --fix가 못 고치고 exit 1로 실제 커밋을 막으며, 이어지는 tsc --noEmit과 vitest run이 타입·테스트 실패를 거부하고, 거부형 포맷 검사는 pnpm verify의 format:check가 담당한다. 또 승인된 RADIO가 lint-staged에 두 명령을 걸도록 명시했으므로 구현은 설계와 일치한다.</p>
-<p class="caption mono">package.json · 인정 opus, codex</p>
+<p class="row"><span class="mono">F-01</span><span class="chip">아키텍처 정합</span></p>
+<p class="finding-title">승인된 [analytics] 비활성화가 RADIO revision 3으로 봉인되지 않았다</p>
+<p class="evidence">커밋된 supabase/config.toml은 analytics를 끈 상태인데 승인 정본 RADIO는 revision 2 그대로이고 analytics를 언급하지 않으며, handoff는 이 변경을 미승인으로 선언하면서 승인 시 revision 3 추가와 재봉인을 필수 후속 조치로 명시했다. 사용자가 2026-08-05 비활성화를 승인했으므로 재봉인이 수행되어야 한다. 등록 check supabase-reset의 결정성이 이 설정에 의존한다.</p>
+<p class="caption mono">docs/execution/radio/P0-T03-radio.md · 인정 opus, codex</p>
 </li><li>
-<p class="row"><span class="mono">F-02</span><span class="chip">테스트</span></p>
-<p class="finding-title">tdd-guard가 인정하는 테스트 경로를 vitest가 수집하지 않는다</p>
-<p class="evidence">tdd-guard.sh는 형제 test/spec, &lt;dir&gt;/__tests__/, &lt;parent&gt;/__tests__/, src/__tests__/, 루트 tests/ 트리를 유효한 테스트로 인정한다. vitest.config.ts의 include는 tools/**/*.test.mjs와 src/**/{model,lib,api,ui,hooks}/**/*.test.{ts,tsx}뿐이다. 결과로 revision 4가 일부러 테스트를 요구하게 만든 src/app/**/route.ts와 src/proxy.ts의 형제 테스트, &lt;parent&gt;/__tests__/·src/__tests__/·tests/ 아래 테스트는 pnpm test가 한 번도 실행하지 않는다. 훅은 통과시키고 러너는 돌리지 않으므로 &#39;테스트가 있다&#39;가 &#39;테스트가 돈다&#39;를 보장하지 않는다.</p>
-<p class="caption mono">vitest.config.ts · 인정 opus, codex</p>
+<p class="row"><span class="mono">F-02</span><span class="chip">아키텍처 정합</span></p>
+<p class="finding-title">지각 기준 인수 조건이 RADIO 안에서 모순되고 phase doc 인수 조건이 미충족인 채 조정 기록이 없다</p>
+<p class="evidence">RADIO 기술 인수 조건은 check_in_rules가 지각 기준(예정 출근 1분 초과)을 담는다고 하나 같은 문서 Data model 절은 지각 판정을 P5-T05 소유로 명시하고, 구현은 후자를 따라 스키마에 임계값이 없다. 기획 승인된 00-foundation.md의 해당 인수 조건은 미충족인데 조정 기록이 RADIO·handoff 어디에도 없어 P5-T05 담당자가 이미 값이 들어가 있다고 오해할 수 있다.</p>
+<p class="caption mono">docs/execution/radio/P0-T03-radio.md · 인정 opus, codex</p>
 </li><li>
 <p class="row"><span class="mono">F-03</span><span class="chip">테스트</span></p>
-<p class="finding-title">harness 회귀 안전망이 단일 검증 명령 밖에 있다</p>
-<p class="evidence">이 task는 harness/ 32개 파일에서 주석 128건을 제거하고 이름을 바꿨고, RADIO는 그 안전망을 pnpm harness:self-test(131개)와 pnpm harness:typecheck로 선언하며 harness-regression을 등록 check로 뒀다. 그런데 package.json의 verify는 format:check, lint:ci, typecheck, test, build, test:e2e, gate:all이라 둘 다 없다. tsconfig.json은 harness를 exclude하고 vitest는 harness/를 수집하지 않으며 .githooks/pre-commit도 self-test를 돌리지 않는다. 이 task 최대 리팩토링 대상의 회귀 보호가 사람이 별도 명령을 기억할 때만 작동한다. 중요도가 갈려(codex high, opus medium) 높은 쪽을 택했다.</p>
-<p class="caption mono">package.json · 인정 opus, codex</p>
-</li></ul>
-</div><div class="severity">
-<h4>medium (backlog) · 15건</h4>
-<ul class="plain"><li>
-<p class="row"><span class="mono">F-04</span><span class="chip">테스트</span></p>
-<p class="finding-title">tdd-guard.sh에 자동 테스트가 하나도 없다</p>
-<p class="evidence">이 task가 훅을 전면 재작성했다(하드코딩 패턴 제거, jq로 계약 읽기, appLayer 분기, exemptPaths 셸 글롭 변환, 테스트 탐색 4단계). 그런데 harness/ 전체를 tdd-guard로 grep하면 0건이고 tools/에도 훅을 실행하는 테스트가 없다. 인수 조건 2(config/fsd.json 변경이 ESLint와 tdd-guard에 함께 반영)는 수동 실측으로만 뒷받침된다. ESLint 쪽 109개 대 훅 쪽 0개의 비대칭이며 test_mode가 tdd인데 tdd.json에도 훅 관련 RED→GREEN 항목이 없다.</p>
-<p class="caption mono">.claude/hooks/tdd-guard.sh · 인정 opus, codex</p>
+<p class="finding-title">migration 재적용 멱등성 인수 조건에 자동 테스트가 없다</p>
+<p class="evidence">index.jsonl verification 3번(재적용해도 중복 없음)에 대응하는 pgTAP 테스트가 없다. supabase db reset 반복은 DB를 재생성하므로 이미 데이터가 있는 DB에 같은 migration을 재적용하는 경로를 지나지 않는다. 검증 단계에서 조정자가 데이터가 있는 DB에 참조 데이터 migration을 재적용해 무변경(행 수 9/1/2 유지)을 실측했으나 자동 회귀 보호는 여전히 없다.</p>
+<p class="caption mono">supabase/tests/02-reference-data.test.sql · 인정 opus, codex</p>
 </li><li>
-<p class="row"><span class="mono">F-05</span><span class="chip">테스트</span></p>
-<p class="finding-title">tests/와 루트 테스트 설정 파일이 타입 검사·린트·포맷 대상 밖이다</p>
-<p class="evidence">tsconfig.json의 include에 tests/**, vitest.config.ts, playwright.config.ts가 없고(exclude는 include를 좁힐 뿐이다), eslint src와 prettier src도 이들을 제외한다. .prettierignore는 /* 뒤 !/src로 src만 남긴다. E2E 스펙과 테스트 설정도 코드인데 이 task가 세운 세 도구(타입·린트·포맷) 어느 것의 대상도 아니어서 tests/e2e/bootstrap.spec.ts의 타입 오류는 Playwright 실행 시점에야 드러난다. Prettier·ESLint의 src 한정은 승인된 결정이지만 정적 품질 검사가 런타임까지 지연되는 공백은 남는다. 중요도가 갈려(codex medium, opus low) 높은 쪽을 택했다.</p>
-<p class="caption mono">tsconfig.json · 인정 opus, codex</p>
+<p class="row"><span class="mono">F-04</span><span class="chip">테스트</span></p>
+<p class="finding-title">RLS 기본 거부의 회귀 보호가 불완전하다 — 정책 0개 미단언, UPDATE·DELETE 미검증</p>
+<p class="evidence">두 리뷰어가 독립적으로 발견해 병합했다. 04 테스트는 anon·authenticated의 SELECT 0행과 INSERT 42501만 검증한다. 정책 없는 RLS 테이블에서 UPDATE·DELETE는 42501 없이 0행 처리되므로 인수 조건의 쓰기 거부가 INSERT에만 성립하고, pg_policies 기준 정책 0개도 단언하지 않아 이후 task가 permissive 정책을 붙여도 현재 테스트는 전부 통과한다. 정책 개수 단언과 UPDATE·DELETE 영향 행 수 0 단언으로 막을 수 있다.</p>
+<p class="caption mono">supabase/tests/04-rls-default-deny.test.sql · 인정 opus, codex</p>
+</li><li>
+<p class="row"><span class="mono">F-05</span><span class="chip">코드 품질</span></p>
+<p class="finding-title">참조 데이터 멱등성이 name 충돌만 흡수해 code 충돌에서 깨진다</p>
+<p class="evidence">참조 데이터 migration이 on conflict (name) do nothing만 사용한다. 시스템 포지션 보호 트리거가 team_lead의 표시명 변경을 허용하므로, 표시명이 바뀐 DB에 재적용하면 name 충돌은 회피되지만 code UNIQUE 충돌이 23505로 migration을 중단시켜 복구 시나리오가 깨진다. 중요도는 opus low·codex medium으로 갈려 높은 쪽을 택했다.</p>
+<p class="caption mono">supabase/migrations/20260804000100_foundation_reference_data.sql · 인정 opus, codex</p>
 </li><li>
 <p class="row"><span class="mono">F-06</span><span class="chip">테스트</span></p>
-<p class="finding-title">Playwright reuseExistingServer가 항상 true다</p>
-<p class="evidence">playwright.config.ts의 webServer가 reuseExistingServer: true로 고정되어 있어, 포트 3100에 남아 있는 이전 서버가 있으면 webServer.command를 실행하지 않고 그 서버를 상대로 E2E가 통과한다. mobile-e2e check의 근거는 &#39;화면을 깨뜨리면 실패하는지 대조군으로 증명한다&#39;인데 그 판별력이 실행 환경 상태에 따라 조건부가 된다. 관례는 !process.env.CI다. 중요도가 갈려(codex medium, opus low) 높은 쪽을 택했다.</p>
-<p class="caption mono">playwright.config.ts · 인정 opus, codex</p>
+<p class="finding-title">CHECK 제약 네 건의 거부 케이스가 검증되지 않았다</p>
+<p class="evidence">경도 범위, 정확도 하한, 시급 비음수, 위도 하한의 거부 케이스가 없어 제약이 실제로 위반을 막는지 확인되지 않았다. 정확도 한도는 승인 RADIO 위험표가 경계 안팎 각 1건을 명시한 항목이라 약속된 배치가 빠졌고, 위험표의 상한은 스키마에 제약이 없어 검증 불가능한 문구다. 중요도는 opus low·codex medium으로 갈려 높은 쪽을 택했다.</p>
+<p class="caption mono">supabase/tests/01-schema-constraints.test.sql · 인정 opus, codex</p>
 </li><li>
-<p class="row"><span class="mono">F-07</span><span class="chip">테스트</span></p>
-<p class="finding-title">tdd-guard의 테스트 탐색이 이름만 맞으면 통과시킨다</p>
-<p class="evidence">루트 tests/ 트리 탐색이 find -name &#39;&lt;stem&gt;.test.*&#39; -o -name &#39;&lt;stem&gt;.spec.*&#39;라서 tests/e2e/rules.spec.ts가 src/entities/shift/model/rules.ts의 단위 테스트 요구를 충족시킨다. 계약의 verifiedBy(model=unit)와 어긋나지만 verifiedBy는 어느 도구도 읽지 않는다. 또 *.config.* 전면 면제 때문에 src/shared/lib/app.config.ts처럼 이름만 바꾸면 lib의 unitTest: required를 우회한다. 면제가 우회 통로가 되지 않게 한다는 이 task의 취지에 어긋난다. 중요도가 갈려(codex medium, opus low) 높은 쪽을 택했다.</p>
-<p class="caption mono">.claude/hooks/tdd-guard.sh · 인정 opus, codex</p>
-</li><li>
-<p class="row"><span class="mono">F-08</span><span class="chip">코드 품질</span></p>
-<p class="finding-title">tdd-guard가 세그먼트 없는 파일의 파일명을 세그먼트로 오독한다</p>
-<p class="evidence">src/entities/shift/model.ts처럼 세그먼트 디렉터리 없이 슬라이스 바로 아래 있는 파일에서 SEGMENT=&quot;${PARTS[3]}&quot;가 model.ts가 된다. jq 조회가 unknown을 돌려주고 차단 메시지는 계약에 없는 세그먼트를 지목한다. 같은 파일을 ESLint는 segment===null로 보고 어떤 세그먼트 규칙도 적용하지 않으며 그 동작이 segment-name.test.mjs와 resolve-path.test.mjs에 고정되어 있다. 두 도구가 같은 파일을 서로 다른 개념으로 해석하는 것은 revision 6이 __tests__ 예외로 고친 것과 같은 종류의 판정 불일치다.</p>
-<p class="caption mono">.claude/hooks/tdd-guard.sh · 인정 opus, codex</p>
-</li><li>
-<p class="row"><span class="mono">F-09</span><span class="chip">코드 품질</span></p>
-<p class="finding-title">동적 import()가 어떤 구조 규칙의 검사도 받지 않는다</p>
-<p class="evidence">layer-direction.mjs와 segment-imports.mjs는 ImportDeclaration, ExportNamedDeclaration, ExportAllDeclaration만 방문하고 ImportExpression을 다루지 않는다. Next.js에서 dynamic(() =&gt; import(&#39;@/shared/api/x&#39;)) 형태는 일상적인 패턴이므로 ui 세그먼트의 **/api/** 금지와 계층 역행 금지가 그대로 통과한다. 이 task가 스스로 적은 위험(&#39;규칙을 만들었는데 실제로는 아무것도 막지 못한다&#39;)에 직접 해당하며 현재 src/에 동적 import가 없어 드러나지 않을 뿐이다.</p>
-<p class="caption mono">tools/eslint-plugin-project/rules/layer-direction.mjs · 인정 opus, codex</p>
-</li><li>
-<p class="row"><span class="mono">F-10</span><span class="chip">코드 품질</span></p>
-<p class="finding-title">tdd-guard.sh에 설명 주석이 남아 자기 인수 조건을 충족하지 못한다</p>
-<p class="evidence">RADIO의 기술 인수 조건에 &#39;저장소에 DEV-CODE-07 위반이 남지 않는다&#39;가 있고 그 근거로 harness/의 주석 128건을 제거했다. 그런데 이 task가 재작성한 tdd-guard.sh에는 파일 머리 9줄 설계 설명 블록과 본문 6곳의 설명 주석이 새로 들어갔다(shellcheck 지시자 제외). 내용도 &#39;config/fsd.json이 정본이다&#39;처럼 DEV-CODE-07이 RADIO·handoff 소유라고 규정한 설계 근거다. CLAUDE.md는 src/ 밖에서도 규칙이 적용되며 리뷰가 지킨다고 명시한다. 같은 규칙으로 다른 파일 128건을 지우면서 자기 파일에는 적용하지 않은 비일관이 핵심이다.</p>
-<p class="caption mono">.claude/hooks/tdd-guard.sh · 인정 opus, codex</p>
-</li><li>
-<p class="row"><span class="mono">F-11</span><span class="chip">보안</span></p>
-<p class="finding-title">pnpm verify가 서버·클라이언트 경계 검사(check:app-build)를 돌리지 않는다</p>
-<p class="evidence">scripts/check-app-build.mjs는 빌드 후 .next/static에서 서버 전용 표식을 찾아 클라이언트 번들 유출을 잡는 검사이고 P0-T01의 등록 check(app-build)다. TOOLING.md도 명령 목록에 올려 뒀다. 그런데 이 task가 정의한 단일 검증 명령 verify는 이 검사를 부르지 않는다. require-server-only 규칙은 선언 유무만 보는 정적 검사이므로 실제 번들 유출을 확인하는 유일한 자동 수단이 어떤 상시 명령에도 걸려 있지 않고 서버 경계 회귀가 CI에서 잡히지 않는다.</p>
-<p class="caption mono">package.json · 인정 opus, codex</p>
-</li><li>
-<p class="row"><span class="mono">F-12</span><span class="chip">보안</span></p>
-<p class="finding-title">no-console이 warn이라 어떤 명령도 실패시키지 않는다</p>
-<p class="evidence">eslint.config.mjs가 no-console을 warn으로 둔다. lint(eslint src)와 lint:ci 어디에도 --max-warnings 0이 없고 lint-staged도 eslint --fix만 부르므로 경고는 아무 게이트도 막지 않는다. RADIO는 DEV-SEC-04·DEV-OBS-02를 no-console로 부분 강제한다고 적었지만 실제 강제력은 0이다. 같은 블록의 process.env 차단은 error라 정상 동작하므로 두 규칙의 등급 차이가 의도된 것인지 문서로 구분되지 않는다. 중요도가 갈려(codex medium, opus low) 높은 쪽을 택했다.</p>
-<p class="caption mono">eslint.config.mjs · 인정 opus, codex</p>
-</li><li>
-<p class="row"><span class="mono">F-13</span><span class="chip">아키텍처 정합</span></p>
-<p class="finding-title">승인된 RADIO가 문서 안에서 자기 모순이고 기획 문서도 드리프트했다</p>
-<p class="evidence">RADIO Data model의 스키마 블록은 config 세그먼트를 runtimeExports: false로 적는데 같은 문서 &#39;runtimeExports 세 단계(revision 4)&#39; 표는 config를 constants로 적고 구현도 constants다. Interface 표도 pnpm lint를 eslint ., pnpm format을 prettier --write .로 적어 같은 문서의 &#39;포맷·린트 적용 범위(revision 4)&#39; 절 및 실제 package.json(eslint src / prettier --write src)과 어긋난다. 기획 문서 00-foundation.md 표도 config 런타임 코드를 금지로 남겨 뒀다. RADIO는 SHA-256으로 봉인된 설계 정본이라 자기 모순 상태로 승인되면 &#39;승인된 RADIO와 실제 구현의 일치&#39;를 판정할 기준 자체가 흔들린다(DEV-SSOT-01).</p>
-<p class="caption mono">docs/execution/radio/P0-T02-radio.md · 인정 opus, codex</p>
-</li><li>
-<p class="row"><span class="mono">F-14</span><span class="chip">아키텍처 정합</span></p>
-<p class="finding-title">handoff가 승인 revision과 봉인 해시를 틀리게 확정 사실로 적었다</p>
-<p class="evidence">handoff.md &#39;확정된 사실&#39; 첫 줄이 &#39;승인 정본은 revision 4(Approved)다. 네 번 재승인했고 봉인 해시는 733125a0…다&#39;라고 적는다. 실제 RADIO는 revision 6이고 index.jsonl의 development_approval.radio_sha256은 3dc0b5a0…이다. revision 5(변경 허용 경로에 00-foundation.md 추가)와 revision 6(__tests__ 네이밍 예외로 두 도구 판정 불일치 해소)의 설계 변경이 &#39;설계 대비 변경 4건&#39;에도 어디에도 없다. gate:handoff는 필수 절의 존재만 검사하므로 이 오기를 잡지 못한다. 다음 단계가 읽는 인계 기록이 승인 결속 정보를 틀리게 확정하고 있어 승인 추적성이 끊긴다.</p>
-<p class="caption mono">docs/execution/runs/P0-T02/handoff.md · 인정 opus, codex</p>
-</li><li>
-<p class="row"><span class="mono">F-15</span><span class="chip">아키텍처 정합</span></p>
-<p class="finding-title">DEVELOPMENT.md가 제거된 옛 tdd-guard 면제 목록을 그대로 서술한다</p>
-<p class="evidence">&#39;에이전트와 Git 품질 게이트&#39; 절은 여전히 **/ui/**·**/components/** 표시 계층, **/types/**, *.d.ts, *.config.*, slice index.ts barrel을 훅 예외로 서술한다. RADIO는 이 하드코딩 패턴들을 제거했다고 명시했고 스크립트에도 없다. components는 계약에 없는 세그먼트라 segment-name 규칙이 오히려 오류로 막으며 barrel은 같은 문서 &#39;이름 규칙&#39; 절이 금지한다. MUST 규칙 정본 문서가 한 문서 안에서 서로 반대되는 안내를 한다. DEV-NAME-05의 naming.exceptions 열거에도 revision 6에서 추가한 **/__tests__/**가 빠져 있다.</p>
-<p class="caption mono">docs/standards/DEVELOPMENT.md · 인정 opus, codex</p>
-</li><li>
-<p class="row"><span class="mono">F-16</span><span class="chip">아키텍처 정합</span></p>
-<p class="finding-title">DEV-NAME-03이 MUST로 신설됐지만 기계 강제가 없다</p>
-<p class="evidence">이 task가 DEVELOPMENT.md에 DEV-NAME-03(파일 이름과 주 export 이름 일치)을 MUST로 신설했고 RADIO 규칙 표는 project/file-naming이 DEV-NAME-*를 담당한다고 적는다. 그러나 file-naming.mjs는 경로와 파일명 형식만 검사하고 export 식별자를 전혀 보지 않는다. ShiftCard.tsx가 다른 이름의 컴포넌트를 export해도 통과한다. DEV-NAME-01·02·04·05는 실제로 강제되므로 03만 비어 있고 그 사실이 어느 문서에도 &#39;사람이 지킨다&#39;로 적혀 있지 않다. 중요도가 갈려(codex medium, opus low) 높은 쪽을 택했다.</p>
-<p class="caption mono">tools/eslint-plugin-project/rules/file-naming.mjs · 인정 opus, codex</p>
-</li><li>
-<p class="row"><span class="mono">F-17</span><span class="chip">아키텍처 정합</span></p>
-<p class="finding-title">슬라이스 없는 계층 지식이 계약이 아니라 코드 두 곳에 하드코딩되어 있다</p>
-<p class="evidence">tdd-guard.sh가 LAYER=app과 LAYER=shared를 직접 분기하고 나머지 계층은 세그먼트가 PARTS[3]이라는 경로 형태를 가정하며, config/fsd.json에는 슬라이스 없는 계층을 표현하는 필드가 없다. 최초 제기된 영향 서술(&#39;ESLint는 layers를 따르는 반면 guard는 이전 구조로 판정한다&#39;)은 상대 리뷰어의 반증으로 정정한다 — resolve-path.mjs도 layer === &#39;app&#39;·&#39;shared&#39;로 동일하게 분기하고 layer-direction.mjs는 SLICELESS_LAYERS = new Set([&#39;app&#39;,&#39;shared&#39;])를 가지므로 계층 이름을 바꾸면 두 도구는 갈리는 것이 아니라 같은 방식으로 함께 깨진다. 남는 결함은 구조 사실의 소유자가 정본 파일이 아니라 코드 두 곳이라는 DEV-SSOT-01 잔여다. 중요도가 갈려(codex medium, opus low) 높은 쪽을 택했다.</p>
-<p class="caption mono">.claude/hooks/tdd-guard.sh · 인정 opus, codex</p>
-</li><li>
-<p class="row"><span class="mono">F-18</span><span class="chip">성능</span></p>
-<p class="finding-title">계약 파일을 파일마다 규칙마다 다시 읽고 다시 파싱한다</p>
-<p class="evidence">contract.mjs의 loadContract에 캐시가 없고 여섯 규칙이 각자 create(context)에서 이를 호출한다. ESLint는 (검사 파일 × 규칙)마다 create를 부르므로 동기 readFileSync + JSON.parse + exemptPaths·naming.exceptions 글롭 정규식 컴파일이 파일당 6회 반복된다. 승인된 RADIO의 Optimizations는 정확히 반대를 이점으로 내세운다 — &#39;규칙 일곱 개를 한 플러그인에 두면 fsd.json을 한 번만 읽고 파싱 결과를 공유할 수 있다&#39;. 설계가 근거로 제시한 이점이 구현되지 않았고 비용이 파일 수에 선형으로 는다. 중요도가 갈려(opus medium, codex low) 높은 쪽을 택했다.</p>
-<p class="caption mono">tools/eslint-plugin-project/lib/contract.mjs · 인정 opus, codex</p>
+<p class="row"><span class="mono">F-07</span><span class="chip">아키텍처 정합</span></p>
+<p class="finding-title">default_hourly_wage 초기값 12000이 근거·자리표시자 기록 없이 들어갔다</p>
+<p class="evidence">PRD는 시스템 기본 시급의 존재와 관리자 변경만 정하고 금액을 정하지 않는다. 좌표는 자리표시자 표기와 확인 주체(P7-T04)가 기록됐지만 시급에는 같은 기록이 없어, 검토되지 않은 값이 예상 급여 계산의 시작점으로 운영까지 이어질 수 있다. DEV-SSOT-01 공백이다. 중요도는 opus low·codex medium으로 갈려 높은 쪽을 택했다.</p>
+<p class="caption mono">supabase/migrations/20260804000100_foundation_reference_data.sql · 인정 opus, codex</p>
 </li></ul>
 </div><div class="severity">
 <h4>low (backlog) · 1건</h4>
 <ul class="plain"><li>
-<p class="row"><span class="mono">F-19</span><span class="chip">성능</span></p>
-<p class="finding-title">pnpm verify가 production 빌드를 두 번 직렬로 돌린다</p>
-<p class="evidence">verify는 test:e2e 앞에서 pnpm build를 실행하고 playwright.config.ts의 webServer.command가 다시 &#39;pnpm build &amp;&amp; pnpm start --port 3100&#39;을 실행한다. 캐시 덕에 두 번째가 짧지만 같은 명령을 근거 없이 직렬로 반복하는 구조다(DEV-OPT-04). webServer를 pnpm start만 돌리게 하면 없앨 수 있고 실측 규모가 작아 low로 둔다.</p>
-<p class="caption mono">package.json · 인정 opus, codex</p>
+<p class="row"><span class="mono">F-08</span><span class="chip">테스트</span></p>
+<p class="finding-title">tdd.json의 supabase db reset RED가 플레이크 실패와 구분되지 않는다</p>
+<p class="evidence">handoff가 같은 명령의 analytics 컨테이너 지연 실패(3회 중 2회)를 문서화하고 있어, 기록만으로는 이 RED가 구현 부재 실패인지 인프라 플레이크인지 판별할 수 없다. 실패 원문 요약을 handoff에 남기면 해소된다.</p>
+<p class="caption mono">docs/execution/runs/P0-T03/tdd.json · 인정 opus, codex</p>
 </li></ul>
 </div>
 <h3>미완료 backlog</h3>
-<ul><li>[low] P0-T29 미결 부채 집계가 마지막 handoff 절의 전체 재기술 가정에 의존 — harness/dashboard/collect.ts</li><li>[medium] P0-T02 tdd-guard.sh에 자동 테스트가 하나도 없음 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 tests/와 루트 테스트 설정 파일이 타입·린트·포맷 대상 밖 — tsconfig.json</li><li>[medium] P0-T02 Playwright reuseExistingServer가 항상 true — playwright.config.ts</li><li>[medium] P0-T02 tdd-guard의 테스트 탐색이 이름만 맞으면 통과시킴 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 tdd-guard가 세그먼트 없는 파일의 파일명을 세그먼트로 오독 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 동적 import()가 어떤 구조 규칙의 검사도 받지 않음 — tools/eslint-plugin-project/rules/layer-direction.mjs</li><li>[medium] P0-T02 tdd-guard.sh에 설명 주석이 남아 자기 인수 조건을 충족하지 못함 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 pnpm verify가 서버·클라이언트 경계 검사(check:app-build)를 돌리지 않음 — package.json</li><li>[medium] P0-T02 no-console이 warn이라 어떤 명령도 실패시키지 않음 — eslint.config.mjs</li><li>[medium] P0-T02 승인된 RADIO가 문서 안에서 자기 모순이고 기획 문서도 드리프트 — docs/execution/radio/P0-T02-radio.md</li><li>[medium] P0-T02 DEVELOPMENT.md가 제거된 옛 tdd-guard 면제 목록을 그대로 서술 — docs/standards/DEVELOPMENT.md</li><li>[medium] P0-T02 DEV-NAME-03이 MUST로 신설됐지만 기계 강제가 없음 — tools/eslint-plugin-project/rules/file-naming.mjs</li><li>[medium] P0-T02 슬라이스 없는 계층 지식이 계약이 아니라 코드 두 곳에 하드코딩 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 계약 파일을 파일마다 규칙마다 다시 읽고 다시 파싱 — tools/eslint-plugin-project/lib/contract.mjs</li><li>[low] P0-T02 pnpm verify가 production 빌드를 두 번 직렬로 돌림 — package.json</li></ul>
+<ul><li>[low] P0-T29 미결 부채 집계가 마지막 handoff 절의 전체 재기술 가정에 의존 — harness/dashboard/collect.ts</li><li>[medium] P0-T02 tdd-guard.sh에 자동 테스트가 하나도 없음 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 tests/와 루트 테스트 설정 파일이 타입·린트·포맷 대상 밖 — tsconfig.json</li><li>[medium] P0-T02 Playwright reuseExistingServer가 항상 true — playwright.config.ts</li><li>[medium] P0-T02 tdd-guard의 테스트 탐색이 이름만 맞으면 통과시킴 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 tdd-guard가 세그먼트 없는 파일의 파일명을 세그먼트로 오독 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 동적 import()가 어떤 구조 규칙의 검사도 받지 않음 — tools/eslint-plugin-project/rules/layer-direction.mjs</li><li>[medium] P0-T02 tdd-guard.sh에 설명 주석이 남아 자기 인수 조건을 충족하지 못함 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 pnpm verify가 서버·클라이언트 경계 검사(check:app-build)를 돌리지 않음 — package.json</li><li>[medium] P0-T02 no-console이 warn이라 어떤 명령도 실패시키지 않음 — eslint.config.mjs</li><li>[medium] P0-T02 승인된 RADIO가 문서 안에서 자기 모순이고 기획 문서도 드리프트 — docs/execution/radio/P0-T02-radio.md</li><li>[medium] P0-T02 DEVELOPMENT.md가 제거된 옛 tdd-guard 면제 목록을 그대로 서술 — docs/standards/DEVELOPMENT.md</li><li>[medium] P0-T02 DEV-NAME-03이 MUST로 신설됐지만 기계 강제가 없음 — tools/eslint-plugin-project/rules/file-naming.mjs</li><li>[medium] P0-T02 슬라이스 없는 계층 지식이 계약이 아니라 코드 두 곳에 하드코딩 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 계약 파일을 파일마다 규칙마다 다시 읽고 다시 파싱 — tools/eslint-plugin-project/lib/contract.mjs</li><li>[low] P0-T02 pnpm verify가 production 빌드를 두 번 직렬로 돌림 — package.json</li><li>[low] P0-T03 tdd.json의 db reset RED가 플레이크와 구분 불가 — docs/execution/runs/P0-T03/tdd.json</li></ul>
 
 <details>
-<summary>해결된 backlog 17건</summary>
-<ul><li>[medium] P0-T29 계약 준수 40점 분모를 저장소 게이트 4종으로 한정(상수 점수 제거) — harness/dashboard/collect.ts</li><li>[medium] P0-T29 게이트 실행 예외를 격리해 생성 중단 대신 실행 실패로 표시 — harness/dashboard/collect.ts</li><li>[medium] P0-T29 collect·main 생성 명령 수준 테스트 신설 — harness/self-test/dashboard-collect.test.ts</li><li>[medium] P0-T29 수정 반영 후 tdd.json RED→GREEN 재기록 — docs/execution/runs/P0-T29/tdd.json</li><li>[low] P0-T29 next-action 근거 문구를 실제 판정 기준(index 등록 순서)으로 정정 — harness/dashboard/next-action.ts</li><li>[low] P0-T29 HEAD subject·body 조회를 git 프로세스 1회로 병합 — harness/dashboard/collect.ts</li><li>[medium] P0-T33 task 결과 파일명과 task_id 일치 미검증 — harness/dashboard/reviews.ts</li><li>[medium] P0-T33 스캔 결과 표시가 승인 문구 전체 스캔 &lt;날짜&gt;와 다름 — harness/dashboard/reviews.ts</li><li>[low] P0-T33 해소된 F-09 backlog 항목이 미완료로 남음 — docs/execution/reviews/backlog.md</li><li>[low] P0-T33 backlog 회귀 테스트의 도달 불가능한 단언 — harness/self-test/dashboard-reviews.test.ts</li><li>[low] P0-T33 participants 파싱 실패가 발견마다 연쇄 오탐을 만듦 — harness/dashboard/reviews.ts</li><li>[medium] P0-T01 app-build 검증이 서버 경계를 판별하지 못함 — docs/execution/runs/P0-T01/handoff.md</li><li>[medium] P0-T01 필요한 설정 파일이 봉인된 변경 허용 경로 밖 — postcss.config.mjs</li><li>[medium] P0-T01 views 개명이 상위 ADR-0008·phase 문서와 충돌 — docs/standards/adr/0008-fsd-server-first-development-guards.md</li><li>[low] P0-T01 서버 경계 파일의 이름과 내용이 어긋남 — src/shared/config/server-only.config.ts</li><li>[medium] P0-T29 reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts</li><li>[medium] P0-T02 handoff가 승인 revision과 봉인 해시를 틀리게 확정 사실로 적음 — docs/execution/runs/P0-T02/handoff.md</li></ul>
+<summary>해결된 backlog 24건</summary>
+<ul><li>[medium] P0-T29 계약 준수 40점 분모를 저장소 게이트 4종으로 한정(상수 점수 제거) — harness/dashboard/collect.ts</li><li>[medium] P0-T29 게이트 실행 예외를 격리해 생성 중단 대신 실행 실패로 표시 — harness/dashboard/collect.ts</li><li>[medium] P0-T29 collect·main 생성 명령 수준 테스트 신설 — harness/self-test/dashboard-collect.test.ts</li><li>[medium] P0-T29 수정 반영 후 tdd.json RED→GREEN 재기록 — docs/execution/runs/P0-T29/tdd.json</li><li>[low] P0-T29 next-action 근거 문구를 실제 판정 기준(index 등록 순서)으로 정정 — harness/dashboard/next-action.ts</li><li>[low] P0-T29 HEAD subject·body 조회를 git 프로세스 1회로 병합 — harness/dashboard/collect.ts</li><li>[medium] P0-T33 task 결과 파일명과 task_id 일치 미검증 — harness/dashboard/reviews.ts</li><li>[medium] P0-T33 스캔 결과 표시가 승인 문구 전체 스캔 &lt;날짜&gt;와 다름 — harness/dashboard/reviews.ts</li><li>[low] P0-T33 해소된 F-09 backlog 항목이 미완료로 남음 — docs/execution/reviews/backlog.md</li><li>[low] P0-T33 backlog 회귀 테스트의 도달 불가능한 단언 — harness/self-test/dashboard-reviews.test.ts</li><li>[low] P0-T33 participants 파싱 실패가 발견마다 연쇄 오탐을 만듦 — harness/dashboard/reviews.ts</li><li>[medium] P0-T01 app-build 검증이 서버 경계를 판별하지 못함 — docs/execution/runs/P0-T01/handoff.md</li><li>[medium] P0-T01 필요한 설정 파일이 봉인된 변경 허용 경로 밖 — postcss.config.mjs</li><li>[medium] P0-T01 views 개명이 상위 ADR-0008·phase 문서와 충돌 — docs/standards/adr/0008-fsd-server-first-development-guards.md</li><li>[low] P0-T01 서버 경계 파일의 이름과 내용이 어긋남 — src/shared/config/server-only.config.ts</li><li>[medium] P0-T29 reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts</li><li>[medium] P0-T02 handoff가 승인 revision과 봉인 해시를 틀리게 확정 사실로 적음 — docs/execution/runs/P0-T02/handoff.md</li><li>[medium] P0-T03 승인된 [analytics] 비활성화가 RADIO revision 3으로 봉인되지 않음 — docs/execution/radio/P0-T03-radio.md</li><li>[medium] P0-T03 지각 기준 인수 조건 모순과 phase doc 미충족의 조정 기록 부재 — docs/execution/radio/P0-T03-radio.md</li><li>[medium] P0-T03 migration 재적용 멱등성 자동 테스트 부재 — supabase/tests/02-reference-data.test.sql</li><li>[medium] P0-T03 RLS 정책 0개 미단언과 UPDATE·DELETE 거부 미검증 — supabase/tests/04-rls-default-deny.test.sql</li><li>[medium] P0-T03 참조 데이터 멱등성이 code UNIQUE 충돌에서 깨짐 — supabase/migrations/20260804000100_foundation_reference_data.sql</li><li>[medium] P0-T03 CHECK 제약 4건의 거부 케이스 미검증 — supabase/tests/01-schema-constraints.test.sql</li><li>[medium] P0-T03 default_hourly_wage 초기값의 근거·자리표시자 기록 없음 — supabase/migrations/20260804000100_foundation_reference_data.sql</li></ul>
 </details>
 </section>
 </main>

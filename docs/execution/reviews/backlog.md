@@ -43,3 +43,11 @@
 - [ ] [medium] [P0-T02] 슬라이스 없는 계층 지식이 계약이 아니라 코드 두 곳에 하드코딩 — .claude/hooks/tdd-guard.sh
 - [ ] [medium] [P0-T02] 계약 파일을 파일마다 규칙마다 다시 읽고 다시 파싱 — tools/eslint-plugin-project/lib/contract.mjs
 - [ ] [low] [P0-T02] pnpm verify가 production 빌드를 두 번 직렬로 돌림 — package.json
+- [x] [medium] [P0-T03] 승인된 [analytics] 비활성화가 RADIO revision 3으로 봉인되지 않음 — docs/execution/radio/P0-T03-radio.md
+- [x] [medium] [P0-T03] 지각 기준 인수 조건 모순과 phase doc 미충족의 조정 기록 부재 — docs/execution/radio/P0-T03-radio.md
+- [x] [medium] [P0-T03] migration 재적용 멱등성 자동 테스트 부재 — supabase/tests/02-reference-data.test.sql
+- [x] [medium] [P0-T03] RLS 정책 0개 미단언과 UPDATE·DELETE 거부 미검증 — supabase/tests/04-rls-default-deny.test.sql
+- [x] [medium] [P0-T03] 참조 데이터 멱등성이 code UNIQUE 충돌에서 깨짐 — supabase/migrations/20260804000100_foundation_reference_data.sql
+- [x] [medium] [P0-T03] CHECK 제약 4건의 거부 케이스 미검증 — supabase/tests/01-schema-constraints.test.sql
+- [x] [medium] [P0-T03] default_hourly_wage 초기값의 근거·자리표시자 기록 없음 — supabase/migrations/20260804000100_foundation_reference_data.sql
+- [ ] [low] [P0-T03] tdd.json의 db reset RED가 플레이크와 구분 불가 — docs/execution/runs/P0-T03/tdd.json

@@ -23,6 +23,18 @@
       "exit_code": 0,
       "at": "2026-08-04T10:24:00.000000Z",
       "phase": "green"
+    },
+    {
+      "command": "supabase test db",
+      "exit_code": 1,
+      "at": "2026-08-05T05:17:31.000000Z",
+      "phase": "red"
+    },
+    {
+      "command": "supabase test db",
+      "exit_code": 0,
+      "at": "2026-08-05T05:18:23.000000Z",
+      "phase": "green"
     }
   ]
 }

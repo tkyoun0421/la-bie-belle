@@ -9,7 +9,7 @@ values
   (null, '안내', 2, 'male', true),
   (null, '드레스실', 1, 'female', false),
   (null, '신부 대기실', 1, 'female', false)
-on conflict (name) do nothing;
+on conflict do nothing;
 
 insert into venue_settings (
   latitude, longitude, gps_radius_m, location_accuracy_limit_m, default_hourly_wage

@@ -61,3 +61,67 @@
 - `supabase/tests/04-rls-default-deny.test.sql` (15)
 - `docs/execution/runs/P0-T03/tdd.json` (RED→GREEN 기록)
 - `package.json` (`db:start`·`db:stop`·`db:reset`·`db:test`)
+
+## 2026-08-05 · 검증 종료
+
+- 작업 식별자: P0-T03 (Supabase 로컬 개발과 초기 스키마)
+- 현재 단계: 검증 종료 → 다음 리팩토링·완료 보고
+- 기준 시각: 2026-08-05
+- 기준 커밋: 92cb8857364009e96e0b28ddb92603ce1544fd81
+
+### 확정된 사실
+
+- `[analytics]` 비활성화를 사용자가 2026-08-05 승인했다. 정본 반영(RADIO revision 3 재봉인)은 아직 수행되지 않았다 — 미결 사항 참조.
+- 등록 check 4종 통과(2026-08-05): `supabase db reset` 2회 연속 성공(멱등), `supabase test db` 4파일 70건 전부 통과. `foundation-seed`·`schema-constraints`·`rls-default-deny`는 pgTAP 파일이 담당한다.
+- 인수 조건 3번의 실행 증거 보강: 데이터가 있는 DB에 참조 데이터 migration을 psql로 재적용해 `INSERT 0 0`과 행 수 9/1/2 무변경을 확인했다. 자동 테스트는 아니다(F-03).
+- 교차 검증 완료(opus·codex 2자, 전원 인정 기준): 확정 발견 8건(medium 7, low 1), 총점 88. 정본은 `docs/execution/reviews/P0-T03-review.json`.
+
+### 미결 사항
+
+- **F-01 재봉인**: 승인된 `[analytics]` 결정을 RADIO revision 3으로 추가하고 `development_approval`을 새 해시로 재봉인해야 한다. 승인 주체는 사용자, 반환 단계는 설계(재봉인 절차)다.
+- **medium 확정 발견 6건(F-02~F-07)의 수정 여부·시점**: 사용자 결정. backlog에 누적했다.
+- 판단이 갈려 기각된 발견 2건을 기록만 남긴다. ①트리거 함수 search_path 미고정(opus 주장 — 공통 규약으로 복제될 우려, codex 반박 — SECURITY INVOKER·내장 함수만 사용해 구체적 영향 없음) ②시스템 포지션 code 부여 방향의 보호 공백(codex 반박 — 승인 범위 밖 제안). 둘 다 확정 발견이 아니며 점수 근거로 쓰지 않았다.
+
+### 다음 행동
+
+1. RADIO revision 3(analytics 결정 반영)과 재봉인을 사용자에게 승인받아 F-01을 해소한다.
+2. 사용자가 수정을 지시한 확정 발견을 개발 단계에서 처리한다. 나머지는 backlog에 유지한다.
+3. 위가 끝나면 P0-T03을 `done`으로 전환하고 검증 산출물을 커밋한다.
+
+### 증거·산출물 경로
+
+- `docs/execution/reviews/P0-T03-review.json` (확정 발견·점수 정본)
+- `docs/execution/reviews/backlog.md` (medium·low 8건 누적)
+- 재적용 실측 절차: `docker exec supabase_db_la-bie-belle psql`로 `20260804000100_foundation_reference_data.sql` 재실행
+
+## 2026-08-05 · 리팩토링·완료 보고
+
+- 작업 식별자: P0-T03 (Supabase 로컬 개발과 초기 스키마)
+- 현재 단계: 리팩토링 종료 → task `done`
+- 기준 시각: 2026-08-05
+
+### 확정된 사실
+
+- 사용자 승인(2026-08-05)으로 교차 검증 확정 발견 medium 6건(F-02~F-07)을 이 task 개발 단계에서 수정하고, RADIO를 revision 3으로 재봉인했다. 새 봉인 해시는 `index.jsonl`의 `development_approval`이 정본이다.
+- F-05는 DEV-TEST-03대로 실패 재현 테스트를 먼저 추가했다: 표시명 변경 후 재적용 테스트가 `23505`로 RED(05:17Z), `ON CONFLICT DO NOTHING` 수정 후 GREEN(05:18Z). 증거는 `tdd.json`.
+- pgTAP은 70건에서 **95건**으로 늘었고 전부 통과한다: CHECK 거부 4건(F-06), 재적용 멱등성·표시명 변경 재적용 6건(F-03·F-05), 정책 0개 단언·UPDATE·DELETE 무영향 15건(F-04).
+- RLS 인수 조건 문구를 실동작대로 정밀화했다(INSERT만 `42501`, UPDATE·DELETE는 영향 0행). `index.jsonl` verification 6번과 RADIO 인수 조건을 함께 고쳤다.
+- 지각 기준 소유권 충돌(F-02)은 phase 문서와 RADIO 양쪽에 조정 기록을 남겼다 — 임계값은 P5-T05 소유.
+- 시급 12000원은 좌표와 같은 자리표시자로 명시하고 P7-T04 확인 항목에 편입했다(F-07).
+
+### 미결 사항
+
+- F-08(low): tdd.json의 2026-08-04 `db reset` RED는 소급 판별이 불가능해 backlog에 미해결로 남긴다. 이후 task부터 RED 실패 사유 요약을 handoff에 함께 남긴다.
+- 기각 발견 2건(search_path, code 부여 방향)은 검증 종료 절 기록 그대로다.
+
+### 다음 행동
+
+- 없음. P0-T03은 `done`이다. 다음 후보는 index.jsonl의 `design_pending`(P0-T34·P0-T35)과 `proposed` 큐가 정한다.
+
+### 증거·산출물 경로
+
+- `supabase/migrations/20260804000100_foundation_reference_data.sql` (ON CONFLICT 수정)
+- `supabase/tests/01·02·04-*.test.sql` (95건으로 확장)
+- `docs/execution/runs/P0-T03/tdd.json` (2026-08-05 RED→GREEN 추가)
+- `docs/execution/radio/P0-T03-radio.md` (revision 3)
+- `docs/execution/reviews/backlog.md` (F-01~F-07 `[x]`)

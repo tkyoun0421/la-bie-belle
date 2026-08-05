@@ -1,5 +1,5 @@
 begin;
-select plan(38);
+select plan(42);
 
 delete from check_in_rules;
 delete from venue_settings;
@@ -99,6 +99,42 @@ select throws_ok(
   '23514',
   null,
   'latitude above 90 rejected'
+);
+
+select throws_ok(
+  $$insert into venue_settings
+      (latitude, longitude, gps_radius_m, location_accuracy_limit_m, default_hourly_wage)
+    values (-91.0, 127.0, 100, 100, 12000)$$,
+  '23514',
+  null,
+  'latitude below -90 rejected'
+);
+
+select throws_ok(
+  $$insert into venue_settings
+      (latitude, longitude, gps_radius_m, location_accuracy_limit_m, default_hourly_wage)
+    values (37.5, 181.0, 100, 100, 12000)$$,
+  '23514',
+  null,
+  'longitude above 180 rejected'
+);
+
+select throws_ok(
+  $$insert into venue_settings
+      (latitude, longitude, gps_radius_m, location_accuracy_limit_m, default_hourly_wage)
+    values (37.5, 127.0, 100, 0, 12000)$$,
+  '23514',
+  null,
+  'zero accuracy limit rejected'
+);
+
+select throws_ok(
+  $$insert into venue_settings
+      (latitude, longitude, gps_radius_m, location_accuracy_limit_m, default_hourly_wage)
+    values (37.5, 127.0, 100, 100, -1)$$,
+  '23514',
+  null,
+  'negative hourly wage rejected'
 );
 
 select lives_ok(

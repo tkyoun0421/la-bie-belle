@@ -1,9 +1,9 @@
 # P0-T03 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 2
+- revision: 3
 - 기획 승인: user, 2026-08-04
-- 개발 설계 승인: user, 2026-08-04 (revision 2 재승인)
+- 개발 설계 승인: user, 2026-08-05 (revision 3 재승인)
 
 ## 개정 이력
 
@@ -11,6 +11,7 @@
 | --- | --- | --- |
 | 1 | 2026-08-04 | 최초 작성. |
 | 2 | 2026-08-04 | 구현 착수 후 드러난 두 가지를 정정해 재승인했다(사용자 결정). ①`check_in_rules`를 구간표에서 **정확 대응표**로 바꿨다. PRD의 초기 규칙이 점 값 두 개뿐이라 구간으로 만들면 PRD에 없는 경계를 설계가 지어내야 했다. `EXCLUDE USING gist`는 `UNIQUE` 하나로 대체된다. ②RLS 기본 거부의 인수 조건 문구를 실제 Postgres 동작에 맞게 고쳤다. Supabase가 `anon`·`authenticated`에 테이블 권한을 기본 부여하므로 읽기는 에러가 아니라 0행이 되고 쓰기만 `42501`로 거부된다. |
+| 3 | 2026-08-05 | 검증 단계의 교차 리뷰(P0-T03-review.json) 확정 발견을 사용자 승인으로 반영해 재봉인했다. ①로컬 `[analytics]` 비활성화를 승인 정본에 편입했다(Interface 절). ②지각 기준 인수 조건의 자기 모순을 해소했다 — 지각 판정은 P5-T05 소유이며 이 task는 규칙표 값만 둔다(F-02). ③참조 데이터 멱등성을 `ON CONFLICT DO NOTHING`(모든 unique 충돌 흡수)으로 정정했다. 표시명이 바뀐 DB에 재적용해도 `code` 충돌로 중단되지 않는다(F-05). ④RLS 인수 조건을 실동작대로 정밀화했다 — `42501` 거부는 INSERT에 성립하고 UPDATE·DELETE는 행 필터로 영향 0행이며, 정책 0개 자체를 pgTAP이 단언한다(F-04). ⑤위험표의 경계값 항목을 실제 스키마에 맞게 정정했다 — 정확도·반경은 하한만 존재한다(F-06). ⑥`default_hourly_wage` 초기값 12000이 자리표시자임을 명시하고 확인 주체를 P7-T04로 지정했다(F-07). |
 
 - 관련 spec: PRD:INV-STAFF-02, DOMAIN:SCHEDULING, DOMAIN:ATTENDANCE, ADR:0001
 - 적용 깊이: 심화 (DB·권한·참조 데이터)
@@ -38,8 +39,8 @@
 - seed 후 `positions` 9행의 표시명·기본 필요 인원·성별 조건이 PRD 4장 표와 정확히 일치한다.
 - 운영 경로(`supabase db push`, migration만 적용)로도 포지션 9종과 venue 설정이 들어가며, 같은 migration을 다시 적용해도 행이 중복되지 않는다.
 - `team_lead` 포지션의 `DELETE`와 `is_active = false` UPDATE가 DB에서 실패한다.
-- `venue_settings`가 GPS 반경 100m·위치 정확도 한도 100m를, `check_in_rules`가 PRD의 지각 기준(예정 출근 시각 1분 초과)을 담는다.
-- 세 테이블 모두 RLS가 켜져 있고 정책이 0개라, `anon`과 `authenticated`의 **읽기는 0행이고 쓰기는 `42501`로 거부**된다.
+- `venue_settings`가 GPS 반경 100m·위치 정확도 한도 100m를, `check_in_rules`가 PRD 초기 규칙표 두 행을 담는다. 지각 판정(예정 출근 시각 1분 초과)은 이 task가 아니라 P5-T05의 출결 계산이 소유한다(revision 3).
+- 세 테이블 모두 RLS가 켜져 있고 정책이 0개라, `anon`과 `authenticated`의 **읽기는 0행, INSERT는 `42501` 거부, UPDATE·DELETE는 행 필터로 영향 0행**이다. 정책 0개 자체를 pgTAP이 단언한다(revision 3).
 
 ### 위험 기반 테스트
 
@@ -49,9 +50,9 @@
 | --- | --- | --- |
 | Happy path — 스키마와 seed가 PRD와 일치 | 실제 PostgreSQL | pgTAP: 컬럼·타입·행 값 대조 |
 | 주요 실패 — 시스템 포지션 삭제·비활성화 | 실제 PostgreSQL | pgTAP: `throws_ok`로 DELETE와 UPDATE 각각 |
-| 경계값 — GPS 반경·정확도 한도의 `CHECK` 하한·상한 | 실제 PostgreSQL | pgTAP: 경계 안팎 각 1건 |
-| 권한 — RLS 기본 거부 | 실제 PostgreSQL | pgTAP: `anon`·`authenticated` role로 전환해 SELECT는 0행, INSERT는 `42501` 확인 |
-| 중복 요청 — migration·seed 재실행 | 실제 PostgreSQL | 재실행 후 행 수와 값 불변 확인 |
+| 경계값 — venue 설정 `CHECK` 제약(위도·경도 범위, 반경·정확도 하한, 시급 비음수) | 실제 PostgreSQL | pgTAP: 경계 안팎 각 1건. 반경·정확도는 하한(`> 0`)만 존재한다(revision 3) |
+| 권한 — RLS 기본 거부 | 실제 PostgreSQL | pgTAP: `anon`·`authenticated` role로 전환해 SELECT 0행, INSERT `42501`, UPDATE·DELETE 영향 0행, 정책 0개 단언(revision 3) |
+| 중복 요청 — migration·seed 재실행 | 실제 PostgreSQL | pgTAP: 재적용 후 행 수·값 불변과 표시명 변경 후 재적용 무중단 단언(revision 3) |
 | 동시성 | 해당 없음 | 참조 데이터이고 이 task에 동시 변경 경로가 없다 |
 
 오탐 대조군을 함께 둔다. 시스템 code가 없는 일반 포지션은 삭제와 비활성화가 **성공해야** 한다. 이게 없으면 "전부 막는" 구현도 통과한다.
@@ -134,6 +135,7 @@
 - 행이 하나뿐임을 `CREATE UNIQUE INDEX ON venue_settings ((true))`로 강제한다. 애플리케이션이 "첫 행"을 고르는 관례에 기대지 않는다.
 - 금액은 원 단위 정수다. 부동소수를 쓰지 않는다.
 - 좌표 실측값은 운영 배포 때 넣는다. migration에는 홀의 대략 좌표를 넣고 실제 값은 관리자가 설정한다. 좌표는 개인정보가 아니라 사업장 정보다.
+- 초기 시급 12000원은 좌표와 같은 자리표시자다(revision 3). PRD는 시스템 기본 시급의 존재만 정하고 금액을 정하지 않으며, 정본은 관리자 설정이고 실제 값 확인은 P7-T04가 맡는다.
 
 ### check_in_rules
 
@@ -166,7 +168,7 @@ ARCHITECTURE가 정의한 "첫 예식 시작 시각과 추천 출근 시각의 �
 | `supabase/seed.sql` | 로컬 `db reset`만 | 개발 편의 데이터. 현재는 비어 있다 |
 
 - 참조 데이터를 seed가 아니라 migration에 두는 것이 기획 결정의 구현이다. Supabase CLI는 `db push`에서 migration만 적용하고 `seed.sql`은 `db reset`에서만 실행하므로, 도구 기본 동작이 "seed는 로컬 전용"을 이미 보장한다.
-- 참조 데이터 migration은 `ON CONFLICT (name) DO NOTHING`으로 멱등하게 쓴다. migration은 한 번만 돌지만 `db reset` 반복과 복구 시나리오에서 안전해야 한다.
+- 참조 데이터 migration은 `ON CONFLICT DO NOTHING`으로 멱등하게 쓴다(revision 3 — `name`만 지정하면 표시명이 바뀐 DB에서 `code` UNIQUE 충돌이 재적용을 중단시킨다). migration은 한 번만 돌지만 `db reset` 반복과 복구 시나리오에서 안전해야 한다.
 - 관리자가 나중에 값을 바꿔도 이 migration은 다시 돌지 않으므로 덮어쓰지 않는다.
 - down migration은 만들지 않는다. Supabase CLI가 지원하지 않으며 되돌림은 보상 migration으로 한다.
 
@@ -183,6 +185,7 @@ ARCHITECTURE가 정의한 "첫 예식 시작 시각과 추천 출근 시각의 �
 
 - `pnpm verify`에는 붙이지 않는다. Docker와 로컬 Supabase 기동이 필요해 의존성 없는 환경에서 실패하며, CI 통합은 P0-T05가 소유한다.
 - 등록 check `schema-constraints`와 `rls-default-deny`는 `supabase test db` 안의 pgTAP 파일로 실행한다.
+- `supabase/config.toml`의 `[analytics]`는 비활성화한다(revision 3, 2026-08-05 사용자 승인). analytics 컨테이너 기동 지연이 `db reset`을 간헐 실패시켜(켠 상태 3회 중 2회 실패, 끈 상태 5회 연속 성공 실측) 등록 check `supabase-reset`의 결정성을 해친다. 로컬 개발 스택 설정이며 운영 환경과 무관하다.
 
 ## Optimizations
 
@@ -208,4 +211,4 @@ docs/standards/ARCHITECTURE.md
 
 ## 미결 사항
 
-- venue 좌표의 실측값은 운영 배포 시점에 관리자가 설정한다. migration에 넣는 초기 좌표는 자리표시자이며 P7-T04(프로덕션 설정)가 실제 값을 확인한다.
+- venue 좌표와 기본 시급의 실측값은 운영 배포 시점에 관리자가 설정한다. migration에 넣는 초기 좌표·시급 12000원은 자리표시자이며 P7-T04(프로덕션 설정)가 실제 값을 확인한다.
