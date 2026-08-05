@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { useOnlineStatus } from "./useOnlineStatus";
+import { useOnlineStatus } from "@/widgets/offline/hooks/useOnlineStatus";
 
 function setNavigatorOnLine(value: boolean) {
   Object.defineProperty(window.navigator, "onLine", {

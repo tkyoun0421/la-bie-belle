@@ -2,7 +2,7 @@
 
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 
-import "./globals.css";
+import "@/app/globals.css";
 
 export default function GlobalError(_props: {
   error: Error & { digest?: string };

@@ -1,9 +1,9 @@
 # P0-T38 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 2
+- revision: 3
 - 기획 승인: user, 2026-08-05
-- 개발 설계 승인: user, 2026-08-05 (revision 2 재승인)
+- 개발 설계 승인: user, 2026-08-05 (revision 3 재승인)
 
 ## 개정 이력
 
@@ -11,6 +11,7 @@
 | --- | --- | --- |
 | 1 | 2026-08-05 | 최초 작성. |
 | 2 | 2026-08-05 | 구현 착수 전 worker가 발견한 규칙 ID 충돌을 정정해 재승인했다(사용자 결정). 신설 규칙 ID를 DEV-TEST-05에서 **DEV-TEST-06**으로 바꿨다. `DEV-TEST-05`("커버리지 수치만으로 완료를 판단하지 않는다", MUST)는 P0-T02부터 DEVELOPMENT.md에 존재한다. revision 1의 "전수 확인 완료" 주장은 조정자의 확인 명령이 출력 60행에서 절단(`head -60`)된 채 판독된 오류다 — P0-T37 rev 2와 같은 유형의 재발이며, 확인 명령의 출력 절단 여부 검증이 전수 확인의 일부임을 이 이력에 남긴다. 규칙의 의미와 나머지 설계는 바뀌지 않았다. |
+| 3 | 2026-08-05 | 구현 완료 후 커밋 직전 worker가 발견한 형식 결함을 정정해 재승인했다(사용자 결정). "변경 허용 경로" 절이 불릿 목록이었는데 `harness/lib/radio-doc.ts`의 `parseAllowedPaths()`는 코드펜스 블록만 읽어 gate:scope가 항상 실패했다 — 기존 RADIO 전부가 쓰는 코드펜스 형식으로 표기만 바꿨다. 경로 값 14개와 설계 내용은 바뀌지 않았다. 조정자가 revision 2 재봉인 시 gate:all 통과를 확인했지만 당시 P0-T38이 `planned`라 gate:scope가 이 RADIO를 아직 읽지 않았다 — 봉인 검증은 소비 시점 조건까지 재현해야 함을 남긴다. |
 
 - 관련 spec: DOCS:SDD, ADR:0008
 - 적용 깊이: 일반 (린트 도구·훅·테스트 재배치. DB·권한·캐시·오프라인 경로 없음)
@@ -105,20 +106,22 @@ vitest 설정은 바꾸지 않는다 — 현행 glob(`src/**/*.test.{ts,tsx}`, j
 
 ## 변경 허용 경로
 
-- `tools/eslint-plugin-project/rules/import-alias.mjs`
-- `tools/eslint-plugin-project/rules/test-placement.mjs`
-- `tools/eslint-plugin-project/rules/__tests__/**`
-- `tools/eslint-plugin-project/index.mjs`
-- `tools/eslint-plugin-project/lib/**`
-- `eslint.config.mjs`
-- `config/fsd.json`
-- `.claude/hooks/tdd-guard.sh`
-- `harness/self-test/**`
-- `src/**`
-- `docs/standards/DEVELOPMENT.md`
-- `docs/execution/radio/P0-T38-radio.md`
-- `docs/execution/runs/P0-T38/**`
-- `docs/execution/phases/index.jsonl`
+```
+tools/eslint-plugin-project/rules/import-alias.mjs
+tools/eslint-plugin-project/rules/test-placement.mjs
+tools/eslint-plugin-project/rules/__tests__/**
+tools/eslint-plugin-project/index.mjs
+tools/eslint-plugin-project/lib/**
+eslint.config.mjs
+config/fsd.json
+.claude/hooks/tdd-guard.sh
+harness/self-test/**
+src/**
+docs/standards/DEVELOPMENT.md
+docs/execution/radio/P0-T38-radio.md
+docs/execution/runs/P0-T38/**
+docs/execution/phases/index.jsonl
+```
 
 ## 미결 사항
 

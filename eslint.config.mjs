@@ -55,6 +55,8 @@ export default [
       "project/require-server-only": "error",
       "project/file-naming": "error",
       "project/error-code-literal": "error",
+      "project/import-alias": "error",
+      "project/test-placement": "error",
     },
   },
 

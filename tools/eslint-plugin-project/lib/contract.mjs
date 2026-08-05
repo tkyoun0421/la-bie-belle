@@ -62,6 +62,25 @@ function readAppLayer(raw) {
   return { ...defaults, ...raw };
 }
 
+const TEST_PLACEMENT_DEFAULTS = { directory: "__tests__", suffix: ".test" };
+
+function readTestPlacement(raw) {
+  if (raw === undefined) {
+    return { ...TEST_PLACEMENT_DEFAULTS };
+  }
+  if (raw === null || typeof raw !== "object" || Array.isArray(raw)) {
+    fail("testPlacement는 객체여야 합니다.");
+  }
+  if (raw.directory !== undefined && typeof raw.directory !== "string") {
+    fail("testPlacement.directory는 문자열이어야 합니다.");
+  }
+  if (raw.suffix !== undefined && typeof raw.suffix !== "string") {
+    fail("testPlacement.suffix는 문자열이어야 합니다.");
+  }
+
+  return { ...TEST_PLACEMENT_DEFAULTS, ...raw };
+}
+
 function readNaming(raw) {
   const defaults = {
     folder: "kebab-case",
@@ -105,6 +124,7 @@ export function parseContract(raw) {
   const exemptMatchers = (raw.exemptPaths ?? []).map(globToRegExp);
   const appLayer = readAppLayer(raw.appLayer);
   const naming = readNaming(raw.naming);
+  const testPlacement = readTestPlacement(raw.testPlacement);
   const namingExceptionMatchers = naming.exceptions.map(globToRegExp);
 
   const layerRank = (layer) => {
@@ -116,6 +136,7 @@ export function parseContract(raw) {
     layers,
     appLayer,
     naming,
+    testPlacement,
     segmentNames: [...segments.keys()],
     layerRank,
     canImport(fromLayer, toLayer) {

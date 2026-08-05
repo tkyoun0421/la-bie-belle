@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { ERROR_CODES } from "@/shared/config/error-codes.config";
 
-import { AccessDeniedScreen } from "./AccessDeniedScreen";
+import { AccessDeniedScreen } from "@/views/status/ui/AccessDeniedScreen";
 
 afterEach(cleanup);
 

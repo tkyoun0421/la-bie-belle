@@ -14,7 +14,7 @@ afterEach(() => {
 
 describe("createSupabaseBrowserClient", () => {
   it("실제 env.client 모듈 로드·Zod 파싱 경로로 Supabase client를 만든다", async () => {
-    const { createSupabaseBrowserClient } = await import("./supabase-browser");
+    const { createSupabaseBrowserClient } = await import("@/shared/lib/supabase-browser");
     const client = createSupabaseBrowserClient();
     expect(client.auth).toBeDefined();
     expect(typeof client.from).toBe("function");
@@ -22,6 +22,8 @@ describe("createSupabaseBrowserClient", () => {
 
   it("필수 NEXT_PUBLIC 값이 없으면 모듈 초기화가 그 키 이름을 담아 실패한다", async () => {
     vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "");
-    await expect(import("./supabase-browser")).rejects.toThrowError(/NEXT_PUBLIC_SUPABASE_URL/);
+    await expect(import("@/shared/lib/supabase-browser")).rejects.toThrowError(
+      /NEXT_PUBLIC_SUPABASE_URL/,
+    );
   });
 });

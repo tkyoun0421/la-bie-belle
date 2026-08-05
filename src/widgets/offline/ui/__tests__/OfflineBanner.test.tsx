@@ -3,7 +3,7 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { OfflineBanner } from "./OfflineBanner";
+import { OfflineBanner } from "@/widgets/offline/ui/OfflineBanner";
 
 function setNavigatorOnLine(value: boolean) {
   Object.defineProperty(window.navigator, "onLine", {

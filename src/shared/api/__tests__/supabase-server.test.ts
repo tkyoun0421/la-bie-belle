@@ -10,7 +10,7 @@ vi.mock("@/shared/config/env.server", () => ({
   },
 }));
 
-import { createSupabaseServerClient } from "./supabase-server";
+import { createSupabaseServerClient } from "@/shared/api/supabase-server";
 
 describe("createSupabaseServerClient", () => {
   it("env.server의 URL·anon key로 Supabase client를 만든다", () => {

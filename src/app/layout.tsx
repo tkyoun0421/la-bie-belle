@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import "./globals.css";
+import "@/app/globals.css";
 
 import "@/shared/config/env.server";
 import { OfflineBanner } from "@/widgets/offline/ui/OfflineBanner";

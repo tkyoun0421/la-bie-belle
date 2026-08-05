@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { ERROR_CODES } from "@/shared/config/error-codes.config";
 
-import { NotFoundScreen } from "./NotFoundScreen";
+import { NotFoundScreen } from "@/views/status/ui/NotFoundScreen";
 
 afterEach(cleanup);
 

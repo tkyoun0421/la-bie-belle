@@ -55,6 +55,7 @@
     }
   },
   "exemptPaths": ["**/generated/**"],
+  "testPlacement": { "directory": "__tests__", "suffix": ".test" },
   "naming": {
     "folder": "kebab-case",
     "file": "kebab-case",

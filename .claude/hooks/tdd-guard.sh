@@ -115,34 +115,20 @@ fi
 DIR=$(dirname "$ABS_PATH")
 BASE=$(basename "$ABS_PATH")
 STEM="${BASE%.*}"
-PARENT=$(dirname "$DIR")
 REL_DIR=$(dirname "$REL_PATH")
+
+PLACEMENT_DIR=$(jq -r '.testPlacement.directory // "__tests__"' "$CONTRACT")
 
 TEST_FOUND=false
 for EXT in ts tsx js jsx mjs cjs; do
-  for CANDIDATE in \
-    "$DIR/$STEM.test.$EXT" \
-    "$DIR/$STEM.spec.$EXT" \
-    "$DIR/__tests__/$STEM.test.$EXT" \
-    "$DIR/__tests__/$STEM.spec.$EXT" \
-    "$PARENT/__tests__/$STEM.test.$EXT" \
-    "$PARENT/__tests__/$STEM.spec.$EXT" \
-    "$PROJECT_ROOT/src/__tests__/$STEM.test.$EXT"; do
-    if [ -f "$CANDIDATE" ]; then
-      TEST_FOUND=true
-      break 2
-    fi
-  done
+  if [ -f "$DIR/$PLACEMENT_DIR/$STEM.test.$EXT" ]; then
+    TEST_FOUND=true
+    break
+  fi
 done
 
-if [ "$TEST_FOUND" = false ] && [ -d "$PROJECT_ROOT/tests" ]; then
-  if find "$PROJECT_ROOT/tests" -type f \( -name "$STEM.test.*" -o -name "$STEM.spec.*" \) -print -quit 2>/dev/null | grep -q .; then
-    TEST_FOUND=true
-  fi
-fi
-
 if [ "$TEST_FOUND" = false ]; then
-  REASON=$(printf '%s' "TDD GUARD: '${REL_PATH}'은 config/fsd.json에서 ${SEGMENT} 세그먼트(unitTest=${UNIT_TEST})라 테스트가 필요합니다. 구현 전에 실패하는 테스트를 먼저 작성하세요 (DEV-TEST-03). 예상 경로: ${REL_DIR}/${STEM}.test.ts 또는 ${REL_DIR}/__tests__/${STEM}.test.ts")
+  REASON=$(printf '%s' "TDD GUARD: '${REL_PATH}'은 config/fsd.json에서 ${SEGMENT} 세그먼트(unitTest=${UNIT_TEST})라 테스트가 필요합니다. 구현 전에 실패하는 테스트를 먼저 작성하세요 (DEV-TEST-03). 예상 경로: ${REL_DIR}/${PLACEMENT_DIR}/${STEM}.test.ts")
   jq -nc --arg reason "$REASON" '{
     hookSpecificOutput: {
       hookEventName: "PreToolUse",

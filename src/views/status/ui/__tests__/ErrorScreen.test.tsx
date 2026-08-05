@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { ERROR_CODES } from "@/shared/config/error-codes.config";
 
-import { ErrorScreen } from "./ErrorScreen";
+import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 
 afterEach(cleanup);
 

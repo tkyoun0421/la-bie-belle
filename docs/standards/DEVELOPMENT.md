@@ -131,6 +131,7 @@ private 데이터의 제한적 오프라인 열람이 실제 현장 요구가 �
 - `DEV-NAME-03` `MUST`: 파일 이름과 그 파일의 주 export 이름을 일치시킨다. `ShiftCard.tsx`는 `ShiftCard`를, `useShiftList.ts`는 `useShiftList`를 export한다.
 - `DEV-NAME-04` `MUST`: 세그먼트 디렉터리는 `config/fsd.json`의 `segments`에 정의된 이름만 쓴다. 새 세그먼트가 필요하면 규칙(`unitTest`, `runtimeExports`, `verifiedBy`, import 제약)을 함께 정의해 추가한다.
 - `DEV-NAME-05` `MAY`: 프레임워크나 외부 도구가 파일명을 정하는 구역은 예외로 둔다. 예외 목록은 `config/fsd.json`의 `naming.exceptions`가 소유하며 현재는 Next.js 예약 파일명(`src/app/**`)과 shadcn 관리 구역(`src/shared/ui/**`)이다.
+- `DEV-NAME-06` `MUST`: `src/` 안 import는 `@/` alias 하나만 쓴다. 상대경로(`./`·`../`)는 정적 `import`·재export(`export … from`)·동적 `import()` 리터럴 모두 금지하며, alias는 파일 확장자를 붙이지 않는다. 기계 강제: `project/import-alias`(fixer 포함).
 
 세그먼트별 책임과 잠금 규칙은 다음과 같다. `unitTest`가 `exempt`인 구역은 런타임 코드를 제한해 면제가 우회 통로가 되지 않게 한다.
 
@@ -197,6 +198,7 @@ Server Action은 Zod로 외부 입력을 검증한다. 성공은 `{ ok: true, da
 - `DEV-TEST-03` `MUST`: 버그 수정은 실패 재현 테스트를 먼저 추가하고 회귀 테스트로 유지한다.
 - `DEV-TEST-04` `SHOULD`: 테스트는 구현 세부사항보다 관찰 가능한 동작과 불변 규칙을 검증한다.
 - `DEV-TEST-05` `MUST`: 커버리지 수치만으로 완료를 판단하지 않는다.
+- `DEV-TEST-06` `MUST`: 단위 테스트는 소스와 같은 폴더의 `__tests__/` 하위에 `<대상>.test.<확장자>`로 둔다. `.spec` 접미사는 쓰지 않는다. 배치 계약의 정본은 `config/fsd.json`의 `testPlacement`이며, 기계 강제: `project/test-placement`와 `.claude/hooks/tdd-guard.sh`.
 
 동작·도메인·API·DB·RLS·보안 task는 TDD를 기본으로 한다. 문서·설정·기계적 생성 task만 verification을 사용한다.
 

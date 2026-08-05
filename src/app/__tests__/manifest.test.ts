@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import manifest from "./manifest";
+import manifest from "@/app/manifest";
 
 describe("manifest", () => {
   it("브랜드 이름과 색을 담는다", () => {

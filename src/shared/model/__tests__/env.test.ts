@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { parseClientEnv, parseServerEnv } from "./env";
+import { parseClientEnv, parseServerEnv } from "@/shared/model/env";
 
 const validServerSource = {
   NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",
@@ -27,7 +27,7 @@ const validClientSource = {
 };
 
 function loadEnvExample(): Record<string, string> {
-  const content = readFileSync(resolve(import.meta.dirname, "../../../.env.example"), "utf8");
+  const content = readFileSync(resolve(import.meta.dirname, "../../../../.env.example"), "utf8");
   const entries: Record<string, string> = {};
   for (const line of content.split("\n")) {
     const trimmed = line.trim();
