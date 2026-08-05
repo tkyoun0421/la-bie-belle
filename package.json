@@ -11,6 +11,7 @@
     "start": "next start",
     "typecheck": "next typegen && tsc --noEmit",
     "check:app-build": "node scripts/check-app-build.mjs",
+    "check:client-secret-scan": "node scripts/client-secret-scan.mjs",
     "lint": "eslint src",
     "lint:ci": "eslint src -c eslint.config.ci.mjs",
     "format": "prettier --write src",

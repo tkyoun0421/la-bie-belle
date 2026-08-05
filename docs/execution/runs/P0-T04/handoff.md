@@ -59,3 +59,42 @@
 ### 미결 사항 (검증 단계 추가)
 
 - **오프라인 신호의 계층 배치** — opus가 "features가 widgets/offline/hooks에 구조적으로 접근 불가(계층 방향)"를 제기했고 codex가 "승인 RADIO 그대로이며 현재 비활성화할 mutation이 없다"로 반박해 기각됐다. 판단이 갈린 사실 자체가 중요해 기록한다: P1에서 변경 행동 비활성화를 처음 구현하는 task가 훅의 `shared/hooks` 이동 여부를 설계로 결정해야 한다.
+
+## 2026-08-05 · 검증 확정 발견 7건(F-01~F-07) 반영
+
+- 작업 식별자: P0-T04 (환경변수와 애플리케이션 셸)
+- 현재 단계: 검증(교차 리뷰 확정 발견 7건 반영, blocked → in_progress 복귀) 종료 → 다음 검증(재확인)
+- 기준 시각: 2026-08-05
+
+### 확정된 사실
+
+- 사용자가 확정 7건의 즉시 수정을 승인해 RADIO를 revision 3으로 재봉인했다(설계 변경 없음, `scripts/**`만 변경 허용 경로에 편입). `index.jsonl`의 `development_approval`은 이미 `radio_revision:3`, SHA-256(`5431b1e73dd8d5da871cb0d87afcd97f1423c74da62f6939f2c51400efad7cc4`)으로 갱신돼 있었다.
+- **F-01(critical)·F-04(medium)**: `PLACEHOLDER_PATTERN`을 `/changeme/i`에서 `/change_?me/i`로 고쳐 `.env.example` 정본 규약 `CHANGE_ME_<용도>`를 잡는다. `env.test.ts`가 `.env.example`을 직접 읽어(`readFileSync`) 만든 fixture로 placeholder 7종(OAuth 2·VAPID 2·QR·SUPER_ADMIN_EMAIL·VAPID_SUBJECT) 전체가 `isProduction:true`에서 거부되고 `isProduction:false`에서는 통과함(오탐 대조군)을 단언한다 — 이제 fixture가 실제 파일에서 파생되므로 규약이 바뀌면 테스트가 자동으로 다시 검증한다.
+- **F-02(high)**: `env.client.ts`가 `process.env` 객체 전체를 넘기던 방식을 버리고 `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`·`NEXT_PUBLIC_VAPID_PUBLIC_KEY`·`NEXT_PUBLIC_APP_URL` 각각을 `process.env.NEXT_PUBLIC_*` 개별 멤버 접근식으로 바꿨다(Next.js는 `define-env.js`의 `getNextPublicEnvironmentVariables()`가 만드는 개별 멤버 접근 치환만 인식한다). 임시로 `NEXT_PUBLIC_APP_URL` 값을 하드코딩한 `'use client'` 페이지를 만들어 `pnpm build` 후 `.next/static`에서 그 값이 실제로 인라인됨을 확인한 뒤 파일을 삭제해 되돌렸다(현재 실제 소비자가 없어 이 재현이 유일한 직접 증거).
+- **F-03(high)**: `useOnlineStatus`를 `useState`+`useEffect` 대신 React 표준 `useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)`로 재작성했다. `getServerSnapshot`은 `true`(온라인) 고정값이라 서버 렌더·최초 하이드레이션이 항상 배너를 그리지 않고, 마운트 후에만 `getSnapshot`(`navigator.onLine`)을 구독한다. 처음에 `useEffect` 안에서 `setIsOnline`을 직접 호출하는 방식을 썼다가 `react-hooks/set-state-in-effect` 린트에 걸려 `useSyncExternalStore`로 바꿨다 — 이 방식이 애초에 hydration 분기 문제의 정석 해법이라 결과적으로 더 맞는 구현이 됐다. `pnpm build` 산출물 `.next/server/app/index.html`에서 `인터넷 연결이 끊겼어요` 문구가 수정 전 1건 → 수정 후 0건임을 확인했다(재현·복구 절차로 RED→GREEN 기록, `tdd.json` 참고).
+- **F-05(medium)**: `scripts/client-secret-scan.mjs`를 새로 만들어 `package.json`에 `check:client-secret-scan`으로 등록했다. `.env`를 읽어 `SUPABASE_SERVICE_ROLE_KEY`·`VAPID_PRIVATE_KEY`·`QR_SIGNING_SECRET` 실값을 얻고, `pnpm build` 후 `.next/static`의 모든 파일에서 그 값을 검색해 발견 시 실패한다. 탐지력 증명: 임시로 서비스 롤 키 값을 `'use client'` 페이지에 하드코딩해 스캔이 실제로 실패(`exit 1`)함을 확인했고, 삭제 후 다시 통과(`exit 0`)함을 확인했다. `NEXT_PUBLIC_APP_URL` 값을 같은 방식으로 클라이언트 페이지에 넣어 번들에 인라인됨(대조군, 판별력 증거)과 스캔이 이를 오탐하지 않음을 확인했다 — 이 대조군은 현재 실제 코드베이스에 소비자가 없어 스크립트 자체의 상시 통과 조건으로는 넣지 않았다(넣으면 P1 전까지 항상 실패하는 죽은 게이트가 된다).
+- **F-06(medium)**: `supabase-browser.test.ts`의 `vi.mock('@/shared/config/env.client')`를 제거했다. `vi.stubEnv`로 `process.env.NEXT_PUBLIC_*`를 설정하고 `vi.resetModules()` + 동적 `import()`로 실제 `env.client.ts` 모듈 초기화와 Zod 파싱 경로를 태운다. mock을 제거한 채로(스텁 없이) 먼저 돌려 실제 필수값 누락 오류가 그대로 던져짐을 RED로 확인한 뒤 스텁을 추가해 GREEN을 만들었다. opus 단서대로 번들 치환 자체(브라우저에서 `process.env`가 없는 것)는 이 단위 테스트로 재현하지 않는다 — 그건 F-02의 build-레벨 재현이 담당한다.
+- **F-07(medium)**: `OfflineBanner`를 FOUNDATIONS `warning` 토큰 그대로 `bg-[#fff7d6] text-[#765500]`로 바꾸고 `fixed inset-x-0 top-0 z-50`으로 상단 고정했다. 렌더 테스트에 색 클래스·`fixed`·`top-0` 단언을 추가했다.
+- `pnpm lint`·`pnpm typecheck`·`pnpm test`(19 files, 161 tests) 전부 통과했다. `.env.example`을 `.env`로 복사한 `pnpm build`와 `pnpm check:client-secret-scan` 모두 통과했다(검증 후 `.env` 삭제, 커밋하지 않음).
+- `docs/execution/reviews/backlog.md`의 P0-T04 medium 4건(F-04·F-05·F-06·F-07)을 `[x]`로 표기했다. critical·high 3건(F-01·F-02·F-03)은 backlog 대상이 아니라 이번 커밋에 직접 반영된 확정 발견이라 별도 항목이 없다.
+
+### 미결 사항
+
+- 없음. 확정 발견 7건 모두 이번 커밋에 반영됐다. 검증 단계에서 판단이 갈렸던 "오프라인 신호의 계층 배치"(위 절 참고)는 기각된 발견이라 이번 라운드의 수정 대상이 아니고, P1의 변경 행동 비활성화 구현 task로 이월된 상태 그대로다.
+
+### 다음 행동
+
+1. 조정자가 반영 내역을 재확인하고 필요하면 재교차검증한다.
+2. 통과 확인 후 `index.jsonl`의 P0-T04를 `done`으로 전환하고 대시보드를 재생성한다.
+
+### 증거·산출물 경로
+
+- `src/shared/model/env.ts`(`PLACEHOLDER_PATTERN`), `src/shared/model/env.test.ts`(`.env.example` 기반 fixture)
+- `src/shared/config/env.client.ts`(개별 멤버 접근식)
+- `src/shared/lib/supabase-browser.test.ts`(mock 제거, `vi.stubEnv`)
+- `src/widgets/offline/hooks/useOnlineStatus.ts`(`useSyncExternalStore`)
+- `src/widgets/offline/ui/OfflineBanner.tsx`(+test, FOUNDATIONS warning 색·고정 배치)
+- `scripts/client-secret-scan.mjs`(신규), `package.json`(`check:client-secret-scan` 등록)
+- `docs/execution/radio/P0-T04-radio.md`(revision 3)
+- `docs/execution/reviews/backlog.md`(P0-T04 medium 4건 `[x]`)
+- `docs/execution/runs/P0-T04/tdd.json`(2026-08-05 11:52~11:59 RED→GREEN 5쌍 추가)

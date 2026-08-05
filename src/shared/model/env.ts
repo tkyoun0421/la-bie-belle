@@ -7,7 +7,7 @@ const NON_EMPTY_MESSAGE = "빈 문자열은 허용되지 않습니다";
 const URL_MESSAGE = "URL 형식이 아닙니다";
 const EMAIL_MESSAGE = "이메일 형식이 아닙니다";
 const PLACEHOLDER_MESSAGE = "production에서 placeholder 값을 쓸 수 없습니다";
-const PLACEHOLDER_PATTERN = /changeme/i;
+const PLACEHOLDER_PATTERN = /change_?me/i;
 
 function requiredString() {
   return z.string({ error: REQUIRED_MESSAGE }).min(1, NON_EMPTY_MESSAGE);

@@ -1,9 +1,9 @@
 # P0-T04 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 2
+- revision: 3
 - 기획 승인: user, 2026-08-05
-- 개발 설계 승인: user, 2026-08-05 (revision 2 재승인)
+- 개발 설계 승인: user, 2026-08-05 (revision 3 재승인)
 
 ## 개정 이력
 
@@ -11,6 +11,7 @@
 | --- | --- | --- |
 | 1 | 2026-08-05 | 최초 작성. |
 | 2 | 2026-08-05 | 구현 착수 중 worker가 발견한 도구 공백을 정정해 재승인했다(사용자 결정). `vitest.config.ts`에 `@/*` alias가 없어 화면 컴포넌트 테스트가 정본 레지스트리를 import하지 못한다 — tsconfig가 이미 `@/*`를 경로 정본으로 정했으므로 vitest alias 추가는 새 결정이 아니라 기존 결정의 정합화다. `vitest.config.ts`를 변경 허용 경로에 추가했다. P0-T01 교차 검증의 postcss 선례(필요 설정 파일이 봉인 경로 밖, medium 확정)와 같은 유형을 리뷰 전에 정정한 것이다. |
+| 3 | 2026-08-05 | 검증 단계의 교차 리뷰(P0-T04-review.json) critical 확정으로 blocked 안전 중단 후, 사용자가 확정 7건(F-01~F-07)의 즉시 수정을 승인해 재봉인했다. 설계 내용 변경은 없다 — 7건 모두 승인 설계 안의 구현 결함이다. F-05(client-secret-scan 미구현)의 수정 대상인 `scripts/**`가 변경 허용 경로 밖이라 경로만 편입한다. 위험표의 '보안 — 서버 비밀 번들 유출' 행이 이 경로의 근거다. |
 
 - 관련 spec: PRD:AC-12, ADR:0001, ADR:0002, DOCS:SDD
 - 적용 깊이: 심화 (환경변수 비밀값 경계) + 일반 (화면·manifest)
@@ -118,6 +119,7 @@ pnpm-lock.yaml
 .env.example
 eslint.config.mjs
 vitest.config.ts
+scripts/**
 src/app/**
 src/views/**
 src/widgets/**

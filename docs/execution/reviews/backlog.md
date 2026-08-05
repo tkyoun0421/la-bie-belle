@@ -54,7 +54,7 @@
 - [x] [medium] [P0-T37] 정본 레지스트리가 키 명명 규칙을 정의 지점에서 강제하지 않음 — src/shared/config/error-codes.config.ts
 - [x] [medium] [P0-T37] '정의 지점 허용' 테스트가 공허해 레지스트리 예외 분기 미검증 — tools/eslint-plugin-project/rules/__tests__/error-code-literal.test.mjs
 - [x] [low] [P0-T37] 경로 판별이 resolveLocation 관행 이탈·접미사 과대 적용 — tools/eslint-plugin-project/rules/error-code-literal.mjs
-- [ ] [medium] [P0-T04] placeholder 거부 테스트가 실제 규약을 피해가는 픽스처 사용 — src/shared/model/env.test.ts
-- [ ] [medium] [P0-T04] client-secret-scan 미구현, 수동 재현으로 대체됨 — scripts/check-app-build.mjs
-- [ ] [medium] [P0-T04] browser env 모듈 실제 초기화 경로가 mock에 가려 미검증 — src/shared/lib/supabase-browser.test.ts
-- [ ] [medium] [P0-T04] 오프라인 배너 색·대비·고정 배치가 디자인 정본 이탈 — src/widgets/offline/ui/OfflineBanner.tsx
+- [x] [medium] [P0-T04] placeholder 거부 테스트가 실제 규약을 피해가는 픽스처 사용 — src/shared/model/env.test.ts
+- [x] [medium] [P0-T04] client-secret-scan 미구현, 수동 재현으로 대체됨 — scripts/check-app-build.mjs
+- [x] [medium] [P0-T04] browser env 모듈 실제 초기화 경로가 mock에 가려 미검증 — src/shared/lib/supabase-browser.test.ts
+- [x] [medium] [P0-T04] 오프라인 배너 색·대비·고정 배치가 디자인 정본 이탈 — src/widgets/offline/ui/OfflineBanner.tsx

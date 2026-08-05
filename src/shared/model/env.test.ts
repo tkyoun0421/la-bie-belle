@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { parseClientEnv, parseServerEnv } from "./env";
@@ -22,6 +25,31 @@ const validClientSource = {
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: "test-vapid-public",
   NEXT_PUBLIC_APP_URL: "http://localhost:3000",
 };
+
+function loadEnvExample(): Record<string, string> {
+  const content = readFileSync(resolve(import.meta.dirname, "../../../.env.example"), "utf8");
+  const entries: Record<string, string> = {};
+  for (const line of content.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.length === 0) {
+      continue;
+    }
+    const separatorIndex = trimmed.indexOf("=");
+    entries[trimmed.slice(0, separatorIndex)] = trimmed.slice(separatorIndex + 1);
+  }
+  return entries;
+}
+
+const envExample = loadEnvExample();
+const envExamplePlaceholderKeys = [
+  "GOOGLE_OAUTH_CLIENT_ID",
+  "GOOGLE_OAUTH_CLIENT_SECRET",
+  "NEXT_PUBLIC_VAPID_PUBLIC_KEY",
+  "VAPID_PRIVATE_KEY",
+  "VAPID_SUBJECT",
+  "SUPER_ADMIN_EMAIL",
+  "QR_SIGNING_SECRET",
+];
 
 describe("parseServerEnv", () => {
   it("유효한 7범주 값을 그대로 파싱한다", () => {
@@ -63,16 +91,21 @@ describe("parseServerEnv", () => {
     }
   });
 
-  it("dev에서는 changeme placeholder로 부팅된다(오탐 대조군)", () => {
-    const source = { ...validServerSource, SUPABASE_SERVICE_ROLE_KEY: "CHANGE_ME_SERVICE_ROLE" };
-    expect(() => parseServerEnv(source, { isProduction: false })).not.toThrow();
+  it(".env.example 그대로는 dev에서 부팅된다(오탐 대조군)", () => {
+    expect(() => parseServerEnv(envExample, { isProduction: false })).not.toThrow();
   });
 
-  it("production에서는 changeme placeholder(대소문자 무시)를 거부한다", () => {
-    const source = { ...validServerSource, SUPABASE_SERVICE_ROLE_KEY: "ChangeMe_ServiceRole" };
-    expect(() => parseServerEnv(source, { isProduction: true })).toThrowError(
-      /SUPABASE_SERVICE_ROLE_KEY/,
-    );
+  it(".env.example의 placeholder 전 항목이 production에서 거부된다", () => {
+    expect(() => parseServerEnv(envExample, { isProduction: true })).toThrowError();
+    try {
+      parseServerEnv(envExample, { isProduction: true });
+      throw new Error("파싱이 실패해야 합니다");
+    } catch (error) {
+      const message = (error as Error).message;
+      for (const key of envExamplePlaceholderKeys) {
+        expect(message).toContain(key);
+      }
+    }
   });
 
   it("production에서도 유효한 실값은 통과한다(오탐 대조군)", () => {
@@ -94,10 +127,13 @@ describe("parseClientEnv", () => {
     );
   });
 
-  it("production에서는 changeme placeholder를 거부한다", () => {
-    const source = { ...validClientSource, NEXT_PUBLIC_VAPID_PUBLIC_KEY: "changeme_vapid" };
-    expect(() => parseClientEnv(source, { isProduction: true })).toThrowError(
+  it(".env.example의 NEXT_PUBLIC_VAPID_PUBLIC_KEY placeholder가 production에서 거부된다", () => {
+    expect(() => parseClientEnv(envExample, { isProduction: true })).toThrowError(
       /NEXT_PUBLIC_VAPID_PUBLIC_KEY/,
     );
+  });
+
+  it(".env.example 그대로는 dev에서 부팅된다(오탐 대조군)", () => {
+    expect(() => parseClientEnv(envExample, { isProduction: false })).not.toThrow();
   });
 });
