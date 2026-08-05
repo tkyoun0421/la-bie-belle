@@ -1,15 +1,16 @@
 # P0-T38 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-05
-- 개발 설계 승인: user, 2026-08-05
+- 개발 설계 승인: user, 2026-08-05 (revision 2 재승인)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-05 | 최초 작성. |
+| 2 | 2026-08-05 | 구현 착수 전 worker가 발견한 규칙 ID 충돌을 정정해 재승인했다(사용자 결정). 신설 규칙 ID를 DEV-TEST-05에서 **DEV-TEST-06**으로 바꿨다. `DEV-TEST-05`("커버리지 수치만으로 완료를 판단하지 않는다", MUST)는 P0-T02부터 DEVELOPMENT.md에 존재한다. revision 1의 "전수 확인 완료" 주장은 조정자의 확인 명령이 출력 60행에서 절단(`head -60`)된 채 판독된 오류다 — P0-T37 rev 2와 같은 유형의 재발이며, 확인 명령의 출력 절단 여부 검증이 전수 확인의 일부임을 이 이력에 남긴다. 규칙의 의미와 나머지 설계는 바뀌지 않았다. |
 
 - 관련 spec: DOCS:SDD, ADR:0008
 - 적용 깊이: 일반 (린트 도구·훅·테스트 재배치. DB·권한·캐시·오프라인 경로 없음)
@@ -20,7 +21,7 @@
 
 ### 범위와 비목표
 
-- 범위: `project/import-alias` ESLint 룰(fixer 포함)과 `project/test-placement` ESLint 룰 + RuleTester 테스트, `eslint.config.mjs` 등록, `config/fsd.json` 테스트 배치 계약 신설, `.claude/hooks/tdd-guard.sh` 배치 인정 후보 축소와 안내 문구 정정, 기존 colocated 테스트 9건의 `__tests__/` 이동과 상대 import 전면 치환, [개발 컨벤션](../../standards/DEVELOPMENT.md) `DEV-NAME-06`·`DEV-TEST-05` 신설.
+- 범위: `project/import-alias` ESLint 룰(fixer 포함)과 `project/test-placement` ESLint 룰 + RuleTester 테스트, `eslint.config.mjs` 등록, `config/fsd.json` 테스트 배치 계약 신설, `.claude/hooks/tdd-guard.sh` 배치 인정 후보 축소와 안내 문구 정정, 기존 colocated 테스트 9건의 `__tests__/` 이동과 상대 import 전면 치환, [개발 컨벤션](../../standards/DEVELOPMENT.md) `DEV-NAME-06`·`DEV-TEST-06` 신설.
 - 비목표(기획 승인 그대로): `src/` 밖 도구 코드의 import 표기(tools/·harness/·scripts/ 관행 유지), 루트 `tests/` 미러 구조, E2E 테스트 배치(루트 `tests/` 소유 그대로).
 - 설계 비목표: 기존 룰(layer-direction 등) 개편, tdd-guard의 이번 축소와 무관한 알려진 약점 수리(backlog의 P0-T02 발견 소유권을 가져오지 않는다), contract 파싱 캐시(기존 관행 그대로).
 
@@ -29,7 +30,7 @@
 - `src/` 안 import 표기는 `@/` alias 1종이다. 상대경로(`./`·`../`)는 정적 `import`·재export(`export … from`)·동적 `import()` 리터럴 모두 금지다. alias는 파일 확장자를 붙이지 않는다(CLAUDE.md 기존 규칙).
 - `src/` 안 단위 테스트는 소스와 같은 폴더의 `__tests__/` 하위에만 두고, 파일명은 `<대상>.test.<확장자>`다. `.spec` 표기는 쓰지 않는다.
 - 테스트 배치 계약의 정본은 `config/fsd.json` 하나이고, ESLint 룰과 tdd-guard가 같은 값을 읽는다(DEV-SSOT-01, 기존 구조 그대로).
-- 규칙 ID 신설은 기존 ID 전수 확인을 선행한다 — 이번 설계에서 확인 완료: `DEV-NAME`은 01~05, `DEV-TEST`는 01~04 사용 중이라 `DEV-NAME-06`·`DEV-TEST-05`가 충돌 없이 비어 있다.
+- 규칙 ID 신설은 기존 ID 전수 확인을 선행하고, 확인 명령의 출력이 절단되지 않았는지도 함께 검증한다 — revision 2에서 재확인 완료: `DEV-NAME`은 01~05, `DEV-TEST`는 01~05 사용 중이라 `DEV-NAME-06`·`DEV-TEST-06`이 충돌 없이 비어 있다.
 
 ### 기술 인수 조건
 
@@ -51,7 +52,7 @@
 ### DEV-* 적용 상태
 
 - `DEV-NAME-06` 신설: `src/` import는 `@/` alias만 쓴다(상대경로 금지). 기계 강제: `project/import-alias`.
-- `DEV-TEST-05` 신설: 단위 테스트는 소스 폴더의 `__tests__/` 하위 `<대상>.test.<확장자>`에 둔다. 기계 강제: `project/test-placement` + tdd-guard.
+- `DEV-TEST-06` 신설: 단위 테스트는 소스 폴더의 `__tests__/` 하위 `<대상>.test.<확장자>`에 둔다. 기계 강제: `project/test-placement` + tdd-guard.
 - `DEV-CODE-07`(주석 금지)·`DEV-SSOT-01`(계약 단일 정본) 등 기존 규칙은 그대로 적용된다.
 
 ## Architecture
@@ -94,9 +95,9 @@ vitest 설정은 바꾸지 않는다 — 현행 glob(`src/**/*.test.{ts,tsx}`, j
 ## Interface
 
 - `project/import-alias` 위반 메시지: `상대경로 import 대신 @/ alias를 쓰세요 (DEV-NAME-06): "<제안 경로>"`. 제안 경로는 fixer가 넣을 값과 같다.
-- `project/test-placement` 위반 메시지: 배치 위반은 `테스트 파일은 <소스 폴더>/__tests__/ 하위에 두세요 (DEV-TEST-05)`, 접미사 위반은 `.spec 대신 .test 접미사를 쓰세요 (DEV-TEST-05)`.
+- `project/test-placement` 위반 메시지: 배치 위반은 `테스트 파일은 <소스 폴더>/__tests__/ 하위에 두세요 (DEV-TEST-06)`, 접미사 위반은 `.spec 대신 .test 접미사를 쓰세요 (DEV-TEST-06)`.
 - tdd-guard 거부 문구의 예상 경로: `<소스 폴더>/__tests__/<대상>.test.ts` 하나만 제안한다.
-- `DEVELOPMENT.md`: `DEV-NAME-06`은 DEV-NAME 절에, `DEV-TEST-05`는 DEV-TEST 절에 MUST로 추가하고 각 룰 이름을 병기한다.
+- `DEVELOPMENT.md`: `DEV-NAME-06`은 DEV-NAME 절에, `DEV-TEST-06`은 DEV-TEST 절에 MUST로 추가하고 각 룰 이름을 병기한다.
 
 ## Optimizations
 
