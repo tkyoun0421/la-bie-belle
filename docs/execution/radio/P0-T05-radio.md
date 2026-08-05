@@ -1,15 +1,16 @@
 # P0-T05 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-06
-- 개발 설계 승인: user, 2026-08-06
+- 개발 설계 승인: user, 2026-08-06 (revision 2 재승인)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-06 | 최초 작성. |
+| 2 | 2026-08-06 | 구현 전 프로토타입 검증에서 worker가 발견한 기존 문서 결함 8건을 반영해 재승인했다(사용자 결정). ① heading 존재·제목 일치 검사를 `product_approval`이 기록된 task로 한정한다 — phase 절은 기획 단계에 처음 만들어지므로 proposed task에 heading을 요구하는 규칙이 워크플로와 모순이었다(P0-T36·P7-T09 위반 3건 자연 해소). ② 실결함 2파일 수정을 범위에 편입한다 — `docs/execution/runs/P0-T29/handoff.md`의 내부 링크 5건 경로 깊이 수정(깨진 참조의 기계 수정, done task의 승인·이력 불변), `docs/execution/phases/01-identity-and-staff.md`의 P1-T06 heading을 index 제목("휴면 계정 상태와 접근 차단")으로 정합. 두 파일을 변경 허용 경로에 추가했다. spec_refs·순환 검사는 오탐 0으로 설계 그대로다. |
 
 - 관련 spec: DOCS:SDD, ADR:0001
 - 적용 깊이: 일반 (CI 구성·검사 스크립트·문서 정정. DB·권한·캐시 경로 없음 — db:test는 기존 pgTAP 실행일 뿐 스키마 변경 없음)
@@ -28,12 +29,12 @@
 
 - CI는 로컬 `pnpm verify`와 같은 명령을 실행한다 — CI 전용 검증 논리를 워크플로 YAML 안에 두지 않는다. 유일한 CI 전용 단계는 migration 검증(`db:test`)이다(사용자 결정).
 - CI 부팅 환경변수는 `.env.example` 복사로 만든다. GitHub secrets를 도입하지 않는다(공개 로컬 데모 값 — P0-T04 확정).
-- 신설 검사는 저장소 현재 상태에서 전부 통과해야 한다(오탐 0). 위반 검출력은 self-test의 의도적 실패 fixture가 증명한다.
+- 신설 검사는 이번 커밋의 기존 결함 수정(P0-T29 링크·P1-T06 heading) 후 저장소 전체에서 위반 0으로 통과해야 한다. 위반 검출력은 self-test의 의도적 실패 fixture가 증명한다. (revision 2)
 - production 빌드는 `verify` 실행당 정확히 1회다.
 
 ### 기술 인수 조건
 
-- `pnpm check:docs`가 ① 의존성 순환 ② index task와 phase 문서 heading(`### <id>. <제목>`)의 존재·제목 일치 ③ `spec_refs` 유효성(접두별 실제 문서 대조) ④ docs 내부 상대 링크의 대상 파일 존재를 검사하고, 위반 시 exit 1과 파일·행 단서를 출력한다.
+- `pnpm check:docs`가 ① 의존성 순환 ② index task와 phase 문서 heading(`### <id>. <제목>`)의 존재·제목 일치 — `product_approval`이 기록된 task에 한정(proposed 면제, revision 2) ③ `spec_refs` 유효성(접두별 실제 문서 대조) ④ docs 내부 상대 링크의 대상 파일 존재를 검사하고, 위반 시 exit 1과 파일·행 단서를 출력한다.
 - harness self-test가 4종 검사 각각에 대해 의도적 실패 fixture로 검출(RED 상당)과 현재 저장소 통과(오탐 대조군)를 단언한다.
 - `pnpm verify`가 `check:docs`·`check:app-build`·`check:client-secret-scan`을 포함하고 production 빌드를 1회만 실행한다. 두 check 스크립트는 단독 실행 시 여전히 자체 빌드로 동작한다.
 - `eslint.config.mjs`의 `no-console`이 error다(`src/`에 console 사용이 없어 기존 통과 유지).
@@ -60,7 +61,7 @@
 
 - `harness/lib/docs-check.ts` (신규): 검사 4종의 로직. 기존 `task-index.ts`(index 파싱)·`violation.ts`(위반 형식)·`glob.ts`를 재사용한다.
   - 순환: `depends_on` 그래프 DFS로 사이클 검출, 사이클 경로를 메시지에 담는다.
-  - 제목 일치: task의 `doc` 필드가 가리키는 phase 문서에서 `### <id>. <제목>` heading을 찾아 부재·제목 불일치를 보고한다.
+  - 제목 일치: `product_approval`이 기록된 task에 한해, `doc` 필드가 가리키는 phase 문서에서 `### <id>. <제목>` heading을 찾아 부재·제목 불일치를 보고한다. proposed task는 phase 절이 기획 단계에 생기므로 검사 대상이 아니다. (revision 2)
   - spec_refs 유효성: 접두별 대조(Data model 참고). 미지의 접두도 위반이다.
   - 내부 링크: `docs/**/*.md`·`CLAUDE.md`·`README.md`의 상대 링크(`](...)`)에서 anchor(`#…`)를 뗀 대상 파일의 존재를 검사한다. 외부 URL(`http…`)은 제외.
 - `harness/checks/docs.ts` (신규 디렉터리): 얇은 진입점. `package.json`에 `check:docs` 등록. gates 디렉터리에 두지 않는다 — pre-commit 게이트가 아님을 구조로 표현한다.
@@ -117,6 +118,8 @@ scripts/**
 docs/workflow/TOOLING.md
 docs/execution/radio/P0-T05-radio.md
 docs/execution/runs/P0-T05/**
+docs/execution/runs/P0-T29/handoff.md
+docs/execution/phases/01-identity-and-staff.md
 docs/execution/phases/index.jsonl
 ```
 
