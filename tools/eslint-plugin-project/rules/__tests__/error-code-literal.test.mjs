@@ -11,7 +11,7 @@ describe("error-code-literal", () => {
       {
         name: "레지스트리 멤버 접근 비교는 허용한다",
         filename: "src/features/apply/api/apply.ts",
-        code: 'import { ERROR_CODES } from "@/shared/config/error-codes.config";\n\nexport function check(code) {\n  return code === ERROR_CODES.COMMON_FORBIDDEN;\n}',
+        code: 'import { ERROR_CODE } from "@/shared/config/error-codes.config";\n\nexport function check(code) {\n  return code === ERROR_CODE.COMMON_FORBIDDEN;\n}',
       },
       {
         name: "레지스트리 멤버 접근을 함수 인자로 전달하면 허용한다",
@@ -36,7 +36,7 @@ describe("error-code-literal", () => {
       {
         name: "레지스트리 정의 파일에서는 리터럴을 허용한다",
         filename: "src/shared/config/error-codes.config.ts",
-        code: 'export const ERROR_CODES = {\n  COMMON_FORBIDDEN: { http: 403, message: "접근 권한이 없어요" },\n} as const;',
+        code: 'export const ERROR_CODES = {\n  COMMON_FORBIDDEN: { http: 403, message: "접근 권한이 없어요" },\n} as const;\n\nexport const ERROR_CODE = {\n  COMMON_FORBIDDEN: "COMMON_FORBIDDEN",\n} as const;',
       },
     ],
     invalid: [

@@ -1,0 +1,60 @@
+{
+  "task_id": "P0-T37",
+  "at": "2026-08-05T10:09:38Z",
+  "base_commit": "4fc359e25e89afad8c3905fe6f7be26bcd4ee76e",
+  "participants": ["opus", "codex"],
+  "participants_note": "",
+  "scores": {
+    "code_quality": 88,
+    "tests": 75,
+    "security": 100,
+    "performance": 100,
+    "architecture": 70
+  },
+  "score_rationale": {
+    "code_quality": "룰과 레지스트리 모두 짧고 명확하나 경로 판별의 관행 이탈·중복(low) 1건이 확정됐다.",
+    "tests": "RuleTester 14케이스가 접두 6종 경계와 오탐 대조군을 실제 ESLint로 덮지만, 정의 지점 예외 분기를 검증하지 못하는 공허한 케이스(medium)와 문자열-객체 비교 fixture 모순(F-01 증거)이 확정됐다.",
+    "security": "확정 결함 없음. 오류 응답·기본 문구에서 비밀값·개인정보를 배제하는 계약이 명시되고 시드 문구는 일반 안내뿐이다.",
+    "performance": "판단 재료 없음. 정적 상수와 Literal 노드당 정규식 1회 검사뿐이라 결함 없음으로 100점.",
+    "architecture": "FSD 배치·변경 허용 경로·RADIO revision 봉인은 정합하나, 정본이 코드 문자열 값을 노출하지 않아 승인된 소비 계약이 구현 불가능한 high 1건과 키 명명 미강제 medium 1건이 확정됐다."
+  },
+  "total": 87,
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "high",
+      "area": "architecture",
+      "title": "레지스트리 멤버 접근으로는 오류 코드 문자열 값을 만들 수 없어 DEV-ERR-08 계약이 구현 불가능하다",
+      "description": "ERROR_CODES 멤버 값은 { http, message } 객체이고 코드 문자열은 keyof 타입으로만 존재한다. DEV-ERR-08의 응답 { error: { code, correlationId } }와 DEV-ERR-01 Result의 code는 런타임 문자열 값을 요구하는데, 그 값을 얻는 유일한 표기인 리터럴을 project/error-code-literal이 src/ 전역에서 차단한다. 첫 소비자는 eslint-disable을 쓰거나 정본을 고쳐야 하며, 화면 문구 재정의 맵의 키도 같은 이유로 막힌다. 어긋남의 증거로 테스트 valid 케이스 'code === ERROR_CODES.COMMON_FORBIDDEN'이 문자열-객체 비교라 항상 false다. 두 리뷰어 모두 high. 소비 시점에 린트가 명시적으로 실패해 조용한 MUST 위반으로는 이어지지 않으므로 critical이 아니라 high로 판독했다.",
+      "file": "src/shared/config/error-codes.config.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-02",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "정본 레지스트리가 키 명명 규칙을 정의 지점에서 강제하지 않는다",
+      "description": "satisfies Record<string, ErrorSpec>는 값의 http·message 형태만 검사하고 키를 제약하지 않는다. 레지스트리 파일은 린트 예외라 접두가 틀린 키나 DEV-ERR-07이 금지한 번호 접미사 키가 typecheck와 lint를 모두 통과해 그대로 유효한 ErrorCode가 된다 — 정본에서의 규칙 위반이 계약이 되는 우회 경로다. 두 리뷰어가 독립적으로 같은 결함을 발견해 병합했다. 중요도는 codex가 medium, opus가 low로 갈려 높은 쪽을 택했다.",
+      "file": "src/shared/config/error-codes.config.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-03",
+      "severity": "medium",
+      "area": "tests",
+      "title": "'정의 지점 허용' 테스트가 공허해 레지스트리 예외 분기를 검증하지 못한다",
+      "description": "해당 valid 케이스의 fixture에는 접두 패턴에 걸리는 문자열 리터럴이 없다. 프로퍼티 키 COMMON_FORBIDDEN은 따옴표 없는 Identifier라 Literal 방문자가 발화하지 않고 나머지 리터럴은 숫자와 한글 문구뿐이다. isRegistryFile 예외 분기를 통째로 제거해도 테스트가 통과하므로 RADIO 위험표의 '오탐 대조군 — 정의 지점 허용' 행이 실제로 보호되지 않는다.",
+      "file": "tools/eslint-plugin-project/rules/__tests__/error-code-literal.test.mjs",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-04",
+      "severity": "low",
+      "area": "code_quality",
+      "title": "경로 판별이 기존 룰의 resolveLocation 관행을 벗어나 중복 구현되고 접미사 일치로 과대 적용된다",
+      "description": "다른 룰 6종은 lib/resolve-path.mjs의 resolveLocation으로 cwd 기준 상대 경로를 판정하는데 새 룰만 toPosix 정규화를 재구현하고 endsWith 접미사 일치를 쓴다. 같은 정규화 로직이 두 곳에 존재하고, cwd에 매이지 않아 해당 접미사로 끝나는 모든 파일이 예외가 된다. 현재 저장소에는 해당 경로가 하나라 실해는 없다.",
+      "file": "tools/eslint-plugin-project/rules/error-code-literal.mjs",
+      "agreed_by": ["opus", "codex"]
+    }
+  ]
+}

@@ -36,3 +36,39 @@
 - `docs/standards/DEVELOPMENT.md`(DEV-ERR-07·08)
 - `docs/execution/radio/P0-T37-radio.md`(revision 2)
 - `docs/execution/phases/index.jsonl`(P0-T37 `in_progress`, `development_approval` revision 2)
+
+## 2026-08-05 · 검증 확정 발견 반영
+
+- 작업 식별자: P0-T37 (오류 코드 정본과 인터페이스 오류 계약)
+- 현재 단계: 검증(교차 리뷰 확정 발견 4건 반영) 종료 → 다음 검증(재확인)
+- 기준 시각: 2026-08-05
+
+### 확정된 사실
+
+- 교차 검증(`docs/execution/reviews/P0-T37-review.json`, opus·codex, total 87)의 확정 발견 4건을 사용자 승인으로 RADIO revision 3에 반영해 재봉인했다. `index.jsonl`의 `development_approval`은 이미 `radio_revision:3`, SHA-256(`ead02383a693c2930d03093277bc70bacc062d212875ee2b8ac61bcca3ad0954`)으로 갱신돼 있어 확인만 하고 그대로 둔다.
+- F-01(high): `error-codes.config.ts`에 코드 이름 맵 `ERROR_CODE`(`satisfies { [K in ErrorCode]: K }`, 키=값 일치를 타입이 강제)를 추가해 런타임 코드 문자열 값을 얻는 표기를 만들었다. 테스트의 문자열-객체 비교 fixture(`code === ERROR_CODES.COMMON_FORBIDDEN`)를 `ERROR_CODE` 멤버 접근으로 고쳤다.
+- F-02(medium): `ERROR_CODES`의 키 타입을 `` Record<`${ErrorDomain}_${string}`, ErrorSpec> ``(접두 6종 유니언 `ErrorDomain` 기반 템플릿)로 강제했다. 임시로 접두 밖 키(`BOGUS_KEY`)를 넣어 `pnpm typecheck`가 `TS2353`(패턴 밖 키)·`TS1360`(이름 맵 키=값 불일치)로 실패함을 확인한 뒤 되돌려 검증했다.
+- F-03(medium): '정의 지점 허용' RuleTester fixture에 접두 패턴에 실제로 걸리는 리터럴(`ERROR_CODE.COMMON_FORBIDDEN: "COMMON_FORBIDDEN"`)을 포함시켰다. 룰의 레지스트리 예외 분기를 통째로 제거한 상태로 이 fixture를 돌려 RED(exit 1, 해당 케이스 1건 실패)를 확인한 뒤, F-04 구현을 적용해 GREEN(exit 0, 14/14)으로 만들었다. RED→GREEN은 `docs/execution/runs/P0-T37/tdd.json`에 추가 기록했다.
+- F-04(low): `tools/eslint-plugin-project/rules/error-code-literal.mjs`의 경로 판별을 기존 룰 6종과 같은 `lib/resolve-path.mjs`의 `resolveLocation(context.filename, context.cwd)` 기반으로 바꿨다. 자체 `toPosix` 정규화와 `endsWith` 접미사 일치를 제거하고 `location.relative`의 정확한 경로 일치로 판정한다.
+- `DEVELOPMENT.md`의 `DEV-ERR-07` 문구 중 "소비 코드는 `ERROR_CODES` 멤버 접근만 쓴다"를 "소비 코드는 `ERROR_CODE`·`ERROR_CODES` 멤버 접근만 쓴다"로 정정했다. 규칙 ID와 그 외 내용은 바꾸지 않았다.
+- `docs/execution/reviews/backlog.md`의 P0-T37 항목 3건([medium] F-02, [medium] F-03, [low] F-04)을 `[x]`로 표기했다. F-01은 backlog 대상이 아니라 RADIO revision 3에 직접 반영된 high 발견이라 별도 항목이 없다.
+- `pnpm lint`, `pnpm typecheck`, `pnpm test`(10 files, 127 tests) 모두 통과했다.
+
+### 미결 사항
+
+- 없음. 확정 발견 4건 모두 이번 커밋에 반영됐다.
+
+### 다음 행동
+
+1. 조정자가 반영 내역을 재확인하고 필요하면 재교차검증한다.
+2. 통과 확인 후 `index.jsonl`의 P0-T37을 `done`으로 전환하고 대시보드를 재생성한다.
+
+### 증거·산출물 경로
+
+- `src/shared/config/error-codes.config.ts`(`ErrorDomain`·`ERROR_CODE` 추가)
+- `tools/eslint-plugin-project/rules/error-code-literal.mjs`(`resolveLocation` 기반 판별)
+- `tools/eslint-plugin-project/rules/__tests__/error-code-literal.test.mjs`(F-01·F-03 fixture 정정)
+- `docs/standards/DEVELOPMENT.md`(`DEV-ERR-07` 문구 정정)
+- `docs/execution/radio/P0-T37-radio.md`(revision 3)
+- `docs/execution/reviews/backlog.md`(P0-T37 3건 `[x]`)
+- `docs/execution/runs/P0-T37/tdd.json`(2026-08-05 10:17~10:18 RED→GREEN 추가)

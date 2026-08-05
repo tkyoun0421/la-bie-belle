@@ -1,9 +1,9 @@
 # P0-T37 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 2
+- revision: 3
 - 기획 승인: user, 2026-08-05
-- 개발 설계 승인: user, 2026-08-05 (revision 2 재승인)
+- 개발 설계 승인: user, 2026-08-05 (revision 3 재승인)
 
 ## 개정 이력
 
@@ -11,6 +11,7 @@
 | --- | --- | --- |
 | 1 | 2026-08-05 | 최초 작성. |
 | 2 | 2026-08-05 | 구현 착수 단계에서 worker가 발견한 규칙 ID 충돌을 정정해 재승인했다(사용자 결정). 신설 규칙 ID를 DEV-ERR-03·04에서 **DEV-ERR-07·08**로 바꿨다. DEVELOPMENT.md에는 DEV-ERR-03(노출 금지)부터 06(보상 전략)까지 이미 존재하고 done된 P0-T28 이력이 참조하므로 기존 번호를 옮길 수 없다. 규칙의 의미는 바뀌지 않았다. revision 1은 설계 시점에 DEV-ERR 절 전체를 확인하지 않은 조정자 오류다. |
+| 3 | 2026-08-05 | 검증 단계의 교차 리뷰(P0-T37-review.json) 확정 발견을 사용자 승인으로 반영해 재봉인했다. ①F-01(high): 레지스트리 멤버 접근이 spec 객체만 반환해 코드 문자열 값을 얻을 수 없고 DEV-ERR-08 소비가 구현 불가능했다 — 코드 이름 맵 `ERROR_CODE`(`satisfies { [K in ErrorCode]: K }`, 키=값 타입 강제)를 함께 export해 해소한다. ②F-02(medium): 키가 `Record<string, …>`이라 명명 규칙이 정의 지점에서 강제되지 않았다 — 키 타입을 도메인 접두 템플릿(`` `${ErrorDomain}_${string}` ``)으로 강제한다. 번호 접미사 금지는 타입으로 강제할 수 없어 리뷰 방어로 남기고 backlog에 기록했다. F-03(테스트 공허)·F-04(경로 판별 관행)는 승인 범위 안의 구현 수정이라 설계 변경이 없다. |
 
 - 관련 spec: DOCS:SDD, ADR:0011
 - 적용 깊이: 일반 (표준·상수·린트 도구. DB·권한·캐시·오프라인 경로 없음)
@@ -35,8 +36,8 @@
 ### 기술 인수 조건
 
 - 레지스트리 파일 밖에서 접두 6종 패턴(`/^(IDENTITY|SCHEDULING|ATTENDANCE|NOTIFICATIONS|PAY|COMMON)_[A-Z0-9_]+$/`)에 걸리는 문자열 리터럴이 lint를 실패시킨다.
-- `ERROR_CODES` 멤버 접근(`ERROR_CODES.COMMON_FORBIDDEN`)은 lint를 통과한다.
-- 레지스트리는 `satisfies`로 각 항목이 `http`와 `message`를 갖는 형태를 강제하고, 어긋난 항목은 `pnpm typecheck`가 실패시킨다.
+- `ERROR_CODES`·`ERROR_CODE` 멤버 접근은 lint를 통과하고, `ERROR_CODE` 멤버 접근은 런타임 코드 문자열 값을 반환한다. (revision 3)
+- 레지스트리는 키 템플릿 타입과 `satisfies`로 접두·형태를 강제하고, 접두 6종 밖의 키·`http`와 `message`가 어긋난 항목·이름 맵의 키=값 불일치는 `pnpm typecheck`가 실패시킨다. (revision 3)
 - COMMON 시드 4종이 존재하고 각각 HTTP 상태와 해요체 기본 문구를 갖는다.
 - DEV-ERR 절이 명명 규칙·정본 위치·read Route Handler 오류 형식·HTTP 매핑 원칙·도메인 코드 추가 절차를 소유한다.
 
@@ -77,7 +78,8 @@
 
 DB 변경이 없다. 레지스트리의 정본 스키마는 다음과 같다.
 
-- `ERROR_CODES`: 코드 → `{ http, message }`의 `as const` 객체를 `satisfies Record<string, ErrorSpec>`로 형태 강제. `ErrorCode` 유니언 타입은 키에서 유도해 export한다.
+- `ERROR_CODES`: 코드 → `{ http, message }`의 `as const` 객체. 키 타입은 도메인 접두 템플릿(`` `${ErrorDomain}_${string}` ``, `ErrorDomain`은 접두 6종 유니언)으로 강제하고 값 형태는 `satisfies`로 강제한다. `ErrorCode` 유니언 타입은 키에서 유도해 export한다. (revision 3)
+- `ERROR_CODE`: 코드 → 같은 이름의 문자열 값 맵. `satisfies { [K in ErrorCode]: K }`로 키=값 일치를 타입이 강제한다. 소비 코드가 런타임 코드 문자열을 얻는 유일한 표기다. (revision 3)
 - COMMON 시드 4종:
 
 | 코드 | HTTP | 기본 문구 |

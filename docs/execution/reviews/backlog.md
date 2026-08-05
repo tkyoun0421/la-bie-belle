@@ -51,3 +51,6 @@
 - [x] [medium] [P0-T03] CHECK 제약 4건의 거부 케이스 미검증 — supabase/tests/01-schema-constraints.test.sql
 - [x] [medium] [P0-T03] default_hourly_wage 초기값의 근거·자리표시자 기록 없음 — supabase/migrations/20260804000100_foundation_reference_data.sql
 - [ ] [low] [P0-T03] tdd.json의 db reset RED가 플레이크와 구분 불가 — docs/execution/runs/P0-T03/tdd.json
+- [x] [medium] [P0-T37] 정본 레지스트리가 키 명명 규칙을 정의 지점에서 강제하지 않음 — src/shared/config/error-codes.config.ts
+- [x] [medium] [P0-T37] '정의 지점 허용' 테스트가 공허해 레지스트리 예외 분기 미검증 — tools/eslint-plugin-project/rules/__tests__/error-code-literal.test.mjs
+- [x] [low] [P0-T37] 경로 판별이 resolveLocation 관행 이탈·접미사 과대 적용 — tools/eslint-plugin-project/rules/error-code-literal.mjs

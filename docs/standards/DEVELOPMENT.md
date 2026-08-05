@@ -169,7 +169,7 @@ Server Action은 Zod로 외부 입력을 검증한다. 성공은 `{ ok: true, da
 
 오류 코드는 도메인 접두 6종(`IDENTITY`·`SCHEDULING`·`ATTENDANCE`·`NOTIFICATIONS`·`PAY`·`COMMON`) + 의미 슬러그의 UPPER_SNAKE 단일 문자열이다. 정본 레지스트리는 `src/shared/config/error-codes.config.ts`의 `ERROR_CODES` 하나이며 코드별로 HTTP 상태와 기본 한국어 문구를 함께 선언한다. read Route Handler의 오류 응답은 `code`와 문의용 식별자만 담고 문구를 담지 않는다.
 
-- `DEV-ERR-07` `MUST`: 오류 코드는 도메인 접두 6종 + 의미 슬러그의 UPPER_SNAKE 문자열이며 번호 접미사를 쓰지 않는다. 정본은 `src/shared/config/error-codes.config.ts`의 `ERROR_CODES` 하나이고, HTTP 상태는 이름에서 유도하지 않고 코드별로 선언한다. 정본 밖에서 접두 패턴에 걸리는 문자열 리터럴은 `project/error-code-literal` 린트가 `src/` 전체에서 차단하며, 소비 코드는 `ERROR_CODES` 멤버 접근만 쓴다. 도메인 코드는 소비하는 기능 task가 자신의 RADIO에서 레지스트리에 추가한다.
+- `DEV-ERR-07` `MUST`: 오류 코드는 도메인 접두 6종 + 의미 슬러그의 UPPER_SNAKE 문자열이며 번호 접미사를 쓰지 않는다. 정본은 `src/shared/config/error-codes.config.ts`의 `ERROR_CODES` 하나이고, HTTP 상태는 이름에서 유도하지 않고 코드별로 선언한다. 정본 밖에서 접두 패턴에 걸리는 문자열 리터럴은 `project/error-code-literal` 린트가 `src/` 전체에서 차단하며, 소비 코드는 `ERROR_CODE`·`ERROR_CODES` 멤버 접근만 쓴다. 도메인 코드는 소비하는 기능 task가 자신의 RADIO에서 레지스트리에 추가한다.
 - `DEV-ERR-08` `MUST`: read Route Handler의 오류 응답 본문은 `{ error: { code, correlationId } }`이고 HTTP 상태는 레지스트리의 `http` 값을 쓰며 문구·비밀값·불필요한 개인정보를 담지 않는다. Server Action은 `DEV-ERR-01`의 Result 형식(`{ ok: false, code, fieldErrors? }`)을 유지하고 `code`를 `ErrorCode`로 좁힌다. 사용자 문구의 정본은 레지스트리 `message`이며 화면은 맥락이 필요할 때만 재정의한다. `correlationId`의 생성·전파는 `DEV-OBS-01`을 따르는 서버 오류 경로가 구현한다.
 
 ## 위험 기반 테스트 포트폴리오

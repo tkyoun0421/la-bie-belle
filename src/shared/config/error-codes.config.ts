@@ -1,3 +1,6 @@
+export type ErrorDomain =
+  "IDENTITY" | "SCHEDULING" | "ATTENDANCE" | "NOTIFICATIONS" | "PAY" | "COMMON";
+
 export type ErrorSpec = {
   http: number;
   message: string;
@@ -11,6 +14,13 @@ export const ERROR_CODES = {
     http: 500,
     message: "일시적인 문제가 생겼어요. 잠시 후 다시 시도해 주세요",
   },
-} as const satisfies Record<string, ErrorSpec>;
+} as const satisfies Record<`${ErrorDomain}_${string}`, ErrorSpec>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;
+
+export const ERROR_CODE = {
+  COMMON_AUTH_REQUIRED: "COMMON_AUTH_REQUIRED",
+  COMMON_FORBIDDEN: "COMMON_FORBIDDEN",
+  COMMON_NOT_FOUND: "COMMON_NOT_FOUND",
+  COMMON_UNEXPECTED: "COMMON_UNEXPECTED",
+} as const satisfies { [K in ErrorCode]: K };

@@ -1,10 +1,8 @@
+import { resolveLocation } from "../lib/resolve-path.mjs";
+
 const ERROR_CODE_PATTERN =
   /^(IDENTITY|SCHEDULING|ATTENDANCE|NOTIFICATIONS|PAY|COMMON)_[A-Z0-9_]+$/;
-const REGISTRY_FILE_SUFFIX = "src/shared/config/error-codes.config.ts";
-
-function isRegistryFile(filename) {
-  return filename.split("\\").join("/").endsWith(REGISTRY_FILE_SUFFIX);
-}
+const REGISTRY_FILE_RELATIVE = "src/shared/config/error-codes.config.ts";
 
 export default {
   meta: {
@@ -20,7 +18,8 @@ export default {
     schema: [],
   },
   create(context) {
-    if (isRegistryFile(context.filename)) {
+    const location = resolveLocation(context.filename, context.cwd);
+    if (location !== null && location.relative === REGISTRY_FILE_RELATIVE) {
       return {};
     }
 
