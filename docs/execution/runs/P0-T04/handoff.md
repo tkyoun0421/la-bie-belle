@@ -47,3 +47,15 @@
 - `.env.example`, `eslint.config.mjs`(`ENV_MODULES` 2경로), `vitest.config.ts`(alias), `package.json`·`pnpm-lock.yaml`(zod·@supabase/supabase-js·@supabase/ssr)
 - `docs/execution/radio/P0-T04-radio.md`(revision 2)
 - `docs/execution/runs/P0-T04/tdd.json`(RED→GREEN 7쌍)
+
+## 2026-08-05 · 검증 단계 — critical 확정으로 blocked 안전 중단
+
+- 작성 주체: 조정자
+- 교차 검증 결과: `docs/execution/reviews/P0-T04-review.json` — 확정 7건(critical 1·high 2·medium 4), 기각 1건. 총점 75.
+- **결정 신호(critical)**: F-01 — production placeholder 거부 정규식(`/changeme/i`)이 정본 규약 `CHANGE_ME_*`를 매칭하지 못해, 봉인된 불변 규칙("운영에서 placeholder 불가")이 실제로 깨져 있다. 계약(REVIEW.md 에스컬레이션)에 따라 task를 `blocked`로 전환하고 즉시 사용자에게 보고한다.
+- 수정 방향(조정자 판독): 확정 7건 모두 승인된 RADIO 설계 **안의 구현 결함**이라 RADIO 개정 없이 개발 단계 재진입으로 수정 가능하다 — F-01 정규식·F-04 픽스처, F-02 개별 `process.env.NEXT_PUBLIC_*` 참조 전환, F-03 SSR 가드, F-05 스캔 구현, F-06 mock 제거(모듈 초기화·파싱 범위), F-07 FOUNDATIONS 값·고정 배치.
+- F-06 수정 한계(opus 단서): 번들 치환 자체는 빌드 시점 동작이라 단위 테스트로 재현 불가 — 회수 범위는 실제 모듈 초기화와 Zod 파싱까지다.
+
+### 미결 사항 (검증 단계 추가)
+
+- **오프라인 신호의 계층 배치** — opus가 "features가 widgets/offline/hooks에 구조적으로 접근 불가(계층 방향)"를 제기했고 codex가 "승인 RADIO 그대로이며 현재 비활성화할 mutation이 없다"로 반박해 기각됐다. 판단이 갈린 사실 자체가 중요해 기록한다: P1에서 변경 행동 비활성화를 처음 구현하는 task가 훅의 `shared/hooks` 이동 여부를 설계로 결정해야 한다.
