@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const clientBundleDirectory = join(root, ".next", "static");
 const envPath = join(root, ".env");
+const reuseBuild = process.argv.includes("--reuse-build");
 const SERVER_SECRET_KEYS = ["SUPABASE_SERVICE_ROLE_KEY", "VAPID_PRIVATE_KEY", "QR_SIGNING_SECRET"];
 
 function fail(message, hint) {
@@ -53,10 +54,12 @@ if (env === null) {
   fail(".env 파일을 찾지 못했습니다.", ".env.example을 .env로 복사한 뒤 다시 실행하세요.");
 }
 
-try {
-  execFileSync("pnpm", ["build"], { cwd: root, stdio: "inherit" });
-} catch {
-  fail("production 빌드가 실패했습니다.", "pnpm build 출력을 확인하세요.");
+if (!reuseBuild) {
+  try {
+    execFileSync("pnpm", ["build"], { cwd: root, stdio: "inherit" });
+  } catch {
+    fail("production 빌드가 실패했습니다.", "pnpm build 출력을 확인하세요.");
+  }
 }
 
 const files = listFiles(clientBundleDirectory);

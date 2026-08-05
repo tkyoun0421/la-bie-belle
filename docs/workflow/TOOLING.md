@@ -125,7 +125,7 @@ pnpm dashboard           # docs/execution/dashboard/index.html 재생성
 - `src/` 바로 아래 파일(`proxy.ts`·`instrumentation.ts`)도 테스트를 요구한다. 계층 밖이지만 요청을 다루는 서버 코드다. Next.js 16에서 `middleware.ts`는 deprecated되고 `proxy.ts`로 이름이 바뀌었다.
 - `exemptPaths`(현재 `**/generated/**`)에 걸리는 코드 생성물은 면제한다.
 - 계약과 무관하게 면제하는 것: 테스트 파일 자체, `*.d.ts`, `*.config.*`, 소스가 아닌 파일.
-- 테스트 탐색 순서: 형제 `*.test.*`/`*.spec.*` → `__tests__/`(같은 디렉터리 또는 상위) → `src/__tests__/` → 루트 `tests/` 트리.
+- 테스트 탐색: 세그먼트 `__tests__/<대상>.test.<확장자>` 배치 하나만 인정한다(배치 폴더명은 `config/fsd.json`의 `testPlacement` 계약이 정본, P0-T38). 형제 파일·상위 `__tests__/`·`src/__tests__/`·루트 `tests/` 폴백은 인정하지 않는다.
 - `jq`가 없거나 계약 파일을 읽지 못하면 훅이 stderr에 경고만 남기고 편집을 허용한다. 계약을 못 읽는다고 작업을 막으면 훅이 단일 장애점이 된다.
 
 ## 구조 계약

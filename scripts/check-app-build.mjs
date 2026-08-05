@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const SERVER_ONLY_MARKER = "labiebelle-server-only-marker";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const clientBundleDirectory = join(root, ".next", "static");
+const reuseBuild = process.argv.includes("--reuse-build");
 
 function fail(message, hint) {
   process.stderr.write(`[check:app-build] ${message}\n  힌트: ${hint}\n`);
@@ -25,10 +26,12 @@ function listFiles(directory) {
   });
 }
 
-try {
-  execFileSync("pnpm", ["build"], { cwd: root, stdio: "inherit" });
-} catch {
-  fail("production 빌드가 실패했습니다.", "pnpm build 출력을 확인하세요.");
+if (!reuseBuild) {
+  try {
+    execFileSync("pnpm", ["build"], { cwd: root, stdio: "inherit" });
+  } catch {
+    fail("production 빌드가 실패했습니다.", "pnpm build 출력을 확인하세요.");
+  }
 }
 
 const files = listFiles(clientBundleDirectory);

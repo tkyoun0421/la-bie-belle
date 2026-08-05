@@ -9,9 +9,9 @@ export default defineConfig({
   use: { baseURL: `http://localhost:${PORT}`, trace: "on-first-retry" },
   projects: [{ name: "mobile", use: { ...devices["Pixel 5"] } }],
   webServer: {
-    command: `pnpm build && pnpm start --port ${PORT}`,
+    command: `pnpm start --port ${PORT}`,
     url: `http://localhost:${PORT}`,
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },
 });

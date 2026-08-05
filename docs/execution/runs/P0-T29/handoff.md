@@ -18,7 +18,7 @@
 #### 구현 파일 목록 (RADIO Architecture 절의 구체화)
 
 RADIO가 지정한 5개 모듈에 더해, 순수 계산 책임이 다른 두 조각을 별도 파일로 분리한다. 파일 목록 결정은
-[운영 계약](../../workflow/WORKFLOW.md#실행-직전의-구체화)이 이 단계에 맡긴 범위이며, 승인된 동작·범위는 바뀌지 않는다.
+[운영 계약](../../../workflow/WORKFLOW.md#실행-직전의-구체화)이 이 단계에 맡긴 범위이며, 승인된 동작·범위는 바뀌지 않는다.
 
 - `harness/dashboard/collect.ts` — 정본 수집. `index.jsonl`(+schema 검증은 게이트 재사용), 게이트 6종 실행 결과,
   `docs/execution/runs/**` 증거 존재 여부와 최신 handoff 미결 항목, `docs/execution/reviews/**`, 보류 ADR, git HEAD·작업 트리 상태.
@@ -98,7 +98,7 @@ RADIO가 지정한 5개 모듈에 더해, 순수 계산 책임이 다른 두 조
 - 구현 파일은 설계 단계 목록과 같다. `harness/dashboard/`의 `collect.ts`·`rubric.ts`·`reviews.ts`·`progress.ts`·`next-action.ts`·`render.ts`·`main.ts` 7개다.
 - 게이트 재사용을 위해 `harness/lib/gate-suite.ts`에 `REPOSITORY_GATES`(id + 실행 함수 5종)를 추가하고 기존 `ALL_GATES`가 그 목록에서 파생되도록 바꿨다. 게이트 실행 순서와 동작은 그대로다. 대시보드는 이 목록을 그대로 호출하고, 6번째 게이트인 `commit-msg`는 HEAD 커밋 메시지를 `checkCommitMessage`에 넣어 판정한다.
 - `pnpm dashboard` 명령을 `package.json`에 추가했다. 실행 방식은 P0-T31과 동일하다(`node --experimental-strip-types`).
-- 문서를 정합화했다. [ADR-0012](../../standards/adr/0012-static-operations-dashboard.md)를 revision 2로 개정해 상태를 `Accepted`로 바꾸고 개정 이력 표를 넣었다(위치·섹션 4종·루브릭 배점·advisory 원칙). `adr/README.md` 표, `docs/workflow/WORKFLOW.md`의 새 `운영 대시보드` 절과 리팩토링 단계 6번, `CLAUDE.md`의 Commands·구조·문서 표를 맞췄다.
+- 문서를 정합화했다. [ADR-0012](../../../standards/adr/0012-static-operations-dashboard.md)를 revision 2로 개정해 상태를 `Accepted`로 바꾸고 개정 이력 표를 넣었다(위치·섹션 4종·루브릭 배점·advisory 원칙). `adr/README.md` 표, `docs/workflow/WORKFLOW.md`의 새 `운영 대시보드` 절과 리팩토링 단계 6번, `CLAUDE.md`의 Commands·구조·문서 표를 맞췄다.
 
 ### 미결 사항
 
@@ -172,7 +172,7 @@ RADIO가 지정한 5개 모듈에 더해, 순수 계산 책임이 다른 두 조
   - `render.ts`가 소유하던 산출물 경로 상수 `DASHBOARD_PATH`를 렌더 모듈로 옮겨 `main.ts`와 산출물 검증 테스트가 같은 값을 쓴다.
 - 정리 후 재검증 결과: check 4종 통과(13/13, 14/14, 13/13, 타입 오류 0), `pnpm harness:self-test` 111/111 통과, `pnpm gate:all` 종료 코드 0, `pnpm dashboard` 재생성 성공.
 - 재생성한 산출물의 준비도는 86점 · 양호다. 감점은 실행 준비도 10점(실행 가능한 `planned` 0건 — P0-T29가 마지막 승인 task다)과 문서 신선도 4점(완료 task handoff의 미결 항목 누적)이다.
-- **P0-T29는 `in_progress`로 남겼다.** [교차 검증 계약](../../workflow/REVIEW.md)에 따라 이 task 변경분의 3자 교차 검증이 아직 남아 있다. 검증 결과와 `done` 전환은 메인 에이전트가 교차 검증을 주관한 뒤에 처리한다.
+- **P0-T29는 `in_progress`로 남겼다.** [교차 검증 계약](../../../workflow/REVIEW.md)에 따라 이 task 변경분의 3자 교차 검증이 아직 남아 있다. 검증 결과와 `done` 전환은 메인 에이전트가 교차 검증을 주관한 뒤에 처리한다.
 - 이번 작업은 commit하지 않았다.
 
 ### 미결 사항
@@ -185,7 +185,7 @@ RADIO가 지정한 5개 모듈에 더해, 순수 계산 책임이 다른 두 조
 
 ### 다음 행동
 
-1. 메인 에이전트가 [교차 검증 계약](../../workflow/REVIEW.md)에 따라 이 task의 변경분을 `main`·`codex`·`opus` 3자로 교차 검증하고 결과를 `docs/execution/reviews/P0-T29-review.json`과 backlog에 기록한다.
+1. 메인 에이전트가 [교차 검증 계약](../../../workflow/REVIEW.md)에 따라 이 task의 변경분을 `main`·`codex`·`opus` 3자로 교차 검증하고 결과를 `docs/execution/reviews/P0-T29-review.json`과 backlog에 기록한다.
 2. 교차 검증에서 `critical`이 없으면 P0-T29를 `done`으로 갱신하고, `pnpm dashboard`를 다시 실행해 최종 상태를 반영한 뒤 사용자에게 보고한다.
 
 ### 증거·산출물 경로
@@ -203,7 +203,7 @@ RADIO가 지정한 5개 모듈에 더해, 순수 계산 책임이 다른 두 조
 
 ### 확정된 사실
 
-- [교차 검증 계약](../../workflow/REVIEW.md)에 따라 독립 리뷰 2자(main, opus)를 수행했다. codex는 미참여(플러그인 명령이 모델 호출 금지 설정) — 결과 기록 시 `participants_note`에 남길 것.
+- [교차 검증 계약](../../../workflow/REVIEW.md)에 따라 독립 리뷰 2자(main, opus)를 수행했다. codex는 미참여(플러그인 명령이 모델 호출 금지 설정) — 결과 기록 시 `participants_note`에 남길 것.
 - opus 영역 점수: 코드 품질 84, 테스트 72, 보안 96, 성능 90, 아키텍처 정합 76. 최종 영역 점수 확정은 수정 반영 후 메인이 재판정한다.
 - 2자 모두 인정한 확정 발견:
   - F-01 [high/architecture] 신선도 "기준 커밋 최신" 7점이 구조상 상시 만점 — `harness/dashboard/main.ts:43-44`가 같은 값을 양쪽 인자에 전달, `rubric.ts:231` 비교가 죽은 코드. ADR-0012 Consequences 문구와 모순.

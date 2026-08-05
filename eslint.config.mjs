@@ -32,7 +32,7 @@ export default [
     rules: {
       "project/no-comments": "error",
       "import-x/no-cycle": "error",
-      "no-console": "warn",
+      "no-console": "error",
       "no-restricted-properties": [
         "error",
         {
