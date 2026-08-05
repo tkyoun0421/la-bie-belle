@@ -1,0 +1,105 @@
+{
+  "task_id": "P0-T38",
+  "at": "2026-08-05T13:10:00Z",
+  "base_commit": "1bdf02f2e45a818c0c11111fe21ecd7b4bfd2360",
+  "participants": ["opus", "codex"],
+  "participants_note": "",
+  "scores": {
+    "code_quality": 75,
+    "tests": 78,
+    "security": 100,
+    "performance": 100,
+    "architecture": 68
+  },
+  "score_rationale": {
+    "code_quality": "룰 구현이 작고 기존 플러그인 관행을 따르나, fixer가 해석 불가능한 alias를 조용히 만들 수 있는 high와 경로 해석 3중 복제·DEV-NAME-06 문구 충돌 low 2건이 확정됐다.",
+    "tests": "RuleTester가 RADIO 지정 위험 케이스의 fixer output을 전부 단언하고 self-test가 실제 가드를 재현 호출하는 품질이나, 고아 테스트 미검출 medium과 contract 신설 분기 미커버 low가 확정됐다.",
+    "security": "확정 발견 없음. 권한·비밀값 경로가 없는 린트·배치 변경이며 이동된 shared/api 테스트의 server-only 경계도 유지된다.",
+    "performance": "확정 발견 없음. AST·경로 판정만 하는 경량 룰이고 계약 읽기는 테스트 패턴 매치 이후로 한정된다.",
+    "architecture": "계약 단일 정본을 두 도구가 공유하는 구조는 지켜졌으나, 봉인된 인수 조건(상대경로 전면 lint 실패)이 두 구간에서 깨지는 high 2건과 TOOLING.md 모순·suffix 미소비 medium 2건이 확정됐다."
+  },
+  "total": 84,
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "high",
+      "area": "architecture",
+      "title": "src/ 밖으로 해석되는 상대 import가 무보고로 통과한다",
+      "description": "toAlias()가 해석 결과가 src/로 시작하지 않으면 null을 반환하고 호출부가 보고 없이 return하므로, src/ 파일의 `../../outside` 같은 상대 import는 project/import-alias를 통과한다(codex가 ESLint stdin으로 재현, opus가 코드 경로로 독립 확인해 병합). RADIO 불변 규칙(상대경로 전면 금지)과 기술 인수 조건(상대경로 import가 lint를 실패시킨다)이 이 구간에서 성립하지 않는다. fixer를 붙일 수 없는 대상이어도 보고 자체는 가능하다. 중요도는 codex high·opus medium에서 높은 쪽을 택했다.",
+      "file": "tools/eslint-plugin-project/rules/import-alias.mjs",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-02",
+      "severity": "high",
+      "area": "architecture",
+      "title": "import-alias 룰이 src 최상위 파일에서 아예 비활성화된다",
+      "description": "resolveLocation이 계층 없는 src 최상위 파일(src/proxy.ts·instrumentation.ts — DEVELOPMENT.md와 TOOLING.md가 명시적으로 인정하고 테스트까지 요구하는 구역)에 null을 반환하면 룰이 visitor를 등록하지 않아 상대 import 금지가 전혀 작동하지 않는다. RuleTester fixture가 없어 의도인지도 고정돼 있지 않다. 중요도는 opus medium·codex high에서 높은 쪽을 택했다.",
+      "file": "tools/eslint-plugin-project/rules/import-alias.mjs",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-03",
+      "severity": "high",
+      "area": "code_quality",
+      "title": "fixer가 해석 불가능한 alias를 만들 수 있고 그 한계가 어디에도 고정되지 않았다",
+      "description": "toAlias는 tsconfig paths 매핑(여섯 계층 접두만 존재)을 확인하지 않고 src/ 접두를 @/로 치환하므로, src 최상위 대상(`../../proxy` → `@/proxy`)처럼 존재하지 않는 alias를 --fix가 조용히 만든다. 이번 이동 직후에도 --fix가 9건 중 8건을 존재하지 않는 `@/…/__tests__/<이름>`으로 고쳐 수작업 정정이 필요했다(handoff 기록 — 이미 깨진 ./ 경로의 기계 번역이라 원인은 별개지만 '유효 alias 미보장'이라는 핵심은 같다). typecheck가 사후에 잡지만 한계가 RuleTester fixture에도 문서에도 없다. RADIO Optimizations 절이 룰의 I/O 없음을 명시해 파일 존재 검사는 승인 범위 밖이다. 중요도는 opus low·codex high에서 높은 쪽을 택했다.",
+      "file": "tools/eslint-plugin-project/rules/import-alias.mjs",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-04",
+      "severity": "medium",
+      "area": "tests",
+      "title": "test-placement가 대응 소스 없는 고아 테스트를 검출하지 못한다",
+      "description": "룰이 접미사와 직계 __tests__/ 폴더명만 검사해 대응 소스가 없는 __tests__/orphan.test.ts가 통과한다(codex가 ESLint stdin으로 재현, opus가 코드로 확인). DEV-TEST-06의 `<대상>.test.<확장자>`에서 <대상> 부분이 기계 강제 밖이다. 다만 RADIO Architecture 절이 룰 검사를 접미사·폴더명 둘로 명시했고 대응 관계 검사는 파일시스템 조회(승인 범위 밖 I/O)를 요구하며, 반대 방향(테스트 없는 소스)과 이름 오타는 tdd-guard가 편집 시점에 거부한다는 opus의 단서를 기록한다. 중요도는 codex medium·opus low에서 높은 쪽을 택했다.",
+      "file": "tools/eslint-plugin-project/rules/test-placement.mjs",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-05",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "TOOLING.md의 tdd-guard 테스트 탐색 순서 서술이 축소된 구현과 모순된다",
+      "description": "TOOLING.md가 여전히 다단계 탐색 순서(형제 → __tests__ → src/__tests__ → 루트 tests/)를 가드 동작으로 서술하나, 축소된 가드는 세그먼트 __tests__/ 하나만 인정하고 self-test가 폴백 거부를 단언한다. CLAUDE.md가 훅 동작의 정본으로 지목한 문서가 사실과 달라, 문서대로 배치하면 lint와 가드 양쪽에서 막힌다. 신설 testPlacement 계약 언급도 없다. TOOLING.md는 봉인된 변경 허용 경로 밖이라 이번 커밋에서 고칠 수 없었다 — 해소에는 경로 편입(RADIO 개정) 또는 후속 task가 필요하다.",
+      "file": "docs/workflow/TOOLING.md",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-06",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "tdd-guard가 testPlacement 계약의 절반(suffix)만 읽어 계약 수정 시 두 도구가 갈린다",
+      "description": "가드는 directory만 jq로 읽고 접미사는 .test로 하드코딩하며 안내 문구도 .test.ts 고정인데, project/test-placement는 계약의 suffix를 읽어 판정한다. config/fsd.json의 suffix를 바꾸면 lint와 가드가 서로 다른 테스트를 요구한다 — 가드 머리말과 TOOLING.md가 약속한 DEV-SSOT-01(계약 한 줄이 두 도구를 함께 바꾼다)이 suffix에는 성립하지 않는다. RADIO는 directory 읽기만 요구해 승인 설계 위반은 아니라는 점을 기록한다. 중요도는 opus low·codex medium에서 높은 쪽을 택했다.",
+      "file": ".claude/hooks/tdd-guard.sh",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-07",
+      "severity": "low",
+      "area": "tests",
+      "title": "contract.mjs의 신설 testPlacement 검증 분기가 테스트되지 않았다",
+      "description": "readTestPlacement의 기본값 fallback 1종과 fail 분기 3종(비객체·directory 비문자열·suffix 비문자열)을 contract.test.mjs가 하나도 단언하지 않는다. 같은 파일의 readAppLayer·readNaming은 검증 테스트를 갖는 관행에서 벗어났고, 두 도구가 공유하는 계약이라 형식 오류가 조용히 통과하면 판정이 함께 흔들린다.",
+      "file": "tools/eslint-plugin-project/lib/contract.mjs",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-08",
+      "severity": "low",
+      "area": "code_quality",
+      "title": "상대경로→src 상대 경로 해석 로직이 세 번째로 복제됐다",
+      "description": "import-alias.mjs가 SOURCE_ROOT 상수와 posix 정규화·src 경계 검사 흐름을 새로 구현하는데 lib/import-target.mjs·lib/resolve-path.mjs에 동일 핵심 로직이 이미 있다. 공통 경로 연산을 lib/에 두는 기존 구조에서 벗어나 src 루트·해석 규칙 변경 시 세 파일을 함께 고쳐야 하고, F-01·F-02의 무보고 구간도 서로 다른 파일의 null 반환에서 비롯된다.",
+      "file": "tools/eslint-plugin-project/rules/import-alias.mjs",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-09",
+      "severity": "low",
+      "area": "code_quality",
+      "title": "DEV-NAME-06의 '확장자 없음' 문구가 같은 커밋의 CSS alias import와 충돌한다",
+      "description": "DEV-NAME-06이 MUST로 'alias는 파일 확장자를 붙이지 않는다'고 무조건 적었지만 같은 변경의 `@/app/globals.css`는 확장자가 필수이고(빌드 통과로 정상 코드 확인), 룰의 toAlias도 .ts·.tsx만 제거한다. 규칙 의도는 소스 모듈 확장자에 한정된 것이므로 문서에 그 범위를 명시해야 한다. DEVELOPMENT.md는 변경 허용 경로 안이라 이번 범위에서 다듬을 수 있었다.",
+      "file": "docs/standards/DEVELOPMENT.md",
+      "agreed_by": ["opus", "codex"]
+    }
+  ]
+}

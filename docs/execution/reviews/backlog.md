@@ -27,7 +27,7 @@
 - [x] [medium] [P0-T01] views 개명이 상위 ADR-0008·phase 문서와 충돌 — docs/standards/adr/0008-fsd-server-first-development-guards.md
 - [x] [low] [P0-T01] 서버 경계 파일의 이름과 내용이 어긋남 — src/shared/config/server-only.config.ts
 - [x] [medium] [P0-T29] reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts
-- [ ] [medium] [P0-T02] tdd-guard.sh에 자동 테스트가 하나도 없음 — .claude/hooks/tdd-guard.sh
+- [x] [medium] [P0-T02] tdd-guard.sh에 자동 테스트가 하나도 없음 — .claude/hooks/tdd-guard.sh
 - [ ] [medium] [P0-T02] tests/와 루트 테스트 설정 파일이 타입·린트·포맷 대상 밖 — tsconfig.json
 - [ ] [medium] [P0-T02] Playwright reuseExistingServer가 항상 true — playwright.config.ts
 - [ ] [medium] [P0-T02] tdd-guard의 테스트 탐색이 이름만 맞으면 통과시킴 — .claude/hooks/tdd-guard.sh
@@ -58,3 +58,9 @@
 - [x] [medium] [P0-T04] client-secret-scan 미구현, 수동 재현으로 대체됨 — scripts/check-app-build.mjs
 - [x] [medium] [P0-T04] browser env 모듈 실제 초기화 경로가 mock에 가려 미검증 — src/shared/lib/supabase-browser.test.ts
 - [x] [medium] [P0-T04] 오프라인 배너 색·대비·고정 배치가 디자인 정본 이탈 — src/widgets/offline/ui/OfflineBanner.tsx
+- [ ] [medium] [P0-T38] test-placement가 대응 소스 없는 고아 테스트를 검출하지 못함 — tools/eslint-plugin-project/rules/test-placement.mjs
+- [ ] [medium] [P0-T38] TOOLING.md의 tdd-guard 탐색 순서 서술이 축소 구현과 모순(봉인 경로 밖, 후속 수정 필요) — docs/workflow/TOOLING.md
+- [ ] [medium] [P0-T38] tdd-guard가 testPlacement 계약의 suffix를 소비하지 않음 — .claude/hooks/tdd-guard.sh
+- [ ] [low] [P0-T38] contract.mjs의 testPlacement 검증 분기 미테스트 — tools/eslint-plugin-project/lib/contract.mjs
+- [ ] [low] [P0-T38] 상대경로 해석 로직이 rules·lib 두 곳에 이어 세 번째로 복제됨 — tools/eslint-plugin-project/rules/import-alias.mjs
+- [ ] [low] [P0-T38] DEV-NAME-06 확장자 금지 문구가 CSS alias import와 충돌 — docs/standards/DEVELOPMENT.md
