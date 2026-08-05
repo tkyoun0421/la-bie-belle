@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
 
 import project from "./tools/eslint-plugin-project/index.mjs";
 
-const ENV_MODULE = "src/shared/config/env.ts";
+const ENV_MODULES = ["src/shared/config/env.server.ts", "src/shared/config/env.client.ts"];
 
 export default [
   {
@@ -38,7 +38,7 @@ export default [
         {
           object: "process",
           property: "env",
-          message: `process.env는 ${ENV_MODULE}에서만 읽습니다 (DEV-SEC-02). 검증된 값을 import해서 쓰세요.`,
+          message: `process.env는 ${ENV_MODULES.join(", ")}에서만 읽습니다 (DEV-SEC-02). 검증된 값을 import해서 쓰세요.`,
         },
       ],
     },
@@ -74,7 +74,7 @@ export default [
   },
 
   {
-    files: [`${ENV_MODULE}`],
+    files: ENV_MODULES,
     rules: { "no-restricted-properties": "off" },
   },
 ];

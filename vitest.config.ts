@@ -1,9 +1,20 @@
+import { resolve } from "node:path";
+
 import { defineConfig } from "vitest/config";
 
+const FSD_LAYERS = ["app", "views", "widgets", "features", "entities", "shared"];
+
+const alias = FSD_LAYERS.map((layer) => ({
+  find: `@/${layer}`,
+  replacement: resolve(import.meta.dirname, "src", layer),
+}));
+
 export default defineConfig({
+  resolve: { alias },
   test: {
     projects: [
       {
+        resolve: { alias },
         test: {
           name: "node",
           environment: "node",
@@ -16,6 +27,7 @@ export default defineConfig({
         },
       },
       {
+        resolve: { alias },
         test: {
           name: "dom",
           environment: "jsdom",

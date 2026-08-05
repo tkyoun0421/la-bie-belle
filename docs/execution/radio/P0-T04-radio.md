@@ -1,15 +1,16 @@
 # P0-T04 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-05
-- 개발 설계 승인: user, 2026-08-05
+- 개발 설계 승인: user, 2026-08-05 (revision 2 재승인)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-05 | 최초 작성. |
+| 2 | 2026-08-05 | 구현 착수 중 worker가 발견한 도구 공백을 정정해 재승인했다(사용자 결정). `vitest.config.ts`에 `@/*` alias가 없어 화면 컴포넌트 테스트가 정본 레지스트리를 import하지 못한다 — tsconfig가 이미 `@/*`를 경로 정본으로 정했으므로 vitest alias 추가는 새 결정이 아니라 기존 결정의 정합화다. `vitest.config.ts`를 변경 허용 경로에 추가했다. P0-T01 교차 검증의 postcss 선례(필요 설정 파일이 봉인 경로 밖, medium 확정)와 같은 유형을 리뷰 전에 정정한 것이다. |
 
 - 관련 spec: PRD:AC-12, ADR:0001, ADR:0002, DOCS:SDD
 - 적용 깊이: 심화 (환경변수 비밀값 경계) + 일반 (화면·manifest)
@@ -78,6 +79,7 @@
 - 화면 — `views/status/ui/`에 `ErrorScreen`·`AccessDeniedScreen`·`NotFoundScreen`, `app/`의 예약 파일 4종은 views를 소비하는 얇은 어댑터(예약 파일은 fsd `appLayer.exemptFiles`로 테스트 면제, 화면 검증은 컴포넌트 테스트가 담당). `loading.tsx`는 PATTERNS의 skeleton 원칙을 따른다.
 - 오프라인 배너 — `widgets/offline/ui/OfflineBanner` + `widgets/offline/hooks/useOnlineStatus`(`navigator.onLine`과 `online`/`offline` 이벤트, `hooks` 세그먼트라 테스트 필수). 문구는 PATTERNS 정본 `인터넷 연결이 끊겼어요`.
 - `app/manifest.ts` — Next metadata route. 이름 `라비에벨`, `theme_color` `#0052ff`(FOUNDATIONS `blue-500`), `background_color` `#ffffff`, placeholder 아이콘 192·512는 `public/icons/`.
+- `vitest.config.ts` — tsconfig의 `@/*` 경로 정본을 따라가는 alias를 추가한다(revision 2). 화면 컴포넌트 테스트가 정본 레지스트리를 `@/shared/config/error-codes.config`로 import하기 위한 정합화다.
 
 ## Data model
 
@@ -115,6 +117,7 @@ package.json
 pnpm-lock.yaml
 .env.example
 eslint.config.mjs
+vitest.config.ts
 src/app/**
 src/views/**
 src/widgets/**

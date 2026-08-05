@@ -1,0 +1,88 @@
+{
+  "entries": [
+    {
+      "command": "pnpm vitest run src/shared/model/env.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-05T11:07:19.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/model/env.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-05T11:07:35.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/api/supabase-server.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-05T11:09:13.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/api/supabase-server.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-05T11:09:55.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/supabase-browser.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-05T11:10:10.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/supabase-browser.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-05T11:10:20.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/status/ui/",
+      "exit_code": 1,
+      "at": "2026-08-05T11:11:17.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/status/ui/",
+      "exit_code": 0,
+      "at": "2026-08-05T11:17:25.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/widgets/offline/hooks/",
+      "exit_code": 1,
+      "at": "2026-08-05T11:17:55.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/widgets/offline/hooks/",
+      "exit_code": 0,
+      "at": "2026-08-05T11:18:10.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/widgets/offline/ui/",
+      "exit_code": 1,
+      "at": "2026-08-05T11:18:19.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/widgets/offline/ui/",
+      "exit_code": 0,
+      "at": "2026-08-05T11:18:30.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/app/manifest.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-05T11:19:24.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/app/manifest.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-05T11:19:35.000Z",
+      "phase": "green"
+    }
+  ]
+}
