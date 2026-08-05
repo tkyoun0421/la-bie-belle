@@ -64,3 +64,10 @@
 - [ ] [low] [P0-T38] contract.mjs의 testPlacement 검증 분기 미테스트 — tools/eslint-plugin-project/lib/contract.mjs
 - [ ] [low] [P0-T38] 상대경로 해석 로직이 rules·lib 두 곳에 이어 세 번째로 복제됨 — tools/eslint-plugin-project/rules/import-alias.mjs
 - [ ] [low] [P0-T38] DEV-NAME-06 확장자 금지 문구가 CSS alias import와 충돌 — docs/standards/DEVELOPMENT.md
+- [ ] [medium] [P0-T05] TOOLING.md의 verify 체인·check:docs·harness/checks 서술 미갱신 — docs/workflow/TOOLING.md
+- [ ] [medium] [P0-T05] 중복 task ID 검사가 어디에도 없어 phase 인수 조건 미충족(후속 task 승격 후보) — harness/lib/index-gate.ts
+- [ ] [low] [P0-T05] 문서 미독 위반 출력이 파일과 줄 번호의 출처를 섞음 — harness/lib/docs-check.ts
+- [ ] [low] [P0-T05] runDocsCheck 합성·진입점·다수 분기 미테스트 — harness/self-test/docs-check.test.ts
+- [ ] [low] [P0-T05] CI 워크플로 permissions 최소 권한 미선언 — .github/workflows/ci.yml
+- [ ] [low] [P0-T05] 내부 링크 검사가 저장소 밖 이탈 경로를 통과시킴 — harness/lib/docs-check.ts
+- [ ] [low] [P0-T05] ADR 참조 검사가 .md 확장자를 보장하지 않음 — harness/lib/docs-check.ts
