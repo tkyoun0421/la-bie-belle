@@ -50,3 +50,42 @@
 - `docs/execution/phases/01-identity-and-staff.md`(P1-T06 heading 정합)
 - `docs/execution/radio/P0-T05-radio.md`(revision 2)
 - `docs/execution/phases/index.jsonl`(P0-T05 `in_progress`, `development_approval` revision 2)
+
+## 2026-08-06 · 검증 단계 — 확정 8건, high 1건 수정 재진입
+
+- 작성 주체: 조정자
+- 교차 검증 결과: `docs/execution/reviews/P0-T05-review.json` — 확정 8건(high 1·medium 2·low 5), 부분 기각 1건(F-07의 디렉터리 링크 부분은 근거 반박으로 좁힘). 총점 87.
+- **high 실증**: F-01(db-verify의 cache: pnpm)이 첫 CI 실행(run 31022541665)에서 실제로 발현했다 — supabase start·pnpm db:test까지 전 기능 단계 통과 후 'Post Run actions/setup-node'의 Path Validation Error로 job 실패. app-verify는 1m17s에 통과해 pnpm verify 전체가 CI 환경에서 성립함이 확인됐다.
+- 수정 방향(조정자 판독): F-01은 승인 설계 밖 단계가 들어온 구현 결함이라 설계 재승인 없이 db-verify의 `cache: pnpm` 제거로 수정한다. medium·low 7건은 backlog에 누적했다 — F-03(중복 task ID 검사 부재)은 RADIO가 신설 검사를 4종으로 한정해 이번 범위 밖이며 후속 task 승격 후보로 기록한다.
+
+### 미결 사항 (검증 단계 추가)
+
+- 중복 task ID 검사의 소유 task — 결정 주체: 사용자(후속 등록 시), 반환할 단계: 기획.
+- branch protection(required checks: app-verify·db-verify) 설정은 GitHub 저장소 설정 화면의 1회 수동 작업이다 — 결정 주체: 사용자, 반환할 단계: P0-T05 종결 보고.
+
+## 2026-08-06 · high 1건 수정 반영
+
+- 작업 식별자: P0-T05 (CI와 문서 인덱스 검증)
+- 현재 단계: 확정 high 1건(F-01) 수정 → 다음 재검증
+- 기준 시각: 2026-08-06
+
+### 확정된 사실
+
+- `.github/workflows/ci.yml`의 `db-verify` job에서 `actions/setup-node`의 `cache: pnpm` 줄을 제거했다. 설계 변경 없이 RADIO revision 2 봉인 그대로 구현만 고쳤다 — `db-verify`는 `node_modules` 설치가 없어(스크립트가 `supabase` CLI만 호출) pnpm store 캐시가 애초에 무의미했고, 캐시 복원 대상 경로가 없어 첫 실행(run 31022541665)에서 `supabase start`·`pnpm db:test`까지 모두 통과한 뒤 `Post Run actions/setup-node` 단계의 Path Validation Error로 job이 실패했다. `setup-node` 단계 자체는 유지한다(`pnpm db:test` 실행에 Node가 필요하다). `app-verify` job은 건드리지 않았다.
+- 로컬에서 `pnpm gate:all`이 통과함을 확인했다. YAML은 `js-yaml`로 다시 파싱해 `db-verify`의 `setup-node` `with` 값이 `{"node-version":"22"}`(캐시 키 없음)임을 확인했다 — 문법 오류 없음. 실제 CI 재실행은 로컬에서 재현할 수 없다.
+- `docs/execution/reviews/`(`backlog.md`, `P0-T05-review.json`)는 이 RADIO의 변경 허용 경로 밖이라 스테이징하지 않았다. 이번 커밋에는 `.github/workflows/ci.yml`과 이 handoff 절만 포함한다.
+
+### 미결 사항
+
+- F-01 반영 후 실제 워크플로 재실행 성공 확인(특히 `db-verify`의 `Post Run actions/setup-node` 통과 여부)은 조정자가 push 후 수행하고 실행 URL을 기록한다 — 결정 주체: 조정자, 반환할 단계: 이 handoff에 추가 기록.
+- medium·low 7건과 branch protection 설정은 이전 절의 조정자 판독대로 backlog·후속 처리로 남는다. 이번 수정으로 상태가 바뀌지 않았다.
+- 재교차검증과 `done` 전환은 조정자가 수행한다. `index.jsonl`의 `status`는 `in_progress`로 남긴다.
+
+### 다음 행동
+
+1. `main`에 push해 `db-verify`가 `Post Run actions/setup-node` 단계까지 포함해 성공하는지 조정자가 재확인한다.
+2. 통과 확인 후 `index.jsonl`의 P0-T05를 `done`으로 전환하고 대시보드를 재생성한다.
+
+### 증거·산출물 경로
+
+- `.github/workflows/ci.yml`(`db-verify`의 `cache: pnpm` 제거)
