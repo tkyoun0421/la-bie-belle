@@ -197,16 +197,27 @@
 
 ### P0-T05. CI와 문서 인덱스 검증
 
-- lint, typecheck, unit, build, migration 검증을 CI에 연결한다.
-- `docs/execution/phases/index.jsonl`의 JSON 파싱, schema, ID 중복, 의존성 존재 여부와 순환을 검사하는 스크립트를 만든다.
-- task ID·Phase·제목·문서 heading의 일치, 유효한 `spec_refs`, 최대 한 개의 진행 task를 검사한다.
+- GitHub Actions로 CI를 구성해 `pnpm verify` 전체와 migration 검증(supabase 로컬 스택 기동 + `pnpm db:test`)을 push·PR에서 실행한다. migration 검증은 CI 전용이며 로컬 `verify` 체인에는 넣지 않는다(사용자 결정 — 로컬 검증에 docker 의존을 더하지 않는다).
+- `docs/execution/phases/index.jsonl`의 JSON 파싱, schema, ID 중복, 의존성 존재 여부와 순환을 검사한다. 현행 `gate:index`가 이미 다루는 항목(파싱·schema·의존 존재·진행 task 최대 1)은 재구현하지 않고 공백(순환, 제목 일치, `spec_refs` 유효성, 내부 링크)만 채운다.
+- task ID·Phase·제목·문서 heading의 일치, 유효한 `spec_refs`(실제 문서·ADR을 가리키는지), 최대 한 개의 진행 task를 검사한다.
 - 깨진 Markdown 내부 링크를 검사한다.
+- backlog 승격 3건(사용자 결정): `check:app-build`·`check:client-secret-scan`을 `verify` 체인에 편입하고, `no-console`을 error로 격상하며, `verify`의 production 빌드 2회 직렬을 1회로 줄이고 Playwright `reuseExistingServer`를 CI에서 재사용하지 않게 정합한다.
+- [TOOLING](../../workflow/TOOLING.md)의 tdd-guard 테스트 탐색 서술을 축소된 구현(세그먼트 `__tests__/` 단일 인정, `testPlacement` 계약)과 일치하게 정정한다(P0-T38 교차 검증 F-05 후속).
+- CI의 앱 부팅 환경변수는 `.env.example`의 공개 로컬 데모 값을 쓴다(비밀 아님 — P0-T04에서 확정).
+
+비목표: 루트 `tests/`·설정 파일의 typecheck·lint 대상 편입(backlog 유지, 사용자 결정), Vercel 배포 파이프라인·CD 자동화, 신규 검사의 gate 승격 여부 재결정(기존 게이트 체계 유지).
 
 인수 조건:
 
 - 잘못된 JSONL 한 줄, 중복 task ID, 존재하지 않거나 순환하는 의존성이 CI를 실패시킨다.
 - task와 Phase 문서의 제목 불일치, 잘못된 spec 참조, 복수 진행 task가 CI를 실패시킨다.
 - 깨진 내부 문서 링크가 CI를 실패시킨다.
+- 의도적 실패 fixture로 위 검사 각각이 실제로 실패를 만들어냄을 확인한다.
+- `pnpm verify`가 경계 검사 2종을 포함하고 production 빌드를 한 번만 돌린다.
+- CI가 push·PR에서 `verify` 전체와 `db:test`를 실행해 실패 시 병합을 차단한다.
+- TOOLING.md의 가드 서술이 실제 구현과 일치한다.
+
+기획 승인: user, 2026-08-06.
 
 ### P0-T06. SDD·DDD 문서 구조 정비
 
