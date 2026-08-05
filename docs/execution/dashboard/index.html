@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="base-commit" content="1f7df0a5fff18f9910b0553ad7f4e09192732cf5">
+<meta name="base-commit" content="fece9e7cc70e91737a3f48992d9735c3a5fbf5cc">
 <title>라비에벨 운영 의사결정 대시보드</title>
 <style>:root{color-scheme:light;--ink:#0a0b0d;--muted:#5b616e;--line:#dee1e6;--surface:#f7f7f7;--action:#0052ff;--action-bg:#eef4ff;--success:#087a4b;--success-bg:#e8f8f1;--warning:#765500;--warning-bg:#fff7d6;--danger:#b01825;--danger-bg:#fff0f1}
 *{box-sizing:border-box}
@@ -60,28 +60,28 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <p class="eyebrow">라비에벨 운영 대시보드 · 읽기 전용 파생물</p>
 <h1>운영 의사결정 대시보드</h1>
 <dl class="meta">
-<div><dt>기준 시각</dt><dd class="mono">2026-08-05T11:45:28.106Z</dd></div>
-<div><dt>기준 커밋</dt><dd><span class="mono">1f7df0a5fff18f9910b0553ad7f4e09192732cf5</span><span class="sub">feat(P0-T04): build the environment schema and application shell</span></dd></div>
-<div><dt>작업 트리</dt><dd>커밋되지 않은 변경 4건 — 표시 내용에 기준 커밋 이후의 작업 트리 상태가 섞여 있다.</dd></div>
+<div><dt>기준 시각</dt><dd class="mono">2026-08-05T12:04:35.173Z</dd></div>
+<div><dt>기준 커밋</dt><dd><span class="mono">fece9e7cc70e91737a3f48992d9735c3a5fbf5cc</span><span class="sub">fix(P0-T04): close cross-review findings F-01~F-07 on env shell</span></dd></div>
+<div><dt>작업 트리</dt><dd>커밋되지 않은 변경 1건 — 표시 내용에 기준 커밋 이후의 작업 트리 상태가 섞여 있다.</dd></div>
 </dl>
 
 </header>
 <main>
 <section id="next-action" class="card highlight">
 <h2>다음 행동·차단</h2>
-<p class="target mono">P0-T04</p>
-<p class="headline">P0-T04 환경변수와 애플리케이션 셸의 blocked 사유를 인터뷰에서 해소한다.</p>
-<p class="rationale">실행 가능한 planned task가 없고 중단된 task가 있다. 결정 해소가 큐를 다시 여는 유일한 경로다.</p>
+<p class="target mono">P0-T34</p>
+<p class="headline">P0-T34 디자인 시스템 코드 구현의 설계(RADIO) 인터뷰를 진행한다.</p>
+<p class="rationale">실행 큐가 비었고 기획 승인만 있는 task가 있다. RADIO 승인이 planned 진입 조건이다.</p>
 <h3>직접 선행 조건</h3>
-<ul><li>docs/execution/runs/P0-T04/decision-signal.json 확인</li></ul>
+<ul><li>승인된 기획 범위 확인</li><li>docs/execution/radio/&lt;task-id&gt;-radio.md 작성과 SHA-256 기록</li></ul>
 <h3>차단 사유</h3>
-<ul><li>P0-T04가 blocked다. 인터뷰에서 결정을 해소해야 큐에 다시 들어간다.</li></ul>
+<p class="empty">차단 사유 없음</p>
 <h3>대안 후보</h3>
-<p class="empty">대안 후보 없음</p>
+<ul><li>P0-T35</li><li>P1-T06</li><li>P7-T01</li></ul>
 </section>
 <section id="readiness" class="card">
 <h2>준비도 루브릭</h2>
-<p class="total"><span class="total-score mono">69</span><span class="total-max">/100</span><span class="grade warning">주의</span></p>
+<p class="total"><span class="total-score mono">79</span><span class="total-max">/100</span><span class="grade action">양호</span></p>
 <p class="caption">등급 경계: 90 이상 우수, 70~89 양호, 70 미만 주의. 모든 점수는 아래 근거 수치로 기계 판정한다.</p>
 <ul class="rubric"><li class="rubric-area">
 <p class="row"><strong>계약 준수</strong><span class="score mono">40/40</span></p>
@@ -98,36 +98,36 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <p class="evidence">증거 8/8건 보유(P0-T30 이후 완료 task, legacy-v2 제외).</p>
 </li></ul>
 </li><li class="rubric-area">
-<p class="row"><strong>실행 준비도</strong><span class="score mono">0/20</span></p>
-<span class="meter"><span class="meter-fill" style="width:0%"></span></span>
+<p class="row"><strong>실행 준비도</strong><span class="score mono">10/20</span></p>
+<span class="meter"><span class="meter-fill" style="width:50%"></span></span>
 <ul class="rubric-items"><li>
 <p class="row"><span>실행 가능한 planned 존재</span><span class="score mono">0/10</span></p>
 <p class="evidence">의존성이 모두 done인 planned task 0건.</p>
 </li><li>
-<p class="row"><span>blocked 0건</span><span class="score mono">0/10</span></p>
-<p class="evidence">blocked task 1건.</p>
+<p class="row"><span>blocked 0건</span><span class="score mono">10/10</span></p>
+<p class="evidence">blocked task 0건.</p>
 </li></ul>
 </li><li class="rubric-area">
 <p class="row"><strong>문서 신선도</strong><span class="score mono">4/15</span></p>
 <span class="meter"><span class="meter-fill" style="width:27%"></span></span>
 <ul class="rubric-items"><li>
 <p class="row"><span>재생성 준수</span><span class="score mono">0/7</span></p>
-<p class="evidence">기존 산출물 기준 커밋 e6f8d9b 이후 재생성 없이 상태 변경 커밋 1건(1f7df0a)이 쌓였다.</p>
+<p class="evidence">기존 산출물 기준 커밋 1f7df0a 이후 재생성 없이 상태 변경 커밋 1건(fece9e7)이 쌓였다.</p>
 </li><li>
 <p class="row"><span>보류 ADR 0건</span><span class="score mono">4/4</span></p>
 <p class="evidence">보류 상태 ADR 0건.</p>
 </li><li>
 <p class="row"><span>미결 부채 0건</span><span class="score mono">0/4</span></p>
-<p class="evidence">최신 handoff의 미결 항목 47건. docs/execution/runs/P0-T01/handoff.md 3건, docs/execution/runs/P0-T02/handoff.md 4건, docs/execution/runs/P0-T03/handoff.md 2건, docs/execution/runs/P0-T04/handoff.md 3건, docs/execution/runs/P0-T29/handoff.md 3건, docs/execution/runs/P0-T30/handoff.md 4건, docs/execution/runs/P0-T31/handoff.md 2건, docs/execution/runs/P0-T32/handoff.md 6건, docs/execution/runs/P0-T33/handoff.md 1건, docs/execution/runs/interviews/2026-08-04-p0-t02-planning.md 4건, docs/execution/runs/interviews/2026-08-04-p0-t03-design.md 2건, docs/execution/runs/interviews/2026-08-04-p0-t03-planning.md 2건, docs/execution/runs/interviews/2026-08-04-publishing-first.md 2건, docs/execution/runs/interviews/2026-08-05-p0-t04-design.md 3건, docs/execution/runs/interviews/2026-08-05-p0-t04-planning.md 2건, docs/execution/runs/interviews/2026-08-05-p0-t37-design.md 2건, docs/execution/runs/interviews/2026-08-05-p0-t37-planning.md 2건.</p>
+<p class="evidence">최신 handoff의 미결 항목 44건. docs/execution/runs/P0-T01/handoff.md 3건, docs/execution/runs/P0-T02/handoff.md 4건, docs/execution/runs/P0-T03/handoff.md 2건, docs/execution/runs/P0-T29/handoff.md 3건, docs/execution/runs/P0-T30/handoff.md 4건, docs/execution/runs/P0-T31/handoff.md 2건, docs/execution/runs/P0-T32/handoff.md 6건, docs/execution/runs/P0-T33/handoff.md 1건, docs/execution/runs/interviews/2026-08-04-p0-t02-planning.md 4건, docs/execution/runs/interviews/2026-08-04-p0-t03-design.md 2건, docs/execution/runs/interviews/2026-08-04-p0-t03-planning.md 2건, docs/execution/runs/interviews/2026-08-04-publishing-first.md 2건, docs/execution/runs/interviews/2026-08-05-p0-t04-design.md 3건, docs/execution/runs/interviews/2026-08-05-p0-t04-planning.md 2건, docs/execution/runs/interviews/2026-08-05-p0-t37-design.md 2건, docs/execution/runs/interviews/2026-08-05-p0-t37-planning.md 2건.</p>
 </li></ul>
 </li></ul>
 </section>
 <section id="progress" class="card">
 <h2>진행도</h2>
-<p class="row"><strong>전체 완료율</strong><span class="score mono">29/84 · 35%</span></p>
-<span class="meter"><span class="meter-fill" style="width:35%"></span></span>
+<p class="row"><strong>전체 완료율</strong><span class="score mono">30/84 · 36%</span></p>
+<span class="meter"><span class="meter-fill" style="width:36%"></span></span>
 <h3>상태별 집계</h3>
-<ul class="chips"><li class="chip">기획 미승인 <span class="mono">50</span></li><li class="chip">설계 대기 <span class="mono">4</span></li><li class="chip">중단 <span class="mono">1</span></li><li class="chip">완료 <span class="mono">29</span></li></ul>
+<ul class="chips"><li class="chip">기획 미승인 <span class="mono">50</span></li><li class="chip">설계 대기 <span class="mono">4</span></li><li class="chip">완료 <span class="mono">30</span></li></ul>
 <h3>현재 진행</h3>
 <p class="empty">진행 중인 task 없음</p>
 <h3>다음 후보</h3>
@@ -136,8 +136,8 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <summary>phase별 진행과 의존성 대기 상세</summary>
 <h3>phase별 완료율</h3>
 <ul class="plain"><li>
-<p class="row"><span><span class="mono">P0</span> 프로젝트 기반과 품질 게이트</span><span class="score mono">29/34 · 85%</span></p>
-<span class="meter"><span class="meter-fill" style="width:85%"></span></span>
+<p class="row"><span><span class="mono">P0</span> 프로젝트 기반과 품질 게이트</span><span class="score mono">30/34 · 88%</span></p>
+<span class="meter"><span class="meter-fill" style="width:88%"></span></span>
 </li><li>
 <p class="row"><span><span class="mono">P1</span> 인증, 승인, 역할, 근무자 관리</span><span class="score mono">0/7 · 0%</span></p>
 <span class="meter"><span class="meter-fill" style="width:0%"></span></span>
@@ -233,11 +233,11 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 </li></ul>
 </div>
 <h3>미완료 backlog</h3>
-<ul><li>[low] P0-T29 미결 부채 집계가 마지막 handoff 절의 전체 재기술 가정에 의존 — harness/dashboard/collect.ts</li><li>[medium] P0-T02 tdd-guard.sh에 자동 테스트가 하나도 없음 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 tests/와 루트 테스트 설정 파일이 타입·린트·포맷 대상 밖 — tsconfig.json</li><li>[medium] P0-T02 Playwright reuseExistingServer가 항상 true — playwright.config.ts</li><li>[medium] P0-T02 tdd-guard의 테스트 탐색이 이름만 맞으면 통과시킴 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 tdd-guard가 세그먼트 없는 파일의 파일명을 세그먼트로 오독 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 동적 import()가 어떤 구조 규칙의 검사도 받지 않음 — tools/eslint-plugin-project/rules/layer-direction.mjs</li><li>[medium] P0-T02 tdd-guard.sh에 설명 주석이 남아 자기 인수 조건을 충족하지 못함 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 pnpm verify가 서버·클라이언트 경계 검사(check:app-build)를 돌리지 않음 — package.json</li><li>[medium] P0-T02 no-console이 warn이라 어떤 명령도 실패시키지 않음 — eslint.config.mjs</li><li>[medium] P0-T02 승인된 RADIO가 문서 안에서 자기 모순이고 기획 문서도 드리프트 — docs/execution/radio/P0-T02-radio.md</li><li>[medium] P0-T02 DEVELOPMENT.md가 제거된 옛 tdd-guard 면제 목록을 그대로 서술 — docs/standards/DEVELOPMENT.md</li><li>[medium] P0-T02 DEV-NAME-03이 MUST로 신설됐지만 기계 강제가 없음 — tools/eslint-plugin-project/rules/file-naming.mjs</li><li>[medium] P0-T02 슬라이스 없는 계층 지식이 계약이 아니라 코드 두 곳에 하드코딩 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 계약 파일을 파일마다 규칙마다 다시 읽고 다시 파싱 — tools/eslint-plugin-project/lib/contract.mjs</li><li>[low] P0-T02 pnpm verify가 production 빌드를 두 번 직렬로 돌림 — package.json</li><li>[low] P0-T03 tdd.json의 db reset RED가 플레이크와 구분 불가 — docs/execution/runs/P0-T03/tdd.json</li><li>[medium] P0-T04 placeholder 거부 테스트가 실제 규약을 피해가는 픽스처 사용 — src/shared/model/env.test.ts</li><li>[medium] P0-T04 client-secret-scan 미구현, 수동 재현으로 대체됨 — scripts/check-app-build.mjs</li><li>[medium] P0-T04 browser env 모듈 실제 초기화 경로가 mock에 가려 미검증 — src/shared/lib/supabase-browser.test.ts</li><li>[medium] P0-T04 오프라인 배너 색·대비·고정 배치가 디자인 정본 이탈 — src/widgets/offline/ui/OfflineBanner.tsx</li></ul>
+<ul><li>[low] P0-T29 미결 부채 집계가 마지막 handoff 절의 전체 재기술 가정에 의존 — harness/dashboard/collect.ts</li><li>[medium] P0-T02 tdd-guard.sh에 자동 테스트가 하나도 없음 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 tests/와 루트 테스트 설정 파일이 타입·린트·포맷 대상 밖 — tsconfig.json</li><li>[medium] P0-T02 Playwright reuseExistingServer가 항상 true — playwright.config.ts</li><li>[medium] P0-T02 tdd-guard의 테스트 탐색이 이름만 맞으면 통과시킴 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 tdd-guard가 세그먼트 없는 파일의 파일명을 세그먼트로 오독 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 동적 import()가 어떤 구조 규칙의 검사도 받지 않음 — tools/eslint-plugin-project/rules/layer-direction.mjs</li><li>[medium] P0-T02 tdd-guard.sh에 설명 주석이 남아 자기 인수 조건을 충족하지 못함 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 pnpm verify가 서버·클라이언트 경계 검사(check:app-build)를 돌리지 않음 — package.json</li><li>[medium] P0-T02 no-console이 warn이라 어떤 명령도 실패시키지 않음 — eslint.config.mjs</li><li>[medium] P0-T02 승인된 RADIO가 문서 안에서 자기 모순이고 기획 문서도 드리프트 — docs/execution/radio/P0-T02-radio.md</li><li>[medium] P0-T02 DEVELOPMENT.md가 제거된 옛 tdd-guard 면제 목록을 그대로 서술 — docs/standards/DEVELOPMENT.md</li><li>[medium] P0-T02 DEV-NAME-03이 MUST로 신설됐지만 기계 강제가 없음 — tools/eslint-plugin-project/rules/file-naming.mjs</li><li>[medium] P0-T02 슬라이스 없는 계층 지식이 계약이 아니라 코드 두 곳에 하드코딩 — .claude/hooks/tdd-guard.sh</li><li>[medium] P0-T02 계약 파일을 파일마다 규칙마다 다시 읽고 다시 파싱 — tools/eslint-plugin-project/lib/contract.mjs</li><li>[low] P0-T02 pnpm verify가 production 빌드를 두 번 직렬로 돌림 — package.json</li><li>[low] P0-T03 tdd.json의 db reset RED가 플레이크와 구분 불가 — docs/execution/runs/P0-T03/tdd.json</li></ul>
 
 <details>
-<summary>해결된 backlog 27건</summary>
-<ul><li>[medium] P0-T29 계약 준수 40점 분모를 저장소 게이트 4종으로 한정(상수 점수 제거) — harness/dashboard/collect.ts</li><li>[medium] P0-T29 게이트 실행 예외를 격리해 생성 중단 대신 실행 실패로 표시 — harness/dashboard/collect.ts</li><li>[medium] P0-T29 collect·main 생성 명령 수준 테스트 신설 — harness/self-test/dashboard-collect.test.ts</li><li>[medium] P0-T29 수정 반영 후 tdd.json RED→GREEN 재기록 — docs/execution/runs/P0-T29/tdd.json</li><li>[low] P0-T29 next-action 근거 문구를 실제 판정 기준(index 등록 순서)으로 정정 — harness/dashboard/next-action.ts</li><li>[low] P0-T29 HEAD subject·body 조회를 git 프로세스 1회로 병합 — harness/dashboard/collect.ts</li><li>[medium] P0-T33 task 결과 파일명과 task_id 일치 미검증 — harness/dashboard/reviews.ts</li><li>[medium] P0-T33 스캔 결과 표시가 승인 문구 전체 스캔 &lt;날짜&gt;와 다름 — harness/dashboard/reviews.ts</li><li>[low] P0-T33 해소된 F-09 backlog 항목이 미완료로 남음 — docs/execution/reviews/backlog.md</li><li>[low] P0-T33 backlog 회귀 테스트의 도달 불가능한 단언 — harness/self-test/dashboard-reviews.test.ts</li><li>[low] P0-T33 participants 파싱 실패가 발견마다 연쇄 오탐을 만듦 — harness/dashboard/reviews.ts</li><li>[medium] P0-T01 app-build 검증이 서버 경계를 판별하지 못함 — docs/execution/runs/P0-T01/handoff.md</li><li>[medium] P0-T01 필요한 설정 파일이 봉인된 변경 허용 경로 밖 — postcss.config.mjs</li><li>[medium] P0-T01 views 개명이 상위 ADR-0008·phase 문서와 충돌 — docs/standards/adr/0008-fsd-server-first-development-guards.md</li><li>[low] P0-T01 서버 경계 파일의 이름과 내용이 어긋남 — src/shared/config/server-only.config.ts</li><li>[medium] P0-T29 reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts</li><li>[medium] P0-T02 handoff가 승인 revision과 봉인 해시를 틀리게 확정 사실로 적음 — docs/execution/runs/P0-T02/handoff.md</li><li>[medium] P0-T03 승인된 [analytics] 비활성화가 RADIO revision 3으로 봉인되지 않음 — docs/execution/radio/P0-T03-radio.md</li><li>[medium] P0-T03 지각 기준 인수 조건 모순과 phase doc 미충족의 조정 기록 부재 — docs/execution/radio/P0-T03-radio.md</li><li>[medium] P0-T03 migration 재적용 멱등성 자동 테스트 부재 — supabase/tests/02-reference-data.test.sql</li><li>[medium] P0-T03 RLS 정책 0개 미단언과 UPDATE·DELETE 거부 미검증 — supabase/tests/04-rls-default-deny.test.sql</li><li>[medium] P0-T03 참조 데이터 멱등성이 code UNIQUE 충돌에서 깨짐 — supabase/migrations/20260804000100_foundation_reference_data.sql</li><li>[medium] P0-T03 CHECK 제약 4건의 거부 케이스 미검증 — supabase/tests/01-schema-constraints.test.sql</li><li>[medium] P0-T03 default_hourly_wage 초기값의 근거·자리표시자 기록 없음 — supabase/migrations/20260804000100_foundation_reference_data.sql</li><li>[medium] P0-T37 정본 레지스트리가 키 명명 규칙을 정의 지점에서 강제하지 않음 — src/shared/config/error-codes.config.ts</li><li>[medium] P0-T37 &#39;정의 지점 허용&#39; 테스트가 공허해 레지스트리 예외 분기 미검증 — tools/eslint-plugin-project/rules/__tests__/error-code-literal.test.mjs</li><li>[low] P0-T37 경로 판별이 resolveLocation 관행 이탈·접미사 과대 적용 — tools/eslint-plugin-project/rules/error-code-literal.mjs</li></ul>
+<summary>해결된 backlog 31건</summary>
+<ul><li>[medium] P0-T29 계약 준수 40점 분모를 저장소 게이트 4종으로 한정(상수 점수 제거) — harness/dashboard/collect.ts</li><li>[medium] P0-T29 게이트 실행 예외를 격리해 생성 중단 대신 실행 실패로 표시 — harness/dashboard/collect.ts</li><li>[medium] P0-T29 collect·main 생성 명령 수준 테스트 신설 — harness/self-test/dashboard-collect.test.ts</li><li>[medium] P0-T29 수정 반영 후 tdd.json RED→GREEN 재기록 — docs/execution/runs/P0-T29/tdd.json</li><li>[low] P0-T29 next-action 근거 문구를 실제 판정 기준(index 등록 순서)으로 정정 — harness/dashboard/next-action.ts</li><li>[low] P0-T29 HEAD subject·body 조회를 git 프로세스 1회로 병합 — harness/dashboard/collect.ts</li><li>[medium] P0-T33 task 결과 파일명과 task_id 일치 미검증 — harness/dashboard/reviews.ts</li><li>[medium] P0-T33 스캔 결과 표시가 승인 문구 전체 스캔 &lt;날짜&gt;와 다름 — harness/dashboard/reviews.ts</li><li>[low] P0-T33 해소된 F-09 backlog 항목이 미완료로 남음 — docs/execution/reviews/backlog.md</li><li>[low] P0-T33 backlog 회귀 테스트의 도달 불가능한 단언 — harness/self-test/dashboard-reviews.test.ts</li><li>[low] P0-T33 participants 파싱 실패가 발견마다 연쇄 오탐을 만듦 — harness/dashboard/reviews.ts</li><li>[medium] P0-T01 app-build 검증이 서버 경계를 판별하지 못함 — docs/execution/runs/P0-T01/handoff.md</li><li>[medium] P0-T01 필요한 설정 파일이 봉인된 변경 허용 경로 밖 — postcss.config.mjs</li><li>[medium] P0-T01 views 개명이 상위 ADR-0008·phase 문서와 충돌 — docs/standards/adr/0008-fsd-server-first-development-guards.md</li><li>[low] P0-T01 서버 경계 파일의 이름과 내용이 어긋남 — src/shared/config/server-only.config.ts</li><li>[medium] P0-T29 reviews 파서가 total=5영역 평균 규칙을 검증하지 않음(P0-T33 파서 개정과 함께 처리) — harness/dashboard/reviews.ts</li><li>[medium] P0-T02 handoff가 승인 revision과 봉인 해시를 틀리게 확정 사실로 적음 — docs/execution/runs/P0-T02/handoff.md</li><li>[medium] P0-T03 승인된 [analytics] 비활성화가 RADIO revision 3으로 봉인되지 않음 — docs/execution/radio/P0-T03-radio.md</li><li>[medium] P0-T03 지각 기준 인수 조건 모순과 phase doc 미충족의 조정 기록 부재 — docs/execution/radio/P0-T03-radio.md</li><li>[medium] P0-T03 migration 재적용 멱등성 자동 테스트 부재 — supabase/tests/02-reference-data.test.sql</li><li>[medium] P0-T03 RLS 정책 0개 미단언과 UPDATE·DELETE 거부 미검증 — supabase/tests/04-rls-default-deny.test.sql</li><li>[medium] P0-T03 참조 데이터 멱등성이 code UNIQUE 충돌에서 깨짐 — supabase/migrations/20260804000100_foundation_reference_data.sql</li><li>[medium] P0-T03 CHECK 제약 4건의 거부 케이스 미검증 — supabase/tests/01-schema-constraints.test.sql</li><li>[medium] P0-T03 default_hourly_wage 초기값의 근거·자리표시자 기록 없음 — supabase/migrations/20260804000100_foundation_reference_data.sql</li><li>[medium] P0-T37 정본 레지스트리가 키 명명 규칙을 정의 지점에서 강제하지 않음 — src/shared/config/error-codes.config.ts</li><li>[medium] P0-T37 &#39;정의 지점 허용&#39; 테스트가 공허해 레지스트리 예외 분기 미검증 — tools/eslint-plugin-project/rules/__tests__/error-code-literal.test.mjs</li><li>[low] P0-T37 경로 판별이 resolveLocation 관행 이탈·접미사 과대 적용 — tools/eslint-plugin-project/rules/error-code-literal.mjs</li><li>[medium] P0-T04 placeholder 거부 테스트가 실제 규약을 피해가는 픽스처 사용 — src/shared/model/env.test.ts</li><li>[medium] P0-T04 client-secret-scan 미구현, 수동 재현으로 대체됨 — scripts/check-app-build.mjs</li><li>[medium] P0-T04 browser env 모듈 실제 초기화 경로가 mock에 가려 미검증 — src/shared/lib/supabase-browser.test.ts</li><li>[medium] P0-T04 오프라인 배너 색·대비·고정 배치가 디자인 정본 이탈 — src/widgets/offline/ui/OfflineBanner.tsx</li></ul>
 </details>
 </section>
 </main>
