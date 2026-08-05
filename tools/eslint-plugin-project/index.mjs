@@ -1,3 +1,4 @@
+import errorCodeLiteral from "./rules/error-code-literal.mjs";
 import fileNaming from "./rules/file-naming.mjs";
 import layerDirection from "./rules/layer-direction.mjs";
 import noComments from "./rules/no-comments.mjs";
@@ -16,5 +17,6 @@ export default {
     "require-server-only": requireServerOnly,
     "file-naming": fileNaming,
     "no-comments": noComments,
+    "error-code-literal": errorCodeLiteral,
   },
 };

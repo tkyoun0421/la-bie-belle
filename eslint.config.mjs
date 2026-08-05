@@ -54,6 +54,7 @@ export default [
       "project/no-runtime-export": "error",
       "project/require-server-only": "error",
       "project/file-naming": "error",
+      "project/error-code-literal": "error",
     },
   },
 
