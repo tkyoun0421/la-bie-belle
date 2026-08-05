@@ -1,19 +1,18 @@
 import path from "node:path";
 
-import { resolveLocation } from "../lib/resolve-path.mjs";
+import { loadContract } from "../lib/contract.mjs";
+import { toSourceRelative } from "../lib/resolve-path.mjs";
 
 const SOURCE_ROOT = "src";
 const ALIAS_PREFIX = "@/";
 
-function toAlias(fromRelativePath, source) {
+function resolveTarget(fromRelativePath, source) {
   const fromDirectory = path.posix.dirname(fromRelativePath);
-  const resolved = path.posix.normalize(path.posix.join(fromDirectory, source));
+  return path.posix.normalize(path.posix.join(fromDirectory, source));
+}
 
-  if (!resolved.startsWith(`${SOURCE_ROOT}/`)) {
-    return null;
-  }
-
-  const withoutRoot = resolved.slice(SOURCE_ROOT.length + 1);
+function toAlias(resolvedPath) {
+  const withoutRoot = resolvedPath.slice(SOURCE_ROOT.length + 1);
   const withoutExtension = withoutRoot.replace(/\.tsx?$/, "");
   return `${ALIAS_PREFIX}${withoutExtension}`;
 }
@@ -25,23 +24,41 @@ export default {
     fixable: "code",
     messages: {
       relativeImport: '상대경로 import 대신 @/ alias를 쓰세요 (DEV-NAME-06): "{{alias}}"',
+      unresolvableImport:
+        '상대경로 import를 쓰지 마세요 (DEV-NAME-06): "{{source}}"는 src/ 밖으로 벗어나 @/ alias로 표현할 수 없습니다.',
     },
     schema: [],
   },
   create(context) {
-    const location = resolveLocation(context.filename, context.cwd);
+    const relativeFilePath = toSourceRelative(context.filename, context.cwd);
 
-    if (location === null) {
+    if (relativeFilePath === null) {
       return {};
     }
+
+    const contract = loadContract(context.cwd);
 
     const check = (sourceNode, source) => {
       if (!source.startsWith("./") && !source.startsWith("../")) {
         return;
       }
 
-      const alias = toAlias(location.relative, source);
-      if (alias === null) {
+      const resolved = resolveTarget(relativeFilePath, source);
+
+      if (!resolved.startsWith(`${SOURCE_ROOT}/`)) {
+        context.report({
+          node: sourceNode,
+          messageId: "unresolvableImport",
+          data: { source },
+        });
+        return;
+      }
+
+      const alias = toAlias(resolved);
+      const [firstSegment] = resolved.slice(SOURCE_ROOT.length + 1).split("/");
+
+      if (!contract.layers.includes(firstSegment)) {
+        context.report({ node: sourceNode, messageId: "relativeImport", data: { alias } });
         return;
       }
 

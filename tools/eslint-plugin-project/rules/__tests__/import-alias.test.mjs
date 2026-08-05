@@ -72,6 +72,25 @@ describe("import-alias", () => {
         output: 'const mod = await import("@/widgets/offline/ui/helpers");',
         errors: [{ messageId: "relativeImport" }],
       },
+      {
+        name: "src/ 밖으로 벗어나는 상대 import는 fix 없이 보고한다(F-01)",
+        filename: "src/shared/lib/format-date.ts",
+        code: 'import { helper } from "../../../outside";',
+        errors: [{ messageId: "unresolvableImport" }],
+      },
+      {
+        name: "src 최상위 파일에서도 상대 import를 보고하고, 계층 대상이면 fix한다(F-02)",
+        filename: "src/proxy.ts",
+        code: 'import { supabase } from "./shared/lib/supabase-browser";',
+        output: 'import { supabase } from "@/shared/lib/supabase-browser";',
+        errors: [{ messageId: "relativeImport" }],
+      },
+      {
+        name: "계약의 계층 접두가 아닌 대상은 fix 없이 보고만 한다(F-03)",
+        filename: "src/app/layout.tsx",
+        code: 'import { proxy } from "../proxy";',
+        errors: [{ messageId: "relativeImport" }],
+      },
     ],
   });
 });

@@ -35,6 +35,18 @@
       "exit_code": 0,
       "at": "2026-08-05T12:32:54.000Z",
       "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/import-alias.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-05T14:59:05.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/import-alias.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-05T14:59:25.000Z",
+      "phase": "green"
     }
   ]
 }
