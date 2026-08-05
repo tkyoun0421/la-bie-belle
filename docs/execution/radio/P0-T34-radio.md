@@ -1,15 +1,16 @@
 # P0-T34 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-04
-- 개발 설계 승인: user, 2026-08-06
+- 개발 설계 승인: user, 2026-08-06 (revision 2 재승인)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-06 | 최초 작성. 설계 인터뷰 확정: shadcn 유지(파일명 예외 구역 유지), 세부 의존 vaul·sonner·react-day-picker 채택, 원시 색 lint 룰 신설, OfflineBanner 교체 편입, 폰트 저장소 커밋, 카탈로그 pageExtensions 제외. |
+| 2 | 2026-08-06 | 구현 착수 전 worker가 발견한 봉인 결함을 반영해 재승인했다(사용자 결정). 기본 팔레트 비활성화와 신설 lint가 변경 허용 경로 밖 기존 파일 5개(`app/loading.tsx`, `views/status` 3종, `views/bootstrap`)를 깨뜨린다 — revision 1이 기존 화면의 기본 팔레트 사용을 전수 확인하지 않은 조정자 누락. 5개 파일의 의미 토큰 치환을 범위에 편입하고 허용 경로에 추가했다. 치환 매핑은 Data model 표가 소유하며, 팔레트에 대응 원시값이 없는 `text-gray-500`(문의 번호 메타데이터)은 `text-muted`로 근사한다(사용자 결정). |
 
 - 관련 spec: DOCS:SDD, ADR:0001
 - 적용 깊이: 일반 (UI 토큰·컴포넌트·개발 도구. DB·권한·비밀값·캐시 경로 없음)
@@ -20,7 +21,7 @@
 
 ### 범위와 비목표
 
-- 범위: ① [FOUNDATIONS](../../product/design/FOUNDATIONS.md)의 토큰(원시 팔레트·의미 토큰 7역할·타이포 8종·radius 5종·그림자·모션·접근성 규칙)을 `globals.css`의 Tailwind v4 `@theme`와 CSS 변수로 구현 ② `Wanted Sans Variable` 직접 호스팅 ③ [COMPONENTS](../../product/design/COMPONENTS.md)의 공용 컴포넌트 10종을 `src/shared/ui`에 구현(shadcn 기반, 명세 우선) ④ 개발 전용 카탈로그 화면(프로덕션 번들 제외) ⑤ 원시 색 직접 참조를 차단하는 lint 룰 신설(사용자 결정) ⑥ `widgets/offline/OfflineBanner`를 신규 Connectivity banner 소비로 교체(사용자 결정).
+- 범위: ① [FOUNDATIONS](../../product/design/FOUNDATIONS.md)의 토큰(원시 팔레트·의미 토큰 7역할·타이포 8종·radius 5종·그림자·모션·접근성 규칙)을 `globals.css`의 Tailwind v4 `@theme`와 CSS 변수로 구현 ② `Wanted Sans Variable` 직접 호스팅 ③ [COMPONENTS](../../product/design/COMPONENTS.md)의 공용 컴포넌트 10종을 `src/shared/ui`에 구현(shadcn 기반, 명세 우선) ④ 개발 전용 카탈로그 화면(프로덕션 번들 제외) ⑤ 원시 색 직접 참조를 차단하는 lint 룰 신설(사용자 결정) ⑥ `widgets/offline/OfflineBanner`를 신규 Connectivity banner 소비로 교체(사용자 결정) ⑦ 기존 화면 5개의 기본 팔레트 유틸을 의미 토큰으로 치환(revision 2).
 - 비목표(기획 승인 그대로): 관리자 전용 컴포넌트 3종(Assignment roster·Staffing summary·Worker picker), 화면 조립, 데이터 연결, 서버 호출, 다크 모드.
 - 설계 비목표: 완전 삭제형 dialog(대상 이름 입력 일치)는 관리자 화면 라운드가 소유한다(미결에 기록). 앱 아이콘·알림 아이콘 자산 제작은 이 task가 다루지 않는다.
 
@@ -39,6 +40,7 @@
 - `design-token-test`가 `globals.css`의 의미 토큰·타이포·radius·그림자 값을 FOUNDATIONS 표의 값과 대조 단언한다.
 - 컴포넌트 10종이 `src/shared/ui`에 존재하고 명세가 정의한 상태를 표현하며, 종마다 `component-test`가 렌더·상태 전환·접근성 속성(role, aria, 접근 가능한 이름)을 단언한다.
 - 신설 룰 `project/design-token-colors`가 `src/` 안 임의 색상값(`[#…]`·`rgb`·`hsl`·`oklch`)과 Tailwind 기본 팔레트 색 유틸(`-white`/`-black` 포함)을 차단하고, rule 테스트가 검출과 오탐 대조를 단언한다. 기존 `OfflineBanner`의 hex 하드코딩이 이 룰의 RED 사례였다가 교체로 GREEN이 된다.
+- 기존 화면 5개(`app/loading.tsx`·`views/status` 3종·`views/bootstrap`)의 기본 팔레트 유틸이 Data model의 치환 매핑대로 의미 토큰으로 바뀌어 저장소 전체 lint 위반 0이 성립한다. (revision 2)
 - `WantedSansVariable.woff2`가 라이선스 사본과 함께 저장소에 커밋되고 `next/font/local`로 로드되며, 명세의 대체 체인이 선언된다.
 - dev 서버의 `/catalog`가 10종과 각 상태를 렌더하고, production 빌드의 라우트 산출물에 `/catalog`가 없다(handoff에 재현 기록).
 - 터치 타깃 최소 44px, 색상 단독 상태 전달 금지(아이콘·라벨 병기), `prefers-reduced-motion` 전역 규칙이 적용되고 테스트 또는 CSS 단언으로 확인된다.
@@ -115,6 +117,16 @@
 
 `blue-200`(`#a8b8cc`)은 소비하는 의미 토큰이 없어 `--raw-*` 정의만 유지한다. 타이포 유틸은 `typo-display`(32/40·700)부터 `typo-caption`(13/18·400)까지 FOUNDATIONS 표 8행을 그대로 옮긴다. 모션 duration은 명세 범위의 중앙값으로 고정한다: `--duration-feedback: 150ms`, `--duration-value: 200ms`, `--duration-overlay: 250ms`.
 
+기존 화면의 기본 팔레트 유틸 치환 매핑(revision 2). 기본 팔레트 비활성화 이전에 만들어진 파일 5개에 적용한다:
+
+| 기존 유틸 | 의미 토큰 | 근거 |
+| --- | --- | --- |
+| `bg-gray-200` | `surface-strong` | 스켈레톤 표면(강한 중립 표면) |
+| `text-gray-700` | `text` | 본문 텍스트 |
+| `text-gray-600` | `text-muted` | 보조 텍스트 |
+| `text-gray-500` | `text-muted` | 문의 번호 메타데이터 — 대응 원시값이 없어 근사(사용자 결정) |
+| `text-blue-600` | `action` | 낮은 우선순위 텍스트 행동(링크) |
+
 ## Interface
 
 - 컴포넌트 export는 PascalCase(`Button`, `BottomSheet`, `ConnectivityBanner` …)이고 업무 상태는 전부 props로 받는다. 도메인 타입을 import하지 않는다(entities 의존 금지 — 셀·행 내용은 프리미티브 props와 children으로 수신).
@@ -133,9 +145,12 @@
 ```
 src/app/globals.css
 src/app/layout.tsx
+src/app/loading.tsx
 src/app/catalog/**
 src/app/__tests__/**
 src/views/catalog/**
+src/views/status/**
+src/views/bootstrap/**
 src/widgets/offline/**
 src/shared/ui/**
 src/shared/lib/**
