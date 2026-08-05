@@ -681,6 +681,27 @@
 
 기획 승인: user, 2026-08-05.
 
+### P0-T38. import 표기와 테스트 배치 규칙
+
+목표: `src/` 안의 import 표기와 테스트 파일 배치를 각각 한 가지 방식으로 통일하고 lint로 강제해, 이후 task가 표기·배치를 재결정하거나 혼용하지 않게 한다.
+
+- `src/` 전체에서 상대경로 import(`./`·`../`)를 전면 금지하고 `@/` alias만 허용한다. 같은 폴더 옆 파일 import도 예외가 아니다 — 표기 1종 통일이 목적이다. 정적 `import`·재export·동적 `import()`를 모두 검사한다.
+- 테스트 파일은 소속 세그먼트의 `__tests__/` 하위 폴더에만 둔다. 소스 옆 colocated `*.test.*` 배치를 lint가 차단한다. tdd-guard와 vitest는 현행 구성이 이 배치를 이미 지원해 도구 개편이 없다.
+- 두 규칙은 `tools/eslint-plugin-project/`의 룰로 구현하고 위반은 pre-commit과 CI를 실패시킨다.
+- 기존 위반을 일괄 수정한다: 현재 colocated 테스트 9건을 `__tests__/`로 이동하고, 테스트 안 상대 import(동적 `import()` 포함)를 `@/` alias로 치환한다. `src/` 비테스트 소스의 상대 import는 착수 시점 0건이다.
+- 규칙의 문서 정본은 [개발 컨벤션](../../standards/DEVELOPMENT.md)이 소유한다. DEV-* 규칙 ID 신설 여부는 설계가 정하며, 신설 시 기존 ID 전수 확인을 선행한다.
+
+비목표: `src/` 밖(tools/·harness/·scripts/·설정 파일)의 import 표기(각 영역 관행 유지), 루트 `tests/` 미러 구조 도입(vitest·tsconfig 개편 비용과 tdd-guard 정밀도 하락으로 제외), E2E 테스트 배치(루트 `tests/` 소유 그대로).
+
+인수 조건:
+
+- `src/` 안 상대경로 import가 lint를 실패시키고, 병합 시점 기준 `src/` 상대 import가 0건이다.
+- 세그먼트 `__tests__/` 밖의 `src/` 테스트 파일이 lint를 실패시키고, 기존 테스트 전부가 `__tests__/` 아래에 있다.
+- 이동·치환 후 `pnpm test` 전체와 tdd-guard·저장소 게이트 4종이 그대로 동작한다.
+- [개발 컨벤션](../../standards/DEVELOPMENT.md)이 두 규칙을 소유한다.
+
+기획 승인: user, 2026-08-05.
+
 ## 종료 조건
 
 - P0의 모든 task가 `done`.
