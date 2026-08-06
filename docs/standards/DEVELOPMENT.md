@@ -149,6 +149,12 @@ private 데이터의 제한적 오프라인 열람이 실제 현장 요구가 �
 
 슬라이스 public API를 barrel(`index.ts`)로 만들지 않는다. Next.js에서 빌드 성능 문제를 만들고 순환 의존의 통로가 되며, 계층 방향은 `project/layer-direction`이 직접 강제하므로 barrel 없이도 규약이 유지된다.
 
+## 디자인 토큰
+
+원시 팔레트 hex는 `src/app/globals.css`의 정의 지점 한 곳에만 존재한다. 화면·컴포넌트 코드는 `@theme` 의미 토큰 유틸(`bg-action`, `text-text-muted` 등)만 쓰고 임의 색상값이나 Tailwind 기본 팔레트 클래스를 직접 참조하지 않는다.
+
+- `DEV-TOKEN-01` `MUST`: 화면 코드는 원시 색을 직접 참조하지 않고 `@theme` 의미 토큰만 쓴다. 기계 강제: `project/design-token-colors`.
+
 ## 재사용
 
 - `DEV-REUSE-01` `MUST`: 도메인·보안·금액·시간 규칙은 하나의 구현만 소유한다.

@@ -10,7 +10,8 @@
       "global-error.tsx",
       "not-found.tsx",
       "template.tsx",
-      "default.tsx"
+      "default.tsx",
+      "page.dev.tsx"
     ]
   },
   "segments": {

@@ -1,0 +1,208 @@
+{
+  "entries": [
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/cn.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-05T16:58:14.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/cn.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-05T16:58:29.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-05T17:01:03.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-05T17:01:44.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/design-token-colors.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-05T17:03:52.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/design-token-colors.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-05T17:04:14.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/badge.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-05T17:40:27.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/badge.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-05T17:40:43.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/chip.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-05T17:41:08.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/chip.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-05T17:41:42.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/connectivity-banner.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-05T17:41:58.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/connectivity-banner.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-05T17:43:14.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/button.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T01:06:30.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/button.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T01:07:16.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/input.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T01:07:38.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/input.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T01:08:03.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/bottom-sheet.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T01:17:10.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/bottom-sheet.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T01:17:35.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/select-field.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T01:18:28.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/select-field.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T01:34:26.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/dialog.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T01:50:25.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/dialog.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T02:04:45.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/snackbar.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T02:05:13.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/snackbar.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T02:05:45.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/calendar.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T02:06:47.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/calendar.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T02:08:25.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/schedule-row.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T02:08:53.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/schedule-row.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T02:09:14.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/notification-row.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T02:09:42.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/notification-row.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T02:10:09.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/widgets/offline/ui/__tests__/OfflineBanner.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T02:11:06.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/widgets/offline/ui/__tests__/OfflineBanner.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T02:11:24.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/design-token-colors.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-06T02:12:16.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/design-token-colors.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-06T02:12:32.000Z",
+      "phase": "green"
+    }
+  ]
+}

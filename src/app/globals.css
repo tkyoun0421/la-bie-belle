@@ -1,13 +1,146 @@
 @import "tailwindcss";
 
-/* 토큰은 P0-T34가 docs/product/design/FOUNDATIONS.md에서 채운다. */
 @theme {
+  --color-*: initial;
+
+  --color-action: var(--raw-blue-500);
+  --color-action-surface: #eef4ff;
+  --color-action-border: #b8ceff;
+
+  --color-action-pressed: var(--raw-blue-700);
+  --color-action-pressed-surface: #e2ebff;
+  --color-action-pressed-border: var(--raw-blue-500);
+
+  --color-success: #087a4b;
+  --color-success-surface: #e8f8f1;
+  --color-success-border: #9bddc2;
+
+  --color-warning: #765500;
+  --color-warning-surface: #fff7d6;
+  --color-warning-border: #f1cf61;
+
+  --color-danger: #b01825;
+  --color-danger-surface: #fff0f1;
+  --color-danger-border: #efb4ba;
+
+  --color-neutral: var(--raw-gray-700);
+  --color-neutral-surface: var(--raw-gray-100);
+  --color-neutral-border: var(--raw-gray-300);
+
+  --color-disabled: var(--raw-gray-700);
+  --color-disabled-surface: var(--raw-gray-200);
+  --color-disabled-border: var(--raw-gray-300);
+
+  --color-text-strong: var(--raw-ink-950);
+  --color-text: var(--raw-gray-700);
+  --color-text-muted: var(--raw-gray-600);
+  --color-text-weak: var(--raw-gray-400);
+  --color-surface: var(--raw-white);
+  --color-surface-weak: var(--raw-gray-100);
+  --color-surface-strong: var(--raw-gray-200);
+  --color-border: var(--raw-gray-300);
+  --color-on-action: var(--raw-white);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 9999px;
+
+  --shadow-floating: 0 8px 24px rgba(10, 11, 13, 0.08);
+
+  --duration-feedback: 150ms;
+  --duration-value: 200ms;
+  --duration-overlay: 250ms;
+}
+
+@theme inline {
+  --font-sans:
+    var(--font-wanted-sans), "Wanted Sans", -apple-system, BlinkMacSystemFont, system-ui,
+    "Segoe UI", "Apple SD Gothic Neo", sans-serif;
 }
 
 :root {
   color-scheme: light;
+
+  --raw-blue-500: #0052ff;
+  --raw-blue-700: #003ecc;
+  --raw-blue-200: #a8b8cc;
+  --raw-ink-950: #0a0b0d;
+  --raw-gray-700: #5b616e;
+  --raw-gray-600: #7c828a;
+  --raw-gray-400: #a8acb3;
+  --raw-gray-300: #dee1e6;
+  --raw-gray-200: #eef0f3;
+  --raw-gray-100: #f7f7f7;
+  --raw-white: #ffffff;
+  --raw-green-500: #05b169;
+  --raw-red-500: #cf202f;
+  --raw-yellow-500: #f4b000;
+}
+
+@utility typo-display {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 700;
+}
+
+@utility typo-headline-lg {
+  font-size: 26px;
+  line-height: 34px;
+  font-weight: 700;
+}
+
+@utility typo-headline-md {
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 700;
+}
+
+@utility typo-title {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+@utility typo-body {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+
+@utility typo-body-strong {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+@utility typo-label {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+@utility typo-caption {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
 }
 
 body {
   -webkit-text-size-adjust: 100%;
+  font-family: var(--font-sans);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

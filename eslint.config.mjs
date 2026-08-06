@@ -57,6 +57,7 @@ export default [
       "project/error-code-literal": "error",
       "project/import-alias": "error",
       "project/test-placement": "error",
+      "project/design-token-colors": "error",
     },
   },
 

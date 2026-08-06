@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import "@/app/globals.css";
 
 import "@/shared/config/env.server";
+import { wantedSans } from "@/shared/config/fonts.config";
 import { OfflineBanner } from "@/widgets/offline/ui/OfflineBanner";
 
 export const metadata: Metadata = {
@@ -18,7 +19,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={wantedSans.variable}>
       <body>
         <OfflineBanner />
         {children}

@@ -1,3 +1,4 @@
+import designTokenColors from "./rules/design-token-colors.mjs";
 import errorCodeLiteral from "./rules/error-code-literal.mjs";
 import fileNaming from "./rules/file-naming.mjs";
 import importAlias from "./rules/import-alias.mjs";
@@ -22,5 +23,6 @@ export default {
     "error-code-literal": errorCodeLiteral,
     "import-alias": importAlias,
     "test-placement": testPlacement,
+    "design-token-colors": designTokenColors,
   },
 };

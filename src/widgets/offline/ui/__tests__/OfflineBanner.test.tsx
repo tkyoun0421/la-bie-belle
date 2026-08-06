@@ -27,12 +27,12 @@ describe("OfflineBanner", () => {
     expect(screen.getByText("인터넷 연결이 끊겼어요")).toBeInTheDocument();
   });
 
-  it("FOUNDATIONS warning 색(전경 #765500·배경 #fff7d6)을 쓴다", () => {
+  it("의미 토큰 warning 색(bg-warning-surface·text-warning)을 쓴다", () => {
     setNavigatorOnLine(false);
     render(<OfflineBanner />);
     const banner = screen.getByText("인터넷 연결이 끊겼어요");
-    expect(banner.className).toContain("text-[#765500]");
-    expect(banner.className).toContain("bg-[#fff7d6]");
+    expect(banner.className).toContain("bg-warning-surface");
+    expect(banner.className).toContain("text-warning");
   });
 
   it("상단에 고정 배치된다", () => {
