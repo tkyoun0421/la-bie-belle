@@ -49,7 +49,7 @@
 - 작업 식별자: P0-T35 (근무자 핵심 화면 퍼블리싱)
 - 현재 단계: RADIO revision 2(SHA `c73a2b49...`, 커밋 `c73b5df`) 편입분 수정 → 다음 재교차검증
 - 기준 시각: 2026-08-06, 기준 커밋: `c73b5df`(RADIO revision 2 재봉인 커밋 — 이 절은 그 위 작업 트리 변경이다). 발견 정본: `docs/execution/reviews/P0-T35-review.json`.
-- 수정 커밋: 이 handoff 절을 포함하는 커밋(직후 `git log -1`로 확인). `worker_done` 보고에 정확한 SHA를 남긴다.
+- 수정 커밋: `3d1a5d1`
 
 ### 확정된 사실
 
