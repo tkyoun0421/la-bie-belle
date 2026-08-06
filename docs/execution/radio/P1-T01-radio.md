@@ -1,15 +1,16 @@
 # P1-T01 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-06
-- 개발 설계 승인: user, 2026-08-06
+- 개발 설계 승인: user, 2026-08-06 (revision 2 재승인 포함)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-06 | 최초 작성. 기획 인터뷰 확정(실물 OAuth 클라이언트·전 탭 보호·온보딩 자리표시·세션 주입 E2E)과 설계 결정 2건(profiles 최소 테이블 P1-T01 생성, CI app-verify에 Supabase 기동) 반영. |
+| 2 | 2026-08-06 | 구현 전 발견된 구조 계약 충돌 해소(사용자 결정 1안): config 세그먼트는 상수 전용(`config/fsd.json` `runtimeExports: "constants"`)이라 판정 함수를 둘 수 없어 `route-access.ts`를 `shared/config` → `shared/lib`로 이동. 경로 언급 전체(Architecture·DEV-* 절) 동반 갱신. env 스키마의 기존 OAuth 값 노출(P0-T04 소유)과 불변 규칙의 관계를 명문화. |
 
 - 관련 spec: DOMAIN:IDENTITY, ADR:0001, ADR:0002
 - 적용 깊이: 심화 (인증·세션·RLS 경계 — 서버 강제와 DB 정책이 본체다)
@@ -27,7 +28,7 @@
 
 - 인증 판정은 서버 경계(`src/proxy.ts`와 서버 모듈)에서 강제한다. UI 숨김은 보조 수단이다(`DEV-SEC`).
 - 서버에서 사용자 확인은 `supabase.auth.getUser()`(토큰 서버 검증)로 한다. 쿠키의 세션 값을 검증 없이 신뢰하지 않는다.
-- `GOOGLE_OAUTH_CLIENT_SECRET`은 `supabase/config.toml`의 env 치환으로만 소비한다. 앱 코드(src/**)는 이 값을 import하지 않으며 `client-secret-scan` 대상이 유지된다.
+- `GOOGLE_OAUTH_CLIENT_SECRET`은 `supabase/config.toml`의 env 치환으로만 소비한다. 앱 코드(src/**)는 이 값을 OAuth 흐름에서 import·소비하지 않으며 `client-secret-scan` 대상이 유지된다. P0-T04가 만든 env 스키마(`src/shared/model/env.ts`)의 필수값 검증·`env.server.ts` 노출은 기존 상태 그대로 두며 이 task의 변경 대상이 아니다.
 - `profiles`는 RLS 기본 거부에 본인 행 select 정책만 갖는다. 쓰기 정책은 P1-T02가 소유한다.
 - 서버 전용 모듈은 첫 import로 `server-only`를 선언한다.
 - 기존 목 화면·게이트·검증 체계의 동작은 바뀌지 않는다(로그아웃 버튼이 더보기 화면에 추가되는 것 외 화면 무수정).
@@ -65,7 +66,7 @@
 ### DEV-* 적용 상태
 
 - `DEV-SEC`: 인증 강제 위치는 proxy·서버 모듈·RLS다. 화면 분기는 보조. secret은 앱 코드 밖(config.toml env 치환).
-- `DEV-ARCH`·`DEV-SSOT-01`: 보호 경로 판정 규칙은 `src/shared/config/route-access.ts` 한 곳이 소유하고 proxy·화면·테스트가 같은 계약을 소비한다.
+- `DEV-ARCH`·`DEV-SSOT-01`: 보호 경로 판정 규칙은 `src/shared/lib/route-access.ts` 한 곳이 소유하고 proxy·화면·테스트가 같은 계약을 소비한다. lib 세그먼트는 함수 export와 단위 테스트 필수를 허용·요구하는 세그먼트다(`config/fsd.json` — config 세그먼트는 상수 전용이라 판정 함수를 둘 수 없다, revision 2).
 - `DEV-TEST-01`: 위 렌즈 표. `DEV-TEST` 계열의 RED→GREEN 증거를 `tdd.json`에 남긴다.
 - `DEV-CODE-07`·`DEV-NAME-*`: 무주석·명명 관행 그대로.
 
@@ -75,7 +76,7 @@
 - `supabase/migrations/<ts>_identity_profiles.sql`: `profiles(id uuid primary key references auth.users(id) on delete cascade, created_at timestamptz not null default now())` + RLS enable + 본인 select 정책. `supabase/tests/05-profiles-rls.test.sql`(pgTAP).
 - `src/shared/lib/supabase-server.ts`(신규, server-only): `createServerClient` + `next/headers` cookies. 기존 `supabase-browser.ts` 무수정.
 - `src/shared/lib/supabase-proxy-session.ts`(신규): proxy 전용 세션 갱신(`@supabase/ssr` 표준 updateSession 패턴 — 요청·응답 쿠키 동기화, `getUser()` 검증 결과 반환).
-- `src/shared/config/route-access.ts`(신규): 공개 경로 목록(`/login`, `/auth/callback`)과 판정 순수 함수 `resolveAuthRedirect(pathname, isAuthenticated)` — 기본 보호, 예외 열거(fail-closed 방향). 단위 테스트 소유.
+- `src/shared/lib/route-access.ts`(신규): 공개 경로 목록(`/login`, `/auth/callback`)과 판정 순수 함수 `resolveAuthRedirect(pathname, isAuthenticated)` — 기본 보호, 예외 열거(fail-closed 방향). lib 세그먼트 규칙에 따라 단위 테스트 필수(revision 2에서 config → lib 이동).
 - `src/proxy.ts`(신규): Next 16 proxy 규약(middleware의 새 이름 — 기능 동일). 세션 갱신 → `resolveAuthRedirect` 적용. matcher로 정적 자산 제외.
 - `src/features/auth/api/sign-in-with-google.ts`(server action): `signInWithOAuth({ provider: "google", options: { redirectTo: <APP_URL>/auth/callback } })` → 반환 URL로 redirect. `sign-out.ts`: `signOut()` → `/login` redirect.
 - `src/entities/identity/api/find-own-profile.ts`(server-only): 현재 사용자의 `profiles` 행 존재 조회.
