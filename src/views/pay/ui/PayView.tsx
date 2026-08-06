@@ -4,7 +4,11 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
 import type { EstimatedPay } from "@/entities/pay/model/estimated-pay";
-import type { RehearsalEntry } from "@/entities/pay/model/rehearsal-entry";
+import {
+  calculateRehearsalAmount,
+  MOCK_REHEARSAL_HOURLY_RATE,
+  type RehearsalEntry,
+} from "@/entities/pay/model/rehearsal-entry";
 import { BottomSheet } from "@/shared/ui/bottom-sheet";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -15,17 +19,16 @@ type PayViewProps = {
   rehearsalEntries: readonly RehearsalEntry[];
 };
 
-const MOCK_HOURLY_RATE = 15000;
+type RehearsalFormValues = {
+  date: string;
+  startTime: string;
+  endTime: string;
+};
+
+const EMPTY_FORM: RehearsalFormValues = { date: "", startTime: "", endTime: "" };
 
 function formatAmount(amount: number) {
   return `${amount.toLocaleString("ko-KR")}원`;
-}
-
-function parseHours(startTime: string, endTime: string) {
-  const [startHour = 0, startMinute = 0] = startTime.split(":").map(Number);
-  const [endHour = 0, endMinute = 0] = endTime.split(":").map(Number);
-  const minutes = endHour * 60 + endMinute - (startHour * 60 + startMinute);
-  return Number.isFinite(minutes) && minutes > 0 ? minutes / 60 : 0;
 }
 
 export function PayView({ estimatedPay, rehearsalEntries: initialRehearsalEntries }: PayViewProps) {
@@ -34,33 +37,83 @@ export function PayView({ estimatedPay, rehearsalEntries: initialRehearsalEntrie
     ...initialRehearsalEntries,
   ]);
   const [addSheetOpen, setAddSheetOpen] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<RehearsalEntry | null>(null);
-  const [date, setDate] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [addForm, setAddForm] = useState<RehearsalFormValues>(EMPTY_FORM);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<RehearsalFormValues>(EMPTY_FORM);
 
-  function resetForm() {
-    setDate("");
-    setStartTime("");
-    setEndTime("");
-  }
+  const editingEntry = rehearsalEntries.find((entry) => entry.id === editingId) ?? null;
+
+  const rehearsalAmount = rehearsalEntries.reduce((sum, entry) => sum + entry.amount, 0);
+  const totalAmount = estimatedPay.regularAmount + rehearsalAmount;
+  const items = [
+    ...estimatedPay.items,
+    ...rehearsalEntries.map((entry) => ({
+      date: entry.date,
+      label: "리허설",
+      amount: entry.amount,
+    })),
+  ].sort((a, b) => a.date.localeCompare(b.date));
 
   function handleAdd() {
     const entry: RehearsalEntry = {
-      id: `reh-${rehearsalEntries.length}-${date}-${startTime}`,
-      date,
-      startTime,
-      endTime,
-      amount: Math.round(parseHours(startTime, endTime) * MOCK_HOURLY_RATE),
+      id: `reh-${rehearsalEntries.length}-${addForm.date}-${addForm.startTime}`,
+      date: addForm.date,
+      startTime: addForm.startTime,
+      endTime: addForm.endTime,
+      hourlyRate: MOCK_REHEARSAL_HOURLY_RATE,
+      amount: calculateRehearsalAmount(
+        addForm.startTime,
+        addForm.endTime,
+        MOCK_REHEARSAL_HOURLY_RATE,
+      ),
     };
     setRehearsalEntries((previous) => [...previous, entry]);
     setAddSheetOpen(false);
-    resetForm();
+    setAddForm(EMPTY_FORM);
   }
 
-  function handleDelete(entry: RehearsalEntry) {
+  function openEdit(entry: RehearsalEntry) {
+    setEditingId(entry.id);
+    setEditForm({ date: entry.date, startTime: entry.startTime, endTime: entry.endTime });
+  }
+
+  function closeEdit() {
+    setEditingId(null);
+    setEditForm(EMPTY_FORM);
+  }
+
+  function handleSaveEdit() {
+    if (!editingEntry) {
+      return;
+    }
+    const target = editingEntry;
+    setRehearsalEntries((previous) =>
+      previous.map((entry) =>
+        entry.id === target.id
+          ? {
+              ...entry,
+              date: editForm.date,
+              startTime: editForm.startTime,
+              endTime: editForm.endTime,
+              amount: calculateRehearsalAmount(
+                editForm.startTime,
+                editForm.endTime,
+                entry.hourlyRate,
+              ),
+            }
+          : entry,
+      ),
+    );
+    closeEdit();
+  }
+
+  function handleDelete() {
+    if (!editingEntry) {
+      return;
+    }
+    const entry = editingEntry;
     setRehearsalEntries((previous) => previous.filter((item) => item.id !== entry.id));
-    setEditingEntry(null);
+    closeEdit();
     showSnackbar("리허설 기록을 삭제했어요", {
       action: {
         label: "되돌리기",
@@ -90,7 +143,7 @@ export function PayView({ estimatedPay, rehearsalEntries: initialRehearsalEntrie
 
       <section className="flex flex-col gap-1">
         <p className="typo-caption text-text">이번 달 예상 합계</p>
-        <p className="typo-display text-text-strong">{amountText(estimatedPay.totalAmount)}</p>
+        <p className="typo-display text-text-strong tabular-nums">{amountText(totalAmount)}</p>
         <p className="typo-caption text-text">
           예정된 근무 시간으로 계산한 금액이에요. 실제 지급 금액과 다를 수 있어요.
         </p>
@@ -99,33 +152,35 @@ export function PayView({ estimatedPay, rehearsalEntries: initialRehearsalEntrie
       <section className="flex gap-4">
         <div className="flex flex-1 flex-col gap-1">
           <p className="typo-caption text-text">일반 근무</p>
-          <p className="typo-body-strong text-text-strong">
+          <p className="typo-body-strong text-text-strong tabular-nums">
             {amountText(estimatedPay.regularAmount)}
           </p>
         </div>
         <div className="flex flex-1 flex-col gap-1">
           <p className="typo-caption text-text">리허설</p>
-          <p className="typo-body-strong text-text-strong">
-            {amountText(estimatedPay.rehearsalAmount)}
+          <p className="typo-body-strong text-text-strong tabular-nums">
+            {amountText(rehearsalAmount)}
           </p>
         </div>
       </section>
 
       <section className="flex flex-col gap-2">
         <h2 className="typo-label text-text">날짜별 내역</h2>
-        {estimatedPay.items.length === 0 ? (
+        {items.length === 0 ? (
           <p className="typo-body text-text">이번 달 내역이 아직 없어요</p>
         ) : (
           <ul className="flex flex-col">
-            {estimatedPay.items.map((item, index) => (
+            {items.map((item, index) => (
               <li
-                key={`${item.date}-${index}`}
+                key={`${item.date}-${item.label}-${index}`}
                 className="flex items-center justify-between border-b border-border py-2"
               >
-                <span className="typo-body text-text-strong">
+                <span className="typo-body text-text-strong tabular-nums">
                   {item.date} · {item.label}
                 </span>
-                <span className="typo-body text-text-strong">{amountText(item.amount)}</span>
+                <span className="typo-body text-text-strong tabular-nums">
+                  {amountText(item.amount)}
+                </span>
               </li>
             ))}
           </ul>
@@ -147,40 +202,59 @@ export function PayView({ estimatedPay, rehearsalEntries: initialRehearsalEntrie
             <li key={entry.id}>
               <button
                 type="button"
-                onClick={() => setEditingEntry(entry)}
+                onClick={() => openEdit(entry)}
                 className="flex w-full items-center justify-between border-b border-border py-2 text-left"
               >
-                <span className="typo-body text-text-strong">
+                <span className="typo-body text-text-strong tabular-nums">
                   {entry.date} · {entry.startTime}-{entry.endTime}
                 </span>
-                <span className="typo-body text-text-strong">{amountText(entry.amount)}</span>
+                <span className="typo-body text-text-strong tabular-nums">
+                  {amountText(entry.amount)}
+                </span>
               </button>
             </li>
           ))}
         </ul>
       </section>
 
-      <BottomSheet open={addSheetOpen} onOpenChange={setAddSheetOpen} title="리허설 기록 추가">
+      <BottomSheet
+        open={addSheetOpen}
+        onOpenChange={(open) => {
+          setAddSheetOpen(open);
+          if (!open) setAddForm(EMPTY_FORM);
+        }}
+        title="리허설 기록 추가"
+      >
         <div className="flex flex-col gap-3 py-2">
           <Input
             label="날짜"
             placeholder="YYYY-MM-DD"
-            value={date}
-            onChange={(event) => setDate(event.target.value)}
+            value={addForm.date}
+            onChange={(event) =>
+              setAddForm((previous) => ({ ...previous, date: event.target.value }))
+            }
           />
           <Input
             label="시작 시각"
             placeholder="HH:MM"
-            value={startTime}
-            onChange={(event) => setStartTime(event.target.value)}
+            value={addForm.startTime}
+            onChange={(event) =>
+              setAddForm((previous) => ({ ...previous, startTime: event.target.value }))
+            }
           />
           <Input
             label="종료 시각"
             placeholder="HH:MM"
-            value={endTime}
-            onChange={(event) => setEndTime(event.target.value)}
+            value={addForm.endTime}
+            onChange={(event) =>
+              setAddForm((previous) => ({ ...previous, endTime: event.target.value }))
+            }
           />
-          <Button variant="primary" onClick={handleAdd} disabled={!date || !startTime || !endTime}>
+          <Button
+            variant="primary"
+            onClick={handleAdd}
+            disabled={!addForm.date || !addForm.startTime || !addForm.endTime}
+          >
             추가하기
           </Button>
         </div>
@@ -189,18 +263,41 @@ export function PayView({ estimatedPay, rehearsalEntries: initialRehearsalEntrie
       <BottomSheet
         open={editingEntry !== null}
         onOpenChange={(open) => {
-          if (!open) setEditingEntry(null);
+          if (!open) closeEdit();
         }}
-        title="리허설 기록"
+        title="리허설 기록 수정"
       >
         {editingEntry ? (
           <div className="flex flex-col gap-3 py-2">
-            <p className="typo-body text-text-strong">
-              {editingEntry.date} · {editingEntry.startTime}-{editingEntry.endTime}
-            </p>
-            <Button variant="destructive" onClick={() => handleDelete(editingEntry)}>
-              삭제하기
-            </Button>
+            <Input
+              label="날짜"
+              value={editForm.date}
+              onChange={(event) =>
+                setEditForm((previous) => ({ ...previous, date: event.target.value }))
+              }
+            />
+            <Input
+              label="시작 시각"
+              value={editForm.startTime}
+              onChange={(event) =>
+                setEditForm((previous) => ({ ...previous, startTime: event.target.value }))
+              }
+            />
+            <Input
+              label="종료 시각"
+              value={editForm.endTime}
+              onChange={(event) =>
+                setEditForm((previous) => ({ ...previous, endTime: event.target.value }))
+              }
+            />
+            <div className="flex gap-2">
+              <Button variant="primary" onClick={handleSaveEdit}>
+                저장하기
+              </Button>
+              <Button variant="destructive" onClick={handleDelete}>
+                삭제하기
+              </Button>
+            </div>
           </div>
         ) : null}
       </BottomSheet>

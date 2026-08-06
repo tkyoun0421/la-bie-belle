@@ -135,7 +135,7 @@ export function ScheduleView({
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-4 p-6 pb-28">
       <h1 className="typo-display text-text-strong">일정</h1>
       <Calendar month={month} dateStates={dateStates} onSelectDate={handleSelectDate} />
-      <div className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between border-t border-border bg-surface p-4 pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]">
+      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-30 flex items-center justify-between border-t border-border bg-surface p-4">
         <span className="typo-label text-text-strong">{changeCount}개 변경</span>
         <Button variant="primary" disabled={changeCount === 0} onClick={handleSave}>
           신청하기

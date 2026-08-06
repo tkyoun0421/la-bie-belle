@@ -43,3 +43,54 @@
 - `tests/e2e/home.spec.ts`(구 `bootstrap.spec.ts` 대체)
 - `docs/execution/runs/P0-T35/tdd.json`(RED→GREEN 전 구간 기록)
 - `docs/execution/phases/index.jsonl`(P0-T35 `in_progress`)
+
+## 2026-08-06 · 교차 검증 확정 12건(F-01~F-08, F-12~F-15) + Tailwind 스캔 한정 수정
+
+- 작업 식별자: P0-T35 (근무자 핵심 화면 퍼블리싱)
+- 현재 단계: RADIO revision 2(SHA `c73a2b49...`, 커밋 `c73b5df`) 편입분 수정 → 다음 재교차검증
+- 기준 시각: 2026-08-06, 기준 커밋: `c73b5df`(RADIO revision 2 재봉인 커밋 — 이 절은 그 위 작업 트리 변경이다). 발견 정본: `docs/execution/reviews/P0-T35-review.json`.
+- 수정 커밋: 이 handoff 절을 포함하는 커밋(직후 `git log -1`로 확인). `worker_done` 보고에 정확한 SHA를 남긴다.
+
+### 확정된 사실
+
+- **선행(Tailwind 스캔 한정)**: `globals.css`의 `@import "tailwindcss"`를 `@import "tailwindcss" source(none);` + `@source "../";`로 바꿔 스캔 범위를 `src/`로 한정했다. `docs/execution/reviews/*.json` 같은 문서 파일 안 `bg-[var(--raw-*)]` 문자열을 더는 클래스 후보로 오인하지 않는다. `pnpm build`의 CSS 경고가 사라졌고, `pnpm dev`로 `/`를 재현하면 200과 정상 렌더를 확인했다(이전에는 전 라우트 500).
+- F-01(high): `src/app/preview/page.dev.tsx` 최상단에 `"use client"`를 선언해 서버 컴포넌트가 클라이언트 컴포넌트에 함수 prop을 직렬화 없이 넘기던 RSC 경계 위반을 없앴다. `pnpm dev`로 `/preview`를 재현해 200과 함께 화면·시나리오 선택 UI, 홈 화면 콘텐츠("다음 근무" 등)가 실제로 렌더됨을 확인했다(이전에는 500).
+- F-02(high): `AppShellTabBar`에 `min-h-16`을 줘 안정된 높이를 만들고, `ScheduleView`의 하단 저장 바를 `bottom-[calc(4rem+env(safe-area-inset-bottom,0px))]`로 탭바 위에 쌓았다. 새 e2e(`tests/e2e/schedule.spec.ts`)로 신청하기 버튼의 bounding box가 탭바보다 위에 있고 실제 클릭이 통과함을 RED(겹침으로 실패, y=711 > 665)→GREEN으로 확인했다.
+- F-03(high): `PayView`의 리허설 수정 바텀시트에 날짜·시작·종료 `Input`을 추가하고 `저장하기`가 값을 반영하도록 구현했다(이전에는 값 표시와 삭제만 있었다). 테스트 이름을 실제 동작(수정 후 목록·합계 반영)과 일치시켰다.
+- F-04(medium): 시급 상수·시간 파싱·금액 계산을 `entities/pay/model/rehearsal-entry.ts`(`calculateRehearsalHours`·`calculateRehearsalAmount`·`MOCK_REHEARSAL_HOURLY_RATE`)로 옮기고 `RehearsalEntry`에 `hourlyRate`(생성 시 시급 스냅샷) 필드를 추가했다. `PayView`는 더 이상 계산을 소유하지 않고 이 함수만 호출한다. `날짜별 내역`과 `리허설`·`합계` 금액을 `rehearsalEntries` 상태에서 매번 다시 계산해, 추가·수정·삭제가 즉시 화면 전체에 반영된다.
+- F-05(medium): `views/home/model/home-priority.ts`의 `HomePriority`와 `views/home/ui/HomeView.tsx`의 `HomeViewModel` 중복 유니언을 하나(`HomeViewModel`, `home-priority.ts` 소유)로 합쳤다. `home.mock.ts`의 모든 홈 시나리오를 `deriveHomePriority(facts)` 호출로 재작성해 `priority`를 fixture가 직접 지정하지 않게 했다.
+- F-06(medium): `HOME_ATTENDANCE_SUCCESS`를 `HomeView.test.tsx`와 `preview` 등록표(`GPS 성공`)에 추가했다. `AttendanceSection`의 성공 분기가 `confirmedAt`을 `HH:mm`으로 표시하고(`서버 확인 시각 08:58`), 확인 중 분기에는 `Loader2` 회전 스피너를 추가했다.
+- F-07(medium): `HomeView.test.tsx`에 모든 출퇴근 상태(가능·확인중·성공·실패 3종)를 순회하며 `/수정/`·`/삭제/` 이름의 버튼이 없음을 단언하는 회귀 테스트를 추가했다(`PRD:INV-ATT-01`).
+- F-08(medium): `estimated-pay.mock.ts`의 `ESTIMATED_PAY_WITH_REHEARSAL`을 `HEAVY_REHEARSAL_ENTRIES`(새 fixture) 기반의 독립 시나리오로 다시 만들었다(더 이상 `WITH_ITEMS`의 별칭이 아니다). `confirmation.mock.ts`에 `NO_TRAINEE_ROSTER`(교육생 없는 대조군)를 추가해 `GENERAL_CONFIRMATION`이 쓰게 하고, `TRAINEE_CONFIRMATION`은 기존 교육생 포함 roster를 유지해 두 시나리오가 실제로 구분되게 했다. `날짜별 내역`이 `rehearsalEntries`에서 파생되도록 바뀌어(F-04) `REHEARSAL_ENTRIES` 개수와 내역 줄이 항상 일치한다. `preview` 등록표에 `공통` 화면(로딩·오류, 오류는 기존 `views/status/ui/ErrorScreen` 재사용)과 `예상 급여`의 `리허설 포함` 시나리오를 추가했다.
+- F-09(medium, 코드 변경 없음): 목 소유 구조를 재확인해 기록한다 — 원자 도메인 fixture(`ATTENDANCE_*`, `CONFIRMED_ROSTER`, `REHEARSAL_ENTRIES` 등)는 `entities/*/model/*.mock.ts`가 소유하고, 여러 원자를 화면 형태로 조합한 시나리오 목(`home.mock.ts`, `schedule.mock.ts`, `pay.mock.ts`, `notifications.mock.ts`)은 해당 view의 `ui` 세그먼트가 소유한다. `(tabs)`의 각 route는 조합 목 import 한 줄과 view 전달만 갖는다(`onOpenDetail`/`onNavigate` 콜백 배선은 순수 네비게이션이며 업무 로직이 아니다). RADIO revision 2가 이 구조를 정문으로 정정했으므로 코드 이동은 하지 않았다.
+- F-12(low): `ScheduleDetailView.test.tsx`의 순서 테스트가 이제 `h2` 순서(`["내 배정","전체 배정표","예식 시간"]`)와 본문 텍스트 인덱스 비교로 실제 DOM 순서를 단언하고, 강조 테스트는 본인 행에 `bg-action-surface` 클래스가 있고 다른 행에는 없음을 확인한다. `CONFIRMED_ROSTER`의 본인 이름을 `"나"`에서 `"정하은"`으로 바꿔 화면 표시 텍스트("나")와 fixture 데이터를 분리했다.
+- F-13(low): `PayView`의 합계·일반/리허설 금액·날짜별 내역·리허설 기록 목록, `ScheduleDetailView`의 예정 출퇴근·예식 시간에 `tabular-nums`를 적용했다.
+- F-14(low): `ScheduleDetailView`의 정식 담당자 포지션을 평문에서 `Badge tone="action"`으로 바꿨다(교육생은 기존 neutral `교육` badge 유지).
+- F-15(low): `AppShellTabBar`의 읽지 않음 점에 `sr-only` "읽지 않음." 텍스트를 추가해 알림 탭의 접근 이름에 반영되게 했다. `HomeView`의 GPS 상태 영역을 `role="status" aria-live="polite"`로 감쌌다.
+- **dev 재현 3건(최종)**: `pnpm dev` 기동 후 `curl`로 확인 — `/` 200(정상 렌더), `/preview` 200(화면·시나리오 선택 UI 렌더), `/schedule` 200(달력·하단 신청하기 바 렌더). 세 경로 모두 dev 서버 로그에 오류 없음.
+- 검증 결과: `pnpm verify` 전체 통과 — `format:check`·`lint:ci`·`typecheck`·`test`(62 files, 423 tests)·`harness:typecheck`·`harness:self-test`(156/156)·`check:docs`·`build`(경고 없음)·`check:app-build`·`check:client-secret-scan`·`test:e2e`(2/2, `home.spec.ts`+신규 `schedule.spec.ts`)·`gate:all`.
+
+### 미결 사항
+
+- F-10(금액 숨김 로컬 미유지), F-11(오프라인 비활성 부재)은 지시대로 범위 밖 이월이며 이번 절에서 다루지 않았다.
+- `.env`/`.env.local` 부트스트랩 공백은 이전 절 기록 그대로 미해결이다.
+- 재교차검증과 `done` 전환은 조정자가 수행한다. `index.jsonl`의 `status`는 `in_progress`로 남긴다.
+
+### 다음 행동
+
+1. 조정자가 F-01~F-08·F-12~F-15와 Tailwind 스캔 한정 수정을 재교차검증한다.
+2. 통과 확인 후 `index.jsonl`의 P0-T35를 `done`으로 전환하고 대시보드를 재생성한다.
+
+### 증거·산출물 경로(이번 수정)
+
+- `src/app/globals.css`(Tailwind `@source` 한정)
+- `src/app/preview/page.dev.tsx`("use client", GPS 성공·리허설 포함·공통 로딩/오류 등록)
+- `src/widgets/app-shell/ui/AppShellTabBar.tsx`(+ 테스트) — F-02·F-15
+- `src/views/schedule/ui/ScheduleView.tsx` — F-02
+- `src/views/pay/ui/PayView.tsx`, `pay.mock.ts`(+ 테스트) — F-03·F-04·F-08·F-13
+- `src/entities/pay/model/rehearsal-entry.ts`, `rehearsal-entry.mock.ts`, `estimated-pay.mock.ts`(+ 각 테스트) — F-04·F-08
+- `src/views/home/model/home-priority.ts`(+ 테스트), `src/views/home/ui/HomeView.tsx`, `home.mock.ts`(+ 테스트) — F-05·F-06·F-07·F-15
+- `src/entities/schedule/model/assignment.mock.ts`, `confirmation.mock.ts`(+ 각 테스트) — F-08·F-12
+- `src/views/schedule-detail/ui/ScheduleDetailView.tsx`(+ 테스트) — F-12·F-13·F-14
+- `tests/e2e/schedule.spec.ts`(신규) — F-02
+- `docs/execution/runs/P0-T35/tdd.json`(RED→GREEN 기록 추가)

@@ -1,4 +1,4 @@
-import { CONFIRMED_ROSTER } from "@/entities/schedule/model/assignment.mock";
+import { CONFIRMED_ROSTER, NO_TRAINEE_ROSTER } from "@/entities/schedule/model/assignment.mock";
 import type { ScheduleConfirmation } from "@/entities/schedule/model/confirmation";
 
 export const GENERAL_CONFIRMATION: ScheduleConfirmation = {
@@ -7,7 +7,7 @@ export const GENERAL_CONFIRMATION: ScheduleConfirmation = {
   scheduledStart: "09:00",
   scheduledEnd: "18:00",
   ceremonyTime: "14:00",
-  roster: CONFIRMED_ROSTER,
+  roster: NO_TRAINEE_ROSTER,
 };
 
 export const CONFIRMED_WITH_CHANGE: ScheduleConfirmation = {

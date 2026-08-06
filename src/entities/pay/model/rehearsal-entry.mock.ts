@@ -1,6 +1,26 @@
-import type { RehearsalEntry } from "@/entities/pay/model/rehearsal-entry";
+import {
+  calculateRehearsalAmount,
+  MOCK_REHEARSAL_HOURLY_RATE,
+  type RehearsalEntry,
+} from "@/entities/pay/model/rehearsal-entry";
+
+function entry(id: string, date: string, startTime: string, endTime: string): RehearsalEntry {
+  return {
+    id,
+    date,
+    startTime,
+    endTime,
+    hourlyRate: MOCK_REHEARSAL_HOURLY_RATE,
+    amount: calculateRehearsalAmount(startTime, endTime, MOCK_REHEARSAL_HOURLY_RATE),
+  };
+}
 
 export const REHEARSAL_ENTRIES: RehearsalEntry[] = [
-  { id: "reh-1", date: "2026-08-11", startTime: "13:00", endTime: "15:00", amount: 30000 },
-  { id: "reh-2", date: "2026-08-18", startTime: "10:00", endTime: "11:30", amount: 15000 },
+  entry("reh-1", "2026-08-11", "13:00", "15:00"),
+  entry("reh-2", "2026-08-18", "10:00", "11:30"),
+];
+
+export const HEAVY_REHEARSAL_ENTRIES: RehearsalEntry[] = [
+  entry("reh-3", "2026-08-05", "09:00", "13:00"),
+  entry("reh-4", "2026-08-20", "14:00", "16:00"),
 ];

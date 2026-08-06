@@ -30,7 +30,7 @@ export function ScheduleDetailView({ confirmation }: ScheduleDetailViewProps) {
 
       <section className="flex flex-col gap-1">
         <p className="typo-caption text-text">{confirmation.date}</p>
-        <p className="typo-headline-md text-text-strong">
+        <p className="typo-headline-md text-text-strong tabular-nums">
           {confirmation.scheduledStart} - {confirmation.scheduledEnd}
         </p>
       </section>
@@ -56,9 +56,19 @@ export function ScheduleDetailView({ confirmation }: ScheduleDetailViewProps) {
               <span className={cn("typo-body", row.isMe ? "text-action" : "text-text-strong")}>
                 {row.isMe ? "나" : row.name}
               </span>
-              <span className="flex items-center gap-2">
-                <span className="typo-caption text-text">{row.positions.join(", ")}</span>
-                {row.isTrainee ? <Badge tone="neutral">교육</Badge> : null}
+              <span className="flex flex-wrap items-center justify-end gap-1">
+                {row.isTrainee ? (
+                  <>
+                    <span className="typo-caption text-text">{row.positions.join(", ")}</span>
+                    <Badge tone="neutral">교육</Badge>
+                  </>
+                ) : (
+                  row.positions.map((position) => (
+                    <Badge key={position} tone="action">
+                      {position}
+                    </Badge>
+                  ))
+                )}
               </span>
             </li>
           ))}
@@ -67,7 +77,7 @@ export function ScheduleDetailView({ confirmation }: ScheduleDetailViewProps) {
 
       <section className="flex flex-col gap-1">
         <h2 className="typo-label text-text">예식 시간</h2>
-        <p className="typo-body text-text-strong">{confirmation.ceremonyTime}</p>
+        <p className="typo-body text-text-strong tabular-nums">{confirmation.ceremonyTime}</p>
       </section>
 
       <Button variant="secondary" disabled disabledReason="다음 라운드에서 제공돼요">

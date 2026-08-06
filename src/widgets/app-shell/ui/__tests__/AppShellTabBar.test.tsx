@@ -26,11 +26,12 @@ describe("AppShellTabBar", () => {
     expect(screen.getByRole("link", { name: "일정" })).not.toHaveAttribute("aria-current");
   });
 
-  it("읽지 않은 알림이 있으면 점 표시를 추가한다", () => {
+  it("읽지 않은 알림이 있으면 점 표시와 함께 접근 이름에도 읽지 않음을 전달한다", () => {
     render(<AppShellTabBar hasUnreadNotifications />);
 
-    const notificationsLink = screen.getByRole("link", { name: "알림" });
+    const notificationsLink = screen.getByRole("link", { name: /읽지 않음/ });
     expect(notificationsLink.querySelector("span[aria-hidden]")).not.toBeNull();
+    expect(notificationsLink).toHaveAccessibleName(/알림/);
   });
 
   it("읽지 않은 알림이 없으면 점 표시가 없다", () => {

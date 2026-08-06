@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 
 import type {
@@ -5,20 +7,10 @@ import type {
   AttendanceFailureReason,
   AttendanceStatus,
 } from "@/entities/attendance/model/attendance-status";
-import type { ScheduleConfirmation } from "@/entities/schedule/model/confirmation";
 import { Button } from "@/shared/ui/button";
+import type { HomeViewModel } from "@/views/home/model/home-priority";
 
-export type HomeViewModel =
-  | {
-      priority: "attendance";
-      attendanceStatus: AttendanceStatus;
-      shiftDate: string;
-      position: string;
-    }
-  | { priority: "deadline-application"; date: string; applicationDeadline: string }
-  | { priority: "confirmation-change"; confirmation: ScheduleConfirmation }
-  | { priority: "next-shift"; date: string; position: string }
-  | { priority: "empty" };
+export type { HomeViewModel } from "@/views/home/model/home-priority";
 
 const ATTENDANCE_ACTION_LABEL: Record<AttendanceAction, string> = {
   "check-in": "출근 인증하기",
@@ -48,21 +40,31 @@ function AttendanceSection({
       {attendanceStatus.type === "ready" ? (
         <Button variant="primary">{ATTENDANCE_ACTION_LABEL[attendanceStatus.action]}</Button>
       ) : null}
-      {attendanceStatus.type === "checking" ? (
-        <p className="typo-body text-text-strong">현재 위치를 확인하고 있어요</p>
-      ) : null}
-      {attendanceStatus.type === "success" ? (
-        <p className="typo-body text-text-strong">현장 위치가 확인됐어요</p>
-      ) : null}
-      {attendanceStatus.type === "failure" ? (
-        <div className="flex flex-col gap-3">
+      <div role="status" aria-live="polite" className="flex flex-col gap-2">
+        {attendanceStatus.type === "checking" ? (
+          <div className="flex items-center gap-2">
+            <Loader2 aria-hidden className="size-4 animate-spin text-action" />
+            <p className="typo-body text-text-strong">현재 위치를 확인하고 있어요</p>
+          </div>
+        ) : null}
+        {attendanceStatus.type === "success" ? (
+          <div className="flex flex-col gap-1">
+            <p className="typo-body text-text-strong">현장 위치가 확인됐어요</p>
+            <p className="typo-caption text-text tabular-nums">
+              서버 확인 시각 {format(new Date(attendanceStatus.confirmedAt), "HH:mm")}
+            </p>
+          </div>
+        ) : null}
+        {attendanceStatus.type === "failure" ? (
           <p className="typo-body text-danger">
             {ATTENDANCE_FAILURE_MESSAGE[attendanceStatus.reason]}
           </p>
-          <div className="flex gap-2">
-            <Button variant="secondary">권한 설정하기</Button>
-            <Button variant="tertiary">QR로 인증하기</Button>
-          </div>
+        ) : null}
+      </div>
+      {attendanceStatus.type === "failure" ? (
+        <div className="flex gap-2">
+          <Button variant="secondary">권한 설정하기</Button>
+          <Button variant="tertiary">QR로 인증하기</Button>
         </div>
       ) : null}
     </section>

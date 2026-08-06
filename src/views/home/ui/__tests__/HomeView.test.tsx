@@ -7,6 +7,7 @@ import {
   HOME_ATTENDANCE_FAILURE_LOW_ACCURACY,
   HOME_ATTENDANCE_FAILURE_OUT_OF_RANGE,
   HOME_ATTENDANCE_FAILURE_PERMISSION_DENIED,
+  HOME_ATTENDANCE_SUCCESS,
   HOME_CHECK_IN_AVAILABLE,
   HOME_CHECK_OUT_AVAILABLE,
   HOME_CONFIRMATION_CHANGE,
@@ -28,9 +29,18 @@ describe("HomeView", () => {
     expect(screen.getByRole("button", { name: "퇴근 인증하기" })).toBeInTheDocument();
   });
 
-  it("GPS 확인 중 상태를 보여준다", () => {
+  it("GPS 확인 중 상태는 진행 표시와 함께 문구를 보여주고 보조 기술에 전달한다", () => {
     render(<HomeView model={HOME_ATTENDANCE_CHECKING} />);
-    expect(screen.getByText("현재 위치를 확인하고 있어요")).toBeInTheDocument();
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent("현재 위치를 확인하고 있어요");
+    expect(status.querySelector("[aria-hidden]")).not.toBeNull();
+  });
+
+  it("GPS 성공 상태는 서버 확인 시각을 보여준다", () => {
+    render(<HomeView model={HOME_ATTENDANCE_SUCCESS} />);
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent("현장 위치가 확인됐어요");
+    expect(status).toHaveTextContent("08:58");
   });
 
   it("GPS 실패(권한 꺼짐) 상태를 보여준다", () => {
@@ -71,5 +81,22 @@ describe("HomeView", () => {
   it("홈에는 예상 급여 금액을 표시하지 않는다", () => {
     render(<HomeView model={HOME_NEXT_SHIFT} />);
     expect(screen.queryByText(/원$/)).toBeNull();
+  });
+
+  it("출퇴근 원본을 수정·삭제하는 UI를 어떤 상태에서도 제공하지 않는다(INV-ATT-01)", () => {
+    for (const model of [
+      HOME_CHECK_IN_AVAILABLE,
+      HOME_CHECK_OUT_AVAILABLE,
+      HOME_ATTENDANCE_CHECKING,
+      HOME_ATTENDANCE_SUCCESS,
+      HOME_ATTENDANCE_FAILURE_PERMISSION_DENIED,
+      HOME_ATTENDANCE_FAILURE_LOW_ACCURACY,
+      HOME_ATTENDANCE_FAILURE_OUT_OF_RANGE,
+    ]) {
+      const { unmount } = render(<HomeView model={model} />);
+      expect(screen.queryByRole("button", { name: /수정/ })).toBeNull();
+      expect(screen.queryByRole("button", { name: /삭제/ })).toBeNull();
+      unmount();
+    }
   });
 });

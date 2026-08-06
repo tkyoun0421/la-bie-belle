@@ -18,4 +18,9 @@ describe("confirmation mock", () => {
   it("교육생이 포함된 배정표 시나리오를 제공한다", () => {
     expect(TRAINEE_CONFIRMATION.roster.some((row) => row.isTrainee)).toBe(true);
   });
+
+  it("일반 확정은 교육생 없는 대조군 배정표를 쓴다(교육생 시나리오와 구분됨)", () => {
+    expect(GENERAL_CONFIRMATION.roster.some((row) => row.isTrainee)).toBe(false);
+    expect(GENERAL_CONFIRMATION.roster).not.toBe(TRAINEE_CONFIRMATION.roster);
+  });
 });

@@ -1,31 +1,50 @@
-import type { AttendanceAction } from "@/entities/attendance/model/attendance-status";
+import type { AttendanceStatus } from "@/entities/attendance/model/attendance-status";
+import type { ScheduleConfirmation } from "@/entities/schedule/model/confirmation";
+
+export type HomeViewModel =
+  | {
+      priority: "attendance";
+      attendanceStatus: AttendanceStatus;
+      shiftDate: string;
+      position: string;
+    }
+  | { priority: "deadline-application"; date: string; applicationDeadline: string }
+  | { priority: "confirmation-change"; confirmation: ScheduleConfirmation }
+  | { priority: "next-shift"; date: string; position: string }
+  | { priority: "empty" };
 
 export type HomePriorityInput = {
-  attendanceAction: AttendanceAction | null;
-  deadlineSoonApplication: boolean;
-  unacknowledgedChange: boolean;
-  nextShiftDate: string | null;
+  attendance: { status: AttendanceStatus; shiftDate: string; position: string } | null;
+  deadlineApplication: { date: string; applicationDeadline: string } | null;
+  confirmationChange: ScheduleConfirmation | null;
+  nextShift: { date: string; position: string } | null;
 };
 
-export type HomePriority =
-  | { type: "attendance"; action: AttendanceAction }
-  | { type: "deadline-application" }
-  | { type: "confirmation-change" }
-  | { type: "next-shift"; date: string }
-  | { type: "empty" };
-
-export function deriveHomePriority(input: HomePriorityInput): HomePriority {
-  if (input.attendanceAction) {
-    return { type: "attendance", action: input.attendanceAction };
+export function deriveHomePriority(input: HomePriorityInput): HomeViewModel {
+  if (input.attendance) {
+    return {
+      priority: "attendance",
+      attendanceStatus: input.attendance.status,
+      shiftDate: input.attendance.shiftDate,
+      position: input.attendance.position,
+    };
   }
-  if (input.deadlineSoonApplication) {
-    return { type: "deadline-application" };
+  if (input.deadlineApplication) {
+    return {
+      priority: "deadline-application",
+      date: input.deadlineApplication.date,
+      applicationDeadline: input.deadlineApplication.applicationDeadline,
+    };
   }
-  if (input.unacknowledgedChange) {
-    return { type: "confirmation-change" };
+  if (input.confirmationChange) {
+    return { priority: "confirmation-change", confirmation: input.confirmationChange };
   }
-  if (input.nextShiftDate) {
-    return { type: "next-shift", date: input.nextShiftDate };
+  if (input.nextShift) {
+    return {
+      priority: "next-shift",
+      date: input.nextShift.date,
+      position: input.nextShift.position,
+    };
   }
-  return { type: "empty" };
+  return { priority: "empty" };
 }

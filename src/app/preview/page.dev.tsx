@@ -1,3 +1,5 @@
+"use client";
+
 import {
   CONFIRMED_WITH_CHANGE,
   GENERAL_CONFIRMATION,
@@ -14,6 +16,7 @@ import { PreviewView, type PreviewScreen } from "@/views/preview/ui/PreviewView"
 import { ScheduleDetailView } from "@/views/schedule-detail/ui/ScheduleDetailView";
 import { ScheduleView } from "@/views/schedule/ui/ScheduleView";
 import * as scheduleMocks from "@/views/schedule/ui/schedule.mock";
+import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 
 const SCREENS: PreviewScreen[] = [
   {
@@ -26,6 +29,7 @@ const SCREENS: PreviewScreen[] = [
       { label: "다음 근무", node: <HomeView model={homeMocks.HOME_NEXT_SHIFT} /> },
       { label: "빈 상태", node: <HomeView model={homeMocks.HOME_EMPTY} /> },
       { label: "GPS 확인 중", node: <HomeView model={homeMocks.HOME_ATTENDANCE_CHECKING} /> },
+      { label: "GPS 성공", node: <HomeView model={homeMocks.HOME_ATTENDANCE_SUCCESS} /> },
       {
         label: "GPS 실패-권한 꺼짐",
         node: <HomeView model={homeMocks.HOME_ATTENDANCE_FAILURE_PERMISSION_DENIED} />,
@@ -66,6 +70,7 @@ const SCREENS: PreviewScreen[] = [
     scenarios: [
       { label: "내역 있음", node: <PayView {...payMocks.PAY_WITH_ITEMS} /> },
       { label: "빈 달", node: <PayView {...payMocks.PAY_EMPTY_MONTH} /> },
+      { label: "리허설 포함", node: <PayView {...payMocks.PAY_WITH_HEAVY_REHEARSAL} /> },
     ],
   },
   {
@@ -94,6 +99,24 @@ const SCREENS: PreviewScreen[] = [
   {
     label: "전체",
     scenarios: [{ label: "기본", node: <MoreView /> }],
+  },
+  {
+    label: "공통",
+    scenarios: [
+      {
+        label: "로딩",
+        node: (
+          <main
+            role="status"
+            aria-live="polite"
+            className="flex min-h-dvh items-center justify-center p-6"
+          >
+            <p className="typo-body text-text">불러오는 중이에요…</p>
+          </main>
+        ),
+      },
+      { label: "오류", node: <ErrorScreen /> },
+    ],
   },
 ];
 
