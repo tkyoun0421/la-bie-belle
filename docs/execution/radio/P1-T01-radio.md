@@ -1,9 +1,9 @@
 # P1-T01 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 2
+- revision: 3
 - 기획 승인: user, 2026-08-06
-- 개발 설계 승인: user, 2026-08-06 (revision 2 재승인 포함)
+- 개발 설계 승인: user, 2026-08-06 (revision 3 재승인 포함)
 
 ## 개정 이력
 
@@ -11,6 +11,7 @@
 | --- | --- | --- |
 | 1 | 2026-08-06 | 최초 작성. 기획 인터뷰 확정(실물 OAuth 클라이언트·전 탭 보호·온보딩 자리표시·세션 주입 E2E)과 설계 결정 2건(profiles 최소 테이블 P1-T01 생성, CI app-verify에 Supabase 기동) 반영. |
 | 2 | 2026-08-06 | 구현 전 발견된 구조 계약 충돌 해소(사용자 결정 1안): config 세그먼트는 상수 전용(`config/fsd.json` `runtimeExports: "constants"`)이라 판정 함수를 둘 수 없어 `route-access.ts`를 `shared/config` → `shared/lib`로 이동. 경로 언급 전체(Architecture·DEV-* 절) 동반 갱신. env 스키마의 기존 OAuth 값 노출(P0-T04 소유)과 불변 규칙의 관계를 명문화. |
+| 3 | 2026-08-06 | 구현 중 발견된 차단 2건 해소(사용자 결정): ① `src/proxy.ts`가 6-레이어 alias 밖이라 테스트 불가(DEV-NAME-06 상대경로 금지 ∧ tdd-guard 테스트 선행 요구) — `tsconfig.json`·`vitest.config.ts`에 최상위 예약 파일 전용 alias를 추가하고 두 파일을 허용 경로에 편입 ② `.env.example`의 Supabase anon·service role 키가 실제 로컬 스택과 서명 불일치(Auth API 첫 실호출에서 발견) — `supabase status -o env` 실값으로 교정하고 허용 경로에 편입. |
 
 - 관련 spec: DOMAIN:IDENTITY, ADR:0001, ADR:0002
 - 적용 깊이: 심화 (인증·세션·RLS 경계 — 서버 강제와 DB 정책이 본체다)
@@ -85,6 +86,8 @@
 - `src/views/more/**`: 더보기 화면에 로그아웃 버튼(sign-out server action 연결)만 추가.
 - `tests/`(Playwright): 미인증 리다이렉트·로그인 렌더·버튼 리다이렉트 시작·세션 주입 후 탭 진입. global setup이 service role admin API로 테스트 사용자를 멱등 생성하고 `signInWithPassword` 세션을 storageState 쿠키로 변환한다(테스트 전용 — 제품 코드에 password 경로 없음).
 - `.github/workflows/ci.yml`: `app-verify`에 Supabase CLI 설치·`supabase start`·`supabase db reset` 단계를 `pnpm verify` 앞에 추가.
+- `tsconfig.json`·`vitest.config.ts`(revision 3): 레이어 밖 최상위 예약 파일(`src/proxy.ts`, 향후 `instrumentation.ts`) 전용 `@/` alias 항목 추가 — 기존 6-레이어 alias의 경계 강제 의미는 불변이며, proxy 단위 테스트(`src/__tests__/proxy.test.ts`)가 이 alias로 import한다.
+- `.env.example`(revision 3): Supabase anon·service role 키를 실제 로컬 스택 값(`supabase status -o env`)으로 교정 — 로컬 전용 공개 가능 값이라는 성격은 불변이고, 자리표시자 정책(진짜 비밀값은 `CHANGE_ME`)도 불변이다.
 
 ## Data model
 
@@ -119,6 +122,9 @@ supabase/migrations/**
 supabase/tests/**
 tests/**
 playwright.config.ts
+tsconfig.json
+vitest.config.ts
+.env.example
 .github/workflows/ci.yml
 docs/execution/radio/P1-T01-radio.md
 docs/execution/runs/P1-T01/**
