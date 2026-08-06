@@ -34,6 +34,20 @@ describe("SignupForm", () => {
     expect(screen.getByText(/개인정보 처리방침/)).toBeInTheDocument();
   });
 
+  it("제출 버튼이 화면 하단에 고정된 영역 안에 있다", async () => {
+    const { SignupForm } = await import("@/features/signup/ui/SignupForm");
+    const action = vi.fn().mockResolvedValue({ ok: true });
+
+    render(<SignupForm action={action} />);
+
+    const button = screen.getByRole("button", { name: "가입 신청하기" });
+    const stickyBar = button.closest("div");
+
+    expect(stickyBar?.className).toMatch(/\bfixed\b/);
+    expect(stickyBar?.className).toMatch(/\bbottom-0\b/);
+    expect(stickyBar?.className).toMatch(/env\(safe-area-inset-bottom/);
+  });
+
   it("모든 필드를 채우고 제출하면 action에 정규화 전 입력 그대로를 전달한다", async () => {
     const { SignupForm } = await import("@/features/signup/ui/SignupForm");
     const action = vi.fn().mockResolvedValue({ ok: true });
@@ -73,5 +87,35 @@ describe("SignupForm", () => {
     await user.click(screen.getByRole("button", { name: "가입 신청하기" }));
 
     await waitFor(() => expect(screen.getByText("이름을 입력해 주세요")).toBeInTheDocument());
+  });
+
+  it("검증 실패 후에도 채워 넣은 4개 필드 값이 사라지지 않는다(React 19 폼 자동 리셋 대응)", async () => {
+    const { SignupForm } = await import("@/features/signup/ui/SignupForm");
+    const action = vi.fn().mockResolvedValue({
+      ok: false,
+      code: ERROR_CODE.IDENTITY_VALIDATION,
+      fieldErrors: { phone: "휴대폰 번호 형식이 올바르지 않아요" },
+    });
+    const user = userEvent.setup();
+
+    render(<SignupForm action={action} />);
+
+    await user.type(screen.getByLabelText("이름"), "홍길동");
+    await user.type(screen.getByLabelText("휴대폰 번호"), "0101234");
+    await user.click(screen.getByRole("button", { name: /성별/ }));
+    await user.click(screen.getByRole("option", { name: "남성" }));
+    const birthDateInput = screen.getByLabelText("생년월일");
+    fireEvent.change(birthDateInput, { target: { value: "1990-01-01" } });
+
+    await user.click(screen.getByRole("button", { name: "가입 신청하기" }));
+
+    await waitFor(() =>
+      expect(screen.getByText("휴대폰 번호 형식이 올바르지 않아요")).toBeInTheDocument(),
+    );
+
+    expect(screen.getByLabelText("이름")).toHaveValue("홍길동");
+    expect(screen.getByLabelText("휴대폰 번호")).toHaveValue("0101234");
+    expect(screen.getByRole("button", { name: /성별/ })).toHaveTextContent("남성");
+    expect(screen.getByLabelText("생년월일")).toHaveValue("1990-01-01");
   });
 });

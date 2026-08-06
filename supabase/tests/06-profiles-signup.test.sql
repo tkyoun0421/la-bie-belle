@@ -1,5 +1,5 @@
 begin;
-select plan(30);
+select plan(32);
 
 select has_type('public', 'profile_status', 'profile_status enum');
 select enum_has_labels(
@@ -14,6 +14,19 @@ select col_type_is('public', 'profiles', 'name', 'text', 'profiles.name type');
 select col_not_null('public', 'profiles', 'phone', 'profiles.phone not null');
 select col_type_is('public', 'profiles', 'phone', 'text', 'profiles.phone type');
 select col_is_unique('public', 'profiles', 'phone', 'profiles.phone unique');
+select is(
+  (
+    select c.conname
+    from pg_constraint c
+    join pg_attribute a
+      on a.attrelid = c.conrelid and a.attnum = any (c.conkey)
+    where c.conrelid = 'public.profiles'::regclass
+      and c.contype = 'u'
+      and a.attname = 'phone'
+  ),
+  'profiles_phone_key',
+  'the phone unique constraint keeps the default-generated name the app depends on for error code mapping'
+);
 select col_not_null('public', 'profiles', 'gender', 'profiles.gender not null');
 select col_type_is('public', 'profiles', 'gender', 'gender', 'profiles.gender type');
 select col_not_null('public', 'profiles', 'birth_date', 'profiles.birth_date not null');
@@ -35,6 +48,14 @@ select throws_ok(
   '23514',
   null,
   'phone not starting with 01 is rejected by the format check'
+);
+
+select throws_ok(
+  $$insert into profiles (id, name, phone, gender, birth_date)
+    values ('44444444-4444-4444-4444-444444444444', '   ', '01012340004', 'male', '1990-01-01')$$,
+  '23514',
+  null,
+  'a blank name is rejected by the not-blank check'
 );
 
 select lives_ok(

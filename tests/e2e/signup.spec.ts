@@ -56,14 +56,15 @@ async function createSessionedUser(
 
   const cookies = await signInWithPasswordCookies(env, { email, password });
   const domain = new URL(baseURL ?? "http://localhost:3100").hostname;
+  await context.clearCookies();
   await context.addCookies(toPlaywrightCookies(cookies, domain));
 
   return data.user.id;
 }
 
-async function submitSignupForm(page: Page) {
+async function submitSignupForm(page: Page, phone: string = randomPhone()) {
   await page.getByLabel("이름").fill("홍길동");
-  await page.getByLabel("휴대폰 번호").fill(randomPhone());
+  await page.getByLabel("휴대폰 번호").fill(phone);
   await page.getByRole("button", { name: /성별/ }).click();
   await page.getByRole("option", { name: "남성" }).click();
   await page.getByLabel("생년월일").fill("1990-01-01");
@@ -104,6 +105,58 @@ test.describe("가입과 승인 대기", () => {
     await expect(page).toHaveURL(/\/pending$/);
   });
 
+  test("pending 사용자가 (tabs) 밖의 보호 라우트(/schedule/<id>)에 접근해도 /pending으로 리다이렉트된다", async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await createSessionedUser(context, baseURL, "e2e-signup-pending-detail", {
+      name: "이수진",
+      phone: randomPhone(),
+      gender: "female",
+      birth_date: "1990-01-01",
+    });
+
+    await page.goto("/schedule/e2e-test-id");
+
+    await expect(page).toHaveURL(/\/pending$/);
+  });
+
+  test("pending 사용자가 /onboarding에 접근해도 /pending으로 리다이렉트된다", async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await createSessionedUser(context, baseURL, "e2e-signup-pending-onboarding", {
+      name: "최우진",
+      phone: randomPhone(),
+      gender: "male",
+      birth_date: "1990-01-01",
+    });
+
+    await page.goto("/onboarding");
+
+    await expect(page).toHaveURL(/\/pending$/);
+  });
+
+  test("active 사용자가 /pending에 접근하면 홈으로 리다이렉트된다", async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await createSessionedUser(context, baseURL, "e2e-signup-active-pending", {
+      name: "정하늘",
+      phone: randomPhone(),
+      gender: "female",
+      birth_date: "1990-01-01",
+      status: "active",
+    });
+
+    await page.goto("/pending");
+
+    await expect(page).toHaveURL(baseURL ? `${baseURL}/` : "http://localhost:3100/");
+  });
+
   test("이미 프로필이 있는 사용자는 /onboarding에서 폼을 다시 보거나 재제출할 수 없다", async ({
     page,
     context,
@@ -121,5 +174,50 @@ test.describe("가입과 승인 대기", () => {
 
     await expect(page).toHaveURL(baseURL ? `${baseURL}/` : "http://localhost:3100/");
     await expect(page.getByLabel("이름")).not.toBeVisible();
+  });
+
+  test("이미 프로필이 있는 사용자로 세션이 바뀐 채 같은 가입 폼을 제출하면 Server Action이 직접 거부한다", async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await createSessionedUser(context, baseURL, "e2e-signup-resubmit-a");
+    await page.goto("/onboarding");
+    await expect(page.getByLabel("이름")).toBeVisible();
+
+    await createSessionedUser(context, baseURL, "e2e-signup-resubmit-b", {
+      name: "이미가입",
+      phone: randomPhone(),
+      gender: "male",
+      birth_date: "1990-01-01",
+      status: "active",
+    });
+
+    await submitSignupForm(page);
+
+    await expect(page).toHaveURL(/\/onboarding$/);
+    await expect(page.getByText("이미 가입 절차를 진행했어요")).toBeVisible();
+  });
+
+  test("이미 사용 중인 휴대폰 번호로 제출하면 전용 안내가 보인다", async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    const takenPhone = randomPhone();
+    await createSessionedUser(context, baseURL, "e2e-signup-phone-taken-owner", {
+      name: "선점자",
+      phone: takenPhone,
+      gender: "male",
+      birth_date: "1990-01-01",
+      status: "active",
+    });
+
+    await createSessionedUser(context, baseURL, "e2e-signup-phone-taken-challenger");
+    await page.goto("/onboarding");
+    await submitSignupForm(page, takenPhone);
+
+    await expect(page.getByText("이미 가입된 휴대폰 번호예요")).toBeVisible();
+    await expect(page).toHaveURL(/\/onboarding$/);
   });
 });

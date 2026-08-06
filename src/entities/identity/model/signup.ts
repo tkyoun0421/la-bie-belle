@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const GENDER_VALUES = ["male", "female"] as const;
+export type GenderValue = (typeof GENDER_VALUES)[number];
 
 const PHONE_PATTERN = /^01[0-9]{8,9}$/;
 const NAME_REQUIRED_MESSAGE = "이름을 입력해 주세요";

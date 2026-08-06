@@ -16,5 +16,14 @@ describe("PrivacyPolicyView", () => {
     expect(screen.getAllByText(/생년월일/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/근무 배정/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/보관/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Google 계정 이메일/).length).toBeGreaterThan(0);
+  });
+
+  it("PRD가 확정한 보관 기간 수치를 구체적으로 명시한다", () => {
+    render(<PrivacyPolicyView />);
+
+    expect(screen.getAllByText(/3개월/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/1년/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/3년/).length).toBeGreaterThan(0);
   });
 });

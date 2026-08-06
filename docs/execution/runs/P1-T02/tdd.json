@@ -157,39 +157,117 @@
       "phase": "green"
     },
     {
-      "command": "pnpm db:test",
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/profile-gate.test.ts",
       "exit_code": 1,
-      "at": "2026-08-06T22:12:00+09:00",
+      "at": "2026-08-06T22:54:50+09:00",
       "phase": "red"
     },
     {
-      "command": "pnpm db:test",
-      "exit_code": 1,
-      "at": "2026-08-06T22:15:00+09:00",
-      "phase": "red"
-    },
-    {
-      "command": "pnpm db:test",
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/profile-gate.test.ts",
       "exit_code": 0,
-      "at": "2026-08-06T22:18:00+09:00",
+      "at": "2026-08-06T22:55:11+09:00",
       "phase": "green"
     },
     {
-      "command": "pnpm test:e2e",
+      "command": "pnpm db:test",
       "exit_code": 1,
-      "at": "2026-08-06T22:30:00+09:00",
+      "at": "2026-08-06T22:58:17+09:00",
       "phase": "red"
     },
     {
-      "command": "pnpm test:e2e",
-      "exit_code": 1,
-      "at": "2026-08-06T22:33:00+09:00",
-      "phase": "red"
-    },
-    {
-      "command": "pnpm test:e2e",
+      "command": "pnpm db:test",
       "exit_code": 0,
-      "at": "2026-08-06T22:36:00+09:00",
+      "at": "2026-08-06T22:58:59+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/signup/ui/__tests__/SignupForm.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T22:59:34+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/signup/ui/__tests__/SignupForm.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T23:00:22+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/find-own-profile.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T23:01:14+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/find-own-profile.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T23:01:25+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/signup/api/__tests__/submit-signup.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T23:02:00+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/signup/api/__tests__/submit-signup.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T23:02:10+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/privacy/ui/__tests__/PrivacyPolicyView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T23:02:27+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/privacy/ui/__tests__/PrivacyPolicyView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T23:02:41+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/find-own-profile.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T23:05:39+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/find-own-profile.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T23:05:48+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/signup/api/__tests__/submit-signup.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T23:06:14+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/signup/api/__tests__/submit-signup.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T23:06:25+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm exec playwright test signup.spec.ts -g \"schedule/<id>\"",
+      "exit_code": 1,
+      "at": "2026-08-06T23:09:42+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm exec playwright test signup.spec.ts -g \"schedule/<id>\"",
+      "exit_code": 0,
+      "at": "2026-08-06T23:13:35+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-06T23:12:54+09:00",
       "phase": "green"
     }
   ]

@@ -74,6 +74,9 @@ export async function submitSignup(input: SubmitSignupInput): Promise<SubmitSign
         fieldErrors: { phone: ERROR_CODES.IDENTITY_PHONE_TAKEN.message },
       };
     }
+    process.stderr.write(
+      `${JSON.stringify({ event: "identity_signup_insert_failed", code: error.code })}\n`,
+    );
     return { ok: false, code: ERROR_CODE.COMMON_UNEXPECTED };
   }
 

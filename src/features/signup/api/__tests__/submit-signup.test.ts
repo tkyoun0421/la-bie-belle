@@ -145,4 +145,23 @@ describe("submitSignup", () => {
 
     expect(result).toEqual({ ok: false, code: ERROR_CODE.COMMON_UNEXPECTED });
   });
+
+  it("그 밖의 DB 오류는 개인정보 없이 원인을 관측 가능하게 기록한다", async () => {
+    const stderrWrite = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    getUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
+    findOwnProfile.mockResolvedValue({ ok: true, data: null });
+    insert.mockResolvedValue({
+      error: { code: "23514", message: "check constraint violated on 홍길동" },
+    });
+
+    const { submitSignup } = await import("@/features/signup/api/submit-signup");
+    await submitSignup(validInput());
+
+    expect(stderrWrite).toHaveBeenCalledOnce();
+    const logged = String(stderrWrite.mock.calls[0]?.[0] ?? "");
+    expect(logged).toContain("23514");
+    expect(logged).not.toContain("홍길동");
+    expect(logged).not.toContain("check constraint violated");
+    stderrWrite.mockRestore();
+  });
 });

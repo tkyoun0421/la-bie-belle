@@ -66,6 +66,22 @@ describe("findOwnProfile", () => {
     expect(result).toEqual({ ok: false, code: ERROR_CODE.COMMON_UNEXPECTED });
   });
 
+  it("조회 오류가 있으면 개인정보 없이 원인을 관측 가능하게 기록한다", async () => {
+    const stderrWrite = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    getUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
+    maybeSingle.mockResolvedValue({ data: null, error: { code: "57P01", message: "boom" } });
+
+    const { findOwnProfile } = await import("@/entities/identity/api/find-own-profile");
+    await findOwnProfile();
+
+    expect(stderrWrite).toHaveBeenCalledOnce();
+    const logged = String(stderrWrite.mock.calls[0]?.[0] ?? "");
+    expect(logged).toContain("57P01");
+    expect(logged).not.toContain("user-1");
+    expect(logged).not.toContain("boom");
+    stderrWrite.mockRestore();
+  });
+
   it("인증된 사용자가 없으면 { ok: false, code: COMMON_AUTH_REQUIRED }를 반환한다", async () => {
     getUser.mockResolvedValue({ data: { user: null }, error: null });
 

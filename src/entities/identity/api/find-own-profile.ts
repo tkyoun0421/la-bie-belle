@@ -33,6 +33,9 @@ export async function findOwnProfile(userId?: string): Promise<FindOwnProfileRes
     .maybeSingle();
 
   if (error) {
+    process.stderr.write(
+      `${JSON.stringify({ event: "identity_find_own_profile_failed", code: error.code })}\n`,
+    );
     return { ok: false, code: ERROR_CODE.COMMON_UNEXPECTED };
   }
 
