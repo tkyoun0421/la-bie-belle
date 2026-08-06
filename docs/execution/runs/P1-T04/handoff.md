@@ -82,3 +82,9 @@
 
 - `docs/execution/radio/P1-T04-radio.md`(revision 2로 재봉인, SHA-256 `2351df47bdcf46d81029feec952d4572fd230eb035a5da44e6fb6229777c7832`).
 - `docs/execution/phases/index.jsonl`의 P1-T04 `development_approval.radio_revision: 2`.
+
+## 2026-08-07 · 조정자 검증 절(교차 검증)
+
+- 대조: 구현 커밋 e55cb7b의 변경 파일 50개 전부가 revision 2 허용 경로 안임을 `git diff ea9b231..HEAD`로 확인. tdd.json 33개 시각 전부 커밋 이전(미래 0건), `gate:all` exit 0.
+- 교차 검증: opus·codex 2자 병렬 + 상호 되물음. 확정 13건(medium 8·low 5), critical·high 0건 — REVIEW.md 수정 라운드 기본 범위(critical·high)에 따라 수정 라운드 없이 done. 기각 1건(성공 스낵바 — 레지스트리가 오류 문구만 소유, 선례 훅 미러, revalidate가 성공 신호라는 근거 반박).
+- 결과: `docs/execution/reviews/P1-T04-review.json`(총점 77), backlog에 13건 누적. F-01(역할 파생 앱 중복)·F-05(픽스처)·F-09(감사 z.enum)는 P1-T03·정비 task에서 해소 후보로 표기.

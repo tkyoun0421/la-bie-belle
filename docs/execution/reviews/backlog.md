@@ -133,3 +133,16 @@
 - [x] [low] [P1-T02] GENDER_OPTIONS ui 재선언(DEV-CODE-08) — src/features/signup/ui/SignupForm.tsx
 - [x] [low] [P1-T02] 처리방침 보관 기간 미명시(문안 확정 입력) — src/views/privacy/ui/PrivacyPolicyView.tsx
 - [x] [low] [P1-T02] F-14 종결 오기재 — 문의 경로 미해소분 추적 복원(P1-T01 행 문구 갱신으로 해소) — docs/execution/reviews/backlog.md
+- [ ] [medium] [P1-T04] 역할 파생 규칙 앱 중복(toRoles)·super_admin 전개 누락으로 배지 오표시 — src/entities/identity/api/list-active-profiles-with-roles.ts
+- [ ] [medium] [P1-T04] is_admin·is_super_admin(uuid) EXECUTE 미회수로 임의 uid 역할 조회 가능 — supabase/migrations/20260807000000_identity_roles.sql
+- [ ] [medium] [P1-T04] 역할 Server Action 입력 Zod 검증 부재·예상 실패 COMMON_UNEXPECTED 흡수 — src/features/role-management/api/grant-admin.ts
+- [ ] [medium] [P1-T04] admin 조회 RLS 정책 행별 is_admin() 재평가(InitPlan 미성립) — supabase/migrations/20260807000000_identity_roles.sql
+- [ ] [medium] [P1-T04] AdminRolesView 픽스처가 생산 불가 역할 배열 사용(F-01 은폐) — src/views/admin/ui/__tests__/AdminRolesView.test.tsx
+- [ ] [medium] [P1-T04] 봉인 렌즈 선언 동시성 pgTAP·해제 후 액션 E2E 미구현 — supabase/tests/07-roles.test.sql
+- [ ] [medium] [P1-T04] reuseExistingServer 로컬 재사용 시 bootstrap E2E env 주입 불성립 — playwright.config.ts
+- [ ] [medium] [P1-T04] 역할 관리 목록 무제한 조회·RADIO 미명시(DEV-OPT-01·04) — src/entities/identity/api/list-active-profiles-with-roles.ts
+- [ ] [low] [P1-T04] 감사 이벤트 z.enum 앱 정본 미구현(P1-T03 이벤트 추가 시 해소 후보) — supabase/migrations/20260807000000_identity_roles.sql
+- [ ] [low] [P1-T04] 신규 오류 로그 correlation ID 부재(저장소 전반 배선 부재 이어받음) — src/entities/identity/api/find-own-roles.ts
+- [ ] [low] [P1-T04] SECURITY DEFINER search_path pg_temp 미고정 — supabase/migrations/20260807000000_identity_roles.sql
+- [ ] [low] [P1-T04] useRoleActions 파일명·주 export 불일치(DEV-NAME-03) — src/features/role-management/hooks/useRoleActions.ts
+- [ ] [low] [P1-T04] RADIO 조회 횟수 기록(2회)과 실제(getUser 3회) 불일치 — src/app/(protected)/admin/roles/page.tsx

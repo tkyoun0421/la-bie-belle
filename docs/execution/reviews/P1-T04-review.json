@@ -1,0 +1,141 @@
+{
+  "task_id": "P1-T04",
+  "at": "2026-08-06T22:52:54Z",
+  "base_commit": "ea9b2317d50feaaad23610e83d41067b041b0060",
+  "participants": ["opus", "codex"],
+  "participants_note": "",
+  "scores": {
+    "code_quality": 80,
+    "tests": 74,
+    "security": 80,
+    "performance": 75,
+    "architecture": 77
+  },
+  "score_rationale": {
+    "code_quality": "모듈이 작고 기존 패턴(require 헬퍼·훅 미러)을 일관되게 따르며 typed Result·무주석 관행이 유지되나, Server Action 입력 검증 부재 medium 1건과 파일명·export 불일치, correlation ID 부재 low 2건이 확정됐다.",
+    "tests": "pgTAP 64건이 판정 사례·권한 비대칭·멱등·원자성을 촘촘히 덮고 증거 시각도 정직하나, 봉인 렌즈의 동시성 pgTAP이 구조적으로 부재하고 해제 후 액션 E2E 누락, 생산 불가 픽스처, reuseExistingServer 로컬 취약 등 medium 3건이 확정됐다.",
+    "security": "서버·DB 이중 강제, 직접 쓰기 차단, 감사 원자성, service_role 최소 소비는 설계대로 구현됐으나 is_admin(uuid) 계열의 실행 권한 미회수 medium 1건과 search_path pg_temp 미고정 low 1건이 확정됐다.",
+    "performance": "단건 위주 조회와 불일치 시 문자열 비교 1회로 끝나는 bootstrap은 적절하나, admin RLS 정책의 행별 재평가와 무제한 목록 조회 medium 2건, RADIO 조회 횟수 오기재 low 1건이 확정됐다.",
+    "architecture": "FSD 방향·server-only·revision 2 범위 봉인·DEFINER 쓰기 패턴이 승인 설계와 맞물리지만, 역할 파생 규칙을 앱이 중복 계산해 RADIO 중심 불변 규칙을 깨뜨린 medium 1건과 감사 이벤트 z.enum 정본 미구현 low 1건이 확정됐다."
+  },
+  "total": 77,
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "앱이 역할 파생 규칙을 중복 구현하고 effective_roles()와 결과가 갈린다",
+      "description": "list-active-profiles-with-roles.ts의 toRoles()가 '활성이면 worker + 부여분' 규칙을 앱에 복제하면서 정본 effective_roles()의 super_admin→admin 전개를 빠뜨렸다. 슈퍼 관리자 행의 roles가 [worker, super_admin]이 되어 AdminRolesView의 배지 tone 판정(hasRole(roles, 'admin'))이 슈퍼 관리자에게만 neutral을 준다. RADIO 불변 규칙('파생 규칙은 effective_roles() 한 곳에만, 앱은 계산하지 않는다')과 DEV-SSOT-01 위반. 권한 차단에는 영향 없음(실 차단은 서버·DB 소유) — 양쪽 모두 medium.",
+      "file": "src/entities/identity/api/list-active-profiles-with-roles.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-02",
+      "severity": "medium",
+      "area": "security",
+      "title": "is_admin·is_super_admin(uuid)의 실행 권한이 회수되지 않아 임의 uid 역할 조회가 가능하다",
+      "description": "effective_roles(uuid)는 EXECUTE를 회수하고 own_effective_roles()만 공개했지만, 같은 정보를 boolean으로 노출하는 SECURITY DEFINER 래퍼 is_admin(uuid)·is_super_admin(uuid)는 기본 EXECUTE가 남아 anon·authenticated가 임의 uuid로 호출할 수 있다. pgTAP의 'effective_roles 직접 실행 거부' 단언이 실제보다 강한 보장을 제시한다. 실악용은 대상 uuid를 알아야 해 낮다(profiles RLS가 타인 id 미노출). 두 래퍼는 RLS 평가에 쓰여 완전 회수는 불가 — 정책 주체 제한 등 별도 통제가 필요하다. 중요도 갈림: codex medium, opus low — 높은 쪽.",
+      "file": "supabase/migrations/20260807000000_identity_roles.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-03",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "역할 Server Action이 외부 입력을 Zod로 검증하지 않고 예상 실패를 COMMON_UNEXPECTED로 흡수한다",
+      "description": "grantAdmin·revokeAdmin이 targetProfileId를 검증 없는 string으로 받아 RPC에 그대로 넘긴다. uuid가 아니면 22P02, 비활성 대상이면 22023 같은 예상 가능한 실패가 전부 COMMON_UNEXPECTED로 변환되어 DEV-ERR-01·DEV-DATA-03과 같은 저장소의 submit-signup Zod 관례에 어긋나고 오류 지표를 오염시킨다. 권한 상승은 없음(requireSuperAdmin과 DEFINER 내부 검사가 앞뒤로 차단). 중요도 갈림: codex medium, opus low — 높은 쪽.",
+      "file": "src/features/role-management/api/grant-admin.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-04",
+      "severity": "medium",
+      "area": "performance",
+      "title": "admin 조회 RLS 정책이 행마다 is_admin()을 재평가한다",
+      "description": "profiles_select_admin·profile_roles_select_admin이 using (is_admin(auth.uid())) 형태다. profiles에는 본인 select 정책이 permissive OR로 합쳐져 합성 조건식이 id 컬럼을 참조하므로 pseudoconstant 최적화가 성립하지 않고, 본인 외 모든 행에서 is_admin()→effective_roles()의 조회 2건이 반복된다. 스칼라 서브쿼리 래핑((select is_admin(auth.uid())))이면 InitPlan 1회 평가로 줄어든다. 현재 규모(수십 명)에서는 체감이 작다. 중요도 갈림: codex medium, opus low — 높은 쪽.",
+      "file": "supabase/migrations/20260807000000_identity_roles.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-05",
+      "severity": "medium",
+      "area": "tests",
+      "title": "AdminRolesView 테스트 픽스처가 실제 생산자가 만들 수 없는 역할 배열을 쓴다",
+      "description": "컴포넌트 테스트의 슈퍼 관리자 픽스처가 [worker, admin, super_admin]인데, 데이터 공급 유일 경로인 toRoles()는 super_admin→admin 전개를 하지 않아 그 배열을 만들 수 없다. 픽스처가 생산자 계약과 어긋나 F-01의 배지 tone 불일치가 테스트로 드러나지 않고, 생산자 단위 테스트도 super_admin 행 출력 형태를 단언하지 않아 두 테스트 사이 검증 공백이 있다. 중요도 갈림: opus low, codex medium — 높은 쪽.",
+      "file": "src/views/admin/ui/__tests__/AdminRolesView.test.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-06",
+      "severity": "medium",
+      "area": "tests",
+      "title": "봉인 렌즈 표가 선언한 동시성 pgTAP과 해제 후 액션 거부 E2E가 실제 테스트에 없다",
+      "description": "RADIO 렌즈 3·4행은 동시 bootstrap·동시 임명을 pgTAP으로 선언하지만 07-roles.test.sql은 begin…rollback 단일 트랜잭션이라 동시 세션 자체가 구조적으로 불가능하고 순차 재호출만 있다. 5행의 '해제 직후 같은 세션의 Server Action 거부 E2E'도 roles.spec.ts가 /admin 접근 차단만 확인한다. 잔여 위험은 낮다(멱등성은 PK·조건부 갱신 기제가 소유, 액션 거부는 단위 테스트가 커버). '선언 vs 실재' 계열 재발 사례. 중요도 갈림: codex medium, opus low — 높은 쪽.",
+      "file": "supabase/tests/07-roles.test.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-07",
+      "severity": "medium",
+      "area": "tests",
+      "title": "reuseExistingServer가 참인 로컬에서 bootstrap E2E의 env 주입 계약이 깨진다",
+      "description": "reuseExistingServer: !process.env.CI라 로컬에 3100 서버가 이미 떠 있으면 Playwright가 스폰하지 않아 webServer.env의 SUPER_ADMIN_EMAIL 주입이 일어나지 않고, 실행별 무작위 픽스처 이메일과 기존 서버의 값이 반드시 어긋나 bootstrap E2E가 환경 의존적으로 실패한다. CI는 스폰 강제라 안전 — 로컬 개발자 경험에 국한. 이 task가 처음으로 E2E를 서버 프로세스 env에 결합시켜 생긴 새 취약점. 중요도 갈림: codex medium, opus low — 높은 쪽.",
+      "file": "playwright.config.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-08",
+      "severity": "medium",
+      "area": "performance",
+      "title": "역할 관리 목록이 무제한 조회이고 그 선택이 RADIO에 명시되지 않았다",
+      "description": "listActiveProfilesWithRoles()에 limit·페이지네이션이 없어 active 프로필 전량을 조회하고, 행마다 클라이언트 leaf(RoleActionButtons, useActionState 2회)를 렌더해 클라이언트 비용도 행 수에 선형이다. DEV-OPT-04(무제한 조회 방지)와 DEV-OPT-01(최적화하지 않는 선택도 RADIO에 명시) 위반. MVP 규모(수십~수백 명)에서 실측 병목 시점은 가깝지 않다. 중요도 갈림: codex medium, opus low — 높은 쪽.",
+      "file": "src/entities/identity/api/list-active-profiles-with-roles.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-09",
+      "severity": "low",
+      "area": "architecture",
+      "title": "감사 이벤트 값 집합의 앱 z.enum 정본이 구현되지 않았다",
+      "description": "RADIO Architecture는 '이벤트 값 집합의 앱 정본은 z.enum, DB는 text+비공백 CHECK'로 승인했지만 세 이벤트(super_admin_bootstrap·admin_role_granted·admin_role_revoked)는 마이그레이션과 SQL 테스트의 문자열 리터럴로만 존재한다. DB 투영만 있고 정본이 빈 상태 — 현재 앱에 감사 이벤트 소비자가 없어 즉시 오작동은 없다. P1-T03이 이벤트 2종을 추가하며 정본 신설을 함께 해소하는 것이 자연스럽다.",
+      "file": "supabase/migrations/20260807000000_identity_roles.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-10",
+      "severity": "low",
+      "area": "code_quality",
+      "title": "신규 예기치 않은 오류 로그에 correlation ID가 없다(저장소 전반의 미비를 이어받음)",
+      "description": "신규 로그 5곳이 event·DB code만 기록해 DEV-OBS-01의 correlation ID 요구를 충족하지 못한다. 다만 기존 find-own-profile·submit-signup이 이미 같은 형태이고 저장소 어디에도 correlation ID 생성·전파 배선이 없어, 이 task 단독으로 해소할 수 없는 전반 미비다 — 별도 배선 task 후보.",
+      "file": "src/entities/identity/api/find-own-roles.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-11",
+      "severity": "low",
+      "area": "security",
+      "title": "SECURITY DEFINER 함수의 search_path가 pg_temp를 고정하지 않는다",
+      "description": "신규 DEFINER 함수 7개가 set search_path = public이라 pg_temp가 릴레이션 탐색에서 우선한다. 동명 임시 테이블을 만들 수 있는 주체가 있으면 정본 판정 함수가 임시 테이블을 읽는 고전적 우회 통로 — 현재 앱 표면(PostgREST RPC)으로는 임의 DDL이 불가해 실악용 경로는 없다. 권한 판정 정본의 기초라 방어 심층 강화 가치가 있다(search_path = '' + 완전 수식 권장).",
+      "file": "supabase/migrations/20260807000000_identity_roles.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-12",
+      "severity": "low",
+      "area": "code_quality",
+      "title": "useRoleActions.ts의 파일 이름과 주 export(useRoleAction)가 어긋난다",
+      "description": "DEV-NAME-03(MUST)은 파일 이름과 주 export 일치를 요구하고 저장소의 다른 hooks 3개는 전부 일치한다. fsd.json naming은 대소문자 패턴만 검사해 ESLint가 잡지 못했다. RADIO가 파일명을 useRoleActions.ts로 적었으므로 export를 useRoleActions로 맞추면 두 문서를 모두 만족한다.",
+      "file": "src/features/role-management/hooks/useRoleActions.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-13",
+      "severity": "low",
+      "area": "performance",
+      "title": "RADIO Optimizations의 조회 횟수 기록(요청당 2회)이 실제(getUser 3회 등)와 다르다",
+      "description": "/admin/roles 한 요청에 (protected) 레이아웃·admin 레이아웃·페이지 세 단계가 각각 getUser() 원격 검증을 호출해 getUser 3회 + 역할 RPC 2회 + 단건 1회 + 목록 1회가 발생한다. RADIO가 중복 제거를 실측 이연으로 명시했으므로 구현 변경 요구가 아니라 문서 기록의 부정확이 문제 — 이후 실측 판단의 근거를 왜곡할 수 있다.",
+      "file": "src/app/(protected)/admin/roles/page.tsx",
+      "agreed_by": ["opus", "codex"]
+    }
+  ]
+}
