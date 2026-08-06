@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 export const INDEX_PATH = "docs/execution/phases/index.jsonl";
 export const INDEX_SCHEMA_PATH = "docs/execution/phases/index.schema.json";
+export const RADIO_LENS_SNAPSHOT_PATH = "config/radio-lens.json";
 
 export function resolveRepoRoot(): string {
   return resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");

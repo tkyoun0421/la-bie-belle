@@ -3,7 +3,14 @@ import { createHash } from "node:crypto";
 import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { INDEX_PATH, INDEX_SCHEMA_PATH, repoPath, resolveRepoRoot } from "../lib/repo.ts";
+import { RISK_LENS_COLUMNS, RISK_LENS_HEADING } from "../lib/radio-doc.ts";
+import {
+  INDEX_PATH,
+  INDEX_SCHEMA_PATH,
+  RADIO_LENS_SNAPSHOT_PATH,
+  repoPath,
+  resolveRepoRoot,
+} from "../lib/repo.ts";
 import type { IndexEntry } from "../lib/task-index.ts";
 import { parseIndexJsonl } from "../lib/task-index.ts";
 import type { Violation } from "../lib/violation.ts";
@@ -29,6 +36,11 @@ export function createFixtureRoot(): string {
   createdRoots.push(root);
   mkdirSync(join(root, dirname(INDEX_SCHEMA_PATH)), { recursive: true });
   copyFileSync(repoPath(resolveRepoRoot(), INDEX_SCHEMA_PATH), join(root, INDEX_SCHEMA_PATH));
+  mkdirSync(join(root, dirname(RADIO_LENS_SNAPSHOT_PATH)), { recursive: true });
+  copyFileSync(
+    repoPath(resolveRepoRoot(), RADIO_LENS_SNAPSHOT_PATH),
+    join(root, RADIO_LENS_SNAPSHOT_PATH),
+  );
   return root;
 }
 
@@ -138,6 +150,52 @@ export function makeRadioMarkdown(allowedPaths: readonly string[]): string {
 
 export function writeRadio(root: string, taskId: string, allowedPaths: readonly string[]): string {
   const markdown = makeRadioMarkdown(allowedPaths);
+  writeFixtureFile(root, radioPathOf(taskId), markdown);
+  return createHash("sha256").update(Buffer.from(markdown)).digest("hex");
+}
+
+export function makeRiskLensRow(overrides: Readonly<Record<string, string>> = {}): Record<string, string> {
+  const row: Record<string, string> = { "인수 조건": "정상 로그인" };
+  for (const lens of RISK_LENS_COLUMNS.slice(1)) {
+    row[lens] = "테스트함";
+  }
+  return { ...row, ...overrides };
+}
+
+export function makeRiskLensSection(rows: readonly Readonly<Record<string, string>>[]): string {
+  const header = `| ${RISK_LENS_COLUMNS.join(" | ")} |`;
+  const separator = `| ${RISK_LENS_COLUMNS.map(() => "---").join(" | ")} |`;
+  const body = rows.map(
+    (row) => `| ${RISK_LENS_COLUMNS.map((column) => row[column] ?? "").join(" | ")} |`,
+  );
+  return [RISK_LENS_HEADING, "", header, separator, ...body].join("\n");
+}
+
+export function writeRadioWithRiskLens(
+  root: string,
+  taskId: string,
+  allowedPaths: readonly string[],
+  lensSection: string | null,
+): string {
+  const markdown = [
+    "# 테스트 RADIO",
+    "",
+    "## Requirements",
+    "",
+    "- 테스트용 문서다.",
+    "",
+    ...(lensSection === null ? [] : [lensSection, ""]),
+    "### DEV-* 적용 상태",
+    "",
+    "- 해당 없음.",
+    "",
+    "## 변경 허용 경로",
+    "",
+    "```",
+    ...allowedPaths,
+    "```",
+    "",
+  ].join("\n");
   writeFixtureFile(root, radioPathOf(taskId), markdown);
   return createHash("sha256").update(Buffer.from(markdown)).digest("hex");
 }
