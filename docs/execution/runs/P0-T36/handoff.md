@@ -43,3 +43,32 @@
 - `docs/execution/radio/README.md`("위험 기반 테스트" 절, 템플릿 갱신)
 - `docs/execution/phases/index.jsonl`(P0-T36 `in_progress`)
 - `docs/execution/runs/P0-T36/tdd.json`
+
+## 2026-08-06 · 검증 단계 종료
+
+- 작업 식별자: P0-T36 (RADIO 위험 렌즈 표 필수화)
+- 현재 단계: 검증 종료 → done 전환
+- 기준 시각: 2026-08-06
+
+### 확정된 사실
+
+- 교차 검증(opus·codex 병렬 독립 리뷰 + 상대 되물음)을 완료했다. 확정 발견 9건(medium 5·low 4), critical·high 없음. 결과는 `docs/execution/reviews/P0-T36-review.json`(총점 86, 기준 커밋 `26cf0bef7ecf075ab1c1547fa4fcdd3c2a5abb0b`)이 소유하고 medium·low는 backlog에 누적했다.
+- 조정자 대조: `config/radio-lens.json`의 16개 항목을 index.jsonl의 `development_approval` 보유 task에서 독립 재추출해 완전 일치를 확인했고, `harness/self-test/fixtures/index-snapshot-p0-t36.jsonl`이 봉인 커밋 시점 index.jsonl과 동일함을 diff로 확인했다. 변경 파일 11개는 전부 봉인 허용 경로 안이다.
+- 등록 check 실행: `radio-lens-fixtures`(harness self-test 내 radio-gate 16 case 포함 전체)와 `typecheck`를 검증 단계에서 재실행해 통과를 확인했다.
+
+### 미결 사항
+
+- F-05: 6렌즈 기계 강제가 상위 문서 `DEV-TEST-01`의 "다섯 위험 렌즈" MUST 문구와 충돌한다. `docs/standards/**`는 이 task의 변경 허용 경로 밖이라 별도 정비 제안이 필요하다 — 결정 주체: 사용자.
+- F-01~F-04, F-06~F-09는 backlog가 추적한다. P1-T01이 렌즈 표 첫 실사용이므로 게이트 우회 구멍 2건(F-02 빈 인수 조건 칸, F-04 빈 허용 경로 fail-open)은 그 전 수정 라운드 후보다 — 결정 주체: 사용자.
+- 렌즈 표 실효성 평가(P1-T01 설계 회고)와 스냅숏 조기 채택은 RADIO 원본 미결 사항 그대로 유지한다.
+
+### 다음 행동
+
+1. `index.jsonl`의 P0-T36을 `done`으로 전환하고 대시보드를 재생성한다.
+2. ci-finisher가 push와 CI 감시를 백그라운드로 수행한다.
+3. P0 phase 종료 — 다음 READY task(P1-T01)의 기획 인터뷰로 진행한다.
+
+### 증거·산출물 경로
+
+- `docs/execution/reviews/P0-T36-review.json`
+- `docs/execution/reviews/backlog.md`(P0-T36 9건 누적)

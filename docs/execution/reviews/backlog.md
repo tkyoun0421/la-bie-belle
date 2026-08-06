@@ -97,3 +97,12 @@
 - [x] [low] [P0-T35] 시간·날짜·금액 tabular-nums 미적용 — src/views/pay/ui/PayView.tsx
 - [x] [low] [P0-T35] 배정표 정식 담당자 action badge 부재 — src/views/schedule-detail/ui/ScheduleDetailView.tsx
 - [x] [low] [P0-T35] 알림 점·GPS 상태의 보조 기술 미전달 — src/widgets/app-shell/ui/AppShellTabBar.tsx
+- [ ] [medium] [P0-T36] 면제 스냅숏 무추가 불변식이 게이트에서 미강제 — harness/lib/radio-gate.ts
+- [ ] [medium] [P0-T36] 빈 인수 조건 칸·한 칸 구분자가 정상 렌즈 표로 인정 — harness/lib/radio-doc.ts
+- [ ] [medium] [P0-T36] self-test fixture가 운영 radio-lens.json 내용에 결합 — harness/self-test/fixture.ts
+- [ ] [medium] [P0-T36] 허용 경로 파싱이 빈 배열이면 렌즈 검사 조용히 생략(fail-open) — harness/lib/radio-gate.ts
+- [ ] [medium] [P0-T36] 6렌즈 강제가 DEV-TEST-01 '다섯 렌즈' MUST 문구와 충돌(docs/standards 별도 정비 필요) — docs/execution/radio/README.md
+- [ ] [low] [P0-T36] RADIO 본문 재사용·같은 순회 서술과 구현 불일치(이중 읽기) — harness/lib/radio-gate.ts
+- [ ] [low] [P0-T36] 헤더 불일치·행 0개를 '표 없음'으로 뭉뚱그리고 행 단서 부재 — harness/lib/radio-gate.ts
+- [ ] [low] [P0-T36] 렌즈 위반 file·line·스냅숏 부재 경로 단언 없음 — harness/self-test/radio-gate.test.ts
+- [ ] [low] [P0-T36] hasCodePaths·parseRiskLensTable 판별 단위 테스트 부재 — harness/self-test/radio-gate.test.ts
