@@ -1,15 +1,16 @@
 # P1-T02 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-06
-- 개발 설계 승인: user, 2026-08-06
+- 개발 설계 승인: user, 2026-08-06 (revision 2는 MUST 위계가 정한 보정 — 아래 개정 이력)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-06 | 최초 작성. 기획 인터뷰 확정 6건(enum 5종 전체·휴대폰 unique·성별 2값·연령 하한 없음·정적 문의 문구·처리방침 편입) 반영. 기존 E2E와의 충돌 2건(지원 코드 insert·탭 진입 전제)을 설계에 명시. |
+| 2 | 2026-08-06 | 구현 전 발견된 정본 충돌 보정: P0-T03이 사람 속성용으로 예약한 기존 `gender` enum이 있는데 revision 1이 `profile_gender` 신설을 지시해 `DEV-SSOT-01` MUST와 충돌했다. MUST는 RADIO로 면제되지 않으므로 기존 `gender` 재사용으로 정정(값 집합 male·female 불변, 사용자 재량 없는 위계 보정). |
 
 - 관련 spec: PRD:AC-12, DOMAIN:IDENTITY, ADR:0002
 - 적용 깊이: 심화 (PII 수집 시작점 — 서버 검증·RLS·상태 가드가 본체다)
@@ -70,7 +71,7 @@
 
 ## Architecture
 
-- `supabase/migrations/<ts>_identity_signup_profile.sql`: `profile_status`·`profile_gender` enum 선언(status 5종·gender 2종), profiles에 `name text not null`, `phone text not null unique`, `gender profile_gender not null`, `birth_date date not null`, `status profile_status not null default 'pending'` 추가(기존 행은 리셋 환경에만 존재하므로 단순 추가), phone CHECK(`^01[0-9]{8,9}$`), 본인·pending insert RLS 정책. `supabase/tests/06-profiles-signup.test.sql`(pgTAP).
+- `supabase/migrations/<ts>_identity_signup_profile.sql`: `profile_status` enum 선언(5종). 성별은 P0-T03이 사람 속성용으로 예약해 둔 기존 `gender` enum(male·female)을 재사용한다(revision 2 — `profile_gender` 신설 없음). profiles에 `name text not null`, `phone text not null unique`, `gender gender not null`, `birth_date date not null`, `status profile_status not null default 'pending'` 추가(기존 행은 리셋 환경에만 존재하므로 단순 추가), phone CHECK(`^01[0-9]{8,9}$`), 본인·pending insert RLS 정책. `supabase/tests/06-profiles-signup.test.sql`(pgTAP).
 - `src/entities/identity/model/signup.ts`: Zod 스키마(4필드)·`normalizePhone`·검증 메시지 코드 매핑 — 단위 테스트 소유. `model/profile-gate.ts`: `resolveProfileGate(profile | null, pathname)` 순수 함수 — 무프로필→온보딩, pending→/pending, active→탭(온보딩·pending 접근 시 홈) 판정.
 - `src/entities/identity/api/find-own-profile.ts`: status 포함 조회로 확장(기존 typed Result 계약 유지).
 - `src/features/signup/api/submit-signup.ts`(Server Action, server-only): getUser → 프로필 부재 확인 → Zod 검증 → insert(pending) → `/pending` redirect. 실패는 `{ ok: false, code, fieldErrors? }`. `src/features/signup/hooks/useSignupForm.ts`: `useActionState` 오케스트레이션. `src/features/signup/ui/SignupForm.tsx`: client leaf(배선만).
