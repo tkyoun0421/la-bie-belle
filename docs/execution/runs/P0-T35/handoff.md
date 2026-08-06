@@ -101,7 +101,7 @@
 - CI run: 31077388075 (`app-verify` job 실패)
 - 원인: `src/views/home/ui/HomeView.tsx`가 date-fns `format()`을 타임존 명시 없이 호출해 실행 환경 로컬 타임존에 의존했고, UTC로 도는 CI에서 `confirmedAt`("2026-08-09T08:58:03+09:00")이 "23:58"로 렌더돼 테스트 기대값 "08:58"과 불일치했다.
 - 수정: `src/shared/lib/format-time-seoul.ts`(신규, `Intl.DateTimeFormat`을 `timeZone: "Asia/Seoul"`로 고정해 실행 환경 타임존과 무관하게 동작, 새 의존성 추가 없음)를 만들고 `HomeView`의 서버 확인 시각 표시가 이 유틸을 쓰도록 바꿨다. `src/shared/lib/__tests__/format-time-seoul.test.ts`로 RED(모듈 없음, exit 1)→GREEN(exit 0)을 재현했고 `docs/execution/runs/P0-T35/tdd.json`에 추가 기록했다. `TZ=UTC pnpm vitest run src/views/home/ui/__tests__/HomeView.test.tsx`로 CI 실패 재현·수정 확인을 마쳤다.
-- 수정 커밋: 이 handoff 절을 포함하는 커밋(직후 `git log -1`로 확인). 최종 보고에 정확한 SHA를 남긴다.
+- 수정 커밋: `d0c9330`
 
 ### 증거·산출물 경로(사후 핫픽스)
 
