@@ -30,17 +30,15 @@ function registerCleanup(): void {
   });
 }
 
+const FIXTURE_EXEMPT_TASKS: readonly string[] = ["P0-T01"];
+
 export function createFixtureRoot(): string {
   registerCleanup();
   const root = mkdtempSync(join(tmpdir(), "lbb-gate-"));
   createdRoots.push(root);
   mkdirSync(join(root, dirname(INDEX_SCHEMA_PATH)), { recursive: true });
   copyFileSync(repoPath(resolveRepoRoot(), INDEX_SCHEMA_PATH), join(root, INDEX_SCHEMA_PATH));
-  mkdirSync(join(root, dirname(RADIO_LENS_SNAPSHOT_PATH)), { recursive: true });
-  copyFileSync(
-    repoPath(resolveRepoRoot(), RADIO_LENS_SNAPSHOT_PATH),
-    join(root, RADIO_LENS_SNAPSHOT_PATH),
-  );
+  writeFixtureJson(root, RADIO_LENS_SNAPSHOT_PATH, { exemptTasks: FIXTURE_EXEMPT_TASKS });
   return root;
 }
 

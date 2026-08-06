@@ -1,0 +1,28 @@
+{
+  "entries": [
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/radio-doc.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T07:55:59.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/radio-doc.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T08:16:22.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/radio-gate.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T07:55:59.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/radio-gate.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T08:16:22.000Z",
+      "phase": "green"
+    }
+  ]
+}

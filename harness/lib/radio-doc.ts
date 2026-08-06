@@ -64,38 +64,52 @@ export type RiskLensRow = {
   readonly cells: ReadonlyMap<string, string>;
 };
 
-export type RiskLensTable = {
-  readonly rows: readonly RiskLensRow[];
-};
+export type RiskLensParseResult =
+  | { readonly kind: "missing" }
+  | { readonly kind: "header-mismatch"; readonly line: number }
+  | { readonly kind: "separator-mismatch"; readonly line: number }
+  | { readonly kind: "ok"; readonly headerLine: number; readonly rows: readonly RiskLensRow[] };
 
-export function parseRiskLensTable(markdown: string): RiskLensTable | null {
+function normalizeCriterion(value: string): string {
+  return value.replace(/\s+/gu, " ").trim();
+}
+
+export function parseRiskLensTable(markdown: string): RiskLensParseResult {
   const lines = markdown.split("\n");
   const headingIndex = lines.findIndex((line) => RISK_LENS_HEADING_PATTERN.test(line));
   if (headingIndex < 0) {
-    return null;
+    return { kind: "missing" };
   }
 
   for (let cursor = headingIndex + 1; cursor < lines.length; cursor += 1) {
     const line = lines[cursor] ?? "";
     if (RISK_LENS_STOP_PATTERN.test(line)) {
-      return null;
+      return { kind: "missing" };
     }
     const trimmed = line.trim();
     if (!TABLE_ROW_PATTERN.test(trimmed)) {
       continue;
     }
 
+    const headerLine = cursor + 1;
     const header = splitTableRow(trimmed);
     const headerMatches =
       header.length === RISK_LENS_COLUMNS.length &&
       RISK_LENS_COLUMNS.every((name, index) => header[index] === name);
     if (!headerMatches) {
-      return null;
+      return { kind: "header-mismatch", line: headerLine };
     }
 
-    const separatorLine = (lines[cursor + 1] ?? "").trim();
-    if (!TABLE_ROW_PATTERN.test(separatorLine) || !isSeparatorRow(splitTableRow(separatorLine))) {
-      return null;
+    const separatorIndex = cursor + 1;
+    const separatorLine = separatorIndex + 1;
+    const separatorRaw = (lines[separatorIndex] ?? "").trim();
+    const separatorCells = TABLE_ROW_PATTERN.test(separatorRaw) ? splitTableRow(separatorRaw) : [];
+    const separatorValid =
+      TABLE_ROW_PATTERN.test(separatorRaw) &&
+      isSeparatorRow(separatorCells) &&
+      separatorCells.length === header.length;
+    if (!separatorValid) {
+      return { kind: "separator-mismatch", line: separatorLine };
     }
 
     const rows: RiskLensRow[] = [];
@@ -109,12 +123,12 @@ export function parseRiskLensTable(markdown: string): RiskLensTable | null {
       for (let column = 1; column < RISK_LENS_COLUMNS.length; column += 1) {
         cells.set(RISK_LENS_COLUMNS[column] as string, values[column] ?? "");
       }
-      rows.push({ line: inner + 1, criterion: values[0] ?? "", cells });
+      rows.push({ line: inner + 1, criterion: normalizeCriterion(values[0] ?? ""), cells });
     }
-    return { rows };
+    return { kind: "ok", headerLine, rows };
   }
 
-  return null;
+  return { kind: "missing" };
 }
 
 export function hasCodePaths(paths: readonly string[]): boolean {
