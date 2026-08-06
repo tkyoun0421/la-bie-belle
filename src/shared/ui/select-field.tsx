@@ -31,6 +31,7 @@ export function SelectField({
   const [open, setOpen] = useState(false);
   const labelId = useId();
   const valueId = useId();
+  const describedById = useId();
   const selected = options.find((option) => option.value === value) ?? null;
 
   return (
@@ -43,6 +44,8 @@ export function SelectField({
         aria-labelledby={`${labelId} ${valueId}`}
         aria-expanded={open}
         aria-haspopup="dialog"
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? describedById : undefined}
         onClick={() => setOpen(true)}
         className={cn(
           "flex h-13 items-center justify-between rounded-md border border-border bg-surface-weak px-4 typo-body text-text-strong",
@@ -51,6 +54,11 @@ export function SelectField({
       >
         <span id={valueId}>{selected ? selected.label : (placeholder ?? "")}</span>
       </button>
+      {error ? (
+        <p id={describedById} className="typo-caption text-danger">
+          {error}
+        </p>
+      ) : null}
       <BottomSheet open={open} onOpenChange={setOpen} title={label}>
         <ul role="listbox" aria-label={label} className="flex flex-col">
           {options.map((option) => {

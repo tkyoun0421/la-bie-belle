@@ -56,6 +56,16 @@ describe("Button", () => {
     );
   });
 
+  it("loading이면 disabled={false}를 명시해도 클릭이 막힌다(중복 제출 방지)", () => {
+    render(
+      <Button loading disabled={false}>
+        저장
+      </Button>,
+    );
+
+    expect(screen.getByRole("button", { name: "저장" })).toBeDisabled();
+  });
+
   it("클릭하면 onClick이 호출된다", async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();

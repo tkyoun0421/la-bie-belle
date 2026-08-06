@@ -1,8 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Chip } from "@/shared/ui/chip";
+
+afterEach(cleanup);
 
 describe("Chip", () => {
   it("button role로 렌더되고 selected 상태를 aria-pressed로 전달한다", () => {

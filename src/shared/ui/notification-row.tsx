@@ -21,12 +21,12 @@ export function NotificationRow({
     <button
       type="button"
       onClick={onPress}
-      aria-label={unread ? `읽지 않음. ${title}` : title}
       className={cn(
         "flex w-full items-start gap-2 border-b border-border py-3 text-left",
         className,
       )}
     >
+      {unread ? <span className="sr-only">읽지 않음.</span> : null}
       {unread ? (
         <span aria-hidden className="mt-2 size-2 shrink-0 rounded-pill bg-action" />
       ) : (
@@ -38,7 +38,7 @@ export function NotificationRow({
         </span>
         <span className="typo-caption text-text-muted">{body}</span>
       </div>
-      <span className="typo-caption text-text-weak">{relativeTime}</span>
+      <span className="typo-caption text-text">{relativeTime}</span>
     </button>
   );
 }

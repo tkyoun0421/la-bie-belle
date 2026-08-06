@@ -128,4 +128,13 @@ describe("globals.css 디자인 토큰", () => {
   it("prefers-reduced-motion 전역 규칙이 있다", () => {
     expect(css).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)/);
   });
+
+  it("focus-visible에 명확한 action ring이 전역으로 적용된다", () => {
+    const blockPattern = /:focus-visible\s*\{([^}]*)\}/;
+    const match = blockPattern.exec(css);
+    expect(match, "focus-visible 블록이 없습니다").not.toBeNull();
+    const block = match?.[1] ?? "";
+    expect(block).toMatch(/outline/);
+    expect(block).toMatch(/var\(--color-action\)/);
+  });
 });

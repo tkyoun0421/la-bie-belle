@@ -24,14 +24,15 @@ describe("Input", () => {
     );
   });
 
-  it("도움말 텍스트를 aria-describedby로 연결한다", () => {
+  it("도움말 텍스트를 aria-describedby로 연결하고 AA 대비를 만족하는 색을 쓴다", () => {
     render(<Input label="시급" helperText="세전 금액을 입력하세요" />);
 
     const input = screen.getByLabelText("시급");
     const describedById = input.getAttribute("aria-describedby");
-    expect(document.getElementById(describedById ?? "")).toHaveTextContent(
-      "세전 금액을 입력하세요",
-    );
+    const description = document.getElementById(describedById ?? "");
+    expect(description).toHaveTextContent("세전 금액을 입력하세요");
+    expect(description).toHaveClass("text-text");
+    expect(description).not.toHaveClass("text-text-muted");
   });
 
   it("비활성 필드는 값과 비활성 이유를 함께 읽을 수 있다", () => {

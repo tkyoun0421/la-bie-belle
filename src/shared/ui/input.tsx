@@ -43,10 +43,7 @@ export function Input({
         {...props}
       />
       {description ? (
-        <p
-          id={describedById}
-          className={cn("typo-caption", error ? "text-danger" : "text-text-muted")}
-        >
+        <p id={describedById} className={cn("typo-caption", error ? "text-danger" : "text-text")}>
           {description}
         </p>
       ) : null}

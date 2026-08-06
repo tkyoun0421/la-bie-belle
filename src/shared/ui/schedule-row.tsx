@@ -30,7 +30,6 @@ export function ScheduleRow({
     <button
       type="button"
       onClick={onPress}
-      aria-label={`${dateLabel} ${status}`}
       className={cn(
         "flex w-full items-center justify-between gap-3 border-b border-border py-3 text-left",
         className,
@@ -38,14 +37,14 @@ export function ScheduleRow({
     >
       <div className="flex flex-col gap-0.5">
         <span className="typo-body-strong text-text-strong">{dateLabel}</span>
-        <span className="typo-caption text-text-muted">
+        <span className="typo-caption text-text">
           {scheduledStart} - {scheduledEnd}
         </span>
         {changeNote ? <span className="typo-caption text-action">{changeNote}</span> : null}
       </div>
       <div className="flex flex-col items-end gap-0.5">
         <span className="typo-label text-text">{position}</span>
-        <span className="typo-caption text-text-muted">{status}</span>
+        <span className="typo-caption text-text">{status}</span>
       </div>
     </button>
   );

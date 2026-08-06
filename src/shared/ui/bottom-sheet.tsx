@@ -36,7 +36,7 @@ export function BottomSheet({
           <div className="shrink-0 px-4 pt-4 pb-2">
             <Drawer.Title className="typo-title text-text-strong">{title}</Drawer.Title>
             {description ? (
-              <Drawer.Description className="typo-caption text-text-muted">
+              <Drawer.Description className="typo-caption text-text">
                 {description}
               </Drawer.Description>
             ) : null}

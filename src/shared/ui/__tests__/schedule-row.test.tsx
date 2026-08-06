@@ -34,9 +34,35 @@ describe("ScheduleRow", () => {
       />,
     );
 
-    expect(screen.getByText("09:00 - 18:00")).toBeInTheDocument();
+    const timeRange = screen.getByText("09:00 - 18:00");
+    expect(timeRange).toBeInTheDocument();
+    expect(timeRange).toHaveClass("text-text");
+    expect(timeRange).not.toHaveClass("text-text-muted");
+
     expect(screen.getByText("플로어")).toBeInTheDocument();
-    expect(screen.getByText("확정")).toBeInTheDocument();
+
+    const status = screen.getByText("확정");
+    expect(status).toBeInTheDocument();
+    expect(status).toHaveClass("text-text");
+    expect(status).not.toHaveClass("text-text-muted");
+  });
+
+  it("접근 가능한 이름에 예정 출퇴근과 포지션도 포함된다(aria-label이 콘텐츠를 덮지 않는다)", () => {
+    render(
+      <ScheduleRow
+        date={new Date(2026, 7, 3)}
+        scheduledStart="09:00"
+        scheduledEnd="18:00"
+        position="플로어"
+        status="확정"
+        onPress={() => {}}
+      />,
+    );
+
+    const button = screen.getByRole("button", { name: /8월 3일/ });
+    expect(button).toHaveAccessibleName(/09:00/);
+    expect(button).toHaveAccessibleName(/18:00/);
+    expect(button).toHaveAccessibleName(/플로어/);
   });
 
   it("본인과 관련된 변경 설명을 보여준다", () => {

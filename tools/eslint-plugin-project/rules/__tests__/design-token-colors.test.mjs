@@ -33,6 +33,16 @@ describe("design-token-colors", () => {
         filename: "src/shared/ui/badge.tsx",
         code: 'export const a = "bg-neutral-surface text-neutral";',
       },
+      {
+        name: "hex처럼 시작하지 않는 anchor 문자열은 허용한다(과잉 탐지 방지)",
+        filename: "src/shared/ui/badge.tsx",
+        code: 'export const a = "#section";',
+      },
+      {
+        name: "style 속성 밖의 hex 문자열은 허용한다(매니페스트 색상 등 무관한 문맥, 과잉 탐지 방지)",
+        filename: "src/shared/ui/badge.tsx",
+        code: 'export const manifestColor = "#0052ff";',
+      },
     ],
     invalid: [
       {
@@ -70,6 +80,48 @@ describe("design-token-colors", () => {
         filename: "src/shared/ui/badge.tsx",
         code: "export const a = `text-gray-500 font-bold`;",
         errors: [{ messageId: "defaultPalette" }],
+      },
+      {
+        name: "불투명도 수식이 붙은 기본 팔레트도 막는다",
+        filename: "src/shared/ui/badge.tsx",
+        code: 'export const a = "bg-black/40";',
+        errors: [{ messageId: "defaultPalette" }],
+      },
+      {
+        name: "불투명도 수식이 붙은 shade 팔레트도 막는다",
+        filename: "src/shared/ui/badge.tsx",
+        code: 'export const a = "text-gray-500/80";',
+        errors: [{ messageId: "defaultPalette" }],
+      },
+      {
+        name: "앞쪽 important 수식(!) 팔레트도 막는다",
+        filename: "src/shared/ui/badge.tsx",
+        code: 'export const a = "!bg-gray-200";',
+        errors: [{ messageId: "defaultPalette" }],
+      },
+      {
+        name: "뒤쪽 important 수식(!) 팔레트도 막는다",
+        filename: "src/shared/ui/badge.tsx",
+        code: 'export const a = "bg-gray-200!";',
+        errors: [{ messageId: "defaultPalette" }],
+      },
+      {
+        name: "JSX style 속성의 hex 문자열도 막는다",
+        filename: "src/shared/ui/badge.tsx",
+        code: 'export const Foo = () => <div style={{ color: "#fff7d6" }} />;',
+        errors: [{ messageId: "arbitraryColor" }],
+      },
+      {
+        name: "JSX style 속성의 rgb() 문자열도 막는다",
+        filename: "src/shared/ui/badge.tsx",
+        code: 'export const Foo = () => <div style={{ color: "rgb(0,0,0)" }} />;',
+        errors: [{ messageId: "arbitraryColor" }],
+      },
+      {
+        name: "임의값으로 원시 CSS 변수를 직접 참조하는 것도 막는다",
+        filename: "src/shared/ui/badge.tsx",
+        code: 'export const a = "bg-[var(--raw-blue-500)]";',
+        errors: [{ messageId: "arbitraryColor" }],
       },
     ],
   });

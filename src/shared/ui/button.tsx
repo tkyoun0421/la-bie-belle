@@ -43,7 +43,7 @@ export function Button({
 }: ButtonProps) {
   const reasonId = useId();
   const Component = asChild ? Slot : "button";
-  const isDisabled = disabled ?? loading;
+  const isDisabled = disabled || loading;
 
   return (
     <>

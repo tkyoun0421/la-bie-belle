@@ -43,6 +43,24 @@ describe("SelectField", () => {
     expect(screen.getByRole("button", { name: "근무지 선택하세요" })).toBeInTheDocument();
   });
 
+  it("오류가 있으면 필드 아래 렌더되고 aria-invalid·aria-describedby로 연결된다", () => {
+    render(
+      <SelectField
+        label="근무지"
+        value={null}
+        options={OPTIONS}
+        onChange={() => {}}
+        error="근무지를 선택하세요"
+      />,
+    );
+
+    const trigger = screen.getByRole("button", { name: /근무지/ });
+    expect(trigger).toHaveAttribute("aria-invalid", "true");
+    const describedById = trigger.getAttribute("aria-describedby");
+    expect(describedById).toBeTruthy();
+    expect(document.getElementById(describedById ?? "")).toHaveTextContent("근무지를 선택하세요");
+  });
+
   it("클릭하면 바텀시트가 열리고 옵션을 고르면 onChange 후 닫힌다", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

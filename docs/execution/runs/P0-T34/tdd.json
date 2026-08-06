@@ -203,6 +203,90 @@
       "exit_code": 0,
       "at": "2026-08-06T02:12:32.000Z",
       "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/calendar.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T02:46:45.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/calendar.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T02:47:11.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/select-field.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T02:47:53.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/select-field.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T02:48:14.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/button.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T02:48:31.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/button.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T02:48:44.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/design-token-colors.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-06T02:49:22.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/design-token-colors.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-06T02:51:56.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T02:52:40.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T02:52:58.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/input.test.tsx src/shared/ui/__tests__/bottom-sheet.test.tsx src/shared/ui/__tests__/notification-row.test.tsx src/shared/ui/__tests__/schedule-row.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T02:55:21.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/input.test.tsx src/shared/ui/__tests__/bottom-sheet.test.tsx src/shared/ui/__tests__/notification-row.test.tsx src/shared/ui/__tests__/schedule-row.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T02:55:59.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/notification-row.test.tsx src/shared/ui/__tests__/schedule-row.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-06T02:56:37.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/notification-row.test.tsx src/shared/ui/__tests__/schedule-row.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-06T02:57:03.000Z",
+      "phase": "green"
     }
   ]
 }
