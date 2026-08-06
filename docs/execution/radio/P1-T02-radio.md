@@ -1,9 +1,9 @@
 # P1-T02 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 2
+- revision: 3
 - 기획 승인: user, 2026-08-06
-- 개발 설계 승인: user, 2026-08-06 (revision 2는 MUST 위계가 정한 보정 — 아래 개정 이력)
+- 개발 설계 승인: user, 2026-08-06 (revision 2·3은 MUST 위계가 정한 보정 — 아래 개정 이력)
 
 ## 개정 이력
 
@@ -11,6 +11,7 @@
 | --- | --- | --- |
 | 1 | 2026-08-06 | 최초 작성. 기획 인터뷰 확정 6건(enum 5종 전체·휴대폰 unique·성별 2값·연령 하한 없음·정적 문의 문구·처리방침 편입) 반영. 기존 E2E와의 충돌 2건(지원 코드 insert·탭 진입 전제)을 설계에 명시. |
 | 2 | 2026-08-06 | 구현 전 발견된 정본 충돌 보정: P0-T03이 사람 속성용으로 예약한 기존 `gender` enum이 있는데 revision 1이 `profile_gender` 신설을 지시해 `DEV-SSOT-01` MUST와 충돌했다. MUST는 RADIO로 면제되지 않으므로 기존 `gender` 재사용으로 정정(값 집합 male·female 불변, 사용자 재량 없는 위계 보정). |
+| 3 | 2026-08-06 | 구현 전 발견된 레이어 충돌 보정: `require-active-profile` 헬퍼를 `shared/lib`에 두면 shared→entities import가 `DEV-ARCH-01` MUST에 막히고 자체 조회 구현은 `DEV-REUSE-04`·`DEV-SSOT-01` MUST를 어긴다. 파일 위치만 `entities/identity/api`로 이동(함수 이름·시그니처·첫 줄 소비 계약·소비자 전부 불변, 사용자 재량 없는 위계 보정). |
 
 - 관련 spec: PRD:AC-12, DOMAIN:IDENTITY, ADR:0002
 - 적용 깊이: 심화 (PII 수집 시작점 — 서버 검증·RLS·상태 가드가 본체다)
@@ -75,7 +76,7 @@
 - `src/entities/identity/model/signup.ts`: Zod 스키마(4필드)·`normalizePhone`·검증 메시지 코드 매핑 — 단위 테스트 소유. `model/profile-gate.ts`: `resolveProfileGate(profile | null, pathname)` 순수 함수 — 무프로필→온보딩, pending→/pending, active→탭(온보딩·pending 접근 시 홈) 판정.
 - `src/entities/identity/api/find-own-profile.ts`: status 포함 조회로 확장(기존 typed Result 계약 유지).
 - `src/features/signup/api/submit-signup.ts`(Server Action, server-only): getUser → 프로필 부재 확인 → Zod 검증 → insert(pending) → `/pending` redirect. 실패는 `{ ok: false, code, fieldErrors? }`. `src/features/signup/hooks/useSignupForm.ts`: `useActionState` 오케스트레이션. `src/features/signup/ui/SignupForm.tsx`: client leaf(배선만).
-- `src/shared/lib/require-active-profile.ts`(server-only): 이후 모든 활성 기능 Server Action이 첫 줄에서 소비할 헬퍼 — active가 아니면 레지스트리 코드로 거부. 이번 task에서 계약·테스트를 확립한다.
+- `src/entities/identity/api/require-active-profile.ts`(server-only): 이후 모든 활성 기능 Server Action이 첫 줄에서 소비할 헬퍼 — active가 아니면 레지스트리 코드로 거부. 이번 task에서 계약·테스트를 확립한다. features(rank 3)→entities(rank 4) 방향이라 모든 미래 Server Action이 규칙 위반 없이 소비한다(revision 3 — shared/lib에서 이동).
 - `src/app/(tabs)/layout.tsx`: 서버에서 프로필 조회 → `resolveProfileGate` 적용(무프로필·pending 리다이렉트). `src/app/onboarding/page.tsx`·`src/app/pending/page.tsx`도 같은 판정 소비. proxy는 무수정(인증만 — DB 조회 없음 유지).
 - `src/views/onboarding/ui/OnboardingView.tsx`: 자리표시 → 폼 화면(서버 컴포넌트, SignupForm 조립 + 동의 문구·/privacy 링크). `src/views/pending/ui/PendingView.tsx`: 대기 상태 + 정적 문의 문구. `src/views/privacy/ui/PrivacyPolicyView.tsx`: 처리방침 정적 콘텐츠. `src/views/login/ui/LoginView.tsx`: 하단 낮은 계층에 /privacy 링크 추가(F-14).
 - `src/shared/config/auth-routes.config.ts`: `/pending`·`/privacy` 상수 추가. `src/shared/lib/route-access.ts`: 공개 목록에 `/privacy` 추가(정확 열거 유지).
