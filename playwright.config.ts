@@ -1,8 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
 import { STORAGE_STATE_PATH } from "./tests/e2e/global-setup";
+import { resolveSuperAdminFixtureEmail } from "./tests/e2e/support/super-admin-fixture";
 
 const PORT = 3100;
+const SUPER_ADMIN_EMAIL = resolveSuperAdminFixtureEmail();
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -20,5 +22,6 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
+    env: { ...process.env, SUPER_ADMIN_EMAIL },
   },
 });

@@ -3,7 +3,7 @@ import "server-only";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ERROR_CODE } from "@/shared/config/error-codes.config";
-import { PENDING_PATH } from "@/shared/config/auth-routes.config";
+import { HOME_PATH, PENDING_PATH } from "@/shared/config/auth-routes.config";
 
 vi.mock("server-only", () => ({}));
 
@@ -15,10 +15,12 @@ const createSupabaseServerClient = vi.fn(async () => ({
   from,
 }));
 const findOwnProfile = vi.fn();
+const bootstrapSuperAdmin = vi.fn();
 const redirect = vi.fn();
 
 vi.mock("@/shared/lib/supabase-server", () => ({ createSupabaseServerClient }));
 vi.mock("@/entities/identity/api/find-own-profile", () => ({ findOwnProfile }));
+vi.mock("@/entities/identity/api/bootstrap-super-admin", () => ({ bootstrapSuperAdmin }));
 vi.mock("next/navigation", () => ({ redirect }));
 
 function validInput(overrides: Partial<Record<string, string>> = {}) {
@@ -36,6 +38,8 @@ beforeEach(() => {
   insert.mockReset();
   from.mockClear();
   findOwnProfile.mockReset();
+  bootstrapSuperAdmin.mockReset();
+  bootstrapSuperAdmin.mockResolvedValue({ ok: true, active: false });
   redirect.mockReset();
 });
 
@@ -92,8 +96,11 @@ describe("submitSignup", () => {
     expect(insert).not.toHaveBeenCalled();
   });
 
-  it("유효 입력이면 정규화된 휴대폰으로 pending 행을 insert하고 /pending으로 이동한다", async () => {
-    getUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
+  it("유효 입력이면 정규화된 휴대폰으로 pending 행을 insert하고 bootstrap 미승격이면 /pending으로 이동한다", async () => {
+    getUser.mockResolvedValue({
+      data: { user: { id: "user-1", email: "worker@labiebelle.test" } },
+      error: null,
+    });
     findOwnProfile.mockResolvedValue({ ok: true, data: null });
     insert.mockResolvedValue({ error: null });
 
@@ -108,10 +115,41 @@ describe("submitSignup", () => {
       gender: "male",
       birth_date: "1990-01-01",
     });
+    expect(bootstrapSuperAdmin).toHaveBeenCalledWith("worker@labiebelle.test");
     expect(redirect).toHaveBeenCalledWith(PENDING_PATH);
   });
 
-  it("휴대폰 unique 위반이면 IDENTITY_PHONE_TAKEN을 반환한다", async () => {
+  it("SUPER_ADMIN_EMAIL 일치자는 insert 직후 bootstrap이 승격되면 홈으로 이동한다", async () => {
+    getUser.mockResolvedValue({
+      data: { user: { id: "user-1", email: "super-admin@labiebelle.test" } },
+      error: null,
+    });
+    findOwnProfile.mockResolvedValue({ ok: true, data: null });
+    insert.mockResolvedValue({ error: null });
+    bootstrapSuperAdmin.mockResolvedValue({ ok: true, active: true });
+
+    const { submitSignup } = await import("@/features/signup/api/submit-signup");
+    await submitSignup(validInput());
+
+    expect(redirect).toHaveBeenCalledWith(HOME_PATH);
+  });
+
+  it("bootstrap RPC가 실패하면 기존 흐름대로 /pending으로 이동한다", async () => {
+    getUser.mockResolvedValue({
+      data: { user: { id: "user-1", email: "super-admin@labiebelle.test" } },
+      error: null,
+    });
+    findOwnProfile.mockResolvedValue({ ok: true, data: null });
+    insert.mockResolvedValue({ error: null });
+    bootstrapSuperAdmin.mockResolvedValue({ ok: false });
+
+    const { submitSignup } = await import("@/features/signup/api/submit-signup");
+    await submitSignup(validInput());
+
+    expect(redirect).toHaveBeenCalledWith(PENDING_PATH);
+  });
+
+  it("휴대폰 unique 위반이면 IDENTITY_PHONE_TAKEN을 반환하고 bootstrap을 호출하지 않는다", async () => {
     getUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
     findOwnProfile.mockResolvedValue({ ok: true, data: null });
     insert.mockResolvedValue({
@@ -130,6 +168,7 @@ describe("submitSignup", () => {
     }
     expect(result.code).toBe(ERROR_CODE.IDENTITY_PHONE_TAKEN);
     expect(result.fieldErrors?.phone).toBeTruthy();
+    expect(bootstrapSuperAdmin).not.toHaveBeenCalled();
     expect(redirect).not.toHaveBeenCalled();
   });
 

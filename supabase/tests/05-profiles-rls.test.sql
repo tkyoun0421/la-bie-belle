@@ -18,8 +18,8 @@ select is(
 );
 select is(
   (select count(*)::int from pg_policies where schemaname = 'public' and tablename = 'profiles'),
-  2,
-  'profiles has exactly two policies (select own, insert own pending)'
+  3,
+  'profiles has exactly three policies (select own, insert own pending, select admin)'
 );
 
 insert into auth.users (id) values

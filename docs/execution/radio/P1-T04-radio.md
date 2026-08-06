@@ -1,15 +1,16 @@
 # P1-T04 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-06
-- 개발 설계 승인: user, 2026-08-07
+- 개발 설계 승인: user, 2026-08-07 (revision 2는 사용자 재량 없는 보정 — 아래 개정 이력)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-06 | 최초 작성. 기획 인터뷰 확정(권한 판정 DB 정본 단일화·worker 암묵·bootstrap 자동 active와 pending 승격·/admin 셸과 임명 최소 화면·감사 기록 최초 도입) 반영. 기존 pgTAP의 정책 개수 고정 단언(05, exactly two policies)과의 충돌을 설계에 명시. |
+| 2 | 2026-08-07 | 구현 중 발견된 범위 선언 누락 보정: revision 1의 미결 사항이 E2E env 처리 방식을 구현에 위임했고, 확정된 방식(Playwright `webServer.env`로 스폰 프로세스에만 `SUPER_ADMIN_EMAIL` 주입 — `.env` 무수정)이 요구하는 `playwright.config.ts`가 변경 허용 경로에 없어 `gate:scope`가 차단했다. 이미 위임된 결정의 이행 경로라 새 제품·기술 판단이 없으므로 허용 경로에 한 줄을 추가한다(사용자 재량 없는 보정, P1-T01 rev4 전례). Architecture·미결 사항 절 동반 갱신. |
 
 - 관련 spec: PRD:AC-12, DOMAIN:IDENTITY, ADR:0002
 - 적용 깊이: 심화 (권한 판정 정본의 최초 확립 — 이후 모든 RLS·서버 검사가 이 위에 선다)
@@ -91,7 +92,7 @@
 - `src/app/(protected)/admin/layout.tsx`: `find-own-roles` → admin 미만이면 홈 리다이렉트(역할 가드 소유). `admin/page.tsx`: 관리자 홈(최소 — 역할 관리 진입, P1-T03이 메뉴 확장). `admin/roles/page.tsx`: super_admin 아니면 `/admin` 리다이렉트 후 `AdminRolesView` 렌더.
 - `src/views/admin/ui/AdminRolesView.tsx`(서버 컴포넌트): 목록 + RoleActionButtons 조립. `src/views/more/ui/MoreView.tsx`: 역할 보유 시 관리자 진입 링크 노출(서버 조회 결과 소비, UI는 조건 렌더만).
 - `src/shared/config/auth-routes.config.ts`: `/admin`·`/admin/roles` 상수 추가. `route-access.ts` 공개 목록 무수정(보호가 기본값).
-- `tests/e2e/roles.spec.ts`: bootstrap 완주(로그인→온보딩 제출→자동 active→/admin 진입)·임명→피임명자 진입·해제 즉시 차단·비관리자 차단. `global-setup`: `SUPER_ADMIN_EMAIL` 사용자 픽스처 추가(기존 사용자와 이메일 분리 유지).
+- `tests/e2e/roles.spec.ts`: bootstrap 완주(로그인→온보딩 제출→자동 active→/admin 진입)·임명→피임명자 진입·해제 즉시 차단·비관리자 차단. `global-setup`: `SUPER_ADMIN_EMAIL` 사용자 픽스처 추가(기존 사용자와 이메일 분리 유지). 픽스처 이메일은 Playwright 실행당 1회 무작위 생성하고 `playwright.config.ts`의 `webServer.env`로 스폰되는 앱 프로세스에만 주입한다 — `.env`·`.env.local`은 건드리지 않는다(revision 2, Next.js env 로드 우선순위 `process.env` 우선 근거).
 
 ## Data model
 
@@ -126,6 +127,7 @@ src/shared/config/**
 supabase/migrations/**
 supabase/tests/**
 tests/**
+playwright.config.ts
 docs/execution/radio/P1-T04-radio.md
 docs/execution/runs/P1-T04/**
 docs/execution/phases/index.jsonl
@@ -135,4 +137,4 @@ docs/execution/phases/index.jsonl
 
 - 관리자 화면(관리자 홈·역할 관리)의 전용 디자인 정본이 없다 — 기존 토큰·컴포넌트로 최소 구성하고 사용자가 검증 단계에서 확인한다. 결정 주체: 사용자.
 - 감사 이벤트 값 집합의 확장(승인·거절 등)은 P1-T03 소유 — 이 task는 bootstrap 승격·임명·해제 3종만 선언한다.
-- 로컬 `.env`의 `SUPER_ADMIN_EMAIL` 실값 설정은 사용자 소유다(현재 placeholder면 E2E가 픽스처 이메일로 대체 설정하는 방식을 구현이 확정).
+- 로컬 `.env`의 `SUPER_ADMIN_EMAIL` 실값 설정은 사용자 소유다. E2E의 대체 설정 방식은 구현이 확정했다(revision 2): 실행별 무작위 픽스처 이메일을 `webServer.env`로 주입 — `.env` 무수정, 반복 실행 간 상태 충돌 없음.

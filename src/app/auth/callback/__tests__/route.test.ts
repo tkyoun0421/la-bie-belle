@@ -8,13 +8,17 @@ const createSupabaseServerClient = vi.fn(async () => ({
   auth: { exchangeCodeForSession },
 }));
 const findOwnProfile = vi.fn();
+const bootstrapSuperAdmin = vi.fn();
 
 vi.mock("@/shared/lib/supabase-server", () => ({ createSupabaseServerClient }));
 vi.mock("@/entities/identity/api/find-own-profile", () => ({ findOwnProfile }));
+vi.mock("@/entities/identity/api/bootstrap-super-admin", () => ({ bootstrapSuperAdmin }));
 
 beforeEach(() => {
   exchangeCodeForSession.mockReset();
   findOwnProfile.mockReset();
+  bootstrapSuperAdmin.mockReset();
+  bootstrapSuperAdmin.mockResolvedValue({ ok: true, active: false });
 });
 
 afterEach(() => {
@@ -25,8 +29,8 @@ function callbackRequest(query: string) {
   return new NextRequest(`http://localhost:3000/auth/callback${query}`);
 }
 
-function exchangeSuccess(userId: string) {
-  return { data: { user: { id: userId }, session: {} }, error: null };
+function exchangeSuccess(userId: string, email = "user@labiebelle.test") {
+  return { data: { user: { id: userId, email }, session: {} }, error: null };
 }
 
 describe("GET /auth/callback", () => {
@@ -57,6 +61,7 @@ describe("GET /auth/callback", () => {
 
     expect(response.headers.get("location")).toBe("http://localhost:3000/login?error=auth");
     expect(findOwnProfile).not.toHaveBeenCalled();
+    expect(bootstrapSuperAdmin).not.toHaveBeenCalled();
   });
 
   it("같은 코드를 재사용하면 두 번째 요청은 교환 실패 경로로 처리된다", async () => {
@@ -113,5 +118,44 @@ describe("GET /auth/callback", () => {
     const response = await GET(callbackRequest("?code=abc"));
 
     expect(response.headers.get("location")).toBe("http://localhost:3000/login?error=auth");
+  });
+
+  it("코드 교환 성공 시 교환된 사용자 이메일로 bootstrapSuperAdmin을 먼저 호출한 뒤 findOwnProfile을 조회한다", async () => {
+    exchangeCodeForSession.mockResolvedValue(
+      exchangeSuccess("user-1", "super-admin@labiebelle.test"),
+    );
+    findOwnProfile.mockResolvedValue({ ok: true, data: { status: "active" } });
+
+    const { GET } = await import("@/app/auth/callback/route");
+    await GET(callbackRequest("?code=abc"));
+
+    expect(bootstrapSuperAdmin).toHaveBeenCalledWith("super-admin@labiebelle.test");
+    const bootstrapOrder = bootstrapSuperAdmin.mock.invocationCallOrder[0] ?? 0;
+    const findOwnProfileOrder = findOwnProfile.mock.invocationCallOrder[0] ?? 0;
+    expect(bootstrapOrder).toBeLessThan(findOwnProfileOrder);
+  });
+
+  it("bootstrap RPC가 실패해도(ok:false) 기존 흐름대로 계속 진행한다", async () => {
+    exchangeCodeForSession.mockResolvedValue(exchangeSuccess("user-1"));
+    findOwnProfile.mockResolvedValue({ ok: true, data: { status: "pending" } });
+    bootstrapSuperAdmin.mockResolvedValue({ ok: false });
+
+    const { GET } = await import("@/app/auth/callback/route");
+    const response = await GET(callbackRequest("?code=abc"));
+
+    expect(response.headers.get("location")).toBe("http://localhost:3000/pending");
+  });
+
+  it("비일치 이메일이면 bootstrapSuperAdmin이 무동작(ok:true, active:false)이고 기존 분기가 그대로 유지된다", async () => {
+    exchangeCodeForSession.mockResolvedValue(
+      exchangeSuccess("user-1", "someone-else@labiebelle.test"),
+    );
+    findOwnProfile.mockResolvedValue({ ok: true, data: null });
+
+    const { GET } = await import("@/app/auth/callback/route");
+    const response = await GET(callbackRequest("?code=abc"));
+
+    expect(bootstrapSuperAdmin).toHaveBeenCalledWith("someone-else@labiebelle.test");
+    expect(response.headers.get("location")).toBe("http://localhost:3000/onboarding");
   });
 });

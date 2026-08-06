@@ -98,7 +98,16 @@ const SCREENS: PreviewScreen[] = [
   },
   {
     label: "전체",
-    scenarios: [{ label: "기본", node: <MoreView onSignOut={async () => ({ ok: true })} /> }],
+    scenarios: [
+      {
+        label: "기본",
+        node: <MoreView onSignOut={async () => ({ ok: true })} roles={[]} />,
+      },
+      {
+        label: "관리자",
+        node: <MoreView onSignOut={async () => ({ ok: true })} roles={["worker", "admin"]} />,
+      },
+    ],
   },
   {
     label: "공통",

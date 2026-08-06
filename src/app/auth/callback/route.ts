@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+import { bootstrapSuperAdmin } from "@/entities/identity/api/bootstrap-super-admin";
 import { findOwnProfile } from "@/entities/identity/api/find-own-profile";
 import { resolveProfileGate } from "@/entities/identity/model/profile-gate";
 import { HOME_PATH, LOGIN_ERROR_PATH } from "@/shared/config/auth-routes.config";
@@ -19,6 +20,8 @@ export async function GET(request: NextRequest) {
   if (error) {
     return NextResponse.redirect(new URL(LOGIN_ERROR_PATH, request.url));
   }
+
+  await bootstrapSuperAdmin(data.user.email);
 
   const profileResult = await findOwnProfile(data.user.id);
 

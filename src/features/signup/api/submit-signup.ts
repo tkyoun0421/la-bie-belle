@@ -4,6 +4,7 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 
+import { bootstrapSuperAdmin } from "@/entities/identity/api/bootstrap-super-admin";
 import { findOwnProfile } from "@/entities/identity/api/find-own-profile";
 import {
   createSignupSchema,
@@ -11,7 +12,7 @@ import {
   toSignupFieldErrors,
   type SignupFieldName,
 } from "@/entities/identity/model/signup";
-import { PENDING_PATH } from "@/shared/config/auth-routes.config";
+import { HOME_PATH, PENDING_PATH } from "@/shared/config/auth-routes.config";
 import { ERROR_CODE, ERROR_CODES, type ErrorCode } from "@/shared/config/error-codes.config";
 import { createSupabaseServerClient } from "@/shared/lib/supabase-server";
 
@@ -80,5 +81,7 @@ export async function submitSignup(input: SubmitSignupInput): Promise<SubmitSign
     return { ok: false, code: ERROR_CODE.COMMON_UNEXPECTED };
   }
 
-  redirect(PENDING_PATH);
+  const bootstrapResult = await bootstrapSuperAdmin(user.email);
+
+  redirect(bootstrapResult.ok && bootstrapResult.active ? HOME_PATH : PENDING_PATH);
 }
