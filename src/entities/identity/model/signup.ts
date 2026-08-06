@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const GENDER_VALUES = ["male", "female"] as const;
+export const GenderValueSchema = z.enum(GENDER_VALUES);
 export type GenderValue = (typeof GENDER_VALUES)[number];
 
 const PHONE_PATTERN = /^01[0-9]{8,9}$/;

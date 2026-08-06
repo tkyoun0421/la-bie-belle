@@ -19,6 +19,7 @@ export const ERROR_CODES = {
   IDENTITY_PHONE_TAKEN: { http: 409, message: "이미 가입된 휴대폰 번호예요" },
   IDENTITY_PROFILE_REQUIRED: { http: 403, message: "가입을 먼저 완료해 주세요" },
   IDENTITY_NOT_ACTIVE: { http: 403, message: "승인 후 이용할 수 있어요" },
+  IDENTITY_ALREADY_PROCESSED: { http: 409, message: "이미 처리된 신청이에요" },
 } as const satisfies Record<`${ErrorDomain}_${string}`, ErrorSpec>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;
@@ -33,4 +34,5 @@ export const ERROR_CODE = {
   IDENTITY_PHONE_TAKEN: "IDENTITY_PHONE_TAKEN",
   IDENTITY_PROFILE_REQUIRED: "IDENTITY_PROFILE_REQUIRED",
   IDENTITY_NOT_ACTIVE: "IDENTITY_NOT_ACTIVE",
+  IDENTITY_ALREADY_PROCESSED: "IDENTITY_ALREADY_PROCESSED",
 } as const satisfies { [K in ErrorCode]: K };

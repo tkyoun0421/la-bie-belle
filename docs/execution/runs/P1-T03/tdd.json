@@ -1,0 +1,172 @@
+{
+  "entries": [
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/audit-event.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T08:09:44+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/audit-event.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T08:09:57+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/approval.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T08:10:23+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/approval.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T08:10:31+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/signup.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T08:10:45+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/signup.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T08:10:53+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/profile-gate.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T08:11:26+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/profile-gate.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T08:11:38+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/format-date-time-seoul.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T08:11:47+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/format-date-time-seoul.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T08:11:58+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/list-pending-profiles.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T08:12:24+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/list-pending-profiles.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T08:12:33+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-07T08:17:39+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-07T08:18:26+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/approval/api/__tests__/approve-signup.test.ts src/features/approval/api/__tests__/reject-signup.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T08:19:14+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/approval/api/__tests__/approve-signup.test.ts src/features/approval/api/__tests__/reject-signup.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T08:19:30+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/approval/hooks/__tests__/useApprovalActions.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T08:19:47+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/approval/hooks/__tests__/useApprovalActions.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T08:19:58+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/approval/ui/__tests__/RejectReasonDialog.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T08:20:13+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/approval/ui/__tests__/RejectReasonDialog.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T08:20:23+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/approval/ui/__tests__/ApprovalActionButtons.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T08:20:35+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/approval/ui/__tests__/ApprovalActionButtons.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T08:20:44+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin/model/__tests__/gender-label.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T08:21:03+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin/model/__tests__/gender-label.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T08:21:10+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin/ui/__tests__/ApprovalListView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T08:21:23+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin/ui/__tests__/ApprovalListView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T08:21:35+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/rejected/ui/__tests__/RejectedView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T08:21:44+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/rejected/ui/__tests__/RejectedView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T08:21:52+09:00",
+      "phase": "green"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import {
   LOGIN_PATH,
   ONBOARDING_PATH,
   PENDING_PATH,
+  REJECTED_PATH,
 } from "@/shared/config/auth-routes.config";
 import { ERROR_CODE } from "@/shared/config/error-codes.config";
 
@@ -34,9 +35,24 @@ describe("resolveProfileGate", () => {
     expect(resolveProfileGate({ status: "pending" }, ONBOARDING_PATH)).toBe(PENDING_PATH);
   });
 
-  it("rejected 사용자는 pending과 같은 대기 화면으로 보낸다(임시)", () => {
-    expect(resolveProfileGate({ status: "rejected" }, HOME_PATH)).toBe(PENDING_PATH);
-    expect(resolveProfileGate({ status: "rejected" }, PENDING_PATH)).toBeNull();
+  it("rejected 사용자가 /rejected에 있으면 통과시킨다", () => {
+    expect(resolveProfileGate({ status: "rejected" }, REJECTED_PATH)).toBeNull();
+  });
+
+  it("rejected 사용자가 보호 탭에 있으면 /rejected로 보낸다", () => {
+    expect(resolveProfileGate({ status: "rejected" }, HOME_PATH)).toBe(REJECTED_PATH);
+  });
+
+  it("rejected 사용자가 /pending에 있으면 /rejected로 보낸다(임시 합류 제거)", () => {
+    expect(resolveProfileGate({ status: "rejected" }, PENDING_PATH)).toBe(REJECTED_PATH);
+  });
+
+  it("rejected 사용자가 /onboarding에 있으면 /rejected로 보낸다", () => {
+    expect(resolveProfileGate({ status: "rejected" }, ONBOARDING_PATH)).toBe(REJECTED_PATH);
+  });
+
+  it("pending 사용자가 /rejected에 있으면 /pending으로 보낸다", () => {
+    expect(resolveProfileGate({ status: "pending" }, REJECTED_PATH)).toBe(PENDING_PATH);
   });
 
   it("active 사용자가 보호 탭에 있으면 통과시킨다", () => {
@@ -49,6 +65,10 @@ describe("resolveProfileGate", () => {
 
   it("active 사용자가 /pending에 있으면 홈으로 보낸다", () => {
     expect(resolveProfileGate({ status: "active" }, PENDING_PATH)).toBe(HOME_PATH);
+  });
+
+  it("active 사용자가 /rejected에 있으면 홈으로 보낸다", () => {
+    expect(resolveProfileGate({ status: "active" }, REJECTED_PATH)).toBe(HOME_PATH);
   });
 });
 
@@ -85,6 +105,13 @@ describe("resolveProfileAccess", () => {
     expect(resolveProfileAccess({ ok: true, data: { status: "pending" } }, HOME_PATH)).toEqual({
       kind: "redirect",
       to: PENDING_PATH,
+    });
+  });
+
+  it("조회 성공 + rejected면 /rejected로 redirect를 반환한다", () => {
+    expect(resolveProfileAccess({ ok: true, data: { status: "rejected" } }, HOME_PATH)).toEqual({
+      kind: "redirect",
+      to: REJECTED_PATH,
     });
   });
 

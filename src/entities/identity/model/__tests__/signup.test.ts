@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   createSignupSchema,
+  GenderValueSchema,
   normalizePhone,
   toSignupFieldErrors,
 } from "@/entities/identity/model/signup";
@@ -17,6 +18,17 @@ describe("normalizePhone", () => {
 
   it("이미 숫자만 있으면 그대로 반환한다", () => {
     expect(normalizePhone("01012345678")).toBe("01012345678");
+  });
+});
+
+describe("GenderValueSchema", () => {
+  it("male·female을 허용한다", () => {
+    expect(GenderValueSchema.safeParse("male").success).toBe(true);
+    expect(GenderValueSchema.safeParse("female").success).toBe(true);
+  });
+
+  it("등록되지 않은 값은 거부한다", () => {
+    expect(GenderValueSchema.safeParse("other").success).toBe(false);
   });
 });
 

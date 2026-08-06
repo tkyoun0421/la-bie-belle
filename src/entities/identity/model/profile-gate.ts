@@ -5,6 +5,7 @@ import {
   LOGIN_PATH,
   ONBOARDING_PATH,
   PENDING_PATH,
+  REJECTED_PATH,
 } from "@/shared/config/auth-routes.config";
 import { ERROR_CODE, type ErrorCode } from "@/shared/config/error-codes.config";
 
@@ -30,7 +31,13 @@ export function resolveProfileGate(
   }
 
   if (profile.status === "active") {
-    return pathname === ONBOARDING_PATH || pathname === PENDING_PATH ? HOME_PATH : null;
+    return pathname === ONBOARDING_PATH || pathname === PENDING_PATH || pathname === REJECTED_PATH
+      ? HOME_PATH
+      : null;
+  }
+
+  if (profile.status === "rejected") {
+    return pathname === REJECTED_PATH ? null : REJECTED_PATH;
   }
 
   return pathname === PENDING_PATH ? null : PENDING_PATH;
