@@ -97,12 +97,17 @@
 - [x] [low] [P0-T35] 시간·날짜·금액 tabular-nums 미적용 — src/views/pay/ui/PayView.tsx
 - [x] [low] [P0-T35] 배정표 정식 담당자 action badge 부재 — src/views/schedule-detail/ui/ScheduleDetailView.tsx
 - [x] [low] [P0-T35] 알림 점·GPS 상태의 보조 기술 미전달 — src/widgets/app-shell/ui/AppShellTabBar.tsx
-- [ ] [medium] [P0-T36] 면제 스냅숏 무추가 불변식이 게이트에서 미강제 — harness/lib/radio-gate.ts
-- [ ] [medium] [P0-T36] 빈 인수 조건 칸·한 칸 구분자가 정상 렌즈 표로 인정 — harness/lib/radio-doc.ts
-- [ ] [medium] [P0-T36] self-test fixture가 운영 radio-lens.json 내용에 결합 — harness/self-test/fixture.ts
-- [ ] [medium] [P0-T36] 허용 경로 파싱이 빈 배열이면 렌즈 검사 조용히 생략(fail-open) — harness/lib/radio-gate.ts
-- [ ] [medium] [P0-T36] 6렌즈 강제가 DEV-TEST-01 '다섯 렌즈' MUST 문구와 충돌(docs/standards 별도 정비 필요) — docs/execution/radio/README.md
-- [ ] [low] [P0-T36] RADIO 본문 재사용·같은 순회 서술과 구현 불일치(이중 읽기) — harness/lib/radio-gate.ts
-- [ ] [low] [P0-T36] 헤더 불일치·행 0개를 '표 없음'으로 뭉뚱그리고 행 단서 부재 — harness/lib/radio-gate.ts
-- [ ] [low] [P0-T36] 렌즈 위반 file·line·스냅숏 부재 경로 단언 없음 — harness/self-test/radio-gate.test.ts
-- [ ] [low] [P0-T36] hasCodePaths·parseRiskLensTable 판별 단위 테스트 부재 — harness/self-test/radio-gate.test.ts
+- [ ] [medium] [P0-T36] 면제 스냅숏 무추가 불변식이 게이트에서 미강제(P0-T39는 스키마 검증만 편입 — 완전 강제는 기준선 설계 필요) — harness/lib/radio-gate.ts
+- [x] [medium] [P0-T36] 빈 인수 조건 칸·한 칸 구분자가 정상 렌즈 표로 인정 — harness/lib/radio-doc.ts
+- [x] [medium] [P0-T36] self-test fixture가 운영 radio-lens.json 내용에 결합 — harness/self-test/fixture.ts
+- [x] [medium] [P0-T36] 허용 경로 파싱이 빈 배열이면 렌즈 검사 조용히 생략(fail-open) — harness/lib/radio-gate.ts
+- [x] [medium] [P0-T36] 6렌즈 강제가 DEV-TEST-01 '다섯 렌즈' MUST 문구와 충돌(docs/standards 별도 정비 필요) — docs/execution/radio/README.md
+- [x] [low] [P0-T36] RADIO 본문 재사용·같은 순회 서술과 구현 불일치(이중 읽기) — harness/lib/radio-gate.ts
+- [x] [low] [P0-T36] 헤더 불일치·행 0개를 '표 없음'으로 뭉뚱그리고 행 단서 부재 — harness/lib/radio-gate.ts
+- [x] [low] [P0-T36] 렌즈 위반 file·line·스냅숏 부재 경로 단언 없음 — harness/self-test/radio-gate.test.ts
+- [x] [low] [P0-T36] hasCodePaths·parseRiskLensTable 판별 단위 테스트 부재 — harness/self-test/radio-gate.test.ts
+- [ ] [medium] [P0-T39] 본문 1회 읽기 계약의 직접 회귀 보호 부재 — harness/self-test/radio-gate.test.ts
+- [ ] [medium] [P0-T39] 렌즈 6열 이름·순서의 문자열 고정 단언 부재 — harness/self-test/radio-doc.test.ts
+- [ ] [low] [P0-T39] revision 2 재봉인 시 Architecture 절 미갱신으로 봉인 문서 내부 상충 — docs/execution/radio/P0-T39-radio.md
+- [ ] [low] [P0-T39] sha256OfFile이 리팩터링 후 죽은 코드로 잔존 — harness/lib/repo.ts
+- [ ] [low] [P0-T39] 승인 해시 계산이 원본 바이트가 아닌 UTF-8 재인코딩 대상 — harness/lib/radio-gate.ts

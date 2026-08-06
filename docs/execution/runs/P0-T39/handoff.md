@@ -45,3 +45,32 @@
 - `docs/execution/radio/P0-T39-radio.md`(조정자 재봉인, revision 2)
 - `docs/execution/phases/index.jsonl`(P0-T39 `in_progress`, `development_approval` revision 2)
 - `docs/execution/runs/P0-T39/tdd.json`
+
+## 2026-08-06 · 검증 단계 종료
+
+- 작업 식별자: P0-T39 (RADIO 렌즈 게이트 정비)
+- 현재 단계: 검증 종료 → done 전환
+- 기준 시각: 2026-08-06
+
+### 확정된 사실
+
+- 교차 검증(opus·codex 병렬 독립 리뷰 + 상대 되물음)을 완료했다. 확정 발견 5건(medium 2·low 3), critical·high 없음. 결과는 `docs/execution/reviews/P0-T39-review.json`(총점 93, 기준 커밋 `bbcb07f6ecffc1ff9d9b571c7c06e1fab4a347d0`)이 소유하고 5건 전부 backlog에 누적했다.
+- 조정자 대조: 변경 11개 파일 전부 봉인 허용 경로 안, RADIO 해시가 revision 2 봉인과 일치, `config/radio-lens.json` 무변경(비목표 준수)을 확인했다.
+- 이 task가 닫은 P0-T36 발견 8건(F-02~F-09)을 backlog에서 `[x]`로 정리했다. F-01(무추가 완전 강제)은 스키마 검증만 편입됐으므로 미해결로 유지한다.
+- 등록 check(`radio-lens-hardening-fixtures`·`typecheck`)를 검증 단계에서 재실행해 통과를 확인했다.
+
+### 미결 사항
+
+- 리뷰어 판단이 갈려 기각된 발견 1건을 기록으로 남긴다: separator-mismatch가 구분자 부재·형식 오류·열 수 불일치 세 원인을 "열 수가 다릅니다" 한 메시지로 보고한다는 opus 지적을, codex가 "봉인 Data model이 그 메시지 하나만 규정했으므로 구현 결함이 아니다"라는 근거로 반박해 기각했다. 진단 세분화는 향후 렌즈 게이트를 다시 여는 task가 있을 때 함께 다룰 후보다 — 결정 주체: 사용자.
+- backlog의 P0-T39 확정 5건(특히 medium 2건 — 1회 읽기·렌즈 열 고정 단언의 회귀 보호)은 다음 정비 기회에 승격 후보다 — 결정 주체: 사용자.
+
+### 다음 행동
+
+1. `index.jsonl`의 P0-T39를 `done`으로 전환하고 대시보드를 재생성한다.
+2. ci-finisher가 기획·봉인·구현·done 4커밋의 push와 CI 감시를 백그라운드로 수행한다.
+3. P0 phase 최종 종료 — P1-T01(Google OAuth와 세션) 기획 인터뷰로 진행한다.
+
+### 증거·산출물 경로
+
+- `docs/execution/reviews/P0-T39-review.json`
+- `docs/execution/reviews/backlog.md`(P0-T39 5건 누적, P0-T36 8건 `[x]` 정리)
