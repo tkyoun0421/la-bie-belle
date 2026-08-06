@@ -37,7 +37,7 @@ export function ScheduleRow({
     >
       <div className="flex flex-col gap-0.5">
         <span className="typo-body-strong text-text-strong">{dateLabel}</span>
-        <span className="typo-caption text-text">
+        <span className="typo-caption text-text tabular-nums">
           {scheduledStart} - {scheduledEnd}
         </span>
         {changeNote ? <span className="typo-caption text-action">{changeNote}</span> : null}

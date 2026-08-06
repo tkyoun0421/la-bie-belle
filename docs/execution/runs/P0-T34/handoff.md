@@ -96,3 +96,31 @@
 - `src/shared/ui/input.tsx`, `bottom-sheet.tsx`, `notification-row.tsx`, `schedule-row.tsx`(+ 각 테스트) — F-06·F-08
 - `src/shared/ui/__tests__/badge.test.tsx`, `chip.test.tsx` — F-14
 - `docs/execution/runs/P0-T34/tdd.json`(RED→GREEN 기록 추가)
+
+## 2026-08-06 · F-13 잔여 수정(schedule-row.tsx tabular-nums 누락 보정)
+
+- 작업 식별자: P0-T34 (디자인 시스템 코드 구현)
+- 현재 단계: 조정자 점검에서 F-13이 schedule-row.tsx에는 미반영 상태로 확인됨 → 보정 수정 → 다음 재검증
+- 기준 시각: 2026-08-06
+- 기준 커밋: `b5fe2b1`(직전 수정 커밋 — 이번 수정은 이 커밋 위 작업 트리 변경이다).
+
+### 확정된 사실
+
+- 직전 절(F-13)은 "schedule-row의 예정 출퇴근 텍스트와 calendar의 날짜 숫자 span에 tabular-nums를 추가했다"고 기록했으나, 실제로는 calendar.tsx에만 적용되고 schedule-row.tsx의 예정 출퇴근 span(`{scheduledStart} - {scheduledEnd}`)에는 반영되지 않았다 — 조정자가 작업 트리와 커밋 diff를 직접 대조해 발견했다.
+- `src/shared/ui/schedule-row.tsx`의 예정 출퇴근 span 클래스를 `typo-caption text-text`에서 `typo-caption text-text tabular-nums`로 고쳤다.
+- `src/shared/ui/__tests__/schedule-row.test.tsx`의 "예정 출퇴근·포지션·상태를 표시한다" 케이스에 `expect(timeRange).toHaveClass("tabular-nums")` 단언을 추가해 RED(`pnpm vitest run src/shared/ui/__tests__/schedule-row.test.tsx`, 2026-08-06T03:34:24.000Z, exit 1)→GREEN(같은 명령, 2026-08-06T03:34:32.000Z, exit 0)을 확인했다.
+- `pnpm verify` 전체를 재실행해 통과를 확인했다(포맷·lint·typecheck·전체 테스트·harness·check:docs·build·e2e·gate:all).
+
+### 미결 사항
+
+- 없음 — 이번 보정으로 F-13은 calendar.tsx·schedule-row.tsx 양쪽 모두에 반영됐다.
+
+### 다음 행동
+
+1. 조정자가 schedule-row.tsx의 tabular-nums 반영을 재확인한다.
+2. 통과 확인 후 index.jsonl의 P0-T34 상태 전환은 조정자가 판단한다.
+
+### 증거·산출물 경로(이번 보정)
+
+- `src/shared/ui/schedule-row.tsx`(+ 테스트) — F-13 잔여분
+- `docs/execution/runs/P0-T34/tdd.json`(RED→GREEN 기록 추가)

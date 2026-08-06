@@ -38,6 +38,7 @@ describe("ScheduleRow", () => {
     expect(timeRange).toBeInTheDocument();
     expect(timeRange).toHaveClass("text-text");
     expect(timeRange).not.toHaveClass("text-text-muted");
+    expect(timeRange).toHaveClass("tabular-nums");
 
     expect(screen.getByText("플로어")).toBeInTheDocument();
 
