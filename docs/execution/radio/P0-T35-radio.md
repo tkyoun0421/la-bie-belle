@@ -1,15 +1,16 @@
 # P0-T35 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-04
-- 개발 설계 승인: user, 2026-08-06
+- 개발 설계 승인: user, 2026-08-06 (revision 2 재승인)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-06 | 최초 작성. 설계 인터뷰 확정: entities 4슬라이스(schedule·attendance·pay·notification), 목은 entities 옆 + route 주입, 전체 탭은 최소 진입판, 상태 확인은 dev 시나리오 전환 페이지. |
+| 2 | 2026-08-06 | 교차 검증 후 수정 라운드를 위해 재승인했다(사용자 결정 2건). ① Tailwind 소스 스캔을 `src/`로 한정하는 `@source` 변경을 범위에 편입하고 허용 경로에 `src/app/globals.css`를 추가했다 — Tailwind가 문서 파일 안 문자열을 클래스로 오인해 dev 서버가 전 라우트 500이며, 교차 검증 F-01(preview 렌더 실패) 수정의 dev 검증이 이 해소에 의존한다. 이에 따라 불변 규칙의 globals.css 변경 금지를 '스캔 한정 변경만 허용'으로 완화했다. ② 목 주입 계약 문구를 구현 현실에 맞게 정정했다(F-09 좁힘 반영): 원자 도메인 fixture는 entities가 소유하고, 화면 조합 목은 view의 ui 세그먼트가 소유하며, route는 조합 목 import 한 줄만 갖는다 — view prop 타입이 ui 세그먼트에 있어 entities가 화면 조합을 소유하면 레이어 방향이 역행하기 때문이다. |
 
 - 관련 spec: DOCS:SDD, PRD:AC-12, PRD:INV-PAY-01, PRD:INV-ATT-01, DOMAIN:SCHEDULING
 - 적용 깊이: 일반 (목 기반 정적 화면·타입 정의. DB·서버 호출·권한·비밀값·캐시 경로 없음)
@@ -20,7 +21,7 @@
 
 ### 범위와 비목표
 
-- 범위: ① [DOMAIN](../../product/DOMAIN.md)의 집합·DTO를 `src/entities/*/model` 타입으로 정의(4슬라이스 — 사용자 결정) ② 같은 슬라이스에 목 fixture와 시나리오 작성 ③ [WORKER-FLOWS](../../product/design/WORKER-FLOWS.md)의 근무자 핵심 화면 6종을 목 props로 정적 구현: 앱 셸과 홈(우선순위 5종·출퇴근 GPS 상태 포함), 일정 달력, 확정 스케줄 상세, 예상 급여와 리허설, 알림함 ④ 전체 탭 최소 진입판(사용자 결정) ⑤ dev 전용 시나리오 전환 페이지(사용자 결정) ⑥ 임시 부트스트랩 화면 제거와 e2e 교체.
+- 범위: ① [DOMAIN](../../product/DOMAIN.md)의 집합·DTO를 `src/entities/*/model` 타입으로 정의(4슬라이스 — 사용자 결정) ② 같은 슬라이스에 목 fixture와 시나리오 작성 ③ [WORKER-FLOWS](../../product/design/WORKER-FLOWS.md)의 근무자 핵심 화면 6종을 목 props로 정적 구현: 앱 셸과 홈(우선순위 5종·출퇴근 GPS 상태 포함), 일정 달력, 확정 스케줄 상세, 예상 급여와 리허설, 알림함 ④ 전체 탭 최소 진입판(사용자 결정) ⑤ dev 전용 시나리오 전환 페이지(사용자 결정) ⑥ 임시 부트스트랩 화면 제거와 e2e 교체 ⑦ Tailwind 소스 스캔을 `src/`로 한정하는 `@source` 변경 — 문서 파일 안 문자열의 클래스 오인으로 깨진 dev 서버 복구(revision 2, 사용자 결정).
 - 비목표(기획 승인 그대로): 로그인·가입·승인 대기·휴면·근무 변경 요청 제출·전체 메뉴 정식판·탈퇴 화면, 서버 연동, 실제 GPS·QR 인증, 푸시 권한 요청, 관리자 화면.
 - 설계 비목표: TanStack Query·서버 상태 관리 도입(기능 구현 라운드 소유), `src/shared/ui` 컴포넌트 수정(부족·결함 발견 시 ask로 반환).
 
@@ -31,7 +32,7 @@
 - 배정표 DTO는 다른 근무자의 전화번호·성별·시급·출결 필드를 **타입 수준에서 정의하지 않는다** — 노출 금지를 렌더가 아니라 데이터 형태로 차단한다.
 - 출퇴근 원본의 수정·삭제 UI를 만들지 않는다(`PRD:INV-ATT-01`). 예상 급여는 `예상` 표시와 실제 지급액 차이 안내를 항상 동반한다(`PRD:INV-PAY-01`). 교육생은 `교육` badge로 구분한다.
 - P0-T34의 의미 토큰·`typo-*`·공용 컴포넌트만 사용한다. 원시 색·임의 색상값 금지는 기존 lint(`project/design-token-colors`)가 강제한다.
-- `src/app/globals.css`·`src/app/catalog/**`·`src/app/manifest.ts`·토큰·폰트 구성은 변경하지 않는다(허용 경로 안이지만 이 task의 대상이 아니다).
+- `src/app/catalog/**`·`src/app/manifest.ts`·토큰·폰트 구성은 변경하지 않는다(허용 경로 안이지만 이 task의 대상이 아니다). `globals.css`는 Tailwind 소스 스캔 한정(`@source`) 변경만 허용한다 — 토큰·타이포·모션 정의는 건드리지 않는다(revision 2).
 - dev 시나리오 페이지는 P0-T34의 `page.dev.tsx` 패턴을 재사용하며 프로덕션 라우트에 존재하지 않는다.
 
 ### 기술 인수 조건
@@ -99,7 +100,7 @@
 ## Interface
 
 - view 컴포넌트는 `<ScreenName>View` 명명으로 props에 DTO만 받는다. 이벤트(신청하기·Undo·탭 이동 등)는 콜백 props이고 이번 라운드에서는 로컬 상태 변경만 한다.
-- 목 주입 계약: route 파일은 `import { <scenario> } from "@/entities/<slice>/model/<aggregate>.mock"` 후 view에 전달하는 것 외의 로직을 갖지 않는다.
+- 목 주입 계약(revision 2 정정): 원자 도메인 fixture는 `entities/*/model/*.mock`이 소유하고, 여러 원자를 화면 형태로 조합한 시나리오 목은 해당 view의 `ui` 세그먼트(`*.mock.ts`)가 소유한다. route 파일은 조합 목 import 한 줄과 view 전달 외의 로직을 갖지 않는다 — 기능 구현 때 이 한 줄이 실조회로 바뀐다.
 - 시나리오 페이지는 fixture 모듈을 열거해 선택 UI를 만든다 — 시나리오 목록의 정본은 entities fixture이며 페이지는 별도 목록을 만들지 않는다.
 
 ## Optimizations
@@ -110,6 +111,7 @@
 ## 변경 허용 경로
 
 ```
+src/app/globals.css
 src/app/**
 src/views/**
 src/widgets/app-shell/**
