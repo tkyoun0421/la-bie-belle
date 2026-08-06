@@ -117,3 +117,26 @@
 - 신규: `src/shared/config/auth-routes.config.ts`, `tests/e2e/support/{supabase-test-auth,mailpit,real-auth-code}.ts`.
 - 삭제: `src/shared/api/supabase-server.ts`, `src/shared/api/__tests__/supabase-server.test.ts`.
 - 로컬 확인: `pnpm verify` 전체 GREEN(`test:e2e` 8/8), `pnpm db:test` GREEN(114 tests, pgTAP 탐지력 증명 포함).
+
+## 2026-08-06 · 검증 단계 종료
+
+- 작업 식별자: P1-T01 (Google OAuth와 세션)
+- 현재 단계: 검증 종료 → done 전환
+- 기준 시각: 2026-08-06
+
+### 확정된 사실
+
+- 교차 검증(opus·codex 병렬 독립 리뷰 + 상대 되물음)을 완료했다. 확정 발견 14건(high 2·medium 7·low 5), 기각 1건(LoginView 표현용 조건부 렌더 — 근거 있는 반박으로 기각, DEV-CODE-09 경계 해석은 개발 단계 기록이 소유). 결과는 `docs/execution/reviews/P1-T01-review.json`(총점 76, 기준 커밋 `597c52ce26300a2e96d83823b2fd9240a9d2bb04`)이 소유한다.
+- 사용자 승인 수정 라운드(revision 5)에서 F-14(승인 범위 밖) 제외 13건을 전부 수정했다(`c720218`, 35 files). backlog의 P1-T01 medium 7·low 4건을 `[x]`로 정리했고 F-14만 미결로 남는다.
+- 조정자 재검증: `pnpm typecheck`·`pnpm test`(74 files/473 tests) 통과 재확인. E2E 8/8·pgTAP 114는 수정 라운드 tdd.json의 GREEN 기록을 증거로 인정한다.
+- 수정 라운드가 실물 결함 2건을 추가로 잡았다: signOut 기본 scope 'global'이 병렬 E2E의 공유 세션을 revoke하는 문제(전용 세션 격리로 해소), 콜백 실 PKCE 교환의 E2E 실현(signInWithOtp + Mailpit 경로).
+
+### 미결 사항
+
+- F-14와 개발 단계 미결 4건은 위 절 그대로 유지된다.
+
+### 다음 행동
+
+1. `index.jsonl`의 P1-T01을 `done`으로 전환하고 대시보드를 재생성한다.
+2. 채택 확정된 DEV-CODE-08·DEV-CODE-09·DEV-ARCH-06을 DEVELOPMENT.md에 적용한다(적용 커밋은 done 이후 — gate:scope 제약).
+3. ci-finisher가 누적 커밋의 push와 CI 감시를 백그라운드로 수행한다.

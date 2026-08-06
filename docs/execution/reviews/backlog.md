@@ -111,3 +111,15 @@
 - [ ] [low] [P0-T39] revision 2 재봉인 시 Architecture 절 미갱신으로 봉인 문서 내부 상충 — docs/execution/radio/P0-T39-radio.md
 - [ ] [low] [P0-T39] sha256OfFile이 리팩터링 후 죽은 코드로 잔존 — harness/lib/repo.ts
 - [ ] [low] [P0-T39] 승인 해시 계산이 원본 바이트가 아닌 UTF-8 재인코딩 대상 — harness/lib/radio-gate.ts
+- [x] [medium] [P1-T01] proxy 리다이렉트 시 갱신 세션 쿠키 유실 — src/proxy.ts
+- [x] [medium] [P1-T01] supabase-proxy-session에 server-only 선언 누락(DEV-ARCH-03) — src/shared/lib/supabase-proxy-session.ts
+- [x] [medium] [P1-T01] sign-out이 DEV-ERR-08 오류 계약(code·문구 정본) 미준수 — src/features/auth/api/sign-out.ts
+- [x] [medium] [P1-T01] 서버 클라이언트 정본이 shared/api·shared/lib로 이원화 — src/shared/api/supabase-server.ts
+- [x] [medium] [P1-T01] pgTAP update 차단 단언이 행 수만 확인 — supabase/tests/05-profiles-rls.test.sql
+- [x] [medium] [P1-T01] E2E global-setup의 env 해석 어긋남·typecheck 대상 밖 — tests/e2e/global-setup.ts
+- [x] [medium] [P1-T01] findOwnProfile 예상 실패의 typed Result 부재(DEV-ERR-01) — src/entities/identity/api/find-own-profile.ts
+- [x] [low] [P1-T01] 공개 경로 판정이 접두어 하위 트리로 확장 — src/shared/lib/route-access.ts
+- [x] [low] [P1-T01] 로그인 경로 리터럴 네 모듈 분산(DEV-CODE-08 후보) — src/shared/lib/route-access.ts
+- [x] [low] [P1-T01] 빈 catch로 인프라 실패 무기록 흡수 — src/app/auth/callback/route.ts
+- [x] [low] [P1-T01] 콜백의 중복 getUser() 왕복 — src/app/auth/callback/route.ts
+- [ ] [low] [P1-T01] 로그인 화면 개인정보·문의 경로 부재(승인 범위 밖 — 후속 정본 정합) — src/views/login/ui/LoginView.tsx
