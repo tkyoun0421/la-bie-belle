@@ -287,6 +287,18 @@
       "exit_code": 0,
       "at": "2026-08-06T06:19:12.000Z",
       "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/format-time-seoul.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T06:38:48.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/format-time-seoul.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T06:38:58.000Z",
+      "phase": "green"
     }
   ]
 }

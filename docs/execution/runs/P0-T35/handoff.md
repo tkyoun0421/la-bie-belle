@@ -94,3 +94,17 @@
 - `src/views/schedule-detail/ui/ScheduleDetailView.tsx`(+ 테스트) — F-12·F-13·F-14
 - `tests/e2e/schedule.spec.ts`(신규) — F-02
 - `docs/execution/runs/P0-T35/tdd.json`(RED→GREEN 기록 추가)
+
+## 2026-08-06 · 사후 CI 핫픽스: Asia/Seoul 시각 고정
+
+- 작업 식별자: P0-T35 (근무자 핵심 화면 퍼블리싱) — `done` 확정 이후 발견된 결함의 사후 수정. 예외 규칙에 따라 `index.jsonl` 상태는 건드리지 않았다(`in_progress` 전환 없음, `done` 유지).
+- CI run: 31077388075 (`app-verify` job 실패)
+- 원인: `src/views/home/ui/HomeView.tsx`가 date-fns `format()`을 타임존 명시 없이 호출해 실행 환경 로컬 타임존에 의존했고, UTC로 도는 CI에서 `confirmedAt`("2026-08-09T08:58:03+09:00")이 "23:58"로 렌더돼 테스트 기대값 "08:58"과 불일치했다.
+- 수정: `src/shared/lib/format-time-seoul.ts`(신규, `Intl.DateTimeFormat`을 `timeZone: "Asia/Seoul"`로 고정해 실행 환경 타임존과 무관하게 동작, 새 의존성 추가 없음)를 만들고 `HomeView`의 서버 확인 시각 표시가 이 유틸을 쓰도록 바꿨다. `src/shared/lib/__tests__/format-time-seoul.test.ts`로 RED(모듈 없음, exit 1)→GREEN(exit 0)을 재현했고 `docs/execution/runs/P0-T35/tdd.json`에 추가 기록했다. `TZ=UTC pnpm vitest run src/views/home/ui/__tests__/HomeView.test.tsx`로 CI 실패 재현·수정 확인을 마쳤다.
+- 수정 커밋: 이 handoff 절을 포함하는 커밋(직후 `git log -1`로 확인). 최종 보고에 정확한 SHA를 남긴다.
+
+### 증거·산출물 경로(사후 핫픽스)
+
+- `src/shared/lib/format-time-seoul.ts`(신규, + 테스트)
+- `src/views/home/ui/HomeView.tsx`(시각 표시 유틸 교체)
+- `docs/execution/runs/P0-T35/tdd.json`(RED→GREEN 기록 추가)

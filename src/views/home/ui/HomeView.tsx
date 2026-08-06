@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 
@@ -7,6 +6,7 @@ import type {
   AttendanceFailureReason,
   AttendanceStatus,
 } from "@/entities/attendance/model/attendance-status";
+import { formatTimeInSeoul } from "@/shared/lib/format-time-seoul";
 import { Button } from "@/shared/ui/button";
 import type { HomeViewModel } from "@/views/home/model/home-priority";
 
@@ -51,7 +51,7 @@ function AttendanceSection({
           <div className="flex flex-col gap-1">
             <p className="typo-body text-text-strong">현장 위치가 확인됐어요</p>
             <p className="typo-caption text-text tabular-nums">
-              서버 확인 시각 {format(new Date(attendanceStatus.confirmedAt), "HH:mm")}
+              서버 확인 시각 {formatTimeInSeoul(attendanceStatus.confirmedAt)}
             </p>
           </div>
         ) : null}
