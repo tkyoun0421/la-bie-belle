@@ -32,28 +32,28 @@ afterEach(() => {
 });
 
 describe("findOwnProfile", () => {
-  it("본인 profile 행이 있으면 { ok: true, data: true }를 반환한다", async () => {
+  it("본인 profile 행이 있으면 { ok: true, data: { status } }를 반환한다", async () => {
     getUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
-    maybeSingle.mockResolvedValue({ data: { id: "user-1" }, error: null });
+    maybeSingle.mockResolvedValue({ data: { status: "pending" }, error: null });
 
     const { findOwnProfile } = await import("@/entities/identity/api/find-own-profile");
     const result = await findOwnProfile();
 
-    expect(result).toEqual({ ok: true, data: true });
+    expect(result).toEqual({ ok: true, data: { status: "pending" } });
     expect(from).toHaveBeenCalledWith("profiles");
-    expect(select).toHaveBeenCalledWith("id");
+    expect(select).toHaveBeenCalledWith("status");
     expect(eq).toHaveBeenCalledWith("id", "user-1");
     expect(getUser).toHaveBeenCalledOnce();
   });
 
-  it("본인 profile 행이 없으면 { ok: true, data: false }를 반환한다", async () => {
+  it("본인 profile 행이 없으면 { ok: true, data: null }를 반환한다", async () => {
     getUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
     maybeSingle.mockResolvedValue({ data: null, error: null });
 
     const { findOwnProfile } = await import("@/entities/identity/api/find-own-profile");
     const result = await findOwnProfile();
 
-    expect(result).toEqual({ ok: true, data: false });
+    expect(result).toEqual({ ok: true, data: null });
   });
 
   it("조회 오류가 있으면 { ok: false, code: COMMON_UNEXPECTED }를 반환한다", async () => {
@@ -77,12 +77,12 @@ describe("findOwnProfile", () => {
   });
 
   it("userId를 인자로 받으면 getUser()를 호출하지 않고 그 id로 바로 조회한다", async () => {
-    maybeSingle.mockResolvedValue({ data: { id: "user-2" }, error: null });
+    maybeSingle.mockResolvedValue({ data: { status: "active" }, error: null });
 
     const { findOwnProfile } = await import("@/entities/identity/api/find-own-profile");
     const result = await findOwnProfile("user-2");
 
-    expect(result).toEqual({ ok: true, data: true });
+    expect(result).toEqual({ ok: true, data: { status: "active" } });
     expect(getUser).not.toHaveBeenCalled();
     expect(eq).toHaveBeenCalledWith("id", "user-2");
   });

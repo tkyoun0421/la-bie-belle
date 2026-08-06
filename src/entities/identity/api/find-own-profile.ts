@@ -1,9 +1,15 @@
 import "server-only";
 
+import {
+  ProfileStatusSchema,
+  type ProfileGateProfile,
+} from "@/entities/identity/model/profile-gate";
 import { createSupabaseServerClient } from "@/shared/lib/supabase-server";
 import { ERROR_CODE, type ErrorCode } from "@/shared/config/error-codes.config";
 
-export type FindOwnProfileResult = { ok: true; data: boolean } | { ok: false; code: ErrorCode };
+export type OwnProfile = ProfileGateProfile | null;
+
+export type FindOwnProfileResult = { ok: true; data: OwnProfile } | { ok: false; code: ErrorCode };
 
 export async function findOwnProfile(userId?: string): Promise<FindOwnProfileResult> {
   const supabase = await createSupabaseServerClient();
@@ -22,7 +28,7 @@ export async function findOwnProfile(userId?: string): Promise<FindOwnProfileRes
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("id")
+    .select("status")
     .eq("id", resolvedUserId)
     .maybeSingle();
 
@@ -30,5 +36,8 @@ export async function findOwnProfile(userId?: string): Promise<FindOwnProfileRes
     return { ok: false, code: ERROR_CODE.COMMON_UNEXPECTED };
   }
 
-  return { ok: true, data: data !== null };
+  return {
+    ok: true,
+    data: data === null ? null : { status: ProfileStatusSchema.parse(data.status) },
+  };
 }

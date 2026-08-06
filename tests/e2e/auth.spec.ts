@@ -10,6 +10,13 @@ import {
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
 
+function randomPhone(): string {
+  const suffix = Math.floor(Math.random() * 1e8)
+    .toString()
+    .padStart(8, "0");
+  return `010${suffix}`;
+}
+
 test.describe("미인증 접근", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
@@ -56,13 +63,24 @@ test.describe("로그아웃", () => {
     const email = `e2e-logout-${randomUUID()}@labiebelle.test`;
     const password = "e2e-logout-password-Aa1!";
 
-    const { error } = await admin.auth.admin.createUser({
+    const { data, error } = await admin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
     });
-    if (error) {
-      throw error;
+    if (error || !data.user) {
+      throw error ?? new Error("테스트 사용자 생성에 실패했습니다.");
+    }
+    const { error: profileError } = await admin.from("profiles").insert({
+      id: data.user.id,
+      name: "이바비",
+      phone: randomPhone(),
+      gender: "female",
+      birth_date: "1990-01-01",
+      status: "active",
+    });
+    if (profileError) {
+      throw profileError;
     }
 
     const cookies = await signInWithPasswordCookies(env, { email, password });
@@ -95,7 +113,14 @@ test.describe("콜백 실제 코드 교환과 온보딩 분기", () => {
     if (error || !data.user) {
       throw error ?? new Error("테스트 사용자 생성에 실패했습니다.");
     }
-    const { error: profileError } = await admin.from("profiles").insert({ id: data.user.id });
+    const { error: profileError } = await admin.from("profiles").insert({
+      id: data.user.id,
+      name: "이바비",
+      phone: randomPhone(),
+      gender: "male",
+      birth_date: "1990-01-01",
+      status: "active",
+    });
     if (profileError) {
       throw profileError;
     }

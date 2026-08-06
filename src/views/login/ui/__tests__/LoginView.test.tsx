@@ -27,4 +27,13 @@ describe("LoginView", () => {
 
     expect(screen.getByRole("alert")).toHaveTextContent("로그인에 실패했어요. 다시 시도해 주세요");
   });
+
+  it("하단에 개인정보 처리방침 링크를 보여준다", () => {
+    render(<LoginView hasAuthError={false} onSignIn={vi.fn()} />);
+
+    expect(screen.getByRole("link", { name: "개인정보 처리방침" })).toHaveAttribute(
+      "href",
+      "/privacy",
+    );
+  });
 });

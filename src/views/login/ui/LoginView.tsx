@@ -1,3 +1,4 @@
+import { PRIVACY_PATH } from "@/shared/config/auth-routes.config";
 import { Button } from "@/shared/ui/button";
 
 type LoginViewProps = {
@@ -22,6 +23,9 @@ export function LoginView({ hasAuthError, onSignIn }: LoginViewProps) {
           </p>
         ) : null}
       </form>
+      <a href={PRIVACY_PATH} className="typo-caption text-text-muted underline">
+        개인정보 처리방침
+      </a>
     </main>
   );
 }

@@ -24,6 +24,7 @@ describe("resolveAuthRedirect", () => {
     expect(resolveAuthRedirect("/auth/callback", false)).toBeNull();
     expect(resolveAuthRedirect("/preview", false)).toBeNull();
     expect(resolveAuthRedirect("/catalog", false)).toBeNull();
+    expect(resolveAuthRedirect("/privacy", false)).toBeNull();
   });
 
   it("공개 경로의 하위 경로는 예외 열거에 없으므로 보호 대상이다", () => {
@@ -40,5 +41,6 @@ describe("resolveAuthRedirect", () => {
     expect(PUBLIC_PATHS).toContain("/auth/callback");
     expect(PUBLIC_PATHS).toContain("/preview");
     expect(PUBLIC_PATHS).toContain("/catalog");
+    expect(PUBLIC_PATHS).toContain("/privacy");
   });
 });

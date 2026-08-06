@@ -1,6 +1,17 @@
-import { AUTH_CALLBACK_PATH, HOME_PATH, LOGIN_PATH } from "@/shared/config/auth-routes.config";
+import {
+  AUTH_CALLBACK_PATH,
+  HOME_PATH,
+  LOGIN_PATH,
+  PRIVACY_PATH,
+} from "@/shared/config/auth-routes.config";
 
-export const PUBLIC_PATHS = [LOGIN_PATH, AUTH_CALLBACK_PATH, "/preview", "/catalog"] as const;
+export const PUBLIC_PATHS = [
+  LOGIN_PATH,
+  AUTH_CALLBACK_PATH,
+  "/preview",
+  "/catalog",
+  PRIVACY_PATH,
+] as const;
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((path) => pathname === path);

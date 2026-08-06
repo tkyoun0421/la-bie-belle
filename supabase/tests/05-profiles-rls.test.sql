@@ -18,17 +18,17 @@ select is(
 );
 select is(
   (select count(*)::int from pg_policies where schemaname = 'public' and tablename = 'profiles'),
-  1,
-  'profiles has exactly one policy'
+  2,
+  'profiles has exactly two policies (select own, insert own pending)'
 );
 
 insert into auth.users (id) values
   ('11111111-1111-1111-1111-111111111111'),
   ('22222222-2222-2222-2222-222222222222');
 
-insert into public.profiles (id) values
-  ('11111111-1111-1111-1111-111111111111'),
-  ('22222222-2222-2222-2222-222222222222');
+insert into public.profiles (id, name, phone, gender, birth_date) values
+  ('11111111-1111-1111-1111-111111111111', '홍길동', '01011110001', 'male', '1990-01-01'),
+  ('22222222-2222-2222-2222-222222222222', '김영희', '01022220002', 'female', '1990-01-01');
 
 set local role anon;
 
@@ -37,7 +37,8 @@ select is_empty(
   'anon reads no profiles'
 );
 select throws_ok(
-  $$insert into profiles (id) values ('33333333-3333-3333-3333-333333333333')$$,
+  $$insert into profiles (id, name, phone, gender, birth_date)
+    values ('33333333-3333-3333-3333-333333333333', '박민수', '01033330003', 'male', '1990-01-01')$$,
   '42501',
   null,
   'anon cannot insert profiles'
@@ -58,10 +59,11 @@ select is(
   'authenticated does not see the other profile row'
 );
 select throws_ok(
-  $$insert into profiles (id) values ('44444444-4444-4444-4444-444444444444')$$,
+  $$insert into profiles (id, name, phone, gender, birth_date)
+    values ('44444444-4444-4444-4444-444444444444', '최지훈', '01044440004', 'male', '1990-01-01')$$,
   '42501',
   null,
-  'authenticated cannot insert profiles (no policy)'
+  'authenticated cannot insert a profile for another id'
 );
 select lives_ok(
   $$update profiles set created_at = '2020-01-01 00:00:00+00' where id = '11111111-1111-1111-1111-111111111111'$$,

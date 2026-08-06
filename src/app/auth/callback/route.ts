@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 import { findOwnProfile } from "@/entities/identity/api/find-own-profile";
-import { HOME_PATH, LOGIN_ERROR_PATH, ONBOARDING_PATH } from "@/shared/config/auth-routes.config";
+import { resolveProfileGate } from "@/entities/identity/model/profile-gate";
+import { HOME_PATH, LOGIN_ERROR_PATH } from "@/shared/config/auth-routes.config";
 import { createSupabaseServerClient } from "@/shared/lib/supabase-server";
 
 export async function GET(request: NextRequest) {
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL(LOGIN_ERROR_PATH, request.url));
   }
 
-  return NextResponse.redirect(
-    new URL(profileResult.data ? HOME_PATH : ONBOARDING_PATH, request.url),
-  );
+  const target = resolveProfileGate(profileResult.data, HOME_PATH) ?? HOME_PATH;
+
+  return NextResponse.redirect(new URL(target, request.url));
 }

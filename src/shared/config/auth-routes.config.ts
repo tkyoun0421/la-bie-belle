@@ -1,6 +1,8 @@
 export const HOME_PATH = "/";
 export const LOGIN_PATH = "/login";
 export const ONBOARDING_PATH = "/onboarding";
+export const PENDING_PATH = "/pending";
+export const PRIVACY_PATH = "/privacy";
 export const AUTH_CALLBACK_PATH = "/auth/callback";
 export const AUTH_ERROR_QUERY_PARAM = "error";
 export const AUTH_ERROR_QUERY_VALUE = "auth";

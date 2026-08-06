@@ -38,10 +38,26 @@ async function ensureTestUser(env: SupabaseTestEnv) {
   return created.user;
 }
 
+async function ensureActiveProfile(env: SupabaseTestEnv, userId: string) {
+  const admin = createClient(env.supabaseUrl, env.serviceRoleKey);
+  const { error } = await admin.from("profiles").upsert({
+    id: userId,
+    name: "이바비",
+    phone: "01000000001",
+    gender: "female",
+    birth_date: "1990-01-01",
+    status: "active",
+  });
+  if (error) {
+    throw error;
+  }
+}
+
 export default async function globalSetup(config: FullConfig) {
   const env = loadSupabaseTestEnv();
 
-  await ensureTestUser(env);
+  const user = await ensureTestUser(env);
+  await ensureActiveProfile(env, user.id);
   const cookies = await signInWithPasswordCookies(env, {
     email: TEST_USER_EMAIL,
     password: TEST_USER_PASSWORD,
