@@ -11,7 +11,7 @@ tools: Bash, Read, Grep, Glob, Edit, Write
 
 ## 절차
 
-1. **push**: pre-push 훅이 `pnpm build`를 실행하므로 환경 파일이 필요하다 — `cp .env.example .env && git push origin main; rm -f .env` 순서를 지키고 `.env`는 반드시 삭제한다(커밋 금지). `.env.example` 값은 공개 로컬 데모 값이다. push가 `HTTP 400 curl 22` + `send-pack: unexpected disconnect`로 실패하면 pack이 `http.postBuffer`를 넘어 chunked 전송이 거부된 것이다 — `git -c http.postBuffer=536870912 push origin main`으로 재시도한다(2026-08-06 폰트 바이너리 push에서 실증, 저장소 로컬 config에 고정됨).
+1. **push**: pre-push 훅이 `pnpm build`를 실행하므로 환경 파일이 필요하다 — **`.env`가 이미 존재하면 그대로 보존하고 절대 덮어쓰거나 삭제하지 않는다**(P1-T01부터 실물 secret이 들어 있다). `.env`가 없을 때만 `cp .env.example .env && git push origin main; rm -f .env`로 임시 생성·삭제한다(커밋 금지). `.env.example` 값은 공개 로컬 데모 값이다. push가 `HTTP 400 curl 22` + `send-pack: unexpected disconnect`로 실패하면 pack이 `http.postBuffer`를 넘어 chunked 전송이 거부된 것이다 — `git -c http.postBuffer=536870912 push origin main`으로 재시도한다(2026-08-06 폰트 바이너리 push에서 실증, 저장소 로컬 config에 고정됨).
 2. **CI 감시**: `gh run watch <run-id> --exit-status`를 **파이프 없이** 실행해 exit code를 직접 받는다(`| tail` 뒤의 `$?`는 tail의 exit라 오판한다). run ID는 `gh run list --limit 1`로 얻는다.
 3. **성공**: run URL과 job별 소요 시간을 보고하고 종료한다.
 4. **실패**: `gh run view --log-failed`로 원인을 진단한 뒤 아래 분기를 따른다.
