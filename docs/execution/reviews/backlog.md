@@ -71,3 +71,17 @@
 - [ ] [low] [P0-T05] CI 워크플로 permissions 최소 권한 미선언 — .github/workflows/ci.yml
 - [ ] [low] [P0-T05] 내부 링크 검사가 저장소 밖 이탈 경로를 통과시킴 — harness/lib/docs-check.ts
 - [ ] [low] [P0-T05] ADR 참조 검사가 .md 확장자를 보장하지 않음 — harness/lib/docs-check.ts
+- [x] [medium] [P0-T34] SelectField error 메시지 미렌더·aria 미연결 — src/shared/ui/select-field.tsx
+- [x] [medium] [P0-T34] Button loading 차단이 disabled={false}에서 무력화 — src/shared/ui/button.tsx
+- [x] [medium] [P0-T34] design-token-colors 룰이 불투명도·important 수식과 클래스 밖 hex를 놓침 — tools/eslint-plugin-project/rules/design-token-colors.mjs
+- [x] [medium] [P0-T34] focus-visible action ring 미구현 — src/app/globals.css
+- [x] [medium] [P0-T34] muted·weak 토큰의 13px 사용이 AA 대비 미달 — src/shared/ui/notification-row.tsx
+- [x] [medium] [P0-T34] Calendar DayButton 인라인 정의로 전 셀 remount·포커스 상실 — src/shared/ui/calendar.tsx
+- [x] [medium] [P0-T34] 행 컴포넌트 aria-label이 내부 콘텐츠를 은폐 — src/shared/ui/notification-row.tsx
+- [x] [medium] [P0-T34] Calendar 오늘 표시·modifiers 폐기 — src/shared/ui/calendar.tsx
+- [x] [medium] [P0-T34] 명세 상태 분기 테스트 공백(달력 3상태·오류·loading 조합·lint 수식) — src/shared/ui/__tests__/calendar.test.tsx
+- [ ] [medium] [P0-T34] recovered 복구 피드백이 도달 불가 상태(위젯 훅 로직 후속 소유) — src/shared/ui/connectivity-banner.tsx
+- [ ] [low] [P0-T34] 오버레이·토스트의 명세 밖 색 역할 전용(overlay 토큰 신설 후속) — src/shared/ui/snackbar.tsx
+- [x] [low] [P0-T34] 시간·날짜 tabular-nums 미적용 — src/shared/ui/schedule-row.tsx
+- [x] [low] [P0-T34] badge·chip 테스트 afterEach(cleanup) 누락 — src/shared/ui/__tests__/badge.test.tsx
+- [ ] [low] [P0-T34] components.json 전제 shadcn 토큰이 @theme에 부재 — components.json
