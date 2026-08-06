@@ -85,3 +85,15 @@
 - [x] [low] [P0-T34] 시간·날짜 tabular-nums 미적용 — src/shared/ui/schedule-row.tsx
 - [x] [low] [P0-T34] badge·chip 테스트 afterEach(cleanup) 누락 — src/shared/ui/__tests__/badge.test.tsx
 - [ ] [low] [P0-T34] components.json 전제 shadcn 토큰이 @theme에 부재 — components.json
+- [x] [medium] [P0-T35] 리허설 시급·금액 계산 정본이 UI 상수(합계 미반영·DTO 스냅샷 부재) — src/views/pay/ui/PayView.tsx
+- [x] [medium] [P0-T35] 홈 우선순위 순수 함수 미호출·유니언 중복 — src/views/home/model/home-priority.ts
+- [x] [medium] [P0-T35] GPS 성공 미검증·preview 미등록·서버 시각 미표시 — src/views/home/ui/HomeView.tsx
+- [x] [medium] [P0-T35] INV-ATT-01 회귀 단언 부재 — src/views/home/ui/__tests__/HomeView.test.tsx
+- [x] [medium] [P0-T35] 시나리오 fixture 별칭·부재·내역 불일치 — src/entities/pay/model/estimated-pay.mock.ts
+- [x] [medium] [P0-T35] 시나리오 목 단일 출처 계약 이탈·handoff 미기록(RADIO 문구 현실화 필요) — src/views/home/ui/home.mock.ts
+- [ ] [medium] [P0-T35] 금액 숨김 로컬 미유지(RADIO 명시 이월 — 기능 구현 라운드 소유) — src/views/pay/ui/PayView.tsx
+- [ ] [medium] [P0-T35] 오프라인 변경 비활성 부재(범위 밖 — 기능 구현 라운드 필수 추적) — src/views/schedule/ui/ScheduleView.tsx
+- [x] [low] [P0-T35] 확정 상세 순서·본인 강조 미단언 — src/views/schedule-detail/ui/__tests__/ScheduleDetailView.test.tsx
+- [x] [low] [P0-T35] 시간·날짜·금액 tabular-nums 미적용 — src/views/pay/ui/PayView.tsx
+- [x] [low] [P0-T35] 배정표 정식 담당자 action badge 부재 — src/views/schedule-detail/ui/ScheduleDetailView.tsx
+- [x] [low] [P0-T35] 알림 점·GPS 상태의 보조 기술 미전달 — src/widgets/app-shell/ui/AppShellTabBar.tsx
