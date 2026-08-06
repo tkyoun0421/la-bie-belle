@@ -1,12 +1,19 @@
 import { defineConfig, devices } from "@playwright/test";
 
+import { STORAGE_STATE_PATH } from "./tests/e2e/global-setup";
+
 const PORT = 3100;
 
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
   reporter: "list",
-  use: { baseURL: `http://localhost:${PORT}`, trace: "on-first-retry" },
+  globalSetup: "./tests/e2e/global-setup.ts",
+  use: {
+    baseURL: `http://localhost:${PORT}`,
+    trace: "on-first-retry",
+    storageState: STORAGE_STATE_PATH,
+  },
   projects: [{ name: "mobile", use: { ...devices["Pixel 5"] } }],
   webServer: {
     command: `pnpm start --port ${PORT}`,

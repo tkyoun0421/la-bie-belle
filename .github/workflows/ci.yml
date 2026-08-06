@@ -40,6 +40,14 @@ jobs:
 
       - run: cp .env.example .env
 
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.75.0
+
+      - run: supabase start
+
+      - run: supabase db reset
+
       - run: pnpm verify
 
   db-verify:

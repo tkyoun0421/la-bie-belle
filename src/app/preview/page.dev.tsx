@@ -98,7 +98,7 @@ const SCREENS: PreviewScreen[] = [
   },
   {
     label: "전체",
-    scenarios: [{ label: "기본", node: <MoreView /> }],
+    scenarios: [{ label: "기본", node: <MoreView onSignOut={async () => ({ ok: true })} /> }],
   },
   {
     label: "공통",

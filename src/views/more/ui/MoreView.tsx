@@ -1,7 +1,13 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
-export function MoreView() {
+import { SignOutButton } from "@/features/auth/ui/SignOutButton";
+
+type MoreViewProps = {
+  onSignOut: () => Promise<{ ok: boolean }>;
+};
+
+export function MoreView({ onSignOut }: MoreViewProps) {
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-4 p-6 pb-24">
       <h1 className="typo-display text-text-strong">전체</h1>
@@ -16,6 +22,7 @@ export function MoreView() {
           </Link>
         </li>
       </ul>
+      <SignOutButton action={onSignOut} />
     </main>
   );
 }

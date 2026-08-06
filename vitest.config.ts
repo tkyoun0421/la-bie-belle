@@ -4,10 +4,13 @@ import { defineConfig } from "vitest/config";
 
 const FSD_LAYERS = ["app", "views", "widgets", "features", "entities", "shared"];
 
-const alias = FSD_LAYERS.map((layer) => ({
-  find: `@/${layer}`,
-  replacement: resolve(import.meta.dirname, "src", layer),
-}));
+const alias = [
+  ...FSD_LAYERS.map((layer) => ({
+    find: `@/${layer}`,
+    replacement: resolve(import.meta.dirname, "src", layer),
+  })),
+  { find: "@/proxy", replacement: resolve(import.meta.dirname, "src", "proxy.ts") },
+];
 
 export default defineConfig({
   resolve: { alias },
