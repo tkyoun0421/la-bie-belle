@@ -1,9 +1,9 @@
 # P1-T01 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 4
+- revision: 5
 - 기획 승인: user, 2026-08-06
-- 개발 설계 승인: user, 2026-08-06 (revision 3 재승인 포함, revision 4는 결정 없는 편집 누락 보정)
+- 개발 설계 승인: user, 2026-08-06 (revision 3 재승인·revision 5 수정 라운드 승인 포함, revision 4는 결정 없는 편집 누락 보정)
 
 ## 개정 이력
 
@@ -13,6 +13,7 @@
 | 2 | 2026-08-06 | 구현 전 발견된 구조 계약 충돌 해소(사용자 결정 1안): config 세그먼트는 상수 전용(`config/fsd.json` `runtimeExports: "constants"`)이라 판정 함수를 둘 수 없어 `route-access.ts`를 `shared/config` → `shared/lib`로 이동. 경로 언급 전체(Architecture·DEV-* 절) 동반 갱신. env 스키마의 기존 OAuth 값 노출(P0-T04 소유)과 불변 규칙의 관계를 명문화. |
 | 3 | 2026-08-06 | 구현 중 발견된 차단 2건 해소(사용자 결정): ① `src/proxy.ts`가 6-레이어 alias 밖이라 테스트 불가(DEV-NAME-06 상대경로 금지 ∧ tdd-guard 테스트 선행 요구) — `tsconfig.json`·`vitest.config.ts`에 최상위 예약 파일 전용 alias를 추가하고 두 파일을 허용 경로에 편입 ② `.env.example`의 Supabase anon·service role 키가 실제 로컬 스택과 서명 불일치(Auth API 첫 실호출에서 발견) — `supabase status -o env` 실값으로 교정하고 허용 경로에 편입. |
 | 4 | 2026-08-06 | 새 결정 없음 — revision 3의 편집 누락 보정. Architecture 절이 이미 명시·승인한 `src/__tests__/proxy.test.ts`가 허용 경로 코드펜스에서 빠져 gate:scope에 걸린 것을 코드펜스에 추가해 정합시켰다. |
+| 5 | 2026-08-06 | 교차 검증 수정 라운드 승인(사용자 결정: high 2·medium 7·쉬운 low 4 = 13건 수정, F-14는 승인 범위 밖 이월). P0-T04가 P1-T01 소유로 이월한 `src/shared/api/supabase-server.ts` 정본 이원화(F-06) 정리를 위해 `src/shared/api/**`를 허용 경로에 편입. |
 
 - 관련 spec: DOMAIN:IDENTITY, ADR:0001, ADR:0002
 - 적용 깊이: 심화 (인증·세션·RLS 경계 — 서버 강제와 DB 정책이 본체다)
@@ -117,6 +118,7 @@ src/views/onboarding/**
 src/views/more/**
 src/features/auth/**
 src/entities/identity/**
+src/shared/api/**
 src/shared/lib/**
 src/shared/config/**
 supabase/config.toml
