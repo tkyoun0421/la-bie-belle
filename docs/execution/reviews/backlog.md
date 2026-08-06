@@ -122,4 +122,14 @@
 - [x] [low] [P1-T01] 로그인 경로 리터럴 네 모듈 분산(DEV-CODE-08 후보) — src/shared/lib/route-access.ts
 - [x] [low] [P1-T01] 빈 catch로 인프라 실패 무기록 흡수 — src/app/auth/callback/route.ts
 - [x] [low] [P1-T01] 콜백의 중복 getUser() 왕복 — src/app/auth/callback/route.ts
-- [ ] [low] [P1-T01] 로그인 화면 개인정보·문의 경로 부재(승인 범위 밖 — 후속 정본 정합) — src/views/login/ui/LoginView.tsx
+- [ ] [low] [P1-T01] 로그인 화면 문의 경로 부재(P1-T02가 /privacy 링크만 해소 — 연락처 설정 신설 시 마저 정합) — src/views/login/ui/LoginView.tsx
+- [x] [medium] [P1-T02] 이름 비공백 CHECK 미투영으로 PostgREST 직접 우회 가능 — supabase/migrations/20260806000200_identity_signup_profile_name_check.sql
+- [x] [medium] [P1-T02] 봉인 렌즈 표 선언 E2E 경계(재호출·상태 조합) 미실검증 — tests/e2e/signup.spec.ts
+- [x] [medium] [P1-T02] 하단 고정 '가입 신청하기' CTA 미이행(safe-area 포함) — src/features/signup/ui/SignupForm.tsx
+- [x] [medium] [P1-T02] 검증 실패 시 React 19 폼 자동 리셋으로 입력 소실 — src/features/signup/ui/SignupForm.tsx
+- [x] [medium] [P1-T02] 휴대폰 중복 전용 코드 매핑의 실 DB 경계 검증 부재 — supabase/tests/06-profiles-signup.test.sql
+- [x] [medium] [P1-T02] DB 실패가 관측 기록 없이 COMMON_UNEXPECTED로 흡수 — src/features/signup/api/submit-signup.ts
+- [ ] [low] [P1-T02] proxy·레이아웃의 getUser 이중 왕복(구조적 제약) — src/app/(protected)/layout.tsx
+- [x] [low] [P1-T02] GENDER_OPTIONS ui 재선언(DEV-CODE-08) — src/features/signup/ui/SignupForm.tsx
+- [x] [low] [P1-T02] 처리방침 보관 기간 미명시(문안 확정 입력) — src/views/privacy/ui/PrivacyPolicyView.tsx
+- [x] [low] [P1-T02] F-14 종결 오기재 — 문의 경로 미해소분 추적 복원(P1-T01 행 문구 갱신으로 해소) — docs/execution/reviews/backlog.md

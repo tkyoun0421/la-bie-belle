@@ -107,3 +107,11 @@
 - 신규: `src/app/(protected)/layout.tsx`, `supabase/migrations/20260806000200_identity_signup_profile_name_check.sql`.
 - 이동: `src/app/(tabs)/**` → `src/app/(protected)/(tabs)/**`, `src/app/schedule/[id]/page.tsx` → `src/app/(protected)/schedule/[id]/page.tsx`(URL 불변).
 - 로컬 확인: 위 "검증 결과" 절.
+
+## 2026-08-06 · 조정자 검증 절(수정 라운드 대조)
+
+- 커밋 대조: `b97ff57`(수정 본체)·`766e760`(스테이징 누락 자체 정정). 두 커밋의 변경 파일 전부가 revision 3 허용 경로 안임을 `git diff --name-only f26c958..HEAD`로 확인했다. `(protected)/layout.tsx`가 소비하는 `ErrorScreen`은 기존 `src/views/status/**` 재사용이라 허용 경로 위반이 아니다.
+- 증거 시각 정합: 커밋된 `tdd.json`의 타임스탬프 45개 전부가 커밋 시각(`23:17:38+09:00`) 이전이고, F-02가 지적한 정각·3분 등간격 패턴은 0건. 미래 시각 기입 해소를 기계 대조로 확인했다.
+- `pnpm gate:all` exit 0 재확인.
+- `766e760`의 성격: 커밋된 코드와 테스트한 코드의 불일치를 implementer가 자체 발견·정정한 것으로, 최종 트리는 검증 통과 상태와 일치한다.
+- backlog 갱신: P1-T02 수정 완료 9건 `[x]`, F-10(getUser 이중 왕복)만 잔존. F-13은 P1-T01 행 문구 갱신으로 종결.
