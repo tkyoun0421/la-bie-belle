@@ -4,6 +4,7 @@ import "@/app/globals.css";
 
 import "@/shared/config/env.server";
 import { wantedSans } from "@/shared/config/fonts.config";
+import { SnackbarProvider } from "@/shared/ui/snackbar";
 import { OfflineBanner } from "@/widgets/offline/ui/OfflineBanner";
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <OfflineBanner />
         {children}
+        <SnackbarProvider />
       </body>
     </html>
   );

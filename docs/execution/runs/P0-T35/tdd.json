@@ -1,0 +1,172 @@
+{
+  "entries": [
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T03:45:50.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T03:47:18.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/attendance/model/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T03:47:51.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/attendance/model/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T03:48:02.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/pay/model/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T03:48:23.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/pay/model/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T03:48:38.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/notification/model/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T03:49:37.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/notification/model/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T03:49:56.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/home/model/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T03:50:24.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/home/model/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T03:50:31.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/widgets/app-shell/ui/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T03:51:21.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/widgets/app-shell/ui/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T03:51:34.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/home/ui/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T03:53:25.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/home/ui/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T03:53:51.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule/ui/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T03:55:43.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule/ui/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T03:56:00.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule-detail/ui/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T03:56:56.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule-detail/ui/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T03:57:10.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/pay/ui/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T03:58:47.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/pay/ui/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T04:00:38.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/notifications/ui/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T04:01:30.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/notifications/ui/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T04:01:45.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/more/ui/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T04:02:04.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/more/ui/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T04:02:13.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/preview/ui/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-06T04:02:50.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/preview/ui/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-06T04:03:16.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm test:e2e -- --reuse-build",
+      "exit_code": 1,
+      "at": "2026-08-06T04:15:01.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm test:e2e -- --reuse-build",
+      "exit_code": 0,
+      "at": "2026-08-06T04:15:14.000Z",
+      "phase": "green"
+    }
+  ]
+}
