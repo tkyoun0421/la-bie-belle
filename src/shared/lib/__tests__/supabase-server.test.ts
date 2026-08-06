@@ -68,13 +68,27 @@ describe("createSupabaseServerClient", () => {
     expect(cookieStore.set).toHaveBeenNthCalledWith(2, "b", "2", { path: "/" });
   });
 
-  it("Server Component 렌더 중 set이 던지는 오류를 삼킨다", async () => {
+  it("Server Component 렌더 중 set이 던지는 알려진 오류(E1180)만 삼킨다", async () => {
     cookieStore.set.mockImplementationOnce(() => {
-      throw new Error("Server Component에서 cookies().set 호출 불가");
+      const error = new Error("Cookies can only be modified in a Server Action or Route Handler.");
+      Object.assign(error, { __NEXT_ERROR_CODE: "E1180" });
+      throw error;
     });
     const { createSupabaseServerClient } = await import("@/shared/lib/supabase-server");
     await createSupabaseServerClient();
 
     expect(() => capturedCookies?.setAll([{ name: "a", value: "1", options: {} }])).not.toThrow();
+  });
+
+  it("그 외 오류는 삼키지 않고 다시 던진다", async () => {
+    cookieStore.set.mockImplementationOnce(() => {
+      throw new Error("예상치 못한 인프라 오류");
+    });
+    const { createSupabaseServerClient } = await import("@/shared/lib/supabase-server");
+    await createSupabaseServerClient();
+
+    expect(() => capturedCookies?.setAll([{ name: "a", value: "1", options: {} }])).toThrow(
+      "예상치 못한 인프라 오류",
+    );
   });
 });

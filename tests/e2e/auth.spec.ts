@@ -1,4 +1,14 @@
+import { randomUUID } from "node:crypto";
+
+import { createClient } from "@supabase/supabase-js";
 import { expect, test } from "@playwright/test";
+
+import { primeRealAuthCallback } from "./support/real-auth-code";
+import {
+  loadSupabaseTestEnv,
+  signInWithPasswordCookies,
+  toPlaywrightCookies,
+} from "./support/supabase-test-auth";
 
 test.describe("미인증 접근", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
@@ -34,5 +44,99 @@ test.describe("세션 주입 후", () => {
     await expect(page).toHaveURL(/\/schedule$/);
     const tabBar = page.getByRole("navigation", { name: "주요 메뉴" });
     await expect(tabBar).toBeVisible();
+  });
+});
+
+test.describe("로그아웃", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test("로그아웃하면 /login으로 이동하고 보호 라우트가 다시 차단된다", async ({ page, context, baseURL }) => {
+    const env = loadSupabaseTestEnv();
+    const admin = createClient(env.supabaseUrl, env.serviceRoleKey);
+    const email = `e2e-logout-${randomUUID()}@labiebelle.test`;
+    const password = "e2e-logout-password-Aa1!";
+
+    const { error } = await admin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    });
+    if (error) {
+      throw error;
+    }
+
+    const cookies = await signInWithPasswordCookies(env, { email, password });
+    const domain = new URL(baseURL ?? "http://localhost:3100").hostname;
+    await context.addCookies(toPlaywrightCookies(cookies, domain));
+
+    await page.goto("/more");
+    await page.getByRole("button", { name: "로그아웃" }).click();
+
+    await expect(page).toHaveURL(/\/login$/);
+
+    await page.goto("/schedule");
+    await expect(page).toHaveURL(/\/login$/);
+  });
+});
+
+test.describe("콜백 실제 코드 교환과 온보딩 분기", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test("profile이 있으면 실제 코드 교환으로 세션 쿠키가 설정되고 홈으로 이동한다", async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    const env = loadSupabaseTestEnv();
+    const admin = createClient(env.supabaseUrl, env.serviceRoleKey);
+    const email = `e2e-callback-with-profile-${randomUUID()}@labiebelle.test`;
+
+    const { data, error } = await admin.auth.admin.createUser({ email, email_confirm: true });
+    if (error || !data.user) {
+      throw error ?? new Error("테스트 사용자 생성에 실패했습니다.");
+    }
+    const { error: profileError } = await admin.from("profiles").insert({ id: data.user.id });
+    if (profileError) {
+      throw profileError;
+    }
+
+    const domain = new URL(baseURL ?? "http://localhost:3100").hostname;
+    const verifyUrl = await primeRealAuthCallback(context, env, {
+      email,
+      redirectTo: `${baseURL}/auth/callback`,
+      domain,
+    });
+
+    await page.goto(verifyUrl);
+
+    await expect(page).toHaveURL(`${baseURL}/`);
+    const cookies = await context.cookies();
+    expect(cookies.some((cookie) => /^sb-.*-auth-token$/.test(cookie.name))).toBe(true);
+  });
+
+  test("profile이 없으면 실제 코드 교환 후 /onboarding으로 이동한다", async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    const env = loadSupabaseTestEnv();
+    const admin = createClient(env.supabaseUrl, env.serviceRoleKey);
+    const email = `e2e-callback-no-profile-${randomUUID()}@labiebelle.test`;
+
+    const { data, error } = await admin.auth.admin.createUser({ email, email_confirm: true });
+    if (error || !data.user) {
+      throw error ?? new Error("테스트 사용자 생성에 실패했습니다.");
+    }
+
+    const domain = new URL(baseURL ?? "http://localhost:3100").hostname;
+    const verifyUrl = await primeRealAuthCallback(context, env, {
+      email,
+      redirectTo: `${baseURL}/auth/callback`,
+      domain,
+    });
+
+    await page.goto(verifyUrl);
+
+    await expect(page).toHaveURL(/\/onboarding$/);
   });
 });

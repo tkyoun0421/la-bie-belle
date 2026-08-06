@@ -1,10 +1,10 @@
 "use client";
 
-import { useSignOutAction } from "@/features/auth/hooks/useSignOutAction";
+import { useSignOutAction, type SignOutOutcome } from "@/features/auth/hooks/useSignOutAction";
 import { Button } from "@/shared/ui/button";
 
 type SignOutButtonProps = {
-  action: () => Promise<{ ok: boolean }>;
+  action: () => Promise<SignOutOutcome>;
 };
 
 export function SignOutButton({ action }: SignOutButtonProps) {

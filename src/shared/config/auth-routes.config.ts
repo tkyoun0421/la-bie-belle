@@ -1,0 +1,7 @@
+export const HOME_PATH = "/";
+export const LOGIN_PATH = "/login";
+export const ONBOARDING_PATH = "/onboarding";
+export const AUTH_CALLBACK_PATH = "/auth/callback";
+export const AUTH_ERROR_QUERY_PARAM = "error";
+export const AUTH_ERROR_QUERY_VALUE = "auth";
+export const LOGIN_ERROR_PATH = `${LOGIN_PATH}?${AUTH_ERROR_QUERY_PARAM}=${AUTH_ERROR_QUERY_VALUE}`;

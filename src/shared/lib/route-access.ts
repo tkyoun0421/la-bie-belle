@@ -1,10 +1,9 @@
-export const PUBLIC_PATHS = ["/login", "/auth/callback", "/preview", "/catalog"] as const;
+import { AUTH_CALLBACK_PATH, HOME_PATH, LOGIN_PATH } from "@/shared/config/auth-routes.config";
 
-const HOME_PATH = "/";
-const LOGIN_PATH = "/login";
+export const PUBLIC_PATHS = [LOGIN_PATH, AUTH_CALLBACK_PATH, "/preview", "/catalog"] as const;
 
 function isPublicPath(pathname: string): boolean {
-  return PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+  return PUBLIC_PATHS.some((path) => pathname === path);
 }
 
 export function resolveAuthRedirect(pathname: string, isAuthenticated: boolean): string | null {

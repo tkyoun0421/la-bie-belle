@@ -1,26 +1,34 @@
 import "server-only";
 
 import { createSupabaseServerClient } from "@/shared/lib/supabase-server";
+import { ERROR_CODE, type ErrorCode } from "@/shared/config/error-codes.config";
 
-export async function findOwnProfile(): Promise<boolean> {
+export type FindOwnProfileResult = { ok: true; data: boolean } | { ok: false; code: ErrorCode };
+
+export async function findOwnProfile(userId?: string): Promise<FindOwnProfileResult> {
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
-  if (user === null) {
-    throw new Error("no authenticated user");
+  let resolvedUserId = userId;
+  if (resolvedUserId === undefined) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user === null) {
+      return { ok: false, code: ERROR_CODE.COMMON_AUTH_REQUIRED };
+    }
+    resolvedUserId = user.id;
   }
 
   const { data, error } = await supabase
     .from("profiles")
     .select("id")
-    .eq("id", user.id)
+    .eq("id", resolvedUserId)
     .maybeSingle();
 
   if (error) {
-    throw new Error("profile lookup failed");
+    return { ok: false, code: ERROR_CODE.COMMON_UNEXPECTED };
   }
 
-  return data !== null;
+  return { ok: true, data: data !== null };
 }

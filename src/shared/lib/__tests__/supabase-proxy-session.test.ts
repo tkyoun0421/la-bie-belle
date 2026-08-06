@@ -1,6 +1,9 @@
+import "server-only";
+
 import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("server-only", () => ({}));
 vi.mock("@/shared/config/env.server", () => ({
   env: {
     NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",

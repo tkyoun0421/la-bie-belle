@@ -1,10 +1,11 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
+import type { SignOutOutcome } from "@/features/auth/hooks/useSignOutAction";
 import { SignOutButton } from "@/features/auth/ui/SignOutButton";
 
 type MoreViewProps = {
-  onSignOut: () => Promise<{ ok: boolean }>;
+  onSignOut: () => Promise<SignOutOutcome>;
 };
 
 export function MoreView({ onSignOut }: MoreViewProps) {

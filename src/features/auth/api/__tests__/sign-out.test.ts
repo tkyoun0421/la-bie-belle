@@ -2,6 +2,8 @@ import "server-only";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { ERROR_CODE } from "@/shared/config/error-codes.config";
+
 vi.mock("server-only", () => ({}));
 
 const signOutMock = vi.fn();
@@ -44,13 +46,13 @@ describe("signOut", () => {
     expect(redirect).toHaveBeenNthCalledWith(2, "/login");
   });
 
-  it("실패하면 redirect하지 않고 실패 결과를 반환한다", async () => {
+  it("실패하면 redirect하지 않고 code를 담은 실패 결과를 반환한다", async () => {
     signOutMock.mockResolvedValue({ error: { message: "boom" } });
 
     const { signOut } = await import("@/features/auth/api/sign-out");
     const result = await signOut();
 
     expect(redirect).not.toHaveBeenCalled();
-    expect(result).toEqual({ ok: false });
+    expect(result).toEqual({ ok: false, code: ERROR_CODE.COMMON_UNEXPECTED });
   });
 });

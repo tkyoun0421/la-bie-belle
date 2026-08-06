@@ -70,3 +70,50 @@
 - `docs/execution/runs/P1-T01/tdd.json` — RED→GREEN 15쌍(단위/통합 12쌍 + `pnpm db:test` 1쌍 + `proxy.test.ts` 1쌍 + `test:e2e` 1쌍).
 - 구현 파일: 위 "확정된 사실" 두 라운드의 각 경로.
 - 로컬 확인: `pnpm verify` 전체 GREEN(위 상세).
+
+## 2026-08-06 · 교차 검증 수정 라운드(revision 5)
+
+- 기준 시각: 2026-08-06
+- `docs/execution/reviews/P1-T01-review.json`(opus·codex 교차 검증, total 76)이 확정한 14건 중 F-14(로그인 화면 개인정보·문의 경로 — 승인 범위 밖 이월)를 제외한 13건(high 2·medium 7·low 4)을 사용자 승인으로 수정했다. RADIO는 revision 5(SHA-256 `8fd75a3b9baf0922822b89e6c28aa6be25021ff50b9ece86b1183bff6e844920`)로 재봉인됐고 `src/shared/api/**`가 허용 경로에 편입됐다. 재개 전 해시 일치를 확인했다.
+
+### 확정된 사실 — 수정 내역
+
+- **F-01(high)**: `supabase/config.toml`의 `additional_redirect_urls`에 `/auth/callback` 콜백 URL이 실제로는 빠져 있었다(RADIO가 처음부터 요구했는데 구현 시 누락). 추가했고, `site_url`(127.0.0.1)과 `NEXT_PUBLIC_APP_URL`(localhost) 호스트 불일치도 `site_url`을 `localhost`로 맞춰 정합시켰다. 로컬 스택을 재시작해 반영을 확인했다.
+- **F-02(high)**: 봉인 렌즈 표가 "테스트함"으로 선언했던 실 경계 세 가지를 `tests/e2e/auth.spec.ts`에 실제로 추가했다.
+  - 로그아웃 E2E — 전역 테스트 사용자(global-setup)를 그대로 쓰면 `signOut()` 기본 scope가 `'global'`이라 병렬로 도는 다른 e2e가 같은 세션을 공유해 로그아웃 시 함께 튕겨나가는 걸 직접 재현으로 확인했다. 로그아웃 테스트 전용의 격리된 사용자·세션을 새로 만들어 해소했다(`signInWithPasswordCookies` 헬퍼 신설).
+  - 온보딩 분기 E2E — profile 있음/없음 두 상태로 실제 `/auth/callback` 도달 후 `/`·`/onboarding` 분기를 각각 단언한다.
+  - 콜백 실 코드 교환·Set-Cookie 검증 — 로컬 GoTrue로 PKCE 코드를 실제로 만드는 방법을 찾았다: `signInWithOtp`(matic link)로 시작한 flow의 code_verifier를 `@supabase/ssr`의 `createBrowserClient`에 커스텀 쿠키 콜백을 주입해 캡처하고, 로컬 Mailpit API(`/api/v1/search`, `/api/v1/message/:id`)로 메일 본문에서 verify link를 읽어, 그 code_verifier 쿠키를 실제 Playwright 브라우저 컨텍스트에 주입한 뒤 verify link로 `page.goto`하면 GoTrue가 303으로 우리 앱의 `/auth/callback?code=...`까지 리다이렉트하고 우리 Route Handler가 실제로 교환에 성공한다 — Node 스크립트로 3단계(쿠키 캡처 확인 → verify 리다이렉트 확인 → 실제 교환 성공 확인)를 미리 재현해 검증한 뒤 테스트로 옮겼다. 이 흐름이 E2E 서버 포트(3100)로도 통과하려면 `additional_redirect_urls`에 `:3100/auth/callback` 두 항목(localhost·127.0.0.1)을 추가로 넣어야 했다(3000 포트만으로는 GoTrue가 리다이렉트를 조용히 `site_url`로 대체해 3100에서 도는 e2e 서버에 닿지 못한다).
+- **F-03(medium)**: `src/proxy.ts`가 리다이렉트 응답을 만들 때 `updateSupabaseSession`이 갱신한 쿠키를 `redirectResponse.cookies.set(cookie)`로 복사하도록 고쳤다. 리다이렉트 경로에서 쿠키가 반영되는지 확인하는 단위 테스트를 추가했다.
+- **F-04(medium)**: `src/shared/lib/supabase-proxy-session.ts` 첫 import로 `server-only`를 추가했다(DEV-ARCH-03).
+- **F-05(medium)**: `SignOutResult`를 `{ ok: false, code: ErrorCode }`로 바꾸고(`ERROR_CODE.COMMON_UNEXPECTED` 재사용, 신규 코드 불필요), `useSignOutAction`이 `ERROR_CODES[code].message`로 문구 정본을 레지스트리에서 읽도록 고쳤다(DEV-ERR-08).
+- **F-06(medium)**: `src/shared/api/supabase-server.ts`와 그 테스트를 삭제해(허용 경로 편입 후) `src/shared/lib/supabase-server.ts`를 유일한 서버 client 정본으로 만들었다. 빈 디렉터리(`src/shared/api/`)도 함께 제거했다(DEV-CODE-04).
+- **F-07(medium)**: pgTAP의 update 차단 단언을 `now()`(트랜잭션 내 불변이라 변조 여부를 구분 못함) 대신 구별되는 고정값(`2020-01-01 00:00:00+00`)으로 바꾸고, 이후 `isnt()`로 원래 값이 유지됐는지 단언한다. 탐지력 증명: 임시로 update를 허용하는 rogue 정책을 테스트 트랜잭션 안에 주입해 새 단언이 실제로 실패함(RED)을 확인한 뒤 rogue 정책을 제거해 GREEN을 재확인했다(P0-T04의 client-secret-scan 탐지력 증명과 같은 방식).
+- **F-08(medium)**: `tests/e2e/global-setup.ts`가 `.env`만 읽던 것을, `process.env` 우선 → `.env.local` → `.env` 순으로 병합해 앱과 같은 우선순위로 읽게 고쳤다(공용 헬퍼 `loadSupabaseTestEnv`를 `tests/e2e/support/supabase-test-auth.ts`에 신설). `tsconfig.json`의 `include`에 `tests/**`·`playwright.config.ts`를 추가해 `pnpm typecheck` 대상으로 편입했고, 편입 후 드러난 타입 오류(`MoreView`의 `onSignOut` prop 타입이 `SignOutOutcome`으로 안 좁혀진 것, `mailpit.ts`의 `noUncheckedIndexedAccess` 위반 2건)를 함께 고쳤다.
+- **F-09 + F-13(medium+low, 같은 파일이라 함께 처리)**: `findOwnProfile`이 `{ ok: true, data: boolean } | { ok: false, code: ErrorCode }`를 반환하도록 바꿨다(`COMMON_AUTH_REQUIRED`·`COMMON_UNEXPECTED` 활용). `userId?: string` 인자를 받아 있으면 `getUser()`를 건너뛴다. `/auth/callback`은 `exchangeCodeForSession` 결과의 `data.user.id`를 그대로 넘겨 중복 `getUser()` 왕복을 없앴다(F-13). `onboarding/page.tsx`는 `!result.ok`면 `/login`으로, `result.data`면 `/`로 보낸다 — 세션 만료가 이제 500이 아니라 `/login`으로 fail-closed된다.
+- **F-10(low)**: `route-access.ts`의 `isPublicPath`가 `startsWith` 하위 트리 확장을 없애고 정확 열거(`pathname === path`)만 쓴다. `/login-history` 보호 테스트는 그대로 두고, "하위 경로도 공개" 테스트는 "하위 경로는 예외 열거에 없으므로 보호 대상" 의미로 갱신했다.
+- **F-11(low)**: `src/shared/config/auth-routes.config.ts`(신규, config 세그먼트 — 상수 전용)에 `HOME_PATH`·`LOGIN_PATH`·`ONBOARDING_PATH`·`AUTH_CALLBACK_PATH`·`AUTH_ERROR_QUERY_PARAM`·`AUTH_ERROR_QUERY_VALUE`·`LOGIN_ERROR_PATH`를 모아, `route-access.ts`·`auth/callback/route.ts`·`sign-in-with-google.ts`·`sign-out.ts`(리뷰가 지목한 4곳) 외에 `login/page.tsx`·`onboarding/page.tsx`도 이 상수만 import하도록 정리했다.
+- **F-12(low)**: `supabase-server.ts`의 `catch`를 "Server Component 렌더 중 set 불가"라는 알려진 경우로 좁혔다 — Next.js가 그 오류에 붙이는 `__NEXT_ERROR_CODE: "E1180"`(`ReadonlyRequestCookiesError`, 내부 클래스라 값만 duck-typing으로 확인, import는 안 함)만 삼키고 그 외는 다시 던진다. `callback`의 `catch`는 F-09의 typed Result 전환으로 자연히 없어졌다(더 이상 예외를 던지지 않는다).
+- **F-14는 승인 범위 밖으로 이번 라운드에서 손대지 않았다**(RADIO 원문 유지, backlog 이월은 조정자 소유).
+
+### 확정된 사실 — DEV-CODE-09 경계 해석(CX-07 기각으로 확정)
+
+- **`ui` 세그먼트는 계산·변환·분기 판정·데이터 가공 "함수"를 두지 않는다. 이미 계산된 값을 어떤 마크업으로 보여줄지 고르는 표현용 조건부 렌더(`{condition ? <A/> : <B/>}`)는 `ui`에 남아도 된다** — 별도 함수로 추출해 `model`/`lib`로 옮기라는 요구가 아니다. 표적은 "함수로 캡슐화된 계산·오케스트레이션"이지 JSX 조건부 표현 자체가 아니다. 이번 구현에서 `LoginView`의 `hasAuthError ? <p role="alert">...` 같은 패턴을 그대로 유지한 근거다.
+
+### 미결 사항
+
+- (1차 중단 이후 동일) `.env.local`의 `GOOGLE_OAUTH_CLIENT_ID`가 placeholder라 Google 실계정까지 이어지는 완전한 수동 로그인은 로컬에서 재현되지 않는다 — 결정 주체: 사용자, 반환할 단계: 없음(범위 밖).
+- F-14(로그인 화면 개인정보·문의 경로) — 승인 범위 밖, 후속 task에서 정본과의 차이를 좁힐 항목.
+- profile 없는 인증 사용자의 URL 직접 탭 진입 차단 — P1-T02 소유(RADIO 원문 그대로).
+- 호스팅 Supabase 프로젝트 전환(배포 URL·키·redirect) — 배포 task 소유(RADIO 원문 그대로).
+
+### 다음 행동
+
+1. 커밋 이후 push·CI 감시는 `ci-finisher` 소유(오프로드) — `docs/execution/reviews/**`는 이번 커밋에 포함하지 않는다(조정자 소유, `done` 전환 커밋에서 처리).
+
+### 증거·산출물 경로(수정 라운드)
+
+- `docs/execution/reviews/P1-T01-review.json` — 교차 검증 확정 발견 14건(조정자 소유, 참고만).
+- `docs/execution/runs/P1-T01/tdd.json` — 이번 라운드 RED→GREEN 10쌍 추가(단위 8쌍 + `pnpm db:test` 1쌍 + `pnpm test:e2e` 1쌍).
+- 신규: `src/shared/config/auth-routes.config.ts`, `tests/e2e/support/{supabase-test-auth,mailpit,real-auth-code}.ts`.
+- 삭제: `src/shared/api/supabase-server.ts`, `src/shared/api/__tests__/supabase-server.test.ts`.
+- 로컬 확인: `pnpm verify` 전체 GREEN(`test:e2e` 8/8), `pnpm db:test` GREEN(114 tests, pgTAP 탐지력 증명 포함).

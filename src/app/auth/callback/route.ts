@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 import { findOwnProfile } from "@/entities/identity/api/find-own-profile";
+import { HOME_PATH, LOGIN_ERROR_PATH, ONBOARDING_PATH } from "@/shared/config/auth-routes.config";
 import { createSupabaseServerClient } from "@/shared/lib/supabase-server";
-
-const LOGIN_ERROR_PATH = "/login?error=auth";
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
@@ -14,18 +13,19 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
     return NextResponse.redirect(new URL(LOGIN_ERROR_PATH, request.url));
   }
 
-  let hasProfile: boolean;
-  try {
-    hasProfile = await findOwnProfile();
-  } catch {
+  const profileResult = await findOwnProfile(data.user.id);
+
+  if (!profileResult.ok) {
     return NextResponse.redirect(new URL(LOGIN_ERROR_PATH, request.url));
   }
 
-  return NextResponse.redirect(new URL(hasProfile ? "/" : "/onboarding", request.url));
+  return NextResponse.redirect(
+    new URL(profileResult.data ? HOME_PATH : ONBOARDING_PATH, request.url),
+  );
 }

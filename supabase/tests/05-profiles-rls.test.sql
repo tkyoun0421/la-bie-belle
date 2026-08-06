@@ -1,5 +1,5 @@
 begin;
-select plan(18);
+select plan(19);
 
 select has_table('public', 'profiles', 'profiles table');
 select col_is_pk('public', 'profiles', 'id', 'profiles pk');
@@ -64,7 +64,7 @@ select throws_ok(
   'authenticated cannot insert profiles (no policy)'
 );
 select lives_ok(
-  $$update profiles set created_at = now() where id = '11111111-1111-1111-1111-111111111111'$$,
+  $$update profiles set created_at = '2020-01-01 00:00:00+00' where id = '11111111-1111-1111-1111-111111111111'$$,
   'authenticated update raises no error because rows are filtered, not denied'
 );
 select lives_ok(
@@ -84,6 +84,11 @@ select results_eq(
 
 reset role;
 
+select isnt(
+  (select created_at from profiles where id = '11111111-1111-1111-1111-111111111111'),
+  '2020-01-01 00:00:00+00'::timestamptz,
+  'the attempted update value was not actually written through rls'
+);
 select is(
   (select count(*)::int from profiles),
   2,

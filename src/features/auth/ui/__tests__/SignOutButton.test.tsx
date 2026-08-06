@@ -2,6 +2,8 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { ERROR_CODE } from "@/shared/config/error-codes.config";
+
 const showSnackbar = vi.fn();
 vi.mock("@/shared/ui/snackbar", () => ({ showSnackbar }));
 
@@ -24,7 +26,7 @@ describe("SignOutButton", () => {
 
   it("action이 실패하면 오류 안내를 보여주고 버튼은 다시 클릭 가능하다", async () => {
     const { SignOutButton } = await import("@/features/auth/ui/SignOutButton");
-    const action = vi.fn().mockResolvedValue({ ok: false });
+    const action = vi.fn().mockResolvedValue({ ok: false, code: ERROR_CODE.COMMON_UNEXPECTED });
     const user = userEvent.setup();
 
     render(<SignOutButton action={action} />);

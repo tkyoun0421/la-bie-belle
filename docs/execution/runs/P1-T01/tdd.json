@@ -179,6 +179,126 @@
       "exit_code": 0,
       "at": "2026-08-06T10:21:12.000Z",
       "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/supabase-proxy-session.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T11:38:02.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/supabase-proxy-session.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T11:38:15.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/route-access.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T11:39:34.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/route-access.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T11:39:46.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/find-own-profile.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T11:40:50.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/find-own-profile.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T11:41:02.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/app/auth/callback/__tests__/route.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T11:41:29.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/app/auth/callback/__tests__/route.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T11:41:42.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/auth/api/__tests__/sign-out.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T11:42:32.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/auth/api/__tests__/sign-out.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T11:42:44.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/auth/hooks/__tests__/useSignOutAction.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T11:43:00.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/auth/hooks/__tests__/useSignOutAction.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T11:43:16.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/supabase-server.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T11:45:07.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/lib/__tests__/supabase-server.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T11:45:24.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/__tests__/proxy.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-06T11:45:47.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/__tests__/proxy.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-06T11:45:59.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-06T11:47:34.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-06T11:47:35.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm test:e2e -- --reuse-build",
+      "exit_code": 1,
+      "at": "2026-08-06T11:56:03.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm test:e2e -- --reuse-build",
+      "exit_code": 0,
+      "at": "2026-08-06T11:58:10.000Z",
+      "phase": "green"
     }
   ]
 }

@@ -12,7 +12,12 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
-  return NextResponse.redirect(new URL(redirectPath, request.url));
+  const redirectResponse = NextResponse.redirect(new URL(redirectPath, request.url));
+  for (const cookie of response.cookies.getAll()) {
+    redirectResponse.cookies.set(cookie);
+  }
+
+  return redirectResponse;
 }
 
 export const config = {

@@ -26,8 +26,8 @@ describe("resolveAuthRedirect", () => {
     expect(resolveAuthRedirect("/catalog", false)).toBeNull();
   });
 
-  it("공개 경로의 하위 경로도 공개로 취급한다", () => {
-    expect(resolveAuthRedirect("/auth/callback/extra", false)).toBeNull();
+  it("공개 경로의 하위 경로는 예외 열거에 없으므로 보호 대상이다", () => {
+    expect(resolveAuthRedirect("/auth/callback/extra", false)).toBe("/login");
   });
 
   it("공개 경로 접두어만 같은 다른 경로는 보호 대상이다", () => {
