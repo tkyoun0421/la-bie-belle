@@ -47,3 +47,11 @@
 - 구현 파일: 위 "확정된 사실" 각 경로 전체(`src/entities/identity/**`, `src/features/approval/**`, `src/views/admin/**`, `src/views/rejected/**`, `src/app/(protected)/admin/approvals/**`, `src/app/rejected/**`, `src/app/(protected)/admin/page.tsx`, `src/shared/config/auth-routes.config.ts`, `src/shared/config/error-codes.config.ts`, `src/shared/lib/format-date-time-seoul.ts`).
 - E2E: `tests/e2e/approval.spec.ts`.
 - 로컬 확인: `pnpm vitest run`·`pnpm typecheck`·`pnpm lint`·`pnpm build`·`pnpm db:reset && pnpm db:test`·`pnpm exec playwright test approval.spec.ts`·`pnpm test:e2e`(전체) 개별 실행 전부 GREEN. `pnpm gate:index`·`gate:radio`·`gate:scope`·`gate:tdd` 개별 실행 GREEN. `pnpm verify` 전체는 다음 행동에서 재확인한다.
+
+## 2026-08-07 · 조정자 검증 절(교차 검증)
+
+- 대조: 구현 커밋 63e5ef0의 변경 파일 40개 전부가 revision 1 허용 경로 안(git diff 0c7e18b..HEAD), tdd.json 28개 시각 전부 커밋 이전(미래 0건), gate:all exit 0.
+- 교차 검증: opus·codex 2자 병렬 + 상호 되물음. 확정 11건(medium 2·low 9), critical·high 0건 — 수정 라운드 없이 done. 기각 4건(Result 흡수는 DEV-ERR-08 원문이 정반대 요구, listPendingProfiles는 RLS가 최종 경계, getUser 중복은 선행 task 산출, pending 상한은 RADIO 승인 유예).
+- F-07(verify 전체 증거 공백) 종결: 조정자가 `pnpm verify` 전체를 직접 실행해 exit 0 확인(2026-08-07 오전, E2E 24/24·gate:all 포함).
+- F-04(index summary 문구 모순) 종결: done 전환 커밋에서 summary를 파생 결정에 맞게 정합화.
+- 결과: `docs/execution/reviews/P1-T03-review.json`(총점 81), backlog 11건 누적(2건은 조정자 즉시 종결 [x]).

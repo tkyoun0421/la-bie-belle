@@ -146,3 +146,14 @@
 - [ ] [low] [P1-T04] SECURITY DEFINER search_path pg_temp 미고정 — supabase/migrations/20260807000000_identity_roles.sql
 - [ ] [low] [P1-T04] useRoleActions 파일명·주 export 불일치(DEV-NAME-03) — src/features/role-management/hooks/useRoleActions.ts
 - [ ] [low] [P1-T04] RADIO 조회 횟수 기록(2회)과 실제(getUser 3회) 불일치 — src/app/(protected)/admin/roles/page.tsx
+- [ ] [medium] [P1-T03] 렌즈 선언 pgTAP 공백(동시성 병렬 세션·원자성 원복·effective_roles 합성) + 정규식 false-confidence — supabase/tests/08-signup-approval.test.sql
+- [ ] [medium] [P1-T03] reject_signup 사유 길이 DB 미방어(직접 RPC 우회) — supabase/migrations/20260807010000_identity_signup_approval.sql
+- [ ] [low] [P1-T03] 감사 z.enum 정본과 SQL 리터럴 동기화 미강제·소비처 없음 — src/entities/identity/model/audit-event.ts
+- [x] [low] [P1-T03] index summary '기본 포지션 부여' 문구 모순(done 전환 커밋에서 조정자 정합화) — docs/execution/phases/index.jsonl
+- [ ] [low] [P1-T03] targetProfileId UUID 미검증(22P02→COMMON_UNEXPECTED 오분류) — src/features/approval/api/approve-signup.ts
+- [ ] [low] [P1-T03] 이미 처리됨 오류에서 revalidate 미실행으로 stale 행 잔존 — src/features/approval/api/approve-signup.ts
+- [x] [low] [P1-T03] verify 전체 실행 증거 공백(조정자가 검증 단계에서 pnpm verify 재실행 GREEN으로 종결) — docs/execution/runs/P1-T03/handoff.md
+- [ ] [low] [P1-T03] 거절 사유 다이얼로그 입력 수명(취소 잔존·실패 소실)·길이 안내 부재 — src/features/approval/ui/RejectReasonDialog.tsx
+- [ ] [low] [P1-T03] 빈 pending 목록 분기 heading 부재 — src/views/admin/ui/ApprovalListView.tsx
+- [ ] [low] [P1-T03] Server Action 결과 타입 3중 선언·hooks 세그먼트 소유 — src/features/approval/hooks/useApprovalActions.ts
+- [ ] [low] [P1-T03] 전용 SQLSTATE 대신 범용 22023 재사용(RADIO 편차) — supabase/migrations/20260807010000_identity_signup_approval.sql
