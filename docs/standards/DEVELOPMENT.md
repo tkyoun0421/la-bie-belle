@@ -43,6 +43,7 @@ FSD 표준의 `pages` 계층을 `views`로 부른다. Next.js가 `src/pages/`를
 - `DEV-ARCH-03` `MUST`: server module은 첫 import로 `import "server-only"`를 선언한다.
 - `DEV-ARCH-04` `MUST`: entity는 도메인 모델, 상태 전이, 순수 규칙과 DTO를 소유하고 복수 entity command는 `features/*/api`에 둔다.
 - `DEV-ARCH-05` `SHOULD`: slice는 필요한 `ui`, `model`, `api`, `lib`만 만들고 빈 계층이나 이름뿐인 wrapper를 만들지 않는다.
+- `DEV-ARCH-06` `SHOULD`: 컴포넌트는 서버 컴포넌트가 기본값이다. `"use client"`는 상호작용(이벤트 핸들러·브라우저 API·클라이언트 상태)이 실제로 필요한 leaf 컴포넌트에만 선언하고, route·layout·view 조합 계층은 서버 컴포넌트로 유지하며 클라이언트 경계를 트리 아래로 민다. 화면 전체를 클라이언트로 만드는 것은 클라이언트 상태가 화면 전역을 지배할 때만 허용하며 그 사유를 RADIO가 소유한다. 채택 시점(2026-08-06) 기준 기존 위반(app 라우트 4곳·view 화면 5곳)은 해당 화면의 실 데이터 연결 task에서 정리한다.
 
 ## 인터페이스와 데이터
 
@@ -119,6 +120,8 @@ private 데이터의 제한적 오프라인 열람이 실제 현장 요구가 �
 - `DEV-CODE-05` `SHOULD`: 상속보다 조합과 명시적인 데이터 흐름을 우선한다.
 - `DEV-CODE-06` `SHOULD`: 함수·파일 줄 수 자체가 아니라 이름, 응집도, 변경 이유와 테스트 가능성으로 분리한다.
 - `DEV-CODE-07` `MUST`: 코드에 설명 주석과 JSDoc 블록을 쓰지 않는다. 의도는 이름과 구조로 드러내고 설계 근거는 RADIO와 handoff가 소유한다. 예외는 코드로 표현할 수 없는 제약(외부 명세 링크, 우회 사유)뿐이며 한 줄로 최소화한다.
+- `DEV-CODE-08` `SHOULD`: 상수는 소비 범위가 자리를 정한다. 한 파일 안에서만 쓰는 표현용 상수는 그 파일에 두어도 된다. 두 파일 이상이 소비하거나 업무 의미를 갖는 상수는 세그먼트 정본으로 옮긴다 — slice 공유는 해당 slice의 `model`, 도메인 수치는 `entities`, 전역은 `shared/config`. `ui` 세그먼트 파일은 업무 상수를 소유하지 않는다.
+- `DEV-CODE-09` `SHOULD`: `ui` 세그먼트 파일은 표현(마크업·스타일·조립)과 이벤트 배선만 소유한다. 계산·변환·분기 판정·데이터 가공은 해당 slice의 `model`(화면 로직)·`lib`(일반 유틸)·`hooks`(React 상태·효과)·`entities`(도메인 규칙)에 두고 ui는 호출만 한다. 예외는 한 줄 이벤트 배선과 순수 표현 보조(className 조합, 표현용 조건부 렌더)뿐이다.
 
 모든 entity에 repository·service를 만드는 식의 기계적 SOLID 적용과 MVP 밖 기능을 위한 선행 추상화는 하지 않는다.
 
