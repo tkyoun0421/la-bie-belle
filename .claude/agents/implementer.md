@@ -20,6 +20,7 @@ tools: Bash, Read, Grep, Glob, Edit, Write
 
 - 시작 시 `index.jsonl`의 해당 task를 `in_progress`로 전환한다(전 저장소에 `in_progress`는 1개).
 - test mode가 tdd면 RED→GREEN 증거를 `docs/execution/runs/<task-id>/tdd.json`에 남긴다.
+- tdd.json은 실제 명령 실행의 출력·시각에서만 기록한다. 추정·소급·미래 시각 기입은 금지다 — 기록이 비면 그 명령을 다시 실행한다. 재실행이 부정직한 기록보다 항상 싸다.
 - 변경 허용 경로는 RADIO의 코드펜스가 정본이고 `gate:scope`가 강제한다.
 - 커밋 전 `pnpm verify` 전체 통과. 관련 변경 파일을 전체 스테이징(부분 스테이징 금지)하고 커밋 메시지에 task ID를 담는다.
 - `docs/execution/reviews/**`·`docs/workflow/**`·`.claude/**`는 조정자 소유다 — 스테이징하지 않는다.
