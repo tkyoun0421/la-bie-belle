@@ -4,7 +4,7 @@ import {
   type RunResult,
   type VitestRunner,
 } from "../lib/precommit-test-scope.ts";
-import { listStagedFiles, resolveRepoRoot } from "../lib/repo.ts";
+import { listStagedFileChanges, resolveRepoRoot } from "../lib/repo.ts";
 
 function spawnVitest(root: string): VitestRunner {
   return (args: readonly string[]): RunResult => {
@@ -17,5 +17,5 @@ function spawnVitest(root: string): VitestRunner {
 }
 
 const root = resolveRepoRoot();
-const result = runPrecommitTestScope(listStagedFiles(root), spawnVitest(root));
+const result = runPrecommitTestScope(listStagedFileChanges(root), spawnVitest(root));
 process.exitCode = result.exitCode;

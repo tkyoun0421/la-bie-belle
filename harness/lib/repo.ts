@@ -44,3 +44,45 @@ export function listStagedFiles(root: string): string[] {
   });
   return stdout.split("\0").filter((entry) => entry.length > 0);
 }
+
+export type StagedFileChange = {
+  readonly status: string;
+  readonly path: string;
+  readonly previousPath?: string;
+};
+
+export function listStagedFileChanges(root: string): StagedFileChange[] {
+  const stdout = execFileSync("git", ["-C", root, "diff", "--cached", "--name-status", "-z"], {
+    encoding: "utf8",
+  });
+  const fields = stdout.split("\0").filter((entry) => entry.length > 0);
+
+  const changes: StagedFileChange[] = [];
+  let cursor = 0;
+  while (cursor < fields.length) {
+    const status = fields[cursor];
+    if (status === undefined) {
+      break;
+    }
+    cursor += 1;
+
+    if (status.startsWith("R") || status.startsWith("C")) {
+      const previousPath = fields[cursor];
+      const path = fields[cursor + 1];
+      cursor += 2;
+      if (previousPath === undefined || path === undefined) {
+        break;
+      }
+      changes.push({ status, path, previousPath });
+      continue;
+    }
+
+    const path = fields[cursor];
+    cursor += 1;
+    if (path === undefined) {
+      break;
+    }
+    changes.push({ status, path });
+  }
+  return changes;
+}

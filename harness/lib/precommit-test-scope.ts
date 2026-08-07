@@ -1,4 +1,5 @@
 import { matchesAnyGlob } from "./glob.ts";
+import type { StagedFileChange } from "./repo.ts";
 
 export type TestScopeMode = "skip" | "related" | "full";
 
@@ -44,21 +45,40 @@ export const BROAD_IMPACT_GLOBS: readonly string[] = [
   "tests/setup-*.ts",
 ];
 
-function isUnclassifiable(path: string): boolean {
+function isUnclassifiablePath(path: string): boolean {
   return path.trim().length === 0 || path.startsWith("/");
 }
 
-export function classifyStagedFiles(paths: readonly string[]): TestScopeJudgment {
-  if (paths.some(isUnclassifiable)) {
+function isUnclassifiable(change: StagedFileChange): boolean {
+  if (change.status.trim().length === 0) {
+    return true;
+  }
+  if (isUnclassifiablePath(change.path)) {
+    return true;
+  }
+  return change.previousPath !== undefined && isUnclassifiablePath(change.previousPath);
+}
+
+function isDeletionOrRename(change: StagedFileChange): boolean {
+  return change.status.startsWith("D") || change.status.startsWith("R");
+}
+
+export function classifyStagedFiles(changes: readonly StagedFileChange[]): TestScopeJudgment {
+  if (changes.some(isUnclassifiable)) {
     return { mode: "full" };
   }
-  if (paths.length === 0) {
+  if (changes.length === 0) {
     return { mode: "skip" };
   }
-  if (paths.some((path) => matchesAnyGlob(path, BROAD_IMPACT_GLOBS))) {
+  if (changes.some(isDeletionOrRename)) {
     return { mode: "full" };
   }
-  const codeFiles = paths.filter((path) => matchesAnyGlob(path, CODE_PATH_GLOBS));
+  if (changes.some((change) => matchesAnyGlob(change.path, BROAD_IMPACT_GLOBS))) {
+    return { mode: "full" };
+  }
+  const codeFiles = changes
+    .filter((change) => matchesAnyGlob(change.path, CODE_PATH_GLOBS))
+    .map((change) => change.path);
   if (codeFiles.length === 0) {
     return { mode: "skip" };
   }
@@ -72,11 +92,13 @@ export function buildVitestCommand(judgment: TestScopeJudgment): VitestCommand |
   if (judgment.mode === "full") {
     return { args: ["run"] };
   }
-  return { args: ["related", ...(judgment.files ?? []), "--run"] };
+  return {
+    args: ["related", ...(judgment.files ?? []), "--run", "--passWithNoTests=false"],
+  };
 }
 
 export function runPrecommitTestScope(
-  stagedFiles: readonly string[],
+  stagedFiles: readonly StagedFileChange[],
   runVitest: VitestRunner,
 ): RunResult {
   const judgment = classifyStagedFiles(stagedFiles);

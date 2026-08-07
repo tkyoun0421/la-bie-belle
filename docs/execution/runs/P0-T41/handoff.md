@@ -50,3 +50,25 @@
 - `.githooks/pre-commit`(무조건 vitest 전체 실행 → 판정 기반 실행부 호출)
 - `docs/execution/runs/P0-T41/tdd.json`
 - `docs/execution/phases/index.jsonl`(P0-T41 `in_progress`)
+
+## 2026-08-07 · 교차 검증 수정 라운드(F-01만 해소)
+
+- 대상: 교차 검증 확정 7건 중 high 1건(F-01)만 이 라운드에서 해소한다. medium 4건(F-02·F-03·F-04·F-05)과 low 2건(F-06·F-07)은 조정자 지시대로 backlog·조정자 소유로 남기고 손대지 않았다. 재봉인은 하지 않았다(RADIO의 fail-closed 불변 규칙을 실제로 이행하는 수정이라 설계 변경이 아니라는 조정자 판단).
+- F-01의 두 근본 원인을 실측으로 재현한 뒤 고쳤다.
+  1. **`vitest related`의 `passWithNoTests` 강제**: `pnpm exec vitest related <파일> --run`을 이 저장소에서 직접 실행하면(예: `harness/lib/precommit-test-scope.ts` — vitest include 밖 경로) "No test files found, exiting with code 0"으로 항상 exit 0이었다. `--passWithNoTests=false`를 명시적으로 추가하면(`??=`는 이미 정의된 `false`를 덮어쓰지 않는다) 같은 조건에서 "exiting with code 1"로 바뀌는 것을 실측으로 확인했다 — `buildVitestCommand`의 related 분기 args 끝에 `--passWithNoTests=false`를 추가했다. `runPrecommitTestScope`의 기존 "related 실패(exitCode !== 0) → fail-closed로 full 재실행" 로직은 무수정이다 — 이제 exit code가 정확해지니 기존 재시도 로직이 그대로 올바르게 작동한다.
+  2. **`git diff --cached --name-only`의 삭제·rename 상태 손실**: `harness/lib/repo.ts`에 `listStagedFileChanges(root)`(신규, `git diff --cached --name-status -z` 기반, NUL 필드를 상태 코드별로 파싱 — R/C는 `previousPath`+`path` 2필드, 그 외는 `path` 1필드)를 추가했다. 기존 `listStagedFiles`(name-only, scope-gate가 쓰는 함수)는 무수정으로 남겨 다른 소비자에 영향이 없다. `classifyStagedFiles`의 입력을 `readonly string[]`에서 `readonly StagedFileChange[]`(status·path·previousPath)로 바꾸고, 분류 불가 판정 다음·빈 스테이징 판정 다음 우선순위로 "상태가 D 또는 R로 시작하는 항목이 하나라도 있으면 full"을 추가했다 — 목적지 경로가 코드 경로 glob에 걸리는지와 무관하게 D·R은 항상 full로 승격하는 블런트 규칙이다(조정자 지시 그대로: "D·R 상태가 하나라도 있으면 full로 승격하라"). `harness/gates/precommit-test.ts`는 `listStagedFiles` 대신 `listStagedFileChanges`를 쓰도록 바꿨다.
+- TDD RED→GREEN(실제 실행): `harness/self-test/precommit-test-scope.test.ts`를 구현보다 먼저 새 계약(`StagedFileChange` 입력, D·R 승격 케이스 3개, `passWithNoTests=false`를 포함한 명령 산출 단언, 0건 related를 실제 vitest로 재현하는 통합 테스트 1개)으로 다시 써서 수정 전 구현(문자열 배열을 기대하는 옛 `classifyStagedFiles`)에 그대로 실행해 44개 중 39개가 실패하는 RED를 실제로 확인했다(`at: 2026-08-07T02:59:33Z`, exit 1) — 대부분은 `path.trim is not a function`(옛 구현이 객체를 문자열로 오인)이고, `passWithNoTests` 통합 테스트는 정확히 보고서가 지목한 그 증상("0건 related 실행이 exit 0으로 통과했다")으로 실패했다. `harness/lib/repo.ts`에 `listStagedFileChanges`를 추가하고 `harness/lib/precommit-test-scope.ts`·`harness/gates/precommit-test.ts`를 위 설계대로 고친 뒤 같은 명령으로 재실행해 44/44 통과(GREEN, `at: 2026-08-07T03:00:10Z`)를 확인했다. 두 시각 모두 `date -u` 실제 출력에서 옮겨 `tdd.json`에 추가했다(기존 두 항목은 무수정 보존).
+- `pnpm harness:typecheck`, `pnpm harness:self-test`(248/248, 이전 242 + 신규 6: D 삭제·R rename 목적지 코드·R rename 목적지 비코드 3 case + 상태 M 무영향 확인 1 case + `runPrecommitTestScope`의 D 단독 승격 1 case + 실제 vitest 통합 1 case), `pnpm gate:tdd`(무출력 통과)를 확인했다. `pnpm db:reset` 후 `pnpm verify` 전체(format → lint:ci → typecheck → test 775/775 → harness:typecheck → harness:self-test 248/248 → check:docs → build → check:app-build → check:client-secret-scan → test:e2e 27/27 → gate:all)를 실행해 exit 0을 확인했다.
+- 자기 커밋 재실측(수정 반영 후): 이 수정 라운드 자체의 스테이징(`harness/gates/precommit-test.ts`·`harness/lib/precommit-test-scope.ts`·`harness/lib/repo.ts`·`harness/self-test/precommit-test-scope.test.ts`, 전부 상태 M — D·R 없음)에 `node harness/gates/precommit-test.ts`를 그대로 실행해 확인했다. 판정은 `related`(코드 경로만 M 상태로 존재, 광역 파일 없음)였고, `vitest related`가 대상 파일 전부 harness/**라 0건을 찾자 이번에는 `--passWithNoTests=false` 덕분에 "exiting with code 1"로 실패했다 — 기존 재시도 로직이 그대로 `vitest run`(전체)을 실행해 775/775 통과 후 exit 0으로 마무리됐다. `time` 측정 결과 총 20.8초(related 시도 ~1초 + full 재실행 ~19.4초)였다.
+  - **절감 효과 변화(중요)**: 첫 구현(F-01 수정 전) 때는 이 유형의 커밋(코드 경로가 있지만 vitest include 밖인 harness/.githooks만 스테이징)이 조용히 0.99초에 exit 0으로 끝나 "절감됐다"고 잘못 기록했었다 — 실은 아무것도 검증하지 못한 채 통과한 것이었다(F-01이 지적한 바로 그 결함). 수정 후에는 같은 유형의 커밋이 fail-closed로 전체 스위트를 타 약 20.8초가 걸린다 — 이는 P0-T41 이전의 무조건 `vitest run`(약 21.0초, 위 첫 절 실측)과 사실상 동일한 비용이다. 즉 harness/.githooks만 건드리는 커밋에는 이 task의 속도 이득이 없다(원래도 vitest가 그 경로를 검증한 적이 없어 이득이 있을 수 없는 유형이었고, 이제는 정직하게 그 사실이 비용으로 드러난다). 실제 절감은 여전히 (a) 문서 전용 커밋의 완전 생략, (b) `src/**`처럼 vitest가 실제로 커버하는 코드 경로를 건드리되 광역 파일·삭제·rename이 없는 커밋의 related 축소 두 갈래에서만 발생한다.
+- F-02·F-03·F-04·F-05·F-06·F-07은 이 라운드에서 의도적으로 손대지 않았다 — 조정자가 backlog·조정자 소유로 지정했다. 특히 F-07(판별 유니언 아닌 판정 타입)과 F-06(related 실패와 진짜 테스트 실패를 구분하지 않고 병합)은 이번 수정이 만든 `TestScopeJudgment`·`runPrecommitTestScope` 구조를 그대로 재사용했으므로 두 finding의 코드 위치·설명은 여전히 유효하다.
+
+### 미결 사항(수정 라운드)
+
+- 없음(F-01 범위 내). F-02·F-03·F-04·F-05·F-06·F-07은 여전히 미해소 상태로 조정자가 소유한다(위 확정 목록 참고, `docs/execution/reviews/P0-T41-review.json`).
+
+### 다음 행동(수정 라운드)
+
+1. 조정자가 F-01 해소를 확인하고, F-02~F-07의 backlog 편입·후속 task 여부를 결정한다.
+2. F-01 재검토 후 문제 없으면 `index.jsonl`의 P0-T41을 `done`으로 전환한다.
+3. ci-finisher가 push와 CI 감시를 백그라운드로 수행한다(이 handoff는 push하지 않는다).
