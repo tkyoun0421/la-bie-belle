@@ -41,3 +41,25 @@
 - `src/shared/config/error-codes.config.ts`, `src/shared/config/auth-routes.config.ts`
 - `src/app/(protected)/admin/recruitment/page.tsx`, `src/app/(protected)/admin/page.tsx`
 - `tests/e2e/recruitment-open.spec.ts`
+
+## 2026-08-07 · 검증·종결(조정자)
+
+- 작업 식별자: P2-T02
+- 현재 단계: 검증 종료 → task 종료
+- 기준 시각: 2026-08-07T20:10:00+09:00
+
+### 확정된 사실
+
+- 교차 검증(opus·codex, 기준 커밋 `0c30a12` → 구현 커밋 `45c2eaf`)에서 발견 9건이 전원 인정으로 확정됐다 — medium 5·low 4, critical·high 0건이라 수정 라운드 없이 종결한다. 총점 88 (code_quality 95 · tests 72 · security 100 · performance 95 · architecture 80). 정본: `docs/execution/reviews/P2-T02-review.json`.
+- 중요도 갈림 3건은 계약대로 높은 쪽을 택하고 사유를 발견 description에 남겼다: F-02 충돌 후 선택 잔존(opus low / codex medium → medium), F-03 월 경계 시간대(opus low / codex medium → medium), F-04 pgTAP 전역 행 수(codex low / opus medium → medium).
+- 확정 9건 전부 medium·low라 backlog에 누적했고 개별 보고 대상은 없다.
+
+### 미결 사항
+
+- F-02(충돌 후 선택 잔존)·F-03(월 경계 시간대)은 P2-T03이 같은 달력·선택·month searchParam 패턴을 재사용하므로, 같은 결함을 복제하지 않도록 P2-T03 구현 지침에 경고로 전달한다. 결정 주체: 조정자(개발 단계 전달로 처리).
+- F-07(RED가 제거·복원 mutation 증거)은 backlog의 P0-T40 '하네스 RED 관행 정비 후보'와 같은 계열이다 — 관행 정비 task가 생기면 함께 다룬다.
+
+### 다음 행동
+
+1. index의 P2-T02를 `done`으로 전환하고 대시보드를 재생성한 뒤 종료 커밋을 만든다.
+2. task 경계 규칙에 따라 P2-T03·T04의 승인(index 행 전환·RADIO 봉인 커밋)을 처리하고 P2-T03 구현에 착수한다.

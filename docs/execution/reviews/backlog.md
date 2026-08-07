@@ -189,3 +189,12 @@
 - [ ] [medium] [P2-T01] applications 두 FK를 결합 위반 하나로만 검증(개별 FK 회귀 미방어) — supabase/tests/12-recruitment-schema.test.sql
 - [ ] [medium] [P2-T01] 본인 명의 INSERT 거부 문구가 실제로는 타인 명의만 시도 — supabase/tests/12-recruitment-schema.test.sql
 - [ ] [low] [P2-T01] applications RLS의 is_admin 행 단위 평가(initplan 선례 존재, RADIO 범위 밖) — supabase/migrations/20260807040000_recruitment_schema.sql
+- [ ] [medium] [P2-T02] E2E가 고정 근무일 데이터를 남겨 같은 검증을 재실행할 수 없음 — tests/e2e/recruitment-open.spec.ts
+- [ ] [medium] [P2-T02] 충돌 응답 후에도 충돌 날짜가 선택·활성 상태로 남아 재제출 가능 — src/views/admin-recruitment/model/recruitment-cell-state.ts
+- [ ] [medium] [P2-T02] month 파라미터 UTC Date 변환으로 서쪽 시간대에서 월 경계 하루 어긋남(DEV-TIME-03 후보 계열) — src/app/(protected)/admin/recruitment/page.tsx
+- [ ] [medium] [P2-T02] pgTAP 감사 단언이 자기 픽스처 아닌 전역 행 수 의존(E2E 실행 뒤 로컬 db:test 깨짐) — supabase/tests/13-recruitment-batch-open.test.sql
+- [ ] [medium] [P2-T02] 월 이동·선택 유지 경로가 어느 계층에서도 미검증(렌즈 선언 불일치) — src/views/admin-recruitment/ui/RecruitmentOpenView.tsx
+- [ ] [low] [P2-T02] 월 조회가 상태 필터 없이 CANCELLED 포함 조회라 부분 인덱스 못 탐 — src/entities/schedule/api/list-recruitment-schedules.ts
+- [ ] [low] [P2-T02] DB·E2E RED가 구현 제거·복원 mutation 증거(편집 전 RED 아님 — P0-T40 관행 정비 후보와 같은 계열) — docs/execution/runs/P2-T02/tdd.json
+- [ ] [low] [P2-T02] 함수 경로 KST 당일 허용 경계 단언 부재(렌즈 선언 불일치) — supabase/tests/13-recruitment-batch-open.test.sql
+- [ ] [low] [P2-T02] 활성 모집 disabled 셀 aria-label "신청 가능" 모순 — src/shared/ui/calendar.tsx
