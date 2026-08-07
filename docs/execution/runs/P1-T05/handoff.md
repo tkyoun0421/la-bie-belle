@@ -105,3 +105,10 @@
 - `docs/execution/runs/P1-T05/tdd.json`에 이 라운드의 RED→GREEN이 이어서 기록돼 있다 — `pnpm db:reset && pnpm db:test`(진짜 RED, F-01·F-03·F-04 결합 재현) 1쌍 + TS 계층(model·api·ui) 6쌍.
 - 갱신: `supabase/migrations/20260807020000_identity_worker_management.sql`(F-01·F-02·F-03 함수 수정 + `seq` 컬럼), `supabase/tests/09-worker-management.test.sql`(F-02·F-04·F-07), `src/entities/identity/api/find-worker-detail.ts`·그 테스트(F-05), `src/features/worker-management/ui/HourlyWageForm.tsx`·그 테스트, `src/features/my-profile/ui/OwnWageForm.tsx`·그 테스트, `src/views/admin/ui/WorkerDetailView.tsx`·그 테스트, `src/views/my-profile/ui/MyProfileView.tsx`·그 테스트(F-06).
 - 신규: `src/entities/identity/model/position-eligibility.ts`·그 테스트(F-05).
+
+## 2026-08-07 · 조정자 검증 절(교차 검증·수정 라운드)
+
+- 대조: 구현 a045e7f(74파일)·수정 be4176d(16파일) 전부 revision 2 허용 경로 안, tdd.json 66개 시각 전부 커밋 이전(미래 0건), gate:all exit 0, P1-T04 마이그레이션 무수정(감사 seq 컬럼은 이 task 마이그레이션의 alter).
+- 교차 검증: opus·codex 병렬 + 상호 되물음. 확정 14건(critical 2·high 5·medium 6·low 1), 기각 1건(venue_settings 행 정책 — RADIO 승인 범위). 총점 70.
+- 수정 라운드: critical·high 7건 전부 해소(be4176d). anon 악용 실재현 RED → 수정 → GREEN, 감사 순서 정본을 seq(identity)로 확립, 성별 조건 필터·파생 시급 표시 완성, anon pgTAP 5종 추가(82건). pnpm verify 전체 exit 0 재확인.
+- medium 6·low 1은 backlog 누적. 병렬 커넥션 동시성 인프라 부재는 계속 미결(P0-T40 계열 정비 후보).

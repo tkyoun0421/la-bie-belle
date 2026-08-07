@@ -1,0 +1,150 @@
+{
+  "task_id": "P1-T05",
+  "at": "2026-08-07T01:16:55Z",
+  "base_commit": "7b79ac1be1b094fa6cf976ff2381e856772c81e8",
+  "participants": ["opus", "codex"],
+  "participants_note": "",
+  "scores": {
+    "code_quality": 72,
+    "tests": 60,
+    "security": 52,
+    "performance": 90,
+    "architecture": 75
+  },
+  "score_rationale": {
+    "code_quality": "모듈 분리·명명·전용 SQLSTATE 등 선행 교훈 반영은 좋으나, 파생 시급 금액을 계산하고 버리는 high 1건과 검증 규칙·시급 폼 복제, 대상 부재 조용한 성공 medium 3건, getUser 중복 low 1건이 확정됐다.",
+    "tests": "pgTAP 75건과 정직한 TDD 기록에도, anon 주체 축 전무(high — 실제 fail-open을 통과시킴)와 순차 호출을 동시성으로 단언하는 false-confidence(high), 무의미한 E2E 민감 필드 단언(medium)이 확정됐다.",
+    "security": "InitPlan 래핑·UUID 검증·PII 미로깅은 잘 배치됐으나, 비활성 계정의 DB측 본인 수정 미강제와 감사 before·순서 왜곡 critical 2건, set_hourly_wage anon fail-open high 1건, DEFINER 실행 권한 미회수 medium 1건이 확정됐다.",
+    "performance": "목록 단일 조회·상세 병렬화·InitPlan 확보로 확정 감점은 setOwnWage의 중복 Auth 왕복 low 1건뿐이다.",
+    "architecture": "FSD 방향·server-only·감사 정본 확장은 승인 설계와 일치하나 기본 포지션 파생에서 성별 조건이 빠져 PRD 150행과 RADIO Data model에 어긋나는 high 1건이 확정됐다."
+  },
+  "total": 70,
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "critical",
+      "area": "security",
+      "title": "비활성 계정이 직접 RPC로 본인 휴대폰·시급을 수정할 수 있다(DB측 상태 미강제)",
+      "description": "update_own_phone은 actor null 여부만, set_hourly_wage 본인 분기는 actor=target만 확인하고 profiles.status를 보지 않는다. 앱 경로는 requireActiveProfile이 막지만 유효 세션의 pending·rejected·dormant 사용자가 PostgREST /rpc 직접 호출로 본인 휴대폰·시급을 바꿀 수 있어 PRD 77행과 서버·DB 이중 강제(RADIO 불변 규칙)를 우회한다. 거절된 신청자가 휴대폰 unique를 점유하는 조작도 가능. P1-T03 approve류 함수는 대상 status를 명시 확인하는 선례가 있다. 중요도 갈림: codex critical, opus medium — 높은 쪽.",
+      "file": "supabase/migrations/20260807020000_identity_worker_management.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-02",
+      "severity": "critical",
+      "area": "security",
+      "title": "수정 함수 3종의 행 잠금 부재로 동시 수정 시 감사 before 값과 순서를 신뢰할 수 없다",
+      "description": "update_worker_info·set_hourly_wage·update_own_phone의 SELECT에 for update가 없어(P1-T03 approve_signup의 잠금 선례 이탈) READ COMMITTED에서 두 트랜잭션이 같은 before를 읽으면 후행 감사가 stale before를 기록해 변경 이력이 왜곡된다. created_at 기본값 now()는 transaction_timestamp라 커밋 순서도 보장하지 않는다. RADIO가 약속한 '변경 전·후 값 detail'과 '감사 순서 보존' 계약 미충족 — 시급 분쟁 추적이 목적인 감사라 치명적. 최종 저장값 자체는 유효(후행 승리). 중요도 갈림: codex critical, opus medium — 높은 쪽.",
+      "file": "supabase/migrations/20260807020000_identity_worker_management.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-03",
+      "severity": "high",
+      "area": "security",
+      "title": "set_hourly_wage 권한 검사가 NULL 3치 논리로 세션 없는 호출에서 fail-open한다",
+      "description": "가드 `if not (is_admin(actor) or actor = target)`에서 auth.uid()가 NULL이면 false OR NULL = NULL, NOT NULL = NULL이라 IF가 성립하지 않아 예외 없이 통과한다. 함수는 PUBLIC EXECUTE + PostgREST 노출 + SECURITY DEFINER라 익명 요청이 대상 UUID만 알면 임의 근무자의 시급을 바꾸고 actor null 감사 행을 남긴다. 같은 파일의 다른 네 함수는 이 구멍이 없다 — set_hourly_wage만 3치 논리에 걸렸다. profile UUID 공개 표면이 현재 없어 critical이 아닌 high.",
+      "file": "supabase/migrations/20260807020000_identity_worker_management.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-04",
+      "severity": "high",
+      "area": "tests",
+      "title": "신규 SECURITY DEFINER 함수 5종의 anon 주체 pgTAP이 전무해 fail-open이 GREEN으로 통과했다",
+      "description": "09 테스트의 권한 단언이 전부 authenticated + 실재 프로필 주체뿐이고 set local role anon 블록이 없다. P1-T03의 08 테스트가 anon 거부를 명시 검증한 선례를 따르지 않았고, 이 공백이 F-03을 놓쳤다. DEFINER 함수마다 auth.uid() NULL 주체는 필수 경계값이다. 중요도 갈림: opus medium, codex high — 높은 쪽.",
+      "file": "supabase/tests/09-worker-management.test.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-05",
+      "severity": "high",
+      "area": "architecture",
+      "title": "기본 포지션 파생에 성별 조건이 빠져 여성 근무자에게 남성 전용 '안내'가 기본 적용으로 표시된다",
+      "description": "find-worker-detail의 granted 판정이 is_default만 보고 gender_requirement를 무시한다. PRD 150행('성별 조건은 그대로 적용한다')과 RADIO Data model('positions.is_default(성별 조건 필터)')을 모두 위반하며, 관리자가 배정 가능 여부를 오판하는 운영 오정보다. 이 파생 규칙은 P3 배정 후보 계산의 기반이라 지금 바로잡아야 한다. 중요도 갈림: codex high, opus medium — 높은 쪽.",
+      "file": "src/entities/identity/api/find-worker-detail.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-06",
+      "severity": "high",
+      "area": "code_quality",
+      "title": "파생 기본 시급 금액을 계산하고도 화면에서 버려 AC7의 표시값 절반이 미구현이다",
+      "description": "WorkerDetailView·MyProfileView가 resolveEffectiveWage의 amount를 소비하지 않고 isDerived만 폼에 넘겨, 시급 미설정자 화면에 빈 입력과 '기본 시급 적용 중' 문구만 남고 실제 기본 시급 금액이 어디에도 없다. RADIO Data model의 '시급 표시값 = hourly_wage ?? default_hourly_wage(파생 표기 동반)' 절반 구현. handoff의 '선언만 되고 소비되지 않는 패턴을 피했다' 서술과도 어긋난다. 중요도 갈림: codex high, opus medium — 높은 쪽.",
+      "file": "src/views/admin/ui/WorkerDetailView.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-07",
+      "severity": "high",
+      "area": "tests",
+      "title": "단일 트랜잭션 순차 호출을 동시성으로 단언하고 동률 created_at을 정렬 키로 써 순서 보존을 검증하지 못한다",
+      "description": "09 테스트 전체가 begin~rollback 단일 트랜잭션이라 모든 감사 행의 created_at(transaction_timestamp)이 동일하고, order by created_at 단언은 물리적 행 순서에 의존해 통과한다 — 순서 보존이 깨져도 잡지 못하는 false-confidence 단언이다. '동시 부여' 블록도 순차 호출로 on conflict 멱등성만 검증한다. 주석·handoff에 '순차 시뮬레이션'이 정직하게 공개돼 은폐는 아니나, F-02가 실재한다는 사실이 이 공백을 그대로 드러냈다. 중요도 갈림: codex high, opus medium — 높은 쪽.",
+      "file": "supabase/tests/09-worker-management.test.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-08",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "개인정보 검증 규칙이 signup.ts와 worker-update.ts에 통째로 복제돼 정본이 둘이 됐다",
+      "description": "정규식·메시지 상수 5종·서울 날짜 헬퍼·4필드 Zod 스키마 본문이 동일 복제다. 같은 slice·segment라 공통 추출 비용이 거의 없고 동일 업무 개념이라 DEV-SSOT-01 위반 — 휴대폰 규칙 변경 시 세 곳(두 TS + DB CHECK)을 함께 고쳐야 하는데 연결이 없다.",
+      "file": "src/entities/identity/model/worker-update.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-09",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "시급 편집 hook·form이 두 feature slice에 사실상 동일 복제됐다",
+      "description": "useHourlyWageForm과 useOwnWageForm, 두 폼 컴포넌트가 이름 외 동일하다('기본 시급 적용 중' 문구 포함). 동일한 시급 편집 규칙의 두 소비자라 공통 소유자(entities 또는 shared)로 올리지 않으면 검증·표시 변경이 어긋난다. 중요도 갈림: opus low, codex medium — 높은 쪽.",
+      "file": "src/features/my-profile/hooks/useOwnWageForm.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-10",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "대상 프로필이 없을 때 수정 함수가 조용히 성공으로 수렴한다",
+      "description": "update_worker_info·set_hourly_wage가 대상 not found면 예외 없이 return해 Server Action이 ok:true를 돌려준다. '대상 없음'과 '변경 없음'은 다른 사실 — 전용 SQLSTATE로 구분해 COMMON_NOT_FOUND로 매핑하는 것이 이 task가 세운 LB001·LB002 방향과 일관된다. 중요도 갈림: opus low, codex medium — 높은 쪽.",
+      "file": "supabase/migrations/20260807020000_identity_worker_management.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-11",
+      "severity": "medium",
+      "area": "tests",
+      "title": "E2E 민감 필드 부재 단언이 잘못된 대상·화면을 검사해 어떤 회귀도 잡지 못한다",
+      "description": "비관리자 차단 시나리오가 이미 홈으로 리다이렉트된 화면에서 타인(target)이 아닌 본인(nonAdmin)의 휴대폰 부재를 단언한다 — 구현이 어떻게 깨져도 항상 통과한다. RLS 차단 자체는 pgTAP이 덮고 있어 실노출 위험은 낮으나 화면 계층 회귀 보호가 없다.",
+      "file": "tests/e2e/worker-management.spec.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-12",
+      "severity": "medium",
+      "area": "security",
+      "title": "신규 DEFINER 함수들의 실행 권한이 PUBLIC으로 남아 is_active_worker가 익명 열거 도구가 된다",
+      "description": "신규 함수들에 revoke/grant execute가 없어 기본 PUBLIC EXECUTE가 유지된다. is_active_worker(uuid)는 익명이 임의 UUID의 활성 여부를 조회하는 공개 RPC가 되고, 이 습관이 F-03의 노출 경로를 만들었다. P1-T03·T04가 effective_roles에 적용한 회수 선례를 따르지 않았다. 중요도 갈림: codex medium, opus low — 높은 쪽.",
+      "file": "supabase/migrations/20260807020000_identity_worker_management.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-13",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "상세 라우트의 id를 UUID 검증 없이 DB에 넘겨 잘못된 URL이 ErrorScreen으로 끝난다",
+      "description": "find-worker-detail이 라우트 파라미터를 검증 없이 uuid 컬럼 필터에 전달해 비UUID URL이 22P02→COMMON_UNEXPECTED→ErrorScreen이 된다(NotFoundScreen이 맞는 자리). 쓰기 경로 4종은 UUID 검증이 있는 비대칭이고, 단위 테스트 mock이 실제 경계를 잘못 표현한다. 권한·노출 영향 없음. 중요도 갈림: codex medium, opus low — 높은 쪽.",
+      "file": "src/entities/identity/api/find-worker-detail.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-14",
+      "severity": "low",
+      "area": "performance",
+      "title": "setOwnWage가 세션 확인 Auth 왕복을 두 번 수행한다",
+      "description": "requireActiveProfile 내부의 getUser 후 사용자 id가 필요해 getUser를 다시 호출한다. require 결과에 id를 포함하거나 대상 인자 없는 본인 전용 RPC 설계였으면 피할 수 있었다 — handoff에 선택 근거가 공개돼 있다.",
+      "file": "src/features/my-profile/api/set-own-wage.ts",
+      "agreed_by": ["opus", "codex"]
+    }
+  ]
+}

@@ -157,3 +157,10 @@
 - [ ] [low] [P1-T03] 빈 pending 목록 분기 heading 부재 — src/views/admin/ui/ApprovalListView.tsx
 - [ ] [low] [P1-T03] Server Action 결과 타입 3중 선언·hooks 세그먼트 소유 — src/features/approval/hooks/useApprovalActions.ts
 - [ ] [low] [P1-T03] 전용 SQLSTATE 대신 범용 22023 재사용(RADIO 편차) — supabase/migrations/20260807010000_identity_signup_approval.sql
+- [ ] [medium] [P1-T05] 개인정보 검증 규칙 signup·worker-update 이중 정본(DEV-SSOT-01) — src/entities/identity/model/worker-update.ts
+- [ ] [medium] [P1-T05] 시급 편집 hook·form 두 slice 동일 복제 — src/features/my-profile/hooks/useOwnWageForm.ts
+- [ ] [medium] [P1-T05] 대상 부재 시 수정 함수 조용한 성공(전용 SQLSTATE·NOT_FOUND 매핑 후보) — supabase/migrations/20260807020000_identity_worker_management.sql
+- [ ] [medium] [P1-T05] E2E 민감 필드 단언이 잘못된 대상·화면 검사(항상 통과) — tests/e2e/worker-management.spec.ts
+- [ ] [medium] [P1-T05] 신규 DEFINER 함수 PUBLIC EXECUTE 미회수(is_active_worker 익명 열거) — supabase/migrations/20260807020000_identity_worker_management.sql
+- [ ] [medium] [P1-T05] 상세 라우트 id UUID 미검증(비UUID URL이 ErrorScreen) — src/entities/identity/api/find-worker-detail.ts
+- [ ] [low] [P1-T05] setOwnWage 세션 확인 Auth 왕복 중복 — src/features/my-profile/api/set-own-wage.ts
