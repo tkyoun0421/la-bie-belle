@@ -2,6 +2,9 @@ alter table profiles
   add column hourly_wage integer
     constraint profiles_hourly_wage_positive check (hourly_wage > 0);
 
+alter table identity_audit_logs
+  add column seq bigint generated always as identity;
+
 create table worker_position_eligibilities (
   profile_id uuid not null references profiles (id) on delete cascade,
   position_id uuid not null references positions (id) on delete restrict,
@@ -87,7 +90,8 @@ begin
   select name, gender, birth_date, phone
     into old_name, old_gender, old_birth_date, old_phone
     from profiles
-    where id = target_profile_id;
+    where id = target_profile_id
+    for update;
 
   if not found then
     return;
@@ -133,7 +137,11 @@ declare
   actor_id uuid := auth.uid();
   old_wage integer;
 begin
-  if not (is_admin(actor_id) or actor_id = target_profile_id) then
+  if actor_id is null then
+    raise exception '로그인이 필요합니다' using errcode = '42501';
+  end if;
+
+  if not (is_admin(actor_id) or (actor_id = target_profile_id and is_active_worker(actor_id))) then
     raise exception '본인 또는 관리자만 시급을 수정할 수 있습니다' using errcode = '42501';
   end if;
 
@@ -141,7 +149,7 @@ begin
     raise exception '시급은 1원 이상 100000원 이하여야 합니다' using errcode = 'LB001';
   end if;
 
-  select hourly_wage into old_wage from profiles where id = target_profile_id;
+  select hourly_wage into old_wage from profiles where id = target_profile_id for update;
 
   if not found then
     return;
@@ -176,7 +184,11 @@ begin
     raise exception '로그인이 필요합니다' using errcode = '42501';
   end if;
 
-  select phone into old_phone from profiles where id = actor_id;
+  if not is_active_worker(actor_id) then
+    raise exception '활성 근무자만 휴대폰을 수정할 수 있습니다' using errcode = '42501';
+  end if;
+
+  select phone into old_phone from profiles where id = actor_id for update;
 
   if not found then
     return;

@@ -49,7 +49,7 @@ export function WorkerDetailView({
         <h2 className="typo-title text-text-strong">시급</h2>
         <HourlyWageForm
           action={onSetWage.bind(null, worker.id)}
-          initialHourlyWage={worker.hourlyWage}
+          initialAmount={effectiveWage.amount}
           isDerived={effectiveWage.isDerived}
         />
       </section>

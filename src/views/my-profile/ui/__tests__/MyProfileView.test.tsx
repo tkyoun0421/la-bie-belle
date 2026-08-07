@@ -35,4 +35,10 @@ describe("MyProfileView", () => {
 
     expect(screen.getByText("기본 시급 적용 중")).toBeInTheDocument();
   });
+
+  it("시급 미설정이면 파생된 기본 시급 금액을 입력 필드에 보여준다(F-06)", () => {
+    render(<MyProfileView info={INFO} onUpdatePhone={vi.fn()} onSetWage={vi.fn()} />);
+
+    expect(screen.getByLabelText("시급")).toHaveValue(12000);
+  });
 });

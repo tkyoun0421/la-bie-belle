@@ -311,6 +311,90 @@
       "exit_code": 0,
       "at": "2026-08-07T09:47:06+09:00",
       "phase": "green"
+    },
+    {
+      "command": "pnpm db:reset && pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-07T10:28:01+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm db:reset && pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-07T10:30:00+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/position-eligibility.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T10:30:44+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/position-eligibility.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T10:30:52+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/find-worker-detail.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T10:31:36+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/find-worker-detail.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T10:32:04+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/worker-management/ui/__tests__/HourlyWageForm.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T10:32:30+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/worker-management/ui/__tests__/HourlyWageForm.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T10:32:43+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/my-profile/ui/__tests__/OwnWageForm.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T10:33:01+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/my-profile/ui/__tests__/OwnWageForm.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T10:33:14+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin/ui/__tests__/WorkerDetailView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T10:33:36+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin/ui/__tests__/WorkerDetailView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T10:33:48+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/my-profile/ui/__tests__/MyProfileView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T10:34:03+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/my-profile/ui/__tests__/MyProfileView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T10:34:12+09:00",
+      "phase": "green"
     }
   ]
 }

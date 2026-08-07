@@ -1,5 +1,5 @@
 begin;
-select plan(75);
+select plan(82);
 
 select has_function(
   'public', 'update_worker_info', array['uuid', 'text', 'gender', 'date', 'text'],
@@ -26,13 +26,15 @@ insert into auth.users (id, email) values
   ('a1000000-0000-0000-0000-000000000001', 'wm-admin@labiebelle.test'),
   ('a1000000-0000-0000-0000-000000000010', 'wm-worker-a@labiebelle.test'),
   ('a1000000-0000-0000-0000-000000000011', 'wm-worker-b@labiebelle.test'),
-  ('a1000000-0000-0000-0000-000000000012', 'wm-worker-c@labiebelle.test');
+  ('a1000000-0000-0000-0000-000000000012', 'wm-worker-c@labiebelle.test'),
+  ('a1000000-0000-0000-0000-000000000013', 'wm-worker-pending@labiebelle.test');
 
 insert into public.profiles (id, name, phone, gender, birth_date, status) values
   ('a1000000-0000-0000-0000-000000000001', '관리자', '01070000001', 'male', '1988-01-01', 'active'),
   ('a1000000-0000-0000-0000-000000000010', '근무자에이', '01070000010', 'male', '1990-01-01', 'active'),
   ('a1000000-0000-0000-0000-000000000011', '근무자비', '01070000011', 'female', '1991-02-02', 'active'),
-  ('a1000000-0000-0000-0000-000000000012', '근무자씨', '01070000012', 'male', '1992-03-03', 'active');
+  ('a1000000-0000-0000-0000-000000000012', '근무자씨', '01070000012', 'male', '1992-03-03', 'active'),
+  ('a1000000-0000-0000-0000-000000000013', '근무자디', '01070000013', 'male', '1993-04-04', 'pending');
 
 insert into public.profile_roles (profile_id, role, granted_by) values
   ('a1000000-0000-0000-0000-000000000001', 'admin', null);
@@ -174,6 +176,27 @@ select throws_ok(
 );
 reset role;
 
+-- 권한: anon 주체의 직접 호출도 거부된다(F-04)
+-- set_config는 role 전환과 무관하게 트랜잭션에 남으므로 이전 세션의 claim을 명시적으로 비운다
+select set_config('request.jwt.claim.sub', '', true);
+select set_config('request.jwt.claims', '', true);
+set local role anon;
+select throws_ok(
+  $$select update_worker_info(
+    'a1000000-0000-0000-0000-000000000010', '익명시도', 'male', '1990-01-01', '01079990098'
+  )$$,
+  '42501',
+  null,
+  'anon의 update_worker_info 호출은 거부된다'
+);
+select throws_ok(
+  $$select set_hourly_wage('a1000000-0000-0000-0000-000000000010', 99000)$$,
+  '42501',
+  null,
+  'anon의 set_hourly_wage 호출은 거부된다'
+);
+reset role;
+
 -- 중복 요청: 같은 값 재수정은 멱등(감사 중복 없음)
 set local role authenticated;
 select set_config('request.jwt.claim.sub', 'a1000000-0000-0000-0000-000000000001', true);
@@ -200,7 +223,7 @@ select is(
   '동일 시급 재수정도 감사 행을 추가하지 않는다'
 );
 
--- 동시성(순차 시뮬레이션): 후행 값이 유효하고 감사가 순서를 보존한다
+-- 순차 수정(진짜 동시성 아님): 후행 값이 유효하고 감사가 호출 순서를 보존한다
 set local role authenticated;
 select set_config('request.jwt.claim.sub', 'a1000000-0000-0000-0000-000000000001', true);
 select lives_ok(
@@ -229,12 +252,12 @@ select is(
 );
 select is(
   (
-    select array_agg(detail -> 'name' ->> 'after' order by created_at)
+    select array_agg(detail -> 'name' ->> 'after' order by seq)
     from identity_audit_logs
     where target_profile_id = 'a1000000-0000-0000-0000-000000000010' and event = 'worker_info_updated'
   ),
   array['근무자에이-개정', '근무자에이-먼저', '근무자에이-나중'],
-  '감사 행이 호출 순서를 보존한다'
+  '감사 행이 seq(bigint identity) 기준으로 호출 순서를 보존한다 — created_at은 한 트랜잭션에서 전부 동률이라 정본으로 쓰지 않는다'
 );
 
 -- =====================================================================
@@ -295,6 +318,35 @@ select is(
   null,
   '거부된 타인 대상 호출은 상태를 바꾸지 않는다'
 );
+
+-- 권한: anon 주체의 update_own_phone 직접 호출도 거부된다(F-04)
+select set_config('request.jwt.claim.sub', '', true);
+select set_config('request.jwt.claims', '', true);
+set local role anon;
+select throws_ok(
+  $$select update_own_phone('01079990097')$$,
+  '42501',
+  null,
+  'anon의 update_own_phone 호출은 거부된다'
+);
+reset role;
+
+-- 권한: 비활성(pending) 본인은 자신의 시급·휴대폰도 수정할 수 없다(F-01)
+set local role authenticated;
+select set_config('request.jwt.claim.sub', 'a1000000-0000-0000-0000-000000000013', true);
+select throws_ok(
+  $$select set_hourly_wage('a1000000-0000-0000-0000-000000000013', 12000)$$,
+  '42501',
+  null,
+  'pending 상태인 본인의 set_hourly_wage 호출도 거부된다'
+);
+select throws_ok(
+  $$select update_own_phone('01079990096')$$,
+  '42501',
+  null,
+  'pending 상태인 본인의 update_own_phone 호출도 거부된다'
+);
+reset role;
 
 -- 중복 요청: 중복 휴대폰 재제출 일관 거부
 set local role authenticated;
@@ -474,6 +526,28 @@ select throws_ok(
 );
 reset role;
 
+-- 권한: anon 주체의 부여·회수 직접 호출도 거부된다(F-04)
+select set_config('request.jwt.claim.sub', '', true);
+select set_config('request.jwt.claims', '', true);
+set local role anon;
+select throws_ok(
+  $$select grant_position_eligibility(
+    'a1000000-0000-0000-0000-000000000010', (select id from positions where name = '스캔')
+  )$$,
+  '42501',
+  null,
+  'anon의 grant_position_eligibility 호출은 거부된다'
+);
+select throws_ok(
+  $$select revoke_position_eligibility(
+    'a1000000-0000-0000-0000-000000000010', (select id from positions where name = '스캔')
+  )$$,
+  '42501',
+  null,
+  'anon의 revoke_position_eligibility 호출은 거부된다'
+);
+reset role;
+
 -- 중복 요청: 회수 재호출은 무변화로 수렴한다
 set local role authenticated;
 select set_config('request.jwt.claim.sub', 'a1000000-0000-0000-0000-000000000001', true);
@@ -516,20 +590,20 @@ select is(
   '재회수는 감사 행을 추가하지 않는다'
 );
 
--- 동시성: 동시 부여가 PK로 단일 행에 수렴한다
+-- 멱등성(순차 재호출, 진짜 동시성 아님): 재부여가 PK로 단일 행에 수렴한다
 set local role authenticated;
 select set_config('request.jwt.claim.sub', 'a1000000-0000-0000-0000-000000000001', true);
 select lives_ok(
   $$select grant_position_eligibility(
     'a1000000-0000-0000-0000-000000000010', (select id from positions where name = '메인')
   )$$,
-  '메인 포지션 동시 부여 시도 1회차'
+  '메인 포지션 재부여 시도 1회차'
 );
 select lives_ok(
   $$select grant_position_eligibility(
     'a1000000-0000-0000-0000-000000000010', (select id from positions where name = '메인')
   )$$,
-  '메인 포지션 동시 부여 시도 2회차'
+  '메인 포지션 재부여 시도 2회차'
 );
 reset role;
 
@@ -540,12 +614,12 @@ select is(
       and position_id = (select id from positions where name = '메인')
   ),
   1,
-  '동시 부여는 PK 제약으로 단일 행에 수렴한다'
+  '재부여는 PK 제약으로 단일 행에 멱등하게 수렴한다'
 );
 select is(
   (select count(*)::int from identity_audit_logs where target_profile_id = 'a1000000-0000-0000-0000-000000000010' and event = 'position_granted' and detail ->> 'position_id' = (select id::text from positions where name = '메인')),
   1,
-  '동시 부여는 감사 행을 중복시키지 않는다'
+  '재부여는 감사 행을 중복시키지 않는다'
 );
 
 -- =====================================================================

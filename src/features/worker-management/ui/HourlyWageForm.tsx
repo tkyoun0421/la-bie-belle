@@ -11,15 +11,13 @@ import { Input } from "@/shared/ui/input";
 
 type HourlyWageFormProps = {
   action: (hourlyWage: number) => Promise<HourlyWageOutcome>;
-  initialHourlyWage: number | null;
+  initialAmount: number;
   isDerived: boolean;
 };
 
-export function HourlyWageForm({ action, initialHourlyWage, isDerived }: HourlyWageFormProps) {
+export function HourlyWageForm({ action, initialAmount, isDerived }: HourlyWageFormProps) {
   const { state, formAction, pending } = useHourlyWageForm(action);
-  const [hourlyWage, setHourlyWage] = useState(
-    initialHourlyWage === null ? "" : String(initialHourlyWage),
-  );
+  const [hourlyWage, setHourlyWage] = useState(String(initialAmount));
   const fieldErrors = !state.ok ? state.fieldErrors : undefined;
 
   return (

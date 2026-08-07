@@ -8,15 +8,13 @@ import { Input } from "@/shared/ui/input";
 
 type OwnWageFormProps = {
   action: (hourlyWage: number) => Promise<OwnWageOutcome>;
-  initialHourlyWage: number | null;
+  initialAmount: number;
   isDerived: boolean;
 };
 
-export function OwnWageForm({ action, initialHourlyWage, isDerived }: OwnWageFormProps) {
+export function OwnWageForm({ action, initialAmount, isDerived }: OwnWageFormProps) {
   const { state, formAction, pending } = useOwnWageForm(action);
-  const [hourlyWage, setHourlyWage] = useState(
-    initialHourlyWage === null ? "" : String(initialHourlyWage),
-  );
+  const [hourlyWage, setHourlyWage] = useState(String(initialAmount));
   const fieldErrors = !state.ok ? state.fieldErrors : undefined;
 
   return (

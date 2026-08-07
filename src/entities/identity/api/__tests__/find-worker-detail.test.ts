@@ -74,9 +74,9 @@ describe("findWorkerDetail", () => {
     });
     positionsOrder.mockResolvedValue({
       data: [
-        { id: "pos-default", name: "안내", is_default: true },
-        { id: "pos-scan", name: "스캔", is_default: false },
-        { id: "pos-main", name: "메인", is_default: false },
+        { id: "pos-default", name: "안내", is_default: true, gender_requirement: "male" },
+        { id: "pos-scan", name: "스캔", is_default: false, gender_requirement: "any" },
+        { id: "pos-main", name: "메인", is_default: false, gender_requirement: "any" },
       ],
       error: null,
     });
@@ -105,6 +105,43 @@ describe("findWorkerDetail", () => {
     });
     expect(positionsEq).toHaveBeenCalledWith("is_active", true);
     expect(eligibilitiesEq).toHaveBeenCalledWith("profile_id", "worker-1");
+  });
+
+  it("기본 포지션의 성별 조건이 근무자와 다르면 목록에서 제외한다(F-05)", async () => {
+    profileMaybeSingle.mockResolvedValue({
+      data: {
+        id: "worker-2",
+        name: "이근무",
+        gender: "female",
+        birth_date: "1991-01-01",
+        phone: "01099998888",
+        status: "active",
+        hourly_wage: null,
+      },
+      error: null,
+    });
+    positionsOrder.mockResolvedValue({
+      data: [
+        { id: "pos-guide", name: "안내", is_default: true, gender_requirement: "male" },
+        { id: "pos-manager", name: "매니저", is_default: true, gender_requirement: "any" },
+        {
+          id: "pos-dress-default",
+          name: "드레스보조",
+          is_default: true,
+          gender_requirement: "female",
+        },
+        { id: "pos-dress", name: "드레스", is_default: false, gender_requirement: "female" },
+      ],
+      error: null,
+    });
+    eligibilitiesEq.mockResolvedValue({ data: [], error: null });
+
+    const { findWorkerDetail } = await import("@/entities/identity/api/find-worker-detail");
+    const result = await findWorkerDetail("worker-2");
+
+    expect(result.ok).toBe(true);
+    const positions = result.ok && result.data !== null ? result.data.positions : [];
+    expect(positions.map((position) => position.name)).toEqual(["매니저", "드레스보조", "드레스"]);
   });
 
   it("대상 프로필이 없으면 data: null을 반환한다", async () => {

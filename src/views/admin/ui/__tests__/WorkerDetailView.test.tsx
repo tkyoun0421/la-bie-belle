@@ -50,6 +50,20 @@ describe("WorkerDetailView", () => {
     expect(screen.getByText("기본 시급 적용 중")).toBeInTheDocument();
   });
 
+  it("시급이 미설정이면 파생된 기본 시급 금액을 입력 필드에 보여준다(F-06)", () => {
+    render(
+      <WorkerDetailView
+        worker={WORKER}
+        onUpdateInfo={vi.fn()}
+        onSetWage={vi.fn()}
+        onGrant={vi.fn()}
+        onRevoke={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByLabelText("시급")).toHaveValue(12000);
+  });
+
   it("기본 포지션은 뱃지를, 비기본 포지션은 토글을 보여준다", () => {
     render(
       <WorkerDetailView

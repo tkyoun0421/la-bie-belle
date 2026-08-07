@@ -40,7 +40,7 @@ export function MyProfileView({ info, onUpdatePhone, onSetWage }: MyProfileViewP
         <h2 className="typo-title text-text-strong">시급</h2>
         <OwnWageForm
           action={onSetWage}
-          initialHourlyWage={info.hourlyWage}
+          initialAmount={effectiveWage.amount}
           isDerived={effectiveWage.isDerived}
         />
       </section>

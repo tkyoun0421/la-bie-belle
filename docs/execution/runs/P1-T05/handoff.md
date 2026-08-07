@@ -68,3 +68,40 @@
 - 구현 파일: 위 "확정된 사실" 각 경로 전체(`src/entities/identity/**`, `src/features/worker-management/**`, `src/features/my-profile/**`, `src/views/admin/**`, `src/views/my-profile/**`, `src/views/more/**`, `src/app/(protected)/admin/workers/**`, `src/app/(protected)/admin/page.tsx`, `src/app/(protected)/my-profile/**`, `src/shared/config/wage.config.ts`, `src/shared/config/auth-routes.config.ts`).
 - E2E: `tests/e2e/worker-management.spec.ts`.
 - RADIO: `docs/execution/radio/P1-T05-radio.md`(revision 2로 재봉인, SHA-256 `0dab78312c1e88384a4d092a55e8ae7da08a3231852fdcb883356f629c657814`).
+
+## 2026-08-07 · 교차 검증 수정 라운드(critical 2·high 5)
+
+- 작업 식별자: P1-T05
+- 현재 단계: 검증(교차 검증 확정 발견 수정) → 다음 검증 재확인
+- 기준 시각: 2026-08-07
+
+### 확정된 사실
+
+- 조정자 지시대로 확정 14건 중 critical 2건·high 5건만 이 라운드에서 해소했다. medium 6건·low 1건은 손대지 않고 backlog로 남겼다(교차 검증 리뷰 파일이 이 turn 이후 별도로 갱신될 예정). 재봉인은 하지 않았다 — 전부 revision 2 허용 경로 안이고 RADIO가 이미 요구한 계약("본인 또는 관리자"·"감사 순서 보존"·"성별 조건 필터"·"파생 표기")의 이행 수정이다.
+- **F-01(critical, 비활성 계정 DB측 본인 수정 미강제) + F-03(critical→실제로는 high 수준 NULL 3치 fail-open, 같은 함수라 함께 고쳤다)**: `set_hourly_wage`의 본인 분기를 `actor_id = target_profile_id`에서 `actor_id = target_profile_id and is_active_worker(actor_id)`로 좁히고, 함수 맨 앞에 `actor_id is null` 명시 거부를 추가해 `is_admin(actor) or actor = target` 형태의 3치 논리 결함을 제거했다(anon이 actor=null일 때 `not(false or null)`이 plpgsql IF에서 false로 취급돼 조용히 통과하던 결함 — 실제로 anon이 타인의 시급을 55555원으로 바꿀 수 있음을 `docker exec ... psql`로 직접 재현해 확인했다). `update_own_phone`에도 `is_active_worker(actor_id)` 확인을 추가했다. 두 함수 모두 pending 본인의 직접 호출을 42501로 거부하도록 pgTAP을 추가해 검증했다.
+- **F-02(critical, 감사 before·순서 왜곡)**: `update_worker_info`·`set_hourly_wage`·`update_own_phone`의 대상 SELECT에 `for update`를 추가했다(approve_signup 패턴). 감사 순서 정본 문제는 `identity_audit_logs`에 `seq bigint generated always as identity` 컬럼을 추가해 해소했다 — `created_at`은 pgTAP이 하나의 트랜잭션(`begin;...rollback;`) 안에서 실행되므로 `now()`가 트랜잭션 시작 시각으로 고정돼 모든 행이 동률이 되는 것을 직접 확인했다(이 컬럼이 없었다면 순서 단언 자체가 애초에 무의미했다). 09 테스트의 순서 단언을 `order by created_at`에서 `order by seq`로 교체했다.
+- **F-04(high, anon 주체 pgTAP 전무)**: 신규 DEFINER 함수 5종 전부에 `set local role anon` 거부 단언을 추가했다. 이 과정에서 내가 처음 작성한 anon 블록 자체의 결함을 발견했다 — `select set_config('request.jwt.claim.sub', ..., true)`는 `reset role`로 되돌아가지 않고 트랜잭션 끝까지 남는 GUC라서, 이전 블록(일반 근무자 세션)의 claim이 그대로 남은 채 `set local role anon`만 전환하면 `auth.uid()`가 여전히 그 근무자의 uuid를 반환해 "진짜 anon"을 검증하지 못한다(직접 `docker exec ... psql`로 재현·확인). 모든 anon 블록 앞에 `select set_config('request.jwt.claim.sub', '', true); select set_config('request.jwt.claims', '', true);`를 추가해 고쳤다. 이 수정 전/후로 `pnpm db:reset && pnpm db:test`를 두 번 실행해 진짜 RED(anon의 set_hourly_wage 호출이 거부되지 않음, pending 본인의 두 호출이 거부되지 않음, 이로 인한 감사 카운트 연쇄 오염)를 실제로 재현한 뒤 F-01·F-03 수정으로 GREEN을 만들었다 — tdd.json에 그 RED→GREEN 쌍이 있다.
+- **F-05(high, 성별 조건 미적용)**: `src/entities/identity/model/position-eligibility.ts`(신규): `matchesGenderRequirement(requirement, workerGender)` 순수 함수 + 단위 테스트(성별×조건 조합 3케이스). `find-worker-detail.ts`가 `positions.gender_requirement`를 함께 조회해 기본 포지션 중 근무자 성별과 맞지 않는 것을 목록에서 제외하도록 고쳤다(비기본 포지션은 그대로 전부 노출 — RADIO Data model이 "성별 조건 필터"를 명시한 대상은 `is_default` 파생 집합뿐이다). 단위 테스트에 여성 근무자가 남성 전용 기본 포지션('안내')을 보지 못하고, 여성 전용 기본 포지션은 보는 케이스를 추가했다.
+- **F-06(high, 파생 기본 시급 금액 미표시)**: `HourlyWageForm`·`OwnWageForm`의 prop을 `initialHourlyWage: number | null`에서 `initialAmount: number`(+ `isDerived: boolean`는 그대로)로 바꿔, 미설정자에게도 입력 필드가 비어 있지 않고 `resolveEffectiveWage`가 계산한 실제 기본 시급 금액을 보여주도록 고쳤다. `WorkerDetailView`·`MyProfileView`는 이미 계산해 둔 `effectiveWage.amount`를 그대로 내려준다. 저장 버튼을 눌러 이 파생값을 그대로 제출하면 그 값이 명시 저장값이 되는 것은 RADIO Data model("저장은 명시 설정만")이 이미 승인한 동작이라 별도 방지 로직을 넣지 않았다.
+- **F-07(high, 동시성 false-confidence 단언)**: 정렬 단언은 F-02 수정으로 함께 해소됐다(`seq` 기준). "동시성"이라 이름 붙였지만 실제로는 순차 호출인 두 블록의 이름을 고쳤다 — AC2의 순서 보존 블록은 "순차 수정(진짜 동시성 아님)"으로, AC5의 재부여 수렴 블록은 "멱등성(순차 재호출, 진짜 동시성 아님)"으로 정정했다(전자는 값이 매번 달라 멱등성이 아니라 순서 보존이 핵심이라 "멱등성"으로 뭉뚱그리지 않고 그대로 "순차 수정"을 썼다). 진짜 병렬 커넥션 검증은 여전히 하지 않았다 — 아래 미결 사항에 남긴다.
+- pgTAP `09-worker-management.test.sql`: 75건 → 82건(anon 거부 5건 + pending 본인 거부 2건 추가, 기존 단언 무갱신 유지). `pnpm db:reset && pnpm db:test` 최종 GREEN(9파일 345 tests).
+- `src/entities/identity/api/__tests__/find-worker-detail.test.ts`: 기존 happy-path 테스트에 `gender_requirement` 필드를 채워 넣고(회귀 아님 — 필드 추가일 뿐 값은 그대로 통과하도록 구성), F-05 케이스 테스트 1건을 추가했다.
+- 검증 결과: `pnpm exec tsc --noEmit`·`pnpm lint`·`pnpm format` GREEN. `pnpm vitest run`(전체) 775 tests GREEN(135 파일). `pnpm db:reset && pnpm test:e2e`(전체 27건) GREEN — worker-management.spec.ts 3건 포함, 회귀 없음.
+- `pnpm verify` 전체를 통으로 실행해 exit 0을 확인했다(2026-08-07T10:39:17 시작 → 10:40:26 종료, e2e 27/27·gate:all 포함). 이어서 `pnpm db:reset && pnpm db:test`를 별도로 재실행해 GREEN(9파일 345 tests)을 최종 확인했다.
+
+### 미결 사항(수정 라운드에서 새로 확인된 것 포함)
+
+- 이전 절의 미결 사항(시급 상한 값 확인, 관리자 화면 디자인, positions/venue_settings 정책 재사용 방향, global-setup.ts 페이지네이션 결함)은 모두 그대로 유효하다.
+- 진짜 동시성(병렬 커넥션) 검증은 이번 라운드에서도 하지 않았다 — pgTAP 스위트에 병렬 커넥션 인프라(dblink 등)가 없다는 P1-T03의 동일 제약이 이어진다. F-02의 `for update` 잠금이 실제로 두 번째 트랜잭션을 대기시키는지는 병렬 커넥션으로만 증명 가능하다. 결정 주체: 사용자(인프라 도입 우선순위 판단 시 별도 task).
+- medium 6건·low 1건은 이번 라운드에서 의도적으로 손대지 않았다 — 조정자 지시대로 backlog로 남는다.
+
+### 다음 행동
+
+1. 이 수정 라운드를 조정자에게 보고하고, 남은 medium·low backlog 처리 여부를 확인받는다.
+2. 검증 통과 후 `index.jsonl`을 `done`으로 전환하고 push·CI 감시는 `ci-finisher`에게 오프로드한다.
+
+### 증거·산출물 경로(수정 라운드)
+
+- `docs/execution/runs/P1-T05/tdd.json`에 이 라운드의 RED→GREEN이 이어서 기록돼 있다 — `pnpm db:reset && pnpm db:test`(진짜 RED, F-01·F-03·F-04 결합 재현) 1쌍 + TS 계층(model·api·ui) 6쌍.
+- 갱신: `supabase/migrations/20260807020000_identity_worker_management.sql`(F-01·F-02·F-03 함수 수정 + `seq` 컬럼), `supabase/tests/09-worker-management.test.sql`(F-02·F-04·F-07), `src/entities/identity/api/find-worker-detail.ts`·그 테스트(F-05), `src/features/worker-management/ui/HourlyWageForm.tsx`·그 테스트, `src/features/my-profile/ui/OwnWageForm.tsx`·그 테스트, `src/views/admin/ui/WorkerDetailView.tsx`·그 테스트, `src/views/my-profile/ui/MyProfileView.tsx`·그 테스트(F-06).
+- 신규: `src/entities/identity/model/position-eligibility.ts`·그 테스트(F-05).
