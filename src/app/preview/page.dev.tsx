@@ -49,11 +49,11 @@ const SCREENS: PreviewScreen[] = [
     scenarios: [
       {
         label: "모집 혼합 월",
-        node: <ScheduleView {...scheduleMocks.SCHEDULE_MIXED_MONTH} onOpenDetail={() => {}} />,
+        node: <ScheduleView {...scheduleMocks.SCHEDULE_MIXED_MONTH} />,
       },
       {
         label: "빈 월",
-        node: <ScheduleView {...scheduleMocks.SCHEDULE_EMPTY_MONTH} onOpenDetail={() => {}} />,
+        node: <ScheduleView {...scheduleMocks.SCHEDULE_EMPTY_MONTH} />,
       },
     ],
   },

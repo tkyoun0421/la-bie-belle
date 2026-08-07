@@ -1,0 +1,112 @@
+{
+  "entries": [
+    {
+      "command": "pnpm db:reset && pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-07T20:37:49Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm db:reset && pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-07T20:39:06Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/application-changes.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T20:41:40Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/application-changes.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T20:41:58Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/recruitment-schedule.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T20:42:13Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/recruitment-schedule.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T20:42:22Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/list-own-applications.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T20:42:38Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/list-own-applications.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T20:42:49Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/application/api/__tests__/apply-recruitment-changes.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T20:43:08Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/application/api/__tests__/apply-recruitment-changes.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T20:43:21Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/application/hooks/__tests__/useApplicationBatch.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T20:45:03Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/application/hooks/__tests__/useApplicationBatch.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T20:45:20Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule/model/__tests__/schedule-cell-state.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T20:46:18Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule/model/__tests__/schedule-cell-state.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T20:46:28Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule/ui/__tests__/ScheduleView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T20:48:30Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule/ui/__tests__/ScheduleView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T20:48:46Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm exec playwright test schedule.spec.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T21:29:19Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm exec playwright test schedule.spec.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T21:34:08Z",
+      "phase": "green"
+    }
+  ]
+}

@@ -29,6 +29,10 @@ export const ERROR_CODES = {
     message: "이미 모집 중인 날짜가 있어요. 목록을 다시 확인해 주세요",
   },
   SCHEDULING_VALIDATION: { http: 422, message: "입력값을 다시 확인해 주세요" },
+  SCHEDULING_APPLICATION_BLOCKED: {
+    http: 409,
+    message: "신청할 수 없는 날짜가 있어요. 목록을 다시 확인해 주세요",
+  },
 } as const satisfies Record<`${ErrorDomain}_${string}`, ErrorSpec>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;
@@ -47,4 +51,5 @@ export const ERROR_CODE = {
   IDENTITY_STATUS_CONFLICT: "IDENTITY_STATUS_CONFLICT",
   SCHEDULING_DATE_CONFLICT: "SCHEDULING_DATE_CONFLICT",
   SCHEDULING_VALIDATION: "SCHEDULING_VALIDATION",
+  SCHEDULING_APPLICATION_BLOCKED: "SCHEDULING_APPLICATION_BLOCKED",
 } as const satisfies { [K in ErrorCode]: K };

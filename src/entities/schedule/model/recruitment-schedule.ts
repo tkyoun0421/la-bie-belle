@@ -33,3 +33,22 @@ export function mapRecruitmentScheduleRow(row: RecruitmentScheduleRow): Recruitm
     status: RecruitmentScheduleStatusSchema.parse(row.status),
   };
 }
+
+export const OWN_APPLICATION_STATUS_VALUES = ["applied", "withdrawn"] as const;
+
+export const OwnApplicationStatusSchema = z.enum(OWN_APPLICATION_STATUS_VALUES);
+export type OwnApplicationStatus = z.infer<typeof OwnApplicationStatusSchema>;
+
+export type RecruitmentScheduleWithApplication = RecruitmentSchedule & {
+  applicationStatus: OwnApplicationStatus | null;
+};
+
+export function mapRecruitmentScheduleWithApplication(
+  schedule: RecruitmentSchedule,
+  applicationStatusByScheduleId: ReadonlyMap<string, OwnApplicationStatus>,
+): RecruitmentScheduleWithApplication {
+  return {
+    ...schedule,
+    applicationStatus: applicationStatusByScheduleId.get(schedule.id) ?? null,
+  };
+}

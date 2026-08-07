@@ -1,19 +1,54 @@
-import { MIXED_MONTH_APPLICATIONS } from "@/entities/schedule/model/application.mock";
-import {
-  EMPTY_MONTH_WORK_SCHEDULES,
-  MIXED_MONTH_WORK_SCHEDULES,
-} from "@/entities/schedule/model/work-schedule.mock";
+import type { RecruitmentScheduleWithApplication } from "@/entities/schedule/model/recruitment-schedule";
+import type {
+  ApplicationBatchInput,
+  ApplicationBatchOutcome,
+} from "@/features/application/hooks/useApplicationBatch";
+
+async function mockApply(_input: ApplicationBatchInput): Promise<ApplicationBatchOutcome> {
+  return { ok: true, appliedCount: 0, withdrawnCount: 0 };
+}
+
+const MIXED_MONTH_SCHEDULES: RecruitmentScheduleWithApplication[] = [
+  {
+    id: "schedule-2026-08-02",
+    workDate: "2026-08-02",
+    applicationDeadline: "2026-08-02",
+    status: "CLOSED",
+    applicationStatus: null,
+  },
+  {
+    id: "schedule-2026-08-03",
+    workDate: "2026-08-03",
+    applicationDeadline: "2026-08-03",
+    status: "OPEN",
+    applicationStatus: null,
+  },
+  {
+    id: "schedule-2026-08-04",
+    workDate: "2026-08-04",
+    applicationDeadline: "2026-08-04",
+    status: "OPEN",
+    applicationStatus: "applied",
+  },
+  {
+    id: "schedule-2026-08-07",
+    workDate: "2026-08-07",
+    applicationDeadline: "2026-08-07",
+    status: "CONFIRMED",
+    applicationStatus: null,
+  },
+];
 
 export const SCHEDULE_MIXED_MONTH = {
   month: new Date(2026, 7, 1),
-  workSchedules: MIXED_MONTH_WORK_SCHEDULES,
-  applications: MIXED_MONTH_APPLICATIONS,
-  confirmedDates: ["2026-08-07"],
+  today: "2026-08-01",
+  schedules: MIXED_MONTH_SCHEDULES,
+  onApply: mockApply,
 };
 
 export const SCHEDULE_EMPTY_MONTH = {
   month: new Date(2026, 8, 1),
-  workSchedules: EMPTY_MONTH_WORK_SCHEDULES,
-  applications: [],
-  confirmedDates: [],
+  today: "2026-08-01",
+  schedules: [],
+  onApply: mockApply,
 };

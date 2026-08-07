@@ -16,11 +16,17 @@ if (!Element.prototype.releasePointerCapture) {
   Element.prototype.releasePointerCapture = () => {};
 }
 
-afterEach(cleanup);
+const push = vi.fn();
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
+
+afterEach(() => {
+  cleanup();
+  push.mockClear();
+});
 
 describe("ScheduleView", () => {
   it("모집 없음·모집 중·신청 완료·모집 마감·확정 상태를 달력에 렌더한다", () => {
-    render(<ScheduleView {...SCHEDULE_MIXED_MONTH} onOpenDetail={() => {}} />);
+    render(<ScheduleView {...SCHEDULE_MIXED_MONTH} />);
 
     expect(screen.getByRole("button", { name: "8월 1일 모집 없음" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "8월 3일 신청 가능" })).toBeInTheDocument();
@@ -31,21 +37,20 @@ describe("ScheduleView", () => {
 
   it("모집 중인 날짜를 탭하면 로컬 선택 상태로 바뀐다", async () => {
     const user = userEvent.setup();
-    render(<ScheduleView {...SCHEDULE_MIXED_MONTH} onOpenDetail={() => {}} />);
+    render(<ScheduleView {...SCHEDULE_MIXED_MONTH} />);
 
     await user.click(screen.getByRole("button", { name: "8월 3일 신청 가능" }));
 
     expect(screen.getByRole("button", { name: "8월 3일 선택됨" })).toBeInTheDocument();
   });
 
-  it("마감·확정 날짜를 탭하면 상세 열기를 호출하고 선택 상태를 바꾸지 않는다", async () => {
+  it("마감·확정 날짜를 탭하면 상세 라우트로 이동하고 선택 상태를 바꾸지 않는다", async () => {
     const user = userEvent.setup();
-    const onOpenDetail = vi.fn();
-    render(<ScheduleView {...SCHEDULE_MIXED_MONTH} onOpenDetail={onOpenDetail} />);
+    render(<ScheduleView {...SCHEDULE_MIXED_MONTH} />);
 
     await user.click(screen.getByRole("button", { name: "8월 7일 확정" }));
 
-    expect(onOpenDetail).toHaveBeenCalledWith("2026-08-07");
+    expect(push).toHaveBeenCalledWith("/schedule/2026-08-07");
     expect(screen.getByRole("button", { name: "8월 7일 확정" })).toBeInTheDocument();
   });
 
@@ -54,7 +59,7 @@ describe("ScheduleView", () => {
     render(
       <>
         <SnackbarProvider />
-        <ScheduleView {...SCHEDULE_MIXED_MONTH} onOpenDetail={() => {}} />
+        <ScheduleView {...SCHEDULE_MIXED_MONTH} />
       </>,
     );
 
@@ -70,8 +75,17 @@ describe("ScheduleView", () => {
   });
 
   it("빈 월은 신청 가능한 날짜 없이 렌더된다", () => {
-    render(<ScheduleView {...SCHEDULE_EMPTY_MONTH} onOpenDetail={() => {}} />);
+    render(<ScheduleView {...SCHEDULE_EMPTY_MONTH} />);
 
     expect(screen.queryByRole("button", { name: /신청 가능/ })).toBeNull();
+  });
+
+  it("월을 이동하면 month searchParam으로 라우팅한다", async () => {
+    const user = userEvent.setup();
+    render(<ScheduleView {...SCHEDULE_MIXED_MONTH} />);
+
+    await user.click(screen.getByRole("button", { name: "다음 달로 이동" }));
+
+    expect(push).toHaveBeenCalledWith("/schedule?month=2026-09");
   });
 });

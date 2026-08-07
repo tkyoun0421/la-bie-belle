@@ -1,15 +1,16 @@
 # P2-T03 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-07
-- 개발 설계 승인: user, 2026-08-07
+- 개발 설계 승인: user, 2026-08-08
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-07 | 최초 작성. 기획 확정 2건(Undo 범위 포함·마감은 상태+시각 이중 검증)과 설계 인터뷰 확정 1건(Undo는 다음 변경 전까지 유지 — 2026-08-07)을 반영. 봉인된 P2-T01(스키마)·P2-T02(달력 확장·반환값 관례·감사 단위) RADIO를 계약으로 삼아 P2-T02 구현 완료 전에 설계했다(파이프라이닝 보정). P2-T02 재봉인이 생기면 달력·관례 전제를 재점검한다. |
+| 2 | 2026-08-08 | 변경 허용 경로에 `src/app/preview/page.dev.tsx` 추가 — 이 RADIO가 요구한 schedule 페이지 서버 컴포넌트 전환으로 `ScheduleView`가 콜백 prop을 받을 수 없게 되어, 프리뷰 카탈로그 호출 2곳의 해당 prop 제거가 필연적 파급인데 경로 목록에서 누락돼 있었다. 결정 내용 변경 없음. |
 
 - 관련 spec: PRD:AC-02, DOMAIN:SCHEDULING, ADR:0003, DESIGN:WORKER-FLOWS 근무 신청 절
 - 적용 깊이: 심화 (근무자 첫 쓰기 경로·batch 멱등 의미론·일정 탭 실데이터 전환)
@@ -101,6 +102,7 @@
 supabase/migrations/**
 supabase/tests/**
 src/app/(protected)/(tabs)/schedule/**
+src/app/preview/page.dev.tsx
 src/entities/schedule/**
 src/features/application/**
 src/views/schedule/**
