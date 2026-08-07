@@ -112,3 +112,7 @@
 - 교차 검증: opus·codex 병렬 + 상호 되물음. 확정 14건(critical 2·high 5·medium 6·low 1), 기각 1건(venue_settings 행 정책 — RADIO 승인 범위). 총점 70.
 - 수정 라운드: critical·high 7건 전부 해소(be4176d). anon 악용 실재현 RED → 수정 → GREEN, 감사 순서 정본을 seq(identity)로 확립, 성별 조건 필터·파생 시급 표시 완성, anon pgTAP 5종 추가(82건). pnpm verify 전체 exit 0 재확인.
 - medium 6·low 1은 backlog 누적. 병렬 커넥션 동시성 인프라 부재는 계속 미결(P0-T40 계열 정비 후보).
+
+## 2026-08-07 · 미결 종결 추기(조정자)
+
+- 시급 상한 `HOURLY_WAGE_MAX = 100,000원`: 사용자 확정(2026-08-07). 구현 제안값 그대로 유지. TS 상수·SQL 리터럴 이원화는 backlog의 정비 task 범위.
