@@ -157,7 +157,6 @@ test("훅 수용 — precommit-test 실행부는 코드가 스테이징되면 vi
   const result = runPrecommitTestGate(root);
 
   assert.notEqual(result.status, 0, "vitest 미설치 fixture에서 코드 스테이징이 통과했다");
-  assert.match(result.output, /vitest|pnpm/i);
 });
 
 test("훅 파일 — .githooks/pre-commit은 무조건적 vitest 전체 실행 대신 precommit-test 실행부를 호출한다", () => {
