@@ -182,3 +182,6 @@
 - [ ] [low] [P1-T06] departed 주체 자가 재활성화 직접 호출 거부 미단언 — supabase/tests/10-dormancy.test.sql
 - [ ] [low] [P1-T06] 기존 active backfill 값 pgTAP 미단언(하네스 구조 제약) — supabase/tests/10-dormancy.test.sql
 - [ ] [low] [P1-T06] bootstrap_super_admin 재정의의 RADIO 추적성 공백 — supabase/migrations/20260807030000_identity_dormancy.sql
+- [ ] [medium] [P1-T07] 비활성 주체 읽기 축 미단언(파생표-실제 RLS 차이 미고정, 픽스처 공허 단언 위험) — supabase/tests/11-authorization-matrix.test.sql
+- [ ] [medium] [P1-T07] 회수(revoke) 축 전수 조합 누락(임명 차단·해제 허용 회귀 미방어) — supabase/tests/11-authorization-matrix.test.sql
+- [ ] [low] [P1-T07] RADIO Architecture 검증 대상 목록 6건이 산출물에 없음(추적성) — docs/execution/radio/P1-T07-radio.md

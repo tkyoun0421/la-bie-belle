@@ -31,3 +31,11 @@
 - 신규 pgTAP: `supabase/tests/11-authorization-matrix.test.sql`(plan 96, 유일한 산출물).
 - 검증 로그(재현 가능): `pnpm db:reset && pnpm db:test` → `Files=11, Tests=498 ... Result: PASS`. `pnpm verify` → exit 0(gate:all 포함).
 - RADIO: `docs/execution/radio/P1-T07-radio.md`(revision 1, SHA-256 `f70193a279e499d1ba9e7398f14d0506a0e916838bd98f21bcf2bf0f4a5f5401`, 무수정).
+
+## 2026-08-07 · 검증·종결(조정자)
+
+- 교차 검증: opus·codex 병렬 독립 리뷰 + 상호 되물음. 확정 3건(medium 2·low 1, critical·high 0), 기각 1건(근거 있는 반박). 총점 92. 결과: `docs/execution/reviews/P1-T07-review.json`, 3건 backlog 누적. 수정 라운드 없음(REVIEW 계약의 기본 범위).
+- F-01이 드러낸 문서 정확도 문제: 봉인 RADIO Data model 파생표의 행1·행2 "비활성 4종 거부" 표기는 실제 RLS(자기 행 읽기는 status 무관 허용)·승인된 동작(/dormant 화면이 비활성 본인 profiles 읽기에 의존)과 어긋난다. 봉인 문서는 소급 수정하지 않으므로 정정은 backlog 정비에서 읽기 축 단언 추가와 함께 다룬다. 케이스 정본인 ARCHITECTURE 10장 매트릭스 자체는 비활성 주체 행이 없어 무결하다.
+- 판단이 갈린 기록(Y-01): codex는 reset role 후 superuser 문맥의 효과 검증 단언들이 RADIO의 주체 시뮬 조건과 어긋난다고 봤고, opus는 ① effective_roles의 EXECUTE 전면 회수로 인수 조건 1은 superuser 외 구현 수단이 없고 ② RADIO가 준거로 삼은 04~10 관행이 동일 패턴이며 ③ 주체 관찰 가능성은 별도 주체 시뮬 단언이 있다는 근거로 반박해 기각됐다. 인수 조건 4의 문언("전 단언 주체 시뮬")과 실질("service role 주체 단언 부재")의 간극은 다음 verification성 RADIO 작성 때 문언을 실질에 맞춰 쓰는 것으로 예방한다.
+- 리팩토링 단계: 코드 품질 확정 발견 0건, 동작 무변경 정리 대상 없음 — 구조 변경 없이 종결. `index.jsonl`의 P1-T07을 `done`으로 전환하고 대시보드를 재생성했다. push·CI 감시는 ci-finisher 오프로드.
+- P1 phase의 마지막 task가 done이 되어 phase 종료 조건(문서 기준) 확인은 P2 기획 진입 시점의 조정자 몫으로 넘어간다. phase 항목 status는 P0 관행(불변)을 따른다.
