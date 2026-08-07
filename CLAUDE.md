@@ -17,7 +17,7 @@ Upper layers govern lower ones. Rationale: [ADR-0013](docs/standards/adr/0013-pr
 | Layer | Owns | Canonical documents |
 |-------|------|---------------------|
 | L1 Collaboration | How work is done | [WORKFLOW](docs/workflow/WORKFLOW.md) · [HANDOFF](docs/workflow/HANDOFF.md) · [REVIEW](docs/workflow/REVIEW.md) · [TOOLING](docs/workflow/TOOLING.md) |
-| L2 Product/Domain | What is built and why | [PRD](docs/product/PRD.md) · [DOMAIN](docs/product/DOMAIN.md) · [DESIGN](docs/product/DESIGN.md) |
+| L2 Product/Domain | What is built and why | [PRD](docs/product/PRD.md) · [DOMAIN](docs/product/DOMAIN.md) · [DESIGN](docs/product/DESIGN.md) · [DECISIONS](docs/product/DECISIONS.md) (읽기 대장) |
 | L3 Standards | Common technical basis | [ARCHITECTURE](docs/standards/ARCHITECTURE.md) · [DEVELOPMENT](docs/standards/DEVELOPMENT.md) · [adr/](docs/standards/adr/README.md) |
 | L4 Planning/Execution | State and evidence | [phases/](docs/execution/phases/README.md) · `radio/` · `runs/` · `reviews/` · `dashboard/` |
 | L5 Code | Implementation | `src/`, `tests/` (future) |
