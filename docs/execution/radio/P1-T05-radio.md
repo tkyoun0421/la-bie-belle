@@ -1,15 +1,16 @@
 # P1-T05 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-07
-- 개발 설계 승인: user, 2026-08-07
+- 개발 설계 승인: user, 2026-08-07 (revision 2는 사용자 재량 없는 위계 보정 — 아래 개정 이력)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-07 | 최초 작성. 기획 확정(기본 포지션 개인 제외 불가·시급 기본값 파생·본인은 휴대폰과 시급만 수정·PRD 80행 개정 동반) 반영. 봉인 전 P1-T04 구현(e55cb7b)과 대조 완료 — DEFINER 쓰기 패턴·/admin 셸·requireAdmin 일치, 감사 이벤트 z.enum 정본은 P1-T03이 신설하므로 이 task는 그 정본을 확장한다. check ID는 index 정본(staff-management-integration·sensitive-response-scan)에 맞췄다. P1-T03 구현 확정과 어긋나는 것이 발견되면 정정 후 재봉인한다. |
+| 2 | 2026-08-07 | 구현 전 [질문]으로 발견된 설계 공백 보정: `positions`·`venue_settings`는 P0-T03이 "정책 0개·읽기 0행"으로 봉인했는데 이 task의 상세·내 정보 화면이 두 테이블(포지션 목록·기본 시급)을 사용자 세션으로 읽어야 한다. DEV-SEC 이중 강제와 기존 정본 구조(RLS가 유일 접근 통제, service role은 bootstrap 전용, 우회 읽기 DEFINER 패턴 부재)가 답을 정하므로 두 테이블에 **활성 근무자 SELECT 정책**을 추가하고 P0-T03의 `04-rls-default-deny` 단언을 새 상태로 갱신한다(P1-T04의 05 정책 개수 갱신 전례와 동일 패턴). 허용 범위는 PRD 77행("승인 대기는 프로필 작성·상태 확인만")이 정한다 — 활성부터. 사용자 재량 없는 위계 보정, 렌즈 표 8행 동반 갱신. |
 
 - 관련 spec: PRD:AC-12, DOMAIN:IDENTITY, ADR:0002
 - 적용 깊이: 심화 (PII·시급 수정 경로와 positions 참조 무결성의 최초 확립)
@@ -56,7 +57,7 @@
 | 5 포지션 부여·회수 | 테스트함 — 비기본 부여→상세 반영→회수 E2E·pgTAP | 테스트함 — 기본 포지션 저장 시도를 트리거가 거부 pgTAP | 테스트함 — 비활성 포지션 부여 거부, 이미 부여된 행 재부여 멱등 | 테스트함 — 일반 근무자 부여 시도 예외 pgTAP | 테스트함 — 회수 재호출 무변화 수렴 | 테스트함 — 동시 부여가 PK로 단일 행 수렴 pgTAP |
 | 6 삭제 차단 | 테스트함 — 쓰인 포지션 delete가 RESTRICT로 실패 pgTAP | 테스트함 — 실패 후 행·참조 무변화 단언 | 테스트함 — 안 쓰인 포지션 delete는 허용(시스템 포지션 보호 트리거 제외) | 해당 없음 — DB 무결성 규약이라 주체 분기가 없다 | 해당 없음 — 제약 위반은 상태를 바꾸지 않는다 | 해당 없음 — FK 제약이 원자적으로 강제한다 |
 | 7 시급 파생 표기 | 테스트함 — 미설정자 화면이 기본 시급 파생 표기 단위 테스트 | 테스트함 — 설정자에게 저장값 표기(파생 표기 부재) | 테스트함 — 기본 시급 자체는 venue_settings 단일 행 조회 | 테스트함 — 파생 표기가 본인·관리자 화면에만 존재 | 해당 없음 — 표시 계층 판정이다 | 해당 없음 — 표시 계층 판정이다 |
-| 8 회귀 | 테스트함 — verify 전체·db:test 통과 | 테스트함 — 기존 E2E(가입·게이트·역할·승인) 통과 | 테스트함 — 기존 pgTAP 단언 무갱신 통과(신규 정책 추가 없음 확인) | 해당 없음 — 시나리오별 권한은 위 행들이 소유한다 | 해당 없음 — 위 행들이 소유한다 | 해당 없음 — E2E는 격리 세션을 쓴다 |
+| 8 회귀 | 테스트함 — verify 전체·db:test 통과 | 테스트함 — 기존 E2E(가입·게이트·역할·승인) 통과 | 테스트함 — 04 rls-default-deny 단언을 새 정책 상태로 갱신(pending·익명 0행 유지 단언 포함)하고 그 외 기존 pgTAP 무갱신 통과 | 해당 없음 — 시나리오별 권한은 위 행들이 소유한다 | 해당 없음 — 위 행들이 소유한다 | 해당 없음 — E2E는 격리 세션을 쓴다 |
 
 - 보충: 수정 경합은 행 잠금 없이 "후행 값 유효 + 감사 순서 보존"으로 정의한다(계정 생애를 바꾸는 전이가 아니라 필드 값 갱신이므로 PRD 103행의 잠금 계약 대상이 아니다). 잠금이 필요한 전이는 P1-T03·T06이 소유한다.
 
@@ -73,6 +74,7 @@
 - `supabase/migrations/<ts>_identity_worker_management.sql`:
   - `profiles`에 `hourly_wage integer null check (hourly_wage > 0)` 추가.
   - `worker_position_eligibilities(profile_id fk→profiles on delete cascade, position_id fk→positions **on delete restrict**, granted_at, granted_by fk→profiles, primary key(profile_id, position_id))`, RLS enable — select: admin 정책 + 본인 행 정책, 쓰기 정책 없음.
+  - `positions`·`venue_settings`에 활성 근무자 SELECT 정책 추가(revision 2 — `effective_roles()` 소비, 행별 재평가를 피하는 형태는 구현 판단). 쓰기 정책은 계속 없음. `supabase/tests/04-rls-default-deny.test.sql`의 정책 0개·0행 단언을 새 상태(활성 근무자 읽기 허용·pending과 익명 0행 유지)로 갱신한다.
   - 트리거 `reject_default_position_eligibility`: insert 대상 position이 `is_default`면 예외.
   - SECURITY DEFINER 함수군(authenticated 실행 허용, 내부 검사가 거부): `update_worker_info(target, …)`(관리자) · `set_hourly_wage(target, wage)`(관리자 또는 본인) · `update_own_phone(phone)`(본인) · `grant_position_eligibility(target, position)`·`revoke_position_eligibility(target, position)`(관리자, 비활성 포지션 거부). 각 함수는 실변경 시 감사 이벤트(`worker_info_updated`·`hourly_wage_updated`·`phone_updated`·`position_granted`·`position_revoked`, 전후 값 detail) insert.
 - `supabase/tests/09-worker-management.test.sql`(pgTAP): 인수 조건 2~6 단언(P0-T03 이월 RESTRICT 검증 포함).

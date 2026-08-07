@@ -6,6 +6,11 @@ export const AUDIT_EVENT_VALUES = [
   "admin_role_revoked",
   "signup_approved",
   "signup_rejected",
+  "worker_info_updated",
+  "hourly_wage_updated",
+  "phone_updated",
+  "position_granted",
+  "position_revoked",
 ] as const;
 
 export const AuditEventSchema = z.enum(AUDIT_EVENT_VALUES);

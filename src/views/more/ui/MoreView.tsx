@@ -4,7 +4,7 @@ import Link from "next/link";
 import { hasRole, type RoleValue } from "@/entities/identity/model/role";
 import type { SignOutOutcome } from "@/features/auth/hooks/useSignOutAction";
 import { SignOutButton } from "@/features/auth/ui/SignOutButton";
-import { ADMIN_PATH } from "@/shared/config/auth-routes.config";
+import { ADMIN_PATH, MY_PROFILE_PATH } from "@/shared/config/auth-routes.config";
 
 type MoreViewProps = {
   onSignOut: () => Promise<SignOutOutcome>;
@@ -22,6 +22,15 @@ export function MoreView({ onSignOut, roles }: MoreViewProps) {
             className="flex items-center justify-between border-b border-border py-4 typo-body text-text-strong"
           >
             예상 급여
+            <ChevronRight aria-hidden className="size-5 text-text" />
+          </Link>
+        </li>
+        <li>
+          <Link
+            href={MY_PROFILE_PATH}
+            className="flex items-center justify-between border-b border-border py-4 typo-body text-text-strong"
+          >
+            내 정보
             <ChevronRight aria-hidden className="size-5 text-text" />
           </Link>
         </li>

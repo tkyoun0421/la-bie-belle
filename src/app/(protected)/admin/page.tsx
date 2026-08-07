@@ -1,7 +1,11 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
-import { ADMIN_APPROVALS_PATH, ADMIN_ROLES_PATH } from "@/shared/config/auth-routes.config";
+import {
+  ADMIN_APPROVALS_PATH,
+  ADMIN_ROLES_PATH,
+  ADMIN_WORKERS_PATH,
+} from "@/shared/config/auth-routes.config";
 
 export default function AdminHomePage() {
   return (
@@ -23,6 +27,15 @@ export default function AdminHomePage() {
             className="flex items-center justify-between border-b border-border py-4 typo-body text-text-strong"
           >
             역할 관리
+            <ChevronRight aria-hidden className="size-5 text-text" />
+          </Link>
+        </li>
+        <li>
+          <Link
+            href={ADMIN_WORKERS_PATH}
+            className="flex items-center justify-between border-b border-border py-4 typo-body text-text-strong"
+          >
+            근무자 관리
             <ChevronRight aria-hidden className="size-5 text-text" />
           </Link>
         </li>
