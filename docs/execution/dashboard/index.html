@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="base-commit" content="3cdca80313bf8dfe61a86e1e3d2835c1f5429769">
+<meta name="base-commit" content="4e351826cc4ce725b4eecfbcb5ffb58e44befd32">
 <title>라비에벨 운영 의사결정 대시보드</title>
 <style>:root{color-scheme:light;--ink:#0a0b0d;--muted:#5b616e;--line:#dee1e6;--surface:#f7f7f7;--action:#0052ff;--action-bg:#eef4ff;--success:#087a4b;--success-bg:#e8f8f1;--warning:#765500;--warning-bg:#fff7d6;--danger:#b01825;--danger-bg:#fff0f1}
 *{box-sizing:border-box}
@@ -60,9 +60,9 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <p class="eyebrow">라비에벨 운영 대시보드 · 읽기 전용 파생물</p>
 <h1>운영 의사결정 대시보드</h1>
 <dl class="meta">
-<div><dt>기준 시각</dt><dd class="mono">2026-08-07T11:12:36.949Z</dd></div>
-<div><dt>기준 커밋</dt><dd><span class="mono">3cdca80313bf8dfe61a86e1e3d2835c1f5429769</span><span class="sub">docs(P2-T02): close cross-review with no fix round required and mark the task done</span></dd></div>
-<div><dt>작업 트리</dt><dd>커밋되지 않은 변경 11건 — 표시 내용에 기준 커밋 이후의 작업 트리 상태가 섞여 있다.</dd></div>
+<div><dt>기준 시각</dt><dd class="mono">2026-08-07T11:12:52.963Z</dd></div>
+<div><dt>기준 커밋</dt><dd><span class="mono">4e351826cc4ce725b4eecfbcb5ffb58e44befd32</span><span class="sub">docs(P2-T03): seal the worker calendar multi-application RADIO revision 1 and queue the task</span></dd></div>
+<div><dt>작업 트리</dt><dd>커밋되지 않은 변경 8건 — 표시 내용에 기준 커밋 이후의 작업 트리 상태가 섞여 있다.</dd></div>
 </dl>
 
 </header>
@@ -77,7 +77,7 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <h3>차단 사유</h3>
 <p class="empty">차단 사유 없음</p>
 <h3>대안 후보</h3>
-<p class="empty">대안 후보 없음</p>
+<ul><li>P2-T04</li></ul>
 </section>
 <section id="readiness" class="card">
 <h2>준비도 루브릭</h2>
@@ -102,7 +102,7 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <span class="meter"><span class="meter-fill" style="width:100%"></span></span>
 <ul class="rubric-items"><li>
 <p class="row"><span>실행 가능한 planned 존재</span><span class="score mono">10/10</span></p>
-<p class="evidence">의존성이 모두 done인 planned task 1건.</p>
+<p class="evidence">의존성이 모두 done인 planned task 2건.</p>
 </li><li>
 <p class="row"><span>blocked 0건</span><span class="score mono">10/10</span></p>
 <p class="evidence">blocked task 0건.</p>
@@ -112,7 +112,7 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <span class="meter"><span class="meter-fill" style="width:73%"></span></span>
 <ul class="rubric-items"><li>
 <p class="row"><span>재생성 준수</span><span class="score mono">7/7</span></p>
-<p class="evidence">기존 산출물 기준 커밋 45c2eaf 이후 재생성이 필요한 상태 변경 커밋이 없다.</p>
+<p class="evidence">기존 산출물 기준 커밋 3cdca80 이후 재생성이 필요한 상태 변경 커밋이 없다.</p>
 </li><li>
 <p class="row"><span>보류 ADR 0건</span><span class="score mono">4/4</span></p>
 <p class="evidence">보류 상태 ADR 0건.</p>
@@ -127,11 +127,11 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <p class="row"><strong>전체 완료율</strong><span class="score mono">47/88 · 53%</span></p>
 <span class="meter"><span class="meter-fill" style="width:53%"></span></span>
 <h3>상태별 집계</h3>
-<ul class="chips"><li class="chip">기획 미승인 <span class="mono">39</span></li><li class="chip">설계 대기 <span class="mono">1</span></li><li class="chip">실행 대기 <span class="mono">1</span></li><li class="chip">완료 <span class="mono">47</span></li></ul>
+<ul class="chips"><li class="chip">기획 미승인 <span class="mono">38</span></li><li class="chip">설계 대기 <span class="mono">1</span></li><li class="chip">실행 대기 <span class="mono">2</span></li><li class="chip">완료 <span class="mono">47</span></li></ul>
 <h3>현재 진행</h3>
 <p class="empty">진행 중인 task 없음</p>
 <h3>다음 후보</h3>
-<ul class="plain"><li><span class="mono">P2-T03</span> 근무자 달력과 다중 신청 <span class="chip">실행 대기</span></li></ul>
+<ul class="plain"><li><span class="mono">P2-T03</span> 근무자 달력과 다중 신청 <span class="chip">실행 대기</span></li><li><span class="mono">P2-T04</span> 자동 마감, 연장, 재오픈 <span class="chip">실행 대기</span></li></ul>
 <details>
 <summary>phase별 진행과 의존성 대기 상세</summary>
 <h3>phase별 완료율</h3>
