@@ -185,3 +185,7 @@
 - [ ] [medium] [P1-T07] 비활성 주체 읽기 축 미단언(파생표-실제 RLS 차이 미고정, 픽스처 공허 단언 위험) — supabase/tests/11-authorization-matrix.test.sql
 - [ ] [medium] [P1-T07] 회수(revoke) 축 전수 조합 누락(임명 차단·해제 허용 회귀 미방어) — supabase/tests/11-authorization-matrix.test.sql
 - [ ] [low] [P1-T07] RADIO Architecture 검증 대상 목록 6건이 산출물에 없음(추적성) — docs/execution/radio/P1-T07-radio.md
+- [ ] [medium] [P2-T01] RLS 쓰기 축 UPDATE 단언이 자기대입 lives_ok뿐(권한 확대 회귀 미방어) — supabase/tests/12-recruitment-schema.test.sql
+- [ ] [medium] [P2-T01] applications 두 FK를 결합 위반 하나로만 검증(개별 FK 회귀 미방어) — supabase/tests/12-recruitment-schema.test.sql
+- [ ] [medium] [P2-T01] 본인 명의 INSERT 거부 문구가 실제로는 타인 명의만 시도 — supabase/tests/12-recruitment-schema.test.sql
+- [ ] [low] [P2-T01] applications RLS의 is_admin 행 단위 평가(initplan 선례 존재, RADIO 범위 밖) — supabase/migrations/20260807040000_recruitment_schema.sql

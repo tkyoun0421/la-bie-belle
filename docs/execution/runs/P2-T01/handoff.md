@@ -43,3 +43,27 @@
 - 신규 마이그레이션: `supabase/migrations/20260807040000_recruitment_schema.sql`. 신규 pgTAP: `supabase/tests/12-recruitment-schema.test.sql`(`plan(129)`, 전부 통과).
 - RADIO: `docs/execution/radio/P2-T01-radio.md`(revision 1, SHA-256 `968b1f16ef1172672c4e26445a9c23254aa22349c99bba64c84a672805cf7e12`, 무수정).
 - `docs/execution/phases/index.jsonl`: P2-T01을 `in_progress`로 전환(개발 시작 시점).
+
+## 2026-08-07 · 검증·종결(조정자)
+
+- 현재 단계: 검증 종료 → task 종결
+- 기준 시각: 2026-08-07
+
+### 확정된 사실
+
+- 교차 검증(opus·codex, 각자 독립 리뷰 후 상호 되묻기 1회)을 완료했다. 결과: `docs/execution/reviews/P2-T01-review.json`, 총점 94(code_quality 100 · tests 80 · security 98 · performance 92 · architecture 100).
+- 확정 발견 4건 — medium 3(F-01 RLS 쓰기 축 UPDATE 공허 단언, F-02 applications FK 미분리 검증, F-03 본인 명의 INSERT 문구-단언 불일치, 전부 tests) · low 1(F-04 applications RLS의 is_admin 행 단위 평가, performance). critical·high 없음 → 계약에 따라 수정 라운드 없이 backlog에 누적했다.
+- 중요도 갈림 2건(F-02·F-03)은 opus low·codex medium으로 갈려 계약대로 높은 쪽을 택했다. 사유는 결과 파일 description에 있다.
+- 기각 1건: 「과거 날짜 강제가 INSERT 전용이라 UPDATE로 우회 가능」 주장은 근거 있는 반박으로 기각됐다 — 승인 정본(phase 문서·RADIO 기술 인수 조건 3)이 과거 날짜 금지를 생성 시점 규칙으로 한정하고, 연장·재오픈 UPDATE의 유효성 규칙은 P2-T04가 소유하며, 지금 일반 UPDATE 차단을 넣으면 과거가 된 기존 스케줄의 합법적 변경까지 막는다.
+- 리팩토링 단계는 무변경으로 종료한다. 확정 발견이 전부 medium·low의 테스트 안전망·범위 밖 개선이라 코드 수정 없이 backlog가 소유하고, 구현은 승인 RADIO revision 1과 일치함이 확인됐다.
+- `index.jsonl`의 P2-T01을 `done`으로 전환한다(이 종결 커밋).
+
+### 미결 사항
+
+- 날짜 규칙의 UPDATE 경로 안전망(연장·재오픈 시 마감일·근무일 유효성)은 P2-T04 설계 인터뷰의 검토 렌즈로 편입한다. 이번 검증에서 판단이 갈렸던 지점이라 기록한다. 결정 주체: 사용자(P2-T04 설계 시점).
+- CONFIRMED→CANCELLED 허용 여부(P3 기획)·신청 조회 인덱스(P2-T03·T05 설계)는 개발 종료 절의 이월 그대로다.
+
+### 다음 행동
+
+1. push·CI 감시를 `ci-finisher`에게 오프로드한다.
+2. P2-T02 설계 인터뷰를 진행한다(기획 승인 완료, 이 스키마 위에 일괄 생성을 설계).
