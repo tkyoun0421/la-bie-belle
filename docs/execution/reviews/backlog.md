@@ -164,3 +164,9 @@
 - [ ] [medium] [P1-T05] 신규 DEFINER 함수 PUBLIC EXECUTE 미회수(is_active_worker 익명 열거) — supabase/migrations/20260807020000_identity_worker_management.sql
 - [ ] [medium] [P1-T05] 상세 라우트 id UUID 미검증(비UUID URL이 ErrorScreen) — src/entities/identity/api/find-worker-detail.ts
 - [ ] [low] [P1-T05] setOwnWage 세션 확인 Auth 왕복 중복 — src/features/my-profile/api/set-own-wage.ts
+- [ ] [medium] [P0-T40] 하네스 RED 증거가 stash 사후 재구성·모듈 로드 실패(test-first 증명력 부재 — 관행 정비 후보) — docs/execution/runs/P0-T40/tdd.json
+- [ ] [low] [P0-T40] 허용 오차 상수값 고정 단언 부재(조용한 완화 미탐지) — harness/self-test/tdd-gate.test.ts
+- [x] [low] [P0-T40] index summary 소급·추정 차단 과대 선언(done 전환 커밋에서 조정자 축소) — docs/execution/phases/index.jsonl
+- [ ] [low] [P0-T40] checkTddEvidence now 기본값 Date.now() 암묵 의존 — harness/lib/tdd-gate.ts
+- [ ] [low] [P0-T40] 오프셋 없는 at의 타임존 미래 오판 경로(정규화 계약 후보) — harness/lib/tdd-gate.ts
+- [ ] [low] [P0-T40] handoff self-test case 수 오기(실질은 git diff로 확인됨) — docs/execution/runs/P0-T40/handoff.md

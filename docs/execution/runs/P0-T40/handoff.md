@@ -33,3 +33,10 @@
 - `harness/self-test/tdd-gate.test.ts`(기존 15 case 무수정 + 신규 5 case, 총 20 case)
 - `docs/execution/runs/P0-T40/tdd.json`
 - `docs/execution/phases/index.jsonl`(P0-T40 `in_progress`)
+
+## 2026-08-07 · 조정자 검증 절(교차 검증)
+
+- 대조: 구현 f635711의 변경 5개 파일 전부 허용 경로 안, tdd.json 시각 정합(미래 0건), gate:all exit 0. opus 요청 사실 확인 2건 수행 — 기존 테스트 케이스 제거는 import 문 1줄뿐(본문 무수정), `pnpm harness:self-test` 201/201 재확인.
+- 교차 검증: opus·codex 병렬 + 되물음. 확정 6건(medium 1·low 5), critical·high 0건 — 수정 라운드 없이 done. 총점 92(파이프라인 최고).
+- medium 1건은 자기 지시적 발견: stash 사후 재구성 RED의 증명력 문제 — 하네스 변경의 RED 증거 관행 정비 후보로 backlog 기록.
+- F-03(index summary 과대 선언)은 done 전환 커밋에서 조정자가 문구 축소로 해소.
