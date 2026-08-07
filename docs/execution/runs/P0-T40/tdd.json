@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "command": "pnpm harness:self-test",
+      "exit_code": 1,
+      "at": "2026-08-07T01:47:59Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm harness:self-test",
+      "exit_code": 0,
+      "at": "2026-08-07T01:48:10Z",
+      "phase": "green"
+    }
+  ]
+}

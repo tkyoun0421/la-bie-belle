@@ -6,6 +6,8 @@ import type { Violation } from "./violation.ts";
 
 const GATE = "gate:tdd";
 
+export const TDD_CLOCK_SKEW_TOLERANCE_MS = 120_000;
+
 type TddEntry = {
   readonly command: string;
   readonly exitCode: number;
@@ -63,7 +65,7 @@ function readEntry(raw: unknown, position: number): { entry: TddEntry } | { erro
   };
 }
 
-export function checkTddEvidence(evidence: unknown): string[] {
+export function checkTddEvidence(evidence: unknown, now: number = Date.now()): string[] {
   if (!isPlainObject(evidence) || !Array.isArray(evidence["entries"])) {
     return ["tdd.json은 entries 배열을 가져야 합니다."];
   }
@@ -80,6 +82,18 @@ export function checkTddEvidence(evidence: unknown): string[] {
       errors.push(...parsed.errors);
     } else {
       entries.push(parsed.entry);
+    }
+  });
+  if (errors.length > 0) {
+    return errors;
+  }
+
+  const futureLimit = now + TDD_CLOCK_SKEW_TOLERANCE_MS;
+  entries.forEach((entry, position) => {
+    if (entry.at > futureLimit) {
+      errors.push(
+        `entries[${position}]: 기록 시각이 검사 시점보다 미래입니다 (at: ${new Date(entry.at).toISOString()}).`,
+      );
     }
   });
   if (errors.length > 0) {
@@ -142,7 +156,7 @@ export function runTddGate(root: string): Violation[] {
     ];
   }
 
-  return checkTddEvidence(evidence).map((description) => ({
+  return checkTddEvidence(evidence, Date.now()).map((description) => ({
     gate: GATE,
     file: evidencePath,
     message: `${taskId}: ${description}`,

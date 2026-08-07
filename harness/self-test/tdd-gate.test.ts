@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { checkTddEvidence, runTddGate } from "../lib/tdd-gate.ts";
+import { TDD_CLOCK_SKEW_TOLERANCE_MS, checkTddEvidence, runTddGate } from "../lib/tdd-gate.ts";
 import {
   createFixtureRoot,
   joinMessages,
@@ -141,4 +141,118 @@ test("gate:tdd — 기록 형식이 잘못되면 차단한다", () => {
     }).length > 0,
     "알 수 없는 phase 위반",
   );
+});
+
+const FIXED_NOW = Date.parse("2026-08-07T12:00:00+09:00");
+
+function isoAt(offsetMs: number): string {
+  return new Date(FIXED_NOW + offsetMs).toISOString();
+}
+
+test("gate:tdd — 검사 시점 + 허용 오차보다 미래인 기록은 거부한다", () => {
+  const errors = checkTddEvidence(
+    {
+      entries: [
+        { command: "pnpm test", exit_code: 1, at: isoAt(-3_600_000), phase: "red" },
+        {
+          command: "pnpm test",
+          exit_code: 0,
+          at: isoAt(TDD_CLOCK_SKEW_TOLERANCE_MS + 10_000),
+          phase: "green",
+        },
+      ],
+    },
+    FIXED_NOW,
+  );
+
+  assert.ok(errors.length > 0, "허용 오차를 넘는 미래 기록은 위반이어야 한다");
+  assert.match(errors.join("\n"), /entries\[1\].*미래/);
+});
+
+test("gate:tdd — 여러 항목 중 미래 항목만 지목된다", () => {
+  const errors = checkTddEvidence(
+    {
+      entries: [
+        { command: "pnpm test", exit_code: 1, at: isoAt(-7_200_000), phase: "red" },
+        { command: "pnpm test", exit_code: 0, at: isoAt(-3_600_000), phase: "green" },
+        {
+          command: "pnpm other",
+          exit_code: 1,
+          at: isoAt(TDD_CLOCK_SKEW_TOLERANCE_MS + 60_000),
+          phase: "red",
+        },
+      ],
+    },
+    FIXED_NOW,
+  );
+
+  assert.equal(errors.length, 1, "미래 항목 하나만 위반으로 보고되어야 한다");
+  assert.match(errors[0] ?? "", /entries\[2\]/);
+});
+
+test("gate:tdd — 허용 오차 경계 ±1초에서 판정이 갈린다", () => {
+  const atBoundary = checkTddEvidence(
+    {
+      entries: [
+        { command: "pnpm test", exit_code: 1, at: isoAt(-3_600_000), phase: "red" },
+        { command: "pnpm test", exit_code: 0, at: isoAt(TDD_CLOCK_SKEW_TOLERANCE_MS), phase: "green" },
+      ],
+    },
+    FIXED_NOW,
+  );
+  const withinToleranceByOneSecond = checkTddEvidence(
+    {
+      entries: [
+        { command: "pnpm test", exit_code: 1, at: isoAt(-3_600_000), phase: "red" },
+        {
+          command: "pnpm test",
+          exit_code: 0,
+          at: isoAt(TDD_CLOCK_SKEW_TOLERANCE_MS - 1_000),
+          phase: "green",
+        },
+      ],
+    },
+    FIXED_NOW,
+  );
+  const beyondToleranceByOneSecond = checkTddEvidence(
+    {
+      entries: [
+        { command: "pnpm test", exit_code: 1, at: isoAt(-3_600_000), phase: "red" },
+        {
+          command: "pnpm test",
+          exit_code: 0,
+          at: isoAt(TDD_CLOCK_SKEW_TOLERANCE_MS + 1_000),
+          phase: "green",
+        },
+      ],
+    },
+    FIXED_NOW,
+  );
+
+  assert.deepEqual(atBoundary, [], "허용 오차와 정확히 같은 미래 시각은 통과해야 한다");
+  assert.deepEqual(withinToleranceByOneSecond, [], "허용 오차 1초 이내의 미래 시각은 통과해야 한다");
+  assert.ok(
+    beyondToleranceByOneSecond.length > 0,
+    "허용 오차를 1초 넘는 미래 시각은 위반이어야 한다",
+  );
+});
+
+test("gate:tdd — 고정 시각을 주입해도 기존 유효 증거는 회귀 없이 통과한다", () => {
+  const farFutureNow = Date.parse("2030-01-01T00:00:00Z");
+
+  assert.deepEqual(checkTddEvidence(makeTddEvidence(), farFutureNow), []);
+});
+
+test("gate:tdd — 실행부가 실제 시각을 주입해 미래 기록을 거부한다", () => {
+  const root = fixtureWithEvidence({
+    entries: [
+      { command: "pnpm test", exit_code: 1, at: "2026-08-03T10:00:00+09:00", phase: "red" },
+      { command: "pnpm test", exit_code: 0, at: "9999-01-01T00:00:00Z", phase: "green" },
+    ],
+  });
+
+  const violations = runTddGate(root);
+
+  assert.ok(violations.length > 0, "실제 시각 기준으로도 먼 미래 기록은 위반이어야 한다");
+  assert.match(joinMessages(violations), /미래/);
 });
