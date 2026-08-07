@@ -130,4 +130,64 @@ describe("Calendar", () => {
     expect(digit).not.toBeNull();
     expect(digit).toHaveTextContent("3");
   });
+
+  it("selectable 상태 셀은 접근 이름에 상태를 담고 탭해 선택할 수 있다", async () => {
+    const user = userEvent.setup();
+    const onSelectDate = vi.fn();
+    render(
+      <Calendar
+        month={MONTH}
+        dateStates={[{ date: new Date(2026, 7, 8), state: "selectable" }]}
+        onSelectDate={onSelectDate}
+      />,
+    );
+
+    const cell = screen.getByRole("button", { name: "8월 8일 선택 가능" });
+    expect(cell).not.toBeDisabled();
+
+    await user.click(cell);
+    expect(onSelectDate).toHaveBeenCalledWith(new Date(2026, 7, 8));
+  });
+
+  it("disabled를 명시하지 않으면 selectable 상태는 비활성화되지 않는다(하위 호환 기본값)", () => {
+    render(
+      <Calendar
+        month={MONTH}
+        dateStates={[{ date: new Date(2026, 7, 9), state: "selectable" }]}
+        onSelectDate={() => {}}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "8월 9일 선택 가능" })).not.toBeDisabled();
+  });
+
+  it("disabled:true를 명시하면 none이 아닌 상태도 비활성화되고 disabled 시각 표현을 쓴다", () => {
+    render(
+      <Calendar
+        month={MONTH}
+        dateStates={[{ date: new Date(2026, 7, 10), state: "open", disabled: true }]}
+        onSelectDate={() => {}}
+      />,
+    );
+
+    const cell = screen.getByRole("button", { name: "8월 10일 신청 가능" });
+    expect(cell).toBeDisabled();
+    expect(cell).toHaveClass("bg-disabled-surface");
+  });
+
+  it("disabled:true인 셀을 탭해도 onSelectDate가 호출되지 않는다", async () => {
+    const user = userEvent.setup();
+    const onSelectDate = vi.fn();
+    render(
+      <Calendar
+        month={MONTH}
+        dateStates={[{ date: new Date(2026, 7, 11), state: "open", disabled: true }]}
+        onSelectDate={onSelectDate}
+      />,
+    );
+
+    const cell = screen.getByRole("button", { name: "8월 11일 신청 가능" });
+    await user.click(cell);
+    expect(onSelectDate).not.toHaveBeenCalled();
+  });
 });

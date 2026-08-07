@@ -10,6 +10,7 @@ export const ADMIN_PATH = "/admin";
 export const ADMIN_ROLES_PATH = "/admin/roles";
 export const ADMIN_APPROVALS_PATH = "/admin/approvals";
 export const ADMIN_WORKERS_PATH = "/admin/workers";
+export const ADMIN_RECRUITMENT_PATH = "/admin/recruitment";
 export const MY_PROFILE_PATH = "/my-profile";
 export const AUTH_CALLBACK_PATH = "/auth/callback";
 export const AUTH_ERROR_QUERY_PARAM = "error";
