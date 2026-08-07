@@ -1,0 +1,78 @@
+{
+  "task_id": "P1-T06",
+  "at": "2026-08-07T05:04:54Z",
+  "base_commit": "2294f9ac3c3b58f1df3ebe0b087de69ff8fd1032",
+  "participants": ["opus", "codex"],
+  "participants_note": "",
+  "scores": {
+    "code_quality": 98,
+    "tests": 78,
+    "security": 94,
+    "performance": 100,
+    "architecture": 82
+  },
+  "score_rationale": {
+    "code_quality": "확정 발견 0건 — typed Result·레지스트리 문구 재사용·주석 없는 명명·액션별 파일 분리가 기존 슬라이스 선례와 일관된다는 평가가 두 리뷰어에서 일치했고, 조회 소유자 이원화 주장은 근거 있는 반박으로 기각되어 점수 근거에서 제외했다.",
+    "tests": "동시성 렌즈를 함수 정의 텍스트 정규식으로 대체한 medium 1건(F-02)과 departed 자가 재활성화·backfill 값 단언 공백 low 2건(F-04·F-05)이 확정 — pgTAP 57건의 anon 주체·권한·부적합·멱등 커버와 실제 명령 기반 RED→GREEN 증거는 두 리뷰어 모두 충실하다고 평가했다.",
+    "security": "권한의 서버·DB 이중 강제, 실행 권한 명시 회수·재부여, profiles update 정책 부재, 감사 detail PII 없음이 확인됐고, 감점은 deactivate_worker 대상 제한 부재(low, 승인 범위 밖 강화 제안) 1건(F-03)이다.",
+    "performance": "확정 발견 0건 — 전이는 단건 RPC 1회, /dormant는 status·anchor 단일 쿼리, 예정일은 추가 조회 없는 서버 계산으로 두 리뷰어의 평가가 일치했다.",
+    "architecture": "예정일 파생이 PRD 87행의 월말 달력 규칙 대신 JS Date 넘침을 쓰는 medium 1건(F-01)과 bootstrap_super_admin 재정의가 봉인 RADIO에 반영되지 않은 추적성 low 1건(F-06)이 확정 — 전이 표 정본·게이트 확장·FSD 의존 방향·변경 허용 경로는 RADIO와 일치한다."
+  },
+  "total": 90,
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "자동 탈퇴 예정일 계산이 PRD의 월말 달력 규칙 대신 JS Date 넘침을 쓴다",
+      "description": "resolveAutoDepartureDate가 Date.UTC(year+1, month-1, day)의 자동 정규화에 의존해 anchor가 윤년 2월 29일이면 다음 해 3월 1일을 반환한다. PRD 87행은 '대상 월에 같은 날짜가 없으면 그달의 마지막 날'로 2월 28일을 요구하고, ARCHITECTURE 회귀 목록(기준 커밋 391행)도 자동 탈퇴 1년의 KST 달력·월말·윤년 경계를 명시한다. 지금은 /dormant 표시가 정책보다 하루 늦는 표시 오류지만 RADIO가 이 순수 함수를 예정일 계산 정본으로 선언했고 P7-T01 자동 탈퇴가 그 위에 서므로 규칙 이탈이 전이 판정으로 번질 수 있으며, 단위 테스트가 잘못된 결과를 기대값으로 고정해 회귀 보호까지 받고 있다. 두 리뷰어가 독립적으로 같은 결함을 발견했다.",
+      "file": "src/entities/identity/model/dormancy.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-02",
+      "severity": "medium",
+      "area": "tests",
+      "title": "동시 전이 인수 조건을 실제 경합 없이 함수 텍스트 검사로 대체했다",
+      "description": "RADIO 위험 표 2행 동시성 칸과 기술 인수 조건 4는 '동시 요청은 행 잠금으로 먼저 완료된 것만 유효'를 pgTAP으로 약속하지만, 10-dormancy.test.sql의 해당 단언은 pg_get_functiondef ~* 'for update' 텍스트 일치 3건뿐이다. 잠금 대상 행이 틀리거나 검증 순서가 뒤집혀도 통과하는 false-confidence 단언이며, 병렬 커넥션 인프라 부재는 handoff에 공개된 P1-T03·T05와 같은 구조적 제약(P1-T05 F-07과 동일 계열)이다. 두 리뷰어가 독립적으로 같은 결함을 발견했다.",
+      "file": "supabase/tests/10-dormancy.test.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-03",
+      "severity": "low",
+      "area": "security",
+      "title": "deactivate_worker에 대상 제한이 없어 일반 admin이 super_admin을 휴면으로 무력화할 수 있다",
+      "description": "deactivate_worker는 is_admin(actor)과 대상의 active 상태만 검사해 admin이 super_admin이나 자기 자신을 dormant로 만들 수 있고, effective_roles가 즉시 빈 배열이 되어 임명·해제를 포함한 권한이 정지된다. P1-T04가 grant/revoke_admin_role을 super_admin 전용으로 두어 세운 계층과 어긋나는 경로지만, 대상이 /dormant에서 즉시 자가 재활성화할 수 있고 감사 행이 남아 회복 가능하며, ARCHITECTURE 권한 매트릭스와 승인 RADIO가 대상 역할 제한을 요구하지 않으므로 승인 범위 밖의 방어 강화 제안이다.",
+      "file": "supabase/migrations/20260807030000_identity_dormancy.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-04",
+      "severity": "low",
+      "area": "tests",
+      "title": "departed 주체의 reactivate_own_profile 직접 호출 거부가 pgTAP에 단언되지 않았다",
+      "description": "RADIO 기술 인수 조건 5와 위험 표 5행 경계값 칸은 departed의 재활성화 경로 부재(버튼·함수)를 약속하는데, 테스트는 reactivate_worker의 departed 대상 거부와 active 주체의 자가 재활성화 거부만 단언하고 departed 주체가 직접 reactivate_own_profile()을 호출하는 경계는 비어 있다. 함수가 dormant 외 전 상태를 LB011로 거부하는 일반화된 상태 검사를 공유해 구현 결함 가능성은 낮다.",
+      "file": "supabase/tests/10-dormancy.test.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-05",
+      "severity": "low",
+      "area": "tests",
+      "title": "기존 active 계정 backfill 값이 pgTAP으로 단언되지 않았다",
+      "description": "RADIO 기술 인수 조건 1과 위험 표 1행 경계값 칸은 기존 active 계정의 backfill(마이그레이션 적용 시각)을 pgTAP 단언으로 약속하지만, 모든 테스트 픽스처가 마이그레이션 이후 anchor를 명시해 직접 insert하므로 backfill update의 값·대상 범위를 단언하는 곳이 없다. 다만 pgTAP이 마이그레이션 이후에 도는 하네스 구조상 '이전부터 있던 행'을 만들 수 없고, 실데이터 DB에서 backfill이 빠지면 뒤따르는 add constraint가 23514로 마이그레이션을 중단시켜 배포 실패로 드러난다.",
+      "file": "supabase/tests/10-dormancy.test.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-06",
+      "severity": "low",
+      "area": "architecture",
+      "title": "bootstrap_super_admin 재정의가 봉인 RADIO의 Architecture에 반영되지 않았다",
+      "description": "봉인된 revision 1은 최초 활성 승인 anchor 기록 대상으로 approve_signup만 열거하는데, 구현은 두 번째 활성화 경로인 bootstrap_super_admin(P1-T04 산출물)도 create or replace로 재정의했고 RADIO는 무수정이다. 원본과 라인 대조 결과 변경은 anchor 세팅 한 줄뿐이라 '기존 로직 불변' 비목표를 충족하고 RADIO 불변 규칙(최초 활성 승인 시 anchor 갱신)이 요구하는 보완이며 handoff가 계기·판단·대안을 공개했지만, 승인 설계 문서가 이 task의 DB 함수 소유 범위를 다 담지 못하는 추적성 공백이 남는다.",
+      "file": "supabase/migrations/20260807030000_identity_dormancy.sql",
+      "agreed_by": ["opus", "codex"]
+    }
+  ]
+}

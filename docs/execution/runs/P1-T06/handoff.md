@@ -38,10 +38,18 @@
 1. 교차 검증(opus·codex)을 진행하고 `docs/execution/reviews/P1-T06-review.json`을 남긴다.
 2. 검증 통과 후 `index.jsonl`을 `done`으로 전환하고 push·CI 감시는 `ci-finisher`에게 오프로드한다.
 
-### 증거·산출물 경로
+### 증거·산출물 경로 (개발 종료 시점)
 
 - `docs/execution/runs/P1-T06/tdd.json` — 실제 명령 실행의 RED→GREEN 기록(DB 1쌍 + TS 11쌍 + E2E 1쌍).
 - 신규 마이그레이션: `supabase/migrations/20260807030000_identity_dormancy.sql`. 신규 pgTAP: `supabase/tests/10-dormancy.test.sql`. 갱신(의미 보존): `supabase/tests/04-rls-default-deny.test.sql`·`07-roles.test.sql`·`08-signup-approval.test.sql`·`09-worker-management.test.sql`.
 - 구현 파일: 위 "확정된 사실" 각 경로 전체(`src/entities/identity/**`, `src/features/reactivation/**`, `src/features/worker-management/**`, `src/views/dormant/**`, `src/views/departed/**`, `src/views/admin/ui/WorkerDetailView.tsx`, `src/app/dormant/**`, `src/app/departed/**`, `src/app/(protected)/admin/workers/[id]/page.tsx`, `src/shared/config/auth-routes.config.ts`, `src/shared/config/error-codes.config.ts`).
 - E2E: `tests/e2e/dormancy.spec.ts` + 픽스처 보정 6개 파일(`global-setup.ts`·`approval.spec.ts`·`auth.spec.ts`·`roles.spec.ts`·`signup.spec.ts`·`worker-management.spec.ts`).
 - RADIO: `docs/execution/radio/P1-T06-radio.md`(revision 1, SHA-256 `988685d1241f4d15dd7845680f0ee2b9f43aeff957c8bff18ffa64aad5274703`, 무수정).
+
+## 2026-08-07 · 검증·종결(조정자)
+
+- 교차 검증: opus·codex 병렬 독립 리뷰 + 상호 되물음. 확정 6건(medium 2·high 0·critical 0·low 4), 기각 3건(전부 근거 있는 반박 — 조회 소유자 이원화, PRD 93행 소유자 공백[P7-T01 범위 37행이 소유함을 사실 확인], TDD 시간 순서). 총점 90. 결과: `docs/execution/reviews/P1-T06-review.json`, medium·low 6건 backlog 누적.
+- critical·high 0건이라 수정 라운드 없음(REVIEW 계약의 기본 범위). medium 2건(윤년 예정일 월말 규칙·동시성 텍스트 검증)은 backlog 정비 주기로 이월.
+- 리팩토링 단계: 확정 발견 중 동작 무변경 정리 대상이 없고 코드 품질 확정 발견 0건이라 구조 변경 없이 종결. 검증 GREEN 상태 그대로다.
+- 판단이 갈린 기록(Y-02): codex는 사후 재현 RED가 TDD 시간 순서 증거로 불충분하다고 봤고, opus는 tdd.json의 계약 정본(`harness/lib/tdd-gate.ts`)이 "같은 command의 더 이른 RED"만 요구하며 작성 순서는 `tdd-guard.sh` 훅이 소유한다는 근거로 반박해 기각됐다. 재현 방식 자체는 handoff에 공개돼 있었다 — tdd.json에 시간 순서 입증까지 요구할지는 계약 개정 사안이다.
+- `index.jsonl`의 P1-T06을 `done`으로 전환하고 대시보드를 재생성했다. push·CI 감시는 ci-finisher 오프로드.

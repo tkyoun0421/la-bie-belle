@@ -176,3 +176,9 @@
 - [x] [medium] [P0-T41] TOOLING.md 훅 정본이 옛 vitest 전체 실행 기술(done 전환 커밋에서 조정자 갱신) — docs/workflow/TOOLING.md
 - [ ] [low] [P0-T41] related 테스트 실패를 full 재실행 결과로 덮어씀(실패 우선 합성 후보) — harness/lib/precommit-test-scope.ts
 - [ ] [low] [P0-T41] 판정 타입 판별 유니언 아님(통과 방향 도달 불가 분기 잔존) — harness/lib/precommit-test-scope.ts
+- [ ] [medium] [P1-T06] 자동 탈퇴 예정일이 월말 규칙 대신 JS Date 넘침 사용(윤년 3월 1일) — src/entities/identity/model/dormancy.ts
+- [ ] [medium] [P1-T06] 동시 전이 검증이 for update 텍스트 검사 대체(실경합 미검증) — supabase/tests/10-dormancy.test.sql
+- [ ] [low] [P1-T06] deactivate_worker 대상 제한 부재(admin이 super_admin 휴면 가능) — supabase/migrations/20260807030000_identity_dormancy.sql
+- [ ] [low] [P1-T06] departed 주체 자가 재활성화 직접 호출 거부 미단언 — supabase/tests/10-dormancy.test.sql
+- [ ] [low] [P1-T06] 기존 active backfill 값 pgTAP 미단언(하네스 구조 제약) — supabase/tests/10-dormancy.test.sql
+- [ ] [low] [P1-T06] bootstrap_super_admin 재정의의 RADIO 추적성 공백 — supabase/migrations/20260807030000_identity_dormancy.sql
