@@ -9,7 +9,7 @@ const DATES_REQUIRED_MESSAGE = "근무일을 1개 이상 선택해 주세요";
 const DATES_MAX_MESSAGE = `근무일은 한 번에 ${RECRUITMENT_OPEN_DATES_MAX}개까지 선택할 수 있어요`;
 const DEADLINE_FORMAT_MESSAGE = "마감일 형식이 올바르지 않아요";
 
-function isValidCalendarDate(value: string): boolean {
+export function isValidCalendarDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     return false;
   }

@@ -1,0 +1,112 @@
+{
+  "entries": [
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/recruitment-manage.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T23:09:39Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/recruitment-manage.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T23:10:19Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/recruitment/api/__tests__/extend-recruitment-deadline.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T23:10:39Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/recruitment/api/__tests__/extend-recruitment-deadline.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T23:10:48Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/recruitment/api/__tests__/reopen-recruitment-schedule.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T23:11:03Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/recruitment/api/__tests__/reopen-recruitment-schedule.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T23:11:13Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/recruitment/hooks/__tests__/useRecruitmentManage.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T23:11:45Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/recruitment/hooks/__tests__/useRecruitmentManage.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T23:11:56Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-recruitment/model/__tests__/recruitment-manage-target.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T23:12:08Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-recruitment/model/__tests__/recruitment-manage-target.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T23:12:16Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-recruitment/model/__tests__/recruitment-manage-deadline.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T23:12:27Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-recruitment/model/__tests__/recruitment-manage-deadline.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T23:12:37Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-recruitment/model/__tests__/recruitment-cell-state.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T23:12:53Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-recruitment/model/__tests__/recruitment-cell-state.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T23:13:03Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm exec playwright test recruitment-open.spec.ts recruitment-manage.spec.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T23:20:35Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm exec playwright test recruitment-open.spec.ts recruitment-manage.spec.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T23:21:36Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm db:reset && pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-07T23:26:53Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm db:reset && pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-07T23:27:31Z",
+      "phase": "green"
+    }
+  ]
+}

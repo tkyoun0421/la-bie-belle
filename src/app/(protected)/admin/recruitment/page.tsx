@@ -1,7 +1,9 @@
 import { startOfMonth } from "date-fns";
 
 import { listRecruitmentSchedules } from "@/entities/schedule/api/list-recruitment-schedules";
+import { extendRecruitmentDeadline } from "@/features/recruitment/api/extend-recruitment-deadline";
 import { openRecruitmentSchedules } from "@/features/recruitment/api/open-recruitment-schedules";
+import { reopenRecruitmentSchedule } from "@/features/recruitment/api/reopen-recruitment-schedule";
 import { RecruitmentOpenView } from "@/views/admin-recruitment/ui/RecruitmentOpenView";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 
@@ -43,6 +45,8 @@ export default async function AdminRecruitmentPage({ searchParams }: AdminRecrui
       today={today}
       schedules={schedulesResult.data}
       onOpen={openRecruitmentSchedules}
+      onExtend={extendRecruitmentDeadline}
+      onReopen={reopenRecruitmentSchedule}
     />
   );
 }

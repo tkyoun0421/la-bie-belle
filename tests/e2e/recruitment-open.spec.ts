@@ -77,7 +77,7 @@ function dateKey(year: number, month: number, day: number): string {
 }
 
 test.describe("관리자 모집 일괄 오픈", () => {
-  test("기존 활성 모집 날짜는 disabled이고, 새 날짜를 선택해 모집을 열면 성공 안내와 함께 해당 날짜도 disabled로 바뀐다", async ({
+  test("기존 활성 모집 날짜는 관리 대상으로 탭할 수 있고, 새 날짜를 선택해 모집을 열면 성공 안내와 함께 해당 날짜도 관리 대상으로 바뀐다", async ({
     browser,
     baseURL,
   }) => {
@@ -105,7 +105,7 @@ test.describe("관리자 모집 일괄 오픈", () => {
 
     const existingCell = page.getByRole("button", { name: `${month}월 ${existingDay}일 신청 가능` });
     await expect(existingCell).toBeVisible();
-    await expect(existingCell).toBeDisabled();
+    await expect(existingCell).not.toBeDisabled();
 
     const cellA = page.getByRole("button", { name: `${month}월 ${selectDayA}일 선택 가능` });
     const cellB = page.getByRole("button", { name: `${month}월 ${selectDayB}일 선택 가능` });
@@ -123,10 +123,10 @@ test.describe("관리자 모집 일괄 오픈", () => {
 
     await expect(
       page.getByRole("button", { name: `${month}월 ${selectDayA}일 신청 가능` }),
-    ).toBeDisabled();
+    ).not.toBeDisabled();
     await expect(
       page.getByRole("button", { name: `${month}월 ${selectDayB}일 신청 가능` }),
-    ).toBeDisabled();
+    ).not.toBeDisabled();
 
     await context.close();
   });

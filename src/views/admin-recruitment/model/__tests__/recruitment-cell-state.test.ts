@@ -22,7 +22,7 @@ describe("toRecruitmentCellStates", () => {
     expect(states).toHaveLength(30);
   });
 
-  it("활성 모집(OPEN)이 있는 날짜는 open 상태이고 disabled다", () => {
+  it("활성 모집(OPEN)이 있는 날짜는 open 상태이고 관리 대상으로 탭할 수 있다(disabled 아님)", () => {
     const states = toRecruitmentCellStates({
       month: MONTH,
       schedules: [schedule("2099-09-20", "OPEN")],
@@ -32,22 +32,31 @@ describe("toRecruitmentCellStates", () => {
 
     const target = states.find((entry) => entry.date.getDate() === 20);
     expect(target?.state).toBe("open");
-    expect(target?.disabled).toBe(true);
+    expect(target?.disabled).toBeFalsy();
   });
 
-  it("PREPARING·CONFIRMED·CLOSED도 활성으로 취급해 open·disabled로 표시한다", () => {
+  it("마감(CLOSED)된 날짜는 closed 상태이고 재오픈 관리 대상으로 탭할 수 있다(disabled 아님)", () => {
     const states = toRecruitmentCellStates({
       month: MONTH,
-      schedules: [
-        schedule("2099-09-21", "PREPARING"),
-        schedule("2099-09-22", "CONFIRMED"),
-        schedule("2099-09-23", "CLOSED"),
-      ],
+      schedules: [schedule("2099-09-23", "CLOSED")],
       selectedDates: new Set(),
       today: TODAY,
     });
 
-    for (const day of [21, 22, 23]) {
+    const target = states.find((entry) => entry.date.getDate() === 23);
+    expect(target?.state).toBe("closed");
+    expect(target?.disabled).toBeFalsy();
+  });
+
+  it("PREPARING·CONFIRMED는 관리 범위 밖이라 open·disabled로 표시해 탭을 막는다", () => {
+    const states = toRecruitmentCellStates({
+      month: MONTH,
+      schedules: [schedule("2099-09-21", "PREPARING"), schedule("2099-09-22", "CONFIRMED")],
+      selectedDates: new Set(),
+      today: TODAY,
+    });
+
+    for (const day of [21, 22]) {
       const target = states.find((entry) => entry.date.getDate() === day);
       expect(target?.state).toBe("open");
       expect(target?.disabled).toBe(true);

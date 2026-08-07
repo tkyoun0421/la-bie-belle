@@ -24,19 +24,26 @@ export function toRecruitmentCellStates({
   selectedDates,
   today,
 }: ToRecruitmentCellStatesParams): RecruitmentCalendarDateState[] {
-  const activeDates = new Set(
+  const scheduleByDate = new Map(
     schedules
       .filter((schedule) => schedule.status !== "CANCELLED")
-      .map((schedule) => schedule.workDate),
+      .map((schedule) => [schedule.workDate, schedule]),
   );
 
   return eachDayOfInterval({ start: startOfMonth(month), end: endOfMonth(month) }).map((date) => {
     const key = format(date, DATE_KEY_FORMAT);
+    const schedule = scheduleByDate.get(key);
 
     if (selectedDates.has(key)) {
       return { date, state: "selected" };
     }
-    if (activeDates.has(key)) {
+    if (schedule !== undefined) {
+      if (schedule.status === "OPEN") {
+        return { date, state: "open" };
+      }
+      if (schedule.status === "CLOSED") {
+        return { date, state: "closed" };
+      }
       return { date, state: "open", disabled: true };
     }
     if (key < today) {
