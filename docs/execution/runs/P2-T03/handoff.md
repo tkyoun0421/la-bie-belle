@@ -176,3 +176,13 @@
 ### 다음 행동(R3-01 라운드 이후)
 
 1. 이번 라운드에서 바꾼 두 파일만 전체 스테이징해 `P2-T03` task ID를 포함한 새 커밋을 만든다(amend 금지, push는 다음 담당자 몫).
+
+## 2026-08-08 · 검증 종료 · done 전환 (조정자 기록)
+
+- 교차 검증(opus·codex) 확정 발견 14건: 1차 12건 + 재확인 라운드 2건(F-13 Undo 범위·R3-01 CANCELLED 정렬).
+- 수정 라운드 3회(`2dd0d42` → `04cb123` → `f06cfb9`)로 high 3건(월 이동 미동기화·차단 후 해제 불가·Undo 범위)과 medium 2건(테스트 공백·CANCELLED 정렬)을 해소 — 매 라운드 리뷰어 전원 재확인, 마지막 라운드 양쪽 모두 "해소·새 결함 없음".
+- 미해결 9건(high 1·medium 7·low 1)은 `docs/execution/reviews/P2-T03-review.json`(최종 점수 84) 정본, medium·low는 backlog 누적.
+- **미해결 high 1건(DB 경계 batch 상한)은 수정이 승인 범위 밖이라 사용자 결정 대기** — EXECUTE 하드닝 low·P2-T02 동일 공백과 묶은 후속 하드닝 task를 추천한 상태.
+- 리팩토링 단계: 수정 라운드가 이미 구조 정렬(Undo diff화·CANCELLED 필터 3지점 일치)을 수행했고, 추가 정리는 동작 위험 대비 이득이 없어 backlog로 이관(셀 판정 이원화 등). 검증 GREEN 유지 확인.
+- 후속 참고(opus 관찰, 결함 아님): 동기화 useEffect가 id 맵 누적·savedApplied 정렬·편집 보존 가드·CANCELLED 정리 네 책임(약 50줄)을 담게 됐다. P2-T04가 마감·재오픈 전이를 붙일 때 순수 함수 분리가 읽기·검증에 유리하다.
+- index: P2-T03 `in_progress → done`(2026-08-08). 커밋·검증 증거는 이 파일 위 절들과 tdd.json이 정본.

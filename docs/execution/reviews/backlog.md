@@ -198,3 +198,13 @@
 - [ ] [low] [P2-T02] DB·E2E RED가 구현 제거·복원 mutation 증거(편집 전 RED 아님 — P0-T40 관행 정비 후보와 같은 계열) — docs/execution/runs/P2-T02/tdd.json
 - [ ] [low] [P2-T02] 함수 경로 KST 당일 허용 경계 단언 부재(렌즈 선언 불일치) — supabase/tests/13-recruitment-batch-open.test.sql
 - [ ] [low] [P2-T02] 활성 모집 disabled 셀 aria-label "신청 가능" 모순 — src/shared/ui/calendar.tsx
+- [ ] [medium] [P2-T03] month 파라미터 UTC Date 변환 타임존 종속(P2-T02 계열, 근무자 일정 페이지 재발) — src/app/(protected)/(tabs)/schedule/page.tsx
+- [x] [medium] [P2-T03] RADIO 선언 월 이동·차단 복구 경계 테스트 부재(렌즈 선언 불일치, 수정 라운드 2dd0d42~f06cfb9에서 해소) — src/features/application/hooks/__tests__/useApplicationBatch.test.ts
+- [x] [medium] [P2-T03] 동기화 effect·마운트 파생의 CANCELLED 미필터로 셀 판정과 불일치(수정 라운드 04cb123·f06cfb9에서 해소) — src/features/application/hooks/useApplicationBatch.ts
+- [ ] [medium] [P2-T03] E2E 무작위 날짜가 영구 누적 로컬 DB와 확률 충돌(flake) — tests/e2e/schedule.spec.ts
+- [ ] [medium] [P2-T03] pgTAP에 타 근무자 신청 행 불변 단언 부재 — supabase/tests/14-recruitment-application.test.sql
+- [ ] [medium] [P2-T03] 셀 상태 판정 model·ui 이원화와 workDate Map 중복 — src/views/schedule/ui/ScheduleView.tsx
+- [ ] [medium] [P2-T03] 감사 detail batch_size 의미가 P2-T02 정본과 불일치 — supabase/migrations/20260808000000_recruitment_application.sql
+- [ ] [medium] [P2-T03] plpgsql 행 단위 SELECT FOR UPDATE·쓰기 반복(집합 기반 가능) — supabase/migrations/20260808000000_recruitment_application.sql
+- [ ] [medium] [P2-T03] 예상 밖 RPC 실패 correlation ID 부재(전역 관례 계열, 정비 task 후보) — src/features/application/api/apply-recruitment-changes.ts
+- [ ] [low] [P2-T03] 신규 DEFINER 함수 EXECUTE revoke/grant 하드닝 누락(P2-T02 동일) — supabase/migrations/20260808000000_recruitment_application.sql

@@ -1,0 +1,105 @@
+{
+  "task_id": "P2-T03",
+  "at": "2026-08-07T22:55:00Z",
+  "base_commit": "4503e79900a3f1569fd18a6551c7e304b02ead90",
+  "participants": ["opus", "codex"],
+  "participants_note": "",
+  "scores": {
+    "code_quality": 85,
+    "tests": 84,
+    "security": 78,
+    "performance": 85,
+    "architecture": 88
+  },
+  "score_rationale": {
+    "code_quality": "1차 확정 high 2건(월 이동 미동기화·차단 후 해제 불가)과 수정이 유발한 high 1건(Undo 범위)·medium 1건(CANCELLED 정렬)은 세 차례 수정 라운드에서 리뷰어 전원 인정으로 해소됐다. month 타임존 종속과 셀 판정 이원화 2건이 미해결로 남는다.",
+    "tests": "pgTAP 40건·파일별 RED→GREEN·E2E 재작성에 더해 수정 라운드가 월 이동·Undo 범위·CANCELLED 경계 테스트 8건을 추가해 선언 공백을 닫았다. E2E 무작위 날짜 flake와 타 근무자 불변 단언 부재가 남는다.",
+    "security": "쓰기 단일 경로(DEFINER)·active 검증 정본·RLS·본인 필터·PII 부재는 확인됐다. DB 경계 batch 상한 미강제(F-01)는 high로 확정됐으나 배열 처리 전 권한 검사와 22023 전량 거부로 실질 완화가 검증됐고, 수정은 승인 범위 밖이라 사용자 결정으로 이관했다. correlation ID 부재는 전역 관례 계열이다.",
+    "performance": "월 범위 한정 조회·단일 RPC·단일 무효화로 구조가 건전하고, 감점은 승인 설계 안의 plpgsql 행 단위 반복 한 건이다.",
+    "architecture": "FSD 방향·server-only·Action 주입·반환 계약·Undo diff 정의가 봉인 RADIO와 일치한다(수정 라운드에서 Undo 구현을 RADIO 문구에 정렬). 감사 batch_size 의미가 P2-T02 정본과 어긋나는 점에서 감점했다."
+  },
+  "total": 84,
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "high",
+      "area": "security",
+      "title": "batch 상한 366이 DB 경계에서 강제되지 않아 직접 RPC로 우회 가능하다",
+      "description": "상한은 Server Action의 Zod에만 있고 SECURITY DEFINER 함수에는 배열 크기 제한이 없으며 EXECUTE 권한도 명시 제한되지 않아, 활성 근무자 계정이면 PostgREST 직접 호출로 임의 크기 배열을 보낼 수 있다(codex, high — unnest·distinct가 검증 전에 수행되는 자원 소모 벡터). opus는 인정하되 low — 배열 처리 전 auth.uid()·is_active_worker 검사로 anon·비활성은 차단되고, 존재하지 않는 id는 22023 전량 거부라 실질 초과 적용 천장이 schedules 테이블 크기(≈366)와 같으며, Zod 배치는 RADIO 기술 인수 조건 4가 명시한 승인 계약이라 DB 경계 추가는 승인 범위 밖 개선. 규칙대로 높은 쪽(high)을 택했다. 수정은 승인 범위를 넓히므로 이 task 안에서 하지 않고 사용자 결정(후속 하드닝 task 또는 재봉인)으로 넘긴다.",
+      "file": "supabase/migrations/20260808000000_recruitment_application.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-02",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "month 파라미터 계산이 실행 환경 로컬 타임존에 종속된다",
+      "description": "parseMonthParam이 UTC 자정 Date에 date-fns 로컬 startOfMonth를 적용하고 기본값 경로(seoulToday + T00:00:00Z)도 같아, UTC보다 서쪽 타임존 서버에서는 전월을 조회하고 서버·브라우저 조합에 따라 달력 월이 어긋난다(DEV-TIME 계약 불일치). P2-T02 review가 같은 패턴을 admin 페이지에서 확정했고 backlog에 미해소로 남아 있는데, 이번에 새로 쓴 근무자 일정 페이지가 같은 계열을 재발시켰다. 배포 런타임 UTC·실사용자 전원 KST라 현재 실피해는 낮다.",
+      "file": "src/app/(protected)/(tabs)/schedule/page.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-03",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "셀 상태 판정이 model과 ui에 이원화되고 workDate Map이 중복 생성된다",
+      "description": "ScheduleView가 CANCELLED 제외 필터·workDate Map·'OPEN이면 토글, 아니면 상세 라우팅' 분기를 직접 수행하는데 같은 필터·Map·상태 분기가 schedule-cell-state.ts에도 있다. 같은 렌더에서 같은 자료구조를 두 번 만들고, 셀 규칙 변경 시 두 곳을 동시에 고쳐야 하며 어긋나면 표시와 동작이 불일치한다. RADIO의 '화면 로직은 model·hooks에' 방향과도 어긋난다(단 RADIO 명시 항목은 셀 상태·diff·Undo이고 탭 분기는 미명시). 수정 라운드의 CANCELLED 정렬로 훅·뷰·model 세 곳의 필터 기준은 일치시켰으나 구조 이원화 자체는 남는다.",
+      "file": "src/views/schedule/ui/ScheduleView.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-04",
+      "severity": "medium",
+      "area": "tests",
+      "title": "E2E 무작위 날짜가 영구 누적되는 로컬 DB와 확률적으로 충돌한다",
+      "description": "픽스처가 24개월×27일(648슬롯)에서 매 실행 3개를 뽑는데 schedules.work_date는 유일하고 시딩 행은 삭제 불가 트리거로 영구 누적되므로, db reset 없이 반복 실행하면 충돌 확률이 누적 10회에 10%대로 오르고 단일 insert라 한 날짜만 겹쳐도 전체가 실패한다. P2-T02의 결정적 실패(backlog 기존 항목)를 진단이 더 어려운 확률적 flake로 바꿨다. CI는 매번 reset이라 가려진다.",
+      "file": "tests/e2e/schedule.spec.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-05",
+      "severity": "medium",
+      "area": "tests",
+      "title": "pgTAP에 다른 근무자의 신청 행이 영향받지 않는다는 단언이 없다",
+      "description": "apply_recruitment_changes의 소유권은 두 루프의 profile_id = actor_id 필터에만 의존하고, 함수는 DEFINER라 RLS를 우회하므로(applications에 FORCE RLS 없음) 이 필터가 유일한 방어선인데, 픽스처에 신청 행을 가진 활성 근무자가 호출자 한 명뿐이라 타인 행 보존을 단언하는 테스트가 없다. 필터가 빠지는 회귀를 DB 테스트가 잡지 못한다.",
+      "file": "supabase/tests/14-recruitment-application.test.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-06",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "감사 detail의 batch_size 의미가 P2-T02 정본과 다르다",
+      "description": "이 함수는 batch_size에 실제 전이 수(applied_count+withdrawn_count)를 기록해 5개 요청·2개 전이가 2로 남지만, P2-T02 open_recruitment_schedules는 같은 키에 중복 제거된 입력 전체 크기를 넣고 RADIO DEV-SSOT-01이 그 감사 단위를 정본으로 지정했다. 같은 키가 두 함수에서 다른 뜻을 가져 감사에서 요청 범위를 복원할 수 없다. pgTAP는 요청 수=전이 수 케이스만 단언해 차이를 감춘다. 중요도가 갈려(opus low·codex medium) 높은 쪽을 택했다.",
+      "file": "supabase/migrations/20260808000000_recruitment_application.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-07",
+      "severity": "medium",
+      "area": "performance",
+      "title": "plpgsql이 대상 수만큼 행 단위 SELECT FOR UPDATE·쓰기를 반복한다",
+      "description": "목표 상태 적용이 foreach로 대상마다 SELECT FOR UPDATE + INSERT/UPDATE를 실행해 한 호출이 최대 700개 이상의 문을 만든다. 네트워크 왕복은 1회이고 실사용량에서는 문제없지만 집합 기반(insert...select + update...from unnest)으로 표현 가능한 구조적 N+1이다(codex medium). opus는 이 절차 순서가 승인 RADIO Architecture 절의 지시라 범위 밖 제안으로 보고 low — 높은 쪽을 택했다. F-01과 결합하면 비용이 커진다.",
+      "file": "supabase/migrations/20260808000000_recruitment_application.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-08",
+      "severity": "medium",
+      "area": "security",
+      "title": "예상 밖 RPC 실패가 correlation ID 없이 정상 Result로 축소된다",
+      "description": "알 수 없는 SQLSTATE도 COMMON_UNEXPECTED Result로 반환하고 로그에 event·code만 남아 장애 시 사용자 보고와 서버 기록을 연결할 수 없다(DEV-ERR-02·DEV-OBS-01 계열, codex medium). opus 확인 결과 이 패턴은 entities·features api 20여 파일에서 동일하며 전부 done task 산출물이라 전역 관례 교체는 이 task 승인 범위 밖(low). 높은 쪽을 택하되, 처리도 이 task가 아니라 전역 정비 task 후보로 넘긴다.",
+      "file": "src/features/application/api/apply-recruitment-changes.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-09",
+      "severity": "low",
+      "area": "security",
+      "title": "신규 DEFINER 함수에 EXECUTE 권한 회수·부여가 없다",
+      "description": "apply_recruitment_changes가 PostgreSQL 기본값대로 PUBLIC EXECUTE가 열린 채 생성된다. identity 계열 마이그레이션의 revoke/grant 관례와 갈리고 최소 권한 방어가 한 겹 부족하지만, 함수 첫 줄의 auth.uid()·is_active_worker 검증과 anon 거부 pgTAP로 실제 노출은 없다. P2-T02 함수도 같은 상태라 이 task가 새로 만든 편차는 아니다 — 전역 하드닝 후보로 넘긴다.",
+      "file": "supabase/migrations/20260808000000_recruitment_application.sql",
+      "agreed_by": ["opus", "codex"]
+    }
+  ]
+}
