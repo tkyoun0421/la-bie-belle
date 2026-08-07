@@ -84,3 +84,39 @@
 
 1. 관련 변경 파일을 RADIO revision 2의 변경 허용 경로 안에서 전체 스테이징한다(부분 스테이징 금지). `docs/execution/runs/interviews/2026-08-08-p2-t03-reseal.md`는 허용 경로 밖이라 스테이징하지 않는다.
 2. `P2-T03` task ID를 포함한 새 커밋을 만든다(amend 금지, push는 다음 담당자 몫).
+
+## 2026-08-08 · 교차 검증 수정 라운드(F-01·F-02 high 2건)
+
+- 작업 식별자: P2-T03
+- 근거: `docs/execution/reviews/P2-T03-review.json`(opus·codex 전원 인정, base_commit `4503e799...`, total 78). WORKFLOW 4단계 5항(검증 실패가 구현 결함이면 3단계 복귀)에 따라 승인 범위 안 high 2건만 수정했다. F-03(DB 경계 batch 상한 미강제)은 review 자체가 "승인 범위를 넓히므로 이 task 안에서 하지 않는다"고 명시해 손대지 않았다. medium 이하(F-04~F-12)도 이번 라운드 대상이 아니다.
+
+### F-01 — 월 이동 후 batch 상태 미동기화
+
+- 원인: `useApplicationBatch`가 `savedApplied`·`pending`을 `useState(initialApplied)`로 마운트 1회만 파생했다. 월 이동은 `router.push`로 `month` searchParam만 바꾸고 `ScheduleView`에 `key`가 없어 컴포넌트·훅 인스턴스가 그대로 유지되므로, 새 달의 `schedules` prop이 들어와도 상태가 갱신되지 않았다.
+- 수정: `schedules` prop이 참조 단위로 바뀔 때만 실행되는 `useEffect` 동기화를 추가했다. 새 프롭에 있는 날짜만 대상으로 ① `savedApplied`를 서버 진실(applicationStatus)에 맞춰 갱신하고 ② 그 날짜에 대해 사용자가 아직 손대지 않은(`pending`이 이전 `savedApplied`와 같던) 경우에만 `pending`도 같이 갱신한다. 새 프롭에 없는 날짜(다른 달)는 두 Set 모두 그대로 둔다 — 이것이 RADIO의 "월 이동 시 선택 유지"를 실제로 성립시키는 부분이다.
+- `scheduleIdByDate`도 매 렌더 스코프의 `useMemo`에서 렌더 간 누적되는 `useRef<Map>`으로 바꿔, 현재 보이는 달이 아닌 이전 달에서 만든 선택도 저장 시 스케줄 id로 정확히 해석되도록 했다(review가 지적한 "조용한 누락" 원인 제거).
+
+### F-02 — 차단 후 OPEN 아닌 셀의 pending 해제 불가
+
+- 판단: `ScheduleView.tsx`는 수정하지 않았다. `apply-recruitment-changes.ts`의 `revalidatePath`가 성공·실패 모두에서 무조건 호출되므로(58행), 차단된 저장 시도 뒤에도 `/schedule`이 자동 리프레시되어 새 `schedules` prop이 들어온다 — 이 시점이 F-01과 동일한 동기화 지점이라, 같은 `useEffect` 안에서 함께 해소했다: 날짜의 최신 `status`가 `OPEN`이 아니면(사용자가 그 날짜를 직접 고쳤는지와 무관하게) `pending`을 서버 진실(`applicationStatus`)에 강제로 맞춘다. `저장 실패 시 로컬 선택 보존`(RADIO 기술 인수 조건 5)과 충돌하지 않는다고 판단한 근거: 그 문구는 실패한 batch 전체를 초기화하지 않는다는 뜻이지, 이미 선택 불가능해진(마감·취소된) 날짜의 유령 선택을 계속 붙들고 있어야 한다는 뜻은 아니다 — 오히려 그 유령 선택이 이후 저장을 계속 차단해 "선택 보존"의 취지(다른 유효한 선택들의 재제출 가능성)를 해쳤다. 여전히 OPEN인 날짜의 미저장 선택은 이 조건에서 전혀 건드리지 않는다. 이미 신청 완료된 날짜가 나중에 CLOSED로 바뀌는 경우도 `applicationStatus`가 여전히 applied이면 `pending`을 applied로 맞추므로 신청 자체는 보존된다(회귀 테스트로 확인).
+- 별도의 [질문] 없이 진행했다 — 위 판단이 RADIO 문구의 의미를 바꾸는 것이 아니라 좁게 보강하는 것이라고 판단했다.
+
+### F-05 — 월 이동·차단 복구 경계 테스트 공백 해소
+
+- `useApplicationBatch.test.ts`에 `rerender`로 schedules를 교체하는 시나리오 4건을 추가했다: 월 이동 후 새 달 상태 반영+이전 달 미저장 선택 유지, 월 이동 후 저장 시 이전 달 선택도 함께 전송, OPEN 이탈 날짜의 pending 자동 정리, 이미 신청된 날짜가 CLOSED로 바뀌어도 신청 유지.
+- `ScheduleView.test.tsx`에 컴포넌트 레벨 통합 테스트 1건을 추가했다 — 8월에서 날짜를 선택(미저장) → 9월로 rerender(9월 자체의 기존 신청 상태가 "신청"으로 정확히 표시되는지 확인) → 다시 8월로 rerender(미저장 선택이 유지되는지 확인). 이 테스트는 수정 전 코드에서 실제로 실패했다(9월 셀이 "신청" 대신 "신청 가능"으로 렌더).
+
+### 검증
+
+- RED→GREEN 실제 실행(신규 4건은 아래, 회귀는 전체 스위트로 확인):
+  - `pnpm vitest run src/features/application/hooks/__tests__/useApplicationBatch.test.ts`: RED 2026-08-07T22:12:36Z(exit 1, 신규 3건 실패) → GREEN 2026-08-07T22:15:08Z(exit 0, 11건 전부 통과).
+  - `pnpm vitest run src/views/schedule/ui/__tests__/ScheduleView.test.tsx`: RED 2026-08-07T22:13:56Z(exit 1) → GREEN 2026-08-07T22:15:13Z(exit 0, 7건 전부 통과).
+- `pnpm typecheck`·`pnpm lint:ci` 통과(`ApplicationBatchSchedule`에 `status: RecruitmentScheduleStatus` 필드 추가, 테스트 픽스처 타입도 함께 갱신).
+- `pnpm db:reset` 후 `pnpm verify` 전체(format → lint:ci → typecheck → vitest **154 files/927 tests**(922+신규 5) → harness:typecheck → harness:self-test → check:docs → build → check:app-build → check:client-secret-scan → test:e2e 32/32 → gate:all) 최종 실행: 시작 2026-08-07T22:17:09Z, 종료 2026-08-07T22:18:34Z, 종료 코드 0.
+- 이번 라운드는 `src/features/application/hooks/useApplicationBatch.ts`·`__tests__/useApplicationBatch.test.ts`·`src/views/schedule/ui/__tests__/ScheduleView.test.tsx`만 바꿨다(마이그레이션·pgTAP·ScheduleView.tsx 본체는 무수정 — RADIO 변경 허용 경로 안, F-03 등 승인 범위를 넘는 항목은 손대지 않았다).
+- 남은 [질문]: 없음.
+
+### 다음 행동(수정 라운드 이후)
+
+1. 이번 라운드에서 바꾼 파일만 전체 스테이징해 `P2-T03` task ID를 포함한 새 커밋을 만든다(amend 금지, push는 다음 담당자 몫).
+2. F-03·F-04~F-12는 이번 라운드 범위 밖으로 남겨둔다 — 조정자가 후속 task 또는 재봉인 여부를 결정한다.

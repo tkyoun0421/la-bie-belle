@@ -2,9 +2,20 @@ import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import type { RecruitmentScheduleWithApplication } from "@/entities/schedule/model/recruitment-schedule";
 import { SnackbarProvider } from "@/shared/ui/snackbar";
 import { ScheduleView } from "@/views/schedule/ui/ScheduleView";
 import { SCHEDULE_EMPTY_MONTH, SCHEDULE_MIXED_MONTH } from "@/views/schedule/ui/schedule.mock";
+
+const SEPTEMBER_SCHEDULES: RecruitmentScheduleWithApplication[] = [
+  {
+    id: "schedule-2026-09-05",
+    workDate: "2026-09-05",
+    applicationDeadline: "2026-09-05",
+    status: "OPEN",
+    applicationStatus: "applied",
+  },
+];
 
 if (!Element.prototype.hasPointerCapture) {
   Element.prototype.hasPointerCapture = () => false;
@@ -87,5 +98,28 @@ describe("ScheduleView", () => {
     await user.click(screen.getByRole("button", { name: "다음 달로 이동" }));
 
     expect(push).toHaveBeenCalledWith("/schedule?month=2026-09");
+  });
+
+  it("월을 이동했다가 돌아오면 새 달의 신청 상태가 반영되고 이전 달의 미저장 선택도 유지된다", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<ScheduleView {...SCHEDULE_MIXED_MONTH} />);
+
+    await user.click(screen.getByRole("button", { name: "8월 3일 신청 가능" }));
+    expect(screen.getByRole("button", { name: "8월 3일 선택됨" })).toBeInTheDocument();
+
+    rerender(
+      <ScheduleView
+        month={new Date(2026, 8, 1)}
+        today="2026-08-01"
+        schedules={SEPTEMBER_SCHEDULES}
+        onApply={SCHEDULE_MIXED_MONTH.onApply}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "9월 5일 신청" })).toBeInTheDocument();
+
+    rerender(<ScheduleView {...SCHEDULE_MIXED_MONTH} />);
+
+    expect(screen.getByRole("button", { name: "8월 3일 선택됨" })).toBeInTheDocument();
   });
 });

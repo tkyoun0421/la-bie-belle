@@ -1,5 +1,6 @@
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
+import type { RecruitmentScheduleStatus } from "@/entities/schedule/model/recruitment-schedule";
 import { ERROR_CODE, ERROR_CODES, type ErrorCode } from "@/shared/config/error-codes.config";
 import { showSnackbar } from "@/shared/ui/snackbar";
 
@@ -12,6 +13,7 @@ export type ApplicationBatchOutcome =
 type ApplicationBatchSchedule = {
   id: string;
   workDate: string;
+  status: RecruitmentScheduleStatus;
   applicationStatus: "applied" | "withdrawn" | null;
 };
 
@@ -23,6 +25,7 @@ type UseApplicationBatchParams = {
 type UndoMemory = { previous: ReadonlySet<string>; count: number };
 
 const SNACKBAR_MESSAGE = "근무 가능일을 변경했어요";
+const OPEN_STATUS: RecruitmentScheduleStatus = "OPEN";
 
 function initialAppliedSet(schedules: readonly ApplicationBatchSchedule[]): ReadonlySet<string> {
   return new Set(
@@ -50,10 +53,50 @@ export function useApplicationBatch({ schedules, onApply }: UseApplicationBatchP
   const [submitting, startTransition] = useTransition();
   const [lastUndo, setLastUndo] = useState<UndoMemory | null>(null);
 
-  const scheduleIdByDate = useMemo(
-    () => new Map(schedules.map((schedule) => [schedule.workDate, schedule.id])),
-    [schedules],
+  const syncedSchedulesRef = useRef(schedules);
+  const scheduleIdByDateRef = useRef(
+    new Map(schedules.map((schedule) => [schedule.workDate, schedule.id])),
   );
+
+  useEffect(() => {
+    if (syncedSchedulesRef.current === schedules) {
+      return;
+    }
+    syncedSchedulesRef.current = schedules;
+
+    for (const schedule of schedules) {
+      scheduleIdByDateRef.current.set(schedule.workDate, schedule.id);
+    }
+
+    const nextSaved = new Set(savedApplied);
+    const nextPending = new Set(pending);
+
+    for (const schedule of schedules) {
+      const key = schedule.workDate;
+      const freshApplied = schedule.applicationStatus === "applied";
+
+      if (freshApplied) {
+        nextSaved.add(key);
+      } else {
+        nextSaved.delete(key);
+      }
+
+      const isOpen = schedule.status === OPEN_STATUS;
+      const hadOwnEdit = pending.has(key) !== savedApplied.has(key);
+      if (isOpen && hadOwnEdit) {
+        continue;
+      }
+
+      if (freshApplied) {
+        nextPending.add(key);
+      } else {
+        nextPending.delete(key);
+      }
+    }
+
+    setSavedApplied(nextSaved);
+    setPending(nextPending);
+  }, [schedules, savedApplied, pending]);
 
   function toggle(dateKey: string) {
     setPending((previous) => {
@@ -77,10 +120,10 @@ export function useApplicationBatch({ schedules, onApply }: UseApplicationBatchP
     }
 
     const applyScheduleIds = applyDates
-      .map((date) => scheduleIdByDate.get(date))
+      .map((date) => scheduleIdByDateRef.current.get(date))
       .filter((id): id is string => id !== undefined);
     const withdrawScheduleIds = withdrawDates
-      .map((date) => scheduleIdByDate.get(date))
+      .map((date) => scheduleIdByDateRef.current.get(date))
       .filter((id): id is string => id !== undefined);
     const changeCountForThisSave = applyDates.length + withdrawDates.length;
     const previousApplied = savedApplied;

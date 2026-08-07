@@ -1,25 +1,51 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import type { RecruitmentScheduleStatus } from "@/entities/schedule/model/recruitment-schedule";
 import { ERROR_CODE, ERROR_CODES } from "@/shared/config/error-codes.config";
 
 const showSnackbar = vi.fn();
 vi.mock("@/shared/ui/snackbar", () => ({ showSnackbar }));
 
-const SCHEDULES = [
+type TestSchedule = {
+  id: string;
+  workDate: string;
+  applicationDeadline: string;
+  status: RecruitmentScheduleStatus;
+  applicationStatus: "applied" | "withdrawn" | null;
+};
+
+const SCHEDULES: TestSchedule[] = [
   {
     id: "schedule-open",
     workDate: "2099-09-01",
     applicationDeadline: "2099-09-01",
-    status: "OPEN" as const,
+    status: "OPEN",
     applicationStatus: null,
   },
   {
     id: "schedule-applied",
     workDate: "2099-09-02",
     applicationDeadline: "2099-09-02",
-    status: "OPEN" as const,
-    applicationStatus: "applied" as const,
+    status: "OPEN",
+    applicationStatus: "applied",
+  },
+];
+
+const OCTOBER_SCHEDULES: TestSchedule[] = [
+  {
+    id: "schedule-open-oct",
+    workDate: "2099-10-01",
+    applicationDeadline: "2099-10-01",
+    status: "OPEN",
+    applicationStatus: null,
+  },
+  {
+    id: "schedule-applied-oct",
+    workDate: "2099-10-02",
+    applicationDeadline: "2099-10-02",
+    status: "OPEN",
+    applicationStatus: "applied",
   },
 ];
 
@@ -169,5 +195,97 @@ describe("useApplicationBatch", () => {
     });
 
     expect(onApply).not.toHaveBeenCalled();
+  });
+
+  it("월 이동으로 schedules가 교체되면 새 달의 신청 상태가 savedApplied에 반영되고 이전 달의 미저장 선택은 유지된다", async () => {
+    const { useApplicationBatch } =
+      await import("@/features/application/hooks/useApplicationBatch");
+    const onApply = vi.fn();
+
+    const { result, rerender } = renderHook(
+      ({ schedules }) => useApplicationBatch({ schedules, onApply }),
+      { initialProps: { schedules: SCHEDULES } },
+    );
+
+    act(() => {
+      result.current.toggle("2099-09-01");
+    });
+    expect(result.current.pending).toEqual(new Set(["2099-09-01", "2099-09-02"]));
+
+    rerender({ schedules: OCTOBER_SCHEDULES });
+
+    expect(result.current.savedApplied).toEqual(new Set(["2099-09-02", "2099-10-02"]));
+    expect(result.current.pending).toEqual(new Set(["2099-09-01", "2099-09-02", "2099-10-02"]));
+    expect(result.current.changeCount).toBe(1);
+  });
+
+  it("월 이동 뒤 저장하면 이전 달에서 만든 선택도 함께 전송된다", async () => {
+    const { useApplicationBatch } =
+      await import("@/features/application/hooks/useApplicationBatch");
+    const onApply = vi.fn().mockResolvedValue({ ok: true, appliedCount: 1, withdrawnCount: 0 });
+
+    const { result, rerender } = renderHook(
+      ({ schedules }) => useApplicationBatch({ schedules, onApply }),
+      { initialProps: { schedules: SCHEDULES } },
+    );
+
+    act(() => {
+      result.current.toggle("2099-09-01");
+    });
+    rerender({ schedules: OCTOBER_SCHEDULES });
+
+    await act(async () => {
+      result.current.save();
+    });
+
+    expect(onApply).toHaveBeenCalledWith({
+      applyScheduleIds: ["schedule-open"],
+      withdrawScheduleIds: [],
+    });
+  });
+
+  it("pending 날짜의 스케줄이 더 이상 OPEN이 아니게 되면 그 날짜만 pending에서 정리된다", async () => {
+    const { useApplicationBatch } =
+      await import("@/features/application/hooks/useApplicationBatch");
+    const onApply = vi.fn();
+
+    const { result, rerender } = renderHook(
+      ({ schedules }) => useApplicationBatch({ schedules, onApply }),
+      { initialProps: { schedules: SCHEDULES } },
+    );
+
+    act(() => {
+      result.current.toggle("2099-09-01");
+    });
+    expect(result.current.pending.has("2099-09-01")).toBe(true);
+
+    const CLOSED_SCHEDULES = [{ ...SCHEDULES[0]!, status: "CLOSED" as const }, SCHEDULES[1]!];
+    rerender({ schedules: CLOSED_SCHEDULES });
+
+    expect(result.current.pending).toEqual(new Set(["2099-09-02"]));
+    expect(result.current.changeCount).toBe(0);
+  });
+
+  it("이미 신청된 날짜가 CLOSED로 바뀌어도 신청 상태는 그대로 유지된다", async () => {
+    const { useApplicationBatch } =
+      await import("@/features/application/hooks/useApplicationBatch");
+    const onApply = vi.fn();
+
+    const { result, rerender } = renderHook(
+      ({ schedules }) => useApplicationBatch({ schedules, onApply }),
+      { initialProps: { schedules: SCHEDULES } },
+    );
+
+    expect(result.current.pending.has("2099-09-02")).toBe(true);
+
+    const CLOSED_APPLIED_SCHEDULES = [
+      SCHEDULES[0]!,
+      { ...SCHEDULES[1]!, status: "CLOSED" as const },
+    ];
+    rerender({ schedules: CLOSED_APPLIED_SCHEDULES });
+
+    expect(result.current.savedApplied.has("2099-09-02")).toBe(true);
+    expect(result.current.pending.has("2099-09-02")).toBe(true);
+    expect(result.current.changeCount).toBe(0);
   });
 });
