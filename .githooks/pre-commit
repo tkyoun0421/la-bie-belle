@@ -13,4 +13,6 @@ fi
 
 pnpm exec lint-staged
 pnpm exec tsc --noEmit --incremental --tsBuildInfoFile .tsbuildinfo
-pnpm exec vitest run
+
+node --experimental-strip-types --disable-warning=ExperimentalWarning \
+  "$repo_root/harness/gates/precommit-test.ts"

@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/precommit-test-scope.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T02:24:00Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/precommit-test-scope.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T02:24:21Z",
+      "phase": "green"
+    }
+  ]
+}
