@@ -31,7 +31,10 @@ const CANCELLED_STATUS: RecruitmentScheduleStatus = "CANCELLED";
 function initialAppliedSet(schedules: readonly ApplicationBatchSchedule[]): ReadonlySet<string> {
   return new Set(
     schedules
-      .filter((schedule) => schedule.applicationStatus === "applied")
+      .filter(
+        (schedule) =>
+          schedule.status !== CANCELLED_STATUS && schedule.applicationStatus === "applied",
+      )
       .map((schedule) => schedule.workDate),
   );
 }
@@ -70,6 +73,13 @@ export function useApplicationBatch({ schedules, onApply }: UseApplicationBatchP
     syncedSchedulesRef.current = schedules;
 
     const activeSchedules = schedules.filter((schedule) => schedule.status !== CANCELLED_STATUS);
+    const activeDates = new Set(activeSchedules.map((schedule) => schedule.workDate));
+    const cancelledOnlyDates = new Set(
+      schedules
+        .filter((schedule) => schedule.status === CANCELLED_STATUS)
+        .map((schedule) => schedule.workDate)
+        .filter((workDate) => !activeDates.has(workDate)),
+    );
 
     for (const schedule of activeSchedules) {
       scheduleIdByDateRef.current.set(schedule.workDate, schedule.id);
@@ -99,6 +109,11 @@ export function useApplicationBatch({ schedules, onApply }: UseApplicationBatchP
       } else {
         nextPending.delete(key);
       }
+    }
+
+    for (const key of cancelledOnlyDates) {
+      nextSaved.delete(key);
+      nextPending.delete(key);
     }
 
     setSavedApplied(nextSaved);

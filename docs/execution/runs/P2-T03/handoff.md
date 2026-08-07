@@ -148,3 +148,31 @@
 ### 다음 행동(F-13 라운드 이후)
 
 1. 이번 라운드에서 바꾼 두 파일만 전체 스테이징해 `P2-T03` task ID를 포함한 새 커밋을 만든다(amend 금지, push는 다음 담당자 몫).
+
+## 2026-08-08 · 교차 검증 재확인 마이크로 수정 라운드(R3-01 CANCELLED 정렬 잔여 2건)
+
+- 작업 식별자: P2-T03
+- 근거: F-13은 리뷰어 전원이 해소를 인정했다. 그러나 R3-01(CANCELLED 정렬)은 codex가 "미해소"로, opus도 같은 잔여 지점을 지적해 04cb123 수정이 필터를 effect·id 맵에만 적용하고 두 경로를 놓쳤다고 확정했다.
+
+### 잔여 경로 ① — 마운트 파생 미필터
+
+- 원인: `initialAppliedSet`(마운트 시 `savedApplied`·`pending` 초깃값을 만드는 함수)이 `status`를 보지 않고 `applicationStatus === "applied"`만으로 걸렀다. 같은 근무일에 CANCELLED(applicationStatus applied) 행과 OPEN(신청 없음) 행이 첫 렌더부터 공존하면, 동기화 effect는 `schedules` prop 참조가 "바뀔 때만" 도는데 마운트 시점엔 참조가 바뀔 일이 없어 이 유령 상태가 전혀 교정되지 않았다.
+- 수정: `initialAppliedSet`에도 `schedule.status !== "CANCELLED"` 필터를 `applicationStatus === "applied"` 조건과 함께 적용했다 — effect·id 맵에 이미 적용한 것과 같은 필터를 마운트 경로에도 맞췄다.
+
+### 잔여 경로 ② — CANCELLED만 남은 날짜의 pending 정리 우회
+
+- 원인: 직전 커밋에서 `activeSchedules`(CANCELLED 제외)만 순회하도록 바꾸면서, 그 날짜에 활성 행이 하나도 없는(=CANCELLED 행뿐인) 날짜는 순회 대상에서 통째로 빠졌다. 그런 날짜는 F-02가 고쳤던 "OPEN 아니면 서버 진실로 강제 정리" 분기를 아예 타지 않아, 사용자가 OPEN이었을 때 만든 미저장 pending이 영원히 남았다. 달력은 이런 날짜를 `모집 없음`/none·disabled로 그리므로 되돌릴 UI 수단이 없고, 저장 시도마다 같은 날짜가 계속 포함돼 반복 차단된다 — F-02가 이미 확정했던 막다른 상태가 CANCELLED 단독 상태에 대해 재발한 것이다.
+- 수정: effect 안에서 "이 schedules 스냅샷에 CANCELLED 행만 있고 활성 행이 없는 날짜" 집합(`cancelledOnlyDates`)을 별도로 계산해, 그 날짜들은 `hadOwnEdit` 여부와 무관하게 `nextSaved`·`nextPending`에서 무조건 제거한다(서버 진실 = 신청 없음). 활성 행이 있는 날짜의 로직(월 이동 시 미저장 선택 유지 등)은 전혀 건드리지 않았다.
+
+### 검증
+
+- RED→GREEN 실제 실행: `pnpm vitest run src/features/application/hooks/__tests__/useApplicationBatch.test.ts` — RED 2026-08-07T22:39:50Z(exit 1, 신규 2건 실패: 마운트 시점 CANCELLED 공존·CANCELLED만 남은 날짜 pending 미정리) → GREEN 2026-08-07T22:40:29Z(exit 0, 15건 전부 통과).
+- `pnpm typecheck`·`pnpm lint:ci`·`pnpm format:check` 통과.
+- `pnpm vitest run`(전체) 154 files/**931 tests**(929+신규 2) GREEN.
+- `pnpm db:reset` 후 `pnpm verify` 전체 최종 실행: 시작 2026-08-07T22:42:13Z, 종료 2026-08-07T22:43:35Z, 종료 코드 0(vitest 931, e2e 32/32, gate:all 포함).
+- 이번 라운드도 `src/features/application/hooks/useApplicationBatch.ts`·`__tests__/useApplicationBatch.test.ts`만 바꿨다.
+- 남은 [질문]: 없음.
+
+### 다음 행동(R3-01 라운드 이후)
+
+1. 이번 라운드에서 바꾼 두 파일만 전체 스테이징해 `P2-T03` task ID를 포함한 새 커밋을 만든다(amend 금지, push는 다음 담당자 몫).

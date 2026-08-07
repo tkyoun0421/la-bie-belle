@@ -367,4 +367,60 @@ describe("useApplicationBatch", () => {
       withdrawScheduleIds: [],
     });
   });
+
+  it("마운트 시점부터 같은 날짜에 CANCELLED 행과 활성 행이 공존하면 CANCELLED 행의 신청 상태는 무시된다", async () => {
+    const { useApplicationBatch } =
+      await import("@/features/application/hooks/useApplicationBatch");
+    const onApply = vi.fn();
+
+    const MOUNT_MIXED_SCHEDULES: TestSchedule[] = [
+      {
+        id: "schedule-reopened-mount",
+        workDate: "2099-12-01",
+        applicationDeadline: "2099-12-01",
+        status: "OPEN",
+        applicationStatus: null,
+      },
+      {
+        id: "schedule-cancelled-mount",
+        workDate: "2099-12-01",
+        applicationDeadline: "2099-12-01",
+        status: "CANCELLED",
+        applicationStatus: "applied",
+      },
+    ];
+
+    const { result } = renderHook(() =>
+      useApplicationBatch({ schedules: MOUNT_MIXED_SCHEDULES, onApply }),
+    );
+
+    expect(result.current.savedApplied.has("2099-12-01")).toBe(false);
+    expect(result.current.pending.has("2099-12-01")).toBe(false);
+  });
+
+  it("CANCELLED 행만 남은 날짜의 미저장 선택은 서버 진실(신청 없음)로 정리된다", async () => {
+    const { useApplicationBatch } =
+      await import("@/features/application/hooks/useApplicationBatch");
+    const onApply = vi.fn();
+
+    const { result, rerender } = renderHook(
+      ({ schedules }) => useApplicationBatch({ schedules, onApply }),
+      { initialProps: { schedules: SCHEDULES } },
+    );
+
+    act(() => {
+      result.current.toggle("2099-09-01");
+    });
+    expect(result.current.pending.has("2099-09-01")).toBe(true);
+
+    const CANCELLED_ONLY_SCHEDULES: TestSchedule[] = [
+      { ...SCHEDULES[0]!, status: "CANCELLED" as const },
+      SCHEDULES[1]!,
+    ];
+    rerender({ schedules: CANCELLED_ONLY_SCHEDULES });
+
+    expect(result.current.pending).toEqual(new Set(["2099-09-02"]));
+    expect(result.current.savedApplied.has("2099-09-01")).toBe(false);
+    expect(result.current.changeCount).toBe(0);
+  });
 });
