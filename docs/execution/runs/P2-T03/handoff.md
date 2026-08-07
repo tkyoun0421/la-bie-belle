@@ -120,3 +120,31 @@
 
 1. 이번 라운드에서 바꾼 파일만 전체 스테이징해 `P2-T03` task ID를 포함한 새 커밋을 만든다(amend 금지, push는 다음 담당자 몫).
 2. F-03·F-04~F-12는 이번 라운드 범위 밖으로 남겨둔다 — 조정자가 후속 task 또는 재봉인 여부를 결정한다.
+
+## 2026-08-08 · 교차 검증 재확인 수정 라운드(F-13 high 1건, 신규)
+
+- 작업 식별자: P2-T03
+- 근거: F-01·F-02·F-05는 opus·codex 전원이 해소를 인정했다. 재확인 과정에서 두 리뷰어가 독립적으로 같은 새 high 결함(F-13)을 발견해 전원 인정으로 확정됐다. 이번 라운드는 F-13 하나와, 같은 effect 안에서 함께 처리하라고 지시된 CANCELLED 필터 정합화만 다뤘다.
+
+### F-13 — 월 이동 후 되돌리기가 다른 달의 기존 신청까지 철회한다
+
+- 원인: 직전 라운드의 F-01 수정으로 `savedApplied`가 월 이동 시 다른 달의 기존 신청까지 흡수하게 됐는데, `executeUndo`는 저장 시점에 찍어둔 `lastUndo.previous`(그 시점의 savedApplied 전체 스냅샷)를 그대로 `submit()`에 넘겼다. `submit`은 `withdrawDates = savedApplied(현재) − target(그 스냅샷)`으로 차집합을 계산하므로, 스냅샷 이후 다른 달에서 새로 병합된 날짜(스냅샷엔 없고 현재엔 있는 날짜)가 전부 "철회 대상"으로 오분류됐다. 직전 라운드 전에는 `scheduleIdByDate`가 매 렌더 스코프였어서 다른 달 날짜의 id 해석이 실패해 조용히 빠졌는데, 이번 라운드에서 id를 `useRef`로 누적한 게 이 오분류를 실제 쓰기로 바꿔놓았다.
+- 수정: Undo 메모리를 "저장 시점 전체 스냅샷"이 아니라 "그 저장이 실제로 바꾼 날짜만의 diff"로 바꿨다 — `UndoMemory.previousByDate: Map<날짜, 그 저장 이전 상태(applied 여부)>`. `executeUndo`는 **현재** `savedApplied`를 복제한 뒤 diff에 있는 날짜만 이전 상태로 되돌려 `target`을 만들고, 그 `target`을 평소의 `submit()` 경로로 보낸다 — 그러면 diff에 없는 날짜(다른 달의 기존 신청 등)는 target에도 현재 savedApplied와 동일하게 남아 `submit`의 차집합 계산에서 자연히 제외된다.
+- RADIO 정합성: 불변 규칙의 "저장 성공 시 직전 저장 상태와의 **diff**를 클라이언트가 기억"이라는 문구가 이 방향을 직접 뒷받침한다고 판단했다. Data model의 "{이전 savedApplied, 이후 savedApplied} 쌍"은 개념적으로 diff와 동치다 — 두 스냅샷 중 실제로 다른 부분만 diff이고, 나머지(안 바뀐 날짜)는 이번 Undo 실행에 어차피 아무 영향을 주지 않으므로 diff만 남기는 것은 그 쌍이 담은 정보의 손실 없는 압축이다. 다른 달이 전혀 병합되지 않는(F-01 버그가 없던) 경우엔 이전 구현과 관찰 가능한 동작이 완전히 같고, 병합되는 경우에만 달라지는데 그 경우 이전 구현 쪽이 버그였다. 별도 [질문] 없이 진행했다.
+
+### 함께 처리 — CANCELLED 필터 정합화
+
+- 동기화 effect가 `schedules`를 필터 없이 순회했다. `ScheduleView.tsx`·`schedule-cell-state.ts`는 둘 다 `status !== "CANCELLED"`로 거른 뒤 날짜별 Map을 만드는데, 같은 근무일에 CANCELLED 1행 + 활성 1행이 부분 유니크 제약상 공존할 수 있어 effect도 필터 없이 돌면 배열 안 등장 순서에 따라 CANCELLED 행의 정보(옛 id·status·applicationStatus)가 활성 행의 정보를 덮어쓸 수 있었다. `scheduleIdByDateRef` 초기값·병합, `savedApplied`·`pending` 재동기화 세 지점 모두에 `schedule.status !== "CANCELLED"` 필터를 앞단에 적용해 세 곳(뷰·model·hook)의 판정을 일치시켰다. 동작 계약 변경이 아니라 정합화이고, review 시점 기준 실제 재현 경로는 없었다(opus 단독 발견, codex 판정 대기 중이었음).
+
+### 검증
+
+- RED→GREEN 실제 실행: `pnpm vitest run src/features/application/hooks/__tests__/useApplicationBatch.test.ts` — RED 2026-08-07T22:29:32Z(exit 1, 신규 2건 실패: F-13 재현·CANCELLED 정합 재현) → GREEN 2026-08-07T22:30:13Z(exit 0, 13건 전부 통과).
+- `pnpm typecheck`·`pnpm lint:ci`·`pnpm format:check` 통과.
+- `pnpm vitest run`(전체) 154 files/**929 tests**(927+신규 2) GREEN.
+- `pnpm db:reset` 후 `pnpm verify` 전체 최종 실행: 시작 2026-08-07T22:31:32Z, 종료 2026-08-07T22:32:57Z, 종료 코드 0(vitest 929, e2e 32/32, gate:all 포함).
+- 이번 라운드는 `src/features/application/hooks/useApplicationBatch.ts`·`__tests__/useApplicationBatch.test.ts`만 바꿨다.
+- 남은 [질문]: 없음.
+
+### 다음 행동(F-13 라운드 이후)
+
+1. 이번 라운드에서 바꾼 두 파일만 전체 스테이징해 `P2-T03` task ID를 포함한 새 커밋을 만든다(amend 금지, push는 다음 담당자 몫).

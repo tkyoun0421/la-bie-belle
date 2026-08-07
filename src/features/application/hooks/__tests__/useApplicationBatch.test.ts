@@ -288,4 +288,83 @@ describe("useApplicationBatch", () => {
     expect(result.current.pending.has("2099-09-02")).toBe(true);
     expect(result.current.changeCount).toBe(0);
   });
+
+  it("저장 후 다른 달로 이동해 되돌리면 그 달의 기존 신청은 그대로 두고 이번 batch 날짜만 되돌아간다", async () => {
+    const { useApplicationBatch } =
+      await import("@/features/application/hooks/useApplicationBatch");
+    const onApply = vi.fn().mockResolvedValue({ ok: true, appliedCount: 1, withdrawnCount: 0 });
+
+    const { result, rerender } = renderHook(
+      ({ schedules }) => useApplicationBatch({ schedules, onApply }),
+      { initialProps: { schedules: SCHEDULES } },
+    );
+
+    act(() => {
+      result.current.toggle("2099-09-01");
+    });
+    await act(async () => {
+      result.current.save();
+    });
+    await waitFor(() => expect(result.current.undo).not.toBeNull());
+
+    rerender({ schedules: OCTOBER_SCHEDULES });
+    expect(result.current.savedApplied.has("2099-10-02")).toBe(true);
+
+    onApply.mockClear();
+    onApply.mockResolvedValue({ ok: true, appliedCount: 0, withdrawnCount: 1 });
+    await act(async () => {
+      result.current.undo?.execute();
+    });
+
+    expect(onApply).toHaveBeenCalledWith({
+      applyScheduleIds: [],
+      withdrawScheduleIds: ["schedule-open"],
+    });
+    expect(result.current.savedApplied.has("2099-10-02")).toBe(true);
+  });
+
+  it("같은 날짜에 CANCELLED 행과 활성 행이 공존하면 활성 행의 정보만 반영된다", async () => {
+    const { useApplicationBatch } =
+      await import("@/features/application/hooks/useApplicationBatch");
+    const onApply = vi.fn().mockResolvedValue({ ok: true, appliedCount: 1, withdrawnCount: 0 });
+
+    const REOPENED_SCHEDULES: TestSchedule[] = [
+      {
+        id: "schedule-reopened",
+        workDate: "2099-11-01",
+        applicationDeadline: "2099-11-01",
+        status: "OPEN",
+        applicationStatus: null,
+      },
+      {
+        id: "schedule-cancelled",
+        workDate: "2099-11-01",
+        applicationDeadline: "2099-11-01",
+        status: "CANCELLED",
+        applicationStatus: "applied",
+      },
+    ];
+
+    const { result, rerender } = renderHook(
+      ({ schedules }) => useApplicationBatch({ schedules, onApply }),
+      { initialProps: { schedules: SCHEDULES } },
+    );
+
+    rerender({ schedules: REOPENED_SCHEDULES });
+
+    expect(result.current.savedApplied.has("2099-11-01")).toBe(false);
+    expect(result.current.pending.has("2099-11-01")).toBe(false);
+
+    act(() => {
+      result.current.toggle("2099-11-01");
+    });
+    await act(async () => {
+      result.current.save();
+    });
+
+    expect(onApply).toHaveBeenCalledWith({
+      applyScheduleIds: ["schedule-reopened"],
+      withdrawScheduleIds: [],
+    });
+  });
 });

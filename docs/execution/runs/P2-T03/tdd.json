@@ -131,6 +131,18 @@
       "exit_code": 0,
       "at": "2026-08-07T22:15:13Z",
       "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/application/hooks/__tests__/useApplicationBatch.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T22:29:32Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/application/hooks/__tests__/useApplicationBatch.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T22:30:13Z",
+      "phase": "green"
     }
   ]
 }

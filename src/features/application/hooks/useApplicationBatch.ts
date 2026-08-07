@@ -22,10 +22,11 @@ type UseApplicationBatchParams = {
   onApply: (input: ApplicationBatchInput) => Promise<ApplicationBatchOutcome>;
 };
 
-type UndoMemory = { previous: ReadonlySet<string>; count: number };
+type UndoMemory = { previousByDate: ReadonlyMap<string, boolean>; count: number };
 
 const SNACKBAR_MESSAGE = "근무 가능일을 변경했어요";
 const OPEN_STATUS: RecruitmentScheduleStatus = "OPEN";
+const CANCELLED_STATUS: RecruitmentScheduleStatus = "CANCELLED";
 
 function initialAppliedSet(schedules: readonly ApplicationBatchSchedule[]): ReadonlySet<string> {
   return new Set(
@@ -55,7 +56,11 @@ export function useApplicationBatch({ schedules, onApply }: UseApplicationBatchP
 
   const syncedSchedulesRef = useRef(schedules);
   const scheduleIdByDateRef = useRef(
-    new Map(schedules.map((schedule) => [schedule.workDate, schedule.id])),
+    new Map(
+      schedules
+        .filter((schedule) => schedule.status !== CANCELLED_STATUS)
+        .map((schedule) => [schedule.workDate, schedule.id]),
+    ),
   );
 
   useEffect(() => {
@@ -64,14 +69,16 @@ export function useApplicationBatch({ schedules, onApply }: UseApplicationBatchP
     }
     syncedSchedulesRef.current = schedules;
 
-    for (const schedule of schedules) {
+    const activeSchedules = schedules.filter((schedule) => schedule.status !== CANCELLED_STATUS);
+
+    for (const schedule of activeSchedules) {
       scheduleIdByDateRef.current.set(schedule.workDate, schedule.id);
     }
 
     const nextSaved = new Set(savedApplied);
     const nextPending = new Set(pending);
 
-    for (const schedule of schedules) {
+    for (const schedule of activeSchedules) {
       const key = schedule.workDate;
       const freshApplied = schedule.applicationStatus === "applied";
 
@@ -125,8 +132,15 @@ export function useApplicationBatch({ schedules, onApply }: UseApplicationBatchP
     const withdrawScheduleIds = withdrawDates
       .map((date) => scheduleIdByDateRef.current.get(date))
       .filter((id): id is string => id !== undefined);
-    const changeCountForThisSave = applyDates.length + withdrawDates.length;
-    const previousApplied = savedApplied;
+
+    const previousByDate = new Map<string, boolean>();
+    for (const date of applyDates) {
+      previousByDate.set(date, false);
+    }
+    for (const date of withdrawDates) {
+      previousByDate.set(date, true);
+    }
+    const changeCountForThisSave = previousByDate.size;
 
     startTransition(async () => {
       const outcome = await onApply({ applyScheduleIds, withdrawScheduleIds });
@@ -134,7 +148,7 @@ export function useApplicationBatch({ schedules, onApply }: UseApplicationBatchP
       if (outcome.ok) {
         setSavedApplied(target);
         setPending(target);
-        setLastUndo({ previous: previousApplied, count: changeCountForThisSave });
+        setLastUndo({ previousByDate, count: changeCountForThisSave });
         showSnackbar(SNACKBAR_MESSAGE);
         return;
       }
@@ -156,7 +170,15 @@ export function useApplicationBatch({ schedules, onApply }: UseApplicationBatchP
     if (lastUndo === null) {
       return;
     }
-    submit(lastUndo.previous);
+    const target = new Set(savedApplied);
+    for (const [date, wasApplied] of lastUndo.previousByDate) {
+      if (wasApplied) {
+        target.add(date);
+      } else {
+        target.delete(date);
+      }
+    }
+    submit(target);
   }
 
   const changeCount = symmetricDifferenceSize(pending, savedApplied);
