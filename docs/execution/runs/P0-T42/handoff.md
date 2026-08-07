@@ -38,3 +38,34 @@
 - `harness/self-test/claude-loop-state.test.ts`
 - `scripts/claude-loop.mjs`
 - `.claude/settings.json`
+
+## 2026-08-08 · 마무리 중단 (blocked, 야간 자동 진행 중 기록)
+
+- 작업 식별자: P0-T42
+- 현재 단계: 개발 마무리 중단 → 사용자 결정 대기(blocked)
+- 기준 시각: 2026-08-08 심야
+
+### 중단 사유
+
+RADIO revision 4의 변경 허용 경로에 속한 `.claude/settings.json`·`.claude/loop.md`에, revision 4가 승인하지 않은 변경이 병렬 세션(사용자 탭으로 추정, 02:15 KST 무렵 생성)에서 섞여 들어왔다. 확인된 미승인 변경: `.claude/loop-unattended.md`(무인 계약 — 질문으로 멈추지 않음, critical·high 선수정 후 사후 보고), `.claude/hooks/loop-unattended-context.sh`(SessionStart 훅 — `unattended-resume.json` 마커·세션 ID 일치·15분 이내 3중 조건일 때만 무인 계약을 컨텍스트로 주입), `settings.json`의 SessionStart 훅 블록, `loop.md`의 무인 계약 참조 문구. 부분 스테이징 금지 규칙과 병렬 세션 작업 보존 원칙 때문에 이 상태로는 승인분만 골라 커밋할 수 없어, 승인된 야간 프로토콜(새 결정 필요 → 해당 task만 blocked, 큐는 계속)대로 P0-T42만 중단했다.
+
+### 구현 완료분 (워킹 트리 보존, 미커밋)
+
+- `scripts/claude-loop.mjs`: `claude --bg` 호출 직전 index·RADIO 해시·안전 상태 재검사(기술 인수 조건 5). 위반 시 `needs_user` 기록 후 exit 2. `--watch`·`--session-id`·`--dry-run` 경로는 재검사 대상 밖.
+- `harness/self-test/claude-loop-reverification.test.ts`(신규): 실제 CLI `spawnSync` 통합 테스트 6건.
+- `harness/self-test/claude-loop-state.test.ts`: 1시간 에피소드 경계(-1ms·정각) 테스트 2건 추가.
+- `docs/execution/runs/P0-T42/tdd.json`: 위 항목 RED→GREEN 기록. `pnpm harness:self-test` 279개 통과 확인.
+
+### 사용자 결정 필요 (아침)
+
+무인 계약 확장(`loop-unattended.md`·SessionStart 훅)의 처리 — 결정 주체: 사용자, 반환할 단계: 설계.
+
+1. P0-T42 RADIO revision 5로 정식 편입(재봉인·재승인) 후 함께 커밋.
+2. 별도 후속 task로 분리하고, P0-T42는 사용자 탭 작업이 정리된 뒤 승인분만 남은 상태에서 커밋.
+3. 사용자 탭이 직접 커밋을 마무리(이 경우 P0-T42 커밋 범위 재조정 필요).
+
+### 야간 조치 기록
+
+- fc54a1f amend 계획은 폐기 — 야간 큐 커밋이 위에 쌓이므로 P0-T42 마무리는 후속 커밋으로 진행한다.
+- push는 아침 결정 전까지 보류(fc54a1f가 원격에 실리면 amend·정리 여지가 사라짐). ci-finisher 디스패치도 같은 이유로 보류.
+- P2-T05·P3-T01 승인 봉인(index 반영)은 이 task 경계에서 커밋했다.

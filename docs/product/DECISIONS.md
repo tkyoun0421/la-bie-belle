@@ -59,6 +59,17 @@
 - **관리자 신청 현황은 현재 신청자만 보여준다.** 목록은 applied 상태만 담고 철회자는 화면에 두지 않는다. 이력은 applications 행과 감사 기록이 보존하며, 철회 이력 화면이 필요해지면 별도 기획으로 연다. — [phase P2-T05 절](../execution/phases/02-recruitment.md) (2026-08-07 기획)
 - **신청자 목록에는 이름만 표시한다.** 개인정보 최소화이며, 가능 포지션 등 배정 판단 정보는 P3 배정 화면 소유다. 이름 외 개인정보 비노출은 P2-T05 인수 조건으로 검증된다. — [phase P2-T05 절](../execution/phases/02-recruitment.md) (2026-08-07 기획)
 - **홈의 「마감 임박 근무 신청」 카드는 P2-T05 범위다.** 워커 플로의 홈 구성과 실제 홈을 정합시키며 달력·조회와 같은 데이터를 재사용한다. 노출 기준(마감 임박 정의)은 설계 미결이다. — [phase P2-T05 절](../execution/phases/02-recruitment.md) · [WORKER-FLOWS 앱 셸과 홈 절](design/WORKER-FLOWS.md) (2026-08-07 기획)
+- **홈 카드의 마감 임박 기준은 KST 오늘 포함 3일이다.** 마감일이 D+0~D+2인 OPEN 모집이 대상이고 가장 임박한 1건만 카드에 올린다. 기획이 미결로 남긴 노출 기준의 확정이다. — [P2-T05 RADIO](../execution/radio/P2-T05-radio.md) (2026-08-08 설계)
+- **홈 카드는 본인 신청 여부와 무관하게 노출한다.** 마감이 시간 기준이라 신청자에게도 마감일이 직접 철회할 수 있는 마지막 시점이다. 미신청이면 신청 유도, applied면 마감 전까지 변경 가능 안내를 보여준다. — [P2-T05 RADIO](../execution/radio/P2-T05-radio.md) (2026-08-08 설계)
+- **날짜별 신청 수는 관리자 달력 셀 배지와 관리 시트 양쪽에 표시한다.** 신청자 이름 목록은 시트 안에만 두고, 시트를 연 시점에만 조회한다. 진입은 P2-T04 관리 시트의 하위 호환 확장이다. — [P2-T05 RADIO](../execution/radio/P2-T05-radio.md) (2026-08-08 설계)
+- **오늘·임박 판정은 서버가 KST로 계산한다.** 브라우저 시간대는 표시에만 관여하고 판정에 관여하지 않는다. 기존 MUST 규칙 DEV-TIME-03·04의 기본 적용을 확인한 결정이다. — [P2-T05 RADIO](../execution/radio/P2-T05-radio.md) · [DEVELOPMENT 시간 규칙](../standards/DEVELOPMENT.md) (2026-08-08 설계)
+
+### 예식과 시간 추천 (P3-T01)
+
+- **규칙표 밖 첫 예식 시각은 버림 방식으로 출근을 추천한다.** 첫 예식 시각 이하 규칙 중 가장 늦은 것의 간격을 적용하고, 그보다 이르면 가장 이른 규칙의 간격을 쓴다(예: 규칙 10:00→08:20·11:00→09:10일 때 12:00→10:10). 규칙표 최소 CRUD는 P3-T01 범위다. — [phase P3-T01 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-08 기획)
+- **예식 시각 수정으로 순서가 바뀌면 시각순으로 재정렬한다.** 같은 시각 중복만 거부하고 순서 역전은 오류가 아니다. — [phase P3-T01 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-08 기획)
+- **예식 입력은 모집 OPEN 중에도 허용하며 상한은 확정 전까지다.** 확정 후 변경은 P3-T06 revision 소유다. ADR-0003의 종전 "마감 이후" 서술은 이 결정으로 개정됐다. — [phase P3-T01 절](../execution/phases/03-assignment-and-confirmation.md) · [ADR-0003](../standards/adr/0003-schedule-lifecycle-and-snapshots.md) (2026-08-08 기획)
+- **퇴근 추천이 자정을 넘으면 23:59로 캡하고 안내한다.** 심야 예식이 실제로 필요해지면 별도 기획으로 연다. 예식·예정 출퇴근 데이터는 확정 배정표(P3-T07) 전까지 관리자 전용이다. — [P3-T01 RADIO](../execution/radio/P3-T01-radio.md) (2026-08-08 설계)
 
 ## ATTENDANCE · NOTIFICATIONS · PAY
 
