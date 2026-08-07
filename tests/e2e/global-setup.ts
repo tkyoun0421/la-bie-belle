@@ -77,6 +77,7 @@ async function ensureActiveProfile(env: SupabaseTestEnv, userId: string) {
     gender: "female",
     birth_date: "1990-01-01",
     status: "active",
+    inactivity_anchor_at: new Date().toISOString(),
   });
   if (error) {
     throw error;

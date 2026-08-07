@@ -57,6 +57,7 @@ async function createActiveWorker(
     gender: "male",
     birth_date: "1990-01-01",
     status: "active",
+    inactivity_anchor_at: new Date().toISOString(),
   });
   if (profileError) {
     throw profileError;

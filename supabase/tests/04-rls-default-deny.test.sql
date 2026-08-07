@@ -21,9 +21,9 @@ insert into auth.users (id, email) values
   ('e0000000-0000-0000-0000-000000000001', 'rls-active-worker@labiebelle.test'),
   ('e0000000-0000-0000-0000-000000000002', 'rls-pending-worker@labiebelle.test');
 
-insert into public.profiles (id, name, phone, gender, birth_date, status) values
-  ('e0000000-0000-0000-0000-000000000001', '활성근무자', '01090000001', 'male', '1990-01-01', 'active'),
-  ('e0000000-0000-0000-0000-000000000002', '대기근무자', '01090000002', 'female', '1991-02-02', 'pending');
+insert into public.profiles (id, name, phone, gender, birth_date, status, inactivity_anchor_at) values
+  ('e0000000-0000-0000-0000-000000000001', '활성근무자', '01090000001', 'male', '1990-01-01', 'active', now()),
+  ('e0000000-0000-0000-0000-000000000002', '대기근무자', '01090000002', 'female', '1991-02-02', 'pending', null);
 
 set local role anon;
 

@@ -11,6 +11,8 @@ export const AUDIT_EVENT_VALUES = [
   "phone_updated",
   "position_granted",
   "position_revoked",
+  "profile_dormanted",
+  "profile_reactivated",
 ] as const;
 
 export const AuditEventSchema = z.enum(AUDIT_EVENT_VALUES);

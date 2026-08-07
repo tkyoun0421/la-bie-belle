@@ -46,12 +46,12 @@ insert into auth.users (id, email) values
   ('b0000000-0000-0000-0000-000000000004', 'roles-pending-grant@labiebelle.test'),
   ('b0000000-0000-0000-0000-000000000005', 'roles-dormant-grant@labiebelle.test');
 
-insert into public.profiles (id, name, phone, gender, birth_date, status) values
-  ('b0000000-0000-0000-0000-000000000001', '활성일반', '01070000001', 'male', '1990-01-01', 'active'),
-  ('b0000000-0000-0000-0000-000000000002', '활성어드민', '01070000002', 'male', '1990-01-01', 'active'),
-  ('b0000000-0000-0000-0000-000000000003', '활성슈퍼', '01070000003', 'male', '1990-01-01', 'active'),
-  ('b0000000-0000-0000-0000-000000000004', '펜딩부여', '01070000004', 'male', '1990-01-01', 'pending'),
-  ('b0000000-0000-0000-0000-000000000005', '휴면부여', '01070000005', 'male', '1990-01-01', 'dormant');
+insert into public.profiles (id, name, phone, gender, birth_date, status, inactivity_anchor_at) values
+  ('b0000000-0000-0000-0000-000000000001', '활성일반', '01070000001', 'male', '1990-01-01', 'active', now()),
+  ('b0000000-0000-0000-0000-000000000002', '활성어드민', '01070000002', 'male', '1990-01-01', 'active', now()),
+  ('b0000000-0000-0000-0000-000000000003', '활성슈퍼', '01070000003', 'male', '1990-01-01', 'active', now()),
+  ('b0000000-0000-0000-0000-000000000004', '펜딩부여', '01070000004', 'male', '1990-01-01', 'pending', null),
+  ('b0000000-0000-0000-0000-000000000005', '휴면부여', '01070000005', 'male', '1990-01-01', 'dormant', now());
 
 insert into public.profile_roles (profile_id, role, granted_by) values
   ('b0000000-0000-0000-0000-000000000002', 'admin', null),
@@ -111,9 +111,9 @@ insert into auth.users (id, email) values
   ('b0000000-0000-0000-0000-000000000010', 'roles-bootstrap-pending@labiebelle.test'),
   ('b0000000-0000-0000-0000-000000000011', 'roles-bootstrap-active@labiebelle.test');
 
-insert into public.profiles (id, name, phone, gender, birth_date, status) values
-  ('b0000000-0000-0000-0000-000000000010', '부트펜딩', '01070000010', 'male', '1990-01-01', 'pending'),
-  ('b0000000-0000-0000-0000-000000000011', '부트액티브', '01070000011', 'male', '1990-01-01', 'active');
+insert into public.profiles (id, name, phone, gender, birth_date, status, inactivity_anchor_at) values
+  ('b0000000-0000-0000-0000-000000000010', '부트펜딩', '01070000010', 'male', '1990-01-01', 'pending', null),
+  ('b0000000-0000-0000-0000-000000000011', '부트액티브', '01070000011', 'male', '1990-01-01', 'active', now());
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', 'b0000000-0000-0000-0000-000000000010', true);
@@ -204,11 +204,11 @@ insert into auth.users (id, email) values
   ('b0000000-0000-0000-0000-000000000022', 'roles-general-admin@labiebelle.test'),
   ('b0000000-0000-0000-0000-000000000023', 'roles-pending-target@labiebelle.test');
 
-insert into public.profiles (id, name, phone, gender, birth_date, status) values
-  ('b0000000-0000-0000-0000-000000000020', '슈퍼관리자', '01070000020', 'male', '1990-01-01', 'active'),
-  ('b0000000-0000-0000-0000-000000000021', '임명대상', '01070000021', 'male', '1990-01-01', 'active'),
-  ('b0000000-0000-0000-0000-000000000022', '일반관리자', '01070000022', 'male', '1990-01-01', 'active'),
-  ('b0000000-0000-0000-0000-000000000023', '펜딩대상', '01070000023', 'male', '1990-01-01', 'pending');
+insert into public.profiles (id, name, phone, gender, birth_date, status, inactivity_anchor_at) values
+  ('b0000000-0000-0000-0000-000000000020', '슈퍼관리자', '01070000020', 'male', '1990-01-01', 'active', now()),
+  ('b0000000-0000-0000-0000-000000000021', '임명대상', '01070000021', 'male', '1990-01-01', 'active', now()),
+  ('b0000000-0000-0000-0000-000000000022', '일반관리자', '01070000022', 'male', '1990-01-01', 'active', now()),
+  ('b0000000-0000-0000-0000-000000000023', '펜딩대상', '01070000023', 'male', '1990-01-01', 'pending', null);
 
 insert into public.profile_roles (profile_id, role, granted_by) values
   ('b0000000-0000-0000-0000-000000000020', 'super_admin', null),

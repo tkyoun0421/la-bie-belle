@@ -20,6 +20,10 @@ export const ERROR_CODES = {
   IDENTITY_PROFILE_REQUIRED: { http: 403, message: "가입을 먼저 완료해 주세요" },
   IDENTITY_NOT_ACTIVE: { http: 403, message: "승인 후 이용할 수 있어요" },
   IDENTITY_ALREADY_PROCESSED: { http: 409, message: "이미 처리된 신청이에요" },
+  IDENTITY_STATUS_CONFLICT: {
+    http: 409,
+    message: "상태가 이미 바뀌었어요. 새로고침 후 다시 확인해 주세요",
+  },
 } as const satisfies Record<`${ErrorDomain}_${string}`, ErrorSpec>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;
@@ -35,4 +39,5 @@ export const ERROR_CODE = {
   IDENTITY_PROFILE_REQUIRED: "IDENTITY_PROFILE_REQUIRED",
   IDENTITY_NOT_ACTIVE: "IDENTITY_NOT_ACTIVE",
   IDENTITY_ALREADY_PROCESSED: "IDENTITY_ALREADY_PROCESSED",
+  IDENTITY_STATUS_CONFLICT: "IDENTITY_STATUS_CONFLICT",
 } as const satisfies { [K in ErrorCode]: K };

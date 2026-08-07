@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import { resolveProfileAccess, resolveProfileGate } from "@/entities/identity/model/profile-gate";
 import {
+  DEPARTED_PATH,
+  DORMANT_PATH,
   HOME_PATH,
   LOGIN_PATH,
   ONBOARDING_PATH,
@@ -70,6 +72,38 @@ describe("resolveProfileGate", () => {
   it("active 사용자가 /rejected에 있으면 홈으로 보낸다", () => {
     expect(resolveProfileGate({ status: "active" }, REJECTED_PATH)).toBe(HOME_PATH);
   });
+
+  it("active 사용자가 /dormant에 있으면 홈으로 보낸다", () => {
+    expect(resolveProfileGate({ status: "active" }, DORMANT_PATH)).toBe(HOME_PATH);
+  });
+
+  it("active 사용자가 /departed에 있으면 홈으로 보낸다", () => {
+    expect(resolveProfileGate({ status: "active" }, DEPARTED_PATH)).toBe(HOME_PATH);
+  });
+
+  it("dormant 사용자가 /dormant에 있으면 통과시킨다", () => {
+    expect(resolveProfileGate({ status: "dormant" }, DORMANT_PATH)).toBeNull();
+  });
+
+  it("dormant 사용자가 보호 탭에 있으면 /dormant로 보낸다", () => {
+    expect(resolveProfileGate({ status: "dormant" }, HOME_PATH)).toBe(DORMANT_PATH);
+  });
+
+  it("dormant 사용자가 /departed에 있으면 /dormant로 보낸다", () => {
+    expect(resolveProfileGate({ status: "dormant" }, DEPARTED_PATH)).toBe(DORMANT_PATH);
+  });
+
+  it("departed 사용자가 /departed에 있으면 통과시킨다", () => {
+    expect(resolveProfileGate({ status: "departed" }, DEPARTED_PATH)).toBeNull();
+  });
+
+  it("departed 사용자가 보호 탭에 있으면 /departed로 보낸다", () => {
+    expect(resolveProfileGate({ status: "departed" }, HOME_PATH)).toBe(DEPARTED_PATH);
+  });
+
+  it("departed 사용자가 /dormant에 있으면 /departed로 보낸다", () => {
+    expect(resolveProfileGate({ status: "departed" }, DORMANT_PATH)).toBe(DEPARTED_PATH);
+  });
 });
 
 describe("resolveProfileAccess", () => {
@@ -112,6 +146,20 @@ describe("resolveProfileAccess", () => {
     expect(resolveProfileAccess({ ok: true, data: { status: "rejected" } }, HOME_PATH)).toEqual({
       kind: "redirect",
       to: REJECTED_PATH,
+    });
+  });
+
+  it("조회 성공 + dormant면 /dormant로 redirect를 반환한다", () => {
+    expect(resolveProfileAccess({ ok: true, data: { status: "dormant" } }, HOME_PATH)).toEqual({
+      kind: "redirect",
+      to: DORMANT_PATH,
+    });
+  });
+
+  it("조회 성공 + departed면 /departed로 redirect를 반환한다", () => {
+    expect(resolveProfileAccess({ ok: true, data: { status: "departed" } }, HOME_PATH)).toEqual({
+      kind: "redirect",
+      to: DEPARTED_PATH,
     });
   });
 

@@ -29,6 +29,8 @@ describe("WorkerDetailView", () => {
         onSetWage={vi.fn()}
         onGrant={vi.fn()}
         onRevoke={vi.fn()}
+        onDeactivate={vi.fn()}
+        onReactivate={vi.fn()}
       />,
     );
 
@@ -44,6 +46,8 @@ describe("WorkerDetailView", () => {
         onSetWage={vi.fn()}
         onGrant={vi.fn()}
         onRevoke={vi.fn()}
+        onDeactivate={vi.fn()}
+        onReactivate={vi.fn()}
       />,
     );
 
@@ -58,6 +62,8 @@ describe("WorkerDetailView", () => {
         onSetWage={vi.fn()}
         onGrant={vi.fn()}
         onRevoke={vi.fn()}
+        onDeactivate={vi.fn()}
+        onReactivate={vi.fn()}
       />,
     );
 
@@ -72,10 +78,46 @@ describe("WorkerDetailView", () => {
         onSetWage={vi.fn()}
         onGrant={vi.fn()}
         onRevoke={vi.fn()}
+        onDeactivate={vi.fn()}
+        onReactivate={vi.fn()}
       />,
     );
 
     expect(screen.getByText("기본 적용")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "부여" })).toBeInTheDocument();
+  });
+
+  it("active 상태 뱃지와 수동 휴면 액션을 보여준다", () => {
+    render(
+      <WorkerDetailView
+        worker={WORKER}
+        onUpdateInfo={vi.fn()}
+        onSetWage={vi.fn()}
+        onGrant={vi.fn()}
+        onRevoke={vi.fn()}
+        onDeactivate={vi.fn()}
+        onReactivate={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("활동 중")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "수동 휴면" })).toBeInTheDocument();
+  });
+
+  it("dormant 상태 뱃지와 재활성화 액션을 보여준다", () => {
+    render(
+      <WorkerDetailView
+        worker={{ ...WORKER, status: "dormant" }}
+        onUpdateInfo={vi.fn()}
+        onSetWage={vi.fn()}
+        onGrant={vi.fn()}
+        onRevoke={vi.fn()}
+        onDeactivate={vi.fn()}
+        onReactivate={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("휴면")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "재활성화" })).toBeInTheDocument();
   });
 });

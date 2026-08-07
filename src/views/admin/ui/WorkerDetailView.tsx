@@ -6,9 +6,13 @@ import type {
   WorkerInfoActionInput,
   WorkerInfoOutcome,
 } from "@/features/worker-management/hooks/useWorkerInfoForm";
+import type { WorkerStatusActionOutcome } from "@/features/worker-management/hooks/useWorkerStatusAction";
 import { HourlyWageForm } from "@/features/worker-management/ui/HourlyWageForm";
 import { PositionToggleList } from "@/features/worker-management/ui/PositionToggleList";
 import { WorkerInfoForm } from "@/features/worker-management/ui/WorkerInfoForm";
+import { WorkerStatusAction } from "@/features/worker-management/ui/WorkerStatusAction";
+import { Badge } from "@/shared/ui/badge";
+import { profileStatusLabel } from "@/views/admin/model/profile-status-label";
 
 type WorkerDetailViewProps = {
   worker: WorkerDetail;
@@ -19,6 +23,8 @@ type WorkerDetailViewProps = {
   onSetWage: (targetProfileId: string, hourlyWage: number) => Promise<HourlyWageOutcome>;
   onGrant: (targetProfileId: string, positionId: string) => Promise<PositionActionOutcome>;
   onRevoke: (targetProfileId: string, positionId: string) => Promise<PositionActionOutcome>;
+  onDeactivate: (targetProfileId: string) => Promise<WorkerStatusActionOutcome>;
+  onReactivate: (targetProfileId: string) => Promise<WorkerStatusActionOutcome>;
 };
 
 export function WorkerDetailView({
@@ -27,12 +33,26 @@ export function WorkerDetailView({
   onSetWage,
   onGrant,
   onRevoke,
+  onDeactivate,
+  onReactivate,
 }: WorkerDetailViewProps) {
   const effectiveWage = resolveEffectiveWage(worker.hourlyWage, worker.defaultHourlyWage);
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-24">
-      <h1 className="typo-display text-text-strong">{worker.name}</h1>
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="typo-display text-text-strong">{worker.name}</h1>
+        <div className="flex items-center gap-2">
+          <Badge tone={worker.status === "active" ? "success" : "neutral"}>
+            {profileStatusLabel(worker.status)}
+          </Badge>
+          <WorkerStatusAction
+            status={worker.status}
+            onDeactivate={onDeactivate.bind(null, worker.id)}
+            onReactivate={onReactivate.bind(null, worker.id)}
+          />
+        </div>
+      </div>
       <section className="flex flex-col gap-3">
         <h2 className="typo-title text-text-strong">개인정보</h2>
         <WorkerInfoForm

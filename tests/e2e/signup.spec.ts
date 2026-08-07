@@ -16,6 +16,7 @@ type ProfileFixture = {
   gender: "male" | "female";
   birth_date: string;
   status?: "pending" | "active";
+  inactivity_anchor_at?: string;
 };
 
 function randomPhone(): string {
@@ -150,6 +151,7 @@ test.describe("가입과 승인 대기", () => {
       gender: "female",
       birth_date: "1990-01-01",
       status: "active",
+      inactivity_anchor_at: new Date().toISOString(),
     });
 
     await page.goto("/pending");
@@ -168,6 +170,7 @@ test.describe("가입과 승인 대기", () => {
       gender: "female",
       birth_date: "1990-01-01",
       status: "active",
+      inactivity_anchor_at: new Date().toISOString(),
     });
 
     await page.goto("/onboarding");
@@ -191,6 +194,7 @@ test.describe("가입과 승인 대기", () => {
       gender: "male",
       birth_date: "1990-01-01",
       status: "active",
+      inactivity_anchor_at: new Date().toISOString(),
     });
 
     await submitSignupForm(page);
@@ -211,6 +215,7 @@ test.describe("가입과 승인 대기", () => {
       gender: "male",
       birth_date: "1990-01-01",
       status: "active",
+      inactivity_anchor_at: new Date().toISOString(),
     });
 
     await createSessionedUser(context, baseURL, "e2e-signup-phone-taken-challenger");

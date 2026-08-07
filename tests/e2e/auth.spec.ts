@@ -78,6 +78,7 @@ test.describe("로그아웃", () => {
       gender: "female",
       birth_date: "1990-01-01",
       status: "active",
+      inactivity_anchor_at: new Date().toISOString(),
     });
     if (profileError) {
       throw profileError;
@@ -120,6 +121,7 @@ test.describe("콜백 실제 코드 교환과 온보딩 분기", () => {
       gender: "male",
       birth_date: "1990-01-01",
       status: "active",
+      inactivity_anchor_at: new Date().toISOString(),
     });
     if (profileError) {
       throw profileError;

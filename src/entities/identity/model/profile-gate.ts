@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 import {
+  DEPARTED_PATH,
+  DORMANT_PATH,
   HOME_PATH,
   LOGIN_PATH,
   ONBOARDING_PATH,
@@ -31,13 +33,25 @@ export function resolveProfileGate(
   }
 
   if (profile.status === "active") {
-    return pathname === ONBOARDING_PATH || pathname === PENDING_PATH || pathname === REJECTED_PATH
+    return pathname === ONBOARDING_PATH ||
+      pathname === PENDING_PATH ||
+      pathname === REJECTED_PATH ||
+      pathname === DORMANT_PATH ||
+      pathname === DEPARTED_PATH
       ? HOME_PATH
       : null;
   }
 
   if (profile.status === "rejected") {
     return pathname === REJECTED_PATH ? null : REJECTED_PATH;
+  }
+
+  if (profile.status === "dormant") {
+    return pathname === DORMANT_PATH ? null : DORMANT_PATH;
+  }
+
+  if (profile.status === "departed") {
+    return pathname === DEPARTED_PATH ? null : DEPARTED_PATH;
   }
 
   return pathname === PENDING_PATH ? null : PENDING_PATH;

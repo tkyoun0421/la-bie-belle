@@ -1,5 +1,7 @@
 import { findWorkerDetail } from "@/entities/identity/api/find-worker-detail";
+import { deactivateWorker } from "@/features/worker-management/api/deactivate-worker";
 import { grantPosition } from "@/features/worker-management/api/grant-position";
+import { reactivateWorker } from "@/features/worker-management/api/reactivate-worker";
 import { revokePosition } from "@/features/worker-management/api/revoke-position";
 import { setHourlyWage } from "@/features/worker-management/api/set-hourly-wage";
 import { updateWorkerInfo } from "@/features/worker-management/api/update-worker-info";
@@ -30,6 +32,8 @@ export default async function AdminWorkerDetailPage({ params }: AdminWorkerDetai
       onSetWage={setHourlyWage}
       onGrant={grantPosition}
       onRevoke={revokePosition}
+      onDeactivate={deactivateWorker}
+      onReactivate={reactivateWorker}
     />
   );
 }

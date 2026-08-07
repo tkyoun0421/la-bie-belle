@@ -1,0 +1,160 @@
+{
+  "entries": [
+    {
+      "command": "pnpm db:reset && pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-07T13:04:39+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm db:reset && pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-07T13:05:37+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/dormant/ui/__tests__/DormantView.test.tsx src/views/departed/ui/__tests__/DepartedView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T13:26:29+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/dormant/ui/__tests__/DormantView.test.tsx src/views/departed/ui/__tests__/DepartedView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T13:26:37+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/worker-management/ui/__tests__/WorkerStatusAction.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T13:26:43+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/worker-management/ui/__tests__/WorkerStatusAction.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T13:26:49+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin/ui/__tests__/WorkerDetailView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-07T13:26:58+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin/ui/__tests__/WorkerDetailView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-07T13:27:07+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "npx playwright test dormancy.spec.ts --reporter=list",
+      "exit_code": 1,
+      "at": "2026-08-07T13:28:20+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "npx playwright test dormancy.spec.ts --reporter=list",
+      "exit_code": 0,
+      "at": "2026-08-07T13:28:52+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/dormancy.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T13:29:47+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/dormancy.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T13:29:52+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/audit-event.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T13:29:59+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/audit-event.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T13:30:05+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/profile-gate.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T13:30:12+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/model/__tests__/profile-gate.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T13:30:21+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/find-own-dormancy.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T13:30:28+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/identity/api/__tests__/find-own-dormancy.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T13:30:34+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/reactivation/api/__tests__/reactivate-own.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T13:30:39+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/reactivation/api/__tests__/reactivate-own.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T13:30:45+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/reactivation/hooks/__tests__/useReactivateOwn.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T13:30:50+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/reactivation/hooks/__tests__/useReactivateOwn.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T13:30:57+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/worker-management/api/__tests__/deactivate-worker.test.ts src/features/worker-management/api/__tests__/reactivate-worker.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T13:31:03+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/worker-management/api/__tests__/deactivate-worker.test.ts src/features/worker-management/api/__tests__/reactivate-worker.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T13:31:09+09:00",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/worker-management/hooks/__tests__/useWorkerStatusAction.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T13:31:14+09:00",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/worker-management/hooks/__tests__/useWorkerStatusAction.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T13:31:20+09:00",
+      "phase": "green"
+    }
+  ]
+}

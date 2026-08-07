@@ -51,6 +51,7 @@ async function createAdminSession(context: BrowserContext, baseURL: string | und
     gender: "male",
     birth_date: "1990-01-01",
     status: "active",
+    inactivity_anchor_at: new Date().toISOString(),
   });
   if (profileError) {
     throw profileError;
@@ -132,6 +133,7 @@ async function createActiveNonAdmin(
     gender: "male",
     birth_date: "1990-01-01",
     status: "active",
+    inactivity_anchor_at: new Date().toISOString(),
   });
   if (profileError) {
     throw profileError;

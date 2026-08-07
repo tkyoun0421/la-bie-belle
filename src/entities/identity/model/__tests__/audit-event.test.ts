@@ -15,6 +15,8 @@ describe("AuditEventSchema", () => {
       "phone_updated",
       "position_granted",
       "position_revoked",
+      "profile_dormanted",
+      "profile_reactivated",
     ];
 
     for (const value of values) {
@@ -26,7 +28,7 @@ describe("AuditEventSchema", () => {
     expect(AuditEventSchema.safeParse("unknown_event").success).toBe(false);
   });
 
-  it("AUDIT_EVENT_VALUES는 정확히 10종이다", () => {
-    expect(AUDIT_EVENT_VALUES).toHaveLength(10);
+  it("AUDIT_EVENT_VALUES는 정확히 12종이다", () => {
+    expect(AUDIT_EVENT_VALUES).toHaveLength(12);
   });
 });
