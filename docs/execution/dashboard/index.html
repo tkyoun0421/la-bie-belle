@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="base-commit" content="83d496175bb63e73a329838df13c671c81cbd60f">
+<meta name="base-commit" content="de05a14a6bc046d1f81040d1418c9e1628120368">
 <title>라비에벨 운영 의사결정 대시보드</title>
 <style>:root{color-scheme:light;--ink:#0a0b0d;--muted:#5b616e;--line:#dee1e6;--surface:#f7f7f7;--action:#0052ff;--action-bg:#eef4ff;--success:#087a4b;--success-bg:#e8f8f1;--warning:#765500;--warning-bg:#fff7d6;--danger:#b01825;--danger-bg:#fff0f1}
 *{box-sizing:border-box}
@@ -60,28 +60,28 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <p class="eyebrow">라비에벨 운영 대시보드 · 읽기 전용 파생물</p>
 <h1>운영 의사결정 대시보드</h1>
 <dl class="meta">
-<div><dt>기준 시각</dt><dd class="mono">2026-08-07T09:12:17.712Z</dd></div>
-<div><dt>기준 커밋</dt><dd><span class="mono">83d496175bb63e73a329838df13c671c81cbd60f</span><span class="sub">feat(P2-T01): add schedule and application recruitment schema</span></dd></div>
-<div><dt>작업 트리</dt><dd>커밋되지 않은 변경 6건 — 표시 내용에 기준 커밋 이후의 작업 트리 상태가 섞여 있다.</dd></div>
+<div><dt>기준 시각</dt><dd class="mono">2026-08-07T09:12:39.362Z</dd></div>
+<div><dt>기준 커밋</dt><dd><span class="mono">de05a14a6bc046d1f81040d1418c9e1628120368</span><span class="sub">docs(P2-T01): close cross-review with no fix round required and mark the task done</span></dd></div>
+<div><dt>작업 트리</dt><dd>커밋되지 않은 변경 3건 — 표시 내용에 기준 커밋 이후의 작업 트리 상태가 섞여 있다.</dd></div>
 </dl>
 
 </header>
 <main>
 <section id="next-action" class="card highlight">
 <h2>다음 행동·차단</h2>
-<p class="target mono">P7-T01</p>
-<p class="headline">P7-T01 휴면·자동 계정 정리와 탈퇴 연쇄 처리의 설계(RADIO) 인터뷰를 진행한다.</p>
+<p class="target mono">P2-T02</p>
+<p class="headline">P2-T02 관리자 모집 일괄 오픈의 설계(RADIO) 인터뷰를 진행한다.</p>
 <p class="rationale">실행 큐가 비었고 기획 승인만 있는 task가 있다. RADIO 승인이 planned 진입 조건이다.</p>
 <h3>직접 선행 조건</h3>
 <ul><li>승인된 기획 범위 확인</li><li>docs/execution/radio/&lt;task-id&gt;-radio.md 작성과 SHA-256 기록</li></ul>
 <h3>차단 사유</h3>
 <p class="empty">차단 사유 없음</p>
 <h3>대안 후보</h3>
-<p class="empty">대안 후보 없음</p>
+<ul><li>P7-T01</li></ul>
 </section>
 <section id="readiness" class="card">
 <h2>준비도 루브릭</h2>
-<p class="total"><span class="total-score mono">79</span><span class="total-max">/100</span><span class="grade action">양호</span></p>
+<p class="total"><span class="total-score mono">86</span><span class="total-max">/100</span><span class="grade action">양호</span></p>
 <p class="caption">등급 경계: 90 이상 우수, 70~89 양호, 70 미만 주의. 모든 점수는 아래 근거 수치로 기계 판정한다.</p>
 <ul class="rubric"><li class="rubric-area">
 <p class="row"><strong>계약 준수</strong><span class="score mono">40/40</span></p>
@@ -108,11 +108,11 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <p class="evidence">blocked task 0건.</p>
 </li></ul>
 </li><li class="rubric-area">
-<p class="row"><strong>문서 신선도</strong><span class="score mono">4/15</span></p>
-<span class="meter"><span class="meter-fill" style="width:27%"></span></span>
+<p class="row"><strong>문서 신선도</strong><span class="score mono">11/15</span></p>
+<span class="meter"><span class="meter-fill" style="width:73%"></span></span>
 <ul class="rubric-items"><li>
-<p class="row"><span>재생성 준수</span><span class="score mono">0/7</span></p>
-<p class="evidence">기존 산출물 기준 커밋 4e7abea 이후 재생성 없이 상태 변경 커밋 3건(83d4961, 8f9ed57, 98e4adc)이 쌓였다.</p>
+<p class="row"><span>재생성 준수</span><span class="score mono">7/7</span></p>
+<p class="evidence">기존 산출물 기준 커밋 83d4961 이후 재생성이 필요한 상태 변경 커밋이 없다.</p>
 </li><li>
 <p class="row"><span>보류 ADR 0건</span><span class="score mono">4/4</span></p>
 <p class="evidence">보류 상태 ADR 0건.</p>
@@ -127,7 +127,7 @@ footer{margin-top:16px;font-size:13px;color:var(--muted)}
 <p class="row"><strong>전체 완료율</strong><span class="score mono">46/88 · 52%</span></p>
 <span class="meter"><span class="meter-fill" style="width:52%"></span></span>
 <h3>상태별 집계</h3>
-<ul class="chips"><li class="chip">기획 미승인 <span class="mono">41</span></li><li class="chip">설계 대기 <span class="mono">1</span></li><li class="chip">완료 <span class="mono">46</span></li></ul>
+<ul class="chips"><li class="chip">기획 미승인 <span class="mono">40</span></li><li class="chip">설계 대기 <span class="mono">2</span></li><li class="chip">완료 <span class="mono">46</span></li></ul>
 <h3>현재 진행</h3>
 <p class="empty">진행 중인 task 없음</p>
 <h3>다음 후보</h3>
