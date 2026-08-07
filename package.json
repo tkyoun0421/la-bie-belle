@@ -33,7 +33,8 @@
     "gate:all": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/gates/all.ts",
     "dashboard": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/dashboard/main.ts",
     "harness:self-test": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/run.ts",
-    "harness:typecheck": "tsc --noEmit --project harness/tsconfig.json"
+    "harness:typecheck": "tsc --noEmit --project harness/tsconfig.json",
+    "claude:loop": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/claude-loop.mjs"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "16",
