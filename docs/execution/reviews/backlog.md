@@ -170,3 +170,9 @@
 - [ ] [low] [P0-T40] checkTddEvidence now 기본값 Date.now() 암묵 의존 — harness/lib/tdd-gate.ts
 - [ ] [low] [P0-T40] 오프셋 없는 at의 타임존 미래 오판 경로(정규화 계약 후보) — harness/lib/tdd-gate.ts
 - [ ] [low] [P0-T40] handoff self-test case 수 오기(실질은 git diff로 확인됨) — docs/execution/runs/P0-T40/handoff.md
+- [ ] [medium] [P0-T41] 미분류 유효 경로 기본 skip fail-open(allowlist 반전 후보) — harness/lib/precommit-test-scope.ts
+- [ ] [medium] [P0-T41] CI 전체 스위트 백스톱 회귀 단언 부재 — harness/self-test/hook-acceptance.test.ts
+- [ ] [medium] [P0-T41] hook-acceptance가 3모드 셸 소비를 실검증하지 않음(fixture 의존성 한계) — harness/self-test/hook-acceptance.test.ts
+- [x] [medium] [P0-T41] TOOLING.md 훅 정본이 옛 vitest 전체 실행 기술(done 전환 커밋에서 조정자 갱신) — docs/workflow/TOOLING.md
+- [ ] [low] [P0-T41] related 테스트 실패를 full 재실행 결과로 덮어씀(실패 우선 합성 후보) — harness/lib/precommit-test-scope.ts
+- [ ] [low] [P0-T41] 판정 타입 판별 유니언 아님(통과 방향 도달 불가 분기 잔존) — harness/lib/precommit-test-scope.ts

@@ -103,7 +103,7 @@ pnpm dashboard           # docs/execution/dashboard/index.html 재생성
 
 | 훅 | 실행 |
 | --- | --- |
-| pre-commit | harness 게이트 4종 → `lint-staged` → `tsc --incremental` → `vitest run` |
+| pre-commit | harness 게이트 4종 → `lint-staged` → `tsc --incremental` → 스테이징 기반 vitest 3모드(비코드만 생략 · 코드 포함 `related` · 광역 파일·삭제·rename·연관 0건은 전체 승격, fail-closed — P0-T41, 판정 정본은 `harness/lib/precommit-test-scope.ts`) |
 | pre-push | `pnpm build` |
 | commit-msg | 메시지 본문의 `P[0-9]+-T[0-9]{2}` task ID 확인 |
 

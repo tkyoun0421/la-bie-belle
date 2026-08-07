@@ -72,3 +72,10 @@
 1. 조정자가 F-01 해소를 확인하고, F-02~F-07의 backlog 편입·후속 task 여부를 결정한다.
 2. F-01 재검토 후 문제 없으면 `index.jsonl`의 P0-T41을 `done`으로 전환한다.
 3. ci-finisher가 push와 CI 감시를 백그라운드로 수행한다(이 handoff는 push하지 않는다).
+
+## 2026-08-07 · 조정자 검증 절(교차 검증·수정 라운드)
+
+- 대조: 구현 c75af0d(8파일)·수정 7f34a93(6파일) 전부 허용 경로 안, tdd.json 시각 정합(미래 0건 — 신설 gate:tdd 검사가 실제 가동), gate:all exit 0.
+- 교차 검증: opus·codex 병렬 + 되물음. 확정 7건(high 1·medium 4·low 2), 기각 3건(근거 반박). 총점 74.
+- 수정 라운드: F-01(fail-closed 무력화) 해소 — --passWithNoTests=false 실측 적용 + name-status 기반 D·R 전체 승격. RED 39/44 실측 후 GREEN 44/44. 자기 커밋에서 0건 related → exit 1 → full 승격 흐름 실관측. 이전 "0.99초 절감" 기록은 결함으로 인한 미검증 통과였음이 정정됨.
+- F-05(TOOLING.md 정본 불일치)는 조정자가 done 전환 커밋에서 훅 표를 3모드 서술로 갱신해 해소. medium 3·low 2는 backlog 누적.
