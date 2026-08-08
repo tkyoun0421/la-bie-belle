@@ -146,8 +146,8 @@ select is(
 );
 select is(
   (select count(*)::int from pg_policies where schemaname = 'public' and tablename = 'check_in_rules'),
-  0,
-  'check_in_rules has zero policies'
+  1,
+  'check_in_rules has exactly one policy(admin 전용 CRUD, P3-T01)'
 );
 
 set local role anon;

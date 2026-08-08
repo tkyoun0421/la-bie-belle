@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
+
 import type { ScheduleApplicant } from "@/entities/schedule/model/schedule-applicant";
 import type { ManagedRecruitmentSchedule } from "@/features/recruitment/hooks/useRecruitmentManage";
+import { ADMIN_SCHEDULE_PATH } from "@/shared/config/auth-routes.config";
 import { BottomSheet } from "@/shared/ui/bottom-sheet";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -113,6 +116,11 @@ export function RecruitmentManageSheet({
           onChange={(event) => onDeadlineChange(event.target.value)}
           error={deadlineError ?? undefined}
         />
+        {managed ? (
+          <Button asChild variant="tertiary">
+            <Link href={`${ADMIN_SCHEDULE_PATH}/${managed.id}`}>예식·시간 관리</Link>
+          </Button>
+        ) : null}
         <ApplicantsSection
           applicants={applicants}
           loading={applicantsLoading}

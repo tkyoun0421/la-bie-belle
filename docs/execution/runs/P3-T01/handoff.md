@@ -31,3 +31,37 @@
 - `docs/execution/radio/P3-T01-radio.md` (봉인 본문 무수정 확인)
 - `supabase/migrations/20260804000000_foundation_schema.sql`·`20260804000100_foundation_reference_data.sql`(기존 `check_in_rules` 정의·seed 확인)
 - `docs/standards/ARCHITECTURE.md` 143행(기존 테이블의 문서화된 목적)
+
+## 2026-08-08 · 개발 단계 종료(revision 2 재개, 구현 완료)
+
+- 작업 식별자: P3-T01 (예식 아이템과 시간 추천)
+- 현재 단계: 개발(3단계) 종료 → 다음 검증(4단계, 교차 리뷰)
+- 기준 시각: 2026-08-08T06:37:41Z
+
+### 확정된 사실
+
+- RADIO `docs/execution/radio/P3-T01-radio.md` revision 2, SHA-256 `5d85abeb2cbbc56332389142e01df135b1321eb3dca3cb1531f631525b8d76b3`(index의 `development_approval`과 일치, `gate:radio` 통과)의 기술 인수 조건 1~7을 전부 구현했다. RADIO 적용 결과와 구현 중 확정한 세부는 `docs/execution/runs/P3-T01/radio.md`에 별도로 남겼다.
+- DB: `supabase/migrations/20260808020000_ceremony_schema.sql`(`ceremonies` 신설·`check_in_rules` admin 정책 추가·`schedules` 예정 출퇴근 컬럼·`replace_schedule_ceremonies`·`set_schedule_planned_times` 함수), `supabase/tests/17-ceremony-schema.test.sql`(신규, plan 54) — `pnpm db:reset && pnpm db:test` 최종 실행 `Files=17, Tests=818, Result: PASS`(2026-08-08T06:30:48Z).
+- TS: 추천 순수 모델(`entities/schedule/model/ceremony-times.ts`), 검증·에러 매핑(`ceremony-manage.ts`), 조회(`entities/schedule/api/get-schedule-prep.ts`), Server Actions(`features/ceremony/api/*`), 상태 훅(`useCeremonyEditor`·`useCheckInRuleActions`), 화면 분기 모델(`views/admin-schedule/model/schedule-prep-screen.ts`), UI(`features/ceremony/ui/*`, `views/admin-schedule/ui/AdminSchedulePrepView.tsx`), 라우트(`src/app/(protected)/admin/schedule/[id]/page.tsx`), 시트 진입 링크(`RecruitmentManageSheet.tsx`)를 모두 TDD RED→GREEN으로 구현했다. 증거는 `docs/execution/runs/P3-T01/tdd.json`(빨강·초록 쌍 전부 실제 명령 실행 기록).
+- E2E: `tests/e2e/ceremony-edit.spec.ts`(신규, `ceremony-edit-e2e`) 2건 — RADIO 기술 인수 조건 6 시나리오 전체(예식 3개 생성→2번째 수정→시각순 확인→첫 예식 변경→재추천 확인창 승인→예정 출근 08:20 반영)와 확정 스케줄 읽기 전용 표시. try/finally로 픽스처(스케줄·예식)를 정리해 재실행 안전하다.
+- `pnpm verify` 전체 GREEN(2026-08-08T06:34:15Z~06:37:14Z, exit 0): format·lint:ci·typecheck·vitest(180 files/1097 tests)·harness:typecheck·harness:self-test(308/308)·check:docs·build·check:app-build·check:client-secret-scan·전체 e2e(38/38, 신규 2건 포함)·gate:all(index·radio·handoff·tdd·scope 전부 통과).
+- 위험 기반 테스트 표의 "테스트함" 선언은 전부 실제 테스트로 실증했다. "동시성" 행은 RADIO 비고·P2-T03 선례와 동일하게 `for update` 잠금 존재를 함수 정의 문자열 검사로 구조적으로만 확인했다(pgTAP은 단일 커넥션이라 실제 동시 세션을 재현하지 못한다).
+- 구현 중 발견한 세부 재해석 8건(스키마 정책 범위, LB020 재사용, `ceremonies` 컬럼 최소화, snake_case RPC 키, 타입 위치, 에러 표시 방식 등)은 새 설계 결정이 아니라 RADIO 문구 안에서의 선택이었다 — 전부 `docs/execution/runs/P3-T01/radio.md`에 근거와 함께 기록했다.
+
+### 미결 사항
+
+- 없음. RADIO의 유일한 미결 사항(P2-T04·T05 재봉인 시 시트 진입 링크 재점검)은 두 task가 이미 재봉인 없이 done 상태라 해당하지 않았다.
+
+### 다음 행동
+
+1. 조정자가 이 커밋을 대상으로 [교차 검증 계약](../../../workflow/REVIEW.md)에 따라 리뷰어 2자(`opus`·`codex`)를 호출해 `docs/execution/reviews/P3-T01-review.json`을 남긴다.
+2. 확정 발견이 없거나 fix round가 필요 없으면 `done`으로 갱신하고 대시보드를 재생성한다. fix round가 필요하면 개발 단계로 돌아와 이 handoff를 이어 읽는다.
+3. push는 `ci-finisher`가 맡는다 — 이 세션은 커밋까지만 완료했다.
+
+### 증거·산출물 경로
+
+- `docs/execution/runs/P3-T01/radio.md` (RADIO 적용 결과·구현 중 세부 재해석 8건)
+- `docs/execution/runs/P3-T01/tdd.json` (RED→GREEN 증거 전체)
+- `supabase/tests/17-ceremony-schema.test.sql`, `supabase/migrations/20260808020000_ceremony_schema.sql`
+- `tests/e2e/ceremony-edit.spec.ts`
+- `src/entities/schedule/**`, `src/features/ceremony/**`, `src/views/admin-schedule/**`, `src/app/(protected)/admin/schedule/**`

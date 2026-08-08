@@ -1,0 +1,148 @@
+{
+  "entries": [
+    {
+      "command": "pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-08T05:59:33Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-08T05:59:48Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/ceremony-times.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T06:00:45Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/ceremony-times.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T06:01:08Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/ceremony-manage.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T06:01:40Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/ceremony-manage.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T06:01:53Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/get-schedule-prep.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T06:02:50Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/get-schedule-prep.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T06:03:08Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/api/__tests__/replace-ceremonies.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T06:04:53Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/api/__tests__/replace-ceremonies.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T06:05:07Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/api/__tests__/set-planned-times.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T06:05:24Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/api/__tests__/set-planned-times.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T06:05:36Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/api/__tests__/manage-checkin-rules.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T06:06:52Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/api/__tests__/manage-checkin-rules.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T06:07:11Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/hooks/__tests__/useCeremonyEditor.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T06:09:13Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/hooks/__tests__/useCeremonyEditor.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T06:09:46Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/schedule-prep-screen.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T06:10:16Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/schedule-prep-screen.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T06:14:07Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/hooks/__tests__/useCheckInRuleActions.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T06:18:03Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/hooks/__tests__/useCheckInRuleActions.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T06:18:18Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/schedule-prep-screen.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T06:21:16Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/schedule-prep-screen.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T06:21:27Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm test:e2e tests/e2e/ceremony-edit.spec.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T06:31:11Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm test:e2e tests/e2e/ceremony-edit.spec.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T06:32:35Z",
+      "phase": "green"
+    }
+  ]
+}
