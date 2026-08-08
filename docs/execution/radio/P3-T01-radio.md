@@ -1,7 +1,7 @@
 # P3-T01 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 2
+- revision: 3
 - 기획 승인: user, 2026-08-08
 - 개발 설계 승인: user, 2026-08-08
 
@@ -11,6 +11,7 @@
 | --- | --- | --- |
 | 1 | 2026-08-08 | 최초 작성. 기획 확정 5건(버림 규칙 추천·규칙표 CRUD 포함·시각순 재정렬·OPEN 중 허용·경계 1~12/당일/분 단위)을 반영. 봉인된 P2-T04(관리 시트)·P2-T05(시트 확장) RADIO를 계약으로 삼아 선행 구현 완료 전에 설계했다(파이프라이닝). 선행 재봉인 시 시트 진입점 전제를 재점검한다. |
 | 2 | 2026-08-08 | 규칙표 정정 재봉인(사용자 승인). revision 1이 신설을 지시한 `checkin_rules`가 P0-T03의 기존 `check_in_rules`와 중복임이 착수 시점에 드러나(DEV-SSOT-01) 기존 테이블 재사용으로 정정 — 신설·재seed 삭제, admin 전용 RLS 정책 추가만 유지, 컬럼 표기를 실제 이름(`first_ceremony_at`·`recommended_check_in`)으로 정정. pgTAP 파일 순번을 17번으로 변경(16번은 P2-T05가 선점). 설계 실질 무변경. |
+| 3 | 2026-08-08 | 한시 노출 수용 재봉인(사용자 승인). 교차 검증 F-01(high)이 봉인 충돌을 드러냈다 — `schedules`의 예정 출퇴근 컬럼 select만 admin 전용으로 강제할 방법이 없다(RLS는 행 단위이고 admin·근무자가 같은 authenticated role이라 컬럼 구분 불가). 예정 출퇴근 select는 기존 schedules 정책을 따르고 P3-T07 전 활성 근무자 노출을 수용한다. mutation admin 전용은 유지. 코드 무변경, 문구 정정만. |
 
 - 관련 spec: PRD 6장(예식과 근무 시간), DOMAIN:SCHEDULING, ADR:0003(2026-08-08 개정 반영), DESIGN:ADMIN-FLOWS 예식과 시간 절
 - 적용 깊이: 심화 (급여로 이어지는 예정 시각·시간 경계·새 스키마)
@@ -31,7 +32,7 @@
 - **확정 전 상한**: `CONFIRMED`·`CANCELLED` 스케줄의 예식·예정 시각 변경은 함수가 거부한다(`SCHEDULING_STATUS_CONFLICT` 409 매핑). OPEN·CLOSED·PREPARING은 허용한다(ADR-0003 개정).
 - **추천은 파생, 저장은 명시**: 출퇴근 추천값은 서버에 저장하지 않는 계산 결과이고, 관리자가 저장할 때만 `schedules`의 예정 출퇴근 컬럼에 쓰인다. 첫·마지막 예식이 바뀌면 재추천 값을 확인창으로 보여주고 확인 시에만 덮어쓴다.
 - **버림 추천 규칙은 순수 모델 한 곳이 소유한다**: 규칙표 행 목록과 첫 예식 시각을 입력받아 출근 추천을 반환한다. 규칙표가 비어 있으면 추천 없음(수동 입력)이다.
-- 권한: 예식·예정 시각·규칙표의 조회·변경은 admin 전용이다(RLS + 함수 `is_admin` 이중). ui는 api를 import하지 않고 page가 Action을 주입한다(관례).
+- 권한: `ceremonies`·`check_in_rules`의 조회·변경과 예정 시각의 변경은 admin 전용이다(RLS + 함수 `is_admin` 이중). `schedules`의 예정 출퇴근 컬럼 select는 기존 schedules 정책(활성 근무자 포함)을 따른다 — 행 단위 RLS와 단일 authenticated role 구조에서 컬럼만 막을 수 없어 P3-T07 전 한시 노출을 수용한다(사용자 결정 2026-08-08, revision 3). ui는 api를 import하지 않고 page가 Action을 주입한다(관례).
 - 감사: 예식 교체·예정 시각 저장은 `scheduling_audit_logs`에 스케줄당 1행(`ceremonies_replaced`·`planned_times_set`, PII 없는 detail)을 남긴다. 규칙표 CRUD는 전역 설정으로 감사 대상이 아니다.
 
 ### 기술 인수 조건
@@ -69,7 +70,7 @@
 
 ## Architecture
 
-- `supabase/migrations/<ts>_ceremony_schema.sql`: `ceremonies`(id, schedule_id FK, starts_at time, unique(schedule_id, starts_at)) 신설, 기존 `check_in_rules`(P0-T03 소유 — `first_ceremony_at time unique`·`recommended_check_in time`, RLS는 켜져 있고 정책 0개)에 admin 전용 정책 추가(테이블·seed 재생성 없음), `schedules`에 `planned_checkin time`·`planned_checkout time` 추가, admin 전용 RLS(select 포함), `replace_schedule_ceremonies`·`set_schedule_planned_times` DEFINER 함수(`set search_path` 고정·감사 insert), 함수 실행 권한 관례.
+- `supabase/migrations/<ts>_ceremony_schema.sql`: `ceremonies`(id, schedule_id FK, starts_at time, unique(schedule_id, starts_at)) 신설, 기존 `check_in_rules`(P0-T03 소유 — `first_ceremony_at time unique`·`recommended_check_in time`, RLS는 켜져 있고 정책 0개)에 admin 전용 정책 추가(테이블·seed 재생성 없음), `schedules`에 `planned_checkin time`·`planned_checkout time` 추가, admin 전용 RLS(select 포함 — `ceremonies` 대상, schedules 컬럼은 revision 3 수용대로 기존 정책), `replace_schedule_ceremonies`·`set_schedule_planned_times` DEFINER 함수(`set search_path` 고정·감사 insert), 함수 실행 권한 관례.
 - `supabase/tests/17-ceremony-schema.test.sql`(pgTAP): 인수 조건 1~3. 픽스처·주체 시뮬은 13~15번 관례(16번은 P2-T05 소유).
 - `src/shared/config/error-codes.config.ts`: 기존 `SCHEDULING_STATUS_CONFLICT` 재사용, 신규 코드 없음.
 - `src/entities/schedule/model/ceremony-times.ts`: 1시간 간격 생성·시각순 정렬·중복 검사·버림 추천·+2h 퇴근(자정 캡) 순수 함수 — unit.
@@ -84,7 +85,7 @@
 - 정본: `schedules`(상태·업무 날짜·예정 출퇴근), `ceremonies`(스케줄별 시각 목록), `check_in_rules`(전역 규칙표, P0-T03 산출물 재사용). 예식 순서는 저장하지 않는다 — 시각순이 순서다.
 - 사실 기록: P0-T03 RADIO는 `check_in_rules`의 소비 도메인을 ATTENDANCE로 서술했으나 실제 첫 소비자는 SCHEDULING(본 task)이다. done task 이력은 소급 수정하지 않으므로 P0-T03은 고치지 않고 여기에 사실만 남긴다.
 - `ceremonies`는 append-only가 아니다 — 교체 함수가 delete+insert(또는 동등)로 전체를 갱신하고 감사가 이력을 남긴다. 확정 시점 스냅샷은 P3-T06 소유(ADR-0003).
-- RLS: 세 대상 모두 admin 전용(select·mutation). 근무자 select는 P3-T07이 연다.
+- RLS: `ceremonies`·`check_in_rules`는 admin 전용(select·mutation)이고 근무자 select는 P3-T07이 연다. `schedules`의 예정 출퇴근 컬럼은 mutation만 admin 전용(DEFINER 함수)이며 select는 기존 schedules 정책을 따른다(revision 3 수용).
 - 트랜잭션: 함수 1회 = 1트랜잭션, `for update` 잠금으로 상태 검증과 적용 사이 전이를 막는다(관례).
 
 ## Interface
