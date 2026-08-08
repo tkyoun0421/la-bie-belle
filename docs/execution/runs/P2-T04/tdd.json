@@ -107,6 +107,18 @@
       "exit_code": 0,
       "at": "2026-08-07T23:27:31Z",
       "phase": "green"
+    },
+    {
+      "command": "pnpm exec vitest run src/views/admin-recruitment/model/__tests__/recruitment-manage-target.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T23:59:01Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm exec vitest run src/views/admin-recruitment/model/__tests__/recruitment-manage-target.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T23:59:10Z",
+      "phase": "green"
     }
   ]
 }

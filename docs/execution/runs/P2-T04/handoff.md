@@ -55,3 +55,14 @@
 - `src/views/admin-recruitment/ui/RecruitmentOpenView.tsx`
 - `src/app/(protected)/admin/recruitment/page.tsx`
 - `tests/e2e/recruitment-manage.spec.ts`, `tests/e2e/recruitment-open.spec.ts`
+
+## 2026-08-08 · 수정 라운드 1 (교차 검증 F-01)
+
+- 기준: `docs/execution/reviews/P2-T04-review.json`(리뷰어 2자 전원 인정 14건, 승인 범위는 high 1건 F-01만). base_commit `b3f300a` 이후 개발 종료 커밋 `1ebd5f6` 위에서 진행했다.
+- F-01(high, architecture) — `findManageableRecruitmentSchedule`이 `schedules.find(workDate 일치)`로 첫 행을 집어 상태만 보는 반면, 셀 판정 정본 `toRecruitmentCellStates`는 CANCELLED를 먼저 걸러 Map을 구성한다. 부분 유니크 제약상 한 날짜에 CANCELLED 행과 활성 행이 공존할 수 있고 조회는 work_date만 정렬해 같은 날짜 안 순서를 보장하지 않으므로, CANCELLED 행이 배열에서 먼저 오면 셀은 open/closed로 그려지는데 탭은 관리 시트 대신 날짜 선택 토글로 빠지는 불일치가 있었다.
+  - 수정: `src/views/admin-recruitment/model/recruitment-manage-target.ts` — `findManageableRecruitmentSchedule`을 `toRecruitmentCellStates`와 동일하게 `status !== "CANCELLED"`로 먼저 거른 뒤 `Map`을 구성해 조회하도록 바꿨다(정본과 필터·순서 규칙 동일화). 부분 유니크 제약상 CANCELLED를 제외하면 같은 work_date에 활성 행이 최대 1개이므로 배열 순서에 무관하게 동일한 결과를 보장한다.
+  - TDD: `src/views/admin-recruitment/model/__tests__/recruitment-manage-target.test.ts`에 같은 근무일에 CANCELLED 행이 배열 앞에 오는 조합 3건을 추가했다 — CANCELLED+OPEN(연장 대상으로 OPEN 반환)·CANCELLED+CLOSED(재오픈 대상으로 CLOSED 반환)·CANCELLED만 있고 활성 행 없음(관리 대상 아님, null). 수정 전 RED(2 failed / 5 passed, exit 1) 확인 후 구현을 고쳐 GREEN(7 passed, exit 0) 확인. 근거는 `docs/execution/runs/P2-T04/tdd.json` 마지막 두 항목.
+  - 이 함수의 유일한 소비처인 `src/views/admin-recruitment/ui/RecruitmentOpenView.tsx`는 시그니처·반환 계약이 그대로라 무수정.
+  - medium 이하(F-02~F-14)는 이번 라운드 범위 밖이라 손대지 않았다.
+- 검증: `pnpm db:reset` 후 `pnpm verify` 전체(format → lint:ci → typecheck → vitest 972 → harness:typecheck → harness:self-test → check:docs → build → check:app-build → check:client-secret-scan → test:e2e 34/34 → gate:all) 재실행, 종료 코드 0. `pnpm gate:all` 단독 재확인도 exit 0.
+- 다음 행동: 조정자가 수정 라운드 커밋을 확인하고 재검증(리뷰) 여부를 판단한다. index.jsonl은 `in_progress` 그대로 두었다(단계 전환은 조정자 소유).

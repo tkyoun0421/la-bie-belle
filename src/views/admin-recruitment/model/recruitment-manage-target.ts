@@ -6,7 +6,12 @@ export function findManageableRecruitmentSchedule(
   schedules: readonly RecruitmentSchedule[],
   dateKey: string,
 ): RecruitmentSchedule | null {
-  const schedule = schedules.find((entry) => entry.workDate === dateKey);
+  const scheduleByDate = new Map(
+    schedules
+      .filter((entry) => entry.status !== "CANCELLED")
+      .map((entry) => [entry.workDate, entry] as const),
+  );
+  const schedule = scheduleByDate.get(dateKey);
   if (schedule === undefined || !MANAGEABLE_STATUSES.has(schedule.status)) {
     return null;
   }

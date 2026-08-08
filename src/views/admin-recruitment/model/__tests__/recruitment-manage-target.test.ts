@@ -35,4 +35,28 @@ describe("findManageableRecruitmentSchedule", () => {
   it("스케줄이 없는 날짜는 null을 반환한다", () => {
     expect(findManageableRecruitmentSchedule([], "2099-09-25")).toBeNull();
   });
+
+  it("같은 근무일에 CANCELLED 행이 OPEN 행보다 먼저 오면 OPEN 행을 연장 대상으로 반환한다", () => {
+    const cancelled = schedule("2099-09-26", "CANCELLED");
+    const open = schedule("2099-09-26", "OPEN");
+    const schedules = [cancelled, open];
+
+    expect(findManageableRecruitmentSchedule(schedules, "2099-09-26")).toEqual(open);
+  });
+
+  it("같은 근무일에 CANCELLED 행이 CLOSED 행보다 먼저 오면 CLOSED 행을 재오픈 대상으로 반환한다", () => {
+    const cancelled = schedule("2099-09-27", "CANCELLED");
+    const closed = schedule("2099-09-27", "CLOSED");
+    const schedules = [cancelled, closed];
+
+    expect(findManageableRecruitmentSchedule(schedules, "2099-09-27")).toEqual(closed);
+  });
+
+  it("같은 근무일에 CANCELLED 행만 있으면(활성 행 없음) 관리 대상이 아니다", () => {
+    const first = schedule("2099-09-28", "CANCELLED");
+    const second = schedule("2099-09-28", "CANCELLED");
+    const schedules = [first, second];
+
+    expect(findManageableRecruitmentSchedule(schedules, "2099-09-28")).toBeNull();
+  });
 });
