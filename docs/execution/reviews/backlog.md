@@ -222,3 +222,14 @@
 - [ ] [low] [P2-T04] extend가 마감일 단축 허용하며 감사 event명과 불일치 — supabase/migrations/20260808010000_recruitment_closing.sql
 - [ ] [low] [P2-T04] DB·E2E RED가 구현 제거·복원 mutation 증거(P0-T40·P2-T02 계열) — docs/execution/runs/P2-T04/tdd.json
 - [ ] [low] [P2-T04] 활성 스케줄 파생 규칙이 두 model 파일에 복제(공유 함수 부재 시 F-01 계열 재발 위험) — src/views/admin-recruitment/model/recruitment-manage-target.ts
+- [ ] [medium] [P0-T42] statusline 경로가 5초마다 게이트 모듈 전체 로드·무변경 상태 재기록 — scripts/claude-loop.mjs
+- [ ] [medium] [P0-T42] session_id·task_id 허용 문자열 형식 검증 부재(인자 주입·비밀값 잔존 여지) — harness/lib/claude-loop-state.ts
+- [ ] [medium] [P0-T42] 최상위 catch가 실패 사유·수동 조치 안내를 버림(인수 조건 4 미달) — scripts/claude-loop.mjs
+- [ ] [medium] [P0-T42] statusline 'loop-mode 확인 필요' 표시가 supervisor 종료 후 도달 불가 — .claude/statusline-usage.sh
+- [ ] [medium] [P0-T42] claude --bg 출력 마지막 토큰을 무검증 session_id 채택(adapter 파싱 테스트 부재) — scripts/claude-loop.mjs
+- [ ] [medium] [P0-T42] pnpm claude:loop 명령이 TOOLING 정본에 없음(문서 드리프트, 허용 경로 밖 후속) — package.json
+- [ ] [medium] [P0-T42] 정상 종료·큐 소진·사용자 대기 미구분(Stop 훅 부재·stopped 겸용·starting 사문) — scripts/claude-loop.mjs
+- [ ] [medium] [P0-T42] watch가 기존 세션을 다음 planned task에 오귀속·낡은 task_id 보존 — harness/lib/claude-loop-state.ts
+- [ ] [low] [P0-T42] supervisor CLI 미수정 구간의 한 줄 다문 스타일 잔존 — scripts/claude-loop.mjs
+- [ ] [low] [P0-T42] sanitizeState가 schema-invalid 부분 객체 수용·schema_version 미검증·사유 미기록 — harness/lib/claude-loop-state.ts
+- [ ] [low] [P0-T42] state lock 회수·해제의 소유권 재확인 부재(빈 파일 오판·제3자 lock 삭제 창) — scripts/claude-loop.mjs

@@ -164,3 +164,33 @@ opus·codex·opus-2 재검증이 확정한 N-1/N-3/F-06 잔여 3건을 봉인 RA
 - `harness/self-test/fixture.ts`
 - `.claude/skills/loop-mode/SKILL.md`
 - `docs/execution/runs/P0-T42/tdd.json`
+
+## 2026-08-08 · 검증 종료 (done)
+
+- 작업 식별자: P0-T42
+- 현재 단계: 검증 종료 → done
+- 기준 시각: 2026-08-08
+
+### 검증 이력 요약
+
+- 1라운드 독립 리뷰(opus·codex) → 병합·교차 확인으로 17건 전원 인정(high 9·medium 7·low 1). critical 없음.
+- 수정 라운드 1(커밋 6eed6c0): high 9건 수정. 재확인에서 5건 즉시 해소, 쟁점 4건은 3자 판정으로 정리 — F-03(재검사 handoff 범위)은 HANDOFF 계약 정합으로 결함 아님 확정, F-06 잔여(respawn 창 race)·F-02 잔여(교차 셀 테스트)는 미해소 수렴, F-07은 기전 해소·잔여 low 재분류. 수정이 만든 새 발견 3건 확정(N-1 lock 무음 실패 high·N-2 watch 오귀속 medium·N-3 needs_user 안내 회귀 medium).
+- 수정 라운드 2(커밋 9464e91, 마지막 라운드): F-06 잔여·N-1·N-3 수정 → opus·opus-2 전원 해소 판정. 실 프로세스 교차 테스트(마커 동기화)가 봉인 표 조건 4 동시성 셀을 채워 F-02도 종결. 새 critical·high 없음.
+- 참여자 대체: codex가 수정 라운드 1 재확인 도중 사용량 리밋으로 이탈해 REVIEW 계약의 대체 규칙대로 opus-2가 남은 판정을 수행했다(결과 파일 participants_note 참조).
+- 최종 결과: `docs/execution/reviews/P0-T42-review.json` — total 82, 미해결 medium 8·low 3은 backlog 누적.
+
+### 확정하지 않은 관찰 (리뷰어 한쪽만 제기, 계약상 미확정 — 후속 참고)
+
+- respawn 결과 기록이 재시도 예산을 소진하면 다음 tick에 중복 respawn이 가능하며, 포기 메시지의 "중복 방지" 문구는 제어 흐름상 성립하지 않는다(발생 조건: 살아있는 프로세스가 3.6초 이상 state lock 점유 — 현실성 낮음).
+- 수정 라운드 2 handoff의 "구분할 스키마 필드가 없다"는 서술은 부정확하다 — LoopStatus에 미사용 `starting`이 이미 있어 "최초 미실행"과 "명시적 stop"을 구분할 수 있다. watch의 stopped 미보존 결정 자체는 타당하나, 후속 설계는 "필드 부재"가 아니라 "초기 상태 값 변경이 수정 라운드 범위 밖"을 전제로 삼아야 한다.
+- 교차 시나리오 테스트의 fake respawn 대기 루프가 제한 PATH에서 sleep을 찾지 못해 1초 미만 busy loop으로 돈다.
+
+### 사용자 결정 대기
+
+- 없음. watch의 stopped 미보존은 리뷰어 전원이 봉인 계약 안 수용으로 판정했고, TOOLING 문서 드리프트(F-06)는 허용 경로 밖이라 후속 문서 정합 작업 대상이다.
+
+### 다음 행동
+
+1. index P0-T42 → done, 경계 커밋(이 handoff + 결과 파일 + backlog + P2-T05 revision 3 재봉인 + 재봉인 기록 + dashboard).
+2. ci-finisher 경유 일괄 push·CI 감시(사용자 승인 완료).
+3. P2-T05 개발 재개 디스패치.

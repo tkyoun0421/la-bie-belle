@@ -1,7 +1,7 @@
 # P2-T05 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 2
+- revision: 3
 - 기획 승인: user, 2026-08-07
 - 개발 설계 승인: user, 2026-08-08
 
@@ -11,6 +11,7 @@
 | --- | --- | --- |
 | 1 | 2026-08-08 | 최초 작성. 설계 인터뷰 확정 6건(관리자 진입은 T04 시트 확장·신청 수는 달력 셀 배지+시트·임박 기준은 오늘 포함 3일·카드는 신청 무관+상태 표시·오늘/임박 판정은 KST 서버 계산·조회는 기존 RLS 재사용)을 반영. 봉인된 P2-T03(신청 batch·일정 탭)·P2-T04(관리 시트·자동 마감) RADIO를 계약으로 삼아 두 task 구현 완료 전에 설계했다(파이프라이닝). 선행 재봉인이 생기면 시트·달력 전제를 재점검한다. |
 | 2 | 2026-08-08 | KST 판정 근거 정정 — DEV-TIME-03·04가 이미 MUST 규칙으로 존재하므로 "후보 규칙 승격 별도 제안" 표현을 "기본 적용"으로 바로잡고 해당 미결 항목을 제거. 결정 내용 변경 없음. |
+| 3 | 2026-08-08 | 개발 착수 스코프 갭 해소 재봉인(user 승인 — 파일 한정). 기술 인수 조건 1의 달력 셀 배지는 셀을 전담 렌더하는 `src/shared/ui/calendar.tsx`의 확장 없이는 구현 불가(`docs/execution/runs/P2-T05/decision-signal.json`)라 변경 허용 경로에 그 한 파일만 추가하고, Calendar 최소 확장(dateStates 항목의 선택적 신청 수 필드, 값이 있을 때만 숫자 배지 렌더)을 Architecture에 명시. 그 외 결정 내용 변경 없음. |
 
 - 관련 spec: PRD:AC-01, PRD:AC-02, DOMAIN:SCHEDULING, DESIGN:WORKER-FLOWS 앱 셸과 홈 절
 - 적용 깊이: 심화 (관리자 개인정보 조회·시간 경계·홈 우선순위 정합)
@@ -71,6 +72,7 @@
 - `src/entities/schedule/api/`: `count-applications-by-month.ts`(관리자 — 월 범위 schedule_id별 applied 수), `list-applicants-by-schedule.ts`(관리자 — applied 이름 목록, profiles join), `find-imminent-recruitment.ts`(근무자 — KST 오늘 D+0~D+2 OPEN 최임박 1건 + 본인 신청 상태, T03 `list-own-applications` 재사용). 모두 `server-only`, 세션 클라이언트 사용, 새 DB 함수 없음. `applications`의 `unique(schedule_id, profile_id)`가 schedule_id 선행 인덱스로 집계를 커버한다 — T03이 이월한 인덱스 재검토의 결론(추가 인덱스 없음).
 - `src/entities/schedule/model/`: 신청자 이름 DTO·집계 DTO(이름 외 필드 없는 타입).
 - `src/features/recruitment/`: `api/list-applicants-by-schedule.action.ts`(시트 오픈 시 호출하는 조회 Server Action — requireAdmin→Zod(uuid)→조회→typed Result), `ui/RecruitmentManageSheet` 신청 현황 섹션 추가(T04 시트 하위 호환 확장 — 기존 폼·Action 무수정).
+- `src/shared/ui/calendar.tsx`: `dateStates` 항목에 선택적 신청 수 필드를 추가하고 `CalendarDayButton`이 값이 있을 때만 작은 숫자 배지를 그리는 최소 확장. 기존 `CalendarCellState` 7종 유니온·`STATE_BADGE` 문자열·공개 prop(month·onMonthChange·dateStates·onSelectDate·today)과 기존 소비처는 무수정이며, 필드를 주지 않는 호출은 렌더 결과가 그대로다(하위 호환).
 - `src/views/admin-recruitment/`: 셀 배지 렌더 분기(model 소유)·시트에 조회 Action 주입.
 - `src/views/home/`: `model/home-priority.ts`의 `deadline-application` variant에 본인 신청 상태 필드 추가, `model/imminent-recruitment.ts`(경계·선정·문구 분기 순수 함수 — `shared/config`의 임박 일수 상수 사용), `ui/HomeView` 카드 실데이터 렌더(일정 탭 이동 링크). `home.mock.ts`는 preview가 계속 쓰면 잔존 허용.
 - `src/views/schedule-detail/`: CLOSED variant 추가(확정 variant 무수정), 분기는 model 소유.
@@ -114,6 +116,7 @@ src/views/admin-recruitment/**
 src/views/home/**
 src/views/schedule-detail/**
 src/shared/config/**
+src/shared/ui/calendar.tsx
 supabase/tests/**
 tests/e2e/**
 docs/execution/radio/P2-T05-radio.md
