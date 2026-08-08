@@ -1,7 +1,7 @@
 # P3-T02 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-09
 - 개발 설계 승인: user, 2026-08-09
 
@@ -10,6 +10,7 @@
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-09 | 최초 작성. 기획 확정(준비 화면 첫 진입 복사·새 포지션 확정 전 강제 반영·확정 스케줄 알림 후 수동·삭제 판정에 필요 인원 포함·기본 포지션 전원 파생·관리자 전용)을 반영. 설계 인터뷰 확정 2건 — 강제 반영은 DB 트리거, 확정 스케줄 안내는 준비 화면 배너까지(추가 시점 모달은 P3-T06). |
+| 2 | 2026-08-09 | 착수 스코프 갭 해소 재봉인(사용자 승인, 파일 한정). 범위 ④가 커밋한 admin 허브 진입 링크의 실제 위치가 `src/app/(protected)/admin/page.tsx`(허브 링크 인라인 나열)인데 허용 경로가 이 파일을 커버하지 않았다 — 한 파일을 링크 1개 추가 용도 한정으로 편입하고 Architecture 표기를 실제 위치로 정정. 설계 실질 무변경(P1-T04 rev2·P2-T05 rev3 전례). |
 
 - 관련 spec: PRD 4장(포지션)·7장(필요 인원과 배정), PRD:AC-03·AC-04, DOMAIN:SCHEDULING, ADR:0003
 - 적용 깊이: 심화 (권한·DB 스키마·트리거 강제)
@@ -77,7 +78,7 @@
 - `src/entities/schedule/api/list-schedule-requirements.ts`(`server-only`, admin): 표 조회. P3-T01 `get-schedule-prep.ts`는 무수정.
 - `src/features/position/`: `api/`(포지션 CRUD Server Action — requireAdmin→Zod→DML/rpc→매핑→revalidatePath), `hooks/`(편집 상태 — unit), `ui/`(목록·편집 시트·삭제 차단 안내 — Action prop 주입).
 - `src/features/requirement/`: `api/`(copy·set·remove Action), `hooks/useRequirementEditor.ts`(표 편집·배너 상태 — unit), `ui/`(표 편집기·미포함 배너).
-- `src/views/admin-positions/` + `src/app/(protected)/admin/positions/page.tsx` 신설. `src/views/admin/`에 진입 링크 1개.
+- `src/views/admin-positions/` + `src/app/(protected)/admin/positions/page.tsx` 신설. 진입 링크 1개는 admin 허브 `src/app/(protected)/admin/page.tsx`에 추가한다(기존 4개 링크와 같은 인라인 나열, revision 2 정정).
 - `src/views/admin-schedule/`: 준비 화면에 필요 인원 절 컴포넌트 추가, `src/app/(protected)/admin/schedule/[id]/page.tsx`에 조회·Action 주입 추가(기존 예식 흐름 무수정).
 - `tests/e2e/position-requirements.spec.ts`(신규): 인수 조건 7.
 
@@ -106,6 +107,7 @@
 ```
 supabase/migrations/**
 supabase/tests/**
+src/app/(protected)/admin/page.tsx
 src/app/(protected)/admin/positions/**
 src/app/(protected)/admin/schedule/**
 src/entities/position/**
@@ -122,7 +124,7 @@ docs/execution/runs/P3-T02/**
 docs/execution/phases/index.jsonl
 ```
 
-- 용도 한정: `src/app/(protected)/admin/schedule/**`·`src/views/admin-schedule/**`은 필요 인원 절 추가에 한정하며 기존 예식 편집 흐름·셀렉터를 수정하지 않는다. `src/views/admin/**`은 진입 링크 1개 추가에 한정한다.
+- 용도 한정: `src/app/(protected)/admin/schedule/**`·`src/views/admin-schedule/**`은 필요 인원 절 추가에 한정하며 기존 예식 편집 흐름·셀렉터를 수정하지 않는다. `src/app/(protected)/admin/page.tsx`·`src/views/admin/**`은 포지션 관리 진입 링크 1개 추가에 한정한다.
 
 ## 미결 사항
 
