@@ -1,0 +1,123 @@
+{
+  "task_id": "P2-T05",
+  "at": "2026-08-08T05:17:08Z",
+  "base_commit": "2289596b740933c57884915f68babe81e7edaa9e",
+  "participants": ["opus", "codex"],
+  "participants_note": "",
+  "scores": {
+    "code_quality": 82,
+    "tests": 74,
+    "security": 92,
+    "performance": 90,
+    "architecture": 90
+  },
+  "score_rationale": {
+    "code_quality": "순수 함수·타입 Result·이름 중심 구조는 일관되나 인수 조건 문구 정합·임박 동률 절단·Invalid Date 처리 medium 3건과 KST 복제·배지 접근성 low 2건이 남았다.",
+    "tests": "unit·pgTAP·E2E가 인수 조건 대부분을 실증하지만 시트 실패 분기·DTO 최소화 회귀·근무자 F-03 unit·KST 자정 경계·E2E 픽스처 정리 medium 5건이 남았다.",
+    "security": "이름 전용 DTO·시트 오픈 시점 조회·requireAdmin+RLS 이중 경계를 pgTAP로 실증했고 로그에 개인정보가 없다. 잔여는 시트 닫기 경로 비대칭의 메모리 상태 low 1건뿐이다.",
+    "performance": "high였던 월 집계 max_rows 절단이 결정적 정렬+range 페이지네이션으로 해소돼 전원 재확인됐다. 조회는 월 1회·시트 1회·홈 1회로 고정되고 N+1이 없다.",
+    "architecture": "server-only·ui의 api 비의존·model 소유·revision 3·4 예외 범위 준수까지 승인 설계와 일치하며 미해결 architecture 발견이 없다."
+  },
+  "total": 86,
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "medium",
+      "area": "tests",
+      "title": "관리 시트 신청 현황의 로딩·실패 분기가 어떤 층에서도 검증되지 않는다",
+      "description": "ApplicantsSection의 loading·failed·목록 분기에 component 테스트가 없고 E2E도 성공 경로만 지난다. fsd.json은 ui를 component|e2e 검증으로 규정하며, RADIO 위험 표 2행의 '조회 실패 시 시트 관리 기능 유지'가 테스트함으로 선언돼 있으나 대응 테스트가 없다.",
+      "file": "src/features/recruitment/ui/RecruitmentManageSheet.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-02",
+      "severity": "medium",
+      "area": "tests",
+      "title": "개인정보 최소화 DTO 테스트가 동어반복이라 불변 규칙을 고정하지 못한다",
+      "description": "리터럴 객체의 Object.keys 단언은 타입에 필드가 추가돼도 통과하고, 신청자 조회 테스트는 select 인자 문자열(이름 전용 조인)을 단언하지 않는다. 실제 노출은 타입·매핑이 막고 있으나 불변 규칙 1의 독립 회귀 방어가 없다. 중요도는 opus가 low, codex가 medium으로 판단해 높은 쪽을 택했다.",
+      "file": "src/entities/schedule/model/__tests__/schedule-applicant.test.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-03",
+      "severity": "medium",
+      "area": "tests",
+      "title": "근무자 경로 F-03 수정이 page 인라인 함수로 남아 unit 회귀가 없고 관리자 쪽과 규칙이 두 벌이다",
+      "description": "관리자 월 파싱은 views/admin-recruitment/model로 추출해 TZ stub unit까지 붙였지만, 근무자 경로의 동일 로직은 unit 면제인 page.tsx 안에 남아 E2E 한 겹으로만 지켜진다. revision 4가 허용한 src/views/schedule/**로 같은 추출이 가능했다(DEV-SSOT-01).",
+      "file": "src/app/(protected)/(tabs)/schedule/page.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-04",
+      "severity": "medium",
+      "area": "tests",
+      "title": "시간대 회귀 E2E가 실패하면 임박 픽스처가 잔존해 다음 실행의 카드 소멸 단언을 깬다",
+      "description": "마감 오늘 OPEN 픽스처의 CANCELLED 되돌림이 단언 뒤에만 있고 try/finally·afterEach가 없어 중간 실패 시 전역 OPEN 행이 남는다. findImminentRecruitment는 전역 OPEN을 보므로 잔존 픽스처가 db:reset 전까지 첫 테스트의 카드 소멸 단언을 계속 깬다. 중요도는 opus가 low, codex가 medium으로 판단해 높은 쪽을 택했다.",
+      "file": "tests/e2e/recruitment-flow.spec.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-05",
+      "severity": "medium",
+      "area": "tests",
+      "title": "KST 자정 직전·직후 경계가 unit에도 E2E에도 고정되지 않았다",
+      "description": "위험 표 5행 경계값 칸이 요구하는 KST 자정 경계를 고정하는 테스트가 없다 — E2E는 실제 시각 한 번만 쓰고, seoulToday()는 unit 면제 page 세 곳에 있어 clock 주입이 불가하다(DEV-TIME-05). 같은 저장소의 createSignupSchema(now) 패턴이 준수 사례로 존재한다. 중요도는 opus가 low, codex가 medium으로 판단해 높은 쪽을 택했다.",
+      "file": "tests/e2e/recruitment-flow.spec.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-06",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "인수 조건 6의 '셀 배지 0 확인' 문구와 E2E 단언이 어긋난다",
+      "description": "0건 배지 미표시는 revision 3이 봉인한 설계('값이 있을 때만 렌더')라 동작 자체는 결함이 아니지만, 인수 조건 6 문구는 '셀 배지 0 확인'이고 E2E는 배지 부재(toHaveCount(0))를 단언해 봉인 문서와 검증이 같은 말을 하지 않는다. 정상 0건과 집계 조회 실패의 화면 동일성은 위험 표 1행이 승인한 트레이드오프다. 중요도는 opus가 low, codex가 medium으로 판단해 높은 쪽을 택했다.",
+      "file": "src/views/admin-recruitment/model/recruitment-cell-state.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-07",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "임박 후보 조회의 50건 제한이 동률 후보의 최우선 모집을 잘라낼 수 있다",
+      "description": "조회는 application_deadline 단일 키 정렬 후 50건 제한인데 순수 모델의 동률 규칙은 workDate 빠른 순이다. 같은 마감일 OPEN이 50건을 넘으면 임의의 50건 위에서 동률이 계산돼 계약과 다른 카드가 선택될 수 있다. 선택은 여전히 최이른 마감일 그룹 안이라 영향은 tie-break 한정이며 work_date 보조 정렬 한 줄로 닫힌다. 중요도는 opus가 low, codex가 medium으로 판단해 높은 쪽을 택했다.",
+      "file": "src/entities/schedule/api/find-imminent-recruitment.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-08",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "형식만 맞는 잘못된 날짜가 워커 상세를 NotFound 대신 오류 화면으로 보낸다",
+      "description": "라우트 ID를 자릿수 정규식만으로 확인해 2026-99-99가 통과하고, Invalid Date가 date-fns v4 format에서 RangeError를 던져 NotFoundScreen 대신 error.tsx 경로로 떨어진다 — 위험 표 4행 '미존재 스케줄 안전 처리' 미충족. 데이터 노출·상태 변경은 없고 URL을 직접 만들어야 도달한다. 중요도는 opus가 low, codex가 medium으로 판단해 높은 쪽을 택했다.",
+      "file": "src/app/(protected)/schedule/[id]/page.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-09",
+      "severity": "low",
+      "area": "code_quality",
+      "title": "KST 오늘 계산이 세 page에 그대로 복제돼 정본 소유자가 없다",
+      "description": "동일한 SEOUL_DATE_FORMATTER + seoulToday()가 홈·관리자 모집·근무자 일정 page에 중복이고 셋 다 unit 면제 파일이다. 공용 자리(shared/lib)는 이번 RADIO 허용 경로 밖이라 완전 해소는 범위를 넘는다.",
+      "file": "src/app/(protected)/(tabs)/page.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-10",
+      "severity": "low",
+      "area": "code_quality",
+      "title": "신청 수 배지가 aria-hidden이고 aria-label에도 없어 보조 기술로 읽을 수 없다",
+      "description": "셀 aria-label이 날짜·상태만 담고 신청 수를 반영하지 않아 스크린 리더로 얻을 수 없으며, 접근 가능한 이름이 없어 E2E가 Tailwind 클래스 셀렉터(span.absolute)로 배지를 잡는다. 시트의 '신청 N명' 텍스트로 대체 가능해 영향은 제한적이다.",
+      "file": "src/shared/ui/calendar.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-11",
+      "severity": "low",
+      "area": "security",
+      "title": "연장·재오픈 성공으로 시트가 닫힐 때 신청자 이름 상태가 초기화되지 않는다",
+      "description": "수동 닫기는 applicants.reset()을 호출하지만 mutation 성공 경로는 훅 내부 close()만 호출해 이름 배열이 메모리에 남는다. 다음 열기 때 load가 즉시 덮어 화면 노출은 없으나 두 닫기 경로가 비대칭이다(DEV-CACHE-05).",
+      "file": "src/views/admin-recruitment/ui/RecruitmentOpenView.tsx",
+      "agreed_by": ["opus", "codex"]
+    }
+  ]
+}

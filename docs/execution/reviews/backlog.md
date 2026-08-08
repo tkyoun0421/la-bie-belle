@@ -233,3 +233,14 @@
 - [ ] [low] [P0-T42] supervisor CLI 미수정 구간의 한 줄 다문 스타일 잔존 — scripts/claude-loop.mjs
 - [ ] [low] [P0-T42] sanitizeState가 schema-invalid 부분 객체 수용·schema_version 미검증·사유 미기록 — harness/lib/claude-loop-state.ts
 - [ ] [low] [P0-T42] state lock 회수·해제의 소유권 재확인 부재(빈 파일 오판·제3자 lock 삭제 창) — scripts/claude-loop.mjs
+- [ ] [medium] [P2-T05] 관리 시트 신청 현황 로딩·실패 분기 무테스트(위험 표 '테스트함' 미이행) — src/features/recruitment/ui/RecruitmentManageSheet.tsx
+- [ ] [medium] [P2-T05] PII 최소화 DTO 테스트 동어반복·select 인자 미단언 — src/entities/schedule/model/__tests__/schedule-applicant.test.ts
+- [ ] [medium] [P2-T05] 근무자 F-03 월 파싱이 page 인라인이라 unit 부재·관리자와 규칙 이원화 — src/app/(protected)/(tabs)/schedule/page.tsx
+- [ ] [medium] [P2-T05] 시간대 E2E 실패 시 임박 픽스처 잔존이 후속 실행 오염 — tests/e2e/recruitment-flow.spec.ts
+- [ ] [medium] [P2-T05] KST 자정 직전·직후 경계가 unit·E2E 어디에도 미고정(DEV-TIME-05) — tests/e2e/recruitment-flow.spec.ts
+- [ ] [medium] [P2-T05] 인수 조건 6 '셀 배지 0 확인' 문구와 E2E 배지 부재 단언 불일치 — src/views/admin-recruitment/model/recruitment-cell-state.ts
+- [ ] [medium] [P2-T05] 임박 후보 50건 제한이 동률 workDate 최우선을 잘라낼 수 있음(보조 정렬 부재) — src/entities/schedule/api/find-imminent-recruitment.ts
+- [ ] [medium] [P2-T05] 형식만 맞는 잘못된 날짜가 상세를 NotFound 대신 오류 화면으로 유도 — src/app/(protected)/schedule/[id]/page.tsx
+- [ ] [low] [P2-T05] KST 오늘 계산이 세 page에 복제(shared/lib 정본 부재) — src/app/(protected)/(tabs)/page.tsx
+- [ ] [low] [P2-T05] 신청 수 배지 aria 미반영·E2E 클래스 셀렉터 의존 — src/shared/ui/calendar.tsx
+- [ ] [low] [P2-T05] mutation 성공 닫기 경로에서 신청자 이름 상태 미초기화(닫기 경로 비대칭) — src/views/admin-recruitment/ui/RecruitmentOpenView.tsx

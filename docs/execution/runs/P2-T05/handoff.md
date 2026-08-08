@@ -146,3 +146,27 @@
 - `docs/execution/runs/P2-T05/decision-signal.json`
 - `docs/execution/radio/P2-T05-radio.md` (봉인 본문 무수정 확인)
 - `docs/execution/reviews/P2-T02-review.json`의 F-03 finding(월 경계 시간대) — 이번 조사에서 함께 확인한 관련 배경
+
+## 2026-08-08 · 검증 종료 (done)
+
+- 작업 식별자: P2-T05
+- 현재 단계: 검증 종료 → done
+- 기준 시각: 2026-08-08
+
+### 검증 이력 요약
+
+- 1라운드 독립 리뷰(opus·codex) → 병합·교차 확인으로 12건 전원 인정(high 1·medium 8·low 3). critical 없음.
+- 기각 4건(근거 있는 반박): 임박 후보 DTO 이중 정의(RADIO의 model 소유 지정은 신청자·집계 DTO 한정), 홈 next-shift 목 렌더 중단(위험 표 3행이 승인한 동작·목 유지가 더 나쁨), 미신청 CLOSED 확정 대기 안내(제품 해석상 타당·3분기 테스트 존재), 재봉인 기록 경로(조정자 메타 커밋은 RADIO 울타리 대상 아님 — TOOLING·WORKFLOW 정본 근거).
+- 수정 라운드(커밋 492856d): high 1건 — 월 집계 max_rows 절단을 결정적 정렬 + range 페이지네이션으로 해소, 페이지 경계 회귀 테스트 2건. opus·codex 전원 해소 판정.
+- 최종 결과: `docs/execution/reviews/P2-T05-review.json` — total 86, 미해결 medium 8·low 3은 backlog 누적.
+
+### 확정하지 않은 관찰 (리뷰어 판단 갈림 — 후속 참고)
+
+- 페이지네이션 도입으로 단일 쿼리의 원자 스냅샷 성격이 사라져, 페이지 요청 사이 신청·철회가 겹치면 배지가 어긋날 수 있다(codex medium 제안). opus는 월 1000건 초과 + 요청 간 쓰기 동시 조건과 RADIO Data model의 "요청 시점 스냅샷" 규정을 근거로 수용된 대가로 판정 — 전원 인정 불성립.
+- DEFAULT_PAGE_SIZE(1000)와 supabase/config.toml의 max_rows(1000)가 서로 참조 없이 중복 선언돼 있고 주입 pageSize에 범위 방어가 없다(opus low 제안, production 영향 없음). 운영에서 max_rows를 낮추면 무음 축소 집계가 재발할 수 있으니 두 값을 잇는 상수·단언을 후속에서 고려.
+
+### 다음 행동
+
+1. index P2-T05 → done, 마감 커밋(이 handoff + 결과 파일 + backlog + dashboard).
+2. ci-finisher 경유 push·CI 감시.
+3. P3-T01(예식 아이템과 시간 추천) 착수 — 의존 충족.
