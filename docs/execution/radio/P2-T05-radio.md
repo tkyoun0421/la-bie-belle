@@ -1,7 +1,7 @@
 # P2-T05 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 3
+- revision: 4
 - 기획 승인: user, 2026-08-07
 - 개발 설계 승인: user, 2026-08-08
 
@@ -12,6 +12,7 @@
 | 1 | 2026-08-08 | 최초 작성. 설계 인터뷰 확정 6건(관리자 진입은 T04 시트 확장·신청 수는 달력 셀 배지+시트·임박 기준은 오늘 포함 3일·카드는 신청 무관+상태 표시·오늘/임박 판정은 KST 서버 계산·조회는 기존 RLS 재사용)을 반영. 봉인된 P2-T03(신청 batch·일정 탭)·P2-T04(관리 시트·자동 마감) RADIO를 계약으로 삼아 두 task 구현 완료 전에 설계했다(파이프라이닝). 선행 재봉인이 생기면 시트·달력 전제를 재점검한다. |
 | 2 | 2026-08-08 | KST 판정 근거 정정 — DEV-TIME-03·04가 이미 MUST 규칙으로 존재하므로 "후보 규칙 승격 별도 제안" 표현을 "기본 적용"으로 바로잡고 해당 미결 항목을 제거. 결정 내용 변경 없음. |
 | 3 | 2026-08-08 | 개발 착수 스코프 갭 해소 재봉인(user 승인 — 파일 한정). 기술 인수 조건 1의 달력 셀 배지는 셀을 전담 렌더하는 `src/shared/ui/calendar.tsx`의 확장 없이는 구현 불가(`docs/execution/runs/P2-T05/decision-signal.json`)라 변경 허용 경로에 그 한 파일만 추가하고, Calendar 최소 확장(dateStates 항목의 선택적 신청 수 필드, 값이 있을 때만 숫자 배지 렌더)을 Architecture에 명시. 그 외 결정 내용 변경 없음. |
+| 4 | 2026-08-08 | 봉인 충돌 해소 재봉인(user 승인). 인수 조건 5의 시간대 E2E가 근무자 일정 탭에서도 F-03과 동일한 월 경계 결함(UTC 파싱, 비KST 브라우저에서 월이 하루 밀림)을 실재 재현했는데 해당 파일이 "선행 산출물 무수정" 비목표에 묶여 있어, 근무자 경로(`src/app/(protected)/(tabs)/schedule/page.tsx`·`src/views/schedule/**`)를 F-03 계열 월 경계 수정 한정 용도로 변경 허용 경로에 추가하고 비목표에 명시적 예외를 기록. 제품 범위 변경 없음(KST 정본 판정은 기존 MUST 규칙). |
 
 - 관련 spec: PRD:AC-01, PRD:AC-02, DOMAIN:SCHEDULING, DESIGN:WORKER-FLOWS 앱 셸과 홈 절
 - 적용 깊이: 심화 (관리자 개인정보 조회·시간 경계·홈 우선순위 정합)
@@ -23,7 +24,7 @@
 ### 범위와 비목표
 
 - 범위: ① 관리자 모집 달력 셀에 날짜별 신청 수 배지, T04 관리 시트에 신청 현황 섹션(신청 수 + applied 신청자 이름 목록) 추가 ② 홈 「마감 임박 근무 신청」 카드를 실데이터로 전환 — KST 오늘 포함 3일(D+0~D+2) 내 마감 예정 OPEN 모집 중 가장 임박한 1건, 본인 신청 상태에 따라 신청 유도 또는 「마감 전까지 변경 가능」 안내 ③ 워커 마감(CLOSED) 날짜 상세의 P2 버전(날짜·마감 상태·내 신청 상태·확정 대기 안내) ④ 상태 전이·시간대 경계·다중 신청의 unit·pgTAP·E2E 테스트와 F-03(월 경계 시간대) 회귀 고정.
-- 비목표(기획 승인 그대로): 포지션 배정·확정 화면(P3 — 확정 상세 스텁은 이 task에서 내용을 바꾸지 않는다), 모집 오픈·마감 푸시(P4), 철회 이력 화면. 설계 비목표: 새 마이그레이션·스키마·RLS 변경 없음(조회 전용 task), P2-T01~T04 산출물의 봉인 계약 무수정(T04 시트는 하위 호환 확장만), 기존 pgTAP 01~15 무수정.
+- 비목표(기획 승인 그대로): 포지션 배정·확정 화면(P3 — 확정 상세 스텁은 이 task에서 내용을 바꾸지 않는다), 모집 오픈·마감 푸시(P4), 철회 이력 화면. 설계 비목표: 새 마이그레이션·스키마·RLS 변경 없음(조회 전용 task), P2-T01~T04 산출물의 봉인 계약 무수정(T04 시트는 하위 호환 확장만 — revision 4 예외: 근무자 일정 탭의 F-03 계열 월 경계 수정에 한해 P2-T03 산출물 수정 허용), 기존 pgTAP 01~15 무수정.
 
 ### 불변 규칙
 
@@ -76,6 +77,7 @@
 - `src/views/admin-recruitment/`: 셀 배지 렌더 분기(model 소유)·시트에 조회 Action 주입.
 - `src/views/home/`: `model/home-priority.ts`의 `deadline-application` variant에 본인 신청 상태 필드 추가, `model/imminent-recruitment.ts`(경계·선정·문구 분기 순수 함수 — `shared/config`의 임박 일수 상수 사용), `ui/HomeView` 카드 실데이터 렌더(일정 탭 이동 링크). `home.mock.ts`는 preview가 계속 쓰면 잔존 허용.
 - `src/views/schedule-detail/`: CLOSED variant 추가(확정 variant 무수정), 분기는 model 소유.
+- `src/views/schedule/**`·`src/app/(protected)/(tabs)/schedule/page.tsx`: F-03 계열 월 경계 수정 한정 — month 전달을 UTC `Date` 대신 `"yyyy-MM"` 문자열로 바꾸고 클라이언트 컴포넌트 안에서 재구성한다(관리자 달력 수정과 동일 기법). 그 외 기능·계약은 무수정.
 - `src/app/(protected)/(tabs)/page.tsx`: 서버 컴포넌트에서 `find-imminent-recruitment` 조회 후 `deriveHomePriority` 입력 주입.
 - `src/app/(protected)/admin/recruitment/page.tsx`: 월 집계 조회 추가·시트 조회 Action 주입.
 - `src/app/(protected)/schedule/[id]/page.tsx`: CLOSED 상태 데이터 조회·분기 주입.
@@ -114,7 +116,9 @@ src/entities/schedule/**
 src/features/recruitment/**
 src/views/admin-recruitment/**
 src/views/home/**
+src/views/schedule/**
 src/views/schedule-detail/**
+src/app/(protected)/(tabs)/schedule/page.tsx
 src/shared/config/**
 src/shared/ui/calendar.tsx
 supabase/tests/**
