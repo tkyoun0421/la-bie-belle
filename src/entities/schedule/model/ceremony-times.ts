@@ -29,8 +29,12 @@ export function isValidCeremonyCount(count: number): boolean {
   return Number.isInteger(count) && count >= CEREMONY_COUNT_MIN && count <= CEREMONY_COUNT_MAX;
 }
 
-export function generateCeremonyTimes(count: number, firstCeremonyTime: string): string[] {
+export function generateCeremonyTimes(count: number, firstCeremonyTime: string): string[] | null {
   const start = timeToMinutes(firstCeremonyTime);
+  const lastMinutes = start + (count - 1) * CEREMONY_INTERVAL_MINUTES;
+  if (lastMinutes >= MINUTES_PER_DAY) {
+    return null;
+  }
   return Array.from({ length: count }, (_, index) =>
     minutesToTime(start + index * CEREMONY_INTERVAL_MINUTES),
   );

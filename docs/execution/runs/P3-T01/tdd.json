@@ -143,6 +143,48 @@
       "exit_code": 0,
       "at": "2026-08-08T06:32:35Z",
       "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/ceremony-times.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T09:16:37Z",
+      "phase": "red",
+      "note": "fix-round F-06: generateCeremonyTimes 자정 넘김 거부 계약으로 교체"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/ceremony-times.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T09:16:47Z",
+      "phase": "green",
+      "note": "fix-round F-06: generateCeremonyTimes 자정 넘김 거부 계약으로 교체"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/hooks/__tests__/useCeremonyEditor.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T09:17:42Z",
+      "phase": "red",
+      "note": "fix-round F-03(recommendationPreview 즉시 미리보기)·F-06(자정 넘김 생성 안내) 훅 연동"
+    },
+    {
+      "command": "pnpm vitest run src/features/ceremony/hooks/__tests__/useCeremonyEditor.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T09:18:09Z",
+      "phase": "green",
+      "note": "fix-round F-03(recommendationPreview 즉시 미리보기)·F-06(자정 넘김 생성 안내) 훅 연동"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-08T09:24:06Z",
+      "phase": "red",
+      "note": "fix-round F-02(NULL 쌍 무결성·분 단위 CHECK)·F-05(감사 detail 전후 값) — 신규 pgTAP 단언을 수정 전 마이그레이션에 대고 실행해 실패 확인"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-08T09:24:59Z",
+      "phase": "green",
+      "note": "fix-round F-02·F-05 — 수정된 마이그레이션 적용 후 17-ceremony-schema.test.sql 65/65, 전체 829/829 PASS"
     }
   ]
 }

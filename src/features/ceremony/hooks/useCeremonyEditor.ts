@@ -1,4 +1,4 @@
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 
 import {
   generateCeremonyTimes,
@@ -10,6 +10,9 @@ import {
 } from "@/entities/schedule/model/ceremony-times";
 import { ERROR_CODES, type ErrorCode } from "@/shared/config/error-codes.config";
 import { showSnackbar } from "@/shared/ui/snackbar";
+
+const MIDNIGHT_CROSSING_MESSAGE =
+  "자정을 넘는 예식은 생성할 수 없어요. 개수나 첫 시각을 줄여 주세요";
 
 export type CeremonyEditorInitial = {
   scheduleId: string;
@@ -58,6 +61,17 @@ export function useCeremonyEditor(
   );
   const [saving, startTransition] = useTransition();
 
+  const recommendationPreview = useMemo<PendingRecommendation | null>(() => {
+    const { first, last } = firstAndLast(sortCeremonyTimes(ceremonyTimes));
+    if (first === null || last === null) {
+      return null;
+    }
+    return {
+      checkin: recommendCheckIn(initial.checkInRules, first),
+      checkout: recommendCheckOut(last),
+    };
+  }, [ceremonyTimes, initial.checkInRules]);
+
   function updateCeremonyTime(index: number, value: string) {
     setCeremonyTimes((prev) => prev.map((time, position) => (position === index ? value : time)));
   }
@@ -71,7 +85,12 @@ export function useCeremonyEditor(
   }
 
   function generateFromCount(count: number, firstCeremonyTime: string) {
-    setCeremonyTimes(generateCeremonyTimes(count, firstCeremonyTime));
+    const generated = generateCeremonyTimes(count, firstCeremonyTime);
+    if (generated === null) {
+      showSnackbar(MIDNIGHT_CROSSING_MESSAGE);
+      return;
+    }
+    setCeremonyTimes(generated);
   }
 
   function saveCeremonies() {
@@ -148,6 +167,7 @@ export function useCeremonyEditor(
     plannedCheckin,
     plannedCheckout,
     pendingRecommendation,
+    recommendationPreview,
     saving,
     updateCeremonyTime,
     addCeremonyTime,

@@ -1,5 +1,5 @@
 begin;
-select plan(54);
+select plan(65);
 
 -- =====================================================================
 -- 스키마 노출: 테이블·컬럼·RLS·함수 시그니처
@@ -158,6 +158,17 @@ select is(
   1,
   'AC1: 최초 저장으로 감사가 정확히 1행 남는다'
 );
+select is(
+  (
+    select detail from scheduling_audit_logs
+    where event = 'ceremonies_replaced'
+      and schedule_id = (select id from schedules where work_date = '2099-11-01')
+    order by seq
+    limit 1
+  ),
+  '{"previous_ceremony_times": [], "new_ceremony_times": ["10:00", "11:00", "12:10"]}'::jsonb,
+  'F-05: 최초 저장의 감사 detail에 이전(빈 배열)·새 예식 시각이 남는다'
+);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '17000000-0000-0000-0000-000000000001', true);
@@ -201,6 +212,17 @@ select is(
   ),
   2,
   'AC1: 실제 변경 시에만 감사가 누적된다'
+);
+select is(
+  (
+    select detail from scheduling_audit_logs
+    where event = 'ceremonies_replaced'
+      and schedule_id = (select id from schedules where work_date = '2099-11-01')
+    order by seq desc
+    limit 1
+  ),
+  '{"previous_ceremony_times": ["10:00", "11:00", "12:10"], "new_ceremony_times": ["09:30", "12:10"]}'::jsonb,
+  'F-05: 두 번째 실제 변경의 감사 detail에 이전 목록(교체 전 값)이 남는다'
 );
 
 -- =====================================================================
@@ -354,6 +376,17 @@ select is(
   1,
   'AC2: 예정 시각 저장으로 감사가 정확히 1행 남는다'
 );
+select is(
+  (
+    select detail from scheduling_audit_logs
+    where event = 'planned_times_set'
+      and schedule_id = (select id from schedules where work_date = '2099-11-01')
+    order by seq
+    limit 1
+  ),
+  '{"previous_checkin": null, "previous_checkout": null, "new_checkin": "08:20", "new_checkout": "15:30"}'::jsonb,
+  'F-05: 최초 저장의 감사 detail에 이전(NULL)·새 예정 시각이 남는다'
+);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '17000000-0000-0000-0000-000000000001', true);
@@ -374,6 +407,57 @@ select is(
   1,
   'AC2 멱등: 같은 값 재저장은 감사 행을 추가하지 않는다'
 );
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '17000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select set_schedule_planned_times(
+    (select id from schedules where work_date = '2099-11-01'), '08:30'::time, '15:45'::time
+  )$$,
+  'AC2: 실제로 값이 바뀌는 재저장은 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from scheduling_audit_logs
+    where event = 'planned_times_set'
+      and schedule_id = (select id from schedules where work_date = '2099-11-01')
+  ),
+  2,
+  'AC2: 실제 변경 시에만 감사가 누적된다'
+);
+select is(
+  (
+    select detail from scheduling_audit_logs
+    where event = 'planned_times_set'
+      and schedule_id = (select id from schedules where work_date = '2099-11-01')
+    order by seq desc
+    limit 1
+  ),
+  '{"previous_checkin": "08:20", "previous_checkout": "15:30", "new_checkin": "08:30", "new_checkout": "15:45"}'::jsonb,
+  'F-05: 두 번째 실제 변경의 감사 detail에 이전 값(교체 전 시각)이 남는다'
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '17000000-0000-0000-0000-000000000001', true);
+select throws_ok(
+  $$select set_schedule_planned_times(
+    (select id from schedules where work_date = '2099-11-01'), null::time, '15:30'::time
+  )$$,
+  '22023',
+  null,
+  'F-02 경계값: checkin이 NULL이면 22023으로 거부된다(한쪽만 NULL 저장 방지)'
+);
+select throws_ok(
+  $$select set_schedule_planned_times(
+    (select id from schedules where work_date = '2099-11-01'), '08:20'::time, null::time
+  )$$,
+  '22023',
+  null,
+  'F-02 경계값: checkout이 NULL이면 22023으로 거부된다(한쪽만 NULL 저장 방지)'
+);
+reset role;
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '17000000-0000-0000-0000-000000000001', true);
@@ -438,8 +522,34 @@ reset role;
 
 select is(
   (select planned_checkin from schedules where work_date = '2099-11-01'),
-  '08:20'::time,
+  '08:30'::time,
   'AC2: 거부된 호출들은 planned_checkin을 바꾸지 못했다'
+);
+
+-- =====================================================================
+-- F-02 회귀: DB 최종 경계 — 쌍 무결성·분 단위 강제(직접 쓰기 우회 방어)
+-- =====================================================================
+
+select throws_ok(
+  $$update schedules set planned_checkin = '08:00'::time, planned_checkout = null
+    where work_date = '2099-11-02'$$,
+  '23514',
+  null,
+  'F-02: 예정 출근만 채우고 퇴근을 비우면 쌍 무결성 CHECK가 거부한다'
+);
+select throws_ok(
+  $$insert into ceremonies (schedule_id, starts_at)
+    values ((select id from schedules where work_date = '2099-11-02'), '10:00:30'::time)$$,
+  '23514',
+  null,
+  'F-02: 초 단위 예식 시각은 분 단위 CHECK가 거부한다'
+);
+select throws_ok(
+  $$update schedules set planned_checkin = '08:00:15'::time, planned_checkout = '15:00'::time
+    where work_date = '2099-11-02'$$,
+  '23514',
+  null,
+  'F-02: 초 단위 예정 출근은 분 단위 CHECK가 거부한다'
 );
 
 select * from finish();

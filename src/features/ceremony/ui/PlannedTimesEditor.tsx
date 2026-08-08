@@ -2,19 +2,42 @@
 
 import { useState } from "react";
 
+import type { PendingRecommendation } from "@/features/ceremony/hooks/useCeremonyEditor";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
+
+const NO_RULE_CHECKIN_PREVIEW = "추천 — 규칙표가 비어 있어 직접 입력이 필요해요";
 
 type PlannedTimesEditorProps = {
   plannedCheckin: string | null;
   plannedCheckout: string | null;
+  recommendationPreview: PendingRecommendation | null;
   onSave: (checkin: string, checkout: string) => void;
   saving: boolean;
 };
 
+function checkinPreviewText(recommendationPreview: PendingRecommendation | null) {
+  if (recommendationPreview === null) {
+    return undefined;
+  }
+  if (recommendationPreview.checkin === null) {
+    return NO_RULE_CHECKIN_PREVIEW;
+  }
+  return `추천 ${recommendationPreview.checkin}`;
+}
+
+function checkoutPreviewText(recommendationPreview: PendingRecommendation | null) {
+  if (recommendationPreview === null) {
+    return undefined;
+  }
+  const cappedSuffix = recommendationPreview.checkout.capped ? " (자정 캡)" : "";
+  return `추천 ${recommendationPreview.checkout.time}${cappedSuffix}`;
+}
+
 export function PlannedTimesEditor({
   plannedCheckin,
   plannedCheckout,
+  recommendationPreview,
   onSave,
   saving,
 }: PlannedTimesEditorProps) {
@@ -41,12 +64,14 @@ export function PlannedTimesEditor({
           type="time"
           value={checkin}
           onChange={(event) => setCheckin(event.target.value)}
+          helperText={checkinPreviewText(recommendationPreview)}
         />
         <Input
           label="예정 퇴근"
           type="time"
           value={checkout}
           onChange={(event) => setCheckout(event.target.value)}
+          helperText={checkoutPreviewText(recommendationPreview)}
         />
       </div>
       <Button

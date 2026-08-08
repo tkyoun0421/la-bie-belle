@@ -29,3 +29,12 @@
 ## 미결 사항 처리
 
 - RADIO의 유일한 미결 사항("P2-T04·T05 재봉인 시 시트 진입 링크 전제를 재점검한다")은 이번 세션 착수 시점에 두 task가 모두 이미 done 상태이자 재봉인 없이 완료돼 있어 재점검 대상이 아니었다. `RecruitmentManageSheet.tsx`의 실제 구조를 확인해 그 위에 링크 1개를 하위 호환으로 추가했다.
+
+## 검증 수정 라운드(revision 3, 교차 검증 F-02·F-03·F-05·F-06)
+
+- RADIO: `docs/execution/radio/P3-T01-radio.md` revision 3, SHA-256 `81a1ce185414ae325f9bdd27016221d265acf87804ea1cfb2eddbde127a0226b`(F-01은 재봉인 문구 정정만으로 해소 — 코드 변경 없음). 이 절은 revision 3이 확정한 나머지 fix round(F-02·F-03·F-05·F-06)의 구현 세부 선택과 근거를 남긴다.
+
+1. **F-02·F-05 수정을 새 마이그레이션이 아니라 기존 `20260808020000_ceremony_schema.sql`을 직접 편집해 반영했다.** 이 마이그레이션은 이번 task 자신의 미푸시 산출물이라 다른 세션·환경이 이미 적용해 되돌릴 수 없는 상태가 아니고, 초기 스키마 생성 계열 변경을 여러 마이그레이션으로 쪼개면 "같은 테이블을 만들고 바로 고치는" 이력만 남아 리뷰 가독성이 떨어진다. DEVELOPMENT.md가 허용하는 범위(운영 데이터·다른 클라이언트에 영향이 없는 자기 완결적 변경) 안에 있다고 판단해 새 마이그레이션을 추가하지 않았다.
+2. **F-02(NULL 우회)에 함수 레벨 가드와 DB CHECK 제약을 둘 다 추가했다.** `set_schedule_planned_times`에는 기존 `checkin >= checkout` 비교 앞에 `checkin is null or checkout is null` 명시 검사(`22023`)를 새로 넣어 사용자에게 기존과 동일한 `SCHEDULING_VALIDATION` UX를 유지했고, 동시에 `schedules_planned_times_pair_check`(`(planned_checkin is null) = (planned_checkout is null)`) CHECK 제약을 컬럼에 걸었다. 제약만 두면 우회 경로(직접 UPDATE 등)의 실패가 매핑되지 않은 `23514`로 관리자 화면에 노출돼 `COMMON_UNEXPECTED`로 뭉개지므로, DEV-DATA-04가 요구하는 "DB 최종 강제"와 기존 에러 UX 일관성을 함께 만족시키려면 두 층 모두 필요하다고 판단했다.
+3. **초 단위 거부(`ceremonies.starts_at`·`schedules.planned_checkin/out`)는 DB CHECK만 추가하고 함수 레벨 사전 검사는 두지 않았다.** 이 값들이 도달하는 유일한 승인 경로(RPC 인자)는 TS `TimeStringSchema`(`^([01]\d|2[0-3]):[0-5]\d$`) 정규식이 이미 초 단위 입력 자체를 구조적으로 차단해, 함수 레벨 중복 검사는 실질적으로 죽은 코드가 된다. `extract(second from ...) = 0` CHECK 제약은 오직 RPC를 우회한 직접 쓰기를 막는 DEV-DATA-04의 "최종 강제" 역할로만 존재시켰다.
+4. **F-06(자정 경계)은 "넘는 분량만 생성"이 아니라 "생성 거부 + 안내"로 구현했다(`generateCeremonyTimes`가 `null` 반환, 훅이 스낵바로 안내).** 부분 생성은 "요청 5개 중 3개만 생성됨"을 설명하는 새 UI/문구가 필요해 기존 설계에 없던 개념을 도입하게 된다. 반면 거부는 함수 계약을 "유효한 전체 목록 아니면 무효"라는 이분법으로 단순하게 유지하면서, 기존 퇴근 +2시간 자정 캡("캡+안내") 선례와 같은 패턴(연산 결과가 하루 경계를 넘으면 연산을 막고 사용자에게 알린다)을 그대로 확장한 것이라 새 개념을 추가하지 않는다. `recommendCheckIn`의 별도 음수-분 wrap 동작은 F-06 지적 범위 밖이라 손대지 않았다.

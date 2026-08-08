@@ -27,8 +27,16 @@ describe("generateCeremonyTimes", () => {
     expect(generateCeremonyTimes(1, "10:30")).toEqual(["10:30"]);
   });
 
-  it("자정을 넘는 생성은 다음날 00시대로 넘어간다(24시간 순환)", () => {
-    expect(generateCeremonyTimes(2, "23:30")).toEqual(["23:30", "00:30"]);
+  it("자정을 넘는 생성은 다음날로 감싸지 않고 null을 반환한다", () => {
+    expect(generateCeremonyTimes(2, "23:30")).toBeNull();
+  });
+
+  it("경계값: 마지막 예식이 정확히 23:59면 생성을 허용한다", () => {
+    expect(generateCeremonyTimes(1, "23:59")).toEqual(["23:59"]);
+  });
+
+  it("경계값: 마지막 예식이 자정(24:00)에 걸치면 null을 반환한다", () => {
+    expect(generateCeremonyTimes(2, "23:00")).toBeNull();
   });
 });
 

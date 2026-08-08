@@ -65,3 +65,38 @@
 - `supabase/tests/17-ceremony-schema.test.sql`, `supabase/migrations/20260808020000_ceremony_schema.sql`
 - `tests/e2e/ceremony-edit.spec.ts`
 - `src/entities/schedule/**`, `src/features/ceremony/**`, `src/views/admin-schedule/**`, `src/app/(protected)/admin/schedule/**`
+
+## 2026-08-08 · 검증 수정 라운드(revision 3, F-02·F-03·F-05·F-06)
+
+- 작업 식별자: P3-T01 (예식 아이템과 시간 추천)
+- 현재 단계: 교차 검증 fix round 완료 → 다음 재검증(4단계, 조정자가 재리뷰 호출)
+- 기준 시각: 2026-08-08T09:29:25Z
+
+### 확정된 사실
+
+- RADIO `docs/execution/radio/P3-T01-radio.md` revision 3, SHA-256 `81a1ce185414ae325f9bdd27016221d265acf87804ea1cfb2eddbde127a0226b`(index의 `development_approval`과 일치)로 재봉인됐다. **F-01(high, 보안)은 코드 변경 없이 재봉인 문구 정정만으로 해소됐다** — 예정 출퇴근 컬럼이 기존 `schedules` select 정책(admin·활성 근무자 공유 role)으로 조회되는 것을 P3-T07 이전까지 한시 수용하는 것으로 불변 규칙·Data model 절을 정정했다.
+- **F-02(DB 경계 공백, 수정 완료)**: `set_schedule_planned_times`에 `checkin is null or checkout is null` 명시 검사(`22023`)를 추가하고, `schedules_planned_times_pair_check` CHECK 제약(편측 NULL 저장 차단)을 컬럼에 걸었다. pgTAP으로 NULL 인자 두 경우(checkin만 NULL/checkout만 NULL) 모두 `throws_ok`로 검증했고, CHECK 제약 자체도 postgres 세션에서 직접 UPDATE로 위반시켜 확인했다.
+- **F-02(초 단위 거부, 수정 완료)**: `ceremonies_starts_at_minute_check`·`schedules_planned_checkin_minute_check`·`schedules_planned_checkout_minute_check` 세 CHECK 제약(`extract(second from ...) = 0`)을 추가했다. TS `TimeStringSchema`가 이미 초 단위 입력을 구조적으로 차단해 함수 레벨 사전 검사는 두지 않고 DB 최종 강제로만 뒀다(근거는 `radio.md` 검증 수정 라운드 절 참조). pgTAP은 postgres 세션 직접 INSERT/UPDATE로 초 단위 값을 시도해 `23514`(check_violation)를 확인했다.
+- **F-03(저장 전 추천 미리보기, 수정 완료)**: `useCeremonyEditor`에 `recommendationPreview`(useMemo 파생값, 저장 왕복 없음)를 추가해 `ceremonyTimes`가 바뀔 때마다(생성 직후·개별 시각 수정 직후) 즉시 재계산되도록 했다. `PlannedTimesEditor`가 이 값을 helperText로 렌더해 "추천 HH:MM" 형태로 노출하고, 규칙표에 매칭 규칙이 없을 때·자정 캡이 걸렸을 때를 구분해 표시한다. 기존 `pendingRecommendation`(저장 성공 후 확인창 흐름)과는 별개 상태로 공존한다.
+- **F-05(감사 로그 전후 값 누락, 수정 완료)**: `ceremonies_replaced` 이벤트 detail에 `previous_ceremony_times`·`new_ceremony_times`(HH:MM 배열)를, `planned_times_set` 이벤트 detail에 `previous_checkin`·`previous_checkout`·`new_checkin`·`new_checkout`(첫 저장 시 previous는 NULL)을 기록하도록 두 함수를 수정했다. 시간값은 PII가 아니라 그대로 기록했다. pgTAP으로 최초 저장(previous NULL)·실제 변경(previous 값 존재) 두 케이스 모두 detail 내용을 `is`로 단언했다.
+- **F-06(자정 경계 생성 버그, 수정 완료)**: `generateCeremonyTimes`가 마지막 예식 시각이 자정(24:00)에 걸치거나 넘으면 `null`을 반환하도록 바꿨다(생성 거부 방식 선택, 근거는 `radio.md` 참조). 훅의 `generateFromCount`가 `null`을 받으면 목록을 바꾸지 않고 스낵바로 안내한다. 기존 "24시간 순환" 단위 테스트를 제거하고 거부 계약·경계값(23:59 허용, 23:00+2개 거부) 테스트로 교체했다.
+- TDD: 위 4건 모두 RED→GREEN을 실제 명령 실행으로 남겼다(`docs/execution/runs/P3-T01/tdd.json`). `pnpm db:test`는 새 pgTAP 단언을 수정 전 마이그레이션에 대고 먼저 실패시켜(2026-08-08T09:24:06Z, exit 1) 진짜 RED를 확보한 뒤 수정된 마이그레이션으로 복원해 GREEN(2026-08-08T09:24:59Z, exit 0, `17-ceremony-schema.test.sql` 65/65·전체 829/829 PASS)을 받았다.
+- `pnpm db:reset && pnpm db:test` 최종 재확인 GREEN(829/829, 2026-08-08T09:26:30Z~09:27:01Z), db:reset 이후 `pnpm test:e2e tests/e2e/ceremony-edit.spec.ts` GREEN(2/2, 09:27:08Z), `pnpm verify` 전체 GREEN(2026-08-08T09:27:17Z~09:29:25Z, exit 0): format·lint:ci·typecheck·vitest(180 files/1104 tests)·harness:typecheck·harness:self-test(308/308)·check:docs·build·check:app-build·check:client-secret-scan·전체 e2e(38/38)·gate:all.
+- F-04(E2E 픽스처 정리)·F-07(미사용 검증 함수)·F-08(pgTAP #04 레코드)은 사용자가 백로그로 명시적으로 보낸 항목이라 이번 라운드에서 건드리지 않았다.
+
+### 미결 사항
+
+- 없음. 이번 라운드에 배정된 F-02·F-03·F-05·F-06 전부 수정·검증 완료했고, F-01은 코드 변경이 필요하지 않았다.
+
+### 다음 행동
+
+1. 조정자가 이 fix round 커밋을 대상으로 재검증(재리뷰)을 진행한다. 이 세션은 `status`를 `in_progress`로 남겨뒀다 — `done` 전환은 조정자 몫이다.
+2. 재검증이 통과하면 조정자가 `done`으로 갱신하고 대시보드를 재생성한다.
+3. push는 `ci-finisher`가 맡는다 — 이 세션은 커밋까지만 완료했다.
+
+### 증거·산출물 경로
+
+- `docs/execution/runs/P3-T01/radio.md` (검증 수정 라운드 절 — 4건 구현 세부 선택과 근거)
+- `docs/execution/runs/P3-T01/tdd.json` (fix round RED→GREEN 3쌍 추가)
+- `supabase/migrations/20260808020000_ceremony_schema.sql`, `supabase/tests/17-ceremony-schema.test.sql`
+- `src/entities/schedule/model/ceremony-times.ts`, `src/features/ceremony/hooks/useCeremonyEditor.ts`, `src/features/ceremony/ui/PlannedTimesEditor.tsx`, `src/views/admin-schedule/ui/AdminSchedulePrepView.tsx`

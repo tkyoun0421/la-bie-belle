@@ -2,7 +2,8 @@ create table ceremonies (
   id uuid primary key default gen_random_uuid(),
   schedule_id uuid not null references schedules (id),
   starts_at time not null,
-  unique (schedule_id, starts_at)
+  unique (schedule_id, starts_at),
+  constraint ceremonies_starts_at_minute_check check (extract(second from starts_at) = 0)
 );
 
 alter table ceremonies enable row level security;
@@ -14,7 +15,13 @@ using (is_admin(auth.uid()));
 
 alter table schedules
   add column planned_checkin time,
-  add column planned_checkout time;
+  add column planned_checkout time,
+  add constraint schedules_planned_times_pair_check
+    check ((planned_checkin is null) = (planned_checkout is null)),
+  add constraint schedules_planned_checkin_minute_check
+    check (planned_checkin is null or extract(second from planned_checkin) = 0),
+  add constraint schedules_planned_checkout_minute_check
+    check (planned_checkout is null or extract(second from planned_checkout) = 0);
 
 create policy check_in_rules_admin_all
 on check_in_rules
@@ -84,7 +91,12 @@ begin
       'ceremonies_replaced',
       actor_id,
       target_schedule_id,
-      jsonb_build_object('count', ceremony_count)
+      jsonb_build_object(
+        'previous_ceremony_times',
+        (select coalesce(jsonb_agg(to_char(t, 'HH24:MI') order by t), '[]'::jsonb) from unnest(previous_times) as t),
+        'new_ceremony_times',
+        (select coalesce(jsonb_agg(to_char(t, 'HH24:MI') order by t), '[]'::jsonb) from unnest(sorted_times) as t)
+      )
     );
   end if;
 
@@ -131,6 +143,10 @@ begin
     raise exception '확정되었거나 취소된 스케줄의 예정 시각은 변경할 수 없습니다' using errcode = 'LB020';
   end if;
 
+  if checkin is null or checkout is null then
+    raise exception '출근·퇴근 시각을 모두 입력해야 합니다' using errcode = '22023';
+  end if;
+
   if checkin >= checkout then
     raise exception '출근 시간은 퇴근 시간보다 이전이어야 합니다' using errcode = '22023';
   end if;
@@ -148,7 +164,12 @@ begin
     'planned_times_set',
     actor_id,
     target_schedule_id,
-    jsonb_build_object('checkin', to_char(checkin, 'HH24:MI'), 'checkout', to_char(checkout, 'HH24:MI'))
+    jsonb_build_object(
+      'previous_checkin', to_char(previous_checkin, 'HH24:MI'),
+      'previous_checkout', to_char(previous_checkout, 'HH24:MI'),
+      'new_checkin', to_char(checkin, 'HH24:MI'),
+      'new_checkout', to_char(checkout, 'HH24:MI')
+    )
   );
 end;
 $$;

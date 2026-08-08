@@ -108,6 +108,7 @@ export function AdminSchedulePrepView({
           <PlannedTimesEditor
             plannedCheckin={editor.plannedCheckin}
             plannedCheckout={editor.plannedCheckout}
+            recommendationPreview={editor.recommendationPreview}
             onSave={editor.savePlannedTimesManually}
             saving={editor.saving}
           />

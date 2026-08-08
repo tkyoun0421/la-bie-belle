@@ -42,6 +42,10 @@ describe("useCeremonyEditor", () => {
     expect(result.current.plannedCheckin).toBe("08:20");
     expect(result.current.plannedCheckout).toBe("13:00");
     expect(result.current.pendingRecommendation).toBeNull();
+    expect(result.current.recommendationPreview).toEqual({
+      checkin: "08:20",
+      checkout: { time: "13:00", capped: false },
+    });
     expect(result.current.saving).toBe(false);
   });
 
@@ -63,6 +67,100 @@ describe("useCeremonyEditor", () => {
     });
 
     expect(result.current.ceremonyTimes).toEqual(["11:00", "12:00", "13:00"]);
+  });
+
+  it("자정을 넘는 생성 요청은 목록을 바꾸지 않고 안내 토스트를 띄운다", async () => {
+    const { useCeremonyEditor } = await import("@/features/ceremony/hooks/useCeremonyEditor");
+    const onReplaceCeremonies = vi.fn();
+    const onSetPlannedTimes = vi.fn();
+
+    const { result } = renderHook(() =>
+      useCeremonyEditor(baseInitial(), onReplaceCeremonies, onSetPlannedTimes),
+    );
+
+    act(() => {
+      result.current.generateFromCount(3, "23:00");
+    });
+
+    expect(result.current.ceremonyTimes).toEqual(["10:00", "11:00"]);
+    expect(showSnackbar).toHaveBeenCalledWith(
+      "자정을 넘는 예식은 생성할 수 없어요. 개수나 첫 시각을 줄여 주세요",
+    );
+  });
+
+  it("recommendationPreview는 현재 목록의 첫·마지막 예식으로 저장 없이 즉시 계산된다", async () => {
+    const { useCeremonyEditor } = await import("@/features/ceremony/hooks/useCeremonyEditor");
+    const onReplaceCeremonies = vi.fn();
+    const onSetPlannedTimes = vi.fn();
+
+    const { result } = renderHook(() =>
+      useCeremonyEditor(baseInitial(), onReplaceCeremonies, onSetPlannedTimes),
+    );
+
+    expect(result.current.recommendationPreview).toEqual({
+      checkin: "08:20",
+      checkout: { time: "13:00", capped: false },
+    });
+  });
+
+  it("목록이 비어 있으면 recommendationPreview는 null이다", async () => {
+    const { useCeremonyEditor } = await import("@/features/ceremony/hooks/useCeremonyEditor");
+    const onReplaceCeremonies = vi.fn();
+    const onSetPlannedTimes = vi.fn();
+
+    const { result } = renderHook(() =>
+      useCeremonyEditor(
+        baseInitial({ ceremonyTimes: [], plannedCheckin: null, plannedCheckout: null }),
+        onReplaceCeremonies,
+        onSetPlannedTimes,
+      ),
+    );
+
+    expect(result.current.recommendationPreview).toBeNull();
+  });
+
+  it("generateFromCount 직후 저장 없이도 recommendationPreview가 갱신된다", async () => {
+    const { useCeremonyEditor } = await import("@/features/ceremony/hooks/useCeremonyEditor");
+    const onReplaceCeremonies = vi.fn();
+    const onSetPlannedTimes = vi.fn();
+
+    const { result } = renderHook(() =>
+      useCeremonyEditor(
+        baseInitial({ ceremonyTimes: [], plannedCheckin: null, plannedCheckout: null }),
+        onReplaceCeremonies,
+        onSetPlannedTimes,
+      ),
+    );
+
+    act(() => {
+      result.current.generateFromCount(3, "11:00");
+    });
+
+    expect(result.current.recommendationPreview).toEqual({
+      checkin: "09:10",
+      checkout: { time: "15:00", capped: false },
+    });
+    expect(onReplaceCeremonies).not.toHaveBeenCalled();
+  });
+
+  it("개별 수정 시 recommendationPreview가 저장 없이 즉시 다시 계산된다", async () => {
+    const { useCeremonyEditor } = await import("@/features/ceremony/hooks/useCeremonyEditor");
+    const onReplaceCeremonies = vi.fn();
+    const onSetPlannedTimes = vi.fn();
+
+    const { result } = renderHook(() =>
+      useCeremonyEditor(baseInitial(), onReplaceCeremonies, onSetPlannedTimes),
+    );
+
+    act(() => {
+      result.current.updateCeremonyTime(0, "09:00");
+    });
+
+    expect(result.current.recommendationPreview).toEqual({
+      checkin: "07:20",
+      checkout: { time: "13:00", capped: false },
+    });
+    expect(onReplaceCeremonies).not.toHaveBeenCalled();
   });
 
   it("updateCeremonyTime은 지정한 인덱스만 로컬에서 바꾼다", async () => {
