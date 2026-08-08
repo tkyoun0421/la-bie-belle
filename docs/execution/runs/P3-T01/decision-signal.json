@@ -1,0 +1,33 @@
+{
+  "task_id": "P3-T01",
+  "area": "data-model",
+  "at": "2026-08-08T05:25:08Z",
+  "found_during": "development",
+  "summary": "RADIO 범위·Architecture·기술 인수 조건 3이 새 테이블 `checkin_rules`(first_ceremony_time·checkin_time)를 마이그레이션으로 새로 만들고 초기 규칙 2행을 seed하라고 지시하는데, 그 역할을 정확히 수행하는 테이블이 P0-T03에서 이미 `check_in_rules`(first_ceremony_at·recommended_check_in)라는 이름으로 만들어져 있고 같은 값(10:00→08:20, 11:00→09:10)으로 이미 seed돼 있다.",
+  "reason": "src/ 코드를 작성하기 전 착수 조사 단계에서 RADIO의 Architecture 절(`supabase/migrations/<ts>_ceremony_schema.sql`: `checkin_rules`(first_ceremony_time time unique, checkin_time time) + seed 2행)과 기술 인수 조건 3(`checkin_rules`는 admin 전용 RLS로 직접 CRUD, first_ceremony_time 유니크, 초기 규칙 2행(10:00→08:20, 11:00→09:10) seed)을 구현하려고 기존 스키마를 grep했다. `supabase/migrations/20260804000000_foundation_schema.sql`(P0-T03, done)이 이미 `check_in_rules` 테이블(id, first_ceremony_at time not null unique, recommended_check_in time not null, created_at, updated_at)을 만들었고, `20260804000100_foundation_reference_data.sql`이 정확히 같은 두 행(10:00→08:20, 11:00→09:10)을 `on conflict (first_ceremony_at) do nothing`으로 이미 seed했다. RLS는 활성화돼 있으나 정책이 0개라 관리자를 포함한 전 주체가 default deny 상태다(`04-rls-default-deny.test.sql`이 'check_in_rules has zero policies'를 명시적으로 고정). `docs/standards/ARCHITECTURE.md`(L3, CLAUDE.md 문서 위계상 RADIO보다 상위) 143행도 이 테이블을 '첫 예식 시작 시각과 추천 출근 시각의 규칙표'로 문서화해, P3-T01이 만들려는 테이블과 목적이 완전히 같다. P0-T03 RADIO(handoff 21행)도 '표에 없는 시각을 어떻게 다룰지는 P3-T01이 정한다'고 적어, 이 테이블이 P3-T01의 추천 로직이 소비할 대상으로 이미 예정돼 있었음을 보여준다. 즉 RADIO는 이 선행 테이블의 존재를 모른 채(P2-T04·T05 파이프라이닝만 미결 사항에 적혀 있고 P0-T03 언급은 없음) 설계된 것으로 보인다. RADIO 문구 그대로 새 `checkin_rules` 테이블을 만들면 구조·의미가 동일한 규칙표 두 개가 공존하게 되어 RADIO 자신이 '기본 적용'으로 선언한 DEV-SSOT-01('추천 규칙·검증 경계는 순수 모델과 DB 함수 한 곳씩 소유, 값 중복 없음')을 RADIO 스스로 어기는 결과가 된다.",
+  "affected": {
+    "docs": ["docs/execution/radio/P3-T01-radio.md", "docs/standards/ARCHITECTURE.md"],
+    "tasks": ["P3-T01", "P0-T03"],
+    "files": [
+      "supabase/migrations/20260804000000_foundation_schema.sql",
+      "supabase/migrations/20260804000100_foundation_reference_data.sql",
+      "supabase/tests/01-schema-constraints.test.sql",
+      "supabase/tests/02-reference-data.test.sql",
+      "supabase/tests/04-rls-default-deny.test.sql"
+    ]
+  },
+  "confirmed": [
+    "기존 `check_in_rules` 테이블의 컬럼 구조(id, first_ceremony_at time unique not null, recommended_check_in time not null, created_at, updated_at)는 RADIO가 `checkin_rules`에 요구하는 구조(first_ceremony_time time unique, checkin_time time — 컬럼 2개, 유니크 제약, seed 2행)와 형태·의미가 동일하다. 이름만 다르다.",
+    "기존 seed 값(10:00→08:20, 11:00→09:10)은 RADIO 기술 인수 조건 3·4가 요구하는 예시 값과 정확히 일치한다 — 새로 seed할 필요가 없다.",
+    "기존 테이블은 RLS가 켜져 있지만 정책이 0개(default deny)라 admin CRUD를 열려면 어차피 새 마이그레이션으로 admin 전용 select·mutation 정책을 추가해야 한다 — 이 부분은 테이블을 재사용해도 신규 마이그레이션 작업량에 큰 차이가 없다.",
+    "이번 세션에서 src/·supabase/ 아래 코드·마이그레이션은 한 줄도 작성·스테이징하지 않았다. index.jsonl 상태 전환과 이 결정 신호·handoff만 기록했다.",
+    "`ceremonies` 테이블·`schedules`의 예정 출퇴근 컬럼·`replace_schedule_ceremonies`·`set_schedule_planned_times` 함수는 기존 스키마에 대응물이 없어 이 충돌의 영향을 받지 않는다 — RADIO 그대로 신설하면 된다.",
+    "pgTAP 파일명도 RADIO는 `supabase/tests/16-ceremony-schema.test.sql`을 지정하지만 그 번호는 P2-T05(같은 날 봉인)가 `16-recruitment-applicants.test.sql`로 이미 선점했다. 이는 의미 내용이 없는 순번 표기라서 다음 번호(17)로 진행하면 될 저위험 사안으로 판단해 별도 open_question으로 올리지 않았고, 재개 시 `17-ceremony-schema.test.sql`로 쓸 계획이다."
+  ],
+  "open_questions": [
+    "기존 `check_in_rules` 테이블을 그대로 재사용(테이블명·컬럼명 유지, admin 전용 RLS 정책만 새 마이그레이션으로 추가, 신규 seed 없이 기존 seed 그대로 사용)하고 RADIO의 `checkin_rules`/`first_ceremony_time`/`checkin_time` 표기만 실제 이름(`check_in_rules`/`first_ceremony_at`/`recommended_check_in`)으로 정정하는 재봉인을 승인하는지 — 제품 동작·컬럼 의미·seed 값 변경이 없어 기술 설계만 바뀌므로 development_approval만 다시 받으면 될 것으로 보인다.",
+    "혹은 기존 테이블을 새 마이그레이션으로 RENAME(테이블·컬럼)해 RADIO 문구 그대로 맞출지 — 이 경우 이미 `done`으로 봉인된 P0-T03의 pgTAP(01·02·04번)과 `docs/standards/ARCHITECTURE.md` 143행 서술을 함께 손봐야 해 '완료된 task의 인수 조건을 깨는 변경은 사용자와 회귀 범위를 합의해 새 task로 인계한다' 원칙과 맞닿는다. 더 무거운 선택지로 보여 권장하지 않지만 옵션으로 남긴다.",
+    "두 선택지 모두 아니라면(예: 두 테이블을 실제로 별개 목적으로 유지해야 할 제품·도메인 이유가 있다면) 그 근거를 알려주면 그에 맞춰 설계를 다시 받는다.",
+    "위 어느 쪽이든 DOMAIN 소유 표기 정정도 함께 필요한지 확인이 필요하다 — P0-T03 RADIO는 `check_in_rules`를 'DOMAIN:ATTENDANCE가 소비'로 적었는데 실제 소비자는 P3-T01(DOMAIN:SCHEDULING)이다. 이번 충돌과 별개로 문서 서술이 실제 소비 도메인과 어긋나 있다."
+  ]
+}
