@@ -1,5 +1,44 @@
 # P2-T05 handoff
 
+## 2026-08-08 (4차) · 검증 수정 라운드 — H-1 PostgREST max_rows 절단 수정
+
+- 작업 식별자: P2-T05 (모집 운영 화면과 테스트)
+- RADIO 기준: `docs/execution/radio/P2-T05-radio.md` revision 4, SHA-256 `08da0dd324eaee6f4b68910dbde69984c4948ff1957794b93b29f04a02b2f9fd`(변경 없음, 재대조 완료)
+- 트리거: 교차 검증(opus·codex 전원 인정) high 1건 — `src/entities/schedule/api/count-applications-by-month.ts`가 `select("schedule_id")`로 월 전체 applied 신청을 한 번에 받아왔는데, `supabase/config.toml`의 `[api] max_rows = 1000`이 응답을 조용히 1000행에서 자른다. 한 달 신청이 1000건을 넘으면 오류 없이 배지 수가 실제보다 작아지고, order가 없어 어떤 스케줄이 줄어드는지도 비결정적이었다.
+
+### 수정 내용
+
+- `countApplicationsByMonth`에 결정적 정렬(`order("id", { ascending: true })`) + `range` 기반 페이지네이션 루프를 추가했다(후보 ① 채택). 마지막 페이지의 행 수가 페이지 크기보다 작아질 때까지 순회하므로, 정확히 페이지 크기의 배수인 경우에도 다음(빈) 페이지를 한 번 더 확인해 절단을 만들지 않는다.
+- `pageSize`를 선택적 파라미터로 노출해 기본값은 `DEFAULT_PAGE_SIZE = 1000`(config.toml의 `max_rows`와 동일 — PostgREST가 한 응답에서 실제로 내려줄 수 있는 최대치)이고, 테스트에서 작은 값으로 주입해 페이지 경계를 재현한다. 기존 호출부(`src/app/(protected)/admin/recruitment/page.tsx`)는 `pageSize`를 넘기지 않아 동작이 그대로다(하위 호환).
+- 임의 상한을 두지 않았다 — 루프는 실제 데이터가 소진될 때까지(마지막 페이지 미만 반환) 계속되므로 신청 건수가 얼마든 정확한 합계를 낸다.
+
+### TDD 증거
+
+- RED: `pnpm vitest run src/entities/schedule/api/__tests__/count-applications-by-month.test.ts` (exit 1, 2026-08-08T05:11:26Z) — 페이지네이션·order 미구현 상태에서 신규 테스트 2건(페이지 경계 초과, 정확한 배수 경계)과 기존 오류 처리 테스트가 실패.
+- GREEN: 같은 명령 (exit 0, 2026-08-08T05:11:42Z) — 6개 테스트 전체 통과.
+- 기록: `docs/execution/runs/P2-T05/tdd.json`.
+
+### 신규/변경 테스트
+
+- `src/entities/schedule/api/__tests__/count-applications-by-month.test.ts`:
+  - (신규) "응답이 페이지 크기 경계를 넘으면 range 페이지네이션으로 전체 페이지를 순회해 정확히 집계한다" — `pageSize: 2`로 주입, 2페이지(2건+1건)에 걸친 신청을 정확히 합산하고 `range(0,1)`·`range(2,3)` 순서 호출을 확인.
+  - (신규) "응답 행 수가 페이지 크기의 정확한 배수여도 다음 페이지가 빌 때까지 확인해 절단 없이 종료한다" — 정확히 페이지 크기만큼 찬 첫 페이지 뒤 빈 두 번째 페이지로 종료를 확인(절단 없이 정확히 2회 호출로 끝남).
+  - (기존 3건 유지, 목 체인만 `order`+`range` 추가에 맞춰 조정) "applied 상태의 신청을 schedule_id별로 집계한다"에 `order` 호출 검증 추가.
+
+### 검증 실행
+
+- `pnpm vitest run src/entities/schedule/api/__tests__/count-applications-by-month.test.ts`: 6 passed.
+- `pnpm test -- --run`(전체 unit): 171 files, 1026 tests passed(기존 1024 + 신규 2).
+- `pnpm lint`·`pnpm typecheck`: 전체 GREEN(침묵).
+- `pnpm gate:all`: exit 0, 침묵.
+- pre-commit 훅(4개 repo gate → lint-staged → 증분 typecheck → unit test) 통과는 커밋 시점에 재확인.
+
+### 범위 밖(변경하지 않음, backlog로 남김)
+
+- 근무자 F-03 unit 추출, 시트 분기 테스트, DTO 테스트 강화, E2E 픽스처 정리, 인수 조건 6 문구 정합, 임박 50건 동률 보조 정렬, KST 자정 경계, 상세 Invalid Date 처리, KST 복제, 배지 aria, 이름 상태 reset 비대칭 — 조정자 지시로 이번 라운드 범위 밖.
+
+---
+
 ## 2026-08-08 (3차) · 개발 완료
 
 - 작업 식별자: P2-T05 (모집 운영 화면과 테스트)

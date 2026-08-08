@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/count-applications-by-month.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T05:11:26Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/count-applications-by-month.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T05:11:42Z",
+      "phase": "green"
+    }
+  ]
+}
