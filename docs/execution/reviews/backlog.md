@@ -244,3 +244,7 @@
 - [ ] [low] [P2-T05] KST 오늘 계산이 세 page에 복제(shared/lib 정본 부재) — src/app/(protected)/(tabs)/page.tsx
 - [ ] [low] [P2-T05] 신청 수 배지 aria 미반영·E2E 클래스 셀렉터 의존 — src/shared/ui/calendar.tsx
 - [ ] [low] [P2-T05] mutation 성공 닫기 경로에서 신청자 이름 상태 미초기화(닫기 경로 비대칭) — src/views/admin-recruitment/ui/RecruitmentOpenView.tsx
+- [ ] [medium] [P3-T01] E2E 스케줄 픽스처 정리가 append-only 트리거에 항상 실패·오류 무시(누적·유니크 충돌) — tests/e2e/ceremony-edit.spec.ts
+- [ ] [low] [P3-T01] 검증 모델 함수 2개(개수·중복) 프로덕션 미소비, 생성 폼 사전 검증 없음 — src/entities/schedule/model/ceremony-times.ts
+- [ ] [low] [P3-T01] 04번 pgTAP 수정이 인수 조건 7과 어긋나는데 runs/radio.md 세부 기록 누락 — supabase/tests/04-rls-default-deny.test.sql
+- [ ] [low] [P3-T01] 빈 예식 행이 있으면 추천 미리보기가 잘못된 값 표시(일시적 표시 오류) — src/features/ceremony/hooks/useCeremonyEditor.ts

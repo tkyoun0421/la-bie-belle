@@ -100,3 +100,34 @@
 - `docs/execution/runs/P3-T01/tdd.json` (fix round RED→GREEN 3쌍 추가)
 - `supabase/migrations/20260808020000_ceremony_schema.sql`, `supabase/tests/17-ceremony-schema.test.sql`
 - `src/entities/schedule/model/ceremony-times.ts`, `src/features/ceremony/hooks/useCeremonyEditor.ts`, `src/features/ceremony/ui/PlannedTimesEditor.tsx`, `src/views/admin-schedule/ui/AdminSchedulePrepView.tsx`
+
+## 2026-08-08 · 검증 종료 (교차 검증 완료 → done)
+
+- 작업 식별자: P3-T01
+- 현재 단계: 검증(4단계) 종료 → done
+- 기준 시각: 2026-08-08T09:40Z
+
+### 확정된 사실
+
+- 교차 검증(리뷰어 `opus`·`codex`, 개발 커밋 892d06f 대상)에서 확정 발견 8건이 나왔다 —
+  high 1(예정 출퇴근 select 노출), medium 5, low 2. 기각 0건.
+- high F-01은 봉인 충돌(행 단위 RLS·단일 authenticated role 구조에서 컬럼 select만 admin
+  전용으로 강제 불가)로 판정돼 사용자 결정 "한시 노출 수용"으로 RADIO revision 3 재봉인(커밋
+  3de0e09)해 종결했다. 코드 무수정은 양 리뷰어가 재확인했다.
+- 사용자 승인 수정 라운드(커밋 6e614b9)가 F-02(NULL·초 단위 DB 제약)·F-03(저장 전 추천
+  미리보기)·F-05(감사 전후 값)·F-06(자정 경계 생성 거부)를 수정했고, 양 리뷰어 재확인에서
+  4건 전부 해소 판정을 받았다.
+- 재확인에서 양 리뷰어가 독립적으로 같은 새 결함 1건(빈 예식 행의 추천 미리보기 오표시,
+  low)을 발견해 전원 인정됐다.
+- 최종 미해결 4건(medium 1·low 3)은 결과 파일 `docs/execution/reviews/P3-T01-review.json`과
+  backlog에 기록했다. total 89 (cq 88 · tests 82 · sec 90 · perf 96 · arch 88).
+- `pnpm gate:all` 침묵, `pnpm test` 1104/1104 통과(조정자 재실행 확인).
+
+### 미결 사항
+
+- 없음. backlog 4건은 backlog 문서가 소유한다.
+
+### 다음 행동
+
+1. index `done` 전환 + 대시보드 재생성 + 마감 커밋.
+2. `ci-finisher`가 미push 커밋 전체(b8a9aa0부터 마감 커밋까지)를 push하고 CI를 감시한다.
