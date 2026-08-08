@@ -52,3 +52,65 @@
 - `supabase/migrations/20260807020000_identity_worker_management.sql`(positions 정책·시스템 보호 트리거)
 - `src/entities/schedule/api/get-schedule-prep.ts`·`src/app/(protected)/admin/schedule/[id]/page.tsx`
   (P3-T01 준비 화면 산출물 확인)
+
+## 2026-08-09 · 개발 단계 완료
+
+- 기준 시각: 이 절 작성 시점, revision 2 재봉인 커밋(`907236b`) 위에서 이어 구현
+- RADIO `docs/execution/radio/P3-T02-radio.md` revision 2, SHA-256
+  `7f9601daba3ef32c81c670a962509c61bafd16d7dbc7a4a2eb18c581e1613ff2` — index의 `development_approval`과 일치.
+
+### 구현 순서(위 미결 사항 해소 후 실제로 밟은 순서)
+
+1. `supabase/migrations/20260809000000_position_requirements.sql` + `supabase/tests/18-position-requirements.test.sql`
+   (pgTAP 75건). `04-rls-default-deny.test.sql`의 `positions` 정책 수 단언을 1→4로 갱신(RADIO가 명시적으로 허용한
+   F-08 교훈, `runs/P3-T02/radio.md`에 문서화 완료).
+2. `src/entities/position/`(model·api)·`src/entities/schedule/`에 `requirement-manage.ts`(model)·
+   `list-schedule-requirements.ts`(api)·`ensure-schedule-requirements-copied.ts`(api, 신규 — 아래 참고) 추가.
+3. `src/features/position/`(api·hooks)·`src/features/requirement/`(api·hooks) — Server Action 3+3개, 편집 상태
+   훅 2개.
+4. `src/features/position/ui/`(`PositionList`·`PositionEditSheet`)·`src/features/requirement/ui/`
+   (`RequirementTable`·`MissingPositionsBanner`), `src/views/admin-positions/ui/AdminPositionsView.tsx` +
+   `src/app/(protected)/admin/positions/page.tsx`, `src/views/admin-schedule/ui/AdminSchedulePrepView.tsx` 확장 +
+   `src/app/(protected)/admin/schedule/[id]/page.tsx` 확장(기존 예식 흐름 무수정, 새 절만 추가).
+5. `tests/e2e/position-requirements.spec.ts`(인수 조건 7 — 자동 반영·기본값 변경 불변·비활성화 배제).
+6. `src/app/(protected)/admin/page.tsx`에 "포지션 관리" 링크 1개 추가(다른 줄 무수정, diff로 확인 완료).
+
+### 구현 중 발견해 즉시 해결한 이슈(설계 재해석이 아니라 프레임워크 제약)
+
+- **Next.js 16 `revalidatePath` 렌더 중 호출 금지.** `features/requirement/api/copy-requirements.ts`
+  (Server Action, 내부에서 `revalidatePath` 호출)를 준비 화면 page.tsx의 렌더 안에서 직접 `await`하면
+  `used "revalidatePath ..." during render which is unsupported` 예외가 실제로 발생했다(재현·수정·재검증
+  완료). `revalidatePath`를 부르지 않는 `src/entities/schedule/api/ensure-schedule-requirements-copied.ts`를
+  새로 만들어 렌더 시점 첫 진입 복사에 쓰고, 기존 `copyRequirements` Action은 RADIO Architecture가 지정한 대로
+  그대로 남겼다. 근거는 `node_modules/next/dist/docs/01-app/03-api-reference/04-functions/revalidatePath.md`와
+  실제 소스(`node_modules/next/dist/esm/server/web/spec-extension/revalidate.js`)로 확인했다. 상세는
+  `runs/P3-T02/radio.md` 2번 항목.
+- **P3-T01 예식 E2E와의 셀렉터 충돌(RADIO 위험 절이 예견한 위험이 실제로 발생).** `pnpm test:e2e` 전체 실행 중
+  `tests/e2e/ceremony-edit.spec.ts`가 `getByRole("button",{name:"저장",exact:true})` strict mode 위반으로
+  깨졌다 — 내가 새로 추가한 `RequirementTable`의 행별 "저장" 버튼이 기존 예식 섹션의 단일 "저장" 버튼과 텍스트가
+  겹쳤기 때문이다. 예식 컴포넌트·예식 E2E 파일은 무수정, 내 컴포넌트 라벨만 "인원 저장"/"인원 삭제"로 바꿔
+  해결했다. 재검증(`pnpm test:e2e` 전체 39건 재실행)으로 회귀 없음을 확인했다. 상세는 `runs/P3-T02/radio.md`
+  3번 항목.
+
+### 검증 결과
+
+- `pnpm verify` 전체 GREEN(포맷·lint·typecheck·unit 191 files/1165 tests·harness self-test 308·check:docs·
+  build·app-build·client-secret-scan·E2E 39/39·gate:all).
+- `pnpm db:reset && pnpm db:test` GREEN(18 files, 904 assertions, `18-position-requirements.test.sql` 75건 포함).
+- `tests/e2e/position-requirements.spec.ts`는 연속 재실행(같은 DB 상태, db:reset 없이 2회)으로 재실행 내성을
+  확인했다.
+- TDD RED→GREEN 증거는 `docs/execution/runs/P3-T02/tdd.json`(pgTAP 1쌍 + unit 9쌍, 전부 실제 명령 실행
+  출력에서 기록).
+
+### 구현 중 확정한 세부와 미결 사항 처리
+
+- `docs/execution/runs/P3-T02/radio.md`에 전부 기록했다(정책 수 단언 갱신, 렌더-중-revalidatePath 회피,
+  예식 E2E 셀렉터 충돌 회피, copy/set/remove의 CONFIRMED 처리 차이, 화면 모드 재사용, 렌더 시점 복사 가드,
+  Chip 위젯 선택 — 총 7개 항목).
+- RADIO의 유일한 미결 사항(확정 스케줄 수동 추가 개방·추가 시점 모달)은 P3-T06 소유로 손대지 않았다.
+
+### 다음 단계
+
+- 4단계(검증) — 교차 검증(`opus`·`codex`)과 인수 조건 증거 등록은 조정자가 이어 진행한다. status는
+  `in_progress`로 유지했다(3~5단계는 하나의 in_progress 구간).
+- push는 하지 않았다 — ci-finisher 소유.

@@ -1,0 +1,137 @@
+{
+  "entries": [
+    {
+      "command": "pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-08T16:06:18Z",
+      "phase": "red",
+      "note": "AC1-4: schedule_position_requirements 테이블·함수 3종·트리거가 아직 없어 18-position-requirements.test.sql 전 75건이 relation/function 부재로 실패"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-08T16:07:07Z",
+      "phase": "green",
+      "note": "AC1-4: position_requirements 마이그레이션 적용 후 18개 파일 904/904 PASS(04-rls-default-deny.test.sql의 positions 정책 수 단언 1→4 갱신 포함)"
+    },
+    {
+      "command": "pnpm vitest run src/entities/position/model/__tests__/position.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T16:12:09Z",
+      "phase": "red",
+      "note": "mapPositionRow·isSystemPosition 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/entities/position/model/__tests__/position.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T16:12:18Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/position/api/__tests__/list-positions.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T16:12:33Z",
+      "phase": "red",
+      "note": "listPositions 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/entities/position/api/__tests__/list-positions.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T16:12:43Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/requirement-manage.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T16:13:10Z",
+      "phase": "red",
+      "note": "requirement-manage 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/requirement-manage.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T16:13:51Z",
+      "phase": "green",
+      "note": "구현 + 테스트 픽스처의 uuid variant 자리 수정(zod .uuid()는 RFC4122 variant 니블을 검사) 후 GREEN"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/list-schedule-requirements.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T16:14:24Z",
+      "phase": "red",
+      "note": "listScheduleRequirements 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/list-schedule-requirements.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T16:14:37Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/position/api/__tests__/manage-positions.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T16:15:20Z",
+      "phase": "red",
+      "note": "createPosition·updatePosition·deletePosition 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/features/position/api/__tests__/manage-positions.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T16:15:59Z",
+      "phase": "green",
+      "note": "구현 + 테스트 픽스처 id를 유효한 uuid 형식으로 수정 후 GREEN"
+    },
+    {
+      "command": "pnpm vitest run src/features/requirement/api/__tests__/copy-requirements.test.ts src/features/requirement/api/__tests__/set-requirement.test.ts src/features/requirement/api/__tests__/remove-requirement.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T16:16:48Z",
+      "phase": "red",
+      "note": "copyRequirements·setRequirement·removeRequirement Action 모듈 부재(3파일 일괄 RED)"
+    },
+    {
+      "command": "pnpm vitest run src/features/requirement/api/__tests__/copy-requirements.test.ts src/features/requirement/api/__tests__/set-requirement.test.ts src/features/requirement/api/__tests__/remove-requirement.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T16:17:15Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/position/hooks/__tests__/usePositionEditor.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T16:18:03Z",
+      "phase": "red",
+      "note": "usePositionEditor 훅 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/features/position/hooks/__tests__/usePositionEditor.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T16:18:19Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/features/requirement/hooks/__tests__/useRequirementEditor.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T16:18:55Z",
+      "phase": "red",
+      "note": "useRequirementEditor 훅 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/features/requirement/hooks/__tests__/useRequirementEditor.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T16:19:09Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/ensure-schedule-requirements-copied.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T16:37:57Z",
+      "phase": "red",
+      "note": "ensureScheduleRequirementsCopied 모듈 부재. copy_schedule_requirements RPC를 Server Action(revalidatePath 포함) 대신 렌더링 중 안전하게 호출하기 위해 신설 — Next.js 16은 revalidatePath를 렌더 중 호출하면 예외를 던진다(node_modules/next/dist/docs 확인)"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/ensure-schedule-requirements-copied.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T16:38:13Z",
+      "phase": "green"
+    }
+  ]
+}

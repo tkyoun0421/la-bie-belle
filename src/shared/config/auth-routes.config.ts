@@ -11,6 +11,7 @@ export const ADMIN_ROLES_PATH = "/admin/roles";
 export const ADMIN_APPROVALS_PATH = "/admin/approvals";
 export const ADMIN_WORKERS_PATH = "/admin/workers";
 export const ADMIN_RECRUITMENT_PATH = "/admin/recruitment";
+export const ADMIN_POSITIONS_PATH = "/admin/positions";
 export const ADMIN_SCHEDULE_PATH = "/admin/schedule";
 export const ADMIN_SCHEDULE_DETAIL_PATTERN = "/admin/schedule/[id]";
 export const MY_PROFILE_PATH = "/my-profile";

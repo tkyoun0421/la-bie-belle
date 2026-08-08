@@ -37,6 +37,10 @@ export const ERROR_CODES = {
     http: 409,
     message: "상태가 이미 바뀌었어요. 새로고침 후 다시 확인해 주세요",
   },
+  SCHEDULING_POSITION_IN_USE: {
+    http: 409,
+    message: "필요 인원에 쓰이고 있는 포지션이에요. 비활성화해 주세요",
+  },
 } as const satisfies Record<`${ErrorDomain}_${string}`, ErrorSpec>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;
@@ -57,4 +61,5 @@ export const ERROR_CODE = {
   SCHEDULING_VALIDATION: "SCHEDULING_VALIDATION",
   SCHEDULING_APPLICATION_BLOCKED: "SCHEDULING_APPLICATION_BLOCKED",
   SCHEDULING_STATUS_CONFLICT: "SCHEDULING_STATUS_CONFLICT",
+  SCHEDULING_POSITION_IN_USE: "SCHEDULING_POSITION_IN_USE",
 } as const satisfies { [K in ErrorCode]: K };

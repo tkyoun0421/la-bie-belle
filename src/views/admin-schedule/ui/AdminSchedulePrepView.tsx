@@ -1,6 +1,8 @@
 "use client";
 
+import type { Position } from "@/entities/position/model/position";
 import type { SchedulePrep } from "@/entities/schedule/types/schedule-prep";
+import type { ScheduleRequirementRow } from "@/entities/schedule/types/schedule-requirement";
 import {
   useCeremonyEditor,
   type ReplaceCeremoniesAction,
@@ -18,6 +20,13 @@ import { CheckInRuleEditor } from "@/features/ceremony/ui/CheckInRuleEditor";
 import { PlannedTimesEditor } from "@/features/ceremony/ui/PlannedTimesEditor";
 import { RecommendationConfirmDialog } from "@/features/ceremony/ui/RecommendationConfirmDialog";
 import {
+  useRequirementEditor,
+  type RemoveRequirementAction,
+  type SetRequirementAction,
+} from "@/features/requirement/hooks/useRequirementEditor";
+import { MissingPositionsBanner } from "@/features/requirement/ui/MissingPositionsBanner";
+import { RequirementTable } from "@/features/requirement/ui/RequirementTable";
+import {
   resolveSchedulePrepScreenMode,
   schedulePrepStatusLabel,
 } from "@/views/admin-schedule/model/schedule-prep-screen";
@@ -32,6 +41,10 @@ type AdminSchedulePrepViewProps = {
   onCreateCheckInRule: (input: CheckInRuleActionInput) => Promise<CheckInRuleMutationOutcome>;
   onUpdateCheckInRule: (input: CheckInRuleActionInput) => Promise<CheckInRuleMutationOutcome>;
   onDeleteCheckInRule: (input: DeleteCheckInRuleActionInput) => Promise<CheckInRuleMutationOutcome>;
+  requirementRows: ScheduleRequirementRow[];
+  activePositions: Position[];
+  onSetRequirement: SetRequirementAction;
+  onRemoveRequirement: RemoveRequirementAction;
 };
 
 export function AdminSchedulePrepView({
@@ -41,6 +54,10 @@ export function AdminSchedulePrepView({
   onCreateCheckInRule,
   onUpdateCheckInRule,
   onDeleteCheckInRule,
+  requirementRows,
+  activePositions,
+  onSetRequirement,
+  onRemoveRequirement,
 }: AdminSchedulePrepViewProps) {
   const editor = useCeremonyEditor(
     {
@@ -57,6 +74,11 @@ export function AdminSchedulePrepView({
     onCreateCheckInRule,
     onUpdateCheckInRule,
     onDeleteCheckInRule,
+  );
+  const requirementEditor = useRequirementEditor(
+    { scheduleId: schedulePrep.id, rows: requirementRows, activePositions },
+    onSetRequirement,
+    onRemoveRequirement,
   );
 
   const mode = resolveSchedulePrepScreenMode({
@@ -121,6 +143,38 @@ export function AdminSchedulePrepView({
           />
         </>
       ) : null}
+
+      <section className="flex flex-col gap-3">
+        <h2 className="typo-title text-text-strong">필요 인원</h2>
+        {mode === "readonly" ? (
+          <ul className="flex flex-col gap-1">
+            {requirementRows.map((row) => (
+              <li
+                key={row.positionId}
+                className="flex items-center justify-between typo-body text-text-strong"
+              >
+                <span>{row.positionName}</span>
+                <span>{row.requiredCount}명</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <>
+            <MissingPositionsBanner
+              missing={requirementEditor.missing}
+              onAdd={requirementEditor.addMissing}
+              pending={requirementEditor.pending}
+            />
+            <RequirementTable
+              rows={requirementEditor.rows}
+              onUpdateCount={requirementEditor.updateCount}
+              onSaveCount={requirementEditor.saveCount}
+              onRemoveRow={requirementEditor.removeRow}
+              pending={requirementEditor.pending}
+            />
+          </>
+        )}
+      </section>
 
       <CheckInRuleEditor
         rules={schedulePrep.checkInRules}

@@ -136,8 +136,8 @@ reset role;
 
 select is(
   (select count(*)::int from pg_policies where schemaname = 'public' and tablename = 'positions'),
-  1,
-  'positions has exactly one policy(활성 근무자 select)'
+  4,
+  'positions has exactly four policies(활성 근무자 select + admin insert·update·delete, P3-T02)'
 );
 select is(
   (select count(*)::int from pg_policies where schemaname = 'public' and tablename = 'venue_settings'),
