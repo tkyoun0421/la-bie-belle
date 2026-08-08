@@ -34,6 +34,7 @@ const USAGE_GUARDED_STATUSES: ReadonlySet<string> = new Set([
   "needs_user",
   "stopped",
 ]);
+const RESPAWN_OUTCOME_GUARDED_STATUSES: ReadonlySet<string> = new Set(["needs_user", "stopped"]);
 
 export type LoopStatus =
   | "starting"
@@ -237,6 +238,9 @@ export function recordFailure(state: LoopState, input: unknown, now = new Date()
 }
 
 export function recordRespawnFailure(state: LoopState, now = new Date()): LoopState {
+  if (RESPAWN_OUTCOME_GUARDED_STATUSES.has(state.status)) {
+    return state;
+  }
   const attempt = state.attempt + 1;
   if (attempt > MAX_RETRY_ATTEMPTS) {
     return { ...state, status: "needs_user", attempt, updated_at: now.toISOString() };
@@ -252,6 +256,9 @@ export function recordRespawnFailure(state: LoopState, now = new Date()): LoopSt
 }
 
 export function recordRespawnSuccess(state: LoopState, now = new Date()): LoopState {
+  if (RESPAWN_OUTCOME_GUARDED_STATUSES.has(state.status)) {
+    return state;
+  }
   return { ...state, status: "running", next_attempt_at: null, updated_at: now.toISOString() };
 }
 

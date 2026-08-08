@@ -127,3 +127,40 @@ opus·codex 교차 검증이 확정한 high 9건을 봉인 RADIO revision 5 계�
 - `harness/self-test/claude-loop-supervisor.test.ts`(신규)
 - `harness/self-test/fixture.ts`
 - `docs/execution/runs/P0-T42/tdd.json`
+
+## 2026-08-08 · 검증 수정 라운드 2 (재검증 확정 3건, 마지막 수정 라운드)
+
+- 작업 식별자: P0-T42
+- 현재 단계: 검증 수정 2회차 → 재검증
+- 기준 시각: 2026-08-08
+
+### 확정된 사실
+
+opus·codex·opus-2 재검증이 확정한 N-1/N-3/F-06 잔여 3건을 봉인 RADIO revision 5 계약대로 수정했다. 이번이 조정자가 지정한 마지막 수정 라운드다. 커밋 SHA는 이 turn의 최종 보고에 남긴다.
+
+- **FIX-1 / F-06 잔여** (`harness/lib/claude-loop-state.ts` `recordRespawnSuccess`·`recordRespawnFailure`): `execFileSync("claude", ["respawn", ...])`가 state lock 밖에서 오래 걸리는 동안 다른 프로세스(StopFailure 훅의 `record-failure`, 또는 `stop`)가 남긴 `needs_user`·`stopped`를 respawn 결과 기록이 무조건 덮어쓰던 결함을 고쳤다. 두 함수 모두 `RESPAWN_OUTCOME_GUARDED_STATUSES`(`needs_user`·`stopped`, `waiting_rate_limit`은 제외 — 정상 경로에서 respawn 대상 상태이므로) 집합에 속한 최신 상태를 보면 기록을 포기하고 그대로 반환한다. 회귀는 두 층으로 남겼다: pure function 단위 테스트(`recordRespawnSuccess`/`recordRespawnFailure`가 needs_user·stopped를 그대로 반환) + CLI 교차 시나리오 테스트(가짜 `claude respawn`을 마커 파일로 붙잡아 두고, 그 사이에 실제 `record-failure`로 needs_user를 기록시킨 뒤 풀어 주는 방식 — 임의 sleep 타이밍에 기대지 않고 결정적으로 재현했다). 이 교차 테스트가 봉인 위험 렌즈 표 "4 안전 중단·게이트" 행의 동시성 셀("실패 신호와 wakeup 교차 시 중단 상태가 우선함")의 "테스트함" 선언을 실제로 채운다.
+- **FIX-2 / N-1** (`scripts/claude-loop.mjs` `withStateLock`·`updateState*`): `loop-state.lock`에 소유 pid를 기록하고, 획득 실패 시 소유 pid가 죽어 있으면(`process.kill(pid,0)`이 ESRCH) 회수 후 재시도한다(공급자 `supervisor.lock`이 이미 쓰는 "pid 기법"을 재사용). `record-usage`·`record-failure`·`stop`은 새 `updateStateOrWarn`을 통해 락 획득에 최종 실패하면 stderr 경고를 남기고 exit 1로 종료한다(기존에는 무음으로 exit 0). supervisor 루프의 respawn 성공/실패 기록은 새 `updateStateCritical`(6회, 100ms 간격 추가 재시도)을 써서 일시적 lock 경합으로 "due" 상태가 남아 다음 3초 tick에 respawn이 중복 호출되는 상황을 막는다. `.claude/skills/loop-mode/SKILL.md`의 "on" 절차 1번에 `loop-state.lock` 스테일 정리 문구를 추가했다(`supervisor.lock`만 다루던 것을 보완).
+- **FIX-3 / N-3** (`scripts/claude-loop.mjs` needs_user 가드): H-9가 도입한 `status === "needs_user" && last_error_kind !== null` 조건이, 재검사 차단 경로(last_error_kind를 건드리지 않던 244행대)가 만든 needs_user를 가드가 못 보게 해 ① 일반 `start`가 안내 없이 3초 폴링 후 exit 0로 새는 경로, ② `start --watch`가 같은 needs_user를 running으로 되살리는 경로 두 가지를 열어 뒀다. 가드를 `status === "needs_user"` 단독 판정으로 되돌리고, 재검사 차단 경로가 이제 `last_error_kind: "invalid_request"`(고정 정규화 목록 안의 값)를 함께 남기게 해 원인은 여전히 상태 파일에서 확인할 수 있게 했다. `watch` 분기의 상태 보존 목록(`WATCH_PRESERVED_STATUSES`)에 `needs_user`를 추가했다(가드가 이미 앞에서 막지만 방어적으로 이중화). 회귀는 last_error_kind가 null인 needs_user에서 `start`(안내 출력 + exit 2 + claude 미호출)와 `start --watch`(상태 보존) 양쪽으로 남겼다.
+- **범위 해석 결정 — `watch`의 `stopped` 보존은 이번 라운드에 넣지 않았다.** 지시문의 요약 문장("watch는 needs_user·stopped를 running으로 되살리지 않는다")을 문자 그대로 `stopped`까지 `WATCH_PRESERVED_STATUSES`에 넣어 보면, `initialState()`의 기본값이 `status: "stopped"`이기 때문에 최초 `/loop-mode on`(fresh 상태에서 `start --watch` 최초 실행)이 3초 폴링 한 번 만에 스스로 종료돼 버린다 — `SKILL.md`의 "on" 3번("status가 running·armed·waiting_rate_limit 중 하나가 됐는지 확인")과 라운드 1부터 검증된 동작을 깨뜨리는 실측 회귀다. 반면 지시문이 명시한 회귀 테스트 스펙은 "last_error_kind가 null인 needs_user에서 ... watch의 상태 보존"으로 needs_user만 좁혀 요구했다. 스키마상 "최초 미실행"과 "명시적으로 stop됨"을 구분할 필드가 없어(둘 다 `status: "stopped"`), 이 구분을 새로 만드는 것은 설계 결정이라 이번 라운드에서 임의로 편입하지 않았다. needs_user만 보존하도록 좁혀 구현했고, 이 판단은 재검증에서 다시 짚어볼 수 있게 여기 명시한다.
+
+### 미결 사항
+
+- 위 "범위 해석 결정"에 적은 대로, `watch`가 명시적으로 `stop`된 직후 재실행됐을 때 `stopped`를 `running`으로 되살리는 기존 동작(라운드 1부터 존재, 이번 라운드가 만든 회귀 아님)은 그대로 남아 있다 — "최초 미실행"과 "명시적 stop"을 구분하는 필드를 추가할지는 설계 결정이 필요하다.
+- `updateStateCritical`의 재시도 예산(6회 × 100ms + 매 시도 내부 최대 500ms)을 모두 소진할 만큼 극단적인 lock 경합이 지속되면 respawn 성공/실패 기록이 여전히 유실될 수 있다 — 다음 3초 tick이 자연 복구하지만, 그 사이 중복 respawn 위험은 이론상 남는다. 지시된 "재시도로 막는다" 요구는 충족했고, 완전한 보장(예: in-memory dedupe 플래그)은 이번 지시 범위 밖이라 넣지 않았다.
+- 남은 non-critical 항목은 지시대로 이번이 마지막 수정 라운드이므로 backlog로 넘긴다.
+
+### 다음 행동
+
+1. 검증 단계에서 `check_ids` 3종 기준 재검증을 받는다.
+2. 통과 시 task를 `done`으로 전환한다.
+
+### 증거·산출물 경로
+
+- `harness/lib/claude-loop-state.ts`
+- `scripts/claude-loop.mjs`
+- `harness/self-test/claude-loop-state.test.ts`
+- `harness/self-test/claude-loop-reverification.test.ts`
+- `harness/self-test/claude-loop-supervisor.test.ts`
+- `harness/self-test/fixture.ts`
+- `.claude/skills/loop-mode/SKILL.md`
+- `docs/execution/runs/P0-T42/tdd.json`

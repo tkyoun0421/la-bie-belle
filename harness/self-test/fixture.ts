@@ -1,9 +1,11 @@
-import { execFileSync, spawnSync } from "node:child_process";
+import { execFileSync, spawn, spawnSync } from "node:child_process";
+import type { ChildProcess } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   chmodSync,
   copyFileSync,
   cpSync,
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -349,5 +351,55 @@ export function readFakeClaudeLog(logPath: string): string[] {
       .filter((line) => line.length > 0);
   } catch {
     return [];
+  }
+}
+
+export function createHeldRespawnAdapter(
+  root: string,
+  options: { readonly bgSessionId?: string; readonly respawnExitCode?: number } = {},
+): {
+  readonly binDir: string;
+  readonly logPath: string;
+  readonly startedMarkerPath: string;
+  readonly releaseMarkerPath: string;
+} {
+  const logPath = join(root, "fake-claude.log");
+  const startedMarkerPath = join(root, "respawn-started.marker");
+  const releaseMarkerPath = join(root, "respawn-release.marker");
+  const bgSessionId = options.bgSessionId ?? "fake-session-1";
+  const respawnExitCode = options.respawnExitCode ?? 0;
+  const script = [
+    `printf '%s\\n' "$*" >> "${logPath}"`,
+    `if [ "$1" = "--bg" ]; then echo "${bgSessionId}"; exit 0; fi`,
+    `if [ "$1" = "respawn" ]; then`,
+    `  : > "${startedMarkerPath}"`,
+    `  while [ ! -f "${releaseMarkerPath}" ]; do sleep 0.05; done`,
+    `  exit ${respawnExitCode}`,
+    `fi`,
+    "exit 1",
+  ].join("\n");
+  const binDir = createFakeClaudeBin(root, script);
+  return { binDir, logPath, startedMarkerPath, releaseMarkerPath };
+}
+
+export function spawnLoopCommand(
+  root: string,
+  args: readonly string[],
+  options: { readonly env?: Readonly<Record<string, string>> } = {},
+): ChildProcess {
+  return spawn(
+    process.execPath,
+    ["--experimental-strip-types", "--disable-warning=ExperimentalWarning", "scripts/claude-loop.mjs", ...args],
+    { cwd: root, env: { ...process.env, PATH: "", ...options.env } },
+  );
+}
+
+export async function waitForFile(path: string, timeoutMs = 6_000): Promise<void> {
+  const start = Date.now();
+  while (!existsSync(path)) {
+    if (Date.now() - start > timeoutMs) {
+      throw new Error(`timed out waiting for ${path}`);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 20));
   }
 }

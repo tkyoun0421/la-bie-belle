@@ -17,6 +17,8 @@ const runtime = join(root, ".claude", "runtime");
 const statePath = join(runtime, "loop-state.json");
 const stateLockPath = join(runtime, "loop-state.lock");
 const lockPath = join(runtime, "supervisor.lock");
+const WATCH_PRESERVED_STATUSES = new Set(["waiting_rate_limit", "armed", "needs_user"]);
+const GATE_BLOCK_ERROR_KIND = "invalid_request";
 
 const harnessLibUrl = (fileName) => new URL(`../harness/lib/${fileName}`, import.meta.url).href;
 const mod = await import(harnessLibUrl("claude-loop-state.ts"));
@@ -121,13 +123,42 @@ function computeDryRunPlan() {
   };
 }
 
+function isProcessAlive(pid) {
+  if (!Number.isInteger(pid) || pid <= 0) {
+    return false;
+  }
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return Boolean(error) && error.code === "EPERM";
+  }
+}
+
+function reapStaleStateLock() {
+  let owner;
+  try {
+    owner = readFileSync(stateLockPath, "utf8").trim();
+  } catch {
+    return;
+  }
+  if (isProcessAlive(Number(owner))) {
+    return;
+  }
+  try {
+    unlinkSync(stateLockPath);
+  } catch {}
+}
+
 async function withStateLock(run) {
   const maxAttempts = 25;
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     let fd;
     try {
       fd = openSync(stateLockPath, "wx", 0o600);
+      writeSync(fd, String(process.pid));
     } catch {
+      reapStaleStateLock();
       await sleep(20);
       continue;
     }
@@ -143,14 +174,43 @@ async function withStateLock(run) {
   return { ok: false, value: undefined };
 }
 
-async function updateState(mutate) {
-  const result = await withStateLock(() => {
+function withStateMutation(mutate) {
+  return withStateLock(() => {
     const current = mod.readState(statePath);
     const next = mutate(current);
     mod.writeState(statePath, next);
     return next;
   });
+}
+
+async function updateState(mutate) {
+  const result = await withStateMutation(mutate);
   return result.ok ? result.value : mod.readState(statePath);
+}
+
+async function updateStateOrWarn(mutate, context) {
+  const result = await withStateMutation(mutate);
+  if (!result.ok) {
+    console.error(
+      `could not acquire the state lock for ${context}; the existing checkpoint was preserved and this round was skipped`,
+    );
+  }
+  return result;
+}
+
+async function updateStateCritical(mutate) {
+  const attempts = 6;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const result = await withStateMutation(mutate);
+    if (result.ok) {
+      return result.value;
+    }
+    await sleep(100);
+  }
+  console.error(
+    "could not persist the respawn outcome after repeated state lock contention; skipping this round to avoid a duplicate respawn call",
+  );
+  return null;
 }
 
 function acquireSupervisorLock() {
@@ -200,9 +260,9 @@ async function runStart() {
         status: "waiting_rate_limit",
         updated_at: new Date().toISOString(),
       }));
-    } else if (state.status === "needs_user" && state.last_error_kind !== null) {
+    } else if (state.status === "needs_user") {
       console.log(
-        `checkpoint status is needs_user (last_error_kind: ${state.last_error_kind}). Run 'pnpm claude:loop status' for the reason, resolve it manually, then restart with 'pnpm claude:loop start --session-id <id>' if you want to keep the same session.`,
+        `checkpoint status is needs_user (last_error_kind: ${state.last_error_kind ?? "unknown"}). Run 'pnpm claude:loop status' for the reason, resolve it manually, then restart with 'pnpm claude:loop start --session-id <id>' if you want to keep the same session.`,
       );
       return 2;
     } else if (resumeAt && resumeAt.valueOf() > Date.now()) {
@@ -221,10 +281,7 @@ async function runStart() {
     if (watch) {
       const derivedTaskId = mod.deriveTaskId(readIndexEntries());
       state = await updateState((current) => {
-        const status =
-          current.status === "waiting_rate_limit" || current.status === "armed"
-            ? current.status
-            : "running";
+        const status = WATCH_PRESERVED_STATUSES.has(current.status) ? current.status : "running";
         return {
           ...current,
           status,
@@ -244,6 +301,7 @@ async function runStart() {
         await updateState((current) => ({
           ...current,
           status: "needs_user",
+          last_error_kind: GATE_BLOCK_ERROR_KIND,
           updated_at: new Date().toISOString(),
         }));
         return 2;
@@ -303,10 +361,10 @@ async function runStart() {
             `${JSON.stringify({ session_id: current.session_id, resumed_at: new Date().toISOString() })}\n`,
             { mode: 0o600 },
           );
-          await updateState((latest) => mod.recordRespawnSuccess(latest));
+          await updateStateCritical((latest) => mod.recordRespawnSuccess(latest));
         } catch {
-          const failed = await updateState((latest) => mod.recordRespawnFailure(latest));
-          if (failed.status === "needs_user") {
+          const failed = await updateStateCritical((latest) => mod.recordRespawnFailure(latest));
+          if (failed !== null && failed.status === "needs_user") {
             break;
           }
         }
@@ -336,7 +394,7 @@ async function main() {
 
   if (command === "record-usage" || command === "record-failure") {
     const input = await readInput();
-    await updateState((current) => {
+    const result = await updateStateOrWarn((current) => {
       if (command === "record-usage") {
         return mod.recordUsage(current, input);
       }
@@ -346,8 +404,8 @@ async function main() {
       }
       const derivedTaskId = mod.deriveTaskId(readIndexEntries());
       return derivedTaskId === null ? failed : { ...failed, task_id: derivedTaskId };
-    });
-    return 0;
+    }, command);
+    return result.ok ? 0 : 1;
   }
 
   if (command === "status") {
@@ -356,12 +414,11 @@ async function main() {
   }
 
   if (command === "stop") {
-    await updateState((current) => ({
-      ...current,
-      status: "stopped",
-      updated_at: new Date().toISOString(),
-    }));
-    return 0;
+    const result = await updateStateOrWarn(
+      (current) => ({ ...current, status: "stopped", updated_at: new Date().toISOString() }),
+      command,
+    );
+    return result.ok ? 0 : 1;
   }
 
   if (command !== "start") {

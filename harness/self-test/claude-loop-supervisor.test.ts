@@ -4,11 +4,14 @@ import { join } from "node:path";
 import { test } from "node:test";
 import {
   createFakeClaudeAdapter,
+  createHeldRespawnAdapter,
   createLoopFixtureRoot,
   makeTask,
   readFakeClaudeLog,
   readLoopState,
   runLoopCommand,
+  spawnLoopCommand,
+  waitForFile,
   writeIndexRecords,
   writeRadio,
 } from "./fixture.ts";
@@ -252,23 +255,42 @@ test("claude-loop record-usage — waiting_rate_limit 안전 대기 상태는 us
   assert.equal(state["status"], "waiting_rate_limit");
 });
 
-test("claude-loop record-failure — 상태 lock을 다른 프로세스가 쥐고 있으면 이번 회차를 건너뛰고 기존 상태를 보존한다", () => {
+test("claude-loop record-failure — 상태 lock을 살아있는 다른 프로세스가 쥐고 있으면 이번 회차를 건너뛰고 경고와 함께 비영으로 종료한다", () => {
   const root = createLoopFixtureRoot();
   const initial = baseState({ status: "waiting_rate_limit", session_id: "sess-c", attempt: 3 });
   writeLoopState(root, initial);
   mkdirSync(runtimeDir(root), { recursive: true });
   const heldLock = join(runtimeDir(root), "loop-state.lock");
-  writeFileSync(heldLock, "held-by-test");
+  writeFileSync(heldLock, String(process.pid));
 
   const result = runLoopCommand(root, ["record-failure"], {
     input: JSON.stringify({ session_id: "sess-c", error_type: "rate_limit" }),
     timeout: 3_000,
   });
 
-  assert.equal(result.status, 0);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /lock/);
   const state = readLoopState(root);
   assert.equal(state["attempt"], 3);
   assert.equal(state["updated_at"], initial["updated_at"]);
+});
+
+test("claude-loop record-failure — 소유 프로세스가 죽은 상태 lock은 회수해 갱신을 진행한다", () => {
+  const root = createLoopFixtureRoot();
+  const initial = baseState({ status: "waiting_rate_limit", session_id: "sess-dead-lock", attempt: 3 });
+  writeLoopState(root, initial);
+  mkdirSync(runtimeDir(root), { recursive: true });
+  writeFileSync(join(runtimeDir(root), "loop-state.lock"), "999999");
+
+  const result = runLoopCommand(root, ["record-failure"], {
+    input: JSON.stringify({ session_id: "sess-dead-lock", error_type: "rate_limit" }),
+    timeout: 3_000,
+  });
+
+  assert.equal(result.status, 0);
+  const state = readLoopState(root);
+  assert.notEqual(state["updated_at"], initial["updated_at"]);
+  assert.equal(existsSync(join(runtimeDir(root), "loop-state.lock")), false);
 });
 
 test("claude-loop start — due한 waiting_rate_limit은 respawn 한 번만으로 running에 수렴한다", () => {
@@ -290,4 +312,88 @@ test("claude-loop start — due한 waiting_rate_limit은 respawn 한 번만으�
   assert.equal(log.length, 1);
   const state = readLoopState(root);
   assert.equal(state["status"], "running");
+});
+
+test("claude-loop start — respawn 성공 기록 직후 상태 lock이 죽은 pid로 남아 있어도 재시도로 회복해 중복 respawn을 만들지 않는다", () => {
+  const root = createLoopFixtureRoot();
+  writeLoopState(
+    root,
+    baseState({
+      status: "waiting_rate_limit",
+      session_id: "sess-stale-lock",
+      attempt: 1,
+      next_attempt_at: "2020-01-01T00:00:00.000Z",
+    }),
+  );
+  mkdirSync(runtimeDir(root), { recursive: true });
+  writeFileSync(join(runtimeDir(root), "loop-state.lock"), "999999");
+  const adapter = createFakeClaudeAdapter(root, { respawnExitCode: 0 });
+
+  runLoopCommand(root, ["start"], { env: { PATH: adapter.binDir }, timeout: 7_500 });
+
+  const log = readFakeClaudeLog(adapter.logPath).filter((line) => line.startsWith("respawn"));
+  assert.equal(log.length, 1);
+  const state = readLoopState(root);
+  assert.equal(state["status"], "running");
+});
+
+test("claude-loop start — respawn 실행 중 record-failure가 needs_user를 기록하면 성공 기록이 이를 덮지 않는다", async () => {
+  const root = createLoopFixtureRoot();
+  writeLoopState(
+    root,
+    baseState({
+      status: "waiting_rate_limit",
+      session_id: "sess-race",
+      attempt: 1,
+      next_attempt_at: "2020-01-01T00:00:00.000Z",
+    }),
+  );
+  const adapter = createHeldRespawnAdapter(root, { respawnExitCode: 0 });
+  const child = spawnLoopCommand(root, ["start"], { env: { PATH: adapter.binDir } });
+
+  try {
+    await waitForFile(adapter.startedMarkerPath);
+
+    const failure = runLoopCommand(root, ["record-failure"], {
+      input: JSON.stringify({ session_id: "sess-race", error_type: "authentication_failed" }),
+    });
+    assert.equal(failure.status, 0);
+    const midFlightState = readLoopState(root);
+    assert.equal(midFlightState["status"], "needs_user");
+
+    writeFileSync(adapter.releaseMarkerPath, "");
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  } finally {
+    child.kill();
+  }
+
+  const state = readLoopState(root);
+  assert.equal(state["status"], "needs_user");
+  assert.equal(state["last_error_kind"], "authentication_failed");
+});
+
+test("claude-loop start — last_error_kind가 없는 needs_user도 안내와 함께 즉시 멈추고 claude를 호출하지 않는다", () => {
+  const root = createLoopFixtureRoot();
+  writeIndexRecords(root, [readyTask(root)]);
+  writeLoopState(root, baseState({ status: "needs_user", last_error_kind: null }));
+  const adapter = createFakeClaudeAdapter(root);
+
+  const result = runLoopCommand(root, ["start"], { env: { PATH: adapter.binDir } });
+
+  assert.equal(result.status, 2);
+  assert.match(`${result.stdout}${result.stderr}`, /needs_user/);
+  assert.deepEqual(readFakeClaudeLog(adapter.logPath), []);
+  const state = readLoopState(root);
+  assert.equal(state["status"], "needs_user");
+});
+
+test("claude-loop start --watch — last_error_kind가 없는 needs_user도 running으로 되살리지 않는다", () => {
+  const root = createLoopFixtureRoot();
+  writeLoopState(root, baseState({ status: "needs_user", last_error_kind: null }));
+
+  const result = runLoopCommand(root, ["start", "--watch"], { timeout: 5_000 });
+
+  assert.equal(result.status, 2);
+  const state = readLoopState(root);
+  assert.equal(state["status"], "needs_user");
 });

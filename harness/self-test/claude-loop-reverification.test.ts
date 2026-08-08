@@ -53,7 +53,7 @@ test("claude-loop start — in_progress task가 둘이면 재검사가 새 세�
   assert.match(result.stderr, /in_progress/);
   const state = readLoopState(root);
   assert.equal(state["status"], "needs_user");
-  assert.equal(state["last_error_kind"], null);
+  assert.equal(state["last_error_kind"], "invalid_request");
   assert.equal(result.status, 2);
 });
 
@@ -69,7 +69,7 @@ test("claude-loop start — 승인 계약이 깨진 in_progress task는 재검�
   assert.match(result.stderr, /development_approval/);
   const state = readLoopState(root);
   assert.equal(state["status"], "needs_user");
-  assert.equal(state["last_error_kind"], null);
+  assert.equal(state["last_error_kind"], "invalid_request");
   assert.equal(result.status, 2);
 });
 
@@ -85,7 +85,7 @@ test("claude-loop start — RADIO 해시가 승인 기록과 다르면 재검사
   assert.match(result.stderr, /해시/);
   const state = readLoopState(root);
   assert.equal(state["status"], "needs_user");
-  assert.equal(state["last_error_kind"], null);
+  assert.equal(state["last_error_kind"], "invalid_request");
   assert.equal(result.status, 2);
 });
 
@@ -100,17 +100,24 @@ test("claude-loop start — --watch는 저장소 재검사를 거치지 않는�
   assert.doesNotMatch(`${result.stdout}${result.stderr}`, /repository reverification blocked/);
 });
 
-test("claude-loop start — 재검사 거부 후 supervisor lock이 정리되어 재시도할 수 있다", () => {
+test("claude-loop start — 재검사 거부 후 supervisor lock은 정리되지만 재시도는 안내만 남기고 재검사를 되풀이하지 않는다", () => {
   const root = createLoopFixtureRoot();
   const first = makeTask({ id: "P0-T01", status: "in_progress" });
   const second = makeTask({ id: "P0-T02", status: "in_progress" });
   writeIndexRecords(root, [first, second]);
 
-  runLoopCommand(root, ["start"]);
+  const blocked = runLoopCommand(root, ["start"]);
+  assert.match(blocked.stderr, /repository reverification blocked/);
+
   const retry = runLoopCommand(root, ["start"]);
 
   assert.doesNotMatch(retry.stderr, /supervisor already running/);
-  assert.match(retry.stderr, /repository reverification blocked/);
+  assert.doesNotMatch(`${retry.stdout}${retry.stderr}`, /repository reverification blocked/);
+  assert.equal(retry.status, 2);
+  assert.match(`${retry.stdout}${retry.stderr}`, /needs_user/);
+  const state = readLoopState(root);
+  assert.equal(state["status"], "needs_user");
+  assert.equal(state["last_error_kind"], "invalid_request");
 });
 
 test("claude-loop start — handoff 문서가 없으면 재검사가 새 세션을 막는다", () => {
@@ -129,7 +136,7 @@ test("claude-loop start — handoff 문서가 없으면 재검사가 새 세션�
   assert.match(result.stderr, /handoff/);
   const state = readLoopState(root);
   assert.equal(state["status"], "needs_user");
-  assert.equal(state["last_error_kind"], null);
+  assert.equal(state["last_error_kind"], "invalid_request");
   assert.equal(result.status, 2);
 });
 
@@ -142,6 +149,7 @@ test("claude-loop start — index.jsonl에 JSON 파싱 오류가 있으면 재�
   assert.match(result.stderr, /repository reverification blocked/);
   const state = readLoopState(root);
   assert.equal(state["status"], "needs_user");
+  assert.equal(state["last_error_kind"], "invalid_request");
   assert.equal(result.status, 2);
 });
 
@@ -162,5 +170,6 @@ test("claude-loop start — 스키마를 위반한 malformed development_approva
   assert.match(result.stderr, /필수 필드/);
   const state = readLoopState(root);
   assert.equal(state["status"], "needs_user");
+  assert.equal(state["last_error_kind"], "invalid_request");
   assert.equal(result.status, 2);
 });

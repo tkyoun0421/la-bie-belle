@@ -15,7 +15,7 @@ node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/cl
 
 ## on
 
-1. `.claude/runtime/supervisor.lock`이 있는데 `pgrep -f "claude-loop.mjs start"`가 비면 스테일 락이므로 지운다. 프로세스가 살아 있으면 이미 켜져 있다고 보고하고 끝낸다.
+1. `.claude/runtime/supervisor.lock`이 있는데 `pgrep -f "claude-loop.mjs start"`가 비면 스테일 락이므로 지운다. `.claude/runtime/loop-state.lock`도 남아 있으면 함께 지운다 — pid가 죽었으면 다음 상태 갱신 때 코드가 스스로 회수하지만 미리 지워도 안전하다. 프로세스가 살아 있으면 이미 켜져 있다고 보고하고 끝낸다.
 2. 감시 supervisor를 터미널에서 분리해 띄운다. `--watch`는 새 작업을 만들지 않는 감시 전용 모드다.
 
    ```bash

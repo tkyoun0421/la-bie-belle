@@ -203,6 +203,33 @@ test("respawn success clears the pending wakeup and resumes running", () => {
   assert.equal(resumed.next_attempt_at, null);
 });
 
+test("respawn success does not revive a needs_user or stopped checkpoint set while the respawn call was in flight", () => {
+  const needsUser: LoopState = {
+    ...initialState(),
+    session_id: "sess",
+    status: "needs_user",
+    last_error_kind: "authentication_failed",
+  };
+  assert.deepEqual(recordRespawnSuccess(needsUser, now), needsUser);
+
+  const stopped: LoopState = { ...initialState(), session_id: "sess", status: "stopped" };
+  assert.deepEqual(recordRespawnSuccess(stopped, now), stopped);
+});
+
+test("respawn failure does not revive a needs_user or stopped checkpoint set while the respawn call was in flight", () => {
+  const needsUser: LoopState = {
+    ...initialState(),
+    session_id: "sess",
+    status: "needs_user",
+    last_error_kind: "billing_error",
+    attempt: 3,
+  };
+  assert.deepEqual(recordRespawnFailure(needsUser, now), needsUser);
+
+  const stopped: LoopState = { ...initialState(), session_id: "sess", status: "stopped", attempt: 3 };
+  assert.deepEqual(recordRespawnFailure(stopped, now), stopped);
+});
+
 test("a repeated failure event for the same session updates state only once", () => {
   const first = recordFailure({ ...initialState(), session_id: "sess" }, { session_id: "sess", error_type: "rate_limit" }, now);
   assert.equal(first.attempt, 1);
