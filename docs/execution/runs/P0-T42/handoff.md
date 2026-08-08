@@ -69,3 +69,21 @@ RADIO revision 4의 변경 허용 경로에 속한 `.claude/settings.json`·`.cl
 - fc54a1f amend 계획은 폐기 — 야간 큐 커밋이 위에 쌓이므로 P0-T42 마무리는 후속 커밋으로 진행한다.
 - push는 아침 결정 전까지 보류(fc54a1f가 원격에 실리면 amend·정리 여지가 사라짐). ci-finisher 디스패치도 같은 이유로 보류.
 - P2-T05·P3-T01 승인 봉인(index 반영)은 이 task 경계에서 커밋했다.
+
+## 2026-08-08 · 마무리 재개 (revision 5 재봉인, 아침 승인)
+
+- 작업 식별자: P0-T42
+- 현재 단계: 개발 마무리 재개 → 커밋 → 다음 검증
+- 기준 시각: 2026-08-08 아침
+
+### 확정된 사실
+
+- 사용자가 아침 보고에서 무인 계약의 revision 5 편입을 승인했다. RADIO revision 5, SHA-256 `877240622231033cf6b515861481fa5696904b8c4823d92cefbf61c9b9bf0e24`, index `development_approval` 반영, status `in_progress` 복귀(전 저장소 1개). 편입 세부는 `docs/execution/runs/interviews/2026-08-08-p0-t42-reseal.md`의 revision 5 절이 정본이다.
+- 이 승인으로 "마무리 중단" 절의 차단 사유가 해소됐다 — 워킹 트리의 무인 계약 파일 4건(`loop-unattended.md`·`loop-unattended-context.sh`·`settings.json` SessionStart·`loop.md` 문구)은 이제 승인분이며, 구현 완료분(재검사·테스트)과 함께 한 커밋으로 마무리한다.
+- push 보류도 함께 해제됐다 — done 이후 ci-finisher 경유 일괄 push.
+
+### 다음 행동
+
+1. 마무리 커밋(무인 계약 + 인수 조건 5 재검사 구현 + statusline 위임 구현).
+2. 검증 단계: `check_ids` 3종(`claude-loop-state-selftest`·`claude-loop-recovery`·`claude-loop-safety`) 기준 교차 검증.
+3. done 전환 → 경계 커밋(재봉인 기록 + P2-T05 revision 3 재봉인) → P2-T05 디스패치.

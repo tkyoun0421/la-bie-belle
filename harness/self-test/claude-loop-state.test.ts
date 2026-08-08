@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { LoopState } from "../lib/claude-loop-state.ts";
 import {
+  EPISODE_WINDOW_MS,
   ERROR_TYPES,
   MAX_RETRY_ATTEMPTS,
   initialState,
@@ -181,6 +182,54 @@ test("a new failure for a different session is not treated as a duplicate", () =
   const second = recordFailure(first, { session_id: "sess-b", error_type: "rate_limit" }, new Date(now.getTime() + 1000));
   assert.equal(second.attempt, 2);
   assert.equal(second.session_id, "sess-b");
+});
+
+test("a failure within the episode window keeps counting attempts", () => {
+  const first = recordFailure({ ...initialState(), session_id: "sess" }, { session_id: "sess", error_type: "rate_limit" }, now);
+  const resumed = recordRespawnSuccess(first, new Date(now.getTime() + 5 * 60_000));
+  const second = recordFailure(resumed, { session_id: "sess", error_type: "rate_limit" }, new Date(now.getTime() + 30 * 60_000));
+  assert.equal(second.attempt, 2);
+});
+
+test("a failure after the episode window starts a fresh attempt count", () => {
+  const first = recordFailure({ ...initialState(), session_id: "sess", attempt: 4 }, { session_id: "sess", error_type: "rate_limit" }, now);
+  const resumed = recordRespawnSuccess(first, new Date(now.getTime() + 5 * 60_000));
+  const second = recordFailure(resumed, { session_id: "sess", error_type: "rate_limit" }, new Date(now.getTime() + EPISODE_WINDOW_MS + 60_000));
+  assert.equal(second.attempt, 1);
+  assert.equal(second.status, "waiting_rate_limit");
+});
+
+test("a failure one millisecond before the one-hour episode boundary still counts within the episode", () => {
+  const priorFailure: LoopState = {
+    ...initialState(),
+    session_id: "sess",
+    attempt: 3,
+    last_failure_at: now.toISOString(),
+    status: "waiting_rate_limit",
+  };
+  const justBeforeBoundary = new Date(now.getTime() + EPISODE_WINDOW_MS - 1);
+  const result = recordFailure(priorFailure, { session_id: "sess", error_type: "rate_limit" }, justBeforeBoundary);
+  assert.equal(result.attempt, 4);
+  assert.equal(result.status, "waiting_rate_limit");
+});
+
+test("a failure exactly at the one-hour episode boundary starts a fresh episode", () => {
+  const priorFailure: LoopState = {
+    ...initialState(),
+    session_id: "sess",
+    attempt: 3,
+    last_failure_at: now.toISOString(),
+    status: "waiting_rate_limit",
+  };
+  const atBoundary = new Date(now.getTime() + EPISODE_WINDOW_MS);
+  const result = recordFailure(priorFailure, { session_id: "sess", error_type: "rate_limit" }, atBoundary);
+  assert.equal(result.attempt, 1);
+  assert.equal(result.status, "waiting_rate_limit");
+});
+
+test("sanitizer keeps last_failure_at only as a string", () => {
+  assert.equal(sanitizeState({ last_failure_at: 12345 }).last_failure_at, null);
+  assert.equal(sanitizeState({ last_failure_at: "2026-08-07T00:00:00.000Z" }).last_failure_at, "2026-08-07T00:00:00.000Z");
 });
 
 test("state sanitizer removes unapproved and oversized values", () => {

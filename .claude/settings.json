@@ -34,6 +34,17 @@
         ]
       }
     ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/loop-unattended-context.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "SubagentStop": [
       {
         "matcher": "ci-finisher",
@@ -50,6 +61,6 @@
   "statusLine": {
     "type": "command",
     "command": "\"$CLAUDE_PROJECT_DIR/.claude/statusline-usage.sh\"",
-    "refreshInterval": 60
+    "refreshInterval": 5
   }
 }

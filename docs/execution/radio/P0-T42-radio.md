@@ -1,7 +1,7 @@
 # P0-T42 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 4
+- revision: 5
 - 기획 승인: user, 2026-08-07
 - 개발 설계 승인: user, 2026-08-08
 - 관련 spec: DOCS:SDD, ADR:0011
@@ -17,6 +17,7 @@
 | 2 | 2026-08-07 | 5시간·주간 사용량 95% 감시와 statusline 로컬 저장을 추가하고 Haiku 호출을 제외. |
 | 3 | 2026-08-08 | revision 2 봉인 파일이 봉인 후 수정으로 무결성이 깨져 재검토 후 재봉인. StopFailure 실제 계약 정합(`error_type` 필드, 실패 유형 10종, epoch 초 `resets_at`), `overloaded` 자동 재시도 편입(user 결정), `statusLine` 최상위 키 명시, 재시도 상한 6회 확정. |
 | 4 | 2026-08-08 | 사용자 탭의 운영 확장을 봉인에 편입(user 인수·승인): `stop`은 supervisor만 중단(A안 확정 — CLI에 공식 세션 중단 명령 부재), `--watch` 감시 모드, 에피소드(직전 실패 1시간 이내) 기준 재시도 6회와 `last_failure_at` 허용 필드, statusline의 사용자 statusline 위임과 loop-mode 표시, `/loop-mode` 스킬 경로 추가. 인수 조건 5는 새 세션을 만드는 start 경로로 한정을 명시. |
+| 5 | 2026-08-08 | 사용자 탭의 무인 계약을 봉인에 편입(user 승인): `.claude/loop-unattended.md`(추천안 채택 진행, 게이트 결정·수정 불가 critical은 해당 task만 blocked, 수정 가능한 critical·high는 선수정 후 사후 보고, 인증·결제만 전체 중단, 결과 보고서 의무), respawn 재개 마커와 SessionStart 3중 조건(마커 존재·세션 ID 일치·15분 이내) 컨텍스트 주입 훅, `loop.md` 무인 규칙 반영. revision 4 인터뷰에서 승인된 statusline 갱신 주기 5초를 본문에 명시. 변경 허용 경로에 `.claude/loop-unattended.md` 추가. |
 
 ## Requirements
 
@@ -26,6 +27,7 @@
 - 범위: statusline 입력의 5시간·주간 `used_percentage`와 `resets_at`을 로컬 파일에 저장하고 어느 한 창이 95% 이상이면 `armed` 상태로 전환한다. 이 수집은 statusline 로컬 스크립트만 사용하며 모델 호출을 발생시키지 않는다.
 - 범위: StopFailure `rate_limit`·`overloaded` 이벤트를 기록하고, session·task·checkpoint를 연결한 상태를 원자적으로 갱신한다. 재시도는 고정·상한 backoff를 사용하며 reset 시각을 알 수 없는 경우에도 무한 빠른 polling을 하지 않는다.
 - 범위: `start`·`status`·`stop`·`record-failure` CLI와 결정적 fake Claude adapter를 제공한다. `start --watch`는 새 세션·새 작업을 만들지 않는 감시 전용 모드로, 기존 세션의 리밋 계열 실패만 재개한다. `/loop-mode` 스킬(on·off·status)이 감시 모드의 운영 진입점이다.
+- 범위: 자동 재개된 세션이 사용자 부재 전제로 따를 무인 계약(`.claude/loop-unattended.md`)과, respawn된 그 세션에만 계약을 컨텍스트로 주입하는 SessionStart 훅을 제공한다. 무인 계약은 승인 게이트를 자동으로 통과하지 않는다 — 게이트가 필요한 결정은 해당 task만 blocked로 남긴다.
 - 비목표: Mac 잠자기·재부팅·로그인 복구·launchd 설치, 사용량 제한 우회·추가 결제·계정 변경, 원격 worker, 제품 코드.
 
 ### 불변 규칙
@@ -71,10 +73,12 @@
 - `harness/lib/claude-loop-state.ts`: checkpoint schema, 허용 상태 전이, backoff 계산, redaction을 순수 함수로 소유한다.
 - `harness/self-test/claude-loop-state.test.ts`: fake clock·fake Claude adapter를 사용해 state/recovery/safety를 검증한다.
 - `.claude/hooks/claude-loop-stop-failure.sh`: StopFailure 입력을 `record-failure`로 전달하며 stdout에는 아무것도 출력하지 않는다.
+- `.claude/loop-unattended.md`: 무인 세션 진행 계약의 정본. 구현 수준 선택지는 추천안을 채택해 진행하고 결정·근거·기각 대안을 결과 보고서(`docs/execution/runs/loop-reports/`)에 남긴다. 수정 가능한 critical·high 검증 결함은 선수정 후 사후 보고하고(유인 규칙의 무인 한정 예외), 인증·결제 오류만 루프 전체를 `needs_user`로 멈춘다.
+- `.claude/hooks/loop-unattended-context.sh`: SessionStart 훅. supervisor가 respawn 시 남긴 재개 마커가 존재하고, 마커의 세션 ID가 현재 세션과 일치하며, 재개 후 15분 이내일 때만 무인 계약 준수 컨텍스트를 주입한다. 주입 시 마커를 삭제해 한 번만 발화하며, 조건 불충족·파싱 실패는 전부 무출력 종료다.
 - `.claude/statusline-usage.sh`: statusline JSON을 checkpoint로 전달(백그라운드)하고, 사용자 전역 statusline 명령이 있으면 표시를 위임한 뒤 loop-mode 상태 표시줄(on·대기·확인 필요·off)을 덧붙인다. 모델·네트워크를 호출하지 않는다.
 - `.claude/skills/loop-mode/`: on·off·status 절차의 정본 스킬. supervisor 기동(nohup 분리)·스테일 락 정리·상태 요약을 담당한다.
-- `.claude/loop.md`: `/goal`에 전달할 저장소 실행 계약. planned 큐·승인·in_progress 1개·handoff·게이트와 정상 종료 조건을 요약한다.
-- `.claude/settings.json`: StopFailure hook은 문서화된 실패 유형 10종 전체를 matcher로 등록하고, `statusLine`은 `hooks` 밖 최상위 키로 등록한다.
+- `.claude/loop.md`: `/goal`에 전달할 저장소 실행 계약. planned 큐·승인·in_progress 1개·handoff·게이트와 정상 종료 조건을 요약하고, 게이트 결정·수정 불가 critical은 해당 task만 blocked로 두고 큐를 계속하는 무인 규칙을 담는다.
+- `.claude/settings.json`: StopFailure hook은 문서화된 실패 유형 10종 전체를 matcher로 등록하고, SessionStart에 무인 컨텍스트 주입 훅을 등록하며, `statusLine`은 `hooks` 밖 최상위 키로 등록한다(갱신 주기 5초 — 사용량 감시 지연을 줄인다).
 - `.gitignore`: `.claude/runtime/` 아래 운영 상태·lock·로그를 제외한다.
 
 서버·클라이언트 경계는 없다. supervisor는 로컬 파일과 Claude CLI만 호출하며 애플리케이션 `src/`를 수정하지 않는다. 세션을 새로 만들 때는 기존 Claude Code background session의 권한 설정을 상속하되 bypass 권한을 추가하지 않는다.
@@ -83,6 +87,7 @@
 
 - 정본: `docs/execution/phases/index.jsonl`, 승인 RADIO 파일, task handoff.
 - 파생 checkpoint: `.claude/runtime/loop-state.json` 한 개. `schema_version`, `session_id`, `task_id`, `status`, `attempt`, `next_attempt_at`, `last_failure_at`, `last_error_kind`, `usage`, `updated_at`만 허용한다. `usage`에는 5시간·주간 `used_percentage`·`resets_at`과 `armed_window`만 둔다. statusline이 주는 `resets_at`은 Unix epoch 초이며 저장 시 ISO 8601 문자열로 정규화한다. `last_failure_at`은 에피소드 재시도 집계의 기준 시각이다.
+- 재개 마커: `.claude/runtime/unattended-resume.json` 한 개. respawn 성공 시 supervisor가 `session_id`·`resumed_at`만 담아 0600 권한으로 쓰고, SessionStart 훅이 주입과 동시에 삭제한다. commit 대상이 아니다.
 - checkpoint는 commit 대상이 아니며 transcript·오류 원문·비밀값을 저장하지 않는다.
 - 상태 전이는 순수 함수가 검사하고, 파일 쓰기는 임시 파일을 같은 디렉터리에 쓴 뒤 rename한다. lock은 supervisor 프로세스가 종료될 때 정리한다.
 - 같은 이벤트와 wakeup은 event id·session id·due 시각으로 멱등 처리한다. 동시 실행은 lock 획득 실패를 정상 대기로 처리한다.
@@ -116,6 +121,7 @@
 .claude/settings.json
 .claude/statusline-usage.sh
 .claude/loop.md
+.claude/loop-unattended.md
 .claude/skills/loop-mode/**
 .gitignore
 harness/lib/**

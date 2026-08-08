@@ -11,6 +11,30 @@
       "exit_code": 0,
       "at": "2026-08-07T15:52:09.000Z",
       "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/claude-loop-reverification.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T17:15:49.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/claude-loop-reverification.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T17:16:01.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning --test-name-pattern=\"episode boundary\" harness/self-test/claude-loop-state.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-07T17:16:20.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/claude-loop-state.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-07T17:16:27.000Z",
+      "phase": "green"
     }
   ]
 }

@@ -12,6 +12,7 @@ import type { IndexEntry, IndexRecord } from "./task-index.ts";
 
 export const USAGE_THRESHOLD = 95;
 export const MAX_RETRY_ATTEMPTS = 6;
+export const EPISODE_WINDOW_MS = 60 * 60_000;
 
 export const ERROR_TYPES = [
   "rate_limit",
@@ -53,6 +54,7 @@ export type LoopState = {
   status: LoopStatus;
   attempt: number;
   next_attempt_at: string | null;
+  last_failure_at: string | null;
   last_error_kind: string | null;
   usage: {
     five_hour: UsageWindow;
@@ -76,6 +78,7 @@ export function initialState(): LoopState {
     status: "stopped",
     attempt: 0,
     next_attempt_at: null,
+    last_failure_at: null,
     last_error_kind: null,
     usage: { five_hour: blankWindow(), seven_day: blankWindow(), armed_window: null },
     updated_at: new Date(0).toISOString(),
@@ -166,6 +169,14 @@ function isOutstandingDuplicate(
   );
 }
 
+function nextEpisodeAttempt(state: LoopState, now: Date): number {
+  const previousFailureAt =
+    state.last_failure_at === null ? Number.NaN : Date.parse(state.last_failure_at);
+  const withinEpisode =
+    Number.isFinite(previousFailureAt) && now.getTime() - previousFailureAt < EPISODE_WINDOW_MS;
+  return (withinEpisode ? state.attempt : 0) + 1;
+}
+
 export function recordFailure(state: LoopState, input: unknown, now = new Date()): LoopState {
   const value = isRecord(input) ? input : {};
   const sessionId =
@@ -181,18 +192,20 @@ export function recordFailure(state: LoopState, input: unknown, now = new Date()
       ...state,
       session_id: sessionId,
       status: "needs_user",
+      last_failure_at: now.toISOString(),
       last_error_kind: errorType,
       updated_at: now.toISOString(),
     };
   }
 
-  const attempt = state.attempt + 1;
+  const attempt = nextEpisodeAttempt(state, now);
   if (attempt > MAX_RETRY_ATTEMPTS) {
     return {
       ...state,
       session_id: sessionId,
       status: "needs_user",
       attempt,
+      last_failure_at: now.toISOString(),
       last_error_kind: errorType,
       updated_at: now.toISOString(),
     };
@@ -204,6 +217,7 @@ export function recordFailure(state: LoopState, input: unknown, now = new Date()
     session_id: sessionId,
     status: "waiting_rate_limit",
     attempt,
+    last_failure_at: now.toISOString(),
     last_error_kind: errorType,
     next_attempt_at: computeBackoffDueAt(attempt, now, resetAt),
     updated_at: now.toISOString(),
@@ -244,6 +258,7 @@ export function sanitizeState(value: unknown): LoopState {
         : "needs_user",
     attempt: typeof v.attempt === "number" ? Math.max(0, Math.floor(v.attempt)) : 0,
     next_attempt_at: typeof v.next_attempt_at === "string" ? v.next_attempt_at.slice(0, 64) : null,
+    last_failure_at: typeof v.last_failure_at === "string" ? v.last_failure_at.slice(0, 64) : null,
     last_error_kind: typeof v.last_error_kind === "string" ? normalizeErrorType(v.last_error_kind) : null,
     usage: {
       five_hour: windowOf(usage.five_hour),
