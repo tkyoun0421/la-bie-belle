@@ -1,26 +1,28 @@
 {
   "task_id": "P2-T05",
   "area": "scope",
-  "at": "2026-08-08T00:25:54Z",
+  "at": "2026-08-08T03:47:11Z",
   "found_during": "development",
-  "summary": "RADIO의 '변경 허용 경로'에 src/shared/ui/calendar.tsx(또는 src/shared/ui/**)가 빠져 있는데, RADIO의 기술 인수 조건 1(관리자 모집 달력 셀의 applied 신청 수 배지)은 그 파일을 수정해야만 구현 가능하다.",
-  "reason": "RADIO 기술 인수 조건 1은 '관리자 모집 달력: 모집이 있는 날짜 셀에 applied 신청 수 배지가 표시되고, 월 이동 시 해당 월 범위로 갱신된다'를 요구하고, Interface 절도 '모집 날짜 셀에 신청 수 배지'를 명시한다. 설계 인터뷰 handoff(docs/execution/runs/interviews/2026-08-08-p2-t05-design.md)의 확정된 사실도 '신청 수는 달력 셀 배지 + 시트 양쪽 표시(user 결정) — 이름 목록은 시트 안에만'이라고 적어, 셀 배지가 시트 표시와 별개로 명시 확정된 제품 결정임을 보여준다. 그런데 관리자 모집 달력의 날짜 셀은 src/shared/ui/calendar.tsx의 CalendarDayButton이 전담 렌더링한다. 이 컴포넌트는 CalendarCellState(고정 7종 유니온)별 고정 배지 문자열(STATE_BADGE: requested/closed/confirmed 3종뿐)만 노출하며, 부모(RecruitmentOpenView)가 셀 내부에 동적 콘텐츠를 주입할 prop(children, render prop, formatter override 등)을 전혀 노출하지 않는다(Calendar의 공개 prop은 month·onMonthChange·dateStates·onSelectDate·today뿐). 즉 날짜별 신청 수를 셀 안에 그리려면 최소한 CalendarCellState 확장 또는 새 prop 추가로 calendar.tsx 자체를 바꿔야 한다. 이 파일은 src/shared/ui/**에 속하는데, RADIO의 '변경 허용 경로' 코드펜스에는 src/shared/config/**만 있고 src/shared/ui/**는 없다. gate:scope(harness/lib/scope-gate.ts)는 RADIO가 선언한 glob 밖의 스테이징 파일을 전부 차단하므로, 봉인된 RADIO 그대로는 배지를 셀 안에 렌더링하는 구현을 커밋할 수 없다.",
+  "summary": "RADIO 기술 인수 조건 5(시간대 회귀)가 요구하는 F-03(월 경계가 브라우저 시간대에 따라 달라짐) 결함이 관리자 모집 달력뿐 아니라 근무자 일정 탭(`src/app/(protected)/(tabs)/schedule/page.tsx`)에도 그대로 존재함을 새 E2E 회귀 스펙으로 재현했는데, 그 파일은 RADIO의 변경 허용 경로 밖이고 P2-T03 산출물이라 '봉인 계약 무수정' 비목표와 충돌한다.",
+  "reason": "이번 세션에서 RADIO(revision 3)가 지시한 대로 admin/recruitment 쪽 F-03(관리자 모집 달력 month prop의 UTC Date 파싱)은 `src/views/admin-recruitment/ui/RecruitmentOpenView.tsx`의 month prop을 Date에서 'yyyy-MM' 문자열로 바꾸고 클라이언트 컴포넌트 내부에서 재구성하는 방식으로 근본 수정했다. 그 뒤 RADIO 허용 경로 안(`tests/e2e/**`)의 `tests/e2e/recruitment-flow.spec.ts`에 인수 조건 5(시간대 회귀 — America/Los_Angeles 브라우저에서 '달력 월 경계·마감 표시·홈 카드가 KST 기준과 동일하다')를 그대로 구현해 실제로 실행했다. 이 스펙은 관리자 달력의 월 경계뿐 아니라 근무자 일정 탭(`/schedule`)에서도 같은 CLOSED 날짜의 '마감' 표시가 같은 달에 보이는지 검증하는데, 실행 결과 근무자 화면이 요청한 달(예: month=2031-02)이 아니라 하루 당겨진 달(2031년 1월)을 렌더해 실패했다. 원인을 추적하니 `src/app/(protected)/(tabs)/schedule/page.tsx`의 `parseMonthParam`이 `new Date(`${value}-01T00:00:00Z`)`로 UTC Date를 만들어 `src/views/schedule/ui/ScheduleView.tsx`(클라이언트 컴포넌트)에 Date 객체 그대로 넘기고 있었다 — 이는 P2-T02-review.json이 admin/recruitment/page.tsx에서 지적한 F-03과 완전히 동일한 패턴이며, 방금 admin 쪽에서 적용한 것과 같은 근본 수정(문자열 prop + 클라이언트 재구성)이 필요하다. 그런데 이 파일과 `src/views/schedule/**`는 RADIO의 '변경 허용 경로' 코드펜스에 없다(`src/app/(protected)/(tabs)/page.tsx`만 있고 `.../schedule/page.tsx`는 없음). 동시에 RADIO 비목표는 'P2-T01~T04 산출물의 봉인 계약 무수정(T04 시트는 하위 호환 확장만)'을 명시한다. 즉 인수 조건 5('시간대 회귀... F-03 월 경계 결함이 unit으로도 고정된다')를 근무자 일정 탭까지 완전히 충족하려면 비목표가 금지하는 P2-T03 산출물 수정과 허용 경로 확장이 함께 필요해, 두 요구가 이 파일 하나를 두고 정면으로 부딪힌다.",
   "affected": {
     "docs": ["docs/execution/radio/P2-T05-radio.md"],
-    "tasks": ["P2-T05"],
-    "files": ["src/shared/ui/calendar.tsx"]
+    "tasks": ["P2-T05", "P2-T03"],
+    "files": [
+      "src/app/(protected)/(tabs)/schedule/page.tsx",
+      "src/views/schedule/ui/ScheduleView.tsx"
+    ]
   },
   "confirmed": [
-    "entities/schedule/**·features/recruitment/**에서 월별 schedule_id별 applied 신청 수를 집계하는 조회와 그 unit 테스트는 허용 경로 안에서 문제 없이 구현 가능하다 — 막힌 것은 '그 숫자를 달력 셀 안에 그리는' 표시 단계뿐이다.",
-    "RADIO 기술 인수 조건 2(시트 신청 현황: 신청 수 + applied 이름 목록)·3(홈 마감 임박 카드 실데이터)·4(워커 CLOSED 날짜 상세)·5의 F-03(월 경계 시간대) 회귀 고정·해당 pgTAP·entities/schedule 신규 조회 3종은 src/shared/ui를 건드리지 않고 RADIO가 선언한 허용 경로(entities/schedule/**·features/recruitment/**·views/admin-recruitment/**·views/home/**·views/schedule-detail/**·해당 app 라우트 3곳)만으로 구현 가능해 보인다.",
-    "다만 기술 인수 조건 6(recruitment-e2e 왕복 시나리오)은 '셀 배지 0 확인'과 '배지·시트 이름 반영 확인' 단계를 명시 포함하므로, 1번을 미루면 같은 spec 파일 안에서 그 단계만 별도로 빼거나 재설계해야 한다.",
-    "이번 세션에서 src/ 아래 코드는 한 줄도 작성·스테이징하지 않았다 — RADIO·관련 코드·과거 리뷰(P2-T02-review.json의 F-03 finding 등)를 읽고 설계 분석만 수행했다.",
-    "src/shared/ui/**를 건드리지 않고 셀 배지를 만드는 우회(예: DayPicker 내부 CSS 클래스에 맞춰 부모 컴포넌트에서 절대 위치 오버레이를 별도로 그리는 방법)를 검토했으나, DayPicker의 주 단위 grid·월 시작 padding 등 내부 렌더링 세부에 의존해 쉽게 어긋나는 하드코딩이라 채택하지 않았다 — WORKFLOW의 '구현으로 우회하지 않는다' 원칙에 따라 질문으로 남긴다."
+    "관리자 모집 달력(src/views/admin-recruitment/ui/RecruitmentOpenView.tsx, src/app/(protected)/admin/recruitment/page.tsx)의 F-03은 이번 세션에서 근본 수정을 완료했고 unit(vi.stubEnv TZ)으로 회귀 고정했다 — RADIO 허용 경로 안에서 끝난 부분이다.",
+    "기술 인수 조건 1~4(달력 배지·시트 신청 현황·홈 카드·CLOSED 상세)와 조건 5의 model unit 회귀(parseRecruitmentMonthParam)는 모두 RADIO 허용 경로 안에서 구현·테스트를 완료했다 — 이번 세션에서 작성한 신규 파일은 스테이징하지 않고 워킹 트리에 보존했다.",
+    "근무자 `/schedule` 페이지의 UTC 파싱은 P2-T05가 새로 만든 코드가 아니라 P2-T03이 이미 만들어 봉인·done 상태로 커밋된 기존 산출물의 결함이다 — P2-T05 범위에서 처음 생긴 결함이 아니라 새 E2E 회귀 스펙이 우연히 처음으로 드러낸 기존 결함이다.",
+    "이 결함은 `src/shared/ui/calendar.tsx`(RADIO가 이미 허용한 파일)의 CalendarDayButton이 day 렌더링에 쓰는 것과 무관하게, 순수하게 각 페이지의 month 파싱·prop 전달 방식 문제다 — calendar.tsx 자체를 다시 손댈 필요는 없다.",
+    "P2-T05가 작성한 `tests/e2e/recruitment-flow.spec.ts` 자체도 재실행 내성(work_date는 랜덤 미래 날짜, application_deadline만 UPDATE 기법으로 오늘로 백데이트)과 day=1 selectable 경계 충돌 회피(randomDayExcludingFirst)를 반영해 두 결함 계열을 반복하지 않도록 이미 조정했다."
   ],
   "open_questions": [
-    "src/shared/ui/calendar.tsx(또는 src/shared/ui/**)를 P2-T05 RADIO의 변경 허용 경로에 추가하는 재봉인을 승인하는지. 이 경우 Calendar가 날짜별 선택적 숫자 배지(예: dateStates 항목에 applicationCount?: number 필드 추가, CalendarDayButton이 값이 있을 때만 작은 숫자를 그리는 최소 확장)를 표시하도록 바꿔야 하며, 이는 P2-T03의 preview 사례(결정 내용 변경 없는 누락 보정)와 달리 공용 컴포넌트에 새 표시 기능을 더하는 것이라 기술 설계 확인이 한 번 더 필요할 수 있다.",
-    "혹은 배지 표시 위치를 달력 셀이 아닌 다른 곳(예: RecruitmentOpenView 안 별도 요약 목록)으로 바꿀지. 이는 2026-08-08 설계 인터뷰가 이미 '달력 셀 배지 + 시트 양쪽 표시'로 명시 확정한 제품 결정을 다시 여는 것이라 기획 단계 반환에 더 가까워 보인다.",
-    "혹은 기술 인수 조건 1(달력 셀 배지)만 별도 후속 task로 분리하고 P2-T05는 나머지(시트 신청 현황·홈 카드·CLOSED 상세·F-03 회귀·pgTAP·해당 E2E)로 재봉인할지. 이 경우 recruitment-e2e 시나리오에서 배지 관련 단계를 제외하도록 Architecture·인수 조건 6을 함께 손봐야 한다.",
-    "위 세 선택지 중 어느 쪽이든 development_approval만 다시 받으면 되는지(제품 범위 자체는 두 번째 선택지를 빼면 바뀌지 않아 보인다), 아니면 product_approval까지 다시 필요한지 확인이 필요하다."
+    "`src/app/(protected)/(tabs)/schedule/page.tsx`(및 필요하면 `src/views/schedule/**`)를 P2-T05 변경 허용 경로에 추가하는 재봉인을 승인하는지 — 이 경우 admin/recruitment와 동일한 근본 수정(month prop을 'yyyy-MM' 문자열로 바꿔 클라이언트 컴포넌트 내부에서 재구성)을 근무자 일정 탭에도 적용해 F-03을 완전히 없앤다. RADIO 비목표의 'P2-T01~T04 산출물 봉인 계약 무수정'에 대한 명시적 예외로 남긴다.",
+    "혹은 인수 조건 5의 '시간대 회귀' 범위를 관리자 모집 달력으로 좁게 재해석하고, 근무자 일정 탭의 동일 결함은 별도 후속 task(백로그)로 분리할지 — 이 경우 `tests/e2e/recruitment-flow.spec.ts`의 시간대 회귀 테스트에서 근무자 `/schedule` 페이지의 '마감' 표시 단언을 제거(또는 KST 브라우저로만 검증)하도록 스펙을 좁혀야 한다.",
+    "위 어느 쪽이든 development_approval 재승인만으로 충분한지, 아니면 '봉인 계약 무수정' 비목표를 건드리는 첫 번째 선택지는 기획 단계로 반환해 product_approval까지 다시 받아야 하는지 확인이 필요하다."
   ]
 }

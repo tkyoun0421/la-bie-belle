@@ -1,5 +1,38 @@
 # P2-T05 handoff
 
+## 2026-08-08 (2차) · 개발 단계 안전 중단 (blocked) — F-03 계열 결함이 허용 경로 밖 파일에서 재현됨
+
+- 작업 식별자: P2-T05 (모집 운영 화면과 테스트)
+- 현재 단계: 개발(3단계) 진행 중 안전 중단 → 설계(2단계) 또는 기획(1단계) 반환(조정자 결정 대기)
+- 기준 시각: 2026-08-08T03:47:11Z
+- RADIO 기준: `docs/execution/radio/P2-T05-radio.md` revision 3, SHA-256 `1feb1840a59458656e9dc011115618f3f8a19f746a4d7c496e3dffc245685e98` (index의 `development_approval`과 일치, 봉인 본문 무수정)
+
+### 확정된 사실
+
+- 기술 인수 조건 1(달력 셀 배지)·2(시트 신청 현황)·3(홈 카드 실데이터)·4(워커 CLOSED 상세)와 조건 5의 관리자 모집 달력 쪽 F-03(월 경계 시간대) 근본 수정·unit 회귀는 모두 구현·테스트를 완료했다. 신규/수정 파일은 RADIO 허용 경로 안이며 아직 스테이징하지 않고 워킹 트리에 보존했다(`git status`로 전체 목록 확인 가능).
+- `tests/e2e/recruitment-flow.spec.ts`(RADIO 허용 경로 `tests/e2e/**` 안, 인수 조건 6·5 커버)를 작성해 로컬 Supabase·`pnpm build` 산출물로 실제 실행했다. 그 과정에서 근무자 일정 탭(`/schedule`, `src/app/(protected)/(tabs)/schedule/page.tsx`)이 관리자 달력과 동일한 F-03 패턴(`new Date(\`${value}-01T00:00:00Z\`)` UTC 파싱 후 Date 객체를 클라이언트 컴포넌트에 그대로 전달)을 가지고 있고, America/Los_Angeles 브라우저에서 실제로 월 경계가 하루 밀려 렌더되는 것을 재현했다(요청 `month=2031-02` → 렌더된 화면 "2031년 1월").
+- 이 파일(`src/app/(protected)/(tabs)/schedule/page.tsx`, `src/views/schedule/ui/ScheduleView.tsx`)은 RADIO의 변경 허용 경로 밖이고 P2-T03 산출물이라, RADIO 비목표의 "P2-T01~T04 산출물 봉인 계약 무수정"과 인수 조건 5("F-03 월 경계 결함이... 고정된다")가 이 지점에서 충돌한다. 근거·선택지는 `docs/execution/runs/P2-T05/decision-signal.json`(2026-08-08T03:47:11Z, 이전 blocked 사건 기록을 대체 — 이전 기록은 git 커밋 `c302730`에 보존됨)에 남겼다.
+- `tests/e2e/recruitment-flow.spec.ts`의 첫 번째 테스트(모집 운영 왕복)는 실제 실행에서 셀렉터 문제(`getByText(/^[1-9]\d*$/)`가 날짜 숫자 자체와 배지 숫자를 모두 매치)로 1건 추가 실패가 있었다 — 이는 F-03과 무관한 이 스펙 자체의 버그이며 blocked 해소 후 함께 고쳐야 한다(배지 전용 로케이터로 좁혀야 함, 예: `cell.locator("span.absolute")`).
+- 이번 세션에서 `pnpm build`를 실행해 `.next` 산출물을 최신화했고, `pnpm test:e2e -- recruitment-flow`를 1회 실행했다(위 실패 포함). `docker`/로컬 Supabase는 세션 시작 시점부터 이미 떠 있었다.
+
+### 미결 사항
+
+- `decision-signal.json`의 `open_questions` 3건 — 근무자 일정 탭 F-03을 이 task 범위로 끌어들여 재봉인할지, 인수 조건 5의 범위를 관리자 달력으로 좁히고 후속 task로 분리할지, 재승인 성격(설계 재승인만인지 기획 반환까지 필요한지). 결정 주체: 사용자(조정자 경유).
+
+### 다음 행동
+
+1. 조정자가 위 미결 사항을 사용자에게 확인하고, 필요하면 RADIO를 재봉인하거나 기획 단계로 반환한다.
+2. 재승인 후 개발 루프가 P2-T05를 다시 `planned`으로 올리고 이어서 실행한다. 이번 세션이 만든 미스테이징 워킹 트리 산출물(신규 model/api/hooks/ui·수정 파일·`tests/e2e/recruitment-flow.spec.ts`)은 그대로 보존돼 있으므로, 다음 세션은 처음부터 다시 만들지 말고 이어서 (a) 결정된 범위에 맞게 `/schedule` 페이지 F-03 수정을 포함/제외하고 (b) 첫 번째 E2E 테스트의 배지 셀렉터를 고치고 (c) 나머지 검증 증거·handoff·커밋을 마무리하면 된다.
+
+### 증거·산출물 경로
+
+- `docs/execution/runs/P2-T05/decision-signal.json`(이번 사건, 이전 사건은 `c302730` 커밋에 보존)
+- `docs/execution/radio/P2-T05-radio.md`(봉인 본문 무수정 확인)
+- `docs/execution/reviews/P2-T02-review.json`의 F-03 finding — 이번에 다시 참조한 배경
+- `tests/e2e/recruitment-flow.spec.ts`(워킹 트리, 미스테이징)
+
+---
+
 ## 2026-08-08 · 개발 단계 안전 중단 (blocked)
 
 - 작업 식별자: P2-T05 (모집 운영 화면과 테스트)
