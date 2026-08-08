@@ -66,3 +66,12 @@
   - medium 이하(F-02~F-14)는 이번 라운드 범위 밖이라 손대지 않았다.
 - 검증: `pnpm db:reset` 후 `pnpm verify` 전체(format → lint:ci → typecheck → vitest 972 → harness:typecheck → harness:self-test → check:docs → build → check:app-build → check:client-secret-scan → test:e2e 34/34 → gate:all) 재실행, 종료 코드 0. `pnpm gate:all` 단독 재확인도 exit 0.
 - 다음 행동: 조정자가 수정 라운드 커밋을 확인하고 재검증(리뷰) 여부를 판단한다. index.jsonl은 `in_progress` 그대로 두었다(단계 전환은 조정자 소유).
+
+## 2026-08-08 · 검증 종료 · done 전환 (조정자 기록)
+
+- 교차 검증(opus·codex) 확정 발견 15건: 1라운드 확정 14건 + 수정 재확인 라운드 1건(파생 규칙 복제, low). 기각 2건(최종 트리 verify 증거 공백 — 조정자 실측 exit 0·86초로 반박, isReopen ui 분기 — DEV-CODE-09 표현용 조건부 렌더 예외).
+- 수정 라운드 1회(`30024b5`)로 high 1건(관리 대상 선택 CANCELLED 불일치) 해소 — 리뷰어 전원 재확인, 판별력 있는 회귀 테스트 3건이 test-first 순서로 추가됨.
+- 미해결 14건(medium 6·low 8)은 `docs/execution/reviews/P2-T04-review.json`(최종 점수 84) 정본, 전부 backlog 누적.
+- **사용자 결정 대기 medium 3건**: cron 실행 관측 기록(DEV-OBS-04, 설계 결정 필요) · 운영자 복구 명령 형태(scripts/** 재봉인 여부) · 수동 복구 감사 trigger 구분(봉인 설계 "복구 경로에 별도 로직 없음"과 얽힘). backlog와 이 절이 추적 지점이다.
+- 리팩토링 단계: 수정 라운드가 정본 정렬을 수행했고 추가 정리는 backlog로 이관(파생 규칙 공유 함수화 등). 최종 트리 verify 조정자 실측 통과(exit 0, 2026-08-07T23:50:17Z~23:51:43Z).
+- index: P2-T04 `in_progress → done`(2026-08-08).

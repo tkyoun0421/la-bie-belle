@@ -208,3 +208,17 @@
 - [ ] [medium] [P2-T03] plpgsql 행 단위 SELECT FOR UPDATE·쓰기 반복(집합 기반 가능) — supabase/migrations/20260808000000_recruitment_application.sql
 - [ ] [medium] [P2-T03] 예상 밖 RPC 실패 correlation ID 부재(전역 관례 계열, 정비 task 후보) — src/features/application/api/apply-recruitment-changes.ts
 - [ ] [low] [P2-T03] 신규 DEFINER 함수 EXECUTE revoke/grant 하드닝 누락(P2-T02 동일) — supabase/migrations/20260808000000_recruitment_application.sql
+- [ ] [medium] [P2-T04] KST 자정 경계 pgTAP가 실행 시각 따라 판별력 상실(UTC 회귀 시 하루 5/8 미탐, set local timezone 이중 단언으로 보완 가능) — supabase/tests/15-recruitment-closing.test.sql
+- [ ] [medium] [P2-T04] cron 실행 성공·처리 수·실패가 앱 스키마에 미기록(DEV-OBS-04·ARCHITECTURE 13절, 설계 결정 필요) — supabase/migrations/20260808010000_recruitment_closing.sql
+- [ ] [medium] [P2-T04] 운영자 복구 명령이 package.json 인라인 JS로 검사·테스트 밖(scripts/** 재봉인 여부 사용자 결정) — package.json
+- [ ] [medium] [P2-T04] E2E 고정 날짜 픽스처 미정리로 로컬 재실행 확정 실패(P2-T02 계열 재발) — tests/e2e/recruitment-manage.spec.ts
+- [ ] [medium] [P2-T04] 예상 밖 RPC 실패 correlation ID 부재(전역 관례 계열) — src/features/recruitment/api/extend-recruitment-deadline.ts
+- [ ] [medium] [P2-T04] 수동 복구 실행이 trigger=cron으로 감사돼 실행 경로 구분 불가(봉인 설계 관련, 사용자 결정 대기) — supabase/migrations/20260808010000_recruitment_closing.sql
+- [ ] [low] [P2-T04] DEFINER 함수 search_path pg_temp 미고정(P1-T04 계열 반복) — supabase/migrations/20260808010000_recruitment_closing.sql
+- [ ] [low] [P2-T04] 재오픈 감사에 변경 전 마감일 누락(DEV-SEC-05 변경 전후 미달) — supabase/migrations/20260808010000_recruitment_closing.sql
+- [ ] [low] [P2-T04] 상태 충돌 문구가 레지스트리·ui 이중 존재 — src/features/recruitment/ui/RecruitmentManageSheet.tsx
+- [ ] [low] [P2-T04] 마감일 검증 메시지 리터럴 중복 — src/views/admin-recruitment/model/recruitment-manage-deadline.ts
+- [ ] [low] [P2-T04] 관리자 OPEN 셀 aria-label '신청 가능' 오도(P2-T02 계열 심화) — src/shared/ui/calendar.tsx
+- [ ] [low] [P2-T04] extend가 마감일 단축 허용하며 감사 event명과 불일치 — supabase/migrations/20260808010000_recruitment_closing.sql
+- [ ] [low] [P2-T04] DB·E2E RED가 구현 제거·복원 mutation 증거(P0-T40·P2-T02 계열) — docs/execution/runs/P2-T04/tdd.json
+- [ ] [low] [P2-T04] 활성 스케줄 파생 규칙이 두 model 파일에 복제(공유 함수 부재 시 F-01 계열 재발 위험) — src/views/admin-recruitment/model/recruitment-manage-target.ts
