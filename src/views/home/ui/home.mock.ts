@@ -66,7 +66,12 @@ export const HOME_ATTENDANCE_FAILURE_OUT_OF_RANGE = deriveHomePriority({
 
 export const HOME_DEADLINE_APPLICATION = deriveHomePriority({
   ...NO_FACTS,
-  deadlineApplication: { date: "2026-08-09", applicationDeadline: "2026-08-07" },
+  deadlineApplication: { date: "2026-08-09", applicationDeadline: "2026-08-07", applied: false },
+});
+
+export const HOME_DEADLINE_APPLICATION_APPLIED = deriveHomePriority({
+  ...NO_FACTS,
+  deadlineApplication: { date: "2026-08-09", applicationDeadline: "2026-08-07", applied: true },
 });
 
 export const HOME_CONFIRMATION_CHANGE = deriveHomePriority({

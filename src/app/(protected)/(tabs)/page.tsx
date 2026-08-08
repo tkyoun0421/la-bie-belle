@@ -1,6 +1,27 @@
+import { findImminentRecruitment } from "@/entities/schedule/api/find-imminent-recruitment";
+import { deriveHomePriority } from "@/views/home/model/home-priority";
+import { selectImminentRecruitment } from "@/views/home/model/imminent-recruitment";
 import { HomeView } from "@/views/home/ui/HomeView";
-import { HOME_NEXT_SHIFT } from "@/views/home/ui/home.mock";
 
-export default function HomePage() {
-  return <HomeView model={HOME_NEXT_SHIFT} />;
+const SEOUL_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" });
+
+function seoulToday(): string {
+  return SEOUL_DATE_FORMATTER.format(new Date());
+}
+
+export default async function HomePage() {
+  const today = seoulToday();
+  const candidatesResult = await findImminentRecruitment({ today });
+  const imminentRecruitment = candidatesResult.ok
+    ? selectImminentRecruitment(candidatesResult.data, today)
+    : null;
+
+  const model = deriveHomePriority({
+    attendance: null,
+    deadlineApplication: imminentRecruitment,
+    confirmationChange: null,
+    nextShift: null,
+  });
+
+  return <HomeView model={model} />;
 }

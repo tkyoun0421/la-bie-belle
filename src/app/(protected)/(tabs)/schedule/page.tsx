@@ -1,4 +1,4 @@
-import { startOfMonth } from "date-fns";
+import { format, startOfMonth } from "date-fns";
 
 import { listOwnApplications } from "@/entities/schedule/api/list-own-applications";
 import { listRecruitmentSchedules } from "@/entities/schedule/api/list-recruitment-schedules";
@@ -16,12 +16,12 @@ function seoulToday(): string {
 
 function parseMonthParam(value: string | undefined): Date {
   if (value !== undefined && MONTH_PARAM_PATTERN.test(value)) {
-    const parsed = new Date(`${value}-01T00:00:00Z`);
+    const parsed = new Date(`${value}-01T00:00:00`);
     if (!Number.isNaN(parsed.getTime())) {
       return startOfMonth(parsed);
     }
   }
-  return startOfMonth(new Date(`${seoulToday()}T00:00:00Z`));
+  return startOfMonth(new Date(`${seoulToday()}T00:00:00`));
 }
 
 type SchedulePageProps = {
@@ -53,7 +53,7 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
 
   return (
     <ScheduleView
-      month={month}
+      month={format(month, "yyyy-MM")}
       today={today}
       schedules={schedules}
       onApply={applyRecruitmentChanges}

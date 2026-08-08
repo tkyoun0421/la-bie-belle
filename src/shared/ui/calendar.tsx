@@ -43,9 +43,14 @@ type CalendarDateState = {
   date: Date;
   state: CalendarCellState;
   disabled?: boolean;
+  applicationCount?: number;
 };
 
-type CalendarDateEntry = { state: CalendarCellState; disabled?: boolean };
+type CalendarDateEntry = {
+  state: CalendarCellState;
+  disabled?: boolean;
+  applicationCount?: number;
+};
 
 const CalendarStateContext = createContext<ReadonlyMap<string, CalendarDateEntry>>(new Map());
 
@@ -56,6 +61,7 @@ function CalendarDayButton({ day, modifiers, className: _className, ...props }: 
   const disabled = entry?.disabled ?? state === "none";
   const dateLabel = `${day.date.getMonth() + 1}월 ${day.date.getDate()}일`;
   const badge = STATE_BADGE[state];
+  const applicationCount = entry?.applicationCount;
 
   return (
     <button
@@ -64,7 +70,7 @@ function CalendarDayButton({ day, modifiers, className: _className, ...props }: 
       disabled={disabled}
       aria-label={`${dateLabel} ${STATE_LABEL[state]}`}
       className={cn(
-        "flex size-11 flex-col items-center justify-center gap-0.5 rounded-md typo-caption",
+        "relative flex size-11 flex-col items-center justify-center gap-0.5 rounded-md typo-caption",
         disabled ? STATE_CLASSES.none : STATE_CLASSES[state],
         modifiers.today && "ring-1 ring-action ring-inset",
       )}
@@ -74,6 +80,14 @@ function CalendarDayButton({ day, modifiers, className: _className, ...props }: 
       {badge ? (
         <span aria-hidden className="text-[9px] leading-none font-semibold">
           {badge}
+        </span>
+      ) : null}
+      {applicationCount !== undefined && applicationCount > 0 ? (
+        <span
+          aria-hidden
+          className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-action text-[9px] leading-none font-semibold text-on-action"
+        >
+          {applicationCount}
         </span>
       ) : null}
     </button>
@@ -94,7 +108,11 @@ export function Calendar({ month, onMonthChange, dateStates, onSelectDate, today
       new Map(
         dateStates.map((entry) => [
           format(entry.date, DATE_KEY_FORMAT),
-          { state: entry.state, disabled: entry.disabled },
+          {
+            state: entry.state,
+            disabled: entry.disabled,
+            applicationCount: entry.applicationCount,
+          },
         ]),
       ),
     [dateStates],

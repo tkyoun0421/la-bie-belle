@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
+import type { ApplicationCountEntry } from "@/entities/schedule/model/application-count";
 import type { RecruitmentSchedule } from "@/entities/schedule/model/recruitment-schedule";
 import {
   useOpenRecruitment,
@@ -15,6 +16,11 @@ import {
   type RecruitmentManageActionInput,
   type RecruitmentManageOutcome,
 } from "@/features/recruitment/hooks/useRecruitmentManage";
+import {
+  useScheduleApplicants,
+  type ListApplicantsInput,
+  type ListApplicantsOutcome,
+} from "@/features/recruitment/hooks/useScheduleApplicants";
 import { RecruitmentManageSheet } from "@/features/recruitment/ui/RecruitmentManageSheet";
 import { RecruitmentSubmitPanel } from "@/features/recruitment/ui/RecruitmentSubmitPanel";
 import { ADMIN_RECRUITMENT_PATH } from "@/shared/config/auth-routes.config";
@@ -29,21 +35,25 @@ const DATE_KEY_FORMAT = "yyyy-MM-dd";
 const MONTH_PARAM_FORMAT = "yyyy-MM";
 
 type RecruitmentOpenViewProps = {
-  month: Date;
+  month: string;
   today: string;
   schedules: readonly RecruitmentSchedule[];
+  applicationCounts: readonly ApplicationCountEntry[];
   onOpen: (input: OpenRecruitmentInput) => Promise<OpenRecruitmentOutcome>;
   onExtend: (input: RecruitmentManageActionInput) => Promise<RecruitmentManageOutcome>;
   onReopen: (input: RecruitmentManageActionInput) => Promise<RecruitmentManageOutcome>;
+  onListApplicants: (input: ListApplicantsInput) => Promise<ListApplicantsOutcome>;
 };
 
 export function RecruitmentOpenView({
-  month,
+  month: monthParam,
   today,
   schedules,
+  applicationCounts,
   onOpen,
   onExtend,
   onReopen,
+  onListApplicants,
 }: RecruitmentOpenViewProps) {
   const router = useRouter();
   const [selectedDates, setSelectedDates] = useState<ReadonlySet<string>>(new Set());
@@ -55,10 +65,13 @@ export function RecruitmentOpenView({
   });
 
   const manage = useRecruitmentManage(onExtend, onReopen);
+  const applicants = useScheduleApplicants(onListApplicants);
+
+  const month = useMemo(() => new Date(`${monthParam}-01T00:00:00`), [monthParam]);
 
   const dateStates = useMemo(
-    () => toRecruitmentCellStates({ month, schedules, selectedDates, today }),
-    [month, schedules, selectedDates, today],
+    () => toRecruitmentCellStates({ month, schedules, selectedDates, today, applicationCounts }),
+    [month, schedules, selectedDates, today, applicationCounts],
   );
 
   const deadlineValidation = validateRecruitmentDeadline({ deadline, selectedDates, today });
@@ -78,9 +91,15 @@ export function RecruitmentOpenView({
     const manageable = findManageableRecruitmentSchedule(schedules, key);
     if (manageable !== null) {
       manage.open(manageable);
+      applicants.load(manageable.id);
       return;
     }
     setSelectedDates((previous) => toggleRecruitmentDate(previous, key));
+  }
+
+  function handleCloseManageSheet() {
+    manage.close();
+    applicants.reset();
   }
 
   function handleMonthChange(nextMonth: Date) {
@@ -121,8 +140,11 @@ export function RecruitmentOpenView({
         deadlineError={manageDeadlineError}
         statusConflict={manage.statusConflict}
         pending={manage.pending}
+        applicants={applicants.applicants}
+        applicantsLoading={applicants.loading}
+        applicantsFailed={applicants.failed}
         onSubmit={manage.submit}
-        onClose={manage.close}
+        onClose={handleCloseManageSheet}
       />
     </main>
   );

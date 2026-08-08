@@ -26,7 +26,11 @@ describe("deriveHomePriority", () => {
   it("오늘 출퇴근이 가능하면 최우선이다", () => {
     const model = deriveHomePriority({
       attendance: { status: ATTENDANCE_STATUS, shiftDate: "2026-08-09", position: "플로어" },
-      deadlineApplication: { date: "2026-08-09", applicationDeadline: "2026-08-07" },
+      deadlineApplication: {
+        date: "2026-08-09",
+        applicationDeadline: "2026-08-07",
+        applied: false,
+      },
       confirmationChange: CONFIRMATION,
       nextShift: { date: "2026-08-09", position: "플로어" },
     });
@@ -42,7 +46,11 @@ describe("deriveHomePriority", () => {
   it("출퇴근이 없으면 마감 임박 신청을 다음으로 우선한다", () => {
     const model = deriveHomePriority({
       ...EMPTY_INPUT,
-      deadlineApplication: { date: "2026-08-09", applicationDeadline: "2026-08-07" },
+      deadlineApplication: {
+        date: "2026-08-09",
+        applicationDeadline: "2026-08-07",
+        applied: false,
+      },
       confirmationChange: CONFIRMATION,
       nextShift: { date: "2026-08-09", position: "플로어" },
     });
@@ -51,6 +59,21 @@ describe("deriveHomePriority", () => {
       priority: "deadline-application",
       date: "2026-08-09",
       applicationDeadline: "2026-08-07",
+      applied: false,
+    });
+  });
+
+  it("마감 임박 신청의 본인 신청 상태를 그대로 전달한다", () => {
+    const model = deriveHomePriority({
+      ...EMPTY_INPUT,
+      deadlineApplication: { date: "2026-08-09", applicationDeadline: "2026-08-07", applied: true },
+    });
+
+    expect(model).toEqual({
+      priority: "deadline-application",
+      date: "2026-08-09",
+      applicationDeadline: "2026-08-07",
+      applied: true,
     });
   });
 

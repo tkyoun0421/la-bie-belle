@@ -12,6 +12,7 @@ import {
   HOME_CHECK_OUT_AVAILABLE,
   HOME_CONFIRMATION_CHANGE,
   HOME_DEADLINE_APPLICATION,
+  HOME_DEADLINE_APPLICATION_APPLIED,
   HOME_EMPTY,
   HOME_NEXT_SHIFT,
 } from "@/views/home/ui/home.mock";
@@ -58,9 +59,16 @@ describe("HomeView", () => {
     expect(screen.getByText("근무지 범위 밖이에요")).toBeInTheDocument();
   });
 
-  it("마감 임박 신청 상태를 보여준다", () => {
+  it("마감 임박 신청 상태(미신청)는 신청 유도 문구와 신청 버튼을 보여준다", () => {
     render(<HomeView model={HOME_DEADLINE_APPLICATION} />);
     expect(screen.getByText("근무 신청 마감이 임박했어요")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "지금 신청하기" })).toBeInTheDocument();
+  });
+
+  it("마감 임박 신청 상태(신청 완료)는 변경 가능 안내를 보여준다", () => {
+    render(<HomeView model={HOME_DEADLINE_APPLICATION_APPLIED} />);
+    expect(screen.getByText("신청 완료 — 마감 전까지 변경 가능")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "일정에서 확인하기" })).toBeInTheDocument();
   });
 
   it("확정 스케줄 변경 확인 상태는 변경 요약을 보여준다", () => {

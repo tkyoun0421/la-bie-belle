@@ -19,15 +19,16 @@ const MONTH_PARAM_FORMAT = "yyyy-MM";
 const SCHEDULE_PATH = "/schedule";
 
 type ScheduleViewProps = {
-  month: Date;
+  month: string;
   today: string;
   schedules: readonly RecruitmentScheduleWithApplication[];
   onApply: (input: ApplicationBatchInput) => Promise<ApplicationBatchOutcome>;
 };
 
-export function ScheduleView({ month, today, schedules, onApply }: ScheduleViewProps) {
+export function ScheduleView({ month: monthParam, today, schedules, onApply }: ScheduleViewProps) {
   const router = useRouter();
   const batch = useApplicationBatch({ schedules, onApply });
+  const month = useMemo(() => new Date(`${monthParam}-01T00:00:00`), [monthParam]);
 
   const scheduleByDate = useMemo(
     () =>

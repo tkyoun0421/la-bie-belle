@@ -40,14 +40,14 @@ const MIXED_MONTH_SCHEDULES: RecruitmentScheduleWithApplication[] = [
 ];
 
 export const SCHEDULE_MIXED_MONTH = {
-  month: new Date(2026, 7, 1),
+  month: "2026-08",
   today: "2026-08-01",
   schedules: MIXED_MONTH_SCHEDULES,
   onApply: mockApply,
 };
 
 export const SCHEDULE_EMPTY_MONTH = {
-  month: new Date(2026, 8, 1),
+  month: "2026-09",
   today: "2026-08-01",
   schedules: [],
   onApply: mockApply,

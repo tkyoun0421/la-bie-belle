@@ -8,14 +8,19 @@ export type HomeViewModel =
       shiftDate: string;
       position: string;
     }
-  | { priority: "deadline-application"; date: string; applicationDeadline: string }
+  | {
+      priority: "deadline-application";
+      date: string;
+      applicationDeadline: string;
+      applied: boolean;
+    }
   | { priority: "confirmation-change"; confirmation: ScheduleConfirmation }
   | { priority: "next-shift"; date: string; position: string }
   | { priority: "empty" };
 
 export type HomePriorityInput = {
   attendance: { status: AttendanceStatus; shiftDate: string; position: string } | null;
-  deadlineApplication: { date: string; applicationDeadline: string } | null;
+  deadlineApplication: { date: string; applicationDeadline: string; applied: boolean } | null;
   confirmationChange: ScheduleConfirmation | null;
   nextShift: { date: string; position: string } | null;
 };
@@ -34,6 +39,7 @@ export function deriveHomePriority(input: HomePriorityInput): HomeViewModel {
       priority: "deadline-application",
       date: input.deadlineApplication.date,
       applicationDeadline: input.deadlineApplication.applicationDeadline,
+      applied: input.deadlineApplication.applied,
     };
   }
   if (input.confirmationChange) {

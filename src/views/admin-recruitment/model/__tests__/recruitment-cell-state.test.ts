@@ -124,4 +124,58 @@ describe("toRecruitmentCellStates", () => {
     expect(target?.state).toBe("selected");
     expect(target?.disabled).toBeFalsy();
   });
+
+  it("applicationCounts로 주어진 신청 수를 schedule_id로 매핑해 셀에 붙인다", () => {
+    const states = toRecruitmentCellStates({
+      month: MONTH,
+      schedules: [schedule("2099-09-20", "OPEN")],
+      selectedDates: new Set(),
+      today: TODAY,
+      applicationCounts: [{ scheduleId: "schedule-2099-09-20", count: 3 }],
+    });
+
+    const target = states.find((entry) => entry.date.getDate() === 20);
+    expect(target?.applicationCount).toBe(3);
+  });
+
+  it("신청 수가 0건이면 applicationCount를 부여하지 않는다(경계값)", () => {
+    const states = toRecruitmentCellStates({
+      month: MONTH,
+      schedules: [schedule("2099-09-20", "OPEN")],
+      selectedDates: new Set(),
+      today: TODAY,
+      applicationCounts: [{ scheduleId: "schedule-2099-09-20", count: 0 }],
+    });
+
+    const target = states.find((entry) => entry.date.getDate() === 20);
+    expect(target?.applicationCount).toBeUndefined();
+  });
+
+  it("applicationCounts를 주지 않으면 이전과 동일하게 applicationCount가 없다(하위 호환)", () => {
+    const states = toRecruitmentCellStates({
+      month: MONTH,
+      schedules: [schedule("2099-09-20", "OPEN")],
+      selectedDates: new Set(),
+      today: TODAY,
+    });
+
+    const target = states.find((entry) => entry.date.getDate() === 20);
+    expect(target?.applicationCount).toBeUndefined();
+  });
+
+  it("월 경계 날짜(1일·말일)에도 신청 수를 정확히 매핑한다", () => {
+    const states = toRecruitmentCellStates({
+      month: MONTH,
+      schedules: [schedule("2099-09-01", "OPEN"), schedule("2099-09-30", "CLOSED")],
+      selectedDates: new Set(),
+      today: TODAY,
+      applicationCounts: [
+        { scheduleId: "schedule-2099-09-01", count: 1 },
+        { scheduleId: "schedule-2099-09-30", count: 2 },
+      ],
+    });
+
+    expect(states.find((entry) => entry.date.getDate() === 1)?.applicationCount).toBe(1);
+    expect(states.find((entry) => entry.date.getDate() === 30)?.applicationCount).toBe(2);
+  });
 });

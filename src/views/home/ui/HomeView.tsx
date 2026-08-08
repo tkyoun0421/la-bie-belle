@@ -86,12 +86,14 @@ export function HomeView({ model }: { model: HomeViewModel }) {
 
       {model.priority === "deadline-application" ? (
         <section className="flex flex-col gap-3">
-          <p className="typo-title text-text-strong">근무 신청 마감이 임박했어요</p>
+          <p className="typo-title text-text-strong">
+            {model.applied ? "신청 완료 — 마감 전까지 변경 가능" : "근무 신청 마감이 임박했어요"}
+          </p>
           <p className="typo-body text-text">
             {model.date} · {model.applicationDeadline}까지
           </p>
-          <Button asChild variant="primary">
-            <Link href="/schedule">지금 신청하기</Link>
+          <Button asChild variant={model.applied ? "secondary" : "primary"}>
+            <Link href="/schedule">{model.applied ? "일정에서 확인하기" : "지금 신청하기"}</Link>
           </Button>
         </section>
       ) : null}

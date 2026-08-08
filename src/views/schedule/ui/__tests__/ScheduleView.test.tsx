@@ -109,7 +109,7 @@ describe("ScheduleView", () => {
 
     rerender(
       <ScheduleView
-        month={new Date(2026, 8, 1)}
+        month="2026-09"
         today="2026-08-01"
         schedules={SEPTEMBER_SCHEDULES}
         onApply={SCHEDULE_MIXED_MONTH.onApply}
