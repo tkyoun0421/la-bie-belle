@@ -1,13 +1,18 @@
 import assert from "node:assert/strict";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { test } from "node:test";
 import type { LoopState } from "../lib/claude-loop-state.ts";
 import {
   EPISODE_WINDOW_MS,
   ERROR_TYPES,
   MAX_RETRY_ATTEMPTS,
+  deriveTaskId,
   initialState,
   isSafeToInvokeClaude,
   normalizeErrorType,
+  readState,
   recordFailure,
   recordRespawnFailure,
   recordRespawnSuccess,
@@ -21,7 +26,7 @@ const now = new Date("2026-08-07T00:00:00.000Z");
 
 test("usage arms at exactly 95% and stores reset times", () => {
   const state = recordUsage(
-    initialState(),
+    { ...initialState(), status: "running" },
     {
       session_id: "session-test-1",
       rate_limits: {
@@ -38,20 +43,52 @@ test("usage arms at exactly 95% and stores reset times", () => {
 
 test("usage below 94% does not arm and 100% clamps", () => {
   const below = recordUsage(
-    initialState(),
+    { ...initialState(), status: "running" },
     { rate_limits: { five_hour: { used_percentage: 94, resets_at: null }, seven_day: { used_percentage: 10, resets_at: null } } },
     now,
   );
   assert.equal(below.usage.armed_window, null);
-  assert.equal(below.status, "stopped");
+  assert.equal(below.status, "running");
 
   const clamped = recordUsage(
-    initialState(),
+    { ...initialState(), status: "running" },
     { rate_limits: { five_hour: { used_percentage: 140, resets_at: null }, seven_day: { used_percentage: 0, resets_at: null } } },
     now,
   );
   assert.equal(clamped.usage.five_hour.used_percentage, 100);
   assert.equal(clamped.status, "armed");
+});
+
+test("recordUsage preserves waiting_rate_limit, needs_user, and stopped status while still refreshing usage fields", () => {
+  const highUsageInput = {
+    rate_limits: {
+      five_hour: { used_percentage: 99, resets_at: "2026-08-07T01:00:00Z" },
+      seven_day: { used_percentage: 0, resets_at: null },
+    },
+  };
+  for (const guardedStatus of ["waiting_rate_limit", "needs_user", "stopped"] as const) {
+    const guarded: LoopState = { ...initialState(), status: guardedStatus, session_id: "sess" };
+    const result = recordUsage(guarded, highUsageInput, now);
+    assert.equal(result.status, guardedStatus);
+    assert.equal(result.usage.armed_window, "five_hour");
+    assert.equal(result.usage.five_hour.used_percentage, 99);
+  }
+});
+
+test("recordUsage still toggles between running and armed once the lifecycle status is not guarded", () => {
+  const running: LoopState = { ...initialState(), status: "running" };
+  const armed = recordUsage(
+    running,
+    { rate_limits: { five_hour: { used_percentage: 96, resets_at: null }, seven_day: { used_percentage: 0, resets_at: null } } },
+    now,
+  );
+  assert.equal(armed.status, "armed");
+  const droppedBelowThreshold = recordUsage(
+    armed,
+    { rate_limits: { five_hour: { used_percentage: 10, resets_at: null }, seven_day: { used_percentage: 0, resets_at: null } } },
+    now,
+  );
+  assert.equal(droppedBelowThreshold.status, "running");
 });
 
 test("resets_at as epoch seconds normalizes to ISO 8601", () => {
@@ -299,4 +336,57 @@ test("selectQueueTask is idle when nothing is executable", () => {
 test("isSafeToInvokeClaude is false whenever gate violations exist", () => {
   assert.equal(isSafeToInvokeClaude([]), true);
   assert.equal(isSafeToInvokeClaude([{ gate: "gate:index", message: "in_progress task가 2개입니다" }]), false);
+});
+
+test("readState returns the initial state when the checkpoint file does not exist", () => {
+  const dir = mkdtempSync(join(tmpdir(), "lbb-loop-state-"));
+  try {
+    const state = readState(join(dir, "missing-loop-state.json"));
+    assert.deepEqual(state, initialState());
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("readState fails closed to needs_user when the checkpoint file exists but is corrupted", () => {
+  const dir = mkdtempSync(join(tmpdir(), "lbb-loop-state-"));
+  try {
+    const path = join(dir, "loop-state.json");
+    writeFileSync(path, "{ not valid json ");
+    const state = readState(path);
+    assert.equal(state.status, "needs_user");
+    assert.equal(state.session_id, null);
+    assert.equal(state.last_error_kind, "unknown");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("readState fails closed to needs_user when the checkpoint file holds a JSON array instead of an object", () => {
+  const dir = mkdtempSync(join(tmpdir(), "lbb-loop-state-"));
+  try {
+    const path = join(dir, "loop-state.json");
+    writeFileSync(path, "[]");
+    const state = readState(path);
+    assert.equal(state.status, "needs_user");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("deriveTaskId follows the in_progress task, or the sole executable task, or null when idle", () => {
+  const resuming = indexEntriesOf([
+    makeTask({ id: "P0-T01", status: "done" }),
+    makeTask({ id: "P0-T02", status: "in_progress" }),
+  ]);
+  assert.equal(deriveTaskId(resuming), "P0-T02");
+
+  const executable = indexEntriesOf([
+    makeTask({ id: "P0-T01", status: "done" }),
+    makeTask({ id: "P0-T03", status: "planned", depends_on: ["P0-T01"] }),
+  ]);
+  assert.equal(deriveTaskId(executable), "P0-T03");
+
+  const idle = indexEntriesOf([makeTask({ id: "P0-T01", status: "done" })]);
+  assert.equal(deriveTaskId(idle), null);
 });

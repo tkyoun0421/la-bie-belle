@@ -29,6 +29,11 @@ export const ERROR_TYPES = [
 export type ErrorType = (typeof ERROR_TYPES)[number];
 
 const BOUNDED_BACKOFF_TYPES: ReadonlySet<ErrorType> = new Set(["rate_limit", "overloaded"]);
+const USAGE_GUARDED_STATUSES: ReadonlySet<string> = new Set([
+  "waiting_rate_limit",
+  "needs_user",
+  "stopped",
+]);
 
 export type LoopStatus =
   | "starting"
@@ -130,9 +135,16 @@ export function recordUsage(state: LoopState, input: unknown, now = new Date()):
       : seven.used_percentage >= USAGE_THRESHOLD
         ? "seven_day"
         : null;
+  const status = USAGE_GUARDED_STATUSES.has(state.status)
+    ? state.status
+    : armed_window
+      ? "armed"
+      : state.status === "armed"
+        ? "running"
+        : state.status;
   return {
     ...state,
-    status: armed_window ? "armed" : state.status === "armed" ? "running" : state.status,
+    status,
     usage: { five_hour: five, seven_day: seven, armed_window },
     updated_at: now.toISOString(),
   };
@@ -269,11 +281,25 @@ export function sanitizeState(value: unknown): LoopState {
   };
 }
 
+function isEnoentError(error: unknown): boolean {
+  return isRecord(error) && error.code === "ENOENT";
+}
+
+function corruptedCheckpointState(): LoopState {
+  return { ...initialState(), status: "needs_user", last_error_kind: "unknown" };
+}
+
 export function readState(path: string): LoopState {
+  let raw: string;
   try {
-    return sanitizeState(JSON.parse(readFileSync(path, "utf8")));
+    raw = readFileSync(path, "utf8");
+  } catch (error) {
+    return isEnoentError(error) ? initialState() : corruptedCheckpointState();
+  }
+  try {
+    return sanitizeState(JSON.parse(raw));
   } catch {
-    return initialState();
+    return corruptedCheckpointState();
   }
 }
 
@@ -325,6 +351,11 @@ export function selectQueueTask(entries: readonly IndexEntry[]): QueueSelection 
       dependenciesSatisfied(entry.record, statusById),
   );
   return next === undefined ? { kind: "idle" } : { kind: "next", taskId: recordId(next.record) };
+}
+
+export function deriveTaskId(entries: readonly IndexEntry[]): string | null {
+  const selection = selectQueueTask(entries);
+  return selection.kind === "idle" ? null : selection.taskId;
 }
 
 export type SafetyViolation = { readonly gate: string; readonly message: string };

@@ -87,3 +87,43 @@ RADIO revision 4의 변경 허용 경로에 속한 `.claude/settings.json`·`.cl
 1. 마무리 커밋(무인 계약 + 인수 조건 5 재검사 구현 + statusline 위임 구현).
 2. 검증 단계: `check_ids` 3종(`claude-loop-state-selftest`·`claude-loop-recovery`·`claude-loop-safety`) 기준 교차 검증.
 3. done 전환 → 경계 커밋(재봉인 기록 + P2-T05 revision 3 재봉인) → P2-T05 디스패치.
+
+## 2026-08-08 · 검증 수정 라운드 (교차 검증 high 9건)
+
+- 작업 식별자: P0-T42
+- 현재 단계: 검증 수정 → 재검증
+- 기준 시각: 2026-08-08
+
+### 확정된 사실
+
+opus·codex 교차 검증이 확정한 high 9건을 봉인 RADIO revision 5 계약대로 수정했다. 커밋 SHA는 이 turn의 최종 보고에 남긴다(handoff는 커밋에 앞서 작성되어 자기 자신의 SHA를 담을 수 없다).
+
+- **H-1** (`harness/lib/claude-loop-state.ts` `recordUsage`): `armed_window`가 서면 lifecycle status(`waiting_rate_limit`·`needs_user`·`stopped`)를 무조건 `"armed"`로 덮어쓰던 결함을 고쳤다. `USAGE_GUARDED_STATUSES` 집합에 속한 상태는 `usage` 필드만 갱신하고 status는 보존한다. armed↔running 토글은 그 외(주로 `running`) 상태에서만 일어난다. 기존 "usage arms at exactly 95%" 계열 두 테스트는 `initialState()`(status `stopped`, 이제는 guarded)가 아니라 `{...initialState(), status:"running"}`을 기준으로 재작성했다 — armed 전환은 유휴(`running`) 상태에서만 일어난다는 봉인 문구를 그대로 테스트에 반영한 것이다.
+- **H-7** (`readState`): 파일 부재(ENOENT)만 `initialState()`로 취급하고, 존재하지만 파싱 실패·비객체 JSON인 경우는 `needs_user`(+ `last_error_kind: "unknown"`)로 fail-closed한다.
+- **H-3** (`scripts/claude-loop.mjs` `reverifyRepositoryForNewSession`): `checkIndexStateRules` 단독 호출을 `runIndexGate`(파싱 오류·스키마·상태 규칙 전체)로 교체하고 `runHandoffGate`를 추가했다. 적용 범위는 새 세션 생성 분기(`!state.session_id || state.status === "stopped"`)로 한정했고, 그 분기 안에서도 reverify를 큐 선택보다 먼저 실행해 손상된 index가 "idle"로 위장되지 않게 했다.
+- **H-4** (dry-run): `main()` 최상단에서 `command === "start" && dryRun`을 가장 먼저 처리해 lock 획득·`mkdirSync`·상태 읽기/쓰기보다 먼저 반환한다. watch·`--session-id`·plain 세 경로 모두 `claude` 미호출을 확인했다.
+- **H-5** (lock 소유권): `supervisor.lock`에 pid를 기록하고, 소유자 pid와 파일 내용이 일치할 때만 삭제한다(`releaseSupervisorLock`). `stop`은 이제 상태만 쓰고 lock 파일을 건드리지 않는다. 부수적으로, 기존 코드의 "idle queue" 종료 분기가 `process.exit(0)`을 곧장 호출해 `finally`를 건너뛰고 lock을 영구히 남기던 잠재 결함도 `main()`을 `return` 기반으로 재구성하며 함께 없앴다.
+- **H-6** (RMW 보호): 상태 전용 lock 파일(`loop-state.lock`)로 read-modify-write를 직렬화하는 `updateState()`를 만들어 record-usage·record-failure·supervisor 루프·stop 네 쓰기 주체가 전부 이 경로를 거치게 했다. 획득 실패는 20ms 간격 25회 재시도 후 이번 회차를 스킵한다(최대 약 500ms).
+- **H-8** (`task_id` 유도): `deriveTaskId(entries)`(순수 함수, `selectQueueTask` 위에 얇게 얹음)를 추가해 `--watch` 시작과 `record-failure`에서 `task_id`가 비어 있으면 index.jsonl의 in_progress(없으면 유일 실행 대상)로 채운다.
+- **H-9** (stopped/needs_user 재기동): `stopped` 체크포인트는 `!state.session_id || state.status === "stopped"` 조건으로 새 세션 분기를 다시 통과한다. `needs_user`는 `--session-id` 명시 없이는 자동 재기동하지 않되, 판별 기준을 `status === "needs_user"`만이 아니라 `last_error_kind !== null`도 요구하도록 다듬었다 — reverify-block으로 인한 `needs_user`(last_error_kind 불변, null)는 저장소를 고친 뒤 재시도가 자연스럽게 통과해야 하는 기존 계약(테스트 6)과 충돌했기 때문이다. 순수 CLI/세션 실패(recordFailure·recordRespawnFailure·손상 checkpoint)는 항상 last_error_kind를 채우므로 guard가 정확히 걸린다.
+- **부수 발견**: `console.error(...); process.exit(N);`을 곧바로 잇는 기존 패턴이 파이프(spawnSync) 환경에서 stderr를 잘라먹는 사례를 재검사 재시도 테스트에서 실측했다(원인: `process.exit()`는 버퍼링된 비동기 쓰기를 기다리지 않는다). `scripts/claude-loop.mjs`를 `process.exitCode = await main();` 패턴으로 재구성해 모든 조기 종료를 `return <code>`로 바꿔 해결했다 — 부수적으로 `finally`가 항상 자연스럽게 실행되어 H-5의 lock 해제 누락 위험도 함께 없앴다.
+
+### 미결 사항
+
+- 없음. 남은 medium·low 8건(catch-all 사유 유실, statusline 확인 필요 표시, 성능 중복 기록, session_id 형식 검증, `--bg` 파싱, 한 줄 스타일, TOOLING 문서, 종료 상태 구분)은 지시대로 backlog로 남긴다.
+- `supervisor.lock`이 소유 프로세스가 `SIGKILL`로 죽는 등 비정상 종료하면 stale lock으로 영구히 남을 수 있다(H-5는 소유권 검증만 요구했고 staleness 복구는 범위 밖). 복구는 `.claude/runtime/` 삭제(기존에 문서화된 되돌림 경로)로 가능하다.
+
+### 다음 행동
+
+1. 검증 단계에서 `check_ids` 3종 기준 교차 재검증을 받는다.
+2. 재검증 통과 시 task를 `done`으로 전환한다.
+
+### 증거·산출물 경로
+
+- `harness/lib/claude-loop-state.ts`
+- `scripts/claude-loop.mjs`
+- `harness/self-test/claude-loop-state.test.ts`
+- `harness/self-test/claude-loop-reverification.test.ts`
+- `harness/self-test/claude-loop-supervisor.test.ts`(신규)
+- `harness/self-test/fixture.ts`
+- `docs/execution/runs/P0-T42/tdd.json`

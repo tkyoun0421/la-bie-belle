@@ -1,6 +1,15 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  copyFileSync,
+  cpSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { RISK_LENS_COLUMNS, RISK_LENS_HEADING } from "../lib/radio-doc.ts";
@@ -252,4 +261,93 @@ export function initGitRepo(root: string): void {
   git(root, ["config", "user.email", "gate-self-test@example.com"]);
   git(root, ["config", "user.name", "gate self test"]);
   git(root, ["config", "commit.gpgsign", "false"]);
+}
+
+export function createLoopFixtureRoot(): string {
+  const root = createFixtureRoot();
+  const source = resolveRepoRoot();
+  cpSync(join(source, "harness", "lib"), join(root, "harness", "lib"), { recursive: true });
+  mkdirSync(join(root, "scripts"), { recursive: true });
+  copyFileSync(join(source, "scripts", "claude-loop.mjs"), join(root, "scripts", "claude-loop.mjs"));
+  return root;
+}
+
+export type LoopRunResult = {
+  readonly status: number;
+  readonly stdout: string;
+  readonly stderr: string;
+  readonly signal: NodeJS.Signals | null;
+};
+
+export function runLoopCommand(
+  root: string,
+  args: readonly string[],
+  options: {
+    readonly env?: Readonly<Record<string, string>>;
+    readonly timeout?: number;
+    readonly input?: string;
+  } = {},
+): LoopRunResult {
+  const result = spawnSync(
+    process.execPath,
+    [
+      "--experimental-strip-types",
+      "--disable-warning=ExperimentalWarning",
+      "scripts/claude-loop.mjs",
+      ...args,
+    ],
+    {
+      cwd: root,
+      encoding: "utf8",
+      env: { ...process.env, PATH: "", ...options.env },
+      timeout: options.timeout ?? 15_000,
+      input: options.input ?? "",
+    },
+  );
+  return {
+    status: result.status ?? 1,
+    stdout: result.stdout ?? "",
+    stderr: result.stderr ?? "",
+    signal: result.signal ?? null,
+  };
+}
+
+export function readLoopState(root: string): Record<string, unknown> {
+  return JSON.parse(readFileSync(join(root, ".claude/runtime/loop-state.json"), "utf8"));
+}
+
+export function createFakeClaudeBin(root: string, posixScript: string): string {
+  const binDir = join(root, "fake-bin");
+  mkdirSync(binDir, { recursive: true });
+  const claudePath = join(binDir, "claude");
+  writeFileSync(claudePath, `#!/bin/sh\n${posixScript}\n`);
+  chmodSync(claudePath, 0o755);
+  return binDir;
+}
+
+export function createFakeClaudeAdapter(
+  root: string,
+  options: { readonly bgSessionId?: string; readonly respawnExitCode?: number } = {},
+): { readonly binDir: string; readonly logPath: string } {
+  const logPath = join(root, "fake-claude.log");
+  const bgSessionId = options.bgSessionId ?? "fake-session-1";
+  const respawnExitCode = options.respawnExitCode ?? 0;
+  const script = [
+    `printf '%s\\n' "$*" >> "${logPath}"`,
+    `if [ "$1" = "--bg" ]; then echo "${bgSessionId}"; exit 0; fi`,
+    `if [ "$1" = "respawn" ]; then exit ${respawnExitCode}; fi`,
+    "exit 1",
+  ].join("\n");
+  const binDir = createFakeClaudeBin(root, script);
+  return { binDir, logPath };
+}
+
+export function readFakeClaudeLog(logPath: string): string[] {
+  try {
+    return readFileSync(logPath, "utf8")
+      .split("\n")
+      .filter((line) => line.length > 0);
+  } catch {
+    return [];
+  }
 }

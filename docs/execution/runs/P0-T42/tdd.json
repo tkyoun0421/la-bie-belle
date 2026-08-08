@@ -35,6 +35,42 @@
       "exit_code": 0,
       "at": "2026-08-07T17:16:27.000Z",
       "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/claude-loop-state.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T01:37:15.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/claude-loop-state.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T01:37:19.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/claude-loop-reverification.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T01:53:44.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/claude-loop-reverification.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T01:55:07.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/claude-loop-supervisor.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-08T01:53:52.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/claude-loop-supervisor.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-08T01:55:16.000Z",
+      "phase": "green"
     }
   ]
 }
