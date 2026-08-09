@@ -1,6 +1,7 @@
 ---
 name: loop-mode
-description: 토큰 리밋 자동 재개 모드 토글. /loop-mode on|off|status — 켜면 감시 supervisor가 usage 리셋 시각을 미리 저장해뒀다가 리밋으로 죽은 세션을 그 시각에 respawn한다. 끄면 자동 재개가 완전히 멈춘다.
+description: 토큰 리밋 자동 재개 모드 토글. /loop-mode on|off|status — 켜면 감시 supervisor가 usage 리셋 시각을 미리 저장해뒀다가 리밋으로 죽은 세션을 그 시각에 respawn한다. 끄면 자동 재개가 완전히 멈춘다. 사용자가 직접 `/loop-mode`를 입력할 때만 실행한다.
+disable-model-invocation: true
 ---
 
 # loop-mode — 리밋 자동 재개 토글

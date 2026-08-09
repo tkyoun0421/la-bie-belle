@@ -17,3 +17,13 @@ coverage/
 playwright-report/
 test-results/
 .probe/
+
+# 로컬 전용 스킬 — 실체는 .claude.local/skills, .claude/skills 아래는 심링크
+# .claude/skills/ 디렉터리 자체는 무시하지 말 것 (스킬 탐색에서 통째로 빠진다)
+.claude.local/
+CLAUDE.local.md
+skills-lock.json
+.claude/skills/*
+!.claude/skills/decision/
+!.claude/skills/loop-mode/
+!.claude/skills/verify/
