@@ -9,6 +9,7 @@ import {
   signInWithPasswordCookies,
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
+import { WORK_DATE_BANDS, workDatesInBand } from "./support/work-date-band";
 
 function randomPhone(): string {
   const suffix = Math.floor(Math.random() * 1e8)
@@ -59,12 +60,6 @@ async function createAdminSession(context: BrowserContext, baseURL: string | und
   return { admin };
 }
 
-function randomFutureWorkDate(): string {
-  const offsetDays = 550 + Math.floor(Math.random() * 300);
-  const target = new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000);
-  return target.toISOString().slice(0, 10);
-}
-
 async function insertOpenSchedule(admin: SupabaseClient, workDate: string): Promise<string> {
   const { data, error } = await admin
     .from("schedules")
@@ -87,8 +82,10 @@ test.describe("포지션 기본 설정과 스케줄 필요 인원", () => {
     const page = await context.newPage();
 
     const positionName = `E2E포지션-${randomUUID().slice(0, 8)}`;
-    const workDateA = randomFutureWorkDate();
-    const workDateB = randomFutureWorkDate();
+    const [workDateA, workDateB] = workDatesInBand(WORK_DATE_BANDS.positionRequirements, 2) as [
+      string,
+      string,
+    ];
     const scheduleAId = await insertOpenSchedule(admin, workDateA);
     let scheduleBId: string | null = null;
     let positionId: string | null = null;

@@ -9,6 +9,7 @@ import {
   signInWithPasswordCookies,
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
+import { WORK_DATE_BANDS, workDateInBand } from "./support/work-date-band";
 
 function randomPhone(): string {
   const suffix = Math.floor(Math.random() * 1e8)
@@ -59,12 +60,6 @@ async function createAdminSession(context: BrowserContext, baseURL: string | und
   return { admin };
 }
 
-function randomFutureWorkDate(): string {
-  const offsetDays = 550 + Math.floor(Math.random() * 300);
-  const target = new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000);
-  return target.toISOString().slice(0, 10);
-}
-
 async function insertSchedule(
   admin: SupabaseClient,
   workDate: string,
@@ -95,7 +90,7 @@ test.describe("관리자 예식 시간 편집", () => {
     const { admin } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 
-    const workDate = randomFutureWorkDate();
+    const workDate = workDateInBand(WORK_DATE_BANDS.ceremonyEditOpen);
     const scheduleId = await insertSchedule(admin, workDate, "OPEN");
 
     try {
@@ -138,7 +133,7 @@ test.describe("관리자 예식 시간 편집", () => {
     const { admin } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 
-    const workDate = randomFutureWorkDate();
+    const workDate = workDateInBand(WORK_DATE_BANDS.ceremonyEditConfirmed);
     const scheduleId = await insertSchedule(admin, workDate, "CONFIRMED");
 
     try {

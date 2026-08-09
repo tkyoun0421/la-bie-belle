@@ -9,6 +9,7 @@ import {
   signInWithPasswordCookies,
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
+import { WORK_DATE_BANDS, monthAnchorInBand } from "./support/work-date-band";
 
 function randomPhone(): string {
   const suffix = Math.floor(Math.random() * 1e8)
@@ -27,16 +28,6 @@ function dateKey(year: number, month: number, day: number): string {
 
 function seoulToday(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
-}
-
-function monthAnchor(minMonthsAhead: number, maxMonthsAhead: number): { year: number; month: number } {
-  const now = new Date();
-  const span = maxMonthsAhead - minMonthsAhead;
-  const offset = minMonthsAhead + Math.floor(Math.random() * span);
-  const monthIndex = now.getMonth() + offset;
-  const year = now.getFullYear() + Math.floor(monthIndex / 12);
-  const month = (monthIndex % 12) + 1;
-  return { year, month };
 }
 
 function randomDay(): number {
@@ -144,7 +135,7 @@ test.describe("모집 운영 왕복", () => {
     const workerB = await createWorkerSession(workerBContext, baseURL, "b");
     const workerBPage = await workerBContext.newPage();
 
-    const { year, month } = monthAnchor(6, 30);
+    const { year, month } = monthAnchorInBand(WORK_DATE_BANDS.recruitmentOpen);
     const day = randomDay();
     const workDate = dateKey(year, month, day);
 
@@ -245,7 +236,7 @@ test.describe("모집 시간대 회귀", () => {
     const { admin } = await createAdminSession(adminContext, baseURL);
     const adminPage = await adminContext.newPage();
 
-    const { year, month } = monthAnchor(31, 60);
+    const { year, month } = monthAnchorInBand(WORK_DATE_BANDS.recruitmentDeadline);
     const closedDay = randomDayExcludingFirst();
     const closedWorkDate = dateKey(year, month, closedDay);
 
@@ -285,7 +276,7 @@ test.describe("모집 시간대 회귀", () => {
     ).toBeVisible();
 
     const today = seoulToday();
-    const { year: farYear, month: farMonth } = monthAnchor(61, 90);
+    const { year: farYear, month: farMonth } = monthAnchorInBand(WORK_DATE_BANDS.recruitmentImminent);
     const farDay = randomDay();
     const imminentWorkDate = dateKey(farYear, farMonth, farDay);
 

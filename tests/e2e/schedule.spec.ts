@@ -9,6 +9,7 @@ import {
   signInWithPasswordCookies,
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
+import { WORK_DATE_BANDS, monthAnchorInBand } from "./support/work-date-band";
 
 function randomPhone(): string {
   const suffix = Math.floor(Math.random() * 1e8)
@@ -57,15 +58,6 @@ function pad(value: number): string {
   return String(value).padStart(2, "0");
 }
 
-function randomMonthAnchor(): { year: number; month: number } {
-  const now = new Date();
-  const offset = 6 + Math.floor(Math.random() * 24);
-  const monthIndex = now.getMonth() + offset;
-  const year = now.getFullYear() + Math.floor(monthIndex / 12);
-  const month = (monthIndex % 12) + 1;
-  return { year, month };
-}
-
 function pickDistinctDays(): [number, number, number] {
   const days = new Set<number>();
   while (days.size < 3) {
@@ -88,7 +80,7 @@ test.describe("근무자 달력과 다중 신청", () => {
     const worker = await createWorkerSession(context, baseURL);
     const page = await context.newPage();
 
-    const { year, month } = randomMonthAnchor();
+    const { year, month } = monthAnchorInBand(WORK_DATE_BANDS.workerCalendar);
     const [dayA, dayB, dayC] = pickDistinctDays();
     const dateA = dateKey(year, month, dayA);
     const dateB = dateKey(year, month, dayB);
