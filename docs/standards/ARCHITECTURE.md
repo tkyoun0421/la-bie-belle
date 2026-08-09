@@ -20,6 +20,7 @@
 | --- | --- |
 | 웹 애플리케이션 | Next.js App Router, TypeScript |
 | UI | Tailwind CSS, shadcn/ui, 모바일 우선 |
+| 인터랙션 | React `<ViewTransition>`, `motion` (ADR-0015가 정한 `LazyMotion` 범위) |
 | 인증 | Supabase Auth, Google OAuth |
 | 데이터베이스 | Supabase PostgreSQL, Seoul 리전 |
 | 권한 | PostgreSQL RLS, 보안 함수, 서버 전용 작업 |
