@@ -65,8 +65,6 @@ export function PositionEditSheet({
           label="이름"
           value={form.name}
           onChange={(event) => onUpdateField("name", event.target.value)}
-          disabled={isSystem}
-          disabledReason={isSystem ? "시스템 포지션 이름은 바꿀 수 없어요" : undefined}
         />
         <Input
           label="기본 필요 인원"

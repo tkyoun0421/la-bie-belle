@@ -14,11 +14,10 @@ for each row execute function set_updated_at();
 
 alter table schedule_position_requirements enable row level security;
 
-create policy schedule_position_requirements_admin_all
+create policy schedule_position_requirements_select_admin
 on schedule_position_requirements
-for all
-using (is_admin(auth.uid()))
-with check (is_admin(auth.uid()));
+for select
+using (is_admin(auth.uid()));
 
 create policy positions_admin_insert
 on positions
@@ -56,8 +55,8 @@ begin
     raise exception '스케줄을 찾을 수 없습니다' using errcode = '22023';
   end if;
 
-  if target_status = 'CANCELLED' then
-    raise exception '취소된 스케줄에는 필요 인원을 생성할 수 없습니다' using errcode = 'LB020';
+  if target_status in ('CONFIRMED', 'CANCELLED') then
+    raise exception '확정되었거나 취소된 스케줄에는 필요 인원을 생성할 수 없습니다' using errcode = 'LB020';
   end if;
 
   if exists (

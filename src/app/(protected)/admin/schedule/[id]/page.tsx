@@ -13,10 +13,11 @@ import {
 import { removeRequirement } from "@/features/requirement/api/remove-requirement";
 import { setRequirement } from "@/features/requirement/api/set-requirement";
 import { AdminSchedulePrepView } from "@/views/admin-schedule/ui/AdminSchedulePrepView";
+import { resolveRequirementSectionData } from "@/views/admin-schedule/model/requirement-section-data";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 import { NotFoundScreen } from "@/views/status/ui/NotFoundScreen";
 
-const NON_COPYABLE_STATUSES: RecruitmentScheduleStatus[] = ["CANCELLED"];
+const NON_COPYABLE_STATUSES: RecruitmentScheduleStatus[] = ["CONFIRMED", "CANCELLED"];
 
 type AdminSchedulePrepPageProps = {
   params: Promise<{ id: string }>;
@@ -43,10 +44,16 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
     listPositions(),
   ]);
 
-  const requirementRows = requirementsResult.ok ? requirementsResult.data : [];
-  const activePositions = positionsResult.ok
-    ? positionsResult.data.filter((position) => position.isActive)
-    : [];
+  const requirementSectionData = resolveRequirementSectionData({
+    requirementsOk: requirementsResult.ok,
+    requirementRows: requirementsResult.ok ? requirementsResult.data : [],
+    positionsOk: positionsResult.ok,
+    positions: positionsResult.ok ? positionsResult.data : [],
+  });
+
+  if (!requirementSectionData.ok) {
+    return <ErrorScreen />;
+  }
 
   return (
     <AdminSchedulePrepView
@@ -56,8 +63,8 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
       onCreateCheckInRule={createCheckInRule}
       onUpdateCheckInRule={updateCheckInRule}
       onDeleteCheckInRule={deleteCheckInRule}
-      requirementRows={requirementRows}
-      activePositions={activePositions}
+      requirementRows={requirementSectionData.requirementRows}
+      activePositions={requirementSectionData.activePositions}
       onSetRequirement={setRequirement}
       onRemoveRequirement={removeRequirement}
     />

@@ -114,3 +114,50 @@
 - 4단계(검증) — 교차 검증(`opus`·`codex`)과 인수 조건 증거 등록은 조정자가 이어 진행한다. status는
   `in_progress`로 유지했다(3~5단계는 하나의 in_progress 구간).
 - push는 하지 않았다 — ci-finisher 소유.
+
+## 2026-08-09 · 검증 수정 라운드(revision 3 반영 + 교차 검증 확정 발견 4건)
+
+- 기준 커밋: 개발 커밋 `1357c87` 위에 조정자의 재봉인 커밋 `0184472`(revision 3, SHA-256
+  `7d55892eb28aacc4db7e626eb749ec2e78f11a096711fa0afe0ca0b7abb5793f`)가 얹힌 상태에서 착수.
+- 대상: R-00(revision 3 반영 — 복사 함수가 CONFIRMED도 거부), F-01(high — admin RLS가 `for all`이라 확정
+  잠금·감사를 우회), F-02(medium — 시스템 포지션 이름 편집이 UI에서 과잉 차단), F-03(medium — 조회 실패가
+  빈 표로 위장돼 인원값 덮어쓰기를 유도), F-04(medium — 새 테이블의 비관리자 거부 pgTAP 부재). 5건 전부
+  TDD(RED 먼저)로 고쳤다. 각 발견의 구체적 결정·근거는 `docs/execution/runs/P3-T02/radio.md`의
+  "교차 검증 수정 라운드" 절에 정리했다.
+- 이번 라운드에서 고치지 않은 것(조정자가 backlog로 분류): 복사·포지션 추가 교차 트랜잭션 경쟁(medium),
+  E2E 스케줄 픽스처 잔존(medium), pgTAP 동시성 단언 라벨(medium), 삭제 차단 안내의 23503 원인 단정(low),
+  P0001을 일시 오류로 안내(low), position_id 역방향 인덱스(low) — 전부 손대지 않았다.
+
+### 변경 파일
+
+- `supabase/migrations/20260809000000_position_requirements.sql`(R-00·F-01 — 기존 마이그레이션을 직접 수정,
+  P3-T01 선례와 동일하게 미푸시 상태이므로 새 마이그레이션 파일을 만들지 않았다).
+- `supabase/tests/18-position-requirements.test.sql`(R-00·F-01·F-04 — 75→86 단언).
+- `src/features/position/ui/PositionEditSheet.tsx` + 신규
+  `src/features/position/ui/__tests__/PositionEditSheet.test.tsx`(F-02).
+- `src/app/(protected)/admin/schedule/[id]/page.tsx`(R-00·F-03) + 신규
+  `src/views/admin-schedule/model/requirement-section-data.ts`·
+  `src/views/admin-schedule/model/__tests__/requirement-section-data.test.ts`(F-03).
+- `docs/execution/phases/index.jsonl`(status `blocked` → `in_progress`, 재봉인 커밋 동안만 blocked).
+- `docs/execution/runs/P3-T02/tdd.json`·`radio.md`·이 handoff(이번 라운드 증거·근거 추가).
+
+### 검증 결과
+
+- `pnpm db:reset && pnpm db:test` GREEN — 18 files, 915 assertions(18번 파일 75→86건, 나머지 17개 파일
+  무변경 확인).
+- `pnpm verify` 전체 GREEN — 포맷·lint·typecheck·unit 193 files/1172 tests(F-02·F-03 신규 테스트 2파일·7건
+  포함, 기존 191/1165에서 순증)·harness self-test 308·check:docs·build·app-build·client-secret-scan·
+  E2E 39/39·gate:all.
+- E2E는 지시대로 `db:reset` 직후 실행했다. 첫 시도에서 `pnpm test:e2e`의 `webServer.reuseExistingServer`가
+  당일 이른 아침에 만든 오래된 `.next` 빌드를 재사용해 이번 라운드 수정 전 코드로 검증될 뻔한 함정을
+  `.next/BUILD_ID`와 소스 mtime 대조로 발견해 `pnpm build` 재실행 후 재검증했다(과정은 `radio.md` 참고).
+- TDD RED→GREEN 증거 3쌍(pgTAP 1쌍 + F-02·F-03 unit 2쌍)을 `docs/execution/runs/P3-T02/tdd.json`에 추가했다.
+
+### 미결 사항
+
+- 없음 — 이번 라운드의 5건 전부 코드·테스트로 해소했고, 새로 드러난 설계 공백은 없었다.
+
+### 다음 단계
+
+- status는 `in_progress`로 남겼다 — 재확인·`done` 전환은 조정자 몫이다.
+- push는 하지 않았다 — ci-finisher 소유.

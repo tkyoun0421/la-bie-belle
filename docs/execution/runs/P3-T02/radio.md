@@ -30,3 +30,77 @@
 ## 미결 사항 처리
 
 - RADIO의 유일한 미결 사항("확정 스케줄 수동 추가 개방과 추가 시점 목록 모달은 P3-T06 설계가 다룬다")은 이 task의 구현 범위 밖이라 손대지 않았다. `set_position_requirement`·`remove_position_requirement`는 설계 그대로 CONFIRMED를 거부한다.
+
+## 2026-08-09 · 교차 검증 수정 라운드(revision 3 반영 + high/medium 4건)
+
+- RADIO: `docs/execution/radio/P3-T02-radio.md` revision 3, SHA-256
+  `7d55892eb28aacc4db7e626eb749ec2e78f11a096711fa0afe0ca0b7abb5793f`
+- 기준 커밋: `1357c87`(개발 커밋) 위에 재봉인 커밋 `0184472`가 얹힌 상태에서 이어 구현. 대상은 조정자가 확정한
+  R-00(revision 3 반영)·F-01(high)·F-02·F-03·F-04(medium) 5건, 전부 TDD로 고쳤다(`tdd.json` 참고).
+
+### 발견별 구현 결정
+
+1. **R-00 — `copy_schedule_requirements`의 거부 대상에 CONFIRMED를 추가했다.** 위 4번 항목("복사는 CONFIRMED를
+   허용하고 수정만 거부한다")이 재봉인으로 뒤집혔다 — "표의 정본 이원화" 불변 규칙이 "복사는 멱등이며 확정·취소
+   스케줄을 제외한다"로 확장됐기 때문이다. 호출부 `NON_COPYABLE_STATUSES`(`page.tsx`)를 `["CANCELLED"]`에서
+   `["CONFIRMED", "CANCELLED"]`로 맞췄고, pgTAP의 "CONFIRMED도 복사된다" 단언을 `throws_ok(..., 'LB020', ...)`로
+   교체했다. AC4가 검증하던 "CONFIRMED 스케줄은 표를 갖고 있어도 자동 반영에서 제외된다" 트리거 분기는 이제
+   copy로 표를 만들 수 없어 픽스처가 사라지므로, superuser 권한의 raw insert 픽스처를 그 앞에 추가해 트리거
+   단언의 의미를 유지했다 — 별도 함수·Action을 새로 만들지 않고 pgTAP 스크립트 안에서만 시뮬레이션했다.
+2. **F-01 — `schedule_position_requirements_admin_all`(`for all`)을 `schedule_position_requirements_select_admin`
+   (`for select`)로 좁혔다.** 저장소 관례를 다시 대조한 결과 `for all` 전례는 상태 잠금·감사가 없는 전역 설정
+   `check_in_rules_admin_all` 하나뿐이고, 상태 잠금(LB020)과 감사(`requirement_set`/`requirement_removed`)가
+   있는 테이블은 전부 select 전용 정책 + DEFINER 함수 쓰기 경로다(`ceremonies_select_admin`,
+   `schedules`/`applications`/`scheduling_audit_logs`). `schedule_position_requirements`는 후자에 속하므로
+   select 전용으로 좁혔다 — DEFINER 함수(`copy_schedule_requirements`·`set_position_requirement`·
+   `remove_position_requirement`)는 RLS를 우회하므로 내부 동작은 영향받지 않는다.
+   pgTAP 작성 중 Postgres RLS의 비직관적 동작을 직접 확인했다: RLS 활성 테이블에 해당 명령의 정책이 없을 때
+   INSERT는 `42501`을 던지지만 UPDATE/DELETE는 대상 행이 `USING` 절에서 걸러져 **에러 없이 0건 적용**된다(로컬
+   `psql`로 별도 scratch 테이블에서 실증). 그래서 update/delete 거부 단언은 `throws_ok`가 아니라
+   `with attempted as (update ... returning 1) select is((select count(*) from attempted), 0, ...)`(WITH을
+   최상위 절로 둔 형태 — 데이터 변경 CTE는 스칼라 서브쿼리 인자 안에 중첩할 수 없다는 Postgres 제약 때문에 이
+   형태여야 파싱된다)로 썼다.
+3. **F-02 — 이름 `Input`의 `disabled={isSystem}`·안내 문구를 제거했다.** DB 트리거
+   `reject_system_position_change`(`20260804000000_foundation_schema.sql`)를 다시 읽어 실제로 막는 대상이
+   `code`·delete·비활성화뿐이고 표시명(`name`)은 명시적으로 허용됨을 확인했다 — 트리거 예외 메시지 자체가
+   "표시명만 수정할 수 있습니다"다. UI 쪽 차단은 PRD 4장·트리거·RADIO Interface 어디에도 근거가 없는 과잉
+   제약이었다. 삭제·비활성화 차단은 트리거가 실제로 막는 대상과 일치하므로 그대로 남겼다.
+4. **F-03 — 조회 실패를 빈 배열로 치환하지 않고 `ErrorScreen`으로 fail-closed 처리한다.** 같은 페이지의
+   `getSchedulePrep` 실패 처리(이미 `ErrorScreen` 반환)와 대칭을 맞췄다 — "표시 문제"가 아니라
+   `useRequirementEditor.addMissing`이 `defaultRequiredCount`로 `setRequirement`를 호출해 이미 저장된 값을
+   전역 기본값으로 덮어쓰는 감사 남는 오작동으로 이어질 수 있어(봉인 불변 규칙 "전역 기본 인원수 변경은 이미
+   복사된 스케줄에 전파하지 않는다" 위반), 조용한 폴백보다 fail-closed가 맞다고 판단했다. `page.tsx` 자체는
+   이 저장소에 테스트 파일 전례가 하나도 없어(`find src/app -name "*.test.tsx"` 결과 0건, `config/fsd.json`의
+   `appLayer` 세그먼트도 `page.tsx`를 unit test 의무에서 면제) 분기 로직을
+   `views/admin-schedule/model/requirement-section-data.ts`의 순수 함수로 추출해 TDD로 고정하고, `page.tsx`는
+   그 결과를 그대로 분기만 하는 얇은 어댑터로 남겼다.
+5. **F-04 — admin·근무자·anon 3주체의 select/insert/update/delete 거부(또는 허용) 단언을 추가했다.** admin은
+   select만 허용(F-01), insert/update/delete는 전부 거부됨을 확인했다. 근무자는 select부터 4종 전부 거부.
+   anon은 `04-rls-default-deny.test.sql`이 이미 정한 범위(select·insert만 확인, update/delete는 anon 세션
+   자체가 이 저장소 전반에서 검증 대상으로 삼지 않는다)를 그대로 따라 select·insert 2종만 거부 확인했다 — 근무자
+   쪽만 4종으로 넓힌 건 F-04 원문이 "근무자 select·mutation 거부"를 명시했기 때문이다. `pg_policies` 개수
+   단언(=1)도 함께 추가해 정책 형태 자체가 넓어지는 회귀를 막았다.
+
+### 검증 결과
+
+- `pnpm db:reset && pnpm db:test` GREEN(18 files, 915 assertions — 18번 파일 75→86건).
+- `pnpm verify` 전체 GREEN(포맷·lint·typecheck·unit 193 files/1172 tests·harness self-test 308·check:docs·
+  build·app-build·client-secret-scan·E2E 39/39·gate:all). E2E는 `pnpm build`로 프로덕션 번들을 새로 만든 뒤
+  `db:reset` 직후 실행했다 — `next start`가 이전 세션의 `.next` 산출물을 그대로 재사용해 이번 라운드 수정 전
+  코드로 검증될 뻔한 것을 빌드 타임스탬프 대조로 발견해 재빌드했다(아래 참고).
+- TDD RED→GREEN 증거는 `docs/execution/runs/P3-T02/tdd.json`에 pgTAP 1쌍 + unit 2쌍(F-02·F-03)으로 추가했다.
+
+### 구현 중 발견한 프로세스 함정(설계와 무관, 검증 절차 교훈)
+
+- **`pnpm test:e2e`의 `webServer.reuseExistingServer`(비 CI 환경)가 오래된 `.next` 빌드를 재사용할 수 있다.**
+  포트에 떠 있는 서버가 없어도 `next start`는 새 프로세스를 띄우되 디스크의 기존 `.next` 산출물을 그대로
+  서빙한다 — 이번 라운드 코드 수정 후 첫 `pnpm test:e2e` 실행에서 CONFIRMED 스케줄 페이지가
+  `ensureScheduleRequirementsCopied`를 실제로 호출해 LB020을 기록하는 로그를 봤는데, R-00 수정 후 코드라면
+  `NON_COPYABLE_STATUSES`가 이를 아예 스킵해야 정상이다. `.next/BUILD_ID`와 소스 파일 mtime을 대조해 빌드가
+  이번 라운드 수정 이전(당일 이른 아침) 것임을 확인했다. `pnpm build`로 재빌드한 뒤 재실행해 로그가 사라짐을
+  확인했다.
+- **`recruitment-manage.spec.ts`·`recruitment-open.spec.ts`는 `work_date`를 `now` 기준 고정 day-of-month
+  오프셋으로 계산하고 픽스처를 정리하지 않는다.** `db:reset` 없이 `test:e2e`를 연속 두 번 돌리면 이전 실행이
+  남긴 동일 `work_date` 행과 유니크 제약(`schedules_work_date_active_unique`)이 충돌해 실패한다 — 이 라운드의
+  코드 변경과 무관한 기존 테스트 설계다(수정 대상 아님, backlog로도 언급되지 않아 손대지 않았다). 매 E2E 실행
+  전 `db:reset`을 다시 해 우회했다.

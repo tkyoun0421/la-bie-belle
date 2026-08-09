@@ -1,5 +1,5 @@
 begin;
-select plan(75);
+select plan(86);
 
 -- =====================================================================
 -- 스키마 노출: 테이블·컬럼·제약·RLS·함수 시그니처
@@ -42,6 +42,14 @@ select is(
 select ok(
   (select relrowsecurity from pg_class where oid = 'public.schedule_position_requirements'::regclass),
   'schedule_position_requirements has row level security enabled'
+);
+select is(
+  (
+    select count(*)::int from pg_policies
+    where schemaname = 'public' and tablename = 'schedule_position_requirements'
+  ),
+  1,
+  'schedule_position_requirements has exactly one policy(select 전용, 쓰기는 DEFINER 함수로만, F-01)'
 );
 
 select has_function(
@@ -236,6 +244,110 @@ select is(
   'AC2: 감사 detail의 position_count가 복사된 행 수와 같다'
 );
 
+-- =====================================================================
+-- F-01·F-04: schedule_position_requirements 쓰기는 DEFINER 함수로만 허용된다
+-- =====================================================================
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '18000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select count(*) from schedule_position_requirements$$,
+  'F-01: admin은 schedule_position_requirements를 select할 수 있다'
+);
+select throws_ok(
+  $$insert into schedule_position_requirements (schedule_id, position_id, required_count)
+    values (
+      (select id from schedules where work_date = '2099-12-03'),
+      (select id from positions where name = '팀장'),
+      1
+    )$$,
+  '42501',
+  null,
+  'F-01: admin의 직접 insert는 42501로 거부된다(쓰기는 DEFINER 함수 경로만 허용)'
+);
+with attempted as (
+  update schedule_position_requirements set required_count = 999
+    where schedule_id = (select id from schedules where work_date = '2099-12-01')
+      and position_id = (select id from positions where name = '팀장')
+    returning 1
+)
+select is(
+  (select count(*)::int from attempted),
+  0,
+  'F-01: admin의 직접 update는 RLS가 대상 행을 걸러 0건 적용된다(확정·취소 잠금·감사 우회 방지)'
+);
+with attempted as (
+  delete from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-01')
+      and position_id = (select id from positions where name = '팀장')
+    returning 1
+)
+select is(
+  (select count(*)::int from attempted),
+  0,
+  'F-01: admin의 직접 delete는 RLS가 대상 행을 걸러 0건 적용된다(확정·취소 잠금·감사 우회 방지)'
+);
+reset role;
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '18000000-0000-0000-0000-000000000002', true);
+select is_empty(
+  $$select 1 from schedule_position_requirements$$,
+  'F-04: 비관리자(active 근무자)는 schedule_position_requirements를 읽을 수 없다'
+);
+select throws_ok(
+  $$insert into schedule_position_requirements (schedule_id, position_id, required_count)
+    values (
+      (select id from schedules where work_date = '2099-12-03'),
+      (select id from positions where name = '팀장'),
+      1
+    )$$,
+  '42501',
+  null,
+  'F-04: 비관리자의 schedule_position_requirements insert는 42501로 거부된다'
+);
+with attempted as (
+  update schedule_position_requirements set required_count = 999
+    where schedule_id = (select id from schedules where work_date = '2099-12-01')
+      and position_id = (select id from positions where name = '팀장')
+    returning 1
+)
+select is(
+  (select count(*)::int from attempted),
+  0,
+  'F-04: 비관리자의 schedule_position_requirements update는 0건 적용된다'
+);
+with attempted as (
+  delete from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-01')
+      and position_id = (select id from positions where name = '팀장')
+    returning 1
+)
+select is(
+  (select count(*)::int from attempted),
+  0,
+  'F-04: 비관리자의 schedule_position_requirements delete는 0건 적용된다'
+);
+reset role;
+
+set local role anon;
+select is_empty(
+  $$select 1 from schedule_position_requirements$$,
+  'F-04: anon은 schedule_position_requirements를 읽을 수 없다'
+);
+select throws_ok(
+  $$insert into schedule_position_requirements (schedule_id, position_id, required_count)
+    values (
+      (select id from schedules where work_date = '2099-12-03'),
+      (select id from positions where name = '팀장'),
+      1
+    )$$,
+  '42501',
+  null,
+  'F-04: anon의 schedule_position_requirements insert는 42501로 거부된다'
+);
+reset role;
+
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '18000000-0000-0000-0000-000000000001', true);
 select lives_ok(
@@ -268,9 +380,11 @@ select lives_ok(
   $$select copy_schedule_requirements((select id from schedules where work_date = '2099-12-02'))$$,
   'AC2: 두 번째 OPEN 스케줄도 복사할 수 있다(AC4 복수 반영 픽스처)'
 );
-select lives_ok(
+select throws_ok(
   $$select copy_schedule_requirements((select id from schedules where work_date = '2099-12-05'))$$,
-  'AC2: CONFIRMED 스케줄도 복사는 거부되지 않는다(설계 문구 그대로 — CANCELLED만 거부)'
+  'LB020',
+  null,
+  'AC2(revision 3): CONFIRMED 스케줄의 복사는 LB020으로 거부된다(확정 스케줄은 자동으로 표를 만들지 않는다)'
 );
 reset role;
 
@@ -517,6 +631,20 @@ select is(
   ),
   2,
   'AC3: 재설정된 스캔 필요 인원이 2로 저장됐다'
+);
+
+-- =====================================================================
+-- AC4 픽스처: CONFIRMED 스케줄에 표를 직접 만든다
+-- (revision 3부터 copy_schedule_requirements가 CONFIRMED를 거부해 더는 복사로
+-- 표를 만들 수 없다 — 트리거의 CONFIRMED 제외 분기를 "표 보유" 상태에서도
+-- 검증하려면 raw insert로 그 상태를 직접 시뮬레이션해야 한다)
+-- =====================================================================
+
+insert into schedule_position_requirements (schedule_id, position_id, required_count)
+values (
+  (select id from schedules where work_date = '2099-12-05'),
+  (select id from positions where name = '팀장'),
+  1
 );
 
 -- =====================================================================

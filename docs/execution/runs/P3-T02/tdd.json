@@ -132,6 +132,48 @@
       "exit_code": 0,
       "at": "2026-08-08T16:38:13Z",
       "phase": "green"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-09T13:04:57Z",
+      "phase": "red",
+      "note": "revision 3 재봉인 수정 라운드(R-00·F-01·F-04): copy_schedule_requirements가 CONFIRMED를 여전히 허용하고 admin 정책이 for all이라 18-position-requirements.test.sql의 새 단언(AC2 LB020 거부·정책 개수 1·admin/worker/anon 쓰기 거부 12건)이 실패"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-09T13:05:46Z",
+      "phase": "green",
+      "note": "revision 3 재봉인 수정 라운드(R-00·F-01·F-04): copy_schedule_requirements CONFIRMED 거부(LB020) + admin 정책을 select 전용으로 좁힌 뒤 18개 파일 915/915 PASS(18번 파일 86/86, AC4는 raw insert 픽스처로 CONFIRMED 트리거 제외 분기를 계속 검증)"
+    },
+    {
+      "command": "pnpm vitest run src/features/position/ui/__tests__/PositionEditSheet.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-09T13:07:06Z",
+      "phase": "red",
+      "note": "F-02: 시스템 포지션의 이름 Input이 disabled={isSystem}이라 '이름 입력이 열려 있다' 단언이 실패"
+    },
+    {
+      "command": "pnpm vitest run src/features/position/ui/__tests__/PositionEditSheet.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-09T13:07:19Z",
+      "phase": "green",
+      "note": "F-02: 이름 Input의 disabled={isSystem}·disabledReason 제거(삭제·비활성화 차단은 유지) 후 3/3 PASS"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/requirement-section-data.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-09T13:09:24Z",
+      "phase": "red",
+      "note": "F-03: resolveRequirementSectionData 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/requirement-section-data.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-09T13:09:34Z",
+      "phase": "green",
+      "note": "F-03: requirements·positions 조회 실패를 빈 배열로 치환하지 않고 ok:false로 구분하는 순수 함수 구현 후 4/4 PASS(진짜 빈 상태는 ok:true로 구분)"
     }
   ]
 }
