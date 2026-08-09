@@ -11,6 +11,7 @@ export const WORK_DATE_BANDS = {
   ceremonyEditOpen: { minMonthsAhead: 98, maxMonthsAhead: 113 },
   ceremonyEditConfirmed: { minMonthsAhead: 115, maxMonthsAhead: 130 },
   positionRequirements: { minMonthsAhead: 132, maxMonthsAhead: 163 },
+  viewTransition: { minMonthsAhead: 165, maxMonthsAhead: 196 },
 } as const satisfies Record<string, WorkDateBand>;
 
 const LAST_SAFE_DAY_OF_MONTH = 27;

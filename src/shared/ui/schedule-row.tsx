@@ -32,6 +32,7 @@ export function ScheduleRow({
       onClick={onPress}
       className={cn(
         "flex w-full items-center justify-between gap-3 border-b border-border py-3 text-left",
+        "transition-transform duration-[var(--duration-feedback)] ease-[var(--ease-out)] active:scale-[0.99]",
         className,
       )}
     >

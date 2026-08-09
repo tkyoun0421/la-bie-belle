@@ -100,4 +100,22 @@ describe("ScheduleRow", () => {
 
     expect(onPress).toHaveBeenCalledOnce();
   });
+
+  it("눌림 피드백을 토큰 시간으로 표현한다", () => {
+    render(
+      <ScheduleRow
+        date={new Date("2026-08-10T00:00:00")}
+        scheduledStart="09:00"
+        scheduledEnd="18:00"
+        position="홀"
+        status="확정"
+        onPress={() => {}}
+      />,
+    );
+
+    const className = screen.getByRole("button").className;
+    expect(className).toContain("duration-[var(--duration-feedback)]");
+    expect(className).toContain("ease-[var(--ease-out)]");
+    expect(className).toContain("active:scale-[0.99]");
+  });
 });

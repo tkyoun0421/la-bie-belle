@@ -72,4 +72,24 @@ describe("Dialog", () => {
 
     expect(screen.getByRole("button", { name: "취소하기" })).toHaveClass("bg-danger");
   });
+
+  it("진입과 이탈에 모션 유틸을 붙인다", () => {
+    render(
+      <Dialog
+        open
+        onOpenChange={() => {}}
+        title="근무를 취소할까요?"
+        confirmLabel="취소하기"
+        onConfirm={() => {}}
+      />,
+    );
+
+    const content = screen.getByRole("dialog");
+    expect(content.className).toContain("data-[state=open]:motion-dialog-in");
+    expect(content.className).toContain("data-[state=closed]:motion-dialog-out");
+
+    const overlay = document.querySelector("[data-slot=dialog-overlay]");
+    expect(overlay?.className).toContain("data-[state=open]:motion-overlay-in");
+    expect(overlay?.className).toContain("data-[state=closed]:motion-overlay-out");
+  });
 });

@@ -34,9 +34,12 @@ export function Dialog({
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-text-strong/40" />
+        <DialogPrimitive.Overlay
+          data-slot="dialog-overlay"
+          className="fixed inset-0 z-50 bg-text-strong/40 data-[state=closed]:motion-overlay-out data-[state=open]:motion-overlay-in"
+        />
         <DialogPrimitive.Content
-          className="fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-xl bg-surface p-5 shadow-floating"
+          className="fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-xl bg-surface p-5 shadow-floating data-[state=closed]:motion-dialog-out data-[state=open]:motion-dialog-in"
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             cancelRef.current?.focus();

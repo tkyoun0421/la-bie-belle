@@ -1,0 +1,64 @@
+{
+  "entries": [
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-09T16:41:45.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-09T16:42:23.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/motion-tokens.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-09T16:43:43.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/motion-tokens.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-09T16:44:21.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/button.test.tsx src/shared/ui/__tests__/chip.test.tsx src/shared/ui/__tests__/schedule-row.test.tsx src/shared/ui/__tests__/dialog.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-09T16:46:17.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/button.test.tsx src/shared/ui/__tests__/chip.test.tsx src/shared/ui/__tests__/schedule-row.test.tsx src/shared/ui/__tests__/dialog.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-09T16:47:01.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-09T16:49:06.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-09T16:49:19.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/bundle-budget.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-09T17:00:12.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/bundle-budget.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-09T17:01:38.000Z",
+      "phase": "green"
+    }
+  ]
+}

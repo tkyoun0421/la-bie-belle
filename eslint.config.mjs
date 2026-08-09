@@ -58,6 +58,7 @@ export default [
       "project/import-alias": "error",
       "project/test-placement": "error",
       "project/design-token-colors": "error",
+      "project/motion-tokens": "error",
     },
   },
 

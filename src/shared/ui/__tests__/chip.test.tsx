@@ -54,4 +54,17 @@ describe("Chip", () => {
 
     expect(onSelectedChange).not.toHaveBeenCalled();
   });
+
+  it("눌림 피드백과 easing을 토큰으로 표현한다", () => {
+    render(
+      <Chip selected={false} onSelectedChange={() => {}}>
+        토요일
+      </Chip>,
+    );
+
+    const className = screen.getByRole("button", { name: "토요일" }).className;
+    expect(className).toContain("duration-[var(--duration-feedback)]");
+    expect(className).toContain("ease-[var(--ease-out)]");
+    expect(className).toContain("active:scale-[0.97]");
+  });
 });

@@ -87,4 +87,13 @@ describe("Button", () => {
     expect(link.tagName).toBe("A");
     expect(link).toHaveClass("bg-action");
   });
+
+  it("눌림 피드백을 토큰 시간으로 표현한다", () => {
+    render(<Button>저장</Button>);
+
+    const className = screen.getByRole("button", { name: "저장" }).className;
+    expect(className).toContain("duration-[var(--duration-feedback)]");
+    expect(className).toContain("ease-[var(--ease-out)]");
+    expect(className).toContain("active:scale-[0.97]");
+  });
 });

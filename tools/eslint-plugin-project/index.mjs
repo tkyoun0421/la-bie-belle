@@ -3,6 +3,7 @@ import errorCodeLiteral from "./rules/error-code-literal.mjs";
 import fileNaming from "./rules/file-naming.mjs";
 import importAlias from "./rules/import-alias.mjs";
 import layerDirection from "./rules/layer-direction.mjs";
+import motionTokens from "./rules/motion-tokens.mjs";
 import noComments from "./rules/no-comments.mjs";
 import noRuntimeExport from "./rules/no-runtime-export.mjs";
 import requireServerOnly from "./rules/require-server-only.mjs";
@@ -24,5 +25,6 @@ export default {
     "import-alias": importAlias,
     "test-placement": testPlacement,
     "design-token-colors": designTokenColors,
+    "motion-tokens": motionTokens,
   },
 };

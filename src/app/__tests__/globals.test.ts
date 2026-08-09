@@ -115,6 +115,60 @@ describe("globals.css 디자인 토큰", () => {
     expect(css).toMatch(pattern);
   });
 
+  it.each([["--ease-out"], ["--ease-spring"]])(
+    "easing 토큰 %s가 cubic-bezier로 정의된다",
+    (name) => {
+      const pattern = new RegExp(`${name}:\\s*cubic-bezier\\([^)]+\\);`);
+      expect(css).toMatch(pattern);
+    },
+  );
+
+  it("항목 간 지연 토큰 --duration-stagger가 ms 단위로 정의된다", () => {
+    expect(css).toMatch(/--duration-stagger:\s*\d+ms;/);
+  });
+
+  it.each([["--spring-stiffness"], ["--spring-damping"]])(
+    "spring 상수 %s가 단위 없는 숫자로 정의된다",
+    (name) => {
+      const pattern = new RegExp(`${name}:\\s*\\d+(\\.\\d+)?;`);
+      expect(css).toMatch(pattern);
+    },
+  );
+
+  describe("서드파티 모션 타이밍 조율", () => {
+    it("vaul 시트가 토큰 시간과 easing을 쓴다", () => {
+      const block =
+        /\[data-vaul-drawer\]\[data-vaul-drawer-direction\]\[data-state\]\s*\{([^}]*)\}/.exec(css);
+      expect(block, "vaul 시트 규칙이 없습니다").not.toBeNull();
+      expect(block?.[1]).toMatch(/transition-duration:\s*var\(--duration-overlay\);/);
+      expect(block?.[1]).toMatch(/transition-timing-function:\s*var\(--ease-out\);/);
+      expect(block?.[1]).toMatch(/animation-duration:\s*var\(--duration-overlay\);/);
+    });
+
+    it("vaul 오버레이가 토큰 시간을 쓴다", () => {
+      const block =
+        /\[data-vaul-overlay\]\[data-vaul-snap-points\]\[data-state\]\s*\{([^}]*)\}/.exec(css);
+      expect(block, "vaul 오버레이 규칙이 없습니다").not.toBeNull();
+      expect(block?.[1]).toMatch(/transition-duration:\s*var\(--duration-overlay\);/);
+      expect(block?.[1]).toMatch(/animation-duration:\s*var\(--duration-overlay\);/);
+    });
+
+    it("sonner 스낵바가 토큰 시간을 쓰되 스와이프 중에는 건드리지 않는다", () => {
+      const block = /\[data-sonner-toast\]:not\(\[data-swiping="true"\]\)\s*\{([^}]*)\}/.exec(css);
+      expect(block, "sonner 규칙이 없습니다").not.toBeNull();
+      expect(block?.[1]).toMatch(/transition-duration:\s*var\(--duration-overlay\);/);
+      expect(block?.[1]).toMatch(/transition-timing-function:\s*var\(--ease-out\);/);
+    });
+
+    it("서드파티 조율에 !important를 쓰지 않는다", () => {
+      const vaulAndSonner = css
+        .split("\n")
+        .filter((line) => /data-vaul|data-sonner/.test(line))
+        .join("\n");
+      expect(vaulAndSonner).not.toMatch(/!important/);
+    });
+  });
+
   it("폰트 체인에 Wanted Sans Variable과 명세 대체 순서를 포함한다", () => {
     expect(css).toMatch(/var\(--font-wanted-sans\)/);
     expect(css).toMatch(/-apple-system/);
@@ -127,6 +181,32 @@ describe("globals.css 디자인 토큰", () => {
 
   it("prefers-reduced-motion 전역 규칙이 있다", () => {
     expect(css).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  });
+
+  describe("prefers-reduced-motion 토큰 덮어쓰기", () => {
+    const reduced = /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*)\}\s*$/.exec(css);
+    const block = reduced?.[1] ?? "";
+
+    it.each([
+      ["--duration-feedback"],
+      ["--duration-value"],
+      ["--duration-overlay"],
+      ["--duration-stagger"],
+    ])("시간 토큰 %s를 0으로 덮는다", (name) => {
+      expect(block).toMatch(new RegExp(`${name}:\\s*0m?s;`));
+    });
+
+    it.each([["--spring-stiffness"], ["--spring-damping"]])(
+      "spring 상수 %s는 덮어쓰지 않는다",
+      (name) => {
+        expect(block).not.toMatch(new RegExp(`${name}:`));
+      },
+    );
+
+    it("전역 안전망 규칙을 유지한다", () => {
+      expect(block).toMatch(/animation-duration:\s*0\.01ms\s*!important;/);
+      expect(block).toMatch(/transition-duration:\s*0\.01ms\s*!important;/);
+    });
   });
 
   it("focus-visible에 명확한 action ring이 전역으로 적용된다", () => {

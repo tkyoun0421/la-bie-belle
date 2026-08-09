@@ -156,7 +156,7 @@ private 데이터의 제한적 오프라인 열람이 실제 현장 요구가 �
 
 원시 팔레트 hex는 `src/app/globals.css`의 정의 지점 한 곳에만 존재한다. 화면·컴포넌트 코드는 `@theme` 의미 토큰 유틸(`bg-action`, `text-text-muted` 등)만 쓰고 임의 색상값이나 Tailwind 기본 팔레트 클래스를 직접 참조하지 않는다.
 
-- `DEV-TOKEN-01` `MUST`: 화면 코드는 원시 색을 직접 참조하지 않고 `@theme` 의미 토큰만 쓴다. 기계 강제: `project/design-token-colors`.
+- `DEV-TOKEN-01` `MUST`: 화면 코드는 원시 색과 모션 값을 직접 참조하지 않고 `@theme` 의미 토큰만 쓴다. 모션에서는 `--duration-*`·`--ease-*`를 참조하고 시간·easing 숫자를 코드에 적지 않으며, 애니메이션 대상은 `transform`과 `opacity`로 제한한다. 기계 강제: `project/design-token-colors`, `project/motion-tokens`.
 
 ## 재사용
 

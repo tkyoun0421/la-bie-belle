@@ -19,14 +19,41 @@ const TEST_USER_PASSWORD = "e2e-p1-t01-password-Aa1!";
 
 export const STORAGE_STATE_PATH = resolve(process.cwd(), "test-results/e2e-auth/user.json");
 
+const USER_PAGE_SIZE = 200;
+
+type AdminUserLister = {
+  auth: {
+    admin: {
+      listUsers: (params: { page: number; perPage: number }) => Promise<{
+        data: { users: { id: string; email?: string }[] };
+        error: unknown;
+      }>;
+    };
+  };
+};
+
+async function findUserByEmail(
+  admin: AdminUserLister,
+  email: string,
+): Promise<{ id: string; email?: string } | null> {
+  for (let page = 1; ; page += 1) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: USER_PAGE_SIZE });
+    if (error) {
+      throw error;
+    }
+    const found = data.users.find((user) => user.email === email);
+    if (found) {
+      return found;
+    }
+    if (data.users.length < USER_PAGE_SIZE) {
+      return null;
+    }
+  }
+}
+
 async function ensureTestUser(env: SupabaseTestEnv) {
   const admin = createClient(env.supabaseUrl, env.serviceRoleKey);
-  const { data, error } = await admin.auth.admin.listUsers();
-  if (error) {
-    throw error;
-  }
-
-  const existing = data.users.find((user) => user.email === TEST_USER_EMAIL);
+  const existing = await findUserByEmail(admin, TEST_USER_EMAIL);
   if (existing) {
     return existing;
   }
@@ -45,12 +72,7 @@ async function ensureTestUser(env: SupabaseTestEnv) {
 async function ensureSuperAdminFixtureUser(env: SupabaseTestEnv) {
   const admin = createClient(env.supabaseUrl, env.serviceRoleKey);
   const email = resolveSuperAdminFixtureEmail();
-  const { data, error } = await admin.auth.admin.listUsers();
-  if (error) {
-    throw error;
-  }
-
-  const existing = data.users.find((user) => user.email === email);
+  const existing = await findUserByEmail(admin, email);
   if (existing) {
     return existing;
   }
