@@ -2,7 +2,6 @@ import { listPositions } from "@/entities/position/api/list-positions";
 import { ensureScheduleRequirementsCopied } from "@/entities/schedule/api/ensure-schedule-requirements-copied";
 import { getSchedulePrep } from "@/entities/schedule/api/get-schedule-prep";
 import { listScheduleRequirements } from "@/entities/schedule/api/list-schedule-requirements";
-import type { RecruitmentScheduleStatus } from "@/entities/schedule/model/recruitment-schedule";
 import { replaceCeremonies } from "@/features/ceremony/api/replace-ceremonies";
 import { setPlannedTimes } from "@/features/ceremony/api/set-planned-times";
 import {
@@ -13,11 +12,12 @@ import {
 import { removeRequirement } from "@/features/requirement/api/remove-requirement";
 import { setRequirement } from "@/features/requirement/api/set-requirement";
 import { AdminSchedulePrepView } from "@/views/admin-schedule/ui/AdminSchedulePrepView";
-import { resolveRequirementSectionData } from "@/views/admin-schedule/model/requirement-section-data";
+import {
+  resolveRequirementSectionData,
+  shouldCopyScheduleRequirements,
+} from "@/views/admin-schedule/model/requirement-section-data";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 import { NotFoundScreen } from "@/views/status/ui/NotFoundScreen";
-
-const NON_COPYABLE_STATUSES: RecruitmentScheduleStatus[] = ["CONFIRMED", "CANCELLED"];
 
 type AdminSchedulePrepPageProps = {
   params: Promise<{ id: string }>;
@@ -35,14 +35,28 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
     return <NotFoundScreen />;
   }
 
-  if (!NON_COPYABLE_STATUSES.includes(schedulePrepResult.data.status)) {
-    await ensureScheduleRequirementsCopied(id);
-  }
-
-  const [requirementsResult, positionsResult] = await Promise.all([
+  const [initialRequirementsResult, positionsResult] = await Promise.all([
     listScheduleRequirements(id),
     listPositions(),
   ]);
+
+  let requirementsResult = initialRequirementsResult;
+
+  if (
+    requirementsResult.ok &&
+    shouldCopyScheduleRequirements({
+      status: schedulePrepResult.data.status,
+      existingRequirementRowCount: requirementsResult.data.length,
+    })
+  ) {
+    const copyResult = await ensureScheduleRequirementsCopied(id);
+
+    if (!copyResult.ok) {
+      return <ErrorScreen />;
+    }
+
+    requirementsResult = await listScheduleRequirements(id);
+  }
 
   const requirementSectionData = resolveRequirementSectionData({
     requirementsOk: requirementsResult.ok,

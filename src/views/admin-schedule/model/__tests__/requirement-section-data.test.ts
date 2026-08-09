@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveRequirementSectionData } from "@/views/admin-schedule/model/requirement-section-data";
+import {
+  resolveRequirementSectionData,
+  shouldCopyScheduleRequirements,
+} from "@/views/admin-schedule/model/requirement-section-data";
 
 const ACTIVE_POSITION = {
   id: "position-1",
@@ -68,5 +71,31 @@ describe("resolveRequirementSectionData", () => {
     });
 
     expect(result).toEqual({ ok: false });
+  });
+});
+
+describe("shouldCopyScheduleRequirements", () => {
+  it("CI-REGRESSION: 표 행이 없고 상태가 복사 가능하면 복사가 필요하다고 판단한다", () => {
+    expect(shouldCopyScheduleRequirements({ status: "OPEN", existingRequirementRowCount: 0 })).toBe(
+      true,
+    );
+  });
+
+  it("CI-REGRESSION: 표 행이 이미 있으면 상태와 무관하게 복사하지 않는다(매 렌더 RPC 재호출 회귀 방지)", () => {
+    expect(shouldCopyScheduleRequirements({ status: "OPEN", existingRequirementRowCount: 1 })).toBe(
+      false,
+    );
+  });
+
+  it("CI-REGRESSION: CONFIRMED 상태면 표가 비어 있어도 복사하지 않는다", () => {
+    expect(
+      shouldCopyScheduleRequirements({ status: "CONFIRMED", existingRequirementRowCount: 0 }),
+    ).toBe(false);
+  });
+
+  it("CI-REGRESSION: CANCELLED 상태면 표가 비어 있어도 복사하지 않는다", () => {
+    expect(
+      shouldCopyScheduleRequirements({ status: "CANCELLED", existingRequirementRowCount: 0 }),
+    ).toBe(false);
   });
 });

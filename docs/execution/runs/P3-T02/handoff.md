@@ -192,3 +192,83 @@
 
 1. index `done` 전환 + 대시보드 재생성 + 마감 커밋.
 2. `ci-finisher`가 미push 커밋 전체(b519a73부터 마감 커밋까지)를 push하고 CI를 감시한다.
+
+## 2026-08-09 · done 이후 CI 회귀 수선 (status `done` 유지)
+
+- 작업 식별자: P3-T02(상태 변경 없음 — 이 절은 인수 조건을 바꾸지 않는 CI 회귀 수선이다)
+- 계기: push 후 main CI run `31316474800`이 attempt 1·2 연속 red. `app-verify`의 `pnpm verify` 중
+  `tests/e2e/ceremony-edit.spec.ts:90`("예식 생성·수정·저장 후 첫 예식 변경 시 재추천을 승인하면 예정
+  출근이 반영된다")가 재추천 다이얼로그의 "반영" 클릭이 30초 타임아웃으로 실패했다. `db-verify`는 성공.
+  CI 로그상 오버레이가 `data-state="open" aria-hidden="true"`로 중첩된 상태였다.
+- RADIO `docs/execution/radio/P3-T02-radio.md` revision 3, SHA-256
+  `7d55892eb28aacc4db7e626eb749ec2e78f11a096711fa0afe0ca0b7abb5793f` — index의 `development_approval`과
+  일치 확인 후 착수. 봉인 본문은 이번 수선에서 수정하지 않았다(불변 규칙 "복사는 멱등이며 확정·취소 스케줄을
+  제외한다"는 판단 위치만 RPC 내부에서 페이지로 앞당길 뿐 그대로 유지).
+
+### 원인
+
+- `replaceCeremonies`(예식 저장 Action)가 `revalidatePath(/admin/schedule/{id})`를 호출한다 → 같은 준비
+  화면 `page.tsx`가 재실행된다 → 기존 코드는 상태가 CONFIRMED·CANCELLED가 아니면 매 재검증마다
+  `ensureScheduleRequirementsCopied(id)`(**DB 쓰기 RPC** — `copy_schedule_requirements`, 표가 이미
+  있으면 조기 return하지만 매번 함수 호출·존재 조회·트랜잭션 왕복이 발생)를 무조건 다시 호출했다. 그 뒤
+  `listScheduleRequirements`·`listPositions` 조회가 이어 붙어 재검증이 그만큼 느려졌고, 느린 CI 환경에서는
+  그 사이 클라이언트가 연 재추천 다이얼로그가 서버 트리 교체와 겹치며 오버레이가 중첩돼 클릭이 막혔다.
+  로컬(`pnpm db:reset && pnpm build` 후 `--repeat-each=3`, 6/6 통과·각 1~4초)에서는 재현되지 않는 느린
+  CI 환경 전용 타이밍 회귀였다.
+
+### 수정 방향(사용자 승인 — 렌더에서 복사 쓰기 제거)
+
+- `page.tsx`가 표 존재 여부를 **먼저 조회**하고(`listScheduleRequirements`), 조회가 성공했고 행이 0개이며
+  상태가 복사 가능할 때만 `ensureScheduleRequirementsCopied`(쓰기 RPC)를 호출한다. 표가 이미 있으면
+  RPC를 아예 호출하지 않는다 — 예식을 저장할 때마다 돌던 쓰기 왕복이 사라져 재검증이 P3-T01 수준으로
+  가벼워진다.
+- 판단 조건(표 존재 0개·상태가 CONFIRMED·CANCELLED가 아님)을 `shouldCopyScheduleRequirements`라는 순수
+  함수로 `src/views/admin-schedule/model/requirement-section-data.ts`에 추출해 TDD로 고정했다. `page.tsx`는
+  이 함수의 결과로만 분기하는 얇은 어댑터로 남겼다 — F-03 라운드가 이미 세운 "page.tsx는 테스트 전례가 없어
+  분기 로직을 model 순수 함수로 뽑고 테스트한다" 관례(위 F-03 절)를 그대로 따랐다.
+- 복사 RPC 자체(`copy_schedule_requirements`)의 멱등성·CONFIRMED/CANCELLED 거부·감사는 DB에 그대로 있다 —
+  페이지의 사전 조회는 최적화이지 DB 경계 대체가 아니다. 동시 진입 두 요청이 모두 "표 없음"을 보고 동시에
+  RPC를 호출해도 함수 내부 `on conflict do nothing`이 그대로 멱등을 보장한다(불변 규칙 무변경).
+- **복사 RPC 실패를 더 이상 조용히 삼키지 않는다.** 기존 코드는 `ensureScheduleRequirementsCopied`의 반환값을
+  버렸다(`await ensureScheduleRequirementsCopied(id);`만 호출). 이번 수선에서 `copyResult.ok`가 false면
+  `ErrorScreen`으로 fail-closed 처리하도록 바꿨다 — F-03이 `listScheduleRequirements`·`listPositions`
+  조회 실패에 이미 적용한 fail-closed 원칙과 대칭을 맞췄다.
+- 조회 순서 변경(`listScheduleRequirements`를 복사보다 먼저 호출)이 F-03의 fail-closed 계약을 깨지 않는지
+  확인했다 — `resolveRequirementSectionData`는 무수정(계약·테스트 그대로 8/8 GREEN), requirements·positions
+  조회 실패는 여전히 `ErrorScreen`으로 간다. 첫 진입(표 0개)에서는 조회 1회(빈 결과) → 복사 RPC → 재조회
+  1회로 왕복이 하나 늘지만, 첫 진입은 스케줄당 1회뿐이고 그 뒤 모든 재검증(예식 저장마다)에서는 조회 1회만
+  하고 RPC를 건너뛴다 — 회귀의 원인이던 "매 재검증 쓰기 RPC"가 사라지는 것이 핵심이다.
+
+### 변경 파일
+
+- `src/app/(protected)/admin/schedule/[id]/page.tsx` — 조회 순서 재배치, `NON_COPYABLE_STATUSES` 상수를
+  model로 이관, 복사 RPC 실패 fail-closed 추가.
+- `src/views/admin-schedule/model/requirement-section-data.ts` — `shouldCopyScheduleRequirements` 순수
+  함수 신설(+ `NON_COPYABLE_REQUIREMENT_STATUSES`, revision 3과 동일한 CONFIRMED·CANCELLED 목록).
+- `src/views/admin-schedule/model/__tests__/requirement-section-data.test.ts` — 신설 함수 unit 4건.
+- `docs/execution/runs/P3-T02/tdd.json`·`radio.md`·이 handoff(이번 수선 증거·근거 추가).
+- `tests/e2e/ceremony-edit.spec.ts`와 예식 관련 코드는 지시대로 손대지 않았다.
+
+### 검증 결과
+
+- TDD RED→GREEN: `pnpm vitest run src/views/admin-schedule/model/__tests__/requirement-section-data.test.ts`
+  RED(2026-08-09T14:15:41Z, exit 1, 4 failed — `shouldCopyScheduleRequirements` 모듈 부재) → GREEN
+  (2026-08-09T14:15:52Z, exit 0, 8/8 pass). 증거는 `runs/P3-T02/tdd.json`.
+- `pnpm db:reset && pnpm db:test` GREEN(18 files, 915 assertions — 마이그레이션 무수정이라 18번 파일 건수
+  변동 없음).
+- `pnpm verify` 전체 GREEN(format·lint·typecheck·unit 193 files/1176 tests[F-03 8건 스위트에 CI-REGRESSION
+  4건 순증]·harness self-test 308·check:docs·build·app-build·client-secret-scan·**E2E 39/39
+  (`ceremony-edit.spec.ts:90` 포함 전부 통과)**·gate:all).
+- **로컬 GREEN이 회귀 해소를 증명하지 못한다.** 이 테스트는 로컬(빠른 환경)에서는 수정 전에도 원래
+  통과하던 테스트였다 — 회귀는 CI의 느린 환경에서만 재현됐다(위 "원인" 절). 최종 확인은 다음 CI push에서
+  `tests/e2e/ceremony-edit.spec.ts:90`가 attempt 1에서 통과하는지로 한다.
+
+### 미결 사항
+
+- 없음. 원인 가설(revalidatePath마다 반복된 쓰기 RPC가 재검증을 느리게 만들어 클라이언트 다이얼로그와
+  서버 트리 교체가 겹친다)은 코드상 성립함을 확인했고 승인된 방향대로 수정했다.
+
+### 다음 단계
+
+- status는 `done`을 유지했다(변경하지 않음).
+- 이 커밋은 push하지 않았다 — `ci-finisher`가 push하고 CI(특히 `ceremony-edit.spec.ts:90`)를 확인한다.

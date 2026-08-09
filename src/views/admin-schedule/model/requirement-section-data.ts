@@ -1,4 +1,5 @@
 import type { Position } from "@/entities/position/model/position";
+import type { RecruitmentScheduleStatus } from "@/entities/schedule/model/recruitment-schedule";
 import type { ScheduleRequirementRow } from "@/entities/schedule/types/schedule-requirement";
 
 export type RequirementSectionDataInput = {
@@ -24,4 +25,20 @@ export function resolveRequirementSectionData(
     requirementRows: input.requirementRows,
     activePositions: input.positions.filter((position) => position.isActive),
   };
+}
+
+const NON_COPYABLE_REQUIREMENT_STATUSES: RecruitmentScheduleStatus[] = ["CONFIRMED", "CANCELLED"];
+
+export type ShouldCopyScheduleRequirementsInput = {
+  status: RecruitmentScheduleStatus;
+  existingRequirementRowCount: number;
+};
+
+export function shouldCopyScheduleRequirements(
+  input: ShouldCopyScheduleRequirementsInput,
+): boolean {
+  return (
+    input.existingRequirementRowCount === 0 &&
+    !NON_COPYABLE_REQUIREMENT_STATUSES.includes(input.status)
+  );
 }

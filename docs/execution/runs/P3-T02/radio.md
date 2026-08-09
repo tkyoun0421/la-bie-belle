@@ -104,3 +104,32 @@
   남긴 동일 `work_date` 행과 유니크 제약(`schedules_work_date_active_unique`)이 충돌해 실패한다 — 이 라운드의
   코드 변경과 무관한 기존 테스트 설계다(수정 대상 아님, backlog로도 언급되지 않아 손대지 않았다). 매 E2E 실행
   전 `db:reset`을 다시 해 우회했다.
+
+## 2026-08-09 · done 이후 CI 회귀 수선 (렌더에서 복사 쓰기 제거)
+
+- RADIO: `docs/execution/radio/P3-T02-radio.md` revision 3, SHA-256
+  `7d55892eb28aacc4db7e626eb749ec2e78f11a096711fa0afe0ca0b7abb5793f`(변경 없음) — index의
+  `development_approval`과 일치 확인 후 착수. task status는 `done`을 유지했다(인수 조건 변경이 아니라
+  main CI 회귀 수선).
+- 계기·원인·검증 결과는 `runs/P3-T02/handoff.md`의 동일 날짜 절 참고. 이 항목은 선택 근거만 기록한다.
+
+### 선택 근거
+
+- **판단 위치를 RPC 내부에서 페이지로 앞당기되, 불변 규칙 문구는 재해석하지 않았다.** revision 3의 "복사는
+  멱등이며 확정·취소 스케줄을 제외한다 — 표가 없으면 생성하고, 있으면 아무것도 하지 않는다"는 이미
+  `copy_schedule_requirements` 함수 내부의 `if exists (...) then return;` 가드로 구현돼 있었다. 이번
+  수선은 그 판단을 페이지 쪽에서 한 번 더(먼저) 하는 것뿐이라 함수 본문·pgTAP 어느 쪽도 건드리지 않았다 —
+  RPC는 여전히 페이지가 어떤 순서로 호출하든 스스로 멱등을 지킨다(방어적 이중화이지 경계 이전이 아니다).
+- **`shouldCopyScheduleRequirements`를 순수 함수로 뽑은 이유.** `page.tsx`는 이 저장소에 unit test 전례가
+  없다(F-03 절과 동일한 근거 — `config/fsd.json`의 appLayer 세그먼트가 `page.tsx`를 test 의무에서 면제).
+  회귀의 핵심인 "언제 쓰기 RPC를 호출하는가" 판단을 테스트 가능한 형태로 고정하려면 model 순수 함수로
+  추출하는 것이 F-03이 이미 세운 관례와 가장 정합적이었다. `NON_COPYABLE_REQUIREMENT_STATUSES`는
+  `NON_COPYABLE_STATUSES`(구 `page.tsx`)와 값이 같지만 새 이름으로 model 파일에 재정의했다 —
+  `schedule-prep-screen.ts`의 `READONLY_STATUSES` 선례처럼 이 저장소는 상태 목록 상수를 여러 model 파일에
+  중복 정의하는 관례를 이미 갖고 있어(공유 상수로 뽑지 않음) 그 관례를 그대로 따랐다.
+- **복사 RPC 실패를 fail-closed로 바꾼 것은 방향 지시("복사 RPC 실패도 조용히 삼키지 마라")를 그대로
+  구현한 것이다.** 기존 코드(`await ensureScheduleRequirementsCopied(id);`)는 반환값을 버렸다 — 이번
+  수선에서 F-03이 `listScheduleRequirements`·`listPositions` 실패에 적용한 것과 같은 `ErrorScreen` 분기를
+  복사 RPC에도 적용했다. 이는 RADIO 문구 밖의 새 결정이 아니라 F-03이 세운 "조회 실패는 빈 표로 위장하지
+  않는다" 원칙을 복사 RPC까지 넓게 적용한 것으로 판단했다(같은 함수의 반환 계약 안에서 이미 `ok:false`를
+  구분해 반환하고 있었으므로 소비자 쪽만 그 신호를 쓰기 시작한 것).
