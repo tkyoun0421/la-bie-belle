@@ -161,3 +161,34 @@
 
 - status는 `in_progress`로 남겼다 — 재확인·`done` 전환은 조정자 몫이다.
 - push는 하지 않았다 — ci-finisher 소유.
+
+## 2026-08-09 · 검증 종료 (교차 검증 완료 → done)
+
+- 작업 식별자: P3-T02
+- 현재 단계: 검증(4단계) 종료 → done
+- 기준 시각: 2026-08-09T13:38Z
+
+### 확정된 사실
+
+- 교차 검증(리뷰어 `opus`·`codex`, 개발 커밋 1357c87 대상)에서 확정 발견 11건이 나왔다 —
+  high 1(admin 직접 DML로 확정 잠금·감사 우회), medium 7, low 3. 기각 1건(copyRequirements를
+  죽은 코드로 본 지적 — 봉인 Architecture가 세 Action을 요구했고 두 경로의 역할이 다르며 오류
+  매핑 함수를 공유한다는 근거로 codex가 반박).
+- 봉인 문구와 제품 규칙이 충돌한 1건(CONFIRMED 스케줄도 복사 대상)은 사용자 결정으로 RADIO
+  revision 3 재봉인(커밋 0184472)해 복사 거부 대상에 CONFIRMED를 추가했다.
+- 사용자 승인 수정 라운드(커밋 c32338a)가 F-01(high, admin 정책 select 전용 축소)·시스템 포지션
+  개명 차단 해제·조회 실패 fail-closed·새 테이블 RLS 거부 pgTAP 4건과 revision 3 반영을
+  수정했고, 양 리뷰어 재확인에서 5건 전부 해소·새 결함 없음 판정을 받았다.
+- 최종 미해결 6건(medium 3·low 3)은 결과 파일 `docs/execution/reviews/P3-T02-review.json`과
+  backlog에 기록했다. total 87 (cq 88 · tests 80 · sec 92 · perf 92 · arch 85).
+- `pnpm gate:all` 침묵, `pnpm test` 1172/1172 통과(조정자 재실행 확인).
+
+### 미결 사항
+
+- 없음. backlog 6건은 backlog 문서가 소유한다. RADIO 미결 절의 확정 스케줄 수동 추가 개방과
+  포지션 추가 시점 모달은 P3-T06 소유다.
+
+### 다음 행동
+
+1. index `done` 전환 + 대시보드 재생성 + 마감 커밋.
+2. `ci-finisher`가 미push 커밋 전체(b519a73부터 마감 커밋까지)를 push하고 CI를 감시한다.

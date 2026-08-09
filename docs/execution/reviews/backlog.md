@@ -248,3 +248,9 @@
 - [ ] [low] [P3-T01] 검증 모델 함수 2개(개수·중복) 프로덕션 미소비, 생성 폼 사전 검증 없음 — src/entities/schedule/model/ceremony-times.ts
 - [ ] [low] [P3-T01] 04번 pgTAP 수정이 인수 조건 7과 어긋나는데 runs/radio.md 세부 기록 누락 — supabase/tests/04-rls-default-deny.test.sql
 - [ ] [low] [P3-T01] 빈 예식 행이 있으면 추천 미리보기가 잘못된 값 표시(일시적 표시 오류) — src/features/ceremony/hooks/useCeremonyEditor.ts
+- [ ] [medium] [P3-T02] 첫 복사와 포지션 추가의 교차 트랜잭션에서 신규 포지션 반영 누락 가능(잠금 부재) — supabase/migrations/20260809000000_position_requirements.sql
+- [ ] [medium] [P3-T02] E2E 정리가 append-only 트리거에 막혀 OPEN 스케줄 잔존·근무일 유니크 점유 — tests/e2e/position-requirements.spec.ts
+- [ ] [medium] [P3-T02] 복사 함수 동시성 단언이 조기 반환 경로만 실행해 on conflict 실증 부재 — supabase/tests/18-position-requirements.test.sql
+- [ ] [low] [P3-T02] 23503 일괄 매핑으로 삭제 차단 원인을 필요 인원으로 단정(가능 포지션 출처 혼동) — src/shared/config/error-codes.config.ts
+- [ ] [low] [P3-T02] 시스템 포지션 보호 거부(P0001)를 재시도 가능한 일시 오류로 안내 — src/features/position/api/manage-positions.ts
+- [ ] [low] [P3-T02] position_id 역방향 FK 인덱스 부재로 삭제 RI 검사 전체 스캔 가능 — supabase/migrations/20260809000000_position_requirements.sql
