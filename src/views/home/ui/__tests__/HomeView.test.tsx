@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { HomeView } from "@/views/home/ui/HomeView";
 import {
@@ -16,6 +16,8 @@ import {
   HOME_EMPTY,
   HOME_NEXT_SHIFT,
 } from "@/views/home/ui/home.mock";
+
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
 
 afterEach(cleanup);
 

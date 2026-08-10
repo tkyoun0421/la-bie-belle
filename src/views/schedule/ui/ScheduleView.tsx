@@ -13,6 +13,7 @@ import {
 import { ApplicationChangeBar } from "@/features/application/ui/ApplicationChangeBar";
 import { Calendar } from "@/shared/ui/calendar";
 import { toScheduleCellStates } from "@/views/schedule/model/schedule-cell-state";
+import { RouterPullToRefresh } from "@/widgets/pull-to-refresh/ui/RouterPullToRefresh";
 
 const DATE_KEY_FORMAT = "yyyy-MM-dd";
 const MONTH_PARAM_FORMAT = "yyyy-MM";
@@ -70,21 +71,23 @@ export function ScheduleView({ month: monthParam, today, schedules, onApply }: S
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-4 p-6 pb-28">
-      <h1 className="typo-display text-text-strong">일정</h1>
-      <Calendar
-        month={month}
-        today={new Date(`${today}T00:00:00`)}
-        dateStates={dateStates}
-        onSelectDate={handleSelectDate}
-        onMonthChange={handleMonthChange}
-      />
-      <ApplicationChangeBar
-        changeCount={batch.changeCount}
-        submitting={batch.submitting}
-        onSave={batch.save}
-        undo={batch.undo}
-      />
-    </main>
+    <RouterPullToRefresh>
+      <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-4 p-6 pb-28">
+        <h1 className="typo-display text-text-strong">일정</h1>
+        <Calendar
+          month={month}
+          today={new Date(`${today}T00:00:00`)}
+          dateStates={dateStates}
+          onSelectDate={handleSelectDate}
+          onMonthChange={handleMonthChange}
+        />
+        <ApplicationChangeBar
+          changeCount={batch.changeCount}
+          submitting={batch.submitting}
+          onSave={batch.save}
+          undo={batch.undo}
+        />
+      </main>
+    </RouterPullToRefresh>
   );
 }

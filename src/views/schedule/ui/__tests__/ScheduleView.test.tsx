@@ -28,7 +28,7 @@ if (!Element.prototype.releasePointerCapture) {
 }
 
 const push = vi.fn();
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push, refresh: vi.fn() }) }));
 
 afterEach(() => {
   cleanup();

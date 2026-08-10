@@ -1,8 +1,14 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { NotificationRow } from "@/shared/ui/notification-row";
+
+function swipe(element: Element, distance: number) {
+  fireEvent.pointerDown(element, { clientX: 0, clientY: 0 });
+  fireEvent.pointerMove(element, { clientX: distance, clientY: 0 });
+  fireEvent.pointerUp(element, { clientX: distance, clientY: 0 });
+}
 
 afterEach(cleanup);
 
@@ -86,6 +92,65 @@ describe("NotificationRow", () => {
 
     await user.click(screen.getByRole("button"));
 
+    expect(onPress).toHaveBeenCalledOnce();
+  });
+
+  it("onSwipeRead가 없으면 스와이프해도 아무 일도 일어나지 않는다", () => {
+    const onPress = vi.fn();
+    render(
+      <NotificationRow
+        title="근무 배정이 확정됐어요"
+        body="8월 3일 플로어 근무가 확정됐어요"
+        relativeTime="3시간 전"
+        unread={false}
+        onPress={onPress}
+      />,
+    );
+
+    swipe(screen.getByRole("button"), 200);
+
+    expect(onPress).not.toHaveBeenCalled();
+  });
+
+  it("임계값을 넘겨 스와이프하면 onSwipeRead가 호출되고 onPress는 호출되지 않는다", () => {
+    const onPress = vi.fn();
+    const onSwipeRead = vi.fn();
+    render(
+      <NotificationRow
+        title="근무 배정이 확정됐어요"
+        body="8월 3일 플로어 근무가 확정됐어요"
+        relativeTime="3시간 전"
+        unread
+        onPress={onPress}
+        onSwipeRead={onSwipeRead}
+      />,
+    );
+
+    swipe(screen.getByRole("button"), 200);
+    fireEvent.click(screen.getByRole("button"));
+
+    expect(onSwipeRead).toHaveBeenCalledOnce();
+    expect(onPress).not.toHaveBeenCalled();
+  });
+
+  it("임계값 전에 놓으면 onSwipeRead가 호출되지 않고 탭도 그대로 동작한다", () => {
+    const onPress = vi.fn();
+    const onSwipeRead = vi.fn();
+    render(
+      <NotificationRow
+        title="근무 배정이 확정됐어요"
+        body="8월 3일 플로어 근무가 확정됐어요"
+        relativeTime="3시간 전"
+        unread
+        onPress={onPress}
+        onSwipeRead={onSwipeRead}
+      />,
+    );
+
+    swipe(screen.getByRole("button"), 10);
+    fireEvent.click(screen.getByRole("button"));
+
+    expect(onSwipeRead).not.toHaveBeenCalled();
     expect(onPress).toHaveBeenCalledOnce();
   });
 });

@@ -95,6 +95,42 @@
       "exit_code": 0,
       "at": "2026-08-10T12:50:59.000Z",
       "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/hooks/__tests__/useReducedMotion.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T13:24:02.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/hooks/__tests__/useReducedMotion.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T13:24:14.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T13:24:24.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T13:24:28.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm harness:self-test",
+      "exit_code": 1,
+      "at": "2026-08-10T14:13:25.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm harness:self-test",
+      "exit_code": 0,
+      "at": "2026-08-10T14:14:18.000Z",
+      "phase": "green"
     }
   ]
 }

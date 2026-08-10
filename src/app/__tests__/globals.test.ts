@@ -254,4 +254,38 @@ describe("globals.css 디자인 토큰", () => {
     expect(block).toMatch(/outline/);
     expect(block).toMatch(/var\(--color-action\)/);
   });
+
+  describe("순차 등장 모션", () => {
+    const staggerFrame = () => /@keyframes\s+stagger-in\s*\{([\s\S]*?)\n\}/.exec(css);
+
+    it("stagger-in keyframes를 정의한다", () => {
+      expect(staggerFrame()).not.toBeNull();
+    });
+
+    it("transform과 opacity만 애니메이션한다", () => {
+      const frame = staggerFrame();
+      expect(frame?.[1]).toMatch(/opacity:/);
+      expect(frame?.[1]).toMatch(/transform:/);
+      expect(frame?.[1]).not.toMatch(/(?<!-)(width|height|top|left|right|bottom|margin|padding):/);
+    });
+
+    it("motion-stagger-item 유틸이 stagger-index와 duration-stagger로 지연을 계산한다", () => {
+      const blockPattern = /@utility motion-stagger-item\s*\{([^}]*)\}/;
+      const match = blockPattern.exec(css);
+      expect(match, "motion-stagger-item 유틸이 없습니다").not.toBeNull();
+      const block = match?.[1] ?? "";
+      expect(block).toMatch(/animation:\s*stagger-in var\(--duration-value\)/);
+      expect(block).toMatch(
+        /animation-delay:\s*calc\(var\(--stagger-index,\s*0\)\s*\*\s*var\(--duration-stagger\)\);/,
+      );
+    });
+  });
+
+  it("overscroll-behavior-y: contain이 body에 전역으로 적용돼 브라우저 기본 당겨서 새로고침을 막는다", () => {
+    const blockPattern = /^body\s*\{([^}]*)\}/m;
+    const match = blockPattern.exec(css);
+    expect(match, "body 블록이 없습니다").not.toBeNull();
+    const block = match?.[1] ?? "";
+    expect(block).toMatch(/overscroll-behavior-y:\s*contain;/);
+  });
 });

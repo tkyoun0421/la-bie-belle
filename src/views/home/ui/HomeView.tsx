@@ -9,6 +9,7 @@ import type {
 import { formatTimeInSeoul } from "@/shared/lib/format-time-seoul";
 import { Button } from "@/shared/ui/button";
 import type { HomeViewModel } from "@/views/home/model/home-priority";
+import { RouterPullToRefresh } from "@/widgets/pull-to-refresh/ui/RouterPullToRefresh";
 
 export type { HomeViewModel } from "@/views/home/model/home-priority";
 
@@ -73,59 +74,61 @@ function AttendanceSection({
 
 export function HomeView({ model }: { model: HomeViewModel }) {
   return (
-    <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-24">
-      <h1 className="typo-display text-text-strong">홈</h1>
+    <RouterPullToRefresh>
+      <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-24">
+        <h1 className="typo-display text-text-strong">홈</h1>
 
-      {model.priority === "attendance" ? (
-        <AttendanceSection
-          attendanceStatus={model.attendanceStatus}
-          shiftDate={model.shiftDate}
-          position={model.position}
-        />
-      ) : null}
+        {model.priority === "attendance" ? (
+          <AttendanceSection
+            attendanceStatus={model.attendanceStatus}
+            shiftDate={model.shiftDate}
+            position={model.position}
+          />
+        ) : null}
 
-      {model.priority === "deadline-application" ? (
-        <section className="flex flex-col gap-3">
-          <p className="typo-title text-text-strong">
-            {model.applied ? "신청 완료 — 마감 전까지 변경 가능" : "근무 신청 마감이 임박했어요"}
-          </p>
-          <p className="typo-body text-text">
-            {model.date} · {model.applicationDeadline}까지
-          </p>
-          <Button asChild variant={model.applied ? "secondary" : "primary"}>
-            <Link href="/schedule">{model.applied ? "일정에서 확인하기" : "지금 신청하기"}</Link>
-          </Button>
-        </section>
-      ) : null}
+        {model.priority === "deadline-application" ? (
+          <section className="flex flex-col gap-3">
+            <p className="typo-title text-text-strong">
+              {model.applied ? "신청 완료 — 마감 전까지 변경 가능" : "근무 신청 마감이 임박했어요"}
+            </p>
+            <p className="typo-body text-text">
+              {model.date} · {model.applicationDeadline}까지
+            </p>
+            <Button asChild variant={model.applied ? "secondary" : "primary"}>
+              <Link href="/schedule">{model.applied ? "일정에서 확인하기" : "지금 신청하기"}</Link>
+            </Button>
+          </section>
+        ) : null}
 
-      {model.priority === "confirmation-change" ? (
-        <section className="flex flex-col gap-3">
-          <p className="typo-title text-text-strong">확정 스케줄이 변경됐어요</p>
-          <p className="typo-body text-action">{model.confirmation.changeSummary}</p>
-          <Button asChild variant="primary">
-            <Link href={`/schedule/${model.confirmation.date}`}>확인하기</Link>
-          </Button>
-        </section>
-      ) : null}
+        {model.priority === "confirmation-change" ? (
+          <section className="flex flex-col gap-3">
+            <p className="typo-title text-text-strong">확정 스케줄이 변경됐어요</p>
+            <p className="typo-body text-action">{model.confirmation.changeSummary}</p>
+            <Button asChild variant="primary">
+              <Link href={`/schedule/${model.confirmation.date}`}>확인하기</Link>
+            </Button>
+          </section>
+        ) : null}
 
-      {model.priority === "next-shift" ? (
-        <section className="flex flex-col gap-3">
-          <p className="typo-title text-text-strong">다음 근무</p>
-          <p className="typo-body text-text">
-            {model.date} · {model.position}
-          </p>
-          <Button asChild variant="secondary">
-            <Link href={`/schedule/${model.date}`}>상세 보기</Link>
-          </Button>
-        </section>
-      ) : null}
+        {model.priority === "next-shift" ? (
+          <section className="flex flex-col gap-3">
+            <p className="typo-title text-text-strong">다음 근무</p>
+            <p className="typo-body text-text">
+              {model.date} · {model.position}
+            </p>
+            <Button asChild variant="secondary">
+              <Link href={`/schedule/${model.date}`}>상세 보기</Link>
+            </Button>
+          </section>
+        ) : null}
 
-      {model.priority === "empty" ? (
-        <section className="flex flex-col gap-2">
-          <p className="typo-title text-text-strong">아직 할 일이 없어요</p>
-          <p className="typo-body text-text">일정에서 근무 가능일을 신청해보세요</p>
-        </section>
-      ) : null}
-    </main>
+        {model.priority === "empty" ? (
+          <section className="flex flex-col gap-2">
+            <p className="typo-title text-text-strong">아직 할 일이 없어요</p>
+            <p className="typo-body text-text">일정에서 근무 가능일을 신청해보세요</p>
+          </section>
+        ) : null}
+      </main>
+    </RouterPullToRefresh>
   );
 }

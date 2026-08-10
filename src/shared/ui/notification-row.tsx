@@ -1,3 +1,6 @@
+import { useRef, type CSSProperties } from "react";
+
+import { useSwipeAction } from "@/shared/hooks/useSwipeAction";
 import { cn } from "@/shared/lib/cn";
 
 type NotificationRowProps = {
@@ -6,7 +9,9 @@ type NotificationRowProps = {
   relativeTime: string;
   unread: boolean;
   onPress: () => void;
+  onSwipeRead?: () => void;
   className?: string;
+  style?: CSSProperties;
 };
 
 export function NotificationRow({
@@ -15,14 +20,37 @@ export function NotificationRow({
   relativeTime,
   unread,
   onPress,
+  onSwipeRead,
   className,
+  style,
 }: NotificationRowProps) {
+  const suppressClickRef = useRef(false);
+  const { offset, handlers } = useSwipeAction({
+    onCommit:
+      onSwipeRead === undefined
+        ? undefined
+        : () => {
+            suppressClickRef.current = true;
+            onSwipeRead();
+          },
+  });
+
+  function handleClick() {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false;
+      return;
+    }
+    onPress();
+  }
+
   return (
     <button
       type="button"
-      onClick={onPress}
+      onClick={handleClick}
+      {...handlers}
+      style={{ ...style, transform: `translateX(${offset}px)` }}
       className={cn(
-        "flex w-full items-start gap-2 border-b border-border py-3 text-left",
+        "flex w-full items-start gap-2 border-b border-border py-3 text-left transition-transform duration-[var(--duration-feedback)] ease-[var(--ease-spring)]",
         className,
       )}
     >

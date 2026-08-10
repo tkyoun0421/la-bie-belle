@@ -9,6 +9,8 @@ import {
   NOTIFICATIONS_MIXED,
 } from "@/views/notifications/ui/notifications.mock";
 
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
+
 afterEach(cleanup);
 
 describe("NotificationsView", () => {

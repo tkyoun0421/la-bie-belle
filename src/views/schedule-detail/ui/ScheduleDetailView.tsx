@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 import type { ScheduleConfirmation } from "@/entities/schedule/model/confirmation";
 import { Badge } from "@/shared/ui/badge";
@@ -49,9 +50,10 @@ export function ScheduleDetailView({ confirmation }: ScheduleDetailViewProps) {
             <li
               key={`${row.name}-${index}`}
               className={cn(
-                "flex items-center justify-between gap-2 border-b border-border py-2",
+                "flex motion-stagger-item items-center justify-between gap-2 border-b border-border py-2",
                 row.isMe && "rounded-md bg-action-surface px-2",
               )}
+              style={{ "--stagger-index": index } as CSSProperties}
             >
               <span className={cn("typo-body", row.isMe ? "text-action" : "text-text-strong")}>
                 {row.isMe ? "나" : row.name}

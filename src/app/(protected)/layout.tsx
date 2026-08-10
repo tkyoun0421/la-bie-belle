@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { findOwnProfile } from "@/entities/identity/api/find-own-profile";
 import { resolveProfileAccess } from "@/entities/identity/model/profile-gate";
 import { HOME_PATH } from "@/shared/config/auth-routes.config";
+import { MotionProvider } from "@/shared/ui/motion-provider";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 
 export default async function ProtectedLayout({ children }: { children: ReactNode }) {
@@ -18,5 +19,5 @@ export default async function ProtectedLayout({ children }: { children: ReactNod
     return <ErrorScreen />;
   }
 
-  return <>{children}</>;
+  return <MotionProvider>{children}</MotionProvider>;
 }
