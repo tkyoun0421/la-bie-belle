@@ -267,3 +267,13 @@
 - [x] [medium] [P0-T43] 시트·스낵바 동시 표시 검증이 DOM 배타성만 보고 타이밍을 안 봄 — src/shared/ui/__tests__/snackbar.test.tsx
 - [ ] [low] [P0-T43] sonner 자식 요소(`> *`)의 opacity 전이 400ms가 토큰 밖에 남음 — src/app/globals.css
 - [ ] [low] [P0-T43] 동시 표시 e2e가 스낵바 기본 4초 수명 안에 두 단계를 끝내야 해 느린 CI에서 간헐 실패 가능 — tests/e2e/motion.spec.ts
+- [x] [medium] [P3-T03] 자격 판정 정본이 후보 조회·교체 함수로 이원화(수정 라운드 44d0669가 assignment_eligibility로 통합) — supabase/migrations/20260810000000_assignments.sql
+- [x] [medium] [P3-T03] 배정 후 자격 회수 시나리오 회귀 테스트 부재(수정 라운드 44d0669가 pgTAP 23단언 추가) — supabase/tests/19-assignments.test.sql
+- [ ] [medium] [P3-T03] 필요 인원 표가 같은 목록을 두 벌 렌더 — src/views/admin-schedule/ui/AdminSchedulePrepView.tsx
+- [ ] [medium] [P3-T03] 저장 왕복 뒤 세대 검사 부재로 다른 포지션 시트에 이전 결과 적용 — src/features/assignment/hooks/useCandidateSelection.ts
+- [ ] [medium] [P3-T03] 필요 인원 행 수 조회 실패가 fail-closed 아님(빈 표 노출) — src/app/(protected)/admin/schedule/[id]/page.tsx
+- [ ] [medium] [P3-T03] E2E 픽스처 try/finally 정리 부재(인수 조건 7 선언과 불일치) — tests/e2e/assignment-eligibility.spec.ts
+- [ ] [medium] [P3-T03] 배정 수 집계가 1000행 상한 조회 뒤 JS 합산이라 상한 초과 시 조용히 축소 — src/entities/schedule/api/list-schedule-requirements.ts
+- [ ] [medium] [P3-T03] 비활성 포지션에서 전원 해제까지 22023 거부(불변 규칙은 신규 배정만 금지) — supabase/migrations/20260810000000_assignments.sql
+- [ ] [low] [P3-T03] DEFINER 함수 search_path pg_temp 미고정(P1-T04·P2-T04 계열 반복) — supabase/migrations/20260810000000_assignments.sql
+- [ ] [low] [P3-T03] 증거 문서 함수명 오기(buildAssignmentCandidateBuckets ↔ groupAssignmentCandidates) — docs/execution/runs/P3-T03/radio.md

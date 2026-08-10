@@ -1,0 +1,96 @@
+{
+  "task_id": "P3-T03",
+  "at": "2026-08-10T08:04:33Z",
+  "base_commit": "d4cc999c2b11bb82976e4d00f648793ae13a5c98",
+  "participants": ["opus", "codex"],
+  "participants_note": "",
+  "scores": {
+    "code_quality": 78,
+    "tests": 82,
+    "security": 92,
+    "performance": 84,
+    "architecture": 84
+  },
+  "score_rationale": {
+    "code_quality": "수정 라운드가 자격을 잃은 기존 배정자를 접힘 영역에서 꺼내 해제 가능하게 만들어 해당 포지션의 배정 변경이 영구 차단되던 high 결함을 닫았으나, 표 중복 렌더·저장 중 시트 전환 경합·count 조회 실패의 fail-open medium 3건이 남았다.",
+    "tests": "수정 라운드가 사후 자격 회수 3경로(가능 포지션 회수·성별 조건 변경·비활성화)를 pgTAP 23단언으로 고정해 세 high를 전부 통과시켰던 테스트 공백을 메웠고, 남은 것은 E2E 픽스처 try/finally 정리 부재 medium 1건이다.",
+    "security": "두 테이블 RLS를 admin select만 열고 쓰기를 DEFINER 함수로 몰아 직접 DML 거부가 pgTAP으로 고정됐으며 감사 detail에 PII가 없다. 남은 것은 저장소 전반이 함께 지닌 search_path pg_temp 미고정 low 1건뿐이다.",
+    "performance": "조회가 준비 진입 1회·시트 1회로 묶여 N+1이 없고 저장도 포지션당 왕복 1회지만, 배정 수 집계가 1000행 상한 조회 뒤 JS 합산이라 상한을 넘기면 표시가 조용히 어긋나는 medium 1건이 남았다.",
+    "architecture": "수정 라운드가 신규 추가분만 자격 검사하도록 교체 함수를 재배치하고 후보 조회를 기존 배정자까지 넓혀 봉인된 불변 규칙(이미 저장된 행은 그대로 둔다)을 실제로 지키게 했고 이원화됐던 자격 판정을 assignment_eligibility 한 곳으로 합쳤으나, 비활성 포지션에서 전원 해제까지 막히는 규칙 초과 medium 1건과 증거 문서 함수명 오기 low 1건이 남았다."
+  },
+  "total": 84,
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "필요 인원 표가 같은 목록을 두 번 렌더한다",
+      "description": "AdminSchedulePrepView가 배정 수와 행 탭을 얹으면서 기존 표 렌더와 새 표 렌더를 함께 남겨, 같은 requirementRows를 두 벌 그린다. 화면에는 포지션 행이 중복으로 보이고 행 탭 대상이 어느 쪽인지 코드만 봐서는 갈리지 않는다. 편집 동작 자체는 한쪽에만 걸려 있어 데이터가 틀어지지는 않지만, P3-T02가 세운 표 구조를 두 벌 유지하게 되어 다음 수정이 한쪽만 고칠 위험을 만든다. 중요도는 opus가 medium, codex가 low로 판단해 높은 쪽을 택했다.",
+      "file": "src/views/admin-schedule/ui/AdminSchedulePrepView.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-02",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "저장 중 시트를 닫고 다른 포지션을 열면 이전 저장 결과가 새 시트에 적용된다",
+      "description": "submit의 startTransition 콜백은 await 뒤에 requestIdRef 세대 검사를 하지 않고 setSavedSelected·setSelected·setAssignedCount·setLastUndo를 실행한다. open은 세대 검사를 하지만 submit은 하지 않아, 저장 왕복 중 close 후 다른 포지션 시트를 열면 이전 포지션의 선택 집합과 배정 수가 새 시트에 덮어씌워진다. 이어서 저장하면 새 포지션에 이전 포지션의 인원이 반영될 수 있다. 저장 왕복이 짧아 실제 도달은 드물지만 경계는 열려 있고, 같은 파일이 이미 open 경로에서 이 위험을 인정하고 방어한다.",
+      "file": "src/features/assignment/hooks/useCandidateSelection.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-03",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "필요 인원 행 수 조회 실패가 fail-closed가 아니다",
+      "description": "page가 countScheduleRequirements 실패 시 requirementCountResult.ok가 false라는 이유로 복사 판정을 건너뛰고 그대로 진행한다. 조회 실패와 '행이 이미 있음'이 같은 경로로 흘러, 아직 복사되지 않은 스케줄에 처음 들어간 관리자가 빈 표와 '표에 없는 포지션' 안내를 보게 된다. RADIO 위험 표 5행이 '조회 실패 fail-closed'를 테스트함으로 선언했는데 이 경로만 그 선언 밖에 있다. 화면을 다시 열면 복구되어 영구 손상은 아니다. 중요도는 codex가 medium, opus가 low로 판단해 높은 쪽을 택했다.",
+      "file": "src/app/(protected)/admin/schedule/[id]/page.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-04",
+      "severity": "medium",
+      "area": "tests",
+      "title": "E2E 픽스처를 try/finally로 정리하지 않는다",
+      "description": "assignment-eligibility.spec.ts가 스케줄·배정 픽스처를 만들고 정리 블록 없이 끝난다. RADIO 인수 조건 7이 'try/finally로 정리한다'고 명시했으나 이행되지 않았다. schedules는 append-only 트리거(LB022)가 삭제를 거부해 실제 정리가 불가능하다는 사정이 있고 새 근무일 구간을 받아 충돌 확률은 낮췄지만, 선언과 구현이 어긋난 채로 남았고 assignments·assignment_positions는 삭제가 가능한데도 정리하지 않는다. P3-T01·P3-T02에서 확정된 것과 같은 계열이다.",
+      "file": "tests/e2e/assignment-eligibility.spec.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-05",
+      "severity": "medium",
+      "area": "performance",
+      "title": "배정 수 집계가 1000행 상한 조회 뒤 JS 합산이라 상한을 넘기면 조용히 어긋난다",
+      "description": "listScheduleRequirements가 assignments를 limit(1000)으로 받아 countAssignedPositions가 JS에서 포지션별로 세는데, 상한을 넘는 스케줄에서는 잘린 만큼 배정 수가 실제보다 적게 표시된다. 오류가 아니라 조용한 축소라 관리자는 인원이 모자란다고 오판할 수 있다. 한 스케줄의 배정 행이 1000을 넘는 일은 현실적으로 드물고 DB 집계로 옮기면 왕복 수는 그대로 두고 해소된다. 중요도는 codex가 medium, opus가 low로 판단해 높은 쪽을 택했다.",
+      "file": "src/entities/schedule/api/list-schedule-requirements.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-06",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "비활성 포지션에서 배정 해제까지 거부돼 정리 경로가 막힌다",
+      "description": "RADIO 불변 규칙은 '비활성 포지션에는 신규 배정을 거부한다'로 신규 생성만 막으라고 적었으나, replace_position_assignments는 profile_ids가 빈 배열(전원 해제)이어도 is_active 검사에서 먼저 22023을 던진다. 배정이 남은 포지션을 관리자가 비활성화하면 그 배정을 없앨 방법이 사라진다. 필요 인원 행은 is_active로 걸러지지 않아 시트는 열리고 저장만 '입력값을 다시 확인해 주세요'로 실패해 원인도 드러나지 않는다. 포지션을 다시 활성화하면 풀리므로 영향은 제한적이다. 중요도는 codex가 medium, opus가 low로 판단해 높은 쪽을 택했다.",
+      "file": "supabase/migrations/20260810000000_assignments.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-07",
+      "severity": "low",
+      "area": "security",
+      "title": "신규 SECURITY DEFINER 함수의 search_path에 pg_temp가 없다",
+      "description": "이 마이그레이션의 DEFINER 함수 전부가 set search_path = public만 지정한다. PostgreSQL 문서가 권고하는 안전 작성법은 pg_temp를 마지막에 명시해 임시 스키마 객체가 참조를 가로채지 못하게 하는 것이다. 다만 이 형태는 저장소의 기존 DEFINER 함수 전반이 따르는 선례이고(P1-T04·P2-T04에서 같은 항목이 이미 누적) 봉인된 RADIO는 이 항목을 다루지 않았으므로 이 task 단독으로 갈라 고칠 사안이 아니다.",
+      "file": "supabase/migrations/20260810000000_assignments.sql",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-08",
+      "severity": "low",
+      "area": "architecture",
+      "title": "증거 문서가 실제와 다른 함수명을 기록했다",
+      "description": "runs/P3-T03/radio.md와 tdd.json의 RED 노트가 후보 분류 함수를 buildAssignmentCandidateBuckets로 적었지만 실제 이름은 groupAssignmentCandidates다. 증거 문서는 나중에 코드를 찾아가는 색인 역할이라 이름 불일치가 추적을 방해한다. 동작에는 영향이 없다.",
+      "file": "docs/execution/runs/P3-T03/radio.md",
+      "agreed_by": ["opus", "codex"]
+    }
+  ]
+}
