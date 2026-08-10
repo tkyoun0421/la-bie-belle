@@ -13,6 +13,7 @@ export const WORK_DATE_BANDS = {
   positionRequirements: { minMonthsAhead: 132, maxMonthsAhead: 163 },
   viewTransition: { minMonthsAhead: 165, maxMonthsAhead: 196 },
   motionComputedStyle: { minMonthsAhead: 198, maxMonthsAhead: 229 },
+  assignmentEligibility: { minMonthsAhead: 231, maxMonthsAhead: 262 },
 } as const satisfies Record<string, WorkDateBand>;
 
 const LAST_SAFE_DAY_OF_MONTH = 27;

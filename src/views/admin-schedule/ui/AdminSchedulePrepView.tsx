@@ -1,8 +1,16 @@
 "use client";
 
+import { useMemo } from "react";
+
 import type { Position } from "@/entities/position/model/position";
 import type { SchedulePrep } from "@/entities/schedule/types/schedule-prep";
 import type { ScheduleRequirementRow } from "@/entities/schedule/types/schedule-requirement";
+import {
+  useCandidateSelection,
+  type ListAssignmentCandidatesAction,
+  type ReplacePositionAssignmentsAction,
+} from "@/features/assignment/hooks/useCandidateSelection";
+import { AssignmentCandidateSheet } from "@/features/assignment/ui/AssignmentCandidateSheet";
 import {
   useCeremonyEditor,
   type ReplaceCeremoniesAction,
@@ -26,6 +34,7 @@ import {
 } from "@/features/requirement/hooks/useRequirementEditor";
 import { MissingPositionsBanner } from "@/features/requirement/ui/MissingPositionsBanner";
 import { RequirementTable } from "@/features/requirement/ui/RequirementTable";
+import { groupAssignmentCandidates } from "@/views/admin-schedule/model/candidate-buckets";
 import {
   resolveSchedulePrepScreenMode,
   schedulePrepStatusLabel,
@@ -42,9 +51,12 @@ type AdminSchedulePrepViewProps = {
   onUpdateCheckInRule: (input: CheckInRuleActionInput) => Promise<CheckInRuleMutationOutcome>;
   onDeleteCheckInRule: (input: DeleteCheckInRuleActionInput) => Promise<CheckInRuleMutationOutcome>;
   requirementRows: ScheduleRequirementRow[];
+  assignedCounts: Record<string, number>;
   activePositions: Position[];
   onSetRequirement: SetRequirementAction;
   onRemoveRequirement: RemoveRequirementAction;
+  onListCandidates: ListAssignmentCandidatesAction;
+  onReplaceAssignments: ReplacePositionAssignmentsAction;
 };
 
 export function AdminSchedulePrepView({
@@ -55,9 +67,12 @@ export function AdminSchedulePrepView({
   onUpdateCheckInRule,
   onDeleteCheckInRule,
   requirementRows,
+  assignedCounts,
   activePositions,
   onSetRequirement,
   onRemoveRequirement,
+  onListCandidates,
+  onReplaceAssignments,
 }: AdminSchedulePrepViewProps) {
   const editor = useCeremonyEditor(
     {
@@ -80,11 +95,20 @@ export function AdminSchedulePrepView({
     onSetRequirement,
     onRemoveRequirement,
   );
+  const candidateSelection = useCandidateSelection({
+    onList: onListCandidates,
+    onReplace: onReplaceAssignments,
+  });
 
   const mode = resolveSchedulePrepScreenMode({
     status: schedulePrep.status,
     ceremonyTimes: editor.ceremonyTimes,
   });
+
+  const candidateBuckets = useMemo(
+    () => groupAssignmentCandidates(candidateSelection.candidates ?? []),
+    [candidateSelection.candidates],
+  );
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-24">
@@ -154,7 +178,7 @@ export function AdminSchedulePrepView({
                 className="flex items-center justify-between typo-body text-text-strong"
               >
                 <span>{row.positionName}</span>
-                <span>{row.requiredCount}명</span>
+                <span>{`필요 ${row.requiredCount} / 배정 ${assignedCounts[row.positionId] ?? 0}`}</span>
               </li>
             ))}
           </ul>
@@ -172,9 +196,46 @@ export function AdminSchedulePrepView({
               onRemoveRow={requirementEditor.removeRow}
               pending={requirementEditor.pending}
             />
+            <ul className="flex flex-col divide-y divide-border border-t border-border">
+              {requirementEditor.rows.map((row) => (
+                <li key={row.positionId}>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      candidateSelection.open({
+                        scheduleId: schedulePrep.id,
+                        positionId: row.positionId,
+                        positionName: row.positionName,
+                        requiredCount: row.requiredCount,
+                        assignedCount: assignedCounts[row.positionId] ?? 0,
+                      })
+                    }
+                    className="flex w-full items-center justify-between py-3 text-left typo-body text-text-strong"
+                  >
+                    <span>{row.positionName}</span>
+                    <span>{`필요 ${row.requiredCount} / 배정 ${assignedCounts[row.positionId] ?? 0}`}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
           </>
         )}
       </section>
+
+      <AssignmentCandidateSheet
+        target={candidateSelection.target}
+        assignedCount={candidateSelection.assignedCount}
+        loading={candidateSelection.loading}
+        failed={candidateSelection.failed}
+        buckets={candidateBuckets}
+        selected={candidateSelection.selected}
+        onToggle={candidateSelection.toggle}
+        changeCount={candidateSelection.changeCount}
+        submitting={candidateSelection.submitting}
+        onSave={candidateSelection.save}
+        undo={candidateSelection.undo}
+        onClose={candidateSelection.close}
+      />
 
       <CheckInRuleEditor
         rules={schedulePrep.checkInRules}

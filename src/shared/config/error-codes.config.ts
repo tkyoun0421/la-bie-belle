@@ -41,6 +41,10 @@ export const ERROR_CODES = {
     http: 409,
     message: "필요 인원에 쓰이고 있는 포지션이에요. 비활성화해 주세요",
   },
+  SCHEDULING_ASSIGNMENT_NOT_ELIGIBLE: {
+    http: 409,
+    message: "선택한 인원 중 이 포지션에 배정할 수 없는 사람이 있어요",
+  },
 } as const satisfies Record<`${ErrorDomain}_${string}`, ErrorSpec>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;
@@ -62,4 +66,5 @@ export const ERROR_CODE = {
   SCHEDULING_APPLICATION_BLOCKED: "SCHEDULING_APPLICATION_BLOCKED",
   SCHEDULING_STATUS_CONFLICT: "SCHEDULING_STATUS_CONFLICT",
   SCHEDULING_POSITION_IN_USE: "SCHEDULING_POSITION_IN_USE",
+  SCHEDULING_ASSIGNMENT_NOT_ELIGIBLE: "SCHEDULING_ASSIGNMENT_NOT_ELIGIBLE",
 } as const satisfies { [K in ErrorCode]: K };

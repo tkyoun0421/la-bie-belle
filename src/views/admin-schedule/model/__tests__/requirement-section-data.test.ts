@@ -25,10 +25,11 @@ const INACTIVE_POSITION = {
 const REQUIREMENT_ROW = { positionId: "position-1", positionName: "스캔", requiredCount: 2 };
 
 describe("resolveRequirementSectionData", () => {
-  it("F-03: 두 조회가 모두 성공하면 활성 포지션만 골라 ok:true를 반환한다", () => {
+  it("F-03: 두 조회가 모두 성공하면 활성 포지션과 배정 수를 함께 반환한다", () => {
     const result = resolveRequirementSectionData({
       requirementsOk: true,
       requirementRows: [REQUIREMENT_ROW],
+      assignedCounts: { "position-1": 3 },
       positionsOk: true,
       positions: [ACTIVE_POSITION, INACTIVE_POSITION],
     });
@@ -36,6 +37,7 @@ describe("resolveRequirementSectionData", () => {
     expect(result).toEqual({
       ok: true,
       requirementRows: [REQUIREMENT_ROW],
+      assignedCounts: { "position-1": 3 },
       activePositions: [ACTIVE_POSITION],
     });
   });
@@ -44,17 +46,24 @@ describe("resolveRequirementSectionData", () => {
     const result = resolveRequirementSectionData({
       requirementsOk: true,
       requirementRows: [],
+      assignedCounts: {},
       positionsOk: true,
       positions: [],
     });
 
-    expect(result).toEqual({ ok: true, requirementRows: [], activePositions: [] });
+    expect(result).toEqual({
+      ok: true,
+      requirementRows: [],
+      assignedCounts: {},
+      activePositions: [],
+    });
   });
 
   it("F-03: requirements 조회가 실패하면 positions가 성공해도 ok:false다(빈 표로 위장하지 않는다)", () => {
     const result = resolveRequirementSectionData({
       requirementsOk: false,
       requirementRows: [],
+      assignedCounts: {},
       positionsOk: true,
       positions: [ACTIVE_POSITION],
     });
@@ -66,6 +75,7 @@ describe("resolveRequirementSectionData", () => {
     const result = resolveRequirementSectionData({
       requirementsOk: true,
       requirementRows: [REQUIREMENT_ROW],
+      assignedCounts: { "position-1": 1 },
       positionsOk: false,
       positions: [],
     });

@@ -5,12 +5,18 @@ import type { ScheduleRequirementRow } from "@/entities/schedule/types/schedule-
 export type RequirementSectionDataInput = {
   requirementsOk: boolean;
   requirementRows: ScheduleRequirementRow[];
+  assignedCounts: Record<string, number>;
   positionsOk: boolean;
   positions: Position[];
 };
 
 export type RequirementSectionData =
-  | { ok: true; requirementRows: ScheduleRequirementRow[]; activePositions: Position[] }
+  | {
+      ok: true;
+      requirementRows: ScheduleRequirementRow[];
+      assignedCounts: Record<string, number>;
+      activePositions: Position[];
+    }
   | { ok: false };
 
 export function resolveRequirementSectionData(
@@ -23,6 +29,7 @@ export function resolveRequirementSectionData(
   return {
     ok: true,
     requirementRows: input.requirementRows,
+    assignedCounts: input.assignedCounts,
     activePositions: input.positions.filter((position) => position.isActive),
   };
 }

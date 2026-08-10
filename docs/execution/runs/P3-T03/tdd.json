@@ -1,0 +1,144 @@
+{
+  "entries": [
+    {
+      "command": "pnpm vitest run src/entities/assignment/model/__tests__/ineligible-reason.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T06:59:28Z",
+      "phase": "red",
+      "note": "AC2·AC6: assignmentIneligibleReasonLabel 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/entities/assignment/model/__tests__/ineligible-reason.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T06:59:31Z",
+      "phase": "green",
+      "note": "AC2·AC6: GENDER_MISMATCH·NOT_ELIGIBLE 이유 라벨 매핑 구현 후 2/2 PASS"
+    },
+    {
+      "command": "pnpm vitest run src/entities/assignment/api/__tests__/list-position-assignment-candidates.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T06:49:50Z",
+      "phase": "red",
+      "note": "AC2: listPositionAssignmentCandidates 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/entities/assignment/api/__tests__/list-position-assignment-candidates.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T06:49:55Z",
+      "phase": "green",
+      "note": "AC2: list_position_assignment_candidates RPC 래핑, 42501→IDENTITY_NOT_ACTIVE 매핑 구현 후 4/4 PASS"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-10T06:54:52Z",
+      "phase": "red",
+      "note": "AC1-4: assignments·assignment_positions 테이블·정책·함수 2종이 아직 없어 19-assignments.test.sql 72개 계획 중 10건 즉시 실패(relation/column 부재)로 조기 중단, 18개 파일 925/925는 그대로 PASS"
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-10T06:55:39Z",
+      "phase": "green",
+      "note": "AC1-4: 20260810000000_assignments.sql 적용 후 19개 파일 987/987 PASS(19-assignments.test.sql 72/72 포함: 스키마·정책·후보 조회·교체·자격 강제 5종 거부·재호출 무변경·감사)"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/list-schedule-requirements.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T06:50:01Z",
+      "phase": "red",
+      "note": "AC5: listScheduleRequirements가 배정 수(assignedCounts)를 함께 반환하도록 확장한 테스트 케이스가 아직 구현에 없어 실패"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/list-schedule-requirements.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T06:50:05Z",
+      "phase": "green",
+      "note": "AC5: assignment_positions를 함께 조회해 position_id별 배정 수를 assignedCounts로 반환하도록 구현 후 6/6 PASS"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/count-schedule-requirements.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T06:59:36Z",
+      "phase": "red",
+      "note": "MEMOIZE-FIX: countScheduleRequirements 모듈 부재. page.tsx가 listScheduleRequirements(id)를 복사 여부 판정과 최종 렌더 두 곳에서 같은 인자로 호출해 Next.js fetch 요청 메모이제이션에 걸려 두 번째 호출이 복사 전 빈 결과를 그대로 반환하던 회귀(5790d71에서 들어옴)를 고치기 위해 신설. head:true count 전용 조회로 판정을 분리해 listScheduleRequirements 호출을 요청당 1회로 줄인다"
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/api/__tests__/count-schedule-requirements.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T06:59:40Z",
+      "phase": "green",
+      "note": "MEMOIZE-FIX: schedule_position_requirements를 select(count:'exact', head:true)로 세는 함수 구현, 42501→IDENTITY_NOT_ACTIVE·그 외→COMMON_UNEXPECTED 매핑 후 5/5 PASS"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/requirement-section-data.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T06:50:10Z",
+      "phase": "red",
+      "note": "AC5: resolveRequirementSectionData가 assignedCounts를 함께 반환하도록 확장한 케이스가 아직 구현에 없어 실패"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/requirement-section-data.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T06:50:17Z",
+      "phase": "green",
+      "note": "AC5: assignedCounts 전달·조회 실패 시 fail-closed 유지 구현 후 8/8 PASS"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T06:50:22Z",
+      "phase": "red",
+      "note": "AC6: buildAssignmentCandidateBuckets 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T06:53:47Z",
+      "phase": "green",
+      "note": "AC6: 후보를 신청함·신청 안 함·자격 미달 세 묶음으로 분류하는 순수 함수 구현 후 3/3 PASS"
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/api/__tests__/list-assignment-candidates.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T06:53:51Z",
+      "phase": "red",
+      "note": "AC6: listAssignmentCandidates Server Action 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/api/__tests__/list-assignment-candidates.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T06:53:54Z",
+      "phase": "green",
+      "note": "AC6: requireAdmin→Zod→listPositionAssignmentCandidates 위임 구현 후 4/4 PASS"
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/api/__tests__/replace-position-assignments.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T06:53:57Z",
+      "phase": "red",
+      "note": "AC3·AC4: replacePositionAssignments Server Action 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/api/__tests__/replace-position-assignments.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T06:54:01Z",
+      "phase": "green",
+      "note": "AC3·AC4: requireAdmin→Zod→replace_position_assignments RPC→에러 매핑(LB020→SCHEDULING_STATUS_CONFLICT, LB023→SCHEDULING_ASSIGNMENT_NOT_ELIGIBLE, 42501→IDENTITY_NOT_ACTIVE)→revalidatePath 구현 후 9/9 PASS"
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/hooks/__tests__/useCandidateSelection.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T06:54:04Z",
+      "phase": "red",
+      "note": "AC6: useCandidateSelection 훅 모듈 부재"
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/hooks/__tests__/useCandidateSelection.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T06:54:09Z",
+      "phase": "green",
+      "note": "AC6: 다중 선택·변경 수 계산·저장·되돌리기 상태 관리 구현 후 9/9 PASS"
+    }
+  ]
+}
