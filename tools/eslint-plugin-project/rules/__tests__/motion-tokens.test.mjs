@@ -24,14 +24,24 @@ describe("motion-tokens", () => {
         code: 'export const a = "delay-[var(--duration-stagger)]";',
       },
       {
-        name: "transform·opacity 전이는 허용한다",
+        name: "여러 속성을 전이시킬 때 유틸 하나에 목록으로 적으면 허용한다",
         filename: "src/shared/ui/chip.tsx",
-        code: 'export const a = "transition-transform transition-opacity";',
+        code: 'export const a = "transition-[color,background-color,border-color,scale]";',
       },
       {
         name: "색상 전이는 레이아웃을 건드리지 않으므로 허용한다",
         filename: "src/shared/ui/button.tsx",
         code: 'export const a = "transition-colors";',
+      },
+      {
+        name: "수식어가 다른 transition 유틸은 서로 덮지 않으므로 허용한다",
+        filename: "src/shared/ui/button.tsx",
+        code: 'export const a = "transition-none md:transition-colors";',
+      },
+      {
+        name: "@theme이 정의한 easing 유틸은 허용한다",
+        filename: "src/shared/ui/button.tsx",
+        code: 'export const a = "ease-out ease-spring";',
       },
       {
         name: "Tailwind 기본 애니메이션 유틸은 허용한다",
@@ -126,6 +136,48 @@ describe("motion-tokens", () => {
         filename: "src/shared/ui/chip.tsx",
         code: 'export const Foo = () => <div style={{ animationTimingFunction: "ease-in-out" }} />;',
         errors: [{ messageId: "arbitraryMotionValue" }],
+      },
+      {
+        name: "Tailwind 기본 duration 유틸의 시간 숫자를 막는다",
+        filename: "src/shared/ui/chip.tsx",
+        code: 'export const a = "transition-colors duration-200";',
+        errors: [{ messageId: "arbitraryMotionValue" }],
+      },
+      {
+        name: "Tailwind 기본 delay 유틸의 시간 숫자를 막는다",
+        filename: "src/shared/ui/chip.tsx",
+        code: 'export const a = "delay-100";',
+        errors: [{ messageId: "arbitraryMotionValue" }],
+      },
+      {
+        name: "@theme이 소유하지 않는 Tailwind 기본 easing 유틸을 막는다",
+        filename: "src/shared/ui/chip.tsx",
+        code: 'export const a = "ease-in-out";',
+        errors: [{ messageId: "arbitraryMotionValue" }],
+      },
+      {
+        name: "선형 easing 유틸도 막는다",
+        filename: "src/shared/ui/chip.tsx",
+        code: 'export const a = "ease-linear";',
+        errors: [{ messageId: "arbitraryMotionValue" }],
+      },
+      {
+        name: "전이 속성을 정하는 유틸을 둘 이상 겹쳐 쓰면 막는다",
+        filename: "src/shared/ui/button.tsx",
+        code: 'export const a = "transition-colors transition-transform";',
+        errors: [{ messageId: "conflictingTransition" }],
+      },
+      {
+        name: "transform과 opacity를 따로 적은 조합도 막는다",
+        filename: "src/shared/ui/chip.tsx",
+        code: 'export const a = "transition-transform transition-opacity";',
+        errors: [{ messageId: "conflictingTransition" }],
+      },
+      {
+        name: "같은 수식어 안에서 겹치면 막는다",
+        filename: "src/shared/ui/chip.tsx",
+        code: 'export const a = "hover:transition-colors hover:transition-transform";',
+        errors: [{ messageId: "conflictingTransition" }],
       },
     ],
   });

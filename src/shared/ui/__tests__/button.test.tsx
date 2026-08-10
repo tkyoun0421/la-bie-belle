@@ -96,4 +96,15 @@ describe("Button", () => {
     expect(className).toContain("ease-[var(--ease-out)]");
     expect(className).toContain("active:scale-[0.97]");
   });
+
+  it("전이 속성을 유틸 하나에 모아 색과 눌림을 함께 전이시킨다", () => {
+    render(<Button>저장</Button>);
+
+    const utilities = screen
+      .getByRole("button", { name: "저장" })
+      .className.split(" ")
+      .filter((token) => token.startsWith("transition"));
+
+    expect(utilities).toEqual(["transition-[color,background-color,border-color,scale]"]);
+  });
 });

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 import type { Violation } from "./violation.ts";
@@ -30,14 +30,7 @@ export function measureStaticChunks(root: string): BundleMeasurement {
   let largestBytes = 0;
   let chunkCount = 0;
 
-  for (const entry of readdirSync(directory)) {
-    if (!entry.endsWith(".js")) {
-      continue;
-    }
-    const path = join(directory, entry);
-    if (!statSync(path).isFile()) {
-      continue;
-    }
+  for (const path of listChunkFiles(directory)) {
     const size = gzipSync(readFileSync(path)).length;
     totalBytes += size;
     largestBytes = Math.max(largestBytes, size);
@@ -45,6 +38,16 @@ export function measureStaticChunks(root: string): BundleMeasurement {
   }
 
   return { totalBytes, largestBytes, chunkCount };
+}
+
+function listChunkFiles(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) {
+      return listChunkFiles(path);
+    }
+    return entry.isFile() && entry.name.endsWith(".js") ? [path] : [];
+  });
 }
 
 export function evaluateBundleBudget(

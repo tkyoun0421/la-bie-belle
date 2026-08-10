@@ -160,12 +160,49 @@ describe("globals.css 디자인 토큰", () => {
       expect(block?.[1]).toMatch(/transition-timing-function:\s*var\(--ease-out\);/);
     });
 
+    it("sonner의 제거 상태 규칙보다 높은 명시도로 토큰 시간을 건다", () => {
+      const block =
+        /\[data-sonner-toast\]\[data-removed\]\[data-front\]\[data-swipe-out\]\[data-expanded\]:not\(\s*\[data-swiping="true"\]\s*\)\s*\{([^}]*)\}/.exec(
+          css,
+        );
+      expect(block, "sonner 제거 상태 규칙이 없습니다").not.toBeNull();
+      expect(block?.[1]).toMatch(/transition-duration:\s*var\(--duration-overlay\);/);
+      expect(block?.[1]).toMatch(/transition-timing-function:\s*var\(--ease-out\);/);
+    });
+
+    it("sonner의 스와이프 아웃 애니메이션도 토큰 시간을 쓴다", () => {
+      const block =
+        /\[data-sonner-toast\]\[data-swipe-out="true"\]\[data-y-position\]\[data-styled\]\s*\{([^}]*)\}/.exec(
+          css,
+        );
+      expect(block, "sonner 스와이프 아웃 규칙이 없습니다").not.toBeNull();
+      expect(block?.[1]).toMatch(/animation-duration:\s*var\(--duration-overlay\);/);
+      expect(block?.[1]).toMatch(/animation-timing-function:\s*var\(--ease-out\);/);
+    });
+
     it("서드파티 조율에 !important를 쓰지 않는다", () => {
       const vaulAndSonner = css
         .split("\n")
         .filter((line) => /data-vaul|data-sonner/.test(line))
         .join("\n");
       expect(vaulAndSonner).not.toMatch(/!important/);
+    });
+  });
+
+  describe("다이얼로그 모션", () => {
+    const dialogFrames = () => [
+      ...css.matchAll(/@keyframes\s+dialog-(?:in|out)\s*\{([\s\S]*?)\n\}/g),
+    ];
+
+    it("진입·이탈 keyframes를 모두 정의한다", () => {
+      expect(dialogFrames()).toHaveLength(2);
+    });
+
+    it("keyframes가 위치를 옮기지 않아 중앙 정렬 유틸과 합성되지 않는다", () => {
+      for (const frame of dialogFrames()) {
+        expect(frame[1]).not.toMatch(/translate/);
+        expect(frame[1]).toMatch(/transform:\s*scale\(/);
+      }
     });
   });
 

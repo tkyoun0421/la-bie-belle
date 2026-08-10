@@ -8,7 +8,7 @@ import { type ComponentPropsWithRef, useId } from "react";
 import { cn } from "@/shared/lib/cn";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap typo-label transition-colors transition-transform duration-[var(--duration-feedback)] ease-[var(--ease-out)] active:scale-[0.97] disabled:cursor-not-allowed disabled:bg-disabled-surface disabled:text-disabled disabled:active:scale-100",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap typo-label transition-[color,background-color,border-color,scale] duration-[var(--duration-feedback)] ease-[var(--ease-out)] active:scale-[0.97] disabled:cursor-not-allowed disabled:bg-disabled-surface disabled:text-disabled disabled:active:scale-100",
   {
     variants: {
       variant: {

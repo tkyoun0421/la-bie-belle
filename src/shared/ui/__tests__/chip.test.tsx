@@ -1,5 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Chip } from "@/shared/ui/chip";
@@ -66,5 +67,41 @@ describe("Chip", () => {
     expect(className).toContain("duration-[var(--duration-feedback)]");
     expect(className).toContain("ease-[var(--ease-out)]");
     expect(className).toContain("active:scale-[0.97]");
+  });
+
+  it("전이 속성을 유틸 하나에 모아 색과 눌림을 함께 전이시킨다", () => {
+    render(
+      <Chip selected={false} onSelectedChange={() => {}}>
+        토요일
+      </Chip>,
+    );
+
+    const utilities = screen
+      .getByRole("button", { name: "토요일" })
+      .className.split(" ")
+      .filter((token) => token.startsWith("transition"));
+
+    expect(utilities).toEqual(["transition-[color,background-color,border-color,scale]"]);
+  });
+
+  it("연속으로 눌러도 선택 상태가 끼이지 않는다", async () => {
+    const user = userEvent.setup();
+
+    function StatefulChip() {
+      const [selected, setSelected] = useState(false);
+      return (
+        <Chip selected={selected} onSelectedChange={setSelected}>
+          토요일
+        </Chip>
+      );
+    }
+
+    render(<StatefulChip />);
+    const chip = screen.getByRole("button", { name: "토요일" });
+
+    for (const expected of ["true", "false", "true", "false", "true"]) {
+      await user.click(chip);
+      expect(chip).toHaveAttribute("aria-pressed", expected);
+    }
   });
 });

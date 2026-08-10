@@ -59,6 +59,66 @@
       "exit_code": 0,
       "at": "2026-08-09T17:01:38.000Z",
       "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/motion-tokens.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-10T04:34:15.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/motion-tokens.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-10T04:35:32.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/button.test.tsx src/shared/ui/__tests__/chip.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-10T04:36:37.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/button.test.tsx src/shared/ui/__tests__/chip.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-10T04:36:54.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T04:38:44.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T04:39:51.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning --test harness/self-test/bundle-budget.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T04:40:29.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "node --experimental-strip-types --disable-warning=ExperimentalWarning --test harness/self-test/bundle-budget.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T04:41:06.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm test:e2e tests/e2e/motion.spec.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T04:44:12.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm test:e2e tests/e2e/motion.spec.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T04:47:41.000Z",
+      "phase": "green"
     }
   ]
 }

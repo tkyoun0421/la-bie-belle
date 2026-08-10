@@ -254,3 +254,16 @@
 - [ ] [low] [P3-T02] 23503 일괄 매핑으로 삭제 차단 원인을 필요 인원으로 단정(가능 포지션 출처 혼동) — src/shared/config/error-codes.config.ts
 - [ ] [low] [P3-T02] 시스템 포지션 보호 거부(P0001)를 재시도 가능한 일시 오류로 안내 — src/features/position/api/manage-positions.ts
 - [ ] [low] [P3-T02] position_id 역방향 FK 인덱스 부재로 삭제 RI 검사 전체 스캔 가능 — supabase/migrations/20260809000000_position_requirements.sql
+- [x] [medium] [P0-T43] sonner 상태별 규칙이 명시도로 이겨 제거·스와이프 아웃이 모션 토큰 밖에 남음 — src/app/globals.css
+- [x] [medium] [P0-T43] motion-tokens가 duration-200·ease-in-out 등 Tailwind 기본 모션 유틸을 통과시켜 DEV-TOKEN-01 강제 범위 미달 — tools/eslint-plugin-project/rules/motion-tokens.mjs
+- [x] [medium] [P0-T43] 모션 단언이 클래스·소스 문자열 수준뿐이라 실제 적용 결함을 못 잡음(계산된 스타일 층 부재) — src/shared/ui/__tests__
+- [x] [medium] [P0-T43] 번들 게이트가 청크 하위 디렉터리를 재귀하지 않아 구조 변경 시 상한을 조용히 허위 통과 — harness/lib/bundle-budget.ts
+- [x] [medium] [P0-T43] RADIO 위험 매트릭스의 '테스트함' 칸 2개(연속 탭·시트와 스낵바 동시)에 대응 테스트 부재 — docs/execution/radio/P0-T43-radio.md
+- [x] [medium] [P0-T43] 적용 기록·handoff의 봉인 SHA가 어느 파일과도 불일치(radio-gate가 runs 하위를 읽지 않아 미검출) — docs/execution/runs/P0-T43/radio.md
+- [x] [medium] [P0-T43] 탐색 E2E가 실행마다 Auth 사용자·profile을 정리 없이 누적(저장소 공통 관례) — tests/e2e/tab-navigation.spec.ts
+- [ ] [low] [P0-T43] 등록 check nav-regression의 RED→GREEN 증거 부재(tdd-gate가 쌍 1개면 통과) — docs/execution/runs/P0-T43/tdd.json
+- [ ] [low] [P0-T43] index.jsonl P0-T44 행이 폐기된 400KB 상한·bundle-budget-400을 유지 — docs/execution/phases/index.jsonl
+- [x] [medium] [P0-T43] 모션 e2e probe가 다이얼로그 클래스를 복사해 드리프트에 취약·이탈 애니메이션 미검증 — tests/e2e/motion.spec.ts
+- [x] [medium] [P0-T43] 시트·스낵바 동시 표시 검증이 DOM 배타성만 보고 타이밍을 안 봄 — src/shared/ui/__tests__/snackbar.test.tsx
+- [ ] [low] [P0-T43] sonner 자식 요소(`> *`)의 opacity 전이 400ms가 토큰 밖에 남음 — src/app/globals.css
+- [ ] [low] [P0-T43] 동시 표시 e2e가 스낵바 기본 4초 수명 안에 두 단계를 끝내야 해 느린 CI에서 간헐 실패 가능 — tests/e2e/motion.spec.ts

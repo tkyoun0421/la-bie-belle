@@ -18,7 +18,7 @@ export function Chip({ children, selected, onSelectedChange, disabled, className
       disabled={disabled}
       onClick={() => onSelectedChange(!selected)}
       className={cn(
-        "inline-flex min-h-11 items-center rounded-pill border px-3 typo-label transition-colors transition-transform",
+        "inline-flex min-h-11 items-center rounded-pill border px-3 typo-label transition-[color,background-color,border-color,scale]",
         "duration-[var(--duration-feedback)] ease-[var(--ease-out)] active:scale-[0.97]",
         selected
           ? "border-action-border bg-action-surface text-action"

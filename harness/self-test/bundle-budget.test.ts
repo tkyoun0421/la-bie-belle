@@ -68,6 +68,19 @@ test("측정 — .js 청크만 gzip 합계에 넣는다", () => {
   assert.equal(measurement.largestBytes, gzippedSize(900));
 });
 
+test("측정 — 하위 디렉터리의 청크도 합계에 넣는다", () => {
+  const root = fixtureWithChunks([500]);
+  const nested = join(root, STATIC_CHUNK_DIRECTORY, "app", "protected");
+  mkdirSync(nested, { recursive: true });
+  writeFileSync(join(nested, "page.js"), "a".repeat(900));
+
+  const measurement = measureStaticChunks(root);
+
+  assert.equal(measurement.chunkCount, 2);
+  assert.equal(measurement.totalBytes, gzippedSize(500) + gzippedSize(900));
+  assert.equal(measurement.largestBytes, gzippedSize(900));
+});
+
 test("측정 — 빌드 디렉터리가 없으면 0으로 보고한다", () => {
   const root = createFixtureRoot();
 
