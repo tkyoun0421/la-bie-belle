@@ -3,7 +3,7 @@
 - 대상 RADIO: `docs/execution/radio/P0-T44-radio.md` revision 7
 - 승인 SHA-256: `58a712f2ab8b742e86b8ae4690b30673414c3dac1db79b9d7124c16b18cf63d0`
 - 개발 세션 기준 시각: 2026-08-10
-- 상태: 기술 인수 조건 1~8 전부 완료. `pnpm verify` 전체 GREEN.
+- 상태: 기술 인수 조건 1~8 전부 완료. `pnpm verify` 전체 GREEN. 교차 검증(`docs/execution/reviews/P0-T44-review.json`) 확정 발견 13건 중 high 3건(F-01·F-02·F-03)과 그 원인이 된 테스트 공백 2건(F-04·F-10)을 수정 라운드로 반영했다 — 아래 「수정 라운드」 절 참조.
 
 ## 재봉인 이력 요약
 
@@ -49,15 +49,11 @@ spring 상수는 TS에 복사하지 않는다 — `motion-provider.tsx`가 `useS
 
 ### 6. 번들
 
-`harness/lib/bundle-budget.ts`의 `BUNDLE_BUDGET_BYTES`를 `500 * 1024`로 바꿨다. 최종 실측은 「재봉인 이력 요약」의 revision 6과 같다 — **490.9KB(502,710바이트, gzip 청크 38개)**. `pnpm gate:bundle`은 GREEN이다(여유 9.1KB).
+`harness/lib/bundle-budget.ts`의 `BUNDLE_BUDGET_BYTES`를 `500 * 1024`로 바꿨다. revision 6이 받아들인 실측은 490.9KB(502,710바이트, gzip 청크 38개)였고, 교차 검증 수정 라운드를 반영한 최종 실측은 **491.0KB(502,829바이트, gzip 청크 38개)**다 — 아래 「수정 라운드」 참조. `pnpm gate:bundle`은 GREEN이다(500KB 상한 대비 여유 약 9.0KB).
 
 ### 7. 렌더 시간
 
-`harness/lib/motion-render-budget.ts`(측정·판정)와 `harness/gates/motion-render-budget.ts`(진입점)를 만들고 `pnpm verify` 체인의 `test:e2e` 뒤, `gate:all` 앞에 이었다(`pnpm gate:motion-render-budget`로 단독 실행도 된다).
-
-측정 방법: `pnpm build`가 만든 `.next/static/chunks/*.css`(Tailwind가 컴파일한 실제 CSS, 토큰·keyframes·유틸의 정본을 그대로 씀)를 읽어 빈 문서에 주입하고, `reducedMotion: "reduce"`/`"no-preference"` 두 조건에서 알림 목록과 같은 구조(`motion-stagger-item` 3개, mock 데이터 `MIXED_NOTIFICATIONS`의 항목 수)를 `innerHTML`로 삽입한 뒤 `requestAnimationFrame` 두 프레임 뒤까지의 경과 시간을 잰다. 단일 측정은 노이즈가 커서(같은 조건에서 1.5~24ms까지 흔들림을 확인) 조건마다 워밍업 2회 + 표본 5회의 중앙값을 쓰도록 바꿨다 — 이후 조건 간 차이가 1ms 미만으로 안정됐다. 로컬 실측: 전체 모션 약 31.7ms, reduced-motion 약 31.8ms, 차이 1ms 미만(상한 16ms 이내, `pnpm gate:motion-render-budget` GREEN).
-
-이 게이트가 실제로 재는 것은 "차례 등장 애니메이션이 도는 중에도 메인 스레드 작업량이 reduced-motion과 거의 같다"는 것이다 — 순차 등장을 JS가 아니라 CSS `animation-delay`로만 구현했기 때문에 성립하며, 회귀(예: 항목마다 JS 타이머를 도는 방식으로 바뀌는 것)가 생기면 이 수치가 벌어진다.
+`harness/lib/motion-render-budget.ts`(순수 판정 함수 `evaluateRenderBudget`·`RENDER_BUDGET_MS`)와 `tests/e2e/motion-render-budget.spec.ts`(실측)로 나뉜다. `package.json`의 `gate:motion-render-budget` 스크립트는 `playwright test tests/e2e/motion-render-budget.spec.ts`를 그대로 호출해 `pnpm verify` 체인의 `test:e2e` 뒤, `gate:all` 앞에 놓이고 단독 실행도 된다. 측정 방법은 교차 검증 F-02로 재설계됐다 — 아래 「수정 라운드」의 F-02 항목이 정본이다.
 
 `harness/self-test/motion-render-budget.test.ts`(5건 — 상한 이내/경계/초과/부호 무관/기본값)로 `evaluateRenderBudget`을 회귀로 덮었다. RADIO revision 7이 아래 「RADIO와 어긋났던 경로」를 바로잡아 스테이징할 수 있게 됐다. `harness/lib/motion-render-budget.ts`를 잠시 치웠다가 복원해 `pnpm harness:self-test`의 RED(모듈을 찾지 못해 전체 실패)→GREEN(321건)을 실제로 확인했다.
 
@@ -74,14 +70,30 @@ spring 상수는 TS에 복사하지 않는다 — `motion-provider.tsx`가 `useS
 - `/schedule`에서 당겨서 새로고침하면 방금 삽입한(`OPEN` 상태) 스케줄 행이 반영돼 달력 셀 라벨이 "모집 없음"에서 "신청 가능"으로 바뀐다 — `router.refresh()`가 실제로 서버 데이터를 다시 가져온다는 인과 증거다.
 - `body`의 `overscroll-behavior-y: contain`을 계산된 스타일로 확인해 브라우저 기본 당겨서 새로고침이 비활성임을 본다.
 
-`page.mouse`(실제 마우스 입력)로 처음 짰을 때 임계값 미만의 작은 드래그도 마우스업 시 네이티브 `click`을 합성해 `onPress`(기존 탭 동작)가 읽음 처리를 해버리는 부작용을 발견했다 — 스와이프 두 테스트는 `element.dispatchEvent(new PointerEvent(...))`로 직접 합성 디스패치하도록 바꿔 네이티브 클릭 합성 없이 우리 포인터 핸들러만 검증하게 했다. 당겨서 새로고침·overscroll 두 테스트는 실제 마우스 입력을 그대로 쓴다(클릭 가능한 요소 위에서 시작하지 않아 부작용이 없다).
+`page.mouse`(실제 마우스 입력)로 처음 짰을 때 임계값 미만의 작은 드래그도 마우스업 시 네이티브 `click`을 합성해 `onPress`(기존 탭 동작)가 읽음 처리를 해버리는 부작용을 발견했다. 이후 두 스와이프 테스트는 `element.dispatchEvent(new PointerEvent(...))` 합성 디스패치로 바꿨으나, 교차 검증 F-10이 이 방식은 신뢰되지 않은(untrusted) 이벤트라 브라우저의 `touch-action` 중재·네이티브 `pointercancel`을 전혀 태우지 않는다고 지적했다 — 수정 라운드에서 CDP `Input.dispatchTouchEvent` 기반 실제 터치 디스패치로 다시 바꿨다. 상세는 「수정 라운드」의 F-10 항목이 정본이다. 당겨서 새로고침·overscroll 두 테스트는 실제 마우스 입력을 그대로 쓴다(클릭 가능한 요소 위에서 시작하지 않아 부작용이 없다).
 
 날짜 대역은 `tests/e2e/support/work-date-band.ts`에 `swipeRefresh: { minMonthsAhead: 264, maxMonthsAhead: 295 }`로 새로 잡아 기존 spec들과 겹치지 않게 했다.
 
-TDD RED 증거는 남기지 않았다 — 프로덕션 서버(`pnpm start`)가 이미 빌드된 `.next` 산출물을 서빙하므로 "구현 전" 상태로 RED를 재현하려면 소스를 되돌리고 다시 빌드해야 한다. P0-T43의 교차 검증(F-10)이 같은 종류의 공백(자연스러운 RED가 없는 신규 e2e)을 low로 판단한 전례를 따라, 재현 비용 대비 낮은 우선순위로 판단해 생략하고 여기 남긴다.
+최초 구현 때는 TDD RED 증거를 남기지 않았다 — 프로덕션 서버(`pnpm start`)가 이미 빌드된 `.next` 산출물을 서빙하므로 "구현 전" 상태로 RED를 재현하려면 소스를 되돌리고 다시 빌드해야 한다는 이유였다. 수정 라운드에서 F-10을 고치며 임계값 미만 이동으로 일시적으로 되돌려 RED(읽음 처리 안 됨 검증 실패)를 실제로 재현하고 복원해 GREEN을 확인했다 — `docs/execution/runs/P0-T44/tdd.json` 참조.
 
 ## RADIO와 어긋났던 경로
 
 RADIO revision 1~6의 「변경 허용 경로」가 `harness/tests/**`를 적었으나 저장소의 실제 하네스 테스트 디렉터리는 `harness/self-test/`다(`harness/self-test/run.ts`가 같은 디렉터리의 `*.test.ts`만 훑는다 — `harness/tests/`에 넣으면 `pnpm harness:self-test`가 그 파일을 아예 실행하지 않는다). `matchesAnyGlob`은 리터럴 매칭이라 `harness/tests/**`는 `harness/self-test/...` 경로에 매치되지 않아 `gate:scope`가 `harness/self-test/**` 아래 새 파일 스테이징을 막았다.
 
 같은 오타가 P0-T43 RADIO revision 2에도 있었고 revision 3에서 바로잡은 전례가 있다(`docs/execution/runs/P0-T43/radio.md`의 「RADIO와 어긋났던 경로」). 이번 RADIO가 그 수정 이전 표기를 다시 물려받았던 것으로 보인다. revision 7이 `harness/tests/**` → `harness/self-test/**`로 바로잡아 해소했다.
+
+## 수정 라운드 (교차 검증 이후)
+
+`docs/execution/reviews/P0-T44-review.json`(opus·codex 합의, 확정 발견 13건 · 총점 82)의 high 3건과 그 원인이 된 테스트 공백 2건만 사용자가 이번 라운드 범위로 정했다. 나머지 8건(F-05·F-06·F-07·F-08·F-09·F-11·F-12·F-13)은 코디네이터가 `docs/execution/reviews/backlog.md`로 옮기며 이번 task의 후속 작업으로 두지 않았다 — 이 절은 손댄 5건만 다룬다.
+
+**F-01(high) — 순차 등장 애니메이션이 스와이프 인라인 transform을 덮는다.** `NotificationRow`가 스와이프 오프셋 `transform: translateX(offset)`을 인라인 `style`로 걸고, 같은 버튼에 `motion-stagger-item`(`animation: stagger-in ... both`)까지 얹었던 게 원인이다. CSS 캐스케이드에서 애니메이션 선언이 인라인 `style`보다 우선하고 `fill-mode: both`가 종료 후에도 `to` 키프레임을 유지해 인라인 `translateX`가 영구히 무시됐다. 애니메이션되는 요소와 스와이프로 이동하는 요소를 분리해 고쳤다 — 바깥 `<div>`가 호출부의 `className`·`style`(`motion-stagger-item`·`--stagger-index`)을 받고, 안쪽 `<button>`은 스와이프 `transform`만 인라인으로 건다. 인수 조건 5(스와이프 읽음)와 인수 조건 2(순차 등장)를 둘 다 유지한다. `src/shared/ui/__tests__/notification-row.test.tsx`에 구조 분리 단언 2건을 더했다.
+
+**F-02(high) — 렌더 시간 게이트가 실제 화면을 재지 않았다.** 기존 `harness/lib/motion-render-budget.ts`가 빌드된 CSS를 빈 문서에 주입하고 게이트 스스로 만든 문자열 마크업 3개(`NOTIFICATION_ITEM_COUNT` 상수)를 재던 것을, `tests/e2e/motion-render-budget.spec.ts`로 옮겨 실제 `/notifications` 화면을 두 조건(`reducedMotion: "no-preference"`/`"reduce"`)으로 띄우고 화면이 실제로 그린 `<main>`의 `outerHTML`(React·`motion`·`NotificationsView`가 만든 진짜 마크업, 항목 수도 실제 렌더된 개수를 그대로 씀)을 그 화면 안에서 재주입해 마운트 시간을 잰다. 워밍업 2회 + 표본 5회 중앙값으로 노이즈를 줄이는 기존 방식은 그대로 살렸다. `harness/lib/motion-render-budget.ts`는 순수 판정 함수(`evaluateRenderBudget`·`RENDER_BUDGET_MS`)만 남겼고, `harness/gates/motion-render-budget.ts`(구 진입점)는 삭제했다 — `gate:motion-render-budget` npm 스크립트가 `playwright test tests/e2e/motion-render-budget.spec.ts`를 직접 호출한다. 인증은 `tests/e2e/support/worker-session.ts`의 `createWorkerSession`으로 새 근무자 세션을 만들어 처리한다(글로벌 `storageState`에 기대지 않는다).
+
+**F-03(high) — 제스처 표면에 `touch-action`이 없고 `pointercancel`을 '놓음'으로 처리했다.** `PullToRefresh.tsx`의 포인터 수신 `<div>`와 `notification-row.tsx`의 버튼에 `touch-action: pan-y`를 추가했다(세로 페이지 스크롤은 브라우저에 맡기고 가로/제스처 인식 모호성만 없앤다). `usePullToRefresh.ts`는 `onPointerUp`과 `onPointerCancel`을 같은 핸들러로 묶어 취소도 `resolvePullRelease`를 태워 `ready` 상태에서 취소되면 `refreshing`으로 넘어갈 수 있었다 — `pull-state.ts`에 `resolvePullCancel`(취소는 `refreshing` 중이 아니면 항상 `idle`로 되돌리고, `refreshing` 중이면 그대로 둔다)을 새로 만들고 `onPointerCancel`을 그 경로로 분리했다. `pull-state.test.ts`·`usePullToRefresh.test.ts`에 취소 케이스를 더했다.
+
+**F-04(medium) — 등록 check id `stagger-render`를 뒷받침하는 컴포넌트 단언이 없었다.** `PayView.test.tsx`(0건·1건·여러 건 — 기존 fixture `PAY_EMPTY_MONTH`·`PAY_WITH_HEAVY_REHEARSAL`·`PAY_WITH_ITEMS`를 그대로 재사용), `NotificationsView.test.tsx`(빈 상태·`NOTIFICATIONS_MIXED` 3건의 순서), `ScheduleDetailView.test.tsx`(`GENERAL_CONFIRMATION` 3행)에 `motion-stagger-item` 클래스와 `--stagger-index` 값을 확인하는 단언을 각각 더했다. 세 파일 모두 구현을 일시적으로 되돌려 RED를 재현했다(F-01처럼 실제 버그가 있어서가 아니라, F-04 자체가 "이 조합을 검증하는 테스트가 없다"는 공백 지적이라 임시로 클래스·스타일을 지워 RED를 만든 뒤 복원해 GREEN을 확인했다).
+
+**F-10(medium) — E2E가 브라우저의 실제 터치 제스처 중재를 우회했다.** `swipe-refresh.spec.ts`의 `dispatchPointerDrag`(`element.dispatchEvent(new PointerEvent(...))`)는 신뢰되지 않은 합성 이벤트라 `touch-action` 중재도 네이티브 `pointercancel`도 유발하지 않았다. CDP `Input.dispatchTouchEvent`(`touchStart`/`touchMove`/`touchEnd`)로 실제 터치 이벤트를 디스패치하는 `dispatchRealTouchDrag`로 바꿨다 — `playwright.config.ts`의 `devices["Pixel 5"]`가 `hasTouch: true`라 CDP 터치 디스패치가 가능하다. 좌표는 대상 행의 `boundingBox()`에서 실측해 실제 히트테스트가 성립하게 했다(합성 디스패치는 히트테스트 없이 지정한 노드에 바로 꽂혀 좌표가 임의여도 됐지만, 실제 터치는 화면 좌표가 맞아야 한다). 3회 반복 실행으로 안정성을 확인했다.
+
+번들 재확인: 수정 라운드 이후 실측 502,829바이트(491.0KB, gzip 청크 38개, 최대 청크 73,292바이트) — revision 6이 받아들인 502,710바이트(490.9KB) 대비 119바이트(0.02%)만 늘었다. `notification-row.tsx`의 래퍼 `<div>` 하나, `pull-state.ts`의 `resolvePullCancel` 순수 함수 몇 줄, `PullToRefresh.tsx`·`notification-row.tsx`의 `touch-action` 인라인 스타일이 전부라 청크 수·구성에 실질적 변화가 없다. `pnpm gate:bundle` GREEN(500KB 상한 대비 여유 약 9.0KB) — 눈에 띄는 증가가 아니라 멈추지 않았다.

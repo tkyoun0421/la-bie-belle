@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { CSSProperties } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { NotificationRow } from "@/shared/ui/notification-row";
@@ -152,5 +153,48 @@ describe("NotificationRow", () => {
 
     expect(onSwipeRead).not.toHaveBeenCalled();
     expect(onPress).toHaveBeenCalledOnce();
+  });
+
+  it("순차 등장 className·style은 스와이프 transform을 담는 버튼이 아니라 바깥 요소에 붙는다", () => {
+    const { container } = render(
+      <NotificationRow
+        title="근무 배정이 확정됐어요"
+        body="8월 3일 플로어 근무가 확정됐어요"
+        relativeTime="3시간 전"
+        unread={false}
+        onPress={() => {}}
+        className="motion-stagger-item"
+        style={{ "--stagger-index": 2 } as CSSProperties}
+      />,
+    );
+
+    const button = screen.getByRole("button");
+    expect(button).not.toHaveClass("motion-stagger-item");
+    expect(button.style.getPropertyValue("--stagger-index")).toBe("");
+
+    const wrapper = container.firstElementChild;
+    expect(wrapper).not.toBe(button);
+    expect(wrapper).toHaveClass("motion-stagger-item");
+    expect(wrapper?.getAttribute("style")).toContain("--stagger-index: 2");
+  });
+
+  it("스와이프 중에도 버튼의 인라인 transform이 바깥 요소의 애니메이션과 무관하게 오프셋을 반영한다", () => {
+    render(
+      <NotificationRow
+        title="근무 배정이 확정됐어요"
+        body="8월 3일 플로어 근무가 확정됐어요"
+        relativeTime="3시간 전"
+        unread
+        onPress={() => {}}
+        onSwipeRead={() => {}}
+        className="motion-stagger-item"
+      />,
+    );
+
+    const button = screen.getByRole("button");
+    fireEvent.pointerDown(button, { clientX: 0, clientY: 0 });
+    fireEvent.pointerMove(button, { clientX: 40, clientY: 0 });
+
+    expect(button.style.transform).toBe("translateX(40px)");
   });
 });

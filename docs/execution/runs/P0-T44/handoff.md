@@ -75,7 +75,7 @@
 - 기술 인수 조건 1~6, 8을 완료했다. 상세 구현 내용과 근거는 `docs/execution/runs/P0-T44/radio.md`가 소유한다.
 - `harness/lib/motion-render-budget.ts`(측정·판정, 워밍업 2회+표본 5회 중앙값으로 노이즈를 줄인 방식)와 `harness/gates/motion-render-budget.ts`(진입점)를 작성하고 `package.json`의 `verify` 체인(`test:e2e` 뒤, `gate:all` 앞)과 `gate:motion-render-budget` 단독 스크립트에 배선했다. 직접 실행(`pnpm gate:motion-render-budget`)과 `pnpm harness:typecheck`로 GREEN을 확인했다 — 로컬 실측은 전체 모션/reduced-motion 차이 1ms 미만(상한 16ms).
 - `tests/e2e/swipe-refresh.spec.ts` 4건(스와이프 커밋/복귀, 세로 드래그의 가로 추적 미시작, 당겨서 새로고침의 실제 서버 데이터 반영, 브라우저 기본 pull-refresh 비활성)을 작성해 3회 반복 실행으로 안정성을 확인했다. `tests/e2e/support/work-date-band.ts`에 겹치지 않는 `swipeRefresh` 대역을 새로 잡았다.
-- `docs/execution/runs/P0-T44/tdd.json`에 이번 세션 실행분(`useReducedMotion`·`globals.css` 순차등장/overscroll)의 RED→GREEN을 실제 명령 실행(구현을 임시로 되돌려 RED를 재현하고 복원해 GREEN을 다시 확인)으로 채웠다. 총 18개 RED→GREEN 쌍.
+- `docs/execution/runs/P0-T44/tdd.json`에 이번 세션 실행분(`useReducedMotion`·`globals.css` 순차등장/overscroll)의 RED→GREEN을 실제 명령 실행(구현을 임시로 되돌려 RED를 재현하고 복원해 GREEN을 다시 확인)으로 채웠다. 총 11개 RED→GREEN 쌍.
 - 세 문서(`docs/execution/runs/P0-T44/radio.md`, `docs/standards/adr/0015-motion-library-scope.md` 결정 3, `docs/execution/phases/00-foundation.md`)에 최종 실측 490.9KB(502,710바이트)를 기록했다.
 - **막힌 지점:** RADIO revision 1~6의 「변경 허용 경로」가 `harness/tests/**`를 적었는데 저장소의 실제 하네스 테스트 디렉터리는 `harness/self-test/`다(`harness/self-test/run.ts`가 자기 디렉터리만 훑는다). `matchesAnyGlob`이 리터럴 매칭이라 `harness/tests/**`는 `harness/self-test/...`에 매치되지 않아 `gate:scope`가 새 self-test 파일 스테이징을 막는다. 같은 오타가 P0-T43 RADIO revision 2에도 있었고 revision 3에서 바로잡힌 전례가 있다(`docs/execution/runs/P0-T43/radio.md`의 「RADIO와 어긋났던 경로」) — 이번 RADIO가 그 이전 표기를 물려받은 것으로 보인다. `motion-render-budget`의 순수 판정 함수(`evaluateRenderBudget`)에 대한 회귀 테스트를 `harness/self-test/`에 넣지 못해 인수 조건 7이 완결되지 못했다.
 - 이번 세션에서 만든 모든 코드·문서는 아직 커밋하지 않았다(재봉인 문서 3개를 먼저 독립 커밋하라는 이전 지시는 이미 완료된 revision 5 재봉인 커밋 `c0d84d0`에서 마쳤고, 그 이후 작업물은 이번 handoff까지 전부 미커밋 상태다).
@@ -93,7 +93,7 @@
 ### 증거·산출물 경로
 
 - `docs/execution/runs/P0-T44/radio.md` (이번 세션 구현 상세 전부)
-- `docs/execution/runs/P0-T44/tdd.json` (18개 RED→GREEN 쌍)
+- `docs/execution/runs/P0-T44/tdd.json` (11개 RED→GREEN 쌍)
 - `tests/e2e/swipe-refresh.spec.ts`, `tests/e2e/support/work-date-band.ts`
 - `harness/lib/motion-render-budget.ts`, `harness/gates/motion-render-budget.ts`
 - `docs/standards/adr/0015-motion-library-scope.md`, `docs/execution/phases/00-foundation.md` (최종 실측 기록)
@@ -129,7 +129,41 @@
 
 ### 증거·산출물 경로
 
-- 구현 커밋(이 handoff를 포함) — 기준 커밋 `627af245cdaaa4f442782f646660d0e9f2082c74` 대비 전체 diff
-- `docs/execution/runs/P0-T44/radio.md`, `docs/execution/runs/P0-T44/tdd.json`(19개 RED→GREEN 쌍)
+- 구현 커밋 `1b3a6198f5956d1d493dcb665fadf2b7300b029c` — 기준 커밋 `627af245cdaaa4f442782f646660d0e9f2082c74` 대비 전체 diff
+- `docs/execution/runs/P0-T44/radio.md`, `docs/execution/runs/P0-T44/tdd.json`(11개 RED→GREEN 쌍)
 - `docs/standards/adr/0015-motion-library-scope.md`, `docs/execution/phases/00-foundation.md`(최종 실측 기록)
 - `tests/e2e/swipe-refresh.spec.ts`, `harness/lib/motion-render-budget.ts`, `harness/gates/motion-render-budget.ts`, `harness/self-test/motion-render-budget.test.ts`
+
+## 2026-08-10 · 교차 검증 수정 라운드
+
+- 작업 식별자: P0-T44 (화면별 인터랙션 효과)
+- 현재 단계: 수정 라운드 완료 → 다음 재검증(교차 리뷰)
+- 기준 커밋: `1b3a6198f5956d1d493dcb665fadf2b7300b029c`(리뷰 대상 diff의 시작점 — 직전 구현 커밋, 이 수정 커밋의 부모)
+
+### 확정된 사실
+
+- `docs/execution/reviews/P0-T44-review.json`(opus·codex 합의, 확정 발견 13건 · 총점 82)를 근거로, 사용자가 수정 라운드 범위를 high 3건(F-01·F-02·F-03)과 그 원인이 된 테스트 공백 2건(F-04·F-10)으로 정했다. 나머지 8건(F-05·F-06·F-07·F-08·F-09·F-11·F-12·F-13)은 코디네이터가 `docs/execution/reviews/backlog.md`로 옮겼다 — 이번 라운드에서 손대지 않았다.
+- F-01(high): `src/shared/ui/notification-row.tsx`에서 순차 등장 애니메이션이 스와이프 인라인 `transform`을 덮던 문제를, 애니메이션 요소(바깥 `<div>`)와 스와이프 이동 요소(안쪽 `<button>`)를 분리해 고쳤다.
+- F-02(high): `harness/lib/motion-render-budget.ts`가 합성 3항목 HTML만 재던 것을, `tests/e2e/motion-render-budget.spec.ts`로 옮겨 실제 `/notifications` 화면이 그린 진짜 마크업으로 측정하게 했다. `harness/gates/motion-render-budget.ts`(구 진입점)는 삭제했고 `gate:motion-render-budget` 스크립트는 이제 그 e2e spec을 직접 호출한다.
+- F-03(high): `PullToRefresh.tsx`·`notification-row.tsx`에 `touch-action: pan-y`를 추가하고, `pull-state.ts`에 `resolvePullCancel`을 새로 만들어 `pointercancel`이 더 이상 '놓음'(`resolvePullRelease`)과 같은 경로를 타지 않게 했다 — 임계값을 넘긴 채 취소되면 항상 `idle`로 돌아간다.
+- F-04(medium): `PayView.test.tsx`·`NotificationsView.test.tsx`·`ScheduleDetailView.test.tsx`에 `motion-stagger-item` 클래스·`--stagger-index` 부여를 확인하는 컴포넌트 단언을 각 화면마다 추가했다 — 이 공백이 F-01을 실제로 놓친 경로였다.
+- F-10(medium): `tests/e2e/swipe-refresh.spec.ts`의 신뢰되지 않은 합성 `PointerEvent` 디스패치를 CDP `Input.dispatchTouchEvent` 기반 실제 터치 디스패치(`dispatchRealTouchDrag`)로 바꿔 `touch-action` 중재·네이티브 `pointercancel`이 실제로 걸리게 했다.
+- `docs/execution/runs/P0-T44/tdd.json`에 이번 라운드 5쌍(F-01·F-03·F-04·F-02·F-10, 실제 명령 실행 RED→GREEN)을 추가해 총 16개 쌍이 됐다. 이전 handoff가 78행에 "18개", 133행에 "19개"로 잘못 적었던 것(실제는 11개)도 이번에 바로잡았다.
+- 번들 재확인: 491.0KB(502,829바이트, gzip 청크 38개) — revision 6이 받아들인 490.9KB(502,710바이트) 대비 119바이트(0.02%)만 늘었다. 500KB 상한 대비 여유는 그대로 약 9.0KB다. `docs/execution/runs/P0-T44/radio.md`·`docs/standards/adr/0015-motion-library-scope.md` 결정 3·`docs/execution/phases/00-foundation.md` 세 문서를 갱신했다.
+- `pnpm verify` 전체(format·lint·typecheck·unit·harness typecheck·harness self-test 321건·check:docs·build·gate:bundle·check:app-build·check:client-secret-scan·e2e·gate:motion-render-budget·gate:all)를 재실행해 GREEN을 확인했다.
+
+### 미결 사항
+
+- 없음. backlog로 옮긴 8건(F-05·F-06·F-07·F-08·F-09·F-11·F-12·F-13)은 이 task의 후속 작업이 아니다.
+
+### 다음 행동
+
+1. 재교차 검증 — 기준 커밋(`1b3a6198f5956d1d493dcb665fadf2b7300b029c`) 대비 diff만 대상으로 한다.
+
+### 증거·산출물 경로
+
+- 수정 커밋 — 기준 커밋 `1b3a6198f5956d1d493dcb665fadf2b7300b029c` 대비 전체 diff
+- `docs/execution/runs/P0-T44/radio.md` 「수정 라운드(교차 검증 이후)」
+- `docs/execution/runs/P0-T44/tdd.json`(16개 RED→GREEN 쌍)
+- `docs/standards/adr/0015-motion-library-scope.md`, `docs/execution/phases/00-foundation.md`(갱신된 최종 실측)
+- `tests/e2e/swipe-refresh.spec.ts`, `tests/e2e/motion-render-budget.spec.ts`, `harness/lib/motion-render-budget.ts`

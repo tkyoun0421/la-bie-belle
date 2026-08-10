@@ -79,4 +79,15 @@ describe("ScheduleDetailView", () => {
 
     expect(screen.getByRole("button", { name: "근무 변경 요청" })).toBeDisabled();
   });
+
+  it("전체 배정표의 각 행에 순차 등장 클래스와 표시 순서대로 stagger-index를 부여한다", () => {
+    render(<ScheduleDetailView confirmation={GENERAL_CONFIRMATION} />);
+
+    const rows = ["나", "김민준", "이서연"].map((name) => screen.getByText(name).closest("li")!);
+
+    rows.forEach((row, index) => {
+      expect(row).toHaveClass("motion-stagger-item");
+      expect(row.getAttribute("style")).toContain(`--stagger-index: ${index}`);
+    });
+  });
 });

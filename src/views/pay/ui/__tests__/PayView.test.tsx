@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { MotionProvider } from "@/shared/ui/motion-provider";
 import { SnackbarProvider } from "@/shared/ui/snackbar";
 import { PayView } from "@/views/pay/ui/PayView";
-import { PAY_EMPTY_MONTH, PAY_WITH_ITEMS } from "@/views/pay/ui/pay.mock";
+import { PAY_EMPTY_MONTH, PAY_WITH_HEAVY_REHEARSAL, PAY_WITH_ITEMS } from "@/views/pay/ui/pay.mock";
 
 if (!Element.prototype.hasPointerCapture) {
   Element.prototype.hasPointerCapture = () => false;
@@ -80,6 +80,34 @@ describe("PayView", () => {
     renderPay(PAY_EMPTY_MONTH);
 
     expect(screen.getByText("이번 달 내역이 아직 없어요")).toBeInTheDocument();
+  });
+
+  it("빈 달은 날짜별 내역에 순차 등장 항목이 없다", () => {
+    renderPay(PAY_EMPTY_MONTH);
+
+    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+  });
+
+  it("날짜별 내역이 1건이면 stagger-index 0을 부여한다", () => {
+    renderPay({ estimatedPay: PAY_WITH_HEAVY_REHEARSAL.estimatedPay, rehearsalEntries: [] });
+
+    const itemsSection = screen.getByText("날짜별 내역").closest("section")!;
+    const rows = within(itemsSection).getAllByRole("listitem");
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toHaveClass("motion-stagger-item");
+    expect(rows[0]).toHaveStyle({ "--stagger-index": "0" });
+  });
+
+  it("날짜별 내역이 여러 건이면 각 행에 순서대로 stagger-index를 부여한다", () => {
+    renderPay(PAY_WITH_ITEMS);
+
+    const itemsSection = screen.getByText("날짜별 내역").closest("section")!;
+    const rows = within(itemsSection).getAllByRole("listitem");
+    expect(rows.length).toBeGreaterThan(1);
+    rows.forEach((row, index) => {
+      expect(row).toHaveClass("motion-stagger-item");
+      expect(row).toHaveStyle({ "--stagger-index": String(index) });
+    });
   });
 
   it("리허설 기록 목록과 공식 기록이 아니라는 안내를 보여준다", () => {

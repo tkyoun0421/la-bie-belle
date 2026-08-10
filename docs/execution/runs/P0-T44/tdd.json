@@ -131,6 +131,66 @@
       "exit_code": 0,
       "at": "2026-08-10T14:14:18.000Z",
       "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/notification-row.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-10T15:08:04.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/notification-row.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-10T15:08:14.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/widgets/pull-to-refresh/model/__tests__/pull-state.test.ts src/widgets/pull-to-refresh/hooks/__tests__/usePullToRefresh.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T15:08:29.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/widgets/pull-to-refresh/model/__tests__/pull-state.test.ts src/widgets/pull-to-refresh/hooks/__tests__/usePullToRefresh.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T15:08:37.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm vitest run src/views/pay/ui/__tests__/PayView.test.tsx src/views/notifications/ui/__tests__/NotificationsView.test.tsx src/views/schedule-detail/ui/__tests__/ScheduleDetailView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-10T15:09:01.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm vitest run src/views/pay/ui/__tests__/PayView.test.tsx src/views/notifications/ui/__tests__/NotificationsView.test.tsx src/views/schedule-detail/ui/__tests__/ScheduleDetailView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-10T15:09:14.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/motion-render-budget.spec.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T15:09:29.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/motion-render-budget.spec.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T15:09:44.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/swipe-refresh.spec.ts -g \"임계값 넘게\"",
+      "exit_code": 1,
+      "at": "2026-08-10T15:16:09.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/swipe-refresh.spec.ts -g \"임계값 넘게\"",
+      "exit_code": 0,
+      "at": "2026-08-10T15:16:28.000Z",
+      "phase": "green"
     }
   ]
 }

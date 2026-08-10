@@ -1,4 +1,4 @@
-import type { BrowserContext, Locator, Page } from "@playwright/test";
+import type { BrowserContext, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
 import { WORK_DATE_BANDS, monthAnchorInBand } from "./support/work-date-band";
@@ -39,33 +39,23 @@ async function dragPointer(
   await page.mouse.move(to.x, to.y, { steps: 5 });
 }
 
-async function dispatchPointerDrag(
-  locator: Locator,
-  points: readonly { x: number; y: number }[],
-) {
-  await locator.evaluate((element, pts) => {
-    function firePointer(type: string, point: { x: number; y: number }) {
-      element.dispatchEvent(
-        new PointerEvent(type, {
-          bubbles: true,
-          cancelable: true,
-          pointerId: 1,
-          pointerType: "touch",
-          clientX: point.x,
-          clientY: point.y,
-        }),
-      );
-    }
-    const [first, ...rest] = pts;
-    if (first === undefined) {
-      return;
-    }
-    firePointer("pointerdown", first);
-    for (const point of rest) {
-      firePointer("pointermove", point);
-    }
-    firePointer("pointerup", rest[rest.length - 1] ?? first);
-  }, points);
+async function dispatchRealTouchDrag(page: Page, points: readonly { x: number; y: number }[]) {
+  const client = await page.context().newCDPSession(page);
+  const [first, ...rest] = points;
+  if (first === undefined) {
+    return;
+  }
+  await client.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [{ x: first.x, y: first.y }],
+  });
+  for (const point of rest) {
+    await client.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [{ x: point.x, y: point.y }],
+    });
+  }
+  await client.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
 }
 
 test.describe("스와이프와 당겨서 새로고침", () => {
@@ -81,17 +71,22 @@ test.describe("스와이프와 당겨서 새로고침", () => {
     const unreadRow = page.getByRole("button", { name: /근무 배정이 확정됐어요/ });
     await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(1);
 
-    await dispatchPointerDrag(unreadRow, [
-      { x: 100, y: 100 },
-      { x: 80, y: 100 },
-      { x: 60, y: 100 },
+    const box = await unreadRow.boundingBox();
+    expect(box, "행의 화면 좌표를 찾지 못했습니다").not.toBeNull();
+    const y = box!.y + box!.height / 2;
+    const startX = box!.x + box!.width - 20;
+
+    await dispatchRealTouchDrag(page, [
+      { x: startX, y },
+      { x: startX - 20, y },
+      { x: startX - 40, y },
     ]);
     await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(1);
 
-    await dispatchPointerDrag(unreadRow, [
-      { x: 100, y: 100 },
-      { x: 40, y: 100 },
-      { x: -50, y: 100 },
+    await dispatchRealTouchDrag(page, [
+      { x: startX, y },
+      { x: startX - 60, y },
+      { x: startX - 150, y },
     ]);
     await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(0);
 
@@ -109,10 +104,15 @@ test.describe("스와이프와 당겨서 새로고침", () => {
     await page.goto("/notifications");
     const unreadRow = page.getByRole("button", { name: /근무 배정이 확정됐어요/ });
 
-    await dispatchPointerDrag(unreadRow, [
-      { x: 100, y: 100 },
-      { x: 101, y: 130 },
-      { x: 102, y: 160 },
+    const box = await unreadRow.boundingBox();
+    expect(box, "행의 화면 좌표를 찾지 못했습니다").not.toBeNull();
+    const x = box!.x + box!.width / 2;
+    const startY = box!.y + box!.height / 2;
+
+    await dispatchRealTouchDrag(page, [
+      { x, y: startY },
+      { x: x + 1, y: startY + 30 },
+      { x: x + 2, y: startY + 60 },
     ]);
 
     await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(1);

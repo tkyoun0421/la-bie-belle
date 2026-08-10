@@ -24,7 +24,7 @@ export function PullToRefresh({ onRefresh, isOnline, children }: PullToRefreshPr
   const pullDistance = phase === "idle" ? 0 : Math.min(distance, INDICATOR_HEIGHT);
 
   return (
-    <div {...handlers} className="relative overflow-hidden">
+    <div {...handlers} className="relative overflow-hidden" style={{ touchAction: "pan-y" }}>
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 flex justify-center pt-2 opacity-0 transition-[transform,opacity] duration-[var(--duration-feedback)] ease-[var(--ease-spring)]"

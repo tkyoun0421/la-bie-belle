@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type PointerEvent } from "react";
 
 import {
   PULL_IDLE_STATE,
+  resolvePullCancel,
   resolvePullComplete,
   resolvePullMove,
   resolvePullRelease,
@@ -86,7 +87,7 @@ export function usePullToRefresh({
     updateState((previous) => resolvePullMove(previous, distance, threshold));
   }
 
-  function handlePointerEnd() {
+  function handlePointerUp() {
     if (startYRef.current === null) {
       return;
     }
@@ -101,14 +102,22 @@ export function usePullToRefresh({
     updateState(() => released);
   }
 
+  function handlePointerCancel() {
+    if (startYRef.current === null) {
+      return;
+    }
+    startYRef.current = null;
+    updateState((previous) => resolvePullCancel(previous));
+  }
+
   return {
     phase: state.phase,
     distance: state.distance,
     handlers: {
       onPointerDown: handlePointerDown,
       onPointerMove: handlePointerMove,
-      onPointerUp: handlePointerEnd,
-      onPointerCancel: handlePointerEnd,
+      onPointerUp: handlePointerUp,
+      onPointerCancel: handlePointerCancel,
     },
   };
 }

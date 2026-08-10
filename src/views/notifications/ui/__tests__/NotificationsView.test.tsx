@@ -58,4 +58,26 @@ describe("NotificationsView", () => {
 
     expect(screen.getByText("아직 알림이 없어요")).toBeInTheDocument();
   });
+
+  it("빈 상태는 순차 등장 항목이 없다", () => {
+    const { container } = render(
+      <NotificationsView {...NOTIFICATIONS_EMPTY} onNavigate={() => {}} />,
+    );
+
+    expect(container.querySelectorAll(".motion-stagger-item")).toHaveLength(0);
+  });
+
+  it("항목마다 순차 등장 클래스와 표시 순서대로 stagger-index를 부여한다", () => {
+    render(<NotificationsView {...NOTIFICATIONS_MIXED} onNavigate={() => {}} />);
+
+    const rows = screen.getAllByRole("button").filter((button) => button !== null);
+    const staggerWrappers = rows
+      .map((button) => button.closest(".motion-stagger-item"))
+      .filter((wrapper): wrapper is HTMLElement => wrapper !== null);
+
+    expect(staggerWrappers).toHaveLength(3);
+    staggerWrappers.forEach((wrapper, index) => {
+      expect(wrapper.getAttribute("style")).toContain(`--stagger-index: ${index}`);
+    });
+  });
 });

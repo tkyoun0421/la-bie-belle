@@ -34,3 +34,10 @@ export function resolvePullRelease(state: PullTrackState): PullTrackState {
 export function resolvePullComplete(): PullTrackState {
   return PULL_IDLE_STATE;
 }
+
+export function resolvePullCancel(state: PullTrackState): PullTrackState {
+  if (state.phase === "refreshing") {
+    return state;
+  }
+  return PULL_IDLE_STATE;
+}

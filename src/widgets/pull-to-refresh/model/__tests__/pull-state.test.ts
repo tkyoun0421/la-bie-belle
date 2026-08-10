@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   PULL_IDLE_STATE,
+  resolvePullCancel,
   resolvePullComplete,
   resolvePullMove,
   resolvePullRelease,
@@ -47,5 +48,20 @@ describe("pull-state", () => {
 
   it("완료되면 idle로 돌아간다", () => {
     expect(resolvePullComplete()).toEqual(PULL_IDLE_STATE);
+  });
+
+  it("ready 상태에서 취소되면 refreshing으로 넘어가지 않고 idle로 돌아간다", () => {
+    const ready = resolvePullMove(PULL_IDLE_STATE, 80, THRESHOLD);
+    expect(resolvePullCancel(ready)).toEqual(PULL_IDLE_STATE);
+  });
+
+  it("pulling 상태에서 취소되면 idle로 돌아간다", () => {
+    const pulling = resolvePullMove(PULL_IDLE_STATE, 30, THRESHOLD);
+    expect(resolvePullCancel(pulling)).toEqual(PULL_IDLE_STATE);
+  });
+
+  it("refreshing 중에 취소돼도 진행 중인 새로고침은 그대로 유지한다", () => {
+    const refreshing = { phase: "refreshing" as const, distance: 80 };
+    expect(resolvePullCancel(refreshing)).toBe(refreshing);
   });
 });

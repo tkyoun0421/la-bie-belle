@@ -113,6 +113,28 @@ describe("usePullToRefresh", () => {
     expect(onRefresh).toHaveBeenCalledOnce();
   });
 
+  it("임계값을 넘긴 채 취소되면(pointercancel) 새로고침을 실행하지 않고 idle로 돌아간다", () => {
+    const onRefresh = vi.fn();
+    const { result } = renderHook(() =>
+      usePullToRefresh({ onRefresh, isOnline: true, threshold: THRESHOLD }),
+    );
+
+    act(() => {
+      result.current.handlers.onPointerDown(pointerEvent(0));
+    });
+    act(() => {
+      result.current.handlers.onPointerMove(pointerEvent(200));
+    });
+    expect(result.current.phase).toBe("ready");
+
+    act(() => {
+      result.current.handlers.onPointerCancel();
+    });
+
+    expect(result.current.phase).toBe("idle");
+    expect(onRefresh).not.toHaveBeenCalled();
+  });
+
   it("실행 중 재당김은 두 번째 실행을 만들지 않는다", async () => {
     let resolveRefresh: () => void = () => {};
     const onRefresh = vi.fn().mockImplementation(
