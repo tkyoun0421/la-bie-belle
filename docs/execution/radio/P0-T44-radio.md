@@ -1,7 +1,7 @@
 # P0-T44 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 2
+- revision: 3
 - 기획 승인: user, 2026-08-09
 - 개발 설계 승인: user, 2026-08-10
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 3 | 2026-08-10 | 당겨서 새로고침의 대상 화면과 변경 허용 경로가 어긋난 것을 바로잡는다. 범위 ④와 기술 인수 조건 4는 대상을 홈·일정·알림·예상급여 넷으로 적었는데, 허용 경로와 Architecture는 예상급여·알림·확정 배정 상세만 열었다 — 뒤쪽 셋은 기술 인수 조건 2(순차 등장)의 대상 목록이고, 허용 경로를 그 목록에서 뽑으면서 인수 조건 4의 화면이 빠졌다. 좁은 쪽에 맞추면 새로고침이 mock 상수를 다시 그리는 두 화면에만 붙어 사용자 눈에 아무 변화가 없다 — 홈(`findImminentRecruitment`)과 일정(`listRecruitmentSchedules`·`listOwnApplications`)만 서버 데이터를 쓴다. 인수 조건 4를 그대로 두고 허용 경로에 `src/views/home/**`·`src/views/schedule/**`를 더한다. 홈만 server component라 `router.refresh()`를 부를 클라이언트 경계를 `widgets/pull-to-refresh` 안의 얇은 어댑터로 두어 네 화면이 같은 방식으로 쓴다. 2026-08-10 사용자 결정. |
 | 2 | 2026-08-10 | 번들 상한을 450KB로 고친다. revision 1은 상한을 380KB에서 400KB로 올린다고 적었으나 그 계산이 선 기준선 367KB가 낡은 값이었다 — P0-T43이 개발 중 실측으로 이를 확인하고 상한을 이미 420KB로 올렸다(P0-T43 revision 3). 착수 직전 실측은 406.5KB라 revision 1대로 상한을 400KB로 내리면 코드를 쓰기 전에 `pnpm verify`가 실패하고, 현재 상한 420KB를 유지해도 `motion` 27KB를 더한 약 433KB가 넘어선다. ADR-0015와 `00-foundation.md`가 이미 "상한을 다시 올리는 일은 P0-T44가 개발 시점 실측 위에서 정한다"고 위임해 둔 자리를 이 개정이 채운다. 2026-08-10 사용자 결정. |
 | 1 | 2026-08-10 | 최초 작성. 설계 인터뷰 확정 5건 — `motion`을 `LazyMotion` 범위로 도입하고 번들 상한을 400KB로 올리며([ADR-0015](../../standards/adr/0015-motion-library-scope.md)), 순차 등장 대상을 실재하는 목록 셋으로 좁히고, mock 화면 위에 제스처 UI를 지금 세우며, 렌더 시간은 reduced-motion 켠/끈 두 측정의 차이로 판정한다. 조사에서 `motion` 13.0.0의 진입점별 gzip을 실측(mini 3KB / LazyMotion 27KB / 전체 42KB)했고, 일정 탭이 목록이 아니라 `<Calendar>` 하나이며 알림·예상급여가 아직 mock 데이터로 렌더되고 TanStack Query가 없어 새로고침 수단이 `router.refresh()`뿐임을 확인했다. |
 
@@ -83,6 +84,8 @@
 - `src/widgets/pull-to-refresh/model/pull-state.ts`: 당김 거리를 대기·당기는 중·임계값 초과·실행 중 상태로 바꾸는 순수 함수.
 - `src/widgets/pull-to-refresh/hooks/usePullToRefresh.ts`: 포인터 추적과 실행 1회 보장.
 - `src/widgets/pull-to-refresh/ui/PullToRefresh.tsx`: 표시. 실행 함수는 prop으로 받는다.
+- `src/widgets/pull-to-refresh/ui/RouterPullToRefresh.tsx`: `"use client"` 어댑터. `useRouter().refresh()`를 위 컴포넌트의 `onRefresh`로 넘기고 children을 그대로 감싼다. server component인 홈이 함수 prop 없이 쓸 수 있고, P4에서 서버 재조회로 갈아끼울 때 이 파일 하나만 바뀐다.
+- `src/views/{home,schedule}/ui/*`: 당겨서 새로고침 블록 배치. 화면 내용과 데이터 흐름은 건드리지 않는다. 일정·알림·예상급여는 이미 `"use client"`이고 홈만 server component라 어댑터로 감싼다.
 - `src/views/{pay,notifications,schedule-detail}/ui/*`: 순차 등장 클래스와 `--stagger-index` 부여, 위 블록 배치.
 - `src/app/globals.css`: 순차 등장 keyframes와 `overscroll-behavior-y: contain`.
 - `harness/gates/`: 렌더 시간 게이트 1종. 번들 게이트는 P0-T43이 만든 것의 상한 숫자만 바꾼다.
@@ -94,7 +97,7 @@
 ## Interface
 
 - `NotificationRow`에 `onSwipeRead?: () => void`가 추가된다. 넘기지 않으면 스와이프가 비활성이며 기존 사용처가 깨지지 않는다.
-- `PullToRefresh`는 `onRefresh: () => Promise<void> | void`를 받는다. 지금은 `router.refresh()`를 넘기고 P4에서 서버 재조회로 바꾼다.
+- `PullToRefresh`는 `onRefresh: () => Promise<void> | void`를 받는다. 호출부는 `RouterPullToRefresh`이며 지금은 `router.refresh()`를 넘기고 P4에서 서버 재조회로 바꾼다. 화면은 어댑터만 쓰고 `onRefresh`를 직접 넘기지 않는다.
 - `AnimatedAmount`는 `value: number`와 `animate: boolean`을 받는다. 포맷 함수는 호출부가 넘긴다.
 - spring 상수는 프로바이더의 컨텍스트로만 흐른다. 개별 컴포넌트가 `getComputedStyle`을 다시 부르지 않는다.
 - 렌더 시간 게이트는 `pnpm verify` 체인의 e2e 뒤 단계로 노출되고 단독 실행도 가능하다.
@@ -123,6 +126,8 @@ src/widgets/pull-to-refresh/**
 src/views/pay/**
 src/views/notifications/**
 src/views/schedule-detail/**
+src/views/home/**
+src/views/schedule/**
 harness/gates/**
 harness/lib/**
 harness/tests/**
@@ -136,7 +141,7 @@ docs/execution/phases/00-foundation.md
 docs/execution/phases/index.jsonl
 ```
 
-- 용도 한정: `src/app/(protected)/layout.tsx`는 프로바이더 배치에 한정하며 인증 흐름과 라우팅을 수정하지 않는다. `src/shared/ui/**`는 새 모션 컴포넌트 추가와 `notification-row`의 prop 확장에 한정한다. `src/views/{pay,notifications,schedule-detail}/**`는 순차 등장 부여와 블록 배치에 한정하며 화면 내용·데이터 흐름을 바꾸지 않는다. `package.json`은 `motion` 추가와 게이트 연결에 한정한다. `docs/standards/ARCHITECTURE.md`는 스택 목록에 `motion`을 넣는 수정에 한정한다.
+- 용도 한정: `src/app/(protected)/layout.tsx`는 프로바이더 배치에 한정하며 인증 흐름과 라우팅을 수정하지 않는다. `src/shared/ui/**`는 새 모션 컴포넌트 추가와 `notification-row`의 prop 확장에 한정한다. `src/views/{pay,notifications,schedule-detail}/**`는 순차 등장 부여와 블록 배치에 한정하며 화면 내용·데이터 흐름을 바꾸지 않는다. `src/views/{home,schedule}/**`는 당겨서 새로고침 블록 배치에만 쓰며 순차 등장은 넣지 않는다 — 두 화면은 목록이 아니다. `package.json`은 `motion` 추가와 게이트 연결에 한정한다. `docs/standards/ARCHITECTURE.md`는 스택 목록에 `motion`을 넣는 수정에 한정한다.
 
 ## 미결 사항
 
