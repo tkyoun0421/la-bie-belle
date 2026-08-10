@@ -13,7 +13,8 @@ export default defineConfig({
   globalSetup: "./tests/e2e/global-setup.ts",
   use: {
     baseURL: `http://localhost:${PORT}`,
-    trace: "on-first-retry",
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
     storageState: STORAGE_STATE_PATH,
   },
   projects: [{ name: "mobile", use: { ...devices["Pixel 5"] } }],

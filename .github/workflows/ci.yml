@@ -50,6 +50,15 @@ jobs:
 
       - run: pnpm verify
 
+      - name: Upload Playwright failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failures
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+
   db-verify:
     name: db-verify
     runs-on: ubuntu-latest
