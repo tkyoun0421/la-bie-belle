@@ -262,7 +262,7 @@
 - [x] [medium] [P0-T43] 적용 기록·handoff의 봉인 SHA가 어느 파일과도 불일치(radio-gate가 runs 하위를 읽지 않아 미검출) — docs/execution/runs/P0-T43/radio.md
 - [x] [medium] [P0-T43] 탐색 E2E가 실행마다 Auth 사용자·profile을 정리 없이 누적(저장소 공통 관례) — tests/e2e/tab-navigation.spec.ts
 - [ ] [low] [P0-T43] 등록 check nav-regression의 RED→GREEN 증거 부재(tdd-gate가 쌍 1개면 통과) — docs/execution/runs/P0-T43/tdd.json
-- [ ] [low] [P0-T43] index.jsonl P0-T44 행이 폐기된 400KB 상한·bundle-budget-400을 유지 — docs/execution/phases/index.jsonl
+- [x] [low] [P0-T43] index.jsonl P0-T44 행이 폐기된 400KB 상한·bundle-budget-400을 유지(RADIO revision 4·6 재봉인이 실측 위에서 500KB·bundle-budget-500으로 갱신) — docs/execution/phases/index.jsonl
 - [x] [medium] [P0-T43] 모션 e2e probe가 다이얼로그 클래스를 복사해 드리프트에 취약·이탈 애니메이션 미검증 — tests/e2e/motion.spec.ts
 - [x] [medium] [P0-T43] 시트·스낵바 동시 표시 검증이 DOM 배타성만 보고 타이밍을 안 봄 — src/shared/ui/__tests__/snackbar.test.tsx
 - [ ] [low] [P0-T43] sonner 자식 요소(`> *`)의 opacity 전이 400ms가 토큰 밖에 남음 — src/app/globals.css
@@ -277,3 +277,11 @@
 - [ ] [medium] [P3-T03] 비활성 포지션에서 전원 해제까지 22023 거부(불변 규칙은 신규 배정만 금지) — supabase/migrations/20260810000000_assignments.sql
 - [ ] [low] [P3-T03] DEFINER 함수 search_path pg_temp 미고정(P1-T04·P2-T04 계열 반복) — supabase/migrations/20260810000000_assignments.sql
 - [ ] [low] [P3-T03] 증거 문서 함수명 오기(buildAssignmentCandidateBuckets ↔ groupAssignmentCandidates) — docs/execution/runs/P3-T03/radio.md
+- [ ] [medium] [P0-T44] onRefresh 실패에 catch가 없어 unhandled rejection이 되고 사용자 안내가 없음 — src/widgets/pull-to-refresh/hooks/usePullToRefresh.ts
+- [ ] [medium] [P0-T44] setState updater 안에서 onCommit 부수효과 실행(Strict Mode 이중 호출, P4 서버 mutation 교체 시 중복) — src/shared/hooks/useSwipeAction.ts
+- [ ] [medium] [P0-T44] suppressClickRef가 뒤이은 click에서만 해제돼 터치 스와이프 후 다음 정상 탭이 삼켜짐 — src/shared/ui/notification-row.tsx
+- [ ] [medium] [P0-T44] idle에서도 transform이 남아 fixed 자손(ApplicationChangeBar)의 컨테이닝 블록이 바뀜 — src/widgets/pull-to-refresh/ui/PullToRefresh.tsx
+- [ ] [medium] [P0-T44] updateState가 setState updater 안에서 ref를 변경해 실행 1회 보장이 폐기된 렌더에 의존 — src/widgets/pull-to-refresh/hooks/usePullToRefresh.ts
+- [ ] [medium] [P0-T44] spring 상수가 TS fallback에 복제돼 봉인 불변 규칙·ADR-0015 결정 5의 SSOT 위반 — src/shared/ui/motion-provider.tsx
+- [ ] [low] [P0-T44] overscroll e2e가 CSS 선언 존재만 단언해 globals.test.ts와 중복(브라우저 동작 미검증) — tests/e2e/swipe-refresh.spec.ts
+- [ ] [low] [P0-T44] tdd.json 쌍 수와 handoff 기재 불일치, 신규 e2e·view 테스트 쌍 부재 — docs/execution/runs/P0-T44/tdd.json
