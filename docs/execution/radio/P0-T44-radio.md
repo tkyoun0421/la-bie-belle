@@ -1,7 +1,7 @@
 # P0-T44 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 6
+- revision: 7
 - 기획 승인: user, 2026-08-09
 - 개발 설계 승인: user, 2026-08-10
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 7 | 2026-08-10 | 변경 허용 경로의 `harness/tests/**`를 `harness/self-test/**`로 고친다. 저장소의 하네스 테스트 디렉터리는 `harness/self-test/`이고 `harness/tests/`는 존재하지 않는다 — `harness/self-test/run.ts`가 자기 디렉터리만 훑으므로 다른 곳에 두면 `pnpm harness:self-test`가 그 파일을 아예 실행하지 않는다. `matchesAnyGlob`이 리터럴 매칭이라 `gate:scope`가 렌더 시간 게이트의 self-test 스테이징을 막았다. P0-T43 RADIO revision 2가 같은 오타를 담았다가 revision 3에서 고친 전례가 있고(`runs/P0-T43/radio.md`의 「RADIO와 어긋났던 경로」), 이 RADIO가 그 이전 표기를 물려받았다. 실재하지 않는 경로를 실재하는 경로로 바꾸는 수정이라 범위가 넓어지지 않는다. 2026-08-10 사용자 결정. |
 | 6 | 2026-08-10 | 정지선 490KB를 950바이트 넘긴 채로 마무리를 승인한다. 구현을 마친 실측이 490.9KB(502,710바이트)로 revision 4가 세운 정지선을 950바이트 넘었으나, 승인 상한 500KB는 9.1KB 여유로 지켜지고 `pnpm gate:bundle`이 통과한다. 정지선은 "상한을 세 번째로 올려야 하는 상황을 조기에 잡는다"는 목적으로 세운 것인데 세 번째 인상이 필요 없으므로 목적은 지켜졌다 — 글자만 950바이트 어긋났다. 남은 범위가 정적 청크에 아무것도 싣지 않아 이 값이 최종값이다: 렌더 시간 게이트는 `harness/gates/`의 Node 스크립트고, `swipe-refresh-e2e`는 Playwright spec이며, 나머지는 문서 세 곳이다. 최대 청크 71.6KB는 `react-dom`이고 상위 세 청크 어디에도 `framer-motion` 문자열이 없어 `motion` 쪽에 더 줄일 자리가 없다. `motion/mini` 전환(412.8KB)은 택하지 않는다 — mini에는 `AnimatedAmount`가 쓰는 `useMotionValue`·`useSpring`·`useTransform`이 없다. 2026-08-10 사용자 결정. |
 | 5 | 2026-08-10 | `useOnlineStatus`를 `src/shared/hooks/`로 승격해 `DEV-OFFLINE` 결정이 실행 가능해지게 한다. revision 4까지의 `DEV-OFFLINE`은 "기존 `useOnlineStatus`를 쓴다"고만 적었는데, 그 훅이 `src/widgets/offline/hooks/`에 있어 같은 `widgets` 계층의 다른 슬라이스인 `widgets/pull-to-refresh`가 import할 수 없다 — `project/layer-direction`의 `SLICELESS_LAYERS`는 `app`·`shared`뿐이다. `isOnline`을 prop으로 올려도 채워줄 `RouterPullToRefresh`가 같은 슬라이스이고, 더 위로 올리면 홈이 server component라 클라이언트 훅을 부르지 못한다. 그 훅은 `navigator.onLine`을 `useSyncExternalStore`로 구독하는 범용 유틸이지 배너에 딸린 로직이 아니므로 `shared`가 옳은 자리다. 허용 경로에 `src/widgets/offline/hooks/**`(이동에 따른 삭제)와 `src/widgets/offline/ui/OfflineBanner.tsx`(import 한 줄)를 더한다. 슬라이스 안에서 `navigator.onLine`을 다시 구독하는 우회는 `DEV-SSOT-01`을 어기므로 택하지 않는다. 2026-08-10 사용자 결정. |
 | 4 | 2026-08-10 | 번들 상한을 500KB로 고친다. revision 2가 세운 450KB와 정지선 440KB는 ADR-0015의 27KB를 믿고 계산한 값인데, 그 27KB가 `motion`만 esbuild로 따로 번들해 잰 값이라 Turbopack 프로덕션 빌드에서 재현되지 않았다. `motion/react`는 `export * from 'framer-motion'`으로 77줄짜리 재수출 barrel을 통째로 다시 내보내고 Turbopack은 그 barrel을 흔들지 않는다. 프로바이더만 배치한 실측이 477.5KB(488,981바이트)로 도입 전 기준선 406.5KB 대비 71KB다. 좁은 진입점은 탈출로가 아니다 — `LazyMotion`·`domAnimation`은 index에만 있고 `motion/react-m`은 `m.*` 요소만 준다. `next.config.ts`의 `experimental.optimizePackageImports: ["motion"]`을 얹어도 바이트 단위로 같은 값이 나왔다. 대안으로 `motion/mini`를 실측(412.8KB, +6.3KB)했으나 `LazyMotion` 범위 유지를 택했다. 정지선을 두 번째로 넘기는 근거는 이 수치가 예측이 아니라 실측이고, `motion`이 인증 뒤 화면 청크에만 실리며, 되돌림이 프로바이더 제거 하나로 끝난다는 점이다. 2026-08-10 사용자 결정. |
@@ -136,7 +137,7 @@ src/views/home/**
 src/views/schedule/**
 harness/gates/**
 harness/lib/**
-harness/tests/**
+harness/self-test/**
 tests/e2e/**
 docs/standards/ARCHITECTURE.md
 docs/standards/adr/0015-motion-library-scope.md
