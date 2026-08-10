@@ -1,7 +1,10 @@
 import { listPositions } from "@/entities/position/api/list-positions";
+import { countScheduleRequirements } from "@/entities/schedule/api/count-schedule-requirements";
 import { ensureScheduleRequirementsCopied } from "@/entities/schedule/api/ensure-schedule-requirements-copied";
 import { getSchedulePrep } from "@/entities/schedule/api/get-schedule-prep";
 import { listScheduleRequirements } from "@/entities/schedule/api/list-schedule-requirements";
+import { listAssignmentCandidates } from "@/features/assignment/api/list-assignment-candidates";
+import { replacePositionAssignments } from "@/features/assignment/api/replace-position-assignments";
 import { replaceCeremonies } from "@/features/ceremony/api/replace-ceremonies";
 import { setPlannedTimes } from "@/features/ceremony/api/set-planned-times";
 import {
@@ -35,18 +38,16 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
     return <NotFoundScreen />;
   }
 
-  const [initialRequirementsResult, positionsResult] = await Promise.all([
-    listScheduleRequirements(id),
+  const [requirementCountResult, positionsResult] = await Promise.all([
+    countScheduleRequirements(id),
     listPositions(),
   ]);
 
-  let requirementsResult = initialRequirementsResult;
-
   if (
-    requirementsResult.ok &&
+    requirementCountResult.ok &&
     shouldCopyScheduleRequirements({
       status: schedulePrepResult.data.status,
-      existingRequirementRowCount: requirementsResult.data.length,
+      existingRequirementRowCount: requirementCountResult.count,
     })
   ) {
     const copyResult = await ensureScheduleRequirementsCopied(id);
@@ -54,13 +55,14 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
     if (!copyResult.ok) {
       return <ErrorScreen />;
     }
-
-    requirementsResult = await listScheduleRequirements(id);
   }
+
+  const requirementsResult = await listScheduleRequirements(id);
 
   const requirementSectionData = resolveRequirementSectionData({
     requirementsOk: requirementsResult.ok,
     requirementRows: requirementsResult.ok ? requirementsResult.data : [],
+    assignedCounts: requirementsResult.ok ? requirementsResult.assignedCounts : {},
     positionsOk: positionsResult.ok,
     positions: positionsResult.ok ? positionsResult.data : [],
   });
@@ -78,9 +80,12 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
       onUpdateCheckInRule={updateCheckInRule}
       onDeleteCheckInRule={deleteCheckInRule}
       requirementRows={requirementSectionData.requirementRows}
+      assignedCounts={requirementSectionData.assignedCounts}
       activePositions={requirementSectionData.activePositions}
       onSetRequirement={setRequirement}
       onRemoveRequirement={removeRequirement}
+      onListCandidates={listAssignmentCandidates}
+      onReplaceAssignments={replacePositionAssignments}
     />
   );
 }
