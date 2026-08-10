@@ -25,7 +25,7 @@ export function CeremonyListEditor({
       <h2 className="typo-title text-text-strong">예식 시간</h2>
       <ul className="flex flex-col gap-3">
         {ceremonyTimes.map((time, index) => (
-          <li key={index} className="flex items-end gap-2">
+          <li key={index} className="flex flex-wrap items-end gap-2">
             <Input
               label={`예식 ${index + 1}`}
               type="time"

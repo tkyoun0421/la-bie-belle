@@ -106,6 +106,11 @@ test.describe("관리자 예식 시간 편집", () => {
       await expect(page.getByLabel("예식 2")).toHaveValue("12:00");
       await expect(page.getByLabel("예식 3")).toHaveValue("13:00");
 
+      const horizontalOverflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(horizontalOverflow).toBe(0);
+
       await page.getByLabel("예식 2").fill("12:10");
       await expect(page.getByLabel("예식 1")).toHaveValue("11:00");
       await expect(page.getByLabel("예식 2")).toHaveValue("12:10");

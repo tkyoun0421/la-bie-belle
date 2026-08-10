@@ -28,7 +28,7 @@ function CheckInRuleRow({
   const [recommendedCheckIn, setRecommendedCheckIn] = useState(rule.recommendedCheckIn);
 
   return (
-    <li className="flex items-end gap-2">
+    <li className="flex flex-wrap items-end gap-2">
       <Input label="첫 예식" type="time" value={rule.firstCeremonyAt} disabled />
       <Input
         label="추천 출근"
@@ -80,7 +80,7 @@ export function CheckInRuleEditor({
           />
         ))}
       </ul>
-      <div className="flex items-end gap-2">
+      <div className="flex flex-wrap items-end gap-2">
         <Input
           label="첫 예식"
           type="time"

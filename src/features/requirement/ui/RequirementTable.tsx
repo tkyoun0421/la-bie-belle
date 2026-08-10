@@ -22,7 +22,7 @@ export function RequirementTable({
   return (
     <ul className="flex flex-col gap-3">
       {rows.map((row) => (
-        <li key={row.positionId} className="flex items-end gap-2">
+        <li key={row.positionId} className="flex flex-wrap items-end gap-2">
           <Input
             label={row.positionName}
             type="number"

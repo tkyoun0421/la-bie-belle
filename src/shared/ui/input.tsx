@@ -25,7 +25,7 @@ export function Input({
   const description = error ?? disabledReason ?? helperText;
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex min-w-0 flex-col gap-1.5">
       <label htmlFor={inputId} className="typo-label text-text">
         {label}
       </label>
