@@ -1,7 +1,7 @@
 # P0-T44 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 7
+- revision: 8
 - 기획 승인: user, 2026-08-09
 - 개발 설계 승인: user, 2026-08-10
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 8 | 2026-08-11 | 렌더 시간 게이트의 자리를 `harness/gates/`에서 `tests/e2e/`로 옮긴 것을 반영한다. Architecture는 게이트를 `harness/gates/`의 Node 스크립트로 뒀으나, 교차 검증이 두 리뷰어 합의로 확정한 F-02(high)가 그 구현이 실제 화면을 재지 않는다는 것이었다 — 빌드된 CSS를 빈 문서에 주입하고 게이트가 스스로 만든 문자열 마크업 3개를 쟀을 뿐 React·`motion`·`NotificationsView`가 그 경로에 없었다. 기술 인수 조건 7이 "같은 화면을 reduced-motion 켜고/끄고 두 번 측정", "대상은 항목이 가장 많은 알림 목록"이라고 정했으므로 브라우저 없이는 조건을 만족할 수 없다. 수정 라운드가 측정을 `tests/e2e/motion-render-budget.spec.ts`로 옮기고 `harness/gates/motion-render-budget.ts`를 삭제했으며, 순수 판정(`evaluateRenderBudget`·`RENDER_BUDGET_MS`)과 그 self-test 5건은 `harness/lib/`·`harness/self-test/`에 그대로 남겼다. `gate:motion-render-budget`은 `pnpm verify` 체인의 e2e 뒤 단계이고 단독 실행도 가능해 인수 조건 7의 노출 요구는 그대로다. `gate:all`은 `harness/lib/gate-suite.ts`의 명시 목록을 돌므로 파일 삭제로 깨지는 집계가 없다. 이 이동은 질문으로 반환되지 않고 수정 라운드 커밋 `fb2f502`에 실렸으며 `runs/P0-T44/radio.md`에 근거가 기록됐다 — 이 개정이 봉인을 실제 배치에 맞춘다. 2026-08-11 사용자 결정. |
 | 7 | 2026-08-10 | 변경 허용 경로의 `harness/tests/**`를 `harness/self-test/**`로 고친다. 저장소의 하네스 테스트 디렉터리는 `harness/self-test/`이고 `harness/tests/`는 존재하지 않는다 — `harness/self-test/run.ts`가 자기 디렉터리만 훑으므로 다른 곳에 두면 `pnpm harness:self-test`가 그 파일을 아예 실행하지 않는다. `matchesAnyGlob`이 리터럴 매칭이라 `gate:scope`가 렌더 시간 게이트의 self-test 스테이징을 막았다. P0-T43 RADIO revision 2가 같은 오타를 담았다가 revision 3에서 고친 전례가 있고(`runs/P0-T43/radio.md`의 「RADIO와 어긋났던 경로」), 이 RADIO가 그 이전 표기를 물려받았다. 실재하지 않는 경로를 실재하는 경로로 바꾸는 수정이라 범위가 넓어지지 않는다. 2026-08-10 사용자 결정. |
 | 6 | 2026-08-10 | 정지선 490KB를 950바이트 넘긴 채로 마무리를 승인한다. 구현을 마친 실측이 490.9KB(502,710바이트)로 revision 4가 세운 정지선을 950바이트 넘었으나, 승인 상한 500KB는 9.1KB 여유로 지켜지고 `pnpm gate:bundle`이 통과한다. 정지선은 "상한을 세 번째로 올려야 하는 상황을 조기에 잡는다"는 목적으로 세운 것인데 세 번째 인상이 필요 없으므로 목적은 지켜졌다 — 글자만 950바이트 어긋났다. 남은 범위가 정적 청크에 아무것도 싣지 않아 이 값이 최종값이다: 렌더 시간 게이트는 `harness/gates/`의 Node 스크립트고, `swipe-refresh-e2e`는 Playwright spec이며, 나머지는 문서 세 곳이다. 최대 청크 71.6KB는 `react-dom`이고 상위 세 청크 어디에도 `framer-motion` 문자열이 없어 `motion` 쪽에 더 줄일 자리가 없다. `motion/mini` 전환(412.8KB)은 택하지 않는다 — mini에는 `AnimatedAmount`가 쓰는 `useMotionValue`·`useSpring`·`useTransform`이 없다. 2026-08-10 사용자 결정. |
 | 5 | 2026-08-10 | `useOnlineStatus`를 `src/shared/hooks/`로 승격해 `DEV-OFFLINE` 결정이 실행 가능해지게 한다. revision 4까지의 `DEV-OFFLINE`은 "기존 `useOnlineStatus`를 쓴다"고만 적었는데, 그 훅이 `src/widgets/offline/hooks/`에 있어 같은 `widgets` 계층의 다른 슬라이스인 `widgets/pull-to-refresh`가 import할 수 없다 — `project/layer-direction`의 `SLICELESS_LAYERS`는 `app`·`shared`뿐이다. `isOnline`을 prop으로 올려도 채워줄 `RouterPullToRefresh`가 같은 슬라이스이고, 더 위로 올리면 홈이 server component라 클라이언트 훅을 부르지 못한다. 그 훅은 `navigator.onLine`을 `useSyncExternalStore`로 구독하는 범용 유틸이지 배너에 딸린 로직이 아니므로 `shared`가 옳은 자리다. 허용 경로에 `src/widgets/offline/hooks/**`(이동에 따른 삭제)와 `src/widgets/offline/ui/OfflineBanner.tsx`(import 한 줄)를 더한다. 슬라이스 안에서 `navigator.onLine`을 다시 구독하는 우회는 `DEV-SSOT-01`을 어기므로 택하지 않는다. 2026-08-10 사용자 결정. |
@@ -93,7 +94,8 @@
 - `src/views/{home,schedule}/ui/*`: 당겨서 새로고침 블록 배치. 화면 내용과 데이터 흐름은 건드리지 않는다. 일정·알림·예상급여는 이미 `"use client"`이고 홈만 server component라 어댑터로 감싼다.
 - `src/views/{pay,notifications,schedule-detail}/ui/*`: 순차 등장 클래스와 `--stagger-index` 부여, 위 블록 배치.
 - `src/app/globals.css`: 순차 등장 keyframes와 `overscroll-behavior-y: contain`.
-- `harness/gates/`: 렌더 시간 게이트 1종. 번들 게이트는 P0-T43이 만든 것의 상한 숫자만 바꾼다.
+- `tests/e2e/motion-render-budget.spec.ts`: 렌더 시간 게이트의 측정. 실제 화면을 두 조건으로 띄워야 하므로 브라우저가 필요하다. 판정은 `harness/lib/`의 순수 함수에 위임하고 `gate:motion-render-budget`이 이 spec을 부른다.
+- `harness/lib/`: 렌더 시간 판정 순수 함수 1종. 번들 게이트는 P0-T43이 만든 것의 상한 숫자만 바꾼다.
 
 ## Data model
 
