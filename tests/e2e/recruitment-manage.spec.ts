@@ -115,7 +115,7 @@ test.describe("관리자 모집 마감 연장·재오픈", () => {
     browser,
     baseURL,
   }) => {
-    const context = await browser.newContext();
+    const context = await browser.newContext({ reducedMotion: "reduce" });
     const { admin } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 
@@ -186,7 +186,7 @@ test.describe("관리자 모집 마감 연장·재오픈", () => {
 
     await context.close();
 
-    const workerContext = await browser.newContext();
+    const workerContext = await browser.newContext({ reducedMotion: "reduce" });
     await createWorkerSession(workerContext, baseURL);
     const workerPage = await workerContext.newPage();
 
@@ -200,7 +200,7 @@ test.describe("관리자 모집 마감 연장·재오픈", () => {
   });
 
   test("비관리자는 /admin/recruitment에 접근할 수 없다", async ({ browser, baseURL }) => {
-    const context = await browser.newContext();
+    const context = await browser.newContext({ reducedMotion: "reduce" });
     await createWorkerSession(context, baseURL);
     const page = await context.newPage();
 

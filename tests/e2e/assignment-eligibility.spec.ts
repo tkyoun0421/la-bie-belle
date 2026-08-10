@@ -124,7 +124,7 @@ test.describe("배정 후보와 자격 검사", () => {
     browser,
     baseURL,
   }) => {
-    const context = await browser.newContext({ ...devices["Pixel 5"] });
+    const context = await browser.newContext({ ...devices["Pixel 5"], reducedMotion: "reduce" });
     const { admin } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 

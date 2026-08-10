@@ -86,7 +86,7 @@ test.describe("관리자 예식 시간 편집", () => {
     browser,
     baseURL,
   }) => {
-    const context = await browser.newContext();
+    const context = await browser.newContext({ reducedMotion: "reduce" });
     const { admin } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 
@@ -129,7 +129,7 @@ test.describe("관리자 예식 시간 편집", () => {
   });
 
   test("확정된 스케줄은 예식·예정 시각을 읽기 전용으로 보여준다", async ({ browser, baseURL }) => {
-    const context = await browser.newContext();
+    const context = await browser.newContext({ reducedMotion: "reduce" });
     const { admin } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 

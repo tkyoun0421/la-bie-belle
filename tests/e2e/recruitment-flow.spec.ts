@@ -123,15 +123,15 @@ test.describe("모집 운영 왕복", () => {
     browser,
     baseURL,
   }) => {
-    const adminContext = await browser.newContext();
+    const adminContext = await browser.newContext({ reducedMotion: "reduce" });
     const { admin } = await createAdminSession(adminContext, baseURL);
     const adminPage = await adminContext.newPage();
 
-    const workerAContext = await browser.newContext();
+    const workerAContext = await browser.newContext({ reducedMotion: "reduce" });
     const workerA = await createWorkerSession(workerAContext, baseURL, "a");
     const workerAPage = await workerAContext.newPage();
 
-    const workerBContext = await browser.newContext();
+    const workerBContext = await browser.newContext({ reducedMotion: "reduce" });
     const workerB = await createWorkerSession(workerBContext, baseURL, "b");
     const workerBPage = await workerBContext.newPage();
 
@@ -232,7 +232,10 @@ test.describe("모집 시간대 회귀", () => {
     browser,
     baseURL,
   }) => {
-    const adminContext = await browser.newContext({ timezoneId: "America/Los_Angeles" });
+    const adminContext = await browser.newContext({
+      timezoneId: "America/Los_Angeles",
+      reducedMotion: "reduce",
+    });
     const { admin } = await createAdminSession(adminContext, baseURL);
     const adminPage = await adminContext.newPage();
 
@@ -266,7 +269,10 @@ test.describe("모집 시간대 회귀", () => {
 
     await adminContext.close();
 
-    const workerContext = await browser.newContext({ timezoneId: "America/Los_Angeles" });
+    const workerContext = await browser.newContext({
+      timezoneId: "America/Los_Angeles",
+      reducedMotion: "reduce",
+    });
     const worker = await createWorkerSession(workerContext, baseURL, "tz");
     const workerPage = await workerContext.newPage();
 
