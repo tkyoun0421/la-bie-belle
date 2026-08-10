@@ -1,7 +1,7 @@
 # P0-T44 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 5
+- revision: 6
 - 기획 승인: user, 2026-08-09
 - 개발 설계 승인: user, 2026-08-10
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 6 | 2026-08-10 | 정지선 490KB를 950바이트 넘긴 채로 마무리를 승인한다. 구현을 마친 실측이 490.9KB(502,710바이트)로 revision 4가 세운 정지선을 950바이트 넘었으나, 승인 상한 500KB는 9.1KB 여유로 지켜지고 `pnpm gate:bundle`이 통과한다. 정지선은 "상한을 세 번째로 올려야 하는 상황을 조기에 잡는다"는 목적으로 세운 것인데 세 번째 인상이 필요 없으므로 목적은 지켜졌다 — 글자만 950바이트 어긋났다. 남은 범위가 정적 청크에 아무것도 싣지 않아 이 값이 최종값이다: 렌더 시간 게이트는 `harness/gates/`의 Node 스크립트고, `swipe-refresh-e2e`는 Playwright spec이며, 나머지는 문서 세 곳이다. 최대 청크 71.6KB는 `react-dom`이고 상위 세 청크 어디에도 `framer-motion` 문자열이 없어 `motion` 쪽에 더 줄일 자리가 없다. `motion/mini` 전환(412.8KB)은 택하지 않는다 — mini에는 `AnimatedAmount`가 쓰는 `useMotionValue`·`useSpring`·`useTransform`이 없다. 2026-08-10 사용자 결정. |
 | 5 | 2026-08-10 | `useOnlineStatus`를 `src/shared/hooks/`로 승격해 `DEV-OFFLINE` 결정이 실행 가능해지게 한다. revision 4까지의 `DEV-OFFLINE`은 "기존 `useOnlineStatus`를 쓴다"고만 적었는데, 그 훅이 `src/widgets/offline/hooks/`에 있어 같은 `widgets` 계층의 다른 슬라이스인 `widgets/pull-to-refresh`가 import할 수 없다 — `project/layer-direction`의 `SLICELESS_LAYERS`는 `app`·`shared`뿐이다. `isOnline`을 prop으로 올려도 채워줄 `RouterPullToRefresh`가 같은 슬라이스이고, 더 위로 올리면 홈이 server component라 클라이언트 훅을 부르지 못한다. 그 훅은 `navigator.onLine`을 `useSyncExternalStore`로 구독하는 범용 유틸이지 배너에 딸린 로직이 아니므로 `shared`가 옳은 자리다. 허용 경로에 `src/widgets/offline/hooks/**`(이동에 따른 삭제)와 `src/widgets/offline/ui/OfflineBanner.tsx`(import 한 줄)를 더한다. 슬라이스 안에서 `navigator.onLine`을 다시 구독하는 우회는 `DEV-SSOT-01`을 어기므로 택하지 않는다. 2026-08-10 사용자 결정. |
 | 4 | 2026-08-10 | 번들 상한을 500KB로 고친다. revision 2가 세운 450KB와 정지선 440KB는 ADR-0015의 27KB를 믿고 계산한 값인데, 그 27KB가 `motion`만 esbuild로 따로 번들해 잰 값이라 Turbopack 프로덕션 빌드에서 재현되지 않았다. `motion/react`는 `export * from 'framer-motion'`으로 77줄짜리 재수출 barrel을 통째로 다시 내보내고 Turbopack은 그 barrel을 흔들지 않는다. 프로바이더만 배치한 실측이 477.5KB(488,981바이트)로 도입 전 기준선 406.5KB 대비 71KB다. 좁은 진입점은 탈출로가 아니다 — `LazyMotion`·`domAnimation`은 index에만 있고 `motion/react-m`은 `m.*` 요소만 준다. `next.config.ts`의 `experimental.optimizePackageImports: ["motion"]`을 얹어도 바이트 단위로 같은 값이 나왔다. 대안으로 `motion/mini`를 실측(412.8KB, +6.3KB)했으나 `LazyMotion` 범위 유지를 택했다. 정지선을 두 번째로 넘기는 근거는 이 수치가 예측이 아니라 실측이고, `motion`이 인증 뒤 화면 청크에만 실리며, 되돌림이 프로바이더 제거 하나로 끝난다는 점이다. 2026-08-10 사용자 결정. |
 | 3 | 2026-08-10 | 당겨서 새로고침의 대상 화면과 변경 허용 경로가 어긋난 것을 바로잡는다. 범위 ④와 기술 인수 조건 4는 대상을 홈·일정·알림·예상급여 넷으로 적었는데, 허용 경로와 Architecture는 예상급여·알림·확정 배정 상세만 열었다 — 뒤쪽 셋은 기술 인수 조건 2(순차 등장)의 대상 목록이고, 허용 경로를 그 목록에서 뽑으면서 인수 조건 4의 화면이 빠졌다. 좁은 쪽에 맞추면 새로고침이 mock 상수를 다시 그리는 두 화면에만 붙어 사용자 눈에 아무 변화가 없다 — 홈(`findImminentRecruitment`)과 일정(`listRecruitmentSchedules`·`listOwnApplications`)만 서버 데이터를 쓴다. 인수 조건 4를 그대로 두고 허용 경로에 `src/views/home/**`·`src/views/schedule/**`를 더한다. 홈만 server component라 `router.refresh()`를 부를 클라이언트 경계를 `widgets/pull-to-refresh` 안의 얇은 어댑터로 두어 네 화면이 같은 방식으로 쓴다. 2026-08-10 사용자 결정. |
@@ -61,7 +62,7 @@
 | 7 렌더 시간 | 테스트함 — 차이 16ms 이내 | 테스트함 — 초과 시 실패 | 테스트함 — 목록이 빈 화면에서 측정이 성립 | 해당 없음 — 측정이다 | 해당 없음 — 반복 측정이 독립이다 | 해당 없음 — 순차 실행이다 |
 | 8 회귀 | 테스트함 — verify GREEN | 테스트함 — 기존 컴포넌트 테스트 통과 | 해당 없음 — 위 행이 소유 | 해당 없음 — 위 행이 소유 | 해당 없음 — 위 행이 소유 | 해당 없음 — 위 행이 소유 |
 
-- 보충 위험: P0-T43이 만든 lint 규칙은 Tailwind 클래스를 검사하므로 `m.*`가 `width`·`height`를 애니메이션해도 막지 못한다. 사용처가 네 곳뿐인 동안 리뷰가 담당하며, 늘어나면 규칙 확장을 별도 제안으로 올린다. 상한 500KB에서 프로바이더만 배치한 실측 477.5KB를 빼면 여유가 약 22KB다. 남은 구현은 CSS·순수 함수·`m.*` 호출부라 정적 청크가 크게 늘 자리가 없지만, 도입 후 합계가 490KB를 넘으면 상한을 세 번째로 올리지 말고 `motion/mini` 전환(실측 412.8KB)을 설계로 반환한다. 알림·예상급여가 아직 mock이라 P4에서 서버가 붙을 때 읽음 처리와 새로고침의 호출부가 바뀐다 — 제스처와 호출부를 분리해 그 교체가 UI를 건드리지 않게 한다.
+- 보충 위험: P0-T43이 만든 lint 규칙은 Tailwind 클래스를 검사하므로 `m.*`가 `width`·`height`를 애니메이션해도 막지 못한다. 사용처가 네 곳뿐인 동안 리뷰가 담당하며, 늘어나면 규칙 확장을 별도 제안으로 올린다. 프로바이더만 배치한 실측이 477.5KB였고 구현을 마친 실측은 490.9KB로 상한 500KB 아래에 9.1KB를 남긴다. 정지선 490KB를 넘으면 멈추고 `motion/mini` 전환(실측 412.8KB)을 설계로 반환하기로 했었고 950바이트 초과로 실제로 멈췄으나, 세 번째 상한 인상이 필요 없어 정지선의 목적이 지켜졌다는 판단으로 그대로 마무리했다(revision 6). 이 화면들에 코드를 더할 때 쓸 예산은 남은 9.1KB다. 알림·예상급여가 아직 mock이라 P4에서 서버가 붙을 때 읽음 처리와 새로고침의 호출부가 바뀐다 — 제스처와 호출부를 분리해 그 교체가 UI를 건드리지 않게 한다.
 
 ### DEV-* 적용 상태
 
@@ -107,7 +108,7 @@
 
 ## Optimizations
 
-- 진입점을 `LazyMotion`+`domAnimation`으로 제한한다. ADR-0015의 진입점별 수치(mini 3KB / LazyMotion 27KB / 전체 42KB)는 esbuild 격리 측정이라 Turbopack 빌드에서 재현되지 않는다 — 이 저장소 실측은 도입 전 406.5KB에서 477.5KB로 71KB가 늘었다. 측정 방법과 수치는 [ADR-0015](../../standards/adr/0015-motion-library-scope.md)가 소유한다.
+- 진입점을 `LazyMotion`+`domAnimation`으로 제한한다. ADR-0015의 진입점별 수치(mini 3KB / LazyMotion 27KB / 전체 42KB)는 esbuild 격리 측정이라 Turbopack 빌드에서 재현되지 않는다 — 이 저장소 실측은 도입 전 406.5KB에서 477.5KB로 71KB가 늘었고, 구현을 마친 최종 실측은 490.9KB다. 측정 방법과 수치는 [ADR-0015](../../standards/adr/0015-motion-library-scope.md)가 소유한다.
 - feature 번들을 동적 import로 지연해 첫 화면의 파싱 비용을 뺀다. 정적 청크 합계는 같으므로 게이트 수치에는 영향이 없다.
 - 순차 등장을 CSS로 처리해 항목 수만큼의 JS 애니메이션을 만들지 않는다. 목록이 길수록 이 선택의 이득이 커진다.
 - 애니메이션 대상은 `transform`과 `opacity`뿐이다. 제스처의 이동도 `transform`으로만 표현한다.
