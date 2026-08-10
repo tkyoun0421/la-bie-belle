@@ -139,6 +139,34 @@
       "at": "2026-08-10T06:54:09Z",
       "phase": "green",
       "note": "AC6: 다중 선택·변경 수 계산·저장·되돌리기 상태 관리 구현 후 9/9 PASS"
+    },
+    {
+      "command": "pnpm db:reset && pnpm db:test",
+      "exit_code": 1,
+      "at": "2026-08-10T07:46:29Z",
+      "phase": "red",
+      "note": "교차 검증 F-01·F-03: 19-assignments.test.sql에 F-05 회귀 단언 23건(72→95)을 추가한 뒤, replace_position_assignments의 기존 buggy 버전(migration 파일만 git stash로 원복)으로 실행. 9개 실패(74-76: 가능 포지션을 잃은 기존 배정자를 포함한 재저장·추가 저장이 LB023으로 오거부, 81-83: 성별 조건이 바뀐 기존 배정자 포함 재저장·추가 저장이 LB023으로 오거부, 89-90: 휴면 전환된 기존 배정자가 후보 목록에서 아예 누락, 92: 휴면 전환된 기존 배정자를 포함한 재저장이 LB023으로 오거부) — F-01·F-03 결함이 실제로 재현됨을 확인"
+    },
+    {
+      "command": "pnpm db:reset && pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-10T07:47:21Z",
+      "phase": "green",
+      "note": "교차 검증 F-01·F-03·F-04: replace_position_assignments를 added_ids만 검사하도록 재배치하고, list_position_assignment_candidates의 where 절을 활성 OR 현재 배정으로 넓히고, assignment_eligibility 헬퍼로 두 함수의 자격 판정을 통합한 뒤 재실행. 19개 파일 1010/1010 PASS(19-assignments.test.sql 95/95 포함, F-05 신규 23건 전부 GREEN)"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-10T07:48:09Z",
+      "phase": "red",
+      "note": "교차 검증 F-02: '이미 배정된 미달자는 신청 여부에 따라 신청함/신청 안 함 묶음으로 간다' 케이스 추가 후, candidate-buckets.ts는 git stash로 수정 전 버전(!eligible이면 무조건 ineligible 묶음)으로 실행 — 신규 케이스 1건 실패(3/4 PASS)"
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-10T07:48:14Z",
+      "phase": "green",
+      "note": "교차 검증 F-02: groupAssignmentCandidates 분기를 '!eligible && !currentlyAssigned'일 때만 ineligible 묶음으로 가도록 수정 후 4/4 PASS"
     }
   ]
 }

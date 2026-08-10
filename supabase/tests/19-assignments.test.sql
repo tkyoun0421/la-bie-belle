@@ -1,5 +1,5 @@
 begin;
-select plan(72);
+select plan(95);
 
 -- =====================================================================
 -- 스키마 노출: 테이블·컬럼·제약·RLS·함수 시그니처
@@ -726,6 +726,287 @@ select throws_ok(
   '23503',
   null,
   '삭제 판정: 배정에 쓰이고 있는 포지션 delete는 23503으로 차단된다(assignment_positions FK restrict)'
+);
+reset role;
+
+-- =====================================================================
+-- 교차 검증 수정 라운드 F-05: 사후 자격 회수 회귀(F-01·F-03·F-04 고정)
+-- 대상: 배정을 만든 뒤 그 사람의 자격이 사라지는 세 경로 각각에서
+-- 재저장·다른 사람 추가·본인 해제가 계속 동작하는지 고정한다.
+-- =====================================================================
+
+insert into worker_position_eligibilities (profile_id, position_id, granted_by) values
+  (
+    '19000000-0000-0000-0000-000000000004',
+    (select id from positions where name = '스캔'),
+    '19000000-0000-0000-0000-000000000001'
+  ),
+  (
+    '19000000-0000-0000-0000-000000000002',
+    (select id from positions where name = '스캔'),
+    '19000000-0000-0000-0000-000000000001'
+  );
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '스캔'),
+    array['19000000-0000-0000-0000-000000000004']::uuid[]
+  )$$,
+  'F-05 준비: M1을 스캔에 배정한다(가능 포지션 보유)'
+);
+reset role;
+
+delete from worker_position_eligibilities
+where profile_id = '19000000-0000-0000-0000-000000000004'
+  and position_id = (select id from positions where name = '스캔');
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '스캔'),
+    array['19000000-0000-0000-0000-000000000004']::uuid[]
+  )$$,
+  'F-05/1①: 가능 포지션을 잃은 M1을 포함한 같은 집합 재저장이 LB023 없이 성공한다'
+);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '스캔'),
+    array[
+      '19000000-0000-0000-0000-000000000004',
+      '19000000-0000-0000-0000-000000000002'
+    ]::uuid[]
+  )$$,
+  'F-05/1②: M1을 유지한 채 자격 있는 F1을 추가하는 저장이 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '스캔')
+  ),
+  2,
+  'F-05/1②: 스캔에 M1·F1 2명이 배정됐다'
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '스캔'),
+    array['19000000-0000-0000-0000-000000000002']::uuid[]
+  )$$,
+  'F-05/1③: 자격을 잃은 M1만 빼는 저장이 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '스캔')
+      and asg.profile_id = '19000000-0000-0000-0000-000000000004'
+  ),
+  0,
+  'F-05/1③: M1이 스캔 배정에서 실제로 제거됐다'
+);
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '스캔')
+      and asg.profile_id = '19000000-0000-0000-0000-000000000002'
+  ),
+  1,
+  'F-05/1③: F1은 스캔 배정을 유지한다'
+);
+
+insert into positions (name, default_required_count, gender_requirement, is_default, is_active)
+values ('임시성별회귀포지션', 1, 'any', true, true);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시성별회귀포지션'),
+    array['19000000-0000-0000-0000-000000000002']::uuid[]
+  )$$,
+  'F-05 준비: F1을 임시성별회귀포지션(당시 any)에 배정한다'
+);
+reset role;
+
+update positions set gender_requirement = 'male' where name = '임시성별회귀포지션';
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시성별회귀포지션'),
+    array['19000000-0000-0000-0000-000000000002']::uuid[]
+  )$$,
+  'F-05/2①: 성별 조건이 바뀌어 어긋난 F1을 포함한 같은 집합 재저장이 LB023 없이 성공한다'
+);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시성별회귀포지션'),
+    array[
+      '19000000-0000-0000-0000-000000000002',
+      '19000000-0000-0000-0000-000000000004'
+    ]::uuid[]
+  )$$,
+  'F-05/2②: F1을 유지한 채 성별이 맞는 M1을 추가하는 저장이 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '임시성별회귀포지션')
+  ),
+  2,
+  'F-05/2②: 임시성별회귀포지션에 F1·M1 2명이 배정됐다'
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시성별회귀포지션'),
+    array['19000000-0000-0000-0000-000000000004']::uuid[]
+  )$$,
+  'F-05/2③: 성별 조건이 어긋난 F1만 빼는 저장이 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '임시성별회귀포지션')
+      and asg.profile_id = '19000000-0000-0000-0000-000000000002'
+  ),
+  0,
+  'F-05/2③: F1이 임시성별회귀포지션 배정에서 실제로 제거됐다'
+);
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '임시성별회귀포지션')
+      and asg.profile_id = '19000000-0000-0000-0000-000000000004'
+  ),
+  1,
+  'F-05/2③: M1은 임시성별회귀포지션 배정을 유지한다'
+);
+
+insert into positions (name, default_required_count, gender_requirement, is_default, is_active)
+values ('임시탈퇴회귀포지션', 1, 'any', true, true);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시탈퇴회귀포지션'),
+    array['19000000-0000-0000-0000-000000000003']::uuid[]
+  )$$,
+  'F-05 준비: F2를 임시탈퇴회귀포지션에 배정한다'
+);
+select lives_ok(
+  $$select deactivate_worker('19000000-0000-0000-0000-000000000003')$$,
+  'F-05 준비: F2를 휴면으로 전환한다'
+);
+
+select is(
+  (
+    select currently_assigned from list_position_assignment_candidates(
+      (select id from schedules where work_date = '2099-09-01'),
+      (select id from positions where name = '임시탈퇴회귀포지션')
+    ) where profile_id = '19000000-0000-0000-0000-000000000003'
+  ),
+  true,
+  'F-05/3①: 휴면 전환된 F2도 후보 목록에 currently_assigned = true로 나온다'
+);
+select is(
+  (
+    select eligible from list_position_assignment_candidates(
+      (select id from schedules where work_date = '2099-09-01'),
+      (select id from positions where name = '임시탈퇴회귀포지션')
+    ) where profile_id = '19000000-0000-0000-0000-000000000003'
+  ),
+  false,
+  'F-05/3①: 휴면 전환된 F2는 eligible = false다'
+);
+select is(
+  (
+    select ineligible_reason from list_position_assignment_candidates(
+      (select id from schedules where work_date = '2099-09-01'),
+      (select id from positions where name = '임시탈퇴회귀포지션')
+    ) where profile_id = '19000000-0000-0000-0000-000000000003'
+  ),
+  null,
+  'F-05/3①: 휴면은 GENDER_MISMATCH·NOT_ELIGIBLE 어느 쪽도 아니라 ineligible_reason이 null이다'
+);
+
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시탈퇴회귀포지션'),
+    array['19000000-0000-0000-0000-000000000003']::uuid[]
+  )$$,
+  'F-05/3②: 휴면 전환된 F2를 포함한 같은 집합 재저장이 LB023 없이 성공한다'
+);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시탈퇴회귀포지션'),
+    array[]::uuid[]
+  )$$,
+  'F-05/3③: 휴면 전환된 F2만 빼는 저장(전원 해제)이 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '임시탈퇴회귀포지션')
+  ),
+  0,
+  'F-05/3③: 휴면 전환된 F2가 임시탈퇴회귀포지션 배정에서 실제로 제거됐다'
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select is(
+  (
+    select count(*)::int from list_position_assignment_candidates(
+      (select id from schedules where work_date = '2099-09-01'),
+      (select id from positions where name = '스캔')
+    ) where name = '배정대기'
+  ),
+  0,
+  'F-05/4: 배정된 적 없는 비활성(pending) 계정은 여전히 후보 목록에 없다'
 );
 reset role;
 

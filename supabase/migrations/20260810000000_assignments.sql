@@ -26,6 +26,64 @@ on assignment_positions
 for select
 using (is_admin(auth.uid()));
 
+create function assignment_eligibility(
+  target_position_id uuid, target_profile_id uuid
+) returns table (
+  eligible boolean,
+  ineligible_reason text
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  position_gender_requirement gender_requirement;
+  position_is_default boolean;
+  profile_status_value profile_status;
+  profile_gender_value gender;
+begin
+  select p.gender_requirement, p.is_default
+    into position_gender_requirement, position_is_default
+    from positions p
+    where p.id = target_position_id;
+
+  select pr.status, pr.gender
+    into profile_status_value, profile_gender_value
+    from profiles pr
+    where pr.id = target_profile_id;
+
+  if profile_status_value is distinct from 'active' then
+    return query select false, null::text;
+    return;
+  end if;
+
+  if not (
+    position_gender_requirement = 'any'
+    or position_gender_requirement::text = profile_gender_value::text
+  ) then
+    return query select false, 'GENDER_MISMATCH'::text;
+    return;
+  end if;
+
+  if not (
+    position_is_default
+    or exists (
+      select 1
+        from worker_position_eligibilities wpe
+        where wpe.profile_id = target_profile_id and wpe.position_id = target_position_id
+    )
+  ) then
+    return query select false, 'NOT_ELIGIBLE'::text;
+    return;
+  end if;
+
+  return query select true, null::text;
+end;
+$$;
+
+revoke execute on function assignment_eligibility(uuid, uuid)
+  from public, anon, authenticated, service_role;
+
 create function list_position_assignment_candidates(
   target_schedule_id uuid, target_position_id uuid
 ) returns table (
@@ -43,19 +101,12 @@ set search_path = public
 as $$
 declare
   actor_id uuid := auth.uid();
-  target_gender_requirement gender_requirement;
-  target_is_default boolean;
 begin
   if not is_admin(actor_id) then
     raise exception '관리자 권한이 필요합니다' using errcode = '42501';
   end if;
 
-  select p.gender_requirement, p.is_default
-    into target_gender_requirement, target_is_default
-    from positions p
-    where p.id = target_position_id;
-
-  if not found then
+  if not exists (select 1 from positions p where p.id = target_position_id) then
     raise exception '포지션을 찾을 수 없습니다' using errcode = '22023';
   end if;
 
@@ -90,33 +141,19 @@ begin
       ),
       array[]::text[]
     ) as other_position_names,
-    (
-      (target_gender_requirement = 'any' or target_gender_requirement::text = p.gender::text)
-      and (
-        target_is_default
-        or exists (
-          select 1
-            from worker_position_eligibilities wpe
-            where wpe.profile_id = p.id and wpe.position_id = target_position_id
-        )
-      )
-    ) as eligible,
-    case
-      when not (target_gender_requirement = 'any' or target_gender_requirement::text = p.gender::text)
-        then 'GENDER_MISMATCH'
-      when not (
-        target_is_default
-        or exists (
-          select 1
-            from worker_position_eligibilities wpe
-            where wpe.profile_id = p.id and wpe.position_id = target_position_id
-        )
-      )
-        then 'NOT_ELIGIBLE'
-      else null
-    end as ineligible_reason
+    elig.eligible,
+    elig.ineligible_reason
   from profiles p
+  cross join lateral assignment_eligibility(target_position_id, p.id) as elig
   where p.status = 'active'
+     or exists (
+       select 1
+         from assignments asg
+         join assignment_positions ap on ap.assignment_id = asg.id
+         where asg.schedule_id = target_schedule_id
+           and asg.profile_id = p.id
+           and ap.position_id = target_position_id
+     )
   order by p.name asc
   limit 1000;
 end;
@@ -137,12 +174,10 @@ declare
   actor_id uuid := auth.uid();
   target_status schedule_status;
   position_active boolean;
-  position_gender_requirement gender_requirement;
-  position_is_default boolean;
   candidate_ids uuid[];
   candidate_id uuid;
-  candidate_status profile_status;
-  candidate_gender gender;
+  candidate_eligible boolean;
+  candidate_ineligible_reason text;
   previous_ids uuid[];
   added_ids uuid[];
   removed_ids uuid[];
@@ -167,8 +202,8 @@ begin
     raise exception '확정되었거나 취소된 스케줄의 배정은 변경할 수 없습니다' using errcode = 'LB020';
   end if;
 
-  select is_active, gender_requirement, is_default
-    into position_active, position_gender_requirement, position_is_default
+  select is_active
+    into position_active
     from positions
     where id = target_position_id;
 
@@ -184,34 +219,6 @@ begin
     into candidate_ids
     from unnest(profile_ids) as x
     where x is not null;
-
-  foreach candidate_id in array candidate_ids loop
-    select status, gender into candidate_status, candidate_gender
-      from profiles
-      where id = candidate_id;
-
-    if not found or candidate_status is distinct from 'active' then
-      raise exception '활성 근무자만 배정할 수 있습니다' using errcode = 'LB023';
-    end if;
-
-    if not (
-      position_gender_requirement = 'any'
-      or position_gender_requirement::text = candidate_gender::text
-    ) then
-      raise exception '포지션 성별 조건에 맞지 않습니다' using errcode = 'LB023';
-    end if;
-
-    if not (
-      position_is_default
-      or exists (
-        select 1
-          from worker_position_eligibilities
-          where profile_id = candidate_id and position_id = target_position_id
-      )
-    ) then
-      raise exception '가능 포지션으로 등록되지 않았습니다' using errcode = 'LB023';
-    end if;
-  end loop;
 
   select coalesce(array_agg(asg.profile_id), array[]::uuid[])
     into previous_ids
@@ -232,6 +239,22 @@ begin
       except
       select unnest(candidate_ids)
     ) as diff;
+
+  foreach candidate_id in array added_ids loop
+    select elig.eligible, elig.ineligible_reason
+      into candidate_eligible, candidate_ineligible_reason
+      from assignment_eligibility(target_position_id, candidate_id) as elig;
+
+    if not candidate_eligible then
+      if candidate_ineligible_reason = 'GENDER_MISMATCH' then
+        raise exception '포지션 성별 조건에 맞지 않습니다' using errcode = 'LB023';
+      elsif candidate_ineligible_reason = 'NOT_ELIGIBLE' then
+        raise exception '가능 포지션으로 등록되지 않았습니다' using errcode = 'LB023';
+      else
+        raise exception '활성 근무자만 배정할 수 있습니다' using errcode = 'LB023';
+      end if;
+    end if;
+  end loop;
 
   added_count := coalesce(array_length(added_ids, 1), 0);
   removed_count := coalesce(array_length(removed_ids, 1), 0);

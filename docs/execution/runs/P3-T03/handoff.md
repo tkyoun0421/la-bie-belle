@@ -1,5 +1,60 @@
 # P3-T03 handoff
 
+## 2026-08-10 · 교차 검증 수정 라운드
+
+- 작업 식별자: P3-T03
+- 현재 단계: 교차 검증 수정 → 재검증
+- 기준 커밋: `d4cc999c2b11bb82976e4d00f648793ae13a5c98`(개발 단계 종료 시점 HEAD)
+
+### 처리한 결함(F-01~F-05)
+
+RADIO 27~29행의 불변 규칙("자격은 배정을 만드는 순간에만 판정한다 … 이미 저장된 행은 이후 자격
+변화와 무관하게 그대로 둔다")을 실제 구현이 세 갈래로 어긴 결함 5건을 고쳤다. 판단 근거와 각 조치의
+상세는 `docs/execution/runs/P3-T03/radio.md`의 "2026-08-10 · 교차 검증 수정 라운드(F-01~F-05)" 절에
+남겼다.
+
+- **F-01(high)**: `replace_position_assignments`가 유지되는 기존 배정까지 재검사해 자격을 잃은
+  기존 배정자가 남아 있으면 해당 포지션의 배정 변경이 영구 차단되던 결함. `previous_ids` 계산을
+  자격 검사 루프보다 앞으로 옮기고 `added_ids`(신규 추가분)만 검사하도록 재배치했다.
+- **F-02(high)**: 자격을 잃은 기존 배정자를 화면에서 해제할 UI가 없던 결함.
+  `groupAssignmentCandidates`가 `!eligible && currentlyAssigned`인 후보를 일반 묶음(신청함/신청
+  안 함)으로 보내고, `CandidateRow`가 `eligible === false`일 때 이름 아래 사유 캡션을 렌더한다.
+- **F-03(high)**: 비활성이 된 기존 배정자가 후보 목록에서 빠져 다른 사람만 바꿔 저장하면 그 배정이
+  소리 없이 삭제되던 결함. 후보 조회 `where` 절을 활성 근무자 OR 현재 이 스케줄·포지션에 배정된
+  사람으로 넓히고, 자격 판정에 활성 상태 검사를 넣어 비활성 배정자는 `eligible=false,
+  ineligible_reason=null`로 나오게 했다.
+- **F-04(medium)**: 자격 판정 로직이 후보 조회·교체 함수 두 곳에 복제돼 있던 결함(F-01·F-03의
+  구조적 원인, `DEV-SSOT-01` 위반). 내부 헬퍼 `assignment_eligibility(target_position_id,
+  target_profile_id)`를 신설해 두 함수가 모두 호출하도록 통합했다.
+- **F-05(medium)**: 사후 자격 회수 시나리오의 회귀 테스트 부재. `19-assignments.test.sql`에 pgTAP
+  23건(72→95), `candidate-buckets.test.ts`에 unit 1건을 추가했다.
+
+### 재현 기록
+
+- pgTAP(F-01·F-03): migration 파일만 수정 전 버전으로 되돌린 상태에서 새 F-05 단언을 실행해 RED
+  9건을 확인(2026-08-10T07:46:29Z) → 수정 복원 후 GREEN 95/95, 전체 19파일 1010/1010 확인
+  (2026-08-10T07:47:21Z).
+- vitest(F-02): `candidate-buckets.ts` 수정 전 버전에서 새 케이스 RED 1건 확인
+  (2026-08-10T07:48:09Z) → 수정 후 GREEN 4/4 확인(2026-08-10T07:48:14Z).
+- 두 RED 모두 실제 명령 실행(수정 파일을 `git stash`로 일시 원복)에서 얻었다. 상세 명령·exit
+  code는 `docs/execution/runs/P3-T03/tdd.json`에 이어 남겼다.
+- `pnpm verify` 전체 GREEN 재확인(format·lint·typecheck·unit·harness self-test·check:docs·build·
+  gate:bundle·check:app-build·check:client-secret-scan·E2E 49/49·gate:all) — 신규
+  `assignment-eligibility.spec.ts`를 포함해 전부 통과했다.
+
+### 미결 사항
+
+- 없음. RADIO의 기존 미결 사항 2건(확정 시점 재검사는 P3-T06, 교육생 연결은 P3-T05)은 이번
+  라운드 범위 밖이라 그대로 열어 뒀다.
+- `04-rls-default-deny.test.sql`은 `assignment_eligibility` 함수 신설과 무관해 무수정으로 남겼다
+  (사유는 `runs/P3-T03/radio.md`에 기록).
+
+### 다음 행동
+
+1. 조정자가 이번 수정 라운드를 재검증하고 `index.jsonl` 상태 전환 여부를 판단한다 — 이 세션은
+   status를 바꾸지 않았다.
+2. `ci-finisher`가 커밋을 push하고 CI를 확인한다. 이 세션은 push하지 않았다.
+
 ## 2026-08-10 · 개발 단계 종료
 
 - 작업 식별자: P3-T03

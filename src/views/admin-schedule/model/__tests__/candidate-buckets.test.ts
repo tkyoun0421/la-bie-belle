@@ -51,6 +51,34 @@ describe("groupAssignmentCandidates", () => {
     expect(result.ineligible).toEqual([ineligibleNotApplied]);
   });
 
+  it("이미 배정된 미달자는 신청 여부에 따라 신청함/신청 안 함 묶음으로 간다(F-02)", () => {
+    const assignedIneligibleApplied = candidate({
+      profileId: "p1",
+      applied: true,
+      currentlyAssigned: true,
+      eligible: false,
+      ineligibleReason: null,
+    });
+    const assignedIneligibleNotApplied = candidate({
+      profileId: "p2",
+      applied: false,
+      currentlyAssigned: true,
+      eligible: false,
+      ineligibleReason: "GENDER_MISMATCH",
+    });
+
+    const result = groupAssignmentCandidates([
+      assignedIneligibleApplied,
+      assignedIneligibleNotApplied,
+    ]);
+
+    expect(result).toEqual({
+      applied: [assignedIneligibleApplied],
+      notApplied: [assignedIneligibleNotApplied],
+      ineligible: [],
+    });
+  });
+
   it("빈 목록은 세 묶음 모두 빈 배열이다", () => {
     expect(groupAssignmentCandidates([])).toEqual({
       applied: [],

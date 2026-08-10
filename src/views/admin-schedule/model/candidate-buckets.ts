@@ -11,7 +11,7 @@ export function groupAssignmentCandidates(
   const ineligible: AssignmentCandidate[] = [];
 
   for (const candidate of candidates) {
-    if (!candidate.eligible) {
+    if (!candidate.eligible && !candidate.currentlyAssigned) {
       ineligible.push(candidate);
       continue;
     }

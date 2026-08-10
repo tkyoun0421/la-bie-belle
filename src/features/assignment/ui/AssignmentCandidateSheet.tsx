@@ -17,6 +17,7 @@ const APPLIED_HEADING = "신청함";
 const NOT_APPLIED_HEADING = "신청 안 함";
 const EMPTY_APPLIED_MESSAGE = "신청한 근무자가 없어요";
 const EMPTY_NOT_APPLIED_MESSAGE = "신청하지 않은 근무자가 없어요";
+const GENERIC_INELIGIBLE_MESSAGE = "지금은 배정 조건에 맞지 않아요";
 
 type AssignmentUndo = { count: number; execute: () => void };
 
@@ -48,6 +49,13 @@ function CandidateRow({
     <li className="flex items-center justify-between gap-2 py-2">
       <div className="flex flex-col gap-1">
         <span className="typo-body text-text-strong">{candidate.name}</span>
+        {candidate.eligible === false ? (
+          <span className="typo-caption text-text">
+            {candidate.ineligibleReason
+              ? assignmentIneligibleReasonLabel(candidate.ineligibleReason)
+              : GENERIC_INELIGIBLE_MESSAGE}
+          </span>
+        ) : null}
         {candidate.otherPositionNames.length > 0 ? (
           <div className="flex flex-wrap gap-1">
             {candidate.otherPositionNames.map((name) => (
