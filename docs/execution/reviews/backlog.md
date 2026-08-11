@@ -293,3 +293,8 @@
 - [ ] [low] [P0-T45] resolveRouteTransition의 ?? "tab" 폴백이 도달 불가 분기라 불변 조건을 가림 — src/widgets/app-shell/ui/AppShellTabBar.tsx
 - [ ] [low] [P3-T04] 신규 겸직 test가 기존 test와 같은 assignmentEligibility 밴드를 나눠 써 23505 충돌 확률(약 2/864) — tests/e2e/assignment-eligibility.spec.ts
 - [x] [low] [P3-T04] handoff가 RED→GREEN 4쌍이라 적었으나 tdd.json은 3쌍(entries 6개) — docs/execution/runs/P3-T04/handoff.md
+- [ ] [medium] [P3-T05] 봉인문이 지시한 insert·delete RLS 정책이 없는데 그 이탈이 구현 기록에 없음 — supabase/migrations/20260811000000_assignment_trainees.sql
+- [ ] [medium] [P3-T05] 교육생 조회가 왕복을 2→3으로 늘려 봉인문 계약과 다른데 그 이탈이 구현 기록에 없음 — src/entities/schedule/api/list-schedule-requirements.ts
+- [ ] [medium] [P3-T05] RED 6쌍 중 3쌍이 구현 후 되돌림으로 합성돼 편집 전 RED를 증명하지 못함 — docs/execution/runs/P3-T05/tdd.json
+- [ ] [low] [P3-T05] 역할 교체 한 건이 changeCount 2로 세어져 되돌리기 문구가 "2명"으로 뜸 — src/features/assignment/hooks/useCandidateSelection.ts
+- [ ] [low] [P3-T05] 공용 e2e 픽스처가 옛 spec 이름(e2e-assignment-eligibility) 접두를 그대로 씀 — tests/e2e/support/assignment-schedule-fixtures.ts
