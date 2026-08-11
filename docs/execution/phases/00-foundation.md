@@ -896,6 +896,7 @@
 
 - 하단 탭 4개 이동에 전환을 넣는다.
 - 일정 달력의 셀에서 스케줄 상세로 들어가는 전환을 넣는다.
+- 탭 바에 없는 화면으로 들어가는 이동에도 같은 전환을 넣는다 — 예상급여, 내 정보, 관리자 화면. 규칙을 하나로 두어 한 앱 안에서 진입 방식이 둘로 갈리지 않게 한다. 2026-08-11 설계 인터뷰에서 추가 승인.
 - 미지원 브라우저에서는 애니메이션 없이 정상 동작한다.
 
 비목표:
@@ -906,8 +907,9 @@
 인수 조건:
 
 - 탭 이동과 상세 진입에서 전환이 실제로 시작되는 것을 호출 계수로 확인한다. P0-T43이 남긴 `tests/e2e/tab-navigation.spec.ts`가 그 자리다.
-- View Transitions 미지원 환경과 reduced-motion에서 화면이 정상 렌더된다.
+- View Transitions 미지원 환경에서 화면이 정상 렌더된다. reduced-motion에서는 미끄러지거나 올라오는 움직임이 사라지고 짧은 페이드만 남는다. 2026-08-11 설계 인터뷰에서 확정.
 - 전환 도중 뒤로 가기나 다른 탭 이동이 겹쳐도 화면이 어긋난 상태로 남지 않는다.
+- 브라우저·하드웨어 뒤로 가기는 애니메이션 없이 이동한다. `popstate`가 동기라 `startViewTransition`과 맞지 않는 플랫폼 제약이며 결함이 아니다. 화면 안의 뒤로 가기 버튼은 전환이 걸린다.
 - P0-T43이 정한 번들 상한을 계속 지킨다.
 
 주요 경계 사례:
@@ -915,13 +917,13 @@
 - 같은 탭을 다시 눌러도 전환이 중복으로 걸리지 않는다.
 - 전환 도중 다른 라우트를 요청해도 마지막 요청 화면으로 안착한다.
 
-알려진 사실(P0-T43 개발에서 확인):
+알려진 사실(P0-T43 개발에서 확인, 2026-08-11 설계 인터뷰에서 해석 정정):
 
-- Next 16.3.0은 `experimental.viewTransition` 키를 인식하지 않는다. Next가 함께 배포하는 view transitions 가이드는 "no configuration"이라고 적는다.
-- 앱의 `react` 19.2.8에는 `ViewTransition`이 없고 Next가 번들하는 19.3.0-canary에는 있다. 빌드·타입·클라이언트 번들 반입은 모두 성공한다.
-- 그럼에도 `(tabs)/layout.tsx` 래핑과 페이지 래핑 모두에서 `document.startViewTransition` 호출이 0회였다. 브라우저는 Chrome 151로 API를 지원한다.
+- Next 16.3.0은 `experimental.viewTransition` 키를 인식하지 않는다. **그 키가 없는 이유는 미지원이 아니라 기본 활성이기 때문이다.** Next가 함께 배포하는 가이드가 "no configuration"이라고 적는 것이 그 뜻이다. `<Link transitionTypes>`도 `node_modules/next/dist/esm/client/link.js`에 실재한다.
+- 앱의 `react` 19.2.8에는 `ViewTransition`이 없다. **다만 이는 Node의 모듈 해석에만 해당하고 클라이언트 번들에는 해당하지 않는다.** Next가 App Router 클라이언트 코드의 `react`를 자기 vendored canary로 alias하며, 빌드 산출물에서 `19.3.0-canary-cbb046ab-20260731` 문자열과 `ViewTransition`·`Activity` 심볼을 확인했다. 따라서 `react`를 올릴 필요가 없다.
+- `(tabs)/layout.tsx` 래핑과 페이지 래핑 모두에서 `document.startViewTransition` 호출이 0회였다. **두 시도 모두 문서화된 실패 모드에 해당한다** — 레이아웃은 라우트 변경에도 마운트를 유지하므로 `enter`/`exit`가 최초 마운트에만 발동하고, 페이지 래핑은 `<ViewTransition>`이 어떤 DOM 노드보다 앞에 있어야 하는 배치 규칙을 어기면 조용히 죽는다. 원인은 React 기능의 부재가 아니라 배치와 발동 조건이다.
 
-기획 승인: user, 2026-08-10.
+기획 승인: user, 2026-08-10. 탭 밖 화면 확대와 reduced-motion 페이드는 2026-08-11 설계 인터뷰에서 추가 승인.
 
 ## 종료 조건
 
