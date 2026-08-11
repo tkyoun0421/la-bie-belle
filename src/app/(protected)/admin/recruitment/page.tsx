@@ -6,6 +6,7 @@ import { extendRecruitmentDeadline } from "@/features/recruitment/api/extend-rec
 import { listApplicantsByScheduleAction } from "@/features/recruitment/api/list-applicants-by-schedule.action";
 import { openRecruitmentSchedules } from "@/features/recruitment/api/open-recruitment-schedules";
 import { reopenRecruitmentSchedule } from "@/features/recruitment/api/reopen-recruitment-schedule";
+import { RouteTransition } from "@/shared/ui/route-transition";
 import { RecruitmentOpenView } from "@/views/admin-recruitment/ui/RecruitmentOpenView";
 import { parseRecruitmentMonthParam } from "@/views/admin-recruitment/model/recruitment-month";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
@@ -37,15 +38,17 @@ export default async function AdminRecruitmentPage({ searchParams }: AdminRecrui
   const applicationCounts = countsResult.ok ? countsResult.data : [];
 
   return (
-    <RecruitmentOpenView
-      month={format(month, "yyyy-MM")}
-      today={today}
-      schedules={schedulesResult.data}
-      applicationCounts={applicationCounts}
-      onOpen={openRecruitmentSchedules}
-      onExtend={extendRecruitmentDeadline}
-      onReopen={reopenRecruitmentSchedule}
-      onListApplicants={listApplicantsByScheduleAction}
-    />
+    <RouteTransition>
+      <RecruitmentOpenView
+        month={format(month, "yyyy-MM")}
+        today={today}
+        schedules={schedulesResult.data}
+        applicationCounts={applicationCounts}
+        onOpen={openRecruitmentSchedules}
+        onExtend={extendRecruitmentDeadline}
+        onReopen={reopenRecruitmentSchedule}
+        onListApplicants={listApplicantsByScheduleAction}
+      />
+    </RouteTransition>
   );
 }

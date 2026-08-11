@@ -3,6 +3,7 @@ import { startOfMonth } from "date-fns";
 import { listOwnApplications } from "@/entities/schedule/api/list-own-applications";
 import { listRecruitmentSchedules } from "@/entities/schedule/api/list-recruitment-schedules";
 import { GENERAL_CONFIRMATION } from "@/entities/schedule/model/confirmation.mock";
+import { RouteTransition } from "@/shared/ui/route-transition";
 import { deriveScheduleDetailVariant } from "@/views/schedule-detail/model/schedule-detail-variant";
 import { ScheduleDetailClosedView } from "@/views/schedule-detail/ui/ScheduleDetailClosedView";
 import { ScheduleDetailView } from "@/views/schedule-detail/ui/ScheduleDetailView";
@@ -44,12 +45,18 @@ export default async function ScheduleDetailPage({ params }: ScheduleDetailPageP
     const ownApplicationStatus = applicationsResult.data[0]?.status ?? null;
 
     return (
-      <ScheduleDetailClosedView
-        workDate={schedule.workDate}
-        ownApplicationStatus={ownApplicationStatus}
-      />
+      <RouteTransition>
+        <ScheduleDetailClosedView
+          workDate={schedule.workDate}
+          ownApplicationStatus={ownApplicationStatus}
+        />
+      </RouteTransition>
     );
   }
 
-  return <ScheduleDetailView confirmation={GENERAL_CONFIRMATION} />;
+  return (
+    <RouteTransition>
+      <ScheduleDetailView confirmation={GENERAL_CONFIRMATION} />
+    </RouteTransition>
+  );
 }

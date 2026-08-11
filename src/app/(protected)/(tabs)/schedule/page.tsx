@@ -4,6 +4,7 @@ import { listOwnApplications } from "@/entities/schedule/api/list-own-applicatio
 import { listRecruitmentSchedules } from "@/entities/schedule/api/list-recruitment-schedules";
 import { mapRecruitmentScheduleWithApplication } from "@/entities/schedule/model/recruitment-schedule";
 import { applyRecruitmentChanges } from "@/features/application/api/apply-recruitment-changes";
+import { RouteTransition } from "@/shared/ui/route-transition";
 import { ScheduleView } from "@/views/schedule/ui/ScheduleView";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 
@@ -52,11 +53,13 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
   );
 
   return (
-    <ScheduleView
-      month={format(month, "yyyy-MM")}
-      today={today}
-      schedules={schedules}
-      onApply={applyRecruitmentChanges}
-    />
+    <RouteTransition>
+      <ScheduleView
+        month={format(month, "yyyy-MM")}
+        today={today}
+        schedules={schedules}
+        onApply={applyRecruitmentChanges}
+      />
+    </RouteTransition>
   );
 }

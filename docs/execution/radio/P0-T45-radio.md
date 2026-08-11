@@ -1,7 +1,7 @@
 # P0-T45 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 2
+- revision: 3
 - 기획 승인: user, 2026-08-10
 - 개발 설계 승인: user, 2026-08-11
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 3 | 2026-08-11 | 시간 토큰 `--duration-crossfade` 신설. revision 2까지의 불변 규칙이 "새 토큰을 만들지 않는다"였는데, P0-T43이 reduced-motion 안에서 시간 토큰 4종을 전부 `0ms`로 덮고 있어(`globals.css:314`, `globals.test.ts:226`이 단언 중) 인수 조건 6의 페이드가 0초로 죽었다. 구현 중 `document.getAnimations()` 실측으로 확인했다. 기존 토큰을 살리는 길은 버튼·칩·스케줄 행·`PullToRefresh`의 눌림 반응까지 되살려 완료된 task를 되돌리므로 택하지 않았다. 페이드는 움직임이 아니라 불투명도 변화라는 것이 인수 조건 6의 근거이므로 그 개념에 토큰 이름을 준다. 2026-08-11 사용자 결정. |
 | 2 | 2026-08-11 | 「변경 허용 경로」에 `src/views/more/**`와 `src/views/home/**` 추가. revision 1이 인수 조건 2·3에서 승인한 이동의 출발지 링크가 이 두 화면 안에 있는데 경로가 빠져 있어 구현이 막혔다. 예상급여·내 정보·관리자로 들어가는 링크 3개는 `MoreView`에, 홈에서 일정으로 가는 CTA 링크는 `HomeView`에 있다. 승인 범위를 넓히는 것이 아니라 이미 승인된 인수 조건을 실행 가능하게 만드는 정정이다. 2026-08-11 사용자 결정. |
 | 1 | 2026-08-11 | 최초 작성. 설계 인터뷰 확정 6건 — Next가 실어 주는 canary의 `<ViewTransition>`을 그대로 쓰고(`react`를 올리지 않는다), 탭 4개 사이는 페이드, 탭 바 밖으로 나가는 이동은 전부 아래에서 올라오는 슬라이드, reduced-motion에서는 움직임 없이 페이드만, 번들 상한은 미리 올리지 않고 실측 정지선을 둔다. 인터뷰 중 P0-T43이 남긴 "알려진 사실"의 해석이 뒤집혔다 — 자세한 근거는 아래 「P0-T43 진단 정정」이 소유한다. 2026-08-11 사용자 결정. |
 
@@ -42,7 +43,8 @@
 - **`<ViewTransition>`은 페이지 컴포넌트의 최상단에 둔다.** 레이아웃에 두지 않고, 그 위를 다른 DOM 노드가 감싸지 않는다. 레이아웃은 라우트 변경에도 살아 있어 `enter`/`exit`가 발동하지 않고, 래퍼 노드가 있으면 배치 규칙 위반으로 조용히 죽는다.
 - **모든 `<ViewTransition>`에 `default="none"`을 붙인다.** 없으면 Suspense 해소·배경 재검증 같은 다른 전환에서도 브라우저 기본 크로스페이드가 함께 터진다.
 - **애니메이션 CSS는 스킬 레시피를 복사한다.** `references/css-recipes.md`가 정본이며 자체 작성하지 않는다. 예외는 reduced-motion 한 곳뿐이다(아래).
-- **모션 상수의 정본은 `globals.css` 하나다.** 레시피의 시간 값은 P0-T43이 세운 `--duration-*`·`--ease-*`로 갈아 끼우고 새 토큰을 만들지 않는다. `DEV-TOKEN-01`.
+- **모션 상수의 정본은 `globals.css` 하나다.** 레시피의 시간 값은 P0-T43이 세운 `--duration-*`·`--ease-*`로 갈아 끼운다. 새 토큰은 `--duration-crossfade` 하나만 만들고 그 밖에는 만들지 않는다. `DEV-TOKEN-01`.
+- **`--duration-crossfade`는 reduced-motion에서 0으로 덮지 않는 유일한 시간 토큰이다.** 라우트 크로스페이드의 지속 시간을 소유한다. 페이드는 위치나 크기가 바뀌는 움직임이 아니라 불투명도 변화이므로 `prefers-reduced-motion`이 지우라고 요구하는 대상이 아니다. P0-T43이 세운 나머지 네 토큰의 `0ms` 덮기는 그대로 둔다 — 버튼·칩·스케줄 행·`PullToRefresh`의 눌림 반응이 그 토큰을 함께 쓴다.
 - **번들 상한을 미리 올리지 않는다.** ADR-0015가 "번들 여유는 저장소 빌드 실측으로만 계산한다"고 정했다. 상한 500KB를 유지하고 넘으면 멈춘다.
 
 ### 기술 인수 조건
@@ -71,12 +73,12 @@
 | 8 번들 | 테스트함 — 500KB 이하 통과 | 테스트함 — 초과 시 verify 실패 | 해당 없음 — P0-T43 게이트가 소유 | 해당 없음 — 빌드 산출물이다 | 해당 없음 — 측정이 멱등이다 | 해당 없음 — 순차 실행이다 |
 | 9 회귀 | 테스트함 — verify GREEN | 테스트함 — 기존 e2e·컴포넌트 테스트 통과 | 해당 없음 — 위 행이 소유 | 해당 없음 — 위 행이 소유 | 해당 없음 — 위 행이 소유 | 해당 없음 — 위 행이 소유 |
 
-- 보충 위험: **번들 여유가 9.0KB뿐이다.** P0-T44 종료 실측이 491.0KB(502,829바이트)이고 상한이 500KB다. `<ViewTransition>`은 이미 번들에 있는 React 기능이라 코드 증가가 CSS와 래퍼 한 종뿐일 것으로 보지만, 인수 조건 1의 최소 배치를 세운 직후 실측하고 상한을 넘으면 멈춰 반환한다. **P0-T44의 `PullToRefresh`가 홈·일정·알림·예상급여의 콘텐츠 래퍼에 idle에서도 `translateY(0px)`를 걸어 둔다**(교차 검증 F-08, backlog 미해결). `none`이 아닌 `transform`은 자손의 컨테이닝 블록을 바꾸므로 그 아래에서 잡히는 전환 스냅샷의 기하가 어긋날 수 있다. 전환이 네 화면에서만 이상하게 보이면 F-08을 먼저 의심하고, 이 task 범위 밖이면 결정 신호로 반환한다. **reduced-motion 처리가 스킬 레시피와 다르다.** 레시피는 `::view-transition-*`의 `animation-duration`을 0s로 만들어 전환을 완전히 없애지만, 이 task는 사용자 결정으로 짧은 페이드를 남긴다 — `prefers-reduced-motion`은 움직임에 민감한 사람을 위한 설정이지 변화를 숨기라는 뜻이 아니라는 판단이다. P0-T43의 전역 리셋(`*`·`*::before`·`*::after`에 `animation-duration: 0.01ms !important`)은 `::view-transition-*` 의사 요소를 잡지 않으므로 이 페이드와 충돌하지 않는다.
+- 보충 위험: **번들 여유가 9.0KB뿐이다.** P0-T44 종료 실측이 491.0KB(502,829바이트)이고 상한이 500KB다. `<ViewTransition>`은 이미 번들에 있는 React 기능이라 코드 증가가 CSS와 래퍼 한 종뿐일 것으로 보지만, 인수 조건 1의 최소 배치를 세운 직후 실측하고 상한을 넘으면 멈춰 반환한다. **P0-T44의 `PullToRefresh`가 홈·일정·알림·예상급여의 콘텐츠 래퍼에 idle에서도 `translateY(0px)`를 걸어 둔다**(교차 검증 F-08, backlog 미해결). `none`이 아닌 `transform`은 자손의 컨테이닝 블록을 바꾸므로 그 아래에서 잡히는 전환 스냅샷의 기하가 어긋날 수 있다. 전환이 네 화면에서만 이상하게 보이면 F-08을 먼저 의심하고, 이 task 범위 밖이면 결정 신호로 반환한다. **reduced-motion 처리가 스킬 레시피와 다르다.** 레시피는 `::view-transition-*`의 `animation-duration`을 0s로 만들어 전환을 완전히 없애지만, 이 task는 사용자 결정으로 짧은 페이드를 남긴다 — `prefers-reduced-motion`은 움직임에 민감한 사람을 위한 설정이지 변화를 숨기라는 뜻이 아니라는 판단이다. P0-T43의 전역 리셋(`*`·`*::before`·`*::after`에 `animation-duration: 0.01ms !important`)은 `::view-transition-*` 의사 요소를 잡지 않으므로 이 페이드와 충돌하지 않는다. 다만 같은 블록의 **토큰 덮기는 충돌했다** — `::view-transition-*`는 `:root`의 커스텀 프로퍼티를 상속하므로 P0-T43이 0으로 덮은 네 토큰 중 무엇을 참조해도 페이드가 0초가 된다. revision 3의 `--duration-crossfade`가 그 자리를 막는다. 의사 요소가 선택자에 안 잡히는 것과 토큰 값을 상속하는 것은 별개 층위다.
 
 ### DEV-* 적용 상태
 
 - `DEV-DEP-01`: 해당 없음 — 새 의존성이 없다. `react`·`react-dom`도 그대로다.
-- `DEV-TOKEN-01`: 기본 적용 — 레시피의 시간·easing을 P0-T43 토큰으로 갈아 끼우고 새 토큰을 만들지 않는다.
+- `DEV-TOKEN-01`: 기본 적용 — 레시피의 시간·easing을 P0-T43 토큰으로 갈아 끼운다. 신설은 `--duration-crossfade` 하나이며 정본은 `globals.css`에 그대로 남는다.
 - `DEV-SSOT-01`: 기본 적용 — 탭 순서와 탭 밖 판정의 정본을 하나로 둔다. `AppShellTabBar` 안의 `TABS` 상수를 `shared/config`로 올려 UI와 판정이 같은 목록을 본다.
 - `DEV-ARCH`: 기본 적용 — 의존 방향은 그대로다. 전환 래퍼는 `shared/ui`, 탭 순서 상수는 `shared/config`, 판정은 순수 함수다.
 - `DEV-TEST-01`: 기본 적용 — tdd, RED→GREEN 증거를 `runs/P0-T45`에 남긴다.
@@ -96,7 +98,8 @@
 - `src/views/schedule-detail/ui/*`: 뒤로 가기 `<Link>`에 `transitionTypes={['nav-back']}`를 붙인다.
 - `src/views/more/ui/MoreView.tsx`: 예상급여·내 정보·관리자 `<Link>` 셋에 `transitionTypes={['nav-forward']}`를 붙인다. 이 셋이 탭 밖으로 나가는 유일한 출발지다.
 - `src/views/home/ui/HomeView.tsx`: 일정으로 가는 CTA `<Link>`에 탭 이동 타입을 붙인다. 태그가 없으면 같은 이동인데 탭 바로 가면 페이드가 걸리고 CTA로 가면 아무 일도 일어나지 않는다.
-- `src/app/globals.css`: 스킬 레시피의 페이드·세로 슬라이드·탭 바 격리 CSS와 reduced-motion 규칙.
+- `src/app/globals.css`: 스킬 레시피의 페이드·세로 슬라이드·탭 바 격리 CSS와 reduced-motion 규칙. 시간 토큰 `--duration-crossfade`를 `@theme`에 신설하고 reduced-motion 블록에서 덮지 않는다. P0-T43이 세운 네 토큰의 `0ms` 덮기는 건드리지 않는다.
+- `src/app/__tests__/globals.test.ts`: reduced-motion 블록이 `--duration-crossfade`를 덮지 않음을 단언한다. 뒤에 오는 task가 무심코 다섯 번째 토큰까지 0으로 덮는 것을 막는 자리다. 기존 네 토큰의 단언은 그대로 둔다.
 
 ## Data model
 

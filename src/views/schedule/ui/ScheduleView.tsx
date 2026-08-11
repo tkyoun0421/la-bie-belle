@@ -2,7 +2,7 @@
 
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { addTransitionType, startTransition, useMemo } from "react";
 
 import type { RecruitmentScheduleWithApplication } from "@/entities/schedule/model/recruitment-schedule";
 import {
@@ -60,7 +60,10 @@ export function ScheduleView({ month: monthParam, today, schedules, onApply }: S
       return;
     }
     if (schedule.status !== "OPEN") {
-      router.push(`${SCHEDULE_PATH}/${key}`);
+      startTransition(() => {
+        addTransitionType?.("nav-forward");
+        router.push(`${SCHEDULE_PATH}/${key}`);
+      });
       return;
     }
     batch.toggle(key);

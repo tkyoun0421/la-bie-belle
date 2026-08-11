@@ -1,33 +1,17 @@
 "use client";
 
-import { Bell, CalendarDays, Home, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ComponentType } from "react";
 
+import { APP_TABS, type AppTab } from "@/shared/config/app-tabs.config";
 import { cn } from "@/shared/lib/cn";
-
-type TabKey = "home" | "schedule" | "notifications" | "more";
-
-type Tab = {
-  key: TabKey;
-  href: string;
-  label: string;
-  icon: ComponentType<{ "aria-hidden"?: boolean; className?: string }>;
-};
-
-const TABS: Tab[] = [
-  { key: "home", href: "/", label: "홈", icon: Home },
-  { key: "schedule", href: "/schedule", label: "일정", icon: CalendarDays },
-  { key: "notifications", href: "/notifications", label: "알림", icon: Bell },
-  { key: "more", href: "/more", label: "전체", icon: Menu },
-];
+import { resolveRouteTransition } from "@/shared/model/route-transition";
 
 type AppShellTabBarProps = {
   hasUnreadNotifications: boolean;
 };
 
-function isTabActive(tab: Tab, pathname: string) {
+function isTabActive(tab: AppTab, pathname: string) {
   if (tab.key === "more") {
     return pathname === "/more" || pathname === "/pay";
   }
@@ -40,16 +24,19 @@ export function AppShellTabBar({ hasUnreadNotifications }: AppShellTabBarProps) 
   return (
     <nav
       aria-label="주요 메뉴"
+      style={{ viewTransitionName: "persistent-nav" }}
       className="fixed inset-x-0 bottom-0 z-40 flex min-h-16 border-t border-border bg-surface pb-[env(safe-area-inset-bottom,0px)]"
     >
-      {TABS.map((tab) => {
+      {APP_TABS.map((tab) => {
         const isActive = isTabActive(tab, pathname);
         const Icon = tab.icon;
+        const transitionType = resolveRouteTransition(pathname, tab.href) ?? "tab";
 
         return (
           <Link
             key={tab.key}
             href={tab.href}
+            transitionTypes={[transitionType]}
             aria-current={isActive ? "page" : undefined}
             className={cn(
               "relative flex flex-1 flex-col items-center gap-1 py-2 typo-caption",

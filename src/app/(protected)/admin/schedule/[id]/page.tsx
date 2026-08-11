@@ -14,6 +14,7 @@ import {
 } from "@/features/ceremony/api/manage-checkin-rules";
 import { removeRequirement } from "@/features/requirement/api/remove-requirement";
 import { setRequirement } from "@/features/requirement/api/set-requirement";
+import { RouteTransition } from "@/shared/ui/route-transition";
 import { AdminSchedulePrepView } from "@/views/admin-schedule/ui/AdminSchedulePrepView";
 import {
   resolveRequirementSectionData,
@@ -72,20 +73,22 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
   }
 
   return (
-    <AdminSchedulePrepView
-      schedulePrep={schedulePrepResult.data}
-      onReplaceCeremonies={replaceCeremonies}
-      onSetPlannedTimes={setPlannedTimes}
-      onCreateCheckInRule={createCheckInRule}
-      onUpdateCheckInRule={updateCheckInRule}
-      onDeleteCheckInRule={deleteCheckInRule}
-      requirementRows={requirementSectionData.requirementRows}
-      assignedCounts={requirementSectionData.assignedCounts}
-      activePositions={requirementSectionData.activePositions}
-      onSetRequirement={setRequirement}
-      onRemoveRequirement={removeRequirement}
-      onListCandidates={listAssignmentCandidates}
-      onReplaceAssignments={replacePositionAssignments}
-    />
+    <RouteTransition>
+      <AdminSchedulePrepView
+        schedulePrep={schedulePrepResult.data}
+        onReplaceCeremonies={replaceCeremonies}
+        onSetPlannedTimes={setPlannedTimes}
+        onCreateCheckInRule={createCheckInRule}
+        onUpdateCheckInRule={updateCheckInRule}
+        onDeleteCheckInRule={deleteCheckInRule}
+        requirementRows={requirementSectionData.requirementRows}
+        assignedCounts={requirementSectionData.assignedCounts}
+        activePositions={requirementSectionData.activePositions}
+        onSetRequirement={setRequirement}
+        onRemoveRequirement={removeRequirement}
+        onListCandidates={listAssignmentCandidates}
+        onReplaceAssignments={replacePositionAssignments}
+      />
+    </RouteTransition>
   );
 }

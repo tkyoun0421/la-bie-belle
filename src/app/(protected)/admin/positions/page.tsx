@@ -4,6 +4,7 @@ import {
   deletePosition,
   updatePosition,
 } from "@/features/position/api/manage-positions";
+import { RouteTransition } from "@/shared/ui/route-transition";
 import { AdminPositionsView } from "@/views/admin-positions/ui/AdminPositionsView";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 
@@ -15,11 +16,13 @@ export default async function AdminPositionsPage() {
   }
 
   return (
-    <AdminPositionsView
-      positions={positionsResult.data}
-      onCreate={createPosition}
-      onUpdate={updatePosition}
-      onDelete={deletePosition}
-    />
+    <RouteTransition>
+      <AdminPositionsView
+        positions={positionsResult.data}
+        onCreate={createPosition}
+        onUpdate={updatePosition}
+        onDelete={deletePosition}
+      />
+    </RouteTransition>
   );
 }

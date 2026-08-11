@@ -95,7 +95,9 @@ export function HomeView({ model }: { model: HomeViewModel }) {
               {model.date} · {model.applicationDeadline}까지
             </p>
             <Button asChild variant={model.applied ? "secondary" : "primary"}>
-              <Link href="/schedule">{model.applied ? "일정에서 확인하기" : "지금 신청하기"}</Link>
+              <Link href="/schedule" transitionTypes={["tab"]}>
+                {model.applied ? "일정에서 확인하기" : "지금 신청하기"}
+              </Link>
             </Button>
           </section>
         ) : null}

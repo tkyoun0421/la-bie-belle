@@ -5,6 +5,7 @@ import { reactivateWorker } from "@/features/worker-management/api/reactivate-wo
 import { revokePosition } from "@/features/worker-management/api/revoke-position";
 import { setHourlyWage } from "@/features/worker-management/api/set-hourly-wage";
 import { updateWorkerInfo } from "@/features/worker-management/api/update-worker-info";
+import { RouteTransition } from "@/shared/ui/route-transition";
 import { WorkerDetailView } from "@/views/admin/ui/WorkerDetailView";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 import { NotFoundScreen } from "@/views/status/ui/NotFoundScreen";
@@ -26,14 +27,16 @@ export default async function AdminWorkerDetailPage({ params }: AdminWorkerDetai
   }
 
   return (
-    <WorkerDetailView
-      worker={workerResult.data}
-      onUpdateInfo={updateWorkerInfo}
-      onSetWage={setHourlyWage}
-      onGrant={grantPosition}
-      onRevoke={revokePosition}
-      onDeactivate={deactivateWorker}
-      onReactivate={reactivateWorker}
-    />
+    <RouteTransition>
+      <WorkerDetailView
+        worker={workerResult.data}
+        onUpdateInfo={updateWorkerInfo}
+        onSetWage={setHourlyWage}
+        onGrant={grantPosition}
+        onRevoke={revokePosition}
+        onDeactivate={deactivateWorker}
+        onReactivate={reactivateWorker}
+      />
+    </RouteTransition>
   );
 }

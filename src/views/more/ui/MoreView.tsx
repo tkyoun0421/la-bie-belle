@@ -19,6 +19,7 @@ export function MoreView({ onSignOut, roles }: MoreViewProps) {
         <li>
           <Link
             href="/pay"
+            transitionTypes={["nav-forward"]}
             className="flex items-center justify-between border-b border-border py-4 typo-body text-text-strong"
           >
             예상 급여
@@ -28,6 +29,7 @@ export function MoreView({ onSignOut, roles }: MoreViewProps) {
         <li>
           <Link
             href={MY_PROFILE_PATH}
+            transitionTypes={["nav-forward"]}
             className="flex items-center justify-between border-b border-border py-4 typo-body text-text-strong"
           >
             내 정보
@@ -38,6 +40,7 @@ export function MoreView({ onSignOut, roles }: MoreViewProps) {
           <li>
             <Link
               href={ADMIN_PATH}
+              transitionTypes={["nav-forward"]}
               className="flex items-center justify-between border-b border-border py-4 typo-body text-text-strong"
             >
               관리자

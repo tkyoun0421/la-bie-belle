@@ -20,7 +20,7 @@ export function ScheduleDetailClosedView({
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6">
       <header className="flex items-center gap-2">
         <Button asChild variant="icon" aria-label="뒤로 가기">
-          <Link href="/schedule">
+          <Link href="/schedule" transitionTypes={["nav-back"]}>
             <ArrowLeft aria-hidden className="size-5" />
           </Link>
         </Button>

@@ -1,4 +1,5 @@
 import { findImminentRecruitment } from "@/entities/schedule/api/find-imminent-recruitment";
+import { RouteTransition } from "@/shared/ui/route-transition";
 import { deriveHomePriority } from "@/views/home/model/home-priority";
 import { selectImminentRecruitment } from "@/views/home/model/imminent-recruitment";
 import { HomeView } from "@/views/home/ui/HomeView";
@@ -23,5 +24,9 @@ export default async function HomePage() {
     nextShift: null,
   });
 
-  return <HomeView model={model} />;
+  return (
+    <RouteTransition>
+      <HomeView model={model} />
+    </RouteTransition>
+  );
 }

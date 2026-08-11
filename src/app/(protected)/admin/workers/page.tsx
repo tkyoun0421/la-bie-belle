@@ -1,5 +1,6 @@
 import { listWorkers } from "@/entities/identity/api/list-workers";
 import { ProfileStatusSchema } from "@/entities/identity/model/profile-gate";
+import { RouteTransition } from "@/shared/ui/route-transition";
 import { WorkerListView } from "@/views/admin/ui/WorkerListView";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 
@@ -19,5 +20,9 @@ export default async function AdminWorkersPage({ searchParams }: AdminWorkersPag
     return <ErrorScreen />;
   }
 
-  return <WorkerListView workers={workersResult.data} search={search} status={status} />;
+  return (
+    <RouteTransition>
+      <WorkerListView workers={workersResult.data} search={search} status={status} />
+    </RouteTransition>
+  );
 }

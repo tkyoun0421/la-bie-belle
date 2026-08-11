@@ -244,6 +244,10 @@ describe("globals.css 디자인 토큰", () => {
       expect(block).toMatch(/animation-duration:\s*0\.01ms\s*!important;/);
       expect(block).toMatch(/transition-duration:\s*0\.01ms\s*!important;/);
     });
+
+    it("--duration-crossfade는 덮어쓰지 않는다", () => {
+      expect(block).not.toMatch(/--duration-crossfade:/);
+    });
   });
 
   it("focus-visible에 명확한 action ring이 전역으로 적용된다", () => {
