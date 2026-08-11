@@ -83,6 +83,42 @@
       "exit_code": 0,
       "at": "2026-08-11T05:28:37.000Z",
       "phase": "green"
+    },
+    {
+      "command": "npx vitest run src/views/home/ui/__tests__/HomeView.test.tsx -t \"nav-forward 전환 타입을 붙인다\"",
+      "exit_code": 1,
+      "at": "2026-08-11T06:46:13.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "npx vitest run src/views/home/ui/__tests__/HomeView.test.tsx -t \"nav-forward 전환 타입을 붙인다\"",
+      "exit_code": 0,
+      "at": "2026-08-11T06:46:31.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/tab-navigation.spec.ts -g \"새 화면이 올라오고|목적지 셋으로 이동하면|예상 급여 알림을 누르면|인접한 네 쌍\"",
+      "exit_code": 1,
+      "at": "2026-08-11T06:40:50.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/tab-navigation.spec.ts -g \"새 화면이 올라오고|목적지 셋으로 이동하면|예상 급여 알림을 누르면|인접한 네 쌍\"",
+      "exit_code": 0,
+      "at": "2026-08-11T06:41:24.000Z",
+      "phase": "green"
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/tab-navigation.spec.ts -g \"미지원 환경에서도 탭 이동과 상세 진입|브라우저 뒤로 가기는 새로 전환을|전환이 끝나기 전에 뒤로 가기를|상세 화면에 진입한 직후|두 번 연달아\"",
+      "exit_code": 1,
+      "at": "2026-08-11T06:43:05.000Z",
+      "phase": "red"
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/tab-navigation.spec.ts -g \"미지원 환경에서도 탭 이동과 상세 진입|브라우저 뒤로 가기는 새로 전환을|전환이 끝나기 전에 뒤로 가기를|상세 화면에 진입한 직후|두 번 연달아\"",
+      "exit_code": 0,
+      "at": "2026-08-11T06:45:43.000Z",
+      "phase": "green"
     }
   ]
 }

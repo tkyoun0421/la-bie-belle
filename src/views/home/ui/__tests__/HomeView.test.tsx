@@ -1,4 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import type { ReactNode, Ref } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { HomeView } from "@/views/home/ui/HomeView";
@@ -18,6 +19,25 @@ import {
 } from "@/views/home/ui/home.mock";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
+
+vi.mock("next/link", () => ({
+  default: ({
+    href,
+    transitionTypes,
+    children,
+    ref,
+    ...rest
+  }: {
+    href: string;
+    transitionTypes?: string[];
+    children: ReactNode;
+    ref?: Ref<HTMLAnchorElement>;
+  }) => (
+    <a href={href} ref={ref} data-transition-types={transitionTypes?.join(",")} {...rest}>
+      {children}
+    </a>
+  ),
+}));
 
 afterEach(cleanup);
 
@@ -78,9 +98,25 @@ describe("HomeView", () => {
     expect(screen.getByText("시작 시간이 30분 당겨졌어요")).toBeInTheDocument();
   });
 
+  it("확정 스케줄 변경 확인 상태의 링크는 nav-forward 전환 타입을 붙인다", () => {
+    render(<HomeView model={HOME_CONFIRMATION_CHANGE} />);
+    expect(screen.getByRole("link", { name: "확인하기" })).toHaveAttribute(
+      "data-transition-types",
+      "nav-forward",
+    );
+  });
+
   it("다음 근무 상태를 보여준다", () => {
     render(<HomeView model={HOME_NEXT_SHIFT} />);
     expect(screen.getByText("다음 근무")).toBeInTheDocument();
+  });
+
+  it("다음 근무 상태의 링크는 nav-forward 전환 타입을 붙인다", () => {
+    render(<HomeView model={HOME_NEXT_SHIFT} />);
+    expect(screen.getByRole("link", { name: "상세 보기" })).toHaveAttribute(
+      "data-transition-types",
+      "nav-forward",
+    );
   });
 
   it("빈 상태를 보여준다", () => {

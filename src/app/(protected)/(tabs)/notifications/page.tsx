@@ -1,5 +1,6 @@
 "use client";
 
+import { addTransitionType, startTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { RouteTransition } from "@/shared/ui/route-transition";
@@ -14,9 +15,12 @@ export default function NotificationsPage() {
       <NotificationsView
         {...NOTIFICATIONS_MIXED}
         onNavigate={(item) => {
-          router.push(
-            item.target.screen === "schedule-detail" ? `/schedule/${item.target.date}` : "/pay",
-          );
+          const destination =
+            item.target.screen === "schedule-detail" ? `/schedule/${item.target.date}` : "/pay";
+          startTransition(() => {
+            addTransitionType?.("nav-forward");
+            router.push(destination);
+          });
         }}
       />
     </RouteTransition>

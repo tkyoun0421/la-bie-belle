@@ -107,7 +107,9 @@ export function HomeView({ model }: { model: HomeViewModel }) {
             <p className="typo-title text-text-strong">확정 스케줄이 변경됐어요</p>
             <p className="typo-body text-action">{model.confirmation.changeSummary}</p>
             <Button asChild variant="primary">
-              <Link href={`/schedule/${model.confirmation.date}`}>확인하기</Link>
+              <Link href={`/schedule/${model.confirmation.date}`} transitionTypes={["nav-forward"]}>
+                확인하기
+              </Link>
             </Button>
           </section>
         ) : null}
@@ -119,7 +121,9 @@ export function HomeView({ model }: { model: HomeViewModel }) {
               {model.date} · {model.position}
             </p>
             <Button asChild variant="secondary">
-              <Link href={`/schedule/${model.date}`}>상세 보기</Link>
+              <Link href={`/schedule/${model.date}`} transitionTypes={["nav-forward"]}>
+                상세 보기
+              </Link>
             </Button>
           </section>
         ) : null}

@@ -1,5 +1,40 @@
 # P0-T45 handoff
 
+## 2026-08-11 · 교차 검증 수정 라운드 종료
+
+- 작업 식별자: P0-T45 (화면 전환)
+- 현재 단계: 개발(3단계) 종료 → 다음 검증(교차 리뷰 재확인)
+- 기준 커밋: `83b9d0d`(조정자가 RADIO revision 4 재봉인·`index.jsonl` 갱신을 먼저 커밋한 지점 — 이번 구현 커밋의 부모)
+
+### 확정된 사실
+
+- 교차 검증(opus·codex)이 revision 3 구현(커밋 `610dfbf`)에 대해 확정 10건(high 4·medium 4·low 2), 종합 78점, `critical` 없음을 냈다. 사용자가 F-01~F-05(high 4건 + MUST 위반 medium 1건) 다섯 건만 이번 라운드 범위로 지정했고, F-06~F-10은 backlog로 명시적으로 미뤘다.
+- RADIO가 revision 4(SHA-256 `0084c924676ccf12804eecf565d22026944ffca1c84c5a055f978d80608b5762`)로 재봉인됐다 — 불변 규칙 두 줄(상위 문서 우선, `filter` 배제)과 화면 전환 220~280ms 대역 추가, `notifications/page.tsx`의 「용도 한정」을 "이미 있는 이동에 전환 타입을 붙이는 것"까지 확대.
+- F-01~F-05를 전부 해소했다 — HomeView 두 링크·알림 `router.push`에 `nav-forward` 태깅(F-01), 크로스페이드를 순차에서 동시 재생으로 바꾸고 `--duration-crossfade`를 200ms→250ms로 올려 전환 총 시간을 400ms에서 250ms로 낮춤(F-02, `FOUNDATIONS.md:120`의 220~280ms 대역 안), e2e 6건 신설(전체 화면 목적지 셋·알림→예상급여·뒤로 가기 네 경우)과 탭 페이드 커버리지를 4쌍 전부로 확대(F-03), `installViewTransitionSpy`를 인덱스 동기화 + `pseudoElement` 방향 판정 구조로 재설계(F-04), `route-fade` 키프레임에서 `filter: blur()` 제거(F-05). 각 항목의 근거와 F-02의 값 선정 이유(스킬 레시피가 아니라 `FOUNDATIONS.md`와 기존 `--duration-overlay` 토큰에 근거)는 `docs/execution/runs/P0-T45/radio.md`의 「교차 검증 수정 라운드(revision 4)」 절이 소유한다.
+- `pnpm db:reset` 뒤 `pnpm verify` 전체(format·lint·typecheck·unit 1340건·harness·check:docs·build·gate:bundle·check:app-build·check:client-secret-scan·e2e 67건·gate:motion-render-budget·gate:all)가 GREEN이다. DB 초기화 전 1회차에서 `recruitment-manage.spec.ts`·`recruitment-open.spec.ts` 각 1건이 work_date 23505 충돌로 실패했으나 이 task와 무관한 기존 시딩 데이터 잔존 문제였다(재초기화 뒤 통과).
+- 최종 번들 실측 491.31KB(503,097바이트), 상한 500KB(512,000바이트) 대비 여유 8,903바이트(8.69KB). F-01의 `HomeView.tsx` prop 추가로 이전 실측(503,070바이트) 대비 27바이트 늘었다 — F-02·F-05는 CSS만 바꿔 이 지표에 영향이 없다.
+- `docs/execution/runs/P0-T45/tdd.json`에 이번 라운드 RED→GREEN 3쌍(6건)을 추가로 기록했다 — HomeView 컴포넌트 테스트 2건(`transitionTypes` 유무), `RouteTransition`의 `enter`/`exit` 매핑을 통째로 뒤바꿔 만든 e2e 4건 묶음(F-04 방향·MoreView 슬라이드·알림 슬라이드·탭 페이드), 테스트 어서션을 임시로 반대로 뒤집어 만든 e2e 5건 묶음(미지원 환경 상세 진입·뒤로 가기 네 경우). 실제 명령 실행 시각으로만 기록했다.
+- 「전환이 끝나기 전에 뒤로 가기를 눌러도 화면이 안착한다」 e2e를 처음 짤 때 `page.getByRole("button", ...).click()` 직후 바로 `page.goBack()`을 부르면 클릭이 촉발한 `router.push`가 히스토리에 반영되기 전에 뒤로 가기가 먼저 실행돼 간헐적으로 실패했다(빈 페이지로 튐). `page.waitForURL(...)`로 URL이 상세 경로로 바뀐 것만 확인한 뒤 `goBack()`을 부르도록 고쳐 5회 반복 실행으로 안정성을 확인했다.
+
+### 미결 사항
+
+- F-06(탭 바 격리 e2e가 격리 CSS를 관찰하지 않음)·F-07(전환 타입 리터럴 산재)·F-08(reduced-motion 정규식 과대 포착)·F-09(`--duration-crossfade` 존재 단언 부재)·F-10(`AppShellTabBar.tsx:33`의 도달 불가 분기)은 사용자가 이번 라운드 범위 밖으로 명시했다 — backlog로 남는다.
+- Phase 1 handoff가 남긴 미결 사항(HomeView 두 링크에 `transitionTypes` 없음)은 이번 라운드의 F-01로 해소됐다.
+- `admin/page.tsx` 안 5개 하위 링크(가입 승인·역할 관리 등)에 `transitionTypes`가 없는 것은 F-01~F-05 목록에 없어 손대지 않았다 — 이번 결정 신호는 아니다.
+
+### 다음 행동
+
+1. 4단계 검증 — 이번 라운드로 해소된 5건에 대한 재확인과 나머지 확정 findings의 backlog 편입을 조정자가 진행한다.
+
+### 증거·산출물 경로
+
+- 구현 커밋 — 기준 커밋 `83b9d0d` 대비 diff
+- `docs/execution/runs/P0-T45/radio.md`(「교차 검증 수정 라운드(revision 4)」 절 — F-01~F-05 해소 방식, F-02 값 근거, 번들 재실측)
+- `docs/execution/runs/P0-T45/tdd.json`(이번 라운드 RED→GREEN 3쌍 추가)
+- `tests/e2e/tab-navigation.spec.ts`(11건 → 17건)
+- `src/views/home/ui/__tests__/HomeView.test.tsx`(2건 순증)
+- `src/views/home/ui/HomeView.tsx`, `src/app/(protected)/(tabs)/notifications/page.tsx`, `src/app/globals.css`
+
 ## 2026-08-11 · 개발 단계 종료
 
 - 작업 식별자: P0-T45 (화면 전환)
