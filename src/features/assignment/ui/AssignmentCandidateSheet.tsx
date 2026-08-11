@@ -5,7 +5,10 @@ import type {
   AssignmentCandidate,
   AssignmentCandidateBuckets,
 } from "@/entities/assignment/types/candidate";
-import type { CandidateSelectionTarget } from "@/features/assignment/hooks/useCandidateSelection";
+import type {
+  CandidateSelectionRole,
+  CandidateSelectionTarget,
+} from "@/features/assignment/hooks/useCandidateSelection";
 import { Badge } from "@/shared/ui/badge";
 import { BottomSheet } from "@/shared/ui/bottom-sheet";
 import { Button } from "@/shared/ui/button";
@@ -27,8 +30,10 @@ type AssignmentCandidateSheetProps = {
   loading: boolean;
   failed: boolean;
   buckets: AssignmentCandidateBuckets;
-  selected: ReadonlySet<string>;
-  onToggle: (profileId: string) => void;
+  selectedAssigned: ReadonlySet<string>;
+  selectedTrainee: ReadonlySet<string>;
+  onToggle: (profileId: string, role: CandidateSelectionRole) => void;
+  canSelectAsTrainee: (candidate: AssignmentCandidate) => boolean;
   changeCount: number;
   submitting: boolean;
   onSave: () => void;
@@ -38,12 +43,16 @@ type AssignmentCandidateSheetProps = {
 
 function CandidateRow({
   candidate,
-  selected,
+  assignedSelected,
+  traineeSelected,
+  canTrain,
   onToggle,
 }: {
   candidate: AssignmentCandidate;
-  selected: boolean;
-  onToggle: (profileId: string) => void;
+  assignedSelected: boolean;
+  traineeSelected: boolean;
+  canTrain: boolean;
+  onToggle: (profileId: string, role: CandidateSelectionRole) => void;
 }) {
   return (
     <li className="flex items-center justify-between gap-2 py-2">
@@ -66,21 +75,54 @@ function CandidateRow({
           </div>
         ) : null}
       </div>
-      <Chip selected={selected} onSelectedChange={() => onToggle(candidate.profileId)}>
-        {selected ? "선택됨" : "선택"}
-      </Chip>
+      <div className="flex items-center gap-2">
+        {canTrain ? (
+          <Chip
+            selected={traineeSelected}
+            onSelectedChange={() => onToggle(candidate.profileId, "trainee")}
+          >
+            {traineeSelected ? "교육됨" : "교육"}
+          </Chip>
+        ) : null}
+        <Chip
+          selected={assignedSelected}
+          onSelectedChange={() => onToggle(candidate.profileId, "assigned")}
+        >
+          {assignedSelected ? "선택됨" : "선택"}
+        </Chip>
+      </div>
     </li>
   );
 }
 
-function IneligibleRow({ candidate }: { candidate: AssignmentCandidate }) {
+function IneligibleRow({
+  candidate,
+  traineeSelected,
+  canTrain,
+  onToggle,
+}: {
+  candidate: AssignmentCandidate;
+  traineeSelected: boolean;
+  canTrain: boolean;
+  onToggle: (profileId: string, role: CandidateSelectionRole) => void;
+}) {
   return (
-    <li className="flex flex-col gap-1 py-2">
-      <span className="typo-body text-text-strong">{candidate.name}</span>
-      {candidate.ineligibleReason ? (
-        <span className="typo-caption text-text">
-          {assignmentIneligibleReasonLabel(candidate.ineligibleReason)}
-        </span>
+    <li className="flex items-center justify-between gap-2 py-2">
+      <div className="flex flex-col gap-1">
+        <span className="typo-body text-text-strong">{candidate.name}</span>
+        {candidate.ineligibleReason ? (
+          <span className="typo-caption text-text">
+            {assignmentIneligibleReasonLabel(candidate.ineligibleReason)}
+          </span>
+        ) : null}
+      </div>
+      {canTrain ? (
+        <Chip
+          selected={traineeSelected}
+          onSelectedChange={() => onToggle(candidate.profileId, "trainee")}
+        >
+          {traineeSelected ? "교육됨" : "교육"}
+        </Chip>
       ) : null}
     </li>
   );
@@ -92,8 +134,10 @@ export function AssignmentCandidateSheet({
   loading,
   failed,
   buckets,
-  selected,
+  selectedAssigned,
+  selectedTrainee,
   onToggle,
+  canSelectAsTrainee,
   changeCount,
   submitting,
   onSave,
@@ -148,7 +192,9 @@ export function AssignmentCandidateSheet({
                     <CandidateRow
                       key={candidate.profileId}
                       candidate={candidate}
-                      selected={selected.has(candidate.profileId)}
+                      assignedSelected={selectedAssigned.has(candidate.profileId)}
+                      traineeSelected={selectedTrainee.has(candidate.profileId)}
+                      canTrain={canSelectAsTrainee(candidate)}
                       onToggle={onToggle}
                     />
                   ))}
@@ -165,7 +211,9 @@ export function AssignmentCandidateSheet({
                     <CandidateRow
                       key={candidate.profileId}
                       candidate={candidate}
-                      selected={selected.has(candidate.profileId)}
+                      assignedSelected={selectedAssigned.has(candidate.profileId)}
+                      traineeSelected={selectedTrainee.has(candidate.profileId)}
+                      canTrain={canSelectAsTrainee(candidate)}
                       onToggle={onToggle}
                     />
                   ))}
@@ -181,7 +229,13 @@ export function AssignmentCandidateSheet({
                 </summary>
                 <ul className="flex flex-col divide-y divide-border">
                   {buckets.ineligible.map((candidate) => (
-                    <IneligibleRow key={candidate.profileId} candidate={candidate} />
+                    <IneligibleRow
+                      key={candidate.profileId}
+                      candidate={candidate}
+                      traineeSelected={selectedTrainee.has(candidate.profileId)}
+                      canTrain={canSelectAsTrainee(candidate)}
+                      onToggle={onToggle}
+                    />
                   ))}
                 </ul>
               </details>

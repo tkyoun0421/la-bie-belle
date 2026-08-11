@@ -15,6 +15,7 @@ export type ReplaceAssignmentsActionInput = {
   scheduleId: string;
   positionId: string;
   profileIds: string[];
+  traineeProfileIds: string[];
 };
 export type ReplaceAssignmentsActionOutcome =
   { ok: true; assignedCount: number } | { ok: false; code: ErrorCode };
@@ -31,6 +32,8 @@ export type CandidateSelectionTarget = {
 
 export type CandidateSelectionOpenParams = CandidateSelectionTarget & { assignedCount: number };
 
+export type CandidateSelectionRole = "assigned" | "trainee";
+
 const SNACKBAR_MESSAGE = "배정을 변경했어요";
 
 function symmetricDifferenceSize(a: ReadonlySet<string>, b: ReadonlySet<string>): number {
@@ -44,7 +47,25 @@ function symmetricDifferenceSize(a: ReadonlySet<string>, b: ReadonlySet<string>)
   return count;
 }
 
-type UndoMemory = { previousSelected: ReadonlySet<string>; count: number };
+function withoutMember(set: ReadonlySet<string>, profileId: string): Set<string> {
+  const next = new Set(set);
+  next.delete(profileId);
+  return next;
+}
+
+function toggleMember(set: ReadonlySet<string>, profileId: string): Set<string> {
+  const next = new Set(set);
+  if (next.has(profileId)) {
+    next.delete(profileId);
+  } else {
+    next.add(profileId);
+  }
+  return next;
+}
+
+type SelectionPair = { assigned: ReadonlySet<string>; trainee: ReadonlySet<string> };
+
+type UndoMemory = { previousSelection: SelectionPair; count: number };
 
 type UseCandidateSelectionParams = {
   onList: ListAssignmentCandidatesAction;
@@ -57,8 +78,12 @@ export function useCandidateSelection({ onList, onReplace }: UseCandidateSelecti
   const [candidates, setCandidates] = useState<AssignmentCandidate[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [savedSelected, setSavedSelected] = useState<ReadonlySet<string>>(new Set());
-  const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
+  const [savedSelectedAssigned, setSavedSelectedAssigned] = useState<ReadonlySet<string>>(
+    new Set(),
+  );
+  const [savedSelectedTrainee, setSavedSelectedTrainee] = useState<ReadonlySet<string>>(new Set());
+  const [selectedAssigned, setSelectedAssigned] = useState<ReadonlySet<string>>(new Set());
+  const [selectedTrainee, setSelectedTrainee] = useState<ReadonlySet<string>>(new Set());
   const [submitting, startTransition] = useTransition();
   const [lastUndo, setLastUndo] = useState<UndoMemory | null>(null);
   const requestIdRef = useRef(0);
@@ -78,8 +103,10 @@ export function useCandidateSelection({ onList, onReplace }: UseCandidateSelecti
     setFailed(false);
     setLoading(true);
     setLastUndo(null);
-    setSavedSelected(new Set());
-    setSelected(new Set());
+    setSavedSelectedAssigned(new Set());
+    setSavedSelectedTrainee(new Set());
+    setSelectedAssigned(new Set());
+    setSelectedTrainee(new Set());
 
     void onList({ scheduleId: params.scheduleId, positionId: params.positionId }).then(
       (outcome) => {
@@ -97,8 +124,15 @@ export function useCandidateSelection({ onList, onReplace }: UseCandidateSelecti
             .filter((candidate) => candidate.currentlyAssigned)
             .map((candidate) => candidate.profileId),
         );
-        setSavedSelected(initiallyAssigned);
-        setSelected(initiallyAssigned);
+        const initiallyTrainee = new Set(
+          outcome.candidates
+            .filter((candidate) => candidate.currentlyTrainee)
+            .map((candidate) => candidate.profileId),
+        );
+        setSavedSelectedAssigned(initiallyAssigned);
+        setSavedSelectedTrainee(initiallyTrainee);
+        setSelectedAssigned(initiallyAssigned);
+        setSelectedTrainee(initiallyTrainee);
       },
     );
   }
@@ -110,41 +144,47 @@ export function useCandidateSelection({ onList, onReplace }: UseCandidateSelecti
     setCandidates(null);
     setLoading(false);
     setFailed(false);
-    setSavedSelected(new Set());
-    setSelected(new Set());
+    setSavedSelectedAssigned(new Set());
+    setSavedSelectedTrainee(new Set());
+    setSelectedAssigned(new Set());
+    setSelectedTrainee(new Set());
     setLastUndo(null);
   }
 
-  function toggle(profileId: string) {
-    setSelected((previous) => {
-      const next = new Set(previous);
-      if (next.has(profileId)) {
-        next.delete(profileId);
-      } else {
-        next.add(profileId);
-      }
-      return next;
-    });
+  function toggle(profileId: string, role: CandidateSelectionRole) {
+    if (role === "assigned") {
+      setSelectedAssigned((previous) => toggleMember(previous, profileId));
+      setSelectedTrainee((previous) => withoutMember(previous, profileId));
+    } else {
+      setSelectedTrainee((previous) => toggleMember(previous, profileId));
+      setSelectedAssigned((previous) => withoutMember(previous, profileId));
+    }
     setLastUndo(null);
   }
 
-  function submit(nextSelection: ReadonlySet<string>) {
+  function submit(nextSelection: SelectionPair) {
     if (target === null) {
       return;
     }
-    const changeCountForThisSave = symmetricDifferenceSize(nextSelection, savedSelected);
+    const changeCountForThisSave =
+      symmetricDifferenceSize(nextSelection.assigned, savedSelectedAssigned) +
+      symmetricDifferenceSize(nextSelection.trainee, savedSelectedTrainee);
     if (changeCountForThisSave === 0) {
       return;
     }
 
     const { scheduleId, positionId } = target;
-    const previousSelected = savedSelected;
+    const previousSelection: SelectionPair = {
+      assigned: savedSelectedAssigned,
+      trainee: savedSelectedTrainee,
+    };
 
     startTransition(async () => {
       const outcome = await onReplace({
         scheduleId,
         positionId,
-        profileIds: Array.from(nextSelection),
+        profileIds: Array.from(nextSelection.assigned),
+        traineeProfileIds: Array.from(nextSelection.trainee),
       });
 
       if (!outcome.ok) {
@@ -152,26 +192,30 @@ export function useCandidateSelection({ onList, onReplace }: UseCandidateSelecti
         return;
       }
 
-      setSavedSelected(nextSelection);
-      setSelected(nextSelection);
+      setSavedSelectedAssigned(nextSelection.assigned);
+      setSavedSelectedTrainee(nextSelection.trainee);
+      setSelectedAssigned(nextSelection.assigned);
+      setSelectedTrainee(nextSelection.trainee);
       setAssignedCount(outcome.assignedCount);
-      setLastUndo({ previousSelected, count: changeCountForThisSave });
+      setLastUndo({ previousSelection, count: changeCountForThisSave });
       showSnackbar(SNACKBAR_MESSAGE);
     });
   }
 
   function save() {
-    submit(selected);
+    submit({ assigned: selectedAssigned, trainee: selectedTrainee });
   }
 
   function executeUndo() {
     if (lastUndo === null) {
       return;
     }
-    submit(lastUndo.previousSelected);
+    submit(lastUndo.previousSelection);
   }
 
-  const changeCount = symmetricDifferenceSize(selected, savedSelected);
+  const changeCount =
+    symmetricDifferenceSize(selectedAssigned, savedSelectedAssigned) +
+    symmetricDifferenceSize(selectedTrainee, savedSelectedTrainee);
 
   return {
     target,
@@ -179,7 +223,8 @@ export function useCandidateSelection({ onList, onReplace }: UseCandidateSelecti
     candidates,
     loading,
     failed,
-    selected,
+    selectedAssigned,
+    selectedTrainee,
     toggle,
     changeCount,
     submitting,

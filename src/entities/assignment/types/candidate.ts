@@ -8,6 +8,7 @@ export type AssignmentCandidate = {
   otherPositionNames: string[];
   eligible: boolean;
   ineligibleReason: AssignmentIneligibleReason | null;
+  currentlyTrainee: boolean;
 };
 
 export type AssignmentCandidateBuckets = {

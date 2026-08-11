@@ -1,0 +1,88 @@
+{
+  "entries": [
+    {
+      "command": "npx -y supabase@2.75.0 test db",
+      "exit_code": 1,
+      "at": "2026-08-11T13:56:08Z",
+      "phase": "red",
+      "note": "assignment_trainees 마이그레이션을 잠시 빼고 db reset 후 실행. 19-assignments.test.sql의 인자 불일치와 20-assignment-trainees.test.sql 45문항 전부(교육생 스키마·RLS·거부 규칙·AC8 회귀) 실패로 확인."
+    },
+    {
+      "command": "npx -y supabase@2.75.0 test db",
+      "exit_code": 0,
+      "at": "2026-08-11T13:56:51Z",
+      "phase": "green",
+      "note": "마이그레이션 복원, db reset 후 재실행. Files=20, Tests=1055, Result: PASS."
+    },
+    {
+      "command": "pnpm vitest run src/entities/assignment/api/__tests__/list-position-assignment-candidates.test.ts src/entities/schedule/api/__tests__/list-schedule-requirements.test.ts src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-11T13:55:40Z",
+      "phase": "red",
+      "note": "세 구현 파일을 HEAD(교육생 이전) 버전으로 되돌리고 실행. 12 failed / 10 passed."
+    },
+    {
+      "command": "pnpm vitest run src/entities/assignment/api/__tests__/list-position-assignment-candidates.test.ts src/entities/schedule/api/__tests__/list-schedule-requirements.test.ts src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-11T13:55:50Z",
+      "phase": "green",
+      "note": "구현 복원 후 재실행. 22/22 통과."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/requirement-section-data.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-11T13:17:29Z",
+      "phase": "red",
+      "note": "traineeCounts·resolveTraineeCountLabel·shouldShowNoManagerNotice 단언 추가 직후. 7 failed / 10 passed."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/requirement-section-data.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-11T13:17:42Z",
+      "phase": "green",
+      "note": "구현 후 재실행. 17/17 통과."
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/hooks/__tests__/useCandidateSelection.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-11T13:20:02Z",
+      "phase": "red",
+      "note": "두 집합(selectedAssigned/selectedTrainee) 기준 새 단언을 옛 한 집합 구조 훅에 대해 실행. 8 failed / 4 passed."
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/hooks/__tests__/useCandidateSelection.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-11T13:20:08Z",
+      "phase": "green",
+      "note": "두 집합 구조로 재작성한 훅 적용 후 재실행. 12/12 통과."
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/api/__tests__/replace-position-assignments.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-11T13:21:18Z",
+      "phase": "red",
+      "note": "traineeProfileIds 필수 필드·LB024/LB025 매핑 단언 추가 직후. 5 failed / 8 passed."
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/api/__tests__/replace-position-assignments.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-11T13:21:50Z",
+      "phase": "green",
+      "note": "구현 후 재실행. 13/13 통과."
+    },
+    {
+      "command": "npx playwright test tests/e2e/assignment-trainee.spec.ts --reporter=list",
+      "exit_code": 1,
+      "at": "2026-08-11T13:58:52Z",
+      "phase": "red",
+      "note": "canSelectCandidateAsTrainee를 일시적으로 항상 false로 바꿔 [교육] 버튼이 전혀 안 그려지게 한 빌드로 실행. 2개 test 모두 타임아웃/요소 부재로 실패."
+    },
+    {
+      "command": "npx playwright test tests/e2e/assignment-trainee.spec.ts --reporter=list",
+      "exit_code": 0,
+      "at": "2026-08-11T13:59:48Z",
+      "phase": "green",
+      "note": "canSelectCandidateAsTrainee 복원 후 재빌드·재실행. 2/2 통과."
+    }
+  ]
+}

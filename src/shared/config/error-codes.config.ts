@@ -45,6 +45,14 @@ export const ERROR_CODES = {
     http: 409,
     message: "선택한 인원 중 이 포지션에 배정할 수 없는 사람이 있어요",
   },
+  SCHEDULING_TRAINEE_ALREADY_ASSIGNED: {
+    http: 409,
+    message: "이미 다른 포지션에 정식 배정되었거나 교육생으로 등록된 사람이 있어요",
+  },
+  SCHEDULING_TRAINEE_DUPLICATE: {
+    http: 409,
+    message: "이미 다른 포지션의 교육생으로 등록된 사람이 있어요",
+  },
 } as const satisfies Record<`${ErrorDomain}_${string}`, ErrorSpec>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;
@@ -67,4 +75,6 @@ export const ERROR_CODE = {
   SCHEDULING_STATUS_CONFLICT: "SCHEDULING_STATUS_CONFLICT",
   SCHEDULING_POSITION_IN_USE: "SCHEDULING_POSITION_IN_USE",
   SCHEDULING_ASSIGNMENT_NOT_ELIGIBLE: "SCHEDULING_ASSIGNMENT_NOT_ELIGIBLE",
+  SCHEDULING_TRAINEE_ALREADY_ASSIGNED: "SCHEDULING_TRAINEE_ALREADY_ASSIGNED",
+  SCHEDULING_TRAINEE_DUPLICATE: "SCHEDULING_TRAINEE_DUPLICATE",
 } as const satisfies { [K in ErrorCode]: K };

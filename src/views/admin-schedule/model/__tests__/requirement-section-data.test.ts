@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   resolveAssignedHeadcount,
   resolveRequirementSectionData,
+  resolveTraineeCountLabel,
   shouldCopyScheduleRequirements,
+  shouldShowNoManagerNotice,
 } from "@/views/admin-schedule/model/requirement-section-data";
 
 const ACTIVE_POSITION = {
@@ -32,6 +34,7 @@ describe("resolveRequirementSectionData", () => {
       requirementRows: [REQUIREMENT_ROW],
       assignedCounts: { "position-1": 3 },
       assignedWorkerCount: 3,
+      traineeCounts: { "position-1": 2 },
       positionsOk: true,
       positions: [ACTIVE_POSITION, INACTIVE_POSITION],
     });
@@ -41,6 +44,7 @@ describe("resolveRequirementSectionData", () => {
       requirementRows: [REQUIREMENT_ROW],
       assignedCounts: { "position-1": 3 },
       assignedWorkerCount: 3,
+      traineeCounts: { "position-1": 2 },
       activePositions: [ACTIVE_POSITION],
     });
   });
@@ -51,6 +55,7 @@ describe("resolveRequirementSectionData", () => {
       requirementRows: [],
       assignedCounts: {},
       assignedWorkerCount: 0,
+      traineeCounts: {},
       positionsOk: true,
       positions: [],
     });
@@ -60,6 +65,7 @@ describe("resolveRequirementSectionData", () => {
       requirementRows: [],
       assignedCounts: {},
       assignedWorkerCount: 0,
+      traineeCounts: {},
       activePositions: [],
     });
   });
@@ -70,6 +76,7 @@ describe("resolveRequirementSectionData", () => {
       requirementRows: [],
       assignedCounts: {},
       assignedWorkerCount: 0,
+      traineeCounts: {},
       positionsOk: true,
       positions: [ACTIVE_POSITION],
     });
@@ -83,6 +90,7 @@ describe("resolveRequirementSectionData", () => {
       requirementRows: [REQUIREMENT_ROW],
       assignedCounts: { "position-1": 1 },
       assignedWorkerCount: 1,
+      traineeCounts: {},
       positionsOk: false,
       positions: [],
     });
@@ -144,5 +152,29 @@ describe("shouldCopyScheduleRequirements", () => {
     expect(
       shouldCopyScheduleRequirements({ status: "CANCELLED", existingRequirementRowCount: 0 }),
     ).toBe(false);
+  });
+});
+
+describe("resolveTraineeCountLabel", () => {
+  it("AC6: 교육생이 있으면 · 교육 K 조각을 반환한다", () => {
+    expect(resolveTraineeCountLabel(2)).toBe("· 교육 2");
+  });
+
+  it("AC6 경계값: 교육생이 0명이면 null을 반환한다(조각을 붙이지 않는다)", () => {
+    expect(resolveTraineeCountLabel(0)).toBeNull();
+  });
+});
+
+describe("shouldShowNoManagerNotice", () => {
+  it("AC7: 정식 배정자가 없고 교육생만 있으면 담당자 없음을 표시한다", () => {
+    expect(shouldShowNoManagerNotice({ assignedCount: 0, traineeCount: 1 })).toBe(true);
+  });
+
+  it("AC7 경계값: 정식도 교육생도 0명이면 담당자 없음을 표시하지 않는다", () => {
+    expect(shouldShowNoManagerNotice({ assignedCount: 0, traineeCount: 0 })).toBe(false);
+  });
+
+  it("AC7: 정식 배정자가 있으면 교육생 유무와 무관하게 담당자 없음을 표시하지 않는다", () => {
+    expect(shouldShowNoManagerNotice({ assignedCount: 1, traineeCount: 1 })).toBe(false);
   });
 });

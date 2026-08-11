@@ -24,3 +24,7 @@ export function groupAssignmentCandidates(
 
   return { applied, notApplied, ineligible };
 }
+
+export function canSelectCandidateAsTrainee(candidate: AssignmentCandidate): boolean {
+  return candidate.ineligibleReason !== "GENDER_MISMATCH";
+}

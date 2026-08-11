@@ -7,6 +7,7 @@ export type RequirementSectionDataInput = {
   requirementRows: ScheduleRequirementRow[];
   assignedCounts: Record<string, number>;
   assignedWorkerCount: number;
+  traineeCounts: Record<string, number>;
   positionsOk: boolean;
   positions: Position[];
 };
@@ -17,6 +18,7 @@ export type RequirementSectionData =
       requirementRows: ScheduleRequirementRow[];
       assignedCounts: Record<string, number>;
       assignedWorkerCount: number;
+      traineeCounts: Record<string, number>;
       activePositions: Position[];
     }
   | { ok: false };
@@ -33,8 +35,24 @@ export function resolveRequirementSectionData(
     requirementRows: input.requirementRows,
     assignedCounts: input.assignedCounts,
     assignedWorkerCount: input.assignedWorkerCount,
+    traineeCounts: input.traineeCounts,
     activePositions: input.positions.filter((position) => position.isActive),
   };
+}
+
+export function resolveTraineeCountLabel(traineeCount: number): string | null {
+  if (traineeCount === 0) {
+    return null;
+  }
+
+  return `· 교육 ${traineeCount}`;
+}
+
+export function shouldShowNoManagerNotice(input: {
+  assignedCount: number;
+  traineeCount: number;
+}): boolean {
+  return input.assignedCount === 0 && input.traineeCount > 0;
 }
 
 export type AssignedHeadcount = { workerCount: number; positionTotal: number };

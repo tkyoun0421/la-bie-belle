@@ -20,6 +20,7 @@ function candidate(overrides: Partial<AssignmentCandidate>): AssignmentCandidate
     otherPositionNames: [],
     eligible: true,
     ineligibleReason: null,
+    currentlyTrainee: false,
     ...overrides,
   };
 }
@@ -47,7 +48,7 @@ describe("useCandidateSelection", () => {
     expect(result.current.failed).toBe(false);
   });
 
-  it("open은 후보를 불러오고 currentlyAssigned인 후보를 초기 선택으로 세팅한다", async () => {
+  it("open은 후보를 불러오고 currentlyAssigned·currentlyTrainee인 후보를 각 집합의 초기 선택으로 세팅한다", async () => {
     const { useCandidateSelection } =
       await import("@/features/assignment/hooks/useCandidateSelection");
     const onList = vi.fn().mockResolvedValue({
@@ -55,6 +56,7 @@ describe("useCandidateSelection", () => {
       candidates: [
         candidate({ profileId: "p1", currentlyAssigned: true }),
         candidate({ profileId: "p2", currentlyAssigned: false }),
+        candidate({ profileId: "p3", currentlyTrainee: true }),
       ],
     });
     const onReplace = vi.fn();
@@ -76,7 +78,8 @@ describe("useCandidateSelection", () => {
       requiredCount: 1,
     });
     expect(result.current.assignedCount).toBe(0);
-    expect(result.current.selected).toEqual(new Set(["p1"]));
+    expect(result.current.selectedAssigned).toEqual(new Set(["p1"]));
+    expect(result.current.selectedTrainee).toEqual(new Set(["p3"]));
     expect(result.current.changeCount).toBe(0);
   });
 
@@ -96,7 +99,7 @@ describe("useCandidateSelection", () => {
     expect(result.current.candidates).toBeNull();
   });
 
-  it("toggle은 선택을 바꾸고 되돌리기 메모리를 지운다", async () => {
+  it("toggle(role: assigned)은 정식 선택을 바꾸고 되돌리기 메모리를 지운다", async () => {
     const { useCandidateSelection } =
       await import("@/features/assignment/hooks/useCandidateSelection");
     const onList = vi.fn().mockResolvedValue({
@@ -111,19 +114,95 @@ describe("useCandidateSelection", () => {
       result.current.open(OPEN_PARAMS);
     });
     act(() => {
-      result.current.toggle("p1");
+      result.current.toggle("p1", "assigned");
     });
 
-    expect(result.current.selected).toEqual(new Set(["p1"]));
+    expect(result.current.selectedAssigned).toEqual(new Set(["p1"]));
     expect(result.current.changeCount).toBe(1);
   });
 
-  it("save 성공 시 배정 수를 갱신하고 되돌리기 메모리를 남긴다", async () => {
+  it("toggle(role: trainee)은 교육 선택을 바꾼다", async () => {
     const { useCandidateSelection } =
       await import("@/features/assignment/hooks/useCandidateSelection");
     const onList = vi.fn().mockResolvedValue({
       ok: true,
       candidates: [candidate({ profileId: "p1", currentlyAssigned: false })],
+    });
+    const onReplace = vi.fn();
+
+    const { result } = renderHook(() => useCandidateSelection({ onList, onReplace }));
+
+    await act(async () => {
+      result.current.open(OPEN_PARAMS);
+    });
+    act(() => {
+      result.current.toggle("p1", "trainee");
+    });
+
+    expect(result.current.selectedTrainee).toEqual(new Set(["p1"]));
+    expect(result.current.selectedAssigned).toEqual(new Set());
+    expect(result.current.changeCount).toBe(1);
+  });
+
+  it("한 사람을 정식으로 고르면 이미 교육으로 골랐던 선택이 풀린다(상호 배타)", async () => {
+    const { useCandidateSelection } =
+      await import("@/features/assignment/hooks/useCandidateSelection");
+    const onList = vi.fn().mockResolvedValue({
+      ok: true,
+      candidates: [candidate({ profileId: "p1", currentlyAssigned: false })],
+    });
+    const onReplace = vi.fn();
+
+    const { result } = renderHook(() => useCandidateSelection({ onList, onReplace }));
+
+    await act(async () => {
+      result.current.open(OPEN_PARAMS);
+    });
+    act(() => {
+      result.current.toggle("p1", "trainee");
+    });
+    act(() => {
+      result.current.toggle("p1", "assigned");
+    });
+
+    expect(result.current.selectedTrainee).toEqual(new Set());
+    expect(result.current.selectedAssigned).toEqual(new Set(["p1"]));
+  });
+
+  it("한 사람을 교육으로 고르면 이미 정식으로 골랐던 선택이 풀린다(상호 배타, 역방향)", async () => {
+    const { useCandidateSelection } =
+      await import("@/features/assignment/hooks/useCandidateSelection");
+    const onList = vi.fn().mockResolvedValue({
+      ok: true,
+      candidates: [candidate({ profileId: "p1", currentlyAssigned: false })],
+    });
+    const onReplace = vi.fn();
+
+    const { result } = renderHook(() => useCandidateSelection({ onList, onReplace }));
+
+    await act(async () => {
+      result.current.open(OPEN_PARAMS);
+    });
+    act(() => {
+      result.current.toggle("p1", "assigned");
+    });
+    act(() => {
+      result.current.toggle("p1", "trainee");
+    });
+
+    expect(result.current.selectedAssigned).toEqual(new Set());
+    expect(result.current.selectedTrainee).toEqual(new Set(["p1"]));
+  });
+
+  it("save 성공 시 배정 수를 갱신하고 두 집합을 함께 onReplace로 보낸다", async () => {
+    const { useCandidateSelection } =
+      await import("@/features/assignment/hooks/useCandidateSelection");
+    const onList = vi.fn().mockResolvedValue({
+      ok: true,
+      candidates: [
+        candidate({ profileId: "p1", currentlyAssigned: false }),
+        candidate({ profileId: "p2", currentlyAssigned: false }),
+      ],
     });
     const onReplace = vi.fn().mockResolvedValue({ ok: true, assignedCount: 1 });
 
@@ -133,7 +212,10 @@ describe("useCandidateSelection", () => {
       result.current.open(OPEN_PARAMS);
     });
     act(() => {
-      result.current.toggle("p1");
+      result.current.toggle("p1", "assigned");
+    });
+    act(() => {
+      result.current.toggle("p2", "trainee");
     });
     await act(async () => {
       result.current.save();
@@ -143,14 +225,15 @@ describe("useCandidateSelection", () => {
       scheduleId: "schedule-1",
       positionId: "position-1",
       profileIds: ["p1"],
+      traineeProfileIds: ["p2"],
     });
     expect(result.current.assignedCount).toBe(1);
     expect(result.current.changeCount).toBe(0);
-    expect(result.current.undo?.count).toBe(1);
+    expect(result.current.undo?.count).toBe(2);
     expect(typeof result.current.undo?.execute).toBe("function");
   });
 
-  it("save 실패 시 선택을 보존하고 스낵바로 오류를 알린다", async () => {
+  it("save 실패 시 두 선택을 보존하고 스낵바로 오류를 알린다", async () => {
     const { useCandidateSelection } =
       await import("@/features/assignment/hooks/useCandidateSelection");
     const onList = vi.fn().mockResolvedValue({
@@ -167,13 +250,14 @@ describe("useCandidateSelection", () => {
       result.current.open(OPEN_PARAMS);
     });
     act(() => {
-      result.current.toggle("p1");
+      result.current.toggle("p1", "assigned");
     });
     await act(async () => {
       result.current.save();
     });
 
-    expect(result.current.selected).toEqual(new Set(["p1"]));
+    expect(result.current.selectedAssigned).toEqual(new Set(["p1"]));
+    expect(result.current.selectedTrainee).toEqual(new Set());
     expect(result.current.undo).toBeNull();
     expect(showSnackbar).toHaveBeenCalledWith(
       ERROR_CODES.SCHEDULING_ASSIGNMENT_NOT_ELIGIBLE.message,
@@ -201,12 +285,15 @@ describe("useCandidateSelection", () => {
     expect(onReplace).not.toHaveBeenCalled();
   });
 
-  it("되돌리기를 실행하면 저장 이전 선택으로 되돌아간다", async () => {
+  it("되돌리기를 실행하면 저장 이전의 두 선택으로 함께 되돌아간다", async () => {
     const { useCandidateSelection } =
       await import("@/features/assignment/hooks/useCandidateSelection");
     const onList = vi.fn().mockResolvedValue({
       ok: true,
-      candidates: [candidate({ profileId: "p1", currentlyAssigned: false })],
+      candidates: [
+        candidate({ profileId: "p1", currentlyAssigned: false }),
+        candidate({ profileId: "p2", currentlyAssigned: false }),
+      ],
     });
     const onReplace = vi.fn().mockResolvedValue({ ok: true, assignedCount: 1 });
 
@@ -216,7 +303,10 @@ describe("useCandidateSelection", () => {
       result.current.open(OPEN_PARAMS);
     });
     act(() => {
-      result.current.toggle("p1");
+      result.current.toggle("p1", "assigned");
+    });
+    act(() => {
+      result.current.toggle("p2", "trainee");
     });
     await act(async () => {
       result.current.save();
@@ -231,8 +321,10 @@ describe("useCandidateSelection", () => {
       scheduleId: "schedule-1",
       positionId: "position-1",
       profileIds: [],
+      traineeProfileIds: [],
     });
-    expect(result.current.selected).toEqual(new Set());
+    expect(result.current.selectedAssigned).toEqual(new Set());
+    expect(result.current.selectedTrainee).toEqual(new Set());
     expect(result.current.assignedCount).toBe(0);
   });
 

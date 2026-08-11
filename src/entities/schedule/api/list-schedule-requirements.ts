@@ -10,6 +10,7 @@ export type ListScheduleRequirementsResult =
       data: ScheduleRequirementRow[];
       assignedCounts: Record<string, number>;
       assignedWorkerCount: number;
+      traineeCounts: Record<string, number>;
     }
   | { ok: false; code: ErrorCode };
 
@@ -23,6 +24,7 @@ type RequirementRow = {
 };
 
 type AssignmentRow = { assignment_positions: { position_id: string }[] | null };
+type TraineeRow = { position_id: string };
 
 function mapFailureCode(pgCode: string | undefined): ErrorCode {
   if (pgCode === FORBIDDEN_PG_CODE) {
@@ -41,12 +43,20 @@ function countAssignedPositions(rows: AssignmentRow[]): Record<string, number> {
   return counts;
 }
 
+function countTrainees(rows: TraineeRow[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const row of rows) {
+    counts[row.position_id] = (counts[row.position_id] ?? 0) + 1;
+  }
+  return counts;
+}
+
 export async function listScheduleRequirements(
   scheduleId: string,
 ): Promise<ListScheduleRequirementsResult> {
   const supabase = await createSupabaseServerClient();
 
-  const [requirementsResult, assignmentsResult] = await Promise.all([
+  const [requirementsResult, assignmentsResult, traineesResult] = await Promise.all([
     supabase
       .from("schedule_position_requirements")
       .select("position_id, required_count, positions(name)")
@@ -56,6 +66,11 @@ export async function listScheduleRequirements(
     supabase
       .from("assignments")
       .select("assignment_positions(position_id)")
+      .eq("schedule_id", scheduleId)
+      .limit(LIST_REQUIREMENTS_LIMIT),
+    supabase
+      .from("assignment_trainees")
+      .select("position_id")
       .eq("schedule_id", scheduleId)
       .limit(LIST_REQUIREMENTS_LIMIT),
   ]);
@@ -72,8 +87,15 @@ export async function listScheduleRequirements(
     );
     return { ok: false, code: mapFailureCode(assignmentsResult.error.code) };
   }
+  if (traineesResult.error) {
+    process.stderr.write(
+      `${JSON.stringify({ event: "scheduling_list_schedule_requirements_trainee_counts_failed", code: traineesResult.error.code })}\n`,
+    );
+    return { ok: false, code: mapFailureCode(traineesResult.error.code) };
+  }
 
   const assignmentRows = (assignmentsResult.data ?? []) as unknown as AssignmentRow[];
+  const traineeRows = (traineesResult.data ?? []) as unknown as TraineeRow[];
 
   return {
     ok: true,
@@ -88,5 +110,6 @@ export async function listScheduleRequirements(
       })),
     assignedCounts: countAssignedPositions(assignmentRows),
     assignedWorkerCount: assignmentRows.length,
+    traineeCounts: countTrainees(traineeRows),
   };
 }

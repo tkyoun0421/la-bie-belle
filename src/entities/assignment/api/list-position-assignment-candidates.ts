@@ -22,6 +22,7 @@ type CandidateRow = {
   other_position_names: string[] | null;
   eligible: boolean;
   ineligible_reason: string | null;
+  currently_trainee: boolean;
 };
 
 function isIneligibleReason(value: string | null): value is AssignmentIneligibleReason {
@@ -58,6 +59,7 @@ export async function listPositionAssignmentCandidates(
       otherPositionNames: row.other_position_names ?? [],
       eligible: row.eligible,
       ineligibleReason: isIneligibleReason(row.ineligible_reason) ? row.ineligible_reason : null,
+      currentlyTrainee: row.currently_trainee,
     })),
   };
 }

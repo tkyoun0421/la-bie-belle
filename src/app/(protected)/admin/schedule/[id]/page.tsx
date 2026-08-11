@@ -66,6 +66,7 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
     requirementRows: requirementsResult.ok ? requirementsResult.data : [],
     assignedCounts: requirementsResult.ok ? requirementsResult.assignedCounts : {},
     assignedWorkerCount: requirementsResult.ok ? requirementsResult.assignedWorkerCount : 0,
+    traineeCounts: requirementsResult.ok ? requirementsResult.traineeCounts : {},
     positionsOk: positionsResult.ok,
     positions: positionsResult.ok ? positionsResult.data : [],
   });
@@ -91,6 +92,7 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
         requirementRows={requirementSectionData.requirementRows}
         assignedCounts={requirementSectionData.assignedCounts}
         assignedHeadcount={assignedHeadcount}
+        traineeCounts={requirementSectionData.traineeCounts}
         activePositions={requirementSectionData.activePositions}
         onSetRequirement={setRequirement}
         onRemoveRequirement={removeRequirement}

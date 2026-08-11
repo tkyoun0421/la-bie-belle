@@ -73,8 +73,8 @@ select has_function(
   'list_position_assignment_candidates(uuid, uuid) exists'
 );
 select has_function(
-  'public', 'replace_position_assignments', array['uuid', 'uuid', 'uuid[]'],
-  'replace_position_assignments(uuid, uuid, uuid[]) exists'
+  'public', 'replace_position_assignments', array['uuid', 'uuid', 'uuid[]', 'uuid[]'],
+  'replace_position_assignments(uuid, uuid, uuid[], uuid[]) exists'
 );
 select ok(
   has_function_privilege(
@@ -84,12 +84,13 @@ select ok(
 );
 select ok(
   has_function_privilege(
-    'authenticated', 'replace_position_assignments(uuid, uuid, uuid[])', 'execute'
+    'authenticated', 'replace_position_assignments(uuid, uuid, uuid[], uuid[])', 'execute'
   ),
   'authenticated는 replace_position_assignments 실행 권한이 있고 admin 여부는 내부 is_admin이 강제한다'
 );
 select ok(
-  pg_get_functiondef('replace_position_assignments(uuid, uuid, uuid[])'::regprocedure) ~* 'for update',
+  pg_get_functiondef('replace_position_assignments(uuid, uuid, uuid[], uuid[])'::regprocedure)
+    ~* 'for update',
   '동시성: replace_position_assignments 정의가 for update 잠금을 사용한다'
 );
 

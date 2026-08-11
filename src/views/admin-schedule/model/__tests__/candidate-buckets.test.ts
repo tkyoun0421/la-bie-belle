@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import type { AssignmentCandidate } from "@/entities/assignment/types/candidate";
-import { groupAssignmentCandidates } from "@/views/admin-schedule/model/candidate-buckets";
+import {
+  canSelectCandidateAsTrainee,
+  groupAssignmentCandidates,
+} from "@/views/admin-schedule/model/candidate-buckets";
 
 function candidate(overrides: Partial<AssignmentCandidate>): AssignmentCandidate {
   return {
@@ -12,6 +15,7 @@ function candidate(overrides: Partial<AssignmentCandidate>): AssignmentCandidate
     otherPositionNames: [],
     eligible: true,
     ineligibleReason: null,
+    currentlyTrainee: false,
     ...overrides,
   };
 }
@@ -85,5 +89,25 @@ describe("groupAssignmentCandidates", () => {
       notApplied: [],
       ineligible: [],
     });
+  });
+});
+
+describe("canSelectCandidateAsTrainee", () => {
+  it("정식 배정에 자격 있는 후보도 교육으로 고를 수 있다", () => {
+    const eligible = candidate({ eligible: true, ineligibleReason: null });
+
+    expect(canSelectCandidateAsTrainee(eligible)).toBe(true);
+  });
+
+  it("가능 포지션이 없을 뿐인 후보(NOT_ELIGIBLE)는 교육으로 고를 수 있다", () => {
+    const notEligible = candidate({ eligible: false, ineligibleReason: "NOT_ELIGIBLE" });
+
+    expect(canSelectCandidateAsTrainee(notEligible)).toBe(true);
+  });
+
+  it("성별 조건이 맞지 않는 후보(GENDER_MISMATCH)는 교육으로도 고를 수 없다", () => {
+    const genderMismatch = candidate({ eligible: false, ineligibleReason: "GENDER_MISMATCH" });
+
+    expect(canSelectCandidateAsTrainee(genderMismatch)).toBe(false);
   });
 });

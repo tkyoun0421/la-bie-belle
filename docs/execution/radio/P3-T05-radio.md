@@ -1,7 +1,7 @@
 # P3-T05 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-11
 - 개발 설계 승인: user, 2026-08-11
 
@@ -10,6 +10,7 @@
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-11 | 최초 작성. 설계 인터뷰 확정 7건 — 교육생을 새 테이블에 담고, 저장은 기존 함수를 넓혀 한 트랜잭션으로 하며, 후보 함수에 교육생 여부 컬럼을 더하고, DB 경계 테스트는 새 pgTAP 파일로 떼고, 시트의 `자격 없음` 묶음은 유지한 채 누를 수만 있게 하고, 후보 한 줄에 `[배정]`·`[교육]` 두 버튼을 나란히 두고, e2e는 새 spec으로 떼며 시딩 헬퍼를 `tests/e2e/support/`로 뺀다. 2026-08-11 사용자 결정. |
+| 2 | 2026-08-11 | 네번째 인자의 기본값을 `null`로 두고 「교육생을 건드리지 않는다」로 읽는다. revision 1의 지시 셋이 서로 부딪혀 개발이 멈춰 반환한 결과다 — 「기본값을 두지 않는다」와 「과부하를 남기지 않는다」와 「`19-assignments.test.sql`은 7줄만 고친다」를 동시에 만족할 방법이 없었다. 봉인 전 조사가 시그니처를 문자열로 박은 줄만 세고 함수를 실제로 부르는 26곳을 세지 않은 것이 원인이다. 정지 조건의 행 번호도 4줄(76·77·87·92)로 정정한다 — 72·73·81행은 `list_position_assignment_candidates`의 인자가 그대로라 깨지지 않는다. 2026-08-11 사용자 결정. |
 
 - 관련 spec: PRD:INV-STAFF-02, PRD:AC-04, DOMAIN:SCHEDULING, DOCS:SDD(ADMIN-FLOWS 관리자 예외 규칙 절)
 - 적용 깊이: 깊음 — 테이블과 RLS를 새로 만들고, 이미 배포된 함수 둘을 drop한 뒤 다시 만들며, 감사 기록과 오류 코드가 는다. P3-T04와 달리 DB 경계가 움직인다.
@@ -44,7 +45,7 @@
 
 ### 정지 조건
 
-- **`supabase/tests/19-assignments.test.sql`에서 고칠 것은 옛 시그니처를 문자열로 박아 둔 7줄뿐이다** — 72·73행(`list_position_assignment_candidates(uuid, uuid)`), 76·77·87·92행(`replace_position_assignments(uuid, uuid, uuid[])`), 81행. 이 파일의 다른 단언을 고쳐야 하는 상황이 나오면 멈추고 결정 신호로 반환한다. 1014줄짜리 기존 회귀망을 이 task가 다시 쓰는 일은 없다.
+- **`supabase/tests/19-assignments.test.sql`에서 고칠 것은 옛 시그니처를 문자열로 박아 둔 4줄뿐이다** — 76·77·87·92행, 모두 `replace_position_assignments(uuid, uuid, uuid[])`를 문자열로 적은 자리다. 72·73·81행은 `list_position_assignment_candidates(uuid, uuid)`인데 인자가 그대로고 반환 테이블만 바뀌므로 `has_function`·`has_function_privilege`가 깨지지 않는다. **이 파일의 3-인자 호출부 26곳은 손대지 않는다** — 네번째 인자의 `null` 기본값이 그것들을 그대로 통과시킨다. 호출부를 고쳐야 하는 상황이 나오면 멈추고 결정 신호로 반환한다. 1014줄짜리 기존 회귀망을 이 task가 다시 쓰는 일은 없다.
 - **기존 e2e 헬퍼를 `tests/e2e/support/`로 빼다가 기존 test가 깨지면 추출을 되돌리고 멈춘다.** `assignment-eligibility.spec.ts`의 기존 test 본문은 import 줄 말고 바뀌지 않아야 한다.
 - **기존 배정 데이터를 옮기거나 채워 넣어야 하는 상황이 나오면 멈춘다.** 교육생 테이블은 비어서 태어나므로 백필이 필요 없다. 필요해졌다면 설계가 틀린 것이다.
 - **`assignments`·`assignment_positions`를 고쳐야 풀리는 문제가 나오면 멈춘다.**
@@ -72,7 +73,7 @@
 | 5 필요 인원 제외 | 테스트함 — 단위에서 교육생이 있는 집계의 `배정 M`이 안 늘어남 | 테스트함 — 교육생이 배정에 섞이면 수가 어긋나 드러남 | 테스트함 — 교육생만 있고 정식이 0명인 포지션 | 해당 없음 — 집계 계층이다 | 해당 없음 — 렌더가 멱등이다 | 해당 없음 — 집계 계층이다 |
 | 6 교육 수 표시 | 테스트함 — 단위 판정과 e2e에서 `· 교육 1`이 뜸 | 테스트함 — 교육생이 없는 포지션에 조각이 있으면 드러남 | 테스트함 — 0명일 때 DOM 부재, 셋일 때 `교육 3` | 해당 없음 — 표시 계층이다 | 해당 없음 — 렌더가 멱등이다 | 해당 없음 — 표시 계층이다 |
 | 7 담당자 없음 | 테스트함 — e2e에서 정식을 모두 뺀 뒤 교육생 행이 남고 표시가 뜸 | 테스트함 — 교육생이 따라 지워지면 드러남 | 테스트함 — 정식이 0명이면서 교육생도 0명인 포지션에는 표시가 없음 | 해당 없음 — 표시 계층이다 | 해당 없음 — 렌더가 멱등이다 | 해당 없음 — 표시 계층이다 |
-| 8 회귀 | 테스트함 — verify GREEN | 테스트함 — 기존 단위·e2e·pgTAP 통과 | 해당 없음 — 위 행이 소유 | 해당 없음 — 위 행이 소유 | 해당 없음 — 위 행이 소유 | 해당 없음 — 위 행이 소유 |
+| 8 회귀 | 테스트함 — verify GREEN | 테스트함 — 기존 단위·e2e·pgTAP 통과 | 테스트함 — 새 pgTAP에서 3-인자 호출이 기존 교육생 행을 남기는지 단언(`null` = 무변경) | 해당 없음 — 위 행이 소유 | 해당 없음 — 위 행이 소유 | 해당 없음 — 위 행이 소유 |
 
 - 보충 위험: **단위 테스트는 Supabase를 전부 mock한다.** `replace-position-assignments.test.ts`가 `rpc`를 `vi.fn()`으로 갈아끼우므로 인수 조건 1~4의 실제 거부는 pgTAP과 실DB e2e로만 검증된다. 단위로 덮이는 것은 순수 계산(집계·판정·묶음)과 훅의 선택 상태뿐이다. **`useCandidateSelection`의 선택 상태가 집합 하나에서 둘로 늘어난다** — `toggle`·`submit`·`changeCount`·되돌리기가 모두 두 집합을 함께 다뤄야 하고, 기존 단위 테스트 268줄이 한 집합을 전제로 쓰여 있어 이 파일의 회귀 위험이 이 task에서 가장 크다. **`자격 없음` 묶음의 의미가 바뀐다** — `groupAssignmentCandidates`가 지금 `eligible === false && !currentlyAssigned`를 통째로 그 묶음에 넣는데, 그중 `NOT_ELIGIBLE`인 사람은 이제 교육으로 고를 수 있고 `GENDER_MISMATCH`인 사람만 못 누른다. 묶음 구성은 그대로 두되 누를 수 있는지의 판정이 사유별로 갈린다. **헬퍼 추출이 멀쩡한 기존 spec을 건드린다** — 시딩 헬퍼 10개를 `tests/e2e/support/`로 빼면서 `assignment-eligibility.spec.ts`의 import가 바뀐다. 기존 test 본문이 한 줄이라도 달라지면 정지 조건이 걸린다.
 
@@ -94,7 +95,7 @@
 
 - `supabase/migrations/<타임스탬프>_assignment_trainees.sql`: 새 테이블 `assignment_trainees`와 RLS를 만들고, 이미 배포된 함수 둘을 `drop function`한 뒤 다시 만든다. 옛 함수를 남겨 두지 않는다 — 같은 이름의 과부하가 둘 공존하면 어느 쪽이 불렸는지 흐려진다.
 - `supabase/tests/20-assignment-trainees.test.sql`: 새 파일. 테이블 구조, RLS, 새 시그니처, 거부 규칙 넷(성별·정식 겸함 양방향·교육생 중복), 상한 없음, 감사 기록을 덮는다.
-- `supabase/tests/19-assignments.test.sql`: 시그니처를 문자열로 박은 7줄만 새 시그니처로 고친다. 다른 단언은 손대지 않는다.
+- `supabase/tests/19-assignments.test.sql`: 시그니처를 문자열로 박은 4줄(76·77·87·92)만 새 시그니처로 고친다. 3-인자 호출부와 다른 단언은 손대지 않는다.
 - `src/entities/assignment/types/candidate.ts`: `AssignmentCandidate`에 `currentlyTrainee: boolean`을 더한다. 런타임 값을 export하지 않는다.
 - `src/entities/assignment/api/list-position-assignment-candidates.ts`: 새 컬럼을 매핑한다. 조회 개수는 그대로 하나다. `import "server-only"`는 첫 줄에 그대로 둔다.
 - `src/entities/schedule/api/list-schedule-requirements.ts`: 성공 반환에 `traineeCounts: Record<string, number>`를 더한다. 교육생 행을 `position_id`로 세며, 기존 `assignedCounts`·`assignedWorkerCount` 계산에 교육생을 섞지 않는다.
@@ -132,7 +133,9 @@ create table assignment_trainees (
 
 ## Interface
 
-- `replace_position_assignments(target_schedule_id uuid, target_position_id uuid, profile_ids uuid[], trainee_profile_ids uuid[])` — 옛 3인자 함수를 `drop` 후 재생성한다. 기본값을 두지 않는다. 기본값을 두면 3인자로 부르는 옛 호출이 그 포지션의 교육생을 조용히 비우게 된다.
+- `replace_position_assignments(target_schedule_id uuid, target_position_id uuid, profile_ids uuid[], trainee_profile_ids uuid[] default null)` — 옛 3인자 함수를 `drop` 후 재생성한다. 함수는 하나뿐이며 과부하를 남기지 않는다.
+- **네번째 인자의 `null`은 「교육생을 건드리지 않는다」로 읽는다.** 함수 본문은 `trainee_profile_ids is not null`일 때만 교육생 교체 구간에 들어간다. 빈 배열을 기본값으로 두면 3인자로 부르는 옛 호출이 그 포지션의 교육생을 조용히 비우므로 그렇게 하지 않는다. 두 값의 뜻이 다르다 — `null`은 무변경, `array[]::uuid[]`는 전부 제거다.
+- TS 레이어는 언제나 4인자로 부른다. `ReplacePositionAssignmentsInputSchema`가 `traineeProfileIds`를 필수 필드로 강제하므로 프로덕션 경로에 3인자 호출이 없다. 기본값은 기존 pgTAP 회귀망의 하위 호환을 위한 것이다.
 - `list_position_assignment_candidates(target_schedule_id uuid, target_position_id uuid)` — 인자는 그대로, 반환 테이블에 `currently_trainee boolean`을 더해 `drop` 후 재생성한다.
 - 거부 코드: `LB024`(정식 배정과 겸하려 함), `LB025`(다른 포지션 교육생과 중복). 성별 거부는 기존 `LB023`을 그대로 쓴다.
 - `ERROR_CODE`에 `SCHEDULING_TRAINEE_ALREADY_ASSIGNED`와 `SCHEDULING_TRAINEE_DUPLICATE`를 더한다.
@@ -168,7 +171,7 @@ docs/execution/phases/03-assignment-and-confirmation.md
 docs/execution/phases/index.jsonl
 ```
 
-- 용도 한정: `supabase/migrations/**`는 교육생 테이블 신설과 두 함수 재생성에만 쓰고 기존 테이블 구조를 바꾸지 않는다. `supabase/tests/19-assignments.test.sql`은 위 정지 조건이 지정한 7줄에만 쓴다. `src/entities/schedule/api/**`는 교육생 집계를 더하는 데만 쓰고 기존 쿼리·필터·권한을 바꾸지 않는다. `src/features/assignment/**`는 선택 상태와 저장 인자를 넓히는 데만 쓰고 관리자 경계 검사를 바꾸지 않는다. `src/views/admin-schedule/**`는 판정 신설과 표시에만 쓰고 필요 인원 편집 동작을 바꾸지 않는다. `error-codes.config.ts`는 코드 둘을 더하는 데만 쓰고 기존 코드의 문구·http를 바꾸지 않는다. `tests/e2e/assignment-eligibility.spec.ts`는 헬퍼 import로 바꾸는 데만 쓰고 기존 test 본문을 고치지 않는다.
+- 용도 한정: `supabase/migrations/**`는 교육생 테이블 신설과 두 함수 재생성에만 쓰고 기존 테이블 구조를 바꾸지 않는다. `supabase/tests/19-assignments.test.sql`은 위 정지 조건이 지정한 4줄에만 쓴다. `src/entities/schedule/api/**`는 교육생 집계를 더하는 데만 쓰고 기존 쿼리·필터·권한을 바꾸지 않는다. `src/features/assignment/**`는 선택 상태와 저장 인자를 넓히는 데만 쓰고 관리자 경계 검사를 바꾸지 않는다. `src/views/admin-schedule/**`는 판정 신설과 표시에만 쓰고 필요 인원 편집 동작을 바꾸지 않는다. `error-codes.config.ts`는 코드 둘을 더하는 데만 쓰고 기존 코드의 문구·http를 바꾸지 않는다. `tests/e2e/assignment-eligibility.spec.ts`는 헬퍼 import로 바꾸는 데만 쓰고 기존 test 본문을 고치지 않는다.
 - `src/entities/schedule/model/**`는 의도적으로 빠져 있다. 근무자용 배정표의 `isTrainee`를 실데이터로 잇는 일은 P3-T07 소유다.
 - `docs/product/**`도 빠져 있다. PRD·ADMIN-FLOWS 수정은 기획 승인 커밋에서 이미 끝났고, 설계·개발이 제품 정본을 다시 고치지 않는다.
 

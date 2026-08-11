@@ -1,125 +1,25 @@
-import { randomUUID } from "node:crypto";
-
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { BrowserContext, Locator, Page } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 import { devices, expect, test } from "@playwright/test";
 
+import { loadSupabaseTestEnv } from "./support/supabase-test-auth";
 import {
-  loadSupabaseTestEnv,
-  signInWithPasswordCookies,
-  toPlaywrightCookies,
-} from "./support/supabase-test-auth";
+  closeSheet,
+  openPositionSheet,
+  positionButton,
+  positionRow,
+  toggleCandidateAndSave,
+  waitForDrawerOpenTransitionToSettle,
+} from "./support/assignment-candidate-sheet";
+import {
+  createAdminSession,
+  createWorkerProfile,
+  insertSchedule,
+} from "./support/assignment-schedule-fixtures";
 import { WORK_DATE_BANDS, workDateInBand, workDatesInBand } from "./support/work-date-band";
 
 const DRESS_POSITION_NAME = "드레스";
 const MAIN_POSITION_NAME = "메인";
 const SCAN_POSITION_NAME = "스캔";
-
-function randomPhone(): string {
-  const suffix = Math.floor(Math.random() * 1e8)
-    .toString()
-    .padStart(8, "0");
-  return `010${suffix}`;
-}
-
-const DRAWER_OPEN_TRANSITION_MS = 700;
-
-async function waitForDrawerOpenTransitionToSettle(page: Page): Promise<void> {
-  await page.waitForTimeout(DRAWER_OPEN_TRANSITION_MS);
-}
-
-async function createAdminSession(context: BrowserContext, baseURL: string | undefined) {
-  const env = loadSupabaseTestEnv();
-  const admin = createClient(env.supabaseUrl, env.serviceRoleKey);
-  const email = `e2e-assignment-eligibility-admin-${randomUUID()}@labiebelle.test`;
-  const password = "e2e-assignment-eligibility-admin-password-Aa1!";
-
-  const { data, error } = await admin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-  });
-  if (error || !data.user) {
-    throw error ?? new Error("관리자 테스트 사용자 생성에 실패했습니다.");
-  }
-
-  const { error: profileError } = await admin.from("profiles").insert({
-    id: data.user.id,
-    name: `배정관리자-${randomUUID().slice(0, 8)}`,
-    phone: randomPhone(),
-    gender: "male",
-    birth_date: "1985-01-01",
-    status: "active",
-    inactivity_anchor_at: new Date().toISOString(),
-  });
-  if (profileError) {
-    throw profileError;
-  }
-
-  const { error: roleError } = await admin
-    .from("profile_roles")
-    .insert({ profile_id: data.user.id, role: "admin" });
-  if (roleError) {
-    throw roleError;
-  }
-
-  const cookies = await signInWithPasswordCookies(env, { email, password });
-  const domain = new URL(baseURL ?? "http://localhost:3100").hostname;
-  await context.addCookies(toPlaywrightCookies(cookies, domain));
-
-  return { admin, email, password };
-}
-
-async function createWorkerProfile(
-  admin: SupabaseClient,
-  slug: string,
-  label: string,
-  gender: "male" | "female",
-): Promise<{ id: string; name: string }> {
-  const email = `e2e-assignment-eligibility-${slug}-${randomUUID()}@labiebelle.test`;
-  const password = "e2e-assignment-eligibility-worker-password-Aa1!";
-  const name = `${label}-${randomUUID().slice(0, 8)}`;
-
-  const { data, error } = await admin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-  });
-  if (error || !data.user) {
-    throw error ?? new Error("근무자 테스트 사용자 생성에 실패했습니다.");
-  }
-
-  const { error: profileError } = await admin.from("profiles").insert({
-    id: data.user.id,
-    name,
-    phone: randomPhone(),
-    gender,
-    birth_date: "1994-04-04",
-    status: "active",
-    inactivity_anchor_at: new Date().toISOString(),
-  });
-  if (profileError) {
-    throw profileError;
-  }
-
-  return { id: data.user.id, name };
-}
-
-async function insertSchedule(
-  admin: SupabaseClient,
-  workDate: string,
-  status: "OPEN" | "CONFIRMED",
-): Promise<string> {
-  const { data, error } = await admin
-    .from("schedules")
-    .insert({ work_date: workDate, application_deadline: workDate, status })
-    .select("id")
-    .single();
-  if (error || !data) {
-    throw error ?? new Error("스케줄 픽스처 생성에 실패했습니다.");
-  }
-  return (data as { id: string }).id;
-}
 
 test.describe("배정 후보와 자격 검사", () => {
   test("여성 전용 포지션에서 자격 없는 근무자는 접힌 목록에 이유와 함께 표시되고, 신청자 배정 저장·교체·초과 배정이 반영되며, 확정 스케줄에서는 배정 시트가 열리지 않는다", async ({
@@ -258,40 +158,6 @@ test.describe("배정 후보와 자격 검사", () => {
     await context.close();
   });
 });
-
-function positionButton(page: Page, positionName: string): Locator {
-  return page.getByRole("button", { name: new RegExp(`^${positionName} 필요`) });
-}
-
-function positionRow(page: Page, positionName: string): Locator {
-  return page.locator("li").filter({ has: positionButton(page, positionName) });
-}
-
-async function openPositionSheet(page: Page, positionName: string): Promise<Locator> {
-  const button = positionButton(page, positionName);
-  await expect(button).toHaveCount(1);
-  await button.click();
-  const sheet = page.getByRole("dialog", { name: positionName, exact: true });
-  await expect(sheet).toBeVisible();
-  return sheet;
-}
-
-async function closeSheet(page: Page, sheet: Locator): Promise<void> {
-  await page.keyboard.press("Escape");
-  await expect(sheet).toBeHidden();
-}
-
-async function toggleCandidateAndSave(
-  page: Page,
-  sheet: Locator,
-  workerName: string,
-  fromLabel: "선택" | "선택됨",
-): Promise<void> {
-  const row = sheet.locator("li").filter({ hasText: workerName });
-  await row.getByRole("button", { name: fromLabel, exact: true }).click({ force: true });
-  await sheet.getByRole("button", { name: "저장", exact: true }).click({ force: true });
-  await expect(page.getByText("배정을 변경했어요")).toBeVisible();
-}
 
 const HEADCOUNT_LINE_PATTERN = /오는 사람 \d+명 · 포지션 합계 \d+/;
 

@@ -34,8 +34,15 @@ import {
 } from "@/features/requirement/hooks/useRequirementEditor";
 import { MissingPositionsBanner } from "@/features/requirement/ui/MissingPositionsBanner";
 import { RequirementTable } from "@/features/requirement/ui/RequirementTable";
-import { groupAssignmentCandidates } from "@/views/admin-schedule/model/candidate-buckets";
-import type { AssignedHeadcount } from "@/views/admin-schedule/model/requirement-section-data";
+import {
+  canSelectCandidateAsTrainee,
+  groupAssignmentCandidates,
+} from "@/views/admin-schedule/model/candidate-buckets";
+import {
+  resolveTraineeCountLabel,
+  shouldShowNoManagerNotice,
+  type AssignedHeadcount,
+} from "@/views/admin-schedule/model/requirement-section-data";
 import {
   resolveSchedulePrepScreenMode,
   schedulePrepStatusLabel,
@@ -54,6 +61,7 @@ type AdminSchedulePrepViewProps = {
   requirementRows: ScheduleRequirementRow[];
   assignedCounts: Record<string, number>;
   assignedHeadcount: AssignedHeadcount | null;
+  traineeCounts: Record<string, number>;
   activePositions: Position[];
   onSetRequirement: SetRequirementAction;
   onRemoveRequirement: RemoveRequirementAction;
@@ -71,6 +79,7 @@ export function AdminSchedulePrepView({
   requirementRows,
   assignedCounts,
   assignedHeadcount,
+  traineeCounts,
   activePositions,
   onSetRequirement,
   onRemoveRequirement,
@@ -180,15 +189,25 @@ export function AdminSchedulePrepView({
         <h2 className="typo-title text-text-strong">필요 인원</h2>
         {mode === "readonly" ? (
           <ul className="flex flex-col gap-1">
-            {requirementRows.map((row) => (
-              <li
-                key={row.positionId}
-                className="flex items-center justify-between typo-body text-text-strong"
-              >
-                <span>{row.positionName}</span>
-                <span>{`필요 ${row.requiredCount} / 배정 ${assignedCounts[row.positionId] ?? 0}`}</span>
-              </li>
-            ))}
+            {requirementRows.map((row) => {
+              const assignedCount = assignedCounts[row.positionId] ?? 0;
+              const traineeCount = traineeCounts[row.positionId] ?? 0;
+              const traineeLabel = resolveTraineeCountLabel(traineeCount);
+              const noManager = shouldShowNoManagerNotice({ assignedCount, traineeCount });
+
+              return (
+                <li
+                  key={row.positionId}
+                  className="flex items-center justify-between typo-body text-text-strong"
+                >
+                  <span>{row.positionName}</span>
+                  <span className="flex items-center gap-1">
+                    <span>{`필요 ${row.requiredCount} / 배정 ${assignedCount}${traineeLabel ? ` ${traineeLabel}` : ""}`}</span>
+                    {noManager ? <span className="typo-caption text-text">담당자 없음</span> : null}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <>
@@ -205,26 +224,38 @@ export function AdminSchedulePrepView({
               pending={requirementEditor.pending}
             />
             <ul className="flex flex-col divide-y divide-border border-t border-border">
-              {requirementEditor.rows.map((row) => (
-                <li key={row.positionId}>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      candidateSelection.open({
-                        scheduleId: schedulePrep.id,
-                        positionId: row.positionId,
-                        positionName: row.positionName,
-                        requiredCount: row.requiredCount,
-                        assignedCount: assignedCounts[row.positionId] ?? 0,
-                      })
-                    }
-                    className="flex w-full items-center justify-between py-3 text-left typo-body text-text-strong"
-                  >
-                    <span>{row.positionName}</span>
-                    <span>{`필요 ${row.requiredCount} / 배정 ${assignedCounts[row.positionId] ?? 0}`}</span>
-                  </button>
-                </li>
-              ))}
+              {requirementEditor.rows.map((row) => {
+                const assignedCount = assignedCounts[row.positionId] ?? 0;
+                const traineeCount = traineeCounts[row.positionId] ?? 0;
+                const traineeLabel = resolveTraineeCountLabel(traineeCount);
+                const noManager = shouldShowNoManagerNotice({ assignedCount, traineeCount });
+
+                return (
+                  <li key={row.positionId}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        candidateSelection.open({
+                          scheduleId: schedulePrep.id,
+                          positionId: row.positionId,
+                          positionName: row.positionName,
+                          requiredCount: row.requiredCount,
+                          assignedCount,
+                        })
+                      }
+                      className="flex w-full items-center justify-between py-3 text-left typo-body text-text-strong"
+                    >
+                      <span>{row.positionName}</span>
+                      <span className="flex items-center gap-1">
+                        <span>{`필요 ${row.requiredCount} / 배정 ${assignedCount}${traineeLabel ? ` ${traineeLabel}` : ""}`}</span>
+                        {noManager ? (
+                          <span className="typo-caption text-text">담당자 없음</span>
+                        ) : null}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </>
         )}
@@ -236,8 +267,10 @@ export function AdminSchedulePrepView({
         loading={candidateSelection.loading}
         failed={candidateSelection.failed}
         buckets={candidateBuckets}
-        selected={candidateSelection.selected}
+        selectedAssigned={candidateSelection.selectedAssigned}
+        selectedTrainee={candidateSelection.selectedTrainee}
         onToggle={candidateSelection.toggle}
+        canSelectAsTrainee={canSelectCandidateAsTrainee}
         changeCount={candidateSelection.changeCount}
         submitting={candidateSelection.submitting}
         onSave={candidateSelection.save}

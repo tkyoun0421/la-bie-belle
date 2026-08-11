@@ -14,6 +14,7 @@ const ReplacePositionAssignmentsInputSchema = z.object({
   scheduleId: z.string().uuid(),
   positionId: z.string().uuid(),
   profileIds: z.array(z.string().uuid()),
+  traineeProfileIds: z.array(z.string().uuid()),
 });
 
 export type ReplacePositionAssignmentsInput = z.infer<typeof ReplacePositionAssignmentsInputSchema>;
@@ -24,6 +25,8 @@ export type ReplacePositionAssignmentsResult =
 const FORBIDDEN_PG_CODE = "42501";
 const STATUS_CONFLICT_PG_CODE = "LB020";
 const NOT_ELIGIBLE_PG_CODE = "LB023";
+const TRAINEE_ALREADY_ASSIGNED_PG_CODE = "LB024";
+const TRAINEE_DUPLICATE_PG_CODE = "LB025";
 const VALIDATION_PG_CODE = "22023";
 
 function mapAssignmentRpcErrorCode(pgCode: string | undefined): ErrorCode {
@@ -35,6 +38,12 @@ function mapAssignmentRpcErrorCode(pgCode: string | undefined): ErrorCode {
   }
   if (pgCode === NOT_ELIGIBLE_PG_CODE) {
     return ERROR_CODE.SCHEDULING_ASSIGNMENT_NOT_ELIGIBLE;
+  }
+  if (pgCode === TRAINEE_ALREADY_ASSIGNED_PG_CODE) {
+    return ERROR_CODE.SCHEDULING_TRAINEE_ALREADY_ASSIGNED;
+  }
+  if (pgCode === TRAINEE_DUPLICATE_PG_CODE) {
+    return ERROR_CODE.SCHEDULING_TRAINEE_DUPLICATE;
   }
   if (pgCode === VALIDATION_PG_CODE) {
     return ERROR_CODE.SCHEDULING_VALIDATION;
@@ -66,6 +75,7 @@ export async function replacePositionAssignments(
     target_schedule_id: parsed.data.scheduleId,
     target_position_id: parsed.data.positionId,
     profile_ids: parsed.data.profileIds,
+    trainee_profile_ids: parsed.data.traineeProfileIds,
   })) as ReplaceAssignmentsRpcResponse;
 
   revalidatePath(ADMIN_SCHEDULE_DETAIL_PATTERN, "layout");
