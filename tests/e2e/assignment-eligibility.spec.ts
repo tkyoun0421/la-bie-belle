@@ -325,6 +325,12 @@ test.describe("복수 포지션 배정", () => {
 
     const coWorker = await createWorkerProfile(admin, "co-worker", "겸직자", "female");
     const coWorker2 = await createWorkerProfile(admin, "co-worker-2", "겸직자2", "male");
+    const dressNotEligibleWorker = await createWorkerProfile(
+      admin,
+      "dress-not-eligible",
+      "가능포지션미등록자",
+      "female",
+    );
 
     const { error: eligibilityError } = await admin.from("worker_position_eligibilities").insert([
       { profile_id: coWorker.id, position_id: mainPositionId },
@@ -372,6 +378,12 @@ test.describe("복수 포지션 배정", () => {
     expect(coWorkerAssignmentAfterBoth?.[0]?.assignment_positions).toHaveLength(2);
 
     const mainSheetForRemoval = await openPositionSheet(page, MAIN_POSITION_NAME);
+    await expect(
+      mainSheetForRemoval
+        .locator("li")
+        .filter({ hasText: coWorker.name })
+        .getByText(SCAN_POSITION_NAME, { exact: true }),
+    ).toBeVisible();
     await toggleCandidateAndSave(page, mainSheetForRemoval, coWorker.name, "선택됨");
     await expect(mainSheetForRemoval.getByText("필요 1 / 배정 0")).toBeVisible();
     await closeSheet(page, mainSheetForRemoval);
@@ -396,6 +408,12 @@ test.describe("복수 포지션 배정", () => {
         .filter({ hasText: coWorker.name })
         .getByRole("button", { name: "선택됨", exact: true }),
     ).toBeVisible();
+    await expect(
+      scanSheetAfterOneRemoved
+        .locator("li")
+        .filter({ hasText: coWorker.name })
+        .getByText(MAIN_POSITION_NAME, { exact: true }),
+    ).toHaveCount(0);
     await toggleCandidateAndSave(page, scanSheetAfterOneRemoved, coWorker.name, "선택됨");
     await expect(scanSheetAfterOneRemoved.getByText("필요 1 / 배정 0")).toBeVisible();
     await closeSheet(page, scanSheetAfterOneRemoved);
@@ -433,6 +451,20 @@ test.describe("복수 포지션 배정", () => {
     );
     expect(rejectedRpcData).toBeNull();
     expect(rejectedRpcError?.code).toBe("LB023");
+    expect(rejectedRpcError?.message).toBe("포지션 성별 조건에 맞지 않습니다");
+
+    const {
+      data: rejectedByEligibilityRpcData,
+      error: rejectedByEligibilityRpcError,
+    } = await authenticatedAdminClient.rpc("replace_position_assignments", {
+      target_schedule_id: scheduleId,
+      target_position_id: dressPositionId,
+      profile_ids: [dressNotEligibleWorker.id],
+    });
+    expect(rejectedByEligibilityRpcData).toBeNull();
+    expect(rejectedByEligibilityRpcError?.code).toBe("LB023");
+    expect(rejectedByEligibilityRpcError?.message).toBe("가능 포지션으로 등록되지 않았습니다");
+    expect(rejectedByEligibilityRpcError?.message).not.toBe(rejectedRpcError?.message);
 
     const { data: coWorker2DressAssignment } = await admin
       .from("assignment_positions")
@@ -449,6 +481,14 @@ test.describe("복수 포지션 배정", () => {
       .eq("assignments.schedule_id", scheduleId)
       .eq("assignments.profile_id", coWorker2.id);
     expect(coWorker2MainAssignment).toHaveLength(1);
+
+    const { data: dressNotEligibleWorkerAssignment } = await admin
+      .from("assignment_positions")
+      .select("position_id, assignments!inner(profile_id, schedule_id)")
+      .eq("position_id", dressPositionId)
+      .eq("assignments.schedule_id", scheduleId)
+      .eq("assignments.profile_id", dressNotEligibleWorker.id);
+    expect(dressNotEligibleWorkerAssignment).toHaveLength(0);
 
     await page.goto(`/admin/schedule/${scheduleId}`);
     const dressSheetForCoWorker2 = await openPositionSheet(page, DRESS_POSITION_NAME);

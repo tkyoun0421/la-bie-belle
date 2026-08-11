@@ -134,6 +134,44 @@ describe("listScheduleRequirements", () => {
     });
   });
 
+  it("AC6: 한 사람이 세 포지션을 겸해도 상한 없이 모두 집계된다", async () => {
+    requirementsLimit.mockResolvedValue({
+      data: [
+        { position_id: "position-1", required_count: 1, positions: { name: "메인" } },
+        { position_id: "position-2", required_count: 1, positions: { name: "스캔" } },
+        { position_id: "position-3", required_count: 1, positions: { name: "드레스" } },
+      ],
+      error: null,
+    });
+    assignmentsLimit.mockResolvedValue({
+      data: [
+        {
+          assignment_positions: [
+            { position_id: "position-1" },
+            { position_id: "position-2" },
+            { position_id: "position-3" },
+          ],
+        },
+      ],
+      error: null,
+    });
+
+    const { listScheduleRequirements } =
+      await import("@/entities/schedule/api/list-schedule-requirements");
+    const result = await listScheduleRequirements("schedule-1");
+
+    expect(result).toEqual({
+      ok: true,
+      data: [
+        { positionId: "position-1", positionName: "메인", requiredCount: 1 },
+        { positionId: "position-2", positionName: "스캔", requiredCount: 1 },
+        { positionId: "position-3", positionName: "드레스", requiredCount: 1 },
+      ],
+      assignedCounts: { "position-1": 1, "position-2": 1, "position-3": 1 },
+      assignedWorkerCount: 1,
+    });
+  });
+
   it("조인된 포지션이 없는 행(FK 정합성 예외)은 결과에서 제외한다", async () => {
     requirementsLimit.mockResolvedValue({
       data: [{ position_id: "orphan", required_count: 1, positions: null }],

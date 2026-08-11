@@ -39,11 +39,11 @@
 - `pnpm verify` 전체 GREEN: format·lint·typecheck·unit(209 files/1345 tests)·harness self-test
   (321/321)·check:docs·build·gate:bundle·check:app-build·check:client-secret-scan·**E2E 68/68**
   (신규 test 포함)·gate:motion-render-budget·gate:all.
-- TDD RED→GREEN 4쌍을 `docs/execution/runs/P3-T04/tdd.json`에 남겼다(unit 2쌍 + e2e 1쌍, 명령·
-  exit code·실제 시각 전부 이번 세션의 실제 명령 실행에서 얻었다). e2e RED→GREEN 쌍은 동일 명령
-  (`npx playwright test tests/e2e/assignment-eligibility.spec.ts --reporter=list`)으로 재실행해
-  `gate:tdd`의 명령 일치 요구를 맞췄다 — 첫 시도(RED는 `-g` 필터, GREEN은 stash pop 접두)가
-  명령 문자열 불일치로 `gate:all`에 걸려 재실행했다.
+- TDD RED→GREEN 3쌍(entries 6개)을 `docs/execution/runs/P3-T04/tdd.json`에 남겼다(unit 2쌍 + e2e
+  1쌍, 명령·exit code·실제 시각 전부 이번 세션의 실제 명령 실행에서 얻었다). e2e RED→GREEN 쌍은
+  동일 명령(`npx playwright test tests/e2e/assignment-eligibility.spec.ts --reporter=list`)으로
+  재실행해 `gate:tdd`의 명령 일치 요구를 맞췄다 — 첫 시도(RED는 `-g` 필터, GREEN은 stash pop
+  접두)가 명령 문자열 불일치로 `gate:all`에 걸려 재실행했다.
 
 ### 인수 조건별 근거
 
@@ -63,10 +63,11 @@
 5. **실인원 줄** — 충족. 겸직 성립 전후로 줄이 DOM에 없다가(포지션 합계=실인원) 겸직 성립 후에만
    `오는 사람 1명 · 포지션 합계 2`가 뜨고, 마지막 제거 후 다시 사라지는 것을 e2e로 확인. 경계값
    (배정 0명, 겸직자 여럿)은 `resolveAssignedHeadcount` unit test로 확인.
-6. **상한 없음** — 충족. `list-schedule-requirements.test.ts`의 신규 케이스가 한 사람이 두
-   `position_id`를 가진 행에서 `assignedWorkerCount`는 1, `assignedCounts` 합은 2가 되는 것을
-   단언한다(집계 로직 자체가 개수 상한을 두지 않는 구조임을 확인). e2e에서 셋 이상은 별도로 만들지
-   않았다 — RADIO 위험 렌즈 표가 이 항목을 unit 전담으로 지정했다.
+6. **상한 없음** — 충족. `list-schedule-requirements.test.ts`의 신규 케이스가 한 사람이 **세**
+   `position_id`(메인·스캔·드레스)를 가진 행에서 `assignedCounts`가 셋 다 1로 상한 없이 집계되고
+   `assignedWorkerCount`는 1로 유지되는 것을 단언한다(집계 로직 자체가 개수 상한을 두지 않는 구조임을
+   확인). 봉인표 AC6 행의 Happy Path·경계값이 요구한 "세 position_id"·"셋째 포지션"과 일치한다.
+   e2e에서 셋 이상은 별도로 만들지 않았다 — RADIO 위험 렌즈 표가 이 항목을 unit 전담으로 지정했다.
 7. **회귀** — 충족. `pnpm verify` 전체 GREEN(위 항목).
 
 ### 조회 수가 늘지 않았다는 근거
@@ -109,7 +110,7 @@
 
 ### 증거·산출물 경로
 
-- `docs/execution/runs/P3-T04/tdd.json` — RED→GREEN 4쌍(명령·exit code·ISO8601 시각).
+- `docs/execution/runs/P3-T04/tdd.json` — RED→GREEN 3쌍(명령·exit code·ISO8601 시각).
 - `docs/execution/runs/P3-T04/radio.md` — "이미 돌아간다" 전제의 실행 확인 근거, AC4를 RPC 직접
   호출로 검증한 이유, 조회 수 불변 근거, backlog 제안 2건.
 - `src/entities/schedule/api/list-schedule-requirements.ts`(+test 확장).
@@ -118,3 +119,78 @@
 - `src/app/(protected)/admin/schedule/[id]/page.tsx`.
 - `tests/e2e/assignment-eligibility.spec.ts`(신규 test 1개 + `createAdminSession` 반환값 확장).
 - `docs/execution/phases/index.jsonl`(P3-T04만 `in_progress`로 전환).
+
+## 2026-08-11 · 교차 리뷰 수정 라운드
+
+- 작업 식별자: P3-T04 (수동 배정과 복수 포지션)
+- 현재 단계: 수정 라운드 종료 → 다음 재검증
+- 기준 시각: 2026-08-11T09:56:56Z
+
+### 확정된 사실
+
+- 교차 검증 확정 발견 5건(high 3·low 2, 종합 92점, critical 없음) 전부 "봉인표가 '테스트함'으로
+  적은 칸이 실제 단언으로 옮겨지지 않았다" 계열이었다. 재봉인 없이 봉인된 「변경 허용 경로」 안에서
+  전부 메웠다.
+- **F-01(high, AC6 세 포지션 단언 부재)**: `src/entities/schedule/api/__tests__/list-schedule-requirements.test.ts`에
+  "AC6: 한 사람이 세 포지션을 겸해도 상한 없이 모두 집계된다" 케이스를 추가했다(메인·스캔·드레스
+  세 `position_id`를 가진 배정 행 1개 → `assignedCounts`가 셋 다 1, `assignedWorkerCount`는 1).
+  회귀를 잡는지는 `list-schedule-requirements.ts`를 P3-T04 이전 커밋(83456b8, `assignedWorkerCount`
+  없음)으로 되돌려 확인했다 — 신규 케이스 포함 5/8 실패(RED), 복원 후 8/8 통과(GREEN). `handoff.md`
+  6번 항목의 "두 position_id" 서술도 "세 position_id"로 고쳤다(이 문단 자체가 F-01 대상이었다).
+- **F-02(high, 겸직 배지 무방비)**: `tests/e2e/assignment-eligibility.spec.ts`에 두 단언을 추가했다.
+  - 385행 부근: 겸직 상태(coWorker가 메인+스캔)에서 메인 시트를 다시 열어 coWorker 행에 "스캔"
+    배지가 보이는지 확인(`mainSheetForRemoval` 열람 직후, 해제 전).
+  - 411행 부근: 메인 해제 후 스캔 시트를 열어 coWorker 행에서 "메인" 배지가 사라졌는지 확인
+    (`scanSheetAfterOneRemoved` 열람 직후, 스캔 해제 전).
+  - 배지를 렌더하는 `AssignmentCandidateSheet.tsx`는 `src/features/assignment/**`라 이 task의
+    「변경 허용 경로」 밖이라 구현을 되돌려 RED를 만들 수 없었다. 대신 단언 자체를 반대로 걸어
+    진짜로 실패하는지 확인했다 — 처음엔 "배지 존재" 쪽을 `toHaveCount(0)`으로 반전했더니 데이터
+    로딩 전 0건인 순간을 우연히 잡아 공허하게 통과해 버렸다(플레이키니스 원인 규명, 되돌림
+    비용 없음). `toBeVisible()`로 존재할 수 없는 "드레스" 배지를 기대하도록 바꾸자 진짜로
+    element not found로 실패했다(RED, spec:386). "배지 소멸" 쪽은 반대로 `toBeVisible()`을 걸어
+    똑같이 element not found로 실패했다(RED, spec:416). 둘 다 원래 값으로 되돌린 뒤 재실행해
+    통과를 확인했다(GREEN).
+- **F-03(high, NOT_ELIGIBLE 분기 미행사)**: 드레스 가능 포지션이 없는 여성 근무자
+  (`dressNotEligibleWorker`)를 추가로 세우고 같은 `replace_position_assignments` RPC를 호출해
+  NOT_ELIGIBLE 분기를 열었다(spec:456-467). errcode(`LB023`)는 두 분기가 같으므로 대신 메시지로
+  분기를 구분했다 — GENDER_MISMATCH는 "포지션 성별 조건에 맞지 않습니다", NOT_ELIGIBLE은 "가능
+  포지션으로 등록되지 않았습니다"이고 서로 다름을 `.not.toBe()`로도 고정했다. 두 메시지 단언을
+  각각 상대 메시지로 바꿔 걸어 실행 → 둘 다 Expected/Received 불일치로 진짜 실패했다(RED,
+  spec:454·spec:466). 원래 값으로 되돌린 뒤 재실행해 통과를 확인했다(GREEN) — errcode만으로는
+  드러나지 않던 분기 구분이 이제 회귀를 잡는다.
+- **F-05(low, 증거 문서 개수 불일치)**: `handoff.md`가 "4쌍"으로 적어 `tdd.json`의 실제 3쌍(entries
+  6개)과 어긋났던 문장을 고쳤다(이 파일의 위쪽 절 두 곳).
+- **F-04(low, work_date 밴드 충돌 확률)**는 지시대로 건드리지 않았다 — 고치려면
+  `tests/e2e/support/**`가 필요한데 「변경 허용 경로」 밖이라 backlog로 남는다.
+- 새 entries 7개(F-01 unit RED·GREEN 1쌍 + F-02·F-03 e2e RED 4개 + e2e GREEN 1개)를
+  `docs/execution/runs/P3-T04/tdd.json`에 추가했다 — entries 6개에서 13개로 늘었다. e2e 쪽은
+  RED 4개가 GREEN 1개보다 모두 앞서 있고 명령 문자열이 전부 동일해 `gate:tdd`를 만족한다.
+- `pnpm verify` 전체 GREEN을 수정 라운드 종료 시점에 재확인했다(아래 「다음 행동」 참고).
+
+### 인수 조건별 근거(수정 라운드로 강화된 부분만)
+
+- AC6: 이제 단위 테스트가 봉인표가 요구한 "세 position_id" 그대로를 단언한다(위 F-01).
+- AC3(연장): 배지 소멸이 이제 e2e에서 직접 단언된다(위 F-02) — 기존 `assignments` 행 부재 확인과
+  함께 이중으로 보호된다.
+- AC4: 두 번째 포지션 거부가 이제 GENDER_MISMATCH·NOT_ELIGIBLE 두 분기 모두에서 각각 다른 사유로
+  확인된다(위 F-03).
+
+### 미결 사항
+
+- F-04(work_date 밴드 충돌 확률 약 2/864)는 `tests/e2e/support/**`가 있어야 고칠 수 있어 backlog로
+  남는다 — 별도 task의 헬퍼 추출 시점에 함께 처리할 만하다.
+- 그 외 미결 사항은 최초 개발 단계 절과 `docs/execution/runs/P3-T04/radio.md`가 그대로 소유한다.
+
+### 다음 행동
+
+1. 조정자가 재검증(교차 리뷰)을 다시 열지 판단한다. 이 세션은 `index.jsonl`의 P3-T04 상태를
+   바꾸지 않았다(계속 `in_progress`).
+2. `ci-finisher`가 이 커밋을 push하고 CI를 확인한다. 이 세션은 push하지 않았다.
+
+### 증거·산출물 경로(수정 라운드분)
+
+- `docs/execution/runs/P3-T04/tdd.json` — entries 13개(F-01·F-02·F-03 신규분 7개 포함).
+- `docs/execution/runs/P3-T04/radio.md` — 수정 라운드 절에 F-01~F-05 처리 내역을 이어 적었다.
+- `src/entities/schedule/api/__tests__/list-schedule-requirements.test.ts`(AC6 세 포지션 케이스).
+- `tests/e2e/assignment-eligibility.spec.ts`(배지 존재·소멸 단언, NOT_ELIGIBLE 거부 fixture와
+  메시지 구분 단언).
