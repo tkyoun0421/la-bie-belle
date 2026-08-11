@@ -291,3 +291,5 @@
 - [ ] [medium] [P0-T45] reduced-motion 가드 정규식이 두 미디어 블록 사이 규칙까지 캡처해 토큰 덮기 가드의 정밀도 상실 — src/app/__tests__/globals.test.ts
 - [ ] [low] [P0-T45] --duration-crossfade의 존재·값 단언과 전환 키프레임·격리 규칙의 존재 단언 부재 — src/app/__tests__/globals.test.ts
 - [ ] [low] [P0-T45] resolveRouteTransition의 ?? "tab" 폴백이 도달 불가 분기라 불변 조건을 가림 — src/widgets/app-shell/ui/AppShellTabBar.tsx
+- [ ] [low] [P3-T04] 신규 겸직 test가 기존 test와 같은 assignmentEligibility 밴드를 나눠 써 23505 충돌 확률(약 2/864) — tests/e2e/assignment-eligibility.spec.ts
+- [x] [low] [P3-T04] handoff가 RED→GREEN 4쌍이라 적었으나 tdd.json은 3쌍(entries 6개) — docs/execution/runs/P3-T04/handoff.md
