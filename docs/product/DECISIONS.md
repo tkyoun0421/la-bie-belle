@@ -86,6 +86,12 @@
 - **확정 전 스케줄에는 배정할 수 있다.** `OPEN`·`CLOSED`·`PREPARING` 세 상태가 모두 해당하고 `CONFIRMED`·`CANCELLED`만 거부하며, 이는 P3-T02 필요 인원 복사가 쓰는 판정과 같다. 확정된 스케줄의 배정 변경은 알림·revision과 함께 P3-T06 이후가 가진다. — [PRD 7장](PRD.md) · [phase P3-T03 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-10 기획)
 - **배정 추가와 제거는 확정 전부터 감사 기록에 남긴다.** 필요 인원 변경이 이미 확정 전 감사를 남기고 있어 같은 화면의 두 동작을 같은 규칙으로 맞췄다. — [PRD 7장](PRD.md) (2026-08-10 기획)
 
+### 복수 포지션 (P3-T04)
+
+- **한 사람이 겸할 수 있는 포지션 개수에 상한이 없다.** 메인+스캔 둘이 전형이지만 셋 이상도 저장되고 경고도 띄우지 않는다. 필요 인원이 상한이 아니라는 P3-T03 결정과 결이 같다. 겸직자의 급여를 한 번 세는지 두 번 세는지는 P6 미결이고, 출퇴근 기록이 하나인지 둘인지는 P5 미결이다. — [ADMIN-FLOWS 배정 절](design/ADMIN-FLOWS.md) · [phase P3-T04 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-11 기획)
+- **겸직으로 포지션 합계와 실인원이 달라질 때만 실인원을 보여준다.** 필요 인원 표 위에 `오는 사람 N명 · 포지션 합계 M`을 한 줄로 띄우고, 두 값이 같은 날은 줄을 아예 띄우지 않는다. 포지션 합계는 실인원보다 클 수는 있어도 작을 수는 없다. — [ADMIN-FLOWS 배정 절](design/ADMIN-FLOWS.md) · [phase P3-T04 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-11 기획)
+- **배정 흐름은 `포지션 선택 → 근무자 선택` 하나로 둔다.** 근무자 한 명을 눌러 그 사람의 포지션을 한자리에서 붙였다 뗐다 하는 화면은 만들지 않는다. 겸직자를 스케줄에서 통째로 빼려면 그 사람이 든 포지션 시트를 각각 열어 해제한다. — [ADMIN-FLOWS 배정 절](design/ADMIN-FLOWS.md) · [phase P3-T04 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-11 기획)
+
 ## ATTENDANCE · NOTIFICATIONS · PAY
 
 - **아직 인터뷰 결정 없음.** P4 알림의 오늘/이번 주 경계는 로컬 시간대 계산 후보로 기록돼 있다(설계 시점 결정).
