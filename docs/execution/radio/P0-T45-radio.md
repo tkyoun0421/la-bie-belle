@@ -1,7 +1,7 @@
 # P0-T45 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-10
 - 개발 설계 승인: user, 2026-08-11
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 2 | 2026-08-11 | 「변경 허용 경로」에 `src/views/more/**`와 `src/views/home/**` 추가. revision 1이 인수 조건 2·3에서 승인한 이동의 출발지 링크가 이 두 화면 안에 있는데 경로가 빠져 있어 구현이 막혔다. 예상급여·내 정보·관리자로 들어가는 링크 3개는 `MoreView`에, 홈에서 일정으로 가는 CTA 링크는 `HomeView`에 있다. 승인 범위를 넓히는 것이 아니라 이미 승인된 인수 조건을 실행 가능하게 만드는 정정이다. 2026-08-11 사용자 결정. |
 | 1 | 2026-08-11 | 최초 작성. 설계 인터뷰 확정 6건 — Next가 실어 주는 canary의 `<ViewTransition>`을 그대로 쓰고(`react`를 올리지 않는다), 탭 4개 사이는 페이드, 탭 바 밖으로 나가는 이동은 전부 아래에서 올라오는 슬라이드, reduced-motion에서는 움직임 없이 페이드만, 번들 상한은 미리 올리지 않고 실측 정지선을 둔다. 인터뷰 중 P0-T43이 남긴 "알려진 사실"의 해석이 뒤집혔다 — 자세한 근거는 아래 「P0-T43 진단 정정」이 소유한다. 2026-08-11 사용자 결정. |
 
 - 관련 spec: DOCS:SDD(FOUNDATIONS 모션 절)
@@ -93,6 +94,8 @@
 - `src/widgets/app-shell/ui/AppShellTabBar.tsx`: `TABS`를 `shared/config`에서 읽고, 각 `<Link>`에 `transitionTypes`를 붙이며, `<nav>`에 격리용 `viewTransitionName`을 준다.
 - `src/views/schedule/ui/*`: 달력 셀의 `router.push`를 `startTransition` + `addTransitionType('nav-forward')` 안으로 넣는다. 화면 내용과 데이터 흐름은 건드리지 않는다.
 - `src/views/schedule-detail/ui/*`: 뒤로 가기 `<Link>`에 `transitionTypes={['nav-back']}`를 붙인다.
+- `src/views/more/ui/MoreView.tsx`: 예상급여·내 정보·관리자 `<Link>` 셋에 `transitionTypes={['nav-forward']}`를 붙인다. 이 셋이 탭 밖으로 나가는 유일한 출발지다.
+- `src/views/home/ui/HomeView.tsx`: 일정으로 가는 CTA `<Link>`에 탭 이동 타입을 붙인다. 태그가 없으면 같은 이동인데 탭 바로 가면 페이드가 걸리고 CTA로 가면 아무 일도 일어나지 않는다.
 - `src/app/globals.css`: 스킬 레시피의 페이드·세로 슬라이드·탭 바 격리 CSS와 reduced-motion 규칙.
 
 ## Data model
@@ -126,6 +129,8 @@ src/shared/ui/**
 src/widgets/app-shell/**
 src/views/schedule/**
 src/views/schedule-detail/**
+src/views/more/**
+src/views/home/**
 tests/e2e/**
 docs/execution/radio/P0-T45-radio.md
 docs/execution/runs/P0-T45/**
@@ -133,7 +138,7 @@ docs/execution/phases/00-foundation.md
 docs/execution/phases/index.jsonl
 ```
 
-- 용도 한정: `src/app/(protected)/**/page.tsx`는 최상단을 전환 래퍼로 감싸는 데만 쓰고 인증 흐름·라우팅·데이터 조회를 바꾸지 않는다. 레이아웃 파일은 허용 경로에 없다 — 레이아웃에 전환을 두는 것이 P0-T43의 실패 원인 중 하나이므로 경로로 막는다. `src/widgets/app-shell/**`는 탭 목록 출처 변경·`transitionTypes` 부여·격리 이름 부여에 한정한다. `src/views/schedule/**`와 `src/views/schedule-detail/**`는 이동을 전환으로 감싸는 데만 쓰고 화면 내용과 데이터 흐름은 그대로 둔다. `docs/execution/phases/00-foundation.md`는 P0-T45 절의 「알려진 사실」 정정과 인수 조건에 탭 밖 화면을 더하는 수정에 한정한다.
+- 용도 한정: `src/app/(protected)/**/page.tsx`는 최상단을 전환 래퍼로 감싸는 데만 쓰고 인증 흐름·라우팅·데이터 조회를 바꾸지 않는다. 레이아웃 파일은 허용 경로에 없다 — 레이아웃에 전환을 두는 것이 P0-T43의 실패 원인 중 하나이므로 경로로 막는다. `src/widgets/app-shell/**`는 탭 목록 출처 변경·`transitionTypes` 부여·격리 이름 부여에 한정한다. `src/views/schedule/**`와 `src/views/schedule-detail/**`는 이동을 전환으로 감싸는 데만 쓰고 화면 내용과 데이터 흐름은 그대로 둔다. `src/views/more/**`와 `src/views/home/**`는 기존 `<Link>`에 `transitionTypes`를 붙이는 데만 쓴다 — 링크의 `href`·순서·문구·조건부 노출을 바꾸지 않는다. 오류·404·접근 거부 화면(`src/views/status/**`)은 복구 화면이라 전환 대상이 아니며 허용 경로에 없다. `docs/execution/phases/00-foundation.md`는 P0-T45 절의 「알려진 사실」 정정과 인수 조건에 탭 밖 화면을 더하는 수정에 한정한다.
 
 ## 미결 사항
 
