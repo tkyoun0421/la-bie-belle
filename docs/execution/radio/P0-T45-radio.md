@@ -1,7 +1,7 @@
 # P0-T45 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 3
+- revision: 4
 - 기획 승인: user, 2026-08-10
 - 개발 설계 승인: user, 2026-08-11
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 4 | 2026-08-11 | 교차 검증(확정 10건, 종합 78) 뒤 수정 라운드를 열며 세 가지를 고쳤다. ① 「변경 허용 경로」의 용도 한정에서 `notifications/page.tsx`의 이동에 전환 타입을 붙이는 것을 허용한다 — F-01이 짚은 세 진입 경로 중 이곳만 막혀 있어 같은 목적지가 진입 방식에 따라 갈렸다. ② 전환 총 시간 상한을 불변 규칙에 넣는다 — `FOUNDATIONS.md:120`이 화면 전환을 220~280ms로 정하는데 구현이 400ms로 나갔고, 구현 기록이 근거로 든 것은 그 대역이 아니라 스킬 레시피의 값이었다(F-02). ③ 애니메이션 대상에서 `filter`를 배제한다 — 레시피 원본의 `fade` 키프레임에 `blur`가 들어 있어 봉인문의 "레시피가 이미 transform·opacity뿐"이라는 서술이 사실과 달랐고, `DEV-TOKEN-01`의 MUST가 이긴다(F-05). 2026-08-11 사용자 결정. |
 | 3 | 2026-08-11 | 시간 토큰 `--duration-crossfade` 신설. revision 2까지의 불변 규칙이 "새 토큰을 만들지 않는다"였는데, P0-T43이 reduced-motion 안에서 시간 토큰 4종을 전부 `0ms`로 덮고 있어(`globals.css:314`, `globals.test.ts:226`이 단언 중) 인수 조건 6의 페이드가 0초로 죽었다. 구현 중 `document.getAnimations()` 실측으로 확인했다. 기존 토큰을 살리는 길은 버튼·칩·스케줄 행·`PullToRefresh`의 눌림 반응까지 되살려 완료된 task를 되돌리므로 택하지 않았다. 페이드는 움직임이 아니라 불투명도 변화라는 것이 인수 조건 6의 근거이므로 그 개념에 토큰 이름을 준다. 2026-08-11 사용자 결정. |
 | 2 | 2026-08-11 | 「변경 허용 경로」에 `src/views/more/**`와 `src/views/home/**` 추가. revision 1이 인수 조건 2·3에서 승인한 이동의 출발지 링크가 이 두 화면 안에 있는데 경로가 빠져 있어 구현이 막혔다. 예상급여·내 정보·관리자로 들어가는 링크 3개는 `MoreView`에, 홈에서 일정으로 가는 CTA 링크는 `HomeView`에 있다. 승인 범위를 넓히는 것이 아니라 이미 승인된 인수 조건을 실행 가능하게 만드는 정정이다. 2026-08-11 사용자 결정. |
 | 1 | 2026-08-11 | 최초 작성. 설계 인터뷰 확정 6건 — Next가 실어 주는 canary의 `<ViewTransition>`을 그대로 쓰고(`react`를 올리지 않는다), 탭 4개 사이는 페이드, 탭 바 밖으로 나가는 이동은 전부 아래에서 올라오는 슬라이드, reduced-motion에서는 움직임 없이 페이드만, 번들 상한은 미리 올리지 않고 실측 정지선을 둔다. 인터뷰 중 P0-T43이 남긴 "알려진 사실"의 해석이 뒤집혔다 — 자세한 근거는 아래 「P0-T43 진단 정정」이 소유한다. 2026-08-11 사용자 결정. |
@@ -42,7 +43,9 @@
 - **`document.startViewTransition`을 직접 부르지 않는다.** React가 대신 부른다. 우리가 부르면 React의 스냅샷 관리와 경합한다.
 - **`<ViewTransition>`은 페이지 컴포넌트의 최상단에 둔다.** 레이아웃에 두지 않고, 그 위를 다른 DOM 노드가 감싸지 않는다. 레이아웃은 라우트 변경에도 살아 있어 `enter`/`exit`가 발동하지 않고, 래퍼 노드가 있으면 배치 규칙 위반으로 조용히 죽는다.
 - **모든 `<ViewTransition>`에 `default="none"`을 붙인다.** 없으면 Suspense 해소·배경 재검증 같은 다른 전환에서도 브라우저 기본 크로스페이드가 함께 터진다.
-- **애니메이션 CSS는 스킬 레시피를 복사한다.** `references/css-recipes.md`가 정본이며 자체 작성하지 않는다. 예외는 reduced-motion 한 곳뿐이다(아래).
+- **애니메이션 CSS는 스킬 레시피를 복사하되 상위 문서가 이긴다.** `references/css-recipes.md`가 출발점이며 자체 작성하지 않는다. 다만 레시피가 `DEVELOPMENT.md`·`FOUNDATIONS.md`와 부딪히면 상위 문서를 따르고 그 사실을 `runs/P0-T45/radio.md`에 적는다. 지금 알려진 어긋남은 셋 — reduced-motion(아래), `filter`, 지속 시간.
+- **애니메이션 대상은 `transform`과 `opacity`뿐이다.** `filter`를 애니메이션하지 않는다. 레시피의 `fade` 키프레임에 `blur`가 들어 있으나 `DEV-TOKEN-01`이 MUST로 대상을 둘로 제한하므로 복사할 때 뺀다. `::view-transition-old/new`는 전체 화면 스냅샷이라 블러 비용이 화면 전체에 걸린다.
+- **라우트 전환의 총 시간은 220~280ms다.** `FOUNDATIONS.md:120`의 모션 표가 화면 전환에 정한 대역이며 L2 제품 문서라 이 RADIO보다 위에 있다. 대역 안에서 어떤 값을 쓸지와 소멸·등장을 겹칠지 이어 붙일지는 구현 재량이되, **끝나는 시점**을 기준으로 재고 그 근거를 `runs/P0-T45/radio.md`에 적는다. 레시피의 값을 근거로 삼지 않는다.
 - **모션 상수의 정본은 `globals.css` 하나다.** 레시피의 시간 값은 P0-T43이 세운 `--duration-*`·`--ease-*`로 갈아 끼운다. 새 토큰은 `--duration-crossfade` 하나만 만들고 그 밖에는 만들지 않는다. `DEV-TOKEN-01`.
 - **`--duration-crossfade`는 reduced-motion에서 0으로 덮지 않는 유일한 시간 토큰이다.** 라우트 크로스페이드의 지속 시간을 소유한다. 페이드는 위치나 크기가 바뀌는 움직임이 아니라 불투명도 변화이므로 `prefers-reduced-motion`이 지우라고 요구하는 대상이 아니다. P0-T43이 세운 나머지 네 토큰의 `0ms` 덮기는 그대로 둔다 — 버튼·칩·스케줄 행·`PullToRefresh`의 눌림 반응이 그 토큰을 함께 쓴다.
 - **번들 상한을 미리 올리지 않는다.** ADR-0015가 "번들 여유는 저장소 빌드 실측으로만 계산한다"고 정했다. 상한 500KB를 유지하고 넘으면 멈춘다.
@@ -97,7 +100,8 @@
 - `src/views/schedule/ui/*`: 달력 셀의 `router.push`를 `startTransition` + `addTransitionType('nav-forward')` 안으로 넣는다. 화면 내용과 데이터 흐름은 건드리지 않는다.
 - `src/views/schedule-detail/ui/*`: 뒤로 가기 `<Link>`에 `transitionTypes={['nav-back']}`를 붙인다.
 - `src/views/more/ui/MoreView.tsx`: 예상급여·내 정보·관리자 `<Link>` 셋에 `transitionTypes={['nav-forward']}`를 붙인다. 이 셋이 탭 밖으로 나가는 유일한 출발지다.
-- `src/views/home/ui/HomeView.tsx`: 일정으로 가는 CTA `<Link>`에 탭 이동 타입을 붙인다. 태그가 없으면 같은 이동인데 탭 바로 가면 페이드가 걸리고 CTA로 가면 아무 일도 일어나지 않는다.
+- `src/views/home/ui/HomeView.tsx`: 일정으로 가는 CTA `<Link>`에 탭 이동 타입을 붙인다. 태그가 없으면 같은 이동인데 탭 바로 가면 페이드가 걸리고 CTA로 가면 아무 일도 일어나지 않는다. **스케줄 상세로 가는 링크 둘(`confirmation-change`·`next-shift`)에도 `nav-forward`를 붙인다** — 같은 이유이며 revision 4에서 더했다.
+- `src/app/(protected)/(tabs)/notifications/page.tsx`: 알림 행을 눌러 스케줄 상세·예상급여로 가는 `router.push`를 `startTransition` + `addTransitionType('nav-forward')` 안에 넣는다. 목적지 판정과 조건은 그대로 둔다.
 - `src/app/globals.css`: 스킬 레시피의 페이드·세로 슬라이드·탭 바 격리 CSS와 reduced-motion 규칙. 시간 토큰 `--duration-crossfade`를 `@theme`에 신설하고 reduced-motion 블록에서 덮지 않는다. P0-T43이 세운 네 토큰의 `0ms` 덮기는 건드리지 않는다.
 - `src/app/__tests__/globals.test.ts`: reduced-motion 블록이 `--duration-crossfade`를 덮지 않음을 단언한다. 뒤에 오는 task가 무심코 다섯 번째 토큰까지 0으로 덮는 것을 막는 자리다. 기존 네 토큰의 단언은 그대로 둔다.
 
@@ -115,7 +119,7 @@
 ## Optimizations
 
 - `<ViewTransition>`은 이미 번들에 있는 React 기능이라 새 런타임 비용이 없다. 늘어나는 것은 CSS와 래퍼 한 종이다.
-- 애니메이션 대상은 `transform`과 `opacity`뿐이다. 레시피가 이미 그렇게 되어 있다.
+- 애니메이션 대상은 `transform`과 `opacity`뿐이다. 레시피는 그렇지 않으므로 복사할 때 `filter`를 뺀다.
 - 탭 바를 스냅샷에서 빼면 전환마다 다시 그리는 영역이 줄어든다.
 - `default="none"`이 Suspense 해소·배경 재검증에서 불필요한 크로스페이드를 막는다.
 - 되돌림은 래퍼 사용처 제거, CSS 제거, `transitionTypes` 제거로 가능하다. 의존성·DB·서버 변경이 없어 되돌림 비용이 낮다.
@@ -141,7 +145,7 @@ docs/execution/phases/00-foundation.md
 docs/execution/phases/index.jsonl
 ```
 
-- 용도 한정: `src/app/(protected)/**/page.tsx`는 최상단을 전환 래퍼로 감싸는 데만 쓰고 인증 흐름·라우팅·데이터 조회를 바꾸지 않는다. 레이아웃 파일은 허용 경로에 없다 — 레이아웃에 전환을 두는 것이 P0-T43의 실패 원인 중 하나이므로 경로로 막는다. `src/widgets/app-shell/**`는 탭 목록 출처 변경·`transitionTypes` 부여·격리 이름 부여에 한정한다. `src/views/schedule/**`와 `src/views/schedule-detail/**`는 이동을 전환으로 감싸는 데만 쓰고 화면 내용과 데이터 흐름은 그대로 둔다. `src/views/more/**`와 `src/views/home/**`는 기존 `<Link>`에 `transitionTypes`를 붙이는 데만 쓴다 — 링크의 `href`·순서·문구·조건부 노출을 바꾸지 않는다. 오류·404·접근 거부 화면(`src/views/status/**`)은 복구 화면이라 전환 대상이 아니며 허용 경로에 없다. `docs/execution/phases/00-foundation.md`는 P0-T45 절의 「알려진 사실」 정정과 인수 조건에 탭 밖 화면을 더하는 수정에 한정한다.
+- 용도 한정: `src/app/(protected)/**/page.tsx`는 최상단을 전환 래퍼로 감싸는 것과 **이미 있는 이동에 전환 타입을 붙이는 것**에만 쓰고, 인증 흐름·목적지·조건·데이터 조회를 바꾸지 않는다. 후자는 revision 4에서 열었다 — 알림 화면의 `router.push`가 스케줄 상세와 예상급여로 가는데 이곳만 태그를 못 붙여 같은 목적지가 진입 방식에 따라 갈렸다(교차 검증 F-01). 어디로 가는지는 그대로 두고 어떻게 보이는지만 바꾼다. 레이아웃 파일은 허용 경로에 없다 — 레이아웃에 전환을 두는 것이 P0-T43의 실패 원인 중 하나이므로 경로로 막는다. `src/widgets/app-shell/**`는 탭 목록 출처 변경·`transitionTypes` 부여·격리 이름 부여에 한정한다. `src/views/schedule/**`와 `src/views/schedule-detail/**`는 이동을 전환으로 감싸는 데만 쓰고 화면 내용과 데이터 흐름은 그대로 둔다. `src/views/more/**`와 `src/views/home/**`는 기존 `<Link>`에 `transitionTypes`를 붙이는 데만 쓴다 — 링크의 `href`·순서·문구·조건부 노출을 바꾸지 않는다. 오류·404·접근 거부 화면(`src/views/status/**`)은 복구 화면이라 전환 대상이 아니며 허용 경로에 없다. `docs/execution/phases/00-foundation.md`는 P0-T45 절의 「알려진 사실」 정정과 인수 조건에 탭 밖 화면을 더하는 수정에 한정한다.
 
 ## 미결 사항
 
