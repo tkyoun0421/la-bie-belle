@@ -6,6 +6,7 @@ export type RequirementSectionDataInput = {
   requirementsOk: boolean;
   requirementRows: ScheduleRequirementRow[];
   assignedCounts: Record<string, number>;
+  assignedWorkerCount: number;
   positionsOk: boolean;
   positions: Position[];
 };
@@ -15,6 +16,7 @@ export type RequirementSectionData =
       ok: true;
       requirementRows: ScheduleRequirementRow[];
       assignedCounts: Record<string, number>;
+      assignedWorkerCount: number;
       activePositions: Position[];
     }
   | { ok: false };
@@ -30,8 +32,24 @@ export function resolveRequirementSectionData(
     ok: true,
     requirementRows: input.requirementRows,
     assignedCounts: input.assignedCounts,
+    assignedWorkerCount: input.assignedWorkerCount,
     activePositions: input.positions.filter((position) => position.isActive),
   };
+}
+
+export type AssignedHeadcount = { workerCount: number; positionTotal: number };
+
+export function resolveAssignedHeadcount(input: {
+  assignedCounts: Record<string, number>;
+  assignedWorkerCount: number;
+}): AssignedHeadcount | null {
+  const positionTotal = Object.values(input.assignedCounts).reduce((sum, count) => sum + count, 0);
+
+  if (positionTotal === input.assignedWorkerCount) {
+    return null;
+  }
+
+  return { workerCount: input.assignedWorkerCount, positionTotal };
 }
 
 const NON_COPYABLE_REQUIREMENT_STATUSES: RecruitmentScheduleStatus[] = ["CONFIRMED", "CANCELLED"];

@@ -35,6 +35,7 @@ import {
 import { MissingPositionsBanner } from "@/features/requirement/ui/MissingPositionsBanner";
 import { RequirementTable } from "@/features/requirement/ui/RequirementTable";
 import { groupAssignmentCandidates } from "@/views/admin-schedule/model/candidate-buckets";
+import type { AssignedHeadcount } from "@/views/admin-schedule/model/requirement-section-data";
 import {
   resolveSchedulePrepScreenMode,
   schedulePrepStatusLabel,
@@ -52,6 +53,7 @@ type AdminSchedulePrepViewProps = {
   onDeleteCheckInRule: (input: DeleteCheckInRuleActionInput) => Promise<CheckInRuleMutationOutcome>;
   requirementRows: ScheduleRequirementRow[];
   assignedCounts: Record<string, number>;
+  assignedHeadcount: AssignedHeadcount | null;
   activePositions: Position[];
   onSetRequirement: SetRequirementAction;
   onRemoveRequirement: RemoveRequirementAction;
@@ -68,6 +70,7 @@ export function AdminSchedulePrepView({
   onDeleteCheckInRule,
   requirementRows,
   assignedCounts,
+  assignedHeadcount,
   activePositions,
   onSetRequirement,
   onRemoveRequirement,
@@ -169,6 +172,11 @@ export function AdminSchedulePrepView({
       ) : null}
 
       <section className="flex flex-col gap-3">
+        {assignedHeadcount !== null ? (
+          <p className="typo-caption text-text">
+            {`오는 사람 ${assignedHeadcount.workerCount}명 · 포지션 합계 ${assignedHeadcount.positionTotal}`}
+          </p>
+        ) : null}
         <h2 className="typo-title text-text-strong">필요 인원</h2>
         {mode === "readonly" ? (
           <ul className="flex flex-col gap-1">

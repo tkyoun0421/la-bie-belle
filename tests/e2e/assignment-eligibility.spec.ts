@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { BrowserContext, Page } from "@playwright/test";
+import type { BrowserContext, Locator, Page } from "@playwright/test";
 import { devices, expect, test } from "@playwright/test";
 
 import {
@@ -9,9 +9,11 @@ import {
   signInWithPasswordCookies,
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
-import { WORK_DATE_BANDS, workDatesInBand } from "./support/work-date-band";
+import { WORK_DATE_BANDS, workDateInBand, workDatesInBand } from "./support/work-date-band";
 
 const DRESS_POSITION_NAME = "드레스";
+const MAIN_POSITION_NAME = "메인";
+const SCAN_POSITION_NAME = "스캔";
 
 function randomPhone(): string {
   const suffix = Math.floor(Math.random() * 1e8)
@@ -65,7 +67,7 @@ async function createAdminSession(context: BrowserContext, baseURL: string | und
   const domain = new URL(baseURL ?? "http://localhost:3100").hostname;
   await context.addCookies(toPlaywrightCookies(cookies, domain));
 
-  return { admin };
+  return { admin, email, password };
 }
 
 async function createWorkerProfile(
@@ -252,6 +254,212 @@ test.describe("배정 후보와 자격 검사", () => {
       .filter({ has: page.getByText(DRESS_POSITION_NAME, { exact: true }) });
     await expect(confirmedDressListItem).toBeVisible();
     await expect(confirmedDressListItem.getByRole("button")).toHaveCount(0);
+
+    await context.close();
+  });
+});
+
+function positionButton(page: Page, positionName: string): Locator {
+  return page.getByRole("button", { name: new RegExp(`^${positionName} 필요`) });
+}
+
+function positionRow(page: Page, positionName: string): Locator {
+  return page.locator("li").filter({ has: positionButton(page, positionName) });
+}
+
+async function openPositionSheet(page: Page, positionName: string): Promise<Locator> {
+  const button = positionButton(page, positionName);
+  await expect(button).toHaveCount(1);
+  await button.click();
+  const sheet = page.getByRole("dialog", { name: positionName, exact: true });
+  await expect(sheet).toBeVisible();
+  return sheet;
+}
+
+async function closeSheet(page: Page, sheet: Locator): Promise<void> {
+  await page.keyboard.press("Escape");
+  await expect(sheet).toBeHidden();
+}
+
+async function toggleCandidateAndSave(
+  page: Page,
+  sheet: Locator,
+  workerName: string,
+  fromLabel: "선택" | "선택됨",
+): Promise<void> {
+  const row = sheet.locator("li").filter({ hasText: workerName });
+  await row.getByRole("button", { name: fromLabel, exact: true }).click({ force: true });
+  await sheet.getByRole("button", { name: "저장", exact: true }).click({ force: true });
+  await expect(page.getByText("배정을 변경했어요")).toBeVisible();
+}
+
+const HEADCOUNT_LINE_PATTERN = /오는 사람 \d+명 · 포지션 합계 \d+/;
+
+test.describe("복수 포지션 배정", () => {
+  test("한 근무자가 두 포지션을 겸하면 각각 집계되고, 한쪽만 빼도 남아 있으며, 마지막 포지션을 빼야 스케줄에서 사라지고, 자격 없는 두 번째 포지션은 DB 함수가 거부하며, 겸직일 때만 실인원 줄이 뜬다", async ({
+    browser,
+    baseURL,
+  }) => {
+    const context = await browser.newContext({ ...devices["Pixel 5"], reducedMotion: "reduce" });
+    const { admin, email, password } = await createAdminSession(context, baseURL);
+    const page = await context.newPage();
+
+    const { data: positionsData, error: positionsError } = await admin
+      .from("positions")
+      .select("id, name")
+      .in("name", [MAIN_POSITION_NAME, SCAN_POSITION_NAME, DRESS_POSITION_NAME]);
+    if (positionsError || !positionsData) {
+      throw positionsError ?? new Error("포지션을 찾지 못했습니다.");
+    }
+    const positionRows = positionsData as { id: string; name: string }[];
+    function positionId(name: string): string {
+      const found = positionRows.find((row) => row.name === name);
+      if (!found) {
+        throw new Error(`포지션 ${name}을 찾지 못했습니다.`);
+      }
+      return found.id;
+    }
+    const mainPositionId = positionId(MAIN_POSITION_NAME);
+    const scanPositionId = positionId(SCAN_POSITION_NAME);
+    const dressPositionId = positionId(DRESS_POSITION_NAME);
+
+    const coWorker = await createWorkerProfile(admin, "co-worker", "겸직자", "female");
+    const coWorker2 = await createWorkerProfile(admin, "co-worker-2", "겸직자2", "male");
+
+    const { error: eligibilityError } = await admin.from("worker_position_eligibilities").insert([
+      { profile_id: coWorker.id, position_id: mainPositionId },
+      { profile_id: coWorker.id, position_id: scanPositionId },
+      { profile_id: coWorker2.id, position_id: mainPositionId },
+    ]);
+    if (eligibilityError) {
+      throw eligibilityError;
+    }
+
+    const workDate = workDateInBand(WORK_DATE_BANDS.assignmentEligibility);
+    const scheduleId = await insertSchedule(admin, workDate, "OPEN");
+
+    await page.goto(`/admin/schedule/${scheduleId}`);
+    await expect(page.getByRole("heading", { name: workDate })).toBeVisible();
+    await expect(page.getByText(HEADCOUNT_LINE_PATTERN)).toHaveCount(0);
+
+    const mainSheetFirstOpen = await openPositionSheet(page, MAIN_POSITION_NAME);
+    await expect(mainSheetFirstOpen.getByText("필요 1 / 배정 0")).toBeVisible();
+    await toggleCandidateAndSave(page, mainSheetFirstOpen, coWorker.name, "선택");
+    await expect(mainSheetFirstOpen.getByText("필요 1 / 배정 1")).toBeVisible();
+    await closeSheet(page, mainSheetFirstOpen);
+
+    await page.goto(`/admin/schedule/${scheduleId}`);
+    await expect(page.getByText(HEADCOUNT_LINE_PATTERN)).toHaveCount(0);
+    await expect(positionRow(page, MAIN_POSITION_NAME).getByText("필요 1 / 배정 1")).toBeVisible();
+
+    const scanSheetFirstOpen = await openPositionSheet(page, SCAN_POSITION_NAME);
+    await expect(scanSheetFirstOpen.getByText("필요 1 / 배정 0")).toBeVisible();
+    await toggleCandidateAndSave(page, scanSheetFirstOpen, coWorker.name, "선택");
+    await expect(scanSheetFirstOpen.getByText("필요 1 / 배정 1")).toBeVisible();
+    await closeSheet(page, scanSheetFirstOpen);
+
+    await page.goto(`/admin/schedule/${scheduleId}`);
+    await expect(page.getByText("오는 사람 1명 · 포지션 합계 2")).toBeVisible();
+    await expect(positionRow(page, MAIN_POSITION_NAME).getByText("필요 1 / 배정 1")).toBeVisible();
+    await expect(positionRow(page, SCAN_POSITION_NAME).getByText("필요 1 / 배정 1")).toBeVisible();
+
+    const { data: coWorkerAssignmentAfterBoth } = await admin
+      .from("assignments")
+      .select("id, assignment_positions(position_id)")
+      .eq("schedule_id", scheduleId)
+      .eq("profile_id", coWorker.id);
+    expect(coWorkerAssignmentAfterBoth).toHaveLength(1);
+    expect(coWorkerAssignmentAfterBoth?.[0]?.assignment_positions).toHaveLength(2);
+
+    const mainSheetForRemoval = await openPositionSheet(page, MAIN_POSITION_NAME);
+    await toggleCandidateAndSave(page, mainSheetForRemoval, coWorker.name, "선택됨");
+    await expect(mainSheetForRemoval.getByText("필요 1 / 배정 0")).toBeVisible();
+    await closeSheet(page, mainSheetForRemoval);
+
+    const { data: coWorkerAssignmentAfterOneRemoved } = await admin
+      .from("assignments")
+      .select("id")
+      .eq("schedule_id", scheduleId)
+      .eq("profile_id", coWorker.id)
+      .maybeSingle();
+    expect(coWorkerAssignmentAfterOneRemoved).not.toBeNull();
+
+    await page.goto(`/admin/schedule/${scheduleId}`);
+    await expect(page.getByText(HEADCOUNT_LINE_PATTERN)).toHaveCount(0);
+    await expect(positionRow(page, MAIN_POSITION_NAME).getByText("필요 1 / 배정 0")).toBeVisible();
+    await expect(positionRow(page, SCAN_POSITION_NAME).getByText("필요 1 / 배정 1")).toBeVisible();
+
+    const scanSheetAfterOneRemoved = await openPositionSheet(page, SCAN_POSITION_NAME);
+    await expect(
+      scanSheetAfterOneRemoved
+        .locator("li")
+        .filter({ hasText: coWorker.name })
+        .getByRole("button", { name: "선택됨", exact: true }),
+    ).toBeVisible();
+    await toggleCandidateAndSave(page, scanSheetAfterOneRemoved, coWorker.name, "선택됨");
+    await expect(scanSheetAfterOneRemoved.getByText("필요 1 / 배정 0")).toBeVisible();
+    await closeSheet(page, scanSheetAfterOneRemoved);
+
+    const { data: coWorkerAssignmentAfterLastRemoved } = await admin
+      .from("assignments")
+      .select("id")
+      .eq("schedule_id", scheduleId)
+      .eq("profile_id", coWorker.id)
+      .maybeSingle();
+    expect(coWorkerAssignmentAfterLastRemoved).toBeNull();
+
+    const mainSheetForCoWorker2 = await openPositionSheet(page, MAIN_POSITION_NAME);
+    await toggleCandidateAndSave(page, mainSheetForCoWorker2, coWorker2.name, "선택");
+    await expect(mainSheetForCoWorker2.getByText("필요 1 / 배정 1")).toBeVisible();
+    await closeSheet(page, mainSheetForCoWorker2);
+
+    const env = loadSupabaseTestEnv();
+    const authenticatedAdminClient = createClient(env.supabaseUrl, env.anonKey);
+    const { error: signInError } = await authenticatedAdminClient.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (signInError) {
+      throw signInError;
+    }
+
+    const { data: rejectedRpcData, error: rejectedRpcError } = await authenticatedAdminClient.rpc(
+      "replace_position_assignments",
+      {
+        target_schedule_id: scheduleId,
+        target_position_id: dressPositionId,
+        profile_ids: [coWorker2.id],
+      },
+    );
+    expect(rejectedRpcData).toBeNull();
+    expect(rejectedRpcError?.code).toBe("LB023");
+
+    const { data: coWorker2DressAssignment } = await admin
+      .from("assignment_positions")
+      .select("position_id, assignments!inner(profile_id, schedule_id)")
+      .eq("position_id", dressPositionId)
+      .eq("assignments.schedule_id", scheduleId)
+      .eq("assignments.profile_id", coWorker2.id);
+    expect(coWorker2DressAssignment).toHaveLength(0);
+
+    const { data: coWorker2MainAssignment } = await admin
+      .from("assignment_positions")
+      .select("position_id, assignments!inner(profile_id, schedule_id)")
+      .eq("position_id", mainPositionId)
+      .eq("assignments.schedule_id", scheduleId)
+      .eq("assignments.profile_id", coWorker2.id);
+    expect(coWorker2MainAssignment).toHaveLength(1);
+
+    await page.goto(`/admin/schedule/${scheduleId}`);
+    const dressSheetForCoWorker2 = await openPositionSheet(page, DRESS_POSITION_NAME);
+    const dressIneligibleSummary = dressSheetForCoWorker2.getByText(/조건에 맞지 않는 \d+명 보기/);
+    await expect(dressIneligibleSummary).toBeVisible();
+    await waitForDrawerOpenTransitionToSettle(page);
+    await dressIneligibleSummary.click({ force: true });
+    const coWorker2DressRow = dressSheetForCoWorker2.locator("li").filter({ hasText: coWorker2.name });
+    await expect(coWorker2DressRow).toBeVisible();
+    await expect(coWorker2DressRow.getByText("포지션 성별 조건과 맞지 않아요")).toBeVisible();
+    await closeSheet(page, dressSheetForCoWorker2);
 
     await context.close();
   });

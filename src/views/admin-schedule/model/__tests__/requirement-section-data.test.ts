@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  resolveAssignedHeadcount,
   resolveRequirementSectionData,
   shouldCopyScheduleRequirements,
 } from "@/views/admin-schedule/model/requirement-section-data";
@@ -30,6 +31,7 @@ describe("resolveRequirementSectionData", () => {
       requirementsOk: true,
       requirementRows: [REQUIREMENT_ROW],
       assignedCounts: { "position-1": 3 },
+      assignedWorkerCount: 3,
       positionsOk: true,
       positions: [ACTIVE_POSITION, INACTIVE_POSITION],
     });
@@ -38,6 +40,7 @@ describe("resolveRequirementSectionData", () => {
       ok: true,
       requirementRows: [REQUIREMENT_ROW],
       assignedCounts: { "position-1": 3 },
+      assignedWorkerCount: 3,
       activePositions: [ACTIVE_POSITION],
     });
   });
@@ -47,6 +50,7 @@ describe("resolveRequirementSectionData", () => {
       requirementsOk: true,
       requirementRows: [],
       assignedCounts: {},
+      assignedWorkerCount: 0,
       positionsOk: true,
       positions: [],
     });
@@ -55,6 +59,7 @@ describe("resolveRequirementSectionData", () => {
       ok: true,
       requirementRows: [],
       assignedCounts: {},
+      assignedWorkerCount: 0,
       activePositions: [],
     });
   });
@@ -64,6 +69,7 @@ describe("resolveRequirementSectionData", () => {
       requirementsOk: false,
       requirementRows: [],
       assignedCounts: {},
+      assignedWorkerCount: 0,
       positionsOk: true,
       positions: [ACTIVE_POSITION],
     });
@@ -76,11 +82,42 @@ describe("resolveRequirementSectionData", () => {
       requirementsOk: true,
       requirementRows: [REQUIREMENT_ROW],
       assignedCounts: { "position-1": 1 },
+      assignedWorkerCount: 1,
       positionsOk: false,
       positions: [],
     });
 
     expect(result).toEqual({ ok: false });
+  });
+});
+
+describe("resolveAssignedHeadcount", () => {
+  it("AC5: 포지션 합계와 실인원이 같으면 null을 반환한다(줄을 띄우지 않는다)", () => {
+    expect(
+      resolveAssignedHeadcount({ assignedCounts: { "position-1": 1 }, assignedWorkerCount: 1 }),
+    ).toBeNull();
+  });
+
+  it("AC5 경계값: 배정이 0명이면 null을 반환한다", () => {
+    expect(resolveAssignedHeadcount({ assignedCounts: {}, assignedWorkerCount: 0 })).toBeNull();
+  });
+
+  it("AC5: 겸직으로 포지션 합계가 실인원보다 크면 두 값을 함께 반환한다", () => {
+    expect(
+      resolveAssignedHeadcount({
+        assignedCounts: { "position-1": 1, "position-2": 1 },
+        assignedWorkerCount: 1,
+      }),
+    ).toEqual({ workerCount: 1, positionTotal: 2 });
+  });
+
+  it("AC5 경계값: 겸직자가 여럿이어도 포지션 합계를 그대로 더한다", () => {
+    expect(
+      resolveAssignedHeadcount({
+        assignedCounts: { "position-1": 2, "position-2": 1 },
+        assignedWorkerCount: 2,
+      }),
+    ).toEqual({ workerCount: 2, positionTotal: 3 });
   });
 });
 

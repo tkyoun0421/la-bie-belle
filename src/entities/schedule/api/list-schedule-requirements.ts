@@ -5,7 +5,12 @@ import { ERROR_CODE, type ErrorCode } from "@/shared/config/error-codes.config";
 import { createSupabaseServerClient } from "@/shared/lib/supabase-server";
 
 export type ListScheduleRequirementsResult =
-  | { ok: true; data: ScheduleRequirementRow[]; assignedCounts: Record<string, number> }
+  | {
+      ok: true;
+      data: ScheduleRequirementRow[];
+      assignedCounts: Record<string, number>;
+      assignedWorkerCount: number;
+    }
   | { ok: false; code: ErrorCode };
 
 const LIST_REQUIREMENTS_LIMIT = 1000;
@@ -68,6 +73,8 @@ export async function listScheduleRequirements(
     return { ok: false, code: mapFailureCode(assignmentsResult.error.code) };
   }
 
+  const assignmentRows = (assignmentsResult.data ?? []) as unknown as AssignmentRow[];
+
   return {
     ok: true,
     data: ((requirementsResult.data ?? []) as unknown as RequirementRow[])
@@ -79,8 +86,7 @@ export async function listScheduleRequirements(
         positionName: row.positions.name,
         requiredCount: row.required_count,
       })),
-    assignedCounts: countAssignedPositions(
-      (assignmentsResult.data ?? []) as unknown as AssignmentRow[],
-    ),
+    assignedCounts: countAssignedPositions(assignmentRows),
+    assignedWorkerCount: assignmentRows.length,
   };
 }

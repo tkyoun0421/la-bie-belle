@@ -72,6 +72,7 @@ describe("listScheduleRequirements", () => {
         { positionId: "position-2", positionName: "드레스", requiredCount: 0 },
       ],
       assignedCounts: { "position-1": 2, "position-2": 1 },
+      assignedWorkerCount: 2,
     });
     expect(from).toHaveBeenCalledWith("schedule_position_requirements");
     expect(requirementsSelect).toHaveBeenCalledWith("position_id, required_count, positions(name)");
@@ -99,6 +100,37 @@ describe("listScheduleRequirements", () => {
       ok: true,
       data: [{ positionId: "position-1", positionName: "팀장", requiredCount: 1 }],
       assignedCounts: {},
+      assignedWorkerCount: 0,
+    });
+  });
+
+  it("겸직으로 포지션 합계가 실인원보다 커도 assignedWorkerCount는 배정 행 수와 같다", async () => {
+    requirementsLimit.mockResolvedValue({
+      data: [
+        { position_id: "position-1", required_count: 1, positions: { name: "메인" } },
+        { position_id: "position-2", required_count: 1, positions: { name: "스캔" } },
+      ],
+      error: null,
+    });
+    assignmentsLimit.mockResolvedValue({
+      data: [
+        { assignment_positions: [{ position_id: "position-1" }, { position_id: "position-2" }] },
+      ],
+      error: null,
+    });
+
+    const { listScheduleRequirements } =
+      await import("@/entities/schedule/api/list-schedule-requirements");
+    const result = await listScheduleRequirements("schedule-1");
+
+    expect(result).toEqual({
+      ok: true,
+      data: [
+        { positionId: "position-1", positionName: "메인", requiredCount: 1 },
+        { positionId: "position-2", positionName: "스캔", requiredCount: 1 },
+      ],
+      assignedCounts: { "position-1": 1, "position-2": 1 },
+      assignedWorkerCount: 1,
     });
   });
 
@@ -113,7 +145,7 @@ describe("listScheduleRequirements", () => {
       await import("@/entities/schedule/api/list-schedule-requirements");
     const result = await listScheduleRequirements("schedule-1");
 
-    expect(result).toEqual({ ok: true, data: [], assignedCounts: {} });
+    expect(result).toEqual({ ok: true, data: [], assignedCounts: {}, assignedWorkerCount: 0 });
   });
 
   it("42501은 IDENTITY_NOT_ACTIVE로 매핑한다", async () => {

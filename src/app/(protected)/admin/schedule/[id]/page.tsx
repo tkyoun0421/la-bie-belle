@@ -17,6 +17,7 @@ import { setRequirement } from "@/features/requirement/api/set-requirement";
 import { RouteTransition } from "@/shared/ui/route-transition";
 import { AdminSchedulePrepView } from "@/views/admin-schedule/ui/AdminSchedulePrepView";
 import {
+  resolveAssignedHeadcount,
   resolveRequirementSectionData,
   shouldCopyScheduleRequirements,
 } from "@/views/admin-schedule/model/requirement-section-data";
@@ -64,6 +65,7 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
     requirementsOk: requirementsResult.ok,
     requirementRows: requirementsResult.ok ? requirementsResult.data : [],
     assignedCounts: requirementsResult.ok ? requirementsResult.assignedCounts : {},
+    assignedWorkerCount: requirementsResult.ok ? requirementsResult.assignedWorkerCount : 0,
     positionsOk: positionsResult.ok,
     positions: positionsResult.ok ? positionsResult.data : [],
   });
@@ -71,6 +73,11 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
   if (!requirementSectionData.ok) {
     return <ErrorScreen />;
   }
+
+  const assignedHeadcount = resolveAssignedHeadcount({
+    assignedCounts: requirementSectionData.assignedCounts,
+    assignedWorkerCount: requirementSectionData.assignedWorkerCount,
+  });
 
   return (
     <RouteTransition>
@@ -83,6 +90,7 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
         onDeleteCheckInRule={deleteCheckInRule}
         requirementRows={requirementSectionData.requirementRows}
         assignedCounts={requirementSectionData.assignedCounts}
+        assignedHeadcount={assignedHeadcount}
         activePositions={requirementSectionData.activePositions}
         onSetRequirement={setRequirement}
         onRemoveRequirement={removeRequirement}
