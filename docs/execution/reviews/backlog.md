@@ -285,3 +285,9 @@
 - [ ] [medium] [P0-T44] spring 상수가 TS fallback에 복제돼 봉인 불변 규칙·ADR-0015 결정 5의 SSOT 위반 — src/shared/ui/motion-provider.tsx
 - [ ] [low] [P0-T44] overscroll e2e가 CSS 선언 존재만 단언해 globals.test.ts와 중복(브라우저 동작 미검증) — tests/e2e/swipe-refresh.spec.ts
 - [ ] [low] [P0-T44] tdd.json 쌍 수와 handoff 기재 불일치, 신규 e2e·view 테스트 쌍 부재 — docs/execution/runs/P0-T44/tdd.json
+- [x] [medium] [P0-T45] route-fade 키프레임이 filter: blur()를 애니메이션해 DEV-TOKEN-01 MUST(transform·opacity 한정)와 부딪힘 — src/app/globals.css (revision 4 수정 라운드에서 blur 제거)
+- [ ] [medium] [P0-T45] 탭 바 격리 e2e가 인라인 viewTransitionName과 전환 밖 boundingBox만 단언해 격리 CSS를 지워도 통과 — tests/e2e/tab-navigation.spec.ts
+- [ ] [medium] [P0-T45] 전환 종류 리터럴이 여섯 파일에 흩어져 RouteTransitionKind의 제약을 받지 않음(오타가 조용히 전환을 없앰) — src/shared/model/route-transition.ts
+- [ ] [medium] [P0-T45] reduced-motion 가드 정규식이 두 미디어 블록 사이 규칙까지 캡처해 토큰 덮기 가드의 정밀도 상실 — src/app/__tests__/globals.test.ts
+- [ ] [low] [P0-T45] --duration-crossfade의 존재·값 단언과 전환 키프레임·격리 규칙의 존재 단언 부재 — src/app/__tests__/globals.test.ts
+- [ ] [low] [P0-T45] resolveRouteTransition의 ?? "tab" 폴백이 도달 불가 분기라 불변 조건을 가림 — src/widgets/app-shell/ui/AppShellTabBar.tsx

@@ -1,0 +1,114 @@
+{
+  "task_id": "P0-T45",
+  "at": "2026-08-11",
+  "base_commit": "ba60cdf",
+  "head_commit": "6327c068e97f6c5385990c34c9d0ce44910ec1aa",
+  "participants": ["opus", "codex"],
+  "findings": [
+    {
+      "id": "F-01",
+      "title": "탭 밖으로 나가는 이동 셋에 전환 타입이 없어 같은 목적지가 진입 경로에 따라 다르게 보인다",
+      "severity": "high",
+      "area": "architecture",
+      "file": "src/views/home/ui/HomeView.tsx",
+      "agreed_by": ["opus", "codex"],
+      "description": "HomeView.tsx:110(confirmation-change)과 :122(next-shift)의 /schedule/${date} 링크에 transitionTypes가 없고, 알림 화면의 router.push(src/app/(protected)/(tabs)/notifications/page.tsx:16-20)도 /schedule/:date·/pay로 이동하면서 타입을 붙이지 않는다. RouteTransition의 default가 none이라 이 경로들은 슬라이드 없이 이동한다. 같은 스케줄 상세인데 달력 셀로 들어가면 올라오고 홈 카드나 알림으로 들어가면 아무 움직임도 없다. RADIO Architecture가 홈 CTA에 태그를 붙이라고 한 근거가 정확히 이 불일치였으므로 같은 논리가 나머지 링크에도 걸린다. 중요도는 리뷰어가 갈려(opus medium, codex high) 계약대로 높은 쪽을 택했다 — 인수 조건 3이 명시적으로 승인한 사용자 동작이 일부 경로에서 나오지 않는다는 점을 근거로 본다. 다만 src/views/home/**는 「변경 허용 경로」 안이라 즉시 고칠 수 있는 반면, notifications/page.tsx는 봉인문의 용도 한정('라우팅을 바꾸지 않는다')에 걸려 승인 범위 밖이다."
+    },
+    {
+      "id": "F-02",
+      "title": "라우트 전환 총 시간 400ms가 FOUNDATIONS의 220~280ms 대역을 벗어난다",
+      "severity": "high",
+      "area": "architecture",
+      "file": "src/app/globals.css",
+      "agreed_by": ["opus", "codex"],
+      "description": "globals.css:58의 --duration-crossfade: 200ms를 :263-268이 '옛 화면은 지연 없이 200ms 동안 사라지고 새 화면은 200ms 지연 뒤 200ms 동안 나타난다'로 쓰므로 전환 종료가 400ms다. 슬라이드 경로도 route-slide-up의 페이드가 같은 지연을 물어 400ms로 끝난다. docs/product/design/FOUNDATIONS.md:120의 모션 표가 '바텀시트·화면 전환 | 220~280ms'로 대역을 못 박고 있으며 이 문서는 RADIO가 「관련 spec: DOCS:SDD(FOUNDATIONS 모션 절)」로 지목한 자리이자 L4 RADIO보다 상위인 L2 제품 문서다. 상한 280ms를 넘고 개별 페이드 200ms는 하한 220ms에도 못 미친다. runs/P0-T45/radio.md:75가 이 값을 '구현 재량'으로 정하면서 근거로 든 것이 FOUNDATIONS 대역이 아니라 스킬 레시피의 --duration-enter(210ms)라 정본을 대조하지 않았음이 드러난다. 중요도는 리뷰어가 갈려(codex high, opus medium) 높은 쪽을 택했다. 해소에는 값 결정이 필요하며, 순차 크로스페이드 구조 자체는 봉인된 '레시피를 복사한다' 규칙에서 왔다. 참고로 P0-T43이 세운 --duration-overlay: 250ms가 이 대역에 맞춰 만들어진 토큰이다."
+    },
+    {
+      "id": "F-03",
+      "title": "e2e가 RADIO 위험 표에서 '테스트함'으로 선언한 경로를 실제로 실행하지 않는다",
+      "severity": "high",
+      "area": "tests",
+      "file": "tests/e2e/tab-navigation.spec.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "테스트 전체에 브라우저 history back 동작이 없어 인수 조건 4가 열거한 네 경우(일반 뒤로 가기, 전환 도중 뒤로 가기, 진입 직후 즉시 뒤로 가기, 연타)가 하나도 검증되지 않는다. 미지원 환경 검사는 네 탭만 순회하고 상세 진입을 확인하지 않는다. 슬라이드 검사는 달력 셀 한 경로만 다뤄 인수 조건 3이 명시적으로 열거한 목적지 셋(예상급여·내 정보·관리자)을 보호하지 않으며, MoreView의 transitionTypes 셋과 HomeView의 하나는 e2e에도 컴포넌트 테스트에도 등장하지 않는다(src/views/**/__tests__/ 전체에 transitionTypes·nav-forward·nav-back 문자열이 없음을 확인). 탭 페이드도 홈→일정 한 쌍만 애니메이션을 검사한다. transitionTypes는 DOM 속성으로 렌더되지 않아 화면으로도 확인이 어려우므로, 이 태그들이 지워지거나 오타가 나면 어떤 테스트도 깨지지 않은 채 전환만 사라진다. 중요도는 리뷰어가 갈려(codex high, opus medium) 높은 쪽을 택했다."
+    },
+    {
+      "id": "F-04",
+      "title": "detail-slide e2e가 올라옴과 내려감을 구분하지 못해 방향 회귀를 막지 못한다",
+      "severity": "high",
+      "area": "tests",
+      "file": "tests/e2e/tab-navigation.spec.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "tab-navigation.spec.ts:271-273과 278-280의 단언이 글자 그대로 같다(route-fade > 0, route-slide-y > 0). 진입과 복귀가 같은 키프레임 이름을 쓰고 reverse로만 갈리므로 이름·지속시간만으로는 방향을 판정할 수 없고, RouteTransition의 nav-forward와 nav-back 매핑을 서로 바꿔도 이 테스트는 GREEN으로 남는다. 인수 조건 3의 핵심인 방향이 회귀 보호 밖이다. 또 installViewTransitionSpy가 transition.ready 콜백에서 비동기로 배열을 채우는데 읽기 시점이 그와 동기화되어 있지 않아, 두 번째 읽기가 첫 전환의 값을 그대로 봐도 단언이 통과한다. animation.effect.pseudoElement로 ::view-transition-new(...)와 old(...)를 갈라 보면 방향을 실제로 단언할 수 있다. 중요도는 리뷰어가 갈려(codex high, opus medium) 높은 쪽을 택했다."
+    },
+    {
+      "id": "F-05",
+      "title": "route-fade 키프레임이 filter: blur()를 애니메이션해 DEV-TOKEN-01 MUST와 부딪힌다",
+      "severity": "medium",
+      "area": "performance",
+      "file": "src/app/globals.css",
+      "agreed_by": ["opus", "codex"],
+      "description": "globals.css:243-252의 @keyframes route-fade가 blur(3px) → blur(0)을 함께 재생한다. DEV-TOKEN-01은 MUST로 '애니메이션 대상은 transform과 opacity로 제한한다'고 정하고 P0-T43 기획 인수 조건도 같은 문장을 승인했다. 대상이 ::view-transition-old/new인 전체 화면 스냅샷이라 모바일 PWA의 모든 라우트 전환마다 전체 화면 블러가 돈다. RADIO Optimizations 절은 '애니메이션 대상은 transform과 opacity뿐이다, 레시피가 이미 그렇게 되어 있다'고 적었으나 레시피 원본(css-recipes.md:20-23)의 fade 키프레임에 blur가 들어 있어 그 서술이 사실과 다르다. 즉 '레시피를 복사한다'는 봉인 규칙과 상위 문서 DEVELOPMENT.md의 MUST가 부딪히는 자리인데 구현이 이 충돌을 질문으로 반환하지 않고 넘어갔다. 기계 강제인 project/motion-tokens 룰은 TS/TSX AST만 검사하고 CSS 키프레임은 보지 않으므로 lint가 잡지 못한다. 해소에는 어느 규칙을 우선할지 결정이 필요하다."
+    },
+    {
+      "id": "F-06",
+      "title": "탭 바 격리 테스트가 격리 CSS를 관찰하지 않아 규칙을 지워도 통과한다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "tests/e2e/tab-navigation.spec.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "tab-navigation.spec.ts:285-308의 단언은 둘뿐이다 — getComputedStyle(nav).viewTransitionName이 'persistent-nav'인지, 클릭 전후 boundingBox()가 같은지. 앞은 <nav>에 인라인으로 박힌 style={{ viewTransitionName }}에서 나오므로 CSS 규칙과 무관하고, 뒤는 fixed inset-x-0 bottom-0인 실제 DOM 요소의 레이아웃 박스라 전환 여부와 상관없이 같다. 따라서 globals.css:281-284의 ::view-transition-group(persistent-nav) { animation: none; z-index: 100 }을 통째로 지워도 두 단언이 통과하며, 그때 탭 바 그룹이 브라우저 기본 크로스페이드를 받아 전환마다 깜빡이는 것이 인수 조건 5가 막으려던 현상이다. 두 boundingBox 호출이 모두 전환 밖 시점이라 테스트 이름의 '전환 중에도'라는 주장도 관찰 범위를 넘는다. runs/P0-T45/tdd.json의 이 검사 RED도 viewTransitionName 제거로 만든 것이어서 격리 CSS 쪽 RED→GREEN 증거가 없다. 등록 check id persistent-nav-isolation이 덮는다고 선언한 범위의 절반이 회귀 보호 밖이다."
+    },
+    {
+      "id": "F-07",
+      "title": "전환 종류 문자열이 여섯 파일에 리터럴로 흩어져 타입 제약을 받지 않는다",
+      "severity": "medium",
+      "area": "code_quality",
+      "file": "src/shared/model/route-transition.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "\"tab\"·\"nav-forward\"·\"nav-back\"이 AppShellTabBar·MoreView·HomeView·ScheduleView·ScheduleDetailView·ScheduleDetailClosedView와 route-transition.tsx의 enter/exit 맵, globals.css의 선택자에 각각 문자열로 적혀 있다. shared/model의 RouteTransitionKind 타입이 이 중 어느 사용처도 제약하지 않는다 — next/link의 transitionTypes가 string[]을 받기 때문이다. 세 종류는 Link·명령형 내비게이션·ViewTransition 매핑이 공유하는 프로토콜인데 각 사용처가 독립 리터럴을 넘기므로, 오타나 이름 변경 누락이 타입 검사도 lint도 없이 특정 경로의 전환만 조용히 없앤다. F-03과 겹쳐 테스트로도 잡히지 않는 링크가 넷 있다. 중요도는 리뷰어가 갈려(codex medium, opus low) 높은 쪽을 택했다. 상수화는 승인된 허용 경로 안에서 가능하다."
+    },
+    {
+      "id": "F-08",
+      "title": "reduced-motion 가드 정규식이 두 번째 미디어 블록과 그 사이 규칙까지 캡처한다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "src/app/__tests__/globals.test.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "globals.test.ts:224의 /@media\\s*\\(prefers-reduced-motion:\\s*reduce\\)\\s*\\{([\\s\\S]*)\\}\\s*$/는 reduced-motion 블록이 파일에 하나뿐이라는 전제로 쓰였다. 이번 변경이 ::view-transition-group(*) 블록을 기존 토큰 블록보다 앞(globals.css:286)에 넣으면서 greedy한 [\\s\\S]*와 파일 끝 anchor가 맞물려 캡처 구간이 첫 블록부터 파일 끝까지로 늘어났다. 그 사이의 body·:focus-visible 규칙까지 'reduced-motion 블록'으로 취급되므로, 토큰 선언이 미디어 쿼리 밖 전역으로 새어 나가도 일부 단언이 통과한다. 지금 깨지는 단언은 없으나 토큰 덮기 가드의 정밀도가 사라졌다. 중요도는 리뷰어가 갈려(codex medium, opus low) 높은 쪽을 택했다."
+    },
+    {
+      "id": "F-09",
+      "title": "신설 토큰 --duration-crossfade와 전환 CSS의 존재를 단위로 단언하지 않는다",
+      "severity": "low",
+      "area": "tests",
+      "file": "src/app/__tests__/globals.test.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "형제 토큰 --duration-feedback·--duration-value·--duration-overlay는 globals.test.ts:109-116에서 값까지 단언하는데, --duration-crossfade는 'reduced-motion에서 덮지 않는다'는 부정 단언 하나뿐이다. 토큰이 삭제되거나 이름이 바뀌면 var()가 무효가 되어 animation 단축 선언 전체가 버려지고 전환이 통째로 죽는데 그 부정 단언은 여전히 통과한다. route-fade·route-slide-y 키프레임과 ::view-transition-* 규칙, persistent-nav 격리 규칙의 존재 단언도 없다. dialog-in/out과 stagger-in에는 같은 성격의 가드가 이미 있어 관례도 존재한다. 페이드·슬라이드의 존재와 양의 지속시간은 e2e가 일부 덮으므로 전체 회귀 보호 공백은 아니다."
+    },
+    {
+      "id": "F-10",
+      "title": "resolveRouteTransition의 ?? \"tab\" 폴백은 도달할 수 없는 분기다",
+      "severity": "low",
+      "area": "code_quality",
+      "file": "src/widgets/app-shell/ui/AppShellTabBar.tsx",
+      "agreed_by": ["opus", "codex"],
+      "description": "AppShellTabBar.tsx:33의 resolveRouteTransition(pathname, tab.href)에서 tab.href는 항상 APP_TABS를 순회한 값이므로 to가 탭 밖 경로일 수 없고, route-transition.ts:19-22의 분기 구조상 반환값이 null이 될 수 없다. 방어 코드처럼 보이지만 실제로는 죽은 분기라 '탭 바 링크의 목적지는 언제나 탭'이라는 불변 조건을 드러내는 대신 가린다. 사용자 동작이나 구조에 실질적 영향은 없다."
+    }
+  ],
+  "scores": {
+    "code_quality": 78,
+    "tests": 58,
+    "security": 100,
+    "performance": 82,
+    "architecture": 74
+  },
+  "score_rationale": {
+    "code_quality": "래퍼·순수 함수·config 분리가 작고 읽기 쉬우며 설명 주석도 없으나, 확정 발견 둘(F-07 전환 종류 리터럴 산재, F-10 도달 불가 폴백)이 남고 F-01의 링크 누락이 사용자에게 불일치로 드러난다.",
+    "tests": "확정 발견 다섯 중 둘이 high다. RED→GREEN 7쌍 중 다섯이 코드의 실재 지점을 되돌려 만든 진짜 RED이고 순수 함수 단위 테스트가 /pay 경계까지 덮지만, 등록 check id가 덮는다고 선언한 범위와 실제 단언이 어긋난 자리가 셋(F-03 미실행 경로, F-04 방향 미구분, F-06 격리 CSS 미관찰)이라 기능을 제거해도 통과하는 테스트가 남는다.",
+    "security": "판단 재료가 없다 — 서버 경계·RLS·입력 검증·개인정보 처리·감사 기록이 하나도 바뀌지 않았고, 관리자 링크의 hasRole 게이팅과 (protected) 레이아웃은 diff 밖이며 비밀값 노출도 없다. 두 리뷰어 모두 결함을 내지 않았다.",
+    "performance": "번들 491.28KB로 상한 500KB를 실측으로 지키고 CSS만 늘었으며 데이터 흐름 변경이 없으나, 확정 발견 F-05의 filter: blur()가 전체 화면 스냅샷에 걸려 모바일에서 매 라우트 전환마다 비용을 낸다.",
+    "architecture": "변경된 29개 파일이 전부 허용 경로 안이고 15개 페이지 모두 래퍼가 최상단이며 레이아웃 래핑·직접 startViewTransition 호출·react 버전 변경이 없어 봉인 규칙을 지켰다. 그러나 확정 발견 둘이 high다 — F-01은 승인된 인수 조건 3의 동작이 일부 경로에서 나오지 않고, F-02는 상위 L2 문서인 FOUNDATIONS의 수치 대역을 벗어난다."
+  },
+  "total": 78
+}
