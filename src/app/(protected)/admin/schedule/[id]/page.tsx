@@ -12,6 +12,7 @@ import {
   deleteCheckInRule,
   updateCheckInRule,
 } from "@/features/ceremony/api/manage-checkin-rules";
+import { confirmSchedule } from "@/features/confirmation/api/confirm-schedule";
 import { removeRequirement } from "@/features/requirement/api/remove-requirement";
 import { setRequirement } from "@/features/requirement/api/set-requirement";
 import { RouteTransition } from "@/shared/ui/route-transition";
@@ -98,6 +99,7 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
         onRemoveRequirement={removeRequirement}
         onListCandidates={listAssignmentCandidates}
         onReplaceAssignments={replacePositionAssignments}
+        onConfirmSchedule={confirmSchedule}
       />
     </RouteTransition>
   );

@@ -1,0 +1,88 @@
+{
+  "entries": [
+    {
+      "command": "npx -y supabase@2.75.0 test db",
+      "exit_code": 1,
+      "at": "2026-08-14T11:44:50Z",
+      "phase": "red",
+      "note": "supabase/migrations/20260815000000_schedule_confirmation.sql을 잠시 빼고 db reset 후 21-schedule-confirmation.test.sql(39문항)만 실행. confirm_schedule 부재로 3/3 사전 단언이 fatal error(pg_get_functiondef 대상 함수 없음)로 실패, Result: FAIL."
+    },
+    {
+      "command": "npx -y supabase@2.75.0 test db",
+      "exit_code": 0,
+      "at": "2026-08-14T11:46:36Z",
+      "phase": "green",
+      "note": "마이그레이션 복원, db reset 후 재실행. 첫 시도에서 NOREQ 픽스처의 planned_checkin 누락(LB027이 LB028보다 먼저 걸림)을 발견해 픽스처를 고치고 재실행. Files=21, Tests=1101, Result: PASS. 전이 트리거의 트랜잭션 내 다단 update(OPEN→CLOSED→PREPARING→CONFIRMED) 가정을 포함한 첫 pgTAP RED→GREEN 쌍."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/confirmation-warnings.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-14T11:47:24Z",
+      "phase": "red",
+      "note": "confirmation-warnings.ts 모듈 부재로 import 실패. 0 test."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/confirmation-warnings.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-14T11:47:34Z",
+      "phase": "green",
+      "note": "computeConfirmationWarnings 구현 후 재실행. 6/6 통과(happy path, 필요0 경계 3종, 교육생 미집계 검증, 빈 입력)."
+    },
+    {
+      "command": "pnpm vitest run src/features/confirmation/api/__tests__/confirm-schedule.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-14T11:48:23Z",
+      "phase": "red",
+      "note": "confirm-schedule.ts 모듈 부재로 10/10 실패."
+    },
+    {
+      "command": "pnpm vitest run src/features/confirmation/api/__tests__/confirm-schedule.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-14T11:48:39Z",
+      "phase": "green",
+      "note": "confirmSchedule 서버 액션 구현 후 재실행. 10/10 통과(권한·검증·LB026~LB030 5종 매핑·42501·기타)."
+    },
+    {
+      "command": "pnpm vitest run src/features/confirmation/hooks/__tests__/useConfirmSchedule.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-14T11:49:14Z",
+      "phase": "red",
+      "note": "useConfirmSchedule.ts 모듈 부재로 import 실패. 0 test."
+    },
+    {
+      "command": "pnpm vitest run src/features/confirmation/hooks/__tests__/useConfirmSchedule.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-14T11:49:24Z",
+      "phase": "green",
+      "note": "useConfirmSchedule 훅 구현 후 재실행. 6/6 통과(초기 상태·open/close·성공·실패·pending 전이·openDialog 오류 초기화)."
+    },
+    {
+      "command": "pnpm vitest run src/features/confirmation/hooks/__tests__/useConfirmSchedule.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-14T11:51:06Z",
+      "phase": "red",
+      "note": "중복 클릭 방지(재진입 가드) 테스트 추가 직후, 가드 구현 전 실행. 1 failed(action이 2번 호출됨) / 6 passed."
+    },
+    {
+      "command": "pnpm vitest run src/features/confirmation/hooks/__tests__/useConfirmSchedule.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-14T11:51:16Z",
+      "phase": "green",
+      "note": "confirm()에 pending 재진입 가드 추가 후 재실행. 7/7 통과."
+    },
+    {
+      "command": "npx playwright test tests/e2e/schedule-confirmation.spec.ts",
+      "exit_code": 1,
+      "at": "2026-08-14T11:57:23Z",
+      "phase": "red",
+      "note": "supabase/migrations/20260815000000_schedule_confirmation.sql을 잠시 빼고 db reset 후, 미리 pnpm build+pnpm start(port 3100)로 띄운 서버에 대해 실행. confirm_schedule RPC 부재로 happy path는 읽기 전용 전환 실패, 구조 오류 케이스는 LB026 문구가 뜨지 않아 2/2 실패."
+    },
+    {
+      "command": "npx playwright test tests/e2e/schedule-confirmation.spec.ts",
+      "exit_code": 0,
+      "at": "2026-08-14T11:58:18Z",
+      "phase": "green",
+      "note": "마이그레이션 복원, db reset 후 재실행(빌드는 이미 최종 코드 기준). 2/2 통과 — 버튼→다이얼로그(미달·담당자없음·마감 안내)→확정→읽기 전용 전환이 페이지 새로고침 없이(revalidatePath 기반) 성립함을 확인, 구조 오류(LB026) 케이스도 다이얼로그 내 오류 안내로 확인."
+    }
+  ]
+}

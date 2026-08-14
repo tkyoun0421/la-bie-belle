@@ -28,16 +28,23 @@ import { CheckInRuleEditor } from "@/features/ceremony/ui/CheckInRuleEditor";
 import { PlannedTimesEditor } from "@/features/ceremony/ui/PlannedTimesEditor";
 import { RecommendationConfirmDialog } from "@/features/ceremony/ui/RecommendationConfirmDialog";
 import {
+  useConfirmSchedule,
+  type ConfirmScheduleAction,
+} from "@/features/confirmation/hooks/useConfirmSchedule";
+import { ConfirmScheduleDialog } from "@/features/confirmation/ui/ConfirmScheduleDialog";
+import {
   useRequirementEditor,
   type RemoveRequirementAction,
   type SetRequirementAction,
 } from "@/features/requirement/hooks/useRequirementEditor";
 import { MissingPositionsBanner } from "@/features/requirement/ui/MissingPositionsBanner";
 import { RequirementTable } from "@/features/requirement/ui/RequirementTable";
+import { Button } from "@/shared/ui/button";
 import {
   canSelectCandidateAsTrainee,
   groupAssignmentCandidates,
 } from "@/views/admin-schedule/model/candidate-buckets";
+import { computeConfirmationWarnings } from "@/views/admin-schedule/model/confirmation-warnings";
 import {
   resolveTraineeCountLabel,
   shouldShowNoManagerNotice,
@@ -67,6 +74,7 @@ type AdminSchedulePrepViewProps = {
   onRemoveRequirement: RemoveRequirementAction;
   onListCandidates: ListAssignmentCandidatesAction;
   onReplaceAssignments: ReplacePositionAssignmentsAction;
+  onConfirmSchedule: ConfirmScheduleAction;
 };
 
 export function AdminSchedulePrepView({
@@ -85,6 +93,7 @@ export function AdminSchedulePrepView({
   onRemoveRequirement,
   onListCandidates,
   onReplaceAssignments,
+  onConfirmSchedule,
 }: AdminSchedulePrepViewProps) {
   const editor = useCeremonyEditor(
     {
@@ -111,6 +120,7 @@ export function AdminSchedulePrepView({
     onList: onListCandidates,
     onReplace: onReplaceAssignments,
   });
+  const confirmSchedule = useConfirmSchedule(onConfirmSchedule);
 
   const mode = resolveSchedulePrepScreenMode({
     status: schedulePrep.status,
@@ -122,12 +132,44 @@ export function AdminSchedulePrepView({
     [candidateSelection.candidates],
   );
 
+  const confirmationWarnings = useMemo(
+    () => computeConfirmationWarnings({ requirementRows, assignedCounts, traineeCounts }),
+    [requirementRows, assignedCounts, traineeCounts],
+  );
+
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-24">
       <div className="flex flex-col gap-1">
         <h1 className="typo-display text-text-strong">{schedulePrep.workDate}</h1>
         <p className="typo-body text-text">{schedulePrepStatusLabel(schedulePrep.status)}</p>
       </div>
+
+      {mode !== "readonly" ? (
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={confirmSchedule.openDialog}
+          disabled={confirmSchedule.pending}
+        >
+          스케줄 확정
+        </Button>
+      ) : null}
+      <ConfirmScheduleDialog
+        open={confirmSchedule.open}
+        onOpenChange={(next) => {
+          if (next) {
+            confirmSchedule.openDialog();
+          } else {
+            confirmSchedule.closeDialog();
+          }
+        }}
+        understaffed={confirmationWarnings.understaffed}
+        noManager={confirmationWarnings.noManager}
+        showClosingNotice={schedulePrep.status === "OPEN"}
+        errorMessage={confirmSchedule.errorMessage}
+        pending={confirmSchedule.pending}
+        onConfirm={() => confirmSchedule.confirm(schedulePrep.id)}
+      />
 
       {mode === "readonly" ? (
         <section className="flex flex-col gap-3">

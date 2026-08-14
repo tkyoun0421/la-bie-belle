@@ -16,6 +16,7 @@ export const WORK_DATE_BANDS = {
   assignmentEligibility: { minMonthsAhead: 231, maxMonthsAhead: 262 },
   swipeRefresh: { minMonthsAhead: 264, maxMonthsAhead: 295 },
   assignmentTrainee: { minMonthsAhead: 297, maxMonthsAhead: 328 },
+  scheduleConfirmation: { minMonthsAhead: 330, maxMonthsAhead: 361 },
 } as const satisfies Record<string, WorkDateBand>;
 
 const LAST_SAFE_DAY_OF_MONTH = 27;
