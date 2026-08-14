@@ -1,7 +1,7 @@
 # P3-T05 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 3
+- revision: 4
 - 기획 승인: user, 2026-08-11
 - 개발 설계 승인: user, 2026-08-14
 
@@ -12,6 +12,7 @@
 | 1 | 2026-08-11 | 최초 작성. 설계 인터뷰 확정 7건 — 교육생을 새 테이블에 담고, 저장은 기존 함수를 넓혀 한 트랜잭션으로 하며, 후보 함수에 교육생 여부 컬럼을 더하고, DB 경계 테스트는 새 pgTAP 파일로 떼고, 시트의 `자격 없음` 묶음은 유지한 채 누를 수만 있게 하고, 후보 한 줄에 `[배정]`·`[교육]` 두 버튼을 나란히 두고, e2e는 새 spec으로 떼며 시딩 헬퍼를 `tests/e2e/support/`로 뺀다. 2026-08-11 사용자 결정. |
 | 2 | 2026-08-11 | 네번째 인자의 기본값을 `null`로 두고 「교육생을 건드리지 않는다」로 읽는다. revision 1의 지시 셋이 서로 부딪혀 개발이 멈춰 반환한 결과다 — 「기본값을 두지 않는다」와 「과부하를 남기지 않는다」와 「`19-assignments.test.sql`은 7줄만 고친다」를 동시에 만족할 방법이 없었다. 봉인 전 조사가 시그니처를 문자열로 박은 줄만 세고 함수를 실제로 부르는 26곳을 세지 않은 것이 원인이다. 정지 조건의 행 번호도 4줄(76·77·87·92)로 정정한다 — 72·73·81행은 `list_position_assignment_candidates`의 인자가 그대로라 깨지지 않는다. 2026-08-11 사용자 결정. |
 | 3 | 2026-08-14 | 교차 검증(critical F-01) 수정 라운드 재봉인. ① 정식 배정 추가 시의 무조건 교차 검사에서 제외하는 대상을 「대상 포지션의 교육생 전체」가 아니라 「이번 호출의 교육 제거 집합에 든 사람」으로 좁힌다 — revision 2가 하위 호환용으로 남긴 3-인자 경로에서 같은 포지션 교육생을 정식 배정하면 겸직 금지가 뚫리던 구멍을 닫고, 4-인자 스왑(교육→정식 전환)은 그대로 허용한다. 이미 push된 마이그레이션은 소급 수정하지 않고 새 마이그레이션으로 함수만 재생성한다. ② F-05: `listScheduleRequirements`의 세 조회 모두 1,000행 상한 도달 시 성공으로 처리하지 않고 fail-closed로 돌린다. ③ F-02: 교육 가능 판정이 `eligible` 축을 함께 보도록 Architecture 문구를 정밀화한다. ④ F-03: 인수 조건 7의 「정식 전원 제거 후 교육생 잔존」 전이를 pgTAP로 단언한다. ⑤ 구현과 어긋났던 봉인문 두 곳을 사실로 정정한다 — RLS는 관리자 select 정책 하나뿐이고(쓰기는 RPC 전용), 교육생 수는 FK 경로 부재로 임베딩이 불가능해 별도 병렬 조회다. 2026-08-14 사용자 결정. |
+| 4 | 2026-08-14 | 재검증 확정 F-11(high) 회귀 수정 재봉인. revision 3의 F-02 수정이 교육 가능 판정을 추가 축으로만 좁혀, 비활성이면서 이미 그 포지션의 교육생인 후보(eligible `false`·사유 `null`·`currentlyTrainee` 참 — 후보 함수의 세번째 `or exists`가 비활성이어도 반환하는 조합)에게 교육 칩이 그려지지 않아 관리자가 그 교육생을 해제할 제품 내 경로가 사라졌다. 판정에 제거 축을 보강한다 — **`currentlyTrainee`가 참이면 칩을 유지한다(해제 가능). 새로 교육으로 고르는 가능 여부는 revision 3 규칙(eligible이거나 사유 `NOT_ELIGIBLE`) 그대로다.** 이 규칙은 이 diff 이전부터 있던 형제 사례(교육생 등록 뒤 포지션 성별 조건 변경으로 `GENDER_MISMATCH`가 된 기존 교육생)도 함께 닫는다. DB는 무수정 — 교육생 자격 루프가 `added_trainee_ids`만 순회해 제거는 이미 허용한다. 회귀 테스트로 eligible `false`·사유 `null`·`currentlyTrainee` 참 조합의 칩 유지를 단위에서 단언한다. 기존 e2e·단위 단언이 이 규칙과 충돌하면 멈추고 결정 신호로 반환한다. 2026-08-14 사용자 결정. |
 
 - 관련 spec: PRD:INV-STAFF-02, PRD:AC-04, DOMAIN:SCHEDULING, DOCS:SDD(ADMIN-FLOWS 관리자 예외 규칙 절)
 - 적용 깊이: 깊음 — 테이블과 RLS를 새로 만들고, 이미 배포된 함수 둘을 drop한 뒤 다시 만들며, 감사 기록과 오류 코드가 는다. P3-T04와 달리 DB 경계가 움직인다.
@@ -102,7 +103,7 @@
 - `src/entities/assignment/types/candidate.ts`: `AssignmentCandidate`에 `currentlyTrainee: boolean`을 더한다. 런타임 값을 export하지 않는다.
 - `src/entities/assignment/api/list-position-assignment-candidates.ts`: 새 컬럼을 매핑한다. 조회 개수는 그대로 하나다. `import "server-only"`는 첫 줄에 그대로 둔다.
 - `src/entities/schedule/api/list-schedule-requirements.ts`: 성공 반환에 `traineeCounts: Record<string, number>`를 더한다. 교육생 행을 `position_id`로 세며, 기존 `assignedCounts`·`assignedWorkerCount` 계산에 교육생을 섞지 않는다.
-- `src/views/admin-schedule/model/candidate-buckets.ts`: 묶음 구성은 그대로 두고, 후보 하나가 교육으로 고를 수 있는지를 판정하는 순수 함수를 더한다. 판정은 `eligible`과 `ineligibleReason` 두 축을 함께 본다 — `eligible`이 참이거나 사유가 `NOT_ELIGIBLE`일 때만 가능하다. `GENDER_MISMATCH`와 사유 없는 비활성(`eligible: false`·사유 `null` — DB가 어차피 「활성 근무자만」으로 거부하는 조합)은 불가다(revision 3, 교차 검증 F-02 — 한 축만 보면 결코 성공하지 않는 버튼이 생긴다). `react`를 import하지 않는다.
+- `src/views/admin-schedule/model/candidate-buckets.ts`: 묶음 구성은 그대로 두고, 후보 하나가 교육으로 고를 수 있는지를 판정하는 순수 함수를 더한다. 판정은 `eligible`과 `ineligibleReason` 두 축을 함께 본다 — `eligible`이 참이거나 사유가 `NOT_ELIGIBLE`일 때만 가능하다. `GENDER_MISMATCH`와 사유 없는 비활성(`eligible: false`·사유 `null` — DB가 어차피 「활성 근무자만」으로 거부하는 조합)은 불가다(revision 3, 교차 검증 F-02 — 한 축만 보면 결코 성공하지 않는 버튼이 생긴다). 단 **`currentlyTrainee`가 참인 후보는 위 규칙과 무관하게 칩을 유지한다**(revision 4, 재검증 F-11 — 제거 축. 이미 교육생인 사람의 해제 경로는 추가 가능 여부와 별개이며, DB의 교육생 자격 검사는 추가 대상만 순회해 제거를 막지 않는다). `react`를 import하지 않는다.
 - `src/views/admin-schedule/model/requirement-section-data.ts`: `교육 K` 조각을 붙일지 말지의 판정을 더한다. 0명이면 붙이지 않는다.
 - `src/views/admin-schedule/ui/AdminSchedulePrepView.tsx`: 판정 결과를 prop으로 받아 `필요 N · 배정 M`에 조각을 잇고, 정식 배정자가 없는 포지션에 `담당자 없음`을 그린다. 계산을 이 파일에서 하지 않는다.
 - `src/features/assignment/hooks/useCandidateSelection.ts`: 선택 상태를 정식용·교육용 두 집합으로 나눈다. `toggle`은 어느 역할인지를 받고, 한 사람이 두 집합에 동시에 들어가지 않도록 훅 안에서 막는다. 저장은 두 집합을 한 번의 `onReplace`로 보내고, 되돌리기는 두 집합을 함께 되돌린다. 변경 수는 두 집합의 대칭차 합이다.
