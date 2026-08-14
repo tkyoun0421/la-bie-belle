@@ -116,4 +116,14 @@ describe("canSelectCandidateAsTrainee", () => {
 
     expect(canSelectCandidateAsTrainee(inactiveNoReason)).toBe(false);
   });
+
+  it("이미 그 포지션의 교육생이면 비활성(eligible:false·사유 null)이어도 칩을 유지한다(revision 4, 재검증 F-11)", () => {
+    const currentTraineeInactive = candidate({
+      eligible: false,
+      ineligibleReason: null,
+      currentlyTrainee: true,
+    });
+
+    expect(canSelectCandidateAsTrainee(currentTraineeInactive)).toBe(true);
+  });
 });

@@ -125,6 +125,20 @@
       "at": "2026-08-14T07:38:05Z",
       "phase": "green",
       "note": "세 조회 각각에 requirementRows.length/assignmentRows.length/traineeRows.length >= LIST_REQUIREMENTS_LIMIT 검사를 추가해 COMMON_UNEXPECTED로 fail-closed 반환하도록 고친 뒤 재실행. 15/15 통과."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-14T08:19:03Z",
+      "phase": "red",
+      "note": "재검증 F-11(high) 회귀 수정. eligible:false·사유 null·currentlyTrainee 참 조합에서 canSelectCandidateAsTrainee가 참을 돌려줘야 한다는 새 단언 추가 직후, currentlyTrainee 축을 보지 않는 revision 3 구현에 대해 실행. 1 failed / 8 passed."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-14T08:19:10Z",
+      "phase": "green",
+      "note": "canSelectCandidateAsTrainee에 제거 축(currentlyTrainee가 참이면 다른 축과 무관하게 참) 보강 후 재실행. 9/9 통과."
     }
   ]
 }

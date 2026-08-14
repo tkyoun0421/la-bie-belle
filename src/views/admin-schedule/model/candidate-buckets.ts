@@ -26,5 +26,8 @@ export function groupAssignmentCandidates(
 }
 
 export function canSelectCandidateAsTrainee(candidate: AssignmentCandidate): boolean {
+  if (candidate.currentlyTrainee) {
+    return true;
+  }
   return candidate.eligible === true || candidate.ineligibleReason === "NOT_ELIGIBLE";
 }

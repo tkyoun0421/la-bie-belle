@@ -1,5 +1,60 @@
 # P3-T05 handoff
 
+## 2026-08-14 · F-11(high) 회귀 수정 2차 라운드 종료
+
+- 현재 단계: 개발(F-11 2차 수정 라운드) 종료 → 다음: 검증(교차 리뷰 재실행) 또는 조정자 판단.
+- 기준 커밋: `4b7625d`(RADIO revision 4 재봉인, SHA-256
+  `6690bfd717ce9ab298bdd12c7e24791010bc9cdd43a3dffe2ed0cf7ebb44554e`, index.jsonl
+  `development_approval`과 일치 확인 후 시작). index.jsonl의 P3-T05는 이미 `in_progress`였고
+  상태 전환 없이 그대로 진행했다.
+- 이번 라운드 범위는 RADIO revision 4 개정 이력 row 4(F-11) 하나뿐이었다.
+
+### F-11(high) — 이미 교육생인 후보의 해제 경로를 되살렸다
+
+- `src/views/admin-schedule/model/candidate-buckets.ts`의 `canSelectCandidateAsTrainee`에 제거 축을
+  보강했다 — `candidate.currentlyTrainee`가 참이면 다른 축(`eligible`·`ineligibleReason`)과 무관하게
+  참을 돌려준다. 새로 교육으로 고르는 판정은 revision 3 규칙
+  (`eligible === true || ineligibleReason === "NOT_ELIGIBLE"`) 그대로 뒀다.
+- DB는 무수정 — 교육생 자격 검사가 `added_trainee_ids`만 순회해 제거는 이미 허용하고 있었다.
+  마이그레이션·pgTAP 어느 것도 이번 라운드에서 건드리지 않았다.
+- 기존 e2e·단위 단언과의 충돌 여부를 먼저 확인했다 — `canSelectCandidateAsTrainee`의 유일한
+  호출부(`AdminSchedulePrepView.tsx` → `AssignmentCandidateSheet.tsx`)와 기존
+  `assignment-trainee.spec.ts`·`assignment-eligibility.spec.ts`에 `currentlyTrainee`·
+  `GENDER_MISMATCH` 조합을 다루는 e2e 시나리오가 없어 우회 없이 그대로 진행했다.
+
+### 검증
+
+- TDD RED→GREEN 1쌍을 `docs/execution/runs/P3-T05/tdd.json`에 append했다(기존 entries 18개 유지).
+  RED: `candidate({ eligible:false, ineligibleReason:null, currentlyTrainee:true })`에 대해
+  `canSelectCandidateAsTrainee`가 `false`를 돌려줘 실패(1 failed / 8 passed, 2026-08-14T08:19:03Z).
+  GREEN: 제거 축 보강 후 9/9 통과(2026-08-14T08:19:10Z).
+- `pnpm verify` 전체를 한 번의 끊기지 않은 실행으로 돌렸다 — format·lint·typecheck·unit(209 files /
+  1370 tests)·harness self-test·check:docs·build·gate:bundle·check:app-build·
+  check:client-secret-scan까지 전부 GREEN, `test:e2e`에서 정확히 알려진 플레이크 두 건만 실패했다
+  (`recruitment-manage.spec.ts:114`, `recruitment-open.spec.ts:80`, 나머지 68/70 통과). 원인을
+  재확인했다 — 두 spec 모두 "오늘 기준 +2개월"의 고정 일자(`work_date`)로 스케줄을 삽입해, 같은
+  로컬 DB에서 반복 실행하면 이전 실행이 남긴 행과 `schedules_work_date_active_unique`가 충돌한다
+  (밴드 미적용, P3-T05 diff와 무관 — 2026-08-11 handoff가 이미 같은 계열로 기록). `pnpm db:reset`
+  으로 로컬 DB를 비운 뒤 두 spec만 독립 재실행해 4/4 통과를 확인했다(재현·회귀 아님을 실행으로
+  증명). 이번 라운드는 두 spec, `playwright.config.ts`, work-date 밴드 어느 것도 변경 허용 경로
+  밖이라 손대지 않았다.
+
+### 이번 라운드에서 건드리지 않은 것
+
+- F-12(4-인자 스왑 무단언)·F-13·F-14·F-15는 이번 범위가 아니다 — backlog에 남아 있다(조정자 소유
+  `docs/execution/reviews/backlog.md`는 이 세션이 스테이징·수정하지 않았다).
+- `supabase/migrations/**`·`supabase/tests/**` 모두 무수정.
+- `tests/e2e/assignment-trainee.spec.ts`·`assignment-eligibility.spec.ts`도 무수정 — F-11 수정이
+  요구하는 새 e2e 시나리오가 없었다(단위 회귀만 요구됨, RADIO revision 4 개정 이력 row 4).
+
+### 미결 사항
+
+- `index.jsonl`의 P3-T05 status는 이 세션이 바꾸지 않았다 — `done` 전환은 조정자 몫이다.
+- RADIO 자체의 미결 사항 5건(교육생 예상 급여·출퇴근 여부·확정 직전 담당자 없음 차단·근무자 화면
+  교육생 표시·감사 로그 상세 수준)은 그대로 열려 있다.
+- work_date 밴드 미적용 spec 2개(`recruitment-manage.spec.ts`·`recruitment-open.spec.ts`) 정리는
+  여전히 후속 task 후보다(2026-08-11 handoff가 먼저 남긴 미결 사항, 이 라운드가 새로 만든 것 아님).
+
 ## 2026-08-14 · 검증 단계(교차 검증 재실행) 종료
 
 - 현재 단계: 검증(교차 리뷰 재실행) 종료 → 다음: F-11 처리 결정(사용자) 후 리팩토링 또는 2차 수정 라운드
