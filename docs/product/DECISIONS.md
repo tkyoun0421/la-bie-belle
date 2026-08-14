@@ -98,7 +98,18 @@
 - **한 사람은 같은 스케줄에서 한 자리만 갖는다.** 정식 배정과 교육생을 겸하지 못하고 두 포지션의 교육생도 되지 못하며, 어느 쪽이 먼저든 나중 것이 거부된다. 정식 배정끼리의 겸직은 P3-T04 결정대로 상한 없이 열려 있어 이 제한은 교육생 쪽에만 걸린다. — [PRD 교육생 절](PRD.md) · [phase P3-T05 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-11 기획)
 - **한 포지션에 붙는 교육생 수에는 상한이 없다.** 셋 이상도 저장되고 경고도 띄우지 않는다. 교육생은 필요 인원 집계에 들어가지 않아 미달 판정을 흔들지 않는다(`INV-STAFF-02`). — [PRD 교육생 절](PRD.md) (2026-08-11 기획)
 - **교육생이 있을 때만 `· 교육 K`를 덧붙인다.** 한 명도 없는 포지션은 `필요 N · 배정 M`에서 끝나며, 이는 겹칠 때만 실인원 줄을 띄우는 P3-T04 결정과 같은 결이다. — [ADMIN-FLOWS 관리자 예외 규칙 절](design/ADMIN-FLOWS.md) (2026-08-11 기획)
-- **정식 배정자를 다 뺀 포지션에도 교육생은 남는다.** 화면에서 `담당자 없음`으로 보이고 확정을 막는 경고는 P3-T06이 다른 경고들과 함께 만든다. — [ADMIN-FLOWS 관리자 예외 규칙 절](design/ADMIN-FLOWS.md) · [phase P3-T05 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-11 기획)
+- **정식 배정자를 다 뺀 포지션에도 교육생은 남는다.** 화면에서 `담당자 없음`으로 보이고 확정 직전 경고는 P3-T06이 다른 경고들과 함께 만든다(2026-08-14 P3-T06 기획이 차단 아님을 확정해 "막는 경고" 표기를 정정). — [ADMIN-FLOWS 관리자 예외 규칙 절](design/ADMIN-FLOWS.md) · [phase P3-T05 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-11 기획)
+- **다른 포지션에 이미 정식 배정된 근무자에게는 교육생 선택지를 표시하지 않는다.** 누르면 항상 DB가 거부하는 버튼을 화면에서 없앤다(P3-T05 교차 검증이 제품 결정 후보로 넘긴 건의 해소). 구현 편입 시점은 P3-T09 기획에서 정한다. — [PRD 교육생 절](PRD.md) (2026-08-14 기획)
+
+### 확정 (P3-T06)
+
+- **확정은 확인 다이얼로그 하나를 거치는 단일 트랜잭션이다.** CLOSED→PREPARING→CONFIRMED를 한 번에 통과하며 PREPARING은 화면에 드러나지 않는 통과 상태다. 미달 유무와 무관하게 다이얼로그가 경고 목록과 마감 안내를 함께 담고, 부분 확정 데이터는 남지 않는다. — [PRD 필요 인원과 배정 절](PRD.md) · [ADR-0003](../standards/adr/0003-schedule-lifecycle-and-snapshots.md) (2026-08-14 기획)
+- **모집 중 스케줄의 확정은 모집 마감을 함께 처리한다.** "모집도 함께 마감됩니다" 안내 후 한 번에 처리한다. — [PRD 필요 인원과 배정 절](PRD.md) · [ADR-0003](../standards/adr/0003-schedule-lifecycle-and-snapshots.md) (2026-08-14 기획)
+- **구조 오류 3종만 확정을 막는다.** 예식 0개, 예정 출퇴근 시각 미설정, 필요 인원 표 미복사다. 배정 0명·인원 미달·담당자 없음은 차단이 아니라 경고다(`INV-STAFF-01`). — [PRD 필요 인원과 배정 절](PRD.md) · [phase P3-T06 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-14 기획)
+- **담당자 없음 경고는 필요 인원과 무관하게 뜬다.** 정식 배정 0명에 교육생이 1명 이상이면 필요 0이어도 경고한다. — [phase P3-T06 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-14 기획)
+- **확정 시점 경고는 확정 감사 기록에 저장하고 화면은 재계산한다.** 전용 경고 테이블은 만들지 않는다. 확정 당시 경고는 감사 기록이, 지금 상태는 화면 재계산이 답한다. — [PRD 필요 인원과 배정 절](PRD.md) (2026-08-14 기획)
+- **시급 스냅샷은 정식 배정과 교육생 모두에 찍는다.** 확정 시점의 개인 시급이며 이후 시급 변경이 과거 예상치를 바꾸지 않는다. 급여 계산 방식은 P6 소유다. — [PRD 예상 급여 절](PRD.md) · [ADR-0003](../standards/adr/0003-schedule-lifecycle-and-snapshots.md) (2026-08-14 기획)
+- **확정 후 변경과 취소는 P3-T09로 분리한다.** 관리자 변경 4종 허용, revision 증가, CONFIRMED→CANCELLED 전이가 그 task 몫이며 그때까지 확정 스케줄은 수정·취소할 수 없다. — [phase P3-T09 절](../execution/phases/03-assignment-and-confirmation.md) (2026-08-14 기획)
 
 ## ATTENDANCE · NOTIFICATIONS · PAY
 
