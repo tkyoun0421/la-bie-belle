@@ -302,6 +302,79 @@ describe("listScheduleRequirements", () => {
     });
   });
 
+  it("revision 3(교차 검증 F-05): 요구 조회가 상한(1000행)에 닿으면 fail-closed로 처리한다", async () => {
+    requirementsLimit.mockResolvedValue({
+      data: Array.from({ length: 1000 }, (_, i) => ({
+        position_id: `position-${i}`,
+        required_count: 1,
+        positions: { name: `포지션${i}` },
+      })),
+      error: null,
+    });
+    assignmentsLimit.mockResolvedValue({ data: [], error: null });
+
+    const { listScheduleRequirements } =
+      await import("@/entities/schedule/api/list-schedule-requirements");
+    const result = await listScheduleRequirements("schedule-1");
+
+    expect(result).toEqual({ ok: false, code: ERROR_CODE.COMMON_UNEXPECTED });
+  });
+
+  it("revision 3(교차 검증 F-05): 배정 조회가 상한(1000행)에 닿으면 fail-closed로 처리한다", async () => {
+    requirementsLimit.mockResolvedValue({
+      data: [{ position_id: "position-1", required_count: 1, positions: { name: "팀장" } }],
+      error: null,
+    });
+    assignmentsLimit.mockResolvedValue({
+      data: Array.from({ length: 1000 }, () => ({
+        assignment_positions: [{ position_id: "position-1" }],
+      })),
+      error: null,
+    });
+
+    const { listScheduleRequirements } =
+      await import("@/entities/schedule/api/list-schedule-requirements");
+    const result = await listScheduleRequirements("schedule-1");
+
+    expect(result).toEqual({ ok: false, code: ERROR_CODE.COMMON_UNEXPECTED });
+  });
+
+  it("revision 3(교차 검증 F-05): 교육생 조회가 상한(1000행)에 닿으면 fail-closed로 처리한다", async () => {
+    requirementsLimit.mockResolvedValue({
+      data: [{ position_id: "position-1", required_count: 1, positions: { name: "팀장" } }],
+      error: null,
+    });
+    assignmentsLimit.mockResolvedValue({ data: [], error: null });
+    traineesLimit.mockResolvedValue({
+      data: Array.from({ length: 1000 }, () => ({ position_id: "position-1" })),
+      error: null,
+    });
+
+    const { listScheduleRequirements } =
+      await import("@/entities/schedule/api/list-schedule-requirements");
+    const result = await listScheduleRequirements("schedule-1");
+
+    expect(result).toEqual({ ok: false, code: ERROR_CODE.COMMON_UNEXPECTED });
+  });
+
+  it("revision 3(교차 검증 F-05) 경계값: 999행은 상한 미도달이라 성공으로 처리한다", async () => {
+    requirementsLimit.mockResolvedValue({
+      data: Array.from({ length: 999 }, (_, i) => ({
+        position_id: `position-${i}`,
+        required_count: 1,
+        positions: { name: `포지션${i}` },
+      })),
+      error: null,
+    });
+    assignmentsLimit.mockResolvedValue({ data: [], error: null });
+
+    const { listScheduleRequirements } =
+      await import("@/entities/schedule/api/list-schedule-requirements");
+    const result = await listScheduleRequirements("schedule-1");
+
+    expect(result.ok).toBe(true);
+  });
+
   it("AC5 경계값: 정식이 0명이고 교육생만 있는 포지션도 traineeCounts에 잡힌다", async () => {
     requirementsLimit.mockResolvedValue({
       data: [{ position_id: "position-1", required_count: 2, positions: { name: "드레스" } }],

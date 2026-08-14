@@ -110,4 +110,10 @@ describe("canSelectCandidateAsTrainee", () => {
 
     expect(canSelectCandidateAsTrainee(genderMismatch)).toBe(false);
   });
+
+  it("비활성 근무자(eligible:false·사유 null)는 교육으로도 고를 수 없다(revision 3, 교차 검증 F-02)", () => {
+    const inactiveNoReason = candidate({ eligible: false, ineligibleReason: null });
+
+    expect(canSelectCandidateAsTrainee(inactiveNoReason)).toBe(false);
+  });
 });

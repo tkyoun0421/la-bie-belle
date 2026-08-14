@@ -1,5 +1,90 @@
 # P3-T05 handoff
 
+## 2026-08-14 · 교차 검증 수정 라운드(critical F-01, high F-02·F-03·F-05) 구현
+
+- 현재 단계: 개발(수정 라운드) 종료 → 다음 검증(교차 리뷰 재실행)
+- 기준 커밋: `b0bfa0c`(RADIO revision 3 재봉인, SHA-256
+  `441e90e424209fd8d9899a39db4fec6177b2a936391a9ca4ef3d8421fa8ea864`, index.jsonl과 일치 확인 후 시작)
+- RADIO(`docs/execution/radio/P3-T05-radio.md` revision 3) 개정 이력 row 3과 본문의 "revision 3" 표기
+  4건(F-01·F-02·F-03·F-05)만 범위로 삼았다. F-04(CI 전체 스위트 GREEN)는 이미 해소되어 이번 라운드
+  범위 밖이었다.
+
+### F-01(critical) — 3-인자 호출의 같은 포지션 겸직 구멍을 닫았다
+
+- 새 마이그레이션 `supabase/migrations/20260814000000_trainee_conflict_guard.sql`에서
+  `replace_position_assignments`만 `drop` 후 재생성했다. 이미 push된
+  `20260811000000_assignment_trainees.sql`은 그대로 두고 소급 수정하지 않았다.
+- 정식 배정 추가 시의 교육생 교차 검사(원본 273~282행에 해당)를 「대상 포지션 제외」에서
+  「이번 호출의 `removed_trainee_ids`에 든 사람만 제외」로 좁혔다 —
+  `not (trainee_touched and at.profile_id = any(removed_trainee_ids))`. `trainee_touched`가 거짓인
+  3-인자 호출은 이 조건이 항상 참(제외 없음)으로 평가되어 교차 검사가 무조건 실행된다. 거부 메시지는
+  "이미 다른 포지션의 교육생이라 정식 배정할 수 없습니다"에서 "이미 교육생으로 등록되어 있어 정식
+  배정할 수 없습니다"로 포지션 불특정 문구로 바꾸고, 코드는 `LB024` 그대로 뒀다.
+- `supabase/tests/20-assignment-trainees.test.sql`: 정지 조건대로 AC3 방향1의 고정 메시지 1줄만
+  갱신했다. 새 단언 2개(준비 1 + 검증 1)를 추가해 "같은 포지션(드레스) 교육생을 3-인자 호출로 정식
+  배정 → LB024" 거부를 확인했다 — 대상자는 드레스 가능 포지션을 미리 등록해 둔 신규 프로필(F14)을
+  썼다. F1(기존 픽스처)을 재사용하면 드레스 가능 포지션이 없어 `assignment_eligibility`의
+  `NOT_ELIGIBLE`(LB023)이 먼저 걸려 F-01이 노리는 겸직 검사(LB024)를 검증할 수 없었기 때문이다 —
+  자격 검사가 트레이니 충돌 검사보다 함수 안에서 먼저 실행되는 구조를 실행으로 확인하고 대상자를
+  바꿔 대응했다(RADIO 문구 안에서의 선택, 설계 재해석 아님).
+
+### F-03(high) — AC7 전이를 pgTAP으로 처음 단언했다
+
+- `docs/execution/runs/P3-T05/radio.md`에 2026-08-14 날짜의 정정 절을 append했다(기존 내용은
+  고치지 않음) — "위험 기반 테스트 매트릭스 반영"의 "7 담당자 없음" 절이 "e2e로 확인했다"고 적은
+  것은 실제로는 제거 호출 이후의 최종 화면 상태만 본 것이었고, 제거 호출 자체가 교육생 행을 건드리지
+  않는다는 전이는 검증한 적이 없었다는 사실을 남겼다.
+- `20-assignment-trainees.test.sql`에 새 섹션을 추가했다: 스캔에 신규 프로필(F12, 스캔 가능 포지션
+  사전 등록)을 정식 배정하고 신규 프로필(F13)을 같은 포지션 교육생으로 추가한 뒤, F12를 3-인자
+  호출(네번째 인자 없음)로 전원 제거하고, F12의 정식 배정이 실제로 사라졌는지와 F13의 교육생 행이
+  그대로 남는지를 각각 단언했다.
+
+### F-02(high) — 교육 가능 판정이 `eligible` 축을 함께 보게 좁혔다
+
+- `src/views/admin-schedule/model/candidate-buckets.ts`의 `canSelectCandidateAsTrainee`를
+  `ineligibleReason !== "GENDER_MISMATCH"`에서 `eligible === true || ineligibleReason === "NOT_ELIGIBLE"`로
+  고쳤다. 옛 구현은 `eligible: false`·사유 `null`(비활성 근무자 — DB가 애초에 "활성 근무자만"으로
+  거부하는 조합)을 `GENDER_MISMATCH`가 아니라는 이유만으로 통과시켜, 절대 성공할 수 없는 `[교육]`
+  버튼을 그리는 구멍이었다.
+- 단위 테스트에 `eligible:false`·사유 `null` 조합 케이스를 추가했다.
+
+### F-05(high) — `listScheduleRequirements`의 세 조회를 fail-closed로 좁혔다
+
+- `src/entities/schedule/api/list-schedule-requirements.ts`: 요구·배정·교육생 세 조회 모두 반환
+  행 수가 `LIST_REQUIREMENTS_LIMIT`(1000)에 도달하면 성공 갈래로 넘어가지 않고 기존 조회 실패와
+  같은 `{ ok: false, code: ERROR_CODE.COMMON_UNEXPECTED }`로 반환하도록 검사 3개를 추가했다(각각
+  전용 `_truncated` 로그 이벤트). 999행은 상한 미도달이라 성공 처리됨을 경계값으로 확인했다.
+- 단위 테스트 4건(요구·배정·교육생 각 상한 도달 + 999행 경계값) 추가.
+
+### 검증
+
+- `pnpm typecheck`·`pnpm lint` 개별 통과 확인 후 `pnpm vitest run` 전체(209 files / 1369 tests,
+  기존 1364 + 이번 라운드 5건) 통과.
+- `npx -y supabase@2.75.0 db reset` 후 `npx -y supabase@2.75.0 test db` — Files=20, Tests=1062,
+  Result: PASS.
+- `pnpm verify` 전체(format·lint·typecheck·unit·harness self-test·check:docs·build·gate:bundle·
+  check:app-build·check:client-secret-scan·test:e2e 70/70·gate:motion-render-budget·gate:all)를
+  **한 번의 끊기지 않은 실행으로 GREEN** 확인(exit 0). 이번 실행에서는 알려진 플레이크 두 spec
+  (`recruitment-manage.spec.ts:114`, `recruitment-open.spec.ts:80`)도 발생하지 않았다.
+- TDD RED→GREEN 3쌍(entries 6개)을 `docs/execution/runs/P3-T05/tdd.json`에 append했다(기존
+  entries 12개 유지) — pgTAP 1쌍(F-01·F-03을 한 db reset 사이클에 함께 담음, 새 마이그레이션 없이
+  RED·있이 GREEN), unit 2쌍(candidate-buckets 1쌍, list-schedule-requirements 1쌍). 명령·exit
+  code·ISO 8601 시각은 전부 이번 세션의 실제 명령 실행에서 얻었다.
+
+### 이번 라운드에서 건드리지 않은 것
+
+- 기존 마이그레이션 `20260811000000_assignment_trainees.sql`은 한 글자도 고치지 않았다.
+- `supabase/tests/19-assignments.test.sql`은 이번 라운드 범위가 아니라 건드리지 않았다.
+- `tests/e2e/assignment-trainee.spec.ts`·`assignment-eligibility.spec.ts`도 이번 라운드 범위 밖 —
+  RADIO revision 3의 F-01·F-02·F-03·F-05 어느 것도 e2e 수정을 요구하지 않았다.
+
+### 미결 사항
+
+- `index.jsonl`의 P3-T05 status는 이 세션이 `in_progress`로 전환했고, 커밋 후에도 그대로 뒀다 —
+  `done` 전환은 조정자 몫이다.
+- RADIO 자체의 미결 사항 5건(교육생 예상 급여·출퇴근 여부·확정 직전 담당자 없음 차단·근무자 화면
+  교육생 표시·감사 로그 상세 수준)은 그대로 열려 있다.
+
 ## 2026-08-14 · 재봉인(revision 3)과 수정 라운드 재투입
 
 - 현재 단계: 설계(재봉인) 종료 → 다음 개발(수정 라운드)

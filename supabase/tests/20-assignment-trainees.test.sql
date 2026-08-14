@@ -1,5 +1,5 @@
 begin;
-select plan(45);
+select plan(52);
 
 -- =====================================================================
 -- 스키마 노출: assignment_trainees 테이블·컬럼·제약·RLS
@@ -56,7 +56,8 @@ insert into auth.users (id, email) values
   ('20000000-0000-0000-0000-000000000011', 'trn-f8@labiebelle.test'),
   ('20000000-0000-0000-0000-000000000012', 'trn-f9@labiebelle.test'),
   ('20000000-0000-0000-0000-000000000013', 'trn-f10@labiebelle.test'),
-  ('20000000-0000-0000-0000-000000000014', 'trn-f11@labiebelle.test');
+  ('20000000-0000-0000-0000-000000000014', 'trn-f11@labiebelle.test'),
+  ('20000000-0000-0000-0000-000000000017', 'trn-f14@labiebelle.test');
 
 insert into public.profiles (id, name, phone, gender, birth_date, status, inactivity_anchor_at) values
   ('20000000-0000-0000-0000-000000000001', '교육관리자', '01091000001', 'male', '1985-01-01', 'active', now()),
@@ -75,10 +76,18 @@ insert into public.profiles (id, name, phone, gender, birth_date, status, inacti
   ('20000000-0000-0000-0000-000000000011', '교육F8', '01091000011', 'female', '1994-01-10', 'active', now()),
   ('20000000-0000-0000-0000-000000000012', '교육F9', '01091000012', 'female', '1994-01-11', 'active', now()),
   ('20000000-0000-0000-0000-000000000013', '교육F10', '01091000013', 'female', '1994-01-12', 'active', now()),
-  ('20000000-0000-0000-0000-000000000014', '교육F11', '01091000014', 'female', '1994-01-13', 'active', now());
+  ('20000000-0000-0000-0000-000000000014', '교육F11', '01091000014', 'female', '1994-01-13', 'active', now()),
+  ('20000000-0000-0000-0000-000000000017', '교육F14', '01091000017', 'female', '1994-01-16', 'active', now());
 
 insert into public.profile_roles (profile_id, role, granted_by) values
   ('20000000-0000-0000-0000-000000000001', 'admin', null);
+
+insert into worker_position_eligibilities (profile_id, position_id, granted_by) values
+  (
+    '20000000-0000-0000-0000-000000000017',
+    (select id from positions where name = '드레스'),
+    '20000000-0000-0000-0000-000000000001'
+  );
 
 insert into schedules (work_date, application_deadline, status) values
   ('2099-10-01', '2099-09-24', 'OPEN');
@@ -309,8 +318,8 @@ select throws_ok(
     array[]::uuid[]
   )$$,
   'LB024',
-  '이미 다른 포지션의 교육생이라 정식 배정할 수 없습니다',
-  'AC3 방향1: 이미 스캔 교육생인 F2를 매니저에 정식 배정하면 LB024로 거부된다'
+  '이미 교육생으로 등록되어 있어 정식 배정할 수 없습니다',
+  'AC3 방향1(revision 3 — 메시지 일반화): 이미 스캔 교육생인 F2를 매니저에 정식 배정하면 LB024로 거부된다'
 );
 
 select lives_ok(
@@ -344,6 +353,26 @@ select throws_ok(
   'LB024',
   '정식 배정과 교육생을 동시에 선택할 수 없습니다',
   'AC3 경계값: 같은 요청에서 정식·교육 두 배열에 동시에 든 F4는 LB024로 거부된다'
+);
+
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-10-01'),
+    (select id from positions where name = '드레스'),
+    array[]::uuid[],
+    array['20000000-0000-0000-0000-000000000017']::uuid[]
+  )$$,
+  'AC3 revision 3(교차 검증 F-01) 준비: F14를 드레스 교육생으로 저장한다(드레스 가능 포지션은 이미 있음)'
+);
+select throws_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-10-01'),
+    (select id from positions where name = '드레스'),
+    array['20000000-0000-0000-0000-000000000017']::uuid[]
+  )$$,
+  'LB024',
+  '이미 교육생으로 등록되어 있어 정식 배정할 수 없습니다',
+  'AC3 revision 3(교차 검증 F-01): 같은 포지션(드레스) 교육생인 F14를 네번째 인자 없는 3-인자 호출로 정식 배정해도 LB024로 거부된다(3-인자 겸직 구멍 차단)'
 );
 reset role;
 
@@ -478,6 +507,78 @@ select is(
   ),
   1,
   'AC8: 축가 교육생 수는 여전히 1명이다(3-인자 호출이 교육생 집합을 늘리거나 줄이지 않았다)'
+);
+
+-- =====================================================================
+-- AC7 전이(revision 3, 교차 검증 F-03): 정식 배정 전원 제거 호출 뒤에도
+-- 교육생 행은 남는다. 이전 기록은 e2e로 최종 상태만 확인했다.
+-- =====================================================================
+
+insert into auth.users (id, email) values
+  ('20000000-0000-0000-0000-000000000015', 'trn-f12@labiebelle.test'),
+  ('20000000-0000-0000-0000-000000000016', 'trn-f13@labiebelle.test');
+
+insert into public.profiles (id, name, phone, gender, birth_date, status, inactivity_anchor_at) values
+  ('20000000-0000-0000-0000-000000000015', '교육F12', '01091000015', 'female', '1994-01-14', 'active', now()),
+  ('20000000-0000-0000-0000-000000000016', '교육F13', '01091000016', 'female', '1994-01-15', 'active', now());
+
+insert into worker_position_eligibilities (profile_id, position_id, granted_by) values
+  (
+    '20000000-0000-0000-0000-000000000015',
+    (select id from positions where name = '스캔'),
+    '20000000-0000-0000-0000-000000000001'
+  );
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '20000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-10-01'),
+    (select id from positions where name = '스캔'),
+    array['20000000-0000-0000-0000-000000000015']::uuid[],
+    array[]::uuid[]
+  )$$,
+  'AC7 전이 준비: F12를 스캔에 정식 배정한다'
+);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-10-01'),
+    (select id from positions where name = '스캔'),
+    array['20000000-0000-0000-0000-000000000015']::uuid[],
+    array['20000000-0000-0000-0000-000000000016']::uuid[]
+  )$$,
+  'AC7 전이 준비: F13을 스캔 교육생으로 추가하며 F12의 정식 배정은 그대로 둔다'
+);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-10-01'),
+    (select id from positions where name = '스캔'),
+    array[]::uuid[]
+  )$$,
+  'AC7 전이: 스캔의 정식 배정자 F12를 네번째 인자 없는 3-인자 호출로 전원 제거한다(null 기본값 = 교육생 무변경)'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-10-01')
+      and ap.position_id = (select id from positions where name = '스캔')
+      and asg.profile_id = '20000000-0000-0000-0000-000000000015'
+  ),
+  0,
+  'AC7 전이: F12의 스캔 정식 배정이 실제로 제거됐다'
+);
+select is(
+  (
+    select count(*)::int from assignment_trainees
+    where schedule_id = (select id from schedules where work_date = '2099-10-01')
+      and position_id = (select id from positions where name = '스캔')
+      and profile_id = '20000000-0000-0000-0000-000000000016'
+  ),
+  1,
+  'AC7 전이(교차 검증 F-03): 정식 배정자 전원 제거 호출 뒤에도 F13의 스캔 교육생 행은 그대로 남는다'
 );
 
 -- =====================================================================

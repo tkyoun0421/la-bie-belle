@@ -94,12 +94,32 @@ export async function listScheduleRequirements(
     return { ok: false, code: mapFailureCode(traineesResult.error.code) };
   }
 
+  const requirementRows = (requirementsResult.data ?? []) as unknown as RequirementRow[];
   const assignmentRows = (assignmentsResult.data ?? []) as unknown as AssignmentRow[];
   const traineeRows = (traineesResult.data ?? []) as unknown as TraineeRow[];
 
+  if (requirementRows.length >= LIST_REQUIREMENTS_LIMIT) {
+    process.stderr.write(
+      `${JSON.stringify({ event: "scheduling_list_schedule_requirements_truncated" })}\n`,
+    );
+    return { ok: false, code: ERROR_CODE.COMMON_UNEXPECTED };
+  }
+  if (assignmentRows.length >= LIST_REQUIREMENTS_LIMIT) {
+    process.stderr.write(
+      `${JSON.stringify({ event: "scheduling_list_schedule_requirements_assigned_counts_truncated" })}\n`,
+    );
+    return { ok: false, code: ERROR_CODE.COMMON_UNEXPECTED };
+  }
+  if (traineeRows.length >= LIST_REQUIREMENTS_LIMIT) {
+    process.stderr.write(
+      `${JSON.stringify({ event: "scheduling_list_schedule_requirements_trainee_counts_truncated" })}\n`,
+    );
+    return { ok: false, code: ERROR_CODE.COMMON_UNEXPECTED };
+  }
+
   return {
     ok: true,
-    data: ((requirementsResult.data ?? []) as unknown as RequirementRow[])
+    data: requirementRows
       .filter(
         (row): row is RequirementRow & { positions: { name: string } } => row.positions !== null,
       )
