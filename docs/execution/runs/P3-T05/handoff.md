@@ -1,6 +1,18 @@
 # P3-T05 handoff
 
-## 2026-08-14 · F-11(high) 회귀 수정 2차 라운드 종료
+## 2026-08-14 · 리팩토링 단계와 task 종료(done)
+
+- 현재 단계: 리팩토링 종료 → `done`. 조정자가 F-11 수정 diff(`4b7625d..b29a6af`)를 감사했다 —
+  삭제 없음, 4파일 전부 허용 경로, `canSelectCandidateAsTrainee`에 revision 4 봉인 규칙 그대로의
+  3줄 보강뿐이다. F-11(high)은 리뷰어 2자가 처방한 그대로의 수정이고 TDD RED→GREEN·verify가
+  실행 증거로 남아, P3-T03·P3-T04 선례대로 수정 라운드에 대한 추가 전체 교차 리뷰는 돌리지 않았다.
+- 리팩토링: 정리할 구조 없음 — 2차 라운드 diff가 판정 함수 3줄과 테스트 1건이라 구조·명명·중복
+  정리 대상이 없다. 상한 검사 3블록 중복(F-15)은 사용자 결정으로 backlog에 남겼다.
+- 확정 발견 처리 요약: critical 1(F-01)·high 4(F-02~F-05) 1차 수정 라운드(`a7712b5`)로 해소,
+  재검증 확정 high 1(F-11) 2차 수정 라운드(`b29a6af`)로 해소. medium·low(F-08~F-10, F-12~F-15)는
+  backlog 누적. 최종 재검증 총점 86(`docs/execution/reviews/P3-T05-review.json`).
+- `index.jsonl`: P3-T05 `in_progress` → `done`(2026-08-14). 다음 행동: ci-finisher push·CI 감시,
+  P3-T06 기획 인터뷰.
 
 - 현재 단계: 개발(F-11 2차 수정 라운드) 종료 → 다음: 검증(교차 리뷰 재실행) 또는 조정자 판단.
 - 기준 커밋: `4b7625d`(RADIO revision 4 재봉인, SHA-256

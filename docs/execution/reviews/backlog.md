@@ -293,8 +293,12 @@
 - [ ] [low] [P0-T45] resolveRouteTransition의 ?? "tab" 폴백이 도달 불가 분기라 불변 조건을 가림 — src/widgets/app-shell/ui/AppShellTabBar.tsx
 - [ ] [low] [P3-T04] 신규 겸직 test가 기존 test와 같은 assignmentEligibility 밴드를 나눠 써 23505 충돌 확률(약 2/864) — tests/e2e/assignment-eligibility.spec.ts
 - [x] [low] [P3-T04] handoff가 RED→GREEN 4쌍이라 적었으나 tdd.json은 3쌍(entries 6개) — docs/execution/runs/P3-T04/handoff.md
-- [ ] [medium] [P3-T05] 봉인문이 지시한 insert·delete RLS 정책이 없는데 그 이탈이 구현 기록에 없음 — supabase/migrations/20260811000000_assignment_trainees.sql
-- [ ] [medium] [P3-T05] 교육생 조회가 왕복을 2→3으로 늘려 봉인문 계약과 다른데 그 이탈이 구현 기록에 없음 — src/entities/schedule/api/list-schedule-requirements.ts
+- [x] [medium] [P3-T05] 봉인문이 지시한 insert·delete RLS 정책이 없는데 그 이탈이 구현 기록에 없음(revision 3 재봉인 b0bfa0c가 봉인문을 사실로 정정) — supabase/migrations/20260811000000_assignment_trainees.sql
+- [x] [medium] [P3-T05] 교육생 조회가 왕복을 2→3으로 늘려 봉인문 계약과 다른데 그 이탈이 구현 기록에 없음(revision 3 재봉인 b0bfa0c가 봉인문을 사실로 정정) — src/entities/schedule/api/list-schedule-requirements.ts
 - [ ] [medium] [P3-T05] RED 6쌍 중 3쌍이 구현 후 되돌림으로 합성돼 편집 전 RED를 증명하지 못함 — docs/execution/runs/P3-T05/tdd.json
 - [ ] [low] [P3-T05] 역할 교체 한 건이 changeCount 2로 세어져 되돌리기 문구가 "2명"으로 뜸 — src/features/assignment/hooks/useCandidateSelection.ts
 - [ ] [low] [P3-T05] 공용 e2e 픽스처가 옛 spec 이름(e2e-assignment-eligibility) 접두를 그대로 씀 — tests/e2e/support/assignment-schedule-fixtures.ts
+- [ ] [medium] [P3-T05] 4-인자 스왑(같은 포지션 교육→정식 전환) 허용 분기가 어느 계층에서도 단언되지 않음(F-12) — supabase/tests/20-assignment-trainees.test.sql
+- [ ] [low] [P3-T05] AC7 전이 단언이 프로덕션이 쓰지 않는 3-인자 경로로만 이뤄짐(F-13) — supabase/tests/20-assignment-trainees.test.sql
+- [ ] [low] [P3-T05] F-01 준비 단계가 설명과 달리 드레스 교육생 4명을 조용히 제거(F-14) — supabase/tests/20-assignment-trainees.test.sql
+- [ ] [low] [P3-T05] 상한 검사 세 블록이 이벤트 문자열만 다른 채 복제됨(F-15) — src/entities/schedule/api/list-schedule-requirements.ts

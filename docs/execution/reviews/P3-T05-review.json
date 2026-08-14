@@ -1,73 +1,11 @@
 {
   "task_id": "P3-T05",
-  "at": "2026-08-11",
-  "base_commit": "3923b6d",
-  "head_commit": "22e43beb7e1171115d624304f67214787e04fb28",
+  "at": "2026-08-14",
+  "base_commit": "b0bfa0c",
+  "head_commit": "a7712b574fbeb90d42f3a08303c9d6597257e08a",
   "participants": ["opus", "codex"],
+  "participants_note": "2026-08-14 수정 라운드(critical F-01·high F-02·F-03·F-05) 재검증. 이전 결과(3923b6d..22e43be)의 F-01·F-02·F-03·F-05는 리뷰어 2자가 해소로 판정했고 F-04는 CI 실행 31778905489로 해소됐다. F-06·F-07은 revision 3 재봉인이 봉인문을 사실로 정정해 해소됐다. 해결되지 않은 F-08~F-10은 그대로 유지하고 이번 라운드 확정 발견은 F-11부터 잇는다.",
   "findings": [
-    {
-      "id": "F-01",
-      "title": "3-인자 호출에서 같은 포지션의 교육생을 정식 배정하면 겸직 금지 불변식이 뚫린다",
-      "severity": "critical",
-      "area": "security",
-      "file": "supabase/migrations/20260811000000_assignment_trainees.sql",
-      "agreed_by": ["opus", "codex"],
-      "description": "무조건 교차 검사(272~282행)가 `at.position_id <> target_position_id`로 대상 포지션을 제외한다. 4-인자 경로는 빈틈이 없다 — 같은 사람이 두 배열에 동시에 들면 LB024로 막히고, 교육 배열에서 빠지면 removed_trainee_ids로 삭제되기 때문이다. 그러나 trainee_touched가 false인 3-인자 호출에서는 교육생 집합을 읽지도 지우지도 않고 위 검사도 그 사람을 건너뛰므로, 325~336행이 정식 배정 행을 추가해 한 사람이 같은 스케줄·같은 포지션에서 정식과 교육을 동시에 갖는다. 봉인문 인수 조건 3은 '이미 교육생인 사람을 정식 배정해도 거부된다'에 포지션 단서를 달지 않았고 `DEV-DATA-01`은 이 불변식을 화면이 아니라 DB 경계가 강제하라고 한다. 앱 UI에서는 도달하지 않는다 — TS 레이어의 zod 스키마가 traineeProfileIds를 필수로 강제해 언제나 4-인자로 부른다. 도달 경로는 관리자가 PostgREST로 3-인자 호출을 직접 보내는 경우이며, 저장소의 pgTAP 26곳이 실제로 그 경로를 쓴다. pgTAP AC8 단언은 교육생과 정식 대상을 서로 다른 사람으로 잡아 이 경로를 지나간다. 중요도는 리뷰어가 갈려(codex critical, opus medium) 계약대로 높은 쪽을 택했다. 낮게 본 쪽의 근거는 앱 경로로 도달하지 않고 관리자 권한이 필요하다는 것이다. 이 3-인자 경로는 RADIO revision 2가 기존 pgTAP 회귀망의 하위 호환을 위해 남긴 것이므로, 봉인 결정이 만든 구멍이다. 제외 조건을 '대상 포지션 전체'가 아니라 '이번 호출에서 교육 집합에서 빠지는 사람'으로 좁히면 4-인자 스왑을 막지 않으면서 닫힌다."
-    },
-    {
-      "id": "F-02",
-      "title": "교육 가능 판정이 eligible을 보지 않아 비활성 후보에 교육 칩이 노출된다",
-      "severity": "high",
-      "area": "code_quality",
-      "file": "src/views/admin-schedule/model/candidate-buckets.ts",
-      "agreed_by": ["opus", "codex"],
-      "description": "canSelectCandidateAsTrainee가 `candidate.ineligibleReason !== \"GENDER_MISMATCH\"` 하나만 본다. assignment_eligibility는 status가 active가 아닌 프로필에 (false, null)을 돌려주고, list_position_assignment_candidates의 where 절이 '이 포지션에 이미 배정 중' 또는 '이 포지션 교육생'인 비활성 프로필을 후보에 남긴다. 같은 저장소의 candidate-buckets.test.ts가 이미 그 조합(eligible:false·ineligibleReason:null·currentlyAssigned:true)을 다루므로 도달 가능성이 코드로 확인된다. 그 후보에게 시트가 교육 칩을 그리지만 저장은 마이그레이션 263~268행에서 언제나 LB023으로 거부돼, 관리자가 누를 수는 있으나 결코 성공하지 않는 버튼이 생긴다. 봉인문 Architecture는 '판정은 eligible과 ineligibleReason에서 나온다'고 적었는데 구현이 한 축을 버렸고, 새 단위 테스트에도 그 조합의 케이스가 없다. 중요도는 리뷰어가 갈려(codex high, opus medium) 높은 쪽을 택했다."
-    },
-    {
-      "id": "F-03",
-      "title": "AC7의 정식 배정 제거 후 교육생 보존이 어느 계층에서도 검증되지 않는데 기록은 검증했다고 적었다",
-      "severity": "high",
-      "area": "tests",
-      "file": "tests/e2e/assignment-trainee.spec.ts",
-      "agreed_by": ["opus", "codex"],
-      "description": "assignment-trainee.spec.ts의 toggleCandidateAndSave 호출 네 곳(94·215·248·280행)이 전부 추가 방향이고 '선택됨'을 눌러 정식 배정을 빼는 동작이 spec 전체에 없다. AC7이 검증되는 화면은 처음부터 정식 0명으로 만들어진 스케줄이라 '정식을 모두 뺀 뒤에도 남는다'는 전이가 아니라 최종 상태만 본 것이다. pgTAP도 덮지 않는다 — AC8(452~481행)은 3-인자 추가 뒤 교육생 잔존을, AC4 경계값(396~424행)은 교육생 쪽 제거를 볼 뿐이다. 그런데 봉인문 위험 기반 테스트 7행은 Happy Path와 주요 실패 두 칸 모두 '테스트함'이라 적었고 runs/P3-T05/radio.md 101~103행은 '정식을 모두 뺀 뒤에도 교육생이 남아 화면에 뜨는 실제 흐름을 e2e로 확인했다'고 단언한다. 실제 삭제 경로(마이그레이션 338~348행)가 assignment_positions·assignments만 건드리므로 현재 동작 자체는 맞을 가능성이 높지만, 인수 조건 하나의 회귀 보호가 전 계층에서 비었고 증거 문서가 그 사실을 덮는다. 중요도는 리뷰어가 갈려(codex high, opus medium) 높은 쪽을 택했다."
-    },
-    {
-      "id": "F-04",
-      "title": "인수 조건 8의 pnpm verify GREEN이 끊기지 않은 한 번의 실행으로 증명되지 않았다",
-      "severity": "high",
-      "area": "tests",
-      "file": "docs/execution/runs/P3-T05/handoff.md",
-      "agreed_by": ["opus", "codex"],
-      "description": "커밋된 handoff 64~84행이 test:e2e 단계에서 recruitment-manage.spec.ts:114·recruitment-open.spec.ts:80이 schedules_work_date_active_unique 충돌로 간헐 실패했고 전체 GREEN을 한 번에 찍지 못했다고 스스로 적었다. 두 파일이 이 diff 밖이고 WORK_DATE_BANDS를 쓰지 않으며 변경 허용 경로 밖이라 고치지 않고 후속으로 반환한 처리는 워크플로에 맞다. 다만 인수 조건 8의 문구는 문자 그대로 미충족이므로 CI에서 전체 GREEN을 한 번 확인할 때까지 열린 항목이다. 중요도는 리뷰어가 갈려(codex high, opus low) 높은 쪽을 택했다. 낮게 본 쪽의 근거는 원인·근거·반환 단계가 모두 기록돼 있어 이 task의 산출물 결함으로는 보기 어렵다는 것이다."
-    },
-    {
-      "id": "F-05",
-      "title": "교육생 집계가 1,000행 상한에 걸려 잘림을 알리지 않는다",
-      "severity": "high",
-      "area": "performance",
-      "file": "src/entities/schedule/api/list-schedule-requirements.ts",
-      "agreed_by": ["opus", "codex"],
-      "description": "71~75행의 assignment_trainees 조회가 LIST_REQUIREMENTS_LIMIT(1000)에 걸리고 잘림을 오류로 알리지 않는다. 중요도는 리뷰어가 크게 갈려(codex high, opus low) 계약대로 높은 쪽을 택했다. 낮게 본 쪽의 근거는 같은 함수의 assignments 조회(66~70행)가 이미 같은 상한·같은 무고지 방식을 쓰고 있어 새로 생긴 성질이 아니고, unique(schedule_id, profile_id) 제약 때문에 한 스케줄의 교육생 행 수가 프로필 수를 넘지 못하며, 예식장 한 스케줄에 교육생 1,000명은 도메인상 도달하지 않는 규모라는 것이다. 고친다면 이 조회 하나가 아니라 세 조회의 잘림 처리를 함께 다루는 편이 맞다."
-    },
-    {
-      "id": "F-06",
-      "title": "봉인문이 지시한 insert·delete RLS 정책이 없는데 그 이탈이 어디에도 기록되지 않았다",
-      "severity": "medium",
-      "area": "architecture",
-      "file": "supabase/migrations/20260811000000_assignment_trainees.sql",
-      "agreed_by": ["opus", "codex"],
-      "description": "봉인문 Data model은 'RLS를 켜고 관리자 select·insert·delete 정책을 세운다'고 적었으나 마이그레이션은 assignment_trainees_select_admin 하나만 만들고, 새 pgTAP은 오히려 '정책이 정확히 하나'와 '관리자의 직접 insert도 42501로 거부'를 단언한다. 결과 자체는 기존 assignments·assignment_positions의 선례와 같고 봉인문보다 좁아 보안상 유리하다. 문제는 기록이다 — runs/P3-T05/radio.md의 「구현 중 확정한 세부」와 handoff 어디에도 이 이탈이 없어, 다음 사람이 봉인문만 읽으면 없는 정책 둘을 있다고 믿는다. 중요도는 리뷰어가 갈려(codex medium, opus low) 높은 쪽을 택했다."
-    },
-    {
-      "id": "F-07",
-      "title": "교육생 수 조회가 봉인문의 왕복 증가 없음 계약과 다르고 그 이탈이 기록되지 않았다",
-      "severity": "medium",
-      "area": "architecture",
-      "file": "src/entities/schedule/api/list-schedule-requirements.ts",
-      "agreed_by": ["opus", "codex"],
-      "description": "봉인문 Optimizations는 '왕복이 늘지 않는다. 교육생 수는 요구 조회에 얹는 집계다'라고 적었으나 구현은 71~75행에서 assignment_trainees를 대상으로 하는 세 번째 요청을 추가한다(2 → 3). 다만 schedule_position_requirements에서 assignment_trainees로 가는 FK 경로가 없어 PostgREST 임베딩으로 '요구 조회에 얹기'가 구조적으로 불가능하고, 기존 assignedCounts도 같은 이유로 이미 별도 요청이라 구현이 선례를 따랐다. 세 요청이 같은 Promise.all 안에서 병렬로 나가 체감 지연이 늘지 않고 N+1도 아니다. 즉 성능 결함이 아니라 봉인문의 요구 자체가 불가능했던 것이며, 그 이탈이 runs/P3-T05/radio.md의 「구현 중 확정한 세부」에 기록되지 않은 것이 발견의 실체다. 중요도는 리뷰어가 갈려(codex medium, opus low) 높은 쪽을 택했다."
-    },
     {
       "id": "F-08",
       "title": "RED 기록 6쌍 중 3쌍이 구현 후 되돌림으로 합성돼 편집 전 RED를 증명하지 못한다",
@@ -75,7 +13,7 @@
       "area": "tests",
       "file": "docs/execution/runs/P3-T05/tdd.json",
       "agreed_by": ["opus", "codex"],
-      "description": "tdd.json이 스스로 밝힌다 — entries 1('마이그레이션을 잠시 빼고'), 3('세 구현 파일을 HEAD 버전으로 되돌리고'), 11('canSelectCandidateAsTrainee를 일시적으로 항상 false로')로 6쌍 중 3쌍이 사후 재구성이다. 특히 e2e RED는 마이그레이션을 그대로 둔 채 UI 판정 함수만 되돌린 것이라 '기능이 없었다'가 아니라 '교육 칩이 없으면 spec이 깨진다'까지만 보인다. 다만 나머지 3쌍은 재구성분보다 이른 시각에 '단언 추가 직후'로 기록돼 진짜 RED-first로 읽히고, 되돌림 RED도 '구현 없이 테스트가 실패한다'는 실질은 증명하며, 방법이 tdd.json note와 handoff 양쪽에 공개돼 있어 은폐가 아니다. 중요도는 리뷰어가 갈려(codex medium, opus low) 높은 쪽을 택했다."
+      "description": "tdd.json이 스스로 밝힌다 — entries 1('마이그레이션을 잠시 빼고'), 3('세 구현 파일을 HEAD 버전으로 되돌리고'), 11('canSelectCandidateAsTrainee를 일시적으로 항상 false로')로 6쌍 중 3쌍이 사후 재구성이다. 특히 e2e RED는 마이그레이션을 그대로 둔 채 UI 판정 함수만 되돌린 것이라 '기능이 없었다'가 아니라 '교육 칩이 없으면 spec이 깨진다'까지만 보인다. 다만 나머지 3쌍은 재구성분보다 이른 시각에 '단언 추가 직후'로 기록돼 진짜 RED-first로 읽히고, 되돌림 RED도 '구현 없이 테스트가 실패한다'는 실질은 증명하며, 방법이 tdd.json note와 handoff 양쪽에 공개돼 있어 은폐가 아니다. 중요도는 리뷰어가 갈려(codex medium, opus low) 높은 쪽을 택했다. (2026-08-11 확정, 미해결 유지)"
     },
     {
       "id": "F-09",
@@ -84,7 +22,7 @@
       "area": "code_quality",
       "file": "src/features/assignment/hooks/useCandidateSelection.ts",
       "agreed_by": ["opus", "codex"],
-      "description": "changeCount가 두 집합의 대칭차 합이라 한 사람을 정식에서 교육으로 옮기면 assigned에서 1, trainee에서 1이 더해져 2가 된다. 시트 푸터의 '개 변경'은 단위가 맞지만 되돌리기 버튼은 '명 되돌리기'로 사람 단위를 쓰므로 한 사람을 옮긴 뒤 '2명 되돌리기'가 뜬다. 대칭차 합 공식 자체는 봉인문 Architecture가 못 박은 것이라 표시 단위 쪽이 문제다."
+      "description": "changeCount가 두 집합의 대칭차 합이라 한 사람을 정식에서 교육으로 옮기면 assigned에서 1, trainee에서 1이 더해져 2가 된다. 시트 푸터의 '개 변경'은 단위가 맞지만 되돌리기 버튼은 '명 되돌리기'로 사람 단위를 쓰므로 한 사람을 옮긴 뒤 '2명 되돌리기'가 뜬다. 대칭차 합 공식 자체는 봉인문 Architecture가 못 박은 것이라 표시 단위 쪽이 문제다. (2026-08-11 확정, 미해결 유지)"
     },
     {
       "id": "F-10",
@@ -93,22 +31,67 @@
       "area": "tests",
       "file": "tests/e2e/support/assignment-schedule-fixtures.ts",
       "agreed_by": ["opus", "codex"],
-      "description": "assignment-eligibility.spec.ts에서 추출해 신설한 공용 헬퍼인데 생성하는 계정 식별자와 비밀번호 상수 이름이 여전히 e2e-assignment-eligibility 접두를 쓴다(18·19·63·64행). 이제 assignment-trainee.spec.ts도 이 헬퍼를 쓰므로 공유 e2e DB의 잔여 데이터나 실패 로그를 조사할 때 trainee spec이 만든 픽스처가 eligibility spec 출처처럼 보인다. 기능 실패는 없다."
+      "description": "assignment-eligibility.spec.ts에서 추출해 신설한 공용 헬퍼인데 생성하는 계정 식별자와 비밀번호 상수 이름이 여전히 e2e-assignment-eligibility 접두를 쓴다(18·19·63·64행). 이제 assignment-trainee.spec.ts도 이 헬퍼를 쓰므로 공유 e2e DB의 잔여 데이터나 실패 로그를 조사할 때 trainee spec이 만든 픽스처가 eligibility spec 출처처럼 보인다. 기능 실패는 없다. (2026-08-11 확정, 미해결 유지)"
+    },
+    {
+      "id": "F-11",
+      "title": "비활성 기존 교육생을 UI에서 제거할 수 없다 — F-02 수정이 만든 회귀",
+      "severity": "high",
+      "area": "code_quality",
+      "file": "src/views/admin-schedule/model/candidate-buckets.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "F-02 수정으로 canSelectCandidateAsTrainee가 eligible === true || ineligibleReason === 'NOT_ELIGIBLE'만 허용하는데, 비활성 프로필은 assignment_eligibility가 (false, null)을 돌려주고 list_position_assignment_candidates의 세번째 or exists가 그 포지션의 기존 교육생이면 비활성이어도 후보로 반환한다. useCandidateSelection.open이 currentlyTrainee를 selectedTrainee에 시딩하지만 판정이 false라 IneligibleRow에 교육 칩 자체가 그려지지 않아 관리자가 그 교육생을 해제할 방법이 없다. DB의 교육생 자격 루프는 added_trainee_ids만 순회하므로 제거는 허용된다 — UI만 제거를 표현하지 못한다. 옛 구현(ineligibleReason !== 'GENDER_MISMATCH')은 이 조합에 true를 돌려줘 '교육됨' 칩으로 해제가 가능했으므로 이번 수정 라운드가 만든 회귀다. 다른 포지션 시트에는 후보로 뜨지 않고, 정식 배정 전환은 LB023에 막히며, 매 저장이 selectedTrainee로 그를 다시 실어 보내 제품 안에 복구 경로가 없다(근무자 재활성화 또는 DB 직접 조작 필요). 수정 방향은 추가 가능성과 제거 가능성의 분리 — currentlyTrainee === true면 칩을 유지하는 규칙이 이 diff 이전부터 있던 형제 사례(교육생 등록 뒤 성별 조건 변경으로 GENDER_MISMATCH가 된 기존 교육생)도 함께 닫는다. 다만 봉인 RADIO revision 3 Architecture가 판정을 eligible·ineligibleReason 두 축의 '고를 수 있는지'로만 규정해 제거 축이 봉인에 없으므로, 수정에는 봉인문 보강(재봉인)이 필요하다. 중요도는 리뷰어가 갈려(codex high, opus medium) 계약대로 높은 쪽을 택했다. 낮게 본 쪽의 근거는 데이터 손상·권한 우회·집계 불변 위반이 없고 도달 조건이 교육생 등록 뒤 확정 전 휴면·비활성 전이로 한정된다는 것이다."
+    },
+    {
+      "id": "F-12",
+      "title": "4-인자 스왑(같은 포지션 교육→정식 전환)의 허용 분기가 어느 계층에서도 단언되지 않는다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "supabase/tests/20-assignment-trainees.test.sql",
+      "agreed_by": ["opus", "codex"],
+      "description": "revision 3이 교차 검사를 전면 거부가 아니라 removed_trainee_ids만 제외로 좁힌 이유가 4-인자 스왑을 살리기 위해서인데, 그 제외 갈래를 타는 테스트가 pgTAP·단위·e2e 어디에도 없다. 20-assignment-trainees.test.sql의 모든 호출에서 added_ids와 removed_trainee_ids가 겹치는 경우가 없고 assignment-trainee.spec.ts에도 교육생을 같은 포지션 정식으로 승격하는 흐름이 없다. 제외 항을 없애는 후속 변경이 들어와도 전 단언이 통과해 과잉 거부 방향 회귀를 회귀망이 전혀 막지 못한다 — 그 경우 시트에서 교육 칩을 정식 칩으로 바꿔 저장하는 실제 흐름이 LB024로 막힌다. 같은 포지션 교육생을 profile_ids에 넣고 trainee_profile_ids에서 빼는 4-인자 호출이 성공하며 교육생 행 삭제와 정식 배정 생성까지 단언하는 양성 회귀 테스트가 필요하다. 리뷰어 2자가 독립으로 같은 결함을 냈다(양쪽 모두 medium)."
+    },
+    {
+      "id": "F-13",
+      "title": "F-03 전이 단언이 프로덕션이 쓰지 않는 3-인자 경로로만 이뤄졌다",
+      "severity": "low",
+      "area": "tests",
+      "file": "supabase/tests/20-assignment-trainees.test.sql",
+      "agreed_by": ["opus", "codex"],
+      "description": "새 AC7 전이 섹션의 제거 호출(552~559행)이 네번째 인자를 뺀 3-인자 호출인데, 프로덕션은 Zod 스키마가 traineeProfileIds를 필수로 강제해 언제나 4-인자로 부르며 정식 전원 해제 저장 시 기존 교육생이 trainee_profile_ids에 그대로 실린다. 그 4-인자 전이는 여전히 어느 계층에서도 단언되지 않았다. 두 경로의 정식 배정 삭제문이 동일해 잔여 위험은 낮아 F-03은 실질 해소로 보되, AC7의 제품 의미와 단언 경로의 어긋남을 남긴다."
+    },
+    {
+      "id": "F-14",
+      "title": "F-01 준비 단계가 설명과 달리 드레스 교육생 4명을 조용히 제거한다",
+      "severity": "low",
+      "area": "tests",
+      "file": "supabase/tests/20-assignment-trainees.test.sql",
+      "agreed_by": ["opus", "codex"],
+      "description": "358~366행의 lives_ok 설명은 'F14를 드레스 교육생으로 저장한다'인데 실제 호출은 trainee 배열에 F14만 담은 4-인자 교체라 앞서 AC1 경계값이 심은 드레스 교육생 4명(F1·F6·F7·F8)이 전부 removed_trainee_ids로 계산돼 삭제된다. 현재는 이 지점 뒤에 드레스 교육생을 참조하는 단언이 없어 통과하지만, 설명과 실제 상태 변화가 어긋나 이후 단언을 추가하는 사람이 4가 아니라 1을 보게 되는 픽스처 결합 위험이다."
+    },
+    {
+      "id": "F-15",
+      "title": "상한 검사 세 블록이 이벤트 문자열만 다른 채 복제됐다",
+      "severity": "low",
+      "area": "code_quality",
+      "file": "src/entities/schedule/api/list-schedule-requirements.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "101~118행에 rows.length >= LIMIT → 로그 → { ok:false, COMMON_UNEXPECTED } 5줄 블록이 세 번 반복되고, 위 78~95행의 오류 블록 셋과 합치면 같은 모양 사다리가 여섯이다. 세 블록의 유일한 차이가 이벤트 이름 문자열이라 네번째 조회가 늘 때 두 사다리를 나란히 고쳐야 하고 복사 실수를 타입이 잡지 못한다. (rows, event)를 받는 지역 헬퍼 하나로 줄일 수 있다."
     }
   ],
   "scores": {
     "code_quality": 78,
-    "tests": 62,
-    "security": 45,
-    "performance": 80,
-    "architecture": 84
+    "tests": 74,
+    "security": 94,
+    "performance": 96,
+    "architecture": 88
   },
   "score_rationale": {
-    "code_quality": "계층별 책임 분리와 오류 코드 매핑이 깔끔하고 설명 주석도 없다. 감점은 확정 발견 둘 — 교육 가능 판정이 eligible 축을 버려 결코 성공하지 않는 버튼을 만드는 high 하나와 되돌리기 단위 표시 low 하나다. 한쪽만 주장한 conflicting_id 변수 재사용과 다른 포지션 교육생 사전 표시 부재는 상대 리뷰어가 각각 '값을 해석하지 않는 범용 센티널'과 '승인된 인터페이스가 저장 경계에서 알리도록 설계했다'는 근거로 반박해 기각됐고, 기각된 발견은 점수 근거로 쓰지 않았다.",
-    "tests": "pgTAP 45문항이 스키마·RLS·거부 4종·상한 없음·감사 detail·FK restrict·3-인자 무변경 회귀까지 덮어 DB 경계의 밀도는 높다. 그러나 확정 발견 넷이 이 영역이고 둘이 high다 — 인수 조건 7의 '정식을 모두 뺀 뒤에도 교육생이 남는다'가 e2e·pgTAP 어느 쪽에도 없는데 봉인표와 구현 기록은 '테스트함'·'e2e로 확인했다'고 적었고, 인수 조건 8의 verify GREEN도 한 번의 실행으로 남지 않았다. RED 6쌍 중 3쌍이 사후 재구성인 점도 증거 품질을 깎는다.",
-    "security": "RLS enable + select 정책만 + revoke·grant + security definer + search_path 고정 + 감사 이벤트 분리가 기존 선례를 정확히 따르고, pgTAP이 '정책이 정확히 하나'와 '관리자 직접 insert도 42501로 거부'까지 단언해 방어 심층이 두껍다. 그럼에도 확정 critical 하나가 이 영역을 지배한다 — 3-인자 경로에서 같은 포지션의 정식·교육 겸직 금지가 DB 경계에서 뚫린다. 앱 UI로 도달하지 않고 관리자 권한이 필요하지만, 이 저장소가 불변식을 화면이 아니라 DB가 강제하도록 정한 이상 경계에 난 구멍은 경계에서 세어야 한다.",
-    "performance": "요구 조회 셋이 Promise.all로 병렬이고 저장은 RPC 한 번이며 후보 함수에 늘어난 것은 행당 EXISTS 하나뿐이라 N+1도 직렬 왕복 증가도 없다. 확정 발견은 1,000행 상한 하나인데 리뷰어 판단이 high와 low로 크게 갈렸고, 낮게 본 쪽의 근거(기존 조회와 같은 상한, unique 제약, 도메인상 도달 불가)가 구체적이라 이 영역 전체를 무너뜨리는 성질로 보지 않았다.",
-    "architecture": "FSD 의존 방향, server-only 첫 줄, 정본 소유권, 비목표 준수, index.jsonl의 revision 2 해시 일치가 모두 코드로 확인됐다. 감점은 확정 medium 둘인데 성질이 같다 — 승인된 설계와 실제 구현이 갈라진 지점(RLS 정책 수, 왕복 수)이 구현 기록에 남지 않았다. 특히 왕복 건은 봉인문의 요구 자체가 구조적으로 불가능했던 것이라 구현보다 봉인 쪽 결함이며, 그 사실이 기록되지 않아 다음 사람이 봉인문을 사실로 읽게 된다."
+    "code_quality": "교육 가능 판정이 DB 분기와 문자 그대로 대칭이 되고 새 마이그레이션은 원본 285줄 중 세 줄만 바꿔 diff가 읽힌다. 그러나 그 판정 수정이 비활성 기존 교육생의 유일한 제거 경로를 지운 확정 high(F-11)가 이 영역을 지배하고, 상한 검사 3블록 복제(F-15)와 유지된 F-09가 더해진다.",
+    "tests": "F-01의 3-인자 거부·교차 포지션 거부·F-03 전이·F-05 상한 3종과 999 경계가 실행 증거와 함께 고정됐고 RED 실패 문항 번호가 실제 단언 순번과 일치한다. 감점은 확정 넷 — 좁히기의 핵심인 4-인자 스왑 허용 분기가 무테스트(F-12, 리뷰어 2자 독립 동일 발견), AC7 전이가 비프로덕션 경로(F-13), 픽스처 설명·상태 불일치(F-14), 유지된 F-08·F-10.",
+    "security": "critical이던 겸직 금지 구멍이 3-인자·교차 포지션 모두 DB 경계(security definer 함수)에서 닫혔고, search_path 고정·revoke 후 grant·행 잠금이 원본과 동일하게 재발급됐으며 거부 메시지 일반화로 노출이 오히려 줄었다. 이 영역의 확정 발견은 없다.",
+    "performance": "추가된 것은 O(1) 길이 비교 세 개와 unique 인덱스를 타는 limit 1 교차 검사뿐이고, 왕복 수·병렬 구조가 그대로이며 상한 도달 시 조용한 축소 대신 즉시 실패한다. 확정 발견이 없다.",
+    "architecture": "revision 3의 다섯 항목이 구현과 문자 단위로 맞고 변경 파일 10개가 전부 허용 경로 안이며 push된 마이그레이션과 19-assignments.test.sql은 무수정이다. 이 영역의 확정 발견은 없으나, F-11의 수정이 봉인문에 없는 제거 축을 요구한다는 사실(판정 규정의 공백)을 반영해 만점을 주지 않았다."
   },
-  "total": 70
+  "total": 86
 }
