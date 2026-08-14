@@ -1,5 +1,19 @@
 # P3-T05 handoff
 
+## 2026-08-14 · 재봉인(revision 3)과 수정 라운드 재투입
+
+- 현재 단계: 설계(재봉인) 종료 → 다음 개발(수정 라운드)
+- 교차 검증 critical F-01(3-인자 호출의 같은 포지션 겸직 구멍)로 blocked였던 task를 설계 단계에서
+  해소했다. 사용자가 F-01 해법(교차 검사 제외 조건 좁히기)과 F-05 포함을 선택하고 revision 3
+  재봉인을 승인했다(2026-08-14). 수정 라운드 범위는 계약 기본값대로 critical·high — F-01·F-02·
+  F-03·F-05이며, 상세는 RADIO revision 3 개정 이력이 소유한다.
+- **F-04는 해소됐다** — ci-finisher가 개발·리뷰 커밋 4개(`d34023d`~`60a6d62`)를 push했고 CI가
+  e2e를 포함한 전체 스위트를 끊기지 않은 한 번의 실행으로 GREEN 처리했다:
+  <https://github.com/tkyoun0421/la-bie-belle/actions/runs/31778905489> (db-verify 2m51s,
+  app-verify 9m10s). 알려진 플레이크 두 spec은 이번 실행에서 발생하지 않았다.
+- `index.jsonl`: `blocked` → `planned`, `development_approval`을 revision 3 + 새 SHA-256으로 갱신.
+- 다음 행동: implementer 서브 에이전트가 수정 라운드를 TDD로 구현 → 검증 단계에서 교차 검증 재실행.
+
 ## 2026-08-11 · 개발 단계 종료
 
 - 작업 식별자: P3-T05 (교육생 배정)
