@@ -1,5 +1,27 @@
 # P3-T06 handoff
 
+## 2026-08-15 · 검증·리팩토링 단계와 task 종료(done)
+
+- 현재 단계: 리팩토링 종료 → `done`.
+- 검증: 등록 check(`confirmation-transaction`·`understaffing-warning`)는 개발 단계의
+  pgTAP·단위·e2e와 `pnpm verify` 2회 실행으로 실증됐고, 교차 검증은 리뷰어 2자(opus·codex)로
+  실행해 확정 발견 9건(high 1, medium 3, low 5)·총점 86을
+  `docs/execution/reviews/P3-T06-review.json`에 남겼다.
+- F-01(high, 교육생 시급 스냅샷 무단언) 수정 라운드(`03734e8`): pgTAP 문항 5개 추가(plan 39→44),
+  RED는 마이그레이션의 교육생 스냅샷 update 문을 일시 삭제해 만들고 GREEN은 원상 복구 후
+  확인 — 증거는 `docs/execution/runs/P3-T06/tdd.json` 마지막 두 entries. 조정자가 수정 diff를
+  감사했다 — 삭제는 `select plan(39);` 한 줄 교체뿐, 3파일 전부 허용 경로다. 리뷰어 2자가 처방한
+  그대로의 테스트 추가라 P3-T03~T05 선례대로 수정 라운드에 대한 추가 전체 교차 리뷰는 돌리지
+  않았다.
+- 리팩토링: 정리할 구조 없음 — 수정 라운드 diff가 pgTAP 단언 5문항과 runs/radio.md 커버리지
+  서술 정정뿐이라 구조·명명·중복 정리 대상이 없다.
+- 확정 발견 처리 요약: high 1(F-01) 수정 라운드로 해소. medium·low 8건(F-02~F-09)은 계약대로
+  `docs/execution/reviews/backlog.md`에 누적 — F-03(requirement 삭제 포지션 경고 누락)은
+  P3-T05 봉인 화면 계산과 동일 모델링이라 합집합 전환에 봉인문 보강이 필요하고, F-05는 수정
+  경로(`shared/ui/dialog.tsx`)가 RADIO 허용 목록 밖이다.
+- `index.jsonl`: P3-T06 `in_progress` → `done`(2026-08-15). 다음 행동: ci-finisher push·CI 감시,
+  P3-T07 기획 인터뷰(planned 큐 소진 — P3-T07·P3-T09는 proposed).
+
 ## 2026-08-14 · 개발 종료
 
 - 작업 식별자: P3-T06
