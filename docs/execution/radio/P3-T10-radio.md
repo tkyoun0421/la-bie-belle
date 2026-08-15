@@ -1,7 +1,7 @@
 # P3-T10 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-16
 - 개발 설계 승인: user, 2026-08-16
 
@@ -10,6 +10,7 @@
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-16 | 최초 작성. 기획 확정 — 범위는 밴드 계열 전부(recruitment 2 spec 밴드 이전 + 독립 추첨 3 spec 일괄 배분 전환, backlog P3-T06 F-06·P3-T07 F-02·P3-T09 F-03 흡수). 2026-08-16 사용자 결정. |
+| 2 | 2026-08-16 | 개발 단계 정지 조건 반환의 해소. revision 1의 인수 조건 4가 「정리 블록 2곳 전체 제거」로 적혀 있었으나, 블록 안에서 무효인 것은 append-only 트리거에 거부되는 schedules delete 한 문장뿐이다 — ceremonies·assignment_positions·assignments·assignment_trainees delete는 테스트 마무리의 사용자 삭제(auth CASCADE)가 FK 위반 없이 지나가기 위한 선행 조건이라 전체 제거 시 두 테스트가 결정적으로 깨진다(implementer 단독 실행 2/2 실패 재현). 인수 조건 4를 「schedules delete 문장만 제거, 나머지 delete 유지」로 수정한다. 2026-08-16 사용자 결정. |
 
 - 관련 spec: DOCS:SDD(테스트 전용), 기획 정본은 phase 03 P3-T10 절
 - 적용 깊이: 얕음 — 테스트 파일 5개와 e2e 지원 헬퍼 1개만 변경. 제품 코드·DB 스키마·문서 계층 무변경.
@@ -25,7 +26,7 @@
 
 ### 범위와 비목표
 
-범위: `tests/e2e/support/work-date-band.ts`에 전용 밴드 2개와 같은 달 다중 날짜 헬퍼 1개 추가, recruitment 2 spec의 고정 날짜를 전용 밴드로 이전, 독립 추첨 3 spec을 모듈 레벨 일괄 배분으로 전환, `post-confirmation-changes`의 무효 정리 블록 제거.
+범위: `tests/e2e/support/work-date-band.ts`에 전용 밴드 2개와 같은 달 다중 날짜 헬퍼 1개 추가, recruitment 2 spec의 고정 날짜를 전용 밴드로 이전, 독립 추첨 3 spec을 모듈 레벨 일괄 배분으로 전환, `post-confirmation-changes` 정리 블록의 무효 `schedules` delete 문장 제거(revision 2 — 나머지 delete는 사용자 삭제 CASCADE의 선행 조건이라 유지).
 
 비목표: 제품 코드·DB 스키마·그 외 e2e spec·시나리오와 단언의 의미 변경.
 
@@ -48,7 +49,7 @@
 1. `recruitment-manage.spec.ts`가 전용 밴드 `recruitmentManage`의 같은 달 무작위 날짜 2개(2~27일, 중복 없음)와 그 달 1일 마감으로 동작하고, 기존 단언(연장·재오픈·신청 가능 전환)이 그대로 통과한다.
 2. `recruitment-open.spec.ts` 테스트 1이 전용 밴드 `recruitmentBulkOpen`의 같은 달 무작위 날짜 3개(오름차순 분배: 선택 A=최소, 선택 B=중간, 기존 활성=최대, 마감=선택 A 날짜)로 동작하고 기존 단언이 그대로 통과한다.
 3. `schedule-confirmation`·`schedule-roster`·`post-confirmation-changes` 세 spec이 각각 모듈 레벨 `workDatesInBand(밴드, 2)` 한 번으로 날짜를 받아 테스트별로 나눠 쓴다(`position-requirements.spec.ts`의 기존 관례).
-4. `post-confirmation-changes`의 정리 블록 2곳이 제거되고, 제거 후에도 해당 spec과 전체 e2e가 GREEN이다.
+4. `post-confirmation-changes` 정리 블록 2곳에서 `schedules` delete 문장만 제거된다(append-only 트리거에 거부되는 무효 코드). ceremonies·assignment_positions·assignments·assignment_trainees delete는 테스트 마무리의 사용자 삭제(auth CASCADE)가 FK 위반 없이 지나가기 위한 선행 조건이므로 유지한다(revision 2). 제거 후에도 해당 spec과 전체 e2e가 GREEN이다.
 5. `db reset` 없이 다섯 spec을 연속 2회 실행해 두 번 모두 GREEN이다(23505 미재현). 실행 명령·결과를 `runs/P3-T10/radio.md`에 기록한다.
 6. `pnpm verify` 전체 GREEN.
 7. backlog의 P3-T06 F-06·P3-T07 F-02·P3-T09 F-03 세 줄이 완료 체크된다.
@@ -59,7 +60,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | 1·2 recruitment 밴드 이전 | 테스트함 — 기존 시나리오 단언 그대로 통과 | 테스트함 — 연속 2회 실행에서 자기 충돌 미재현(5번 조건) | 테스트함 — 날짜 2~27일 제한으로 마감 1일과 충돌 없음, 월말 29~31일 미사용 | 해당 없음 — 권한 시나리오(테스트 2)는 날짜 무관 무수정 | 해당 없음 — 날짜 산출 교체만 | 테스트함 — 전용 밴드가 다른 spec과 구간 분리 |
 | 3 일괄 배분 전환 | 테스트함 — 기존 시나리오 단언 그대로 통과 | 테스트함 — 같은 spec 두 테스트의 날짜가 한 추첨에서 나와 상호 충돌 구조적 제거 | 해당 없음 — workDatesInBand의 중복 제거는 기존 헬퍼 동작 | 해당 없음 — 날짜 산출 교체만 | 해당 없음 — 날짜 산출 교체만 | 테스트함 — fullyParallel 워커 분산에서도 모듈 평가 1회로 날짜 고정 |
-| 4 정리 블록 제거 | 테스트함 — 제거 후 spec 단독·전체 e2e GREEN | 테스트함 — 잔존 데이터가 있어도 날짜 격리로 재실행 무충돌(5번 조건이 실증) | 해당 없음 — 제거라 경계 없음 | 해당 없음 — 테스트 코드 | 해당 없음 — 테스트 코드 | 해당 없음 — 테스트 코드 |
+| 4 무효 delete 제거 | 테스트함 — 제거 후 spec 단독·전체 e2e GREEN | 테스트함 — 잔존 schedules 행이 있어도 날짜 격리로 재실행 무충돌(5번 조건이 실증), 유지된 delete로 사용자 삭제 CASCADE 무위반 | 해당 없음 — 한 문장 제거라 경계 없음 | 해당 없음 — 테스트 코드 | 해당 없음 — 테스트 코드 | 해당 없음 — 테스트 코드 |
 | 5 반복 실행 | 테스트함 — 본체(연속 2회 GREEN 로그) | 테스트함 — 실패 시 원인 커밋 전 해소가 완료 조건 | 해당 없음 — 통계적 잔여 확률(전 spec 공통 관례 수준)은 수용 | 해당 없음 — 테스트 실행 | 해당 없음 — 테스트 실행 | 해당 없음 — 로컬 단일 DB 실행 |
 
 - 보충 위험: **workDatesInSameMonth 신설 헬퍼** — 같은 달 보장·중복 없음·2~27일·오름차순은 사용 spec의 삽입 성공과 셀 단언 통과가 실증한다(e2e 지원 코드에 단위 테스트를 두지 않는 기존 관례 유지). **원거리 월의 UI 제약**은 코드 대조에서 `?month=` URL 직접 진입으로 확인됐으나, 달력 셀 렌더 규칙이 월 범위를 제한하면 정지 조건이다.
