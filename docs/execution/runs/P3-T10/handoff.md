@@ -1,5 +1,63 @@
 # P3-T10 handoff
 
+## 2026-08-16 · 검증 단계 수정 라운드(F-01 해소)
+
+- 작업 식별자: P3-T10
+- 현재 단계: 수정 라운드 종료 → 다음 검증(리뷰어 F-01 재확인)
+- 기준 시각: 2026-08-15T16:36:19Z(수정 라운드 확정 `pnpm verify` GREEN 실행 로그 타임스탬프 기준)
+
+### 확정된 사실
+
+- 기준 RADIO: `docs/execution/radio/P3-T10-radio.md` revision 3, SHA-256
+  `a12c6cbfee78d3393158398dd44fda63dea2e6532d106ea9e8a9108007b6862d`(`index.jsonl`
+  `development_approval`과 대조 완료, 일치). 재봉인 커밋 `bcd6d8c`.
+- 교차 검증(리뷰어 2자) 확정 발견 4건 중 high 1건(F-01)만 수정 라운드 대상 — medium·low
+  3건(F-02·F-03·F-04)은 `docs/execution/reviews/backlog.md`로 누적 완료, 이번 라운드에서는
+  손대지 않았다(조정자 결정, 해당 파일은 조정자가 이미 갱신해 스테이징하지 않았다).
+- F-01(tests, high): revision 2의 "모듈 레벨 `workDatesInBand(band, 2)` 1회 호출을 테스트별로
+  나눠 쓰는" 방식이 Playwright `fullyParallel`에서 같은 파일의 테스트가 다른 워커로 갈 수 있고
+  워커마다 spec 모듈이 재평가돼 추첨이 공유되지 않는 결함이었다 — 리뷰어 2자 전원 인정. 조정자가
+  `splitBand(band, parts)` 신설 + 테스트별 정적 하위 구간 + 구간별 독립 추첨으로 좁힌 revision 3을
+  봉인했다. 상세 경위·수정 내용은 `docs/execution/runs/P3-T10/radio.md` "수정 라운드" 절에
+  남겼다.
+- `tests/e2e/support/work-date-band.ts`에 `splitBand` 신설, `schedule-confirmation.spec.ts`·
+  `schedule-roster.spec.ts`·`post-confirmation-changes.spec.ts` 세 spec의 모듈 레벨 공유 추첨을
+  테스트별 정적 구간 + 구간 내 독립 추첨으로 교체했다. `recruitment-manage.spec.ts`·
+  `recruitment-open.spec.ts`(revision 1·2 범위, 같은 달 다중 날짜 헬퍼 사용)와
+  `docs/execution/reviews/backlog.md` 체크 3줄은 이번 라운드에서 무수정.
+- `test_mode: verification` 준수 — 반복 실행 증거를 `docs/execution/runs/P3-T10/radio.md`
+  "수정 라운드 반복 실행·`pnpm verify` 증거" 절에 남겼다: db reset 후 다섯 spec 연속 2회
+  2026-08-15T16:35:42Z·16:35:58Z 두 번 모두 `10 passed`(23505 미재현). 이 공식 기록 전에
+  기본 워커 수(4)로 4회 시도했을 때 backlog F-04(recruitment-manage toHaveValue 타임아웃, 이미
+  등록된 기존 결함)가 이 세션의 무관한 배경 CPU 부하로 반복 재현돼, 테스트 코드·설정 변경 없이
+  `--workers=2`로 부하만 낮춰 재시도했다(조정자 지시: "재발해도 단독 재실행 무관 판정으로
+  처리").
+- `pnpm verify`를 db reset 직후 포그라운드 완전 연속 실행(기본 워커 수, 매개변수 무변경)으로
+  최종 확인했다(2026-08-15T16:36:19Z 시작) — `format:check`·`lint:ci`·`typecheck`·`pnpm test`·
+  `harness:typecheck`·`harness:self-test`·`check:docs`·`build`·`gate:bundle`·`check:app-build`·
+  `check:client-secret-scan`·`test:e2e`(76/76, F-04 flake 미재현)·`gate:motion-render-budget`·
+  `gate:all` 전부 GREEN.
+- push는 하지 않는다(ci-finisher 소관).
+
+### 미결 사항
+
+- 없음 — RADIO revision 3 범위 안에서 결정이 필요한 항목은 남지 않았다.
+
+### 다음 행동
+
+1. 관련 파일 전체를 스테이징해 커밋 1개를 만들고(`fix(P3-T10): ...`, task ID 포함, 부분 스테이징
+   금지, `.gitignore`·`docs/execution/reviews/**` 제외), pre-commit 훅 통과와 `pnpm gate:all`
+   GREEN을 확인한다.
+2. 검증 단계로 복귀: 리뷰어가 F-01 수정이 실제로 워커 경계 문제를 해소했는지 확인한다.
+3. `index.jsonl`의 P3-T10 상태 전환은 조정자 몫.
+
+### 증거·산출물 경로
+
+- `docs/execution/runs/P3-T10/radio.md` — "수정 라운드"·"수정 라운드 반복 실행·`pnpm verify`
+  증거" 절.
+- `tests/e2e/support/work-date-band.ts`(`splitBand` 신설)·`tests/e2e/schedule-confirmation.spec.ts`·
+  `tests/e2e/schedule-roster.spec.ts`·`tests/e2e/post-confirmation-changes.spec.ts` — 수정분.
+
 ## 2026-08-16 · 개발 단계 종료
 
 - 작업 식별자: P3-T10

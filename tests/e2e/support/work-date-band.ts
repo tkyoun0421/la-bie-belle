@@ -69,3 +69,19 @@ export function workDatesInSameMonth(band: WorkDateBand, count: number): string[
     .sort((a, b) => a - b)
     .map((day) => `${year}-${pad(month)}-${pad(day)}`);
 }
+
+export function splitBand(band: WorkDateBand, parts: number): WorkDateBand[] {
+  const width = band.maxMonthsAhead - band.minMonthsAhead + 1;
+  const base = Math.floor(width / parts);
+  const remainder = width % parts;
+  const subBands: WorkDateBand[] = [];
+  let start = band.minMonthsAhead;
+
+  for (let index = 0; index < parts; index += 1) {
+    const length = base + (index < remainder ? 1 : 0);
+    subBands.push({ minMonthsAhead: start, maxMonthsAhead: start + length - 1 });
+    start += length;
+  }
+
+  return subBands;
+}

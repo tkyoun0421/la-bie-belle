@@ -2,7 +2,12 @@ import { devices, expect, test } from "@playwright/test";
 
 import { createAdminSession, insertSchedule } from "./support/assignment-schedule-fixtures";
 import { createWorkerSession, deleteWorkerSessions, type WorkerSession } from "./support/worker-session";
-import { WORK_DATE_BANDS, workDatesInBand } from "./support/work-date-band";
+import {
+  WORK_DATE_BANDS,
+  splitBand,
+  workDateInBand,
+  type WorkDateBand,
+} from "./support/work-date-band";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -29,10 +34,10 @@ async function findPositionIds(
   return result;
 }
 
-const [postConfirmationChangesWorkDateA, postConfirmationChangesWorkDateB] = workDatesInBand(
+const [POST_CONFIRMATION_CHANGES_BAND_A, POST_CONFIRMATION_CHANGES_BAND_B] = splitBand(
   WORK_DATE_BANDS.postConfirmationChanges,
   2,
-) as [string, string];
+) as [WorkDateBand, WorkDateBand];
 
 test.describe("확정 후 변경", () => {
   test("확정 후 예식 변경이 revision을 올리고 근무자 상세에 변경 안내가 뜬다(AC1·AC9)", async ({
@@ -58,7 +63,7 @@ test.describe("확정 후 변경", () => {
     const positionIds = await findPositionIds(admin, [MANAGER_POSITION_NAME]);
     const managerPositionId = positionIds[MANAGER_POSITION_NAME]!;
 
-    const workDate = postConfirmationChangesWorkDateA;
+    const workDate = workDateInBand(POST_CONFIRMATION_CHANGES_BAND_A);
     const scheduleId = await insertSchedule(admin, workDate, "CONFIRMED");
 
     const { error: ceremonyError } = await admin
@@ -158,7 +163,7 @@ test.describe("확정 후 변경", () => {
     const managerPositionId = positionIds[MANAGER_POSITION_NAME]!;
     const songPositionId = positionIds[SONG_POSITION_NAME]!;
 
-    const workDate = postConfirmationChangesWorkDateB;
+    const workDate = workDateInBand(POST_CONFIRMATION_CHANGES_BAND_B);
     const scheduleId = await insertSchedule(admin, workDate, "CONFIRMED");
 
     const { error: ceremonyError } = await admin
