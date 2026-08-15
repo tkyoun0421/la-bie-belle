@@ -374,9 +374,9 @@ select throws_ok(
     (select id from positions where name = '팀장'),
     array['19000000-0000-0000-0000-000000000002']::uuid[]
   )$$,
-  'LB020',
+  'LB030',
   null,
-  'AC3: CONFIRMED 스케줄의 배정 교체는 LB020으로 거부된다'
+  'AC3: CONFIRMED 스케줄의 배정 교체는 허용되나 시급 미설정 근무자 추가는 LB030으로 거부된다(P3-T09)'
 );
 select throws_ok(
   $$select replace_position_assignments(
@@ -639,9 +639,9 @@ select throws_ok(
     (select id from positions where name = '팀장'),
     array['19000000-0000-0000-0000-000000000002']::uuid[]
   )$$,
-  'LB020',
+  'LB030',
   null,
-  'AC4 자격 강제 5/5: 확정 스케줄 배정 시도는 LB020으로 거부된다'
+  'AC4 자격 강제 5/5: 확정 스케줄 배정은 자격보다 시급 미설정(LB030)에 먼저 막힌다(P3-T09)'
 );
 
 select throws_ok(

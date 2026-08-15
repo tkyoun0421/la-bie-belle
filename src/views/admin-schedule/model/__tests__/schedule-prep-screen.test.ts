@@ -6,12 +6,18 @@ import {
 } from "@/views/admin-schedule/model/schedule-prep-screen";
 
 describe("resolveSchedulePrepScreenMode", () => {
-  it("확정·취소 상태는 항상 readonly다", () => {
-    expect(resolveSchedulePrepScreenMode({ status: "CONFIRMED", ceremonyTimes: ["10:00"] })).toBe(
-      "readonly",
-    );
+  it("취소 상태는 예식 유무와 무관하게 항상 readonly다(P3-T09)", () => {
     expect(resolveSchedulePrepScreenMode({ status: "CANCELLED", ceremonyTimes: [] })).toBe(
       "readonly",
+    );
+    expect(resolveSchedulePrepScreenMode({ status: "CANCELLED", ceremonyTimes: ["10:00"] })).toBe(
+      "readonly",
+    );
+  });
+
+  it("확정 상태는 더는 readonly가 아니고 예식이 있으면 editing이다(P3-T09, 확정 후 편집 개방)", () => {
+    expect(resolveSchedulePrepScreenMode({ status: "CONFIRMED", ceremonyTimes: ["10:00"] })).toBe(
+      "editing",
     );
   });
 

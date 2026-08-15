@@ -49,6 +49,8 @@ describe("mapConfirmedRoster", () => {
           is_self: false,
         },
       ],
+      revision: 1,
+      revised_at: "2026-08-15T10:23:02.000000+00:00",
     });
 
     expect(roster).toEqual({
@@ -58,6 +60,8 @@ describe("mapConfirmedRoster", () => {
       roster: [
         { name: "정하은", positionName: "매니저", sortOrder: 80, isTrainee: false, isSelf: false },
       ],
+      revision: 1,
+      revisedAt: "2026-08-15T10:23:02.000000+00:00",
     });
   });
 
@@ -67,9 +71,25 @@ describe("mapConfirmedRoster", () => {
       planned_checkout: "18:00",
       ceremonies: [],
       roster: [],
+      revision: 3,
+      revised_at: "2026-08-15T10:23:02.000000+00:00",
     });
 
     expect(roster.roster).toEqual([]);
     expect(roster.ceremonyTimes).toEqual([]);
+  });
+
+  it("revision·revisedAt을 그대로 옮긴다(P3-T09)", () => {
+    const roster = mapConfirmedRoster({
+      planned_checkin: "09:00",
+      planned_checkout: "18:00",
+      ceremonies: [],
+      roster: [],
+      revision: 5,
+      revised_at: "2026-08-15T11:00:00.000000+00:00",
+    });
+
+    expect(roster.revision).toBe(5);
+    expect(roster.revisedAt).toBe("2026-08-15T11:00:00.000000+00:00");
   });
 });

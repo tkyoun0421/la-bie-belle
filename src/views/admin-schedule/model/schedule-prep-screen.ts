@@ -7,7 +7,7 @@ export type SchedulePrepScreenInput = {
   ceremonyTimes: string[];
 };
 
-const READONLY_STATUSES: RecruitmentScheduleStatus[] = ["CONFIRMED", "CANCELLED"];
+const READONLY_STATUSES: RecruitmentScheduleStatus[] = ["CANCELLED"];
 
 export function resolveSchedulePrepScreenMode(
   input: SchedulePrepScreenInput,

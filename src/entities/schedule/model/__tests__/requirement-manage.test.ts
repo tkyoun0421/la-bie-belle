@@ -65,6 +65,12 @@ describe("mapRequirementRpcErrorCode", () => {
     expect(mapRequirementRpcErrorCode("22023")).toBe(ERROR_CODE.SCHEDULING_VALIDATION);
   });
 
+  it("LB034는 SCHEDULING_REVISION_LAST_REQUIREMENT로 매핑한다", () => {
+    expect(mapRequirementRpcErrorCode("LB034")).toBe(
+      ERROR_CODE.SCHEDULING_REVISION_LAST_REQUIREMENT,
+    );
+  });
+
   it("그 외 코드는 COMMON_UNEXPECTED로 매핑한다", () => {
     expect(mapRequirementRpcErrorCode("57P01")).toBe(ERROR_CODE.COMMON_UNEXPECTED);
     expect(mapRequirementRpcErrorCode(undefined)).toBe(ERROR_CODE.COMMON_UNEXPECTED);

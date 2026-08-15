@@ -9,6 +9,8 @@ export const CONFIRMED_ROSTER_GENERAL: ConfirmedRoster = {
     { name: "김민준", positionName: "매니저", sortOrder: 80, isTrainee: false, isSelf: false },
     { name: "이서연", positionName: "안내", sortOrder: 90, isTrainee: false, isSelf: false },
   ],
+  revision: 1,
+  revisedAt: "2026-08-01T09:00:00.000000+00:00",
 };
 
 export const CONFIRMED_ROSTER_WITH_TRAINEE: ConfirmedRoster = {
@@ -19,6 +21,8 @@ export const CONFIRMED_ROSTER_WITH_TRAINEE: ConfirmedRoster = {
     ...CONFIRMED_ROSTER_GENERAL.roster,
     { name: "박도윤", positionName: "매니저", sortOrder: 80, isTrainee: true, isSelf: false },
   ],
+  revision: 1,
+  revisedAt: "2026-08-01T09:00:00.000000+00:00",
 };
 
 export const CONFIRMED_ROSTER_UNASSIGNED: ConfirmedRoster = {
@@ -29,4 +33,6 @@ export const CONFIRMED_ROSTER_UNASSIGNED: ConfirmedRoster = {
     { name: "김민준", positionName: "매니저", sortOrder: 80, isTrainee: false, isSelf: false },
     { name: "이서연", positionName: "안내", sortOrder: 90, isTrainee: false, isSelf: false },
   ],
+  revision: 1,
+  revisedAt: "2026-08-01T09:00:00.000000+00:00",
 };

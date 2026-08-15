@@ -21,6 +21,7 @@ export type RemoveRequirementInput = z.infer<typeof RemoveRequirementInputSchema
 const FORBIDDEN_PG_CODE = "42501";
 const STATUS_CONFLICT_PG_CODE = "LB020";
 const VALIDATION_PG_CODE = "22023";
+const LAST_REQUIREMENT_PG_CODE = "LB034";
 
 export function mapRequirementRpcErrorCode(pgCode: string | undefined): ErrorCode {
   if (pgCode === FORBIDDEN_PG_CODE) {
@@ -31,6 +32,9 @@ export function mapRequirementRpcErrorCode(pgCode: string | undefined): ErrorCod
   }
   if (pgCode === VALIDATION_PG_CODE) {
     return ERROR_CODE.SCHEDULING_VALIDATION;
+  }
+  if (pgCode === LAST_REQUIREMENT_PG_CODE) {
+    return ERROR_CODE.SCHEDULING_REVISION_LAST_REQUIREMENT;
   }
   return ERROR_CODE.COMMON_UNEXPECTED;
 }

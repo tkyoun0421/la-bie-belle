@@ -1,5 +1,5 @@
 begin;
-select plan(65);
+select plan(67);
 
 -- =====================================================================
 -- 스키마 노출: 테이블·컬럼·RLS·함수 시그니처
@@ -277,13 +277,16 @@ reset role;
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '17000000-0000-0000-0000-000000000001', true);
-select throws_ok(
+select lives_ok(
   $$select replace_schedule_ceremonies(
     (select id from schedules where work_date = '2099-11-03'), array['10:00']::time[]
   )$$,
-  'LB020',
-  null,
-  'AC1: CONFIRMED 스케줄의 예식 변경은 LB020으로 거부된다'
+  'AC1: CONFIRMED 스케줄의 예식 변경은 허용된다(P3-T09)'
+);
+select is(
+  (select revision from schedules where work_date = '2099-11-03'),
+  2,
+  'AC1: CONFIRMED 예식 변경 성공으로 revision이 2로 오른다'
 );
 select throws_ok(
   $$select replace_schedule_ceremonies(
@@ -477,13 +480,16 @@ select throws_ok(
   null,
   'AC2 경계값: checkin == checkout도 22023으로 거부된다'
 );
-select throws_ok(
+select lives_ok(
   $$select set_schedule_planned_times(
     (select id from schedules where work_date = '2099-11-03'), '08:20'::time, '15:30'::time
   )$$,
-  'LB020',
-  null,
-  'AC2: CONFIRMED 스케줄의 예정 시각 변경은 LB020으로 거부된다'
+  'AC2: CONFIRMED 스케줄의 예정 시각 변경은 허용된다(P3-T09)'
+);
+select is(
+  (select revision from schedules where work_date = '2099-11-03'),
+  3,
+  'AC2: CONFIRMED 예정 시각 변경 성공으로 revision이 3으로 오른다'
 );
 select throws_ok(
   $$select set_schedule_planned_times(

@@ -28,9 +28,14 @@ import { CheckInRuleEditor } from "@/features/ceremony/ui/CheckInRuleEditor";
 import { PlannedTimesEditor } from "@/features/ceremony/ui/PlannedTimesEditor";
 import { RecommendationConfirmDialog } from "@/features/ceremony/ui/RecommendationConfirmDialog";
 import {
+  useCancelSchedule,
+  type CancelScheduleAction,
+} from "@/features/confirmation/hooks/useCancelSchedule";
+import {
   useConfirmSchedule,
   type ConfirmScheduleAction,
 } from "@/features/confirmation/hooks/useConfirmSchedule";
+import { CancelScheduleDialog } from "@/features/confirmation/ui/CancelScheduleDialog";
 import { ConfirmScheduleDialog } from "@/features/confirmation/ui/ConfirmScheduleDialog";
 import {
   useRequirementEditor,
@@ -44,6 +49,7 @@ import {
   canSelectCandidateAsTrainee,
   groupAssignmentCandidates,
 } from "@/views/admin-schedule/model/candidate-buckets";
+import { computeCancellationImpact } from "@/views/admin-schedule/model/cancellation-impact";
 import { computeConfirmationWarnings } from "@/views/admin-schedule/model/confirmation-warnings";
 import {
   resolveTraineeCountLabel,
@@ -55,7 +61,7 @@ import {
   schedulePrepStatusLabel,
 } from "@/views/admin-schedule/model/schedule-prep-screen";
 
-const READONLY_NOTICE = "확정되었거나 취소된 스케줄은 예식·예정 시각을 수정할 수 없어요";
+const READONLY_NOTICE = "취소된 스케줄은 예식·예정 시각을 수정할 수 없어요";
 const EMPTY_CEREMONY_MESSAGE = "아직 등록된 예식이 없어요. 개수와 첫 예식 시각으로 생성해 주세요";
 
 type AdminSchedulePrepViewProps = {
@@ -68,6 +74,7 @@ type AdminSchedulePrepViewProps = {
   requirementRows: ScheduleRequirementRow[];
   assignedCounts: Record<string, number>;
   assignedHeadcount: AssignedHeadcount | null;
+  assignedWorkerCount: number;
   traineeCounts: Record<string, number>;
   activePositions: Position[];
   onSetRequirement: SetRequirementAction;
@@ -75,6 +82,7 @@ type AdminSchedulePrepViewProps = {
   onListCandidates: ListAssignmentCandidatesAction;
   onReplaceAssignments: ReplacePositionAssignmentsAction;
   onConfirmSchedule: ConfirmScheduleAction;
+  onCancelSchedule: CancelScheduleAction;
 };
 
 export function AdminSchedulePrepView({
@@ -87,6 +95,7 @@ export function AdminSchedulePrepView({
   requirementRows,
   assignedCounts,
   assignedHeadcount,
+  assignedWorkerCount,
   traineeCounts,
   activePositions,
   onSetRequirement,
@@ -94,6 +103,7 @@ export function AdminSchedulePrepView({
   onListCandidates,
   onReplaceAssignments,
   onConfirmSchedule,
+  onCancelSchedule,
 }: AdminSchedulePrepViewProps) {
   const editor = useCeremonyEditor(
     {
@@ -121,6 +131,7 @@ export function AdminSchedulePrepView({
     onReplace: onReplaceAssignments,
   });
   const confirmSchedule = useConfirmSchedule(onConfirmSchedule);
+  const cancelSchedule = useCancelSchedule(onCancelSchedule);
 
   const mode = resolveSchedulePrepScreenMode({
     status: schedulePrep.status,
@@ -137,6 +148,11 @@ export function AdminSchedulePrepView({
     [requirementRows, assignedCounts, traineeCounts],
   );
 
+  const cancellationImpact = useMemo(
+    () => computeCancellationImpact({ assignedWorkerCount, traineeCounts }),
+    [assignedWorkerCount, traineeCounts],
+  );
+
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-24">
       <div className="flex flex-col gap-1">
@@ -144,7 +160,7 @@ export function AdminSchedulePrepView({
         <p className="typo-body text-text">{schedulePrepStatusLabel(schedulePrep.status)}</p>
       </div>
 
-      {mode !== "readonly" ? (
+      {mode !== "readonly" && schedulePrep.status !== "CONFIRMED" ? (
         <Button
           type="button"
           variant="secondary"
@@ -169,6 +185,31 @@ export function AdminSchedulePrepView({
         errorMessage={confirmSchedule.errorMessage}
         pending={confirmSchedule.pending}
         onConfirm={() => confirmSchedule.confirm(schedulePrep.id)}
+      />
+
+      {schedulePrep.status === "CONFIRMED" ? (
+        <Button
+          type="button"
+          variant="destructive"
+          onClick={cancelSchedule.openDialog}
+          disabled={cancelSchedule.pending}
+        >
+          스케줄 취소
+        </Button>
+      ) : null}
+      <CancelScheduleDialog
+        open={cancelSchedule.open}
+        onOpenChange={(next) => {
+          if (next) {
+            cancelSchedule.openDialog();
+          } else {
+            cancelSchedule.closeDialog();
+          }
+        }}
+        affectedWorkerCount={cancellationImpact}
+        errorMessage={cancelSchedule.errorMessage}
+        pending={cancelSchedule.pending}
+        onCancel={() => cancelSchedule.cancel(schedulePrep.id)}
       />
 
       {mode === "readonly" ? (

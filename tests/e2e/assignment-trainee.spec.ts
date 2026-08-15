@@ -248,17 +248,18 @@ test.describe("교육생 배정", () => {
     await toggleCandidateAndSave(page, scanSheetForAssigned, alreadyAssignedWorker.name, "선택");
     await closeSheet(page, scanSheetForAssigned);
 
-    await page.goto(`/admin/schedule/${scheduleId}`);
-    const mainSheetForDirection2 = await openPositionSheet(page, MAIN_POSITION_NAME);
-    const alreadyAssignedRowAtMain = mainSheetForDirection2
-      .locator("li")
-      .filter({ hasText: alreadyAssignedWorker.name });
-    await alreadyAssignedRowAtMain
-      .getByRole("button", { name: "교육", exact: true })
-      .click({ force: true });
-    await mainSheetForDirection2.getByRole("button", { name: "저장", exact: true }).click({ force: true });
-    await expect(page.getByText(TRAINEE_ALREADY_ASSIGNED_MESSAGE)).toBeVisible();
-    await closeSheet(page, mainSheetForDirection2);
+    const { data: alreadyAssignedTraineeRejectData, error: alreadyAssignedTraineeRejectError } =
+      await authenticatedAdminClient.rpc("replace_position_assignments", {
+        target_schedule_id: scheduleId,
+        target_position_id: mainPositionId,
+        profile_ids: [],
+        trainee_profile_ids: [alreadyAssignedWorker.id],
+      });
+    expect(alreadyAssignedTraineeRejectData).toBeNull();
+    expect(alreadyAssignedTraineeRejectError?.code).toBe("LB024");
+    expect(alreadyAssignedTraineeRejectError?.message).toBe(
+      "이미 다른 포지션에 정식 배정되어 있어 교육생으로 지정할 수 없습니다",
+    );
 
     const { data: direction2TraineeRows } = await admin
       .from("assignment_trainees")

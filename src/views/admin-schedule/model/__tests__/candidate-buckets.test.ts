@@ -126,4 +126,24 @@ describe("canSelectCandidateAsTrainee", () => {
 
     expect(canSelectCandidateAsTrainee(currentTraineeInactive)).toBe(true);
   });
+
+  it("다른 포지션에 정식 배정된 후보는 자격이 있어도 교육으로 고를 수 없다(P3-T09)", () => {
+    const assignedElsewhere = candidate({
+      eligible: true,
+      ineligibleReason: null,
+      otherPositionNames: ["매니저"],
+    });
+
+    expect(canSelectCandidateAsTrainee(assignedElsewhere)).toBe(false);
+  });
+
+  it("다른 포지션 정식 배정이 없는 미배정 후보는 선택지를 유지한다(P3-T09)", () => {
+    const unassigned = candidate({
+      eligible: true,
+      ineligibleReason: null,
+      otherPositionNames: [],
+    });
+
+    expect(canSelectCandidateAsTrainee(unassigned)).toBe(true);
+  });
 });

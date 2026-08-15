@@ -213,6 +213,21 @@ describe("replacePositionAssignments", () => {
     expect(first.ok === false && second.ok === false && first.code !== second.code).toBe(true);
   });
 
+  it("LB030(시급 미설정)은 SCHEDULING_CONFIRM_MISSING_WAGE로 매핑한다(P3-T09)", async () => {
+    rpc.mockResolvedValue({ data: null, error: { code: "LB030", message: "missing wage" } });
+
+    const { replacePositionAssignments } =
+      await import("@/features/assignment/api/replace-position-assignments");
+    const result = await replacePositionAssignments({
+      scheduleId: VALID_SCHEDULE_ID,
+      positionId: VALID_POSITION_ID,
+      profileIds: [VALID_PROFILE_ID],
+      traineeProfileIds: [],
+    });
+
+    expect(result).toEqual({ ok: false, code: ERROR_CODE.SCHEDULING_CONFIRM_MISSING_WAGE });
+  });
+
   it("22023(유효성)은 SCHEDULING_VALIDATION으로 매핑한다", async () => {
     rpc.mockResolvedValue({ data: null, error: { code: "22023", message: "inactive position" } });
 

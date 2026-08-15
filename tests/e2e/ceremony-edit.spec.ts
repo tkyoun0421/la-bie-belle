@@ -133,22 +133,33 @@ test.describe("관리자 예식 시간 편집", () => {
     }
   });
 
-  test("확정된 스케줄은 예식·예정 시각을 읽기 전용으로 보여준다", async ({ browser, baseURL }) => {
+  test("확정된 스케줄은 예식·예정 시각을 편집할 수 있고 취소 버튼이 보인다(P3-T09)", async ({
+    browser,
+    baseURL,
+  }) => {
     const context = await browser.newContext({ reducedMotion: "reduce" });
     const { admin } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 
     const workDate = workDateInBand(WORK_DATE_BANDS.ceremonyEditConfirmed);
     const scheduleId = await insertSchedule(admin, workDate, "CONFIRMED");
+    const { error: ceremonyError } = await admin
+      .from("ceremonies")
+      .insert({ schedule_id: scheduleId, starts_at: "11:00" });
+    if (ceremonyError) {
+      throw ceremonyError;
+    }
 
     try {
       await page.goto(`/admin/schedule/${scheduleId}`);
       await expect(page.getByRole("heading", { name: workDate })).toBeVisible();
       await expect(
-        page.getByText("확정되었거나 취소된 스케줄은 예식·예정 시각을 수정할 수 없어요"),
-      ).toBeVisible();
-      await expect(page.getByLabel("예식 개수")).toHaveCount(0);
-      await expect(page.getByRole("button", { name: "저장", exact: true })).toHaveCount(0);
+        page.getByText("취소된 스케줄은 예식·예정 시각을 수정할 수 없어요"),
+      ).toHaveCount(0);
+      await expect(page.getByLabel("예식 1")).toHaveValue("11:00");
+      await expect(page.getByRole("button", { name: "저장", exact: true })).toBeVisible();
+      await expect(page.getByRole("button", { name: "스케줄 취소" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "스케줄 확정" })).toHaveCount(0);
     } finally {
       await deleteScheduleFixture(admin, scheduleId);
       await context.close();

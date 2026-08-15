@@ -16,7 +16,6 @@ const CONFIRM_TRIGGER_LABEL = "스케줄 확정";
 const CONFIRM_DIALOG_TITLE = "스케줄을 확정할까요?";
 const CONFIRM_DIALOG_CONFIRM_LABEL = "확정하기";
 const CLOSING_NOTICE = "모집도 함께 마감됩니다";
-const READONLY_NOTICE = "확정되었거나 취소된 스케줄은 예식·예정 시각을 수정할 수 없어요";
 const NO_CEREMONY_MESSAGE = "예식을 먼저 만들어 주세요";
 
 async function findPositionIds(
@@ -40,7 +39,7 @@ async function findPositionIds(
 }
 
 test.describe("확정, 경고, revision", () => {
-  test("AC7 happy path: 버튼→다이얼로그(미달·담당자 없음·마감 안내)→확정→읽기 전용 전환", async ({
+  test("AC7 happy path: 버튼→다이얼로그(미달·담당자 없음·마감 안내)→확정→편집 가능·취소 버튼 전환(P3-T09)", async ({
     browser,
     baseURL,
   }) => {
@@ -146,8 +145,8 @@ test.describe("확정, 경고, revision", () => {
 
     await dialog.getByRole("button", { name: CONFIRM_DIALOG_CONFIRM_LABEL, exact: true }).click();
 
-    await expect(page.getByText(READONLY_NOTICE)).toBeVisible();
     await expect(confirmTrigger).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "스케줄 취소" })).toBeVisible();
 
     const { data: scheduleRow } = await admin
       .from("schedules")

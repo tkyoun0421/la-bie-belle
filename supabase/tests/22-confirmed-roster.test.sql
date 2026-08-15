@@ -1,5 +1,5 @@
 begin;
-select plan(42);
+select plan(46);
 
 -- =====================================================================
 -- 스키마: sort_order 컬럼·get_confirmed_roster 함수 시그니처·시드 순서
@@ -97,6 +97,13 @@ insert into ceremonies (schedule_id, starts_at)
 select id, x.t
   from schedules, lateral (values ('10:00'::time), ('14:00'::time)) as x(t)
   where work_date = '2098-11-01';
+
+insert into scheduling_audit_logs (event, actor_profile_id, schedule_id, detail) values (
+  'schedule_confirmed',
+  '22000000-0000-0000-0000-000000000001',
+  (select id from schedules where work_date = '2098-11-01'),
+  jsonb_build_object('revision', 1, 'warnings', jsonb_build_array())
+);
 
 insert into assignments (schedule_id, profile_id) values
   (
@@ -242,7 +249,7 @@ select throws_ok(
 reset role;
 
 -- =====================================================================
--- AC1: 필드 경계 — 최상위 4개 키, roster 행은 5개 키만, 금지 필드 부재
+-- AC1: 필드 경계 — 최상위 6개 키, roster 행은 5개 키만, 금지 필드 부재
 -- =====================================================================
 
 set local role authenticated;
@@ -264,15 +271,47 @@ select ok(
   (select get_confirmed_roster((select id from schedules where work_date = '2098-11-01')) ? 'roster'),
   'AC1: 응답에 roster 키가 있다'
 );
+select ok(
+  (select get_confirmed_roster((select id from schedules where work_date = '2098-11-01')) ? 'revision'),
+  'AC1(P3-T09): 응답에 revision 키가 있다'
+);
+select ok(
+  (select get_confirmed_roster((select id from schedules where work_date = '2098-11-01')) ? 'revised_at'),
+  'AC1(P3-T09): 응답에 revised_at 키가 있다'
+);
 select is(
   (
     select count(*)::int from jsonb_object_keys(
       get_confirmed_roster((select id from schedules where work_date = '2098-11-01'))
     )
   ),
-  4,
-  'AC1: 응답 최상위 키는 planned_checkin·planned_checkout·ceremonies·roster 4개뿐이다'
+  6,
+  'AC1: 응답 최상위 키는 planned_checkin·planned_checkout·ceremonies·roster·revision·revised_at 6개뿐이다'
 );
+select is(
+  (
+    select (get_confirmed_roster((select id from schedules where work_date = '2098-11-01')) ->> 'revision')::int
+  ),
+  1,
+  'AC1(P3-T09): revision 값은 픽스처 그대로 1이다'
+);
+reset role;
+select is(
+  (
+    select (
+      get_confirmed_roster((select id from schedules where work_date = '2098-11-01')) ->> 'revised_at'
+    )::timestamptz
+  ),
+  (
+    select created_at from scheduling_audit_logs
+    where schedule_id = (select id from schedules where work_date = '2098-11-01')
+      and event = 'schedule_confirmed'
+    order by seq desc limit 1
+  ),
+  'AC1(P3-T09): revised_at은 schedule_confirmed 감사의 시각으로 대체된다(변경 이력이 없을 때)'
+);
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '22000000-0000-0000-0000-000000000003', true);
 
 select ok(
   (

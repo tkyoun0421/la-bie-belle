@@ -27,6 +27,7 @@ const STATUS_CONFLICT_PG_CODE = "LB020";
 const NOT_ELIGIBLE_PG_CODE = "LB023";
 const TRAINEE_ALREADY_ASSIGNED_PG_CODE = "LB024";
 const TRAINEE_DUPLICATE_PG_CODE = "LB025";
+const MISSING_WAGE_PG_CODE = "LB030";
 const VALIDATION_PG_CODE = "22023";
 
 function mapAssignmentRpcErrorCode(pgCode: string | undefined): ErrorCode {
@@ -44,6 +45,9 @@ function mapAssignmentRpcErrorCode(pgCode: string | undefined): ErrorCode {
   }
   if (pgCode === TRAINEE_DUPLICATE_PG_CODE) {
     return ERROR_CODE.SCHEDULING_TRAINEE_DUPLICATE;
+  }
+  if (pgCode === MISSING_WAGE_PG_CODE) {
+    return ERROR_CODE.SCHEDULING_CONFIRM_MISSING_WAGE;
   }
   if (pgCode === VALIDATION_PG_CODE) {
     return ERROR_CODE.SCHEDULING_VALIDATION;

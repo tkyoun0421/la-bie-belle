@@ -12,6 +12,7 @@ import {
   deleteCheckInRule,
   updateCheckInRule,
 } from "@/features/ceremony/api/manage-checkin-rules";
+import { cancelSchedule } from "@/features/confirmation/api/cancel-schedule";
 import { confirmSchedule } from "@/features/confirmation/api/confirm-schedule";
 import { removeRequirement } from "@/features/requirement/api/remove-requirement";
 import { setRequirement } from "@/features/requirement/api/set-requirement";
@@ -93,6 +94,7 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
         requirementRows={requirementSectionData.requirementRows}
         assignedCounts={requirementSectionData.assignedCounts}
         assignedHeadcount={assignedHeadcount}
+        assignedWorkerCount={requirementSectionData.assignedWorkerCount}
         traineeCounts={requirementSectionData.traineeCounts}
         activePositions={requirementSectionData.activePositions}
         onSetRequirement={setRequirement}
@@ -100,6 +102,7 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
         onListCandidates={listAssignmentCandidates}
         onReplaceAssignments={replacePositionAssignments}
         onConfirmSchedule={confirmSchedule}
+        onCancelSchedule={cancelSchedule}
       />
     </RouteTransition>
   );

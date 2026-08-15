@@ -1,5 +1,5 @@
 begin;
-select plan(129);
+select plan(130);
 
 -- =====================================================================
 -- AC1 스키마 생성: enum·테이블·컬럼·기본값·PK
@@ -346,16 +346,19 @@ select throws_ok(
   null,
   'CONFIRMED→PREPARING은 종단 이탈이라 LB020으로 거부된다'
 );
-select throws_ok(
-  $$update schedules set status = 'CANCELLED' where work_date = '2099-02-04'$$,
-  'LB020',
-  null,
-  'CONFIRMED→CANCELLED는 이 task의 표 밖이라 LB020으로 거부된다(P3 기획 소유)'
-);
 select is(
   (select status from schedules where work_date = '2099-02-04'),
   'CONFIRMED'::schedule_status,
-  '거부된 CONFIRMED 이탈 시도들은 상태를 바꾸지 못했다'
+  '거부된 CONFIRMED 이탈 시도(OPEN·CLOSED·PREPARING)들은 상태를 바꾸지 못했다'
+);
+select lives_ok(
+  $$update schedules set status = 'CANCELLED' where work_date = '2099-02-04'$$,
+  'CONFIRMED→CANCELLED는 확정 후 취소 전이로 허용된다(P3-T09)'
+);
+select is(
+  (select status from schedules where work_date = '2099-02-04'),
+  'CANCELLED'::schedule_status,
+  'CONFIRMED→CANCELLED 전이 후 상태가 CANCELLED로 반영된다'
 );
 
 -- CANCELLED 종단 상태의 이탈 거부(2099-02-05의 CANCELLED 행 재사용)

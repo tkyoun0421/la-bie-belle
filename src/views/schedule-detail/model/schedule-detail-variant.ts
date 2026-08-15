@@ -1,15 +1,18 @@
 import type { RecruitmentScheduleStatus } from "@/entities/schedule/model/recruitment-schedule";
 
-export type ScheduleDetailVariant = "closed" | "open" | "confirmed";
+export type ScheduleDetailVariant = "closed" | "open" | "confirmed" | "cancelled";
 
 export function deriveScheduleDetailVariant(
   status: RecruitmentScheduleStatus,
 ): ScheduleDetailVariant {
-  if (status === "CLOSED") {
-    return "closed";
-  }
   if (status === "OPEN") {
     return "open";
   }
-  return "confirmed";
+  if (status === "CONFIRMED") {
+    return "confirmed";
+  }
+  if (status === "CANCELLED") {
+    return "cancelled";
+  }
+  return "closed";
 }

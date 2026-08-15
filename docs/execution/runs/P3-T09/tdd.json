@@ -1,0 +1,207 @@
+{
+  "entries": [
+    {
+      "command": "npx -y supabase@2.75.0 test db",
+      "exit_code": 1,
+      "at": "2026-08-15T10:07:57Z",
+      "phase": "red",
+      "note": "supabase/migrations/20260817000000_post_confirmation_changes.sql을 잠시 빼고 db reset 후 23-post-confirmation-changes.test.sql(82문항)만 신규 파일 상태로 실행. bump_confirmed_revision·cancel_confirmed_schedule 함수 부재로 사전 스키마 단언 2/2가 fatal error(function does not exist)로 실패, Result: FAIL."
+    },
+    {
+      "command": "npx -y supabase@2.75.0 test db",
+      "exit_code": 0,
+      "at": "2026-08-15T10:10:54Z",
+      "phase": "green",
+      "note": "마이그레이션 복원, db reset 후 재실행. 23-post-confirmation-changes.test.sql 82/82 GREEN — revision 5종 RPC 누적 1→12·중복요청도 revision 증가·schedule_revised 감사 값 단언, LB033(예식 0개)·LB034(마지막 요건행)·LB030(시급 미설정 추가) 구조 차단과 원자성, 제거→재추가 재스냅샷, 겸직 재스냅샷 없음, get_confirmed_roster의 revision·revised_at 값 일치, cancel_confirmed_schedule 전이·보존·감사·LB032·재확정 LB029·6개 함수 42501 전부 통과. (중간에 scheduling_audit_logs RLS 정책 부재로 인한 관리자 역할 내 감사 조회 실패 3건을 reset role 재배치로 수정한 뒤 최종 실행한 결과.) 같은 실행에서 08~21·22 기존 파일 중 이번 개방과 충돌하는 「CONFIRMED 거부」 단언이 12·17·18·19·22 파일에서 그대로 드러남(다음 GREEN 단계에서 갱신 예정) — Files=23, Tests=1216, Result: FAIL(23번 파일 자체는 82/82 ok)."
+    },
+    {
+      "command": "npx -y supabase@2.75.0 test db",
+      "exit_code": 0,
+      "at": "2026-08-15T10:23:02Z",
+      "phase": "green",
+      "note": "파일 12(CONFIRMED→CANCELLED lives_ok로 전환)·17(예식·예정 시각 CONFIRMED 변경 lives_ok+revision 단언)·18(요건 CONFIRMED set/remove를 스캔 포지션으로 재구성, LB034 단언, AC4 픽스처 충돌 방지 정리 delete 추가)·19(팀장 CONFIRMED 배정 시급 미설정 케이스를 LB020에서 LB030 기대로 수정)·22(schedule_confirmed 감사 픽스처 추가, get_confirmed_roster 응답 revision·revised_at 키·값 단언 추가) 갱신 후 db reset·전체 재실행. Files=23, Tests=1240, All tests successful, Result: PASS. 08~23번 전 파일 그린, 이번 P3-T09 개방과 충돌하던 기존 CONFIRMED 거부 단언 정합 완료."
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/ceremony-manage.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:24:19Z",
+      "phase": "red",
+      "note": "mapCeremonyRpcErrorCode에 LB033 분기 없이 새 단언(LB033을 SCHEDULING_REVISION_NO_CEREMONY로 매핑)을 추가. COMMON_UNEXPECTED를 반환해 1 failed / 11 passed."
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/ceremony-manage.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:24:26Z",
+      "phase": "green",
+      "note": "mapCeremonyRpcErrorCode에 LB033→SCHEDULING_REVISION_NO_CEREMONY 분기 추가 후 재실행. 12/12 통과."
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/requirement-manage.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:24:48Z",
+      "phase": "red",
+      "note": "mapRequirementRpcErrorCode에 LB034 분기 없이 새 단언(LB034를 SCHEDULING_REVISION_LAST_REQUIREMENT로 매핑) 추가. COMMON_UNEXPECTED를 반환해 1 failed / 10 passed."
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/requirement-manage.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:24:58Z",
+      "phase": "green",
+      "note": "mapRequirementRpcErrorCode에 LB034→SCHEDULING_REVISION_LAST_REQUIREMENT 분기 추가 후 재실행. 11/11 통과."
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/api/__tests__/replace-position-assignments.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:25:22Z",
+      "phase": "red",
+      "note": "mapAssignmentRpcErrorCode에 LB030 분기 없이 새 단언(LB030을 SCHEDULING_CONFIRM_MISSING_WAGE로 매핑) 추가. COMMON_UNEXPECTED를 반환해 1 failed / 13 passed."
+    },
+    {
+      "command": "pnpm vitest run src/features/assignment/api/__tests__/replace-position-assignments.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:25:32Z",
+      "phase": "green",
+      "note": "mapAssignmentRpcErrorCode에 LB030→SCHEDULING_CONFIRM_MISSING_WAGE 분기 추가 후 재실행. 14/14 통과."
+    },
+    {
+      "command": "pnpm vitest run src/features/confirmation/api/__tests__/cancel-schedule.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:26:29Z",
+      "phase": "red",
+      "note": "cancel-schedule.ts 모듈 부재로 import 실패. 7/7 실패."
+    },
+    {
+      "command": "pnpm vitest run src/features/confirmation/api/__tests__/cancel-schedule.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:26:41Z",
+      "phase": "green",
+      "note": "cancelSchedule 구현 후 재실행(RADIO 관례대로 { ok: true, data: { revision } } 응답 형태, LB032→SCHEDULING_CANCEL_INVALID_STATUS·22023→SCHEDULING_VALIDATION·42501→IDENTITY_NOT_ACTIVE 매핑). 7/7 통과."
+    },
+    {
+      "command": "pnpm vitest run src/features/confirmation/hooks/__tests__/useCancelSchedule.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:27:09Z",
+      "phase": "red",
+      "note": "useCancelSchedule.ts 모듈 부재로 Vite 변환 단계에서 resolve 실패, no tests(1 failed)."
+    },
+    {
+      "command": "pnpm vitest run src/features/confirmation/hooks/__tests__/useCancelSchedule.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:27:18Z",
+      "phase": "green",
+      "note": "useConfirmSchedule과 동일한 dialog·pending·errorMessage 상태 기계로 useCancelSchedule 구현(cancel 액션명, data.revision 응답 형태) 후 재실행. 7/7 통과."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/cancellation-impact.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:28:03Z",
+      "phase": "red",
+      "note": "cancellation-impact.ts 모듈 부재로 import 실패, no tests(1 failed)."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/cancellation-impact.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:28:09Z",
+      "phase": "green",
+      "note": "computeCancellationImpact(assignedWorkerCount + traineeCounts 합산 순수 함수) 구현 후 재실행. 4/4 통과(정식+교육생 합산, 교육생 0명, 전체 0명, 겸직 중복집계 없음)."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:28:43Z",
+      "phase": "red",
+      "note": "다른 포지션 정식 배정자의 교육 칩 숨김 새 단언 추가. canSelectCandidateAsTrainee가 아직 otherPositionNames를 보지 않아 1 failed / 10 passed."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:28:51Z",
+      "phase": "green",
+      "note": "canSelectCandidateAsTrainee 맨 앞에 otherPositionNames.length > 0이면 false를 반환하는 분기 추가(currentlyTrainee 검사보다 먼저) 후 재실행. 11/11 통과."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/schedule-prep-screen.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:29:18Z",
+      "phase": "red",
+      "note": "CONFIRMED가 더는 readonly가 아니고 editing이어야 한다는 새 단언 추가, 기존 CONFIRMED·CANCELLED 통합 readonly 단언은 CANCELLED 전용으로 분리. READONLY_STATUSES가 아직 CONFIRMED를 포함해 1 failed / 4 passed."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/model/__tests__/schedule-prep-screen.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:29:23Z",
+      "phase": "green",
+      "note": "READONLY_STATUSES를 [\"CANCELLED\"]로 좁힌 후 재실행. 5/5 통과."
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule-detail/model/__tests__/schedule-detail-variant.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:31:38Z",
+      "phase": "red",
+      "note": "3분기(closed·open·confirmed) 통합 단언을 PREPARING→closed·CONFIRMED→confirmed·CANCELLED→cancelled 4분기 단언으로 분리(F-07). 구현이 아직 3분기라 CANCELLED 기대가 confirmed로 나와 2 failed / 3 passed."
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule-detail/model/__tests__/schedule-detail-variant.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:31:45Z",
+      "phase": "green",
+      "note": "deriveScheduleDetailVariant를 closed|open|confirmed|cancelled 4분기로 확장(PREPARING은 closed로, CANCELLED는 신설 cancelled로) 후 재실행. 5/5 통과."
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/confirmed-roster.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:33:09Z",
+      "phase": "red",
+      "note": "mapConfirmedRoster 입력·기대값에 revision·revised_at/revisedAt 필드 추가. 매핑 함수가 아직 두 필드를 옮기지 않아 2 failed / 3 passed."
+    },
+    {
+      "command": "pnpm vitest run src/entities/schedule/model/__tests__/confirmed-roster.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:33:18Z",
+      "phase": "green",
+      "note": "ConfirmedRoster·ConfirmedRosterApiPayload 타입에 revision·revised_at 추가하고 mapConfirmedRoster가 그대로 옮기도록 구현 후 재실행. 5/5 통과."
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule-detail/model/__tests__/revision-notice.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:34:16Z",
+      "phase": "red",
+      "note": "revision-notice.ts 모듈 부재로 import 실패, no tests(1 failed)."
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule-detail/model/__tests__/revision-notice.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:34:22Z",
+      "phase": "green",
+      "note": "shouldShowRevisionNotice(revision > 1)·formatRevisedAt(date-fns format, \"M월 d일 HH:mm\") 구현 후 재실행. 3/3 통과."
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule-detail/ui/__tests__/ScheduleDetailView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-15T10:35:13Z",
+      "phase": "red",
+      "note": "propsFrom에 revision·revisedAt 전달 추가, revision=1 무표시·revision>1 변경 안내 새 단언 2건 추가(mock 3종도 revision:1 필드 보강). 컴포넌트가 아직 안내를 렌더하지 않아 1 failed / 12 passed."
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule-detail/ui/__tests__/ScheduleDetailView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-15T10:35:33Z",
+      "phase": "green",
+      "note": "ScheduleDetailView에 revision·revisedAt prop 추가, shouldShowRevisionNotice가 true일 때 formatRevisedAt 결과와 함께 변경 안내 문구 렌더 후 재실행. 13/13 통과."
+    },
+    {
+      "command": "PLAYWRIGHT_SKIP_WEBSERVER=1 PLAYWRIGHT_BASE_URL=http://localhost:3100 npx playwright test tests/e2e/post-confirmation-changes.spec.ts tests/e2e/ceremony-edit.spec.ts tests/e2e/schedule-confirmation.spec.ts tests/e2e/assignment-eligibility.spec.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T10:52:33Z",
+      "phase": "red",
+      "note": "src/features/confirmation/**·cancellation-impact.ts·revision-notice.ts·ScheduleDetailCancelledView.tsx·마이그레이션 20260817000000_post_confirmation_changes.sql 등 P3-T09 신규/수정분을 git stash로 일시 제거한 구버전 코드+DB에 대해 실행(supabase db reset·pnpm build·서버 재기동으로 상태 정합 확보). post-confirmation-changes.spec.ts 2건(신규 스펙, RPC·화면 자체가 없어 실패)·ceremony-edit.spec.ts CONFIRMED 편집 케이스·schedule-confirmation.spec.ts 취소 버튼 전환 케이스·assignment-eligibility.spec.ts 확정 스케줄 배정 시트 케이스가 구버전 동작(취소 버튼 없음·CONFIRMED 읽기전용·배정 시트 미개방)과 충돌해 5 failed / 3 passed."
+    },
+    {
+      "command": "PLAYWRIGHT_SKIP_WEBSERVER=1 PLAYWRIGHT_BASE_URL=http://localhost:3100 npx playwright test tests/e2e/post-confirmation-changes.spec.ts tests/e2e/ceremony-edit.spec.ts tests/e2e/schedule-confirmation.spec.ts tests/e2e/assignment-eligibility.spec.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T10:53:41Z",
+      "phase": "green",
+      "note": "git stash pop으로 P3-T09 전체 복원, supabase db reset·pnpm build·서버 재기동 후 재실행. 같은 명령에 회귀 확인용 schedule-roster.spec.ts를 더해 함께 돌렸고 총 10/10 통과(대상 4개 스펙만 세면 8/8)."
+    }
+  ]
+}

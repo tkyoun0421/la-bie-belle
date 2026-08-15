@@ -85,6 +85,10 @@ describe("mapCeremonyRpcErrorCode", () => {
     expect(mapCeremonyRpcErrorCode("22023")).toBe(ERROR_CODE.SCHEDULING_VALIDATION);
   });
 
+  it("LB033을 SCHEDULING_REVISION_NO_CEREMONY로 매핑한다", () => {
+    expect(mapCeremonyRpcErrorCode("LB033")).toBe(ERROR_CODE.SCHEDULING_REVISION_NO_CEREMONY);
+  });
+
   it("그 외 코드는 COMMON_UNEXPECTED로 매핑한다", () => {
     expect(mapCeremonyRpcErrorCode("XX000")).toBe(ERROR_CODE.COMMON_UNEXPECTED);
     expect(mapCeremonyRpcErrorCode(undefined)).toBe(ERROR_CODE.COMMON_UNEXPECTED);

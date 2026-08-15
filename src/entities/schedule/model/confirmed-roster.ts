@@ -29,6 +29,8 @@ export type ConfirmedRoster = {
   plannedCheckout: string;
   ceremonyTimes: string[];
   roster: ConfirmedRosterRow[];
+  revision: number;
+  revisedAt: string;
 };
 
 export type ConfirmedRosterApiPayload = {
@@ -36,6 +38,8 @@ export type ConfirmedRosterApiPayload = {
   planned_checkout: string;
   ceremonies: string[];
   roster: ConfirmedRosterRowApiRow[];
+  revision: number;
+  revised_at: string;
 };
 
 export function mapConfirmedRoster(payload: ConfirmedRosterApiPayload): ConfirmedRoster {
@@ -44,5 +48,7 @@ export function mapConfirmedRoster(payload: ConfirmedRosterApiPayload): Confirme
     plannedCheckout: payload.planned_checkout,
     ceremonyTimes: payload.ceremonies,
     roster: payload.roster.map(mapConfirmedRosterRow),
+    revision: payload.revision,
+    revisedAt: payload.revised_at,
   };
 }

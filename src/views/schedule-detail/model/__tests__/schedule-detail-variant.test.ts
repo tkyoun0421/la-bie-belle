@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 
-import type { RecruitmentScheduleStatus } from "@/entities/schedule/model/recruitment-schedule";
 import { deriveScheduleDetailVariant } from "@/views/schedule-detail/model/schedule-detail-variant";
 
 describe("deriveScheduleDetailVariant", () => {
@@ -12,10 +11,15 @@ describe("deriveScheduleDetailVariant", () => {
     expect(deriveScheduleDetailVariant("OPEN")).toBe("open");
   });
 
-  it.each(["PREPARING", "CONFIRMED", "CANCELLED"] as RecruitmentScheduleStatus[])(
-    "%s 상태는 confirmed 변형이다",
-    (status) => {
-      expect(deriveScheduleDetailVariant(status)).toBe("confirmed");
-    },
-  );
+  it("PREPARING 상태는 closed 변형이다(F-07, 확정 전 준비 중은 모집 마감과 같은 안내)", () => {
+    expect(deriveScheduleDetailVariant("PREPARING")).toBe("closed");
+  });
+
+  it("CONFIRMED 상태는 confirmed 변형이다", () => {
+    expect(deriveScheduleDetailVariant("CONFIRMED")).toBe("confirmed");
+  });
+
+  it("CANCELLED 상태는 cancelled 변형이다(P3-T09)", () => {
+    expect(deriveScheduleDetailVariant("CANCELLED")).toBe("cancelled");
+  });
 });

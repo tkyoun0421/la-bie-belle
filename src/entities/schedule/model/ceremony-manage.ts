@@ -29,6 +29,7 @@ export type SetPlannedTimesInput = z.infer<typeof SetPlannedTimesInputSchema>;
 const FORBIDDEN_PG_CODE = "42501";
 const STATUS_CONFLICT_PG_CODE = "LB020";
 const VALIDATION_PG_CODE = "22023";
+const NO_CEREMONY_PG_CODE = "LB033";
 
 export function mapCeremonyRpcErrorCode(pgCode: string | undefined): ErrorCode {
   if (pgCode === FORBIDDEN_PG_CODE) {
@@ -39,6 +40,9 @@ export function mapCeremonyRpcErrorCode(pgCode: string | undefined): ErrorCode {
   }
   if (pgCode === VALIDATION_PG_CODE) {
     return ERROR_CODE.SCHEDULING_VALIDATION;
+  }
+  if (pgCode === NO_CEREMONY_PG_CODE) {
+    return ERROR_CODE.SCHEDULING_REVISION_NO_CEREMONY;
   }
   return ERROR_CODE.COMMON_UNEXPECTED;
 }

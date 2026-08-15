@@ -2,6 +2,10 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
+import {
+  formatRevisedAt,
+  shouldShowRevisionNotice,
+} from "@/views/schedule-detail/model/revision-notice";
 import type {
   MyRosterPosition,
   PositionRosterGroup,
@@ -18,6 +22,8 @@ type ScheduleDetailViewProps = {
   ceremonyTimes: string[];
   groups: PositionRosterGroup[];
   myPositions: MyRosterPosition[];
+  revision?: number;
+  revisedAt?: string;
 };
 
 function RosterMemberRow({ member }: { member: RosterMember }) {
@@ -60,6 +66,8 @@ export function ScheduleDetailView({
   ceremonyTimes,
   groups,
   myPositions,
+  revision = 1,
+  revisedAt,
 }: ScheduleDetailViewProps) {
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6">
@@ -77,6 +85,9 @@ export function ScheduleDetailView({
         <p className="typo-headline-md text-text-strong tabular-nums">
           {plannedCheckin} - {plannedCheckout}
         </p>
+        {shouldShowRevisionNotice(revision) && revisedAt !== undefined ? (
+          <p className="typo-caption text-text">{`${formatRevisedAt(revisedAt)}에 변경됐어요`}</p>
+        ) : null}
       </section>
 
       {myPositions.length > 0 ? (

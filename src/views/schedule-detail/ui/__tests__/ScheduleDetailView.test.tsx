@@ -22,6 +22,8 @@ function propsFrom(roster: typeof CONFIRMED_ROSTER_GENERAL, workDate = "2026-08-
     ceremonyTimes: roster.ceremonyTimes,
     groups: buildRosterGroups(roster.roster),
     myPositions: deriveMyRosterPositions(roster.roster),
+    revision: roster.revision,
+    revisedAt: roster.revisedAt,
   };
 }
 
@@ -134,5 +136,18 @@ describe("ScheduleDetailView", () => {
       expect(row).toHaveClass("motion-stagger-item");
       expect(row.getAttribute("style")).toContain(`--stagger-index: ${index}`);
     });
+  });
+
+  it("revision이 1이면 변경 안내를 보여주지 않는다(P3-T09)", () => {
+    const { container } = render(<ScheduleDetailView {...propsFrom(CONFIRMED_ROSTER_GENERAL)} />);
+
+    expect(container.textContent).not.toContain("변경됐어요");
+  });
+
+  it("revision이 1보다 크면 최종 변경 시각과 함께 변경 안내를 보여준다(P3-T09)", () => {
+    const roster = { ...CONFIRMED_ROSTER_GENERAL, revision: 3 };
+    render(<ScheduleDetailView {...propsFrom(roster)} />);
+
+    expect(screen.getByText(/변경됐어요/)).toBeInTheDocument();
   });
 });

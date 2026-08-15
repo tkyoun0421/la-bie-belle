@@ -26,6 +26,9 @@ export function groupAssignmentCandidates(
 }
 
 export function canSelectCandidateAsTrainee(candidate: AssignmentCandidate): boolean {
+  if (candidate.otherPositionNames.length > 0) {
+    return false;
+  }
   if (candidate.currentlyTrainee) {
     return true;
   }

@@ -22,7 +22,7 @@ const MAIN_POSITION_NAME = "메인";
 const SCAN_POSITION_NAME = "스캔";
 
 test.describe("배정 후보와 자격 검사", () => {
-  test("여성 전용 포지션에서 자격 없는 근무자는 접힌 목록에 이유와 함께 표시되고, 신청자 배정 저장·교체·초과 배정이 반영되며, 확정 스케줄에서는 배정 시트가 열리지 않는다", async ({
+  test("여성 전용 포지션에서 자격 없는 근무자는 접힌 목록에 이유와 함께 표시되고, 신청자 배정 저장·교체·초과 배정이 반영되며, 확정 스케줄에서도 배정 시트가 열린다(P3-T09)", async ({
     browser,
     baseURL,
   }) => {
@@ -149,11 +149,16 @@ test.describe("배정 후보와 자격 검사", () => {
 
     await page.goto(`/admin/schedule/${scheduleConfirmedId}`);
     await expect(page.getByRole("heading", { name: workDateConfirmed })).toBeVisible();
-    const confirmedDressListItem = page
-      .locator("li")
-      .filter({ has: page.getByText(DRESS_POSITION_NAME, { exact: true }) });
-    await expect(confirmedDressListItem).toBeVisible();
-    await expect(confirmedDressListItem.getByRole("button")).toHaveCount(0);
+    const confirmedDressCandidateButton = page.getByRole("button", {
+      name: new RegExp(`^${DRESS_POSITION_NAME} 필요`),
+    });
+    await expect(confirmedDressCandidateButton).toHaveCount(1);
+    await confirmedDressCandidateButton.click();
+    const confirmedSheet = page.getByRole("dialog", { name: DRESS_POSITION_NAME, exact: true });
+    await expect(confirmedSheet).toBeVisible();
+    await expect(confirmedSheet.getByText("필요 1 / 배정 0")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(confirmedSheet).toBeHidden();
 
     await context.close();
   });

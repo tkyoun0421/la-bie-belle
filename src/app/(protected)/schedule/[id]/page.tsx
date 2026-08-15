@@ -9,6 +9,7 @@ import {
   deriveMyRosterPositions,
 } from "@/views/schedule-detail/model/roster-groups";
 import { deriveScheduleDetailVariant } from "@/views/schedule-detail/model/schedule-detail-variant";
+import { ScheduleDetailCancelledView } from "@/views/schedule-detail/ui/ScheduleDetailCancelledView";
 import { ScheduleDetailClosedView } from "@/views/schedule-detail/ui/ScheduleDetailClosedView";
 import { ScheduleDetailOpenView } from "@/views/schedule-detail/ui/ScheduleDetailOpenView";
 import { ScheduleDetailView } from "@/views/schedule-detail/ui/ScheduleDetailView";
@@ -34,14 +35,20 @@ export default async function ScheduleDetailPage({ params }: ScheduleDetailPageP
     return <ErrorScreen />;
   }
 
-  const schedule = schedulesResult.data.find(
-    (entry) => entry.workDate === id && entry.status !== "CANCELLED",
-  );
+  const schedule = schedulesResult.data.find((entry) => entry.workDate === id);
   if (schedule === undefined) {
     return <NotFoundScreen />;
   }
 
   const variant = deriveScheduleDetailVariant(schedule.status);
+  if (variant === "cancelled") {
+    return (
+      <RouteTransition>
+        <ScheduleDetailCancelledView workDate={schedule.workDate} />
+      </RouteTransition>
+    );
+  }
+
   if (variant === "closed") {
     const applicationsResult = await listOwnApplications({ scheduleIds: [schedule.id] });
     if (!applicationsResult.ok) {
@@ -81,6 +88,8 @@ export default async function ScheduleDetailPage({ params }: ScheduleDetailPageP
         ceremonyTimes={rosterResult.data.ceremonyTimes}
         groups={buildRosterGroups(rosterResult.data.roster)}
         myPositions={deriveMyRosterPositions(rosterResult.data.roster)}
+        revision={rosterResult.data.revision}
+        revisedAt={rosterResult.data.revisedAt}
       />
     </RouteTransition>
   );

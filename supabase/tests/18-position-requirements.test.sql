@@ -1,5 +1,5 @@
 begin;
-select plan(86);
+select plan(89);
 
 -- =====================================================================
 -- 스키마 노출: 테이블·컬럼·제약·RLS·함수 시그니처
@@ -425,24 +425,41 @@ select throws_ok(
   null,
   'AC3: 존재하지 않는 스케줄에 대한 set_position_requirement는 22023으로 거부된다'
 );
-select throws_ok(
+select lives_ok(
   $$select set_position_requirement(
     (select id from schedules where work_date = '2099-12-05'),
-    (select id from positions where name = '팀장'), 3
+    (select id from positions where name = '스캔'), 3
   )$$,
-  'LB020',
-  null,
-  'AC3: CONFIRMED 스케줄의 set_position_requirement는 LB020으로 거부된다'
+  'AC3: CONFIRMED 스케줄의 set_position_requirement는 허용된다(P3-T09)'
+);
+select is(
+  (select revision from schedules where work_date = '2099-12-05'),
+  2,
+  'AC3: CONFIRMED 필요 인원 설정 성공으로 revision이 2로 오른다'
 );
 select throws_ok(
   $$select remove_position_requirement(
     (select id from schedules where work_date = '2099-12-05'),
-    (select id from positions where name = '팀장')
+    (select id from positions where name = '스캔')
   )$$,
-  'LB020',
+  'LB034',
   null,
-  'AC3: CONFIRMED 스케줄의 remove_position_requirement는 LB020으로 거부된다'
+  'AC3: CONFIRMED 스케줄의 마지막 필요 인원 행 제거는 LB034로 거부된다(P3-T09)'
 );
+select is(
+  (select revision from schedules where work_date = '2099-12-05'),
+  2,
+  'AC3: LB034 거부는 revision을 올리지 않는다'
+);
+reset role;
+select lives_ok(
+  $$delete from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-05')
+      and position_id = (select id from positions where name = '스캔')$$,
+  'AC3 경계값 정리: CONFIRMED 시뮬레이션용 임시 행을 되돌린다(AC4 픽스처와의 충돌 방지)'
+);
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '18000000-0000-0000-0000-000000000001', true);
 select throws_ok(
   $$select set_position_requirement(
     (select id from schedules where work_date = '2099-12-06'),

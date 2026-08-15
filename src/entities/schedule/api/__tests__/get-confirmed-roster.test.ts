@@ -37,6 +37,8 @@ describe("getConfirmedRoster", () => {
             is_self: true,
           },
         ],
+        revision: 2,
+        revised_at: "2026-08-15T10:23:02.000000+00:00",
       },
       error: null,
     });
@@ -59,6 +61,8 @@ describe("getConfirmedRoster", () => {
             isSelf: true,
           },
         ],
+        revision: 2,
+        revisedAt: "2026-08-15T10:23:02.000000+00:00",
       },
     });
     expect(rpc).toHaveBeenCalledWith("get_confirmed_roster", {
