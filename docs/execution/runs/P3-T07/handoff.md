@@ -1,5 +1,21 @@
 # P3-T07 handoff
 
+## 2026-08-15 · 검증·리팩토링 단계와 task 종료(done)
+
+- 현재 단계: 리팩토링 종료 → `done`.
+- 검증: 조정자가 구현 diff(`9476b2e..b3d862f`)를 감사했다 — 파일 삭제 없음, 26파일 전부 허용
+  경로다. 교차 검증은 리뷰어 2자(opus·codex)로 실행해 확정 발견 8건(medium 3, low 5)·총점 91을
+  `docs/execution/reviews/P3-T07-review.json`에 남겼다. 공동 발견 2건은 병합 전원 인정, 단독
+  발견 6건은 상호 되묻기에서 전부 인정 — 기각 없음. critical·high 없음이라 수정 라운드도 없다.
+- 리팩토링: 정리할 구조 없음 — 확정 발견 중 정리성 항목(F-06 죽은 mock)은 계약대로 backlog가
+  소유하고, 그 밖의 구조·명명·중복 정리 대상이 없다. 재검증 불필요(변경 없음).
+- 확정 발견 처리 요약: medium 3(F-01 revision 2 계약값 무단언, F-02 e2e 무작위 날짜, F-03
+  스케줄 격리 단언 부재)·low 5(F-04~F-08)는 전부 `docs/execution/reviews/backlog.md` 누적.
+- 개발 단계 특기: 정지 조건 1회 발동(예정 시각 조회 경로 부재) → RADIO revision 2 재봉인
+  (`9476b2e`)으로 해소 — 예정 시각을 roster RPC 최상위 키로 반환.
+- `index.jsonl`: P3-T07 `in_progress` → `done`(2026-08-15). 다음 행동: ci-finisher push·CI 감시,
+  P3-T09 기획 인터뷰(planned 큐 소진 — P3-T08·T09는 proposed).
+
 ## 2026-08-15 · 개발 종료
 
 - 작업 식별자: P3-T07

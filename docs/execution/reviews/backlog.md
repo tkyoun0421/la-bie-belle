@@ -310,3 +310,11 @@
 - [ ] [low] [P3-T06] confirm_schedule의 22023 미매핑으로 일시 오류 문구 노출(F-07) — src/features/confirmation/api/confirm-schedule.ts
 - [ ] [low] [P3-T06] onOpenChange의 도달 불가 open=true 분기(F-08) — src/views/admin-schedule/ui/AdminSchedulePrepView.tsx
 - [ ] [low] [P3-T06] handoff와 runs/radio.md의 단위 테스트 수치 불일치(623 vs 212 files/1393)(F-09) — docs/execution/runs/P3-T06/handoff.md
+- [ ] [medium] [P3-T07] revision 2 신설 예정 시각·예식 반환값이 전 계층에서 실제 값 무단언(봉인 위험표 문면 이행이라는 정상 참작 포함)(F-01) — supabase/tests/22-confirmed-roster.test.sql
+- [ ] [medium] [P3-T07] 새 e2e 두 테스트가 같은 밴드 독립 무작위 날짜로 23505 충돌 가능(workDatesInBand 분할로 해소)(F-02) — tests/e2e/schedule-roster.spec.ts
+- [ ] [medium] [P3-T07] roster 조회의 대상 스케줄 격리(where 3절)를 단언하는 픽스처 부재(F-03) — supabase/tests/22-confirmed-roster.test.sql
+- [ ] [low] [P3-T07] 준비 화면 고정 순서가 초기 필요 인원 표에만 성립(추가 목록·append는 허용 경로 밖, 후속 제안)(F-04) — src/entities/schedule/api/list-schedule-requirements.ts
+- [ ] [low] [P3-T07] 같은 포지션 동명이인의 배정표 행 React key 충돌(displayIndex 포함으로 해소)(F-05) — src/views/schedule-detail/ui/ScheduleDetailView.tsx
+- [ ] [low] [P3-T07] 소비자 없는 confirmation mock 2종 잔존, 배정표 타입 두 벌 병존(F-06) — src/entities/schedule/model/confirmation.mock.ts
+- [ ] [low] [P3-T07] deriveScheduleDetailVariant가 PREPARING·CANCELLED를 confirmed로 접음(P3-T09 취소 개방 전 재검토)(F-07) — src/views/schedule-detail/model/schedule-detail-variant.ts
+- [ ] [low] [P3-T07] handoff의 TDD 쌍 수치(9쌍)가 tdd.json 실증(10쌍)과 불일치(F-08) — docs/execution/runs/P3-T07/handoff.md
