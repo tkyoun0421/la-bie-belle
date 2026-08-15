@@ -326,3 +326,6 @@
 - [ ] [low] [P3-T09] tdd.json entries[1]의 exit_code 0과 note의 FAIL 서술 모순(F-07) — docs/execution/runs/P3-T09/tdd.json
 - [ ] [low] [P3-T09] AC8 경계값(같은 포지션 정식 배정자 전환 허용)의 단위 단언 부재(F-08) — src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts
 - [ ] [low] [P3-T09] 19번 pgTAP 갱신 단언 설명이 실제 검사 순서(자격 LB023 선행)와 반대(F-09) — supabase/tests/19-assignments.test.sql
+- [ ] [medium] [P3-T10] recruitment-manage '마감일 연장 다이얼로그 재오픈'의 부하 시 toHaveValue 5초 타임아웃 — stale applicationDeadline 상태 복사가 원인 후보, 해소는 제품 코드 몫(F-04) — src/features/recruitment/hooks/useRecruitmentManage.ts
+- [ ] [low] [P3-T10] workDatesInSameMonth의 count>26 무한 루프 가드 부재, 호출부 무검증 튜플 캐스팅(F-02) — tests/e2e/support/work-date-band.ts
+- [ ] [low] [P3-T10] 같은 달 날짜 산출·parseWorkDate·pad 사본이 schedule·recruitment 2종·tab-navigation spec에 병존(통합은 허용 경로 밖, 후속 제안)(F-03) — tests/e2e/schedule.spec.ts

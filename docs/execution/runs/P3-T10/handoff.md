@@ -1,5 +1,30 @@
 # P3-T10 handoff
 
+## 2026-08-16 · 검증·리팩토링 종료, done 마감
+
+- 작업 식별자: P3-T10
+- 현재 단계: done — 다음 task로 이동
+
+### 확정된 사실
+
+- 교차 검증(opus·codex, base 2637bce / head f8e50ca): 확정 발견 4건(high 1·medium 1·low 2),
+  총점 87. 결과는 `docs/execution/reviews/P3-T10-review.json`, medium·low 3건은 backlog 누적.
+  기각 1건(backlog P2-T04 214행 체크 제안)은 픽스처 미정리·누적 충돌 가능성 잔존이라는 근거
+  있는 반박으로 기각.
+- 수정 라운드 1회: F-01(high — 모듈 레벨 일괄 추첨이 fullyParallel 워커 경계에서 공유되지
+  않음) → RADIO revision 3 재봉인(bcd6d8c) 후 fix 커밋 `2bbf2e4`. `splitBand` 정적 하위 구간
+  분할로 교체, 조정자 삭제 감사 통과(비겹침·전체 포괄 확인). 다섯 spec 연속 2회 GREEN,
+  `pnpm verify` 전체 GREEN. F-01은 조정자의 봉인 설계 오류였고 구현은 매 revision을 그대로
+  따랐다.
+- 리팩토링 단계: 개발+fix diff 재검토 — 구조·명명·중복 정리 대상 없음, 변경 없이 종료
+  (사본 병존 F-03은 허용 경로 밖 후속 제안으로 backlog에 있음).
+
+### 미결 사항
+
+- F-04(medium): recruitment-manage 부하성 toHaveValue 타임아웃 — 제품 코드 몫(stale
+  applicationDeadline 상태 복사가 원인 후보), backlog 등록 완료. 수정 라운드 중 배경 CPU
+  부하에서 4회 재현될 만큼 실존하는 결함이라 후속 task 후보다.
+
 ## 2026-08-16 · 검증 단계 수정 라운드(F-01 해소)
 
 - 작업 식별자: P3-T10
