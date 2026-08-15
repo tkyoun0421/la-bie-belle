@@ -2,7 +2,7 @@ import { devices, expect, test } from "@playwright/test";
 
 import { createAdminSession, insertSchedule } from "./support/assignment-schedule-fixtures";
 import { createWorkerSession, deleteWorkerSessions, type WorkerSession } from "./support/worker-session";
-import { WORK_DATE_BANDS, workDateInBand } from "./support/work-date-band";
+import { WORK_DATE_BANDS, workDatesInBand } from "./support/work-date-band";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -29,6 +29,11 @@ async function findPositionIds(
   return result;
 }
 
+const [postConfirmationChangesWorkDateA, postConfirmationChangesWorkDateB] = workDatesInBand(
+  WORK_DATE_BANDS.postConfirmationChanges,
+  2,
+) as [string, string];
+
 test.describe("확정 후 변경", () => {
   test("확정 후 예식 변경이 revision을 올리고 근무자 상세에 변경 안내가 뜬다(AC1·AC9)", async ({
     browser,
@@ -53,7 +58,7 @@ test.describe("확정 후 변경", () => {
     const positionIds = await findPositionIds(admin, [MANAGER_POSITION_NAME]);
     const managerPositionId = positionIds[MANAGER_POSITION_NAME]!;
 
-    const workDate = workDateInBand(WORK_DATE_BANDS.postConfirmationChanges);
+    const workDate = postConfirmationChangesWorkDateA;
     const scheduleId = await insertSchedule(admin, workDate, "CONFIRMED");
 
     const { error: ceremonyError } = await admin
@@ -108,7 +113,6 @@ test.describe("확정 후 변경", () => {
       await admin.from("ceremonies").delete().eq("schedule_id", scheduleId);
       await admin.from("assignment_positions").delete().eq("assignment_id", (assignmentRow as { id: string }).id);
       await admin.from("assignments").delete().eq("id", (assignmentRow as { id: string }).id);
-      await admin.from("schedules").delete().eq("id", scheduleId);
       await deleteWorkerSessions(workerSessions);
       await adminContext.close();
       await workerContext.close();
@@ -154,7 +158,7 @@ test.describe("확정 후 변경", () => {
     const managerPositionId = positionIds[MANAGER_POSITION_NAME]!;
     const songPositionId = positionIds[SONG_POSITION_NAME]!;
 
-    const workDate = workDateInBand(WORK_DATE_BANDS.postConfirmationChanges);
+    const workDate = postConfirmationChangesWorkDateB;
     const scheduleId = await insertSchedule(admin, workDate, "CONFIRMED");
 
     const { error: ceremonyError } = await admin
@@ -242,7 +246,6 @@ test.describe("확정 후 변경", () => {
       await admin.from("assignment_positions").delete().eq("assignment_id", (assignmentRow as { id: string }).id);
       await admin.from("assignments").delete().eq("id", (assignmentRow as { id: string }).id);
       await admin.from("ceremonies").delete().eq("schedule_id", scheduleId);
-      await admin.from("schedules").delete().eq("id", scheduleId);
       await deleteWorkerSessions(workerSessions);
       await adminContext.close();
       await assignedContext.close();

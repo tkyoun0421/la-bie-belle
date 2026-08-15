@@ -19,6 +19,8 @@ export const WORK_DATE_BANDS = {
   scheduleConfirmation: { minMonthsAhead: 330, maxMonthsAhead: 361 },
   scheduleRoster: { minMonthsAhead: 363, maxMonthsAhead: 394 },
   postConfirmationChanges: { minMonthsAhead: 396, maxMonthsAhead: 427 },
+  recruitmentManage: { minMonthsAhead: 429, maxMonthsAhead: 460 },
+  recruitmentBulkOpen: { minMonthsAhead: 462, maxMonthsAhead: 493 },
 } as const satisfies Record<string, WorkDateBand>;
 
 const LAST_SAFE_DAY_OF_MONTH = 27;
@@ -53,4 +55,17 @@ export function workDatesInBand(band: WorkDateBand, count: number): string[] {
 
 export function workDateInBand(band: WorkDateBand): string {
   return workDatesInBand(band, 1)[0]!;
+}
+
+export function workDatesInSameMonth(band: WorkDateBand, count: number): string[] {
+  const { year, month } = monthAnchorInBand(band);
+  const days = new Set<number>();
+
+  while (days.size < count) {
+    days.add(2 + Math.floor(Math.random() * (LAST_SAFE_DAY_OF_MONTH - 1)));
+  }
+
+  return Array.from(days)
+    .sort((a, b) => a - b)
+    .map((day) => `${year}-${pad(month)}-${pad(day)}`);
 }

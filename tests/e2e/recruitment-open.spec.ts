@@ -9,6 +9,7 @@ import {
   signInWithPasswordCookies,
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
+import { WORK_DATE_BANDS, workDatesInSameMonth } from "./support/work-date-band";
 
 function randomPhone(): string {
   const suffix = Math.floor(Math.random() * 1e8)
@@ -64,16 +65,9 @@ function pad(value: number): string {
   return String(value).padStart(2, "0");
 }
 
-function nextMonthAnchor(): { year: number; month: number } {
-  const now = new Date();
-  const monthIndex = now.getMonth() + 1;
-  const year = now.getFullYear() + Math.floor(monthIndex / 12);
-  const month = (monthIndex % 12) + 1;
-  return { year, month };
-}
-
-function dateKey(year: number, month: number, day: number): string {
-  return `${year}-${pad(month)}-${pad(day)}`;
+function parseWorkDate(value: string): { year: number; month: number; day: number } {
+  const [year, month, day] = value.split("-").map(Number);
+  return { year: year!, month: month!, day: day! };
 }
 
 test.describe("관리자 모집 일괄 오픈", () => {
@@ -85,13 +79,13 @@ test.describe("관리자 모집 일괄 오픈", () => {
     const { admin } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 
-    const { year, month } = nextMonthAnchor();
-    const existingDay = 10;
-    const selectDayA = 2;
-    const selectDayB = 3;
-    const existingDate = dateKey(year, month, existingDay);
-    const selectDateA = dateKey(year, month, selectDayA);
-    const selectDateB = dateKey(year, month, selectDayB);
+    const [selectDateA, selectDateB, existingDate] = workDatesInSameMonth(
+      WORK_DATE_BANDS.recruitmentBulkOpen,
+      3,
+    ) as [string, string, string];
+    const { year, month, day: selectDayA } = parseWorkDate(selectDateA);
+    const selectDayB = parseWorkDate(selectDateB).day;
+    const existingDay = parseWorkDate(existingDate).day;
 
     const { error: scheduleError } = await admin
       .from("schedules")

@@ -2,7 +2,7 @@ import { devices, expect, test } from "@playwright/test";
 
 import { createWorkerProfile, insertSchedule } from "./support/assignment-schedule-fixtures";
 import { createWorkerSession } from "./support/worker-session";
-import { WORK_DATE_BANDS, workDateInBand } from "./support/work-date-band";
+import { WORK_DATE_BANDS, workDatesInBand } from "./support/work-date-band";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -29,6 +29,11 @@ async function findPositionIds(
   return result;
 }
 
+const [scheduleRosterWorkDateA, scheduleRosterWorkDateB] = workDatesInBand(
+  WORK_DATE_BANDS.scheduleRoster,
+  2,
+) as [string, string];
+
 test.describe("확정 배정표", () => {
   test("AC8: 확정 상세는 포지션 그룹·내 배정·교육 구분을 보여주고, 그날 미배정 근무자는 내 배정 섹션이 없다", async ({
     browser,
@@ -53,7 +58,7 @@ test.describe("확정 배정표", () => {
       "female",
     );
 
-    const workDate = workDateInBand(WORK_DATE_BANDS.scheduleRoster);
+    const workDate = scheduleRosterWorkDateA;
     const scheduleId = await insertSchedule(self.admin, workDate, "CONFIRMED");
 
     const { error: plannedTimesError } = await self.admin
@@ -148,7 +153,7 @@ test.describe("확정 배정표", () => {
     const worker = await createWorkerSession(context, baseURL, "e2e-roster-open");
     const page = await context.newPage();
 
-    const workDate = workDateInBand(WORK_DATE_BANDS.scheduleRoster);
+    const workDate = scheduleRosterWorkDateB;
     const scheduleId = await insertSchedule(worker.admin, workDate, "OPEN");
 
     await page.goto(`/schedule/${workDate}`);

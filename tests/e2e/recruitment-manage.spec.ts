@@ -9,6 +9,7 @@ import {
   signInWithPasswordCookies,
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
+import { WORK_DATE_BANDS, workDatesInSameMonth } from "./support/work-date-band";
 
 function randomPhone(): string {
   const suffix = Math.floor(Math.random() * 1e8)
@@ -98,16 +99,13 @@ function pad(value: number): string {
   return String(value).padStart(2, "0");
 }
 
-function manageMonthAnchor(): { year: number; month: number } {
-  const now = new Date();
-  const monthIndex = now.getMonth() + 2;
-  const year = now.getFullYear() + Math.floor(monthIndex / 12);
-  const month = (monthIndex % 12) + 1;
-  return { year, month };
-}
-
 function dateKey(year: number, month: number, day: number): string {
   return `${year}-${pad(month)}-${pad(day)}`;
+}
+
+function parseWorkDate(value: string): { year: number; month: number; day: number } {
+  const [year, month, day] = value.split("-").map(Number);
+  return { year: year!, month: month!, day: day! };
 }
 
 test.describe("관리자 모집 마감 연장·재오픈", () => {
@@ -119,11 +117,12 @@ test.describe("관리자 모집 마감 연장·재오픈", () => {
     const { admin } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 
-    const { year, month } = manageMonthAnchor();
-    const openDay = 12;
-    const closedDay = 18;
-    const openWorkDate = dateKey(year, month, openDay);
-    const closedWorkDate = dateKey(year, month, closedDay);
+    const [openWorkDate, closedWorkDate] = workDatesInSameMonth(
+      WORK_DATE_BANDS.recruitmentManage,
+      2,
+    ) as [string, string];
+    const { year, month, day: openDay } = parseWorkDate(openWorkDate);
+    const closedDay = parseWorkDate(closedWorkDate).day;
     const openInitialDeadline = dateKey(year, month, 1);
 
     const { error: openScheduleError } = await admin

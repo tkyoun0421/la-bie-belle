@@ -5,7 +5,7 @@ import {
   createWorkerProfile,
   insertSchedule,
 } from "./support/assignment-schedule-fixtures";
-import { WORK_DATE_BANDS, workDateInBand } from "./support/work-date-band";
+import { WORK_DATE_BANDS, workDatesInBand } from "./support/work-date-band";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -37,6 +37,11 @@ async function findPositionIds(
   }
   return result;
 }
+
+const [scheduleConfirmationWorkDateA, scheduleConfirmationWorkDateB] = workDatesInBand(
+  WORK_DATE_BANDS.scheduleConfirmation,
+  2,
+) as [string, string];
 
 test.describe("확정, 경고, revision", () => {
   test("AC7 happy path: 버튼→다이얼로그(미달·담당자 없음·마감 안내)→확정→편집 가능·취소 버튼 전환(P3-T09)", async ({
@@ -79,7 +84,7 @@ test.describe("확정, 경고, revision", () => {
       throw traineeWageError;
     }
 
-    const workDate = workDateInBand(WORK_DATE_BANDS.scheduleConfirmation);
+    const workDate = scheduleConfirmationWorkDateA;
     const scheduleId = await insertSchedule(admin, workDate, "OPEN");
 
     const { error: ceremonyError } = await admin
@@ -184,7 +189,7 @@ test.describe("확정, 경고, revision", () => {
     const { admin } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 
-    const workDate = workDateInBand(WORK_DATE_BANDS.scheduleConfirmation);
+    const workDate = scheduleConfirmationWorkDateB;
     const scheduleId = await insertSchedule(admin, workDate, "OPEN");
 
     await page.goto(`/admin/schedule/${scheduleId}`);
