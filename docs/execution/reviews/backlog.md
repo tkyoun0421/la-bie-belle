@@ -318,3 +318,11 @@
 - [ ] [low] [P3-T07] 소비자 없는 confirmation mock 2종 잔존, 배정표 타입 두 벌 병존(F-06) — src/entities/schedule/model/confirmation.mock.ts
 - [ ] [low] [P3-T07] deriveScheduleDetailVariant가 PREPARING·CANCELLED를 confirmed로 접음(P3-T09 취소 개방 전 재검토)(F-07) — src/views/schedule-detail/model/schedule-detail-variant.ts
 - [ ] [low] [P3-T07] handoff의 TDD 쌍 수치(9쌍)가 tdd.json 실증(10쌍)과 불일치(F-08) — docs/execution/runs/P3-T07/handoff.md
+- [ ] [medium] [P3-T09] get_confirmed_roster의 무인덱스 감사 테이블 조회 1~2회가 근무자 읽기 경로에 추가(schedule_id·event 복합 인덱스 필요)(F-02) — supabase/migrations/20260817000000_post_confirmation_changes.sql
+- [ ] [medium] [P3-T09] 새 e2e가 workDatesInBand 일괄 배분 대신 독립 추첨, 정리 삭제는 트리거 거부 무시(F-03) — tests/e2e/post-confirmation-changes.spec.ts
+- [ ] [medium] [P3-T09] 변경 안내 시각이 서버 로컬 TZ를 타 UTC 배포에서 KST와 어긋남(format-date-time-seoul 관례로 해소)(F-05) — src/views/schedule-detail/model/revision-notice.ts
+- [ ] [medium] [P3-T09] bump_confirmed_revision revoke·cancel_confirmed_schedule grant의 회귀 단언 부재(15번 파일 관례 적용)(F-06) — supabase/tests/23-post-confirmation-changes.test.sql
+- [ ] [low] [P3-T09] runs/radio.md의 감사 section 값 기록이 실제 SQL과 불일치(requirements·assignments vs position_requirement·position_assignments)(F-04) — docs/execution/runs/P3-T09/radio.md
+- [ ] [low] [P3-T09] tdd.json entries[1]의 exit_code 0과 note의 FAIL 서술 모순(F-07) — docs/execution/runs/P3-T09/tdd.json
+- [ ] [low] [P3-T09] AC8 경계값(같은 포지션 정식 배정자 전환 허용)의 단위 단언 부재(F-08) — src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts
+- [ ] [low] [P3-T09] 19번 pgTAP 갱신 단언 설명이 실제 검사 순서(자격 LB023 선행)와 반대(F-09) — supabase/tests/19-assignments.test.sql

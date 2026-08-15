@@ -1,5 +1,30 @@
 # P3-T09 handoff
 
+## 2026-08-16 · 검증·리팩토링 종료, done 마감
+
+- 작업 식별자: P3-T09
+- 현재 단계: done — 다음 task로 이동
+
+### 확정된 사실
+
+- 교차 검증(opus·codex, base 5cce577 / head d21cbd9): 확정 발견 9건(high 1·medium 4·low 4), 총점 83.
+  결과는 `docs/execution/reviews/P3-T09-review.json`, medium·low 8건은
+  `docs/execution/reviews/backlog.md`에 누적. 기각 3건(전원 인정 실패)은 review.json
+  `participants_note`에 사유 기록.
+- 수정 라운드 1회: F-01(high — 같은 근무일의 과거 CANCELLED 행이 활성 스케줄을 가림) →
+  fix 커밋 `1b6a2bc`. `selectScheduleForWorkDate` model 순수 함수로 비취소 행 우선 선택,
+  단위 4건 RED→GREEN(tdd.json 쌍 추가), `pnpm verify` 전체 GREEN(단위 221 files/1454,
+  e2e 76/76). 관리자 상세는 UUID PK 조회라 같은 결함 없음(runs/radio.md 수정 라운드 절).
+- 리팩토링 단계: 개발+fix diff 재검토 — 구조·명명·중복 정리 대상 없음, 변경 없이 종료.
+
+### 미결 사항 (검증에서 판단이 갈린 기록)
+
+- 감사 `detail`의 전후 상태 필드 표준화 — codex 제기, opus가 근거 있는 반박(전이는 event
+  이름+LB032 가드로 확정, 봉인 RADIO·기존 관례와 일치)으로 기각. 표준화하려면
+  `schedule_confirmed`·`schedule_closed`까지 함께 다루는 별도 결정 사안.
+- 재정의 정의자 함수 5종의 `search_path`에 `pg_temp` 미명시 — opus 제기, codex가 반박
+  (원본 보존을 봉인 DEV-SEC 절이 명시, 이번 task 범위 밖)으로 기각. 별도 보안 정비 task 후보.
+
 ## 2026-08-15 · 개발 종료
 
 - 작업 식별자: P3-T09
