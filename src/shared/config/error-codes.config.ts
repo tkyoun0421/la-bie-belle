@@ -64,6 +64,7 @@ export const ERROR_CODES = {
     http: 409,
     message: "시급이 설정되지 않은 근무자가 있어요",
   },
+  SCHEDULING_ROSTER_NOT_CONFIRMED: { http: 409, message: "아직 확정되지 않은 스케줄이에요" },
 } as const satisfies Record<`${ErrorDomain}_${string}`, ErrorSpec>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;
@@ -93,4 +94,5 @@ export const ERROR_CODE = {
   SCHEDULING_CONFIRM_NO_REQUIREMENTS: "SCHEDULING_CONFIRM_NO_REQUIREMENTS",
   SCHEDULING_CONFIRM_INVALID_STATUS: "SCHEDULING_CONFIRM_INVALID_STATUS",
   SCHEDULING_CONFIRM_MISSING_WAGE: "SCHEDULING_CONFIRM_MISSING_WAGE",
+  SCHEDULING_ROSTER_NOT_CONFIRMED: "SCHEDULING_ROSTER_NOT_CONFIRMED",
 } as const satisfies { [K in ErrorCode]: K };

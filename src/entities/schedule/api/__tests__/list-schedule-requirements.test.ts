@@ -7,8 +7,7 @@ import { ERROR_CODE } from "@/shared/config/error-codes.config";
 vi.mock("server-only", () => ({}));
 
 const requirementsLimit = vi.fn();
-const requirementsOrder = vi.fn(() => ({ limit: requirementsLimit }));
-const requirementsEq = vi.fn(() => ({ order: requirementsOrder }));
+const requirementsEq = vi.fn(() => ({ limit: requirementsLimit }));
 const requirementsSelect = vi.fn(() => ({ eq: requirementsEq }));
 
 const assignmentsLimit = vi.fn();
@@ -38,7 +37,6 @@ vi.mock("@/shared/lib/supabase-server", () => ({ createSupabaseServerClient }));
 
 beforeEach(() => {
   requirementsLimit.mockReset();
-  requirementsOrder.mockClear();
   requirementsEq.mockClear();
   requirementsSelect.mockClear();
   assignmentsLimit.mockReset();
@@ -59,8 +57,16 @@ describe("listScheduleRequirements", () => {
   it("스케줄의 필요 인원 표를 포지션명·배정 수와 함께 조회한다", async () => {
     requirementsLimit.mockResolvedValue({
       data: [
-        { position_id: "position-1", required_count: 3, positions: { name: "팀장" } },
-        { position_id: "position-2", required_count: 0, positions: { name: "드레스" } },
+        {
+          position_id: "position-1",
+          required_count: 3,
+          positions: { name: "팀장", sort_order: 10 },
+        },
+        {
+          position_id: "position-2",
+          required_count: 0,
+          positions: { name: "드레스", sort_order: 40 },
+        },
       ],
       error: null,
     });
@@ -87,9 +93,10 @@ describe("listScheduleRequirements", () => {
       traineeCounts: {},
     });
     expect(from).toHaveBeenCalledWith("schedule_position_requirements");
-    expect(requirementsSelect).toHaveBeenCalledWith("position_id, required_count, positions(name)");
+    expect(requirementsSelect).toHaveBeenCalledWith(
+      "position_id, required_count, positions(name, sort_order)",
+    );
     expect(requirementsEq).toHaveBeenCalledWith("schedule_id", "schedule-1");
-    expect(requirementsOrder).toHaveBeenCalledWith("position_id", { ascending: true });
     expect(requirementsLimit).toHaveBeenCalledWith(1000);
     expect(from).toHaveBeenCalledWith("assignments");
     expect(assignmentsSelect).toHaveBeenCalledWith("assignment_positions(position_id)");
@@ -101,9 +108,78 @@ describe("listScheduleRequirements", () => {
     expect(traineesLimit).toHaveBeenCalledWith(1000);
   });
 
+  it("AC5·9: 응답 행이 sort_order 오름차순으로 정렬된다(DB 정렬이 아니라 서버 코드 정렬)", async () => {
+    requirementsLimit.mockResolvedValue({
+      data: [
+        {
+          position_id: "position-guide",
+          required_count: 2,
+          positions: { name: "안내", sort_order: 90 },
+        },
+        {
+          position_id: "position-lead",
+          required_count: 1,
+          positions: { name: "팀장", sort_order: 10 },
+        },
+        {
+          position_id: "position-scan",
+          required_count: 1,
+          positions: { name: "스캔", sort_order: 20 },
+        },
+      ],
+      error: null,
+    });
+    assignmentsLimit.mockResolvedValue({ data: [], error: null });
+
+    const { listScheduleRequirements } =
+      await import("@/entities/schedule/api/list-schedule-requirements");
+    const result = await listScheduleRequirements("schedule-1");
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.data.map((row) => row.positionName)).toEqual(["팀장", "스캔", "안내"]);
+  });
+
+  it("AC5 경계값: sort_order 동률이면 이름순으로 보조 정렬한다(신규 포지션 기본값 1000)", async () => {
+    requirementsLimit.mockResolvedValue({
+      data: [
+        {
+          position_id: "position-b",
+          required_count: 1,
+          positions: { name: "라마바", sort_order: 1000 },
+        },
+        {
+          position_id: "position-a",
+          required_count: 1,
+          positions: { name: "가나다", sort_order: 1000 },
+        },
+      ],
+      error: null,
+    });
+    assignmentsLimit.mockResolvedValue({ data: [], error: null });
+
+    const { listScheduleRequirements } =
+      await import("@/entities/schedule/api/list-schedule-requirements");
+    const result = await listScheduleRequirements("schedule-1");
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.data.map((row) => row.positionName)).toEqual(["가나다", "라마바"]);
+  });
+
   it("배정이 없는 포지션은 assignedCounts에 등장하지 않는다", async () => {
     requirementsLimit.mockResolvedValue({
-      data: [{ position_id: "position-1", required_count: 1, positions: { name: "팀장" } }],
+      data: [
+        {
+          position_id: "position-1",
+          required_count: 1,
+          positions: { name: "팀장", sort_order: 10 },
+        },
+      ],
       error: null,
     });
     assignmentsLimit.mockResolvedValue({ data: [], error: null });
@@ -124,8 +200,16 @@ describe("listScheduleRequirements", () => {
   it("겸직으로 포지션 합계가 실인원보다 커도 assignedWorkerCount는 배정 행 수와 같다", async () => {
     requirementsLimit.mockResolvedValue({
       data: [
-        { position_id: "position-1", required_count: 1, positions: { name: "메인" } },
-        { position_id: "position-2", required_count: 1, positions: { name: "스캔" } },
+        {
+          position_id: "position-1",
+          required_count: 1,
+          positions: { name: "메인", sort_order: 30 },
+        },
+        {
+          position_id: "position-2",
+          required_count: 1,
+          positions: { name: "스캔", sort_order: 20 },
+        },
       ],
       error: null,
     });
@@ -143,8 +227,8 @@ describe("listScheduleRequirements", () => {
     expect(result).toEqual({
       ok: true,
       data: [
-        { positionId: "position-1", positionName: "메인", requiredCount: 1 },
         { positionId: "position-2", positionName: "스캔", requiredCount: 1 },
+        { positionId: "position-1", positionName: "메인", requiredCount: 1 },
       ],
       assignedCounts: { "position-1": 1, "position-2": 1 },
       assignedWorkerCount: 1,
@@ -155,9 +239,21 @@ describe("listScheduleRequirements", () => {
   it("AC6: 한 사람이 세 포지션을 겸해도 상한 없이 모두 집계된다", async () => {
     requirementsLimit.mockResolvedValue({
       data: [
-        { position_id: "position-1", required_count: 1, positions: { name: "메인" } },
-        { position_id: "position-2", required_count: 1, positions: { name: "스캔" } },
-        { position_id: "position-3", required_count: 1, positions: { name: "드레스" } },
+        {
+          position_id: "position-1",
+          required_count: 1,
+          positions: { name: "메인", sort_order: 30 },
+        },
+        {
+          position_id: "position-2",
+          required_count: 1,
+          positions: { name: "스캔", sort_order: 20 },
+        },
+        {
+          position_id: "position-3",
+          required_count: 1,
+          positions: { name: "드레스", sort_order: 40 },
+        },
       ],
       error: null,
     });
@@ -181,8 +277,8 @@ describe("listScheduleRequirements", () => {
     expect(result).toEqual({
       ok: true,
       data: [
-        { positionId: "position-1", positionName: "메인", requiredCount: 1 },
         { positionId: "position-2", positionName: "스캔", requiredCount: 1 },
+        { positionId: "position-1", positionName: "메인", requiredCount: 1 },
         { positionId: "position-3", positionName: "드레스", requiredCount: 1 },
       ],
       assignedCounts: { "position-1": 1, "position-2": 1, "position-3": 1 },
@@ -238,7 +334,13 @@ describe("listScheduleRequirements", () => {
 
   it("배정 수 조회가 실패하면 fail-closed로 전체를 실패 처리한다", async () => {
     requirementsLimit.mockResolvedValue({
-      data: [{ position_id: "position-1", required_count: 1, positions: { name: "팀장" } }],
+      data: [
+        {
+          position_id: "position-1",
+          required_count: 1,
+          positions: { name: "팀장", sort_order: 10 },
+        },
+      ],
       error: null,
     });
     assignmentsLimit.mockResolvedValue({ data: null, error: { code: "42501", message: "denied" } });
@@ -252,7 +354,13 @@ describe("listScheduleRequirements", () => {
 
   it("AC5: 교육생 수 조회가 실패하면 fail-closed로 전체를 실패 처리한다", async () => {
     requirementsLimit.mockResolvedValue({
-      data: [{ position_id: "position-1", required_count: 1, positions: { name: "팀장" } }],
+      data: [
+        {
+          position_id: "position-1",
+          required_count: 1,
+          positions: { name: "팀장", sort_order: 10 },
+        },
+      ],
       error: null,
     });
     assignmentsLimit.mockResolvedValue({ data: [], error: null });
@@ -268,8 +376,16 @@ describe("listScheduleRequirements", () => {
   it("AC5: 교육생을 포지션별로 세고 assignedCounts·assignedWorkerCount에는 섞지 않는다", async () => {
     requirementsLimit.mockResolvedValue({
       data: [
-        { position_id: "position-1", required_count: 1, positions: { name: "드레스" } },
-        { position_id: "position-2", required_count: 1, positions: { name: "스캔" } },
+        {
+          position_id: "position-1",
+          required_count: 1,
+          positions: { name: "드레스", sort_order: 40 },
+        },
+        {
+          position_id: "position-2",
+          required_count: 1,
+          positions: { name: "스캔", sort_order: 20 },
+        },
       ],
       error: null,
     });
@@ -293,8 +409,8 @@ describe("listScheduleRequirements", () => {
     expect(result).toEqual({
       ok: true,
       data: [
-        { positionId: "position-1", positionName: "드레스", requiredCount: 1 },
         { positionId: "position-2", positionName: "스캔", requiredCount: 1 },
+        { positionId: "position-1", positionName: "드레스", requiredCount: 1 },
       ],
       assignedCounts: { "position-1": 1 },
       assignedWorkerCount: 1,
@@ -307,7 +423,7 @@ describe("listScheduleRequirements", () => {
       data: Array.from({ length: 1000 }, (_, i) => ({
         position_id: `position-${i}`,
         required_count: 1,
-        positions: { name: `포지션${i}` },
+        positions: { name: `포지션${i}`, sort_order: 1000 },
       })),
       error: null,
     });
@@ -322,7 +438,13 @@ describe("listScheduleRequirements", () => {
 
   it("revision 3(교차 검증 F-05): 배정 조회가 상한(1000행)에 닿으면 fail-closed로 처리한다", async () => {
     requirementsLimit.mockResolvedValue({
-      data: [{ position_id: "position-1", required_count: 1, positions: { name: "팀장" } }],
+      data: [
+        {
+          position_id: "position-1",
+          required_count: 1,
+          positions: { name: "팀장", sort_order: 10 },
+        },
+      ],
       error: null,
     });
     assignmentsLimit.mockResolvedValue({
@@ -341,7 +463,13 @@ describe("listScheduleRequirements", () => {
 
   it("revision 3(교차 검증 F-05): 교육생 조회가 상한(1000행)에 닿으면 fail-closed로 처리한다", async () => {
     requirementsLimit.mockResolvedValue({
-      data: [{ position_id: "position-1", required_count: 1, positions: { name: "팀장" } }],
+      data: [
+        {
+          position_id: "position-1",
+          required_count: 1,
+          positions: { name: "팀장", sort_order: 10 },
+        },
+      ],
       error: null,
     });
     assignmentsLimit.mockResolvedValue({ data: [], error: null });
@@ -362,7 +490,7 @@ describe("listScheduleRequirements", () => {
       data: Array.from({ length: 999 }, (_, i) => ({
         position_id: `position-${i}`,
         required_count: 1,
-        positions: { name: `포지션${i}` },
+        positions: { name: `포지션${i}`, sort_order: 1000 },
       })),
       error: null,
     });
@@ -377,7 +505,13 @@ describe("listScheduleRequirements", () => {
 
   it("AC5 경계값: 정식이 0명이고 교육생만 있는 포지션도 traineeCounts에 잡힌다", async () => {
     requirementsLimit.mockResolvedValue({
-      data: [{ position_id: "position-1", required_count: 2, positions: { name: "드레스" } }],
+      data: [
+        {
+          position_id: "position-1",
+          required_count: 2,
+          positions: { name: "드레스", sort_order: 40 },
+        },
+      ],
       error: null,
     });
     assignmentsLimit.mockResolvedValue({ data: [], error: null });

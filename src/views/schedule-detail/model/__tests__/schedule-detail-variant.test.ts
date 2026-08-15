@@ -8,8 +8,12 @@ describe("deriveScheduleDetailVariant", () => {
     expect(deriveScheduleDetailVariant("CLOSED")).toBe("closed");
   });
 
-  it.each(["OPEN", "PREPARING", "CONFIRMED", "CANCELLED"] as RecruitmentScheduleStatus[])(
-    "%s 상태는 confirmed 변형(기존 스텁)이다",
+  it("OPEN 상태는 open 변형이다(모집 중 안내)", () => {
+    expect(deriveScheduleDetailVariant("OPEN")).toBe("open");
+  });
+
+  it.each(["PREPARING", "CONFIRMED", "CANCELLED"] as RecruitmentScheduleStatus[])(
+    "%s 상태는 confirmed 변형이다",
     (status) => {
       expect(deriveScheduleDetailVariant(status)).toBe("confirmed");
     },

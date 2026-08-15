@@ -1,10 +1,11 @@
 "use client";
 
 import {
-  CONFIRMED_WITH_CHANGE,
-  GENERAL_CONFIRMATION,
-  TRAINEE_CONFIRMATION,
-} from "@/entities/schedule/model/confirmation.mock";
+  CONFIRMED_ROSTER_GENERAL,
+  CONFIRMED_ROSTER_UNASSIGNED,
+  CONFIRMED_ROSTER_WITH_TRAINEE,
+} from "@/entities/schedule/model/confirmed-roster.mock";
+import type { ConfirmedRoster } from "@/entities/schedule/model/confirmed-roster";
 import { HomeView } from "@/views/home/ui/HomeView";
 import * as homeMocks from "@/views/home/ui/home.mock";
 import { MoreView } from "@/views/more/ui/MoreView";
@@ -13,10 +14,25 @@ import * as notificationsMocks from "@/views/notifications/ui/notifications.mock
 import { PayView } from "@/views/pay/ui/PayView";
 import * as payMocks from "@/views/pay/ui/pay.mock";
 import { PreviewView, type PreviewScreen } from "@/views/preview/ui/PreviewView";
+import {
+  buildRosterGroups,
+  deriveMyRosterPositions,
+} from "@/views/schedule-detail/model/roster-groups";
 import { ScheduleDetailView } from "@/views/schedule-detail/ui/ScheduleDetailView";
 import { ScheduleView } from "@/views/schedule/ui/ScheduleView";
 import * as scheduleMocks from "@/views/schedule/ui/schedule.mock";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
+
+function scheduleDetailPreviewProps(workDate: string, roster: ConfirmedRoster) {
+  return {
+    workDate,
+    plannedCheckin: roster.plannedCheckin,
+    plannedCheckout: roster.plannedCheckout,
+    ceremonyTimes: roster.ceremonyTimes,
+    groups: buildRosterGroups(roster.roster),
+    myPositions: deriveMyRosterPositions(roster.roster),
+  };
+}
 
 const SCREENS: PreviewScreen[] = [
   {
@@ -60,9 +76,30 @@ const SCREENS: PreviewScreen[] = [
   {
     label: "확정 상세",
     scenarios: [
-      { label: "일반 확정", node: <ScheduleDetailView confirmation={GENERAL_CONFIRMATION} /> },
-      { label: "변경 있음", node: <ScheduleDetailView confirmation={CONFIRMED_WITH_CHANGE} /> },
-      { label: "교육생 포함", node: <ScheduleDetailView confirmation={TRAINEE_CONFIRMATION} /> },
+      {
+        label: "일반 확정",
+        node: (
+          <ScheduleDetailView
+            {...scheduleDetailPreviewProps("2026-08-09", CONFIRMED_ROSTER_GENERAL)}
+          />
+        ),
+      },
+      {
+        label: "교육생 포함",
+        node: (
+          <ScheduleDetailView
+            {...scheduleDetailPreviewProps("2026-08-16", CONFIRMED_ROSTER_WITH_TRAINEE)}
+          />
+        ),
+      },
+      {
+        label: "미배정",
+        node: (
+          <ScheduleDetailView
+            {...scheduleDetailPreviewProps("2026-08-23", CONFIRMED_ROSTER_UNASSIGNED)}
+          />
+        ),
+      },
     ],
   },
   {

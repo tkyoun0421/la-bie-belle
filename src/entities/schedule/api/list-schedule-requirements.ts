@@ -20,7 +20,7 @@ const FORBIDDEN_PG_CODE = "42501";
 type RequirementRow = {
   position_id: string;
   required_count: number;
-  positions: { name: string } | null;
+  positions: { name: string; sort_order: number } | null;
 };
 
 type AssignmentRow = { assignment_positions: { position_id: string }[] | null };
@@ -59,9 +59,8 @@ export async function listScheduleRequirements(
   const [requirementsResult, assignmentsResult, traineesResult] = await Promise.all([
     supabase
       .from("schedule_position_requirements")
-      .select("position_id, required_count, positions(name)")
+      .select("position_id, required_count, positions(name, sort_order)")
       .eq("schedule_id", scheduleId)
-      .order("position_id", { ascending: true })
       .limit(LIST_REQUIREMENTS_LIMIT),
     supabase
       .from("assignments")
@@ -121,7 +120,13 @@ export async function listScheduleRequirements(
     ok: true,
     data: requirementRows
       .filter(
-        (row): row is RequirementRow & { positions: { name: string } } => row.positions !== null,
+        (row): row is RequirementRow & { positions: { name: string; sort_order: number } } =>
+          row.positions !== null,
+      )
+      .sort(
+        (a, b) =>
+          a.positions.sort_order - b.positions.sort_order ||
+          a.positions.name.localeCompare(b.positions.name, "ko"),
       )
       .map((row) => ({
         positionId: row.position_id,

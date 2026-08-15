@@ -1,11 +1,16 @@
 import { startOfMonth } from "date-fns";
 
+import { getConfirmedRoster } from "@/entities/schedule/api/get-confirmed-roster";
 import { listOwnApplications } from "@/entities/schedule/api/list-own-applications";
 import { listRecruitmentSchedules } from "@/entities/schedule/api/list-recruitment-schedules";
-import { GENERAL_CONFIRMATION } from "@/entities/schedule/model/confirmation.mock";
 import { RouteTransition } from "@/shared/ui/route-transition";
+import {
+  buildRosterGroups,
+  deriveMyRosterPositions,
+} from "@/views/schedule-detail/model/roster-groups";
 import { deriveScheduleDetailVariant } from "@/views/schedule-detail/model/schedule-detail-variant";
 import { ScheduleDetailClosedView } from "@/views/schedule-detail/ui/ScheduleDetailClosedView";
+import { ScheduleDetailOpenView } from "@/views/schedule-detail/ui/ScheduleDetailOpenView";
 import { ScheduleDetailView } from "@/views/schedule-detail/ui/ScheduleDetailView";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 import { NotFoundScreen } from "@/views/status/ui/NotFoundScreen";
@@ -54,9 +59,29 @@ export default async function ScheduleDetailPage({ params }: ScheduleDetailPageP
     );
   }
 
+  if (variant === "open") {
+    return (
+      <RouteTransition>
+        <ScheduleDetailOpenView workDate={schedule.workDate} />
+      </RouteTransition>
+    );
+  }
+
+  const rosterResult = await getConfirmedRoster(schedule.id);
+  if (!rosterResult.ok) {
+    return <ErrorScreen />;
+  }
+
   return (
     <RouteTransition>
-      <ScheduleDetailView confirmation={GENERAL_CONFIRMATION} />
+      <ScheduleDetailView
+        workDate={schedule.workDate}
+        plannedCheckin={rosterResult.data.plannedCheckin}
+        plannedCheckout={rosterResult.data.plannedCheckout}
+        ceremonyTimes={rosterResult.data.ceremonyTimes}
+        groups={buildRosterGroups(rosterResult.data.roster)}
+        myPositions={deriveMyRosterPositions(rosterResult.data.roster)}
+      />
     </RouteTransition>
   );
 }
