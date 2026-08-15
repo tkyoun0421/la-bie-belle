@@ -1,7 +1,7 @@
 # P3-T09 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-15
 - 개발 설계 승인: user, 2026-08-15
 
@@ -10,6 +10,7 @@
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-15 | 최초 작성. 설계 인터뷰 확정 2건 — revision 증가 단위는 화면 저장(RPC 호출) 1회당 +1이고, 취소된 스케줄의 근무자 직접 진입에는 취소 안내 화면을 신설한다(상태 분기 4분기 확장, P3-T07 backlog F-07 처리 포함). 2026-08-15 사용자 결정. |
+| 2 | 2026-08-15 | 개발 단계 정지 조건 반환의 해소. revision 1이 기존 「CONFIRMED 거부」 단언 갱신을 pgTAP·features 단위에만 열어 두고, 확정 후 읽기 전용을 단언하는 기존 e2e 3파일(ceremony-edit·schedule-confirmation·assignment-eligibility)을 허용 경로에서 빠뜨렸다 — 확정 후 편집 개방이 본체라 이 단언들은 필연적으로 깨진다. 세 파일을 허용 경로에 추가하고 갱신 용도를 읽기 전용 단언의 새 동작(편집 가능·취소 버튼) 정합으로 한정한다. 2026-08-15 사용자 결정. |
 
 - 관련 spec: PRD 8장(확정 후 변경), PRD:AC-03, PRD:INV-PAY-01(스냅샷 불변), DOMAIN:SCHEDULING, ADR:0003, DOCS:SDD(ADMIN-FLOWS 확정과 확정 후 변경 절, WORKER-FLOWS 확정 스케줄 절)
 - 적용 깊이: 깊음 — 금액(추가 스냅샷), 상태 전이 트리거 개정, 배포된 정의자 함수 5종 재정의, 감사·revision·오류 코드가 는다.
@@ -76,7 +77,7 @@
 | 9·10 근무자 표시 | 테스트함 — revision>1 변경 표시·CANCELLED 안내 화면(단위+e2e) | 테스트함 — revision 1 무표시, 4분기 각 상태 매핑 단위 | 테스트함 — 취소 직후 진입이 안내 화면 | 테스트함 — e2e를 근무자 계정으로 실행 | 해당 없음 — 읽기 화면 | 해당 없음 — 읽기 화면 |
 | 11 인원 계산 | 테스트함 — 정식+교육생 합산 순수 함수 단위 | 테스트함 — 0명 스케줄 취소도 동작 | 테스트함 — 겸직자는 사람 수로 1회만 집계 | 해당 없음 — 계산 계층 | 해당 없음 — 순수 함수 | 해당 없음 — 계산 계층 |
 
-- 보충 위험: **기존 단언과의 충돌 목록을 선확인한다** — 20~23 pgTAP와 features 단위 중 「CONFIRMED 거부」를 고정한 단언은 이 task의 알려진 범위 내 갱신이다(정지 조건의 예외 명시 참조). **e2e work_date 밴드** — 새 spec은 전용 밴드 + `workDatesInBand` 일괄 배분으로 spec 내 무작위 충돌을 만들지 않는다(P3-T07 F-02 교훈). **replace_position_assignments의 CONFIRMED 개방**은 P3-T05 교육생 규칙(겸직 금지·중복 금지·성별)을 그대로 통과해야 한다 — 기존 검증 블록 무수정.
+- 보충 위험: **기존 단언과의 충돌 목록을 선확인한다** — 20~23 pgTAP, features 단위, 그리고 기존 e2e 3파일(ceremony-edit·schedule-confirmation·assignment-eligibility) 중 「CONFIRMED 거부·읽기 전용」을 고정한 단언은 이 task의 알려진 범위 내 갱신이다(정지 조건의 예외 명시 참조, revision 2). **e2e work_date 밴드** — 새 spec은 전용 밴드 + `workDatesInBand` 일괄 배분으로 spec 내 무작위 충돌을 만들지 않는다(P3-T07 F-02 교훈). **replace_position_assignments의 CONFIRMED 개방**은 P3-T05 교육생 규칙(겸직 금지·중복 금지·성별)을 그대로 통과해야 한다 — 기존 검증 블록 무수정.
 
 ### DEV-* 적용 상태
 
@@ -140,13 +141,16 @@ src/app/(protected)/schedule/[id]/page.tsx
 src/app/(protected)/admin/schedule/[id]/page.tsx
 src/shared/config/error-codes.config.ts
 tests/e2e/post-confirmation-changes.spec.ts
+tests/e2e/ceremony-edit.spec.ts
+tests/e2e/schedule-confirmation.spec.ts
+tests/e2e/assignment-eligibility.spec.ts
 tests/e2e/support/**
 docs/execution/radio/P3-T09-radio.md
 docs/execution/runs/P3-T09/**
 docs/execution/phases/index.jsonl
 ```
 
-- 용도 한정: `src/features/{assignment,ceremony,requirement}/**`는 새 오류 코드 매핑과 그 단위 테스트에만 쓰고 기존 입력·응답 계약을 바꾸지 않는다. `error-codes.config.ts`는 코드 3개 추가뿐이다. `supabase/tests/**`는 새 파일(23), roster 확장 키 단언 갱신(22), 그리고 기존 파일(08~21)의 「CONFIRMED 거부」 단언을 이번 개방에 맞춰 갱신하는 데만 쓴다 — 갱신 목록은 runs/radio.md에 남긴다. 그 밖의 기존 단언 약화는 금지다. `tests/e2e/support/**`는 밴드 1개 추가와 기존 헬퍼 재사용에만 쓴다.
+- 용도 한정: `src/features/{assignment,ceremony,requirement}/**`는 새 오류 코드 매핑과 그 단위 테스트에만 쓰고 기존 입력·응답 계약을 바꾸지 않는다. `error-codes.config.ts`는 코드 3개 추가뿐이다. `supabase/tests/**`는 새 파일(23), roster 확장 키 단언 갱신(22), 그리고 기존 파일(08~21)의 「CONFIRMED 거부」 단언을 이번 개방에 맞춰 갱신하는 데만 쓴다 — 갱신 목록은 runs/radio.md에 남긴다. 그 밖의 기존 단언 약화는 금지다. 기존 e2e 3파일(ceremony-edit·schedule-confirmation·assignment-eligibility)은 확정 후 읽기 전용 단언을 새 동작(편집 가능·취소 버튼)에 맞춰 갱신하는 데만 쓴다(revision 2) — 다른 시나리오·단언은 건드리지 않는다. `tests/e2e/support/**`는 밴드 1개 추가와 기존 헬퍼 재사용에만 쓴다.
 - `docs/product/**`는 의도적으로 빠져 있다. 정합화는 기획·설계 승인 시점에 조정자가 끝냈다.
 - 위 밖의 파일이 필요해지면 멈추고 반환한다.
 
