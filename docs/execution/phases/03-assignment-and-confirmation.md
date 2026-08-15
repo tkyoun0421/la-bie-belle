@@ -283,7 +283,18 @@ P3-T06 기획(2026-08-14)에서 분리된 task다. 확정 스케줄에 대한 �
 
 ### P3-T10. e2e work_date 밴드 정리
 
-테스트 전용 task다. `recruitment-manage.spec.ts`·`recruitment-open.spec.ts`가 밴드 없이 고정 상대 날짜로 스케줄을 삽입해, 같은 로컬 DB 반복 실행에서 `schedules_work_date_active_unique`(23505) 충돌로 간헐 실패한다(P3-T04·T05 handoff가 기록한 알려진 플레이크). 두 spec을 `tests/e2e/support/work-date-band.ts`의 겹치지 않는 밴드로 옮긴다. 제품 동작 변경 없음.
+기획 승인: user, 2026-08-16 (범위 확장 포함 요약본 승인, `index.jsonl` `product_approval` 기록).
+
+테스트 전용 task다. 제품 코드·동작 변경 없음. 두 갈래를 함께 처리한다.
+
+- **밴드 이전**: `recruitment-manage.spec.ts`·`recruitment-open.spec.ts`가 밴드 없이 고정 상대 날짜(현재 월+2의 12·18일)로 스케줄을 삽입해, 같은 로컬 DB 반복 실행에서 `schedules_work_date_active_unique`(23505) 충돌로 간헐 실패한다(P3-T04·T05 handoff가 기록한 알려진 플레이크). 두 spec을 `tests/e2e/support/work-date-band.ts`의 겹치지 않는 전용 밴드로 옮긴다.
+- **일괄 배분 전환**: `schedule-confirmation.spec.ts`·`schedule-roster.spec.ts`·`post-confirmation-changes.spec.ts`가 같은 밴드 안에서 테스트마다 날짜를 독립 추첨해 병렬 실행 시 약 0.12% 확률로 서로 충돌한다(backlog P3-T06 F-06·P3-T07 F-02·P3-T09 F-03). `workDatesInBand` 일괄 배분으로 바꾸고, `post-confirmation-changes`의 무효 정리 삭제(append-only 트리거가 거부하는데 오류를 무시)도 정돈한다.
+
+인수 조건:
+
+- 다섯 spec 전부 전용 밴드·`workDatesInBand` 일괄 배분을 사용한다.
+- `db reset` 없는 반복 실행에서 23505 충돌이 재현되지 않는다.
+- backlog의 P3-T06 F-06·P3-T07 F-02·P3-T09 F-03이 완료 처리된다.
 
 ## 종료 조건
 
