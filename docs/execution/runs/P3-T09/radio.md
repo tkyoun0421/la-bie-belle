@@ -99,3 +99,30 @@
   `tests/e2e/post-confirmation-changes.spec.ts`(AC1·AC9, AC4·AC7·AC10)로 실증.
 - 11(인원 계산): `src/views/admin-schedule/model/__tests__/cancellation-impact.test.ts`(신설
   4건)로 실증.
+
+## 수정 라운드 (교차 검증 F-01, high)
+
+- 검증 단계 교차 검증(리뷰어 2자)에서 확정 발견 9건 중 high 1건이 수정 라운드 대상으로 반환됐다
+  — medium·low 8건은 backlog로 누적하고 이번 라운드에서는 고치지 않는다(조정자 결정).
+- **F-01(architecture, high)**: `src/app/(protected)/schedule/[id]/page.tsx`가
+  `schedulesResult.data.find((entry) => entry.workDate === id)`로 같은 근무일의 첫 행을 상태
+  우선순위 없이 집었다. `schedules_work_date_active_unique`는 `status <> 'CANCELLED'` 부분
+  인덱스라 취소 1행 + 활성 1행이 같은 근무일에 공존할 수 있고(12번 pgTAP가 공존을 직접 단언),
+  `list-recruitment-schedules`는 `work_date` 오름차순만 지정해 같은 근무일 내 행 순서가
+  정해지지 않는다. 취소 행이 먼저 오면 근무자가 살아 있는 확정 스케줄 대신 취소 안내만 보는
+  조용한 오표시가 났다.
+- 수정: `src/views/schedule-detail/model/select-schedule-for-work-date.ts`(신설) —
+  `selectScheduleForWorkDate(schedules, workDate)` 순수 함수가 같은 `workDate`의 행들 중
+  `status !== "CANCELLED"`인 첫 행을 우선 고르고, 없을 때만(취소 행만 있을 때) 첫 매치를
+  고른다. `page.tsx`의 `.find(...)` 호출을 이 함수 호출로 교체 — 판정 로직을 JSX·page 어댑터가
+  아니라 model 순수 함수에 둔다는 사용자 취향(UI에 로직 금지)을 그대로 따랐다.
+- 관리자 상세 `src/app/(protected)/admin/schedule/[id]/page.tsx`도 같은 패턴이 있는지 확인했다
+  — `getSchedulePrep(id)`가 라우트 파라미터를 work_date가 아니라 스케줄 UUID로 받아
+  `.eq("id", scheduleId).maybeSingle()`로 단일 행을 직접 조회하므로 같은 근무일 다중 행 문제와
+  무관하다(primary key 조회). 수정 불필요, 코드 확인만 기록.
+- `src/views/schedule/**`·`src/views/admin-recruitment/**`·`src/views/home/**` 등 `workDate`를
+  쓰는 다른 화면도 있으나, 전부 RADIO 변경 허용 경로 밖이고 이번 F-01 반환의 지시(구체적으로
+  admin 상세 page.tsx만 지목)를 넘는 범위라 손대지 않았다.
+- TDD: `pnpm vitest run src/views/schedule-detail/model/__tests__/select-schedule-for-work-date.test.ts`
+  RED(모듈 부재, 1 failed) → GREEN(4/4) 1쌍을 `docs/execution/runs/P3-T09/tdd.json`에 추가,
+  `pnpm gate:tdd` 통과.

@@ -202,6 +202,20 @@
       "at": "2026-08-15T10:53:41Z",
       "phase": "green",
       "note": "git stash pop으로 P3-T09 전체 복원, supabase db reset·pnpm build·서버 재기동 후 재실행. 같은 명령에 회귀 확인용 schedule-roster.spec.ts를 더해 함께 돌렸고 총 10/10 통과(대상 4개 스펙만 세면 8/8)."
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule-detail/model/__tests__/select-schedule-for-work-date.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-15T15:17:49Z",
+      "phase": "red",
+      "note": "교차 검증 F-01(high) 수정 라운드. select-schedule-for-work-date.ts 모듈 부재로 import 실패, no tests(1 failed) — 같은 근무일에 취소 행과 활성 행이 공존할 때 활성 행 우선 선택, 취소 행만 있으면 취소 행 선택, 미일치 undefined, 활성 행 단독 케이스 4건을 먼저 작성."
+    },
+    {
+      "command": "pnpm vitest run src/views/schedule-detail/model/__tests__/select-schedule-for-work-date.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-15T15:18:00Z",
+      "phase": "green",
+      "note": "selectScheduleForWorkDate 구현(같은 work_date 매치 중 status !== 'CANCELLED'인 첫 행을 우선, 없으면 matches[0]) 후 재실행. 4/4 통과. src/app/(protected)/schedule/[id]/page.tsx의 .find((entry) => entry.workDate === id)를 이 함수 호출로 교체."
     }
   ]
 }
