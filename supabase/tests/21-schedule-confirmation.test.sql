@@ -1,5 +1,5 @@
 begin;
-select plan(39);
+select plan(44);
 
 -- =====================================================================
 -- 스키마 노출: 스냅샷 컬럼·confirm_schedule 함수 시그니처·동시성 관례
@@ -524,6 +524,53 @@ select is(
   ),
   13000,
   'AC4: 확정 후 시급 변경은 assignments.hourly_wage_snapshot을 바꾸지 않는다(여전히 13000)'
+);
+
+-- =====================================================================
+-- AC4 교육생 스냅샷: assignment_trainees 전 행도 값으로 단언되고 이후 변경에 불변이다
+-- (F-01 수정: 이전까지 assignment_trainees는 col_type_is로 컬럼 존재만 확인했다)
+-- =====================================================================
+
+select is(
+  (
+    select hourly_wage_snapshot from assignment_trainees
+    where schedule_id = (select id from schedules where work_date = '2099-12-07')
+      and profile_id = '21000000-0000-0000-0000-000000000006'
+  ),
+  15000,
+  'AC4: 담당자없음교육(교육생)의 스냅샷이 확정 직후 당시 시급 15000과 일치한다'
+);
+select is(
+  (
+    select hourly_wage_snapshot from assignment_trainees
+    where schedule_id = (select id from schedules where work_date = '2099-12-07')
+      and profile_id = '21000000-0000-0000-0000-000000000007'
+  ),
+  16000,
+  'AC4: 경계교육(교육생)의 스냅샷이 확정 직후 당시 시급 16000과 일치한다'
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '21000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select set_hourly_wage('21000000-0000-0000-0000-000000000006', 21000)$$,
+  'AC4: 확정 후 관리자가 담당자없음교육(교육생)의 시급을 21000으로 바꾼다'
+);
+reset role;
+
+select is(
+  (select hourly_wage from profiles where id = '21000000-0000-0000-0000-000000000006'),
+  21000,
+  'AC4: profiles.hourly_wage는 실제로 21000으로 바뀌었다'
+);
+select is(
+  (
+    select hourly_wage_snapshot from assignment_trainees
+    where schedule_id = (select id from schedules where work_date = '2099-12-07')
+      and profile_id = '21000000-0000-0000-0000-000000000006'
+  ),
+  15000,
+  'AC4: 확정 후 교육생 시급 변경은 assignment_trainees.hourly_wage_snapshot을 바꾸지 않는다(여전히 15000)'
 );
 
 -- =====================================================================

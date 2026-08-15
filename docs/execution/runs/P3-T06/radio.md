@@ -90,3 +90,21 @@ RADIO 위험 표 8행 전부를 아래 계층에서 실제로 실행해 확인�
   useConfirmSchedule 훅 단위(pending 전이·재진입 가드).
 - 8 경고 프리뷰 계산: `confirmation-warnings.test.ts` 6문항(happy path, 필요 0 교육생만, 전부 충족,
   전부 0, 교육생 미집계 검증, 빈 입력).
+
+## 2026-08-14 · 교차 검증 F-01 정정(수정 라운드)
+
+위 "4 시급 스냅샷: pgTAP(스냅샷 일치, `set_hourly_wage` 이후 불변, 겸직자 1행)" 서술은 실제
+커버리지보다 넓게 적혀 있었다. 개발 완료 시점의 `supabase/tests/21-schedule-confirmation.test.sql`은
+`hourly_wage_snapshot`을 값으로 읽는 단언(`is()`)을 전부 `assignments` 대상으로만 뒀고,
+`assignment_trainees.hourly_wage_snapshot`은 파일 앞부분의 `col_type_is()`로 컬럼 타입 존재만
+확인했을 뿐 확정 뒤 실제 값을 단언하지 않았다 — 마이그레이션의 `assignment_trainees` 스냅샷 update
+문(`confirm_schedule` 함수 본문)을 통째로 지워도 pgTAP·단위·e2e 전 계층이 GREEN이었다. 교차 검증
+확정 발견 F-01(high, `docs/execution/reviews/P3-T06-review.json`)로 지적됐다.
+
+수정: `21-schedule-confirmation.test.sql`에 문항 5개를 추가했다(plan 39→44) — 12-07 스케줄 확정
+직후 교육생 2명(담당자없음교육 시급 15000, 경계교육 시급 16000)의 `assignment_trainees.
+hourly_wage_snapshot`이 확정 당시 `profiles.hourly_wage`와 일치함을 값으로 단언하고, 확정 후
+`set_hourly_wage`로 교육생 시급을 바꿔도 스냅샷이 불변임을 단언한다. RED→GREEN 근거는
+`docs/execution/runs/P3-T06/tdd.json`(마지막 두 entries)에 있다. 위 "4 시급 스냅샷" 서술은
+이제 실제 커버리지(정식·교육생 양쪽 모두 값으로 단언)와 일치한다. 다른 발견(F-02~F-09)은 이
+수정 범위 밖이며 `docs/execution/reviews/backlog.md`가 소유한다.
