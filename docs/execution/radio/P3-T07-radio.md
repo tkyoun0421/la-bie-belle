@@ -1,7 +1,7 @@
 # P3-T07 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-15
 - 개발 설계 승인: user, 2026-08-15
 
@@ -10,6 +10,7 @@
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-15 | 최초 작성. 설계 인터뷰 확정 3건 — 근무자용 배정표 조회는 SECURITY DEFINER RPC `get_confirmed_roster` 하나로 열고, 포지션 정렬은 `positions.sort_order` 컬럼을 신설해 고정 순서(팀장→스캔→메인→드레스→축가→신부 대기실→드레스실→매니저→안내)를 시드하며, 이 정렬을 관리자 준비 화면에도 함께 적용한다(기획 보강 동반). 2026-08-15 사용자 결정. |
+| 2 | 2026-08-15 | 개발 단계 정지 조건 반환의 해소. revision 1의 전제 「예정 출퇴근·상태는 기존 조회로 읽는다」가 코드와 어긋났다 — `listRecruitmentSchedules`의 select에는 `planned_checkin`·`planned_checkout`이 없고, 근무자가 예정 시각을 읽는 함수가 저장소에 없다. 예정 시각은 `get_confirmed_roster` 반환 jsonb 최상위 키로 함께 반환한다(확정 스케줄은 LB027 차단 덕에 예정 시각이 항상 있다). 캘린더 공용 조회는 건드리지 않는다. 2026-08-15 사용자 결정. |
 
 - 관련 spec: PRD:AC-05, PRD 13장(개인정보와 공개 범위), DOMAIN:SCHEDULING(INV-STAFF-03), ADR:0002, DOCS:SDD(WORKER-FLOWS 확정 스케줄 절)
 - 적용 깊이: 깊음 — 개인정보 공개 경계가 본질이다. admin 전용 select 아래 있던 데이터(이름·포지션·교육생·예식)를 근무자에게 여는 새 읽기 경로가 생긴다.
@@ -20,7 +21,7 @@
 
 - 기획 승인(2026-08-15)이 소유한 제품 결정을 다시 열지 않는다: 승인 근무자 전원 열람, 포지션 그룹 문법(정식 위·구분선 아래 교육생·겸직 중복 등장), 인원 숫자 비노출, 빈 포지션 숨김, 배정표는 CONFIRMED만, OPEN 직접 진입은 모집 중 안내, 예식 전부 표시, 미배정자는 `내 배정` 없음.
 - 예상 급여(P6-T02), 근무 변경 요청 활성화(P4), 확정 후 변경 표시(P3-T09 이후)는 이 task 밖이다.
-- 코드 대조 확정 사실: `assignments`·`assignment_positions`·`assignment_trainees`·`ceremonies`·`schedule_position_requirements`·`profiles`(타인) 전부 admin 전용 select다. `schedules`는 `is_active_worker`로 근무자 select가 열려 있어 예정 출퇴근·상태는 기존 조회로 읽는다. `is_active_worker(uuid)`·`is_admin(uuid)` 헬퍼 존재. `positions`에 정렬 컬럼 없음, 시드 9종의 이름이 확정 순서와 1:1 대응(「대기실」=시드 「신부 대기실」). 다음 오류 코드 빈 자리는 LB031. `reject_system_position_change` 트리거는 code·is_active·삭제만 막아 `sort_order` 갱신과 무관하다.
+- 코드 대조 확정 사실: `assignments`·`assignment_positions`·`assignment_trainees`·`ceremonies`·`schedule_position_requirements`·`profiles`(타인) 전부 admin 전용 select다. `schedules`는 `is_active_worker`로 근무자 select가 열려 있고 상태는 기존 조회(`listRecruitmentSchedules`)로 읽지만, 그 select에 `planned_checkin`·`planned_checkout`이 없어 예정 시각은 RPC 응답이 함께 반환한다(revision 2). `is_active_worker(uuid)`·`is_admin(uuid)` 헬퍼 존재. `positions`에 정렬 컬럼 없음, 시드 9종의 이름이 확정 순서와 1:1 대응(「대기실」=시드 「신부 대기실」). 다음 오류 코드 빈 자리는 LB031. `reject_system_position_change` 트리거는 code·is_active·삭제만 막아 `sort_order` 갱신과 무관하다.
 
 ## Requirements
 
@@ -48,7 +49,7 @@
 
 ### 기술 인수 조건
 
-1. `get_confirmed_roster`가 승인 근무자에게 예식 시각 목록과 배정 행(이름·포지션명·sort_order·교육생 여부·본인 여부)만 반환하고, 반환 jsonb 어디에도 시급·스냅샷·휴대폰·생년월일·성별 키가 없다(pgTAP — 키 부재를 값으로 단언).
+1. `get_confirmed_roster`가 승인 근무자에게 예정 출퇴근 시각, 예식 시각 목록과 배정 행(이름·포지션명·sort_order·교육생 여부·본인 여부)만 반환하고, 반환 jsonb 어디에도 시급·스냅샷·휴대폰·생년월일·성별 키가 없다(pgTAP — 키 부재를 값으로 단언).
 2. 미배정 승인 근무자의 호출이 성공하고, 승인 전(pending)·비로그인 호출은 42501로 거부된다(pgTAP).
 3. CONFIRMED가 아닌 스케줄(OPEN·CLOSED·CANCELLED)은 LB031, 존재하지 않는 스케줄은 22023으로 거부된다(pgTAP).
 4. 겸직자는 맡은 포지션마다 행으로 등장하고, 교육생은 소속 포지션의 교육생 행으로 나오며, 정식도 교육생도 없는 포지션은 응답에 없다(pgTAP).
@@ -100,7 +101,7 @@
     1. `is_active_worker(auth.uid()) or is_admin(auth.uid())` 아니면 42501.
     2. `schedules` 조회 — 없으면 22023, `status <> 'CONFIRMED'`면 LB031.
     3. `ceremonies` 시각 목록과 배정 행 집계 — `assignments`+`assignment_positions`(정식), `assignment_trainees`(교육생)를 `profiles`(이름)·`positions`(이름·sort_order)와 조인. 본인 여부는 `profile_id = auth.uid()`.
-    4. `jsonb_build_object('ceremonies', …, 'roster', …)` 반환 — 행 필드는 name·position_name·sort_order·is_trainee·is_self뿐.
+    4. `jsonb_build_object('planned_checkin', …, 'planned_checkout', …, 'ceremonies', …, 'roster', …)` 반환 — 확정 스케줄은 LB027 차단 덕에 예정 시각이 항상 있다. roster 행 필드는 name·position_name·sort_order·is_trainee·is_self뿐.
 - 읽기 전용 함수라 잠금·트랜잭션 추가 결정 없음.
 
 ## Interface
@@ -111,7 +112,7 @@
 
 ## Optimizations
 
-- roster RPC 왕복 1회(예식 포함). 스케줄 상태·예정 시각은 페이지가 이미 가진 기존 조회를 재사용한다. 그룹 계산은 클라 순수 함수로 왕복 0회.
+- roster RPC 왕복 1회(예식·예정 시각 포함). 스케줄 상태는 페이지가 이미 가진 기존 조회를 재사용한다. 그룹 계산은 클라 순수 함수로 왕복 0회.
 - 실패 로그 이벤트는 기존 entities api 로깅 패턴(`scheduling_get_confirmed_roster_failed`).
 - 되돌림: 컬럼·함수 추가뿐이라 drop으로 되돌릴 수 있다.
 
