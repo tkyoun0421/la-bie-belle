@@ -92,3 +92,60 @@
 - RADIO 적용 결과: `docs/execution/runs/P4-T01/radio.md`
 - verify 로그(저장소 밖, 스크래치패드): `/private/tmp/claude-501/-Users-yuntaegwan-Desktop-projects-la-bie-belle/e2695cd7-5794-42bc-865a-372e27167d90/scratchpad/`(`verify-p4t01-run2.log`, `swipe_red.log`, `swipe_green.log` 등)
 - 구현 커밋: 이 문서를 포함하는 본 커밋
+
+## 2026-08-16 · 교차 검증 수정 라운드(F-01·F-02)
+
+- 작업 식별자: P4-T01
+- 현재 단계: 개발 종료 상태 유지, 교차 검증(`docs/execution/reviews/P4-T01-review.json`) 확정
+  발견 high 2건 수정 라운드 → 다음 검증(리뷰어 재확인)
+- 기준 시각: 2026-08-16T08:35:54Z
+
+### 확정된 사실
+
+- 재봉인 없음 — F-01·F-02 두 수정 모두 현행 RADIO revision 2(SHA-256
+  `5ba3d1750bd44ab4f9ad5a4de49e4de25ad5017f290d8d3d975db38e538ec724`)의 문면·허용 경로 안이다.
+  `index.jsonl`의 `development_approval`은 이번 라운드에서 변경하지 않았다.
+- F-01(high): `confirm_schedule`의 `target_work_date` 선언·초기 select projection이
+  20260818000000 원본 밖이었다. 원본 그대로 복원하고, 알림 insert의 select에 `join schedules
+  s on s.id = target_schedule_id`를 추가해 `work_date`를 읽도록 바꿨다. 알림 블록을 제외한
+  본문 전체(172줄)가 20260818000000과 문자 단위로 동일함을 `diff`로 확인했다(종료 코드 0,
+  방법·명령은 `docs/execution/runs/P4-T01/radio.md`의 "교차 검증 수정 라운드" 절).
+- F-02(high): `supabase/tests/24-notifications.test.sql`에 `04-rls-default-deny.test.sql`
+  관례대로 "F-02 RLS 기본 거부" 문항 20개를 추가했다(plan 80→100) — 3테이블
+  relrowsecurity·정책 개수 고정, notification_outbox·push_subscriptions의 anon·authenticated
+  select/insert 차단, notifications의 authenticated 직접 insert/update/delete 차단(읽음은
+  RPC로만의 나머지 절반). 구현 중 서브쿼리가 RLS를 다시 타 거짓 통과가 나는 문제를 발견해
+  `current_setting`/`set_config` 커스텀 GUC로 대상 id를 미리 담아 두는 방식으로 고쳤다(상세는
+  `radio.md` 참고).
+- `test_mode=tdd` 절차: F-02 신규 단언은 회귀 고정 성격이라 새 RED 재현 없이, `pnpm gate:tdd`의
+  실제 판정 로직(같은 command의 더 이른 RED만 있으면 통과, 1:1 짝 불필요)을 먼저 확인한 뒤
+  기존 pgTAP RED(entries[10])를 재사용하고 오늘 GREEN(entries[16])만
+  `docs/execution/runs/P4-T01/tdd.json`에 추가했다. F-01은 RED→GREEN이 아니라 20260818
+  원본과의 diff로 검증해 별도 tdd.json 항목을 만들지 않았다 — 사유는 `radio.md`에 남겼다.
+  `pnpm gate:tdd` 통과.
+- `pnpm db:reset` → `pnpm db:test`: Files=24, Tests=1423, 전 파일 GREEN(21~23번 포함, 기존
+  단언 회귀 없음).
+- `pnpm verify`를 포그라운드로 완주했다 — 결과는 최종 보고 참고. 유일한 e2e 실패는
+  `recruitment-manage.spec.ts:112`(사전 known-flaky)였고 격리 재실행으로 무관성을 재확인했다.
+- 전체 스테이징 후 커밋한다(부분 스테이징 없음) — `.gitignore`·`docs/execution/reviews/**`·
+  다른 세션 산출물은 제외했다. push는 하지 않는다(ci-finisher 소관).
+
+### 미결 사항
+
+- 없음 — F-01·F-02는 이번 라운드로 해소됐다. F-03~F-10(medium·low 8건)은 계약대로
+  `docs/execution/reviews/backlog.md`가 소유하며 이 task의 결정 대상이 아니다(reviews/**는
+  읽기 전용, 스테이징하지 않았다).
+
+### 다음 행동
+
+1. 리뷰어가 이번 수정 커밋을 F-01·F-02 원 발견과 대조해 해소를 확인한다.
+2. `index.jsonl`의 P4-T01 상태 전환과 backlog 반영은 조정자 몫.
+
+### 증거·산출물 경로
+
+- 마이그레이션(F-01 수정): `supabase/migrations/20260819000000_notifications_foundation.sql`
+- pgTAP(F-02 수정, plan 100): `supabase/tests/24-notifications.test.sql`
+- 교차 검증 원본: `docs/execution/reviews/P4-T01-review.json`(읽기 전용)
+- TDD 증거: `docs/execution/runs/P4-T01/tdd.json`(entries[16], pgTAP GREEN-only)
+- RADIO 적용 결과(수정 라운드 상세): `docs/execution/runs/P4-T01/radio.md`
+- pgTAP 실행 로그(저장소 밖, 스크래치패드): `pgtap_fix_round.log`, `pgtap_fix_round2.log`

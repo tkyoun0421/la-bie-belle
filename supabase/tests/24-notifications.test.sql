@@ -1,5 +1,5 @@
 begin;
-select plan(80);
+select plan(100);
 
 -- =====================================================================
 -- AC1 스키마: enum·테이블·컬럼·기본값·PK (unique 제약은 AC4에서 행동으로 검증)
@@ -601,6 +601,172 @@ select is(
   'AC5: 알림이 없는 사람의 모두 읽음은 0을 반환하고 남의 행에 영향을 주지 않는다'
 );
 reset role;
+
+-- =====================================================================
+-- F-02 RLS 기본 거부: notification_outbox·push_subscriptions의 RLS와
+-- notifications 직접 쓰기(읽음은 RPC로만) 차단이 DB 경계에서 강제된다
+-- (04-rls-default-deny.test.sql 관례)
+-- =====================================================================
+
+select is(
+  (select relrowsecurity from pg_class where oid = 'public.notifications'::regclass),
+  true,
+  'F-02: notifications has row level security enabled'
+);
+select is(
+  (select relrowsecurity from pg_class where oid = 'public.notification_outbox'::regclass),
+  true,
+  'F-02: notification_outbox has row level security enabled'
+);
+select is(
+  (select relrowsecurity from pg_class where oid = 'public.push_subscriptions'::regclass),
+  true,
+  'F-02: push_subscriptions has row level security enabled'
+);
+
+select is(
+  (select count(*)::int from pg_policies where schemaname = 'public' and tablename = 'notifications'),
+  1,
+  'F-02: notifications has exactly one policy(본인 select)'
+);
+select is(
+  (
+    select count(*)::int from pg_policies
+    where schemaname = 'public' and tablename = 'notification_outbox'
+  ),
+  0,
+  'F-02: notification_outbox has no client-facing policy'
+);
+select is(
+  (
+    select count(*)::int from pg_policies
+    where schemaname = 'public' and tablename = 'push_subscriptions'
+  ),
+  1,
+  'F-02: push_subscriptions has exactly one policy(본인 select)'
+);
+
+select set_config(
+  'app.f02_notification_id',
+  (
+    select id::text from notifications
+    where event_type = 'idempotency_probe'
+      and aggregate_id = '24000000-0000-0000-0000-0000000000aa'
+      and revision = 2
+  ),
+  true
+);
+
+select set_config('request.jwt.claim.sub', '', true);
+select set_config('request.jwt.claims', '', true);
+set local role anon;
+
+select is_empty(
+  $$select 1 from notification_outbox$$,
+  'F-02: anon은 notification_outbox를 전혀 읽지 못한다'
+);
+select is_empty(
+  $$select 1 from push_subscriptions$$,
+  'F-02: anon은 push_subscriptions를 전혀 읽지 못한다'
+);
+select throws_ok(
+  $$insert into notification_outbox (notification_id)
+    values (current_setting('app.f02_notification_id')::uuid)$$,
+  '42501',
+  null,
+  'F-02: anon cannot insert notification_outbox'
+);
+select throws_ok(
+  $$insert into push_subscriptions (profile_id, endpoint, p256dh, auth)
+    values (
+      '24000000-0000-0000-0000-000000000002', 'https://push.example/f02-anon',
+      'p256dh-anon', 'auth-anon'
+    )$$,
+  '42501',
+  null,
+  'F-02: anon cannot insert push_subscriptions'
+);
+select throws_ok(
+  $$insert into notifications (recipient_id, event_type, aggregate_id, revision, title, body, target)
+    values (
+      '24000000-0000-0000-0000-000000000002', 'f02_probe', gen_random_uuid(), 1,
+      'F-02 침입', 'F-02 침입 본문', jsonb_build_object('screen', 'pay')
+    )$$,
+  '42501',
+  null,
+  'F-02: anon cannot insert notifications directly'
+);
+
+reset role;
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '24000000-0000-0000-0000-000000000002', true);
+
+select is_empty(
+  $$select 1 from notification_outbox$$,
+  'F-02: authenticated 본인도 notification_outbox를 읽지 못한다(정책 없음)'
+);
+select is_empty(
+  $$select 1 from push_subscriptions where profile_id = '24000000-0000-0000-0000-000000000002'$$,
+  'F-02: authenticated 본인도 push_subscriptions를 읽지 못한다(select 정책이 있어도 행이 없음)'
+);
+select throws_ok(
+  $$insert into notification_outbox (notification_id)
+    values (current_setting('app.f02_notification_id')::uuid)$$,
+  '42501',
+  null,
+  'F-02: authenticated cannot insert notification_outbox(정책 없음)'
+);
+select throws_ok(
+  $$insert into push_subscriptions (profile_id, endpoint, p256dh, auth)
+    values (
+      '24000000-0000-0000-0000-000000000002', 'https://push.example/f02-authenticated',
+      'p256dh-auth', 'auth-auth'
+    )$$,
+  '42501',
+  null,
+  'F-02: authenticated cannot insert push_subscriptions(쓰기 흐름은 P4-T02 몫)'
+);
+select throws_ok(
+  $$insert into notifications (recipient_id, event_type, aggregate_id, revision, title, body, target)
+    values (
+      '24000000-0000-0000-0000-000000000002', 'f02_probe', gen_random_uuid(), 1,
+      'F-02 침입', 'F-02 침입 본문', jsonb_build_object('screen', 'pay')
+    )$$,
+  '42501',
+  null,
+  'F-02: authenticated cannot insert notifications directly(정본은 confirm_schedule 정의자 함수뿐)'
+);
+select lives_ok(
+  $$update notifications set title = title || ' 변조'
+    where recipient_id = '24000000-0000-0000-0000-000000000002'$$,
+  'F-02: 본인의 update notifications도 정책이 없어 rows are filtered, not denied'
+);
+select lives_ok(
+  $$delete from notifications where recipient_id = '24000000-0000-0000-0000-000000000002'$$,
+  'F-02: 본인의 delete notifications도 rows are filtered, not denied'
+);
+
+reset role;
+
+select is(
+  (
+    select title from notifications
+    where aggregate_id = (select id from schedules where work_date = '2099-12-20')
+      and recipient_id = '24000000-0000-0000-0000-000000000002'
+  ),
+  '근무 배정이 확정됐어요',
+  'F-02: notifications의 title은 authenticated의 직접 update로 바뀌지 않았다(읽음은 RPC로만)'
+);
+select is(
+  (
+    select count(*)::int from notifications
+    where aggregate_id = (select id from schedules where work_date = '2099-12-20')
+      and recipient_id = '24000000-0000-0000-0000-000000000002'
+  ),
+  1,
+  'F-02: notifications 행은 authenticated의 직접 delete로 사라지지 않았다'
+);
 
 -- =====================================================================
 -- AC6: mark_notification_read·mark_all_notifications_read는 authenticated에만

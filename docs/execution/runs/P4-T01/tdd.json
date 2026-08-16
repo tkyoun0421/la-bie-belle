@@ -111,6 +111,13 @@
       "at": "2026-08-16T07:55:13Z",
       "phase": "green",
       "note": "62·96행 두 테스트에 worker.admin으로 '근무 배정이 확정됐어요' 알림 행을 시딩(recipient_id=worker.id)하고 try/finally로 정리하도록 수정한 원래 버전을 복원해 재실행. 4 passed."
+    },
+    {
+      "command": "pnpm db:test",
+      "exit_code": 0,
+      "at": "2026-08-16T08:34:35Z",
+      "phase": "green",
+      "note": "교차 검증 수정 라운드(F-01·F-02). confirm_schedule의 target_work_date 선언·projection을 20260818000000 원본으로 복원하고 알림 insert를 schedules 조인으로 바꾼 뒤, 24-notifications.test.sql에 F-02 RLS 기본 거부 문항 20개(plan 80→100)를 추가해 전체 재실행. Files=24, Tests=1423, 전 파일 ok(21~23번 포함), Result: PASS. 이 GREEN은 같은 명령의 기존 RED(entries[10], 2026-08-16T07:00:33Z)를 gate:tdd 기준 앞선 RED로 재사용한다 — F-02 신규 단언은 회귀 고정 성격이라 정책을 임시로 빼는 새 RED 재현 없이 진행했다(사유는 runs/P4-T01/radio.md 참고). F-01은 RED/GREEN 쌍이 아니라 20260818 원본과의 문자 단위 diff로 별도 검증했다(같은 문서 참고, diff 종료 코드 0)."
     }
   ]
 }

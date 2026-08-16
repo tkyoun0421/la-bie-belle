@@ -122,3 +122,68 @@ test)가 정본이다.
   `try/finally`로 정리하도록 바꿨다. 같은 파일의 "당겨서 새로고침"·"overscroll" 두 테스트는
   이번 변경과 무관해 손대지 않았다.
 - 세 파일 모두 단언 약화는 없다 — 대상 데이터의 출처만 mock에서 실 DB 시딩으로 바뀌었다.
+
+## 교차 검증 수정 라운드(F-01·F-02, `docs/execution/reviews/P4-T01-review.json`)
+
+재봉인 없음 — 두 수정 모두 RADIO revision 2의 문면·허용 경로 안이다.
+
+### F-01(high) — confirm_schedule 선언·projection이 봉인 문면 밖을 벗어남
+
+봉인 불변 "감사 insert 뒤 알림·outbox 블록 추가, 본문 나머지 무수정"을 어기고
+`target_work_date date;` 선언 1줄과 초기 `select status, revision, planned_checkin, work_date
+... for update`의 projection 1줄(work_date 추가)이 20260818000000 원본 밖이었다. 두 줄을
+원본 그대로 복원하고, 알림 insert 문의 select에 `join schedules s on s.id =
+target_schedule_id`를 추가해 `s.work_date`로 읽도록 바꿨다 — 추가 SQL 문·추가 왕복 없이(같은
+INSERT 문 안의 조인 1개일 뿐, 함수 호출당 SQL 왕복 횟수는 그대로) body·target 값은 동일하다.
+
+**동일성 확인 방법**: 현재 `confirm_schedule` 정의(90~285행)에서 알림 블록(구 259~281행,
+`with recipients as (` ~ `on conflict (notification_id) do nothing;`)을 잘라낸 나머지를
+20260818000000의 `confirm_schedule` 전체(1~172행)와 `diff`로 비교했다.
+
+```
+sed -n '90,258p' supabase/migrations/20260819000000_notifications_foundation.sql > a.sql
+sed -n '283,285p' supabase/migrations/20260819000000_notifications_foundation.sql >> a.sql
+sed -n '1,172p' supabase/migrations/20260818000000_confirmation_warning_scope.sql > b.sql
+diff b.sql a.sql
+```
+
+**결과**: `diff` 출력 없음, 종료 코드 0 — 알림 블록 밖 본문(declare·is_admin 검사·잠금
+select·차단 4종·경고 집계·스냅샷 update·상태 전이·감사 insert·return)이 20260818000000과
+172줄 전부 문자 단위로 동일하다. `pnpm db:reset` 후 마이그레이션이 오류 없이 적용됐고
+`pnpm db:test`가 전 파일(21~23번 포함) GREEN이라 의미 회귀도 없다.
+
+### F-02(high) — notification_outbox·push_subscriptions RLS·notifications 직접 쓰기 차단 미검증
+
+`supabase/tests/24-notifications.test.sql`에 `04-rls-default-deny.test.sql` 관례대로
+"F-02 RLS 기본 거부" 절 20문항을 추가했다(plan 80→100): 세 테이블 `relrowsecurity` true 3개,
+정책 개수 고정 3개(notifications 1·notification_outbox 0·push_subscriptions 1 — 마이그레이션
+정의 기준), notification_outbox·push_subscriptions의 anon·authenticated select 차단(`is_empty`
+4개)·insert 차단(`throws_ok` 42501 4개), notifications의 anon·authenticated 직접 insert 차단
+(`throws_ok` 42501 2개) + authenticated의 update·delete가 정책 없음으로 필터되고(`lives_ok`
+2개) 실제로 아무 것도 바뀌지 않았음을 확인(`is` 2개) — 「읽음은 RPC로만」 불변의 나머지 절반.
+
+구현 중 발견: `notification_outbox` insert 차단 문항에서 `select id from notifications where
+...`를 소스로 쓰면 그 서브쿼리 자체가 `notifications`의 RLS(본인 select만)를 다시 타서 0행을
+반환해 "삽입할 행이 없어 예외도 없음"이라는 거짓 통과가 났다(예상 42501, 실제로는 무예외).
+`select set_config('app.f02_notification_id', (select id::text from notifications where ...),
+true)`로 대상 id를 트랜잭션 범위 커스텀 GUC에 슈퍼유저 권한으로 미리 담아 두고, anon·
+authenticated 블록에서는 `current_setting('app.f02_notification_id')::uuid` 리터럴로
+insert해 RLS를 우회 없이 `notification_outbox` 자신의 정책 부재만으로 42501을 받도록
+고쳤다 — `request.jwt.claim.sub`가 이미 같은 파일에서 커스텀 GUC로 롤 전환을 가로질러 쓰이는
+관례와 같은 패턴이다.
+
+**RED→GREEN 절차에 대한 사유**: F-02 신규 단언은 "이미 봉인된 RLS 정책이 있는데 검증이
+없었다"는 회귀 고정 성격이라, RED를 얻으려면 마이그레이션의 정책 정의를 일시로 빼야 한다 —
+F-01과 같은 파일을 다시 건드리는 과한 절차라 판단해 생략했다. 대신 `pnpm gate:tdd`의 실제
+판정 로직(`harness/lib/tdd-gate.ts`)을 먼저 확인했다 — green 기록마다 **같은 command 문자열의
+더 이른 red 기록**이 있으면 통과이고, red와 green이 1:1로 짝지어질 필요는 없다. 기존
+`tdd.json`의 pgTAP RED(entries[10], `pnpm db:test`, 2026-08-16T07:00:33Z, F-02 이전부터 이미
+있던 기록)가 이 요건을 그대로 충족해 새 RED 없이 오늘의 pgTAP 전체 GREEN(entries[16])만
+추가했다. `pnpm gate:tdd` 통과로 확인.
+
+### 검증
+
+- `pnpm db:reset` → `pnpm db:test`: Files=24, Tests=1423(1403+20), 전 파일 ok. GREEN 시각
+  2026-08-16T08:34:35Z(`docs/execution/runs/P4-T01/tdd.json` entries[16]).
+- F-01은 위 diff로, F-02는 위 pgTAP GREEN으로 각각 해소를 실증한다. 두 수정 모두 이번
+  수정으로 RADIO revision 2 문면과 허용 경로를 벗어나지 않았다 — 재봉인 불필요.

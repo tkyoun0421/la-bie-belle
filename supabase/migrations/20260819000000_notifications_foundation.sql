@@ -97,7 +97,6 @@ declare
   target_status schedule_status;
   target_revision integer;
   target_planned_checkin time;
-  target_work_date date;
   ceremony_count int;
   requirement_count int;
   missing_wage_exists boolean;
@@ -109,8 +108,8 @@ begin
     raise exception '관리자 권한이 필요합니다' using errcode = '42501';
   end if;
 
-  select status, revision, planned_checkin, work_date
-    into target_status, target_revision, target_planned_checkin, target_work_date
+  select status, revision, planned_checkin
+    into target_status, target_revision, target_planned_checkin
     from schedules
     where id = target_schedule_id
     for update;
@@ -270,9 +269,10 @@ begin
       target_schedule_id,
       target_revision,
       '근무 배정이 확정됐어요',
-      to_char(target_work_date, 'FMMM"월 "FMDD"일 근무가 확정됐어요"'),
-      jsonb_build_object('screen', 'schedule-detail', 'date', target_work_date)
+      to_char(s.work_date, 'FMMM"월 "FMDD"일 근무가 확정됐어요"'),
+      jsonb_build_object('screen', 'schedule-detail', 'date', s.work_date)
     from recipients
+    join schedules s on s.id = target_schedule_id
     on conflict (event_type, aggregate_id, recipient_id, revision) do nothing
     returning id
   )
