@@ -1,0 +1,148 @@
+{
+  "task_id": "P4-T01",
+  "at": "2026-08-16",
+  "base_commit": "0a6ae79",
+  "head_commit": "b7e53ab4750c07a3d578cf086823a36b00e74001",
+  "participants": [
+    "opus",
+    "codex"
+  ],
+  "participants_note": "개발분(b7e53ab 구현, RADIO revision 2) 교차 검증. 같은 결함을 양자가 낸 병합 3건(F-04 search_path, F-05 배지 전체 조회, F-07 e2e 영속 공백)은 전원 인정으로 확정. 단독 발견 8건 중 되묻기에서 7건 인정, 1건 기각 — codex의 「outbox에 4요소 멱등성 키 부재」(high 주장)는 opus가 근거로 반박했다: notification_id unique+FK와 notifications의 4요소 unique가 이행적으로 같은 결과를 강제하고, 봉인 RADIO Data model이 outbox 컬럼을 남김없이 열거하며 4요소 컬럼을 두지 않았으므로 제안 교정이 오히려 봉인 위반이다. 중요도가 갈린 발견(F-01 high/low, F-02 high/medium, F-04·F-06·F-07·F-08·F-09·F-10 medium/low)은 계약대로 높은 쪽.",
+  "scores": {
+    "code_quality": 80,
+    "tests": 70,
+    "security": 82,
+    "performance": 68,
+    "architecture": 78
+  },
+  "score_rationale": {
+    "code_quality": "Result 유니온·구조화 로그·기존 관례 준수는 양자 공히 인정하나, 낙관 상태가 서버 갱신·실패와 조정되지 않고(F-03) NotificationTarget 런타임 파싱이 소유 계층 밖에 있다(F-10).",
+    "tests": "pgTAP 80문항·단위·여정 e2e·RED→GREEN 8쌍의 두터운 배치지만, 신규 테이블 2종 RLS와 notifications 쓰기 차단이 DB 경계 미검증(F-02 high, DEV-TEST-02 MUST)이고 모두 읽음·영속 경로 e2e 공백(F-07)·롤백 단언 관찰력 부족(F-09)이 겹친다.",
+    "security": "RLS 본인 행·3롤 grant 행렬·무 PII 본문·requireActiveProfile은 충실하나, 새 정의자 함수 2종의 pg_temp 미고정(F-04)과 조회의 단일 강제(F-08)가 방어 겹을 얇게 만든다.",
+    "performance": "확정 트랜잭션은 insert 2문 추가로 끝나지만, 탭 배지가 매 페이지 렌더마다 최대 1000행 목록을 읽고 /notifications에서 같은 조회가 중복 실행되며(F-05) 무제한 보존 테이블에 지원 인덱스가 없다(F-06).",
+    "architecture": "동일 트랜잭션 결합·FSD 계층·DB 정본 배치는 봉인 그대로이고 codex의 outbox 멱등성 주장은 기각됐지만, confirm_schedule의 선언·projection 변경이 봉인 문면(알림 블록 추가만 허용)을 벗어났다(F-01)."
+  },
+  "total": 76,
+  "findings": [
+    {
+      "id": "F-01",
+      "title": "confirm_schedule 재정의가 봉인 문면 밖에서 선언과 잠금 조회 projection을 바꿨다",
+      "severity": "high",
+      "area": "architecture",
+      "file": "supabase/migrations/20260819000000_notifications_foundation.sql",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "봉인 불변은 「감사 insert 뒤 알림·outbox 블록 추가, 본문 나머지·반환 무수정」인데 target_work_date 선언 1줄과 초기 select ... for update의 projection 1줄(work_date 추가)이 그 밖이다. 차단 4종·전이·스냅샷·경고·감사·반환·권한·잠금 대상은 20260818000000과 동일하고 runs 기록에 변경이 명시돼 은폐는 없다(opus — 기능 결함 아닌 절차 문제로 low). 해소는 선언·projection을 원상 복원하고 알림 insert 문의 select에 schedules 조인으로 work_date를 읽는 것 — 추가 문장 없이 봉인 문면과 Optimizations를 모두 지킨다. codex high·opus low — 계약대로 높은 쪽."
+    },
+    {
+      "id": "F-02",
+      "title": "notification_outbox·push_subscriptions의 RLS와 notifications 직접 쓰기 차단이 DB 경계에서 미검증이다",
+      "severity": "high",
+      "area": "tests",
+      "file": "supabase/tests/24-notifications.test.sql",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "24번은 notifications select 격리와 읽음 RPC만 검증한다. 새로 RLS를 enable한 outbox·push_subscriptions에는 relrowsecurity·정책 수·접근 차단 단언이 0건이고, notifications도 「읽음은 RPC로만」 불변의 절반인 직접 insert/update/delete 차단이 미검증이라 훗날 permissive 정책 추가를 테스트가 못 잡는다. 04-rls-default-deny의 확립 관례가 있고 DEV-TEST-02가 MUST이며, push_subscriptions는 푸시 자격 증명(p256dh·auth)을 담아 위험이 크다 — P4-T02가 쓰기 흐름을 얹기 전이 고정 적기다. opus medium·codex high — 계약대로 높은 쪽."
+    },
+    {
+      "id": "F-03",
+      "title": "알림함 낙관 상태가 서버 갱신·실패 결과와 재조정되지 않는다",
+      "severity": "medium",
+      "area": "code_quality",
+      "file": "src/views/notifications/ui/NotificationsView.tsx",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "useState가 최초 initialItems만 소비하는데 같은 컴포넌트가 감싸는 RouterPullToRefresh의 onRefresh가 router.refresh()라, 당겨서 새로고침해도 목록은 그대로이고 배지만 서버 계산으로 갱신돼 「배지는 미읽음, 목록은 빈」 관측 가능한 불일치가 난다. 읽음 action 결과도 void로 버려 실패 시 UI가 계속 읽음으로 남는다(단독으로는 RADIO 허용 낙관 갱신 범위 — stale과 겹쳐 medium). mock 시절엔 정적 데이터라 숨어 있다 실데이터 전환으로 표면화됐다."
+    },
+    {
+      "id": "F-04",
+      "title": "새 정의자 함수 2종의 search_path에 pg_temp가 고정되지 않았다",
+      "severity": "medium",
+      "area": "security",
+      "file": "supabase/migrations/20260819000000_notifications_foundation.sql",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "mark_notification_read·mark_all_notifications_read가 set search_path = public만 쓰고 notifications를 비한정 이름으로 참조한다 — 같은 파일의 confirm_schedule은 public, pg_temp를 써 파일 안에서도 불일치. 실제 영향은 자기 세션 임시 테이블 그림자로 자기 읽음을 무력화하는 자해성 no-op 수준(opus — 권한 상승 없음으로 low, codex medium — 계약대로 높은 쪽). 기존 함수 다수가 public만 쓰는 전면 교정은 범위 밖."
+    },
+    {
+      "id": "F-05",
+      "title": "탭 배지가 전용 count 없이 목록 전체 조회에 의존해 매 렌더 비용·중복 왕복·1000 한도 부정확을 만든다",
+      "severity": "medium",
+      "area": "performance",
+      "file": "src/app/(protected)/(tabs)/layout.tsx",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "(tabs)/layout.tsx가 모든 탭 라우트 렌더마다 listNotifications()로 최대 1000행 전체 컬럼을 가져와 boolean 하나만 쓰고, /notifications에서는 page와 layout이 같은 쿼리를 2회 실행한다(cache() 래핑 없음). unreadCount가 한도 걸린 items에서 계산돼 최신 1000건이 전부 읽음이면 더 오래된 미읽음이 있어도 배지가 꺼진다. RADIO Optimizations의 「1왕복」과 어긋나며 같은 RADIO가 대안으로 둔 전용 count 호출(read_at is null + head/count)이면 피할 수 있었다."
+    },
+    {
+      "id": "F-06",
+      "title": "무제한 보존 notifications에 recipient 선두 인덱스·미읽음 부분 인덱스가 없다",
+      "severity": "medium",
+      "area": "performance",
+      "file": "supabase/migrations/20260819000000_notifications_foundation.sql",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "비-PK 인덱스가 4요소 unique(선두 event_type) 하나라 recipient_id 필터·created_at desc 정렬·미읽음 bulk update를 지원하지 못한다. 보존 무제한 + 매 탭 렌더 조회(F-05)와 뿌리가 겹친다. 저장소 전체가 보조 인덱스를 거의 안 두는 공통 관행이고 RADIO도 요구하지 않아 이 task의 회귀는 아니다(opus low·codex medium — 계약대로 높은 쪽). 해소는 (recipient_id, created_at desc)와 read_at is null 부분 인덱스."
+    },
+    {
+      "id": "F-07",
+      "title": "모두 읽음·스와이프·당겨서 새로고침의 영속 경로가 e2e에서 검증되지 않는다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "tests/e2e/notifications.spec.ts",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "전용 e2e는 개별 알림 탭 경로만 지난다. AC9의 「모두 읽음 후 배지 소멸」은 page.tsx의 onMarkAllRead 배선부터 DB 반영까지 어느 계층에서도 이어서 관측되지 않아 배선이 끊겨도 통과하고, 스와이프 읽음 후 reload 영속·새 알림 생성 뒤 당겨서 새로고침 반영도 빠졌다(후자는 F-03의 stale 결함을 잡았을 경로). opus low·codex medium — 계약대로 높은 쪽."
+    },
+    {
+      "id": "F-08",
+      "title": "listNotifications가 서버 소유자 필터 없이 RLS 단일 강제에 의존한다",
+      "severity": "medium",
+      "area": "security",
+      "file": "src/entities/notification/api/list-notifications.ts",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "auth.getUser() 확인도 recipient_id 필터도 없이 select 결과를 신뢰하고 무세션 호출이 오류 대신 빈 성공을 반환한다. 저장소의 다른 본인 데이터 조회(list-own-applications·find-own-worker-info)는 getUser() 후 .eq 소유자 필터로 이중 강제(DEV-SEC-01)하고 무세션에 COMMON_AUTH_REQUIRED를 낸다. 현재 RLS가 정확해 실유출은 없는 방어 심도 결함. opus low·codex medium — 계약대로 높은 쪽."
+    },
+    {
+      "id": "F-09",
+      "title": "AC3 롤백 단언이 알림 삽입 이전 차단만 써서 트랜잭션 결합을 관측하지 못한다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "supabase/tests/24-notifications.test.sql",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "LB030 거부 후 알림·outbox 0건 단언은 구조 차단이 전부 알림 insert보다 앞이라 알림 기록이 트랜잭션 밖이어도 참이다 — 「같은 트랜잭션」 결합을 구분하지 못한다. codex는 알림·outbox 기록 단계 이후 실패를 유도해 스케줄·감사·알림 전체 롤백을 단언해야 공백이 닫힌다고 봤다(schedules.status 불변 추가만으로는 부족). opus low·codex medium — 계약대로 높은 쪽."
+    },
+    {
+      "id": "F-10",
+      "title": "NotificationTarget의 런타임 유효성 규칙이 model 밖 api에 중복 구현됐다",
+      "severity": "medium",
+      "area": "code_quality",
+      "file": "src/entities/notification/api/list-notifications.ts",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "타입 집합은 model(notification-item.ts) 소유인데 유효 screen 판단(parseTarget)은 api에 수기 구현돼 정본이 둘이다. P4-T03이 새 screen을 타입에만 더하면 컴파일 오류 없이 파서가 그 알림을 목록·unreadCount에서 조용히 제외한다. 저장소 관례(OwnApplicationStatusSchema·GenderValueSchema — model이 런타임 스키마 소유, api가 parse)로 옮기면 구조적으로 막힌다. opus low·codex medium — 계약대로 높은 쪽."
+    }
+  ]
+}

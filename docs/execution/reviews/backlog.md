@@ -339,3 +339,11 @@
 - [ ] [low] [P3-T08] recommendCheckIn 동일 인자 재호출 동어반복 단언(F-10) — src/entities/schedule/model/__tests__/ceremony-times.test.ts
 - [ ] [low] [P3-T08] try 블록 본문 미들여쓰기(포매터가 tests/ 미검사)(F-11) — tests/e2e/assignment-eligibility.spec.ts
 - [x] [medium] [P3-T11] traineePositions가 선택 prop(기본값 [])이라 page 전달 누락이 무성 통과, 표 밖 경고 화면 배선 실증 테스트 0건(F-02) — src/views/admin-schedule/ui/AdminSchedulePrepView.tsx (2026-08-16 수정 라운드 beb1b80 해소 — prop 필수화 + 경고 요약 컴포넌트 단언 3건)
+- [ ] [medium] [P4-T01] 알림함 낙관 상태가 router.refresh·읽음 실패와 미조정 — 당겨서 새로고침에 목록 stale, 배지와 불일치(F-03) — src/views/notifications/ui/NotificationsView.tsx
+- [ ] [medium] [P4-T01] mark_notification_read·mark_all_notifications_read search_path에 pg_temp 미고정(같은 파일 confirm_schedule과 불일치)(F-04) — supabase/migrations/20260819000000_notifications_foundation.sql
+- [ ] [medium] [P4-T01] 탭 배지가 전용 count 없이 목록 전체 조회 의존 — 매 렌더 최대 1000행·/notifications 중복 왕복·한도 초과 시 배지 부정확(F-05) — src/app/(protected)/(tabs)/layout.tsx
+- [ ] [medium] [P4-T01] notifications에 (recipient_id, created_at desc)·read_at is null 부분 인덱스 부재(무제한 보존·매 렌더 조회와 결합)(F-06) — supabase/migrations/20260819000000_notifications_foundation.sql
+- [ ] [medium] [P4-T01] 모두 읽음 배지 소멸(AC9)·스와이프 reload 영속·당겨서 새로고침 반영이 e2e 미검증(F-07) — tests/e2e/notifications.spec.ts
+- [ ] [medium] [P4-T01] listNotifications가 getUser()·소유자 필터 없는 RLS 단일 강제, 무세션에 빈 성공 반환(DEV-SEC-01 이중 강제 관례 이탈)(F-08) — src/entities/notification/api/list-notifications.ts
+- [ ] [medium] [P4-T01] AC3 롤백 단언이 알림 삽입 이전 차단만 사용 — 같은 트랜잭션 결합 미관측(F-09) — supabase/tests/24-notifications.test.sql
+- [ ] [medium] [P4-T01] NotificationTarget 유효 screen 판단이 model 스키마 아닌 api parseTarget에 중복 — 새 screen 추가 시 조용한 제외(F-10) — src/entities/notification/api/list-notifications.ts

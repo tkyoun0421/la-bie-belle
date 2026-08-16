@@ -149,3 +149,19 @@
 - TDD 증거: `docs/execution/runs/P4-T01/tdd.json`(entries[16], pgTAP GREEN-only)
 - RADIO 적용 결과(수정 라운드 상세): `docs/execution/runs/P4-T01/radio.md`
 - pgTAP 실행 로그(저장소 밖, 스크래치패드): `pgtap_fix_round.log`, `pgtap_fix_round2.log`
+
+## 2026-08-16 · 검증 종료(조정자)
+
+- 교차 검증(opus·codex, base `0a6ae79` → head `b7e53ab`): total 76
+  (`docs/execution/reviews/P4-T01-review.json`). 확정 발견 10건 — high 2건(F-01
+  봉인 문면 밖 선언·projection 변경, F-02 신규 테이블 RLS 미검증)은 재봉인 없이
+  수정 라운드 커밋 `c007331`로 해소(20260818 대비 알림 블록 밖 본문 문자 단위
+  동일 확인, pgTAP plan 80→100). medium 8건(F-03~F-10)은 backlog 342~349행.
+- 판단이 갈려 기각된 발견 1건(전원 인정 불성립, 기록 목적):
+  - 「notification_outbox에 4요소 멱등성 키 부재」(codex high 주장) — opus 반박:
+    notification_id unique+FK와 notifications의 4요소 unique가 이행적으로 같은
+    결과를 강제하고, 봉인 RADIO Data model이 outbox 컬럼을 남김없이 열거하며
+    4요소 컬럼을 두지 않았으므로 제안 교정이 오히려 봉인 위반. P4-T08 소비자
+    설계에서 outbox 자체 키의 필요가 재론되면 그때 다룬다.
+- P4-T03 이관 사항: 확정 알림은 이 task가 소유하게 됐고, T03에는 모집 오픈·변경·
+  요청 계열과 확정 알림의 푸시 링크 연결 확인만 남는다(기획 기록 참조).
