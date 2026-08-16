@@ -174,3 +174,23 @@ handoff의 선례를 따름).
 - TDD 증거: `docs/execution/runs/P4-T03/tdd.json`(새 RED→GREEN 2쌍, 총 12 entries)
 - RADIO 적용 결과(수정 라운드 상세): `docs/execution/runs/P4-T03/radio.md`
 - 수정 커밋: 이 절을 포함하는 본 커밋
+
+## 검증 종료 (조정자, 2026-08-17)
+
+- 교차 검증 결과: `docs/execution/reviews/P4-T03-review.json` — 총점 81
+  (code 84 · tests 62 · security 96 · perf 89 · arch 74), 확정 7건.
+- high 3건은 revision 2 재봉인(8a97b6c) 후 수정 라운드 f025d3d으로 해소:
+  F-01 워커 삭제 헬퍼의 알림 선정리(조정자 단독 실행 재현 → 수정 후 GREEN),
+  F-02 자기 스케줄 한정 단언(4 spec 연속 3회 8/8), F-03 스케줄 전체 전후
+  로스터 합집합(사용자 결정, 다른 포지션 수신 RED→GREEN). diff 감사 완료 —
+  8개 파일 한정, 병렬 세션 변경 미포함.
+- medium 1(F-04 롤백 테스트 실패 지점)·low 3(F-05~F-07)은 backlog 소유.
+- 기각 2건(근거 있는 반박): 「알림 블록 4중 복제」는 봉인 RADIO의 generic
+  helper + RPC별 블록 명시에서 파생된 구조라 이 커밋의 결함이 아님(codex),
+  「admin 전용 미수신 검증 공백」은 effective_roles 구조상 active
+  admin-only가 존재할 수 없어 pending+admin 픽스처가 타당(codex).
+- F-01의 교훈: 개발 중 e2e 실패를 환경 특성으로 결론 내리기 전에 실패
+  원문(FK 제약)을 소스와 대조할 것 — 초기 라운드가 GoTrue 동시성으로
+  오판하고 회귀 확인 범위에서 해당 spec을 뺐다.
+- push·CI는 병렬 디자인 세션의 미커밋 모듈(P4-T02 커밋이 참조) 커밋 후
+  일괄 수행한다(사용자 결정, 2026-08-16). gate:bundle 재측정도 그때.

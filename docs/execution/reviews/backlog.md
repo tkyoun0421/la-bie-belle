@@ -358,3 +358,7 @@
 - [ ] [low] [P4-T02] e2e RED가 teardown FK 실패라 AC7 RED 증거 불성립(F-11) — docs/execution/runs/P4-T02/tdd.json
 - [ ] [low] [P4-T02] anon 42501이 ACL 거부라 함수 본문 미인증 가드 미검증(F-12) — supabase/tests/25-push-subscriptions.test.sql
 - [ ] [low] [P4-T02] applicationSavedSignal 카운터가 첫 성공 후 의미 없는 증가 — boolean이 정확(F-13) — src/views/schedule/ui/ScheduleView.tsx
+- [ ] [medium] [P4-T03] 롤백 pgTAP이 시급 검사 단계 실패만 통과 — 알림 기록 이후 실패 지점 미검증(F-04) — supabase/tests/26-recruitment-change-notifications.test.sql
+- [ ] [low] [P4-T03] 딥링크 월 정규식이 00·13~99월 허용 — 세 벌(path·파서·SW) 동시 강화 필요(F-05) — src/entities/notification/model/notification-path.ts
+- [ ] [low] [P4-T03] 비확정 저장 경로에서 수신자·work_date 무조건 조회 + 교육생 조회 중복(F-06) — supabase/migrations/20260821000000_recruitment_change_notifications.sql
+- [ ] [low] [P4-T03] 월 형식 정규식이 entities 안 두 파일에 독립 선언 — 행 제외/폴백 드리프트 위험(F-07) — src/entities/notification/model/notification-path.ts
