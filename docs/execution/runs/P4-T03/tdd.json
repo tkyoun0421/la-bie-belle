@@ -1,0 +1,60 @@
+{
+  "entries": [
+    {
+      "command": "supabase test db",
+      "exit_code": 1,
+      "at": "2026-08-16T15:05:01Z",
+      "phase": "red",
+      "note": "26-recruitment-change-notifications.test.sql만 두고 20260821000000 마이그레이션을 임시로 뺀 상태로 실행. notify_schedule_recipients 부재로 has_function 실패 및 정지, 45개 중 34개만 실행되고 15개 실패(Bad plan)."
+    },
+    {
+      "command": "supabase test db",
+      "exit_code": 0,
+      "at": "2026-08-16T15:07:12Z",
+      "phase": "green",
+      "note": "20260821000000_recruitment_change_notifications.sql(notify_schedule_recipients 헬퍼 + open_recruitment_schedules·replace_schedule_ceremonies·set_schedule_planned_times·replace_position_assignments 재정의) 복원 후 재실행. 26개 파일 1512개 테스트 전부 통과(기존 25개 파일 회귀 없음, 신규 26번 45/45)."
+    },
+    {
+      "command": "pnpm vitest run src/entities/notification/model/__tests__/notification-path.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-16T15:08:20Z",
+      "phase": "red",
+      "note": "notification-path.ts 부재로 import 실패(0 test, 1 failed suite)."
+    },
+    {
+      "command": "pnpm vitest run src/entities/notification/model/__tests__/notification-path.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-16T15:08:35Z",
+      "phase": "green",
+      "note": "resolveNotificationPath(schedule-detail·schedule+month·pay·월 형식 불량/미지 screen 폴백) 구현 후 재실행. 5/5 통과."
+    },
+    {
+      "command": "pnpm vitest run src/entities/notification/api/__tests__/list-notifications.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-16T15:08:54Z",
+      "phase": "red",
+      "note": "parseTarget이 schedule screen을 아직 허용하지 않아 새 케이스(schedule screen 파싱)가 빈 목록을 반환해 실패. 6개 중 1개 실패."
+    },
+    {
+      "command": "pnpm vitest run src/entities/notification/api/__tests__/list-notifications.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-16T15:09:06Z",
+      "phase": "green",
+      "note": "parseTarget에 schedule screen(month 형식 검증 포함) 허용 분기 추가 후 재실행. 6/6 통과."
+    },
+    {
+      "command": "pnpm vitest run src/features/push/lib/__tests__/push-service-worker.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-16T15:09:46Z",
+      "phase": "red",
+      "note": "push-service-worker.js를 git stash로 원본(schedule 분기 없음) 상태로 되돌리고 실행. schedule+유효 month 케이스가 /notifications로 폴백해 실패(6개 중 1개)."
+    },
+    {
+      "command": "pnpm vitest run src/features/push/lib/__tests__/push-service-worker.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-16T15:09:55Z",
+      "phase": "green",
+      "note": "git stash pop으로 isNotificationTarget·resolvePushClickPath의 schedule 분기(month 형식 검증 포함) 복원 후 재실행. 6/6 통과."
+    }
+  ]
+}

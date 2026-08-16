@@ -8,6 +8,7 @@ import { ERROR_CODE, type ErrorCode } from "@/shared/config/error-codes.config";
 import { createSupabaseServerClient } from "@/shared/lib/supabase-server";
 
 const LIST_NOTIFICATIONS_LIMIT = 1000;
+const NOTIFICATION_MONTH_PATTERN = /^\d{4}-\d{2}$/;
 
 type NotificationRow = {
   id: string;
@@ -30,6 +31,14 @@ function parseTarget(raw: unknown): NotificationTarget | null {
 
   if (value.screen === "schedule-detail" && typeof value.date === "string") {
     return { screen: "schedule-detail", date: value.date };
+  }
+
+  if (
+    value.screen === "schedule" &&
+    typeof value.month === "string" &&
+    NOTIFICATION_MONTH_PATTERN.test(value.month)
+  ) {
+    return { screen: "schedule", month: value.month };
   }
 
   if (value.screen === "pay") {

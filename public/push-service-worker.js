@@ -2,6 +2,7 @@ const DEFAULT_TITLE = "라비에벨";
 const DEFAULT_BODY = "";
 const NOTIFICATION_ICON = "/icons/icon-192.png";
 const NOTIFICATIONS_FALLBACK_PATH = "/notifications";
+const NOTIFICATION_MONTH_PATTERN = /^\d{4}-\d{2}$/;
 
 function parsePushPayload(event) {
   if (event.data === null) {
@@ -36,6 +37,9 @@ function isNotificationTarget(value) {
   if (value.screen === "schedule-detail") {
     return typeof value.date === "string";
   }
+  if (value.screen === "schedule") {
+    return typeof value.month === "string";
+  }
   return value.screen === "pay";
 }
 
@@ -43,7 +47,15 @@ function resolvePushClickPath(target) {
   if (!isNotificationTarget(target)) {
     return NOTIFICATIONS_FALLBACK_PATH;
   }
-  return target.screen === "schedule-detail" ? `/schedule/${target.date}` : "/pay";
+  if (target.screen === "schedule-detail") {
+    return `/schedule/${target.date}`;
+  }
+  if (target.screen === "schedule") {
+    return NOTIFICATION_MONTH_PATTERN.test(target.month)
+      ? `/schedule?month=${target.month}`
+      : NOTIFICATIONS_FALLBACK_PATH;
+  }
+  return "/pay";
 }
 
 async function focusOrOpenWindow(path) {

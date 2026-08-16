@@ -113,4 +113,44 @@ describe("push-service-worker", () => {
 
     expect(stub.clients.openWindow).toHaveBeenCalledWith("https://labiebelle.test/notifications");
   });
+
+  it("notificationclick 이벤트에서 schedule target은 month 쿼리를 담은 일정 경로로 이동한다", async () => {
+    const { stub, listeners } = createSelfStub();
+    vi.stubGlobal("self", stub);
+
+    await import(PUSH_SERVICE_WORKER_PATH);
+
+    const waitUntilCalls: Promise<unknown>[] = [];
+    listeners.notificationclick?.({
+      notification: { data: { target: { screen: "schedule", month: "2026-08" } }, close: vi.fn() },
+      waitUntil: (promise: Promise<unknown>) => {
+        waitUntilCalls.push(promise);
+      },
+    } as never);
+
+    await Promise.all(waitUntilCalls);
+
+    expect(stub.clients.openWindow).toHaveBeenCalledWith(
+      "https://labiebelle.test/schedule?month=2026-08",
+    );
+  });
+
+  it("schedule target의 month 형식이 불량이면 /notifications로 이동한다", async () => {
+    const { stub, listeners } = createSelfStub();
+    vi.stubGlobal("self", stub);
+
+    await import(PUSH_SERVICE_WORKER_PATH);
+
+    const waitUntilCalls: Promise<unknown>[] = [];
+    listeners.notificationclick?.({
+      notification: { data: { target: { screen: "schedule", month: "2026-8" } }, close: vi.fn() },
+      waitUntil: (promise: Promise<unknown>) => {
+        waitUntilCalls.push(promise);
+      },
+    } as never);
+
+    await Promise.all(waitUntilCalls);
+
+    expect(stub.clients.openWindow).toHaveBeenCalledWith("https://labiebelle.test/notifications");
+  });
 });

@@ -24,6 +24,7 @@ export const WORK_DATE_BANDS = {
   confirmationJourney: { minMonthsAhead: 495, maxMonthsAhead: 526 },
   notifications: { minMonthsAhead: 528, maxMonthsAhead: 559 },
   pushSubscription: { minMonthsAhead: 561, maxMonthsAhead: 592 },
+  recruitmentNotifications: { minMonthsAhead: 594, maxMonthsAhead: 625 },
 } as const satisfies Record<string, WorkDateBand>;
 
 const LAST_SAFE_DAY_OF_MONTH = 27;

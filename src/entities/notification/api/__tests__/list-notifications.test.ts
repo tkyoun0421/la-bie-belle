@@ -81,6 +81,58 @@ describe("listNotifications", () => {
     });
   });
 
+  it("schedule screen을 month와 함께 파싱해 목록에 포함한다", async () => {
+    limit.mockResolvedValue({
+      data: [
+        {
+          id: "notification-schedule",
+          title: "새 근무 모집이 열렸어요",
+          body: "8월 10일~8월 12일 근무 모집이 열렸어요",
+          created_at: "2026-08-06T09:00:00+09:00",
+          read_at: null,
+          target: { screen: "schedule", month: "2026-08" },
+        },
+      ],
+      error: null,
+    });
+
+    const { listNotifications } = await import("@/entities/notification/api/list-notifications");
+    const result = await listNotifications();
+
+    expect(result.ok).toBe(true);
+    expect(result.ok && result.items).toEqual([
+      {
+        id: "notification-schedule",
+        title: "새 근무 모집이 열렸어요",
+        body: "8월 10일~8월 12일 근무 모집이 열렸어요",
+        occurredAt: "2026-08-06T09:00:00+09:00",
+        read: false,
+        target: { screen: "schedule", month: "2026-08" },
+      },
+    ]);
+  });
+
+  it("schedule screen의 month 형식이 불량이면 목록에서 제외한다", async () => {
+    limit.mockResolvedValue({
+      data: [
+        {
+          id: "notification-bad-month",
+          title: "새 근무 모집이 열렸어요",
+          body: "8월 10일~8월 12일 근무 모집이 열렸어요",
+          created_at: "2026-08-06T09:00:00+09:00",
+          read_at: null,
+          target: { screen: "schedule", month: "2026-8" },
+        },
+      ],
+      error: null,
+    });
+
+    const { listNotifications } = await import("@/entities/notification/api/list-notifications");
+    const result = await listNotifications();
+
+    expect(result).toEqual({ ok: true, items: [], unreadCount: 0 });
+  });
+
   it("데이터가 없으면 빈 목록과 unreadCount 0을 반환한다", async () => {
     limit.mockResolvedValue({ data: null, error: null });
 

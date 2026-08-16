@@ -4,6 +4,7 @@ import { addTransitionType, startTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import type { NotificationItem } from "@/entities/notification/model/notification-item";
+import { resolveNotificationPath } from "@/entities/notification/model/notification-path";
 import { NotificationsView } from "@/views/notifications/ui/NotificationsView";
 
 type NotificationsPageClientProps = {
@@ -22,8 +23,7 @@ export function NotificationsPageClient({
   const router = useRouter();
 
   function handleNavigate(item: NotificationItem) {
-    const destination =
-      item.target.screen === "schedule-detail" ? `/schedule/${item.target.date}` : "/pay";
+    const destination = resolveNotificationPath(item.target);
     startTransition(() => {
       addTransitionType?.("nav-forward");
       router.push(destination);
