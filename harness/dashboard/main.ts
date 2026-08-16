@@ -7,6 +7,14 @@ import { recommendNextAction } from "./next-action.ts";
 import { summarizeProgress } from "./progress.ts";
 import type { DashboardView } from "./render.ts";
 import { DASHBOARD_PATH, renderDashboard } from "./render.ts";
+import {
+  COACHING_PAGE_PATH,
+  RETROSPECTIVE_PAGE_PATH,
+  collectCoaching,
+  collectRetrospective,
+  renderCoachingPage,
+  renderRetrospectivePage,
+} from "./retrospective.ts";
 import { summarizeReviews } from "./reviews.ts";
 import { computeReadiness } from "./rubric.ts";
 
@@ -46,16 +54,27 @@ export function buildView(collection: Collection): DashboardView {
   };
 }
 
-function generate(root: string, now: Date): string {
-  const html = renderDashboard(buildView(collect(root, now)));
-  const absolutePath = repoPath(root, DASHBOARD_PATH);
+function writePage(root: string, relativePath: string, html: string): string {
+  const absolutePath = repoPath(root, relativePath);
   mkdirSync(dirname(absolutePath), { recursive: true });
   writeFileSync(absolutePath, html, "utf8");
-  return DASHBOARD_PATH;
+  return relativePath;
+}
+
+function generate(root: string, now: Date): string[] {
+  return [
+    writePage(root, DASHBOARD_PATH, renderDashboard(buildView(collect(root, now)))),
+    writePage(
+      root,
+      RETROSPECTIVE_PAGE_PATH,
+      renderRetrospectivePage(collectRetrospective(root)),
+    ),
+    writePage(root, COACHING_PAGE_PATH, renderCoachingPage(collectCoaching(root))),
+  ];
 }
 
 try {
-  process.stdout.write(`${generate(resolveRepoRoot(), new Date())}\n`);
+  process.stdout.write(`${generate(resolveRepoRoot(), new Date()).join("\n")}\n`);
 } catch (error) {
   process.stderr.write(`대시보드 생성에 실패했습니다: ${(error as Error).message}\n`);
   process.exitCode = 1;

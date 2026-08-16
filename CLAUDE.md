@@ -35,7 +35,7 @@ Start every task by reading [WORKFLOW](docs/workflow/WORKFLOW.md). It owns the f
 
 ## Non-negotiable rules
 
-- **Two approval gates only** — stages 1 and 2. Never advance a task past either without explicit user approval. Interviews produce no code; execution makes no design decisions.
+- **Two approval gates only** — stages 1 and 2. Never advance a task past either without explicit user approval. Interviews produce no code; execution makes no design decisions. Screen design is settled inside stage 2 and sealed with the RADIO — it adds no third gate ([`/publish-ui`](.claude/skills/publish-ui/SKILL.md)).
 - **At most one `in_progress` task**, repo-wide. The loop is sequential, never parallel.
 - **Approvals live in [`index.jsonl`](docs/execution/phases/index.jsonl)**, not in prose. All current tasks use `dual-approval-v3` (product approval + SHA-256-bound RADIO approval).
 - **Never reuse or delete** task IDs, dependencies, or statuses. Never retroactively edit a `done` task's history or approval hashes.
@@ -57,16 +57,17 @@ pnpm test / test:e2e          # Vitest · Playwright (mobile)
 pnpm typecheck                # next typegen + tsc --noEmit
 pnpm verify                   # the single CI command: format → lint → types → test → build → e2e → gates
 
-pnpm gate:all                 # index · RADIO hash · handoff · TDD evidence · commit scope
+pnpm gate:all                 # index · RADIO hash · handoff · TDD evidence · commit scope · retrospective · docs · design tokens
+pnpm design:build <시안.html>  # inline Tailwind CSS and the font into a mockup for Artifact publishing
 pnpm harness:self-test        # harness test suite
-pnpm dashboard                # regenerate the read-only ops dashboard
+pnpm dashboard                # regenerate the read-only ops dashboard (3 pages)
 ```
 
 Structure rules live in `config/fsd.json` — layer order, per-segment test/export/import rules. **ESLint and `.claude/hooks/tdd-guard.sh` both read that one file**, so changing it moves both. Rule meanings: [DEVELOPMENT](docs/standards/DEVELOPMENT.md) (`DEV-NAME-*`).
 
-Individual gates (`gate:index`, `gate:radio`, `gate:handoff`, `gate:tdd`, `gate:scope`) run standalone; a passing gate prints nothing and exits 0.
+Individual gates (`gate:index`, `gate:radio`, `gate:handoff`, `gate:tdd`, `gate:scope`, `gate:retro`, `gate:docs`, `gate:tokens`) run standalone; a passing gate prints nothing and exits 0.
 
-Git hooks (`core.hooksPath` = `.githooks`): pre-commit runs the four repo gates → lint-staged → incremental typecheck → unit tests; pre-push runs the build; commit-msg requires a task ID. A Claude Code `PreToolUse` hook (`.claude/hooks/tdd-guard.sh`) denies edits to `src/` code whose segment requires a test that does not exist.
+Git hooks (`core.hooksPath` = `.githooks`): pre-commit runs the six repo gates → lint-staged → incremental typecheck → unit tests; pre-push runs the build; commit-msg requires a task ID. A Claude Code `PreToolUse` hook (`.claude/hooks/tdd-guard.sh`) denies edits to `src/` code whose segment requires a test that does not exist.
 
 **Next.js 16 differs from most training data.** Read the relevant guide under `node_modules/next/dist/docs/` before writing framework code.
 

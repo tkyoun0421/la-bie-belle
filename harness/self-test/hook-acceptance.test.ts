@@ -45,6 +45,24 @@ function createHookRepo(): string {
   ]);
   writeFixtureJson(root, "docs/execution/runs/P0-T01/tdd.json", makeTddEvidence());
   writeFixtureFile(root, "docs/execution/runs/P0-T01/handoff.md", makeHandoffMarkdown("P0-T01"));
+  writeFixtureJson(root, "docs/execution/retrospective/exempt.json", {
+    generated_at: "2026-08-16T00:00:00Z",
+    task_ids: [],
+  });
+  writeFixtureFile(root, "docs/execution/retrospective/cases.md", "");
+  writeFixtureFile(root, "docs/execution/phases/00-foundation.md", "### P0-T01. 테스트 task\n");
+
+  const tokenFixture = join(source, "harness/self-test/fixtures/token-parity/match");
+  writeFixtureFile(
+    root,
+    "docs/product/design/FOUNDATIONS.md",
+    readFileSync(join(tokenFixture, "FOUNDATIONS.md"), "utf8"),
+  );
+  writeFixtureFile(
+    root,
+    "src/app/globals.css",
+    readFileSync(join(tokenFixture, "globals.css"), "utf8"),
+  );
 
   git(root, ["add", "-A"]);
   git(root, ["commit", "--no-verify", "-m", "P0-T00 fixture bootstrap"]);

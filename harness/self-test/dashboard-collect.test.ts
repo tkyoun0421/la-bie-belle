@@ -47,7 +47,7 @@ test("collect — git 저장소가 아니어도 생성을 중단하지 않는다
   );
   assert.deepEqual(
     collection.referenceGates.map((gate) => gate.id),
-    ["gate:scope", "commit-msg"],
+    ["gate:scope", "gate:retro", "gate:docs", "gate:tokens", "commit-msg"],
   );
   assert.ok(collection.notices.length > 0, "누락 알림이 있어야 한다");
 });
@@ -137,7 +137,11 @@ test("main — 생성 명령이 marker를 포함한 산출물을 쓰고 경로�
     { encoding: "utf8" },
   );
 
-  assert.equal(stdout.trim(), DASHBOARD_PATH);
+  assert.deepEqual(stdout.trim().split("\n"), [
+    DASHBOARD_PATH,
+    "docs/execution/dashboard/retrospective.html",
+    "docs/execution/dashboard/coaching.html",
+  ]);
   const html = readTextFile(root, DASHBOARD_PATH);
   assert.ok(html !== null, "산출물이 만들어져야 한다");
   assert.match(html, /^<!doctype html>/iu);

@@ -19,6 +19,7 @@ pnpm build               # 프로덕션 빌드 (Turbopack)
 pnpm start               # 프로덕션 서버
 pnpm typecheck           # next typegen + tsc --noEmit
 pnpm check:app-build     # 빌드 후 서버 전용 값이 클라이언트 번들에 샜는지 검사
+pnpm check:client-secret-scan  # 빌드 후 클라이언트 번들에 service role·VAPID·QR 서명 등 서버 비밀 키가 샜는지 검사
 
 pnpm lint                # ESLint (src 대상)
 pnpm lint:ci             # ESLint + type-aware 규칙
@@ -29,7 +30,17 @@ pnpm test:e2e            # Playwright 모바일 E2E
 pnpm verify              # CI용 단일 검증 명령
 ```
 
-`pnpm verify`는 `format:check → lint:ci → typecheck → test → build → test:e2e → gate:all` 순서로 돈다. 앞이 실패하면 뒤를 돌리지 않아 CI 피드백이 빠르다.
+### 데이터베이스와 운영 스크립트
+
+```bash
+pnpm db:start            # supabase start — 로컬 스택 기동
+pnpm db:stop             # supabase stop — 로컬 스택 정지
+pnpm db:reset            # supabase db reset — 빈 DB에서 migration → seed 재적용
+pnpm db:test             # supabase test db — pgTAP 테스트 실행
+pnpm ops:close-recruitments  # close_due_recruitment_schedules RPC를 직접 호출하는 운영자 수동 복구 명령 (pg_cron이 놓친 마감 처리용)
+```
+
+`pnpm verify`는 `format:check → lint:ci → typecheck → test → harness:typecheck → harness:self-test → check:docs → build → gate:bundle → check:app-build(--reuse-build) → check:client-secret-scan(--reuse-build) → test:e2e → gate:motion-render-budget → gate:all` 순서로 돈다. 앞이 실패하면 뒤를 돌리지 않아 CI 피드백이 빠르다. `build` 이후 두 검사가 `--reuse-build`를 받는 이유는 직전 `build` 산출물을 재사용해 중복 빌드를 피하기 위해서다.
 
 **Prettier와 ESLint는 `src/` 안의 애플리케이션 코드만 대상으로 한다.** 도구(`harness/`·`tools/`·`scripts/`), 문서, 실행 증거는 대상이 아니다. 저장소 전체를 포맷하면 승인 SHA-256에 결속된 RADIO 문서까지 바뀌어 `gate:radio`가 막는다.
 
@@ -59,10 +70,17 @@ pnpm gate:radio          # planned/in_progress task: radio_sha256 == 실제 파�
 pnpm gate:handoff        # handoff.md 존재와 필수 7개 필드 (선택 인자: task ID)
 pnpm gate:tdd            # test_mode=tdd task의 tdd.json이 명령별 RED→GREEN을 증명
 pnpm gate:scope          # staged 파일이 현재 task RADIO의 변경 허용 경로 안인지
-pnpm gate:all            # 위 다섯 게이트를 한 번에
-pnpm harness:self-test   # 여섯 게이트의 node:test 스위트 (임시 저장소 훅 수용 테스트 포함)
+pnpm gate:retro          # done task마다 retrospective/cases.md에 회고 한 줄 (면제 스냅숏 제외)
+pnpm gate:docs           # 문서 내부 링크·heading 제목·spec_refs·의존성 순환
+pnpm check:docs          # gate:docs와 동일한 검사(harness/checks/docs.ts) — 문서 전용 작업 중 쓰는 별칭
+pnpm gate:tokens         # FOUNDATIONS의 다섯 토큰 표와 globals.css 대조 — 문서가 정본이고 코드가 따른다
+pnpm gate:all            # 위 여덟 게이트(index·radio·handoff·tdd·scope·retro·docs·tokens)를 한 번에
+pnpm gate:bundle                 # 정적 청크 gzip 예산 초과 검사 — gate:all 밖, verify의 build 직후 단계
+pnpm gate:motion-render-budget   # 모션 렌더 예산 E2E(Playwright) — gate:all 밖, verify의 test:e2e 다음 단계
+pnpm design:build <시안.html>    # 시안 HTML에 Tailwind CSS와 글꼴을 인라인 — Artifact 발행용, 게이트 아님
+pnpm harness:self-test   # 게이트 전체의 node:test 스위트 (임시 저장소 훅 수용 테스트 포함)
 pnpm harness:typecheck   # harness/ 대상 tsc --noEmit
-pnpm dashboard           # docs/execution/dashboard/index.html 재생성
+pnpm dashboard           # docs/execution/dashboard/ 세 페이지 재생성
 ```
 
 ### 게이트 판정 규칙
@@ -84,9 +102,10 @@ pnpm dashboard           # docs/execution/dashboard/index.html 재생성
 
 ## 운영 대시보드
 
-`pnpm dashboard`는 인라인 CSS에 외부 리소스가 없는 자족 HTML 한 파일을 `docs/execution/dashboard/index.html`에 쓴다. 모바일 우선이다. 계약의 정본은 [ADR-0012](../standards/adr/0012-static-operations-dashboard.md)다.
+`pnpm dashboard`는 인라인 CSS에 외부 리소스가 없는 자족 HTML을 `docs/execution/dashboard/` 아래 세 파일(`index.html`·`retrospective.html`·`coaching.html`)로 쓴다. 모바일 우선이다. 계약의 정본은 [ADR-0012](../standards/adr/0012-static-operations-dashboard.md)다.
 
-- 섹션 4종: 진행도, 준비도 루브릭, 검증, 다음 행동·차단. 상단에 기준 시각과 기준 커밋을 둔다.
+- `index.html` 섹션 4종: 진행도, 준비도 루브릭, 검증, 다음 행동·차단. 상단에 기준 시각과 기준 커밋을 두고, 나머지 두 페이지를 링크한다.
+- `retrospective.html`은 `docs/execution/retrospective/`의 성공·실패 집계와 task별 회고, 미결 제안을 렌더한다. `coaching.html`은 `docs/execution/coaching/`의 최신 `/coach` 결과를 중요도순으로 렌더하고 실행 이력을 나열한다.
 - 준비도는 100점 만점의 기계 판정이다: 계약 준수 40(index·radio·handoff·tdd 저장소 게이트 통과율, `harness/lib` 게이트 재사용 — scope와 commit-msg는 참고 표시만), 증거 완결성 25, 실행 준비도 20, 문서 최신성 15(재생성 준수는 직전에 커밋된 산출물의 `base-commit` 표식과 대조해 측정). 등급은 90+ 우수, 70–89 양호, 70 미만 주의. 모든 점수는 근거 숫자를 함께 보여준다.
 - **읽기 전용 파생물**이다. `index.jsonl`·`runs/`·`reviews/`에 쓰지 않고 승인이나 상태 전환을 하지 않는다. 원본이 없거나 형식이 깨지면 값을 추측하지 않고 누락 / 결과 없음 / 형식 오류로 표시한다. 생성 실패는 권고 사항이며 task를 막지 않는다.
 - 재생성 시점: task가 `done`·`blocked`·`skipped`로 바뀌거나 phase 경계가 바뀐 뒤.
@@ -103,18 +122,28 @@ pnpm dashboard           # docs/execution/dashboard/index.html 재생성
 
 | 훅 | 실행 |
 | --- | --- |
-| pre-commit | harness 게이트 4종 → `lint-staged` → `tsc --incremental` → 스테이징 기반 vitest 3모드(비코드만 생략 · 코드 포함 `related` · 광역 파일·삭제·rename·연관 0건은 전체 승격, fail-closed — P0-T41, 판정 정본은 `harness/lib/precommit-test-scope.ts`) |
+| pre-commit | harness 게이트 6종 → `lint-staged` → `tsc --incremental` → 스테이징 기반 vitest 3모드(비코드만 생략 · 코드 포함 `related` · 광역 파일·삭제·rename·연관 0건은 전체 승격, fail-closed — P0-T41, 판정 정본은 `harness/lib/precommit-test-scope.ts`) |
 | pre-push | `pnpm build` |
 | commit-msg | 메시지 본문의 `P[0-9]+-T[0-9]{2}` task ID 확인 |
 
-- harness 게이트(인덱스·RADIO 해시·TDD 증거·커밋 범위)를 **가장 먼저** 돌린다. 0.09초로 가장 빠르고, 승인 계약 위반은 포맷 문제보다 먼저 알아야 한다.
+- harness 게이트(인덱스·RADIO 해시·TDD 증거·커밋 범위·회고·문서)를 **가장 먼저** 돌린다. 로컬 파일 검사뿐이라 가장 빠르고, 승인 계약 위반은 포맷 문제보다 먼저 알아야 한다.
 - `package.json`이나 `node_modules`가 없으면 pre-commit이 뒤의 세 검사를 건너뛰고 그 사실을 stderr에 알린다. 하네스 수용 테스트가 의존성 없는 임시 저장소에서 훅을 돌리기 때문이다. 조용히 건너뛰지 않는다.
 - `prepare` 스크립트가 `git config core.hooksPath .githooks`를 실행하므로 `pnpm install`만으로 훅이 붙는다. husky는 쓰지 않는다 — 설치 시 `core.hooksPath`를 자기 디렉터리로 바꿔 harness 게이트를 조용히 무력화한다.
 - 로컬 훅은 `--no-verify`로 우회할 수 있다. git의 한계이며 CI에서 `pnpm verify`를 다시 돌려 보완한다(P0-T05).
 
 ## Claude Code 훅
 
-`.claude/settings.json`이 `Write`/`Edit`/`MultiEdit`에 `PreToolUse` 훅을 건다.
+`.claude/settings.json`이 다섯 종류를 건다.
+
+| 이벤트 | matcher | 스크립트 | 역할 |
+| --- | --- | --- | --- |
+| `PreToolUse` | `Write`\|`Edit`\|`MultiEdit` | `.claude/hooks/tdd-guard.sh` | 대응 테스트 파일이 없는 `src/` 비즈니스 로직 편집을 거부한다(상세는 아래). |
+| `PreToolUse` | `Bash`\|`Write`\|`Edit`\|`MultiEdit` | `.claude/hooks/ci-finisher-guard.sh` | payload의 `agent_type`이 `ci-finisher`일 때만 판정해 마무리 오프로드 범위 밖 행동을 막는다. 메인 세션과 다른 에이전트는 통과시킨다. 규칙 정본: [`.claude/agents/ci-finisher.md`](../../.claude/agents/ci-finisher.md). |
+| `SessionStart` | — | `.claude/hooks/loop-unattended-context.sh` | 무인 재개(respawn) 마커가 있는 세션에만 loop-unattended 계약을 주입한다. 규칙 정본: [`.claude/loop-unattended.md`](../../.claude/loop-unattended.md). |
+| `SubagentStop` | `ci-finisher` | `.claude/hooks/ci-finisher-stop-guard.sh` | push용 임시 `.env`(`.env.example` 사본)가 삭제되지 않은 채 `ci-finisher`가 종료하려 하면 한 번 막는다. 규칙 정본: [`.claude/agents/ci-finisher.md`](../../.claude/agents/ci-finisher.md). |
+| `StopFailure` | `rate_limit`·`overloaded` 등 재시도 가능 실패 10종 | `.claude/hooks/claude-loop-stop-failure.sh` | 실패를 `scripts/claude-loop.mjs record-failure`로 전달해 무인 재개(claude-loop) 상태를 갱신한다. 규칙 정본: [`.claude/loop.md`](../../.claude/loop.md). |
+
+`pnpm claude:loop`는 `scripts/claude-loop.mjs`의 CLI 진입점이다(`start`·`status`·`stop`·`record-failure` 등 subcommand). 위 `StopFailure` 훅이 내부에서 호출하는 것과 같은 스크립트이며, 사람이 쓰는 운영 진입점은 `/loop-mode` 스킬이다.
 
 **`.claude/hooks/tdd-guard.sh`**는 대응 테스트 파일이 없는 `src/` 아래 비즈니스 로직 편집을 거부한다.
 
@@ -135,4 +164,4 @@ pnpm dashboard           # docs/execution/dashboard/index.html 재생성
 - `layers` 배열의 **순서가 의존 방향**이다. 앞의 계층이 뒤의 계층을 import할 수 있다.
 - `segments`의 각 항목은 `unitTest`, `runtimeExports`, `verifiedBy`, `forbidImports`, `requireServerOnly`를 갖는다.
 - `verifiedBy`는 도구가 강제하지 않지만, 비어 있으면 검증 계획 없는 면제 구역이라는 사실이 파일에서 바로 보인다.
-- 규칙 구현은 `tools/eslint-plugin-project/`에 있다. 규칙 일곱 개가 `lib/contract.mjs`를 통해 이 파일을 읽는다.
+- 규칙 구현은 `tools/eslint-plugin-project/`에 있다. 규칙 여덟 개가 `lib/contract.mjs`를 통해 이 파일을 읽는다.

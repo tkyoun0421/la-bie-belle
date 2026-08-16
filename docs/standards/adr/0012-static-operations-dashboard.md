@@ -2,7 +2,7 @@
 
 - 상태: Accepted
 - 날짜: 2026-07-24
-- 개정일: 2026-08-03 (revision 2)
+- 개정일: 2026-08-16 (revision 3)
 - 관련 문서: [운영 계약](../../workflow/WORKFLOW.md), [교차 검증 계약](../../workflow/REVIEW.md), [시스템 아키텍처](../ARCHITECTURE.md), [P0 Phase](../../execution/phases/00-foundation.md), [ADR-0013](0013-project-layer-structure.md)
 
 ## 개정 이력
@@ -12,6 +12,7 @@
 | 1 | 2026-07-24 | Accepted | 구 하네스의 readiness 보고서와 dashboard를 전제로 안내·최신화 계약을 정했다. |
 | — | 2026-08-03 | 보류(재검토 예정) | [ADR-0013](0013-project-layer-structure.md) 5레이어 재편으로 참조 경로와 산출물 위치가 무효가 되어 보류했다. |
 | 2 | 2026-08-03 | Accepted | 새 구조의 산출물 위치, 섹션 4종, 기계 판정 준비도 루브릭과 advisory 원칙으로 개정해 보류를 해제했다. |
+| 3 | 2026-08-16 | Accepted | 산출물을 3파일(index·retrospective·coaching)로 늘렸다. 회고 저장소와 `/coach` 결과가 생겨 표시할 곳이 필요해졌고, 한 파일에 이어 붙이면 판단용 첫 화면이 밀린다. 읽기 전용 advisory 원칙은 두 페이지에 그대로 적용된다(P0-T46). |
 
 ## Context
 
@@ -25,7 +26,15 @@ revision 1은 구 하네스의 readiness 보고서·dashboard 산출물을 전�
 
 ### 위치와 생성
 
-- 생성기는 `harness/dashboard/`에 두고 `pnpm dashboard` 명령 하나로 실행한다. 산출물은 `docs/execution/dashboard/index.html` 단일 파일이며 저장소에 커밋한다.
+- 생성기는 `harness/dashboard/`에 두고 `pnpm dashboard` 명령 하나로 실행한다. 산출물은 `docs/execution/dashboard/` 아래 세 파일이며 저장소에 커밋한다.
+
+| 파일 | 담는 것 | 정본 |
+| --- | --- | --- |
+| `index.html` | 진행도·준비도·검증·다음 행동. 판단용 첫 화면 | `index.jsonl`, `runs/`, `reviews/`, 게이트 결과 |
+| `retrospective.html` | 성공·실패 집계, task별 회고, 미결 제안 | `docs/execution/retrospective/cases.md`·`proposals.md` |
+| `coaching.html` | 최신 `/coach` 결과의 중요도별 제안, 실행 이력 | `docs/execution/coaching/<날짜>-coach.md` |
+
+`index.html`이 나머지 둘을 링크한다. 세 파일 모두 원본이 없으면 **누락**을 표시하고 생성은 계속한다 — 대시보드가 없어서 작업이 멈추는 일은 없어야 한다.
 - 산출물은 인라인 CSS만 사용하는 자체 포함 HTML이다. 외부 리소스를 로드하지 않고 네트워크 없이 열린다. 모바일 우선으로 핵심 판단 정보를 먼저 보여주고 상세는 접어 둔다.
 - 계약 준수 판정은 하네스 게이트 실행 결과를 재사용한다. 대시보드는 게이트 규칙을 다시 구현하지 않는다.
 
@@ -60,7 +69,7 @@ revision 1은 구 하네스의 readiness 보고서·dashboard 산출물을 전�
 
 ## Consequences
 
-- 사용자는 한 파일에서 현재 상태, 준비도 점수와 근거, 검증 결과, 다음 행동과 직접 차단 조건을 판단할 수 있다.
+- 사용자는 `index.html` 한 파일에서 현재 상태, 준비도 점수와 근거, 검증 결과, 다음 행동과 직접 차단 조건을 판단할 수 있다. 회고와 코칭은 판단이 아니라 되돌아보기용이라 별도 페이지로 뺀다.
 - 점수가 전부 기계 판정이므로 등급이 흔들리면 원인이 되는 수치를 바로 지목할 수 있다. 반대로 루브릭에 없는 품질은 이 점수로 드러나지 않는다.
 - 게이트 실행 결과를 재사용하므로 게이트 규칙이 바뀌면 대시보드 점수도 자동으로 따라간다. 게이트가 느려지면 생성도 같이 느려진다.
 - 산출물이 커밋되므로 어느 시점의 판단이었는지 이력이 남는다. 대신 재생성을 잊으면 기준 커밋이 뒤처지며, 그 사실은 문서 신선도 점수와 상단 표시로 드러난다.

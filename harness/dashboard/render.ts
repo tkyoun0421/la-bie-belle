@@ -41,7 +41,7 @@ const GRADE_TONE: Readonly<Record<string, string>> = {
   주의: "warning",
 };
 
-function escapeHtml(value: string): string {
+export function escapeHtml(value: string): string {
   return value
     .replace(/&/gu, "&amp;")
     .replace(/</gu, "&lt;")
@@ -267,7 +267,7 @@ ${list(reviews.backlog.resolved.map(backlogLine), "해결 기록 없음")}
 </section>`;
 }
 
-const STYLE = `:root{color-scheme:light;--ink:#0a0b0d;--muted:#5b616e;--line:#dee1e6;--surface:#f7f7f7;--action:#0052ff;--action-bg:#eef4ff;--success:#087a4b;--success-bg:#e8f8f1;--warning:#765500;--warning-bg:#fff7d6;--danger:#b01825;--danger-bg:#fff0f1}
+export const STYLE = `:root{color-scheme:light;--ink:#0a0b0d;--muted:#5b616e;--line:#dee1e6;--surface:#f7f7f7;--action:#0052ff;--action-bg:#eef4ff;--success:#087a4b;--success-bg:#e8f8f1;--warning:#765500;--warning-bg:#fff7d6;--danger:#b01825;--danger-bg:#fff0f1}
 *{box-sizing:border-box}
 body{margin:0;padding:16px;background:#fff;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
 main{display:flex;flex-direction:column;gap:16px}
@@ -332,6 +332,7 @@ export function renderDashboard(view: DashboardView): string {
 </head>
 <body>
 ${header(view)}
+<p class="eyebrow"><a href="retrospective.html">회고</a> · <a href="coaching.html">코칭</a></p>
 <main>
 ${nextActionSection(view.nextAction)}
 ${readinessSection(view.readiness)}
