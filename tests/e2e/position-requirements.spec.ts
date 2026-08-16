@@ -141,13 +141,11 @@ test.describe("포지션 기본 설정과 스케줄 필요 인원", () => {
         await admin.from("positions").delete().eq("id", positionId);
       }
       await admin.from("schedule_position_requirements").delete().eq("schedule_id", scheduleAId);
-      await admin.from("schedules").delete().eq("id", scheduleAId);
       if (scheduleBId !== null) {
         await admin
           .from("schedule_position_requirements")
           .delete()
           .eq("schedule_id", scheduleBId);
-        await admin.from("schedules").delete().eq("id", scheduleBId);
       }
       await context.close();
     }

@@ -1,5 +1,5 @@
 begin;
-select plan(82);
+select plan(86);
 
 -- =====================================================================
 -- 스키마: 신규 함수 시그니처·동시성 관례
@@ -15,6 +15,27 @@ select has_function(
 select ok(
   pg_get_functiondef('cancel_confirmed_schedule(uuid)'::regprocedure) ~* 'for update',
   '동시성: cancel_confirmed_schedule 정의가 for update 잠금을 사용한다'
+);
+
+-- =====================================================================
+-- P3-T08 backlog 흡수(F-06): bump_confirmed_revision 회수·cancel_confirmed_schedule 부여 회귀
+-- =====================================================================
+
+select ok(
+  not has_function_privilege(
+    'authenticated', 'bump_confirmed_revision(uuid, text, jsonb, jsonb)', 'execute'
+  ),
+  'P3-T08 F-06: authenticated는 bump_confirmed_revision 실행 권한이 없다(내부 전용)'
+);
+select ok(
+  not has_function_privilege(
+    'service_role', 'bump_confirmed_revision(uuid, text, jsonb, jsonb)', 'execute'
+  ),
+  'P3-T08 F-06: service_role도 bump_confirmed_revision 실행 권한이 없다(전 롤 회수)'
+);
+select ok(
+  has_function_privilege('authenticated', 'cancel_confirmed_schedule(uuid)', 'execute'),
+  'P3-T08 F-06: authenticated는 cancel_confirmed_schedule 실행 권한을 가진다'
 );
 
 -- =====================================================================
@@ -227,6 +248,16 @@ select is(
     'revision', 2
   ),
   'AC1: schedule_revised 감사 detail이 section·전후 값·새 revision을 값으로 담는다'
+);
+select is(
+  (
+    select actor_profile_id from scheduling_audit_logs
+    where schedule_id = (select id from schedules where work_date = '2097-10-01')
+      and event = 'schedule_revised'
+    order by seq desc limit 1
+  ),
+  '23000000-0000-0000-0000-000000000001',
+  'P3-T08: schedule_revised 감사의 actor_profile_id가 호출 관리자다'
 );
 
 -- 2. 예식 동일 내용 재저장(중복 요청)도 revision을 올린다

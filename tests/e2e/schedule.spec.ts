@@ -9,7 +9,7 @@ import {
   signInWithPasswordCookies,
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
-import { WORK_DATE_BANDS, monthAnchorInBand } from "./support/work-date-band";
+import { WORK_DATE_BANDS, workDatesInSameMonth } from "./support/work-date-band";
 
 function randomPhone(): string {
   const suffix = Math.floor(Math.random() * 1e8)
@@ -54,23 +54,6 @@ async function createWorkerSession(context: BrowserContext, baseURL: string | un
   return { admin, id: data.user.id, name };
 }
 
-function pad(value: number): string {
-  return String(value).padStart(2, "0");
-}
-
-function pickDistinctDays(): [number, number, number] {
-  const days = new Set<number>();
-  while (days.size < 3) {
-    days.add(1 + Math.floor(Math.random() * 27));
-  }
-  const ordered = Array.from(days);
-  return [ordered[0]!, ordered[1]!, ordered[2]!];
-}
-
-function dateKey(year: number, month: number, day: number): string {
-  return `${year}-${pad(month)}-${pad(day)}`;
-}
-
 test.describe("근무자 달력과 다중 신청", () => {
   test("모집 날짜 선택과 기존 신청 해제를 batch로 저장하고 되돌리기로 원상 복귀한다", async ({
     browser,
@@ -80,11 +63,16 @@ test.describe("근무자 달력과 다중 신청", () => {
     const worker = await createWorkerSession(context, baseURL);
     const page = await context.newPage();
 
-    const { year, month } = monthAnchorInBand(WORK_DATE_BANDS.workerCalendar);
-    const [dayA, dayB, dayC] = pickDistinctDays();
-    const dateA = dateKey(year, month, dayA);
-    const dateB = dateKey(year, month, dayB);
-    const dateC = dateKey(year, month, dayC);
+    const [dateA, dateB, dateC] = workDatesInSameMonth(WORK_DATE_BANDS.workerCalendar, 3) as [
+      string,
+      string,
+      string,
+    ];
+    const month = Number(dateA.slice(5, 7));
+    const monthKey = dateA.slice(0, 7);
+    const dayA = Number(dateA.slice(8, 10));
+    const dayB = Number(dateB.slice(8, 10));
+    const dayC = Number(dateC.slice(8, 10));
 
     const { data: scheduleRows, error: scheduleError } = await worker.admin
       .from("schedules")
@@ -112,7 +100,7 @@ test.describe("근무자 달력과 다중 신청", () => {
       throw applicationError;
     }
 
-    await page.goto(`/schedule?month=${year}-${pad(month)}`);
+    await page.goto(`/schedule?month=${monthKey}`);
     await expect(page.getByRole("heading", { name: "일정" })).toBeVisible();
 
     const cellA = page.getByRole("button", { name: `${month}월 ${dayA}일 신청 가능` });

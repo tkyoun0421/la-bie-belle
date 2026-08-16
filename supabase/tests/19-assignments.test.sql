@@ -1,5 +1,5 @@
 begin;
-select plan(95);
+select plan(106);
 
 -- =====================================================================
 -- 스키마 노출: 테이블·컬럼·제약·RLS·함수 시그니처
@@ -120,7 +120,9 @@ insert into public.profile_roles (profile_id, role, granted_by) values
 insert into schedules (work_date, application_deadline, status) values
   ('2099-09-01', '2099-08-25', 'OPEN'),
   ('2099-09-02', '2099-08-26', 'CONFIRMED'),
-  ('2099-09-03', '2099-08-27', 'CANCELLED');
+  ('2099-09-03', '2099-08-27', 'CANCELLED'),
+  ('2099-09-04', '2099-08-28', 'CLOSED'),
+  ('2099-09-05', '2099-08-29', 'PREPARING');
 
 insert into applications (schedule_id, profile_id, status) values
   (
@@ -447,6 +449,16 @@ select is(
   ),
   'F-05: 감사 detail에 추가 2·제거 0·이전 0·이후 2가 수치로만 담긴다(PII 없음)'
 );
+select is(
+  (
+    select actor_profile_id from scheduling_audit_logs
+    where event = 'assignment_positions_replaced'
+      and (detail ->> 'position_id')::uuid = (select id from positions where name = '팀장')
+    order by seq desc limit 1
+  ),
+  '19000000-0000-0000-0000-000000000001',
+  'P3-T08: assignment_positions_replaced 감사의 actor_profile_id가 호출 관리자다'
+);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
@@ -569,6 +581,20 @@ select is(
 );
 select is(
   (
+    select detail from scheduling_audit_logs
+    where event = 'assignment_positions_replaced'
+      and schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and (detail ->> 'position_id')::uuid = (select id from positions where name = '팀장')
+    order by seq desc limit 1
+  ),
+  jsonb_build_object(
+    'position_id', (select id from positions where name = '팀장'),
+    'added_count', 0, 'removed_count', 1, 'previous_count', 1, 'new_count', 0
+  ),
+  'P3-T08 전원 해제 감사: 빈 배열 저장의 감사 detail이 추가 0·제거 1·이전 1·이후 0으로 남는다'
+);
+select is(
+  (
     select count(*)::int from assignments
     where schedule_id = (select id from schedules where work_date = '2099-09-01')
       and profile_id = '19000000-0000-0000-0000-000000000003'
@@ -641,7 +667,7 @@ select throws_ok(
   )$$,
   'LB030',
   null,
-  'AC4 자격 강제 5/5: 확정 스케줄 배정은 자격보다 시급 미설정(LB030)에 먼저 막힌다(P3-T09)'
+  'AC4 자격 강제 5/5(F-09 정정): 자격(LB023) 검사가 먼저 실행되고 F1은 그 검사를 통과하지만, 확정 스케줄이라 이어지는 시급 미설정 검사(LB030)에서 거부된다(P3-T09)'
 );
 
 select throws_ok(
@@ -1010,6 +1036,130 @@ select is(
   'F-05/4: 배정된 적 없는 비활성(pending) 계정은 여전히 후보 목록에 없다'
 );
 reset role;
+
+-- =====================================================================
+-- P3-T08 축 단위 공백: CLOSED·PREPARING도 replace_position_assignments를
+-- 허용한다(전이 트리거는 update만 다뤄 직접 insert된 픽스처에도 적용된다)
+-- =====================================================================
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-04'),
+    (select id from positions where name = '팀장'),
+    array['19000000-0000-0000-0000-000000000002']::uuid[]
+  )$$,
+  'P3-T08 CLOSED: replace_position_assignments가 CLOSED 스케줄에서도 성공한다'
+);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-05'),
+    (select id from positions where name = '팀장'),
+    array['19000000-0000-0000-0000-000000000002']::uuid[]
+  )$$,
+  'P3-T08 PREPARING: replace_position_assignments가 PREPARING 스케줄에서도 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-04')
+      and ap.position_id = (select id from positions where name = '팀장')
+  ),
+  1,
+  'P3-T08 CLOSED: 팀장에 1명이 실제로 배정됐다'
+);
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-05')
+      and ap.position_id = (select id from positions where name = '팀장')
+  ),
+  1,
+  'P3-T08 PREPARING: 팀장에 1명이 실제로 배정됐다'
+);
+
+-- =====================================================================
+-- P3-T08 한 계층뿐 규칙: 필요 인원이 0인 포지션에도 정식 배정할 수 있다
+-- =====================================================================
+
+insert into schedule_position_requirements (schedule_id, position_id, required_count)
+values (
+  (select id from schedules where work_date = '2099-09-01'),
+  (select id from positions where name = '축가'),
+  0
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '축가'),
+    array['19000000-0000-0000-0000-000000000004']::uuid[]
+  )$$,
+  'P3-T08: 필요 인원 0인 축가 포지션에도 정식 배정이 성공한다(기본 포지션이라 자격 통과)'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '축가')
+  ),
+  1,
+  'P3-T08: 필요 0인 축가 포지션에 실제로 1명이 배정됐다(필요 인원 표는 배정을 막지 않는다)'
+);
+
+-- =====================================================================
+-- P3-T08 한 계층뿐 규칙: 기본 포지션 지정·해제가 자격 판정을 즉시 전이시킨다
+-- =====================================================================
+
+insert into positions (name, default_required_count, gender_requirement, is_default, is_active)
+values ('임시기본전이포지션', 1, 'any', false, true);
+
+select is(
+  (
+    select eligible from list_position_assignment_candidates(
+      (select id from schedules where work_date = '2099-09-01'),
+      (select id from positions where name = '임시기본전이포지션')
+    ) where name = '배정M1'
+  ),
+  false,
+  'P3-T08 기본 포지션 지정 전: 가능 포지션 없는 M1은 비기본 포지션에서 eligible=false다'
+);
+
+update positions set is_default = true where name = '임시기본전이포지션';
+
+select is(
+  (
+    select eligible from list_position_assignment_candidates(
+      (select id from schedules where work_date = '2099-09-01'),
+      (select id from positions where name = '임시기본전이포지션')
+    ) where name = '배정M1'
+  ),
+  true,
+  'P3-T08 기본 포지션 지정: is_default를 true로 바꾸면 같은 M1이 즉시 eligible=true가 된다'
+);
+
+update positions set is_default = false where name = '임시기본전이포지션';
+
+select is(
+  (
+    select eligible from list_position_assignment_candidates(
+      (select id from schedules where work_date = '2099-09-01'),
+      (select id from positions where name = '임시기본전이포지션')
+    ) where name = '배정M1'
+  ),
+  false,
+  'P3-T08 기본 포지션 해제: is_default를 다시 false로 되돌리면 M1이 다시 eligible=false가 된다'
+);
 
 select * from finish();
 rollback;

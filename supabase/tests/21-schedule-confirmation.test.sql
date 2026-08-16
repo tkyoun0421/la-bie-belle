@@ -1,5 +1,5 @@
 begin;
-select plan(44);
+select plan(48);
 
 -- =====================================================================
 -- 스키마 노출: 스냅샷 컬럼·confirm_schedule 함수 시그니처·동시성 관례
@@ -338,6 +338,15 @@ select is(
   ),
   'AC5 경계값: 배정 0명·필요 전부 0 스케줄은 경고 0건으로 확정되고 감사 detail이 빈 목록이다'
 );
+select is(
+  (
+    select actor_profile_id from scheduling_audit_logs
+    where schedule_id = (select id from schedules where work_date = '2099-12-06')
+      and event = 'schedule_confirmed'
+  ),
+  '21000000-0000-0000-0000-000000000001',
+  'P3-T08: schedule_confirmed 감사의 actor_profile_id가 호출 관리자다'
+);
 
 -- =====================================================================
 -- AC1·AC6 재시도: 성공 직후 재확정은 LB029로 거부된다(중복 요청·동시성)
@@ -592,6 +601,37 @@ select throws_ok(
   'AC6: 직접 insert된 CANCELLED 픽스처의 확정 시도는 LB029로 거부된다'
 );
 reset role;
+
+-- =====================================================================
+-- P3-T08 backlog 흡수(F-04, 동시 확정 대체 종결): 병렬 트랜잭션은 pgTAP
+-- 단일 연결 한계로 실증할 수 없다. 재호출 LB029·revision 불변·스냅샷
+-- 불변 단언으로 대체한다(사유는 backlog 줄에도 병기).
+-- =====================================================================
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '21000000-0000-0000-0000-000000000001', true);
+select throws_ok(
+  $$select confirm_schedule((select id from schedules where work_date = '2099-12-08'))$$,
+  'LB029',
+  '확정할 수 없는 상태예요',
+  'P3-T08 F-04 대체 종결: 이미 확정된 겸직자 스케줄의 재확정 재호출도 LB029로 거부된다'
+);
+reset role;
+
+select is(
+  (select revision from schedules where work_date = '2099-12-08'),
+  1,
+  'P3-T08 F-04 대체 종결: 거부된 재확정 뒤에도 revision은 1 그대로다'
+);
+select is(
+  (
+    select hourly_wage_snapshot from assignments
+    where schedule_id = (select id from schedules where work_date = '2099-12-08')
+      and profile_id = '21000000-0000-0000-0000-000000000008'
+  ),
+  17000,
+  'P3-T08 F-04 대체 종결: 거부된 재확정 뒤에도 겸직자 스냅샷은 17000 그대로다'
+);
 
 select * from finish();
 rollback;

@@ -78,7 +78,6 @@ async function insertSchedule(
 
 async function deleteScheduleFixture(admin: SupabaseClient, scheduleId: string) {
   await admin.from("ceremonies").delete().eq("schedule_id", scheduleId);
-  await admin.from("schedules").delete().eq("id", scheduleId);
 }
 
 test.describe("관리자 예식 시간 편집", () => {

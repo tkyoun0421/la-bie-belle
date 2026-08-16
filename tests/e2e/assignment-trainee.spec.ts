@@ -303,4 +303,77 @@ test.describe("교육생 배정", () => {
 
     await context.close();
   });
+
+  test("P3-T08 한 계층뿐 규칙: 다른 포지션에 이미 배정된 후보는 교육 칩 자체가 숨겨진다", async ({
+    browser,
+    baseURL,
+  }) => {
+    const context = await browser.newContext({ ...devices["Pixel 5"], reducedMotion: "reduce" });
+    const { admin } = await createAdminSession(context, baseURL);
+    const page = await context.newPage();
+
+    const positionIds = await findPositionIds(admin, [SCAN_POSITION_NAME, MAIN_POSITION_NAME]);
+    const scanPositionId = positionIds[SCAN_POSITION_NAME]!;
+    const mainPositionId = positionIds[MAIN_POSITION_NAME]!;
+
+    const otherPositionWorker = await createWorkerProfile(
+      admin,
+      "trainee-chip-hidden",
+      "다른포지션정식",
+      "female",
+    );
+
+    const { error: eligibilityError } = await admin.from("worker_position_eligibilities").insert([
+      { profile_id: otherPositionWorker.id, position_id: scanPositionId },
+      { profile_id: otherPositionWorker.id, position_id: mainPositionId },
+    ]);
+    if (eligibilityError) {
+      throw eligibilityError;
+    }
+
+    const workDate = workDateInBand(WORK_DATE_BANDS.assignmentTrainee);
+    const scheduleId = await insertSchedule(admin, workDate, "OPEN");
+
+    const { error: requirementsError } = await admin.from("schedule_position_requirements").insert([
+      { schedule_id: scheduleId, position_id: scanPositionId, required_count: 1 },
+      { schedule_id: scheduleId, position_id: mainPositionId, required_count: 1 },
+    ]);
+    if (requirementsError) {
+      throw requirementsError;
+    }
+
+    const { data: assignmentRow, error: assignmentError } = await admin
+      .from("assignments")
+      .insert({ schedule_id: scheduleId, profile_id: otherPositionWorker.id })
+      .select("id")
+      .single();
+    if (assignmentError || !assignmentRow) {
+      throw assignmentError ?? new Error("배정 픽스처 생성에 실패했습니다.");
+    }
+    const { error: assignmentPositionError } = await admin
+      .from("assignment_positions")
+      .insert({ assignment_id: (assignmentRow as { id: string }).id, position_id: mainPositionId });
+    if (assignmentPositionError) {
+      throw assignmentPositionError;
+    }
+
+    await page.goto(`/admin/schedule/${scheduleId}`);
+    await expect(page.getByRole("heading", { name: workDate })).toBeVisible();
+
+    const scanSheet = await openPositionSheet(page, SCAN_POSITION_NAME);
+    const otherPositionWorkerRow = scanSheet
+      .locator("li")
+      .filter({ hasText: otherPositionWorker.name });
+    await expect(otherPositionWorkerRow).toBeVisible();
+    await expect(otherPositionWorkerRow.getByText(MAIN_POSITION_NAME, { exact: true })).toBeVisible();
+    await expect(
+      otherPositionWorkerRow.getByRole("button", { name: /^교육/ }),
+    ).toHaveCount(0);
+    await expect(
+      otherPositionWorkerRow.getByRole("button", { name: "선택", exact: true }),
+    ).toBeVisible();
+    await closeSheet(page, scanSheet);
+
+    await context.close();
+  });
 });

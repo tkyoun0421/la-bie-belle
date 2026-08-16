@@ -1,5 +1,5 @@
 begin;
-select plan(89);
+select plan(108);
 
 -- =====================================================================
 -- 스키마 노출: 테이블·컬럼·제약·RLS·함수 시그니처
@@ -111,7 +111,10 @@ insert into schedules (work_date, application_deadline, status) values
   ('2099-12-03', '2099-11-26', 'OPEN'),
   ('2099-12-04', '2099-11-27', 'OPEN'),
   ('2099-12-05', '2099-11-28', 'CONFIRMED'),
-  ('2099-12-06', '2099-11-29', 'CANCELLED');
+  ('2099-12-06', '2099-11-29', 'CANCELLED'),
+  ('2099-12-07', '2099-11-30', 'CLOSED'),
+  ('2099-12-08', '2099-12-01', 'PREPARING'),
+  ('2099-12-10', '2099-12-03', 'OPEN');
 
 -- =====================================================================
 -- AC1 기능: admin은 positions를 직접 CRUD할 수 있고 비관리자는 거부된다
@@ -510,6 +513,17 @@ select is(
   ),
   'F-05: 수정 감사 detail에 변경 전(1)·후(3) 값이 병기된다'
 );
+select is(
+  (
+    select actor_profile_id from scheduling_audit_logs
+    where event = 'requirement_set'
+      and schedule_id = (select id from schedules where work_date = '2099-12-01')
+      and (detail ->> 'position_id')::uuid = (select id from positions where name = '팀장')
+    order by seq desc limit 1
+  ),
+  '18000000-0000-0000-0000-000000000001',
+  'P3-T08: requirement_set 감사의 actor_profile_id가 호출 관리자다'
+);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '18000000-0000-0000-0000-000000000001', true);
@@ -747,6 +761,182 @@ select is(
   ),
   0,
   'AC4 경계값: 비활성 포지션 추가는 감사도 남기지 않는다'
+);
+
+-- =====================================================================
+-- P3-T08 축 단위 공백: CLOSED·PREPARING도 수정 RPC를 허용한다(전이 트리거는
+-- update만 다뤄 직접 insert된 CLOSED·PREPARING 픽스처에도 적용된다)
+-- =====================================================================
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '18000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select copy_schedule_requirements((select id from schedules where work_date = '2099-12-07'))$$,
+  'P3-T08 CLOSED: copy_schedule_requirements가 CLOSED 스케줄에서도 성공한다'
+);
+select lives_ok(
+  $$select copy_schedule_requirements((select id from schedules where work_date = '2099-12-08'))$$,
+  'P3-T08 PREPARING: copy_schedule_requirements가 PREPARING 스케줄에서도 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-07')
+  ),
+  10,
+  'P3-T08 CLOSED: 활성 포지션 10개가 복사됐다'
+);
+select is(
+  (
+    select count(*)::int from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-08')
+  ),
+  10,
+  'P3-T08 PREPARING: 활성 포지션 10개가 복사됐다'
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '18000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select set_position_requirement(
+    (select id from schedules where work_date = '2099-12-07'),
+    (select id from positions where name = '팀장'), 5
+  )$$,
+  'P3-T08 CLOSED: set_position_requirement가 CLOSED 스케줄에서도 성공한다'
+);
+select lives_ok(
+  $$select remove_position_requirement(
+    (select id from schedules where work_date = '2099-12-07'),
+    (select id from positions where name = '스캔')
+  )$$,
+  'P3-T08 CLOSED: remove_position_requirement가 CLOSED 스케줄에서도 성공한다'
+);
+select lives_ok(
+  $$select set_position_requirement(
+    (select id from schedules where work_date = '2099-12-08'),
+    (select id from positions where name = '팀장'), 5
+  )$$,
+  'P3-T08 PREPARING: set_position_requirement가 PREPARING 스케줄에서도 성공한다'
+);
+select lives_ok(
+  $$select remove_position_requirement(
+    (select id from schedules where work_date = '2099-12-08'),
+    (select id from positions where name = '스캔')
+  )$$,
+  'P3-T08 PREPARING: remove_position_requirement가 PREPARING 스케줄에서도 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select required_count from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-07')
+      and position_id = (select id from positions where name = '팀장')
+  ),
+  5,
+  'P3-T08 CLOSED: 팀장 필요 인원이 5로 갱신됐다'
+);
+select is(
+  (
+    select count(*)::int from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-07')
+      and position_id = (select id from positions where name = '스캔')
+  ),
+  0,
+  'P3-T08 CLOSED: 스캔 필요 인원 행이 삭제됐다'
+);
+select is(
+  (
+    select required_count from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-08')
+      and position_id = (select id from positions where name = '팀장')
+  ),
+  5,
+  'P3-T08 PREPARING: 팀장 필요 인원이 5로 갱신됐다'
+);
+select is(
+  (
+    select count(*)::int from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-08')
+      and position_id = (select id from positions where name = '스캔')
+  ),
+  0,
+  'P3-T08 PREPARING: 스캔 필요 인원 행이 삭제됐다'
+);
+
+-- =====================================================================
+-- P3-T08 한 계층뿐 규칙: 전역 기본값 비전파(포지션 구조만 강제, 인원값은 스냅샷)
+-- =====================================================================
+
+select is(
+  (
+    select required_count from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-01')
+      and position_id = (select id from positions where name = '메인')
+  ),
+  1,
+  'P3-T08 비전파 준비: 메인 필요 인원이 복사 시점 기본값(1) 그대로다'
+);
+
+update positions set default_required_count = default_required_count + 5 where name = '메인';
+
+select is(
+  (select default_required_count from positions where name = '메인'),
+  6,
+  'P3-T08 비전파: 메인의 전역 기본값이 6으로 바뀌었다'
+);
+select is(
+  (
+    select required_count from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-01')
+      and position_id = (select id from positions where name = '메인')
+  ),
+  1,
+  'P3-T08 비전파: 전역 기본값 변경 후에도 이미 복사된 스케줄의 required_count는 1 그대로다'
+);
+
+-- =====================================================================
+-- P3-T08 backlog 흡수(P3-T02): 복사 함수 동시성 단언이 조기 반환 경로만
+-- 실행해 on conflict 실증이 없었다(단일 pgTAP 연결은 실제 동시 트랜잭션 경합을
+-- 만들 수 없다 — copy_schedule_requirements의 exists() 조기 반환 가드가
+-- 함수 자체 호출로는 on conflict 분기 도달을 막기 때문이다). 대체로 함수가
+-- 쓰는 것과 동일한 INSERT...ON CONFLICT DO NOTHING 문을 선삽입 행 위에서
+-- 직접 실행해 충돌 시 기존 값이 보존됨을 실증한다.
+-- =====================================================================
+
+insert into schedule_position_requirements (schedule_id, position_id, required_count)
+values (
+  (select id from schedules where work_date = '2099-12-10'),
+  (select id from positions where name = '팀장'),
+  77
+);
+
+select lives_ok(
+  $$insert into schedule_position_requirements (schedule_id, position_id, required_count)
+    select (select id from schedules where work_date = '2099-12-10'), id, default_required_count
+      from positions
+      where is_active
+    on conflict (schedule_id, position_id) do nothing$$,
+  'P3-T08 동시성 대체 실증: 복사 INSERT의 on conflict do nothing 절이 선삽입 행과 충돌 없이 성공한다'
+);
+select is(
+  (
+    select required_count from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-10')
+      and position_id = (select id from positions where name = '팀장')
+  ),
+  77,
+  'P3-T08 동시성 대체 실증: 선삽입된 팀장 행 값(77)이 on conflict do nothing으로 보존된다(덮어쓰지 않음)'
+);
+select is(
+  (
+    select count(*)::int from schedule_position_requirements
+    where schedule_id = (select id from schedules where work_date = '2099-12-10')
+  ),
+  (select count(*)::int from positions where is_active),
+  'P3-T08 동시성 대체 실증: 나머지 활성 포지션은 정상 삽입되어 총 행 수가 활성 포지션 수와 같다'
 );
 
 -- =====================================================================

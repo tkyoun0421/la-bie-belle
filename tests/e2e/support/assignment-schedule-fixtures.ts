@@ -15,8 +15,8 @@ export function randomPhone(): string {
 export async function createAdminSession(context: BrowserContext, baseURL: string | undefined) {
   const env = loadSupabaseTestEnv();
   const admin = createClient(env.supabaseUrl, env.serviceRoleKey);
-  const email = `e2e-assignment-eligibility-admin-${randomUUID()}@labiebelle.test`;
-  const password = "e2e-assignment-eligibility-admin-password-Aa1!";
+  const email = `e2e-assignment-admin-${randomUUID()}@labiebelle.test`;
+  const password = "e2e-assignment-admin-password-Aa1!";
 
   const { data, error } = await admin.auth.admin.createUser({
     email,
@@ -60,8 +60,8 @@ export async function createWorkerProfile(
   label: string,
   gender: "male" | "female",
 ): Promise<{ id: string; name: string }> {
-  const email = `e2e-assignment-eligibility-${slug}-${randomUUID()}@labiebelle.test`;
-  const password = "e2e-assignment-eligibility-worker-password-Aa1!";
+  const email = `e2e-assignment-${slug}-${randomUUID()}@labiebelle.test`;
+  const password = "e2e-assignment-worker-password-Aa1!";
   const name = `${label}-${randomUUID().slice(0, 8)}`;
 
   const { data, error } = await admin.auth.admin.createUser({
@@ -92,7 +92,7 @@ export async function createWorkerProfile(
 export async function insertSchedule(
   admin: SupabaseClient,
   workDate: string,
-  status: "OPEN" | "CONFIRMED",
+  status: "OPEN" | "CLOSED" | "PREPARING" | "CONFIRMED",
 ): Promise<string> {
   const { data, error } = await admin
     .from("schedules")

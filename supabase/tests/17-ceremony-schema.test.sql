@@ -1,5 +1,5 @@
 begin;
-select plan(67);
+select plan(68);
 
 -- =====================================================================
 -- 스키마 노출: 테이블·컬럼·RLS·함수 시그니처
@@ -168,6 +168,17 @@ select is(
   ),
   '{"previous_ceremony_times": [], "new_ceremony_times": ["10:00", "11:00", "12:10"]}'::jsonb,
   'F-05: 최초 저장의 감사 detail에 이전(빈 배열)·새 예식 시각이 남는다'
+);
+select is(
+  (
+    select actor_profile_id from scheduling_audit_logs
+    where event = 'ceremonies_replaced'
+      and schedule_id = (select id from schedules where work_date = '2099-11-01')
+    order by seq
+    limit 1
+  ),
+  '17000000-0000-0000-0000-000000000001',
+  'P3-T08: ceremonies_replaced 감사의 actor_profile_id가 호출 관리자다'
 );
 
 set local role authenticated;

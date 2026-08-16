@@ -244,13 +244,13 @@
 - [ ] [low] [P2-T05] KST 오늘 계산이 세 page에 복제(shared/lib 정본 부재) — src/app/(protected)/(tabs)/page.tsx
 - [ ] [low] [P2-T05] 신청 수 배지 aria 미반영·E2E 클래스 셀렉터 의존 — src/shared/ui/calendar.tsx
 - [ ] [low] [P2-T05] mutation 성공 닫기 경로에서 신청자 이름 상태 미초기화(닫기 경로 비대칭) — src/views/admin-recruitment/ui/RecruitmentOpenView.tsx
-- [ ] [medium] [P3-T01] E2E 스케줄 픽스처 정리가 append-only 트리거에 항상 실패·오류 무시(누적·유니크 충돌) — tests/e2e/ceremony-edit.spec.ts
+- [x] [medium] [P3-T01] E2E 스케줄 픽스처 정리가 append-only 트리거에 항상 실패·오류 무시(누적·유니크 충돌) — tests/e2e/ceremony-edit.spec.ts
 - [ ] [low] [P3-T01] 검증 모델 함수 2개(개수·중복) 프로덕션 미소비, 생성 폼 사전 검증 없음 — src/entities/schedule/model/ceremony-times.ts
 - [ ] [low] [P3-T01] 04번 pgTAP 수정이 인수 조건 7과 어긋나는데 runs/radio.md 세부 기록 누락 — supabase/tests/04-rls-default-deny.test.sql
 - [ ] [low] [P3-T01] 빈 예식 행이 있으면 추천 미리보기가 잘못된 값 표시(일시적 표시 오류) — src/features/ceremony/hooks/useCeremonyEditor.ts
 - [ ] [medium] [P3-T02] 첫 복사와 포지션 추가의 교차 트랜잭션에서 신규 포지션 반영 누락 가능(잠금 부재) — supabase/migrations/20260809000000_position_requirements.sql
-- [ ] [medium] [P3-T02] E2E 정리가 append-only 트리거에 막혀 OPEN 스케줄 잔존·근무일 유니크 점유 — tests/e2e/position-requirements.spec.ts
-- [ ] [medium] [P3-T02] 복사 함수 동시성 단언이 조기 반환 경로만 실행해 on conflict 실증 부재 — supabase/tests/18-position-requirements.test.sql
+- [x] [medium] [P3-T02] E2E 정리가 append-only 트리거에 막혀 OPEN 스케줄 잔존·근무일 유니크 점유 — tests/e2e/position-requirements.spec.ts
+- [x] [medium] [P3-T02] 복사 함수 동시성 단언이 조기 반환 경로만 실행해 on conflict 실증 부재 — supabase/tests/18-position-requirements.test.sql
 - [ ] [low] [P3-T02] 23503 일괄 매핑으로 삭제 차단 원인을 필요 인원으로 단정(가능 포지션 출처 혼동) — src/shared/config/error-codes.config.ts
 - [ ] [low] [P3-T02] 시스템 포지션 보호 거부(P0001)를 재시도 가능한 일시 오류로 안내 — src/features/position/api/manage-positions.ts
 - [ ] [low] [P3-T02] position_id 역방향 FK 인덱스 부재로 삭제 RI 검사 전체 스캔 가능 — supabase/migrations/20260809000000_position_requirements.sql
@@ -272,7 +272,7 @@
 - [ ] [medium] [P3-T03] 필요 인원 표가 같은 목록을 두 벌 렌더 — src/views/admin-schedule/ui/AdminSchedulePrepView.tsx
 - [ ] [medium] [P3-T03] 저장 왕복 뒤 세대 검사 부재로 다른 포지션 시트에 이전 결과 적용 — src/features/assignment/hooks/useCandidateSelection.ts
 - [ ] [medium] [P3-T03] 필요 인원 행 수 조회 실패가 fail-closed 아님(빈 표 노출) — src/app/(protected)/admin/schedule/[id]/page.tsx
-- [ ] [medium] [P3-T03] E2E 픽스처 try/finally 정리 부재(인수 조건 7 선언과 불일치) — tests/e2e/assignment-eligibility.spec.ts
+- [x] [medium] [P3-T03] E2E 픽스처 try/finally 정리 부재(인수 조건 7 선언과 불일치) — tests/e2e/assignment-eligibility.spec.ts
 - [ ] [medium] [P3-T03] 배정 수 집계가 1000행 상한 조회 뒤 JS 합산이라 상한 초과 시 조용히 축소 — src/entities/schedule/api/list-schedule-requirements.ts
 - [ ] [medium] [P3-T03] 비활성 포지션에서 전원 해제까지 22023 거부(불변 규칙은 신규 배정만 금지) — supabase/migrations/20260810000000_assignments.sql
 - [ ] [low] [P3-T03] DEFINER 함수 search_path pg_temp 미고정(P1-T04·P2-T04 계열 반복) — supabase/migrations/20260810000000_assignments.sql
@@ -291,28 +291,28 @@
 - [ ] [medium] [P0-T45] reduced-motion 가드 정규식이 두 미디어 블록 사이 규칙까지 캡처해 토큰 덮기 가드의 정밀도 상실 — src/app/__tests__/globals.test.ts
 - [ ] [low] [P0-T45] --duration-crossfade의 존재·값 단언과 전환 키프레임·격리 규칙의 존재 단언 부재 — src/app/__tests__/globals.test.ts
 - [ ] [low] [P0-T45] resolveRouteTransition의 ?? "tab" 폴백이 도달 불가 분기라 불변 조건을 가림 — src/widgets/app-shell/ui/AppShellTabBar.tsx
-- [ ] [low] [P3-T04] 신규 겸직 test가 기존 test와 같은 assignmentEligibility 밴드를 나눠 써 23505 충돌 확률(약 2/864) — tests/e2e/assignment-eligibility.spec.ts
+- [x] [low] [P3-T04] 신규 겸직 test가 기존 test와 같은 assignmentEligibility 밴드를 나눠 써 23505 충돌 확률(약 2/864) — tests/e2e/assignment-eligibility.spec.ts
 - [x] [low] [P3-T04] handoff가 RED→GREEN 4쌍이라 적었으나 tdd.json은 3쌍(entries 6개) — docs/execution/runs/P3-T04/handoff.md
 - [x] [medium] [P3-T05] 봉인문이 지시한 insert·delete RLS 정책이 없는데 그 이탈이 구현 기록에 없음(revision 3 재봉인 b0bfa0c가 봉인문을 사실로 정정) — supabase/migrations/20260811000000_assignment_trainees.sql
 - [x] [medium] [P3-T05] 교육생 조회가 왕복을 2→3으로 늘려 봉인문 계약과 다른데 그 이탈이 구현 기록에 없음(revision 3 재봉인 b0bfa0c가 봉인문을 사실로 정정) — src/entities/schedule/api/list-schedule-requirements.ts
 - [ ] [medium] [P3-T05] RED 6쌍 중 3쌍이 구현 후 되돌림으로 합성돼 편집 전 RED를 증명하지 못함 — docs/execution/runs/P3-T05/tdd.json
 - [ ] [low] [P3-T05] 역할 교체 한 건이 changeCount 2로 세어져 되돌리기 문구가 "2명"으로 뜸 — src/features/assignment/hooks/useCandidateSelection.ts
-- [ ] [low] [P3-T05] 공용 e2e 픽스처가 옛 spec 이름(e2e-assignment-eligibility) 접두를 그대로 씀 — tests/e2e/support/assignment-schedule-fixtures.ts
-- [ ] [medium] [P3-T05] 4-인자 스왑(같은 포지션 교육→정식 전환) 허용 분기가 어느 계층에서도 단언되지 않음(F-12) — supabase/tests/20-assignment-trainees.test.sql
-- [ ] [low] [P3-T05] AC7 전이 단언이 프로덕션이 쓰지 않는 3-인자 경로로만 이뤄짐(F-13) — supabase/tests/20-assignment-trainees.test.sql
-- [ ] [low] [P3-T05] F-01 준비 단계가 설명과 달리 드레스 교육생 4명을 조용히 제거(F-14) — supabase/tests/20-assignment-trainees.test.sql
+- [x] [low] [P3-T05] 공용 e2e 픽스처가 옛 spec 이름(e2e-assignment-eligibility) 접두를 그대로 씀 — tests/e2e/support/assignment-schedule-fixtures.ts
+- [x] [medium] [P3-T05] 4-인자 스왑(같은 포지션 교육→정식 전환) 허용 분기가 어느 계층에서도 단언되지 않음(F-12) — supabase/tests/20-assignment-trainees.test.sql
+- [x] [low] [P3-T05] AC7 전이 단언이 프로덕션이 쓰지 않는 3-인자 경로로만 이뤄짐(F-13) — supabase/tests/20-assignment-trainees.test.sql
+- [x] [low] [P3-T05] F-01 준비 단계가 설명과 달리 드레스 교육생 4명을 조용히 제거(F-14) — supabase/tests/20-assignment-trainees.test.sql
 - [ ] [low] [P3-T05] 상한 검사 세 블록이 이벤트 문자열만 다른 채 복제됨(F-15) — src/entities/schedule/api/list-schedule-requirements.ts
 - [ ] [medium] [P3-T06] 성공 응답에서 확정 확정본 경고 목록을 받고도 폐기(봉인 Interface 괴리, 기록 부재)(F-02) — src/features/confirmation/api/confirm-schedule.ts
 - [ ] [medium] [P3-T06] requirement 삭제된 포지션의 담당자 없음 경고가 감사·프리뷰 양쪽 누락(P3-T05 화면 계산과 동일 모델링, 합집합 전환은 봉인문 보강 필요)(F-03) — supabase/migrations/20260815000000_schedule_confirmation.sql
-- [ ] [medium] [P3-T06] 동시 확정 단언이 함수 문자열 검사·순차 재호출뿐(병렬 트랜잭션은 현 pgTAP 하네스로 표현 불가)(F-04) — supabase/tests/21-schedule-confirmation.test.sql
+- [x] [medium] [P3-T06] 동시 확정 단언이 함수 문자열 검사·순차 재호출뿐(병렬 트랜잭션은 현 pgTAP 하네스로 표현 불가)(F-04) — supabase/tests/21-schedule-confirmation.test.sql (P3-T08 대체 종결: 병렬 트랜잭션은 pgTAP 단일 연결 한계로 실증 불가 — 재호출 LB029 거부·revision 불변·겸직자 스냅샷 불변 단언 3건으로 대체)
 - [ ] [low] [P3-T06] pending 중 다이얼로그 확인·닫기 시각 잠금 없음(수정은 shared/ui/dialog.tsx로 허용 경로 밖)(F-05) — src/features/confirmation/ui/ConfirmScheduleDialog.tsx
 - [x] [low] [P3-T06] 병렬 e2e 두 테스트가 같은 밴드 무작위 날짜로 회당 약 0.12% 23505 충돌 가능(F-06) — tests/e2e/schedule-confirmation.spec.ts
 - [ ] [low] [P3-T06] confirm_schedule의 22023 미매핑으로 일시 오류 문구 노출(F-07) — src/features/confirmation/api/confirm-schedule.ts
 - [ ] [low] [P3-T06] onOpenChange의 도달 불가 open=true 분기(F-08) — src/views/admin-schedule/ui/AdminSchedulePrepView.tsx
 - [ ] [low] [P3-T06] handoff와 runs/radio.md의 단위 테스트 수치 불일치(623 vs 212 files/1393)(F-09) — docs/execution/runs/P3-T06/handoff.md
-- [ ] [medium] [P3-T07] revision 2 신설 예정 시각·예식 반환값이 전 계층에서 실제 값 무단언(봉인 위험표 문면 이행이라는 정상 참작 포함)(F-01) — supabase/tests/22-confirmed-roster.test.sql
+- [x] [medium] [P3-T07] revision 2 신설 예정 시각·예식 반환값이 전 계층에서 실제 값 무단언(봉인 위험표 문면 이행이라는 정상 참작 포함)(F-01) — supabase/tests/22-confirmed-roster.test.sql
 - [x] [medium] [P3-T07] 새 e2e 두 테스트가 같은 밴드 독립 무작위 날짜로 23505 충돌 가능(workDatesInBand 분할로 해소)(F-02) — tests/e2e/schedule-roster.spec.ts
-- [ ] [medium] [P3-T07] roster 조회의 대상 스케줄 격리(where 3절)를 단언하는 픽스처 부재(F-03) — supabase/tests/22-confirmed-roster.test.sql
+- [x] [medium] [P3-T07] roster 조회의 대상 스케줄 격리(where 3절)를 단언하는 픽스처 부재(F-03) — supabase/tests/22-confirmed-roster.test.sql
 - [ ] [low] [P3-T07] 준비 화면 고정 순서가 초기 필요 인원 표에만 성립(추가 목록·append는 허용 경로 밖, 후속 제안)(F-04) — src/entities/schedule/api/list-schedule-requirements.ts
 - [ ] [low] [P3-T07] 같은 포지션 동명이인의 배정표 행 React key 충돌(displayIndex 포함으로 해소)(F-05) — src/views/schedule-detail/ui/ScheduleDetailView.tsx
 - [ ] [low] [P3-T07] 소비자 없는 confirmation mock 2종 잔존, 배정표 타입 두 벌 병존(F-06) — src/entities/schedule/model/confirmation.mock.ts
@@ -321,11 +321,11 @@
 - [ ] [medium] [P3-T09] get_confirmed_roster의 무인덱스 감사 테이블 조회 1~2회가 근무자 읽기 경로에 추가(schedule_id·event 복합 인덱스 필요)(F-02) — supabase/migrations/20260817000000_post_confirmation_changes.sql
 - [x] [medium] [P3-T09] 새 e2e가 workDatesInBand 일괄 배분 대신 독립 추첨, 정리 삭제는 트리거 거부 무시(F-03) — tests/e2e/post-confirmation-changes.spec.ts
 - [ ] [medium] [P3-T09] 변경 안내 시각이 서버 로컬 TZ를 타 UTC 배포에서 KST와 어긋남(format-date-time-seoul 관례로 해소)(F-05) — src/views/schedule-detail/model/revision-notice.ts
-- [ ] [medium] [P3-T09] bump_confirmed_revision revoke·cancel_confirmed_schedule grant의 회귀 단언 부재(15번 파일 관례 적용)(F-06) — supabase/tests/23-post-confirmation-changes.test.sql
+- [x] [medium] [P3-T09] bump_confirmed_revision revoke·cancel_confirmed_schedule grant의 회귀 단언 부재(15번 파일 관례 적용)(F-06) — supabase/tests/23-post-confirmation-changes.test.sql
 - [ ] [low] [P3-T09] runs/radio.md의 감사 section 값 기록이 실제 SQL과 불일치(requirements·assignments vs position_requirement·position_assignments)(F-04) — docs/execution/runs/P3-T09/radio.md
 - [ ] [low] [P3-T09] tdd.json entries[1]의 exit_code 0과 note의 FAIL 서술 모순(F-07) — docs/execution/runs/P3-T09/tdd.json
-- [ ] [low] [P3-T09] AC8 경계값(같은 포지션 정식 배정자 전환 허용)의 단위 단언 부재(F-08) — src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts
-- [ ] [low] [P3-T09] 19번 pgTAP 갱신 단언 설명이 실제 검사 순서(자격 LB023 선행)와 반대(F-09) — supabase/tests/19-assignments.test.sql
+- [x] [low] [P3-T09] AC8 경계값(같은 포지션 정식 배정자 전환 허용)의 단위 단언 부재(F-08) — src/views/admin-schedule/model/__tests__/candidate-buckets.test.ts
+- [x] [low] [P3-T09] 19번 pgTAP 갱신 단언 설명이 실제 검사 순서(자격 LB023 선행)와 반대(F-09) — supabase/tests/19-assignments.test.sql
 - [ ] [medium] [P3-T10] recruitment-manage '마감일 연장 다이얼로그 재오픈'의 부하 시 toHaveValue 5초 타임아웃 — stale applicationDeadline 상태 복사가 원인 후보, 해소는 제품 코드 몫(F-04) — src/features/recruitment/hooks/useRecruitmentManage.ts
-- [ ] [low] [P3-T10] workDatesInSameMonth의 count>26 무한 루프 가드 부재, 호출부 무검증 튜플 캐스팅(F-02) — tests/e2e/support/work-date-band.ts
-- [ ] [low] [P3-T10] 같은 달 날짜 산출·parseWorkDate·pad 사본이 schedule·recruitment 2종·tab-navigation spec에 병존(통합은 허용 경로 밖, 후속 제안)(F-03) — tests/e2e/schedule.spec.ts
+- [x] [low] [P3-T10] workDatesInSameMonth의 count>26 무한 루프 가드 부재, 호출부 무검증 튜플 캐스팅(F-02) — tests/e2e/support/work-date-band.ts
+- [x] [low] [P3-T10] 같은 달 날짜 산출·parseWorkDate·pad 사본이 schedule·recruitment 2종·tab-navigation spec에 병존(통합은 허용 경로 밖, 후속 제안)(F-03) — tests/e2e/schedule.spec.ts (P3-T08: schedule.spec.ts는 workDatesInSameMonth로 전면 치환, tab-navigation.spec.ts는 월앵커+일자뽑기 중복 두 블록만 workDateInBand로 치환, recruitment-manage·open은 이미 workDatesInSameMonth를 쓰고 있어 남은 pad·parseWorkDate가 날짜 산출과 무관한 별도 용도라 치환 대상 없음)

@@ -1,5 +1,5 @@
 begin;
-select plan(46);
+select plan(52);
 
 -- =====================================================================
 -- 스키마: sort_order 컬럼·get_confirmed_roster 함수 시그니처·시드 순서
@@ -310,6 +310,40 @@ select is(
   ),
   'AC1(P3-T09): revised_at은 schedule_confirmed 감사의 시각으로 대체된다(변경 이력이 없을 때)'
 );
+select is(
+  (
+    select actor_profile_id from scheduling_audit_logs
+    where schedule_id = (select id from schedules where work_date = '2098-11-01')
+      and event = 'schedule_confirmed'
+    order by seq desc limit 1
+  ),
+  '22000000-0000-0000-0000-000000000001',
+  'P3-T08: schedule_confirmed 감사의 actor_profile_id가 호출 관리자다'
+);
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '22000000-0000-0000-0000-000000000003', true);
+select is(
+  (
+    select get_confirmed_roster((select id from schedules where work_date = '2098-11-01')) ->> 'planned_checkin'
+  ),
+  '09:00',
+  'P3-T08 F-01: planned_checkin 값이 픽스처 09:00과 일치한다'
+);
+select is(
+  (
+    select get_confirmed_roster((select id from schedules where work_date = '2098-11-01')) ->> 'planned_checkout'
+  ),
+  '18:00',
+  'P3-T08 F-01: planned_checkout 값이 픽스처 18:00과 일치한다'
+);
+select is(
+  (
+    select get_confirmed_roster((select id from schedules where work_date = '2098-11-01')) -> 'ceremonies'
+  ),
+  '["10:00", "14:00"]'::jsonb,
+  'P3-T08 F-01: ceremonies 값이 픽스처 시각순 목록과 일치한다'
+);
+reset role;
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '22000000-0000-0000-0000-000000000003', true);
 
@@ -536,6 +570,60 @@ select is(
   (select roster_without_self from roster_snapshot_assigned),
   'AC2 경계값: is_self를 제외하면 미배정 근무자와 본인 배정 근무자의 응답이 동일하다'
 );
+
+-- =====================================================================
+-- P3-T08 backlog 흡수(F-03, 대상 스케줄 고립): 다른 확정 스케줄이 존재해도
+-- planned_*·ceremonies·roster가 서로 섞이지 않는다
+-- =====================================================================
+
+insert into schedules (work_date, application_deadline, status, planned_checkin, planned_checkout)
+values ('2098-11-05', '2098-10-29', 'CONFIRMED', '11:00', '20:00');
+
+insert into ceremonies (schedule_id, starts_at)
+select id, '16:00'::time from schedules where work_date = '2098-11-05';
+
+insert into scheduling_audit_logs (event, actor_profile_id, schedule_id, detail) values (
+  'schedule_confirmed',
+  '22000000-0000-0000-0000-000000000001',
+  (select id from schedules where work_date = '2098-11-05'),
+  jsonb_build_object('revision', 1, 'warnings', jsonb_build_array())
+);
+
+insert into assignments (schedule_id, profile_id) values (
+  (select id from schedules where work_date = '2098-11-05'),
+  '22000000-0000-0000-0000-000000000003'
+);
+
+insert into assignment_positions (assignment_id, position_id) values (
+  (
+    select id from assignments
+    where schedule_id = (select id from schedules where work_date = '2098-11-05')
+      and profile_id = '22000000-0000-0000-0000-000000000003'
+  ),
+  (select id from positions where name = '가나다')
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '22000000-0000-0000-0000-000000000003', true);
+select is(
+  (
+    select jsonb_array_length(
+      get_confirmed_roster((select id from schedules where work_date = '2098-11-01')) -> 'roster'
+    )
+  ),
+  7,
+  'P3-T08 F-03: 다른 스케줄(2098-11-05)이 확정된 뒤에도 대상 스케줄의 roster 행수는 그대로 7이다'
+);
+select ok(
+  not (
+    select bool_or(elem ->> 'name' = '미배정근무자')
+    from jsonb_array_elements(
+      get_confirmed_roster((select id from schedules where work_date = '2098-11-01')) -> 'roster'
+    ) as elem
+  ),
+  'P3-T08 F-03: 다른 스케줄에만 배정된 근무자(미배정근무자)는 대상 스케줄 roster에 섞여 들어오지 않는다'
+);
+reset role;
 
 select * from finish();
 rollback;

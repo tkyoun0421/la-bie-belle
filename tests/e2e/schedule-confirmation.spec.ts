@@ -22,6 +22,9 @@ const CONFIRM_DIALOG_TITLE = "스케줄을 확정할까요?";
 const CONFIRM_DIALOG_CONFIRM_LABEL = "확정하기";
 const CLOSING_NOTICE = "모집도 함께 마감됩니다";
 const NO_CEREMONY_MESSAGE = "예식을 먼저 만들어 주세요";
+const NO_PLANNED_TIME_MESSAGE = "예정 출퇴근 시각을 먼저 설정해 주세요";
+const NO_REQUIREMENTS_MESSAGE = "필요 인원 표를 먼저 열어 주세요";
+const MISSING_WAGE_MESSAGE = "시급이 설정되지 않은 근무자가 있어요";
 
 async function findPositionIds(
   admin: SupabaseClient,
@@ -43,10 +46,19 @@ async function findPositionIds(
   return result;
 }
 
-const [SCHEDULE_CONFIRMATION_BAND_A, SCHEDULE_CONFIRMATION_BAND_B] = splitBand(
-  WORK_DATE_BANDS.scheduleConfirmation,
-  2,
-) as [WorkDateBand, WorkDateBand];
+const [
+  SCHEDULE_CONFIRMATION_BAND_A,
+  SCHEDULE_CONFIRMATION_BAND_B,
+  SCHEDULE_CONFIRMATION_BAND_C,
+  SCHEDULE_CONFIRMATION_BAND_D,
+  SCHEDULE_CONFIRMATION_BAND_E,
+] = splitBand(WORK_DATE_BANDS.scheduleConfirmation, 5) as [
+  WorkDateBand,
+  WorkDateBand,
+  WorkDateBand,
+  WorkDateBand,
+  WorkDateBand,
+];
 
 test.describe("확정, 경고, revision", () => {
   test("AC7 happy path: 버튼→다이얼로그(미달·담당자 없음·마감 안내)→확정→편집 가능·취소 버튼 전환(P3-T09)", async ({
@@ -208,6 +220,185 @@ test.describe("확정, 경고, revision", () => {
     await dialog.getByRole("button", { name: CONFIRM_DIALOG_CONFIRM_LABEL, exact: true }).click();
 
     await expect(dialog.getByText(NO_CEREMONY_MESSAGE)).toBeVisible();
+    await expect(dialog).toBeVisible();
+
+    const { data: scheduleRow } = await admin
+      .from("schedules")
+      .select("status")
+      .eq("id", scheduleId)
+      .single();
+    expect((scheduleRow as { status: string } | null)?.status).toBe("OPEN");
+
+    await context.close();
+  });
+
+  test("구조 오류(예정 출퇴근 시각 미설정)는 LB027 안내를 띄우고 화면을 준비 상태로 유지한다(P3-T08)", async ({
+    browser,
+    baseURL,
+  }) => {
+    const context = await browser.newContext({ ...devices["Pixel 5"], reducedMotion: "reduce" });
+    const { admin } = await createAdminSession(context, baseURL);
+    const page = await context.newPage();
+
+    const workDate = workDateInBand(SCHEDULE_CONFIRMATION_BAND_C);
+    const scheduleId = await insertSchedule(admin, workDate, "OPEN");
+
+    const { error: ceremonyError } = await admin
+      .from("ceremonies")
+      .insert({ schedule_id: scheduleId, starts_at: "10:00" });
+    if (ceremonyError) {
+      throw ceremonyError;
+    }
+
+    await page.goto(`/admin/schedule/${scheduleId}`);
+    await expect(page.getByRole("heading", { name: workDate })).toBeVisible();
+
+    const confirmTrigger = page.getByRole("button", { name: CONFIRM_TRIGGER_LABEL, exact: true });
+    await confirmTrigger.click();
+
+    const dialog = page.getByRole("dialog", { name: CONFIRM_DIALOG_TITLE });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole("button", { name: CONFIRM_DIALOG_CONFIRM_LABEL, exact: true }).click();
+
+    await expect(dialog.getByText(NO_PLANNED_TIME_MESSAGE)).toBeVisible();
+    await expect(dialog).toBeVisible();
+
+    const { data: scheduleRow } = await admin
+      .from("schedules")
+      .select("status")
+      .eq("id", scheduleId)
+      .single();
+    expect((scheduleRow as { status: string } | null)?.status).toBe("OPEN");
+
+    await context.close();
+  });
+
+  test("구조 오류(필요 인원 표 미작성)는 LB028 안내를 띄우고 화면을 준비 상태로 유지한다(P3-T08)", async ({
+    browser,
+    baseURL,
+  }) => {
+    const context = await browser.newContext({ ...devices["Pixel 5"], reducedMotion: "reduce" });
+    const { admin } = await createAdminSession(context, baseURL);
+    const page = await context.newPage();
+
+    const workDate = workDateInBand(SCHEDULE_CONFIRMATION_BAND_D);
+    const scheduleId = await insertSchedule(admin, workDate, "OPEN");
+
+    const { error: ceremonyError } = await admin
+      .from("ceremonies")
+      .insert({ schedule_id: scheduleId, starts_at: "10:00" });
+    if (ceremonyError) {
+      throw ceremonyError;
+    }
+
+    const { error: plannedTimesError } = await admin
+      .from("schedules")
+      .update({ planned_checkin: "09:00", planned_checkout: "18:00" })
+      .eq("id", scheduleId);
+    if (plannedTimesError) {
+      throw plannedTimesError;
+    }
+
+    await page.goto(`/admin/schedule/${scheduleId}`);
+    await expect(page.getByRole("heading", { name: workDate })).toBeVisible();
+
+    const { error: clearRequirementsError } = await admin
+      .from("schedule_position_requirements")
+      .delete()
+      .eq("schedule_id", scheduleId);
+    if (clearRequirementsError) {
+      throw clearRequirementsError;
+    }
+
+    const confirmTrigger = page.getByRole("button", { name: CONFIRM_TRIGGER_LABEL, exact: true });
+    await confirmTrigger.click();
+
+    const dialog = page.getByRole("dialog", { name: CONFIRM_DIALOG_TITLE });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole("button", { name: CONFIRM_DIALOG_CONFIRM_LABEL, exact: true }).click();
+
+    await expect(dialog.getByText(NO_REQUIREMENTS_MESSAGE)).toBeVisible();
+    await expect(dialog).toBeVisible();
+
+    const { data: scheduleRow } = await admin
+      .from("schedules")
+      .select("status")
+      .eq("id", scheduleId)
+      .single();
+    expect((scheduleRow as { status: string } | null)?.status).toBe("OPEN");
+
+    await context.close();
+  });
+
+  test("구조 오류(시급 미설정 배정자)는 LB030 안내를 띄우고 화면을 준비 상태로 유지한다(P3-T08)", async ({
+    browser,
+    baseURL,
+  }) => {
+    const context = await browser.newContext({ ...devices["Pixel 5"], reducedMotion: "reduce" });
+    const { admin } = await createAdminSession(context, baseURL);
+    const page = await context.newPage();
+
+    const positionIds = await findPositionIds(admin, [MANAGER_POSITION_NAME]);
+    const managerPositionId = positionIds[MANAGER_POSITION_NAME]!;
+
+    const wagelessWorker = await createWorkerProfile(
+      admin,
+      "confirm-wageless",
+      "확정시급없음",
+      "female",
+    );
+
+    const workDate = workDateInBand(SCHEDULE_CONFIRMATION_BAND_E);
+    const scheduleId = await insertSchedule(admin, workDate, "OPEN");
+
+    const { error: ceremonyError } = await admin
+      .from("ceremonies")
+      .insert({ schedule_id: scheduleId, starts_at: "10:00" });
+    if (ceremonyError) {
+      throw ceremonyError;
+    }
+
+    const { error: plannedTimesError } = await admin
+      .from("schedules")
+      .update({ planned_checkin: "09:00", planned_checkout: "18:00" })
+      .eq("id", scheduleId);
+    if (plannedTimesError) {
+      throw plannedTimesError;
+    }
+
+    const { error: requirementsError } = await admin
+      .from("schedule_position_requirements")
+      .insert({ schedule_id: scheduleId, position_id: managerPositionId, required_count: 1 });
+    if (requirementsError) {
+      throw requirementsError;
+    }
+
+    const { data: assignmentRow, error: assignmentError } = await admin
+      .from("assignments")
+      .insert({ schedule_id: scheduleId, profile_id: wagelessWorker.id })
+      .select("id")
+      .single();
+    if (assignmentError || !assignmentRow) {
+      throw assignmentError ?? new Error("배정 픽스처 생성에 실패했습니다.");
+    }
+    const { error: assignmentPositionError } = await admin
+      .from("assignment_positions")
+      .insert({ assignment_id: (assignmentRow as { id: string }).id, position_id: managerPositionId });
+    if (assignmentPositionError) {
+      throw assignmentPositionError;
+    }
+
+    await page.goto(`/admin/schedule/${scheduleId}`);
+    await expect(page.getByRole("heading", { name: workDate })).toBeVisible();
+
+    const confirmTrigger = page.getByRole("button", { name: CONFIRM_TRIGGER_LABEL, exact: true });
+    await confirmTrigger.click();
+
+    const dialog = page.getByRole("dialog", { name: CONFIRM_DIALOG_TITLE });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole("button", { name: CONFIRM_DIALOG_CONFIRM_LABEL, exact: true }).click();
+
+    await expect(dialog.getByText(MISSING_WAGE_MESSAGE)).toBeVisible();
     await expect(dialog).toBeVisible();
 
     const { data: scheduleRow } = await admin

@@ -146,4 +146,15 @@ describe("canSelectCandidateAsTrainee", () => {
 
     expect(canSelectCandidateAsTrainee(unassigned)).toBe(true);
   });
+
+  it("같은 포지션에 이미 정식 배정된 후보도 교육으로 전환 선택할 수 있다(AC8 경계값, P3-T08)", () => {
+    const sameAssignee = candidate({
+      eligible: true,
+      ineligibleReason: null,
+      currentlyAssigned: true,
+      otherPositionNames: [],
+    });
+
+    expect(canSelectCandidateAsTrainee(sameAssignee)).toBe(true);
+  });
 });

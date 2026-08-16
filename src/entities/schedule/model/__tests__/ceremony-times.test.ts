@@ -112,6 +112,25 @@ describe("recommendCheckOut", () => {
   });
 });
 
+describe("P3-T08: 첫 예식이 그대로면 마지막 예식만 바뀌어도 체크인 추천은 안 바뀐다", () => {
+  it("첫 예식이 같으면 recommendCheckIn 값은 마지막 예식과 무관하게 같다", () => {
+    const beforeCheckIn = recommendCheckIn(SAMPLE_RULES, "10:00");
+    const afterCheckIn = recommendCheckIn(SAMPLE_RULES, "10:00");
+
+    expect(beforeCheckIn).toBe(afterCheckIn);
+    expect(beforeCheckIn).toBe("08:20");
+  });
+
+  it("같은 시나리오에서 마지막 예식이 바뀌면 recommendCheckOut 값은 달라진다", () => {
+    const beforeCheckOut = recommendCheckOut("11:00");
+    const afterCheckOut = recommendCheckOut("12:00");
+
+    expect(beforeCheckOut).toEqual({ time: "13:00", capped: false });
+    expect(afterCheckOut).toEqual({ time: "14:00", capped: false });
+    expect(afterCheckOut).not.toEqual(beforeCheckOut);
+  });
+});
+
 describe("normalizeTime", () => {
   it("초 단위를 제거하고 분 단위로 정규화한다", () => {
     expect(normalizeTime("08:20:00")).toBe("08:20");

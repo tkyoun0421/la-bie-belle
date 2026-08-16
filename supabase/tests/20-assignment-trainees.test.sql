@@ -1,5 +1,5 @@
 begin;
-select plan(52);
+select plan(64);
 
 -- =====================================================================
 -- 스키마 노출: assignment_trainees 테이블·컬럼·제약·RLS
@@ -90,7 +90,9 @@ insert into worker_position_eligibilities (profile_id, position_id, granted_by) 
   );
 
 insert into schedules (work_date, application_deadline, status) values
-  ('2099-10-01', '2099-09-24', 'OPEN');
+  ('2099-10-01', '2099-09-24', 'OPEN'),
+  ('2099-10-02', '2099-09-25', 'CLOSED'),
+  ('2099-10-03', '2099-09-26', 'PREPARING');
 
 -- =====================================================================
 -- RLS: assignment_trainees는 select 전용, 쓰기는 DEFINER 함수로만
@@ -257,6 +259,16 @@ select is(
 );
 select is(
   (
+    select actor_profile_id from scheduling_audit_logs
+    where event = 'assignment_trainees_replaced'
+      and (detail ->> 'position_id')::uuid = (select id from positions where name = '드레스')
+    order by seq desc limit 1
+  ),
+  '20000000-0000-0000-0000-000000000001',
+  'P3-T08: assignment_trainees_replaced 감사의 actor_profile_id가 호출 관리자다'
+);
+select is(
+  (
     select count(*)::int from scheduling_audit_logs
     where event = 'assignment_positions_replaced'
       and (detail ->> 'position_id')::uuid = (select id from positions where name = '드레스')
@@ -362,7 +374,7 @@ select lives_ok(
     array[]::uuid[],
     array['20000000-0000-0000-0000-000000000017']::uuid[]
   )$$,
-  'AC3 revision 3(교차 검증 F-01) 준비: F14를 드레스 교육생으로 저장한다(드레스 가능 포지션은 이미 있음)'
+  'AC3 revision 3(교차 검증 F-01 정정, P3-T08): F14를 드레스 교육생으로 저장한다 — trainee_profile_ids가 [F14]뿐이라 드레스의 기존 교육생 4명(F1·F6·F7·F8)이 이 호출로 함께 제거된다(전체 교체 계약)'
 );
 select throws_ok(
   $$select replace_position_assignments(
@@ -579,6 +591,167 @@ select is(
   ),
   1,
   'AC7 전이(교차 검증 F-03): 정식 배정자 전원 제거 호출 뒤에도 F13의 스캔 교육생 행은 그대로 남는다'
+);
+
+-- =====================================================================
+-- P3-T08 backlog 흡수(F-12): 같은 포지션 안에서 4-인자 호출로 교육→정식
+-- 전환(스왑)하는 분기가 어느 계층에서도 단언되지 않았다. F14는 드레스의
+-- 유일한 교육생이라(위 준비에서 다른 교육생 4명이 대체됨) 여기서 그 상태를
+-- 그대로 넘겨받는다.
+-- =====================================================================
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '20000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-10-01'),
+    (select id from positions where name = '드레스'),
+    array['20000000-0000-0000-0000-000000000017']::uuid[],
+    array[]::uuid[]
+  )$$,
+  'P3-T08 F-12: 같은 포지션(드레스) 교육생 F14를 4-인자 호출로 정식 배정 전환한다(교육→정식 스왑 허용)'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-10-01')
+      and ap.position_id = (select id from positions where name = '드레스')
+      and asg.profile_id = '20000000-0000-0000-0000-000000000017'
+  ),
+  1,
+  'P3-T08 F-12: F14가 드레스에 정식 배정됐다'
+);
+select is(
+  (
+    select count(*)::int from assignment_trainees
+    where schedule_id = (select id from schedules where work_date = '2099-10-01')
+      and position_id = (select id from positions where name = '드레스')
+      and profile_id = '20000000-0000-0000-0000-000000000017'
+  ),
+  0,
+  'P3-T08 F-12: F14의 드레스 교육생 행은 스왑으로 사라졌다'
+);
+
+-- =====================================================================
+-- P3-T08 backlog 흡수(F-13): AC7 전이는 지금까지 프로덕션이 쓰지 않는
+-- 3-인자 경로로만 실증됐다. 프로덕션이 실제로 쓰는 4-인자 경로(교육생
+-- 배열을 명시적으로 그대로 넘김)로 같은 전이를 재현한다.
+-- =====================================================================
+
+insert into auth.users (id, email) values
+  ('20000000-0000-0000-0000-000000000018', 'trn-f15@labiebelle.test');
+
+insert into public.profiles (id, name, phone, gender, birth_date, status, inactivity_anchor_at) values
+  ('20000000-0000-0000-0000-000000000018', '교육F15', '01091000018', 'female', '1994-01-17', 'active', now());
+
+insert into worker_position_eligibilities (profile_id, position_id, granted_by) values
+  (
+    '20000000-0000-0000-0000-000000000018',
+    (select id from positions where name = '메인'),
+    '20000000-0000-0000-0000-000000000001'
+  );
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '20000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-10-01'),
+    (select id from positions where name = '메인'),
+    array['20000000-0000-0000-0000-000000000018']::uuid[],
+    array['20000000-0000-0000-0000-000000000008']::uuid[]
+  )$$,
+  'P3-T08 F-13 준비: F15를 메인에 정식 배정하며 4-인자 호출로 기존 F5의 메인 교육생 상태를 명시 유지한다'
+);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-10-01'),
+    (select id from positions where name = '메인'),
+    array[]::uuid[],
+    array['20000000-0000-0000-0000-000000000008']::uuid[]
+  )$$,
+  'P3-T08 F-13(AC7 4-인자 경로): 프로덕션이 실제로 쓰는 4-인자 호출로 정식 배정자 F15 전원을 제거하며 교육생 배열은 그대로 넘긴다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-10-01')
+      and ap.position_id = (select id from positions where name = '메인')
+      and asg.profile_id = '20000000-0000-0000-0000-000000000018'
+  ),
+  0,
+  'P3-T08 F-13: F15의 메인 정식 배정이 실제로 제거됐다'
+);
+select is(
+  (
+    select count(*)::int from assignment_trainees
+    where schedule_id = (select id from schedules where work_date = '2099-10-01')
+      and position_id = (select id from positions where name = '메인')
+      and profile_id = '20000000-0000-0000-0000-000000000008'
+  ),
+  1,
+  'P3-T08 F-13(AC7): 4-인자 경로로도 정식 배정자 전원 제거 후 F5의 메인 교육생 행이 그대로 남는다'
+);
+
+-- =====================================================================
+-- P3-T08 축 단위 공백: CLOSED·PREPARING도 교육생 인자를 포함한
+-- replace_position_assignments를 허용한다
+-- =====================================================================
+
+insert into auth.users (id, email) values
+  ('20000000-0000-0000-0000-000000000020', 'trn-f17@labiebelle.test'),
+  ('20000000-0000-0000-0000-000000000021', 'trn-f18@labiebelle.test');
+
+insert into public.profiles (id, name, phone, gender, birth_date, status, inactivity_anchor_at) values
+  ('20000000-0000-0000-0000-000000000020', '교육F17', '01091000020', 'male', '1994-01-19', 'active', now()),
+  ('20000000-0000-0000-0000-000000000021', '교육F18', '01091000021', 'male', '1994-01-20', 'active', now());
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '20000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-10-02'),
+    (select id from positions where name = '매니저'),
+    array[]::uuid[],
+    array['20000000-0000-0000-0000-000000000020']::uuid[]
+  )$$,
+  'P3-T08 CLOSED: 교육생 인자를 포함한 replace_position_assignments가 CLOSED 스케줄에서도 성공한다'
+);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-10-03'),
+    (select id from positions where name = '매니저'),
+    array[]::uuid[],
+    array['20000000-0000-0000-0000-000000000021']::uuid[]
+  )$$,
+  'P3-T08 PREPARING: 교육생 인자를 포함한 replace_position_assignments가 PREPARING 스케줄에서도 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_trainees
+    where schedule_id = (select id from schedules where work_date = '2099-10-02')
+      and position_id = (select id from positions where name = '매니저')
+      and profile_id = '20000000-0000-0000-0000-000000000020'
+  ),
+  1,
+  'P3-T08 CLOSED: 교육생 F17 행이 실제로 생겼다'
+);
+select is(
+  (
+    select count(*)::int from assignment_trainees
+    where schedule_id = (select id from schedules where work_date = '2099-10-03')
+      and position_id = (select id from positions where name = '매니저')
+      and profile_id = '20000000-0000-0000-0000-000000000021'
+  ),
+  1,
+  'P3-T08 PREPARING: 교육생 F18 행이 실제로 생겼다'
 );
 
 -- =====================================================================

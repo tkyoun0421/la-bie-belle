@@ -9,7 +9,7 @@ import {
   signInWithPasswordCookies,
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
-import { WORK_DATE_BANDS, monthAnchorInBand, workDatesInBand } from "./support/work-date-band";
+import { WORK_DATE_BANDS, workDateInBand, workDatesInBand } from "./support/work-date-band";
 import {
   type WorkerSession,
   createWorkerSession,
@@ -229,9 +229,8 @@ test.describe("탭 이동과 상세 진입", () => {
     const afterTabMove = await readViewTransitionCallCount(page);
     expect(afterTabMove).toBeGreaterThan(0);
 
-    const { year, month } = monthAnchorInBand(WORK_DATE_BANDS.viewTransition);
-    const day = 1 + Math.floor(Math.random() * 27);
-    const workDate = `${year}-${pad(month)}-${pad(day)}`;
+    const workDate = workDateInBand(WORK_DATE_BANDS.viewTransition);
+    const { year, month, day } = parseWorkDate(workDate);
 
     const { error: scheduleError } = await worker.admin
       .from("schedules")
@@ -315,9 +314,8 @@ test.describe("탭 이동과 상세 진입", () => {
     const worker = await signInWorker(context, baseURL);
     const page = await context.newPage();
 
-    const { year, month } = monthAnchorInBand(WORK_DATE_BANDS.viewTransition);
-    const day = 1 + Math.floor(Math.random() * 27);
-    const workDate = `${year}-${pad(month)}-${pad(day)}`;
+    const workDate = workDateInBand(WORK_DATE_BANDS.viewTransition);
+    const { year, month, day } = parseWorkDate(workDate);
 
     const { error: scheduleError } = await worker.admin
       .from("schedules")

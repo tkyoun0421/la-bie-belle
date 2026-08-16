@@ -21,6 +21,7 @@ export const WORK_DATE_BANDS = {
   postConfirmationChanges: { minMonthsAhead: 396, maxMonthsAhead: 427 },
   recruitmentManage: { minMonthsAhead: 429, maxMonthsAhead: 460 },
   recruitmentBulkOpen: { minMonthsAhead: 462, maxMonthsAhead: 493 },
+  confirmationJourney: { minMonthsAhead: 495, maxMonthsAhead: 526 },
 } as const satisfies Record<string, WorkDateBand>;
 
 const LAST_SAFE_DAY_OF_MONTH = 27;
@@ -58,6 +59,12 @@ export function workDateInBand(band: WorkDateBand): string {
 }
 
 export function workDatesInSameMonth(band: WorkDateBand, count: number): string[] {
+  if (count > LAST_SAFE_DAY_OF_MONTH - 1) {
+    throw new Error(
+      `workDatesInSameMonth: count ${count}는 한 달 안에서 뽑을 수 있는 최대 ${LAST_SAFE_DAY_OF_MONTH - 1}개를 초과한다`,
+    );
+  }
+
   const { year, month } = monthAnchorInBand(band);
   const days = new Set<number>();
 

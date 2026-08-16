@@ -248,6 +248,31 @@ describe("useCeremonyEditor", () => {
     });
   });
 
+  it("P3-T08: 마지막 예식만 바뀌면(첫은 그대로) 저장 후 재추천 확인창을 연다", async () => {
+    const { useCeremonyEditor } = await import("@/features/ceremony/hooks/useCeremonyEditor");
+    const onReplaceCeremonies = vi
+      .fn()
+      .mockResolvedValue({ ok: true, ceremonyTimes: ["10:00", "12:00"], changed: true });
+    const onSetPlannedTimes = vi.fn();
+
+    const { result } = renderHook(() =>
+      useCeremonyEditor(baseInitial(), onReplaceCeremonies, onSetPlannedTimes),
+    );
+
+    act(() => {
+      result.current.updateCeremonyTime(1, "12:00");
+    });
+    await act(async () => {
+      result.current.saveCeremonies();
+    });
+
+    await waitFor(() => expect(result.current.pendingRecommendation).not.toBeNull());
+    expect(result.current.pendingRecommendation).toEqual({
+      checkin: "08:20",
+      checkout: { time: "14:00", capped: false },
+    });
+  });
+
   it("재추천 확인창 승인은 onSetPlannedTimes를 호출하고 예정 시각을 갱신한다", async () => {
     const { useCeremonyEditor } = await import("@/features/ceremony/hooks/useCeremonyEditor");
     const onReplaceCeremonies = vi

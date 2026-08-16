@@ -15,11 +15,15 @@ import {
   createWorkerProfile,
   insertSchedule,
 } from "./support/assignment-schedule-fixtures";
-import { WORK_DATE_BANDS, workDateInBand, workDatesInBand } from "./support/work-date-band";
+import { splitBand, WORK_DATE_BANDS, workDateInBand, workDatesInBand } from "./support/work-date-band";
 
 const DRESS_POSITION_NAME = "드레스";
 const MAIN_POSITION_NAME = "메인";
 const SCAN_POSITION_NAME = "스캔";
+
+const ELIGIBILITY_SUB_BANDS = splitBand(WORK_DATE_BANDS.assignmentEligibility, 2);
+const ELIGIBILITY_BAND_A = ELIGIBILITY_SUB_BANDS[0]!;
+const ELIGIBILITY_BAND_B = ELIGIBILITY_SUB_BANDS[1]!;
 
 test.describe("배정 후보와 자격 검사", () => {
   test("여성 전용 포지션에서 자격 없는 근무자는 접힌 목록에 이유와 함께 표시되고, 신청자 배정 저장·교체·초과 배정이 반영되며, 확정 스케줄에서도 배정 시트가 열린다(P3-T09)", async ({
@@ -27,6 +31,7 @@ test.describe("배정 후보와 자격 검사", () => {
     baseURL,
   }) => {
     const context = await browser.newContext({ ...devices["Pixel 5"], reducedMotion: "reduce" });
+    try {
     const { admin } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 
@@ -45,10 +50,10 @@ test.describe("배정 후보와 자격 검사", () => {
     const femaleC = await createWorkerProfile(admin, "female-c", "여성C", "female");
     const maleA = await createWorkerProfile(admin, "male-a", "남성A", "male");
 
-    const [workDateOpen, workDateConfirmed] = workDatesInBand(
-      WORK_DATE_BANDS.assignmentEligibility,
-      2,
-    ) as [string, string];
+    const [workDateOpen, workDateConfirmed] = workDatesInBand(ELIGIBILITY_BAND_A, 2) as [
+      string,
+      string,
+    ];
 
     const scheduleOpenId = await insertSchedule(admin, workDateOpen, "OPEN");
     const scheduleConfirmedId = await insertSchedule(admin, workDateConfirmed, "CONFIRMED");
@@ -159,8 +164,9 @@ test.describe("배정 후보와 자격 검사", () => {
     await expect(confirmedSheet.getByText("필요 1 / 배정 0")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(confirmedSheet).toBeHidden();
-
-    await context.close();
+    } finally {
+      await context.close();
+    }
   });
 });
 
@@ -172,6 +178,7 @@ test.describe("복수 포지션 배정", () => {
     baseURL,
   }) => {
     const context = await browser.newContext({ ...devices["Pixel 5"], reducedMotion: "reduce" });
+    try {
     const { admin, email, password } = await createAdminSession(context, baseURL);
     const page = await context.newPage();
 
@@ -212,7 +219,7 @@ test.describe("복수 포지션 배정", () => {
       throw eligibilityError;
     }
 
-    const workDate = workDateInBand(WORK_DATE_BANDS.assignmentEligibility);
+    const workDate = workDateInBand(ELIGIBILITY_BAND_B);
     const scheduleId = await insertSchedule(admin, workDate, "OPEN");
 
     await page.goto(`/admin/schedule/${scheduleId}`);
@@ -371,7 +378,8 @@ test.describe("복수 포지션 배정", () => {
     await expect(coWorker2DressRow).toBeVisible();
     await expect(coWorker2DressRow.getByText("포지션 성별 조건과 맞지 않아요")).toBeVisible();
     await closeSheet(page, dressSheetForCoWorker2);
-
-    await context.close();
+    } finally {
+      await context.close();
+    }
   });
 });
