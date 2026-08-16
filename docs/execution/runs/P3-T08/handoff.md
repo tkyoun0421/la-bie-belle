@@ -1,5 +1,30 @@
 # P3-T08 handoff
 
+## 2026-08-16 · 검증·리팩토링 종료, done 마감
+
+- 작업 식별자: P3-T08
+- 현재 단계: done — 다음 task로 이동
+
+### 확정된 사실
+
+- 교차 검증(opus·codex, base c345f30 / head 49c71b0): 확정 발견 11건(high 1·medium 6·low 4),
+  기각 0, 총점 81. 결과는 `docs/execution/reviews/P3-T08-review.json`, medium·low 10건 backlog
+  누적. 실질 커버리지 순증(pgTAP 1240→1297, UI 단위 58, 여정 e2e)은 리뷰어 양자 공히 인정 —
+  발견 다수는 봉인 인수 조건 대비 이행·기록 정합 문제.
+- 수정 라운드 1회: F-01(high — CLOSED·PREPARING을 지나는 e2e 부재인데 완료로 보고) →
+  fix 커밋 `fc2dc7e`. position-requirements spec에 PREPARING 준비 화면 편집·저장 e2e 신설
+  (splitBand 서브밴드·try/finally 관례 준수, DB 반영 값 단언), runs 기록 정정. 조정자 삭제
+  감사 통과, verify 전체 GREEN(e2e 82).
+- backlog 정정: P3-T10 330·331행의 부분 해소 완료 체크를 잔존분 기준으로 정정(F-04 이행).
+- 리팩토링 단계: 개발+fix diff 재검토 — 테스트 전용 변경이라 구조 정리 대상 없음, 변경 없이
+  종료(잔여 위생은 backlog F-03·F-09·F-11이 소유).
+
+### 미결 사항
+
+- medium 6건이 backlog에 남아 있다 — on-conflict 프로덕션 결속(F-02), assignment-trainee
+  splitBand(F-03), 연속 2회 증거(F-05), 권한 행렬(F-06), 22번 격리 재단언(F-08)은 후속
+  task 후보 묶음이다. P3-T11(확정 경고·괴리 정리)과 함께 다음 기획 인터뷰에서 순서 결정.
+
 ## 2026-08-16 · 교차 검증 수정 라운드(F-01)
 
 - 현재 단계: 개발 단계 내 수정 라운드 종료 → 다음 검증(재개).

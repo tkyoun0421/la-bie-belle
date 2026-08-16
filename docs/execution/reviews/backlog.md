@@ -329,3 +329,12 @@
 - [ ] [medium] [P3-T10] recruitment-manage '마감일 연장 다이얼로그 재오픈'의 부하 시 toHaveValue 5초 타임아웃 — stale applicationDeadline 상태 복사가 원인 후보, 해소는 제품 코드 몫(F-04) — src/features/recruitment/hooks/useRecruitmentManage.ts
 - [x] [low] [P3-T10] workDatesInSameMonth의 count>26 무한 루프 가드 부재, 호출부 무검증 튜플 캐스팅(F-02) — tests/e2e/support/work-date-band.ts
 - [x] [low] [P3-T10] 같은 달 날짜 산출·parseWorkDate·pad 사본이 schedule·recruitment 2종·tab-navigation spec에 병존(통합은 허용 경로 밖, 후속 제안)(F-03) — tests/e2e/schedule.spec.ts (P3-T08: schedule.spec.ts는 workDatesInSameMonth로 전면 치환, tab-navigation.spec.ts는 월앵커+일자뽑기 중복 두 블록만 workDateInBand로 치환, recruitment-manage·open은 이미 workDatesInSameMonth를 쓰고 있어 남은 pad·parseWorkDate가 날짜 산출과 무관한 별도 용도라 치환 대상 없음)
+- [ ] [medium] [P3-T08] 복사 on-conflict 단언이 프로덕션 함수 미경유 SQL 사본 — pg_get_functiondef 결속 또는 호출 실증 재설계 필요(F-02) — supabase/tests/18-position-requirements.test.sql
+- [ ] [medium] [P3-T08] assignment-trainee 3개 테스트가 같은 밴드 공유(splitBand 3분할로 해소)(F-03) — tests/e2e/assignment-trainee.spec.ts
+- [ ] [medium] [P3-T08] e2e 전체 연속 2회 GREEN 증거가 문면대로 불성립(중간 RED 개입, 무관 flake 원인)(F-05) — docs/execution/runs/P3-T08/radio.md
+- [ ] [medium] [P3-T08] bump·cancel 함수의 revoke·grant 역할 행렬 부분 고정(anon 무단언, 15번 3롤 관례 미완)(F-06) — supabase/tests/23-post-confirmation-changes.test.sql
+- [ ] [medium] [P3-T08] 22번 격리 주석이 단언 범위 과장 — 간섭 삽입 뒤 planned·ceremonies 재단언 부재(F-08) — supabase/tests/22-confirmed-roster.test.sql
+- [ ] [low] [P3-T08] 22번 감사 actor 단언이 픽스처 자기검증(RPC 경유 아님)(F-07) — supabase/tests/22-confirmed-roster.test.sql
+- [ ] [low] [P3-T08] 여정 e2e에 try/finally 부재(같은 커밋의 위생 관례와 반대)(F-09) — tests/e2e/confirmation-roster-journey.spec.ts
+- [ ] [low] [P3-T08] recommendCheckIn 동일 인자 재호출 동어반복 단언(F-10) — src/entities/schedule/model/__tests__/ceremony-times.test.ts
+- [ ] [low] [P3-T08] try 블록 본문 미들여쓰기(포매터가 tests/ 미검사)(F-11) — tests/e2e/assignment-eligibility.spec.ts

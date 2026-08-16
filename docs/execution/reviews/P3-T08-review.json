@@ -1,0 +1,160 @@
+{
+  "task_id": "P3-T08",
+  "at": "2026-08-16",
+  "base_commit": "c345f30",
+  "head_commit": "49c71b0d19124b92c9fc92df0476d34b40078218",
+  "participants": [
+    "opus",
+    "codex"
+  ],
+  "participants_note": "개발분(49c71b0 구현, RADIO revision 1) 교차 검증. 병합 전원 인정 4건(F-01~F-04), 단독 발견 7건은 상호 되묻기에서 전부 인정돼 기각 없음. 중요도가 갈린 발견(F-01 high/medium, F-04·F-05·F-06 medium/low, F-08 low/medium)은 계약대로 높은 쪽을 택했다. 실질 커버리지 순증(pgTAP +57, UI 단위 58, 여정 e2e)은 양자가 공히 인정 — 발견 다수는 봉인 인수 조건 대비 이행·기록의 정합 문제다.",
+  "scores": {
+    "code_quality": 82,
+    "tests": 66,
+    "security": 85,
+    "performance": 97,
+    "architecture": 74
+  },
+  "score_rationale": {
+    "code_quality": "UI 단위 11파일이 approval 관례대로 깔끔하나, try 블록 미들여쓰기(F-11)·인라인 slice 파싱 도입·사본 통합 절반(F-04 관련)이 남는다.",
+    "tests": "pgTAP 1240→1297, UI 58, 여정 e2e 등 실질 커버리지가 크게 늘었지만, 인수 조건 1의 e2e 절반 미이행(F-01 high)·프로덕션 미경유 on-conflict 단언(F-02)·밴드 공유 flake 재도입(F-03)·연속 2회 증거 불성립(F-05)·격리 주석 과장(F-08)·동어반복 단언(F-10)이 겹친다.",
+    "security": "감사 actor 대조를 17~23번 전 파일에 세우고 revoke·grant 회귀를 신설해 방어 순증이나, 역할 행렬 부분 고정(F-06)과 22번 자기검증 단언(F-07)로 감점.",
+    "performance": "제품 코드 무변경의 테스트 전용 변경 — 감점 재료는 밴드 공유가 남기는 간헐 재실행 비용뿐.",
+    "architecture": "허용 경로·FSD 배치·제품 코드 무수정은 지켰지만, 인수 조건 미이행이 기록 없이 완료로 보고되고(F-01) 정지 조건 3을 거치지 않은 대체 종결(F-02)·부분 해소의 완료 체크(F-04)로 봉인문과 기록의 정합이 어긋난다."
+  },
+  "total": 81,
+  "findings": [
+    {
+      "id": "F-01",
+      "title": "인수 조건 1의 e2e 절반이 미이행인데 완료로 보고됐다 — CLOSED·PREPARING을 지나는 e2e 부재",
+      "severity": "high",
+      "area": "tests",
+      "file": "tests/e2e/support/assignment-schedule-fixtures.ts",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "봉인 인수 조건 1은 'insertSchedule이 4상태 유니언을 받고 최소 1개 e2e가 CLOSED 또는 PREPARING 경로를 지난다'를 요구한다. 유니언은 넓혔으나 저장소 전체에서 insertSchedule에 CLOSED·PREPARING을 넘기는 호출이 0건이다(opus가 전 호출부 확인). tab-navigation의 직접 CLOSED insert는 근무자 라우트용이라 관리자 준비 화면의 수정 RPC 경로를 검증하지 않는다. 소비자 없는 유니언 확장이며, runs 기록과 handoff는 미이행을 적지 않고 '4개 번들 전부 적용'으로 서술했다. codex high·opus medium — 계약대로 높은 쪽."
+    },
+    {
+      "id": "F-02",
+      "title": "복사 on-conflict 흡수가 프로덕션 함수를 거치지 않는 SQL 사본 단언으로 대체됐다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "supabase/tests/18-position-requirements.test.sql",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "봉인문은 '선삽입 후 복사 호출로 conflict 경로 실증'을 지정했고 사전 승인된 대체 종결은 동시 확정(F-04) 하나뿐이다. 구현은 함수의 exists() 조기 반환으로 호출 실증이 불가함을 확인하고도 정지 조건 3으로 멈추지 않고 함수 본문 INSERT 문을 테스트에 복사해 실행했다 — 함수가 on conflict 절을 잃어도 GREEN이다. backlog 253행은 대체 사유 병기 없이 완료 체크됐다. pg_get_functiondef 패턴 검사 같은 프로덕션 결속 수단이 같은 파일에 이미 있다."
+    },
+    {
+      "id": "F-03",
+      "title": "신규 교육 칩 e2e가 splitBand 없이 기존 두 테스트와 같은 밴드를 공유한다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "tests/e2e/assignment-trainee.spec.ts",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "봉인 불변 규칙은 'spec 내 다중 테스트는 splitBand 정적 하위 구간'(P3-T10 확립 관례)이다. 신설 테스트가 assignmentTrainee 밴드 전체를 다시 추첨해 3개 테스트가 밴드 하나를 공유한다 — 쌍 3개 기준 회당 약 0.35%의 23505 충돌. 같은 커밋의 schedule-confirmation은 splitBand 5분할로 올바르게 처리했고 assignment-eligibility의 같은 결함(backlog 294)을 이 task가 직접 고쳤다. 해소는 splitBand 3분할."
+    },
+    {
+      "id": "F-04",
+      "title": "위생 backlog 두 줄(330·331)이 부분 해소 상태로 완료 체크됐다",
+      "severity": "medium",
+      "area": "architecture",
+      "file": "docs/execution/reviews/backlog.md",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "330행의 무검증 튜플 캐스팅은 recruitment-manage·recruitment-open에 잔존(두 파일은 diff에 없음), 331행의 parseWorkDate 사본도 recruitment 2종·tab-navigation에 그대로이며 work-date-band.ts에 공용 parseWorkDate가 신설되지 않았다. schedule.spec.ts는 로컬 헬퍼를 지우며 slice 인라인 파싱이라는 세 번째 방식을 새로 들여왔다. 331행의 종결 서술('치환 대상 없음')은 parseWorkDate 사본에 대해 사실과 다르다. 완료 체크가 실제 해소에 대응하지 않아 대장 신뢰를 깎는다. 마감 시 조정자가 두 줄을 잔존분 기준으로 정정한다."
+    },
+    {
+      "id": "F-05",
+      "title": "e2e 전체 연속 2회 GREEN 증거가 문면대로 성립하지 않는다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "docs/execution/runs/P3-T08/radio.md",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "기록된 전체 실행 순서는 GREEN → RED(recruitment-manage:112) → 단독 GREEN → GREEN → verify 중 RED → verify GREEN — 인접한 두 전체 실행이 모두 GREEN인 구간이 없어 인수 조건 8이 문면대로 증명되지 않는다. 실패 spec은 이 task가 손대지 않은 파일이고 원인은 backlog 329의 기존 부하성 flake이며 기록에 은폐가 없다(opus 정상 참작 — 증거 형식의 흠). codex medium·opus low — 계약대로 높은 쪽."
+    },
+    {
+      "id": "F-06",
+      "title": "revoke·grant 회귀 테스트가 전체 역할 행렬을 고정하지 않는다",
+      "severity": "medium",
+      "area": "security",
+      "file": "supabase/tests/23-post-confirmation-changes.test.sql",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "테스트는 bump의 authenticated·service_role 거부와 cancel의 authenticated 허용만 검사한다. anon은 두 함수 모두 무단언 — anon·service_role에 cancel이 재부여되거나 anon에 bump 권한이 생기는 회귀가 통과한다. backlog 324가 지목한 15번 관례는 3개 롤을 모두 고정한다. bump는 본문에 권한 검사가 없어 revoke 한 겹이 유일한 방어라 행렬을 마저 고정할 값어치가 있다(opus — 가장 흔한 회귀인 public 회수 누락은 기존 단언이 잡는다는 정상 참작으로 low, codex medium — 계약대로 높은 쪽)."
+    },
+    {
+      "id": "F-07",
+      "title": "22번 감사 actor 단언이 픽스처 자기검증이다",
+      "severity": "low",
+      "area": "security",
+      "file": "supabase/tests/22-confirmed-roster.test.sql",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "schedule_confirmed 감사 행을 직접 insert한 뒤 같은 값을 읽어 비교해, confirm_schedule의 actor 기록 로직이 깨져도 통과한다. 17~21·23번은 실제 RPC 산물을 대조하므로 축 전체가 무력하진 않고, runs 기록이 방식('픽스처 삽입 행 기준')을 명시 공개해 은폐도 없다."
+    },
+    {
+      "id": "F-08",
+      "title": "22번 F-03 격리 주석이 실제 단언보다 넓은 범위를 주장한다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "supabase/tests/22-confirmed-roster.test.sql",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "간섭 픽스처 삽입 뒤 단언은 roster 행수·미배정 부재 2건뿐이고 planned_*·ceremonies 값 단언은 간섭 삽입 이전에 실행된다 — ceremonies 조회의 where schedule_id가 사라져도 GREEN. 다른 스케줄의 ceremony 누출·assignment_trainees 필터 회귀를 잡지 못해 완료 체크된 F-03(P3-T07)의 세 where 절 보호가 불완전하다. 해소는 간섭 삽입 뒤 재단언 추가. opus low·codex medium — 계약대로 높은 쪽."
+    },
+    {
+      "id": "F-09",
+      "title": "신설 여정 e2e에 try/finally가 없어 실패 시 컨텍스트가 정리되지 않는다",
+      "severity": "low",
+      "area": "tests",
+      "file": "tests/e2e/confirmation-roster-journey.spec.ts",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "adminContext·selfContext close가 정상 종료 경로에만 있어 중간 expect 실패 시 건너뛴다. 같은 커밋이 assignment-eligibility에 세운 try/finally 위생 관례(backlog 275 해소)와 반대다. Playwright worker teardown이 최종 회수해 영향은 제한적."
+    },
+    {
+      "id": "F-10",
+      "title": "마지막 예식 단독 변경 단언 하나가 동어반복이다",
+      "severity": "low",
+      "area": "tests",
+      "file": "src/entities/schedule/model/__tests__/ceremony-times.test.ts",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "recommendCheckIn을 같은 인자로 두 번 불러 동일성만 비교 — 시그니처에 마지막 예식 인자가 없어 명제가 타입으로 자명하고 회귀를 잡지 못한다. 유의미한 단언은 useCeremonyEditor.test.ts:251이 이미 제공해 실질 공백은 아니다."
+    },
+    {
+      "id": "F-11",
+      "title": "try/finally 적용 시 블록 본문이 들여쓰기되지 않았다",
+      "severity": "low",
+      "area": "code_quality",
+      "file": "tests/e2e/assignment-eligibility.spec.ts",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "try 블록 본문 수백 줄이 원래 들여쓰기 그대로라 블록 경계가 구분되지 않는다. format:check·lint:ci가 src만 대상이라 verify가 잡지 못한다. 기능 영향 없음."
+    }
+  ]
+}
