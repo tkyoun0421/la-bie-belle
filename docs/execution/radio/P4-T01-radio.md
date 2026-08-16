@@ -1,15 +1,16 @@
 # P4-T01 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-16
-- 개발 설계 승인: user, 2026-08-16
+- 개발 설계 승인: user, 2026-08-16 (revision 2 재봉인 포함)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-16 | 최초 작성. 기획 결정 4건(알림함 실데이터 연결 포함, 확정 알림 1종 앞당김, 그룹 경계 Asia/Seoul 고정, 무제한 보존)의 구현 설계. |
+| 2 | 2026-08-16 | 개발 단계 정지 조건 반환의 해소. revision 1의 mock 전제 단언 선확인이 `tests/e2e/swipe-refresh.spec.ts`(71·105행 — mock 확정 알림 행을 스와이프 대상으로 전제)를 빠뜨려, 실데이터 전환 후 두 테스트가 결정적으로 실패한다. 이 파일을 허용 경로에 추가하고 용도를 두 테스트의 서비스 클라이언트 알림 시딩 전환(tab-navigation·motion-render-budget과 같은 패턴)으로 한정한다. 2026-08-16 사용자 결정. |
 
 - 관련 spec: PRD:AC-11, PRD 9장(알림), DOMAIN:NOTIFICATIONS, ADR:0005
 - 적용 깊이: 깊음 — 새 도메인 경계(NOTIFICATIONS)의 첫 스키마 3종, 배포된 정의자 함수 1종 재정의(confirm_schedule 알림 결합), 새 RPC 2종, 화면 실데이터 전환.
@@ -74,7 +75,7 @@
 | 7 Seoul 경계 | 테스트함 — 그룹 3분류 기본 | 테스트함 — 기기 tz가 달라도 결과 동일(주입 now) | 테스트함 — KST 자정·일요일 경계·연말 | 해당 없음 — 순수 함수 | 해당 없음 — 순수 함수 | 해당 없음 — 순수 함수 |
 | 8·9·10 화면·여정 | 테스트함 — e2e 확정→알림→이동, 단위로 읽음 콜백 배선 | 테스트함 — 알림 0건 빈 상태 유지 | 테스트함 — 새로고침 후 읽음 유지 | 테스트함 — e2e 근무자 계정 | 해당 없음 — 읽음 멱등이 5 소유 | 해당 없음 — 표시 계층, DB 강제는 4 소유 |
 
-- 보충 위험: **기존 단언 대조 선확인(조사 완료)** — mock 전제 단언은 `NotificationsView.test.tsx`(prop 확장 정합), `notification-group` 단위(Seoul 전환 정합), `tab-navigation.spec.ts:392`(mock 예상 급여 알림 클릭 — 시딩 전환), `motion-render-budget.spec.ts`(알림 행 stagger 측정 — 시딩 전환)이다. 전부 허용 경로 안의 알려진 범위 갱신이고 단언 약화는 금지다. **confirm_schedule 3번째 재정의** — 21~23번 pgTAP 기존 단언은 반환 형태 불변으로 GREEN 유지가 전제다. **e2e 밴드** — 신규 spec은 전용 밴드 528~559를 레지스트리에 등록하고 다중 테스트는 splitBand 정적 하위 구간(P3-T10 관례). **알림함 e2e의 근무자 정리** — FK 체인(assignments→profiles) 정리 관례 준수.
+- 보충 위험: **기존 단언 대조 선확인(조사 완료)** — mock 전제 단언은 `NotificationsView.test.tsx`(prop 확장 정합), `notification-group` 단위(Seoul 전환 정합), `tab-navigation.spec.ts:392`(mock 예상 급여 알림 클릭 — 시딩 전환), `motion-render-budget.spec.ts`(알림 행 stagger 측정 — 시딩 전환), `swipe-refresh.spec.ts`(스와이프 읽음 대상 행 — 시딩 전환, revision 2에서 추가 발견)이다. 전부 허용 경로 안의 알려진 범위 갱신이고 단언 약화는 금지다. **confirm_schedule 3번째 재정의** — 21~23번 pgTAP 기존 단언은 반환 형태 불변으로 GREEN 유지가 전제다. **e2e 밴드** — 신규 spec은 전용 밴드 528~559를 레지스트리에 등록하고 다중 테스트는 splitBand 정적 하위 구간(P3-T10 관례). **알림함 e2e의 근무자 정리** — FK 체인(assignments→profiles) 정리 관례 준수.
 
 ### DEV-* 적용 상태
 
@@ -129,13 +130,14 @@ src/app/(protected)/(tabs)/layout.tsx
 tests/e2e/notifications.spec.ts
 tests/e2e/tab-navigation.spec.ts
 tests/e2e/motion-render-budget.spec.ts
+tests/e2e/swipe-refresh.spec.ts
 tests/e2e/support/**
 docs/execution/radio/P4-T01-radio.md
 docs/execution/runs/P4-T01/**
 docs/execution/phases/index.jsonl
 ```
 
-- 용도 한정: `tests/e2e/support/**`는 밴드 1개 추가(528~559)와 기존 헬퍼 재사용·최소 확장(알림 시딩 헬퍼 포함)에만 쓴다. `tab-navigation.spec.ts`는 mock 전제 시나리오(392행 예상 급여 알림 클릭)를 서비스 클라이언트 시딩 기반으로 바꾸는 정합 갱신에만, `motion-render-budget.spec.ts`는 측정 대상 알림 행을 시딩으로 확보하는 정합 갱신에만 쓴다 — 두 파일의 다른 시나리오·단언은 건드리지 않는다. `src/entities/notification/**`의 mock 2파일은 preview·catalog 호환 유지 범위에서만 손댄다. `(tabs)/layout.tsx`는 unread 실데이터 배선 한 곳이다. 기존 pgTAP(21~23)은 이 task의 허용 경로 밖 — confirm_schedule 재정의로 기존 단언이 깨지면 고치지 말고 멈춰 반환한다(정지 조건 3).
+- 용도 한정: `tests/e2e/support/**`는 밴드 1개 추가(528~559)와 기존 헬퍼 재사용·최소 확장(알림 시딩 헬퍼 포함)에만 쓴다. `tab-navigation.spec.ts`는 mock 전제 시나리오(392행 예상 급여 알림 클릭)를 서비스 클라이언트 시딩 기반으로 바꾸는 정합 갱신에만, `motion-render-budget.spec.ts`는 측정 대상 알림 행을 시딩으로 확보하는 정합 갱신에만, `swipe-refresh.spec.ts`는 두 스와이프 테스트(62·96행 시나리오)의 대상 알림 행을 시딩으로 확보하는 정합 갱신에만 쓴다(revision 2) — 세 파일의 다른 시나리오·단언은 건드리지 않는다. `src/entities/notification/**`의 mock 2파일은 preview·catalog 호환 유지 범위에서만 손댄다. `(tabs)/layout.tsx`는 unread 실데이터 배선 한 곳이다. 기존 pgTAP(21~23)은 이 task의 허용 경로 밖 — confirm_schedule 재정의로 기존 단언이 깨지면 고치지 말고 멈춰 반환한다(정지 조건 3).
 - `docs/product/**`·`docs/execution/reviews/**`는 의도적으로 빠져 있다. 정합화·backlog는 조정자 몫.
 - 위 밖의 파일이 필요해지면 멈추고 반환한다.
 
