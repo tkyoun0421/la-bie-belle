@@ -199,9 +199,9 @@ test.describe("모집·변경 알림 여정", () => {
       await workerPage.goto("/notifications");
       await expect(workerPage.getByRole("heading", { level: 1, name: "알림" })).toBeVisible();
 
-      const notificationRow = workerPage.getByRole("button", {
-        name: new RegExp(RECRUITMENT_OPENED_TITLE),
-      });
+      const notificationRow = workerPage
+        .getByRole("button", { name: new RegExp(RECRUITMENT_OPENED_TITLE) })
+        .filter({ hasText: `${month}월 ${day}일` });
       await expect(notificationRow).toBeVisible();
 
       await notificationRow.click();

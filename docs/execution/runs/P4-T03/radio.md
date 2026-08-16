@@ -1,10 +1,14 @@
 # P4-T03 RADIO 적용 결과
 
-- 기준 RADIO: `docs/execution/radio/P4-T03-radio.md` **revision 1**, SHA-256
+- 기준 RADIO: `docs/execution/radio/P4-T03-radio.md` **revision 1**(최초 개발), SHA-256
   `26cbf12e316941d1224f8fea4927c55dd2f004d0d1dd784ba522c0e505d744b2`(index.jsonl
-  `development_approval`과 대조 완료, 일치). 재봉인 없음 — 개발 중 정지 조건 반환도 없었다.
+  `development_approval`과 대조 완료, 일치). 최초 개발은 재봉인 없이 완주했다.
 - 기준 커밋: `063bdde`("docs(P4-T03): seal RADIO revision 1 and queue the task as planned",
-  조정자). 구현 커밋: 이 문서를 포함하는 본 커밋 — 최종 보고에서 SHA를 확인할 수 있다.
+  조정자). 최초 구현 커밋: `05eb52a`.
+- **교차 검증 high 3건(F-01·F-02·F-03) 수정 라운드**로 RADIO가 **revision 2**, SHA-256
+  `f93880f68de6465c922d2cc5b4a0d2453db8c8baee28e877155e996beb1edaf1`(사용자 승인, 조정자 재봉인
+  커밋 `8a97b6c`)로 갱신됐다. `index.jsonl`의 `development_approval`도 revision 2로 갱신됐다.
+  이 라운드의 상세는 아래 "교차 검증 수정 라운드(F-01·F-02·F-03)" 절.
 
 ## 적용 결과 요약
 
@@ -118,3 +122,108 @@ RADIO의 Requirements·Architecture·Data model·Interface 절 그대로 구현�
   `src/views/schedule/model/deadline-batches.ts` 등)가 함께 있었다. RADIO의 변경 허용 경로
   목록에 없는 파일은 전부 스테이징에서 제외했다 — 상세 목록은
   `docs/execution/runs/P4-T03/handoff.md`.
+
+## 교차 검증 수정 라운드(F-01·F-02·F-03)
+
+- 기준 RADIO가 revision 1 → **revision 2**(SHA-256
+  `f93880f68de6465c922d2cc5b4a0d2453db8c8baee28e877155e996beb1edaf1`, 재봉인 커밋 `8a97b6c`)로
+  바뀌었다. `index.jsonl`의 `development_approval`도 revision 2로 갱신됐다(조정자). 허용 경로에
+  `tests/e2e/post-confirmation-changes.spec.ts`·`tests/e2e/notifications.spec.ts`가 용도 한정으로
+  추가됐다.
+
+### F-03(high, 사용자 결정) — 배정 변경 수신자를 스케줄 전체 전후 로스터 합집합으로 확정
+
+- `supabase/migrations/20260821000000_recruitment_change_notifications.sql`의
+  `replace_position_assignments`를 수정했다(새 파일이 아니라 기존 파일 재작성 — 아직 push
+  전이라 로컬 DB 재적용으로 반영). 포지션 한정 수신자 계산(`previous_ids ∪ candidate_ids ∪
+  notify_previous_trainee_ids ∪ notify_final_trainee_ids`)을 제거하고, 대신 스케줄 전체
+  `assignments ∪ assignment_trainees`(포지션 무관)를 **변경 전**(`notify_schedule_before_ids`,
+  어떤 mutation도 일어나기 전인 `notify_work_date` 조회 직후에 한 번 계산) 시점과 **변경
+  후**(`notify_schedule_after_ids`, no-op 분기·실제 변경 분기 각각에서 `bump_confirmed_revision`
+  호출 직후 다시 계산)에 각각 조회해 그 합집합을 `notify_recipient_ids`로 쓰도록 바꿨다. 다른
+  포지션의 배정자·교육생은 이 함수가 손대지 않으므로 전/후 두 시점 모두 그대로 집합에 남아
+  자동으로 수신자가 된다. 기존 `previous_ids`(포지션 한정, added/removed diff용)는 그대로
+  남겨뒀다 — 알림 수신자 계산과 무관하게 여전히 필요하다.
+- pgTAP `supabase/tests/26-recruitment-change-notifications.test.sql`에 새 픽스처(다른 포지션
+  `안내`의 배정자 근무자G·교육생 근무자H, AC2 스케줄에 한정해 추가 — AC1의 활성 근무자 전수
+  집계 이후 시점에 삽입해 AC1 단언에 영향 없음)와 새 단언 2개(G·H 각각 수신)를 추가하고,
+  기존 "5명 수신" 총계 단언을 "7명"으로 갱신했다(정합 갱신 — F-03 계약 확대에 따른 필연적
+  결과). plan 45→47.
+- RED→GREEN: `docs/execution/runs/P4-T03/tdd.json`에 새 쌍 추가(`supabase test db
+  supabase/tests/26-recruitment-change-notifications.test.sql`, RED 2026-08-16T16:03:08Z exit 1
+  — 47개 중 3개 실패(신설 단언 3개 모두), GREEN 2026-08-16T16:03:58Z exit 0 — 47/47). RED는
+  마이그레이션 파일만 `git stash`로 F-03 이전 상태로 되돌려 재현하고, GREEN은 `git stash pop`
+  으로 복원한 뒤 같은 명령으로 재실행해 얻었다.
+
+### F-01(high, 재현 확정) — 알림 팬아웃과 e2e `deleteWorkerSessions`의 FK 충돌
+
+- 원인: `notifications.recipient_id`·`notification_outbox.notification_id`는 각각
+  `profiles(id)`·`notifications(id)`를 참조하지만 `on delete cascade`가 없다(반면
+  `profiles.id → auth.users(id)`는 cascade). 이번 task가 추가한 알림 팬아웃(모집 오픈은 활성
+  근무자 전원, 확정 후 변경은 스케줄 로스터 전원)이 e2e 워커 계정에도 알림 행을 만들면서,
+  `deleteWorkerSessions`의 `admin.auth.admin.deleteUser`가 프로필을 지우려다 그 프로필을 가리키는
+  notifications 행 때문에 FK 위반으로 실패한다.
+- 수정: `tests/e2e/support/worker-session.ts`의 `deleteWorkerSessions`가 각 세션의
+  `session.admin`(service-role, RLS 우회)으로 (1) `recipient_id = session.id`인 notifications의
+  id 목록을 조회하고, (2) 그 id들을 참조하는 notification_outbox 행을 먼저 삭제하고(FK 순서상
+  notifications보다 먼저 지워야 한다 — outbox도 notifications를 cascade 없이 참조), (3)
+  notifications 행을 삭제한 뒤, (4) 기존 `deleteUser` 호출로 이어지게 했다. 전 spec 공통 해소 —
+  `tests/e2e/support/**`는 밴드 관례상 모든 spec이 재사용한다.
+- RED→GREEN: 조정자가 지목한 재현 명령(`pnpm exec playwright test
+  tests/e2e/post-confirmation-changes.spec.ts` 단독 실행)을 그대로 썼다. RED는
+  `worker-session.ts`만 `git stash`로 원본으로 되돌려 얻었다(exit 1,
+  2026-08-16T16:05:00Z — 조정자가 지목한 그대로 `worker-session.ts:62`에서
+  `AuthRetryableFetchError: Database error deleting user`, 1 failed·1 passed). GREEN은
+  `git stash pop`으로 수정을 복원한 뒤 같은 명령으로 재실행해 얻었다(exit 0,
+  2026-08-16T16:05:55Z, 2/2 통과).
+
+### F-02(high) — 모집 오픈 팬아웃에 의한 e2e 단언 오염
+
+- `tests/e2e/notifications.spec.ts:134`: 기존 단언
+  `expect(notificationsTabLink.getByText(UNREAD_MARKER_TEXT)).toHaveCount(0)`은 워커 계정의
+  "미읽음 전체 배지"가 0인지를 전역으로 확인했다. 탭 배지는 불리언(어떤 미읽음이든 있으면
+  표시)이라 병렬로 실행 중인 다른 spec(예: `recruitment-notifications.spec.ts`의 모집 오픈
+  테스트)이 같은 시각 활성 근무자 전원에게 모집 오픈 알림을 팬아웃하면 이 워커도 받아
+  거짓 실패할 수 있다. 전역 배지 단언을 DB 스코프 단언으로 바꿨다 — `admin`(service-role)으로
+  `aggregate_id = scheduleId and recipient_id = worker.id`인 자기 확정 알림 행 하나를 직접
+  조회해 `read_at`이 null이 아님을 확인한다(자기 스케줄 한정). 읽음 후 그 행이 목록에서 미읽음
+  표시가 없다는 UI 단언(기존 133행)은 그대로 유지했다 — 다른 시나리오는 무수정.
+- `tests/e2e/recruitment-notifications.spec.ts`(신규 모집 오픈 테스트): 워커 알림함에서
+  `getByRole("button", { name: new RegExp(RECRUITMENT_OPENED_TITLE) })`만으로 행을 찾으면, 같은
+  워커가 병렬 spec의 다른 모집 오픈 팬아웃까지 받았을 때 제목이 같은 행이 여럿이라 Playwright
+  strict-mode 위반(다중 매치)이 날 수 있다. `.filter({ hasText: \`${month}월 ${day}일\` })`을
+  덧붙여 이 테스트의 밴드 날짜로 로케이터를 좁혔다(RADIO 예시 그대로 — "본문의 밴드
+  날짜로 특정").
+- 이 두 수정은 실제 경합(레이스 컨디션)에 의존하는 오염이라 결정적으로 재현되는 RED
+  시나리오를 pgTAP처럼 만들 수 없었다 — 별도 RED→GREEN 쌍을 tdd.json에 남기지 않았다(F-01의
+  RED→GREEN 쌍과 같은 계열의 e2e 하네스 안정화로 분류). 대신 조정자가 요구한 검증
+  방법(post-confirmation-changes·notifications·recruitment-notifications·push-subscription 4개
+  spec을 함께 실행해 격리 해소 확인)을 **연속 3회** 수행해 매번 8/8 통과를 확인했다 — 근거는
+  아래 "수정 후 검증".
+
+### 수정 후 검증
+
+- pgTAP 전체: `supabase db reset` → `supabase test db` — **26 files, 1514 tests, PASS**(기존
+  25개 파일 회귀 없음, 26번은 47/47).
+- 내 범위 단위: `pnpm typecheck`(전체 GREEN), `pnpm test`(전체 **244/244 파일, 1602/1602
+  테스트** — 이번 라운드에서 vitest 대상 파일은 건드리지 않았고 회귀 없음),
+  `pnpm exec prettier --check`(수정 5개 파일 전부 스타일 통과). e2e 파일(`tests/e2e/**`)은
+  `lint:ci`(`eslint src`) 범위 밖이라 대상 아님(프로젝트 관례).
+- e2e 4 spec 동시 실행(조정자 지정): `pnpm exec playwright test
+  tests/e2e/post-confirmation-changes.spec.ts tests/e2e/notifications.spec.ts
+  tests/e2e/recruitment-notifications.spec.ts tests/e2e/push-subscription.spec.ts` — `supabase db
+  reset` 후 **연속 3회 실행, 매번 8/8 통과**(F-01·F-02 수정 전에는 1회차부터 F-01 원인으로
+  결정적 실패, 위 RED 근거 참고).
+- push는 하지 않는다(ci-finisher 소관). 무관 변경 접촉 없음 — 아래 "수정 대상 파일" 목록 밖은
+  스테이징하지 않았다.
+
+### 수정 대상 파일
+
+- `supabase/migrations/20260821000000_recruitment_change_notifications.sql`(F-03)
+- `supabase/tests/26-recruitment-change-notifications.test.sql`(F-03 — 픽스처·단언 추가/갱신,
+  plan 45→47)
+- `tests/e2e/support/worker-session.ts`(F-01)
+- `tests/e2e/notifications.spec.ts`(F-02 — 134행 근방 단언만)
+- `tests/e2e/recruitment-notifications.spec.ts`(F-02 — 모집 오픈 로케이터 1곳만)
+- `docs/execution/runs/P4-T03/tdd.json`(F-01·F-03 RED→GREEN 쌍 추가)
+- `docs/execution/runs/P4-T03/radio.md`·`docs/execution/runs/P4-T03/handoff.md`(이 절)

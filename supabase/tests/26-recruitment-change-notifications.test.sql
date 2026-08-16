@@ -1,5 +1,5 @@
 begin;
-select plan(45);
+select plan(47);
 
 -- =====================================================================
 -- 스키마: helper 함수 시그니처
@@ -197,9 +197,26 @@ select is(
 );
 
 -- =====================================================================
--- AC2: 배정 변경 — 전후 합집합(빠짐·추가·유지·교육생) 수신, 무관 근무자 미수신,
+-- AC2: 배정 변경 — 스케줄 전체 전후 로스터 합집합(빠짐·추가·유지·교육생 +
+-- 같은 스케줄 다른 포지션 배정자·교육생, revision 2/F-03) 수신, 배정되지 않은 근무자 미수신,
 -- revision이 bump 반환값과 일치
 -- =====================================================================
+
+insert into auth.users (id, email) values
+  ('26000000-0000-0000-0000-000000000014', 'rcn-worker-g@labiebelle.test'),
+  ('26000000-0000-0000-0000-000000000015', 'rcn-worker-h@labiebelle.test');
+
+insert into public.profiles (
+  id, name, phone, gender, birth_date, status, inactivity_anchor_at, hourly_wage
+) values
+  (
+    '26000000-0000-0000-0000-000000000014', '근무자G', '01096000014', 'male', '1987-01-01',
+    'active', now(), 14000
+  ),
+  (
+    '26000000-0000-0000-0000-000000000015', '근무자H', '01096000015', 'female', '1986-01-01',
+    'active', now(), 15000
+  );
 
 insert into schedules (work_date, application_deadline, status) values
   ('2098-06-01', '2098-05-25', 'CONFIRMED'),
@@ -244,6 +261,29 @@ insert into assignment_trainees (schedule_id, position_id, profile_id, hourly_wa
     '26000000-0000-0000-0000-000000000010', 15000
   );
 
+insert into assignments (schedule_id, profile_id, hourly_wage_snapshot) values
+  (
+    (select id from schedules where work_date = '2098-06-01'),
+    '26000000-0000-0000-0000-000000000014', 14000
+  );
+
+insert into assignment_positions (assignment_id, position_id) values
+  (
+    (
+      select id from assignments
+      where schedule_id = (select id from schedules where work_date = '2098-06-01')
+        and profile_id = '26000000-0000-0000-0000-000000000014'
+    ),
+    (select id from positions where name = '안내')
+  );
+
+insert into assignment_trainees (schedule_id, position_id, profile_id, hourly_wage_snapshot) values
+  (
+    (select id from schedules where work_date = '2098-06-01'),
+    (select id from positions where name = '안내'),
+    '26000000-0000-0000-0000-000000000015', 15000
+  );
+
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '26000000-0000-0000-0000-000000000001', true);
 select lives_ok(
@@ -270,8 +310,9 @@ select is(
     where event_type = 'schedule_revised'
       and aggregate_id = (select id from schedules where work_date = '2098-06-01')
   ),
-  5,
-  'AC2: 빠진 배정자(A)·유지 배정자(B)·들어온 배정자(C)·전후 교육생(D·E) 5명 모두 정확히 1건씩 받는다'
+  7,
+  'AC2(F-03): 빠진 배정자(A)·유지 배정자(B)·들어온 배정자(C)·전후 교육생(D·E)·같은 스케줄 다른 '
+    || '포지션(안내)의 배정자(G)·교육생(H) 7명 모두 정확히 1건씩 받는다(스케줄 전체 전후 로스터)'
 );
 select is(
   (
@@ -306,7 +347,29 @@ select is(
       and recipient_id = '26000000-0000-0000-0000-000000000012'
   ),
   0,
-  'AC2: 무관 근무자(F)는 배정과 관련이 없어 미수신이다'
+  'AC2: 스케줄에 배정되지 않은 근무자(F)는 미수신이다'
+);
+select is(
+  (
+    select count(*)::int from notifications
+    where event_type = 'schedule_revised'
+      and aggregate_id = (select id from schedules where work_date = '2098-06-01')
+      and recipient_id = '26000000-0000-0000-0000-000000000014'
+      and revision = 2
+  ),
+  1,
+  'AC2(F-03): 같은 스케줄 다른 포지션(안내)의 배정자(G)도 스케줄 전체 로스터 합집합으로 수신한다'
+);
+select is(
+  (
+    select count(*)::int from notifications
+    where event_type = 'schedule_revised'
+      and aggregate_id = (select id from schedules where work_date = '2098-06-01')
+      and recipient_id = '26000000-0000-0000-0000-000000000015'
+      and revision = 2
+  ),
+  1,
+  'AC2(F-03): 같은 스케줄 다른 포지션(안내)의 교육생(H)도 스케줄 전체 로스터 합집합으로 수신한다'
 );
 
 -- =====================================================================

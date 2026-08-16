@@ -95,3 +95,82 @@ handoff의 선례를 따름).
 - TDD 증거: `docs/execution/runs/P4-T03/tdd.json`(RED→GREEN 4쌍, 8 entries)
 - RADIO 적용 결과: `docs/execution/runs/P4-T03/radio.md`
 - 구현 커밋: 이 문서를 포함하는 본 커밋
+
+## 2026-08-16 · 교차 검증 수정 라운드(F-01·F-02·F-03)
+
+- 작업 식별자: P4-T03
+- 현재 단계: 개발 종료 상태 유지, 교차 검증(`docs/execution/reviews/P4-T03-review.json`) 확정
+  발견 high 3건 수정 라운드 → 다음 검증(리뷰어 재확인)
+- 기준 시각: 2026-08-16T16:11:47Z
+
+### 확정된 사실
+
+- 기준 RADIO가 revision 1(SHA-256
+  `26cbf12e316941d1224f8fea4927c55dd2f004d0d1dd784ba522c0e505d744b2`) → **revision 2**(SHA-256
+  `f93880f68de6465c922d2cc5b4a0d2453db8c8baee28e877155e996beb1edaf1`, 재봉인 커밋 `8a97b6c`,
+  사용자 승인)로 바뀌었다. `index.jsonl`의 `development_approval`도 revision 2로 갱신됐다(조정자).
+- F-01(high, 재현 확정)·F-02(high)·F-03(high, 사용자 결정) 셋 다
+  `docs/execution/runs/P4-T03/radio.md`의 "교차 검증 수정 라운드(F-01·F-02·F-03)" 절에 상세
+  기록했다. 요약:
+  1. F-03: `replace_position_assignments`의 변경 알림 수신자를 포지션 한정 전후 합집합에서
+     **스케줄 전체 전후 로스터 합집합**으로 넓혔다(사용자 결정). 마이그레이션은 기존
+     `20260821000000` 파일을 재작성했다(아직 push 전이라 로컬 DB 재적용으로 반영, 새 파일
+     아님).
+  2. F-01: e2e `tests/e2e/support/worker-session.ts`의 `deleteWorkerSessions`가 프로필 삭제
+     전에 그 프로필 수신 notifications·notification_outbox를 먼저 지우도록 고쳤다(알림 팬아웃이
+     profiles를 cascade 없이 참조해 FK 위반이 나던 문제, 조정자가 재현 확정).
+  3. F-02: `tests/e2e/notifications.spec.ts`의 전역 미읽음 배지 0 단언을 자기 스케줄 한정 DB
+     조회로 바꾸고, `tests/e2e/recruitment-notifications.spec.ts`의 모집 오픈 알림 로케이터에
+     밴드 날짜 `.filter({ hasText })`를 추가해 병렬 spec의 모집 오픈 팬아웃에 오염되지 않게
+     했다.
+- 허용 경로 revision 2(`tests/e2e/post-confirmation-changes.spec.ts`·`tests/e2e/notifications.spec.ts`
+  용도 한정 추가) 밖으로 나간 파일은 없다.
+- `test_mode=tdd` 절차: F-03은 pgTAP에 RED를 먼저 추가했다(`supabase test db
+  supabase/tests/26-recruitment-change-notifications.test.sql`, RED 2026-08-16T16:03:08Z exit 1
+  → GREEN 2026-08-16T16:03:58Z exit 0). F-01은 조정자가 지목한 재현 명령을 그대로 써서
+  RED(`pnpm exec playwright test tests/e2e/post-confirmation-changes.spec.ts`,
+  2026-08-16T16:05:00Z exit 1, `worker-session.ts:62`에서 정확히 재현) → GREEN
+  (2026-08-16T16:05:55Z exit 0)을 확보했다. F-02는 레이스 컨디션 성격이라 결정적 RED를 만들
+  수 없어 별도 쌍을 남기지 않았다(근거는 radio.md). `docs/execution/runs/P4-T03/tdd.json`에 새
+  RED→GREEN 2쌍 추가(총 6쌍, 12 entries). `pnpm gate:tdd` 통과.
+- 수정 후 검증(포그라운드, 이번 라운드 범위로 스코프):
+  - pgTAP 전체: `supabase db reset` → `supabase test db` — 26 files, **1514 tests, PASS**.
+  - `pnpm typecheck`: 전체 GREEN.
+  - `pnpm test`: 전체 **244/244 파일, 1602/1602 테스트** GREEN(이번 라운드는 vitest 대상 파일을
+    건드리지 않아 회귀 없음).
+  - `pnpm exec prettier --check`: 수정 5개 파일 전부 스타일 통과. e2e는 `lint:ci`(`eslint src`)
+    범위 밖이라 대상 아님(프로젝트 관례).
+  - e2e 4 spec 동시 실행(조정자 지정): `pnpm exec playwright test
+    tests/e2e/post-confirmation-changes.spec.ts tests/e2e/notifications.spec.ts
+    tests/e2e/recruitment-notifications.spec.ts tests/e2e/push-subscription.spec.ts` —
+    `supabase db reset` 후 **연속 3회 실행, 매번 8/8 통과**.
+  - 전체 verify(format/lint/build/gate:bundle 등)는 이번 라운드에서 다시 돌리지 않았다 — 수정
+    범위가 마이그레이션 1개·pgTAP 1개·e2e support 1개·e2e spec 2개(부분)로 좁고, 개발 종료
+    시점 handoff의 verify 결과(build·gate:index/radio/tdd/handoff/scope/all GREEN)가 이
+    범위에서 재확인 필요한 항목을 포함하지 않는다고 판단했다. 필요하면 검증 단계에서 리뷰어가
+    전체 재실행한다.
+- 전체 스테이징 후 커밋한다(부분 스테이징 없음) — 수정 대상 5개 파일(마이그레이션 1·pgTAP
+  1·e2e support 1·e2e spec 2)과 `docs/execution/runs/P4-T03/{tdd.json,radio.md,handoff.md}`만
+  스테이징했다. 병렬 세션(들)의 무관 변경은 이번 라운드에서도 손대지도 스테이징하지도 않았다.
+  push는 하지 않는다(ci-finisher 소관).
+
+### 미결 사항
+
+- 없음 — F-01·F-02·F-03은 이번 라운드로 해소됐다. medium·low(F-04~F-07)는 backlog가 소유하며
+  이 task의 결정 대상이 아니다(이번 라운드에서 고치지 않았다).
+
+### 다음 행동
+
+1. 리뷰어가 이번 수정 커밋을 F-01·F-02·F-03 원 발견과 대조해 해소를 확인한다.
+2. `index.jsonl`의 P4-T03 상태 전환은 조정자 몫.
+
+### 증거·산출물 경로
+
+- 수정 파일: `supabase/migrations/20260821000000_recruitment_change_notifications.sql`(F-03),
+  `supabase/tests/26-recruitment-change-notifications.test.sql`(F-03, plan 45→47),
+  `tests/e2e/support/worker-session.ts`(F-01), `tests/e2e/notifications.spec.ts`(F-02),
+  `tests/e2e/recruitment-notifications.spec.ts`(F-02)
+- 교차 검증 원본: `docs/execution/reviews/P4-T03-review.json`(읽기 전용)
+- TDD 증거: `docs/execution/runs/P4-T03/tdd.json`(새 RED→GREEN 2쌍, 총 12 entries)
+- RADIO 적용 결과(수정 라운드 상세): `docs/execution/runs/P4-T03/radio.md`
+- 수정 커밋: 이 절을 포함하는 본 커밋

@@ -59,6 +59,33 @@ export type WorkerSession = Awaited<ReturnType<typeof createWorkerSession>>;
 
 export async function deleteWorkerSessions(sessions: readonly WorkerSession[]) {
   for (const session of sessions) {
+    const { data: notificationRows, error: notificationsFetchError } = await session.admin
+      .from("notifications")
+      .select("id")
+      .eq("recipient_id", session.id);
+    if (notificationsFetchError) {
+      throw notificationsFetchError;
+    }
+
+    const notificationIds = (notificationRows ?? []).map((row) => row.id as string);
+    if (notificationIds.length > 0) {
+      const { error: outboxError } = await session.admin
+        .from("notification_outbox")
+        .delete()
+        .in("notification_id", notificationIds);
+      if (outboxError) {
+        throw outboxError;
+      }
+
+      const { error: notificationsError } = await session.admin
+        .from("notifications")
+        .delete()
+        .in("id", notificationIds);
+      if (notificationsError) {
+        throw notificationsError;
+      }
+    }
+
     const { error } = await session.admin.auth.admin.deleteUser(session.id);
     if (error) {
       throw error;

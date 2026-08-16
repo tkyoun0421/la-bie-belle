@@ -55,6 +55,34 @@
       "at": "2026-08-16T15:09:55Z",
       "phase": "green",
       "note": "git stash pop으로 isNotificationTarget·resolvePushClickPath의 schedule 분기(month 형식 검증 포함) 복원 후 재실행. 6/6 통과."
+    },
+    {
+      "command": "supabase test db supabase/tests/26-recruitment-change-notifications.test.sql",
+      "exit_code": 1,
+      "at": "2026-08-16T16:03:08Z",
+      "phase": "red",
+      "note": "F-03(교차 검증 high) RED. replace_position_assignments 재정의를 git stash로 F-03 이전(포지션 한정 수신자) 상태로 되돌리고, 다른 포지션(안내) 배정자G·교육생H 픽스처와 새 단언 3개(7명 합계·G 수신·H 수신)를 추가한 26번 pgTAP만 단독 실행. 47개 중 3개 실패(13, 17, 18) — G·H는 여전히 0건, 합계는 7이 아닌 5."
+    },
+    {
+      "command": "supabase test db supabase/tests/26-recruitment-change-notifications.test.sql",
+      "exit_code": 0,
+      "at": "2026-08-16T16:03:58Z",
+      "phase": "green",
+      "note": "git stash pop으로 replace_position_assignments의 스케줄 전체 전후 로스터 합집합(notify_schedule_before_ids·notify_schedule_after_ids) 복원 후 재실행. 47/47 통과."
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/post-confirmation-changes.spec.ts",
+      "exit_code": 1,
+      "at": "2026-08-16T16:05:00Z",
+      "phase": "red",
+      "note": "F-01(교차 검증 high) RED. tests/e2e/support/worker-session.ts의 deleteWorkerSessions를 git stash로 원본(알림 정리 없이 곧바로 deleteUser) 상태로 되돌리고 단독 실행. 조정자가 지목한 그대로 worker-session.ts:62에서 AuthRetryableFetchError: Database error deleting user로 1번째 테스트가 실패(1 failed, 1 passed)."
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/post-confirmation-changes.spec.ts",
+      "exit_code": 0,
+      "at": "2026-08-16T16:05:55Z",
+      "phase": "green",
+      "note": "git stash pop으로 deleteWorkerSessions가 프로필 삭제 전 recipient_id 기준 notifications·notification_outbox를 먼저 지우도록 복원한 뒤 재실행. 2/2 통과."
     }
   ]
 }

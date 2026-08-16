@@ -131,7 +131,17 @@ test.describe("알림함 여정", () => {
       const reloadedRow = workerPage.getByRole("button", { name: new RegExp(NOTIFICATION_TITLE) });
       await expect(reloadedRow).toBeVisible();
       await expect(reloadedRow).not.toHaveAccessibleName(new RegExp(UNREAD_MARKER_TEXT));
-      await expect(notificationsTabLink.getByText(UNREAD_MARKER_TEXT)).toHaveCount(0);
+
+      const { data: ownNotification, error: ownNotificationError } = await admin
+        .from("notifications")
+        .select("read_at")
+        .eq("aggregate_id", scheduleId)
+        .eq("recipient_id", worker.id)
+        .single();
+      if (ownNotificationError || !ownNotification) {
+        throw ownNotificationError ?? new Error("확정 알림 행을 찾지 못했습니다.");
+      }
+      expect((ownNotification as { read_at: string | null }).read_at).not.toBeNull();
     } finally {
       const { data: notificationRows } = await admin
         .from("notifications")

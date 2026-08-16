@@ -385,8 +385,8 @@ declare
   wageless_id uuid;
   new_confirmed_revision integer;
   notify_work_date date;
-  notify_previous_trainee_ids uuid[];
-  notify_final_trainee_ids uuid[];
+  notify_schedule_before_ids uuid[];
+  notify_schedule_after_ids uuid[];
   notify_recipient_ids uuid[];
 begin
   if not is_admin(actor_id) then
@@ -403,6 +403,18 @@ begin
   end if;
 
   select work_date into notify_work_date from schedules where id = target_schedule_id;
+
+  select coalesce(array_agg(distinct pid), array[]::uuid[])
+    into notify_schedule_before_ids
+    from (
+      select asg.profile_id as pid
+        from assignments asg
+        where asg.schedule_id = target_schedule_id
+      union
+      select at.profile_id as pid
+        from assignment_trainees at
+        where at.schedule_id = target_schedule_id
+    ) as roster;
 
   if target_status = 'CANCELLED' then
     raise exception '확정되었거나 취소된 스케줄의 배정은 변경할 수 없습니다' using errcode = 'LB020';
@@ -445,12 +457,6 @@ begin
     where asg.schedule_id = target_schedule_id
       and ap.position_id = target_position_id;
 
-  select coalesce(array_agg(at.profile_id), array[]::uuid[])
-    into notify_previous_trainee_ids
-    from assignment_trainees at
-    where at.schedule_id = target_schedule_id
-      and at.position_id = target_position_id;
-
   select coalesce(array_agg(pid), array[]::uuid[]) into added_ids
     from (
       select unnest(candidate_ids) as pid
@@ -484,8 +490,6 @@ begin
         select unnest(trainee_ids)
       ) as diff;
   end if;
-
-  notify_final_trainee_ids := case when trainee_touched then trainee_ids else notify_previous_trainee_ids end;
 
   if not position_active
     and (
@@ -599,15 +603,6 @@ begin
     new_trainee_count := coalesce(array_length(trainee_ids, 1), 0);
   end if;
 
-  select coalesce(array_agg(distinct pid), array[]::uuid[])
-    into notify_recipient_ids
-    from unnest(
-      coalesce(previous_ids, array[]::uuid[]) || coalesce(candidate_ids, array[]::uuid[])
-        || coalesce(notify_previous_trainee_ids, array[]::uuid[])
-        || coalesce(notify_final_trainee_ids, array[]::uuid[])
-    ) as pid
-    where pid is not null;
-
   if added_count = 0 and removed_count = 0 and added_trainee_count = 0 and removed_trainee_count = 0
   then
     if target_status = 'CONFIRMED' then
@@ -625,6 +620,26 @@ begin
           'trainee_profile_ids', case when trainee_touched then to_jsonb(trainee_ids) else null end
         )
       ) into new_confirmed_revision;
+
+      select coalesce(array_agg(distinct pid), array[]::uuid[])
+        into notify_schedule_after_ids
+        from (
+          select asg.profile_id as pid
+            from assignments asg
+            where asg.schedule_id = target_schedule_id
+          union
+          select at.profile_id as pid
+            from assignment_trainees at
+            where at.schedule_id = target_schedule_id
+        ) as roster;
+
+      select coalesce(array_agg(distinct pid), array[]::uuid[])
+        into notify_recipient_ids
+        from unnest(
+          coalesce(notify_schedule_before_ids, array[]::uuid[])
+            || coalesce(notify_schedule_after_ids, array[]::uuid[])
+        ) as pid
+        where pid is not null;
 
       perform notify_schedule_recipients(
         'schedule_revised',
@@ -741,6 +756,26 @@ begin
         'trainee_profile_ids', case when trainee_touched then to_jsonb(trainee_ids) else null end
       )
     ) into new_confirmed_revision;
+
+    select coalesce(array_agg(distinct pid), array[]::uuid[])
+      into notify_schedule_after_ids
+      from (
+        select asg.profile_id as pid
+          from assignments asg
+          where asg.schedule_id = target_schedule_id
+        union
+        select at.profile_id as pid
+          from assignment_trainees at
+          where at.schedule_id = target_schedule_id
+      ) as roster;
+
+    select coalesce(array_agg(distinct pid), array[]::uuid[])
+      into notify_recipient_ids
+      from unnest(
+        coalesce(notify_schedule_before_ids, array[]::uuid[])
+          || coalesce(notify_schedule_after_ids, array[]::uuid[])
+      ) as pid
+      where pid is not null;
 
     perform notify_schedule_recipients(
       'schedule_revised',
