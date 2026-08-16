@@ -1,9 +1,9 @@
 # P4-T02 RADIO 개발 설계
 
 - 상태: Sealed
-- revision: 2
+- revision: 3
 - 기획 승인: user, 2026-08-16
-- 개발 설계 승인: user, 2026-08-16 (revision 1·2)
+- 개발 설계 승인: user, 2026-08-16 (revision 1·2·3)
 
 ## 개정 이력
 
@@ -11,6 +11,7 @@
 | --- | --- | --- |
 | 1 | 2026-08-16 | 최초 작성. 기획 결정 3건(권한 진입점 두 곳 병행, dev 스크립트 테스트 발송, 실기기 확인 P7-T06 이월)의 구현 설계. |
 | 2 | 2026-08-16 | 정지 조건 1 접촉으로 SW 등록 방식 재설계(사용자 승인). Turbopack이 `new URL(<파일>, import.meta.url)`을 번들 없이 정적 자산 원본 복사로 처리해(MIME `video/mp2t`, `@/` 별칭·TypeScript 미변환) revision 1의 번들 등록이 성립하지 않음을 프로덕션 빌드로 확인. SW를 `public/push-service-worker.js` 독립 classic script로 이동, `model/push-display`·`lib` 배선 파일 폐지, 실파일 직접 단위 테스트로 대체. |
+| 3 | 2026-08-16 | 검증 high 2건 수정을 위한 재봉인(사용자 승인). F-01: 켜기 도중 저장 실패 시 브라우저 구독을 보상 해지해 유령 구독을 차단한다. F-02: 브라우저 구독이 존재하는 마운트에서 `save_push_subscription` upsert 1왕복으로 현재 계정 재귀속·수렴을 실행한다 — Optimizations의 「설정 화면·시트 서버 왕복 0」을 이 경우에 한해 갱신. 두 동작의 훅 단위 회귀 테스트를 인수 조건 6에 추가. |
 
 - 관련 spec: PRD:AC-11, PRD 9장(알림 — 권한 진입점 두 곳), DOMAIN:NOTIFICATIONS, ADR:0005(만료 구독 비활성화), WORKER-FLOWS 알림과 푸시 권한 절
 - 적용 깊이: 중간 — push_subscriptions 쓰기 RPC 2종 신설, public 독립 Service Worker 1개, 새 화면 1개(알림 설정)와 시트 1개(사전 안내), 제품 서버 로직 변경 없음(발송은 T08).
@@ -34,7 +35,7 @@
 
 - 브라우저 권한 요청은 두 진입점의 명시적 사용자 행동(`알림 받기` 선택, 설정에서 켜기) 뒤에만 일어난다. 앱 진입·화면 마운트가 권한 팝업을 만들지 않는다. Service Worker 등록 자체는 권한과 무관하므로 진입점 화면에서 lazy 등록한다.
 - 구독 쓰기는 RPC로만 한다. `save_push_subscription`은 endpoint 기준 upsert(재구독 시 `disabled_at` 해제, 같은 기기의 계정 전환 시 소유자 재지정)이고, `remove_push_subscription`은 본인 행만 `disabled_at`을 찍는다 — 행 삭제 없음(ADR-0005 비활성화).
-- 구독 상태의 정본은 브라우저 `pushManager.getSubscription()`이고 DB는 발송 대상 목록이다. 둘이 어긋나면(브라우저에 구독 없음·권한 회수) 화면은 꺼짐으로 표시하고 DB 행은 다음 켜기에서 upsert로 수렴한다.
+- 구독 상태의 정본은 브라우저 `pushManager.getSubscription()`이고 DB는 발송 대상 목록이다. 둘이 어긋나면(브라우저에 구독 없음·권한 회수) 화면은 꺼짐으로 표시하고 DB 행은 다음 켜기에서 upsert로 수렴한다. 브라우저에 구독이 존재하는 마운트에서는 `save_push_subscription` upsert를 호출해 소유자·행을 현재 계정으로 재귀속·수렴시키고(revision 3, F-02), 켜기 도중 저장이 실패하면 방금 만든 브라우저 구독을 보상 해지(unsubscribe)해 두 정본이 어긋난 채 고정되지 않게 한다(revision 3, F-01).
 - SW는 import 없는 독립 classic script다 — 푸시 페이로드 해석(제목·본문·target)과 클릭 이동 경로 계산을 파일 안에 담되, 단위 테스트가 public 실파일을 `self` 스텁으로 직접 import해 단언한다(중복 사본 금지 — 같은 로직을 model에 두 벌 두지 않는다). target 모양은 P4-T01 `NotificationTarget`과 동일하다.
 - 거부·미지원·iOS 미설치 상태에서도 앱 내 알림함은 정상 동작하고, 설정 화면이 해당 상태를 안내한다(WORKER-FLOWS).
 - 새 테이블·컬럼·오류 코드 없음. `push_subscriptions` 스키마와 기존 RLS 정책은 무수정 — 쓰기 RPC와 그 검증만 더한다.
@@ -55,7 +56,7 @@
 3. 권한 행렬·RLS: 두 RPC는 authenticated만 grant(anon·service_role 거부 3롤 단언), `push_subscriptions` 직접 insert/update가 클라이언트 롤에서 차단됨을 단언(P4-T01 F-02 교훈 선반영, pgTAP).
 4. 구독 상태 판정 순수 함수: unsupported / ios-not-installed / permission-denied / ready / subscribed 분기와 그 우선순위(단위 — RED 먼저).
 5. 사전 안내 노출 판정 순수 함수: 신청 저장 성공 + 미구독 + 권한 미거부 + 기노출 아님일 때만 true, localStorage 키 1회 기록(판정은 순수 함수 단위, 저장 접근은 훅).
-6. 알림 설정 화면: 켜기 행동 뒤에만 권한 요청·구독 저장 action 호출, 끄기 시 브라우저 unsubscribe + 해지 action, 미지원·거부·iOS 미설치 안내 렌더(훅·액션 단위 + e2e는 화면 진입과 안내 분기).
+6. 알림 설정 화면: 켜기 행동 뒤에만 권한 요청·구독 저장 action 호출, 끄기 시 브라우저 unsubscribe + 해지 action, 미지원·거부·iOS 미설치 안내 렌더(훅·액션 단위 + e2e는 화면 진입과 안내 분기). 켜기 도중 저장 실패 시 보상 해지와, 기존 구독이 있는 마운트의 재귀속 upsert 호출을 훅 단위로 단언한다(revision 3 — RED 먼저).
 7. 첫 신청 저장 성공 후 사전 안내 시트가 뜨고 `알림 받기`가 권한 요청으로, `나중에`가 시트 종결·재노출 없음으로 이어진다(e2e — 밴드 561~592, 권한 요청 자체는 시트 노출·분기까지 단언).
 8. SW 동작: 단위 테스트(`src/features/push/lib/__tests__/` 아래, node 프로젝트)가 `public/push-service-worker.js` 실파일을 `self` 스텁으로 직접 import해 — push·notificationclick 리스너 등록, push 페이로드 → `showNotification` 옵션(제목·본문·아이콘·data.target), `notificationclick` target → 이동 경로(`/schedule/<date>`·`/pay`, 알 수 없는 값·누락 필드는 `/notifications` 폴백)를 단언한다(단위 — RED 먼저).
 9. dev 스크립트가 활성 구독 전체(또는 지정 profile)로 테스트 푸시를 발송하고, 410/404 응답의 구독을 service role로 `disabled_at` 마킹한다(수동 실행 — 사용 절차는 체크리스트 문서에).
@@ -86,7 +87,7 @@
 ## Architecture
 
 - `public/push-service-worker.js` — import 없는 독립 classic script: `push`는 페이로드를 해석해 `showNotification`, `notificationclick`은 target을 경로로 바꿔 `clients.openWindow`/focus. 훅이 `navigator.serviceWorker.register("/push-service-worker.js", { scope: "/", updateViaCache: "none" })`로 lazy 등록한다. 단위 테스트는 `src/features/push/lib/__tests__/`에서 실파일을 직접 import해 단언한다(revision 2 — 번들 등록 불가로 재설계).
-- `src/features/push/` — `api/save-push-subscription.ts`·`api/remove-push-subscription.ts`(server action, RPC 호출, 기존 오류 매핑, 단위 필수), `hooks/usePushSubscription.ts`(SW lazy 등록·권한 요청·subscribe/unsubscribe·상태), `model/push-support.ts`(상태 판정 순수 함수)·`model/push-priming.ts`(노출 판정), `ui/PushPrimingSheet.tsx`(bottom-sheet 재사용). `model/push-display`·`lib/push-service-worker.ts`는 두지 않는다 — SW 로직의 정본은 public 실파일 하나다.
+- `src/features/push/` — `api/save-push-subscription.ts`·`api/remove-push-subscription.ts`(server action, RPC 호출, 기존 오류 매핑, 단위 필수), `hooks/usePushSubscription.ts`(SW lazy 등록·권한 요청·subscribe/unsubscribe·상태·기존 구독 마운트 재귀속·저장 실패 보상 해지), `model/push-support.ts`(상태 판정 순수 함수)·`model/push-priming.ts`(노출 판정), `ui/PushPrimingSheet.tsx`(bottom-sheet 재사용). `model/push-display`·`lib/push-service-worker.ts`는 두지 않는다 — SW 로직의 정본은 public 실파일 하나다.
 - `src/views/notification-settings/` — `ui/NotificationSettingsView.tsx`(안내 분기 + 켜기·끄기, 계산 없음). 라우트 `src/app/(protected)/(tabs)/more/notification-settings/page.tsx`.
 - `src/views/more/ui/MoreView.tsx` — `알림 설정` 항목 1개 추가(기존 목록 관례).
 - `src/views/schedule/ui/ScheduleView.tsx` — 신청 저장 성공 콜백 뒤 PushPrimingSheet 렌더 한 곳.
@@ -109,7 +110,7 @@
 
 ## Optimizations
 
-- 설정 화면·시트는 서버 왕복 0(브라우저 상태 기준), 켜기·끄기 각 1왕복(action). SW 등록은 진입점 화면 lazy.
+- 설정 화면·시트는 조회 왕복 0(브라우저 상태 기준), 켜기·끄기 각 1왕복(action). 브라우저 구독이 존재하는 마운트에서만 재귀속 upsert 1왕복이 추가된다(revision 3, F-02 — 구독 없는 대다수 마운트는 왕복 0 유지). SW 등록은 진입점 화면 lazy.
 - 되돌림: RPC drop, SW 엔트리·화면 제거로 되돌린다. 데이터 마이그레이션 없음.
 
 ## 변경 허용 경로
