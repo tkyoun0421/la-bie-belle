@@ -4,6 +4,14 @@ RADIO: `docs/execution/radio/P3-T08-radio.md` (revision 1, SHA-256 `feebb61484ca
 
 test_mode: `verification` — RED/GREEN 사이클 대신 번들별 결과와 전체 검증 GREEN 기록을 남긴다.
 
+## 수정 라운드 — F-01(high, 교차 검증)
+
+교차 검증에서 리뷰어 2자 전원이 지적: 봉인 RADIO 기술 인수 조건 1("e2e `insertSchedule`이 4상태 유니언을 받고 최소 1개 e2e가 CLOSED 또는 PREPARING 경로를 지난다")이 미이행이었다. `insertSchedule` 유니언은 4상태로 넓혔지만, 저장소 전체에서 실제로 CLOSED·PREPARING 상태로 스케줄을 만들어 관리자 준비 화면의 수정 RPC 경로(편집→저장)를 통과시키는 e2e가 0건이었다(`tab-navigation.spec.ts`의 직접 CLOSED insert는 근무자 라우트 렌더 확인용이라 이 조건을 충족하지 않는다).
+
+고침: `tests/e2e/position-requirements.spec.ts`에 `"필요 인원 저장은 PREPARING 스케줄의 준비 화면에서도 성공한다(P3-T08 F-01)"` 테스트를 신설했다. PREPARING 상태로 스케줄을 직접 insert(+예식 1건, "편집" 모드 진입 조건 충족)하고, `/admin/schedule/[id]` 화면에서 매니저 포지션 필요 인원을 3으로 입력→"인원 저장" 클릭→`schedule_position_requirements.required_count`가 실제로 3으로 반영됐는지, 스케줄 상태가 여전히 `PREPARING`인지(부작용으로 상태가 바뀌지 않는지)를 단언한다. 기존 테스트와 날짜가 겹치지 않도록 `WORK_DATE_BANDS.positionRequirements`를 `splitBand(..., 2)`로 나눠 신규 테스트 전용 서브밴드를 썼다(기존 assignment-trainee F-03 사례의 밴드 공유 실수를 반복하지 않기 위함).
+
+완료 절차: `npx -y supabase@2.75.0 db reset` → `position-requirements.spec.ts` 단독 GREEN(2 passed) → `pnpm verify` 포그라운드 — 1차 시도에서 `recruitment-manage.spec.ts:112`(backlog 329 기존 무관 flake, 단독 재실행으로 `2 passed` 확인) 발생 → 2차 시도에서 전 단계 통과(e2e 82 passed, 신설 테스트 포함), 종료 코드 0.
+
 ## 번들 1 — 축 단위 공백
 
 - CLOSED·PREPARING 픽스처·허용 단언: pgTAP 18(+19)·19(+11)·20(+12)번에 편입.
@@ -68,4 +76,6 @@ test_mode: `verification` — RED/GREEN 사이클 대신 번들별 결과와 전
    - 2회차: 첫 시도에서 `recruitment-manage.spec.ts:112`(마감 연장 다이얼로그 `toHaveValue` 5초 타임아웃)가 실패 — backlog 329에 기록된 기존 무관 flake(제품 코드 소유, load-heavy `toHaveValue`)와 동일 패턴. `npx playwright test tests/e2e/recruitment-manage.spec.ts` 단독 재실행으로 `2 passed`를 확인해 flake로 판정. 전체 재실행 결과 `81 passed (1.4m)`으로 GREEN.
 5. `pnpm verify` 포그라운드 전체 실행 — 1차 시도에서 `test:e2e` 단계 중 동일한 `recruitment-manage.spec.ts:112` flake가 다시 발생, 체인 스크립트 특성상 전체 재실행. 2차 시도에서 format·lint·typecheck·`pnpm test`·harness·`check:docs`·`build`·`gate:bundle`·`check:app-build`·`check:client-secret-scan`·`test:e2e`(81 passed)·`gate:motion-render-budget`·`gate:all` 전 단계 통과, 종료 코드 0.
 
-새/보강 단언 요약: pgTAP 7파일 합계 +57(1240→1297), UI 단위 신규 11파일 58개, 기존 단위 파일 보강(+useCeremonyEditor 1, +ceremony-times 2, +candidate-buckets 1), e2e 신규 5개 테스트(schedule-confirmation +3, assignment-trainee +1, confirmation-roster-journey +1 신설 파일).
+새/보강 단언 요약(수정 라운드 반영 전, 최초 완료 시점): pgTAP 7파일 합계 +57(1240→1297), UI 단위 신규 11파일 58개, 기존 단위 파일 보강(+useCeremonyEditor 1, +ceremony-times 2, +candidate-buckets 1), e2e 신규 5개 테스트(schedule-confirmation +3, assignment-trainee +1, confirmation-roster-journey +1 신설 파일).
+
+수정 라운드(F-01) 반영 후 최종 e2e 신규 테스트는 6개(위 5개 + `position-requirements.spec.ts` 1개), `pnpm test:e2e` 전체는 82개로 GREEN.

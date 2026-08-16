@@ -1,5 +1,52 @@
 # P3-T08 handoff
 
+## 2026-08-16 · 교차 검증 수정 라운드(F-01)
+
+- 현재 단계: 개발 단계 내 수정 라운드 종료 → 다음 검증(재개).
+- 기준 시각: 2026-08-16(아래 `pnpm verify` 2차 통과 실행 기준).
+
+### 확정된 사실
+
+- 교차 검증 결과: 확정 11건 중 high 1건(F-01)만 이 라운드에서 수정. medium·low 10건은
+  조정자가 이미 `docs/execution/reviews/backlog.md`에 누적 완료했고(330·331행 부분
+  해소 정정 포함) 이번 라운드는 손대지 않았다.
+- F-01(high, tests): 봉인 RADIO 기술 인수 조건 1("e2e `insertSchedule`이 4상태
+  유니언을 받고 최소 1개 e2e가 CLOSED 또는 PREPARING 경로를 지난다")이 최초 완료
+  시점에는 미이행이었다 — `insertSchedule` 유니언은 4상태로 넓혔지만 CLOSED·PREPARING
+  상태로 만든 스케줄에서 관리자 준비 화면의 수정 RPC 경로(편집→저장)를 실제로 통과
+  시키는 e2e가 0건이었다. `tab-navigation.spec.ts`의 직접 CLOSED insert는 근무자
+  라우트 렌더 확인용이라 이 조건을 충족하지 않는다는 리뷰어 2자 전원 지적을 인정.
+- 고침: `tests/e2e/position-requirements.spec.ts`에
+  `"필요 인원 저장은 PREPARING 스케줄의 준비 화면에서도 성공한다(P3-T08 F-01)"` 1건
+  신설. PREPARING 스케줄(+예식 1건)을 직접 insert하고 `/admin/schedule/[id]` 화면에서
+  매니저 포지션 필요 인원을 3으로 입력→저장→`schedule_position_requirements`에 실제
+  반영 및 스케줄 상태가 여전히 `PREPARING`임을 단언한다. 기존 테스트와 밴드를 공유하지
+  않도록 `WORK_DATE_BANDS.positionRequirements`를 `splitBand(..., 2)`로 나눴다
+  (assignment-trainee F-03류 밴드 공유 실수 반복 방지).
+- 완료 절차 전부 GREEN: `db reset` → `position-requirements.spec.ts` 단독(2 passed) →
+  `pnpm verify` 포그라운드(1차 시도 `recruitment-manage.spec.ts:112` — backlog 329
+  기존 무관 flake, 단독 재실행 `2 passed`로 확인 → 2차 시도 전 단계 통과, e2e 82
+  passed, 종료 코드 0).
+- RADIO revision 1 봉인 그대로, 허용 경로(`tests/e2e/position-requirements.spec.ts`)
+  안에서만 수정했다. `.gitignore` 워킹트리 수정은 이번에도 스테이징하지 않았다.
+- push는 하지 않았다(ci-finisher 소관).
+
+### 미결 사항
+
+- 없음 — 이 라운드에서 결정이 필요한 항목은 남지 않았다.
+
+### 다음 행동
+
+1. 검증 단계에서 F-01 수정 결과를 리뷰어가 대조·재확인.
+2. medium·low 10건은 이미 backlog.md 누적 완료 상태이므로 이 task에서는 추가
+   조치 없음.
+
+### 증거·산출물 경로
+
+- `tests/e2e/position-requirements.spec.ts`(신설 테스트 1건 + `splitBand` 밴드 분리)
+- `docs/execution/runs/P3-T08/radio.md`(수정 라운드 절 추가)
+- 검증 로그: `pnpm verify` 2회 실행(스크래치패드, 저장소 밖)
+
 ## 2026-08-16 · 개발 종료
 
 - 작업 식별자: P3-T08

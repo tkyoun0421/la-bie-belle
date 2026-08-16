@@ -9,7 +9,7 @@ import {
   signInWithPasswordCookies,
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
-import { WORK_DATE_BANDS, workDatesInBand } from "./support/work-date-band";
+import { WORK_DATE_BANDS, splitBand, workDateInBand, workDatesInBand } from "./support/work-date-band";
 
 function randomPhone(): string {
   const suffix = Math.floor(Math.random() * 1e8)
@@ -72,6 +72,11 @@ async function insertOpenSchedule(admin: SupabaseClient, workDate: string): Prom
   return (data as { id: string }).id;
 }
 
+const [POSITION_REQUIREMENTS_BAND_A, POSITION_REQUIREMENTS_BAND_B] = splitBand(
+  WORK_DATE_BANDS.positionRequirements,
+  2,
+) as [ReturnType<typeof splitBand>[number], ReturnType<typeof splitBand>[number]];
+
 test.describe("포지션 기본 설정과 스케줄 필요 인원", () => {
   test("포지션 추가는 표가 있는 열린 스케줄에 자동 반영되고, 기본값 변경은 이미 복사된 표를 바꾸지 않으며, 비활성화는 새 스케줄 선택지에서 제외된다", async ({
     browser,
@@ -82,7 +87,7 @@ test.describe("포지션 기본 설정과 스케줄 필요 인원", () => {
     const page = await context.newPage();
 
     const positionName = `E2E포지션-${randomUUID().slice(0, 8)}`;
-    const [workDateA, workDateB] = workDatesInBand(WORK_DATE_BANDS.positionRequirements, 2) as [
+    const [workDateA, workDateB] = workDatesInBand(POSITION_REQUIREMENTS_BAND_A, 2) as [
       string,
       string,
     ];
@@ -147,6 +152,78 @@ test.describe("포지션 기본 설정과 스케줄 필요 인원", () => {
           .delete()
           .eq("schedule_id", scheduleBId);
       }
+      await context.close();
+    }
+  });
+
+  test("필요 인원 저장은 PREPARING 스케줄의 준비 화면에서도 성공한다(P3-T08 F-01)", async ({
+    browser,
+    baseURL,
+  }) => {
+    const context = await browser.newContext();
+    const { admin } = await createAdminSession(context, baseURL);
+    const page = await context.newPage();
+
+    const { data: positionRow, error: positionError } = await admin
+      .from("positions")
+      .select("id")
+      .eq("name", "매니저")
+      .single();
+    if (positionError || !positionRow) {
+      throw positionError ?? new Error("매니저 포지션을 찾지 못했습니다.");
+    }
+    const managerPositionId = (positionRow as { id: string }).id;
+
+    const workDate = workDateInBand(POSITION_REQUIREMENTS_BAND_B);
+    const { data: scheduleRow, error: scheduleError } = await admin
+      .from("schedules")
+      .insert({ work_date: workDate, application_deadline: workDate, status: "PREPARING" })
+      .select("id")
+      .single();
+    if (scheduleError || !scheduleRow) {
+      throw scheduleError ?? new Error("PREPARING 스케줄 픽스처 생성에 실패했습니다.");
+    }
+    const scheduleId = (scheduleRow as { id: string }).id;
+
+    const { error: ceremonyError } = await admin
+      .from("ceremonies")
+      .insert({ schedule_id: scheduleId, starts_at: "10:00" });
+    if (ceremonyError) {
+      throw ceremonyError;
+    }
+
+    try {
+      await page.goto(`/admin/schedule/${scheduleId}`);
+      await expect(page.getByRole("heading", { name: workDate })).toBeVisible();
+      await expect(page.getByText("준비 중")).toBeVisible();
+
+      const managerRow = page
+        .locator("li")
+        .filter({ has: page.getByLabel("매니저", { exact: true }) });
+      await managerRow.getByLabel("매니저", { exact: true }).fill("3");
+      await managerRow.getByRole("button", { name: "인원 저장", exact: true }).click();
+
+      await expect
+        .poll(async () => {
+          const { data } = await admin
+            .from("schedule_position_requirements")
+            .select("required_count")
+            .eq("schedule_id", scheduleId)
+            .eq("position_id", managerPositionId)
+            .single();
+          return (data as { required_count: number } | null)?.required_count ?? null;
+        })
+        .toBe(3);
+
+      const { data: scheduleAfterSave } = await admin
+        .from("schedules")
+        .select("status")
+        .eq("id", scheduleId)
+        .single();
+      expect((scheduleAfterSave as { status: string } | null)?.status).toBe("PREPARING");
+    } finally {
+      await admin.from("schedule_position_requirements").delete().eq("schedule_id", scheduleId);
+      await admin.from("ceremonies").delete().eq("schedule_id", scheduleId);
       await context.close();
     }
   });
