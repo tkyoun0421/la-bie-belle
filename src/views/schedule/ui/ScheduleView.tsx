@@ -118,7 +118,7 @@ export function ScheduleView({
 
   return (
     <RouterPullToRefresh>
-      <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-3 p-4 pb-28">
+      <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-3 p-4 pb-nav-action-safe">
         <h1 className="px-1 typo-display text-text-strong">일정</h1>
         <SegmentedControl
           label="일정 보기 방식"

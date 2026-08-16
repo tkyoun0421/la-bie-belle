@@ -46,7 +46,7 @@ export function CatalogView() {
   const [chipSelected, setChipSelected] = useState(false);
 
   return (
-    <main className="mx-auto flex max-w-screen-sm flex-col gap-8 p-6 pb-24">
+    <main className="mx-auto flex max-w-screen-sm flex-col gap-8 p-6 pb-nav-safe">
       <h1 className="typo-display text-text-strong">디자인 시스템 카탈로그</h1>
 
       <Section title="Button">

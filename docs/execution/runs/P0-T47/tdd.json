@@ -1,0 +1,32 @@
+{
+  "entries": [
+    {
+      "command": "pnpm harness:self-test",
+      "exit_code": 1,
+      "at": "2026-08-16T16:46:23Z",
+      "phase": "red",
+      "note": "AC5·6·8: harness/lib/token-parity.ts와 harness/design/build.ts가 아직 없어 token-parity.test.ts는 ERR_MODULE_NOT_FOUND로 임포트가 깨지고, design-build.test.ts의 6개 케이스는 harness/design/build.ts를 찾지 못해 실패(347 pass / 6 fail, exit 1)"
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/spacing-scale.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-16T16:46:25Z",
+      "phase": "red",
+      "note": "AC10: tools/eslint-plugin-project/rules/spacing-scale.mjs가 아직 없어 Cannot find module로 스위트 전체가 실패(0 tests, exit 1)"
+    },
+    {
+      "command": "pnpm harness:self-test",
+      "exit_code": 0,
+      "at": "2026-08-16T18:12:57Z",
+      "phase": "green",
+      "note": "AC5·6·8: harness/lib/token-parity.ts와 harness/design/build.ts 구현 뒤 364 pass / 0 fail, exit 0. token-parity 11건·design-build 9건 포함."
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/spacing-scale.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-16T18:13:21Z",
+      "phase": "green",
+      "note": "AC10: tools/eslint-plugin-project/rules/spacing-scale.mjs 구현과 index.mjs 등록 뒤 34 pass, exit 0."
+    }
+  ]
+}

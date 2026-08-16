@@ -27,7 +27,7 @@ export function AdminPositionsView({
   const editor = usePositionEditor(onCreate, onUpdate, onDelete);
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-24">
+    <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-nav-safe">
       <div className="flex items-center justify-between">
         <h1 className="typo-display text-text-strong">포지션 관리</h1>
         <Button type="button" variant="secondary" onClick={editor.openCreate}>

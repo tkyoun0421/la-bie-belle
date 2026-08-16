@@ -43,6 +43,23 @@
   --color-border: var(--raw-gray-300);
   --color-on-action: var(--raw-white);
 
+  --spacing-0: 0px;
+  --spacing-0\.5: 2px;
+  --spacing-1: 4px;
+  --spacing-1\.5: 6px;
+  --spacing-2: 8px;
+  --spacing-2\.5: 10px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+
+  --spacing-nav-safe: 96px;
+  --spacing-nav-action-safe: 112px;
+
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 16px;

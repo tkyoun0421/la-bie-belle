@@ -16,7 +16,7 @@ export function MyProfileView({ info, onUpdatePhone, onSetWage }: MyProfileViewP
   const effectiveWage = resolveEffectiveWage(info.hourlyWage, info.defaultHourlyWage);
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-24">
+    <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-nav-safe">
       <h1 className="typo-display text-text-strong">내 정보</h1>
       <section className="flex flex-col">
         <div className="flex items-center justify-between border-b border-border py-3">

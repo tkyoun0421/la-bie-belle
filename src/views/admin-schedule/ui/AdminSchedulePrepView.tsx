@@ -168,7 +168,7 @@ export function AdminSchedulePrepView({
   );
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-24">
+    <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-nav-safe">
       <div className="flex flex-col gap-1">
         <h1 className="typo-display text-text-strong">{schedulePrep.workDate}</h1>
         <p className="typo-body text-text">{schedulePrepStatusLabel(schedulePrep.status)}</p>

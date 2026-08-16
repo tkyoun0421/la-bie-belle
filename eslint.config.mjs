@@ -56,6 +56,7 @@ export default [
       "project/file-naming": "error",
       "project/error-code-literal": "error",
       "project/import-alias": "error",
+      "project/spacing-scale": "error",
       "project/test-placement": "error",
       "project/design-token-colors": "error",
       "project/motion-tokens": "error",
