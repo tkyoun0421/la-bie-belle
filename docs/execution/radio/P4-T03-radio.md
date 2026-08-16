@@ -1,15 +1,16 @@
 # P4-T03 RADIO 개발 설계
 
 - 상태: Sealed
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-16
-- 개발 설계 승인: user, 2026-08-16
+- 개발 설계 승인: user, 2026-08-16 (revision 1) · 2026-08-17 (revision 2)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-16 | 최초 작성. 기획 결정 4건(일괄 오픈당 1건, 활성 근무자 전원, 변경 3종, 전후 합집합)의 구현 설계. |
+| 2 | 2026-08-17 | 검증 high 3건 수정을 위한 재봉인(사용자 승인). F-03: 배정 변경 수신자를 대상 포지션 한정에서 **스케줄 전체 전후 합집합**으로 확정(사용자 결정) — 다른 포지션 배정자·교육생 수신 단언 추가. F-01·F-02: 알림 팬아웃이 기존 e2e 정리와 충돌(재현 확정) — 워커 삭제 헬퍼가 프로필 삭제 전 수신 알림을 정리하고, 알림 단언은 자기 스케줄 한정으로 강건화. 허용 경로에 기존 spec 2개 한정 추가. |
 
 - 관련 spec: PRD:AC-11, PRD 8장(관리자 변경)·9장(알림), DOMAIN:NOTIFICATIONS(RecruitmentOpened·ConfirmedScheduleRevised), ADR:0005(멱등성 키·같은 트랜잭션)
 - 적용 깊이: 중간 — 마이그레이션 1개(알림 helper + RPC 4종 재정의), 딥링크 screen 1종 확장(타입·파서·SW·알림함 클라이언트), 신규 화면 없음.
@@ -35,7 +36,7 @@
 - 멱등성은 기존 키 `(event_type, aggregate_id, recipient_id, revision)` + `on conflict do nothing`을 그대로 쓴다. 새 event_type 값은 `recruitment_opened`·`schedule_revised` 둘뿐(DOMAIN 사건명과 대응).
 - 모집 오픈 알림의 aggregate_id는 **그 일괄 오픈이 만든 스케줄 중 최소 work_date 행의 id**, revision은 1이다 — 같은 배치 재실행은 스케줄 unique 충돌로 실패하므로 부분 재시도에서도 수신자당 1건이 유지된다. 수신자는 `is_active_worker` 통과자 전원, target은 `{"screen":"schedule","month":"<최소 work_date의 YYYY-MM>"}`.
 - 변경 알림의 aggregate_id는 schedule_id, revision은 `bump_confirmed_revision` 반환값이다. 저장 1회 = revision 1 = 수신자당 알림 1건(PRD 8장). no-op 저장도 revision이 오르는 기존 구현을 따라 알림을 만든다 — 알림만 억제하는 분기를 추가하지 않는다.
-- 변경 알림 수신자: 배정 변경은 (기존 배정자∪기존 교육생)∪(신규 배정자∪신규 교육생), 시간·예식 변경은 현재 배정자∪교육생. requirement RPC 2종과 cancel_confirmed_schedule은 알림 코드 무추가.
+- 변경 알림 수신자: 배정 변경은 **변경 전 스케줄 전체 로스터(배정자∪교육생)와 변경 후 스케줄 전체 로스터의 합집합**이다 — 대상 포지션 밖의 동료도 받는다(revision 2, 사용자 결정). 시간·예식 변경은 현재 배정자∪교육생. requirement RPC 2종과 cancel_confirmed_schedule은 알림 코드 무추가.
 - 기록 helper는 confirm_schedule의 CTE 패턴(신규 알림만 outbox 동반)을 함수화한 것 하나로 통일하고, 클라이언트 롤이 직접 호출할 수 없게 revoke한다. 기존 confirm_schedule은 재작성하지 않는다(봉인된 P4-T01 산출 무수정).
 - 새 screen `schedule`의 경로 계산은 entities/notification model의 순수 함수가 앱 쪽 정본이다 — 알림함 클라이언트의 인라인 삼항을 이 함수로 대체한다. SW는 독립 스크립트 제약(P4-T02 결정)상 같은 규칙을 인라인으로 갖되 단위 테스트가 양쪽을 같은 케이스로 단언한다.
 - RPC 시그니처·반환·기존 오류 코드 무변경 — 서버 액션 파일 4종은 손대지 않는다.
@@ -49,7 +50,7 @@
 ### 기술 인수 조건
 
 1. 모집 오픈: 활성 근무자마다 정확히 1건(`recruitment_opened`, aggregate=최소 work_date 스케줄, revision 1), pending·dormant·departed·rejected·admin 전용 계정은 미수신, 같은 알림 재기록 시도는 흡수되고 outbox도 늘지 않는다(pgTAP — 값 단언).
-2. 배정 변경: 빠진 배정자·들어온 배정자·유지 배정자·전후 교육생이 모두 수신(합집합), 무관 근무자 미수신, revision이 bump 반환값과 일치(pgTAP).
+2. 배정 변경: 빠진 배정자·들어온 배정자·유지 배정자·전후 교육생 그리고 **같은 스케줄 다른 포지션의 배정자·교육생**이 모두 수신(스케줄 전체 전후 합집합, revision 2), 스케줄에 배정되지 않은 근무자 미수신, revision이 bump 반환값과 일치(pgTAP — 다른 포지션 수신 단언은 RED 먼저).
 3. 시간·예식 변경: 현재 배정자∪교육생 수신, no-op 저장도 새 revision으로 1건(pgTAP).
 4. 제외 경로: requirement 변경 저장과 확정 취소는 알림 0건(pgTAP).
 5. 멱등·트랜잭션: 같은 (event_type, aggregate, recipient, revision) 재삽입 무중복, 변경 실패 시 알림·outbox 롤백(pgTAP), helper 직접 호출은 클라이언트 3롤 거부(pgTAP).
@@ -67,7 +68,7 @@
 | 6 딥링크 | 테스트함 — schedule 경로·기존 2종 | 테스트함 — 미지 screen·월 형식 불량 폴백 | 테스트함 — 파서 행 제외 vs SW 폴백 각각 | 해당 없음 — 표시 계층 | 해당 없음 — 순수 함수 | 해당 없음 — 순수 함수 |
 | 7 e2e | 테스트함 — 확정 링크·오픈 알림 여정 | 해당 없음 — 실패 분기는 단위·pgTAP 소유 | 해당 없음 — 밴드 594~625 격리 | 테스트함 — 근무자 계정 시점 | 해당 없음 — 단위가 소유 | 해당 없음 — 단일 여정 |
 
-- 보충 위험: **기존 테스트 단언 대조** — notifications e2e(528~559 밴드)는 mock이 아닌 확정 알림 실데이터 기준이므로 새 알림 종류가 기존 목록 단언을 깨지 않게 신규 시나리오는 전용 밴드(594~625)에서만 스케줄을 만든다. **SW 파일 수정**은 P4-T02 산출(public/push-service-worker.js)의 screen 분기 1곳 추가와 그 단위 테스트 확장에 한정한다. **NotificationsPageClient**는 인라인 삼항을 model 함수 호출로 바꾸는 1곳이다.
+- 보충 위험: **기존 테스트 단언 대조** — notifications e2e(528~559 밴드)는 mock이 아닌 확정 알림 실데이터 기준이므로 새 알림 종류가 기존 목록 단언을 깨지 않게 신규 시나리오는 전용 밴드(594~625)에서만 스케줄을 만든다. **SW 파일 수정**은 P4-T02 산출(public/push-service-worker.js)의 screen 분기 1곳 추가와 그 단위 테스트 확장에 한정한다. **NotificationsPageClient**는 인라인 삼항을 model 함수 호출로 바꾸는 1곳이다. **알림 팬아웃과 e2e 격리(revision 2)** — 알림 행이 profiles를 cascade 없이 참조하므로 `deleteWorkerSessions`는 프로필 삭제 전 그 프로필 수신 알림을 정리한다(전 spec 공통 해소). 모집 팬아웃은 병렬 spec의 활성 워커 전원에게 행을 만들므로, 알림 개수·목록 단언은 자기 스케줄(aggregate) 한정으로 쓰고 전역 0 단언을 두지 않는다 — 기존 notifications.spec의 배지 단언도 같은 원칙으로 정합화한다.
 
 ### DEV-* 적용 상태
 
@@ -119,13 +120,15 @@ src/views/notifications/ui/__tests__/**
 public/push-service-worker.js
 src/features/push/lib/__tests__/push-service-worker.test.ts
 tests/e2e/recruitment-notifications.spec.ts
+tests/e2e/post-confirmation-changes.spec.ts
+tests/e2e/notifications.spec.ts
 tests/e2e/support/**
 docs/execution/runs/P4-T03/**
 docs/execution/radio/P4-T03-radio.md
 docs/execution/phases/index.jsonl
 ```
 
-- 용도 한정: `NotificationsPageClient.tsx`는 경로 계산 대체 1곳, `public/push-service-worker.js`는 schedule screen 분기 추가만(다른 동작 무수정), `tests/e2e/support/**`는 밴드 1행(594~625)과 헬퍼 재사용, 기존 `list-notifications.ts`는 screen 허용 확장과 그 테스트 정합만, `src/views/notifications/ui/__tests__/**`는 경로 계산 대체에 따른 정합 갱신만(기존 단언 대조 결과 mock target 수준이라 영향 낮음 — 2026-08-16 확인).
+- 용도 한정: `NotificationsPageClient.tsx`는 경로 계산 대체 1곳, `public/push-service-worker.js`는 schedule screen 분기 추가만(다른 동작 무수정), `tests/e2e/support/**`는 밴드 1행(594~625)과 헬퍼 재사용, 기존 `list-notifications.ts`는 screen 허용 확장과 그 테스트 정합만, `src/views/notifications/ui/__tests__/**`는 경로 계산 대체에 따른 정합 갱신만(기존 단언 대조 결과 mock target 수준이라 영향 낮음 — 2026-08-16 확인), `tests/e2e/post-confirmation-changes.spec.ts`·`tests/e2e/notifications.spec.ts`는 알림 팬아웃 격리(정리·자기 스케줄 한정 단언) 정합 갱신에만 쓴다(revision 2 — 다른 시나리오 무수정).
 - `docs/product/**`·`docs/execution/reviews/**`는 조정자 몫. 위 밖이 필요하면 멈추고 반환한다.
 
 ## 미결 사항
