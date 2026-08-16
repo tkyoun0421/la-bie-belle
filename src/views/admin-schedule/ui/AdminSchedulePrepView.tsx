@@ -82,7 +82,7 @@ type AdminSchedulePrepViewProps = {
   assignedHeadcount: AssignedHeadcount | null;
   assignedWorkerCount: number;
   traineeCounts: Record<string, number>;
-  traineePositions?: TraineePosition[];
+  traineePositions: TraineePosition[];
   activePositions: Position[];
   onSetRequirement: SetRequirementAction;
   onRemoveRequirement: RemoveRequirementAction;
@@ -104,7 +104,7 @@ export function AdminSchedulePrepView({
   assignedHeadcount,
   assignedWorkerCount,
   traineeCounts,
-  traineePositions = [],
+  traineePositions,
   activePositions,
   onSetRequirement,
   onRemoveRequirement,
@@ -225,6 +225,36 @@ export function AdminSchedulePrepView({
         pending={cancelSchedule.pending}
         onCancel={() => cancelSchedule.cancel(schedulePrep.id)}
       />
+
+      {confirmationWarnings.understaffed.length > 0 || confirmationWarnings.noManager.length > 0 ? (
+        <section data-testid="confirmation-warning-summary" className="flex flex-col gap-3">
+          <h2 className="typo-title text-text-strong">확정 경고 요약</h2>
+          {confirmationWarnings.understaffed.length > 0 ? (
+            <div className="flex flex-col gap-1">
+              <p className="typo-caption text-text-strong">필요 인원 미달</p>
+              <ul className="flex flex-col gap-1">
+                {confirmationWarnings.understaffed.map((warning) => (
+                  <li key={warning.positionId} className="typo-body text-text">
+                    {`${warning.positionName} · 필요 ${warning.requiredCount} / 배정 ${warning.assignedCount}`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {confirmationWarnings.noManager.length > 0 ? (
+            <div className="flex flex-col gap-1">
+              <p className="typo-caption text-text-strong">담당자 없음</p>
+              <ul className="flex flex-col gap-1">
+                {confirmationWarnings.noManager.map((warning) => (
+                  <li key={warning.positionId} className="typo-body text-text">
+                    {`${warning.positionName} · 교육 ${warning.traineeCount}`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
 
       {mode === "readonly" ? (
         <section className="flex flex-col gap-3">

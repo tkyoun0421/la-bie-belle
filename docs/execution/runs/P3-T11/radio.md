@@ -134,3 +134,45 @@ RADIO "위험 기반 테스트" 표의 8행 전부 아래 파일에서 실증됐
 - `src/features/confirmation/api/confirm-schedule.ts`: 무수정 확인(git diff 없음).
 - 신규 e2e 없음 — 기존 e2e 스위트는 `pnpm verify`의 일부로 실행해 회귀 없음을 확인했다
   (아래 verify 결과 참고).
+
+## 수정 라운드(revision 2, F-01/F-02 해소)
+
+- 기준 RADIO: `docs/execution/radio/P3-T11-radio.md` revision 2, SHA-256
+  `5562f445f41c4a6a8c1d13a9163e5762a6fb863faca8dcee82a1cd5cd4b5694a`(재봉인 커밋
+  `563488e`, index.jsonl `development_approval`과 대조 완료, 일치).
+- 교차 검증(`docs/execution/reviews/P3-T11-review.json`) 확정 발견 2건을 해소했다.
+
+1. **F-01(high) 해소** — `AdminSchedulePrepView.tsx`에 다이얼로그 밖 경고 요약 `<section
+   data-testid="confirmation-warning-summary">`를 추가했다. `CancelScheduleDialog` 렌더
+   직후·모드별 분기(`readonly`/`empty`/`editing`) 앞에 배치해 `schedulePrep.status`·`mode`와
+   무관하게 항상 평가되며, `confirmationWarnings.understaffed`·`confirmationWarnings.noManager`
+   (기존 `useMemo` 산출값을 그대로 재사용 — 신규 계산 없음)가 둘 다 빈 배열이면 섹션 자체를
+   렌더하지 않는다. 목록 항목 문구(`"${positionName} · 필요 ${requiredCount} / 배정
+   ${assignedCount}"`, `"${positionName} · 교육 ${traineeCount}"`)는 `ConfirmScheduleDialog`의
+   기존 표시 관례를 그대로 재사용해 두 표면의 문구가 어긋나지 않는다. `ConfirmScheduleDialog`
+   JSX 블록 자체는 한 글자도 건드리지 않았다(git diff로 무수정 확인).
+2. **F-02(medium) 해소** — `traineePositions` prop에서 `?`·기본값 `[]`를 제거해 필수 prop으로
+   바꿨다. `page.tsx`는 이미 `requirementsResult.ok ? requirementsResult.traineePositions : []`로
+   전달 중이라 호출부 수정은 없었다. RADIO revision 2가 허용 경로에 새로 편입한
+   `src/views/admin-schedule/ui/__tests__/AdminSchedulePrepView.test.tsx`에 3건을 추가했다 —
+   (a) CONFIRMED 상태에서 표 밖 교육생 잔존 포지션(표 행에 없음)의 이름이 경고 요약에 보이는지,
+   (b) `understaffed`·`noManager`가 둘 다 빈 배열이면 경고 요약 testid 자체가 없는지, (c) 표
+   안 담당자 없음(표 행에 있고 정식 0 + 교육생 ≥1)과 표 밖 담당자 없음이 경고 요약 안에 동시에
+   보이는지. 기존 CANCELLED 스모크 1건은 단언을 하나도 바꾸지 않고 `traineePositions={[]}`만
+   추가해(필수화로 인한 컴파일 정합, RADIO "용도 한정" 절의 "입력 확장 정합"에 해당) 그대로
+   보존했다. 텍스트 충돌(예: 표 행 캡션과 경고 요약이 같은 "담당자 없음" 문구를 동시에 그리는
+   경우)을 피하려고 새 단언은 전부 `within(screen.getByTestId("confirmation-warning-summary"))`로
+   스코프를 좁혀 조회했다 — `ApprovalActionButtons.test.tsx` 관례(순수 render/screen 쿼리,
+   `cleanup`/`afterEach`, 복잡한 훅 mocking 없음)를 그대로 따랐다.
+3. **RED→GREEN** — `git stash push -- src/views/admin-schedule/ui/AdminSchedulePrepView.tsx`로
+   구현만 되돌리고(테스트 파일은 신규 단언 포함 상태 유지) `pnpm vitest run
+   src/views/admin-schedule/ui/__tests__/AdminSchedulePrepView.test.tsx` 실행 — 2 failed / 2
+   passed(4). 실패 2건은 F-01 단건 표시·표 안팎 동시 표시(둘 다 `getByTestId`가 존재하지 않는
+   testid를 찾다 던짐). "경고 둘 다 없으면 미렌더" 단언은 사전 구현 상태에서도 우연히 참이라
+   RED에서 자연히 통과했다(섹션 자체가 아예 없던 상태이므로) — 나머지 두 단언이 진짜 RED를
+   실증한다. `git stash pop`으로 구현 복원 후 동일 명령 재실행 — 4 tests 전부 통과, exit 0.
+   상세 exit code·시각은 `docs/execution/runs/P3-T11/tdd.json`의 5·6번째 항목.
+4. **정지 조건·불변 규칙 재점검** — revision 2 범위는 표시 계층(섹션 추가·prop 필수화)뿐이라
+   3개 정지 조건 중 어느 것도 새로 발동하지 않았다. `computeConfirmationWarnings`·
+   `confirm_schedule`·`replace_position_assignments`는 무수정이므로 DEV-SSOT(화면-DB 규칙
+   동일성)도 그대로 유지된다.

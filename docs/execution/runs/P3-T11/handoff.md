@@ -78,4 +78,69 @@
   `src/app/(protected)/admin/schedule/[id]/page.tsx`(prop 전달만)
 - TDD 증거: `docs/execution/runs/P3-T11/tdd.json`(RED→GREEN 2쌍, 4 entries)
 - RADIO 적용 결과: `docs/execution/runs/P3-T11/radio.md`
-- 구현 커밋: 이 handoff 커밋 직후 생성(SHA는 다음 보고에서 확정)
+- 구현 커밋: `15de76c`
+
+## 2026-08-16 · 수정 라운드(F-01/F-02, revision 2)
+
+- 작업 식별자: P3-T11
+- 현재 단계: 수정 라운드 종료 → 다음 검증
+- 기준 시각: 2026-08-16T06:15:02Z(이 라운드 마지막 `pnpm verify` 전체 실행 시작 시각)
+- **기준 커밋(갱신)**: 이 handoff 커밋 직후 생성되는 수정 라운드 커밋(SHA는 다음 보고에서
+  확정) — 직전 기준 커밋 `15de76c`는 그대로 남긴다, 이 절이 새 기준이다.
+
+### 확정된 사실
+
+- 기준 RADIO: `docs/execution/radio/P3-T11-radio.md` revision 2, SHA-256
+  `5562f445f41c4a6a8c1d13a9163e5762a6fb863faca8dcee82a1cd5cd4b5694a`(재봉인 커밋 `563488e`,
+  index.jsonl `development_approval`과 대조 완료, 일치).
+- 교차 검증 확정 발견 2건(`docs/execution/reviews/P3-T11-review.json`, F-01 high·F-02
+  medium)을 해소했다. 상세 서술은 `docs/execution/runs/P3-T11/radio.md`의 "수정 라운드(revision
+  2, F-01/F-02 해소)" 절.
+  - F-01: `AdminSchedulePrepView.tsx`에 상태와 무관한(CONFIRMED 포함) 경고 요약 영역
+    (`data-testid="confirmation-warning-summary"`)을 추가했다. `ConfirmScheduleDialog`는
+    무수정(git diff 없음, 확인 완료).
+  - F-02: `traineePositions` prop을 필수로 바꾸고, `AdminSchedulePrepView.test.tsx`(revision 2
+    허용 경로 신규 편입)에 3건을 추가했다 — 표 밖 잔존 포지션 단건 표시, 경고 둘 다 없을 때
+    미렌더, 표 안·표 밖 동시 표시. 기존 CANCELLED 스모크는 단언 무변경, `traineePositions={[]}`만
+    추가(필수화에 따른 컴파일 정합).
+- `test_mode=tdd` 준수: 이번 라운드의 RED→GREEN 1쌍을 실제 명령 실행 결과로
+  `docs/execution/runs/P3-T11/tdd.json`에 추가했다(기존 4건 보존, 총 6건). RED는
+  `git stash push -- src/views/admin-schedule/ui/AdminSchedulePrepView.tsx`로 구현만 되돌린
+  상태에서 2 failed/2 passed(exit 1), GREEN은 `git stash pop` 복원 후 4 passed(exit 0). 두
+  실행 모두 동일한 명령 문자열(`pnpm vitest run
+  src/views/admin-schedule/ui/__tests__/AdminSchedulePrepView.test.tsx`)을 썼다(`gate:tdd`
+  요구).
+- `pnpm verify`를 이 라운드에서 두 차례 돌렸다. 1차는 e2e 2건(`auth.spec.ts:60`,
+  `recruitment-manage.spec.ts:112`)이 실패했으나 이 task의 diff와 무관한 두 스펙을
+  격리 재실행(`pnpm exec playwright test tests/e2e/auth.spec.ts
+  tests/e2e/recruitment-manage.spec.ts`, db reset 후)한 결과 8/8 전부 통과해 전체 스위트
+  동시 실행 중의 우연한 경합(P3-T06·P3-T11 이전 라운드에 기록된 것과 같은 유형의 flaky)임을
+  확인했다. 2차 전체 실행에서 e2e 82개 전부 GREEN, `format`·`lint`·`typecheck`·`pnpm
+  test`·`harness:typecheck`·`harness:self-test`·`check:docs`·`build`·`gate:bundle`·
+  `check:app-build`·`check:client-secret-scan`·`gate:motion-render-budget`·`gate:all` 모두
+  GREEN, exit 0.
+- push는 하지 않았다(ci-finisher 소관).
+
+### 미결 사항
+
+- 없음 — RADIO revision 2 범위 안에서 결정이 필요한 항목은 남지 않았다.
+
+### 다음 행동
+
+1. 커밋 생성: `AdminSchedulePrepView.tsx`·`AdminSchedulePrepView.test.tsx`·
+   `docs/execution/runs/P3-T11/{radio.md,tdd.json,handoff.md}` 전체 스테이징(부분 스테이징
+   금지), 메시지에 `P3-T11` 포함. `.gitignore`·`docs/execution/reviews/**`는 스테이징하지
+   않는다(조정자 소유, 워킹트리 미커밋 상태 보존).
+2. 검증 단계 진입: 리뷰어가 F-01·F-02 해소와 인수 조건 8·9의 실증 근거
+   (`docs/execution/runs/P3-T11/tdd.json` 5·6번째 항목, 신규 컴포넌트 단언 3건) 확인.
+3. `index.jsonl`의 P3-T11 상태 전환은 조정자 몫.
+
+### 증거·산출물 경로(이번 라운드 추가분)
+
+- 화면 배선: `src/views/admin-schedule/ui/AdminSchedulePrepView.tsx`(경고 요약 영역, prop
+  필수화)
+- 컴포넌트 테스트: `src/views/admin-schedule/ui/__tests__/AdminSchedulePrepView.test.tsx`
+  (신규 3문항 + 기존 스모크 보존)
+- TDD 증거: `docs/execution/runs/P3-T11/tdd.json`(RED→GREEN 총 3쌍, 6 entries)
+- RADIO 적용 결과: `docs/execution/runs/P3-T11/radio.md`의 "수정 라운드" 절
+- 수정 라운드 커밋: 이 handoff 커밋 직후 생성(SHA는 다음 보고에서 확정)

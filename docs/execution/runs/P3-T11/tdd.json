@@ -27,6 +27,20 @@
       "at": "2026-08-16T05:27:58Z",
       "phase": "green",
       "note": "마이그레이션 복원 후 db reset, 재실행. Files=23, Tests=1323, Result: PASS — 19·21·23 신규 단언 전부 통과, 기존 단언 회귀 없음."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/ui/__tests__/AdminSchedulePrepView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-16T06:09:47Z",
+      "phase": "red",
+      "note": "revision 2 수정 라운드(F-01/F-02). AdminSchedulePrepView.tsx 구현을 git stash로 잠시 되돌린 뒤(테스트 파일은 경고 요약 영역 신규 단언 포함 상태로 유지) 실행. 2 failed / 2 passed(4) — confirmation-warning-summary testid가 존재하지 않아 getByTestId 실패(F-01 단건 표시·표 안팎 동시 표시 케이스)."
+    },
+    {
+      "command": "pnpm vitest run src/views/admin-schedule/ui/__tests__/AdminSchedulePrepView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-16T06:09:56Z",
+      "phase": "green",
+      "note": "git stash pop으로 경고 요약 영역 구현 복원 후 재실행. 4 tests 전부 통과(CANCELLED 스모크 보존, F-01 단건 표시, 경고 없음 시 영역 미렌더, 표 안·표 밖 동시 표시)."
     }
   ]
 }
