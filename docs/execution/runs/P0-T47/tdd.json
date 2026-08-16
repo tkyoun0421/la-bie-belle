@@ -27,6 +27,20 @@
       "at": "2026-08-16T18:13:21Z",
       "phase": "green",
       "note": "AC10: tools/eslint-plugin-project/rules/spacing-scale.mjs 구현과 index.mjs 등록 뒤 34 pass, exit 0."
+    },
+    {
+      "command": "pnpm harness:self-test",
+      "exit_code": 1,
+      "at": "2026-08-16T19:36:42Z",
+      "phase": "red",
+      "note": "review F-01·F-02 회귀: token-parity.test.ts 3건(spacing-nav-safe 값 위반, 반 칸 space-1.5 값 위반, 매핑 불가 토큰 위반 미보고)과 design-build.test.ts 2건(@font-face 등록 글꼴 이름이 font-family 체인 밖에서 안 쓰임, --font-wanted-sans가 폴백 없이 미정의 상태로 남음)이 harness/lib/token-parity.ts·harness/design/build.ts를 고치지 않아 실패(368 tests, 363 pass, 5 fail, exit 1)."
+    },
+    {
+      "command": "pnpm harness:self-test",
+      "exit_code": 0,
+      "at": "2026-08-16T19:39:49Z",
+      "phase": "green",
+      "note": "review F-01·F-02 수정 뒤 368 pass / 0 fail, exit 0. token-parity.ts는 SPACE_TOKEN_PATTERN이 소수 스케일을 받고 DECLARATION_PATTERN이 이스케이프된 이름을 읽으며 하단 여백 매핑이 `--` 없는 표기를 받고 매핑 실패를 unmappableTokenViolation으로 보고한다. build.ts는 산출물에 --font-wanted-sans를 선언해 @font-face가 등록한 패밀리가 글꼴 체인에서 해석된다."
     }
   ]
 }

@@ -14,7 +14,11 @@
   --color-neutral-surface: #f7f7f7;
   --color-neutral-border: #dee1e6;
 
+  --spacing-0: 0px;
+  --spacing-0\.5: 2px;
   --spacing-1: 4px;
+  --spacing-1\.5: 7px;
+  --spacing-2\.5: 10px;
   --spacing-4: 18px;
   --spacing-6: 24px;
 

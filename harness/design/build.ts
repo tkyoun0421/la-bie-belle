@@ -7,6 +7,7 @@ import { resolveRepoRoot } from "../lib/repo.ts";
 const GLOBALS_CSS_PATH = "src/app/globals.css";
 const FONT_PATH = "src/shared/config/fonts/WantedSansVariable.woff2";
 const FONT_FAMILY = "Wanted Sans Variable";
+const FONT_VARIABLE = "--font-wanted-sans";
 const SOURCE_DIRECTIVE_PATTERN = /@source\s+"[^"]*";/;
 
 type BuildArgs = {
@@ -56,6 +57,10 @@ function buildFontFaceCss(root: string): string {
   ].join("\n");
 }
 
+function buildFontVariableCss(): string {
+  return [":root {", `  ${FONT_VARIABLE}: "${FONT_FAMILY}";`, "}"].join("\n");
+}
+
 function injectStyle(html: string, css: string): string {
   const styleBlock = `<style>\n${css}\n</style>`;
   if (html.includes("</head>")) {
@@ -90,7 +95,7 @@ async function run(): Promise<number> {
     comment.remove();
   });
 
-  const css = `${buildFontFaceCss(root)}\n\n${result.root.toString()}`;
+  const css = [buildFontFaceCss(root), result.root.toString(), buildFontVariableCss()].join("\n\n");
   const html = readFileSync(inputPath, "utf8");
   writeFileSync(outputPath, injectStyle(html, css));
   return 0;

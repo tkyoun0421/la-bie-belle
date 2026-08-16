@@ -85,16 +85,42 @@ test("gate:tokens(9) — 간격 표 space-4가 --spacing-4와 다르면 위반�
   assert.match(messages, /18px/u);
 });
 
-test("gate:tokens(9) — 하단 고정 요소 여백 토큰 --spacing-nav-safe 값이 다르면 위반한다", () => {
+test("gate:tokens(9) — 하단 고정 요소 여백 토큰 spacing-nav-safe 값이 다르면 위반한다", () => {
   const root = createFixtureRoot();
   loadCase(root, "mismatch");
 
   const violations = runTokenParityGate(root);
   const messages = joinMessages(violations);
 
-  assert.match(messages, /--spacing-nav-safe/u);
+  assert.match(messages, /spacing-nav-safe/u);
   assert.match(messages, /96px/u);
   assert.match(messages, /90px/u);
+});
+
+test("gate:tokens(6,8) — 반 칸 간격 토큰 space-1.5가 --spacing-1.5와 다르면 위반한다", () => {
+  const root = createFixtureRoot();
+  loadCase(root, "mismatch");
+
+  const violations = runTokenParityGate(root);
+  const messages = joinMessages(violations);
+
+  assert.match(messages, /space-1\.5/u);
+  assert.match(messages, /6px/u);
+  assert.match(messages, /7px/u);
+});
+
+test("gate:tokens(6,8) — 문서 표 토큰을 코드 이름으로 옮길 수 없으면 조용히 건너뛰지 않고 위반한다", () => {
+  const root = createFixtureRoot();
+  loadCase(root, "unmappable-token");
+
+  const violations = runTokenParityGate(root);
+  const messages = joinMessages(violations);
+
+  assert.ok(
+    violations.length > 0,
+    "매핑할 수 없는 토큰 행을 continue로 조용히 넘기면 안 된다",
+  );
+  assert.match(messages, /space-jumbo/u);
 });
 
 test("gate:tokens(6) — 형태와 깊이 표 radius-sm 값이 다르면 위반한다", () => {

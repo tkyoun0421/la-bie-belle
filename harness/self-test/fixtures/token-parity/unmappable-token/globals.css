@@ -1,0 +1,22 @@
+:root {
+  --raw-blue-500: #0052ff;
+}
+
+@theme {
+  --color-action: var(--raw-blue-500);
+  --color-action-surface: #eef4ff;
+  --color-action-border: #b8ceff;
+
+  --spacing-4: 16px;
+
+  --spacing-nav-safe: 96px;
+  --spacing-nav-action-safe: 112px;
+
+  --radius-sm: 8px;
+}
+
+@utility typo-body {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}

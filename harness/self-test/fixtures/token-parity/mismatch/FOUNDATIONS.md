@@ -29,7 +29,11 @@
 
 | 토큰 | 값 |
 | --- | ---: |
+| `space-0` | 0px |
+| `space-0.5` | 2px |
 | `space-1` | 4px |
+| `space-1.5` | 6px |
+| `space-2.5` | 10px |
 | `space-4` | 16px |
 | `space-6` | 24px |
 
@@ -37,8 +41,8 @@
 
 | 토큰 | 값 | 용도 |
 | --- | ---: | --- |
-| `--spacing-nav-safe` | 96px | 탭 바 회피 |
-| `--spacing-nav-action-safe` | 112px | ApplicationChangeBar 회피 |
+| `spacing-nav-safe` | 96px | 탭 바 회피 |
+| `spacing-nav-action-safe` | 112px | ApplicationChangeBar 회피 |
 
 ## 형태와 깊이
 

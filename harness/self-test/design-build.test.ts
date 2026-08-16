@@ -95,6 +95,64 @@ test("design:build(5) — 글꼴을 base64 data: URI로 심되 프레임이 셋�
   assert.match(output, /@font-face\s*\{[^}]*src:\s*url\("?data:font\/woff2;base64,/su);
 });
 
+function extractFontFaceFamily(css: string): string | null {
+  const match = /@font-face\s*\{[^}]*font-family:\s*"([^"]+)"/su.exec(css);
+  return match?.[1] ?? null;
+}
+
+function stripFontFaceBlocks(css: string): string {
+  return css.replace(/@font-face\s*\{[^}]*\}/gsu, "");
+}
+
+function findUndeclaredVarReferences(css: string): string[] {
+  const declared = new Set<string>();
+  const declarationPattern = /(--[a-zA-Z0-9-]+):/gu;
+  for (const match of css.matchAll(declarationPattern)) {
+    const name = match[1];
+    if (name !== undefined) {
+      declared.add(name);
+    }
+  }
+
+  const undeclared = new Set<string>();
+  const referencePattern = /var\((--[a-zA-Z0-9-]+)\)/gu;
+  for (const match of css.matchAll(referencePattern)) {
+    const name = match[1];
+    if (name !== undefined && !declared.has(name)) {
+      undeclared.add(name);
+    }
+  }
+  return [...undeclared];
+}
+
+test("design:build(5) — @font-face가 등록한 글꼴 이름이 실제 font-family 체인에서 쓰인다", () => {
+  const directory = createScratchDirectory();
+  const inputPath = writeInputHtml(directory, "font-usage.html", '<p class="font-sans">본문</p>');
+
+  const result = runDesignBuild([inputPath]);
+
+  assert.equal(result.status, 0, result.stderr);
+  const output = readFileSync(join(directory, "font-usage.inlined.html"), "utf8");
+  const registeredFamily = extractFontFaceFamily(output);
+  assert.ok(registeredFamily !== null, "@font-face에 font-family 선언이 있어야 한다");
+  assert.ok(
+    stripFontFaceBlocks(output).includes(`"${registeredFamily}"`),
+    `@font-face가 등록한 "${registeredFamily}"가 @font-face 밖의 font-family 체인에서 쓰이지 않는다`,
+  );
+});
+
+test("design:build(5) — 산출물에 폴백 없이 남은 미정의 var() 참조가 없다", () => {
+  const directory = createScratchDirectory();
+  const inputPath = writeInputHtml(directory, "font-vars.html", '<p class="font-sans">본문</p>');
+
+  const result = runDesignBuild([inputPath]);
+
+  assert.equal(result.status, 0, result.stderr);
+  const output = readFileSync(join(directory, "font-vars.inlined.html"), "utf8");
+  const undeclared = findUndeclaredVarReferences(output);
+  assert.deepEqual(undeclared, [], `산출물 안에서 정의되지 않은 var() 참조가 폴백 없이 남아 있다: ${undeclared.join(", ")}`);
+});
+
 test("design:build(5) — 입력 인자가 없으면 exit 1이다", () => {
   const result = runDesignBuild([]);
 

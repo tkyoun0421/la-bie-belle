@@ -20,6 +20,14 @@
 - 그 과정에서 이 task가 낸 회귀 3건을 고쳤다. `harness/design/build.ts:89`의 `walkComments` 콜백이 `comment.remove()` 반환값을 그대로 흘려 `harness:typecheck`가 TS2769로 깨졌다 — 블록 본문으로 바꿨다. `harness/self-test/dashboard-collect.test.ts`의 `referenceGates` 기대 목록에 `gate:tokens`가 빠져 있었다. `harness/self-test/hook-acceptance.test.ts`의 fixture 저장소에 FOUNDATIONS·globals.css가 없어 `COMMIT_GATES`에 새로 들어간 `gate:tokens`가 "읽을 수 없습니다"로 커밋을 막았다 — `fixtures/token-parity/match`의 일치 쌍을 fixture 저장소에 심었다. 파일이 없을 때 게이트가 조용히 통과하게 만드는 길은 택하지 않았다. 거짓 통과가 이 게이트의 핵심 위험이다.
 - 구현 중 사용자 결정 둘: `env(safe-area-inset-bottom)` 임의값은 FOUNDATIONS가 이미 승인한 패턴이라 린트 대상에서 뺐다. 반 칸 간격(0.5·1.5·2.5)은 19군데 실사용 중이라 FOUNDATIONS 표에 올리고 "밀집한 내부 요소에만" 단서를 달았다(2026-08-17 사용자 결정).
 
+### 4단계 교차 검증과 그 수정
+
+- `opus`·`codex` 2자 교차 검증 결과가 `docs/execution/reviews/P0-T47-review.json`에 있다. 확정 발견 12건, 기각 0건, 종합 77점. medium·low 9건은 backlog에 누적했다.
+- `high` 셋 중 둘이 이 task 코드의 결함이라 3단계로 되돌려 고쳤다. **F-01** — `gate:tokens`가 반 칸 세 행과 하단 여백 두 행을 조용히 건너뛰고 있었다. `SPACE_TOKEN_PATTERN`이 정수만 받고, 하단 여백 매핑이 `--spacing-` 접두를 요구하는데 FOUNDATIONS 표는 `spacing-nav-safe`로 적혀 있고, `DECLARATION_PATTERN`이 `--spacing-0\.5` 같은 이스케이프 이름을 못 읽었다. 셋을 고치고 **매핑 실패를 `continue`가 아니라 `unmappableTokenViolation`으로 보고**하게 바꿨다 — 조용히 넘긴 것이 근본 원인이었다. **F-02** — `design:build` 산출물의 글꼴 체인 첫 항목 `var(--font-wanted-sans)`가 자립 HTML에 정의되지 않아 `font-family` 선언이 통째로 무효화되고 심은 1.6MB WOFF2가 쓰이지 않았다. 산출물에 그 변수를 선언해 `@font-face`가 등록한 패밀리가 해석되게 했다.
+- `unit-test-writer`가 RED를 남기고(368 tests / 5 fail) 조정 세션이 GREEN으로 만들었다(368 pass / 0 fail). `implementer`를 따로 띄우지 않고 조정 세션이 구현한 것은 이 세션이 앞선 하네스 구현도 이어받아 맥락을 갖고 있었기 때문이다. RED와 GREEN의 기록자는 갈렸다.
+- RED 작성 중 fixture가 실제 문서와 다른 표기(`--spacing-nav-safe`)를 써서 결함을 가리고 있던 F-04도 함께 정정했다. fixture 넷의 하단 여백 표기를 실물과 맞추고 반 칸·`space-0` 행을 더했으며, 매핑 불가 토큰을 담은 `unmappable-token` fixture를 새로 만들었다.
+- 남은 `high` **F-03**(e2e 시딩 충돌)은 `tests/e2e/**`가 이 task 허용 경로 밖이라 여기서 고칠 수 없다. 별도 task로 올린다.
+
 ### 커밋을 가르며 생긴 것
 
 작업 트리에 이 task 말고 두 흐름이 더 있었고, 셋의 글이 같은 파일 안에서 줄 단위로 섞여 있었다. 처리는 이렇게 갈랐다.

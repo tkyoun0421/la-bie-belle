@@ -10,9 +10,10 @@ const HEADING_PATTERN = /^#{1,6}[ \t]/u;
 const ROOT_BLOCK_PATTERN = /^:root\s*\{/u;
 const THEME_BLOCK_PATTERN = /^@theme\s*\{/u;
 const TYPO_UTILITY_PATTERN = /^@utility\s+typo-([a-zA-Z0-9-]+)\s*\{/u;
-const DECLARATION_PATTERN = /^(--[a-zA-Z0-9-]+):\s*(.+);\s*$/u;
+const DECLARATION_PATTERN = /^(--[a-zA-Z0-9\\.-]+):\s*(.+);\s*$/u;
 const VAR_REFERENCE_PATTERN = /^var\((--[a-zA-Z0-9-]+)\)$/u;
-const SPACE_TOKEN_PATTERN = /^space-([0-9]+)$/u;
+const SPACE_TOKEN_PATTERN = /^space-([0-9]+(?:\.[0-9]+)?)$/u;
+const NAV_SAFE_TOKEN_PATTERN = /^(?:--)?(spacing-nav-[a-z-]+)$/u;
 
 const RAW_PALETTE_HEADING = /^###[ \t]+원시 팔레트[ \t]*$/u;
 const SEMANTIC_TOKEN_HEADING = /^###[ \t]+제품 의미 토큰[ \t]*$/u;
@@ -238,6 +239,16 @@ function unresolvedReferenceViolation(label: string, docLine: number, reference:
   };
 }
 
+function unmappableTokenViolation(label: string, docLine: number, token: string): Violation {
+  return {
+    gate: GATE,
+    file: FOUNDATIONS_PATH,
+    line: docLine,
+    message: `${label}: FOUNDATIONS.md:${docLine}의 토큰 ${token}을 globals.css 변수 이름으로 옮길 수 없습니다.`,
+    hint: "표의 토큰 이름을 규약에 맞추거나, 새 이름 규칙이 필요하면 게이트의 매핑을 먼저 넓히세요.",
+  };
+}
+
 function checkSingleValueTable(
   docLines: readonly string[],
   headingPattern: RegExp,
@@ -259,6 +270,7 @@ function checkSingleValueTable(
     }
     const cssName = toCssName(token);
     if (cssName === null) {
+      violations.push(unmappableTokenViolation(rowLabel(token), row.line, token));
       continue;
     }
     const expected = stripBackticks(row.cells[1] ?? "");
@@ -299,7 +311,7 @@ function checkSpacingScale(docLines: readonly string[], codeVariables: ReadonlyM
     (token) => {
       const match = SPACE_TOKEN_PATTERN.exec(token);
       const scale = match?.[1];
-      return scale === undefined ? null : `--spacing-${scale}`;
+      return scale === undefined ? null : `--spacing-${scale.replace(".", "\\.")}`;
     },
     codeVariables,
     (token) => `간격과 레이아웃 ${token}`,
@@ -311,7 +323,10 @@ function checkNavSafeSpacing(docLines: readonly string[], codeVariables: Readonl
     docLines,
     NAV_SAFE_HEADING,
     "하단 고정 요소 여백",
-    (token) => (token.startsWith("--spacing-") ? token : null),
+    (token) => {
+      const name = NAV_SAFE_TOKEN_PATTERN.exec(token)?.[1];
+      return name === undefined ? null : `--${name}`;
+    },
     codeVariables,
     (token) => `하단 고정 요소 여백 ${token}`,
   );
