@@ -6,15 +6,17 @@ import { MoreView } from "@/views/more/ui/MoreView";
 afterEach(cleanup);
 
 describe("MoreView", () => {
-  it("역할이 없으면 예상 급여·내 정보 진입 항목만 갖는다", () => {
+  it("역할이 없으면 예상 급여·내 정보·알림 설정 진입 항목만 갖는다", () => {
     render(<MoreView onSignOut={vi.fn()} roles={[]} />);
 
     const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(2);
+    expect(links).toHaveLength(3);
     expect(links[0]).toHaveAttribute("href", "/pay");
     expect(links[0]).toHaveTextContent("예상 급여");
     expect(links[1]).toHaveAttribute("href", "/my-profile");
     expect(links[1]).toHaveTextContent("내 정보");
+    expect(links[2]).toHaveAttribute("href", "/more/notification-settings");
+    expect(links[2]).toHaveTextContent("알림 설정");
   });
 
   it("로그아웃 버튼을 렌더한다", () => {
