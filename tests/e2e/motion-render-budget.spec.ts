@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
@@ -70,17 +72,40 @@ test.describe("렌더 시간 예산", () => {
     sessions.push(worker);
     const page = await context.newPage();
 
-    await page.emulateMedia({ reducedMotion: "no-preference" });
-    const fullMotionMarkup = await captureNotificationListMarkup(page);
-    const fullMotionMs = await measureMountMs(page, fullMotionMarkup);
+    const { data: notificationRow, error: notificationError } = await worker.admin
+      .from("notifications")
+      .insert({
+        recipient_id: worker.id,
+        event_type: "render_budget_probe",
+        aggregate_id: randomUUID(),
+        revision: 1,
+        title: "근무 배정이 확정됐어요",
+        body: "렌더 예산 측정용 알림이에요",
+        target: { screen: "pay" },
+      })
+      .select("id")
+      .single();
+    if (notificationError || !notificationRow) {
+      throw notificationError ?? new Error("알림 픽스처 생성에 실패했습니다.");
+    }
 
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    const reducedMotionMarkup = await captureNotificationListMarkup(page);
-    const reducedMotionMs = await measureMountMs(page, reducedMotionMarkup);
+    try {
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      const fullMotionMarkup = await captureNotificationListMarkup(page);
+      const fullMotionMs = await measureMountMs(page, fullMotionMarkup);
 
-    const violations = evaluateRenderBudget({ fullMotionMs, reducedMotionMs });
-    expect(violations.map((violation) => violation.message)).toEqual([]);
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      const reducedMotionMarkup = await captureNotificationListMarkup(page);
+      const reducedMotionMs = await measureMountMs(page, reducedMotionMarkup);
 
-    await context.close();
+      const violations = evaluateRenderBudget({ fullMotionMs, reducedMotionMs });
+      expect(violations.map((violation) => violation.message)).toEqual([]);
+    } finally {
+      await worker.admin
+        .from("notifications")
+        .delete()
+        .eq("id", (notificationRow as { id: string }).id);
+      await context.close();
+    }
   });
 });

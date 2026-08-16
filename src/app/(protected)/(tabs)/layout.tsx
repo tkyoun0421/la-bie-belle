@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 
-import { MIXED_NOTIFICATIONS } from "@/entities/notification/model/notification-item.mock";
+import { listNotifications } from "@/entities/notification/api/list-notifications";
 import { AppShellTabBar } from "@/widgets/app-shell/ui/AppShellTabBar";
 
-export default function TabsLayout({ children }: { children: ReactNode }) {
-  const hasUnreadNotifications = MIXED_NOTIFICATIONS.some((item) => !item.read);
+export default async function TabsLayout({ children }: { children: ReactNode }) {
+  const notificationsResult = await listNotifications();
+  const hasUnreadNotifications = notificationsResult.ok && notificationsResult.unreadCount > 0;
 
   return (
     <>

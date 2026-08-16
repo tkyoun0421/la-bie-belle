@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -79,5 +79,50 @@ describe("NotificationsView", () => {
     staggerWrappers.forEach((wrapper, index) => {
       expect(wrapper.getAttribute("style")).toContain(`--stagger-index: ${index}`);
     });
+  });
+
+  it("항목을 탭하면 onMarkRead가 해당 항목과 함께 호출된다", async () => {
+    const user = userEvent.setup();
+    const onMarkRead = vi.fn();
+    render(
+      <NotificationsView {...NOTIFICATIONS_MIXED} onNavigate={() => {}} onMarkRead={onMarkRead} />,
+    );
+
+    const row = screen.getByText("근무 배정이 확정됐어요").closest("button")!;
+    await user.click(row);
+
+    expect(onMarkRead).toHaveBeenCalledOnce();
+    expect(onMarkRead).toHaveBeenCalledWith(expect.objectContaining({ id: "noti-1" }));
+  });
+
+  it("임계값을 넘겨 스와이프하면 onMarkRead가 호출된다", () => {
+    const onMarkRead = vi.fn();
+    render(
+      <NotificationsView {...NOTIFICATIONS_MIXED} onNavigate={() => {}} onMarkRead={onMarkRead} />,
+    );
+
+    const row = screen.getByText("근무 배정이 확정됐어요").closest("button")!;
+    fireEvent.pointerDown(row, { clientX: 0, clientY: 0 });
+    fireEvent.pointerMove(row, { clientX: 200, clientY: 0 });
+    fireEvent.pointerUp(row, { clientX: 200, clientY: 0 });
+
+    expect(onMarkRead).toHaveBeenCalledOnce();
+    expect(onMarkRead).toHaveBeenCalledWith(expect.objectContaining({ id: "noti-1" }));
+  });
+
+  it("모두 읽음을 누르면 onMarkAllRead가 호출된다", async () => {
+    const user = userEvent.setup();
+    const onMarkAllRead = vi.fn();
+    render(
+      <NotificationsView
+        {...NOTIFICATIONS_MIXED}
+        onNavigate={() => {}}
+        onMarkAllRead={onMarkAllRead}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "모두 읽음" }));
+
+    expect(onMarkAllRead).toHaveBeenCalledOnce();
   });
 });

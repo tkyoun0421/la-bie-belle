@@ -1,27 +1,24 @@
-"use client";
-
-import { addTransitionType, startTransition } from "react";
-import { useRouter } from "next/navigation";
-
+import { listNotifications } from "@/entities/notification/api/list-notifications";
+import { markAllNotificationsRead } from "@/features/notification/api/mark-all-notifications-read";
+import { markNotificationRead } from "@/features/notification/api/mark-notification-read";
 import { RouteTransition } from "@/shared/ui/route-transition";
-import { NotificationsView } from "@/views/notifications/ui/NotificationsView";
-import { NOTIFICATIONS_MIXED } from "@/views/notifications/ui/notifications.mock";
+import { NotificationsPageClient } from "@/views/notifications/ui/NotificationsPageClient";
+import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
 
-export default function NotificationsPage() {
-  const router = useRouter();
+export default async function NotificationsPage() {
+  const notificationsResult = await listNotifications();
+
+  if (!notificationsResult.ok) {
+    return <ErrorScreen />;
+  }
 
   return (
     <RouteTransition>
-      <NotificationsView
-        {...NOTIFICATIONS_MIXED}
-        onNavigate={(item) => {
-          const destination =
-            item.target.screen === "schedule-detail" ? `/schedule/${item.target.date}` : "/pay";
-          startTransition(() => {
-            addTransitionType?.("nav-forward");
-            router.push(destination);
-          });
-        }}
+      <NotificationsPageClient
+        items={notificationsResult.items}
+        now={new Date()}
+        onMarkRead={markNotificationRead}
+        onMarkAllRead={markAllNotificationsRead}
       />
     </RouteTransition>
   );

@@ -23,6 +23,8 @@ type NotificationsViewProps = {
   items: readonly NotificationItem[];
   now: Date;
   onNavigate: (item: NotificationItem) => void;
+  onMarkRead: (item: NotificationItem) => void;
+  onMarkAllRead: () => void;
 };
 
 function relativeTime(occurredAt: string, now: Date) {
@@ -33,6 +35,8 @@ export function NotificationsView({
   items: initialItems,
   now,
   onNavigate,
+  onMarkRead,
+  onMarkAllRead,
 }: NotificationsViewProps) {
   const [items, setItems] = useState<NotificationItem[]>(() => [...initialItems]);
   const hasUnread = items.some((item) => !item.read);
@@ -43,12 +47,14 @@ export function NotificationsView({
 
   function handleMarkAllRead() {
     setItems((previous) => previous.map((item) => ({ ...item, read: true })));
+    onMarkAllRead();
   }
 
   function handlePress(item: NotificationItem) {
     setItems((previous) =>
       previous.map((entry) => (entry.id === item.id ? { ...entry, read: true } : entry)),
     );
+    onMarkRead(item);
     onNavigate(item);
   }
 
@@ -56,6 +62,7 @@ export function NotificationsView({
     setItems((previous) =>
       previous.map((entry) => (entry.id === item.id ? { ...entry, read: true } : entry)),
     );
+    onMarkRead(item);
   }
 
   return (

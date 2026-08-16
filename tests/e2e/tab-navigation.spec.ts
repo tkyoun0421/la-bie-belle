@@ -394,23 +394,46 @@ test.describe("탭 이동과 상세 진입", () => {
     baseURL,
   }) => {
     const context = await browser.newContext();
-    await signInWorker(context, baseURL);
+    const worker = await signInWorker(context, baseURL);
     const page = await context.newPage();
     await installViewTransitionSpy(page);
 
-    await page.goto("/notifications");
-    await expect(page.getByRole("heading", { level: 1, name: "알림" })).toBeVisible();
+    const { data: notificationRow, error: notificationError } = await worker.admin
+      .from("notifications")
+      .insert({
+        recipient_id: worker.id,
+        event_type: "pay_snapshot_updated",
+        aggregate_id: randomUUID(),
+        revision: 1,
+        title: "예상 급여가 갱신됐어요",
+        body: "이번 달 예상 급여를 확인하세요",
+        target: { screen: "pay" },
+      })
+      .select("id")
+      .single();
+    if (notificationError || !notificationRow) {
+      throw notificationError ?? new Error("알림 픽스처 생성에 실패했습니다.");
+    }
 
-    const index = await readViewTransitionCallCount(page);
-    await page.getByRole("button", { name: /예상 급여가 갱신됐어요/ }).click();
-    await expect(page).toHaveURL(/\/pay$/);
-    await expect(page.getByRole("heading", { level: 1, name: "예상 급여" })).toBeVisible();
+    try {
+      await page.goto("/notifications");
+      await expect(page.getByRole("heading", { level: 1, name: "알림" })).toBeVisible();
 
-    const animations = await readTransitionAnimations(page, index);
-    expect(durationOf(animations, "route-fade", "new")).toBeGreaterThan(0);
-    expect(durationOf(animations, "route-slide-y", "new")).toBeGreaterThan(0);
+      const index = await readViewTransitionCallCount(page);
+      await page.getByRole("button", { name: /예상 급여가 갱신됐어요/ }).click();
+      await expect(page).toHaveURL(/\/pay$/);
+      await expect(page.getByRole("heading", { level: 1, name: "예상 급여" })).toBeVisible();
 
-    await context.close();
+      const animations = await readTransitionAnimations(page, index);
+      expect(durationOf(animations, "route-fade", "new")).toBeGreaterThan(0);
+      expect(durationOf(animations, "route-slide-y", "new")).toBeGreaterThan(0);
+    } finally {
+      await worker.admin
+        .from("notifications")
+        .delete()
+        .eq("id", (notificationRow as { id: string }).id);
+      await context.close();
+    }
   });
 
   test("상세 진입은 새 화면이 올라오고 뒤로 가기는 옛 화면이 내려간다", async ({

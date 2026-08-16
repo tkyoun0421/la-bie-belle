@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import type { BrowserContext, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
@@ -64,33 +66,56 @@ test.describe("스와이프와 당겨서 새로고침", () => {
     baseURL,
   }) => {
     const context = await browser.newContext();
-    await signInWorker(context, baseURL, "e2e-swipe-notif-worker");
+    const worker = await signInWorker(context, baseURL, "e2e-swipe-notif-worker");
     const page = await context.newPage();
 
-    await page.goto("/notifications");
-    const unreadRow = page.getByRole("button", { name: /근무 배정이 확정됐어요/ });
-    await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(1);
+    const { data: notificationRow, error: notificationError } = await worker.admin
+      .from("notifications")
+      .insert({
+        recipient_id: worker.id,
+        event_type: "schedule_confirmed",
+        aggregate_id: randomUUID(),
+        revision: 1,
+        title: "근무 배정이 확정됐어요",
+        body: "스와이프 읽음 처리 테스트용 알림이에요",
+        target: { screen: "schedule-detail", date: "2026-01-01" },
+      })
+      .select("id")
+      .single();
+    if (notificationError || !notificationRow) {
+      throw notificationError ?? new Error("알림 픽스처 생성에 실패했습니다.");
+    }
 
-    const box = await unreadRow.boundingBox();
-    expect(box, "행의 화면 좌표를 찾지 못했습니다").not.toBeNull();
-    const y = box!.y + box!.height / 2;
-    const startX = box!.x + box!.width - 20;
+    try {
+      await page.goto("/notifications");
+      const unreadRow = page.getByRole("button", { name: /근무 배정이 확정됐어요/ });
+      await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(1);
 
-    await dispatchRealTouchDrag(page, [
-      { x: startX, y },
-      { x: startX - 20, y },
-      { x: startX - 40, y },
-    ]);
-    await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(1);
+      const box = await unreadRow.boundingBox();
+      expect(box, "행의 화면 좌표를 찾지 못했습니다").not.toBeNull();
+      const y = box!.y + box!.height / 2;
+      const startX = box!.x + box!.width - 20;
 
-    await dispatchRealTouchDrag(page, [
-      { x: startX, y },
-      { x: startX - 60, y },
-      { x: startX - 150, y },
-    ]);
-    await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(0);
+      await dispatchRealTouchDrag(page, [
+        { x: startX, y },
+        { x: startX - 20, y },
+        { x: startX - 40, y },
+      ]);
+      await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(1);
 
-    await context.close();
+      await dispatchRealTouchDrag(page, [
+        { x: startX, y },
+        { x: startX - 60, y },
+        { x: startX - 150, y },
+      ]);
+      await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(0);
+    } finally {
+      await worker.admin
+        .from("notifications")
+        .delete()
+        .eq("id", (notificationRow as { id: string }).id);
+      await context.close();
+    }
   });
 
   test("세로로 드래그하면 가로 추적이 시작되지 않아 읽음 처리되지 않는다", async ({
@@ -98,26 +123,49 @@ test.describe("스와이프와 당겨서 새로고침", () => {
     baseURL,
   }) => {
     const context = await browser.newContext();
-    await signInWorker(context, baseURL, "e2e-swipe-scroll-worker");
+    const worker = await signInWorker(context, baseURL, "e2e-swipe-scroll-worker");
     const page = await context.newPage();
 
-    await page.goto("/notifications");
-    const unreadRow = page.getByRole("button", { name: /근무 배정이 확정됐어요/ });
+    const { data: notificationRow, error: notificationError } = await worker.admin
+      .from("notifications")
+      .insert({
+        recipient_id: worker.id,
+        event_type: "schedule_confirmed",
+        aggregate_id: randomUUID(),
+        revision: 1,
+        title: "근무 배정이 확정됐어요",
+        body: "세로 드래그 무시 테스트용 알림이에요",
+        target: { screen: "schedule-detail", date: "2026-01-01" },
+      })
+      .select("id")
+      .single();
+    if (notificationError || !notificationRow) {
+      throw notificationError ?? new Error("알림 픽스처 생성에 실패했습니다.");
+    }
 
-    const box = await unreadRow.boundingBox();
-    expect(box, "행의 화면 좌표를 찾지 못했습니다").not.toBeNull();
-    const x = box!.x + box!.width / 2;
-    const startY = box!.y + box!.height / 2;
+    try {
+      await page.goto("/notifications");
+      const unreadRow = page.getByRole("button", { name: /근무 배정이 확정됐어요/ });
 
-    await dispatchRealTouchDrag(page, [
-      { x, y: startY },
-      { x: x + 1, y: startY + 30 },
-      { x: x + 2, y: startY + 60 },
-    ]);
+      const box = await unreadRow.boundingBox();
+      expect(box, "행의 화면 좌표를 찾지 못했습니다").not.toBeNull();
+      const x = box!.x + box!.width / 2;
+      const startY = box!.y + box!.height / 2;
 
-    await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(1);
+      await dispatchRealTouchDrag(page, [
+        { x, y: startY },
+        { x: x + 1, y: startY + 30 },
+        { x: x + 2, y: startY + 60 },
+      ]);
 
-    await context.close();
+      await expect(unreadRow.getByText("읽지 않음.")).toHaveCount(1);
+    } finally {
+      await worker.admin
+        .from("notifications")
+        .delete()
+        .eq("id", (notificationRow as { id: string }).id);
+      await context.close();
+    }
   });
 
   test("당겨서 새로고침으로 새로 열린 모집이 반영된다", async ({ browser, baseURL }) => {
