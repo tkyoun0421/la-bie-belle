@@ -1,5 +1,5 @@
 begin;
-select plan(106);
+select plan(118);
 
 -- =====================================================================
 -- 스키마 노출: 테이블·컬럼·제약·RLS·함수 시그니처
@@ -1159,6 +1159,239 @@ select is(
   ),
   false,
   'P3-T08 기본 포지션 해제: is_default를 다시 false로 되돌리면 M1이 다시 eligible=false가 된다'
+);
+
+-- =====================================================================
+-- P3-T11: 비활성 포지션은 축소·전원 해제만 허용되고 새 인원 추가는 거부된다
+-- =====================================================================
+
+insert into positions (name, default_required_count, gender_requirement, is_default, is_active)
+values ('임시비활성축소포지션', 1, 'any', false, false);
+
+insert into auth.users (id, email) values
+  ('19000000-0000-0000-0000-000000000006', 'asg-inactive-f3@labiebelle.test'),
+  ('19000000-0000-0000-0000-000000000007', 'asg-inactive-f4@labiebelle.test'),
+  ('19000000-0000-0000-0000-000000000008', 'asg-inactive-trainee@labiebelle.test'),
+  ('19000000-0000-0000-0000-000000000009', 'asg-inactive-candidate@labiebelle.test');
+
+insert into public.profiles (id, name, phone, gender, birth_date, status, inactivity_anchor_at) values
+  (
+    '19000000-0000-0000-0000-000000000006', '비활성축소F3', '01090000006', 'female', '1990-06-06',
+    'active', now()
+  ),
+  (
+    '19000000-0000-0000-0000-000000000007', '비활성축소F4', '01090000007', 'female', '1990-07-07',
+    'active', now()
+  ),
+  (
+    '19000000-0000-0000-0000-000000000008', '비활성축소교육', '01090000008', 'male', '1990-08-08',
+    'active', now()
+  ),
+  (
+    '19000000-0000-0000-0000-000000000009', '비활성축소후보', '01090000009', 'male', '1990-09-09',
+    'active', now()
+  );
+
+insert into assignments (schedule_id, profile_id) values
+  (
+    (select id from schedules where work_date = '2099-09-01'),
+    '19000000-0000-0000-0000-000000000006'
+  ),
+  (
+    (select id from schedules where work_date = '2099-09-01'),
+    '19000000-0000-0000-0000-000000000007'
+  );
+
+insert into assignment_positions (assignment_id, position_id) values
+  (
+    (
+      select id from assignments
+      where schedule_id = (select id from schedules where work_date = '2099-09-01')
+        and profile_id = '19000000-0000-0000-0000-000000000006'
+    ),
+    (select id from positions where name = '임시비활성축소포지션')
+  ),
+  (
+    (
+      select id from assignments
+      where schedule_id = (select id from schedules where work_date = '2099-09-01')
+        and profile_id = '19000000-0000-0000-0000-000000000007'
+    ),
+    (select id from positions where name = '임시비활성축소포지션')
+  );
+
+insert into assignment_trainees (schedule_id, position_id, profile_id) values
+  (
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시비활성축소포지션'),
+    '19000000-0000-0000-0000-000000000008'
+  );
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시비활성축소포지션'),
+    array['19000000-0000-0000-0000-000000000006']::uuid[],
+    array['19000000-0000-0000-0000-000000000008']::uuid[]
+  )$$,
+  'P3-T11: 비활성 포지션에서 정식 인원을 부분 축소(2명→1명)해도 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '임시비활성축소포지션')
+  ),
+  1,
+  'P3-T11: 부분 축소 후 비활성 포지션의 정식 배정은 1명만 남는다'
+);
+select is(
+  (
+    select count(*)::int from assignment_trainees
+    where schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and position_id = (select id from positions where name = '임시비활성축소포지션')
+  ),
+  1,
+  'P3-T11: 부분 축소 호출에서 교육생 목록을 그대로 넘기면 교육생 수는 바뀌지 않는다'
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시비활성축소포지션'),
+    array[]::uuid[],
+    array[]::uuid[]
+  )$$,
+  'P3-T11: 비활성 포지션에서 정식·교육생 전원 해제도 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '임시비활성축소포지션')
+  ),
+  0,
+  'P3-T11: 전원 해제 후 비활성 포지션의 정식 배정은 0명이다'
+);
+select is(
+  (
+    select count(*)::int from assignment_trainees
+    where schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and position_id = (select id from positions where name = '임시비활성축소포지션')
+  ),
+  0,
+  'P3-T11: 전원 해제 후 비활성 포지션의 교육생도 0명이다'
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select throws_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시비활성축소포지션'),
+    array['19000000-0000-0000-0000-000000000009']::uuid[]
+  )$$,
+  '22023',
+  '비활성 포지션에는 배정할 수 없습니다',
+  'P3-T11: 비활성 포지션에 새 정식 인원을 추가하면 22023으로 거부된다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '임시비활성축소포지션')
+  ),
+  0,
+  'P3-T11: 정식 인원 추가 거부 뒤에도 비활성 포지션의 정식 배정은 0명 그대로다'
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select throws_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시비활성축소포지션'),
+    array[]::uuid[],
+    array['19000000-0000-0000-0000-000000000009']::uuid[]
+  )$$,
+  '22023',
+  '비활성 포지션에는 배정할 수 없습니다',
+  'P3-T11: 비활성 포지션에 새 교육생을 추가하면 22023으로 거부된다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_trainees
+    where schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and position_id = (select id from positions where name = '임시비활성축소포지션')
+  ),
+  0,
+  'P3-T11: 교육생 추가 거부 뒤에도 비활성 포지션의 교육생은 0명 그대로다'
+);
+
+-- 혼합 호출(축소+추가) 거부를 확인하려고 정식 인원 1명을 다시 채운다(RED 단계에서
+-- 앞선 축소·해제가 여전히 거부돼 F3가 남아 있을 수 있어 재삽입은 멱등하게 만든다).
+insert into assignments (schedule_id, profile_id)
+select (select id from schedules where work_date = '2099-09-01'), '19000000-0000-0000-0000-000000000006'
+where not exists (
+  select 1 from assignments
+  where schedule_id = (select id from schedules where work_date = '2099-09-01')
+    and profile_id = '19000000-0000-0000-0000-000000000006'
+);
+insert into assignment_positions (assignment_id, position_id)
+select
+  (
+    select id from assignments
+    where schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and profile_id = '19000000-0000-0000-0000-000000000006'
+  ),
+  (select id from positions where name = '임시비활성축소포지션')
+where not exists (
+  select 1 from assignment_positions ap
+  join assignments asg on asg.id = ap.assignment_id
+  where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+    and asg.profile_id = '19000000-0000-0000-0000-000000000006'
+    and ap.position_id = (select id from positions where name = '임시비활성축소포지션')
+);
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '19000000-0000-0000-0000-000000000001', true);
+select throws_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2099-09-01'),
+    (select id from positions where name = '임시비활성축소포지션'),
+    array['19000000-0000-0000-0000-000000000009']::uuid[]
+  )$$,
+  '22023',
+  '비활성 포지션에는 배정할 수 없습니다',
+  'P3-T11 경계값: 축소(F3 제거)와 추가(후보)가 섞인 호출도 추가가 있으므로 거부된다'
+);
+reset role;
+
+select is(
+  (
+    select array_agg(asg.profile_id order by asg.profile_id)
+    from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2099-09-01')
+      and ap.position_id = (select id from positions where name = '임시비활성축소포지션')
+  ),
+  array['19000000-0000-0000-0000-000000000006']::uuid[],
+  'P3-T11 경계값: 혼합 호출 거부 뒤에도 비활성 포지션의 정식 배정은 F3 하나 그대로다(부분 반영 없음)'
 );
 
 select * from finish();

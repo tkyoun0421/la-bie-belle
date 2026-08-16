@@ -64,6 +64,12 @@ import {
 const READONLY_NOTICE = "취소된 스케줄은 예식·예정 시각을 수정할 수 없어요";
 const EMPTY_CEREMONY_MESSAGE = "아직 등록된 예식이 없어요. 개수와 첫 예식 시각으로 생성해 주세요";
 
+type TraineePosition = {
+  positionId: string;
+  positionName: string;
+  sortOrder: number;
+};
+
 type AdminSchedulePrepViewProps = {
   schedulePrep: SchedulePrep;
   onReplaceCeremonies: ReplaceCeremoniesAction;
@@ -76,6 +82,7 @@ type AdminSchedulePrepViewProps = {
   assignedHeadcount: AssignedHeadcount | null;
   assignedWorkerCount: number;
   traineeCounts: Record<string, number>;
+  traineePositions?: TraineePosition[];
   activePositions: Position[];
   onSetRequirement: SetRequirementAction;
   onRemoveRequirement: RemoveRequirementAction;
@@ -97,6 +104,7 @@ export function AdminSchedulePrepView({
   assignedHeadcount,
   assignedWorkerCount,
   traineeCounts,
+  traineePositions = [],
   activePositions,
   onSetRequirement,
   onRemoveRequirement,
@@ -144,8 +152,14 @@ export function AdminSchedulePrepView({
   );
 
   const confirmationWarnings = useMemo(
-    () => computeConfirmationWarnings({ requirementRows, assignedCounts, traineeCounts }),
-    [requirementRows, assignedCounts, traineeCounts],
+    () =>
+      computeConfirmationWarnings({
+        requirementRows,
+        assignedCounts,
+        traineeCounts,
+        traineePositions,
+      }),
+    [requirementRows, assignedCounts, traineeCounts, traineePositions],
   );
 
   const cancellationImpact = useMemo(

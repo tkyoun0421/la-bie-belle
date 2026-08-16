@@ -4,6 +4,12 @@ import type { ScheduleRequirementRow } from "@/entities/schedule/types/schedule-
 import { ERROR_CODE, type ErrorCode } from "@/shared/config/error-codes.config";
 import { createSupabaseServerClient } from "@/shared/lib/supabase-server";
 
+export type TraineePosition = {
+  positionId: string;
+  positionName: string;
+  sortOrder: number;
+};
+
 export type ListScheduleRequirementsResult =
   | {
       ok: true;
@@ -11,6 +17,7 @@ export type ListScheduleRequirementsResult =
       assignedCounts: Record<string, number>;
       assignedWorkerCount: number;
       traineeCounts: Record<string, number>;
+      traineePositions: TraineePosition[];
     }
   | { ok: false; code: ErrorCode };
 
@@ -24,7 +31,10 @@ type RequirementRow = {
 };
 
 type AssignmentRow = { assignment_positions: { position_id: string }[] | null };
-type TraineeRow = { position_id: string };
+type TraineeRow = {
+  position_id: string;
+  positions: { name: string; sort_order: number } | null;
+};
 
 function mapFailureCode(pgCode: string | undefined): ErrorCode {
   if (pgCode === FORBIDDEN_PG_CODE) {
@@ -51,6 +61,21 @@ function countTrainees(rows: TraineeRow[]): Record<string, number> {
   return counts;
 }
 
+function collectTraineePositions(rows: TraineeRow[]): TraineePosition[] {
+  const byPositionId = new Map<string, TraineePosition>();
+  for (const row of rows) {
+    if (!row.positions || byPositionId.has(row.position_id)) {
+      continue;
+    }
+    byPositionId.set(row.position_id, {
+      positionId: row.position_id,
+      positionName: row.positions.name,
+      sortOrder: row.positions.sort_order,
+    });
+  }
+  return Array.from(byPositionId.values());
+}
+
 export async function listScheduleRequirements(
   scheduleId: string,
 ): Promise<ListScheduleRequirementsResult> {
@@ -69,7 +94,7 @@ export async function listScheduleRequirements(
       .limit(LIST_REQUIREMENTS_LIMIT),
     supabase
       .from("assignment_trainees")
-      .select("position_id")
+      .select("position_id, positions(name, sort_order)")
       .eq("schedule_id", scheduleId)
       .limit(LIST_REQUIREMENTS_LIMIT),
   ]);
@@ -136,5 +161,6 @@ export async function listScheduleRequirements(
     assignedCounts: countAssignedPositions(assignmentRows),
     assignedWorkerCount: assignmentRows.length,
     traineeCounts: countTrainees(traineeRows),
+    traineePositions: collectTraineePositions(traineeRows),
   };
 }

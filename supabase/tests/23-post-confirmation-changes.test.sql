@@ -1,5 +1,5 @@
 begin;
-select plan(86);
+select plan(91);
 
 -- =====================================================================
 -- 스키마: 신규 함수 시그니처·동시성 관례
@@ -915,6 +915,76 @@ select throws_ok(
   'AC5: 비관리자의 cancel_confirmed_schedule은 42501로 거부된다'
 );
 reset role;
+
+-- =====================================================================
+-- P3-T11: CONFIRMED 스케줄에서도 비활성 포지션 축소는 성공하고 revision·감사가 따라온다
+-- =====================================================================
+
+insert into positions (name, default_required_count, gender_requirement, is_default, is_active)
+values ('임시비활성확정축소포지션', 1, 'any', false, false);
+
+insert into assignments (schedule_id, profile_id, hourly_wage_snapshot) values
+  (
+    (select id from schedules where work_date = '2097-10-10'),
+    '23000000-0000-0000-0000-000000000002', 13000
+  );
+
+insert into assignment_positions (assignment_id, position_id) values
+  (
+    (
+      select id from assignments
+      where schedule_id = (select id from schedules where work_date = '2097-10-10')
+        and profile_id = '23000000-0000-0000-0000-000000000002'
+    ),
+    (select id from positions where name = '임시비활성확정축소포지션')
+  );
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '23000000-0000-0000-0000-000000000001', true);
+select lives_ok(
+  $$select replace_position_assignments(
+    (select id from schedules where work_date = '2097-10-10'),
+    (select id from positions where name = '임시비활성확정축소포지션'),
+    array[]::uuid[]
+  )$$,
+  'P3-T11: CONFIRMED 스케줄의 비활성 포지션 전원 해제(축소)도 성공한다'
+);
+reset role;
+
+select is(
+  (
+    select count(*)::int from assignment_positions ap
+    join assignments asg on asg.id = ap.assignment_id
+    where asg.schedule_id = (select id from schedules where work_date = '2097-10-10')
+      and ap.position_id = (select id from positions where name = '임시비활성확정축소포지션')
+  ),
+  0,
+  'P3-T11: CONFIRMED 스케줄에서도 비활성 포지션 축소 후 배정은 0명이다'
+);
+select is(
+  (select revision from schedules where work_date = '2097-10-10'),
+  2,
+  'P3-T11: CONFIRMED 스케줄의 비활성 포지션 축소 성공은 revision을 1에서 2로 올린다'
+);
+select is(
+  (
+    select count(*)::int from scheduling_audit_logs
+    where schedule_id = (select id from schedules where work_date = '2097-10-10')
+      and event = 'schedule_revised'
+  ),
+  1,
+  'P3-T11: CONFIRMED 스케줄의 비활성 포지션 축소는 schedule_revised 감사를 함께 남긴다'
+);
+select is(
+  (
+    select detail ->> 'section' from scheduling_audit_logs
+    where schedule_id = (select id from schedules where work_date = '2097-10-10')
+      and event = 'schedule_revised'
+    order by seq desc limit 1
+  ),
+  'position_assignments',
+  'P3-T11: 감사 detail의 section이 position_assignments다'
+);
 
 select * from finish();
 rollback;

@@ -91,6 +91,7 @@ describe("listScheduleRequirements", () => {
       assignedCounts: { "position-1": 2, "position-2": 1 },
       assignedWorkerCount: 2,
       traineeCounts: {},
+      traineePositions: [],
     });
     expect(from).toHaveBeenCalledWith("schedule_position_requirements");
     expect(requirementsSelect).toHaveBeenCalledWith(
@@ -103,7 +104,7 @@ describe("listScheduleRequirements", () => {
     expect(assignmentsEq).toHaveBeenCalledWith("schedule_id", "schedule-1");
     expect(assignmentsLimit).toHaveBeenCalledWith(1000);
     expect(from).toHaveBeenCalledWith("assignment_trainees");
-    expect(traineesSelect).toHaveBeenCalledWith("position_id");
+    expect(traineesSelect).toHaveBeenCalledWith("position_id, positions(name, sort_order)");
     expect(traineesEq).toHaveBeenCalledWith("schedule_id", "schedule-1");
     expect(traineesLimit).toHaveBeenCalledWith(1000);
   });
@@ -194,6 +195,7 @@ describe("listScheduleRequirements", () => {
       assignedCounts: {},
       assignedWorkerCount: 0,
       traineeCounts: {},
+      traineePositions: [],
     });
   });
 
@@ -233,6 +235,7 @@ describe("listScheduleRequirements", () => {
       assignedCounts: { "position-1": 1, "position-2": 1 },
       assignedWorkerCount: 1,
       traineeCounts: {},
+      traineePositions: [],
     });
   });
 
@@ -284,6 +287,7 @@ describe("listScheduleRequirements", () => {
       assignedCounts: { "position-1": 1, "position-2": 1, "position-3": 1 },
       assignedWorkerCount: 1,
       traineeCounts: {},
+      traineePositions: [],
     });
   });
 
@@ -304,6 +308,7 @@ describe("listScheduleRequirements", () => {
       assignedCounts: {},
       assignedWorkerCount: 0,
       traineeCounts: {},
+      traineePositions: [],
     });
   });
 
@@ -415,6 +420,7 @@ describe("listScheduleRequirements", () => {
       assignedCounts: { "position-1": 1 },
       assignedWorkerCount: 1,
       traineeCounts: { "position-1": 2, "position-2": 1 },
+      traineePositions: [],
     });
   });
 
@@ -530,6 +536,49 @@ describe("listScheduleRequirements", () => {
       assignedCounts: {},
       assignedWorkerCount: 0,
       traineeCounts: { "position-1": 1 },
+      traineePositions: [],
     });
+  });
+
+  it("P3-T11: 교육생 포지션의 이름·정렬 정보를 중복 제거해 traineePositions로 반환한다", async () => {
+    requirementsLimit.mockResolvedValue({ data: [], error: null });
+    assignmentsLimit.mockResolvedValue({ data: [], error: null });
+    traineesLimit.mockResolvedValue({
+      data: [
+        { position_id: "position-scan", positions: { name: "스캔", sort_order: 20 } },
+        { position_id: "position-scan", positions: { name: "스캔", sort_order: 20 } },
+        { position_id: "position-main", positions: { name: "메인", sort_order: 30 } },
+      ],
+      error: null,
+    });
+
+    const { listScheduleRequirements } =
+      await import("@/entities/schedule/api/list-schedule-requirements");
+    const result = await listScheduleRequirements("schedule-1");
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.traineePositions).toEqual([
+      { positionId: "position-scan", positionName: "스캔", sortOrder: 20 },
+      { positionId: "position-main", positionName: "메인", sortOrder: 30 },
+    ]);
+  });
+
+  it("P3-T11: 교육생이 0명이면 traineePositions도 빈 배열이다", async () => {
+    requirementsLimit.mockResolvedValue({ data: [], error: null });
+    assignmentsLimit.mockResolvedValue({ data: [], error: null });
+    traineesLimit.mockResolvedValue({ data: [], error: null });
+
+    const { listScheduleRequirements } =
+      await import("@/entities/schedule/api/list-schedule-requirements");
+    const result = await listScheduleRequirements("schedule-1");
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.traineePositions).toEqual([]);
   });
 });

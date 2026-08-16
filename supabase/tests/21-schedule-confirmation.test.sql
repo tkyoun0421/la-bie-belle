@@ -1,5 +1,5 @@
 begin;
-select plan(48);
+select plan(57);
 
 -- =====================================================================
 -- 스키마 노출: 스냅샷 컬럼·confirm_schedule 함수 시그니처·동시성 관례
@@ -496,6 +496,194 @@ select ok(
     )
   ),
   'AC5 경계값: 필요 0·정식 0·교육생 1인 스캔이 미달 아님·담당자 없음으로 기록된다'
+);
+
+-- =====================================================================
+-- P3-T11: 필요 인원 표에서 지워진 포지션의 잔존 배정·교육생 취급
+-- =====================================================================
+
+insert into auth.users (id, email) values
+  ('21000000-0000-0000-0000-000000000009', 'cfm-offtable-manager@labiebelle.test'),
+  ('21000000-0000-0000-0000-000000000010', 'cfm-offtable-trainee@labiebelle.test'),
+  ('21000000-0000-0000-0000-000000000011', 'cfm-offtable-formal@labiebelle.test');
+
+insert into public.profiles (
+  id, name, phone, gender, birth_date, status, inactivity_anchor_at, hourly_wage
+) values
+  (
+    '21000000-0000-0000-0000-000000000009', '표밖매니저', '01092000009', 'male', '1994-01-07',
+    'active', now(), 14000
+  ),
+  (
+    '21000000-0000-0000-0000-000000000010', '표밖교육', '01092000010', 'female', '1994-01-08',
+    'active', now(), 15000
+  ),
+  (
+    '21000000-0000-0000-0000-000000000011', '표밖정식', '01092000011', 'male', '1994-01-09',
+    'active', now(), 16000
+  );
+
+insert into schedules (
+  work_date, application_deadline, status, planned_checkin, planned_checkout
+) values
+  ('2099-12-13', '2099-12-06', 'OPEN', '09:00', '18:00');
+
+insert into ceremonies (schedule_id, starts_at)
+select id, '10:00'::time from schedules where work_date = '2099-12-13';
+
+insert into schedule_position_requirements (schedule_id, position_id, required_count) values
+  (
+    (select id from schedules where work_date = '2099-12-13'),
+    (select id from positions where name = '매니저'), 1
+  ),
+  (
+    (select id from schedules where work_date = '2099-12-13'),
+    (select id from positions where name = '스캔'), 1
+  ),
+  (
+    (select id from schedules where work_date = '2099-12-13'),
+    (select id from positions where name = '메인'), 1
+  );
+
+insert into assignments (schedule_id, profile_id) values
+  (
+    (select id from schedules where work_date = '2099-12-13'),
+    '21000000-0000-0000-0000-000000000009'
+  ),
+  (
+    (select id from schedules where work_date = '2099-12-13'),
+    '21000000-0000-0000-0000-000000000011'
+  );
+
+insert into assignment_positions (assignment_id, position_id) values
+  (
+    (
+      select id from assignments
+      where schedule_id = (select id from schedules where work_date = '2099-12-13')
+        and profile_id = '21000000-0000-0000-0000-000000000009'
+    ),
+    (select id from positions where name = '매니저')
+  ),
+  (
+    (
+      select id from assignments
+      where schedule_id = (select id from schedules where work_date = '2099-12-13')
+        and profile_id = '21000000-0000-0000-0000-000000000011'
+    ),
+    (select id from positions where name = '메인')
+  );
+
+insert into assignment_trainees (schedule_id, position_id, profile_id) values
+  (
+    (select id from schedules where work_date = '2099-12-13'),
+    (select id from positions where name = '스캔'),
+    '21000000-0000-0000-0000-000000000010'
+  );
+
+-- 필요 인원 표에서 스캔·메인 행을 지운다: 스캔은 교육생만, 메인은 정식만 잔존한다.
+delete from schedule_position_requirements
+  where schedule_id = (select id from schedules where work_date = '2099-12-13')
+    and position_id in (
+      (select id from positions where name = '스캔'),
+      (select id from positions where name = '메인')
+    );
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '21000000-0000-0000-0000-000000000001', true);
+
+create temporary table p3t11_confirm_capture (result jsonb, error_message text);
+
+do $$
+declare
+  confirm_result jsonb;
+begin
+  confirm_result := confirm_schedule(
+    (select id from schedules where work_date = '2099-12-13')
+  );
+  insert into p3t11_confirm_capture (result) values (confirm_result);
+exception when others then
+  insert into p3t11_confirm_capture (error_message) values (sqlerrm);
+end;
+$$;
+
+reset role;
+
+select ok(
+  (select error_message is null from p3t11_confirm_capture),
+  'P3-T11: 표 밖 포지션이 섞인 스케줄도 예외 없이 확정된다'
+);
+select is(
+  (select jsonb_array_length(result -> 'warnings' -> 'no_manager') from p3t11_confirm_capture),
+  1,
+  'P3-T11: 반환 jsonb의 담당자 없음 목록에는 표 밖 교육생 잔존 포지션(스캔) 하나만 담긴다'
+);
+select ok(
+  (select result -> 'warnings' -> 'no_manager' from p3t11_confirm_capture) @> jsonb_build_array(
+    jsonb_build_object(
+      'position_id', (select id from positions where name = '스캔'),
+      'position_name', '스캔', 'trainee_count', 1
+    )
+  ),
+  'P3-T11: 반환 jsonb의 표 밖 스캔 경고가 이름·trainee_count 값과 함께 담긴다'
+);
+select ok(
+  not (
+    (select result -> 'warnings' -> 'no_manager' from p3t11_confirm_capture) @> jsonb_build_array(
+      jsonb_build_object('position_id', (select id from positions where name = '메인'))
+    )
+  ),
+  'P3-T11 경계값: 반환 jsonb에서 표 밖 정식 배정만 남은 메인은 담당자 없음 목록에 없다'
+);
+select is(
+  (select jsonb_array_length(result -> 'warnings' -> 'understaffed') from p3t11_confirm_capture),
+  0,
+  'P3-T11 경계값: 반환 jsonb에서 표 밖 포지션은 required_count 0으로 취급되어 미달 목록에 없다'
+);
+
+select is(
+  (
+    select jsonb_array_length(detail -> 'warnings' -> 'no_manager')
+    from scheduling_audit_logs
+    where schedule_id = (select id from schedules where work_date = '2099-12-13')
+      and event = 'schedule_confirmed'
+  ),
+  1,
+  'P3-T11: 감사 detail의 담당자 없음 목록에도 표 밖 교육생 잔존 포지션(스캔) 하나만 담긴다'
+);
+select ok(
+  (
+    select detail -> 'warnings' -> 'no_manager' from scheduling_audit_logs
+    where schedule_id = (select id from schedules where work_date = '2099-12-13')
+      and event = 'schedule_confirmed'
+  ) @> jsonb_build_array(
+    jsonb_build_object(
+      'position_id', (select id from positions where name = '스캔'),
+      'position_name', '스캔', 'trainee_count', 1
+    )
+  ),
+  'P3-T11: 감사 detail의 표 밖 스캔 경고가 이름·trainee_count 값과 함께 담긴다'
+);
+select ok(
+  not (
+    (
+      select detail -> 'warnings' -> 'no_manager' from scheduling_audit_logs
+      where schedule_id = (select id from schedules where work_date = '2099-12-13')
+        and event = 'schedule_confirmed'
+    ) @> jsonb_build_array(
+      jsonb_build_object('position_id', (select id from positions where name = '메인'))
+    )
+  ),
+  'P3-T11 경계값: 감사 detail에서도 표 밖 정식 배정만 남은 메인은 담당자 없음 목록에 없다'
+);
+select is(
+  (
+    select jsonb_array_length(detail -> 'warnings' -> 'understaffed')
+    from scheduling_audit_logs
+    where schedule_id = (select id from schedules where work_date = '2099-12-13')
+      and event = 'schedule_confirmed'
+  ),
+  0,
+  'P3-T11 경계값: 감사 detail에서도 표 밖 포지션은 미달 목록에 없다'
 );
 
 -- =====================================================================

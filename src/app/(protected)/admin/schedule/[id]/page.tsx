@@ -96,6 +96,7 @@ export default async function AdminSchedulePrepPage({ params }: AdminSchedulePre
         assignedHeadcount={assignedHeadcount}
         assignedWorkerCount={requirementSectionData.assignedWorkerCount}
         traineeCounts={requirementSectionData.traineeCounts}
+        traineePositions={requirementsResult.ok ? requirementsResult.traineePositions : []}
         activePositions={requirementSectionData.activePositions}
         onSetRequirement={setRequirement}
         onRemoveRequirement={removeRequirement}

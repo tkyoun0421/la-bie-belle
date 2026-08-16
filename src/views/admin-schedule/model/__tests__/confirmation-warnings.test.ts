@@ -12,6 +12,7 @@ describe("computeConfirmationWarnings", () => {
       ],
       assignedCounts: { manager: 1, scan: 1 },
       traineeCounts: { song: 1 },
+      traineePositions: [],
     });
 
     expect(result).toEqual({
@@ -28,6 +29,7 @@ describe("computeConfirmationWarnings", () => {
       requirementRows: [{ positionId: "scan", positionName: "스캔", requiredCount: 0 }],
       assignedCounts: {},
       traineeCounts: { scan: 1 },
+      traineePositions: [],
     });
 
     expect(result).toEqual({
@@ -41,6 +43,7 @@ describe("computeConfirmationWarnings", () => {
       requirementRows: [{ positionId: "manager", positionName: "매니저", requiredCount: 2 }],
       assignedCounts: { manager: 2 },
       traineeCounts: {},
+      traineePositions: [],
     });
 
     expect(result).toEqual({ understaffed: [], noManager: [] });
@@ -51,6 +54,7 @@ describe("computeConfirmationWarnings", () => {
       requirementRows: [{ positionId: "manager", positionName: "매니저", requiredCount: 0 }],
       assignedCounts: {},
       traineeCounts: {},
+      traineePositions: [],
     });
 
     expect(result).toEqual({ understaffed: [], noManager: [] });
@@ -61,6 +65,7 @@ describe("computeConfirmationWarnings", () => {
       requirementRows: [{ positionId: "manager", positionName: "매니저", requiredCount: 1 }],
       assignedCounts: {},
       traineeCounts: { manager: 5 },
+      traineePositions: [],
     });
 
     expect(result.understaffed).toEqual([
@@ -73,8 +78,70 @@ describe("computeConfirmationWarnings", () => {
       requirementRows: [],
       assignedCounts: {},
       traineeCounts: {},
+      traineePositions: [],
     });
 
     expect(result).toEqual({ understaffed: [], noManager: [] });
+  });
+
+  it("P3-T11: 필요 인원 표 밖 포지션에 교육생만 남으면 담당자 없음에 sortOrder·이름순으로 덧붙는다", () => {
+    const result = computeConfirmationWarnings({
+      requirementRows: [{ positionId: "manager", positionName: "매니저", requiredCount: 1 }],
+      assignedCounts: { manager: 1 },
+      traineeCounts: { scan: 2, dress: 1 },
+      traineePositions: [
+        { positionId: "dress", positionName: "드레스", sortOrder: 40 },
+        { positionId: "scan", positionName: "스캔", sortOrder: 20 },
+      ],
+    });
+
+    expect(result).toEqual({
+      understaffed: [],
+      noManager: [
+        { positionId: "scan", positionName: "스캔", traineeCount: 2 },
+        { positionId: "dress", positionName: "드레스", traineeCount: 1 },
+      ],
+    });
+  });
+
+  it("P3-T11 경계값: 표 밖 포지션에 정식 배정만 남으면 어떤 경고도 만들지 않는다", () => {
+    const result = computeConfirmationWarnings({
+      requirementRows: [],
+      assignedCounts: { main: 1 },
+      traineeCounts: {},
+      traineePositions: [],
+    });
+
+    expect(result).toEqual({ understaffed: [], noManager: [] });
+  });
+
+  it("P3-T11 경계값: 표 밖 포지션에 정식 배정과 교육생이 함께 있으면 정식 배정이 있으므로 담당자 없음을 만들지 않는다", () => {
+    const result = computeConfirmationWarnings({
+      requirementRows: [],
+      assignedCounts: { main: 1 },
+      traineeCounts: { main: 1 },
+      traineePositions: [{ positionId: "main", positionName: "메인", sortOrder: 30 }],
+    });
+
+    expect(result).toEqual({ understaffed: [], noManager: [] });
+  });
+
+  it("P3-T11: 표 안 포지션과 표 밖 포지션이 함께 있으면 표 안 순서 뒤에 표 밖 항목이 붙는다", () => {
+    const result = computeConfirmationWarnings({
+      requirementRows: [{ positionId: "song", positionName: "축가", requiredCount: 1 }],
+      assignedCounts: {},
+      traineeCounts: { song: 1, scan: 1 },
+      traineePositions: [{ positionId: "scan", positionName: "스캔", sortOrder: 20 }],
+    });
+
+    expect(result).toEqual({
+      understaffed: [
+        { positionId: "song", positionName: "축가", requiredCount: 1, assignedCount: 0 },
+      ],
+      noManager: [
+        { positionId: "song", positionName: "축가", traineeCount: 1 },
+        { positionId: "scan", positionName: "스캔", traineeCount: 1 },
+      ],
+    });
   });
 });
