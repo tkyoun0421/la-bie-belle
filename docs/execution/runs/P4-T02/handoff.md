@@ -179,3 +179,23 @@ gate:bundle 원문:
 - TDD 증거: `docs/execution/runs/P4-T02/tdd.json`(새 RED→GREEN 쌍, 20 entries)
 - RADIO 적용 결과(수정 라운드 상세): `docs/execution/runs/P4-T02/radio.md`
 - 수정 커밋: 이 절을 포함하는 본 커밋
+
+## 검증 종료 (조정자, 2026-08-16)
+
+- 교차 검증 결과: `docs/execution/reviews/P4-T02-review.json` — 총점 75
+  (code 70 · tests 70 · security 68 · perf 93 · arch 72), 확정 13건.
+- high 2건은 revision 3 재봉인(80b61df) 후 수정 라운드 dcd49f8으로 해소:
+  F-01 저장 실패 보상 해지, F-02 기존 구독 마운트 재귀속. 수정 diff 감사
+  완료 — 허용 경로 5개 파일만, 병렬 세션 변경 미포함.
+- medium 7·low 4는 backlog(F-03~F-13)가 소유. F-06(proxy matcher SW 제외
+  누락)은 허용 경로 밖(src/proxy.ts)이라 별도 조치 필요 표기, F-09(소유자
+  재지정 감사)는 P4-T08 설계에서 재론.
+- 기각 2건(근거 있는 반박): 「서버 액션 동적 import 관례 이탈·배선
+  무검증」은 Next.js 공식 지원·radio 기록·계층별 검증 충족으로,
+  「마운트마다 register 소프트 업데이트」는 W3C Register 알고리즘(동일
+  scriptURL·type·updateViaCache면 기존 registration 반환)으로 반박됐다.
+- 알려진 보류: 구현 커밋 69f2dad가 병렬 디자인 세션의 미커밋 모듈
+  3종(segmented-control·deadline-batches·DeadlineBatchList)을 참조해 단독
+  빌드 불가 — push·CI는 그 모듈들이 커밋된 뒤 수행한다(사용자 결정,
+  2026-08-16). gate:bundle 초과(506~508KB/500KB)도 병렬 변경 혼입 상태의
+  측정이라 push 시점에 재측정한다.

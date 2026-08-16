@@ -347,3 +347,14 @@
 - [ ] [medium] [P4-T01] listNotifications가 getUser()·소유자 필터 없는 RLS 단일 강제, 무세션에 빈 성공 반환(DEV-SEC-01 이중 강제 관례 이탈)(F-08) — src/entities/notification/api/list-notifications.ts
 - [ ] [medium] [P4-T01] AC3 롤백 단언이 알림 삽입 이전 차단만 사용 — 같은 트랜잭션 결합 미관측(F-09) — supabase/tests/24-notifications.test.sql
 - [ ] [medium] [P4-T01] NotificationTarget 유효 screen 판단이 model 스키마 아닌 api parseTarget에 중복 — 새 screen 추가 시 조용한 제외(F-10) — src/entities/notification/api/list-notifications.ts
+- [ ] [medium] [P4-T02] 구독·해지 훅 실패 미처리 — catch 없음·unhandled rejection·code 폐기·해지 결과 무시, showSnackbar 관례 이탈(F-03) — src/features/push/hooks/usePushSubscription.ts
+- [ ] [medium] [P4-T02] endpoint·p256dh·auth가 Action Zod·SQL 경계 없이 저장 — 발송 대상 URL에 임의 값 주입 가능(F-04) — src/features/push/api/save-push-subscription.ts
+- [ ] [medium] [P4-T02] AC8 명시 단언 3종(data.target·schedule-detail 딥링크·누락 필드 폴백) 누락 + 실패 전이 테스트 공백(F-05) — src/features/push/lib/__tests__/push-service-worker.test.ts
+- [ ] [medium] [P4-T02] /push-service-worker.js가 proxy matcher·PUBLIC_PATHS에서 제외 안 됨 — 미인증 SW 갱신 307 실패, 허용 경로 밖이라 별도 조치 필요(F-06) — src/proxy.ts
+- [ ] [medium] [P4-T02] 사전 안내 노출 판정이 ui로 분산 — applicationSaved 죽은 인자, unsupported 게이트 무테스트(F-07) — src/features/push/ui/PushPrimingSheet.tsx
+- [ ] [medium] [P4-T02] DEV-NAME-06 기계 강제를 상수 추출 동적 import로 우회 — 봉인-규약 충돌 미결정·미기록(F-08) — src/features/push/lib/__tests__/push-service-worker.test.ts
+- [ ] [medium] [P4-T02] endpoint 소유자 재지정의 교차 계정 전이 무감사 — P4-T08 설계에서 전이 기록 여부 판단(F-09) — supabase/migrations/20260820000000_push_subscription_write.sql
+- [ ] [low] [P4-T02] iOS 설치 안내 문구가 시트·설정 화면에 중복 — features/push 정본 상수로 추출(F-10) — src/features/push/ui/PushPrimingSheet.tsx
+- [ ] [low] [P4-T02] e2e RED가 teardown FK 실패라 AC7 RED 증거 불성립(F-11) — docs/execution/runs/P4-T02/tdd.json
+- [ ] [low] [P4-T02] anon 42501이 ACL 거부라 함수 본문 미인증 가드 미검증(F-12) — supabase/tests/25-push-subscriptions.test.sql
+- [ ] [low] [P4-T02] applicationSavedSignal 카운터가 첫 성공 후 의미 없는 증가 — boolean이 정확(F-13) — src/views/schedule/ui/ScheduleView.tsx
