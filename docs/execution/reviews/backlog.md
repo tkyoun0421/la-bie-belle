@@ -274,7 +274,7 @@
 - [ ] [medium] [P3-T03] 필요 인원 행 수 조회 실패가 fail-closed 아님(빈 표 노출) — src/app/(protected)/admin/schedule/[id]/page.tsx
 - [x] [medium] [P3-T03] E2E 픽스처 try/finally 정리 부재(인수 조건 7 선언과 불일치) — tests/e2e/assignment-eligibility.spec.ts
 - [ ] [medium] [P3-T03] 배정 수 집계가 1000행 상한 조회 뒤 JS 합산이라 상한 초과 시 조용히 축소 — src/entities/schedule/api/list-schedule-requirements.ts
-- [ ] [medium] [P3-T03] 비활성 포지션에서 전원 해제까지 22023 거부(불변 규칙은 신규 배정만 금지) — supabase/migrations/20260810000000_assignments.sql
+- [x] [medium] [P3-T03] 비활성 포지션에서 전원 해제까지 22023 거부(불변 규칙은 신규 배정만 금지) — supabase/migrations/20260810000000_assignments.sql (2026-08-16 P3-T11 해소 — 20260818 마이그레이션이 거부를 추가 인원 존재 시로 완화, 축소·전원 해제 lives_ok pgTAP 19·23)
 - [ ] [low] [P3-T03] DEFINER 함수 search_path pg_temp 미고정(P1-T04·P2-T04 계열 반복) — supabase/migrations/20260810000000_assignments.sql
 - [ ] [low] [P3-T03] 증거 문서 함수명 오기(buildAssignmentCandidateBuckets ↔ groupAssignmentCandidates) — docs/execution/runs/P3-T03/radio.md
 - [ ] [medium] [P0-T44] onRefresh 실패에 catch가 없어 unhandled rejection이 되고 사용자 안내가 없음 — src/widgets/pull-to-refresh/hooks/usePullToRefresh.ts
@@ -302,8 +302,8 @@
 - [x] [low] [P3-T05] AC7 전이 단언이 프로덕션이 쓰지 않는 3-인자 경로로만 이뤄짐(F-13) — supabase/tests/20-assignment-trainees.test.sql
 - [x] [low] [P3-T05] F-01 준비 단계가 설명과 달리 드레스 교육생 4명을 조용히 제거(F-14) — supabase/tests/20-assignment-trainees.test.sql
 - [ ] [low] [P3-T05] 상한 검사 세 블록이 이벤트 문자열만 다른 채 복제됨(F-15) — src/entities/schedule/api/list-schedule-requirements.ts
-- [ ] [medium] [P3-T06] 성공 응답에서 확정 확정본 경고 목록을 받고도 폐기(봉인 Interface 괴리, 기록 부재)(F-02) — src/features/confirmation/api/confirm-schedule.ts
-- [ ] [medium] [P3-T06] requirement 삭제된 포지션의 담당자 없음 경고가 감사·프리뷰 양쪽 누락(P3-T05 화면 계산과 동일 모델링, 합집합 전환은 봉인문 보강 필요)(F-03) — supabase/migrations/20260815000000_schedule_confirmation.sql
+- [x] [medium] [P3-T06] 성공 응답에서 확정 확정본 경고 목록을 받고도 폐기(봉인 Interface 괴리, 기록 부재)(F-02) — src/features/confirmation/api/confirm-schedule.ts (2026-08-16 P3-T11 기획에서 결함 아님 종결 — 사후 조회는 준비 화면 재계산으로 충족, DECISIONS P3-T11 소절)
+- [x] [medium] [P3-T06] requirement 삭제된 포지션의 담당자 없음 경고가 감사·프리뷰 양쪽 누락(P3-T05 화면 계산과 동일 모델링, 합집합 전환은 봉인문 보강 필요)(F-03) — supabase/migrations/20260815000000_schedule_confirmation.sql (2026-08-16 P3-T11 해소 — confirm_schedule 합집합 CTE + computeConfirmationWarnings 확장, pgTAP 21·단위 값 단언)
 - [x] [medium] [P3-T06] 동시 확정 단언이 함수 문자열 검사·순차 재호출뿐(병렬 트랜잭션은 현 pgTAP 하네스로 표현 불가)(F-04) — supabase/tests/21-schedule-confirmation.test.sql (P3-T08 대체 종결: 병렬 트랜잭션은 pgTAP 단일 연결 한계로 실증 불가 — 재호출 LB029 거부·revision 불변·겸직자 스냅샷 불변 단언 3건으로 대체)
 - [ ] [low] [P3-T06] pending 중 다이얼로그 확인·닫기 시각 잠금 없음(수정은 shared/ui/dialog.tsx로 허용 경로 밖)(F-05) — src/features/confirmation/ui/ConfirmScheduleDialog.tsx
 - [x] [low] [P3-T06] 병렬 e2e 두 테스트가 같은 밴드 무작위 날짜로 회당 약 0.12% 23505 충돌 가능(F-06) — tests/e2e/schedule-confirmation.spec.ts
@@ -338,3 +338,4 @@
 - [ ] [low] [P3-T08] 여정 e2e에 try/finally 부재(같은 커밋의 위생 관례와 반대)(F-09) — tests/e2e/confirmation-roster-journey.spec.ts
 - [ ] [low] [P3-T08] recommendCheckIn 동일 인자 재호출 동어반복 단언(F-10) — src/entities/schedule/model/__tests__/ceremony-times.test.ts
 - [ ] [low] [P3-T08] try 블록 본문 미들여쓰기(포매터가 tests/ 미검사)(F-11) — tests/e2e/assignment-eligibility.spec.ts
+- [x] [medium] [P3-T11] traineePositions가 선택 prop(기본값 [])이라 page 전달 누락이 무성 통과, 표 밖 경고 화면 배선 실증 테스트 0건(F-02) — src/views/admin-schedule/ui/AdminSchedulePrepView.tsx (2026-08-16 수정 라운드 beb1b80 해소 — prop 필수화 + 경고 요약 컴포넌트 단언 3건)

@@ -1,0 +1,52 @@
+{
+  "task_id": "P3-T11",
+  "at": "2026-08-16",
+  "base_commit": "e4f628b",
+  "head_commit": "15de76c2afb48bd6ed8be93a3f7e52cf7774293f",
+  "participants": [
+    "opus",
+    "codex"
+  ],
+  "participants_note": "개발분(15de76c 구현, RADIO revision 1) 교차 검증. 병합 전원 인정 1건(F-01 — 양자 독립 제기), 단독 발견 3건 중 되묻기 인정 1건(F-02)·근거 있는 반박으로 기각 2건(server-only 타입 유입 — import type은 번들에서 제거되고 fsd.json 계약이 model→api를 금지하지 않음, TDD RED 증거 합성 — tdd-gate.ts 기계 계약은 실행 순서를 요구하지 않고 P3 전 구간 선례와 동일 방식). 중요도가 갈린 F-01(opus low·codex high)은 계약대로 높은 쪽. 함수 재정의의 축자 충실성·권한 관례 보존·plan 산술 일치는 양자 공히 인정.",
+  "scores": {
+    "code_quality": 90,
+    "tests": 74,
+    "security": 98,
+    "performance": 98,
+    "architecture": 74
+  },
+  "score_rationale": {
+    "code_quality": "두 정의자 함수 재정의가 직전 정의와 축자 대조로 충실하고 명명·오류 처리 관례를 지켰다(양자 공히 인정) — 감점은 선택 prop 기본값이라는 방어적 군더더기뿐(F-02와 결부).",
+    "tests": "pgTAP 26문항(반환·감사 양쪽 값 단언, 표 밖 정식-only 무경고 경계, 거부 후 무변화)과 단위가 충실하고 RED→GREEN 증거·plan 산술도 맞지만, page→view→model 배선을 실증하는 테스트가 0건이고 인수 조건 6의 '기존 e2e' 증거가 새 경로를 지나지 않는다(F-02).",
+    "security": "is_admin·42501·security definer·search_path·revoke/grant가 직전 정의와 동일함을 양자가 대조 확인, 새 조회 컬럼은 포지션 이름·정렬로 개인정보 아님. 판단 재료가 적어 소폭 감점 없이 유지.",
+    "performance": "조회 왕복 무변경, 임베드 컬럼 추가뿐, limit 1000 절단 가드 유지, union은 같은 스케줄 범위 스캔 — 감점 재료 없음.",
+    "architecture": "DB 정본·화면 재계산이라는 봉인 구조는 지켰지만, 이번에 새로 만든 표 밖 경고 부류에 한해 확정 후 조회 표면이 없어 기획 결정 ①(사후 조회는 준비 화면 재계산으로 충족)의 전제가 성립하지 않는다(F-01)."
+  },
+  "total": 87,
+  "findings": [
+    {
+      "id": "F-01",
+      "title": "확정 후에는 이번에 추가한 표 밖 담당자 없음 경고를 화면 어디서도 볼 수 없다",
+      "severity": "high",
+      "area": "architecture",
+      "file": "src/views/admin-schedule/ui/AdminSchedulePrepView.tsx",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "noManager 배열을 그리는 유일한 표면이 ConfirmScheduleDialog인데 확정 버튼이 status !== CONFIRMED에서만 렌더되고, 화면의 포지션 목록 순회는 필요 인원 행만 돈다. 표 안 포지션은 표 행의 '담당자 없음' 캡션으로 사후에도 보이지만 표 밖 포지션은 행이 없어 확정 뒤에는 감사 로그 말고 확인할 길이 없다. 기획 결정 ①(경고 사후 조회는 준비 화면 실시간 재계산으로 충족 — backlog 305 종결 근거)의 전제가 이번에 새로 만든 경고 부류에 한해 성립하지 않는다. 구현은 봉인된 RADIO(prop 전달만, 스냅샷 UI 비목표)를 그대로 지켰으므로 설계-기획 간극이다. opus low·codex high — 계약대로 높은 쪽."
+    },
+    {
+      "id": "F-02",
+      "title": "표 밖 경고의 화면 배선을 컴파일러도 테스트도 지키지 않는다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "src/views/admin-schedule/ui/AdminSchedulePrepView.tsx",
+      "agreed_by": [
+        "opus",
+        "codex"
+      ],
+      "description": "traineePositions가 선택 prop(기본값 [])이라 page.tsx의 전달 한 줄이 사라져도 타입 검사가 통과하고 표 밖 경고만 조용히 사라진다 — DB는 계속 경고를 남기므로 화면-DB 규칙 동일성 불변이 무성으로 깨진다. 유일한 컴포넌트 테스트는 CANCELLED 스모크 1건이고 신규 e2e도 없으며, e2e 픽스처는 필요 인원 행을 지우지 않아 화면 경로 실증 테스트가 0건이다. 구현 기록이 허용 경로 밖 테스트 파일 때문에 prop을 선택으로 뒀다고 밝혔다 — 계약을 약화하는 대신 결정 신호로 반환했어야 할 지점."
+    }
+  ]
+}

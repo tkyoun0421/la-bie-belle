@@ -144,3 +144,21 @@
 - TDD 증거: `docs/execution/runs/P3-T11/tdd.json`(RED→GREEN 총 3쌍, 6 entries)
 - RADIO 적용 결과: `docs/execution/runs/P3-T11/radio.md`의 "수정 라운드" 절
 - 수정 라운드 커밋: 이 handoff 커밋 직후 생성(SHA는 다음 보고에서 확정)
+
+## 2026-08-16 · 검증 종료(조정자)
+
+- 교차 검증(opus·codex, base `e4f628b` → head `15de76c`): total 87
+  (`docs/execution/reviews/P3-T11-review.json`). 확정 발견 F-01(high)·F-02(medium)는
+  RADIO revision 2 재봉인 후 수정 라운드 커밋 `beb1b80`으로 해소 — 경고 요약 영역
+  신설(상태 무관 렌더), `traineePositions` prop 필수화, 컴포넌트 단언 3건.
+- 판단이 갈려 기각된 발견 2건(전원 인정 불성립, 기록 목적으로만 남김):
+  - server-only api 모듈의 타입이 model로 유입(opus 제기) — codex 반박: `import type`은
+    번들에서 제거되고 `config/fsd.json` 계약은 model→api 임포트를 금지하지 않는다.
+    공유 타입을 types 세그먼트로 옮기는 정리는 취향 개선 후보로만 남는다.
+  - TDD RED 증거가 구현 후 되돌림으로 생성(codex 제기) — opus 반박:
+    `harness/lib/tdd-gate.ts`의 기계 계약은 같은 명령의 RED 선행·exit 코드만 요구하고
+    실행 순서 조항이 없으며, P3 전 구간(`P3-T03~T09`)의 tdd.json이 같은 방식이다.
+    계약 문면을 「RED 실행이 구현 작성보다 앞서야 한다」로 좁힐지는 소유자 결정
+    사안 — 필요 시 별도 제안으로 올린다.
+- backlog 종결 4줄: 277(비활성 축소 완화)·305(결함 아님 — 기획 결정 ①)·306(합집합
+  확장)·341(P3-T11 F-02, 수정 라운드 해소).
