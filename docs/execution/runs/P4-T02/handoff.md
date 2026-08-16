@@ -124,3 +124,58 @@ gate:bundle 원문:
 - TDD 증거: `docs/execution/runs/P4-T02/tdd.json`(RED→GREEN 9쌍, 18 entries)
 - RADIO 적용 결과(정지 조건 2회 반환 경위 포함): `docs/execution/runs/P4-T02/radio.md`
 - 구현 커밋: 이 문서를 포함하는 본 커밋
+
+## 2026-08-16 · 교차 검증 수정 라운드(F-01·F-02)
+
+- 작업 식별자: P4-T02
+- 현재 단계: 개발 종료 상태 유지, 교차 검증(`docs/execution/reviews/P4-T02-review.json`) 확정
+  발견 high 2건 수정 라운드 → 다음 검증(리뷰어 재확인)
+- 기준 시각: 2026-08-16T14:20:00Z
+
+### 확정된 사실
+
+- 기준 RADIO가 revision 2(SHA-256 `d69380dab93e5697ef1804f661489a5478b2c47666908f5ab17e2410345937c5`)
+  → **revision 3**(SHA-256 `7f232a1cf8d28ec19bdbaf217e28ff4c18d2fe2b331baa737e4721d308cf2598`,
+  재봉인 커밋 `80b61df`)로 바뀌었다. `index.jsonl`의 `development_approval`도 revision 3으로
+  갱신됐다(조정자).
+- F-01(high, 유령 구독)·F-02(high, 계정 전환 미재귀속) 둘 다
+  `src/features/push/hooks/usePushSubscription.ts` 안에서 해소했다 — 허용 경로 밖 파일이
+  필요하지 않아 추가 정지 조건 반환 없이 완료했다. 상세는
+  `docs/execution/runs/P4-T02/radio.md`의 "교차 검증 수정 라운드" 절.
+- `test_mode=tdd` 절차: `usePushSubscription.test.ts`에 새 테스트 2개(F-01 보상 해지 단언,
+  F-02 재귀속 호출 단언) + 미호출 케이스 명시 테스트 1개를 추가한 뒤 구현을 이전 상태로 둔 채
+  실행해 RED(2 failed | 7 passed, 2026-08-16T14:14:06Z) 확보, 구현 수정 후 같은 명령으로
+  재실행해 GREEN(9/9, 2026-08-16T14:14:24Z) 확보. `docs/execution/runs/P4-T02/tdd.json`에 새
+  RED→GREEN 쌍 추가(총 10쌍, 20 entries). `pnpm gate:tdd` 통과.
+- 확인한 검증 단계(내 범위로 스코프): `pnpm vitest run src/features/push`(37/37),
+  `pnpm exec eslint -c eslint.config.ci.mjs src/features/push`(0 errors — 테스트의 오류 코드
+  문자열 리터럴을 `ERROR_CODE.COMMON_UNEXPECTED` 참조로 고쳐 통과), `tsc --noEmit`(전체
+  무오류), `pnpm test`(전체 243/243 파일·1593/1593 테스트 GREEN — 이전 라운드에서 미소유
+  파일 때문에 실패했던 `deadline-batches.test.ts`는 그 사이 다른 세션이 구현을 채워 이번엔
+  이 실행에서도 통과했다, 내가 손대지 않음).
+- 전체 verify(format/build/e2e/gate:bundle 등)는 이번 라운드에서 다시 돌리지 않았다 — 두 파일
+  범위의 최소 수정이라 개발 종료 시점 handoff의 verify 결과 요약(gate:bundle 미소유 원인 추정
+  포함)이 유효하다고 판단했다. 필요하면 검증 단계에서 리뷰어가 전체 재실행한다.
+- 전체 스테이징 후 커밋한다(부분 스테이징 없음) — 수정 대상 2파일(`usePushSubscription.ts`,
+  `usePushSubscription.test.ts`)과 `docs/execution/runs/P4-T02/{tdd.json,radio.md,handoff.md}`만
+  스테이징했다. 이번 세션 중에도 계속 변하고 있는 병렬 세션(들)의 무관 파일은 손대지도
+  스테이징하지도 않았다. push는 하지 않는다(ci-finisher 소관).
+
+### 미결 사항
+
+- 없음 — F-01·F-02는 이번 라운드로 해소됐다. F-03~F-13(medium·low)은 backlog가 소유하며 이
+  task의 결정 대상이 아니다.
+
+### 다음 행동
+
+1. 리뷰어가 이번 수정 커밋을 F-01·F-02 원 발견과 대조해 해소를 확인한다.
+2. `index.jsonl`의 P4-T02 상태 전환은 조정자 몫.
+
+### 증거·산출물 경로
+
+- 수정 파일: `src/features/push/hooks/usePushSubscription.ts`,
+  `src/features/push/hooks/__tests__/usePushSubscription.test.ts`
+- 교차 검증 원본: `docs/execution/reviews/P4-T02-review.json`(읽기 전용)
+- TDD 증거: `docs/execution/runs/P4-T02/tdd.json`(새 RED→GREEN 쌍, 20 entries)
+- RADIO 적용 결과(수정 라운드 상세): `docs/execution/runs/P4-T02/radio.md`
+- 수정 커밋: 이 절을 포함하는 본 커밋

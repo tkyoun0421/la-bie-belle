@@ -80,6 +80,19 @@ export function usePushSubscription() {
         if (cancelled) {
           return;
         }
+        if (existing !== null) {
+          const json = existing.toJSON();
+          const p256dh = json.keys?.p256dh;
+          const auth = json.keys?.auth;
+          if (json.endpoint !== undefined && p256dh !== undefined && auth !== undefined) {
+            const { savePushSubscription } =
+              await import("@/features/push/api/save-push-subscription");
+            await savePushSubscription({ endpoint: json.endpoint, p256dh, auth });
+          }
+          if (cancelled) {
+            return;
+          }
+        }
         setSubscribed(existing !== null);
       } catch {
         if (!cancelled) {
@@ -133,6 +146,7 @@ export function usePushSubscription() {
       const { savePushSubscription } = await import("@/features/push/api/save-push-subscription");
       const result = await savePushSubscription({ endpoint: json.endpoint, p256dh, auth });
       if (!result.ok) {
+        await subscription.unsubscribe();
         return { ok: false };
       }
       setRegistration(activeRegistration);

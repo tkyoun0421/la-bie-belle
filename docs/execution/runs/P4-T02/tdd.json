@@ -125,6 +125,20 @@
       "at": "2026-08-16T13:15:53Z",
       "phase": "green",
       "note": "두 사전 안내 테스트에서 deleteWorkerSessions 호출을 제거(context.close()만 유지) 후 재실행 — tests/e2e/schedule.spec.ts가 이미 신청까지 마친 워커는 삭제하지 않는 것과 동일한 기존 선례를 따름. 3/3 통과, 재실행으로 안정성 재확인(연속 2회 3/3)."
+    },
+    {
+      "command": "pnpm vitest run src/features/push/hooks/__tests__/usePushSubscription.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-16T14:14:06Z",
+      "phase": "red",
+      "note": "revision 3(F-01·F-02) 회귀 테스트 2개를 추가한 채 훅 구현은 이전 그대로 두고 실행. 2 failed | 7 passed — 'subscribe: 저장 액션이 실패하면 방금 만든 브라우저 구독을 보상 해지하고 실패를 반환한다'(unsubscribe 0회 호출)와 '기존 브라우저 구독이 있는 마운트에서는 저장 액션을 호출해 현재 계정으로 재귀속한다'(savePushSubscription 0회 호출)."
+    },
+    {
+      "command": "pnpm vitest run src/features/push/hooks/__tests__/usePushSubscription.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-16T14:14:24Z",
+      "phase": "green",
+      "note": "usePushSubscription.ts에 F-01(subscribe 저장 실패 시 subscription.unsubscribe() 보상 해지 후 {ok:false} 반환)과 F-02(등록 effect에서 기존 구독 발견 시 savePushSubscription 호출로 현재 계정 재귀속, 구독 없는 마운트는 호출 없음 유지) 구현 후 재실행. 9/9 통과."
     }
   ]
 }

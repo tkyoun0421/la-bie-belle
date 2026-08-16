@@ -1,6 +1,8 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { ERROR_CODE } from "@/shared/config/error-codes.config";
+
 const savePushSubscription = vi.fn();
 const removePushSubscription = vi.fn();
 
@@ -141,5 +143,47 @@ describe("usePushSubscription", () => {
     });
     expect(outcome).toEqual({ ok: true });
     await waitFor(() => expect(result.current.status).toBe("ready"));
+  });
+
+  it("subscribe: 저장 액션이 실패하면 방금 만든 브라우저 구독을 보상 해지하고 실패를 반환한다", async () => {
+    const { subscribeFn } = setupSupportedBrowser();
+    const freshSubscription = createFakeSubscription("https://push.example/rollback");
+    subscribeFn.mockResolvedValue(freshSubscription);
+    savePushSubscription.mockResolvedValue({ ok: false, code: ERROR_CODE.COMMON_UNEXPECTED });
+
+    const { usePushSubscription } = await import("@/features/push/hooks/usePushSubscription");
+    const { result } = renderHook(() => usePushSubscription());
+    await waitFor(() => expect(result.current.status).toBe("ready"));
+
+    const outcome = await result.current.subscribe();
+
+    expect(outcome).toEqual({ ok: false });
+    expect(freshSubscription.unsubscribe).toHaveBeenCalledOnce();
+    expect(result.current.status).toBe("ready");
+  });
+
+  it("기존 브라우저 구독이 있는 마운트에서는 저장 액션을 호출해 현재 계정으로 재귀속한다", async () => {
+    const fakeSubscription = createFakeSubscription("https://push.example/existing");
+    setupSupportedBrowser({ existingSubscription: fakeSubscription });
+
+    const { usePushSubscription } = await import("@/features/push/hooks/usePushSubscription");
+    const { result } = renderHook(() => usePushSubscription());
+    await waitFor(() => expect(result.current.status).toBe("subscribed"));
+
+    expect(savePushSubscription).toHaveBeenCalledWith({
+      endpoint: "https://push.example/existing",
+      p256dh: "p256dh-value",
+      auth: "auth-value",
+    });
+  });
+
+  it("구독이 없는 마운트에서는 저장 액션을 호출하지 않는다(왕복 0 유지)", async () => {
+    setupSupportedBrowser();
+
+    const { usePushSubscription } = await import("@/features/push/hooks/usePushSubscription");
+    const { result } = renderHook(() => usePushSubscription());
+    await waitFor(() => expect(result.current.status).toBe("ready"));
+
+    expect(savePushSubscription).not.toHaveBeenCalled();
   });
 });

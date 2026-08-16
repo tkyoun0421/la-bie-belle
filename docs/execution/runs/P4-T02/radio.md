@@ -1,11 +1,46 @@
 # P4-T02 RADIO 적용 결과
 
-- 기준 RADIO: `docs/execution/radio/P4-T02-radio.md` revision 2, SHA-256
-  `d69380dab93e5697ef1804f661489a5478b2c47666908f5ab17e2410345937c5`(index.jsonl
+- 기준 RADIO: `docs/execution/radio/P4-T02-radio.md` **revision 3**, SHA-256
+  `7f232a1cf8d28ec19bdbaf217e28ff4c18d2fe2b331baa737e4721d308cf2598`(index.jsonl
   `development_approval`과 대조 완료, 일치). 최초 착수 시점은 revision 1, SHA-256
-  `147ea02ef9d2b14a25be2ae64a388c4bb246cf6f3cdbbc46658635d34fbba759`였다.
+  `147ea02ef9d2b14a25be2ae64a388c4bb246cf6f3cdbbc46658635d34fbba759`였고, 개발 종료 시점은
+  revision 2, SHA-256 `d69380dab93e5697ef1804f661489a5478b2c47666908f5ab17e2410345937c5`였다.
 - 기준 커밋: `dd3ad4c`("docs(P4-T02): reseal RADIO revision 2 with public standalone service
-  worker"). revision 1 봉인 커밋은 `a6bf642`.
+  worker"). revision 1 봉인 커밋은 `a6bf642`, revision 3 재봉인 커밋은 `80b61df`. 개발 종료
+  구현 커밋은 `69f2dad`.
+
+## 교차 검증 수정 라운드(F-01·F-02, revision 3, `docs/execution/reviews/P4-T02-review.json`)
+
+교차 검증(opus·codex, base `dd3ad4c` → head `69f2dad`)에서 high 2건이 전원 인정으로 확정됐다.
+둘 다 `src/features/push/hooks/usePushSubscription.ts` 안이라 재봉인 뒤 같은 파일만 고쳤다.
+
+- **F-01(high) — 유령 구독**: `pushManager.subscribe` 성공 뒤 `savePushSubscription`이 실패해도
+  방금 만든 브라우저 구독을 되돌리지 않아, 재방문 시 등록 effect가 `getSubscription()`으로
+  `subscribed=true`를 고정시켜 켜기 버튼이 사라지고 DB 발송 대상에는 없는 상태가 영구화됐다.
+  `subscribe()`의 저장 실패 분기에 `await subscription.unsubscribe()`를 추가해 보상 해지하고
+  `{ ok: false }`를 반환하도록 고쳤다 — 결과를 fire-and-forget하지 않고 await해 테스트가 실제
+  호출 완료를 관측할 수 있게 했다(`no-floating-promises`도 이 형태를 요구한다).
+- **F-02(high) — 계정 전환 미재귀속**: 마운트 시 `getSubscription()` 존재만으로 `subscribed`를
+  세팅하고 `save_push_subscription`을 부르지 않아, 같은 브라우저에서 계정이 바뀌어도 DB
+  endpoint 소유자가 이전 계정으로 남았다. 등록 effect가 기존 구독을 발견하면(existing !== null)
+  `savePushSubscription`을 호출해 현재 계정으로 재귀속·수렴시키도록 고쳤다. 구독이 없는
+  마운트는 이 호출 자체가 없어 봉인 Optimizations의 "구독 없는 대다수 마운트는 왕복 0"이
+  그대로 유지된다(revision 3이 이 한 경우에 한해 "왕복 0"을 갱신했으므로 재귀속 왕복 1회
+  자체는 설계 위반이 아니다).
+- 재귀속 호출이 실패해도(네트워크 등) 별도 처리를 추가하지 않았다 — 기존 `registerAndSync`의
+  바깥 `try/catch`가 이미 함수 전체의 예외를 `setRegistration(null)`로 흡수하는 구조를 그대로
+  둔 것이고, 이 흡수 로직 자체를 넓히는 건 F-03(훅 전체 오류 피드백 부재, medium)에 속해
+  이번 라운드에서 손대지 않았다.
+- medium·low 발견(F-03~F-13)은 backlog로 이관됐고 이번 라운드에서 고치지 않았다.
+- `test_mode=tdd` 절차: `src/features/push/hooks/__tests__/usePushSubscription.test.ts`에 새
+  테스트 2개(F-01 보상 해지·F-02 재귀속 호출) + 기존 미호출 케이스를 명시하는 테스트 1개를
+  추가한 뒤, 구현을 이전 상태로 둔 채 실행해 RED(2 failed | 7 passed) 확보, 구현 수정 후 같은
+  명령으로 재실행해 GREEN(9/9) 확보. `docs/execution/runs/P4-T02/tdd.json`에 새 RED→GREEN
+  쌍으로 기록, `pnpm gate:tdd` 통과.
+- 검증: `pnpm vitest run src/features/push`(37/37), 스코프 `eslint -c eslint.config.ci.mjs
+  src/features/push`(0 errors, `project/error-code-literal`이 테스트의 문자열 리터럴
+  `"COMMON_UNEXPECTED"`를 잡아 `ERROR_CODE.COMMON_UNEXPECTED` 참조로 고침), `tsc --noEmit`
+  전체 무오류.
 
 ## 정지 조건 반환 1회차 — SW 번들 방식(revision 1 → 2, 재봉인)
 
