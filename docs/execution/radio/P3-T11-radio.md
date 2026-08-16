@@ -1,15 +1,16 @@
 # P3-T11 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 2
 - 기획 승인: user, 2026-08-16
-- 개발 설계 승인: user, 2026-08-16
+- 개발 설계 승인: user, 2026-08-16 (revision 2 재봉인 포함)
 
 ## 개정 이력
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
 | 1 | 2026-08-16 | 최초 작성. 기획 결정 3건(경고 사후 조회는 화면 재계산으로 충족, 담당자 없음 경고의 표 밖 포지션 포함, 비활성 포지션 축소만 허용)의 구현 설계. |
+| 2 | 2026-08-16 | 교차 검증 F-01(high)의 해소. revision 1은 경고 표시를 확정 다이얼로그에만 뒀는데 확정 후에는 그 다이얼로그를 여는 버튼이 사라져, 이번에 새로 만든 표 밖 담당자 없음 경고가 확정 뒤 화면 어디에도 안 보인다 — 기획 결정 ①(사후 조회는 준비 화면 재계산으로 충족)의 전제가 깨진다. 준비 화면에 다이얼로그 밖 경고 요약 영역을 추가하고, traineePositions prop을 필수로 바꾸고, 컴포넌트 테스트를 허용 경로에 추가한다(F-02 medium 동반 해소). 2026-08-16 사용자 결정. |
 
 - 관련 spec: PRD:INV-STAFF-01, PRD 필요 인원과 배정 절, PRD 포지션 절(148행 비활성), DOMAIN:SCHEDULING, DOCS:SDD(ADMIN-FLOWS 배정 절)
 - 적용 깊이: 중간 — 배포된 정의자 함수 2종 재정의(경고 계산·비활성 검사), 화면 경고 모델 확장. 스키마·오류 코드·상태 전이 무변경.
@@ -25,7 +26,7 @@
 
 ### 범위와 비목표
 
-범위: 마이그레이션 1개(`confirm_schedule` 경고 합집합 + `replace_position_assignments` 비활성 완화 재정의), `listScheduleRequirements` 교육생 포지션 이름 반환, `computeConfirmationWarnings` 합집합 확장, 준비 화면 prop 전달, pgTAP 19·21·23 단언, 단위 2파일 갱신, backlog 277·305·306 종결.
+범위: 마이그레이션 1개(`confirm_schedule` 경고 합집합 + `replace_position_assignments` 비활성 완화 재정의), `listScheduleRequirements` 교육생 포지션 이름 반환, `computeConfirmationWarnings` 합집합 확장, 준비 화면 prop 전달과 다이얼로그 밖 경고 요약 영역(상태 무관 — 확정 후 포함, 경고가 비어 있으면 미렌더, revision 2), pgTAP 19·21·23 단언, 단위 2파일 갱신, 준비 화면 컴포넌트 테스트(revision 2), backlog 277·305·306 종결.
 
 비목표: 확정 당시 경고 스냅샷 조회 UI(감사 기록으로 충분 — 기획), `confirm-schedule.ts` feature 변경(경고 폐기는 확정 동작 — 기획), 경고 상세 확장(P3-T07 F-07 — backlog 유지), 신규 e2e(표시 경로 무변경 — 아래 인수 조건 6), 오류 코드 신설, 알림(P4).
 
@@ -54,6 +55,8 @@
 5. `listScheduleRequirements`가 교육생 포지션의 이름·정렬 정보를 반환한다(단위).
 6. 준비 화면 경고 배너·확정 다이얼로그는 확장된 계산 결과를 기존 렌더링으로 그린다 — 신규 e2e 없음, 기존 e2e 전체 GREEN 유지가 증거다.
 7. backlog 277·306은 이 구현으로 해소, 305는 결함 아님(기획 결정)으로 종결한다 — 종결 기재는 조정자 몫.
+8. 준비 화면이 상태와 무관하게(CONFIRMED 포함) 다이얼로그 밖 경고 요약 영역에 understaffed·noManager를 표시하고, 표 밖 교육생 잔존 포지션이 이름과 함께 그 요약에 뜬다. 경고가 둘 다 비어 있으면 영역을 그리지 않는다(컴포넌트 단위 — RED 먼저, revision 2).
+9. `traineePositions`는 필수 prop이다 — page 전달 누락이 타입 오류로 잡힌다(revision 2).
 
 ### 위험 기반 테스트
 
@@ -63,6 +66,7 @@
 | 3 비활성 축소 | 테스트함 — 부분 축소·전원 해제 lives_ok, CONFIRMED는 revision·감사 동반 | 테스트함 — 정식 추가·교육생 추가 각각 22023 거부, 거부 후 행수 무변화 | 테스트함 — 축소와 동시에 추가가 섞인 호출은 거부(added 존재) | 해당 없음 — 기존 42501 단언 소유 | 테스트함 — 같은 축소 재호출은 changed=false 기존 경로 | 해당 없음 — for update 기존 소유 |
 | 4 화면 규칙 동일성 | 테스트함 — 표 밖 교육생 잔존 noManager 산출(RED 먼저) | 테스트함 — 표 밖 정식 잔존 무경고 | 테스트함 — 표 안 기존 케이스 회귀 없음, 표 밖 항목의 정렬 위치 | 해당 없음 — 순수 함수 | 해당 없음 — 순수 함수 | 해당 없음 — 순수 함수 |
 | 5 조회 확장 | 테스트함 — 교육생 포지션 이름·정렬 반환 | 테스트함 — 실패 매핑 기존 단언 유지 | 테스트함 — 교육생 0명이면 빈 배열 | 해당 없음 — 기존 42501 매핑 소유 | 해당 없음 — 읽기 멱등 | 해당 없음 — 읽기 전용 |
+| 8·9 경고 요약 표시 | 테스트함 — CONFIRMED 렌더에서 표 밖 포지션 이름이 경고 요약에 보임(컴포넌트) | 테스트함 — 경고 둘 다 빈 경우 영역 미렌더 | 테스트함 — 표 안 경고와 표 밖 경고 동시 표시 | 해당 없음 — 관리자 라우트 가드는 기존 소유 | 해당 없음 — 표시 계층 | 해당 없음 — 표시 계층 |
 
 - 보충 위험: **기존 단언 대조를 선확인한다** — `ComputeConfirmationWarningsInput` 필드 추가로 기존 단위 테스트 입력 리터럴이 컴파일 실패한다. 갱신은 허용 경로 내 알려진 범위(입력 확장 정합)이며 기존 단언 약화는 금지다. e2e 픽스처는 필요 인원 행을 지우지 않으므로 기존 e2e 경고 단언과 충돌하지 않는다. 밴드 변경 없음(신규 e2e 없음).
 
@@ -79,7 +83,7 @@
 - DB 경계가 정본: 경고 합집합·비활성 완화 모두 정의자 함수 안이다. 클라이언트는 표시만 한다.
 - `entities/schedule/api/list-schedule-requirements.ts` — 교육생 쿼리를 `position_id, positions(name, sort_order)` 임베드로 확장하고, 결과에 교육생 포지션 메타(`traineePositions: { positionId, positionName, sortOrder }[]`, 중복 제거)를 추가한다. 기존 필드·정렬·절단 가드 무수정.
 - `views/admin-schedule/model/confirmation-warnings.ts` — 입력에 `traineePositions` 추가. 표 행 순회는 기존 그대로, 그 뒤 표 밖 교육생 포지션(assigned 0 + trainee ≥1)을 sortOrder·이름순으로 noManager에 덧붙인다.
-- `AdminSchedulePrepView`·`page.tsx` — prop 전달만. 경고 배너·다이얼로그 렌더링 무수정.
+- `AdminSchedulePrepView` — prop 전달 + 다이얼로그 밖 경고 요약 영역 렌더(revision 2). 계산은 여전히 model 산출을 그대로 표시하고, 다이얼로그 렌더링은 무수정. `page.tsx`는 prop 전달만.
 - `features/confirmation/api/confirm-schedule.ts` — 무수정(기획 결정 ①).
 
 ## Data model
@@ -93,6 +97,7 @@
 
 - `ListScheduleRequirementsResult`에 `traineePositions` 추가 — 기존 필드·호출부 계약 무변경.
 - `ComputeConfirmationWarningsInput`에 `traineePositions` 추가(필수 필드). 산출 타입 `ConfirmationWarnings` 무변경.
+- `AdminSchedulePrepView`의 `traineePositions` prop은 필수다 — 선택 prop·기본값 금지(revision 2).
 - RPC 시그니처·반환 형태·오류 코드·server action 매핑 전부 무변경.
 
 ## Optimizations
@@ -112,13 +117,14 @@ src/entities/schedule/api/__tests__/list-schedule-requirements.test.ts
 src/views/admin-schedule/model/confirmation-warnings.ts
 src/views/admin-schedule/model/__tests__/confirmation-warnings.test.ts
 src/views/admin-schedule/ui/AdminSchedulePrepView.tsx
+src/views/admin-schedule/ui/__tests__/AdminSchedulePrepView.test.tsx
 src/app/(protected)/admin/schedule/[id]/page.tsx
 docs/execution/radio/P3-T11-radio.md
 docs/execution/runs/P3-T11/**
 docs/execution/phases/index.jsonl
 ```
 
-- 용도 한정: pgTAP 3파일은 신규 단언 추가와 plan 수 조정에만 쓴다 — 기존 단언 약화·삭제는 금지이고, 비활성 전면 거부를 고정한 기존 단언을 발견하면 고치지 말고 멈춰 반환한다(정지 조건 1). `AdminSchedulePrepView.tsx`·`page.tsx`는 prop 전달에만 쓴다. 단위 2파일의 기존 단언 갱신은 입력 확장 정합에 한정한다.
+- 용도 한정: pgTAP 3파일은 신규 단언 추가와 plan 수 조정에만 쓴다 — 기존 단언 약화·삭제는 금지이고, 비활성 전면 거부를 고정한 기존 단언을 발견하면 고치지 말고 멈춰 반환한다(정지 조건 1). `AdminSchedulePrepView.tsx`는 prop 전달·prop 필수화·경고 요약 영역 렌더에, `page.tsx`는 prop 전달에만 쓴다(revision 2). `ui/__tests__/AdminSchedulePrepView.test.tsx`는 기존 CANCELLED 스모크를 보존하고 경고 요약 단언을 더하는 데만 쓴다(기존 UI 테스트 관례 — testing-library render 기반). 단위 2파일의 기존 단언 갱신은 입력 확장 정합에 한정한다.
 - `docs/product/**`·`docs/execution/reviews/**`는 의도적으로 빠져 있다. 정합화·backlog 종결은 조정자 몫이다.
 - 위 밖의 파일이 필요해지면 멈추고 반환한다.
 
