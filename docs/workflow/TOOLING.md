@@ -133,17 +133,13 @@ pnpm dashboard           # docs/execution/dashboard/ 세 페이지 재생성
 
 ## Claude Code 훅
 
-`.claude/settings.json`이 다섯 종류를 건다.
+`.claude/settings.json`이 세 종류를 건다.
 
 | 이벤트 | matcher | 스크립트 | 역할 |
 | --- | --- | --- | --- |
 | `PreToolUse` | `Write`\|`Edit`\|`MultiEdit` | `.claude/hooks/tdd-guard.sh` | 대응 테스트 파일이 없는 `src/` 비즈니스 로직 편집을 거부한다(상세는 아래). |
 | `PreToolUse` | `Bash`\|`Write`\|`Edit`\|`MultiEdit` | `.claude/hooks/ci-finisher-guard.sh` | payload의 `agent_type`이 `ci-finisher`일 때만 판정해 마무리 오프로드 범위 밖 행동을 막는다. 메인 세션과 다른 에이전트는 통과시킨다. 규칙 정본: [`.claude/agents/ci-finisher.md`](../../.claude/agents/ci-finisher.md). |
-| `SessionStart` | — | `.claude/hooks/loop-unattended-context.sh` | 무인 재개(respawn) 마커가 있는 세션에만 loop-unattended 계약을 주입한다. 규칙 정본: [`.claude/loop-unattended.md`](../../.claude/loop-unattended.md). |
 | `SubagentStop` | `ci-finisher` | `.claude/hooks/ci-finisher-stop-guard.sh` | push용 임시 `.env`(`.env.example` 사본)가 삭제되지 않은 채 `ci-finisher`가 종료하려 하면 한 번 막는다. 규칙 정본: [`.claude/agents/ci-finisher.md`](../../.claude/agents/ci-finisher.md). |
-| `StopFailure` | `rate_limit`·`overloaded` 등 재시도 가능 실패 10종 | `.claude/hooks/claude-loop-stop-failure.sh` | 실패를 `scripts/claude-loop.mjs record-failure`로 전달해 무인 재개(claude-loop) 상태를 갱신한다. 규칙 정본: [`.claude/loop.md`](../../.claude/loop.md). |
-
-`pnpm claude:loop`는 `scripts/claude-loop.mjs`의 CLI 진입점이다(`start`·`status`·`stop`·`record-failure` 등 subcommand). 위 `StopFailure` 훅이 내부에서 호출하는 것과 같은 스크립트이며, 사람이 쓰는 운영 진입점은 `/loop-mode` 스킬이다.
 
 **`.claude/hooks/tdd-guard.sh`**는 대응 테스트 파일이 없는 `src/` 아래 비즈니스 로직 편집을 거부한다.
 

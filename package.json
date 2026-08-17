@@ -40,8 +40,7 @@
     "gate:motion-render-budget": "playwright test tests/e2e/motion-render-budget.spec.ts",
     "dashboard": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/dashboard/main.ts",
     "harness:self-test": "node --experimental-strip-types --disable-warning=ExperimentalWarning harness/self-test/run.ts",
-    "harness:typecheck": "tsc --noEmit --project harness/tsconfig.json",
-    "claude:loop": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/claude-loop.mjs"
+    "harness:typecheck": "tsc --noEmit --project harness/tsconfig.json"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "16",

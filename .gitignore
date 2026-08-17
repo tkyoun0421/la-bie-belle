@@ -26,7 +26,6 @@ skills-lock.json
 !.claude/skills/coach/
 !.claude/skills/decision/
 !.claude/skills/explain/
-!.claude/skills/loop-mode/
 !.claude/skills/publish-ui/
 !.claude/skills/verify/
 
