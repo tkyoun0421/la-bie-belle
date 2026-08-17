@@ -7,6 +7,28 @@ const DATE_KEY_FORMAT = "yyyy-MM-dd";
 
 export type ScheduleCalendarDateState = { date: Date; state: CalendarCellState };
 
+export type ScheduleEntryState = Extract<
+  CalendarCellState,
+  "open" | "selected" | "requested" | "closed" | "confirmed"
+>;
+
+export function toScheduleEntryState(
+  schedule: RecruitmentScheduleWithApplication,
+  pending: ReadonlySet<string>,
+  savedApplied: ReadonlySet<string>,
+): ScheduleEntryState {
+  if (schedule.status === "CONFIRMED") {
+    return "confirmed";
+  }
+  if (schedule.status !== "OPEN") {
+    return "closed";
+  }
+  if (pending.has(schedule.workDate)) {
+    return savedApplied.has(schedule.workDate) ? "requested" : "selected";
+  }
+  return "open";
+}
+
 export type ToScheduleCellStatesParams = {
   month: Date;
   schedules: readonly RecruitmentScheduleWithApplication[];
@@ -33,15 +55,6 @@ export function toScheduleCellStates({
     if (schedule === undefined) {
       return { date, state: "none" };
     }
-    if (schedule.status === "CONFIRMED") {
-      return { date, state: "confirmed" };
-    }
-    if (schedule.status !== "OPEN") {
-      return { date, state: "closed" };
-    }
-    if (pending.has(key)) {
-      return { date, state: savedApplied.has(key) ? "requested" : "selected" };
-    }
-    return { date, state: "open" };
+    return { date, state: toScheduleEntryState(schedule, pending, savedApplied) };
   });
 }

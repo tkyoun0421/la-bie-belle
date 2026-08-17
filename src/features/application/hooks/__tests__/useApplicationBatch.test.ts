@@ -82,6 +82,38 @@ describe("useApplicationBatch", () => {
     expect(result.current.changeCount).toBe(1);
   });
 
+  it("selectMany는 이미 고른 날짜를 뒤집지 않고 넘긴 날짜를 한 번에 켠다", async () => {
+    const { useApplicationBatch } =
+      await import("@/features/application/hooks/useApplicationBatch");
+    const onApply = vi.fn();
+
+    const { result } = renderHook(() => useApplicationBatch({ schedules: SCHEDULES, onApply }));
+
+    act(() => {
+      result.current.selectMany(["2099-09-01", "2099-09-02"], true);
+    });
+
+    expect(result.current.pending).toEqual(new Set(["2099-09-01", "2099-09-02"]));
+  });
+
+  it("selectMany로 끄면 넘긴 날짜만 pending에서 빠진다", async () => {
+    const { useApplicationBatch } =
+      await import("@/features/application/hooks/useApplicationBatch");
+    const onApply = vi.fn();
+
+    const { result } = renderHook(() => useApplicationBatch({ schedules: SCHEDULES, onApply }));
+
+    act(() => {
+      result.current.selectMany(["2099-09-01"], true);
+    });
+    act(() => {
+      result.current.selectMany(["2099-09-01", "2099-09-02"], false);
+    });
+
+    expect(result.current.pending).toEqual(new Set());
+    expect(result.current.changeCount).toBe(1);
+  });
+
   it("save 성공 시 savedApplied를 갱신하고 스낵바와 되돌리기 메모리를 남긴다", async () => {
     const { useApplicationBatch } =
       await import("@/features/application/hooks/useApplicationBatch");

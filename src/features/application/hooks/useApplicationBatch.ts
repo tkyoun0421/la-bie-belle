@@ -133,6 +133,21 @@ export function useApplicationBatch({ schedules, onApply }: UseApplicationBatchP
     setLastUndo(null);
   }
 
+  function selectMany(dateKeys: readonly string[], select: boolean) {
+    setPending((previous) => {
+      const next = new Set(previous);
+      for (const dateKey of dateKeys) {
+        if (select) {
+          next.add(dateKey);
+        } else {
+          next.delete(dateKey);
+        }
+      }
+      return next;
+    });
+    setLastUndo(null);
+  }
+
   function submit(target: ReadonlySet<string>) {
     const applyDates = Array.from(target).filter((date) => !savedApplied.has(date));
     const withdrawDates = Array.from(savedApplied).filter((date) => !target.has(date));
@@ -202,6 +217,7 @@ export function useApplicationBatch({ schedules, onApply }: UseApplicationBatchP
     savedApplied,
     pending,
     toggle,
+    selectMany,
     save,
     changeCount,
     submitting,
