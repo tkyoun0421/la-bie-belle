@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>라비에벨 — 라운드 34 (로딩·오프라인·에러)</title>
+    <title>라비에벨 홈 화면 (확정본)</title>
     <style>
       :root {
         --color-canvas: #f1f3f6;
@@ -1389,19 +1389,22 @@
       </defs>
     </svg>
 
-    <h1 class="sheet-title">라운드 34 — 로딩 · 오프라인 · 에러</h1>
+    <h1 class="sheet-title">홈 화면 확정본 — 라운드 34까지</h1>
     <p class="sheet-note">
-      빈 상태 다섯이 라운드 29~33에서 닫혔다. 이건 <strong>화면마다 다시 묻지 않을 전역 규칙</strong>
-      한 판이다. 셋 중 둘은 이미 승인 문서가 소유하고 있어 <strong>모양만 준다</strong> —
-      <code>PATTERNS.md:75-82</code>가 「처음 읽는 화면은 구조를 유지하는 skeleton」과
-      「오프라인이면 상단 고정 배너 + 모든 변경 행동 비활성화」를 정해뒀다.
-      <strong>에러만 규칙이 없다</strong> — 그 자리가 이 판의 물음이다.
+      라운드 23에서 고정된 홈에 <strong>빈 상태 다섯</strong>(라운드 29~33)과
+      <strong>로딩 · 오프라인 · 에러 전역 규칙</strong>(라운드 34)이 더해졌다.
+      <strong>29</strong> 근무 없는 날엔 오늘 블록이 통째로 사라진다(알림에 이어 두 번째 예외) ·
+      <strong>30</strong> 급여 빈 행은 <code>—</code>(0원 아님, 블러·탭 없음)이고 셋이 다 비면 한 줄로
+      접힌다 · <strong>31</strong> 빈 블록은 <strong>앵커 없는 안 눌리는 quiet 한 줄 + 더보기</strong>
+      (「없음」 배지 폐기) · <strong>32</strong> 스트립의 <strong>오늘 칸에 실선 1px이 늘 둘린다</strong> ·
+      <strong>33</strong> 홈 카드를 다 꺼도 <strong>종 점은 남는다</strong>(끄기는 미루기, 읽음은 알림
+      화면의 것) · <strong>34</strong> skeleton은 <strong>아는 것을 안 가리고 반짝이지 않으며</strong>,
+      오프라인 배너는 헤더 레이어의 셋째 줄, 에러는 <strong>일부면 그 블록 · 전부면 한 장</strong>이다.
     </p>
     <p class="callout">
-      <strong>아는 것은 가리지 않는다.</strong> 화면 제목 · 블록 이름표 · 요일과 날짜는 서버가
-      없어도 아는 값이라 skeleton으로 덮지 않는다. 회색 막대는 <strong>서버에서 와야 하는 것</strong>
-      에만 깐다. 반짝임(shimmer)은 넣지 않았다 — 움직임은 눌림·리빌·시트처럼 <strong>뜻이 있는
-      순간</strong>에만 쓴다(라운드 5·18·22).
+      <strong>주급은 기획으로 돌아간다.</strong> <code>PRD.md:346</code>이 「월별 합계」다. 주 경계·월 합계
+      유지 여부·달 걸친 근무 처리를 정해야 한다. 「받은 총급여」도 <code>PRD.md:375</code>가 실제 정산을
+      MVP에서 빼서 「누적 예상 급여」로 대신한다.
     </p>
 
     <div class="lab">
@@ -1668,7 +1671,7 @@
                 type="button"
                 id="checkIn"
                 style="margin-top: 4px"
-                data-toast="현재 위치를 확인합니다"
+                data-toast="위치 확인 화면으로 갑니다 · 끝나면 홈으로 돌아옵니다"
               >
                 출근 인증하기
               </button>
@@ -1922,86 +1925,377 @@
           </div>
         </div>
 
+        <div class="panel-group">
+          <span>이번 주</span>
+          <div class="opts" data-group="week">
+            <button class="opt" type="button" data-value="three">근무 3회</button>
+            <button class="opt" type="button" data-value="one">근무 1회</button>
+            <button class="opt" type="button" data-value="empty">빈 주</button>
+          </div>
+        </div>
+
+        <div class="panel-group">
+          <span>오늘</span>
+          <div class="opts" data-group="today">
+            <button class="opt" type="button" data-value="open">인증 창 열림</button>
+            <button class="opt" type="button" data-value="wait">창 열리기 전</button>
+            <button class="opt" type="button" data-value="none">근무 없는 날</button>
+          </div>
+        </div>
+
+        <div class="panel-group">
+          <span>다가오는 근무</span>
+          <div class="opts" data-group="upco">
+            <button class="opt" type="button" data-value="three">3건</button>
+            <button class="opt" type="button" data-value="one">1건</button>
+            <button class="opt" type="button" data-value="none">없음</button>
+          </div>
+        </div>
+
+        <div class="panel-group">
+          <span>급여</span>
+          <div class="opts" data-group="pay">
+            <button class="opt" type="button" data-value="full">셋 다 있음</button>
+            <button class="opt" type="button" data-value="lastweek">지난주만 없음</button>
+            <button class="opt" type="button" data-value="none">전부 없음</button>
+          </div>
+        </div>
+
+        <div class="panel-group">
+          <span>알림</span>
+          <div class="opts">
+            <button class="opt" type="button" id="resetNotices">세 장 다시 채우기</button>
+          </div>
+        </div>
+
+        <div class="panel-group">
+          <span>시각</span>
+          <div class="opts">
+            <button class="opt" type="button" id="skipToStart">출근 직전</button>
+            <button class="opt" type="button" id="skipPast">출근 시각 넘김</button>
+          </div>
+        </div>
+
         <p class="hint">
-          다섯을 차례로 눌러본다. <code>오프라인</code>에서는 <b>출근 인증 버튼이 죽고</b>
-          배너가 헤더에 붙는다. <code>에러 · 일부</code>는 「다가오는 근무」 하나만 실패한 경우,
-          <code>에러 · 전부</code>는 아무것도 못 받은 경우다.
+          <b>빈 홈 전체</b> — <code>근무 없는 날</code> · <code>빈 주</code> · <code>없음</code> ·
+          <code>전부 없음</code>에 놓고 알림 셋을 <code>X</code>로 다 끈다. 종 점은 그래도 남고,
+          18일 칸의 실선이 오늘을 말한다.<br /><br />
+          <b>눌러볼 것</b> — <code>오늘</code> 카드의 아바타 줄(오늘 포지션 배치도가 올라온다) ·
+          금액(빛이 훑으며 열리고, 다시 누르면 빛이 그 자리에서 사라진다) ·
+          다가오는 근무 행의 <code>확인</code>(같은 바닥 시트) ·
+          검은 숫자 날짜 · 알림 <code>X</code> · 하단 탭 · 최상단에서 휠 위로 굴려 새로고침.<br /><br />
+          <b>출근 인증하기</b>는 카드 안에서 바뀌지 않고 <b>위치 확인 화면으로 넘어간다</b> —
+          끝나면 홈으로 돌아온다. 그 화면은 <b>P0-T49</b>가 그린다.
         </p>
       </div>
     </div>
 
-    <h2 class="section-title">세 안 — 에러를 어디에 그리나</h2>
+    <h2 class="section-title">D 배지 — 급함 층위 (라운드 27 확정)</h2>
     <p class="section-note">
-      로딩과 오프라인은 승인 문서가 이미 정해뒀다. <strong>에러만 규칙이 없다</strong> —
-      <code>PATTERNS.md:73-82</code>에 로딩·오프라인 줄은 있는데 「서버가 실패했을 때」 줄이 없다.
-      갈리는 것은 <strong>실패한 블록만 말하나, 화면 전체가 말하나</strong>다.
+      배지가 전부 회색이라 내일 근무와 다음 주 근무가 같은 무게로 보였다. <strong>D-2까지만
+      브랜드 파랑을 옅게 깐다</strong> — D-1이 한 단계 진하고 D-2가 그다음, D-3부터는 회색이다.
+      <strong>진한 <code>#0052ff</code>는 쓰지 않는다</strong> — 그 파랑은 눌러야 할 버튼 하나의
+      것이라(라운드 1) 배지는 틴트에 머문다.
     </p>
-    <div class="offbench">
-      <div class="offcol">
-        <p class="offcap"><b>가 — 블록별만</b></p>
-        <div class="offslot">
-          <p class="block-label">다가오는 근무</p>
-          <div class="card card-rows">
-            <div class="row-fail on">
-              <span class="empty-line">불러오지 못했어요</span>
-              <button class="button-quiet" type="button">다시 시도</button>
-            </div>
-          </div>
-          <p class="block-label" style="margin-top: 12px">급여</p>
-          <div class="card card-rows">
-            <div class="row-fail on">
-              <span class="empty-line">불러오지 못했어요</span>
-              <button class="button-quiet" type="button">다시 시도</button>
-            </div>
+    <div class="marktiles" style="flex-wrap: wrap">
+      <div class="marktile">
+        <span class="dbadge dbadge-d1">D-1</span>
+        <span>내일 — 틴트 진함</span>
+      </div>
+      <div class="marktile">
+        <span class="dbadge dbadge-d2">D-2</span>
+        <span>모레 — 틴트 옅음</span>
+      </div>
+      <div class="marktile">
+        <span class="dbadge">D-4</span>
+        <span>그 뒤 — 회색</span>
+      </div>
+      <div class="marktile">
+        <span class="dbadge">없음</span>
+        <span>빈 상태</span>
+      </div>
+    </div>
+    <p class="section-note" style="margin-top: 16px">
+      <strong>D-0은 없다.</strong> 오늘 근무는 「다가오는 근무」에 들어오지 않고 맨 위 「오늘」
+      카드가 통째로 맡는다 — 같은 근무를 두 블록이 말하면 홈이 자기 말을 반복하는 셈이다. 그래서
+      <strong>이 블록은 내일(D-1)부터 시작한다.</strong> 오늘의 포지션 배치도는 배지가 아니라
+      <strong>「오늘」 카드의 발치</strong>가 연다 — 아바타 줄 오른쪽에 화살표가 붙었고, 누르면
+      다가오는 근무와 같은 바닥 시트가 올라온다. 모달을 한 벌 더 만들지 않고 있는 것을 쓴다.
+    </p>
+
+    <h2 class="section-title">행 앵커 그림 — 라운드 23 확정</h2>
+    <p class="section-note">
+      기준은 라운드 7 어법이다 — <strong>다색 그라디언트 · 위가 밝고 아래가 어두운 입체 · 배경
+      블록 없이 그림 자체로 선다.</strong> 아래 셋이 확정본이고, 비교하던 회백·사각 배경 벌은
+      걷었다. 색은 셋 중 둘이 이미 쓰던 그라디언트고 새로 는 것은 보라 하나다.
+    </p>
+    <div class="markbench">
+      <div class="pcol">
+        <div class="marktiles">
+          <div class="marktile">
+            <svg viewBox="0 0 36 36" aria-hidden="true">
+              <rect x="4" y="9.5" width="28" height="17" rx="3" fill="url(#green)" />
+              <rect
+                x="6.6"
+                y="12.1"
+                width="22.8"
+                height="11.8"
+                rx="1.6"
+                fill="none"
+                stroke="#ffffff"
+                stroke-width="1"
+                opacity="0.55"
+              />
+              <circle cx="18" cy="18" r="5.2" fill="#eafaf0" />
+              <path
+                d="M15.2 15.6 16.5 20.4 18 16.7 19.5 20.4 20.8 15.6"
+                fill="none"
+                stroke="#0d6b3c"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="M14.6 17.7h6.8" fill="none" stroke="#0d6b3c" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
           </div>
         </div>
-        <p class="offnote">
-          <b>「블록 자리는 항상 같다」(라운드 6)를 끝까지 지킨다.</b> 산 블록은 산다.
-          대가 — <b>다 실패하면 같은 말과 같은 버튼이 다섯 번 쌓인다.</b>
-          다시 시도를 다섯 번 눌러야 한다.
+        <p class="pcol-note">
+          <b>지난주 — 초록 지폐 + ₩.</b> 애플 <code>💵</code>의 짜임이다 — 초록 그라디언트 지폐,
+          흰 안쪽 테, 가운데 연초록 원에 진초록 ₩. 손 든 사람의 셔츠와 같은 초록을 그대로 쓴다.
+          앞서 있던 동전 더미는 새긴 통화 기호가 ¥로 읽혀 걷었다(원화는 ₩).
         </p>
       </div>
-
-      <div class="offcol">
-        <p class="offcap"><b>나 — 화면 한 장만</b></p>
-        <div class="offslot" style="display: grid; place-items: center; min-height: 232px">
-          <div style="text-align: center">
-            <p class="fail-title">불러오지 못했어요</p>
-            <p class="caption" style="margin-top: 4px">잠시 뒤에 다시 시도해 주세요</p>
-            <button class="button-quiet" type="button" style="margin: 12px auto 0">다시 시도</button>
+      <div class="pcol">
+        <div class="marktiles">
+          <div class="marktile">
+            <svg viewBox="0 0 36 36" aria-hidden="true">
+              <rect x="5" y="17.5" width="6.8" height="13" rx="2.4" fill="url(#amber)" />
+              <rect x="14.6" y="8" width="6.8" height="22.5" rx="2.4" fill="url(#blue)" />
+              <rect x="24.2" y="13" width="6.8" height="17.5" rx="2.4" fill="url(#green)" />
+            </svg>
           </div>
         </div>
-        <p class="offnote">
-          한 번만 말하고 <b>다시 시도 버튼도 하나</b>다. 대가 —
-          <b>하나만 실패해도 멀쩡한 블록 넷을 같이 걷는다.</b> 오늘 출근 인증을 못 하게 된다.
+        <p class="pcol-note">
+          <b>8월 — 다색 막대 셋.</b> 애플 <code>📊</code>의 짜임으로 호박·파랑·초록 막대가 그림
+          자체로 선다. 셋 다 이미 쓰는 그라디언트라 새 색이 없다. 앞서 있던 파랑 사각 배경은
+          「배경 블록 없이 그림 자체로 선다」 위반이고 출근 버튼의 파랑과도 경쟁했다.
         </p>
       </div>
-
-      <div class="offcol">
-        <p class="offcap"><b>다 — 섞는다</b> · 기본 선택 · 기기가 보여주는 것</p>
-        <div class="offslot">
-          <p class="offcap" style="margin: 0 0 6px">일부 실패 → 그 블록만</p>
-          <div class="card card-rows">
-            <div class="row-fail on">
-              <span class="empty-line">다가오는 근무를 불러오지 못했어요</span>
-              <button class="button-quiet" type="button">다시 시도</button>
-            </div>
-          </div>
-          <p class="offcap" style="margin: 12px 0 6px">전부 실패 → 화면 한 장</p>
-          <div class="card" style="display: grid; place-items: center; min-height: 96px">
-            <div style="text-align: center">
-              <p class="fail-title">불러오지 못했어요</p>
-              <button class="button-quiet" type="button" style="margin: 10px auto 0">다시 시도</button>
-            </div>
+      <div class="pcol">
+        <div class="marktiles">
+          <div class="marktile">
+            <svg viewBox="0 0 36 36" aria-hidden="true">
+              <path
+                d="M6.5 27.5 13.5 20 18.5 23.5 25 15.5"
+                fill="none"
+                stroke="url(#violet)"
+                stroke-width="4.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="M30.4 9 23 10.6 28 15.6z" fill="#6a3bd8" />
+            </svg>
           </div>
         </div>
-        <p class="offnote">
-          문구를 <b>블록 이름으로 갈라</b> 무엇이 없는지 그 자리에서 말하고, 아무것도 못 받았으면
-          한 장으로 묶는다. 대가 — <b>규칙이 둘이라 「몇 개부터 한 장인가」를 정해야 한다.</b>
-          시안은 <b>전부 실패일 때만</b> 한 장으로 잡았다.
+        <p class="pcol-note">
+          <b>누적 — 보라 오름 꺾은선 + 화살촉.</b> 애플 <code>📈</code>의 방향을 순환
+          화살표(<code>🔄</code>)와 같은 선 굵기 4.2로 그렸다 — 종이 없이 선 자체로 선다.
+          보라(<code>#b18cff</code> → <code>#6a3bd8</code>)는 이 그림이 들여온 고정색이다.
+          애플의 빨간 선은 「빨강은 진짜 오류에만」 규칙에 걸려 못 쓴다.
         </p>
       </div>
     </div>
+
+    <h2 class="section-title">글자 계층 — 여섯 단계</h2>
+    <p class="section-note">
+      스케일 8단계(<code>FOUNDATIONS.md:56-63</code>)는 라운드 2 그대로고, 바꾼 것은 어느 자리에
+      어느 단계를 쓰는지와 <strong>무게</strong>다. 홈에 <strong>700이 한 글자도 없다</strong> —
+      가장 무거운 것이 600이고, 값은 500에 머문다. 「무게로 소리치지 말고 크기와 색으로 말한다」가
+      이 표의 한 줄 요약이다.
+    </p>
+    <div class="table-wrap">
+      <table class="state-table">
+        <thead>
+          <tr>
+            <th>단계</th>
+            <th>역할</th>
+            <th>무게 · 색</th>
+            <th>홈에서 서는 자리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>26/34</strong></td>
+            <td>큰 숫자 — 지금 세는 값</td>
+            <td><strong>600</strong> · strong · tabular</td>
+            <td><strong>카운트다운 하나뿐이다.</strong> 주급이 18로 내려와(라운드 21) 이 단계는 홈에서
+              한 자리만 갖는다 — 그 자리가 곧 「지금 할 일」이라는 뜻이 된다</td>
+          </tr>
+          <tr>
+            <td><strong>22/30</strong></td>
+            <td>화면 제목</td>
+            <td><strong>600</strong> · strong</td>
+            <td>「홈」 하나</td>
+          </tr>
+          <tr>
+            <td><strong>18/26</strong></td>
+            <td>행 값 <em>(구 카드 제목 단계의 재배정)</em></td>
+            <td><strong>500</strong> · strong · tabular</td>
+            <td>급여 행 셋의 금액 · 주급 발치 금액 · 없음 상태의 「—」.
+              <strong>다가오는 근무만 16/24로 내려 쓴다</strong>(라운드 22 예외)</td>
+          </tr>
+          <tr>
+            <td><strong>16/24</strong></td>
+            <td>문장 값과 그 아래 자리</td>
+            <td>문장 400 · 숫자·날짜 <strong>500</strong> · strong</td>
+            <td>알림 문장 · 오늘 카드 포지션 · 배치도 모달 제목(600)과 명단 · 주간 스트립 근무일
+              숫자(500) · 다가오는 근무 날짜(500)</td>
+          </tr>
+          <tr>
+            <td><strong>14/20</strong></td>
+            <td>행동</td>
+            <td>파란 버튼 600 · 더보기 400</td>
+            <td>「출근 인증하기」는 600으로 부르고, 「전체 일정 보기」는 400으로 조용히 있는다 —
+              같은 크기라도 무게가 급함을 가른다</td>
+          </tr>
+          <tr>
+            <td><strong>13/18</strong></td>
+            <td>메타</td>
+            <td>이름표 <strong>500</strong> muted · 라벨/캡션 400 muted · D 배지 <strong>600</strong> ·
+              <strong>알약 400</strong> · 탭 라벨 400(선택 600)</td>
+            <td>블록 이름표 · 행 라벨 · 캡션 · D 배지 · 알약 「확인」 · 하단 탭 라벨</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="section-note">
+      <strong>단계 밖 값은 쓰지 않는다.</strong> <code>display</code> 32/40은 홈에 자리가 없고,
+      15/22처럼 표에 없는 크기는 이번 판에서 걷어냈다(아래 「실제 값과 어긋났던 곳」).
+    </p>
+
+    <h2 class="section-title">아이템 안의 순서 규칙</h2>
+    <p class="section-note">
+      홈에 두 줄짜리가 두 종류 있고 순서가 반대다. 이것은 우연이 아니라 규칙이다 —
+      <strong>숫자가 주인공이면 라벨이 위, 주인공이 읽을 것이면 그것이 위.</strong> 여기에 라운드
+      21이 세 번째 꼴을 더했다 — 쌓지 않고 한 줄에 좌우로 세우는 자리다.
+    </p>
+    <div class="table-wrap">
+      <table class="state-table">
+        <thead>
+          <tr>
+            <th>종류</th>
+            <th>윗줄</th>
+            <th>아랫줄</th>
+            <th>쓰는 곳</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>지표 (훑는 줄)</strong></td>
+            <td>라벨 13/18 muted</td>
+            <td>값 18/26 · <strong>500</strong></td>
+            <td>급여 행 셋 — 「지난주 · 2회 11시간」 위, 금액 아래</td>
+          </tr>
+          <tr>
+            <td><strong>문장 (읽는 줄)</strong></td>
+            <td>문장 16/24</td>
+            <td>캡션 13/18 muted</td>
+            <td>알림 카드 · 오늘 카드의 좌우 양쪽 · <strong>다가오는 근무</strong>(날짜가 주인공이라
+              날짜 위·포지션 아래 — 라운드 22)</td>
+          </tr>
+          <tr>
+            <td><strong>한 줄 좌우 (견주는 줄)</strong></td>
+            <td colspan="2">왼쪽 캡션 13/18 muted · 오른쪽 값 18/26 500 — 두 줄이 아니라 한 줄이다</td>
+            <td>주급 발치(라운드 21). 두 줄로 쌓으면 홈에 큰 숫자가 둘이 되어 카운트다운과 싸운다</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title">배치 계층 — 지면 → 카드 → 행 → 앵커</h2>
+    <div class="table-wrap">
+      <table class="state-table">
+        <thead>
+          <tr>
+            <th>층</th>
+            <th>규칙</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>지면</strong></td>
+            <td>좌우 16 · 블록 사이 12 · 블록 이름표는 지면 위 13/18 <strong>500</strong>, 카드까지 6</td>
+          </tr>
+          <tr>
+            <td><strong>카드</strong></td>
+            <td>모서리 20 · 안쪽 여백 16. 예외 둘 — <strong>행 카드는 상하 4</strong>(행의 12와 합쳐
+              첫/끝 행이 16), <strong>주간 카드는 상하 14</strong>(스트립 셀이 이미 자기 높이를 갖는다)</td>
+          </tr>
+          <tr>
+            <td><strong>행</strong></td>
+            <td>상하 12 · 행 사이 hairline <code>#e5e8eb</code> · 한 행에 목적지 하나.
+              라운드 23이 14·8 안을 재보고 <strong>12로 남겼다</strong></td>
+          </tr>
+          <tr>
+            <td><strong>왼쪽 앵커</strong></td>
+            <td>32×32 고정 — 그림도 D 배지도 같은 칸. 본문과 14. <strong>알림 카드의 그림만 28</strong>
+              이고 본문과 12다(라운드 8 결정 유지)</td>
+          </tr>
+          <tr>
+            <td><strong>오른쪽 자리</strong></td>
+            <td>셋 중 하나만 — 알약(높이 34) · 아이콘 버튼(터치 44) · 화살표 20. 겹쳐 두지 않는다.
+              알림 카드는 끄기 버튼이 44를 쓰므로 카드 오른쪽 여백이 8이다</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title">실제 값과 어긋났던 곳 — 이번 판에서 고침</h2>
+    <p class="section-note">
+      표를 화면 코드와 한 줄씩 대조하다 찾은 셋이다. 규칙을 화면에 맞춘 것이 둘, 화면을 규칙에
+      맞춘 것이 하나다.
+    </p>
+    <div class="table-wrap">
+      <table class="state-table">
+        <thead>
+          <tr>
+            <th>어디</th>
+            <th>표에 적혀 있던 것</th>
+            <th>화면의 실제</th>
+            <th>어느 쪽으로 맞췄나</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>알약 「확인」</td>
+            <td>14/20 600 행동 단계</td>
+            <td>13/18 600</td>
+            <td><strong>둘 다 낮췄다.</strong> 크기는 화면대로 13/18(높이 34에 14/20이면 위아래가
+              눌린다), 무게는 <strong>400</strong>으로 더 내렸다 — 더보기 행과 같은 결이다
+              (라운드 26)</td>
+          </tr>
+          <tr>
+            <td>더보기 행</td>
+            <td>14/20 · 600</td>
+            <td>14/20 · 400 회색</td>
+            <td><strong>화면대로.</strong> 「전체 일정 보기」가 파란 버튼과 같은 무게일 이유가 없다.
+              크기는 같고 무게가 급함을 가른다</td>
+          </tr>
+          <tr>
+            <td>배치도 모달 명단</td>
+            <td>표에 없던 자리</td>
+            <td>15/22 — 스케일 8단계 밖</td>
+            <td><strong>규칙대로.</strong> 16/24로 올리고 내 이름은 500 파랑으로 낮췄다(600은
+              라운드 19 감량 뒤 D 배지·버튼의 무게다)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="section-note">
+      함께 걷어낸 것 — 쓰이지 않는 CSS 넷(<code>.amount-big</code> 26/34 700,
+      <code>.datebox</code>, <code>.lrow</code>, 벤치용 <code>.spec</code>). 앞 라운드에서 폐기된
+      배치의 잔해라 두면 다음 사람이 살아 있는 규칙으로 읽는다.
+    </p>
 
     <script>
       (function () {
@@ -2452,6 +2746,12 @@
           });
         });
 
+        document.getElementById("resetNotices").addEventListener("click", function () {
+          current = 0;
+          slot.classList.remove("collapsed");
+          showNotice(0, true);
+        });
+
         document.querySelectorAll(".tab").forEach(function (tab) {
           tab.addEventListener("click", function () {
             document.querySelectorAll(".tab").forEach(function (other) {
@@ -2483,6 +2783,22 @@
               apply();
             });
           });
+        });
+
+        document.getElementById("skipToStart").addEventListener("click", function () {
+          state.today = "open";
+          remain.open = 12;
+          past = 0;
+          paintClock();
+          apply();
+        });
+
+        document.getElementById("skipPast").addEventListener("click", function () {
+          state.today = "open";
+          remain.open = 0;
+          past = 724;
+          paintClock();
+          apply();
         });
 
         var toastTimer = null;
