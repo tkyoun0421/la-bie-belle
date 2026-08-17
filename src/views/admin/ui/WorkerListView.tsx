@@ -25,7 +25,7 @@ function statusHref(targetStatus: ProfileStatus, search: string): string {
 export function WorkerListView({ workers, search, status }: WorkerListViewProps) {
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-4 p-6 pb-nav-safe">
-      <h1 className="typo-display text-text-strong">근무자 관리</h1>
+      <h1 className="typo-headline-md text-text-strong">근무자 관리</h1>
       <form method="get" action={ADMIN_WORKERS_PATH} className="flex gap-2">
         <input type="hidden" name="status" value={status} />
         <input

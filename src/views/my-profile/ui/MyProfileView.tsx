@@ -17,7 +17,7 @@ export function MyProfileView({ info, onUpdatePhone, onSetWage }: MyProfileViewP
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-nav-safe">
-      <h1 className="typo-display text-text-strong">내 정보</h1>
+      <h1 className="typo-headline-md text-text-strong">내 정보</h1>
       <section className="flex flex-col">
         <div className="flex items-center justify-between border-b border-border py-3">
           <span className="typo-body text-text">이름</span>

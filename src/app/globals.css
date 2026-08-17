@@ -38,10 +38,17 @@
   --color-text-muted: var(--raw-gray-600);
   --color-text-weak: var(--raw-gray-400);
   --color-surface: var(--raw-white);
-  --color-surface-weak: var(--raw-gray-100);
+  --color-surface-weak: var(--raw-gray-150);
   --color-surface-strong: var(--raw-gray-200);
-  --color-border: var(--raw-gray-300);
+  --color-border: var(--raw-gray-250);
   --color-on-action: var(--raw-white);
+
+  --color-canvas: var(--raw-gray-150);
+  --color-ink-800: var(--raw-gray-800);
+  --color-action-deep: var(--raw-blue-800);
+  --color-action-tint-weak: var(--raw-blue-25);
+  --color-action-tint: var(--raw-blue-50);
+  --color-action-tint-strong: var(--raw-blue-100);
 
   --spacing-0: 0px;
   --spacing-0\.5: 2px;
@@ -90,15 +97,22 @@
 :root {
   color-scheme: light;
 
+  --raw-blue-800: #0c3f9c;
   --raw-blue-500: #0052ff;
   --raw-blue-700: #003ecc;
   --raw-blue-200: #a8b8cc;
+  --raw-blue-100: #cfe0fc;
+  --raw-blue-50: #e4edfd;
+  --raw-blue-25: #f2f6fd;
   --raw-ink-950: #0a0b0d;
+  --raw-gray-800: #3a3f4a;
   --raw-gray-700: #5b616e;
   --raw-gray-600: #7c828a;
   --raw-gray-400: #a8acb3;
   --raw-gray-300: #dee1e6;
+  --raw-gray-250: #e5e8eb;
   --raw-gray-200: #eef0f3;
+  --raw-gray-150: #f1f3f6;
   --raw-gray-100: #f7f7f7;
   --raw-white: #ffffff;
   --raw-green-500: #05b169;
@@ -106,28 +120,22 @@
   --raw-yellow-500: #f4b000;
 }
 
-@utility typo-display {
-  font-size: 32px;
-  line-height: 40px;
-  font-weight: 700;
-}
-
 @utility typo-headline-lg {
   font-size: 26px;
   line-height: 34px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 @utility typo-headline-md {
   font-size: 22px;
   line-height: 30px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 @utility typo-title {
   font-size: 18px;
   line-height: 26px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 @utility typo-body {
@@ -139,7 +147,7 @@
 @utility typo-body-strong {
   font-size: 16px;
   line-height: 24px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 @utility typo-label {
@@ -152,6 +160,12 @@
   font-size: 13px;
   line-height: 18px;
   font-weight: 400;
+}
+
+@utility typo-caption-strong {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
 }
 
 [data-vaul-drawer][data-vaul-drawer-direction][data-state] {
@@ -308,7 +322,7 @@
 body {
   -webkit-text-size-adjust: 100%;
   font-family: var(--font-sans);
-  background-color: var(--color-surface);
+  background-color: var(--color-canvas);
   color: var(--color-text);
   overscroll-behavior-y: contain;
 }

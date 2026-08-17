@@ -1,7 +1,7 @@
 export function PrivacyPolicyView() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6">
-      <h1 className="typo-display text-text-strong">개인정보 처리방침</h1>
+      <h1 className="typo-headline-md text-text-strong">개인정보 처리방침</h1>
 
       <section className="flex flex-col gap-2">
         <h2 className="typo-title text-text-strong">수집하는 개인정보</h2>

@@ -12,7 +12,7 @@ export function DormantView({ inactivityAnchorAt, onReactivate }: DormantViewPro
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col items-center justify-center gap-4 p-6 text-center">
-      <h1 className="typo-display text-text-strong">휴면 상태예요</h1>
+      <h1 className="typo-headline-md text-text-strong">휴면 상태예요</h1>
       <p className="typo-body text-text">다시 활동하기를 누르면 곧바로 서비스를 이용할 수 있어요</p>
       <p className="typo-body text-text">자동 탈퇴 예정일: {autoDepartureDate}</p>
       <ReactivateButton onReactivate={onReactivate} />

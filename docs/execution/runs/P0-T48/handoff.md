@@ -1,9 +1,41 @@
 # P0-T48 handoff
 
+## 2026-08-18 · 개발 1라운드 GREEN (토큰·타이포 이관)
+
+- 기준 커밋: `ce2e605ee1edb2dd70fbeafba909d9ab594bd75b` (RADIO revision 4,
+  sha256 `0a284bc45a7514db4fc30ef22b28471aac4c74e8a0d9c75bdaa9fe5f721bf51e`).
+- **아래 「설계 봉인」 절의 「revision 1」 표기는 그 세션 시점 기준으로 지금은 낡았다** —
+  `index.jsonl`의 실제 `development_approval`은 revision 4다. 이 절을 다시 손대지 않았으니
+  다음 세션이 revision 4 기준으로 읽어라.
+- 이 라운드가 한 것 넷: (1) `globals.css` `:root`에 원시 팔레트 7행(blue-800/100/50/25,
+  gray-800/250/150) 추가, `@theme`에 의미 토큰 6개(`--color-canvas`·`-ink-800`·`-action-deep`·
+  `-action-tint-weak`·`-action-tint`·`-action-tint-strong`) 신설, `--color-border`→
+  `--raw-gray-250`·`--color-surface-weak`→`--raw-gray-150` 참조 교체, `body` 배경을
+  `--color-canvas`로 교체. (2) `@utility typo-*` 8개 재정의(`typo-display` 삭제,
+  `typo-caption-strong` 신설). (3) `typo-display` 사용처를 그레마다 치환 — 화면 제목 h1
+  `typo-headline-md`, `PayView.tsx:152` 금액 `typo-title`. **홈·일정(`HomeView.tsx`·
+  `ScheduleView.tsx`)의 `typo-display`는 손대지 않았다** — publisher 몫이라 그대로 둠. (4)
+  `FOUNDATIONS.md` 원시 팔레트 표·타이포그래피 표 갱신.
+- **재현**: `pnpm vitest run src/app/__tests__/globals.test.ts` (106 passed) ·
+  `pnpm gate:tokens`(무출력 exit 0) · `pnpm verify`(아래 미결 둘을 빼면 통과, 근거는
+  `docs/execution/runs/P0-T48/tdd.json`의 green 기록).
+- **미결 1 — `gate:bundle` 508KB/500KB 초과.** 이 라운드 변경 전 HEAD에서도 동일하게
+  실패함을 `git stash` 대조로 확인했다(내 변경과 무관). `docs/execution/reviews/backlog.md:372`에
+  P0-T47 리뷰가 이미 올려둔 항목이라 새로 만들지 않았다.
+  `--` `pnpm check:app-build` · `check:client-secret-scan` · `test:e2e`(88개 중 하나 flaky
+  work_date 충돌, 단독 재실행 시 통과) · `gate:motion-render-budget` · `gate:all`은 모두
+  개별로 통과 확인했다.
+- **미결 2 — `no-logic-in-ui` RED.** `tools/eslint-plugin-project/rules/__tests__/no-logic-in-ui.test.mjs`가
+  아직 커밋 안 된 채 작업 트리에 있다(다음 라운드 「Dumb UI 린트」 몫). 이 커밋에 포함하지
+  않았다 — 검증 중에는 잠시 치워뒀다가 그대로 복원했다.
+- **치환 개수 불일치**: RADIO는 「스물넷 h1 + 금액 1 = 스물다섯」이라 적었는데, 실제 grep
+  전수 확인 결과 h1은 23개(홈·일정 포함)뿐이라 합계 24다. 셈이 하나 어긋나 있을 뿐 지시
+  자체(치환 대상·클래스명)는 분명해 진행했다. 다음 라운드가 문서 정본을 다시 셀 때 참고.
+
 ## 2026-08-18 · 설계 봉인 (디자인 라운드 34까지)
 
 - 작업 식별자: P0-T48 (전역 디자인 틀 재제안과 기존 화면 퍼블리싱)
-- 현재 단계: **2단계 설계가 닫혔다.** RADIO revision 1이 승인됐고 `index.jsonl`의 상태가 `planned`다
+- 현재 단계: **3단계 개발 진행 중.** RADIO revision 1이 봉인됐고 `index.jsonl`의 상태가 `in_progress`다
 - 기준 시각: 2026-08-18 (개발 설계 승인 직후)
 - 이어받는 세션이 읽을 순서: 이 파일 → [`../../radio/P0-T48-radio.md`](../../radio/P0-T48-radio.md)(봉인된 정본) →
   [`design/NOTES.md`](design/NOTES.md)(라운드 근거)
@@ -29,10 +61,11 @@
 
 ### 확정된 사실
 
-- `index.jsonl`의 P0-T48이 `design_pending`이고 `product_approval`(user, 2026-08-16)이 기록돼
-  있다. 저장소 전체에 `in_progress`가 없다.
-- **디자인 규칙의 정본은 `design/NOTES.md`다.** 라운드 1~28이 기록돼 있고 **전부 확정이다.**
-  확정된 화면의 계약은 `design/confirmed/<화면>.html`이다.
+- `index.jsonl`의 P0-T48이 `in_progress`이고 승인 둘이 다 기록돼 있다. 저장소에 다른
+  `in_progress`는 없다.
+- **디자인 규칙의 근거는 `design/NOTES.md`가 갖고, 봉인된 정본은 RADIO다.** 라운드 1~34가 전부
+  확정이며 화면 계약은 `design/confirmed/<화면>.html`이다. 이관이 끝나면 정본이
+  `docs/product/design/**`로 옮겨간다.
 - 시안 발행 주소: `https://claude.ai/code/artifact/2d3506c2-1e3b-46c9-b1a5-9c257990b879`
   — 발행 시 이 주소를 `url` 인자로 넘겨야 같은 링크가 유지된다. favicon은 `🎨`로 고정.
 - **`proposal.html`은 인터랙티브 프로토타입이다.** 흐름 — 덮어쓰기 →
@@ -97,7 +130,7 @@
 - **P0-T55 포지션 교대 요청 기획**이 `proposed`로 섰다 — `WORKER-FLOWS.md:86`이 막아둔 기능이라
   기획 승인이 먼저다. 시안은 이미 `confirmed/schedule.html`에 그려져 있다.
 
-### 바로 다음 행동 (새 세션)
+### 다음 행동
 
 3단계 개발이다. RADIO Architecture가 순서를 갖고 있다.
 

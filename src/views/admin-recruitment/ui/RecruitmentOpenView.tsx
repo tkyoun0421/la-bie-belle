@@ -115,7 +115,7 @@ export function RecruitmentOpenView({
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-4 p-6 pb-12">
-      <h1 className="typo-display text-text-strong">모집 오픈</h1>
+      <h1 className="typo-headline-md text-text-strong">모집 오픈</h1>
       <Calendar
         month={month}
         today={new Date(`${today}T00:00:00`)}

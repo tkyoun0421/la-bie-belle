@@ -133,7 +133,7 @@ export function PayView({ estimatedPay, rehearsalEntries: initialRehearsalEntrie
     <RouterPullToRefresh>
       <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-nav-safe">
         <div className="flex items-center justify-between">
-          <h1 className="typo-display text-text-strong">예상 급여</h1>
+          <h1 className="typo-headline-md text-text-strong">예상 급여</h1>
           <Button
             variant="icon"
             aria-label={hideAmount ? "금액 표시하기" : "금액 숨기기"}
@@ -149,7 +149,7 @@ export function PayView({ estimatedPay, rehearsalEntries: initialRehearsalEntrie
 
         <section className="flex flex-col gap-1">
           <p className="typo-caption text-text">이번 달 예상 합계</p>
-          <p className="typo-display text-text-strong tabular-nums">
+          <p className="typo-title text-text-strong tabular-nums">
             {hideAmount ? (
               "••••••"
             ) : (

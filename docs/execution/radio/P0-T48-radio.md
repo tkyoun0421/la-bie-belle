@@ -1,7 +1,7 @@
 # P0-T48 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 1
+- revision: 4
 - 기획 승인: user, 2026-08-16 (범위 축소 2026-08-18)
 - 개발 설계 승인: user, 2026-08-18
 
@@ -9,12 +9,15 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 4 | 2026-08-18 | **Next 파일 규약을 쓰고 상태 도구 둘을 들인다**(사용자 결정 셋). ① 라우트별 `loading.tsx`·`error.tsx`를 세우고 홈의 블록 다섯을 `<Suspense>`로 감싸 스트리밍한다 — 봉인된 설계가 `HomeSkeleton.tsx`·`HomeFailure.tsx`로 손수 짜던 것을 프레임워크가 준다. ② 배정표 시트를 **병렬 + 인터셉팅 라우트**로 올려 뒤로가기로 닫히고 링크로 열리게 한다. 겹겹 시트가 URL 겹이 되므로 `useSheetStack`이 없어진다. ③ `ARCHITECTURE.md:24`가 이미 정해둔 **TanStack Query를 설치**하고(지금까지 `package.json`에 없었다) 일정 목록의 지난 회차 무한 스크롤이 쓴다. ④ **zustand**를 금액 가림 설정 하나에만 쓴다 — 화면을 가로지르는 유일한 클라이언트 상태다. 데이터 로딩 구조가 바뀌므로 revision 1의 비목표 「서버·데이터 변경 안 함」을 **부분 개방**한다 — 쿼리 함수는 그대로 두고 **누가 언제 부르나**만 바꾼다. 2026-08-18 사용자 결정. |
+| 3 | 2026-08-18 | **화면 상태를 둘 자리를 적는다.** revision 2가 「`ui`는 로직을 모른다」를 박았는데 `model`은 `config/fsd.json`이 `forbidImports: ["react","react-dom"]`로 막아 `useState`를 못 담는다. revision 1의 Architecture가 `model` 파일만 이름을 대고 React 상태의 자리를 안 적어 **시트가 열렸나·무엇을 골랐나·금액이 열렸나가 갈 곳이 없었다.** 세 갈래로 가른다 — `model`은 판정, `hooks`는 상태와 전이, `ui`는 표현. 홈 훅 셋·일정 훅 셋·공용 훅 둘을 Architecture에 더한다. `views/*/hooks/`는 이 저장소에서 처음 쓰는 자리지만 `fsd.json`이 이미 정의한 세그먼트라 새 계약이 아니다. 2026-08-18 사용자 지적. |
+| 2 | 2026-08-18 | **Dumb UI를 규칙으로 박고 기계가 지키게 한다**(사용자 지시). `DEV-CODE-09`가 이미 「`ui`는 표현과 이벤트 배선만 소유한다」고 적었는데 `SHOULD`이고 예외 조항 「표현용 조건부 렌더」가 뒷문이라 지켜지지 않았다 — 지금 `HomeView.tsx`가 그 증거다. `MUST`로 올리고 예외를 좁히며, `project/no-logic-in-ui` 린트를 신설해 `ui` 파일에서 값 비교·산술·`.length`·파생 배열 메서드·`Date`/`Intl`/포맷 호출을 error로 막는다. 열거값 `===` 분기와 JSX 안의 목록 `map`은 통과한다. 이 task가 홈·일정을 새로 쓰므로 **규칙을 먼저 세우지 않으면 새 화면이 같은 자리에 로직을 다시 심는다.** `docs/standards/DEVELOPMENT.md`·`tools/eslint-plugin-project/**`·`eslint.config.mjs`·`config/fsd.json`을 변경 허용 경로에 더한다. 2026-08-18 사용자 결정. |
 | 1 | 2026-08-18 | 최초 작성. 디자인 라운드 1~34가 닫힌 뒤의 이관 설계다. 확정 규칙의 정본은 `runs/P0-T48/design/NOTES.md`이고 화면 계약은 `design/confirmed/home.html`·`schedule.html`이다. 이 RADIO는 그 둘을 L3 정본(`docs/product/design/**` + `globals.css`)으로 옮기는 경로와 두 화면의 퍼블리싱 구조만 정한다. `test_mode`를 `verification`에서 `tdd`로 바꾼다. |
 
 - 관련 spec: DOCS:SDD, ADR:0014(FSD 뷰 레이어 이름)
 - 적용 깊이: 일반 — 표시 계층과 문서다. 서버 경계·DB·RLS·권한·개인정보·금액 계산 로직을 건드리지 않는다. 금액은 이미 계산된 값을 받아 가리고 여는 표시 규칙만 다룬다.
 - test mode: tdd
-- 예정 check IDs: global-template-sealed, home-schedule-republished, design-token-ladder, typo-scale-reweight, home-empty-states, home-failure-states, schedule-calendar-grammar, preview-state-matrix
+- 예정 check IDs: global-template-sealed, home-schedule-republished, design-token-ladder, typo-scale-reweight, home-empty-states, home-failure-states, schedule-calendar-grammar, preview-state-matrix, dumb-ui-lint, route-convention-states, roster-sheet-intercept, client-state-boundaries
 
 ## 기획 승인 이후의 정정
 
@@ -24,7 +27,7 @@
 
 ### 범위와 비목표
 
-범위는 다섯이다.
+범위는 여덟이다.
 
 ① **색 토큰 이관** — 시안이 쓰는 파랑 사다리 넷과 회색 셋을 `FOUNDATIONS.md` 원시 팔레트에 올리고 `globals.css`의 의미 토큰이 그것을 가리키게 한다. `gate:tokens`가 통과한다.
 
@@ -36,6 +39,12 @@
 
 ⑤ **일정 퍼블리싱** — `confirmed/schedule.html` 계약대로 달력·목록 두 뷰와 바닥 시트를 세운다. 같은 네 상태를 포함한다.
 
+⑥ **Dumb UI 강제** — `DEV-CODE-09`를 `MUST`로 올리고 `project/no-logic-in-ui` 린트를 신설한다. `ui`는 판정된 값을 받아 그릴 뿐 계산을 모른다.
+
+⑦ **라우트 규약** — 라우트별 `loading.tsx`·`error.tsx`, 블록별 `<Suspense>` 스트리밍, 배정표 시트를 병렬 + 인터셉팅 라우트로.
+
+⑧ **상태 도구 둘** — TanStack Query 설치와 Provider(`ARCHITECTURE.md:24`의 적용), zustand로 금액 가림 설정 하나.
+
 두 화면의 모든 상태는 `/preview`에 목 데이터로 등록된다.
 
 설계 비목표는 여섯이다.
@@ -43,7 +52,8 @@
 - **나머지 열아홉 화면.** P0-T49~T54가 맡는다. 이 task가 `docs/product/design/**`에 정본을 세워두면 그쪽은 남의 run 폴더를 안 읽는다.
 - **포지션 교대.** `WORKER-FLOWS.md:86`이 만들지 말라고 적은 기능이라 기획 승인이 먼저다(P0-T55). 시안(`confirmed/schedule.html`)에 그려져 있지만 코드로 옮기지 않는다. 바닥 시트 발치의 `근무 변경 요청` 버튼은 `근무 취소` 한 갈래만 연다.
 - **출퇴근 인증 화면.** 라운드 34 후속에서 별도 페이지로 정해졌고 화면 자체는 P0-T49다. 홈의 파랑 버튼은 `/attendance`로 이동만 하고 그 페이지는 이 task가 만들지 않는다.
-- **서버·데이터·로직.** Server Action, 쿼리, 스키마, RLS를 건드리지 않는다. 금액 가림 설정은 기기 저장으로 붙이고 계정 저장은 후속 task가 저장 계층만 갈아끼운다.
+- **쿼리·스키마·RLS.** `entities/*/api/**`의 쿼리 함수 본문, DB 스키마, RLS 정책을 건드리지 않는다. revision 4가 여는 것은 **누가 언제 부르나**뿐이다 — `page.tsx`가 한 번에 `await`하던 것을 블록별 async 서버 컴포넌트가 각자 `await`한다. 반환 타입과 인자는 그대로다. 새로 만드는 서버 진입점은 지난 회차 더 불러오기 하나이고 기존 쿼리를 감싼다.
+- **금액 가림의 계정 저장.** zustand + `persist`로 기기에 둔다. `profiles` 컬럼·RLS·서버 왕복은 후속 task가 저장 계층만 갈아끼운다. 스토어 인터페이스는 그대로 산다.
 - **기획으로 돌아간 물음 넷.** 주급의 주 경계(`PRD.md:346`), 인증을 닫는 시각(`PRD.md:298-300`), 「확정」이 누구의 확정인가(`schedule-cell-state.ts:20-29`), 포지션 교대 승인 규칙. 해당 PRD 줄을 이 task가 고치지 않는다. 화면은 NOTES가 적은 가정대로 그린다.
 - **`action`·`action-pressed` 의미 토큰의 배경·테두리 판정.** 아래 「미결 사항」이 근거를 갖는다.
 
@@ -58,8 +68,12 @@
 - **출퇴근 시각은 서버가 만든다**(INV-ATT-01). 이 task의 화면은 받은 값을 표시할 뿐이고 클라이언트 시계로 인증 성립을 판정하지 않는다.
 - **예상 급여는 예정 시간 계산 값이다**(INV-PAY-01). 「받은 총급여」라는 표현을 쓰지 않는다. 이름은 「누적 예상 급여」다.
 - **빨강을 쓰지 않는다.** 로딩 실패도, 연결 끊김도, 변경 미반영도 빨강이 아니다. 빨강은 위치 권한 실패 같은 진짜 오류에만 남는다.
-- **화면 로직은 `model`이 갖는다.** `ui`는 받은 값을 그린다. 빈 상태 판정, 말줄임 기준, D-n 계산, 블록 순서가 전부 `model`이다.
+- **자리는 셋이다.** `model`이 **판정**을 갖고(React 금지, 렌더 없이 테스트가 돈다), `hooks`가 **상태와 전이**를 갖고(`useState`·`useReducer`·`useEffect`), `ui`가 **표현**을 갖는다. 훅은 상태를 들되 판정은 `model`에 묻는다 — 「선택된 날이 18일」은 상태라 훅이고, 「그날 발치에 무엇이 뜨나」는 판정이라 `model`이다. 훅에 `.length === 0`이 들어오면 그건 `model`로 내려가야 한다는 신호다.
+- **`ui`는 로직을 모른다.** 받은 값을 그리고 이벤트를 올려보낼 뿐이다. 빈 상태 판정·D-n 계산·남은 시간·금액 포맷·정렬·자르기·개수 세기가 전부 `model`이고, `ui`가 받는 것은 **이미 판정된 열거값과 이미 만들어진 목록**이다. `list.length === 0 ? 빈화면 : 목록`은 표현이 아니라 판정이다 — 그 줄이 `ui`에 있으면 다음 화면이 그것을 근거로 삼는다.
 - `DEV-CODE-07` — 새 컴포넌트에 설명 주석을 넣지 않는다.
+- **프레임워크가 주는 것을 손으로 짜지 않는다.** 첫 페인트는 `loading.tsx`, 라우트 실패는 `error.tsx`, 블록별 지연은 `<Suspense>`, 시트 겹은 URL 겹이다. 같은 일을 컴포넌트 상태로 다시 만들면 뒤로가기·새로고침·링크 공유가 전부 어긋난다.
+- **반짝임을 넣지 않는다.** 지금 `src/app/loading.tsx`가 `animate-pulse`를 쓰는데 라운드 34가 shimmer를 금지했다. 라우트 규약을 세우며 함께 걷는다.
+- **`ui`가 `useQuery`를 부르지 않는다.** 클라이언트 페치도 `hooks`가 갖고 `ui`는 결과를 프롭으로 받는다. Dumb UI 규칙은 데이터 출처를 가리지 않는다.
 - **No barrel files** — 실제 경로로 import한다.
 
 ### 기술 인수 조건
@@ -80,7 +94,19 @@
 14. 하단 탭이 `홈 · 일정 · 급여 · 전체` 넷이고 선택 탭만 `gray-800` 채움이다. 알림은 헤더 오른쪽 종이다.
 15. `/preview`에 홈 아홉 시나리오와 일정 일곱 시나리오가 등록된다.
 16. 홈 주간 스트립이 월요일 시작이고 일정 달력이 일요일 시작이며, 두 화면이 왜 다른지가 `WORKER-FLOWS.md`에 한 줄로 적힌다.
-17. `pnpm verify`가 통과한다.
+17. `DEV-CODE-09`가 `SHOULD`에서 **`MUST`**로 오르고 예외가 「className 조합과 열거값 분기」 둘로 좁혀진다.
+18. `project/no-logic-in-ui`가 `eslint.config.mjs`에 `error`로 켜지고, `ui` 세그먼트 파일에서 비교 연산자(`< > <= >=`) · 산술(`- * / %`) · `.length` 접근 · 파생 배열 메서드(`filter`·`reduce`·`sort`·`slice`·`find`·`some`·`every`·`flatMap`) · `Date`/`Intl`/`toLocaleString`/`toFixed` 호출을 잡는다. 열거값 `===`·`!==` 분기와 **JSX 표현식 안의 `map`**은 통과한다. `__tests__`와 `*.mock.ts`는 대상이 아니다.
+19. 규칙이 **기본 `error`**이고, 아직 이관 안 된 화면만 `eslint.config.mjs`가 경로를 이름으로 대어 끈다. 그 예외 목록이 P0-T49~T54에서 한 줄씩 줄어든다. 새 파일은 목록에 없으므로 처음부터 규칙 아래 선다.
+20. **홈·일정의 `ui` 파일에 이 규칙의 예외가 하나도 없다.**
+21. React 상태가 `views/*/hooks/`와 `shared/hooks/`에만 있다. `views/home/ui/**`·`views/schedule/ui/**`에 `useState`·`useReducer`가 없고, `model` 파일이 `react`를 import하지 않는다(`fsd.json`의 `forbidImports`가 이미 막지만 새 `model` 파일이 실제로 그 아래 서는지 확인한다).
+22. 훅 일곱(홈 둘 · 일정 셋 · 공용 둘)이 `useCamelCase` 이름 규약을 지키고 각자 단위 테스트를 갖는다(`fsd.json`의 `hooks` 세그먼트가 `unitTest: required`다).
+23. `(tabs)` 아래에 `loading.tsx`와 `error.tsx`가 있고, `schedule/`에도 각자 있다. 둘 다 `(tabs)/layout.tsx`의 헤더와 탭바를 남긴 채 안쪽만 바꾼다. `src/app/loading.tsx`의 `animate-pulse`가 걷히고 라운드 34의 skeleton 어법을 따른다.
+24. 홈의 블록 다섯이 각자 `<Suspense fallback>`과 에러 경계 안에 서고, 한 블록이 실패해도 나머지 넷이 렌더된다. `(tabs)/layout.tsx`의 `listNotifications()`도 Suspense 뒤로 물러나 종 점이 탭 트리를 막지 않는다.
+25. **「전부 실패」의 경계가 셸이다.** `(protected)/layout.tsx`의 프로필 조회가 실패하면 화면 한 장이고, 블록별 실패는 블록 자리에서 말한다. 스트리밍에서는 다섯 블록이 각자 실패하는 것과 요청 자체가 실패하는 것이 다른 사건이라, revision 1의 「다섯 중 넷은 블록별, 다섯 다는 한 장」을 이렇게 옮긴다.
+26. 배정표가 `(tabs)/roster/[date]`에 라우트로 서고 `@sheet/(.)roster/[date]`가 그것을 가로채 바닥 시트로 띄운다. 홈의 오늘 카드 발치와 일정의 확정 날짜가 **같은 주소**를 연다. 뒤로가기로 닫히고 새로고침하면 전체 화면으로 열린다. 겹겹 시트는 URL 겹(`/roster/[date]/change`)이라 `useSheetStack`이 없다.
+27. `@tanstack/react-query`가 설치되고 `QueryClientProvider`가 `(protected)` 아래 클라이언트 경계에 선다. 일정 목록의 지난 회차 무한 스크롤이 `useInfiniteQuery`로 돈다.
+28. `zustand`가 설치되고 `shared/hooks/useAmountMasking.ts` 하나만 스토어다. `persist`로 기기에 남고 SSR 수화 경고가 없다. 다른 화면 상태는 스토어에 안 올라간다.
+29. `pnpm verify`가 통과한다.
 
 ### 위험 기반 테스트
 
@@ -99,7 +125,12 @@
 | 14 탭바 | 테스트함 — 네 탭과 `/pay` 활성 매핑 | 테스트함 — `/pay`가 `more` 활성으로 묶이던 기존 동작이 사라짐 | 테스트함 — 선택 탭이 `gray-800` 채움이고 파랑을 안 씀 | 해당 없음 — 탭 표시에 권한 분기가 없다 | 해당 없음 — 라우팅이다 | 해당 없음 — 라우터 상태 하나 |
 | 15 preview | 테스트함 — 두 화면 열여섯 시나리오가 목록에 뜨고 선택되면 렌더 | 테스트함 — 시나리오 배열이 비면 렌더가 깨지지 않음 | 해당 없음 — 목록 유무의 이진 판정 | 해당 없음 — **preview는 목 데이터 전용이다.** 실데이터·서버 호출·인증을 붙이지 않는다 | 해당 없음 — 요청을 안 낸다 | 해당 없음 — 로컬 선택 상태다 |
 | 16 주 시작 요일 | 테스트함 — 스트립이 월요일부터, 달력이 일요일부터 렌더 | 해당 없음 — 요일 배열 상수라 실패 분기가 없다 | 테스트함 — 달을 넘는 주(8/31이 9월 첫 주에 드는 경우)에 스트립이 이어짐 | 해당 없음 — 표시 계층 | 해당 없음 — 순수 계산 | 해당 없음 — 로컬 상태다 |
-| 17 verify | 테스트함 — `pnpm verify` 전체 통과 | 테스트함 — `gate:tokens`·`gate:docs`가 이관 누락을 잡는지 확인 | 해당 없음 — 통과 여부의 이진 판정 | 해당 없음 — CI 실행 권한은 기존 그대로다 | 해당 없음 — 재실행이 같은 결과 | 해당 없음 — 게이트가 순차로 돈다 |
+| 17~20 Dumb UI | 테스트함 — 열거값 분기와 JSX `map`이 통과 | 테스트함 — `list.length === 0` · `new Date(x) - Date.now()` · `shifts.filter(...)`가 각각 error | 테스트함 — **`__tests__`와 `*.mock.ts` 면제가 실제로 먹는지**, `model`·`hooks` 파일은 대상이 아님, 예외 목록에 있는 경로가 조용히 통과함 | 해당 없음 — 정적 분석이다 | 해당 없음 — 순수 판정 | 해당 없음 — ESLint가 파일마다 독립 판정한다 |
+| 21·22 상태의 자리 | 테스트함 — 훅 일곱이 각자 단위 테스트로 상태 전이를 단언 | 테스트함 — 같은 날 두 번 누르기·마지막 알림 끄기·화면 재마운트에서 상태가 규칙대로 움직임 | 테스트함 — **`useAmountReveal`이 화면 복귀로 열릴 땐 리빌 빛을 안 켠다**(손으로 열 때만), 가림 설정이 꺼져 있으면 근무일에도 안 가려짐 | 해당 없음 — 로컬 상태에 권한이 없다 | 테스트함 — 알림 끄기 연타에 카드가 한 장씩만 넘어감 | 해당 없음 — 훅 하나가 한 컴포넌트 트리를 산다 |
+| 23~25 라우트 상태 | 테스트함 — `loading.tsx`·`error.tsx`가 탭 셸을 남긴 채 안쪽만 바꿈 | 테스트함 — 한 블록만 던지면 그 자리만 실패하고 넷이 삶, 셸이 던지면 화면 한 장 | 테스트함 — **다섯 블록이 다 던져도 헤더·탭바가 살아 있음**, `animate-pulse`가 저장소에 안 남음 | 해당 없음 — 실패 표시에 권한 분기가 없다 | 테스트함 — 「다시 시도」가 경계 `reset()` + `router.refresh()`를 한 번만 부름 | 테스트함 — 블록이 서로 다른 시각에 도착해도 순서와 자리가 안 바뀜 |
+| 26 시트 라우트 | 테스트함 — 홈·일정 양쪽에서 같은 주소가 열리고 시트로 뜸 | 테스트함 — 직접 방문·새로고침에서 전체 화면으로 열림 | 테스트함 — **뒤로가기가 겹을 하나씩 벗김**(`/roster/x/change` → `/roster/x` → 원래 화면), 없는 날짜는 not-found | 해당 없음 — 명단 권한은 서버 쿼리가 판정하고 이 task가 안 바꾼다 | 테스트함 — 같은 주소를 두 번 밀어도 시트가 하나 | 해당 없음 — 라우터 상태 하나 |
+| 27·28 상태 도구 | 테스트함 — Provider가 서고 무한 스크롤이 두 회차씩 붙음 | 테스트함 — 더 불러오기 실패 시 목록이 살아 있고 재시도가 가능 | 테스트함 — **zustand `persist`의 SSR 수화**(첫 렌더가 서버와 같음), 저장값이 없을 때의 기본값 | 해당 없음 — 가림 설정은 기기에만 있고 서버로 안 간다 | 테스트함 — 바닥 도달 연타가 같은 페이지를 두 번 안 부름 | 해당 없음 — 쿼리 키 하나에 요청 하나 |
+| 29 verify | 테스트함 — `pnpm verify` 전체 통과 | 테스트함 — `gate:tokens`·`gate:docs`가 이관 누락을 잡는지 확인 | 해당 없음 — 통과 여부의 이진 판정 | 해당 없음 — CI 실행 권한은 기존 그대로다 | 해당 없음 — 재실행이 같은 결과 | 해당 없음 — 게이트가 순차로 돈다 |
 
 핵심 위험 넷을 따로 적는다.
 
@@ -115,10 +146,12 @@
 
 - `DEV-SSOT-01`: 추가 결정 — 디자인 규칙의 정본을 NOTES에서 `docs/product/design/**`로 옮긴다. 이관이 끝나면 NOTES 머리에 「정본은 L3다」를 적어 두 곳이 정본을 다투지 않게 한다.
 - `DEV-TOKEN-01`: 기본 적용 — 화면은 의미 토큰만 쓴다. 원시 hex를 컴포넌트에 직접 적지 않는다. 예외는 그림 자산 안의 고정색이고 NOTES 「그림 자산」 절이 근거를 갖는다.
-- `DEV-ARCH`: 추가 결정 — 홈의 블록 다섯과 일정의 두 뷰를 `widgets/`로 올릴지 `views/*/ui/`에 둘지를 Architecture가 정한다. 계층 순서와 의존 방향은 그대로다.
+- `DEV-ARCH`: 추가 결정 — 홈의 블록 다섯과 일정의 두 뷰를 `views/*/ui/`에 둔다. 더해 **`views/*/hooks/`를 처음 세운다** — 지금까지 `hooks`는 `features/`와 `shared/`에만 있었지만 `fsd.json`이 레이어를 가리지 않고 정의한 세그먼트라 새 계약이 아니다. 계층 순서와 의존 방향은 그대로다.
+- `DEV-ARCH-06`: 부분 적용 — `"use client"`는 훅을 쓰는 leaf에만 붙인다. `HomeView`·`ScheduleView` 전체를 클라이언트로 만들지 않는다. 두 화면 다 상호작용이 블록 단위라 경계를 아래로 밀 수 있다.
 - `DEV-NAME-*`: 기본 적용 — `config/fsd.json`의 세그먼트 규칙을 따른다. `ui`는 컴포넌트, `model`은 판정, 테스트는 세그먼트 옆 `__tests__`.
 - `DEV-TEST-01`: 기본 적용 — tdd. `unit-test-writer`가 컴포넌트 RED를 남기고 `publisher`가 GREEN을 만든다. 증거는 `runs/P0-T48/tdd.json`.
 - `DEV-CODE-07`: 기본 적용 — 설명 주석 금지.
+- `DEV-CODE-09`: **추가 결정** — `SHOULD`에서 `MUST`로 올리고 예외를 「className 조합과 열거값 분기」 둘로 좁힌다. 지금 문구의 「표현용 조건부 렌더」가 판정을 표현으로 위장시키는 뒷문이다. `project/no-logic-in-ui`가 강제한다.
 - `DEV-SEC`·`DEV-DATA`: 해당 없음 — 서버 모듈과 스키마를 안 만든다. 기존 쿼리의 반환 타입만 읽는다.
 - `DEV-TIME`: 부분 적용 — 카운트다운과 D-n이 시간을 센다. 계산은 `model`이 하고 기준 시각을 프롭으로 받아 테스트가 시계를 고정한다. 인증 성립 판정은 하지 않는다.
 - `DEV-CACHE`·`DEV-OFFLINE`: 부분 적용 — 오프라인 배너와 재시도가 기존 `widgets/offline`과 TanStack Query 무효화에 붙는다. 캐시 키와 전략을 새로 만들지 않는다.
@@ -216,6 +249,73 @@
 
 무게는 유틸리티의 기본값이고 자리마다 Tailwind의 `font-normal`·`font-medium`·`font-semibold`로 덮는다. 라운드 24가 정한 열한 쌍 중 여덟이 기본값이고 셋이 override다 — 모달 제목 16/24 600 · 더보기 14/20 400 · D 배지와 선택 탭 13/18 600.
 
+### Dumb UI 린트
+
+`project/no-logic-in-ui`는 기존 플러그인 관례를 그대로 따른다 — `tools/eslint-plugin-project/lib/contract.mjs`의 `loadContract(cwd)`로 `config/fsd.json`을 읽고 `resolveLocation(filename, cwd)`으로 세그먼트를 판정한다. `segment !== "ui"`면 아무것도 안 한다. 새 파일 둘이다.
+
+- `tools/eslint-plugin-project/rules/no-logic-in-ui.mjs`
+- `tools/eslint-plugin-project/rules/__tests__/no-logic-in-ui.test.mjs`
+
+**막는 것 다섯.**
+
+| 무엇 | 왜 |
+| --- | --- |
+| 비교 연산자 `<` `>` `<=` `>=` | 값을 견주는 것은 판정이다. 열거값 분기는 `===`로 충분하다 |
+| 산술 `-` `*` `/` `%`와 단항 `-` | 남은 시간·합계·비율은 `model`이 낸다 |
+| `.length` 접근 | 「비었나」와 「몇 개인가」가 `ui`에 들어오는 가장 흔한 문이다 |
+| `filter` `reduce` `sort` `slice` `find` `some` `every` `flatMap` | 목록을 골라내고 줄 세우는 것은 판정이다. **`map`은 JSX 표현식 안일 때만 통과한다** — 그건 렌더링이지 파생이 아니다 |
+| `new Date` · `Date.now` · `Intl.*` · `toLocaleString` · `toLocaleDateString` · `toFixed` | 시각과 포맷은 `model` 몫이다. `ui`는 완성된 문자열을 받는다 |
+
+**통과시키는 것.** `===`·`!==` 열거값 분기, `&&`·`||`·`??`·`?.`, 템플릿 리터럴과 `cn()`의 className 조합, JSX 안의 목록 `map`. `__tests__` 아래와 `*.mock.ts`는 대상이 아니다 — 목 데이터는 값을 만드는 것이 일이다.
+
+`+`는 막지 않는다. 문자열 이음과 덧셈을 정적으로 가르려면 타입 정보가 필요하고, 그 복잡도만큼의 값이 없다. 산술 `+`가 새면 리뷰가 잡는다.
+
+**켜는 방식이 중요하다.** `eslint.config.mjs`에서 규칙을 **기본 `error`**로 켜고, 아직 이관 안 된 화면만 `files:` 블록으로 경로를 **이름 대어 끈다**. 반대로(이관된 화면만 켜기) 하면 새로 만드는 파일이 규칙 밖에서 태어난다. 예외 목록은 갚아야 할 빚의 목록이고 P0-T49~T54가 자기 화면 줄을 지운다. 홈·일정은 이 task가 다시 쓰므로 목록에 오르지 않는다.
+
+`config/fsd.json`은 `ui` 세그먼트에 `noLogic: true` 한 필드를 더한다. 규칙이 세그먼트 이름을 하드코딩하지 않고 계약에서 읽게 하려는 것이고, `CLAUDE.md`가 적은 「ESLint와 tdd-guard가 한 파일을 읽는다」를 지킨다.
+
+### 라우트 구조
+
+Next 16의 파일 규약이 이 화면들이 필요로 하는 것을 거의 다 갖고 있다. 손으로 짜던 것을 규약으로 옮긴다.
+
+```
+src/app/(protected)/
+  layout.tsx                          프로필 게이트 — 여기가 실패하면 「화면 한 장」이다
+  providers.tsx                       QueryClientProvider (클라이언트 경계)
+  (tabs)/
+    layout.tsx                        헤더 레이어 + 탭바 + @sheet 슬롯
+    loading.tsx                       탭 셸 안의 첫 페인트
+    error.tsx                         라우트 실패 — 헤더·탭바는 남는다
+    page.tsx                          홈 — 블록 다섯을 Suspense로 감싼다
+    schedule/
+      page.tsx · loading.tsx · error.tsx
+    roster/[date]/
+      page.tsx                        직접 방문·새로고침에서의 전체 화면
+      change/page.tsx                 근무 변경 요청 (겹)
+    @sheet/
+      default.tsx                     null — 시트가 없을 때
+      (.)roster/[date]/page.tsx       가로채서 바닥 시트로
+      (.)roster/[date]/change/page.tsx
+```
+
+**시트가 라우트인 이유.** 모바일에서 뒤로가기로 시트가 닫히는 것이 기대 동작인데 컴포넌트 상태로는 그게 공짜로 안 온다. 라우트로 올리면 뒤로가기·새로고침·링크 공유가 전부 따라온다. 겹겹 시트의 깊이가 URL 겹이 되므로 revision 3이 적은 `shared/hooks/useSheetStack.ts`는 **없앤다** — 라우터가 이미 스택이다. 홈의 오늘 카드 발치와 일정의 확정 날짜가 같은 주소를 여는 것이 「시트는 앱에서 하나다」를 코드로 지킨다.
+
+**블록별 스트리밍.** `page.tsx`는 데이터를 안 기다린다. 블록마다 async 서버 컴포넌트를 두고 `<Suspense fallback={<블록 skeleton/>}>`으로 감싸면 먼저 온 블록부터 그려진다. 지금은 `page.tsx`가 전부 `await`한 뒤 한 번에 그려서, 느린 쿼리 하나가 화면 전체를 잡는다. `(tabs)/layout.tsx`의 `listNotifications()`도 같은 문제라 종 점을 Suspense 뒤로 민다.
+
+**에러 경계는 클라이언트 클래스 컴포넌트 하나다.** Next에는 컴포넌트 단위 `error.tsx`가 없으므로 `shared/ui/block-boundary.tsx`를 만들어 블록마다 두른다. 새 의존성(`react-error-boundary`)을 들이지 않는다 — 잡고 `reset`을 주는 클래스 하나면 된다. 「다시 시도」는 `reset()` 뒤 `router.refresh()`다.
+
+**「전부 실패」가 셸로 옮겨간다.** 스트리밍에서는 블록 다섯이 각자 실패하는 것과 요청 자체가 못 서는 것이 다른 사건이다. 프로필 조회(`(protected)/layout.tsx`)가 실패하면 화면 한 장, 블록이 실패하면 블록 자리. 사용자가 보는 결과는 revision 1이 정한 것과 같고 경계를 세는 방식만 바뀐다.
+
+**첫 페인트의 skeleton.** `src/app/loading.tsx`가 지금 `animate-pulse`를 쓰는데 라운드 34가 shimmer를 금지했다. 라우트별 `loading.tsx`를 세우며 루트 것도 함께 고친다.
+
+### 상태 도구 둘
+
+**TanStack Query** — `ARCHITECTURE.md:24`가 클라이언트 캐시로 이미 정해뒀는데 `package.json`에 없었다. 이 task에서 실제로 쓰는 자리는 **일정 목록의 지난 회차 무한 스크롤** 하나다(`useInfiniteQuery`). 나머지는 서버 컴포넌트가 읽으므로 쿼리 클라이언트를 안 탄다 — 블록 재시도도 `router.refresh()`이지 `invalidateQueries`가 아니다. revision 1의 위험 표가 「재시도는 읽기 쿼리 무효화」라고 적은 것은 **틀렸고** 여기서 바로잡는다. Provider는 세우되 쓰지 않는 곳에 억지로 끼우지 않는다.
+
+지난 회차를 클라이언트가 더 부르려면 서버 진입점이 하나 필요하다. `features/recruitment/api/list-past-rounds.ts`를 만들어 기존 `listRecruitmentSchedules`를 감싼다 — 쿼리 본문을 안 고치고 호출 경로만 연다.
+
+**zustand** — 스토어는 하나다. `shared/hooks/useAmountMasking.ts`가 「근무일 자동 가림」 설정을 갖고 `persist`로 기기에 남긴다. 화면을 가로지르는 유일한 클라이언트 상태이고(홈과 급여 화면이 같은 것을 본다), 나머지 화면 상태는 전부 화면 단위라 훅으로 둔다. SSR에서 수화가 어긋나지 않게 `skipHydration`을 쓰고 마운트 뒤에 되살린다 — 안 그러면 첫 렌더가 서버와 달라진다.
+
 ### 코드 구조
 
 두 화면의 블록은 **`views/*/ui/`에 둔다.** `widgets/`는 「독립된 화면 블록」이고 홈의 다섯 블록은 홈 화면의 구성 요소다. 다른 화면이 쓰기 시작하면 그때 올린다 — 지금 올리면 쓰는 곳이 하나인 위젯이 다섯 생긴다. 예외는 이미 `widgets/`에 있는 셋(`app-shell`·`offline`·`pull-to-refresh`)이고 그대로 쓴다.
@@ -225,12 +325,13 @@
 - `views/home/model/home-blocks.ts` — 블록 다섯의 표시 판정. 입력은 화면이 받는 뷰 모델이고 출력은 블록마다 `filled | empty | hidden | failed | loading` 다섯 중 하나다. 「알림과 오늘만 접힌다」·「급여 셋 다 비면 한 줄」·「전부 실패면 한 장」이 여기 있고 `ui`에는 조건이 없다.
 - `views/home/model/countdown.ts` — 인증 창 두 단계와 예정 시각 초과 뒤집기. 기준 시각을 인자로 받는다.
 - `views/home/model/upcoming-shifts.ts` — D-n 계산, 내일부터 최대 셋, 배지 색 층위 셋.
-- `views/home/ui/HomeView.tsx` — 블록 다섯을 순서대로 놓고 판정 결과를 넘긴다.
+- `views/home/hooks/useNoticeDeck.ts` — 알림 카드의 현재 장, 오늘 끈 목록(기기 저장), 교체 애니메이션 단계. 마지막 장을 끄면 블록이 접힌다는 판정은 `home-blocks.ts`가 하고 훅은 「몇 장 남았나」만 든다.
+- `views/home/hooks/useWeekSelection.ts` — 주간 스트립에서 고른 날. 근무 없는 날은 안 눌리므로 선택될 수 없고, 같은 날을 다시 누르면 주 요약으로 돌아온다.
+- `views/home/ui/HomeView.tsx` — 블록 다섯을 순서대로 놓고 판정 결과를 넘긴다. 훅을 여기서 부르고 그 값을 `model`에 먹여 나온 열거값만 아래로 내린다.
 - `views/home/ui/NoticeBlock.tsx` · `TodayBlock.tsx` · `WeekStripBlock.tsx` · `UpcomingBlock.tsx` · `PayBlock.tsx`
 - `views/home/ui/EmptyRow.tsx` — 빈 블록 한 줄. 앵커 없이, 안 눌리게, 16/24 400.
 - `views/home/ui/FailedRow.tsx` — 실패 한 줄 + 「다시 시도」 알약. `EmptyRow`와 골격이 같고 오른쪽 자리만 찬다.
-- `views/home/ui/HomeSkeleton.tsx` — 아는 값을 남기고 서버 값 자리에만 막대를 깐다.
-- `views/home/ui/HomeFailure.tsx` — 전부 실패했을 때의 화면 한 장.
+- `views/home/ui/BlockSkeleton.tsx` — 블록별 `<Suspense fallback>`. 아는 값을 남기고 서버 값 자리에만 막대를 깐다. 화면 한 장짜리 skeleton은 `(tabs)/loading.tsx`가 갖고, 전부 실패 화면은 `(tabs)/error.tsx`가 갖는다.
 - `views/home/ui/home.mock.ts` — preview 아홉 시나리오의 목 데이터. 목 데이터의 요일을 실제 달력에 맞춘다(라운드 28이 찾은 어긋남).
 
 **일정**
@@ -238,7 +339,10 @@
 - `views/schedule/model/schedule-cell-state.ts` — 라운드 28 표의 여섯 상태로 다시 쓴다. **내 신청을 마감이 덮지 않게** 고친다. 「확정」이 누구의 확정인가는 기획 반환이라, 이 화면은 받는 데이터(`listRecruitmentSchedules` + `listOwnApplications`)로 말할 수 있는 것만 말한다.
 - `views/schedule/model/deadline-batches.ts` — 회차가 보통 하나라는 전제로 고친다. 여럿이면 마감 임박순으로 쌓는다.
 - `views/schedule/model/application-diff.ts` — 변경을 추가·취소로 나눠 세는 판정.
-- `views/schedule/ui/ScheduleView.tsx` — 달력·목록 두 뷰와 바닥 시트를 얹는다.
+- `views/schedule/hooks/useScheduleViewMode.ts` — 달력·목록 전환.
+- `views/schedule/hooks/useApplicationDraft.ts` — 로컬 선택 초안. 저장된 신청과 지금 손댄 칸을 들고, 추가·취소 개수 판정은 `application-diff.ts`에 묻는다.
+- `views/schedule/hooks/usePastRounds.ts` — 지난 회차 무한 스크롤. `useInfiniteQuery`로 `features/recruitment/api/list-past-rounds.ts`를 두 회차씩 부르고 끝을 안다.
+- `views/schedule/ui/ScheduleView.tsx` — 달력·목록 두 뷰와 바닥 시트를 얹는다. 훅 셋을 여기서 부른다.
 - `views/schedule/ui/ScheduleCalendar.tsx` · `CalendarFooter.tsx`(세 줄) · `RecruitmentRoundList.tsx`(회차 카드와 무한 스크롤)
 - `views/schedule/ui/RosterSheet.tsx` — 배정표 바닥 시트. 발치의 `근무 변경 요청`은 `근무 취소` 한 갈래만 연다.
 - `views/schedule/ui/schedule.mock.ts` — preview 일곱 시나리오.
@@ -246,10 +350,13 @@
 
 **공용**
 
+- `shared/hooks/useAmountReveal.ts` — 금액이 열렸나. 기본 가림 여부(`maskedByDefault`)를 **인자로 받는다** — 「오늘이 근무일인가」는 도메인이라 `shared`가 알면 안 된다. 「손으로 열었나」를 함께 들어 리빌 빛이 화면 복귀·상태 전환에서는 안 돌게 한다. 화면을 벗어나면 되돌아가는 것은 마운트마다 초기화되기 때문이다. 「스위치는 앱 전체 하나」는 `useAmountMasking` 스토어가 갖고 「열림은 화면 단위」는 이 훅이 갖는다. 닫기 아이콘이 ✕인가 ←인가는 시트가 라우트라 URL 깊이가 정한다.
+- `shared/hooks/useAmountMasking.ts` — zustand 스토어. 「근무일 자동 가림」 설정 하나를 갖고 `persist`로 기기에 남긴다. 이 task의 유일한 전역 상태다.
 - `shared/ui/masked-amount.tsx` — 금액 가림. 가려진 동안 더미를 blur 7px + `aria-hidden`으로 깔고, 손으로 열 때만 회백 빛이 1.5초 훑는다. 가림이 다시 걸리면 훑기가 즉시 사라진다.
 - `shared/ui/anchor-illustration.tsx` — 그림 자산 여덟(알림 다섯 + 급여 앵커 셋)을 인라인 SVG로 갖는다. 32×32 앵커 칸, 알림만 28px.
 - `shared/ui/d-badge.tsx` — D-n 배지. 32px radius 11, 색 층위 셋.
 - `shared/ui/skeleton-bar.tsx` — 막대 하나. `--color-border` radius 6, 애니메이션 없음.
+- `shared/ui/block-boundary.tsx` — 블록 하나를 두르는 클라이언트 에러 경계. 잡으면 실패 한 줄과 「다시 시도」를 보여주고 `reset()` 뒤 `router.refresh()`를 부른다.
 - `widgets/app-shell/ui/AppShellTabBar.tsx` — 탭 넷과 `gray-800` 채움, 눌림 420ms. `/pay`를 `more` 활성으로 묶던 `:15-17`을 고친다.
 - `widgets/app-shell/ui/AppHeader.tsx` — 상태 표시줄 24 + 헤더 56을 한 레이어 80으로 묶고 `blur(9px)` + 지면색 50%. 배너가 뜨면 120이 된다.
 - `widgets/offline/ui/OfflineBanner.tsx` — 헤더 레이어의 셋째 줄로 들어가게 고친다.
@@ -306,6 +413,19 @@ src/views/preview/**
 src/views/**/ui/*.tsx
 src/app/(protected)/(tabs)/**
 src/app/(protected)/admin/page.tsx
+tools/eslint-plugin-project/**
+eslint.config.mjs
+config/fsd.json
+docs/standards/DEVELOPMENT.md
+docs/standards/ARCHITECTURE.md
+package.json
+pnpm-lock.yaml
+src/app/(protected)/**
+src/app/loading.tsx
+src/app/error.tsx
+src/shared/hooks/**
+src/features/recruitment/api/list-past-rounds.ts
+src/features/recruitment/api/__tests__/list-past-rounds.test.ts
 ```
 
 용도 한정을 넷으로 나눠 적는다.
@@ -318,7 +438,11 @@ src/app/(protected)/admin/page.tsx
 
 **치환 전용.** `src/views/**/ui/*.tsx`(홈·일정·preview 제외)와 `src/app/(protected)/admin/page.tsx`는 **`typo-display` 클래스 문자열 치환에만** 쓴다 — 화면 제목 스물넷은 `typo-headline-md`, `PayView.tsx:152`의 금액은 `typo-title`. 마크업 구조·프롭·조건·문구·다른 클래스를 건드리지 않는다. 열아홉 화면의 모양을 이 task가 고치는 것이 아니라 지워지는 유틸리티를 대체하는 것뿐이다. 나머지는 P0-T49~T54가 각자 다시 그린다.
 
-**안 여는 것.** `src/features/**`·`src/entities/**`·`src/views/**/model/**`(홈·일정 제외)·`supabase/**`·`harness/**`는 허용 경로에 없다. 일정의 신청 배선은 기존 `useApplicationBatch`를 그대로 쓰고, 신청 데이터의 모양이 부족하면 고치지 말고 질문으로 반환한다. `--color-border`와 `--color-surface-weak` 값 변경이 다른 화면의 렌더를 바꾸더라도 그 확인은 P0-T49~T54의 몫이다.
+**Dumb UI(revision 2).** `tools/eslint-plugin-project/**`는 `no-logic-in-ui.mjs` 신설과 `index.mjs` 등록 한 줄에 한정한다 — 기존 열세 규칙의 판정 로직을 고치지 않는다. `eslint.config.mjs`는 새 규칙을 `error`로 켜고 아직 이관 안 된 화면의 예외 블록을 두는 데 한정한다. `config/fsd.json`은 `ui` 세그먼트에 `noLogic: true` 한 필드를 더하는 데 한정하고 다른 세그먼트의 `unitTest`·`verifiedBy`·`forbidImports`를 건드리지 않는다 — 이 파일은 `tdd-guard.sh`도 읽으므로 잘못 만지면 훅이 같이 움직인다. `docs/standards/DEVELOPMENT.md`는 `DEV-CODE-09` 한 줄을 `MUST`로 올리고 예외를 좁히는 데 한정하며, 다른 `DEV-*` 규칙을 손대지 않는다.
+
+**라우트와 상태 도구(revision 4).** `src/app/(protected)/**`는 라우트 규약 파일(`loading.tsx`·`error.tsx`·`@sheet` 슬롯·`roster` 라우트)과 블록별 Suspense 재구성, `providers.tsx` 신설에 한정한다 — **인증 게이트(`resolveProfileAccess`)와 리다이렉트 규칙을 건드리지 않는다.** `package.json`·`pnpm-lock.yaml`은 `@tanstack/react-query`와 `zustand` 두 의존성 추가에 한정한다. `src/shared/hooks/**`는 `useAmountReveal`·`useAmountMasking` 둘 신설에 한정하고 기존 셋(`useOnlineStatus`·`useSwipeAction`·`useReducedMotion`)을 안 고친다. `src/features/recruitment/api/list-past-rounds.ts`는 **기존 쿼리를 감싸는 서버 진입점 하나**이고 파일 이름으로 못 박았다 — `features/**` 전체가 열린 것이 아니다. `docs/standards/ARCHITECTURE.md`는 TanStack Query가 실제로 서고 zustand가 한 자리에 들어왔다는 것을 적는 데 한정한다.
+
+**안 여는 것.** `src/entities/**`·`src/views/**/model/**`(홈·일정 제외)·`supabase/**`·`harness/**`·`docs/product/PRD.md`는 허용 경로에 없다. `src/features/**`도 위에 이름을 댄 파일 둘 말고는 닫혀 있다. 일정의 신청 배선은 기존 `useApplicationBatch`를 그대로 쓰고, 신청 데이터의 모양이 부족하면 고치지 말고 질문으로 반환한다. `--color-border`와 `--color-surface-weak` 값 변경이 다른 화면의 렌더를 바꾸더라도 그 확인은 P0-T49~T54의 몫이다.
 
 ## 미결 사항
 
@@ -327,4 +451,6 @@ src/app/(protected)/admin/page.tsx
 - **긴 이름 말줄임.** 오늘 카드 오른쪽 포지션 이름과 알림 카드 두 줄 넘침의 기준값. 계산은 `model`이 하기로 정했으나 값을 아직 안 정했다. 실제 데이터의 이름 길이를 보고 퍼블리싱 중에 정한다.
 - **D 배지 형태 검수.** 색 층위는 라운드 27이 정했고 32px·radius 11이라는 형태는 라운드 7 수준의 검수를 안 받았다. 퍼블리싱하며 실제 렌더로 본다.
 - **홈 목 데이터의 요일.** 시안은 「8월 18일 월요일」인데 2026-08-18은 화요일이다. 퍼블리싱 때 맞춘다.
+- **TanStack Query가 이 task에서 얼마나 쓰이나.** 실제 사용처는 지난 회차 무한 스크롤 하나뿐이다. 서버 컴포넌트가 읽는 나머지는 쿼리 클라이언트를 안 탄다. `ARCHITECTURE.md:24`를 코드로 세우는 값어치는 있지만, 이 task만 놓고 보면 Provider가 거의 비어 있다. P0-T52(급여)·P4 계열이 실제 클라이언트 페치를 얹으며 채운다.
+- **Dumb UI 예외 목록의 규모.** 규칙을 켜면 아직 이관 안 된 열아홉 화면 중 몇 곳이 걸릴지 아직 안 셌다. 구현 첫 단계가 전수 확인이고, 예외로 끄는 경로가 늘어나는 것 자체는 예상된 빚이다. 다만 `src/shared/ui/**`(shadcn 파생)가 대량으로 걸리면 그건 화면 task가 아니라 공용 컴포넌트의 문제라 별도 판단이 필요하다 — 그 자리에서 멈추고 묻는다.
 - **주간 스트립의 주 경계.** 월요일 시작은 NOTES가 적은 가정이고 확정이 아니다. `PRD.md:346`이 「날짜별 금액과 월별 합계」라 급여 주의 시작일·월별 합계 존치·달에 걸친 근무의 귀속 셋이 기획 몫으로 남아 있다. 기획이 답하면 스트립의 요일 배열 상수 하나가 바뀐다.

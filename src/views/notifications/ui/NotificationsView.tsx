@@ -69,7 +69,7 @@ export function NotificationsView({
     <RouterPullToRefresh>
       <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-4 p-6 pb-nav-safe">
         <div className="flex items-center justify-between">
-          <h1 className="typo-display text-text-strong">알림</h1>
+          <h1 className="typo-headline-md text-text-strong">알림</h1>
           <Button variant="tertiary" onClick={handleMarkAllRead} disabled={!hasUnread}>
             모두 읽음
           </Button>

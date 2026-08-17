@@ -80,7 +80,7 @@ function BatchRow({ row, onSelect }: BatchRowProps) {
       {row.state === "selected" ? (
         <span
           aria-hidden
-          className="bg-action-tint text-action-deep grid size-5 shrink-0 place-items-center rounded-pill"
+          className="grid size-5 shrink-0 place-items-center rounded-pill bg-action-tint text-action-deep"
         >
           <Check className="size-3" strokeWidth={3} />
         </span>
@@ -155,7 +155,7 @@ export function DeadlineBatchList({ batches, onSelectRow, onToggleBatch }: Deadl
             </div>
             {batch.rows.map((row, index) => (
               <div key={row.workDate}>
-                {index > 0 ? <div aria-hidden className="bg-canvas mx-3 h-px" /> : null}
+                {index > 0 ? <div aria-hidden className="mx-3 h-px bg-canvas" /> : null}
                 <BatchRow row={row} onSelect={onSelectRow} />
               </div>
             ))}

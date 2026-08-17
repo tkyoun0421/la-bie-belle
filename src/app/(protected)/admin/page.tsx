@@ -14,7 +14,7 @@ export default function AdminHomePage() {
   return (
     <RouteTransition>
       <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-4 p-6">
-        <h1 className="typo-display text-text-strong">관리자</h1>
+        <h1 className="typo-headline-md text-text-strong">관리자</h1>
         <ul className="flex flex-col">
           <li>
             <Link

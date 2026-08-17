@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-17T17:59:50Z",
+      "phase": "red",
+      "note": "AC1~3·17: 원시 팔레트 7개(blue-800/100/50/25, gray-800/250/150)와 신설 의미 토큰 6개(canvas·ink-800·action-deep·action-tint-weak/-tint/-tint-strong)가 globals.css에 없어 실패, --color-border·--color-surface-weak가 여전히 raw-gray-300/100을 가리켜 실패, typo-headline-lg/-md·title·body-strong·caption-strong 5개의 font-weight/size가 700/구값이라 실패, typo-display 블록 존재 및 font-weight:700 잔존 단언 실패, body 배경이 --color-surface라 실패. 23 failed / 83 passed, exit 1."
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/no-logic-in-ui.test.mjs",
+      "exit_code": 1,
+      "at": "2026-08-17T18:06:51Z",
+      "phase": "red",
+      "note": "AC17~20: tools/eslint-plugin-project/rules/no-logic-in-ui.mjs가 아직 없어 '../no-logic-in-ui.mjs' import가 Cannot find module로 실패, 테스트 스위트 자체가 뜨지 못함(0 test, 1 failed suite), exit 1."
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-17T18:33:37Z",
+      "phase": "green",
+      "note": "AC1~3·17: globals.css에 원시 팔레트 7개·신설 의미 토큰 6개 추가, --color-border→--raw-gray-250·--color-surface-weak→--raw-gray-150 참조 교체, typo-headline-lg/-md·title·body-strong 굵기 재조정과 typo-caption-strong 신설, typo-display 블록 삭제, body 배경을 --color-canvas로 교체. 106 passed / 106, exit 0."
+    }
+  ]
+}

@@ -21,7 +21,7 @@ export function ApprovalListView({ profiles, onApprove, onReject }: ApprovalList
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-4 p-6 pb-nav-safe">
-      <h1 className="typo-display text-text-strong">가입 승인</h1>
+      <h1 className="typo-headline-md text-text-strong">가입 승인</h1>
       <ul className="flex flex-col">
         {profiles.map((profile) => (
           <li key={profile.id} className="flex flex-col gap-3 border-b border-border py-4">

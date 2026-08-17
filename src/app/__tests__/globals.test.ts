@@ -25,6 +25,13 @@ describe("globals.css 디자인 토큰", () => {
     ["--raw-green-500", "#05b169"],
     ["--raw-red-500", "#cf202f"],
     ["--raw-yellow-500", "#f4b000"],
+    ["--raw-blue-800", "#0c3f9c"],
+    ["--raw-blue-100", "#cfe0fc"],
+    ["--raw-blue-50", "#e4edfd"],
+    ["--raw-blue-25", "#f2f6fd"],
+    ["--raw-gray-800", "#3a3f4a"],
+    ["--raw-gray-250", "#e5e8eb"],
+    ["--raw-gray-150", "#f1f3f6"],
   ])("원시 팔레트 %s는 %s다", (name, hex) => {
     const pattern = new RegExp(`${name}:\\s*${hex};`);
     expect(css).toMatch(pattern);
@@ -63,9 +70,9 @@ describe("globals.css 디자인 토큰", () => {
     ["--color-text-muted", "var(--raw-gray-600)"],
     ["--color-text-weak", "var(--raw-gray-400)"],
     ["--color-surface", "var(--raw-white)"],
-    ["--color-surface-weak", "var(--raw-gray-100)"],
+    ["--color-surface-weak", "var(--raw-gray-150)"],
     ["--color-surface-strong", "var(--raw-gray-200)"],
-    ["--color-border", "var(--raw-gray-300)"],
+    ["--color-border", "var(--raw-gray-250)"],
     ["--color-on-action", "var(--raw-white)"],
   ])("텍스트/표면 토큰 %s는 %s다", (name, value) => {
     const pattern = new RegExp(`${name}:\\s*${value.replace(/[()]/g, "\\$&")};`);
@@ -73,14 +80,26 @@ describe("globals.css 디자인 토큰", () => {
   });
 
   it.each([
-    ["typo-display", "32px", "40px", "700"],
-    ["typo-headline-lg", "26px", "34px", "700"],
-    ["typo-headline-md", "22px", "30px", "700"],
-    ["typo-title", "18px", "26px", "600"],
+    ["--color-canvas", "var(--raw-gray-150)"],
+    ["--color-ink-800", "var(--raw-gray-800)"],
+    ["--color-action-deep", "var(--raw-blue-800)"],
+    ["--color-action-tint-weak", "var(--raw-blue-25)"],
+    ["--color-action-tint", "var(--raw-blue-50)"],
+    ["--color-action-tint-strong", "var(--raw-blue-100)"],
+  ])("신설 의미 토큰 %s는 %s다", (name, value) => {
+    const pattern = new RegExp(`${name}:\\s*${value.replace(/[()]/g, "\\$&")};`);
+    expect(css).toMatch(pattern);
+  });
+
+  it.each([
+    ["typo-headline-lg", "26px", "34px", "600"],
+    ["typo-headline-md", "22px", "30px", "600"],
+    ["typo-title", "18px", "26px", "500"],
     ["typo-body", "16px", "24px", "400"],
-    ["typo-body-strong", "16px", "24px", "600"],
+    ["typo-body-strong", "16px", "24px", "500"],
     ["typo-label", "14px", "20px", "600"],
     ["typo-caption", "13px", "18px", "400"],
+    ["typo-caption-strong", "13px", "18px", "500"],
   ])("타이포 유틸 %s는 %s/%s·%s다", (name, size, lineHeight, weight) => {
     const blockPattern = new RegExp(`@utility ${name}\\s*\\{([^}]*)\\}`);
     const match = blockPattern.exec(css);
@@ -89,6 +108,14 @@ describe("globals.css 디자인 토큰", () => {
     expect(block).toMatch(new RegExp(`font-size:\\s*${size};`));
     expect(block).toMatch(new RegExp(`line-height:\\s*${lineHeight};`));
     expect(block).toMatch(new RegExp(`font-weight:\\s*${weight};`));
+  });
+
+  it("typo-display 블록이 없다", () => {
+    expect(css).not.toMatch(/@utility typo-display\s*\{/);
+  });
+
+  it("font-weight: 700 선언이 어디에도 없다", () => {
+    expect(css).not.toMatch(/font-weight:\s*700;/);
   });
 
   it.each([
@@ -291,5 +318,13 @@ describe("globals.css 디자인 토큰", () => {
     expect(match, "body 블록이 없습니다").not.toBeNull();
     const block = match?.[1] ?? "";
     expect(block).toMatch(/overscroll-behavior-y:\s*contain;/);
+  });
+
+  it("body 배경이 --color-canvas를 쓴다", () => {
+    const blockPattern = /^body\s*\{([^}]*)\}/m;
+    const match = blockPattern.exec(css);
+    expect(match, "body 블록이 없습니다").not.toBeNull();
+    const block = match?.[1] ?? "";
+    expect(block).toMatch(/background-color:\s*var\(--color-canvas\);/);
   });
 });
