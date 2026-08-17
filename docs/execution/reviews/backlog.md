@@ -362,3 +362,12 @@
 - [ ] [low] [P4-T03] 딥링크 월 정규식이 00·13~99월 허용 — 세 벌(path·파서·SW) 동시 강화 필요(F-05) — src/entities/notification/model/notification-path.ts
 - [ ] [low] [P4-T03] 비확정 저장 경로에서 수신자·work_date 무조건 조회 + 교육생 조회 중복(F-06) — supabase/migrations/20260821000000_recruitment_change_notifications.sql
 - [ ] [low] [P4-T03] 월 형식 정규식이 entities 안 두 파일에 독립 선언 — 행 제외/폴백 드리프트 위험(F-07) — src/entities/notification/model/notification-path.ts
+- [ ] [medium] [P0-T47] self-test fixture가 실제 FOUNDATIONS 표기(`spacing-nav-safe`)와 달라 nav-safe 회귀가 거짓 GREEN — 반 칸 행·데이터 0행 표도 미검증(F-04) — harness/self-test/fixtures/token-parity/match/FOUNDATIONS.md
+- [ ] [medium] [P0-T47] 인수 조건 9가 명시한 globals.test.ts의 간격·하단 여백 토큰 단언이 없다(F-05) — src/app/__tests__/globals.test.ts
+- [ ] [medium] [P0-T47] 간격 토큰 px 고정으로 p-4가 rem 비례를 잃음 — 브라우저 글꼴 배율에서 렌더 불변 규칙이 깨진다(F-06) — src/app/globals.css
+- [ ] [medium] [P0-T47] spacing-scale이 음수 마진 전체와 env()를 섞은 calc 임의값을 통과시킨다(F-07) — tools/eslint-plugin-project/rules/spacing-scale.mjs
+- [ ] [medium] [P0-T47] FOUNDATIONS의 "탭 바 없는 화면엔 두지 않는다"를 pb-nav-safe 쓰는 7개 화면이 어긴다 — P0-T48이 값과 함께 판정(F-08) — docs/product/design/FOUNDATIONS.md
+- [ ] [medium] [P0-T47] P0-T46 소유인 gate:retro·gate:docs 편입이 P0-T47 커밋에 결합 — done task 증거가 후속 커밋으로 채워짐(F-09) — harness/lib/gate-suite.ts
+- [ ] [medium] [P0-T47] design:build가 오염된 입력의 외부 참조를 검출·인라인하지 않는다(F-10) — harness/design/build.ts
+- [ ] [medium] [P0-T47] gate:bundle 508KB로 500KB 상한 초과 — 원인은 이 변경분 밖이나 인수 조건 12가 미충족(F-11) — package.json
+- [ ] [low] [P0-T47] SKILL.md 경로 표가 globals.css를 허용·금지 양쪽에 둔다(F-12) — .claude/skills/publish-ui/SKILL.md

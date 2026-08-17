@@ -1,7 +1,7 @@
 # P0-T47 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 4
+- revision: 5
 - 기획 승인: user, 2026-08-16
 - 개발 설계 승인: user, 2026-08-17
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 5 | 2026-08-17 | `docs/execution/reviews/**`와 `docs/execution/retrospective/**`를 변경 허용 경로에 더한다. 4단계 교차 검증 결과를 커밋하려는데 `gate:scope`가 `reviews/P0-T47-review.json`과 `backlog.md`를 범위 밖으로 막았다. 두 경로는 이 task가 만드는 기능이 아니라 WORKFLOW 4·5단계가 모든 task에 요구하는 산출물이고, P4-T03 RADIO는 `docs/execution/reviews/**`는 조정자 몫이라고 명시해뒀는데 revision 1이 그 줄을 빠뜨렸다. 빠뜨린 것을 채우는 것이지 범위를 넓히는 것이 아니다. 용도는 이 task의 리뷰 결과 파일·backlog 누적 줄과 회고 한 줄에 한정한다. 2026-08-17 사용자 결정. |
 | 4 | 2026-08-17 | `.gitignore`를 변경 허용 경로에 더한다. 커밋 직전에 `.claude/skills/publish-ui/`가 `.gitignore`의 `.claude/skills/*` 규칙에 걸려 저장소에 들어가지 않는다는 것이 드러났다. revision 1이 이 경로를 허용 경로에 넣고 `CLAUDE.md`가 이 파일을 규칙 정본으로 링크하므로, 예외 한 줄이 없으면 봉인된 설계가 성립하지 않는다. `coach`·`decision`·`explain`·`loop-mode`·`verify`가 이미 같은 방식으로 예외 처리돼 있어 새 관례를 만드는 것도 아니다. 용도는 `!.claude/skills/publish-ui/` 한 줄 추가에 한정한다. 2026-08-17 사용자 결정. |
 | 3 | 2026-08-17 | 두 가지를 연다. 첫째, FOUNDATIONS 간격 표에 반 칸 `space-0.5`(2px)·`space-1.5`(6px)·`space-2.5`(10px)를 더한다. 린트를 켜자 19군데가 걸렸는데 전부 배지·칩·행 내부의 밀집 간격이었다 — `gap-1.5` 6곳, `gap-2.5` 3곳, `gap-0.5` 3곳 등. 이 값들은 Tailwind 기본 스케일에 있어 지금까지 아무 저항 없이 쓰였고, 실제로 4px 리듬으로 대체하면 배지 내부가 눈에 띄게 벌어진다. 값을 고쳐 리듬을 지키는 길도 있었으나 그건 이 task의 비목표인 "값이 옳은지의 판정"에 들어간다. 표에 올리되 「밀집한 내부 요소에만」이라는 사용 조건을 함께 적어 구획 간격으로 새어 나가지 않게 막는다. 둘째, `pb-[env(safe-area-inset-bottom,0px)]`이 임의값으로 걸렸다. FOUNDATIONS 「간격과 레이아웃」이 "하단 고정 행동은 `env(safe-area-inset-bottom)`을 포함한다"고 이미 규정하므로 문서가 승인한 패턴을 문서 파생 린트가 막는 자기모순이다. `env(`를 담은 임의값은 판정 대상에서 뺀다 — 픽셀 상수를 우회하는 구멍이 아니다. revision 2의 범위 ⓪과 FOUNDATIONS 용도 한정이 `space-0` 한 행에 묶여 있어 함께 연다. 2026-08-17 사용자 결정. |
 | 2 | 2026-08-17 | FOUNDATIONS 간격 표에 `space-0` = `0px`를 더한다. revision 1의 불변 규칙은 "간격은 문서에 적힌 값만 쓴다"인데 표에 `0`이 없고, `gap-0`·`p-0`·`py-0`이 `shared/ui`의 세 파일과 `views/schedule/ui/DeadlineBatchList.tsx`에 실사용 중이라 규칙을 그대로 적용하면 `pnpm verify`가 통과하지 못한다. RED 작성 중 `unit-test-writer`가 발견해 반환했다. `0`을 린트의 예외 목록에 넣는 길도 있었으나, 예외를 두면 "표에 있는 값만"이라는 규칙이 한 번 깨지고 다음 예외를 막을 근거가 사라진다. 표에 넣어 규칙이 예외 없이 성립하게 한다. revision 1의 용도 한정이 FOUNDATIONS를 "하단 고정 요소 여백 절 추가에 한정"했으므로 그 문구도 함께 연다. 2026-08-17 사용자 결정. |
@@ -160,11 +161,13 @@ docs/product/DESIGN.md
 docs/product/design/FOUNDATIONS.md
 docs/execution/radio/P0-T47-radio.md
 docs/execution/runs/P0-T47/**
+docs/execution/reviews/**
+docs/execution/retrospective/**
 docs/execution/phases/00-foundation.md
 docs/execution/phases/index.jsonl
 ```
 
-- 용도 한정: `harness/lib/**`는 `token-parity.ts` 신설과 `gate-suite.ts`의 배열 한 줄 추가에만 쓴다 — 기존 게이트의 판정 로직을 고치지 않는다. `package.json`은 스크립트 두 줄 추가에 한정하고 의존성을 더하지 않는다. `.gitignore`는 `!.claude/skills/publish-ui/` 한 줄 추가에만 쓰고 다른 무시 규칙을 건드리지 않는다. `.githooks/**`는 허용 경로에 없다 — 훅은 `harness/gates/pre-commit.ts`를 부르고 그 진입점이 `COMMIT_GATES`를 읽으므로 편입이 `gate-suite.ts` 안에서 끝난다. `.claude/agents/unit-test-writer.md`와 `implementer.md`는 분업 순서를 적는 데만 쓰고 기존 계약(RED 무수정, `[질문]` 반환, 커밋 규칙)을 바꾸지 않는다. `docs/product/DESIGN.md`는 「변경 규칙」에 정본 관계를 적는 데 한정하고 토큰 값·원칙·화면 범위를 바꾸지 않는다. `docs/product/design/FOUNDATIONS.md`는 하단 고정 요소 여백 절 추가와 간격 표에 `space-0`·반 칸 셋을 행으로 더하고 반 칸의 사용 조건 한 줄을 적는 데 한정하고, 기존 표의 **값을 바꾸지 않는다** — 행 추가와 값 변경은 다르다. `CLAUDE.md`는 명령 목록과 문서 지도 반영에 한정하며 「Non-negotiable rules」의 승인 게이트 조항은 건드리지 않는다. `docs/execution/phases/00-foundation.md`는 P0-T47 절의 `test_mode` 정정과 범위 추가에 한정한다.
+- 용도 한정: `harness/lib/**`는 `token-parity.ts` 신설과 `gate-suite.ts`의 배열 한 줄 추가에만 쓴다 — 기존 게이트의 판정 로직을 고치지 않는다. `package.json`은 스크립트 두 줄 추가에 한정하고 의존성을 더하지 않는다. `.gitignore`는 `!.claude/skills/publish-ui/` 한 줄 추가에만 쓰고 다른 무시 규칙을 건드리지 않는다. `docs/execution/reviews/**`는 이 task의 결과 파일 하나와 backlog 누적 줄에, `docs/execution/retrospective/**`는 회고 한 줄에 한정한다 — 다른 task의 기록을 건드리지 않는다. `.githooks/**`는 허용 경로에 없다 — 훅은 `harness/gates/pre-commit.ts`를 부르고 그 진입점이 `COMMIT_GATES`를 읽으므로 편입이 `gate-suite.ts` 안에서 끝난다. `.claude/agents/unit-test-writer.md`와 `implementer.md`는 분업 순서를 적는 데만 쓰고 기존 계약(RED 무수정, `[질문]` 반환, 커밋 규칙)을 바꾸지 않는다. `docs/product/DESIGN.md`는 「변경 규칙」에 정본 관계를 적는 데 한정하고 토큰 값·원칙·화면 범위를 바꾸지 않는다. `docs/product/design/FOUNDATIONS.md`는 하단 고정 요소 여백 절 추가와 간격 표에 `space-0`·반 칸 셋을 행으로 더하고 반 칸의 사용 조건 한 줄을 적는 데 한정하고, 기존 표의 **값을 바꾸지 않는다** — 행 추가와 값 변경은 다르다. `CLAUDE.md`는 명령 목록과 문서 지도 반영에 한정하며 「Non-negotiable rules」의 승인 게이트 조항은 건드리지 않는다. `docs/execution/phases/00-foundation.md`는 P0-T47 절의 `test_mode` 정정과 범위 추가에 한정한다.
 
 - `src/**`의 용도 한정이 특히 좁다. `src/app/globals.css`는 **토큰 추가에만** 쓰고 기존 토큰 값·`@utility` 블록·reduced-motion 블록을 건드리지 않는다. `src/views/**/ui/*.tsx`는 **하단 여백 클래스 문자열 치환에만** 쓴다 — 마크업 구조·프롭·조건·문구·다른 클래스를 바꾸지 않는다. `OnboardingView`의 `pb-36` 제거가 이 task에서 렌더가 바뀌는 유일한 지점이다. `src/app/__tests__/**`는 새 토큰이 존재하고 값이 문서와 같은지 단언하는 데 쓴다.
 

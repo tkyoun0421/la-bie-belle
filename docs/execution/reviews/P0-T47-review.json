@@ -1,0 +1,133 @@
+{
+  "task_id": "P0-T47",
+  "at": "2026-08-17",
+  "base_commit": "e864ce3",
+  "head_commit": "da8be6c2f3437c6ea00e28aee535c30005222a03",
+  "participants": ["opus", "codex"],
+  "participants_note": "개발분(da8be6c 구현, RADIO revision 4) 교차 검증. 두 리뷰어가 같은 결함을 독립으로 낸 병합 2건(F-01 게이트 거짓 통과, F-06 spacing-scale 우회)은 되묻지 않고 전원 인정. 나머지 8건은 되묻기 라운드에서 전원 인정됐고 기각은 0건이다. 중요도 갈림(F-02 medium/high, F-06 low/medium, F-07 low/medium, F-09 low/medium, F-10 low/high)은 계약대로 높은 쪽을 택했다. 조정자는 opus의 요청에 따라 `pnpm build` 산출 CSS를 확인해 `.p-4{padding:var(--spacing-4)}`·`.pb-nav-safe{padding-bottom:var(--spacing-nav-safe)}`·`.gap-1\\.5{gap:var(--spacing-1\\.5)}`라는 사실 자료를 양쪽에 동일하게 전달했고, 판단은 전달하지 않았다. F-10에 대해 opus는 codex 근거 중 「handoff가 전체 통과라고 서술해 모순된다」를 사실과 다르다고 정정했다(handoff.md:19는 「이 task 몫이」이고 :34가 미결로 공시한다). 발견 자체는 인정됐으므로 정정된 근거로 남긴다.",
+  "findings": [
+    {
+      "id": "F-01",
+      "title": "gate:tokens가 하단 여백 토큰 2개와 반 칸 간격 3개를 조용히 건너뛴다",
+      "severity": "high",
+      "area": "architecture",
+      "file": "harness/lib/token-parity.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "`checkNavSafeSpacing`의 매핑이 `token.startsWith(\"--spacing-\")`을 요구하는데 FOUNDATIONS.md:102-103의 표 토큰은 `spacing-nav-safe`·`spacing-nav-action-safe`로 `--` 접두가 없다. `checkSingleValueTable`이 `cssName === null`인 행을 `continue`로 넘기므로 하단 고정 요소 여백 대조가 실제 저장소에서 0행 실행된다. 같은 구조로 `SPACE_TOKEN_PATTERN`(`/^space-([0-9]+)$/`)이 `space-0.5`·`space-1.5`·`space-2.5`를 못 잡아 간격 표 13행 중 10행만 대조되고, `DECLARATION_PATTERN`의 이름 문자셋에 이스케이프가 없어 `--spacing-0\\.5:` 선언도 수집되지 않는다. 양쪽이 함께 빠져 위반이 나지 않는다. 영향: `--spacing-nav-safe`를 지우거나 값을 바꿔도 게이트가 통과하고 `pb-nav-safe`가 여백 없는 클래스가 된다. RADIO가 「핵심 위험은 게이트의 거짓 통과다」라고 명시한 바로 그 실패다. 근본 원인은 매핑 실패를 위반이 아니라 `continue`로 삼킨 것이다."
+    },
+    {
+      "id": "F-02",
+      "title": "design:build가 심은 글꼴이 산출물의 어떤 규칙에도 연결되지 않는다",
+      "severity": "high",
+      "area": "code_quality",
+      "file": "harness/design/build.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "`buildFontFaceCss`는 `@font-face`의 `font-family`를 `\"Wanted Sans Variable\"`로 등록한다. 그런데 산출물 CSS의 글꼴 체인은 `globals.css`의 `var(--font-wanted-sans), \"Wanted Sans\", -apple-system, …`이고 `--font-wanted-sans`는 `next/font`가 앱 런타임에 주입하는 변수라 자립 HTML에 존재하지 않는다. 폴백 없는 미정의 `var()`가 들어가 `font-family` 선언 자체가 무효화되고, 뒤의 `\"Wanted Sans\"`도 등록한 패밀리 이름과 다르다. 결과적으로 시안은 브라우저 기본 글꼴로 렌더되면서 약 1.6MB의 base64를 헛되이 싣는다. 타이포는 정본 다섯 표 중 하나라 잘못된 글꼴로 본 시안을 근거로 안을 고르게 된다. `design-build.test.ts`는 `@font-face` 개수 1과 `data:` URI 존재만 단언해 이 구멍을 지나친다. 중요도는 opus medium·codex high로 갈렸고 계약대로 높은 쪽을 택했다."
+    },
+    {
+      "id": "F-03",
+      "title": "E2E 격리 실패로 인수 조건 12의 verify 통과 증거가 성립하지 않는다",
+      "severity": "high",
+      "area": "tests",
+      "file": "tests/e2e",
+      "agreed_by": ["opus", "codex"],
+      "description": "매 실행 1~2개 spec이 `23505 duplicate key value violates unique constraint \"schedules_work_date_active_unique\"`로 실패하고 실패 spec이 실행마다 바뀐다(`notifications`·`recruitment-notifications`·`recruitment-manage`·`schedule-confirmation`). RADIO 인수 조건 12가 요구하는 `pnpm verify` 전체 GREEN 증거가 없다. 중요도는 codex high·opus low로 갈렸고 계약대로 높은 쪽을 택했다. 다만 두 가지를 함께 기록한다. 이 변경분은 e2e·시딩 코드를 건드리지 않아 실패와 인과가 없고, codex가 근거로 든 「handoff가 전체 통과라고 서술해 증거가 모순된다」는 사실과 다르다 — `handoff.md:19`는 「이 task 몫이 전부 통과함을 확인했다」이며 열거한 명령에 `test:e2e`·`gate:bundle`이 빠져 있고 `:34`가 둘을 미결 사항으로 공시한다. 제시된 조치(spec별 고유 시드·DB 초기화·트랜잭션 격리)는 `tests/e2e/**`가 P0-T47 변경 허용 경로 밖이라 이 task에서 수행하면 승인 범위를 넘는다. 별도 task로 올릴 일이다."
+    },
+    {
+      "id": "F-04",
+      "title": "self-test fixture가 실제 FOUNDATIONS 표기와 달라 nav-safe 회귀가 거짓 GREEN이다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "harness/self-test/fixtures/token-parity/match/FOUNDATIONS.md",
+      "agreed_by": ["opus", "codex"],
+      "description": "fixture 네 종의 하단 여백 표가 `--spacing-nav-safe`로 적혀 있는데 실제 `docs/product/design/FOUNDATIONS.md`는 `spacing-nav-safe`다. 그래서 `token-parity.test.ts`의 「하단 고정 요소 여백 토큰 값이 다르면 위반한다」가 fixture에서만 통과하고 실물에서는 성립하지 않는다. 회귀 테스트가 존재하지 않는 보호를 존재한다고 증언하는 상태다. 간격 fixture 표에도 반 칸 행이 없어 그 누락 역시 테스트가 못 잡는다. 추가로 `missing-table` fixture는 heading을 통째로 지운 경우만 덮어, RADIO가 지목한 다른 거짓 통과 경로(헤더·구분선은 남고 데이터 행만 0개)는 검증되지 않는다."
+    },
+    {
+      "id": "F-05",
+      "title": "인수 조건 9가 명시한 globals.test.ts의 간격·하단 여백 토큰 단언이 없다",
+      "severity": "medium",
+      "area": "tests",
+      "file": "src/app/__tests__/globals.test.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "RADIO 위험 기반 테스트 표의 인수 조건 9 행은 「테스트함 — `globals.test.ts`가 열 값과 하단 여백 토큰 둘의 존재·값을 단언」이라고 적고 변경 허용 경로도 `src/app/__tests__/**`를 그 용도로 열어 두었다. 실제 파일에는 `--spacing-*` 단언이 한 줄도 없고 변경 파일 목록에도 없다. F-01과 겹쳐 `--spacing-nav-safe`·`--spacing-nav-action-safe`와 반 칸 셋은 게이트·단위 테스트·린트 어느 층에서도 보호되지 않는다. 인수 조건 11의 「치환 전후 렌더 결과 동일」도 nav-safe 클래스를 단언하는 컴포넌트 테스트가 없어 「테스트함」 표기가 근거를 갖지 못한다."
+    },
+    {
+      "id": "F-06",
+      "title": "간격 토큰을 px 리터럴로 명시해 rem 기반 스케일의 성질이 바뀐다",
+      "severity": "medium",
+      "area": "architecture",
+      "file": "src/app/globals.css",
+      "agreed_by": ["opus", "codex"],
+      "description": "Tailwind 기본값은 `--spacing: 0.25rem`이라 치환 전 `p-4`는 루트 글꼴 크기에 비례하는 1rem이었다. 조정자가 확인한 빌드 산출 CSS는 `.p-4{padding:var(--spacing-4)}`로, 이제 16px 리터럴을 직접 읽는다. 기본 16px 환경에서는 같지만 사용자가 브라우저 기본 글꼴 크기를 바꾸면 계산값이 갈려 RADIO 불변 규칙 「기계 치환은 값을 바꾸지 않는다 / 화면 모양이 바뀌는 곳은 온보딩 한 줄뿐이다」가 기본 설정에서만 참이 된다. 글씨만 커지고 여백이 고정되는 변화는 FOUNDATIONS 접근성 절의 WCAG 2.2 AA 목표와 부딪힌다. 다만 고정 px 간격이 곧바로 AA 위반이라는 단정은 근거가 부족하다는 codex의 정정을 반영해 접근성 회귀 위험으로 기록한다."
+    },
+    {
+      "id": "F-07",
+      "title": "spacing-scale 린트에 간격값 우회 경로가 둘 있다",
+      "severity": "medium",
+      "area": "code_quality",
+      "file": "tools/eslint-plugin-project/rules/spacing-scale.mjs",
+      "agreed_by": ["opus", "codex"],
+      "description": "`classifySpacingToken`이 `stripped.startsWith(\"-\")`이면 무조건 `null`을 반환해 `-mt-7`·`-mx-13` 같은 음수 마진이 판정 대상에서 빠진다. 인수 조건 10은 「`p`·`m`·`gap`·`space` 계열 유틸리티에서 문서 밖 숫자를 막는다」이고 음수 마진도 그 계열이다. 또 임의값은 `env(` 포함 여부만 보므로 `pb-[calc(env(safe-area-inset-bottom)+92px)]`처럼 미승인 픽셀 상수를 섞어도 통과한다. `spacing-scale.test.mjs`에 음수 케이스가 valid·invalid 어느 쪽으로도 없어 의도적 제외인지 누락인지 구분되지 않는다. 현재 `src/` 안에 음수 간격 사용이 없어 잠재적 구멍이다. 중요도는 opus low·codex medium으로 갈렸고 계약대로 높은 쪽을 택했다."
+    },
+    {
+      "id": "F-08",
+      "title": "FOUNDATIONS에 새로 넣은 규칙을 같은 변경분의 7개 화면이 어긴다",
+      "severity": "medium",
+      "area": "architecture",
+      "file": "docs/product/design/FOUNDATIONS.md",
+      "agreed_by": ["opus", "codex"],
+      "description": "FOUNDATIONS.md:106이 「탭 바가 없는 화면에는 이 여백을 두지 않는다」를 새 규정으로 넣었다. `AppShellTabBar`는 `(protected)/(tabs)/layout.tsx`에서만 렌더되는데 `pb-nav-safe`가 붙은 화면 중 `AdminRolesView`·`ApprovalListView`·`WorkerListView`·`WorkerDetailView`·`AdminPositionsView`·`AdminSchedulePrepView`·`MyProfileView` 일곱은 그 밖이다. 정본 문서와 코드가 같은 커밋에서 어긋난 채 출발하고 이를 잡는 검사가 없다. RADIO 미결 사항이 값의 적절성 판정을 P0-T48로 미뤘지만, 미룬 것은 값의 판정이고 금지 문장을 문서에 올린 것은 이번 변경이다. 중요도는 opus low·codex medium으로 갈렸고 계약대로 높은 쪽을 택했다."
+    },
+    {
+      "id": "F-09",
+      "title": "P0-T46 게이트 편입이 P0-T47 커밋에 결합됐다",
+      "severity": "medium",
+      "area": "architecture",
+      "file": "harness/lib/gate-suite.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "이 diff는 RADIO가 허용한 `gate:tokens` 편입 외에 P0-T46 소유인 `gate:retro`·`gate:docs`도 두 게이트 배열과 `package.json` 스크립트에 함께 넣는다. P0-T46의 `index.jsonl` verification 항목이 그 편입을 자기 인수 조건으로 명시하므로 소유는 P0-T46이다. P0-T47 RADIO의 용도 한정은 「`gate-suite.ts`의 배열 한 줄 추가에만」, 「`package.json`은 스크립트 두 줄 추가에 한정」이라 봉인된 범위를 넘었고, `gate:scope`는 경로 글롭만 판정해 이 산문 한정을 강제하지 못한다. 파생 효과로 P0-T46이 `done`인데 그 인수 조건 하나가 자기 커밋 시점 트리에 없었고 후속 커밋으로 채워져 감사·롤백 경계가 어긋난다. 기능 결함이 없고 handoff에 공시됐으며 `gate-suite.ts`가 `token-parity.ts`를 import한다는 실재하는 빌드 제약이 원인이라 high까지 올리지 않는다."
+    },
+    {
+      "id": "F-10",
+      "title": "design:build가 외부 참조 없는 산출물을 보장하지 않는다",
+      "severity": "medium",
+      "area": "code_quality",
+      "file": "harness/design/build.ts",
+      "agreed_by": ["opus", "codex"],
+      "description": "`injectStyle`은 원본 HTML을 그대로 두고 `<style>`만 끼워 넣을 뿐이라 입력에 있던 외부 stylesheet·script·원격 이미지를 검출하지도 인라인하지도 않는다. RADIO Interface 절의 산출물 계약(「외부 `<link>`·`<script src>`·원격 이미지 없음」)과 인수 조건 5(「산출물에 외부 참조가 없다」)는 조건 없이 적혀 있으므로 도구가 보장할 몫이다. `design-build.test.ts`는 처음부터 깨끗한 입력에서만 단언해 오염 입력 경로가 미검증이다. 중요도는 opus low·codex medium으로 갈렸고 계약대로 높은 쪽을 택했다. opus의 완화 근거는 시안 작성자가 외부 입력이 아니라 조정 세션 자신이고 실패해도 Artifact가 차단해 발행 즉시 드러난다는 것이다."
+    },
+    {
+      "id": "F-11",
+      "title": "gate:bundle이 508KB로 승인된 500KB 상한을 넘어 인수 조건 12가 미충족이다",
+      "severity": "medium",
+      "area": "performance",
+      "file": "package.json",
+      "agreed_by": ["opus", "codex"],
+      "description": "`verify` 체인에 포함된 `gate:bundle`이 정적 청크 gzip 508KB로 상한 500KB를 초과해 실패한다. `harness/lib/bundle-budget.ts`가 `.js`만 세므로 CSS 토큰 15줄만 더한 이 변경은 초과의 원인이 아니다. 그럼에도 승인된 인수 조건 12(`pnpm verify` 통과)가 현재 충족되지 않는다는 사실은 기록이 필요하다. 번들을 상한 아래로 줄이거나 별도 승인으로 예산을 개정하기 전에는 전체 통과로 적을 수 없다. 중요도는 opus low·codex medium으로 갈렸고 계약대로 높은 쪽을 택했다."
+    },
+    {
+      "id": "F-12",
+      "title": "스킬 문서의 경로 표에서 globals.css가 허용과 금지 양쪽에 걸린다",
+      "severity": "low",
+      "area": "code_quality",
+      "file": ".claude/skills/publish-ui/SKILL.md",
+      "agreed_by": ["opus", "codex"],
+      "description": "표가 같은 행에서 허용 칸에 `src/app/globals.css`를, 금지 칸에 `src/app/**`(preview 제외)를 둔다. 이 문서는 RADIO 불변 규칙이 「규칙 정본」으로 지정한 자리이고 `publisher.md`가 복제 없이 가리키므로 worker가 표만 보고 `globals.css` 수정 가부를 판단할 수 없다. 구체 경로가 광역 금지보다 우선한다고 추론할 수는 있어 즉시 기능을 막지는 않는다. 금지 칸을 `src/app/**`(globals.css·preview 제외)로 고치면 해소된다."
+    }
+  ],
+  "scores": {
+    "code_quality": 70,
+    "tests": 60,
+    "security": 100,
+    "performance": 88,
+    "architecture": 65
+  },
+  "score_rationale": {
+    "code_quality": "순수 함수 분리·명명·주석 없음·하네스 관례 준수는 좋으나 확정 발견 넷이 남는다 — 시안 글꼴이 산출물에서 쓰이지 못하는 high(F-02), 린트 우회 경로 둘(F-07), 외부 참조 미보장(F-10), 규칙 정본의 경로 표 모순(F-12).",
+    "tests": "RED→GREEN이 `tdd.json`에 같은 명령으로 4건 남고 경계·실패·멱등 케이스를 넓게 덮었지만, fixture가 실제 문서 표기와 달라 핵심 회귀가 거짓 GREEN이고(F-04) 인수 조건 9가 명시한 단언이 아예 없으며(F-05) e2e가 매 실행 깨져 전체 회귀 증거가 없다(F-03 high).",
+    "security": "권한·개인정보·비밀값·감사 기록 표면을 건드리지 않은 변경이라 판단 재료가 없다. 두 리뷰어 모두 새 추적 경로와 `design:build`가 읽는 파일에서 자격 증명·개인정보 노출을 찾지 못했다.",
+    "performance": "게이트는 파일 둘을 읽고 린트는 문자열 분해라 비용이 미미하며 `design:build`는 입력 HTML만 스캔해 산출물이 붓지 않는다. 감점은 확정 발견 F-11(번들 508KB) 하나이며 원인이 이 변경분 밖이라는 사실을 반영했다.",
+    "architecture": "변경 파일 전부가 허용 경로 안이고 lib·gates·self-test 분리와 두 배열 편입이 RADIO대로다. 다만 정본 강제 게이트가 실제 토큰 다섯 개를 검사하지 않고(F-01 high), 간격 토큰의 px 고정이 렌더 불변 규칙과 어긋나며(F-06), 새 FOUNDATIONS 규정을 같은 커밋의 화면 일곱이 어기고(F-08), 봉인된 용도 한정을 넘어 다른 task의 편입이 함께 들어왔다(F-09)."
+  },
+  "total": 77
+}
