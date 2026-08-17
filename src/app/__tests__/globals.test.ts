@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -112,6 +112,62 @@ describe("globals.css 디자인 토큰", () => {
 
   it("typo-display 블록이 없다", () => {
     expect(css).not.toMatch(/@utility typo-display\s*\{/);
+  });
+
+  describe("죽은 typo 유틸리티 사용처", () => {
+    const srcRoot = resolve(import.meta.dirname, "..", "..");
+    const selfTestFile = resolve(import.meta.dirname, "globals.test.ts");
+
+    function collectSourceFiles(dir: string, files: string[] = []): string[] {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (entry.name === "node_modules") continue;
+        const fullPath = resolve(dir, entry.name);
+        if (entry.isDirectory()) {
+          collectSourceFiles(fullPath, files);
+          continue;
+        }
+        if (/\.(ts|tsx)$/.test(entry.name) && fullPath !== selfTestFile) {
+          files.push(fullPath);
+        }
+      }
+      return files;
+    }
+
+    function definedTypoUtilities(): Set<string> {
+      const defined = new Set<string>();
+      for (const match of css.matchAll(/@utility\s+(typo-[a-z]+(?:-[a-z]+)*)\s*\{/g)) {
+        if (match[1] !== undefined) {
+          defined.add(match[1]);
+        }
+      }
+      return defined;
+    }
+
+    type TypoUsage = { file: string; line: number; className: string };
+
+    function usedTypoClasses(): TypoUsage[] {
+      const usages: TypoUsage[] = [];
+      for (const filePath of collectSourceFiles(srcRoot)) {
+        const lines = readFileSync(filePath, "utf8").split("\n");
+        const relativePath = filePath.replace(`${srcRoot}/`, "src/");
+        lines.forEach((lineText, index) => {
+          for (const match of lineText.matchAll(/\btypo-[a-z]+(?:-[a-z]+)*\b/g)) {
+            usages.push({ file: relativePath, line: index + 1, className: match[0] });
+          }
+        });
+      }
+      return usages;
+    }
+
+    it("소스에서 쓰이는 typo-* 클래스가 전부 globals.css의 @utility 블록으로 정의돼 있다", () => {
+      const defined = definedTypoUtilities();
+      const dead = usedTypoClasses().filter((usage) => !defined.has(usage.className));
+      const report = dead
+        .map((usage) => `${usage.file}:${usage.line} ${usage.className}`)
+        .join("\n");
+
+      expect(dead, `정의되지 않은 typo 유틸리티 사용처:\n${report}`).toEqual([]);
+    });
   });
 
   it("font-weight: 700 선언이 어디에도 없다", () => {

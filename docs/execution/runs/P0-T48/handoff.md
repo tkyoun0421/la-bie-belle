@@ -1,5 +1,74 @@
 # P0-T48 handoff
 
+## 2026-08-18 · 개발 2라운드 GREEN (Dumb UI 린트·번들 상한 600KB)
+
+- 기준 커밋: `b944dc1c15326da96d1d4d540553a2c831174c75`(개발 1라운드). 그 위에서 RADIO가
+  revision 5로 올라갔다(사용자 결정, 번들 상한 600KB) —
+  sha256 `551fa9dc4dbc9c0ebfe40b38e9ef69cd93353e68347514e38df4da19785ffcad`.
+- 이 라운드가 한 것 다섯: (1) `HomeView.tsx:79`·`ScheduleView.tsx:122`의 남은
+  `typo-display`를 `typo-headline-md`로 치환 — 클래스 문자열만. (2) `BUNDLE_BUDGET_BYTES`를
+  `600 * 1024`로(측정 로직은 안 건드림). (3) `ADR-0015` 결정 3에 세 번째 인상을 기록 —
+  지금 실측 508KB(519,825바이트)가 최종 실측 491.0KB에서 17KB 늘었고 원인은 아직 안 셌다는
+  것, 「490KB를 넘으면 `motion/mini`로 반환」 조항을 뒤집는다는 것을 문장으로 적었다.
+  (4) `tools/eslint-plugin-project/rules/no-logic-in-ui.mjs` 신설 — `segment-imports.mjs`
+  관례(`loadContract`+`resolveLocation`)를 따라 비교 연산자·산술·`.length`·파생 배열
+  메서드·`Date`/`Intl`/`toLocaleString`/`toFixed` 호출을 `ui` 세그먼트에서 막는다.
+  `config/fsd.json`의 `ui` 세그먼트에 `noLogic: true`를 더했고, 이를 읽게 하려고
+  `tools/eslint-plugin-project/lib/contract.mjs`의 `readSegment`에 `noLogic`(선택, 기본
+  `false`) 파싱을 `requireServerOnly`와 같은 자리에 더했다 — RADIO 「Dumb UI」 용도 한정
+  문구가 `no-logic-in-ui.mjs` 신설과 `index.mjs` 등록 한 줄이라고 적었지만, Architecture가
+  「규칙이 세그먼트 이름을 하드코딩하지 않고 계약에서 읽게 하려는 것」이라고 명시해 그
+  설계 의도를 이행하려면 `contract.mjs`가 그 필드를 실제로 반환해야 했다. 다른 12개
+  규칙의 판정 로직은 손대지 않았고 기존 `contract.test.mjs` 15건이 그대로 통과한다.
+  (5) `DEV-CODE-09`를 `SHOULD`→`MUST`로 올리고 예외를 「className 조합과 열거값 분기」
+  둘로 좁혔다.
+- **`Intl.*` 정적 분석 구멍 하나를 조정자 지시로 메웠다.** `new` 없이 부르는
+  `Intl.NumberFormat(...).format(...)` 형태는 `NewExpression`만 보던 첫 구현이 놓쳤다.
+  RED 두 건(`Intl.NumberFormat("ko").format(1000);`·`Intl.DateTimeFormat("ko").format(d);`,
+  둘 다 `dateOrFormatCall` 기대)을 `no-logic-in-ui.test.mjs`에 먼저 추가해 실패를 확인한
+  뒤, `CallExpression` 핸들러에 `callee.object`가 `Identifier "Intl"`인 경우의 검사를
+  더해 GREEN으로 돌렸다(안쪽 `Intl.NumberFormat("ko")` 호출 노드 하나만 잡혀 리포트
+  1건). 저장소에 `new` 없는 `Intl.*` 사용처가 없어 `pnpm lint`는 그대로 무출력이다.
+- **린트 예외 목록(26개, `eslint.config.mjs` 맨 끝 블록)**: 전수 스캔(모든 `ui` 세그먼트
+  파일에 규칙을 켠 채 개별 lint)으로 얻었다 — `src/features/**/ui` 11개, `src/shared/ui/**`
+  2개(`calendar.tsx`·`select-field.tsx`, 16개 중 2개라 「대량」 기준 미달로 질문 없이
+  진행), `src/views/**/ui` 11개(`preview/ui/PreviewView.tsx` 포함), `src/widgets/pull-to-refresh/ui/PullToRefresh.tsx`
+  1개, **그리고 `src/views/schedule/ui/ScheduleView.tsx`·`DeadlineBatchList.tsx` 2개.**
+  홈(`HomeView.tsx`)은 스캔 결과 위반이 전혀 없어 예외 목록에 없다 — AC20을 그대로
+  지킨다. `ScheduleView.tsx`는 RADIO가 명시적으로 허락한 경우다(①에서 고친 파일이 규칙에
+  걸리면 예외로 올리고 보고하라). **`DeadlineBatchList.tsx`는 RADIO가 이름을 대지 않은
+  세 번째 파일이라 판단이 필요했다** — `ScheduleView.tsx`가 그 컴포넌트를 렌더하고
+  `git log`로 확인한바 두 파일 다 P4-T02 시절 코드로 이번 라운드 전 커밋(`b944dc1`)이
+  "홈·일정 화면은 publisher 몫이라 typo-display를 그대로 뒀다"고 명시적으로 건드리지
+  않았다. `src/views/schedule/**`는 RADIO Architecture가 「전면 재작성」이라고 이미
+  선언한 범위라 같은 근거(publisher가 다시 쓸 파일)가 `DeadlineBatchList.tsx`에도
+  적용된다고 보고 같은 처리를 했다. **AC20의 문구("홈·일정의 ui 파일에 예외가 하나도
+  없다")를 문자 그대로 지키지 못한 지점이니 조정자가 재검토할 것.** 예외 목록 위에
+  「P0-T49~T54가 자기 화면 줄을 지운다」 한 줄은 **안 남겼다** — `DEV-CODE-07`이 코드
+  주석을 저장소 전체(리뷰로 유지되는 `src/` 밖 포함)에서 금지한다는 CLAUDE.md 해석을
+  따랐다. 확신이 서지 않아 비워두고 여기 보고한다.
+- **번들 실측**: 빌드 뒤 `measureStaticChunks` 실측 519,850바이트(507.7KB, 청크 44개,
+  최대 청크 71.6KB) — 조정자가 별도로 잰 519,852바이트와 사실상 같다(빌드마다 수 바이트
+  변동). 600KB 상한 대비 여유 약 92.3KB, `pnpm gate:bundle` 통과.
+- **재현**: `pnpm vitest run tools/eslint-plugin-project/rules/__tests__/no-logic-in-ui.test.mjs`
+  (41 passed) · `pnpm vitest run src/app/__tests__/globals.test.ts`(107 passed) ·
+  `pnpm lint`(무출력) · `pnpm gate:bundle`(무출력) · `pnpm verify`.
+- **`pnpm verify` 로컬 재현 기록 — e2e만 반복적으로 flake했다.** 같은 작업 트리로 6회
+  실행하는 동안 format·lint:ci·typecheck·unit(1693 passed)·harness:self-test·check:docs·
+  build·gate:bundle·check:app-build·check:client-secret-scan은 매번 예외 없이 통과했다.
+  `test:e2e`만 회차마다 다른 스펙에서 실패했다(1건 → 2건 → 8건 → 4건 → 8건 →
+  `e2e5`에서 0건 통과). 실패 원인은 전부 `Test timeout` · `toHaveURL`/`toBeVisible` 대기
+  초과였고 로직 단언 실패가 아니었다. `uptime`이 이 구간에서 load average 20~63을
+  오갔다(`5 users` 동시 세션) — 로컬 리소스 경합으로 판정했다(조정자 대조 결론과 일치).
+  마지막 `verify` 시도(`e2e에서만` 깨짐, 8개 스펙)의 깨진 스펙만
+  `pnpm exec playwright test <8개 파일> --workers=1`로 직렬 재실행해 24/24 통과를
+  확인했다 — `assignment-eligibility`·`assignment-trainee`·`position-requirements`·
+  `recruitment-flow`·`recruitment-notifications`·`roles`·`schedule-confirmation`·
+  `worker-management` 여덟 spec 파일.
+- **미결**: `docs/execution/reviews/backlog.md:372`의 508KB 행 닫힘과 `P0-T56`(번들 원인
+  규명) 신설은 이 커밋에 없다 — 조정자 소유라 손대지 않았다. `docs/execution/phases/00-foundation.md`의
+  P0-T56~P0-T58 절 추가도 같은 이유로 이 커밋 밖이다(내 diff가 아니다).
+
 ## 2026-08-18 · 개발 1라운드 GREEN (토큰·타이포 이관)
 
 - 기준 커밋: `ce2e605ee1edb2dd70fbeafba909d9ab594bd75b` (RADIO revision 4,

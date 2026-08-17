@@ -19,7 +19,8 @@
       "unitTest": "exempt",
       "verifiedBy": ["component", "e2e"],
       "runtimeExports": true,
-      "forbidImports": ["server-only", "**/api/**"]
+      "forbidImports": ["server-only", "**/api/**"],
+      "noLogic": true
     },
     "hooks": {
       "unitTest": "required",

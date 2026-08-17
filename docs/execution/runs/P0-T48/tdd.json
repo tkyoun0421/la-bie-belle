@@ -20,6 +20,27 @@
       "at": "2026-08-17T18:33:37Z",
       "phase": "green",
       "note": "AC1~3·17: globals.css에 원시 팔레트 7개·신설 의미 토큰 6개 추가, --color-border→--raw-gray-250·--color-surface-weak→--raw-gray-150 참조 교체, typo-headline-lg/-md·title·body-strong 굵기 재조정과 typo-caption-strong 신설, typo-display 블록 삭제, body 배경을 --color-canvas로 교체. 106 passed / 106, exit 0."
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-17T18:39:10Z",
+      "phase": "red",
+      "note": "AC3 후반절(저장소 전체에 typo-display 사용처가 없다)의 구멍 보강: src/**의 .ts·.tsx를 훑어 쓰이는 typo-* 클래스가 전부 globals.css의 @utility typo-* 블록으로 정의됐는지 단언하는 일반 규칙 테스트를 추가. src/views/home/ui/HomeView.tsx:79와 src/views/schedule/ui/ScheduleView.tsx:122의 typo-display가 정의 없는 사용처로 잡혀 실패. 1 failed / 107 (106 passed), exit 1."
+    },
+    {
+      "command": "pnpm vitest run tools/eslint-plugin-project/rules/__tests__/no-logic-in-ui.test.mjs",
+      "exit_code": 0,
+      "at": "2026-08-17T19:42:31Z",
+      "phase": "green",
+      "note": "AC17~20: tools/eslint-plugin-project/rules/no-logic-in-ui.mjs 신설(비교 연산자·산술·length·파생 배열 메서드·Date/Intl/toLocaleString/toFixed 호출을 잡고 JSX map·열거값 분기·__tests__·*.mock.ts는 통과), index.mjs 등록, config/fsd.json ui 세그먼트에 noLogic:true 추가, lib/contract.mjs가 그 필드를 읽게 확장. 41 passed / 41, exit 0."
+    },
+    {
+      "command": "pnpm vitest run src/app/__tests__/globals.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-17T19:42:35Z",
+      "phase": "green",
+      "note": "AC3 후반절 구멍 보강 통과: HomeView.tsx:79·ScheduleView.tsx:122의 typo-display를 typo-headline-md로 치환해 정의 없는 typo-* 사용처를 없앰. 107 passed / 107, exit 0."
     }
   ]
 }

@@ -32,6 +32,9 @@ function readSegment(name, raw) {
   if (raw.requireServerOnly !== undefined && typeof raw.requireServerOnly !== "boolean") {
     fail(`segments.${name}.requireServerOnly는 불리언이어야 합니다.`);
   }
+  if (raw.noLogic !== undefined && typeof raw.noLogic !== "boolean") {
+    fail(`segments.${name}.noLogic은 불리언이어야 합니다.`);
+  }
 
   return {
     name,
@@ -40,6 +43,7 @@ function readSegment(name, raw) {
     runtimeExports: raw.runtimeExports,
     forbidImports: raw.forbidImports ?? [],
     requireServerOnly: raw.requireServerOnly ?? false,
+    noLogic: raw.noLogic ?? false,
   };
 }
 

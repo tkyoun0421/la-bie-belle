@@ -5,7 +5,7 @@ import type { Violation } from "./violation.ts";
 
 export const STATIC_CHUNK_DIRECTORY = ".next/static/chunks";
 
-export const BUNDLE_BUDGET_BYTES = 500 * 1024;
+export const BUNDLE_BUDGET_BYTES = 600 * 1024;
 
 export type BundleMeasurement = {
   readonly totalBytes: number;

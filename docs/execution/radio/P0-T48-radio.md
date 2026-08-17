@@ -1,7 +1,7 @@
 # P0-T48 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 4
+- revision: 5
 - 기획 승인: user, 2026-08-16 (범위 축소 2026-08-18)
 - 개발 설계 승인: user, 2026-08-18
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 5 | 2026-08-18 | **번들 상한을 600KB로 올린다**(사용자 결정). 지금 실측이 508KB로 이미 500KB를 넘겼고(`backlog.md:372`, P0-T47이 원인은 그 변경분 밖이라고 기록), revision 4가 `@tanstack/react-query`와 `zustand`를 더하면 더 벌어진다. 인수 조건이 `pnpm verify` 통과를 요구하므로 이대로면 task를 못 닫는다. **이건 ADR 개정이다** — 상한의 정본은 harness 상수가 아니라 `ADR-0015` 결정 3이고, 그 문서가 「490KB를 넘으면 상한을 올리는 대신 `motion/mini` 전환을 설계로 반환한다」고 못 박아뒀다. 그 대안은 같은 ADR이 이미 배제했다(`AnimatedAmount`가 쓰는 훅 셋이 mini에 없다). 조항을 뒤집는 것이므로 harness 상수와 함께 ADR 개정 이력에 올린다. 번들을 실제로 줄이는 일은 별도 task다 — 이번에는 감시선만 올린다. `harness/lib/bundle-budget.ts`·`harness/self-test/**`·`docs/standards/adr/0015-motion-library-scope.md`를 변경 허용 경로에 더한다. 2026-08-18 사용자 결정. |
 | 4 | 2026-08-18 | **Next 파일 규약을 쓰고 상태 도구 둘을 들인다**(사용자 결정 셋). ① 라우트별 `loading.tsx`·`error.tsx`를 세우고 홈의 블록 다섯을 `<Suspense>`로 감싸 스트리밍한다 — 봉인된 설계가 `HomeSkeleton.tsx`·`HomeFailure.tsx`로 손수 짜던 것을 프레임워크가 준다. ② 배정표 시트를 **병렬 + 인터셉팅 라우트**로 올려 뒤로가기로 닫히고 링크로 열리게 한다. 겹겹 시트가 URL 겹이 되므로 `useSheetStack`이 없어진다. ③ `ARCHITECTURE.md:24`가 이미 정해둔 **TanStack Query를 설치**하고(지금까지 `package.json`에 없었다) 일정 목록의 지난 회차 무한 스크롤이 쓴다. ④ **zustand**를 금액 가림 설정 하나에만 쓴다 — 화면을 가로지르는 유일한 클라이언트 상태다. 데이터 로딩 구조가 바뀌므로 revision 1의 비목표 「서버·데이터 변경 안 함」을 **부분 개방**한다 — 쿼리 함수는 그대로 두고 **누가 언제 부르나**만 바꾼다. 2026-08-18 사용자 결정. |
 | 3 | 2026-08-18 | **화면 상태를 둘 자리를 적는다.** revision 2가 「`ui`는 로직을 모른다」를 박았는데 `model`은 `config/fsd.json`이 `forbidImports: ["react","react-dom"]`로 막아 `useState`를 못 담는다. revision 1의 Architecture가 `model` 파일만 이름을 대고 React 상태의 자리를 안 적어 **시트가 열렸나·무엇을 골랐나·금액이 열렸나가 갈 곳이 없었다.** 세 갈래로 가른다 — `model`은 판정, `hooks`는 상태와 전이, `ui`는 표현. 홈 훅 셋·일정 훅 셋·공용 훅 둘을 Architecture에 더한다. `views/*/hooks/`는 이 저장소에서 처음 쓰는 자리지만 `fsd.json`이 이미 정의한 세그먼트라 새 계약이 아니다. 2026-08-18 사용자 지적. |
 | 2 | 2026-08-18 | **Dumb UI를 규칙으로 박고 기계가 지키게 한다**(사용자 지시). `DEV-CODE-09`가 이미 「`ui`는 표현과 이벤트 배선만 소유한다」고 적었는데 `SHOULD`이고 예외 조항 「표현용 조건부 렌더」가 뒷문이라 지켜지지 않았다 — 지금 `HomeView.tsx`가 그 증거다. `MUST`로 올리고 예외를 좁히며, `project/no-logic-in-ui` 린트를 신설해 `ui` 파일에서 값 비교·산술·`.length`·파생 배열 메서드·`Date`/`Intl`/포맷 호출을 error로 막는다. 열거값 `===` 분기와 JSX 안의 목록 `map`은 통과한다. 이 task가 홈·일정을 새로 쓰므로 **규칙을 먼저 세우지 않으면 새 화면이 같은 자리에 로직을 다시 심는다.** `docs/standards/DEVELOPMENT.md`·`tools/eslint-plugin-project/**`·`eslint.config.mjs`·`config/fsd.json`을 변경 허용 경로에 더한다. 2026-08-18 사용자 결정. |
@@ -17,7 +18,7 @@
 - 관련 spec: DOCS:SDD, ADR:0014(FSD 뷰 레이어 이름)
 - 적용 깊이: 일반 — 표시 계층과 문서다. 서버 경계·DB·RLS·권한·개인정보·금액 계산 로직을 건드리지 않는다. 금액은 이미 계산된 값을 받아 가리고 여는 표시 규칙만 다룬다.
 - test mode: tdd
-- 예정 check IDs: global-template-sealed, home-schedule-republished, design-token-ladder, typo-scale-reweight, home-empty-states, home-failure-states, schedule-calendar-grammar, preview-state-matrix, dumb-ui-lint, route-convention-states, roster-sheet-intercept, client-state-boundaries
+- 예정 check IDs: global-template-sealed, home-schedule-republished, design-token-ladder, typo-scale-reweight, home-empty-states, home-failure-states, schedule-calendar-grammar, preview-state-matrix, dumb-ui-lint, route-convention-states, roster-sheet-intercept, client-state-boundaries, bundle-budget-600
 
 ## 기획 승인 이후의 정정
 
@@ -27,7 +28,7 @@
 
 ### 범위와 비목표
 
-범위는 여덟이다.
+범위는 아홉이다.
 
 ① **색 토큰 이관** — 시안이 쓰는 파랑 사다리 넷과 회색 셋을 `FOUNDATIONS.md` 원시 팔레트에 올리고 `globals.css`의 의미 토큰이 그것을 가리키게 한다. `gate:tokens`가 통과한다.
 
@@ -44,6 +45,8 @@
 ⑦ **라우트 규약** — 라우트별 `loading.tsx`·`error.tsx`, 블록별 `<Suspense>` 스트리밍, 배정표 시트를 병렬 + 인터셉팅 라우트로.
 
 ⑧ **상태 도구 둘** — TanStack Query 설치와 Provider(`ARCHITECTURE.md:24`의 적용), zustand로 금액 가림 설정 하나.
+
+⑨ **번들 상한 600KB** — `ADR-0015` 결정 3 개정과 `harness/lib/bundle-budget.ts` 상수.
 
 두 화면의 모든 상태는 `/preview`에 목 데이터로 등록된다.
 
@@ -106,7 +109,9 @@
 26. 배정표가 `(tabs)/roster/[date]`에 라우트로 서고 `@sheet/(.)roster/[date]`가 그것을 가로채 바닥 시트로 띄운다. 홈의 오늘 카드 발치와 일정의 확정 날짜가 **같은 주소**를 연다. 뒤로가기로 닫히고 새로고침하면 전체 화면으로 열린다. 겹겹 시트는 URL 겹(`/roster/[date]/change`)이라 `useSheetStack`이 없다.
 27. `@tanstack/react-query`가 설치되고 `QueryClientProvider`가 `(protected)` 아래 클라이언트 경계에 선다. 일정 목록의 지난 회차 무한 스크롤이 `useInfiniteQuery`로 돈다.
 28. `zustand`가 설치되고 `shared/hooks/useAmountMasking.ts` 하나만 스토어다. `persist`로 기기에 남고 SSR 수화 경고가 없다. 다른 화면 상태는 스토어에 안 올라간다.
-29. `pnpm verify`가 통과한다.
+29. `BUNDLE_BUDGET_BYTES`가 `600 * 1024`이고 `pnpm gate:bundle`이 통과한다. `ADR-0015` 결정 3에 세 번째 인상의 근거와 실측이 적히고 개정 이력에 행이 오른다. **「490KB를 넘으면 올리는 대신 `motion/mini`」 조항을 뒤집는다는 것을 문장으로 적는다** — 조용히 지우지 않는다.
+30. `backlog.md:372`의 508KB 행이 닫히고, **번들을 실제로 줄이는 후속 task가 `proposed`로 선다.** 이번 인상은 감시선을 올린 것이지 문제를 푼 것이 아니다.
+31. `pnpm verify`가 통과한다.
 
 ### 위험 기반 테스트
 
@@ -130,7 +135,8 @@
 | 23~25 라우트 상태 | 테스트함 — `loading.tsx`·`error.tsx`가 탭 셸을 남긴 채 안쪽만 바꿈 | 테스트함 — 한 블록만 던지면 그 자리만 실패하고 넷이 삶, 셸이 던지면 화면 한 장 | 테스트함 — **다섯 블록이 다 던져도 헤더·탭바가 살아 있음**, `animate-pulse`가 저장소에 안 남음 | 해당 없음 — 실패 표시에 권한 분기가 없다 | 테스트함 — 「다시 시도」가 경계 `reset()` + `router.refresh()`를 한 번만 부름 | 테스트함 — 블록이 서로 다른 시각에 도착해도 순서와 자리가 안 바뀜 |
 | 26 시트 라우트 | 테스트함 — 홈·일정 양쪽에서 같은 주소가 열리고 시트로 뜸 | 테스트함 — 직접 방문·새로고침에서 전체 화면으로 열림 | 테스트함 — **뒤로가기가 겹을 하나씩 벗김**(`/roster/x/change` → `/roster/x` → 원래 화면), 없는 날짜는 not-found | 해당 없음 — 명단 권한은 서버 쿼리가 판정하고 이 task가 안 바꾼다 | 테스트함 — 같은 주소를 두 번 밀어도 시트가 하나 | 해당 없음 — 라우터 상태 하나 |
 | 27·28 상태 도구 | 테스트함 — Provider가 서고 무한 스크롤이 두 회차씩 붙음 | 테스트함 — 더 불러오기 실패 시 목록이 살아 있고 재시도가 가능 | 테스트함 — **zustand `persist`의 SSR 수화**(첫 렌더가 서버와 같음), 저장값이 없을 때의 기본값 | 해당 없음 — 가림 설정은 기기에만 있고 서버로 안 간다 | 테스트함 — 바닥 도달 연타가 같은 페이지를 두 번 안 부름 | 해당 없음 — 쿼리 키 하나에 요청 하나 |
-| 29 verify | 테스트함 — `pnpm verify` 전체 통과 | 테스트함 — `gate:tokens`·`gate:docs`가 이관 누락을 잡는지 확인 | 해당 없음 — 통과 여부의 이진 판정 | 해당 없음 — CI 실행 권한은 기존 그대로다 | 해당 없음 — 재실행이 같은 결과 | 해당 없음 — 게이트가 순차로 돈다 |
+| 29·30 번들 상한 | 테스트함 — `gate:bundle`이 새 상한에서 통과 | 테스트함 — 상한을 넘긴 fixture에서 여전히 위반을 보고 | 테스트함 — **의존성 둘을 넣은 뒤의 실측을 숫자로 기록**하고 600KB 대비 여유를 적는다. 여유가 50KB 아래면 후속 task를 `should`로 올린다 | 해당 없음 — 빌드 산출물을 읽는 판정이다 | 해당 없음 — 재실행이 같은 결과 | 해당 없음 — 빌드 뒤 한 번 잰다 |
+| 31 verify | 테스트함 — `pnpm verify` 전체 통과 | 테스트함 — `gate:tokens`·`gate:docs`가 이관 누락을 잡는지 확인 | 해당 없음 — 통과 여부의 이진 판정 | 해당 없음 — CI 실행 권한은 기존 그대로다 | 해당 없음 — 재실행이 같은 결과 | 해당 없음 — 게이트가 순차로 돈다 |
 
 핵심 위험 넷을 따로 적는다.
 
@@ -426,6 +432,9 @@ src/app/error.tsx
 src/shared/hooks/**
 src/features/recruitment/api/list-past-rounds.ts
 src/features/recruitment/api/__tests__/list-past-rounds.test.ts
+harness/lib/bundle-budget.ts
+harness/self-test/bundle-budget.test.ts
+docs/standards/adr/0015-motion-library-scope.md
 ```
 
 용도 한정을 넷으로 나눠 적는다.
@@ -442,6 +451,8 @@ src/features/recruitment/api/__tests__/list-past-rounds.test.ts
 
 **라우트와 상태 도구(revision 4).** `src/app/(protected)/**`는 라우트 규약 파일(`loading.tsx`·`error.tsx`·`@sheet` 슬롯·`roster` 라우트)과 블록별 Suspense 재구성, `providers.tsx` 신설에 한정한다 — **인증 게이트(`resolveProfileAccess`)와 리다이렉트 규칙을 건드리지 않는다.** `package.json`·`pnpm-lock.yaml`은 `@tanstack/react-query`와 `zustand` 두 의존성 추가에 한정한다. `src/shared/hooks/**`는 `useAmountReveal`·`useAmountMasking` 둘 신설에 한정하고 기존 셋(`useOnlineStatus`·`useSwipeAction`·`useReducedMotion`)을 안 고친다. `src/features/recruitment/api/list-past-rounds.ts`는 **기존 쿼리를 감싸는 서버 진입점 하나**이고 파일 이름으로 못 박았다 — `features/**` 전체가 열린 것이 아니다. `docs/standards/ARCHITECTURE.md`는 TanStack Query가 실제로 서고 zustand가 한 자리에 들어왔다는 것을 적는 데 한정한다.
 
+**번들 상한(revision 5).** `harness/lib/bundle-budget.ts`는 `BUNDLE_BUDGET_BYTES` 한 줄에 한정한다 — 측정 로직(`STATIC_CHUNK_DIRECTORY` 재귀·gzip 계산)을 건드리지 않는다. P0-T43이 그 재귀를 고친 이력이 있어 손대면 조용한 허위 통과를 되살릴 수 있다. `harness/self-test/bundle-budget.test.ts`는 새 상한을 반영하는 데 한정한다. `docs/standards/adr/0015-motion-library-scope.md`는 결정 3에 세 번째 인상을 적고 개정 이력에 행을 더하는 데 한정하며, **결정 1·2·4·5와 앞선 개정 이력 행을 건드리지 않는다.** `index.jsonl`의 P0-T44·P0-T45 행에 있는 `bundle-budget-500`·`bundle-budget-500-hold` check ID는 **그대로 둔다** — 끝난 task의 이력이다.
+
 **안 여는 것.** `src/entities/**`·`src/views/**/model/**`(홈·일정 제외)·`supabase/**`·`harness/**`·`docs/product/PRD.md`는 허용 경로에 없다. `src/features/**`도 위에 이름을 댄 파일 둘 말고는 닫혀 있다. 일정의 신청 배선은 기존 `useApplicationBatch`를 그대로 쓰고, 신청 데이터의 모양이 부족하면 고치지 말고 질문으로 반환한다. `--color-border`와 `--color-surface-weak` 값 변경이 다른 화면의 렌더를 바꾸더라도 그 확인은 P0-T49~T54의 몫이다.
 
 ## 미결 사항
@@ -451,6 +462,7 @@ src/features/recruitment/api/__tests__/list-past-rounds.test.ts
 - **긴 이름 말줄임.** 오늘 카드 오른쪽 포지션 이름과 알림 카드 두 줄 넘침의 기준값. 계산은 `model`이 하기로 정했으나 값을 아직 안 정했다. 실제 데이터의 이름 길이를 보고 퍼블리싱 중에 정한다.
 - **D 배지 형태 검수.** 색 층위는 라운드 27이 정했고 32px·radius 11이라는 형태는 라운드 7 수준의 검수를 안 받았다. 퍼블리싱하며 실제 렌더로 본다.
 - **홈 목 데이터의 요일.** 시안은 「8월 18일 월요일」인데 2026-08-18은 화요일이다. 퍼블리싱 때 맞춘다.
+- **508KB가 어디서 늘었나.** `ADR-0015`가 기록한 최종 실측은 491.0KB인데 지금 508KB다. 17KB가 언제 어디서 붙었는지 아무도 안 셌다. 상한을 올리는 것으로 감시선은 되찾지만 원인은 그대로 남는다. 후속 task가 청크별로 재고 줄인다.
 - **TanStack Query가 이 task에서 얼마나 쓰이나.** 실제 사용처는 지난 회차 무한 스크롤 하나뿐이다. 서버 컴포넌트가 읽는 나머지는 쿼리 클라이언트를 안 탄다. `ARCHITECTURE.md:24`를 코드로 세우는 값어치는 있지만, 이 task만 놓고 보면 Provider가 거의 비어 있다. P0-T52(급여)·P4 계열이 실제 클라이언트 페치를 얹으며 채운다.
 - **Dumb UI 예외 목록의 규모.** 규칙을 켜면 아직 이관 안 된 열아홉 화면 중 몇 곳이 걸릴지 아직 안 셌다. 구현 첫 단계가 전수 확인이고, 예외로 끄는 경로가 늘어나는 것 자체는 예상된 빚이다. 다만 `src/shared/ui/**`(shadcn 파생)가 대량으로 걸리면 그건 화면 task가 아니라 공용 컴포넌트의 문제라 별도 판단이 필요하다 — 그 자리에서 멈추고 묻는다.
 - **주간 스트립의 주 경계.** 월요일 시작은 NOTES가 적은 가정이고 확정이 아니다. `PRD.md:346`이 「날짜별 금액과 월별 합계」라 급여 주의 시작일·월별 합계 존치·달에 걸친 근무의 귀속 셋이 기획 몫으로 남아 있다. 기획이 답하면 스트립의 요일 배열 상수 하나가 바뀐다.

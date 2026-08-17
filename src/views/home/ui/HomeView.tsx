@@ -76,7 +76,7 @@ export function HomeView({ model }: { model: HomeViewModel }) {
   return (
     <RouterPullToRefresh>
       <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-nav-safe">
-        <h1 className="typo-display text-text-strong">홈</h1>
+        <h1 className="typo-headline-md text-text-strong">홈</h1>
 
         {model.priority === "attendance" ? (
           <AttendanceSection

@@ -119,7 +119,7 @@ export function ScheduleView({
   return (
     <RouterPullToRefresh>
       <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-3 p-4 pb-nav-action-safe">
-        <h1 className="typo-display px-1 text-text-strong">일정</h1>
+        <h1 className="px-1 typo-headline-md text-text-strong">일정</h1>
         <SegmentedControl
           label="일정 보기 방식"
           options={VIEW_MODE_OPTIONS}

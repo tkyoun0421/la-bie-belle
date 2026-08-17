@@ -4,6 +4,7 @@ import fileNaming from "./rules/file-naming.mjs";
 import importAlias from "./rules/import-alias.mjs";
 import layerDirection from "./rules/layer-direction.mjs";
 import motionTokens from "./rules/motion-tokens.mjs";
+import noLogicInUi from "./rules/no-logic-in-ui.mjs";
 import spacingScale from "./rules/spacing-scale.mjs";
 import noComments from "./rules/no-comments.mjs";
 import noRuntimeExport from "./rules/no-runtime-export.mjs";
@@ -28,5 +29,6 @@ export default {
     "design-token-colors": designTokenColors,
     "motion-tokens": motionTokens,
     "spacing-scale": spacingScale,
+    "no-logic-in-ui": noLogicInUi,
   },
 };
