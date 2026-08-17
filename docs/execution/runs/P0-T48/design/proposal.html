@@ -8,8 +8,8 @@
       :root {
         --color-canvas: #f1f3f6;
         --color-surface: #ffffff;
-        --color-surface-weak: #f7f7f7;
-        --color-border: #dee1e6;
+        --color-surface-weak: #f2f4f6;
+        --color-border: #e5e8eb;
 
         --color-text-strong: #0a0b0d;
         --color-text: #5b616e;
@@ -20,7 +20,11 @@
         --color-action: #0052ff;
         --color-action-deep: #0c3f9c;
         --color-action-tint-weak: #f2f6fd;
+        --color-action-tint: #e4edfd;
         --color-on-action: #ffffff;
+
+        --color-warn-tint: #fdf0dd;
+        --color-warn-deep: #8a5300;
 
         --radius-md: 14px;
         --radius-lg: 16px;
@@ -54,8 +58,8 @@
       }
 
       .sheet-note {
-        margin: 0 0 8px;
-        max-width: 64ch;
+        margin: 0 0 14px;
+        max-width: 74ch;
         font-size: 14px;
         line-height: 22px;
         color: var(--color-text-muted);
@@ -66,120 +70,152 @@
       }
 
       .callout {
-        margin: 0 0 28px;
-        padding: 12px 16px;
-        max-width: 78ch;
+        margin: 0 0 10px;
+        padding: 10px 14px;
+        max-width: 80ch;
         border-radius: var(--radius-md);
-        background: var(--color-action-tint-weak);
-        color: var(--color-action-deep);
+        background: var(--color-warn-tint);
+        color: var(--color-warn-deep);
         font-size: 13px;
         line-height: 20px;
       }
 
-      .section-title {
-        margin: 36px 0 4px;
-        font-size: 18px;
-        line-height: 26px;
+      .callout:last-of-type {
+        margin-bottom: 28px;
+      }
+
+      .lab {
+        display: flex;
+        gap: 28px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      /* ---------- 조작판 ---------- */
+
+      .panel {
+        width: 296px;
+        padding: 18px 20px 22px;
+        border-radius: 20px;
+        background: var(--color-surface);
+      }
+
+      .panel h2 {
+        margin: 0 0 2px;
+        font-size: 15px;
+        line-height: 22px;
         font-weight: 700;
         color: var(--color-text-strong);
       }
 
-      .section-note {
-        margin: 0 0 16px;
-        max-width: 64ch;
+      .panel > p {
+        margin: 0 0 18px;
         font-size: 13px;
-        line-height: 20px;
+        line-height: 19px;
         color: var(--color-text-muted);
       }
 
-      .rail {
-        display: flex;
-        gap: 24px;
-        align-items: flex-start;
-        overflow-x: auto;
-        padding-bottom: 16px;
+      .panel-group {
+        margin-bottom: 16px;
       }
 
-      .frame {
-        flex: 0 0 auto;
-        width: 340px;
-      }
-
-      .frame-label {
-        margin: 0 0 4px;
-        font-size: 14px;
-        line-height: 20px;
-        font-weight: 700;
-        color: var(--color-text-strong);
-      }
-
-      .frame-lead {
-        margin: 0 0 10px;
+      .panel-group > span {
+        display: block;
+        margin-bottom: 6px;
         font-size: 13px;
         line-height: 18px;
-        color: var(--color-text-muted);
-      }
-
-      .screen {
-        position: relative;
-        height: 640px;
-        overflow: hidden;
-        border: 1px solid var(--color-border);
-        border-radius: 28px;
-        background: var(--color-canvas);
-      }
-
-      .status-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 20px 2px;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--color-text-strong);
-        font-variant-numeric: tabular-nums;
-      }
-
-      .body {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 4px 16px 96px;
-        height: calc(100% - 30px);
-        overflow: hidden;
-      }
-
-      .header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 4px;
-        min-height: 48px;
-        padding: 0 4px;
-      }
-
-      .header h2 {
-        margin: 0;
-        flex: 1;
-        font-size: 22px;
-        line-height: 30px;
         font-weight: 700;
         color: var(--color-text-strong);
       }
 
-      .icon-button {
+      .opts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .opt {
+        padding: 7px 11px;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-pill);
+        background: var(--color-surface);
+        color: var(--color-text);
+        font-family: inherit;
+        font-size: 13px;
+        line-height: 18px;
+        cursor: pointer;
+      }
+
+      .opt[aria-pressed="true"] {
+        border-color: var(--color-action);
+        background: var(--color-action-tint-weak);
+        color: var(--color-action-deep);
+        font-weight: 600;
+      }
+
+      .hint {
+        margin: 0;
+        padding-top: 14px;
+        border-top: 1px solid var(--color-border);
+        font-size: 13px;
+        line-height: 19px;
+        color: var(--color-text-muted);
+      }
+
+      .hint b {
+        color: var(--color-text-strong);
+      }
+
+      /* ---------- 기기 ---------- */
+
+      .phone {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 393px;
+        height: 851px;
+        border-radius: 28px;
+        background: var(--color-canvas);
+        overflow: hidden;
+      }
+
+      .phone-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 4;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 80px;
+        padding: 24px 16px 0;
+        background: rgba(241, 243, 246, 0.5);
+        -webkit-backdrop-filter: blur(9px);
+        backdrop-filter: blur(9px);
+      }
+
+      .screen-title {
+        margin: 0;
+        font-size: 22px;
+        line-height: 30px;
+        font-weight: 600;
+        color: var(--color-text-strong);
+      }
+
+      .bell {
         position: relative;
         display: grid;
         place-items: center;
         width: 44px;
         height: 44px;
-        margin-right: -10px;
         border: 0;
         background: none;
-        color: var(--color-text-strong);
+        color: var(--color-text);
+        cursor: pointer;
       }
 
-      .icon-button svg {
+      .bell svg {
         width: 24px;
         height: 24px;
         fill: none;
@@ -189,17 +225,148 @@
         stroke-linejoin: round;
       }
 
-      .bell-dot::after {
-        content: "";
+      .bell-dot {
         position: absolute;
-        top: 8px;
-        right: 9px;
+        top: 9px;
+        right: 10px;
         width: 8px;
         height: 8px;
-        border: 2px solid var(--color-canvas);
         border-radius: var(--radius-pill);
         background: var(--color-action);
       }
+
+      .phone-body {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 80px 16px 16px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: none;
+      }
+
+      .phone-body::-webkit-scrollbar {
+        display: none;
+      }
+
+      .refresh {
+        display: grid;
+        place-items: center;
+        height: 0;
+        overflow: hidden;
+        transition: height 200ms ease;
+      }
+
+      .refresh.on {
+        height: 44px;
+      }
+
+      .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--color-border);
+        border-top-color: var(--color-action);
+        border-radius: var(--radius-pill);
+        animation: spin 700ms linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .block {
+        display: none;
+        flex-direction: column;
+      }
+
+      .block.on {
+        display: flex;
+      }
+
+      .tabbar {
+        flex: 0 0 auto;
+        display: flex;
+        height: 64px;
+        border-top: 1px solid var(--color-border);
+        background: var(--color-surface);
+      }
+
+      .tab {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        border: 0;
+        background: none;
+        font-family: inherit;
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--color-text);
+        cursor: pointer;
+      }
+
+      .tab svg {
+        width: 24px;
+        height: 24px;
+        transform-origin: 50% 100%;
+      }
+
+      .tab .fill {
+        display: none;
+      }
+
+      .tab .line {
+        display: block;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .tab[aria-current="page"] {
+        color: var(--color-ink-800);
+        font-weight: 600;
+      }
+
+      .tab[aria-current="page"] .fill {
+        display: block;
+        fill: currentColor;
+        stroke: none;
+      }
+
+      .tab[aria-current="page"] .line {
+        display: none;
+      }
+
+      .tab.pressed svg {
+        animation: tabPress 420ms cubic-bezier(0.32, 0.72, 0, 1);
+      }
+
+      @keyframes tabPress {
+        0% {
+          transform: scale(1, 1);
+        }
+        18% {
+          transform: scale(1.22, 0.78);
+        }
+        44% {
+          transform: scale(0.95, 1.06);
+        }
+        68% {
+          transform: scale(1.1, 0.91);
+        }
+        100% {
+          transform: scale(1, 1);
+        }
+      }
+
+      /* ---------- 카드와 행 ---------- */
 
       .card {
         display: flex;
@@ -214,6 +381,26 @@
         gap: 8px;
       }
 
+      .card-rows {
+        gap: 0;
+        padding: 4px 16px;
+      }
+
+      .card-week {
+        gap: 0;
+        padding: 14px 16px;
+      }
+
+
+      .block-label {
+        margin: 0;
+        padding: 0 4px 6px;
+        font-size: 13px;
+        line-height: 18px;
+        font-weight: 500;
+        color: var(--color-text-muted);
+      }
+
       .caption {
         margin: 0;
         font-size: 13px;
@@ -221,63 +408,169 @@
         color: var(--color-text-muted);
       }
 
-      .title {
+      .value {
         margin: 0;
-        font-size: 18px;
-        line-height: 26px;
-        font-weight: 600;
+        font-size: 16px;
+        line-height: 24px;
         color: var(--color-text-strong);
       }
 
-      .amount {
+      .clock {
         margin: 0;
         font-size: 26px;
         line-height: 34px;
-        font-weight: 700;
+        font-weight: 600;
         color: var(--color-text-strong);
         font-variant-numeric: tabular-nums;
       }
 
-      .amount-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+      .clock-quiet {
+        color: var(--color-text-muted);
       }
 
-      .masked {
-        color: var(--color-text-weak);
-        filter: blur(7px);
-        user-select: none;
+      /* 알림 */
+
+      .notice-slot {
+        position: relative;
+        flex: 0 0 auto;
+        height: 70px;
+        transition:
+          height 260ms cubic-bezier(0.32, 0.72, 0, 1),
+          margin-bottom 260ms cubic-bezier(0.32, 0.72, 0, 1);
       }
 
-      .sr-only {
+      .notice-slot.collapsed {
+        height: 0;
+        margin-bottom: -12px;
+      }
+
+      .notice {
         position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip-path: inset(50%);
-        white-space: nowrap;
+        inset: 0;
+        display: none;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 8px 12px 16px;
+        border-radius: var(--radius-xl);
+        background: var(--color-surface);
       }
 
-      .eye {
+      .notice.on {
+        display: flex;
+      }
+
+      .notice.entering {
+        animation: noticeIn 280ms cubic-bezier(0.32, 0.72, 0, 1);
+      }
+
+      .notice.leaving {
+        animation: noticeOut 160ms ease-in forwards;
+      }
+
+      @keyframes noticeIn {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes noticeOut {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+      }
+
+      .glyph {
+        flex: 0 0 auto;
+        display: block;
+        width: 28px;
+        height: 28px;
+      }
+
+      .notice-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .dismiss {
+        flex: 0 0 auto;
         display: grid;
         place-items: center;
         width: 44px;
         height: 44px;
-        margin: -12px -10px -12px 0;
         border: 0;
+        border-radius: var(--radius-pill);
         background: none;
-        color: var(--color-text-muted);
+        color: var(--color-text-weak);
+        cursor: pointer;
+        transition: transform 120ms ease;
       }
 
-      .eye svg {
-        width: 20px;
-        height: 20px;
+      .dismiss:active {
+        transform: scale(0.88);
+      }
+
+      .dismiss svg {
+        width: 17px;
+        height: 17px;
         fill: none;
         stroke: currentColor;
-        stroke-width: 2;
+        stroke-width: 1.8;
         stroke-linecap: round;
-        stroke-linejoin: round;
+      }
+
+      /* 오늘 */
+
+      .split {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .split-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 2px;
+      }
+
+      .today-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-top: 10px;
+        border-top: 1px solid var(--color-border);
+      }
+
+      .avatars {
+        display: flex;
+        flex: 0 0 auto;
+      }
+
+      .avatars span {
+        width: 22px;
+        height: 22px;
+        border: 2px solid var(--color-surface);
+        border-radius: var(--radius-pill);
+        background: #c9d1dc;
+      }
+
+      .avatars span + span {
+        margin-left: -8px;
       }
 
       .button {
@@ -292,61 +585,331 @@
         font-size: 14px;
         line-height: 20px;
         font-weight: 600;
+        cursor: pointer;
+        transition: transform 120ms ease;
       }
 
-      .button-secondary {
+      .button:active {
+        transform: scale(0.985);
+      }
+
+      .button:disabled {
         background: var(--color-surface-weak);
-        color: var(--color-text-strong);
+        color: var(--color-text-weak);
+        cursor: default;
+        transform: none;
       }
 
-      .tabbar {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        height: 64px;
-        border-top: 1px solid var(--color-border);
-        background: var(--color-surface);
+      /* 주간 스트립 */
+
+      .week {
+        display: flex;
+        gap: 2px;
       }
 
-      .tabbar-standalone {
-        position: static;
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-xl);
-        overflow: hidden;
-      }
-
-      .tab {
-        position: relative;
-        isolation: isolate;
+      .wcell {
+        flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 3px;
-        height: 100%;
-        font-size: 11px;
-        line-height: 14px;
+        gap: 4px;
+        border: 0;
+        background: none;
+        font-family: inherit;
+        cursor: pointer;
+      }
+
+      .wdow {
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--color-text-muted);
+      }
+
+      .wnum {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--color-text);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .wcell.st-shift .wnum {
+        color: var(--color-text-strong);
+        font-weight: 500;
+      }
+
+      .wcell.st-none {
+        cursor: default;
+      }
+
+      .wcell.st-none .wnum {
+        color: var(--color-text-weak);
+      }
+
+      .wcell.selected .wnum {
+        background: var(--color-action-tint);
+        color: var(--color-action-deep);
+        transform-origin: 50% 100%;
+        animation: selectIn 420ms cubic-bezier(0.32, 0.72, 0, 1);
+      }
+
+      @keyframes selectIn {
+        0% {
+          transform: scale(1, 1);
+        }
+        18% {
+          transform: scale(1.22, 0.78);
+        }
+        44% {
+          transform: scale(0.95, 1.06);
+        }
+        68% {
+          transform: scale(1.1, 0.91);
+        }
+        100% {
+          transform: scale(1, 1);
+        }
+      }
+
+      .amt.revealing {
+        background-image: linear-gradient(100deg, currentColor 40%, #b7bec9 50%, currentColor 60%);
+        background-size: 250% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 1500ms ease-in-out;
+      }
+
+      @keyframes shine {
+        from {
+          background-position: 100% 0;
+        }
+        to {
+          background-position: 0% 0;
+        }
+      }
+
+      .pcol {
+        width: 340px;
+      }
+
+      .pcol-note {
+        margin: 0 0 8px;
+        font-size: 13px;
+        line-height: 19px;
+        color: var(--color-text-muted);
+      }
+
+      .pcol-note b {
         font-weight: 600;
+        color: var(--color-text-strong);
+      }
+
+      .markbench {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: flex-start;
+      }
+
+      .marktiles {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+
+      .marktile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        width: 128px;
+        padding: 18px 0 12px;
+        border-radius: var(--radius-lg);
+        background: var(--color-surface);
+      }
+
+      .marktile svg {
+        width: 64px;
+        height: 64px;
+      }
+
+      .marktile span {
+        font-size: 12px;
+        line-height: 16px;
+        color: var(--color-text-muted);
+      }
+
+      .week-foot {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--color-border);
+      }
+
+      /* 행 */
+
+      .trow {
+        display: none;
+        align-items: center;
+        gap: 14px;
+        width: 100%;
+        padding: 12px 0;
+        border: 0;
+        background: none;
+        text-align: left;
+        font-family: inherit;
+        cursor: pointer;
+        transition: transform 120ms ease;
+      }
+
+      .trow.on {
+        display: flex;
+      }
+
+      .trow.on + .trow.on {
+        border-top: 1px solid var(--color-border);
+      }
+
+      .trow:active {
+        transform: scale(0.985);
+      }
+
+      .trow-main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .trow-label {
+        margin: 0 0 1px;
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--color-text-muted);
+      }
+
+      .trow-main .trow-label,
+      .trow-main .trow-value {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .trow-main .trow-value + .trow-label {
+        margin: 1px 0 0;
+      }
+
+      .upco .trow-value {
+        font-size: 16px;
+        line-height: 24px;
+      }
+
+      .trow-value {
+        margin: 0;
+        font-size: 18px;
+        line-height: 26px;
+        font-weight: 500;
+        color: var(--color-text-strong);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .trow-value-quiet {
         color: var(--color-text);
       }
 
-      .tab .glyph {
-        display: block;
-        width: 24px;
-        height: 24px;
-        transform-origin: 50% 100%;
+      .blurred {
+        filter: blur(7px);
+        user-select: none;
       }
 
-      .tab svg {
+      .mark {
+        flex: 0 0 auto;
         display: block;
-        width: 24px;
-        height: 24px;
+        width: 32px;
+        height: 32px;
       }
 
-      .tab .line {
+      .dbadge {
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 11px;
+        background: var(--color-action);
+        color: var(--color-on-action);
+        font-size: 13px;
+        line-height: 18px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .dbadge-quiet {
+        background: var(--color-surface-weak);
+        color: var(--color-text);
+      }
+
+      .pill {
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        height: 34px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: var(--radius-pill);
+        background: var(--color-surface-weak);
+        color: var(--color-text-strong);
+        font-family: inherit;
+        font-size: 13px;
+        line-height: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 120ms ease;
+      }
+
+      .pill:active {
+        transform: scale(0.94);
+      }
+
+      .amt {
+        cursor: pointer;
+      }
+
+      .amt:not(.blurred) {
+        transition: transform 120ms ease;
+      }
+
+      .amt:not(.blurred):active {
+        transform: scale(0.96);
+      }
+
+      .more {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        width: 100%;
+        padding: 12px 0;
+        border: 0;
+        border-top: 1px solid var(--color-border);
+        background: none;
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--color-text);
+        cursor: pointer;
+      }
+
+      .more svg {
+        width: 16px;
+        height: 16px;
         fill: none;
         stroke: currentColor;
         stroke-width: 2;
@@ -354,276 +917,1396 @@
         stroke-linejoin: round;
       }
 
-      .tab .solid {
-        display: none;
-      }
-
-      .tab[aria-current="page"] {
-        color: var(--color-ink-800);
-      }
-
-      .tab[aria-current="page"] .line {
-        display: none;
-      }
-
-      .tab[aria-current="page"] .solid {
-        display: block;
-      }
-
-      .solid .fg {
-        fill: currentColor;
-        stroke: none;
-      }
-
-      .solid .cut {
-        fill: var(--color-surface);
-        stroke: none;
-      }
-
-      .solid .cut-stroke {
+      .chevron {
+        flex: 0 0 auto;
+        width: 20px;
+        height: 20px;
         fill: none;
-        stroke: var(--color-surface);
+        stroke: var(--color-text-weak);
         stroke-width: 2;
         stroke-linecap: round;
+        stroke-linejoin: round;
       }
 
-      .tab[aria-current="page"] .glyph {
-        animation: squash 2200ms infinite;
+      .sheet-dim {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        background: rgba(10, 11, 13, 0.4);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 200ms ease;
       }
 
-      @keyframes squash {
-        0% {
-          transform: scale(1, 1);
-        }
-        3% {
-          transform: scale(1.22, 0.78);
-        }
-        7% {
-          transform: scale(0.95, 1.06);
-        }
-        10% {
-          transform: scale(1.02, 0.99);
-        }
-        13% {
-          transform: scale(1.1, 0.91);
-        }
-        16% {
-          transform: scale(0.98, 1.02);
-        }
-        19%,
-        100% {
-          transform: scale(1, 1);
-        }
+      .sheet-dim.on {
+        opacity: 1;
+        pointer-events: auto;
       }
 
-      @media (prefers-reduced-motion: reduce) {
-        .tab .glyph {
-          animation: none !important;
-        }
+      .roster {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 6;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 20px 16px 16px;
+        border-radius: 20px 20px 0 0;
+        background: var(--color-surface);
+        transform: translateY(100%);
+        transition: transform 260ms cubic-bezier(0.32, 0.72, 0, 1);
       }
 
-      .variant {
-        margin-bottom: 20px;
-        max-width: 380px;
+      .roster.on {
+        transform: translateY(0);
       }
 
-      .variant p {
-        margin: 0 0 8px;
+      .roster-title {
+        margin: 0;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 600;
+        color: var(--color-text-strong);
+      }
+
+      .roster-rows {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .roster-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 0;
+      }
+
+      .roster-row + .roster-row {
+        border-top: 1px solid var(--color-border);
+      }
+
+      .rnames {
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--color-text-strong);
+      }
+
+      .rnames .me {
+        color: var(--color-action-deep);
+        font-weight: 500;
+      }
+
+      .toast {
+        position: absolute;
+        left: 50%;
+        bottom: 84px;
+        transform: translate(-50%, 12px);
+        padding: 10px 16px;
+        border-radius: var(--radius-pill);
+        background: rgba(10, 11, 13, 0.86);
+        color: #fff;
+        font-size: 13px;
+        line-height: 18px;
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 180ms ease,
+          transform 180ms ease;
+      }
+
+      .toast.on {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      .defs {
+        position: absolute;
+        width: 0;
+        height: 0;
+      }
+
+      .state-table {
+        width: 100%;
+        max-width: 900px;
+        border-collapse: collapse;
+        font-size: 13px;
+        line-height: 20px;
+      }
+
+      .state-table th,
+      .state-table td {
+        padding: 8px 12px;
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .state-table th {
+        color: var(--color-text-strong);
+        font-weight: 700;
+      }
+
+      .state-table td strong {
+        color: var(--color-text-strong);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        margin-bottom: 8px;
+        padding: 4px 16px 8px;
+        border-radius: var(--radius-xl);
+        background: var(--color-surface);
+      }
+
+      .section-title {
+        margin: 40px 0 4px;
+        font-size: 18px;
+        line-height: 26px;
+        font-weight: 700;
+        color: var(--color-text-strong);
+      }
+
+      .section-note {
+        margin: 0 0 16px;
+        max-width: 78ch;
         font-size: 13px;
         line-height: 20px;
         color: var(--color-text-muted);
       }
 
-      .variant p strong {
+      .section-note strong {
         color: var(--color-text-strong);
       }
     </style>
   </head>
   <body>
-    <h1 class="sheet-title">라운드 5 — 선택 탭의 모양과 움직임</h1>
+    <svg class="defs" aria-hidden="true">
+      <defs>
+        <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffd971" />
+          <stop offset="1" stop-color="#e79f22" />
+        </linearGradient>
+        <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#5d4835" />
+          <stop offset="1" stop-color="#33261a" />
+        </linearGradient>
+        <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#54d787" />
+          <stop offset="1" stop-color="#11834a" />
+        </linearGradient>
+        <linearGradient id="blue" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#5b90ff" />
+          <stop offset="1" stop-color="#0b3f9e" />
+        </linearGradient>
+        <linearGradient id="amber" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffc94d" />
+          <stop offset="1" stop-color="#c4700a" />
+        </linearGradient>
+        <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffffff" />
+          <stop offset="1" stop-color="#e8ecf1" />
+        </linearGradient>
+        <linearGradient id="violet" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#b18cff" />
+          <stop offset="1" stop-color="#6a3bd8" />
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <h1 class="sheet-title">라운드 25 — 헤더 블러 (2차)</h1>
     <p class="sheet-note">
-      하단 탭은 <strong>홈 · 일정 · 급여 · 전체</strong> 넷으로 확정. 선택 탭은 파랑이 아니라
-      <strong>어두운 채움</strong>이고 선택 안 된 탭은 <code>gray-700</code> 선이다. 화면에서 파랑은
-      눌러야 할 버튼 하나에만 남는다. 선택 탭 뒤에 깔던 회색 블록은 뺐다 — 선택돼 있는 내내 남아
-      있어서 채움과 색이 이미 하는 말을 한 번 더 하고 있었다.
+      계층은 라운드 24로 확정됐다(아래 표 셋이 확정본이다). 이 판의 수정 하나 —
+      <strong>스크롤을 내리면 카드가 헤더 뒤로 지나가며 흐릿하게 비친다.</strong> 전에는 헤더가
+      지면을 잘라 콘텐츠가 그 선에서 사라졌다. 상태 표시줄 자리까지 한 레이어로 묶어 실제
+      폰에서 콘텐츠가 시계 뒤로 지나가는 짜임을 그대로 옮겼다. 2차에서
+      <strong>더 옅게</strong> 풀었다 — 흐림 14 → <strong>9px</strong>, 덮는 지면색 68 →
+      <strong>50%</strong>. 뒤 카드의 윤곽이 더 살아난다.
+      <strong>기기에서 아래로 굴려보면 보인다.</strong>
     </p>
     <p class="callout">
-      Lucide에는 채운 세트가 없다. <code>전체</code>의 <code>Menu</code>는 선 세 개라 채울 도형이
-      아예 없어 <code>LayoutGrid</code>(정사각 넷)로 바꿨다 — 이건 Lucide에 실제로 있는 아이콘이라 선
-      상태는 정품이다. 나머지 셋의 채움은 Lucide 실루엣에서 딴 파생 자산이 된다. 채움 색
-      <code>#3a3f4a</code>도 팔레트에 없던 단계라 <code>FOUNDATIONS</code> 원시 표에 행을 더해야 한다.
+      <strong>주급은 기획으로 돌아간다.</strong> <code>PRD.md:346</code>이 「월별 합계」다. 주 경계·월 합계
+      유지 여부·달 걸친 근무 처리를 정해야 한다. 「받은 총급여」도 <code>PRD.md:375</code>가 실제 정산을
+      MVP에서 빼서 「누적 예상 급여」로 대신한다.
     </p>
 
-    <div class="rail">
-      <section class="frame">
-        <p class="frame-label">홈 — 확정된 셸</p>
-        <p class="frame-lead">탭 넷, 헤더 종, 어두운 채움으로 선택.</p>
-        <div class="screen">
-          <div class="status-bar"><span>9:41</span><span>LTE</span></div>
-          <div class="body">
-            <div class="header">
-              <h2>홈</h2>
-              <button class="icon-button bell-dot" type="button" aria-label="알림 · 읽지 않음">
+    <div class="lab">
+      <div class="phone" id="phone">
+        <div class="phone-header">
+          <p class="screen-title">홈</p>
+          <button class="bell" type="button" aria-label="알림" data-toast="알림 화면으로 갑니다">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+              <path d="M10.3 21a2 2 0 0 0 3.4 0" />
+            </svg>
+            <span class="bell-dot" id="bellDot" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="phone-body" id="body">
+          <div class="refresh" id="refresh"><span class="spinner"></span></div>
+
+          <!-- 알림 -->
+          <div class="notice-slot" id="noticeSlot">
+            <div class="notice" data-notice="0">
+              <svg class="glyph" viewBox="0 0 36 36" aria-hidden="true">
+                <path
+                  d="M25.6 24.4 29.8 13"
+                  fill="none"
+                  stroke="url(#skin)"
+                  stroke-width="4.8"
+                  stroke-linecap="round"
+                />
+                <circle cx="30.4" cy="9.6" r="3.9" fill="url(#skin)" />
+                <path
+                  d="M18 22.6c5.9 0 10.7 4.2 10.7 9.4V34a2 2 0 0 1-2 2H9.3a2 2 0 0 1-2-2v-2c0-5.2 4.8-9.4 10.7-9.4"
+                  fill="url(#green)"
+                />
+                <circle cx="18" cy="15" r="7.2" fill="url(#skin)" />
+                <path
+                  d="M10.8 15.2c0-4.6 3.2-7.8 7.2-7.8s7.2 3.2 7.2 7.8c-1.8-2.3-4.2-3.4-7.2-3.4s-5.4 1.1-7.2 3.4"
+                  fill="url(#hair)"
+                />
+                <circle cx="15.2" cy="16.2" r="1.15" fill="#3f2f21" />
+                <circle cx="20.8" cy="16.2" r="1.15" fill="#3f2f21" />
+                <path
+                  d="M16.2 19.4a2.6 2.6 0 0 0 3.6 0"
+                  fill="none"
+                  stroke="#3f2f21"
+                  stroke-width="1.3"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span class="notice-main">
+                <span class="value">8월 22일 공석</span>
+                <span class="caption">지금 신청할 수 있어요</span>
+              </span>
+              <button class="dismiss" type="button" aria-label="알림 끄기" data-dismiss>
                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M10.268 21a2 2 0 0 0 3.464 0" />
-                  <path
-                    d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"
-                  />
+                  <path d="M6 6l12 12M18 6L6 18" />
                 </svg>
               </button>
             </div>
 
-            <div class="card">
-              <p class="caption">8월 18일 · 홀서빙 근무</p>
-              <button class="button" type="button">출근 인증하기</button>
-              <p class="caption">근무 시작 20분 전부터 인증할 수 있어요</p>
+            <div class="notice" data-notice="1">
+              <svg class="glyph" viewBox="0 0 36 36" aria-hidden="true">
+                <rect
+                  x="5"
+                  y="7.5"
+                  width="26"
+                  height="23"
+                  rx="4.5"
+                  fill="url(#paper)"
+                  stroke="#dfe3e9"
+                  stroke-width="0.8"
+                />
+                <path d="M5 12A4.5 4.5 0 0 1 9.5 7.5h17A4.5 4.5 0 0 1 31 12v2.4H5z" fill="url(#blue)" />
+                <path
+                  d="m11.5 22.5 3.8 3.8 8.2-8.6"
+                  fill="none"
+                  stroke="#0052ff"
+                  stroke-width="2.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span class="notice-main">
+                <span class="value">8월 스케줄 확정</span>
+                <span class="caption">포지션을 확인해보세요</span>
+              </span>
+              <button class="dismiss" type="button" aria-label="알림 끄기" data-dismiss>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
             </div>
 
-            <div class="card card-tight">
-              <p class="title">근무 신청 마감이 임박했어요</p>
-              <p class="caption">8월 24일 · 8월 20일 18:00까지</p>
-              <button class="button button-secondary" type="button">지금 신청하기</button>
-            </div>
-
-            <div class="card card-tight">
-              <p class="caption">이번 달 예상 급여</p>
-              <div class="amount-row">
-                <p class="amount masked" aria-hidden="true">000,000원</p>
-                <span class="sr-only">금액 숨김</span>
-                <button class="eye" type="button" aria-label="금액 보기">
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path
-                      d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.8 10.8 0 0 1-1.876 2.98"
-                    />
-                    <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
-                    <path
-                      d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
-                    />
-                    <path d="m2 2 20 20" />
-                  </svg>
-                </button>
-              </div>
-              <p class="caption">일반 근무 5회 · 리허설 1회</p>
+            <div class="notice" data-notice="2">
+              <svg class="glyph" viewBox="0 0 36 36" aria-hidden="true">
+                <path
+                  d="M7.5 18a10.5 10.5 0 0 1 17.8-7.6"
+                  fill="none"
+                  stroke="url(#amber)"
+                  stroke-width="4.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M28.5 18a10.5 10.5 0 0 1-17.8 7.6"
+                  fill="none"
+                  stroke="url(#amber)"
+                  stroke-width="4.2"
+                  stroke-linecap="round"
+                />
+                <path d="M24.2 4.5 30 11.2l-8.2 1.2z" fill="url(#amber)" />
+                <path d="M11.8 31.5 6 24.8l8.2-1.2z" fill="url(#amber)" />
+              </svg>
+              <span class="notice-main">
+                <span class="value">8월 21일 배정 변경</span>
+                <span class="caption">홀서빙 → 접수</span>
+              </span>
+              <button class="dismiss" type="button" aria-label="알림 끄기" data-dismiss>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
             </div>
           </div>
 
-          <nav class="tabbar">
-            <span class="tab" aria-current="page">
-              <span class="glyph">
-                <svg class="solid" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    class="fg"
-                    d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+          <!-- 오늘 -->
+          <div class="block" data-var="today:open|wait">
+            <p class="block-label">오늘 · 8월 18일 월요일</p>
+            <div class="card card-tight">
+              <div class="split">
+                <div>
+                  <p class="clock" id="clock">1:18:59</p>
+                  <p class="caption" id="clockCaption">출근 시각까지</p>
+                </div>
+                <div class="split-right">
+                  <p class="value">홀서빙</p>
+                  <p class="caption">11:00 ~ 16:00</p>
+                </div>
+              </div>
+              <div class="today-meta">
+                <span class="avatars" aria-hidden="true">
+                  <span></span><span></span><span></span><span></span>
+                </span>
+                <p class="caption">4명 · 예식 14:00</p>
+              </div>
+              <button
+                class="button"
+                type="button"
+                id="checkIn"
+                style="margin-top: 4px"
+                data-toast="현재 위치를 확인합니다"
+              >
+                출근 인증하기
+              </button>
+            </div>
+          </div>
+
+          <!-- 이번 주 -->
+          <div class="block on">
+            <p class="block-label">이번 주</p>
+            <div class="card card-week">
+              <div class="week" id="week"></div>
+              <div class="week-foot">
+                <p class="caption" id="weekCaption">주급 · 3회 15시간</p>
+                <p
+                  class="trow-value amt"
+                  id="weekAmt"
+                  data-real="180,000원"
+                  data-mask="000,000원"
+                  role="button"
+                  tabindex="0"
+                ></p>
+                <p class="trow-value" id="weekNone" style="display: none">—</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 다가오는 근무 -->
+          <div class="block on">
+            <p class="block-label">다가오는 근무</p>
+            <div class="card card-rows upco">
+              <button class="trow" type="button" data-var="upco:three|one" data-roster="0">
+                <span class="dbadge dbadge-quiet">D-3</span>
+                <span class="trow-main">
+                  <span class="trow-value">8월 21일 목</span>
+                  <span class="trow-label">홀서빙 · 11:00 ~ 16:00</span>
+                </span>
+                <span class="pill">확인</span>
+              </button>
+              <button class="trow" type="button" data-var="upco:three" data-roster="1">
+                <span class="dbadge dbadge-quiet">D-5</span>
+                <span class="trow-main">
+                  <span class="trow-value">8월 23일 토</span>
+                  <span class="trow-label">접수 · 10:00 ~ 15:00</span>
+                </span>
+                <span class="pill">확인</span>
+              </button>
+              <button class="trow" type="button" data-var="upco:three" data-roster="2">
+                <span class="dbadge dbadge-quiet">D-7</span>
+                <span class="trow-main">
+                  <span class="trow-value">8월 25일 월</span>
+                  <span class="trow-label">홀서빙 · 12:00 ~ 17:00</span>
+                </span>
+                <span class="pill">확인</span>
+              </button>
+              <button class="trow" type="button" data-var="upco:none" data-toast="일정 화면으로 갑니다">
+                <span class="dbadge dbadge-quiet">없음</span>
+                <span class="trow-main">
+                  <span class="trow-value trow-value-quiet">다가오는 근무가 없어요</span>
+                </span>
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+              <button class="more" type="button" data-toast="일정 화면으로 갑니다">
+                <span>전체 일정 보기</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- 급여 -->
+          <div class="block on">
+            <p class="block-label">급여</p>
+            <div class="card card-rows">
+              <button class="trow on" type="button" data-toast="지난주 급여 상세">
+                <svg class="mark" viewBox="0 0 36 36" aria-hidden="true">
+                  <rect x="4" y="9.5" width="28" height="17" rx="3" fill="url(#green)" />
+                  <rect
+                    x="6.6"
+                    y="12.1"
+                    width="22.8"
+                    height="11.8"
+                    rx="1.6"
+                    fill="none"
+                    stroke="#ffffff"
+                    stroke-width="1"
+                    opacity="0.55"
                   />
-                  <path class="cut" d="M9.5 21v-7.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V21z" />
-                </svg>
-                <svg class="line" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+                  <circle cx="18" cy="18" r="5.2" fill="#eafaf0" />
                   <path
-                    d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                    d="M15.2 15.6 16.5 20.4 18 16.7 19.5 20.4 20.8 15.6"
+                    fill="none"
+                    stroke="#0d6b3c"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M14.6 17.7h6.8"
+                    fill="none"
+                    stroke="#0d6b3c"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
                   />
                 </svg>
-              </span>
-              홈
-            </span>
-            <span class="tab">
-              <span class="glyph">
-                <svg class="solid" viewBox="0 0 24 24" aria-hidden="true">
-                  <rect class="fg" width="18" height="18" x="3" y="4" rx="3" />
-                  <path class="cut-stroke" d="M3.5 10.5h17" />
-                  <circle class="cut" cx="8" cy="14.5" r="1.1" />
-                  <circle class="cut" cx="12" cy="14.5" r="1.1" />
-                  <circle class="cut" cx="16" cy="14.5" r="1.1" />
-                  <circle class="cut" cx="8" cy="18" r="1.1" />
-                  <circle class="cut" cx="12" cy="18" r="1.1" />
+                <span class="trow-main">
+                  <span class="trow-label">지난주 · 2회 11시간</span>
+                  <span
+                    class="trow-value trow-value-quiet amt"
+                    data-real="132,000원"
+                    data-mask="000,000원"
+                  ></span>
+                </span>
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6" />
                 </svg>
-                <svg class="line" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M8 2v4" />
-                  <path d="M16 2v4" />
-                  <rect width="18" height="18" x="3" y="4" rx="2" />
-                  <path d="M3 10h18" />
-                  <path d="M8 14h.01" />
-                  <path d="M12 14h.01" />
-                  <path d="M16 14h.01" />
-                  <path d="M8 18h.01" />
-                  <path d="M12 18h.01" />
+              </button>
+              <button class="trow on" type="button" data-toast="8월 급여 상세">
+                <svg class="mark" viewBox="0 0 36 36" aria-hidden="true">
+                  <rect x="5" y="17.5" width="6.8" height="13" rx="2.4" fill="url(#amber)" />
+                  <rect x="14.6" y="8" width="6.8" height="22.5" rx="2.4" fill="url(#blue)" />
+                  <rect x="24.2" y="13" width="6.8" height="17.5" rx="2.4" fill="url(#green)" />
                 </svg>
-              </span>
-              일정
-            </span>
-            <span class="tab">
-              <span class="glyph">
-                <svg class="solid" viewBox="0 0 24 24" aria-hidden="true">
+                <span class="trow-main">
+                  <span class="trow-label">8월 · 6회 30시간</span>
+                  <span class="trow-value amt" data-real="360,000원" data-mask="000,000원"></span>
+                </span>
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+              <button class="trow on" type="button" data-toast="누적 예상 급여">
+                <svg class="mark" viewBox="0 0 36 36" aria-hidden="true">
                   <path
-                    class="fg"
-                    d="M2 7a3 3 0 0 1 3-3h11a1 1 0 0 1 1 1v2H5a1 1 0 0 0 0 2h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"
+                    d="M6.5 27.5 13.5 20 18.5 23.5 25 15.5"
+                    fill="none"
+                    stroke="url(#violet)"
+                    stroke-width="4.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
                   />
-                  <circle class="cut" cx="17" cy="14" r="1.5" />
+                  <path d="M30.4 9 23 10.6 28 15.6z" fill="#6a3bd8" />
                 </svg>
-                <svg class="line" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"
-                  />
-                  <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+                <span class="trow-main">
+                  <span class="trow-label">2026년 누적 · 58회</span>
+                  <span
+                    class="trow-value trow-value-quiet amt"
+                    data-real="3,744,000원"
+                    data-mask="00,000,000원"
+                  ></span>
+                </span>
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6" />
                 </svg>
-              </span>
-              급여
-            </span>
-            <span class="tab">
-              <span class="glyph">
-                <svg class="solid" viewBox="0 0 24 24" aria-hidden="true">
-                  <rect class="fg" x="3" y="3" width="7.5" height="7.5" rx="2" />
-                  <rect class="fg" x="13.5" y="3" width="7.5" height="7.5" rx="2" />
-                  <rect class="fg" x="3" y="13.5" width="7.5" height="7.5" rx="2" />
-                  <rect class="fg" x="13.5" y="13.5" width="7.5" height="7.5" rx="2" />
+              </button>
+              <button class="more" type="button" data-toast="주별 급여 목록">
+                <span>주별로 모두 보기</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6" />
                 </svg>
-                <svg class="line" viewBox="0 0 24 24" aria-hidden="true">
-                  <rect x="3" y="3" width="7.5" height="7.5" rx="2" />
-                  <rect x="13.5" y="3" width="7.5" height="7.5" rx="2" />
-                  <rect x="3" y="13.5" width="7.5" height="7.5" rx="2" />
-                  <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" />
-                </svg>
-              </span>
-              전체
-            </span>
-          </nav>
+              </button>
+            </div>
+          </div>
         </div>
-      </section>
+
+        <nav class="tabbar">
+          <button class="tab" type="button" aria-current="page" data-tab="홈">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path class="fill" d="M3 10.6 12 3l9 7.6V20a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1z" />
+              <path class="line" d="M3 10.6 12 3l9 7.6V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
+              <path class="line" d="M9.5 21v-6h5v6" />
+            </svg>
+            <span>홈</span>
+          </button>
+          <button class="tab" type="button" data-tab="일정">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                class="fill"
+                d="M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2m2.5 9.5h3v3h-3zm6 0h3v3h-3z"
+              />
+              <rect class="line" x="3" y="5" width="18" height="16" rx="2" />
+              <path class="line" d="M8 3v4M16 3v4M3 11h18" />
+            </svg>
+            <span>일정</span>
+          </button>
+          <button class="tab" type="button" data-tab="급여">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                class="fill"
+                d="M4.5 6h15A2.5 2.5 0 0 1 22 8.5v7A2.5 2.5 0 0 1 19.5 18h-15A2.5 2.5 0 0 1 2 15.5v-7A2.5 2.5 0 0 1 4.5 6m11 6.5h3v2h-3z"
+              />
+              <rect class="line" x="2.5" y="6" width="19" height="13" rx="2.5" />
+              <path class="line" d="M2.5 11h19M17 15h2" />
+            </svg>
+            <span>급여</span>
+          </button>
+          <button class="tab" type="button" data-tab="전체">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                class="fill"
+                d="M4 3.5h6a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5m10 0h6a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5M4 13.5h6a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5v-6a.5.5 0 0 1 .5-.5m10 0h6a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1-.5-.5v-6a.5.5 0 0 1 .5-.5"
+              />
+              <rect class="line" x="3.5" y="3.5" width="7" height="7" rx="1.5" />
+              <rect class="line" x="13.5" y="3.5" width="7" height="7" rx="1.5" />
+              <rect class="line" x="3.5" y="13.5" width="7" height="7" rx="1.5" />
+              <rect class="line" x="13.5" y="13.5" width="7" height="7" rx="1.5" />
+            </svg>
+            <span>전체</span>
+          </button>
+        </nav>
+
+        <div class="toast" id="toast"></div>
+
+        <div class="sheet-dim" id="rosterDim"></div>
+        <div class="roster" id="roster">
+          <div>
+            <p class="roster-title" id="rosterTitle"></p>
+            <p class="caption" id="rosterCaption"></p>
+          </div>
+          <div class="roster-rows" id="rosterRows"></div>
+          <button class="button" type="button" id="rosterClose">닫기</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>조작판</h2>
+        <p>시안 밖의 도구다.</p>
+
+        <div class="panel-group">
+          <span>이번 주</span>
+          <div class="opts" data-group="week">
+            <button class="opt" type="button" data-value="three">근무 3회</button>
+            <button class="opt" type="button" data-value="one">근무 1회</button>
+            <button class="opt" type="button" data-value="empty">빈 주</button>
+          </div>
+        </div>
+
+        <div class="panel-group">
+          <span>오늘</span>
+          <div class="opts" data-group="today">
+            <button class="opt" type="button" data-value="open">인증 창 열림</button>
+            <button class="opt" type="button" data-value="wait">창 열리기 전</button>
+            <button class="opt" type="button" data-value="none">근무 없는 날</button>
+          </div>
+        </div>
+
+        <div class="panel-group">
+          <span>다가오는 근무</span>
+          <div class="opts" data-group="upco">
+            <button class="opt" type="button" data-value="three">3건</button>
+            <button class="opt" type="button" data-value="one">1건</button>
+            <button class="opt" type="button" data-value="none">없음</button>
+          </div>
+        </div>
+
+        <div class="panel-group">
+          <span>알림</span>
+          <div class="opts">
+            <button class="opt" type="button" id="resetNotices">세 장 다시 채우기</button>
+          </div>
+        </div>
+
+        <div class="panel-group">
+          <span>시각</span>
+          <div class="opts">
+            <button class="opt" type="button" id="skipToStart">출근 직전</button>
+            <button class="opt" type="button" id="skipPast">출근 시각 넘김</button>
+          </div>
+        </div>
+
+        <p class="hint">
+          <b>눌러볼 것</b> — 금액(빛이 훑으며 열리고, 다시 누르면 빛이 그 자리에서 사라진다) ·
+          다가오는 근무 행의 <code>확인</code>(배치도 모달 — 명단 글씨가 16/24로 올라갔다) ·
+          검은 숫자 날짜 · 알림 <code>X</code> · 하단 탭 · 최상단에서 휠 위로 굴려 새로고침.
+        </p>
+      </div>
     </div>
 
-    <h2 class="section-title">선택 표시</h2>
+    <h2 class="section-title">행 앵커 그림 — 라운드 23 확정</h2>
     <p class="section-note">
-      여기서는 눌림 모션이 반복 재생된다. 실제로는 누르는 순간 한 번만 돈다.
-      <code>prefers-reduced-motion</code>에서는 멈추고 색과 채움만 바뀐다.
+      기준은 라운드 7 어법이다 — <strong>다색 그라디언트 · 위가 밝고 아래가 어두운 입체 · 배경
+      블록 없이 그림 자체로 선다.</strong> 아래 셋이 확정본이고, 비교하던 회백·사각 배경 벌은
+      걷었다. 색은 셋 중 둘이 이미 쓰던 그라디언트고 새로 는 것은 보라 하나다.
+    </p>
+    <div class="markbench">
+      <div class="pcol">
+        <div class="marktiles">
+          <div class="marktile">
+            <svg viewBox="0 0 36 36" aria-hidden="true">
+              <rect x="4" y="9.5" width="28" height="17" rx="3" fill="url(#green)" />
+              <rect
+                x="6.6"
+                y="12.1"
+                width="22.8"
+                height="11.8"
+                rx="1.6"
+                fill="none"
+                stroke="#ffffff"
+                stroke-width="1"
+                opacity="0.55"
+              />
+              <circle cx="18" cy="18" r="5.2" fill="#eafaf0" />
+              <path
+                d="M15.2 15.6 16.5 20.4 18 16.7 19.5 20.4 20.8 15.6"
+                fill="none"
+                stroke="#0d6b3c"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="M14.6 17.7h6.8" fill="none" stroke="#0d6b3c" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+          </div>
+        </div>
+        <p class="pcol-note">
+          <b>지난주 — 초록 지폐 + ₩.</b> 애플 <code>💵</code>의 짜임이다 — 초록 그라디언트 지폐,
+          흰 안쪽 테, 가운데 연초록 원에 진초록 ₩. 손 든 사람의 셔츠와 같은 초록을 그대로 쓴다.
+          앞서 있던 동전 더미는 새긴 통화 기호가 ¥로 읽혀 걷었다(원화는 ₩).
+        </p>
+      </div>
+      <div class="pcol">
+        <div class="marktiles">
+          <div class="marktile">
+            <svg viewBox="0 0 36 36" aria-hidden="true">
+              <rect x="5" y="17.5" width="6.8" height="13" rx="2.4" fill="url(#amber)" />
+              <rect x="14.6" y="8" width="6.8" height="22.5" rx="2.4" fill="url(#blue)" />
+              <rect x="24.2" y="13" width="6.8" height="17.5" rx="2.4" fill="url(#green)" />
+            </svg>
+          </div>
+        </div>
+        <p class="pcol-note">
+          <b>8월 — 다색 막대 셋.</b> 애플 <code>📊</code>의 짜임으로 호박·파랑·초록 막대가 그림
+          자체로 선다. 셋 다 이미 쓰는 그라디언트라 새 색이 없다. 앞서 있던 파랑 사각 배경은
+          「배경 블록 없이 그림 자체로 선다」 위반이고 출근 버튼의 파랑과도 경쟁했다.
+        </p>
+      </div>
+      <div class="pcol">
+        <div class="marktiles">
+          <div class="marktile">
+            <svg viewBox="0 0 36 36" aria-hidden="true">
+              <path
+                d="M6.5 27.5 13.5 20 18.5 23.5 25 15.5"
+                fill="none"
+                stroke="url(#violet)"
+                stroke-width="4.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="M30.4 9 23 10.6 28 15.6z" fill="#6a3bd8" />
+            </svg>
+          </div>
+        </div>
+        <p class="pcol-note">
+          <b>누적 — 보라 오름 꺾은선 + 화살촉.</b> 애플 <code>📈</code>의 방향을 순환
+          화살표(<code>🔄</code>)와 같은 선 굵기 4.2로 그렸다 — 종이 없이 선 자체로 선다.
+          보라(<code>#b18cff</code> → <code>#6a3bd8</code>)는 이 그림이 들여온 고정색이다.
+          애플의 빨간 선은 「빨강은 진짜 오류에만」 규칙에 걸려 못 쓴다.
+        </p>
+      </div>
+    </div>
+
+    <h2 class="section-title">글자 계층 — 여섯 단계</h2>
+    <p class="section-note">
+      스케일 8단계(<code>FOUNDATIONS.md:56-63</code>)는 라운드 2 그대로고, 바꾼 것은 어느 자리에
+      어느 단계를 쓰는지와 <strong>무게</strong>다. 홈에 <strong>700이 한 글자도 없다</strong> —
+      가장 무거운 것이 600이고, 값은 500에 머문다. 「무게로 소리치지 말고 크기와 색으로 말한다」가
+      이 표의 한 줄 요약이다.
+    </p>
+    <div class="table-wrap">
+      <table class="state-table">
+        <thead>
+          <tr>
+            <th>단계</th>
+            <th>역할</th>
+            <th>무게 · 색</th>
+            <th>홈에서 서는 자리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>26/34</strong></td>
+            <td>큰 숫자 — 지금 세는 값</td>
+            <td><strong>600</strong> · strong · tabular</td>
+            <td><strong>카운트다운 하나뿐이다.</strong> 주급이 18로 내려와(라운드 21) 이 단계는 홈에서
+              한 자리만 갖는다 — 그 자리가 곧 「지금 할 일」이라는 뜻이 된다</td>
+          </tr>
+          <tr>
+            <td><strong>22/30</strong></td>
+            <td>화면 제목</td>
+            <td><strong>600</strong> · strong</td>
+            <td>「홈」 하나</td>
+          </tr>
+          <tr>
+            <td><strong>18/26</strong></td>
+            <td>행 값 <em>(구 카드 제목 단계의 재배정)</em></td>
+            <td><strong>500</strong> · strong · tabular</td>
+            <td>급여 행 셋의 금액 · 주급 발치 금액 · 없음 상태의 「—」.
+              <strong>다가오는 근무만 16/24로 내려 쓴다</strong>(라운드 22 예외)</td>
+          </tr>
+          <tr>
+            <td><strong>16/24</strong></td>
+            <td>문장 값과 그 아래 자리</td>
+            <td>문장 400 · 숫자·날짜 <strong>500</strong> · strong</td>
+            <td>알림 문장 · 오늘 카드 포지션 · 배치도 모달 제목(600)과 명단 · 주간 스트립 근무일
+              숫자(500) · 다가오는 근무 날짜(500)</td>
+          </tr>
+          <tr>
+            <td><strong>14/20</strong></td>
+            <td>행동</td>
+            <td>파란 버튼 600 · 더보기 400</td>
+            <td>「출근 인증하기」는 600으로 부르고, 「전체 일정 보기」는 400으로 조용히 있는다 —
+              같은 크기라도 무게가 급함을 가른다</td>
+          </tr>
+          <tr>
+            <td><strong>13/18</strong></td>
+            <td>메타</td>
+            <td>이름표 <strong>500</strong> muted · 라벨/캡션 400 muted · D 배지 <strong>600</strong> ·
+              알약 600 · 탭 라벨 400(선택 600)</td>
+            <td>블록 이름표 · 행 라벨 · 캡션 · D 배지 · 알약 「확인」 · 하단 탭 라벨</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="section-note">
+      <strong>단계 밖 값은 쓰지 않는다.</strong> <code>display</code> 32/40은 홈에 자리가 없고,
+      15/22처럼 표에 없는 크기는 이번 판에서 걷어냈다(아래 「실제 값과 어긋났던 곳」).
     </p>
 
-    <div class="variant">
-      <p><strong>확정</strong> — 회색 블록 없음. 선 → 채움, <code>#5b616e</code> → <code>#3a3f4a</code>, 그리고 크게 한 번 + 반동으로 한 번 더 눌리는 모션. 셋으로만 알린다.</p>
-      <nav class="tabbar tabbar-standalone">
-        <span class="tab"><span class="glyph"><svg class="line" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
-              <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            </svg></span>홈</span>
-        <span class="tab"><span class="glyph"><svg class="line" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M8 2v4" /><path d="M16 2v4" />
-              <rect width="18" height="18" x="3" y="4" rx="2" />
-              <path d="M3 10h18" />
-              <path d="M8 14h.01" /><path d="M12 14h.01" /><path d="M16 14h.01" />
-            </svg></span>일정</span>
-        <span class="tab" aria-current="page"><span class="glyph"><svg class="solid" viewBox="0 0 24 24" aria-hidden="true">
-              <path class="fg" d="M2 7a3 3 0 0 1 3-3h11a1 1 0 0 1 1 1v2H5a1 1 0 0 0 0 2h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" />
-              <circle class="cut" cx="17" cy="14" r="1.5" />
-            </svg><svg class="line" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
-              <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
-            </svg></span>급여</span>
-        <span class="tab"><span class="glyph"><svg class="line" viewBox="0 0 24 24" aria-hidden="true">
-              <rect x="3" y="3" width="7.5" height="7.5" rx="2" />
-              <rect x="13.5" y="3" width="7.5" height="7.5" rx="2" />
-              <rect x="3" y="13.5" width="7.5" height="7.5" rx="2" />
-              <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" />
-            </svg></span>전체</span>
-      </nav>
+    <h2 class="section-title">아이템 안의 순서 규칙</h2>
+    <p class="section-note">
+      홈에 두 줄짜리가 두 종류 있고 순서가 반대다. 이것은 우연이 아니라 규칙이다 —
+      <strong>숫자가 주인공이면 라벨이 위, 주인공이 읽을 것이면 그것이 위.</strong> 여기에 라운드
+      21이 세 번째 꼴을 더했다 — 쌓지 않고 한 줄에 좌우로 세우는 자리다.
+    </p>
+    <div class="table-wrap">
+      <table class="state-table">
+        <thead>
+          <tr>
+            <th>종류</th>
+            <th>윗줄</th>
+            <th>아랫줄</th>
+            <th>쓰는 곳</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>지표 (훑는 줄)</strong></td>
+            <td>라벨 13/18 muted</td>
+            <td>값 18/26 · <strong>500</strong></td>
+            <td>급여 행 셋 — 「지난주 · 2회 11시간」 위, 금액 아래</td>
+          </tr>
+          <tr>
+            <td><strong>문장 (읽는 줄)</strong></td>
+            <td>문장 16/24</td>
+            <td>캡션 13/18 muted</td>
+            <td>알림 카드 · 오늘 카드의 좌우 양쪽 · <strong>다가오는 근무</strong>(날짜가 주인공이라
+              날짜 위·포지션 아래 — 라운드 22)</td>
+          </tr>
+          <tr>
+            <td><strong>한 줄 좌우 (견주는 줄)</strong></td>
+            <td colspan="2">왼쪽 캡션 13/18 muted · 오른쪽 값 18/26 500 — 두 줄이 아니라 한 줄이다</td>
+            <td>주급 발치(라운드 21). 두 줄로 쌓으면 홈에 큰 숫자가 둘이 되어 카운트다운과 싸운다</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+
+    <h2 class="section-title">배치 계층 — 지면 → 카드 → 행 → 앵커</h2>
+    <div class="table-wrap">
+      <table class="state-table">
+        <thead>
+          <tr>
+            <th>층</th>
+            <th>규칙</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>지면</strong></td>
+            <td>좌우 16 · 블록 사이 12 · 블록 이름표는 지면 위 13/18 <strong>500</strong>, 카드까지 6</td>
+          </tr>
+          <tr>
+            <td><strong>카드</strong></td>
+            <td>모서리 20 · 안쪽 여백 16. 예외 둘 — <strong>행 카드는 상하 4</strong>(행의 12와 합쳐
+              첫/끝 행이 16), <strong>주간 카드는 상하 14</strong>(스트립 셀이 이미 자기 높이를 갖는다)</td>
+          </tr>
+          <tr>
+            <td><strong>행</strong></td>
+            <td>상하 12 · 행 사이 hairline <code>#e5e8eb</code> · 한 행에 목적지 하나.
+              라운드 23이 14·8 안을 재보고 <strong>12로 남겼다</strong></td>
+          </tr>
+          <tr>
+            <td><strong>왼쪽 앵커</strong></td>
+            <td>32×32 고정 — 그림도 D 배지도 같은 칸. 본문과 14. <strong>알림 카드의 그림만 28</strong>
+              이고 본문과 12다(라운드 8 결정 유지)</td>
+          </tr>
+          <tr>
+            <td><strong>오른쪽 자리</strong></td>
+            <td>셋 중 하나만 — 알약(높이 34) · 아이콘 버튼(터치 44) · 화살표 20. 겹쳐 두지 않는다.
+              알림 카드는 끄기 버튼이 44를 쓰므로 카드 오른쪽 여백이 8이다</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title">실제 값과 어긋났던 곳 — 이번 판에서 고침</h2>
+    <p class="section-note">
+      표를 화면 코드와 한 줄씩 대조하다 찾은 셋이다. 규칙을 화면에 맞춘 것이 둘, 화면을 규칙에
+      맞춘 것이 하나다.
+    </p>
+    <div class="table-wrap">
+      <table class="state-table">
+        <thead>
+          <tr>
+            <th>어디</th>
+            <th>표에 적혀 있던 것</th>
+            <th>화면의 실제</th>
+            <th>어느 쪽으로 맞췄나</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>알약 「확인」</td>
+            <td>14/20 행동 단계</td>
+            <td>13/18 600</td>
+            <td><strong>화면대로.</strong> 알약은 높이 34라 14/20이면 위아래가 눌린다 — 행동 단계의
+              예외로 표에 적었다</td>
+          </tr>
+          <tr>
+            <td>더보기 행</td>
+            <td>14/20 · 600</td>
+            <td>14/20 · 400 회색</td>
+            <td><strong>화면대로.</strong> 「전체 일정 보기」가 파란 버튼과 같은 무게일 이유가 없다.
+              크기는 같고 무게가 급함을 가른다</td>
+          </tr>
+          <tr>
+            <td>배치도 모달 명단</td>
+            <td>표에 없던 자리</td>
+            <td>15/22 — 스케일 8단계 밖</td>
+            <td><strong>규칙대로.</strong> 16/24로 올리고 내 이름은 500 파랑으로 낮췄다(600은
+              라운드 19 감량 뒤 D 배지·버튼의 무게다)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="section-note">
+      함께 걷어낸 것 — 쓰이지 않는 CSS 넷(<code>.amount-big</code> 26/34 700,
+      <code>.datebox</code>, <code>.lrow</code>, 벤치용 <code>.spec</code>). 앞 라운드에서 폐기된
+      배치의 잔해라 두면 다음 사람이 살아 있는 규칙으로 읽는다.
+    </p>
+
+    <script>
+      (function () {
+        var state = {
+          today: "open",
+          upco: "three",
+          amount: "hidden",
+          week: "three",
+          selectedDay: null,
+        };
+
+        function amountDefault() {
+          return state.today === "none" ? "shown" : "hidden";
+        }
+
+        var weekCases = {
+          three: {
+            caption: "주급 · 3회 15시간",
+            amount: { real: "180,000원", mask: "000,000원" },
+            days: [
+              {
+                dow: "월",
+                date: 18,
+                work: {
+                  caption: "8월 18일 월 · 홀서빙 5시간",
+                  real: "60,000원",
+                  mask: "00,000원",
+                },
+              },
+              { dow: "화", date: 19 },
+              { dow: "수", date: 20 },
+              {
+                dow: "목",
+                date: 21,
+                work: {
+                  caption: "8월 21일 목 · 접수 5시간",
+                  real: "60,000원",
+                  mask: "00,000원",
+                },
+              },
+              { dow: "금", date: 22 },
+              {
+                dow: "토",
+                date: 23,
+                work: {
+                  caption: "8월 23일 토 · 홀서빙 5시간",
+                  real: "60,000원",
+                  mask: "00,000원",
+                },
+              },
+              { dow: "일", date: 24 },
+            ],
+          },
+          one: {
+            caption: "주급 · 1회 5시간",
+            amount: { real: "60,000원", mask: "00,000원" },
+            days: [
+              { dow: "월", date: 18 },
+              { dow: "화", date: 19 },
+              { dow: "수", date: 20 },
+              { dow: "목", date: 21 },
+              { dow: "금", date: 22 },
+              {
+                dow: "토",
+                date: 23,
+                work: {
+                  caption: "8월 23일 토 · 홀서빙 5시간",
+                  real: "60,000원",
+                  mask: "00,000원",
+                },
+              },
+              { dow: "일", date: 24 },
+            ],
+          },
+          empty: {
+            caption: "이번 주 근무가 없어요",
+            amount: null,
+            days: [
+              { dow: "월", date: 18 },
+              { dow: "화", date: 19 },
+              { dow: "수", date: 20 },
+              { dow: "목", date: 21 },
+              { dow: "금", date: 22 },
+              { dow: "토", date: 23 },
+              { dow: "일", date: 24 },
+            ],
+          },
+        };
+
+        var vars = Array.prototype.slice.call(document.querySelectorAll("[data-var]"));
+        var amounts = Array.prototype.slice.call(document.querySelectorAll(".amt"));
+        var checkIn = document.getElementById("checkIn");
+        var clockEl = document.getElementById("clock");
+        var clockCaption = document.getElementById("clockCaption");
+        var toast = document.getElementById("toast");
+        var body = document.getElementById("body");
+        var refresh = document.getElementById("refresh");
+        var slot = document.getElementById("noticeSlot");
+        var bellDot = document.getElementById("bellDot");
+        var notices = Array.prototype.slice.call(slot.querySelectorAll(".notice"));
+        var weekEl = document.getElementById("week");
+        var weekCaption = document.getElementById("weekCaption");
+        var weekAmt = document.getElementById("weekAmt");
+        var weekNone = document.getElementById("weekNone");
+
+        function renderWeek() {
+          var data = weekCases[state.week];
+          weekEl.innerHTML = data.days
+            .map(function (d, i) {
+              var cls =
+                "wcell st-" +
+                (d.work ? "shift" : "none") +
+                (state.selectedDay === i ? " selected" : "");
+              return (
+                '<button class="' +
+                cls +
+                '" type="button" data-i="' +
+                i +
+                '"' +
+                (d.work ? "" : " disabled") +
+                '><span class="wdow">' +
+                d.dow +
+                '</span><span class="wnum">' +
+                d.date +
+                "</span></button>"
+              );
+            })
+            .join("");
+          var selected =
+            state.selectedDay !== null ? data.days[state.selectedDay] : null;
+          var foot = selected && selected.work ? selected.work : null;
+          if (foot) {
+            weekCaption.textContent = foot.caption;
+            weekAmt.setAttribute("data-real", foot.real);
+            weekAmt.setAttribute("data-mask", foot.mask);
+            weekAmt.style.display = "";
+            weekNone.style.display = "none";
+          } else if (data.amount) {
+            weekCaption.textContent = data.caption;
+            weekAmt.setAttribute("data-real", data.amount.real);
+            weekAmt.setAttribute("data-mask", data.amount.mask);
+            weekAmt.style.display = "";
+            weekNone.style.display = "none";
+          } else {
+            weekCaption.textContent = data.caption;
+            weekAmt.style.display = "none";
+            weekNone.style.display = "";
+          }
+        }
+
+        weekEl.addEventListener("click", function (event) {
+          var cell = event.target.closest(".wcell");
+          if (!cell || cell.disabled) return;
+          var index = Number(cell.getAttribute("data-i"));
+          state.selectedDay = state.selectedDay === index ? null : index;
+          renderWeek();
+          apply();
+        });
+
+        var upcoData = [
+          {
+            title: "8월 21일 목 · 홀서빙",
+            caption: "예식 14:00 · 4명 근무",
+            rows: [
+              { pos: "홀서빙", people: ["나", "김지원"] },
+              { pos: "접수", people: ["박서연"] },
+              { pos: "주방", people: ["이준호"] },
+            ],
+          },
+          {
+            title: "8월 23일 토 · 접수",
+            caption: "예식 12:00 · 5명 근무",
+            rows: [
+              { pos: "홀서빙", people: ["김지원", "이수민"] },
+              { pos: "접수", people: ["나"] },
+              { pos: "주방", people: ["이준호", "정다은"] },
+            ],
+          },
+          {
+            title: "8월 25일 월 · 홀서빙",
+            caption: "예식 11:00 · 3명 근무",
+            rows: [
+              { pos: "홀서빙", people: ["나"] },
+              { pos: "접수", people: ["박서연"] },
+              { pos: "주방", people: ["정다은"] },
+            ],
+          },
+        ];
+
+        var rosterDim = document.getElementById("rosterDim");
+        var roster = document.getElementById("roster");
+        var rosterTitle = document.getElementById("rosterTitle");
+        var rosterCaption = document.getElementById("rosterCaption");
+        var rosterRows = document.getElementById("rosterRows");
+
+        function openRoster(index) {
+          var data = upcoData[index];
+          rosterTitle.textContent = data.title;
+          rosterCaption.textContent = data.caption;
+          rosterRows.innerHTML = data.rows
+            .map(function (row) {
+              var names = row.people
+                .map(function (name) {
+                  return name === "나" ? '<b class="me">나</b>' : name;
+                })
+                .join(" · ");
+              return (
+                '<div class="roster-row"><span class="caption">' +
+                row.pos +
+                '</span><span class="rnames">' +
+                names +
+                "</span></div>"
+              );
+            })
+            .join("");
+          rosterDim.classList.add("on");
+          roster.classList.add("on");
+        }
+
+        function closeRoster() {
+          rosterDim.classList.remove("on");
+          roster.classList.remove("on");
+        }
+
+        document.querySelectorAll("[data-roster]").forEach(function (row) {
+          row.addEventListener("click", function () {
+            openRoster(Number(row.getAttribute("data-roster")));
+          });
+        });
+
+        rosterDim.addEventListener("click", closeRoster);
+        document.getElementById("rosterClose").addEventListener("click", closeRoster);
+
+        function apply() {
+          vars.forEach(function (el) {
+            var spec = el.getAttribute("data-var").split(":");
+            var values = spec[1].split("|");
+            el.classList.toggle("on", values.indexOf(state[spec[0]]) !== -1);
+          });
+
+          amounts.forEach(function (el) {
+            if (state.amount === "shown") {
+              el.textContent = el.getAttribute("data-real");
+              el.classList.remove("blurred");
+              el.removeAttribute("aria-hidden");
+              el.setAttribute("aria-label", "금액 가리기");
+            } else {
+              el.textContent = el.getAttribute("data-mask");
+              el.classList.add("blurred");
+              el.classList.remove("revealing");
+              el.setAttribute("aria-hidden", "true");
+              el.setAttribute("aria-label", "금액 보기");
+            }
+          });
+
+          document.querySelectorAll("[data-group]").forEach(function (group) {
+            var key = group.getAttribute("data-group");
+            group.querySelectorAll(".opt").forEach(function (opt) {
+              opt.setAttribute(
+                "aria-pressed",
+                opt.getAttribute("data-value") === state[key] ? "true" : "false",
+              );
+            });
+          });
+
+          if (state.today === "wait") {
+            checkIn.disabled = true;
+            clockCaption.textContent = "09:00부터 인증 가능";
+            clockEl.classList.add("clock-quiet");
+          } else {
+            checkIn.disabled = false;
+            clockEl.classList.remove("clock-quiet");
+          }
+
+        }
+
+        var remain = { open: 4739, wait: 1478 };
+        var past = 0;
+
+        function two(n) {
+          return n < 10 ? "0" + n : String(n);
+        }
+
+        function format(total) {
+          var h = Math.floor(total / 3600);
+          var m = Math.floor((total % 3600) / 60);
+          var s = total % 60;
+          return h > 0 ? h + ":" + two(m) + ":" + two(s) : m + ":" + two(s);
+        }
+
+        function paintClock() {
+          if (state.today === "none") return;
+          if (state.today === "wait") {
+            clockEl.textContent = format(remain.wait);
+            return;
+          }
+          if (remain.open > 0) {
+            clockEl.textContent = format(remain.open);
+            clockCaption.textContent = "출근 시각까지";
+          } else {
+            clockEl.textContent = "+" + format(past);
+            clockCaption.textContent = "출근 시각에서 지남";
+          }
+        }
+
+        setInterval(function () {
+          if (state.today === "wait") {
+            if (remain.wait > 0) remain.wait -= 1;
+            else state.today = "open";
+          } else if (remain.open > 0) {
+            remain.open -= 1;
+          } else {
+            past += 1;
+          }
+          paintClock();
+          apply();
+        }, 1000);
+
+        amounts.forEach(function (el) {
+          el.addEventListener("click", function (event) {
+            event.stopPropagation();
+            state.amount = state.amount === "shown" ? "hidden" : "shown";
+            apply();
+            if (state.amount === "shown") {
+              amounts.forEach(function (amountEl) {
+                amountEl.classList.remove("revealing");
+                void amountEl.offsetWidth;
+                amountEl.classList.add("revealing");
+              });
+            }
+          });
+          el.addEventListener("animationend", function (event) {
+            if (event.animationName === "shine") el.classList.remove("revealing");
+          });
+        });
+
+        var current = 0;
+
+        function showNotice(index, animate) {
+          notices.forEach(function (el, i) {
+            el.classList.toggle("on", i === index);
+            el.classList.remove("entering", "leaving");
+            if (i === index && animate) {
+              void el.offsetWidth;
+              el.classList.add("entering");
+            }
+          });
+        }
+
+        function dismiss() {
+          var card = notices[current];
+          card.classList.add("leaving");
+          setTimeout(function () {
+            card.classList.remove("on", "leaving");
+            current += 1;
+            if (current >= notices.length) {
+              slot.classList.add("collapsed");
+              bellDot.style.display = "none";
+              return;
+            }
+            showNotice(current, true);
+          }, 160);
+        }
+
+        slot.querySelectorAll("[data-dismiss]").forEach(function (btn) {
+          btn.addEventListener("click", function (event) {
+            event.stopPropagation();
+            dismiss();
+          });
+        });
+
+        document.getElementById("resetNotices").addEventListener("click", function () {
+          current = 0;
+          slot.classList.remove("collapsed");
+          bellDot.style.display = "";
+          showNotice(0, true);
+        });
+
+        document.querySelectorAll(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            document.querySelectorAll(".tab").forEach(function (other) {
+              other.removeAttribute("aria-current");
+              other.classList.remove("pressed");
+            });
+            tab.setAttribute("aria-current", "page");
+            void tab.offsetWidth;
+            tab.classList.add("pressed");
+            if (tab.getAttribute("data-tab") !== "홈") {
+              showToast(tab.getAttribute("data-tab") + " 화면으로 갑니다");
+              state.amount = amountDefault();
+              apply();
+            }
+          });
+        });
+
+        document.querySelectorAll("[data-group]").forEach(function (group) {
+          var key = group.getAttribute("data-group");
+          group.querySelectorAll(".opt").forEach(function (opt) {
+            opt.addEventListener("click", function () {
+              state[key] = opt.getAttribute("data-value");
+              if (key === "today") state.amount = amountDefault();
+              if (key === "week") {
+                state.selectedDay = null;
+                renderWeek();
+              }
+              paintClock();
+              apply();
+            });
+          });
+        });
+
+        document.getElementById("skipToStart").addEventListener("click", function () {
+          state.today = "open";
+          remain.open = 12;
+          past = 0;
+          paintClock();
+          apply();
+        });
+
+        document.getElementById("skipPast").addEventListener("click", function () {
+          state.today = "open";
+          remain.open = 0;
+          past = 724;
+          paintClock();
+          apply();
+        });
+
+        var toastTimer = null;
+
+        function showToast(text) {
+          toast.textContent = text;
+          toast.classList.add("on");
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(function () {
+            toast.classList.remove("on");
+          }, 1400);
+        }
+
+        document.querySelectorAll("[data-toast]").forEach(function (el) {
+          el.addEventListener("click", function () {
+            showToast(el.getAttribute("data-toast"));
+          });
+        });
+
+        var pull = 0;
+        var refreshing = false;
+
+        body.addEventListener(
+          "wheel",
+          function (event) {
+            if (refreshing) return;
+            if (body.scrollTop <= 0 && event.deltaY < 0) {
+              pull += -event.deltaY;
+              if (pull > 90) {
+                pull = 0;
+                refreshing = true;
+                refresh.classList.add("on");
+                setTimeout(function () {
+                  refresh.classList.remove("on");
+                  refreshing = false;
+                  showToast("새로 불러왔어요");
+                }, 1100);
+              }
+            } else {
+              pull = 0;
+            }
+          },
+          { passive: true },
+        );
+
+        showNotice(0, false);
+        renderWeek();
+        paintClock();
+        apply();
+      })();
+    </script>
   </body>
 </html>
