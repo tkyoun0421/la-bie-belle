@@ -175,6 +175,7 @@ describe("globals.css 디자인 토큰", () => {
   });
 
   it.each([
+    ["--radius-xs", "6px"],
     ["--radius-sm", "8px"],
     ["--radius-md", "14px"],
     ["--radius-lg", "16px"],

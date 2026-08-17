@@ -21,7 +21,8 @@
 | 웹 애플리케이션 | Next.js App Router, TypeScript |
 | UI | Tailwind CSS, shadcn/ui, 모바일 우선 |
 | 인터랙션 | React `<ViewTransition>`, `motion` (ADR-0015가 정한 `LazyMotion` 범위) |
-| 클라이언트 캐시 | TanStack Query (server-first 기본, `DEV-CACHE`가 정한 범위) |
+| 클라이언트 캐시 | TanStack Query (server-first 기본, `DEV-CACHE`가 정한 범위). P0-T48부터 실제로 설치되고 `(protected)/providers.tsx`가 `QueryClientProvider`를 선다 |
+| 클라이언트 전역 상태 | zustand. `shared/hooks/useAmountMasking.ts`의 「근무일 자동 가림」 설정 한 자리뿐이다(P0-T48) — 화면 단위 상태는 훅으로 두고 스토어로 올리지 않는다 |
 | 인증 | Supabase Auth, Google OAuth |
 | 데이터베이스 | Supabase PostgreSQL, Seoul 리전 |
 | 권한 | PostgreSQL RLS, 보안 함수, 서버 전용 작업 |

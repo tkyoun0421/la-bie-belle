@@ -119,6 +119,7 @@
 
 | 토큰 | 값 | 사용 |
 | --- | ---: | --- |
+| `radius-xs` | 6px | skeleton 막대 |
 | `radius-sm` | 8px | 작은 내부 요소 |
 | `radius-md` | 14px | 입력, 보조 버튼 |
 | `radius-lg` | 16px | 주요 버튼, 일반 표면 |

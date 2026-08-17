@@ -1,5 +1,64 @@
 # P0-T48 handoff
 
+## 2026-08-18 · 개발 4라운드 GREEN (Next 라우트 규약과 상태 도구 둘)
+
+- 기준 커밋: `cfdf7db`(revision 6 재봉인). RADIO는 그대로 revision 6,
+  sha256 `83756aeeb654a9dfeae70218c8d6bda9b009dbae4444b4cc70816fc235454c86` — 이 라운드는 RADIO를
+  다시 안 열었다.
+- **만든 것.** `--radius-xs: 6px`을 `globals.css`와 `FOUNDATIONS.md` radius 표에 추가.
+  `src/shared/ui/block-boundary.tsx`(클래스 기반 에러 경계, `router.refresh()` 호출, 연타 잠금) 신설.
+  `@tanstack/react-query`·`zustand` 설치. `src/app/(protected)/providers.tsx` 신설
+  (`useState` lazy init으로 `QueryClient` 인스턴스를 고정) 후 `(protected)/layout.tsx`의 인증 게이트
+  통과 분기에 배선. `(tabs)/loading.tsx`·`error.tsx`, `(tabs)/schedule/loading.tsx`·`error.tsx`,
+  `(tabs)/@sheet/default.tsx` 신설하고 `(tabs)/layout.tsx`가 `sheet` prop을 받아 렌더하게 함.
+  `src/app/loading.tsx`의 `animate-pulse`를 걷어내고 `rounded-xs bg-border` skeleton 어법으로 교체.
+  `docs/standards/ARCHITECTURE.md:24` 근처에 TanStack Query 실제 설치·zustand `useAmountMasking`
+  한 자리 문장 추가.
+- **판단이 필요했던 자리 둘.**
+  1. **`providers.tsx`가 tdd-guard에 막혀 멈췄다가 재개했다.** `config/fsd.json`의
+     `appLayer.unitTest=required`이고 `exemptFiles`엔 Next 예약 파일명만 있어 `providers.tsx`(비예약
+     커스텀 파일)는 단위 테스트가 필요했는데, 이번 라운드 RED 세 파일 중 그걸 다루는 게 없었다.
+     테스트를 쓰지 않는다는 tdd 원칙을 지켜 구현을 멈추고 조정자에게 물었다. 조정자가 test-writer를
+     다시 불러 `src/app/(protected)/__tests__/providers.test.tsx`(children 렌더·`useQueryClient()`
+     실인스턴스 수신·리렌더 시 인스턴스 유지 3케이스, `vitest.config.ts` jsdom 글롭 밖이라 파일
+     맨 위 `// @vitest-environment jsdom` 도크블록으로 우회)를 채웠고, 그 RED를 GREEN으로 만들며
+     재개했다.
+  2. **`(tabs)/loading.tsx`를 세우자 `tab-navigation.spec.ts` 3건이 회귀했다 — RouteTransition은
+     Suspense 경계보다 안쪽에 있다.** `RouteTransition`(`<ViewTransition>` 래퍼)이 각 `page.tsx`
+     안쪽에 있는데(`(tabs)/page.tsx`·`pay/page.tsx`·`more/page.tsx`·`my-profile/page.tsx`·
+     `admin/page.tsx` 전부), `loading.tsx`가 만드는 Suspense 경계는 그보다 위에 선다. 목적지가
+     fallback으로 서스펜드되면 그 커밋 트리엔 `<ViewTransition>`이 하나도 없어 `AppShellTabBar`가
+     붙인 `tab` 타입 전환이 짝을 못 찾고 `route-transition.tsx`의 `default: "none"`으로 떨어져
+     애니메이션이 0으로 끝났다(Next 문서
+     `node_modules/next/dist/docs/01-app/02-guides/view-transitions.md:106,144,260`가 이 자리를
+     정확히 적는다 — "destination suspends into a fallback first, no pair forms" /
+     "Wrap the Suspense fallback in a `ViewTransition`"). `(tabs)/loading.tsx`와
+     `(tabs)/schedule/loading.tsx`의 skeleton을 `RouteTransition`으로 감싸 해결했다 — 새 컴포넌트를
+     만들지 않고 page들이 이미 쓰는 그 컴포넌트 그대로 재사용했다. **`route-transition.tsx` 자체는
+     안 고쳤다**(용도 한정이 `shared/ui`를 Architecture가 이름 댄 넷 + 기존 셋의 토큰 반영으로
+     닫아뒀다). `error.tsx` 넷은 감싸지 않았다 — e2e가 요구하지 않고 실패 화면은 전환 대상이
+     아니다. **이 자리를 P0-T49~T54에 남긴다 — `loading.tsx`를 세우면 그 fallback도
+     `RouteTransition`으로 감싸야 한다. 안 그러면 서스펜드되는 목적지로 갈 때 라우트 전환이
+     조용히 죽는다.**
+- **번들 실측**: 배선 완료 뒤 `pnpm build` → `measureStaticChunks` **527,913바이트(515.5KB), 청크
+  47개**. 600KB 상한 대비 여유 **86,487바이트(84.5KB)** — 위험 표 「29·30」의 50KB 문턱 위라 후속
+  task 승격 불필요. `pnpm gate:bundle` 통과. `RouteTransition` import 추가가 번들에 유의미한 영향을
+  주지 않아 재측정하지 않았다(조정자 지시).
+- **e2e**: 전체 실행에서 `ceremony-edit.spec.ts` 1건 + `tab-navigation.spec.ts` 3건 실패 →
+  둘 다 `--workers=1` 직렬 재실행. `ceremony-edit.spec.ts`는 통과(`23505 duplicate key
+  (work_date)` 병렬 워커 시딩 충돌, 알려진 flake). `tab-navigation.spec.ts` 3건은 직렬에서도
+  재현돼 회귀로 확정하고 위 판단 2번으로 고쳤다. 고친 뒤 `tab-navigation.spec.ts` 직렬 17/17
+  통과, `pnpm test:e2e` 전체 88건 중 `schedule-confirmation.spec.ts` 1건만 실패(동일
+  `23505 duplicate key (work_date)` 패턴) → 직렬 재실행 5/5 통과로 flake 확인. `pnpm vitest run`
+  전체 249 files·1714 tests 통과, `pnpm gate:all` 무출력.
+- **재현**: `pnpm vitest run src/shared/ui/__tests__/block-boundary.test.tsx
+  src/app/__tests__/route-conventions.test.ts src/app/__tests__/globals.test.ts
+  "src/app/(protected)/__tests__/providers.test.tsx"`(128 passed) ·
+  `pnpm build && pnpm gate:bundle`(무출력) ·
+  `pnpm exec playwright test tests/e2e/tab-navigation.spec.ts --workers=1`(17 passed).
+- **미결**: 없음. `@sheet/(.)roster/**` 인터셉트·`roster/[date]` 페이지·홈·일정 블록·훅 일곱·
+  `useAmountMasking` 스토어는 계획대로 5라운드로 남겨뒀다.
+
 ## 2026-08-18 · RADIO revision 6 재봉인 (radius 사다리에 xs 6px)
 
 - sha256 `83756aeeb654a9dfeae70218c8d6bda9b009dbae4444b4cc70816fc235454c86`(사용자 승인,

@@ -6,6 +6,7 @@ import { resolveProfileAccess } from "@/entities/identity/model/profile-gate";
 import { HOME_PATH } from "@/shared/config/auth-routes.config";
 import { MotionProvider } from "@/shared/ui/motion-provider";
 import { ErrorScreen } from "@/views/status/ui/ErrorScreen";
+import { Providers } from "@/app/(protected)/providers";
 
 export default async function ProtectedLayout({ children }: { children: ReactNode }) {
   const profileResult = await findOwnProfile();
@@ -19,5 +20,9 @@ export default async function ProtectedLayout({ children }: { children: ReactNod
     return <ErrorScreen />;
   }
 
-  return <MotionProvider>{children}</MotionProvider>;
+  return (
+    <Providers>
+      <MotionProvider>{children}</MotionProvider>
+    </Providers>
+  );
 }

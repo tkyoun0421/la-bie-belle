@@ -41,6 +41,20 @@
       "at": "2026-08-17T19:42:35Z",
       "phase": "green",
       "note": "AC3 후반절 구멍 보강 통과: HomeView.tsx:79·ScheduleView.tsx:122의 typo-display를 typo-headline-md로 치환해 정의 없는 typo-* 사용처를 없앰. 107 passed / 107, exit 0."
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/block-boundary.test.tsx src/app/__tests__/route-conventions.test.ts src/app/__tests__/globals.test.ts \"src/app/(protected)/__tests__/providers.test.tsx\"",
+      "exit_code": 1,
+      "at": "2026-08-17T20:50:34Z",
+      "phase": "red",
+      "note": "AC9·23~25·27·32(에러 경계·라우트 규약·상태 도구·radius 사다리, RADIO revision 6 재봉인 반영). implementer가 이 사이 block-boundary.tsx·globals.css의 --radius-xs·(tabs)/loading·error·@sheet/default·schedule/loading·error를 채워 block-boundary.test.tsx·globals.test.ts와 route-conventions.test.ts의 파일 존재·skeleton 어법 케이스는 이제 통과한다. 남은 구멍 하나는 route-conventions.test.ts의 'providers.tsx가 있다'(AC27) — implementer가 src/app/(protected)/providers.tsx를 만들려다 tdd-guard(appLayer.unitTest=required, exemptFiles에 providers 미포함)에 막혀 멈췄다. src/app/(protected)/__tests__/providers.test.tsx를 신설해 그 구멍을 메운다 — @/app/(protected)/providers 모듈이 없어 스위트 자체가 못 뜸(children 그대로 렌더·자식이 useQueryClient()로 실제 QueryClient 인스턴스를 받음·리렌더에도 같은 인스턴스 유지 3케이스 전부 미실행). 이 파일은 ui/hooks 세그먼트 밖이라 vitest.config.ts가 기본 node 환경으로 매칭해 @testing-library/react가 document 부재로 죽는 문제가 있어, 파일 내부에 // @vitest-environment jsdom 도크블록과 @testing-library/jest-dom/vitest 직접 import로 자체 해결했다(vitest.config.ts·eslint.config.mjs는 안 건드림, project/no-comments는 eslint-disable-next-line으로 그 한 줄만 예외 처리). 종합: route-conventions 11 tests·1 failed(providers.tsx가 있다), providers.test.tsx 1 failed suite(0 test), block-boundary·globals는 통과, 전체 125 tests·124 passed·1 failed, exit 1."
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/block-boundary.test.tsx src/app/__tests__/route-conventions.test.ts src/app/__tests__/globals.test.ts \"src/app/(protected)/__tests__/providers.test.tsx\"",
+      "exit_code": 0,
+      "at": "2026-08-17T20:54:28Z",
+      "phase": "green",
+      "note": "AC9·23~25·27·32 통과: src/app/(protected)/providers.tsx 신설(QueryClient를 useState lazy init으로 고정하고 QueryClientProvider로 children을 감쌈) — providers.test.tsx의 children 렌더·useQueryClient() 실인스턴스 수신·리렌더 시 인스턴스 유지 3케이스가 전부 통과해 route-conventions.test.ts의 'providers.tsx가 있다'도 함께 통과한다. (protected)/layout.tsx에 <Providers>를 인증 게이트 통과 이후 분기(MotionProvider 바깥)로 배선. 4 test files·128 tests 전부 통과, exit 0."
     }
   ]
 }
