@@ -1,14 +1,14 @@
 # P0-T47 handoff
 
-## 2026-08-17 · 개발 진행 중
+## 2026-08-17 · 완료
 
 - 작업 식별자: P0-T47 (디자인 단계와 /publish-ui 도입)
-- 현재 단계: 개발 진행 중 → 커밋 대기
+- 현재 단계: 5단계 리팩토링 종료 → `done`
 - 기준 시각: 2026-08-17
 
 ### 확정된 사실
 
-- RADIO revision 4가 봉인돼 있다(SHA `f7bfc22304d6…`). revision 2가 FOUNDATIONS 간격 표에 `space-0`를, revision 3이 반 칸 셋(`space-0.5`·`space-1.5`·`space-2.5`)과 `env()` 임의값 린트 예외를, revision 4가 `.gitignore`를 범위에 넣었다. `index.jsonl`의 `development_approval`이 revision 4와 그 SHA를 가리킨다.
+- RADIO revision 5가 봉인돼 있다(SHA `ead0a945a99e…`). revision 2가 FOUNDATIONS 간격 표에 `space-0`를, revision 3이 반 칸 셋(`space-0.5`·`space-1.5`·`space-2.5`)과 `env()` 임의값 린트 예외를, revision 4가 `.gitignore`를, revision 5가 `docs/execution/reviews/**`와 `docs/execution/retrospective/**`를 범위에 넣었다. `index.jsonl`의 `development_approval`이 revision 5와 그 SHA를 가리킨다.
 - `.claude/skills/publish-ui/`가 `.gitignore`의 `.claude/skills/*`에 걸려 저장소에 들어가지 않고 있었다. `!.claude/skills/publish-ui/` 한 줄을 더해 열었다 — `coach`·`decision`·`explain`·`loop-mode`·`verify`가 이미 같은 방식이다.
 - 하네스·린트 구역이 GREEN이다. `harness/lib/token-parity.ts`(self-test 11건), `harness/design/build.ts`(9건), `tools/eslint-plugin-project/rules/spacing-scale.mjs`(34건). `pnpm harness:self-test`가 364 pass / 0 fail로 통과했고 `tdd.json`에 RED 2건·GREEN 2건이 같은 명령으로 기록돼 있다.
 - `gate:tokens`가 `harness/lib/gate-suite.ts`의 `REPOSITORY_GATES`와 `COMMIT_GATES` 양쪽에 편입됐고 `package.json`에 `gate:tokens`·`design:build` 스크립트가 있다.
@@ -27,12 +27,13 @@
 - `unit-test-writer`가 RED를 남기고(368 tests / 5 fail) 조정 세션이 GREEN으로 만들었다(368 pass / 0 fail). `implementer`를 따로 띄우지 않고 조정 세션이 구현한 것은 이 세션이 앞선 하네스 구현도 이어받아 맥락을 갖고 있었기 때문이다. RED와 GREEN의 기록자는 갈렸다.
 - RED 작성 중 fixture가 실제 문서와 다른 표기(`--spacing-nav-safe`)를 써서 결함을 가리고 있던 F-04도 함께 정정했다. fixture 넷의 하단 여백 표기를 실물과 맞추고 반 칸·`space-0` 행을 더했으며, 매핑 불가 토큰을 담은 `unmappable-token` fixture를 새로 만들었다.
 - 남은 `high` **F-03**(e2e 시딩 충돌)은 `tests/e2e/**`가 이 task 허용 경로 밖이라 여기서 고칠 수 없다. 별도 task로 올린다.
+- 리뷰 결과 파일과 backlog를 커밋하려는데 `gate:scope`가 둘 다 범위 밖으로 막았다. 이 task가 4단계·5단계를 통과하려면 자기 산출물을 남길 자리가 있어야 하는데 변경 허용 경로를 처음 쓸 때 그 자리를 빠뜨렸다. revision 5로 `docs/execution/reviews/**`와 `docs/execution/retrospective/**`를 더했다(2026-08-17 사용자 결정).
 
 ### 커밋을 가르며 생긴 것
 
 작업 트리에 이 task 말고 두 흐름이 더 있었고, 셋의 글이 같은 파일 안에서 줄 단위로 섞여 있었다. 처리는 이렇게 갈랐다.
 
-- **P0-T46(에이전트 팀 확장)** — 구현은 다 돼 있는데 `index.jsonl` 등록과 커밋이 안 된 채였다. P0-T47이 그 위에 얹혀 있어(내 WORKFLOW 절이 P0-T46의 「테스트 작성과 구현의 분리」를 가리키고, `unit-test-writer.md`는 P0-T46이 만든 파일이다) 먼저 등록·커밋했다. 그 과정에서 **P0-T47의 문서 줄 일부가 P0-T46 커밋에 함께 들어갔다** — `CLAUDE.md`·`WORKFLOW.md`·`TOOLING.md`·`00-foundation.md`·`implementer.md`·`unit-test-writer.md`·`.gitignore`. 여섯 파일 모두 P0-T46의 변경 허용 경로 안이라 게이트는 통과하지만, 이력상 귀속은 정확하지 않다. 줄을 갈라 빼봤더니 `check:docs`가 "`### P0-T47` heading이 없습니다", `gate:radio`가 해시 불일치를 내서 되돌렸다 — HEAD가 이미 P0-T47의 `index.jsonl` 항목만 커밋한 반쪽 상태였기 때문이다.
+- **P0-T46(에이전트 팀 확장)** — 구현은 다 돼 있는데 `index.jsonl` 등록과 커밋이 안 된 채였다. P0-T47이 그 위에 얹혀 있어(내 WORKFLOW 절이 P0-T46의 「테스트 작성과 구현의 분리」를 가리키고, `unit-test-writer.md`는 P0-T46이 만든 파일이다) 먼저 등록·커밋했다. 그 과정에서 **P0-T47의 문서 줄 일부가 P0-T46 커밋에 함께 들어갔다** — `CLAUDE.md`·`WORKFLOW.md`·`TOOLING.md`·`00-foundation.md`·`implementer.md`·`unit-test-writer.md`·`.gitignore`. 일곱 파일 모두 P0-T46의 변경 허용 경로 안이라 게이트는 통과하지만, 이력상 귀속은 정확하지 않다. 줄을 갈라 빼봤더니 `check:docs`가 "`### P0-T47` heading이 없습니다", `gate:radio`가 해시 불일치를 내서 되돌렸다 — HEAD가 이미 P0-T47의 `index.jsonl` 항목만 커밋한 반쪽 상태였기 때문이다.
 - 반대로 `gate-suite.ts`와 `package.json`은 P0-T46의 허용 경로 안인데도 **이 커밋으로 미뤘다.** `gate-suite.ts`가 `token-parity.ts`를 import하는데 그 파일은 P0-T47 소유라, P0-T46 커밋에 넣으면 그 시점 트리가 빌드되지 않는다.
 - **디자인 시스템 개편(미승인·task ID 미부여)** — `stash@{0}`에 격리했다. 다만 HEAD의 `ScheduleView.tsx`가 이미 `segmented-control`·`deadline-batches`·`DeadlineBatchList`를 import하고 있어(그쪽도 반쪽 커밋 상태다) 타입체크가 깨졌다. 그 네 파일과 `useApplicationBatch`·`schedule-cell-state`만 stash에서 되살렸다. 나머지 시각 변경은 격리된 채 남아 P0-T48이 가져간다.
 - `docs/standards/ARCHITECTURE.md`·`DEVELOPMENT.md`·`adr/0008`·`adr/0011`·`adr/README.md`와 `runs/interviews/`의 인터뷰 기록들은 어느 task의 허용 경로에도 없어 스테이징하지 않았다.
@@ -44,13 +45,14 @@
 
 ### 다음 행동
 
-1. 4단계 검증 — `check_ids` 실행과 교차 검증.
-2. `retrospector`로 회고 한 줄을 남기고 `done`으로 전환한다.
+1. F-03(e2e `schedules_work_date_active_unique` 시딩 충돌)을 별도 task로 올린다. 이 task 허용 경로 밖이라 여기서 손대지 않았다.
+2. `gate:bundle` 508KB 대 상한 500KB를 결정한다 — 상한을 올리든 의존성을 줄이든 승인이 필요하다. 이 task 이전부터 있던 문제다.
 3. P0-T48 기획으로 넘어가 `stash@{0}`의 개편 작업을 승인된 범위 안에서 되살린다.
 
 ### 증거·산출물 경로
 
-- `docs/execution/radio/P0-T47-radio.md` (revision 4)
+- `docs/execution/radio/P0-T47-radio.md` (revision 5)
+- `docs/execution/reviews/P0-T47-review.json` (확정 발견 12건, 종합 77점)
 - `docs/execution/runs/P0-T47/tdd.json` (RED 2건·GREEN 2건)
 - `docs/execution/runs/P0-T47/open-decisions.md` (D-01 해소)
 - `docs/execution/runs/interviews/2026-08-16-p0-t47-planning.md`, `2026-08-17-p0-t47-design.md`
