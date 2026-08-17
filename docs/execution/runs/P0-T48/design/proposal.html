@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>라비에벨 화면 틀</title>
+    <style>
+      :root {
+        --color-canvas: #f1f3f6;
+        --color-surface: #ffffff;
+        --color-surface-weak: #f7f7f7;
+        --color-border: #dee1e6;
+
+        --color-text-strong: #0a0b0d;
+        --color-text: #5b616e;
+        --color-text-muted: #7c828a;
+        --color-text-weak: #a8acb3;
+        --color-ink-800: #3a3f4a;
+
+        --color-action: #0052ff;
+        --color-action-deep: #0c3f9c;
+        --color-action-tint-weak: #f2f6fd;
+        --color-on-action: #ffffff;
+
+        --radius-md: 14px;
+        --radius-lg: 16px;
+        --radius-xl: 20px;
+        --radius-pill: 9999px;
+
+        --font-sans:
+          "Wanted Sans Variable", "Wanted Sans", -apple-system, BlinkMacSystemFont, system-ui,
+          "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 32px 24px 64px;
+        background: #e6e9ee;
+        font-family: var(--font-sans);
+        color: var(--color-text);
+        -webkit-text-size-adjust: 100%;
+      }
+
+      .sheet-title {
+        margin: 0 0 4px;
+        font-size: 22px;
+        line-height: 30px;
+        font-weight: 700;
+        color: var(--color-text-strong);
+      }
+
+      .sheet-note {
+        margin: 0 0 8px;
+        max-width: 64ch;
+        font-size: 14px;
+        line-height: 22px;
+        color: var(--color-text-muted);
+      }
+
+      .sheet-note strong {
+        color: var(--color-text-strong);
+      }
+
+      .callout {
+        margin: 0 0 28px;
+        padding: 12px 16px;
+        max-width: 78ch;
+        border-radius: var(--radius-md);
+        background: var(--color-action-tint-weak);
+        color: var(--color-action-deep);
+        font-size: 13px;
+        line-height: 20px;
+      }
+
+      .section-title {
+        margin: 36px 0 4px;
+        font-size: 18px;
+        line-height: 26px;
+        font-weight: 700;
+        color: var(--color-text-strong);
+      }
+
+      .section-note {
+        margin: 0 0 16px;
+        max-width: 64ch;
+        font-size: 13px;
+        line-height: 20px;
+        color: var(--color-text-muted);
+      }
+
+      .rail {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+        overflow-x: auto;
+        padding-bottom: 16px;
+      }
+
+      .frame {
+        flex: 0 0 auto;
+        width: 340px;
+      }
+
+      .frame-label {
+        margin: 0 0 4px;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 700;
+        color: var(--color-text-strong);
+      }
+
+      .frame-lead {
+        margin: 0 0 10px;
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--color-text-muted);
+      }
+
+      .screen {
+        position: relative;
+        height: 640px;
+        overflow: hidden;
+        border: 1px solid var(--color-border);
+        border-radius: 28px;
+        background: var(--color-canvas);
+      }
+
+      .status-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px 2px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--color-text-strong);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .body {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 4px 16px 96px;
+        height: calc(100% - 30px);
+        overflow: hidden;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 4px;
+        min-height: 48px;
+        padding: 0 4px;
+      }
+
+      .header h2 {
+        margin: 0;
+        flex: 1;
+        font-size: 22px;
+        line-height: 30px;
+        font-weight: 700;
+        color: var(--color-text-strong);
+      }
+
+      .icon-button {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin-right: -10px;
+        border: 0;
+        background: none;
+        color: var(--color-text-strong);
+      }
+
+      .icon-button svg {
+        width: 24px;
+        height: 24px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .bell-dot::after {
+        content: "";
+        position: absolute;
+        top: 8px;
+        right: 9px;
+        width: 8px;
+        height: 8px;
+        border: 2px solid var(--color-canvas);
+        border-radius: var(--radius-pill);
+        background: var(--color-action);
+      }
+
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+        border-radius: var(--radius-xl);
+        background: var(--color-surface);
+      }
+
+      .card-tight {
+        gap: 8px;
+      }
+
+      .caption {
+        margin: 0;
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--color-text-muted);
+      }
+
+      .title {
+        margin: 0;
+        font-size: 18px;
+        line-height: 26px;
+        font-weight: 600;
+        color: var(--color-text-strong);
+      }
+
+      .amount {
+        margin: 0;
+        font-size: 26px;
+        line-height: 34px;
+        font-weight: 700;
+        color: var(--color-text-strong);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .amount-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .masked {
+        color: var(--color-text-weak);
+        filter: blur(7px);
+        user-select: none;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+
+      .eye {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin: -12px -10px -12px 0;
+        border: 0;
+        background: none;
+        color: var(--color-text-muted);
+      }
+
+      .eye svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .button {
+        display: grid;
+        place-items: center;
+        height: 52px;
+        border: 0;
+        border-radius: var(--radius-lg);
+        background: var(--color-action);
+        color: var(--color-on-action);
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 600;
+      }
+
+      .button-secondary {
+        background: var(--color-surface-weak);
+        color: var(--color-text-strong);
+      }
+
+      .tabbar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        height: 64px;
+        border-top: 1px solid var(--color-border);
+        background: var(--color-surface);
+      }
+
+      .tabbar-standalone {
+        position: static;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+      }
+
+      .tab {
+        position: relative;
+        isolation: isolate;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        height: 100%;
+        font-size: 11px;
+        line-height: 14px;
+        font-weight: 600;
+        color: var(--color-text);
+      }
+
+      .tab .glyph {
+        display: block;
+        width: 24px;
+        height: 24px;
+        transform-origin: 50% 100%;
+      }
+
+      .tab svg {
+        display: block;
+        width: 24px;
+        height: 24px;
+      }
+
+      .tab .line {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .tab .solid {
+        display: none;
+      }
+
+      .tab[aria-current="page"] {
+        color: var(--color-ink-800);
+      }
+
+      .tab[aria-current="page"] .line {
+        display: none;
+      }
+
+      .tab[aria-current="page"] .solid {
+        display: block;
+      }
+
+      .solid .fg {
+        fill: currentColor;
+        stroke: none;
+      }
+
+      .solid .cut {
+        fill: var(--color-surface);
+        stroke: none;
+      }
+
+      .solid .cut-stroke {
+        fill: none;
+        stroke: var(--color-surface);
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+
+      .tab[aria-current="page"] .glyph {
+        animation: squash 2200ms infinite;
+      }
+
+      @keyframes squash {
+        0% {
+          transform: scale(1, 1);
+        }
+        3% {
+          transform: scale(1.22, 0.78);
+        }
+        7% {
+          transform: scale(0.95, 1.06);
+        }
+        10% {
+          transform: scale(1.02, 0.99);
+        }
+        13% {
+          transform: scale(1.1, 0.91);
+        }
+        16% {
+          transform: scale(0.98, 1.02);
+        }
+        19%,
+        100% {
+          transform: scale(1, 1);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .tab .glyph {
+          animation: none !important;
+        }
+      }
+
+      .variant {
+        margin-bottom: 20px;
+        max-width: 380px;
+      }
+
+      .variant p {
+        margin: 0 0 8px;
+        font-size: 13px;
+        line-height: 20px;
+        color: var(--color-text-muted);
+      }
+
+      .variant p strong {
+        color: var(--color-text-strong);
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="sheet-title">라운드 5 — 선택 탭의 모양과 움직임</h1>
+    <p class="sheet-note">
+      하단 탭은 <strong>홈 · 일정 · 급여 · 전체</strong> 넷으로 확정. 선택 탭은 파랑이 아니라
+      <strong>어두운 채움</strong>이고 선택 안 된 탭은 <code>gray-700</code> 선이다. 화면에서 파랑은
+      눌러야 할 버튼 하나에만 남는다. 선택 탭 뒤에 깔던 회색 블록은 뺐다 — 선택돼 있는 내내 남아
+      있어서 채움과 색이 이미 하는 말을 한 번 더 하고 있었다.
+    </p>
+    <p class="callout">
+      Lucide에는 채운 세트가 없다. <code>전체</code>의 <code>Menu</code>는 선 세 개라 채울 도형이
+      아예 없어 <code>LayoutGrid</code>(정사각 넷)로 바꿨다 — 이건 Lucide에 실제로 있는 아이콘이라 선
+      상태는 정품이다. 나머지 셋의 채움은 Lucide 실루엣에서 딴 파생 자산이 된다. 채움 색
+      <code>#3a3f4a</code>도 팔레트에 없던 단계라 <code>FOUNDATIONS</code> 원시 표에 행을 더해야 한다.
+    </p>
+
+    <div class="rail">
+      <section class="frame">
+        <p class="frame-label">홈 — 확정된 셸</p>
+        <p class="frame-lead">탭 넷, 헤더 종, 어두운 채움으로 선택.</p>
+        <div class="screen">
+          <div class="status-bar"><span>9:41</span><span>LTE</span></div>
+          <div class="body">
+            <div class="header">
+              <h2>홈</h2>
+              <button class="icon-button bell-dot" type="button" aria-label="알림 · 읽지 않음">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M10.268 21a2 2 0 0 0 3.464 0" />
+                  <path
+                    d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div class="card">
+              <p class="caption">8월 18일 · 홀서빙 근무</p>
+              <button class="button" type="button">출근 인증하기</button>
+              <p class="caption">근무 시작 20분 전부터 인증할 수 있어요</p>
+            </div>
+
+            <div class="card card-tight">
+              <p class="title">근무 신청 마감이 임박했어요</p>
+              <p class="caption">8월 24일 · 8월 20일 18:00까지</p>
+              <button class="button button-secondary" type="button">지금 신청하기</button>
+            </div>
+
+            <div class="card card-tight">
+              <p class="caption">이번 달 예상 급여</p>
+              <div class="amount-row">
+                <p class="amount masked" aria-hidden="true">000,000원</p>
+                <span class="sr-only">금액 숨김</span>
+                <button class="eye" type="button" aria-label="금액 보기">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.8 10.8 0 0 1-1.876 2.98"
+                    />
+                    <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                    <path
+                      d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+                    />
+                    <path d="m2 2 20 20" />
+                  </svg>
+                </button>
+              </div>
+              <p class="caption">일반 근무 5회 · 리허설 1회</p>
+            </div>
+          </div>
+
+          <nav class="tabbar">
+            <span class="tab" aria-current="page">
+              <span class="glyph">
+                <svg class="solid" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    class="fg"
+                    d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                  />
+                  <path class="cut" d="M9.5 21v-7.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V21z" />
+                </svg>
+                <svg class="line" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+                  <path
+                    d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                  />
+                </svg>
+              </span>
+              홈
+            </span>
+            <span class="tab">
+              <span class="glyph">
+                <svg class="solid" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect class="fg" width="18" height="18" x="3" y="4" rx="3" />
+                  <path class="cut-stroke" d="M3.5 10.5h17" />
+                  <circle class="cut" cx="8" cy="14.5" r="1.1" />
+                  <circle class="cut" cx="12" cy="14.5" r="1.1" />
+                  <circle class="cut" cx="16" cy="14.5" r="1.1" />
+                  <circle class="cut" cx="8" cy="18" r="1.1" />
+                  <circle class="cut" cx="12" cy="18" r="1.1" />
+                </svg>
+                <svg class="line" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 2v4" />
+                  <path d="M16 2v4" />
+                  <rect width="18" height="18" x="3" y="4" rx="2" />
+                  <path d="M3 10h18" />
+                  <path d="M8 14h.01" />
+                  <path d="M12 14h.01" />
+                  <path d="M16 14h.01" />
+                  <path d="M8 18h.01" />
+                  <path d="M12 18h.01" />
+                </svg>
+              </span>
+              일정
+            </span>
+            <span class="tab">
+              <span class="glyph">
+                <svg class="solid" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    class="fg"
+                    d="M2 7a3 3 0 0 1 3-3h11a1 1 0 0 1 1 1v2H5a1 1 0 0 0 0 2h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"
+                  />
+                  <circle class="cut" cx="17" cy="14" r="1.5" />
+                </svg>
+                <svg class="line" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"
+                  />
+                  <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+                </svg>
+              </span>
+              급여
+            </span>
+            <span class="tab">
+              <span class="glyph">
+                <svg class="solid" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect class="fg" x="3" y="3" width="7.5" height="7.5" rx="2" />
+                  <rect class="fg" x="13.5" y="3" width="7.5" height="7.5" rx="2" />
+                  <rect class="fg" x="3" y="13.5" width="7.5" height="7.5" rx="2" />
+                  <rect class="fg" x="13.5" y="13.5" width="7.5" height="7.5" rx="2" />
+                </svg>
+                <svg class="line" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="3" width="7.5" height="7.5" rx="2" />
+                  <rect x="13.5" y="3" width="7.5" height="7.5" rx="2" />
+                  <rect x="3" y="13.5" width="7.5" height="7.5" rx="2" />
+                  <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" />
+                </svg>
+              </span>
+              전체
+            </span>
+          </nav>
+        </div>
+      </section>
+    </div>
+
+    <h2 class="section-title">선택 표시</h2>
+    <p class="section-note">
+      여기서는 눌림 모션이 반복 재생된다. 실제로는 누르는 순간 한 번만 돈다.
+      <code>prefers-reduced-motion</code>에서는 멈추고 색과 채움만 바뀐다.
+    </p>
+
+    <div class="variant">
+      <p><strong>확정</strong> — 회색 블록 없음. 선 → 채움, <code>#5b616e</code> → <code>#3a3f4a</code>, 그리고 크게 한 번 + 반동으로 한 번 더 눌리는 모션. 셋으로만 알린다.</p>
+      <nav class="tabbar tabbar-standalone">
+        <span class="tab"><span class="glyph"><svg class="line" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+              <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            </svg></span>홈</span>
+        <span class="tab"><span class="glyph"><svg class="line" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 2v4" /><path d="M16 2v4" />
+              <rect width="18" height="18" x="3" y="4" rx="2" />
+              <path d="M3 10h18" />
+              <path d="M8 14h.01" /><path d="M12 14h.01" /><path d="M16 14h.01" />
+            </svg></span>일정</span>
+        <span class="tab" aria-current="page"><span class="glyph"><svg class="solid" viewBox="0 0 24 24" aria-hidden="true">
+              <path class="fg" d="M2 7a3 3 0 0 1 3-3h11a1 1 0 0 1 1 1v2H5a1 1 0 0 0 0 2h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" />
+              <circle class="cut" cx="17" cy="14" r="1.5" />
+            </svg><svg class="line" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
+              <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+            </svg></span>급여</span>
+        <span class="tab"><span class="glyph"><svg class="line" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="3" width="7.5" height="7.5" rx="2" />
+              <rect x="13.5" y="3" width="7.5" height="7.5" rx="2" />
+              <rect x="3" y="13.5" width="7.5" height="7.5" rx="2" />
+              <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" />
+            </svg></span>전체</span>
+      </nav>
+    </div>
+  </body>
+</html>

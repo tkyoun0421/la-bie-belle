@@ -29,3 +29,6 @@ skills-lock.json
 !.claude/skills/loop-mode/
 !.claude/skills/publish-ui/
 !.claude/skills/verify/
+
+# design:build 산출물 — 시안 원본만 커밋하고 글꼴을 심은 1.7MB 빌드본은 제외
+*.inlined.html
