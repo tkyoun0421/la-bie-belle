@@ -1,5 +1,42 @@
 # P0-T48 handoff
 
+## 2026-08-18 · 개발 4b라운드 GREEN (block-boundary 결함 둘 — 조사 조립 · 재시도 영구 잠금)
+
+- 기준 커밋: `72efa0a`(4라운드). RADIO는 그대로 revision 6, 이 라운드는 RADIO를 안 열었다.
+  고친 파일은 `src/shared/ui/block-boundary.tsx` 하나. `BlockBoundary` 호출자는 저장소에
+  아직 없다(`grep -rn "BlockBoundary" src/`가 정의부와 테스트 파일만 반환) — prop 이름 변경의
+  파급이 없다.
+- **결함 ① 조사 조립.** `` `${name}을 불러오지 못했어요` `` 템플릿이 받침 없는 이름
+  (이번 주·다가오는 근무·급여)에서 「급여**을**」처럼 깨졌다. 조사 판정은 종성 산술이라
+  `no-logic-in-ui`가 막는 `shared/ui`에서도, RADIO 허용 경로 밖인 `shared/lib`에서도 할 수
+  없다. **`name: string`을 `message: string`(완성된 실패 문장 한 줄)로 바꿔 조사를 문장을
+  만드는 쪽(호출자)의 책임으로 넘겼다** — `AssignmentCandidateSheet.tsx:18`·
+  `RecruitmentManageSheet.tsx:14`가 이미 완성 문장 상수를 쓰는 저장소 관행을 따른 것이다.
+  **5라운드가 홈 블록 다섯(알림·오늘·이번 주·다가오는 근무·급여)의 실패 문장 상수를
+  `views/home/model/**`에 둬야 한다** — 파생 표시값(조사가 붙은 완성 문장)은 화면 `model`이
+  소유하는 계산이라 `DEV-CODE-08`을 따른다. 이 라운드는 그 소비처를 만들지 않았다(호출자
+  없음), 5라운드가 처음 만든다.
+- **결함 ② 재시도 영구 잠금.** `handleRetry`가 `setState({retrying:true, hasError:false})`
+  뒤 `onRetry()`를 부르면, 자식이 다시 던져 `hasError`가 곧바로 `true`로 돌아오는데
+  `componentDidUpdate`의 리셋 조건(`prevState.hasError && !this.state.hasError && retrying`)이
+  `hasError`가 `false`로 안 내려간 그 프레임에선 참이 될 수 없어 `retrying`이 `true`로 굳고
+  버튼이 영원히 disabled로 남았다. **`componentDidUpdate`를 없애고 `handleRetry`가
+  `Promise.resolve(this.props.onRetry()).finally(() => this.setState({ retrying: false }))`로
+  refresh 완료(성공·실패 무관)마다 락을 직접 풀도록 바꿨다.** `hasError` 리셋은 여전히
+  `onRetry` 호출 **전**에 동기로 일어나므로 "reset 뒤 refresh 한 번" 순서(RED 케이스 제목
+  그대로)는 유지된다. `useTransition`으로 옮기는 안도 검토했으나(RADIO 참고 제안), 실제
+  `router.refresh(): void`가 프로덕션에서 Promise를 반환하지 않아 `startTransition`의
+  `isPending`이 실제 새로고침 완료 시점과 결합되는지가 이 라운드 범위에서 검증되지 않고,
+  writer 검증 stub과 같은 방향인 `Promise.resolve(...).finally(...)`가 관찰 가능한 단언
+  (`disabled` 속성·`router.refresh()` 호출 수) 전부를 직접 만족해 더 작은 변경으로 갔다.
+- **테스트는 고치지 않았다.** `block-boundary.test.tsx`는 writer가 이미 `message` prop과
+  8개 케이스로 남긴 RED 그대로다.
+- **재현**: `pnpm vitest run src/shared/ui/__tests__/block-boundary.test.tsx`(8 passed) ·
+  `pnpm lint`(무출력) · `pnpm typecheck`(통과) · `pnpm gate:all`(무출력). e2e·build는
+  조정자 지시로 생략했다(호출자 없는 컴포넌트 하나, pre-push가 build를 돈다).
+- **미결**: 5라운드가 `views/home/model/**`에 다섯 블록 실패 문장 상수를 두고 `BlockBoundary`를
+  처음 호출한다 — 그때 `message` 조립과 조사가 맞는지 실사용 문맥에서 다시 확인해야 한다.
+
 ## 2026-08-18 · 개발 4라운드 GREEN (Next 라우트 규약과 상태 도구 둘)
 
 - 기준 커밋: `cfdf7db`(revision 6 재봉인). RADIO는 그대로 revision 6,

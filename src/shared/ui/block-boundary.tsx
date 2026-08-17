@@ -5,12 +5,12 @@ import { Component } from "react";
 import type { ReactNode } from "react";
 
 type BlockBoundaryProps = {
-  name: string;
+  message: string;
   children: ReactNode;
 };
 
 type BlockBoundaryContentProps = BlockBoundaryProps & {
-  onRetry: () => void;
+  onRetry: () => void | Promise<void>;
 };
 
 type BlockBoundaryContentState = {
@@ -25,21 +25,14 @@ class BlockBoundaryContent extends Component<BlockBoundaryContentProps, BlockBou
     return { hasError: true };
   }
 
-  componentDidUpdate(
-    _prevProps: BlockBoundaryContentProps,
-    prevState: BlockBoundaryContentState,
-  ): void {
-    if (prevState.hasError && !this.state.hasError && this.state.retrying) {
-      this.setState({ retrying: false });
-    }
-  }
-
   handleRetry = (): void => {
     if (this.state.retrying) {
       return;
     }
     this.setState({ retrying: true, hasError: false });
-    this.props.onRetry();
+    Promise.resolve(this.props.onRetry()).finally(() => {
+      this.setState({ retrying: false });
+    });
   };
 
   render(): ReactNode {
@@ -49,7 +42,7 @@ class BlockBoundaryContent extends Component<BlockBoundaryContentProps, BlockBou
 
     return (
       <div className="flex items-center justify-between gap-3 py-3">
-        <p className="typo-body text-text-muted">{`${this.props.name}을 불러오지 못했어요`}</p>
+        <p className="typo-body text-text-muted">{this.props.message}</p>
         <button
           type="button"
           onClick={this.handleRetry}
@@ -63,11 +56,11 @@ class BlockBoundaryContent extends Component<BlockBoundaryContentProps, BlockBou
   }
 }
 
-export function BlockBoundary({ name, children }: BlockBoundaryProps) {
+export function BlockBoundary({ message, children }: BlockBoundaryProps) {
   const router = useRouter();
 
   return (
-    <BlockBoundaryContent name={name} onRetry={() => router.refresh()}>
+    <BlockBoundaryContent message={message} onRetry={() => router.refresh()}>
       {children}
     </BlockBoundaryContent>
   );

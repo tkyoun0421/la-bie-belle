@@ -55,6 +55,20 @@
       "at": "2026-08-17T20:54:28Z",
       "phase": "green",
       "note": "AC9·23~25·27·32 통과: src/app/(protected)/providers.tsx 신설(QueryClient를 useState lazy init으로 고정하고 QueryClientProvider로 children을 감쌈) — providers.test.tsx의 children 렌더·useQueryClient() 실인스턴스 수신·리렌더 시 인스턴스 유지 3케이스가 전부 통과해 route-conventions.test.ts의 'providers.tsx가 있다'도 함께 통과한다. (protected)/layout.tsx에 <Providers>를 인증 게이트 통과 이후 분기(MotionProvider 바깥)로 배선. 4 test files·128 tests 전부 통과, exit 0."
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/block-boundary.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-17T21:21:38Z",
+      "phase": "red",
+      "note": "AC9(4b라운드, 커밋 72efa0a 이후 조정자가 찾은 결함 둘). ① BlockBoundaryProps를 name:string에서 message:string(완성 문장)으로 바꾸는 계약 변경 — 현재 구현이 여전히 name을 읽어 `${name}을 불러오지 못했어요` 템플릿을 조립하므로 message prop을 그대로 렌더하는 3케이스(message 렌더·받침 없는 문장 '급여를 불러오지 못했어요'·형제 케이스)가 'undefined을 불러오지 못했어요'로 잡혀 실패. ② 재시도 영구 잠금 — componentDidUpdate의 리셋 조건(prevState.hasError && !this.state.hasError && this.state.retrying)이 자식이 계속 던지는 상황에서 참이 될 수 없어 첫 재시도 이후 버튼이 영원히 disabled로 굳음: 연타 케이스는 deferred promise를 resolve한 뒤에도 버튼이 disabled로 남아 waitFor 타임아웃, 신설 케이스('재시도가 실패한 뒤에도 다시 시도할 수 있다')는 두 번째 클릭 자체가 불가능해 router.refresh() 두 번째 호출 단언이 미도달. 5 failed / 3 passed (8 tests), exit 1. 임시 stub(message prop 직접 렌더 + handleRetry가 Promise.resolve(onRetry()).finally(()=>setState({retrying:false}))로 componentDidUpdate 없이 리셋)을 넣어 8/8 GREEN을 확인한 뒤 원본으로 되돌렸다(git diff 없음 확인)."
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/block-boundary.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-17T21:26:02Z",
+      "phase": "green",
+      "note": "AC9(4b라운드) 통과: BlockBoundaryProps.name을 message:string(완성 문장)으로 바꾸고 fallback이 조사 조립 없이 this.props.message를 그대로 렌더하도록 고쳤다. 재시도 잠금은 componentDidUpdate를 제거하고 handleRetry가 Promise.resolve(this.props.onRetry()).finally(() => setState({ retrying: false }))로 refresh 완료(성공·실패 무관)마다 락을 풀도록 바꿨다 — hasError 리셋은 여전히 onRetry 호출 전에 동기로 일어나 '리셋 뒤 refresh 한 번' 순서는 유지된다. 8 passed / 8, exit 0."
     }
   ]
 }
