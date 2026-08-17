@@ -133,7 +133,7 @@ private 데이터의 제한적 오프라인 열람이 실제 현장 요구가 �
 - `DEV-NAME-02` `MUST`: 파일 이름은 kebab-case를 기본으로 하되 `ui` 세그먼트의 컴포넌트는 PascalCase, `hooks` 세그먼트는 useCamelCase를 쓴다.
 - `DEV-NAME-03` `MUST`: 파일 이름과 그 파일의 주 export 이름을 일치시킨다. `ShiftCard.tsx`는 `ShiftCard`를, `useShiftList.ts`는 `useShiftList`를 export한다.
 - `DEV-NAME-04` `MUST`: 세그먼트 디렉터리는 `config/fsd.json`의 `segments`에 정의된 이름만 쓴다. 새 세그먼트가 필요하면 규칙(`unitTest`, `runtimeExports`, `verifiedBy`, import 제약)을 함께 정의해 추가한다.
-- `DEV-NAME-05` `MAY`: 프레임워크나 외부 도구가 파일명을 정하는 구역은 예외로 둔다. 예외 목록은 `config/fsd.json`의 `naming.exceptions`가 소유하며 현재는 Next.js 예약 파일명(`src/app/**`)과 shadcn 관리 구역(`src/shared/ui/**`)이다.
+- `DEV-NAME-05` `MAY`: 프레임워크나 외부 도구가 파일명을 정하는 구역은 예외로 둔다. 예외 목록은 `config/fsd.json`의 `naming.exceptions`가 소유하며 현재는 Next.js 예약 파일명(`src/app/**`), shadcn 관리 구역(`src/shared/ui/**`), 테스트 파일(`**/__tests__/**`)이다.
 - `DEV-NAME-06` `MUST`: `src/` 안 import는 `@/` alias 하나만 쓴다. 상대경로(`./`·`../`)는 정적 `import`·재export(`export … from`)·동적 `import()` 리터럴 모두 금지하며, alias는 파일 확장자를 붙이지 않는다. 기계 강제: `project/import-alias`(fixer 포함).
 
 세그먼트별 책임과 잠금 규칙은 다음과 같다. `unitTest`가 `exempt`인 구역은 런타임 코드를 제한해 면제가 우회 통로가 되지 않게 한다.
@@ -142,7 +142,7 @@ private 데이터의 제한적 오프라인 열람이 실제 현장 요구가 �
 | --- | --- | --- | --- |
 | `ui` | 면제 (컴포넌트·E2E로 검증) | 허용 | 서버 모듈·`api` 세그먼트 금지 |
 | `hooks` | 필수 | 허용 | 서버 모듈 금지 |
-| `model` | 필수 | 허용 | React 금지 |
+| `model` | 필수 | 허용 | `react`·`react-dom`·서버 모듈 금지 |
 | `api` | 필수 | 허용 | `import "server-only"` 필수 |
 | `lib` | 필수 | 허용 | — |
 | `config` | 면제 | 상수만 (함수·클래스 금지) | — |
@@ -287,6 +287,6 @@ RADIO를 재설계하면 고정 경로에서 revision을 증가시키고 `Draft`
 
 ## 실행
 
-구조 재편 과정에서 기존 하네스와 repository-local 스킬이 제거되어 현재 실행 명령은 없다. 5단계 파이프라인과 [연속 루프](../workflow/WORKFLOW.md#연속-루프-규칙)를 강제하는 새 실행 하네스와 명령은 **P0-T31**에서 다시 만든다. 그때까지 단계 순서, 승인 게이트와 루프 규칙은 문서 계약으로 지키고 사람이 확인한다.
+5단계 파이프라인과 [연속 루프](../workflow/WORKFLOW.md#연속-루프-규칙)를 강제하는 게이트 하네스가 `harness/`에 있다(P0-T31, done). 두 승인, RADIO 해시, 의존성, TDD 증거, 커밋 범위, 회고, 문서 정합을 검사한다. 포맷, lint, TypeScript strict와 테스트 도구는 P0-T02(done)에서 구성했다.
 
-새 하네스는 두 승인, RADIO 해시, 의존성, 실행 계약, TDD 증거, check 결과와 task commit을 검사하고 기술적 실패를 설정된 횟수 안에서 재시도한다. 포맷, lint, TypeScript strict와 실제 앱 테스트 도구는 P0-T02에서 구성한다.
+명령·게이트·git hook·Claude Code hook의 정본은 [TOOLING](../workflow/TOOLING.md)이다. 이 문서는 명령을 복제하지 않는다.

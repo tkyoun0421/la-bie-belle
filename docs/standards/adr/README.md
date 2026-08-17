@@ -15,7 +15,7 @@ ADR은 구현자가 임의로 바꾸면 데이터 호환성, 보안 또는 운�
 | [0009](0009-two-track-interview-and-engineering-loop.md) | 딥인터뷰 설계와 자율 개발 루프 분리 | Superseded (ADR-0013) |
 | [0010](0010-dormancy-and-automatic-account-lifecycle.md) | 휴면과 자동 계정 생명주기 | Accepted |
 | [0011](0011-planning-radio-development-contract.md) | 기획 승인, RADIO 개발 설계와 개발 컨벤션 계약 | Accepted |
-| [0012](0012-static-operations-dashboard.md) | 정적 운영 대시보드의 안내·최신화 계약 | Accepted (revision 2) |
+| [0012](0012-static-operations-dashboard.md) | 정적 운영 대시보드의 안내·최신화 계약 | Accepted (revision 3) |
 | [0013](0013-project-layer-structure.md) | 5레이어 프로젝트 구조와 5단계 개발 파이프라인 | Accepted |
 | [0014](0014-fsd-view-layer-naming.md) | FSD 화면 조합 계층 이름 `views` | Accepted |
 | [0015](0015-motion-library-scope.md) | 인터랙션 라이브러리를 `motion`의 `LazyMotion` 범위로 제한 | Accepted |

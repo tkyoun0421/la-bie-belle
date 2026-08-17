@@ -3,6 +3,7 @@
 - 상태: Accepted
 - 날짜: 2026-07-24
 - 부분 대체: [ADR-0008](0008-fsd-server-first-development-guards.md), [ADR-0009](0009-two-track-interview-and-engineering-loop.md)
+- 아래 Decision의 `la-bie-belle-product-interview`·`la-bie-belle-development-interview` 스킬 대체 항목은 ADR-0013(P0-T30)의 5레이어 재편으로 구 하네스·repository-local 스킬과 함께 무효화됐다. 본문은 당시 결정의 역사 기록으로 보존한다.
 
 ## Context
 

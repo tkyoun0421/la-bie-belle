@@ -21,6 +21,7 @@
 | 웹 애플리케이션 | Next.js App Router, TypeScript |
 | UI | Tailwind CSS, shadcn/ui, 모바일 우선 |
 | 인터랙션 | React `<ViewTransition>`, `motion` (ADR-0015가 정한 `LazyMotion` 범위) |
+| 클라이언트 캐시 | TanStack Query (server-first 기본, `DEV-CACHE`가 정한 범위) |
 | 인증 | Supabase Auth, Google OAuth |
 | 데이터베이스 | Supabase PostgreSQL, Seoul 리전 |
 | 권한 | PostgreSQL RLS, 보안 함수, 서버 전용 작업 |
@@ -77,9 +78,9 @@ flowchart LR
 
 ### 저장소 운영 대시보드
 
-- 생성기는 `harness/dashboard/`, 실행 명령은 `pnpm dashboard`, 산출물은 `docs/execution/dashboard/index.html` 단일 파일이다. 상세 구현 계약은 [ADR-0012](adr/0012-static-operations-dashboard.md)(revision 2, Accepted)가 소유한다.
+- 생성기는 `harness/dashboard/`, 실행 명령은 `pnpm dashboard`, 산출물은 `docs/execution/dashboard/` 아래 세 파일(`index.html`·`retrospective.html`·`coaching.html`)이다. 상세 구현 계약은 [ADR-0012](adr/0012-static-operations-dashboard.md)(revision 3, Accepted)가 소유한다.
 - 운영 대시보드는 작업 인덱스와 실행 증거에서 생성하는 로컬 정적·읽기 전용 운영 진입점이다. 인라인 CSS만 쓰는 자체 포함 HTML이라 네트워크 없이 열린다.
-- 대시보드는 진행도, 준비도 루브릭(기계 판정 100점), 검증 결과, 다음 행동·차단의 네 섹션과 상단의 기준 시각·기준 커밋을 표시한다. 추천은 승인 상태와 의존성의 실행 경로를 우선한다.
+- `index.html`은 진행도, 준비도 루브릭(기계 판정 100점), 검증 결과, 다음 행동·차단의 네 섹션과 상단의 기준 시각·기준 커밋을 표시한다. 추천은 승인 상태와 의존성의 실행 경로를 우선한다.
 - 생성물은 원본을 바꾸지 않으며 task의 승인·상태·실행을 호출하지 않는다. 실행 큐의 진행은 개발 루프가 소유한다. 원본이 없거나 형식이 깨졌으면 값을 추정하지 않고 누락·결과 없음·형식 오류로 표시한다.
 - task 최종 상태 또는 phase 경계가 변한 실행 경로는 최신 실행 상태를 반영해 대시보드를 재생성한다. 재생성을 빠뜨리면 준비도의 문서 신선도 점수가 그 사실을 드러낸다.
 
