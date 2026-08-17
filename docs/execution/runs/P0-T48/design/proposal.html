@@ -21,6 +21,7 @@
         --color-action-deep: #0c3f9c;
         --color-action-tint-weak: #f2f6fd;
         --color-action-tint: #e4edfd;
+        --color-action-tint-strong: #cfe0fc;
         --color-on-action: #ffffff;
 
         --color-warn-tint: #fdf0dd;
@@ -552,8 +553,23 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        padding-top: 10px;
+        width: 100%;
+        padding: 10px 0 0;
+        border: 0;
         border-top: 1px solid var(--color-border);
+        background: none;
+        font-family: inherit;
+        text-align: left;
+        cursor: pointer;
+        transition: transform 120ms ease;
+      }
+
+      .today-meta:active {
+        transform: scale(0.985);
+      }
+
+      .today-meta .caption {
+        flex: 1;
       }
 
       .avatars {
@@ -843,18 +859,24 @@
         width: 32px;
         height: 32px;
         border-radius: 11px;
-        background: var(--color-action);
-        color: var(--color-on-action);
+        background: var(--color-surface-weak);
+        color: var(--color-text);
         font-size: 13px;
         line-height: 18px;
         font-weight: 600;
         font-variant-numeric: tabular-nums;
       }
 
-      .dbadge-quiet {
-        background: var(--color-surface-weak);
-        color: var(--color-text);
+      .dbadge-d1 {
+        background: var(--color-action-tint-strong);
+        color: var(--color-action-deep);
       }
+
+      .dbadge-d2 {
+        background: var(--color-action-tint);
+        color: var(--color-action-deep);
+      }
+
 
       .pill {
         flex: 0 0 auto;
@@ -869,7 +891,6 @@
         font-family: inherit;
         font-size: 13px;
         line-height: 18px;
-        font-weight: 600;
         cursor: pointer;
         transition: transform 120ms ease;
       }
@@ -1116,15 +1137,14 @@
       </defs>
     </svg>
 
-    <h1 class="sheet-title">라운드 25 — 헤더 블러 (2차)</h1>
+    <h1 class="sheet-title">라운드 27 — D 배지 층위와 오늘의 포지션</h1>
     <p class="sheet-note">
-      계층은 라운드 24로 확정됐다(아래 표 셋이 확정본이다). 이 판의 수정 하나 —
-      <strong>스크롤을 내리면 카드가 헤더 뒤로 지나가며 흐릿하게 비친다.</strong> 전에는 헤더가
-      지면을 잘라 콘텐츠가 그 선에서 사라졌다. 상태 표시줄 자리까지 한 레이어로 묶어 실제
-      폰에서 콘텐츠가 시계 뒤로 지나가는 짜임을 그대로 옮겼다. 2차에서
-      <strong>더 옅게</strong> 풀었다 — 흐림 14 → <strong>9px</strong>, 덮는 지면색 68 →
-      <strong>50%</strong>. 뒤 카드의 윤곽이 더 살아난다.
-      <strong>기기에서 아래로 굴려보면 보인다.</strong>
+      D 배지가 전부 회색이라 내일 근무와 다음 주 근무가 같은 무게였다.
+      <strong>D-2까지만 브랜드 파랑을 옅게 깔고</strong>(D-1이 한 단계 진하다) D-3부터는 회색이다.
+      기기의 세 행이 D-1 · D-2 · D-4라 세 층위가 한눈에 보인다. <strong>D-0은 만들지
+      않았다</strong> — 오늘 근무는 「오늘」 카드가 통째로 맡고, 그 카드의
+      <strong>발치를 누르면 오늘의 포지션 배치도</strong>가 다가오는 근무와 같은 바닥 시트로
+      올라온다. 같은 판에 라운드 26(알약 무게 600 → <strong>400</strong>)도 들어 있다.
     </p>
     <p class="callout">
       <strong>주급은 기획으로 돌아간다.</strong> <code>PRD.md:346</code>이 「월별 합계」다. 주 경계·월 합계
@@ -1268,12 +1288,15 @@
                   <p class="caption">11:00 ~ 16:00</p>
                 </div>
               </div>
-              <div class="today-meta">
+              <button class="today-meta" type="button" data-roster="3">
                 <span class="avatars" aria-hidden="true">
                   <span></span><span></span><span></span><span></span>
                 </span>
-                <p class="caption">4명 · 예식 14:00</p>
-              </div>
+                <span class="caption">4명 · 예식 14:00 · 포지션 보기</span>
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
               <button
                 class="button"
                 type="button"
@@ -1311,31 +1334,31 @@
             <p class="block-label">다가오는 근무</p>
             <div class="card card-rows upco">
               <button class="trow" type="button" data-var="upco:three|one" data-roster="0">
-                <span class="dbadge dbadge-quiet">D-3</span>
+                <span class="dbadge dbadge-d1">D-1</span>
                 <span class="trow-main">
-                  <span class="trow-value">8월 21일 목</span>
+                  <span class="trow-value">8월 19일 화</span>
                   <span class="trow-label">홀서빙 · 11:00 ~ 16:00</span>
                 </span>
                 <span class="pill">확인</span>
               </button>
               <button class="trow" type="button" data-var="upco:three" data-roster="1">
-                <span class="dbadge dbadge-quiet">D-5</span>
+                <span class="dbadge dbadge-d2">D-2</span>
                 <span class="trow-main">
-                  <span class="trow-value">8월 23일 토</span>
+                  <span class="trow-value">8월 20일 수</span>
                   <span class="trow-label">접수 · 10:00 ~ 15:00</span>
                 </span>
                 <span class="pill">확인</span>
               </button>
               <button class="trow" type="button" data-var="upco:three" data-roster="2">
-                <span class="dbadge dbadge-quiet">D-7</span>
+                <span class="dbadge">D-4</span>
                 <span class="trow-main">
-                  <span class="trow-value">8월 25일 월</span>
+                  <span class="trow-value">8월 22일 금</span>
                   <span class="trow-label">홀서빙 · 12:00 ~ 17:00</span>
                 </span>
                 <span class="pill">확인</span>
               </button>
               <button class="trow" type="button" data-var="upco:none" data-toast="일정 화면으로 갑니다">
-                <span class="dbadge dbadge-quiet">없음</span>
+                <span class="dbadge">없음</span>
                 <span class="trow-main">
                   <span class="trow-value trow-value-quiet">다가오는 근무가 없어요</span>
                 </span>
@@ -1553,12 +1576,46 @@
         </div>
 
         <p class="hint">
-          <b>눌러볼 것</b> — 금액(빛이 훑으며 열리고, 다시 누르면 빛이 그 자리에서 사라진다) ·
-          다가오는 근무 행의 <code>확인</code>(배치도 모달 — 명단 글씨가 16/24로 올라갔다) ·
+          <b>눌러볼 것</b> — <code>오늘</code> 카드의 아바타 줄(오늘 포지션 배치도가 올라온다) ·
+          금액(빛이 훑으며 열리고, 다시 누르면 빛이 그 자리에서 사라진다) ·
+          다가오는 근무 행의 <code>확인</code>(같은 바닥 시트) ·
           검은 숫자 날짜 · 알림 <code>X</code> · 하단 탭 · 최상단에서 휠 위로 굴려 새로고침.
         </p>
       </div>
     </div>
+
+    <h2 class="section-title">D 배지 — 급함 층위 (라운드 27 제안)</h2>
+    <p class="section-note">
+      배지가 전부 회색이라 내일 근무와 다음 주 근무가 같은 무게로 보였다. <strong>D-2까지만
+      브랜드 파랑을 옅게 깐다</strong> — D-1이 한 단계 진하고 D-2가 그다음, D-3부터는 회색이다.
+      <strong>진한 <code>#0052ff</code>는 쓰지 않는다</strong> — 그 파랑은 눌러야 할 버튼 하나의
+      것이라(라운드 1) 배지는 틴트에 머문다.
+    </p>
+    <div class="marktiles" style="flex-wrap: wrap">
+      <div class="marktile">
+        <span class="dbadge dbadge-d1">D-1</span>
+        <span>내일 — 틴트 진함</span>
+      </div>
+      <div class="marktile">
+        <span class="dbadge dbadge-d2">D-2</span>
+        <span>모레 — 틴트 옅음</span>
+      </div>
+      <div class="marktile">
+        <span class="dbadge">D-4</span>
+        <span>그 뒤 — 회색</span>
+      </div>
+      <div class="marktile">
+        <span class="dbadge">없음</span>
+        <span>빈 상태</span>
+      </div>
+    </div>
+    <p class="section-note" style="margin-top: 16px">
+      <strong>D-0은 없다.</strong> 오늘 근무는 「다가오는 근무」에 들어오지 않고 맨 위 「오늘」
+      카드가 통째로 맡는다 — 같은 근무를 두 블록이 말하면 홈이 자기 말을 반복하는 셈이다. 그래서
+      <strong>이 블록은 내일(D-1)부터 시작한다.</strong> 오늘의 포지션 배치도는 배지가 아니라
+      <strong>「오늘」 카드의 발치</strong>가 연다 — 아바타 줄 오른쪽에 화살표가 붙었고, 누르면
+      다가오는 근무와 같은 바닥 시트가 올라온다. 모달을 한 벌 더 만들지 않고 있는 것을 쓴다.
+    </p>
 
     <h2 class="section-title">행 앵커 그림 — 라운드 23 확정</h2>
     <p class="section-note">
@@ -1699,7 +1756,7 @@
             <td><strong>13/18</strong></td>
             <td>메타</td>
             <td>이름표 <strong>500</strong> muted · 라벨/캡션 400 muted · D 배지 <strong>600</strong> ·
-              알약 600 · 탭 라벨 400(선택 600)</td>
+              <strong>알약 400</strong> · 탭 라벨 400(선택 600)</td>
             <td>블록 이름표 · 행 라벨 · 캡션 · D 배지 · 알약 「확인」 · 하단 탭 라벨</td>
           </tr>
         </tbody>
@@ -1805,10 +1862,11 @@
         <tbody>
           <tr>
             <td>알약 「확인」</td>
-            <td>14/20 행동 단계</td>
+            <td>14/20 600 행동 단계</td>
             <td>13/18 600</td>
-            <td><strong>화면대로.</strong> 알약은 높이 34라 14/20이면 위아래가 눌린다 — 행동 단계의
-              예외로 표에 적었다</td>
+            <td><strong>둘 다 낮췄다.</strong> 크기는 화면대로 13/18(높이 34에 14/20이면 위아래가
+              눌린다), 무게는 <strong>400</strong>으로 더 내렸다 — 더보기 행과 같은 결이다
+              (라운드 26)</td>
           </tr>
           <tr>
             <td>더보기 행</td>
@@ -1993,7 +2051,7 @@
 
         var upcoData = [
           {
-            title: "8월 21일 목 · 홀서빙",
+            title: "8월 19일 화 · 홀서빙",
             caption: "예식 14:00 · 4명 근무",
             rows: [
               { pos: "홀서빙", people: ["나", "김지원"] },
@@ -2002,7 +2060,7 @@
             ],
           },
           {
-            title: "8월 23일 토 · 접수",
+            title: "8월 20일 수 · 접수",
             caption: "예식 12:00 · 5명 근무",
             rows: [
               { pos: "홀서빙", people: ["김지원", "이수민"] },
@@ -2011,12 +2069,21 @@
             ],
           },
           {
-            title: "8월 25일 월 · 홀서빙",
+            title: "8월 22일 금 · 홀서빙",
             caption: "예식 11:00 · 3명 근무",
             rows: [
               { pos: "홀서빙", people: ["나"] },
               { pos: "접수", people: ["박서연"] },
               { pos: "주방", people: ["정다은"] },
+            ],
+          },
+          {
+            title: "오늘 · 8월 18일 월",
+            caption: "예식 14:00 · 4명 근무",
+            rows: [
+              { pos: "홀서빙", people: ["나", "김지원"] },
+              { pos: "접수", people: ["박서연"] },
+              { pos: "주방", people: ["이준호"] },
             ],
           },
         ];
