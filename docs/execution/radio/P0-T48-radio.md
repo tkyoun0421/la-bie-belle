@@ -1,7 +1,7 @@
 # P0-T48 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 5
+- revision: 6
 - 기획 승인: user, 2026-08-16 (범위 축소 2026-08-18)
 - 개발 설계 승인: user, 2026-08-18
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 6 | 2026-08-18 | **radius 사다리에 `xs` 6px 칸을 만든다**(사용자 결정). 라운드 34가 skeleton 막대를 「`--color-border` radius 6」으로 정했고 3라운드가 그것을 `PATTERNS.md:92`에 이관했는데, `FOUNDATIONS.md`의 radius 사다리(`sm 8 · md 14 · lg 16 · xl 20 · pill`)와 `globals.css`에는 **6px 칸이 없다.** 설계가 6을 정할 때 사다리에 그 칸이 없다는 것을 못 봤다 — 승인된 문서 둘이 서로 어긋난 상태다. 임의값 `rounded-[6px]`을 세 파일에 박는 대신 사다리를 늘린다. 그래야 P0-T49~T54가 같은 자리에서 임의값을 다시 안 쓴다. revision 5까지의 `globals.css` 용도 한정과 `FOUNDATIONS.md` 용도 한정이 둘 다 **닫힌 목록**이라 이 한 줄을 더하는 것도 재봉인이다. 2026-08-18 사용자 결정. |
 | 5 | 2026-08-18 | **번들 상한을 600KB로 올린다**(사용자 결정). 지금 실측이 508KB로 이미 500KB를 넘겼고(`backlog.md:372`, P0-T47이 원인은 그 변경분 밖이라고 기록), revision 4가 `@tanstack/react-query`와 `zustand`를 더하면 더 벌어진다. 인수 조건이 `pnpm verify` 통과를 요구하므로 이대로면 task를 못 닫는다. **이건 ADR 개정이다** — 상한의 정본은 harness 상수가 아니라 `ADR-0015` 결정 3이고, 그 문서가 「490KB를 넘으면 상한을 올리는 대신 `motion/mini` 전환을 설계로 반환한다」고 못 박아뒀다. 그 대안은 같은 ADR이 이미 배제했다(`AnimatedAmount`가 쓰는 훅 셋이 mini에 없다). 조항을 뒤집는 것이므로 harness 상수와 함께 ADR 개정 이력에 올린다. 번들을 실제로 줄이는 일은 별도 task다 — 이번에는 감시선만 올린다. `harness/lib/bundle-budget.ts`·`harness/self-test/**`·`docs/standards/adr/0015-motion-library-scope.md`를 변경 허용 경로에 더한다. 2026-08-18 사용자 결정. |
 | 4 | 2026-08-18 | **Next 파일 규약을 쓰고 상태 도구 둘을 들인다**(사용자 결정 셋). ① 라우트별 `loading.tsx`·`error.tsx`를 세우고 홈의 블록 다섯을 `<Suspense>`로 감싸 스트리밍한다 — 봉인된 설계가 `HomeSkeleton.tsx`·`HomeFailure.tsx`로 손수 짜던 것을 프레임워크가 준다. ② 배정표 시트를 **병렬 + 인터셉팅 라우트**로 올려 뒤로가기로 닫히고 링크로 열리게 한다. 겹겹 시트가 URL 겹이 되므로 `useSheetStack`이 없어진다. ③ `ARCHITECTURE.md:24`가 이미 정해둔 **TanStack Query를 설치**하고(지금까지 `package.json`에 없었다) 일정 목록의 지난 회차 무한 스크롤이 쓴다. ④ **zustand**를 금액 가림 설정 하나에만 쓴다 — 화면을 가로지르는 유일한 클라이언트 상태다. 데이터 로딩 구조가 바뀌므로 revision 1의 비목표 「서버·데이터 변경 안 함」을 **부분 개방**한다 — 쿼리 함수는 그대로 두고 **누가 언제 부르나**만 바꾼다. 2026-08-18 사용자 결정. |
 | 3 | 2026-08-18 | **화면 상태를 둘 자리를 적는다.** revision 2가 「`ui`는 로직을 모른다」를 박았는데 `model`은 `config/fsd.json`이 `forbidImports: ["react","react-dom"]`로 막아 `useState`를 못 담는다. revision 1의 Architecture가 `model` 파일만 이름을 대고 React 상태의 자리를 안 적어 **시트가 열렸나·무엇을 골랐나·금액이 열렸나가 갈 곳이 없었다.** 세 갈래로 가른다 — `model`은 판정, `hooks`는 상태와 전이, `ui`는 표현. 홈 훅 셋·일정 훅 셋·공용 훅 둘을 Architecture에 더한다. `views/*/hooks/`는 이 저장소에서 처음 쓰는 자리지만 `fsd.json`이 이미 정의한 세그먼트라 새 계약이 아니다. 2026-08-18 사용자 지적. |
@@ -112,6 +113,7 @@
 29. `BUNDLE_BUDGET_BYTES`가 `600 * 1024`이고 `pnpm gate:bundle`이 통과한다. `ADR-0015` 결정 3에 세 번째 인상의 근거와 실측이 적히고 개정 이력에 행이 오른다. **「490KB를 넘으면 올리는 대신 `motion/mini`」 조항을 뒤집는다는 것을 문장으로 적는다** — 조용히 지우지 않는다.
 30. `backlog.md:372`의 508KB 행이 닫히고, **번들을 실제로 줄이는 후속 task가 `proposed`로 선다.** 이번 인상은 감시선을 올린 것이지 문제를 푼 것이 아니다.
 31. `pnpm verify`가 통과한다.
+32. `--radius-xs: 6px`이 `globals.css`에 서고 `FOUNDATIONS.md`의 radius 표에 `radius-xs` 행이 오른다. skeleton 막대 셋(`src/app/loading.tsx`·`(tabs)/loading.tsx`·`(tabs)/schedule/loading.tsx`)이 임의값이 아니라 그 토큰을 쓴다. **저장소에 `rounded-[` 임의 radius가 하나도 없다.**
 
 ### 위험 기반 테스트
 
@@ -136,6 +138,7 @@
 | 26 시트 라우트 | 테스트함 — 홈·일정 양쪽에서 같은 주소가 열리고 시트로 뜸 | 테스트함 — 직접 방문·새로고침에서 전체 화면으로 열림 | 테스트함 — **뒤로가기가 겹을 하나씩 벗김**(`/roster/x/change` → `/roster/x` → 원래 화면), 없는 날짜는 not-found | 해당 없음 — 명단 권한은 서버 쿼리가 판정하고 이 task가 안 바꾼다 | 테스트함 — 같은 주소를 두 번 밀어도 시트가 하나 | 해당 없음 — 라우터 상태 하나 |
 | 27·28 상태 도구 | 테스트함 — Provider가 서고 무한 스크롤이 두 회차씩 붙음 | 테스트함 — 더 불러오기 실패 시 목록이 살아 있고 재시도가 가능 | 테스트함 — **zustand `persist`의 SSR 수화**(첫 렌더가 서버와 같음), 저장값이 없을 때의 기본값 | 해당 없음 — 가림 설정은 기기에만 있고 서버로 안 간다 | 테스트함 — 바닥 도달 연타가 같은 페이지를 두 번 안 부름 | 해당 없음 — 쿼리 키 하나에 요청 하나 |
 | 29·30 번들 상한 | 테스트함 — `gate:bundle`이 새 상한에서 통과 | 테스트함 — 상한을 넘긴 fixture에서 여전히 위반을 보고 | 테스트함 — **의존성 둘을 넣은 뒤의 실측을 숫자로 기록**하고 600KB 대비 여유를 적는다. 여유가 50KB 아래면 후속 task를 `should`로 올린다 | 해당 없음 — 빌드 산출물을 읽는 판정이다 | 해당 없음 — 재실행이 같은 결과 | 해당 없음 — 빌드 뒤 한 번 잰다 |
+| 32 radius 사다리 | 테스트함 — `gate:tokens`가 `radius-xs`를 문서와 css 양쪽에서 찾아 짝을 맞춤 | 테스트함 — 문서 행만 넣고 css를 빼면 미해결로 잡힘 | 테스트함 — **저장소 전수 검사로 `rounded-[` 임의값이 0건**, skeleton 막대 셋이 전부 `rounded-xs` | 해당 없음 — CSS 선언에 실행 권한이 없다 | 해당 없음 — 선언은 멱등 | 해당 없음 — 빌드 시점에 한 번 평가된다 |
 | 31 verify | 테스트함 — `pnpm verify` 전체 통과 | 테스트함 — `gate:tokens`·`gate:docs`가 이관 누락을 잡는지 확인 | 해당 없음 — 통과 여부의 이진 판정 | 해당 없음 — CI 실행 권한은 기존 그대로다 | 해당 없음 — 재실행이 같은 결과 | 해당 없음 — 게이트가 순차로 돈다 |
 
 핵심 위험 넷을 따로 적는다.
@@ -439,9 +442,9 @@ docs/standards/adr/0015-motion-library-scope.md
 
 용도 한정을 넷으로 나눠 적는다.
 
-**문서.** `FOUNDATIONS.md`는 원시 팔레트 일곱 행 추가, 타이포 표 재배치, 좌우 여백과 카드 문장 개정, 블러·그림 자산 두 절 신설, 모션 표 한 행 추가에 한정한다. **제품 의미 토큰 표의 값을 바꾸지 않는다.** `PATTERNS.md`·`COMPONENTS.md`·`WORKER-FLOWS.md`·`DESIGN.md`는 위 「문서 이관」이 줄 단위로 적은 것에 한정하고, `WORKER-FLOWS.md:80`·`:86`(포지션 교대)은 건드리지 않는다. **`docs/product/PRD.md`는 허용 경로에 없다** — 기획 반환 물음 넷은 이 task가 안 고친다. `docs/execution/reviews/**`는 이 task의 리뷰 결과와 backlog 누적 줄에, `docs/execution/retrospective/**`는 회고에 한정한다. `00-foundation.md`는 P0-T48 절의 `test_mode` 정정과 완료 기록에 한정한다.
+**문서.** `FOUNDATIONS.md`는 원시 팔레트 일곱 행 추가, 타이포 표 재배치, 좌우 여백과 카드 문장 개정, 블러·그림 자산 두 절 신설, 모션 표 한 행 추가, **radius 표에 `radius-xs` 6px 한 행 추가(revision 6)**에 한정한다. **제품 의미 토큰 표의 값을 바꾸지 않는다.** `PATTERNS.md`·`COMPONENTS.md`·`WORKER-FLOWS.md`·`DESIGN.md`는 위 「문서 이관」이 줄 단위로 적은 것에 한정하고, `WORKER-FLOWS.md:80`·`:86`(포지션 교대)은 건드리지 않는다. **`docs/product/PRD.md`는 허용 경로에 없다** — 기획 반환 물음 넷은 이 task가 안 고친다. `docs/execution/reviews/**`는 이 task의 리뷰 결과와 backlog 누적 줄에, `docs/execution/retrospective/**`는 회고에 한정한다. `00-foundation.md`는 P0-T48 절의 `test_mode` 정정과 완료 기록에 한정한다.
 
-**토큰.** `globals.css`는 원시 일곱 추가, 의미 토큰 여섯 신설, `--color-border`·`--color-surface-weak`의 참조 교체, `body` 배경 교체, `@utility typo-*` 여덟 재배치와 `typo-display` 삭제에 한정한다. 모션 토큰·reduced-motion 블록·vaul/sonner 셀렉터를 건드리지 않는다.
+**토큰.** `globals.css`는 원시 일곱 추가, 의미 토큰 여섯 신설, `--color-border`·`--color-surface-weak`의 참조 교체, `body` 배경 교체, `@utility typo-*` 여덟 재배치와 `typo-display` 삭제, **`--radius-xs: 6px` 한 줄 추가(revision 6)**에 한정한다. 모션 토큰·reduced-motion 블록·vaul/sonner 셀렉터를 건드리지 않는다.
 
 **화면.** `src/views/home/**`와 `src/views/schedule/**`는 전면 재작성이다. `src/shared/ui/**`는 위 Architecture가 이름을 댄 넷의 신설과 기존 `button`·`calendar`·`segmented-control`의 토큰 반영에 한정하고, 다른 shadcn 컴포넌트를 갈아엎지 않는다. `src/widgets/app-shell/**`는 탭 넷·채움 색·눌림·헤더 레이어에, `src/widgets/offline/**`는 배너를 셋째 줄로 옮기는 데 한정한다. `src/app/(protected)/(tabs)/**`는 두 화면의 라우트가 새 view에 넘기는 프롭을 맞추는 데만 쓴다 — 데이터 로딩 방식과 쿼리를 바꾸지 않는다.
 

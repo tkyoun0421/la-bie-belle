@@ -1,5 +1,25 @@
 # P0-T48 handoff
 
+## 2026-08-18 · RADIO revision 6 재봉인 (radius 사다리에 xs 6px)
+
+- sha256 `83756aeeb654a9dfeae70218c8d6bda9b009dbae4444b4cc70816fc235454c86`(사용자 승인,
+  2026-08-18). revision 5는 `551fa9dc…`였다.
+- **왜 열었나.** 3라운드가 라운드 34 확정을 `PATTERNS.md:92`에 이관하면서 「막대는
+  `--color-border` radius 6」이 승인 문서가 됐는데, `FOUNDATIONS.md:121-126`의 radius 사다리와
+  `globals.css:70-74`에는 6px 칸이 없다(`sm 8 · md 14 · lg 16 · xl 20 · pill`). 설계가 6을 정할 때
+  사다리를 안 봤다 — 승인 문서 둘이 어긋난 채로 4라운드 RED가 `rounded-[6px]` 임의값을 박았다.
+- **무엇을 골랐나.** 임의값을 세 파일에 남기는 대신 사다리를 늘린다(사용자 결정). 그래야
+  P0-T49~T54가 같은 자리에서 임의값을 다시 안 쓴다. 대안이던 「`radius-sm` 8px로 스냅」은
+  라운드 34 확정값을 조정자가 바꾸는 것이라 뺐다.
+- **왜 재봉인이었나.** revision 5까지의 `globals.css` 용도 한정과 `FOUNDATIONS.md` 용도 한정이
+  둘 다 **닫힌 목록**이라 토큰 한 줄·표 한 행을 더하는 것도 봉인 밖이다.
+- **더한 것**: 인수 조건 32(토큰이 서고 skeleton 막대 셋이 그것을 쓰며 **저장소에 `rounded-[`
+  임의 radius가 0건**) · 위험 표 `32 radius 사다리` 행 · 용도 한정 두 문단에 한 줄씩. 인수 조건
+  1~31과 위험 표 나머지 행은 안 건드렸다. 새 check ID는 안 만들었다 — `design-token-ladder`가
+  이미 이 축을 진다.
+- **4라운드 RED를 고쳐야 한다.** `src/app/__tests__/route-conventions.test.ts`가 `rounded-[6px]`을
+  기대한다. `rounded-xs`로 바꾸고 「`rounded-[` 0건」 단언을 더한 뒤 GREEN으로 간다.
+
 ## 2026-08-18 · 개발 3라운드 (문서 이관 — 코드 변경 없음)
 
 - 기준 커밋: `6b33d09`(개발 2라운드). RADIO는 여전히 revision 5,
