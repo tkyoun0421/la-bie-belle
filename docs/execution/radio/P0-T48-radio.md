@@ -1,7 +1,7 @@
 # P0-T48 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 7
+- revision: 8
 - 기획 승인: user, 2026-08-16 (범위 축소 2026-08-18)
 - 개발 설계 승인: user, 2026-08-18
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 8 | 2026-08-18 | **확정 디자인이 토큰 체계와 부딪히면 값을 깎지 말고 체계를 늘린다**(사용자 결정, 원칙). 5A 퍼블리싱에서 막힌 둘을 그 원칙으로 푼다. ① **그림 자산 여덟 중 둘(`change-approved`·`change-rejected`)이 확정 시안에 SVG로 안 그려져 있다** — `FOUNDATIONS.md` 「그림 자산」 절은 알림 다섯을 적는데 시안의 알림 카드는 세 장뿐이다. 새로 그리되 **시안에 이미 확정된 요소만으로 조합한다** — 초록은 기존 `green` 그라디언트, 사각 기하와 흰 체크는 `schedule-confirmed`의 것, 회색은 시안이 이미 쓰는 `#c9d1dc`(아바타 원)와 팔레트 `gray-600` `#7c828a`를 같은 어법으로 묶는다. 발명하는 값이 없다. ② **모션 사다리가 손맛 대역을 담게 늘린다.** `project/motion-tokens`가 임의 지속시간을 막고 사다리 최대가 300ms라 금액 리빌 훑기 1.5초를 구현할 길이 없었다. **표 밖 예외로 빼지 않고 표 안 행으로 올린다** — 표 밖에 서 있던 하단 탭 눌림 420ms도 같이 행으로 들인다. 표가 담는 대역이 둘이 된다는 것을 표가 직접 말한다: 조작에 답하는 120~300ms와, 조작을 안 막고 그 위로 흐르는 400~1500ms. ③ **revision 7의 인수 조건 34를 고친다.** 「간격 토큰이 늘지 않는다」는 이 원칙과 부딪힌다 — 「임의값을 안 쓴다. 사다리에 없는 값은 규칙으로 올린 뒤 쓰고, worker는 즉흥으로 만들지 않고 반환한다」로 바꾼다. 막는 대상은 토큰의 증가가 아니라 **worker의 즉흥**이다. 2026-08-18 사용자 결정. |
 | 7 | 2026-08-18 | **radius 사다리에 `cell` 12px를 만들고 11px를 그리로 합친다**(사용자 결정). 5라운드 착수 전 시안 전수 조사에서 사다리 밖 radius 둘이 더 나왔다 — `.dbadge`·`.sk-anchor`의 **11px**와 `.wnum`(주간 스트립 칸)·`.dcell.today`(달력 오늘 칸)의 **12px**다. revision 6이 세운 인수 조건 32가 `rounded-[` 임의값을 0건으로 막았고 Architecture의 코드 구조가 `d-badge.tsx`를 「32px radius 11」이라 직접 적었으므로, 그대로 두면 publisher가 첫 파일에서 막힌다. **1px 차이라 하나로 합친다** — 1라운드가 `#f1f3f6`·`#f2f4f6`을 같은 근거로 합친 선례를 따른다. 이름은 `radius-cell`이다. 크기 이름(xs·sm·md·lg·xl)에는 8과 14 사이가 비어 있고, 같은 표의 `radius-pill`이 이미 역할 이름이라 관례 밖이 아니다. 더해 **간격은 토큰을 늘리지 않는다** — 사다리 밖 간격값은 사다리로 스냅하고, 스냅이 화면을 무너뜨리면 멈추고 반환한다. `.phone` 28px는 시안의 폰 프레임이라 제품 UI가 아니다. 2026-08-18 사용자 결정. |
 | 6 | 2026-08-18 | **radius 사다리에 `xs` 6px 칸을 만든다**(사용자 결정). 라운드 34가 skeleton 막대를 「`--color-border` radius 6」으로 정했고 3라운드가 그것을 `PATTERNS.md:92`에 이관했는데, `FOUNDATIONS.md`의 radius 사다리(`sm 8 · md 14 · lg 16 · xl 20 · pill`)와 `globals.css`에는 **6px 칸이 없다.** 설계가 6을 정할 때 사다리에 그 칸이 없다는 것을 못 봤다 — 승인된 문서 둘이 서로 어긋난 상태다. 임의값 `rounded-[6px]`을 세 파일에 박는 대신 사다리를 늘린다. 그래야 P0-T49~T54가 같은 자리에서 임의값을 다시 안 쓴다. revision 5까지의 `globals.css` 용도 한정과 `FOUNDATIONS.md` 용도 한정이 둘 다 **닫힌 목록**이라 이 한 줄을 더하는 것도 재봉인이다. 2026-08-18 사용자 결정. |
 | 5 | 2026-08-18 | **번들 상한을 600KB로 올린다**(사용자 결정). 지금 실측이 508KB로 이미 500KB를 넘겼고(`backlog.md:372`, P0-T47이 원인은 그 변경분 밖이라고 기록), revision 4가 `@tanstack/react-query`와 `zustand`를 더하면 더 벌어진다. 인수 조건이 `pnpm verify` 통과를 요구하므로 이대로면 task를 못 닫는다. **이건 ADR 개정이다** — 상한의 정본은 harness 상수가 아니라 `ADR-0015` 결정 3이고, 그 문서가 「490KB를 넘으면 상한을 올리는 대신 `motion/mini` 전환을 설계로 반환한다」고 못 박아뒀다. 그 대안은 같은 ADR이 이미 배제했다(`AnimatedAmount`가 쓰는 훅 셋이 mini에 없다). 조항을 뒤집는 것이므로 harness 상수와 함께 ADR 개정 이력에 올린다. 번들을 실제로 줄이는 일은 별도 task다 — 이번에는 감시선만 올린다. `harness/lib/bundle-budget.ts`·`harness/self-test/**`·`docs/standards/adr/0015-motion-library-scope.md`를 변경 허용 경로에 더한다. 2026-08-18 사용자 결정. |
@@ -116,7 +117,10 @@
 31. `pnpm verify`가 통과한다.
 32. `--radius-xs: 6px`이 `globals.css`에 서고 `FOUNDATIONS.md`의 radius 표에 `radius-xs` 행이 오른다. skeleton 막대 셋(`src/app/loading.tsx`·`(tabs)/loading.tsx`·`(tabs)/schedule/loading.tsx`)이 임의값이 아니라 그 토큰을 쓴다. **저장소에 `rounded-[` 임의 radius가 하나도 없다.**
 33. `--radius-cell: 12px`이 서고 `FOUNDATIONS.md` radius 표에 행이 오른다. **D 배지 · 앵커 칸 · 주간 스트립 날짜 칸 · 달력 오늘 칸 넷이 같은 `rounded-cell`을 쓴다** — 시안의 11px와 12px가 하나로 합쳐진 자리다.
-34. **간격 토큰이 늘지 않는다.** `--spacing-*`와 `FOUNDATIONS.md` 간격 표가 이 task 전후로 같다. 시안의 사다리 밖 간격은 사다리 값으로 스냅하고, 스냅이 화면을 무너뜨리는 자리는 고치지 말고 반환한다.
+34. **사다리 밖 값을 임의값으로 쓰지 않는다.** `p-[..]`·`gap-[..]` 같은 임의 간격이 저장소에 0건이다. 시안의 사다리 밖 간격은 먼저 사다리 값으로 스냅하고, **스냅이 시안을 무너뜨리는 자리는 worker가 즉흥으로 토큰을 만들지 말고 반환한다** — 반환된 값은 규칙(`FOUNDATIONS.md` 간격 표 + `globals.css`)으로 올린 뒤에 쓴다. 막는 것은 토큰의 증가가 아니라 worker의 즉흥이다(revision 8).
+35. **그림 자산 여덟이 전부 실물로 선다.** `change-approved`·`change-rejected` 둘은 확정 시안에 SVG가 없어 새로 그리되 **시안에 이미 확정된 요소만으로 조합한다** — 초록은 기존 `green` 그라디언트(`#54d787`→`#11834a`), 사각 기하(`rx="4.5"`)와 흰 체크 path는 `schedule-confirmed`의 것, 회색은 `#c9d1dc`(시안의 아바타 원)→`#7c828a`(팔레트 `gray-600`)를 위가 밝고 아래가 어두운 어법으로 묶는다. `FOUNDATIONS.md` 「그림 자산」 절의 고정색 목록에 그 회색 두 값을 적는다. **빨강을 쓰지 않는다** — 미반영도 실패가 아니라 처리가 끝난 결과다.
+36. **모션 표가 손맛 대역을 담는다.** 표 밖 예외 문단에 있던 하단 탭 눌림 420ms가 표 안 행으로 올라오고, 금액 리빌 훑기 1500ms가 행으로 새로 오른다. 표 밖 예외 문단은 지운다 — 예외가 표로 들어왔으니 밖에 남을 것이 없다. 두 행은 「조작을 막지 않고 그 위로 흐르는 장식」이라는 원칙을 달아 앞 네 행의 응답 대역과 구별된다. `globals.css`에 `--duration-press: 420ms`·`--duration-sweep: 1500ms`가 서고, `prefers-reduced-motion: reduce` 블록에서 **둘 다 0ms로 죽는다**(기존 네 토큰과 같은 자리).
+37. **금액 리빌 훑기가 선다.** 손으로 열 때만 회백 빛이 `--duration-sweep` 동안 한 번 훑고 지나간다. 가림이 다시 걸리면 즉시 사라지고, 화면 복귀·상태 전환처럼 손이 안 닿은 열림에서는 안 돈다.
 
 ### 위험 기반 테스트
 
@@ -141,6 +145,7 @@
 | 26 시트 라우트 | 테스트함 — 홈·일정 양쪽에서 같은 주소가 열리고 시트로 뜸 | 테스트함 — 직접 방문·새로고침에서 전체 화면으로 열림 | 테스트함 — **뒤로가기가 겹을 하나씩 벗김**(`/roster/x/change` → `/roster/x` → 원래 화면), 없는 날짜는 not-found | 해당 없음 — 명단 권한은 서버 쿼리가 판정하고 이 task가 안 바꾼다 | 테스트함 — 같은 주소를 두 번 밀어도 시트가 하나 | 해당 없음 — 라우터 상태 하나 |
 | 27·28 상태 도구 | 테스트함 — Provider가 서고 무한 스크롤이 두 회차씩 붙음 | 테스트함 — 더 불러오기 실패 시 목록이 살아 있고 재시도가 가능 | 테스트함 — **zustand `persist`의 SSR 수화**(첫 렌더가 서버와 같음), 저장값이 없을 때의 기본값 | 해당 없음 — 가림 설정은 기기에만 있고 서버로 안 간다 | 테스트함 — 바닥 도달 연타가 같은 페이지를 두 번 안 부름 | 해당 없음 — 쿼리 키 하나에 요청 하나 |
 | 29·30 번들 상한 | 테스트함 — `gate:bundle`이 새 상한에서 통과 | 테스트함 — 상한을 넘긴 fixture에서 여전히 위반을 보고 | 테스트함 — **의존성 둘을 넣은 뒤의 실측을 숫자로 기록**하고 600KB 대비 여유를 적는다. 여유가 50KB 아래면 후속 task를 `should`로 올린다 | 해당 없음 — 빌드 산출물을 읽는 판정이다 | 해당 없음 — 재실행이 같은 결과 | 해당 없음 — 빌드 뒤 한 번 잰다 |
+| 35·36·37 그림과 모션 | 테스트함 — 그림 여덟이 이름마다 svg를 렌더하고 리빌 스윕이 손으로 열 때만 붙음 | 테스트함 — 가림이 다시 걸리면 스윕 클래스가 즉시 사라짐 | 테스트함 — **`change-rejected`에 빨강이 없음**, 그림 최소 크기 24px 하한, `project/motion-tokens`가 무출력, **`prefers-reduced-motion`에서 두 토큰이 0ms** | 해당 없음 — 표시 전용이다 | 해당 없음 — 선언은 멱등 | 해당 없음 — 컴포넌트 하나가 자기 상태를 산다 |
 | 33·34 칸 radius와 간격 | 테스트함 — `gate:tokens`가 `radius-cell`을 문서와 css 양쪽에서 찾아 짝을 맞춤 | 테스트함 — 배지·칸 넷이 같은 유틸리티를 쓰는지 컴포넌트 테스트로 확인 | 테스트함 — **`p-`·`m-`·`gap-` 임의값과 사다리 밖 값이 0건**(`project/spacing-scale`이 무출력), `--spacing-*` 목록이 task 전후 동일 | 해당 없음 — CSS 선언에 실행 권한이 없다 | 해당 없음 — 선언은 멱등 | 해당 없음 — 빌드 시점에 한 번 평가된다 |
 | 32 radius 사다리 | 테스트함 — `gate:tokens`가 `radius-xs`를 문서와 css 양쪽에서 찾아 짝을 맞춤 | 테스트함 — 문서 행만 넣고 css를 빼면 미해결로 잡힘 | 테스트함 — **저장소 전수 검사로 `rounded-[` 임의값이 0건**, skeleton 막대 셋이 전부 `rounded-xs` | 해당 없음 — CSS 선언에 실행 권한이 없다 | 해당 없음 — 선언은 멱등 | 해당 없음 — 빌드 시점에 한 번 평가된다 |
 | 31 verify | 테스트함 — `pnpm verify` 전체 통과 | 테스트함 — `gate:tokens`·`gate:docs`가 이관 누락을 잡는지 확인 | 해당 없음 — 통과 여부의 이진 판정 | 해당 없음 — CI 실행 권한은 기존 그대로다 | 해당 없음 — 재실행이 같은 결과 | 해당 없음 — 게이트가 순차로 돈다 |
@@ -446,9 +451,9 @@ docs/standards/adr/0015-motion-library-scope.md
 
 용도 한정을 넷으로 나눠 적는다.
 
-**문서.** `FOUNDATIONS.md`는 원시 팔레트 일곱 행 추가, 타이포 표 재배치, 좌우 여백과 카드 문장 개정, 블러·그림 자산 두 절 신설, 모션 표 한 행 추가, **radius 표에 `radius-xs` 6px·`radius-cell` 12px 두 행 추가(revision 6·7)**에 한정한다. **제품 의미 토큰 표의 값을 바꾸지 않는다.** `PATTERNS.md`·`COMPONENTS.md`·`WORKER-FLOWS.md`·`DESIGN.md`는 위 「문서 이관」이 줄 단위로 적은 것에 한정하고, `WORKER-FLOWS.md:80`·`:86`(포지션 교대)은 건드리지 않는다. **`docs/product/PRD.md`는 허용 경로에 없다** — 기획 반환 물음 넷은 이 task가 안 고친다. `docs/execution/reviews/**`는 이 task의 리뷰 결과와 backlog 누적 줄에, `docs/execution/retrospective/**`는 회고에 한정한다. `00-foundation.md`는 P0-T48 절의 `test_mode` 정정과 완료 기록에 한정한다.
+**문서.** `FOUNDATIONS.md`는 원시 팔레트 일곱 행 추가, 타이포 표 재배치, 좌우 여백과 카드 문장 개정, 블러·그림 자산 두 절 신설, 모션 표 한 행 추가, **radius 표에 `radius-xs` 6px·`radius-cell` 12px 두 행 추가(revision 6·7)**, **「그림 자산」 절 고정색 목록에 회색 두 값 추가, 모션 표에 탭 눌림·리빌 훑기 두 행 추가와 표 밖 예외 문단 삭제(revision 8)**에 한정한다. **제품 의미 토큰 표의 값을 바꾸지 않는다.** `PATTERNS.md`·`COMPONENTS.md`·`WORKER-FLOWS.md`·`DESIGN.md`는 위 「문서 이관」이 줄 단위로 적은 것에 한정하고, `WORKER-FLOWS.md:80`·`:86`(포지션 교대)은 건드리지 않는다. **`docs/product/PRD.md`는 허용 경로에 없다** — 기획 반환 물음 넷은 이 task가 안 고친다. `docs/execution/reviews/**`는 이 task의 리뷰 결과와 backlog 누적 줄에, `docs/execution/retrospective/**`는 회고에 한정한다. `00-foundation.md`는 P0-T48 절의 `test_mode` 정정과 완료 기록에 한정한다.
 
-**토큰.** `globals.css`는 원시 일곱 추가, 의미 토큰 여섯 신설, `--color-border`·`--color-surface-weak`의 참조 교체, `body` 배경 교체, `@utility typo-*` 여덟 재배치와 `typo-display` 삭제, **`--radius-xs: 6px`·`--radius-cell: 12px` 두 줄 추가(revision 6·7)**에 한정한다. 모션 토큰·reduced-motion 블록·vaul/sonner 셀렉터를 건드리지 않는다.
+**토큰.** `globals.css`는 원시 일곱 추가, 의미 토큰 여섯 신설, `--color-border`·`--color-surface-weak`의 참조 교체, `body` 배경 교체, `@utility typo-*` 여덟 재배치와 `typo-display` 삭제, **`--radius-xs: 6px`·`--radius-cell: 12px` 두 줄 추가(revision 6·7)**, **`--duration-press`·`--duration-sweep` 두 토큰과 리빌 훑기 유틸리티 추가, `prefers-reduced-motion` 블록에 두 토큰 0ms 추가(revision 8)**에 한정한다. 모션 토큰·reduced-motion 블록·vaul/sonner 셀렉터를 건드리지 않는다.
 
 **화면.** `src/views/home/**`와 `src/views/schedule/**`는 전면 재작성이다. `src/shared/ui/**`는 위 Architecture가 이름을 댄 넷의 신설과 기존 `button`·`calendar`·`segmented-control`의 토큰 반영에 한정하고, 다른 shadcn 컴포넌트를 갈아엎지 않는다. `src/widgets/app-shell/**`는 탭 넷·채움 색·눌림·헤더 레이어에, `src/widgets/offline/**`는 배너를 셋째 줄로 옮기는 데 한정한다. `src/app/(protected)/(tabs)/**`는 두 화면의 라우트가 새 view에 넘기는 프롭을 맞추는 데만 쓴다 — 데이터 로딩 방식과 쿼리를 바꾸지 않는다.
 
