@@ -1,5 +1,79 @@
 # P0-T48 handoff
 
+## 2026-08-19 · 인수 조건 24 뒷문장 GREEN — 종 점을 Suspense 뒤로 물렸다
+
+`src/app/__tests__/tabs-layout.test.tsx` RED(`listNotifications`가 영원히 응답하지 않으면 헤더·탭바가
+50ms 안에 못 그려짐)를 GREEN으로 바꿨다. `(tabs)/layout.tsx`가 더 이상 `await listNotifications()`로
+최상단을 막지 않는다.
+
+**설계.** RADIO가 제안한 「표현 종 하나 + 데이터를 읽는 컴포넌트 하나 + `layout.tsx`가 `<Suspense>`로
+감싸 `AppHeader`에 넘긴다」 골격을 따르되, 데이터를 읽는 쪽을 **async 서버 컴포넌트가 아니라 `use()`로
+Promise를 읽는 클라이언트 컴포넌트**로 바꿨다. 이유를 렌더로 직접 확인했다 — async 함수 컴포넌트를
+`<Suspense>` 자식으로 그대로 두고 스크래치 테스트를 돌리면 `react-dom/client`(이 테스트가 쓰는
+렌더러, RSC 파이프라인이 아니다)가 `<AsyncBell> is an async Client Component. Only Server
+Components can be async at the moment.`를 던진다(`use()`로 완전히 해소된 뒤 재렌더를 기다릴
+때만 나타나고, 이 테스트처럼 동기 구간만 보면 겉으로는 죽지 않지만 신뢰할 수 없는 상태였다).
+Next 공식 문서(`node_modules/next/dist/docs/01-app/01-getting-started/06-fetching-data.md:240-317`,
+"Streaming data with the `use` API")가 같은 문제의 정본 해법을 이미 적어 뒀다 — 서버에서 `await` 없이
+Promise만 만들어 프롭으로 내리고, 클라이언트 컴포넌트가 `use()`로 읽는다. 이 어법으로 바꾼 뒤
+같은 스크래치 테스트를 다시 돌려 (a) 미해결 Promise가 두 사본 모두에서 동기적으로 fallback을
+보여주고 예외를 던지지 않는 것, (b) 같은 Promise 객체를 두 자리에 공유해도 실제 호출은 한 번뿐이고
+나중에 해소되면 두 사본이 함께 갱신되는 것을 직접 확인했다(테스트 파일 자체는 커밋에 안 남긴다 —
+확인용 스크래치였고 실제 코드에 남는 계약이 아니다).
+
+**변경.**
+- `src/widgets/app-shell/model/notification-bell.ts`(신설) — `hasUnreadNotifications(result)`
+  판정 하나. `list-notifications.ts`의 `ListNotificationsResult` 타입을 재수출한다. `model` 세그먼트라
+  `unitTest: required`를 따라 `__tests__/notification-bell.test.ts` 3케이스를 같이 뒀다.
+- `src/widgets/app-shell/ui/NotificationBell.tsx`(신설) — `AppHeader.tsx`의 `HeaderRow`에 있던
+  `Link` + `Bell` + 점 마크업을 그대로 옮긴 표현 컴포넌트. `hasUnread: boolean` 하나만 받는다.
+- `src/widgets/app-shell/ui/NotificationBellSlot.tsx`(신설) — `"use client"`, `use(notificationsPromise)`로
+  Promise를 읽고 `hasUnreadNotifications`로 판정한 값을 `NotificationBell`에 넘긴다. `ui` 세그먼트의
+  `forbidImports: ["**/api/**"]`에 걸리지 않도록 `ListNotificationsResult` 타입은
+  `@/entities/notification/api/...`가 아니라 위 `model` 파일에서 재수출받아 쓴다.
+- `src/app/(protected)/(tabs)/layout.tsx` — `await listNotifications()`를 걷고
+  `const notificationsPromise = listNotifications()`만 남겼다. `<Suspense
+  fallback={<NotificationBell hasUnread={false} />}><NotificationBellSlot
+  notificationsPromise={notificationsPromise} /></Suspense>`를 만들어 `AppHeader`의 새 `bellSlot`
+  프롭에 넘긴다. `TabsLayout` 자체는 여전히 `async function`이다 — 내부에 `await`가 없어도 타입은
+  `Promise<ReactNode>`라 테스트의 `waitAtMost<T>(promise: Promise<T>, ms)`와 맞고, 다음
+  마이크로태스크에서 바로 resolve되므로 50ms 레이스를 통과한다.
+- `src/widgets/app-shell/ui/AppHeader.tsx` — `hasUnreadNotifications: boolean` 프롭을
+  `bellSlot: ReactNode`로 바꿨다. `HeaderRow`는 이제 종 마크업을 스스로 안 그리고 `{bellSlot}`을
+  그대로 꽂는다. `bannerSlot`과 같은 자리에 같은 어법으로 놓았다 — 스페이서 사본과 유리 사본
+  양쪽에 **같은 React 엘리먼트 객체**가 두 번 들어간다.
+
+**같은 슬롯 엘리먼트가 두 사본에 그려지는 점(RADIO가 확인하라고 지시한 자리).** `bellSlot`은
+`layout.tsx`에서 **한 번만** 만들어진 JS 객체이고 `AppHeader`가 그 객체를 스페이서 `div`와 유리
+`div`에 각각 꽂는다. React 엘리먼트는 `{ type, props }` 서술일 뿐이라 같은 객체를 두 자리에
+놓아도 문법적으로는 유효하지만, React는 위치(파이버)마다 별도로 마운트하므로 **`NotificationBellSlot`의
+함수 본문(`use(notificationsPromise)`)이 위치마다 한 번씩, 즉 두 번 실행된다.** 다만 `use()`가
+읽는 것은 이미 `layout.tsx`에서 단 한 번 만들어진 같은 Promise 인스턴스이므로 **`listNotifications()`
+자체가 두 번 불리지는 않는다** — 위 스크래치 테스트 (b)가 이것을 직접 셌다(호출 카운터가 1로
+남았다). `AppHeader.test.tsx`에 이 사실을 굳히는 케이스를 하나 추가했다("`bellSlot`은 같은
+엘리먼트가 두 사본에 각각 서고 접근성 트리에는 하나만 남는다") — 스페이서 쪽은 `aria-hidden`
+조상 때문에 `getByRole`에서 안 잡히고, 유리 쪽만 접근 가능한 것을 단언한다.
+
+**옮기거나 지운 `AppHeader.test.tsx` 단언.** 여덟 케이스 전부 살아 있다 — 하나도 안 지웠다. 프롭이
+`hasUnreadNotifications: boolean` → `bellSlot: ReactNode`로 바뀌어서 `render(<AppHeader
+hasUnreadNotifications={...} />)`를 전부 `render(<AppHeader bellSlot={<NotificationBell
+hasUnread={...} />} />)`로 고쳐 썼을 뿐, 각 케이스가 확인하던 사실(제목 라우팅, 종의 접근 가능한
+이름이 하나뿐인 것, `h1`, 읽지 않음 점과 `aria-label`, 유리/스페이서의 `fixed` 여부, 배너 슬롯 이중
+렌더)은 그대로다. 케이스 하나("`bellSlot`은...")를 새로 더했다.
+
+**끝.** `pnpm vitest run src/app/__tests__/tabs-layout.test.tsx` 1 passed. `pnpm vitest run src/app
+src/widgets src/views` 77 files·581 passed. `pnpm lint`·`pnpm typecheck`·`pnpm build` 통과.
+`pnpm test:e2e tests/e2e/offline-banner.spec.ts tests/e2e/tab-navigation.spec.ts` 19 passed
+(요청한 숫자와 일치). 변경 파일은 `src/app/(protected)/(tabs)/layout.tsx` ·
+`src/widgets/app-shell/ui/AppHeader.tsx` ·
+`src/widgets/app-shell/ui/NotificationBell.tsx`(신설) ·
+`src/widgets/app-shell/ui/NotificationBellSlot.tsx`(신설) ·
+`src/widgets/app-shell/model/notification-bell.ts`(신설) ·
+`src/widgets/app-shell/model/__tests__/notification-bell.test.ts`(신설) ·
+`src/widgets/app-shell/ui/__tests__/AppHeader.test.tsx` ·
+`docs/execution/runs/P0-T48/tdd.json`이다. `src/entities/**`는 안 건드렸다 —
+`listNotifications`의 쿼리 함수 본문은 그대로고 부르는 자리만 옮겼다.
+
 ## 2026-08-19 · 인수 조건 41 GREEN — 원인 셋을 따로 고치고 잔여 결함 하나를 더 찾았다
 
 `tests/e2e/tab-navigation.spec.ts` RED(4 failed :338 :365 :439 :551 / 13 passed)를 GREEN(17

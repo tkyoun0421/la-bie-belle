@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 
 import { listNotifications } from "@/entities/notification/api/list-notifications";
 import { AppHeader } from "@/widgets/app-shell/ui/AppHeader";
 import { AppShellTabBar } from "@/widgets/app-shell/ui/AppShellTabBar";
+import { NotificationBell } from "@/widgets/app-shell/ui/NotificationBell";
+import { NotificationBellSlot } from "@/widgets/app-shell/ui/NotificationBellSlot";
 import { OfflineBanner } from "@/widgets/offline/ui/OfflineBanner";
 
 export default async function TabsLayout({
@@ -12,13 +15,16 @@ export default async function TabsLayout({
   children: ReactNode;
   sheet: ReactNode;
 }) {
-  const notificationsResult = await listNotifications();
-  const hasUnreadNotifications = notificationsResult.ok && notificationsResult.unreadCount > 0;
+  const notificationsPromise = listNotifications();
 
   return (
     <>
       <AppHeader
-        hasUnreadNotifications={hasUnreadNotifications}
+        bellSlot={
+          <Suspense fallback={<NotificationBell hasUnread={false} />}>
+            <NotificationBellSlot notificationsPromise={notificationsPromise} />
+          </Suspense>
+        }
         bannerSlot={<OfflineBanner variant="shell-row" />}
       />
       {children}
