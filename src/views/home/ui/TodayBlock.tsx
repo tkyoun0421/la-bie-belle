@@ -75,7 +75,7 @@ export function TodayBlock({
           </div>
 
           <Link
-            href={`/roster/${shift.date}`}
+            href={`/schedule/${shift.date}`}
             transitionTypes={["nav-forward"]}
             className="flex items-center gap-2 border-t border-border pt-2.5 transition-transform duration-[var(--duration-feedback)] ease-[var(--ease-out)] active:scale-[0.985]"
           >

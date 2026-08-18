@@ -25,7 +25,7 @@ export function UpcomingBlock({ status, shifts }: UpcomingBlockProps) {
             {shifts.map((shift) => (
               <Link
                 key={shift.date}
-                href={`/roster/${shift.date}`}
+                href={`/schedule/${shift.date}`}
                 transitionTypes={["nav-forward"]}
                 className="flex items-center gap-3 py-3 transition-transform duration-[var(--duration-feedback)] ease-[var(--ease-out)] active:scale-[0.985]"
               >
