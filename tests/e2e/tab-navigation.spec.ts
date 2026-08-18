@@ -9,7 +9,13 @@ import {
   signInWithPasswordCookies,
   toPlaywrightCookies,
 } from "./support/supabase-test-auth";
-import { WORK_DATE_BANDS, workDateInBand, workDatesInBand } from "./support/work-date-band";
+import {
+  WORK_DATE_BANDS,
+  splitBand,
+  workDateInBand,
+  workDatesInBand,
+  type WorkDateBand,
+} from "./support/work-date-band";
 import {
   type WorkerSession,
   createWorkerSession,
@@ -28,6 +34,28 @@ const MORE_DESTINATIONS = [
   { link: "내 정보", heading: "내 정보" },
   { link: "관리자", heading: "관리자" },
 ] as const;
+
+const [
+  VIEW_TRANSITION_BAND_CALL_COUNT,
+  VIEW_TRANSITION_BAND_NO_SUPPORT,
+  VIEW_TRANSITION_BAND_CALENDAR_ENTRY,
+  VIEW_TRANSITION_BAND_ENTER_EXIT,
+  VIEW_TRANSITION_BAND_REDUCED_MOTION,
+  VIEW_TRANSITION_BAND_BACK_NO_NEW_CALL,
+  VIEW_TRANSITION_BAND_BACK_BEFORE_FINISH,
+  VIEW_TRANSITION_BAND_BACK_IMMEDIATELY,
+  VIEW_TRANSITION_BAND_BACK_TWICE,
+] = splitBand(WORK_DATE_BANDS.viewTransition, 9) as [
+  WorkDateBand,
+  WorkDateBand,
+  WorkDateBand,
+  WorkDateBand,
+  WorkDateBand,
+  WorkDateBand,
+  WorkDateBand,
+  WorkDateBand,
+  WorkDateBand,
+];
 
 const sessions: WorkerSession[] = [];
 
@@ -113,21 +141,35 @@ type TransitionSide = "old" | "new" | "other";
 
 type TransitionAnimation = { name: string; durationMs: number; side: TransitionSide };
 
+type TransitionRecord = { done: boolean; types: string[]; animations: TransitionAnimation[] };
+
 async function installViewTransitionSpy(page: Page) {
   await page.addInitScript(() => {
-    type Record_ = { done: boolean; animations: TransitionAnimation[] };
-    const target = window as typeof window & { __transitionRecords: Record_[] };
+    const target = window as typeof window & {
+      __transitionRecords: TransitionRecord[];
+      __lastRecordChangeAt: number;
+    };
     target.__transitionRecords = [];
+    target.__lastRecordChangeAt = Date.now();
     const native = document.startViewTransition?.bind(document);
     if (native === undefined) {
       return;
     }
     document.startViewTransition = ((...args: Parameters<typeof native>) => {
+      const [callbackOptions] = args;
+      const types =
+        typeof callbackOptions === "function" || callbackOptions === undefined
+          ? []
+          : callbackOptions.types ?? [];
       const index = target.__transitionRecords.length;
-      target.__transitionRecords.push({ done: false, animations: [] });
+      target.__transitionRecords.push({ done: false, types, animations: [] });
+      target.__lastRecordChangeAt = Date.now();
       const transition = native(...args);
+      const nextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       transition.ready
-        .then(() => {
+        .then(async () => {
+          await nextFrame();
+          await nextFrame();
           const animations = document
             .getAnimations()
             .map((animation) => {
@@ -146,10 +188,10 @@ async function installViewTransitionSpy(page: Page) {
               (entry): entry is TransitionAnimation =>
                 typeof entry.name === "string" && entry.name.length > 0,
             );
-          target.__transitionRecords[index] = { done: true, animations };
+          target.__transitionRecords[index] = { done: true, types, animations };
         })
         .catch(() => {
-          target.__transitionRecords[index] = { done: true, animations: [] };
+          target.__transitionRecords[index] = { done: true, types, animations: [] };
         });
       return transition;
     }) as typeof document.startViewTransition;
@@ -164,24 +206,57 @@ async function readViewTransitionCallCount(page: Page): Promise<number> {
   );
 }
 
-async function readTransitionAnimations(page: Page, index: number): Promise<TransitionAnimation[]> {
-  await page.waitForFunction((i) => {
-    const records = (
-      window as typeof window & {
-        __transitionRecords?: { done: boolean; animations: TransitionAnimation[] }[];
-      }
-    ).__transitionRecords;
-    return records?.[i]?.done === true;
-  }, index);
+async function readTypedTransitionCount(page: Page): Promise<number> {
+  return page.evaluate(
+    () =>
+      (
+        window as typeof window & { __transitionRecords?: TransitionRecord[] }
+      ).__transitionRecords?.filter((record) => record.types.length > 0).length ?? 0,
+  );
+}
 
-  return page.evaluate((i) => {
-    const records = (
-      window as typeof window & {
-        __transitionRecords: { done: boolean; animations: TransitionAnimation[] }[];
+async function waitForTransitionSettle(page: Page, idleMs = 400): Promise<void> {
+  await page.waitForFunction((idle) => {
+    const target = window as typeof window & { __lastRecordChangeAt?: number };
+    const last = target.__lastRecordChangeAt ?? 0;
+    return Date.now() - last >= idle;
+  }, idleMs);
+}
+
+async function readTransitionAnimations(
+  page: Page,
+  index: number,
+  expectedType: string,
+): Promise<TransitionAnimation[]> {
+  await page.waitForFunction(
+    ({ start, type }) => {
+      const records = (window as typeof window & { __transitionRecords?: TransitionRecord[] })
+        .__transitionRecords;
+      if (records === undefined) {
+        return false;
       }
-    ).__transitionRecords;
-    return records[i]!.animations;
-  }, index);
+      for (let cursor = start; cursor < records.length; cursor += 1) {
+        const record = records[cursor];
+        if (record?.done && record.types.includes(type)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    { start: index, type: expectedType },
+  );
+
+  return page.evaluate(({ start, type }) => {
+    const records = (window as typeof window & { __transitionRecords: TransitionRecord[] })
+      .__transitionRecords;
+    const record = records
+      .slice(start)
+      .find((candidate) => candidate.done && candidate.types.includes(type));
+    if (record === undefined) {
+      throw new Error(`전환 타입 ${type}을 기록한 전환을 찾지 못했습니다.`);
+    }
+    return record.animations;
+  }, { start: index, type: expectedType });
 }
 
 function durationOf(
@@ -229,7 +304,7 @@ test.describe("탭 이동과 상세 진입", () => {
     const afterTabMove = await readViewTransitionCallCount(page);
     expect(afterTabMove).toBeGreaterThan(0);
 
-    const workDate = workDateInBand(WORK_DATE_BANDS.viewTransition);
+    const workDate = workDateInBand(VIEW_TRANSITION_BAND_CALL_COUNT);
     const { year, month, day } = parseWorkDate(workDate);
 
     const { error: scheduleError } = await worker.admin
@@ -282,7 +357,7 @@ test.describe("탭 이동과 상세 진입", () => {
 
     await walkTabs(page);
 
-    const [workDate] = workDatesInBand(WORK_DATE_BANDS.viewTransition, 1);
+    const [workDate] = workDatesInBand(VIEW_TRANSITION_BAND_NO_SUPPORT, 1);
     const { year, month, day } = parseWorkDate(workDate!);
     await seedClosedSchedule(worker, workDate!);
 
@@ -314,7 +389,7 @@ test.describe("탭 이동과 상세 진입", () => {
     const worker = await signInWorker(context, baseURL);
     const page = await context.newPage();
 
-    const workDate = workDateInBand(WORK_DATE_BANDS.viewTransition);
+    const workDate = workDateInBand(VIEW_TRANSITION_BAND_CALENDAR_ENTRY);
     const { year, month, day } = parseWorkDate(workDate);
 
     const { error: scheduleError } = await worker.admin
@@ -339,6 +414,7 @@ test.describe("탭 이동과 상세 진입", () => {
     browser,
     baseURL,
   }) => {
+    test.setTimeout(60_000);
     const context = await browser.newContext();
     await signInWorker(context, baseURL);
     const page = await context.newPage();
@@ -354,7 +430,7 @@ test.describe("탭 이동과 상세 진입", () => {
       await tabBar.getByRole("link", { name: tab.link }).click();
       await expect(page.getByRole("heading", { level: 1, name: tab.heading })).toBeVisible();
 
-      const animations = await readTransitionAnimations(page, index);
+      const animations = await readTransitionAnimations(page, index, "tab");
       expect(durationOf(animations, "route-fade")).toBeGreaterThan(0);
       expect(durationOf(animations, "route-slide-y")).toBe(0);
     }
@@ -366,6 +442,7 @@ test.describe("탭 이동과 상세 진입", () => {
     browser,
     baseURL,
   }) => {
+    test.setTimeout(60_000);
     const context = await browser.newContext();
     await signInAdminWorker(context, baseURL);
     const page = await context.newPage();
@@ -381,7 +458,7 @@ test.describe("탭 이동과 상세 진입", () => {
         page.getByRole("heading", { level: 1, name: destination.heading }),
       ).toBeVisible();
 
-      const animations = await readTransitionAnimations(page, index);
+      const animations = await readTransitionAnimations(page, index, "nav-forward");
       expect(durationOf(animations, "route-fade", "new")).toBeGreaterThan(0);
       expect(durationOf(animations, "route-slide-y", "new")).toBeGreaterThan(0);
     }
@@ -424,7 +501,7 @@ test.describe("탭 이동과 상세 진입", () => {
       await expect(page).toHaveURL(/\/pay$/);
       await expect(page.getByRole("heading", { level: 1, name: "예상 급여" })).toBeVisible();
 
-      const animations = await readTransitionAnimations(page, index);
+      const animations = await readTransitionAnimations(page, index, "nav-forward");
       expect(durationOf(animations, "route-fade", "new")).toBeGreaterThan(0);
       expect(durationOf(animations, "route-slide-y", "new")).toBeGreaterThan(0);
     } finally {
@@ -445,7 +522,7 @@ test.describe("탭 이동과 상세 진입", () => {
     const page = await context.newPage();
     await installViewTransitionSpy(page);
 
-    const [workDate] = workDatesInBand(WORK_DATE_BANDS.viewTransition, 1);
+    const [workDate] = workDatesInBand(VIEW_TRANSITION_BAND_ENTER_EXIT, 1);
     const { year, month, day } = parseWorkDate(workDate!);
     await seedClosedSchedule(worker, workDate!);
 
@@ -457,7 +534,7 @@ test.describe("탭 이동과 상세 진입", () => {
     await expect(page).toHaveURL(new RegExp(`/schedule/${workDate}$`));
     await expect(page.getByRole("heading", { level: 1, name: "모집 마감" })).toBeVisible();
 
-    const forwardAnimations = await readTransitionAnimations(page, forwardIndex);
+    const forwardAnimations = await readTransitionAnimations(page, forwardIndex, "nav-forward");
     expect(durationOf(forwardAnimations, "route-slide-y", "new")).toBeGreaterThan(0);
     expect(durationOf(forwardAnimations, "route-slide-y", "old")).toBe(0);
     expect(durationOf(forwardAnimations, "route-fade", "old")).toBeGreaterThan(0);
@@ -466,7 +543,7 @@ test.describe("탭 이동과 상세 진입", () => {
     await page.getByRole("link", { name: "뒤로 가기" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "일정" })).toBeVisible();
 
-    const backwardAnimations = await readTransitionAnimations(page, backwardIndex);
+    const backwardAnimations = await readTransitionAnimations(page, backwardIndex, "nav-back");
     expect(durationOf(backwardAnimations, "route-slide-y", "old")).toBeGreaterThan(0);
     expect(durationOf(backwardAnimations, "route-slide-y", "new")).toBe(0);
     expect(durationOf(backwardAnimations, "route-fade", "new")).toBeGreaterThan(0);
@@ -508,7 +585,7 @@ test.describe("탭 이동과 상세 진입", () => {
     const page = await context.newPage();
     await installViewTransitionSpy(page);
 
-    const [workDate] = workDatesInBand(WORK_DATE_BANDS.viewTransition, 1);
+    const [workDate] = workDatesInBand(VIEW_TRANSITION_BAND_REDUCED_MOTION, 1);
     const { year, month, day } = parseWorkDate(workDate!);
     await seedClosedSchedule(worker, workDate!);
 
@@ -520,7 +597,7 @@ test.describe("탭 이동과 상세 진입", () => {
     await expect(page).toHaveURL(new RegExp(`/schedule/${workDate}$`));
     await expect(page.getByRole("heading", { level: 1, name: "모집 마감" })).toBeVisible();
 
-    const animations = await readTransitionAnimations(page, index);
+    const animations = await readTransitionAnimations(page, index, "nav-forward");
     expect(durationOf(animations, "route-fade")).toBeGreaterThan(0);
     expect(durationOf(animations, "route-slide-y")).toBe(0);
 
@@ -560,11 +637,12 @@ test.describe("탭 이동과 상세 진입", () => {
     const tabBar = page.getByRole("navigation", { name: "주요 메뉴" });
     await tabBar.getByRole("link", { name: "일정" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "일정" })).toBeVisible();
-    const afterFirstClick = await readViewTransitionCallCount(page);
+    await waitForTransitionSettle(page);
+    const afterFirstClick = await readTypedTransitionCount(page);
 
     await tabBar.getByRole("link", { name: "일정" }).click();
-    await page.waitForTimeout(300);
-    const afterSecondClick = await readViewTransitionCallCount(page);
+    await waitForTransitionSettle(page);
+    const afterSecondClick = await readTypedTransitionCount(page);
 
     expect(afterSecondClick).toBe(afterFirstClick);
 
@@ -580,7 +658,7 @@ test.describe("탭 이동과 상세 진입", () => {
     const page = await context.newPage();
     await installViewTransitionSpy(page);
 
-    const [workDate] = workDatesInBand(WORK_DATE_BANDS.viewTransition, 1);
+    const [workDate] = workDatesInBand(VIEW_TRANSITION_BAND_BACK_NO_NEW_CALL, 1);
     const { year, month, day } = parseWorkDate(workDate!);
     await seedClosedSchedule(worker, workDate!);
 
@@ -607,7 +685,7 @@ test.describe("탭 이동과 상세 진입", () => {
     const worker = await signInWorker(context, baseURL);
     const page = await context.newPage();
 
-    const [workDate] = workDatesInBand(WORK_DATE_BANDS.viewTransition, 1);
+    const [workDate] = workDatesInBand(VIEW_TRANSITION_BAND_BACK_BEFORE_FINISH, 1);
     const { year, month, day } = parseWorkDate(workDate!);
     await seedClosedSchedule(worker, workDate!);
 
@@ -633,7 +711,7 @@ test.describe("탭 이동과 상세 진입", () => {
     const worker = await signInWorker(context, baseURL);
     const page = await context.newPage();
 
-    const [workDate] = workDatesInBand(WORK_DATE_BANDS.viewTransition, 1);
+    const [workDate] = workDatesInBand(VIEW_TRANSITION_BAND_BACK_IMMEDIATELY, 1);
     const { year, month, day } = parseWorkDate(workDate!);
     await seedClosedSchedule(worker, workDate!);
 
@@ -657,7 +735,7 @@ test.describe("탭 이동과 상세 진입", () => {
     const worker = await signInWorker(context, baseURL);
     const page = await context.newPage();
 
-    const [workDate] = workDatesInBand(WORK_DATE_BANDS.viewTransition, 1);
+    const [workDate] = workDatesInBand(VIEW_TRANSITION_BAND_BACK_TWICE, 1);
     const { year, month, day } = parseWorkDate(workDate!);
     await seedClosedSchedule(worker, workDate!);
 

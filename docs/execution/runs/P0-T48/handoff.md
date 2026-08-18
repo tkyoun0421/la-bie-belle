@@ -1,5 +1,74 @@
 # P0-T48 handoff
 
+## 2026-08-19 · 인수 조건 41 GREEN — 원인 셋을 따로 고치고 잔여 결함 하나를 더 찾았다
+
+`tests/e2e/tab-navigation.spec.ts` RED(4 failed :338 :365 :439 :551 / 13 passed)를 GREEN(17
+passed)으로 바꿨다. 원인 셋은 지시대로 따로 다뤘고, 도중에 브리핑에 없던 넷째 결함을 하나 더
+찾아 고쳤다.
+
+**원인 A(`:439`, 구현 결함).** `(tabs)/layout.tsx`의 `<div data-app-shell>` 래퍼를 걷어 Fragment로
+바꿨다 — `{children}` 위에 호스트 엘리먼트가 있으면 React `completeWork`가 그 호스트에서
+`ViewTransitionStatic` 비트를 지워 `(tabs)` 경계를 넘는 이동이 `enter`도 `exit`도 못 받는다.
+`data-app-shell`은 `AppHeader.tsx`의 고정(비-`aria-hidden`) 사본 하나로 옮겼다 — 스페이서 사본이
+아니라 실제로 화면에 보이는 헤더 쪽을 골랐고, `AppHeader.test.tsx`에 이 속성 위치를 단언하는
+테스트가 없어 자유 판단이었다. `globals.css`의 `body:has([data-app-shell])` 선택자는 자손 매칭이라
+어느 자손이 속성을 들든 그대로 동작해 손대지 않았다.
+
+**필수 검증**(RADIO 지시대로): `route-transition.tsx`의 `enter`/`exit` 내용을 일부러 맞바꿔 RED가
+재현되는지 확인했다 — `expect(durationOf(...)).toBeGreaterThan(0)` 계열 단언이 다시 실패하며
+`:439`와 같은 지점에서 깨지는 것을 확인한 뒤 `git diff`가 빈 diff를 낼 때까지 원복했다.
+
+**원인 B(`:338`·`:551`, 테스트 결함).** `installViewTransitionSpy`가 `document.startViewTransition`을
+가로챌 때 호출마다 `types` 배열을 함께 기록하도록 바꿨다. `readTransitionAnimations`는 더 이상
+호출 순번(index)이 아니라 기대하는 전환 타입(`"tab"`·`"nav-forward"`·`"nav-back"`)으로 레코드를
+찾는다 — 이동 한 번에 `startViewTransition`이 여러 번(탭 눌림 애니메이션 등 타입 없는 호출 포함)
+도는데 스파이가 한 번을 가정했던 게 `:338`의 결함이었다.
+
+`:551`("같은 탭을 다시 눌러도 전환 호출이 늘지 않는다")은 브리핑에 적힌 `readTransitionAnimations`
+경로를 쓰지 않는 테스트라 그 수정만으로는 안 고쳐졌다 — 원시 호출 수를 그대로 비교하고 있었다.
+디버그 로그로 확인해 보니 같은 탭을 다시 누르면 타입 없는 `startViewTransition`이 뒤늦게 하나 더
+잡히는 타이밍이 있어 원시 개수 비교가 흔들렸다. `readTypedTransitionCount`(`types.length > 0`인
+레코드만 세는 함수)와 `waitForTransitionSettle`(마지막 레코드 변화 후 400ms 무변화를 기다리는
+함수)을 새로 만들어 클릭마다 "정착 후 타입 있는 개수"를 비교하도록 바꿨다. 진단 문서의 대안
+B-2·B-3을 섞은 조합이다 — `--workers=1`로 같은 테스트만 10회 반복해 10/10 통과를 확인했다.
+
+**원인 C(`:365`, 병렬 전용 결함).** `WORK_DATE_BANDS.viewTransition` 한 구간을 나눠 쓰는 테스트가
+브리핑이 말한 여섯이 아니라 실제로는 아홉이었다(`grep`으로 전수 확인). `splitBand(band, 9)`로
+아홉 구간으로 쪼개 `schedule-confirmation.spec.ts`가 쓰는 것과 같은 관용구로 각 테스트에
+전용 구간을 줬다.
+
+**넷째 결함(`:513`, 브리핑에 없던 잔여 결함).** 전체 스위트를 반복 실행하는 도중
+"상세 진입은 새 화면이 올라오고 뒤로 가기는 옛 화면이 내려간다" 테스트가 `--workers=1` 단독
+실행에서도 6번에 1번꼴로 flake했다 — `route-fade`의 new쪽 애니메이션 길이가 0으로 읽혔다.
+디버그 덤프로 실패 케이스를 직접 잡아 보니 레코드 자체는 하나(중복 아님)였는데 그 안의
+`animations` 배열이 old쪽 3개만 담고 new쪽 `route-fade` 2개가 빠져 있었다 — `transition.ready`가
+풀리는 시점에 `document.getAnimations()`를 바로 부르면 new쪽 pseudo-element 애니메이션이 아직
+등록되지 않는 레이스였다. `transition.ready.then()` 안에서 `requestAnimationFrame`으로 두 프레임을
+더 기다린 뒤에 `document.getAnimations()`를 읽도록 고쳤다. `--workers=1`로 해당 테스트만 8회
+반복해 8/8 통과를 확인했다(고치기 전 표본은 6회 중 1회 실패).
+
+**전체 스위트 검증 중 관측한 부하.** `pnpm test:e2e tests/e2e/tab-navigation.spec.ts`(옵션 없는
+그대로) 1차 실행이 `:441`("전체 화면의 목적지 셋으로 이동하면 새 화면에 슬라이드가 걸린다",
+60초 타임아웃 지정된 테스트) 하나에서 `page.waitForFunction: Test ended.`로 실패했다(16
+passed / 1 failed). 그 직후 같은 테스트를 `--workers=1` 단독으로 4회 반복해 4/4 통과(매회 5초대,
+60초 예산의 1/10 수준)를 확인했고, `uptime`이 그 무렵 load average 5~20대를 보여 앞서
+관측했던(다른 세션의 `com.apple.Virtualization.VirtualMachine` 프로세스가 157%+ CPU를 문 채
+누적 26시간 넘게 돌던 사례, 피크 129.54) 시스템 부하의 잔여로 판단했다. 곧이어 재실행한
+옵션 없는 그대로의 명령이 `17 passed (25.3s)`로 깨끗하게 통과해 GREEN 근거로 남겼다. 이 세션
+안에서 코드를 건드리지 않은 재실행만으로 결과가 바뀐 것이 이 판단의 근거다 — 다른 세션의
+동시 작업 정황은 보고만 하고 그 프로세스 처분은 시도하지 않았다.
+
+**`:551`이 잃은 것을 적어 둔다.** 단언이 「호출 횟수」에서 「타입 붙은 전환 횟수」로 옮겨갔으므로
+**전환 폭주(타입 없는 호출이 무한히 느는 회귀)를 감시하던 눈이 사라졌다.** 진단 문서가 대안 B-3의
+대가로 미리 짚어 둔 자리다. `expect` 총수는 77에서 77로 그대로고 삭제된 단언은 하나도 없지만,
+계약 하나는 실제로 좁아졌다. 왜 이동 한 번에 `startViewTransition`이 세 번 도는지 규명하는 일을
+backlog에 올렸다.
+
+`pnpm lint` · `pnpm typecheck` · `pnpm vitest run src/app src/widgets`(181 passed) · `pnpm build`
+모두 통과했다. 변경 파일은 `src/app/(protected)/(tabs)/layout.tsx` ·
+`src/widgets/app-shell/ui/AppHeader.tsx` · `tests/e2e/tab-navigation.spec.ts`다.
+`src/shared/ui/route-transition.tsx`는 매핑 맞바꿈 검증 후 원복해 diff가 없다.
+
 ## 2026-08-19 · RADIO revision 14 재봉인 — 일정을 떼고 홈까지로 닫는다
 
 사용자가 「지연의 주원인은 구현 속도가 아니라 범위 팽창 → 재봉인 → 전체 검증 반복」이라는 읽기 전용

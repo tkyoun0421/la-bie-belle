@@ -16,7 +16,7 @@ export default async function TabsLayout({
   const hasUnreadNotifications = notificationsResult.ok && notificationsResult.unreadCount > 0;
 
   return (
-    <div data-app-shell>
+    <>
       <AppHeader
         hasUnreadNotifications={hasUnreadNotifications}
         bannerSlot={<OfflineBanner variant="shell-row" />}
@@ -24,6 +24,6 @@ export default async function TabsLayout({
       {children}
       {sheet}
       <AppShellTabBar />
-    </div>
+    </>
   );
 }
