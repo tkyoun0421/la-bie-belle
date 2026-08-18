@@ -1,139 +1,108 @@
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
+"use client";
 
-import type {
-  AttendanceAction,
-  AttendanceFailureReason,
-  AttendanceStatus,
-} from "@/entities/attendance/model/attendance-status";
-import { formatTimeInSeoul } from "@/shared/lib/format-time-seoul";
-import { Button } from "@/shared/ui/button";
-import type { HomeViewModel } from "@/views/home/model/home-priority";
+import { Suspense } from "react";
+
+import { useAmountMasking } from "@/shared/hooks/useAmountMasking";
+import { useAmountReveal } from "@/shared/hooks/useAmountReveal";
+import { BlockBoundary } from "@/shared/ui/block-boundary";
+import { useNoticeDeck } from "@/views/home/hooks/useNoticeDeck";
+import { useWeekSelection } from "@/views/home/hooks/useWeekSelection";
+import { formatWindowOpensAt, toCountdown } from "@/views/home/model/countdown";
+import { toFullDateLabel } from "@/views/home/model/date-labels";
+import { toHomeBlocks } from "@/views/home/model/home-blocks";
+import type { HomeBlockName, HomeViewModel } from "@/views/home/model/home-view-model";
+import { toUpcomingShifts } from "@/views/home/model/upcoming-shifts";
+import { toWeekFooter, toWeekStripCells } from "@/views/home/model/week-strip";
+import { BlockSkeleton } from "@/views/home/ui/BlockSkeleton";
+import { NoticeBlock } from "@/views/home/ui/NoticeBlock";
+import { PayBlock } from "@/views/home/ui/PayBlock";
+import { TodayBlock } from "@/views/home/ui/TodayBlock";
+import { UpcomingBlock } from "@/views/home/ui/UpcomingBlock";
+import { WeekStripBlock } from "@/views/home/ui/WeekStripBlock";
 import { RouterPullToRefresh } from "@/widgets/pull-to-refresh/ui/RouterPullToRefresh";
 
-export type { HomeViewModel } from "@/views/home/model/home-priority";
-
-const ATTENDANCE_ACTION_LABEL: Record<AttendanceAction, string> = {
-  "check-in": "출근 인증하기",
-  "check-out": "퇴근 인증하기",
+const BLOCK_FAILURE_MESSAGE: Record<HomeBlockName, string> = {
+  notices: "알림을 불러오지 못했어요",
+  today: "오늘 근무를 불러오지 못했어요",
+  week: "이번 주를 불러오지 못했어요",
+  upcoming: "다가오는 근무를 불러오지 못했어요",
+  pay: "급여를 불러오지 못했어요",
 };
 
-const ATTENDANCE_FAILURE_MESSAGE: Record<AttendanceFailureReason, string> = {
-  "permission-denied": "위치 권한이 꺼져 있어요",
-  "low-accuracy": "위치 정확도가 낮아요",
-  "out-of-range": "근무지 범위 밖이에요",
+type HomeViewProps = {
+  model: HomeViewModel;
+  now: Date;
+  today: string;
+  noticeIds: readonly string[];
 };
 
-function AttendanceSection({
-  attendanceStatus,
-  shiftDate,
-  position,
-}: {
-  attendanceStatus: AttendanceStatus;
-  shiftDate: string;
-  position: string;
-}) {
-  return (
-    <section className="flex flex-col gap-3">
-      <p className="typo-caption text-text">
-        {shiftDate} · {position} 근무
-      </p>
-      {attendanceStatus.type === "ready" ? (
-        <Button variant="primary">{ATTENDANCE_ACTION_LABEL[attendanceStatus.action]}</Button>
-      ) : null}
-      <div role="status" aria-live="polite" className="flex flex-col gap-2">
-        {attendanceStatus.type === "checking" ? (
-          <div className="flex items-center gap-2">
-            <Loader2 aria-hidden className="size-4 animate-spin text-action" />
-            <p className="typo-body text-text-strong">현재 위치를 확인하고 있어요</p>
-          </div>
-        ) : null}
-        {attendanceStatus.type === "success" ? (
-          <div className="flex flex-col gap-1">
-            <p className="typo-body text-text-strong">현장 위치가 확인됐어요</p>
-            <p className="typo-caption text-text tabular-nums">
-              서버 확인 시각 {formatTimeInSeoul(attendanceStatus.confirmedAt)}
-            </p>
-          </div>
-        ) : null}
-        {attendanceStatus.type === "failure" ? (
-          <p className="typo-body text-danger">
-            {ATTENDANCE_FAILURE_MESSAGE[attendanceStatus.reason]}
-          </p>
-        ) : null}
-      </div>
-      {attendanceStatus.type === "failure" ? (
-        <div className="flex gap-2">
-          <Button variant="secondary">권한 설정하기</Button>
-          <Button variant="tertiary">QR로 인증하기</Button>
-        </div>
-      ) : null}
-    </section>
-  );
-}
+export function HomeView({ model, now, today, noticeIds }: HomeViewProps) {
+  const plan = toHomeBlocks(model, now);
+  const todayLabel = toFullDateLabel(today);
 
-export function HomeView({ model }: { model: HomeViewModel }) {
+  const noticeDeck = useNoticeDeck(noticeIds, today);
+
+  const weekDays = model.week.state === "ready" ? model.week.data.days : [];
+  const weekSelection = useWeekSelection(weekDays);
+  const weekCells = toWeekStripCells(weekDays);
+  const weekFooter = toWeekFooter({ days: weekDays }, weekSelection.selectedDate);
+
+  const upcomingShifts =
+    model.upcoming.state === "ready" ? toUpcomingShifts(model.upcoming.data, today) : [];
+
+  const shift = model.today.state === "ready" ? model.today.data : null;
+  const countdown = shift === null ? null : toCountdown(shift.attendanceWindow, now);
+  const windowOpensAtLabel = shift === null ? null : formatWindowOpensAt(shift.attendanceWindow);
+
+  const payRows = model.pay.state === "ready" ? model.pay.data.rows : [];
+
+  const autoMaskOnWorkday = useAmountMasking((state) => state.autoMaskOnWorkday);
+  const isWorkday = shift !== null;
+  const reveal = useAmountReveal(autoMaskOnWorkday && isWorkday);
+
   return (
     <RouterPullToRefresh>
-      <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-nav-safe">
-        <h1 className="typo-headline-md text-text-strong">홈</h1>
-
-        {model.priority === "attendance" ? (
-          <AttendanceSection
-            attendanceStatus={model.attendanceStatus}
-            shiftDate={model.shiftDate}
-            position={model.position}
-          />
-        ) : null}
-
-        {model.priority === "deadline-application" ? (
-          <section className="flex flex-col gap-3">
-            <p className="typo-title text-text-strong">
-              {model.applied ? "신청 완료 — 마감 전까지 변경 가능" : "근무 신청 마감이 임박했어요"}
-            </p>
-            <p className="typo-body text-text">
-              {model.date} · {model.applicationDeadline}까지
-            </p>
-            <Button asChild variant={model.applied ? "secondary" : "primary"}>
-              <Link href="/schedule" transitionTypes={["tab"]}>
-                {model.applied ? "일정에서 확인하기" : "지금 신청하기"}
-              </Link>
-            </Button>
-          </section>
-        ) : null}
-
-        {model.priority === "confirmation-change" ? (
-          <section className="flex flex-col gap-3">
-            <p className="typo-title text-text-strong">확정 스케줄이 변경됐어요</p>
-            <p className="typo-body text-action">{model.confirmation.changeSummary}</p>
-            <Button asChild variant="primary">
-              <Link href={`/schedule/${model.confirmation.date}`} transitionTypes={["nav-forward"]}>
-                확인하기
-              </Link>
-            </Button>
-          </section>
-        ) : null}
-
-        {model.priority === "next-shift" ? (
-          <section className="flex flex-col gap-3">
-            <p className="typo-title text-text-strong">다음 근무</p>
-            <p className="typo-body text-text">
-              {model.date} · {model.position}
-            </p>
-            <Button asChild variant="secondary">
-              <Link href={`/schedule/${model.date}`} transitionTypes={["nav-forward"]}>
-                상세 보기
-              </Link>
-            </Button>
-          </section>
-        ) : null}
-
-        {model.priority === "empty" ? (
-          <section className="flex flex-col gap-2">
-            <p className="typo-title text-text-strong">아직 할 일이 없어요</p>
-            <p className="typo-body text-text">일정에서 근무 가능일을 신청해보세요</p>
-          </section>
-        ) : null}
+      <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-3 p-4 pb-nav-action-safe">
+        {plan.map((entry) => (
+          <Suspense
+            key={entry.block}
+            fallback={<BlockSkeleton block={entry.block} todayLabel={todayLabel} />}
+          >
+            <BlockBoundary message={BLOCK_FAILURE_MESSAGE[entry.block]}>
+              {entry.status === "loading" ? (
+                <BlockSkeleton block={entry.block} todayLabel={todayLabel} />
+              ) : entry.block === "notices" ? (
+                <NoticeBlock
+                  status={entry.status === "failed" ? "failed" : "filled"}
+                  notices={model.notices.state === "ready" ? model.notices.data : []}
+                  deck={noticeDeck}
+                />
+              ) : entry.block === "today" ? (
+                <TodayBlock
+                  status={entry.status === "failed" ? "failed" : "filled"}
+                  shift={shift}
+                  todayLabel={todayLabel}
+                  countdown={countdown}
+                  windowOpensAtLabel={windowOpensAtLabel}
+                />
+              ) : entry.block === "week" ? (
+                <WeekStripBlock
+                  status={entry.status}
+                  cells={weekCells}
+                  today={today}
+                  footer={weekFooter}
+                  selectedDate={weekSelection.selectedDate}
+                  onSelect={weekSelection.select}
+                  reveal={reveal}
+                />
+              ) : entry.block === "upcoming" ? (
+                <UpcomingBlock status={entry.status} shifts={upcomingShifts} />
+              ) : (
+                <PayBlock status={entry.status} rows={payRows} reveal={reveal} />
+              )}
+            </BlockBoundary>
+          </Suspense>
+        ))}
       </main>
     </RouterPullToRefresh>
   );

@@ -1,7 +1,7 @@
 # P0-T48 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 9
+- revision: 11
 - 기획 승인: user, 2026-08-16 (범위 축소 2026-08-18)
 - 개발 설계 승인: user, 2026-08-18
 
@@ -9,6 +9,8 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 11 | 2026-08-18 | **전사 유실을 되돌리고 그 수리가 요구한 경로 셋을 연다**(사용자 결정). 사용자가 실제 홈 화면에서 버그 여덟을 연달아 찾았고, fable 독립 감사가 원인을 **봉인 전사 유실**로 짚었다 — 시안에서 RADIO로 옮길 때 동작 계약이 손실 압축되는데 하류는 시안이 아니라 RADIO를 정본으로 본다(`unit-test-writer.md:21` 「유일한 설계 정본」). 그래서 RADIO가 잃은 계약이 틀린 채로 테스트에 봉인되고 publisher는 그 테스트를 못 고친다. 인수 조건 37이 「가림이 다시 걸리면」이라고만 적고 **무엇이 다시 가리는지**를 안 적은 자리에 「화면을 벗어나면」이라는 오독이 들어간 것이 그 실례다. 되돌리기 위해 시안의 모션·동작 계약을 요약 없이 전사했고(NOTES 라운드 38) **모션 선언 열여덟 중 코드에 있는 것이 둘, 다른 것이 넷, 없는 것이 열둘**임이 드러났다. ① **인수 조건 39·40 신설** — 모션 열여덟이 지속·이징뿐 아니라 **생명주기**(reflow 재트리거·`animationend` 이름 가드)까지 서는 것과, 코드에 아예 없는 헤더가 서는 것. ② **이징 결정** — 시안이 넷에서 반복해 쓰는 `cubic-bezier(0.32, 0.72, 0, 1)`은 사고가 아니라 의도라 `--ease-emphasized`로 사다리를 늘리고, `ease`·`ease-in` 키워드 아홉은 `--ease-out`으로 흡수하며, 700ms 회전은 두 대역 어디에도 안 속하므로 `animate-spin` 그대로 둔다. ③ **허용 경로 셋 추가** — `src/shared/lib/**`(더미 폭 결함이 요구한 순수 함수. `ui`에 치환 로직을 못 두니 갈 곳이 여기뿐이다), `src/app/preview/**`(`src/views/preview/**`만 열려 있어 라우트가 빠져 있었다), `src/shared/config/app-tabs.config.ts`(탭 구성이 급여 자리에 알림을 넣어 **인수 조건 14를 안 지킨다**). ④ `globals.css` 용도 한정에 넷을 더한다. **재봉인을 두 번 하지 않으려고 5D에서 막힐 것까지 한 번에 묶었다** — 실측이 1회 2.0시간, 2회 이상 13.2시간이다(P0-T57 기획 근거). 2026-08-18 사용자 결정. |
+| 10 | 2026-08-18 | **홈 뷰 모델의 출처를 못 박는다**(사용자 결정). 5B RED가 막혔다 — Interface가 요구하는 `HomeViewModel`·`AttendanceWindow`·`Shift` 셋이 저장소에 없다. 조사해 보니 누락이 아니라 **홈 다섯 블록 중 셋에 붙일 쿼리가 아예 없어서**다. 알림은 `list-notifications.ts`, 오늘은 `get-confirmed-roster(date)`가 있지만 **이번 주·다가오는 근무·급여 셋은 내 확정 근무를 기간으로 뽑는 쿼리도 급여 쿼리도 없다** — `PayView`조차 `pay.mock.ts`로 서 있다(`(tabs)/pay/page.tsx`). 그래서 ① 뷰 모델 타입 셋을 **`views/home/model/`이 소유**하고 필드는 NOTES 라운드 6~34에서 파생시킨다 ② **`(tabs)/page.tsx`가 `home.mock.ts`를 먹인다**(`pay/page.tsx` 선례) ③ 그래도 **블록 다섯의 Suspense·에러 경계 구조는 실물로 세운다**(인수 조건 24) — 쿼리가 생기면 소스만 갈아끼우고 구조는 안 바뀐다 ④ 실제 데이터 배선은 후속 task 몫이다. 덤으로 `home-priority.ts`·`imminent-recruitment.ts` **둘을 지운다** — 앞엣것의 `HomeViewModel`은 이름만 같고 NOTES 라운드 6이 폐기한 「우선순위 하나만 노출」 그 모양이고, 뒤엣것은 새 홈이 마감 임박을 알림 한 장에 넘겨 쓸 자리가 없다. **절반만 실물로 붙이는 안은 버렸다** — 배선이 두 종류로 갈리고 셋을 붙일 때 어차피 다시 갈아엎으며, 알림도 `kind` 필드가 없어 그림을 못 고르는 반쪽이다. revision 9가 표 밖 예외를 없앴으므로 미결의 탭 눌림 420ms 항목도 함께 닫는다. 2026-08-18 사용자 결정. |
 | 9 | 2026-08-18 | **대역을 예외가 아니라 디자인 시스템의 구조로 세운다**(사용자 결정). revision 8은 모션 표에 두 행을 보태고 그 아래 원칙 한 줄로 「대역이 둘」을 설명했는데, 그건 여전히 표에 붙은 주석이지 시스템이 아니다. `FOUNDATIONS.md` 「모션」 절을 **응답 대역(120~300ms) · 표현 대역(400~1500ms) · 지연** 셋으로 다시 짜고 대역마다 상황 표와 **토큰 표**를 갖게 한다. 절 머리에 「새 모션은 대역을 먼저 고르고, 두 대역 어디에도 안 맞으면 대역을 새로 정의해 적는다 — 개별 값을 예외로 빼지 않는다」를 규칙으로 박는다. 조사 중 `gate:tokens`가 **모션을 전혀 안 읽는다**는 것이 나왔다(`harness/lib/token-parity.ts:18-23`이 파는 제목은 팔레트·의미 토큰·타이포·간격·형태 다섯뿐). 모션만 검사 없는 산문이라 값이 어긋나도 아무도 못 잡고, 그래서 예외 문단이 생길 수 있었다. **`harness/**`는 이 task가 안 여는 경로라 검사기 보강은 P0-T59로 넘긴다.** 2026-08-18 사용자 결정. |
 | 8 | 2026-08-18 | **확정 디자인이 토큰 체계와 부딪히면 값을 깎지 말고 체계를 늘린다**(사용자 결정, 원칙). 5A 퍼블리싱에서 막힌 둘을 그 원칙으로 푼다. ① **그림 자산 여덟 중 둘(`change-approved`·`change-rejected`)이 확정 시안에 SVG로 안 그려져 있다** — `FOUNDATIONS.md` 「그림 자산」 절은 알림 다섯을 적는데 시안의 알림 카드는 세 장뿐이다. 새로 그리되 **시안에 이미 확정된 요소만으로 조합한다** — 초록은 기존 `green` 그라디언트, 사각 기하와 흰 체크는 `schedule-confirmed`의 것, 회색은 시안이 이미 쓰는 `#c9d1dc`(아바타 원)와 팔레트 `gray-600` `#7c828a`를 같은 어법으로 묶는다. 발명하는 값이 없다. ② **모션 사다리가 손맛 대역을 담게 늘린다.** `project/motion-tokens`가 임의 지속시간을 막고 사다리 최대가 300ms라 금액 리빌 훑기 1.5초를 구현할 길이 없었다. **표 밖 예외로 빼지 않고 표 안 행으로 올린다** — 표 밖에 서 있던 하단 탭 눌림 420ms도 같이 행으로 들인다. 표가 담는 대역이 둘이 된다는 것을 표가 직접 말한다: 조작에 답하는 120~300ms와, 조작을 안 막고 그 위로 흐르는 400~1500ms. ③ **revision 7의 인수 조건 34를 고친다.** 「간격 토큰이 늘지 않는다」는 이 원칙과 부딪힌다 — 「임의값을 안 쓴다. 사다리에 없는 값은 규칙으로 올린 뒤 쓰고, worker는 즉흥으로 만들지 않고 반환한다」로 바꾼다. 막는 대상은 토큰의 증가가 아니라 **worker의 즉흥**이다. 2026-08-18 사용자 결정. |
 | 7 | 2026-08-18 | **radius 사다리에 `cell` 12px를 만들고 11px를 그리로 합친다**(사용자 결정). 5라운드 착수 전 시안 전수 조사에서 사다리 밖 radius 둘이 더 나왔다 — `.dbadge`·`.sk-anchor`의 **11px**와 `.wnum`(주간 스트립 칸)·`.dcell.today`(달력 오늘 칸)의 **12px**다. revision 6이 세운 인수 조건 32가 `rounded-[` 임의값을 0건으로 막았고 Architecture의 코드 구조가 `d-badge.tsx`를 「32px radius 11」이라 직접 적었으므로, 그대로 두면 publisher가 첫 파일에서 막힌다. **1px 차이라 하나로 합친다** — 1라운드가 `#f1f3f6`·`#f2f4f6`을 같은 근거로 합친 선례를 따른다. 이름은 `radius-cell`이다. 크기 이름(xs·sm·md·lg·xl)에는 8과 14 사이가 비어 있고, 같은 표의 `radius-pill`이 이미 역할 이름이라 관례 밖이 아니다. 더해 **간격은 토큰을 늘리지 않는다** — 사다리 밖 간격값은 사다리로 스냅하고, 스냅이 화면을 무너뜨리면 멈추고 반환한다. `.phone` 28px는 시안의 폰 프레임이라 제품 UI가 아니다. 2026-08-18 사용자 결정. |
@@ -122,6 +124,9 @@
 35. **그림 자산 여덟이 전부 실물로 선다.** `change-approved`·`change-rejected` 둘은 확정 시안에 SVG가 없어 새로 그리되 **시안에 이미 확정된 요소만으로 조합한다** — 초록은 기존 `green` 그라디언트(`#54d787`→`#11834a`), 사각 기하(`rx="4.5"`)와 흰 체크 path는 `schedule-confirmed`의 것, 회색은 `#c9d1dc`(시안의 아바타 원)→`#7c828a`(팔레트 `gray-600`)를 위가 밝고 아래가 어두운 어법으로 묶는다. `FOUNDATIONS.md` 「그림 자산」 절의 고정색 목록에 그 회색 두 값을 적는다. **빨강을 쓰지 않는다** — 미반영도 실패가 아니라 처리가 끝난 결과다.
 36. **모션이 대역 구조를 갖는다.** `FOUNDATIONS.md` 「모션」 절이 **응답 대역 120~300ms**(손이 기다린다) · **표현 대역 400~1500ms**(조작을 안 막고 그 위로 흐른다) · **지연**(항목 사이 간격, 지속시간이 아니라 대역 밖) 셋으로 서고, 대역마다 상황 표와 토큰 표를 갖는다. 표 밖 예외 문단은 사라지고 예외였던 하단 탭 눌림 420ms가 표현 대역의 행이 된다. 절 머리에 **「새 모션은 대역을 먼저 고른다. 두 대역 어디에도 안 맞으면 대역을 새로 정의해 적고 개별 값을 예외로 빼지 않는다」**가 규칙으로 선다. `globals.css`의 `--duration-*` 일곱이 그 토큰 표와 1:1이고, 새로 서는 `--duration-press: 420ms`·`--duration-sweep: 1500ms`를 포함해 전부 `prefers-reduced-motion: reduce`에서 **0ms로 죽는다**.
 37. **금액 리빌 훑기가 선다.** 손으로 열 때만 회백 빛이 `--duration-sweep` 동안 한 번 훑고 지나간다. 가림이 다시 걸리면 즉시 사라지고, 화면 복귀·상태 전환처럼 손이 안 닿은 열림에서는 안 돈다.
+38. **홈 뷰 모델의 출처가 하나다.** `HomeViewModel`·`AttendanceWindow`·`Shift`·`UpcomingShift`·`CountdownState`·`HomeBlockPlan`이 전부 `src/views/home/model/`에 서고 `src/entities/**`를 안 건드린다. `(tabs)/page.tsx`는 `views/home/ui/home.mock.ts`를 먹인다. **그래도 블록 다섯이 각자 `<Suspense fallback>`과 `BlockBoundary` 안에 선다**(인수 조건 24) — 소스가 목이어도 구조는 실물이고, 쿼리가 생기면 소스만 바뀐다. `src/views/home/model/home-priority.ts`·`imminent-recruitment.ts`와 그 테스트 넷이 저장소에서 사라지고 `deriveHomePriority`·`selectImminentRecruitment`를 부르는 곳이 하나도 안 남는다.
+39. **모션 열여덟이 시안대로 선다.** NOTES 라운드 38의 전사표가 정본이다. 지속시간과 이징뿐 아니라 **생명주기**까지 선다 — 탭 눌림·알림 진입은 `void el.offsetWidth`로 reflow를 강제해 재생을 다시 트리거하고, 금액 훑기는 `animationend`에서 **애니메이션 이름을 확인하고** 클래스를 뗀다. 이징은 `--ease-emphasized`(`cubic-bezier(0.32, 0.72, 0, 1)`) 신설 하나에 `ease`·`ease-in` 키워드 흡수이고, 회전 스피너는 대역 밖이라 `animate-spin`으로 둔다. 열여덟 어디에도 인라인 지속시간이 없고 `project/motion-tokens`가 무출력이다.
+40. **헤더가 선다.** `widgets/app-shell/ui/AppHeader.tsx`가 실물로 서서 상태 표시줄 24 + 헤더 56을 한 레이어 80으로 묶는다. 배경은 그라디언트가 아니라 **반투명 유리**다 — 지면색 50%(`rgba(241, 243, 246, 0.5)`)에 `backdrop-filter: blur(9px)`. **스크롤에 반응하지 않고** 아래 경계선도 없다. 콘텐츠가 그 유리 밑을 지나며 비치는 것이 경계 처리 전부이고, `.phone-body`의 위 여백 80이 `24 + 56`과 맞물린다. 오른쪽은 44×44 종에 8px `--color-action` 점 하나이며, **읽지 않음 표시는 헤더 종에만 있고 탭바에는 없다**(인수 조건 14).
 
 ### 위험 기반 테스트
 
@@ -146,7 +151,9 @@
 | 26 시트 라우트 | 테스트함 — 홈·일정 양쪽에서 같은 주소가 열리고 시트로 뜸 | 테스트함 — 직접 방문·새로고침에서 전체 화면으로 열림 | 테스트함 — **뒤로가기가 겹을 하나씩 벗김**(`/roster/x/change` → `/roster/x` → 원래 화면), 없는 날짜는 not-found | 해당 없음 — 명단 권한은 서버 쿼리가 판정하고 이 task가 안 바꾼다 | 테스트함 — 같은 주소를 두 번 밀어도 시트가 하나 | 해당 없음 — 라우터 상태 하나 |
 | 27·28 상태 도구 | 테스트함 — Provider가 서고 무한 스크롤이 두 회차씩 붙음 | 테스트함 — 더 불러오기 실패 시 목록이 살아 있고 재시도가 가능 | 테스트함 — **zustand `persist`의 SSR 수화**(첫 렌더가 서버와 같음), 저장값이 없을 때의 기본값 | 해당 없음 — 가림 설정은 기기에만 있고 서버로 안 간다 | 테스트함 — 바닥 도달 연타가 같은 페이지를 두 번 안 부름 | 해당 없음 — 쿼리 키 하나에 요청 하나 |
 | 29·30 번들 상한 | 테스트함 — `gate:bundle`이 새 상한에서 통과 | 테스트함 — 상한을 넘긴 fixture에서 여전히 위반을 보고 | 테스트함 — **의존성 둘을 넣은 뒤의 실측을 숫자로 기록**하고 600KB 대비 여유를 적는다. 여유가 50KB 아래면 후속 task를 `should`로 올린다 | 해당 없음 — 빌드 산출물을 읽는 판정이다 | 해당 없음 — 재실행이 같은 결과 | 해당 없음 — 빌드 뒤 한 번 잰다 |
+| 38 홈 뷰 모델 | 테스트함 — `home.mock.ts`를 먹은 라우트가 블록 다섯을 순서대로 세움 | 테스트함 — 한 블록이 던져도 나머지 넷이 남음(BlockBoundary) | 테스트함 — **`deriveHomePriority`·`selectImminentRecruitment` 참조가 저장소에 0건**, `views/home/model/**`가 `entities/`를 import하지 않음 | 해당 없음 — 목 데이터라 권한 경계를 안 탄다 | 해당 없음 — 표시 전용이고 쓰기가 없다 | 해당 없음 — 서버 컴포넌트가 렌더마다 같은 목을 읽는다 |
 | 35·36·37 그림과 모션 | 테스트함 — 그림 여덟이 이름마다 svg를 렌더하고 리빌 스윕이 손으로 열 때만 붙음 | 테스트함 — 가림이 다시 걸리면 스윕 클래스가 즉시 사라짐 | 테스트함 — **`change-rejected`에 빨강이 없음**, 그림 최소 크기 24px 하한, `project/motion-tokens`가 무출력, **`prefers-reduced-motion`에서 두 토큰이 0ms** | 해당 없음 — 표시 전용이다 | 해당 없음 — 선언은 멱등 | 해당 없음 — 컴포넌트 하나가 자기 상태를 산다 |
+| 39·40 모션과 헤더 | 테스트함 — 전사표 열여덟이 각자 시안의 지속·이징으로 돌고 헤더가 유리 배경으로 섬 | 테스트함 — 재생을 다시 트리거하는 셋(탭 눌림·알림 진입·셀 선택)이 두 번째 조작에서도 돎, 훑기가 끝나고 클래스가 걷힘 | 테스트함 — **`prefers-reduced-motion`에서 열여덟이 전부 죽음**, 헤더가 스크롤에 반응하지 않음, 탭바에 읽지 않음 점이 **없음**(종에만 있음), 탭 넷이 `홈·일정·급여·전체` | 해당 없음 — 표시 계층이고 헤더는 본인 알림 수만 읽는다 | 테스트함 — 알림 끄기 연타가 전환 중에 막혀 카드가 한 장씩만 넘어감 | 해당 없음 — 애니메이션은 컴포넌트 자기 상태다 |
 | 33·34 칸 radius와 간격 | 테스트함 — `gate:tokens`가 `radius-cell`을 문서와 css 양쪽에서 찾아 짝을 맞춤 | 테스트함 — 배지·칸 넷이 같은 유틸리티를 쓰는지 컴포넌트 테스트로 확인 | 테스트함 — **`p-`·`m-`·`gap-` 임의값과 사다리 밖 값이 0건**(`project/spacing-scale`이 무출력), `--spacing-*` 목록이 task 전후 동일 | 해당 없음 — CSS 선언에 실행 권한이 없다 | 해당 없음 — 선언은 멱등 | 해당 없음 — 빌드 시점에 한 번 평가된다 |
 | 32 radius 사다리 | 테스트함 — `gate:tokens`가 `radius-xs`를 문서와 css 양쪽에서 찾아 짝을 맞춤 | 테스트함 — 문서 행만 넣고 css를 빼면 미해결로 잡힘 | 테스트함 — **저장소 전수 검사로 `rounded-[` 임의값이 0건**, skeleton 막대 셋이 전부 `rounded-xs` | 해당 없음 — CSS 선언에 실행 권한이 없다 | 해당 없음 — 선언은 멱등 | 해당 없음 — 빌드 시점에 한 번 평가된다 |
 | 31 verify | 테스트함 — `pnpm verify` 전체 통과 | 테스트함 — `gate:tokens`·`gate:docs`가 이관 누락을 잡는지 확인 | 해당 없음 — 통과 여부의 이진 판정 | 해당 없음 — CI 실행 권한은 기존 그대로다 | 해당 없음 — 재실행이 같은 결과 | 해당 없음 — 게이트가 순차로 돈다 |
@@ -341,6 +348,8 @@ src/app/(protected)/
 
 **홈**
 
+- `views/home/model/home-priority.ts`·`imminent-recruitment.ts`와 그 테스트 둘 — **지운다**(revision 10). 앞엣것이 export하는 `HomeViewModel`은 NOTES 라운드 6이 폐기한 「우선순위 하나만 노출」의 모양이라 새 뷰 모델과 이름이 부딪히고, 뒤엣것은 새 홈이 마감 임박을 알림 한 장에 넘겨 부르는 곳이 없어진다.
+- `views/home/model/home-view-model.ts` — 화면이 받는 뷰 모델 타입(**revision 10**). 블록 다섯이 그리는 것을 NOTES 라운드 6~34에서 파생시킨 모양이고, 낳을 쿼리가 없어 `entities/`가 아니라 여기 산다.
 - `views/home/model/home-blocks.ts` — 블록 다섯의 표시 판정. 입력은 화면이 받는 뷰 모델이고 출력은 블록마다 `filled | empty | hidden | failed | loading` 다섯 중 하나다. 「알림과 오늘만 접힌다」·「급여 셋 다 비면 한 줄」·「전부 실패면 한 장」이 여기 있고 `ui`에는 조건이 없다.
 - `views/home/model/countdown.ts` — 인증 창 두 단계와 예정 시각 초과 뒤집기. 기준 시각을 인자로 받는다.
 - `views/home/model/upcoming-shifts.ts` — D-n 계산, 내일부터 최대 셋, 배지 색 층위 셋.
@@ -386,7 +395,9 @@ src/app/(protected)/
 
 ## Data model
 
-해당 없음 — DB 스키마·마이그레이션·RLS 변경이 없다. 기존 쿼리(`listRecruitmentSchedules`·`listOwnApplications`·`confirmation.ts`·`get-schedule-prep.ts`)의 반환 타입을 읽기만 한다.
+해당 없음 — DB 스키마·마이그레이션·RLS 변경이 없다. 일정 화면은 기존 쿼리(`listRecruitmentSchedules`·`listOwnApplications`·`confirmation.ts`·`get-schedule-prep.ts`)의 반환 타입을 읽기만 한다.
+
+**홈은 읽을 쿼리가 없다(revision 10).** 다섯 블록 중 알림(`list-notifications.ts`)과 오늘(`get-confirmed-roster`) 둘만 쿼리가 있고 **이번 주·다가오는 근무·급여 셋은 없다** — 내 확정 근무를 기간으로 뽑는 쿼리도, 급여 쿼리도 저장소에 없다(`(tabs)/pay/page.tsx`가 `pay.mock.ts`를 먹는 이유가 같다). 그래서 홈의 뷰 모델 타입은 `views/home/model/`이 소유하고 필드는 NOTES 라운드 6~34의 블록 정의에서 파생시킨다. `(tabs)/page.tsx`는 `home.mock.ts`를 먹이고, 실제 데이터 배선은 쿼리를 만드는 후속 task가 맡는다. **`src/entities/**`는 이 task가 안 여는 경로 그대로다.**
 
 ## Interface
 
@@ -425,6 +436,9 @@ src/app/globals.css
 src/app/__tests__/**
 src/shared/ui/**
 src/widgets/app-shell/**
+src/shared/lib/**
+src/app/preview/**
+src/shared/config/app-tabs.config.ts
 src/widgets/offline/**
 src/views/home/**
 src/views/schedule/**
@@ -454,9 +468,9 @@ docs/standards/adr/0015-motion-library-scope.md
 
 **문서.** `FOUNDATIONS.md`는 원시 팔레트 일곱 행 추가, 타이포 표 재배치, 좌우 여백과 카드 문장 개정, 블러·그림 자산 두 절 신설, 모션 표 한 행 추가, **radius 표에 `radius-xs` 6px·`radius-cell` 12px 두 행 추가(revision 6·7)**, **「그림 자산」 절 고정색 목록에 회색 두 값 추가(revision 8), 「모션」 절 전체를 대역 셋 구조로 재구성(revision 9)**에 한정한다. **제품 의미 토큰 표의 값을 바꾸지 않는다.** `PATTERNS.md`·`COMPONENTS.md`·`WORKER-FLOWS.md`·`DESIGN.md`는 위 「문서 이관」이 줄 단위로 적은 것에 한정하고, `WORKER-FLOWS.md:80`·`:86`(포지션 교대)은 건드리지 않는다. **`docs/product/PRD.md`는 허용 경로에 없다** — 기획 반환 물음 넷은 이 task가 안 고친다. `docs/execution/reviews/**`는 이 task의 리뷰 결과와 backlog 누적 줄에, `docs/execution/retrospective/**`는 회고에 한정한다. `00-foundation.md`는 P0-T48 절의 `test_mode` 정정과 완료 기록에 한정한다.
 
-**토큰.** `globals.css`는 원시 일곱 추가, 의미 토큰 여섯 신설, `--color-border`·`--color-surface-weak`의 참조 교체, `body` 배경 교체, `@utility typo-*` 여덟 재배치와 `typo-display` 삭제, **`--radius-xs: 6px`·`--radius-cell: 12px` 두 줄 추가(revision 6·7)**, **`--duration-press`·`--duration-sweep` 두 토큰과 리빌 훑기 유틸리티 추가, `prefers-reduced-motion` 블록에 두 토큰 0ms 추가(revision 8)**에 한정한다. 모션 토큰·reduced-motion 블록·vaul/sonner 셀렉터를 건드리지 않는다.
+**토큰.** `globals.css`는 원시 일곱 추가, 의미 토큰 여섯 신설, `--color-border`·`--color-surface-weak`의 참조 교체, `body` 배경 교체, `@utility typo-*` 여덟 재배치와 `typo-display` 삭제, **`--radius-xs: 6px`·`--radius-cell: 12px` 두 줄 추가(revision 6·7)**, **`--duration-press`·`--duration-sweep` 두 토큰과 리빌 훑기 유틸리티 추가, `prefers-reduced-motion` 블록에 두 토큰 0ms 추가(revision 8)**, **`@layer base`에 `button:not(:disabled)`·`[role="button"]:not(:disabled)` 커서 규칙 한 자리 신설 · `@utility typo-body-sm` 14/20/400 신설 · `--ease-emphasized` 신설 · `@utility amount-sweep`을 `::after` 오버레이에서 시안의 `background-clip: text` 기법으로 교체(revision 11)**에 한정한다. **커서 규칙은 Tailwind v4 preflight가 버튼 커서를 `default`로 되돌린 것을 되찾는 것이고**, 개별 컴포넌트에 `cursor-pointer`를 뿌리지 않는다. 그 밖의 모션 토큰·reduced-motion 와일드카드·vaul/sonner 셀렉터를 건드리지 않는다. `src/shared/lib/**`는 `mask-digits` 같은 **표현용 순수 함수**에 한정한다 — `ui`가 치환·계산을 못 하기 때문에 생기는 자리이고, 도메인 규칙을 여기 두지 않는다. `src/app/preview/**`는 preview 라우트가 새 view에 넘기는 프롭을 맞추는 데, `src/shared/config/app-tabs.config.ts`는 **급여 자리에 들어간 알림 탭을 인수 조건 14의 넷으로 되돌리는 데** 한정한다.
 
-**화면.** `src/views/home/**`와 `src/views/schedule/**`는 전면 재작성이다. `src/shared/ui/**`는 위 Architecture가 이름을 댄 넷의 신설과 기존 `button`·`calendar`·`segmented-control`의 토큰 반영에 한정하고, 다른 shadcn 컴포넌트를 갈아엎지 않는다. `src/widgets/app-shell/**`는 탭 넷·채움 색·눌림·헤더 레이어에, `src/widgets/offline/**`는 배너를 셋째 줄로 옮기는 데 한정한다. `src/app/(protected)/(tabs)/**`는 두 화면의 라우트가 새 view에 넘기는 프롭을 맞추는 데만 쓴다 — 데이터 로딩 방식과 쿼리를 바꾸지 않는다.
+**화면.** `src/views/home/**`와 `src/views/schedule/**`는 전면 재작성이다. `src/shared/ui/**`는 위 Architecture가 이름을 댄 넷의 신설과 기존 `button`·`calendar`·`segmented-control`의 토큰 반영에 한정하고, 다른 shadcn 컴포넌트를 갈아엎지 않는다. `src/widgets/app-shell/**`는 탭 넷·채움 색·눌림·헤더 레이어에, `src/widgets/offline/**`는 배너를 셋째 줄로 옮기는 데 한정한다. `src/app/(protected)/(tabs)/**`는 두 화면의 라우트가 새 view에 넘기는 프롭을 맞추고 블록별 Suspense·에러 경계를 세우는 데 쓴다. **일정 라우트의 쿼리와 로딩 방식은 그대로 둔다.** 홈 라우트는 `deriveHomePriority`·`selectImminentRecruitment` 호출을 걷고 `home.mock.ts`를 먹인다(revision 10) — 새 쿼리를 만들지 않고 기존 쿼리를 고치지도 않는다.
 
 **치환 전용.** `src/views/**/ui/*.tsx`(홈·일정·preview 제외)와 `src/app/(protected)/admin/page.tsx`는 **`typo-display` 클래스 문자열 치환에만** 쓴다 — 화면 제목 스물넷은 `typo-headline-md`, `PayView.tsx:152`의 금액은 `typo-title`. 마크업 구조·프롭·조건·문구·다른 클래스를 건드리지 않는다. 열아홉 화면의 모양을 이 task가 고치는 것이 아니라 지워지는 유틸리티를 대체하는 것뿐이다. 나머지는 P0-T49~T54가 각자 다시 그린다.
 
@@ -471,7 +485,7 @@ docs/standards/adr/0015-motion-library-scope.md
 ## 미결 사항
 
 - **`action`·`action-pressed` 의미 토큰의 배경·테두리.** `FOUNDATIONS.md:32-33`의 `#eef4ff`·`#b8ceff`·`#e2ebff`를 홈·일정 시안이 한 번도 안 쓴다. 시안의 파란 테두리는 로딩 스피너와 변경 요청 중인 빈 점 둘뿐이고 파란 채움은 전부 틴트 사다리다. 새 틴트로 갈면 근거 없이 찍는 것이고, 두면 죽은 값이 남는다. 화면 둘로는 판단이 안 서므로 P0-T49~T54가 파란 테두리 표면을 쓰는지 보고 정한다.
-- **모션 대역의 탭 눌림 420ms.** 표에 행으로 올리면 「버튼 피드백 120~160ms」와 부딪히고, 예외로 적으면 표가 규칙을 다 못 담는다. 예외로 적되 P0-T49~T54에서 같은 성격의 값이 더 나오면 표를 다시 짠다.
+- **홈이 실제 데이터를 보는 날.** revision 10이 홈 라우트를 목으로 채웠다. 이번 주·다가오는 근무·급여 셋의 쿼리가 없어서인데, 그 쿼리를 어느 task가 만드는지 아직 안 정했다. `entities/schedule`에 「내 확정 근무를 기간으로」가 하나, `entities/pay`에 급여 하나가 필요하다. 화면 여섯이 끝난 뒤 P4 계열과 함께 정한다.
 - **긴 이름 말줄임.** 오늘 카드 오른쪽 포지션 이름과 알림 카드 두 줄 넘침의 기준값. 계산은 `model`이 하기로 정했으나 값을 아직 안 정했다. 실제 데이터의 이름 길이를 보고 퍼블리싱 중에 정한다.
 - **D 배지 형태 검수.** 색 층위는 라운드 27이 정했고 32px·radius 11이라는 형태는 라운드 7 수준의 검수를 안 받았다. 퍼블리싱하며 실제 렌더로 본다.
 - **홈 목 데이터의 요일.** 시안은 「8월 18일 월요일」인데 2026-08-18은 화요일이다. 퍼블리싱 때 맞춘다.

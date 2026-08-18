@@ -7,11 +7,11 @@ import { Button } from "@/shared/ui/button";
 afterEach(cleanup);
 
 describe("Button", () => {
-  it("기본값은 primary 56px 버튼이다", () => {
+  it("기본값은 primary 52px 버튼이다", () => {
     render(<Button>신청하기</Button>);
 
     const button = screen.getByRole("button", { name: "신청하기" });
-    expect(button).toHaveClass("h-14");
+    expect(button).toHaveClass("h-13");
     expect(button).toHaveClass("bg-action");
   });
 

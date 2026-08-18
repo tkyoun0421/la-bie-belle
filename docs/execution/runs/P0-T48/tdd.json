@@ -90,6 +90,34 @@
       "at": "2026-08-18T08:52:23Z",
       "phase": "green",
       "note": "5A라운드 GREEN(AC32·33·35·36·37): 공용 부품 여섯이 전부 섰다. skeleton-bar(--color-border·radius-xs 6·애니메이션 없음)·d-badge(radius-cell 12·색 층위 셋)·anchor-illustration(그림 여덟)·masked-amount(blur 7px 더미 + 필수 sweep prop)·useAmountReveal(maskedByDefault 인자, revealedByHand 하나만 들고 masked·revealing을 파생)·useAmountMasking(zustand persist, 키 labiebelle:amount-masking, skipHydration). 시안에 SVG가 없던 change-approved·change-rejected 둘은 확정 시안의 요소만 조합해 그렸다 — 사각 기하 rx=4.5와 흰 체크 path는 data-notice=1 카드에서, 초록은 green 그라디언트 #54d787→#11834a, 회색은 FOUNDATIONS 고정색에 새로 박은 #c9d1dc→#7c828a. 빨강 없음. 훑기는 globals.css의 @utility amount-sweep 하나이고 지속시간을 인라인으로 박지 않아 --duration-sweep 토큰이 정본이다. 24 files passed, 164 passed, exit 0."
+    },
+    {
+      "command": "pnpm vitest run src/views/home/hooks/__tests__/useNoticeDeck.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-18T10:31:00Z",
+      "phase": "red",
+      "note": "실제 화면에서 나온 버그의 RED(위험 기반 테스트 21·22 상태의 자리): 알림 카드가 첫 마운트에 떴다가 사라진다. useNoticeDeck이 useState 초기화 함수로 렌더 중에 localStorage를 읽어 서버 첫 렌더(window 없음, 빈 집합)와 클라이언트 수화 렌더(끈 목록 있음)가 어긋난다. 계약을 「첫 렌더 결과가 저장소 내용과 무관하게 같다」로 잡아 렌더마다 currentId 스냅샷을 배열에 쌓는 방식으로 3건을 세웠다 — 저장소가 비었을 때·끈 목록이 심겼을 때 둘 다 snapshots[0]이 null이어야 하고(짝으로 하나의 사실), 첫 렌더 시점 Storage.prototype.getItem 호출 횟수가 0이어야 한다. 기존 8건은 한 글자도 안 건드렸다. Test Files 1 failed (1), Tests 3 failed | 8 passed (11), exit 1."
+    },
+    {
+      "command": "pnpm vitest run src/views/home/hooks/__tests__/useNoticeDeck.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-18T10:44:00Z",
+      "phase": "green",
+      "note": "알림 깜빡임 GREEN. useState 초기화 함수로 렌더 중 localStorage를 읽던 자리를 걷었다. 제안했던 useState(null)+useEffect(setState)는 react-hooks/set-state-in-effect 린트에 막혔고(저장소 선례 셋 useOnlineStatus·useReducedMotion·motion-provider가 전부 같은 자리에서 우회했다), useSyncExternalStore + 날짜별 작은 스토어(useMemo로 today마다 재생성)로 풀었다. getSnapshot은 캐시만 읽고 readDismissedIds를 직접 안 부른다 — 이 성질이 깨지면 새 3건이 다시 빨개진다. UseNoticeDeckResult 필드 다섯은 그대로. Test Files 1 passed (1), Tests 11 passed (11), exit 0. 전체 pnpm vitest run src/views src/shared는 91 files / 588 passed."
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/masked-amount.test.tsx src/shared/hooks/__tests__/useAmountReveal.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-18T11:05:00Z",
+      "phase": "red",
+      "note": "실제 화면에서 나온 금액 리빌 버그 넷의 RED(인수 조건 37, 위험 표 21·22·35~37행). 확정 시안 home.html이 정본이고 구현이 틀렸다 — :2699가 누를 때마다 열림/가림을 뒤집는데 useAmountReveal.reveal()은 한 방향이고 MaskedAmount는 가려졌을 때만 button이라 열린 뒤 누를 수조차 없었다. :2709-2711은 animationend에 revealing 클래스를 떼는데 구현은 켜지면 영원히 켜져 있었다. :2314-2316은 더미가 실제 금액의 숫자만 0으로 바꾼 같은 길이 문자열인데 구현은 고정 문자열 ○,○○○,○○○원이라 열고 닫을 때마다 폭이 튀었다. :931의 .amt{cursor:pointer}가 두 상태 모두에 걸리는데 Tailwind v4 preflight가 button 커서를 default로 되돌려 놨다. 계약을 toggle/settle과 onToggle/onSweepEnd로 다시 잡았다 — onReveal은 이름이 한 방향을 못 박아 버그를 낳았으므로 없앤다. 시안 :2316의 year 행 mask 00,000,000원은 real 3,744,000원보다 자릿수가 하나 많은 시안 자체 오타라 자릿수 검증 사례는 :2321의 2,652,000원→0,000,000원으로 대체했다. Test Files 2 failed (2), Tests 15 failed | 10 passed (25), exit 1."
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__/masked-amount.test.tsx src/shared/hooks/__tests__/useAmountReveal.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-18T11:35:00Z",
+      "phase": "green",
+      "note": "금액 리빌 버그 넷 GREEN. useAmountReveal이 손의 뜻을 none/open/close 셋으로 들고 revealing을 별도 상태로 분리해 toggle이 양방향이 됐다. MaskedAmount는 두 상태 다 button이고 aria-label이 상태를 따라가며, 더미는 shared/lib/mask-digits.ts의 순수 함수가 실제 금액의 숫자만 0으로 바꿔 폭이 같다. globals.css의 @utility amount-sweep을 ::after 오버레이에서 시안의 background-clip:text 그라디언트로 전면 교체했고, ease-in-out은 --ease-out으로 흡수했다(새 이징 토큰을 안 만든다). @layer base에 button:not(:disabled) 커서 규칙 한 자리를 세워 Tailwind v4 preflight가 되돌린 pointer를 앱 전체에서 되찾았다. animationend는 jsdom 30이 window.AnimationEvent를 안 만들어 React가 webkit 프리픽스로 오판하는 조합 버그가 있어, tests/setup-dom.ts 폴리필(허용 경로 밖)을 되돌리고 useRef + 네이티브 addEventListener로 붙였다. Test Files 2 passed (2), Tests 25 passed (25), exit 0. 전체 pnpm vitest run src/views src/shared는 92 files / 600 passed."
     }
   ]
 }

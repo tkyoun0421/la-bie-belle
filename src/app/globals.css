@@ -154,6 +154,12 @@
   font-weight: 500;
 }
 
+@utility typo-body-sm {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+
 @utility typo-label {
   font-size: 14px;
   line-height: 20px;
@@ -272,36 +278,25 @@
 
 @keyframes amount-sweep {
   from {
-    transform: translateX(-120%);
-    opacity: 0;
-  }
-  30% {
-    opacity: 1;
+    background-position: 100% 0;
   }
   to {
-    transform: translateX(120%);
-    opacity: 0;
+    background-position: 0% 0;
   }
 }
 
 @utility amount-sweep {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(
-      100deg,
-      transparent 20%,
-      var(--color-surface-weak) 50%,
-      transparent 80%
-    );
-    animation: amount-sweep var(--duration-sweep) var(--ease-out) 1;
-  }
+  background-image: linear-gradient(
+    100deg,
+    currentColor 40%,
+    var(--color-text-weak) 50%,
+    currentColor 60%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: amount-sweep var(--duration-sweep) var(--ease-out) 1;
 }
 
 @utility motion-stagger-item {
@@ -368,6 +363,13 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-action);
   outline-offset: 2px;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

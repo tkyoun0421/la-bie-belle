@@ -12,7 +12,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "h-14 rounded-lg bg-action px-6 text-on-action",
+        primary: "h-13 rounded-lg bg-action px-6 text-on-action",
         secondary: "h-12 rounded-md bg-neutral-surface px-5 text-text-strong",
         tertiary: "min-h-11 bg-transparent px-2 text-action",
         destructive: "h-12 rounded-md bg-danger px-5 text-on-action",

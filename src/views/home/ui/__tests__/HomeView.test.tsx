@@ -1,21 +1,19 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { ReactNode, Ref } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { HomeView } from "@/views/home/ui/HomeView";
 import {
-  HOME_ATTENDANCE_CHECKING,
-  HOME_ATTENDANCE_FAILURE_LOW_ACCURACY,
-  HOME_ATTENDANCE_FAILURE_OUT_OF_RANGE,
-  HOME_ATTENDANCE_FAILURE_PERMISSION_DENIED,
-  HOME_ATTENDANCE_SUCCESS,
-  HOME_CHECK_IN_AVAILABLE,
-  HOME_CHECK_OUT_AVAILABLE,
-  HOME_CONFIRMATION_CHANGE,
-  HOME_DEADLINE_APPLICATION,
-  HOME_DEADLINE_APPLICATION_APPLIED,
-  HOME_EMPTY,
-  HOME_NEXT_SHIFT,
+  HOME_ALL_EMPTY,
+  HOME_ALL_FAILED,
+  HOME_BASIC,
+  HOME_BEFORE_WINDOW,
+  HOME_LOADING,
+  HOME_NO_SHIFT_TODAY,
+  HOME_OVERDUE,
+  HOME_PARTIAL_FAILURE,
+  HOME_WINDOW_OPEN,
 } from "@/views/home/ui/home.mock";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
@@ -41,108 +39,109 @@ vi.mock("next/link", () => ({
 
 afterEach(cleanup);
 
-describe("HomeView", () => {
-  it("출근 가능 상태는 출근 인증하기 행동을 보여준다", () => {
-    render(<HomeView model={HOME_CHECK_IN_AVAILABLE} />);
-    expect(screen.getByRole("button", { name: "출근 인증하기" })).toBeInTheDocument();
+describe("HomeView — 기본", () => {
+  it("알림 · 오늘 · 이번 주 · 다가오는 근무 · 급여 다섯 블록을 세운다", () => {
+    render(<HomeView {...HOME_BASIC} />);
+
+    expect(screen.getByText("8월 22일 공석")).toBeInTheDocument();
+    expect(screen.getByText("1:18:59")).toBeInTheDocument();
+    expect(screen.getByText("주급 · 3회 15시간")).toBeInTheDocument();
+    expect(screen.getByText("접수 · 10:00 ~ 15:00")).toBeInTheDocument();
+    expect(screen.getByText("지난주 · 2회 11시간")).toBeInTheDocument();
   });
 
-  it("퇴근 가능 상태는 퇴근 인증하기 행동을 보여준다", () => {
-    render(<HomeView model={HOME_CHECK_OUT_AVAILABLE} />);
-    expect(screen.getByRole("button", { name: "퇴근 인증하기" })).toBeInTheDocument();
+  it("다가오는 근무의 D 배지가 D-1 · D-2 · D-4 순서로 선다", () => {
+    render(<HomeView {...HOME_BASIC} />);
+    expect(screen.getByText("D-1")).toBeInTheDocument();
+    expect(screen.getByText("D-2")).toBeInTheDocument();
+    expect(screen.getByText("D-4")).toBeInTheDocument();
   });
 
-  it("GPS 확인 중 상태는 진행 표시와 함께 문구를 보여주고 보조 기술에 전달한다", () => {
-    render(<HomeView model={HOME_ATTENDANCE_CHECKING} />);
-    const status = screen.getByRole("status");
-    expect(status).toHaveTextContent("현재 위치를 확인하고 있어요");
-    expect(status.querySelector("[aria-hidden]")).not.toBeNull();
+  it("금액은 기본적으로 가려져 있다", () => {
+    render(<HomeView {...HOME_BASIC} />);
+    expect(screen.getAllByRole("button", { name: "금액 보기" }).length).toBeGreaterThan(0);
   });
 
-  it("GPS 성공 상태는 서버 확인 시각을 보여준다", () => {
-    render(<HomeView model={HOME_ATTENDANCE_SUCCESS} />);
-    const status = screen.getByRole("status");
-    expect(status).toHaveTextContent("현장 위치가 확인됐어요");
-    expect(status).toHaveTextContent("08:58");
+  it("금액 하나를 열면 화면의 나머지 금액도 함께 열린다", async () => {
+    const user = userEvent.setup();
+    render(<HomeView {...HOME_BASIC} />);
+
+    const [firstRevealButton] = screen.getAllByRole("button", { name: "금액 보기" });
+    await user.click(firstRevealButton!);
+
+    expect(screen.getByText("132,000원")).toBeInTheDocument();
+    expect(screen.getByText("360,000원")).toBeInTheDocument();
+  });
+});
+
+describe("HomeView — 오늘 블록의 세 상태", () => {
+  it("인증 창이 열리기 전에는 열리는 시각과 함께 회색(비활성) 버튼을 보여준다", () => {
+    render(<HomeView {...HOME_BEFORE_WINDOW} />);
+
+    expect(screen.getByText("09:00부터 인증 가능")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "출근 인증하기" })).toBeDisabled();
   });
 
-  it("GPS 실패(권한 꺼짐) 상태를 보여준다", () => {
-    render(<HomeView model={HOME_ATTENDANCE_FAILURE_PERMISSION_DENIED} />);
-    expect(screen.getByText("위치 권한이 꺼져 있어요")).toBeInTheDocument();
+  it("인증 창이 열린 뒤에는 예정 시각까지 남은 시간과 활성 버튼을 보여준다", () => {
+    render(<HomeView {...HOME_WINDOW_OPEN} />);
+
+    expect(screen.getByText("퇴근 시각까지")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "퇴근 인증하기" })).toBeEnabled();
   });
 
-  it("GPS 실패(정확도 낮음) 상태를 보여준다", () => {
-    render(<HomeView model={HOME_ATTENDANCE_FAILURE_LOW_ACCURACY} />);
-    expect(screen.getByText("위치 정확도가 낮아요")).toBeInTheDocument();
+  it("예정 시각을 지나면 경과 시간이 +로 뒤집히고 그래도 인증할 수 있다", () => {
+    render(<HomeView {...HOME_OVERDUE} />);
+
+    expect(screen.getByText("+0:12:04")).toBeInTheDocument();
+    expect(screen.getByText("출근 시각에서 지남")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "출근 인증하기" })).toBeEnabled();
+  });
+});
+
+describe("HomeView — 빈 상태", () => {
+  it("근무 없는 날은 오늘 블록이 통째로 사라진다", () => {
+    render(<HomeView {...HOME_NO_SHIFT_TODAY} />);
+
+    expect(screen.queryByRole("button", { name: "출근 인증하기" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "퇴근 인증하기" })).toBeNull();
+    expect(screen.queryByText(/포지션 보기/)).toBeNull();
   });
 
-  it("GPS 실패(범위 밖) 상태를 보여준다", () => {
-    render(<HomeView model={HOME_ATTENDANCE_FAILURE_OUT_OF_RANGE} />);
-    expect(screen.getByText("근무지 범위 밖이에요")).toBeInTheDocument();
+  it("알림 없음 · 오늘 없음 · 빈 주 · 다가오는 근무 없음 · 급여 없음이 계약대로 렌더된다", () => {
+    render(<HomeView {...HOME_ALL_EMPTY} />);
+
+    expect(screen.queryByText(/공석|스케줄 확정|배정 변경/)).toBeNull();
+    expect(screen.getByText("이번 주 근무가 없어요")).toBeInTheDocument();
+    expect(screen.getByText("다가오는 근무가 없어요")).toBeInTheDocument();
+    expect(screen.getByText("아직 계산할 급여가 없어요")).toBeInTheDocument();
+  });
+});
+
+describe("HomeView — 로딩과 실패", () => {
+  it("로딩 상태는 실제 값을 렌더하지 않는다", () => {
+    render(<HomeView {...HOME_LOADING} />);
+
+    expect(screen.queryByText("주급 · 3회 15시간")).toBeNull();
+    expect(screen.queryByText("D-1")).toBeNull();
   });
 
-  it("마감 임박 신청 상태(미신청)는 신청 유도 문구와 신청 버튼을 보여준다", () => {
-    render(<HomeView model={HOME_DEADLINE_APPLICATION} />);
-    expect(screen.getByText("근무 신청 마감이 임박했어요")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "지금 신청하기" })).toBeInTheDocument();
+  it("일부 블록만 실패해도 나머지 블록은 그대로 산다", () => {
+    render(<HomeView {...HOME_PARTIAL_FAILURE} />);
+
+    expect(screen.getByText("다가오는 근무를 불러오지 못했어요")).toBeInTheDocument();
+    expect(screen.getByText("급여를 불러오지 못했어요")).toBeInTheDocument();
+    expect(screen.getByText("8월 22일 공석")).toBeInTheDocument();
+    expect(screen.getByText("주급 · 3회 15시간")).toBeInTheDocument();
   });
 
-  it("마감 임박 신청 상태(신청 완료)는 변경 가능 안내를 보여준다", () => {
-    render(<HomeView model={HOME_DEADLINE_APPLICATION_APPLIED} />);
-    expect(screen.getByText("신청 완료 — 마감 전까지 변경 가능")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "일정에서 확인하기" })).toBeInTheDocument();
-  });
+  it("전부 실패하면 다섯 블록 모두 실패 문구와 다시 시도 버튼을 보여준다", () => {
+    render(<HomeView {...HOME_ALL_FAILED} />);
 
-  it("확정 스케줄 변경 확인 상태는 변경 요약을 보여준다", () => {
-    render(<HomeView model={HOME_CONFIRMATION_CHANGE} />);
-    expect(screen.getByText("시작 시간이 30분 당겨졌어요")).toBeInTheDocument();
-  });
-
-  it("확정 스케줄 변경 확인 상태의 링크는 nav-forward 전환 타입을 붙인다", () => {
-    render(<HomeView model={HOME_CONFIRMATION_CHANGE} />);
-    expect(screen.getByRole("link", { name: "확인하기" })).toHaveAttribute(
-      "data-transition-types",
-      "nav-forward",
-    );
-  });
-
-  it("다음 근무 상태를 보여준다", () => {
-    render(<HomeView model={HOME_NEXT_SHIFT} />);
-    expect(screen.getByText("다음 근무")).toBeInTheDocument();
-  });
-
-  it("다음 근무 상태의 링크는 nav-forward 전환 타입을 붙인다", () => {
-    render(<HomeView model={HOME_NEXT_SHIFT} />);
-    expect(screen.getByRole("link", { name: "상세 보기" })).toHaveAttribute(
-      "data-transition-types",
-      "nav-forward",
-    );
-  });
-
-  it("빈 상태를 보여준다", () => {
-    render(<HomeView model={HOME_EMPTY} />);
-    expect(screen.getByText("아직 할 일이 없어요")).toBeInTheDocument();
-  });
-
-  it("홈에는 예상 급여 금액을 표시하지 않는다", () => {
-    render(<HomeView model={HOME_NEXT_SHIFT} />);
-    expect(screen.queryByText(/원$/)).toBeNull();
-  });
-
-  it("출퇴근 원본을 수정·삭제하는 UI를 어떤 상태에서도 제공하지 않는다(INV-ATT-01)", () => {
-    for (const model of [
-      HOME_CHECK_IN_AVAILABLE,
-      HOME_CHECK_OUT_AVAILABLE,
-      HOME_ATTENDANCE_CHECKING,
-      HOME_ATTENDANCE_SUCCESS,
-      HOME_ATTENDANCE_FAILURE_PERMISSION_DENIED,
-      HOME_ATTENDANCE_FAILURE_LOW_ACCURACY,
-      HOME_ATTENDANCE_FAILURE_OUT_OF_RANGE,
-    ]) {
-      const { unmount } = render(<HomeView model={model} />);
-      expect(screen.queryByRole("button", { name: /수정/ })).toBeNull();
-      expect(screen.queryByRole("button", { name: /삭제/ })).toBeNull();
-      unmount();
-    }
+    expect(screen.getByText("알림을 불러오지 못했어요")).toBeInTheDocument();
+    expect(screen.getByText("오늘 근무를 불러오지 못했어요")).toBeInTheDocument();
+    expect(screen.getByText("이번 주를 불러오지 못했어요")).toBeInTheDocument();
+    expect(screen.getByText("다가오는 근무를 불러오지 못했어요")).toBeInTheDocument();
+    expect(screen.getByText("급여를 불러오지 못했어요")).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "다시 시도" }).length).toBe(5);
   });
 });

@@ -38,26 +38,15 @@ const SCREENS: PreviewScreen[] = [
   {
     label: "홈",
     scenarios: [
-      { label: "출근 가능", node: <HomeView model={homeMocks.HOME_CHECK_IN_AVAILABLE} /> },
-      { label: "퇴근 가능", node: <HomeView model={homeMocks.HOME_CHECK_OUT_AVAILABLE} /> },
-      { label: "마감 임박 신청", node: <HomeView model={homeMocks.HOME_DEADLINE_APPLICATION} /> },
-      { label: "확정 변경 확인", node: <HomeView model={homeMocks.HOME_CONFIRMATION_CHANGE} /> },
-      { label: "다음 근무", node: <HomeView model={homeMocks.HOME_NEXT_SHIFT} /> },
-      { label: "빈 상태", node: <HomeView model={homeMocks.HOME_EMPTY} /> },
-      { label: "GPS 확인 중", node: <HomeView model={homeMocks.HOME_ATTENDANCE_CHECKING} /> },
-      { label: "GPS 성공", node: <HomeView model={homeMocks.HOME_ATTENDANCE_SUCCESS} /> },
-      {
-        label: "GPS 실패-권한 꺼짐",
-        node: <HomeView model={homeMocks.HOME_ATTENDANCE_FAILURE_PERMISSION_DENIED} />,
-      },
-      {
-        label: "GPS 실패-정확도 낮음",
-        node: <HomeView model={homeMocks.HOME_ATTENDANCE_FAILURE_LOW_ACCURACY} />,
-      },
-      {
-        label: "GPS 실패-범위 밖",
-        node: <HomeView model={homeMocks.HOME_ATTENDANCE_FAILURE_OUT_OF_RANGE} />,
-      },
+      { label: "기본", node: <HomeView {...homeMocks.HOME_BASIC} /> },
+      { label: "인증 창 열리기 전", node: <HomeView {...homeMocks.HOME_BEFORE_WINDOW} /> },
+      { label: "인증 창 열린 뒤", node: <HomeView {...homeMocks.HOME_WINDOW_OPEN} /> },
+      { label: "예정 시각 초과", node: <HomeView {...homeMocks.HOME_OVERDUE} /> },
+      { label: "근무 없는 날", node: <HomeView {...homeMocks.HOME_NO_SHIFT_TODAY} /> },
+      { label: "전부 빈 날", node: <HomeView {...homeMocks.HOME_ALL_EMPTY} /> },
+      { label: "로딩", node: <HomeView {...homeMocks.HOME_LOADING} /> },
+      { label: "부분 실패", node: <HomeView {...homeMocks.HOME_PARTIAL_FAILURE} /> },
+      { label: "전부 실패", node: <HomeView {...homeMocks.HOME_ALL_FAILED} /> },
     ],
   },
   {
