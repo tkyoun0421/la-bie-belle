@@ -18,7 +18,7 @@ import {
 
 const TAB_SEQUENCE = [
   { link: "일정", heading: "일정" },
-  { link: "알림", heading: "알림" },
+  { link: "급여", heading: "예상 급여" },
   { link: "전체", heading: "전체" },
   { link: "홈", heading: "홈" },
 ] as const;
@@ -540,7 +540,7 @@ test.describe("탭 이동과 상세 진입", () => {
 
     const tabBar = page.getByRole("navigation", { name: "주요 메뉴" });
     await tabBar.getByRole("link", { name: "일정" }).click();
-    await tabBar.getByRole("link", { name: "알림" }).click();
+    await page.getByRole("link", { name: /알림/ }).click();
 
     await expect(page.getByRole("heading", { level: 1, name: "알림" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 1, name: "일정" })).not.toBeVisible();

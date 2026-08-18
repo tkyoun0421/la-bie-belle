@@ -1,7 +1,9 @@
 "use client";
 
 import { X } from "lucide-react";
+import { useEffect, useRef } from "react";
 
+import { cn } from "@/shared/lib/cn";
 import { AnchorIllustration, type IllustrationName } from "@/shared/ui/anchor-illustration";
 import type { UseNoticeDeckResult } from "@/views/home/hooks/useNoticeDeck";
 import { toNoticeContent } from "@/views/home/model/notice-content";
@@ -29,6 +31,55 @@ function illustrationOf(kind: NoticeItem["kind"]): IllustrationName {
   }
 }
 
+type NoticeCardProps = {
+  notice: NoticeItem;
+  current: boolean;
+  entering: boolean;
+  leaving: boolean;
+  onDismiss: () => void;
+  onSettle: () => void;
+};
+
+function NoticeCard({ notice, current, entering, leaving, onDismiss, onSettle }: NoticeCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) {
+      return;
+    }
+    el.addEventListener("animationend", onSettle);
+    return () => el.removeEventListener("animationend", onSettle);
+  }, [onSettle]);
+
+  return (
+    <div
+      ref={cardRef}
+      className={cn(
+        "absolute inset-0 flex flex-row items-center gap-3 rounded-xl bg-surface py-3 pr-2 pl-4",
+        entering ? "motion-notice-in" : "",
+        leaving ? "motion-notice-out" : "",
+      )}
+    >
+      <AnchorIllustration name={illustrationOf(notice.kind)} size={28} />
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <p className="typo-body text-text-strong">{toNoticeContent(notice).value}</p>
+        <p className="typo-caption text-text-muted">{toNoticeContent(notice).caption}</p>
+      </div>
+      {current ? (
+        <button
+          type="button"
+          aria-label="알림 끄기"
+          onClick={onDismiss}
+          className="flex size-11 shrink-0 items-center justify-center rounded-pill text-text-weak transition-transform duration-[var(--duration-feedback)] ease-[var(--ease-out)] active:scale-[0.88]"
+        >
+          <X aria-hidden className="size-[17px]" strokeWidth={1.8} />
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
 export function NoticeBlock({ status, notices, deck }: NoticeBlockProps) {
   if (status === "failed") {
     return (
@@ -38,30 +89,32 @@ export function NoticeBlock({ status, notices, deck }: NoticeBlockProps) {
     );
   }
 
+  const collapsed = deck.currentId === null && deck.leavingId === null;
+
   return (
-    <>
-      {notices.map((notice) =>
-        notice.id === deck.currentId ? (
-          <div
+    <div
+      data-testid="notice-slot"
+      className={cn("motion-notice-slot h-17.5", collapsed ? "motion-notice-collapsed" : "")}
+    >
+      {notices.map((notice) => {
+        const isCurrent = notice.id === deck.currentId;
+        const isLeaving = notice.id === deck.leavingId;
+        if (!isCurrent && !isLeaving) {
+          return null;
+        }
+
+        return (
+          <NoticeCard
             key={notice.id}
-            className="flex flex-row items-center gap-3 rounded-xl bg-surface py-3 pr-2 pl-4"
-          >
-            <AnchorIllustration name={illustrationOf(notice.kind)} size={28} />
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <p className="typo-body text-text-strong">{toNoticeContent(notice).value}</p>
-              <p className="typo-caption text-text-muted">{toNoticeContent(notice).caption}</p>
-            </div>
-            <button
-              type="button"
-              aria-label="알림 끄기"
-              onClick={deck.dismiss}
-              className="flex size-11 shrink-0 items-center justify-center rounded-pill text-text-weak"
-            >
-              <X aria-hidden className="size-[17px]" strokeWidth={1.8} />
-            </button>
-          </div>
-        ) : null,
-      )}
-    </>
+            notice={notice}
+            current={isCurrent}
+            entering={isCurrent && deck.phase === "entering"}
+            leaving={isLeaving}
+            onDismiss={deck.dismiss}
+            onSettle={deck.settle}
+          />
+        );
+      })}
+    </div>
   );
 }

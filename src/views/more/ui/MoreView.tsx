@@ -16,7 +16,6 @@ type MoreViewProps = {
 export function MoreView({ onSignOut, roles }: MoreViewProps) {
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-3 p-4 pb-nav-safe">
-      <h1 className="px-1 typo-headline-md text-text-strong">전체</h1>
       <ul className="flex flex-col overflow-hidden rounded-xl bg-surface [&>li:last-child>a]:border-b-0">
         <li>
           <Link

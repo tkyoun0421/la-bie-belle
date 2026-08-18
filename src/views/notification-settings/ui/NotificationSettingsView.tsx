@@ -4,7 +4,6 @@ import { usePushSubscription } from "@/features/push/hooks/usePushSubscription";
 import type { PushSupportState } from "@/features/push/model/push-support";
 import { Button } from "@/shared/ui/button";
 
-const TITLE = "알림 설정";
 const ENABLE_LABEL = "켜기";
 const DISABLE_LABEL = "끄기";
 
@@ -31,7 +30,6 @@ export function NotificationSettingsView() {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-screen-sm flex-col gap-6 p-6 pb-nav-safe">
-      <h1 className="px-1 typo-headline-md text-text-strong">{TITLE}</h1>
       <section className="flex flex-col gap-4">
         <p className="typo-body text-text">{STATUS_DESCRIPTION[subscription.status]}</p>
         {subscription.status === "ready" ? (

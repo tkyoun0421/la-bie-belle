@@ -88,10 +88,21 @@ describe("Button", () => {
     expect(link).toHaveClass("bg-action");
   });
 
-  it("눌림 피드백을 토큰 시간으로 표현한다", () => {
+  it("눌림 피드백을 토큰 시간으로 표현한다 — primary는 시안 확정값 .985다(home.html:617-634)", () => {
     render(<Button>저장</Button>);
 
     const className = screen.getByRole("button", { name: "저장" }).className;
+    expect(className).toContain("duration-[var(--duration-feedback)]");
+    expect(className).toContain("ease-[var(--ease-out)]");
+    expect(className).toContain("active:scale-[0.985]");
+  });
+
+  it("quiet variant는 시안 확정값 .97로 primary와 배율이 갈린다(home.html:1271-1289)", () => {
+    render(<Button variant="quiet">다시 시도</Button>);
+
+    const className = screen.getByRole("button", { name: "다시 시도" }).className;
+    expect(className).toContain("bg-surface-weak");
+    expect(className).not.toContain("bg-action");
     expect(className).toContain("duration-[var(--duration-feedback)]");
     expect(className).toContain("ease-[var(--ease-out)]");
     expect(className).toContain("active:scale-[0.97]");

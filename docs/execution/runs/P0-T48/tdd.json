@@ -118,6 +118,20 @@
       "at": "2026-08-18T11:35:00Z",
       "phase": "green",
       "note": "금액 리빌 버그 넷 GREEN. useAmountReveal이 손의 뜻을 none/open/close 셋으로 들고 revealing을 별도 상태로 분리해 toggle이 양방향이 됐다. MaskedAmount는 두 상태 다 button이고 aria-label이 상태를 따라가며, 더미는 shared/lib/mask-digits.ts의 순수 함수가 실제 금액의 숫자만 0으로 바꿔 폭이 같다. globals.css의 @utility amount-sweep을 ::after 오버레이에서 시안의 background-clip:text 그라디언트로 전면 교체했고, ease-in-out은 --ease-out으로 흡수했다(새 이징 토큰을 안 만든다). @layer base에 button:not(:disabled) 커서 규칙 한 자리를 세워 Tailwind v4 preflight가 되돌린 pointer를 앱 전체에서 되찾았다. animationend는 jsdom 30이 window.AnimationEvent를 안 만들어 React가 webkit 프리픽스로 오판하는 조합 버그가 있어, tests/setup-dom.ts 폴리필(허용 경로 밖)을 되돌리고 useRef + 네이티브 addEventListener로 붙였다. Test Files 2 passed (2), Tests 25 passed (25), exit 0. 전체 pnpm vitest run src/views src/shared는 92 files / 600 passed."
+    },
+    {
+      "command": "pnpm vitest run src/views src/widgets src/shared",
+      "exit_code": 1,
+      "at": "2026-08-18T15:46:16Z",
+      "phase": "red",
+      "note": "5D-b RED(인수 조건 39, NOTES 라운드 38 전사표). 사용자가 실제 화면에서 「선택했을 때 애니메이션들이 적용 안 됐고 홈에 알림도 마찬가지」라고 짚은 자리다 — 모션 선언 열여덟 중 열둘이 코드에 아예 없었다. 주 셀 선택 스쿼시, 알림 카드 진입·퇴장·슬롯 접힘과 animationend의 settle 배선, 눌림 여섯, 주 skeleton이 요일·날짜를 실제 글자로 보여주는 것(week-strip에 월요일 시작 주 일곱을 내는 함수 신설, 알림의 일요일 시작과 대비해 못 박고 UTC·Asia/Seoul·America/New_York 셋에서 검증), 급여 세 행이 눌리는 요소인 것. 결정 둘을 받아 더했다 — ① 인증 버튼 눌림 배율은 시안이 이긴다(.button .985 · .button-quiet .97 · .amt .96로 시안이 요소마다 다르게 주는데 button.tsx가 quiet 자리의 .97을 primary에 쓰고 있었다), 낡은 단언을 갱신하고 quiet 단언을 신설했다. ② 알림 퇴장은 useNoticeDeck이 나가는 카드 id를 노출하는 쪽으로 간다 — 시안이 카드를 전부 마운트해 두는 것은 바닐라 DOM 사정이고 React에서는 노출값 하나가 얇다. 마지막 카드를 끄면 currentId가 null이고 나가는 카드만 남는데 그 상태에서도 퇴장이 끝까지 돌고 슬롯이 접히는 것이 경계값이다. 기존 11건(렌더 중 localStorage 미접근 3건 포함)은 한 글자도 안 건드렸다. Test Files 10 failed | 97 passed (107), Tests 34 failed | 648 passed (682), exit 1."
+    },
+    {
+      "command": "pnpm vitest run src/views src/widgets src/shared",
+      "exit_code": 0,
+      "at": "2026-08-18T16:20:42Z",
+      "phase": "green",
+      "note": "5D GREEN(인수 조건 39·40). 모션 열여덟이 섰다 — 알림 진입·퇴장·슬롯 접힘은 useNoticeDeck이 leavingId를 들고 NoticeBlock이 NoticeCard로 쪼개져 현재·나가는 카드를 동시에 그리며 각자 animationend에서 settle을 부른다(JSX onAnimationEnd가 아니라 native listener인 이유는 jsdom이 window.AnimationEvent를 안 만들어 React가 리스너 등록 자체를 건너뛰기 때문이고 MaskedAmount가 이미 같은 자리에서 같은 패턴을 쓴다). 주 셀 선택은 tab-press와 값이 같아 키프레임을 재사용했다. 눌림 여섯과 button primary .985·quiet .97 분리. week-strip에 월요일 시작 toCurrentWeekLabels를 세워 BlockSkeleton이 요일·날짜를 실제 글자로 보여준다. 급여 세 행이 눌린다. 슬롯 접힘의 height 트랜지션은 project/motion-tokens가 레이아웃 속성 애니메이션을 막아 TSX 인라인 대신 globals.css @utility로 옮겼다. 5D-a 산출물(헤더·탭바·커서·이징 토큰)도 이 GREEN이 함께 덮는다. 추가로 사용자가 실제 화면에서 짚은 둘 — 탭 아이콘을 lucide fill=currentColor로 흉내 낸 것이 획 아이콘을 덩어리로 뭉개서, 시안의 fill/line path를 d 값 그대로 옮긴 TabIcon으로 갈았다(발명이 아니라 전사). 셸 둘의 안쪽 내용에 mx-auto max-w-screen-sm을 걸어 콘텐츠 기둥과 맞추되 유리 배경과 탭바 바닥은 화면 끝까지 둔다 — 좁히면 iOS 하단 인디케이터 뒤 배경이 빈다. 나가는 쪽 route-fade e2e 3건은 사전 결함이라 손대지 않았다. Test Files 107 passed (107), Tests 682 passed (682), exit 0. 전체 pnpm vitest run은 276 files / 1934 passed, pnpm build 성공."
     }
   ]
 }

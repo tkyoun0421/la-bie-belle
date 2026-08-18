@@ -120,6 +120,81 @@ describe("useNoticeDeck (위험 기반 테스트 21·22 — 상태의 자리)", 
   });
 });
 
+describe("useNoticeDeck (인수 조건 39, 라운드 38 #6 — 퇴장 애니메이션이 돌 자리를 훅이 노출한다)", () => {
+  it("dismiss()는 방금 끈 카드를 leavingId로 남기고 currentId는 그대로 다음 카드로 넘어간다", () => {
+    const { result } = renderHook(() => useNoticeDeck(THREE_NOTICES, TODAY));
+
+    act(() => {
+      result.current.dismiss();
+    });
+
+    expect(result.current.leavingId).toBe("notice-1");
+    expect(result.current.currentId).toBe("notice-2");
+  });
+
+  it("settle()을 부르면 phase뿐 아니라 leavingId도 함께 비워진다", () => {
+    const { result } = renderHook(() => useNoticeDeck(THREE_NOTICES, TODAY));
+
+    act(() => {
+      result.current.dismiss();
+    });
+    act(() => {
+      result.current.settle();
+    });
+
+    expect(result.current.leavingId).toBeNull();
+    expect(result.current.phase).toBe("idle");
+  });
+
+  it("마지막 카드를 끄면 currentId는 곧바로 null이어도 leavingId는 settle 전까지 남는다 — 슬롯 접힘의 경계값", () => {
+    const { result } = renderHook(() => useNoticeDeck(["only-one"], TODAY));
+
+    act(() => {
+      result.current.dismiss();
+    });
+
+    expect(result.current.currentId).toBeNull();
+    expect(result.current.leavingId).toBe("only-one");
+
+    act(() => {
+      result.current.settle();
+    });
+
+    expect(result.current.leavingId).toBeNull();
+  });
+
+  it("전환 중 연타는 leavingId가 채워져 있어도 여전히 무시된다 — 기존 transitioningRef 성질 유지", () => {
+    const { result } = renderHook(() => useNoticeDeck(THREE_NOTICES, TODAY));
+
+    act(() => {
+      result.current.dismiss();
+      result.current.dismiss();
+      result.current.dismiss();
+    });
+
+    expect(result.current.currentId).toBe("notice-2");
+    expect(result.current.leavingId).toBe("notice-1");
+    expect(result.current.remainingCount).toBe(2);
+  });
+
+  it("settle 뒤 다음 dismiss는 그때의 카드를 새 leavingId로 남긴다", () => {
+    const { result } = renderHook(() => useNoticeDeck(THREE_NOTICES, TODAY));
+
+    act(() => {
+      result.current.dismiss();
+    });
+    act(() => {
+      result.current.settle();
+    });
+    act(() => {
+      result.current.dismiss();
+    });
+
+    expect(result.current.leavingId).toBe("notice-2");
+    expect(result.current.currentId).toBe("notice-3");
+  });
+});
+
 describe("useNoticeDeck (위험 기반 테스트 21·22 — 첫 렌더는 localStorage와 무관해야 한다)", () => {
   afterEach(() => {
     vi.restoreAllMocks();

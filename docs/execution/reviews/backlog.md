@@ -369,5 +369,8 @@
 - [ ] [medium] [P0-T47] FOUNDATIONS의 "탭 바 없는 화면엔 두지 않는다"를 pb-nav-safe 쓰는 7개 화면이 어긴다 — P0-T48이 값과 함께 판정(F-08) — docs/product/design/FOUNDATIONS.md
 - [ ] [medium] [P0-T47] P0-T46 소유인 gate:retro·gate:docs 편입이 P0-T47 커밋에 결합 — done task 증거가 후속 커밋으로 채워짐(F-09) — harness/lib/gate-suite.ts
 - [ ] [medium] [P0-T47] design:build가 오염된 입력의 외부 참조를 검출·인라인하지 않는다(F-10) — harness/design/build.ts
-- [ ] [medium] [P0-T47] gate:bundle 508KB로 500KB 상한 초과 — 원인은 이 변경분 밖이나 인수 조건 12가 미충족(F-11) — package.json
+- [x] [medium] [P0-T47] gate:bundle 508KB로 500KB 상한 초과 — 원인은 이 변경분 밖이나 인수 조건 12가 미충족(F-11) — package.json
+  - 2026-08-18 P0-T48 revision 5가 상한을 600KB로 올려 게이트를 되살렸다(ADR-0015 결정 3 개정). **원인 규명과 감량은 P0-T56으로 뺐다** — 이번 인상은 감시선을 올린 것이지 문제를 푼 것이 아니다.
 - [ ] [low] [P0-T47] SKILL.md 경로 표가 globals.css를 허용·금지 양쪽에 둔다(F-12) — .claude/skills/publish-ui/SKILL.md
+- [ ] [low] [P0-T48] skeleton-bar·d-badge 컴포넌트 테스트가 route-conventions.test.ts의 전수 검사와 겹친다 — 임의값 radius 2건·반짝임 1건은 이미 `src/` 전체를 걸어 잡히므로 국소 재확인을 걷는다. skeleton-bar는 구현 9줄에 테스트 59줄이고 행동 단언이 0건이라 테스트가 디자인 시스템 린터 노릇을 한다. `--color-border`·`rounded-xs` 단언은 남긴다 — 전수 쪽은 loading.tsx 세 파일만 이름으로 찍어 본다 — src/shared/ui/__tests__/skeleton-bar.test.tsx
+- [ ] [medium] [P0-T48] `rounded-[` 임의 radius 금지를 테스트가 아니라 ESLint 규칙이 들어야 한다 — 지금은 route-conventions.test.ts:89-103이 전수로 잡아 커밋 훅이 아니라 테스트 실행 때만 돈다. tools/eslint-plugin-project/rules/ 열넷 중 radius를 보는 규칙이 없다(design-token-colors·motion-tokens·spacing-scale 셋 다 radius를 안 다룬다). P0-T48은 「기존 열세 규칙을 안 고친다」로 용도가 한정돼 신설 판단을 P0-T59로 넘긴다 — tools/eslint-plugin-project/rules/

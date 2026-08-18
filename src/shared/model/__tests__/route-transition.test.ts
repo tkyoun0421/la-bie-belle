@@ -16,10 +16,12 @@ describe("resolveRouteTransition", () => {
   });
 
   it("탭 밖 경로끼리 이동하면 null을 돌려준다", () => {
-    expect(resolveRouteTransition("/schedule/2026-08-20", "/pay")).toBeNull();
+    expect(
+      resolveRouteTransition("/schedule/2026-08-20", "/more/notification-settings"),
+    ).toBeNull();
   });
 
-  it("/pay는 (tabs) 그룹 안에 있어도 탭 목록에 없으므로 탭 밖 경로로 취급한다", () => {
-    expect(resolveRouteTransition("/more", "/pay")).toBe("nav-forward");
+  it("/pay는 급여 탭이라 탭 경로끼리의 이동으로 취급한다", () => {
+    expect(resolveRouteTransition("/more", "/pay")).toBe("tab");
   });
 });

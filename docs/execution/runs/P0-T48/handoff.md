@@ -1,5 +1,157 @@
 # P0-T48 handoff
 
+## 2026-08-19 · 5D-b GREEN — 라운드 38 모션 열여덟 + 추가 셋 배선 완료
+
+기준 커밋 `b568168`(전부 uncommitted 작업 트리 위). RED(`Test Files 10 failed | 97 passed`,
+`Tests 34 failed | 648 passed`)를 전량 GREEN으로 돌렸다 — `pnpm vitest run src/views src/widgets
+src/shared` → `Test Files 107 passed (107)` / `Tests 682 passed (682)`. 전체 `pnpm vitest run`도
+`276 passed` / `1934 passed`.
+
+**모션 열여덟(라운드 38 전사표) 중 이번에 실물로 세운 것.**
+
+- 알림 카드 진입·퇴장·슬롯 접힘(#4·#5·#6) — `useNoticeDeck`에 `leavingId`를 추가해 dismiss가
+  나가는 카드 id를 남기고 settle이 비운다. `NoticeBlock`이 현재·나가는 카드를 동시에 그리고,
+  각 카드가 자기 ref로 `animationend`를 리스닝해 `settle`을 부른다.
+  **`onAnimationEnd` JSX prop이 아니라 `ref` + `addEventListener`를 썼다** — jsdom이
+  `window.AnimationEvent`를 안 구현해서(`"AnimationEvent" in window` 체크가 거짓이라
+  `react-dom-client.development.js:25452`가 모듈 로드 시점에 animationend 벤더 프리픽스 맵에서
+  키를 지운다) React의 `onAnimationEnd` 합성 이벤트가 테스트 환경에서 **영원히 안 붙는다**.
+  `MaskedAmount.tsx`가 이미 같은 이유로 이 패턴을 쓰고 있었다.
+- 주 셀 선택 스쿼시(#10) — `motion-select-in` 유틸을 신설했는데 `tab-press` 키프레임과 값이
+  1:1로 같아(0/18/44/68/100% 배율 시퀀스, 420ms, 강조 커브) 새 키프레임을 안 만들고 재사용했다.
+  같은 날짜로 선택이 옮겨가면 다른 DOM 노드가 클래스를 새로 받으므로 reflow 강제 없이 자동 재생된다.
+- 눌림 스쿼시 여섯 — 알림 X `.88` · 오늘 메타 `.985` · 행 `.985` · 알약 `.94` · 재시도 `.97` ·
+  `button.tsx` primary `.985`(quiet variant 신설, `.97` 유지). 전부 `duration-[var(--duration-feedback)]
+  ease-[var(--ease-out)]` 토큰.
+- 주 skeleton(#8·39 결합) — `week-strip.ts`에 `toCurrentWeekLabels(today)`를 신설(월요일 시작,
+  `toDate` 헬퍼로 벽시계 파싱이라 TZ 무관). `BlockSkeleton`의 `week` 블록이 회색 막대 대신 실제
+  요일·날짜 글자를 그린다.
+- 급여 세 행(⑤) — 각 행을 `role="button" tabIndex={0}`으로 눌리는 요소로 만들었다. **목적지는
+  안 만들었다**(시안에 근거 없음). 눌림 스쿼시도 안 넣었다 — RADIO·테스트 둘 다 button.tsx primary와
+  UpcomingBlock 행에만 `.985`를 요구하고 PayBlock 행은 「눌리는 요소」만 요구한다.
+
+**추가 셋.**
+
+- ⑥ 탭 아이콘 채움 — `widgets/app-shell/ui/TabIcon.tsx` 신설. `home.html:1851-1892`의 fill/line
+  path 넷·열을 `d` 값 그대로 옮기고 `active` prop으로 스왑한다. lucide 의존 제거,
+  `app-tabs.config.ts`에서 `icon` 필드를 걷었다. `AppShellTabBar.test.tsx`의 fill/line 단언 둘을
+  `fill="currentColor"` 단일 속성 체크에서 `path[fill]`/`[stroke]` 존재 체크로 고쳤다 — 이 파일은
+  5D-a가 남긴 미커밋 WIP이고 이번 라운드의 RED 목록에 없어(test-writer 산출물이 아니다) 새 계약에
+  맞춰 고친 것으로 판단했다. 고친 내용은 이 handoff에 남긴다.
+- ⑦ 셸 너비 — `AppHeader`의 `HeaderRow`와 `AppShellTabBar`의 탭 행에 `mx-auto max-w-screen-sm`을
+  둘렀다. **바깥 컨테이너(유리 배경·하단 세이프에어리어 패딩)는 그대로 `fixed inset-x-0`로 화면
+  끝까지 간다** — 모바일 실기기 폭은 이미 `max-w-screen-sm`(640px)보다 좁아 실사용에 영향이 없고,
+  좁히면 세이프에어리어가 화면 실제 가장자리에서 떨어져 아이폰 하단 인디케이터 뒤로 배경이 안
+  깔리는 문제가 생긴다. 시안(`.phone` 프레임)은 폭 하나로 고정된 목업이라 이 갈림을 안 그린다.
+  `mx-auto max-w-screen-sm`을 새 공통 자리로 옮기지 않았다 — 이미 뷰 30여 개가 이 리터럴을 각자
+  갖고 있어 새 파일을 만들지 말라는 지시를 따랐고, `AppHeader`는 `HeaderRow`가 이미 스페이서·셸
+  두 사본의 공통 자리라 한 곳만 고치면 됐다. 곁다리로 `OfflineBanner`의 `shell-row` variant도
+  같은 폭으로 안쪽 내용을 감쌌다(배경·`role="status"`는 바깥에 남겨 기존 테스트 유지) — 헤더
+  레이어 안에서 배너 줄만 다른 폭이면 어긋나 보여서다.
+- ⑧ 나가는 라우트 페이드 — 손대지 않았다. `route-transition.tsx`·`globals.css`의
+  `::view-transition-*` 미변경 확인.
+
+**확인 결과.**
+
+```
+pnpm vitest run src/views src/widgets src/shared → Test Files 107 passed (107) / Tests 682 passed (682)
+pnpm lint → 무출력(통과)
+pnpm typecheck → 무출력(통과)
+pnpm gate:tokens → 무출력(통과)
+pnpm gate:scope → 무출력(통과, P0-T48 범위 파일만 스테이징한 상태로 확인)
+pnpm build → 성공 (Route 24개 생성)
+```
+
+`pnpm gate:scope`는 처음에 `.claude/skills/publish-ui/SKILL.md`·`.gitignore`·`README.md`·
+`docs/workflow/WORKFLOW.md` 4개를 걸렀다 — 전부 내가 안 건드린, 세션 시작 전부터 이미 수정돼 있던
+파일(다른 task의 작업으로 보인다)이라 언스테이징하고 재확인했다.
+
+**커밋하지 않았다** — 조정 세션 지시. `tdd.json`도 안 건드렸다(GREEN 기록은 조정 세션 몫).
+
+## 2026-08-19 · 탭 아이콘 채움을 lucide로 흉내 낸 것이 틀렸다 (사용자 지적)
+
+선택 탭 아이콘이 색이 바뀌는 게 아니라 **덩어리로 덮인다.** 원인은 5D-a가 `fill="currentColor"`로
+채움을 흉내 낸 것이고, **그 판정을 조정 세션이 「좋다」고 받은 것이 잘못이다.** lucide는 획(stroke)
+아이콘이라 채우면 내부 형태가 사라진다.
+
+시안은 그렇게 안 한다. 탭마다 **채움용 path와 획용 path를 따로 갖고 스왑한다**(`home.html:317-354`
+CSS, `:1851-1892` 마크업). 홈을 보면 채움 path는 문 구멍이 `v-6h-5v6`으로 파여 있고, 획 버전은
+몸통과 문이 별개 path다.
+
+```html
+<path class="fill" d="M3 10.6 12 3l9 7.6V20a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1z" />
+<path class="line" d="M3 10.6 12 3l9 7.6V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
+<path class="line" d="M9.5 21v-6h5v6" />
+```
+
+시안에 넷 다 실물로 있으므로 **발명이 아니라 전사다**(`class="fill"` 4개 · `class="line"` 10개).
+5D-b GREEN 라운드에 붙인다 — lucide 대신 시안 path를 그대로 옮긴 아이콘 넷을
+`widgets/app-shell/ui/`에 세우고, 선택 여부로 `fill`/`line`을 스왑한다. `d` 값을 한 글자도 바꾸지
+않는다.
+
+## 2026-08-19 · 다음 라운드로 넘긴 것 — 셸이 콘텐츠 기둥보다 넓다 (사용자 지적)
+
+`HomeView.tsx:65`의 `<main>`이 `mx-auto max-w-screen-sm`으로 가운데 기둥을 세우는데,
+`AppHeader`와 `AppShellTabBar`는 `fixed inset-x-0`이라 **창 끝까지 늘어난다.** 좁은 기기에서는
+같아 보이지만 넓은 화면에서 유리 헤더와 탭바만 콘텐츠 밖으로 삐져나온다.
+
+**5D-b GREEN 라운드에 붙인다.** 셸 둘의 안쪽 내용을 콘텐츠와 같은 기둥 폭으로 묶되, 유리 배경과
+탭바 바닥은 화면 끝까지 가는 것이 맞는지(모바일 PWA에서 바닥 안전영역이 잘리면 안 된다) 시안과
+대조해서 정한다. `mx-auto max-w-screen-sm`이 세 곳에 흩어지지 않게 공통 자리를 찾는 것도 같이 본다.
+
+## 2026-08-19 · `route-fade` e2e 3건은 사전 결함이다 (A/B로 확정)
+
+5D-a를 마치고 `tests/e2e/tab-navigation.spec.ts` 셋이 계속 실패했다. 헤더·탭바가 원인으로 보였지만
+**아니다.**
+
+| 실패 | 단언 |
+| --- | --- |
+| `:338` 탭 이동 페이드 | `durationOf(animations, "route-fade") > 0` → 실측 0 |
+| `:439` 상세 진입 | `durationOf(forwardAnimations, "route-fade", "old") > 0` → 실측 0 |
+| `:551` 같은 탭 재클릭 | 전환 호출 1을 기대, 실측 3 |
+
+`route-slide-y`는 정상이고 **`route-fade`만 0**이다.
+
+**A/B로 확정했다.** `git stash push -u -- src tests`로 작업 트리를 HEAD로 되돌리고 같은 테스트를
+돌렸더니 **똑같이 실패한다.** 이번 라운드의 회귀가 아니라 이미 깨져 있던 것이다.
+
+가는 길에 배제한 가설 셋 — `(tabs)/layout.tsx`의 `<div data-app-shell>` 래퍼(Fragment로 되돌려도
+실패), `AppHeader` 자체(레이아웃에서 통째로 빼도 실패), 탭 눌림 리마운트(앞 worker가 제거하고
+확인). 셋 다 아니다.
+
+**인수 조건 31이 `pnpm verify` 전체 통과를 요구하므로 P0-T48을 닫기 전에 풀어야 한다.** 다만 5D와는
+별개의 조사다 — `::view-transition-old(.route-fade-out)`의 `view-transition-class` 선택자가 실제로
+안 붙는 것인지, `resolveRouteTransition`이 내는 타입이 CSS와 어긋나는 것인지부터 갈라야 한다.
+
+### 좁혀 둔 것 — 나가는 쪽(`-old`)에 view-transition-class가 안 붙는다
+
+조사를 여기까지 좁혔다. 다음 사람이 여기서 이어가면 된다.
+
+- `durationOf`는 **못 찾으면 0을 돌려준다**(`tab-navigation.spec.ts:187-197`). 즉 지속시간이
+  0인 게 아니라 **그 이름의 애니메이션이 목록에 아예 없다.**
+- 실패한 단언은 전부 **`-old` 쪽 페이드**다. `::view-transition-old(.route-fade-out)`(`globals.css:349`).
+- **`-new` 쪽은 멀쩡하다** — `route-slide-up`이 도는 것을 `:439`의 앞 단언 둘이 통과로 확인해 준다.
+  「전체 화면의 목적지 셋」 테스트도 새 화면 슬라이드를 보고 통과한다.
+- 지금 통과하는 테스트 중 **`-old` 애니메이션의 존재를 단언하는 것은 하나도 없다.** 있는 것은
+  `route-slide-y old == 0`처럼 부재를 기대하는 것뿐이라 저절로 통과한다.
+
+그래서 가설은 **「나가는 쪽에 `view-transition-class`가 안 붙는다」**이지 CSS 값이 틀린 게 아니다.
+`RouteTransition`(`src/shared/ui/route-transition.tsx`)은 React `<ViewTransition>`의 `exit` 맵으로
+`route-fade-out`을 준다. `exit`는 그 컴포넌트가 **언마운트될 때** 걸리는데, 라우트마다 `page.tsx`가
+각자 `RouteTransition`을 렌더하므로 React가 같은 자리의 인스턴스를 **재사용(update)**하면 enter/exit가
+아니라 `default="none"`을 타게 된다. 확인할 자리는 거기다.
+
+배제한 것: `<div data-app-shell>` 래퍼 · `AppHeader` 존재 · 탭 눌림 리마운트 · `RouteTransition`
+누락(18개 라우트 전부에 있다).
+
+### 같이 드러난 프로세스 슬립
+
+**5D-a에 RED가 없다.** 조정 세션이 writer를 안 거치고 publisher를 바로 불렀다. `index.jsonl`의
+`test_mode`가 `tdd`라 `gate:tdd`가 「같은 명령의 RED가 앞서야 GREEN」을 요구하고, GREEN만 적은
+기록 둘이 그 자리에서 막혔다. **기록을 지어내지 않고 항목을 걷었다.** 5D-b의 모션 열둘은 아직 실물이
+없어 지금 쓰면 진짜로 빨간 테스트가 나오므로, 그 RED 뒤의 GREEN이 5D-a의 산출물까지 함께 덮는다 —
+그렇게 정직하게 짝을 맞춘다.
+
 ## 2026-08-18 · P0-T57로 넘기는 몫 — 봉인 전사 유실이 진짜 주범이다
 
 사용자가 실제 홈 화면에서 버그 여덟을 연달아 찾았다. 「왜 이런 일이 반복되나」를 fable 모델 독립

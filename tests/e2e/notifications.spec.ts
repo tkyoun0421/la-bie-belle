@@ -12,8 +12,7 @@ const CONFIRM_TRIGGER_LABEL = "스케줄 확정";
 const CONFIRM_DIALOG_TITLE = "스케줄을 확정할까요?";
 const CONFIRM_DIALOG_CONFIRM_LABEL = "확정하기";
 const NOTIFICATION_TITLE = "근무 배정이 확정됐어요";
-const NAV_LABEL = "주요 메뉴";
-const NOTIFICATIONS_TAB_LABEL = "알림";
+const NOTIFICATIONS_LABEL = "알림";
 const UNREAD_MARKER_TEXT = "읽지 않음";
 
 async function findPositionId(admin: SupabaseClient, name: string): Promise<string> {
@@ -112,9 +111,8 @@ test.describe("알림함 여정", () => {
       await workerPage.goto("/notifications");
       await expect(workerPage.getByRole("heading", { level: 1, name: "알림" })).toBeVisible();
 
-      const tabBar = workerPage.getByRole("navigation", { name: NAV_LABEL });
-      const notificationsTabLink = tabBar.getByRole("link", { name: NOTIFICATIONS_TAB_LABEL });
-      await expect(notificationsTabLink.getByText(UNREAD_MARKER_TEXT)).toBeVisible();
+      const notificationsBell = workerPage.getByRole("link", { name: new RegExp(NOTIFICATIONS_LABEL) });
+      await expect(notificationsBell).toHaveAccessibleName(new RegExp(UNREAD_MARKER_TEXT));
 
       const notificationRow = workerPage.getByRole("button", {
         name: new RegExp(NOTIFICATION_TITLE),

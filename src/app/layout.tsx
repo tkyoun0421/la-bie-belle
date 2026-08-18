@@ -22,7 +22,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko" className={wantedSans.variable}>
       <body>
-        <OfflineBanner />
+        <div id="global-offline-banner">
+          <OfflineBanner variant="standalone" />
+        </div>
         {children}
         <SnackbarProvider />
       </body>

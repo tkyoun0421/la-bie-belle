@@ -77,7 +77,7 @@ export function TodayBlock({
           <Link
             href={`/roster/${shift.date}`}
             transitionTypes={["nav-forward"]}
-            className="flex items-center gap-2 border-t border-border pt-2.5"
+            className="flex items-center gap-2 border-t border-border pt-2.5 transition-transform duration-[var(--duration-feedback)] ease-[var(--ease-out)] active:scale-[0.985]"
           >
             <span aria-hidden className="flex shrink-0">
               <span className="size-5.5 rounded-pill border-2 border-surface bg-neutral-border" />

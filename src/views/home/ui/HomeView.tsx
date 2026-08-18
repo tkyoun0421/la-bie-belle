@@ -66,11 +66,11 @@ export function HomeView({ model, now, today, noticeIds }: HomeViewProps) {
         {plan.map((entry) => (
           <Suspense
             key={entry.block}
-            fallback={<BlockSkeleton block={entry.block} todayLabel={todayLabel} />}
+            fallback={<BlockSkeleton block={entry.block} todayLabel={todayLabel} today={today} />}
           >
             <BlockBoundary message={BLOCK_FAILURE_MESSAGE[entry.block]}>
               {entry.status === "loading" ? (
-                <BlockSkeleton block={entry.block} todayLabel={todayLabel} />
+                <BlockSkeleton block={entry.block} todayLabel={todayLabel} today={today} />
               ) : entry.block === "notices" ? (
                 <NoticeBlock
                   status={entry.status === "failed" ? "failed" : "filled"}

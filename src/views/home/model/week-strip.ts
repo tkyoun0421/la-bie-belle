@@ -15,6 +15,11 @@ export type WeekFooter = {
   amount: number | null;
 };
 
+export type WeekDayLabel = {
+  weekdayLabel: string;
+  dayNumber: number;
+};
+
 function toDate(dateKey: string): Date {
   return new Date(`${dateKey}T00:00:00`);
 }
@@ -48,6 +53,22 @@ function toWeekSummaryFooter(days: readonly WeekDay[]): WeekFooter {
     caption: `주급 · ${workedDays.length}회 ${totalHours}시간`,
     amount: totalAmount,
   };
+}
+
+export function toCurrentWeekLabels(today: string): WeekDayLabel[] {
+  const todayDate = toDate(today);
+  const mondayOffset = (todayDate.getDay() + 6) % 7;
+  const monday = new Date(todayDate);
+  monday.setDate(todayDate.getDate() - mondayOffset);
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + index);
+    return {
+      weekdayLabel: format(date, "EEE", { locale: ko }),
+      dayNumber: date.getDate(),
+    };
+  });
 }
 
 export function toWeekFooter(

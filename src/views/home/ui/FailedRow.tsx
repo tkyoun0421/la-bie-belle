@@ -15,7 +15,7 @@ export function FailedRow({ message }: FailedRowProps) {
       <button
         type="button"
         onClick={() => router.refresh()}
-        className="h-8.5 shrink-0 rounded-pill bg-surface-weak px-3 typo-caption text-text-strong"
+        className="h-8.5 shrink-0 rounded-pill bg-surface-weak px-3 typo-caption text-text-strong transition-transform duration-[var(--duration-feedback)] ease-[var(--ease-out)] active:scale-[0.97]"
       >
         다시 시도
       </button>

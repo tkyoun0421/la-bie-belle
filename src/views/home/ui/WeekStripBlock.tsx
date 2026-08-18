@@ -49,7 +49,9 @@ export function WeekStripBlock({
                     "flex size-8.5 items-center justify-center rounded-cell typo-body tabular-nums",
                     cell.hasShift ? "font-medium text-text-strong" : "text-text-weak",
                     cell.date === today ? "ring-1 ring-border ring-inset" : "",
-                    cell.date === selectedDate ? "bg-action-tint text-action-deep" : "",
+                    cell.date === selectedDate
+                      ? "motion-select-in bg-action-tint text-action-deep"
+                      : "",
                   )}
                 >
                   {cell.dayNumber}

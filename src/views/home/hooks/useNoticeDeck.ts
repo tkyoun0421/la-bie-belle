@@ -8,6 +8,7 @@ export type NoticeDeckPhase = "idle" | "entering";
 
 export type UseNoticeDeckResult = {
   currentId: string | null;
+  leavingId: string | null;
   remainingCount: number;
   phase: NoticeDeckPhase;
   dismiss: () => void;
@@ -104,6 +105,7 @@ export function useNoticeDeck(noticeIds: readonly string[], today: string): UseN
     store.getServerSnapshot,
   );
   const [phase, setPhase] = useState<NoticeDeckPhase>("idle");
+  const [leavingId, setLeavingId] = useState<string | null>(null);
   const transitioningRef = useRef(false);
 
   useEffect(() => {
@@ -122,13 +124,15 @@ export function useNoticeDeck(noticeIds: readonly string[], today: string): UseN
     next.add(currentId);
     writeDismissedIds(today, next);
     store.commit(next);
+    setLeavingId(currentId);
     setPhase("entering");
   }
 
   function settle() {
     transitioningRef.current = false;
+    setLeavingId(null);
     setPhase("idle");
   }
 
-  return { currentId, remainingCount: remaining.length, phase, dismiss, settle };
+  return { currentId, leavingId, remainingCount: remaining.length, phase, dismiss, settle };
 }

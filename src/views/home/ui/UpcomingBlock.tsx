@@ -27,7 +27,7 @@ export function UpcomingBlock({ status, shifts }: UpcomingBlockProps) {
                 key={shift.date}
                 href={`/roster/${shift.date}`}
                 transitionTypes={["nav-forward"]}
-                className="flex items-center gap-3 py-3"
+                className="flex items-center gap-3 py-3 transition-transform duration-[var(--duration-feedback)] ease-[var(--ease-out)] active:scale-[0.985]"
               >
                 <DBadge label={shift.label} tier={shift.tier} />
                 <span className="min-w-0 flex-1">
@@ -38,7 +38,7 @@ export function UpcomingBlock({ status, shifts }: UpcomingBlockProps) {
                     {shift.position} · {shift.startTime} ~ {shift.endTime}
                   </span>
                 </span>
-                <span className="flex h-8.5 shrink-0 items-center rounded-pill bg-surface-weak px-3 typo-caption text-text-strong">
+                <span className="flex h-8.5 shrink-0 items-center rounded-pill bg-surface-weak px-3 typo-caption text-text-strong transition-transform duration-[var(--duration-feedback)] ease-[var(--ease-out)] active:scale-[0.94]">
                   확인
                 </span>
               </Link>

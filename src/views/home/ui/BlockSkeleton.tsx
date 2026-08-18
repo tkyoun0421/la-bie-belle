@@ -1,9 +1,11 @@
 import { SkeletonBar } from "@/shared/ui/skeleton-bar";
 import type { HomeBlockName } from "@/views/home/model/home-view-model";
+import { toCurrentWeekLabels } from "@/views/home/model/week-strip";
 
 type BlockSkeletonProps = {
   block: HomeBlockName;
   todayLabel: string;
+  today: string;
 };
 
 const ROW_BLOCK_TITLE: Partial<Record<HomeBlockName, string>> = {
@@ -12,11 +14,19 @@ const ROW_BLOCK_TITLE: Partial<Record<HomeBlockName, string>> = {
   pay: "급여",
 };
 
-function WeekCellSkeleton() {
+function WeekCellSkeleton({
+  weekdayLabel,
+  dayNumber,
+}: {
+  weekdayLabel: string;
+  dayNumber: number;
+}) {
   return (
     <div className="flex flex-1 flex-col items-center gap-1">
-      <SkeletonBar className="h-4.5 w-6" />
-      <SkeletonBar className="size-8.5 rounded-cell" />
+      <span className="typo-caption text-text-muted">{weekdayLabel}</span>
+      <span className="flex size-8.5 items-center justify-center rounded-cell typo-body text-text-weak tabular-nums">
+        {dayNumber}
+      </span>
     </div>
   );
 }
@@ -55,7 +65,7 @@ function RowsSkeleton({ variant }: { variant: RowSkeletonVariant }) {
   );
 }
 
-export function BlockSkeleton({ block, todayLabel }: BlockSkeletonProps) {
+export function BlockSkeleton({ block, todayLabel, today }: BlockSkeletonProps) {
   if (block === "notices") {
     return (
       <div className="flex h-17.5 flex-row items-center gap-3 rounded-xl bg-surface p-4">
@@ -94,18 +104,20 @@ export function BlockSkeleton({ block, todayLabel }: BlockSkeletonProps) {
   }
 
   if (block === "week") {
+    const weekLabels = toCurrentWeekLabels(today);
+
     return (
       <div className="flex flex-col gap-1.5">
         <p className="px-1 pb-1.5 typo-caption-strong text-text-muted">{ROW_BLOCK_TITLE.week}</p>
         <div className="flex flex-col gap-0 rounded-xl bg-surface px-4 py-3">
           <div className="flex gap-0.5">
-            <WeekCellSkeleton />
-            <WeekCellSkeleton />
-            <WeekCellSkeleton />
-            <WeekCellSkeleton />
-            <WeekCellSkeleton />
-            <WeekCellSkeleton />
-            <WeekCellSkeleton />
+            {weekLabels.map((label) => (
+              <WeekCellSkeleton
+                key={label.dayNumber}
+                weekdayLabel={label.weekdayLabel}
+                dayNumber={label.dayNumber}
+              />
+            ))}
           </div>
           <div className="mt-3 flex items-baseline justify-between gap-2 border-t border-border pt-3">
             <SkeletonBar className="h-3 w-27" />

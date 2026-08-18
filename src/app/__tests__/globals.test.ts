@@ -384,4 +384,12 @@ describe("globals.css 디자인 토큰", () => {
     const block = match?.[1] ?? "";
     expect(block).toMatch(/background-color:\s*var\(--color-canvas\);/);
   });
+
+  it("앱 셸이 있는 화면에서는 전역 오프라인 배너를 숨긴다", () => {
+    const blockPattern = /body:has\(\[data-app-shell\]\)\s*#global-offline-banner\s*\{([^}]*)\}/;
+    const match = blockPattern.exec(css);
+    expect(match, "셸 존재 기반 전역 배너 숨김 규칙이 없습니다").not.toBeNull();
+    const block = match?.[1] ?? "";
+    expect(block).toMatch(/display:\s*none;/);
+  });
 });
