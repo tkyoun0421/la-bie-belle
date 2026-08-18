@@ -1,5 +1,87 @@
 # P0-T48 handoff
 
+## 2026-08-19 · RADIO revision 14 재봉인 — 일정을 떼고 홈까지로 닫는다
+
+사용자가 「지연의 주원인은 구현 속도가 아니라 범위 팽창 → 재봉인 → 전체 검증 반복」이라는 읽기 전용
+진단을 넣었고, 그 자료로 닫기·분리를 판단했다.
+
+**남은 범위를 실제로 세어 보니 진단이 그리는 것보다 작았다.** 아홉 묶음 중 일곱이 이미 닫혀 있다 —
+`@tanstack/react-query ^5.101.4` · `zustand ^5.0.15`와 `useAmountMasking.ts` · `BUNDLE_BUDGET_BYTES
+= 600 * 1024` · `(tabs)`와 `schedule/`의 `loading.tsx`·`error.tsx` · 탭 넷 · 인수 조건 39·40.
+남은 것은 일정 화면과 배정표 라우트, 그리고 `pnpm verify`를 막는 사전 결함 셋뿐이었다.
+
+**그래서 분리 기준을 「누가 무엇을 기다리는가」로 잡았다.** P0-T49~T54 여섯이 P0-T48을 기다리는데,
+그 여섯이 실제로 기다리는 것은 일정 화면이 아니라 디자인 시스템과 Dumb UI 린트다. 둘 다 섰다.
+일정을 여기서 마저 하면 여섯이 퍼블리싱 한 라운드를 더 기다린다. 반대로 일정을 떼면 지금 풀린다.
+
+**일정은 기획에 막혀 있지 않다.** 대조가 올린 1단계 반환 후보 다섯 중 셋은 이미 처리된 물음이다 —
+포지션 교대는 설계 비목표라 안 만들면 그만이고, 배정 데이터 공백은 라운드 28이 이미 기획 반환으로
+올려 시안이 「내 신청을 잃지 않는 쪽」으로 답을 그려 뒀으며, 모집 회차는 `deadline-batches.ts`의
+마감일 묶음이 대용으로 이미 돈다. 진짜로 못 그리는 것은 신청 시작일과 「변경 요청 중」 속 빈 점
+둘이고, 둘 다 P0-T60이 들고 간다.
+
+**배정표는 새 task가 필요 없었다.** `P0-T50 「일정 상세 화면 퍼블리싱」`이 이미 등록돼 있고 summary가
+배정표 시트 어법을 갖고 있다. 게다가 `/schedule/[date]`가 **이미 배정표를 그리고 있다** —
+`(protected)/schedule/[id]/page.tsx:20`의 파라미터는 이름만 `id`고 `WORK_DATE_PATTERN`으로
+근무일을 검사한 뒤 `selectScheduleForWorkDate`로 찾으며, `ScheduleDetailView:95,108`이
+「내 배정」·「전체 배정표」를 그린다. 인수 조건 26이 말한 것은 새 화면이 아니라 그 화면의 이름 바꾸기와
+시트 가로채기였다. 홈의 죽은 링크 둘은 커밋 `2c413af`에서 `/schedule/[date]`로 돌렸다.
+
+**인수 조건 41을 세웠다.** `pnpm verify`를 막던 e2e 다섯 건인데 원인이 셋으로 갈린다.
+
+- `:439`는 구현 결함이다. `(tabs)/layout.tsx`가 `{children}` 위에 호스트 엘리먼트를 두면 React
+  `completeWork`가 그 호스트에서 `ViewTransitionStatic` 비트를 지우고
+  `commitExitViewTransitions`·`commitEnterViewTransitions`가 그 비트로만 하강을 정하므로,
+  `(tabs)` 경계를 넘는 이동에서 `RouteTransition`이 `enter`도 `exit`도 못 받는다. 래퍼를 걷고
+  `data-app-shell`을 헤더로 옮기면 여섯 단언이 전부 통과한다(A/B 확인).
+- `:338`·`:551`은 테스트 결함이다. 이동 한 번에 `startViewTransition`이 세 번 도는데 스파이가
+  한 번을 가정했다.
+- `:502`·`:628`은 `WORK_DATE_BANDS.viewTransition` 한 구간을 여섯 테스트가 나눠 쓰다 부딪히는
+  병렬 전용 실패다.
+
+**앞선 판단 하나를 정정했다.** 이 handoff가 「`<div data-app-shell>` 래퍼는 배제」라고 두 곳에
+적어 뒀는데 오판이다. 실패 셋을 한 원인으로 묶고 봤기 때문에 「Fragment로 되돌려도 여전히
+3 failed」를 「래퍼는 무관」으로 읽었다. 정정문을 그 두 자리에 달았다.
+
+**근거 셋을 저장소에 남겼다.** 세션 스크래치패드는 사라지므로 `design/`으로 옮겼다 —
+`schedule-transcription.md`(시안 동작 계약 전사) · `schedule-survey.md`(구현 대조) ·
+`route-fade-diagnosis.md`(전환 결함 진단). NOTES 라운드 39가 셋을 요약하고 결정 물음 아홉을 남긴다.
+
+**240ms는 250ms로 흡수한다**(사용자 승인). 시안 CSS와 인수 조건 12와 `WORKER-FLOWS.md:53` 셋이
+240을 적었지만 응답 대역 토큰은 150·200·250뿐이고 사람 눈에 10ms는 안 보인다. 인수 조건 12가
+P0-T60으로 가므로 세 자리를 그 task가 함께 고친다.
+
+RADIO revision 14 SHA-256 `51659b8e9edb1a64b32e647b9bdfd7f87d6114b0f011ce07901fa85257be8386`,
+2026-08-19 사용자 승인. `P0-T60`은 `design_pending`으로 등록했다(product_approval 2026-08-19).
+
+## 2026-08-19 · 5D 커밋 `8ec4e00` — 삭제 감사와 커밋 위생
+
+5D-a·5D-b 산출물을 한 커밋으로 실었다. `tdd.json`의 GREEN 항목 하나가 두 라운드를 함께 덮는다 —
+5D-a는 자기 RED 없이 GREEN만 남길 뻔했고, 없는 RED를 지어내는 대신 항목을 걷고 5D-b의 진짜 RED에
+붙였다(경위는 아래 5D-a 절에 이미 남아 있다).
+
+**삭제 감사** (implementer가 지운 것 중 봉인된 계약이 조용히 사라졌는지 확인).
+
+- `AppShellTabBar.tsx` −43 — `isTabActive`가 사라졌다. 이 함수는 `/pay`를 `more` 탭의 활성으로
+  쳐주던 것인데, 탭이 `홈 · 일정 · 급여 · 전체` 넷이 되면서 급여가 제 탭을 갖게 돼 필요가 없다
+  (인수 조건 14). `hasUnreadNotifications` prop과 탭바 배지도 함께 사라졌는데, 같은 조건이
+  「알림은 헤더 오른쪽 종」이라고 못박은 결과다. 둘 다 의도된 삭제다.
+- `NoticeBlock.tsx` −23 — Fragment가 `data-testid="notice-slot"` 래퍼로 바뀌면서 카드 마크업이
+  `NoticeCard`로 통째 옮겨간 것이다. 없어진 줄은 전부 옮겨간 자리에 있다.
+- `BlockSkeleton.tsx` −11 · `AppShellTabBar.test.tsx` −14 — 회색 막대가 실제 요일·날짜 글자로,
+  `fill="currentColor"` 단언이 `path[fill]`/`[stroke]` 단언으로 바뀐 몫이다.
+
+봉인된 계약이 소리 없이 빠진 곳은 없었다.
+
+**다른 세션의 것은 걷어냈다.** `src/shared/lib/yeild-to-main.ts` → `yield-to-main.ts` 리네임
+셋(구현·새 이름·테스트)은 이 세션의 작업이 아니라 staged에서 뺐다. `src/shared/lib/` 밖에서
+이 모듈을 import하는 곳이 없어 빼도 빌드가 갈라지지 않는 것을 먼저 확인했다.
+`index.jsonl`은 HEAD 블롭에서 P0-T48 줄만 갈아끼운 사본을 `git hash-object -w`로 넣어
+부분 staged 했다 — 작업 트리의 P0-T57·P0-T58 줄은 그 세션의 몫이라 건드리지 않았다.
+
+**e2e 오해 하나 정정.** 5D 중간에 `offline-banner.spec.ts`가 1 failed로 보인 기록이 있는데,
+커밋 직전 다시 돌리니 `2 passed`다. 중간 상태에서 찍힌 값이었다.
+
 ## 2026-08-19 · 5D-b GREEN — 라운드 38 모션 열여덟 + 추가 셋 배선 완료
 
 기준 커밋 `b568168`(전부 uncommitted 작업 트리 위). RED(`Test Files 10 failed | 97 passed`,
@@ -119,6 +201,11 @@ CSS, `:1851-1892` 마크업). 홈을 보면 채움 path는 문 구멍이 `v-6h-5
 실패), `AppHeader` 자체(레이아웃에서 통째로 빼도 실패), 탭 눌림 리마운트(앞 worker가 제거하고
 확인). 셋 다 아니다.
 
+> **정정 (2026-08-19).** 래퍼를 배제한 것은 오판이다. 실패 셋을 한 원인으로 묶고 봤기 때문에
+> 「Fragment로 되돌려도 여전히 3 failed」를 「래퍼는 무관」으로 읽었는데, 실제로는 래퍼가
+> `:439` 하나만 만들고 `:338`·`:551`은 원인이 따로 있었다. 래퍼를 걷으면 `:439`의 여섯 단언이
+> 전부 통과한다(A/B 확인). 자세한 근거는 인수 조건 41과 `design/route-fade-diagnosis.md`.
+
 **인수 조건 31이 `pnpm verify` 전체 통과를 요구하므로 P0-T48을 닫기 전에 풀어야 한다.** 다만 5D와는
 별개의 조사다 — `::view-transition-old(.route-fade-out)`의 `view-transition-class` 선택자가 실제로
 안 붙는 것인지, `resolveRouteTransition`이 내는 타입이 CSS와 어긋나는 것인지부터 갈라야 한다.
@@ -141,8 +228,8 @@ CSS, `:1851-1892` 마크업). 홈을 보면 채움 path는 문 구멍이 `v-6h-5
 각자 `RouteTransition`을 렌더하므로 React가 같은 자리의 인스턴스를 **재사용(update)**하면 enter/exit가
 아니라 `default="none"`을 타게 된다. 확인할 자리는 거기다.
 
-배제한 것: `<div data-app-shell>` 래퍼 · `AppHeader` 존재 · 탭 눌림 리마운트 · `RouteTransition`
-누락(18개 라우트 전부에 있다).
+배제한 것: ~~`<div data-app-shell>` 래퍼~~(**오판이다 — 위 정정을 보라. 이것이 `:439`의 원인이다**) ·
+`AppHeader` 존재 · 탭 눌림 리마운트 · `RouteTransition` 누락(18개 라우트 전부에 있다).
 
 ### 같이 드러난 프로세스 슬립
 

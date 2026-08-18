@@ -1,7 +1,7 @@
 # P0-T48 RADIO 개발 설계
 
 - 상태: Approved
-- revision: 13
+- revision: 14
 - 기획 승인: user, 2026-08-16 (범위 축소 2026-08-18)
 - 개발 설계 승인: user, 2026-08-18
 
@@ -9,6 +9,7 @@
 
 | revision | 날짜 | 내용 |
 | --- | --- | --- |
+| 14 | 2026-08-19 | **일정 화면을 이 task에서 뗀다**(사용자 결정). 홈이 닫히고 나서 남은 범위를 세어 보니 아홉 묶음 중 일곱이 끝났고 남은 것은 일정 화면 하나와 배정표 라우트, 그리고 `pnpm verify`를 막는 사전 결함이었다. 그런데 P0-T49~T54 여섯이 기다리는 것은 일정 화면이 아니라 **디자인 시스템과 Dumb UI 린트**이고 그 둘은 이미 섰다. 일정을 여기서 마저 하면 여섯이 퍼블리싱 한 라운드를 더 기다린다. 일정 화면(인수 조건 11·12·13과 15·16·20·27의 일정 몫)은 **P0-T60**으로, 배정표 라우트와 시트 가로채기(인수 조건 26)는 이미 등록돼 있는 **P0-T50**(일정 상세 화면 퍼블리싱 — summary가 배정표 시트 어법을 이미 갖고 있다)으로 넘긴다. 근거는 라운드 39의 전사·대조 둘(`design/schedule-transcription.md`·`design/schedule-survey.md`)이고, 거기서 나온 결정 물음 아홉도 함께 넘어간다. 홈이 걸던 `/roster/[date]` 링크 둘은 그 라우트가 없어 404였으므로 **이미 도는 `/schedule/[date]`로 돌렸다** — 그 페이지의 파라미터는 이름만 `id`고 실제로는 근무일이며(`WORK_DATE_PATTERN`) `ScheduleDetailView`가 「내 배정」·「전체 배정표」를 그린다. 인수 조건 26이 말한 것은 새 화면이 아니라 그 화면의 이름 바꾸기와 시트 가로채기였다. 아울러 **인수 조건 41을 세워 `pnpm verify`를 막는 사전 결함의 수리 경로를 연다.** 2026-08-19 사용자 결정. |
 | 13 | 2026-08-18 | **헤더가 서자 셸 화면 넷에서 제목이 두 번 뜬다**(사용자 결정). 헤더가 없던 시절 구조라 **화면마다 자기 `<h1>`을 그린다.** 홈과 일정은 이번 task가 다시 쓰면서 뺐지만 급여·전체·알림·알림 설정 넷은 그대로여서, `AppHeader`가 서는 순간 같은 제목이 위아래로 두 번 보인다. `src/views/**/ui/*.tsx`의 용도 한정이 **`typo-display` 문자열 치환 전용**이라 `<h1>` 삭제가 밖이었다. ① **네 줄을 지운다** — `PayView.tsx:136`·`MoreView.tsx:19`·`NotificationsView.tsx:72`·`NotificationSettingsView.tsx:34`. 화면 제목의 소유자를 헤더 하나로 만든다. ② **`AppHeader`의 제목이 `<p>`가 아니라 `<h1>`이 된다** — 시안이 `<p class="screen-title">`을 쓴 것은 목업 사정이고, 화면에 `h1`이 하나도 없으면 접근성 문제이자 e2e가 `getByRole("heading", { level: 1 })`로 화면을 못 잡는다(실제로 새 e2e가 그 자리에서 실패했다). ③ **`globals.css` 용도 한정에 인수 조건 39가 요구하는 keyframe·유틸리티 신설을 더한다** — `selectIn`·`noticeIn`·`noticeOut`·눌림 스쿼시 등 전사표 열여덟이 요구하는 것들이고, revision 11이 이징 토큰만 열고 keyframe을 안 적었다. **네 번째 재봉인을 막으려고 5D-b가 요구할 것을 같이 열었다.** 2026-08-18 사용자 결정. |
 | 12 | 2026-08-18 | **인수 조건 14를 지키자 터진 파급 셋을 연다**(사용자 결정). 5D-a가 급여를 진짜 탭으로 올리고 알림을 헤더 종으로 되돌리자, **「`/pay`는 탭이 아니다」를 전제한 옛 단언들이 무너졌다.** `resolveRouteTransition` 구현은 한 글자도 안 고쳤고 `APP_TABS` 목록이 바뀌자 파생 동작이 자동으로 달라진 것이다 — 즉 **틀린 상태를 굳혀 두고 있던 테스트**이지 새로 깨진 계약이 아니다. ① `src/shared/model/__tests__/route-transition.test.ts` 단언 둘, ② `tests/e2e/**`가 탭바에서 「알림」 링크를 찾는 자리(이제 헤더 종이다), ③ **루트 `src/app/layout.tsx`가 `OfflineBanner`를 전역으로 무조건 그리는 자리** — 셋째가 허용 경로 밖이라 5D-a가 `OfflineBanner` 안에서 `usePathname()`으로 「내가 셸 화면인가」를 스스로 판별해 중복을 죽이는 우회로를 냈는데, 라우트가 늘 때마다 그 경로 집합을 같이 갱신해야 하는 부채다. 루트 레이아웃을 열어 **배너 조립을 셸 밖으로 분리**하고 우회를 걷는다. **재봉인을 세 번 하지 않으려고 파급 셋을 한 번에 묶었다** — revision 11이 5D에서 막힐 것을 미리 열었듯, 이번에는 그 라운드를 실제로 돌려야 보이던 것을 연다. 인수 조건 31(`pnpm verify` 전체 통과)이 있어 파급을 미루면 task를 닫는 시점이 같이 미뤄진다. 2026-08-18 사용자 결정. |
 | 11 | 2026-08-18 | **전사 유실을 되돌리고 그 수리가 요구한 경로 셋을 연다**(사용자 결정). 사용자가 실제 홈 화면에서 버그 여덟을 연달아 찾았고, fable 독립 감사가 원인을 **봉인 전사 유실**로 짚었다 — 시안에서 RADIO로 옮길 때 동작 계약이 손실 압축되는데 하류는 시안이 아니라 RADIO를 정본으로 본다(`unit-test-writer.md:21` 「유일한 설계 정본」). 그래서 RADIO가 잃은 계약이 틀린 채로 테스트에 봉인되고 publisher는 그 테스트를 못 고친다. 인수 조건 37이 「가림이 다시 걸리면」이라고만 적고 **무엇이 다시 가리는지**를 안 적은 자리에 「화면을 벗어나면」이라는 오독이 들어간 것이 그 실례다. 되돌리기 위해 시안의 모션·동작 계약을 요약 없이 전사했고(NOTES 라운드 38) **모션 선언 열여덟 중 코드에 있는 것이 둘, 다른 것이 넷, 없는 것이 열둘**임이 드러났다. ① **인수 조건 39·40 신설** — 모션 열여덟이 지속·이징뿐 아니라 **생명주기**(reflow 재트리거·`animationend` 이름 가드)까지 서는 것과, 코드에 아예 없는 헤더가 서는 것. ② **이징 결정** — 시안이 넷에서 반복해 쓰는 `cubic-bezier(0.32, 0.72, 0, 1)`은 사고가 아니라 의도라 `--ease-emphasized`로 사다리를 늘리고, `ease`·`ease-in` 키워드 아홉은 `--ease-out`으로 흡수하며, 700ms 회전은 두 대역 어디에도 안 속하므로 `animate-spin` 그대로 둔다. ③ **허용 경로 셋 추가** — `src/shared/lib/**`(더미 폭 결함이 요구한 순수 함수. `ui`에 치환 로직을 못 두니 갈 곳이 여기뿐이다), `src/app/preview/**`(`src/views/preview/**`만 열려 있어 라우트가 빠져 있었다), `src/shared/config/app-tabs.config.ts`(탭 구성이 급여 자리에 알림을 넣어 **인수 조건 14를 안 지킨다**). ④ `globals.css` 용도 한정에 넷을 더한다. **재봉인을 두 번 하지 않으려고 5D에서 막힐 것까지 한 번에 묶었다** — 실측이 1회 2.0시간, 2회 이상 13.2시간이다(P0-T57 기획 근거). 2026-08-18 사용자 결정. |
@@ -46,11 +47,11 @@
 
 ④ **홈 퍼블리싱** — `confirmed/home.html` 계약대로 다섯 블록을 세운다. 빈 상태·로딩·에러·오프라인까지 포함한다.
 
-⑤ **일정 퍼블리싱** — `confirmed/schedule.html` 계약대로 달력·목록 두 뷰와 바닥 시트를 세운다. 같은 네 상태를 포함한다.
+⑤ ~~**일정 퍼블리싱**~~ — **P0-T60으로 이관(revision 14).** 아래 「이관 목록」이 어느 인수 조건이 어디로 갔는지 줄 단위로 적는다.
 
 ⑥ **Dumb UI 강제** — `DEV-CODE-09`를 `MUST`로 올리고 `project/no-logic-in-ui` 린트를 신설한다. `ui`는 판정된 값을 받아 그릴 뿐 계산을 모른다.
 
-⑦ **라우트 규약** — 라우트별 `loading.tsx`·`error.tsx`, 블록별 `<Suspense>` 스트리밍, 배정표 시트를 병렬 + 인터셉팅 라우트로.
+⑦ **라우트 규약** — 라우트별 `loading.tsx`·`error.tsx`, 블록별 `<Suspense>` 스트리밍. ~~배정표 시트를 병렬 + 인터셉팅 라우트로~~ **는 P0-T50으로 이관(revision 14)** — `@sheet` 슬롯과 `default.tsx`는 이 task가 세워 두었으니 그 위에 가로채기만 올리면 된다.
 
 ⑧ **상태 도구 둘** — TanStack Query 설치와 Provider(`ARCHITECTURE.md:24`의 적용), zustand로 금액 가림 설정 하나.
 
@@ -129,6 +130,27 @@
 38. **홈 뷰 모델의 출처가 하나다.** `HomeViewModel`·`AttendanceWindow`·`Shift`·`UpcomingShift`·`CountdownState`·`HomeBlockPlan`이 전부 `src/views/home/model/`에 서고 `src/entities/**`를 안 건드린다. `(tabs)/page.tsx`는 `views/home/ui/home.mock.ts`를 먹인다. **그래도 블록 다섯이 각자 `<Suspense fallback>`과 `BlockBoundary` 안에 선다**(인수 조건 24) — 소스가 목이어도 구조는 실물이고, 쿼리가 생기면 소스만 바뀐다. `src/views/home/model/home-priority.ts`·`imminent-recruitment.ts`와 그 테스트 넷이 저장소에서 사라지고 `deriveHomePriority`·`selectImminentRecruitment`를 부르는 곳이 하나도 안 남는다.
 39. **모션 열여덟이 시안대로 선다.** NOTES 라운드 38의 전사표가 정본이다. 지속시간과 이징뿐 아니라 **생명주기**까지 선다 — 탭 눌림·알림 진입은 `void el.offsetWidth`로 reflow를 강제해 재생을 다시 트리거하고, 금액 훑기는 `animationend`에서 **애니메이션 이름을 확인하고** 클래스를 뗀다. 이징은 `--ease-emphasized`(`cubic-bezier(0.32, 0.72, 0, 1)`) 신설 하나에 `ease`·`ease-in` 키워드 흡수이고, 회전 스피너는 대역 밖이라 `animate-spin`으로 둔다. 열여덟 어디에도 인라인 지속시간이 없고 `project/motion-tokens`가 무출력이다.
 40. **헤더가 선다.** `widgets/app-shell/ui/AppHeader.tsx`가 실물로 서서 상태 표시줄 24 + 헤더 56을 한 레이어 80으로 묶는다. 배경은 그라디언트가 아니라 **반투명 유리**다 — 지면색 50%(`rgba(241, 243, 246, 0.5)`)에 `backdrop-filter: blur(9px)`. **스크롤에 반응하지 않고** 아래 경계선도 없다. 콘텐츠가 그 유리 밑을 지나며 비치는 것이 경계 처리 전부이고, `.phone-body`의 위 여백 80이 `24 + 56`과 맞물린다. 오른쪽은 44×44 종에 8px `--color-action` 점 하나이며, **읽지 않음 표시는 헤더 종에만 있고 탭바에는 없다**(인수 조건 14).
+
+41. **`pnpm verify`를 막던 사전 결함 셋이 걷힌다.** 셋은 원인이 서로 다르므로 한 덩어리로 다루지 않는다.
+    - `tab-navigation.spec.ts:439`는 **구현 결함이다.** `(tabs)/layout.tsx`가 `{children}` 위에 호스트 엘리먼트(`<div data-app-shell>`)를 두면, React `completeWork`가 그 호스트에서 `ViewTransitionStatic` 비트를 지우고 `commitExitViewTransitions`·`commitEnterViewTransitions`가 그 비트로만 하강을 정하므로 `(tabs)` 경계를 넘는 이동에서 `RouteTransition`이 `enter`도 `exit`도 못 받는다. **`{children}`의 호스트 조상을 없애고 `data-app-shell` 표식을 헤더 엘리먼트로 옮긴다.** `globals.css`의 `body:has([data-app-shell])`는 후손 아무나 걸리는 `:has()`라 셀렉터를 안 바꿔도 산다. A/B로 확인했다 — Fragment로 바꾸니 `:439`의 여섯 단언이 전부 통과한다.
+    - `:338`·`:551`은 **테스트 결함이다.** 이동 한 번에 `startViewTransition`이 세 번 도는데 스파이가 한 번을 가정해 인덱스와 계수가 어긋난다. `installViewTransitionSpy`가 이미 `transition.ready`에서 기록하므로 `types`를 함께 저장하고, `readTransitionAnimations`가 「기대한 전환 타입을 단 첫 기록」을 기다리게 고친다. 고친 뒤 `enter`/`exit` 매핑을 일부러 뒤바꿔 RED가 다시 나오는지 확인한다 — P0-T45가 이 단언을 그렇게 설계했다.
+    - 병렬 실행에서만 나는 `:502`·`:628`은 **`WORK_DATE_BANDS.viewTransition` 한 구간을 이 파일의 여섯 테스트가 나눠 쓰다 부딪히는 것이다.** 겹치지 않는 구간을 나눠 준다.
+    - **나가는 쪽 페이드의 존재를 단언하는 통과 테스트가 지금 `:439` 하나뿐이다.** 셸에 래퍼를 다시 넣으면 조용히 같은 자리로 돌아가므로, 이 사실을 handoff가 남기고 P0-T50이 `@sheet` 슬롯을 올릴 때 다시 확인한다.
+
+#### 이관 목록 (revision 14)
+
+| 인수 조건 | 무엇 | 가는 곳 |
+| --- | --- | --- |
+| 11 | 일정 달력 셀 어법 | P0-T60 |
+| 12 | 하단 변경 바 (240ms는 **250ms로 흡수** — 2026-08-19 사용자 승인) | P0-T60 |
+| 13 | 회차 목록과 지난 회차 무한 스크롤 | P0-T60 |
+| 15 | `/preview`의 **일정 일곱** 시나리오 (홈 아홉은 이 task가 닫는다) | P0-T60 |
+| 16 | **일정 달력이 일요일 시작**이라는 몫 (홈 스트립 월요일 시작과 `WORKER-FLOWS.md` 한 줄은 이 task가 닫는다) | P0-T60 |
+| 20 | `eslint.config.mjs`에서 **일정 두 줄** 제거 (홈은 이 task가 닫는다) | P0-T60 |
+| 26 | 배정표 라우트와 `@sheet` 가로채기 | P0-T50 |
+| 27 | `useInfiniteQuery` 배선 (설치와 `QueryClientProvider`는 이 task가 닫는다) | P0-T60 |
+
+`check_ids`도 따라간다 — `schedule-calendar-grammar`는 P0-T60, `roster-sheet-intercept`는 P0-T50.
 
 ### 위험 기반 테스트
 
@@ -477,7 +499,9 @@ docs/standards/adr/0015-motion-library-scope.md
 
 **파급 셋(revision 12).** `src/shared/model/__tests__/route-transition.test.ts`는 **`/pay`가 이제 탭이라는 사실을 반영하는 단언 둘**에 한정한다 — `resolveRouteTransition` 구현을 건드리지 않는다. `tests/e2e/**`는 **탭바에서 「알림」을 찾던 자리를 헤더 종으로 옮기는 데** 한정하고, 새 시나리오를 만들지 않는다. `src/app/layout.tsx`는 **전역 `OfflineBanner` 조립을 앱 셸 밖으로 분리하는 데** 한정한다 — 그 결과 `widgets/offline`의 `usePathname()` 셸 판별 우회가 걷혀야 하며, 루트 레이아웃의 다른 provider·메타데이터·폰트 설정을 건드리지 않는다.
 
-**화면.** `src/views/home/**`와 `src/views/schedule/**`는 전면 재작성이다. `src/shared/ui/**`는 위 Architecture가 이름을 댄 넷의 신설과 기존 `button`·`calendar`·`segmented-control`의 토큰 반영에 한정하고, 다른 shadcn 컴포넌트를 갈아엎지 않는다. `src/widgets/app-shell/**`는 탭 넷·채움 색·눌림·헤더 레이어에, `src/widgets/offline/**`는 배너를 셋째 줄로 옮기는 데 한정한다. `src/app/(protected)/(tabs)/**`는 두 화면의 라우트가 새 view에 넘기는 프롭을 맞추고 블록별 Suspense·에러 경계를 세우는 데 쓴다. **일정 라우트의 쿼리와 로딩 방식은 그대로 둔다.** 홈 라우트는 `deriveHomePriority`·`selectImminentRecruitment` 호출을 걷고 `home.mock.ts`를 먹인다(revision 10) — 새 쿼리를 만들지 않고 기존 쿼리를 고치지도 않는다.
+**인수 조건 41의 수리 경로(revision 14).** `src/app/(protected)/(tabs)/layout.tsx`에서 **`{children}`의 호스트 조상을 없애는 것**과 `data-app-shell` 표식을 헤더 엘리먼트로 옮기는 것을 연다 — 위 「화면」 절이 이 파일을 「프롭 맞추기와 Suspense·에러 경계」로 한정했으므로 그 밖이다. 인증 게이트와 리다이렉트, 헤더·탭바의 조립 순서는 그대로 둔다. `tests/e2e/**`는 위 「파급 셋」의 한정에 더해 **`support/` 아래 `installViewTransitionSpy`·`readTransitionAnimations`의 기록 짝짓기 수정과 `WORK_DATE_BANDS` 구간 재배분**을 연다 — 새 시나리오는 여전히 만들지 않는다.
+
+**화면.** `src/views/home/**`는 전면 재작성이다. ~~`src/views/schedule/**`~~는 **P0-T60으로 이관(revision 14)** — 이 task가 남긴 것은 `typo-display` 치환뿐이고 일정 화면의 구조·값·모션은 건드리지 않는다. `src/shared/ui/**`는 위 Architecture가 이름을 댄 넷의 신설과 기존 `button`·`calendar`·`segmented-control`의 토큰 반영에 한정하고, 다른 shadcn 컴포넌트를 갈아엎지 않는다. `src/widgets/app-shell/**`는 탭 넷·채움 색·눌림·헤더 레이어에, `src/widgets/offline/**`는 배너를 셋째 줄로 옮기는 데 한정한다. `src/app/(protected)/(tabs)/**`는 두 화면의 라우트가 새 view에 넘기는 프롭을 맞추고 블록별 Suspense·에러 경계를 세우는 데 쓴다. **일정 라우트의 쿼리와 로딩 방식은 그대로 둔다.** 홈 라우트는 `deriveHomePriority`·`selectImminentRecruitment` 호출을 걷고 `home.mock.ts`를 먹인다(revision 10) — 새 쿼리를 만들지 않고 기존 쿼리를 고치지도 않는다.
 
 **치환 전용.** `src/views/**/ui/*.tsx`(홈·일정·preview 제외)와 `src/app/(protected)/admin/page.tsx`는 **`typo-display` 클래스 문자열 치환과, 셸 화면 넷의 중복된 화면 제목 `<h1>` 한 줄 삭제(revision 13 — `PayView.tsx`·`MoreView.tsx`·`NotificationsView.tsx`·`NotificationSettingsView.tsx`)에만** 쓴다 — 화면 제목 스물넷은 `typo-headline-md`, `PayView.tsx:152`의 금액은 `typo-title`. 마크업 구조·프롭·조건·문구·다른 클래스를 건드리지 않는다. 열아홉 화면의 모양을 이 task가 고치는 것이 아니라 지워지는 유틸리티를 대체하는 것뿐이다. 나머지는 P0-T49~T54가 각자 다시 그린다.
 
