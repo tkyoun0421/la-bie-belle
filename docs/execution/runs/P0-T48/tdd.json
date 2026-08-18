@@ -160,6 +160,20 @@
       "at": "2026-08-18T18:59:40Z",
       "phase": "green",
       "note": "인수 조건 24 뒷문장 GREEN. layout.tsx가 listNotifications()를 더 이상 await하지 않고 호출만 해서 얻은 Promise를 <Suspense fallback={<NotificationBell hasUnread={false} />}><NotificationBellSlot notificationsPromise={...} /></Suspense>로 감싸 AppHeader의 새 bellSlot 프롭에 넘긴다. TabsLayout은 여전히 async 함수라 반환 타입이 Promise<ReactNode>로 테스트의 waitAtMost<T>(promise: Promise<T>, ms)와 맞지만 내부에 await가 없어 다음 마이크로태스크에서 즉시 resolve된다. NotificationBellSlot은 \"use client\" + React 19 use() 훅으로 프롭 Promise를 읽는 클라이언트 컴포넌트다 — async 서버 컴포넌트를 Suspense 자식으로 그대로 두면 react-dom/client(테스트가 쓰는 렌더러)가 'Only Server Components can be async' 오류를 낸다는 것을 스크래치 테스트로 먼저 재현해 배제했고, Next 공식 문서(node_modules/next/dist/docs/01-app/01-getting-started/06-fetching-data.md:240-317, 'Streaming data with the use API')가 권하는 대로 '서버에서 시작만 하고 안 기다린 Promise를 프롭으로 내려 클라이언트가 use()로 읽는' 어법으로 바꿔 별도 스크래치 테스트로 (a) 미해결 Promise가 fallback을 동기로 두 자리 모두 보여주고 (b) 같은 Promise 객체를 두 사본에 공유해도 실제 호출은 한 번뿐이며 나중에 해소되면 둘 다 갱신됨을 렌더로 직접 확인했다. hasUnreadNotifications(result.ok && result.unreadCount > 0) 판정은 src/widgets/app-shell/model/notification-bell.ts로 옮겨 no-logic-in-ui가 ui 세그먼트에서 비교 연산자를 못 찾게 했다. 1 passed / 1, exit 0. 이 실행 밖에서 pnpm vitest run src/app src/widgets src/views(77 files) 581 passed, pnpm lint·pnpm typecheck·pnpm build 통과, pnpm test:e2e tests/e2e/offline-banner.spec.ts tests/e2e/tab-navigation.spec.ts 19 passed."
+    },
+    {
+      "command": "pnpm verify",
+      "exit_code": 1,
+      "at": "2026-08-18T19:10:12Z",
+      "phase": "red",
+      "note": "인수 조건 31 RED. pnpm verify 전체를 이 task에서 처음 끝까지 돌렸더니 둘이 나왔다. ① pnpm lint:ci가 eslint.config.ci.mjs로 타입 인식 규칙을 켜는데 라운드마다 worker가 돌린 것은 pnpm lint뿐이라 7건이 쌓여 있었다 — block-boundary.tsx:33의 떠 있는 promise 하나와 테스트 셋의 any 누출 여섯이고 전부 이 task가 새로 만든 파일이다. ② 그것을 고친 뒤 재실행에서 recruitment-flow.spec.ts:304가 홈에서 「근무 신청 마감이 임박했어요」를 못 찾아 89 passed / 1 failed."
+    },
+    {
+      "command": "pnpm verify",
+      "exit_code": 0,
+      "at": "2026-08-18T19:17:13Z",
+      "phase": "green",
+      "note": "인수 조건 31 GREEN. format:check → lint:ci → typecheck → test → harness → docs → build → bundle → app-build → secret-scan → e2e(90 passed) → motion-render-budget → gate:all 전부 통과, 종료 코드 0. lint:ci 7건은 타입 주석과 void 한 줄로 막았고 단언은 하나도 안 고쳤다. e2e 실패 하나는 폐기된 설계를 지키던 낡은 단언이었다 — NOTES.md:231이 「마감 임박 표시를 홈에서 잃는 대신 알림 한 장이 그 역할을 진다」로 2026-08-17에 확정했고 알림 카드 종류 다섯에도 마감 임박이 없다. 인수 조건 38의 selectImminentRecruitment 삭제와 revision 10의 목 데이터 전환이 그 확정의 코드 쪽 귀결이라, 홈 단언 둘을 걷고 알림 화면(P0-T51)에서 다시 세우는 일을 backlog에 올렸다. 종료 코드를 파이프에 안 물리고 로그 파일로 받아 확인했다 — tail이 값을 삼키는 것을 이 라운드에서 실제로 겪었다."
     }
   ]
 }

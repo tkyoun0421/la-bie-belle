@@ -59,7 +59,9 @@ describe("useAmountMasking", () => {
 
     expect(useAmountMasking.getState().autoMaskOnWorkday).toBe(false);
 
-    const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "null");
+    const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "null") as {
+      state?: { autoMaskOnWorkday?: boolean };
+    } | null;
     expect(stored?.state?.autoMaskOnWorkday).toBe(false);
   });
 

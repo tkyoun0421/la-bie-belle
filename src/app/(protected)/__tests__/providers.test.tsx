@@ -27,7 +27,7 @@ describe("Providers", () => {
   });
 
   it("자식이 useQueryClient()로 QueryClient 인스턴스를 실제로 받는다", () => {
-    const onClient = vi.fn();
+    const onClient = vi.fn<(client: QueryClient) => void>();
 
     render(
       <Providers>
@@ -40,7 +40,7 @@ describe("Providers", () => {
   });
 
   it("리렌더해도 같은 QueryClient 인스턴스를 유지한다", () => {
-    const onClient = vi.fn();
+    const onClient = vi.fn<(client: QueryClient) => void>();
 
     const { rerender } = render(
       <Providers>

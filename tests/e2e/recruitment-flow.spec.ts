@@ -300,10 +300,6 @@ test.describe("모집 시간대 회귀", () => {
       throw imminentDeadlineError;
     }
 
-    await workerPage.goto("/");
-    await expect(workerPage.getByText("근무 신청 마감이 임박했어요")).toBeVisible();
-    await expect(workerPage.getByRole("link", { name: "지금 신청하기" })).toBeVisible();
-
     const { error: imminentCleanupError } = await worker.admin
       .from("schedules")
       .update({ status: "CANCELLED" })

@@ -1,5 +1,41 @@
 # P0-T48 handoff
 
+## 2026-08-19 · 인수 조건 31 GREEN — verify 전체가 처음 끝까지 돌았다
+
+`pnpm verify` 종료 코드 0. e2e 90 passed. 이 task에서 verify를 끝까지 돌린 것이 이번이 처음이고,
+그래서 그동안 안 보이던 둘이 나왔다.
+
+**하나 — `pnpm lint`와 `pnpm lint:ci`가 다른 규칙을 본다.** CI 설정(`eslint.config.ci.mjs`)만 타입
+인식 규칙을 켠다. 라운드마다 worker에게 시킨 것은 `pnpm lint`뿐이었으므로 7건이 조용히 쌓였고,
+**전부 이 task가 새로 만든 파일이었다** — `block-boundary.tsx:33`의 떠 있는 promise 하나와
+`providers.test.tsx`·`useAmountMasking.test.ts`·`block-boundary.test.tsx`의 `any` 누출 여섯.
+떠 있는 promise에는 `void`를 붙였다. 삼키는 `.catch`를 안 붙인 이유는 `onRetry` 실패가 조용히
+사라지는 쪽이 더 나쁘기 때문이다. 나머지 여섯은 타입 주석만 붙였고 **단언은 하나도 안 고쳤다.**
+
+**이건 절차의 구멍이다.** 개발 라운드의 마무리 명령에 `pnpm lint`를 적으면 worker는 그것만 돈다.
+`pnpm verify`를 한 번도 안 돌리고 라운드를 여러 번 닫으면 CI 전용 규칙의 빚이 마지막에 몰린다.
+P0-T57이 봉인 전 실태 조사를 맡으므로 거기에 「worker 마무리 명령이 CI가 실제로 도는 것과 같은
+규칙을 보는가」를 한 줄 얹을 값어치가 있다.
+
+**둘 — 낡은 e2e 단언 둘.** `recruitment-flow.spec.ts:304-305`가 홈에서
+「근무 신청 마감이 임박했어요」와 「지금 신청하기」를 기대했다. 두 문구는 `src/` 어디에도 없다.
+없어진 것이 아니라 **확정 설계가 자리를 옮긴 것이다** — `NOTES.md:231` 「마감 임박 표시를 홈에서
+잃는 대신 알림 한 장이 그 역할을 진다」(2026-08-17 사용자 확정)이고, 알림 카드 종류
+다섯(`vacancy`·`schedule-confirmed`·`assignment-changed`·`change-approved`·`change-rejected`)에도
+마감 임박이 없다. 인수 조건 38의 `selectImminentRecruitment` 삭제와 revision 10의 목 데이터 전환이
+그 확정의 코드 쪽 귀결이다. 그러므로 폐기된 설계를 지키던 단언이라 걷었고, 같은 테스트의
+달력 월 경계·마감 표시 단언과 시딩은 그대로 뒀다. **잃은 감시는 backlog에 올렸다** — 알림
+화면(P0-T51)이 서면 같은 시딩으로 거기서 다시 세운다. 그때까지 「마감이 임박하면 근무자가
+알게 된다」를 지키는 e2e가 하나도 없다.
+
+RADIO revision 15 SHA-256 `01bd2e81eecbb59a506b4812120de47c3a725deb09b562db901ffbacd3c40c36`,
+2026-08-19 사용자 승인.
+
+**곁들여 — 종료 코드를 파이프에 물리지 마라.** 첫 verify를 `pnpm verify 2>&1 | tail -60`으로
+돌렸더니 하네스가 종료 코드 0으로 보고했다. `tail`이 값을 삼킨 것이고 실제로는 실패였다. 이후로는
+로그 파일로 받아 `echo "EXIT=$?"`로 확인했다. 이 저장소의 e2e에서 이미 같은 사고를 겪었는데
+verify에서 또 겪었다.
+
 ## 2026-08-19 · 인수 조건 24 뒷문장 GREEN — 종 점을 Suspense 뒤로 물렸다
 
 `src/app/__tests__/tabs-layout.test.tsx` RED(`listNotifications`가 영원히 응답하지 않으면 헤더·탭바가

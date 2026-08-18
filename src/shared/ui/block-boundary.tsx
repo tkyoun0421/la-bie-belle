@@ -30,7 +30,7 @@ class BlockBoundaryContent extends Component<BlockBoundaryContentProps, BlockBou
       return;
     }
     this.setState({ retrying: true, hasError: false });
-    Promise.resolve(this.props.onRetry()).finally(() => {
+    void Promise.resolve(this.props.onRetry()).finally(() => {
       this.setState({ retrying: false });
     });
   };

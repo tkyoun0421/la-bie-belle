@@ -1,6 +1,7 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
+import type { MockInstance } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { BlockBoundary } from "@/shared/ui/block-boundary";
@@ -44,7 +45,7 @@ describe("BlockBoundary", () => {
   });
 
   describe("자식이 던질 때", () => {
-    let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+    let consoleErrorSpy: MockInstance<typeof console.error>;
 
     beforeEach(() => {
       consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
