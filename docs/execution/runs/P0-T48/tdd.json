@@ -69,6 +69,27 @@
       "at": "2026-08-17T21:26:02Z",
       "phase": "green",
       "note": "AC9(4b라운드) 통과: BlockBoundaryProps.name을 message:string(완성 문장)으로 바꾸고 fallback이 조사 조립 없이 this.props.message를 그대로 렌더하도록 고쳤다. 재시도 잠금은 componentDidUpdate를 제거하고 handleRetry가 Promise.resolve(this.props.onRetry()).finally(() => setState({ retrying: false }))로 refresh 완료(성공·실패 무관)마다 락을 풀도록 바꿨다 — hasError 리셋은 여전히 onRetry 호출 전에 동기로 일어나 '리셋 뒤 refresh 한 번' 순서는 유지된다. 8 passed / 8, exit 0."
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__ src/shared/hooks/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-18T07:56:28Z",
+      "phase": "red",
+      "note": "5A라운드(RADIO revision 7): 공용 부품 여섯의 RED. src/shared/ui/skeleton-bar.tsx·d-badge.tsx·anchor-illustration.tsx·masked-amount.tsx, src/shared/hooks/useAmountReveal.ts·useAmountMasking.ts가 전부 없어 6개 테스트 스위트가 import 단계에서 Failed to resolve import로 죽어 0 test 수집(6 failed suites). 기존 18개 스위트·103 tests는 그대로 통과해 회귀 없음. 전체 24 files 중 6 failed·18 passed, 103 passed(0 실행 안 된 신규 스위트 제외), exit 1. d-badge(rounded-cell 미사용)·skeleton-bar(rounded-[6px] 임의값)·masked-amount(masked 상태에서 실제 값 렌더)로 임시 stub을 넣어 해당 단언들이 오답을 실제로 잡아내는지 확인한 뒤 stub 파일 6개를 전부 삭제했다(작업 트리에 소스 변경 없음, git status로 재확인)."
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__ src/shared/hooks/__tests__",
+      "exit_code": 1,
+      "at": "2026-08-18T08:44:23Z",
+      "phase": "red",
+      "note": "5A라운드 보강(RADIO revision 9, AC35·37): 리빌 훑기와 그림 둘의 RED. MaskedAmount에 필수 sweep prop을 세운 계약 4건을 더했고 그중 2건이 실패 — .amount-sweep 요소를 container.querySelector가 못 찾아 expected null not to be null. AnchorIllustration은 change-approved·change-rejected가 아직 null을 반환해 'SVG로 렌더된다' 2건이 계속 실패. 빨강 금지 단언은 hex를 HSL 색상각으로 바꿔 0°/360° ±15°만 빨강으로 보는 판정을 테스트 파일 안에 두어 호박 #ffc94d(약 33°)·#c4700a(약 42°) 오탐이 없음을 실행으로 확인했고, 그림 둘이 null인 동안은 공집합이라 트리비얼 통과 상태다. 2 files failed, 4 failed / 30 passed(34), exit 1."
+    },
+    {
+      "command": "pnpm vitest run src/shared/ui/__tests__ src/shared/hooks/__tests__",
+      "exit_code": 0,
+      "at": "2026-08-18T08:52:23Z",
+      "phase": "green",
+      "note": "5A라운드 GREEN(AC32·33·35·36·37): 공용 부품 여섯이 전부 섰다. skeleton-bar(--color-border·radius-xs 6·애니메이션 없음)·d-badge(radius-cell 12·색 층위 셋)·anchor-illustration(그림 여덟)·masked-amount(blur 7px 더미 + 필수 sweep prop)·useAmountReveal(maskedByDefault 인자, revealedByHand 하나만 들고 masked·revealing을 파생)·useAmountMasking(zustand persist, 키 labiebelle:amount-masking, skipHydration). 시안에 SVG가 없던 change-approved·change-rejected 둘은 확정 시안의 요소만 조합해 그렸다 — 사각 기하 rx=4.5와 흰 체크 path는 data-notice=1 카드에서, 초록은 green 그라디언트 #54d787→#11834a, 회색은 FOUNDATIONS 고정색에 새로 박은 #c9d1dc→#7c828a. 빨강 없음. 훑기는 globals.css의 @utility amount-sweep 하나이고 지속시간을 인라인으로 박지 않아 --duration-sweep 토큰이 정본이다. 24 files passed, 164 passed, exit 0."
     }
   ]
 }

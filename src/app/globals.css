@@ -73,6 +73,7 @@
   --radius-lg: 16px;
   --radius-xl: 20px;
   --radius-pill: 9999px;
+  --radius-cell: 12px;
 
   --shadow-floating: 0 8px 24px rgba(10, 11, 13, 0.08);
 
@@ -81,6 +82,8 @@
   --duration-overlay: 250ms;
   --duration-stagger: 30ms;
   --duration-crossfade: 250ms;
+  --duration-press: 420ms;
+  --duration-sweep: 1500ms;
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -267,6 +270,40 @@
   }
 }
 
+@keyframes amount-sweep {
+  from {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+@utility amount-sweep {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      var(--color-surface-weak) 50%,
+      transparent 80%
+    );
+    animation: amount-sweep var(--duration-sweep) var(--ease-out) 1;
+  }
+}
+
 @utility motion-stagger-item {
   animation: stagger-in var(--duration-value) var(--ease-out) both;
   animation-delay: calc(var(--stagger-index, 0) * var(--duration-stagger));
@@ -339,6 +376,8 @@ body {
     --duration-value: 0ms;
     --duration-overlay: 0ms;
     --duration-stagger: 0ms;
+    --duration-press: 0ms;
+    --duration-sweep: 0ms;
   }
 
   *,
