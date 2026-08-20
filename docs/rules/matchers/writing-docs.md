@@ -11,6 +11,8 @@ Load this whenever you create or edit anything under `docs/`.
 
 Local documents are written in English. See the language rule in `docs/rules/common.md`.
 
+An agent driving document work from a session uses the `/doc` skill, which runs this procedure end to end — ownership check, branch, template, publication. A subagent that skill dispatches follows the rules below directly and does not call back into it.
+
 ## Templates
 
 Start from `docs/templates/`, never from a blank file.

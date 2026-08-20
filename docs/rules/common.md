@@ -75,6 +75,8 @@ GitHub artifacts are written in **Korean** — Issue titles and bodies, PR title
 
 Code, commands, identifiers, file paths, CLI flags, and commit type keywords (`feat`, `fix`, …) stay verbatim in both languages.
 
+One exception: a skill's `description` field may carry Korean trigger phrases. That field is matched against what the user types, and the user types Korean.
+
 ## Communication
 
 **The record is canonical; the bell is only a signal.** Every instruction, request, and report between agents is written to GitHub — a PR comment or an Issue. The Orca `terminal send` bell carries one line that says "go look". An instruction delivered only through a terminal did not happen.
