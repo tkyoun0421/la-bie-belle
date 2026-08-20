@@ -27,6 +27,19 @@ related_issue: ""
 - main 직커밋 금지. 총괄 포함 모든 변경은 PR로만 통합한다.
 - merge는 총괄 에이전트만 한다. 방식은 **squash merge** — main 이력은 작업 단위당 1커밋.
 - merge 전제: 독립 리뷰 에이전트(`pr-reviewer`)의 통과 보고. 작성자는 자기 PR을 리뷰하지 않는다.
+
+### 리뷰 중요도와 처리 (루브릭은 임시 — 상세화는 §7 미결)
+
+리뷰 발견의 중요도는 normal · high · critical 3단계다.
+
+| 중요도 | 기준 | 처리 |
+|--------|------|------|
+| **critical** | 비밀값·PII 노출(저장소 PUBLIC), 데이터 파괴·유실 경로, 인증·권한 우회, main 파괴(빌드·기존 테스트 실패) | merge 불가. 총괄이 **PR 작성 role에게 즉시 수정 지시** |
+| **high** | 스펙 인수 조건 미충족·명백한 기능 버그, 소유권 침범, 동작 변경에 테스트 부재, 도메인 정책 오구현 | merge 불가. 총괄이 **PR 작성 role에게 긴급 수정 지시** |
+| **normal** | 리팩토링·네이밍·성능 개선 여지, 문서 규약 경미 위반(front matter 누락 등), 스펙 모호로 확인 필요 | merge 진행. 항목을 **GitHub Issue(ticket)로 열어** 후속 추적 |
+
+- critical·high 수정은 새 PR이 아니라 **같은 PR에 push**하고 재리뷰를 받는다.
+- 긴급 수정 지시의 수신자는 항상 그 PR의 작성 role이다 (pm PR이면 PM, ui PR이면 UI).
 - PR 제목은 `type(scope): 요약` 형식, 본문에 관련 Issue 번호(`#N`)와 변경 영향(Domain/Spec/Arch Impact)을 적는다. 커밋 규약은 PR 단위로만 강제하고 작업 중 커밋은 자유다.
 - 배포 이후에는 merge 권한이 사람에게 넘어간다.
 
@@ -66,6 +79,7 @@ related_issue: ""
 
 ## 7. 미결 (결정되면 이 문서를 갱신)
 
+- 리뷰 중요도 루브릭 상세화: 경계 사례 판정, normal ticket의 라벨·우선순위 체계, 긴급 수정 지시의 전달 방식 (#62)
 - 총괄이 받은 완료 알림의 타 worktree 재전파 규칙
 - GitHub Projects(Kanban) 상태 관리 주체
 - 코딩 표준 문서 위치 (제안: `docs/architecture/overview.md`)
