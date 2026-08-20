@@ -20,12 +20,12 @@ requirements → PRD → ADR (product and domain decisions) → SPEC file → [E
 
 - **PRD** — `docs/prd.md`.
 - **Domain** — `docs/domain/`.
-- **ADR** — `docs/adr/ADR-00N-<slug>.md`. Product and domain decisions, append-only. See `matchers/writing-docs.md`.
+- **ADR** — `docs/adr/ADR-00N-<slug>.md`. Product and domain decisions, append-only. See `docs/rules/matchers/writing-docs.md`.
 - **SPEC** — `docs/specs/<feature>.md`. The single source of truth for a feature. The `[Epic]` Issue carries a summary and a link, never a copy.
 
 ## Standard procedure
 
-Move your own board card: In Progress when you cut the branch, In Review when you open the PR. If you cannot proceed, follow `matchers/blocked.md` rather than stopping quietly.
+Move your own board card: In Progress when you cut the branch, In Review when you open the PR. If you cannot proceed, follow `docs/rules/matchers/blocked.md` rather than stopping quietly.
 
 Decide the slice order — moving cards from Backlog to Todo is yours, shared with the orchestrator.
 

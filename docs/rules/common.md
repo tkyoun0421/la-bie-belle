@@ -10,7 +10,7 @@ The constitution for agent collaboration on La Bie Belle. When another document 
 
 ## Module map
 
-Rules are split along three axes. Load `common.md` always, your own role file always, and a matcher only when its situation occurs.
+Rules are split along three axes. Load `docs/rules/common.md` always, your own role file always, and a matcher only when its situation occurs.
 
 | Axis | Path | When to load |
 |------|------|--------------|
@@ -54,7 +54,7 @@ Never commit directly to `main`. Every change, the orchestrator's included, land
 
 Only the orchestrator merges, and always as a **squash merge** — one commit on `main` per unit of work. A merge requires a PASS from the independent `pr-reviewer` agent. Nobody reviews their own PR. Once the product is deployed, merge authority moves to a human.
 
-PR titles use `type(scope): summary`, and the body carries the related Issue number and the change impact. Commit message conventions are enforced at the PR level only; commits during the work are free-form. See `matchers/opening-a-pr.md`.
+PR titles use `type(scope): summary`, and the body carries the related Issue number and the change impact. Commit message conventions are enforced at the PR level only; commits during the work are free-form. See `docs/rules/matchers/opening-a-pr.md`.
 
 ## Work tracking
 
@@ -64,11 +64,11 @@ The single source of truth for a specification is the file under `docs/specs/`. 
 
 Feature implementation comes before design. Applying a design is a separate slice, taken up after the `docs/ui/` specification exists.
 
-Status lives in the Status field of the [La Bie Belle](https://github.com/users/tkyoun0421/projects/8) project board, not in labels. See `matchers/publishing-issues.md`.
+Status lives in the Status field of the [La Bie Belle](https://github.com/users/tkyoun0421/projects/8) project board, not in labels. See `docs/rules/matchers/publishing-issues.md`.
 
 ## Language
 
-Local documents are written in **English** — everything under `docs/`, `.claude/`, and `config/`. English keeps agent context cheap and unambiguous.
+Local documents are written in **English** — everything under `docs/` and `.claude/`. English keeps agent context cheap and unambiguous.
 
 GitHub artifacts are written in **Korean** — Issue titles and bodies, PR titles and bodies, and every comment. A human reads those directly.
 
@@ -93,7 +93,7 @@ Known limit: a role agent can disable its own guard with `git commit --no-verify
 
 ## Ground rules
 
-- The repository is **public**. See `matchers/handling-secrets.md`.
+- The repository is **public**. See `docs/rules/matchers/handling-secrets.md`.
 - Output from the previous project, on the `snapshot/2026-08-20-pre-reset` branch, is off limits. This project starts from a blank slate.
 
 ## Open items

@@ -8,7 +8,7 @@ related_issue: "#69"
 
 Load this when opening a GitHub Issue or moving a card on the board.
 
-Issue titles and bodies are written in Korean. See the language rule in `common.md`.
+Issue titles and bodies are written in Korean. See the language rule in `docs/rules/common.md`.
 
 ## Kinds
 

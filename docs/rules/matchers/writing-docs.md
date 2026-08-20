@@ -8,7 +8,7 @@ related_issue: "#69"
 
 Load this whenever you create or edit anything under `docs/`.
 
-Local documents are written in English. See the language rule in `common.md`.
+Local documents are written in English. See the language rule in `docs/rules/common.md`.
 
 ## Front matter
 

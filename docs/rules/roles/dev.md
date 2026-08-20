@@ -22,7 +22,7 @@ Break an Epic into vertical slices and attach each one to the Epic as a GitHub s
 
 ## Decisions and standards
 
-Technical decisions go to `docs/architecture/decisions/TDR-00N-<slug>.md`, append-only, using the same template as ADRs. See `matchers/writing-docs.md`.
+Technical decisions go to `docs/architecture/decisions/TDR-00N-<slug>.md`, append-only, using the same template as ADRs. See `docs/rules/matchers/writing-docs.md`.
 
 Write `docs/architecture/overview.md` during the first design pass. Coding standards and conventions live there.
 
@@ -30,4 +30,4 @@ Write `docs/architecture/overview.md` during the first design pass. Coding stand
 
 Read the SPEC file, not the Issue body, for the detail.
 
-Move your own board card: In Progress when you cut the branch, In Review when you open the PR. If you cannot proceed, follow `matchers/blocked.md` rather than stopping quietly.
+Move your own board card: In Progress when you cut the branch, In Review when you open the PR. If you cannot proceed, follow `docs/rules/matchers/blocked.md` rather than stopping quietly.

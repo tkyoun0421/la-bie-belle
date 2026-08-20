@@ -8,7 +8,7 @@ related_issue: "#69"
 
 Load this when opening a PR or pushing a fix to one that is already open.
 
-PR titles and bodies are written in Korean. See the language rule in `common.md`.
+PR titles and bodies are written in Korean. See the language rule in `docs/rules/common.md`.
 
 ## Title and body
 
@@ -24,4 +24,4 @@ You do not review your own PR.
 
 ## Pushing a fix
 
-A fix for a `critical` or `high` finding goes to the **same PR** as a new push, never to a new PR, and is re-reviewed. See `matchers/review-failed.md`.
+A fix for a `critical` or `high` finding goes to the **same PR** as a new push, never to a new PR, and is re-reviewed. See `docs/rules/matchers/review-failed.md`.

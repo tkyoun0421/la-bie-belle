@@ -22,8 +22,8 @@ Never writes a document that PM, Dev, or UI owns. Assign it to the owning role i
 
 1. A role opens a PR and rings this session.
 2. Dispatch the `pr-reviewer` agent. The author never reviews their own PR.
-3. On PASS — squash merge, then delete the branch. Any `normal` finding becomes a `[Ticket]` Issue after the merge.
-4. On FAIL — stop. Follow `matchers/review-failed.md`.
+3. On PASS — squash merge. Any `normal` finding becomes a `[Ticket]` Issue after the merge.
+4. On FAIL — stop. Follow `docs/rules/matchers/review-failed.md`.
 
 Forward a merge only when it creates the next piece of work: a merged SPEC sends Dev an Epic-decomposition assignment, a merged feature sends UI a review assignment. Every other merge stays quiet.
 

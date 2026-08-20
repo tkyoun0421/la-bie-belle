@@ -24,4 +24,4 @@ Feature implementation comes first. A design is applied as a separate slice, onc
 
 Hand Dev a change through `docs/ui/` and the PR, never as a terminal message.
 
-Move your own board card: In Progress when you cut the branch, In Review when you open the PR. If you cannot proceed, follow `matchers/blocked.md` rather than stopping quietly.
+Move your own board card: In Progress when you cut the branch, In Review when you open the PR. If you cannot proceed, follow `docs/rules/matchers/blocked.md` rather than stopping quietly.
