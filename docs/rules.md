@@ -80,7 +80,7 @@ related_issue: "#62"
 | surface | `surface:ui` `surface:db` `surface:auth` `surface:api` `surface:workflow` `surface:docs` |
 | risk | `risk:security` `risk:privacy` `risk:performance` `risk:concurrency` `risk:migration` `risk:external` |
 
-**Project Status** — 상태의 정본은 GitHub Project의 Status 필드다.
+**Project Status** — 상태의 정본은 GitHub Project [La Bie Belle](https://github.com/users/tkyoun0421/projects/8)의 Status 필드다. 새 Issue는 보드에 올린 뒤 상태를 지정한다 (`gh project item-add 8 --owner tkyoun0421 --url <issue-url>`).
 
 | Status | 의미 | 옮기는 손 |
 |--------|------|-----------|
