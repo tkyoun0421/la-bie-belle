@@ -30,8 +30,4 @@ body:
   - type: markdown
     attributes:
       value: |
-        발행 후 보드에 올리고 상태를 지정한다.
-
-        ```
-        gh project item-add 8 --owner tkyoun0421 --url <issue-url>
-        ```
+        발행 후 보드에 올리고 상태를 지정한다. 명령은 `docs/rules/matchers/publishing-issues.md`에 있다.

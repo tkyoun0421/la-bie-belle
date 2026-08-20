@@ -38,3 +38,5 @@ Focus order, contrast requirements, labels for anything conveyed by colour or ic
 What this pass deliberately leaves alone, so the next review does not treat it as an omission.
 
 ## Open questions
+
+Anything the implemented screen left ambiguous and the review could not settle alone. Written as questions.

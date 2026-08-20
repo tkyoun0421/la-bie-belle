@@ -46,3 +46,5 @@ What is stored, what changes, and what survives a refresh or a crash. Shapes and
 What happens when it goes wrong: invalid input, a conflict with someone else's action, a failed external call, an empty result. Each one gets the behaviour the user sees.
 
 ## Open questions
+
+Anything that would change the acceptance criteria if answered differently. Written as questions, so a slice never ships against a guess.

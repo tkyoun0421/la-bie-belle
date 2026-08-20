@@ -32,3 +32,5 @@ Statements that are always true, whatever the code does. "A booking never overla
 For anything with a lifecycle, the states and the legal moves between them. Name the moves that are forbidden as well.
 
 ## Open questions
+
+Terms still contested, boundaries not yet drawn, invariants you suspect but cannot yet state. Written as questions.

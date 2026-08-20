@@ -23,6 +23,7 @@ Start from `docs/templates/`, never from a blank file.
 | TDR | `docs/architecture/decisions/TDR-00N-<slug>.md` | `docs/templates/tdr.md` |
 | SPEC | `docs/specs/<feature>.md` | `docs/templates/spec.md` |
 | UI spec | `docs/ui/<screen>.md` | `docs/templates/ui-spec.md` |
+| Architecture overview | `docs/architecture/overview.md` | `docs/templates/architecture-overview.md` |
 
 ## Front matter
 
