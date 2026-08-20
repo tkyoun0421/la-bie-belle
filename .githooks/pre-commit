@@ -1,42 +1,19 @@
 #!/bin/bash
 set -u
 
-staged=$(git diff --cached --name-only --diff-filter=ACMR)
+toplevel=$(git rev-parse --show-toplevel)
 
-if printf '%s\n' "$staged" | grep -E '^\.env(\..+)?$' | grep -vx '\.env\.example' >/dev/null; then
-  echo "pre-commit: .env files must never be committed (repository is public)." >&2
+paths=$(git -c core.quotepath=false diff --cached --name-status -M | awk -F'\t' '{for (i = 2; i <= NF; i++) print $i}')
+
+if printf '%s\n' "$paths" | grep -E '(^|/)\.env(\..+)?$|(^|/)\.envrc$' | grep -vE '(^|/)\.env\.example$' >/dev/null; then
+  echo "pre-commit: .env/.envrc files must never be committed anywhere in the tree (repository is public)." >&2
   exit 1
 fi
 
-toplevel=$(git rev-parse --show-toplevel)
 role_file="$toplevel/.agent-role"
 [ -f "$role_file" ] || exit 0
 role=$(tr -d '[:space:]' < "$role_file")
 [ -n "$role" ] || exit 0
 
-export ROLE="$role" TOPLEVEL="$toplevel" STAGED="$staged"
-python3 - <<'PYEOF'
-import json, os, sys
-
-role = os.environ["ROLE"]
-toplevel = os.environ["TOPLEVEL"]
-
-try:
-    with open(os.path.join(toplevel, "config", "ownership.json")) as f:
-        ownership = json.load(f)
-except (OSError, json.JSONDecodeError):
-    sys.exit(0)
-
-prefixes = ownership.get(role)
-if prefixes is None:
-    sys.exit(0)
-
-staged = [line for line in os.environ.get("STAGED", "").splitlines() if line]
-bad = [f for f in staged if not any(f == p or f.startswith(p) for p in prefixes)]
-if bad:
-    print(f"pre-commit: role '{role}' is committing files it does not own:", file=sys.stderr)
-    for f in bad:
-        print(f"  {f}", file=sys.stderr)
-    print("Request changes outside your ownership via Issue or PR comment (docs/rules.md).", file=sys.stderr)
-    sys.exit(1)
-PYEOF
+export ROLE="$role" PROJECT_DIR="$toplevel"
+printf '%s\n' "$paths" | python3 "$toplevel/.claude/hooks/ownership-check.py" paths

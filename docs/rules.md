@@ -58,8 +58,10 @@ related_issue: ""
 
 ## 6. 강제 장치
 
-- **PreToolUse 훅** `.claude/hooks/ownership-guard.sh`: `.agent-role`이 있는 worktree에서 소유 밖 경로의 Edit/Write를 편집 시점에 거부한다.
-- **pre-commit** `.githooks/pre-commit`: staged 파일의 소유권 검사 + `.env*` 커밋 차단. 저장소 클론·재설정 시 `git config core.hooksPath .githooks`를 한 번 실행해야 한다.
+- **PreToolUse 훅** `.claude/hooks/ownership-guard.sh`(로직: `ownership-check.py`): `.agent-role`이 있는 worktree에서 소유 밖 경로의 Edit/Write/NotebookEdit을 편집 시점에 거부한다. 자기 worktree·임시 디렉터리·`~/.claude` 밖의 절대 경로(다른 worktree 포함)도 거부한다.
+- **pre-commit** `.githooks/pre-commit`: staged 변경(추가·수정·**삭제·rename 양쪽 경로**)의 소유권 검사 + 트리 어디서든 `.env*`·`.envrc` 커밋 차단(`.env.example` 예외). 저장소 클론·재설정 시 `git config core.hooksPath .githooks`를 한 번 실행해야 한다.
+- 두 장치 모두 **fail-closed**다: `config/ownership.json`이 깨졌거나 `.agent-role`의 role이 미등록이면 허용이 아니라 차단한다. 총괄(=`.agent-role` 없음)만 무검사.
+- 알려진 한계: role 에이전트가 `git commit --no-verify`나 `.agent-role` 자체 수정으로 자기 가드를 끌 수는 있다. 이는 규칙 위반이며 최종 방어선은 PR 독립 리뷰다 — 리뷰어는 브랜치 접두사와 변경 경로의 소유권을 반드시 대조한다.
 - 저장소는 PUBLIC이다. 비밀값은 `.env`·`.env.local`에만 두고, 예시는 `.env.example`에 플레이스홀더로만 적는다.
 
 ## 7. 미결 (결정되면 이 문서를 갱신)
