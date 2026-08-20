@@ -2,6 +2,7 @@
 .env.*
 !.env.example
 node_modules/
+__pycache__/
 .next/
 CLAUDE.local.md
 .agent-role

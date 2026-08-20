@@ -1,0 +1,37 @@
+name: Epic
+description: 기능 단위. PM이 발행한다.
+title: "[Epic] "
+labels: ["type:feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        스펙의 정본은 `docs/specs/` 파일이다. 여기에는 요약과 링크만 넣고 상세를 복사하지 마라. 내용을 고칠 일이 생기면 파일을 고친다.
+  - type: input
+    id: spec
+    attributes:
+      label: SPEC 파일
+      description: 저장소 안 경로 또는 링크
+      placeholder: docs/specs/reservation.md
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: 요약
+      description: 이 기능이 무엇이고 사용자에게 무슨 값을 주는지 한 문단.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: 완료 조건
+      description: 이 Epic을 닫을 수 있는 조건. 보통은 "모든 슬라이스가 닫힘"이지만, 그 밖에 필요한 것이 있으면 적는다.
+  - type: markdown
+    attributes:
+      value: |
+        발행 후 보드에 올리고 상태를 지정한다.
+
+        ```
+        gh project item-add 8 --owner tkyoun0421 --url <issue-url>
+        ```

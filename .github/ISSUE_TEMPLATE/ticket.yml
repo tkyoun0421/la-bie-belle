@@ -1,0 +1,30 @@
+name: Ticket
+description: 리뷰 normal 후속, 개선·부채. 총괄이 발행한다.
+title: "[Ticket] "
+body:
+  - type: textarea
+    id: background
+    attributes:
+      label: 배경
+      description: 어디서 나온 항목인지. 리뷰 발견이면 그 PR과 지적 내용을 링크한다.
+    validations:
+      required: true
+  - type: textarea
+    id: todo
+    attributes:
+      label: 할 일
+      description: 무엇을 어떻게 바꾸면 닫히는지.
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: 담당
+      description: 이 변경이 걸린 경로의 소유 role.
+      placeholder: PM / Dev / UI / 총괄
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        라벨은 type · surface · risk 세 축에서 해당하는 것을 붙인다.

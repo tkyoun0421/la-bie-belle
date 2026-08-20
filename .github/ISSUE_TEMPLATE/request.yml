@@ -1,0 +1,39 @@
+name: Request
+description: 자기 소유 밖 경로의 변경 요청. 아무 role이나 발행한다.
+title: "[Request] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        소유 role이 스스로 판단한다 — 받아들여 구현하고 PR을 열거나, 사유를 코멘트로 남기고 닫는다. 총괄은 role끼리 의견이 갈릴 때만 중재한다.
+  - type: dropdown
+    id: target
+    attributes:
+      label: 요청 대상
+      options:
+        - PM
+        - Dev
+        - UI
+        - 총괄
+    validations:
+      required: true
+  - type: input
+    id: path
+    attributes:
+      label: 대상 경로
+      placeholder: docs/specs/reservation.md
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: 무엇을 바꿔 달라는 것인가
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: 왜 필요한가
+      description: 이게 없으면 무엇이 막히는지. 막힌 작업이 있으면 그 Issue를 링크한다.
+    validations:
+      required: true

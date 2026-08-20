@@ -33,7 +33,7 @@ Rules are split along three axes. Load `docs/rules/common.md` always, your own r
 
 | Worktree | Agent | Owns |
 |----------|-------|------|
-| `main` checkout | Orchestrator (`@orchestrator`) | `docs/rules/`, `config/`, `.claude/`, `.githooks/` — with access to every path |
+| `main` checkout | Orchestrator (`@orchestrator`) | `docs/rules/`, `docs/templates/`, `config/`, `.claude/`, `.githooks/`, `.github/` — with access to every path |
 | `pm` | PM (`@agent-pm`) | `docs/prd.md`, `docs/domain/`, `docs/adr/`, `docs/specs/` |
 | `dev` | Dev (`@agent-dev`) | `docs/architecture/` (technical decisions under `architecture/decisions/` as TDRs), `src/`, root development config |
 | `ui` | UI (`@agent-ui`) | `docs/ui/` — never code |

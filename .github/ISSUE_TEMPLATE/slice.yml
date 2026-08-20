@@ -1,0 +1,38 @@
+name: Slice
+description: 세로 슬라이스 하나. Dev가 발행하고 Epic에 sub-issue로 묶는다.
+title: "[Slice] "
+labels: ["type:feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        슬라이스는 모든 층(스키마·API·화면·테스트)을 관통하는 좁고 완전한 경로다. 한 층만 가로로 자른 것은 슬라이스가 아니다.
+  - type: input
+    id: epic
+    attributes:
+      label: 부모 Epic
+      placeholder: "#42"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: 무엇이 동작하게 되나
+      description: 사용자 관점에서 이 슬라이스가 끝나면 무엇을 할 수 있는지. 층별 구현 목록이 아니다.
+    validations:
+      required: true
+  - type: textarea
+    id: criteria
+    attributes:
+      label: 인수 조건
+      description: SPEC의 인수 조건 중 이 슬라이스가 만족시키는 항목. 체크박스로 적는다.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: blocked_by
+    attributes:
+      label: 선행 슬라이스
+      description: 이 슬라이스보다 먼저 끝나야 하는 것. 없으면 "없음".
