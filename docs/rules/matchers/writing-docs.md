@@ -11,6 +11,8 @@ Load this whenever you create or edit anything under `docs/`.
 
 Local documents are written in English. See the language rule in `docs/rules/common.md`.
 
+The `/doc` skill runs this procedure end to end — ownership check, branch, template, publication. Use it rather than reproducing the steps by hand.
+
 ## Templates
 
 Start from `docs/templates/`, never from a blank file.
