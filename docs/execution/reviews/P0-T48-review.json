@@ -1,0 +1,168 @@
+{
+  "task_id": "P0-T48",
+  "at": "2026-08-19T00:40:00+09:00",
+  "base_commit": "8a0c84ed89ad8f36037a0150e2c7ecfe31ae5a5f",
+  "participants": ["opus", "codex"],
+  "participants_note": "",
+  "scores": {
+    "code_quality": 62,
+    "tests": 63,
+    "security": 85,
+    "performance": 74,
+    "architecture": 66
+  },
+  "score_rationale": {
+    "code_quality": "이름과 구조는 일관되고 주석 0건이나, 화면에 붙어 있어야 할 동작이 빠진 자리가 high 둘(F-02·F-03)에 medium 다섯이라 표면은 완성됐고 배선은 덜 됐다.",
+    "tests": "RED/GREEN 25쌍에 린트 규칙 테스트 41개로 양은 충분하지만, 위반을 성공 조건으로 고정한 테스트가 셋(F-08·F-09 그리고 F-07의 자릿수 단언)이라 감시선이 반대로 걸렸다.",
+    "security": "서버 경계·RLS·비밀값 취급에 발견이 없고 실제 금액은 DOM에 들어가지 않는다. 마스킹 자릿수 정본 충돌(F-07) 하나만 남았고 이는 유출이 아니라 문서 갈림이다.",
+    "performance": "번들과 렌더 예산은 게이트를 통과하나, 홈의 스트리밍 경계가 통째로 무력(F-01)이라 설계가 약속한 지연 흡수가 실제로는 없다.",
+    "architecture": "FSD 계층 방향과 server-only 선언은 지켜졌지만, ui 판정 금지의 구멍(F-06)·모션 계약 위반(F-08)·정본 갈림 둘(F-05·F-07)이 규칙 자체의 신뢰를 깎는다."
+  },
+  "total": 70,
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "high",
+      "area": "performance",
+      "title": "홈의 Suspense 다섯이 클라이언트 경계 안이라 스트리밍이 일어나지 않는다",
+      "description": "HomeView가 \"use client\"이고 그 안에서 다섯 블록을 <Suspense>로 감싼다. 서버에서 흘려보낼 경계가 아니므로 폴백은 클라이언트 렌더 한 틱 동안만 스치고, 인수 조건 24가 약속한 「블록별로 먼저 온 것부터 보인다」가 실제로는 성립하지 않는다. 다섯 블록은 부모가 데이터를 모두 받은 뒤 한꺼번에 나타난다. opus는 medium(폴백 자체는 존재), codex는 high(약속한 동작이 0%)로 갈렸고 계약대로 높은 쪽을 택했다 — 폴백이 보이느냐가 아니라 스트리밍이 되느냐가 인수 조건의 문장이기 때문이다.",
+      "file": "src/views/home/ui/HomeView.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-02",
+      "severity": "high",
+      "area": "code_quality",
+      "title": "TodayBlock의 주요 CTA에 href도 onClick도 없고 오프라인 상태도 안 본다",
+      "description": "오늘 근무 카드의 행동 버튼이 마크업만 있고 이동·실행 경로가 붙어 있지 않다. 누르면 아무 일도 일어나지 않는다. 오프라인일 때 비활성으로 내려가는 처리도 없어 끊긴 상태에서도 눌리는 것처럼 보인다. codex high, opus medium으로 갈렸다 — opus는 「퍼블리싱 단계라 배선 전」으로 봤으나, 같은 화면의 다른 CTA들은 이미 배선돼 있어 의도적 유보가 아니라 누락이다. 높은 쪽을 택했다.",
+      "file": "src/views/home/ui/TodayBlock.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-03",
+      "severity": "high",
+      "area": "code_quality",
+      "title": "PayBlock이 role=\"button\" tabIndex={0}을 핸들러 없이 걸고 그 안에 진짜 button을 중첩한다",
+      "description": "PayBlock.tsx:42가 컨테이너에 role=\"button\"과 tabIndex={0}을 주지만 onClick·onKeyDown이 없다. 키보드 사용자는 탭이 멈추는데 Enter/Space로 할 수 있는 일이 없고, 스크린 리더는 버튼이라고 읽는다. 게다가 그 안에 실제 <button>이 들어 있어 중첩 대화형 요소가 된다. codex high, opus medium으로 갈렸고 높은 쪽을 택했다 — 접근성 트리를 거짓으로 만드는 것은 시각적 결함이 아니라 특정 사용자에게만 화면이 깨지는 것이다.",
+      "file": "src/views/home/ui/PayBlock.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-04",
+      "severity": "high",
+      "area": "code_quality",
+      "title": "남은 시간 카운트다운이 첫 렌더 값에 고정돼 갱신되지 않는다",
+      "description": "countdown.ts가 계산한 값이 렌더 시점 한 번만 들어가고 타이머가 없다. 홈을 열어 둔 채로 시간이 흘러도 「N분 남음」이 그대로다. 근무 시작 임박을 알리는 것이 이 표시의 목적이므로, 멈춘 카운트다운은 잘못된 정보를 보여준다. codex high, opus low로 크게 갈렸다 — opus는 「홈은 오래 열어 두는 화면이 아니다」로 봤으나 근무 직전 대기가 정확히 오래 열어 두는 상황이라 codex 쪽 근거가 강하다. 높은 쪽을 택했다.",
+      "file": "src/views/home/ui/TodayBlock.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-05",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "index.jsonl의 P0-T48 verification이 아직 일정 화면을 요구한다",
+      "description": "RADIO revision 14가 일정 화면을 P0-T60으로 옮겼는데 index.jsonl의 verification 셋째 항목은 여전히 「홈·일정 화면이 confirmed/*.html 계약대로」를 요구한다. check_ids의 home-schedule-republished도 같은 이름을 남긴다. 승인 기록이 실제 범위와 어긋나 있어, 이 상태로 done이 되면 충족한 적 없는 조건이 충족된 것으로 기록된다.",
+      "file": "docs/execution/phases/index.jsonl",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-06",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "no-logic-in-ui의 JSX map 예외를 타고 판정이 ui에 남아 있다",
+      "description": "규칙이 JSX 안의 map을 허용하는데, 그 콜백 안에서 조건 분기와 라벨 선택이 이뤄지는 자리가 여럿이다. 규칙은 통과하지만 「모든 로직은 UI에서 벗어난다」는 상시 지침은 안 지켜진다. 규칙이 잡지 못하는 만큼 리뷰가 매번 손으로 봐야 하고, 그러면 규칙을 둔 이유가 사라진다.",
+      "file": "tools/eslint-plugin-project/rules/no-logic-in-ui.mjs",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-07",
+      "severity": "medium",
+      "area": "security",
+      "title": "마스킹 더미가 자릿수를 보존해 금액 규모가 드러난다 — 정본이 둘로 갈렸다",
+      "description": "masked-amount가 「숫자만 0으로 바꾼 같은 길이 문자열」을 쓴다(NOTES.md:1233). 그런데 FOUNDATIONS.md:140은 「고정 폭 더미 위에 걸어 자릿수가 드러나지 않게 한다」고 정한다. 실제 값은 DOM에 없으므로 유출은 아니지만 자릿수만으로 급여 규모의 자릿수가 노출된다. 두 문서가 정면으로 부딪히고 RADIO 불변 규칙상 L3(FOUNDATIONS)가 이긴다. opus는 1라운드에서 「봉인된 결정」으로 봤다가 이 충돌을 찾고 스스로 판정을 뒤집었다. 테스트가 현재 동작(자릿수 보존)을 성공 조건으로 고정하고 있어 고칠 때 테스트도 함께 뒤집어야 한다.",
+      "file": "src/shared/ui/masked-amount.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-08",
+      "severity": "medium",
+      "area": "architecture",
+      "title": "--duration-crossfade가 reduced-motion 블록에서 빠졌고 테스트가 그 누락을 성공 조건으로 고정한다",
+      "description": "prefers-reduced-motion 블록이 모션 토큰을 0으로 내리는데 --duration-crossfade만 빠져 있다. 모션을 줄인 사용자에게 라우트 크로스페이드가 그대로 돈다. 더 나쁜 것은 globals.test.ts:332-334가 「crossfade는 reduced-motion 블록에 없다」를 단언해, 고치는 순간 테스트가 깨지도록 위반을 못 박아 뒀다는 점이다.",
+      "file": "src/app/globals.css",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-09",
+      "severity": "medium",
+      "area": "tests",
+      "title": "700 굵기 금지 단언이 globals.css만 훑어 화면 파일의 font-bold 셋을 놓친다",
+      "description": "「화면에 700은 없다」는 상시 지침을 지키는 단언이 globals.css 문자열만 grep한다. 그 결과 ErrorScreen.tsx:8·NotFoundScreen.tsx:8·AccessDeniedScreen.tsx:8의 font-bold가 그대로 살아 있고 테스트는 GREEN이다. 감시 대상이 토큰 선언부인데 위반은 사용처에서 나므로 검사 범위가 처음부터 어긋나 있다.",
+      "file": "src/app/__tests__/globals.test.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-10",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "zustand persist를 skipHydration으로 켜 두고 운영 경로에서 rehydrate()를 부르지 않는다",
+      "description": "useAmountMasking이 persist에 skipHydration: true를 주는데, 이를 되살리는 rehydrate() 호출이 테스트에만 있고 운영 코드에 없다. 저장된 마스킹 상태가 새로고침 뒤 복원되지 않아 사용자가 매번 다시 가려야 한다. 저장 자체는 되고 있어 조용히 어긋난다.",
+      "file": "src/shared/hooks/useAmountMasking.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-11",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "실패 한 줄이 FailedRow와 BlockBoundary 두 벌로 갈라져 성질이 서로 다르다",
+      "description": "같은 문구의 실패 표시가 두 곳에 있는데 FailedRow는 압축 동작을 갖고 연타 잠금이 없고, BlockBoundary는 연타 잠금을 갖고 압축이 없다. 어느 쪽이 뜨느냐에 따라 사용자가 겪는 재시도 동작이 달라진다. 문구까지 중복 선언돼 한쪽만 고치면 갈린다.",
+      "file": "src/views/home/ui/FailedRow.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-12",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "masked-amount의 animationend 리스너에 애니메이션 이름 가드가 없다",
+      "description": "masked-amount.tsx:34가 animationend를 듣지만 event.animationName을 보지 않는다. 자식이나 자신에게 다른 애니메이션이 하나라도 붙으면 그 종료가 마스킹 전환을 끝낸 것으로 오인된다. 인수 조건 39가 이름 가드를 명시했는데 NoticeBlock 쪽만 지켰다.",
+      "file": "src/shared/ui/masked-amount.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-13",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "알림 슬롯이 홈을 그릴 때마다 접혔다 펴진다",
+      "description": "useNoticeDeck이 첫 렌더에서 currentId를 null로 두고 마운트 뒤 localStorage를 읽어 채운다. 그 사이 한 프레임 동안 슬롯이 접혀 아래 블록이 위로 올라왔다가 다시 내려간다. 첫 렌더를 localStorage와 떼어 놓으려던 조치(테스트 198-244행이 그 성질을 지킨다)가 레이아웃 튐이라는 다른 증상을 만들었다.",
+      "file": "src/views/home/ui/NoticeBlock.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-14",
+      "severity": "medium",
+      "area": "code_quality",
+      "title": "알림 진입 애니메이션(250ms)이 퇴장(150ms)과 settle을 공유해 중간에 끊긴다",
+      "description": "dismiss 뒤 들어오는 카드의 진입은 250ms인데 나가는 카드의 퇴장은 150ms이고, 둘이 하나의 settle 신호를 나눠 쓴다. 먼저 끝나는 퇴장이 settle을 불러 진입이 100ms 남은 채로 잘린다. opus low, codex medium으로 갈려 높은 쪽을 택했다 — 눈에 띄는 정도가 작아도 인수 조건이 정한 진입 곡선이 실제로 안 도는 것이기 때문이다.",
+      "file": "src/views/home/ui/NoticeBlock.tsx",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-15",
+      "severity": "low",
+      "area": "performance",
+      "title": "날짜가 박힌 알림 끄기 키가 localStorage에 계속 쌓이고 회수되지 않는다",
+      "description": "labiebelle:home-notice-deck:<YYYY-MM-DD> 형식으로 하루에 키 하나가 생기는데 지우는 경로가 없다. 매일 쓰면 1년에 365개가 남는다. 용량 문제가 되기까지는 아주 오래 걸리지만 되돌릴 수 있는 시점은 지금이다.",
+      "file": "src/views/home/hooks/useNoticeDeck.ts",
+      "agreed_by": ["opus", "codex"]
+    },
+    {
+      "id": "F-16",
+      "severity": "low",
+      "area": "code_quality",
+      "title": "아무도 안 쓰는 API 표면 둘이 남아 있다",
+      "description": "toHomeBlocks(now)의 now 인자와 useNoticeDeck의 remainingCount가 어느 호출부에서도 쓰이지 않는다. 테스트만 이들을 붙들고 있어 표면이 실제보다 넓어 보이고, 나중에 읽는 사람이 지원되는 기능으로 오해한다.",
+      "file": "src/views/home/model/home-blocks.ts",
+      "agreed_by": ["opus", "codex"]
+    }
+  ]
+}

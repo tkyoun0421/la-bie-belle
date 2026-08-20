@@ -174,6 +174,48 @@
       "at": "2026-08-18T19:17:13Z",
       "phase": "green",
       "note": "인수 조건 31 GREEN. format:check → lint:ci → typecheck → test → harness → docs → build → bundle → app-build → secret-scan → e2e(90 passed) → motion-render-budget → gate:all 전부 통과, 종료 코드 0. lint:ci 7건은 타입 주석과 void 한 줄로 막았고 단언은 하나도 안 고쳤다. e2e 실패 하나는 폐기된 설계를 지키던 낡은 단언이었다 — NOTES.md:231이 「마감 임박 표시를 홈에서 잃는 대신 알림 한 장이 그 역할을 진다」로 2026-08-17에 확정했고 알림 카드 종류 다섯에도 마감 임박이 없다. 인수 조건 38의 selectImminentRecruitment 삭제와 revision 10의 목 데이터 전환이 그 확정의 코드 쪽 귀결이라, 홈 단언 둘을 걷고 알림 화면(P0-T51)에서 다시 세우는 일을 backlog에 올렸다. 종료 코드를 파이프에 안 물리고 로그 파일로 받아 확인했다 — tail이 값을 삼키는 것을 이 라운드에서 실제로 겪었다."
+    },
+    {
+      "command": "pnpm vitest run src/views/home/model/__tests__/attendance-button.test.ts src/views/home/hooks/__tests__/useTickingNow.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-18T20:01:52Z",
+      "phase": "red",
+      "note": "4단계 교차 검증 확정 발견 F-02·F-04 수정 라운드 RED. src/views/home/model/attendance-button.ts와 src/views/home/hooks/useTickingNow.ts가 아직 없어 두 스위트 모두 'Cannot find package'로 즉시 실패한다(0 test, 2 failed suite). attendance-button.test.ts는 toAttendanceButtonState(countdown, action, online)가 오프라인·before-window·overdue 조합에서 disabled·label을 어떻게 판정해야 하는지 7케이스로 건다. useTickingNow.test.ts는 useTickingNow(base, active)가 첫 렌더에 base를 그대로 돌려주고, active인 동안 1초마다 실제 경과 시간만큼 진행하며, active=false면 타이머를 안 걸고, 언마운트·active 전환 시 타이머를 정리하고, base 교체 시 경과 기준을 다시 잡는지를 8케이스로 건다. Test Files 2 failed, exit 1."
+    },
+    {
+      "command": "pnpm vitest run src/views/home/ui/__tests__/TodayBlock.test.tsx src/views/home/ui/__tests__/PayBlock.test.tsx src/views/home/ui/__tests__/HomeView.test.tsx",
+      "exit_code": 1,
+      "at": "2026-08-18T20:01:59Z",
+      "phase": "red",
+      "note": "4단계 교차 검증 확정 발견 F-02·F-03·F-04 수정 라운드 RED. 5 failed / 16 passed(21). TodayBlock.test.tsx — attendanceButton={{disabled:true,label:'연결되면 인증할 수 있어요'}}를 줘도 TodayBlock이 그 프롭을 몰라 여전히 countdown.phase만으로 활성 '출근 인증하기'를 그려 getByRole('button',{name:'연결되면 인증할 수 있어요'})가 못 찾음(F-02). PayBlock.test.tsx — 급여 행 컨테이너 3개가 여전히 role=\"button\" tabIndex={0}를 가져 querySelectorAll('[role=\"button\"]')이 0이 아니라 3이라 실패, getAllByRole('button')이 행마다 바깥 role=button div + 안쪽 진짜 button 두 개씩 잡혀 3이 아니라 6이라 실패(F-03). HomeView.test.tsx — HOME_BASIC 렌더 뒤 1초 진행해도 '1:18:59'가 그대로라 queryByText('1:18:59')가 null이 아니라 실패하고 '1:18:58'을 못 찾음(F-04); HOME_WINDOW_OPEN을 오프라인으로 렌더해도 useOnlineStatus를 아무도 안 불러 라벨이 그대로 '퇴근 인증하기'라 getByRole('button',{name:'연결되면 인증할 수 있어요'})를 못 찾음(F-02). 나머지 16개(눌림 스쿼시·금액 버튼 클릭 시 toggle 호출·행당 인터랙티브 3개 기대치의 전제가 되는 렌더·기존 HomeView 스위트 전부)는 그대로 통과. Test Files 3 failed, exit 1."
+    },
+    {
+      "command": "pnpm vitest run src/views/home/model/__tests__/attendance-button.test.ts src/views/home/hooks/__tests__/useTickingNow.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-18T20:10:48Z",
+      "phase": "green",
+      "note": "4단계 교차 검증 확정 발견 F-02·F-04 수정 라운드 GREEN. src/views/home/model/attendance-button.ts(toAttendanceButtonState)와 src/views/home/hooks/useTickingNow.ts(useTickingNow)를 새로 세워 두 스위트 모두 통과. Test Files 2 passed, Tests 15 passed, exit 0."
+    },
+    {
+      "command": "pnpm vitest run src/views/home/ui/__tests__/TodayBlock.test.tsx src/views/home/ui/__tests__/PayBlock.test.tsx src/views/home/ui/__tests__/HomeView.test.tsx",
+      "exit_code": 0,
+      "at": "2026-08-18T20:12:03Z",
+      "phase": "green",
+      "note": "4단계 교차 검증 확정 발견 F-02·F-03·F-04 수정 라운드 GREEN. TodayBlock이 attendanceButton 프롭(label·disabled)을 받아 렌더하고 죽은 attendanceLabel()을 지웠다. PayBlock 행 컨테이너에서 role=\"button\" tabIndex={0}을 걷어 안쪽 진짜 button만 대화형으로 남겼다(그에 맞춰 PayBlock.test.tsx의 \"급여 세 행이 눌리는 요소로 잡힌다\" 단언을 closest(button,[role=button]) 대신 within(row).getByRole(button,{name:금액 보기})로 뒤집었다 — 「행 전체가 눌린다」는 버리고 「금액을 누를 수 있다」는 유지). HomeView가 useTickingNow(now, shift!==null)로 countdown을 재계산하고 useOnlineStatus()·toAttendanceButtonState를 배선해 attendanceButton을 TodayBlock에 내린다. Test Files 3 passed, Tests 21 passed, exit 0."
+    },
+    {
+      "command": "pnpm vitest run src/views/home/hooks/__tests__/useTickingNow.test.ts",
+      "exit_code": 1,
+      "at": "2026-08-18T21:06:39Z",
+      "phase": "red",
+      "note": "수정 라운드 조정자 감사 RED. useTickingNow가 setNow(current => current + 1000)로 세고 있어 인터벌이 밀리면 시계가 실제 벽시계보다 뒤처진다 — 브라우저가 백그라운드 탭의 setInterval을 throttle하는 자리이고 시안 confirmed/home.html:2684이 요구한 것은 실제 시각을 따르는 시계다. 가짜 타이머만으로는 두 구현이 구별되지 않아, setSystemTime으로 60초를 흘린 뒤 틱을 한 번만 깨우는 단언을 더했다. AssertionError: expected 1787097601000 to be 1787097661000. Tests 1 failed | 8 passed (9)."
+    },
+    {
+      "command": "pnpm vitest run src/views/home/hooks/__tests__/useTickingNow.test.ts",
+      "exit_code": 0,
+      "at": "2026-08-18T21:07:39Z",
+      "phase": "green",
+      "note": "인터벌 콜백을 마운트 시점 anchor 기준의 실제 경과(baseMs + (Date.now() - anchor))로 바꿔 밀린 틱이 한 번에 따라잡는다. 같은 라운드에서 TodayBlock의 attendanceButton 프롭을 optional에서 필수로 좁히고 ?? \"\" 폴백을 걷었다 — 프롭이 없을 때 빈 라벨 버튼이 서던 자리라 실패 분기와 같은 가드로 묶었다. Tests 9 passed (9)."
     }
   ]
 }

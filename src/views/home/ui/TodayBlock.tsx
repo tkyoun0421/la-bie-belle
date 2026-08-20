@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { cn } from "@/shared/lib/cn";
 import { Button } from "@/shared/ui/button";
+import type { AttendanceButtonState } from "@/views/home/model/attendance-button";
 import type { CountdownState } from "@/views/home/model/countdown";
 import { formatCountdownClock } from "@/views/home/model/countdown";
 import type { TodayShift } from "@/views/home/model/home-view-model";
@@ -14,6 +15,7 @@ type TodayBlockProps = {
   todayLabel: string;
   countdown: CountdownState | null;
   windowOpensAtLabel: string | null;
+  attendanceButton: AttendanceButtonState | null;
 };
 
 function clockCaption(
@@ -31,22 +33,19 @@ function clockCaption(
   }
 }
 
-function attendanceLabel(action: TodayShift["attendanceWindow"]["action"]): string {
-  return action === "check-in" ? "출근 인증하기" : "퇴근 인증하기";
-}
-
 export function TodayBlock({
   status,
   shift,
   todayLabel,
   countdown,
   windowOpensAtLabel,
+  attendanceButton,
 }: TodayBlockProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <p className="px-1 pb-1.5 typo-caption-strong text-text-muted">오늘 · {todayLabel}</p>
 
-      {status === "failed" || shift === null || countdown === null ? (
+      {status === "failed" || shift === null || countdown === null || attendanceButton === null ? (
         <div className="rounded-xl bg-surface px-4 py-1">
           <FailedRow message="오늘 근무를 불러오지 못했어요" />
         </div>
@@ -94,10 +93,10 @@ export function TodayBlock({
           <Button
             type="button"
             variant="primary"
-            disabled={countdown.phase === "before-window"}
+            disabled={attendanceButton.disabled}
             className="mt-1"
           >
-            {attendanceLabel(shift.attendanceWindow.action)}
+            {attendanceButton.label}
           </Button>
         </div>
       )}

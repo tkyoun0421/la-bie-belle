@@ -4,9 +4,12 @@ import { Suspense } from "react";
 
 import { useAmountMasking } from "@/shared/hooks/useAmountMasking";
 import { useAmountReveal } from "@/shared/hooks/useAmountReveal";
+import { useOnlineStatus } from "@/shared/hooks/useOnlineStatus";
 import { BlockBoundary } from "@/shared/ui/block-boundary";
 import { useNoticeDeck } from "@/views/home/hooks/useNoticeDeck";
+import { useTickingNow } from "@/views/home/hooks/useTickingNow";
 import { useWeekSelection } from "@/views/home/hooks/useWeekSelection";
+import { toAttendanceButtonState } from "@/views/home/model/attendance-button";
 import { formatWindowOpensAt, toCountdown } from "@/views/home/model/countdown";
 import { toFullDateLabel } from "@/views/home/model/date-labels";
 import { toHomeBlocks } from "@/views/home/model/home-blocks";
@@ -51,8 +54,14 @@ export function HomeView({ model, now, today, noticeIds }: HomeViewProps) {
     model.upcoming.state === "ready" ? toUpcomingShifts(model.upcoming.data, today) : [];
 
   const shift = model.today.state === "ready" ? model.today.data : null;
-  const countdown = shift === null ? null : toCountdown(shift.attendanceWindow, now);
+  const online = useOnlineStatus();
+  const tickingNow = useTickingNow(now, shift !== null);
+  const countdown = shift === null ? null : toCountdown(shift.attendanceWindow, tickingNow);
   const windowOpensAtLabel = shift === null ? null : formatWindowOpensAt(shift.attendanceWindow);
+  const attendanceButton =
+    shift === null || countdown === null
+      ? null
+      : toAttendanceButtonState(countdown, shift.attendanceWindow.action, online);
 
   const payRows = model.pay.state === "ready" ? model.pay.data.rows : [];
 
@@ -84,6 +93,7 @@ export function HomeView({ model, now, today, noticeIds }: HomeViewProps) {
                   todayLabel={todayLabel}
                   countdown={countdown}
                   windowOpensAtLabel={windowOpensAtLabel}
+                  attendanceButton={attendanceButton}
                 />
               ) : entry.block === "week" ? (
                 <WeekStripBlock

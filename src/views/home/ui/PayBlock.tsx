@@ -39,12 +39,7 @@ export function PayBlock({ status, rows, reveal }: PayBlockProps) {
         {status === "filled" ? (
           <div className="flex flex-col divide-y divide-border">
             {rows.map((row) => (
-              <div
-                key={row.kind}
-                role="button"
-                tabIndex={0}
-                className="flex items-center gap-3 py-3"
-              >
+              <div key={row.kind} className="flex items-center gap-3 py-3">
                 <AnchorIllustration name={illustrationOf(row.kind)} size={32} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate typo-caption text-text-muted">

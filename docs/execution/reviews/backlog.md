@@ -373,6 +373,20 @@
   - 2026-08-18 P0-T48 revision 5가 상한을 600KB로 올려 게이트를 되살렸다(ADR-0015 결정 3 개정). **원인 규명과 감량은 P0-T56으로 뺐다** — 이번 인상은 감시선을 올린 것이지 문제를 푼 것이 아니다.
 - [ ] [low] [P0-T47] SKILL.md 경로 표가 globals.css를 허용·금지 양쪽에 둔다(F-12) — .claude/skills/publish-ui/SKILL.md
 - [ ] [low] [P0-T48] skeleton-bar·d-badge 컴포넌트 테스트가 route-conventions.test.ts의 전수 검사와 겹친다 — 임의값 radius 2건·반짝임 1건은 이미 `src/` 전체를 걸어 잡히므로 국소 재확인을 걷는다. skeleton-bar는 구현 9줄에 테스트 59줄이고 행동 단언이 0건이라 테스트가 디자인 시스템 린터 노릇을 한다. `--color-border`·`rounded-xs` 단언은 남긴다 — 전수 쪽은 loading.tsx 세 파일만 이름으로 찍어 본다 — src/shared/ui/__tests__/skeleton-bar.test.tsx
-- [ ] [medium] [P0-T48] `rounded-[` 임의 radius 금지를 테스트가 아니라 ESLint 규칙이 들어야 한다 — 지금은 route-conventions.test.ts:89-103이 전수로 잡아 커밋 훅이 아니라 테스트 실행 때만 돈다. tools/eslint-plugin-project/rules/ 열넷 중 radius를 보는 규칙이 없다(design-token-colors·motion-tokens·spacing-scale 셋 다 radius를 안 다룬다). P0-T48은 「기존 열세 규칙을 안 고친다」로 용도가 한정돼 신설 판단을 P0-T59로 넘긴다 — tools/eslint-plugin-project/rules/
+- [ ] [medium] [P0-T48] `rounded-[` 임의 radius 금지를 테스트가 아니라 ESLint 규칙이 들어야 한다 — 지금은 route-conventions.test.ts:89-103이 전수로 잡아 커밋 훅이 아니라 테스트 실행 때만 돈다. tools/eslint-plugin-project/rules/ 열넷 중 radius를 보는 규칙이 없다(design-token-colors·motion-tokens·spacing-scale 셋 다 radius를 안 다룬다). P0-T48은 「기존 열세 규칙을 안 고친다」로 용도가 한정돼 신설 판단을 P0-T64로 넘긴다(2026-08-19 ID 재배정 — 상대 세션이 P0-T59를 먼저 썼다) — tools/eslint-plugin-project/rules/
 - [ ] [medium] [P0-T48] 라우트 이동 한 번이 `document.startViewTransition`을 세 번 부른다 — 인수 조건 41을 고치며 드러났다. 화면에는 안 보인다(React가 루트 그룹을 `opacity: 0`으로 무효화한다) 하지만 타입 없는 호출 둘이 늦게 들어와 e2e 스파이의 원시 계수를 흔들었고, 그래서 `:551`의 단언이 「호출 횟수」에서 「타입 붙은 전환 횟수」로 내려앉았다. **그 결과 전환 폭주를 감시하던 눈이 사라졌다.** 왜 셋인지 규명하고 하나로 줄이거나, 줄일 수 없으면 타입 없는 호출의 상한을 따로 단언한다 — src/shared/ui/route-transition.tsx · tests/e2e/tab-navigation.spec.ts
 - [ ] [medium] [P0-T48] 마감 임박 표시의 e2e 감시가 사라졌다 — `recruitment-flow.spec.ts`가 홈에서 「근무 신청 마감이 임박했어요」·「지금 신청하기」를 보던 단언 둘을 걷었다(RADIO revision 15). 표시 자체가 없어진 것이 아니라 자리를 옮긴 것이다 — `NOTES.md:231` 「마감 임박 표시를 홈에서 잃는 대신 알림 한 장이 그 역할을 진다」(2026-08-17 사용자 확정). 알림 화면(P0-T51)이 서면 거기서 같은 시딩으로 다시 세운다. 그때까지 「마감이 임박하면 근무자가 알게 된다」를 지키는 e2e가 하나도 없다 — tests/e2e/recruitment-flow.spec.ts
+- [x] [medium] [P0-T48] index.jsonl의 verification·check_ids가 revision 14로 빠진 일정 화면을 아직 요구한다(F-05) — docs/execution/phases/index.jsonl
+  - 2026-08-19 verification 셋째 항목을 홈만 남기고 check_id를 home-republished로 바꿨다. RADIO revision 14가 정한 범위를 index가 뒤늦게 따라간 것이라 새 결정은 없다. 봉인된 RADIO:31의 「예정 check IDs」 줄은 그대로 둔다 — 이관 목록 표가 이미 그 위에서 차이를 설명한다.
+- [ ] [medium] [P0-T48] no-logic-in-ui의 JSX map 예외 안에서 조건 분기·라벨 선택이 계속 일어난다(F-06) — tools/eslint-plugin-project/rules/no-logic-in-ui.mjs
+- [ ] [medium] [P0-T48] 마스킹 더미가 자릿수를 보존 — FOUNDATIONS.md:140과 NOTES.md:1233이 갈리고 L3가 이긴다(F-07) — src/shared/ui/masked-amount.tsx
+- [ ] [medium] [P0-T48] --duration-crossfade가 reduced-motion 블록에서 빠졌고 globals.test.ts:332-334가 그 누락을 성공 조건으로 고정한다(F-08) — src/app/globals.css
+- [ ] [medium] [P0-T48] 700 굵기 금지 단언이 globals.css만 훑어 화면 파일 셋의 font-bold를 놓친다(F-09) — src/app/__tests__/globals.test.ts
+- [ ] [medium] [P0-T48] persist skipHydration을 켜 두고 운영 경로에 rehydrate() 호출이 없어 마스킹 상태가 복원되지 않는다(F-10) — src/shared/hooks/useAmountMasking.ts
+- [ ] [medium] [P0-T48] 실패 한 줄이 FailedRow(압축 있음·연타 잠금 없음)와 BlockBoundary(잠금 있음·압축 없음) 두 벌로 갈렸다(F-11) — src/views/home/ui/FailedRow.tsx
+- [ ] [medium] [P0-T48] masked-amount의 animationend에 이름 가드가 없어 다른 애니메이션 종료가 마스킹 전환을 끝낸다(F-12) — src/shared/ui/masked-amount.tsx
+- [ ] [medium] [P0-T48] 알림 슬롯이 첫 렌더에 접혔다 마운트 뒤 펴져 홈 상단이 한 프레임 튄다(F-13) — src/views/home/ui/NoticeBlock.tsx
+- [ ] [medium] [P0-T48] 알림 진입 250ms가 퇴장 150ms와 settle을 공유해 100ms 남기고 잘린다(F-14) — src/views/home/ui/NoticeBlock.tsx
+- [ ] [low] [P0-T48] 날짜별 알림 끄기 localStorage 키가 회수되지 않고 하루 하나씩 쌓인다(F-15) — src/views/home/hooks/useNoticeDeck.ts
+- [ ] [low] [P0-T48] 호출부 없는 API 표면 둘 — toHomeBlocks(now)의 now와 useNoticeDeck의 remainingCount(F-16) — src/views/home/model/home-blocks.ts
+- [ ] [medium] [P0-T48] 마감일 연장 성공 토스트가 재검증 커밋보다 먼저 떠 다이얼로그를 다시 열면 옛 마감일이 남는다 — `useRecruitmentManage.submit()`이 `startTransition` 안에서 서버 액션이 끝나자마자 `showSnackbar`·`close()`를 부르고 목록 데이터가 갱신되기를 기다리지 않는다. `recruitment-manage.spec.ts:166`이 `--repeat-each=3`에서 1회 실패하고 받은 값은 항상 갱신 전 마감일이다. **두 리뷰어의 발견이 아니라 P0-T48 검증 중 verify가 잡은 것**이고, 자리가 `features/recruitment`라 이 task 밖이다 — src/features/recruitment/hooks/useRecruitmentManage.ts

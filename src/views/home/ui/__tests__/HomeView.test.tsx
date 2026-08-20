@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode, Ref } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -38,6 +38,13 @@ vi.mock("next/link", () => ({
 }));
 
 afterEach(cleanup);
+
+function setNavigatorOnLine(value: boolean) {
+  Object.defineProperty(window.navigator, "onLine", {
+    configurable: true,
+    value,
+  });
+}
 
 describe("HomeView — 기본", () => {
   it("알림 · 오늘 · 이번 주 · 다가오는 근무 · 급여 다섯 블록을 세운다", () => {
@@ -143,5 +150,46 @@ describe("HomeView — 로딩과 실패", () => {
     expect(screen.getByText("다가오는 근무를 불러오지 못했어요")).toBeInTheDocument();
     expect(screen.getByText("급여를 불러오지 못했어요")).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "다시 시도" }).length).toBe(5);
+  });
+});
+
+describe("HomeView — 카운트다운 시계는 살아 움직인다 (F-04, confirmed/home.html:2684)", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("시간이 흐르면 카운트다운 표시가 갱신된다", () => {
+    vi.useFakeTimers();
+    render(<HomeView {...HOME_BASIC} />);
+
+    expect(screen.getByText("1:18:59")).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(screen.queryByText("1:18:59")).toBeNull();
+    expect(screen.getByText("1:18:58")).toBeInTheDocument();
+  });
+});
+
+describe("HomeView — 오프라인이면 출근 인증 버튼이 비활성화된다 (F-02, confirmed/home.html:2646-2651)", () => {
+  afterEach(() => {
+    setNavigatorOnLine(true);
+  });
+
+  it("연결이 끊기면 버튼이 비활성화되고 라벨이 안내 문구로 바뀐다", () => {
+    setNavigatorOnLine(false);
+    render(<HomeView {...HOME_WINDOW_OPEN} />);
+
+    expect(screen.getByRole("button", { name: "연결되면 인증할 수 있어요" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "퇴근 인증하기" })).toBeNull();
+  });
+
+  it("연결이 살아 있으면 인증 창이 열린 동안 버튼이 활성 상태로 원래 라벨을 보여준다", () => {
+    setNavigatorOnLine(true);
+    render(<HomeView {...HOME_WINDOW_OPEN} />);
+
+    expect(screen.getByRole("button", { name: "퇴근 인증하기" })).toBeEnabled();
   });
 });
