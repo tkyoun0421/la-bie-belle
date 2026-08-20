@@ -1,0 +1,748 @@
+[
+  {
+    "type": "cameraUpdate",
+    "width": 1600,
+    "height": 1200,
+    "x": 0,
+    "y": 0
+  },
+  {
+    "type": "text",
+    "id": "title",
+    "x": 60,
+    "y": 42,
+    "width": 720,
+    "height": 56,
+    "text": "빌드 · 테스트 흐름",
+    "fontSize": 46,
+    "strokeColor": "#1e1e1e",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "text",
+    "id": "subtitle",
+    "x": 62,
+    "y": 104,
+    "width": 1100,
+    "height": 28,
+    "text": "로컬 Git 훅의 빠른 피드백부터 CI의 앱·DB 독립 검증까지 실패를 앞단에서 차단하는 체인",
+    "fontSize": 20,
+    "strokeColor": "#757575",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "rectangle",
+    "id": "local_zone",
+    "x": 55,
+    "y": 150,
+    "width": 1490,
+    "height": 245,
+    "backgroundColor": "#fff3bf",
+    "fillStyle": "solid",
+    "strokeColor": "#f59e0b",
+    "opacity": 40,
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "local_title",
+    "x": 85,
+    "y": 170,
+    "width": 480,
+    "height": 34,
+    "text": "1. 로컬 변경 방어선",
+    "fontSize": 27,
+    "strokeColor": "#1e1e1e",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "rectangle",
+    "id": "change",
+    "x": 90,
+    "y": 245,
+    "width": 240,
+    "height": 95,
+    "backgroundColor": "#ffd8a8",
+    "fillStyle": "solid",
+    "strokeColor": "#f59e0b",
+    "label": {
+      "text": "작업 트리 변경\nsrc · tests · docs",
+      "fontSize": 19,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "change_precommit",
+    "x": 330,
+    "y": 292,
+    "width": 65,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        65,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#f59e0b",
+    "startBinding": {
+      "elementId": "change",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "precommit",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "precommit",
+    "x": 395,
+    "y": 225,
+    "width": 360,
+    "height": 135,
+    "backgroundColor": "#d0bfff",
+    "fillStyle": "solid",
+    "strokeColor": "#8b5cf6",
+    "label": {
+      "text": "pre-commit\n게이트 6종 · lint-staged\ntsc incremental · 관련 Vitest",
+      "fontSize": 18,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "precommit_commitmsg",
+    "x": 755,
+    "y": 292,
+    "width": 65,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        65,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#8b5cf6",
+    "startBinding": {
+      "elementId": "precommit",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "commitmsg",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "commitmsg",
+    "x": 820,
+    "y": 245,
+    "width": 280,
+    "height": 95,
+    "backgroundColor": "#a5d8ff",
+    "fillStyle": "solid",
+    "strokeColor": "#4a9eed",
+    "label": {
+      "text": "commit-msg\nP0-T00 task ID",
+      "fontSize": 19,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "commitmsg_prepush",
+    "x": 1100,
+    "y": 292,
+    "width": 65,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        65,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#4a9eed",
+    "startBinding": {
+      "elementId": "commitmsg",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "prepush",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "prepush",
+    "x": 1165,
+    "y": 245,
+    "width": 340,
+    "height": 95,
+    "backgroundColor": "#b2f2bb",
+    "fillStyle": "solid",
+    "strokeColor": "#22c55e",
+    "label": {
+      "text": "pre-push\npnpm build",
+      "fontSize": 20,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "ci_zone",
+    "x": 55,
+    "y": 430,
+    "width": 1490,
+    "height": 695,
+    "backgroundColor": "#dbe4ff",
+    "fillStyle": "solid",
+    "strokeColor": "#4a9eed",
+    "opacity": 35,
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "ci_title",
+    "x": 85,
+    "y": 450,
+    "width": 560,
+    "height": 34,
+    "text": "2. GitHub Actions — 두 독립 job",
+    "fontSize": 27,
+    "strokeColor": "#1e1e1e",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "rectangle",
+    "id": "trigger",
+    "x": 90,
+    "y": 520,
+    "width": 250,
+    "height": 90,
+    "backgroundColor": "#ffd8a8",
+    "fillStyle": "solid",
+    "strokeColor": "#f59e0b",
+    "label": {
+      "text": "push main / PR\ncheckout + setup",
+      "fontSize": 19,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "app_verify_label",
+    "x": 338,
+    "y": 492,
+    "width": 82,
+    "height": 18,
+    "text": "app-verify",
+    "fontSize": 14,
+    "strokeColor": "#1971c2",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "arrow",
+    "id": "trigger_app",
+    "x": 340,
+    "y": 552,
+    "width": 80,
+    "height": -32,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        80,
+        -32
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#4a9eed",
+    "startBinding": {
+      "elementId": "trigger",
+      "fixedPoint": [
+        1,
+        0.35
+      ]
+    },
+    "endBinding": {
+      "elementId": "app_setup",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "trigger_db",
+    "x": 215,
+    "y": 610,
+    "width": 205,
+    "height": 307,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        307
+      ],
+      [
+        205,
+        307
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#22c55e",
+    "startBinding": {
+      "elementId": "trigger",
+      "fixedPoint": [
+        0.5,
+        1
+      ]
+    },
+    "endBinding": {
+      "elementId": "db_verify",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "app_setup",
+    "x": 420,
+    "y": 500,
+    "width": 260,
+    "height": 105,
+    "backgroundColor": "#a5d8ff",
+    "fillStyle": "solid",
+    "strokeColor": "#4a9eed",
+    "label": {
+      "text": "install + Chromium\n.env.example 복사\nSupabase start + reset",
+      "fontSize": 17,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "setup_static",
+    "x": 680,
+    "y": 552,
+    "width": 55,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        55,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#4a9eed",
+    "startBinding": {
+      "elementId": "app_setup",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "static",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "static",
+    "x": 735,
+    "y": 500,
+    "width": 330,
+    "height": 105,
+    "backgroundColor": "#d0bfff",
+    "fillStyle": "solid",
+    "strokeColor": "#8b5cf6",
+    "label": {
+      "text": "정적 검사\nformat → lint:ci → typecheck",
+      "fontSize": 18,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "static_unit",
+    "x": 1065,
+    "y": 552,
+    "width": 55,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        55,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#8b5cf6",
+    "startBinding": {
+      "elementId": "static",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "unit",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "unit",
+    "x": 1120,
+    "y": 500,
+    "width": 385,
+    "height": 105,
+    "backgroundColor": "#c3fae8",
+    "fillStyle": "solid",
+    "strokeColor": "#06b6d4",
+    "label": {
+      "text": "단위 · 하네스\nVitest → harness type/self-test\n→ docs check",
+      "fontSize": 17,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "unit_build",
+    "x": 1312,
+    "y": 605,
+    "width": -962,
+    "height": 105,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        45
+      ],
+      [
+        -962,
+        45
+      ],
+      [
+        -962,
+        105
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#06b6d4",
+    "startBinding": {
+      "elementId": "unit",
+      "fixedPoint": [
+        0.5,
+        1
+      ]
+    },
+    "endBinding": {
+      "elementId": "build",
+      "fixedPoint": [
+        0.5,
+        0
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "build",
+    "x": 225,
+    "y": 710,
+    "width": 360,
+    "height": 115,
+    "backgroundColor": "#b2f2bb",
+    "fillStyle": "solid",
+    "strokeColor": "#22c55e",
+    "label": {
+      "text": "production build\n번들 예산 · app-build\n클라이언트 secret scan",
+      "fontSize": 18,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "build_e2e",
+    "x": 585,
+    "y": 767,
+    "width": 70,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        70,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#22c55e",
+    "startBinding": {
+      "elementId": "build",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "e2e",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "e2e",
+    "x": 655,
+    "y": 710,
+    "width": 360,
+    "height": 115,
+    "backgroundColor": "#a5d8ff",
+    "fillStyle": "solid",
+    "strokeColor": "#4a9eed",
+    "label": {
+      "text": "Playwright mobile E2E\nPixel 5 · 실제 Supabase\ntrace/screenshot on failure",
+      "fontSize": 17,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "e2e_budget",
+    "x": 1015,
+    "y": 767,
+    "width": 70,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        70,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#4a9eed",
+    "startBinding": {
+      "elementId": "e2e",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "final_gates",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "final_gates",
+    "x": 1085,
+    "y": 710,
+    "width": 420,
+    "height": 115,
+    "backgroundColor": "#d0bfff",
+    "fillStyle": "solid",
+    "strokeColor": "#8b5cf6",
+    "label": {
+      "text": "motion render budget\n→ gate:all\nindex · radio · handoff · TDD · scope …",
+      "fontSize": 17,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "db_verify",
+    "x": 420,
+    "y": 870,
+    "width": 420,
+    "height": 95,
+    "backgroundColor": "#b2f2bb",
+    "fillStyle": "solid",
+    "strokeColor": "#22c55e",
+    "label": {
+      "text": "db-verify\nSupabase start → pnpm db:test",
+      "fontSize": 19,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "db_pgtap",
+    "x": 840,
+    "y": 917,
+    "width": 100,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        100,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#22c55e",
+    "startBinding": {
+      "elementId": "db_verify",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "pgtap",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "pgtap",
+    "x": 940,
+    "y": 870,
+    "width": 400,
+    "height": 95,
+    "backgroundColor": "#c3fae8",
+    "fillStyle": "solid",
+    "strokeColor": "#06b6d4",
+    "label": {
+      "text": "26개 pgTAP SQL suite\nschema · RLS · RPC · trigger",
+      "fontSize": 18,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "result",
+    "x": 420,
+    "y": 1020,
+    "width": 920,
+    "height": 70,
+    "backgroundColor": "#b2f2bb",
+    "fillStyle": "solid",
+    "strokeColor": "#22c55e",
+    "label": {
+      "text": "두 job 모두 GREEN → 병합 가능  |  어느 단계든 실패하면 뒤 체인은 실행하지 않고 원인과 artifact를 남긴다",
+      "fontSize": 18,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "source_note",
+    "x": 85,
+    "y": 1098,
+    "width": 1350,
+    "height": 24,
+    "text": "정본: package.json · .githooks/ · .github/workflows/ci.yml · vitest.config.ts · playwright.config.ts",
+    "fontSize": 16,
+    "strokeColor": "#757575",
+    "locked": true,
+    "fontFamily": 8
+  }
+]

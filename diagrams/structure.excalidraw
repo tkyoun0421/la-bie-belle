@@ -1,0 +1,1312 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "excalidraw-cli",
+  "elements": [
+    {
+      "type": "text",
+      "id": "t_title",
+      "x": 60,
+      "y": 30,
+      "width": 1000,
+      "height": 40,
+      "text": "라비에벨 구조 — 문서 레이어 · 코드 레이어 · 도메인 경계",
+      "fontSize": 30,
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_sub",
+      "x": 60,
+      "y": 76,
+      "width": 1300,
+      "height": 22,
+      "text": "정본: CLAUDE.md · ADR-0013(레이어 구조) · ADR-0014(view 계층 명명) · config/fsd.json · docs/product/DOMAIN.md",
+      "fontSize": 16,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_lh",
+      "x": 60,
+      "y": 115,
+      "width": 620,
+      "height": 26,
+      "text": "문서 레이어 — 위가 아래를 지배한다",
+      "fontSize": 20,
+      "strokeColor": "#8b5cf6",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "l1",
+      "x": 60,
+      "y": 150,
+      "width": 620,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "l1_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "l1_label",
+      "x": 70,
+      "y": 160,
+      "width": 600,
+      "height": 60,
+      "text": "L1 협업 — 일하는 방식\nWORKFLOW · HANDOFF · REVIEW · TOOLING",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "l1",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_l1_l2",
+      "x": 370,
+      "y": 230,
+      "width": 0,
+      "height": 20,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "l1",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "l2",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "l2",
+      "x": 60,
+      "y": 250,
+      "width": 620,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "l2_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "l2_label",
+      "x": 70,
+      "y": 260,
+      "width": 600,
+      "height": 60,
+      "text": "L2 제품·도메인 — 무엇을 왜 만드나\nPRD · DOMAIN · DESIGN · DECISIONS (읽기 대장)",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "l2",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_l2_l3",
+      "x": 370,
+      "y": 330,
+      "width": 0,
+      "height": 20,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "l2",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "l3",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "l3",
+      "x": 60,
+      "y": 350,
+      "width": 620,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "l3_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "l3_label",
+      "x": 70,
+      "y": 360,
+      "width": 600,
+      "height": 60,
+      "text": "L3 표준 — 공통 기술 기반\nARCHITECTURE · DEVELOPMENT · adr/",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "l3",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_l3_l4",
+      "x": 370,
+      "y": 430,
+      "width": 0,
+      "height": 20,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "l3",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "l4",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "l4",
+      "x": 60,
+      "y": 450,
+      "width": 620,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "l4_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "l4_label",
+      "x": 70,
+      "y": 460,
+      "width": 600,
+      "height": 60,
+      "text": "L4 계획·실행 — 상태와 증거\nphases/index.jsonl · radio/ · runs/ · reviews/ · dashboard/",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "l4",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_l4_l5",
+      "x": 370,
+      "y": 530,
+      "width": 0,
+      "height": 20,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "l4",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "l5",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "l5",
+      "x": 60,
+      "y": 550,
+      "width": 620,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "l5_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "l5_label",
+      "x": 70,
+      "y": 560,
+      "width": 600,
+      "height": 60,
+      "text": "L5 코드 — 구현\nsrc/ · tests/",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "l5",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_ln",
+      "x": 60,
+      "y": 648,
+      "width": 620,
+      "height": 22,
+      "text": "CLAUDE.md와 .claude/는 도구 요구로 루트에 있지만 논리적으로 L1이다.",
+      "fontSize": 16,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_ch",
+      "x": 60,
+      "y": 690,
+      "width": 620,
+      "height": 26,
+      "text": "충돌하면 이 순서로 조정한다",
+      "fontSize": 20,
+      "strokeColor": "#ef4444",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "chain",
+      "x": 60,
+      "y": 725,
+      "width": 620,
+      "height": 88,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#ffc9c9",
+      "fillStyle": "solid",
+      "strokeColor": "#ef4444",
+      "boundElements": [
+        {
+          "id": "chain_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "chain_label",
+      "x": 70,
+      "y": 735,
+      "width": 600,
+      "height": 68,
+      "text": "PRD → DOMAIN → ADR → ARCHITECTURE\n→ DEVELOPMENT/RADIO → phase → index",
+      "fontSize": 17,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "chain",
+      "strokeColor": "#ef4444",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_cn",
+      "x": 60,
+      "y": 823,
+      "width": 620,
+      "height": 22,
+      "text": "문서가 어긋나면 조용히 하나를 고르지 않는다.",
+      "fontSize": 16,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_fh",
+      "x": 760,
+      "y": 115,
+      "width": 700,
+      "height": 26,
+      "text": "src/ FSD 레이어 — import는 위 → 아래 한 방향",
+      "fontSize": 20,
+      "strokeColor": "#4a9eed",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "f_app",
+      "x": 760,
+      "y": 150,
+      "width": 700,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "f_app_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "f_app_label",
+      "x": 770,
+      "y": 160,
+      "width": 680,
+      "height": 60,
+      "text": "app/ — Next.js 라우트·레이아웃·프로바이더 (얇은 어댑터)\npage.tsx 23개 · (protected)/(tabs) · admin · auth · preview",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "f_app",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_f1",
+      "x": 1110,
+      "y": 230,
+      "width": 0,
+      "height": 20,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "f_app",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "f_views",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "f_views",
+      "x": 760,
+      "y": 250,
+      "width": 700,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "f_views_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "f_views_label",
+      "x": 770,
+      "y": 260,
+      "width": 680,
+      "height": 60,
+      "text": "views/ — 라우트 단위 화면 조립, 22 슬라이스\nFSD의 pages를 개명 (src/pages는 Next.js 예약, ADR-0014)",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "f_views",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_f2",
+      "x": 1110,
+      "y": 330,
+      "width": 0,
+      "height": 20,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "f_views",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "f_widgets",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "f_widgets",
+      "x": 760,
+      "y": 350,
+      "width": 700,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#eebefa",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "f_widgets_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "f_widgets_label",
+      "x": 770,
+      "y": 360,
+      "width": 680,
+      "height": 60,
+      "text": "widgets/ — 독립 화면 블록, 3 슬라이스\napp-shell · offline · pull-to-refresh",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "f_widgets",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_f3",
+      "x": 1110,
+      "y": 430,
+      "width": 0,
+      "height": 20,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "f_widgets",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "f_features",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "f_features",
+      "x": 760,
+      "y": 450,
+      "width": 700,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "f_features_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "f_features_label",
+      "x": 770,
+      "y": 460,
+      "width": 680,
+      "height": 60,
+      "text": "features/ — 사용자 행동·Server Action·변경, 16 슬라이스\napplication · assignment · confirmation · recruitment · auth · push …",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "f_features",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_f4",
+      "x": 1110,
+      "y": 530,
+      "width": 0,
+      "height": 20,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "f_features",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "f_entities",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "f_entities",
+      "x": 760,
+      "y": 550,
+      "width": 700,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "f_entities_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "f_entities_label",
+      "x": 770,
+      "y": 560,
+      "width": 680,
+      "height": 60,
+      "text": "entities/ — 도메인 모델·순수 규칙·DTO, 7 슬라이스\nassignment · attendance · identity · notification · pay · position · schedule",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "f_entities",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_f5",
+      "x": 1110,
+      "y": 630,
+      "width": 0,
+      "height": 20,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "f_entities",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "f_shared",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "f_shared",
+      "x": 760,
+      "y": 650,
+      "width": 700,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "f_shared_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "f_shared_label",
+      "x": 770,
+      "y": 660,
+      "width": 680,
+      "height": 60,
+      "text": "shared/ — 재사용 UI·설정·공통 서버 클라이언트 기반\nconfig · hooks · lib · model · ui",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "f_shared",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_fn1",
+      "x": 760,
+      "y": 742,
+      "width": 680,
+      "height": 44,
+      "text": "config/fsd.json이 세그먼트 규칙을 단독 소유\nESLint와 tdd-guard가 같은 파일을 읽는다",
+      "fontSize": 16,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_fn2",
+      "x": 760,
+      "y": 792,
+      "width": 680,
+      "height": 44,
+      "text": "ui: 로직·server-only·api import 금지\napi: \"server-only\" 필수 · model: react 금지",
+      "fontSize": 16,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_fn3",
+      "x": 760,
+      "y": 842,
+      "width": 680,
+      "height": 44,
+      "text": "배럴 없이 실경로 import\nalias에는 확장자를 붙이지 않는다",
+      "fontSize": 16,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_dh",
+      "x": 60,
+      "y": 898,
+      "width": 1200,
+      "height": 26,
+      "text": "5개 도메인 경계 (DOMAIN:*) — 한 앱 안에서 책임과 트랜잭션을 나눈 것이지 마이크로서비스가 아니다. 화살표는 소유가 아니라 소비 방향.",
+      "fontSize": 20,
+      "strokeColor": "#22c55e",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "d_id",
+      "x": 60,
+      "y": 940,
+      "width": 300,
+      "height": 105,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "d_id_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "d_id_label",
+      "x": 70,
+      "y": 950,
+      "width": 280,
+      "height": 85,
+      "text": "IDENTITY\n가입·승인·휴면·역할·PII·시급\nprofile · role · departed vault",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "d_id",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_d1",
+      "x": 360,
+      "y": 992,
+      "width": 70,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          70,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "d_id",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "d_sch",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "d_sch",
+      "x": 430,
+      "y": 940,
+      "width": 300,
+      "height": 105,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "d_sch_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "d_sch_label",
+      "x": 440,
+      "y": 950,
+      "width": 280,
+      "height": 85,
+      "text": "SCHEDULING\n포지션·모집·신청·배정·확정·교대\nschedule · assignment · requirement",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "d_sch",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_d2",
+      "x": 730,
+      "y": 992,
+      "width": 70,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          70,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "d_sch",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "d_att",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "d_att",
+      "x": 800,
+      "y": 940,
+      "width": 300,
+      "height": 105,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "d_att_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "d_att_label",
+      "x": 810,
+      "y": 950,
+      "width": 280,
+      "height": 85,
+      "text": "ATTENDANCE\nGPS·QR 인증 · 불변 원본 · 팀장 확인\nevent · attestation · projection",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "d_att",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_d3",
+      "x": 1100,
+      "y": 992,
+      "width": 70,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          70,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "d_att",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "d_pay",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "d_pay",
+      "x": 1170,
+      "y": 940,
+      "width": 290,
+      "height": 105,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "d_pay_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "d_pay_label",
+      "x": 1180,
+      "y": 950,
+      "width": 270,
+      "height": 85,
+      "text": "PAY\n예상 급여 조회 · 리허설 자기기록\npay projection · rehearsal entry",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "d_pay",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_d1",
+      "x": 340,
+      "y": 1058,
+      "width": 200,
+      "height": 20,
+      "text": "활성 상태·역할·자격",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_d2",
+      "x": 712,
+      "y": 1058,
+      "width": 220,
+      "height": 20,
+      "text": "확정 배정·예정 시간",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_d3",
+      "x": 1090,
+      "y": 1058,
+      "width": 220,
+      "height": 20,
+      "text": "결근 projection",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_d4",
+      "x": 580,
+      "y": 1045,
+      "width": 0,
+      "height": 45,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          45
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "d_sch",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "d_not",
+        "fixedPoint": [
+          0.22,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_d5",
+      "x": 950,
+      "y": 1045,
+      "width": 0,
+      "height": 45,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          45
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "d_att",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "d_not",
+        "fixedPoint": [
+          0.77,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "d_not",
+      "x": 430,
+      "y": 1090,
+      "width": 670,
+      "height": 80,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#eebefa",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "d_not_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "d_not_label",
+      "x": 440,
+      "y": 1100,
+      "width": 650,
+      "height": 60,
+      "text": "NOTIFICATIONS — 앱 내 알림 · 푸시 구독 · outbox · 재시도\n다른 도메인의 domain event를 받는다 (ScheduleConfirmed, AttendanceRecorded …)",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "d_not",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_dn",
+      "x": 1130,
+      "y": 1095,
+      "width": 320,
+      "height": 44,
+      "text": "권한·PII는 서버 경계와\nPostgreSQL RLS가 강제",
+      "fontSize": 16,
+      "strokeColor": "#ef4444",
+      "fontFamily": 8,
+      "locked": true
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null,
+    "viewModeEnabled": true,
+    "currentItemFontFamily": 8
+  },
+  "files": {}
+}

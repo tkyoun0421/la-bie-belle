@@ -1,0 +1,1306 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "excalidraw-cli",
+  "elements": [
+    {
+      "type": "text",
+      "id": "title",
+      "x": 60,
+      "y": 42,
+      "width": 620,
+      "height": 56,
+      "text": "진입점 · 요청 흐름",
+      "fontSize": 46,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "x": 62,
+      "y": 104,
+      "width": 1050,
+      "height": 28,
+      "text": "브라우저 요청이 인증·권한 경계를 지나 조회 또는 변경으로 처리되고 다시 UI에 반영되는 경로",
+      "fontSize": 20,
+      "strokeColor": "#757575",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "entry_zone",
+      "x": 55,
+      "y": 150,
+      "width": 1490,
+      "height": 220,
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "opacity": 40,
+      "locked": true,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "entry_title",
+      "x": 85,
+      "y": 170,
+      "width": 360,
+      "height": 34,
+      "text": "1. 모든 요청의 진입",
+      "fontSize": 27,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "browser",
+      "x": 90,
+      "y": 230,
+      "width": 230,
+      "height": 90,
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "browser_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "browser_label",
+      "x": 100,
+      "y": 240,
+      "width": 210,
+      "height": 70,
+      "text": "브라우저 · PWA\nURL / Link / Form",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "browser",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "browser_proxy",
+      "x": 320,
+      "y": 275,
+      "width": 60,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          60,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#f59e0b",
+      "startBinding": {
+        "elementId": "browser",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "proxy",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "proxy",
+      "x": 380,
+      "y": 230,
+      "width": 230,
+      "height": 90,
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "proxy_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "proxy_label",
+      "x": 390,
+      "y": 240,
+      "width": 210,
+      "height": 70,
+      "text": "src/proxy.ts\n경로 + 세션 갱신",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "proxy",
+      "strokeColor": "#4a9eed",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "proxy_session",
+      "x": 610,
+      "y": 275,
+      "width": 60,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          60,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#4a9eed",
+      "startBinding": {
+        "elementId": "proxy",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "session",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "session",
+      "x": 670,
+      "y": 230,
+      "width": 230,
+      "height": 90,
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "session_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "session_label",
+      "x": 680,
+      "y": 240,
+      "width": 210,
+      "height": 70,
+      "text": "Supabase Auth\n쿠키 + getUser",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "session",
+      "strokeColor": "#8b5cf6",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "session_route",
+      "x": 900,
+      "y": 275,
+      "width": 60,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          60,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#8b5cf6",
+      "startBinding": {
+        "elementId": "session",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "route",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "route",
+      "x": 960,
+      "y": 230,
+      "width": 230,
+      "height": 90,
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "route_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "route_label",
+      "x": 970,
+      "y": 240,
+      "width": 210,
+      "height": 70,
+      "text": "route-access\npublic / login / protected",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "route",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "route_result",
+      "x": 1190,
+      "y": 275,
+      "width": 60,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          60,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#f59e0b",
+      "startBinding": {
+        "elementId": "route",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "entry_result",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "entry_result",
+      "x": 1250,
+      "y": 230,
+      "width": 250,
+      "height": 90,
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#22c55e",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "entry_result_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "entry_result_label",
+      "x": 1260,
+      "y": 240,
+      "width": 230,
+      "height": 70,
+      "text": "App Router 진입\n또는 /login · / redirect",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "entry_result",
+      "strokeColor": "#22c55e",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "read_zone",
+      "x": 55,
+      "y": 405,
+      "width": 1490,
+      "height": 300,
+      "backgroundColor": "#dbe4ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "opacity": 35,
+      "locked": true,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "read_title",
+      "x": 85,
+      "y": 426,
+      "width": 480,
+      "height": 34,
+      "text": "2. 조회 요청 — server-first",
+      "fontSize": 27,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "page",
+      "x": 75,
+      "y": 500,
+      "width": 205,
+      "height": 100,
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "page_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "page_label",
+      "x": 85,
+      "y": 510,
+      "width": 185,
+      "height": 80,
+      "text": "page / layout\nServer Component",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "page",
+      "strokeColor": "#4a9eed",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "page_gate",
+      "x": 280,
+      "y": 550,
+      "width": 45,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          45,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#4a9eed",
+      "startBinding": {
+        "elementId": "page",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "gate",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "gate",
+      "x": 325,
+      "y": 500,
+      "width": 205,
+      "height": 100,
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "gate_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "gate_label",
+      "x": 335,
+      "y": 510,
+      "width": 185,
+      "height": 80,
+      "text": "profile / admin gate\n상태·역할 재확인",
+      "fontSize": 17,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "gate",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "gate_query",
+      "x": 530,
+      "y": 550,
+      "width": 45,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          45,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#f59e0b",
+      "startBinding": {
+        "elementId": "gate",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "query",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "query",
+      "x": 575,
+      "y": 500,
+      "width": 205,
+      "height": 100,
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "query_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "query_label",
+      "x": 585,
+      "y": 510,
+      "width": 185,
+      "height": 80,
+      "text": "entities/*/api\nquery · projection",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "query",
+      "strokeColor": "#8b5cf6",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "query_client",
+      "x": 780,
+      "y": 550,
+      "width": 45,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          45,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#8b5cf6",
+      "startBinding": {
+        "elementId": "query",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "server_client",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "server_client",
+      "x": 825,
+      "y": 500,
+      "width": 205,
+      "height": 100,
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "strokeColor": "#06b6d4",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "server_client_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "server_client_label",
+      "x": 835,
+      "y": 510,
+      "width": 185,
+      "height": 80,
+      "text": "Supabase server client\n세션 쿠키 전달",
+      "fontSize": 17,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "server_client",
+      "strokeColor": "#06b6d4",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "client_db",
+      "x": 1030,
+      "y": 550,
+      "width": 45,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          45,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#06b6d4",
+      "startBinding": {
+        "elementId": "server_client",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "read_db",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "read_db",
+      "x": 1075,
+      "y": 500,
+      "width": 205,
+      "height": 100,
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#22c55e",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "read_db_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "read_db_label",
+      "x": 1085,
+      "y": 510,
+      "width": 185,
+      "height": 80,
+      "text": "PostgreSQL\nRLS + table / RPC",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "read_db",
+      "strokeColor": "#22c55e",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "db_view",
+      "x": 1280,
+      "y": 550,
+      "width": 45,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          45,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#22c55e",
+      "startBinding": {
+        "elementId": "read_db",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "read_view",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "read_view",
+      "x": 1325,
+      "y": 500,
+      "width": 180,
+      "height": 100,
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "read_view_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "read_view_label",
+      "x": 1335,
+      "y": 510,
+      "width": 160,
+      "height": 80,
+      "text": "views/*/ui\nRSC HTML",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "read_view",
+      "strokeColor": "#4a9eed",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "read_note",
+      "x": 85,
+      "y": 635,
+      "width": 1250,
+      "height": 24,
+      "text": "private 조회는 서버에서 직접 수행  ·  상호작용 후 재조회가 필요할 때만 얇은 Route Handler + TanStack Query 사용",
+      "fontSize": 17,
+      "strokeColor": "#495057",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "write_zone",
+      "x": 55,
+      "y": 740,
+      "width": 1490,
+      "height": 390,
+      "backgroundColor": "#e5dbff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "opacity": 30,
+      "locked": true,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "write_title",
+      "x": 85,
+      "y": 761,
+      "width": 520,
+      "height": 34,
+      "text": "3. 변경 요청 — Server Action",
+      "fontSize": 27,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "form",
+      "x": 75,
+      "y": 835,
+      "width": 205,
+      "height": 105,
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "form_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "form_label",
+      "x": 85,
+      "y": 845,
+      "width": 185,
+      "height": 85,
+      "text": "Client UI / form\n사용자 입력",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "form",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "form_action",
+      "x": 280,
+      "y": 887,
+      "width": 45,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          45,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#f59e0b",
+      "startBinding": {
+        "elementId": "form",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "action",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "action",
+      "x": 325,
+      "y": 835,
+      "width": 205,
+      "height": 105,
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "action_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "action_label",
+      "x": 335,
+      "y": 845,
+      "width": 185,
+      "height": 85,
+      "text": "features/*/api\n\"use server\"",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "action",
+      "strokeColor": "#8b5cf6",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "action_validate",
+      "x": 530,
+      "y": 887,
+      "width": 45,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          45,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#8b5cf6",
+      "startBinding": {
+        "elementId": "action",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "validate",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "validate",
+      "x": 575,
+      "y": 835,
+      "width": 205,
+      "height": 105,
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "validate_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "validate_label",
+      "x": 585,
+      "y": 845,
+      "width": 185,
+      "height": 85,
+      "text": "입력 파싱 + 권한\nactive / admin",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "validate",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "validate_rpc",
+      "x": 780,
+      "y": 887,
+      "width": 45,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          45,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#f59e0b",
+      "startBinding": {
+        "elementId": "validate",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "rpc",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "rpc",
+      "x": 825,
+      "y": 835,
+      "width": 205,
+      "height": 105,
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#22c55e",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "rpc_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "rpc_label",
+      "x": 835,
+      "y": 845,
+      "width": 185,
+      "height": 85,
+      "text": "Postgres RPC\n원자적 transaction",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "rpc",
+      "strokeColor": "#22c55e",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "rpc_effects",
+      "x": 1030,
+      "y": 887,
+      "width": 45,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          45,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#22c55e",
+      "startBinding": {
+        "elementId": "rpc",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "effects",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "effects",
+      "x": 1075,
+      "y": 835,
+      "width": 205,
+      "height": 105,
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "strokeColor": "#06b6d4",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "effects_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "effects_label",
+      "x": 1085,
+      "y": 845,
+      "width": 185,
+      "height": 85,
+      "text": "RLS · trigger\naudit · outbox",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "effects",
+      "strokeColor": "#06b6d4",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "effects_refresh",
+      "x": 1280,
+      "y": 887,
+      "width": 45,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          45,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#06b6d4",
+      "startBinding": {
+        "elementId": "effects",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "refresh",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "refresh",
+      "x": 1325,
+      "y": 835,
+      "width": 180,
+      "height": 105,
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "refresh_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "refresh_label",
+      "x": 1335,
+      "y": 845,
+      "width": 160,
+      "height": 85,
+      "text": "revalidatePath\nUI 새로고침",
+      "fontSize": 17,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "refresh",
+      "strokeColor": "#4a9eed",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "write_note",
+      "x": 85,
+      "y": 980,
+      "width": 1320,
+      "height": 52,
+      "text": "권한은 UI에서 버튼을 숨기는 것으로 끝나지 않는다. Server Action의 계정·역할 확인과 DB의 RLS / SECURITY DEFINER 함수가 함께 강제한다.\nOAuth만 /auth/callback Route Handler에서 code → session 교환 후 profile gate로 목적지를 결정한다.",
+      "fontSize": 17,
+      "strokeColor": "#495057",
+      "locked": true,
+      "fontFamily": 8
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null,
+    "viewModeEnabled": true,
+    "currentItemFontFamily": 8
+  },
+  "files": {}
+}

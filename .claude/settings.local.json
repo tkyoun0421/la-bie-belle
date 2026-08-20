@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/yuntaegwan/.local/share/claude/versions/**)",
+      "Read(//Users/yuntaegwan/.claude/**)",
+      "Bash(rg --hidden --no-ignore:*)",
+      "Bash(mkdir -p /tmp/trace-extract)",
+      "Read(//private/tmp/trace-extract/**)",
+      "Bash(rm -rf ./*)",
+      "Bash(unzip -o -q \"/Users/yuntaegwan/Desktop/projects/la-bie-belle/test-results/assignment-eligibility-배정--735a4-되며-확정-스케줄에서는-배정-시트가-열리지-않는다-mobile/trace.zip\")"
+    ]
+  },
+  "enabledPlugins": {
+    "claude-hud@claude-hud": true
+  }
+}

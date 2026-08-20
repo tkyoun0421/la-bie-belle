@@ -1,0 +1,1459 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "excalidraw-cli",
+  "elements": [
+    {
+      "type": "text",
+      "id": "t_title",
+      "x": 60,
+      "y": 30,
+      "width": 900,
+      "height": 40,
+      "text": "라비에벨 협업 프로세스 — 5단계 파이프라인",
+      "fontSize": 30,
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_sub",
+      "x": 60,
+      "y": 76,
+      "width": 1200,
+      "height": 22,
+      "text": "정본: docs/workflow/WORKFLOW.md · 기획 → 설계 → 개발 → 검증 → 리팩토링 · 승인 게이트는 1·2단계 두 곳뿐",
+      "fontSize": 16,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "zone1",
+      "x": 40,
+      "y": 105,
+      "width": 1500,
+      "height": 235,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#dbe4ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "opacity": 30,
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_zone1",
+      "x": 58,
+      "y": 118,
+      "width": 900,
+      "height": 24,
+      "text": "승인 구간 — 사용자 + AI 인터뷰 (커밋을 만들지 않아 실행 구간과 겹칠 수 있다)",
+      "fontSize": 18,
+      "strokeColor": "#4a9eed",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "p1",
+      "x": 70,
+      "y": 155,
+      "width": 210,
+      "height": 105,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "p1_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "p1_label",
+      "x": 80,
+      "y": 165,
+      "width": 190,
+      "height": 85,
+      "text": "1. 기획\n인터뷰",
+      "fontSize": 20,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "p1",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_p1_g1",
+      "x": 280,
+      "y": 207,
+      "width": 60,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          60,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "p1",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "g1",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "diamond",
+      "id": "g1",
+      "x": 340,
+      "y": 145,
+      "width": 200,
+      "height": 125,
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "boundElements": [
+        {
+          "id": "g1_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "g1_label",
+      "x": 350,
+      "y": 155,
+      "width": 180,
+      "height": 105,
+      "text": "기획 승인",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "g1",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_g1_p2",
+      "x": 540,
+      "y": 207,
+      "width": 70,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          70,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "g1",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "p2",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "p2",
+      "x": 610,
+      "y": 155,
+      "width": 210,
+      "height": 105,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "p2_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "p2_label",
+      "x": 620,
+      "y": 165,
+      "width": 190,
+      "height": 85,
+      "text": "2. 설계\nRADIO 인터뷰",
+      "fontSize": 20,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "p2",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_p2_g2",
+      "x": 820,
+      "y": 207,
+      "width": 70,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          70,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "p2",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "g2",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "diamond",
+      "id": "g2",
+      "x": 890,
+      "y": 145,
+      "width": 200,
+      "height": 125,
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "boundElements": [
+        {
+          "id": "g2_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "g2_label",
+      "x": 900,
+      "y": 155,
+      "width": 180,
+      "height": 105,
+      "text": "RADIO 승인",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "g2",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_g2_q",
+      "x": 1090,
+      "y": 207,
+      "width": 80,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          80,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "g2",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "queue",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "queue",
+      "x": 1170,
+      "y": 155,
+      "width": 230,
+      "height": 105,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "queue_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "queue_label",
+      "x": 1180,
+      "y": 165,
+      "width": 210,
+      "height": 85,
+      "text": "planned 큐",
+      "fontSize": 20,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "queue",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_n1",
+      "x": 70,
+      "y": 282,
+      "width": 260,
+      "height": 20,
+      "text": "PRD·DOMAIN 정합화 · 제품 인수 조건",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_n2",
+      "x": 340,
+      "y": 282,
+      "width": 260,
+      "height": 20,
+      "text": "product_approval → design_pending",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_n3",
+      "x": 610,
+      "y": 282,
+      "width": 260,
+      "height": 20,
+      "text": "시안 확정은 RADIO에 함께 봉인",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_n4",
+      "x": 890,
+      "y": 282,
+      "width": 330,
+      "height": 20,
+      "text": "development_approval + radio_sha256 → planned",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_n5",
+      "x": 70,
+      "y": 308,
+      "width": 340,
+      "height": 20,
+      "text": "수정·보류는 같은 단계로 되돌린다 · 침묵은 승인이 아니다",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_n6",
+      "x": 1170,
+      "y": 308,
+      "width": 300,
+      "height": 20,
+      "text": "의존 task가 모두 done인 것만 후보",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "zone2",
+      "x": 40,
+      "y": 372,
+      "width": 1500,
+      "height": 818,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#e5dbff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "opacity": 30,
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_zone2",
+      "x": 58,
+      "y": 385,
+      "width": 1000,
+      "height": 24,
+      "text": "실행 구간 — AI 연속 루프 (in_progress는 저장소 전체에서 최대 하나, 병렬 없음)",
+      "fontSize": 18,
+      "strokeColor": "#8b5cf6",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_q_s3",
+      "x": 1285,
+      "y": 260,
+      "width": 1260,
+      "height": 218,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          96
+        ],
+        [
+          -1260,
+          96
+        ],
+        [
+          -1260,
+          218
+        ],
+        [
+          -1215,
+          218
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "queue",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "s3",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "s3",
+      "x": 70,
+      "y": 425,
+      "width": 230,
+      "height": 105,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "s3_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "s3_label",
+      "x": 80,
+      "y": 435,
+      "width": 210,
+      "height": 85,
+      "text": "3. 개발",
+      "fontSize": 22,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "s3",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_s3_s4",
+      "x": 300,
+      "y": 477,
+      "width": 80,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          80,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "s3",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "s4",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "s4",
+      "x": 380,
+      "y": 425,
+      "width": 230,
+      "height": 105,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "s4_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "s4_label",
+      "x": 390,
+      "y": 435,
+      "width": 210,
+      "height": 85,
+      "text": "4. 검증",
+      "fontSize": 22,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "s4",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_s4_s5",
+      "x": 610,
+      "y": 477,
+      "width": 80,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          80,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "s4",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "s5",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "s5",
+      "x": 690,
+      "y": 425,
+      "width": 230,
+      "height": 105,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "s5_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "s5_label",
+      "x": 700,
+      "y": 435,
+      "width": 210,
+      "height": 85,
+      "text": "5. 리팩토링",
+      "fontSize": 22,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "s5",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_s5_done",
+      "x": 920,
+      "y": 477,
+      "width": 80,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          80,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "s5",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "done",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "done",
+      "x": 1000,
+      "y": 425,
+      "width": 200,
+      "height": 105,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "done_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "done_label",
+      "x": 1010,
+      "y": 435,
+      "width": 180,
+      "height": 85,
+      "text": "done",
+      "fontSize": 22,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "done",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_loop",
+      "x": 1200,
+      "y": 477,
+      "width": 280,
+      "height": 270,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          280,
+          0
+        ],
+        [
+          280,
+          -270
+        ],
+        [
+          200,
+          -270
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "done",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "queue",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_s3n",
+      "x": 70,
+      "y": 545,
+      "width": 300,
+      "height": 20,
+      "text": "worktree 격리 · RADIO 범위만 구현",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_s4n",
+      "x": 380,
+      "y": 545,
+      "width": 300,
+      "height": 20,
+      "text": "check_ids · 교차 검증 2자 · critical은 blocked",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_s5n",
+      "x": 690,
+      "y": 545,
+      "width": 300,
+      "height": 20,
+      "text": "동작 불변 정리 · retrospector · 단일 commit",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_donen",
+      "x": 1000,
+      "y": 545,
+      "width": 300,
+      "height": 20,
+      "text": "handoff 기록 후 다음 후보로 (연속 루프)",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_wh",
+      "x": 70,
+      "y": 598,
+      "width": 1100,
+      "height": 24,
+      "text": "3단계 worker 디스패치 — 순차, 같은 worktree, 커밋은 GREEN 이후 한 번",
+      "fontSize": 18,
+      "strokeColor": "#8b5cf6",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_s3_w1",
+      "x": 290,
+      "y": 530,
+      "width": 0,
+      "height": 105,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          105
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "s3",
+        "fixedPoint": [
+          0.95,
+          1
+        ]
+      },
+      "endBinding": {
+        "elementId": "w1",
+        "fixedPoint": [
+          0.78,
+          0
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "w1",
+      "x": 70,
+      "y": 635,
+      "width": 280,
+      "height": 100,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#ffc9c9",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "w1_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "w1_label",
+      "x": 80,
+      "y": 645,
+      "width": 260,
+      "height": 80,
+      "text": "unit-test-writer\n컴포넌트·단위 RED",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "w1",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_w1_w2",
+      "x": 350,
+      "y": 685,
+      "width": 40,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          40,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "w1",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "w2",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "w2",
+      "x": 390,
+      "y": 635,
+      "width": 280,
+      "height": 100,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "w2_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "w2_label",
+      "x": 400,
+      "y": 645,
+      "width": 260,
+      "height": 80,
+      "text": "publisher\n시안 → UI GREEN · UI 커밋",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "w2",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_w2_w3",
+      "x": 670,
+      "y": 685,
+      "width": 40,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          40,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "w2",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "w3",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "w3",
+      "x": 710,
+      "y": 635,
+      "width": 300,
+      "height": 100,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#ffc9c9",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "w3_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "w3_label",
+      "x": 720,
+      "y": 645,
+      "width": 280,
+      "height": 80,
+      "text": "integration-test-writer\ne2e-test-writer — RED",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "w3",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "a_w3_w4",
+      "x": 1010,
+      "y": 685,
+      "width": 40,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          40,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "w3",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "w4",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "w4",
+      "x": 1050,
+      "y": 635,
+      "width": 280,
+      "height": 100,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "w4_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "w4_label",
+      "x": 1060,
+      "y": 645,
+      "width": 260,
+      "height": 80,
+      "text": "implementer\nGREEN · 배선 커밋",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "w4",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_wn1",
+      "x": 70,
+      "y": 752,
+      "width": 1200,
+      "height": 22,
+      "text": "writer는 실패하는 RED까지만 쓰고 커밋하지 않는다. implementer는 그 테스트를 고치지 않고, 만족 불가능한 단언은 [질문]으로 반환한다.",
+      "fontSize": 16,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_wn2",
+      "x": 70,
+      "y": 782,
+      "width": 1200,
+      "height": 22,
+      "text": "views/**/ui를 건드리는 task만 publisher가 낀다. test_mode가 tdd가 아니면 implementer 단독으로 진행한다.",
+      "fontSize": 16,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_vh",
+      "x": 70,
+      "y": 830,
+      "width": 900,
+      "height": 24,
+      "text": "4단계 검증 — pnpm verify (CI용 단일 명령, 앞이 실패하면 뒤를 돌리지 않는다)",
+      "fontSize": 18,
+      "strokeColor": "#06b6d4",
+      "fontFamily": 8,
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "vchain",
+      "x": 70,
+      "y": 865,
+      "width": 1440,
+      "height": 95,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "vchain_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "vchain_label",
+      "x": 80,
+      "y": 875,
+      "width": 1420,
+      "height": 75,
+      "text": "format · lint · typecheck → unit + harness + docs\nbuild · bundle · secret scan → Playwright E2E · motion → gate:all",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "vchain",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "vgate",
+      "x": 70,
+      "y": 985,
+      "width": 690,
+      "height": 95,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "boundElements": [
+        {
+          "id": "vgate_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "vgate_label",
+      "x": 80,
+      "y": 995,
+      "width": 670,
+      "height": 75,
+      "text": "gate:all — index · radio · handoff · tdd · scope · retro · docs · tokens\n(통과하면 아무것도 출력하지 않고 0으로 끝난다)",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "vgate",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "vrev",
+      "x": 820,
+      "y": 985,
+      "width": 690,
+      "height": 95,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#eebefa",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "vrev_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "vrev_label",
+      "x": 830,
+      "y": 995,
+      "width": 670,
+      "height": 75,
+      "text": "교차 검증 — reviewer(Opus) + Codex CLI 2자 독립 리뷰\n둘 다 동의할 때만 확정 → reviews/<task-id>-review.json",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "vrev",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "rec1",
+      "x": 70,
+      "y": 1090,
+      "width": 460,
+      "height": 65,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "rec1_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "rec1_label",
+      "x": 80,
+      "y": 1100,
+      "width": 440,
+      "height": 45,
+      "text": "phases/index.jsonl — 승인·상태의 정본",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "rec1",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "rec2",
+      "x": 560,
+      "y": 1090,
+      "width": 460,
+      "height": 65,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "rec2_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "rec2_label",
+      "x": 570,
+      "y": 1100,
+      "width": 440,
+      "height": 45,
+      "text": "radio/<task-id>-radio.md — SHA-256 봉인",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "rec2",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "rec3",
+      "x": 1050,
+      "y": 1090,
+      "width": 460,
+      "height": 65,
+      "roundness": {
+        "type": 3
+      },
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "boundElements": [
+        {
+          "id": "rec3_label",
+          "type": "text"
+        }
+      ],
+      "roughness": 2,
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "rec3_label",
+      "x": 1060,
+      "y": 1100,
+      "width": 440,
+      "height": 45,
+      "text": "runs/<task-id>/ — handoff · tdd.json · 증거",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "rec3",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "t_hooks",
+      "x": 70,
+      "y": 1165,
+      "width": 1300,
+      "height": 20,
+      "text": "git 훅(.githooks): pre-commit → 게이트 6종 · lint-staged · tsc --incremental · vitest / pre-push → build / commit-msg → P0-T00 형식 task ID 필수",
+      "fontSize": 14,
+      "strokeColor": "#757575",
+      "fontFamily": 8,
+      "locked": true
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null,
+    "viewModeEnabled": true,
+    "currentItemFontFamily": 8
+  },
+  "files": {}
+}

@@ -27,7 +27,11 @@ skills-lock.json
 !.claude/skills/decision/
 !.claude/skills/explain/
 !.claude/skills/publish-ui/
+!.claude/skills/hotfix/
 !.claude/skills/verify/
 
 # design:build 산출물 — 시안 원본만 커밋하고 글꼴을 심은 1.7MB 빌드본은 제외
 *.inlined.html
+
+# hotfix 대기 큐 — 허용 경로 판정에 걸리면 안 되므로 추적하지 않는다
+docs/execution/hotfix-queue.md

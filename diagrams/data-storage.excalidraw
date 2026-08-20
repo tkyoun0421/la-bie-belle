@@ -1,0 +1,853 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "excalidraw-cli",
+  "elements": [
+    {
+      "type": "text",
+      "id": "title",
+      "x": 60,
+      "y": 42,
+      "width": 760,
+      "height": 56,
+      "text": "데이터 모델 · 저장 계층",
+      "fontSize": 46,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "x": 62,
+      "y": 104,
+      "width": 1120,
+      "height": 28,
+      "text": "TypeScript 모델과 조회·명령 경계가 PostgreSQL의 테이블·정책·트랜잭션으로 연결되는 현재 구현",
+      "fontSize": 20,
+      "strokeColor": "#757575",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "app_zone",
+      "x": 55,
+      "y": 150,
+      "width": 1490,
+      "height": 205,
+      "backgroundColor": "#dbe4ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "opacity": 35,
+      "locked": true,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "app_title",
+      "x": 85,
+      "y": 170,
+      "width": 420,
+      "height": 34,
+      "text": "1. 애플리케이션 데이터 경계",
+      "fontSize": 27,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "ui",
+      "x": 90,
+      "y": 230,
+      "width": 280,
+      "height": 82,
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "ui_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "ui_label",
+      "x": 100,
+      "y": 240,
+      "width": 260,
+      "height": 62,
+      "text": "views / features UI\n표시·입력",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ui",
+      "strokeColor": "#4a9eed",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "ui_model",
+      "x": 370,
+      "y": 271,
+      "width": 85,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          85,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#4a9eed",
+      "startBinding": {
+        "elementId": "ui",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "model",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "model",
+      "x": 455,
+      "y": 230,
+      "width": 280,
+      "height": 82,
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "model_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "model_label",
+      "x": 465,
+      "y": 240,
+      "width": 260,
+      "height": 62,
+      "text": "entities/*/model\n타입·schema·순수 파생",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "model",
+      "strokeColor": "#8b5cf6",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "model_api",
+      "x": 735,
+      "y": 271,
+      "width": 85,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          85,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#8b5cf6",
+      "startBinding": {
+        "elementId": "model",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "api",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "api",
+      "x": 820,
+      "y": 230,
+      "width": 280,
+      "height": 82,
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "strokeColor": "#06b6d4",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "api_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "api_label",
+      "x": 830,
+      "y": 240,
+      "width": 260,
+      "height": 62,
+      "text": "entities api 조회\nfeatures api 명령",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "api",
+      "strokeColor": "#06b6d4",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "api_client",
+      "x": 1100,
+      "y": 271,
+      "width": 85,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          85,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#06b6d4",
+      "startBinding": {
+        "elementId": "api",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "client",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "client",
+      "x": 1185,
+      "y": 230,
+      "width": 320,
+      "height": 82,
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#22c55e",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "client_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "client_label",
+      "x": 1195,
+      "y": 240,
+      "width": 300,
+      "height": 62,
+      "text": "Supabase client factory\nserver session / service role",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "client",
+      "strokeColor": "#22c55e",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "db_zone",
+      "x": 55,
+      "y": 390,
+      "width": 1490,
+      "height": 570,
+      "backgroundColor": "#d3f9d8",
+      "fillStyle": "solid",
+      "strokeColor": "#22c55e",
+      "opacity": 35,
+      "locked": true,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "db_title",
+      "x": 85,
+      "y": 410,
+      "width": 460,
+      "height": 34,
+      "text": "2. PostgreSQL 소유 데이터",
+      "fontSize": 27,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "auth_users",
+      "x": 90,
+      "y": 500,
+      "width": 210,
+      "height": 105,
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "auth_users_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "auth_users_label",
+      "x": 100,
+      "y": 510,
+      "width": 190,
+      "height": 85,
+      "text": "Supabase Auth\nauth.users",
+      "fontSize": 20,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "auth_users",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "auth_identity",
+      "x": 300,
+      "y": 552,
+      "width": 70,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          70,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#f59e0b",
+      "startBinding": {
+        "elementId": "auth_users",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "identity",
+        "fixedPoint": [
+          0,
+          0.3
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "identity",
+      "x": 370,
+      "y": 475,
+      "width": 330,
+      "height": 225,
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "identity_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "identity_label",
+      "x": 380,
+      "y": 485,
+      "width": 310,
+      "height": 205,
+      "text": "IDENTITY\n\nprofiles\nprofile_roles\nworker_position_eligibilities\nidentity_audit_logs",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "identity",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "identity_scheduling",
+      "x": 700,
+      "y": 587,
+      "width": 70,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          70,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#f59e0b",
+      "startBinding": {
+        "elementId": "identity",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "scheduling",
+        "fixedPoint": [
+          0,
+          0.32
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "scheduling",
+      "x": 770,
+      "y": 475,
+      "width": 430,
+      "height": 365,
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "scheduling_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "scheduling_label",
+      "x": 780,
+      "y": 485,
+      "width": 410,
+      "height": 345,
+      "text": "SCHEDULING\n\npositions · schedules · applications\nceremonies · schedule_position_requirements\nassignments · assignment_positions\nassignment_trainees\nscheduling_audit_logs",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "scheduling",
+      "strokeColor": "#4a9eed",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "scheduling_notifications",
+      "x": 1200,
+      "y": 657,
+      "width": 70,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          70,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#4a9eed",
+      "startBinding": {
+        "elementId": "scheduling",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "notifications",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "notifications",
+      "x": 1270,
+      "y": 515,
+      "width": 235,
+      "height": 285,
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#22c55e",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "notifications_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "notifications_label",
+      "x": 1280,
+      "y": 525,
+      "width": 215,
+      "height": 265,
+      "text": "NOTIFICATIONS\n\nnotifications\nnotification_outbox\npush_subscriptions",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "notifications",
+      "strokeColor": "#22c55e",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "settings",
+      "x": 90,
+      "y": 735,
+      "width": 610,
+      "height": 105,
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "strokeColor": "#06b6d4",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "settings_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "settings_label",
+      "x": 100,
+      "y": 745,
+      "width": 590,
+      "height": 85,
+      "text": "운영 기준 데이터\npositions · venue_settings · check_in_rules\nseed는 로컬 fixture, reference data는 migration",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "settings",
+      "strokeColor": "#06b6d4",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "future_note",
+      "x": 90,
+      "y": 875,
+      "width": 1320,
+      "height": 48,
+      "text": "현재 DB 마이그레이션은 Identity · Scheduling · Notifications까지 구현되어 있다. Attendance와 Pay는 코드 모델·화면이 있으나 영속 테이블은 이후 task 범위다.",
+      "fontSize": 17,
+      "strokeColor": "#495057",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "guard_zone",
+      "x": 55,
+      "y": 995,
+      "width": 1490,
+      "height": 150,
+      "backgroundColor": "#e5dbff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "opacity": 30,
+      "locked": true,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "guard_title",
+      "x": 85,
+      "y": 1014,
+      "width": 300,
+      "height": 28,
+      "text": "3. 저장 계층 가드",
+      "fontSize": 24,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "rls",
+      "x": 90,
+      "y": 1060,
+      "width": 300,
+      "height": 62,
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "rls_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "rls_label",
+      "x": 100,
+      "y": 1070,
+      "width": 280,
+      "height": 42,
+      "text": "RLS — 행 단위 접근",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "rls",
+      "strokeColor": "#8b5cf6",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "rpc_guard",
+      "x": 455,
+      "y": 1060,
+      "width": 300,
+      "height": 62,
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "rpc_guard_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "rpc_guard_label",
+      "x": 465,
+      "y": 1070,
+      "width": 280,
+      "height": 42,
+      "text": "RPC — 원자적 command",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "rpc_guard",
+      "strokeColor": "#8b5cf6",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "constraint",
+      "x": 820,
+      "y": 1060,
+      "width": 300,
+      "height": 62,
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "constraint_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "constraint_label",
+      "x": 830,
+      "y": 1070,
+      "width": 280,
+      "height": 42,
+      "text": "FK · CHECK · trigger",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "constraint",
+      "strokeColor": "#8b5cf6",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "immutable",
+      "x": 1185,
+      "y": 1060,
+      "width": 320,
+      "height": 62,
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "immutable_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "immutable_label",
+      "x": 1195,
+      "y": 1070,
+      "width": 300,
+      "height": 42,
+      "text": "audit / outbox — append-only",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "immutable",
+      "strokeColor": "#8b5cf6",
+      "locked": true
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null,
+    "viewModeEnabled": true,
+    "currentItemFontFamily": 8
+  },
+  "files": {}
+}

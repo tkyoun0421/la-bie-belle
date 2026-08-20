@@ -1119,6 +1119,61 @@ P0-T48 revision 5가 상한을 500KB에서 **600KB로 올렸다**(2026-08-18 사
 
 이 화면에는 자격도 배정도 오지 않는다 — 「확정이 누구의 확정인가」와 같은 갈래의 공백이다. 시안은 `runs/P0-T48/design/confirmed/schedule.html`에 이미 그려져 있다.
 
+### P0-T63. 역할 세그먼트 구조 계약과 interface 테스트 가드
+
+목표: 2026-08-19 사용자 확정 설계(prowfish worktree)의 구조·의존·테스트 계약을 강제 장치(`config/fsd.json`·ESLint·tdd-guard)에 싣는다.
+
+확정 구조와 의존.
+
+- `features/<domain>/{mutations, data-access}` · `entities/<domain>/{queries, data-access, model}` · `views/<screen>/{queries, model, ui}`. facades·use-cases·loaders·actions는 기본 구조에서 만들지 않는다.
+- feature mutation은 여러 entity를 조합할 수 있고 view query는 여러 entity query를 조합할 수 있다. entity→다른 entity·entity→feature·feature→feature import는 금지한다. 복수 domain 변경은 feature mutation, 복수 domain 화면 조회는 view query, cross-domain projection은 소유 domain의 DB view/RPC가 담당한다.
+
+테스트 seam — implementation 파일 1:1이 아니라 module interface 단위다.
+
+- `mutations/<operation>`과 같은 이름의 feature data-access는 `mutations/__tests__/<operation>.test` 하나가 보호한다. entity `queries`도 같다. view query는 자체 interface 테스트를 갖는다.
+- 단일 소비자 data-access는 바깥 interface의 내부 implementation이라 별도 테스트가 없다. 실제 복수 소비자가 같은 의미 계약에 의존하고 삭제 시 복잡성이 퍼지는 data-access만 독립 interface와 `data-access/__tests__` 통합 테스트로 승격한다.
+- operation 전용 규칙은 따로 model로 추출하지 않고 실제 재사용 model만 자체 테스트를 가진다. SQL 불변 규칙 테스트와 핵심 E2E는 유지하고, Supabase fluent 호출 mock 테스트는 interface 테스트로 교체한다.
+
+세울 것.
+
+1. **스키마 확장이 선행이다.** 현재 `config/fsd.json` 스키마(`contract.mjs`가 검증하는 키 6개)는 레이어별 세그먼트 집합, 동일 레이어 import 금지, 같은 이름 data-access 짝, interface 단위 테스트 가드를 표현하지 못한다(2026-08-19 실측). 정본은 fsd.json 하나를 유지하고 ESLint와 tdd-guard가 함께 움직인다.
+2. **ADR-0018 신설.** ADR-0008의 `features/*/api` 구조와 파일 단위 테스트 가드 결정을 부분 대체한다고 명시하고, ADR-0008 상단에 부분 대체 표시 한 줄을 붙인다(ADR-0011↔0016 방식).
+3. **DEVELOPMENT·템플릿 정합.** DEV-ARCH·DEV-TEST 해당 절 개정과 세그먼트 경로 예시(템플릿·radio README류) 정합 갱신.
+4. **공존 규칙.** 기존 `api` 세그먼트 규칙은 domain별 migration 기간 동안 그대로 유효하다 — 신규 세그먼트 규칙과 병립한다.
+
+근거 실측(다른 worktree, 2026-08-19): production 159파일 · test 147파일 · test LOC 1.69배 · vi.mock 테스트 82개 · 내부 호출 직접 단언 83개 · 관련 커밋 62.5%가 복수 slice 변경.
+
+미결(설계 인터뷰에서 정할 것): 확정 목록 밖 기존 세그먼트(hooks·config·types·shared 구성)의 취급, 권한 판정(`require-*`)의 자리 — 오전 안의 `policies` 세그먼트는 확정 목록에 없다.
+
+기획 승인: 없음(`proposed`). 구조 설계 자체는 2026-08-19 사용자 확정이나 task 기획 승인 절차는 남아 있다.
+
+### P0-T59. 역할 세그먼트 재편 시범 이행 — schedule
+
+목표: 확정 구조의 시범 이행 — schedule domain 수직 절편 하나로 계약을 실증한다.
+
+개정: 2026-08-19 사용자 확정 설계(prowfish worktree)가 같은 날 오전 안(queries·mutations·policies·hooks 세그먼트 + `runQuery`·`runAction` deep module + `tests/helpers` fake supabase)을 대체했다. 구조·의존·테스트 계약의 정본은 P0-T63(ADR-0018)이다. 오전 인터뷰의 기각 이력(레이어 개명·actions 통합·만능 utils)은 `runs/interviews/2026-08-19-segment-restructure.md`에 남아 있다.
+
+- `confirm-schedule`을 `features/schedule/mutations`와 같은 이름 data-access로 옮기고 `mutations/__tests__/confirm-schedule.test` 하나가 보호한다.
+- `list-applicants`를 `entities/schedule/queries`로 옮기고 interface 테스트를 갖는다.
+- 기존 `confirm_schedule` SQL과 schedule-confirmation E2E는 재사용한다. Supabase fluent 목 테스트는 interface 테스트로 교체한다.
+- 기존 `api` 구조는 domain별 migration 동안 공존한다. 시범 회고 후 나머지 domain의 migration task를 채번한다.
+
+기획 승인: 없음(`proposed`).
+
+### P0-T61. 재사용 도메인 판정 승격
+
+목표: 화면 무관하고 재사용이 실증된 도메인 판정을 `entities/*/model`로 올린다.
+
+근거: `views/admin-schedule/model/confirmation-warnings.ts`의 인원 미달(`requiredCount > assignedCount`)·교육생 단독(`assignedCount === 0 && traineeCount >= 1`) 판정은 「교육생은 필요 인원을 충족하지 않는다」는 PRD 불변식의 적용이라 화면 소유물이 아니다. 게다가 같은 규칙이 SQL(`20260818000000` migration :114·:127)과 이웃 `requirement-section-data.ts`(:51, 조건이 `> 0` 대 `>= 1`로 달리 적힘)에 별도 구현으로 존재한다 — 3중 구현(2026-08-19 실측). `confirm_schedule` RPC가 반환하는 warnings는 TS가 `unknown`으로 받아 버린다.
+
+- 승격 기준은 2026-08-19 확정 설계를 따른다: operation 전용 규칙은 model로 추출하지 않고 **실제 재사용 model만** 자체 테스트를 가진다.
+- `cancellation-impact`·`candidate-buckets`는 개별 심사한다 — candidate-buckets는 자격 판정(`canSelectCandidateAsTrainee`)과 화면 버킷 분류를 가른다.
+- 개정: 오전 안의 home view-model Facade는 제외한다 — 확정 설계가 기본 구조에서 facade를 만들지 않는다.
+
+비목표: 관찰 가능한 동작 변경, 신규 화면, week-strip·date-labels류 표시 계산의 이동(지금 자리가 맞다), home model 조립 구조 변경.
+
+의존: P0-T48(실데이터 배선 후 실증)과 P0-T59(확정 구조 시범 이행 위에서 이동).
+
 ### P0-T57. 설계 봉인 2층화와 봉인 전 실태 조사
 
 목표: 재봉인 비용을 만드는 원인 셋을 각각의 자리에서 막는다.
@@ -1230,6 +1285,37 @@ P0-T49~T54 여섯이 기다리는 것이 일정 화면이 아니라 **디자인 
 그리지 않는다.
 
 기획 승인: 2026-08-19 사용자.
+
+### P0-T62. 완료 판정 deep module과 전체 E2E의 CI 이관
+
+목표: 완료 판정의 인터페이스를 「이 task, 완료인가?」 하나로 줄이고, 전체 E2E를 로컬이 아니라 CI가 소유하게 한다.
+
+2026-08-19 로컬 병목 실측과 운영 방향 결정이 근거다.
+
+- 로컬 `pnpm verify`(`package.json:27`)는 형식부터 전체 E2E까지 매번 돈다. P0-T48 검증 6회에서 E2E 실패가 1→2→8→4→8→0으로 요동했고, 깨진 8개 spec을 `--workers=1`로 다시 돌리면 24/24 통과했다 — 코드 결함이 아니라 8GB 로컬에서 Docker(약 4.1GB)와 Playwright가 겹친 자원 경합이다.
+- push와 CI 감시는 done **뒤**다(`WORKFLOW.md:274`, ci-finisher). CI 실패가 완료를 막는 증거가 아니라 사후 알림이라, 완료 뒤 코드·증거가 달라지는 통로가 열려 있다.
+- 기반은 이미 있다 — CI(`.github/workflows/ci.yml`)는 독립 supabase(`supabase start` + `db reset`)에서 verify 전체를 돌리고, `index.schema.json`에 `verification_pending` 상태가 이미 있다.
+
+세울 것 다섯.
+
+1. **`verify:local` 신설.** 로컬 기본 루프는 변경 관련 검사만 돈다. `pnpm verify`의 전체 의미는 CI 정본으로 보존한다. 관련 E2E를 로컬에서 선택 실행할 경로는 남긴다.
+2. **CI 2단 분리.** 빠른 검사 job(형식·린트·타입·단위·하네스·문서·빌드)과 독립 DB 전체 E2E job으로 가른다. 실패 시 trace·스크린샷·실행 커밋을 보존하고, 불안정 테스트는 재시도로 숨기지 않고 별도 상태로 드러낸다.
+3. **done 전환 조건.** 로컬 GREEN 후 `verification_pending`에 들어가고, 해당 main push 커밋의 CI 성공이 확인된 뒤에만 done이 된다. 실패는 정상 개발 상태로 되돌린다 — CI가 코드 수정을 대신하지 않는다.
+4. **CD 경계.** CI가 검증한 동일 결과물만 배포하고, 배포 후 확인은 짧고 읽기 중심(로그인·첫 화면)이다. 최초 전체 검증을 CD로 미루지 않는다.
+5. **문서·계약 개정.** WORKFLOW(`:274`의 done 뒤 push 순서 반전 포함)·TOOLING·ci-finisher 계약·CLAUDE.md를 정합 갱신하고, `adr/0017`(로컬/CI/CD 검증 책임 분담)을 신설한다.
+
+확정 결정(2026-08-19 사용자).
+
+- `verification_pending` 동안 다음 task는 **인터뷰만 병행**하고 구현 착수는 불가다 — 최대 1 `in_progress` 불변 규칙은 무수정.
+- push 흐름은 **main 직push 유지** — PR 절차 없이 해당 커밋의 CI 성공이 done 조건이다.
+- **`pnpm verify`의 전체 의미는 보존**하고 `verify:local`을 신설한다.
+- done 확정 주체는 **ci-finisher 계약 확장** — push → CI 감시 → 성공 시 done 상태 커밋, 실패 시 수정 대신 보고.
+
+비목표: P0-T57과의 병합(목적이 다르다 — 봉인 개선과 완료 증거). 전체 E2E의 야간 전용화. 로컬 재현 경로 삭제. 불안정 테스트의 무제한 재시도 통과. 최종 검증 강도 하락. 정기 브라우저 매트릭스(후속). P0-T48 범위 변경.
+
+효과 측정: task당 로컬 전체 E2E 실행 횟수, CI 대기·실행 시간, E2E 재실행·불안정 테스트 수, 착수→done 소요를 retrospector가 누적한다(P0-T57 성공 측정과 같은 방식). CI 대기가 새 병목이 되면 실행 조건·캐시·검사 분할을 조정한다.
+
+기획 승인: 2026-08-19 사용자. 코드 변경 없는 운영 원칙(한 작업 트리에 수정 담당자 한 명, 무거운 로컬 검사 순차 실행, 8GB 로컬에서 E2E worker 증설 금지)은 승인과 함께 즉시 적용한다.
 
 ## 종료 조건
 

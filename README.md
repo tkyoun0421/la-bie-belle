@@ -16,6 +16,24 @@
 - [Phase 실행 계획](docs/execution/phases/README.md)
 - [기계 판독용 작업 인덱스](docs/execution/phases/index.jsonl)
 
+## 한눈에 보기
+
+전체 흐름은 [프로젝트 지도](https://excalidraw.com/#json=SnTVqu6-OZixkWHRyvuU_,98oSmvZcsWwNnx3TTcN5Xg)에서 시작합니다. 세부 다이어그램은 실제 코드·설정·DB 마이그레이션을 기준으로 나눴습니다.
+
+| 다이어그램 | 다루는 내용 | 원본 |
+| --- | --- | --- |
+| [프로젝트 지도](https://excalidraw.com/#json=SnTVqu6-OZixkWHRyvuU_,98oSmvZcsWwNnx3TTcN5Xg) | 제품 목표 → 승인·실행 → 문서·코드 계층 → 도메인 흐름 | [`overview.excalidraw`](diagrams/overview.excalidraw) |
+| [협업 프로세스](https://excalidraw.com/#json=j9VdJTLx6ZOnNPh9rkv7H,oA2sSpwdW7Q8YhQVD0_kbg) | 5단계 파이프라인, 승인 게이트, worker, `pnpm verify` | [`process.excalidraw`](diagrams/process.excalidraw) |
+| [프로젝트 구조](https://excalidraw.com/#json=p0nD94rDYDxwCxLLj8m8Z,Ef4_bEA-ZkWNIblfIsd90g) | L1~L5 문서 레이어, FSD import 방향, 도메인 경계 | [`structure.excalidraw`](diagrams/structure.excalidraw) |
+| [진입점·요청 흐름](https://excalidraw.com/#json=pYg5zKc_Ie3dTgBV2-lWt,MsyJNUQvb_zUJv86TryCDw) | proxy·인증 진입, server-first 조회, Server Action 변경 | [`request-flow.excalidraw`](diagrams/request-flow.excalidraw) |
+| [데이터 모델·저장 계층](https://excalidraw.com/#json=5rf0zsaaf5XmA0g6nlpfs,qOTjKaO2zj14Ki2LQ07AZQ) | TypeScript 모델, Identity·Scheduling·Notifications 테이블, RLS·RPC | [`data-storage.excalidraw`](diagrams/data-storage.excalidraw) |
+| [외부 연동·설정](https://excalidraw.com/#json=2uuvJIxYgU53yOYHZgAi-,hVOSXa1kT0M1ztS0tfu9Ig) | Google OAuth, Supabase, Web Push, server/client 환경변수 | [`integrations-config.excalidraw`](diagrams/integrations-config.excalidraw) |
+| [빌드·테스트 흐름](https://excalidraw.com/#json=SR6d-_B6_ZlabSEBVVorw,73PVjQjifSz2PPHIufLsPQ) | Git 훅, `pnpm verify`, Playwright, pgTAP, CI 두 job | [`build-test.excalidraw`](diagrams/build-test.excalidraw) |
+
+CLI로 다시 만들 수 있는 다이어그램은 같은 이름의 `.elements.json` 입력 파일을 `diagrams/`에 함께 둡니다.
+
+공유 링크는 읽기 모드로 시작하고 모든 요소가 잠겨 있습니다. excalidraw.com에 작업 중인 로컬 캔버스가 있으면 공식 앱이 교체 확인창을 띄우므로, 기존 화면을 보존하려면 새 창이나 시크릿 창에서 링크를 여세요.
+
 ## 문서 구조
 
 문서는 5레이어로 나뉘며 위 레이어가 아래 레이어를 지배합니다. 근거는 [ADR-0013](docs/standards/adr/0013-project-layer-structure.md)입니다.

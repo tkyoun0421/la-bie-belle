@@ -1,0 +1,1005 @@
+[
+  {
+    "type": "cameraUpdate",
+    "width": 1600,
+    "height": 1200,
+    "x": 0,
+    "y": 0
+  },
+  {
+    "type": "text",
+    "id": "title",
+    "x": 60,
+    "y": 42,
+    "width": 520,
+    "height": 56,
+    "text": "라비에벨 프로젝트 지도",
+    "fontSize": 46,
+    "strokeColor": "#1e1e1e",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "text",
+    "id": "subtitle",
+    "x": 62,
+    "y": 104,
+    "width": 1050,
+    "height": 28,
+    "text": "제품의 목표가 승인된 결정과 코드 구조를 거쳐 운영 가능한 근무 관리 PWA가 되는 흐름",
+    "fontSize": 20,
+    "strokeColor": "#757575",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "rectangle",
+    "id": "goal_zone",
+    "x": 55,
+    "y": 150,
+    "width": 1490,
+    "height": 120,
+    "backgroundColor": "#fff3bf",
+    "fillStyle": "solid",
+    "strokeColor": "#f59e0b",
+    "strokeWidth": 2,
+    "opacity": 70,
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "goal_kicker",
+    "x": 85,
+    "y": 170,
+    "width": 165,
+    "height": 26,
+    "text": "MVP 성공 기준",
+    "fontSize": 20,
+    "strokeColor": "#9c5700",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "text",
+    "id": "goal_text",
+    "x": 85,
+    "y": 204,
+    "width": 990,
+    "height": 36,
+    "text": "다음 달 스케줄 모집부터 단체 채팅과 수기 배정표를 완전히 대체한다",
+    "fontSize": 28,
+    "strokeColor": "#1e1e1e",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "rectangle",
+    "id": "product_badge",
+    "x": 1260,
+    "y": 176,
+    "width": 245,
+    "height": 66,
+    "backgroundColor": "#ffd8a8",
+    "fillStyle": "solid",
+    "strokeColor": "#f59e0b",
+    "label": {
+      "text": "모바일 PWA\n근무자 + 관리자",
+      "fontSize": 19,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "flow_zone",
+    "x": 55,
+    "y": 305,
+    "width": 1490,
+    "height": 275,
+    "backgroundColor": "#dbe4ff",
+    "fillStyle": "solid",
+    "strokeColor": "#4a9eed",
+    "opacity": 35,
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "flow_title",
+    "x": 85,
+    "y": 326,
+    "width": 280,
+    "height": 34,
+    "text": "1. 결정에서 실행까지",
+    "fontSize": 27,
+    "strokeColor": "#1e1e1e",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "text",
+    "id": "flow_subtitle",
+    "x": 395,
+    "y": 335,
+    "width": 650,
+    "height": 22,
+    "text": "사용자가 방향을 승인하면 AI 실행 루프가 승인된 범위만 연속 처리",
+    "fontSize": 17,
+    "strokeColor": "#757575",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "rectangle",
+    "id": "plan",
+    "x": 90,
+    "y": 395,
+    "width": 220,
+    "height": 92,
+    "backgroundColor": "#fff3bf",
+    "fillStyle": "solid",
+    "strokeColor": "#f59e0b",
+    "label": {
+      "text": "1 기획\n무엇을 · 왜",
+      "fontSize": 21,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "plan_gate_label",
+    "x": 310,
+    "y": 369,
+    "width": 70,
+    "height": 18,
+    "text": "기획 승인",
+    "fontSize": 14,
+    "strokeColor": "#9c5700",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "arrow",
+    "id": "plan_to_design",
+    "x": 310,
+    "y": 441,
+    "width": 70,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        70,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#f59e0b",
+    "startBinding": {
+      "elementId": "plan",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "design",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "design",
+    "x": 380,
+    "y": 395,
+    "width": 220,
+    "height": 92,
+    "backgroundColor": "#d0bfff",
+    "fillStyle": "solid",
+    "strokeColor": "#8b5cf6",
+    "label": {
+      "text": "2 설계\nRADIO + 시안",
+      "fontSize": 21,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "design_gate_label",
+    "x": 595,
+    "y": 369,
+    "width": 80,
+    "height": 18,
+    "text": "RADIO 승인",
+    "fontSize": 14,
+    "strokeColor": "#6741d9",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "arrow",
+    "id": "design_to_build",
+    "x": 600,
+    "y": 441,
+    "width": 70,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        70,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#8b5cf6",
+    "startBinding": {
+      "elementId": "design",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "build",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "build",
+    "x": 670,
+    "y": 395,
+    "width": 220,
+    "height": 92,
+    "backgroundColor": "#a5d8ff",
+    "fillStyle": "solid",
+    "strokeColor": "#4a9eed",
+    "label": {
+      "text": "3 개발\nRED → GREEN",
+      "fontSize": 21,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "build_to_verify",
+    "x": 890,
+    "y": 441,
+    "width": 70,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        70,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#4a9eed",
+    "startBinding": {
+      "elementId": "build",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "verify",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "verify",
+    "x": 960,
+    "y": 395,
+    "width": 220,
+    "height": 92,
+    "backgroundColor": "#b2f2bb",
+    "fillStyle": "solid",
+    "strokeColor": "#22c55e",
+    "label": {
+      "text": "4 검증\npnpm verify",
+      "fontSize": 21,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "verify_to_refactor",
+    "x": 1180,
+    "y": 441,
+    "width": 70,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        70,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#22c55e",
+    "startBinding": {
+      "elementId": "verify",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "refactor",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "refactor",
+    "x": 1250,
+    "y": 395,
+    "width": 220,
+    "height": 92,
+    "backgroundColor": "#c3fae8",
+    "fillStyle": "solid",
+    "strokeColor": "#06b6d4",
+    "label": {
+      "text": "5 리팩토링\n증거 + handoff",
+      "fontSize": 21,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "flow_note",
+    "x": 90,
+    "y": 520,
+    "width": 1320,
+    "height": 22,
+    "text": "승인 게이트는 1·2단계 두 곳뿐  ·  실행 구간은 in_progress 1개  ·  실패나 새 결정은 blocked로 남기고 독립 task를 계속",
+    "fontSize": 17,
+    "strokeColor": "#495057",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "rectangle",
+    "id": "structure_zone",
+    "x": 55,
+    "y": 615,
+    "width": 1490,
+    "height": 285,
+    "backgroundColor": "#e5dbff",
+    "fillStyle": "solid",
+    "strokeColor": "#8b5cf6",
+    "opacity": 30,
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "structure_title",
+    "x": 85,
+    "y": 636,
+    "width": 340,
+    "height": 34,
+    "text": "2. 문서가 코드 구조를 지배",
+    "fontSize": 27,
+    "strokeColor": "#1e1e1e",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "text",
+    "id": "structure_subtitle",
+    "x": 450,
+    "y": 645,
+    "width": 600,
+    "height": 22,
+    "text": "승인된 제품·도메인·기술 기준만 L5 구현으로 내려간다",
+    "fontSize": 17,
+    "strokeColor": "#757575",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "rectangle",
+    "id": "docs",
+    "x": 90,
+    "y": 705,
+    "width": 315,
+    "height": 132,
+    "backgroundColor": "#d0bfff",
+    "fillStyle": "solid",
+    "strokeColor": "#8b5cf6",
+    "label": {
+      "text": "L1 협업\nL2 제품·도메인\nL3 기술 기준\nL4 계획·실행",
+      "fontSize": 19,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "docs_to_code",
+    "x": 405,
+    "y": 771,
+    "width": 85,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        85,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#8b5cf6",
+    "startBinding": {
+      "elementId": "docs",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "app",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "app",
+    "x": 490,
+    "y": 720,
+    "width": 145,
+    "height": 102,
+    "backgroundColor": "#a5d8ff",
+    "fillStyle": "solid",
+    "strokeColor": "#4a9eed",
+    "label": {
+      "text": "app\n라우트·어댑터",
+      "fontSize": 17,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "app_to_views",
+    "x": 635,
+    "y": 771,
+    "width": 32,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        32,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#4a9eed",
+    "startBinding": {
+      "elementId": "app",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "views",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "views",
+    "x": 667,
+    "y": 720,
+    "width": 145,
+    "height": 102,
+    "backgroundColor": "#a5d8ff",
+    "fillStyle": "solid",
+    "strokeColor": "#4a9eed",
+    "label": {
+      "text": "views\n화면 조립",
+      "fontSize": 17,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "views_to_widgets",
+    "x": 812,
+    "y": 771,
+    "width": 32,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        32,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#4a9eed",
+    "startBinding": {
+      "elementId": "views",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "widgets",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "widgets",
+    "x": 844,
+    "y": 720,
+    "width": 145,
+    "height": 102,
+    "backgroundColor": "#a5d8ff",
+    "fillStyle": "solid",
+    "strokeColor": "#4a9eed",
+    "label": {
+      "text": "widgets\n화면 블록",
+      "fontSize": 17,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "widgets_to_features",
+    "x": 989,
+    "y": 771,
+    "width": 32,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        32,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#4a9eed",
+    "startBinding": {
+      "elementId": "widgets",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "features",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "features",
+    "x": 1021,
+    "y": 720,
+    "width": 145,
+    "height": 102,
+    "backgroundColor": "#d0bfff",
+    "fillStyle": "solid",
+    "strokeColor": "#8b5cf6",
+    "label": {
+      "text": "features\n사용자 행동",
+      "fontSize": 17,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "features_to_entities",
+    "x": 1166,
+    "y": 771,
+    "width": 32,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        32,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#8b5cf6",
+    "startBinding": {
+      "elementId": "features",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "entities",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "entities",
+    "x": 1198,
+    "y": 720,
+    "width": 145,
+    "height": 102,
+    "backgroundColor": "#c3fae8",
+    "fillStyle": "solid",
+    "strokeColor": "#06b6d4",
+    "label": {
+      "text": "entities\n도메인 모델",
+      "fontSize": 17,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "entities_to_shared",
+    "x": 1343,
+    "y": 771,
+    "width": 32,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        32,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#06b6d4",
+    "startBinding": {
+      "elementId": "entities",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "shared",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "shared",
+    "x": 1375,
+    "y": 720,
+    "width": 130,
+    "height": 102,
+    "backgroundColor": "#c3fae8",
+    "fillStyle": "solid",
+    "strokeColor": "#06b6d4",
+    "label": {
+      "text": "shared\n공통 기반",
+      "fontSize": 17,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "structure_note",
+    "x": 490,
+    "y": 850,
+    "width": 1020,
+    "height": 22,
+    "text": "import는 왼쪽에서 오른쪽으로만  ·  UI 권한 표시와 별개로 서버 경계 + PostgreSQL RLS가 실제 권한을 강제",
+    "fontSize": 17,
+    "strokeColor": "#495057",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "rectangle",
+    "id": "domain_zone",
+    "x": 55,
+    "y": 935,
+    "width": 1490,
+    "height": 225,
+    "backgroundColor": "#d3f9d8",
+    "fillStyle": "solid",
+    "strokeColor": "#22c55e",
+    "opacity": 35,
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "domain_title",
+    "x": 85,
+    "y": 956,
+    "width": 720,
+    "height": 34,
+    "text": "3. 다섯 도메인은 데이터를 소유하고 필요한 사실만 소비",
+    "fontSize": 27,
+    "strokeColor": "#1e1e1e",
+    "locked": true,
+    "fontFamily": 8
+  },
+  {
+    "type": "rectangle",
+    "id": "identity",
+    "x": 90,
+    "y": 1020,
+    "width": 235,
+    "height": 82,
+    "backgroundColor": "#ffd8a8",
+    "fillStyle": "solid",
+    "strokeColor": "#f59e0b",
+    "label": {
+      "text": "IDENTITY\n계정·역할·자격",
+      "fontSize": 18,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "identity_to_scheduling",
+    "x": 325,
+    "y": 1061,
+    "width": 55,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        55,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#f59e0b",
+    "startBinding": {
+      "elementId": "identity",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "scheduling",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "scheduling",
+    "x": 380,
+    "y": 1020,
+    "width": 235,
+    "height": 82,
+    "backgroundColor": "#a5d8ff",
+    "fillStyle": "solid",
+    "strokeColor": "#4a9eed",
+    "label": {
+      "text": "SCHEDULING\n모집·배정·확정",
+      "fontSize": 18,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "scheduling_to_attendance",
+    "x": 615,
+    "y": 1061,
+    "width": 55,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        55,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#4a9eed",
+    "startBinding": {
+      "elementId": "scheduling",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "attendance",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "attendance",
+    "x": 670,
+    "y": 1020,
+    "width": 235,
+    "height": 82,
+    "backgroundColor": "#d0bfff",
+    "fillStyle": "solid",
+    "strokeColor": "#8b5cf6",
+    "label": {
+      "text": "ATTENDANCE\n출퇴근 원본·확인",
+      "fontSize": 18,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "arrow",
+    "id": "attendance_to_pay",
+    "x": 905,
+    "y": 1061,
+    "width": 55,
+    "height": 0,
+    "points": [
+      [
+        0,
+        0
+      ],
+      [
+        55,
+        0
+      ]
+    ],
+    "endArrowhead": "arrow",
+    "strokeColor": "#8b5cf6",
+    "startBinding": {
+      "elementId": "attendance",
+      "fixedPoint": [
+        1,
+        0.5
+      ]
+    },
+    "endBinding": {
+      "elementId": "pay",
+      "fixedPoint": [
+        0,
+        0.5
+      ]
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "pay",
+    "x": 960,
+    "y": 1020,
+    "width": 235,
+    "height": 82,
+    "backgroundColor": "#c3fae8",
+    "fillStyle": "solid",
+    "strokeColor": "#06b6d4",
+    "label": {
+      "text": "PAY\n예상 급여·리허설",
+      "fontSize": 18,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "rectangle",
+    "id": "notifications",
+    "x": 1240,
+    "y": 1008,
+    "width": 265,
+    "height": 106,
+    "backgroundColor": "#b2f2bb",
+    "fillStyle": "solid",
+    "strokeColor": "#22c55e",
+    "label": {
+      "text": "NOTIFICATIONS\nIdentity · Scheduling ·\nAttendance 사건 소비",
+      "fontSize": 17,
+      "fontFamily": 8
+    },
+    "locked": true
+  },
+  {
+    "type": "text",
+    "id": "domain_note",
+    "x": 90,
+    "y": 1122,
+    "width": 860,
+    "height": 22,
+    "text": "논리적 경계이며 마이크로서비스가 아니다  ·  화살표는 소유권이 아니라 소비 방향",
+    "fontSize": 16,
+    "strokeColor": "#495057",
+    "locked": true,
+    "fontFamily": 8
+  }
+]

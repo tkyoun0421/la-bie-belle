@@ -1,0 +1,1218 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "excalidraw-cli",
+  "elements": [
+    {
+      "type": "text",
+      "id": "title",
+      "x": 60,
+      "y": 42,
+      "width": 780,
+      "height": 56,
+      "text": "외부 연동 · 설정",
+      "fontSize": 46,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "x": 62,
+      "y": 104,
+      "width": 1080,
+      "height": 28,
+      "text": "OAuth·Supabase·Web Push가 앱의 서버/브라우저 경계와 환경변수 계약을 통해 연결되는 방식",
+      "fontSize": 20,
+      "strokeColor": "#757575",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "auth_zone",
+      "x": 55,
+      "y": 150,
+      "width": 1490,
+      "height": 260,
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "opacity": 40,
+      "locked": true,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "auth_title",
+      "x": 85,
+      "y": 170,
+      "width": 420,
+      "height": 34,
+      "text": "1. Google OAuth 로그인",
+      "fontSize": 27,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "login",
+      "x": 90,
+      "y": 245,
+      "width": 220,
+      "height": 95,
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "login_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "login_label",
+      "x": 100,
+      "y": 255,
+      "width": 200,
+      "height": 75,
+      "text": "LoginView\nGoogle 로그인",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "login",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "login_action",
+      "x": 310,
+      "y": 292,
+      "width": 55,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          55,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#f59e0b",
+      "startBinding": {
+        "elementId": "login",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "oauth_action",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "oauth_action",
+      "x": 365,
+      "y": 245,
+      "width": 220,
+      "height": 95,
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "oauth_action_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "oauth_action_label",
+      "x": 375,
+      "y": 255,
+      "width": 200,
+      "height": 75,
+      "text": "Server Action\nsignInWithOAuth",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "oauth_action",
+      "strokeColor": "#8b5cf6",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "action_auth",
+      "x": 585,
+      "y": 292,
+      "width": 55,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          55,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#8b5cf6",
+      "startBinding": {
+        "elementId": "oauth_action",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "supabase_auth",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "supabase_auth",
+      "x": 640,
+      "y": 245,
+      "width": 220,
+      "height": 95,
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#22c55e",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "supabase_auth_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "supabase_auth_label",
+      "x": 650,
+      "y": 255,
+      "width": 200,
+      "height": 75,
+      "text": "Supabase Auth\nOAuth broker",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "supabase_auth",
+      "strokeColor": "#22c55e",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "auth_google",
+      "x": 860,
+      "y": 292,
+      "width": 55,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          55,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#22c55e",
+      "startArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "supabase_auth",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "google",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "google",
+      "x": 915,
+      "y": 245,
+      "width": 220,
+      "height": 95,
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "google_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "google_label",
+      "x": 925,
+      "y": 255,
+      "width": 200,
+      "height": 75,
+      "text": "Google OAuth\n사용자 동의",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "google",
+      "strokeColor": "#4a9eed",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "google_callback",
+      "x": 1135,
+      "y": 292,
+      "width": 55,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          55,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#4a9eed",
+      "startBinding": {
+        "elementId": "google",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "callback",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "callback",
+      "x": 1190,
+      "y": 245,
+      "width": 315,
+      "height": 95,
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "strokeColor": "#06b6d4",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "callback_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "callback_label",
+      "x": 1200,
+      "y": 255,
+      "width": 295,
+      "height": 75,
+      "text": "/auth/callback\ncode → session → profile gate",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "callback",
+      "strokeColor": "#06b6d4",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "data_zone",
+      "x": 55,
+      "y": 445,
+      "width": 1490,
+      "height": 245,
+      "backgroundColor": "#dbe4ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "opacity": 35,
+      "locked": true,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "data_title",
+      "x": 85,
+      "y": 465,
+      "width": 440,
+      "height": 34,
+      "text": "2. Supabase 데이터 경계",
+      "fontSize": 27,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "next_server",
+      "x": 90,
+      "y": 540,
+      "width": 270,
+      "height": 95,
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "next_server_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "next_server_label",
+      "x": 100,
+      "y": 550,
+      "width": 250,
+      "height": 75,
+      "text": "Next.js on Vercel\nRSC + Server Action",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "next_server",
+      "strokeColor": "#4a9eed",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "server_api",
+      "x": 360,
+      "y": 587,
+      "width": 90,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          90,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#4a9eed",
+      "startBinding": {
+        "elementId": "next_server",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "supabase_api",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "supabase_api",
+      "x": 450,
+      "y": 540,
+      "width": 300,
+      "height": 95,
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "strokeColor": "#06b6d4",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "supabase_api_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "supabase_api_label",
+      "x": 460,
+      "y": 550,
+      "width": 280,
+      "height": 75,
+      "text": "Supabase API\nREST · Auth · RPC",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "supabase_api",
+      "strokeColor": "#06b6d4",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "api_postgres",
+      "x": 750,
+      "y": 587,
+      "width": 90,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          90,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#06b6d4",
+      "startBinding": {
+        "elementId": "supabase_api",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "postgres",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "postgres",
+      "x": 840,
+      "y": 540,
+      "width": 300,
+      "height": 95,
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#22c55e",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "postgres_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "postgres_label",
+      "x": 850,
+      "y": 550,
+      "width": 280,
+      "height": 75,
+      "text": "PostgreSQL\nRLS · function · trigger",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "postgres",
+      "strokeColor": "#22c55e",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "service_role",
+      "x": 1140,
+      "y": 587,
+      "width": 90,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          90,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#ef4444",
+      "startBinding": {
+        "elementId": "postgres",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "server_only",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "server_only",
+      "x": 1230,
+      "y": 540,
+      "width": 275,
+      "height": 95,
+      "backgroundColor": "#ffc9c9",
+      "fillStyle": "solid",
+      "strokeColor": "#ef4444",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "server_only_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "server_only_label",
+      "x": 1240,
+      "y": 550,
+      "width": 255,
+      "height": 75,
+      "text": "service role client\nserver-only 강제",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "server_only",
+      "strokeColor": "#ef4444",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "push_zone",
+      "x": 55,
+      "y": 725,
+      "width": 1490,
+      "height": 265,
+      "backgroundColor": "#d3f9d8",
+      "fillStyle": "solid",
+      "strokeColor": "#22c55e",
+      "opacity": 35,
+      "locked": true,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "push_title",
+      "x": 85,
+      "y": 745,
+      "width": 500,
+      "height": 34,
+      "text": "3. Web Push 구독과 수신",
+      "fontSize": 27,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "push_ui",
+      "x": 90,
+      "y": 820,
+      "width": 245,
+      "height": 100,
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "strokeColor": "#f59e0b",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "push_ui_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "push_ui_label",
+      "x": 100,
+      "y": 830,
+      "width": 225,
+      "height": 80,
+      "text": "브라우저 hook\n권한 + PushManager",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "push_ui",
+      "strokeColor": "#f59e0b",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "ui_subscription",
+      "x": 335,
+      "y": 870,
+      "width": 65,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          65,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#f59e0b",
+      "startBinding": {
+        "elementId": "push_ui",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "subscription_db",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "subscription_db",
+      "x": 400,
+      "y": 820,
+      "width": 245,
+      "height": 100,
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeColor": "#22c55e",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "subscription_db_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "subscription_db_label",
+      "x": 410,
+      "y": 830,
+      "width": 225,
+      "height": 80,
+      "text": "push_subscriptions\nendpoint + keys",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "subscription_db",
+      "strokeColor": "#22c55e",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "sender",
+      "x": 710,
+      "y": 820,
+      "width": 245,
+      "height": 100,
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "sender_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "sender_label",
+      "x": 720,
+      "y": 830,
+      "width": 225,
+      "height": 80,
+      "text": "현재 발송 도구\nsend-test-push.mjs",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "sender",
+      "strokeColor": "#8b5cf6",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "sender_webpush",
+      "x": 955,
+      "y": 870,
+      "width": 65,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          65,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#8b5cf6",
+      "startBinding": {
+        "elementId": "sender",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "web_push",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "web_push",
+      "x": 1020,
+      "y": 820,
+      "width": 210,
+      "height": 100,
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "strokeColor": "#06b6d4",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "web_push_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "web_push_label",
+      "x": 1030,
+      "y": 830,
+      "width": 190,
+      "height": 80,
+      "text": "Web Push\nVAPID",
+      "fontSize": 19,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "web_push",
+      "strokeColor": "#06b6d4",
+      "locked": true
+    },
+    {
+      "type": "arrow",
+      "id": "webpush_sw",
+      "x": 1230,
+      "y": 870,
+      "width": 65,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          65,
+          0
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "strokeColor": "#06b6d4",
+      "startBinding": {
+        "elementId": "web_push",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "elementId": "service_worker",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "locked": true,
+      "roughness": 2
+    },
+    {
+      "type": "rectangle",
+      "id": "service_worker",
+      "x": 1295,
+      "y": 820,
+      "width": 210,
+      "height": 100,
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "service_worker_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "service_worker_label",
+      "x": 1305,
+      "y": 830,
+      "width": 190,
+      "height": 80,
+      "text": "Service Worker\n알림 + 딥링크",
+      "fontSize": 18,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "service_worker",
+      "strokeColor": "#4a9eed",
+      "locked": true
+    },
+    {
+      "type": "text",
+      "id": "push_note",
+      "x": 90,
+      "y": 945,
+      "width": 1280,
+      "height": 22,
+      "text": "notification_outbox는 이미 저장되지만 운영 발송 worker / Edge Function 연결은 아직 구현되지 않았다.",
+      "fontSize": 16,
+      "strokeColor": "#495057",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "config_zone",
+      "x": 55,
+      "y": 1025,
+      "width": 1490,
+      "height": 130,
+      "backgroundColor": "#e5dbff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "opacity": 30,
+      "locked": true,
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "config_title",
+      "x": 85,
+      "y": 1043,
+      "width": 240,
+      "height": 28,
+      "text": "4. 설정 계약",
+      "fontSize": 24,
+      "strokeColor": "#1e1e1e",
+      "locked": true,
+      "fontFamily": 8
+    },
+    {
+      "type": "rectangle",
+      "id": "client_env",
+      "x": 90,
+      "y": 1083,
+      "width": 315,
+      "height": 52,
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeColor": "#4a9eed",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "client_env_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "client_env_label",
+      "x": 100,
+      "y": 1093,
+      "width": 295,
+      "height": 32,
+      "text": "env.client — NEXT_PUBLIC 4종",
+      "fontSize": 17,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "client_env",
+      "strokeColor": "#4a9eed",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "server_env",
+      "x": 455,
+      "y": 1083,
+      "width": 315,
+      "height": 52,
+      "backgroundColor": "#ffc9c9",
+      "fillStyle": "solid",
+      "strokeColor": "#ef4444",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "server_env_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "server_env_label",
+      "x": 465,
+      "y": 1093,
+      "width": 295,
+      "height": 32,
+      "text": "env.server — 비밀 포함 11종",
+      "fontSize": 17,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "server_env",
+      "strokeColor": "#ef4444",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "zod_env",
+      "x": 820,
+      "y": 1083,
+      "width": 315,
+      "height": 52,
+      "backgroundColor": "#d0bfff",
+      "fillStyle": "solid",
+      "strokeColor": "#8b5cf6",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "zod_env_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "zod_env_label",
+      "x": 830,
+      "y": 1093,
+      "width": 295,
+      "height": 32,
+      "text": "Zod — 시작 시 형식·placeholder 검증",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "zod_env",
+      "strokeColor": "#8b5cf6",
+      "locked": true
+    },
+    {
+      "type": "rectangle",
+      "id": "config_files",
+      "x": 1185,
+      "y": 1083,
+      "width": 320,
+      "height": 52,
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "strokeColor": "#06b6d4",
+      "locked": true,
+      "boundElements": [
+        {
+          "id": "config_files_label",
+          "type": "text"
+        }
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "roughness": 2
+    },
+    {
+      "type": "text",
+      "id": "config_files_label",
+      "x": 1195,
+      "y": 1093,
+      "width": 300,
+      "height": 32,
+      "text": "next.config + supabase/config.toml",
+      "fontSize": 16,
+      "fontFamily": 8,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "config_files",
+      "strokeColor": "#06b6d4",
+      "locked": true
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null,
+    "viewModeEnabled": true,
+    "currentItemFontFamily": 8
+  },
+  "files": {}
+}
