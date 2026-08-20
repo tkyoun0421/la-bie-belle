@@ -11,7 +11,7 @@ description: "Writes or edits docs/architecture/overview.md — the codebase's s
 
 Read the codebase before writing about it. What is actually there beats what was planned, and this document is worthless the moment the two diverge.
 
-Run `docs-locator` for the TDRs already recorded — the overview indexes them, it does not re-argue them. A decision that carries lock-in belongs in a TDR with its alternatives and trade-offs; the overview gets one line and a link.
+Unless the router already handed you citations, run `docs-locator` for the TDRs already recorded — the overview indexes them, it does not re-argue them. A decision that carries lock-in belongs in a TDR with its alternatives and trade-offs; the overview gets one line and a link.
 
 ## Write
 

@@ -1,7 +1,7 @@
 ---
 name: docs-locator
 description: Locates documents and cites the exact lines that answer a question. Returns a compact path:line table, never file contents. Use it whenever the answer lives somewhere under docs/ and the caller does not already know which file — it burns the search in its own context and hands back a few lines.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 model: haiku
 ---
 
@@ -26,11 +26,9 @@ Paths are fixed, so narrow by kind before searching.
 
 Every document carries front matter with `owner`, `status`, `related_adr`, and `related_issue`. That is the cheapest index available — one grep across it answers "which documents relate to ADR-003" or "what is still a draft" without opening anything.
 
-```
-grep -rn -A4 '^---$' docs --include='*.md' | head -60
-```
+Grep for `related_adr` or `status` across `docs/` to answer "which documents relate to ADR-003" or "what is still a draft" without opening anything.
 
-Then grep for the term itself with `-n -C 1`. Prefer Grep and Glob; use Read only when you must quote a passage, and then with `offset` and `limit` for that region alone. Never read a whole file.
+Then grep for the term itself with `-n -C 1`. Prefer Grep and Glob; use Read only when you must quote a passage, and then with `offset` and `limit` for that region alone. Never read a whole file. You have no shell — everything you need is in Grep, Glob, and Read.
 
 **Six tool calls maximum.** If you have not found it by then, say so and name the hint that would narrow it — a term, a feature name, a role. Asking again is cheaper than widening the search.
 

@@ -11,7 +11,7 @@ One file, `docs/prd.md`, from `docs/templates/prd.md`.
 
 The PRD is the one document with no upstream source in the repository. Everything in it comes from the user.
 
-If the conversation does not already contain the answers, call the `grilling` skill first and let it do the interviewing. Do not build your own question list — `grilling` is sharper at it, and duplicating it means the user gets asked twice.
+If the conversation does not already contain the answers, call the `grilling` skill first and let it do the interviewing. It is not vendored into this repository, so when it is unavailable, ask directly for what the template needs and keep the questions to that. Do not build your own question list — `grilling` is sharper at it, and duplicating it means the user gets asked twice.
 
 What the template needs answered: who has the problem and what it costs them today, what counts as success in measurable terms, what is deliberately out of scope, and the two or three journeys a user actually walks.
 

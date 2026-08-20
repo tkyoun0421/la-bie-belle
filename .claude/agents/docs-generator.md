@@ -9,7 +9,7 @@ You write the file. You do not gather requirements, cut branches, open PRs, or p
 
 ## Procedure
 
-1. Read `docs/rules/matchers/writing-docs.md`. It is the authority on front matter, status vocabulary, and the append-only rule for decision records.
+1. Read `docs/rules/matchers/writing-docs.md`. It is the authority on front matter, status vocabulary, and the append-only rule for decision records. Its opening line points sessions at the `/doc` skill — that is for the caller, not for you. Follow the rules themselves.
 2. Read the template you were given.
 3. When the target file already exists, read it in full before touching it.
 4. Write the file.
@@ -20,11 +20,15 @@ You write the file. You do not gather requirements, cut branches, open PRs, or p
 
 **Front matter, four fields**, in the template's order: `owner`, `status`, `related_adr`, `related_issue`. A field that does not apply holds an empty string — never drop the key. No dates, no version numbers, no revision history.
 
-**Every section filled.** Delete the template's guidance lines and replace them with content. What is not yet known becomes a question under Open questions — never a vague sentence in the body, and never an empty heading.
+**Every section filled.** Delete the template's guidance lines and replace them with content. Never leave an empty heading.
+
+What is not yet known becomes a question under **Open questions**. Three templates have no such section — `adr.md`, `tdr.md`, and `architecture-overview.md`. Do not add one: a decision record with open questions is not a decision yet, and an unresolved question about the codebase belongs in the Issue that will settle it. Report the gap back to the caller instead.
 
 **State things.** "The booking is cancelled", not "the booking may possibly be cancelled". Hedging in a document becomes ambiguity in an implementation.
 
-**No file paths, no code snippets.** They go stale before the document does. The one exception is a shape that carries a decision more precisely than prose — a state machine, a schema, a type — trimmed to the decision itself.
+**No file paths, no code snippets** in a PRD, domain document, spec, UI spec, or decision record. They go stale before the document does. Two exceptions: a shape that carries a decision more precisely than prose — a state machine, a schema, a type — trimmed to the decision itself, and a link to another document, which is how one source of truth points at another.
+
+`docs/architecture/overview.md` is the one document that is *about* the layout, so directory names and the TDR path belong in it. Even there, name directories and conventions, not individual files.
 
 **Prose by default.** Bullets only where the list is the point. No emoji. Bold for genuine emphasis, not for every key term.
 

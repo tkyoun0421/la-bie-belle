@@ -38,11 +38,26 @@ Labels classify. They never carry status.
 
 ## Board
 
-Status lives in the Status field of the [La Bie Belle](https://github.com/users/tkyoun0421/projects/8) project board. Put a new Issue on the board, then set its status.
+Status lives in the Status field of the [La Bie Belle](https://github.com/users/tkyoun0421/projects/8) project board. Put a new Issue on the board, then set its status. Adding a card does not set one — a card added and left alone sits in `No Status`, invisible to every column.
 
 ```
-gh project item-add 8 --owner tkyoun0421 --url <issue-url>
+gh project item-add 8 --owner tkyoun0421 --url <issue-url>          # prints the item id
+gh project item-edit --project-id PVT_kwHOBd4HfM4Bg89n \
+  --id <item-id> \
+  --field-id PVTSSF_lAHOBd4HfM4Bg89nzhf6jUI \
+  --single-select-option-id <option-id>
 ```
+
+| Status | Option id |
+|--------|-----------|
+| Backlog | `f025dca8` |
+| Todo | `f66a47cd` |
+| In Progress | `c2dd621b` |
+| In Review | `b9e12ba6` |
+| Done | `b9771004` |
+| Blocked | `5b4d353f` |
+
+To move a card that is already on the board, find its item id with `gh project item-list 8 --owner tkyoun0421 --format json` and run the same `item-edit`.
 
 | Status | Meaning | Who moves it |
 |--------|---------|--------------|

@@ -15,7 +15,7 @@ Run the app and look at the real screen. A spec written from the spec file inste
 
 ## Gather
 
-Run `docs-locator` for the feature spec behind the screen, so the states you describe match the states the feature actually has.
+Unless the router already handed you citations, run `docs-locator` for the feature spec behind the screen, so the states you describe match the states the feature actually has.
 
 Walk every state deliberately: default, hover, focus, active, disabled, loading, empty, error. A state with no entry is a state Dev will guess at, and the guess will be wrong in a way nobody notices until a user hits it.
 

@@ -30,7 +30,7 @@ Labels come from three axes — type, surface, risk — and only ones that alrea
 
 For a Slice, attach it to its Epic as a sub-issue after creating it, and create slices in dependency order so each can reference real numbers.
 
-Then set the board status the caller asked for. A new Issue with no card is invisible to everyone.
+Then set the board status the caller asked for. `gh project item-add` only creates the card — it leaves the status empty, and a card in `No Status` shows up in no column at all. `docs/rules/matchers/publishing-issues.md` carries the `gh project item-edit` call and the option id for each status.
 
 ## Rules
 

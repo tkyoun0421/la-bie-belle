@@ -33,6 +33,6 @@ Say what the diff does, not what it was meant to do. When you removed or moved s
 
 ## After opening
 
-Move the board card to **In Review**.
+Move the board card to **In Review**. The command and the option ids are in `docs/rules/matchers/publishing-issues.md` — moving a card takes `gh project item-edit`, not `item-add`.
 
 Report the PR number and URL back to the caller, who rings the orchestrator. You do not merge, and you do not request a review yourself.

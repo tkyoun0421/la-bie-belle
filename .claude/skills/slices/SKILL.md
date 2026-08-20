@@ -15,7 +15,7 @@ gh issue view <epic> --comments
 
 Follow the link to `docs/specs/<feature>.md` and read the file. The Issue body is a summary — the acceptance criteria live in the file, and those are what the slices divide.
 
-Run `docs-locator` for decisions that constrain the implementation before deciding the shape.
+Unless the router already handed you citations, run `docs-locator` for decisions that constrain the implementation before deciding the shape.
 
 ## Cut the slices
 
@@ -31,4 +31,8 @@ A wide mechanical refactor is the exception to vertical slicing — one change w
 
 Dispatch `gh-issue-generator` with the slice list, in dependency order so each Issue can reference real numbers. It creates them in Korean, attaches each as a sub-issue of the Epic, applies the labels, and puts the cards on the board.
 
-Do not modify or close the Epic. PM closes it when every slice is closed.
+New slice cards go to **Backlog**, except the ones with no predecessor, which go to **Todo** — those are what Dev can pick up immediately.
+
+Do not modify or close the Epic, and do not move its card. PM closes it when every slice is closed.
+
+This skill writes no file and opens no PR, so there is no branch to cut and no card of its own to move. Slicing is finished when the Issues exist and are on the board.

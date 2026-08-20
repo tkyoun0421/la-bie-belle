@@ -17,7 +17,7 @@ The number is the highest existing one plus one, zero-padded to three digits. Tw
 
 ## Gather
 
-Run `docs-locator` for records already covering this ground. If one exists and this decision reverses it, you are superseding: write the new record, then set the old one's `status` to `superseded` and name the replacement. Never edit the old record's Context, Decision, Alternatives, or Trade-offs — those stay as they were when the decision was made.
+Unless the router already handed you citations, run `docs-locator` for records already covering this ground. If one exists and this decision reverses it, you are superseding: write the new record, then set the old one's `status` to `superseded` and name the replacement. Never edit the old record's Context, Decision, Alternatives, or Trade-offs — those stay as they were when the decision was made.
 
 The four sections need: what forced the decision, what was decided, which alternatives were genuinely on the table and why each lost, and what this costs.
 

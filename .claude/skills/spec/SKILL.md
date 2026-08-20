@@ -9,9 +9,9 @@ description: "Writes docs/specs/<feature>.md — the single source of truth for 
 
 ## Gather
 
-Run `docs-locator` for the domain vocabulary this feature touches and any decision record that constrains it. A spec that renames a domain term or contradicts an accepted ADR is a defect, not a proposal.
+Unless the router already handed you citations, run `docs-locator` for the domain vocabulary this feature touches and any decision record that constrains it. A spec that renames a domain term or contradicts an accepted ADR is a defect, not a proposal.
 
-Synthesise from what the conversation and the repository already hold. If the feature has not been discussed at all, call the `grilling` skill first.
+Synthesise from what the conversation and the repository already hold. If the feature has not been discussed at all, call the `grilling` skill first. It is not vendored into this repository, so when it is unavailable, ask directly for what the template needs.
 
 ## Acceptance criteria carry the weight
 
