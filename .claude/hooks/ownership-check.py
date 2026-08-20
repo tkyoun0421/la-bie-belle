@@ -6,7 +6,7 @@ import sys
 
 DENY_HOOK = 2
 DENY_COMMIT = 1
-TEMP_PREFIXES = ("/tmp/", "/private/tmp/", "/var/folders/")
+TEMP_PREFIXES = ("/tmp/", "/private/tmp/", "/var/folders/", "/private/var/folders/")
 
 
 def fail(mode, message):
