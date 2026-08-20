@@ -1,0 +1,25 @@
+{
+  "pm": ["docs/prd.md", "docs/domain/", "docs/adr/", "docs/specs/"],
+  "dev": [
+    "docs/architecture/",
+    "src/",
+    "public/",
+    "tests/",
+    "e2e/",
+    "supabase/",
+    "package.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "tsconfig*.json",
+    "next.config.*",
+    "next-env.d.ts",
+    "postcss.config.*",
+    "eslint.config.*",
+    "vitest.config.*",
+    "playwright.config.*",
+    "components.json",
+    ".prettierrc",
+    ".prettierignore"
+  ],
+  "ui": ["docs/ui/"]
+}

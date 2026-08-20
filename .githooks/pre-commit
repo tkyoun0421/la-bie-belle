@@ -1,0 +1,19 @@
+#!/bin/bash
+set -u
+
+toplevel=$(git rev-parse --show-toplevel)
+
+paths=$(git -c core.quotepath=false diff --cached --name-status -M | awk -F'\t' '{for (i = 2; i <= NF; i++) print $i}')
+
+if printf '%s\n' "$paths" | grep -E '(^|/)\.env(\..+)?$|(^|/)\.envrc$' | grep -vE '(^|/)\.env\.example$' >/dev/null; then
+  echo "pre-commit: .env/.envrc files must never be committed anywhere in the tree (repository is public)." >&2
+  exit 1
+fi
+
+role_file="$toplevel/.agent-role"
+[ -f "$role_file" ] || exit 0
+role=$(tr -d '[:space:]' < "$role_file")
+[ -n "$role" ] || exit 0
+
+export ROLE="$role" PROJECT_DIR="$toplevel"
+printf '%s\n' "$paths" | python3 "$toplevel/.claude/hooks/ownership-check.py" paths
