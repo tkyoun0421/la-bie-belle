@@ -1,1 +1,0 @@
-export const HOME_IMMINENT_DEADLINE_DAYS_AHEAD = 2;

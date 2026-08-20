@@ -1,33 +1,5 @@
-node_modules/
-.DS_Store
-*.log
-
-# Next.js
-.next/
-.claude/runtime/
-next-env.d.ts
-tsconfig.tsbuildinfo
-.tsbuildinfo
-
-# 환경변수
 .env
 .env.*
 !.env.example
-coverage/
-playwright-report/
-test-results/
-.probe/
-
-# 로컬 전용 외부 스킬 — 실체를 .claude/skills에 두되 Git에서는 제외
-# .claude/skills/ 디렉터리 자체는 무시하지 말 것 (스킬 탐색에서 통째로 빠진다)
-CLAUDE.local.md
-skills-lock.json
-.claude/skills/*
-!.claude/skills/coach/
-!.claude/skills/decision/
-!.claude/skills/explain/
-!.claude/skills/publish-ui/
-!.claude/skills/verify/
-
-# design:build 산출물 — 시안 원본만 커밋하고 글꼴을 심은 1.7MB 빌드본은 제외
-*.inlined.html
+node_modules/
+.next/
