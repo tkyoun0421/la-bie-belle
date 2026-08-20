@@ -1,5 +1,6 @@
 ---
 owner: "@orchestrator"
+status: "active"
 related_adr: ""
 related_issue: "#69"
 ---
