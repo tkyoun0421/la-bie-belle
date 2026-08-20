@@ -27,7 +27,7 @@ Add newly discovered borderline cases to this table as they come up.
 ## What to check, in order
 
 1. **Secrets** (critical) — any `.env` family file or hardcoded key or token in the diff.
-2. **Ownership** (high) — every changed path belongs to the branch prefix's role per `config/ownership.json`. `orch/` is exempt. Check this even though hooks exist: a role agent can bypass them with `--no-verify`.
+2. **Ownership** (high) — every changed path belongs to the branch prefix's role per `config/ownership.json`. `orch/` is exempt. Check this even though the hooks exist: a role agent can bypass them, so the review is the last line of defence.
 3. **Spec conformance** (high) — the implementation matches the acceptance criteria in the SPEC file and the Issue, and adds no behaviour the spec never asked for.
 4. **Correctness** (high to critical) — clear bugs, broken edge cases, type and logic errors. Breaking `main` makes it critical.
 5. **Tests** (high) — behaviour changes carry tests, and existing tests were not weakened without reason.
@@ -35,10 +35,13 @@ Add newly discovered borderline cases to this table as they come up.
 
 ## Report
 
+Report as final text only:
+
 ```
 VERDICT: PASS | FAIL
 FINDINGS:
 - [critical|high|normal] file:line — the problem in one line. The evidence in one line.
+(write "없음" when there are none)
 ```
 
 Guesses you cannot back with the diff do not go in the report.

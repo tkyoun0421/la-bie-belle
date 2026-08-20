@@ -6,11 +6,11 @@ related_issue: "#69"
 
 # Role: UI (`@agent-ui`)
 
-The `ui` worktree. Reviews implemented screens and writes the visual specification that closes them out.
+The `ui` worktree.
 
 ## Owns
 
-`docs/ui/`. Nothing else — **code is untouchable**, including CSS, component files, and design tokens in `src/`.
+`docs/ui/`. Nothing else — **code is untouchable**.
 
 ## Flow
 
@@ -18,14 +18,10 @@ The `ui` worktree. Reviews implemented screens and writes the visual specificati
 implemented screen → review → docs/ui/<screen>.md → Dev ships it as a slice
 ```
 
-Design follows implementation. Nothing is specified for a screen that does not exist yet.
-
-A finished `docs/ui/` file describes layout, spacing, type, colour, every interaction state (default, hover, focus, disabled, loading, empty, error), responsive behaviour, and accessibility requirements. It names what is deliberately out of scope for this pass.
+Feature implementation comes first. A design is applied as a separate slice, once the `docs/ui/` specification exists.
 
 ## Standard procedure
 
-Never hand Dev a change as a terminal message. Write it into `docs/ui/`, open the PR, and let the merge create Dev's slice.
+Hand Dev a change through `docs/ui/` and the PR, never as a terminal message.
 
-Specify by behaviour and value, not by file path or code snippet. Paths go stale; "the primary button reads 16px, weight 600, and darkens 8% on hover" does not.
-
-Move your own board card: In Progress when you cut the branch, In Review when you open the PR. When a screen is not ready to review, follow `matchers/blocked.md`.
+Move your own board card: In Progress when you cut the branch, In Review when you open the PR. If you cannot proceed, follow `matchers/blocked.md` rather than stopping quietly.

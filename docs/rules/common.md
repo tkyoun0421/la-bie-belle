@@ -6,7 +6,7 @@ related_issue: "#69"
 
 # Common Rules
 
-The constitution for agent collaboration on La Bie Belle. Every agent loads this file at the start of every task. When any other document contradicts the rules set under `docs/rules/`, the rules set wins. Only the orchestrator amends it, and only through a PR.
+The constitution for agent collaboration on La Bie Belle. When another document contradicts the rules set under `docs/rules/`, the rules set wins. Only the orchestrator amends it, and only through a PR.
 
 ## Module map
 
@@ -27,20 +27,22 @@ Rules are split along three axes. Load `common.md` always, your own role file al
 | `review-failed.md` | A review came back FAIL, or you received a fix order |
 | `blocked.md` | You cannot proceed and must stop |
 | `parallel-work.md` | Splitting work across subagents or worktrees |
-| `handling-secrets.md` | Touching credentials, `.env*`, or anything a public repo must not hold |
+| `handling-secrets.md` | Touching credentials or `.env*` files |
 
 ## Roles and workspaces
 
 | Worktree | Agent | Owns |
 |----------|-------|------|
-| `main` checkout | Orchestrator (`@orchestrator`) | `docs/rules/`, `docs/templates/`, `config/`, `.claude/`, `.githooks/`, `.github/` — with read access everywhere |
+| `main` checkout | Orchestrator (`@orchestrator`) | `docs/rules/`, `config/`, `.claude/`, `.githooks/` — with access to every path |
 | `pm` | PM (`@agent-pm`) | `docs/prd.md`, `docs/domain/`, `docs/adr/`, `docs/specs/` |
 | `dev` | Dev (`@agent-dev`) | `docs/architecture/` (technical decisions under `architecture/decisions/` as TDRs), `src/`, root development config |
 | `ui` | UI (`@agent-ui`) | `docs/ui/` — never code |
 
-`config/ownership.json` is the machine-readable source of truth for ownership. Where it disagrees with the table above, the JSON wins. A path listed for no role belongs to the orchestrator.
+`config/ownership.json` is the machine-readable source of truth for ownership. Where it disagrees with the table above, the JSON wins.
 
-Never edit a path you do not own. Open a `[Request]` Issue and let the owning role decide. Each worktree carries its identity in two untracked files: `CLAUDE.local.md` holds the instructions, `.agent-role` holds the role marker the enforcement hooks read.
+Never edit a path you do not own. Open a `[Request]` Issue for the owning agent instead.
+
+Each worktree carries its identity in two untracked files: `CLAUDE.local.md` holds the instructions, `.agent-role` holds the role marker the enforcement hooks read.
 
 Coding standards and conventions live in `docs/architecture/overview.md`, owned by Dev and written during the first design pass.
 
@@ -52,13 +54,15 @@ Never commit directly to `main`. Every change, the orchestrator's included, land
 
 Only the orchestrator merges, and always as a **squash merge** — one commit on `main` per unit of work. A merge requires a PASS from the independent `pr-reviewer` agent. Nobody reviews their own PR. Once the product is deployed, merge authority moves to a human.
 
-PR titles use `type(scope): summary`. Commit message conventions are enforced at the PR level only; commits during the work are free-form. Details of PR bodies and board transitions live in `matchers/opening-a-pr.md`.
+PR titles use `type(scope): summary`, and the body carries the related Issue number and the change impact. Commit message conventions are enforced at the PR level only; commits during the work are free-form. See `matchers/opening-a-pr.md`.
 
 ## Work tracking
 
 Tasks are tracked in GitHub Issues. History is tracked in `git log` and PR diffs. There is no separate tasks file and no changelog file.
 
 The single source of truth for a specification is the file under `docs/specs/`. An Issue body carries a summary and a link, never a copy of the detail. Corrections go to the file.
+
+Feature implementation comes before design. Applying a design is a separate slice, taken up after the `docs/ui/` specification exists.
 
 Status lives in the Status field of the [La Bie Belle](https://github.com/users/tkyoun0421/projects/8) project board, not in labels. See `matchers/publishing-issues.md`.
 
@@ -82,7 +86,7 @@ Merge news is not broadcast. The orchestrator forwards a merge only when it crea
 
 Two mechanisms guard ownership, and both **fail closed**: a broken `config/ownership.json` or an unregistered role in `.agent-role` blocks rather than allows. Only the orchestrator, which has no `.agent-role`, runs unchecked.
 
-- **PreToolUse hook** `.claude/hooks/ownership-guard.sh` (logic in `ownership-check.py`) rejects `Edit`, `Write`, and `NotebookEdit` on paths outside the role's ownership at the moment of editing, including absolute paths outside its own worktree.
+- **PreToolUse hook** `.claude/hooks/ownership-guard.sh` (logic in `ownership-check.py`) rejects `Edit`, `Write`, and `NotebookEdit` on paths outside the role's ownership at the moment of editing. Absolute paths outside the role's own worktree are rejected too, including other worktrees; temp directories and `~/.claude` are the exceptions.
 - **pre-commit hook** `.githooks/pre-commit` checks ownership of staged changes — additions, modifications, deletions, and both sides of a rename — and blocks any `.env*` or `.envrc` anywhere in the tree, with `.env.example` as the only exception. After cloning or resetting the repo, run `git config core.hooksPath .githooks` once.
 
 Known limit: a role agent can disable its own guard with `git commit --no-verify` or by editing `.agent-role`. That is a rule violation, and the last line of defence is the independent PR review — the reviewer always cross-checks the branch prefix against the ownership of every changed path.
@@ -98,4 +102,3 @@ Amend this rules set once these are decided.
 
 - Document index and search script (tsx)
 - Automated test harness for the ownership guards (#63)
-- Whether ADR and TDR keep the fixed four-section template or move to a minimal one- to three-sentence form

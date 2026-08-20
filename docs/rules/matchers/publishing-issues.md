@@ -8,22 +8,22 @@ related_issue: "#69"
 
 Load this when opening a GitHub Issue or moving a card on the board.
 
-Issue titles and bodies are written in **Korean**. A human reads them.
+Issue titles and bodies are written in Korean. See the language rule in `common.md`.
 
 ## Kinds
 
-The title prefix identifies the kind, and the kind decides who owns it.
+The title prefix identifies the kind.
 
 | Kind | Opened by | Content |
 |------|-----------|---------|
 | `[Epic]` | PM | One feature. A link to the SPEC file plus a summary. PM closes it when every slice is closed |
 | `[Slice]` | Dev | One vertical slice, attached to its Epic as a GitHub sub-issue |
 | `[Ticket]` | Orchestrator | Follow-up for a `normal` review finding, improvement, or debt |
-| `[Request]` | Any role | A change outside your ownership. The owning role decides on its own — accept and implement, or refuse with a reason and close. The orchestrator steps in only when two roles deadlock |
+| `[Request]` | Any role | A change outside your ownership. The owning role decides on its own — accept and implement, or refuse with a reason and close. The orchestrator mediates only when two roles disagree |
 
-When the owner is not obvious from the kind, name it in the body.
+The kind decides the assignee (Epic means PM, Slice means Dev, and so on). When it is not obvious, name the assignee in the body.
 
-Never copy specification detail into an Issue body. Summary and link only.
+Link the PR to the Issue with `Closes #N` so the merge closes it automatically.
 
 ## Labels
 
