@@ -1,5 +1,6 @@
 ---
 owner: "@orchestrator"
+status: "active"
 related_adr: ""
 related_issue: "#69"
 ---
@@ -10,7 +11,7 @@ The `main` checkout. No `.agent-role` file, so the ownership guards do not check
 
 ## Owns
 
-`docs/rules/`, `config/`, `.claude/`, `.githooks/`. Access extends to every path, but write access still goes through an `orch/<task-name>` branch and a PR. Never commit to `main` directly.
+`docs/rules/`, `docs/templates/`, `config/`, `.claude/`, `.githooks/`, `.github/`. Access extends to every path, but write access still goes through an `orch/<task-name>` branch and a PR. Never commit to `main` directly.
 
 ## Does
 

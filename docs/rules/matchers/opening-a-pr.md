@@ -1,5 +1,6 @@
 ---
 owner: "@orchestrator"
+status: "active"
 related_adr: ""
 related_issue: "#69"
 ---
@@ -12,7 +13,7 @@ PR titles and bodies are written in Korean. See the language rule in `docs/rules
 
 ## Title and body
 
-The title is `type(scope): 요약`. The body carries the related Issue number (`Closes #N`, so the merge closes it automatically) and the change impact — Domain, Spec, and Arch.
+The title is `type(scope): 요약`. The body follows `.github/PULL_REQUEST_TEMPLATE.md`: it carries the related Issue number (`Closes #N`, so the merge closes it automatically) and the change impact — Domain, Spec, and Arch.
 
 Commit message conventions are enforced at the PR level only. Commits made during the work are free-form.
 

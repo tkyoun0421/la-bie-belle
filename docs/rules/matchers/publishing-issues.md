@@ -1,5 +1,6 @@
 ---
 owner: "@orchestrator"
+status: "active"
 related_adr: ""
 related_issue: "#69"
 ---
@@ -12,7 +13,7 @@ Issue titles and bodies are written in Korean. See the language rule in `docs/ru
 
 ## Kinds
 
-The title prefix identifies the kind.
+The title prefix identifies the kind. `.github/ISSUE_TEMPLATE/` holds a form per kind; an Issue opened with `gh` bypasses the form, so mirror the fields it asks for.
 
 | Kind | Opened by | Content |
 |------|-----------|---------|
