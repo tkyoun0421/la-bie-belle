@@ -71,7 +71,7 @@ def check_hook(role, project_dir):
             "hook",
             f"ownership-check: role '{role}' may only edit its own worktree "
             f"(plus temp and ~/.claude). '{abs_path}' is outside it. "
-            "Never edit other worktrees directly — integrate through main (docs/rules.md §4).",
+            "Never edit other worktrees directly — integrate through main (docs/rules.md §5).",
         )
 
     rel = os.path.relpath(abs_path, real_project)
@@ -80,8 +80,8 @@ def check_hook(role, project_dir):
     fail(
         "hook",
         f"ownership-check: role '{role}' does not own '{rel}'. Do not edit it. "
-        "Request the change from the owning agent via Issue or PR comment "
-        "(docs/rules.md, config/ownership.json).",
+        "Open a [Request] Issue for the owning agent "
+        "(docs/rules.md §1·§3, config/ownership.json).",
     )
 
 
@@ -93,7 +93,7 @@ def check_paths(role, project_dir):
         print(f"pre-commit: role '{role}' is touching files it does not own (add/modify/delete/rename):", file=sys.stderr)
         for f in bad:
             print(f"  {f}", file=sys.stderr)
-        print("Request changes outside your ownership via Issue or PR comment (docs/rules.md).", file=sys.stderr)
+        print("Open a [Request] Issue for changes outside your ownership (docs/rules.md §1·§3).", file=sys.stderr)
         sys.exit(DENY_COMMIT)
 
 
