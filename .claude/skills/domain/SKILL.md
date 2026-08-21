@@ -17,7 +17,7 @@ Then sharpen the language against what the user actually says.
 - When two words mean one thing, pick one and list the other under `_Avoid_` so it does not come back.
 - Test relationships with concrete scenarios rather than abstractions. "A party of six books a table for four and two people cancel — is that one booking or two?" An invariant that survives three such scenarios is worth writing down.
 
-If the vocabulary has not been discussed at all yet, call the `grilling` skill and let it drive. It is not vendored into this repository, so when it is unavailable, ask directly for what the template needs.
+If the vocabulary has not been discussed at all yet, call the `interview` skill and let it drive.
 
 ## Write
 

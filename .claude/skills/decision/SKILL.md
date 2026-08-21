@@ -23,6 +23,8 @@ The four sections need: what forced the decision, what was decided, which altern
 
 The alternatives section is the one that earns the record. "We considered other options" records nothing — name the library, the pattern, the service, and the specific reason it lost. Without that, the same alternative gets proposed again in six months.
 
+When the alternatives were never argued out with the user, call the `interview` skill first. Its options block is what this section is made of — each option a claim, with what it wins and what it loses.
+
 ## Write
 
 Dispatch `docs-generator`. New records start at `status: proposed` and move to `accepted` when the decision is actually in force.
