@@ -51,6 +51,9 @@ def build_sandbox(source, root):
     os.chmod(os.path.join(main, "githooks", "pre-commit"), 0o755)
 
     git(main, "init", "-q", "-b", "main")
+    git(main, "config", "user.email", "test@example.com")
+    git(main, "config", "user.name", "test")
+    git(main, "config", "commit.gpgsign", "false")
     git(main, "add", "-A")
     git(main, "commit", "-q", "-m", "init")
 
@@ -64,6 +67,7 @@ def build_sandbox(source, root):
         git(path, "config", "core.hooksPath", os.path.join(main, "githooks"))
         git(path, "config", "user.email", "test@example.com")
         git(path, "config", "user.name", "test")
+        git(path, "config", "commit.gpgsign", "false")
     return main, worktrees
 
 
@@ -217,6 +221,27 @@ def precommit_blocks_secrets_and_foreign_paths(main, worktrees):
 
     check("pre-commit: 한글 문서는 secrets에 걸리지 않는다",
           stage_and_commit(main, {"docs/ui/화면.md": "x\n"}), 0)
+
+    check("pre-commit: 개행이 든 경로는 소유를 묻기 전에 거절한다",
+          stage_and_commit(main, {"nl\nhere/a.md": "x\n"}), DENY_COMMIT)
+    discard(main, "nl\nhere")
+
+    stage_and_commit(main, {"docs/rename/before.md": "x\n"})
+    git(main, "mv", "docs/rename/before.md", "docs/rename/after.md")
+    with open(os.path.join(main, "docs/rename/.env"), "w") as f:
+        f.write("K=v\n")
+    git(main, "add", "-A")
+    check("pre-commit: rename 레코드 뒤에 붙은 .env도 막는다",
+          run(["git", "commit", "-q", "-m", "t"], cwd=main).returncode, DENY_COMMIT)
+    discard(main, "docs/rename/.env")
+
+    git(worktrees["pm"], "checkout", "-q", "pm/t")
+    stage_and_commit(worktrees["pm"], {"docs/specs/moved.md": "x\n"})
+    os.makedirs(os.path.join(worktrees["pm"], "src"), exist_ok=True)
+    git(worktrees["pm"], "mv", "docs/specs/moved.md", "src/moved.ts")
+    check("pre-commit: 소유 밖으로 rename하면 막는다",
+          run(["git", "commit", "-q", "-m", "t"], cwd=worktrees["pm"]).returncode, DENY_COMMIT)
+    discard(worktrees["pm"], "src")
 
     with open(os.path.join(main, ".env"), "w") as f:
         f.write("K=v\n")

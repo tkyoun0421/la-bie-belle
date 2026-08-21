@@ -5,8 +5,10 @@ toplevel=$(git rev-parse --show-toplevel)
 records=$(mktemp)
 trap 'rm -f "$records"' EXIT
 
-git diff --cached --name-status -z -M \
-  | python3 "$toplevel/scripts/secrets-check.py" paths > "$records"
+if ! git diff --cached --name-status -z -M \
+  | python3 "$toplevel/scripts/secrets-check.py" paths > "$records"; then
+  exit 1
+fi
 
 python3 "$toplevel/scripts/secrets-check.py" scan < "$records" || exit 1
 

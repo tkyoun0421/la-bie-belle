@@ -50,7 +50,8 @@ jobs:
                 | python3 base/scripts/secrets-check.py paths > dropped.zero
               echo "force-push 이전 head ${BEFORE_SHA}의 이력도 함께 훑는다"
             else
-              echo "::warning::force-push 이전 head ${BEFORE_SHA}를 가져오지 못했다. 그 이력은 이번 검사에서 빠진다"
+              echo "::error::force-push 이전 head ${BEFORE_SHA}를 가져오지 못해 그 이력을 훑을 수 없다. 통과가 아니라 차단이다 — 브랜치에 다시 push해서 검사를 새로 돌려라"
+              exit 1
             fi
           fi
 
