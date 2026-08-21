@@ -6,10 +6,38 @@ body:
     attributes:
       value: |
         소유 role이 스스로 판단한다 — 받아들여 구현하고 PR을 열거나, 사유를 코멘트로 남기고 닫는다. 총괄은 role끼리 의견이 갈릴 때만 중재한다.
-  - type: dropdown
-    id: target
+
+        받는 쪽이 이 본문만 읽고 판단할 수 있어야 한다.
+  - type: textarea
+    id: what
     attributes:
-      label: 요청 대상
+      label: 무엇을 바꿔 달라
+      placeholder: |
+        각 worktree의 CLAUDE.local.md가 가리키는 규칙 문서 경로를 새 경로로 고쳐 달라.
+    validations:
+      required: true
+  - type: input
+    id: path
+    attributes:
+      label: 어디
+      placeholder: docs/specs/reservation-cancel.md
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: 이게 없으면 무엇이 막히나
+      description: 막힌 작업이 있으면 그 Issue를 링크한다.
+      placeholder: |
+        세션을 시작할 때 없어진 docs/rules.md를 읽으려 한다.
+        규칙을 못 읽은 채로 작업이 시작된다.
+    validations:
+      required: true
+  - type: dropdown
+    id: owner
+    attributes:
+      label: 담당
+      description: 그 경로를 소유한 role. `config/ownership.json`의 pm·dev·ui 목록에 없으면 총괄이다.
       options:
         - PM
         - Dev
@@ -18,26 +46,50 @@ body:
     validations:
       required: true
   - type: input
-    id: path
+    id: related
     attributes:
-      label: 대상 경로
-      placeholder: docs/specs/reservation.md
+      label: 관련
+      description: 이 요청을 낳은 Issue나 PR. 없으면 비워 둔다.
+      placeholder: "#70"
+  - type: dropdown
+    id: type
+    attributes:
+      label: type
+      options:
+        - type:feature
+        - type:bug
+        - type:refactor
+        - type:docs
+        - type:chore
     validations:
       required: true
-  - type: textarea
-    id: what
+  - type: dropdown
+    id: surface
     attributes:
-      label: 무엇을 바꿔 달라는 것인가
+      label: surface
+      options:
+        - surface:ui
+        - surface:db
+        - surface:auth
+        - surface:api
+        - surface:workflow
+        - surface:docs
     validations:
       required: true
-  - type: textarea
-    id: why
+  - type: dropdown
+    id: risk
     attributes:
-      label: 왜 필요한가
-      description: 이게 없으면 무엇이 막히는지. 막힌 작업이 있으면 그 Issue를 링크한다.
-    validations:
-      required: true
+      label: risk
+      description: 해당하는 것이 없으면 비워 둔다. 여럿이면 여러 개 고른다.
+      multiple: true
+      options:
+        - risk:security
+        - risk:privacy
+        - risk:performance
+        - risk:concurrency
+        - risk:migration
+        - risk:external
   - type: markdown
     attributes:
       value: |
-        발행 후 보드에 올리고 상태를 지정한다. 명령은 `docs/rules/matchers/publishing-issues.md`에 있다.
+        고른 세 축은 본문에 기록될 뿐 라벨로 자동 부착되지 않는다. 발행한 뒤 같은 값으로 라벨을 단다.
