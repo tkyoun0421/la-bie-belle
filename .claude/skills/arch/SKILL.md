@@ -7,6 +7,8 @@ description: "docs/architecture/overview.md를 쓰거나 고친다 — 코드베
 
 `docs/architecture/overview.md`. `docs/templates/architecture-overview.md`에서 시작한다. 파일 하나이고, 코딩 표준이 사는 유일한 자리다.
 
+이 스킬은 `/doc` 라우터가 소유권을 확인하고 브랜치를 뗀 뒤를 전제한다. `git rev-parse --abbrev-ref HEAD`가 `<role>/<task-name>` 꼴이 아니면 라우터를 안 지난 것이니 `/doc`으로 돌아가라 — 여기서 소유권을 다시 판정하면 사본이 하나 더 생긴다.
+
 ## 모으기
 
 코드베이스에 대해 쓰기 전에 코드베이스를 읽어라. 계획된 것보다 실제로 있는 것이 이긴다. 둘이 갈라지는 순간 이 문서는 값을 잃는다.

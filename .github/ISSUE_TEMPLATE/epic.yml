@@ -40,6 +40,18 @@ body:
       label: 상세 명세
       description: 저장소 안 경로. 명세 파일이 없는 총괄 작업이면 비워 둔다.
       placeholder: docs/specs/reservation-cancel.md
+  - type: dropdown
+    id: owner
+    attributes:
+      label: 담당
+      description: Epic은 경로가 없어 소유 registry가 담당을 정하지 못한다. 여기서 고른다.
+      options:
+        - PM
+        - Dev
+        - UI
+        - 총괄
+    validations:
+      required: true
   - type: textarea
     id: done
     attributes:

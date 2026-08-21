@@ -8,6 +8,7 @@ description: "docs/domain/ 아래 문서를 쓰거나 고친다 — 프로젝트
 `docs/domain/<topic>.md`. `docs/templates/domain.md`에서 시작한다.
 
 이 스킬은 `/doc` 라우터가 소유권을 확인하고 브랜치를 뗀 뒤를 전제한다. `git rev-parse --abbrev-ref HEAD`가 `<role>/<task-name>` 꼴이 아니면 라우터를 안 지난 것이니 `/doc`으로 돌아가라 — 여기서 소유권을 다시 판정하면 사본이 하나 더 생긴다.
+
 ## 모으기
 
 라우터가 인용을 이미 넘기지 않았다면, 기존 도메인 파일과 용어를 못박은 결정 기록을 `docs-locator`로 먼저 찾아라. 같은 말을 다르게 정의한 두 번째 파일은 파일이 없는 것보다 나쁘다.

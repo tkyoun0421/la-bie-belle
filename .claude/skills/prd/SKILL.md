@@ -8,6 +8,7 @@ description: "제품 요구사항 문서 docs/prd.md를 쓰거나 고친다. 보
 파일 하나, `docs/prd.md`. `docs/templates/prd.md`에서 시작한다.
 
 이 스킬은 `/doc` 라우터가 소유권을 확인하고 브랜치를 뗀 뒤를 전제한다. `git rev-parse --abbrev-ref HEAD`가 `<role>/<task-name>` 꼴이 아니면 라우터를 안 지난 것이니 `/doc`으로 돌아가라 — 여기서 소유권을 다시 판정하면 사본이 하나 더 생긴다.
+
 ## 모으기
 
 PRD는 저장소 안에 상류 출처가 없는 유일한 문서다. 내용 전부가 사용자에게서 온다.

@@ -8,6 +8,7 @@ description: "ADR(제품·도메인 결정, PM)이나 TDR(기술 결정, Dev)을
 어느 쪽인지는 역할이 정한다. PM은 `docs/templates/adr.md`에서 `docs/adr/ADR-00N-<slug>.md`를 쓴다. Dev는 `docs/templates/tdr.md`에서 `docs/architecture/decisions/TDR-00N-<slug>.md`를 쓴다.
 
 이 스킬은 `/doc` 라우터가 소유권을 확인하고 브랜치를 뗀 뒤를 전제한다. `git rev-parse --abbrev-ref HEAD`가 `<role>/<task-name>` 꼴이 아니면 라우터를 안 지난 것이니 `/doc`으로 돌아가라 — 여기서 소유권을 다시 판정하면 사본이 하나 더 생긴다.
+
 ## 번호를 붙인다
 
 ```

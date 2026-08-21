@@ -15,7 +15,9 @@ related_issue: "#69, #68, #101, #90"
 
 `docs/templates/`에서 시작한다. 빈 파일에서 시작하지 않는다.
 
-어느 종류가 어느 경로와 템플릿을 쓰는지는 `config/documents.json`에 있다. 소유 역할과 stage 스킬도 같은 자리에 있다. 외워서 쓰지 말고 그 파일을 읽어라 — 소유 registry와 같은 패턴이고, 산문에 둔 두 번째 사본이 먼저 어긋나는 사본이다.
+어느 종류가 어느 경로와 템플릿을 쓰는지, 그리고 어느 stage 스킬이 받는지는 `config/documents.json`에 있다. 외워서 쓰지 말고 그 파일을 읽어라 — 소유 registry와 같은 패턴이고, 산문에 둔 두 번째 사본이 먼저 어긋나는 사본이다.
+
+소유는 그 파일에 없다. 경로를 `config/ownership.json`에 대서 정한다. registry 둘이 같은 사실을 적으면 둘이 갈린다.
 
 ## Front matter
 
@@ -50,7 +52,7 @@ related_issue: "#69, #88"
 
 ## 결정 기록
 
-제품·도메인 결정은 ADR이고 기술 결정은 TDR이다. 경로와 소유는 `config/documents.json`의 `adr`·`tdr` 항목이 갖는다.
+제품·도메인 결정은 ADR이고 기술 결정은 TDR이다. 경로는 `config/documents.json`의 `adr`·`tdr` 항목이, 소유는 그 경로로 본 `config/ownership.json`이 갖는다.
 
 둘 다 **append-only**다. 대체는 옛 기록을 지우지 않는다. 옛 기록의 `status`를 `superseded`로 바꾸고 그것을 대신하는 기록의 이름을 적을 뿐이다.
 
