@@ -13,7 +13,8 @@ body:
     attributes:
       label: 무엇을 바꿔 달라
       placeholder: |
-        각 worktree의 CLAUDE.local.md가 가리키는 규칙 문서 경로를 새 경로로 고쳐 달라.
+        예약 취소 스펙의 인수 조건 3번이 취소가 막혔을 때 화면에 뜨는 문장을 정하지 않았다.
+        그 문장을 스펙에 적어 달라.
     validations:
       required: true
   - type: input
@@ -29,22 +30,14 @@ body:
       label: 이게 없으면 무엇이 막히나
       description: 막힌 작업이 있으면 그 Issue를 링크한다.
       placeholder: |
-        세션을 시작할 때 없어진 docs/rules.md를 읽으려 한다.
-        규칙을 못 읽은 채로 작업이 시작된다.
+        예약 취소 화면의 UI 명세를 쓰려는데 사용자가 볼 문장의 정본이 없다.
+        지금 상태로는 UI가 문구를 지어내고, 나중에 스펙과 갈린다.
     validations:
       required: true
-  - type: dropdown
-    id: owner
+  - type: markdown
     attributes:
-      label: 담당
-      description: 그 경로를 소유한 role. `config/ownership.json`의 pm·dev·ui 목록에 없으면 총괄이다.
-      options:
-        - PM
-        - Dev
-        - UI
-        - 총괄
-    validations:
-      required: true
+      value: |
+        담당은 고르지 않는다. 위 `어디`에 적은 경로를 `config/ownership.json`에 대면 소유 role이 나온다. pm·dev·ui 목록 어디에도 없으면 총괄이다.
   - type: input
     id: related
     attributes:

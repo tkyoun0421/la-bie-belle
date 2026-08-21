@@ -32,17 +32,10 @@ body:
       placeholder: .claude/skills/interview/SKILL.md
     validations:
       required: true
-  - type: dropdown
-    id: owner
+  - type: markdown
     attributes:
-      label: 담당
-      options:
-        - PM
-        - Dev
-        - UI
-        - 총괄
-    validations:
-      required: true
+      value: |
+        담당은 고르지 않는다. 위 `어디를 건드리나`에 적은 경로를 `config/ownership.json`에 대면 소유 role이 나온다. pm·dev·ui 목록 어디에도 없으면 총괄이다.
   - type: textarea
     id: source
     attributes:

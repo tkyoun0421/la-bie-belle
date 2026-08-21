@@ -7,6 +7,7 @@ description: "ADR(제품·도메인 결정, PM)이나 TDR(기술 결정, Dev)을
 
 어느 쪽인지는 역할이 정한다. PM은 `docs/templates/adr.md`에서 `docs/adr/ADR-00N-<slug>.md`를 쓴다. Dev는 `docs/templates/tdr.md`에서 `docs/architecture/decisions/TDR-00N-<slug>.md`를 쓴다.
 
+이 스킬은 `/doc` 라우터가 소유권을 확인하고 브랜치를 뗀 뒤를 전제한다. `git rev-parse --abbrev-ref HEAD`가 `<role>/<task-name>` 꼴이 아니면 라우터를 안 지난 것이니 `/doc`으로 돌아가라 — 여기서 소유권을 다시 판정하면 사본이 하나 더 생긴다.
 ## 번호를 붙인다
 
 ```
@@ -23,7 +24,7 @@ ls docs/adr            # 또는: ls docs/architecture/decisions
 
 기록을 값지게 만드는 절은 대안이다. "다른 선택지도 검토했다"는 아무것도 기록하지 않는다 — 라이브러리, 패턴, 서비스의 이름과 밀린 구체적 이유를 적어라. 그게 없으면 같은 대안이 반년 뒤에 다시 올라온다.
 
-대안을 사용자와 따져본 적이 없다면 `interview` 스킬을 먼저 불러라. 그 스킬의 선택지 블록이 이 절의 재료다 — 각 선택지가 주장이고, 얻는 것과 잃는 것을 달고 있다.
+대안을 사용자와 따져본 적이 없다면 `interview` 스킬을 먼저 불러라. 위에서 찾은 인용을 함께 넘겨라 — 바로 앞에서 `docs-locator`를 돌려 놓고 안 넘기면 인터뷰가 그걸 다시 돈다. 그 스킬의 선택지 블록이 이 절의 재료다 — 각 선택지가 주장이고, 얻는 것과 잃는 것을 달고 있다.
 
 ## 쓰기
 

@@ -9,7 +9,7 @@ description: "이 프로젝트가 만드는 모든 문서의 라우터. 종류�
 
 ## 1. 규칙을 읽는다
 
-`basename "$(git rev-parse --show-toplevel)"`를 돌려라. 그 값이 네 역할 키다. `git rev-parse --git-dir`이 `.git`을 그대로 내놓으면 main 작업 트리이고, 너는 총괄이다.
+`basename "$(git rev-parse --show-toplevel)"`를 돌려라. 그 값이 네 역할 키다. `git rev-parse --absolute-git-dir`과 `--git-common-dir`이 같은 곳을 가리키면 main 작업 트리이고, 너는 총괄이다.
 
 그다음 이 순서로 읽는다.
 
@@ -21,16 +21,7 @@ description: "이 프로젝트가 만드는 모든 문서의 라우터. 종류�
 
 ## 2. 종류를 가린다
 
-| 종류 | 대상 | 소유 | Stage 스킬 |
-|------|--------|-------|-------------|
-| `prd` | `docs/prd.md` | pm | `prd` |
-| `domain` | `docs/domain/<topic>.md` | pm | `domain` |
-| `adr` | `docs/adr/ADR-00N-<slug>.md` | pm | `decision` |
-| `tdr` | `docs/architecture/decisions/TDR-00N-<slug>.md` | dev | `decision` |
-| `spec` | `docs/specs/<feature>.md` | pm | `spec` |
-| `ui` / `ui-spec` | `docs/ui/<screen>.md` | ui | `ui-spec` |
-| `arch` | `docs/architecture/overview.md` | dev | `arch` |
-| `slices` | 파일 없음 — GitHub Issue | dev | `slices` |
+종류마다 대상 경로, 템플릿, 소유 역할, stage 스킬이 `config/documents.json`에 있다. 외워서 쓰지 말고 그 파일을 읽어라 — 산문에 둔 두 번째 사본이 먼저 어긋나는 사본이다. `aliases`에 적힌 이름도 같은 종류로 받는다. `slices`는 `path`가 `null`이다. 파일이 아니라 GitHub Issue를 만들기 때문이다.
 
 종류가 주어지지 않았으면 어느 쪽인지 물어라. 스펙과 결정 기록 사이에서 짐작하지 마라 — 둘은 다른 자리에 다른 손으로 간다.
 

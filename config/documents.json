@@ -1,0 +1,51 @@
+{
+  "prd": {
+    "path": "docs/prd.md",
+    "template": "docs/templates/prd.md",
+    "owner": "pm",
+    "skill": "prd"
+  },
+  "domain": {
+    "path": "docs/domain/<topic>.md",
+    "template": "docs/templates/domain.md",
+    "owner": "pm",
+    "skill": "domain"
+  },
+  "adr": {
+    "path": "docs/adr/ADR-00N-<slug>.md",
+    "template": "docs/templates/adr.md",
+    "owner": "pm",
+    "skill": "decision"
+  },
+  "tdr": {
+    "path": "docs/architecture/decisions/TDR-00N-<slug>.md",
+    "template": "docs/templates/tdr.md",
+    "owner": "dev",
+    "skill": "decision"
+  },
+  "spec": {
+    "path": "docs/specs/<feature>.md",
+    "template": "docs/templates/spec.md",
+    "owner": "pm",
+    "skill": "spec"
+  },
+  "ui": {
+    "aliases": ["ui-spec"],
+    "path": "docs/ui/<screen>.md",
+    "template": "docs/templates/ui-spec.md",
+    "owner": "ui",
+    "skill": "ui-spec"
+  },
+  "arch": {
+    "path": "docs/architecture/overview.md",
+    "template": "docs/templates/architecture-overview.md",
+    "owner": "dev",
+    "skill": "arch"
+  },
+  "slices": {
+    "path": null,
+    "template": null,
+    "owner": "dev",
+    "skill": "slices"
+  }
+}

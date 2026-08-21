@@ -45,7 +45,7 @@ def role_patterns(mode, role, project_dir):
         fail(
             mode,
             f"ownership-check: 역할 '{role}'이 config/ownership.json에 없다. 차단한다 — "
-            "worktree 디렉터리 이름이 곧 역할 키다. 등록된 worktree에서 일하거나 registry에 역할을 등록해라.",
+            "main 작업 트리나 브랜치 접두가 가리킨 역할인데 registry에 그 키가 없다. registry에 키를 넣어라.",
         )
     return patterns
 
