@@ -1,0 +1,109 @@
+name: Slice (기능)
+description: Epic에서 쪼갠 세로 슬라이스 하나. Dev가 발행하고 Epic에 sub-issue로 묶는다.
+title: "[Slice] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        슬라이스는 모든 층(스키마·API·화면·테스트)을 관통하는 좁고 완전한 경로다. 한 층만 가로로 자른 것은 슬라이스가 아니다.
+
+        이 본문은 사람이 읽는 보고서다. 엔드포인트 이름이나 컬럼 타입 같은 정확한 계약은 설계 문서에 두고, 여기에는 요지만 적는다.
+  - type: input
+    id: epic
+    attributes:
+      label: 부모 Epic
+      placeholder: "#42"
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: 이 슬라이스가 끝나면
+      description: 사용자 관점에서 무엇을 할 수 있게 되는지. 층별 구현 목록이 아니다.
+      placeholder: |
+        예약 내역에서 취소 버튼을 눌러 예약이 취소되고, 그 시간대가 다시 열린다.
+    validations:
+      required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: 어떻게 짜나
+      description: 화면·서버·데이터가 각각 어떻게 달라지는지 한 줄씩.
+      placeholder: |
+        - 화면: 예약 내역 카드에 취소 버튼과 확인 모달을 붙인다
+        - 서버: 취소 API를 새로 낸다. 이미 취소된 예약과 방문 24시간 안쪽을 구분해 거절한다
+        - 데이터: 예약에 "취소됨" 상태와 취소 시각이 붙는다. 마이그레이션 한 건
+    validations:
+      required: true
+  - type: textarea
+    id: edges
+    attributes:
+      label: 조심할 것
+      description: 동시에 벌어지면 깨지는 것, 실패했을 때 사용자가 보는 것, 빈 상태.
+      placeholder: |
+        - 같은 시간대를 두 사람이 동시에 잡으면 먼저 저장한 쪽이 이긴다
+        - 취소된 예약을 다시 취소하면 화면에 "이미 취소된 예약입니다"
+  - type: textarea
+    id: verify
+    attributes:
+      label: 확인 방법
+      description: 직접 눌러서 확인하는 순서. SPEC의 인수 조건을 옮겨 적는 자리가 아니다.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: input
+    id: design-doc
+    attributes:
+      label: 설계 상세
+      description: 정확한 계약이 적힌 설계 문서 경로. 아직 없으면 비워 둔다.
+      placeholder: docs/architecture/design/reservation-cancel.md
+  - type: input
+    id: blocked-by
+    attributes:
+      label: 먼저 끝나야 하는 것
+      description: 선행 슬라이스. 없으면 비워 둔다.
+      placeholder: "#83"
+  - type: dropdown
+    id: type
+    attributes:
+      label: type
+      options:
+        - type:feature
+        - type:bug
+        - type:refactor
+        - type:docs
+        - type:chore
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: surface
+      options:
+        - surface:ui
+        - surface:db
+        - surface:auth
+        - surface:api
+        - surface:workflow
+        - surface:docs
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: risk
+      description: 해당하는 것이 없으면 비워 둔다. 여럿이면 여러 개 고른다.
+      multiple: true
+      options:
+        - risk:security
+        - risk:privacy
+        - risk:performance
+        - risk:concurrency
+        - risk:migration
+        - risk:external
+  - type: markdown
+    attributes:
+      value: |
+        고른 세 축은 본문에 기록될 뿐 라벨로 자동 부착되지 않는다. 발행한 뒤 같은 값으로 라벨을 단다.

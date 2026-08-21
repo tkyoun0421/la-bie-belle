@@ -25,6 +25,8 @@ Each slice claims a subset of the spec's numbered acceptance criteria. Every cri
 
 Name the slices that must finish first. A slice with no predecessor can start immediately.
 
+For each slice, also outline how it is built — what the screen, the server, and the data each need — and what to watch for when two users collide or a call fails. The `[Slice]` form asks for both, and Dev is the only one who can answer them. Keep it to the outline: exact endpoint signatures, column types, and response shapes belong in the design document, not in the Issue.
+
 A wide mechanical refactor is the exception to vertical slicing — one change whose blast radius crosses the whole codebase cannot land green as a tracer bullet. Sequence it instead: add the new form beside the old, migrate call sites in batches small enough to keep CI green, then delete the old form once no caller remains. Each step is its own slice, blocked by the previous one.
 
 ## Publish
