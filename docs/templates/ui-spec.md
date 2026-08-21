@@ -5,38 +5,38 @@ related_adr: ""
 related_issue: ""
 ---
 
-# UI: {screen}
+# UI: {화면}
 
-Written after the screen is implemented, from reviewing the real thing. Dev applies it as a separate slice.
+화면이 구현된 뒤에 실물을 보고 쓴다. Dev가 별도 슬라이스로 적용한다.
 
-## Screen
+## 화면
 
-Which screen this covers and where a user arrives from.
+어느 화면을 다루고 사용자가 어디서 들어오나.
 
-## Layout
+## 레이아웃
 
-Structure and spacing: what sits where, how it stacks, what the rhythm between blocks is. Describe by value — "24px between the form and the summary" — not by class name or file.
+구조와 간격. 무엇이 어디에 앉고, 어떻게 쌓이고, 블록 사이의 리듬은 무엇인가. 클래스 이름이나 파일이 아니라 값으로 적는다 — "폼과 요약 사이 24px" 하는 식이다.
 
-## Type and colour
+## 타이포그래피와 색
 
-Sizes, weights, and colours by value and role. Name the role too: "primary action", "muted metadata".
+크기, 굵기, 색을 값과 역할로. 역할도 함께 적는다 — "주요 동작", "보조 메타데이터" 하는 식이다.
 
-## States
+## 상태
 
-Every state the elements can be in, and what each looks like: default, hover, focus, active, disabled, loading, empty, error. A state with no entry here is a state Dev will guess at.
+요소가 가질 수 있는 모든 상태와 각각의 모습 — 기본, hover, focus, active, disabled, 로딩, 빈 상태, 오류. 여기 없는 상태는 Dev가 짐작할 상태다.
 
-## Responsive
+## 반응형
 
-What changes at which width, and what must never wrap or truncate.
+어느 폭에서 무엇이 바뀌나, 그리고 무엇이 절대 줄바꿈되거나 잘리면 안 되나.
 
-## Accessibility
+## 접근성
 
-Focus order, contrast requirements, labels for anything conveyed by colour or icon alone, and keyboard paths through the screen.
+focus 순서, 대비 요구치, 색이나 아이콘만으로 전달되는 것에 붙일 레이블, 키보드로 화면을 지나는 경로.
 
-## Out of scope
+## 범위 밖
 
-What this pass deliberately leaves alone, so the next review does not treat it as an omission.
+이번에 일부러 손대지 않은 것. 다음 검수가 그걸 누락으로 보지 않게 적어둔다.
 
-## Open questions
+## 열린 질문
 
-Anything the implemented screen left ambiguous and the review could not settle alone. Written as questions.
+구현된 화면이 애매하게 남겼고 검수만으로는 못 정한 것. 질문 형태로 쓴다.

@@ -5,24 +5,24 @@ related_adr: ""
 related_issue: ""
 ---
 
-# ADR-00N: {the decision in a short noun phrase}
+# ADR-00N: {결정을 짧은 명사구로}
 
-## Context
+## 맥락
 
-What forced a decision. The situation, the pressure, and anything a future reader would need to understand why this was even a question.
+무엇이 결정을 강요했나. 상황, 압력, 그리고 나중에 읽는 사람이 "이게 왜 논쟁거리였는지"를 이해하는 데 필요한 것.
 
-## Decision
+## 결정
 
-What was decided, stated in the present tense as a rule the project now follows.
+무엇을 정했나. 프로젝트가 이제 따르는 규칙으로, 현재형 문장으로 적는다.
 
-## Alternatives considered
+## 검토한 대안
 
-The options that were genuinely on the table, each with the reason it lost. An alternative dismissed here will be proposed again in six months unless the reason is written down.
+실제로 테이블에 올랐던 선택지와 각각이 밀린 이유. 여기서 밀어낸 대안은 이유를 적어두지 않으면 반년 뒤에 다시 올라온다.
 
-## Trade-offs
+## 트레이드오프
 
-What this decision costs. Every real decision gives something up — name it, so nobody later mistakes the cost for an oversight.
+이 결정이 치르는 값. 진짜 결정은 무엇인가를 포기한다 — 그걸 적어라. 그래야 나중에 누가 그 값을 실수로 오해하지 않는다.
 
 ---
 
-Records are append-only. Never rewrite a decided record: to reverse it, write a new one and set this one's `status` to `superseded`, noting which record replaces it. Status flows `proposed` → `accepted` → `superseded` and nowhere else.
+기록은 append-only다. 정해진 기록은 절대 다시 쓰지 않는다. 뒤집으려면 새 기록을 쓰고 이 기록의 `status`를 `superseded`로 바꾸며 무엇이 대신하는지 적는다. status는 `proposed` → `accepted` → `superseded`로만 흐른다.

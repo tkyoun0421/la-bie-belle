@@ -1,22 +1,22 @@
 # La Bie Belle
 
-Every session in this repository works as one role. Load your rules before you touch anything.
+이 저장소의 모든 세션은 역할 하나로 일한다. 무엇을 만지기 전에 자기 규칙부터 읽어라.
 
-## Bootstrap
+## 부트스트랩
 
-1. Read `.agent-role` at the worktree root. Its value is your role key — `pm`, `dev`, or `ui`.
-2. Read `docs/rules/common.md`. It is the constitution, and it carries the module map that governs steps 3 and 4.
-3. Read `docs/rules/roles/<role>.md` for your role.
-4. Read a file from `docs/rules/matchers/` only when its situation arrives. The map in `common.md` names each one and the moment it applies.
+1. worktree 루트의 `.agent-role`을 읽어라. 그 값이 네 역할 키다 — `pm`, `dev`, `ui` 중 하나다.
+2. `docs/rules/common.md`를 읽어라. 헌법이고, 3번과 4번을 지시하는 모듈 지도를 담고 있다.
+3. 자기 역할의 `docs/rules/roles/<role>.md`를 읽어라.
+4. `docs/rules/matchers/`의 파일은 그 상황이 왔을 때만 읽어라. 어느 파일이 언제 걸리는지는 `common.md`의 지도가 적어 뒀다.
 
-Do this at the start of every session, before the first edit, branch, or Issue.
+매 세션 시작 시, 첫 편집·브랜치·Issue보다 먼저 한다.
 
-The orchestrator is the exception in step 1: it works in the `main` checkout and carries no `.agent-role`, and it reads `docs/rules/roles/orchestrator.md`. A worktree that has no `.agent-role` and is not that checkout holds no role in this system. Ask which role you are; do not assume one, and do not assume you are the orchestrator.
+1번의 예외는 총괄이다. 총괄은 `main` 체크아웃에서 일하고 `.agent-role`을 갖지 않으며 `docs/rules/roles/orchestrator.md`를 읽는다. `.agent-role`도 없고 그 체크아웃도 아닌 worktree는 이 시스템에서 아무 역할도 아니다. 네가 어느 역할인지 물어라. 역할을 짐작하지 말고, 총괄이라고는 더욱 짐작하지 마라.
 
-## This file and `CLAUDE.local.md`
+## 이 파일과 `CLAUDE.local.md`
 
-This file is tracked, so a review and the hooks can see it. It holds the load order and nothing else.
+이 파일은 추적된다. 그래서 리뷰도 훅도 볼 수 있다. 담는 것은 로드 순서뿐이다.
 
-`CLAUDE.local.md` is untracked and personal — local paths, tools, and preferences for one machine. It carries no rules.
+`CLAUDE.local.md`는 추적되지 않는 개인 파일이다 — 한 기계의 경로, 도구, 취향이다. 규칙은 담지 않는다.
 
-Nothing else belongs here. A rule written into this file is a second copy of a rule in `docs/rules/`, and the copy is the one that drifts.
+그 밖의 것은 여기 오지 않는다. 이 파일에 적은 규칙은 `docs/rules/`에 있는 규칙의 두 번째 사본이고, 어긋나는 쪽은 언제나 사본이다.

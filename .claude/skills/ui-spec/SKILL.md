@@ -1,34 +1,34 @@
 ---
 name: ui-spec
-description: "Writes docs/ui/<screen>.md — the visual and interaction finish of a screen that already exists. Normally reached through the /doc router. UI only, and never touches code."
+description: "docs/ui/<screen>.md를 쓴다 — 이미 있는 화면의 시각·상호작용 마감이다. 보통 /doc 라우터를 지나 도달한다. UI 전용이고 코드는 절대 건드리지 않는다."
 ---
 
-# UI spec
+# UI 명세
 
-`docs/ui/<screen>.md`, from `docs/templates/ui-spec.md`.
+`docs/ui/<screen>.md`. `docs/templates/ui-spec.md`에서 시작한다.
 
-## Precondition
+## 전제
 
-The screen must already be implemented. Design follows implementation here; there is nothing to review otherwise. If the screen does not exist yet, stop and say so rather than specifying it blind.
+화면이 이미 구현돼 있어야 한다. 여기서는 디자인이 구현을 뒤따른다. 아니면 검수할 것이 없다. 화면이 아직 없으면 눈감고 명세하지 말고 멈춰서 그렇게 말해라.
 
-Run the app and look at the real screen. A spec written from the spec file instead of from the running screen documents what was intended, not what shipped, and the gap between those two is exactly what this document is for.
+앱을 띄우고 실제 화면을 봐라. 실행 중인 화면이 아니라 스펙 파일을 보고 쓴 명세는 출시된 것이 아니라 의도된 것을 적는다. 이 문서가 존재하는 이유가 바로 그 둘 사이의 틈이다.
 
-## Gather
+## 모으기
 
-Unless the router already handed you citations, run `docs-locator` for the feature spec behind the screen, so the states you describe match the states the feature actually has.
+라우터가 인용을 이미 넘기지 않았다면, 화면 뒤의 기능 스펙을 `docs-locator`로 찾아라. 네가 적는 상태가 기능이 실제로 갖는 상태와 맞도록.
 
-Walk every state deliberately: default, hover, focus, active, disabled, loading, empty, error. A state with no entry is a state Dev will guess at, and the guess will be wrong in a way nobody notices until a user hits it.
+모든 상태를 의식적으로 밟아라 — 기본, hover, focus, active, disabled, 로딩, 빈 상태, 오류. 항목이 없는 상태는 Dev가 짐작할 상태이고, 그 짐작은 사용자가 부딪히기 전까지 아무도 눈치채지 못하는 방식으로 틀린다.
 
-Check the keyboard path through the screen and anything conveyed by colour or icon alone.
+키보드로 화면을 지나는 경로와, 색이나 아이콘만으로 전달되는 것을 확인해라.
 
-## Write
+## 쓰기
 
-Dispatch `docs-generator` with the template, the target path, and the observations.
+`docs-generator`를 붙이고 템플릿, 대상 경로, 관찰한 것을 넘겨라.
 
-Specify by value and by role — "24px between the form and the summary", "the primary action darkens 8% on hover". Never by class name, component name, or file path: those belong to Dev and they change without telling you.
+값과 역할로 명세해라 — "폼과 요약 사이 24px", "주요 동작은 hover에서 8% 어두워진다". 클래스 이름, 컴포넌트 이름, 파일 경로로는 절대 적지 마라. 그건 Dev의 것이고 너에게 알리지 않고 바뀐다.
 
-Name what this pass deliberately leaves alone, under Out of scope, so the next review does not read it as an omission.
+이번에 일부러 손대지 않은 것을 범위 밖에 적어라. 다음 검수가 그걸 누락으로 읽지 않게.
 
-## Publish
+## 발행
 
-Dispatch `gh-pr-generator`. The merge is what creates Dev's work — a UI spec landing on `main` is the signal that a slice applying it can be cut. Never hand Dev the change directly.
+`gh-pr-generator`를 붙인다. Dev의 일감을 만드는 건 merge다 — UI 명세가 `main`에 얹히는 것이 그것을 적용할 슬라이스를 자를 수 있다는 신호다. Dev에게 변경을 직접 건네지 마라.

@@ -5,30 +5,30 @@ related_adr: ""
 related_issue: ""
 ---
 
-# Architecture Overview
+# 아키텍처 개요
 
-The one place coding standards and conventions live. Written during the first design pass and kept current as the codebase grows.
+코딩 표준과 관례가 사는 유일한 자리다. 첫 설계 단계에서 쓰고 코드베이스가 자라는 동안 최신으로 유지한다.
 
-## Purpose
+## 목적
 
-What this codebase is and the shape it takes. One paragraph, enough that a new agent knows where it has landed.
+이 코드베이스가 무엇이고 어떤 모양인가. 새 에이전트가 자기가 어디 떨어졌는지 알 만큼 한 문단으로.
 
-## Stack
+## 스택
 
-Languages, frameworks, and services in use, each with the job it does here. A choice that carries lock-in belongs in a TDR — link it rather than arguing it here.
+쓰는 언어·프레임워크·서비스와 각각이 여기서 맡은 일. 종속을 만드는 선택은 TDR로 가고, 여기서는 따지지 말고 링크한다.
 
-## Structure
+## 구조
 
-The top-level directories and what belongs in each. State what does *not* belong there too; that is what stops drift.
+최상위 디렉터리와 각각에 무엇이 들어가나. 무엇이 거기 들어가지 *않는지*도 적어라. 번짐을 막는 건 그쪽이다.
 
-## Conventions
+## 관례
 
-Naming, file layout, import order, error handling, logging — whatever a reviewer would otherwise flag by taste. Write the rule, not the preference: "components are named after what they render, not where they sit" beats "keep names clean".
+이름, 파일 배치, import 순서, 오류 처리, 로깅 — 안 적으면 리뷰어가 취향으로 지적할 것들. 취향이 아니라 규칙으로 써라. "컴포넌트는 어디에 앉는지가 아니라 무엇을 그리는지로 이름 짓는다"가 "이름을 깔끔하게 유지한다"보다 낫다.
 
-## Testing
+## 테스트
 
-What gets tested and at which seam. Name the prior art — the existing test another agent should copy the shape of.
+무엇을 어느 이음매에서 테스트하나. 선례를 지목해라 — 다른 에이전트가 모양을 베낄 기존 테스트다.
 
-## Decisions
+## 결정
 
-An index of the TDRs under `docs/architecture/decisions/`, newest first, each one line. The records themselves stay canonical; this is only the map.
+`docs/architecture/decisions/` 아래 TDR의 색인. 최신순으로 한 줄씩. 정본은 기록 자체이고 여기는 지도일 뿐이다.

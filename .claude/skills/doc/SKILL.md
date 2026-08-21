@@ -1,27 +1,27 @@
 ---
 name: doc
-description: "Router for every document this project produces. Takes a kind and a topic — /doc spec 예약취소, /doc adr 결제수단 — resolves ownership, cuts the branch, and hands off to the stage skill. Use it for any request to write or edit a PRD, domain document, ADR, TDR, spec, UI spec, architecture overview, or to break an Epic into slices. Korean triggers: PRD 쓰자, ADR 남겨, 스펙 만들어, 도메인 용어 정리, UI 스펙 작성, 에픽 슬라이스로 쪼개."
+description: "이 프로젝트가 만드는 모든 문서의 라우터. 종류와 주제를 받아 — /doc spec 예약취소, /doc adr 결제수단 — 소유권을 확인하고 브랜치를 뗀 뒤 stage 스킬로 넘긴다. PRD·도메인 문서·ADR·TDR·스펙·UI 스펙·아키텍처 개요를 쓰거나 고치는 요청, Epic을 슬라이스로 쪼개는 요청에 쓴다. 트리거: PRD 쓰자, ADR 남겨, 스펙 만들어, 도메인 용어 정리, UI 스펙 작성, 에픽 슬라이스로 쪼개."
 ---
 
-# Doc router
+# Doc 라우터
 
-You are the entry point for document work. You do not write documents yourself — you resolve who owns what, prepare the branch, and hand off.
+너는 문서 작업의 진입점이다. 문서를 직접 쓰지 않는다 — 누가 무엇을 소유하는지 가리고, 브랜치를 준비하고, 넘긴다.
 
-## 1. Load the rules
+## 1. 규칙을 읽는다
 
-Read `.agent-role` at the repository root. A missing file means you are the orchestrator.
+저장소 루트의 `.agent-role`을 읽어라. 파일이 없으면 너는 총괄이다.
 
-Then read, in this order:
+그다음 이 순서로 읽는다.
 
 - `docs/rules/common.md`
 - `docs/rules/roles/<role>.md`
 - `docs/rules/matchers/writing-docs.md`
 
-Everything below assumes those are loaded. Do not restate their content — follow it.
+아래는 전부 그것들이 로드됐다고 전제한다. 내용을 다시 적지 말고 따라라.
 
-## 2. Resolve the kind
+## 2. 종류를 가린다
 
-| Kind | Target | Owner | Stage skill |
+| 종류 | 대상 | 소유 | Stage 스킬 |
 |------|--------|-------|-------------|
 | `prd` | `docs/prd.md` | pm | `prd` |
 | `domain` | `docs/domain/<topic>.md` | pm | `domain` |
@@ -30,38 +30,38 @@ Everything below assumes those are loaded. Do not restate their content — foll
 | `spec` | `docs/specs/<feature>.md` | pm | `spec` |
 | `ui` / `ui-spec` | `docs/ui/<screen>.md` | ui | `ui-spec` |
 | `arch` | `docs/architecture/overview.md` | dev | `arch` |
-| `slices` | no file — GitHub Issues | dev | `slices` |
+| `slices` | 파일 없음 — GitHub Issue | dev | `slices` |
 
-When no kind was given, ask which one. Do not guess between a spec and a decision — they land in different places and different hands.
+종류가 주어지지 않았으면 어느 쪽인지 물어라. 스펙과 결정 기록 사이에서 짐작하지 마라 — 둘은 다른 자리에 다른 손으로 간다.
 
-`decision` on its own is not a kind: resolve it to `adr` or `tdr` before checking ownership, because the two have different owners. A product or domain choice is an ADR; a technical one is a TDR. When the calling role already settles it, say which you picked and continue.
+`decision`은 그 자체로 종류가 아니다. 소유권을 확인하기 전에 `adr`이나 `tdr`로 가려라. 둘의 소유가 다르기 때문이다. 제품·도메인 선택은 ADR이고 기술 선택은 TDR이다. 부르는 역할이 이미 정해 놨으면 어느 쪽을 골랐는지 말하고 계속한다.
 
-The orchestrator's own documents — `docs/rules/` and `docs/templates/` — have no stage skill. From the `main` checkout, follow `docs/rules/matchers/writing-docs.md` directly and skip to step 4.
+총괄 자신의 문서 — `docs/rules/`와 `docs/templates/` — 에는 stage 스킬이 없다. `main` 체크아웃에서는 `docs/rules/matchers/writing-docs.md`를 직접 따르고 4번으로 건너뛴다.
 
-Tell them apart this way. What and why the product exists is the PRD. What a word means and what must always be true is a domain document. A fork in the road where one path was chosen and someone will later ask "why this way" is a decision record. How one feature behaves is a spec. The visual and interaction finish of a screen that already exists is a UI spec. How the codebase is arranged and what conventions it follows is the architecture overview.
+이렇게 갈라라. 제품이 무엇이고 왜 있는지는 PRD다. 어떤 말이 무슨 뜻이고 무엇이 언제나 참이어야 하는지는 도메인 문서다. 갈림길에서 한쪽을 골랐고 나중에 누군가 "왜 이렇게 했지"라고 물을 자리는 결정 기록이다. 기능 하나가 어떻게 동작하는지는 스펙이다. 이미 있는 화면의 시각·상호작용 마감은 UI 스펙이다. 코드베이스가 어떻게 배치되고 어떤 관례를 따르는지는 아키텍처 개요다.
 
-## 3. Check ownership
+## 3. 소유권을 확인한다
 
-Compare the target path against `config/ownership.json` and your role.
+대상 경로를 `config/ownership.json`과 네 역할에 대조해라.
 
-If you do not own it, **stop here**. Dispatch `gh-issue-generator` to open a `[Request]` Issue for the owning role, describing what you need and why, then report the Issue number. Do not write the file, and do not open a branch.
+네 소유가 아니면 **여기서 멈춰라**. `gh-issue-generator`를 붙여 소유한 역할에게 `[Request]` Issue를 열고, 무엇이 왜 필요한지 적은 뒤 Issue 번호를 보고해라. 파일을 쓰지도, 브랜치를 열지도 마라.
 
-One role does not read the registry that way. The `orchestrator` key is `["*"]`, which is access and not authorship — the orchestrator writes none of the documents in the table above. From the `main` checkout the answer is always a `[Request]`, or an assignment to the owning role.
+한 역할은 registry를 그렇게 읽지 않는다. `orchestrator` 키는 `["*"]`인데 그건 접근이지 작성권이 아니다 — 총괄은 위 표의 어느 문서도 쓰지 않는다. `main` 체크아웃에서의 답은 언제나 `[Request]`이거나 소유한 역할에게 하는 배정이다.
 
-## 4. Cut the branch
+## 4. 브랜치를 딴다
 
-`slices` produces no file and opens no PR, so it gets no branch. Skip to step 5 for that kind.
+`slices`는 파일을 만들지 않고 PR도 열지 않으니 브랜치가 없다. 그 종류는 5번으로 건너뛴다.
 
-For everything else:
+나머지는 전부:
 
 ```
 git fetch origin && git checkout -b <role>/<task-name> origin/main
 ```
 
-Then move the related board card to **In Progress** — `docs/rules/matchers/publishing-issues.md` has the command and the option ids.
+그다음 관련 보드 카드를 **In Progress**로 옮긴다 — 명령과 option id는 `docs/rules/matchers/publishing-issues.md`에 있다.
 
-## 5. Hand off
+## 5. 넘긴다
 
-Call the stage skill with the Skill tool, passing the topic and anything already known from the conversation. The stage skill owns the rest — gathering, writing, publishing.
+Skill 도구로 stage 스킬을 부르고 주제와 대화에서 이미 알아낸 것을 함께 넘겨라. 나머지는 stage 스킬의 몫이다 — 수집, 작성, 발행이다.
 
-Before handing off, run `docs-locator` when the document will depend on existing ones: a spec needs the domain vocabulary and any decisions that bind it, a decision needs to know whether an earlier record already covers the ground. Pass the citations to the stage skill and say you ran it, so it does not search the same ground again.
+넘기기 전에, 만들 문서가 기존 문서에 기대게 될 때는 `docs-locator`를 돌려라. 스펙은 도메인 어휘와 그것을 묶는 결정이 필요하고, 결정 기록은 앞선 기록이 이미 그 자리를 덮었는지 알아야 한다. 인용을 stage 스킬에 함께 넘기고 네가 돌렸다고 말해라. 같은 자리를 또 뒤지지 않게.

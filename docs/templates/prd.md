@@ -5,34 +5,34 @@ related_adr: ""
 related_issue: ""
 ---
 
-# Product Requirements
+# 제품 요구사항
 
-## Summary
+## 요약
 
-One paragraph: what this product is and who it serves. A reader who stops here should still know what is being built.
+한 문단으로. 이 제품이 무엇이고 누구를 위한 것인가. 여기서 읽기를 멈춘 사람도 무엇을 만드는지는 알아야 한다.
 
-## Users and problem
+## 사용자와 문제
 
-Who has the problem, and what the problem costs them today. Describe the current workaround — that is what the product competes with.
+누가 그 문제를 겪고, 그 문제가 오늘 그들에게 무엇을 치르게 하나. 지금의 우회 방법을 적어라 — 제품이 실제로 경쟁하는 상대가 그것이다.
 
-## Success criteria
+## 성공 기준
 
-Measurable statements. "Bookings confirmed without staff intervention" is a criterion; "better user experience" is not.
+측정 가능한 문장. "직원이 개입하지 않고 확정되는 예약"은 기준이고, "더 나은 사용자 경험"은 기준이 아니다.
 
-## Scope
+## 범위
 
-**In** — what this product does.
+**한다** — 이 제품이 하는 것.
 
-**Out** — what it deliberately does not do. The exclusions matter as much as the inclusions; they stop scope from drifting later.
+**하지 않는다** — 일부러 하지 않는 것. 제외가 포함만큼 중요하다. 나중에 범위가 번지는 걸 막는 게 이쪽이다.
 
-## Key journeys
+## 핵심 여정
 
-The two or three paths a user actually walks, start to finish, in the vocabulary of `docs/domain/`.
+사용자가 실제로 걷는 두세 갈래를 처음부터 끝까지. `docs/domain/`의 어휘로 쓴다.
 
-## Constraints
+## 제약
 
-Regulatory, operational, budget, or timing limits that shape the solution. Constraints that come from a decision belong in an ADR, linked from here.
+해법의 모양을 정하는 규제·운영·예산·일정 한계. 결정에서 나온 제약은 ADR에 담고 여기서 링크한다.
 
-## Open questions
+## 열린 질문
 
-Anything not yet settled, written as a question. An unanswered question lives here rather than as a vague sentence in the body.
+아직 안 정해진 것을 질문 형태로. 답 없는 질문은 본문의 애매한 문장이 아니라 여기에 산다.

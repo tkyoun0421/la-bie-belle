@@ -1,32 +1,32 @@
 ---
 name: domain
-description: "Writes or edits a document under docs/domain/ — the project's vocabulary, entities, invariants, and state transitions. Normally reached through the /doc router. PM only."
+description: "docs/domain/ 아래 문서를 쓰거나 고친다 — 프로젝트의 어휘, 엔티티, 불변식, 상태 전이다. 보통 /doc 라우터를 지나 도달한다. PM 전용."
 ---
 
 # Domain
 
-`docs/domain/<topic>.md`, from `docs/templates/domain.md`.
+`docs/domain/<topic>.md`. `docs/templates/domain.md`에서 시작한다.
 
-## Gather
+## 모으기
 
-Unless the router already handed you citations, run `docs-locator` first for existing domain files and any decision record that fixes a term. A second file defining the same word differently is worse than no file.
+라우터가 인용을 이미 넘기지 않았다면, 기존 도메인 파일과 용어를 못박은 결정 기록을 `docs-locator`로 먼저 찾아라. 같은 말을 다르게 정의한 두 번째 파일은 파일이 없는 것보다 나쁘다.
 
-Then sharpen the language against what the user actually says.
+그다음 사용자가 실제로 하는 말에 대고 언어를 벼려라.
 
-- When a word is overloaded, force the split. "You said account — do you mean the Customer or the login? Those are different things."
-- When two words mean one thing, pick one and list the other under `_Avoid_` so it does not come back.
-- Test relationships with concrete scenarios rather than abstractions. "A party of six books a table for four and two people cancel — is that one booking or two?" An invariant that survives three such scenarios is worth writing down.
+- 한 단어가 여러 뜻을 지고 있으면 갈라라. "계정이라고 하셨는데, 손님을 말하는 겁니까 로그인을 말하는 겁니까? 둘은 다른 것입니다."
+- 두 단어가 한 가지를 가리키면 하나를 고르고 나머지는 `_쓰지 않는다_`에 적어 다시 들어오지 못하게 한다.
+- 관계는 추상이 아니라 구체적인 상황으로 시험해라. "여섯 명이 4인 테이블을 예약했다가 둘이 취소하면 그건 예약 하나입니까 둘입니까?" 그런 상황 셋을 견딘 불변식이라야 적을 값이 있다.
 
-If the vocabulary has not been discussed at all yet, call the `interview` skill and let it drive.
+어휘가 아직 전혀 논의되지 않았으면 `interview` 스킬을 불러 맡겨라.
 
-## Write
+## 쓰기
 
-Dispatch `docs-generator` with the template, the target path, and the gathered vocabulary. Definitions stay to one or two sentences and say what a thing *is*, not what it does.
+`docs-generator`를 붙이고 템플릿, 대상 경로, 모은 어휘를 넘겨라. 정의는 한두 문장에 머물고, 그것이 무엇을 *하는지*가 아니라 무엇*인지*를 말한다.
 
-Only terms specific to this project belong here. General programming concepts do not, however often the code uses them.
+이 프로젝트에만 있는 용어만 여기 온다. 일반 프로그래밍 개념은 코드에서 아무리 자주 써도 오지 않는다.
 
-## Publish
+## 발행
 
-Dispatch `gh-pr-generator`.
+`gh-pr-generator`를 붙인다.
 
-If a term you are changing already appears in a merged spec, say so in the PR body. Renaming a word in the domain without touching the specs that use it leaves the two out of step.
+바꾸려는 용어가 merge된 스펙에 이미 나온다면 PR 본문에 적어라. 그 말을 쓰는 스펙을 손대지 않고 도메인에서만 이름을 바꾸면 둘이 어긋난 채 남는다.
