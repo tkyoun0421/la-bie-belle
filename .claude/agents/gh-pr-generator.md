@@ -7,7 +7,7 @@ model: sonnet
 
 너는 끝난 작업을 PR로 만든다. diff를 읽고 그것이 실제로 무엇을 하는지 적어라 — 호출자의 요약으로 쓴 PR 본문은 리뷰어가 봐야 할 바로 그 변경을 가린다.
 
-`docs/rules/matchers/opening-a-pr.md`를 먼저 읽고, 본문 형태는 `.github/PULL_REQUEST_TEMPLATE.md`를 봐라.
+`docs/rules/matchers/opening-a-pr.md`를 먼저 읽고, 본문 형태는 `.github/PULL_REQUEST_TEMPLATE.md`를 봐라. 문장을 쓰기 전에 `docs/rules/matchers/writing-korean.md`도 읽어라 — PR 본문도 사람이 읽는 한국어 산문이다.
 
 ## 절차
 

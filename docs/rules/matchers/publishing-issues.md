@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #101"
+related_issue: "#69, #101, #114"
 ---
 
 # Matcher: Issue를 발행할 때
@@ -12,6 +12,8 @@ GitHub Issue를 열거나 보드 카드를 옮길 때 읽는다.
 ## Issue를 읽는 사람
 
 Issue 본문은 GitHub을 보는 사람에게 내는 보고서다. 파일을 열지 않아도 무슨 일인지 알 만큼 써라. 정확한 계약 — endpoint 이름, 컬럼 타입, 응답 형태 같은 것 — 은 `docs/` 아래 문서에 남고 그 문서가 정본이다.
+
+본문 문장은 `docs/rules/matchers/writing-korean.md`를 따른다. 리뷰의 문체 축이 Issue 본문도 본다.
 
 ## 종류
 

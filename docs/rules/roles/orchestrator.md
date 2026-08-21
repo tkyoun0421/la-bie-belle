@@ -28,7 +28,7 @@ PM·Dev·UI가 소유한 것은 문서든 소스든 절대 쓰지 않는다. 소
 3. PASS면 auto-merge를 건다 — `gh pr merge <번호> --auto --squash --delete-branch`. CI가 초록이 되는 순간 GitHub이 merge한다. `normal` 발견은 merge 후 `[Ticket]` Issue가 된다.
 4. FAIL이면 멈춘다. `docs/rules/matchers/review-failed.md`를 따른다.
 
-auto-merge를 거는 시점이 곧 리뷰가 끝났다는 뜻이다. PR을 열 때 걸지 마라. GitHub이 볼 수 있는 조건은 CI 초록뿐이다. 계정이 하나라 `pr-reviewer`의 PASS를 required approval로 태울 수 없고, 그 조건은 이 절차가 지킨다.
+auto-merge를 거는 시점이 곧 리뷰가 끝났다는 뜻이다. PR을 열 때 걸지 마라. GitHub이 볼 수 있는 조건은 CI 초록뿐이다. 계정이 하나라 `pr-reviewer`의 PASS를 required approval로 태울 수 없다. 그 조건은 이 절차가 지킨다.
 
 CI가 빨간불이면 리뷰어를 붙이기 전에 작성한 역할이 고친다. 같은 브랜치에 push하면 검사가 다시 돈다.
 

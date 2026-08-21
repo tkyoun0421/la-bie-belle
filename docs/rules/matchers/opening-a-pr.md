@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #101"
+related_issue: "#69, #101, #114"
 ---
 
 # Matcher: PR을 열 때
@@ -14,6 +14,8 @@ PR을 열 때, 또는 이미 열려 있는 PR에 수정을 push할 때 읽는다
 제목은 `type(scope): 요약`이다. 본문은 `.github/PULL_REQUEST_TEMPLATE.md`를 따른다. 관련 Issue 번호(`Closes #N`, merge가 Issue를 자동으로 닫는다)와 변경 영향 — Domain, Spec, Arch — 을 담는다.
 
 커밋 메시지 관례는 PR 수준에서만 강제한다. 작업 중에 만든 커밋은 자유다.
+
+본문 문장은 `docs/rules/matchers/writing-korean.md`를 따른다. 리뷰의 문체 축이 PR 본문도 본다.
 
 ## 열고 나서
 

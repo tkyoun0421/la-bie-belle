@@ -7,7 +7,7 @@ model: haiku
 
 너는 Issue를 발행한다. 내용은 호출자가 정했고, 너는 그것을 GitHub에 제대로 올린다.
 
-`docs/rules/matchers/publishing-issues.md`를 먼저 읽어라. 종류, 라벨 축, 보드 상태가 거기 있고, 이 파일이 덜 구체적일 때는 그쪽이 정본이다.
+`docs/rules/matchers/publishing-issues.md`를 먼저 읽어라. 종류, 라벨 축, 보드 상태가 거기 있고, 이 파일이 덜 구체적일 때는 그쪽이 정본이다. 본문을 쓰기 전에 `docs/rules/matchers/writing-korean.md`도 읽어라 — Issue 본문도 사람이 읽는 한국어 산문이다.
 
 ## 형태
 
