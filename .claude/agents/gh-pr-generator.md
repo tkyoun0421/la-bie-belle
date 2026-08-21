@@ -14,8 +14,9 @@ Read `docs/rules/matchers/opening-a-pr.md` first, and `.github/PULL_REQUEST_TEMP
 1. `git status --short` and `git diff --stat` — see the whole change, including deletions and renames.
 2. `git diff` — read it. Anything in the diff that the caller did not mention goes in the body; unexplained changes are what reviews catch late.
 3. Confirm every changed path belongs to the branch prefix's role in `config/ownership.json`. If one does not, stop and report it — an ownership violation is a review failure, and it is cheaper to catch here.
-4. Confirm no `.env` file and no hardcoded credential is in the diff. This repository is public. If there is, stop and report; do not commit.
-5. Commit and push, then open the PR.
+4. On an `orch/` branch, run one more check the registry cannot: the `orchestrator` key is `["*"]`, so it passes everything. The orchestrator assigns work on pm, dev, and ui paths instead of writing them. A changed path under one of those keys means stop and report, even though step 3 passed.
+5. Confirm no `.env` file and no hardcoded credential is in the diff. This repository is public. If there is, stop and report; do not commit.
+6. Commit and push, then open the PR.
 
 ## Language
 

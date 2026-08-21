@@ -41,7 +41,7 @@ Rules are split along three axes. Load `docs/rules/common.md` always, your own r
 
 Which paths a key owns lives in `config/ownership.json`. Read it rather than recalling it — the guards and the reviewer read that same file, and a second copy in prose is a copy that drifts.
 
-The `orchestrator` key holds `["*"]`, because coordination reaches every path. That is access, not authorship. The orchestrator may touch anything and still writes nothing another role owns — not a document, not a source file. It assigns the work instead. Separately from the registry, the guards never see the orchestrator at all; **Enforcement** below says why.
+The `orchestrator` key holds `["*"]`, because coordination reaches every path. That is access, not authorship. The orchestrator may touch anything and still writes nothing another role owns — not a document, not a source file. It assigns the work instead. Separately from the registry, the ownership guards skip the orchestrator; the secrets block does not, and stops every role alike. **Enforcement** below says why.
 
 Never edit a path you do not own. Open a `[Request]` Issue for the owning agent instead.
 
@@ -89,7 +89,9 @@ Merge news is not broadcast. The orchestrator forwards a merge only when it crea
 
 ## Enforcement
 
-Two mechanisms guard ownership, and both **fail closed**: a broken `config/ownership.json` or an unregistered role in `.agent-role` blocks rather than allows. Only the orchestrator, which has no `.agent-role`, runs unchecked.
+Two mechanisms guard ownership, and both **fail closed**: a broken `config/ownership.json` or an unregistered role in `.agent-role` blocks rather than allows. Only the orchestrator, which has no `.agent-role`, passes the ownership check unexamined.
+
+The secrets block is a separate matter. `.githooks/pre-commit` rejects `.env*` and `.envrc` before it ever looks for `.agent-role`, so it catches the orchestrator too.
 
 - **PreToolUse hook** `.claude/hooks/ownership-guard.sh` (logic in `ownership-check.py`) rejects `Edit`, `Write`, and `NotebookEdit` on paths outside the role's ownership at the moment of editing. Absolute paths outside the role's own worktree are rejected too, including other worktrees; temp directories and `~/.claude` are the exceptions.
 - **pre-commit hook** `.githooks/pre-commit` checks ownership of staged changes — additions, modifications, deletions, and both sides of a rename — and blocks any `.env*` or `.envrc` anywhere in the tree, with `.env.example` as the only exception. After cloning or resetting the repo, run `git config core.hooksPath .githooks` once.
