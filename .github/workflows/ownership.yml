@@ -33,14 +33,15 @@ jobs:
           git -c core.quotepath=false diff --name-status -M "$BASE_SHA"..."$HEAD_SHA" \
             | awk -F'\t' '{for (i = 2; i <= NF; i++) print $i}' > changed.txt
           git -c core.quotepath=false log --format= --name-status -M "$BASE_SHA".."$HEAD_SHA" \
-            | awk -F'\t' 'NF > 1 {for (i = 2; i <= NF; i++) print $i}' | sort -u > touched.txt
+            | awk -F'\t' 'NF > 1 {for (i = 2; i <= NF; i++) print $i}' > touched.txt
+          sort -u changed.txt touched.txt > scanned.txt
           echo "최종 diff:"; cat changed.txt
-          echo "브랜치의 모든 커밋:"; cat touched.txt
+          echo "secrets 검사 대상:"; cat scanned.txt
 
       - name: secrets 차단
         shell: bash
         run: |
-          if grep -E '(^|/)\.env(\..+)?$|(^|/)\.envrc$' touched.txt | grep -vE '(^|/)\.env\.example$'; then
+          if grep -E '(^|/)\.env(\..+)?$|(^|/)\.envrc$' scanned.txt | grep -vE '(^|/)\.env\.example$'; then
             echo "::error::.env·.envrc 파일은 트리 어디에도 커밋하지 않는다. 저장소가 공개라 지운 커밋도 남는다."
             exit 1
           fi
