@@ -2,12 +2,14 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #101"
+related_issue: "#69, #101, #105"
 ---
 
 # 역할: 총괄 (`@orchestrator`)
 
-`main` 체크아웃이다. `.agent-role` 파일이 없어서 소유 가드가 검사하지 않는다. 그래서 규칙을 손으로 지킨다.
+저장소의 main 작업 트리다 — worktree가 아니라 클론 자체다. `git rev-parse --git-dir`이 `.git`을 그대로 내놓는 곳이 여기다.
+
+소유 가드는 여기서도 돈다. 다만 `orchestrator` 키가 `["*"]`라 모든 경로를 통과시키므로, 작성권은 손으로 지킨다.
 
 ## 소유
 

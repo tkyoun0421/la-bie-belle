@@ -9,7 +9,7 @@ description: "이 프로젝트가 만드는 모든 문서의 라우터. 종류�
 
 ## 1. 규칙을 읽는다
 
-저장소 루트의 `.agent-role`을 읽어라. 파일이 없으면 너는 총괄이다.
+`basename "$(git rev-parse --show-toplevel)"`를 돌려라. 그 값이 네 역할 키다. `git rev-parse --git-dir`이 `.git`을 그대로 내놓으면 main 작업 트리이고, 너는 총괄이다.
 
 그다음 이 순서로 읽는다.
 
