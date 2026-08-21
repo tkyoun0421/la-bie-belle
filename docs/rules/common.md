@@ -111,13 +111,17 @@ merge 소식은 뿌리지 않는다. 총괄은 그 merge가 특정 역할에게 
 
 ## 집행
 
-판정은 한 자리에 있다. `scripts/ownership-check.py`가 "역할 R이 경로 P를 쓸 수 있나"에 답하고, 아래 셋이 그것을 부른다. 셋 다 **fail closed**다 — `config/ownership.json`이 깨졌거나, worktree 이름이 역할 키가 아니거나, 브랜치 접두가 가리키는 역할이 worktree와 다르면 통과가 아니라 차단이다. 총괄도 예외가 아니다. `["*"]`가 총괄의 모든 경로를 통과시킬 뿐, 검사 자체는 똑같이 돈다.
+판정은 한 자리에 있다. `scripts/ownership-check.py`가 "역할 R이 경로 P를 쓸 수 있나"에 답하고, 아래 셋이 그것을 부른다.
+
+셋 다 **fail closed**다. `config/ownership.json`을 읽을 수 없으면 어디서든 차단이다. 훅 둘은 worktree 이름이 역할 키가 아니거나 브랜치 접두가 가리키는 역할과 다를 때 막고, CI는 worktree가 없는 자리라 접두가 등록된 넷이 아니거나 그 값이 비었을 때 막는다.
+
+총괄도 예외가 아니다. `["*"]`가 총괄의 모든 경로를 통과시킬 뿐, 검사 자체는 똑같이 돈다.
 
 secrets 차단은 별개 축이다. `.githooks/pre-commit`은 역할을 가리기도 전에 `.env*`와 `.envrc`를 거절하므로 총괄도 여기에 걸린다.
 
 - **PreToolUse 훅** `.claude/hooks/ownership-guard.sh`가 판정 module을 불러, 편집 시점에 역할 소유 밖 경로의 `Edit`·`Write`·`NotebookEdit`를 거절한다. 자기 worktree 밖의 절대 경로도 거절한다 — 다른 worktree도 포함이고, 임시 디렉터리와 `~/.claude`만 예외다.
 - **pre-commit 훅** `.githooks/pre-commit`이 스테이지된 변경의 소유를 검사한다 — 추가·수정·삭제와 rename 양쪽이다. 그리고 트리 어디에 있든 `.env*`와 `.envrc`를 막는다. 유일한 예외는 `.env.example`이다. 저장소를 클론하거나 리셋한 뒤에는 `git config core.hooksPath .githooks`를 한 번 돌려라.
-- **CI** `.github/workflows/ownership.yml`이 PR마다 같은 판정을 다시 돌린다. worktree가 없는 자리라 역할은 브랜치 접두에서 온다 — `--branch`가 그 값을 나른다. `.env` 계열 차단도 같이 돈다. 이 검사는 required status check라 빨간불이면 merge가 거부된다.
+- **CI** `.github/workflows/ownership.yml`이 PR마다 같은 판정을 다시 돌린다. worktree가 없는 자리라 역할은 브랜치 접두에서 온다 — `--branch`가 그 값을 나른다. 판정 module과 registry는 PR이 아니라 base 커밋에서 꺼내 읽는다. 그러지 않으면 PR이 registry에 자기 줄을 넣어 스스로를 통과시킨다. `.env` 계열 차단도 같이 도는데, 이쪽은 최종 diff가 아니라 브랜치의 모든 커밋을 훑는다 — 넣었다 지운 키도 공개 저장소의 이력에는 남기 때문이다. 이 검사는 required status check라 빨간불이면 merge가 거부된다.
 
 로컬 훅 둘은 끌 수 있다. `git commit --no-verify`가 pre-commit 훅을 건너뛰고, PreToolUse 훅은 Claude Code 설정을 고치면 꺼진다. 둘 다 규칙 위반이고, 그래서 같은 판정이 CI에 한 번 더 있다. CI는 저장소 설정이 지키므로 에이전트가 끄지 못한다.
 

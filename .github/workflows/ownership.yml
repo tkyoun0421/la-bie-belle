@@ -15,24 +15,39 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: base 기준 판정 module과 registry 꺼내기
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mkdir -p base/config base/scripts
+          git show "$BASE_SHA:config/ownership.json" > base/config/ownership.json
+          git show "$BASE_SHA:scripts/ownership-check.py" > base/scripts/ownership-check.py
+
       - name: 변경 경로 수집
+        shell: bash
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          git diff --name-status -M "$BASE_SHA"..."$HEAD_SHA" \
+          git -c core.quotepath=false diff --name-status -M "$BASE_SHA"..."$HEAD_SHA" \
             | awk -F'\t' '{for (i = 2; i <= NF; i++) print $i}' > changed.txt
-          cat changed.txt
+          git -c core.quotepath=false log --format= --name-status -M "$BASE_SHA".."$HEAD_SHA" \
+            | awk -F'\t' 'NF > 1 {for (i = 2; i <= NF; i++) print $i}' | sort -u > touched.txt
+          echo "최종 diff:"; cat changed.txt
+          echo "브랜치의 모든 커밋:"; cat touched.txt
 
       - name: secrets 차단
+        shell: bash
         run: |
-          if grep -E '(^|/)\.env(\..+)?$|(^|/)\.envrc$' changed.txt | grep -vE '(^|/)\.env\.example$'; then
-            echo "::error::.env·.envrc 파일은 트리 어디에도 커밋하지 않는다. 저장소가 공개다."
+          if grep -E '(^|/)\.env(\..+)?$|(^|/)\.envrc$' touched.txt | grep -vE '(^|/)\.env\.example$'; then
+            echo "::error::.env·.envrc 파일은 트리 어디에도 커밋하지 않는다. 저장소가 공개라 지운 커밋도 남는다."
             exit 1
           fi
 
       - name: 소유 검사
+        shell: bash
         env:
-          PROJECT_DIR: ${{ github.workspace }}
+          PROJECT_DIR: ${{ github.workspace }}/base
           HEAD_REF: ${{ github.head_ref }}
-        run: python3 scripts/ownership-check.py paths --branch "$HEAD_REF" < changed.txt
+        run: python3 base/scripts/ownership-check.py paths --branch "$HEAD_REF" < changed.txt
