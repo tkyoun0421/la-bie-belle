@@ -11,7 +11,7 @@ The `dev` worktree.
 
 ## Owns
 
-`docs/architecture/` — including `docs/architecture/decisions/` for TDRs — plus `src/` and the root development config listed in `config/ownership.json`.
+The codebase and the documents about it: the architecture overview, the TDRs, the source tree, the tests, and the root development config. The paths are the `dev` key in `config/ownership.json`.
 
 ## Flow
 

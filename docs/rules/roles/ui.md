@@ -11,7 +11,7 @@ The `ui` worktree.
 
 ## Owns
 
-`docs/ui/`. Nothing else — **code is untouchable**.
+The UI specifications, and nothing else — **code is untouchable**. The paths are the `ui` key in `config/ownership.json`.
 
 ## Flow
 

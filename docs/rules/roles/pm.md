@@ -11,7 +11,7 @@ The `pm` worktree.
 
 ## Owns
 
-`docs/prd.md`, `docs/domain/`, `docs/adr/`, `docs/specs/`.
+The product documents: the PRD, the domain, the product and domain decision records, the specs. The paths are the `pm` key in `config/ownership.json`.
 
 ## Flow
 

@@ -46,7 +46,7 @@ Compare the target path against `config/ownership.json` and your role.
 
 If you do not own it, **stop here**. Dispatch `gh-issue-generator` to open a `[Request]` Issue for the owning role, describing what you need and why, then report the Issue number. Do not write the file, and do not open a branch.
 
-The orchestrator owns none of the documents in the table above. From the `main` checkout the answer is always a `[Request]`, or an assignment to the owning role.
+One role does not read the registry that way. The `orchestrator` key is `["*"]`, which is access and not authorship — the orchestrator writes none of the documents in the table above. From the `main` checkout the answer is always a `[Request]`, or an assignment to the owning role.
 
 ## 4. Cut the branch
 
