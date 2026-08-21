@@ -15,6 +15,8 @@ The frontier is every decision whose prerequisites are already settled — the q
 
 Ask one of them. One question, not the frontier. Then stop and wait. Several questions in one turn arrive as a wall of text and come back half answered.
 
+Number the questions in the order you ask them, across the whole interview — Q1, then Q2, then Q3. The count never restarts at a new turn.
+
 Open the turn with the frontier as titles — one line each, no bodies — so the size and the order of what is left is visible without being asked to answer it. Then ask the first. Keep that list current as answers land.
 
 Order the frontier by what it unblocks. A decision that changes the shape of later questions goes first.
@@ -25,7 +27,7 @@ After each answer, recompute the frontier and ask the next question. A question 
 
 Never ask the user for something the repository can answer. Unless the caller already handed you citations, dispatch `docs-locator` for anything under `docs/`; read the file yourself for anything else. Every claim in a question carries its `file:line`.
 
-A question whose facts you do not yet hold is not on the frontier. `docs-locator` answers in one shot — run it, read what it returns, then ask.
+A question whose facts you do not yet hold is not ready to ask, but the decision stays on the frontier — finding those facts is your work, not a reason to drop it. `docs-locator` answers in one shot: run it, read what it returns, then ask.
 
 ## Question format
 
@@ -75,10 +77,14 @@ Ask in the language the user is writing in. Where that is Korean, choose the eve
 
 When the frontier is empty, list every settled decision, then ask for approval in as many words. An answer given during the interview is not approval — the summary is what gets approved, and nothing is acted on until it does.
 
-Hand the settled set to whatever comes next. When a document follows, go through the `/doc` router — it resolves ownership and cuts the branch, and an interview that reaches a stage skill directly skips both. When the session's own work follows, carry on with it.
+Hand the settled set back to whoever called you. A stage skill calls this skill from inside its own Gather, which means `/doc` has already resolved ownership and cut the branch — return to that skill and let it write. Never send it back through the router.
+
+Nobody calls you when the user reaches this skill directly. If a document follows from there, start it through `/doc`: the router is what resolves ownership and cuts the branch, and the settled decisions travel with you in the conversation. Walking into a stage skill from here skips both.
+
+When the session's own work follows instead, carry on with it.
 
 ## Not this
 
-Write no file. The decisions land in the document the caller writes, or in an ADR or TDR.
+Write no file. The decisions land in the document that follows — the one the calling stage skill writes, or the one `/doc` routes to.
 
 Ask no question the repository already answers.
