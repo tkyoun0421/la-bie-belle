@@ -44,7 +44,7 @@ body:
     id: owner
     attributes:
       label: 담당
-      description: Epic은 경로가 없어 소유 registry가 담당을 정하지 못한다. 여기서 고른다.
+      description: Epic의 담당은 경로가 정하지 않는다. 스펙 파일은 PM 것이지만 그 Epic을 받아 슬라이스로 쪼개는 것은 Dev다. 그래서 여기서 고른다.
       options:
         - PM
         - Dev

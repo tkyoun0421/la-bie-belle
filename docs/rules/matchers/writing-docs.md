@@ -15,7 +15,7 @@ related_issue: "#69, #68, #101, #90"
 
 `docs/templates/`에서 시작한다. 빈 파일에서 시작하지 않는다.
 
-어느 종류가 어느 경로와 템플릿을 쓰는지, 그리고 어느 stage 스킬이 받는지는 `config/documents.json`에 있다. 외워서 쓰지 말고 그 파일을 읽어라 — 소유 registry와 같은 패턴이고, 산문에 둔 두 번째 사본이 먼저 어긋나는 사본이다.
+어느 종류가 어느 경로와 템플릿을 쓰는지, 그리고 어느 stage 스킬이 받는지는 `config/documents.json`에 있다. 외워서 쓰지 말고 그 파일을 읽어라 — 소유 registry와 같은 패턴이며, 산문에 둔 두 번째 사본이 먼저 어긋나는 사본이다.
 
 소유는 그 파일에 없다. 경로를 `config/ownership.json`에 대서 정한다. registry 둘이 같은 사실을 적으면 둘이 갈린다.
 

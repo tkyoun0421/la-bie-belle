@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #88, #91, #101, #105, #106, #114"
+related_issue: "#69, #88, #91, #101, #105, #106, #114, #109"
 ---
 
 # 공통 규칙
@@ -124,7 +124,7 @@ secrets 차단은 별개 축이다. `.githooks/pre-commit`은 역할을 가리�
 
 - **PreToolUse 훅** `.claude/hooks/ownership-guard.sh`가 판정 module을 불러, 편집 시점에 역할 소유 밖 경로의 `Edit`·`Write`·`NotebookEdit`를 거절한다. 자기 worktree 밖의 절대 경로도 거절한다 — 다른 worktree도 포함이고, 임시 디렉터리와 `~/.claude`만 예외다.
 - **pre-commit 훅** `.githooks/pre-commit`이 스테이지된 변경의 소유를 검사한다 — 추가·수정·삭제와 rename 양쪽이다. 그리고 트리 어디에 있든 `.env*`와 `.envrc`를 막는다. 유일한 예외는 `.env.example`이다. 저장소를 클론하거나 리셋한 뒤에는 `git config core.hooksPath .githooks`를 한 번 돌려라.
-- **CI** `.github/workflows/ownership.yml`이 PR마다 같은 판정을 다시 돌린다. 역할은 브랜치 접두에서 오고 `--branch`가 그 값을 나른다. 판정 module과 registry는 PR이 아니라 base 커밋에서 꺼내 읽는다. 그러지 않으면 PR이 registry에 자기 줄을 넣어 스스로를 통과시킨다. 두 검사가 서로 다른 목록을 본다. 소유 검사는 base와 head를 견준 **최종 diff**만 본다 — 중간에 건드렸다가 되돌린 파일은 merge될 트리에 없으니 소유를 묻지 않는다. `.env` 계열 차단은 그 최종 diff에 **브랜치의 모든 커밋**을 더해 훑는다. 넣었다 지운 키가 공개 저장소의 이력에 남고, merge 커밋에서 얹은 파일은 커밋 목록에 나오지 않기 때문이다. 이 검사는 required status check라 빨간불이면 merge가 거부된다.
+- **CI** `.github/workflows/ownership.yml`이 PR마다 같은 판정을 다시 돌린다. 역할은 브랜치 접두에서 오고 `--branch`가 그 값을 나른다. 판정 module과 registry는 PR이 아니라 base 커밋에서 꺼내 읽는다. 그러지 않으면 PR이 registry에 자기 줄을 넣어 스스로를 통과시킨다. 두 검사가 서로 다른 목록을 본다. 소유 검사는 base와 head를 견준 **최종 diff**만 본다 — 중간에 건드렸다가 되돌린 파일은 merge될 트리에 없으니 소유를 묻지 않는다. `.env` 계열 차단은 그 최종 diff에 **브랜치의 모든 커밋**을 더해 훑는다. 넣었다 지운 키가 공개 저장소의 이력에 남기 때문이고, merge 커밋에서 얹은 파일은 커밋 목록에 나오지 않기 때문이다. 이 검사는 required status check라 빨간불이면 merge가 거부된다.
 
 로컬 훅 둘은 끌 수 있다. `git commit --no-verify`가 pre-commit 훅을 건너뛰고, PreToolUse 훅은 Claude Code 설정을 고치면 꺼진다. 둘 다 규칙 위반이고, 그래서 같은 판정이 CI에 한 번 더 있다. CI는 저장소 설정이 지키므로 에이전트가 끄지 못한다.
 
