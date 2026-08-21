@@ -11,7 +11,7 @@
 
 매 세션 시작 시, 첫 편집·브랜치·Issue보다 먼저 한다.
 
-1번의 예외는 총괄이다. 총괄은 저장소의 main 작업 트리에서 일한다 — worktree가 아니라 클론 자체다. `git rev-parse --git-dir`이 `.git`을 그대로 내놓으면 거기이고, linked worktree라면 `.git/worktrees/<이름>`이 나온다. 총괄은 `docs/rules/roles/orchestrator.md`를 읽는다.
+1번의 예외는 총괄이다. 총괄은 저장소의 main 작업 트리에서 일한다 — worktree가 아니라 클론 자체다. `git rev-parse --absolute-git-dir`과 `--git-common-dir`이 같은 곳을 가리키면 거기이고, linked worktree에서는 앞쪽이 `.git/worktrees/<이름>`이라 둘이 갈린다. 총괄은 `docs/rules/roles/orchestrator.md`를 읽는다.
 
 linked worktree인데 디렉터리 이름이 `pm`·`dev`·`ui` 중 하나가 아니면 이 시스템에서 아무 역할도 아니다. 소유 가드가 통과시키지 않는다. 네가 어느 역할인지 물어라. 역할을 짐작하지 말고, 총괄이라고는 더욱 짐작하지 마라.
 

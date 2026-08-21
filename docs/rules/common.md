@@ -45,7 +45,9 @@ related_issue: "#69, #88, #91, #101, #105"
 
 소유하지 않은 경로는 절대 고치지 마라. 대신 소유한 에이전트에게 `[Request]` Issue를 열어라.
 
-worktree는 자기 디렉터리 이름으로 정체성을 밝힌다. `pm`·`dev`·`ui`가 그대로 registry 키다. 총괄은 worktree가 아니라 저장소의 main 작업 트리에서 일한다 — `git rev-parse --git-dir`이 `.git`을 그대로 내놓는 곳이고, linked worktree에서는 `.git/worktrees/<이름>`이 나온다. 이름이 registry에 없는 worktree는 이 시스템에서 아무 역할도 아니고, 가드가 통과시키지 않는다.
+worktree는 자기 디렉터리 이름으로 정체성을 밝힌다. `pm`·`dev`·`ui`가 그대로 registry 키다. 총괄은 worktree가 아니라 저장소의 main 작업 트리에서 일한다 — `git rev-parse --absolute-git-dir`과 `--git-common-dir`이 같은 곳을 가리키는 곳이고, linked worktree에서는 앞쪽이 `.git/worktrees/<이름>`이라 둘이 갈린다.
+
+역할 키가 아닌 이름의 worktree는 이 시스템에서 아무 역할도 아니고, 가드가 통과시키지 않는다. `orchestrator`도 그 이름으로는 얻을 수 없다 — 총괄 자리는 디렉터리 이름이 아니라 main 작업 트리라는 사실이 정한다.
 
 정체성을 세션이 직접 적는 자리는 없다. 이름을 바꾸려면 작업 공간 자체를 옮겨야 한다.
 
@@ -57,7 +59,9 @@ worktree는 자기 디렉터리 이름으로 정체성을 밝힌다. `pm`·`dev`
 
 브랜치는 단명하고 작업 하나에 묶인다. 매 작업을 시작할 때 `git fetch origin`을 돌리고 `origin/main`에서 `<role>/<task-name>` 브랜치를 새로 딴다 — `pm/…`, `dev/…`, `ui/…`, `orch/…`. 장수 브랜치는 금지다.
 
-접두는 규약이 아니라 검사다. 브랜치에 서 있는 동안 가드가 worktree 이름과 접두를 맞대고, 어긋나면 커밋을 막는다. `dev` worktree에서 `pm/…` 브랜치를 따는 일은 그 자리에서 걸린다.
+접두는 규약이면서 검사다. 브랜치에 서 있는 동안 가드가 worktree 이름과 접두를 맞대고, 어긋나면 편집과 커밋을 막는다. `pm` worktree에서 `dev/…` 브랜치를 따는 것 자체는 git이 막지 않는다 — 걸리는 것은 그다음 편집이나 커밋이다.
+
+접두 넷 중 어느 것도 아닌 이름은 대조에서 빠지고, 그때는 worktree 이름 하나로 판정한다. 소유는 그래도 지켜지지만 접두 규칙 자체는 리뷰가 지킨다.
 
 task 사이에 role worktree는 아무 브랜치에도 서 있지 않는다. 그때는 접두가 없으니 디렉터리 이름 하나로 판정한다.
 
@@ -107,7 +111,7 @@ merge 소식은 뿌리지 않는다. 총괄은 그 merge가 특정 역할에게 
 
 ## 집행
 
-판정은 한 자리에 있다. `scripts/ownership-check.py`가 "역할 R이 경로 P를 쓸 수 있나"에 답하고, 아래 훅 둘이 그것을 부른다. 둘 다 **fail closed**다 — `config/ownership.json`이 깨졌거나, worktree 이름이 registry에 없거나, 브랜치 접두가 등록된 역할이 아니면 통과가 아니라 차단이다. 총괄도 예외가 아니다. `["*"]`가 총괄의 모든 경로를 통과시킬 뿐, 검사 자체는 똑같이 돈다.
+판정은 한 자리에 있다. `scripts/ownership-check.py`가 "역할 R이 경로 P를 쓸 수 있나"에 답하고, 아래 훅 둘이 그것을 부른다. 둘 다 **fail closed**다 — `config/ownership.json`이 깨졌거나, worktree 이름이 역할 키가 아니거나, 브랜치 접두가 가리키는 역할이 worktree와 다르면 통과가 아니라 차단이다. 총괄도 예외가 아니다. `["*"]`가 총괄의 모든 경로를 통과시킬 뿐, 검사 자체는 똑같이 돈다.
 
 secrets 차단은 별개 축이다. `.githooks/pre-commit`은 역할을 가리기도 전에 `.env*`와 `.envrc`를 거절하므로 총괄도 여기에 걸린다.
 
