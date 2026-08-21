@@ -45,13 +45,23 @@ The `orchestrator` key holds `["*"]`, because coordination reaches every path. T
 
 Never edit a path you do not own. Open a `[Request]` Issue for the owning agent instead.
 
-Each worktree carries its identity in two untracked files: `CLAUDE.local.md` holds the instructions, `.agent-role` holds the role marker the enforcement hooks read.
+A worktree declares its identity in one untracked file, `.agent-role`, which holds the role key the enforcement hooks read. The instructions themselves are tracked: `CLAUDE.md` at the repository root sends every session here at start-up. `CLAUDE.local.md`, where a worktree has one, is personal machine setup and carries no rules.
 
 Coding standards and conventions live in `docs/architecture/overview.md`, owned by Dev and written during the first design pass.
 
 ## Branches, PRs, and merges
 
 Branches are short-lived and scoped to one task. At the start of every task, run `git fetch origin` and cut a fresh `<role>/<task-name>` branch from `origin/main` — `pm/…`, `dev/…`, `ui/…`, `orch/…`. Long-lived branches are forbidden.
+
+Between tasks a worktree parks on no branch at all:
+
+```
+git checkout --detach origin/main      # idle
+git checkout -b pm/<task> origin/main  # work starts
+git branch -d pm/<task>                # after the merge, back to detached
+```
+
+A parked branch becomes a long-lived branch, which is exactly what the rule above forbids. Detached, there is no name to violate the prefix rule and no branch to fall behind. `main` is not an option for parking: git refuses to check out one branch in two worktrees, and the `main` checkout belongs to the orchestrator.
 
 Never commit directly to `main`. Every change, the orchestrator's included, lands through a PR.
 
