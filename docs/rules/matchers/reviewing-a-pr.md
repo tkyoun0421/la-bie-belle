@@ -29,10 +29,11 @@ Add newly discovered borderline cases to this table as they come up.
 
 1. **Secrets** (critical) — any `.env` family file or hardcoded key or token in the diff.
 2. **Ownership** (high) — every changed path belongs to the branch prefix's role per `config/ownership.json`. Three prefixes carry their own name; `orch/` is the key `orchestrator`. Check this even though the hooks exist: a role agent can bypass them, so the review is the last line of defence.
-3. **Spec conformance** (high) — the implementation matches the acceptance criteria in the SPEC file and the Issue, and adds no behaviour the spec never asked for.
-4. **Correctness** (high to critical) — clear bugs, broken edge cases, type and logic errors. Breaking `main` makes it critical.
-5. **Tests** (high) — behaviour changes carry tests, and existing tests were not weakened without reason.
-6. **Conventions** (normal) — title format, Issue number, Impact lines, and updated front matter on document changes.
+3. **Authorship** (high) — on an `orch/` PR only. The `orchestrator` key is `["*"]`, so the registry check above passes every path and cannot catch this axis. `docs/rules/roles/orchestrator.md` forbids the orchestrator from writing what pm, dev, or ui owns: it assigns that work instead. An `orch/` PR that changes a path under another role's key is a finding, and the registry's approval is not a defence. The exception is a path the owning role has handed over in writing — an accepted `[Request]` Issue, linked from the PR body.
+4. **Spec conformance** (high) — the implementation matches the acceptance criteria in the SPEC file and the Issue, and adds no behaviour the spec never asked for.
+5. **Correctness** (high to critical) — clear bugs, broken edge cases, type and logic errors. Breaking `main` makes it critical.
+6. **Tests** (high) — behaviour changes carry tests, and existing tests were not weakened without reason.
+7. **Conventions** (normal) — title format, Issue number, Impact lines, and updated front matter on document changes.
 
 ## Report
 
