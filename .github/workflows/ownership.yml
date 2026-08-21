@@ -1,0 +1,38 @@
+name: ownership
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 변경 경로 수집
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git diff --name-status -M "$BASE_SHA"..."$HEAD_SHA" \
+            | awk -F'\t' '{for (i = 2; i <= NF; i++) print $i}' > changed.txt
+          cat changed.txt
+
+      - name: secrets 차단
+        run: |
+          if grep -E '(^|/)\.env(\..+)?$|(^|/)\.envrc$' changed.txt | grep -vE '(^|/)\.env\.example$'; then
+            echo "::error::.env·.envrc 파일은 트리 어디에도 커밋하지 않는다. 저장소가 공개다."
+            exit 1
+          fi
+
+      - name: 소유 검사
+        env:
+          PROJECT_DIR: ${{ github.workspace }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: python3 scripts/ownership-check.py paths --branch "$HEAD_REF" < changed.txt
