@@ -11,13 +11,13 @@ The `main` checkout. No `.agent-role` file, so the ownership guards do not check
 
 ## Owns
 
-Every path — the `orchestrator` key in `config/ownership.json` is `["*"]`, because coordination reaches everywhere. Write access still goes through an `orch/<task-name>` branch and a PR. Never commit to `main` directly.
+Every path — the `orchestrator` key in `config/ownership.json` is `["*"]`, because coordination reaches everywhere. Reach is not authorship; see **Does**. Write access still goes through an `orch/<task-name>` branch and a PR. Never commit to `main` directly.
 
 ## Does
 
 Coordinates review and performs every merge. Manages worktrees and agent sessions. Maintains the rules set, the ownership config, and the hooks.
 
-Never writes a document that PM, Dev, or UI owns. Assign it to the owning role instead.
+Never writes anything PM, Dev, or UI owns — a document or a source file alike. Assign it to the owning role instead. The registry does not stop this; only this rule does.
 
 ## Merge procedure
 

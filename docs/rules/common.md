@@ -39,9 +39,9 @@ Rules are split along three axes. Load `docs/rules/common.md` always, your own r
 | `dev` | Dev (`@agent-dev`) | `dev/` | `dev` |
 | `ui` | UI (`@agent-ui`) | `ui/` | `ui` |
 
-Which paths a key owns lives in `config/ownership.json`, and nowhere else. Read it rather than recalling it — the guards and the reviewer read that same file, and a second copy in prose is a copy that drifts.
+Which paths a key owns lives in `config/ownership.json`. Read it rather than recalling it — the guards and the reviewer read that same file, and a second copy in prose is a copy that drifts.
 
-The `orchestrator` key holds `["*"]`. Coordination reaches every path, so it is not an exception to the rule; it is a role that owns everything.
+The `orchestrator` key holds `["*"]`, because coordination reaches every path. That is access, not authorship. The orchestrator may touch anything and still writes nothing another role owns — not a document, not a source file. It assigns the work instead. Separately from the registry, the guards never see the orchestrator at all; **Enforcement** below says why.
 
 Never edit a path you do not own. Open a `[Request]` Issue for the owning agent instead.
 
