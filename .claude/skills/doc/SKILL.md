@@ -9,7 +9,7 @@ description: "이 프로젝트가 만드는 모든 문서의 라우터. 종류�
 
 ## 1. 규칙을 읽는다
 
-`basename "$(git rev-parse --show-toplevel)"`를 돌려라. 그 값이 네 역할 키다. `git rev-parse --git-dir`이 `.git`을 그대로 내놓으면 main 작업 트리이고, 너는 총괄이다.
+`basename "$(git rev-parse --show-toplevel)"`를 돌려라. 그 값이 네 역할 키다. `git rev-parse --absolute-git-dir`과 `--git-common-dir`이 같은 곳을 가리키면 main 작업 트리이며, 너는 총괄이다.
 
 그다음 이 순서로 읽는다.
 
@@ -21,16 +21,9 @@ description: "이 프로젝트가 만드는 모든 문서의 라우터. 종류�
 
 ## 2. 종류를 가린다
 
-| 종류 | 대상 | 소유 | Stage 스킬 |
-|------|--------|-------|-------------|
-| `prd` | `docs/prd.md` | pm | `prd` |
-| `domain` | `docs/domain/<topic>.md` | pm | `domain` |
-| `adr` | `docs/adr/ADR-00N-<slug>.md` | pm | `decision` |
-| `tdr` | `docs/architecture/decisions/TDR-00N-<slug>.md` | dev | `decision` |
-| `spec` | `docs/specs/<feature>.md` | pm | `spec` |
-| `ui` / `ui-spec` | `docs/ui/<screen>.md` | ui | `ui-spec` |
-| `arch` | `docs/architecture/overview.md` | dev | `arch` |
-| `slices` | 파일 없음 — GitHub Issue | dev | `slices` |
+종류마다 대상 경로, 템플릿, stage 스킬이 `config/documents.json`에 있다. 외워서 쓰지 말고 그 파일을 읽어라 — 산문에 둔 두 번째 사본이 먼저 어긋나는 사본이다. `aliases`에 적힌 이름도 같은 종류로 받는다. `slices`는 `path`가 `null`이다. 파일이 아니라 GitHub Issue를 만들기 때문이다.
+
+소유는 여기 없다. 3번에서 그 `path`를 `config/ownership.json`에 대서 정한다. 같은 사실을 두 파일에 적으면 둘이 갈린다. `path`가 없는 `slices`는 대조할 것이 없으니 `docs/rules/matchers/publishing-issues.md`의 종류 표가 담당을 정한다.
 
 종류가 주어지지 않았으면 어느 쪽인지 물어라. 스펙과 결정 기록 사이에서 짐작하지 마라 — 둘은 다른 자리에 다른 손으로 간다.
 
@@ -46,7 +39,7 @@ description: "이 프로젝트가 만드는 모든 문서의 라우터. 종류�
 
 네 소유가 아니면 **여기서 멈춰라**. `gh-issue-generator`를 붙여 소유한 역할에게 `[Request]` Issue를 열고, 무엇이 왜 필요한지 적은 뒤 Issue 번호를 보고해라. 파일을 쓰지도, 브랜치를 열지도 마라.
 
-한 역할은 registry를 그렇게 읽지 않는다. `orchestrator` 키는 `["*"]`인데 그건 접근이지 작성권이 아니다 — 총괄은 위 표의 어느 문서도 쓰지 않는다. `main` 체크아웃에서의 답은 언제나 `[Request]`이거나 소유한 역할에게 하는 배정이다.
+한 역할은 registry를 그렇게 읽지 않는다. `orchestrator` 키는 `["*"]`인데 그건 접근이지 작성권이 아니다 — 총괄은 `config/documents.json`에 실린 어느 문서도 쓰지 않는다. `main` 체크아웃에서의 답은 언제나 `[Request]`이거나 소유한 역할에게 하는 배정이다.
 
 ## 4. 브랜치를 딴다
 

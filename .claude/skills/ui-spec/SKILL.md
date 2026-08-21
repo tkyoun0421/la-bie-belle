@@ -7,6 +7,8 @@ description: "docs/ui/<screen>.md를 쓴다 — 이미 있는 화면의 시각·
 
 `docs/ui/<screen>.md`. `docs/templates/ui-spec.md`에서 시작한다.
 
+이 스킬은 `/doc` 라우터가 소유권을 확인하고 브랜치를 뗀 뒤를 전제한다. `git rev-parse --abbrev-ref HEAD`가 `<role>/<task-name>` 꼴이 아니면 라우터를 안 지난 것이니 `/doc`으로 돌아가라 — 여기서 소유권을 다시 판정하면 사본이 하나 더 생긴다.
+
 ## 전제
 
 화면이 이미 구현돼 있어야 한다. 여기서는 디자인이 구현을 뒤따른다. 아니면 검수할 것이 없다. 화면이 아직 없으면 눈감고 명세하지 말고 멈춰서 그렇게 말해라.

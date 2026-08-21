@@ -2,12 +2,12 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #101, #105, #106, #114"
+related_issue: "#69, #101, #105, #106, #114, #109"
 ---
 
 # 역할: 총괄 (`@orchestrator`)
 
-저장소의 main 작업 트리다 — worktree가 아니라 클론 자체다. `git rev-parse --git-dir`이 `.git`을 그대로 내놓는 곳이 여기다.
+저장소의 main 작업 트리다 — worktree가 아니라 클론 자체다. `git rev-parse --absolute-git-dir`과 `--git-common-dir`이 같은 곳을 가리키면 여기다. linked worktree에서는 앞쪽이 `.git/worktrees/<이름>`이라 둘이 갈린다.
 
 소유 가드는 여기서도 돈다. 다만 `orchestrator` 키가 `["*"]`라 모든 경로를 통과시키므로, 작성권은 손으로 지킨다.
 
