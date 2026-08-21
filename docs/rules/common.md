@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69"
+related_issue: "#69, #91"
 ---
 
 # Common Rules
@@ -53,15 +53,20 @@ Coding standards and conventions live in `docs/architecture/overview.md`, owned 
 
 Branches are short-lived and scoped to one task. At the start of every task, run `git fetch origin` and cut a fresh `<role>/<task-name>` branch from `origin/main` — `pm/…`, `dev/…`, `ui/…`, `orch/…`. Long-lived branches are forbidden.
 
-Between tasks a worktree parks on no branch at all:
+Between tasks a role worktree parks on no branch at all:
 
 ```
-git checkout --detach origin/main      # idle
-git checkout -b pm/<task> origin/main  # work starts
-git branch -d pm/<task>                # after the merge, back to detached
+git checkout --detach origin/main        # idle
+git checkout -b pm/<task> origin/main    # work starts
+                                         # the orchestrator squash-merges the PR
+git fetch origin --prune
+git checkout --detach origin/main        # leave the branch before deleting it
+git branch -D pm/<task>                  # -D, not -d: a squash merge rewrites the commit
 ```
 
-A parked branch becomes a long-lived branch, which is exactly what the rule above forbids. Detached, there is no name to violate the prefix rule and no branch to fall behind. `main` is not an option for parking: git refuses to check out one branch in two worktrees, and the `main` checkout belongs to the orchestrator.
+Delete the branch only after the merge lands. `git branch -d` refuses here — the squashed commit on `main` is not the branch's own commit, so git still calls the branch unmerged. The work is already on `main`; `-D` is the correct verb, not a shortcut around a warning.
+
+A parked branch becomes a long-lived branch, which is exactly what the rule above forbids. Detached, there is no name to violate the prefix rule and no branch to fall behind. `main` is not an option for parking: git refuses to check out one branch in two worktrees, and that checkout belongs to the orchestrator, who stays on `main` between tasks and works from `orch/` branches like everyone else.
 
 Never commit directly to `main`. Every change, the orchestrator's included, lands through a PR.
 
