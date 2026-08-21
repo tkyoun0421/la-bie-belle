@@ -91,7 +91,7 @@ Merge news is not broadcast. The orchestrator forwards a merge only when it crea
 
 Two mechanisms guard ownership, and both **fail closed**: a broken `config/ownership.json` or an unregistered role in `.agent-role` blocks rather than allows. Only the orchestrator, which has no `.agent-role`, passes the ownership check unexamined.
 
-The secrets block is a separate matter. `.githooks/pre-commit` rejects `.env*` and `.envrc` at lines 8–11, before it reads `.agent-role` at lines 13–14, so it catches the orchestrator too.
+The secrets block is a separate matter. `.githooks/pre-commit` rejects `.env*` and `.envrc` before it ever looks for `.agent-role`, so it catches the orchestrator too.
 
 - **PreToolUse hook** `.claude/hooks/ownership-guard.sh` (logic in `ownership-check.py`) rejects `Edit`, `Write`, and `NotebookEdit` on paths outside the role's ownership at the moment of editing. Absolute paths outside the role's own worktree are rejected too, including other worktrees; temp directories and `~/.claude` are the exceptions.
 - **pre-commit hook** `.githooks/pre-commit` checks ownership of staged changes — additions, modifications, deletions, and both sides of a rename — and blocks any `.env*` or `.envrc` anywhere in the tree, with `.env.example` as the only exception. After cloning or resetting the repo, run `git config core.hooksPath .githooks` once.
