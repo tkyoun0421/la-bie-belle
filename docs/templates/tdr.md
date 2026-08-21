@@ -5,24 +5,24 @@ related_adr: ""
 related_issue: ""
 ---
 
-# TDR-00N: {the decision in a short noun phrase}
+# TDR-00N: {결정을 짧은 명사구로}
 
-## Context
+## 맥락
 
-What forced a decision. The technical situation, the constraint, and anything a future reader would need to understand why this was even a question.
+무엇이 결정을 강요했나. 기술 상황, 제약, 그리고 나중에 읽는 사람이 "이게 왜 논쟁거리였는지"를 이해하는 데 필요한 것.
 
-## Decision
+## 결정
 
-What was decided, stated in the present tense as a rule the codebase now follows.
+무엇을 정했나. 코드베이스가 이제 따르는 규칙으로, 현재형 문장으로 적는다.
 
-## Alternatives considered
+## 검토한 대안
 
-The options that were genuinely on the table, each with the reason it lost. Name the library, service, or pattern explicitly — "we considered other options" records nothing.
+실제로 테이블에 올랐던 선택지와 각각이 밀린 이유. 라이브러리·서비스·패턴 이름을 그대로 적어라 — "다른 선택지도 검토했다"는 아무것도 기록하지 않는다.
 
-## Trade-offs
+## 트레이드오프
 
-What this decision costs: the performance, the coupling, the migration burden, the thing that becomes harder. Name it, so nobody later mistakes the cost for an oversight.
+이 결정이 치르는 값. 성능, 결합도, 마이그레이션 부담, 이제 더 어려워지는 일. 그걸 적어라. 그래야 나중에 누가 그 값을 실수로 오해하지 않는다.
 
 ---
 
-Records are append-only. Never rewrite a decided record: to reverse it, write a new one and set this one's `status` to `superseded`, noting which record replaces it. Status flows `proposed` → `accepted` → `superseded` and nowhere else.
+기록은 append-only다. 정해진 기록은 절대 다시 쓰지 않는다. 뒤집으려면 새 기록을 쓰고 이 기록의 `status`를 `superseded`로 바꾸며 무엇이 대신하는지 적는다. status는 `proposed` → `accepted` → `superseded`로만 흐른다.

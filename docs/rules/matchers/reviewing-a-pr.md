@@ -2,48 +2,48 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69"
+related_issue: "#69, #89, #101"
 ---
 
-# Matcher: Reviewing a PR
+# Matcher: PR을 리뷰할 때
 
-Load this when reviewing a PR or ruling on the severity of a finding.
+PR을 리뷰하거나 발견의 심각도를 판정할 때 읽는다.
 
-Judge the diff and the repository state, never the author's account of them. A reviewer reports; a reviewer does not fix.
+diff와 저장소 상태를 판단하지, 작성자가 그것에 대해 한 말을 판단하지 않는다. 리뷰어는 보고하고, 고치지 않는다.
 
-## Severity
+## 심각도
 
-Three tiers. The reviewer assigns them first; the orchestrator rules on borderline cases.
+세 단계다. 리뷰어가 먼저 매기고, 애매한 것은 총괄이 판정한다.
 
-| Severity | Criteria | Handling |
+| 심각도 | 기준 | 처리 |
 |----------|----------|----------|
-| **critical** | Secrets or PII exposed (the repo is public), data loss or destruction paths, authentication or authorisation bypass, `main` broken (build or existing tests fail) | No merge. The orchestrator orders an immediate fix from the authoring role |
-| **high** | Acceptance criteria unmet, clear functional bug, ownership violation, behaviour change with no test, domain policy implemented wrongly | No merge. The orchestrator orders an urgent fix from the authoring role |
-| **normal** | Refactoring, naming, performance headroom, minor convention slips such as missing front matter, spec ambiguity needing confirmation | Merge proceeds. Each item becomes a `[Ticket]` Issue for follow-up |
+| **critical** | 비밀 정보나 개인 정보 노출(저장소가 공개다), 데이터 유실·파괴 경로, 인증·인가 우회, `main`이 깨짐(빌드나 기존 테스트 실패) | merge 없음. 총괄이 작성한 역할에게 즉시 수정을 지시한다 |
+| **high** | 인수 조건 미충족, 명백한 기능 버그, 소유권 위반, 테스트 없는 동작 변경, 도메인 정책의 잘못된 구현 | merge 없음. 총괄이 작성한 역할에게 긴급 수정을 지시한다 |
+| **normal** | 리팩터링, 이름, 성능 여유, front matter 누락 같은 사소한 관례 어긋남, 확인이 필요한 명세 모호 | merge는 진행한다. 각 항목은 후속 `[Ticket]` Issue가 된다 |
 
-One `critical` or `high` finding makes the verdict FAIL. A PR with only `normal` findings passes, and every one of them is still listed.
+`critical`이나 `high` 발견이 하나라도 있으면 판정은 FAIL이다. `normal`만 있는 PR은 통과하고, 그래도 하나하나 전부 적는다.
 
-Add newly discovered borderline cases to this table as they come up.
+새로 나온 애매한 사례는 이 표에 덧붙여라.
 
-## What to check, in order
+## 무엇을 순서대로 볼 것인가
 
-1. **Secrets** (critical) — any `.env` family file or hardcoded key or token in the diff.
-2. **Ownership** (high) — every changed path belongs to the branch prefix's role per `config/ownership.json`. Three prefixes carry their own name; `orch/` is the key `orchestrator`. Check this even though the hooks exist: a role agent can bypass them, so the review is the last line of defence.
-3. **Authorship** (high) — on an `orch/` PR only. The `orchestrator` key is `["*"]`, so the registry check above passes every path and cannot catch this axis. `docs/rules/roles/orchestrator.md` forbids the orchestrator from writing what pm, dev, or ui owns: it assigns that work instead. An `orch/` PR that changes a path under another role's key is a finding, and the registry's approval is not a defence. There is no exception: an accepted `[Request]` means the owning role implements the change itself, never that it hands its paths over.
-4. **Spec conformance** (high) — the implementation matches the acceptance criteria in the SPEC file and the Issue, and adds no behaviour the spec never asked for.
-5. **Correctness** (high to critical) — clear bugs, broken edge cases, type and logic errors. Breaking `main` makes it critical.
-6. **Tests** (high) — behaviour changes carry tests, and existing tests were not weakened without reason.
-7. **Conventions** (normal) — title format, Issue number, Impact lines, and updated front matter on document changes.
+1. **비밀 정보** (critical) — diff 안의 `.env` 계열 파일이나 하드코딩된 키·토큰.
+2. **소유권** (high) — 바뀐 모든 경로가 `config/ownership.json`에서 브랜치 접두의 역할에 속하는가. 접두 셋은 자기 이름을 그대로 쓰고, `orch/`는 `orchestrator` 키다. 훅이 있어도 이걸 검사한다 — 역할 에이전트가 훅을 우회할 수 있으니 리뷰가 마지막 방어선이다.
+3. **작성권** (high) — `orch/` PR에만 해당한다. `orchestrator` 키가 `["*"]`라서 위의 registry 대조는 모든 경로를 통과시키고, 이 축을 잡지 못한다. `docs/rules/roles/orchestrator.md`는 총괄이 pm·dev·ui가 소유한 것을 쓰는 걸 금지한다. 총괄은 그 일을 배정한다. `orch/` PR이 다른 역할의 키에 속한 경로를 바꿨다면 그건 발견이고, registry가 통과시켰다는 사실은 방어가 되지 않는다. 예외는 없다. 수락된 `[Request]`는 소유한 역할이 직접 구현한다는 뜻이지, 경로를 넘긴다는 뜻이 아니다.
+4. **명세 부합** (high) — 구현이 SPEC 파일과 Issue의 인수 조건과 맞는가, 명세가 요구하지 않은 동작을 덧붙이지 않았는가.
+5. **정확성** (high~critical) — 명백한 버그, 깨진 경계 사례, 타입·로직 오류. `main`을 깨뜨리면 critical이다.
+6. **테스트** (high) — 동작 변경에 테스트가 붙었는가, 기존 테스트를 이유 없이 약화시키지 않았는가.
+7. **관례** (normal) — 제목 형식, Issue 번호, Impact 줄, 문서 변경 시 갱신된 front matter.
 
-## Report
+## 보고
 
-Report as final text only:
+최종 텍스트로만 보고한다.
 
 ```
 VERDICT: PASS | FAIL
 FINDINGS:
-- [critical|high|normal] file:line — the problem in one line. The evidence in one line.
-(write "없음" when there are none)
+- [critical|high|normal] file:line — 문제 한 줄. 근거 한 줄.
+(없으면 "없음"이라고 적는다)
 ```
 
-Guesses you cannot back with the diff do not go in the report.
+diff로 뒷받침할 수 없는 짐작은 보고서에 넣지 않는다.

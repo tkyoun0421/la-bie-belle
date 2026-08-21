@@ -2,27 +2,25 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69"
+related_issue: "#69, #101"
 ---
 
-# Matcher: Opening a PR
+# Matcher: PR을 열 때
 
-Load this when opening a PR or pushing a fix to one that is already open.
+PR을 열 때, 또는 이미 열려 있는 PR에 수정을 push할 때 읽는다.
 
-PR titles and bodies are written in Korean. See the language rule in `docs/rules/common.md`.
+## 제목과 본문
 
-## Title and body
+제목은 `type(scope): 요약`이다. 본문은 `.github/PULL_REQUEST_TEMPLATE.md`를 따른다. 관련 Issue 번호(`Closes #N`, merge가 Issue를 자동으로 닫는다)와 변경 영향 — Domain, Spec, Arch — 을 담는다.
 
-The title is `type(scope): 요약`. The body follows `.github/PULL_REQUEST_TEMPLATE.md`: it carries the related Issue number (`Closes #N`, so the merge closes it automatically) and the change impact — Domain, Spec, and Arch.
+커밋 메시지 관례는 PR 수준에서만 강제한다. 작업 중에 만든 커밋은 자유다.
 
-Commit message conventions are enforced at the PR level only. Commits made during the work are free-form.
+## 열고 나서
 
-## After you open it
+보드 카드를 **In Review**로 옮기고 총괄 세션에 벨을 울린다. PR을 여는 것이 완료 보고이고, 벨은 신호일 뿐이다.
 
-Move your board card to **In Review**, then ring the orchestrator session. Opening the PR is the completion report; the bell is only the signal.
+자기 PR은 자기가 리뷰하지 않는다.
 
-You do not review your own PR.
+## 수정을 push할 때
 
-## Pushing a fix
-
-A fix for a `critical` or `high` finding goes to the **same PR** as a new push, never to a new PR, and is re-reviewed. See `docs/rules/matchers/review-failed.md`.
+`critical`이나 `high` 발견의 수정은 새 PR이 아니라 **같은 PR**에 새 push로 간다. 그리고 다시 리뷰받는다. `docs/rules/matchers/review-failed.md`를 봐라.

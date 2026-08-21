@@ -2,125 +2,122 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #91"
+related_issue: "#69, #88, #91, #101"
 ---
 
-# Common Rules
+# 공통 규칙
 
-The constitution for agent collaboration on La Bie Belle. When another document contradicts the rules set under `docs/rules/`, the rules set wins. Only the orchestrator amends it, and only through a PR.
+라비에벨의 에이전트 협업 헌법이다. 다른 문서가 `docs/rules/`의 규칙과 부딪히면 규칙 세트가 이긴다. 고치는 사람은 총괄뿐이고, 방법은 PR뿐이다.
 
-## Module map
+## 모듈 지도
 
-Rules are split along three axes. Load `docs/rules/common.md` always, your own role file always, and a matcher only when its situation occurs.
+규칙은 축 셋으로 갈린다. `docs/rules/common.md`는 항상 읽고, 자기 역할 파일도 항상 읽고, matcher는 그 상황이 왔을 때만 읽는다.
 
-| Axis | Path | When to load |
+| 축 | 경로 | 읽는 때 |
 |------|------|--------------|
-| Always | `docs/rules/common.md` | Every task |
-| Who | `docs/rules/roles/<role>.md` | Every task, for the role in `.agent-role` |
-| When | `docs/rules/matchers/<situation>.md` | Only when that situation occurs |
+| 항상 | `docs/rules/common.md` | 매 작업 |
+| 누가 | `docs/rules/roles/<role>.md` | 매 작업. `.agent-role`이 가리키는 역할 |
+| 언제 | `docs/rules/matchers/<situation>.md` | 그 상황이 왔을 때만 |
 
-| Matcher | Load it when |
+| Matcher | 이때 읽는다 |
 |---------|--------------|
-| `writing-docs.md` | Creating or editing anything under `docs/` |
-| `publishing-issues.md` | Opening a GitHub Issue or moving a board card |
-| `opening-a-pr.md` | Opening a PR, or pushing a fix to an open one |
-| `reviewing-a-pr.md` | Reviewing a PR and assigning severity to findings |
-| `review-failed.md` | A review came back FAIL, or you received a fix order |
-| `blocked.md` | You cannot proceed and must stop |
-| `parallel-work.md` | Splitting work across subagents or worktrees |
-| `handling-secrets.md` | Touching credentials or `.env*` files |
+| `writing-docs.md` | `docs/` 아래를 만들거나 고칠 때 |
+| `publishing-issues.md` | GitHub Issue를 열거나 보드 카드를 옮길 때 |
+| `opening-a-pr.md` | PR을 열 때, 또는 열려 있는 PR에 수정을 push할 때 |
+| `reviewing-a-pr.md` | PR을 리뷰하고 발견에 심각도를 매길 때 |
+| `review-failed.md` | 리뷰가 FAIL로 돌아왔거나 수정 지시를 받았을 때 |
+| `blocked.md` | 더 갈 수 없어 멈춰야 할 때 |
+| `parallel-work.md` | subagent나 worktree로 일을 나눌 때 |
+| `handling-secrets.md` | 자격 증명이나 `.env*` 파일을 만질 때 |
 
-## Roles and workspaces
+## 역할과 작업 공간
 
-| Worktree | Agent | Branch prefix | Registry key |
+| Worktree | 에이전트 | 브랜치 접두 | Registry 키 |
 |----------|-------|---------------|--------------|
-| `main` checkout | Orchestrator (`@orchestrator`) | `orch/` | `orchestrator` |
+| `main` 체크아웃 | 총괄 (`@orchestrator`) | `orch/` | `orchestrator` |
 | `pm` | PM (`@agent-pm`) | `pm/` | `pm` |
 | `dev` | Dev (`@agent-dev`) | `dev/` | `dev` |
 | `ui` | UI (`@agent-ui`) | `ui/` | `ui` |
 
-Which paths a key owns lives in `config/ownership.json`. Read it rather than recalling it — the guards and the reviewer read that same file, and a second copy in prose is a copy that drifts.
+어느 키가 어느 경로를 소유하는지는 `config/ownership.json`에 있다. 외워서 쓰지 말고 그 파일을 읽어라 — 가드도 리뷰어도 같은 파일을 읽는다. 산문에 둔 두 번째 사본이 먼저 어긋나는 사본이다.
 
-The `orchestrator` key holds `["*"]`, because coordination reaches every path. That is access, not authorship. The orchestrator may touch anything and still writes nothing another role owns — not a document, not a source file. It assigns the work instead. Separately from the registry, the ownership guards skip the orchestrator; the secrets block does not, and stops every role alike. **Enforcement** below says why.
+`orchestrator` 키는 `["*"]`다. 조율이 모든 경로에 닿기 때문이다. 그건 접근이지 작성권이 아니다. 총괄은 무엇이든 만질 수 있지만 다른 역할이 소유한 것은 아무것도 쓰지 않는다 — 문서도 소스도 마찬가지다. 대신 그 일을 배정한다. registry와 별개로, 소유 가드는 총괄을 건너뛴다. secrets 차단은 건너뛰지 않는다. 이유는 아래 **집행**에 있다.
 
-Never edit a path you do not own. Open a `[Request]` Issue for the owning agent instead.
+소유하지 않은 경로는 절대 고치지 마라. 대신 소유한 에이전트에게 `[Request]` Issue를 열어라.
 
-A worktree declares its identity in one untracked file, `.agent-role`, which holds the role key the enforcement hooks read. The instructions themselves are tracked: `CLAUDE.md` at the repository root sends every session here at start-up. `CLAUDE.local.md`, where a worktree has one, is personal machine setup and carries no rules.
+worktree는 추적되지 않는 파일 `.agent-role` 하나로 자기 정체성을 밝힌다. 그 안에 집행 훅이 읽는 역할 키가 들어 있다. 지시 자체는 추적된다 — 저장소 루트의 `CLAUDE.md`가 세션이 시작될 때마다 여기로 보낸다. worktree에 `CLAUDE.local.md`가 있다면 그건 그 기계의 개인 설정이고 규칙은 담지 않는다.
 
-Coding standards and conventions live in `docs/architecture/overview.md`, owned by Dev and written during the first design pass.
+코딩 표준과 관례는 `docs/architecture/overview.md`에 산다. Dev가 소유하고 첫 설계 단계에서 쓴다.
 
-## Branches, PRs, and merges
+## 브랜치, PR, merge
 
-Branches are short-lived and scoped to one task. At the start of every task, run `git fetch origin` and cut a fresh `<role>/<task-name>` branch from `origin/main` — `pm/…`, `dev/…`, `ui/…`, `orch/…`. Long-lived branches are forbidden.
+브랜치는 단명하고 작업 하나에 묶인다. 매 작업을 시작할 때 `git fetch origin`을 돌리고 `origin/main`에서 `<role>/<task-name>` 브랜치를 새로 딴다 — `pm/…`, `dev/…`, `ui/…`, `orch/…`. 장수 브랜치는 금지다.
 
-Between tasks a role worktree parks on no branch at all:
+task 사이에 role worktree는 아무 브랜치에도 서 있지 않는다.
 
 ```
-git checkout --detach origin/main        # idle
-git checkout -b pm/<task> origin/main    # work starts
-                                         # the orchestrator squash-merges the PR
+git checkout --detach origin/main        # 유휴
+git fetch origin                         # 작업 시작
+git checkout -b pm/<task> origin/main
+                                         # 총괄이 PR을 squash merge한다
 git fetch origin --prune
-git checkout --detach origin/main        # leave the branch before deleting it
-git branch -D pm/<task>                  # -D, not -d: a squash merge rewrites the commit
+git checkout --detach origin/main        # 지우기 전에 그 브랜치에서 내려온다
+git branch -D pm/<task>                  # -d가 아니라 -D다. squash merge는 커밋을 다시 쓴다
 ```
 
-Delete the branch only after the merge lands. `git branch -d` refuses here — the squashed commit on `main` is not the branch's own commit, so git still calls the branch unmerged. The work is already on `main`; `-D` is the correct verb, not a shortcut around a warning.
+브랜치는 merge가 끝난 뒤에만 지운다. 여기서 `git branch -d`는 거절한다 — `main`에 얹힌 squash 커밋은 그 브랜치의 커밋이 아니라서 git이 아직 merge되지 않은 브랜치로 본다. 작업은 이미 `main`에 있다. `-D`가 맞는 동사이지 경고를 피해 가는 지름길이 아니다.
 
-A parked branch becomes a long-lived branch, which is exactly what the rule above forbids. Detached, there is no name to violate the prefix rule and no branch to fall behind. `main` is not an option for parking: git refuses to check out one branch in two worktrees, and that checkout belongs to the orchestrator, who stays on `main` between tasks and works from `orch/` branches like everyone else.
+주차된 브랜치는 곧 장수 브랜치이고, 그건 바로 위 규칙이 금지하는 것이다. detached 상태에는 접두 규칙을 어길 이름도 없고 뒤처질 브랜치도 없다. `main`에 주차하는 길은 막혀 있다 — git이 한 브랜치를 두 worktree에 체크아웃하지 못하게 하고, 그 체크아웃은 총괄 몫이다. 총괄은 task 사이에 `main`에 머물고 작업은 남들처럼 `orch/` 브랜치에서 한다.
 
-Never commit directly to `main`. Every change, the orchestrator's included, lands through a PR.
+`main`에 직접 커밋하지 않는다. 총괄의 것을 포함해 모든 변경은 PR로 들어간다.
 
-Only the orchestrator merges, and always as a **squash merge** — one commit on `main` per unit of work. A merge requires a PASS from the independent `pr-reviewer` agent. Nobody reviews their own PR. Once the product is deployed, merge authority moves to a human.
+merge는 총괄만 하고 언제나 **squash merge**다 — 작업 단위 하나가 `main`의 커밋 하나가 된다. merge하려면 독립 `pr-reviewer` 에이전트의 PASS가 있어야 한다. 자기 PR은 아무도 리뷰하지 않는다. 제품이 배포되면 merge 권한은 사람에게 넘어간다.
 
-PR titles use `type(scope): summary`, and the body carries the related Issue number and the change impact. Commit message conventions are enforced at the PR level only; commits during the work are free-form. See `docs/rules/matchers/opening-a-pr.md`.
+PR 제목은 `type(scope): 요약`이고, 본문은 관련 Issue 번호와 변경 영향을 담는다. 커밋 메시지 관례는 PR 수준에서만 강제한다. 작업 중의 커밋은 자유다. `docs/rules/matchers/opening-a-pr.md`를 봐라.
 
-## Work tracking
+## 작업 추적
 
-Tasks are tracked in GitHub Issues. History is tracked in `git log` and PR diffs. There is no separate tasks file and no changelog file.
+작업은 GitHub Issue로 추적한다. 이력은 `git log`와 PR diff로 추적한다. 별도의 tasks 파일도 changelog 파일도 없다.
 
-The single source of truth for a specification is the file under `docs/specs/`. An Issue body carries a summary and a link, never a copy of the detail. Corrections go to the file.
+명세의 유일한 정본은 `docs/specs/` 아래의 파일이다. Issue 본문은 요약과 링크를 담을 뿐 상세를 복사하지 않는다. 정정은 파일로 간다.
 
-Feature implementation comes before design. Applying a design is a separate slice, taken up after the `docs/ui/` specification exists.
+기능 구현이 디자인보다 먼저다. 디자인 적용은 `docs/ui/` 명세가 생긴 뒤 별도 슬라이스로 간다.
 
-Status lives in the Status field of the [La Bie Belle](https://github.com/users/tkyoun0421/projects/8) project board, not in labels. See `docs/rules/matchers/publishing-issues.md`.
+상태는 라벨이 아니라 [La Bie Belle](https://github.com/users/tkyoun0421/projects/8) 프로젝트 보드의 Status 필드에 산다. `docs/rules/matchers/publishing-issues.md`를 봐라.
 
-## Language
+## 언어
 
-Local documents are written in **English** — everything under `docs/` and `.claude/`. English keeps agent context cheap and unambiguous.
+이 저장소의 모든 글은 **한국어**로 쓴다. `docs/`와 `.claude/`의 로컬 문서도, GitHub의 Issue·PR·코멘트도 마찬가지다. 사람이 직접 읽는다.
 
-GitHub artifacts are written in **Korean** — Issue titles and bodies, PR titles and bodies, and every comment. A human reads those directly.
+코드, 명령, 식별자, 파일 경로, CLI 플래그, commit type 키워드(`feat`, `fix`, …), 스킬과 에이전트의 `name` 필드는 원문 그대로 둔다. 번역하면 그 자리에서 실행되지 않는다.
 
-Code, commands, identifiers, file paths, CLI flags, and commit type keywords (`feat`, `fix`, …) stay verbatim in both languages.
+## 소통
 
-One exception: a skill's `description` field may carry Korean trigger phrases. That field is matched against what the user types, and the user types Korean.
+**기록이 정본이고 벨은 신호일 뿐이다.** 에이전트 사이의 지시·요청·보고는 전부 GitHub에 쓴다 — PR 코멘트나 Issue다. Orca `terminal send` 벨은 "가서 봐라" 한 줄을 나른다. 터미널로만 전달된 지시는 일어나지 않은 것이다.
 
-## Communication
+PR 자체가 완료 보고다. 역할이 PR을 열고 총괄에게 벨을 울린다.
 
-**The record is canonical; the bell is only a signal.** Every instruction, request, and report between agents is written to GitHub — a PR comment or an Issue. The Orca `terminal send` bell carries one line that says "go look". An instruction delivered only through a terminal did not happen.
+merge 소식은 뿌리지 않는다. 총괄은 그 merge가 특정 역할에게 다음 일감을 만들 때만 전한다 — SPEC이 merge되면 Dev에게 슬라이스 분해가, 기능이 merge되면 UI에게 검수가 간다. 나머지는 각 역할이 다음 작업을 시작하며 `main`을 pull할 때 자연히 딸려온다.
 
-A PR is itself the completion report: the role opens the PR and rings the orchestrator.
+## 집행
 
-Merge news is not broadcast. The orchestrator forwards a merge only when it creates the next piece of work for a specific role — a merged SPEC hands slicing to Dev, a merged feature hands review to UI. Everything else, each role picks up naturally when it pulls `main` at the start of its next task.
+소유권을 지키는 장치가 둘이고 둘 다 **fail closed**다. `config/ownership.json`이 깨졌거나 `.agent-role`에 등록되지 않은 역할이 적혀 있으면 통과가 아니라 차단이다. `.agent-role`이 없는 총괄만 소유 검사를 검사받지 않고 지난다.
 
-## Enforcement
+secrets 차단은 별개다. `.githooks/pre-commit`은 `.agent-role`을 찾기도 전에 `.env*`와 `.envrc`를 거절하므로 총괄도 여기에 걸린다.
 
-Two mechanisms guard ownership, and both **fail closed**: a broken `config/ownership.json` or an unregistered role in `.agent-role` blocks rather than allows. Only the orchestrator, which has no `.agent-role`, passes the ownership check unexamined.
+- **PreToolUse 훅** `.claude/hooks/ownership-guard.sh` (판정 로직은 `ownership-check.py`)가 편집 시점에 역할 소유 밖 경로의 `Edit`·`Write`·`NotebookEdit`를 거절한다. 자기 worktree 밖의 절대 경로도 거절한다 — 다른 worktree도 포함이고, 임시 디렉터리와 `~/.claude`만 예외다.
+- **pre-commit 훅** `.githooks/pre-commit`이 스테이지된 변경의 소유를 검사한다 — 추가·수정·삭제와 rename 양쪽이다. 그리고 트리 어디에 있든 `.env*`와 `.envrc`를 막는다. 유일한 예외는 `.env.example`이다. 저장소를 클론하거나 리셋한 뒤에는 `git config core.hooksPath .githooks`를 한 번 돌려라.
 
-The secrets block is a separate matter. `.githooks/pre-commit` rejects `.env*` and `.envrc` before it ever looks for `.agent-role`, so it catches the orchestrator too.
+알려진 한계: 역할 에이전트는 `git commit --no-verify`를 쓰거나 `.agent-role`을 고쳐 자기 가드를 끌 수 있다. 그건 규칙 위반이고, 마지막 방어선은 독립 PR 리뷰다 — 리뷰어는 브랜치 접두와 바뀐 모든 경로의 소유를 매번 대조한다.
 
-- **PreToolUse hook** `.claude/hooks/ownership-guard.sh` (logic in `ownership-check.py`) rejects `Edit`, `Write`, and `NotebookEdit` on paths outside the role's ownership at the moment of editing. Absolute paths outside the role's own worktree are rejected too, including other worktrees; temp directories and `~/.claude` are the exceptions.
-- **pre-commit hook** `.githooks/pre-commit` checks ownership of staged changes — additions, modifications, deletions, and both sides of a rename — and blocks any `.env*` or `.envrc` anywhere in the tree, with `.env.example` as the only exception. After cloning or resetting the repo, run `git config core.hooksPath .githooks` once.
+## 기본 전제
 
-Known limit: a role agent can disable its own guard with `git commit --no-verify` or by editing `.agent-role`. That is a rule violation, and the last line of defence is the independent PR review — the reviewer always cross-checks the branch prefix against the ownership of every changed path.
+- 저장소는 **공개**다. `docs/rules/matchers/handling-secrets.md`를 봐라.
+- 이전 프로젝트의 산출물, 즉 `snapshot/2026-08-20-pre-reset` 브랜치는 참조 금지다. 이 프로젝트는 백지에서 시작한다.
 
-## Ground rules
+## 열린 항목
 
-- The repository is **public**. See `docs/rules/matchers/handling-secrets.md`.
-- Output from the previous project, on the `snapshot/2026-08-20-pre-reset` branch, is off limits. This project starts from a blank slate.
+아래가 정해지면 이 규칙 세트를 고친다.
 
-## Open items
-
-Amend this rules set once these are decided.
-
-- Document index and search script (tsx)
-- Automated test harness for the ownership guards (#63)
+- 문서 색인과 검색 스크립트 (tsx)
+- 소유권 가드 자동 테스트 하네스 (#63)

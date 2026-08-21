@@ -5,46 +5,46 @@ related_adr: ""
 related_issue: ""
 ---
 
-# Spec: {feature}
+# Spec: {기능}
 
-This file is the single source of truth for the feature. The `[Epic]` Issue links here and carries a summary only.
+이 파일이 기능의 유일한 정본이다. `[Epic]` Issue는 여기를 링크하고 요약만 담는다.
 
-## Summary
+## 요약
 
-What the feature does, in one paragraph, from the user's side.
+기능이 무엇을 하는지 사용자 쪽에서 한 문단으로.
 
-## User value
+## 사용자 가치
 
-Why a user wants this. If the answer is "because the system needs it", this is not a feature — it is an implementation detail of one.
+왜 사용자가 이걸 원하나. 답이 "시스템이 필요로 해서"라면 그건 기능이 아니라 어떤 기능의 구현 세부다.
 
-## Scope
+## 범위
 
-**In** — the behaviour this spec covers.
+**한다** — 이 명세가 다루는 동작.
 
-**Out** — behaviour deliberately excluded, and where it will be handled instead if it will be.
+**하지 않는다** — 일부러 뺀 동작과, 처리한다면 어디서 처리할지.
 
-## Flow
+## 흐름
 
-The path through the feature, step by step. Name the screens and the decision points. No file paths, no code.
+기능을 지나는 경로를 단계별로. 화면 이름과 분기점을 적는다. 파일 경로도 코드도 쓰지 않는다.
 
-## Domain rules
+## 도메인 규칙
 
-The rules the feature must respect, in the vocabulary of `docs/domain/`. Link the domain file rather than restating its definitions.
+기능이 지켜야 할 규칙을 `docs/domain/`의 어휘로. 정의를 다시 적지 말고 도메인 파일을 링크한다.
 
-## Acceptance criteria
+## 인수 조건
 
-Numbered, each in Given / When / Then form. These are what Dev slices against and what the reviewer checks, so each one has to be verifiable on its own.
+번호를 매기고 각각 Given / When / Then 형태로 쓴다. Dev가 이걸 기준으로 슬라이스를 쪼개고 리뷰어가 이걸 검사하니, 하나하나가 그 자체로 검증 가능해야 한다.
 
-1. **Given** {starting state} **when** {the user does X} **then** {the observable result}.
+1. **Given** {시작 상태} **when** {사용자가 X를 한다} **then** {관찰되는 결과}.
 
-## Data and state
+## 데이터와 상태
 
-What is stored, what changes, and what survives a refresh or a crash. Shapes and meanings, not schemas.
+무엇이 저장되고, 무엇이 바뀌고, 새로고침이나 크래시 뒤에 무엇이 살아남나. 스키마가 아니라 형태와 의미를 적는다.
 
-## Errors and edge cases
+## 오류와 경계 사례
 
-What happens when it goes wrong: invalid input, a conflict with someone else's action, a failed external call, an empty result. Each one gets the behaviour the user sees.
+잘못될 때 무슨 일이 일어나나 — 잘못된 입력, 다른 사람의 동작과의 충돌, 외부 호출 실패, 빈 결과. 각각에 사용자가 보는 동작을 붙인다.
 
-## Open questions
+## 열린 질문
 
-Anything that would change the acceptance criteria if answered differently. Written as questions, so a slice never ships against a guess.
+답이 달라지면 인수 조건이 바뀌는 것들. 질문 형태로 쓴다. 그래야 슬라이스가 짐작 위에서 출시되지 않는다.

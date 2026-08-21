@@ -5,32 +5,32 @@ related_adr: ""
 related_issue: ""
 ---
 
-# Domain: {topic}
+# 도메인: {주제}
 
-One or two sentences on what this part of the domain covers and why it exists as its own area.
+이 도메인 조각이 무엇을 다루고 왜 독립된 영역인지 한두 문장으로.
 
-## Language
+## 언어
 
-Be opinionated. When several words mean the same thing, pick one and list the rest under _Avoid_ so nobody reintroduces them.
+단호하게 정해라. 같은 것을 가리키는 말이 여럿이면 하나를 고르고 나머지는 _쓰지 않는다_ 에 나열해 다시 들어오지 못하게 한다.
 
-**{Term}**
-What it is, in one or two sentences. Define what it *is*, not what it does.
-_Avoid_: {synonyms that must not be used}
+**{용어}**
+무엇인지 한두 문장으로. 무엇을 *하는지*가 아니라 무엇*인지*를 정의한다.
+_쓰지 않는다_: {써서는 안 되는 동의어}
 
-Only terms specific to this project belong here. General programming concepts do not, however often the code uses them.
+이 프로젝트에만 있는 용어만 여기 온다. 일반 프로그래밍 개념은 코드에서 아무리 자주 써도 여기 오지 않는다.
 
-## Entities and relationships
+## 엔티티와 관계
 
-The things that exist and how they connect. Cardinality matters: one booking has many guests, one guest has many bookings.
+존재하는 것들과 이어지는 방식. 개수 관계가 중요하다 — 예약 하나에 손님 여럿, 손님 하나에 예약 여럿.
 
-## Invariants
+## 불변식
 
-Statements that are always true, whatever the code does. "A booking never overlaps another booking on the same table" is an invariant — the implementation has to make it so, and a test should prove it.
+코드가 무엇을 하든 언제나 참인 문장. "한 테이블의 예약은 다른 예약과 겹치지 않는다"가 불변식이다 — 구현이 그렇게 만들어야 하고 테스트가 증명해야 한다.
 
-## State transitions
+## 상태 전이
 
-For anything with a lifecycle, the states and the legal moves between them. Name the moves that are forbidden as well.
+수명 주기가 있는 것마다 상태와 그 사이의 합법적인 이동. 금지된 이동도 함께 적는다.
 
-## Open questions
+## 열린 질문
 
-Terms still contested, boundaries not yet drawn, invariants you suspect but cannot yet state. Written as questions.
+아직 다투는 용어, 아직 긋지 못한 경계, 짐작은 되지만 아직 못 박지 못한 불변식. 질문 형태로 쓴다.

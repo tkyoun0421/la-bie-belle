@@ -1,30 +1,30 @@
 ---
 name: prd
-description: "Writes or edits docs/prd.md, the product requirements document. Normally reached through the /doc router, which has already loaded the rules and cut the branch. PM only."
+description: "제품 요구사항 문서 docs/prd.md를 쓰거나 고친다. 보통 /doc 라우터를 지나 도달하고, 그때는 규칙이 이미 로드됐고 브랜치도 떼어져 있다. PM 전용."
 ---
 
 # PRD
 
-One file, `docs/prd.md`, from `docs/templates/prd.md`.
+파일 하나, `docs/prd.md`. `docs/templates/prd.md`에서 시작한다.
 
-## Gather
+## 모으기
 
-The PRD is the one document with no upstream source in the repository. Everything in it comes from the user.
+PRD는 저장소 안에 상류 출처가 없는 유일한 문서다. 내용 전부가 사용자에게서 온다.
 
-If the conversation does not already contain the answers, call the `interview` skill first and let it do the interviewing. Do not build your own question list — duplicating it means the user gets asked twice.
+대화에 이미 답이 없으면 `interview` 스킬을 먼저 부르고 인터뷰를 맡겨라. 네 질문 목록을 따로 만들지 마라 — 겹치면 사용자가 두 번 답한다.
 
-What the template needs answered: who has the problem and what it costs them today, what counts as success in measurable terms, what is deliberately out of scope, and the two or three journeys a user actually walks.
+템플릿이 답을 요구하는 것: 누가 그 문제를 겪고 오늘 무엇을 치르는가, 측정 가능한 말로 무엇이 성공인가, 무엇을 일부러 범위 밖에 두는가, 사용자가 실제로 걷는 두세 갈래는 무엇인가.
 
-Nothing here is a guess. What the user has not decided goes to **Open questions** as a question.
+여기서 짐작하는 것은 없다. 사용자가 안 정한 것은 질문 형태로 **열린 질문**으로 간다.
 
-## Write
+## 쓰기
 
-Dispatch `docs-generator` with the template path, the target path, and everything gathered. It writes English and fills every section.
+`docs-generator`를 붙이고 템플릿 경로, 대상 경로, 모은 것 전부를 넘겨라. 그 에이전트가 모든 절을 채운다.
 
-## Publish
+## 발행
 
-Dispatch `gh-pr-generator`. The PRD produces no Epic — it is the source the specs are later cut from, not a unit of work.
+`gh-pr-generator`를 붙인다. PRD는 Epic을 만들지 않는다 — 나중에 스펙을 잘라낼 원천이지 작업 단위가 아니다.
 
-## Editing an existing PRD
+## 이미 있는 PRD를 고칠 때
 
-Read the current file first and change only what the request touches. A PRD accumulates; rewriting it wholesale loses decisions nobody remembers making. If a change contradicts something already there, say so rather than quietly replacing it.
+현재 파일을 먼저 읽고 요청이 닿는 곳만 바꿔라. PRD는 쌓인다. 통째로 다시 쓰면 아무도 기억하지 못하는 결정이 사라진다. 바꾸려는 내용이 이미 있는 것과 부딪히면 조용히 갈아치우지 말고 말해라.

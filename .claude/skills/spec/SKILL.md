@@ -1,39 +1,39 @@
 ---
 name: spec
-description: "Writes docs/specs/<feature>.md — the single source of truth for one feature — and publishes the matching [Epic] Issue. Normally reached through the /doc router. PM only."
+description: "기능 하나의 유일한 정본인 docs/specs/<feature>.md를 쓰고, 짝이 되는 [Epic] Issue를 발행한다. 보통 /doc 라우터를 지나 도달한다. PM 전용."
 ---
 
 # Spec
 
-`docs/specs/<feature>.md`, from `docs/templates/spec.md`. This file is canonical; the Epic links to it.
+`docs/specs/<feature>.md`. `docs/templates/spec.md`에서 시작한다. 이 파일이 정본이고 Epic이 여기를 링크한다.
 
-## Gather
+## 모으기
 
-Unless the router already handed you citations, run `docs-locator` for the domain vocabulary this feature touches and any decision record that constrains it. A spec that renames a domain term or contradicts an accepted ADR is a defect, not a proposal.
+라우터가 인용을 이미 넘기지 않았다면, 이 기능이 닿는 도메인 어휘와 그것을 묶는 결정 기록을 `docs-locator`로 찾아라. 도메인 용어의 이름을 바꾸거나 수락된 ADR과 부딪히는 스펙은 제안이 아니라 결함이다.
 
-Synthesise from what the conversation and the repository already hold. If the feature has not been discussed at all, call the `interview` skill first.
+대화와 저장소가 이미 쥐고 있는 것에서 종합해라. 기능이 아예 논의되지 않았다면 `interview` 스킬을 먼저 부른다.
 
-## Acceptance criteria carry the weight
+## 무게는 인수 조건이 진다
 
-Everything else in the spec is context; the numbered Given / When / Then list is what Dev slices against and what the reviewer checks.
+스펙의 나머지는 맥락이다. Dev가 슬라이스를 자르는 기준도, 리뷰어가 검사하는 것도 번호 매긴 Given / When / Then 목록이다.
 
-Each criterion is verifiable on its own, names an observable result rather than an internal state, and covers one path. Split "the booking is saved and the guest is emailed" into two — they fail independently.
+각 조건은 그 자체로 검증 가능하고, 내부 상태가 아니라 관찰되는 결과를 말하며, 경로 하나를 덮는다. "예약이 저장되고 손님에게 메일이 간다"는 둘로 쪼갠다 — 따로 실패하기 때문이다.
 
-The list is not done when the happy path is covered. Invalid input, a conflict with someone else's action, a failed external call, an empty result: each gets a criterion, or gets named under Out of scope.
+행복한 경로를 덮었다고 목록이 끝난 게 아니다. 잘못된 입력, 다른 사람의 동작과의 충돌, 실패한 외부 호출, 빈 결과 — 각각이 조건을 갖거나 범위 밖에 이름으로 적힌다.
 
-## Write
+## 쓰기
 
-Dispatch `docs-generator` with the template, the target path, and everything gathered. Use the domain vocabulary exactly as `docs/domain/` defines it — link the domain file rather than restating definitions.
+`docs-generator`를 붙이고 템플릿, 대상 경로, 모은 것 전부를 넘겨라. 도메인 어휘는 `docs/domain/`이 정의한 그대로 쓰고, 정의를 다시 적지 말고 도메인 파일을 링크한다.
 
-No file paths, no code snippets. The exception is a shape that carries a decision more precisely than prose can — a state machine, a schema — trimmed to the decision.
+파일 경로도 코드 조각도 넣지 않는다. 예외는 산문보다 정확하게 결정을 담는 형태 — 상태 기계나 스키마 — 이고, 그것도 결정에 필요한 만큼만 남긴다.
 
-## Publish
+## 발행
 
-Two dispatches, in order.
+두 번 붙인다. 순서가 있다.
 
-1. `gh-issue-generator` — an `[Epic]` Issue in Korean carrying a link to the spec file and a summary, never a copy of the detail. It applies the labels and puts the card on the board.
-2. `gh-pr-generator` — the PR for the spec file, referencing the Epic.
+1. `gh-issue-generator` — 스펙 파일 링크와 요약을 담은 `[Epic]` Issue. 상세를 복사하지 않는다. 라벨을 붙이고 카드를 보드에 올린다.
+2. `gh-pr-generator` — 스펙 파일의 PR. Epic을 참조한다.
 
-## Editing an existing spec
+## 이미 있는 스펙을 고칠 때
 
-Corrections go to the file, never to the Issue body. When a merged spec changes and slices are already open against it, say so in the PR body — Dev needs to know which slices moved under them.
+정정은 Issue 본문이 아니라 파일로 간다. merge된 스펙이 바뀌는데 그에 대해 이미 열린 슬라이스가 있으면 PR 본문에 적어라 — 어느 슬라이스의 발밑이 움직였는지 Dev가 알아야 한다.

@@ -1,40 +1,40 @@
 ---
 name: slices
-description: "Breaks an [Epic] into vertical slice [Slice] sub-issues on GitHub. Produces no document. Normally reached through the /doc router. Dev only."
+description: "[Epic]을 수직 슬라이스 [Slice] sub-issue로 쪼갠다. 문서는 만들지 않는다. 보통 /doc 라우터를 지나 도달한다. Dev 전용."
 ---
 
 # Slices
 
-Takes an Epic number, reads the spec it links to, and publishes one `[Slice]` Issue per vertical slice. No file is written and no PR is opened.
+Epic 번호를 받아 그것이 링크한 스펙을 읽고, 수직 슬라이스마다 `[Slice]` Issue를 하나씩 발행한다. 파일은 쓰지 않고 PR도 열지 않는다.
 
-## Read the source
+## 원천을 읽는다
 
 ```
 gh issue view <epic> --comments
 ```
 
-Follow the link to `docs/specs/<feature>.md` and read the file. The Issue body is a summary — the acceptance criteria live in the file, and those are what the slices divide.
+`docs/specs/<feature>.md` 링크를 따라가 파일을 읽어라. Issue 본문은 요약이다 — 인수 조건은 파일에 살고, 슬라이스가 나누는 것이 그 조건들이다.
 
-Unless the router already handed you citations, run `docs-locator` for decisions that constrain the implementation before deciding the shape.
+라우터가 인용을 이미 넘기지 않았다면, 모양을 정하기 전에 구현을 묶는 결정을 `docs-locator`로 찾아라.
 
-## Cut the slices
+## 슬라이스를 자른다
 
-A slice cuts a narrow but complete path through every layer — schema, API, screen, tests. It is demoable on its own and sized to fit one fresh context window. A layer cut horizontally is not a slice: "add the database tables" leaves nothing a person can look at.
+슬라이스는 모든 층을 관통하는 좁지만 완결된 경로 하나를 자른다 — 스키마, API, 화면, 테스트다. 그 자체로 시연 가능하고, 새 컨텍스트 창 하나에 들어갈 크기다. 층을 가로로 자른 것은 슬라이스가 아니다. "데이터베이스 테이블 추가"는 사람이 볼 수 있는 것을 아무것도 남기지 않는다.
 
-Each slice claims a subset of the spec's numbered acceptance criteria. Every criterion lands in exactly one slice. A criterion nobody claimed means the Epic is not fully sliced; a criterion claimed twice means two slices will fight over the same code.
+각 슬라이스는 스펙의 번호 매긴 인수 조건 중 일부를 맡는다. 모든 조건은 정확히 한 슬라이스에 앉는다. 아무도 안 맡은 조건이 있으면 Epic이 다 쪼개지지 않은 것이고, 두 번 맡은 조건이 있으면 두 슬라이스가 같은 코드를 두고 다툰다.
 
-Name the slices that must finish first. A slice with no predecessor can start immediately.
+먼저 끝나야 하는 슬라이스를 지목해라. 선행이 없는 슬라이스는 곧바로 시작할 수 있다.
 
-For each slice, also outline how it is built — what the screen, the server, and the data each need — and what to watch for when two users collide or a call fails. The `[Slice]` form asks for both, and Dev is the only one who can answer them. Keep it to the outline: exact endpoint signatures, column types, and response shapes belong in the design document, not in the Issue.
+슬라이스마다 어떻게 만드는지도 개괄해라 — 화면·서버·데이터가 각각 무엇을 필요로 하는지, 그리고 두 사용자가 부딪히거나 호출이 실패할 때 무엇을 조심해야 하는지다. `[Slice]` 폼이 둘 다 묻고, 답할 수 있는 건 Dev뿐이다. 개괄에 머물러라 — 정확한 endpoint 시그니처, 컬럼 타입, 응답 형태는 Issue가 아니라 설계 문서의 몫이다.
 
-A wide mechanical refactor is the exception to vertical slicing — one change whose blast radius crosses the whole codebase cannot land green as a tracer bullet. Sequence it instead: add the new form beside the old, migrate call sites in batches small enough to keep CI green, then delete the old form once no caller remains. Each step is its own slice, blocked by the previous one.
+넓은 기계적 리팩터링은 수직 슬라이싱의 예외다. 폭발 반경이 코드베이스 전체를 가로지르는 변경 하나는 예광탄처럼 초록으로 착지할 수 없다. 대신 순서를 매겨라 — 옛 형태 옆에 새 형태를 두고, 호출 지점을 CI가 초록으로 남을 만큼 작은 묶음으로 옮기고, 남은 호출자가 없을 때 옛 형태를 지운다. 각 단계가 자기 슬라이스이고 앞 단계에 막혀 있다.
 
-## Publish
+## 발행
 
-Dispatch `gh-issue-generator` with the slice list, in dependency order so each Issue can reference real numbers. It creates them in Korean, attaches each as a sub-issue of the Epic, applies the labels, and puts the cards on the board.
+`gh-issue-generator`를 붙이고 슬라이스 목록을 의존 순서로 넘겨라. 그래야 각 Issue가 실제 번호를 참조할 수 있다. 그 에이전트가 Issue를 만들고, Epic의 sub-issue로 붙이고, 라벨을 달고, 카드를 보드에 올린다.
 
-New slice cards go to **Backlog**, except the ones with no predecessor, which go to **Todo** — those are what Dev can pick up immediately.
+새 슬라이스 카드는 **Backlog**로 간다. 선행이 없는 것만 **Todo**로 간다 — Dev가 곧바로 집을 수 있는 것들이다.
 
-Do not modify or close the Epic, and do not move its card. PM closes it when every slice is closed.
+Epic은 고치지도 닫지도 말고 카드도 옮기지 마라. 슬라이스가 전부 닫히면 PM이 닫는다.
 
-This skill writes no file and opens no PR, so there is no branch to cut and no card of its own to move. Slicing is finished when the Issues exist and are on the board.
+이 스킬은 파일을 쓰지 않고 PR도 열지 않으니 딸 브랜치도, 옮길 자기 카드도 없다. Issue가 생기고 보드에 올라가면 슬라이싱은 끝난 것이다.

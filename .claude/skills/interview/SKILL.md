@@ -1,90 +1,90 @@
 ---
 name: interview
-description: "Interviews the user until every decision behind a plan is settled — one question at a time, each carrying its background, its options as competing claims, and what each option wins and loses. Use before writing a PRD, spec, domain document, ADR, or TDR, before amending the rules set, and whenever a plan needs stress-testing. Korean triggers: 인터뷰 해줘, 질문해줘, 뭘 정해야 하지, 이 계획 따져줘, 설계 검증, 결정 좀 하자."
+description: "계획 뒤에 깔린 결정을 전부 정할 때까지 사용자를 인터뷰한다 — 한 번에 한 질문씩, 각 질문은 배경과 서로 경쟁하는 주장으로서의 선택지, 그리고 각 선택지가 얻고 잃는 것을 함께 담는다. PRD·스펙·도메인 문서·ADR·TDR을 쓰기 전에, 규칙 세트를 고치기 전에, 그리고 계획을 압박 시험해야 할 때 쓴다. 트리거: 인터뷰 해줘, 질문해줘, 뭘 정해야 하지, 이 계획 따져줘, 설계 검증, 결정 좀 하자."
 ---
 
-# Interview
+# 인터뷰
 
-Settle every decision behind a plan before anyone writes a document or touches code. You ask; the user decides.
+문서를 쓰거나 코드를 만지기 전에 계획 뒤에 깔린 결정을 전부 정한다. 묻는 건 너고 정하는 건 사용자다.
 
-Model the plan as a tree. Each answer settles one decision and opens the ones hanging off it.
+계획을 트리로 본다. 답 하나가 결정 하나를 닫고 거기 매달린 결정들을 연다.
 
-## One question at a time
+## 한 번에 한 질문
 
-The frontier is every decision whose prerequisites are already settled — the questions answerable now, without guessing at an answer you have not heard.
+프런티어는 전제가 이미 정해진 결정 전부다 — 아직 듣지 못한 답을 짐작하지 않고도 지금 답할 수 있는 질문들이다.
 
-Ask one of them. One question, not the frontier. Then stop and wait. Several questions in one turn arrive as a wall of text and come back half answered.
+그중 하나를 물어라. 프런티어가 아니라 질문 하나다. 그리고 멈춰서 기다려라. 한 턴에 여러 질문을 던지면 벽 같은 글로 도착해 절반만 답이 돌아온다.
 
-Number the questions in the order you ask them, across the whole interview — Q1, then Q2, then Q3. The count never restarts at a new turn.
+질문에는 물어본 순서대로 인터뷰 전체를 관통하는 번호를 매긴다 — Q1, Q2, Q3. 새 턴이라고 번호가 다시 1로 돌아가지 않는다.
 
-Open the turn with the frontier as titles — one line each, no bodies — so the size and the order of what is left is visible without being asked to answer it. Then ask the first. Keep that list current as answers land.
+턴을 열 때 프런티어를 제목만으로 — 한 줄씩, 본문 없이 — 먼저 보여라. 남은 것의 크기와 순서가 답하라는 압박 없이 보이게. 그다음 첫 질문을 한다. 답이 도착할 때마다 그 목록을 최신으로 유지한다.
 
-Order the frontier by what it unblocks. A decision that changes the shape of later questions goes first.
+프런티어는 무엇을 풀어주는지로 정렬한다. 뒤 질문의 모양을 바꾸는 결정이 먼저다.
 
-After each answer, recompute the frontier and ask the next question. A question that depends on one still open is not on the frontier at all. Repeat until it is empty.
+답이 하나 오면 프런티어를 다시 계산하고 다음 질문을 한다. 아직 열린 결정에 기대는 질문은 애초에 프런티어가 아니다. 프런티어가 빌 때까지 반복한다.
 
-## Facts are yours, decisions are the user's
+## 사실은 네 몫이고 결정은 사용자 몫이다
 
-Never ask the user for something the repository can answer. Unless the caller already handed you citations, dispatch `docs-locator` for anything under `docs/`; read the file yourself for anything else. Every claim in a question carries its `file:line`.
+저장소가 답할 수 있는 것을 사용자에게 묻지 마라. 호출자가 인용을 이미 넘겼다면 그걸 쓰고, 아니면 `docs/` 아래는 `docs-locator`를 붙이고 그 밖은 네가 직접 파일을 읽어라. 질문 안의 모든 주장은 자기 `file:line`을 달고 있다.
 
-A question whose facts you do not yet hold is not ready to ask, but the decision stays on the frontier — finding those facts is your work, not a reason to drop it. `docs-locator` answers in one shot: run it, read what it returns, then ask.
+사실을 아직 못 쥔 질문은 물을 준비가 안 된 것이지만, 그 결정은 프런티어에 그대로 남는다 — 사실을 찾는 게 네 일이지 결정을 버릴 이유가 아니다. `docs-locator`는 한 번에 답한다. 돌리고, 돌아온 걸 읽고, 그다음에 물어라.
 
-## Question format
+## 질문 형식
 
-Four blocks, in this order.
+블록 넷을 이 순서로.
 
-**What the problem is.** Prose, never a list. Three beats: how it stands today, what that costs in one concrete situation, and why the question opens now. Citations sit inside the sentences.
+**문제가 무엇인가.** 목록이 아니라 산문이다. 세 박자로 — 지금 어떻게 서 있고, 그게 구체적인 상황 하나에서 무엇을 치르게 하고, 왜 이 질문이 지금 열리는가. 인용은 문장 안에 앉는다.
 
-**Options.** Each option is a claim, not a menu item. Under its heading, two lines: why the claim holds, and what actually changes — which file, which situation. Three real options beat five padded ones.
+**선택지.** 각 선택지는 메뉴 항목이 아니라 주장이다. 제목 아래 두 줄 — 왜 그 주장이 서는가, 그리고 실제로 무엇이 바뀌는가(어느 파일, 어느 상황). 진짜 선택지 셋이 부풀린 다섯보다 낫다.
 
-**What each option wins and loses.** A table, one row per option, a column for each. Short cells: this block is for comparison side by side, not for argument.
+**각 선택지가 얻고 잃는 것.** 표로, 선택지마다 한 행, 얻는 것과 잃는 것에 각각 한 열. 칸은 짧게 — 이 블록은 나란히 놓고 비교하는 자리이지 논증하는 자리가 아니다.
 
-**Recommendation.** One option, one line of why.
+**추천.** 선택지 하나와 이유 한 줄.
 
-Rendered — headings in the user's language, structure as below:
+렌더링하면 이렇다. 제목은 사용자의 언어로, 구조는 아래대로.
 
 ```
-<what is left: one line per decision still on the frontier, titles only, this one marked>
+<남은 것: 프런티어에 아직 있는 결정마다 한 줄, 제목만, 지금 묻는 것에 표시>
 
-❓ **Q1 — <the decision, in one line>**
+❓ **Q1 — <이번에 정할 것, 한 줄>**
 
-### <what the problem is>
-<prose, three beats, citations inline>
+### <문제가 무엇인가>
+<산문, 세 박자, 인용은 문장 안에>
 
-### <options>
-**A. <the claim>**
-<why it holds>
-<what changes>
+### <선택지>
+**A. <주장>**
+<왜 서는가>
+<무엇이 바뀌는가>
 
-**B. <the claim>**
+**B. <주장>**
 …
 
-### <what each wins and loses>
-| | <wins> | <loses> |
+### <각각 얻고 잃는 것>
+| | <얻는 것> | <잃는 것> |
 |---|---|---|
 | A | … | … |
 | B | … | … |
 
-### <recommendation>
-**B** — <one line>
+### <추천>
+**B** — <한 줄>
 ```
 
-## Language
+## 언어
 
-Ask in the language the user is writing in. Where that is Korean, choose the everyday word over the Sino-Korean compound, and keep every sentence short enough to read once.
+사용자가 쓰는 언어로 물어라. 한국어라면 한자어 대신 일상어를 고르고, 문장은 한 번에 읽힐 만큼 짧게 유지한다.
 
-## Ending
+## 마무리
 
-When the frontier is empty, list every settled decision, then ask for approval in as many words. An answer given during the interview is not approval — the summary is what gets approved, and nothing is acted on until it does.
+프런티어가 비면 정해진 결정을 전부 나열하고 그만큼의 말로 승인을 구한다. 인터뷰 중에 나온 답은 승인이 아니다 — 승인받는 것은 그 요약이고, 승인 전에는 아무것도 실행하지 않는다.
 
-Hand the settled set back to whoever called you. A stage skill calls this skill from inside its own Gather, which means `/doc` has already resolved ownership and cut the branch — return to that skill and let it write. Never send it back through the router.
+정해진 묶음을 너를 부른 쪽에 돌려준다. stage 스킬은 자기 Gather 안에서 이 스킬을 부르는데, 그건 `/doc`이 이미 소유권을 확인하고 브랜치를 땄다는 뜻이다 — 그 스킬로 돌아가 쓰게 둬라. 라우터로 되돌리지 마라.
 
-Nobody calls you when the user reaches this skill directly. If a document follows from there, start it through `/doc`: the router is what resolves ownership and cuts the branch, and the settled decisions travel with you in the conversation. Walking into a stage skill from here skips both.
+사용자가 이 스킬로 곧장 들어왔을 때는 부른 쪽이 없다. 거기서 문서로 이어진다면 `/doc`으로 시작해라. 소유권을 가리고 브랜치를 따는 건 라우터이고, 정해진 결정은 대화에 실려 함께 간다. 여기서 stage 스킬로 바로 걸어 들어가면 둘 다 건너뛴다.
 
-When the session's own work follows instead, carry on with it.
+세션 자신의 작업으로 이어진다면 그대로 계속한다.
 
-## Not this
+## 하지 않는 것
 
-Write no file. The decisions land in the document that follows — the one the calling stage skill writes, or the one `/doc` routes to.
+파일을 쓰지 않는다. 결정은 뒤따르는 문서에 앉는다 — 부른 stage 스킬이 쓰는 문서이거나 `/doc`이 라우팅하는 문서다.
 
-Ask no question the repository already answers.
+저장소가 이미 답하는 질문은 하지 않는다.

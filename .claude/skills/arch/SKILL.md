@@ -1,32 +1,32 @@
 ---
 name: arch
-description: "Writes or edits docs/architecture/overview.md — the codebase's shape, conventions, and testing seams. Normally reached through the /doc router. Dev only."
+description: "docs/architecture/overview.md를 쓰거나 고친다 — 코드베이스의 모양, 관례, 테스트 이음매다. 보통 /doc 라우터를 지나 도달한다. Dev 전용."
 ---
 
-# Architecture overview
+# 아키텍처 개요
 
-`docs/architecture/overview.md`, from `docs/templates/architecture-overview.md`. One file, the only place coding standards live.
+`docs/architecture/overview.md`. `docs/templates/architecture-overview.md`에서 시작한다. 파일 하나이고, 코딩 표준이 사는 유일한 자리다.
 
-## Gather
+## 모으기
 
-Read the codebase before writing about it. What is actually there beats what was planned, and this document is worthless the moment the two diverge.
+코드베이스에 대해 쓰기 전에 코드베이스를 읽어라. 계획된 것보다 실제로 있는 것이 이긴다. 둘이 갈라지는 순간 이 문서는 값을 잃는다.
 
-Unless the router already handed you citations, run `docs-locator` for the TDRs already recorded — the overview indexes them, it does not re-argue them. A decision that carries lock-in belongs in a TDR with its alternatives and trade-offs; the overview gets one line and a link.
+라우터가 인용을 이미 넘기지 않았다면, 이미 기록된 TDR을 `docs-locator`로 찾아라 — 개요는 그것들을 색인할 뿐 다시 논쟁하지 않는다. 종속을 만드는 결정은 대안과 트레이드오프를 달고 TDR로 가고, 개요에는 한 줄과 링크만 남는다.
 
-## Write
+## 쓰기
 
-Dispatch `docs-generator` with the template, the target path, and what you found.
+`docs-generator`를 붙이고 템플릿, 대상 경로, 찾은 것을 넘겨라.
 
-Write rules, not preferences. "Components are named after what they render, not where they sit" is a rule a reviewer can apply; "keep names clean" is not.
+취향이 아니라 규칙을 써라. "컴포넌트는 어디에 앉는지가 아니라 무엇을 그리는지로 이름 짓는다"는 리뷰어가 적용할 수 있는 규칙이고, "이름을 깔끔하게 유지한다"는 아니다.
 
-Say what does *not* belong in each directory as well as what does. The exclusions are what stop the structure from eroding.
+디렉터리마다 무엇이 들어가는지와 함께 무엇이 들어가지 *않는지*도 적어라. 구조가 무너지는 걸 막는 건 그 제외다.
 
-For testing, name the prior art — the existing test whose shape another agent should copy. An abstract description of good tests produces none.
+테스트는 선례를 지목해라 — 다른 에이전트가 모양을 베낄 기존 테스트다. 좋은 테스트에 대한 추상적 서술은 테스트를 하나도 만들지 않는다.
 
-## Publish
+## 발행
 
-Dispatch `gh-pr-generator`.
+`gh-pr-generator`를 붙인다.
 
-## Editing
+## 고칠 때
 
-This document accumulates and is read constantly. Change only what the request touches, and when a new convention contradicts an existing one, replace the old line rather than adding a second rule beside it — two conventions for the same thing is worse than none.
+이 문서는 쌓이고 계속 읽힌다. 요청이 닿는 곳만 바꿔라. 새 관례가 기존 관례와 부딪히면 옆에 규칙을 하나 더 두지 말고 옛 줄을 갈아라 — 같은 것에 관례가 둘이면 없느니만 못하다.

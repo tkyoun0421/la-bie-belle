@@ -1,36 +1,36 @@
 ---
 name: decision
-description: "Writes an ADR (product and domain decisions, PM) or a TDR (technical decisions, Dev). Picks the path and the numbering from the calling role. Normally reached through the /doc router."
+description: "ADR(제품·도메인 결정, PM)이나 TDR(기술 결정, Dev)을 쓴다. 부르는 역할을 보고 경로와 번호를 정한다. 보통 /doc 라우터를 지나 도달한다."
 ---
 
-# Decision record
+# 결정 기록
 
-The role decides which it is. PM writes `docs/adr/ADR-00N-<slug>.md` from `docs/templates/adr.md`. Dev writes `docs/architecture/decisions/TDR-00N-<slug>.md` from `docs/templates/tdr.md`.
+어느 쪽인지는 역할이 정한다. PM은 `docs/templates/adr.md`에서 `docs/adr/ADR-00N-<slug>.md`를 쓴다. Dev는 `docs/templates/tdr.md`에서 `docs/architecture/decisions/TDR-00N-<slug>.md`를 쓴다.
 
-## Number it
+## 번호를 붙인다
 
 ```
-ls docs/adr            # or: ls docs/architecture/decisions
+ls docs/adr            # 또는: ls docs/architecture/decisions
 ```
 
-The number is the highest existing one plus one, zero-padded to three digits. Two records must never share a number — check at write time, not from memory.
+번호는 기존 최댓값에 하나를 더하고 세 자리로 0을 채운다. 두 기록이 같은 번호를 갖는 일은 없어야 한다 — 기억이 아니라 쓰는 시점에 확인해라.
 
-## Gather
+## 모으기
 
-Unless the router already handed you citations, run `docs-locator` for records already covering this ground. If one exists and this decision reverses it, you are superseding: write the new record, then set the old one's `status` to `superseded` and name the replacement. Never edit the old record's Context, Decision, Alternatives, or Trade-offs — those stay as they were when the decision was made.
+라우터가 인용을 이미 넘기지 않았다면, 이 자리를 이미 덮은 기록이 있는지 `docs-locator`로 찾아라. 있고 이번 결정이 그것을 뒤집는다면 대체하는 것이다. 새 기록을 쓴 다음 옛 기록의 `status`를 `superseded`로 바꾸고 무엇이 대신하는지 적어라. 옛 기록의 맥락·결정·대안·트레이드오프는 절대 고치지 마라 — 그건 결정하던 그때 그대로 남는다.
 
-The four sections need: what forced the decision, what was decided, which alternatives were genuinely on the table and why each lost, and what this costs.
+네 절이 필요로 하는 것: 무엇이 결정을 강요했나, 무엇을 정했나, 실제로 테이블에 올랐던 대안은 무엇이고 각각 왜 밀렸나, 그리고 이게 무엇을 치르나.
 
-The alternatives section is the one that earns the record. "We considered other options" records nothing — name the library, the pattern, the service, and the specific reason it lost. Without that, the same alternative gets proposed again in six months.
+기록을 값지게 만드는 절은 대안이다. "다른 선택지도 검토했다"는 아무것도 기록하지 않는다 — 라이브러리, 패턴, 서비스의 이름과 밀린 구체적 이유를 적어라. 그게 없으면 같은 대안이 반년 뒤에 다시 올라온다.
 
-When the alternatives were never argued out with the user, call the `interview` skill first. Its options block is what this section is made of — each option a claim, with what it wins and what it loses.
+대안을 사용자와 따져본 적이 없다면 `interview` 스킬을 먼저 불러라. 그 스킬의 선택지 블록이 이 절의 재료다 — 각 선택지가 주장이고, 얻는 것과 잃는 것을 달고 있다.
 
-## Write
+## 쓰기
 
-Dispatch `docs-generator`. New records start at `status: proposed` and move to `accepted` when the decision is actually in force.
+`docs-generator`를 붙인다. 새 기록은 `status: proposed`로 시작하고, 결정이 실제로 효력을 가질 때 `accepted`로 옮긴다.
 
-Keep it to the decision. Implementation detail belongs in the spec or the code, and file paths belong nowhere — they go stale before the record does.
+결정에만 머물러라. 구현 세부는 스펙이나 코드의 몫이고, 파일 경로는 어디에도 안 온다 — 기록보다 먼저 낡는다.
 
-## Publish
+## 발행
 
-Dispatch `gh-pr-generator`. When the record supersedes an earlier one, say which in the PR body — that is the pair a reviewer has to check together.
+`gh-pr-generator`를 붙인다. 이 기록이 앞선 기록을 대체한다면 어느 것인지 PR 본문에 적어라 — 리뷰어가 함께 봐야 하는 짝이 그것이다.

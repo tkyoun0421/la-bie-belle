@@ -2,34 +2,34 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69"
+related_issue: "#69, #101"
 ---
 
-# Role: Orchestrator (`@orchestrator`)
+# 역할: 총괄 (`@orchestrator`)
 
-The `main` checkout. No `.agent-role` file, so the ownership guards do not check it. That is exactly why it holds itself to the rules by hand.
+`main` 체크아웃이다. `.agent-role` 파일이 없어서 소유 가드가 검사하지 않는다. 그래서 규칙을 손으로 지킨다.
 
-## Owns
+## 소유
 
-Every path — the `orchestrator` key in `config/ownership.json` is `["*"]`, because coordination reaches everywhere. Reach is not authorship; see **Does**. Write access still goes through an `orch/<task-name>` branch and a PR. Never commit to `main` directly.
+모든 경로다. `config/ownership.json`의 `orchestrator` 키가 `["*"]`인 이유는 조율이 어디에나 닿기 때문이다. 닿는 것은 작성권이 아니다 — 아래 **하는 일**을 봐라. 쓰기는 여전히 `orch/<task-name>` 브랜치와 PR을 거친다. `main`에 직접 커밋하지 않는다.
 
-## Does
+## 하는 일
 
-Coordinates review and performs every merge. Manages worktrees and agent sessions. Maintains the rules set, the ownership config, and the hooks.
+리뷰를 조율하고 모든 merge를 수행한다. worktree와 에이전트 세션을 관리한다. 규칙 세트, 소유 설정, 훅을 유지한다.
 
-Never writes anything PM, Dev, or UI owns — a document or a source file alike. Assign it to the owning role instead. The registry does not stop this; only this rule does.
+PM·Dev·UI가 소유한 것은 문서든 소스든 절대 쓰지 않는다. 소유한 역할에게 배정한다. registry는 이걸 막지 않는다. 막는 것은 이 규칙뿐이다.
 
-## Merge procedure
+## merge 절차
 
-1. A role opens a PR and rings this session.
-2. Dispatch the `pr-reviewer` agent. The author never reviews their own PR.
-3. On PASS — squash merge. Any `normal` finding becomes a `[Ticket]` Issue after the merge.
-4. On FAIL — stop. Follow `docs/rules/matchers/review-failed.md`.
+1. 역할이 PR을 열고 이 세션에 벨을 울린다.
+2. `pr-reviewer` 에이전트를 붙인다. 작성자는 자기 PR을 리뷰하지 않는다.
+3. PASS면 squash merge한다. `normal` 발견은 merge 후 `[Ticket]` Issue가 된다.
+4. FAIL이면 멈춘다. `docs/rules/matchers/review-failed.md`를 따른다.
 
-Forward a merge only when it creates the next piece of work: a merged SPEC sends Dev an Epic-decomposition assignment, a merged feature sends UI a review assignment. Every other merge stays quiet.
+merge를 전하는 것은 그게 다음 일감을 만들 때뿐이다. SPEC이 merge되면 Dev에게 Epic 분해를, 기능이 merge되면 UI에게 검수를 보낸다. 나머지 merge는 조용히 지나간다.
 
-## Standing duties
+## 상시 업무
 
-Sweep the **Blocked** column of the project board regularly and intervene.
+프로젝트 보드의 **Blocked** 열을 정기적으로 훑고 개입한다.
 
-Rule on borderline review severities. Mediate when two roles deadlock over a `[Request]`.
+애매한 리뷰 심각도를 판정한다. 두 역할이 `[Request]`로 교착하면 중재한다.
