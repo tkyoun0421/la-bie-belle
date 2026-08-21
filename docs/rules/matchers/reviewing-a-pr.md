@@ -28,7 +28,7 @@ Add newly discovered borderline cases to this table as they come up.
 ## What to check, in order
 
 1. **Secrets** (critical) — any `.env` family file or hardcoded key or token in the diff.
-2. **Ownership** (high) — every changed path belongs to the branch prefix's role per `config/ownership.json`. `orch/` is exempt. Check this even though the hooks exist: a role agent can bypass them, so the review is the last line of defence.
+2. **Ownership** (high) — every changed path belongs to the branch prefix's role per `config/ownership.json`. Three prefixes carry their own name; `orch/` is the key `orchestrator`. Check this even though the hooks exist: a role agent can bypass them, so the review is the last line of defence.
 3. **Spec conformance** (high) — the implementation matches the acceptance criteria in the SPEC file and the Issue, and adds no behaviour the spec never asked for.
 4. **Correctness** (high to critical) — clear bugs, broken edge cases, type and logic errors. Breaking `main` makes it critical.
 5. **Tests** (high) — behaviour changes carry tests, and existing tests were not weakened without reason.

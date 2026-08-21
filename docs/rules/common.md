@@ -32,14 +32,16 @@ Rules are split along three axes. Load `docs/rules/common.md` always, your own r
 
 ## Roles and workspaces
 
-| Worktree | Agent | Owns |
-|----------|-------|------|
-| `main` checkout | Orchestrator (`@orchestrator`) | `docs/rules/`, `docs/templates/`, `config/`, `.claude/`, `.githooks/`, `.github/` — with access to every path |
-| `pm` | PM (`@agent-pm`) | `docs/prd.md`, `docs/domain/`, `docs/adr/`, `docs/specs/` |
-| `dev` | Dev (`@agent-dev`) | `docs/architecture/` (technical decisions under `architecture/decisions/` as TDRs), `src/`, root development config |
-| `ui` | UI (`@agent-ui`) | `docs/ui/` — never code |
+| Worktree | Agent | Branch prefix | Registry key |
+|----------|-------|---------------|--------------|
+| `main` checkout | Orchestrator (`@orchestrator`) | `orch/` | `orchestrator` |
+| `pm` | PM (`@agent-pm`) | `pm/` | `pm` |
+| `dev` | Dev (`@agent-dev`) | `dev/` | `dev` |
+| `ui` | UI (`@agent-ui`) | `ui/` | `ui` |
 
-`config/ownership.json` is the machine-readable source of truth for ownership. Where it disagrees with the table above, the JSON wins.
+Which paths a key owns lives in `config/ownership.json`, and nowhere else. Read it rather than recalling it — the guards and the reviewer read that same file, and a second copy in prose is a copy that drifts.
+
+The `orchestrator` key holds `["*"]`. Coordination reaches every path, so it is not an exception to the rule; it is a role that owns everything.
 
 Never edit a path you do not own. Open a `[Request]` Issue for the owning agent instead.
 

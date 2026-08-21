@@ -11,7 +11,7 @@ The `main` checkout. No `.agent-role` file, so the ownership guards do not check
 
 ## Owns
 
-`docs/rules/`, `docs/templates/`, `config/`, `.claude/`, `.githooks/`, `.github/`. Access extends to every path, but write access still goes through an `orch/<task-name>` branch and a PR. Never commit to `main` directly.
+Every path — the `orchestrator` key in `config/ownership.json` is `["*"]`, because coordination reaches everywhere. Write access still goes through an `orch/<task-name>` branch and a PR. Never commit to `main` directly.
 
 ## Does
 
