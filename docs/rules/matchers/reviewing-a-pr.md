@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #89, #101"
+related_issue: "#69, #89, #101, #114"
 ---
 
 # Matcher: PR을 리뷰할 때
@@ -34,6 +34,7 @@ diff와 저장소 상태를 판단하지, 작성자가 그것에 대해 한 말�
 5. **정확성** (high~critical) — 명백한 버그, 깨진 경계 사례, 타입·로직 오류. `main`을 깨뜨리면 critical이다.
 6. **테스트** (high) — 동작 변경에 테스트가 붙었는가, 기존 테스트를 이유 없이 약화시키지 않았는가.
 7. **관례** (normal) — 제목 형식, Issue 번호, Impact 줄, 문서 변경 시 갱신된 front matter.
+8. **문체** (normal) — 새로 쓴 한국어 산문에 `docs/rules/matchers/writing-korean.md`가 세운 S1 대상 열여덟이 남았는가. PR 본문과 코멘트도 대상이다. `docs/rules/` 아래의 규칙 문서는 다음 세션이 본으로 삼는 글이라 더 엄하게 본다.
 
 ## 보고
 

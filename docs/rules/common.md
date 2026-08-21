@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #88, #91, #101, #105, #106"
+related_issue: "#69, #88, #91, #101, #105, #106, #114"
 ---
 
 # 공통 규칙
@@ -21,6 +21,7 @@ related_issue: "#69, #88, #91, #101, #105, #106"
 
 | Matcher | 이때 읽는다 |
 |---------|--------------|
+| `writing-korean.md` | 사람이 읽을 한국어 문장을 쓸 때 — 문서 본문, Issue·PR 본문, 코멘트 |
 | `writing-docs.md` | `docs/` 아래를 만들거나 고칠 때 |
 | `publishing-issues.md` | GitHub Issue를 열거나 보드 카드를 옮길 때 |
 | `opening-a-pr.md` | PR을 열 때, 또는 열려 있는 PR에 수정을 push할 때 |
@@ -59,7 +60,7 @@ worktree는 자기 디렉터리 이름으로 정체성을 밝힌다. `pm`·`dev`
 
 브랜치는 단명하고 작업 하나에 묶인다. 매 작업을 시작할 때 `git fetch origin`을 돌리고 `origin/main`에서 `<role>/<task-name>` 브랜치를 새로 딴다 — `pm/…`, `dev/…`, `ui/…`, `orch/…`. 장수 브랜치는 금지다.
 
-접두는 규약이면서 검사다. 브랜치에 서 있는 동안 가드가 worktree 이름과 접두를 맞대고, 어긋나면 편집과 커밋을 막는다. `pm` worktree에서 `dev/…` 브랜치를 따는 것 자체는 git이 막지 않는다 — 걸리는 것은 그다음 편집이나 커밋이다.
+접두는 규약이면서 검사다. 브랜치에 서 있는 동안 가드가 worktree 이름과 접두를 맞대고 어긋나면 편집과 커밋을 막는다. `pm` worktree에서 `dev/…` 브랜치를 따는 것 자체는 git이 막지 않는다. 걸리는 것은 그다음 편집이나 커밋이다.
 
 접두 넷 중 어느 것도 아닌 이름은 대조에서 빠지고, 그때는 worktree 이름 하나로 판정한다. 소유는 그래도 지켜지지만 접두 규칙 자체는 리뷰가 지킨다.
 
@@ -101,6 +102,8 @@ PR 제목은 `type(scope): 요약`이고, 본문은 관련 Issue 번호와 변�
 
 코드, 명령, 식별자, 파일 경로, CLI 플래그, commit type 키워드(`feat`, `fix`, …), 스킬과 에이전트의 `name` 필드는 원문 그대로 둔다. 번역하면 그 자리에서 실행되지 않는다.
 
+어느 언어로 쓸지는 여기서 정한다. 그 언어를 어떻게 쓸지는 `docs/rules/matchers/writing-korean.md`가 정한다. 문서 본문이든 Issue·PR 본문이든 사람이 읽을 한국어 문장을 쓰기 전에 그 파일을 읽어라.
+
 ## 소통
 
 **기록이 정본이고 벨은 신호일 뿐이다.** 에이전트 사이의 지시·요청·보고는 전부 GitHub에 쓴다 — PR 코멘트나 Issue다. Orca `terminal send` 벨은 "가서 봐라" 한 줄을 나른다. 터미널로만 전달된 지시는 일어나지 않은 것이다.
@@ -121,7 +124,7 @@ secrets 차단은 별개 축이다. `.githooks/pre-commit`은 역할을 가리�
 
 - **PreToolUse 훅** `.claude/hooks/ownership-guard.sh`가 판정 module을 불러, 편집 시점에 역할 소유 밖 경로의 `Edit`·`Write`·`NotebookEdit`를 거절한다. 자기 worktree 밖의 절대 경로도 거절한다 — 다른 worktree도 포함이고, 임시 디렉터리와 `~/.claude`만 예외다.
 - **pre-commit 훅** `.githooks/pre-commit`이 스테이지된 변경의 소유를 검사한다 — 추가·수정·삭제와 rename 양쪽이다. 그리고 트리 어디에 있든 `.env*`와 `.envrc`를 막는다. 유일한 예외는 `.env.example`이다. 저장소를 클론하거나 리셋한 뒤에는 `git config core.hooksPath .githooks`를 한 번 돌려라.
-- **CI** `.github/workflows/ownership.yml`이 PR마다 같은 판정을 다시 돌린다. worktree가 없는 자리라 역할은 브랜치 접두에서 온다 — `--branch`가 그 값을 나른다. 판정 module과 registry는 PR이 아니라 base 커밋에서 꺼내 읽는다. 그러지 않으면 PR이 registry에 자기 줄을 넣어 스스로를 통과시킨다. `.env` 계열 차단도 같이 도는데, 이쪽은 최종 diff와 브랜치의 모든 커밋을 합쳐 훑는다 — 넣었다 지운 키도 공개 저장소의 이력에는 남고, merge 커밋에서 얹은 파일은 커밋 목록에 안 나오기 때문이다. 이 검사는 required status check라 빨간불이면 merge가 거부된다.
+- **CI** `.github/workflows/ownership.yml`이 PR마다 같은 판정을 다시 돌린다. 역할은 브랜치 접두에서 오고 `--branch`가 그 값을 나른다. 판정 module과 registry는 PR이 아니라 base 커밋에서 꺼내 읽는다. 그러지 않으면 PR이 registry에 자기 줄을 넣어 스스로를 통과시킨다. `.env` 계열 차단도 같이 돈다. 이쪽은 최종 diff에 브랜치의 모든 커밋을 더해 훑는데, 넣었다 지운 키가 공개 저장소의 이력에 남고 merge 커밋에서 얹은 파일은 커밋 목록에 나오지 않기 때문이다. 이 검사는 required status check라 빨간불이면 merge가 거부된다.
 
 로컬 훅 둘은 끌 수 있다. `git commit --no-verify`가 pre-commit 훅을 건너뛰고, PreToolUse 훅은 Claude Code 설정을 고치면 꺼진다. 둘 다 규칙 위반이고, 그래서 같은 판정이 CI에 한 번 더 있다. CI는 저장소 설정이 지키므로 에이전트가 끄지 못한다.
 
