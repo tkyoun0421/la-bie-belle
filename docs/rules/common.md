@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #91, #101"
+related_issue: "#69, #88, #91, #101"
 ---
 
 # 공통 규칙
