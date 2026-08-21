@@ -2,13 +2,13 @@
 set -u
 
 toplevel=$(git rev-parse --show-toplevel)
+records=$(mktemp)
+trap 'rm -f "$records"' EXIT
 
-paths=$(git -c core.quotepath=false diff --cached --name-status -M | awk -F'\t' '{for (i = 2; i <= NF; i++) print $i}')
+git diff --cached --name-status -z -M \
+  | python3 "$toplevel/scripts/secrets-check.py" paths > "$records"
 
-if printf '%s\n' "$paths" | grep -E '(^|/)\.env(\..+)?$|(^|/)\.envrc$' | grep -vE '(^|/)\.env\.example$' >/dev/null; then
-  echo "pre-commit: .env·.envrc 파일은 트리 어디에도 커밋하지 않는다. 저장소가 공개다." >&2
-  exit 1
-fi
+python3 "$toplevel/scripts/secrets-check.py" scan < "$records" || exit 1
 
 export PROJECT_DIR="$toplevel"
-printf '%s\n' "$paths" | python3 "$toplevel/scripts/ownership-check.py" paths
+tr '\0' '\n' < "$records" | python3 "$toplevel/scripts/ownership-check.py" paths
