@@ -11,18 +11,22 @@ Load this when opening a GitHub Issue or moving a card on the board.
 
 Issue titles and bodies are written in Korean. See the language rule in `docs/rules/common.md`.
 
+## Who reads an Issue
+
+An Issue body is a report for the human reading GitHub. Local documents are English, so the Issue is the only surface that reader has — write enough Korean that the work is understandable without opening a file. The precise contract, such as endpoint names, column types, and response shapes, stays in the English document under `docs/`, which remains the source of truth.
+
 ## Kinds
 
-The title prefix identifies the kind. `.github/ISSUE_TEMPLATE/` holds a form per kind; an Issue opened with `gh` bypasses the form, so mirror the fields it asks for.
+The title prefix identifies the kind. `.github/ISSUE_TEMPLATE/` holds five forms for four kinds, because `[Slice]` splits into a feature form and a design form. An Issue opened with `gh` bypasses the form, so mirror the fields it asks for.
 
 | Kind | Opened by | Content |
 |------|-----------|---------|
-| `[Epic]` | PM | One feature. A link to the SPEC file plus a summary. PM closes it when every slice is closed |
-| `[Slice]` | Dev | One vertical slice, attached to its Epic as a GitHub sub-issue |
+| `[Epic]` | PM, or the orchestrator | One unit of work that breaks into several sub-issues — a feature, or a multi-step orchestrator task. A feature Epic links its SPEC file; an orchestrator Epic has none. Closed when every sub-issue is closed |
+| `[Slice]` | Dev | One vertical slice of an Epic, attached to it as a GitHub sub-issue. A design slice applies a `docs/ui/` specification to a screen that already exists, has no parent Epic, and uses its own form |
 | `[Ticket]` | Orchestrator | Follow-up for a `normal` review finding, improvement, or debt |
 | `[Request]` | Any role | A change outside your ownership. The owning role decides on its own — accept and implement, or refuse with a reason and close. The orchestrator mediates only when two roles disagree |
 
-The kind decides the assignee (Epic means PM, Slice means Dev, and so on). When it is not obvious, name the assignee in the body.
+The kind usually decides the assignee — a Slice means Dev, a Ticket means whoever owns the path it touches. An Epic and a Request name theirs in the body.
 
 Link the PR to the Issue with `Closes #N` so the merge closes it automatically.
 
@@ -35,6 +39,8 @@ Labels classify. They never carry status.
 | type | `type:feature` `type:bug` `type:refactor` `type:docs` `type:chore` |
 | surface | `surface:ui` `surface:db` `surface:auth` `surface:api` `surface:workflow` `surface:docs` |
 | risk | `risk:security` `risk:privacy` `risk:performance` `risk:concurrency` `risk:migration` `risk:external` |
+
+A form's `dropdown` field only records the axis in the body — it does not apply a label. Only the static `labels:` key at the top of a form does that. Label an Issue as you publish it with `gh issue create --label`, or right after, when it came in through the web form.
 
 ## Board
 

@@ -15,9 +15,11 @@ Issue titles and bodies are **Korean**. Code, paths, commands, identifiers, and 
 
 ## Shape
 
-The title prefix sets the kind: `[Epic]`, `[Slice]`, `[Ticket]`, `[Request]`. Mirror the fields the matching form in `.github/ISSUE_TEMPLATE/` asks for — `gh` bypasses the form, so the fields are your responsibility.
+The title prefix sets the kind: `[Epic]`, `[Slice]`, `[Ticket]`, `[Request]`. `.github/ISSUE_TEMPLATE/` holds five forms for those four kinds — `[Slice]` has one form for a feature slice and one for a design slice. Mirror the fields the matching form asks for; `gh` bypasses the form, so the fields are your responsibility.
 
-Never copy specification detail into a body. An Epic carries a link to the spec file and a summary; corrections go to the file.
+The body is a report for the human who reads GitHub, not a stub pointing at a file. Local documents are English and that reader does not read them, so carry enough Korean that the work is understandable on its own — what changes, how it is built in outline, what to watch for.
+
+Never copy the precise contract into a body. Endpoint signatures, column types, and response shapes belong in the English document, which stays the source of truth; the Issue carries the outline and a link to it.
 
 ## Publish
 

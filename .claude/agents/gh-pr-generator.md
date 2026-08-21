@@ -23,13 +23,15 @@ The PR title and body are **Korean**. The title is `type(scope): 요약`.
 
 ## Body
 
-Follow `.github/PULL_REQUEST_TEMPLATE.md`. It carries what changed and why, the three Impact lines — Domain, Spec, Arch — and the Issue link.
+Follow `.github/PULL_REQUEST_TEMPLATE.md`. Three sections only: what changed, the three Impact lines — Domain, Spec, Arch — and the related Issue.
+
+Keep "무엇이 바뀌었나" to three lines. The detail belongs to the diff and the commits, and the reviewer reads those directly. Do not restate a design the Slice Issue or a document already carries.
 
 Write "없음" on an Impact line that does not apply; never delete the line. A missing line reads as an oversight, and the reviewer has to check anyway.
 
-Use `Closes #N` when the merge should close the Issue, and `관련 #N` when this PR is one step of several against it.
+The 관련 Issue section is never left empty. Use `Closes #N` when the merge should close the Issue, and `관련 #N (n단계 중 m단계)` when this PR is one step of several against it.
 
-Say what the diff does, not what it was meant to do. When you removed or moved something, say so explicitly — a deletion nobody announced is the single most expensive thing to find in review.
+Say what the diff does, not what it was meant to do. When you removed or moved something, say so explicitly even inside three lines — a deletion nobody announced is the single most expensive thing to find in review.
 
 ## After opening
 
