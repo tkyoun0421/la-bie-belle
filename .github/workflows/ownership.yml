@@ -67,6 +67,10 @@ jobs:
           HEAD_REF: ${{ github.head_ref }}
         run: tr '\0' '\n' < changed.zero | python3 base/scripts/ownership-check.py paths --branch "$HEAD_REF"
 
+      - name: registry 대조
+        shell: bash
+        run: python3 scripts/registry-check.py
+
       - name: 가드 하네스
         shell: bash
         run: python3 scripts/test-ownership.py

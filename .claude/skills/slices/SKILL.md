@@ -1,11 +1,13 @@
 ---
 name: slices
-description: "[Epic]을 수직 슬라이스 [Slice] sub-issue로 쪼갠다. 문서는 만들지 않는다. 보통 /doc 라우터를 지나 도달한다. Dev 전용."
+description: "[Epic]을 수직 슬라이스 [Slice] sub-issue로 쪼갠다. 문서는 만들지 않는다. `/doc` 라우터가 넘긴다. Dev 전용."
 ---
 
 # Slices
 
 Epic 번호를 받아 그것이 링크한 스펙을 읽고, 수직 슬라이스마다 `[Slice]` Issue를 하나씩 발행한다. 파일은 쓰지 않고 PR도 열지 않는다.
+
+`/doc`을 지나지 않고 여기로 들어왔으면 `/doc`으로 다시 시작해라. 종류를 가리는 것은 라우터가 갖는다.
 
 ## 원천을 읽는다
 
