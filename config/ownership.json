@@ -1,5 +1,16 @@
 {
-  "orchestrator": ["*"],
+  "orchestrator": [
+    "CLAUDE.md",
+    ".gitignore",
+    ".env.example",
+    ".claude/",
+    ".githooks/",
+    ".github/",
+    "config/",
+    "scripts/",
+    "docs/rules/",
+    "docs/templates/"
+  ],
   "pm": ["docs/prd.md", "docs/domain/", "docs/adr/", "docs/specs/"],
   "dev": [
     "docs/architecture/",

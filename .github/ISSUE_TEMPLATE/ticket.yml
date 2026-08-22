@@ -35,7 +35,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        담당은 고르지 않는다. 위 `어디를 건드리나`에 적은 경로를 `config/ownership.json`에 대면 소유 role이 나온다. pm·dev·ui 목록 어디에도 없으면 총괄이다.
+        담당은 고르지 않는다. 위 `어디를 건드리나`에 적은 경로를 `config/ownership.json`에 대면 소유 role이 나온다. 네 목록 어디에도 없으면 담당이 아니라 registry의 구멍이다. 그 경로를 어느 키에 넣을지 정하는 `[Request]`가 먼저다.
   - type: textarea
     id: source
     attributes:

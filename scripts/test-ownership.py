@@ -114,8 +114,12 @@ def discard(worktree, *paths):
 
 def role_comes_from_worktree(main, worktrees):
     git(main, "checkout", "-q", "-b", "orch/t")
-    check("main 작업 트리는 총괄이라 모든 경로를 지난다",
-          judge_paths(main, ["docs/rules/a.md", "src/a.ts", "docs/ui/a.md"]), 0)
+    check("main 작업 트리는 총괄로 판정한다",
+          judge_paths(main, ["docs/rules/a.md", "config/a.json", "scripts/a.py"]), 0)
+    check("총괄도 dev 소유 경로에서 막힌다",
+          judge_paths(main, ["src/a.ts"]), DENY_COMMIT)
+    check("총괄도 ui 소유 경로에서 막힌다",
+          judge_paths(main, ["docs/ui/a.md"]), DENY_COMMIT)
 
     git(worktrees["pm"], "checkout", "-q", "-b", "pm/t")
     check("pm worktree는 자기 소유 경로를 지난다",
@@ -141,8 +145,10 @@ def role_comes_from_branch_prefix(main):
           judge_paths(main, ["src/a.ts"], branch="dev/t"), 0)
     check("--branch pm/… 에 dev 경로를 주면 막는다",
           judge_paths(main, ["src/a.ts"], branch="pm/t"), DENY_COMMIT)
-    check("--branch orch/… 는 총괄이라 모두 지난다",
-          judge_paths(main, ["src/a.ts"], branch="orch/t"), 0)
+    check("--branch orch/… 는 총괄 소유 경로를 지난다",
+          judge_paths(main, ["docs/rules/a.md"], branch="orch/t"), 0)
+    check("--branch orch/… 에 pm 경로를 주면 막는다",
+          judge_paths(main, ["docs/prd.md"], branch="orch/t"), DENY_COMMIT)
     check("등록되지 않은 접두는 막는다",
           judge_paths(main, ["docs/rules/a.md"], branch="feat/t"), DENY_COMMIT)
     check("--branch 값이 비면 막는다",
@@ -151,7 +157,7 @@ def role_comes_from_branch_prefix(main):
           judge_paths(main, ["docs/rules/a.md"], branch="main"), DENY_COMMIT)
 
 
-def hook_guards_edit_time(worktrees):
+def hook_guards_edit_time(main, worktrees):
     pm, dev = worktrees["pm"], worktrees["dev"]
     git(pm, "checkout", "-q", "pm/t")
     check("훅: 자기 소유 경로는 지난다",
@@ -166,6 +172,10 @@ def hook_guards_edit_time(worktrees):
           judge_hook(pm, os.path.join(os.path.expanduser("~"), ".claude", "x.md")), 0)
     check("훅: file_path가 없는 payload는 지난다",
           judge_hook(pm, None), 0)
+    check("훅: 총괄도 소유 경로는 지난다",
+          judge_hook(main, os.path.join(main, "docs/rules/a.md")), 0)
+    check("훅: 총괄도 소유 밖 경로는 막는다",
+          judge_hook(main, os.path.join(main, "docs/prd.md")), DENY_HOOK)
 
 
 def registry_failure_closes(main, worktrees):
@@ -220,7 +230,7 @@ def precommit_blocks_secrets_and_foreign_paths(main, worktrees):
     discard(main, "문서 폴더")
 
     check("pre-commit: 한글 문서는 secrets에 걸리지 않는다",
-          stage_and_commit(main, {"docs/ui/화면.md": "x\n"}), 0)
+          stage_and_commit(main, {"docs/rules/화면.md": "x\n"}), 0)
 
     check("pre-commit: 개행이 든 경로는 소유를 묻기 전에 거절한다",
           stage_and_commit(main, {"nl\nhere/a.md": "x\n"}), DENY_COMMIT)
@@ -236,23 +246,23 @@ def precommit_blocks_secrets_and_foreign_paths(main, worktrees):
     discard(worktrees["pm"], "docs/prd.md\u0085docs/specs/y.md")
     git(main, "checkout", "-q", "orch/t")
 
-    stage_and_commit(main, {"docs/rename/before.md": "x\n"})
-    git(main, "mv", "docs/rename/before.md", "docs/rename/after.md")
-    with open(os.path.join(main, "docs/rename/.env"), "w") as f:
+    stage_and_commit(main, {"docs/rules/rename/before.md": "x\n"})
+    git(main, "mv", "docs/rules/rename/before.md", "docs/rules/rename/after.md")
+    with open(os.path.join(main, "docs/rules/rename/.env"), "w") as f:
         f.write("K=v\n")
     git(main, "add", "-A")
     check("pre-commit: rename 레코드 뒤에 붙은 .env도 막는다",
           run(["git", "commit", "-q", "-m", "t"], cwd=main).returncode, DENY_COMMIT)
-    discard(main, "docs/rename")
+    discard(main, "docs/rules/rename")
 
-    stage_and_commit(main, {"docs/copy/src.md": "alpha\nbeta\ngamma\ndelta\n"})
+    stage_and_commit(main, {"docs/rules/copy/src.md": "alpha\nbeta\ngamma\ndelta\n"})
     check("pre-commit: copy 레코드 뒤에 붙은 .env도 막는다",
           stage_and_commit(main, {
-              "docs/copy/src.md": "alpha\nbeta\ngamma\ndelta\nEXTRA\n",
-              "docs/copy/dst.md": "alpha\nbeta\ngamma\ndelta\n",
-              "docs/zzz/.env": "K=v\n",
+              "docs/rules/copy/src.md": "alpha\nbeta\ngamma\ndelta\nEXTRA\n",
+              "docs/rules/copy/dst.md": "alpha\nbeta\ngamma\ndelta\n",
+              "docs/rules/zzz/.env": "K=v\n",
           }), DENY_COMMIT)
-    discard(main, "docs/zzz", "docs/copy")
+    discard(main, "docs/rules/zzz", "docs/rules/copy")
 
     git(worktrees["pm"], "checkout", "-q", "pm/t")
     stage_and_commit(worktrees["pm"], {"docs/specs/moved.md": "x\n"})
@@ -279,7 +289,7 @@ def main():
         sandbox, worktrees = build_sandbox(source, root)
         role_comes_from_worktree(sandbox, worktrees)
         role_comes_from_branch_prefix(sandbox)
-        hook_guards_edit_time(worktrees)
+        hook_guards_edit_time(sandbox, worktrees)
         registry_failure_closes(sandbox, worktrees)
         precommit_blocks_secrets_and_foreign_paths(sandbox, worktrees)
     finally:
