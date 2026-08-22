@@ -24,12 +24,17 @@ def paths_from(records):
     return collected
 
 
+def splits_into_lines(path):
+    return path.splitlines() != [path]
+
+
 def emit(paths):
-    newlined = [p for p in paths if "\n" in p or "\r" in p]
-    if newlined:
-        print("secrets-check: 경로에 개행이 든 파일은 이 저장소에서 다루지 않는다. 차단한다 — "
-              "아래 경로를 개행 없는 이름으로 바꿔라.", file=sys.stderr)
-        for path in newlined:
+    breaking = [p for p in paths if splits_into_lines(p)]
+    if breaking:
+        print("secrets-check: 줄바꿈으로 읽히는 문자가 든 경로는 이 저장소에서 다루지 않는다. 차단한다 — "
+              "소유 검사가 줄 단위로 읽어서 경로 하나가 조각으로 갈린다. 아래 경로의 이름을 바꿔라.",
+              file=sys.stderr)
+        for path in breaking:
             print(f"  {path!r}", file=sys.stderr)
         return 1
     stream = sys.stdout.buffer

@@ -114,11 +114,11 @@ merge 소식은 뿌리지 않는다. 총괄은 그 merge가 특정 역할에게 
 
 ## 집행
 
-판정 module이 둘이다. `scripts/ownership-check.py`가 "역할 R이 경로 P를 쓸 수 있나"에 답하고, `scripts/secrets-check.py`가 "이 경로가 자격 증명 파일인가"에 답한다. 아래 셋이 그것들을 부른다.
+판정 module이 둘이다. `scripts/ownership-check.py`는 "역할 R이 경로 P를 쓸 수 있나"에 답한다. `scripts/secrets-check.py`는 "이 경로가 자격 증명 파일인가"에 답한다. 아래 셋이 그것들을 부른다.
 
 경로 목록은 `scripts/secrets-check.py`가 git의 NUL 구분 출력에서 꺼낸다. 줄 단위로 자르면 git이 이름을 인용해 내놓는 경로 — 따옴표나 탭이 든 것 — 에서 그 인용이 패턴을 깨뜨려 `"이상한 폴더/.env"`가 그냥 지나간다.
 
-`scripts/ownership-check.py`는 줄 단위로 읽는다. 그래서 꺼내는 자리가 개행이 든 경로를 아예 거절한다. 그러지 않으면 경로 하나가 조각으로 갈려 각 조각이 소유를 통과할 수 있다. `scripts/test-ownership.py`가 두 경우를 케이스로 잡아 둔다.
+`scripts/ownership-check.py`는 줄 단위로 읽는다. 그래서 꺼내는 자리가 줄바꿈으로 읽히는 문자가 든 경로를 아예 거절한다. 개행만이 아니라 수직 탭이나 다음 줄 문자도 파이썬은 줄 경계로 본다. 거절하지 않으면 경로 하나가 조각으로 갈려 각 조각이 소유를 통과한다. `scripts/test-ownership.py`가 두 경우를 케이스로 잡아 둔다.
 
 셋 다 **fail closed**다. `config/ownership.json`을 읽을 수 없으면 어디서든 차단이다. 훅 둘은 worktree 이름이 역할 키가 아니거나 브랜치 접두가 가리키는 역할과 다를 때 막고, CI는 worktree가 없는 자리라 접두가 등록된 넷이 아니거나 그 값이 비었을 때 막는다.
 

@@ -1,11 +1,11 @@
 #!/bin/bash
-set -u
+set -uo pipefail
 
 toplevel=$(git rev-parse --show-toplevel)
 records=$(mktemp)
 trap 'rm -f "$records"' EXIT
 
-if ! git diff --cached --name-status -z -M \
+if ! git diff --cached --name-status -z -M -C \
   | python3 "$toplevel/scripts/secrets-check.py" paths > "$records"; then
   exit 1
 fi

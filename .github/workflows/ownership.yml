@@ -37,20 +37,20 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BEFORE_SHA: ${{ github.event.before }}
         run: |
-          git diff --name-status -z -M "$BASE_SHA"..."$HEAD_SHA" \
+          git diff --name-status -z -M -C "$BASE_SHA"..."$HEAD_SHA" \
             | python3 base/scripts/secrets-check.py paths > changed.zero
-          git log --format= --name-status -z -M "$BASE_SHA".."$HEAD_SHA" \
+          git log --format= --name-status -z -M -C "$BASE_SHA".."$HEAD_SHA" \
             | python3 base/scripts/secrets-check.py paths > touched.zero
           : > dropped.zero
 
           if [ -n "${BEFORE_SHA:-}" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
             if git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null \
               || git fetch --no-tags --quiet origin "$BEFORE_SHA" 2>/dev/null; then
-              git log --format= --name-status -z -M "$BASE_SHA".."$BEFORE_SHA" \
+              git log --format= --name-status -z -M -C "$BASE_SHA".."$BEFORE_SHA" \
                 | python3 base/scripts/secrets-check.py paths > dropped.zero
               echo "force-push 이전 head ${BEFORE_SHA}의 이력도 함께 훑는다"
             else
-              echo "::error::force-push 이전 head ${BEFORE_SHA}를 가져오지 못해 그 이력을 훑을 수 없다. 통과가 아니라 차단이다 — 브랜치에 다시 push해서 검사를 새로 돌려라"
+              echo "::error::force-push 이전 head ${BEFORE_SHA}를 가져오지 못해 그 이력을 훑을 수 없다. 통과가 아니라 차단이다 — 커밋을 하나 얹어 일반 push해라. 또 force-push하면 같은 자리에 다시 걸리고, job 재실행도 같은 payload를 쓴다"
               exit 1
             fi
           fi

@@ -226,6 +226,16 @@ def precommit_blocks_secrets_and_foreign_paths(main, worktrees):
           stage_and_commit(main, {"nl\nhere/a.md": "x\n"}), DENY_COMMIT)
     discard(main, "nl\nhere")
 
+    git(worktrees["pm"], "checkout", "-q", "pm/t")
+    check("pre-commit: 수직 탭이 든 경로도 조각나기 전에 거절한다",
+          stage_and_commit(worktrees["pm"], {"docs/prd.md\vdocs/specs/x.md": "x\n"}), DENY_COMMIT)
+    discard(worktrees["pm"], "docs/prd.md\vdocs/specs/x.md")
+
+    check("pre-commit: 다음 줄 문자가 든 경로도 거절한다",
+          stage_and_commit(worktrees["pm"], {"docs/prd.md\u0085docs/specs/y.md": "x\n"}), DENY_COMMIT)
+    discard(worktrees["pm"], "docs/prd.md\u0085docs/specs/y.md")
+    git(main, "checkout", "-q", "orch/t")
+
     stage_and_commit(main, {"docs/rename/before.md": "x\n"})
     git(main, "mv", "docs/rename/before.md", "docs/rename/after.md")
     with open(os.path.join(main, "docs/rename/.env"), "w") as f:
