@@ -37,7 +37,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        담당은 고르지 않는다. 위 `어디`에 적은 경로를 `config/ownership.json`에 대면 소유 role이 나온다. 네 목록 어디에도 없으면 담당이 아니라 registry의 구멍이다. 그 경로를 어느 키에 넣을지 정하는 `[Request]`가 먼저다.
+        담당은 고르지 않는다. 위 `어디`에 적은 경로를 `config/ownership.json`에 대면 소유 role이 나온다. 네 목록 어디에도 없으면 담당이 아니라 registry의 구멍이다. 그 경로를 어느 키에 넣을지 정하는 것이 먼저인데, 그 registry 자체가 총괄 소유라 `[Request]`로 갈 자리가 없다. `config/ownership.json`에 경로를 넣는 `[Ticket]`을 총괄이 열고, 그 PR이 merge된 뒤에 본래 일이 이어진다.
   - type: input
     id: related
     attributes:
