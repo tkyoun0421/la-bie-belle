@@ -31,9 +31,17 @@ def main():
         print(f"registry-check: registry를 읽을 수 없다 ({e}). 통과가 아니라 차단이다.", file=sys.stderr)
         return 1
 
+    missing = [kind for kind, entry in documents.items() if "path" not in entry]
+    if missing:
+        print("registry-check: config/documents.json의 종류에 `path` 키가 없다. 파일을 만들지 않는 종류라면 "
+              "`null`을 적어라. 키 자체가 없으면 오타와 구분되지 않는다.", file=sys.stderr)
+        for kind in missing:
+            print(f"  {kind}", file=sys.stderr)
+        return 1
+
     orphans = []
     for kind, entry in documents.items():
-        path = entry.get("path")
+        path = entry["path"]
         if path is None:
             continue
         holders = [role for role, patterns in ownership.items() if owns(path, patterns)]

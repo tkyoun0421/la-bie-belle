@@ -43,8 +43,9 @@ def check(name, got, want):
 
 def build_sandbox(source, root):
     main = os.path.join(root, "main")
-    for relative in ("config/ownership.json", "scripts/ownership-check.py",
-                     "scripts/secrets-check.py", "githooks/pre-commit"):
+    for relative in ("config/ownership.json", "config/documents.json",
+                     "scripts/ownership-check.py", "scripts/secrets-check.py",
+                     "scripts/registry-check.py", "githooks/pre-commit"):
         target = os.path.join(main, relative)
         os.makedirs(os.path.dirname(target), exist_ok=True)
         shutil.copy(os.path.join(source, relative.replace("githooks/", ".githooks/")), target)
@@ -69,6 +70,42 @@ def build_sandbox(source, root):
         git(path, "config", "user.name", "test")
         git(path, "config", "commit.gpgsign", "false")
     return main, worktrees
+
+
+def judge_registry(main, documents, ownership=None):
+    overrides = {"documents.json": documents}
+    if ownership is not None:
+        overrides["ownership.json"] = ownership
+    saved = {}
+    for name, body in overrides.items():
+        path = os.path.join(main, "config", name)
+        with open(path) as f:
+            saved[path] = f.read()
+        with open(path, "w") as f:
+            f.write(body)
+    try:
+        return run(["python3", os.path.join(main, "scripts", "registry-check.py")]).returncode
+    finally:
+        for path, body in saved.items():
+            with open(path, "w") as f:
+                f.write(body)
+
+
+def registry_check_pairs_two_registries(main):
+    check("registry 대조: 저장소의 registry 둘은 맞물린다",
+          run(["python3", os.path.join(main, "scripts", "registry-check.py")]).returncode, 0)
+    check("registry 대조: 소유 없는 경로를 막는다",
+          judge_registry(main, '{"x": {"path": "docs/nowhere/a.md", "template": null, "skill": "x"}}'), 1)
+    check("registry 대조: 두 역할이 무는 경로를 막는다",
+          judge_registry(main,
+                         '{"x": {"path": "docs/rules/a.md", "template": null, "skill": "x"}}',
+                         '{"orchestrator": ["docs/rules/"], "pm": ["docs/"]}'), 1)
+    check("registry 대조: path 키가 없는 종류를 막는다",
+          judge_registry(main, '{"x": {"template": null, "skill": "x"}}'), 1)
+    check("registry 대조: path가 null인 종류는 지난다",
+          judge_registry(main, '{"x": {"path": null, "template": null, "skill": "x"}}'), 0)
+    check("registry 대조: 깨진 JSON은 통과가 아니라 차단이다",
+          judge_registry(main, "{ not json"), 1)
 
 
 def module_of(project_dir):
@@ -291,6 +328,7 @@ def main():
         role_comes_from_branch_prefix(sandbox)
         hook_guards_edit_time(sandbox, worktrees)
         registry_failure_closes(sandbox, worktrees)
+        registry_check_pairs_two_registries(sandbox)
         precommit_blocks_secrets_and_foreign_paths(sandbox, worktrees)
     finally:
         shutil.rmtree(root, ignore_errors=True)

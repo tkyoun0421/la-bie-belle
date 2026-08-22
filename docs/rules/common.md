@@ -138,7 +138,9 @@ CI는 마지막으로 돌린 검사 하나로 merge를 가른다. force-push 이
 
 로컬 훅 둘은 끌 수 있다. `git commit --no-verify`가 pre-commit 훅을 건너뛰고, PreToolUse 훅은 Claude Code 설정을 고치면 꺼진다. 둘 다 규칙 위반이고, 그래서 같은 판정이 CI에 한 번 더 있다. CI는 저장소 설정이 지키므로 에이전트가 끄지 못한다.
 
-registry 둘의 대조는 CI에만 있다. `scripts/registry-check.py`가 `config/documents.json`의 모든 `path`를 `config/ownership.json`에 대서 소유 역할이 정확히 하나 나오는지 본다. 문서 종류를 새로 만들면서 소유를 정하지 않으면 여기서 걸린다. 같은 판정을 쓰려고 소유 module의 `owns()`를 그대로 불러 쓴다 — 대조 규칙의 두 번째 사본을 만들지 않으려는 것이다.
+registry 둘의 대조는 CI에만 있다. `scripts/registry-check.py`가 `config/documents.json`의 모든 `path`를 `config/ownership.json`에 대서 소유 역할이 정확히 하나 나오는지 본다. 문서 종류를 새로 만들면서 소유를 정하지 않으면 여기서 걸린다. 같은 판정을 쓰려고 소유 module의 `owns()`를 그대로 불러 쓴다. 대조 규칙의 두 번째 사본을 만들지 않으려는 것이다.
+
+이 검사만 base가 아니라 PR의 트리를 읽는다. 묻는 것이 merge될 registry 둘의 정합이라 base를 읽으면 검사할 대상이 없다. 소유 검사의 base 고정은 PR이 registry에 자기 줄을 넣어 스스로를 통과시키는 것을 막는 장치인데, 이 대조는 통과를 주는 검사가 아니라 요구하는 검사라 그 위험이 없다.
 
 CI가 잡지 못하는 축은 남는다. 명세 부합과 정확성은 기계의 몫이 아니다. 그 자리의 방어선은 독립 PR 리뷰다 — 리뷰어는 브랜치 접두와 바뀐 모든 경로의 소유를 매번 대조한다.
 
