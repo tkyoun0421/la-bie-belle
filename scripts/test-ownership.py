@@ -243,7 +243,7 @@ def precommit_blocks_secrets_and_foreign_paths(main, worktrees):
     git(main, "add", "-A")
     check("pre-commit: rename 레코드 뒤에 붙은 .env도 막는다",
           run(["git", "commit", "-q", "-m", "t"], cwd=main).returncode, DENY_COMMIT)
-    discard(main, "docs/rename/.env")
+    discard(main, "docs/rename")
 
     stage_and_commit(main, {"docs/copy/src.md": "alpha\nbeta\ngamma\ndelta\n"})
     check("pre-commit: copy 레코드 뒤에 붙은 .env도 막는다",
@@ -252,7 +252,7 @@ def precommit_blocks_secrets_and_foreign_paths(main, worktrees):
               "docs/copy/dst.md": "alpha\nbeta\ngamma\ndelta\n",
               "docs/zzz/.env": "K=v\n",
           }), DENY_COMMIT)
-    discard(main, "docs/zzz")
+    discard(main, "docs/zzz", "docs/copy")
 
     git(worktrees["pm"], "checkout", "-q", "pm/t")
     stage_and_commit(worktrees["pm"], {"docs/specs/moved.md": "x\n"})
