@@ -39,7 +39,7 @@ description: "이 프로젝트가 만드는 모든 문서의 라우터. 종류�
 
 네 소유가 아니면 **여기서 멈춰라**. `gh-issue-generator`를 붙여 소유한 역할에게 `[Request]` Issue를 열고, 무엇이 왜 필요한지 적은 뒤 Issue 번호를 보고해라. 파일을 쓰지도, 브랜치를 열지도 마라.
 
-한 역할은 registry를 그렇게 읽지 않는다. `orchestrator` 키는 `["*"]`인데 그건 접근이지 작성권이 아니다 — 총괄은 `config/documents.json`에 실린 어느 문서도 쓰지 않는다. `main` 체크아웃에서의 답은 언제나 `[Request]`이거나 소유한 역할에게 하는 배정이다.
+총괄도 같은 대조를 받는다. `orchestrator` 키에 든 `docs/` 경로는 `docs/rules/`와 `docs/templates/` 둘뿐이라 `config/documents.json`에 실린 문서는 하나도 총괄 것이 아니다. `main` 작업 트리에서의 답은 언제나 `[Request]`이거나 소유한 역할에게 하는 배정이다.
 
 ## 4. 브랜치를 딴다
 

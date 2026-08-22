@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #101, #114, #66, #94, #96"
+related_issue: "#69, #101, #114, #66, #94, #96, #113"
 ---
 
 # Matcher: Issue를 발행할 때
@@ -28,7 +28,7 @@ Issue 본문은 GitHub을 보는 사람에게 내는 보고서다. 파일을 열
 
 `[Orch]` 접두는 더 쓰지 않는다. 총괄의 다단계 작업은 `[Epic]`이 받는다. 이미 열려 있는 `[Orch]` Issue는 제목을 그대로 두고 닫힐 때까지 간다. 제목을 옮기면 그걸 가리키는 링크가 전부 어긋난다.
 
-담당은 경로가 정한다. `[Ticket]`과 `[Request]`는 본문에 적은 경로를 `config/ownership.json`에 대면 소유 역할이 나온다. pm·dev·ui 어느 목록에도 없으면 총괄이다. 폼에서 담당을 고르는 칸을 뺀 이유가 이것이다 — 손으로 고르게 두면 경로와 어긋나며, 어긋난 쪽은 언제나 손으로 고른 쪽이다. `[Slice]`는 언제나 Dev다. `[Epic]`의 담당은 경로가 정하지 않는다. 스펙 파일이 PM 것이어도 그 Epic을 받아 쪼개는 것은 Dev이기 때문이고, 그래서 폼의 담당 칸에서 고른다.
+담당은 경로가 정한다. `[Ticket]`과 `[Request]`는 본문에 적은 경로를 `config/ownership.json`에 대면 소유 역할이 나온다. `orchestrator`도 목록 하나일 뿐이라 총괄이 받는 것도 그 목록으로 정해진다. 네 목록 어디에도 없으면 담당이 아니라 registry의 구멍이다. 그 경로를 어느 키에 넣을지 정하는 것이 먼저인데, `config/ownership.json`이 총괄 소유라 `[Request]`로 갈 자리가 없다. registry에 경로를 넣는 `[Ticket]`을 총괄이 열고, 그것이 merge된 뒤에 본래 일이 이어진다. 폼에서 담당을 고르는 칸을 뺀 이유가 이것이다 — 손으로 고르게 두면 경로와 어긋나며, 어긋난 쪽은 언제나 손으로 고른 쪽이다. `[Slice]`는 언제나 Dev다. `[Epic]`의 담당은 경로가 정하지 않는다. 스펙 파일이 PM 것이어도 그 Epic을 받아 쪼개는 것은 Dev이기 때문이고, 그래서 폼의 담당 칸에서 고른다.
 
 PR은 `Closes #N`으로 Issue와 이어라. merge가 Issue를 자동으로 닫는다.
 

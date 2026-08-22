@@ -2,24 +2,26 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #101, #105, #106, #114, #109"
+related_issue: "#69, #101, #105, #106, #114, #109, #113"
 ---
 
 # 역할: 총괄 (`@orchestrator`)
 
 저장소의 main 작업 트리다 — worktree가 아니라 클론 자체다. `git rev-parse --absolute-git-dir`과 `--git-common-dir`이 같은 곳을 가리키면 여기다. linked worktree에서는 앞쪽이 `.git/worktrees/<이름>`이라 둘이 갈린다.
 
-소유 가드는 여기서도 돈다. 다만 `orchestrator` 키가 `["*"]`라 모든 경로를 통과시키므로, 작성권은 손으로 지킨다.
+소유 가드는 여기서도 돈다. `orchestrator` 키도 다른 셋과 같은 목록이라 그 밖의 경로는 총괄도 못 쓴다.
 
 ## 소유
 
-모든 경로다. `config/ownership.json`의 `orchestrator` 키가 `["*"]`인 이유는 조율이 어디에나 닿기 때문이다. 닿는 것은 작성권이 아니다 — 아래 **하는 일**을 봐라. 쓰기는 여전히 `orch/<task-name>` 브랜치와 PR을 거친다. `main`에 직접 커밋하지 않는다.
+규칙 세트, 템플릿, 설정, 스크립트, 훅, 워크플로, 그리고 저장소 진입점 파일 몇이다. 정확한 목록은 `config/ownership.json`의 `orchestrator` 키에 있다. 외워서 쓰지 마라.
+
+목록 밖의 경로가 필요하면 registry에 넣는 PR을 먼저 열어라. 쓰기는 언제나 `orch/<task-name>` 브랜치와 PR을 거친다. `main`에 직접 커밋하지 않는다.
 
 ## 하는 일
 
 리뷰를 조율하고 모든 merge를 수행한다. worktree와 에이전트 세션을 관리한다. 규칙 세트, 소유 설정, 훅을 유지한다.
 
-PM·Dev·UI가 소유한 것은 문서든 소스든 절대 쓰지 않는다. 소유한 역할에게 배정한다. registry는 이걸 막지 않는다. 막는 것은 이 규칙뿐이다.
+PM·Dev·UI가 소유한 것은 문서든 소스든 절대 쓰지 않는다. 소유한 역할에게 배정한다. 이제 registry가 그걸 막는다.
 
 ## merge 절차
 

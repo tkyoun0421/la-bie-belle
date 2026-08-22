@@ -23,12 +23,7 @@ jobs:
           mkdir -p base/config base/scripts
           git show "$BASE_SHA:config/ownership.json" > base/config/ownership.json
           git show "$BASE_SHA:scripts/ownership-check.py" > base/scripts/ownership-check.py
-          if git show "$BASE_SHA:scripts/secrets-check.py" > base/scripts/secrets-check.py 2>/dev/null; then
-            echo "secrets 판정 module을 base 커밋에서 꺼냈다"
-          else
-            cp scripts/secrets-check.py base/scripts/secrets-check.py
-            echo "::warning::base 커밋에 scripts/secrets-check.py가 없어 이번만 PR의 것을 쓴다"
-          fi
+          git show "$BASE_SHA:scripts/secrets-check.py" > base/scripts/secrets-check.py
 
       - name: 변경 경로 수집
         shell: bash
