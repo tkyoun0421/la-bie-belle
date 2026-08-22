@@ -48,14 +48,14 @@ jobs:
               || git fetch --no-tags --quiet origin "$BEFORE_SHA" 2>/dev/null; then
               git log --format= --name-status -z -M -C "$BASE_SHA".."$BEFORE_SHA" \
                 | python3 base/scripts/secrets-check.py paths > dropped.zero
-              echo "force-push 이전 head ${BEFORE_SHA}의 이력도 함께 훑는다"
+              echo "직전 head ${BEFORE_SHA}까지의 이력도 함께 훑는다 — force-push로 밀려난 커밋이 있다면 여기서 걸린다"
             else
               echo "::error::force-push 이전 head ${BEFORE_SHA}를 가져오지 못해 그 이력을 훑을 수 없다. 통과가 아니라 차단이다 — 커밋을 하나 얹어 일반 push해라. 또 force-push하면 같은 자리에 다시 걸리고, job 재실행도 같은 payload를 쓴다"
               exit 1
             fi
           fi
 
-          cat changed.zero touched.zero dropped.zero > scanned.zero
+          cat changed.zero touched.zero dropped.zero | sort -z -u > scanned.zero
           echo "소유 검사 대상 — 최종 diff:"
           tr '\0' '\n' < changed.zero
           echo "secrets 검사 대상 — 최종 diff에 모든 커밋과 떨어져 나간 이력을 더한 것:"
