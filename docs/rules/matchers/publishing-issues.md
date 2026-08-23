@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #101, #114, #66, #94, #96, #113"
+related_issue: "#69, #101, #114, #66, #94, #96, #113, #120"
 ---
 
 # Matcher: Issue를 발행할 때
@@ -46,7 +46,7 @@ PR은 `Closes #N`으로 Issue와 이어라. merge가 Issue를 자동으로 닫�
 
 ## 보드
 
-상태는 [La Bie Belle](https://github.com/users/tkyoun0421/projects/8) 프로젝트 보드의 Status 필드에 산다. 새 Issue를 보드에 올린 다음 상태를 정해라. 카드를 추가한다고 상태가 정해지지는 않는다 — 추가만 하고 둔 카드는 `No Status`에 앉아 어느 열에도 보이지 않는다.
+상태는 [La Bie Belle](https://github.com/users/tkyoun0421/projects/8) 프로젝트 보드의 Status 필드에 산다. 새 Issue를 보드에 올리면 workflow가 Backlog에 앉힌다. 거기서 더 옮길 자리가 있으면 아래 명령으로 옮겨라 — 브랜치를 이미 땄으면 In Progress다.
 
 ```
 gh project item-add 8 --owner tkyoun0421 --url <issue-url>          # item id를 출력한다
@@ -73,10 +73,30 @@ gh project item-edit --project-id PVT_kwHOBd4HfM4Bg89n \
 | Todo | 다음 차례로 확정됐다 — 배정 대기열이다 | PM(슬라이스 순서), 총괄 |
 | In Progress | 브랜치를 땄고 작업 중이다 | 배정된 역할 |
 | In Review | PR이 열렸고 리뷰·수정 루프가 돈다 | 배정된 역할 |
-| Done | merge됐거나 닫혔다 | 자동 |
+| Done | merge됐거나 닫혔다 | workflow |
 | Blocked | 명세 공백, Request 대기, 충족되지 않은 의존성. **사유 코멘트가 의무다** | 배정된 역할 |
 
 각 역할이 자기 카드를 옮긴다. 브랜치를 따면 In Progress, PR을 열면 In Review다.
+
+### 보드가 스스로 하는 것
+
+두 열은 손으로 옮기지 않는다. 프로젝트의 내장 workflow가 옮긴다.
+
+| Workflow | 걸리는 때 | 하는 일 |
+|----------|------------|---------|
+| `Item closed` | Issue나 PR이 닫힐 때 | Status를 Done으로 |
+| `Item added to project` | 카드가 보드에 올라올 때 | Status를 Backlog으로 |
+
+이 둘이 꺼지면 아무 경고 없이 멈춘다. 2026-08-22에 `Item closed`가 꺼진 채로 있던 것을 발견했고, 그때 닫힌 Issue 23건의 카드가 Backlog와 In Progress에 그대로 앉아 있었다. 보드가 상태의 정본이라 그 값이 틀리면 Blocked 열을 훑는 일도 헛돈다.
+
+토글은 저장소 밖에 있어서 git이 지키지 못한다. GraphQL에도 켜고 끄는 mutation이 없다 — `deleteProjectV2Workflow`만 있고, 켜는 것은 웹에서만 된다. 상태가 궁금하면 켜짐 여부는 읽을 수 있다.
+
+```
+gh api graphql -f query='{ user(login:"tkyoun0421"){ projectV2(number:8){
+  workflows(first:30){ nodes{ name enabled } } } } }'
+```
+
+카드가 통째로 밀린 것을 보면 이 둘부터 확인해라. 보드를 새로 만들었거나 설정이 초기화됐을 때 제일 먼저 꺼지는 자리다.
 
 ## 우선순위
 
