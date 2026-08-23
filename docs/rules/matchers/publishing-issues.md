@@ -69,7 +69,7 @@ gh project item-edit --project-id PVT_kwHOBd4HfM4Bg89n \
 
 | Status | 뜻 | 옮기는 사람 |
 |--------|---------|--------------|
-| Backlog | 발행됐고 아직 줄 서지 않았다 | 연 사람 |
+| Backlog | 발행됐고 아직 줄 서지 않았다 | workflow |
 | Todo | 다음 차례로 확정됐다 — 배정 대기열이다 | PM(슬라이스 순서), 총괄 |
 | In Progress | 브랜치를 땄고 작업 중이다 | 배정된 역할 |
 | In Review | PR이 열렸고 리뷰·수정 루프가 돈다 | 배정된 역할 |
@@ -85,11 +85,11 @@ gh project item-edit --project-id PVT_kwHOBd4HfM4Bg89n \
 | Workflow | 걸리는 때 | 하는 일 |
 |----------|------------|---------|
 | `Item closed` | Issue나 PR이 닫힐 때 | Status를 Done으로 |
-| `Item added to project` | 카드가 보드에 올라올 때 | Status를 Backlog으로 |
+| `Item added to project` | 카드가 보드에 올라올 때 | Status를 Backlog로 |
 
-이 둘이 꺼지면 아무 경고 없이 멈춘다. 2026-08-22에 `Item closed`가 꺼진 채로 있던 것을 발견했고, 그때 닫힌 Issue 23건의 카드가 Backlog와 In Progress에 그대로 앉아 있었다. 보드가 상태의 정본이라 그 값이 틀리면 Blocked 열을 훑는 일도 헛돈다.
+이 둘이 꺼지면 아무 경고 없이 멈춘다. 2026-08-22에 `Item closed`가 꺼진 채로 있던 것을 발견했고 그때 닫힌 Issue 23건의 카드가 Backlog와 In Progress에 그대로 앉아 있었다. 보드가 상태의 정본이라 그 값이 틀리면 Blocked 열을 훑는 일도 헛돈다.
 
-토글은 저장소 밖에 있어서 git이 지키지 못한다. GraphQL에도 켜고 끄는 mutation이 없다 — `deleteProjectV2Workflow`만 있고, 켜는 것은 웹에서만 된다. 상태가 궁금하면 켜짐 여부는 읽을 수 있다.
+토글은 저장소 밖에 있어서 git이 지키지 못한다. GraphQL에도 켜고 끄는 mutation이 없다 — `deleteProjectV2Workflow`만 있고 켜는 것은 웹에서만 된다. 상태가 궁금하면 켜짐 여부는 읽을 수 있다.
 
 ```
 gh api graphql -f query='{ user(login:"tkyoun0421"){ projectV2(number:8){
@@ -97,6 +97,8 @@ gh api graphql -f query='{ user(login:"tkyoun0421"){ projectV2(number:8){
 ```
 
 카드가 통째로 밀린 것을 보면 이 둘부터 확인해라. 보드를 새로 만들었거나 설정이 초기화됐을 때 제일 먼저 꺼지는 자리다.
+
+`Auto-add sub-issues to project`도 켜져 있다. Status를 만지지 않아 위 표에는 없지만, 꺼지면 `[Slice]` sub-issue가 보드에 아예 올라오지 않는다. 위 명령이 셋을 다 보여 준다.
 
 ## 우선순위
 
