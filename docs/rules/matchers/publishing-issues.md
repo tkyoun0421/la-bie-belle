@@ -98,7 +98,7 @@ gh api graphql -f query='{ user(login:"tkyoun0421"){ projectV2(number:8){
 
 카드가 통째로 밀린 것을 보면 이 둘부터 확인해라. 보드를 새로 만들었거나 설정이 초기화됐을 때 제일 먼저 꺼지는 자리다.
 
-`Auto-add sub-issues to project`도 켜져 있다. Status를 만지지 않아 위 표에는 없지만, 꺼지면 `[Slice]` sub-issue가 보드에 아예 올라오지 않는다. 위 명령이 셋을 다 보여 준다.
+`Auto-add sub-issues to project`도 켜져 있다. Status를 만지지 않아 위 표에는 없다. 이것이 꺼지면 `[Slice]` sub-issue가 자동으로는 보드에 올라오지 않는다. 발행할 때 `gh project item-add`를 손수 돌리는 경로는 그대로 남는다. 위 명령이 셋을 다 보여 준다.
 
 ## 우선순위
 
