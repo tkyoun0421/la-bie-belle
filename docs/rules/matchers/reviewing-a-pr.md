@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #89, #101, #114, #113, #91"
+related_issue: "#69, #89, #101, #114, #113, #91, #126"
 ---
 
 # Matcher: PR을 리뷰할 때
@@ -32,7 +32,7 @@ diff와 저장소 상태를 판단하지, 작성자가 그것에 대해 한 말�
 3. **명세 부합** (high) — 구현이 SPEC 파일과 Issue의 인수 조건과 맞는가, 명세가 요구하지 않은 동작을 덧붙이지 않았는가.
 4. **정확성** (high~critical) — 명백한 버그, 깨진 경계 사례, 타입·로직 오류. `main`을 깨뜨리면 critical이다.
 5. **테스트** (high) — 동작 변경에 테스트가 붙었는가, 기존 테스트를 이유 없이 약화시키지 않았는가.
-6. **관례** (normal) — 제목 형식, Issue 번호, Impact 줄, 문서 변경 시 갱신된 front matter.
+6. **관례** (normal) — 제목 형식, Issue 번호, Impact 줄, 문서 변경 시 갱신된 front matter. front matter의 형태는 CI의 `scripts/docs-check.py`가 이미 본다. 여기서 볼 것은 형태가 아니라 값이다 — 이 작업의 Issue 번호가 `related_issue`에 붙었는가, `status`가 실제 상태와 맞는가.
 7. **문체** (normal) — 새로 쓴 한국어 산문에 `docs/rules/matchers/writing-korean.md`가 세운 S1 대상 열여덟이 남았는가. PR 본문과 코멘트도 대상이다. `docs/rules/` 아래의 규칙 문서는 다음 세션이 본으로 삼는 글이라 더 엄하게 본다.
 
 6번과 7번은 기계로 옮기지 않는다. 그 둘의 절반을 CI로 내리자는 안이 #91에 있었는데, 세어 보니 남는 절반이 더 컸다. 제목 형식과 front matter는 정규식이 잡지만 Impact 줄이 실제로 무엇이 달라지는지 말하는가는 못 잡는다. 문체 항목은 인용문과 코드 블록 안에서도 똑같이 걸려 오탐이 merge를 막는다. 축을 반으로 갈라 절반만 CI에 두면 리뷰어는 나머지 절반을 보러 같은 파일을 다시 연다.

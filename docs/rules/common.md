@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #88, #91, #101, #105, #106, #114, #109, #63, #111, #112, #113"
+related_issue: "#69, #88, #91, #101, #105, #106, #114, #109, #63, #111, #112, #113, #126"
 ---
 
 # 공통 규칙
@@ -140,7 +140,9 @@ CI는 마지막으로 돌린 검사 하나로 merge를 가른다. force-push 이
 
 registry 둘의 대조는 CI에만 있다. `scripts/registry-check.py`가 `config/documents.json`의 모든 `path`를 `config/ownership.json`에 대서 소유 역할이 정확히 하나 나오는지 본다. 문서 종류를 새로 만들면서 소유를 정하지 않으면 여기서 걸린다. 같은 판정을 쓰려고 소유 module의 `owns()`를 그대로 불러 쓴다. 대조 규칙의 두 번째 사본을 만들지 않으려는 것이다.
 
-이 검사만 base가 아니라 PR의 트리를 읽는다. 묻는 것이 merge될 registry 둘의 정합이라 base를 읽으면 검사할 대상이 없다. 소유 검사의 base 고정은 PR이 registry에 자기 줄을 넣어 스스로를 통과시키는 것을 막는 장치인데, 이 대조는 통과를 주는 검사가 아니라 요구하는 검사라 그 위험이 없다.
+front matter 검사도 CI에만 있다. `scripts/docs-check.py`가 `docs/` 아래 모든 문서를 훑어 필드 넷이 다 있는지, `status`가 그 종류의 어휘에 드는지, `related_issue`와 `related_adr`이 규격대로인지 본다. 어느 어휘를 쓸지는 `config/documents.json`의 `adr`·`tdr` 항목이 가리키는 자리로 가른다. `scripts/test-docs-check.py`가 이 판정을 케이스 스물로 잡아 둔다. 규격 자체는 `docs/rules/matchers/writing-docs.md`가 갖는다.
+
+이 둘만 base가 아니라 PR의 트리를 읽는다. 묻는 것이 merge될 트리의 정합이라 base를 읽으면 검사할 대상이 없다. 소유 검사의 base 고정은 PR이 registry에 자기 줄을 넣어 스스로를 통과시키는 것을 막는 장치인데, 이 둘은 통과를 주는 검사가 아니라 요구하는 검사라 그 위험이 없다.
 
 CI가 잡지 못하는 축은 남는다. 명세 부합과 정확성은 기계의 몫이 아니다. 그 자리의 방어선은 독립 PR 리뷰다 — 리뷰어는 브랜치 접두와 바뀐 모든 경로의 소유를 매번 대조한다.
 
