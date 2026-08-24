@@ -530,6 +530,19 @@ def main():
              done + "\n- [x\ufe0f\ufe0f\ufe0f\ufe0f] G2: \uc2a4\ud399 1.2\n", ("--status",), 2)
         case(root, "제어 문자로 쪼갠 속성 이름도 오류다", done + "\nCHECK: false\n", ("--status",), 2)
         case(root, "네 글자 대괄호는 산문이다", done + "\n- [abcd] 참고 목록\n", ("--status",), 0)
+        case(root, "합성되는 결합 부호로 쪼갠 속성 이름도 오류다",
+             done + "\nCHÉCK: false\n", ("--status",), 2)
+        case(root, "둘러싸는 결합 부호로 쪼갠 속성 이름도 오류다",
+             done + "\nCHE\u0489CK: false\n", ("--status",), 2)
+        case(root, "붙는 결합 부호로 쪼갠 속성 이름도 오류다",
+             done + "\nCHE\u0903CK: false\n", ("--status",), 2)
+        case(root, "네 글자 상자와 결합 부호를 겹쳐도 블록이 사라지지 않는다",
+             done + "\n- [done] G2: 결제가 실제로 승인된다\n"
+             "CHÉCK: false\nEXPÉCT: never\nEVIDENCÉ: pending\n",
+             ("--status",), 2)
+        case(root, "네 글자 상자 gate에 평문 속성이 붙어도 오류다",
+             done + "\n- [done] G2: 둘\n  CHECK: false\n  EXPECT: never\n  EVIDENCE: pending\n",
+             ("--status",), 2)
         case(root, "gate 없는 자리의 고아 속성은 그것만으로 오류다",
              "# Gates\n\n  CHECK: false\n\n" + done.split("\n", 2)[2], ("--status",), 2)
 

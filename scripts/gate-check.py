@@ -94,11 +94,11 @@ def compile_expect(expect):
 
 
 def scan_view(line):
-    folded = unicodedata.normalize("NFKC", line)
+    decomposed = unicodedata.normalize("NFKD", line)
     kept = []
-    for character in folded:
+    for character in decomposed:
         category = unicodedata.category(character)
-        if category in ("Cf", "Mn") or (category == "Cc" and character != "\t"):
+        if category.startswith("M") or category == "Cf" or (category == "Cc" and character != "\t"):
             continue
         kept.append(character)
     return "".join(kept)
