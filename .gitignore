@@ -3,5 +3,6 @@
 !.env.example
 node_modules/
 __pycache__/
+.gates/
 .next/
 CLAUDE.local.md

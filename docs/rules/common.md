@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #88, #91, #101, #105, #106, #114, #109, #63, #111, #112, #113, #126"
+related_issue: "#69, #88, #91, #101, #105, #106, #114, #109, #63, #111, #112, #113, #126, #130"
 ---
 
 # 공통 규칙
@@ -23,6 +23,7 @@ related_issue: "#69, #88, #91, #101, #105, #106, #114, #109, #63, #111, #112, #1
 |---------|--------------|
 | `writing-korean.md` | 사람이 읽을 한국어 문장을 쓸 때 — 문서 본문, Issue·PR 본문, 코멘트 |
 | `writing-docs.md` | `docs/` 아래를 만들거나 고칠 때 |
+| `gates.md` | 슬라이스를 구현하거나 그 완료를 판정할 때 |
 | `publishing-issues.md` | GitHub Issue를 열거나 보드 카드를 옮길 때 |
 | `opening-a-pr.md` | PR을 열 때, 또는 열려 있는 PR에 수정을 push할 때 |
 | `reviewing-a-pr.md` | PR을 리뷰하고 발견에 심각도를 매길 때 |
@@ -143,6 +144,8 @@ registry 둘의 대조는 CI에만 있다. `scripts/registry-check.py`가 `confi
 front matter 검사도 CI에만 있다. `scripts/docs-check.py`가 `docs/` 아래 모든 문서를 훑어 필드 넷이 다 있는지, `status`가 그 종류의 어휘에 드는지, `related_issue`와 `related_adr`이 규격대로인지 본다. 어느 어휘를 쓸지는 `config/documents.json`의 `adr`·`tdr` 항목이 가리키는 자리로 가른다. `scripts/test-docs-check.py`가 이 판정을 케이스 스물로 잡아 둔다. 규격 자체는 `docs/rules/matchers/writing-docs.md`가 갖는다.
 
 이 둘만 base가 아니라 PR의 트리를 읽는다. 묻는 것이 merge될 트리의 정합이라 base를 읽으면 검사할 대상이 없다. 소유 검사의 base 고정은 PR이 registry에 자기 줄을 넣어 스스로를 통과시키는 것을 막는 장치인데, 이 둘은 통과를 주는 검사가 아니라 요구하는 검사라 그 위험이 없다.
+
+완료 판정은 별개 축이라 소유도 묻지 않고 CI에도 없다. **Stop 훅** `.claude/hooks/gate-guard.sh`가 `scripts/gate-check.py`를 불러, 세션이 끝나려 할 때 `.gates/` 아래 원장에 미충족 gate가 남았는지 본다. 원장이 없으면 통과시키므로 강제 범위는 설정이 아니라 원장의 존재가 정한다. 원장이 깨졌으면 통과가 아니라 차단이다. 훅은 명령을 돌리지 않고 파일에 적힌 증거만 읽으며, 진전 없이 여섯 번 연속으로 막으면 일곱 번째는 놓아준다. 규격은 `docs/rules/matchers/gates.md`가 갖는다. 원장은 추적되지 않아 CI가 읽을 대상이 없고, PR 본문에 실린 원장에 묻는 것은 `CHECK:`가 제목이 말하는 것을 실제로 재느냐라서 그 판정은 사람에게 남는다.
 
 CI가 잡지 못하는 축은 남는다. 명세 부합과 정확성은 기계의 몫이 아니다. 그 자리의 방어선은 독립 PR 리뷰다 — 리뷰어는 브랜치 접두와 바뀐 모든 경로의 소유를 매번 대조한다.
 
