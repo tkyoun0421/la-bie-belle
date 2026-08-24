@@ -475,6 +475,25 @@ def main():
         check("맨 ABANDON 줄은 오류다", run(root, "--status").returncode, 2)
         clear(root)
 
+        done = PASSING.replace("- [ ] G1", "- [x] G1").replace(
+            "EVIDENCE: pending", "EVIDENCE: exit 0 | verification passed"
+        )
+        case(root, "모드를 안 고르면 오류다", done, (), 2)
+        case(root, "인용 부호가 붙은 gate 줄은 오류다", done + "\n> - [x] G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "NBSP가 붙은 gate 줄은 오류다", done + "\n\u00a0- [x] G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "전각 공백이 붙은 gate 줄은 오류다", done + "\n\u3000- [x] G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "제로폭 공백이 붙은 gate 줄은 오류다", done + "\n\u200b- [x] G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "불릿이 가운뎃점인 gate 줄은 오류다", done + "\n• [x] G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "인용 부호가 붙은 속성 줄은 오류다", done + "\n> EVIDENCE: exit 0\n", ("--status",), 2)
+        case(root, "들여쓰지 않은 속성 줄은 오류다", done + "\nEVIDENCE: exit 0\n", ("--status",), 2)
+        case(root, "소문자 속성 줄은 오류다", done + "\ncheck: echo verification passed\n", ("--status",), 2)
+        case(root, "들여쓴 ABANDON 줄은 오류다", done + "\n  ABANDON: G1 사유가 여기 있다\n", ("--status",), 2)
+        case(root, "원장을 통째로 인용하면 오류다",
+             "".join(f"> {line}\n" for line in done.split("\n")), ("--status",), 2)
+        case(root, "ABANDON은 gate 정의보다 위에 있어도 받는다",
+             "# Gates: 시험\n\nABANDON: G1 결제 사업자 계정이 아직 없다\n\n"
+             + PASSING.split("\n", 2)[2], ("--status",), 0)
+
         duplicated = met.replace("echo verification passed", "false")
         write(root, "slice.md", duplicated + duplicated.split("\n", 2)[2])
         before = ledger_text(root)

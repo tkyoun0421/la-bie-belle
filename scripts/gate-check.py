@@ -9,11 +9,12 @@ import sys
 MALFORMED = 2
 UNMET = 1
 GATE_LINE = re.compile(r"^- \[( |x)\] ([^\s:]+):[ \t]*(.*?)[ \t]*$")
-LOOSE_GATE = re.compile(r"^[ \t]*(?:[-*+]|\d+[.)])[ \t]*\[[ xX]{0,2}\]")
+PREFIX = re.compile(r"^[\s>\u200b-\u200d\u2060\ufeff]+")
+LOOSE_GATE = re.compile(r"^(?:[-*+•]|\d+[.)])[ \t]*\[[ xX]{0,2}\]")
 ATTRIBUTE = re.compile(r"^[ \t]+(CHECK|EXPECT|EVIDENCE):[ \t]*(.*?)[ \t]*$")
-LOOSE_ATTRIBUTE = re.compile(r"^(CHECK|EXPECT|EVIDENCE):")
+LOOSE_ATTRIBUTE = re.compile(r"^(CHECK|EXPECT|EVIDENCE):", re.I)
 ABANDON_LINE = re.compile(r"^ABANDON:[ \t]+(\S+)[ \t]*(.*?)[ \t]*$")
-LOOSE_ABANDON = re.compile(r"^ABANDON:")
+LOOSE_ABANDON = re.compile(r"^ABANDON:", re.I)
 RELEASED_LINE = re.compile(r"^RELEASED:[ \t]*(.*?)[ \t]*$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 REGEX_EXPECT = re.compile(r"^/(.*)/([a-z]*)$")
@@ -90,10 +91,20 @@ def compile_expect(expect):
         return "regex", str(e)
 
 
+def prefix_note(line, bare):
+    if line == bare:
+        return ""
+    return (
+        " 줄 앞에 인용 부호나 보이지 않는 공백이 붙어 있다 — "
+        "PR 본문이나 코멘트에서 옮겨 붙이면 `> `나 non-breaking space가 딸려온다."
+    )
+
+
 def parse(path):
     ledger = Ledger(path)
     ledger.lines, ledger.newline = read_lines(path)
     seen = {}
+    abandons = []
     current = None
     expected_next = None
     fence = None
@@ -124,10 +135,13 @@ def parse(path):
             ledger.gates.append(current)
             continue
 
-        if LOOSE_GATE.match(line):
+        bare = PREFIX.sub("", line)
+
+        if LOOSE_GATE.match(bare):
             ledger.errors.append(
                 f"{path}:{index + 1} gate 줄의 형태가 어긋난다. `- [ ] ID: 제목`이나 `- [x] ID: 제목`이어야 한다 — "
                 "상자는 소문자 x와 공백만 받고, id에는 공백도 콜론도 들어가지 않으며, 줄은 들여쓰지 않는다."
+                + prefix_note(line, bare)
             )
             current = None
             expected_next = None
@@ -142,7 +156,7 @@ def parse(path):
                 ledger.errors.append(
                     f"{path}:{index + 1} {attribute.group(1)}:이 자기 gate 바로 아래에 붙어 있지 않다. "
                     f"{ledger.qualified(current)}와 이 줄 사이에 다른 줄이 끼었다 — "
-                    "빈 줄이나 주석일 수도 있고, 형태가 어긋나 무시된 gate 줄일 수도 있다."
+                    "빈 줄이나 주석일 수도 있고 형태가 어긋나 무시된 gate 줄일 수도 있다."
                 )
                 current = None
                 expected_next = None
@@ -164,31 +178,38 @@ def parse(path):
                 current.evidence_line = index
             continue
 
-        if LOOSE_ATTRIBUTE.match(line):
+        if LOOSE_ATTRIBUTE.match(bare):
             ledger.errors.append(
-                f"{path}:{index + 1} {line.split(':', 1)[0]}:이 들여쓰기되지 않았다. gate 아래로 들여써라."
+                f"{path}:{index + 1} {bare.split(':', 1)[0]}:이 gate 아래로 들여쓴 속성 줄로 읽히지 않는다. "
+                "공백이나 탭으로 들여쓰고 철자는 대문자다."
+                + prefix_note(line, bare)
             )
             continue
 
         abandon = ABANDON_LINE.match(line)
         if abandon:
-            gate_id, reason = abandon.group(1), abandon.group(2)
-            target = next((g for g in ledger.gates if g.id == gate_id), None)
-            if target is None:
-                ledger.errors.append(f"{path}:{index + 1} ABANDON:이 없는 gate '{gate_id}'를 가리킨다.")
-            elif not reason:
-                ledger.errors.append(f"{path}:{index + 1} ABANDON:에 사유가 없다. 사유 없는 포기는 포기가 아니다.")
-            else:
-                target.abandoned = reason
+            abandons.append((index, abandon.group(1), abandon.group(2)))
             continue
 
-        if LOOSE_ABANDON.match(line):
-            ledger.errors.append(f"{path}:{index + 1} ABANDON:은 gate id와 사유를 함께 받는다.")
+        if LOOSE_ABANDON.match(bare):
+            ledger.errors.append(
+                f"{path}:{index + 1} ABANDON:은 들여쓰지 않은 줄에서 gate id와 사유를 함께 받는다."
+                + prefix_note(line, bare)
+            )
             continue
 
         release = RELEASED_LINE.match(line)
         if release:
             ledger.released.append(release.group(1))
+
+    for index, gate_id, reason in abandons:
+        target = next((g for g in ledger.gates if g.id == gate_id), None)
+        if target is None:
+            ledger.errors.append(f"{path}:{index + 1} ABANDON:이 없는 gate '{gate_id}'를 가리킨다.")
+        elif not reason:
+            ledger.errors.append(f"{path}:{index + 1} ABANDON:에 사유가 없다. 사유 없는 포기는 포기가 아니다.")
+        else:
+            target.abandoned = reason
 
     if fence is not None:
         ledger.errors.append(
