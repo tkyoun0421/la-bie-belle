@@ -86,8 +86,22 @@ def partial(met):
     return "# Gates: 흔들림\n\n" + "\n".join(gates)
 
 
-def hook_payload(session="s1"):
-    return json.dumps({"session_id": session, "stop_hook_active": False})
+def hook_payload(session="s1", chained=False):
+    return json.dumps({"session_id": session, "stop_hook_active": chained})
+
+
+def two_gates(second):
+    return (
+        "# Gates\n\n"
+        "- [ ] G1: 결제가 실제로 승인된다\n"
+        "  CHECK: false\n"
+        "  EXPECT: never\n"
+        "  EVIDENCE: pending\n\n"
+        f"{second}\n"
+        "  CHECK: echo ok\n"
+        "  EXPECT: ok\n"
+        "  EVIDENCE: pending\n"
+    )
 
 
 def main():
@@ -159,14 +173,51 @@ def main():
              PASSING.replace("EXPECT: verification passed", "EXPECT:"),
              ["--status"], 2)
 
-        case(root, "어긋난 gate 줄이 앞 gate의 CHECK를 덮어쓰지 않는다",
-             "# Gates\n\n- [ ] G1: 스펙 3.2\n  CHECK: false\n  EXPECT: never\n  EVIDENCE: pending\n\n"
-             "- [X] G2: 스펙 3.4\n  CHECK: echo 8 passed\n  EXPECT: 8 passed\n  EVIDENCE: pending\n",
-             ["--run"], 2)
+        for label, second in (
+            ("대문자 상자", "- [X] G2: 둘"),
+            ("별표 불릿", "* [ ] G2: 둘"),
+            ("더하기 불릿", "+ [ ] G2: 둘"),
+            ("번호 불릿", "1. [ ] G2: 둘"),
+            ("두 글자 상자", "- [xx] G2: 둘"),
+            ("괄호 번호 불릿", "1) [ ] G2: 둘"),
+            ("들여쓴 gate 줄", "  - [ ] G2: 둘"),
+            ("콜론 없는 gate 줄", "- [ ] G2 둘"),
+            ("숫자 상자", "- [1] G2: 둘"),
+        ):
+            case(root, f"{label}로 쓴 줄이 앞 gate를 덮어쓰지 않는다",
+                 two_gates(second), ["--run"], 2)
 
         case(root, "코드 펜스 안의 gate는 세지 않는다",
              "# Gates\n\n```markdown\n- [ ] G1: 예시\n  CHECK: true\n  EXPECT: ok\n```\n",
              ["--status"], 2)
+
+        case(root, "물결 펜스 안의 gate도 세지 않는다",
+             "# Gates\n\n~~~markdown\n- [ ] G1: 예시\n  CHECK: true\n  EXPECT: ok\n~~~\n",
+             ["--status"], 2)
+
+        case(root, "다른 문자의 펜스는 열린 펜스를 닫지 않는다",
+             "# Gates\n\n```markdown\n~~~\n- [ ] G1: 예시\n  CHECK: true\n  EXPECT: ok\n```\n",
+             ["--status"], 2)
+
+        case(root, "속성이 없는 어긋난 gate 줄도 오류다",
+             PASSING + "\n* [ ] G2: 둘\n",
+             ["--status"], 2)
+
+        case(root, "체크박스가 아닌 목록은 gate로 오해하지 않는다",
+             PASSING + "\n참고\n\n- [문서](docs/x.md) 스펙\n- [1] 각주\n",
+             ["--status"], 1)
+
+        case(root, "--timeout이 정수가 아니면 막는다",
+             PASSING, ["--run", "--timeout", "빨리"], 2)
+
+        case(root, "--timeout이 범위를 벗어나면 막는다",
+             PASSING, ["--run", "--timeout", "0"], 2)
+
+        write(root, "slice.md", PASSING)
+        blank = run(root, "--run", "--cwd")
+        check("--cwd에 값이 없으면 그 이유를 말하며 막는다",
+              (blank.returncode, "값이 없다" in blank.stderr), (2, True))
+        clear(root)
 
         case(root, "ABANDON에 사유가 없으면 오류다",
              PASSING + "\nABANDON: G1\n",
@@ -269,6 +320,65 @@ def main():
             if not run(root, "--hook", stdin=hook_payload("swing")).stdout.strip():
                 break
         check("충족 수가 오르내려도 결국 해제된다", index < 11, True)
+        clear(root)
+
+        blocked_while_moving = []
+        for index in range(3):
+            write(root, "slice.md", partial(index))
+            blocked_while_moving.append(
+                bool(run(root, "--hook", stdin=hook_payload("moving", chained=index > 0)).stdout.strip())
+            )
+        check("차단이 이어져도 매번 새로 충족하면 막힌 채로 간다",
+              blocked_while_moving, [True] * 3)
+        clear(root)
+
+        os.makedirs(os.path.join(root, "안쪽"), exist_ok=True)
+        write(root, "slice.md", PASSING.replace("echo verification passed", "pwd")
+              .replace("EXPECT: verification passed", "EXPECT: 안쪽"))
+        check("--cwd가 명령이 도는 자리를 바꾼다",
+              run(root, "--run", "--cwd", os.path.join(root, "안쪽")).returncode, 0)
+        clear(root)
+
+        write(root, "slice.md", PASSING.replace(
+            "echo verification passed",
+            "sh -c 'echo verification passed; echo 뒤에 붙은 잡음'"))
+        run(root, "--run")
+        check("증거는 마지막 줄이 아니라 기대에 걸린 줄을 남긴다",
+              "verification passed" in ledger_text(root).split("EVIDENCE:")[1].split("\n")[0], True)
+        clear(root)
+
+        write(root, "slice.md", PASSING.replace(
+            "echo verification passed",
+            "python3 -c \"print('verification passed ' + 'x' * 500)\""))
+        run(root, "--run")
+        evidence = ledger_text(root).split("EVIDENCE:")[1].split("\n")[0]
+        check("긴 증거는 잘린다", len(evidence) < 300 and evidence.endswith("…"), True)
+        clear(root)
+
+        write(root, "done.md", PASSING.replace("- [ ] G1", "- [x] G1").replace(
+            "EVIDENCE: pending", "EVIDENCE: exit 0 | verification passed"))
+        write(root, "stuck.md", PASSING.replace("G1", "G9"))
+        for _ in range(7):
+            run(root, "--hook", stdin=hook_payload("two-ledgers"))
+        check("해제 줄은 미충족이 남은 원장에만 남는다",
+              ("RELEASED:" in ledger_text(root, "stuck.md"),
+               "RELEASED:" in ledger_text(root, "done.md")),
+              (True, False))
+        clear(root)
+
+        write(root, "slice.md", PASSING)
+        with open(os.path.join(root, ".gates", ".hook-state.json"), "w", encoding="utf-8") as f:
+            f.write('{"broken": {"best": "많이", "blocks": null}}')
+        corrupt = json.loads(run(root, "--hook", stdin=hook_payload("broken")).stdout or "{}")
+        check("상태 값이 망가져도 훅은 죽지 않고 막는다", corrupt.get("decision"), "block")
+        check("망가진 상태는 판정을 죽이지 않고 처음부터 센다",
+              "죽었다" in corrupt.get("reason", ""), False)
+        clear(root)
+
+        os.makedirs(os.path.join(root, ".gates", "wedged.md"), exist_ok=True)
+        wedged = json.loads(run(root, "--hook", stdin=hook_payload("wedged")).stdout or "{}")
+        shutil.rmtree(os.path.join(root, ".gates", "wedged.md"))
+        check("원장을 읽지 못하면 훅은 통과가 아니라 차단이다", wedged.get("decision"), "block")
         clear(root)
 
         forged = PASSING.replace("- [ ] G1", "- [x] G1").replace(

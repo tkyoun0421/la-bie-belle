@@ -9,7 +9,7 @@ import sys
 MALFORMED = 2
 UNMET = 1
 GATE_LINE = re.compile(r"^- \[( |x)\] ([^\s:]+):[ \t]*(.*?)[ \t]*$")
-LOOSE_GATE = re.compile(r"^[ \t]*-[ \t]*\[[^\]]?\]")
+LOOSE_GATE = re.compile(r"^[ \t]*(?:[-*+]|\d+[.)])[ \t]*\[[ xX]{0,2}\]")
 ATTRIBUTE = re.compile(r"^[ \t]+(CHECK|EXPECT|EVIDENCE):[ \t]*(.*?)[ \t]*$")
 LOOSE_ATTRIBUTE = re.compile(r"^(CHECK|EXPECT|EVIDENCE):")
 ABANDON_LINE = re.compile(r"^ABANDON:[ \t]+(\S+)[ \t]*(.*?)[ \t]*$")
@@ -95,6 +95,7 @@ def parse(path):
     ledger.lines, ledger.newline = read_lines(path)
     seen = {}
     current = None
+    expected_next = None
     fence = None
 
     for index, line in enumerate(ledger.lines):
@@ -116,6 +117,7 @@ def parse(path):
                 ledger.errors.append(f"{path}:{index + 1} gate id '{gate_id}'가 두 번 나온다. 파일 안에서 유일해야 한다.")
             seen[gate_id] = index
             current = Gate(gate_id, gate_match.group(3), gate_match.group(1) == "x", index)
+            expected_next = index + 1
             ledger.gates.append(current)
             continue
 
@@ -125,6 +127,7 @@ def parse(path):
                 "상자는 소문자 x와 공백만 받고, id에는 공백도 콜론도 들어가지 않으며, 줄은 들여쓰지 않는다."
             )
             current = None
+            expected_next = None
             continue
 
         attribute = ATTRIBUTE.match(line)
@@ -132,6 +135,16 @@ def parse(path):
             if current is None:
                 ledger.errors.append(f"{path}:{index + 1} {attribute.group(1)}:이 어느 gate에도 붙지 않았다.")
                 continue
+            if index != expected_next:
+                ledger.errors.append(
+                    f"{path}:{index + 1} {attribute.group(1)}:이 자기 gate 바로 아래에 붙어 있지 않다. "
+                    f"{ledger.qualified(current)}와 이 줄 사이에 다른 줄이 끼었다 — "
+                    "gate 줄의 형태가 어긋나 무시됐을 수 있다."
+                )
+                current = None
+                expected_next = None
+                continue
+            expected_next = index + 1
             key, value = attribute.group(1), attribute.group(2)
             if key == "CHECK":
                 current.check = value
@@ -308,6 +321,19 @@ def load_state(path):
     return state if isinstance(state, dict) else {}
 
 
+def session_entry(state, session):
+    entry = state.get(session)
+    if not isinstance(entry, dict):
+        return {}
+    clean = {"released": bool(entry.get("released"))}
+    for key in ("best", "blocks"):
+        try:
+            clean[key] = int(entry.get(key))
+        except (TypeError, ValueError):
+            continue
+    return clean
+
+
 def save_state(path, state):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
@@ -320,7 +346,6 @@ def hook(root):
     except json.JSONDecodeError:
         payload = {}
     session = str(payload.get("session_id") or "unknown")
-    chained = bool(payload.get("stop_hook_active"))
 
     paths = discover(root, [])
     if not paths:
@@ -336,9 +361,9 @@ def hook(root):
     ]
     state_path = os.path.join(root, ".gates", STATE_FILE)
     state = load_state(state_path)
-    entry = state.get(session) or {}
-    released = bool(entry.get("released"))
-    best = int(entry.get("best", -1))
+    entry = session_entry(state, session)
+    released = entry.get("released", False)
+    best = entry.get("best", -1)
     met_now = sum(1 for ledger in ledgers for gate in ledger.gates if gate.met())
 
     if not errors and not unmet:
@@ -347,12 +372,12 @@ def hook(root):
             save_state(state_path, state)
         return 0
 
-    if met_now > best and not chained:
+    if met_now > best:
         entry = {"best": met_now, "blocks": 1, "released": released}
     else:
         entry = {
             "best": max(best, met_now),
-            "blocks": int(entry.get("blocks", 0)) + 1,
+            "blocks": entry.get("blocks", 0) + 1,
             "released": released,
         }
     state[session] = entry
@@ -362,7 +387,7 @@ def hook(root):
         state[session] = entry
         save_state(state_path, state)
         note = (
-            f"훅이 진전 없이 {BLOCK_LIMIT}번 막은 뒤 놓아줬다. "
+            f"훅이 새로 충족된 gate 없이 {BLOCK_LIMIT}번 막은 뒤 놓아줬다. "
             f"미충족: {', '.join(unmet) if unmet else '원장이 깨졌다'}"
         )
         for ledger in ledgers:
@@ -405,7 +430,12 @@ def main():
         os.environ.get("PROJECT_DIR") or os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
     )
     if "--hook" in args:
-        return hook(root)
+        try:
+            return hook(root)
+        except (Exception, SystemExit) as e:
+            reason = f"gate-check가 판정 중에 죽었다 ({e}). 통과가 아니라 차단이다 — 훅을 고쳐라."
+            print(json.dumps({"decision": "block", "reason": reason}, ensure_ascii=False))
+            return 0
     if "--subagent" in args:
         return verify_all(root)
 
