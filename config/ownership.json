@@ -1,5 +1,6 @@
 {
   "orchestrator": [
+    ".gates/",
     "CLAUDE.md",
     "README.md",
     ".gitignore",
@@ -12,8 +13,9 @@
     "docs/rules/",
     "docs/templates/"
   ],
-  "pm": ["docs/prd.md", "docs/domain/", "docs/adr/", "docs/specs/"],
+  "pm": [".gates/", "docs/prd.md", "docs/domain/", "docs/adr/", "docs/specs/"],
   "dev": [
+    ".gates/",
     "docs/architecture/",
     "src/",
     "public/",
@@ -34,5 +36,5 @@
     ".prettierrc",
     ".prettierignore"
   ],
-  "ui": ["docs/ui/"]
+  "ui": [".gates/", "docs/ui/"]
 }
