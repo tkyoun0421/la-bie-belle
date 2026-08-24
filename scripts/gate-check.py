@@ -13,8 +13,9 @@ GATE_LINE = re.compile(r"^- \[( |x)\] ([^\s:]+):[ \t]*(.*?)[ \t]*$")
 PREFIX = re.compile(r"^[\s>\u200b-\u200d\u2060\ufeff]+")
 ATTRIBUTE = re.compile(r"^[ \t]+(CHECK|EXPECT|EVIDENCE):[ \t]*(.*?)[ \t]*$")
 ABANDON_LINE = re.compile(r"^ABANDON:[ \t]+(\S+)[ \t]*(.*?)[ \t]*$")
-SCRUB = re.compile(r"[\u200b-\u200d\u2060\ufeff]")
-SUSPECT_KEYWORD = re.compile(r"(?<!\w)(CHECK|EXPECT|EVIDENCE|ABANDON|RELEASED)[ \t]*[:\u2236\ua789]", re.I)
+SUSPECT_KEYWORD = re.compile(
+    r"(?<![A-Za-z])(CHECK|EXPECT|EVIDENCE|ABANDON|RELEASED)"
+    r"[ \t]*[:\u2236\ua789\u0589\u05c3\u1361\u2982\u02d0]", re.I)
 SUSPECT_BOX = re.compile(r"\[[^\]]{0,3}\]")
 RELEASED_LINE = re.compile(r"^RELEASED:[ \t]*(.*?)[ \t]*$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
@@ -90,6 +91,17 @@ def compile_expect(expect):
         return re.compile(pattern, bits), None
     except re.error as e:
         return "regex", str(e)
+
+
+def scan_view(line):
+    folded = unicodedata.normalize("NFKC", line)
+    kept = []
+    for character in folded:
+        category = unicodedata.category(character)
+        if category in ("Cf", "Mn") or (category == "Cc" and character != "\t"):
+            continue
+        kept.append(character)
+    return "".join(kept)
 
 
 def prefix_note(line, bare):
@@ -177,7 +189,7 @@ def parse(path):
             continue
 
         bare = PREFIX.sub("", line)
-        folded = SCRUB.sub("", unicodedata.normalize("NFKC", line))
+        folded = scan_view(line)
         if SUSPECT_KEYWORD.search(folded) or SUSPECT_BOX.search(folded):
             ledger.errors.append(
                 f"{path}:{index + 1} gate의 재료가 실린 줄이 어느 규격에도 맞지 않는다. "

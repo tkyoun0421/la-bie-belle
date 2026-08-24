@@ -518,6 +518,20 @@ def main():
         case(root, "비율 기호 콜론 속성 줄도 오류다", done + "\nCHECK\u2236 false\n", ("--status",), 2)
         case(root, "인용된 RELEASED 줄도 오류다", done + "\n> RELEASED: 한 번 풀었다\n", ("--status",), 2)
         case(root, "낱말에 붙은 속성 이름은 산문이다", done + "\n참고 — typecheck: 초록이다\n", ("--status",), 0)
+        case(root, "한글에 붙은 속성 이름은 오류다", done + "\n검사CHECK: false\n", ("--status",), 2)
+        case(root, "밑줄에 붙은 속성 이름은 오류다", done + "\n_CHECK: false\n", ("--status",), 2)
+        case(root, "숫자에 붙은 속성 이름은 오류다", done + "\n1EXPECT: never\n", ("--status",), 2)
+        case(root, "아르메니아 콜론 속성 줄도 오류다", done + "\nCHECK\u0589 false\n", ("--status",), 2)
+        case(root, "수식 콜론 속성 줄도 오류다", done + "\nCHECK\ua789 false\n", ("--status",), 2)
+        case(root, "방향 표식으로 쪼갠 블록도 오류다",
+             done + "\n- [\u200e\u200e\u200e\u200ex] G2: \uacb0\uc81c \uc2b9\uc778\nCHECK\u200e: false\n", ("--status",), 2)
+        case(root, "소프트 하이픈으로 쪼갠 속성 이름도 오류다", done + "\nCH\u00adECK: false\n", ("--status",), 2)
+        case(root, "변형 선택자로 부풀린 상자도 오류다",
+             done + "\n- [x\ufe0f\ufe0f\ufe0f\ufe0f] G2: \uc2a4\ud399 1.2\n", ("--status",), 2)
+        case(root, "제어 문자로 쪼갠 속성 이름도 오류다", done + "\nCHECK: false\n", ("--status",), 2)
+        case(root, "네 글자 대괄호는 산문이다", done + "\n- [abcd] 참고 목록\n", ("--status",), 0)
+        case(root, "gate 없는 자리의 고아 속성은 그것만으로 오류다",
+             "# Gates\n\n  CHECK: false\n\n" + done.split("\n", 2)[2], ("--status",), 2)
 
         write(root, "slice.md", done + "\n> - [x] G2: 스펙 1.2\n")
         check("접두 안내가 오류문에 실린다", "인용 부호" in run(root, "--status").stderr, True)
