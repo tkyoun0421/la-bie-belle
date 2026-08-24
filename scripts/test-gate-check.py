@@ -209,6 +209,40 @@ def main():
         check("진전이 없으면 여섯 번까지만 막는다",
               [bool(text.strip()) for text in outputs],
               [True] * 6 + [False])
+        check("해제되면 원장에 RELEASED 줄이 남는다",
+              "RELEASED:" in ledger_text(root), True)
+        check("해제 뒤에도 미충족이면 다시 막는다",
+              json.loads(run(root, "--hook", stdin=hook_payload("stuck")).stdout or "{}").get("decision"),
+              "block")
+        clear(root)
+
+        forged = PASSING.replace("- [ ] G1", "- [x] G1").replace(
+            "EVIDENCE: pending", "EVIDENCE: exit 0 | verification passed"
+        ).replace("echo verification passed", "false")
+        write(root, "slice.md", forged)
+        run(root, "--subagent")
+        check("서브에이전트 훅이 위조된 상자를 되돌린다",
+              "- [ ] G1:" in ledger_text(root), True)
+        clear(root)
+
+        write(root, "slice.md", PASSING)
+        run(root, "--subagent")
+        check("서브에이전트 훅이 증거를 채운다",
+              "EVIDENCE: exit 0 |" in ledger_text(root), True)
+        check("서브에이전트 훅은 막지 않는다",
+              run(root, "--subagent").returncode, 0)
+        clear(root)
+
+        check("원장이 없으면 서브에이전트 훅은 아무것도 하지 않는다",
+              run(root, "--subagent").returncode, 0)
+
+        met_with_note = PASSING.replace("- [ ] G1", "- [x] G1").replace(
+            "EVIDENCE: pending", "EVIDENCE: exit 0 | verification passed"
+        ) + "\nRELEASED: 훅이 진전 없이 6번 막은 뒤 놓아줬다\n"
+        write(root, "slice.md", met_with_note)
+        released = run(root, "--status")
+        check("RELEASED 줄이 있어도 원장은 깨지지 않는다", released.returncode, 0)
+        check("RELEASED 줄은 보고에 실린다", "RELEASED slice" in released.stdout, True)
         clear(root)
 
         write(root, "slice.md", PASSING.replace("  CHECK:", "CHECK:"))

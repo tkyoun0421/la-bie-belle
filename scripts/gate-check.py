@@ -13,6 +13,7 @@ ATTRIBUTE = re.compile(r"^[ \t]+(CHECK|EXPECT|EVIDENCE):[ \t]*(.*?)[ \t]*$")
 LOOSE_ATTRIBUTE = re.compile(r"^(CHECK|EXPECT|EVIDENCE):")
 ABANDON_LINE = re.compile(r"^ABANDON:[ \t]+(\S+)[ \t]*(.*?)[ \t]*$")
 LOOSE_ABANDON = re.compile(r"^ABANDON:")
+RELEASED_LINE = re.compile(r"^RELEASED:[ \t]*(.*?)[ \t]*$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 REGEX_EXPECT = re.compile(r"^/(.*)/([a-z]*)$")
 FLAGS = {"i": re.I, "m": re.M, "s": re.S}
@@ -48,6 +49,7 @@ class Ledger:
         self.newline = "\n"
         self.gates = []
         self.errors = []
+        self.released = []
 
     def qualified(self, gate):
         return f"{self.stem}:{gate.id}"
@@ -151,6 +153,11 @@ def parse(path):
 
         if LOOSE_ABANDON.match(line):
             ledger.errors.append(f"{path}:{index + 1} ABANDON:은 gate id와 사유를 함께 받는다.")
+            continue
+
+        release = RELEASED_LINE.match(line)
+        if release:
+            ledger.released.append(release.group(1))
 
     if not ledger.gates:
         ledger.errors.append(f"{path} gate가 하나도 없다. 빈 원장은 ALL MET이 아니라 오류다.")
@@ -227,6 +234,31 @@ def write_back(ledger):
         f.write(ledger.newline.join(lines))
 
 
+def record_release(ledger, note):
+    lines = list(ledger.lines)
+    while lines and not lines[-1].strip():
+        lines.pop()
+    lines.extend(["", f"RELEASED: {note}", ""])
+    try:
+        with open(ledger.path, "w", newline="", encoding="utf-8") as f:
+            f.write(ledger.newline.join(lines))
+    except OSError:
+        pass
+
+
+def verify_all(root):
+    ledgers = [parse(path) for path in discover(root, [])]
+    for ledger in ledgers:
+        if ledger.errors:
+            continue
+        for gate in ledger.live():
+            ok, evidence = execute(gate, root, DEFAULT_TIMEOUT)
+            gate.checked = ok
+            gate.evidence = evidence
+        write_back(ledger)
+    return 0
+
+
 def discover(root, paths):
     if paths:
         return paths
@@ -246,6 +278,9 @@ def report(ledgers):
             else:
                 unmet += 1
                 print(f"UNMET    {ledger.qualified(gate)}  {gate.outcome}")
+    for ledger in ledgers:
+        for note in ledger.released:
+            print(f"RELEASED {ledger.stem} — {note}")
     print(f"\n충족 {met} · 미충족 {unmet} · 포기 {abandoned}")
     return unmet
 
@@ -294,21 +329,33 @@ def hook(root):
     state_path = os.path.join(root, ".gates", STATE_FILE)
     state = load_state(state_path)
     entry = state.get(session) or {}
+    released = bool(entry.get("released"))
     met_now = sum(1 for ledger in ledgers for gate in ledger.gates if gate.met())
     if entry.get("met") == met_now:
         entry["blocks"] = int(entry.get("blocks", 0)) + 1
     else:
-        entry = {"met": met_now, "blocks": 1}
+        entry = {"met": met_now, "blocks": 1, "released": released}
+    entry["released"] = released
     state[session] = entry
-    save_state(state_path, state)
 
-    if entry["blocks"] > BLOCK_LIMIT:
+    if entry["blocks"] > BLOCK_LIMIT and not released:
+        entry["released"] = True
+        state[session] = entry
+        save_state(state_path, state)
+        note = (
+            f"훅이 진전 없이 {BLOCK_LIMIT}번 막은 뒤 놓아줬다. "
+            f"미충족: {', '.join(unmet) if unmet else '원장이 깨졌다'}"
+        )
+        for ledger in ledgers:
+            if ledger.errors or any(not gate.met() for gate in ledger.live()):
+                record_release(ledger, note)
         print(
-            f"gate-check: 원장에 진전이 없는 채로 {BLOCK_LIMIT}번 막았다. 이번에는 통과시킨다 — "
-            "미충족을 그대로 두려면 ABANDON:에 사유를 남겨라.",
+            f"gate-check: {note} 이 세션에서 해제는 한 번뿐이고 원장에 RELEASED: 줄로 남았다.",
             file=sys.stderr,
         )
         return 0
+
+    save_state(state_path, state)
 
     if errors:
         reason = "원장이 깨졌다. 고치기 전에는 완료가 아니다.\n" + "\n".join(errors)
@@ -340,6 +387,8 @@ def main():
     )
     if "--hook" in args:
         return hook(root)
+    if "--subagent" in args:
+        return verify_all(root)
 
     timeout = option(args, "--timeout", DEFAULT_TIMEOUT)
     cwd = option(args, "--cwd", root)
@@ -357,7 +406,7 @@ def main():
             mode = candidate
             break
     if not mode:
-        die("gate-check: --status, --run, --reverify, --hook 중 하나를 골라라.")
+        die("gate-check: --status, --run, --reverify, --hook, --subagent 중 하나를 골라라.")
 
     paths = discover(root, args)
     if not paths:
