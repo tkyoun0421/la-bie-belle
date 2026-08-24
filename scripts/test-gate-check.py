@@ -237,8 +237,12 @@ def main():
              .replace("EXPECT: verification passed", r"EXPECT: /^verification passed$/m"),
              ["--run"], 0)
 
-        case(root, "체크박스가 아닌 목록은 gate로 오해하지 않는다",
-             PASSING + "\n참고\n\n- [문서](docs/x.md) 스펙\n- [1] 각주\n",
+        case(root, "짧은 대괄호 목록은 산문으로 통과하지 않는다",
+             PASSING + "\n참고\n\n- [1] 각주\n",
+             ["--status"], 2)
+
+        case(root, "긴 대괄호 링크는 산문으로 통과한다",
+             PASSING + "\n참고\n\n- [설계 문서](docs/x.md) 스펙\n",
              ["--status"], 1)
 
         case(root, "--timeout이 정수가 아니면 막는다",
@@ -490,6 +494,20 @@ def main():
         case(root, "들여쓴 ABANDON 줄은 오류다", done + "\n  ABANDON: G1 사유가 여기 있다\n", ("--status",), 2)
         case(root, "원장을 통째로 인용하면 오류다",
              "".join(f"> {line}\n" for line in done.split("\n")), ("--status",), 2)
+        case(root, "겹으로 인용한 gate 줄도 오류다", done + "\n> > > - [x] G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "모르는 불릿에 상자가 실려도 오류다", done + "\n▸ [x] G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "상자 안에 공백이 끼어도 오류다", done + "\n- [ x ] G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "두 글자 상자가 홀로 있어도 오류다", done + "\n- [xx] G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "전각 대괄호 상자도 오류다", done + "\n- ［x］ G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "들여쓴 소문자 속성 줄도 오류다", done + "\n  check: echo ok\n", ("--status",), 2)
+        case(root, "전각 콜론 속성 줄도 오류다", done + "\n  CHECK： echo ok\n", ("--status",), 2)
+        case(root, "산문에 속성 이름 콜론이 실리면 오류다", done + "\n메모: 여기 EXPECT: 값은 건드리지 마라\n", ("--status",), 2)
+        case(root, "gate와 속성 사이 빈 줄은 오류다",
+             "# Gates\n\n- [ ] G1: 하나\n\n  CHECK: echo ok\n  EXPECT: ok\n  EVIDENCE: pending\n",
+             ("--status",), 2)
+        case(root, "gate와 속성 사이 주석 줄은 오류다",
+             "# Gates\n\n- [ ] G1: 하나\n메모 한 줄\n  CHECK: echo ok\n  EXPECT: ok\n  EVIDENCE: pending\n",
+             ("--status",), 2)
         case(root, "ABANDON은 gate 정의보다 위에 있어도 받는다",
              "# Gates: 시험\n\nABANDON: G1 결제 사업자 계정이 아직 없다\n\n"
              + PASSING.split("\n", 2)[2], ("--status",), 0)
