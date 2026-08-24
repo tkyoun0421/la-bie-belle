@@ -28,7 +28,7 @@ gh project item-add 8 --owner tkyoun0421 --url <issue-url>
 
 Slice는 만든 뒤 Epic의 sub-issue로 붙이고, 의존 순서대로 만들어 각각이 실제 번호를 참조할 수 있게 한다.
 
-그다음 호출자가 말한 보드 상태를 설정해라. `gh project item-add`는 카드를 만들 뿐이고 상태는 비워 둔다. `No Status`인 카드는 어느 열에도 나타나지 않는다. `gh project item-edit` 호출과 상태별 option id는 `docs/rules/matchers/publishing-issues.md`에 있다.
+`gh project item-add`로 올린 카드는 workflow가 Backlog에 앉힌다. 호출자가 말한 상태가 Backlog면 더 할 일이 없다. 다른 열이면 `gh project item-edit`을 돌려라 — 호출 형태와 상태별 option id는 `docs/rules/matchers/publishing-issues.md`에 있다.
 
 ## 규칙
 
