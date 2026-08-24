@@ -71,6 +71,14 @@ jobs:
         shell: bash
         run: python3 scripts/registry-check.py
 
+      - name: front matter 검사
+        shell: bash
+        run: python3 scripts/docs-check.py
+
       - name: 가드 하네스
         shell: bash
         run: python3 scripts/test-ownership.py
+
+      - name: front matter 하네스
+        shell: bash
+        run: python3 scripts/test-docs-check.py
