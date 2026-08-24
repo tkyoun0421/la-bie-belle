@@ -9,6 +9,7 @@ import sys
 MALFORMED = 2
 UNMET = 1
 GATE_LINE = re.compile(r"^- \[( |x)\] ([^\s:]+):[ \t]*(.*?)[ \t]*$")
+LOOSE_GATE = re.compile(r"^[ \t]*-[ \t]*\[[^\]]?\]")
 ATTRIBUTE = re.compile(r"^[ \t]+(CHECK|EXPECT|EVIDENCE):[ \t]*(.*?)[ \t]*$")
 LOOSE_ATTRIBUTE = re.compile(r"^(CHECK|EXPECT|EVIDENCE):")
 ABANDON_LINE = re.compile(r"^ABANDON:[ \t]+(\S+)[ \t]*(.*?)[ \t]*$")
@@ -118,6 +119,14 @@ def parse(path):
             ledger.gates.append(current)
             continue
 
+        if LOOSE_GATE.match(line):
+            ledger.errors.append(
+                f"{path}:{index + 1} gate 줄의 형태가 어긋난다. `- [ ] ID: 제목`이나 `- [x] ID: 제목`이어야 한다 — "
+                "상자는 소문자 x와 공백만 받고, id에는 공백도 콜론도 들어가지 않으며, 줄은 들여쓰지 않는다."
+            )
+            current = None
+            continue
+
         attribute = ATTRIBUTE.match(line)
         if attribute:
             if current is None:
@@ -172,6 +181,11 @@ def parse(path):
             continue
         if not gate.check:
             ledger.errors.append(f"{where} CHECK:가 비었다.")
+        if not gate.expect:
+            ledger.errors.append(
+                f"{where} EXPECT:가 비었다. 빈 기대는 무엇에나 걸리므로 gate가 아무것도 재지 않는다."
+            )
+            continue
         compiled, detail = compile_expect(gate.expect)
         if compiled == "flag":
             ledger.errors.append(f"{where} EXPECT:의 정규식 플래그 '{detail}'를 모른다. i, m, s만 받는다.")
@@ -306,6 +320,7 @@ def hook(root):
     except json.JSONDecodeError:
         payload = {}
     session = str(payload.get("session_id") or "unknown")
+    chained = bool(payload.get("stop_hook_active"))
 
     paths = discover(root, [])
     if not paths:
@@ -319,23 +334,27 @@ def hook(root):
         for gate in ledger.live()
         if not gate.met()
     ]
-    if not errors and not unmet:
-        state_path = os.path.join(root, ".gates", STATE_FILE)
-        state = load_state(state_path)
-        if state.pop(session, None) is not None:
-            save_state(state_path, state)
-        return 0
-
     state_path = os.path.join(root, ".gates", STATE_FILE)
     state = load_state(state_path)
     entry = state.get(session) or {}
     released = bool(entry.get("released"))
+    best = int(entry.get("best", -1))
     met_now = sum(1 for ledger in ledgers for gate in ledger.gates if gate.met())
-    if entry.get("met") == met_now:
-        entry["blocks"] = int(entry.get("blocks", 0)) + 1
+
+    if not errors and not unmet:
+        if entry:
+            state[session] = {"best": met_now, "blocks": 0, "released": released}
+            save_state(state_path, state)
+        return 0
+
+    if met_now > best and not chained:
+        entry = {"best": met_now, "blocks": 1, "released": released}
     else:
-        entry = {"met": met_now, "blocks": 1, "released": released}
-    entry["released"] = released
+        entry = {
+            "best": max(best, met_now),
+            "blocks": int(entry.get("blocks", 0)) + 1,
+            "released": released,
+        }
     state[session] = entry
 
     if entry["blocks"] > BLOCK_LIMIT and not released:

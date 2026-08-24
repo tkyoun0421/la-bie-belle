@@ -71,6 +71,21 @@ def case(root, name, text, args, want):
         clear(root)
 
 
+def partial(met):
+    gates = []
+    for index in range(1, 4):
+        done = index <= met
+        box = "x" if done else " "
+        evidence = "exit 0 | verification passed" if done else "pending"
+        gates.append(
+            f"- [{box}] G{index}: 스펙 1.{index}\n"
+            f"  CHECK: echo verification passed\n"
+            f"  EXPECT: verification passed\n"
+            f"  EVIDENCE: {evidence}\n"
+        )
+    return "# Gates: 흔들림\n\n" + "\n".join(gates)
+
+
 def hook_payload(session="s1"):
     return json.dumps({"session_id": session, "stop_hook_active": False})
 
@@ -123,6 +138,31 @@ def main():
         case(root, "들여쓰지 않은 CHECK는 오류다",
              PASSING.replace("  CHECK:", "CHECK:"),
              ["--status"], 2)
+
+        case(root, "상자에 대문자를 쓰면 오류다",
+             PASSING.replace("- [ ] G1", "- [X] G1"),
+             ["--status"], 2)
+
+        case(root, "gate 줄에 콜론이 빠지면 오류다",
+             PASSING.replace("- [ ] G1: 스펙 1.1", "- [ ] G1 스펙 1.1"),
+             ["--status"], 2)
+
+        case(root, "gate 줄을 들여쓰면 오류다",
+             PASSING.replace("- [ ] G1", "  - [ ] G1"),
+             ["--status"], 2)
+
+        case(root, "id에 공백이 들면 오류다",
+             PASSING.replace("- [ ] G1:", "- [ ] G 1:"),
+             ["--status"], 2)
+
+        case(root, "빈 EXPECT는 오류다",
+             PASSING.replace("EXPECT: verification passed", "EXPECT:"),
+             ["--status"], 2)
+
+        case(root, "어긋난 gate 줄이 앞 gate의 CHECK를 덮어쓰지 않는다",
+             "# Gates\n\n- [ ] G1: 스펙 3.2\n  CHECK: false\n  EXPECT: never\n  EVIDENCE: pending\n\n"
+             "- [X] G2: 스펙 3.4\n  CHECK: echo 8 passed\n  EXPECT: 8 passed\n  EVIDENCE: pending\n",
+             ["--run"], 2)
 
         case(root, "코드 펜스 안의 gate는 세지 않는다",
              "# Gates\n\n```markdown\n- [ ] G1: 예시\n  CHECK: true\n  EXPECT: ok\n```\n",
@@ -214,6 +254,21 @@ def main():
         check("해제 뒤에도 미충족이면 다시 막는다",
               json.loads(run(root, "--hook", stdin=hook_payload("stuck")).stdout or "{}").get("decision"),
               "block")
+
+        write(root, "slice.md", PASSING)
+        run(root, "--run")
+        run(root, "--hook", stdin=hook_payload("stuck"))
+        write(root, "slice.md", PASSING)
+        again = [run(root, "--hook", stdin=hook_payload("stuck")).stdout for _ in range(8)]
+        check("전부 충족했다 다시 미충족이 돼도 두 번 해제하지 않는다",
+              [bool(text.strip()) for text in again], [True] * 8)
+        clear(root)
+
+        for index in range(12):
+            write(root, "slice.md", partial(1 if index % 2 == 0 else 2))
+            if not run(root, "--hook", stdin=hook_payload("swing")).stdout.strip():
+                break
+        check("충족 수가 오르내려도 결국 해제된다", index < 11, True)
         clear(root)
 
         forged = PASSING.replace("- [ ] G1", "- [x] G1").replace(
@@ -249,6 +304,46 @@ def main():
         check("원장이 깨지면 훅은 통과가 아니라 차단이다",
               json.loads(run(root, "--hook", stdin=hook_payload("broken")).stdout or "{}").get("decision"),
               "block")
+        clear(root)
+
+        met = PASSING.replace("- [ ] G1", "- [x] G1").replace(
+            "EVIDENCE: pending", "EVIDENCE: exit 0 | verification passed"
+        )
+        write(root, "slice.md", met + met.split("\n", 2)[2])
+        check("전부 충족이어도 원장이 깨졌으면 훅은 차단한다",
+              json.loads(run(root, "--hook", stdin=hook_payload("dup")).stdout or "{}").get("decision"),
+              "block")
+        clear(root)
+
+        write(root, "slice.md", PASSING + "\nABANDON: G1 결제 사업자 계정이 아직 없다\n")
+        check("포기만 남은 원장은 훅이 통과시킨다",
+              run(root, "--hook", stdin=hook_payload("abandoned")).stdout, "")
+        run(root, "--subagent")
+        check("서브에이전트 훅도 포기한 gate는 건너뛴다",
+              "EVIDENCE: pending" in ledger_text(root), True)
+        clear(root)
+
+        write(root, "slice.md", PASSING.replace("CHECK: echo verification passed", "CHECK:"))
+        check("빈 CHECK는 오류다", run(root, "--status").returncode, 2)
+        clear(root)
+
+        write(root, "slice.md", PASSING + "\nABANDON:\n")
+        check("맨 ABANDON 줄은 오류다", run(root, "--status").returncode, 2)
+        clear(root)
+
+        duplicated = met.replace("echo verification passed", "false")
+        write(root, "slice.md", duplicated + duplicated.split("\n", 2)[2])
+        before = ledger_text(root)
+        run(root, "--subagent")
+        check("서브에이전트 훅은 깨진 원장을 건드리지 않는다", ledger_text(root), before)
+        clear(root)
+
+        write(root, "slice.md", PASSING.replace("\n", "\r\n"))
+        run(root, "--run")
+        with open(os.path.join(root, ".gates", "slice.md"), newline="", encoding="utf-8") as f:
+            raw = f.read()
+        check("CRLF 원장은 CRLF로 남는다",
+              "\r\n" in raw and "\n" not in raw.replace("\r\n", ""), True)
         clear(root)
 
     failed = [name for ok, name in results if not ok]
