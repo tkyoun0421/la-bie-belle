@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import sys
+import unicodedata
 
 MALFORMED = 2
 UNMET = 1
@@ -12,8 +13,9 @@ GATE_LINE = re.compile(r"^- \[( |x)\] ([^\s:]+):[ \t]*(.*?)[ \t]*$")
 PREFIX = re.compile(r"^[\s>\u200b-\u200d\u2060\ufeff]+")
 ATTRIBUTE = re.compile(r"^[ \t]+(CHECK|EXPECT|EVIDENCE):[ \t]*(.*?)[ \t]*$")
 ABANDON_LINE = re.compile(r"^ABANDON:[ \t]+(\S+)[ \t]*(.*?)[ \t]*$")
-SUSPECT_KEYWORD = re.compile(r"(CHECK|EXPECT|EVIDENCE|ABANDON|RELEASED)[ \t]*[:\uff1a]", re.I)
-SUSPECT_BOX = re.compile(r"^[^\[\uff3b]{0,6}[\[\uff3b][^\]\uff3d]{0,3}[\]\uff3d]")
+SCRUB = re.compile(r"[\u200b-\u200d\u2060\ufeff]")
+SUSPECT_KEYWORD = re.compile(r"(?<!\w)(CHECK|EXPECT|EVIDENCE|ABANDON|RELEASED)[ \t]*[:\u2236\ua789]", re.I)
+SUSPECT_BOX = re.compile(r"\[[^\]]{0,3}\]")
 RELEASED_LINE = re.compile(r"^RELEASED:[ \t]*(.*?)[ \t]*$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 REGEX_EXPECT = re.compile(r"^/(.*)/([a-z]*)$")
@@ -175,7 +177,8 @@ def parse(path):
             continue
 
         bare = PREFIX.sub("", line)
-        if SUSPECT_KEYWORD.search(line) or SUSPECT_BOX.match(bare):
+        folded = SCRUB.sub("", unicodedata.normalize("NFKC", line))
+        if SUSPECT_KEYWORD.search(folded) or SUSPECT_BOX.search(folded):
             ledger.errors.append(
                 f"{path}:{index + 1} gate의 재료가 실린 줄이 어느 규격에도 맞지 않는다. "
                 "gate는 `- [ ] ID: 제목`, 속성은 gate 바로 아래 들여쓴 대문자 `CHECK:`·`EXPECT:`·`EVIDENCE:`, "

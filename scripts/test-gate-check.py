@@ -508,6 +508,20 @@ def main():
         case(root, "gate와 속성 사이 주석 줄은 오류다",
              "# Gates\n\n- [ ] G1: 하나\n메모 한 줄\n  CHECK: echo ok\n  EXPECT: ok\n  EVIDENCE: pending\n",
              ("--status",), 2)
+
+        case(root, "줄 한가운데 상자도 오류다", done + "\nStep 12. [x] G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "표 행에 실린 상자도 오류다", done + "\n| 완료 상태 | [x] G2: 결제 승인 |\n", ("--status",), 2)
+        case(root, "제로폭 문자로 부풀린 상자도 오류다",
+             done + "\n- [x\u200b\u200b\u200b] G2: 스펙 1.2\n", ("--status",), 2)
+        case(root, "속성 이름 속 제로폭 문자도 오류다", done + "\nCH\u200bECK: false\n", ("--status",), 2)
+        case(root, "전각 라틴 속성 이름도 오류다", done + "\nＣＨＥＣＫ： false\n", ("--status",), 2)
+        case(root, "비율 기호 콜론 속성 줄도 오류다", done + "\nCHECK\u2236 false\n", ("--status",), 2)
+        case(root, "인용된 RELEASED 줄도 오류다", done + "\n> RELEASED: 한 번 풀었다\n", ("--status",), 2)
+        case(root, "낱말에 붙은 속성 이름은 산문이다", done + "\n참고 — typecheck: 초록이다\n", ("--status",), 0)
+
+        write(root, "slice.md", done + "\n> - [x] G2: 스펙 1.2\n")
+        check("접두 안내가 오류문에 실린다", "인용 부호" in run(root, "--status").stderr, True)
+        clear(root)
         case(root, "ABANDON은 gate 정의보다 위에 있어도 받는다",
              "# Gates: 시험\n\nABANDON: G1 결제 사업자 계정이 아직 없다\n\n"
              + PASSING.split("\n", 2)[2], ("--status",), 0)

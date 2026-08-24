@@ -19,11 +19,11 @@ PR을 열 때, 또는 이미 열려 있는 PR에 수정을 push할 때 읽는다
 
 ## 원장을 옮긴다
 
-`.gates/` 아래 원장을 쓴 작업이면 PR을 열기 전에 `python3 scripts/gate-check.py --reverify`를 돌리고, **원장 전문을 PR 본문에 붙인다**. 요약이 아니라 `CHECK:`와 `EXPECT:`까지 그대로다.
+`.gates/` 아래 원장을 쓴 작업이면 PR을 열기 전에 `python3 scripts/gate-check.py --reverify`를 돌리고 **원장 전문을 PR 본문에 붙인다**. 요약이 아니라 `CHECK:`와 `EXPECT:`까지 그대로다.
 
-로컬 파일은 추적되지 않아 브랜치와 함께 죽는다. PR 본문이 그 원장의 정본이고, 리뷰어가 `CHECK:`를 읽는 유일한 자리다. `docs/rules/matchers/gates.md`를 봐라.
+로컬 파일은 추적되지 않아 브랜치와 함께 죽는다. PR 본문이 그 원장의 정본이다. 리뷰어가 `CHECK:`를 읽는 유일한 자리다. `docs/rules/matchers/gates.md`를 봐라.
 
-미충족 gate가 남은 채로 PR을 열지 마라. 채울 수 없는 것은 `ABANDON:`에 사유를 달고, 그 줄도 본문에 함께 나른다.
+미충족 gate가 남은 채로 PR을 열지 마라. 채울 수 없는 것은 `ABANDON:`에 사유를 달고 그 줄도 본문에 함께 나른다.
 
 ## 열고 나서
 

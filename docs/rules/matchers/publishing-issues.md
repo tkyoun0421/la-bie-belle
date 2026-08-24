@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #101, #114, #66, #94, #96, #113, #120"
+related_issue: "#69, #101, #114, #66, #94, #96, #113, #120, #130"
 ---
 
 # Matcher: Issue를 발행할 때
