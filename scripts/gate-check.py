@@ -97,6 +97,7 @@ def parse(path):
     current = None
     expected_next = None
     fence = None
+    fence_line = None
 
     for index, line in enumerate(ledger.lines):
         opening = FENCE.match(line)
@@ -104,8 +105,10 @@ def parse(path):
             marker = opening.group(1)
             if fence is None:
                 fence = marker[0] * len(marker)
+                fence_line = index
             elif marker[0] == fence[0] and len(marker) >= len(fence):
                 fence = None
+                fence_line = None
             continue
         if fence is not None:
             continue
@@ -139,13 +142,19 @@ def parse(path):
                 ledger.errors.append(
                     f"{path}:{index + 1} {attribute.group(1)}:이 자기 gate 바로 아래에 붙어 있지 않다. "
                     f"{ledger.qualified(current)}와 이 줄 사이에 다른 줄이 끼었다 — "
-                    "gate 줄의 형태가 어긋나 무시됐을 수 있다."
+                    "빈 줄이나 주석일 수도 있고, 형태가 어긋나 무시된 gate 줄일 수도 있다."
                 )
                 current = None
                 expected_next = None
                 continue
             expected_next = index + 1
             key, value = attribute.group(1), attribute.group(2)
+            written = {"CHECK": current.check, "EXPECT": current.expect, "EVIDENCE": current.evidence_line}
+            if written[key] is not None:
+                ledger.errors.append(
+                    f"{path}:{index + 1} {ledger.qualified(current)}에 {key}:가 두 번 나온다. gate당 한 줄이다."
+                )
+                continue
             if key == "CHECK":
                 current.check = value
             elif key == "EXPECT":
@@ -180,6 +189,12 @@ def parse(path):
         release = RELEASED_LINE.match(line)
         if release:
             ledger.released.append(release.group(1))
+
+    if fence is not None:
+        ledger.errors.append(
+            f"{path}:{fence_line + 1} 코드 펜스가 닫히지 않았다. 그 아래 gate는 전부 무시된다 — "
+            "원장을 옮겨 붙이다 여는 펜스가 딸려왔는지 봐라."
+        )
 
     if not ledger.gates:
         ledger.errors.append(f"{path} gate가 하나도 없다. 빈 원장은 ALL MET이 아니라 오류다.")

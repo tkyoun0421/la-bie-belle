@@ -196,12 +196,46 @@ def main():
              ["--status"], 2)
 
         case(root, "다른 문자의 펜스는 열린 펜스를 닫지 않는다",
-             "# Gates\n\n```markdown\n~~~\n- [ ] G1: 예시\n  CHECK: true\n  EXPECT: ok\n```\n",
-             ["--status"], 2)
+             PASSING + "\n```text\n~~~\n- [ ] G2: 예시\n  CHECK: false\n  EXPECT: never\n"
+             "  EVIDENCE: pending\n```\n",
+             ["--run"], 0)
+
+        case(root, "속성이 앞 gate로 흘러가면 오류다",
+             "# Gates\n\n- [ ] G1: 하나\n  CHECK: echo ok\n"
+             "- [1] G2: 둘\n  EXPECT: ok\n  EVIDENCE: pending\n",
+             ["--run"], 2)
 
         case(root, "속성이 없는 어긋난 gate 줄도 오류다",
              PASSING + "\n* [ ] G2: 둘\n",
              ["--status"], 2)
+
+        for label, fence in (
+            ("백틱", "```"),
+            ("물결", "~~~"),
+            ("언어를 적은 백틱", "```markdown"),
+            ("들여쓴 백틱", "  ```"),
+        ):
+            case(root, f"닫히지 않은 {label} 펜스는 오류다",
+                 PASSING.replace("- [ ] G1", "- [x] G1").replace(
+                     "EVIDENCE: pending", "EVIDENCE: exit 0 | verification passed")
+                 + f"\n{fence}\n- [ ] G2: 결제가 실제로 승인된다\n"
+                   "  CHECK: false\n  EXPECT: never\n  EVIDENCE: pending\n",
+                 ["--reverify"], 2)
+
+        case(root, "긴 펜스를 짧은 펜스로 닫으면 오류다",
+             PASSING + "\n````\n예시\n```\n",
+             ["--status"], 2)
+
+        case(root, "같은 속성이 두 번 나오면 오류다",
+             PASSING.replace("  EVIDENCE: pending",
+                             "  EVIDENCE: exit 0 | 손으로 쓴 줄\n  EVIDENCE: pending"),
+             ["--status"], 2)
+
+        case(root, "정규식 EXPECT는 출력 중간 줄에도 걸린다",
+             PASSING.replace("echo verification passed",
+                             "sh -c 'echo 앞줄; echo verification passed; echo 뒷줄'")
+             .replace("EXPECT: verification passed", r"EXPECT: /^verification passed$/m"),
+             ["--run"], 0)
 
         case(root, "체크박스가 아닌 목록은 gate로 오해하지 않는다",
              PASSING + "\n참고\n\n- [문서](docs/x.md) 스펙\n- [1] 각주\n",
