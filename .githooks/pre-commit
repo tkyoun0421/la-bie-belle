@@ -1,0 +1,26 @@
+#!/bin/sh
+
+for f in $(git diff --cached --name-only); do
+  case "$f" in
+    .env|.env.*)
+      if [ "$f" != ".env.example" ]; then
+        echo "차단: $f 는 커밋할 수 없다. .env 파일은 로컬 전용이다."
+        exit 1
+      fi
+      ;;
+  esac
+done
+
+added=$(git diff --cached -U0 | grep '^+' | grep -v '^+++')
+
+if printf '%s' "$added" | grep -qiE "(api[_-]?key|secret|token|password)['\"]?[[:space:]]*[:=][[:space:]]*['\"][A-Za-z0-9_-]{16,}"; then
+  echo "차단: 시크릿으로 보이는 키=값이 staged diff에 있다."
+  exit 1
+fi
+
+if printf '%s' "$added" | grep -qE "(sk-[A-Za-z0-9]{20,}|AKIA[A-Z0-9]{16}|eyJ[A-Za-z0-9_-]{20,}\.eyJ)"; then
+  echo "차단: 실키 형태의 문자열(sk-/AKIA/JWT)이 staged diff에 있다."
+  exit 1
+fi
+
+exit 0
