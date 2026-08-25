@@ -7,7 +7,7 @@ related_issue: "#69, #101, #114, #66, #94, #96, #113, #120, #130, #150"
 
 # Matcher: Issue를 발행할 때
 
-GitHub Issue를 열거나 보드 카드를 옮길 때 읽는다.
+GitHub Issue를 열거나 보드 카드를 옮길 때, 그리고 Issue에 보고 코멘트를 쓸 때 읽는다.
 
 ## Issue를 읽는 사람
 
