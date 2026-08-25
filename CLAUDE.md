@@ -8,8 +8,10 @@
 
 - `docs/handoff.md` — 지금 상태와 다음 첫 수. 세션은 여기서 시작하고 상세가 필요할 때만 아래로 내려간다
 - `docs/plan.md` — task와 완료 조건
+- `docs/spec/` — 완료 조건 한두 줄로 안 담기는 task의 명세. 승격 기준은 ADR-002에 있다
 - `docs/log/` — 회차 기록. 왜 그렇게 정했는지가 여기 있다
 - `docs/prd.md` — 제품 요구
+- `docs/domain.md` — 도메인 용어 정본과 컨텍스트 경계
 - `docs/adr/` — 되돌리기 어려운 결정과 그 근거
 - `docs/design-system/` — 디자인과 퍼블리싱 규칙은 `README.md`, 그 옆에 디자인 시스템과 페이지별 디자인
 - `.claude/agents/` — subagent 정의문
@@ -50,6 +52,8 @@ Feature-Sliced Design으로 배치한다. `src/` 아래 `app`(Next 라우팅만,
 - 기능 task는 넷을 순서대로 태운다. `test-planner` → writer 둘 → `implementer` → `pr-diff`.
 
 ## 흐름
+
+SDD와 DDD와 TDD로 간다. 용어를 먼저 박고, 그 용어로 명세를 쓰고, 명세에서 실패하는 테스트를 뽑고, 그다음 구현한다. 셋을 어디까지 가져오는지와 명세를 언제 `docs/spec/`으로 빼는지는 `docs/adr/ADR-002-sdd-ddd-tdd.md`에 있다.
 
 PRD와 ADR을 먼저 세우고 `docs/plan.md`의 task로 쪼갠다. task마다 완료 조건을 같이 쓴다 — 코드가 생기기 전에 "이게 되면 완료"를 확인 가능한 문장으로 총괄이 정한다. 구현 뒤에 쓴 테스트는 이미 내린 결정을 확인할 뿐이라, 완료의 정의는 구현보다 먼저여야 한다.
 
