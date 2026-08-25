@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #88, #91, #101, #105, #106, #114, #109, #63, #111, #112, #113, #126, #130, #142, #143, #145"
+related_issue: "#69, #88, #91, #101, #105, #106, #114, #109, #63, #111, #112, #113, #126, #130, #142, #143, #145, #150"
 ---
 
 # 공통 규칙
@@ -24,7 +24,7 @@ related_issue: "#69, #88, #91, #101, #105, #106, #114, #109, #63, #111, #112, #1
 | `writing-korean.md` | 사람이 읽을 한국어 문장을 쓸 때 — 문서 본문, Issue·PR 본문, 코멘트 |
 | `writing-docs.md` | `docs/` 아래를 만들거나 고칠 때 |
 | `gates.md` | 슬라이스를 구현하거나 그 완료를 판정할 때 |
-| `publishing-issues.md` | GitHub Issue를 열거나 보드 카드를 옮길 때 |
+| `publishing-issues.md` | GitHub Issue를 열거나 보드 카드를 옮길 때, Issue에 보고 코멘트를 쓸 때 |
 | `opening-a-pr.md` | PR을 열 때, 또는 열려 있는 PR에 수정을 push할 때 |
 | `reviewing-a-pr.md` | PR을 리뷰하고 발견에 심각도를 매길 때 |
 | `review-failed.md` | 리뷰가 FAIL로 돌아왔거나 수정 지시를 받았을 때 |
@@ -114,7 +114,9 @@ PR 제목은 `type(scope): 요약`이고, 본문은 관련 Issue 번호와 변�
 
 **기록이 정본이고 벨은 신호일 뿐이다.** 에이전트 사이의 지시·요청·보고는 전부 GitHub에 쓴다 — PR 코멘트나 Issue다. Orca `terminal send` 벨은 "가서 봐라" 한 줄을 나른다. 터미널로만 전달된 지시는 일어나지 않은 것이다.
 
-PR 자체가 완료 보고다. 역할이 PR을 열고 총괄에게 벨을 울린다.
+PR 자체가 완료 보고다. 역할이 PR을 열고 총괄에게 벨을 울린다. 코멘트가 산출물인 작업도 같다 — 보고 코멘트를 달고 총괄에게 벨을 울린다. 벨 없는 보고는 총괄이 우연히 발견할 때까지 잠든다. 그 시간만큼 다음 결정이 늦는다.
+
+보고 코멘트의 짜임은 `docs/rules/matchers/publishing-issues.md`가 갖는다.
 
 merge 소식은 뿌리지 않는다. 총괄은 그 merge가 특정 역할에게 다음 일감을 만들 때만 전한다 — SPEC이 merge되면 Dev에게 슬라이스 분해가, 기능이 merge되면 UI에게 검수가, `docs/ui/` 명세가 merge되면 Dev에게 디자인 슬라이스가 간다. 나머지는 각 역할이 다음 작업을 시작하며 `main`을 pull할 때 자연히 딸려온다.
 
