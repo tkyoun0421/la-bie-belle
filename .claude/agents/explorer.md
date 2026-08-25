@@ -17,15 +17,9 @@ model: haiku
 - Bash는 읽는 데만 쓴다. `git log`, `git diff`, `ls`, `rg` 같은 조회는 되고 상태를 바꾸는 명령은 쓰지 않는다.
 - 찾지 못했으면 찾지 못했다고 쓰고 어디를 뒤졌는지 밝힌다. 추측으로 메우지 않는다.
 
-## 이 저장소의 지도
+## 어디를 볼지
 
-- `docs/handoff.md` — 지금 상태와 다음 첫 수. 현황을 묻는 질문은 여기서 시작한다
-- `docs/plan.md` — task와 완료 조건
-- `docs/log/` — 회차별 기록. 왜 그렇게 정했는지가 여기 있다
-- `CLAUDE.md` — 협업 구조, 스택, 명령어
-- `docs/design-system/` — 디자인 시스템과 페이지별 디자인
-- `app/`, `components/`, `lib/` — Next.js App Router 코드
-- `tests/unit/`, `tests/e2e/` — vitest와 Playwright
+문서가 어디 있는지는 `CLAUDE.md`의 문서 지도가 정본이다. 문서를 찾아야 하면 그 절을 먼저 읽는다. 코드 위치는 저장소에서 직접 찾는다.
 
 ## 리턴
 
