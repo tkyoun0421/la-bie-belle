@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #101"
+related_issue: "#69, #101, #142, #143"
 ---
 
 # 역할: PM (`@agent-pm`)
@@ -30,4 +30,4 @@ related_issue: "#69, #101"
 
 슬라이스 순서를 정한다 — Backlog에서 Todo로 카드를 올리는 일은 네 몫이고 총괄과 나눠 갖는다.
 
-`[Epic]`은 그 아래 슬라이스가 전부 닫히면 네가 닫는다.
+`[Epic]`은 그 아래 슬라이스가 전부 닫히면 네가 닫는다. 닫기 전에 Epic 코멘트의 통합 gate를 최신 `origin/main`에서 직접 돌리고 결과를 같은 Epic에 코멘트로 남겨라. 그 코멘트가 닫는 근거다. gate가 빨간불이면 닫지 말고 그 결과를 근거로 Dev에게 `[Request]`를 열어라. 소유 밖의 변경을 청하는 길은 언제나 그쪽이다.
