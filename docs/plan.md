@@ -1,12 +1,15 @@
 # 계획
 
-task 하나가 한 줄이다. 끝난 task는 완료로 내리고 로그 링크를 단다.
+task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코드가 생기기 전에 총괄이 쓴다. 끝난 task는 완료로 내리고 로그 링크를 단다.
 
 ## 다음
 
-- [ ] 프로젝트 스캐폴드 — Next.js + shadcn/ui + Tailwind. CI(build·lint·test)를 만들고 branch protection의 필수 검사로 연결한다
+- [ ] 프로젝트 스캐폴드 — Next.js + shadcn/ui + Tailwind
+  - 완료 조건: build·lint·test·e2e(Playwright)가 로컬과 CI에서 통과하고, CI가 branch protection 필수 검사로 걸려 빨간불이면 merge가 막힌다. 기본 페이지가 브라우저에 뜬다.
 - [ ] PRD 작성 — 제품 인터뷰로 요구를 확정한다
+  - 완료 조건: `docs/prd.md`에 대상 사용자·핵심 기능·비범위가 담기고 사람이 승인한다.
 - [ ] 디자인 레퍼런스 검토 — 시안 방향을 사람이 정한다
+  - 완료 조건: 방향 결정과 근거 레퍼런스가 `docs/design-system/`에 기록된다.
 
 ## 진행
 
