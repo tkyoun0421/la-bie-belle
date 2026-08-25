@@ -6,6 +6,19 @@
 
 새 총괄 세션은 `docs/handoff.md`를 먼저 읽고 거기서 이어간다. 상세가 필요할 때만 `docs/plan.md`와 `docs/log/`를 본다.
 
+## 스택과 명령어
+
+Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui(`@base-ui/react` 기반), 테스트는 vitest와 Playwright다. Node 22, 패키지 매니저는 pnpm 8.15.2 — 정확한 버전은 `package.json`이 정본이다.
+
+- `pnpm dev` — 개발 서버
+- `pnpm build` — 프로덕션 빌드
+- `pnpm start` — 빌드된 앱 실행 (e2e의 webServer가 쓴다)
+- `pnpm lint` — ESLint
+- `pnpm test` — vitest 단위 테스트
+- `pnpm e2e` — Playwright e2e (먼저 `pnpm build`가 필요하다)
+
+CI(`.github/workflows/ci.yml`)는 PR마다 lint → test → build → e2e를 돌리고, `ci` job이 branch protection 필수 검사다.
+
 ## 원칙 — 결정은 총괄, 생산은 subagent
 
 - 결정이 담기는 문서는 총괄이 대화에서 바로 쓴다. PRD, ADR, plan, 회차 로그가 여기 속한다.
