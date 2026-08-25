@@ -19,7 +19,7 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 
 ## 완료
 
-- [x] 도메인 규칙의 집을 `docs/domain/`으로 정한다 (ADR-004) — PRD에서 규칙을 빼고 영역별 파일 여섯으로 나눴다
+- [x] 도메인 규칙의 집을 `docs/domain/`으로 정한다 (ADR-004) — PRD에서 규칙을 빼고 영역별 파일 여섯으로 나눴다 — [docs/log/2026-08-26-2.md](log/2026-08-26-2.md)
 - [x] Supabase 바탕과 integration 테스트 층을 세운다 — [docs/log/2026-08-26.md](log/2026-08-26.md)
   - 완료 조건: `supabase start`로 뜬 로컬 DB에 붙는 integration 테스트가 하나 이상 초록불이고, `pnpm test:integration`과 CI의 integration 단계가 돈다. `tdd-guard-unit.py`가 `__tests__/<이름>.integration.test.ts`를 짝으로 인정한다.
 - [x] 영속과 인증을 Supabase로 정한다 (ADR-003) — [docs/log/2026-08-26.md](log/2026-08-26.md)
