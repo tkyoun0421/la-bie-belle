@@ -49,7 +49,7 @@ Feature-Sliced Design으로 배치한다. `src/` 아래 `app`(Next 라우팅만,
 - 경계가 애매하면 이 질문으로 판정한다: "스폰 프롬프트에 넣을 말이 대화 요약뿐인가?" 그렇다면 총괄이 직접 쓰는 쪽이 싸다.
 - 어느 subagent가 무엇을 하는지는 `.claude/agents/`의 정의문이 정본이다. 설명이 세션마다 자동으로 들어오니 여기 옮겨 적지 않는다.
 - 찾는 일은 읽기 전용 subagent에 맡겨 총괄 컨텍스트를 아낀다. 우리 관행과 바깥 자료가 둘 다 필요하면 `docs-researcher`를 먼저 부른다. 우리가 뭘 정해뒀는지 알고 나서 바깥을 봐야 한다.
-- 기능 task는 넷을 순서대로 태운다. `test-planner` → writer 둘 → `implementer` → `pr-diff`.
+- 기능 task는 넷을 순서대로 태운다. `test-planner` → writer 셋 → `implementer` → `pr-diff`. writer는 계획이 배정한 층만 태운다.
 
 ## 흐름
 
