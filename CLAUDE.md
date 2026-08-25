@@ -35,6 +35,12 @@ Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui(`@base-ui/react`
 
 CI(`.github/workflows/ci.yml`)는 PR마다 lint → test → build → e2e를 돌리고, `ci` job이 branch protection 필수 검사다.
 
+## 코드 구조
+
+Feature-Sliced Design으로 배치한다. `src/` 아래 `app`(Next 라우팅만, 얇게) · `screens`(화면 조립) · `features`(use-case) · `entities`(모델과 규칙) · `shared`(공용) 다섯이다. 슬라이스 안 세그먼트는 성격대로 나누고 목록은 열어둔다.
+
+`.tsx`는 더미 UI다. 받은 것을 그리기만 하고, 계산과 상태 규칙과 통신은 전부 `.ts`로 뺀다. 근거와 세부는 `docs/adr/ADR-001-fsd-layout-and-tdd-guard.md`에 있다.
+
 ## 원칙 — 결정은 총괄, 생산은 subagent
 
 - 결정이 담기는 문서는 총괄이 대화에서 바로 쓴다. PRD, ADR, plan, 회차 로그가 여기 속한다.
@@ -51,7 +57,7 @@ CI(`.github/workflows/ci.yml`)는 PR마다 lint → test → build → e2e를 �
 
 PRD와 ADR을 먼저 세우고 `docs/plan.md`의 task로 쪼갠다. task마다 완료 조건을 같이 쓴다 — 코드가 생기기 전에 "이게 되면 완료"를 확인 가능한 문장으로 총괄이 정한다. 구현 뒤에 쓴 테스트는 이미 내린 결정을 확인할 뿐이라, 완료의 정의는 구현보다 먼저여야 한다.
 
-이 저장소는 TDD로 간다. 완료 조건을 실패하는 테스트로 먼저 옮기고, 실패를 확인한 뒤에 구현한다. 코드를 먼저 쓰고 테스트를 나중에 붙이지 않는다.
+이 저장소는 TDD로 간다. 완료 조건을 실패하는 테스트로 먼저 옮기고, 실패를 확인한 뒤에 구현한다. 코드를 먼저 쓰고 테스트를 나중에 붙이지 않는다. 단위 테스트는 대상 파일과 같은 레벨의 `__tests__`에, e2e는 루트 `tests/e2e/`에 둔다. 이 규율은 `.claude/hooks/`의 훅 둘이 막는다 — 짝 테스트가 없으면 파일을 쓸 수 없고 우회할 길은 없다. 자세한 규칙은 `docs/adr/ADR-001-fsd-layout-and-tdd-guard.md`에 있다.
 
 기능 개발과 디자인은 병렬로 가고, 디자인이 완료된 화면부터 퍼블리싱이 붙는다.
 

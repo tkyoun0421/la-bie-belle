@@ -8,6 +8,9 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["tests/unit/**/*.test.ts"],
+    include: [
+      "src/**/__tests__/**/*.test.{ts,tsx}",
+      ".claude/hooks/__tests__/**/*.test.ts",
+    ],
   },
 });

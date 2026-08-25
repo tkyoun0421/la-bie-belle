@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 
 describe("cn", () => {
   it("공백으로 클래스를 잇는다", () => {
