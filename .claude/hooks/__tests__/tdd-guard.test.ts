@@ -38,6 +38,7 @@ beforeAll(() => {
   write("src/shared/lib/__tests__/utils.test.ts", "");
   write("src/screens/orders/__tests__/placeholder", "");
   write("tests/e2e/orders.spec.ts", "");
+  write("src/entities/payroll/dals/__tests__/payroll.integration.test.ts", "");
 });
 
 describe("유닛 훅", () => {
@@ -90,6 +91,26 @@ describe("유닛 훅", () => {
     expect(
       run("tdd-guard-unit.py", "src/shared/ui/button.ts", "export function buttonVariants() {}"),
     ).toBe(allowed);
+  });
+
+  it("dals 경로에서 integration 짝만 있어도 통과시킨다", () => {
+    expect(
+      run(
+        "tdd-guard-unit.py",
+        "src/entities/payroll/dals/payroll.ts",
+        "export function fetchPayroll() {}",
+      ),
+    ).toBe(allowed);
+  });
+
+  it("dals 경로여도 짝이 아예 없으면 막는다", () => {
+    expect(
+      run(
+        "tdd-guard-unit.py",
+        "src/entities/payroll/dals/salary.ts",
+        "export function fetchSalary() {}",
+      ),
+    ).toBe(blocked);
   });
 });
 
