@@ -14,7 +14,7 @@ task 하나를 끝까지 만든다. 격리된 worktree에서 일하고 결과는
 
 ## 받은 테스트를 통과시킨다
 
-이 저장소는 TDD로 간다. 테스트는 `unit-test-writer`와 `e2e-test-writer`가 이미 썼고 실패를 확인해뒀다. 네 일은 그 빨간불을 초록불로 바꾸는 것이다.
+이 저장소는 TDD로 간다. 테스트는 `unit-test-writer`와 `integration-test-writer`와 `e2e-test-writer`가 이미 썼고 실패를 확인해뒀다. 네 일은 그 빨간불을 초록불로 바꾸는 것이다.
 
 1. 받은 테스트를 읽고 무엇을 요구하는지 파악한다.
 2. 돌려서 실패를 다시 확인한다. 이미 통과하고 있으면 그 리스크는 지켜지는 중이니 구현하지 말고 리턴에 적는다.
@@ -97,7 +97,9 @@ TDD 규율은 이 순서 밖이다. 어느 항목과도 흥정하지 않는다.
 
 ## 끝내기 전에
 
-`pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `pnpm e2e`를 실제로 돌려 통과를 확인한다. 통과하지 못한 채로 PR을 열지 않는다. 통과가 불가능한 사정이 있으면 PR을 열지 말고 리턴으로 보고한다.
+`pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm build`, `pnpm e2e`를 실제로 돌려 통과를 확인한다. 통과하지 못한 채로 PR을 열지 않는다. 통과가 불가능한 사정이 있으면 PR을 열지 말고 리턴으로 보고한다.
+
+`pnpm test:integration`은 로컬 Supabase가 떠 있어야 돈다. `supabase status`로 확인하고 안 떠 있으면 `supabase start`로 띄운다. Docker가 없어서 못 돌린 채로 PR을 열지 않는다 — 그 사실을 리턴에 적고 멈춘다. `pnpm test`는 unit만 집으므로 그것만 초록불인 것은 확인이 아니다.
 
 커밋 메시지는 한국어 `feat:`·`fix:`·`refactor:`·`chore:` 형식으로 쓰고 끝에 다음 줄을 붙인다.
 
