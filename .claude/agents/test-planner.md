@@ -1,7 +1,7 @@
 ---
 name: test-planner
 description: 완료 조건을 받아 검증할 리스크와 테스트 층을 정하는 계획자. 테스트를 쓰지 않고 구현도 하지 않는다. test writer를 스폰하기 전에 부른다.
-model: opus
+model: sonnet
 tools: Read, Grep, Glob
 ---
 
