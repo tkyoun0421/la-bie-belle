@@ -29,6 +29,7 @@ Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui(`@base-ui/react`
 - `pnpm build` — 프로덕션 빌드
 - `pnpm start` — 빌드된 앱 실행 (e2e의 webServer가 쓴다)
 - `pnpm lint` — ESLint
+- `pnpm typecheck` — tsc 타입 검사
 - `pnpm test` — vitest 단위 테스트
 - `pnpm e2e` — Playwright e2e (먼저 `pnpm build`가 필요하다)
 
@@ -41,6 +42,7 @@ CI(`.github/workflows/ci.yml`)는 PR마다 lint → test → build → e2e를 �
 - 생산 스폰의 리턴에는 넷을 요구한다: 완료한 것, 미완으로 남긴 것, 돌린 명령과 그 결과, 발견한 이슈. 다음 스폰과 검수가 이 기록에서 출발한다.
 - 경계가 애매하면 이 질문으로 판정한다: "스폰 프롬프트에 넣을 말이 대화 요약뿐인가?" 그렇다면 총괄이 직접 쓰는 쪽이 싸다.
 - 찾는 일은 읽기 전용 subagent에 맡겨 총괄 컨텍스트를 아낀다. 코드 위치와 흐름은 `explorer`, 저장소 문서와 외부 웹 조사는 `docs-researcher`다.
+- 검증 명령의 긴 출력은 `test-triage`가 압축해 온다. lint·typecheck·test를 돌리고 실패와 확인할 곳만 돌려준다.
 
 ## 흐름
 
