@@ -8,7 +8,7 @@
 
 ## 스택과 명령어
 
-Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui(`@base-ui/react` 기반), 테스트는 vitest와 Playwright다. Node 22, 패키지 매니저는 pnpm 8.15.2 — 정확한 버전은 `package.json`이 정본이다.
+Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui(`@base-ui/react` 기반), 클라이언트 상태는 zustand, 서버 상태는 TanStack Query(`app/providers.tsx`에 provider가 있다), 테스트는 vitest와 Playwright다. Node 22, 패키지 매니저는 pnpm 8.15.2 — 정확한 버전은 `package.json`이 정본이다.
 
 - `pnpm dev` — 개발 서버
 - `pnpm build` — 프로덕션 빌드
