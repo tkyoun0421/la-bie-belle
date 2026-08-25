@@ -67,7 +67,6 @@ PRD와 ADR을 먼저 세우고 `docs/plan.md`의 task로 쪼갠다. task마다 �
 ## git
 
 - task마다 단명 브랜치를 따고 PR로 낸다. 총괄이 리뷰하고 squash merge한다. main 직접 push는 없다.
-- 코드 생산 스폰은 worktree 격리로 돌린다.
 - clone 후 한 번 실행한다: `git config core.hooksPath .githooks`
 
 ## 기록
