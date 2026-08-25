@@ -79,6 +79,7 @@ git checkout -b pm/<task> origin/main
 git fetch origin --prune
 git checkout --detach origin/main        # 지우기 전에 그 브랜치에서 내려온다
 git branch -D pm/<task>                  # -d가 아니라 -D다. squash merge는 커밋을 다시 쓴다
+rm -f .gates/<task>.md                   # 끝난 원장은 브랜치와 함께 지운다
 ```
 
 브랜치는 merge가 끝난 뒤에만 지운다. 여기서 `git branch -d`는 거절한다 — `main`에 얹힌 squash 커밋은 그 브랜치의 커밋이 아니라서 git이 아직 merge되지 않은 브랜치로 본다. 작업은 이미 `main`에 있다. `-D`가 맞는 동사이지 경고를 피해 가는 지름길이 아니다.
