@@ -1,5 +1,5 @@
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   resolve: {
@@ -8,9 +8,25 @@ export default defineConfig({
     },
   },
   test: {
-    include: [
-      "src/**/__tests__/**/*.test.{ts,tsx}",
-      ".claude/hooks/__tests__/**/*.test.ts",
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "unit",
+          include: [
+            "src/**/__tests__/**/*.test.{ts,tsx}",
+            ".claude/hooks/__tests__/**/*.test.ts",
+          ],
+          exclude: [...configDefaults.exclude, "**/*.integration.test.ts"],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "integration",
+          include: ["src/**/__tests__/**/*.integration.test.ts"],
+        },
+      },
     ],
   },
 });
