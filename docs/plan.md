@@ -4,6 +4,8 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 
 ## 다음
 
+- [ ] Supabase 바탕과 integration 테스트 층을 세운다 — ADR-003이 정한 대로 깐다
+  - 완료 조건: `supabase start`로 뜬 로컬 DB에 붙는 integration 테스트가 하나 이상 초록불이고, `pnpm test:integration`과 CI의 integration 단계가 돈다. `tdd-guard-unit.py`가 `__tests__/<이름>.integration.test.ts`를 짝으로 인정한다.
 - [ ] 디자인 레퍼런스 검토 — 시안 방향을 사람이 정한다
   - 완료 조건: 방향 결정과 근거 레퍼런스가 `docs/design-system/`에 기록된다.
 
