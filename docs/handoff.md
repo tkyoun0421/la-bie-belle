@@ -6,9 +6,13 @@
 
 협업 구조와 개발 바탕이 다 섰다. Next.js + Tailwind + shadcn/ui가 FSD 배치로 서 있고(`src/app`·`screens`·`features`·`entities`·`shared`), `ci` job이 branch protection 필수 검사라 빨간불이면 merge가 막힌다. TDD는 `.claude/hooks/`의 훅 둘이 강제한다 — 짝 테스트가 없으면 파일을 쓸 수 없고 우회할 길은 없다. 규칙의 근거는 `docs/adr/ADR-001-fsd-layout-and-tdd-guard.md`에 있다.
 
-subagent 아홉이 있다. `explorer`(코드 탐색) · `docs-researcher`(저장소 문서) · `web-researcher`(저장소 밖) · `test-planner`(테스트 계획) · `unit-test-writer` · `e2e-test-writer` · `test-triage`(검증 압축) · `implementer`(코드 생산) · `pr-diff`(merge 전 감사). 갈래는 `CLAUDE.md`에 적혀 있다.
+subagent가 열 개 있다. `explorer`(코드 탐색) · `docs-researcher`(저장소 문서) · `web-researcher`(저장소 밖) · `test-planner`(테스트 계획, sonnet) · `unit-test-writer` · `e2e-test-writer` · `test-triage`(검증 압축) · `implementer`(코드 생산) · `pr-diff`(merge 전 감사) · `session-recorder`(회차 마감). 갈래는 `CLAUDE.md`에 적혀 있다.
 
-기능 task는 넷을 순서대로 태운다. `test-planner`로 리스크에 층을 배정하고, writer 둘이 실패하는 테스트를 쓰고, `implementer`가 통과시켜 PR을 열고, `pr-diff`가 감사한다. implementer는 테스트를 쓰지도 고치지도 못한다.
+기능 task는 넷을 순서대로 태운다. `test-planner`로 리스크에 층을 배정하고, writer 둘이 실패하는 테스트를 쓰고, `implementer`가 통과시켜 PR을 열고, `pr-diff`가 감사한다. implementer는 테스트를 쓰지도 고치지도 못한다 — 받은 빨간불을 초록불로 바꿀 뿐이고, 테스트가 없으면 시작하지 않고 멈춘다. 이 흐름은 아직 실전에서 한 번도 안 돌았다. 다음 기능 task에서 처음 돈다.
+
+회차 마감(회차 로그·plan.md·handoff.md 갱신, PR 열기)은 이제 `session-recorder`가 한다. 근거는 merge된 PR 본문에서 가져오고, PR에 안 남은 판단만 총괄이 프롬프트로 실어준다.
+
+`CLAUDE.md`는 85줄대로 줄었다. subagent 설명이나 ADR에 이미 있는 내용을 사본으로 옮겨 적지 않는다는 역방향 규칙이 문서 지도 절에 있다 — 새로 뭔가 적기 전에 정본이 다른 데 있는지부터 확인한다.
 
 제품은 아직 없다. 화면은 스캐폴드 기본 페이지 하나뿐이다.
 
