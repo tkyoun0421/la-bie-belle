@@ -4,6 +4,7 @@
 node_modules/
 .next/
 .DS_Store
+.claude/worktrees/
 out/
 coverage/
 test-results/
