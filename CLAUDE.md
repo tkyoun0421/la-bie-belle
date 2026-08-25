@@ -6,20 +6,18 @@
 
 무엇이 어디 있는지는 이 절이 정본이다. 다른 문서와 에이전트 정의문은 지도를 옮겨 적지 않고 여기를 가리킨다. 새 문서 갈래가 생기면 이 절에 한 줄을 더한다.
 
-- `docs/handoff.md` — 지금 상태와 다음 첫 수. 세션은 여기서 시작한다
+- `docs/handoff.md` — 지금 상태와 다음 첫 수. 세션은 여기서 시작하고 상세가 필요할 때만 아래로 내려간다
 - `docs/plan.md` — task와 완료 조건
 - `docs/log/` — 회차 기록. 왜 그렇게 정했는지가 여기 있다
 - `docs/prd.md` — 제품 요구
 - `docs/adr/` — 되돌리기 어려운 결정과 그 근거
-- `docs/design-system/` — 디자인 시스템과 페이지별 디자인
+- `docs/design-system/` — 디자인과 퍼블리싱 규칙은 `README.md`, 그 옆에 디자인 시스템과 페이지별 디자인
 - `.claude/agents/` — subagent 정의문
 - `CLAUDE.md` — 이 파일. 구조와 스택과 지도
 
 코드가 어디 있는지는 여기 적지 않는다. 저장소에서 직접 찾는 편이 항상 최신이다.
 
-## 세션 시작
-
-새 총괄 세션은 `docs/handoff.md`를 먼저 읽고 거기서 이어간다. 상세가 필요할 때만 `docs/plan.md`와 `docs/log/`를 본다.
+반대 방향도 같다. 다른 곳에 정본이 있는 내용은 이 파일에 옮겨 적지 않는다. `CLAUDE.md`는 세션마다 통째로 로드되니 어디를 볼지와 무엇을 먼저 부를지만 담는다.
 
 ## 스택과 명령어
 
@@ -33,7 +31,7 @@ Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui(`@base-ui/react`
 - `pnpm test` — vitest 단위 테스트
 - `pnpm e2e` — Playwright e2e (먼저 `pnpm build`가 필요하다)
 
-CI(`.github/workflows/ci.yml`)는 PR마다 lint → test → build → e2e를 돌리고, `ci` job이 branch protection 필수 검사다.
+CI(`.github/workflows/ci.yml`)는 PR마다 lint → test → build → e2e를 돌리고 `ci` job이 branch protection 필수 검사다. 기능 PR은 코드 모양이 아니라 화면 흐름이 실제로 도는지까지 본다.
 
 ## 코드 구조
 
@@ -47,35 +45,24 @@ Feature-Sliced Design으로 배치한다. `src/` 아래 `app`(Next 라우팅만,
 - 볼륨 있는 생산은 subagent를 스폰한다. 코드 전부, 디자인 시스템 문서 전개, 페이지별 명세, 조사가 여기 속한다.
 - 생산 스폰의 리턴에는 넷을 요구한다: 완료한 것, 미완으로 남긴 것, 돌린 명령과 그 결과, 발견한 이슈. 다음 스폰과 검수가 이 기록에서 출발한다.
 - 경계가 애매하면 이 질문으로 판정한다: "스폰 프롬프트에 넣을 말이 대화 요약뿐인가?" 그렇다면 총괄이 직접 쓰는 쪽이 싸다.
-- 찾는 일은 읽기 전용 subagent에 맡겨 총괄 컨텍스트를 아낀다. 코드 위치와 흐름은 `explorer`, 저장소 문서는 `docs-researcher`, 저장소 밖은 `web-researcher`다.
-- 우리 관행과 바깥 자료가 둘 다 필요하면 `docs-researcher`를 먼저 부른다. 우리가 뭘 정해뒀는지 알고 나서 바깥을 봐야 한다.
-- 검증 명령의 긴 출력은 `test-triage`가 압축해 온다. lint·typecheck·test를 돌리고 실패와 확인할 곳만 돌려준다.
-- 테스트 계획은 `test-planner`가 세운다. 완료 조건을 주면 리스크마다 층을 배정하고 무엇을 일부러 안 덮는지까지 적어 온다.
-- 테스트는 `unit-test-writer`와 `e2e-test-writer`가 쓴다. 배정받은 리스크를 실패하는 테스트로 옮기고 실패를 확인해 둔다.
-- 코드는 `implementer`가 만든다. 써둔 테스트를 받아 통과시키고 PR까지 연다. 테스트는 쓰지 않는다.
-- merge 전 diff 감사는 `pr-diff`가 한다. 삭제, 총괄 문서 접촉, 시크릿, 테스트 없는 구현을 잡아 온다.
+- 어느 subagent가 무엇을 하는지는 `.claude/agents/`의 정의문이 정본이다. 설명이 세션마다 자동으로 들어오니 여기 옮겨 적지 않는다.
+- 찾는 일은 읽기 전용 subagent에 맡겨 총괄 컨텍스트를 아낀다. 우리 관행과 바깥 자료가 둘 다 필요하면 `docs-researcher`를 먼저 부른다. 우리가 뭘 정해뒀는지 알고 나서 바깥을 봐야 한다.
+- 기능 task는 넷을 순서대로 태운다. `test-planner` → writer 둘 → `implementer` → `pr-diff`.
 
 ## 흐름
 
 PRD와 ADR을 먼저 세우고 `docs/plan.md`의 task로 쪼갠다. task마다 완료 조건을 같이 쓴다 — 코드가 생기기 전에 "이게 되면 완료"를 확인 가능한 문장으로 총괄이 정한다. 구현 뒤에 쓴 테스트는 이미 내린 결정을 확인할 뿐이라, 완료의 정의는 구현보다 먼저여야 한다.
 
-이 저장소는 TDD로 간다. 완료 조건을 실패하는 테스트로 먼저 옮기고, 실패를 확인한 뒤에 구현한다. 코드를 먼저 쓰고 테스트를 나중에 붙이지 않는다.
+이 저장소는 TDD로 간다. 실패하는 테스트를 먼저 쓰고 실패를 확인한 뒤에 구현한다. 쓰는 손과 구현하는 손은 다르다 — 구현자가 쓴 테스트는 구현에 맞춰지기 때문이다. `implementer`는 받은 테스트의 단언을 바꾸지 못한다.
 
-작성과 구현은 다른 스폰이 맡는다. `test-planner`가 리스크에 층을 배정하고, writer 둘이 실패하는 테스트를 쓰고, `implementer`가 그 빨간불을 초록불로 바꾼다. 구현자가 쓴 테스트는 구현에 맞춰지니 손을 갈랐다. implementer는 받은 테스트의 단언을 바꾸지 못한다.
+`.claude/hooks/`의 훅 둘이 이 규율을 막고 우회할 길은 없다. 테스트가 어디 살고 훅이 무엇을 요구하는지는 `docs/adr/ADR-001-fsd-layout-and-tdd-guard.md`에 있다.
 
-단위 테스트는 대상 파일과 같은 레벨의 `__tests__`에, e2e는 루트 `tests/e2e/`에 둔다. 이 규율은 `.claude/hooks/`의 훅 둘이 막는다 — 짝 테스트가 없으면 파일을 쓸 수 없고 우회할 길은 없다. 자세한 규칙은 `docs/adr/ADR-001-fsd-layout-and-tdd-guard.md`에 있다.
-
-기능 개발과 디자인은 병렬로 가고, 디자인이 완료된 화면부터 퍼블리싱이 붙는다.
-
-- 디자인 산출물은 `docs/design-system/` 문서다. 디자인 시스템을 먼저, 페이지별 디자인을 다음에 만든다. 시안 방향 같은 결정은 사람이 내리고 문서 전개만 스폰한다.
-- 기능 화면은 shadcn/ui + Tailwind 기본값으로 만든다. 퍼블리싱은 토큰과 스타일 교체로 입힌다.
-- 퍼블리싱 검수는 자동 루프다. 검수 스폰은 합격 여부와 지적 목록을 구조화해 리턴하고, 지적마다 `docs/design-system/`의 조항을 인용해야 반려가 성립한다. 반려가 2회를 넘으면 루프를 멈추고 사람이 판정한다. 대개 디자인 문서가 모호한 탓이다.
+기능 개발과 디자인은 병렬로 가고, 디자인이 완료된 화면부터 퍼블리싱이 붙는다. 규칙은 `docs/design-system/README.md`에 있다.
 
 ## git
 
 - task마다 단명 브랜치를 따고 PR로 낸다. 총괄이 리뷰하고 squash merge한다. main 직접 push는 없다.
 - 코드 생산 스폰은 worktree 격리로 돌린다.
-- CI는 build·lint·test에 행위 검증(Playwright e2e)을 더한다. 기능 PR은 코드 모양이 아니라 화면 흐름이 실제로 도는지까지 본다.
 - clone 후 한 번 실행한다: `git config core.hooksPath .githooks`
 
 ## 기록
@@ -85,8 +72,6 @@ PRD와 ADR을 먼저 세우고 `docs/plan.md`의 task로 쪼갠다. task마다 �
 - `docs/log/` 회차 로그 — 쌓는 역사다
 - `docs/plan.md` task 상태
 - `docs/handoff.md` — 다음 세션을 위한 현재 상태 스냅샷이라 쌓지 않고 덮어쓴다
-
-새 문서 갈래를 만들었으면 문서 지도에도 한 줄을 더한다.
 
 ## 증축 규칙
 
