@@ -2,7 +2,7 @@
 owner: "@orchestrator"
 status: "active"
 related_adr: ""
-related_issue: "#69, #101, #130"
+related_issue: "#69, #101, #130, #142, #144"
 ---
 
 # Matcher: 막혔을 때
@@ -24,3 +24,7 @@ related_issue: "#69, #101, #130"
 포기와 Blocked를 가르는 것은 남은 일이 있느냐다. 지금 할 수 있는 것이 남아 있으면 포기하고 나아간다. 아무것도 못 하면 카드를 Blocked로 옮긴다.
 
 요청받은 산출물이 통째로 포기됐다면 그 작업은 완료가 아니다. 그때는 PR을 열지 말고 Blocked로 간다.
+
+## 원장이 있는 작업을 Blocked로 보낼 때
+
+원장 전문을 사유 코멘트에 붙이고 `.gates/<slice>.md`를 지워라. 순서가 이유다 — 미충족 원장이 남아 있으면 Stop 훅이 그 worktree의 모든 종료를 막아 Blocked 세션이 끝나지 못한다. 코멘트에 옮긴 원장이 `CHECK:` 문안을 지키니 재개할 때 거기서 가져와 다시 쓴다. PR 본문이 원장의 정본이 되는 것과 같은 이동이고 정본이 파일에서 GitHub으로 간다.
