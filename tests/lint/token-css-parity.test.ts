@@ -58,6 +58,12 @@ ${options.darkAttribute ?? DARK_PALETTE}
 `;
 }
 
+function notMatching(diff: TokenDiffEntry[]) {
+  return diff.filter(
+    (entry) => entry.status !== "match" && entry.status !== "skipped",
+  );
+}
+
 function entryOf(diff: TokenDiffEntry[], token: string): TokenDiffEntry {
   const entry = diff.find((item) => item.token === token);
   if (!entry) {
@@ -93,14 +99,14 @@ describe("tokens.md 표 읽기", () => {
     expect(entry.status).toBe("match");
   });
 
-  it("팔레트 열이 빈 자리(—)인 행은 값 대조 없이 통과한다", () => {
+  it("팔레트 열이 빈 자리(—)인 행은 값 대조를 건너뛴 것으로 표시된다", () => {
     const entry = entryOf(
       tokenCssParity(TOKENS_MD, cssFixture({})),
       "stroke.surface",
     );
 
     expect(entry.variable).toBe("--role-stroke-surface");
-    expect(entry.status).toBe("match");
+    expect(entry.status).toBe("skipped");
   });
 
   it("Variant와 State가 붙은 토큰 이름을 하나의 항목으로 읽는다", () => {
@@ -136,7 +142,7 @@ describe("globals.css 세 블록 구분", () => {
   it("--role- 이 가리키는 --palette- 참조를 테마마다 다른 값으로 푼다", () => {
     const diff = tokenCssParity(TOKENS_MD, cssFixture({}));
 
-    expect(diff.filter((entry) => entry.status !== "match")).toEqual([]);
+    expect(notMatching(diff)).toEqual([]);
   });
 
   it("역할 변수를 리터럴로 박으면 다크 두 블록이 라이트 값을 물려받아 어긋난다", () => {
@@ -196,7 +202,7 @@ ${ROLES}`;
 
     const diff = tokenCssParity(TOKENS_MD, cssFixture({ root: paddedLight }));
 
-    expect(diff.filter((entry) => entry.status !== "match")).toEqual([]);
+    expect(notMatching(diff)).toEqual([]);
   });
 
   it("값이 실제로 다르면 불일치로 판정한다", () => {
@@ -246,21 +252,37 @@ describe("역할 변수 누락", () => {
   });
 });
 
+const ROLE_TOKEN_COUNT = 27;
+
+const PALETTE_LESS_TOKENS = ["stroke.surface"];
+
+function realEntries() {
+  const markdown = readFileSync(
+    path.join(process.cwd(), "docs/design-system/tokens.md"),
+    "utf8",
+  );
+  const css = readFileSync(
+    path.join(process.cwd(), "src/app/globals.css"),
+    "utf8",
+  );
+
+  return tokenCssParity(markdown, css);
+}
+
 describe("실제 tokens.md와 globals.css 대조", () => {
+  it("tokens.md의 역할 토큰 표에서 스물일곱 행을 읽는다", () => {
+    expect(realEntries()).toHaveLength(ROLE_TOKEN_COUNT);
+  });
+
+  it("팔레트를 가리키지 않아 값 대조를 건너뛰는 토큰은 stroke.surface 하나뿐이다", () => {
+    const skipped = realEntries()
+      .filter((entry) => entry.status === "skipped")
+      .map((entry) => entry.token);
+
+    expect(skipped).toEqual(PALETTE_LESS_TOKENS);
+  });
+
   it("globals.css가 tokens.md 8절과 oklch 문자열로 맞물린다", () => {
-    const markdown = readFileSync(
-      path.join(process.cwd(), "docs/design-system/tokens.md"),
-      "utf8",
-    );
-    const css = readFileSync(
-      path.join(process.cwd(), "src/app/globals.css"),
-      "utf8",
-    );
-
-    const notMatching = tokenCssParity(markdown, css).filter(
-      (entry) => entry.status !== "match",
-    );
-
-    expect(notMatching).toEqual([]);
+    expect(notMatching(realEntries())).toEqual([]);
   });
 });

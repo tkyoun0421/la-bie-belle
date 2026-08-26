@@ -6,7 +6,7 @@
 
 `docs/design-system/`이 섰다. `tokens.md`(팔레트 6계열 × 11단계, 역할 토큰 매핑, 타이포·스페이싱·라운딩·그림자·모션, Tailwind 4 `@theme` 전문)를 정본으로 두고, `foundation/`의 색·타이포·스페이싱과 형태·모션 넷과 `writing.md`·`components.md`·`README.md`가 그 정본을 이름으로만 부른다. 브랜드 색은 절제 규칙(버튼 한 자리) 아래 있고, warning은 brand와 밝기가 거의 같아 글자색으로는 안 쓴다. 라이트·다크 두 모드는 의미 매핑 표 하나로 같이 덮인다.
 
-규칙 열넷이 `eslint.config.mjs`와 Prettier로 CI에서 돈다. 경계(상대 경로·역방향 레이어·같은 층 다른 슬라이스 import), 디자인 값(하드코딩 색·크기, Tailwind 기본 팔레트), `.tsx` 더미 UI 강제, 테스트 `.only` 금지, import·Tailwind 클래스 순서, `console` 제한, 미사용 import 정리가 전부 잡힌다. `src/app/globals.css`는 `tokens.md` 8절 전문으로 교체됐고 대조 로직이 `src/shared/lib/token-css-parity.ts`에 있다. `@tests/*` alias가 생겨 `tests/`를 가리키는 상대 경로가 없어졌다. CI는 `lint → format:check → test → integration → build → e2e` 여섯 단계다.
+규칙 열넷이 `eslint.config.mjs`와 Prettier로 CI에서 돈다. 경계(상대 경로·역방향 레이어·같은 층 다른 슬라이스 import), 디자인 값(하드코딩 색·크기, Tailwind 기본 팔레트), `.tsx` 더미 UI 강제, 테스트 `.only` 금지, import·Tailwind 클래스 순서, `console` 제한, 미사용 import 정리가 전부 잡힌다. `src/app/globals.css`는 `tokens.md` 8절 전문으로 교체됐고 대조 로직이 `tests/lint/token-css-parity.ts`에 있다. `@tests/*` alias가 생겨 `tests/`를 가리키는 상대 경로가 없어졌다. CI는 `lint → format:check → test → integration → build → e2e` 여섯 단계다.
 
 생산 스폰이 같은 실패를 세 번째 만나면 손을 떼고 총괄이 `codex-rescue`(`--model gpt-5.6-sol`)로 넘기는 3회 규칙이 `CLAUDE.md`와 `.claude/agents/implementer.md`에 얹혔다. 셈은 구현자가 하고 넘기는 판정은 총괄이 한다.
 

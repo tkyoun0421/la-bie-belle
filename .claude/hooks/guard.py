@@ -26,21 +26,24 @@ def _relative_path(raw_path):
         return None
 
 
-def _content(tool_input, relative_path):
-    incoming = "\n".join(str(tool_input.get(key, "")) for key in CONTENT_KEYS)
-    if relative_path.startswith(".."):
-        return incoming
-    try:
-        with open(
-            os.path.join(ROOT, relative_path), encoding="utf-8", errors="ignore"
-        ) as handle:
-            return handle.read()
-    except OSError:
-        return incoming
+def _reader(tool_input, relative_path):
+    def read():
+        incoming = "\n".join(str(tool_input.get(key, "")) for key in CONTENT_KEYS)
+        if relative_path.startswith(".."):
+            return incoming
+        try:
+            with open(
+                os.path.join(ROOT, relative_path), encoding="utf-8", errors="ignore"
+            ) as handle:
+                return handle.read()
+        except OSError:
+            return incoming
+
+    return read
 
 
 def guard(verdict):
-    """verdict(relative_path, content) -> 막는 이유 문자열 또는 None"""
+    """verdict(relative_path, read) -> 막는 이유 문자열 또는 None"""
     payload = _payload()
     if payload is None:
         sys.exit(0)
@@ -54,7 +57,7 @@ def guard(verdict):
     if relative_path is None:
         sys.exit(0)
 
-    reason = verdict(relative_path, _content(tool_input, relative_path))
+    reason = verdict(relative_path, _reader(tool_input, relative_path))
     if not reason:
         sys.exit(0)
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fixedCode, violationsOf } from "@tests/lint/rule-check";
+import { errorsOf, fixedCode, violationsOf } from "@tests/lint/rule-check";
 
 const NO_UNUSED_IMPORTS = "unused-imports/no-unused-imports";
 const NO_UNUSED_VARS = "unused-imports/no-unused-vars";
@@ -86,7 +86,7 @@ describe("규칙14 — 미사용 import와 import type", () => {
     ).toEqual([]);
   });
 
-  it("회귀 — utils.ts는 이미 inline type을 쓰고 있어 규칙14의 어느 규칙도 안 걸린다", async () => {
+  it("회귀 — utils.ts는 이미 inline type을 쓰고 있어 어느 규칙도 안 걸린다", async () => {
     const code = `import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -95,14 +95,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 `;
 
-    const violations = await violationsOf(code, "src/shared/lib/utils.ts");
+    const errors = await errorsOf(code, "src/shared/lib/utils.ts");
 
-    expect(
-      unusedImportRuleIds(violations.map((violation) => violation.ruleId)),
-    ).toEqual([]);
+    expect(errors).toEqual([]);
   });
 
-  it("회귀 — button.tsx는 이미 inline type을 쓰고 있어 규칙14의 어느 규칙도 안 걸린다", async () => {
+  it("회귀 — button.tsx는 이미 inline type을 쓰고 있어 어느 규칙도 안 걸린다", async () => {
     const code = `import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -134,10 +132,8 @@ function Button({
 export { Button, buttonVariants }
 `;
 
-    const violations = await violationsOf(code, "src/shared/ui/button.tsx");
+    const errors = await errorsOf(code, "src/shared/ui/button.tsx");
 
-    expect(
-      unusedImportRuleIds(violations.map((violation) => violation.ruleId)),
-    ).toEqual([]);
+    expect(errors).toEqual([]);
   });
 });

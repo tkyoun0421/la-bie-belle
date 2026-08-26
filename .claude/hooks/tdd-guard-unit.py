@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import os
 import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from guard import exists, guard
 
@@ -16,7 +19,7 @@ SKIP_PREFIXES = ("src/app/", "src/shared/ui/")
 PAIR_SUFFIXES = (".test.ts", ".integration.test.ts")
 
 
-def verdict(path, content):
+def verdict(path, read):
     if not path.startswith("src/") or not path.endswith(".ts"):
         return None
     if path.endswith(".d.ts") or path.endswith(".test.ts") or "/__tests__/" in path:
@@ -24,7 +27,7 @@ def verdict(path, content):
     if path.startswith(SKIP_PREFIXES):
         return None
 
-    if not EXECUTABLE_EXPORT.search(content):
+    if not EXECUTABLE_EXPORT.search(read()):
         return None
 
     directory, filename = os.path.split(path)

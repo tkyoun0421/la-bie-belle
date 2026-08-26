@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from guard import exists, guard
 
@@ -25,7 +28,7 @@ def spec_name(path):
     return None
 
 
-def verdict(path, _content):
+def verdict(path, _read):
     name = spec_name(path)
     if not name:
         return None
