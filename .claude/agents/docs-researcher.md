@@ -1,6 +1,6 @@
 ---
 name: docs-researcher
-description: 저장소 문서를 조사하는 조사자. "우리가 이걸 왜 이렇게 정했나", "이 결정이 어느 회차에서 나왔나", "이 문서가 뭐라고 하나" 같은 질문에 쓴다. 저장소 밖은 보지 않는다 — 웹 조사는 web-researcher, 코드 탐색은 explorer가 맡는다.
+description: 저장소 문서를 조사하는 조사자. 문서를 열어야 할 일이 생기면 사람이 시키기를 기다리지 않고 먼저 스폰한다. 우리가 무엇을 왜 정해뒀는지 확인할 때, 결정이 어느 회차에서 나왔는지 짚을 때, 문서가 뭐라고 적어뒀는지 읽을 때가 여기다. PRD와 ADR과 docs/domain/과 plan과 log와 spec과 design-system이 대상이다. 저장소 밖은 보지 않는다 — 웹 조사는 web-researcher, 코드 탐색은 explorer가 맡는다.
 tools: Read, Grep, Glob
 model: haiku
 effort: low
