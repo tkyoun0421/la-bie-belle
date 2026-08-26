@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  arbitraryValueOf,
+  arbitraryValuesOf,
   classStringVisitor,
+  segmentsOf,
   utilityOf,
 } from "../class-strings.mjs";
 
@@ -87,6 +88,21 @@ describe("utilityOf — 변형 접두사를 벗기고 마지막 유틸리티만 
   });
 });
 
+describe("utilityOf — 대괄호 깊이와 소괄호 깊이를 따로 센다", () => {
+  it.each([
+    { token: "[&[title=(]]:bg-red-500", utility: "bg-red-500" },
+    {
+      token: "[&[data-x='((']]:text-red-600",
+      utility: "text-red-600",
+    },
+  ])(
+    "$token 은 대괄호 안 짝 없는 소괄호에 안 흔들리고 $utility 를 남긴다",
+    ({ token, utility }) => {
+      expect(utilityOf(token)).toBe(utility);
+    },
+  );
+});
+
 describe("utilityOf — 경계에서 무엇을 돌려주는지", () => {
   it("변형 접두사만 있고 유틸리티가 비면 빈 문자열을 돌려준다", () => {
     expect(utilityOf("hover:")).toBe("");
@@ -105,38 +121,53 @@ describe("utilityOf — 경계에서 무엇을 돌려주는지", () => {
   });
 });
 
-describe("arbitraryValueOf — 첫 대괄호부터 짝이 맞는 곳까지 꺼낸다", () => {
-  it.each([
-    { utility: "flex", value: null },
-    {
-      utility: "bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]",
-      value: "color-mix(in_oklch,var(--secondary),var(--foreground)_5%)",
-    },
-    {
-      utility: "rounded-[min(var(--radius-md),12px)]",
-      value: "min(var(--radius-md),12px)",
-    },
-    {
-      utility: "grid-cols-[repeat(2,minmax(0,1fr))]",
-      value: "repeat(2,minmax(0,1fr))",
-    },
-    {
-      utility: "[&_svg:not([class*='size-'])]",
-      value: "&_svg:not([class*='size-'])",
-    },
-    { utility: "w-[1px]-[2px]", value: "1px" },
-  ])("$utility 에서 $value 를 꺼낸다", ({ utility, value }) => {
-    expect(arbitraryValueOf(utility)).toBe(value);
+describe("segmentsOf — 깊이 0의 콜론으로 세그먼트를 전부 쪼갠다", () => {
+  it("변형 셋과 유틸리티 하나로 네 세그먼트가 나온다", () => {
+    expect(segmentsOf("md:hover:[&>*]:text-[color:var(--fg)]")).toEqual([
+      "md",
+      "hover",
+      "[&>*]",
+      "text-[color:var(--fg)]",
+    ]);
+  });
+
+  it("변형이 없으면 원소 하나짜리 배열을 돌려준다", () => {
+    expect(segmentsOf("flex")).toEqual(["flex"]);
   });
 });
 
-describe("arbitraryValueOf — 경계에서 무엇을 돌려주는지", () => {
-  it("대괄호가 열리기만 하고 안 닫히면 null 을 돌려준다", () => {
-    expect(arbitraryValueOf("bg-[foo")).toBeNull();
+describe("arbitraryValuesOf — 유틸리티 안의 대괄호 그룹을 짝이 맞는 것만 순서대로 꺼낸다", () => {
+  it.each([
+    { utility: "flex", values: [] },
+    {
+      utility: "bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]",
+      values: ["color-mix(in_oklch,var(--secondary),var(--foreground)_5%)"],
+    },
+    {
+      utility: "rounded-[min(var(--radius-md),12px)]",
+      values: ["min(var(--radius-md),12px)"],
+    },
+    {
+      utility: "grid-cols-[repeat(2,minmax(0,1fr))]",
+      values: ["repeat(2,minmax(0,1fr))"],
+    },
+    {
+      utility: "[&_svg:not([class*='size-'])]",
+      values: ["&_svg:not([class*='size-'])"],
+    },
+    { utility: "w-[1px]-[2px]", values: ["1px", "2px"] },
+  ])("$utility 에서 $values 를 꺼낸다", ({ utility, values }) => {
+    expect(arbitraryValuesOf(utility)).toEqual(values);
+  });
+});
+
+describe("arbitraryValuesOf — 경계에서 무엇을 돌려주는지", () => {
+  it("대괄호가 열리기만 하고 안 닫히면 빈 배열을 돌려준다", () => {
+    expect(arbitraryValuesOf("bg-[foo")).toEqual([]);
   });
 
-  it("빈 대괄호는 null 이 아니라 빈 문자열을 돌려준다", () => {
-    expect(arbitraryValueOf("w-[]")).toBe("");
+  it("빈 대괄호는 빈 문자열이 담긴 배열을 돌려준다", () => {
+    expect(arbitraryValuesOf("w-[]")).toEqual([""]);
   });
 });
 
