@@ -6,9 +6,9 @@
 
 `docs/design-system/`이 섰다. `tokens.md`(팔레트 6계열 × 11단계, 역할 토큰 매핑, 타이포·스페이싱·라운딩·그림자·모션, Tailwind 4 `@theme` 전문)를 정본으로 두고, `foundation/`의 색·타이포·스페이싱과 형태·모션 넷과 `writing.md`·`components.md`·`README.md`가 그 정본을 이름으로만 부른다. 브랜드 색은 절제 규칙(버튼 한 자리) 아래 있고, warning은 brand와 밝기가 거의 같아 글자색으로는 안 쓴다.
 
-규칙 열일곱(lint가 집행하는 열넷 + `.claude/hooks/`의 TDD 가드 둘 + `.githooks/pre-commit`의 시크릿 검사)이 `tests/lint/rule-catalog.ts`의 카탈로그로 코드에 존재한다. 카탈로그는 규칙이 켜져 있는지를 `ESLint#calculateConfigForFile()`로 직접 읽고, 훅은 `settings.json` 등록 여부를, pre-commit은 실제 스크립트 실행으로 확인한다. 문서 번호 6·7·8은 아무 자리에도 없어 지어내지 않고 `RULE_NUMBERS_NEVER_ASSIGNED`로 구조에 박아뒀다.
+규칙 열일곱(lint가 집행하는 열넷 + `.claude/hooks/`의 TDD 가드 둘 + `.githooks/pre-commit`의 시크릿 검사)이 `tests/lint/rules.ts`의 카탈로그로 코드에 존재한다. 카탈로그는 규칙이 켜져 있는지를 `ESLint#calculateConfigForFile()`로 직접 읽고, 훅은 `settings.json` 등록 여부를, pre-commit은 실제 스크립트 실행으로 확인한다. 문서 번호 6·7·8은 아무 자리에도 없어 지어내지 않고 `RULE_NUMBERS_NEVER_ASSIGNED`로 구조에 박아뒀다.
 
-`tests/lint/`의 lint 확인은 `harness.ts` 하나로 모였다 — `violationsOf`와 `fixedCode` 둘만 노출하고 ESLint 인스턴스는 모듈 스코프에 두 개(평범한 것, `fix: true`)만 둔다. 단언은 `errorCount`가 아니라 `ruleId` 집합으로 좁혀져서, 규칙 하나가 다른 규칙에 가려 빠져도 초록불이 안 켜진다. `token-css-parity`는 `src/shared/lib/`에서 `tests/lint/token-css-parity.ts`로 옮겨졌고 입구가 `tokenCssParity(markdown, css)` 하나로 좁아졌다. `.claude/hooks/`의 훅 둘은 payload 해독 공통 층을 `guard.py`로 뺐다.
+`tests/lint/`의 lint 확인은 `rule-check.ts` 하나로 모였다 — `violationsOf`와 `errorsOf`와 `fixedCode` 셋만 노출하고 ESLint 인스턴스는 모듈 스코프에 두 개(평범한 것, `fix: true`)만 둔다. 단위 성격의 단언은 `errorCount`가 아니라 `ruleId`로 좁혀져 어느 규칙이 걸렸는지까지 못 박고, 실제 파일 전문을 픽스처로 쓰는 회귀 케이스는 `errorsOf`로 「어느 규칙도 안 걸린다」를 본다. `token-css-parity`는 `src/shared/lib/`에서 `tests/lint/token-css-parity.ts`로 옮겨졌고 입구가 `tokenCssParity(markdown, css)` 하나로 좁아졌다. `.claude/hooks/`의 훅 둘은 payload 해독 공통 층을 `guard.py`로 뺐다.
 
 이 다섯 변경은 병합만으로 끝나지 않았다. 병합 뒤 `pr-diff`·적대적 검증자·codex 셋을 토론시켜 변이 아홉 가지(카탈로그 최소 편집, 훅 제거, 규칙 강등 등)로 실제로 막는지 확인했고, 그 자리에서 세 가지 실공백이 드러나 고쳐졌다. 토큰 대조가 파싱 실패 시 공허하게 통과하던 것, 회귀 픽스처 열셋이 `errorsOf`로 다시 열리기 전엔 다른 규칙 위반을 못 보던 것, 훅이 `PYTHONSAFEPATH=1`에서 조용히 통과로 돌아서던 것이다. `class-strings.mjs:90-93`이 `(`와 `[`를 한 깊이로 섞어 세는 실제 lint 우회로는 확인만 됐고 이번 회차엔 안 고쳤다.
 
@@ -42,7 +42,7 @@
 
 - **`tests/lint/.tmp-format-check/`를 `.gitignore`에 넣지 않는다.** Prettier 3이 `.gitignore`를 기본 ignore 파일로 읽는다. 넣으면 `format-check.test.ts`가 만든 픽스처를 prettier가 건너뛰어 `--check`가 조용히 0으로 끝난다 — 테스트가 사실상 안 도는데 초록으로 보인다.
 - **`pnpm typecheck`가 `@supabase/supabase-js`를 못 찾으며 깨지는 일이 반복된다.** `pnpm install --frozen-lockfile`로 복구한다.
-- **`tests/lint/` 테스트가 worktree 여러 개를 동시에 돌리면 기본 5초 타임아웃에서 흔들린다.** `new ESLint()`가 next·typescript-eslint 설정을 통째로 로드하는 비용이 첫 테스트에 몰린다. `--testTimeout=60000`을 주면 안정적으로 통과한다. `harness.ts`와 `rule-catalog.ts`는 이 비용을 모듈 스코프/`beforeAll`로 한 번만 치르게 옮겨뒀지만, 옛 방식이 남은 파일이 있으면 여전히 흔들릴 수 있다.
+- **`tests/lint/` 테스트가 worktree 여러 개를 동시에 돌리면 기본 5초 타임아웃에서 흔들린다.** `new ESLint()`가 next·typescript-eslint 설정을 통째로 로드하는 비용이 첫 테스트에 몰린다. `--testTimeout=60000`을 주면 안정적으로 통과한다. `rule-check.ts`와 `rules.ts`는 이 비용을 모듈 스코프/`beforeAll`로 한 번만 치르게 옮겨뒀지만, 옛 방식이 남은 파일이 있으면 여전히 흔들릴 수 있다.
 - 저장소는 PUBLIC이다. 시크릿 커밋 금지, pre-commit 스캔이 있다.
 - clone이나 worktree를 새로 만들면 `git config core.hooksPath .githooks`를 실행한다.
 - 새 subagent 정의문은 main에 merge된 뒤에야 호출할 수 있게 등록된다.
