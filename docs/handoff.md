@@ -4,17 +4,17 @@
 
 ## 지금 상태
 
-`docs/design-system/`이 섰다. `tokens.md`(팔레트 6계열 × 11단계, 역할 토큰 매핑, 타이포·스페이싱·라운딩·그림자·모션, Tailwind 4 `@theme` 전문)를 정본으로 두고, `foundation/`의 색·타이포·스페이싱과 형태·모션 넷과 `writing.md`·`components.md`·`README.md`가 그 정본을 이름으로만 부른다. 브랜드 색은 절제 규칙(버튼 한 자리) 아래 있고, warning은 brand와 밝기가 거의 같아 글자색으로는 안 쓴다.
+`eslint-rules/class-strings.mjs`를 거치는 하우스 lint 규칙 셋(`no-arbitrary-class-values`·`no-color-literals`·`no-default-palette-class`)이 이전엔 놓치던 우회로 다섯을 막는다. 깊이 카운터가 `bracketDepth`와 `parenDepth`로 갈라져 대괄호 안 짝 없는 소괄호를 더는 안 헷갈린다. 임의 값 검사가 마지막 세그먼트만이 아니라 변형 접두사 세그먼트 전부와, 유틸리티 하나에 대괄호 그룹이 둘 이상이어도 전부를 돈다. `var(...)`가 한 번이라도 나오면 값 전체를 사면하던 방식을 버리고, 커스텀 프로퍼티 식별자만 걷어낸 뒤 남는 문자열에서 리터럴을 찾는다(`calc(var(--gap)+13px)`의 `13px`을 잡는다). 정규식 경계 셋 — `SIZE_LITERAL`의 선행 배제 문자군에서 `-`를 뺀 것, hex 리터럴의 끝을 `\b` 대신 `(?![0-9a-f])`로 잡은 것, 팔레트 규칙이 대괄호 투명도(`bg-red-500/[0.5]`)도 매칭하게 한 것 — 도 조여졌다. 파서가 내보내는 이름이 바뀌었다. `eslint-rules/class-strings.mjs`는 이제 `classStringVisitor`·`segmentsOf`·`utilityOf`·`arbitraryValuesOf`(복수) 넷을 내보내고, 첫 대괄호 그룹만 돌려주던 `arbitraryValueOf`(단수)는 사라졌다.
 
-규칙 열일곱(lint가 집행하는 열넷 + `.claude/hooks/`의 TDD 가드 둘 + `.githooks/pre-commit`의 시크릿 검사)이 `tests/lint/rules.ts`의 카탈로그로 코드에 존재한다. 카탈로그는 규칙이 켜져 있는지를 `ESLint#calculateConfigForFile()`로 직접 읽고, 훅은 `settings.json` 등록 여부를, pre-commit은 실제 스크립트 실행으로 확인한다. 문서 번호 6·7·8은 아무 자리에도 없어 지어내지 않고 `RULE_NUMBERS_NEVER_ASSIGNED`로 구조에 박아뒀다.
+`src/shared/ui/button.tsx`의 라운딩이 `docs/design-system/components.md`와 맞춰졌다. base가 `rounded-full`로 올라가 크기 여덟(`default`·`xs`·`sm`·`lg`·`icon`·`icon-xs`·`icon-sm`·`icon-lg`)이 전부 그것만 물려받고, 없는 ButtonGroup 컴포넌트를 겨냥하던 `in-data-[slot=button-group]:rounded-lg` 네 곳이 지워졌다. 새 `src/shared/ui/__tests__/button.test.ts`가 이 계약을 크기별로 직접 검사한다.
 
-`tests/lint/`의 lint 확인은 `rule-check.ts` 하나로 모였다 — `violationsOf`와 `errorsOf`와 `fixedCode` 셋만 노출하고 ESLint 인스턴스는 모듈 스코프에 두 개(평범한 것, `fix: true`)만 둔다. 단위 성격의 단언은 `errorCount`가 아니라 `ruleId`로 좁혀져 어느 규칙이 걸렸는지까지 못 박고, 실제 파일 전문을 픽스처로 쓰는 회귀 케이스는 `errorsOf`로 「어느 규칙도 안 걸린다」를 본다. `token-css-parity`는 `src/shared/lib/`에서 `tests/lint/token-css-parity.ts`로 옮겨졌고 입구가 `tokenCssParity(markdown, css)` 하나로 좁아졌다. `.claude/hooks/`의 훅 둘은 payload 해독 공통 층을 `guard.py`로 뺐다.
+`tests/lint/rule-catalogue.test.ts`에 카탈로그와 config를 preset baseline으로 맞대는 검사가 붙었다. `eslint-config-next/core-web-vitals`와 `.../typescript`가 내보내는 rules 키 집합을 baseline으로 두고, 그 밖에서 error로 켜진 규칙이 카탈로그의 ruleId 집합과 정확히 일치하는지 본다(둘 다 11개). `eslint-config-next`가 올라가도 baseline이 같이 움직여 노후화가 안 생긴다. `tests/lint/relative-import.test.ts`엔 `tests/` 경로 fixture 검사가, `tests/lint/tailwind-default-palette.test.ts`엔 대괄호 투명도 케이스 다섯이 늘었다. `pnpm test`는 205개(18개 파일) 전부 초록이다.
 
-이 다섯 변경은 병합만으로 끝나지 않았다. 병합 뒤 `pr-diff`·적대적 검증자·codex 셋을 토론시켜 변이 아홉 가지(카탈로그 최소 편집, 훅 제거, 규칙 강등 등)로 실제로 막는지 확인했고, 그 자리에서 세 가지 실공백이 드러나 고쳐졌다. 토큰 대조가 파싱 실패 시 공허하게 통과하던 것, 회귀 픽스처 열셋이 `errorsOf`로 다시 열리기 전엔 다른 규칙 위반을 못 보던 것, 훅이 `PYTHONSAFEPATH=1`에서 조용히 통과로 돌아서던 것이다. `class-strings.mjs:90-93`이 `(`와 `[`를 한 깊이로 섞어 세는 실제 lint 우회로는 확인만 됐고 이번 회차엔 안 고쳤다.
-
-제품 코드는 여전히 integration 테스트 한 파일(`src/entities/profile/dals/__tests__/profile.integration.test.ts`)뿐이다. `dals` 실행 코드도 화면도 없다. `docs/domain/`의 여섯 파일은 두 회차 전에 첫 인터뷰를 돌았고 이번 회차에서는 안 건드렸다.
+제품 코드는 여전히 integration 테스트 한 파일(`src/entities/profile/dals/__tests__/profile.integration.test.ts`)뿐이다. `dals` 실행 코드도 화면도 없다. `docs/domain/`의 여섯 파일은 이번 회차에서도 안 건드렸다.
 
 ## 다음 첫 수
+
+지난 회차의 다음 첫 수가 그대로 남아 있다. 이번 회차(#206)는 그 사이 드러난 lint 우회로를 먼저 막은 곁가지였다.
 
 `tokens.md` 8절이 덮지 않는 자리 넷을 메운다. `globals.css`를 8절 전문으로 교체하며 드러났다. 넷 중 진짜 버그는 `@custom-variant dark`가 없어 `dark:` 유틸리티가 `[data-theme="dark"]`를 안 따라가는 것이다 — `button.tsx`가 `dark:` 클래스를 여럿 쓴다. 나머지 셋은 `@layer base` 없이 body 색이 `color-scheme`에만 기대는 것, `card.tsx`가 쓰는 `--font-heading`이 사라진 것, `--font-sans`가 가리키는 Pretendard 파일이 없어 `-apple-system` 폴백으로 떨어지는 것이다. 완료 조건은 `docs/plan.md` 「다음」에 그대로 있다.
 
@@ -22,7 +22,7 @@
 
 ## 열린 결정
 
-- `class-strings.mjs`의 실제 lint 우회로. `max-[600px]:hidden`, `bg-red-500/[0.5]`, `p-[calc(var(--gap)+13px)]` 셋이 유효 CSS를 만드는데 아무 규칙에도 안 걸린다. 뿌리는 `eslint-rules/class-strings.mjs:90-93`이 `(`와 `[`를 한 깊이 카운터에 섞어 세는 것이다. 새 회귀가 아니라 원래 있던 구멍이 테스트로 드러난 것이고, `class-strings.test.ts:127`이 이 한계를 정상 계약처럼 적어둔 건 테스트 부채로 남아 있다. `docs/plan.md`의 task로는 아직 안 올렸다.
+- `tests/lint/tsx-dumb-ui.test.ts`의 회귀 테스트 다섯(`page.tsx`·`layout.tsx`·`providers.tsx`·`button.tsx`·`card.tsx`)이 전부 실제 소스를 베낀 인라인 사본을 픽스처로 들고 있다. 소스가 바뀌면 사본이 같이 썩는다 — 이번에 `button.tsx`를 고치며 실제로 하나가 썩었고, 단언은 그대로 둔 채 입력 문자열만 동기화해 넘겼다. `tests/lint/design-token-values.test.ts`의 회귀 테스트는 이번에 `readFileSync`로 실제 파일을 읽는 방식으로 바뀌어 이 썩음이 없다. 다섯을 그 방식으로 옮길지는 안 정해졌다.
 - `token-css-parity`가 `tests/lint/`로 옮겨가며 `tdd-guard-unit.py`의 사전 차단(`src/` 아래만 봄)에서 빠졌다. CI의 `pnpm test`가 대신 잡지만, 편집 순간 손이 막히는 장치는 잃었다. 훅이 `tests/` 아래 `.test.ts`가 아닌 `.ts`까지 보게 넓힐지는 판단이 남아 있다.
 - 도메인 규칙의 미정 항목은 `docs/domain/`의 각 파일 "아직 안 정한 것" 절이 정본이다. 여기 옮겨 적지 않는다.
 - 관리자 승인 경로가 없다. 컬럼 권한은 역할 단위라 `authenticated`에 `approved_at`을 열면 관리자든 아니든 다 열린다. `security definer` 함수로 가야 한다. 지금 스키마는 그 문을 안 열어뒀다.
