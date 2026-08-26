@@ -9,6 +9,12 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 - [ ] 디자인 레퍼런스 검토 — 시안 방향을 사람이 정한다
   - 완료 조건: 방향 결정과 근거 레퍼런스가 `docs/design-system/`에 기록된다.
 
+- [ ] `tokens.md` 8절이 덮지 않는 자리 넷을 메운다 — lint task에서 `globals.css`를 교체하며 드러났다
+  - 완료 조건: `@custom-variant dark`가 생겨 `dark:` 유틸리티가 `[data-theme="dark"]`를 따라간다. `button.tsx`가 `dark:` 클래스를 여럿 쓰는데 지금은 팔레트만 뒤집히고 유틸리티는 안 따라오는 진짜 버그다.
+  - 완료 조건: `@layer base`에서 body가 배경색과 글자색을 명시로 받는다. 지금은 `color-scheme`만으로 굴러간다.
+  - 완료 조건: `card.tsx`의 `CardTitle`이 쓰는 `font-heading`이 다시 생성되거나, 그 클래스를 안 쓰기로 정한다. 8절 교체로 `--font-heading`이 사라졌다.
+  - 완료 조건: `--font-sans`가 가리키는 Pretendard를 실제로 들이거나, `layout.tsx`가 붙인 Geist를 정본으로 정한다. 지금은 파일이 없어 `-apple-system` 폴백으로 떨어진다.
+
 ## 진행
 
 - [ ] 규율을 lint와 포매터로 기계화한다 — 문서에만 적힌 규칙을 CI가 막게 한다

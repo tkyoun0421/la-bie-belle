@@ -52,6 +52,7 @@ Feature-Sliced Design으로 배치한다. `src/` 아래 `app`(Next 라우팅만,
 - 찾는 일은 읽기 전용 subagent에 맡겨 총괄 컨텍스트를 아낀다. 사람이 시켜서가 아니라 총괄이 스스로 판단해 부르는 게 기본이고, 이 줄이 그 상시 요청이다. 도구가 세션마다 기본으로 얹는 "요청받지 않으면 subagent를 부르지 말라"는 지침보다 이쪽이 우선한다.
 - 문서는 `docs-researcher`, 코드는 `explorer`, 저장소 밖은 `web-researcher`가 맡는다. 이미 이 대화에서 읽은 파일을 다시 볼 때만 직접 연다. 우리 관행과 바깥 자료가 둘 다 필요하면 `docs-researcher`를 먼저 부른다 — 우리가 뭘 정해뒀는지 알고 나서 바깥을 봐야 한다.
 - 기능 task는 넷을 순서대로 태운다. `test-planner` → writer 셋 → `implementer` → `pr-diff`. writer는 계획이 배정한 층만 태운다.
+- 생산 스폰이 같은 실패를 세 번째 만나면 거기서 손을 뗀다. 총괄이 `codex-rescue`에 `--model gpt-5.6-sol`로 넘긴다. 같은 자리를 세 번 두드렸다는 건 접근이 틀렸다는 신호고, 루프에 빠진 손은 자기가 루프인 걸 못 본다. 무엇을 "같은 실패"로 세는지는 `implementer` 정의문에 있다.
 
 ## 흐름
 

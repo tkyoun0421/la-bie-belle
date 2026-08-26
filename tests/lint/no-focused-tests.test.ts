@@ -95,7 +95,7 @@ describe("규칙10 — 집중 실행 표시", () => {
 import {
   createGuestClient,
   createSignedInUser,
-} from "../../../../../tests/integration/supabase";
+} from "@tests/integration/supabase";
 
 describe("프로필 접근 권한", () => {
   it("가입 승인 전에도 본인은 자기 프로필을 읽는다", async () => {
