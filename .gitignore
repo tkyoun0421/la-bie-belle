@@ -13,3 +13,4 @@ blob-report/
 playwright/.cache/
 next-env.d.ts
 *.tsbuildinfo
+__pycache__/
