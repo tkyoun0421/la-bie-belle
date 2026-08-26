@@ -1,18 +1,12 @@
-export type RoleTokenRow = {
-  token: string;
-  palette: string | null;
-  utility: string;
-};
+type ThemeTokens = Record<string, string>;
 
-export type ThemeTokens = Record<string, string>;
-
-export type GlobalsCssBlocks = {
+type GlobalsCssBlocks = {
   light: ThemeTokens;
   darkMediaQuery: ThemeTokens;
   darkAttribute: ThemeTokens;
 };
 
-export type ThemeName = keyof GlobalsCssBlocks;
+type ThemeName = keyof GlobalsCssBlocks;
 
 export type TokenDiffEntry =
   | { token: string; variable: string; status: "match" }
@@ -23,6 +17,12 @@ export type TokenDiffEntry =
       status: "mismatch";
       mismatches: { theme: ThemeName; expected: string; actual: string }[];
     };
+
+type RoleTokenRow = {
+  token: string;
+  palette: string | null;
+  utility: string;
+};
 
 type PaletteValue = { light: string; dark: string };
 
@@ -44,6 +44,12 @@ const EMPTY_CELL = "—";
 const DARK_MEDIA = /^@media\b.*prefers-color-scheme\s*:\s*dark/;
 const DARK_ATTRIBUTE = /\[data-theme\s*=\s*["']dark["']\]/;
 const SECTION_HEADING = /^###\s+(.+?)\s*$/;
+
+const THEMES: { name: ThemeName; side: keyof PaletteValue }[] = [
+  { name: "light", side: "light" },
+  { name: "darkMediaQuery", side: "dark" },
+  { name: "darkAttribute", side: "dark" },
+];
 
 function cellsOf(line: string): string[] | null {
   const trimmed = line.trim();
@@ -98,7 +104,7 @@ function readTableRows(
   }
 }
 
-export function parseRoleTokenTable(markdown: string): RoleTokenRow[] {
+function parseRoleTokenTable(markdown: string): RoleTokenRow[] {
   const rows: RoleTokenRow[] = [];
 
   readTableRows(markdown.split("\n"), ROLE_HEADER, (cells) => {
@@ -240,6 +246,21 @@ function splitVarArguments(inner: string): {
   return { reference: inner.trim(), fallback: null };
 }
 
+function matchParen(source: string, open: number): number {
+  let depth = 0;
+  for (let cursor = open; cursor < source.length; cursor += 1) {
+    if (source[cursor] === "(") {
+      depth += 1;
+    } else if (source[cursor] === ")") {
+      depth -= 1;
+      if (depth === 0) {
+        return cursor;
+      }
+    }
+  }
+  return source.length - 1;
+}
+
 function substitute(
   value: string,
   declarations: ThemeTokens,
@@ -273,21 +294,6 @@ function substitute(
   return result;
 }
 
-function matchParen(source: string, open: number): number {
-  let depth = 0;
-  for (let cursor = open; cursor < source.length; cursor += 1) {
-    if (source[cursor] === "(") {
-      depth += 1;
-    } else if (source[cursor] === ")") {
-      depth -= 1;
-      if (depth === 0) {
-        return cursor;
-      }
-    }
-  }
-  return source.length - 1;
-}
-
 function resolve(
   name: string,
   declarations: ThemeTokens,
@@ -311,7 +317,7 @@ function resolveAll(declarations: ThemeTokens): ThemeTokens {
   return resolved;
 }
 
-export function parseGlobalsCss(css: string): GlobalsCssBlocks {
+function parseGlobalsCss(css: string): GlobalsCssBlocks {
   const blocks = readBlocks(css, 0, css.length);
 
   const light = mergeDeclarations(
@@ -335,7 +341,7 @@ export function parseGlobalsCss(css: string): GlobalsCssBlocks {
   };
 }
 
-export function normalizeOklch(value: string): string {
+function normalizeOklch(value: string): string {
   const collapsed = value.trim().replace(/\s+/g, " ").toLowerCase();
   const parsed = /^oklch\((.*)\)$/.exec(collapsed);
   if (!parsed) {
@@ -357,13 +363,7 @@ function variableOf(token: string): string {
   return `--role-${token.split(".").join("-")}`;
 }
 
-const THEMES: { name: ThemeName; side: keyof PaletteValue }[] = [
-  { name: "light", side: "light" },
-  { name: "darkMediaQuery", side: "dark" },
-  { name: "darkAttribute", side: "dark" },
-];
-
-export function diffTokensAgainstCss(
+export function tokenCssParity(
   markdown: string,
   css: string,
 ): TokenDiffEntry[] {
