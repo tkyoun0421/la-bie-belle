@@ -1,6 +1,6 @@
 ---
 name: web-researcher
-description: 저장소 밖을 조사하는 조사자. 라이브러리 사용법과 변경 사항, 디자인 레퍼런스, 기술 비교처럼 웹을 뒤져야 하는 질문에 쓴다. 결정하지 않고 근거와 출처를 모아 온다. 저장소 안은 docs-researcher와 explorer가 맡는다.
+description: 저장소 밖을 조사하는 조사자. 저장소가 답을 못 주는 자리에 닿으면 사람이 시키기를 기다리지 않고 먼저 스폰한다. 라이브러리 사용법과 변경 사항, 디자인 레퍼런스, 기술 비교가 여기다. 결정하지 않고 근거와 출처를 모아 온다. 저장소 안은 docs-researcher와 explorer가 맡는다.
 tools: WebSearch, WebFetch, Read
 model: sonnet
 effort: medium
