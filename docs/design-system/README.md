@@ -2,6 +2,26 @@
 
 디자인과 퍼블리싱 규칙은 여기가 정본이다. 산출물 문서도 이 디렉터리에 쌓인다.
 
+## 문서 지도
+
+무엇이 어디 있는지는 이 절이 정본이다. 새 문서가 생기면 여기에 한 줄을 더한다.
+
+- [tokens.md](tokens.md) — 모든 값의 정본. 팔레트, 역할 토큰, 타이포 스케일, 스페이싱, 라운딩, 그림자, 모션, 대비 검증, Tailwind `@theme` 전문
+- [foundation/color.md](foundation/color.md) — 적응형 2계층이 왜 필요한지, 브랜드 색을 아끼는 규칙, 경고색 제약
+- [foundation/typography.md](foundation/typography.md) — 스케일과 굵기를 쓰는 법, Pretendard, 숫자 정렬
+- [foundation/spacing-shape.md](foundation/spacing-shape.md) — 여백 리듬, 라운딩, 그림자와 면 나누기
+- [foundation/motion.md](foundation/motion.md) — 언제 움직이고 언제 안 움직이는지, 접근성, base-ui에 애니메이션 붙이기
+- [writing.md](writing.md) — 화면에 나가는 한국어 규칙
+- [components.md](components.md) — 컴포넌트별 역할 토큰 표
+
+## 두 축
+
+**값은 tokens.md에만 적는다.** hex와 oklch, 픽셀 수치, 밀리초, 그림자 문자열, 대비비, 폰트 굵기 숫자가 전부 여기 해당한다. 다른 문서는 토큰 이름으로 가리키고 값을 옮겨 적지 않는다. 같은 값이 두 곳에 적히면 바꿀 때 한 곳을 놓치고, 그때부터 문서 둘이 서로 다른 말을 하는데 어느 쪽이 맞는지 아무도 모른다.
+
+**지도는 README에만 건다.** 어떤 문서가 무엇을 담는지는 위의 문서 지도 절에만 적는다. 다른 문서는 자기 안에 목차나 문서 목록을 두지 않는다. 값을 가리키는 `tokens.md` 링크와 근거 한 곳을 짚는 링크는 지도가 아니라서 예외다. 지도가 여러 곳에 적히면 문서가 늘거나 이름이 바뀔 때 한 곳을 놓치고, 그때부터 문서들이 없는 파일을 가리킨다.
+
+`CLAUDE.md`가 저장소 전체에 쓰는 방식과 같다.
+
 ## 순서
 
 기능 개발과 디자인은 병렬로 간다. 디자인이 완료된 화면부터 퍼블리싱이 붙는다.
