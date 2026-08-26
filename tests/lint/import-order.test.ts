@@ -1,14 +1,7 @@
-import path from "node:path";
-import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
+import { fixedCode, violationsOf } from "@tests/lint/rule-check";
 
-async function lintFixture(code: string, filePath: string, fix = false) {
-  const eslint = new ESLint({ overrideConfigFile: "eslint.config.mjs", fix });
-  const [result] = await eslint.lintText(code, {
-    filePath: path.join(process.cwd(), filePath),
-  });
-  return result;
-}
+const IMPORT_ORDER = "import/order";
 
 function importSources(code: string) {
   return [...code.matchAll(/from\s+["']([^"']+)["']/g)].map(
@@ -17,61 +10,67 @@ function importSources(code: string) {
 }
 
 describe("규칙11 — import 순서", () => {
-  it("app 레이어를 shared보다 먼저 import하면 걸린다", async () => {
+  it("app 레이어를 shared보다 먼저 import하면 import/order가 걸린다", async () => {
     const code = `import { Home } from "@/screens/home/ui/home";\nimport { cn } from "@/shared/lib/utils";\n\nexport const value = { Home, cn };\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/features/attendance/model/fixture.ts",
     );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      IMPORT_ORDER,
+    );
   });
 
-  it("shared → entities → features → screens → app 순서는 위반 0건이다", async () => {
+  it("shared → entities → features → screens → app 순서는 import/order가 안 걸린다", async () => {
     const code = `import { cn } from "@/shared/lib/utils";\nimport { Profile } from "@/entities/profile/model/profile";\nimport { trackAttendance } from "@/features/attendance/model/attendance";\nimport { Home } from "@/screens/home/ui/home";\n\nexport const value = { cn, Profile, trackAttendance, Home };\n`;
 
-    const result = await lintFixture(code, "src/app/fixture.ts");
+    const violations = await violationsOf(code, "src/app/fixture.ts");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      IMPORT_ORDER,
+    );
   });
 
-  it("외부 패키지가 먼저 오고 FSD 그룹이 순서대로면 위반 0건이다", async () => {
+  it("외부 패키지가 먼저 오고 FSD 그룹이 순서대로면 import/order가 안 걸린다", async () => {
     const code = `import { describe } from "vitest";\nimport { cn } from "@/shared/lib/utils";\nimport { Profile } from "@/entities/profile/model/profile";\n\nexport const value = { describe, cn, Profile };\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/__tests__/fixture.test.ts",
     );
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      IMPORT_ORDER,
+    );
   });
 
   it("--fix를 적용하면 import 순서가 바로잡힌다", async () => {
     const code = `import { Home } from "@/screens/home/ui/home";\nimport { cn } from "@/shared/lib/utils";\n\nexport const value = { Home, cn };\n`;
 
-    const result = await lintFixture(
+    const output = await fixedCode(
       code,
       "src/features/attendance/model/fixture.ts",
-      true,
     );
-    const fixedCode = result.output ?? code;
 
-    expect(importSources(fixedCode)).toEqual([
+    expect(importSources(output)).toEqual([
       "@/shared/lib/utils",
       "@/screens/home/ui/home",
     ]);
   });
 
-  it("CSS side-effect import가 섞여도 크래시나 오탐 없이 판정된다", async () => {
+  it("CSS side-effect import가 섞여도 크래시나 오탐 없이 import/order가 안 걸린다", async () => {
     const code = `import "@/app/globals.css";\nimport { cn } from "@/shared/lib/utils";\nimport { Home } from "@/screens/home/ui/home";\n\nexport const value = { cn, Home };\n`;
 
-    const result = await lintFixture(code, "src/app/fixture.ts");
+    const violations = await violationsOf(code, "src/app/fixture.ts");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      IMPORT_ORDER,
+    );
   });
 
-  it("회귀 — alias로 고친 layout.tsx는 위반 0건이다", async () => {
+  it("회귀 — alias로 고친 layout.tsx는 import/order가 안 걸린다", async () => {
     const code = `import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/app/providers";
@@ -91,8 +90,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 `;
 
-    const result = await lintFixture(code, "src/app/layout.tsx");
+    const violations = await violationsOf(code, "src/app/layout.tsx");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      IMPORT_ORDER,
+    );
   });
 });

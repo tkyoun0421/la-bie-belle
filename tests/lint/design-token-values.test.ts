@@ -1,14 +1,18 @@
-import path from "node:path";
-import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
+import { violationsOf } from "@tests/lint/rule-check";
 
-async function lintClassName(className: string) {
-  const eslint = new ESLint({ overrideConfigFile: "eslint.config.mjs" });
+const NO_ARBITRARY_CLASS_VALUES = "house/no-arbitrary-class-values";
+const NO_COLOR_LITERALS = "house/no-color-literals";
+const DESIGN_TOKEN_RULES = [NO_ARBITRARY_CLASS_VALUES, NO_COLOR_LITERALS];
+
+function designTokenRuleIds(ruleIds: string[]) {
+  return ruleIds.filter((ruleId) => DESIGN_TOKEN_RULES.includes(ruleId));
+}
+
+async function ruleIdsOfClassName(className: string) {
   const code = `export function Fixture() {\n  return <div className="${className}" />;\n}\n`;
-  const [result] = await eslint.lintText(code, {
-    filePath: path.join(process.cwd(), "src/shared/ui/fixture.tsx"),
-  });
-  return result;
+  const violations = await violationsOf(code, "src/shared/ui/fixture.tsx");
+  return violations.map((violation) => violation.ruleId);
 }
 
 describe("규칙4 — 하드코딩한 색과 크기", () => {
@@ -25,30 +29,48 @@ describe("규칙4 — 하드코딩한 색과 크기", () => {
       ["rounded-[min(var(--radius-md),12px)]", "var()를 감싼 min()"],
       ["grid-cols-[1fr_auto]", "그리드 트랙 크기"],
       ["grid-rows-[auto_auto]", "그리드 트랙 크기"],
-    ])("%s (%s)는 위반 0건이다", async (className) => {
-      const result = await lintClassName(`flex ${className} items-center`);
+    ])("%s (%s)는 규칙4의 어느 규칙도 안 걸린다", async (className) => {
+      const ruleIds = await ruleIdsOfClassName(
+        `flex ${className} items-center`,
+      );
 
-      expect(result.errorCount).toBe(0);
+      expect(designTokenRuleIds(ruleIds)).toEqual([]);
     });
   });
 
   describe("대괄호 안이 리터럴이면 걸린다", () => {
     it.each([
-      ["text-[0.8rem]", "rem 리터럴 크기"],
-      ["text-[13px]", "px 리터럴 크기"],
-      ["p-[7px]", "px 리터럴 스페이싱"],
-      ["bg-[#6E4F39]", "hex 리터럴 색"],
-      ["bg-[rgb(110,79,57)]", "rgb 리터럴 색"],
-      ["bg-[hsl(24,32%,33%)]", "hsl 리터럴 색"],
-    ])("%s (%s)는 위반 1건 이상이다", async (className) => {
-      const result = await lintClassName(`flex ${className} items-center`);
+      ["text-[0.8rem]", "rem 리터럴 크기", [NO_ARBITRARY_CLASS_VALUES]],
+      ["text-[13px]", "px 리터럴 크기", [NO_ARBITRARY_CLASS_VALUES]],
+      ["p-[7px]", "px 리터럴 스페이싱", [NO_ARBITRARY_CLASS_VALUES]],
+      [
+        "bg-[#6E4F39]",
+        "hex 리터럴 색",
+        [NO_ARBITRARY_CLASS_VALUES, NO_COLOR_LITERALS],
+      ],
+      [
+        "bg-[rgb(110,79,57)]",
+        "rgb 리터럴 색",
+        [NO_ARBITRARY_CLASS_VALUES, NO_COLOR_LITERALS],
+      ],
+      [
+        "bg-[hsl(24,32%,33%)]",
+        "hsl 리터럴 색",
+        [NO_ARBITRARY_CLASS_VALUES, NO_COLOR_LITERALS],
+      ],
+    ])(
+      "%s (%s)는 적어둔 규칙이 전부 걸린다",
+      async (className, _description, expectedRuleIds) => {
+        const ruleIds = await ruleIdsOfClassName(
+          `flex ${className} items-center`,
+        );
 
-      expect(result.errorCount).toBeGreaterThan(0);
-    });
+        expect(designTokenRuleIds(ruleIds)).toEqual(expectedRuleIds);
+      },
+    );
   });
 
-  it("회귀 — text-[0.8rem]이 토큰 유틸로 바뀐 button.tsx는 위반 0건이다", async () => {
-    const eslint = new ESLint({ overrideConfigFile: "eslint.config.mjs" });
+  it("회귀 — text-[0.8rem]이 토큰 유틸로 바뀐 button.tsx는 규칙4의 어느 규칙도 안 걸린다", async () => {
     const code = `import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -91,10 +113,9 @@ function Button({
 
 export { Button, buttonVariants }
 `;
-    const [result] = await eslint.lintText(code, {
-      filePath: path.join(process.cwd(), "src/shared/ui/button.tsx"),
-    });
+    const violations = await violationsOf(code, "src/shared/ui/button.tsx");
+    const ruleIds = violations.map((violation) => violation.ruleId);
 
-    expect(result.errorCount).toBe(0);
+    expect(designTokenRuleIds(ruleIds)).toEqual([]);
   });
 });

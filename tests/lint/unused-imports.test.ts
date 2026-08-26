@@ -1,45 +1,47 @@
-import path from "node:path";
-import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
+import { fixedCode, violationsOf } from "@tests/lint/rule-check";
 
-async function lintFixture(code: string, filePath: string, fix = false) {
-  const eslint = new ESLint({ overrideConfigFile: "eslint.config.mjs", fix });
-  const [result] = await eslint.lintText(code, {
-    filePath: path.join(process.cwd(), filePath),
-  });
-  return result;
+const NO_UNUSED_IMPORTS = "unused-imports/no-unused-imports";
+const NO_UNUSED_VARS = "unused-imports/no-unused-vars";
+const CONSISTENT_TYPE_IMPORTS = "@typescript-eslint/consistent-type-imports";
+const UNUSED_IMPORT_RULES = [
+  NO_UNUSED_IMPORTS,
+  NO_UNUSED_VARS,
+  CONSISTENT_TYPE_IMPORTS,
+];
+
+function unusedImportRuleIds(ruleIds: string[]) {
+  return ruleIds.filter((ruleId) => UNUSED_IMPORT_RULES.includes(ruleId));
 }
 
 describe("규칙14 — 미사용 import와 import type", () => {
-  it("안 쓰는 named import가 걸리고, --fix 후 그 줄이 사라진다", async () => {
+  it("안 쓰는 named import에 unused-imports/no-unused-imports가 걸리고, --fix 후 그 줄이 사라진다", async () => {
     const code = `import { unused } from "react";\n\nexport const value = 1;\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/fixture.ts",
     );
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_UNUSED_IMPORTS,
+    );
 
-    const fixedResult = await lintFixture(
+    const output = await fixedCode(
       code,
       "src/entities/profile/model/fixture.ts",
-      true,
     );
-    const fixedCode = fixedResult.output ?? code;
 
-    expect(fixedCode).not.toContain("unused");
+    expect(output).not.toContain("unused");
   });
 
   it("일부만 안 쓰는 named import는 --fix 후 쓰는 것만 남는다", async () => {
     const code = `import { used, unused } from "react";\n\nexport const value = used;\n`;
 
-    const fixedResult = await lintFixture(
+    const output = await fixedCode(
       code,
       "src/entities/profile/model/fixture.ts",
-      true,
     );
-    const fixedCode = fixedResult.output ?? code;
-    const importLine = fixedCode.match(/import \{([^}]+)\} from "react";/);
+    const importLine = output.match(/import \{([^}]+)\} from "react";/);
 
     expect(importLine).not.toBeNull();
     const specifiers = (importLine?.[1] ?? "")
@@ -50,39 +52,41 @@ describe("규칙14 — 미사용 import와 import type", () => {
     expect(specifiers).toEqual(["used"]);
   });
 
-  it("값 자리에서 안 쓰이고 타입 자리에서만 쓰는 import는 --fix 후 import type으로 바뀐다", async () => {
+  it("값 자리에서 안 쓰이고 타입 자리에서만 쓰는 import는 @typescript-eslint/consistent-type-imports가 걸리고, --fix 후 import type으로 바뀐다", async () => {
     const code = `import { Profile } from "@/entities/profile/model/profile";\n\nexport function show(profile: Profile) {\n  return profile;\n}\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/features/attendance/model/fixture.ts",
     );
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      CONSISTENT_TYPE_IMPORTS,
+    );
 
-    const fixedResult = await lintFixture(
+    const output = await fixedCode(
       code,
       "src/features/attendance/model/fixture.ts",
-      true,
     );
-    const fixedCode = fixedResult.output ?? code;
 
-    expect(fixedCode).toMatch(
+    expect(output).toMatch(
       /import\s+type\s+\{\s*Profile\s*\}|import\s+\{\s*type\s+Profile\s*\}/,
     );
   });
 
-  it("이미 올바른 import { x, type Y }는 위반 0건이다", async () => {
+  it("이미 올바른 import { x, type Y }는 규칙14의 어느 규칙도 안 걸린다", async () => {
     const code = `import { useState, type ReactNode } from "react";\n\nexport function useThing(): ReactNode {\n  const [value] = useState<ReactNode>(null);\n  return value;\n}\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/features/attendance/model/fixture.ts",
     );
 
-    expect(result.errorCount).toBe(0);
+    expect(
+      unusedImportRuleIds(violations.map((violation) => violation.ruleId)),
+    ).toEqual([]);
   });
 
-  it("회귀 — utils.ts는 이미 inline type을 쓰고 있어 위반 0건이다", async () => {
+  it("회귀 — utils.ts는 이미 inline type을 쓰고 있어 규칙14의 어느 규칙도 안 걸린다", async () => {
     const code = `import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -91,12 +95,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 `;
 
-    const result = await lintFixture(code, "src/shared/lib/utils.ts");
+    const violations = await violationsOf(code, "src/shared/lib/utils.ts");
 
-    expect(result.errorCount).toBe(0);
+    expect(
+      unusedImportRuleIds(violations.map((violation) => violation.ruleId)),
+    ).toEqual([]);
   });
 
-  it("회귀 — button.tsx는 이미 inline type을 쓰고 있어 위반 0건이다", async () => {
+  it("회귀 — button.tsx는 이미 inline type을 쓰고 있어 규칙14의 어느 규칙도 안 걸린다", async () => {
     const code = `import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -128,8 +134,10 @@ function Button({
 export { Button, buttonVariants }
 `;
 
-    const result = await lintFixture(code, "src/shared/ui/button.tsx");
+    const violations = await violationsOf(code, "src/shared/ui/button.tsx");
 
-    expect(result.errorCount).toBe(0);
+    expect(
+      unusedImportRuleIds(violations.map((violation) => violation.ruleId)),
+    ).toEqual([]);
   });
 });

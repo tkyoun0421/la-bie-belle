@@ -1,114 +1,133 @@
-import path from "node:path";
-import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
+import { violationsOf } from "@tests/lint/rule-check";
 
-async function lintFixture(code: string, filePath: string) {
-  const eslint = new ESLint({ overrideConfigFile: "eslint.config.mjs" });
-  const [result] = await eslint.lintText(code, {
-    filePath: path.join(process.cwd(), filePath),
-  });
-  return result;
-}
+const DUMB_UI = "house/dumb-ui";
 
 describe("규칙9 — .tsx는 더미 UI", () => {
   it(".tsx에서 @supabase/supabase-js를 import하면 걸린다", async () => {
     const code = `import { createClient } from "@supabase/supabase-js";\n\nexport function Fixture() {\n  createClient("url", "key");\n  return null;\n}\n`;
 
-    const result = await lintFixture(code, "src/screens/home/ui/fixture.tsx");
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/fixture.tsx",
+    );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
   });
 
   it(".tsx에서 fetch(...)를 호출하면 걸린다", async () => {
     const code = `export function Fixture() {\n  fetch("/api/profile");\n  return null;\n}\n`;
 
-    const result = await lintFixture(code, "src/screens/home/ui/fixture.tsx");
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/fixture.tsx",
+    );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
   });
 
   it(".tsx에서 useQuery를 호출하면 걸린다", async () => {
     const code = `import { useQuery } from "@tanstack/react-query";\n\nexport function Fixture() {\n  useQuery({ queryKey: ["x"], queryFn: async () => null });\n  return null;\n}\n`;
 
-    const result = await lintFixture(code, "src/screens/home/ui/fixture.tsx");
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/fixture.tsx",
+    );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
   });
 
   it(".tsx에서 useMutation을 호출하면 걸린다", async () => {
     const code = `import { useMutation } from "@tanstack/react-query";\n\nexport function Fixture() {\n  useMutation({ mutationFn: async () => null });\n  return null;\n}\n`;
 
-    const result = await lintFixture(code, "src/screens/home/ui/fixture.tsx");
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/fixture.tsx",
+    );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
   });
 
   it(".tsx에서 useSuspenseQuery를 호출하면 걸린다", async () => {
     const code = `import { useSuspenseQuery } from "@tanstack/react-query";\n\nexport function Fixture() {\n  useSuspenseQuery({ queryKey: ["x"], queryFn: async () => null });\n  return null;\n}\n`;
 
-    const result = await lintFixture(code, "src/screens/home/ui/fixture.tsx");
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/fixture.tsx",
+    );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
   });
 
   it("alias로 이름을 바꿔 useQuery를 불러도 걸린다", async () => {
     const code = `import { useQuery as useProfileQuery } from "@tanstack/react-query";\n\nexport function Fixture() {\n  useProfileQuery({ queryKey: ["x"], queryFn: async () => null });\n  return null;\n}\n`;
 
-    const result = await lintFixture(code, "src/screens/home/ui/fixture.tsx");
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/fixture.tsx",
+    );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
   });
 
   it(".ts 파일의 @supabase/supabase-js import는 통과한다", async () => {
     const code = `import { createClient } from "@supabase/supabase-js";\n\nexport function load() {\n  return createClient("url", "key");\n}\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/dals/fixture.ts",
     );
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
   });
 
   it(".ts 파일의 fetch(...) 호출은 통과한다", async () => {
     const code = `export function load() {\n  return fetch("/api/profile");\n}\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/dals/fixture.ts",
     );
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
   });
 
   it(".ts 파일의 useQuery 호출은 통과한다", async () => {
     const code = `import { useQuery } from "@tanstack/react-query";\n\nexport function useLoad() {\n  return useQuery({ queryKey: ["x"], queryFn: async () => null });\n}\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/dals/fixture.ts",
     );
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
   });
 
   it("src/app/providers.tsx 경로의 @supabase/* import는 예외로 통과한다", async () => {
     const code = `import { createClient } from "@supabase/supabase-js";\n\nexport function Providers() {\n  createClient("url", "key");\n  return null;\n}\n`;
 
-    const result = await lintFixture(code, "src/app/providers.tsx");
+    const violations = await violationsOf(code, "src/app/providers.tsx");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
   });
 
   it("src/shared/ui/의 fetch(...) 호출은 예외가 아니라 걸린다", async () => {
     const code = `export function Fixture() {\n  fetch("/api/profile");\n  return null;\n}\n`;
 
-    const result = await lintFixture(code, "src/shared/ui/fixture.tsx");
+    const violations = await violationsOf(code, "src/shared/ui/fixture.tsx");
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
   });
 
-  it("회귀 — page.tsx는 위반 0건이다", async () => {
+  it("회귀 — page.tsx는 house/dumb-ui가 안 걸린다", async () => {
     const code = `import { Button } from "@/shared/ui/button";
 import {
   Card,
@@ -135,12 +154,14 @@ export default function Home() {
 }
 `;
 
-    const result = await lintFixture(code, "src/app/page.tsx");
+    const violations = await violationsOf(code, "src/app/page.tsx");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
   });
 
-  it("회귀 — layout.tsx는 위반 0건이다", async () => {
+  it("회귀 — layout.tsx는 house/dumb-ui가 안 걸린다", async () => {
     const code = `import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/app/providers";
@@ -175,12 +196,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 }
 `;
 
-    const result = await lintFixture(code, "src/app/layout.tsx");
+    const violations = await violationsOf(code, "src/app/layout.tsx");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
   });
 
-  it("회귀 — providers.tsx는 위반 0건이다", async () => {
+  it("회귀 — providers.tsx는 house/dumb-ui가 안 걸린다", async () => {
     const code = `"use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -195,12 +218,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 `;
 
-    const result = await lintFixture(code, "src/app/providers.tsx");
+    const violations = await violationsOf(code, "src/app/providers.tsx");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
   });
 
-  it("회귀 — button.tsx는 위반 0건이다", async () => {
+  it("회귀 — button.tsx는 house/dumb-ui가 안 걸린다", async () => {
     const code = `import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -261,12 +286,14 @@ function Button({
 export { Button, buttonVariants }
 `;
 
-    const result = await lintFixture(code, "src/shared/ui/button.tsx");
+    const violations = await violationsOf(code, "src/shared/ui/button.tsx");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
   });
 
-  it("회귀 — card.tsx는 위반 0건이다", async () => {
+  it("회귀 — card.tsx는 house/dumb-ui가 안 걸린다", async () => {
     const code = `import * as React from "react"
 
 import { cn } from "@/shared/lib/utils"
@@ -372,8 +399,10 @@ export {
 }
 `;
 
-    const result = await lintFixture(code, "src/shared/ui/card.tsx");
+    const violations = await violationsOf(code, "src/shared/ui/card.tsx");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
   });
 });
