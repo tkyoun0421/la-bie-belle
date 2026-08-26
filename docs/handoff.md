@@ -4,23 +4,24 @@
 
 ## 지금 상태
 
-도메인 규칙의 정본이 `docs/domain/`이다. `README.md`(지도와 컨텍스트 경계)와 영역별 파일 여섯(`schedule.md`·`swap.md`·`attendance.md`·`payroll.md`·`account.md`·`notification.md`)으로 나뉘어 있고, 각 파일이 그 영역의 용어와 규칙을 같이 담는다. `docs/prd.md`는 왜 만드는지·누구를 위한 것인지·무엇을 안 하는지만 남았고 규칙과 숫자는 `docs/domain/` 링크로 바뀌었다. 파일마다 "아직 안 정한 것" 절이 인터뷰로 채울 자리를 남겨뒀다. 급여 쪽이 가장 크고, 그중 여섯은 법정 기준과 지금 규칙이 어긋난 자리다 — `payroll.md`에 "이 절이 다 채워지기 전에는 급여 계산 코드를 쓰지 않는다"를 박아뒀다.
+`docs/domain/`의 여섯 파일이 전부 첫 인터뷰를 돌았다. 급여를 시작으로 근무표·교대·출근·계정·알림 순서로 채워졌고, 급여 인터뷰 도중 "앱이 내는 급여는 지급 근거가 아니라 근무자용 예상치"라는 전제가 뒤집혀 나머지 다섯 파일의 결이 그 위에서 다시 잡혔다. `payroll.md`를 잠갔던 "이 절이 다 채워지기 전에는 급여 계산 코드를 쓰지 않는다"가 풀려 급여를 포함한 도메인 규칙 쪽 자물쇠가 전부 열렸다.
 
-Supabase 바탕이 섰다. `profiles` 테이블 하나와 RLS 정책 둘과 가입 트리거가 `supabase/migrations/`에 있다. 가입하면 트리거가 짝 프로필을 만들고 `display_name`과 `approved_at`은 비워둔다. select 정책은 본인 행이면 승인 전이든 후든 항상 보여주고, update 정책은 본인 행에 한해 열리되 `approved_at`은 컬럼 권한으로 잠가 자가발급을 막는다. 승인 여부는 참거짓 컬럼이 아니라 `approved_at`이 비었는지로만 판정한다.
+각 파일에 인터뷰 도중 새로 열린 미정 항목이 남아 있다. 급여는 공휴일 API 실패와 임시공휴일 처리, 근무표는 확정 뒤 날을 새로 여는 경우, 교대는 요청 겹침과 재요청, 출근은 사유 승인 거절과 QR 교체 인지, 계정은 차단 해제·퇴사 상태 로그인·계정 잇기, 알림은 알림 끈 사람에 대한 관리자 인지와 금요일 알림 겹침이다. 전부 계산이나 화면 흐름을 막지 않는 자리다.
 
-integration 층이 실제로 돈다. 자리는 대상과 같은 레벨의 `__tests__/<이름>.integration.test.ts`이고, `pnpm test:integration`이 로컬 Supabase를 띄워 돈다(`supabase start && supabase migration up && vitest run --project integration`). `tdd-guard-unit.py`가 이 확장자를 unit 테스트와 나란히 짝으로 인정한다. CI는 lint → test → integration → build → e2e 다섯 단계다.
+알고 남긴 구멍이 둘 있다. 급여 쪽은 연장 기준 9시간·가산 중복 없음·야간 없음·공휴일 없음·주휴 없음·휴게 무공제 여섯이 5인 이상 사업장의 법정 기준과 어긋난다. 출근 쪽은 고정 QR이 원격에서도 사진 한 장으로 뚫릴 수 있다. 둘 다 `docs/domain/`에 왜 이렇게 정했는지와 함께 남아 있다.
 
-subagent가 열하나다. `test-planner` → writer 셋 → `implementer` → `pr-diff` 흐름이 코드 위에서 한 바퀴 돌아 다음 기능 task부터는 이 길이 이미 닦여 있다.
+subagent 자동 스폰이 상시 요청으로 풀렸다. `CLAUDE.md`에 총괄이 스스로 판단해 부르는 게 기본이라고 박혀 있고, `docs-researcher`·`explorer`·`web-researcher` 정의문의 description도 "일이 생기면 먼저 스폰한다"로 갈렸다.
 
-제품 코드는 아직 없다. `src/` 아래에는 integration 테스트 한 파일(`src/entities/profile/dals/__tests__/profile.integration.test.ts`)뿐이고 `dals` 실행 코드도 화면도 없다.
+Supabase 바탕은 지난 회차 그대로다. `profiles` 테이블 하나와 RLS 정책 둘과 가입 트리거가 `supabase/migrations/`에 있다. select 정책은 본인 행이면 승인 전이든 후든 항상 보여주고, update 정책은 본인 행에 한해 열리되 `approved_at`은 컬럼 권한으로 잠가 자가발급을 막는다. integration 층은 `__tests__/<이름>.integration.test.ts` 자리에서 `pnpm test:integration`으로 돌고, CI는 lint → test → integration → build → e2e 다섯 단계다.
+
+제품 코드는 여전히 integration 테스트 한 파일(`src/entities/profile/dals/__tests__/profile.integration.test.ts`)뿐이다. `dals` 실행 코드도 화면도 없다.
 
 ## 다음 첫 수
 
-급여 규칙 인터뷰. `docs/domain/payroll.md`의 "아직 안 정한 것"을 채운다. 연장 기준 시간, 가산 중복, 야간 가산, 주휴수당, 휴게 공제, 휴일 8시간 초과분 여섯이 법정 기준과 어긋나 있어 노무 확인이 먼저다. 사업장은 상시 근로자 5인 이상으로 확인됐다.
+도메인 규칙 여섯이 다 채워져 규칙 쪽 자물쇠가 풀렸다. `docs/plan.md`의 "다음"에는 디자인 레퍼런스 검토 하나만 남았고, 그 외에는 막힌 것 없이 첫 기능 task를 고르는 일이 다음이다.
 
 ## 열린 결정
 
-- subagent 자동 위임이 시스템 프롬프트의 "Do not call the AgentTool unless the user requested it"에 막혀 있다. `CLAUDE.md`의 "찾는 일은 읽기 전용 subagent에 맡긴다"와 부딪힌다. 출처는 Claude Code CLI 바이너리(`~/.local/share/claude/versions/2.1.245`) 안의 문자열이고 Orca 앱 설정에도 사용자 설정 파일에도 없다 — 도구가 기본으로 넣는 지침이라 이 저장소에서 지울 파일이 없다. 하드 차단은 아니라 스폰을 명시로 요청하면 걸린다. "`CLAUDE.md`를 살린다" 쪽으로 방향은 정했지만 손댈 자리를 못 찾았다.
 - 도메인 규칙의 미정 항목은 `docs/domain/`의 각 파일 "아직 안 정한 것" 절이 정본이다. 여기 옮겨 적지 않는다.
 - 관리자 승인 경로가 없다. 컬럼 권한은 역할 단위라 `authenticated`에 `approved_at`을 열면 관리자든 아니든 다 열린다. `security definer` 함수로 가야 한다. 지금 스키마는 그 문을 안 열어뒀다.
 - integration 테스트가 사용자를 안 치운다. `tests/integration/supabase.ts`가 사용자를 만들기만 하고 치우는 길을 안 준다. anon 키로는 `auth.users`를 못 지우고 프로필 행 삭제는 테스트가 지키는 바로 그 정책에 걸린다. 지우려면 service role이 필요한데 금지다. 한 번 돌 때 일곱이 로컬 DB에 쌓인다. 무작위 UUID라 지금은 무해하지만 "프로필 전체 목록" 같은 걸 검증하려 들면 걸린다.
