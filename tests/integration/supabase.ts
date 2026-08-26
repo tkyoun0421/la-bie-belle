@@ -12,9 +12,13 @@ let resolved: LocalSupabase | undefined;
 function readStatus(): Map<string, string> {
   let output: string;
   try {
-    output = execFileSync("supabase", ["status", "-o", "env"], { encoding: "utf8" });
+    output = execFileSync("supabase", ["status", "-o", "env"], {
+      encoding: "utf8",
+    });
   } catch {
-    throw new Error("로컬 Supabase가 뜨지 않았다. pnpm test:integration 으로 돌려라.");
+    throw new Error(
+      "로컬 Supabase가 뜨지 않았다. pnpm test:integration 으로 돌려라.",
+    );
   }
 
   const entries = output

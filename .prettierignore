@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+build/
+coverage/
+test-results/
+playwright-report/
+blob-report/
+supabase/.branches/
+supabase/.temp/
+pnpm-lock.yaml
+*.md
