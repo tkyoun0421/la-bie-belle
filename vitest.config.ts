@@ -17,6 +17,7 @@ export default defineConfig({
           include: [
             "src/**/__tests__/**/*.test.{ts,tsx}",
             ".claude/hooks/__tests__/**/*.test.ts",
+            "eslint-rules/__tests__/**/*.test.ts",
             "tests/lint/**/*.test.ts",
           ],
           exclude: [...configDefaults.exclude, "**/*.integration.test.ts"],
