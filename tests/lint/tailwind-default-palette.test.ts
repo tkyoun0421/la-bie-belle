@@ -1,44 +1,42 @@
-import path from "node:path";
-import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
+import { violationsOf } from "@tests/lint/rule-check";
 
-async function lintClassName(className: string) {
-  const eslint = new ESLint({ overrideConfigFile: "eslint.config.mjs" });
+const NO_DEFAULT_PALETTE_CLASS = "house/no-default-palette-class";
+
+async function ruleIdsOfClassName(className: string) {
   const code = `export function Fixture() {\n  return <div className="${className}" />;\n}\n`;
-  const [result] = await eslint.lintText(code, {
-    filePath: path.join(process.cwd(), "src/shared/ui/fixture.tsx"),
-  });
-  return result;
+  const violations = await violationsOf(code, "src/shared/ui/fixture.tsx");
+  return violations.map((violation) => violation.ruleId);
 }
 
 describe("규칙5 — Tailwind 기본 팔레트 유틸리티", () => {
-  it("text-warning-500은 우리 팔레트 이름이라 통과한다", async () => {
-    const result = await lintClassName("text-warning-500");
+  it("text-warning-500은 우리 팔레트 이름이라 house/no-default-palette-class가 안 걸린다", async () => {
+    const ruleIds = await ruleIdsOfClassName("text-warning-500");
 
-    expect(result.errorCount).toBe(0);
+    expect(ruleIds).not.toContain(NO_DEFAULT_PALETTE_CLASS);
   });
 
-  it("bg-neutral-500은 우리 팔레트 이름이라 통과한다", async () => {
-    const result = await lintClassName("bg-neutral-500");
+  it("bg-neutral-500은 우리 팔레트 이름이라 house/no-default-palette-class가 안 걸린다", async () => {
+    const ruleIds = await ruleIdsOfClassName("bg-neutral-500");
 
-    expect(result.errorCount).toBe(0);
+    expect(ruleIds).not.toContain(NO_DEFAULT_PALETTE_CLASS);
   });
 
-  it("bg-red-500은 우리 팔레트에 없어 걸린다", async () => {
-    const result = await lintClassName("bg-red-500");
+  it("bg-red-500은 우리 팔레트에 없어 house/no-default-palette-class가 걸린다", async () => {
+    const ruleIds = await ruleIdsOfClassName("bg-red-500");
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(ruleIds).toContain(NO_DEFAULT_PALETTE_CLASS);
   });
 
-  it("text-gray-600은 우리 팔레트에 없어 걸린다", async () => {
-    const result = await lintClassName("text-gray-600");
+  it("text-gray-600은 우리 팔레트에 없어 house/no-default-palette-class가 걸린다", async () => {
+    const ruleIds = await ruleIdsOfClassName("text-gray-600");
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(ruleIds).toContain(NO_DEFAULT_PALETTE_CLASS);
   });
 
-  it("bg-slate-100은 우리 팔레트에 없어 걸린다", async () => {
-    const result = await lintClassName("bg-slate-100");
+  it("bg-slate-100은 우리 팔레트에 없어 house/no-default-palette-class가 걸린다", async () => {
+    const ruleIds = await ruleIdsOfClassName("bg-slate-100");
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(ruleIds).toContain(NO_DEFAULT_PALETTE_CLASS);
   });
 });

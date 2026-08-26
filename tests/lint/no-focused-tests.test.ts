@@ -1,96 +1,105 @@
-import path from "node:path";
-import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
+import { violationsOf } from "@tests/lint/rule-check";
 
-async function lintFixture(code: string, filePath: string) {
-  const eslint = new ESLint({ overrideConfigFile: "eslint.config.mjs" });
-  const [result] = await eslint.lintText(code, {
-    filePath: path.join(process.cwd(), filePath),
-  });
-  return result;
-}
+const NO_RESTRICTED_SYNTAX = "no-restricted-syntax";
 
 describe("규칙10 — 집중 실행 표시", () => {
   it("vitest describe.only가 걸린다", async () => {
     const code = `import { describe, it } from "vitest";\n\ndescribe.only("x", () => {\n  it("y", () => {});\n});\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/__tests__/fixture.test.ts",
     );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_RESTRICTED_SYNTAX,
+    );
   });
 
   it("vitest it.only가 걸린다", async () => {
     const code = `import { describe, it } from "vitest";\n\ndescribe("x", () => {\n  it.only("y", () => {});\n});\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/__tests__/fixture.test.ts",
     );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_RESTRICTED_SYNTAX,
+    );
   });
 
   it("vitest test.only가 걸린다", async () => {
     const code = `import { test } from "vitest";\n\ntest.only("x", () => {});\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/__tests__/fixture.test.ts",
     );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_RESTRICTED_SYNTAX,
+    );
   });
 
   it("playwright test.only가 걸린다", async () => {
     const code = `import { test } from "@playwright/test";\n\ntest.only("x", async () => {});\n`;
 
-    const result = await lintFixture(code, "tests/e2e/fixture.spec.ts");
+    const violations = await violationsOf(code, "tests/e2e/fixture.spec.ts");
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_RESTRICTED_SYNTAX,
+    );
   });
 
   it("playwright test.describe.only가 걸린다", async () => {
     const code = `import { test } from "@playwright/test";\n\ntest.describe.only("x", () => {\n  test("y", async () => {});\n});\n`;
 
-    const result = await lintFixture(code, "tests/e2e/fixture.spec.ts");
+    const violations = await violationsOf(code, "tests/e2e/fixture.spec.ts");
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_RESTRICTED_SYNTAX,
+    );
   });
 
-  it("vitest it.skip은 위반 0건이다", async () => {
+  it("vitest it.skip은 no-restricted-syntax가 안 걸린다", async () => {
     const code = `import { describe, it } from "vitest";\n\ndescribe("x", () => {\n  it.skip("y", () => {});\n});\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/__tests__/fixture.test.ts",
     );
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      NO_RESTRICTED_SYNTAX,
+    );
   });
 
-  it("playwright test.skip은 위반 0건이다", async () => {
+  it("playwright test.skip은 no-restricted-syntax가 안 걸린다", async () => {
     const code = `import { test } from "@playwright/test";\n\ntest.skip("x", async () => {});\n`;
 
-    const result = await lintFixture(code, "tests/e2e/fixture.spec.ts");
+    const violations = await violationsOf(code, "tests/e2e/fixture.spec.ts");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      NO_RESTRICTED_SYNTAX,
+    );
   });
 
-  it("평범한 describe/it/test는 위반 0건이다", async () => {
+  it("평범한 describe/it/test는 no-restricted-syntax가 안 걸린다", async () => {
     const code = `import { describe, it, test } from "vitest";\n\ndescribe("x", () => {\n  it("y", () => {});\n  test("z", () => {});\n});\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/__tests__/fixture.test.ts",
     );
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      NO_RESTRICTED_SYNTAX,
+    );
   });
 
-  it("회귀 — profile.integration.test.ts는 위반 0건이다", async () => {
+  it("회귀 — profile.integration.test.ts는 no-restricted-syntax가 안 걸린다", async () => {
     const code = `import { describe, expect, it } from "vitest";
 import {
   createGuestClient,
@@ -127,15 +136,17 @@ describe("프로필 접근 권한", () => {
 });
 `;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/dals/__tests__/profile.integration.test.ts",
     );
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      NO_RESTRICTED_SYNTAX,
+    );
   });
 
-  it("회귀 — utils.test.ts는 위반 0건이다", async () => {
+  it("회귀 — utils.test.ts는 no-restricted-syntax가 안 걸린다", async () => {
     const code = `import { describe, expect, it } from "vitest";
 import { cn } from "@/shared/lib/utils";
 
@@ -154,15 +165,17 @@ describe("cn", () => {
 });
 `;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/shared/lib/__tests__/utils.test.ts",
     );
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      NO_RESTRICTED_SYNTAX,
+    );
   });
 
-  it("회귀 — home.spec.ts는 위반 0건이다", async () => {
+  it("회귀 — home.spec.ts는 no-restricted-syntax가 안 걸린다", async () => {
     const code = `import { expect, test } from "@playwright/test";
 
 test("기본 페이지가 뜨고 핵심 텍스트가 보인다", async ({ page }) => {
@@ -173,8 +186,10 @@ test("기본 페이지가 뜨고 핵심 텍스트가 보인다", async ({ page }
 });
 `;
 
-    const result = await lintFixture(code, "tests/e2e/home.spec.ts");
+    const violations = await violationsOf(code, "tests/e2e/home.spec.ts");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      NO_RESTRICTED_SYNTAX,
+    );
   });
 });

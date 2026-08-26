@@ -1,83 +1,88 @@
-import path from "node:path";
-import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
+import { violationsOf } from "@tests/lint/rule-check";
 
-async function lintFixture(code: string, filePath: string) {
-  const eslint = new ESLint({ overrideConfigFile: "eslint.config.mjs" });
-  const [result] = await eslint.lintText(code, {
-    filePath: path.join(process.cwd(), filePath),
-  });
-  return result;
-}
+const NO_CONSOLE = "no-console";
 
 describe("규칙13 — console", () => {
   it("console.log는 걸린다", async () => {
     const code = `export function f() {\n  console.log("x");\n}\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/fixture.ts",
     );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_CONSOLE,
+    );
   });
 
-  it("console.error는 위반 0건이다", async () => {
+  it("console.error는 no-console이 안 걸린다", async () => {
     const code = `export function f() {\n  console.error("x");\n}\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/fixture.ts",
     );
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      NO_CONSOLE,
+    );
   });
 
-  it("console.warn은 위반 0건이다", async () => {
+  it("console.warn은 no-console이 안 걸린다", async () => {
     const code = `export function f() {\n  console.warn("x");\n}\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/fixture.ts",
     );
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      NO_CONSOLE,
+    );
   });
 
   it("console.info도 걸린다", async () => {
     const code = `export function f() {\n  console.info("x");\n}\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/fixture.ts",
     );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_CONSOLE,
+    );
   });
 
   it("console.debug도 걸린다", async () => {
     const code = `export function f() {\n  console.debug("x");\n}\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/fixture.ts",
     );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_CONSOLE,
+    );
   });
 
   it("console.table도 걸린다", async () => {
     const code = `export function f() {\n  console.table(["x"]);\n}\n`;
 
-    const result = await lintFixture(
+    const violations = await violationsOf(
       code,
       "src/entities/profile/model/fixture.ts",
     );
 
-    expect(result.errorCount).toBeGreaterThan(0);
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_CONSOLE,
+    );
   });
 
-  it("회귀 — 지금 src/에는 console 호출이 없어 위반 0건이다", async () => {
+  it("회귀 — 지금 src/에는 console 호출이 없어 no-console이 안 걸린다", async () => {
     const code = `import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -86,8 +91,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 `;
 
-    const result = await lintFixture(code, "src/shared/lib/utils.ts");
+    const violations = await violationsOf(code, "src/shared/lib/utils.ts");
 
-    expect(result.errorCount).toBe(0);
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      NO_CONSOLE,
+    );
   });
 });
