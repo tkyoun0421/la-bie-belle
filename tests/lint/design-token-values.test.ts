@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { errorsOf, violationsOf } from "@tests/lint/rule-check";
 
@@ -19,14 +21,21 @@ describe("규칙4 — 하드코딩한 색과 크기", () => {
   describe("대괄호 안이 토큰을 거치면 통과한다", () => {
     it.each([
       ["[&_svg]:pointer-events-none", "선택자 변형"],
+      ["[&_svg:not([class*='size-'])]:size-4", "not 선택자 안 크기 클래스"],
       ["in-data-[slot=button-group]:rounded-lg", "속성 선택자 변형"],
       ["*:[img:first-child]:rounded-t-xl", "자식 선택자 변형"],
+      [
+        "data-[size=sm]:[--card-spacing:--spacing(3)]",
+        "data 변형 안 커스텀 프로퍼티",
+      ],
       ["[--card-spacing:--spacing(3)]", "커스텀 프로퍼티에 스페이싱 함수"],
+      ["has-data-[icon=inline-end]:pr-2", "has-data 변형"],
+      ["active:not-aria-[haspopup]:translate-y-px", "not-aria 변형"],
+      ["supports-[display:grid]:grid", "supports 변형"],
       [
         "bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]",
         "var()를 감싼 color-mix",
       ],
-      ["rounded-[min(var(--radius-md),12px)]", "var()를 감싼 min()"],
       ["grid-cols-[1fr_auto]", "그리드 트랙 크기"],
       ["grid-rows-[auto_auto]", "그리드 트랙 크기"],
     ])("%s (%s)는 규칙4의 어느 규칙도 안 걸린다", async (className) => {
@@ -70,49 +79,79 @@ describe("규칙4 — 하드코딩한 색과 크기", () => {
     );
   });
 
-  it("회귀 — text-[0.8rem]이 토큰 유틸로 바뀐 button.tsx는 어느 규칙도 안 걸린다", async () => {
-    const code = `import { Button as ButtonPrimitive } from "@base-ui/react/button"
-import { cva, type VariantProps } from "class-variance-authority"
+  describe("변형 접두사 자리에 박힌 임의 값도 걸린다", () => {
+    it.each([
+      [
+        "max-[600px]:hidden",
+        "변형 자리 px 리터럴",
+        [NO_ARBITRARY_CLASS_VALUES],
+      ],
+      [
+        "min-[48rem]:grid-cols-2",
+        "변형 자리 rem 리터럴",
+        [NO_ARBITRARY_CLASS_VALUES],
+      ],
+    ])(
+      "%s (%s)는 마지막 세그먼트가 아니어도 걸린다",
+      async (className, _description, expectedRuleIds) => {
+        const ruleIds = await ruleIdsOfClassName(
+          `flex ${className} items-center`,
+        );
 
-import { cn } from "@/shared/lib/utils"
-
-const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        expect(designTokenRuleIds(ruleIds)).toEqual(expectedRuleIds);
       },
-      size: {
-        default:
-          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+    );
+  });
+
+  describe("두 번째 이후 대괄호 그룹도 걸린다", () => {
+    it("w-[var(--w)]-[13px]의 두 번째 그룹 13px가 걸린다", async () => {
+      const ruleIds = await ruleIdsOfClassName(
+        "flex w-[var(--w)]-[13px] items-center",
+      );
+
+      expect(designTokenRuleIds(ruleIds)).toEqual([NO_ARBITRARY_CLASS_VALUES]);
+    });
+  });
+
+  describe("토큰 함수를 걷어내고 남는 리터럴은 걸린다", () => {
+    it.each([
+      [
+        "p-[calc(var(--gap)+13px)]",
+        "calc 안에 남는 px",
+        [NO_ARBITRARY_CLASS_VALUES],
+      ],
+      [
+        "w-[calc(var(--w)-2rem)]",
+        "calc 안에 남는 rem",
+        [NO_ARBITRARY_CLASS_VALUES],
+      ],
+      [
+        "rounded-[min(var(--radius-md),12px)]",
+        "min() 안에 남는 px",
+        [NO_ARBITRARY_CLASS_VALUES],
+      ],
+      [
+        "bg-[color-mix(in_oklch,var(--primary),#6E4F39_10%)]",
+        "color-mix 안에 남는 hex",
+        [NO_ARBITRARY_CLASS_VALUES, NO_COLOR_LITERALS],
+      ],
+    ])(
+      "%s (%s)는 var()를 걷어낸 나머지에서 걸린다",
+      async (className, _description, expectedRuleIds) => {
+        const ruleIds = await ruleIdsOfClassName(
+          `flex ${className} items-center`,
+        );
+
+        expect(designTokenRuleIds(ruleIds)).toEqual(expectedRuleIds);
       },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
+    );
+  });
 
-function Button({
-  className,
-  variant = "default",
-  size = "default",
-  ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
-  return (
-    <ButtonPrimitive
-      data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
-}
-
-export { Button, buttonVariants }
-`;
+  it("회귀 — 실제 button.tsx 파일은 규칙4의 어느 규칙도 안 걸린다", async () => {
+    const code = readFileSync(
+      path.join(process.cwd(), "src/shared/ui/button.tsx"),
+      "utf8",
+    );
     const errors = await errorsOf(code, "src/shared/ui/button.tsx");
 
     expect(errors).toEqual([]);

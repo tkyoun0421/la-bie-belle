@@ -1,4 +1,5 @@
-const HEX_COLOR = /(?:^|[^&\w])#[0-9a-f]{3}(?:[0-9a-f]{3}(?:[0-9a-f]{2})?)?\b/i;
+const HEX_COLOR =
+  /(?:^|[^&\w])#[0-9a-f]{3}(?:[0-9a-f]{3}(?:[0-9a-f]{2})?)?(?![0-9a-f])/i;
 const COLOR_FUNCTION = /\b(?:rgba?|hsla?|oklch|oklab|lch|lab)\(\s*[\d.]/i;
 
 const noColorLiterals = {

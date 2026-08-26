@@ -81,17 +81,22 @@ export function classStringVisitor(onClassToken) {
   };
 }
 
-export function utilityOf(classToken) {
+export function segmentsOf(classToken) {
   const segments = [];
-  let depth = 0;
+  let bracketDepth = 0;
+  let parenDepth = 0;
   let current = "";
 
   for (const character of classToken) {
-    if (character === "[" || character === "(") {
-      depth += 1;
-    } else if (character === "]" || character === ")") {
-      depth = Math.max(0, depth - 1);
-    } else if (character === ":" && depth === 0) {
+    if (character === "[") {
+      bracketDepth += 1;
+    } else if (character === "]") {
+      bracketDepth = Math.max(0, bracketDepth - 1);
+    } else if (bracketDepth === 0 && character === "(") {
+      parenDepth += 1;
+    } else if (bracketDepth === 0 && character === ")") {
+      parenDepth = Math.max(0, parenDepth - 1);
+    } else if (character === ":" && bracketDepth === 0 && parenDepth === 0) {
       segments.push(current);
       current = "";
       continue;
@@ -100,26 +105,33 @@ export function utilityOf(classToken) {
   }
 
   segments.push(current);
+  return segments;
+}
+
+export function utilityOf(classToken) {
+  const segments = segmentsOf(classToken);
   return segments[segments.length - 1];
 }
 
-export function arbitraryValueOf(utility) {
-  const start = utility.indexOf("[");
-  if (start === -1) {
-    return null;
-  }
-
+export function arbitraryValuesOf(utility) {
+  const values = [];
   let depth = 0;
-  for (let index = start; index < utility.length; index += 1) {
-    if (utility[index] === "[") {
+  let start = -1;
+
+  for (let index = 0; index < utility.length; index += 1) {
+    const character = utility[index];
+    if (character === "[") {
+      if (depth === 0) {
+        start = index;
+      }
       depth += 1;
-    } else if (utility[index] === "]") {
+    } else if (character === "]" && depth > 0) {
       depth -= 1;
       if (depth === 0) {
-        return utility.slice(start + 1, index);
+        values.push(utility.slice(start + 1, index));
       }
     }
   }
 
-  return null;
+  return values;
 }

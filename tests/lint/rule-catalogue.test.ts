@@ -1,6 +1,8 @@
 import { accessSync, constants, existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { ESLint } from "eslint";
+import { ESLint, type Linter } from "eslint";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
 import { beforeAll, describe, expect, it } from "vitest";
 import {
   DOCUMENTED_LINT_RULE_COUNT,
@@ -58,6 +60,18 @@ function ruleIdsOf(mechanisms: EnforcedRule["mechanism"][]) {
   ).map((rule) => rule.ruleId as string);
 }
 
+function presetBaselineRuleIds() {
+  const baseline = new Set<string>();
+
+  for (const block of [...nextVitals, ...nextTs] as Linter.Config[]) {
+    for (const ruleId of Object.keys(block.rules ?? {})) {
+      baseline.add(ruleId);
+    }
+  }
+
+  return baseline;
+}
+
 describe("규칙 카탈로그", () => {
   let config: Awaited<ReturnType<typeof resolveConfig>>;
 
@@ -113,6 +127,33 @@ describe("규칙 카탈로그", () => {
       .filter((file) => !existsSync(path.join(process.cwd(), file)));
 
     expect([...new Set(missing)]).toEqual([]);
+  });
+
+  it("config가 켜둔 규칙 중 preset baseline에 없는 것은 전부 카탈로그에 있다", () => {
+    const baseline = presetBaselineRuleIds();
+    const turnedOnByConfig = Object.entries(config.rules ?? {})
+      .filter(([, entry]) => isTurnedOn(entry))
+      .map(([ruleId]) => ruleId);
+
+    const beyondBaseline = turnedOnByConfig.filter(
+      (ruleId) => !baseline.has(ruleId),
+    );
+    const catalogued = [...new Set(ruleIdsOf(["eslint", "house"]))];
+
+    expect(beyondBaseline.sort()).toEqual(catalogued.sort());
+  });
+
+  it("카탈로그가 가리키는 테스트 파일은 자기 ruleId를 실제로 언급한다", () => {
+    const withRuleId = RULES.filter((rule) => rule.ruleId !== null);
+    const notMentioned = withRuleId.filter((rule) => {
+      const content = readFileSync(
+        path.join(process.cwd(), rule.test as string),
+        "utf8",
+      );
+      return !content.includes(rule.ruleId as string);
+    });
+
+    expect(notMentioned).toEqual([]);
   });
 });
 

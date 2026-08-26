@@ -25,9 +25,10 @@ const DEFAULT_PALETTES = [
 ];
 
 const STEPPED = new RegExp(
-  `^-?[a-z]+(?:-[a-z]+)*-(?:${DEFAULT_PALETTES.join("|")})-(?:50|\\d{3})(?:\\/\\d+)?$`,
+  `^-?[a-z]+(?:-[a-z]+)*-(?:${DEFAULT_PALETTES.join("|")})-(?:50|\\d{3})(?:\\/(?:\\d+|\\[[^\\]]*\\]))?$`,
 );
-const ACHROMATIC = /^-?[a-z]+(?:-[a-z]+)*-(?:white|black)(?:\/\d+)?$/;
+const ACHROMATIC =
+  /^-?[a-z]+(?:-[a-z]+)*-(?:white|black)(?:\/(?:\d+|\[[^\]]*\]))?$/;
 
 const noDefaultPaletteClass = {
   meta: {

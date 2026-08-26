@@ -1,14 +1,29 @@
 import {
-  arbitraryValueOf,
+  arbitraryValuesOf,
   classStringVisitor,
-  utilityOf,
+  segmentsOf,
 } from "./class-strings.mjs";
 
-const THROUGH_TOKEN = /var\(|--spacing\(|--alpha\(|--value\(/;
+const CUSTOM_PROPERTY = /--[A-Za-z0-9_-]+/g;
 const COLOR_LITERAL =
-  /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab|lch|lab)\(/i;
+  /#[0-9a-f]{3,8}(?![0-9a-f])|\b(?:rgba?|hsla?|oklch|oklab|lch|lab)\(/i;
 const SIZE_LITERAL =
-  /(?:^|[^a-z0-9_.-])\d*\.?\d+(?:px|rem|em|ch|ex|vh|vw|vmin|vmax|pt|pc|in|cm|mm|%)\b/i;
+  /(?:^|[^a-z0-9_.])\d*\.?\d+(?:px|rem|em|ch|ex|vh|vw|vmin|vmax|pt|pc|in|cm|mm|%)\b/i;
+
+function beyondTokens(value) {
+  return value.replace(CUSTOM_PROPERTY, "");
+}
+
+function hasLiteral(value) {
+  const remainder = beyondTokens(value);
+  return COLOR_LITERAL.test(remainder) || SIZE_LITERAL.test(remainder);
+}
+
+function literalIn(classToken) {
+  return segmentsOf(classToken)
+    .flatMap((segment) => arbitraryValuesOf(segment))
+    .some(hasLiteral);
+}
 
 const noArbitraryClassValues = {
   meta: {
@@ -25,11 +40,7 @@ const noArbitraryClassValues = {
   },
   create(context) {
     return classStringVisitor((classToken, node) => {
-      const value = arbitraryValueOf(utilityOf(classToken));
-      if (value === null || THROUGH_TOKEN.test(value)) {
-        return;
-      }
-      if (!COLOR_LITERAL.test(value) && !SIZE_LITERAL.test(value)) {
+      if (!literalIn(classToken)) {
         return;
       }
       context.report({

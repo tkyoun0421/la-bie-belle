@@ -79,4 +79,24 @@ describe("규칙1 — 상대 경로 import 금지", () => {
 
     expect(globalsCssLine.length).toBeGreaterThan(0);
   });
+
+  it("tests/ 아래 파일의 같은 폴더를 가리키는 ./ 상대 import가 걸린다", async () => {
+    const code = `import { x } from "./x";\n\nexport const value = x;\n`;
+
+    const violations = await violationsOf(code, "tests/lint/fixture.ts");
+
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_RESTRICTED_IMPORTS,
+    );
+  });
+
+  it("tests/ 아래 파일의 상위 폴더를 가리키는 ../ 상대 import가 걸린다", async () => {
+    const code = `import { y } from "../y";\n\nexport const value = y;\n`;
+
+    const violations = await violationsOf(code, "tests/lint/fixture.ts");
+
+    expect(violations.map((violation) => violation.ruleId)).toContain(
+      NO_RESTRICTED_IMPORTS,
+    );
+  });
 });
