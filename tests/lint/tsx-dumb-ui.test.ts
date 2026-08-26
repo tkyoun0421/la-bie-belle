@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { violationsOf } from "@tests/lint/rule-check";
+import { errorsOf, violationsOf } from "@tests/lint/rule-check";
 
 const DUMB_UI = "house/dumb-ui";
 
@@ -127,7 +127,7 @@ describe("규칙9 — .tsx는 더미 UI", () => {
     expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
   });
 
-  it("회귀 — page.tsx는 house/dumb-ui가 안 걸린다", async () => {
+  it("회귀 — page.tsx는 어느 규칙도 안 걸린다", async () => {
     const code = `import { Button } from "@/shared/ui/button";
 import {
   Card,
@@ -154,14 +154,12 @@ export default function Home() {
 }
 `;
 
-    const violations = await violationsOf(code, "src/app/page.tsx");
+    const errors = await errorsOf(code, "src/app/page.tsx");
 
-    expect(violations.map((violation) => violation.ruleId)).not.toContain(
-      DUMB_UI,
-    );
+    expect(errors).toEqual([]);
   });
 
-  it("회귀 — layout.tsx는 house/dumb-ui가 안 걸린다", async () => {
+  it("회귀 — layout.tsx는 어느 규칙도 안 걸린다", async () => {
     const code = `import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/app/providers";
@@ -196,14 +194,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 }
 `;
 
-    const violations = await violationsOf(code, "src/app/layout.tsx");
+    const errors = await errorsOf(code, "src/app/layout.tsx");
 
-    expect(violations.map((violation) => violation.ruleId)).not.toContain(
-      DUMB_UI,
-    );
+    expect(errors).toEqual([]);
   });
 
-  it("회귀 — providers.tsx는 house/dumb-ui가 안 걸린다", async () => {
+  it("회귀 — providers.tsx는 어느 규칙도 안 걸린다", async () => {
     const code = `"use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -218,14 +214,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 `;
 
-    const violations = await violationsOf(code, "src/app/providers.tsx");
+    const errors = await errorsOf(code, "src/app/providers.tsx");
 
-    expect(violations.map((violation) => violation.ruleId)).not.toContain(
-      DUMB_UI,
-    );
+    expect(errors).toEqual([]);
   });
 
-  it("회귀 — button.tsx는 house/dumb-ui가 안 걸린다", async () => {
+  it("회귀 — button.tsx는 어느 규칙도 안 걸린다", async () => {
     const code = `import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -286,14 +280,12 @@ function Button({
 export { Button, buttonVariants }
 `;
 
-    const violations = await violationsOf(code, "src/shared/ui/button.tsx");
+    const errors = await errorsOf(code, "src/shared/ui/button.tsx");
 
-    expect(violations.map((violation) => violation.ruleId)).not.toContain(
-      DUMB_UI,
-    );
+    expect(errors).toEqual([]);
   });
 
-  it("회귀 — card.tsx는 house/dumb-ui가 안 걸린다", async () => {
+  it("회귀 — card.tsx는 어느 규칙도 안 걸린다", async () => {
     const code = `import * as React from "react"
 
 import { cn } from "@/shared/lib/utils"
@@ -399,10 +391,8 @@ export {
 }
 `;
 
-    const violations = await violationsOf(code, "src/shared/ui/card.tsx");
+    const errors = await errorsOf(code, "src/shared/ui/card.tsx");
 
-    expect(violations.map((violation) => violation.ruleId)).not.toContain(
-      DUMB_UI,
-    );
+    expect(errors).toEqual([]);
   });
 });

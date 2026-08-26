@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fixedCode, violationsOf } from "@tests/lint/rule-check";
+import { errorsOf, fixedCode, violationsOf } from "@tests/lint/rule-check";
 
 const IMPORT_ORDER = "import/order";
 
@@ -70,7 +70,7 @@ describe("규칙11 — import 순서", () => {
     );
   });
 
-  it("회귀 — alias로 고친 layout.tsx는 import/order가 안 걸린다", async () => {
+  it("회귀 — alias로 고친 layout.tsx는 어느 규칙도 안 걸린다", async () => {
     const code = `import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/app/providers";
@@ -90,10 +90,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 `;
 
-    const violations = await violationsOf(code, "src/app/layout.tsx");
+    const errors = await errorsOf(code, "src/app/layout.tsx");
 
-    expect(violations.map((violation) => violation.ruleId)).not.toContain(
-      IMPORT_ORDER,
-    );
+    expect(errors).toEqual([]);
   });
 });

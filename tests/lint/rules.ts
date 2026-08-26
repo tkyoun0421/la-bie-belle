@@ -3,10 +3,13 @@ export type EnforcedRule = {
   name: string;
   mechanism: "eslint" | "house" | "prettier" | "hook" | "pre-commit";
   ruleId: string | null;
+  enforcedBy: string | null;
   test: string | null;
 };
 
 export const DOCUMENTED_LINT_RULE_COUNT = 14;
+
+export const ENFORCED_RULE_COUNT = 17;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -16,6 +19,7 @@ export const RULES: EnforcedRule[] = [
     name: "상대 경로 import 금지",
     mechanism: "eslint",
     ruleId: "no-restricted-imports",
+    enforcedBy: null,
     test: "tests/lint/relative-import.test.ts",
   },
   {
@@ -23,6 +27,7 @@ export const RULES: EnforcedRule[] = [
     name: "FSD 역방향 import",
     mechanism: "eslint",
     ruleId: "no-restricted-imports",
+    enforcedBy: null,
     test: "tests/lint/fsd-layer-order.test.ts",
   },
   {
@@ -30,6 +35,7 @@ export const RULES: EnforcedRule[] = [
     name: "같은 층 다른 슬라이스 import",
     mechanism: "house",
     ruleId: "house/no-cross-slice-import",
+    enforcedBy: null,
     test: "tests/lint/fsd-slice-boundary.test.ts",
   },
   {
@@ -37,6 +43,7 @@ export const RULES: EnforcedRule[] = [
     name: "하드코딩한 색과 크기",
     mechanism: "house",
     ruleId: "house/no-arbitrary-class-values",
+    enforcedBy: null,
     test: "tests/lint/design-token-values.test.ts",
   },
   {
@@ -44,6 +51,7 @@ export const RULES: EnforcedRule[] = [
     name: "하드코딩한 색과 크기",
     mechanism: "house",
     ruleId: "house/no-color-literals",
+    enforcedBy: null,
     test: "tests/lint/design-token-values.test.ts",
   },
   {
@@ -51,6 +59,7 @@ export const RULES: EnforcedRule[] = [
     name: "Tailwind 기본 팔레트 유틸리티",
     mechanism: "house",
     ruleId: "house/no-default-palette-class",
+    enforcedBy: null,
     test: "tests/lint/tailwind-default-palette.test.ts",
   },
   {
@@ -58,6 +67,7 @@ export const RULES: EnforcedRule[] = [
     name: ".tsx는 더미 UI",
     mechanism: "house",
     ruleId: "house/dumb-ui",
+    enforcedBy: null,
     test: "tests/lint/tsx-dumb-ui.test.ts",
   },
   {
@@ -65,6 +75,7 @@ export const RULES: EnforcedRule[] = [
     name: "집중 실행 표시",
     mechanism: "eslint",
     ruleId: "no-restricted-syntax",
+    enforcedBy: null,
     test: "tests/lint/no-focused-tests.test.ts",
   },
   {
@@ -72,6 +83,7 @@ export const RULES: EnforcedRule[] = [
     name: "import 순서",
     mechanism: "eslint",
     ruleId: "import/order",
+    enforcedBy: null,
     test: "tests/lint/import-order.test.ts",
   },
   {
@@ -79,6 +91,7 @@ export const RULES: EnforcedRule[] = [
     name: "Tailwind 클래스 순서",
     mechanism: "prettier",
     ruleId: null,
+    enforcedBy: "prettier.config.mjs",
     test: "tests/lint/format-check.test.ts",
   },
   {
@@ -86,6 +99,7 @@ export const RULES: EnforcedRule[] = [
     name: "console",
     mechanism: "eslint",
     ruleId: "no-console",
+    enforcedBy: null,
     test: "tests/lint/no-console.test.ts",
   },
   {
@@ -93,6 +107,7 @@ export const RULES: EnforcedRule[] = [
     name: "미사용 import와 import type",
     mechanism: "eslint",
     ruleId: "unused-imports/no-unused-imports",
+    enforcedBy: null,
     test: "tests/lint/unused-imports.test.ts",
   },
   {
@@ -100,6 +115,7 @@ export const RULES: EnforcedRule[] = [
     name: "미사용 import와 import type",
     mechanism: "eslint",
     ruleId: "@typescript-eslint/consistent-type-imports",
+    enforcedBy: null,
     test: "tests/lint/unused-imports.test.ts",
   },
   {
@@ -107,6 +123,7 @@ export const RULES: EnforcedRule[] = [
     name: "실행 코드를 쓰기 전에 짝 테스트가 있어야 한다",
     mechanism: "hook",
     ruleId: null,
+    enforcedBy: ".claude/hooks/tdd-guard-unit.py",
     test: ".claude/hooks/__tests__/tdd-guard.test.ts",
   },
   {
@@ -114,6 +131,7 @@ export const RULES: EnforcedRule[] = [
     name: "화면과 라우트를 쓰기 전에 e2e 명세가 있어야 한다",
     mechanism: "hook",
     ruleId: null,
+    enforcedBy: ".claude/hooks/tdd-guard-e2e.py",
     test: ".claude/hooks/__tests__/tdd-guard.test.ts",
   },
   {
@@ -121,6 +139,7 @@ export const RULES: EnforcedRule[] = [
     name: "시크릿과 .env는 커밋할 수 없다",
     mechanism: "pre-commit",
     ruleId: null,
-    test: null,
+    enforcedBy: ".githooks/pre-commit",
+    test: "tests/lint/pre-commit.test.ts",
   },
 ];

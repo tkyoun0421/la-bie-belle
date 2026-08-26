@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { violationsOf } from "@tests/lint/rule-check";
+import { errorsOf, violationsOf } from "@tests/lint/rule-check";
 
 const NO_CONSOLE = "no-console";
 
@@ -82,7 +82,7 @@ describe("규칙13 — console", () => {
     );
   });
 
-  it("회귀 — 지금 src/에는 console 호출이 없어 no-console이 안 걸린다", async () => {
+  it("회귀 — 지금 src/의 utils.ts는 어느 규칙도 안 걸린다", async () => {
     const code = `import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -91,10 +91,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 `;
 
-    const violations = await violationsOf(code, "src/shared/lib/utils.ts");
+    const errors = await errorsOf(code, "src/shared/lib/utils.ts");
 
-    expect(violations.map((violation) => violation.ruleId)).not.toContain(
-      NO_CONSOLE,
-    );
+    expect(errors).toEqual([]);
   });
 });

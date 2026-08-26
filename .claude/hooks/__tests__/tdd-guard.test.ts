@@ -16,6 +16,33 @@ function write(relative: string, body: string) {
   return absolute;
 }
 
+function spawn(
+  hook: string,
+  relative: string,
+  content: string,
+  options: { env?: NodeJS.ProcessEnv; timeout?: number } = {},
+) {
+  return spawnSync("python3", [join(hooksDir, hook)], {
+    input: JSON.stringify({
+      tool_name: "Write",
+      tool_input: { file_path: join(projectDir, relative), content },
+    }),
+    env: { ...process.env, CLAUDE_PROJECT_DIR: projectDir, ...options.env },
+    encoding: "utf8",
+    timeout: options.timeout,
+  });
+}
+
+function fifo(relative: string) {
+  const absolute = join(projectDir, relative);
+  mkdirSync(dirname(absolute), { recursive: true });
+  const made = spawnSync("mkfifo", [absolute], { encoding: "utf8" });
+  if (made.status !== 0) {
+    throw new Error(`mkfifo 실패: ${made.stderr}`);
+  }
+  return relative;
+}
+
 function run(hook: string, relative: string, content: string) {
   const result = spawnSync("python3", [join(hooksDir, hook)], {
     input: JSON.stringify({
@@ -179,5 +206,37 @@ describe("e2e 훅", () => {
     expect(
       run("tdd-guard-e2e.py", "src/entities/cart/models/cart.ts", ""),
     ).toBe(allowed);
+  });
+});
+
+describe("훅이 서 있는 자리", () => {
+  it("모듈 탐색 경로가 잠겨도 판정이 살아 있다", () => {
+    const result = spawn(
+      "tdd-guard-unit.py",
+      "src/entities/locked/model/locked.ts",
+      "export function locked() {}",
+      { env: { PYTHONSAFEPATH: "1" } },
+    );
+
+    expect(result.status).toBe(blocked);
+  });
+
+  it("e2e 훅은 판정에 안 쓰는 파일을 읽지 않는다", () => {
+    const result = spawn("tdd-guard-e2e.py", fifo("src/app/page.tsx"), "", {
+      timeout: 5_000,
+    });
+
+    expect(result.status).toBe(allowed);
+  });
+
+  it("유닛 훅은 경로에서 이미 걸러낸 파일을 읽지 않는다", () => {
+    const result = spawn(
+      "tdd-guard-unit.py",
+      fifo("src/shared/ui/skipped.ts"),
+      "export function skipped() {}",
+      { timeout: 5_000 },
+    );
+
+    expect(result.status).toBe(allowed);
   });
 });

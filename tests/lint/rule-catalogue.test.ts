@@ -1,9 +1,10 @@
-import { existsSync } from "node:fs";
+import { accessSync, constants, existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { ESLint } from "eslint";
 import { beforeAll, describe, expect, it } from "vitest";
 import {
   DOCUMENTED_LINT_RULE_COUNT,
+  ENFORCED_RULE_COUNT,
   RULES,
   RULE_NUMBERS_NEVER_ASSIGNED,
   type EnforcedRule,
@@ -24,12 +25,31 @@ async function resolveConfig() {
 
 function isTurnedOn(entry: unknown) {
   const severity = Array.isArray(entry) ? entry[0] : entry;
-  return (
-    severity === 2 ||
-    severity === "error" ||
-    severity === 1 ||
-    severity === "warn"
+  return severity === 2 || severity === "error";
+}
+
+function rulesEnforcedBy(mechanism: EnforcedRule["mechanism"]) {
+  return RULES.filter((rule) => rule.mechanism === mechanism);
+}
+
+function registeredHookCommands() {
+  const settings = JSON.parse(
+    readFileSync(path.join(process.cwd(), ".claude/settings.json"), "utf8"),
   );
+
+  return (settings.hooks?.PreToolUse ?? []).flatMap(
+    (matcher: { hooks?: { command?: string }[] }) =>
+      (matcher.hooks ?? []).map((hook) => hook.command ?? ""),
+  );
+}
+
+function isExecutable(file: string) {
+  try {
+    accessSync(path.join(process.cwd(), file), constants.X_OK);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function ruleIdsOf(mechanisms: EnforcedRule["mechanism"][]) {
@@ -62,6 +82,31 @@ describe("규칙 카탈로그", () => {
     expect(catalogued).toEqual(registered);
   });
 
+  it("훅으로 집행한다고 적은 규칙은 실제로 settings.json에 등록돼 있다", () => {
+    const commands = registeredHookCommands().join("\n");
+    const unregistered = rulesEnforcedBy("hook")
+      .map((rule) => rule.enforcedBy as string)
+      .filter((script) => !commands.includes(script));
+
+    expect(unregistered).toEqual([]);
+  });
+
+  it("pre-commit으로 집행한다고 적은 규칙은 실행 가능한 파일을 가리킨다", () => {
+    const notExecutable = rulesEnforcedBy("pre-commit")
+      .map((rule) => rule.enforcedBy as string)
+      .filter((file) => !isExecutable(file));
+
+    expect(notExecutable).toEqual([]);
+  });
+
+  it("lint가 아닌 mechanism은 집행 파일을 반드시 적는다", () => {
+    const unnamed = RULES.filter(
+      (rule) => !LINT_MECHANISMS.includes(rule.mechanism),
+    ).filter((rule) => rule.enforcedBy === null);
+
+    expect(unnamed).toEqual([]);
+  });
+
   it("카탈로그가 가리키는 테스트 파일은 디스크에 있다", () => {
     const missing = RULES.map((rule) => rule.test)
       .filter((file): file is string => file !== null)
@@ -79,10 +124,17 @@ describe("규칙 번호", () => {
     ]),
   ].sort((a, b) => a - b);
 
-  it("1부터 시작해 끊기지 않는다", () => {
-    const unbroken = Array.from({ length: numbers.length }, (_, i) => i + 1);
+  it("1부터 열일곱까지 끊김 없이 이어진다", () => {
+    const unbroken = Array.from(
+      { length: ENFORCED_RULE_COUNT },
+      (_, index) => index + 1,
+    );
 
     expect(numbers).toEqual(unbroken);
+  });
+
+  it("정체를 못 찾은 번호는 여섯·일곱·여덟 셋뿐이다", () => {
+    expect(RULE_NUMBERS_NEVER_ASSIGNED).toEqual([6, 7, 8]);
   });
 
   it("한 번호를 나눠 가진 규칙은 이름이 같고 ruleId가 서로 다르다", () => {

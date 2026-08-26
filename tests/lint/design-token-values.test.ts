@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { violationsOf } from "@tests/lint/rule-check";
+import { errorsOf, violationsOf } from "@tests/lint/rule-check";
 
 const NO_ARBITRARY_CLASS_VALUES = "house/no-arbitrary-class-values";
 const NO_COLOR_LITERALS = "house/no-color-literals";
@@ -70,7 +70,7 @@ describe("규칙4 — 하드코딩한 색과 크기", () => {
     );
   });
 
-  it("회귀 — text-[0.8rem]이 토큰 유틸로 바뀐 button.tsx는 규칙4의 어느 규칙도 안 걸린다", async () => {
+  it("회귀 — text-[0.8rem]이 토큰 유틸로 바뀐 button.tsx는 어느 규칙도 안 걸린다", async () => {
     const code = `import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -113,9 +113,8 @@ function Button({
 
 export { Button, buttonVariants }
 `;
-    const violations = await violationsOf(code, "src/shared/ui/button.tsx");
-    const ruleIds = violations.map((violation) => violation.ruleId);
+    const errors = await errorsOf(code, "src/shared/ui/button.tsx");
 
-    expect(designTokenRuleIds(ruleIds)).toEqual([]);
+    expect(errors).toEqual([]);
   });
 });

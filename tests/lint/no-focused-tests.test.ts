@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { violationsOf } from "@tests/lint/rule-check";
+import { errorsOf, violationsOf } from "@tests/lint/rule-check";
 
 const NO_RESTRICTED_SYNTAX = "no-restricted-syntax";
 
@@ -99,7 +99,7 @@ describe("규칙10 — 집중 실행 표시", () => {
     );
   });
 
-  it("회귀 — profile.integration.test.ts는 no-restricted-syntax가 안 걸린다", async () => {
+  it("회귀 — profile.integration.test.ts는 어느 규칙도 안 걸린다", async () => {
     const code = `import { describe, expect, it } from "vitest";
 import {
   createGuestClient,
@@ -136,17 +136,15 @@ describe("프로필 접근 권한", () => {
 });
 `;
 
-    const violations = await violationsOf(
+    const errors = await errorsOf(
       code,
       "src/entities/profile/dals/__tests__/profile.integration.test.ts",
     );
 
-    expect(violations.map((violation) => violation.ruleId)).not.toContain(
-      NO_RESTRICTED_SYNTAX,
-    );
+    expect(errors).toEqual([]);
   });
 
-  it("회귀 — utils.test.ts는 no-restricted-syntax가 안 걸린다", async () => {
+  it("회귀 — utils.test.ts는 어느 규칙도 안 걸린다", async () => {
     const code = `import { describe, expect, it } from "vitest";
 import { cn } from "@/shared/lib/utils";
 
@@ -165,17 +163,15 @@ describe("cn", () => {
 });
 `;
 
-    const violations = await violationsOf(
+    const errors = await errorsOf(
       code,
       "src/shared/lib/__tests__/utils.test.ts",
     );
 
-    expect(violations.map((violation) => violation.ruleId)).not.toContain(
-      NO_RESTRICTED_SYNTAX,
-    );
+    expect(errors).toEqual([]);
   });
 
-  it("회귀 — home.spec.ts는 no-restricted-syntax가 안 걸린다", async () => {
+  it("회귀 — home.spec.ts는 어느 규칙도 안 걸린다", async () => {
     const code = `import { expect, test } from "@playwright/test";
 
 test("기본 페이지가 뜨고 핵심 텍스트가 보인다", async ({ page }) => {
@@ -186,10 +182,8 @@ test("기본 페이지가 뜨고 핵심 텍스트가 보인다", async ({ page }
 });
 `;
 
-    const violations = await violationsOf(code, "tests/e2e/home.spec.ts");
+    const errors = await errorsOf(code, "tests/e2e/home.spec.ts");
 
-    expect(violations.map((violation) => violation.ruleId)).not.toContain(
-      NO_RESTRICTED_SYNTAX,
-    );
+    expect(errors).toEqual([]);
   });
 });

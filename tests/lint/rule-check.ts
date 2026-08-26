@@ -1,7 +1,12 @@
 import path from "node:path";
 import { ESLint } from "eslint";
 
-export type Violation = { ruleId: string; line: number; message: string };
+export type Violation = {
+  ruleId: string;
+  line: number;
+  message: string;
+  severity: 1 | 2;
+};
 
 const overrideConfigFile = "eslint.config.mjs";
 
@@ -26,7 +31,17 @@ export async function violationsOf(
     ruleId: message.ruleId ?? "",
     line: message.line,
     message: message.message,
+    severity: message.severity === 2 ? 2 : 1,
   }));
+}
+
+export async function errorsOf(
+  code: string,
+  filePath: string,
+): Promise<Violation[]> {
+  const violations = await violationsOf(code, filePath);
+
+  return violations.filter((violation) => violation.severity === 2);
 }
 
 export async function fixedCode(

@@ -10,6 +10,7 @@ type ThemeName = keyof GlobalsCssBlocks;
 
 export type TokenDiffEntry =
   | { token: string; variable: string; status: "match" }
+  | { token: string; variable: string; status: "skipped" }
   | { token: string; variable: string; status: "missing"; themes: ThemeName[] }
   | {
       token: string;
@@ -381,7 +382,7 @@ export function tokenCssParity(
     }
 
     if (row.palette === null) {
-      return { token: row.token, variable, status: "match" };
+      return { token: row.token, variable, status: "skipped" };
     }
 
     const step = palette[row.palette];
