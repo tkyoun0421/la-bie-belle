@@ -4,6 +4,7 @@ import { configDefaults, defineConfig } from "vitest/config";
 export default defineConfig({
   resolve: {
     alias: {
+      "@tests": fileURLToPath(new URL("./tests", import.meta.url)),
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
@@ -16,6 +17,7 @@ export default defineConfig({
           include: [
             "src/**/__tests__/**/*.test.{ts,tsx}",
             ".claude/hooks/__tests__/**/*.test.ts",
+            "tests/lint/**/*.test.ts",
           ],
           exclude: [...configDefaults.exclude, "**/*.integration.test.ts"],
         },

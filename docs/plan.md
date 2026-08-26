@@ -11,7 +11,15 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 
 ## 진행
 
-(없음)
+- [ ] 규율을 lint와 포매터로 기계화한다 — 문서에만 적힌 규칙을 CI가 막게 한다
+  - 완료 조건 (경계): `pnpm lint`가 `src/` 안의 상대 경로 import를 예외 없이 잡는다. `tests/`를 가리키는 import는 예외로 뚫지 않고 `@tests/*` alias를 새로 만들어 없앤다. 역방향 레이어 import(shared→entities, entities→features, features→screens, screens→app)를 잡는다. 같은 층 다른 슬라이스 import(entities/a → entities/b)를 잡는다.
+  - 완료 조건 (디자인 값): `pnpm lint`가 하드코딩한 색과 크기를 잡는다 — hex·rgb·hsl·oklch 리터럴, Tailwind 임의 값(`bg-[#...]`·`text-[13px]`·`p-[7px]`), Tailwind 기본 팔레트 유틸리티(`bg-red-500`·`text-gray-600`). 대괄호 안이 토큰을 거치면(`var()`·`--spacing()`) 통과하고 리터럴이면 걸린다. 선택자와 속성 변형은 애초에 대상이 아니다. `src/app/globals.css`를 `tokens.md` 8절 전문으로 교체하고, `pnpm test`가 둘을 oklch 문자열로 맞대어 본다.
+  - 완료 조건 (`.tsx`는 더미 UI): `pnpm lint`가 `.tsx` 안의 `@supabase/*` import와 `fetch(` 호출과 TanStack Query 훅 직접 호출을 잡는다. ADR-001 「화면과 로직」의 집행이다.
+  - 완료 조건 (테스트 규율): `pnpm lint`가 vitest와 Playwright의 집중 실행 표시(`.only`)를 잡는다. main에 들어가면 CI가 초록인 채로 테스트가 안 도는 자리다.
+  - 완료 조건 (정리): `pnpm lint`가 `console.error`와 `console.warn`만 통과시키고 나머지 `console` 호출은 전부 잡는다. 미사용 import가 걸리고 `--fix`로 지워진다. 타입만 쓰는 import는 `import type`으로 통일된다. import 순서가 FSD 레이어 순서로 고정된다.
+  - 완료 조건 (포매터): `pnpm format:check`가 있고 CI에서 돈다. Tailwind 클래스 순서가 여기 걸린다.
+  - 완료 조건 (증명): 규칙마다 위반 픽스처와 그 규칙이 실제로 발동하는지 확인하는 테스트가 있다. 기존 검사는 전부 그대로 통과한다.
+  - 범위 밖: type-aware lint(`no-floating-promises` 등)는 lint 속도를 이유로 안 켠다. `no-magic-numbers`, 파일명 규칙 강제, 코드 주석 금지 lint, 시크릿 스캔, a11y 규칙 추가도 이번에 안 한다.
 
 ## 완료
 

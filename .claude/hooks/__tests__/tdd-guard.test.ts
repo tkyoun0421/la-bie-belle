@@ -44,52 +44,88 @@ beforeAll(() => {
 describe("유닛 훅", () => {
   it("실행 코드를 내보내는데 짝 테스트가 없으면 막는다", () => {
     expect(
-      run("tdd-guard-unit.py", "src/entities/cart/models/cart.ts", "export function total() {}"),
+      run(
+        "tdd-guard-unit.py",
+        "src/entities/cart/models/cart.ts",
+        "export function total() {}",
+      ),
     ).toBe(blocked);
   });
 
   it("화살표 함수를 내보내도 막는다", () => {
     expect(
-      run("tdd-guard-unit.py", "src/features/add/hooks/useAdd.ts", "export const useAdd = () => {}"),
+      run(
+        "tdd-guard-unit.py",
+        "src/features/add/hooks/useAdd.ts",
+        "export const useAdd = () => {}",
+      ),
     ).toBe(blocked);
   });
 
   it("타입만 있으면 통과시킨다", () => {
     expect(
-      run("tdd-guard-unit.py", "src/entities/cart/types.ts", "export type Cart = { id: string }"),
+      run(
+        "tdd-guard-unit.py",
+        "src/entities/cart/types.ts",
+        "export type Cart = { id: string }",
+      ),
     ).toBe(allowed);
   });
 
   it("상수만 있으면 통과시킨다", () => {
     expect(
-      run("tdd-guard-unit.py", "src/entities/cart/config/consts.ts", "export const MAX = 10"),
+      run(
+        "tdd-guard-unit.py",
+        "src/entities/cart/config/consts.ts",
+        "export const MAX = 10",
+      ),
     ).toBe(allowed);
   });
 
   it("짝 테스트가 있으면 통과시킨다", () => {
     expect(
-      run("tdd-guard-unit.py", "src/shared/lib/utils.ts", "export function cn() {}"),
+      run(
+        "tdd-guard-unit.py",
+        "src/shared/lib/utils.ts",
+        "export function cn() {}",
+      ),
     ).toBe(allowed);
   });
 
   it("더미 UI인 tsx는 보지 않는다", () => {
     expect(
-      run("tdd-guard-unit.py", "src/features/add/ui/Button.tsx", "export function Button() {}"),
+      run(
+        "tdd-guard-unit.py",
+        "src/features/add/ui/Button.tsx",
+        "export function Button() {}",
+      ),
     ).toBe(allowed);
   });
 
   it("테스트 파일 자체는 보지 않는다", () => {
     expect(
-      run("tdd-guard-unit.py", "src/entities/cart/models/__tests__/cart.test.ts", "export function x() {}"),
+      run(
+        "tdd-guard-unit.py",
+        "src/entities/cart/models/__tests__/cart.test.ts",
+        "export function x() {}",
+      ),
     ).toBe(allowed);
   });
 
   it("라우팅 레이어와 shadcn 생성물은 보지 않는다", () => {
     expect(
-      run("tdd-guard-unit.py", "src/app/api/cart/route.ts", "export function GET() {}"),
+      run(
+        "tdd-guard-unit.py",
+        "src/app/api/cart/route.ts",
+        "export function GET() {}",
+      ),
     ).toBe(allowed);
     expect(
-      run("tdd-guard-unit.py", "src/shared/ui/button.ts", "export function buttonVariants() {}"),
+      run(
+        "tdd-guard-unit.py",
+        "src/shared/ui/button.ts",
+        "export function buttonVariants() {}",
+      ),
     ).toBe(allowed);
   });
 
@@ -120,7 +156,9 @@ describe("e2e 훅", () => {
   });
 
   it("screens 슬라이스에 spec이 없으면 막는다", () => {
-    expect(run("tdd-guard-e2e.py", "src/screens/cart/ui/CartScreen.tsx", "")).toBe(blocked);
+    expect(
+      run("tdd-guard-e2e.py", "src/screens/cart/ui/CartScreen.tsx", ""),
+    ).toBe(blocked);
   });
 
   it("루트 화면은 home spec으로 짝을 찾는다", () => {
@@ -129,11 +167,17 @@ describe("e2e 훅", () => {
   });
 
   it("짝 spec이 있는 슬라이스는 통과시킨다", () => {
-    expect(run("tdd-guard-e2e.py", "src/screens/orders/ui/OrdersScreen.tsx", "")).toBe(allowed);
+    expect(
+      run("tdd-guard-e2e.py", "src/screens/orders/ui/OrdersScreen.tsx", ""),
+    ).toBe(allowed);
   });
 
   it("화면이 아닌 파일은 보지 않는다", () => {
-    expect(run("tdd-guard-e2e.py", "src/shared/ui/button.tsx", "")).toBe(allowed);
-    expect(run("tdd-guard-e2e.py", "src/entities/cart/models/cart.ts", "")).toBe(allowed);
+    expect(run("tdd-guard-e2e.py", "src/shared/ui/button.tsx", "")).toBe(
+      allowed,
+    );
+    expect(
+      run("tdd-guard-e2e.py", "src/entities/cart/models/cart.ts", ""),
+    ).toBe(allowed);
   });
 });
