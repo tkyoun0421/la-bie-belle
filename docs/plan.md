@@ -6,9 +6,6 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 
 ## 다음
 
-- [ ] 디자인 레퍼런스 검토 — 시안 방향을 사람이 정한다
-  - 완료 조건: 방향 결정과 근거 레퍼런스가 `docs/design-system/`에 기록된다.
-
 - [ ] `tokens.md` 8절이 덮지 않는 자리 넷을 메운다 — lint task에서 `globals.css`를 교체하며 드러났다
   - 완료 조건: `@custom-variant dark`가 생겨 `dark:` 유틸리티가 `[data-theme="dark"]`를 따라간다. `button.tsx`가 `dark:` 클래스를 여럿 쓰는데 지금은 팔레트만 뒤집히고 유틸리티는 안 따라오는 진짜 버그다.
   - 완료 조건: `@layer base`에서 body가 배경색과 글자색을 명시로 받는다. 지금은 `color-scheme`만으로 굴러간다.
@@ -17,7 +14,9 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 
 ## 진행
 
-- [ ] 규율을 lint와 포매터로 기계화한다 — 문서에만 적힌 규칙을 CI가 막게 한다
+## 완료
+
+- [x] 규율을 lint와 포매터로 기계화한다 — 문서에만 적힌 규칙을 CI가 막게 한다 — [docs/log/2026-08-26-4.md](log/2026-08-26-4.md)
   - 완료 조건 (경계): `pnpm lint`가 `src/` 안의 상대 경로 import를 예외 없이 잡는다. `tests/`를 가리키는 import는 예외로 뚫지 않고 `@tests/*` alias를 새로 만들어 없앤다. 역방향 레이어 import(shared→entities, entities→features, features→screens, screens→app)를 잡는다. 같은 층 다른 슬라이스 import(entities/a → entities/b)를 잡는다.
   - 완료 조건 (디자인 값): `pnpm lint`가 하드코딩한 색과 크기를 잡는다 — hex·rgb·hsl·oklch 리터럴, Tailwind 임의 값(`bg-[#...]`·`text-[13px]`·`p-[7px]`), Tailwind 기본 팔레트 유틸리티(`bg-red-500`·`text-gray-600`). 대괄호 안이 토큰을 거치면(`var()`·`--spacing()`) 통과하고 리터럴이면 걸린다. 선택자와 속성 변형은 애초에 대상이 아니다. `src/app/globals.css`를 `tokens.md` 8절 전문으로 교체하고, `pnpm test`가 둘을 oklch 문자열로 맞대어 본다.
   - 완료 조건 (`.tsx`는 더미 UI): `pnpm lint`가 `.tsx` 안의 `@supabase/*` import와 `fetch(` 호출과 TanStack Query 훅 직접 호출을 잡는다. ADR-001 「화면과 로직」의 집행이다.
@@ -26,9 +25,8 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
   - 완료 조건 (포매터): `pnpm format:check`가 있고 CI에서 돈다. Tailwind 클래스 순서가 여기 걸린다.
   - 완료 조건 (증명): 규칙마다 위반 픽스처와 그 규칙이 실제로 발동하는지 확인하는 테스트가 있다. 기존 검사는 전부 그대로 통과한다.
   - 범위 밖: type-aware lint(`no-floating-promises` 등)는 lint 속도를 이유로 안 켠다. `no-magic-numbers`, 파일명 규칙 강제, 코드 주석 금지 lint, 시크릿 스캔, a11y 규칙 추가도 이번에 안 한다.
-
-## 완료
-
+- [x] 디자인 레퍼런스 검토 — 시안 방향을 사람이 정한다 — [docs/log/2026-08-26-4.md](log/2026-08-26-4.md)
+  - 완료 조건: 방향 결정과 근거 레퍼런스가 `docs/design-system/`에 기록된다.
 - [x] 교대와 출근과 알림 규칙을 확정한다 — [docs/log/2026-08-26-3.md](log/2026-08-26-3.md)
   - 완료 조건: `docs/domain/swap.md`와 `docs/domain/attendance.md`와 `docs/domain/notification.md`의 "아직 안 정한 것"이 빈다. QR 위조 대응과 iOS PWA 푸시 제약 대응이 여기 들어간다.
 - [x] 계정과 근무표 규칙을 확정한다 — [docs/log/2026-08-26-3.md](log/2026-08-26-3.md)
