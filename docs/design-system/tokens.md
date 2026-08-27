@@ -352,12 +352,16 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 | `fg.positive` on `bg.neutral` | 6.86 | 8.25 |
 | `fg.critical` on `bg.neutral` | 7.73 | 7.46 |
 | `fg.informative` on `bg.neutral` | 7.19 | 7.95 |
+| `fg.neutral-disabled` on `bg.neutral-disabled` | 4.51 | 5.86 |
+
+비활성 글자도 읽혀야 해서 이 줄을 기준 아래로 내리지 않았다. 버튼이 왜 눌리지 않는지는 대개 그 버튼에 적힌 글자가 알려준다.
 
 ### 떨어진 조합
 
 | 조합 | 결과 | 판정 |
 | --- | --- | --- |
 | neutral-600 on `bg.neutral` (라이트) | 3.56 | `fg.neutral-subtle`에서 탈락. neutral-700으로 올렸다 |
+| neutral-600 on `bg.neutral-disabled` (라이트) | 3.22 | `fg.neutral-disabled`에서 탈락. neutral-700이 넷 중 유일하게 기준을 넘었다 |
 | brand-800 vs warning-800 (라이트) | 1.02 | 사실상 같은 밝기. warning을 글자색에서 뺐다 |
 
 두 판정의 근거는 [foundation/color.md](foundation/color.md#대비-검증)와 [경고색 제약](foundation/color.md#경고색-제약)에 있다.
