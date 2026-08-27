@@ -270,7 +270,7 @@ function realEntries() {
 }
 
 describe("실제 tokens.md와 globals.css 대조", () => {
-  it("tokens.md의 역할 토큰 표에서 스물일곱 행을 읽는다", () => {
+  it("tokens.md의 역할 토큰 표에서 서른한 행을 읽는다", () => {
     expect(realEntries()).toHaveLength(ROLE_TOKEN_COUNT);
   });
 
