@@ -7,10 +7,18 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 ## 다음
 
 - [ ] `tokens.md` 8절이 덮지 않는 자리 넷을 메운다 — lint task에서 `globals.css`를 교체하며 드러났다
-  - 완료 조건: `@custom-variant dark`가 생겨 `dark:` 유틸리티가 `[data-theme="dark"]`를 따라간다. `button.tsx`가 `dark:` 클래스를 여럿 쓰는데 지금은 팔레트만 뒤집히고 유틸리티는 안 따라오는 진짜 버그다.
+  - 완료 조건: `@custom-variant dark`가 생겨 `dark:` 유틸리티가 두 경우를 다 따라간다. `[data-theme="dark"]`가 걸렸을 때와, 속성이 아예 없는데 기기가 다크일 때다. `[data-theme="light"]`가 걸리면 기기가 다크여도 안 따라간다. `button.tsx`가 `dark:` 클래스를 여럿 쓰는데 지금은 팔레트만 뒤집히고 유틸리티는 안 따라오는 진짜 버그다.
   - 완료 조건: `@layer base`에서 body가 배경색과 글자색을 명시로 받는다. 지금은 `color-scheme`만으로 굴러간다.
-  - 완료 조건: `card.tsx`의 `CardTitle`이 쓰는 `font-heading`이 다시 생성되거나, 그 클래스를 안 쓰기로 정한다. 8절 교체로 `--font-heading`이 사라졌다.
-  - 완료 조건: `--font-sans`가 가리키는 Pretendard를 실제로 들이거나, `layout.tsx`가 붙인 Geist를 정본으로 정한다. 지금은 파일이 없어 `-apple-system` 폴백으로 떨어진다.
+  - 완료 조건: `card.tsx`의 `CardTitle`에서 `font-heading` 클래스가 사라진다. 제목은 본문과 같은 폰트를 쓰고 굵기와 크기로만 구분하기로 정했다.
+  - 완료 조건: `--font-sans`가 Wanted Sans를 가리키고 화면에 실제로 그 서체가 걸린다. jsdelivr의 조각 나눔 스타일시트를 쓰고 저장소에 폰트 파일을 넣지 않는다. `layout.tsx`에서 Geist와 Geist Mono import가 빠진다.
+  - 완료 조건: 굵기가 넷으로 준다. Wanted Sans가 400부터 시작해 `font-light`(300)이 400으로 눌리기 때문이다. `tokens.md` 3절과 `foundation/typography.md`에서 `font-light`가 빠지고, 급여 금액은 `font-normal`로 바뀐다.
+
+- [ ] 값이 비어 있던 상태 토큰 셋을 채운다 — 출근 인증 버튼이 첫 화면부터 비활성을 쓴다
+  - 완료 조건: `bg.neutral-disabled`(neutral-100) · `fg.neutral-disabled`(neutral-700) · `stroke.neutral-disabled`(neutral-200) 셋이 `tokens.md` 2절 표와 8절 CSS 양쪽에 있다. 계열을 나누지 않아 갈색 버튼이든 삭제 버튼이든 비활성이면 같은 회색이다.
+  - 완료 조건: `bg.brand-weak-selected`(brand-100)가 2절 표와 8절 CSS 양쪽에 있다. 선택된 줄의 테두리는 이미 있는 `stroke.brand-solid`를 쓴다.
+  - 완료 조건: 자릿수가 줄맞춤돼야 하는 자리에 `font-variant-numeric: tabular-nums`를 쓴다는 규칙이 `tokens.md` 3절에 한 줄로 있다. 급여 금액과 근무 시간이 그 자리다.
+  - 완료 조건: `tokens.md`의 「아직 안 정한 것」에서 `selected`와 `disabled` 항목이 빠진다.
+  - 완료 조건: `pnpm test`의 토큰 대조가 통과한다. 2절 표와 8절 CSS가 어긋나면 이 테스트가 잡는다.
 
 ## 진행
 

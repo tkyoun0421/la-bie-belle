@@ -153,10 +153,12 @@ hue 248, chroma 최대 0.115.
 | `bg.neutral-weak` | neutral-100 | `#F5F3F1` | `#191715` | `bg-bg-neutral-weak` |
 | `bg.neutral-weak-pressed` | neutral-200 | `#E2DFDD` | `#272523` | `bg-bg-neutral-weak-pressed` |
 | `bg.neutral-solid` | neutral-1000 | `#1B1917` | `#ECE9E6` | `bg-bg-neutral-solid` |
+| `bg.neutral-disabled` | neutral-100 | `#F5F3F1` | `#191715` | `bg-bg-neutral-disabled` |
 | `bg.brand-solid` | brand-800 | `#6E4F39` | `#C7A48C` | `bg-bg-brand-solid` |
 | `bg.brand-solid-pressed` | brand-900 | `#442D1B` | `#E4C5B0` | `bg-bg-brand-solid-pressed` |
 | `bg.brand-weak` | brand-100 | `#FBF2EB` | `#1C1612` | `bg-bg-brand-weak` |
 | `bg.brand-weak-pressed` | brand-200 | `#ECDCD2` | `#2E231B` | `bg-bg-brand-weak-pressed` |
+| `bg.brand-weak-selected` | brand-100 | `#FBF2EB` | `#1C1612` | `bg-bg-brand-weak-selected` |
 | `bg.positive-weak` | positive-100 | `#E8F9EB` | `#0E1B11` | `bg-bg-positive-weak` |
 | `bg.warning-weak` | warning-100 | `#FDF3D9` | `#1E1603` | `bg-bg-warning-weak` |
 | `bg.critical-solid` | critical-800 | `#93302B` | `#F5897E` | `bg-bg-critical-solid` |
@@ -172,6 +174,7 @@ hue 248, chroma 최대 0.115.
 | `fg.neutral-muted` | neutral-800 | `#595654` | `#AFACA9` | `text-fg-neutral-muted` |
 | `fg.neutral-subtle` | neutral-700 | `#726F6D` | `#969391` | `text-fg-neutral-subtle` |
 | `fg.neutral-contrast` | neutral-00 | `#FFFEFD` | `#0D0C0B` | `text-fg-neutral-contrast` |
+| `fg.neutral-disabled` | neutral-700 | `#726F6D` | `#969391` | `text-fg-neutral-disabled` |
 | `fg.brand` | brand-800 | `#6E4F39` | `#C7A48C` | `text-fg-brand` |
 | `fg.brand-contrast` | neutral-00 | `#FFFEFD` | `#0D0C0B` | `text-fg-brand-contrast` |
 | `fg.positive` | positive-800 | `#1A6738` | `#77C08B` | `text-fg-positive` |
@@ -186,6 +189,7 @@ hue 248, chroma 최대 0.115.
 | --- | --- | --- | --- | --- |
 | `stroke.neutral` | neutral-200 | `#E2DFDD` | `#272523` | `border-stroke-neutral` |
 | `stroke.neutral-muted` | neutral-300 | `#CECBC9` | `#353231` | `border-stroke-neutral-muted` |
+| `stroke.neutral-disabled` | neutral-200 | `#E2DFDD` | `#272523` | `border-stroke-neutral-disabled` |
 | `stroke.brand-solid` | brand-800 | `#6E4F39` | `#C7A48C` | `border-stroke-brand-solid` |
 | `stroke.surface` | — | `transparent` | `#272523` | `border-stroke-surface` |
 
@@ -213,32 +217,36 @@ hue 248, chroma 최대 0.115.
 
 `text-4xl`부터 위는 지웠다.
 
-굵기 다섯이다. Tailwind 기본값과 같아서 갈아끼울 것이 없고, 쓰지 않는 넷(`thin` `extralight` `extrabold` `black`)만 지웠다.
+굵기 넷이다. Tailwind 기본값과 같아서 갈아끼울 것이 없고, 쓰지 않는 다섯(`thin` `extralight` `light` `extrabold` `black`)을 지웠다.
 
 | 유틸 | 값 |
 | --- | --- |
-| `font-light` | 300 |
 | `font-normal` | 400 |
 | `font-medium` | 500 |
 | `font-semibold` | 600 |
 | `font-bold` | 700 |
 
+`light`가 지운 쪽에 든 것은 Wanted Sans의 가변 축이 400에서 시작하기 때문이다. `font-light`를 걸어도 300이 400으로 눌려서 `font-normal`과 같은 글자가 나온다. 아무것도 안 하는 유틸을 남겨두면 언젠가 누군가 그걸로 무게를 낮추려 한다.
+
+숫자는 자릿수가 줄맞춤돼야 하는 자리에서 `font-variant-numeric: tabular-nums`를 쓴다. 유틸은 `tabular-nums`고 급여 금액과 근무 시간이 그 자리다. 규칙은 [foundation/typography.md](foundation/typography.md#숫자-정렬)에 있다.
+
 ### 서체 연결
 
-Pretendard를 `next/font/local`로 붙인다. 가변 폰트 한 장이 무게 다섯을 다 덮는다.
+Wanted Sans를 jsdelivr의 조각 나눔 스타일시트로 가져온다. **저장소에 폰트 파일을 넣지 않는다.**
 
-```ts
-import localFont from "next/font/local";
-
-export const pretendard = localFont({
-  src: "./PretendardVariable.woff2",
-  weight: "300 700",
-  display: "swap",
-  variable: "--font-pretendard",
-});
+```html
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous" />
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css"
+/>
 ```
 
-`<html>`에 `pretendard.variable`을 걸면 아래 `@theme inline`의 `--font-sans`가 그 변수를 집는다. 고른 이유와 라이선스는 [foundation/typography.md](foundation/typography.md#서체)에 있다.
+이 스타일시트는 `@font-face` 아흔둘을 `unicode-range`로 갈라둔다. 브라우저는 그중 화면에 실제로 찍힌 글자가 든 조각만 받는다. 조각 하나가 25KB 남짓이라 첫 화면이 100~300KB로 끝난다. 통짜 한 장은 1,259KB고 첫 글자를 그리기 전에 그걸 다 받아야 한다.
+
+`@font-face`가 선언하는 이름이 `Wanted Sans Variable`이고, 아래 `@theme inline`의 `--font-sans`가 그 이름을 첫 자리에 둔다. `font-display: swap`은 스타일시트가 이미 걸어두었다.
+
+고른 이유와 라이선스는 [foundation/typography.md](foundation/typography.md#서체)에 있다.
 
 ---
 
@@ -360,7 +368,7 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 
 ## 8. CSS 전문
 
-아래 네 블록을 순서대로 이어 붙이면 `src/app/globals.css` 한 벌이 된다. 지금은 문서일 뿐이고 실제 CSS 파일은 아직 없다.
+아래 여섯 블록을 순서대로 이어 붙이면 `src/app/globals.css` 한 벌이 된다. 어긋나면 `tests/lint/token-css-parity.test.ts`가 잡는다.
 
 `@theme inline`을 쓰는 이유는 Tailwind 4의 동작 때문이다. 그냥 `@theme`은 값을 `:root`에서 한 번 굳혀버려서, 다크에서 팔레트가 바뀌어도 유틸이 옛 값을 계속 가리킨다. `inline`은 유틸에 `var()`를 그대로 심어 요소 자리에서 값을 풀게 한다.
 
@@ -453,7 +461,21 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 
 기기 설정을 따라가는 길과 `data-theme`로 못 박는 길 둘 다 걸어둔다. `[data-theme="light"]`가 붙어 있으면 기기가 다크여도 라이트로 남는다.
 
+`@custom-variant dark`가 같은 규칙을 `dark:` 유틸리티 쪽에도 건다. Tailwind의 기본 `dark:`는 미디어 쿼리만 보기 때문에, 이것이 없으면 팔레트는 `[data-theme="dark"]`를 따라 뒤집히는데 `dark:` 클래스를 단 자리만 라이트로 남는다. 갈래 둘의 조건이 위 팔레트 블록 둘과 정확히 같아야 한다.
+
 ```css
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:where(:not([data-theme="light"], [data-theme="light"] *)) {
+      @slot;
+    }
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
@@ -625,10 +647,12 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
   --role-bg-neutral-weak: var(--palette-neutral-100);
   --role-bg-neutral-weak-pressed: var(--palette-neutral-200);
   --role-bg-neutral-solid: var(--palette-neutral-1000);
+  --role-bg-neutral-disabled: var(--palette-neutral-100);
   --role-bg-brand-solid: var(--palette-brand-800);
   --role-bg-brand-solid-pressed: var(--palette-brand-900);
   --role-bg-brand-weak: var(--palette-brand-100);
   --role-bg-brand-weak-pressed: var(--palette-brand-200);
+  --role-bg-brand-weak-selected: var(--palette-brand-100);
   --role-bg-positive-weak: var(--palette-positive-100);
   --role-bg-warning-weak: var(--palette-warning-100);
   --role-bg-critical-solid: var(--palette-critical-800);
@@ -640,6 +664,7 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
   --role-fg-neutral-muted: var(--palette-neutral-800);
   --role-fg-neutral-subtle: var(--palette-neutral-700);
   --role-fg-neutral-contrast: var(--palette-neutral-00);
+  --role-fg-neutral-disabled: var(--palette-neutral-700);
   --role-fg-brand: var(--palette-brand-800);
   --role-fg-brand-contrast: var(--palette-neutral-00);
   --role-fg-positive: var(--palette-positive-800);
@@ -648,6 +673,7 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 
   --role-stroke-neutral: var(--palette-neutral-200);
   --role-stroke-neutral-muted: var(--palette-neutral-300);
+  --role-stroke-neutral-disabled: var(--palette-neutral-200);
   --role-stroke-brand-solid: var(--palette-brand-800);
   --role-stroke-surface: var(--surface-stroke);
 
@@ -685,6 +711,7 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 
   --font-weight-thin: initial;
   --font-weight-extralight: initial;
+  --font-weight-light: initial;
   --font-weight-extrabold: initial;
   --font-weight-black: initial;
 
@@ -703,8 +730,8 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  --font-sans: var(--font-pretendard, "Pretendard Variable"), -apple-system,
-    BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", sans-serif;
+  --font-sans: "Wanted Sans Variable", -apple-system, BlinkMacSystemFont,
+    system-ui, "Apple SD Gothic Neo", sans-serif;
 
   --shadow-card: var(--surface-shadow);
 
@@ -784,10 +811,12 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
   --color-bg-neutral-weak: var(--role-bg-neutral-weak);
   --color-bg-neutral-weak-pressed: var(--role-bg-neutral-weak-pressed);
   --color-bg-neutral-solid: var(--role-bg-neutral-solid);
+  --color-bg-neutral-disabled: var(--role-bg-neutral-disabled);
   --color-bg-brand-solid: var(--role-bg-brand-solid);
   --color-bg-brand-solid-pressed: var(--role-bg-brand-solid-pressed);
   --color-bg-brand-weak: var(--role-bg-brand-weak);
   --color-bg-brand-weak-pressed: var(--role-bg-brand-weak-pressed);
+  --color-bg-brand-weak-selected: var(--role-bg-brand-weak-selected);
   --color-bg-positive-weak: var(--role-bg-positive-weak);
   --color-bg-warning-weak: var(--role-bg-warning-weak);
   --color-bg-critical-solid: var(--role-bg-critical-solid);
@@ -799,6 +828,7 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
   --color-fg-neutral-muted: var(--role-fg-neutral-muted);
   --color-fg-neutral-subtle: var(--role-fg-neutral-subtle);
   --color-fg-neutral-contrast: var(--role-fg-neutral-contrast);
+  --color-fg-neutral-disabled: var(--role-fg-neutral-disabled);
   --color-fg-brand: var(--role-fg-brand);
   --color-fg-brand-contrast: var(--role-fg-brand-contrast);
   --color-fg-positive: var(--role-fg-positive);
@@ -807,6 +837,7 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 
   --color-stroke-neutral: var(--role-stroke-neutral);
   --color-stroke-neutral-muted: var(--role-stroke-neutral-muted);
+  --color-stroke-neutral-disabled: var(--role-stroke-neutral-disabled);
   --color-stroke-brand-solid: var(--role-stroke-brand-solid);
   --color-stroke-surface: var(--role-stroke-surface);
 }
@@ -870,6 +901,21 @@ shadcn/ui가 만들어내는 컴포넌트는 `bg-primary`, `text-muted-foregroun
 
 `accent`가 `bg.brand-weak`로 간 것은 확인이 필요한 자리다. shadcn은 accent를 메뉴 hover 배경에 쓰는데, 그러면 드롭다운을 훑는 동안 브랜드 색이 계속 깜빡인다. [foundation/color.md](foundation/color.md#브랜드-색을-아끼는-이유)의 절제 규칙과 부딪히므로 실제 화면을 보고 `bg.neutral-weak`로 내릴지 판단한다.
 
+### 8.6 베이스
+
+body가 배경색과 글자색을 명시로 받는다.
+
+```css
+@layer base {
+  body {
+    background-color: var(--role-bg-neutral);
+    color: var(--role-fg-neutral);
+  }
+}
+```
+
+`color-scheme: dark`만으로도 브라우저가 알아서 어두운 바탕을 깔지만 그 색은 브라우저마다 다르고 우리 `neutral-00`이 아니다. 화면 전체의 바탕이 팔레트 밖 색이면 그 위에 올린 면과 미세하게 어긋난다. `@layer base`에 두었으니 유틸리티가 언제나 이긴다.
+
 ---
 
 ## 출처
@@ -886,7 +932,7 @@ https://www.apache.org/licenses/LICENSE-2.0
 
 타이포그래피 스케일과 문안 규칙은 토스 TDS의 [Consumer UX Guide](https://developers-apps-in-toss.toss.im/design/consumer-ux-guide)를 참고했다.
 
-Pretendard는 [SIL Open Font License 1.1](https://scripts.sil.org/OFL)로 배포된다.
+Wanted Sans는 Wanted Lab이 만들었고 [SIL Open Font License 1.1](https://scripts.sil.org/OFL)로 배포된다.
 
 ---
 
@@ -898,14 +944,12 @@ Pretendard는 [SIL Open Font License 1.1](https://scripts.sil.org/OFL)로 배포
 
 **브랜드 색 출처.** 지금 brand 계열은 2026 리뉴얼 홀 이미지와 lbwedding.co.kr 내비게이션에서 뽑았다. 공식 브랜드 가이드로 확인한 값이 아니다. 로고나 명함, 인쇄물에 정해진 색이 있으면 hue를 그쪽으로 옮기고 brand 계열 열한 단계를 다시 뽑는다. neutral도 같은 hue를 쓰므로 같이 움직인다.
 
-**라이트와 다크 중 무엇이 기본인가.** 지금은 기기 설정을 따라간다는 가정으로 CSS를 짰다. 앱 안에서 고르게 할지, 한쪽으로 못 박을지 안 정했다.
+**테마를 고르는 UI와 그 선택을 어디 저장할지.** 기기 설정을 따르되 앱에서 덮을 수 있게 하기로 정했고 CSS는 `[data-theme]` 양쪽 갈래를 다 받는다. 하지만 그 속성을 실제로 걸어줄 화면이 없다. 설정 화면 어디에 둘지, 선택을 localStorage에 둘지 계정에 둘지, 첫 페인트 전에 어떻게 복원할지가 안 정해졌다.
 
 **되돌리기 어려운 동작에 별도 색을 줄지.** 출근 인증은 한 번 찍으면 되돌리는 길이 없고([domain/attendance.md](../domain/attendance.md)) 교대 수락도 그렇다. 둘 다 지금은 같은 `bg.brand-solid`라서 한 화면에 브랜드 버튼이 둘 뜰 수 있다. 그러면 어느 쪽이 주요 액션인지 흐려진다.
 
 **빈 상태 화면.** 근무 없는 날, 급여 0원, 알림 0건을 이 팔레트로 아직 안 그려봤다. 뉴트럴만으로 충분히 읽히는지, 일러스트가 필요한지 모른다.
 
 ### 전개하면서 드러난 빈자리
-
-**`selected`와 `disabled` 상태값.** 역할 토큰 문법에는 셋(`pressed` `selected` `disabled`)이 들어 있는데 값이 매겨진 것은 `pressed`뿐이다. 비활성 버튼은 첫 화면부터 필요하다. 출근 인증 버튼이 근무 시작 1시간 전까지는 눌리지 않기 때문이다.
 
 **축하 모션을 쓸 자리.** [foundation/motion.md](foundation/motion.md#축하할-순간)에 적었듯 출근 인증 완료 하나는 확실한데, 두 번째로 지목됐던 "급여 확정"은 도메인에 없는 행위다. `docs/domain/payroll.md`가 급여를 확정하지 않는다고 못 박아뒀다.

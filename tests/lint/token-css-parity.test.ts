@@ -252,7 +252,7 @@ describe("역할 변수 누락", () => {
   });
 });
 
-const ROLE_TOKEN_COUNT = 27;
+const ROLE_TOKEN_COUNT = 31;
 
 const PALETTE_LESS_TOKENS = ["stroke.surface"];
 

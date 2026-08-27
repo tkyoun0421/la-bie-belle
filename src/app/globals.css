@@ -80,6 +80,18 @@
   --surface-stroke: transparent;
 }
 
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:where(:not([data-theme="light"], [data-theme="light"] *)) {
+      @slot;
+    }
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
@@ -245,10 +257,12 @@
   --role-bg-neutral-weak: var(--palette-neutral-100);
   --role-bg-neutral-weak-pressed: var(--palette-neutral-200);
   --role-bg-neutral-solid: var(--palette-neutral-1000);
+  --role-bg-neutral-disabled: var(--palette-neutral-100);
   --role-bg-brand-solid: var(--palette-brand-800);
   --role-bg-brand-solid-pressed: var(--palette-brand-900);
   --role-bg-brand-weak: var(--palette-brand-100);
   --role-bg-brand-weak-pressed: var(--palette-brand-200);
+  --role-bg-brand-weak-selected: var(--palette-brand-100);
   --role-bg-positive-weak: var(--palette-positive-100);
   --role-bg-warning-weak: var(--palette-warning-100);
   --role-bg-critical-solid: var(--palette-critical-800);
@@ -260,6 +274,7 @@
   --role-fg-neutral-muted: var(--palette-neutral-800);
   --role-fg-neutral-subtle: var(--palette-neutral-700);
   --role-fg-neutral-contrast: var(--palette-neutral-00);
+  --role-fg-neutral-disabled: var(--palette-neutral-700);
   --role-fg-brand: var(--palette-brand-800);
   --role-fg-brand-contrast: var(--palette-neutral-00);
   --role-fg-positive: var(--palette-positive-800);
@@ -268,6 +283,7 @@
 
   --role-stroke-neutral: var(--palette-neutral-200);
   --role-stroke-neutral-muted: var(--palette-neutral-300);
+  --role-stroke-neutral-disabled: var(--palette-neutral-200);
   --role-stroke-brand-solid: var(--palette-brand-800);
   --role-stroke-surface: var(--surface-stroke);
 
@@ -301,6 +317,7 @@
 
   --font-weight-thin: initial;
   --font-weight-extralight: initial;
+  --font-weight-light: initial;
   --font-weight-extrabold: initial;
   --font-weight-black: initial;
 
@@ -320,8 +337,8 @@
   --color-current: currentColor;
 
   --font-sans:
-    var(--font-pretendard, "Pretendard Variable"), -apple-system,
-    BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", sans-serif;
+    "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui,
+    "Apple SD Gothic Neo", sans-serif;
 
   --shadow-card: var(--surface-shadow);
 
@@ -401,10 +418,12 @@
   --color-bg-neutral-weak: var(--role-bg-neutral-weak);
   --color-bg-neutral-weak-pressed: var(--role-bg-neutral-weak-pressed);
   --color-bg-neutral-solid: var(--role-bg-neutral-solid);
+  --color-bg-neutral-disabled: var(--role-bg-neutral-disabled);
   --color-bg-brand-solid: var(--role-bg-brand-solid);
   --color-bg-brand-solid-pressed: var(--role-bg-brand-solid-pressed);
   --color-bg-brand-weak: var(--role-bg-brand-weak);
   --color-bg-brand-weak-pressed: var(--role-bg-brand-weak-pressed);
+  --color-bg-brand-weak-selected: var(--role-bg-brand-weak-selected);
   --color-bg-positive-weak: var(--role-bg-positive-weak);
   --color-bg-warning-weak: var(--role-bg-warning-weak);
   --color-bg-critical-solid: var(--role-bg-critical-solid);
@@ -416,6 +435,7 @@
   --color-fg-neutral-muted: var(--role-fg-neutral-muted);
   --color-fg-neutral-subtle: var(--role-fg-neutral-subtle);
   --color-fg-neutral-contrast: var(--role-fg-neutral-contrast);
+  --color-fg-neutral-disabled: var(--role-fg-neutral-disabled);
   --color-fg-brand: var(--role-fg-brand);
   --color-fg-brand-contrast: var(--role-fg-brand-contrast);
   --color-fg-positive: var(--role-fg-positive);
@@ -424,6 +444,7 @@
 
   --color-stroke-neutral: var(--role-stroke-neutral);
   --color-stroke-neutral-muted: var(--role-stroke-neutral-muted);
+  --color-stroke-neutral-disabled: var(--role-stroke-neutral-disabled);
   --color-stroke-brand-solid: var(--role-stroke-brand-solid);
   --color-stroke-surface: var(--role-stroke-surface);
 }
@@ -448,4 +469,11 @@
   --color-border: var(--role-stroke-neutral);
   --color-input: var(--role-stroke-neutral);
   --color-ring: var(--role-stroke-brand-solid);
+}
+
+@layer base {
+  body {
+    background-color: var(--role-bg-neutral);
+    color: var(--role-fg-neutral);
+  }
 }
