@@ -14,8 +14,9 @@ type ServerClientOptions = {
   };
 };
 
-const { REFRESHED_COOKIE } = vi.hoisted(() => ({
+const { REFRESHED_COOKIE, REFRESHED_HEADER } = vi.hoisted(() => ({
   REFRESHED_COOKIE: { name: "sb-access-token", value: "refreshed-token-value" },
+  REFRESHED_HEADER: { name: "x-sample-cache-control", value: "no-store-sample" },
 }));
 
 vi.mock("@supabase/ssr", () => ({
@@ -23,7 +24,10 @@ vi.mock("@supabase/ssr", () => ({
     (_url: string, _key: string, options: ServerClientOptions) => ({
       auth: {
         getUser: async () => {
-          options.cookies.setAll([{ ...REFRESHED_COOKIE, options: {} }], {});
+          options.cookies.setAll(
+            [{ ...REFRESHED_COOKIE, options: {} }],
+            { [REFRESHED_HEADER.name]: REFRESHED_HEADER.value },
+          );
           return { data: { user: null }, error: null };
         },
       },
@@ -39,6 +43,16 @@ describe("미들웨어 — 갱신된 쿠키를 응답에 심는다", () => {
 
     expect(response.cookies.get(REFRESHED_COOKIE.name)?.value).toBe(
       REFRESHED_COOKIE.value,
+    );
+  });
+
+  it("setAll 둘째 인자로 받은 헤더가 실제 NextResponse 헤더에 실린다", async () => {
+    const request = new NextRequest("http://localhost:3000/mypage");
+
+    const response = await middleware(request);
+
+    expect(response.headers.get(REFRESHED_HEADER.name)).toBe(
+      REFRESHED_HEADER.value,
     );
   });
 });
