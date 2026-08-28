@@ -24,31 +24,34 @@
 
 ## 굵기
 
-다섯이다.
+넷이다.
 
 | 유틸 | 쓰는 자리 |
 | --- | --- |
-| `font-light` | 아주 큰 숫자 |
 | `font-normal` | 본문 |
 | `font-medium` | 라벨, 버튼 |
 | `font-semibold` | 제목 |
 | `font-bold` | 강조 |
 
-Tailwind가 들고 오는 `font-thin`, `font-extralight`, `font-extrabold`, `font-black`은 지웠다.
+Tailwind가 들고 오는 `font-thin`, `font-extralight`, `font-light`, `font-extrabold`, `font-black`은 지웠다.
+
+`font-light`가 저 목록에 든 것은 서체 때문이다. Wanted Sans의 가변 축이 400에서 시작해서 300을 걸어도 400으로 눌린다. 남겨두면 눌러도 아무 일이 없는 유틸이 되고, 그걸 모르는 사람이 큰 숫자를 가늘게 만들려고 계속 집는다.
 
 한글에서 굵기는 라틴 문자보다 티가 덜 난다. 획이 많아서 인접한 두 단계의 차이가 작다. 강조가 필요하면 굵기 한 단계보다 크기 한 단계가 잘 먹는다.
 
 ## 서체
 
-Pretendard를 self-host한다.
+Wanted Sans를 쓴다. Wanted Lab이 만들었고 [SIL Open Font License 1.1](https://scripts.sil.org/OFL)로 배포된다. 상업적 사용과 수정과 재배포가 전부 열려 있다.
 
-고른 이유는 셋이다. 한글과 라틴 문자의 획 두께가 맞아서 "9월 12일 10:00" 같은 문자열이 한 줄에서 어긋나지 않는다. 라이선스가 SIL Open Font License라 상업적 사용과 수정과 재배포가 전부 열려 있다. 그리고 Google Fonts에 없어서 CDN으로 붙일 길이 없고, 어차피 파일을 우리가 들고 있어야 한다.
+고른 이유는 셋이다. 한글과 라틴 문자를 같이 그린 UI용 서체라 "9월 12일 10:00" 같은 문자열이 한 줄에서 어긋나지 않는다. 가변 폰트 한 장이 400부터 1000까지 덮어서 위 굵기 넷이 파일 하나에 다 든다. 그리고 만든 쪽이 `unicode-range`로 갈라둔 웹폰트 빌드를 같이 배포한다 — 서브셋을 우리가 만들 필요가 없다.
 
-self-host는 라이선스 문제가 아니라 성능 선택이기도 하다. 외부 폰트 호스트를 거치면 첫 화면에서 연결이 한 번 더 생긴다. 매일 십 초 쓰는 앱에서 그 왕복이 화면 전체를 늦춘다.
+**저장소에 폰트 파일을 넣지 않는다.** jsdelivr에 올라간 조각 나눔 스타일시트를 `<link>`로 건다. 거는 코드는 [tokens.md](../tokens.md#서체-연결)에 있다.
 
-`next/font/local`로 붙인다. 설정 코드는 [tokens.md](../tokens.md#서체-연결)에 있다. 가변 폰트 한 장으로 무게 다섯을 다 덮는다. 무게마다 파일을 따로 받으면 다섯 번 내려받아야 한다.
+한글 폰트는 글자 수 때문에 라틴 폰트보다 훨씬 무겁다. 통짜 한 장이 1,259KB고, self-host하면 첫 화면에서 그걸 다 받는다. 조각 나눔은 화면에 실제로 찍힌 글자가 든 조각만 받게 해서 같은 화면을 100~300KB로 끝낸다. 매일 십 초 쓰는 앱이라 첫 화면의 무게가 전부다.
 
-한글 폰트는 글자 수 때문에 라틴 폰트보다 훨씬 무겁다. 실제로 붙일 때 서브셋 버전을 쓸지 확인한다. 폰트가 늦게 와도 글자가 먼저 보이게 `display: "swap"`을 건다.
+바깥 호스트를 거치니 연결이 한 번 더 생긴다. 그 값은 `preconnect`로 미리 치른다. 폰트가 늦게 와도 글자가 먼저 보이게 하는 `font-display: swap`은 그 스타일시트가 이미 걸어두었다.
+
+굵기를 `font-light`에서 뺀 것도 이 서체 때문이다. 가변 축이 400에서 시작해 300을 받아주지 않는다.
 
 ## 숫자 정렬
 
@@ -84,7 +87,7 @@ TDS가 이 원칙을 명시해뒀고 우리도 그대로 가져온다. 웨딩홀
 
 | 자리 | 단계 | 굵기 |
 | --- | --- | --- |
-| 급여 금액 | `text-3xl` | `font-light` |
+| 급여 금액 | `text-3xl` | `font-normal` |
 | 화면 제목 | `text-xl` | `font-semibold` |
 | 카드 제목 | `text-lg` | `font-semibold` |
 | 본문 | `text-base` | `font-normal` |
@@ -97,4 +100,4 @@ TDS가 이 원칙을 명시해뒀고 우리도 그대로 가져온다. 웨딩홀
 
 스케일과 접근성 원칙은 토스 TDS의 [Consumer UX Guide](https://developers-apps-in-toss.toss.im/design/consumer-ux-guide)에서 가져왔다.
 
-Pretendard는 [SIL Open Font License 1.1](https://scripts.sil.org/OFL)로 배포된다.
+Wanted Sans는 Wanted Lab이 만들었고 [SIL Open Font License 1.1](https://scripts.sil.org/OFL)로 배포된다. 원본은 [wanteddev/wanted-sans](https://github.com/wanteddev/wanted-sans)에 있다.

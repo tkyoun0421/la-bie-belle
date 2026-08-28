@@ -252,7 +252,7 @@ describe("역할 변수 누락", () => {
   });
 });
 
-const ROLE_TOKEN_COUNT = 27;
+const ROLE_TOKEN_COUNT = 31;
 
 const PALETTE_LESS_TOKENS = ["stroke.surface"];
 
@@ -270,7 +270,7 @@ function realEntries() {
 }
 
 describe("실제 tokens.md와 globals.css 대조", () => {
-  it("tokens.md의 역할 토큰 표에서 스물일곱 행을 읽는다", () => {
+  it("tokens.md의 역할 토큰 표에서 서른한 행을 읽는다", () => {
     expect(realEntries()).toHaveLength(ROLE_TOKEN_COUNT);
   });
 
