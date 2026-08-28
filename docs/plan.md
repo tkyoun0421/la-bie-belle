@@ -6,8 +6,7 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 
 ## 다음
 
-- [ ] 세션 기반을 깐다 — 계정 영역의 나머지가 전부 이 위에 선다
-  - 완료 조건: [docs/spec/session-foundation.md](spec/session-foundation.md). 로그인한 사람을 서버와 브라우저 양쪽에서 읽고 토큰을 만료 전에 갱신한다. 화면은 안 만든다.
+(없음)
 
 ## 진행
 
@@ -15,6 +14,8 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 
 ## 완료
 
+- [x] 세션 기반을 깐다 — 계정 영역의 나머지가 전부 이 위에 선다 — [docs/log/2026-08-28-2.md](log/2026-08-28-2.md)
+  - 완료 조건: [docs/spec/session-foundation.md](spec/session-foundation.md). 로그인한 사람을 서버와 브라우저 양쪽에서 읽고 토큰을 만료 전에 갱신한다. 화면은 안 만든다.
 - [x] `tokens.md` 8절이 덮지 않는 자리 넷을 메운다 — lint task에서 `globals.css`를 교체하며 드러났다 — [docs/log/2026-08-28.md](log/2026-08-28.md)
   - 완료 조건: `@custom-variant dark`가 생겨 `dark:` 유틸리티가 두 경우를 다 따라간다. `[data-theme="dark"]`가 걸렸을 때와, 속성이 아예 없는데 기기가 다크일 때다. `[data-theme="light"]`가 걸리면 기기가 다크여도 안 따라간다. `button.tsx`가 `dark:` 클래스를 여럿 쓰는데 지금은 팔레트만 뒤집히고 유틸리티는 안 따라오는 진짜 버그다.
   - 완료 조건: `@layer base`에서 body가 배경색과 글자색을 명시로 받는다. 지금은 `color-scheme`만으로 굴러간다.
