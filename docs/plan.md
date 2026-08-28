@@ -6,11 +6,7 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 
 ## 다음
 
-- [ ] 세션 배선의 조용한 실패 둘을 드러낸다 — 인증 위에 승인과 권한이 쌓이기 전에 바닥을 정리한다
-  - 완료 조건: `NEXT_PUBLIC_SUPABASE_URL`이나 `NEXT_PUBLIC_SUPABASE_ANON_KEY`가 없으면 `createSupabaseServerClient`가 그 자리에서 던진다. 지금은 `?? ""`로 빈 문자열을 넘겨서 env를 빠뜨린 배포가 "아무도 로그인 안 되는 정상 앱"으로 조용히 돈다. `NEXT_PUBLIC_*`은 빌드 시점에 번들에 박히니 CI의 env 주입이 `pnpm build`보다 뒤로 밀려도 아무것도 안 잡는다.
-  - 완료 조건: 쿠키 쓰기가 실패해도 캐시 금지 헤더는 응답에 실린다. 지금은 `catch`의 `return`이 헤더를 넘기는 루프까지 건너뛴다. 두 일은 독립인데 하나가 다른 하나를 막고 있고, 막히는 쪽이 하필 토큰 실린 응답이 캐시에 남는 걸 방지하는 장치다.
-  - 완료 조건: `.tsx` 더미 UI 규칙이 간접 호출을 못 잡는다는 한계가 문서에 있다. `@/shared/lib/`를 한 겹 거치면 `house/dumb-ui`가 통과시킨다 — `src/app/page.tsx`가 지금 그 상태다. 규칙의 버그가 아니라 type-aware lint를 안 켜기로 한 결정의 대가라, 그 둘을 같이 적는다.
-  - 범위 밖: 미들웨어의 `matcher`. 지금은 함수 안에서 정적 자원을 걸러내는데 `export const config = { matcher }`를 쓰면 실행 자체를 안 한다. 동작은 맞고 명세도 지켰으니 열린 결정으로 둔다.
+(없음)
 
 ## 진행
 
@@ -18,6 +14,11 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 
 ## 완료
 
+- [x] 세션 배선의 조용한 실패 둘을 드러낸다 — 인증 위에 승인과 권한이 쌓이기 전에 바닥을 정리한다 — [docs/log/2026-08-28-3.md](log/2026-08-28-3.md)
+  - 완료 조건: `NEXT_PUBLIC_SUPABASE_URL`이나 `NEXT_PUBLIC_SUPABASE_ANON_KEY`가 없으면 `createSupabaseServerClient`가 그 자리에서 던진다. 지금은 `?? ""`로 빈 문자열을 넘겨서 env를 빠뜨린 배포가 "아무도 로그인 안 되는 정상 앱"으로 조용히 돈다. `NEXT_PUBLIC_*`은 빌드 시점에 번들에 박히니 CI의 env 주입이 `pnpm build`보다 뒤로 밀려도 아무것도 안 잡는다.
+  - 완료 조건: 쿠키 쓰기가 실패해도 캐시 금지 헤더는 응답에 실린다. 지금은 `catch`의 `return`이 헤더를 넘기는 루프까지 건너뛴다. 두 일은 독립인데 하나가 다른 하나를 막고 있고, 막히는 쪽이 하필 토큰 실린 응답이 캐시에 남는 걸 방지하는 장치다.
+  - 완료 조건: `.tsx` 더미 UI 규칙이 간접 호출을 못 잡는다는 한계가 문서에 있다. `@/shared/lib/`를 한 겹 거치면 `house/dumb-ui`가 통과시킨다 — `src/app/page.tsx`가 지금 그 상태다. 규칙의 버그가 아니라 type-aware lint를 안 켜기로 한 결정의 대가라, 그 둘을 같이 적는다.
+  - 범위 밖: 미들웨어의 `matcher`. 지금은 함수 안에서 정적 자원을 걸러내는데 `export const config = { matcher }`를 쓰면 실행 자체를 안 한다. 동작은 맞고 명세도 지켰으니 열린 결정으로 둔다.
 - [x] 세션 기반을 깐다 — 계정 영역의 나머지가 전부 이 위에 선다 — [docs/log/2026-08-28-2.md](log/2026-08-28-2.md)
   - 완료 조건: [docs/spec/session-foundation.md](spec/session-foundation.md). 로그인한 사람을 서버와 브라우저 양쪽에서 읽고 토큰을 만료 전에 갱신한다. 화면은 안 만든다.
 - [x] `tokens.md` 8절이 덮지 않는 자리 넷을 메운다 — lint task에서 `globals.css`를 교체하며 드러났다 — [docs/log/2026-08-28.md](log/2026-08-28.md)

@@ -4,11 +4,11 @@
 
 ## 지금 상태
 
-세션 기반이 깔렸다. `docs/spec/session-foundation.md`의 완료 조건 여섯 중 다섯 반이 채워졌다. `src/middleware.ts`가 요청마다 토큰을 갱신해 요청 쿠키와 응답 쿠키 양쪽에 심고, 정적 자원 경로(`_next/static`, `_next/image`, 파비콘, 이미지 확장자)는 건너뛴다. `src/shared/lib/create-supabase-server-client.ts`가 Next의 쿠키 저장소를 `@supabase/ssr`의 `getAll`·`setAll` 모양으로 잇고, `get-current-user.ts`가 `getUser()`로만 지금 로그인한 사람을 읽는다. `getSession()` 금지는 `tests/lint/no-get-session.test.ts`가 `src/` 아래를 소스 스캔으로 지킨다. `POST /auth/logout`이 쿠키를 지우고, `/`가 로그인한 사람의 이메일 주소를 그대로 그려 세션이 서버까지 닿았음을 증명하는 발판 역할을 한다.
+세션 기반이 깔려 있고, 이번 회차에서 그 배선에 숨어 있던 조용한 실패 셋을 고쳤다. `src/shared/lib/create-supabase-server-client.ts`는 이제 `NEXT_PUBLIC_SUPABASE_URL`이나 `NEXT_PUBLIC_SUPABASE_ANON_KEY`가 없으면 그 자리에서 던진다 — `?? ""`로 빈 문자열을 넘기던 자리를 없앴다. 쿠키 쓰기 실패와 캐시 금지 헤더 전달이 분리됐다 — `catch`의 `return`이 헤더 루프를 더는 막지 않는다. `house/dumb-ui` lint 규칙이 `@/shared/lib/`를 거치는 간접 호출을 못 잡는다는 한계가 ADR-001에 적혔다. 미들웨어의 `matcher` 미비는 성능 판단으로 남겨 이번엔 안 건드렸다.
 
-브라우저용 Supabase 클라이언트는 아직 없다. 빌드는 `tsconfig.build.json`으로 앱 코드만 타입 검사하고, 테스트까지 보는 검사는 `pnpm typecheck`가 맡아 CI에 새로 들어갔다. e2e는 `playwright.config.ts`의 `workers: 1`로 직렬로 돈다.
+`src/middleware.ts`가 요청마다 토큰을 갱신해 요청 쿠키와 응답 쿠키 양쪽에 심고, 정적 자원 경로는 건너뛴다. `get-current-user.ts`가 `getUser()`로만 지금 로그인한 사람을 읽는다. `getSession()` 금지는 `tests/lint/no-get-session.test.ts`가 소스 스캔으로 지킨다. `POST /auth/logout`이 쿠키를 지우고, `/`가 로그인한 사람의 이메일 주소를 그대로 그려 세션이 서버까지 닿았음을 증명하는 발판 역할을 한다.
 
-`docs/domain/`의 여섯 파일은 이번에도 안 건드렸다. 승인·역할·차단·퇴사는 이 task가 안 다뤘다.
+브라우저용 Supabase 클라이언트는 아직 없다. `docs/domain/`의 여섯 파일은 이번에도 안 건드렸다. 승인·역할·차단·퇴사는 아직 다루지 않았다.
 
 ## 다음 첫 수
 
@@ -16,11 +16,13 @@
 
 ## 열린 결정
 
+- env가 없으면 미들웨어가 모든 요청에서 던져 앱 전체가 500이 된다. 조용한 로그아웃보다 낫다고 판단해 그렇게 갔지만, 사용자에게는 Next 기본 에러 화면이 뜬다. `error.tsx`를 다룰 때 같이 본다 — 로그인 화면 task가 그 자리다.
+- 미들웨어에 `matcher`가 없다. 함수 안에서 정적 자원을 걸러내는데 `export const config = { matcher }`를 쓰면 실행 자체를 안 한다. 동작은 맞고 명세도 지켰으니 성능 판단으로 남겨뒀다.
 - 브라우저용 Supabase 클라이언트 팩토리가 없다. 완료 조건 1의 절반이다. 구글 버튼이 생기는 로그인 화면 task로 미뤘고, `src/shared/lib/__tests__/create-supabase-browser-client.test.ts`를 작성자에게 배정해야 한다.
 - `src/app/page.tsx`가 통신을 한다 — `.tsx`는 더미 UI라는 ADR-001 규칙과 어긋난다. 명세가 발판이라 밝혔고 로그인 화면 task에서 걷어낸다. 살아남으면 `.ts`로 빼야 한다.
 - `playwright.config.ts`에 `workers: 1`과 `fullyParallel: true`가 같이 있다 — 앞이 뒤를 무의미하게 만든다. e2e가 늘면 아플 자리다.
 - Next 16이 `middleware.ts`를 deprecate하고 `proxy`로 밀고 있다 — 테스트가 파일명을 못박아둬서 옮길 때 같이 고쳐야 한다.
-- CI가 `pnpm format:check`에서 죽는 일이 두 번째다. 방금 더한 테스트 파일에 포매터를 안 돌려서다. 증축 규칙상 세 번째면 작성자 정의문에 `pnpm format:check`를 넣는다.
+- 포매터를 언제 정의문에 박을지. 증축 규칙 1번은 CI가 몇 번 죽었나가 아니라 **같은 스폰 프롬프트를 몇 번 썼나**를 센다. 이번 회차에 `npx prettier --write`를 writer와 implementer 스폰 양쪽에 넣었으니 둘이 찼고, 다음 스폰에서 한 번 더 쓰면 셋째다. 인과는 이미 양방향으로 확인됐다 — 안 적은 회차엔 CI가 죽었고 적은 회차엔 안 죽었다. 셋째가 되면 그 자리에서 추출한다.
 - PR #197의 lint 규칙 표가 저장소 안에 없고 PR 본문에만 있다 — 규칙 번호 불변식(`DOCUMENTED_LINT_RULE_COUNT`)이 그 표에 기대는데 정본이 저장소 밖에 있다.
 - `tokens.md` 7절 대비 값 일곱 줄 중 다섯이 hex 재계산과 어긋난다. 전부 4.5:1은 넘겨서 급하지 않다.
 - `tests/lint/tsx-dumb-ui.test.ts:162`의 인라인 `layout.tsx` 픽스처가 아직 Geist를 가리킨다. 이 파일의 픽스처 다섯(`layout`·`page`·`providers`·`button`·`card`)이 전부 실제 소스를 베낀 인라인 사본이라, 소스가 바뀔 때마다 같은 방식으로 썩는다. `design-token-values.test.ts`처럼 `readFileSync`로 실제 파일을 읽게 옮길지는 안 정했다.
@@ -42,6 +44,8 @@
 
 ## 주의
 
+- **vitest가 `NEXT_PUBLIC_*`을 `process.env`에 안 얹는다.** Vite의 `envPrefix` 기본값이 `VITE_`라서다. env를 읽는 코드를 테스트하려면 `vi.stubEnv`로 명시로 채워야 한다. `.env.local`에 값이 있어도 소용없다.
+- **`create-supabase-server-client`는 이제 env가 없으면 던진다.** 이 팩토리를 부르는 새 테스트를 쓸 때 `vi.stubEnv`가 필요하다.
 - **`tests/lint/.tmp-format-check/`를 `.gitignore`에 넣지 않는다.** Prettier 3이 `.gitignore`를 기본 ignore 파일로 읽는다. 넣으면 `format-check.test.ts`가 만든 픽스처를 prettier가 건너뛰어 `--check`가 조용히 0으로 끝난다 — 테스트가 사실상 안 도는데 초록으로 보인다.
 - **`pnpm typecheck`가 `@supabase/supabase-js`를 못 찾으며 깨지는 일이 반복된다.** `pnpm install --frozen-lockfile`로 복구한다.
 - **`pnpm typecheck`와 `pnpm build`가 보는 범위가 다르다.** 빌드는 `tsconfig.build.json`으로 테스트를 뺀 앱 코드만 본다. 테스트 파일의 타입 오류는 `pnpm typecheck`(CI에 새로 들어감)나 `pnpm test`에서만 드러난다.
@@ -57,4 +61,4 @@
 - type-aware lint(`no-floating-promises` 등)는 속도를 이유로 안 켜져 있다. await 빠진 Supabase 호출 같은 건 lint가 못 잡는다.
 - 디자인 값 lint 규칙은 `src/**/__tests__/**`를 예외로 둔다. 대조 테스트가 픽스처로 oklch 리터럴 문자열을 쥐고 있어서다.
 - Wanted Sans는 CDN(jsdelivr) 의존이다. self-host가 아니라서 그 서비스가 죽으면 폰트가 시스템 폴백으로 떨어진다. `layout.tsx`의 `preconnect`는 지연만 줄일 뿐 가용성을 보장하지 않는다.
-- CI는 `pnpm build` 앞에서 `supabase status`의 값을 `NEXT_PUBLIC_SUPABASE_URL`과 `NEXT_PUBLIC_SUPABASE_ANON_KEY`로 넘긴다. `NEXT_PUBLIC_*`은 빌드 시점에 번들에 박히므로 이 순서가 바뀌면 e2e가 빈 URL을 든 앱을 상대하게 된다.
+- CI는 `pnpm build` 앞에서 `supabase status`의 값을 `NEXT_PUBLIC_SUPABASE_URL`과 `NEXT_PUBLIC_SUPABASE_ANON_KEY`로 넘긴다. `NEXT_PUBLIC_*`은 빌드 시점에 번들에 박히므로 이 순서가 바뀌면, `/`와 `/auth/logout`이 동적 라우트라 빌드는 그대로 통과하고 실행 시점에 `createSupabaseServerClient`가 던져 요청마다 500이 뜬다. 예전처럼 빈 URL을 든 앱이 조용히 뜨는 게 아니다.
