@@ -22,7 +22,7 @@
 - `src/app/page.tsx`가 통신을 한다 — `.tsx`는 더미 UI라는 ADR-001 규칙과 어긋난다. 명세가 발판이라 밝혔고 로그인 화면 task에서 걷어낸다. 살아남으면 `.ts`로 빼야 한다.
 - `playwright.config.ts`에 `workers: 1`과 `fullyParallel: true`가 같이 있다 — 앞이 뒤를 무의미하게 만든다. e2e가 늘면 아플 자리다.
 - Next 16이 `middleware.ts`를 deprecate하고 `proxy`로 밀고 있다 — 테스트가 파일명을 못박아둬서 옮길 때 같이 고쳐야 한다.
-- CI가 `pnpm format:check`에서 죽었던 일이 두 번 있었다. 이번 회차는 스폰 프롬프트에 `npx prettier --write`를 명시로 넣어 안 죽었다 — 즉 증축 규칙의 세 번째 카운트는 안 채워졌지만, 매번 프롬프트에 적어야 막힌다는 사실만 드러났다. 정의문에 박아 넣을지는 아직 안 정했다.
+- 포매터를 언제 정의문에 박을지. 증축 규칙 1번은 CI가 몇 번 죽었나가 아니라 **같은 스폰 프롬프트를 몇 번 썼나**를 센다. 이번 회차에 `npx prettier --write`를 writer와 implementer 스폰 양쪽에 넣었으니 둘이 찼고, 다음 스폰에서 한 번 더 쓰면 셋째다. 인과는 이미 양방향으로 확인됐다 — 안 적은 회차엔 CI가 죽었고 적은 회차엔 안 죽었다. 셋째가 되면 그 자리에서 추출한다.
 - PR #197의 lint 규칙 표가 저장소 안에 없고 PR 본문에만 있다 — 규칙 번호 불변식(`DOCUMENTED_LINT_RULE_COUNT`)이 그 표에 기대는데 정본이 저장소 밖에 있다.
 - `tokens.md` 7절 대비 값 일곱 줄 중 다섯이 hex 재계산과 어긋난다. 전부 4.5:1은 넘겨서 급하지 않다.
 - `tests/lint/tsx-dumb-ui.test.ts:162`의 인라인 `layout.tsx` 픽스처가 아직 Geist를 가리킨다. 이 파일의 픽스처 다섯(`layout`·`page`·`providers`·`button`·`card`)이 전부 실제 소스를 베낀 인라인 사본이라, 소스가 바뀔 때마다 같은 방식으로 썩는다. `design-token-values.test.ts`처럼 `readFileSync`로 실제 파일을 읽게 옮길지는 안 정했다.
