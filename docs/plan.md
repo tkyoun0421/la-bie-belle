@@ -6,14 +6,21 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
 
 ## 다음
 
-- [ ] `tokens.md` 8절이 덮지 않는 자리 넷을 메운다 — lint task에서 `globals.css`를 교체하며 드러났다
+(없음)
+
+## 진행
+
+(없음)
+
+## 완료
+
+- [x] `tokens.md` 8절이 덮지 않는 자리 넷을 메운다 — lint task에서 `globals.css`를 교체하며 드러났다 — [docs/log/2026-08-28.md](log/2026-08-28.md)
   - 완료 조건: `@custom-variant dark`가 생겨 `dark:` 유틸리티가 두 경우를 다 따라간다. `[data-theme="dark"]`가 걸렸을 때와, 속성이 아예 없는데 기기가 다크일 때다. `[data-theme="light"]`가 걸리면 기기가 다크여도 안 따라간다. `button.tsx`가 `dark:` 클래스를 여럿 쓰는데 지금은 팔레트만 뒤집히고 유틸리티는 안 따라오는 진짜 버그다.
   - 완료 조건: `@layer base`에서 body가 배경색과 글자색을 명시로 받는다. 지금은 `color-scheme`만으로 굴러간다.
   - 완료 조건: `card.tsx`의 `CardTitle`에서 `font-heading` 클래스가 사라진다. 제목은 본문과 같은 폰트를 쓰고 굵기와 크기로만 구분하기로 정했다.
   - 완료 조건: `--font-sans`가 Wanted Sans를 가리키고 화면에 실제로 그 서체가 걸린다. jsdelivr의 조각 나눔 스타일시트를 쓰고 저장소에 폰트 파일을 넣지 않는다. `layout.tsx`에서 Geist와 Geist Mono import가 빠진다.
   - 완료 조건: 굵기가 넷으로 준다. Wanted Sans가 400부터 시작해 `font-light`(300)이 400으로 눌리기 때문이다. `tokens.md` 3절과 `foundation/typography.md`에서 `font-light`가 빠지고, 급여 금액은 `font-normal`로 바뀐다.
-
-- [ ] 값이 비어 있던 상태 토큰 셋을 채운다 — 출근 인증 버튼이 첫 화면부터 비활성을 쓴다
+- [x] 값이 비어 있던 상태 토큰 셋을 채운다 — 출근 인증 버튼이 첫 화면부터 비활성을 쓴다 — [docs/log/2026-08-28.md](log/2026-08-28.md)
   - 완료 조건: `bg.neutral-disabled`(neutral-100) · `fg.neutral-disabled`(neutral-700) · `stroke.neutral-disabled`(neutral-200) 셋이 `tokens.md` 2절 표와 8절 CSS 양쪽에 있다. 계열을 나누지 않아 갈색 버튼이든 삭제 버튼이든 비활성이면 같은 회색이다.
   - 완료 조건: `bg.brand-weak-selected`(brand-100)가 2절 표와 8절 CSS 양쪽에 있다. 선택된 줄의 테두리는 이미 있는 `stroke.brand-solid`를 쓴다.
   - 완료 조건: 자릿수가 줄맞춤돼야 하는 자리에 `font-variant-numeric: tabular-nums`를 쓴다는 규칙이 `tokens.md` 3절에 한 줄로 있다. 급여 금액과 근무 시간이 그 자리다.
@@ -21,12 +28,6 @@ task는 제목 한 줄과 완료 조건으로 이뤄진다. 완료 조건은 코
   - 완료 조건: 같은 목록에서 "라이트와 다크 중 무엇이 기본인가"도 빠진다. 기기 설정을 따르되 앱에서 덮을 수 있게 하기로 정했다. 대신 테마를 고르는 UI와 그 선택을 어디 저장할지가 새 미정 항목으로 들어간다.
   - 완료 조건: `components.md`의 destructive 규칙이 좁아진다. 빨강은 계정 탈퇴처럼 정말 되돌릴 수 없는 자리에만 쓰고 근무표 삭제는 일반 버튼이다. 빨강이 흔해지면 정작 위험한 자리에서 손이 안 멈춘다.
   - 완료 조건: `pnpm test`의 토큰 대조가 통과한다. 2절 표와 8절 CSS가 어긋나면 이 테스트가 잡는다.
-
-## 진행
-
-(없음)
-
-## 완료
 
 - [x] 규율을 lint와 포매터로 기계화한다 — 문서에만 적힌 규칙을 CI가 막게 한다 — [docs/log/2026-08-26-4.md](log/2026-08-26-4.md)
   - 완료 조건 (경계): `pnpm lint`가 `src/` 안의 상대 경로 import를 예외 없이 잡는다. `tests/`를 가리키는 import는 예외로 뚫지 않고 `@tests/*` alias를 새로 만들어 없앤다. 역방향 레이어 import(shared→entities, entities→features, features→screens, screens→app)를 잡는다. 같은 층 다른 슬라이스 import(entities/a → entities/b)를 잡는다.
