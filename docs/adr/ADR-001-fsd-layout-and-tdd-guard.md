@@ -28,6 +28,8 @@ widgets 레이어는 두지 않는다. 화면 조립 덩이가 실제로 반복�
 
 `.tsx`는 더미 UI다. 받은 것을 그리기만 한다. 계산, 상태 규칙, 통신은 전부 `.ts`로 뺀다.
 
+집행은 `house/dumb-ui` lint 규칙이 한다(`eslint-rules/dumb-ui.mjs`, `src/**/*.tsx`에 걸린다). `.tsx` 안의 `@supabase/*` import와 `fetch()` 호출과 TanStack Query 훅 직접 호출을 잡는다.
+
 ## 테스트 자리
 
 - 단위 테스트는 대상 파일과 같은 레벨의 `__tests__/<이름>.test.ts`에 둔다.
@@ -55,3 +57,7 @@ widgets 레이어는 두지 않는다. 화면 조립 덩이가 실제로 반복�
 훅은 Write와 Edit만 본다. 그 밖의 경로로 파일을 쓰면 통과한다.
 
 라우트 이름을 짝짓기에 쓰므로, 서로 다른 라우트가 마지막 디렉터리 이름을 공유하면 spec 하나를 함께 가리킨다. 그런 라우트가 생기면 이름을 다르게 짓는다.
+
+`house/dumb-ui`는 `.tsx`가 직접 쓰는 것만 본다. `@/shared/lib/`를 한 겹 거치면 통과한다. `src/app/page.tsx`가 지금 그 상태다 — `getCurrentUser`를 불러 Supabase에 붙는데 lint는 아무 말도 안 한다.
+
+규칙의 버그가 아니라 type-aware lint를 안 켜기로 한 결정의 대가다. 어떤 `.ts` 함수가 통신하는지 알려면 타입 정보가 필요한데, 그건 lint 속도를 이유로 이미 접었다(`docs/plan.md`의 lint task 「범위 밖」). 그러니 `.tsx`와 통신 사이의 경계는 lint가 아니라 리뷰가 지킨다.
