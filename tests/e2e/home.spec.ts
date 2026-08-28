@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { countGetUserCalls } from "@tests/e2e/support/auth-calls";
+import { seedSignedInSession } from "@tests/e2e/support/session";
 
 test("기본 페이지가 뜨고 핵심 텍스트가 보인다", async ({ page }) => {
   await page.goto("/");
@@ -70,4 +72,48 @@ test("Wanted Sans가 CDN에서 로드되어 실제 렌더 텍스트에 걸린다
   expect(geistSansVariable).toBe("");
 
   expect(jsdelivrWoff2Statuses).toContain(200);
+});
+
+test("로그인하지 않은 채 접속하면 로그인하지 않았다는 문구가 보인다", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  await expect(page.getByText("로그인하지 않았습니다")).toBeVisible();
+});
+
+test("세션을 심고 접속하면 로그인한 사람의 이메일 주소가 그대로 보인다", async ({
+  page,
+  context,
+  baseURL,
+}) => {
+  const user = await seedSignedInSession(
+    context,
+    baseURL ?? "http://localhost:3000",
+  );
+
+  await page.goto("/");
+
+  await expect(page.getByText(user.email)).toBeVisible();
+});
+
+test("이미지 같은 정적 자원을 요청해도 인증 갱신 호출이 안 딸려 온다", async ({
+  page,
+  context,
+  baseURL,
+}) => {
+  await seedSignedInSession(context, baseURL ?? "http://localhost:3000");
+
+  const beforeStatic = countGetUserCalls();
+  const staticResponse = await page.goto("/favicon.ico");
+  expect(staticResponse?.ok()).toBe(true);
+  const afterStatic = countGetUserCalls();
+
+  expect(afterStatic).toBe(beforeStatic);
+
+  const homeResponse = await page.goto("/");
+  expect(homeResponse?.ok()).toBe(true);
+  const afterHome = countGetUserCalls();
+
+  expect(afterHome).toBeGreaterThan(afterStatic);
 });
