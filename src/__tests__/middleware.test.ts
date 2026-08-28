@@ -16,7 +16,10 @@ type ServerClientOptions = {
 
 const { REFRESHED_COOKIE, REFRESHED_HEADER } = vi.hoisted(() => ({
   REFRESHED_COOKIE: { name: "sb-access-token", value: "refreshed-token-value" },
-  REFRESHED_HEADER: { name: "x-sample-cache-control", value: "no-store-sample" },
+  REFRESHED_HEADER: {
+    name: "x-sample-cache-control",
+    value: "no-store-sample",
+  },
 }));
 
 vi.mock("@supabase/ssr", () => ({
@@ -24,10 +27,9 @@ vi.mock("@supabase/ssr", () => ({
     (_url: string, _key: string, options: ServerClientOptions) => ({
       auth: {
         getUser: async () => {
-          options.cookies.setAll(
-            [{ ...REFRESHED_COOKIE, options: {} }],
-            { [REFRESHED_HEADER.name]: REFRESHED_HEADER.value },
-          );
+          options.cookies.setAll([{ ...REFRESHED_COOKIE, options: {} }], {
+            [REFRESHED_HEADER.name]: REFRESHED_HEADER.value,
+          });
           return { data: { user: null }, error: null };
         },
       },
