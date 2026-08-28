@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { isStaticAssetPath, middleware } from "@/middleware";
 
 type SetAllCookies = (
@@ -38,7 +38,13 @@ vi.mock("@supabase/ssr", () => ({
 }));
 
 describe("미들웨어 — 갱신된 쿠키를 응답에 심는다", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("getUser 호출 중 setAll로 넘긴 쿠키가 실제 NextResponse 쿠키에 실린다", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://example.supabase.co");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "test-anon-key");
     const request = new NextRequest("http://localhost:3000/mypage");
 
     const response = await middleware(request);
@@ -49,6 +55,8 @@ describe("미들웨어 — 갱신된 쿠키를 응답에 심는다", () => {
   });
 
   it("setAll 둘째 인자로 받은 헤더가 실제 NextResponse 헤더에 실린다", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://example.supabase.co");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "test-anon-key");
     const request = new NextRequest("http://localhost:3000/mypage");
 
     const response = await middleware(request);
