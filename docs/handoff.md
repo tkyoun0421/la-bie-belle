@@ -6,21 +6,21 @@
 
 **작업 트리가 둘 서 있다.** `~/orca/workspaces/la-bie-belle/` 아래 `design`과 `dev`고, 둘 다 detached로 최신 main에 서 있다. 훅 경로와 env와 의존성까지 준비돼 있다. 무엇을 어디서 하는지는 그때 사람이 정하고 문서에 못 박지 않았다. 트리를 열고 닫는 절차는 `.claude/skills/worktree/`에 있다.
 
-페이지별 디자인 문서의 첫 파일 `docs/design-system/pages/login.md`가 생겼다. 로그인 화면과 승인 대기 화면의 짜임, 역할 토큰, 화면 문안, 모션이 들어 있고 그 틀(화면 절 넷 + 안 담은 것 + 규칙과 부딪힌 자리 + 아직 안 정한 것)이 `README.md`에 박혔다. 뒤따르는 화면은 이 틀을 따른다.
+**`globals.css`가 이제 `tokens.md`에서 생성된다.** `pnpm tokens:css`가 표를 읽어 `src/app/globals.css`를 통째로 쓴다. 8절 「CSS 전문」은 표로 담을 칸이 없는 넷(뼈대, Tailwind 기본값 초기화와 서체, shadcn 다리, `@layer base`의 body)만 남았고 나머지는 표에서 생성된다. 첫 실행이 바꾼 건 순서 셋뿐이었다 — `@custom-variant dark` 위치, `--text-*` 순서, `--radius-*` 위치. 값은 한 자도 안 바뀌었다. 옛 파리티 검사(`tests/lint/token-css-parity.ts`와 그 test)는 지워졌고, `tests/lint/generate-globals-css.test.ts`가 생성 결과와 저장된 파일을 통째로 대조한다.
 
-`tokens.md`가 세 자리에서 움직였다. 6절에 「되풀이 주기와 계단」(`--interval-rotate`·`--interval-beat`·`--stagger-step`), 9절에 「바깥이 정한 값」(`--vendor-google-bg`·`--vendor-google-stroke`·`--vendor-google-fg`), 7절 대비 표에 옅은 면 조합 일곱 줄이 들어갔다. `on bg.neutral` 여덟 줄의 어긋난 값도 이때 고쳤다. 같은 토큰 여섯이 `src/app/globals.css`에도 들어갔다 — 파리티 테스트가 8절과 그 파일을 맞대어 보기 때문이다. 역할 토큰은 서른한 행 그대로다.
+**7절 대비값도 이제 기계가 잰다.** `tests/lint/contrast-check.ts`가 1절 팔레트 hex에서 WCAG 공식으로 다시 계산해 「측정한 조합」 16행(라이트·다크)과 「떨어진 조합」 4행을 대조하고, 측정한 조합은 4.5:1 이상인지도 본다. 표 값은 재계산해도 전부 맞았다 — 검사를 세운 건 붉은불을 켜기 위해서가 아니라 초록불이 증거가 되게 하기 위해서였고, 변이 다섯(값 어긋남 둘, 행 삭제, 헤더 파손, 반올림 삽입)으로 실제로 무는 걸 확인했다. 표 파서(`Row` 타입·`readRows`·`requireRows`·`bySection`·헤더 상수)는 `scripts/tokens-md.mts`로 빠져 생성기와 검사가 같이 쓴다.
 
-`domain/notification.md`의 알림이 다섯에서 여섯이 됐다. 가입 승인이 맨 앞이고 여섯 중 그것만 승인 전 사람에게 간다. 「켜는 자리」 절이 알림 켜기와 홈 화면 추가 안내를 승인 대기 화면으로 정했다. `foundation/color.md`의 브랜드 색 자리는 브랜드 마크가 들어와 넷이다.
+생성기와 검사 스크립트는 `.mts` 확장자로 `node --experimental-strip-types`로 돈다. `eslint.config.mjs`의 files 글롭에 `mts`를 더했다.
 
-포맷 검사가 pre-commit 훅으로 내려갔다. 훅이 staged 파일의 포맷을 고쳐 인덱스에 다시 올리고, 일부만 staged된 파일은 고치지 않고 막는다. `CLAUDE.md` 증축 규칙에 "무엇을 지을지는 원인이 정한다"는 문단이 붙었다. `.claude/skills/explain-simply/`가 생겨 대화 설명 톤을 다룬다.
+`plan.md`의 「다음」이 디자인 task 하나로 줄었다. 코드 쪽 task는 지금 없다.
 
-코드는 지난 회차 그대로다. 세션 기반이 서 있고 화면은 아직 없다. 브라우저용 Supabase 클라이언트도 아직 없다.
+페이지별 디자인 문서는 여전히 `docs/design-system/pages/login.md` 하나뿐이다. 로그인 화면과 승인 대기 화면의 짜임, 역할 토큰, 화면 문안, 모션이 들어 있고 그 틀(화면 절 넷 + 안 담은 것 + 규칙과 부딪힌 자리 + 아직 안 정한 것)이 `README.md`에 박혔다. 뒤따르는 화면은 이 틀을 따른다.
+
+코드는 세션 기반이 서 있고 화면은 아직 없다. 브라우저용 Supabase 클라이언트도 아직 없다.
 
 ## 다음 첫 수
 
-`plan.md`의 「다음」에 task 둘이 있고 순서가 있다. **`globals.css`를 `tokens.md`에서 생성하는 것이 먼저다** — 토큰 값을 고치는 일이 그 위에 얹힌다. 7절 대비값 검사는 그다음이다.
-
-디자인 쪽에는 아직 task가 없다. 로그인 다음 화면을 정하면 선다. 그릴 수 있는 화면과 도메인이 막고 있는 화면은 아래 「다음에 그릴 화면」에 있다.
+`plan.md`의 「다음」에 「근무자 대시보드 디자인을 정한다」 하나만 남았다. 시안을 사람이 보고 고르는 디자인 task다. 코드 쪽 task는 지금 비어 있다.
 
 ## 다음에 그릴 화면
 
@@ -34,6 +34,7 @@
 
 ## 열린 결정
 
+- **2절 표에 「참조」 열을 열지.** `scripts/generate-globals-css.mts`의 `SURFACE_STROKE_IN_DARK = "var(--palette-neutral-200)"`가 값이 문서 밖에 사는 유일한 자리다. 2절 `stroke.surface` 행의 다크 칸이 hex(`#272523`)라 팔레트 참조로 되돌릴 수 없고 표에 그 참조를 담을 칸도 없어서, 지금은 8절 산문에 그 사실만 적어뒀다. 2절 표에 칸을 열어 끌어올릴지는 안 정했다.
 - **`src/` 처분.** "따로 건질 건 없을 것 같다"고 했지만 총괄이 삭제 지시로 읽지 않고 그대로 뒀다 — 되돌리기 어려운 쪽을 기본값으로 삼지 않았다. 실제로 지우려면 말해줘야 한다.
 - **권한을 거부한 뒤의 알림 영역 모습.** 브라우저는 한 번 거부하면 다시 묻지 않는다. 첫째 모습(아직 안 켬)을 그대로 두면 눌러도 아무 일이 없는 버튼이 남고, 아이폰 안내를 띄우면 물을 길이 없는 경우와 물었다 거부당한 경우를 뒤섞는다. `pages/login.md`의 「아직 안 정한 것」에 있다.
 - **거절됐을 때 알림을 보낼지.** 승인이 알림으로 나가니 거절도 대칭으로 나갈 법한데, 거절은 이번만이고 같은 사람이 다시 가입할 수 있다. 통보가 최종 판정처럼 읽히면 다시 올 사람을 돌려세운다. 안 보내면 승인 대기 화면에 계속 남는다. `domain/notification.md`에 있다.
@@ -52,7 +53,7 @@
 - 관리자 승인 RLS가 `security definer`를 필요로 한다. 컬럼 권한은 역할 단위라 `authenticated`에 `approved_at`을 열면 관리자든 아니든 다 열린다. 지금 스키마는 그 문을 안 열어뒀다.
 - integration 테스트가 만든 사용자를 치우지 않는다. anon 키로는 `auth.users`를 못 지우고, 프로필 행 삭제는 테스트가 지키는 바로 그 정책에 걸린다. 지우려면 service role이 필요한데 금지다. `supabase/config.toml`이 IP당 5분에 서른 번으로 가입을 막는데 e2e도 이제 사용자를 만드니, 계정 task를 여러 회차 돌리면 닿는다.
 - 테마를 고르는 UI와 그 선택을 어디 저장할지가 미정이다. 기기 설정을 따르되 앱에서 덮을 수 있게 하기로는 정했지만, 그 속성을 실제로 걸어줄 화면이 없다. `tokens.md`의 「아직 안 정한 것」에 있다.
-- `token-css-parity`가 `tests/lint/`로 옮겨가며 `tdd-guard-unit.py`의 사전 차단(`src/` 아래만 봄)에서 빠진 채다. CI의 `pnpm test`가 대신 잡지만, 편집 순간 손이 막히는 장치는 아직 없다.
+- `scripts/tokens-md.mts`와 `scripts/generate-globals-css.mts`에 `SUBSECTION` 정규식이 각각 있다. 공유 모듈이 export를 안 해서고, 생성기의 `readFences`는 heading에서 번호만 떼는 다른 파서라 표 파서와 계약을 공유하지 않는다. 이번에 막은 「표 파서 두 벌」과는 성격이 달라 그대로 뒀다.
 - 도메인 규칙의 미정 항목은 `docs/domain/`의 각 파일 "아직 안 정한 것" 절이 정본이다. 디자인 값의 미정 항목은 `docs/design-system/tokens.md`와 `docs/design-system/pages/`의 같은 이름 절이 정본이다. 여기 옮겨 적지 않는다.
 - 로컬에서 연타하면 가입 rate limit에 걸린다. `supabase/config.toml`이 IP당 5분에 30번이다. CI는 컨테이너가 매번 새로 떠서 무관하다.
 - `authenticated`에 `profiles` 테이블 단위 insert와 delete 권한이 열려 있다. 정책이 없어 RLS가 전부 막는 구조다. 지금은 기본 거부라 안전하고 테스트가 delete 쪽을 지킨다.
@@ -67,10 +68,12 @@
 
 ## 주의
 
-- **`tokens.md` 8절과 `src/app/globals.css`가 파리티 테스트로 묶여 있다.** 8절을 고치면 `globals.css`도 같이 움직여야 `pnpm test`가 통과한다. 토큰 하나를 고치는 데 문서와 코드를 같이 열어야 하는 자리고, 생성기 task가 서면 이 묶임이 사라진다.
 - **`docs/`와 `.claude/`만 바뀐 PR은 CI가 뒤쪽 넷을 건너뛴다.** integration과 build와 e2e와 supabase 기동이다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨지는 자리가 있다.
 - **`.prettierignore`가 `*.md`를 거른다.** 문서에 prettier를 돌려도 아무 일도 안 한다. 저장소 전체 방침이다.
 - **pre-commit 훅이 staged 파일의 포맷을 고쳐 인덱스에 다시 올린다.** 일부만 staged된 파일이 포맷에 어긋나면 고치지 않고 커밋을 막는다 — 훅이 고치면 staged 안 한 변경까지 딸려 들어가기 때문이다. 그때는 `pnpm format` 뒤에 직접 `git add` 한다.
+- **`tests/lint/` 아래 테스트는 `tdd-guard-unit.py`의 사전 차단 밖이다.** 그 훅은 `src/`로 시작하는 `.ts` 파일만 본다. `tests/lint/generate-globals-css.test.ts`와 `tests/lint/contrast-check.test.ts`도 여기 해당해서, 편집 순간 손이 막히는 장치는 없고 CI의 `pnpm test`가 대신 잡는다.
+- **`SUBSECTION` 정규식이 `scripts/tokens-md.mts`와 `scripts/generate-globals-css.mts` 두 곳에 있다.** 표 파서 계약을 공유하는 게 아니라 마크다운 heading 정규식이 우연히 겹친 것이다. 표 형식을 바꿀 땐 둘 다 확인한다.
+- **`.mts` 스크립트는 `node --experimental-strip-types`로 돈다.** `pnpm tokens:css`가 그 명령을 감싼다. `tsx`나 `ts-node` 같은 별도 실행기 의존성이 없다.
 - **vitest가 `NEXT_PUBLIC_*`을 `process.env`에 안 얹는다.** Vite의 `envPrefix` 기본값이 `VITE_`라서다. env를 읽는 코드를 테스트하려면 `vi.stubEnv`로 명시로 채워야 한다. `.env.local`에 값이 있어도 소용없다.
 - **`create-supabase-server-client`는 env가 없으면 던진다.** 이 팩토리를 부르는 새 테스트를 쓸 때 `vi.stubEnv`가 필요하다.
 - **`tests/lint/.tmp-format-check/`를 `.gitignore`에 넣지 않는다.** Prettier 3이 `.gitignore`를 기본 ignore 파일로 읽는다. 넣으면 `format-check.test.ts`가 만든 픽스처를 prettier가 건너뛰어 `--check`가 조용히 0으로 끝난다 — 테스트가 사실상 안 도는데 초록으로 보인다.
