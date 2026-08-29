@@ -47,7 +47,7 @@ const eslintConfig = defineConfig([
   ]),
 
   {
-    files: ["**/*.{ts,tsx,mjs}"],
+    files: ["**/*.{ts,tsx,mts,mjs}"],
     plugins: { import: importPlugin, house },
     settings: { "import/internal-regex": "^@/" },
     rules: {
@@ -95,7 +95,7 @@ const eslintConfig = defineConfig([
   },
 
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["**/*.{ts,tsx,mts}"],
     plugins: { "unused-imports": unusedImports },
     rules: {
       "@typescript-eslint/no-unused-vars": "off",

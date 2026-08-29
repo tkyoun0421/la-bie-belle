@@ -10,7 +10,7 @@
 
 base-ui는 동작과 접근성만 담당하고 스타일을 들고 있지 않다. 애니메이션 엔진도 없다. 열림과 닫힘 같은 상태를 data attribute로 노출할 뿐이고 움직임은 CSS에 맡긴다. 덕분에 우리 토큰을 그대로 얹을 수 있고, 컴포넌트를 쓰려고 다른 스타일 체계를 같이 들여올 일이 없다.
 
-shadcn이 만들어내는 클래스 이름(`bg-primary`, `text-muted-foreground`, `border-border`)은 [tokens.md의 shadcn 다리](tokens.md#85-shadcn-다리)가 우리 역할 토큰에 연결한다. 설치한 컴포넌트를 손대지 않아도 우리 색으로 나온다는 뜻이다.
+shadcn이 만들어내는 클래스 이름(`bg-primary`, `text-muted-foreground`, `border-border`)은 [tokens.md의 shadcn 다리](tokens.md#83-shadcn-다리)가 우리 역할 토큰에 연결한다. 설치한 컴포넌트를 손대지 않아도 우리 색으로 나온다는 뜻이다.
 
 shadcn 기본 목록에 없어서 우리가 정의하는 것이 둘이다. `BottomCTA`와 `ListRow`고, 이름은 토스 TDS에서 가져왔다.
 

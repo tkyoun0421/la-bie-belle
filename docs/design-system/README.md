@@ -6,7 +6,7 @@
 
 무엇이 어디 있는지는 이 절이 정본이다. 새 문서가 생기면 여기에 한 줄을 더한다.
 
-- [tokens.md](tokens.md) — 모든 값의 정본. 팔레트, 역할 토큰, 타이포 스케일, 스페이싱, 라운딩, 그림자, 모션, 대비 검증, Tailwind `@theme` 전문
+- [tokens.md](tokens.md) — 모든 값의 정본. 팔레트, 역할 토큰, 타이포 스케일, 스페이싱, 라운딩, 그림자, 모션, 대비 검증. `src/app/globals.css`가 여기서 나온다
 - [foundation/color.md](foundation/color.md) — 적응형 2계층이 왜 필요한지, 브랜드 색을 아끼는 규칙, 경고색 제약
 - [foundation/typography.md](foundation/typography.md) — 스케일과 굵기를 쓰는 법, Wanted Sans, 숫자 정렬
 - [foundation/spacing-shape.md](foundation/spacing-shape.md) — 여백 리듬, 라운딩, 그림자와 면 나누기
