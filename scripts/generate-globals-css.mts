@@ -2,8 +2,15 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { format, resolveConfig } from "prettier";
+import {
+  bySection,
+  EMPTY_CELL,
+  PALETTE_HEADER,
+  requireRows,
+  ROLE_HEADER,
+  type Row,
+} from "./tokens-md.mts";
 
-type Row = { cells: string[]; section: string };
 type Declaration = { name: string; value: string };
 type Group = Declaration[];
 type Side = "light" | "dark";
@@ -12,14 +19,6 @@ const ROOT = path.resolve(fileURLToPath(import.meta.url), "../..");
 const TOKENS_PATH = path.join(ROOT, "docs/design-system/tokens.md");
 const GLOBALS_PATH = path.join(ROOT, "src/app/globals.css");
 
-const PALETTE_HEADER = [
-  "단계",
-  "라이트 hex",
-  "라이트 oklch",
-  "다크 hex",
-  "다크 oklch",
-];
-const ROLE_HEADER = ["토큰", "팔레트", "라이트", "다크", "Tailwind 유틸"];
 const TYPOGRAPHY_HEADER = [
   "유틸",
   "크기",
@@ -34,7 +33,6 @@ const DURATION_HEADER = ["변수", "값", "Tailwind 유틸", "쓰는 자리"];
 const CADENCE_HEADER = ["변수", "값", "쓰는 자리"];
 const VENDOR_HEADER = ["변수", "값", "자리", "Tailwind 유틸"];
 
-const EMPTY_CELL = "—";
 const SUBSECTION = /^###\s+(.+?)\s*$/;
 const FENCE_OPEN = "```css";
 const FENCE_CLOSE = "```";
@@ -58,85 +56,11 @@ const SURFACE_STROKE_IN_DARK = "var(--palette-neutral-200)";
 const STATIC_RADIUS_UTILITIES = new Set(["rounded-none", "rounded-full"]);
 const ALIASED_PREFIX = /^--(?:palette|role|vendor)-/;
 
-function cellsOf(line: string): string[] | null {
-  const trimmed = line.trim();
-  if (!trimmed.startsWith("|")) {
-    return null;
-  }
-  return trimmed
-    .replace(/^\|/, "")
-    .replace(/\|$/, "")
-    .split("|")
-    .map((cell) => cell.trim().replace(/^`|`$/g, "").trim());
-}
-
-function isHeader(cells: string[], header: string[]): boolean {
-  return (
-    cells.length === header.length &&
-    header.every((label, index) => cells[index] === label)
-  );
-}
-
-function readRows(markdown: string, header: string[]): Row[] {
-  const lines = markdown.split("\n");
-  const rows: Row[] = [];
-  let section = "";
-  let index = 0;
-
-  while (index < lines.length) {
-    const heading = SUBSECTION.exec(lines[index]);
-    if (heading) {
-      section = heading[1];
-      index += 1;
-      continue;
-    }
-
-    const cells = cellsOf(lines[index]);
-    if (!cells || !isHeader(cells, header)) {
-      index += 1;
-      continue;
-    }
-
-    index += 2;
-    while (index < lines.length) {
-      const row = cellsOf(lines[index]);
-      if (!row || row.length !== header.length) {
-        break;
-      }
-      rows.push({ cells: row, section });
-      index += 1;
-    }
-  }
-
-  return rows;
-}
-
-function requireRows(markdown: string, header: string[], label: string): Row[] {
-  const rows = readRows(markdown, header);
-  if (rows.length === 0) {
-    throw new Error(`${label} 표를 tokens.md에서 찾지 못했다.`);
-  }
-  return rows;
-}
-
 function requireOne(rows: Row[], label: string): Row {
   if (rows.length !== 1) {
     throw new Error(`${label} 는 한 줄이어야 하는데 ${rows.length} 줄이다.`);
   }
   return rows[0];
-}
-
-function bySection(rows: Row[]): Row[][] {
-  const sections = new Map<string, Row[]>();
-  for (const row of rows) {
-    const bucket = sections.get(row.section);
-    if (bucket) {
-      bucket.push(row);
-    } else {
-      sections.set(row.section, [row]);
-    }
-  }
-  return [...sections.values()];
 }
 
 function readFences(markdown: string): Map<string, string[]> {
