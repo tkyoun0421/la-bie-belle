@@ -37,9 +37,12 @@ Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui(`@base-ui/react`
 - `pnpm typecheck` — tsc 타입 검사
 - `pnpm test` — vitest 단위 테스트
 - `pnpm test:integration` — 로컬 Supabase에 붙는 vitest (Docker가 필요하고 스크립트가 스택을 띄운다)
+- `pnpm test:integration:run` — 스택이 이미 떠 있을 때 마이그레이션과 테스트만 돌린다
 - `pnpm e2e` — Playwright e2e (먼저 `pnpm build`가 필요하다)
 
 CI(`.github/workflows/ci.yml`)는 PR마다 lint → test → integration → build → e2e를 돌리고 `ci` job이 branch protection 필수 검사다. 기능 PR은 코드 모양이 아니라 화면 흐름이 실제로 도는지까지 본다.
+
+`docs/`와 `.claude/`만 바뀐 PR은 DB와 브라우저를 쓰는 뒤쪽 넷을 건너뛴다. lint와 format과 typecheck와 단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서 변경만으로도 깨지는 자리가 있다.
 
 ## 코드 구조
 

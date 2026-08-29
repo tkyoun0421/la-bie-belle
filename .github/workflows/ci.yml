@@ -10,6 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: 문서만 바뀐 PR인지 본다
+        id: scope
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed=$(git diff --name-only "${{ github.event.pull_request.base.sha }}...HEAD")
+          if printf '%s\n' "$changed" | grep -qvE '^(docs/|\.claude/)'; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+            echo "docs/ 와 .claude/ 만 바뀌었다. DB와 브라우저를 쓰는 단계를 건너뛴다."
+          fi
       - uses: pnpm/action-setup@v6
         with:
           version: 8.15.2
@@ -23,15 +39,24 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - uses: supabase/setup-cli@v1
+        if: steps.scope.outputs.code == 'true'
         with:
           version: 2.75.0
-      - run: pnpm test:integration
+      - name: 테스트가 쓰는 서비스만 띄운다
+        if: steps.scope.outputs.code == 'true'
+        run: supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime
+      - run: pnpm test:integration:run
+        if: steps.scope.outputs.code == 'true'
       - name: 로컬 Supabase 접속 정보를 앱 env로 넘긴다
+        if: steps.scope.outputs.code == 'true'
         run: |
           supabase status -o env \
             | sed -n 's/^API_URL="\(.*\)"$/NEXT_PUBLIC_SUPABASE_URL=\1/p' >> "$GITHUB_ENV"
           supabase status -o env \
             | sed -n 's/^ANON_KEY="\(.*\)"$/NEXT_PUBLIC_SUPABASE_ANON_KEY=\1/p' >> "$GITHUB_ENV"
       - run: pnpm build
+        if: steps.scope.outputs.code == 'true'
       - run: pnpm exec playwright install --with-deps chromium
+        if: steps.scope.outputs.code == 'true'
       - run: pnpm e2e
+        if: steps.scope.outputs.code == 'true'
