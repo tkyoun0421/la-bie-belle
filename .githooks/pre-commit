@@ -23,4 +23,42 @@ if printf '%s' "$added" | grep -qE "(sk-[A-Za-z0-9]{20,}|AKIA[A-Z0-9]{16}|eyJ[A-
   exit 1
 fi
 
+prettier="./node_modules/.bin/prettier"
+[ -x "$prettier" ] || exit 0
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -n "$staged" ] || exit 0
+
+unstaged=$(git diff --name-only)
+
+whole=""
+partial=""
+for f in $staged; do
+  if printf '%s\n' "$unstaged" | grep -qxF "$f"; then
+    partial="$partial $f"
+  else
+    whole="$whole $f"
+  fi
+done
+
+if [ -n "$partial" ]; then
+  $prettier --check --ignore-unknown $partial >/dev/null 2>&1
+  if [ $? -eq 1 ]; then
+    echo "차단: 포맷이 안 맞는데 일부만 staged된 파일이 있다."
+    for f in $partial; do echo "  $f"; done
+    echo "훅이 고치면 staged 안 한 변경까지 딸려 들어간다. pnpm format 뒤에 직접 add해라."
+    exit 1
+  fi
+fi
+
+if [ -n "$whole" ]; then
+  changed=$($prettier --list-different --ignore-unknown $whole 2>/dev/null)
+  if [ -n "$changed" ]; then
+    echo "포맷 정리:"
+    for f in $changed; do echo "  $f"; done
+    $prettier --write --ignore-unknown --log-level warn $changed >/dev/null 2>&1
+    git add $changed
+  fi
+fi
+
 exit 0

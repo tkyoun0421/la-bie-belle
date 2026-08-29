@@ -113,7 +113,9 @@ TDD 규율은 이 순서 밖이다. 어느 항목과도 흥정하지 않는다.
 
 ## 끝내기 전에
 
-`pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm build`, `pnpm e2e`를 실제로 돌려 통과를 확인한다. 통과하지 못한 채로 PR을 열지 않는다. 통과가 불가능한 사정이 있으면 PR을 열지 말고 리턴으로 보고한다.
+`pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm build`, `pnpm e2e`를 실제로 돌려 통과를 확인한다. 통과하지 못한 채로 PR을 열지 않는다. 통과가 불가능한 사정이 있으면 PR을 열지 말고 리턴으로 보고한다.
+
+`pnpm format:check`는 pre-commit 훅이 이미 지킨다. staged 파일 중 포맷이 어긋난 것을 훅이 고쳐서 인덱스에 다시 올리니 손으로 돌릴 일이 없다. 목록에 남긴 것은 훅을 안 건 클론에서도 CI 전에 알기 위해서다. 마크다운은 `.prettierignore`가 빼놔서 대상이 아니다.
 
 `pnpm test:integration`은 로컬 Supabase가 떠 있어야 돈다. `supabase status`로 확인하고 안 떠 있으면 `supabase start`로 띄운다. Docker가 없어서 못 돌린 채로 PR을 열지 않는다 — 그 사실을 리턴에 적고 멈춘다. `pnpm test`는 unit만 집으므로 그것만 초록불인 것은 확인이 아니다.
 

@@ -320,6 +320,28 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 
 등장에는 `tw-animate-css`의 `zoom-in-95`를 쓴다. 시작값이 위 최솟값 안에 든다.
 
+### 되풀이 주기와 계단
+
+위의 duration 넷은 전부 한 번 일어나고 끝나는 전환의 길이다. 되풀이하는 주기와 요소 사이의 간격은 성격이 달라서 접두어를 나눴다. `--duration-`은 한 번, `--interval-`은 되풀이, `--stagger-`는 요소 사이다.
+
+| 변수 | 값 | 쓰는 자리 |
+| --- | --- | --- |
+| `--interval-rotate` | 4s | 문구가 저절로 갈리는 주기 |
+| `--interval-beat` | 1.8s | 기다리는 중을 알리는 점이 뛰는 주기 |
+| `--stagger-step` | 70ms | 등장할 때 요소끼리 어긋나는 간격 |
+
+Tailwind 유틸이 없다. 셋 다 `var()`로 직접 쓴다.
+
+값을 이렇게 잡은 이유다.
+
+`--interval-rotate`는 한 줄을 읽고 눈을 뗄 시간이다. 더 짧으면 다 읽기 전에 갈리고, 더 길면 갈린다는 것을 눈치채기 전에 화면을 닫는다.
+
+`--interval-beat`는 맥박보다 느리다. 사람의 평상시 맥박이 1초를 밑도는데 그보다 빠르게 뛰면 재촉으로 읽힌다. 승인 대기는 사람이 서두를 수 있는 것이 없는 화면이라 재촉하면 안 된다.
+
+`--stagger-step`은 요소가 따로 움직인다고 읽히는 최소 간격이다. 더 좁히면 한 덩이가 통째로 올라오는 것으로 보여서 계단을 준 값이 사라진다.
+
+셋 다 [foundation/motion.md](foundation/motion.md)의 규칙 안에 있다. 되풀이 주기 둘이 「자주 일어나는 것은 움직이지 않는다」와 부딪히는 자리는 그 화면의 문서가 따로 적는다.
+
 ### 근거 수치
 
 위 넷을 어디서 가져왔는지다. 규칙은 [foundation/motion.md](foundation/motion.md)에 있다.
@@ -344,29 +366,43 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 
 | 조합 | 라이트 | 다크 |
 | --- | --- | --- |
-| `fg.neutral` on `bg.neutral` | 15.84 | 16.16 |
-| `fg.neutral-muted` on `bg.neutral` | 7.23 | 7.91 |
-| `fg.neutral-subtle` on `bg.neutral` | 4.95 | 5.86 |
-| `fg.brand` on `bg.neutral` | 6.68 | 8.48 |
-| `fg.brand-contrast` on `bg.brand-solid` | 7.39 | 8.48 |
-| `fg.positive` on `bg.neutral` | 6.86 | 8.25 |
-| `fg.critical` on `bg.neutral` | 7.73 | 7.46 |
-| `fg.informative` on `bg.neutral` | 7.19 | 7.95 |
+| `fg.neutral` on `bg.neutral` | 17.40 | 16.16 |
+| `fg.neutral-muted` on `bg.neutral` | 7.23 | 8.65 |
+| `fg.neutral-subtle` on `bg.neutral` | 4.95 | 6.40 |
+| `fg.brand` on `bg.neutral` | 7.34 | 8.48 |
+| `fg.brand-contrast` on `bg.brand-solid` | 7.34 | 8.48 |
+| `fg.positive` on `bg.neutral` | 6.86 | 9.02 |
+| `fg.critical` on `bg.neutral` | 7.73 | 8.15 |
+| `fg.informative` on `bg.neutral` | 7.19 | 8.69 |
 | `fg.neutral-disabled` on `bg.neutral-disabled` | 4.51 | 5.86 |
+| `fg.neutral` on `bg.neutral-weak` | 15.84 | 14.78 |
+| `fg.neutral-muted` on `bg.neutral-weak` | 6.58 | 7.91 |
+| `fg.neutral` on `bg.positive-weak` | 16.01 | 14.67 |
+| `fg.neutral-muted` on `bg.positive-weak` | 6.65 | 7.86 |
+| `fg.positive` on `bg.positive-weak` | 6.31 | 8.19 |
+| `fg.neutral` on `bg.informative-weak` | 15.78 | 14.81 |
+| `fg.neutral-muted` on `bg.informative-weak` | 6.55 | 7.93 |
 
 비활성 글자도 읽혀야 해서 이 줄을 기준 아래로 내리지 않았다. 버튼이 왜 눌리지 않는지는 대개 그 버튼에 적힌 글자가 알려준다.
+
+옅은 면 위의 조합 일곱은 [pages/login.md](pages/login.md#색-1)의 알림 영역에서 나왔다. 옅은 면에 글자를 올리는 자리는 알림 블록마다 되풀이되니 다른 화면에도 같은 값이 걸린다.
 
 ### 떨어진 조합
 
 | 조합 | 결과 | 판정 |
 | --- | --- | --- |
-| neutral-600 on `bg.neutral` (라이트) | 3.56 | `fg.neutral-subtle`에서 탈락. neutral-700으로 올렸다 |
+| neutral-600 on `bg.neutral` (라이트) | 3.54 | `fg.neutral-subtle`에서 탈락. neutral-700으로 올렸다 |
 | neutral-600 on `bg.neutral-disabled` (라이트) | 3.22 | `fg.neutral-disabled`에서 탈락. neutral-700이 넷 중 유일하게 기준을 넘었다 |
 | brand-800 vs warning-800 (라이트) | 1.02 | 사실상 같은 밝기. warning을 글자색에서 뺐다 |
+| `fg.neutral-subtle` on `bg.informative-weak` (라이트) | 4.49 | 알림 영역 아래 줄에서 탈락. `fg.neutral-muted`로 올렸다 |
+
+마지막 줄은 `bg.neutral-weak`에서 4.51, `bg.positive-weak`에서 4.56으로 겨우 넘고 `bg.informative-weak`에서만 떨어진다. 셋을 한 토큰으로 묶는 자리라 셋 다 통과하는 `fg.neutral-muted`를 골랐다. 두 면에서 통과한다고 남겨두면 면 색을 하나 바꿀 때마다 글자색을 다시 재야 한다.
 
 두 판정의 근거는 [foundation/color.md](foundation/color.md#대비-검증)와 [경고색 제약](foundation/color.md#경고색-제약)에 있다.
 
 새 조합을 만들 때는 측정하고 이 표에 줄을 더한다. 눈으로 판정하지 않는다.
+
+`on bg.neutral` 값 여덟이 한때 어긋나 있었다. 일곱은 neutral-00이 아니라 neutral-100 면으로 잰 값이 적혀 있었고 하나는 소수점이 틀렸다. 어느 쪽도 4.5 판정을 뒤집지 않았지만, 손으로 재고 손으로 옮겨 적는 한 같은 일이 또 난다. 이 표를 기계가 대신 재게 하는 것이 남은 일이다.
 
 ---
 
@@ -641,9 +677,11 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 }
 ```
 
-### 8.3 역할 토큰과 모션
+### 8.3 역할 토큰과 모션과 바깥 값
 
 한 번만 쓴다. 팔레트를 가리키기만 하므로 다크에서 다시 쓸 것이 없다.
+
+`--vendor-` 셋은 우리가 정한 값이 아니라서 oklch가 아니라 hex다. 무엇이고 왜 못 바꾸는지는 [9절](#9-바깥이-정한-값)에 있다.
 
 ```css
 :root {
@@ -685,6 +723,14 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
   --duration-base: 180ms;
   --duration-slow: 240ms;
   --duration-slower: 300ms;
+
+  --interval-rotate: 4s;
+  --interval-beat: 1.8s;
+  --stagger-step: 70ms;
+
+  --vendor-google-bg: #131314;
+  --vendor-google-stroke: #8e918f;
+  --vendor-google-fg: #e3e3e3;
 }
 ```
 
@@ -844,6 +890,10 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
   --color-stroke-neutral-disabled: var(--role-stroke-neutral-disabled);
   --color-stroke-brand-solid: var(--role-stroke-brand-solid);
   --color-stroke-surface: var(--role-stroke-surface);
+
+  --color-google-bg: var(--vendor-google-bg);
+  --color-google-stroke: var(--vendor-google-stroke);
+  --color-google-fg: var(--vendor-google-fg);
 }
 ```
 
@@ -919,6 +969,34 @@ body가 배경색과 글자색을 명시로 받는다.
 ```
 
 `color-scheme: dark`만으로도 브라우저가 알아서 어두운 바탕을 깔지만 그 색은 브라우저마다 다르고 우리 `neutral-00`이 아니다. 화면 전체의 바탕이 팔레트 밖 색이면 그 위에 올린 면과 미세하게 어긋난다. `@layer base`에 두었으니 유틸리티가 언제나 이긴다.
+
+---
+
+## 9. 바깥이 정한 값
+
+**이 절의 값은 우리가 못 바꾼다.** 다른 곳이 정해서 우리에게 지킬 것을 요구한 값이고, 여기 있는 이유는 화면 코드가 리터럴을 못 쓰기 때문이다. 토큰을 거치면 `house/no-color-literals`가 통과하니 규칙에 구멍을 내지 않고 풀린다.
+
+팔레트를 다시 뽑을 때 **이 절은 같이 움직이지 않는다.** brand의 hue를 옮기든 명도 곡선을 다시 그리든 아래 값은 그대로다. 우리 색이 아니라서다.
+
+접두어가 `--vendor-`인 것도 그래서다. `--palette-`와 `--role-`은 우리가 정하고 우리가 바꾸지만 `--vendor-`는 출처가 바꿀 때만 바뀐다.
+
+### 구글 로그인 버튼
+
+구글이 배경 테마 셋(밝게·중간·어둡게)을 못 박았고 그 밖은 못 쓴다. 우리는 어두운 배경을 쓴다. 아래 셋이 그 테마의 값이다.
+
+| 변수 | 값 | 자리 | Tailwind 유틸 |
+| --- | --- | --- | --- |
+| `--vendor-google-bg` | `#131314` | 버튼 배경 | `bg-google-bg` |
+| `--vendor-google-stroke` | `#8E918F` | 버튼 테두리 | `border-google-stroke` |
+| `--vendor-google-fg` | `#E3E3E3` | 버튼 글자 | `text-google-fg` |
+
+oklch가 아니라 hex다. 구글이 hex로 적었고, 옮겨 적으면서 색공간을 바꾸면 반올림이 끼어 원문과 대조할 수 없게 된다. 못 바꾸는 값은 출처가 쓴 표기 그대로 두는 편이 확인하기 쉽다.
+
+라이트와 중립 테마의 값은 안 옮겼다. 지금 쓰는 것이 어두운 테마 하나뿐이고, 안 쓰는 값을 미리 옮겨두면 어느 쪽이 실제로 화면에 나가는지 흐려진다.
+
+대비는 이 표의 대상이 아니다. 구글이 짝지은 조합이고 우리가 고칠 수 없어서 [7절](#7-대비-검증)에 줄을 더하지 않는다.
+
+이 값을 지키는 것은 취향이 아니다. 구글 문서가 app verification에 required라고 적었고 배포할 때 OAuth 앱 심사가 본다. 출처는 [Google Identity — Branding guidelines](https://developers.google.com/identity/branding-guidelines)다.
 
 ---
 
