@@ -366,14 +366,14 @@ Tailwind 유틸이 없다. 셋 다 `var()`로 직접 쓴다.
 
 | 조합 | 라이트 | 다크 |
 | --- | --- | --- |
-| `fg.neutral` on `bg.neutral` | 15.84 | 16.16 |
-| `fg.neutral-muted` on `bg.neutral` | 7.23 | 7.91 |
-| `fg.neutral-subtle` on `bg.neutral` | 4.95 | 5.86 |
-| `fg.brand` on `bg.neutral` | 6.68 | 8.48 |
-| `fg.brand-contrast` on `bg.brand-solid` | 7.39 | 8.48 |
-| `fg.positive` on `bg.neutral` | 6.86 | 8.25 |
-| `fg.critical` on `bg.neutral` | 7.73 | 7.46 |
-| `fg.informative` on `bg.neutral` | 7.19 | 7.95 |
+| `fg.neutral` on `bg.neutral` | 17.40 | 16.16 |
+| `fg.neutral-muted` on `bg.neutral` | 7.23 | 8.65 |
+| `fg.neutral-subtle` on `bg.neutral` | 4.95 | 6.40 |
+| `fg.brand` on `bg.neutral` | 7.34 | 8.48 |
+| `fg.brand-contrast` on `bg.brand-solid` | 7.34 | 8.48 |
+| `fg.positive` on `bg.neutral` | 6.86 | 9.02 |
+| `fg.critical` on `bg.neutral` | 7.73 | 8.15 |
+| `fg.informative` on `bg.neutral` | 7.19 | 8.69 |
 | `fg.neutral-disabled` on `bg.neutral-disabled` | 4.51 | 5.86 |
 | `fg.neutral` on `bg.neutral-weak` | 15.84 | 14.78 |
 | `fg.neutral-muted` on `bg.neutral-weak` | 6.58 | 7.91 |
@@ -391,7 +391,7 @@ Tailwind 유틸이 없다. 셋 다 `var()`로 직접 쓴다.
 
 | 조합 | 결과 | 판정 |
 | --- | --- | --- |
-| neutral-600 on `bg.neutral` (라이트) | 3.56 | `fg.neutral-subtle`에서 탈락. neutral-700으로 올렸다 |
+| neutral-600 on `bg.neutral` (라이트) | 3.54 | `fg.neutral-subtle`에서 탈락. neutral-700으로 올렸다 |
 | neutral-600 on `bg.neutral-disabled` (라이트) | 3.22 | `fg.neutral-disabled`에서 탈락. neutral-700이 넷 중 유일하게 기준을 넘었다 |
 | brand-800 vs warning-800 (라이트) | 1.02 | 사실상 같은 밝기. warning을 글자색에서 뺐다 |
 | `fg.neutral-subtle` on `bg.informative-weak` (라이트) | 4.49 | 알림 영역 아래 줄에서 탈락. `fg.neutral-muted`로 올렸다 |
@@ -401,6 +401,8 @@ Tailwind 유틸이 없다. 셋 다 `var()`로 직접 쓴다.
 두 판정의 근거는 [foundation/color.md](foundation/color.md#대비-검증)와 [경고색 제약](foundation/color.md#경고색-제약)에 있다.
 
 새 조합을 만들 때는 측정하고 이 표에 줄을 더한다. 눈으로 판정하지 않는다.
+
+`on bg.neutral` 값 여덟이 한때 어긋나 있었다. 일곱은 neutral-00이 아니라 neutral-100 면으로 잰 값이 적혀 있었고 하나는 소수점이 틀렸다. 어느 쪽도 4.5 판정을 뒤집지 않았지만, 손으로 재고 손으로 옮겨 적는 한 같은 일이 또 난다. 이 표를 기계가 대신 재게 하는 것이 남은 일이다.
 
 ---
 
