@@ -113,7 +113,9 @@ TDD 규율은 이 순서 밖이다. 어느 항목과도 흥정하지 않는다.
 
 ## 끝내기 전에
 
-`pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm build`, `pnpm e2e`를 실제로 돌려 통과를 확인한다. 통과하지 못한 채로 PR을 열지 않는다. 통과가 불가능한 사정이 있으면 PR을 열지 말고 리턴으로 보고한다.
+`pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm build`, `pnpm e2e`를 실제로 돌려 통과를 확인한다. 통과하지 못한 채로 PR을 열지 않는다. 통과가 불가능한 사정이 있으면 PR을 열지 말고 리턴으로 보고한다.
+
+`pnpm format:check`는 새로 만든 파일에서 걸린다. 손으로 쓴 들여쓰기와 줄바꿈이 prettier 규칙과 어긋나기 때문이고, 코드든 문서든 마찬가지다. 파일을 새로 만들었으면 `npx prettier --write <경로>`를 먼저 돌리고 나서 검사한다. 이걸 빠뜨려 CI가 빨간불이 된 일이 되풀이돼서 여기 적는다.
 
 `pnpm test:integration`은 로컬 Supabase가 떠 있어야 돈다. `supabase status`로 확인하고 안 떠 있으면 `supabase start`로 띄운다. Docker가 없어서 못 돌린 채로 PR을 열지 않는다 — 그 사실을 리턴에 적고 멈춘다. `pnpm test`는 unit만 집으므로 그것만 초록불인 것은 확인이 아니다.
 
