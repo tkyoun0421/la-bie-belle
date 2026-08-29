@@ -15,6 +15,7 @@
 - `docs/adr/` — 되돌리기 어려운 결정과 그 근거
 - `docs/design-system/` — 디자인과 퍼블리싱 규칙은 `README.md`, 그 옆에 디자인 시스템과 페이지별 디자인
 - `.claude/agents/` — subagent 정의문
+- `.claude/skills/` — 스킬 정의문. 설명 톤 같은 대화 규칙이 여기 산다
 - `CLAUDE.md` — 이 파일. 구조와 스택과 지도
 
 코드가 어디 있는지는 여기 적지 않는다. 저장소에서 직접 찾는 편이 항상 최신이다.
