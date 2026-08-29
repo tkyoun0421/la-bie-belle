@@ -320,6 +320,28 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 
 등장에는 `tw-animate-css`의 `zoom-in-95`를 쓴다. 시작값이 위 최솟값 안에 든다.
 
+### 되풀이 주기와 계단
+
+위의 duration 넷은 전부 한 번 일어나고 끝나는 전환의 길이다. 되풀이하는 주기와 요소 사이의 간격은 성격이 달라서 접두어를 나눴다. `--duration-`은 한 번, `--interval-`은 되풀이, `--stagger-`는 요소 사이다.
+
+| 변수 | 값 | 쓰는 자리 |
+| --- | --- | --- |
+| `--interval-rotate` | 4s | 문구가 저절로 갈리는 주기 |
+| `--interval-beat` | 1.8s | 기다리는 중을 알리는 점이 뛰는 주기 |
+| `--stagger-step` | 70ms | 등장할 때 요소끼리 어긋나는 간격 |
+
+Tailwind 유틸이 없다. 셋 다 `var()`로 직접 쓴다.
+
+값을 이렇게 잡은 이유다.
+
+`--interval-rotate`는 한 줄을 읽고 눈을 뗄 시간이다. 더 짧으면 다 읽기 전에 갈리고, 더 길면 갈린다는 것을 눈치채기 전에 화면을 닫는다.
+
+`--interval-beat`는 맥박보다 느리다. 사람의 평상시 맥박이 1초를 밑도는데 그보다 빠르게 뛰면 재촉으로 읽힌다. 승인 대기는 사람이 서두를 수 있는 것이 없는 화면이라 재촉하면 안 된다.
+
+`--stagger-step`은 요소가 따로 움직인다고 읽히는 최소 간격이다. 더 좁히면 한 덩이가 통째로 올라오는 것으로 보여서 계단을 준 값이 사라진다.
+
+셋 다 [foundation/motion.md](foundation/motion.md)의 규칙 안에 있다. 되풀이 주기 둘이 「자주 일어나는 것은 움직이지 않는다」와 부딪히는 자리는 그 화면의 문서가 따로 적는다.
+
 ### 근거 수치
 
 위 넷을 어디서 가져왔는지다. 규칙은 [foundation/motion.md](foundation/motion.md)에 있다.
@@ -641,9 +663,11 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 }
 ```
 
-### 8.3 역할 토큰과 모션
+### 8.3 역할 토큰과 모션과 바깥 값
 
 한 번만 쓴다. 팔레트를 가리키기만 하므로 다크에서 다시 쓸 것이 없다.
+
+`--vendor-` 셋은 우리가 정한 값이 아니라서 oklch가 아니라 hex다. 무엇이고 왜 못 바꾸는지는 [9절](#9-바깥이-정한-값)에 있다.
 
 ```css
 :root {
@@ -685,6 +709,14 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
   --duration-base: 180ms;
   --duration-slow: 240ms;
   --duration-slower: 300ms;
+
+  --interval-rotate: 4s;
+  --interval-beat: 1.8s;
+  --stagger-step: 70ms;
+
+  --vendor-google-bg: #131314;
+  --vendor-google-stroke: #8e918f;
+  --vendor-google-fg: #e3e3e3;
 }
 ```
 
@@ -844,6 +876,10 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
   --color-stroke-neutral-disabled: var(--role-stroke-neutral-disabled);
   --color-stroke-brand-solid: var(--role-stroke-brand-solid);
   --color-stroke-surface: var(--role-stroke-surface);
+
+  --color-google-bg: var(--vendor-google-bg);
+  --color-google-stroke: var(--vendor-google-stroke);
+  --color-google-fg: var(--vendor-google-fg);
 }
 ```
 
@@ -919,6 +955,34 @@ body가 배경색과 글자색을 명시로 받는다.
 ```
 
 `color-scheme: dark`만으로도 브라우저가 알아서 어두운 바탕을 깔지만 그 색은 브라우저마다 다르고 우리 `neutral-00`이 아니다. 화면 전체의 바탕이 팔레트 밖 색이면 그 위에 올린 면과 미세하게 어긋난다. `@layer base`에 두었으니 유틸리티가 언제나 이긴다.
+
+---
+
+## 9. 바깥이 정한 값
+
+**이 절의 값은 우리가 못 바꾼다.** 다른 곳이 정해서 우리에게 지킬 것을 요구한 값이고, 여기 있는 이유는 화면 코드가 리터럴을 못 쓰기 때문이다. 토큰을 거치면 `house/no-color-literals`가 통과하니 규칙에 구멍을 내지 않고 풀린다.
+
+팔레트를 다시 뽑을 때 **이 절은 같이 움직이지 않는다.** brand의 hue를 옮기든 명도 곡선을 다시 그리든 아래 값은 그대로다. 우리 색이 아니라서다.
+
+접두어가 `--vendor-`인 것도 그래서다. `--palette-`와 `--role-`은 우리가 정하고 우리가 바꾸지만 `--vendor-`는 출처가 바꿀 때만 바뀐다.
+
+### 구글 로그인 버튼
+
+구글이 배경 테마 셋(밝게·중간·어둡게)을 못 박았고 그 밖은 못 쓴다. 우리는 어두운 배경을 쓴다. 아래 셋이 그 테마의 값이다.
+
+| 변수 | 값 | 자리 | Tailwind 유틸 |
+| --- | --- | --- | --- |
+| `--vendor-google-bg` | `#131314` | 버튼 배경 | `bg-google-bg` |
+| `--vendor-google-stroke` | `#8E918F` | 버튼 테두리 | `border-google-stroke` |
+| `--vendor-google-fg` | `#E3E3E3` | 버튼 글자 | `text-google-fg` |
+
+oklch가 아니라 hex다. 구글이 hex로 적었고, 옮겨 적으면서 색공간을 바꾸면 반올림이 끼어 원문과 대조할 수 없게 된다. 못 바꾸는 값은 출처가 쓴 표기 그대로 두는 편이 확인하기 쉽다.
+
+라이트와 중립 테마의 값은 안 옮겼다. 지금 쓰는 것이 어두운 테마 하나뿐이고, 안 쓰는 값을 미리 옮겨두면 어느 쪽이 실제로 화면에 나가는지 흐려진다.
+
+대비는 이 표의 대상이 아니다. 구글이 짝지은 조합이고 우리가 고칠 수 없어서 [7절](#7-대비-검증)에 줄을 더하지 않는다.
+
+이 값을 지키는 것은 취향이 아니다. 구글 문서가 app verification에 required라고 적었고 배포할 때 OAuth 앱 심사가 본다. 출처는 [Google Identity — Branding guidelines](https://developers.google.com/identity/branding-guidelines)다.
 
 ---
 

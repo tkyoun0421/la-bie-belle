@@ -291,6 +291,14 @@
   --duration-base: 180ms;
   --duration-slow: 240ms;
   --duration-slower: 300ms;
+
+  --interval-rotate: 4s;
+  --interval-beat: 1.8s;
+  --stagger-step: 70ms;
+
+  --vendor-google-bg: #131314;
+  --vendor-google-stroke: #8e918f;
+  --vendor-google-fg: #e3e3e3;
 }
 
 @theme {
@@ -447,6 +455,10 @@
   --color-stroke-neutral-disabled: var(--role-stroke-neutral-disabled);
   --color-stroke-brand-solid: var(--role-stroke-brand-solid);
   --color-stroke-surface: var(--role-stroke-surface);
+
+  --color-google-bg: var(--vendor-google-bg);
+  --color-google-stroke: var(--vendor-google-stroke);
+  --color-google-fg: var(--vendor-google-fg);
 }
 
 @theme inline {
