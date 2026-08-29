@@ -375,8 +375,17 @@ Tailwind 유틸이 없다. 셋 다 `var()`로 직접 쓴다.
 | `fg.critical` on `bg.neutral` | 7.73 | 7.46 |
 | `fg.informative` on `bg.neutral` | 7.19 | 7.95 |
 | `fg.neutral-disabled` on `bg.neutral-disabled` | 4.51 | 5.86 |
+| `fg.neutral` on `bg.neutral-weak` | 15.84 | 14.78 |
+| `fg.neutral-muted` on `bg.neutral-weak` | 6.58 | 7.91 |
+| `fg.neutral` on `bg.positive-weak` | 16.01 | 14.67 |
+| `fg.neutral-muted` on `bg.positive-weak` | 6.65 | 7.86 |
+| `fg.positive` on `bg.positive-weak` | 6.31 | 8.19 |
+| `fg.neutral` on `bg.informative-weak` | 15.78 | 14.81 |
+| `fg.neutral-muted` on `bg.informative-weak` | 6.55 | 7.93 |
 
 비활성 글자도 읽혀야 해서 이 줄을 기준 아래로 내리지 않았다. 버튼이 왜 눌리지 않는지는 대개 그 버튼에 적힌 글자가 알려준다.
+
+옅은 면 위의 조합 일곱은 [pages/login.md](pages/login.md#색-1)의 알림 영역에서 나왔다. 옅은 면에 글자를 올리는 자리는 알림 블록마다 되풀이되니 다른 화면에도 같은 값이 걸린다.
 
 ### 떨어진 조합
 
@@ -385,6 +394,9 @@ Tailwind 유틸이 없다. 셋 다 `var()`로 직접 쓴다.
 | neutral-600 on `bg.neutral` (라이트) | 3.56 | `fg.neutral-subtle`에서 탈락. neutral-700으로 올렸다 |
 | neutral-600 on `bg.neutral-disabled` (라이트) | 3.22 | `fg.neutral-disabled`에서 탈락. neutral-700이 넷 중 유일하게 기준을 넘었다 |
 | brand-800 vs warning-800 (라이트) | 1.02 | 사실상 같은 밝기. warning을 글자색에서 뺐다 |
+| `fg.neutral-subtle` on `bg.informative-weak` (라이트) | 4.49 | 알림 영역 아래 줄에서 탈락. `fg.neutral-muted`로 올렸다 |
+
+마지막 줄은 `bg.neutral-weak`에서 4.51, `bg.positive-weak`에서 4.56으로 겨우 넘고 `bg.informative-weak`에서만 떨어진다. 셋을 한 토큰으로 묶는 자리라 셋 다 통과하는 `fg.neutral-muted`를 골랐다. 두 면에서 통과한다고 남겨두면 면 색을 하나 바꿀 때마다 글자색을 다시 재야 한다.
 
 두 판정의 근거는 [foundation/color.md](foundation/color.md#대비-검증)와 [경고색 제약](foundation/color.md#경고색-제약)에 있다.
 
