@@ -408,102 +408,25 @@ Tailwind 유틸이 없다. 셋 다 `var()`로 직접 쓴다.
 
 ## 8. CSS 전문
 
-아래 여섯 블록을 순서대로 이어 붙이면 `src/app/globals.css` 한 벌이 된다. 어긋나면 `tests/lint/token-css-parity.test.ts`가 잡는다.
+`src/app/globals.css`는 이 파일에서 만든다. `pnpm tokens:css`가 앞 절의 표를 읽어 CSS 한 벌을 새로 쓴다. globals.css를 손으로 고치지 않는다. 다음 실행이 덮는다.
+
+앞 절 표에서 나오는 것은 여기 사본을 두지 않는다. 팔레트도 역할 토큰도 타이포 스케일도 라운딩도 그림자도 모션도 바깥 값도 자기 절이 정본이고, 같은 값을 여기 옮겨 적으면 두 곳이 언젠가 어긋난다.
+
+그래서 이 절에 남은 것은 아래 넷뿐이다. 표로 담을 수 없는 뼈대라 이 절이 그것들의 유일한 정본이고, 코드펜스 안을 고치면 다음 생성이 그대로 옮겨 담는다.
+
+블록 선택자와 `color-scheme`은 여기 없다. `:root`와 `@media (prefers-color-scheme: dark)`와 `:root:not([data-theme="light"])`와 `[data-theme="dark"]`는 생성기가 세운다. 면을 띄우는 `--surface-shadow`와 `--surface-stroke`도 없다. 값은 2절과 5절 표에서 오고, 다크에서 선이 `neutral-200`을 가리킨다는 것만 생성기가 안다.
 
 `@theme inline`을 쓰는 이유는 Tailwind 4의 동작 때문이다. 그냥 `@theme`은 값을 `:root`에서 한 번 굳혀버려서, 다크에서 팔레트가 바뀌어도 유틸이 옛 값을 계속 가리킨다. `inline`은 유틸에 `var()`를 그대로 심어 요소 자리에서 값을 풀게 한다.
 
-### 8.1 라이트
+### 8.1 뼈대
+
+파일 맨 앞에 그대로 놓인다.
+
+`@custom-variant dark`가 팔레트를 뒤집는 조건을 `dark:` 유틸리티 쪽에도 건다. Tailwind의 기본 `dark:`는 미디어 쿼리만 보기 때문에, 이것이 없으면 팔레트는 `[data-theme="dark"]`를 따라 뒤집히는데 `dark:` 클래스를 단 자리만 라이트로 남는다. 갈래 둘의 조건이 생성기가 세우는 팔레트 블록 둘과 정확히 같아야 한다. `[data-theme="light"]`가 붙어 있으면 기기가 다크여도 라이트로 남는다.
 
 ```css
 @import "tailwindcss";
 
-:root {
-  color-scheme: light;
-
-  --palette-neutral-00: oklch(1.000 0.0037 57);
-  --palette-neutral-100: oklch(0.965 0.0037 57);
-  --palette-neutral-200: oklch(0.905 0.0043 57);
-  --palette-neutral-300: oklch(0.845 0.0045 57);
-  --palette-neutral-400: oklch(0.760 0.0047 57);
-  --palette-neutral-500: oklch(0.680 0.0050 57);
-  --palette-neutral-600: oklch(0.625 0.0050 57);
-  --palette-neutral-700: oklch(0.545 0.0050 57);
-  --palette-neutral-800: oklch(0.455 0.0050 57);
-  --palette-neutral-900: oklch(0.320 0.0053 57);
-  --palette-neutral-1000: oklch(0.215 0.0055 57);
-
-  --palette-brand-00: oklch(1.000 0.0058 57);
-  --palette-brand-100: oklch(0.965 0.0128 57);
-  --palette-brand-200: oklch(0.905 0.0220 57);
-  --palette-brand-300: oklch(0.845 0.0336 57);
-  --palette-brand-400: oklch(0.760 0.0452 57);
-  --palette-brand-500: oklch(0.680 0.0545 57);
-  --palette-brand-600: oklch(0.625 0.0580 57);
-  --palette-brand-700: oklch(0.545 0.0568 57);
-  --palette-brand-800: oklch(0.455 0.0534 57);
-  --palette-brand-900: oklch(0.320 0.0452 57);
-  --palette-brand-1000: oklch(0.215 0.0348 57);
-
-  --palette-positive-00: oklch(1.000 0.0115 152);
-  --palette-positive-100: oklch(0.965 0.0253 152);
-  --palette-positive-200: oklch(0.905 0.0437 152);
-  --palette-positive-300: oklch(0.845 0.0667 152);
-  --palette-positive-400: oklch(0.760 0.0897 152);
-  --palette-positive-500: oklch(0.680 0.1081 152);
-  --palette-positive-600: oklch(0.625 0.1150 152);
-  --palette-positive-700: oklch(0.545 0.1127 152);
-  --palette-positive-800: oklch(0.455 0.1058 152);
-  --palette-positive-900: oklch(0.320 0.0897 152);
-  --palette-positive-1000: oklch(0.215 0.0690 152);
-
-  --palette-warning-00: oklch(1.000 0.0160 88);
-  --palette-warning-100: oklch(0.965 0.0352 88);
-  --palette-warning-200: oklch(0.905 0.0608 88);
-  --palette-warning-300: oklch(0.845 0.0928 88);
-  --palette-warning-400: oklch(0.760 0.1248 88);
-  --palette-warning-500: oklch(0.680 0.1504 88);
-  --palette-warning-600: oklch(0.625 0.1600 88);
-  --palette-warning-700: oklch(0.545 0.1568 88);
-  --palette-warning-800: oklch(0.455 0.1472 88);
-  --palette-warning-900: oklch(0.320 0.1248 88);
-  --palette-warning-1000: oklch(0.215 0.0960 88);
-
-  --palette-critical-00: oklch(1.000 0.0145 27);
-  --palette-critical-100: oklch(0.965 0.0319 27);
-  --palette-critical-200: oklch(0.905 0.0551 27);
-  --palette-critical-300: oklch(0.845 0.0841 27);
-  --palette-critical-400: oklch(0.760 0.1131 27);
-  --palette-critical-500: oklch(0.680 0.1363 27);
-  --palette-critical-600: oklch(0.625 0.1450 27);
-  --palette-critical-700: oklch(0.545 0.1421 27);
-  --palette-critical-800: oklch(0.455 0.1334 27);
-  --palette-critical-900: oklch(0.320 0.1131 27);
-  --palette-critical-1000: oklch(0.215 0.0870 27);
-
-  --palette-informative-00: oklch(1.000 0.0115 248);
-  --palette-informative-100: oklch(0.965 0.0253 248);
-  --palette-informative-200: oklch(0.905 0.0437 248);
-  --palette-informative-300: oklch(0.845 0.0667 248);
-  --palette-informative-400: oklch(0.760 0.0897 248);
-  --palette-informative-500: oklch(0.680 0.1081 248);
-  --palette-informative-600: oklch(0.625 0.1150 248);
-  --palette-informative-700: oklch(0.545 0.1127 248);
-  --palette-informative-800: oklch(0.455 0.1058 248);
-  --palette-informative-900: oklch(0.320 0.0897 248);
-  --palette-informative-1000: oklch(0.215 0.0690 248);
-
-  --surface-shadow: 0 1px 2px rgba(28, 25, 22, 0.05), 0 8px 20px -14px rgba(28, 25, 22, 0.4);
-  --surface-stroke: transparent;
-}
-```
-
-### 8.2 다크
-
-기기 설정을 따라가는 길과 `data-theme`로 못 박는 길 둘 다 걸어둔다. `[data-theme="light"]`가 붙어 있으면 기기가 다크여도 라이트로 남는다.
-
-`@custom-variant dark`가 같은 규칙을 `dark:` 유틸리티 쪽에도 건다. Tailwind의 기본 `dark:`는 미디어 쿼리만 보기 때문에, 이것이 없으면 팔레트는 `[data-theme="dark"]`를 따라 뒤집히는데 `dark:` 클래스를 단 자리만 라이트로 남는다. 갈래 둘의 조건이 위 팔레트 블록 둘과 정확히 같아야 한다.
-
-```css
 @custom-variant dark {
   &:where([data-theme="dark"], [data-theme="dark"] *) {
     @slot;
@@ -515,243 +438,17 @@ Tailwind 유틸이 없다. 셋 다 `var()`로 직접 쓴다.
     }
   }
 }
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-
-    --palette-neutral-00: oklch(0.155 0.0037 57);
-    --palette-neutral-100: oklch(0.205 0.0037 57);
-    --palette-neutral-200: oklch(0.265 0.0043 57);
-    --palette-neutral-300: oklch(0.320 0.0045 57);
-    --palette-neutral-400: oklch(0.400 0.0047 57);
-    --palette-neutral-500: oklch(0.480 0.0050 57);
-    --palette-neutral-600: oklch(0.585 0.0050 57);
-    --palette-neutral-700: oklch(0.665 0.0050 57);
-    --palette-neutral-800: oklch(0.745 0.0050 57);
-    --palette-neutral-900: oklch(0.845 0.0053 57);
-    --palette-neutral-1000: oklch(0.935 0.0055 57);
-
-    --palette-brand-00: oklch(0.155 0.0058 57);
-    --palette-brand-100: oklch(0.205 0.0128 57);
-    --palette-brand-200: oklch(0.265 0.0220 57);
-    --palette-brand-300: oklch(0.320 0.0336 57);
-    --palette-brand-400: oklch(0.400 0.0452 57);
-    --palette-brand-500: oklch(0.480 0.0545 57);
-    --palette-brand-600: oklch(0.585 0.0580 57);
-    --palette-brand-700: oklch(0.665 0.0568 57);
-    --palette-brand-800: oklch(0.745 0.0534 57);
-    --palette-brand-900: oklch(0.845 0.0452 57);
-    --palette-brand-1000: oklch(0.935 0.0348 57);
-
-    --palette-positive-00: oklch(0.155 0.0115 152);
-    --palette-positive-100: oklch(0.205 0.0253 152);
-    --palette-positive-200: oklch(0.265 0.0437 152);
-    --palette-positive-300: oklch(0.320 0.0667 152);
-    --palette-positive-400: oklch(0.400 0.0897 152);
-    --palette-positive-500: oklch(0.480 0.1081 152);
-    --palette-positive-600: oklch(0.585 0.1150 152);
-    --palette-positive-700: oklch(0.665 0.1127 152);
-    --palette-positive-800: oklch(0.745 0.1058 152);
-    --palette-positive-900: oklch(0.845 0.0897 152);
-    --palette-positive-1000: oklch(0.935 0.0690 152);
-
-    --palette-warning-00: oklch(0.155 0.0160 88);
-    --palette-warning-100: oklch(0.205 0.0352 88);
-    --palette-warning-200: oklch(0.265 0.0608 88);
-    --palette-warning-300: oklch(0.320 0.0928 88);
-    --palette-warning-400: oklch(0.400 0.1248 88);
-    --palette-warning-500: oklch(0.480 0.1504 88);
-    --palette-warning-600: oklch(0.585 0.1600 88);
-    --palette-warning-700: oklch(0.665 0.1568 88);
-    --palette-warning-800: oklch(0.745 0.1472 88);
-    --palette-warning-900: oklch(0.845 0.1248 88);
-    --palette-warning-1000: oklch(0.935 0.0960 88);
-
-    --palette-critical-00: oklch(0.155 0.0145 27);
-    --palette-critical-100: oklch(0.205 0.0319 27);
-    --palette-critical-200: oklch(0.265 0.0551 27);
-    --palette-critical-300: oklch(0.320 0.0841 27);
-    --palette-critical-400: oklch(0.400 0.1131 27);
-    --palette-critical-500: oklch(0.480 0.1363 27);
-    --palette-critical-600: oklch(0.585 0.1450 27);
-    --palette-critical-700: oklch(0.665 0.1421 27);
-    --palette-critical-800: oklch(0.745 0.1334 27);
-    --palette-critical-900: oklch(0.845 0.1131 27);
-    --palette-critical-1000: oklch(0.935 0.0870 27);
-
-    --palette-informative-00: oklch(0.155 0.0115 248);
-    --palette-informative-100: oklch(0.205 0.0253 248);
-    --palette-informative-200: oklch(0.265 0.0437 248);
-    --palette-informative-300: oklch(0.320 0.0667 248);
-    --palette-informative-400: oklch(0.400 0.0897 248);
-    --palette-informative-500: oklch(0.480 0.1081 248);
-    --palette-informative-600: oklch(0.585 0.1150 248);
-    --palette-informative-700: oklch(0.665 0.1127 248);
-    --palette-informative-800: oklch(0.745 0.1058 248);
-    --palette-informative-900: oklch(0.845 0.0897 248);
-    --palette-informative-1000: oklch(0.935 0.0690 248);
-
-    --surface-shadow: none;
-    --surface-stroke: var(--palette-neutral-200);
-  }
-}
-
-[data-theme="dark"] {
-  color-scheme: dark;
-
-  --palette-neutral-00: oklch(0.155 0.0037 57);
-  --palette-neutral-100: oklch(0.205 0.0037 57);
-  --palette-neutral-200: oklch(0.265 0.0043 57);
-  --palette-neutral-300: oklch(0.320 0.0045 57);
-  --palette-neutral-400: oklch(0.400 0.0047 57);
-  --palette-neutral-500: oklch(0.480 0.0050 57);
-  --palette-neutral-600: oklch(0.585 0.0050 57);
-  --palette-neutral-700: oklch(0.665 0.0050 57);
-  --palette-neutral-800: oklch(0.745 0.0050 57);
-  --palette-neutral-900: oklch(0.845 0.0053 57);
-  --palette-neutral-1000: oklch(0.935 0.0055 57);
-
-  --palette-brand-00: oklch(0.155 0.0058 57);
-  --palette-brand-100: oklch(0.205 0.0128 57);
-  --palette-brand-200: oklch(0.265 0.0220 57);
-  --palette-brand-300: oklch(0.320 0.0336 57);
-  --palette-brand-400: oklch(0.400 0.0452 57);
-  --palette-brand-500: oklch(0.480 0.0545 57);
-  --palette-brand-600: oklch(0.585 0.0580 57);
-  --palette-brand-700: oklch(0.665 0.0568 57);
-  --palette-brand-800: oklch(0.745 0.0534 57);
-  --palette-brand-900: oklch(0.845 0.0452 57);
-  --palette-brand-1000: oklch(0.935 0.0348 57);
-
-  --palette-positive-00: oklch(0.155 0.0115 152);
-  --palette-positive-100: oklch(0.205 0.0253 152);
-  --palette-positive-200: oklch(0.265 0.0437 152);
-  --palette-positive-300: oklch(0.320 0.0667 152);
-  --palette-positive-400: oklch(0.400 0.0897 152);
-  --palette-positive-500: oklch(0.480 0.1081 152);
-  --palette-positive-600: oklch(0.585 0.1150 152);
-  --palette-positive-700: oklch(0.665 0.1127 152);
-  --palette-positive-800: oklch(0.745 0.1058 152);
-  --palette-positive-900: oklch(0.845 0.0897 152);
-  --palette-positive-1000: oklch(0.935 0.0690 152);
-
-  --palette-warning-00: oklch(0.155 0.0160 88);
-  --palette-warning-100: oklch(0.205 0.0352 88);
-  --palette-warning-200: oklch(0.265 0.0608 88);
-  --palette-warning-300: oklch(0.320 0.0928 88);
-  --palette-warning-400: oklch(0.400 0.1248 88);
-  --palette-warning-500: oklch(0.480 0.1504 88);
-  --palette-warning-600: oklch(0.585 0.1600 88);
-  --palette-warning-700: oklch(0.665 0.1568 88);
-  --palette-warning-800: oklch(0.745 0.1472 88);
-  --palette-warning-900: oklch(0.845 0.1248 88);
-  --palette-warning-1000: oklch(0.935 0.0960 88);
-
-  --palette-critical-00: oklch(0.155 0.0145 27);
-  --palette-critical-100: oklch(0.205 0.0319 27);
-  --palette-critical-200: oklch(0.265 0.0551 27);
-  --palette-critical-300: oklch(0.320 0.0841 27);
-  --palette-critical-400: oklch(0.400 0.1131 27);
-  --palette-critical-500: oklch(0.480 0.1363 27);
-  --palette-critical-600: oklch(0.585 0.1450 27);
-  --palette-critical-700: oklch(0.665 0.1421 27);
-  --palette-critical-800: oklch(0.745 0.1334 27);
-  --palette-critical-900: oklch(0.845 0.1131 27);
-  --palette-critical-1000: oklch(0.935 0.0870 27);
-
-  --palette-informative-00: oklch(0.155 0.0115 248);
-  --palette-informative-100: oklch(0.205 0.0253 248);
-  --palette-informative-200: oklch(0.265 0.0437 248);
-  --palette-informative-300: oklch(0.320 0.0667 248);
-  --palette-informative-400: oklch(0.400 0.0897 248);
-  --palette-informative-500: oklch(0.480 0.1081 248);
-  --palette-informative-600: oklch(0.585 0.1150 248);
-  --palette-informative-700: oklch(0.665 0.1127 248);
-  --palette-informative-800: oklch(0.745 0.1058 248);
-  --palette-informative-900: oklch(0.845 0.0897 248);
-  --palette-informative-1000: oklch(0.935 0.0690 248);
-
-  --surface-shadow: none;
-  --surface-stroke: var(--palette-neutral-200);
-}
 ```
 
-### 8.3 역할 토큰과 모션과 바깥 값
+### 8.2 Tailwind 기본값 초기화와 서체
 
-한 번만 쓴다. 팔레트를 가리키기만 하므로 다크에서 다시 쓸 것이 없다.
+Tailwind가 기본으로 들고 오는 것 중 안 쓰는 것을 지우고 서체를 건다. 값이 아니라 「지운다」는 선언이라 표로 담을 자리가 없다.
 
-`--vendor-` 셋은 우리가 정한 값이 아니라서 oklch가 아니라 hex다. 무엇이고 왜 못 바꾸는지는 [9절](#9-바깥이-정한-값)에 있다.
+펜스 둘이고 순서가 곧 자리다. 첫 펜스는 `@theme` 블록 끝에, 둘째 펜스는 `@theme inline` 블록 머리에 들어간다.
 
-```css
-:root {
-  --role-bg-neutral: var(--palette-neutral-00);
-  --role-bg-neutral-weak: var(--palette-neutral-100);
-  --role-bg-neutral-weak-pressed: var(--palette-neutral-200);
-  --role-bg-neutral-solid: var(--palette-neutral-1000);
-  --role-bg-neutral-disabled: var(--palette-neutral-100);
-  --role-bg-brand-solid: var(--palette-brand-800);
-  --role-bg-brand-solid-pressed: var(--palette-brand-900);
-  --role-bg-brand-weak: var(--palette-brand-100);
-  --role-bg-brand-weak-pressed: var(--palette-brand-200);
-  --role-bg-brand-weak-selected: var(--palette-brand-100);
-  --role-bg-positive-weak: var(--palette-positive-100);
-  --role-bg-warning-weak: var(--palette-warning-100);
-  --role-bg-critical-solid: var(--palette-critical-800);
-  --role-bg-critical-solid-pressed: var(--palette-critical-900);
-  --role-bg-critical-weak: var(--palette-critical-100);
-  --role-bg-informative-weak: var(--palette-informative-100);
-
-  --role-fg-neutral: var(--palette-neutral-1000);
-  --role-fg-neutral-muted: var(--palette-neutral-800);
-  --role-fg-neutral-subtle: var(--palette-neutral-700);
-  --role-fg-neutral-contrast: var(--palette-neutral-00);
-  --role-fg-neutral-disabled: var(--palette-neutral-700);
-  --role-fg-brand: var(--palette-brand-800);
-  --role-fg-brand-contrast: var(--palette-neutral-00);
-  --role-fg-positive: var(--palette-positive-800);
-  --role-fg-critical: var(--palette-critical-800);
-  --role-fg-informative: var(--palette-informative-800);
-
-  --role-stroke-neutral: var(--palette-neutral-200);
-  --role-stroke-neutral-muted: var(--palette-neutral-300);
-  --role-stroke-neutral-disabled: var(--palette-neutral-200);
-  --role-stroke-brand-solid: var(--palette-brand-800);
-  --role-stroke-surface: var(--surface-stroke);
-
-  --duration-fast: 125ms;
-  --duration-base: 180ms;
-  --duration-slow: 240ms;
-  --duration-slower: 300ms;
-
-  --interval-rotate: 4s;
-  --interval-beat: 1.8s;
-  --stagger-step: 70ms;
-
-  --vendor-google-bg: #131314;
-  --vendor-google-stroke: #8e918f;
-  --vendor-google-fg: #e3e3e3;
-}
-```
-
-### 8.4 테마
+무엇을 왜 지웠는지는 [3절](#3-타이포그래피)과 [5절](#5-라운딩과-그림자)에 있다. 크기는 `text-3xl`까지, 굵기는 넷, 라운딩은 `rounded-xl`까지가 전부다.
 
 ```css
-@theme {
-  --text-xs: 0.8125rem;
-  --text-xs--line-height: 1.21875rem;
-  --text-sm: 0.9375rem;
-  --text-sm--line-height: 1.40625rem;
-  --text-base: 1.0625rem;
-  --text-base--line-height: 1.59375rem;
-  --text-lg: 1.25rem;
-  --text-lg--line-height: 1.8125rem;
-  --text-xl: 1.375rem;
-  --text-xl--line-height: 1.9375rem;
-  --text-2xl: 1.625rem;
-  --text-2xl--line-height: 2.1875rem;
-  --text-3xl: 1.875rem;
-  --text-3xl--line-height: 2.5rem;
   --text-4xl: initial;
   --text-5xl: initial;
   --text-6xl: initial;
@@ -765,147 +462,34 @@ Tailwind 유틸이 없다. 셋 다 `var()`로 직접 쓴다.
   --font-weight-extrabold: initial;
   --font-weight-black: initial;
 
-  --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
   --radius-2xl: initial;
   --radius-3xl: initial;
   --radius-4xl: initial;
-}
-
-@theme inline {
-  --color-*: initial;
-  --color-transparent: transparent;
-  --color-current: currentColor;
-
-  --font-sans: "Wanted Sans Variable", -apple-system, BlinkMacSystemFont,
-    system-ui, "Apple SD Gothic Neo", sans-serif;
-
-  --shadow-card: var(--surface-shadow);
-
-  --color-neutral-00: var(--palette-neutral-00);
-  --color-neutral-100: var(--palette-neutral-100);
-  --color-neutral-200: var(--palette-neutral-200);
-  --color-neutral-300: var(--palette-neutral-300);
-  --color-neutral-400: var(--palette-neutral-400);
-  --color-neutral-500: var(--palette-neutral-500);
-  --color-neutral-600: var(--palette-neutral-600);
-  --color-neutral-700: var(--palette-neutral-700);
-  --color-neutral-800: var(--palette-neutral-800);
-  --color-neutral-900: var(--palette-neutral-900);
-  --color-neutral-1000: var(--palette-neutral-1000);
-
-  --color-brand-00: var(--palette-brand-00);
-  --color-brand-100: var(--palette-brand-100);
-  --color-brand-200: var(--palette-brand-200);
-  --color-brand-300: var(--palette-brand-300);
-  --color-brand-400: var(--palette-brand-400);
-  --color-brand-500: var(--palette-brand-500);
-  --color-brand-600: var(--palette-brand-600);
-  --color-brand-700: var(--palette-brand-700);
-  --color-brand-800: var(--palette-brand-800);
-  --color-brand-900: var(--palette-brand-900);
-  --color-brand-1000: var(--palette-brand-1000);
-
-  --color-positive-00: var(--palette-positive-00);
-  --color-positive-100: var(--palette-positive-100);
-  --color-positive-200: var(--palette-positive-200);
-  --color-positive-300: var(--palette-positive-300);
-  --color-positive-400: var(--palette-positive-400);
-  --color-positive-500: var(--palette-positive-500);
-  --color-positive-600: var(--palette-positive-600);
-  --color-positive-700: var(--palette-positive-700);
-  --color-positive-800: var(--palette-positive-800);
-  --color-positive-900: var(--palette-positive-900);
-  --color-positive-1000: var(--palette-positive-1000);
-
-  --color-warning-00: var(--palette-warning-00);
-  --color-warning-100: var(--palette-warning-100);
-  --color-warning-200: var(--palette-warning-200);
-  --color-warning-300: var(--palette-warning-300);
-  --color-warning-400: var(--palette-warning-400);
-  --color-warning-500: var(--palette-warning-500);
-  --color-warning-600: var(--palette-warning-600);
-  --color-warning-700: var(--palette-warning-700);
-  --color-warning-800: var(--palette-warning-800);
-  --color-warning-900: var(--palette-warning-900);
-  --color-warning-1000: var(--palette-warning-1000);
-
-  --color-critical-00: var(--palette-critical-00);
-  --color-critical-100: var(--palette-critical-100);
-  --color-critical-200: var(--palette-critical-200);
-  --color-critical-300: var(--palette-critical-300);
-  --color-critical-400: var(--palette-critical-400);
-  --color-critical-500: var(--palette-critical-500);
-  --color-critical-600: var(--palette-critical-600);
-  --color-critical-700: var(--palette-critical-700);
-  --color-critical-800: var(--palette-critical-800);
-  --color-critical-900: var(--palette-critical-900);
-  --color-critical-1000: var(--palette-critical-1000);
-
-  --color-informative-00: var(--palette-informative-00);
-  --color-informative-100: var(--palette-informative-100);
-  --color-informative-200: var(--palette-informative-200);
-  --color-informative-300: var(--palette-informative-300);
-  --color-informative-400: var(--palette-informative-400);
-  --color-informative-500: var(--palette-informative-500);
-  --color-informative-600: var(--palette-informative-600);
-  --color-informative-700: var(--palette-informative-700);
-  --color-informative-800: var(--palette-informative-800);
-  --color-informative-900: var(--palette-informative-900);
-  --color-informative-1000: var(--palette-informative-1000);
-
-  --color-bg-neutral: var(--role-bg-neutral);
-  --color-bg-neutral-weak: var(--role-bg-neutral-weak);
-  --color-bg-neutral-weak-pressed: var(--role-bg-neutral-weak-pressed);
-  --color-bg-neutral-solid: var(--role-bg-neutral-solid);
-  --color-bg-neutral-disabled: var(--role-bg-neutral-disabled);
-  --color-bg-brand-solid: var(--role-bg-brand-solid);
-  --color-bg-brand-solid-pressed: var(--role-bg-brand-solid-pressed);
-  --color-bg-brand-weak: var(--role-bg-brand-weak);
-  --color-bg-brand-weak-pressed: var(--role-bg-brand-weak-pressed);
-  --color-bg-brand-weak-selected: var(--role-bg-brand-weak-selected);
-  --color-bg-positive-weak: var(--role-bg-positive-weak);
-  --color-bg-warning-weak: var(--role-bg-warning-weak);
-  --color-bg-critical-solid: var(--role-bg-critical-solid);
-  --color-bg-critical-solid-pressed: var(--role-bg-critical-solid-pressed);
-  --color-bg-critical-weak: var(--role-bg-critical-weak);
-  --color-bg-informative-weak: var(--role-bg-informative-weak);
-
-  --color-fg-neutral: var(--role-fg-neutral);
-  --color-fg-neutral-muted: var(--role-fg-neutral-muted);
-  --color-fg-neutral-subtle: var(--role-fg-neutral-subtle);
-  --color-fg-neutral-contrast: var(--role-fg-neutral-contrast);
-  --color-fg-neutral-disabled: var(--role-fg-neutral-disabled);
-  --color-fg-brand: var(--role-fg-brand);
-  --color-fg-brand-contrast: var(--role-fg-brand-contrast);
-  --color-fg-positive: var(--role-fg-positive);
-  --color-fg-critical: var(--role-fg-critical);
-  --color-fg-informative: var(--role-fg-informative);
-
-  --color-stroke-neutral: var(--role-stroke-neutral);
-  --color-stroke-neutral-muted: var(--role-stroke-neutral-muted);
-  --color-stroke-neutral-disabled: var(--role-stroke-neutral-disabled);
-  --color-stroke-brand-solid: var(--role-stroke-brand-solid);
-  --color-stroke-surface: var(--role-stroke-surface);
-
-  --color-google-bg: var(--vendor-google-bg);
-  --color-google-stroke: var(--vendor-google-stroke);
-  --color-google-fg: var(--vendor-google-fg);
-}
 ```
 
 `--color-*: initial`은 Tailwind가 들고 오는 기본 팔레트를 지운다. 지우지 않으면 `bg-red-500`이 그대로 먹혀서 우리 팔레트 밖 색이 화면에 섞인다. `bg-white`와 `text-black`도 같이 사라지니 흰 면은 `bg-bg-neutral`을 쓴다.
 
+`--font-sans`의 첫 자리가 [서체 연결](#서체-연결)의 스타일시트가 선언하는 이름이다. 뒤의 넷은 그 폰트를 못 받았을 때의 대체다.
+
+```css
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-sans:
+    "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui,
+    "Apple SD Gothic Neo", sans-serif;
+
+  --shadow-card: var(--surface-shadow);
+```
+
 `bg-bg-neutral`처럼 접두사가 겹쳐 보이는 것은 알고 둔 것이다. 역할 토큰 이름이 `bg.neutral`이고 Tailwind 유틸 접두사도 `bg-`라서다. 이름을 하나로 유지해야 위의 표에서 찾은 것을 그대로 옮겨 적을 수 있다.
 
-### 8.5 shadcn 다리
+### 8.3 shadcn 다리
 
 shadcn/ui가 만들어내는 컴포넌트는 `bg-primary`, `text-muted-foreground`, `border-border` 같은 자기 이름을 쓴다. 이 이름들을 우리 역할 토큰에 연결해두면 컴포넌트를 설치한 그 순간부터 우리 색으로 나온다. 연결을 안 하면 shadcn 기본 색이 그대로 남는다.
 
-아래는 결정된 역할 토큰에서 기계적으로 끌어낸 것이다. 새로 정한 색은 없다.
+아래는 결정된 역할 토큰에서 기계적으로 끌어낸 것이다. 새로 정한 색은 없다. 그래도 표에서 뽑아내지 않고 펜스로 두는 것은, 이 짝이 우리 이름 체계가 아니라 shadcn의 이름 체계라서다. 우리 표에 shadcn의 이름을 담을 칸이 없다.
 
 | shadcn 이름 | 우리 역할 토큰 |
 | --- | --- |
@@ -955,9 +539,9 @@ shadcn/ui가 만들어내는 컴포넌트는 `bg-primary`, `text-muted-foregroun
 
 `accent`가 `bg.brand-weak`로 간 것은 확인이 필요한 자리다. shadcn은 accent를 메뉴 hover 배경에 쓰는데, 그러면 드롭다운을 훑는 동안 브랜드 색이 계속 깜빡인다. [foundation/color.md](foundation/color.md#브랜드-색을-아끼는-이유)의 절제 규칙과 부딪히므로 실제 화면을 보고 `bg.neutral-weak`로 내릴지 판단한다.
 
-### 8.6 베이스
+### 8.4 베이스
 
-body가 배경색과 글자색을 명시로 받는다.
+body가 배경색과 글자색을 명시로 받는다. 파일 맨 뒤에 그대로 놓인다.
 
 ```css
 @layer base {
