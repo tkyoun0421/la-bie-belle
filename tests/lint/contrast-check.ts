@@ -149,7 +149,6 @@ function reportedRatioOf(cell: string, comboText: string): number {
   return ratio;
 }
 
-// 재계산값은 반올림하지 않는다. 표의 둘째 자리와 맞추는 일은 테스트의 toBeCloseTo(…, 2)가 이미 하고, 4.5 판정은 4.5065처럼 경계에 붙은 줄을 표기값이 아니라 실제값으로 갈라야 한다.
 function recomputedRatio(markdown: string, combo: Combo, theme: Theme): number {
   return contrastRatio(
     resolveTokenHex(markdown, combo.left, theme),

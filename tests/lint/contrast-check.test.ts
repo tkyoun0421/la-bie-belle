@@ -154,3 +154,22 @@ describe("완료 조건 — 측정한 조합은 재계산값 기준으로 4.5:1 
     expect(row.recomputed.dark).toBeGreaterThanOrEqual(AA_THRESHOLD);
   });
 });
+
+describe("완료 조건 — 4.5 판정을 표기값이 아니라 실제값으로 가른다", () => {
+  const boundary = measuredContrastRows(TOKENS_MARKDOWN).filter(
+    (row) =>
+      row.combo.left === "fg.neutral-disabled" &&
+      row.combo.right === "bg.neutral-disabled",
+  );
+
+  it("4.5 경계에 붙은 행이 표에 하나 있다", () => {
+    expect(boundary).toHaveLength(1);
+  });
+
+  it.each(boundary.map((row) => [row.recomputed.light] as const))(
+    "재계산한 라이트 값 %s 는 자기 자신을 둘째 자리로 반올림한 값과 다르다",
+    (light) => {
+      expect(light).not.toBe(Math.round(light * 100) / 100);
+    },
+  );
+});
