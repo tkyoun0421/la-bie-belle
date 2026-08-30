@@ -1,0 +1,2022 @@
+<!--
+  근무자 대시보드 시안 — 사람이 보고 고른 결과다.
+
+  값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../tokens.md이고,
+  무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 dashboard.md다.
+  둘과 이 파일이 어긋나면 저 둘이 이긴다.
+
+  이 파일이 맡는 것은 글로 안 남는 것들이다 — 움직이는 모습, 겹치는 타이밍,
+  실제 비율, 여러 화면을 나란히 놓고 보는 눈. 구현할 때 이 셋을 같이 연다.
+
+  퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
+  앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../README.md의 「퍼블리싱」에 있다.
+-->
+<title>근무자 대시보드 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+
+<style>
+:root {
+  --b-bg: oklch(0.945 0.004 57);
+  --b-panel: oklch(0.988 0.003 57);
+  --b-ink: oklch(0.27 0.007 57);
+  --b-sub: oklch(0.52 0.006 57);
+  --b-faint: oklch(0.63 0.005 57);
+  --b-line: oklch(0.885 0.005 57);
+  --b-line-strong: oklch(0.8 0.005 57);
+  --b-accent: oklch(0.48 0.115 248);
+  --b-mock-shadow: 0 2px 6px rgba(28,25,22,.06), 0 24px 48px -28px rgba(28,25,22,.5);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+    --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+    --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+    --b-accent: oklch(0.76 0.1 248);
+    --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+  }
+}
+:root[data-theme="dark"] {
+  --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+  --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+  --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+  --b-accent: oklch(0.76 0.1 248);
+  --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--b-bg); color: var(--b-ink);
+  font-family: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1300px; margin: 0 auto; padding: 56px 28px 110px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--b-accent); margin: 0 0 14px;
+}
+h1 { font-size: 36px; line-height: 1.25; font-weight: 700; letter-spacing: -.02em; margin: 0 0 16px; }
+.lede { font-size: 16px; color: var(--b-sub); max-width: 60ch; margin: 0; }
+
+section { margin-top: 70px; }
+.sec-head { border-top: 1px solid var(--b-line-strong); padding-top: 18px; margin-bottom: 28px; }
+.sec-num {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .12em; color: var(--b-faint); display: block; margin-bottom: 7px;
+}
+h2 { font-size: 23px; font-weight: 700; letter-spacing: -.015em; margin: 0 0 10px; }
+.sec-head p { margin: 0; color: var(--b-sub); max-width: 68ch; font-size: 14.5px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, 375px); gap: 44px 30px; justify-content: start; }
+.item > figcaption { margin-top: 16px; }
+.cap-key { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--b-faint); }
+.cap-name { font-size: 17px; font-weight: 700; margin: 3px 0 6px; letter-spacing: -.01em; }
+.cap-body { font-size: 13.5px; color: var(--b-sub); margin: 0; max-width: 46ch; }
+.cap-body strong { color: var(--b-ink); font-weight: 600; }
+code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .88em;
+  background: var(--b-panel); border: 1px solid var(--b-line); border-radius: 4px; padding: 1px 5px;
+}
+.replay {
+  margin-top: 14px; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--b-accent);
+  background: none; border: 1px solid color-mix(in oklch, var(--b-accent) 40%, transparent);
+  border-radius: 999px; padding: 4px 13px; cursor: pointer;
+}
+.replay:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+
+/* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
+.mock {
+  --palette-neutral-00: oklch(1 .0037 57);
+  --palette-neutral-100: oklch(.965 .0037 57);
+  --palette-neutral-200: oklch(.905 .0043 57);
+  --palette-neutral-300: oklch(.845 .0045 57);
+  --palette-neutral-400: oklch(.76 .0047 57);
+  --palette-neutral-500: oklch(.68 .005 57);
+  --palette-neutral-600: oklch(.625 .005 57);
+  --palette-neutral-700: oklch(.545 .005 57);
+  --palette-neutral-800: oklch(.455 .005 57);
+  --palette-neutral-900: oklch(.32 .0053 57);
+  --palette-neutral-1000: oklch(.215 .0055 57);
+  --palette-brand-100: oklch(.965 .0128 57);
+  --palette-brand-200: oklch(.905 .022 57);
+  --palette-brand-300: oklch(.845 .0336 57);
+  --palette-brand-800: oklch(.455 .0534 57);
+  --palette-positive-100: oklch(.965 .0253 152);
+  --palette-positive-800: oklch(.455 .1058 152);
+  --palette-warning-100: oklch(.965 .0352 88);
+  --palette-warning-500: oklch(.68 .1504 88);
+  --palette-critical-100: oklch(.965 .0319 27);
+  --palette-critical-800: oklch(.455 .1334 27);
+  --surface-stroke: transparent;
+  --scrim-ink: var(--palette-neutral-1000);
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5);
+}
+.mock.force-dark, :root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-400: oklch(.4 .0047 57);
+  --palette-neutral-500: oklch(.48 .005 57);
+  --palette-neutral-600: oklch(.585 .005 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-100: oklch(.205 .0128 57);
+  --palette-brand-200: oklch(.265 .022 57);
+  --palette-brand-300: oklch(.32 .0336 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --palette-positive-100: oklch(.205 .0253 152);
+  --palette-positive-800: oklch(.745 .1058 152);
+  --palette-warning-100: oklch(.205 .0352 88);
+  --palette-warning-500: oklch(.48 .1504 88);
+    --palette-critical-100: oklch(.205 .0319 27);
+    --palette-critical-800: oklch(.745 .1334 27);
+  --surface-stroke: var(--palette-neutral-200);
+    --scrim-ink: var(--palette-neutral-00);
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mock:not(.force-light) {
+    --palette-neutral-00: oklch(.155 .0037 57);
+    --palette-neutral-100: oklch(.205 .0037 57);
+    --palette-neutral-200: oklch(.265 .0043 57);
+    --palette-neutral-300: oklch(.32 .0045 57);
+    --palette-neutral-400: oklch(.4 .0047 57);
+    --palette-neutral-500: oklch(.48 .005 57);
+    --palette-neutral-600: oklch(.585 .005 57);
+    --palette-neutral-700: oklch(.665 .005 57);
+    --palette-neutral-800: oklch(.745 .005 57);
+    --palette-neutral-900: oklch(.845 .0053 57);
+    --palette-neutral-1000: oklch(.935 .0055 57);
+    --palette-brand-100: oklch(.205 .0128 57);
+    --palette-brand-200: oklch(.265 .022 57);
+    --palette-brand-300: oklch(.32 .0336 57);
+    --palette-brand-800: oklch(.745 .0534 57);
+    --palette-positive-100: oklch(.205 .0253 152);
+    --palette-positive-800: oklch(.745 .1058 152);
+    --palette-warning-100: oklch(.205 .0352 88);
+    --palette-warning-500: oklch(.48 .1504 88);
+    --palette-critical-100: oklch(.205 .0319 27);
+    --palette-critical-800: oklch(.745 .1334 27);
+    --surface-stroke: var(--palette-neutral-200);
+    --scrim-ink: var(--palette-neutral-00);
+    --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+  }
+}
+.mock {
+  --bg-neutral: var(--palette-neutral-00);
+  --bg-neutral-weak: var(--palette-neutral-100);
+  --bg-neutral-solid: var(--palette-neutral-1000);
+  --bg-neutral-disabled: var(--palette-neutral-100);
+  --bg-brand-solid: var(--palette-brand-800);
+  --bg-brand-weak: var(--palette-brand-100);
+  --bg-brand-band: var(--palette-brand-300);
+  --bg-positive-weak: var(--palette-positive-100);
+  --bg-warning-weak: var(--palette-warning-100);
+  --bg-critical-weak: var(--palette-critical-100);
+  --bg-critical-solid: var(--palette-critical-800);
+  --fg-neutral: var(--palette-neutral-1000);
+  --fg-neutral-muted: var(--palette-neutral-800);
+  --fg-neutral-subtle: var(--palette-neutral-700);
+  --fg-neutral-contrast: var(--palette-neutral-00);
+  --fg-neutral-disabled: var(--palette-neutral-700);
+  --fg-brand: var(--palette-brand-800);
+  --fg-brand-contrast: var(--palette-neutral-00);
+  --fg-positive: var(--palette-positive-800);
+  --fg-critical: var(--palette-critical-800);
+  --stroke-neutral: var(--palette-neutral-200);
+  --stroke-neutral-muted: var(--palette-neutral-300);
+  --stroke-neutral-disabled: var(--palette-neutral-200);
+  --stroke-brand-solid: var(--palette-brand-800);
+
+  --map-ground: var(--palette-neutral-100);
+  --map-block: var(--palette-neutral-200);
+  --map-road: var(--palette-neutral-00);
+  --map-park: var(--palette-positive-100);
+  --map-label: var(--palette-neutral-600);
+
+  --t-xs: .8125rem; --lh-xs: 1.21875rem;
+  --t-sm: .9375rem; --lh-sm: 1.40625rem;
+  --t-base: 1.0625rem; --lh-base: 1.59375rem;
+  --t-lg: 1.25rem; --lh-lg: 1.8125rem;
+  --t-xl: 1.375rem; --lh-xl: 1.9375rem;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+  --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms; --d-slower: 300ms;
+  --interval-beat: 1.8s;
+
+  width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  background: var(--bg-neutral); color: var(--fg-neutral);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  font-size: var(--t-base); line-height: var(--lh-base);
+  box-shadow: var(--b-mock-shadow);
+}
+.mock .num { font-variant-numeric: tabular-nums; }
+
+.statusbar {
+  flex: 0 0 auto; height: 46px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px 0 30px; font-size: var(--t-xs); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.sb-right { display: flex; align-items: center; gap: 5px; }
+.appbar {
+  flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 4px 24px 14px; min-height: 42px;
+}
+.appbar .date { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+.brandmark {
+  width: 28px; height: 28px; border-radius: var(--r-sm); background: var(--bg-brand-solid);
+  color: var(--fg-brand-contrast); display: grid; place-items: center;
+  font-size: var(--t-xs); font-weight: 700; flex: 0 0 auto;
+}
+.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+.spacer { flex: 1 1 auto; min-height: 8px; }
+
+.daybar { padding-top: 26px; }
+.track { position: relative; height: 34px; border-radius: var(--r-sm); background: var(--bg-neutral-weak); }
+.track .work {
+  position: absolute; top: 5px; bottom: 5px; border-radius: var(--r-xs);
+  background: var(--bg-brand-band);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 9px;
+  font-size: var(--t-xs); line-height: 1; font-weight: 500;
+  color: var(--fg-neutral); font-variant-numeric: tabular-nums;
+}
+.track .now { position: absolute; top: -7px; bottom: -7px; width: 2px; border-radius: 999px; background: var(--bg-brand-solid); }
+.nowlab {
+  position: absolute; top: -22px; transform: translateX(-50%); font-size: var(--t-xs); line-height: 1;
+  font-weight: 600; color: var(--fg-brand); font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.barnote {
+  margin-top: 10px; display: flex; align-items: center; gap: 6px;
+  font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums;
+}
+.barnote .tick { flex: 0 0 auto; display: grid; place-items: center; color: var(--fg-positive); }
+.barnote .said { color: var(--fg-neutral-muted); font-weight: 500; }
+
+.headline { font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 700; letter-spacing: -.01em; }
+.headline.off { color: var(--fg-neutral-muted); font-weight: 600; }
+
+.rule { height: 1px; background: var(--stroke-neutral); }
+.kv { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 11px 0; }
+.kv .k { font-size: var(--t-sm); color: var(--fg-neutral-muted); }
+.kv .v { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; font-variant-numeric: tabular-nums; }
+.kv .v.none { color: var(--fg-neutral-subtle); font-weight: 500; }
+.kv + .kv { border-top: 1px solid var(--stroke-neutral); }
+
+.noti { overflow: hidden; }
+.noti-h {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle);
+  padding: 4px 0; min-height: 30px;
+}
+.noti-h b { color: var(--fg-neutral-muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+.noti-slot { position: relative; }
+.noti-slot .noti-item ~ .noti-item { display: none; }
+.noti-item {
+  display: grid; grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 10px; padding: 4px 0 12px;
+  transition: opacity var(--d-base) ease-out, transform var(--d-slow) ease-out;
+}
+.noti-meta {
+  grid-row: 2; grid-column: 2; margin-top: 5px; min-height: 30px;
+  display: flex; align-items: center; gap: 12px;
+}
+.noti-meta > .noti-cta { flex: 0 0 auto; margin-left: auto; align-self: center; }
+.noti-cta.pair { display: flex; align-items: center; gap: 6px; }
+.noti-item .unread {
+  grid-area: 1 / 1; align-self: start; margin-top: 9px;
+  width: 6px; height: 6px; border-radius: 999px; background: var(--bg-brand-solid);
+}
+.noti-item .donemark { grid-area: 1 / 1; align-self: start; margin-top: 4px; display: grid; place-items: center; color: var(--fg-positive); }
+.noti-item .donemark.off { color: var(--fg-neutral-subtle); }
+.noti-item .nt { grid-row: 1; grid-column: 2; font-size: var(--t-sm); line-height: var(--lh-sm); }
+.noti-item .ns {
+  flex: 0 0 auto; align-self: center; line-height: 1;
+  font-size: var(--t-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums;
+}
+.noti-close {
+  flex: 0 0 auto; width: 32px; height: 32px; margin-right: -8px; border: 0; background: none; padding: 0;
+  display: grid; place-items: center; color: var(--fg-neutral-subtle); cursor: pointer; border-radius: 999px;
+}
+.noti-close:hover { background: var(--bg-neutral-weak); }
+.noti-close:focus-visible { outline: 2px solid var(--stroke-brand-solid); outline-offset: 1px; }
+.noti-item.swap-out .nt, .noti-item.swap-out .noti-meta,
+.noti-item.swap-out .unread, .noti-item.swap-out .donemark {
+  opacity: 0; transform: translateY(-4px);
+  transition: opacity var(--d-base) ease-out, transform var(--d-base) ease-out;
+}
+.noti-item.swap-in .nt, .noti-item.swap-in .noti-meta, .noti-item.swap-in .donemark { animation: swapin var(--d-slow) ease-out both; }
+@keyframes swapin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.noti-item.leaving { opacity: 0; transform: translateX(16px); }
+.noti-item.entering { opacity: 0; transform: translateY(8px); }
+.noti.gone { height: 0 !important; opacity: 0; padding: 0; margin: 0; transition: height var(--d-slow) ease-out, opacity var(--d-base) ease-out; }
+
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 48px; border-radius: 999px; border: 0;
+  font-size: var(--t-sm); font-weight: 500; font-family: inherit;
+  background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
+}
+.btn.h44 { height: 44px; }
+.btn:disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); cursor: default; }
+.btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+.btn.ghost { background: transparent; color: var(--fg-neutral-muted); }
+.btn.sm { width: auto; height: 30px; padding: 0 12px; font-size: var(--t-xs); background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+.btn .spin {
+  width: 17px; height: 17px; border-radius: 999px;
+  border: 2px solid currentColor; border-top-color: transparent;
+  animation: spin .68s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn.done { background: var(--bg-positive-weak); color: var(--fg-positive); cursor: default; }
+.btn.done .tickin { display: grid; place-items: center; animation: tickin var(--d-slow) cubic-bezier(.2,.8,.3,1) both; }
+@keyframes tickin { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: none; } }
+
+/* 사유 바텀시트 — components.md의 Dialog와 바텀시트 */
+.reasonwrap { display: flex; justify-content: center; margin-top: 12px; }
+.scrim {
+  position: absolute; inset: 0; z-index: 3; background: var(--scrim-ink);
+  opacity: 0; pointer-events: none; transition: opacity var(--d-slow) ease-out;
+}
+.mock.modal-open .scrim { opacity: .42; pointer-events: auto; }
+.rsheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+  background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 10px 24px 24px; box-shadow: var(--sheet-shadow);
+  transform: translateY(102%); transition: transform var(--d-slow) cubic-bezier(.2,.8,.25,1);
+}
+.mock.modal-open .rsheet { transform: none; }
+
+.field { margin-top: 16px; }
+.frow { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.field .lab { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+.cnt { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+.cnt.full { color: var(--fg-critical); font-weight: 600; }
+.fhint { margin-top: 7px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+.statechip {
+  font-size: var(--t-xs); line-height: 1; font-weight: 600; color: var(--fg-neutral-muted);
+  background: var(--bg-neutral-weak); border-radius: 999px; padding: 5px 10px;
+}
+.field .box {
+  border-radius: var(--r-md); background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
+  padding: 12px; min-height: 88px; font-size: var(--t-sm); line-height: var(--lh-sm);
+  color: var(--fg-neutral); transition: border-color var(--d-fast) ease-out;
+}
+.field .box.ph { color: var(--fg-neutral-subtle); }
+.field .box.focus { border-color: var(--stroke-brand-solid); }
+.field .box.ro { border-color: transparent; color: var(--fg-neutral-muted); min-height: 0; }
+.caret { display: inline-block; width: 1.5px; height: 1.02em; background: var(--fg-brand); vertical-align: -2px; animation: caret 1s steps(1, end) infinite; }
+@keyframes caret { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+.rowbtns { display: flex; gap: 8px; margin-top: 18px; }
+.rowbtns .btn { margin-top: 0; }
+.rowbtns .btn.secondary { flex: 0 0 100px; }
+
+.rres { display: grid; place-items: center; text-align: center; padding: 10px 0 2px; }
+.mark { position: relative; width: 96px; height: 96px; display: grid; place-items: center; margin-bottom: 16px; }
+.mark .disc {
+  width: 64px; height: 64px; border-radius: 999px; display: grid; place-items: center;
+  background: var(--bg-neutral); border: 2px solid var(--bg-brand-solid); color: var(--bg-brand-solid);
+}
+.mark .halo { position: absolute; inset: 0; border-radius: 999px; border: 4px solid var(--bg-brand-solid); opacity: 0; }
+.mark.bad .disc { background: var(--bg-critical-weak); border-color: var(--bg-critical-solid); color: var(--fg-critical); }
+.mark.drawn path { stroke-dashoffset: 0; }
+.mark.go .halo { animation: burst 800ms cubic-bezier(.05,.82,.2,1) both; }
+.mark.go .halo.h2 { animation-delay: 130ms; border-width: 2px; }
+.mark.go .disc { animation: punch 620ms cubic-bezier(.16,.95,.2,1) both; }
+.mark.go .disc path { animation: drawline 440ms cubic-bezier(.35,.72,.2,1) 220ms both; }
+.mark.bad.go .disc { animation: shake 620ms cubic-bezier(.36,.07,.19,.97) both; }
+.mark.bad.go .disc path { animation: drawline 260ms ease-out 180ms both; }
+.mark.bad.go .disc path + path { animation-delay: 400ms; }
+@keyframes shake {
+  0% { transform: scale(.86); } 20% { transform: scale(1.03) translateX(0); }
+  38% { transform: translateX(-7px); } 54% { transform: translateX(6px); }
+  70% { transform: translateX(-4px); } 84% { transform: translateX(2px); } 100% { transform: none; }
+}
+.rres .rt { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 700; letter-spacing: -.01em; }
+.rres .rb { margin-top: 5px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.rres .rb .num { font-variant-numeric: tabular-nums; }
+
+.rsheet.lifted { bottom: 232px; }
+.kbd {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; height: 232px;
+  background: var(--bg-neutral-weak); border-top: 1px solid var(--stroke-neutral);
+  display: flex; flex-direction: column; justify-content: center; gap: 9px; padding: 10px 5px 22px;
+}
+.krow { display: flex; gap: 5px; justify-content: center; }
+.krow i { flex: 0 0 30px; height: 38px; border-radius: 5px; background: var(--bg-neutral); box-shadow: 0 1px 0 var(--stroke-neutral-muted); }
+.krow i.w { flex-basis: 42px; background: var(--stroke-neutral); box-shadow: none; }
+.krow i.sp { flex: 1 1 auto; }
+
+.block.crit { background: var(--bg-critical-weak); }
+.block .i-crit { flex: 0 0 auto; color: var(--fg-critical); margin-top: 1px; }
+
+.cta-note { margin-top: 8px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+.linkbtn {
+  display: block; margin: 14px auto 0; border: 0; background: none; padding: 6px 4px;
+  font-family: inherit; font-size: var(--t-xs); line-height: var(--lh-xs);
+  color: var(--fg-neutral-muted); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--stroke-neutral-muted);
+}
+.linkbtn:hover { color: var(--fg-neutral); }
+.linkbtn:focus-visible { outline: 2px solid var(--stroke-brand-solid); outline-offset: 2px; border-radius: var(--r-xs); }
+
+.block { border-radius: var(--r-lg); padding: 14px 16px; display: flex; gap: 11px; align-items: flex-start; }
+.block.warn { background: var(--bg-warning-weak); }
+.block.ok { background: var(--bg-positive-weak); }
+.block .bt { display: block; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 600; color: var(--fg-neutral); }
+.block .bb { display: block; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); margin-top: 4px; }
+.i-warn { color: var(--palette-warning-500); flex: 0 0 auto; margin-top: 2px; }
+.i-ok { color: var(--fg-positive); flex: 0 0 auto; margin-top: 2px; }
+
+.map { position: relative; flex: 1 1 auto; overflow: hidden; background: var(--map-ground); }
+.map svg.tiles { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mapchrome { position: absolute; top: 14px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; }
+.mapbtn {
+  width: 38px; height: 38px; border-radius: 999px; border: 0; padding: 0;
+  background: var(--bg-neutral); color: var(--fg-neutral); display: grid; place-items: center;
+  box-shadow: 0 1px 2px rgba(28,25,22,.14), 0 6px 16px -10px rgba(28,25,22,.5); cursor: pointer;
+}
+.attrib {
+  position: absolute; right: 10px; font-size: 10px; line-height: 1;
+  color: var(--map-label); background: color-mix(in oklch, var(--bg-neutral) 78%, transparent);
+  padding: 3px 6px; border-radius: 3px;
+}
+.me { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); width: 156px; height: 156px; display: grid; place-items: center; }
+.me .acc { position: absolute; inset: 0; border-radius: 999px; background: var(--bg-brand-solid); opacity: .13; }
+.me .ring {
+  position: absolute; inset: 0; border-radius: 999px; border: 2px solid var(--bg-brand-solid);
+  opacity: 0; animation: ripple 2.6s cubic-bezier(.2,.6,.3,1) infinite;
+}
+.me .ring:nth-of-type(3) { animation-delay: 1.3s; }
+@keyframes ripple {
+  0%   { transform: scale(.18); opacity: 0; }
+  18%  { opacity: .85; }
+  100% { transform: scale(1); opacity: 0; }
+}
+.me .dot {
+  position: relative; width: 20px; height: 20px; border-radius: 999px;
+  background: var(--bg-brand-solid); border: 3px solid var(--bg-neutral);
+  box-shadow: 0 1px 3px rgba(28,25,22,.4);
+}
+.me.done .ring { animation: none; opacity: 0; }
+.me.done .acc { background: var(--fg-positive); opacity: .14; }
+.me.done .dot { background: var(--fg-positive); }
+
+/* 출근 인증 완료 — motion.md가 이 앱의 유일한 축하로 지목한 자리 */
+.me .dot.big {
+  width: 58px; height: 58px; border-width: 4px;
+  display: grid; place-items: center; color: var(--fg-neutral-contrast);
+}
+.me .glow {
+  position: absolute; inset: -270px; border-radius: 999px; opacity: 0; pointer-events: none;
+  background: radial-gradient(circle, var(--bg-brand-solid) 0%, transparent 62%);
+}
+.me .blast {
+  position: absolute; inset: 0; border-radius: 999px;
+  background: var(--bg-brand-solid); opacity: 0; pointer-events: none;
+}
+.me .burst {
+  position: absolute; inset: 0; border-radius: 999px;
+  border: 7px solid var(--bg-brand-solid); opacity: 0; pointer-events: none;
+}
+.me .sparks { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+.me .sparks i { position: absolute; left: 0; top: 0; width: 0; height: 0; transform: rotate(var(--a)); }
+.me .sparks i::before {
+  content: ""; position: absolute; left: -3px; width: 6px; height: 20px; border-radius: 999px;
+  background: var(--bg-brand-solid); opacity: 0;
+}
+.me .sparks.s2 i::before { width: 4px; height: 11px; }
+.cheer .glow { animation: glow 660ms ease-out both; }
+.cheer .blast { animation: blast 520ms cubic-bezier(.05,.85,.2,1) both; }
+.cheer .burst { animation: burst 1050ms cubic-bezier(.04,.8,.2,1) both; }
+.cheer .burst.b2 { animation-delay: 110ms; border-width: 5px; }
+.cheer .burst.b3 { animation-delay: 230ms; border-width: 3px; }
+.cheer .burst.b4 { animation-delay: 360ms; border-width: 2px; }
+.cheer .sparks i::before { animation: spark 940ms cubic-bezier(.08,.88,.2,1) both; animation-delay: var(--d); }
+.cheer .sparks.s2 i::before { animation-name: spark2; animation-duration: 820ms; }
+.cheer .dot.big { animation: punch 860ms cubic-bezier(.14,.95,.2,1) 90ms both; }
+.cheer .dot.big svg { animation: tickpop 520ms cubic-bezier(.18,.95,.22,1) 300ms both; }
+.cheer .acc { animation: accpop 880ms cubic-bezier(.2,.8,.3,1) both; }
+@keyframes glow {
+  0%   { opacity: 0; transform: scale(.24); }
+  12%  { opacity: .4; }
+  100% { opacity: 0; transform: scale(1); }
+}
+@keyframes blast {
+  0%   { transform: scale(.04); opacity: 0; }
+  8%   { opacity: .88; }
+  100% { transform: scale(2.7); opacity: 0; }
+}
+@keyframes burst {
+  0%   { transform: scale(.08); opacity: 0; }
+  9%   { opacity: 1; }
+  100% { transform: scale(3.1); opacity: 0; }
+}
+@keyframes spark {
+  0%   { transform: translateY(-20px) scaleY(.18); opacity: 0; }
+  12%  { opacity: 1; }
+  100% { transform: translateY(-132px) scaleY(1.45); opacity: 0; }
+}
+@keyframes spark2 {
+  0%   { transform: translateY(-16px) scaleY(.2); opacity: 0; }
+  14%  { opacity: .9; }
+  100% { transform: translateY(-86px) scaleY(1.2); opacity: 0; }
+}
+@keyframes punch {
+  0%   { transform: scale(0) rotate(-16deg); }
+  42%  { transform: scale(1.4) rotate(6deg); }
+  68%  { transform: scale(.9) rotate(-2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes tickpop {
+  0%   { opacity: 0; transform: scale(.4); }
+  60%  { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes accpop {
+  0%   { transform: scale(.86); }
+  45%  { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+@keyframes drawline { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+.me.v-draw .dot.big { background: var(--bg-neutral); color: var(--bg-brand-solid); border-color: var(--bg-brand-solid); }
+.me.v-draw .acc { background: var(--bg-brand-solid); }
+.cheer.v-draw .dot.big svg { animation: none; opacity: 1; }
+.cheer.v-draw .dot.big path { animation: drawline 520ms cubic-bezier(.35,.72,.2,1) 320ms both; }
+
+.sheet.cheer-in > * { animation: sheetrise var(--d-slower) ease-out both; }
+.sheet.cheer-in > *:nth-child(3) { animation-delay: 60ms; }
+.sheet.cheer-in > *:nth-child(4) { animation-delay: 120ms; }
+@keyframes sheetrise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.me.far { width: 96px; height: 96px; top: 62%; left: 64%; }
+.me.far .ring { animation: none; opacity: 0; }
+.hall { position: absolute; left: 41%; top: 28%; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.hall .flag {
+  display: flex; align-items: center; gap: 5px; background: var(--bg-neutral-solid); color: var(--fg-neutral-contrast);
+  border-radius: 999px; padding: 5px 11px 5px 8px; font-size: var(--t-xs); line-height: 1; font-weight: 600; white-space: nowrap;
+}
+.hall .stem { width: 2px; height: 9px; background: var(--bg-neutral-solid); }
+.hall .anchor { width: 9px; height: 9px; border-radius: 999px; background: var(--bg-neutral-solid); border: 2px solid var(--bg-neutral); margin-top: -3px; }
+.hall .radius {
+  position: absolute; left: 50%; top: 100%; transform: translate(-50%, -6px);
+  width: 128px; height: 128px; border-radius: 999px;
+  border: 1.5px dashed var(--stroke-neutral-muted); background: color-mix(in oklch, var(--bg-neutral) 22%, transparent);
+}
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  background: var(--bg-neutral); border-radius: var(--r-xl) var(--r-xl) 0 0;
+  padding: 10px 24px 26px; box-shadow: var(--sheet-shadow);
+}
+.grabber { width: 34px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 16px; }
+.sheet-t { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 700; letter-spacing: -.01em; }
+.sheet-s { margin-top: 5px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+.sheet .btn { margin-top: 18px; }
+.sheet .btn + .btn { margin-top: 6px; }
+.dots { display: inline-flex; gap: 4px; align-items: center; vertical-align: middle; margin-left: 7px; }
+.dots i { width: 4px; height: 4px; border-radius: 999px; background: var(--palette-neutral-400); animation: beat var(--interval-beat) ease-in-out infinite; }
+.dots i:nth-child(2) { animation-delay: .2s; }
+.dots i:nth-child(3) { animation-delay: .4s; }
+@keyframes beat { 0%,100% { transform: scale(1); opacity: .45; } 50% { transform: scale(1.5); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .me .ring { animation: none; opacity: 0; }
+  .dots i { animation: none; opacity: .7; }
+  .noti-item { transition: opacity var(--d-base) ease-out; }
+  .noti-item.leaving, .noti-item.entering { transform: none; }
+  .noti-item.swap-out .nt, .noti-item.swap-out .noti-meta { transform: none; }
+  .noti-item.swap-in .nt, .noti-item.swap-in .noti-meta, .noti-item.swap-in .donemark { animation: none; }
+  .btn .spin { animation: none; border-top-color: currentColor; opacity: .5; }
+  .btn.done .tickin { animation: none; }
+  .rsheet { transition: none; }
+  .caret { animation: none; }
+  .mark.go .halo { animation: none; opacity: 0; }
+  .mark.go .disc, .mark.bad.go .disc { animation: none; }
+  .mark.go .disc path, .mark.bad.go .disc path { animation: none; stroke-dashoffset: 0; }
+  .cheer .glow, .cheer .blast, .cheer .burst, .cheer .sparks i::before { animation: none; opacity: 0; }
+  .cheer .dot.big, .cheer .acc, .cheer .dot.big svg { animation: none; }
+  .cheer.v-draw .dot.big path { animation: none; stroke-dashoffset: 0; }
+  .sheet.cheer-in > * { animation: none; }
+}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">라비에벨 · 페이지 디자인 02</p>
+  <h1>근무자 대시보드 시안</h1>
+  <p class="lede">
+    고른 것만 모았다. 같은 사람, 같은 날 — 9월 12일(토) 10:00–19:00 안내 근무다.
+    카운트다운 숫자는 실제로 줄고, 05절의 알림은 눌린다.
+  </p>
+
+  <!-- 01 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">01 / 하루</span>
+      <h2>인증 전, 창이 열린 뒤, 찍은 뒤</h2>
+      <p>바뀌는 것은 띠 위의 「지금」 선과 그 아래 한 줄, 그리고 버튼이다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>7:30</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="noti" data-noti>
+              <div class="noti-h"><span>안 본 알림 <b data-noti-count>2</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+              <div class="noti-slot">
+                <div class="noti-item" data-noti-item>
+                  <i class="unread"></i>
+                  <span class="nt">박서연 님이 9월 13일 근무를 바꾸고 싶어 해요</span>
+                  <div class="noti-meta">
+                    <span class="ns">오늘 7:12</span>
+                    <span class="noti-cta pair">
+                      <button class="btn sm" data-act="yes" style="background:var(--bg-brand-solid);color:var(--fg-brand-contrast)">수락</button>
+                      <button class="btn sm" data-act="no">거절</button>
+                    </span>
+                  </div>
+                </div>
+                <div class="noti-item" data-noti-item>
+                  <i class="unread"></i>
+                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
+                  <div class="noti-meta">
+                  <span class="ns">어제 21:04</span>
+                  <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
+                </div>
+              </div>
+            </div>
+            <div class="rule"></div>
+            <div class="daybar">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:10%"></i><span class="nowlab" style="left:10%">7:30</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <button class="btn h44" style="margin-top:18px" disabled><span class="num" data-cd>1시간 29분</span> 뒤 출근 인증</button>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">07:30</div>
+          <div class="cap-name">창이 열리기 전</div>
+          <p class="cap-body">버튼이 눌리지 않고 <strong>남은 시간이 앞, 할 일이 뒤</strong>다. 숫자는 실제로 줄어든다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:20</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="noti" data-noti>
+              <div class="noti-h"><span>안 본 알림 <b data-noti-count>1</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+              <div class="noti-slot">
+                <div class="noti-item" data-noti-item>
+                  <i class="unread"></i>
+                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
+                  <div class="noti-meta">
+                    <span class="ns">어제 21:04</span>
+                    <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="rule"></div>
+            <div class="daybar">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:22.22%"></i><span class="nowlab" style="left:22.22%">9:20</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <button class="btn h44" style="margin-top:18px">출근 인증하기</button>
+            <div class="cta-note">홀에서 누르면 위치로 확인해요</div>
+            <div class="rule" style="margin-top:18px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">09:20</div>
+          <div class="cap-name">창이 열렸다</div>
+          <p class="cap-body">브랜드 색이 꽉 찬 면으로 나타나는 유일한 자리다. 누르면 02절의 지도 화면으로 간다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:52</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="noti" data-noti>
+              <div class="noti-h"><span>안 본 알림 <b data-noti-count>1</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+              <div class="noti-slot">
+                <div class="noti-item" data-noti-item>
+                  <i class="unread"></i>
+                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
+                  <div class="noti-meta">
+                    <span class="ns">어제 21:04</span>
+                    <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="rule"></div>
+            <div class="daybar">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:25.78%"></i><span class="nowlab" style="left:25.78%">9:52</span>
+              </div>
+              <div class="barnote">
+                <span class="tick"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+                <span class="said"><span class="num">9:52</span>에 출근 인증했어요</span> · 안내 · <span class="num">9시간</span>
+              </div>
+            </div>
+            <div class="rule" style="margin-top:22px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">09:52</div>
+          <div class="cap-name">찍은 뒤</div>
+          <p class="cap-body"><strong>버튼이 통째로 사라지고</strong> 초록 체크와 시각만 남는다. 화면이 그만큼 짧아진다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">02 / 출근 인증</span>
+      <h2>지도 위에서 찍는다</h2>
+      <p>
+        내 위치가 한가운데 서고 원이 퍼진다. 점선 원은 홀 반경 100m다 — 내 점이 그 안에 있는지가 곧 답이다.
+        인증되면 브랜드 색이 터지고 그 자리에 <strong>찍힌 시각이 남는다.</strong> 02절 ②의 「다시 보기」로 재생된다.
+      </p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:51</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="map">
+            <svg class="tiles" viewBox="0 0 375 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="375" height="600" fill="var(--map-ground)"/>
+              <g fill="var(--map-block)">
+                <rect x="-10" y="24" width="118" height="86" rx="3"/><rect x="130" y="10" width="86" height="72" rx="3"/>
+                <rect x="238" y="24" width="120" height="86" rx="3"/><rect x="-10" y="146" width="86" height="118" rx="3"/>
+                <rect x="252" y="146" width="106" height="70" rx="3"/><rect x="252" y="238" width="106" height="94" rx="3"/>
+                <rect x="-10" y="300" width="86" height="96" rx="3"/><rect x="118" y="360" width="104" height="88" rx="3"/>
+                <rect x="252" y="368" width="106" height="80" rx="3"/><rect x="-10" y="432" width="86" height="76" rx="3"/>
+                <rect x="130" y="486" width="92" height="80" rx="3"/><rect x="252" y="484" width="106" height="82" rx="3"/>
+              </g>
+              <rect x="112" y="150" width="126" height="82" rx="6" fill="var(--map-park)"/>
+              <g stroke="var(--map-road)" stroke-linecap="square" fill="none">
+                <path d="M-10 128h395" stroke-width="20"/><path d="M-10 282h395" stroke-width="14"/>
+                <path d="M-10 414h395" stroke-width="20"/><path d="M-10 466h395" stroke-width="11"/>
+                <path d="M92 -10v620" stroke-width="18"/><path d="M236 -10v620" stroke-width="14"/><path d="M330 -10v620" stroke-width="11"/>
+              </g>
+              <g fill="var(--map-label)" font-size="9.5" font-family="system-ui, sans-serif">
+                <text x="150" y="196">중앙공원</text><text x="99" y="352">웨딩로</text>
+              </g>
+            </svg>
+            <div class="hall">
+              <span class="flag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V4l8 3 8-3v10l-8 3-8-3"/></svg>라비에벨</span>
+              <i class="stem"></i><i class="anchor"></i><i class="radius"></i>
+            </div>
+            <div class="me"><i class="acc"></i><i class="ring"></i><i class="ring"></i><i class="dot"></i></div>
+            <div class="mapchrome">
+              <button class="mapbtn" aria-label="닫기"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+              <button class="mapbtn" aria-label="내 위치로"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button>
+            </div>
+            <span class="attrib" style="bottom:186px">지도 · 카카오</span>
+            <div class="sheet">
+              <div class="grabber"></div>
+              <div class="sheet-t">위치를 확인하고 있어요<span class="dots"><i></i><i></i><i></i></span></div>
+              <div class="sheet-s">홀 근처인지 보는 중이에요</div>
+              <button class="btn" disabled>출근 인증하기</button>
+              <button class="linkbtn">위치가 안 잡히면 QR로 인증하기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">① 확인 중</div>
+          <div class="cap-name">내 점에서 원이 퍼진다</div>
+          <p class="cap-body">
+            옅은 원판은 위치 정확도다. <strong>QR은 밑줄 친 글로 내렸다</strong> — 보조 수단이라 버튼으로 세우면 무게가 위치와 같아진다.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:52</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="map">
+            <svg class="tiles" viewBox="0 0 375 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="375" height="600" fill="var(--map-ground)"/>
+              <g fill="var(--map-block)">
+                <rect x="-10" y="24" width="118" height="86" rx="3"/><rect x="130" y="10" width="86" height="72" rx="3"/>
+                <rect x="238" y="24" width="120" height="86" rx="3"/><rect x="-10" y="146" width="86" height="118" rx="3"/>
+                <rect x="252" y="146" width="106" height="70" rx="3"/><rect x="252" y="238" width="106" height="94" rx="3"/>
+                <rect x="-10" y="300" width="86" height="96" rx="3"/><rect x="118" y="360" width="104" height="88" rx="3"/>
+                <rect x="252" y="368" width="106" height="80" rx="3"/><rect x="-10" y="432" width="86" height="76" rx="3"/>
+                <rect x="130" y="486" width="92" height="80" rx="3"/><rect x="252" y="484" width="106" height="82" rx="3"/>
+              </g>
+              <rect x="112" y="150" width="126" height="82" rx="6" fill="var(--map-park)"/>
+              <g stroke="var(--map-road)" stroke-linecap="square" fill="none">
+                <path d="M-10 128h395" stroke-width="20"/><path d="M-10 282h395" stroke-width="14"/>
+                <path d="M-10 414h395" stroke-width="20"/><path d="M-10 466h395" stroke-width="11"/>
+                <path d="M92 -10v620" stroke-width="18"/><path d="M236 -10v620" stroke-width="14"/><path d="M330 -10v620" stroke-width="11"/>
+              </g>
+              <g fill="var(--map-label)" font-size="9.5" font-family="system-ui, sans-serif">
+                <text x="150" y="196">중앙공원</text><text x="99" y="352">웨딩로</text>
+              </g>
+            </svg>
+            <div class="hall">
+              <span class="flag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V4l8 3 8-3v10l-8 3-8-3"/></svg>라비에벨</span>
+              <i class="stem"></i><i class="anchor"></i><i class="radius"></i>
+            </div>
+            <div class="me done v-draw cheer" data-cheer>
+              <i class="acc"></i><i class="glow"></i><i class="blast"></i>
+              <i class="burst"></i><i class="burst b2"></i><i class="burst b3"></i><i class="burst b4"></i>
+              <span class="sparks"><i style="--a:0deg;--d:0ms"></i><i style="--a:30deg;--d:45ms"></i><i style="--a:60deg;--d:18ms"></i><i style="--a:90deg;--d:62ms"></i><i style="--a:120deg;--d:28ms"></i><i style="--a:150deg;--d:70ms"></i><i style="--a:180deg;--d:8ms"></i><i style="--a:210deg;--d:52ms"></i><i style="--a:240deg;--d:22ms"></i><i style="--a:270deg;--d:58ms"></i><i style="--a:300deg;--d:34ms"></i><i style="--a:330deg;--d:74ms"></i></span>
+              <span class="sparks s2"><i style="--a:15deg;--d:90ms"></i><i style="--a:60deg;--d:120ms"></i><i style="--a:105deg;--d:100ms"></i><i style="--a:150deg;--d:135ms"></i><i style="--a:195deg;--d:95ms"></i><i style="--a:240deg;--d:125ms"></i><i style="--a:285deg;--d:105ms"></i><i style="--a:330deg;--d:140ms"></i></span>
+              <i class="dot big"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></i>
+            </div>
+            <span class="attrib" style="bottom:194px">지도 · 카카오</span>
+            <div class="sheet cheer-in" data-cheer-sheet>
+              <div class="grabber"></div>
+              <div class="sheet-t">출근 인증했어요</div>
+              <div class="sheet-s"><span class="num">9:52</span>에 찍혔어요 · 홀에서 <span class="num">18m</span></div>
+              <button class="btn">대시보드로 돌아가기</button>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-cheer-replay>다시 보기</button>
+        <figcaption>
+          <div class="cap-key">② 인증됐다</div>
+          <div class="cap-name">체크를 획으로 긋는다</div>
+          <p class="cap-body">
+            브랜드 색이 터져 나가고 링 넷이 뒤따라 번진다. 막대 스물이 사방으로 튀고,
+            그 자리에 <strong>흰 원 위로 브랜드 색 체크가 왼쪽부터 그어진다.</strong>
+            초록 면에 흰 획을 얹던 것을 맞바꿨다 — 화면에서 가장 튀던 색이 사라지고 우리 색만 남는다.
+            미리 그려진 체크가 나타나는 것이 아니라 <strong>선이 그어지는 그동안이 인증되는 시간</strong>이다.
+            <code>motion.md</code>가 <strong>「강한 모션은 축하할 순간에만 쓴다. 이 앱에서 확실한 축하는 출근 인증 완료 하나다」</strong>라고 적어둔 그 자리다.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:51</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="map">
+            <svg class="tiles" viewBox="0 0 375 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="375" height="600" fill="var(--map-ground)"/>
+              <g fill="var(--map-block)">
+                <rect x="-10" y="24" width="118" height="86" rx="3"/><rect x="130" y="10" width="86" height="72" rx="3"/>
+                <rect x="238" y="24" width="120" height="86" rx="3"/><rect x="-10" y="146" width="86" height="118" rx="3"/>
+                <rect x="252" y="146" width="106" height="70" rx="3"/><rect x="252" y="238" width="106" height="94" rx="3"/>
+                <rect x="-10" y="300" width="86" height="96" rx="3"/><rect x="118" y="360" width="104" height="88" rx="3"/>
+                <rect x="252" y="368" width="106" height="80" rx="3"/><rect x="-10" y="432" width="86" height="76" rx="3"/>
+                <rect x="130" y="486" width="92" height="80" rx="3"/><rect x="252" y="484" width="106" height="82" rx="3"/>
+              </g>
+              <rect x="112" y="150" width="126" height="82" rx="6" fill="var(--map-park)"/>
+              <g stroke="var(--map-road)" stroke-linecap="square" fill="none">
+                <path d="M-10 128h395" stroke-width="20"/><path d="M-10 282h395" stroke-width="14"/>
+                <path d="M-10 414h395" stroke-width="20"/><path d="M-10 466h395" stroke-width="11"/>
+                <path d="M92 -10v620" stroke-width="18"/><path d="M236 -10v620" stroke-width="14"/><path d="M330 -10v620" stroke-width="11"/>
+              </g>
+              <g fill="var(--map-label)" font-size="9.5" font-family="system-ui, sans-serif">
+                <text x="150" y="196">중앙공원</text><text x="99" y="352">웨딩로</text>
+              </g>
+            </svg>
+            <div class="hall" style="left:34%;top:23%">
+              <span class="flag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V4l8 3 8-3v10l-8 3-8-3"/></svg>라비에벨</span>
+              <i class="stem"></i><i class="anchor"></i><i class="radius" style="width:96px;height:96px"></i>
+            </div>
+            <div class="me far"><i class="acc"></i><i class="dot"></i></div>
+            <div class="mapchrome">
+              <button class="mapbtn" aria-label="닫기"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+              <button class="mapbtn" aria-label="내 위치로"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button>
+            </div>
+            <span class="attrib" style="bottom:222px">지도 · 카카오</span>
+            <div class="sheet">
+              <div class="grabber"></div>
+              <div class="sheet-t">홀에서 조금 떨어져 있어요</div>
+              <div class="sheet-s">홀에서 <span class="num">320m</span> 거리예요 · <span class="num">100m</span> 안에서 찍을 수 있어요</div>
+              <button class="btn">위치 다시 확인하기</button>
+              <button class="linkbtn">실내라 위치가 안 잡히면 QR로 인증하기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">③ 멀거나 안 잡힘</div>
+          <div class="cap-name">QR이 주요 액션이 된다</div>
+          <p class="cap-body">
+            지도가 이유를 대신 말한다 — 내 점이 점선 원 밖에 있다.
+            <strong>주요 액션은 「위치 다시 확인하기」다.</strong> 320m는 걸어서 좁혀지는 거리라 그게 먼저 할 일이고, QR은 여기서도 보조다.
+          </p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">03 / 못 찍었을 때</span>
+      <h2>시트를 열고 거기서 끝낸다</h2>
+      <p>
+        인증 창은 그날 18:00에 닫힌다. 사유는 <strong>바텀시트에서 쓰고 보내고 결과까지 본다.</strong>
+        <code>motion.md</code>의 「로딩은 원형 회전 뒤에 체크로 끝낸다」가 이 자리다 —
+        성공과 실패가 같은 자리에서 다른 모양으로 끝난다. 앞의 둘은 눌러볼 수 있고 뒤의 일곱은 엣지 케이스다.
+      </p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock" data-reason-scope data-replay-scope>
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box ph" data-box>가게에 있었지만 위치가 안 잡혔어요</div>
+                
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send disabled><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+            <div data-pane="ok" hidden>
+              <div class="rres">
+                <div class="mark" data-mark>
+                  <i class="halo"></i><i class="halo h2"></i>
+                  <span class="disc"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></span>
+                </div>
+                <div class="rt">사유를 보냈어요</div>
+                <div class="rb">관리자가 확인하면 알려드릴게요</div>
+              </div>
+            </div>
+            <div data-pane="bad" hidden>
+              <div class="rres">
+                <div class="mark bad" data-mark>
+                  <span class="disc"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/><path d="M17 7 7 17" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></span>
+                </div>
+                <div class="rt">사유를 보내지 못했어요</div>
+                <div class="rb">쓴 내용은 그대로 있어요 · 다시 보내볼게요</div>
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send><span class="lbl">다시 보내기</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>다시 보기</button>
+        <figcaption>
+          <div class="cap-key">18:40</div>
+          <div class="cap-name">시트를 열고 거기서 끝낸다</div>
+          <p class="cap-body">「사유 넣기」를 누르면 <strong>바텀시트가 올라온다.</strong> 보낸 결과도 같은 시트 안에서 나온다. 시트가 닫히면 뒤 화면의 블록과 버튼이 이미 바뀌어 있다. 데모라 글은 저절로 써진다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock" data-reason-scope data-replay-scope data-fail>
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box ph" data-box>가게에 있었지만 위치가 안 잡혔어요</div>
+                
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send disabled><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+            <div data-pane="ok" hidden>
+              <div class="rres">
+                <div class="mark" data-mark>
+                  <i class="halo"></i><i class="halo h2"></i>
+                  <span class="disc"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></span>
+                </div>
+                <div class="rt">사유를 보냈어요</div>
+                <div class="rb">관리자가 확인하면 알려드릴게요</div>
+              </div>
+            </div>
+            <div data-pane="bad" hidden>
+              <div class="rres">
+                <div class="mark bad" data-mark>
+                  <span class="disc"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/><path d="M17 7 7 17" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></span>
+                </div>
+                <div class="rt">사유를 보내지 못했어요</div>
+                <div class="rb">쓴 내용은 그대로 있어요 · 다시 보내볼게요</div>
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send><span class="lbl">다시 보내기</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>다시 보기</button>
+        <figcaption>
+          <div class="cap-key">보내기 실패</div>
+          <div class="cap-name">쓴 글은 안 날아간다</div>
+          <p class="cap-body">첫 보내기가 실패하는 흐름이다. <strong>원이 흔들리고 ✕가 두 획으로 그어진다.</strong> 성공과 같은 자리 같은 크기인데 모양과 색이 다르다. 쓴 내용은 시트 안에 그대로 남아 다시 누르면 그 글이 간다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box ph" data-box>가게에 있었지만 위치가 안 잡혔어요</div>
+                
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send disabled><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ①</div>
+          <div class="cap-name">안 쓰면 못 보낸다</div>
+          <p class="cap-body">열자마자의 모습이다. 자리표시 글이 예시를 준다. <strong>보내기는 잠겨 있다</strong> — 빈 사유가 관리자에게 가면 확인할 것이 없다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box focus" data-box>몸살<i class="caret"></i></div>
+                <div class="fhint">조금 더 자세히 써주세요 · 다섯 자 이상</div>
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send disabled><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ②</div>
+          <div class="cap-name">두 글자로는 안 된다</div>
+          <p class="cap-body">다섯 자 미만이면 보내기가 잠긴 채 <strong>무엇이 모자란지 아래에 적는다.</strong> 테두리를 붉게 물들이지 않는다 — 아직 틀린 것이 아니라 덜 쓴 것이다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span><span class="cnt full num">200/200</span></div>
+                <div class="box focus" data-box>어제 가게 앞에서 넘어져서 병원에 갔다가 늦게 도착했어요. 홀에 들어와서 인증을 누르려는데 지하라 위치가 계속 안 잡혔고, 매니저님께는 도착하자마자 말씀드렸어요. 다음부터는 QR을 먼저 찾아볼<i class="caret"></i></div>
+                <div class="fhint">여기까지만 쓸 수 있어요</div>
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ③</div>
+          <div class="cap-name">200자에서 멈춘다</div>
+          <p class="cap-body">글자 수는 <strong>서른 자가 남았을 때부터</strong> 보인다. 상한에 닿으면 숫자가 critical 색이 되고 더 안 들어간다. 이미 쓴 글을 지우지는 않는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box " data-box>지하라 위치가 안 잡혔어요. 10시에 도착해서 홀에 있었어요.</div>
+                
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close disabled>닫기</button>
+                <button class="btn h44" data-send disabled><span class="lbl">보내는 중</span><i class="spin"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ④</div>
+          <div class="cap-name">보내는 동안은 못 닫는다</div>
+          <p class="cap-body">닫기까지 같이 잠긴다. <strong>중간에 닫으면 갔는지 안 갔는지 알 길이 없다.</strong> 돌기만 하다 끝나지 않게 다음 화면이 반드시 온다 — 체크 아니면 ✕다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>19:10</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:86.67%"></i><span class="nowlab" style="left:86.67%">19:10</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>관리자가 확인하면 알려드릴게요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn h44 done" disabled><i class="tickin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></i>사유를 보냈어요</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="sent">
+              <div class="sheet-t">보낸 사유예요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">18:52</span>에 보냈어요</div>
+              <div class="field">
+                <div class="frow"><span class="lab">보낸 내용</span><span class="statechip">확인 중</span></div>
+                <div class="box ro">지하라 위치가 안 잡혔어요. 10시에 도착해서 홀에 있었어요.</div>
+              </div>
+              <div class="rowbtns"><button class="btn secondary h44" style="flex:1 1 auto">닫기</button></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ⑤</div>
+          <div class="cap-name">보낸 뒤에 다시 열면</div>
+          <p class="cap-body">읽기 전용이다. 배경이 같은 <code>bg.neutral-weak</code>인데 테두리가 없어 <strong>쓰는 칸이 아님을 모양으로 말한다.</strong> 고칠 수 있는지는 <code>domain/attendance.md</code>가 아직 안 정했다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet lifted" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box focus" data-box>지하라 위치가 안 잡혔어요.<i class="caret"></i></div>
+                
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="kbd" aria-hidden="true">
+            <div class="krow"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="krow"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="krow"><i class="w"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="w"></i></div>
+            <div class="krow"><i class="w"></i><i class="sp"></i><i class="w"></i></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ⑥</div>
+          <div class="cap-name">키보드가 올라오면</div>
+          <p class="cap-body">시트가 <strong>키보드 위에 올라앉는다.</strong> 입력 칸과 버튼이 둘 다 보여야 해서, 가려지는 쪽을 밀지 않고 시트째 올린다. 대시보드는 덮개 뒤로 더 가려진다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:12</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:22px">어제 사유가 처리됐어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+              </div>
+              <div class="barnote">9월 12일(토) · 9시간</div>
+            </div>
+            <div class="block crit" style="margin-top:20px">
+              <span class="i-crit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16h.01"/></svg></span>
+              <span>
+                <span class="bt">사유가 받아들여지지 않았어요</span>
+                <span class="bb">관리자가 「위치 기록이 없어요」라고 남겼어요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44">사유 다시 쓰기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">2일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">216,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ⑦</div>
+          <div class="cap-name">반려되면 다음 날 대시보드에</div>
+          <p class="cap-body">거절은 시트가 아니라 <strong>다음에 앱을 열었을 때 블록으로</strong> 온다. 승인은 알림 하나로 끝나고 거절만 화면에 남는다 — 할 일이 남았기 때문이다. <code>domain/attendance.md</code>가 거절 뒤를 아직 안 정해서 이 화면은 제안이다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">04 / 근무가 없을 때</span>
+      <h2>값이 없으면 숫자를 안 쓴다</h2>
+      <p><code>0일</code>·<code>0원</code> 대신 <code>–</code>다. 0은 「없다」가 아니라 「세어봤더니 0」이라서 못 번 것처럼 읽힌다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>12:36</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 10일(목)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline off" style="margin-bottom:22px">오늘은 근무가 없어요</div>
+              <div class="track"><i class="now" style="left:44%"></i><span class="nowlab" style="left:44%">12:36</span></div>
+              <div class="barnote">다음 근무는 <span class="num">9월 12일(토) 10:00</span>이에요</div>
+            </div>
+            <div class="rule" style="margin-top:22px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">오늘만 없다</div>
+          <div class="cap-name">막대만 없다</div>
+          <p class="cap-body">이번 주 값은 그대로 있다. 삽화를 새로 만들 일이 없다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>12:36</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 10일(목)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline off" style="margin-bottom:22px">이번 주는 근무가 없어요</div>
+              <div class="track"><i class="now" style="left:44%"></i><span class="nowlab" style="left:44%">12:36</span></div>
+              <div class="barnote">다음 근무는 <span class="num">9월 15일(화) 10:00</span>이에요</div>
+            </div>
+            <div class="rule" style="margin-top:22px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v none">–</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v none">–</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">이번 주 배정 없음</div>
+          <div class="cap-name">트랙은 실선으로 남는다</div>
+          <p class="cap-body">근무표는 나왔는데 나에게 배정이 안 온 것이다. 값 둘이 <code>–</code>가 된다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>12:36</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">8월 28일(금)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline off" style="margin-bottom:22px">9월 근무표는 아직 확정 전이에요</div>
+              <div class="track" style="background:transparent;border:1px dashed var(--stroke-neutral-muted)"></div>
+              <div class="barnote">관리자가 확정하면 알려드릴게요</div>
+            </div>
+            <div class="rule" style="margin-top:22px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v none">–</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v none">–</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">확정 전</div>
+          <div class="cap-name">트랙이 점선이 된다</div>
+          <p class="cap-body"><strong>근무 없음과 확정 전은 뜻이 반대다.</strong> <code>color.md</code>가 둘을 다르게 그리라고 정했다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">05 / 알림</span>
+      <h2>한 줄만 서고 오른쪽이 할 일의 자리다</h2>
+      <p>✕는 우측 상단에서 지운다. CTA는 그 아래 시각과 한 줄이다. 교대 요청은 화면을 안 옮기고 그 줄에서 답한다 — 눌러보면 문구가 바뀐다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock" data-replay-scope style="height:auto;padding:20px 20px 24px;border-radius:var(--r-xl)">
+          <div class="noti" data-noti>
+            <div class="noti-h"><span>안 본 알림 <b data-noti-count>4</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+            <div class="noti-slot">
+              <div class="noti-item" data-noti-item>
+                <i class="unread"></i>
+                <span class="nt">박서연 님이 9월 13일 근무를 바꾸고 싶어 해요</span>
+                <div class="noti-meta">
+                  <span class="ns">오늘 8:12</span>
+                </div>
+                  <span class="noti-cta pair">
+                    <button class="btn sm" data-act="yes" style="background:var(--bg-brand-solid);color:var(--fg-brand-contrast)">수락</button>
+                    <button class="btn sm" data-act="no">거절</button>
+                  </span>
+                </div>
+              </div>
+              <div class="noti-item" data-noti-item>
+                <i class="unread"></i>
+                <span class="nt">내일 9월 13일 10:00 근무가 있어요</span>
+                <div class="noti-meta">
+                  <span class="ns">어제 21:00</span>
+                </div>
+              </div>
+              <div class="noti-item" data-noti-item>
+                <i class="unread"></i>
+                <span class="nt">9월 20일 근무가 스캔에서 메인으로 바뀌었어요</span>
+                <div class="noti-meta">
+                  <span class="ns">어제 18:40</span>
+                  <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
+                </div>
+              </div>
+              <div class="noti-item" data-noti-item>
+                <i class="unread"></i>
+                <span class="nt">이번 주말 주차장 공사로 뒷문을 써주세요</span>
+                <div class="noti-meta">
+                  <span class="ns">9월 10일</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="rule"></div>
+          <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+          <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+        </div>
+        <button class="replay" type="button" data-replay>다시 보기</button>
+        <figcaption>
+          <div class="cap-key">4건에서 0건까지</div>
+          <div class="cap-name">지우면 다음이 올라온다</div>
+          <p class="cap-body">
+            수락하면 점이 초록 체크로 바뀌고 문구가 <strong>「관리자가 승인하면 알려드릴게요」</strong>가 된다.
+            줄이 안 사라지는 것은 <code>swap.md</code>가 수락 뒤 관리자 승인이 또 온다고 적었기 때문이다.
+          </p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">06 / 다크</span>
+      <h2>팔레트가 통째로 뒤집힌다</h2>
+      <p>역할 토큰 표는 한 벌이다. 지도 타일도 같이 뒤집힌다. 막대 위 글자 대비는 라이트 10.83, 다크 10.56으로 거의 같다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock force-dark">
+          <div class="statusbar"><span>9:20</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="noti">
+              <div class="noti-h"><span>안 본 알림 <b>1</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+              <div class="noti-slot">
+                <div class="noti-item">
+                  <i class="unread"></i>
+                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
+                  <div class="noti-meta">
+                    <span class="ns">어제 21:04</span>
+                    <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="rule"></div>
+            <div class="daybar">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:22.22%"></i><span class="nowlab" style="left:22.22%">9:20</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <button class="btn h44" style="margin-top:18px">출근 인증하기</button>
+            <div class="cta-note">홀에서 누르면 위치로 확인해요</div>
+            <div class="rule" style="margin-top:18px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">다크 · 대시보드</div>
+          <div class="cap-name">거리가 위계를 만든다</div>
+          <p class="cap-body">막대는 트랙보다 한 걸음 떨어져 있고 버튼은 배경에서 가장 멀다. 절대값이 아니라 이 거리가 남는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock force-dark">
+          <div class="statusbar"><span>9:51</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="map">
+            <svg class="tiles" viewBox="0 0 375 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="375" height="600" fill="var(--map-ground)"/>
+              <g fill="var(--map-block)">
+                <rect x="-10" y="24" width="118" height="86" rx="3"/><rect x="130" y="10" width="86" height="72" rx="3"/>
+                <rect x="238" y="24" width="120" height="86" rx="3"/><rect x="-10" y="146" width="86" height="118" rx="3"/>
+                <rect x="252" y="146" width="106" height="70" rx="3"/><rect x="252" y="238" width="106" height="94" rx="3"/>
+                <rect x="-10" y="300" width="86" height="96" rx="3"/><rect x="118" y="360" width="104" height="88" rx="3"/>
+                <rect x="252" y="368" width="106" height="80" rx="3"/><rect x="-10" y="432" width="86" height="76" rx="3"/>
+                <rect x="130" y="486" width="92" height="80" rx="3"/><rect x="252" y="484" width="106" height="82" rx="3"/>
+              </g>
+              <rect x="112" y="150" width="126" height="82" rx="6" fill="var(--map-park)"/>
+              <g stroke="var(--map-road)" stroke-linecap="square" fill="none">
+                <path d="M-10 128h395" stroke-width="20"/><path d="M-10 282h395" stroke-width="14"/>
+                <path d="M-10 414h395" stroke-width="20"/><path d="M-10 466h395" stroke-width="11"/>
+                <path d="M92 -10v620" stroke-width="18"/><path d="M236 -10v620" stroke-width="14"/><path d="M330 -10v620" stroke-width="11"/>
+              </g>
+              <g fill="var(--map-label)" font-size="9.5" font-family="system-ui, sans-serif">
+                <text x="150" y="196">중앙공원</text><text x="99" y="352">웨딩로</text>
+              </g>
+            </svg>
+            <div class="hall">
+              <span class="flag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V4l8 3 8-3v10l-8 3-8-3"/></svg>라비에벨</span>
+              <i class="stem"></i><i class="anchor"></i><i class="radius"></i>
+            </div>
+            <div class="me"><i class="acc"></i><i class="ring"></i><i class="ring"></i><i class="dot"></i></div>
+            <div class="mapchrome">
+              <button class="mapbtn" aria-label="닫기"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+              <button class="mapbtn" aria-label="내 위치로"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button>
+            </div>
+            <span class="attrib" style="bottom:186px">지도 · 카카오</span>
+            <div class="sheet">
+              <div class="grabber"></div>
+              <div class="sheet-t">위치를 확인하고 있어요<span class="dots"><i></i><i></i><i></i></span></div>
+              <div class="sheet-s">홀 근처인지 보는 중이에요</div>
+              <button class="btn" disabled>출근 인증하기</button>
+              <button class="linkbtn">위치가 안 잡히면 QR로 인증하기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">다크 · 출근 인증</div>
+          <div class="cap-name">지도 타일도 뒤집힌다</div>
+          <p class="cap-body">퍼지는 원이 다크에서는 배경보다 밝은 브라운이 된다. 라이트와 반대로 움직인다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock force-dark modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:22px">오늘 근무가 있어요</div>
+              <div class="track">
+                <span class="work" style="left:26.67%;width:60%"><span>10:00</span><span>19:00</span></span>
+                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
+              </div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb">왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44">사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grabber"></div>
+            <div class="rres">
+              <div class="mark bad drawn">
+                <span class="disc"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/><path d="M17 7 7 17" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></span>
+              </div>
+              <div class="rt">사유를 보내지 못했어요</div>
+              <div class="rb">쓴 내용은 그대로 있어요 · 다시 보내볼게요</div>
+            </div>
+            <div class="rowbtns">
+              <button class="btn secondary h44">닫기</button>
+              <button class="btn h44">다시 보내기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">다크 · 사유 시트</div>
+          <div class="cap-name">덮개는 밝아지지 않는다</div>
+          <p class="cap-body">
+            뒤 덮개가 <code>bg.neutral-solid</code>인데 다크에서는 그 값이 <strong>밝은 회색으로 뒤집힌다.</strong>
+            그대로 쓰면 화면이 하얗게 떠서, 덮개만 팔레트를 따라가지 않고 어두운 쪽에 고정한다.
+            <code>critical</code>은 뒤집혀도 뜻이 그대로라 그냥 따라간다.
+          </p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  var SPAN = (1 * 3600 + 29 * 60 + 44) * 1000;
+  var target = Date.now() + SPAN;
+  function fmtHM(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000));
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    return h ? h + "시간 " + m + "분" : m + "분";
+  }
+  var cd = document.querySelectorAll("[data-cd]");
+  function tick() {
+    var left = target - Date.now();
+    if (left <= 0) { target = Date.now() + SPAN; left = SPAN; }
+    cd.forEach(function (n) { n.textContent = fmtHM(left); });
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  var SLOW = 240, BASE = 180;
+  var CHECK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+  var CROSS = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  var ANSWER = {
+    yes: ["9월 13일 근무를 바꾸기로 했어요", "관리자가 승인하면 알려드릴게요", "", CHECK],
+    no:  ["9월 13일 교대를 거절했어요", "박서연 님에게 알려드렸어요", " off", CROSS]
+  };
+  function wire(root) {
+    var count = root.querySelector("[data-noti-count]");
+    var slot = root.querySelector(".noti-slot");
+    if (!slot) return;
+
+    function dismissTop() {
+      var item = slot.firstElementChild;
+      if (!item || item.dataset.gone) return;
+      item.dataset.gone = "1";
+      item.classList.add("leaving");
+      if (count && !item.dataset.answered) {
+        count.textContent = slot.querySelectorAll("[data-noti-item]").length - 1;
+      }
+      setTimeout(function () {
+        item.remove();
+        var next = slot.firstElementChild;
+        if (next) {
+          next.classList.add("entering");
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { next.classList.remove("entering"); });
+          });
+        } else {
+          root.style.height = root.offsetHeight + "px";
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { root.classList.add("gone"); });
+          });
+        }
+      }, SLOW);
+    }
+
+    root.addEventListener("click", function (e) {
+      if (e.target.closest("[data-noti-x]") || e.target.closest("[data-noti-go]")) {
+        dismissTop();
+        return;
+      }
+      var act = e.target.closest("[data-act]");
+      if (!act) return;
+      var row = act.closest("[data-noti-item]");
+      if (!row || row.dataset.answered) return;
+      row.dataset.answered = "1";
+      var a = ANSWER[act.dataset.act];
+      row.classList.add("swap-out");
+      if (count) count.textContent = Math.max(0, (parseInt(count.textContent, 10) || 1) - 1);
+      setTimeout(function () {
+        row.querySelector(".unread").outerHTML = '<i class="donemark' + a[2] + '">' + a[3] + '</i>';
+        row.querySelector(".nt").textContent = a[0];
+        row.querySelector(".ns").textContent = a[1];
+        var cta = row.querySelector(".noti-cta");
+        if (cta) cta.remove();
+        row.classList.remove("swap-out");
+        row.classList.add("swap-in");
+      }, BASE);
+    });
+  }
+
+  var C16 = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+  var REASON_TEXT = "지하라 위치가 안 잡혔어요. 10시에 도착해서 홀에 있었어요.";
+  var MAXLEN = 200;
+
+  function wireReason(scope) {
+    var openBtn = scope.querySelector("[data-reason]");
+    var sheet = scope.querySelector("[data-rsheet]");
+    if (!openBtn || !sheet) return;
+
+    var sub = scope.querySelector("[data-reason-sub]");
+    var box = sheet.querySelector("[data-box]");
+    var writePane = sheet.querySelector('[data-pane="write"]');
+    var sendBtn = writePane.querySelector("[data-send]");
+    var panes = {};
+    sheet.querySelectorAll("[data-pane]").forEach(function (el) { panes[el.dataset.pane] = el; });
+
+    var failFirst = scope.hasAttribute("data-fail");
+    var tried = false, typedOnce = false;
+    var timers = scope.__timers = [];
+    function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+
+    function show(name) {
+      Object.keys(panes).forEach(function (k) { panes[k].hidden = (k !== name); });
+    }
+    function play(pane) {
+      var m = pane.querySelector("[data-mark]");
+      if (!m) return;
+      m.classList.remove("go");
+      void m.offsetWidth;
+      m.classList.add("go");
+    }
+
+    function type() {
+      box.classList.remove("ph");
+      box.classList.add("focus");
+      var i = 0;
+      (function step() {
+        box.innerHTML = REASON_TEXT.slice(0, i) + '<i class="caret"></i>';
+        if (i >= 5) sendBtn.disabled = false;
+        if (i >= REASON_TEXT.length) return;
+        i++;
+        later(step, 34);
+      })();
+    }
+
+    openBtn.addEventListener("click", function () {
+      if (openBtn.classList.contains("done")) return;
+      scope.classList.add("modal-open");
+      if (!typedOnce) { typedOnce = true; later(type, 460); }
+    });
+
+    sheet.addEventListener("click", function (e) {
+      var closer = e.target.closest("[data-close]");
+      if (closer && !closer.disabled) { scope.classList.remove("modal-open"); return; }
+
+      var send = e.target.closest("[data-send]");
+      if (!send || send.disabled) return;
+
+      var lbl = send.querySelector(".lbl");
+      var keep = lbl.textContent;
+      var closeBtn = send.parentElement.querySelector("[data-close]");
+      send.disabled = true;
+      if (closeBtn) closeBtn.disabled = true;
+      lbl.textContent = "보내는 중";
+      send.insertAdjacentHTML("beforeend", '<i class="spin"></i>');
+
+      later(function () {
+        var sp = send.querySelector(".spin");
+        if (sp) sp.remove();
+        lbl.textContent = keep;
+        send.disabled = false;
+        if (closeBtn) closeBtn.disabled = false;
+
+        if (failFirst && !tried) {
+          tried = true;
+          show("bad");
+          play(panes.bad);
+          return;
+        }
+        show("ok");
+        play(panes.ok);
+        later(settle, 1650);
+      }, 1150);
+    });
+
+    function settle() {
+      scope.classList.remove("modal-open");
+      later(function () {
+        openBtn.classList.remove("secondary");
+        openBtn.classList.add("done");
+        openBtn.disabled = true;
+        openBtn.innerHTML = '<i class="tickin">' + C16 + "</i>사유를 보냈어요";
+        if (sub) sub.textContent = "관리자가 확인하면 알려드릴게요";
+      }, 220);
+    }
+  }
+
+  document.querySelectorAll("[data-reason-scope]").forEach(wireReason);
+
+  document.querySelectorAll("[data-cheer-replay]").forEach(function (b) {
+    var fig = b.closest("figure");
+    b.addEventListener("click", function () {
+      [["[data-cheer]", "cheer"], ["[data-cheer-sheet]", "cheer-in"]].forEach(function (pair) {
+        var el = fig.querySelector(pair[0]);
+        if (!el) return;
+        el.classList.remove(pair[1]);
+        void el.offsetWidth;
+        el.classList.add(pair[1]);
+      });
+    });
+  });
+  document.querySelectorAll("[data-noti]").forEach(wire);
+
+  document.querySelectorAll("[data-replay]").forEach(function (btn) {
+    var scope = btn.parentElement.querySelector("[data-replay-scope]");
+    if (!scope) return;
+    var snapshot = scope.innerHTML;
+    btn.addEventListener("click", function () {
+      (scope.__timers || []).forEach(clearTimeout);
+      scope.classList.remove("modal-open");
+      scope.innerHTML = snapshot;
+      scope.querySelectorAll("[data-noti]").forEach(wire);
+      if (scope.hasAttribute("data-reason-scope")) wireReason(scope);
+    });
+  });
+})();
+</script>
