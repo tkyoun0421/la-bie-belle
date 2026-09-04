@@ -20,11 +20,11 @@ jobs:
             exit 0
           fi
           changed=$(git diff --name-only "${{ github.event.pull_request.base.sha }}...HEAD")
-          if printf '%s\n' "$changed" | grep -qvE '^(docs/|\.claude/)'; then
+          if printf '%s\n' "$changed" | grep -qvE '^(docs/|\.claude/|[^/]+\.md$)'; then
             echo "code=true" >> "$GITHUB_OUTPUT"
           else
             echo "code=false" >> "$GITHUB_OUTPUT"
-            echo "docs/ 와 .claude/ 만 바뀌었다. DB와 브라우저를 쓰는 단계를 건너뛴다."
+            echo "문서만 바뀌었다. DB와 브라우저를 쓰는 단계를 건너뛴다."
           fi
       - uses: pnpm/action-setup@v6
         with:
