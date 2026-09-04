@@ -14,7 +14,7 @@ PR diff를 통째로 읽고, 총괄이 merge 전에 알아야 할 사실만 돌�
 ## 반드시 보는 것
 
 - **삭제** — 지워지거나 이름이 바뀐 파일. `gh pr diff <번호> --name-status`로 먼저 훑는다. 삭제가 이 PR의 목적에 들어 있지 않으면 전부 적는다.
-- **총괄 문서 접촉** — `CLAUDE.md`, `docs/plan.md`, `docs/handoff.md`, `docs/log/`, `docs/prd.md`, `docs/adr/`, `.claude/`, `.githooks/`, `.github/`가 바뀌었는지. 바뀌었으면 어느 줄인지 적는다.
+- **총괄 문서 접촉** — `CLAUDE.md`, `docs/plan.md`, `docs/handoff.md`, `docs/log/`, `docs/1-plan/prd.md`, `docs/2-design/adr/`, `.claude/`, `.githooks/`, `.github/`가 바뀌었는지. 바뀌었으면 어느 줄인지 적는다.
 - **시크릿** — 키·토큰·비밀번호로 보이는 문자열, `.env` 파일. 발견하면 값을 그대로 옮기지 말고 위치와 형태만 적는다.
 - **테스트** — 이 저장소는 TDD로 간다. 구현이 바뀌었는데 테스트가 함께 오지 않은 곳을 적는다.
 - **생성 파일** — `pnpm-lock.yaml`처럼 기계가 만든 파일은 줄 단위로 읽지 말고 무엇이 늘고 줄었는지 한 줄로 요약한다.

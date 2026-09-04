@@ -28,6 +28,12 @@ intent·spec·adr·plans는 전용 하위 폴더로 관리하고 그 안에 기�
 
 메타 문서 넷(handoff·backlog·CHANGELOG·log)은 어느 단계에도 안 속해서 루트에 남는다. 언제 읽느냐의 답이 "항상"인 문서다.
 
+## 파일 이름
+
+소문자 kebab-case가 기본이다. 예외는 셋뿐이다 — `README.md`와 `CHANGELOG.md`와 `ADR-NNN-*.md`는 생태계 표준이 대문자라 그대로 둔다.
+
+사슬 파일은 같은 슬러그로 잇는다. `1-plan/intent/dark-mode.md`가 생기면 spec과 plans의 파일도 `dark-mode.md`다. 슬러그 하나로 세 단계를 오간다.
+
 ## 사슬
 
 기능 하나가 지나는 길이다. 같은 슬러그가 세 파일을 잇는다.
