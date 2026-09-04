@@ -165,7 +165,7 @@ describe("규칙 번호", () => {
     ]),
   ].sort((a, b) => a - b);
 
-  it("1부터 열일곱까지 끊김 없이 이어진다", () => {
+  it("1부터 끝 번호까지 끊김 없이 이어진다", () => {
     const unbroken = Array.from(
       { length: ENFORCED_RULE_COUNT },
       (_, index) => index + 1,

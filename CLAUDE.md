@@ -43,6 +43,7 @@ FSD: `src/` 아래 `app` · `screens` · `features` · `entities` · `shared`. `
 ## git
 
 - task마다 단명 브랜치 → PR → 총괄 리뷰 → squash merge. main 직접 push 없음
+- 기능 브랜치는 `feat/<슬러그>` — 슬러그는 사슬 파일명(intent·spec·plans)과 같다 (ADR-005)
 - clone 후 한 번: `git config core.hooksPath .githooks`
 
 ## 기록
