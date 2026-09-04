@@ -1,6 +1,6 @@
 ---
 name: session-recorder
-description: 회차를 마감하는 기록자. merge된 PR과 git log를 읽어 회차 로그를 쓰고 plan.md 상태와 handoff.md를 갱신해 PR을 연다. 결정을 내리지 않는다.
+description: 회차를 마감하는 기록자. merge된 PR과 git log를 읽어 회차 로그를 쓰고 backlog.md 상태와 handoff.md를 갱신해 PR을 연다. 결정을 내리지 않는다.
 model: sonnet
 tools: Bash, Read, Write, Edit, Grep, Glob
 ---
@@ -30,7 +30,7 @@ gh pr view <번호> --json number,title,body,mergedAt
 
 여러 번호를 한 번에 훑고 싶으면 반복문으로 묶어 한 호출로 끝낸다.
 
-그다음 `git log --oneline` 으로 범위를 확인하고, `docs/log/`의 최근 파일 둘을 읽어 형식과 문체를 익힌다. `docs/plan.md`와 `docs/handoff.md`도 현재 상태를 읽는다.
+그다음 `git log --oneline` 으로 범위를 확인하고, `docs/log/`의 최근 파일 둘을 읽어 형식과 문체를 익힌다. `docs/backlog.md`와 `docs/handoff.md`도 현재 상태를 읽는다.
 
 PR 본문이 얇아서 왜를 복원할 수 없으면 억지로 채우지 말고 리턴에 적는다.
 
@@ -46,7 +46,7 @@ PR 본문이 얇아서 왜를 복원할 수 없으면 억지로 채우지 말고
 
 로그는 쌓는다. 기존 파일을 고치지 않는다.
 
-## plan.md
+## backlog.md
 
 상태만 옮긴다.
 
@@ -99,7 +99,7 @@ PR 본문 끝에는 다음 줄을 넣는다.
 
 ## 리턴
 
-1. 쓴 것 — 회차 로그 경로, plan.md에서 옮긴 상태, handoff.md에서 바꾼 절
+1. 쓴 것 — 회차 로그 경로, backlog.md에서 옮긴 상태, handoff.md에서 바꾼 절
 2. 채우지 못한 곳 — 근거를 못 찾아 비워둔 자리와 어느 PR이 얇았는지
 3. 총괄에게 넘기는 것 — 문서 지도 갱신처럼 이 에이전트가 못 건드리는 사항
 4. PR 번호

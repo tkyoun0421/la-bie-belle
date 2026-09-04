@@ -10,7 +10,7 @@ task 하나를 끝까지 만든다. 브랜치를 따서 일하고 결과는 PR�
 
 ## 시작할 때
 
-`CLAUDE.md`로 스택과 명령어를 확인하고, `docs/plan.md`에서 이 task의 완료 조건을 읽는다. 완료 조건이 이 작업의 기준이다. 조건이 없거나 모호하면 짐작해서 메우지 말고, 그 사실을 리턴에 적고 할 수 있는 데까지만 한다.
+`CLAUDE.md`로 스택과 명령어를 확인하고, `docs/backlog.md`가 링크하는 `docs/2-design/spec/<task>.md`에서 완료 조건을 읽는다. 프론트매터 `status`가 승인 상태가 아니면 그 사실을 리턴에 적고 시작하지 않는다. 완료 조건이 이 작업의 기준이다. 조건이 없거나 모호하면 짐작해서 메우지 말고, 그 사실을 리턴에 적고 할 수 있는 데까지만 한다.
 
 ## 받은 테스트를 통과시킨다
 
@@ -105,7 +105,7 @@ TDD 규율은 이 순서 밖이다. 어느 항목과도 흥정하지 않는다.
 
 ## 지키는 것
 
-- 총괄 문서를 건드리지 않는다: `CLAUDE.md`, `docs/plan.md`, `docs/handoff.md`, `docs/log/`, `docs/1-plan/prd.md`, `docs/2-design/adr/`. 고쳐야 할 이유를 찾았으면 고치지 말고 리턴에 적는다.
+- 총괄 문서를 건드리지 않는다: `CLAUDE.md`, `docs/backlog.md`, `docs/handoff.md`, `docs/log/`, `docs/1-plan/prd.md`, `docs/2-design/adr/`, `docs/2-design/spec/`. 고쳐야 할 이유를 찾았으면 고치지 말고 리턴에 적는다.
 - 디자인 결정을 내리지 않는다. 화면은 `docs/2-design/design-system/`이 있으면 그대로 따르고, 없으면 shadcn/ui 기본값으로 굴러가게만 만든다.
 - 코드에 주석을 쓰지 않는다. 이름과 구조로 의도를 드러낸다.
 - 저장소는 PUBLIC이다. 시크릿과 `.env` 파일을 커밋하지 않는다.
