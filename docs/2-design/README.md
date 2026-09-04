@@ -4,7 +4,7 @@
 
 - `domain/` — 개념 설계. 용어와 규칙의 정본. 지금은 `docs/domain/`에 있고 이사 예정이다
 - `architecture/` — 구조 설계. `data-model.md`(테이블과 관계), `api.md`, `flows.md`(화면 간 흐름) (예정)
-- `design-system/` — 시각 설계. 지금은 `docs/design-system/`에 있고 이사 예정이다
+- `design-system/` — 시각 설계
 - `adr/` — 되돌리기 어려운 결정과 그 근거. 어느 단계의 결정이든 전부 이 한 곳에 쌓는다. 지금은 `docs/adr/`에 있고 이사 예정이다
 - `spec/` — 기능별 명세와 완료 조건. 프론트매터 `status`가 태관의 승인 마크고, 승인 없이 구현으로 못 간다. 지금은 `docs/spec/`에 있고 이사 예정이다
 

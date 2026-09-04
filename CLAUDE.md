@@ -18,7 +18,7 @@
 - `docs/prd.md` — 제품 요구. `docs/1-plan/`으로 이사 예정
 - `docs/domain/` — 도메인 용어와 규칙의 정본. 영역별 파일과 컨텍스트 경계는 그 안 `README.md`가 안내한다. `docs/2-design/domain/`으로 이사 예정
 - `docs/adr/` — 되돌리기 어려운 결정과 그 근거. `docs/2-design/adr/`로 이사 예정
-- `docs/design-system/` — 디자인과 퍼블리싱 규칙은 `README.md`, 그 옆에 디자인 시스템과 페이지별 디자인. `docs/2-design/design-system/`으로 이사 예정
+- `docs/2-design/design-system/` — 디자인과 퍼블리싱 규칙은 `README.md`, 그 옆에 디자인 시스템과 페이지별 디자인
 - `docs/1-plan/` ~ `docs/6-maintain/` — SDLC 단계 폴더. 각 단계가 무엇을 담는지는 그 안 `README.md`가 안내한다
 - `.claude/agents/` — subagent 정의문
 - `.claude/skills/` — 스킬 정의문. 설명 톤 같은 대화 규칙이 여기 산다

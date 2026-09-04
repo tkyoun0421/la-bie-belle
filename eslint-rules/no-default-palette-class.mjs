@@ -39,7 +39,7 @@ const noDefaultPaletteClass = {
     schema: [],
     messages: {
       outsidePalette:
-        "'{{token}}' 은 Tailwind 기본 팔레트다. docs/design-system/tokens.md 의 역할 토큰 유틸을 써라.",
+        "'{{token}}' 은 Tailwind 기본 팔레트다. docs/2-design/design-system/tokens.md 의 역할 토큰 유틸을 써라.",
     },
   },
   create(context) {

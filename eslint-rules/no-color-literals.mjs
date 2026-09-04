@@ -11,7 +11,7 @@ const noColorLiterals = {
     schema: [],
     messages: {
       literal:
-        "색값 '{{value}}' 를 코드에 직접 적었다. docs/design-system/tokens.md 의 역할 토큰을 써라.",
+        "색값 '{{value}}' 를 코드에 직접 적었다. docs/2-design/design-system/tokens.md 의 역할 토큰을 써라.",
     },
   },
   create(context) {
