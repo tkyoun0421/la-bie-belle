@@ -9,7 +9,7 @@ export type EnforcedRule = {
 
 export const DOCUMENTED_LINT_RULE_COUNT = 14;
 
-export const ENFORCED_RULE_COUNT = 17;
+export const ENFORCED_RULE_COUNT = 18;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -141,5 +141,13 @@ export const RULES: EnforcedRule[] = [
     ruleId: null,
     enforcedBy: ".githooks/pre-commit",
     test: "tests/lint/pre-commit.test.ts",
+  },
+  {
+    no: 18,
+    name: "승인된 spec 없이 feat 브랜치에서 src/를 고칠 수 없다",
+    mechanism: "hook",
+    ruleId: null,
+    enforcedBy: ".claude/hooks/spec-gate.py",
+    test: ".claude/hooks/__tests__/spec-gate.test.ts",
   },
 ];
