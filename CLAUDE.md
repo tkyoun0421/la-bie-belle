@@ -74,7 +74,7 @@ PRD와 ADR을 먼저 세우고 `docs/plan.md`의 task로 쪼갠다. task마다 �
 
 `.claude/hooks/`의 훅 둘이 이 규율을 막고 우회할 길은 없다. 테스트가 어디 살고 훅이 무엇을 요구하는지는 `docs/adr/ADR-001-fsd-layout-and-tdd-guard.md`에 있다.
 
-기능 개발과 디자인은 병렬로 가고, 디자인이 완료된 화면부터 퍼블리싱이 붙는다. 규칙은 `docs/design-system/README.md`에 있다.
+기능 개발과 디자인은 병렬로 가고, 디자인이 완료된 화면부터 퍼블리싱이 붙는다. 규칙은 `docs/2-design/design-system/README.md`에 있다.
 
 ## git
 
