@@ -30,7 +30,7 @@ task 하나의 완료 조건을 받아, 무엇이 깨질 수 있고 그걸 어�
 
 **unit** — 계산, 변환, 업무 규칙, 검증 로직, 상태 전이, 도메인 불변식, 정렬, 정규화, 중복 제거, 결정적인 에러 동작. 앱을 띄우지 않고 확인되는 것들이다.
 
-**integration** — 실제 Postgres를 거쳐야만 드러나는 것. RLS 정책, 스키마 제약, 트랜잭션 경계, 여러 행이 맞물린 조회, `dals`가 DB와 주고받는 계약. 근거는 `docs/adr/ADR-003-supabase-and-integration-tests.md`에 있다.
+**integration** — 실제 Postgres를 거쳐야만 드러나는 것. RLS 정책, 스키마 제약, 트랜잭션 경계, 여러 행이 맞물린 조회, `dals`가 DB와 주고받는 계약. 근거는 `docs/2-design/adr/ADR-003-supabase-and-integration-tests.md`에 있다.
 
 **e2e** — 사용자 여정, 인증 전환, 라우팅과 내비게이션, 화면에서 서버까지 이어지는 동작, 새로고침이나 이동 뒤에도 남는 상태, 여러 층이 맞물려야 드러나는 회귀.
 

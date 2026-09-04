@@ -618,4 +618,4 @@ Wanted Sans는 Wanted Lab이 만들었고 [SIL Open Font License 1.1](https://sc
 
 ### 전개하면서 드러난 빈자리
 
-**축하 모션을 쓸 자리.** [foundation/motion.md](foundation/motion.md#축하할-순간)에 적었듯 출근 인증 완료 하나는 확실한데, 두 번째로 지목됐던 "급여 확정"은 도메인에 없는 행위다. `docs/domain/payroll.md`가 급여를 확정하지 않는다고 못 박아뒀다.
+**축하 모션을 쓸 자리.** [foundation/motion.md](foundation/motion.md#축하할-순간)에 적었듯 출근 인증 완료 하나는 확실한데, 두 번째로 지목됐던 "급여 확정"은 도메인에 없는 행위다. `docs/2-design/domain/payroll.md`가 급여를 확정하지 않는다고 못 박아뒀다.

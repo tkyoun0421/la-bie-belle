@@ -13,7 +13,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 
 `test-planner`가 integration으로 배정한 리스크와 그것이 지키는 완료 조건을 받는다. 배정받은 것만 쓴다. 계획이 unit이나 e2e로 보낸 것을 여기서 다시 훑지 않는다.
 
-`docs/adr/ADR-003-supabase-and-integration-tests.md`를 먼저 읽는다. 이 층이 왜 있는지와 무엇을 지켜야 하는지가 거기 있다. 같은 슬라이스에 이미 있는 integration 테스트가 있으면 그 방식을 따른다.
+`docs/2-design/adr/ADR-003-supabase-and-integration-tests.md`를 먼저 읽는다. 이 층이 왜 있는지와 무엇을 지켜야 하는지가 거기 있다. 같은 슬라이스에 이미 있는 integration 테스트가 있으면 그 방식을 따른다.
 
 ## 어디에 쓰나
 
@@ -73,7 +73,7 @@ DB를 거쳐 나온 관찰 가능한 결과만 본다.
 - 테스트 하나가 한 가지를 지킨다.
 - 이름은 지키려는 규칙을 한국어로 적는다. 함수나 테이블 이름을 옮겨 적지 않는다.
 
-돈이 걸린 계산은 경계값을 같이 덮는다. `docs/prd.md`에 예시 금액이 박혀 있으면 그 숫자를 쓴다.
+돈이 걸린 계산은 경계값을 같이 덮는다. `docs/1-plan/prd.md`에 예시 금액이 박혀 있으면 그 숫자를 쓴다.
 
 ## 지키는 것
 

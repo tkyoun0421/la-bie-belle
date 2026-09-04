@@ -14,7 +14,7 @@
 
 `plan.md`의 「다음」이 디자인 task 하나로 줄었다. 코드 쪽 task는 지금 없다.
 
-페이지별 디자인 문서는 여전히 `docs/design-system/pages/login.md` 하나뿐이다. 로그인 화면과 승인 대기 화면의 짜임, 역할 토큰, 화면 문안, 모션이 들어 있고 그 틀(화면 절 넷 + 안 담은 것 + 규칙과 부딪힌 자리 + 아직 안 정한 것)이 `README.md`에 박혔다. 뒤따르는 화면은 이 틀을 따른다.
+페이지별 디자인 문서는 여전히 `docs/2-design/design-system/pages/login.md` 하나뿐이다. 로그인 화면과 승인 대기 화면의 짜임, 역할 토큰, 화면 문안, 모션이 들어 있고 그 틀(화면 절 넷 + 안 담은 것 + 규칙과 부딪힌 자리 + 아직 안 정한 것)이 `README.md`에 박혔다. 뒤따르는 화면은 이 틀을 따른다.
 
 코드는 세션 기반이 서 있고 화면은 아직 없다. 브라우저용 Supabase 클라이언트도 아직 없다.
 
@@ -54,14 +54,14 @@
 - integration 테스트가 만든 사용자를 치우지 않는다. anon 키로는 `auth.users`를 못 지우고, 프로필 행 삭제는 테스트가 지키는 바로 그 정책에 걸린다. 지우려면 service role이 필요한데 금지다. `supabase/config.toml`이 IP당 5분에 서른 번으로 가입을 막는데 e2e도 이제 사용자를 만드니, 계정 task를 여러 회차 돌리면 닿는다.
 - 테마를 고르는 UI와 그 선택을 어디 저장할지가 미정이다. 기기 설정을 따르되 앱에서 덮을 수 있게 하기로는 정했지만, 그 속성을 실제로 걸어줄 화면이 없다. `tokens.md`의 「아직 안 정한 것」에 있다.
 - `scripts/tokens-md.mts`와 `scripts/generate-globals-css.mts`에 `SUBSECTION` 정규식이 각각 있다. 공유 모듈이 export를 안 해서고, 생성기의 `readFences`는 heading에서 번호만 떼는 다른 파서라 표 파서와 계약을 공유하지 않는다. 이번에 막은 「표 파서 두 벌」과는 성격이 달라 그대로 뒀다.
-- 도메인 규칙의 미정 항목은 `docs/domain/`의 각 파일 "아직 안 정한 것" 절이 정본이다. 디자인 값의 미정 항목은 `docs/design-system/tokens.md`와 `docs/design-system/pages/`의 같은 이름 절이 정본이다. 여기 옮겨 적지 않는다.
+- 도메인 규칙의 미정 항목은 `docs/2-design/domain/`의 각 파일 "아직 안 정한 것" 절이 정본이다. 디자인 값의 미정 항목은 `docs/2-design/design-system/tokens.md`와 `docs/2-design/design-system/pages/`의 같은 이름 절이 정본이다. 여기 옮겨 적지 않는다.
 - 로컬에서 연타하면 가입 rate limit에 걸린다. `supabase/config.toml`이 IP당 5분에 30번이다. CI는 컨테이너가 매번 새로 떠서 무관하다.
 - `authenticated`에 `profiles` 테이블 단위 insert와 delete 권한이 열려 있다. 정책이 없어 RLS가 전부 막는 구조다. 지금은 기본 거부라 안전하고 테스트가 delete 쪽을 지킨다.
 - shadcn `accent` 매핑 — `bg.brand-weak`로 걸면 드롭다운 hover마다 브랜드 색이 깜빡여 절제 규칙과 부딪힌다. 실제 화면을 보고 `bg.neutral-weak`로 내릴지 판단이 필요하다.
-- "8월 28일에 나옵니다" 예시 문장 — 어체가 합쇼체라 해요체 규칙과 어긋나고, `docs/domain/schedule.md`에 근무표 확정 마감일이 없어 앱이 날짜를 약속할 근거가 없다. `writing.md`에 확인 요청으로 달려 있다.
+- "8월 28일에 나옵니다" 예시 문장 — 어체가 합쇼체라 해요체 규칙과 어긋나고, `docs/2-design/domain/schedule.md`에 근무표 확정 마감일이 없어 앱이 날짜를 약속할 근거가 없다. `writing.md`에 확인 요청으로 달려 있다.
 - 급여 확정 축하 모션 — 축하할 순간 후보로 지목됐는데 `payroll.md`가 급여를 확정하지 않는다고 못 박아 대상을 못 정했다.
 - 되돌리기 어려운 동작에 별도 색을 줄지 — 출근 인증과 교대 수락 둘 다 되돌릴 길이 없는데 지금은 같은 `bg.brand-solid`라 한 화면에 브랜드 버튼이 둘 뜰 수 있다.
-- `docs/design-system/tokens.md`의 "빈 상태 화면"과 "브랜드 색 출처" — 빈 상태 화면은 근무 없는 날·급여 0원·알림 0건을 이 팔레트로 아직 안 그려봤다. 브랜드 색 출처는 지금 brand 계열이 공식 브랜드 가이드가 아니라 홀 이미지와 웹사이트 내비게이션에서 뽑은 값이다.
+- `docs/2-design/design-system/tokens.md`의 "빈 상태 화면"과 "브랜드 색 출처" — 빈 상태 화면은 근무 없는 날·급여 0원·알림 0건을 이 팔레트로 아직 안 그려봤다. 브랜드 색 출처는 지금 brand 계열이 공식 브랜드 가이드가 아니라 홀 이미지와 웹사이트 내비게이션에서 뽑은 값이다.
 - 세그먼트 목록 — 실제 파일을 보고 정한다.
 - `playwright.config.ts`의 CI 리트라이 2 — e2e가 늘고 `workers: 1`까지 겹쳐 전체 실행 시간이 무거워지고 있다. 유지할지 정한다.
 - CI가 1분대에서 4분대로 늘었던 것 중 analytics(logflare·vector) 몫은 껐다. 남은 시간이 여전히 아픈지는 몇 회차 더 겪고 정한다.
@@ -84,8 +84,8 @@
 - 저장소는 PUBLIC이다. 시크릿 커밋 금지, pre-commit 스캔이 있다.
 - clone이나 worktree를 새로 만들면 `git config core.hooksPath .githooks`를 실행한다. 포맷 훅도 여기 붙어 있다.
 - 새 subagent 정의문은 main에 merge된 뒤에야 호출할 수 있게 등록된다.
-- 새 개념이 코드에 등장하면 먼저 `docs/domain/`에 있는지 확인한다. 용어 정본과 코드 이름을 잇는 장치가 없어서 어긋나도 아무도 안 막는다.
-- task 완료 조건이 세 문장을 넘거나 예외 규칙이 둘 이상이면 `docs/spec/<task>.md`로 승격한다(ADR-002).
+- 새 개념이 코드에 등장하면 먼저 `docs/2-design/domain/`에 있는지 확인한다. 용어 정본과 코드 이름을 잇는 장치가 없어서 어긋나도 아무도 안 막는다.
+- task 완료 조건이 세 문장을 넘거나 예외 규칙이 둘 이상이면 `docs/2-design/spec/<task>.md`로 승격한다(ADR-002).
 - integration 테스트를 돌리려면 로컬에 Docker가 떠 있어야 한다. `pnpm test:integration`이 `supabase start`부터 하니 못 뜨면 그 자리에서 멈춘다.
 - `vitest.config.ts`가 CommonJS로 읽히는데 ESM 문법이라 실행할 때마다 경고가 뜬다. 동작에는 영향이 없다.
 - type-aware lint(`no-floating-promises` 등)는 속도를 이유로 안 켜져 있다. await 빠진 Supabase 호출 같은 건 lint가 못 잡는다.

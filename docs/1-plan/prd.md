@@ -2,7 +2,7 @@
 
 2026-08-25 인터뷰로 정했다.
 
-계산과 상태 전이 규칙은 여기 없다. `docs/domain/`이 정본이다. 이 문서는 왜 만드는지와 누구를 위한 것인지와 무엇을 안 하는지를 담는다.
+계산과 상태 전이 규칙은 여기 없다. `docs/2-design/domain/`이 정본이다. 이 문서는 왜 만드는지와 누구를 위한 것인지와 무엇을 안 하는지를 담는다.
 
 ## 무엇을 만드나
 
@@ -26,19 +26,19 @@
 
 확정 전에는 관리자가 마음대로 고친다. 확정을 누르면 근무자에게 알림이 나가고 그때부터 근무표는 공개된 약속이 된다.
 
-규칙은 [docs/domain/schedule.md](domain/schedule.md)에 있다.
+규칙은 [docs/2-design/domain/schedule.md](../2-design/domain/schedule.md)에 있다.
 
 ### 교대
 
 확정 뒤에 바뀌는 길은 둘이다. 근무자끼리 요청하고 수락하고 관리자가 승인하는 길, 그리고 관리자가 절차 없이 바꾸는 길이다. 누가 언제 무엇에 동의했는지가 남는다.
 
-규칙은 [docs/domain/swap.md](domain/swap.md)에 있다.
+규칙은 [docs/2-design/domain/swap.md](../2-design/domain/swap.md)에 있다.
 
 ### 출근 인증
 
 근무자가 현장에서 출근을 찍는다. 관리자가 누가 왔는지를 사람 입으로 듣고 기억하던 자리를 기록이 대신한다.
 
-규칙은 [docs/domain/attendance.md](domain/attendance.md)에 있다.
+규칙은 [docs/2-design/domain/attendance.md](../2-design/domain/attendance.md)에 있다.
 
 ### 급여
 
@@ -46,19 +46,19 @@
 
 앱이 내놓는 숫자는 예상치다. 실제 지급액은 관리자가 앱 밖에서 따로 계산하고, 그 손 계산은 이 앱이 없애지 않는다. 앱이 푸는 문제는 근무자가 자기 몫을 모른 채 기다리는 것이지 관리자의 계산 노동이 아니다.
 
-계산 규칙은 [docs/domain/payroll.md](domain/payroll.md)에 있다. 예상치라도 실제와 크게 어긋나면 앱을 안 믿게 되니, 규칙이 다 채워지기 전에는 계산 코드를 쓰지 않는다.
+계산 규칙은 [docs/2-design/domain/payroll.md](../2-design/domain/payroll.md)에 있다. 예상치라도 실제와 크게 어긋나면 앱을 안 믿게 되니, 규칙이 다 채워지기 전에는 계산 코드를 쓰지 않는다.
 
 ### 휴무 희망
 
 근무자가 다음 달 근무표가 나오기 전에 쉬고 싶은 날을 넣는다. 관리자는 카톡을 거슬러 올라가는 대신 목록으로 본다.
 
-규칙은 [docs/domain/schedule.md](domain/schedule.md)에 있다.
+규칙은 [docs/2-design/domain/schedule.md](../2-design/domain/schedule.md)에 있다.
 
 ### 알림
 
 근무표 확정과 변경, 근무 전날, 출근 직전, 관리자 공지가 푸시로 나간다. 관리자 공지는 근무표와 무관한 전달이다.
 
-규칙은 [docs/domain/notification.md](domain/notification.md)에 있다.
+규칙은 [docs/2-design/domain/notification.md](../2-design/domain/notification.md)에 있다.
 
 ### 계정
 
@@ -66,7 +66,7 @@
 
 근무표와 급여가 외부로 새지 않게 막는 유일한 문이다.
 
-규칙은 [docs/domain/account.md](domain/account.md)에 있다.
+규칙은 [docs/2-design/domain/account.md](../2-design/domain/account.md)에 있다.
 
 ### 관리자 통계
 
@@ -92,4 +92,4 @@
 
 디자인 방향은 레퍼런스를 보고 사람이 정한다.
 
-도메인 규칙의 빈자리는 `docs/domain/`의 각 파일 맨 아래 "아직 안 정한 것" 절에 모아뒀다. 급여 쪽이 가장 크고 가장 급하다.
+도메인 규칙의 빈자리는 `docs/2-design/domain/`의 각 파일 맨 아래 "아직 안 정한 것" 절에 모아뒀다. 급여 쪽이 가장 크고 가장 급하다.
