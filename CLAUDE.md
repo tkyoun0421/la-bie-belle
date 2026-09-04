@@ -18,7 +18,7 @@
 - `docs/prd.md` — 제품 요구. `docs/1-plan/`으로 이사 예정
 - `docs/domain/` — 도메인 용어와 규칙의 정본. 영역별 파일과 컨텍스트 경계는 그 안 `README.md`가 안내한다. `docs/2-design/domain/`으로 이사 예정
 - `docs/adr/` — 되돌리기 어려운 결정과 그 근거. `docs/2-design/adr/`로 이사 예정
-- `docs/design-system/` — 디자인과 퍼블리싱 규칙은 `README.md`, 그 옆에 디자인 시스템과 페이지별 디자인. `docs/2-design/design-system/`으로 이사 예정
+- `docs/2-design/design-system/` — 디자인과 퍼블리싱 규칙은 `README.md`, 그 옆에 디자인 시스템과 페이지별 디자인
 - `docs/1-plan/` ~ `docs/6-maintain/` — SDLC 단계 폴더. 각 단계가 무엇을 담는지는 그 안 `README.md`가 안내한다
 - `.claude/agents/` — subagent 정의문
 - `.claude/skills/` — 스킬 정의문. 설명 톤 같은 대화 규칙이 여기 산다
@@ -74,7 +74,7 @@ PRD와 ADR을 먼저 세우고 `docs/plan.md`의 task로 쪼갠다. task마다 �
 
 `.claude/hooks/`의 훅 둘이 이 규율을 막고 우회할 길은 없다. 테스트가 어디 살고 훅이 무엇을 요구하는지는 `docs/adr/ADR-001-fsd-layout-and-tdd-guard.md`에 있다.
 
-기능 개발과 디자인은 병렬로 가고, 디자인이 완료된 화면부터 퍼블리싱이 붙는다. 규칙은 `docs/design-system/README.md`에 있다.
+기능 개발과 디자인은 병렬로 가고, 디자인이 완료된 화면부터 퍼블리싱이 붙는다. 규칙은 `docs/2-design/design-system/README.md`에 있다.
 
 ## git
 

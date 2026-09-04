@@ -11,7 +11,7 @@ import {
 } from "@tests/lint/contrast-check";
 
 const TOKENS_MARKDOWN = readFileSync(
-  path.join(process.cwd(), "docs/design-system/tokens.md"),
+  path.join(process.cwd(), "docs/2-design/design-system/tokens.md"),
   "utf8",
 );
 

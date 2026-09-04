@@ -35,7 +35,7 @@ const noArbitraryClassValues = {
     schema: [],
     messages: {
       hardcoded:
-        "'{{token}}' 은 대괄호 안에 값을 직접 적었다. docs/design-system/tokens.md 의 유틸을 쓰거나 var()·--spacing() 을 거쳐라.",
+        "'{{token}}' 은 대괄호 안에 값을 직접 적었다. docs/2-design/design-system/tokens.md 의 유틸을 쓰거나 var()·--spacing() 을 거쳐라.",
     },
   },
   create(context) {

@@ -16,7 +16,7 @@ type Group = Declaration[];
 type Side = "light" | "dark";
 
 const ROOT = path.resolve(fileURLToPath(import.meta.url), "../..");
-const TOKENS_PATH = path.join(ROOT, "docs/design-system/tokens.md");
+const TOKENS_PATH = path.join(ROOT, "docs/2-design/design-system/tokens.md");
 const GLOBALS_PATH = path.join(ROOT, "src/app/globals.css");
 
 const TYPOGRAPHY_HEADER = [

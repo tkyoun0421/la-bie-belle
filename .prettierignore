@@ -10,4 +10,4 @@ supabase/.branches/
 supabase/.temp/
 pnpm-lock.yaml
 *.md
-docs/design-system/pages/*.sian.html
+docs/2-design/design-system/pages/*.sian.html

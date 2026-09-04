@@ -571,7 +571,7 @@ describe("리스크 I — 생성기가 비결정적이다", () => {
 describe("완료 조건 — 실제 tokens.md에서 실제 globals.css를 그대로 만든다", () => {
   it("tokens.md로 생성한 결과가 저장된 globals.css와 바이트 단위로 같다", async () => {
     const markdown = readFileSync(
-      path.join(process.cwd(), "docs/design-system/tokens.md"),
+      path.join(process.cwd(), "docs/2-design/design-system/tokens.md"),
       "utf8",
     );
     const savedCss = readFileSync(
