@@ -10,10 +10,11 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 ## 진행
 
-- [ ] spec 승인 게이트와 문서 구조 검사를 단다 — [spec](2-design/spec/sdlc-gate.md)
+(비어 있음)
 
 ## 완료
 
+- [x] spec 승인 게이트와 문서 구조 검사를 단다 — [docs/log/2026-09-04.md](log/2026-09-04.md)
 - [x] `tokens.md` 7절의 대비값을 기계가 재게 한다 — [docs/log/2026-08-29-2.md](log/2026-08-29-2.md)
 - [x] `src/app/globals.css`를 `tokens.md`에서 생성한다 — [docs/log/2026-08-29-2.md](log/2026-08-29-2.md)
 - [x] 로그인 화면과 승인 대기 화면의 디자인을 정한다 — [docs/log/2026-08-29.md](log/2026-08-29.md)

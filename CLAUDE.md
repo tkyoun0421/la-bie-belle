@@ -48,7 +48,7 @@ FSD: `src/` 아래 `app` · `screens` · `features` · `entities` · `shared`. `
 
 ## 기록
 
-회차 마감은 `session-recorder`가 한다 — log 추가, plan 상태 갱신, handoff 덮어쓰기. 근거는 merge된 PR 본문에서 읽는다.
+회차 마감은 `session-recorder`가 한다 — log 추가, backlog 상태 갱신, handoff 덮어쓰기. 근거는 merge된 PR 본문에서 읽는다.
 
 ## 증축 규칙
 
