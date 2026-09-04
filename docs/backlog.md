@@ -10,7 +10,7 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 ## 진행
 
-(없음)
+- [ ] spec 승인 게이트와 문서 구조 검사를 단다 — [spec](2-design/spec/sdlc-gate.md)
 
 ## 완료
 
