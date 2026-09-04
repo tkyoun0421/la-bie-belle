@@ -8,14 +8,18 @@
 
 무엇이 어디 있는지는 이 절이 정본이다. 다른 문서와 에이전트 정의문은 지도를 옮겨 적지 않고 여기를 가리킨다. 새 문서 갈래가 생기면 이 절에 한 줄을 더한다.
 
+`docs/`를 SDLC 단계 폴더로 재편하는 중이다. 결정과 이행 순서는 ADR-005에 있고, 이 지도는 매 PR에서 실제 자리를 따라간다.
+
 - `docs/handoff.md` — 지금 상태와 다음 첫 수. 세션은 여기서 시작하고 상세가 필요할 때만 아래로 내려간다
-- `docs/plan.md` — task와 완료 조건
-- `docs/spec/` — 완료 조건 한두 줄로 안 담기는 task의 명세. 승격 기준은 ADR-002에 있다
+- `docs/plan.md` — task와 완료 조건. `backlog.md`로 개명 예정
+- `docs/CHANGELOG.md` — 무엇이 언제 바뀌었는지의 시간순 색인. 왜는 log와 PR에 있다
+- `docs/spec/` — task 명세. `docs/2-design/spec/`으로 이사 예정
 - `docs/log/` — 회차 기록. 왜 그렇게 정했는지가 여기 있다
-- `docs/prd.md` — 제품 요구. 왜 만드는지와 무엇을 안 하는지까지고 규칙은 안 담는다
-- `docs/domain/` — 도메인 용어와 규칙의 정본. 영역별 파일과 컨텍스트 경계는 그 안 `README.md`가 안내한다. 자리와 근거는 ADR-004에 있다
-- `docs/adr/` — 되돌리기 어려운 결정과 그 근거
-- `docs/design-system/` — 디자인과 퍼블리싱 규칙은 `README.md`, 그 옆에 디자인 시스템과 페이지별 디자인
+- `docs/prd.md` — 제품 요구. `docs/1-plan/`으로 이사 예정
+- `docs/domain/` — 도메인 용어와 규칙의 정본. 영역별 파일과 컨텍스트 경계는 그 안 `README.md`가 안내한다. `docs/2-design/domain/`으로 이사 예정
+- `docs/adr/` — 되돌리기 어려운 결정과 그 근거. `docs/2-design/adr/`로 이사 예정
+- `docs/design-system/` — 디자인과 퍼블리싱 규칙은 `README.md`, 그 옆에 디자인 시스템과 페이지별 디자인. `docs/2-design/design-system/`으로 이사 예정
+- `docs/1-plan/` ~ `docs/6-maintain/` — SDLC 단계 폴더. 각 단계가 무엇을 담는지는 그 안 `README.md`가 안내한다
 - `.claude/agents/` — subagent 정의문
 - `.claude/skills/` — 스킬 정의문. 설명 톤 같은 대화 규칙이 여기 산다
 - `CLAUDE.md` — 이 파일. 구조와 스택과 지도
