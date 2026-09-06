@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: docs-researcher
 date: 2026-09-06
-resolved:
+resolved: 2026-09-06
 ---
 
 **일**: 회차 로그 19개 전수 조사를 docs-researcher 하나에 맡겼더니 60KB grep 결과에 도구 예산을 소진하고 얕은 보고로 끝났다. 파일을 예닐곱 개씩 셋으로 갈라 다시 스폰하니 전문이 읽혔다.
