@@ -4,7 +4,6 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 ## 다음
 
-- [ ] 근무자 대시보드 디자인을 정한다 — [spec](2-design/spec/dashboard-design.md)
 - [ ] 로그인 화면과 승인 대기 화면을 만든다 — [spec](2-design/spec/login-screens.md)
 - [ ] 근무자 대시보드를 만든다 — 데이터 task들이 서기 전에는 못 연다 — [spec](2-design/spec/dashboard.md)
 
@@ -15,6 +14,7 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 ## 완료
 
 - [x] spec 승인 게이트와 문서 구조 검사를 단다 — [docs/log/2026-09-04.md](log/2026-09-04.md)
+- [x] 근무자 대시보드 디자인을 정한다 — [docs/log/2026-08-30.md](log/2026-08-30.md)
 - [x] `tokens.md` 7절의 대비값을 기계가 재게 한다 — [docs/log/2026-08-29-2.md](log/2026-08-29-2.md)
 - [x] `src/app/globals.css`를 `tokens.md`에서 생성한다 — [docs/log/2026-08-29-2.md](log/2026-08-29-2.md)
 - [x] 로그인 화면과 승인 대기 화면의 디자인을 정한다 — [docs/log/2026-08-29.md](log/2026-08-29.md)
