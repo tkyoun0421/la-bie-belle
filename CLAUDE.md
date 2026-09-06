@@ -24,7 +24,7 @@ Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui, zustand, TanSta
 - `pnpm test:integration` — 로컬 Supabase 필요 (Docker). 스택이 떠 있으면 `pnpm test:integration:run`
 - `pnpm e2e` — 먼저 `pnpm build`
 
-CI는 PR마다 lint → test → integration → build → e2e. 문서만 바뀐 PR은 뒤쪽 무거운 넷을 건너뛰고, lint·format·typecheck·단위 테스트는 항상 돈다 — 문서가 테스트 입력인 자리가 있다. PR마다 claude 자동 리뷰가 `REVIEW.md` 기준으로 코멘트를 단다.
+CI는 PR마다 lint → test → integration → build → e2e. 문서만 바뀐 PR은 뒤쪽 무거운 넷을 건너뛰고, lint·format·typecheck·단위 테스트는 항상 돈다 — 문서가 테스트 입력인 자리가 있다. PR마다 claude 자동 리뷰가 `REVIEW.md` 기준으로 코멘트를 달고, 매주 월요일 보안 스캔이 돌아 발견을 `security` 라벨 Issue로 남긴다.
 
 ## 코드 구조
 
