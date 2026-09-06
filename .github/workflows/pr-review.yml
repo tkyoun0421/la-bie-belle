@@ -1,0 +1,49 @@
+name: pr-review
+
+on:
+  pull_request:
+    # converted_to_draft는 리뷰를 새로 돌리지 않고, concurrency로 실행 중인 리뷰를 취소하는 용도
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+
+concurrency:
+  group: pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # PUBLIC 저장소 가드 — fork PR과 draft는 리뷰하지 않는다
+    if: github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      # 정책은 PR이 못 건드리게 base 브랜치 사본을 쓴다.
+      # base에 REVIEW.md가 아직 없으면(정책 도입 PR) PR 사본으로 대체한다.
+      - name: 리뷰 정책을 base 브랜치에서 가져온다
+        run: |
+          git fetch --depth 1 origin "$GITHUB_BASE_REF"
+          git show "origin/$GITHUB_BASE_REF:REVIEW.md" > /tmp/review-policy.md \
+            || cp REVIEW.md /tmp/review-policy.md
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            /tmp/review-policy.md가 리뷰 정책 정본(REVIEW.md의 base 브랜치 사본)이다.
+            먼저 읽고 그 검사 축과 리포트 형식대로 이 PR을 감사해라. 정책에 없는
+            취향 지적은 하지 않는다.
+
+            리포트는 `gh pr comment`로 PR에 코멘트 하나로 남긴다. 특정 줄에 붙는
+            위험은 `mcp__github_inline_comment__create_inline_comment`(confirmed: true)로
+            해당 줄에 단다. 코멘트는 한국어로 쓴다.
+          claude_args: |
+            --allowedTools "Read,Grep,Glob,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),mcp__github_inline_comment__create_inline_comment"
