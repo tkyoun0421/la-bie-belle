@@ -11,6 +11,7 @@
 - `docs/1-plan/` — 기획: prd, 시나리오, 로드맵, 지표, `intent/`
 - `docs/2-design/` — 설계: `domain/`(용어·규칙 정본), `architecture/`, `design-system/`, `adr/`, `spec/`(완료 조건·승인 마크)
 - `docs/3-build/` ~ `docs/6-maintain/` — 구현 계획, 테스트 전략, 배포, 운영. 각 안내는 그 안 `README.md`
+- `REVIEW.md` — PR 리뷰 정책 정본. CI 자동 리뷰와 `pr-diff`가 같은 축을 읽는다
 - `.claude/agents/` — subagent 정의문
 - `.claude/skills/` — 스킬 정의문
 
@@ -23,7 +24,7 @@ Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui, zustand, TanSta
 - `pnpm test:integration` — 로컬 Supabase 필요 (Docker). 스택이 떠 있으면 `pnpm test:integration:run`
 - `pnpm e2e` — 먼저 `pnpm build`
 
-CI는 PR마다 lint → test → integration → build → e2e. 문서만 바뀐 PR은 뒤쪽 무거운 넷을 건너뛰고, lint·format·typecheck·단위 테스트는 항상 돈다 — 문서가 테스트 입력인 자리가 있다.
+CI는 PR마다 lint → test → integration → build → e2e. 문서만 바뀐 PR은 뒤쪽 무거운 넷을 건너뛰고, lint·format·typecheck·단위 테스트는 항상 돈다 — 문서가 테스트 입력인 자리가 있다. PR마다 claude 자동 리뷰가 `REVIEW.md` 기준으로 코멘트를 단다.
 
 ## 코드 구조
 
