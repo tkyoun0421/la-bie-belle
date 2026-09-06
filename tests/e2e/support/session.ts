@@ -60,11 +60,11 @@ function toPlaywrightSameSite(
 
 export type SeededSession = SignedInUser;
 
-export async function seedSignedInSession(
+export async function seedSessionForUser(
   context: BrowserContext,
   baseURL: string,
+  user: SignedInUser,
 ): Promise<SeededSession> {
-  const user = await createSignedInUser();
   const { data: sessionData, error: sessionError } =
     await user.client.auth.getSession();
   if (sessionError || !sessionData.session) {
@@ -119,4 +119,12 @@ export async function seedSignedInSession(
   );
 
   return user;
+}
+
+export async function seedSignedInSession(
+  context: BrowserContext,
+  baseURL: string,
+): Promise<SeededSession> {
+  const user = await createSignedInUser();
+  return seedSessionForUser(context, baseURL, user);
 }

@@ -1,12 +1,28 @@
 import { expect, test } from "@playwright/test";
 import { countGetUserCalls } from "@tests/e2e/support/auth-calls";
-import { seedSignedInSession } from "@tests/e2e/support/session";
+import {
+  seedSessionForUser,
+  seedSignedInSession,
+} from "@tests/e2e/support/session";
+import { createApprovedUser } from "@tests/integration/postgres";
 
-test("기본 페이지가 뜨고 핵심 텍스트가 보인다", async ({ page }) => {
+test("승인된 사용자로 접속하면 리다이렉트 없이 홈에 머문다", async ({
+  page,
+  context,
+  baseURL,
+}) => {
+  const user = await createApprovedUser();
+  await seedSessionForUser(context, baseURL ?? "http://localhost:3000", user);
+
   await page.goto("/");
 
-  await expect(page.getByText("La Bie Belle")).toBeVisible();
-  await expect(page.getByRole("button", { name: "시작하기" })).toBeVisible();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(
+    page.getByRole("button", { name: "시작하기" }),
+  ).not.toBeVisible();
+  await expect(
+    page.getByText("프로젝트 스캐폴드가 준비되었습니다"),
+  ).not.toBeVisible();
 });
 
 test("body가 라이트와 다크에서 서로 다른 배경색과 글자색을 명시로 받는다", async ({
@@ -52,7 +68,7 @@ test("Wanted Sans가 CDN에서 로드되어 실제 렌더 텍스트에 걸린다
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
 
-  const heading = page.getByText("La Bie Belle");
+  const heading = page.getByText("라비에벨");
   const fontFamily = await heading.evaluate(
     (element) => getComputedStyle(element).fontFamily,
   );
@@ -72,29 +88,6 @@ test("Wanted Sans가 CDN에서 로드되어 실제 렌더 텍스트에 걸린다
   expect(geistSansVariable).toBe("");
 
   expect(jsdelivrWoff2Statuses).toContain(200);
-});
-
-test("로그인하지 않은 채 접속하면 로그인하지 않았다는 문구가 보인다", async ({
-  page,
-}) => {
-  await page.goto("/");
-
-  await expect(page.getByText("로그인하지 않았습니다")).toBeVisible();
-});
-
-test("세션을 심고 접속하면 로그인한 사람의 이메일 주소가 그대로 보인다", async ({
-  page,
-  context,
-  baseURL,
-}) => {
-  const user = await seedSignedInSession(
-    context,
-    baseURL ?? "http://localhost:3000",
-  );
-
-  await page.goto("/");
-
-  await expect(page.getByText(user.email)).toBeVisible();
 });
 
 test("이미지 같은 정적 자원을 요청해도 인증 갱신 호출이 안 딸려 온다", async ({
