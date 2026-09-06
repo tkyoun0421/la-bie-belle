@@ -422,10 +422,13 @@ Tailwind 유틸이 없다. 셋 다 `var()`로 직접 쓴다.
 
 파일 맨 앞에 그대로 놓인다.
 
+`tw-animate-css`는 [motion.md](foundation/motion.md)가 지목하는 등장 유틸(`animate-in`·`fade-in`·`zoom-in-95` 등)의 출처다. import가 없으면 그 유틸이 존재하지 않아 모션 조항을 코드가 지킬 수 없다 — login-screens 검수 1회차가 그 어긋남을 잡았다.
+
 `@custom-variant dark`가 팔레트를 뒤집는 조건을 `dark:` 유틸리티 쪽에도 건다. Tailwind의 기본 `dark:`는 미디어 쿼리만 보기 때문에, 이것이 없으면 팔레트는 `[data-theme="dark"]`를 따라 뒤집히는데 `dark:` 클래스를 단 자리만 라이트로 남는다. 갈래 둘의 조건이 생성기가 세우는 팔레트 블록 둘과 정확히 같아야 한다. `[data-theme="light"]`가 붙어 있으면 기기가 다크여도 라이트로 남는다.
 
 ```css
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark {
   &:where([data-theme="dark"], [data-theme="dark"] *) {
