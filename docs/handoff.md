@@ -4,23 +4,25 @@
 
 ## 지금 상태
 
+**`docs/1-plan/`의 시나리오·로드맵·지표가 다 찼다.** `scenarios.md`는 장면 여섯, `roadmap.md`는 릴리스 둘(1차: 계정·근무표·출근·급여·핵심 알림, 2차: 교대·공지·통계), `metrics.md`는 성공 축 넷(출근 인증률·근무표 문의 감소·관리자 시간 절감·알림 도달)이다. 목표선은 전부 미정이고 운영 첫 달 뒤에 정하기로 합의했다. 인터뷰에서 domain에 없던 새 사실 — 출근 기한이 첫 예식 1시간 50분 전(11시 식이면 9시 10분) — 이 나왔는데 시나리오에만 실렸고 `schedule.md` 반영은 아직 안 했다.
+
+**관찰 로그가 첫 배치를 처리했다.** 지난 회차가 튼 `docs/observations/`에 심어둔 백필 관찰 넷(001~004)이 이번 회차에서 전부 actioned로 닫혔다. 그 결과로 `tdd-guard-unit.py` 훅, `test-planner`·`docs-researcher` 정의문, `design-system/README.md` 넷이 바뀌었다. 관찰 005(observation-applier 추출 제안)는 아직 open이고, 같은 target이 하나뿐이라 증축 후보로는 안 올라간다.
+
+**`tdd-guard-unit.py`가 `tests/lint/`까지 본다.** 감시 접두사가 `src/`에 `tests/lint/`를 더했고, `tests/` 아래에서는 짝 테스트를 `__tests__/`가 아니라 형제 `<이름>.test.ts`로 찾는다. 접두사 방식 자체는 남아 있어서 또 다른 경로가 새면 새 관찰로 센다.
+
 **`docs/`가 SDLC 여섯 단계 폴더로 섰다.** `1-plan/`(prd·scenarios·roadmap·metrics·intent) → `2-design/`(domain·architecture·design-system·adr·spec) → `3-build/`(plans) → `4-test/`(strategy) → `5-deploy/` → `6-maintain/` 순이다. `handoff.md`·`backlog.md`·`CHANGELOG.md`·`log/`는 어느 단계에도 안 속해 루트에 남는다. 근거와 새 배치 전체는 ADR-005가 정본이다.
 
 **기능마다 intent→spec→plan 사슬을 걷는다.** `1-plan/intent/<슬러그>.md` → `2-design/spec/<슬러그>.md`(완료 조건과 `status` 승인 마크) → `3-build/plans/<슬러그>.md`다. 관문은 spec→구현 한 마디뿐이고 `.claude/hooks/spec-gate.py`가 지킨다 — `feat/<슬러그>` 브랜치에서 `src/`를 고치는데 `docs/2-design/spec/<슬러그>.md`가 없거나 `status: approved`가 아니면 막는다. `feat/`가 아닌 브랜치와 `src/` 밖 경로는 안 막는다.
 
-**`backlog.md`가 `plan.md`를 대체했다.** 행 하나가 task 하나고 완료 조건은 이제 항상 그 행이 링크하는 spec에 산다(ADR-002의 승격 기준을 ADR-005가 대체했다). 지금 「진행」은 비어 있고 「다음」에 둘(로그인 화면·대시보드 구현)이 남아 있다.
+**`backlog.md`의 「진행」은 비어 있고 「다음」에 둘이 남아 있다.** 로그인 화면·대시보드 구현이다. 완료 조건은 각각 링크된 spec에 사는데 둘 다 `status: draft`로 승인 전이다.
 
-**CLAUDE.md는 라우터다.** 108줄이 58줄로 줄었고 협업 구조를 설명하던 서두가 빠졌다. 근거 산문은 ADR과 design-system README와 정의문으로의 포인터로 바뀌었으니, 왜를 알아야 하면 CLAUDE.md가 아니라 그 정본을 읽는다.
+**CLAUDE.md는 라우터다.** 근거 산문은 ADR과 design-system README와 정의문으로의 포인터로 바뀌었으니, 왜를 알아야 하면 CLAUDE.md가 아니라 그 정본을 읽는다.
 
-**CI에서 문서만 바뀐 PR은 더 빠르다.** 스킵 패턴이 `docs/`·`.claude/`에 루트 마크다운(`[^/]+\.md$`)까지 넓어져서 문서 전용 PR이 4분대에서 48초로 줄었다. lint·format·typecheck·단위 테스트는 여전히 문서 PR에서도 돈다.
-
-**문서 구조를 지키는 검사 둘이 `pnpm test`에 낀다.** `tests/lint/doc-map.ts`는 CLAUDE.md 문서 지도의 백틱 경로가 실존하는지 확인하고, `tests/lint/legacy-doc-paths.ts`는 개편 전 `docs/` 바로 아래 있던 옛 경로 여섯 종(plan.md · prd.md · domain · adr · spec · design-system)이 문서·정의문·코드에 남았는지 훑는다. `docs/log/`는 당시 사실의 기록이라 통째로 빠진다.
-
-**코드 층은 이번 회차에서 안 건드렸다.** 세션 기반은 서 있고 화면은 아직 없다. 브라우저용 Supabase 클라이언트 팩토리도 없다. `globals.css`는 여전히 `tokens.md`에서 생성되고 7절 대비값은 여전히 기계가 잰다 — 위치만 `docs/2-design/design-system/`으로 옮겨왔다.
+**코드 층은 이번 회차에서도 안 건드렸다.** 세션 기반은 서 있고 화면은 아직 없다. 브라우저용 Supabase 클라이언트 팩토리도 없다. `globals.css`는 여전히 `tokens.md`에서 생성되고 7절 대비값은 여전히 기계가 잰다.
 
 ## 다음 첫 수
 
-`docs/1-plan/`의 `scenarios.md`·`roadmap.md`·`metrics.md`를 태관 인터뷰로 채운다. 셋 다 #236이 튼 틀만 있고 백지다. 각 파일 안 「틀」 절이 인터뷰에서 물을 항목을 이미 적어뒀다 — 시나리오는 누가·언제·무엇을·어떻게 끝나나, 로드맵은 릴리스별 담는 것·빼는 것·판정 기준, 지표는 이름과 정의·왜 이것인가·목표선이다.
+`docs/backlog.md`「다음」의 첫 줄이다 — 로그인 화면과 승인 대기 화면을 만든다([spec](2-design/spec/login-screens.md), 지금 `status: draft`). 그 아래엔 근무자 대시보드가 있지만 backlog가 "데이터 task들이 서기 전에는 못 연다"고 못박아뒀다.
 
 ## 열린 결정
 
@@ -64,7 +66,7 @@
 - **`docs/2-design/spec/`의 완료 조건은 이제 모든 task에 의무다.** ADR-002의 승격 기준(세 문장 넘으면 승격)은 ADR-005가 대체했다 — 문장 길이와 무관하게 spec이 항상 완료 조건의 집이다.
 - **`.prettierignore`가 `*.md`를 거른다.** 문서에 prettier를 돌려도 아무 일도 안 한다. 저장소 전체 방침이다.
 - **pre-commit 훅이 staged 파일의 포맷을 고쳐 인덱스에 다시 올린다.** 일부만 staged된 파일이 포맷에 어긋나면 고치지 않고 커밋을 막는다 — 훅이 고치면 staged 안 한 변경까지 딸려 들어가기 때문이다. 그때는 `pnpm format` 뒤에 직접 `git add` 한다.
-- **`tests/lint/` 아래 테스트는 `tdd-guard-unit.py`의 사전 차단 밖이다.** 그 훅은 `src/`로 시작하는 `.ts` 파일만 본다. `tests/lint/generate-globals-css.test.ts`와 `tests/lint/contrast-check.test.ts`도 여기 해당해서, 편집 순간 손이 막히는 장치는 없고 CI의 `pnpm test`가 대신 잡는다.
+- **`tdd-guard-unit.py`가 `tests/lint/`도 짝 테스트를 요구한다.** 감시 접두사에 `src/`와 `tests/lint/` 둘 다 있다. `tests/` 아래에서는 짝을 `__tests__/`가 아니라 형제 `<이름>.test.ts`로 찾는다 — 그 디렉터리 관례가 형제 배치라서다. `tests/e2e/`는 여전히 감시 밖이라 CI의 `pnpm test`가 대신 잡는다. `tests/lint/rule-check.ts`는 지금 짝 테스트가 없어서 이 파일을 고치려면 먼저 `rule-check.test.ts`를 써야 한다.
 - **`SUBSECTION` 정규식이 `scripts/tokens-md.mts`와 `scripts/generate-globals-css.mts` 두 곳에 있다.** 표 파서 계약을 공유하는 게 아니라 마크다운 heading 정규식이 우연히 겹친 것이다. 표 형식을 바꿀 땐 둘 다 확인한다.
 - **`.mts` 스크립트는 `node --experimental-strip-types`로 돈다.** `pnpm tokens:css`가 그 명령을 감싼다. `tsx`나 `ts-node` 같은 별도 실행기 의존성이 없다.
 - **vitest가 `NEXT_PUBLIC_*`을 `process.env`에 안 얹는다.** Vite의 `envPrefix` 기본값이 `VITE_`라서다. env를 읽는 코드를 테스트하려면 `vi.stubEnv`로 명시로 채워야 한다. `.env.local`에 값이 있어도 소용없다.
