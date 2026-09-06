@@ -66,6 +66,7 @@ beforeAll(() => {
   write("src/screens/orders/__tests__/placeholder", "");
   write("tests/e2e/orders.spec.ts", "");
   write("src/entities/payroll/dals/__tests__/payroll.integration.test.ts", "");
+  write("tests/lint/paired.test.ts", "");
 });
 
 describe("유닛 훅", () => {
@@ -174,6 +175,46 @@ describe("유닛 훅", () => {
         "export function fetchSalary() {}",
       ),
     ).toBe(blocked);
+  });
+
+  it("tests/lint 실행 모듈에 형제 짝이 없으면 막는다", () => {
+    expect(
+      run(
+        "tdd-guard-unit.py",
+        "tests/lint/checker.ts",
+        "export function check() {}",
+      ),
+    ).toBe(blocked);
+  });
+
+  it("tests/lint 실행 모듈에 형제 짝이 있으면 통과시킨다", () => {
+    expect(
+      run(
+        "tdd-guard-unit.py",
+        "tests/lint/paired.ts",
+        "export function paired() {}",
+      ),
+    ).toBe(allowed);
+  });
+
+  it("tests/lint의 테스트 파일 자체는 보지 않는다", () => {
+    expect(
+      run(
+        "tdd-guard-unit.py",
+        "tests/lint/checker.test.ts",
+        "export function x() {}",
+      ),
+    ).toBe(allowed);
+  });
+
+  it("tests/e2e는 유닛 훅 감시 밖이다", () => {
+    expect(
+      run(
+        "tdd-guard-unit.py",
+        "tests/e2e/helper.ts",
+        "export function helper() {}",
+      ),
+    ).toBe(allowed);
   });
 });
 
