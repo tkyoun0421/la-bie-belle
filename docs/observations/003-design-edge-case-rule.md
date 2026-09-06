@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: design-system/README.md
 date: 2026-09-06
-resolved:
+resolved: 2026-09-06
 ---
 
 **일**: 2026-08-30 회차에 "디자인은 엣지 케이스까지 전부 그린다"는 지시가 나왔고 사유 시트를 열 가지 상태로 그렸다. 그런데 이 규칙이 총괄 로컬 메모리에만 남았다. 2026-09-06에 확인한 design-system/README.md에는 해당 규칙이 없다.
