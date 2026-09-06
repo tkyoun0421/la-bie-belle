@@ -29,7 +29,8 @@ const APPEAR =
 const BEAT =
   "motion-safe:animate-in motion-safe:zoom-in-90 motion-safe:repeat-infinite motion-safe:direction-alternate motion-safe:ease-out motion-safe:animation-duration-[calc(var(--interval-beat)/2)]";
 
-const SWAP = "animate-in fade-in animation-duration-[var(--duration-base)]";
+const SWAP =
+  "animate-in fade-in ease-out animation-duration-[var(--duration-base)]";
 
 function millisecondsOf(cssTime: string): number {
   const amount = Number.parseFloat(cssTime);
