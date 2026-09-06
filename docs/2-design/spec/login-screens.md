@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 ---
 
 # 로그인 화면과 승인 대기 화면을 만든다
