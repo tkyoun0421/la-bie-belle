@@ -8,7 +8,7 @@
 
 **기능마다 intent→spec→plan 사슬을 걷는다.** `1-plan/intent/<슬러그>.md` → `2-design/spec/<슬러그>.md`(완료 조건과 `status` 승인 마크) → `3-build/plans/<슬러그>.md`다. 관문은 spec→구현 한 마디뿐이고 `.claude/hooks/spec-gate.py`가 지킨다 — `feat/<슬러그>` 브랜치에서 `src/`를 고치는데 `docs/2-design/spec/<슬러그>.md`가 없거나 `status: approved`가 아니면 막는다. `feat/`가 아닌 브랜치와 `src/` 밖 경로는 안 막는다.
 
-**`backlog.md`가 `plan.md`를 대체했다.** 행 하나가 task 하나고 완료 조건은 이제 항상 그 행이 링크하는 spec에 산다(ADR-002의 승격 기준을 ADR-005가 대체했다). 지금 「진행」은 비어 있고 「다음」에 셋(대시보드 디자인·로그인 화면·대시보드 구현)이 남아 있는데, 첫 행은 아래 「다음 첫 수」에 적은 대로 상태가 이상하다.
+**`backlog.md`가 `plan.md`를 대체했다.** 행 하나가 task 하나고 완료 조건은 이제 항상 그 행이 링크하는 spec에 산다(ADR-002의 승격 기준을 ADR-005가 대체했다). 지금 「진행」은 비어 있고 「다음」에 둘(로그인 화면·대시보드 구현)이 남아 있다.
 
 **CLAUDE.md는 라우터다.** 108줄이 58줄로 줄었고 협업 구조를 설명하던 서두가 빠졌다. 근거 산문은 ADR과 design-system README와 정의문으로의 포인터로 바뀌었으니, 왜를 알아야 하면 CLAUDE.md가 아니라 그 정본을 읽는다.
 
