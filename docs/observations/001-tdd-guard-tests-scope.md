@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: tdd-guard-unit.py 훅
 date: 2026-09-06
-resolved:
+resolved: 2026-09-06
 ---
 
 **일**: token-css-parity 모듈을 `tests/lint/`로 옮기자 "실행 코드에 짝 테스트가 없으면 막는" TDD 훅이 침묵했다. 훅이 `src/` 아래만 보므로 `tests/`로 나간 실행 코드는 검사 밖이다. 당시 총괄 몫으로 남겨 뒀고 아직 그대로다.
@@ -12,3 +12,5 @@ resolved:
 **원칙**: 경로 접두사로 지키는 규칙은 파일을 옮기는 것만으로 뚫린다.
 
 출처: docs/log/2026-08-26-5.md
+
+반영(2026-09-06): 감시 접두사에 `tests/lint/`를 더하고, `tests/` 경로는 형제 `<이름>.test.ts`를 짝으로 받는다. 접두사 방식 자체는 유지 — 실행 모듈이 또 다른 위치로 옮겨 새면 새 관찰로 센다.
