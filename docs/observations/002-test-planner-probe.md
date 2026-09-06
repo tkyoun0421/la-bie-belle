@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: test-planner
 date: 2026-09-06
-resolved:
+resolved: 2026-09-06
 ---
 
 **일**: 계획자가 "로컬은 `.env.local` 덕에 통과하고 CI만 빨간불"이라 진단했는데, probe 테스트로 재보니 로컬 vitest도 `undefined`였다(Vite envPrefix가 VITE\_만 본다). 진단이 틀리면 writer가 잘못된 리스크를 받는다. 실측으로 뒤집힌 기록만 있고 정의문에는 반영이 없다.
