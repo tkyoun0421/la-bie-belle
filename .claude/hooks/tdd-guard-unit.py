@@ -14,13 +14,15 @@ EXECUTABLE_EXPORT = re.compile(
     re.MULTILINE,
 )
 
+WATCH_PREFIXES = ("src/", "tests/lint/")
+
 SKIP_PREFIXES = ("src/app/", "src/shared/ui/")
 
 PAIR_SUFFIXES = (".test.ts", ".integration.test.ts")
 
 
 def verdict(path, read):
-    if not path.startswith("src/") or not path.endswith(".ts"):
+    if not path.startswith(WATCH_PREFIXES) or not path.endswith(".ts"):
         return None
     if path.endswith(".d.ts") or path.endswith(".test.ts") or "/__tests__/" in path:
         return None
@@ -31,10 +33,16 @@ def verdict(path, read):
         return None
 
     directory, filename = os.path.split(path)
-    candidates = [
-        os.path.join(directory, "__tests__", filename[:-3] + suffix)
-        for suffix in PAIR_SUFFIXES
-    ]
+    if path.startswith("tests/"):
+        candidates = [
+            os.path.join(directory, filename[:-3] + suffix)
+            for suffix in PAIR_SUFFIXES
+        ]
+    else:
+        candidates = [
+            os.path.join(directory, "__tests__", filename[:-3] + suffix)
+            for suffix in PAIR_SUFFIXES
+        ]
     if any(exists(candidate) for candidate in candidates):
         return None
 
