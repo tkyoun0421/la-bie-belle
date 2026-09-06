@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { createApprovedUser } from "@tests/integration/postgres";
 import {
   createGuestClient,
   createSignedInUser,
@@ -97,5 +98,21 @@ describe("프로필 접근 권한", () => {
       .eq("id", user.userId);
 
     expect(data).toEqual([{ id: user.userId }]);
+  });
+
+  it("승인되면 본인도 채워진 승인 시각을 읽는다", async () => {
+    const user = await createApprovedUser();
+
+    const { data, error } = await user.client
+      .from("profiles")
+      .select("approved_at")
+      .eq("id", user.userId);
+
+    expect(error).toBeNull();
+    const approvedAt = data?.[0]?.approved_at as string | null;
+    expect(approvedAt).not.toBeNull();
+    expect(new Date(approvedAt as string).getTime()).toBe(
+      new Date(user.approvedAt).getTime(),
+    );
   });
 });
