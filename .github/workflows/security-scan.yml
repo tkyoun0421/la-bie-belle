@@ -1,0 +1,49 @@
+name: security-scan
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # 매주 월요일 09:00 KST
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: security 라벨 준비
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh label create security --description "보안 스캔 발견" --color D93F0B --force
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+
+            이 저장소 전체를 보안 관점에서 스캔해라. PUBLIC 저장소다.
+
+            보는 것:
+            - 커밋된 시크릿 — 키·토큰·비밀번호 패턴, .env 파일
+            - 인증·인가 결함 — Supabase RLS 부재, 클라이언트만 믿는 로직
+            - 주입 — SQL, XSS, 명령 주입이 가능한 입력 경로
+            - 설정 실수 — CORS, 헤더, 워크플로 권한 과다
+            - .githooks와 .claude/hooks 스크립트의 우회 가능성
+
+            먼저 `gh issue list --label security --state open`으로 이미 보고된
+            발견을 확인하고, 같은 건은 다시 만들지 않는다.
+
+            새 발견이 있으면 `gh issue create --label security`로 Issue 하나에
+            모아 보고한다. 항목마다 심각도(critical/high/medium/low)와
+            확신도(high/medium/low), `경로:줄번호`를 적는다. 확인 가능한
+            사실만 적고, 값이 의심되는 시크릿은 위치와 형태만 적는다.
+            새 발견이 없으면 Issue를 만들지 않는다. Issue는 한국어로 쓴다.
+          claude_args: |
+            --allowedTools "Read,Grep,Glob,Bash(gh issue list:*),Bash(gh issue create:*)"
