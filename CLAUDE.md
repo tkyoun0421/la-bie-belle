@@ -8,6 +8,7 @@
 - `docs/backlog.md` — task 보드. 완료 조건은 행이 링크하는 spec에 산다
 - `docs/CHANGELOG.md` — 날짜·변경·PR 표. 왜는 log와 PR에
 - `docs/log/` — 회차 기록. 왜 그렇게 정했는지
+- `docs/observations/` — 관찰 로그. 정의문·훅이 삐걱인 자리, 증축 규칙의 카운터. 규칙은 그 안 `README.md`, 근거는 ADR-006
 - `docs/1-plan/` — 기획: prd, 시나리오, 로드맵, 지표, `intent/`
 - `docs/2-design/` — 설계: `domain/`(용어·규칙 정본), `architecture/`, `design-system/`, `adr/`, `spec/`(완료 조건·승인 마크)
 - `docs/3-build/` ~ `docs/6-maintain/` — 구현 계획, 테스트 전략, 배포, 운영. 각 안내는 그 안 `README.md`
@@ -49,11 +50,11 @@ FSD: `src/` 아래 `app` · `screens` · `features` · `entities` · `shared`. `
 
 ## 기록
 
-회차 마감은 `session-recorder`가 한다 — log 추가, backlog 상태 갱신, handoff 덮어쓰기. 근거는 merge된 PR 본문에서 읽는다.
+회차 마감은 `session-recorder`가 한다 — log 추가, backlog 상태 갱신, handoff 덮어쓰기, 관찰 집계·이동. 근거는 merge된 PR 본문에서 읽는다.
 
 ## 증축 규칙
 
-구조는 상처가 생긴 자리에만 짓는다. 같은 스폰 프롬프트 세 번째 → 정의문 추출, 경계 위반이 main에 들어감 → 훅. 판정 질문은 "기계가 대신할 수 있나".
+구조는 상처가 생긴 자리에만 짓는다. 같은 스폰 프롬프트 세 번째 → 정의문 추출, 경계 위반이 main에 들어감 → 훅. 판정 질문은 "기계가 대신할 수 있나". 판정의 카운터는 `docs/observations/` — 마찰은 본 그 턴에 기록한다.
 
 ## 공개 저장소
 
