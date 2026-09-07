@@ -4,31 +4,40 @@
 
 ## 지금 상태
 
-**`docs/1-plan/`의 시나리오·로드맵·지표가 다 찼다.** `scenarios.md`는 장면 여섯, `roadmap.md`는 릴리스 둘(1차: 계정·근무표·출근·급여·핵심 알림, 2차: 교대·공지·통계), `metrics.md`는 성공 축 넷(출근 인증률·근무표 문의 감소·관리자 시간 절감·알림 도달)이다. 목표선은 전부 미정이고 운영 첫 달 뒤에 정하기로 합의했다. 인터뷰에서 domain에 없던 새 사실 — 출근 기한이 첫 예식 1시간 50분 전(11시 식이면 9시 10분) — 이 나왔는데 시나리오에만 실렸고 `schedule.md` 반영은 아직 안 했다.
+**로그인 화면과 승인 대기 화면이 섰다.** `backlog.md`「다음」의 첫 줄이던 login-screens task가 spec 승인(#250) → 구현(#251) → 문구·spec 후속 결정(#252) → 구글 로고(#253)로 끝까지 걸었다. 라우트 넷(`/login`, `/pending`, `/`, `/auth/callback`)이 서고, 목적지 판정은 `resolveAuthDestination` 한 곳에 모였다. 홈(`/`)의 스캐폴드 카드가 걷혔다 — `page.tsx`는 이제 `enterRoute`를 부르고 화면만 그리는 더미 UI다. 그 조립(쿠키 → 클라이언트 → 사용자 → 승인 시각 → 목적지)은 `src/app/auth-gate.ts`로 갔는데, entities와 shared를 같이 부르는 코드라 FSD 계층 규칙과 훅(`tdd-guard-unit.py`) 둘 다 피해 app 층으로 흘러갔다. 짝 테스트가 없고 e2e만 이 배선을 밟는다.
 
-**관찰 로그가 첫 배치를 처리했다.** 지난 회차가 튼 `docs/observations/`에 심어둔 백필 관찰 넷(001~004)이 이번 회차에서 전부 actioned로 닫혔다. 그 결과로 `tdd-guard-unit.py` 훅, `test-planner`·`docs-researcher` 정의문, `design-system/README.md` 넷이 바뀌었다. 관찰 005(observation-applier 추출 제안)는 아직 open이고, 같은 target이 하나뿐이라 증축 후보로는 안 올라간다.
+**브라우저용 Supabase 클라이언트 팩토리가 생겼다.** `src/shared/lib/create-supabase-browser-client.ts`와 짝 테스트가 있다. 세션 기반 task 완료 조건 1의 남은 절반이었다.
 
-**`tdd-guard-unit.py`가 `tests/lint/`까지 본다.** 감시 접두사가 `src/`에 `tests/lint/`를 더했고, `tests/` 아래에서는 짝 테스트를 `__tests__/`가 아니라 형제 `<이름>.test.ts`로 찾는다. 접두사 방식 자체는 남아 있어서 또 다른 경로가 새면 새 관찰로 센다.
+**검수 루프가 이번에 처음 실전을 돌았다.** `design-system/README.md`가 세워만 두고 안 쓰던 규칙 — 지적마다 조항을 인용해야 반려가 성립하고, 반려 2회를 넘으면 사람이 판정한다 — 이 login-screens 구현에서 처음 돌았다. 1회차 반려 다섯이 전부 조항 인용으로 성립했고, 2회차엔 이징 커브 어긋남(ease-out) 하나만 남아 고쳐서 해소했다. 자산 자체가 없어 문서 해석으로 못 푸는 반려(구글 G 로고) 하나는 루프 밖 사람 결정으로 넘어가 #253에서 닫혔다.
 
-**`docs/`가 SDLC 여섯 단계 폴더로 섰다.** `1-plan/`(prd·scenarios·roadmap·metrics·intent) → `2-design/`(domain·architecture·design-system·adr·spec) → `3-build/`(plans) → `4-test/`(strategy) → `5-deploy/` → `6-maintain/` 순이다. `handoff.md`·`backlog.md`·`CHANGELOG.md`·`log/`는 어느 단계에도 안 속해 루트에 남는다. 근거와 새 배치 전체는 ADR-005가 정본이다.
+**구글 G 로고가 공식 자산에서 크롭돼 들어갔다.** `public/google-g.svg`가 구글 `signin-assets.zip`의 버튼 SVG에서 배경·테두리 `<path>` 둘만 지우고 `viewBox`를 마스크가 선언한 박스로 좁힌 것이다. 글자꼴·마스크·그라디언트·블러 필터는 원본 바이트 그대로고, 파일 맨 위에 출처와 지운 것을 주석으로 남겨뒀다. `background-image`로 불러서 `.tsx`에 hex가 한 글자도 안 들어간다. 렌더가 이 이미지에 실제로 그려지는지 지키는 테스트는 없다 — 파일을 지워도 e2e 11개가 그대로 통과한다.
 
-**기능마다 intent→spec→plan 사슬을 걷는다.** `1-plan/intent/<슬러그>.md` → `2-design/spec/<슬러그>.md`(완료 조건과 `status` 승인 마크) → `3-build/plans/<슬러그>.md`다. 관문은 spec→구현 한 마디뿐이고 `.claude/hooks/spec-gate.py`가 지킨다 — `feat/<슬러그>` 브랜치에서 `src/`를 고치는데 `docs/2-design/spec/<슬러그>.md`가 없거나 `status: approved`가 아니면 막는다. `feat/`가 아닌 브랜치와 `src/` 밖 경로는 안 막는다.
+**도는 문구 넷이 확정됐고 session-foundation 완료 조건 6이 개정됐다.** `pages/login.md`의 「아직 안 정한 것」에서 문구 항목이 빠졌다. 세션 기반 spec의 조건 6("`/`가 이메일을 그대로 드러낸다")은 예고대로 걷혔고, 이메일이 뜨는 자리는 이제 `/pending`의 계정 행이라고 spec에 적혔다.
 
-**`backlog.md`의 「진행」은 비어 있고 「다음」에 둘이 남아 있다.** 로그인 화면·대시보드 구현이다. 완료 조건은 각각 링크된 spec에 사는데 둘 다 `status: draft`로 승인 전이다.
+**관찰 로그가 001~004를 archive로 옮겼다.** resolved 날짜(2026-09-06)가 오늘보다 앞이라서다. 이번 회차가 새로 쌓은 005~008은 전부 open이고 target이 서로 달라 증축 후보(같은 target 3건) 조건에는 못 미친다 — `tdd-guard-e2e.py`가 `src/screens/` 접두사만 보고 확장자를 안 봐서 순수 `.ts`까지 화면으로 오판하는 자리(006), 여러 계층을 내려다보는 조립 코드가 FSD 어디에도 정착지가 없어 훅 사각으로 도피한 자리(007, `auth-gate.ts`가 그 예), implementer의 "안 된다" 보고가 실행 확인 없이 일반론으로 나와 사람 결정 한 차례를 낭비시킨 자리(008, 처음엔 로고가 안 그려진다고 했었다)다.
 
-**CLAUDE.md는 라우터다.** 근거 산문은 ADR과 design-system README와 정의문으로의 포인터로 바뀌었으니, 왜를 알아야 하면 CLAUDE.md가 아니라 그 정본을 읽는다.
-
-**코드 층은 이번 회차에서도 안 건드렸다.** 세션 기반은 서 있고 화면은 아직 없다. 브라우저용 Supabase 클라이언트 팩토리도 없다. `globals.css`는 여전히 `tokens.md`에서 생성되고 7절 대비값은 여전히 기계가 잰다.
+**`backlog.md`「다음」에는 대시보드 하나만 남았다.** 로그인 화면 task가 완료로 내려갔다. 다만 이 순서를 그대로 여는 게 다음 첫 수는 아니다 — 아래를 본다.
 
 ## 다음 첫 수
 
-`docs/backlog.md`「다음」의 첫 줄이다 — 로그인 화면과 승인 대기 화면을 만든다([spec](2-design/spec/login-screens.md), 지금 `status: draft`). 그 아래엔 근무자 대시보드가 있지만 backlog가 "데이터 task들이 서기 전에는 못 연다"고 못박아뒀다.
+**backlog 순서(대시보드 구현 착수)가 아니다.** 태관이 2026-09-07에 방향을 바꿨다 — 계획과 화면 디자인을 먼저 꼼꼼히 해두고 구현은 그 뒤로 미룬다. 다음 첫 수는 태관 인터뷰로 다음 둘을 정하는 것이다.
+
+1. 어느 화면들의 디자인을 먼저 묶어 그릴지
+2. 이 순서 규칙을 어느 문서에 박을지
+
+이 전환 자체가 이번 회차의 결정이니, 다음 세션은 이 순서를 스스로 다시 정하지 않는다.
 
 ## 열린 결정
 
-- **2절 표에 「참조」 열을 열지.** `scripts/generate-globals-css.mts`의 `SURFACE_STROKE_IN_DARK = "var(--palette-neutral-200)"`가 값이 문서 밖에 사는 유일한 자리다. `tokens.md` 2절 `stroke.surface` 행의 다크 칸이 hex(`#272523`)라 팔레트 참조로 되돌릴 수 없고 표에 그 참조를 담을 칸도 없어서, 지금은 8절 산문에 그 사실만 적어뒀다. 2절 표에 칸을 열어 끌어올릴지는 안 정했다.
+- **로고 렌더를 지키는 테스트가 없다.** `public/google-g.svg`를 지워도 e2e 11개가 초록이다. 「버튼 안 로고의 `background-image`가 비어 있지 않다」는 e2e 한 줄이 후보다.
+- **CI가 chromium만 돈다.** 주 타깃이 아이폰 사파리인데 webkit을 안 본다.
+- **뛰는 점의 진폭이 `tokens.md`에 없다.** 등장 모션의 최솟값 0.9를 빌려 썼는데(6px 점에서 0.6px 변화라 눈에 잘 안 띈다), 실제 화면을 보고 정한다.
+- **Button hover 조항이 `components.md` 표에 없다.** secondary·ghost·destructive의 눌림 배경도 아직 shadcn 기본값이다.
+- **`motion.md`에 `delay-*` 함정이 문서화돼 있지 않다.** core Tailwind의 `transition-delay`가 이겨서 `tw-animate-css`를 쓰려면 `[--tw-animation-delay]`로 우회해야 하는데, 이게 라이브러리 내부 변수라 이름이 바뀌면 조용히 죽는다. 잡는 테스트가 없다.
+- **`pages/login.md` 23행의 가운데 덩이 위치 서술이 두 가지로 읽힌다.** "남는 공간을 위아래가 반씩 나눈다"와 "화면 한가운데에 선다"가 정확히 같은 자리가 아니다. 탭 제목("La Bie Belle" vs "라비에벨") 조항도 없다.
+- **2절 표에 「참조」 열을 열지.** `scripts/generate-globals-css.mts`의 `SURFACE_STROKE_IN_DARK = "var(--palette-neutral-200)"`가 값이 문서 밖에 사는 유일한 자리다. `tokens.md` 2절 `stroke.surface` 행의 다크 칸이 hex(`#272523`)라 팔레트 참조로 되돌릴 수 없고 표에 그 참조를 담을 칸도 없어서, 지금은 8절 산문에 그 사실만 적어뒀다.
 - **`src/` 처분.** "따로 건질 건 없을 것 같다"고 했지만 총괄이 삭제 지시로 읽지 않고 그대로 뒀다 — 되돌리기 어려운 쪽을 기본값으로 삼지 않았다. 실제로 지우려면 말해줘야 한다.
-- **권한을 거부한 뒤의 알림 영역 모습.** 브라우저는 한 번 거부하면 다시 묻지 않는다. 첫째 모습(아직 안 켬)을 그대로 두면 눌러도 아무 일이 없는 버튼이 남고, 아이폰 안내를 띄우면 물을 길이 없는 경우와 물었다 거부당한 경우를 뒤섞는다. `docs/2-design/design-system/pages/login.md`의 「아직 안 정한 것」에 있다.
+- **권한을 거부한 뒤의 알림 영역 모습.** 브라우저는 한 번 거부하면 다시 묻지 않는다. 첫째 모습(아직 안 켬)을 그대로 두면 눌러도 아무 일이 없는 버튼이 남고, 아이폰 안내를 띄우면 물을 길이 없는 경우와 물었다 거부당한 경우를 뒤섞는다. `pages/login.md`의 「아직 안 정한 것」에 있다.
 - **거절됐을 때 알림을 보낼지.** 승인이 알림으로 나가니 거절도 대칭으로 나갈 법한데, 거절은 이번만이고 같은 사람이 다시 가입할 수 있다. 통보가 최종 판정처럼 읽히면 다시 올 사람을 돌려세운다. 안 보내면 승인 대기 화면에 계속 남는다. `docs/2-design/domain/notification.md`에 있다.
 - **구글 버튼의 Google Sans Medium.** 구글 문서가 그 서체를 적었는데 서드파티 웹에 배포되지 않아 우리 서체로 그려야 한다. 그 어긋남을 OAuth 심사가 어떻게 보는지 모른다. 버튼 이미지를 통째로 쓰면 규정에 맞지만 문구를 우리말로 못 쓴다.
 - **라이트와 다크에서 구글 버튼 테마를 나눌지.** 지금은 양쪽 다 어두운 배경 하나고, 라이트와 중립 테마의 값은 `tokens.md`에 안 옮겼다. 구글이 테마별로 다른 버튼을 쓰는 것을 막지 않는다. 실제 화면을 보고 정한다.
@@ -36,8 +45,6 @@
 - **브랜드 색이 한 화면에 둘인 자리.** 승인 대기 화면에 알약(`bg.brand-weak`)과 「알림 켜기」(`bg.brand-solid`)가 같이 선다. 무게가 갈려 지금은 지나갔지만 실제 화면에서 다시 본다. 헤더에 로고를 두는 화면이 생기면 같은 판단이 한 번 더 필요하다 — `color.md`가 그 조건을 적어뒀다.
 - env가 없으면 미들웨어가 모든 요청에서 던져 앱 전체가 500이 된다. 조용한 로그아웃보다 낫다고 판단해 그렇게 갔지만, 사용자에게는 Next 기본 에러 화면이 뜬다. `error.tsx`를 다룰 때 같이 본다.
 - 미들웨어에 `matcher`가 없다. 함수 안에서 정적 자원을 걸러내는데 `export const config = { matcher }`를 쓰면 실행 자체를 안 한다. 동작은 맞고 명세도 지켰으니 성능 판단으로 남겨뒀다.
-- 브라우저용 Supabase 클라이언트 팩토리가 없다. 세션 기반 task 완료 조건 1의 절반이다. 구글 버튼이 생기는 로그인 화면 구현 task로 미뤘고, `src/shared/lib/__tests__/create-supabase-browser-client.test.ts`를 작성자에게 배정해야 한다.
-- `src/app/page.tsx`가 통신을 한다 — `.tsx`는 더미 UI라는 ADR-001 규칙과 어긋난다. 명세가 발판이라 밝혔고 로그인 화면 구현 task에서 걷어낸다. 살아남으면 `.ts`로 빼야 한다.
 - `playwright.config.ts`에 `workers: 1`과 `fullyParallel: true`가 같이 있다 — 앞이 뒤를 무의미하게 만든다. e2e가 늘면 아플 자리다.
 - Next 16이 `middleware.ts`를 deprecate하고 `proxy`로 밀고 있다 — 테스트가 파일명을 못박아둬서 옮길 때 같이 고쳐야 한다.
 - PR #197의 lint 규칙 표가 저장소 안에 없고 PR 본문에만 있다 — 규칙 번호 불변식(`DOCUMENTED_LINT_RULE_COUNT`)이 그 표에 기대는데 정본이 저장소 밖에 있다.
@@ -55,13 +62,15 @@
 - `docs/2-design/design-system/tokens.md`의 "브랜드 색 출처" — 지금 brand 계열이 공식 브랜드 가이드가 아니라 홀 이미지와 웹사이트 내비게이션에서 뽑은 값이다.
 - 세그먼트 목록 — 실제 파일을 보고 정한다.
 - `playwright.config.ts`의 CI 리트라이 2 — e2e가 늘고 `workers: 1`까지 겹쳐 전체 실행 시간이 무거워지고 있다. 유지할지 정한다.
-- CI가 1분대에서 4분대로 늘었던 것 중 analytics(logflare·vector) 몫은 껐다. 문서 전용 PR은 이번 회차에서 48초로 줄었지만, 코드가 낀 PR의 남은 시간이 여전히 아픈지는 몇 회차 더 겪고 정한다.
+- CI가 1분대에서 4분대로 늘었던 것 중 analytics(logflare·vector) 몫은 껐다. 문서 전용 PR은 48초로 줄었지만, 코드가 낀 PR의 남은 시간이 여전히 아픈지는 몇 회차 더 겪고 정한다.
 
 ## 주의
 
-- **`docs/`·`.claude/`·루트 마크다운만 바뀐 PR은 CI가 뒤쪽 넷(integration·build·e2e·supabase 기동)을 건너뛴다.** 스킵 패턴이 이번 회차에서 루트 md까지 넓어졌다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨지는 자리가 있다.
+- **`docs/`·`.claude/`·루트 마크다운만 바뀐 PR은 CI가 뒤쪽 넷(integration·build·e2e·supabase 기동)을 건너뛴다.** 스킵 패턴이 루트 md까지 넓다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨지는 자리가 있다.
 - **`pnpm test`에 문서 구조를 지키는 검사 둘이 낀다.** `tests/lint/doc-map.ts`(CLAUDE.md 문서 지도 경로 실존 확인)와 `tests/lint/legacy-doc-paths.ts`(옛 경로 잔존 검사)다. 문서를 옮길 땐 CLAUDE.md 문서 지도를 같이 갱신하고, 옛 경로 문자열을 새로 남기지 않는다. `docs/log/`는 검사 밖이라 당시 경로를 그대로 써도 된다.
 - **`feat/<슬러그>` 브랜치에서 `src/`를 고치려면 `docs/2-design/spec/<슬러그>.md`가 `status: approved`여야 한다.** `.claude/hooks/spec-gate.py`가 막는다. `feat/`가 아닌 브랜치(문서·리팩터링·수리)는 게이트 밖이다.
+- **`tdd-guard-e2e.py`가 `src/screens/` 아래 순수 `.ts`도 화면으로 오판한다.** `spec_name()`이 접두사만 보고 확장자를 안 봐서, `model/` 아래 로직 파일까지 `tests/e2e/<이름>.spec.ts`를 요구할 수 있다. 관찰 006이 열려 있고 아직 안 고쳐졌다 — 이런 파일을 계획할 때 unit 테스트 작성 순서가 밀릴 수 있다.
+- **여러 계층을 내려다보는 조립 코드는 `src/app/`으로 흘러가고 짝 테스트 요구가 없다.** `auth-gate.ts`가 그 예다 — entities와 shared를 같이 부르는 코드가 FSD 계층 규칙과 `tdd-guard-unit.py` 둘 다 피해 훅 사각으로 갔다. e2e만 이 배선을 검증한다. 관찰 007이 자리 규칙 자체를 총괄 결정 대상으로 올려뒀다.
 - **CLAUDE.md는 이제 라우터다.** 왜에 해당하는 산문은 CLAUDE.md에 없고 ADR과 각 정본 문서(design-system README, 정의문)에 있다. CLAUDE.md만 읽고 근거를 찾으려 하지 않는다.
 - **`docs/2-design/spec/`의 완료 조건은 이제 모든 task에 의무다.** ADR-002의 승격 기준(세 문장 넘으면 승격)은 ADR-005가 대체했다 — 문장 길이와 무관하게 spec이 항상 완료 조건의 집이다.
 - **`.prettierignore`가 `*.md`를 거른다.** 문서에 prettier를 돌려도 아무 일도 안 한다. 저장소 전체 방침이다.
