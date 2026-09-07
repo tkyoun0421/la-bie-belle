@@ -213,7 +213,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 | 상태 | 배경 | 날짜 글자 | 테두리 | 표식 |
 | --- | --- | --- | --- | --- |
 | 안 연 날 | 없음 | `fg.neutral-subtle` | 없음 | 없음 |
-| 열린 날 | `bg.neutral-weak` | `fg.neutral` | 없음 | 희망 수 또는 빈 자리 |
+| 열린 날 | `bg.neutral-weak` | `fg.neutral` | 없음 | 신청 수 또는 빈 자리 |
 | 오늘 | `bg.brand-solid` | `fg.brand-contrast` | 없음 | — |
 | 선택된 날 — 열기 모드 | `bg.brand-weak-selected` | `fg.neutral` | `stroke.brand-solid` | 체크 |
 
