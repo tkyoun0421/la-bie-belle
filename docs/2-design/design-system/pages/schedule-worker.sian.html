@@ -28,9 +28,10 @@
   「제안」으로 그린 것 — 결정되면 문서에서 표시를 떼고 여기도 같이 고친다.
   · 근무 취소 버튼의 마감. 도메인 미정이라 교대와 같은 「전날까지」로 그렸다
   · 아코디언 기본 펼침. 전부 접힘으로 두고 04·05는 한 날을 누른 뒤를 그렸다
-    · 10/사유 글자 상한 100자. 카운터를 「98 / 100」으로 고정해 거의 찬 상태를 보였다
-  · 11/확정 전 — 근무 신청. 고른 날 칸 조합·BottomCTA 「보내기」·마감 뒤와 접수 전 안내 문구,
-    전부 문서가 이미 「제안」으로 표시해둔 것을 그대로 옮겼다. 시안이 새로 제안한 것이 아니다
+    · 11/사유 글자 상한 100자. 카운터를 「98 / 100」으로 고정해 거의 찬 상태를 보였다
+  · 08/근무 요청 시트. 시트 제목 짜임·CTA 배치(교대·취소 시트와 같은 결)·수락(Button primary)·
+    거절(Button secondary)·안내 문구와 끝난 요청 안내(둘 다 fg.neutral-muted · text-sm)·
+    늦은 수락 실패의 오류 블록 모양, 전부 문서가 이미 「제안」으로 표시해둔 것을 그대로 옮겼다
 -->
 <title>근무자 근무표 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -298,7 +299,7 @@ body.view-scene .stage.scene-live { display: block; }
 }
 .btn:disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); cursor: default; }
 .btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
-/* 09/보낸 뒤 — secondary와 disabled가 같은 버튼에 겹치는 첫 자리라 순서 무관하게 disabled가 이기도록 못 박는다 */
+/* 10/보낸 뒤 — secondary와 disabled가 같은 버튼에 겹치는 첫 자리라 순서 무관하게 disabled가 이기도록 못 박는다 */
 .btn.secondary:disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); }
 /* 취소가 왼쪽, 교대가 오른쪽. 둘 다 그 자리의 진짜 액션이라 폭을 반씩 나눈다 */
 .rowbtns { display: flex; gap: 8px; margin-top: 16px; }
@@ -351,10 +352,10 @@ body.view-scene .stage.scene-live { display: block; }
 .cell.today b { color: var(--fg-brand-contrast); }
 .legend { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
-/* 11/확정 전 — 근무 신청. 「확정 전」 점선 칸이 components.md 근무자 조회 표의 마지막 줄이다 */
+/* 12/확정 전 — 근무 신청. 「확정 전」 점선 칸이 components.md 근무자 조회 표의 마지막 줄이다 */
 .cell.pre { border: 1px dashed var(--stroke-neutral-muted); }
 .cell.pre b { color: var(--fg-neutral-subtle); font-weight: 400; }
-/* 고른 날 — 관리자 날 열기 모드의 선택 칸과 같은 조합을 빌렸다(문서가 「제안」으로 명시) */
+/* 고른 날 — components.md 「근무표 날짜 칸」의 「확정 전 — 신청에서 고른 날」이 정본이다 */
 .cell.pre.sel { background: var(--bg-brand-weak-selected); border: 1px solid var(--stroke-brand-solid); }
 .cell.pre.sel b { color: var(--fg-neutral); font-weight: 500; }
 .cell.pre.sel::after { content: "✓"; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-brand); }
@@ -447,7 +448,7 @@ body.view-scene .stage.scene-live { display: block; }
 .field .box.ph { color: var(--fg-neutral-subtle); }
 .field .cnt { margin-top: 6px; text-align: right; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
-/* 10/실패와 경합 — 오류 블록. components.md 알림 블록의 오류 계열(bg.critical-weak)을 글자만 fg.critical로 단순화했다(아이콘 없음) */
+/* 11/실패와 경합 — 오류 블록. components.md 알림 블록의 오류 계열(bg.critical-weak)을 글자만 fg.critical로 단순화했다(아이콘 없음) */
 .errbox {
   margin-top: 14px; border-radius: var(--r-lg); background: var(--bg-critical-weak); color: var(--fg-critical);
   padding: 12px 14px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
@@ -1089,7 +1090,109 @@ body.view-scene .stage.scene-live { display: block; }
   <!-- 08 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">08 / 다크</span>
+      <span class="sec-num">08 / 근무 요청 시트</span>
+      <h2>수락하면 그 자리로 바로 들어간다</h2>
+      <p>관리자가 미신청 날의 자리를 물어보는 근무 요청의 근무자 쪽이다. 「근무 요청이 왔어요」 푸시를 누르면 이 화면 그 달·그 날로 오고 시트가 열린 채다. 부제엔 시간만 있고 인원이 없다 — 아직 내 배정이 아니라서다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-request-open">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>14:12</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 근무표</span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">근무 요청 · 10월 17일(토) 안내</div>
+            <div class="sh-sub num">10:00 – 18:00</div>
+            <div class="waitline">수락하면 바로 배정돼요</div>
+            <div class="rowbtns" style="margin-top:16px">
+              <button class="btn secondary" type="button">거절</button>
+              <button class="btn" type="button">수락</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">08 / REQUEST · OPEN</div>
+          <div class="cap-name">근무 요청 시트</div>
+          <p class="cap-body">제목 「근무 요청 · 10월 17일(토) 안내」는 교대·취소 시트 제목과 같은 짜임이다(「제안」). 부제가 시간만 있고 인원이 없다. 안내 한 줄 <strong>「수락하면 바로 배정돼요」</strong>가 수락이 신청을 대신 넣는 게 아니라 즉시 배정임을 미리 말한다 — <code>fg.neutral-muted</code> · <code>text-sm</code>이다(「제안」). CTA는 <strong>거절 secondary 왼쪽, 수락 primary 오른쪽</strong>으로 02 「시트의 문」과 같은 배치다(「제안」).</p>
+          <p class="cap-body" style="margin-top:8px">배경 달력을 10~11일 줄에서 잘랐다 — <strong>17일 칸은 이 목업에 없다.</strong> lede의 예시 데이터는 01~07의 달력에서 17일을 이미 지수의 근무 점으로 그렸는데, 근무 요청은 미신청 날에만 간다는 도메인 규칙과 부딪힌다(지수가 이미 17일에 근무 중이면 그날 요청을 받을 수 없다). 칸 자체를 안 보이게 잘라 피했다 — 이 시트가 실제로 그 데이터 흐름의 어느 시점에 오는지는 검수에서 정한다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>늦은 수락은 여기 따로 안 그렸다.</strong> 수락을 눌렀는데 그 사이 다른 사람이 먼저 수락해 자리가 찼으면 실패한다 — CTA 위에 <code>bg.critical-weak</code> · <code>fg.critical</code> 오류 블록(11/CANCEL · FAIL과 같은 모양, 「제안」)으로 <strong>「자리가 찼어요」</strong>가 선다. 푸시로 따로 알리지 않고 누른 순간 이 시트가 말한다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-request-closed">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>09:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 근무표</span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">근무 요청 · 10월 17일(토) 안내</div>
+            <div class="waitline" style="margin-top:8px">이 요청은 끝났어요. 자리가 찼거나 기간이 지났어요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">08 / REQUEST · CLOSED</div>
+          <div class="cap-name">끝난 요청 안내</div>
+          <p class="cap-body">자리가 이미 찼거나 만료된 요청의 알림을 눌러 들어오면 시트가 <strong>닫힌 상태 안내</strong>로 열린다 — <strong>「이 요청은 끝났어요. 자리가 찼거나 기간이 지났어요」</strong>. <code>fg.neutral-muted</code> · <code>text-sm</code>이다(「제안」).</p>
+          <p class="cap-body" style="margin-top:8px"><strong>제목이 남는지는 문서에 없다.</strong> 문서는 「닫힌 상태 안내로 열린다」고만 적어서, 시안은 어느 요청이 끝났는지 알 수 있게 제목(「근무 요청 · 10월 17일(토) 안내」)을 그대로 두고 부제·안내·CTA 자리를 이 한 줄로 갈아 끼웠다 — 검수에서 정한다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 09 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">09 / 다크</span>
       <h2>같은 화면 둘을 뒤집어 본다</h2>
       <p>01과 04를 다크에 고정했다. 페이지 토글과 무관하게 항상 다크다 — 옅은 면과 점, 내 줄 면이 어두운 바탕에서 어떻게 갈리는지 보는 자리다.</p>
     </div>
@@ -1138,7 +1241,7 @@ body.view-scene .stage.scene-live { display: block; }
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">08 / DARK · CAL</div>
+          <div class="cap-key">09 / DARK · CAL</div>
           <div class="cap-name">다크의 달력</div>
           <p class="cap-body">다크에서 <code>bg.neutral-weak</code>가 바탕보다 밝아진다 — 열린 날이 떠오르고 안 연 날이 가라앉는 관계는 라이트와 같다. <strong>알약 선택 칸은 그림자가 사라져 면 대비만 남는다.</strong></p>
         </figcaption>
@@ -1192,7 +1295,7 @@ body.view-scene .stage.scene-live { display: block; }
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">08 / DARK · ACC</div>
+          <div class="cap-key">09 / DARK · ACC</div>
           <div class="cap-name">다크의 아코디언</div>
           <p class="cap-body">내 줄의 <code>bg.brand-weak</code>가 다크에서 아주 어두운 갈색이다 — <strong>면만으로 갈리는지, 「나」와 브랜드 글자가 같이 있어야 읽히는지</strong>를 여기서 본다. secondary 버튼과 Badge neutral이 같은 <code>bg.neutral-weak</code>라 둘의 무게도 같이 확인한다.</p>
         </figcaption>
@@ -1201,12 +1304,12 @@ body.view-scene .stage.scene-live { display: block; }
     </div>
   </section>
 
-  <!-- 09 -->
+  <!-- 10 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">09 / 보낸 뒤</span>
+      <span class="sec-num">10 / 보낸 뒤</span>
       <h2>배지가 남고 문이 닫힌다</h2>
-      <p>교대·취소 요청을 보내면 시트가 닫히고 그 배정에 「요청 중」이 남는다(「제안」 — 시안 검수로 확정한다). 그 근무의 버튼 둘도 같이 잠긴다. 결과가 오기 전까지 달력 칸은 안 바뀐다.</p>
+      <p>교대·취소 요청을 보내면 시트가 닫히고 그 배정에 「요청 중」이 남는다. 그 근무의 버튼 둘도 같이 잠긴다. 결과가 오기 전까지 달력 칸은 안 바뀐다.</p>
     </div>
     <div class="grid">
 
@@ -1260,10 +1363,10 @@ body.view-scene .stage.scene-live { display: block; }
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">09 / SENT · ACC</div>
+          <div class="cap-key">10 / SENT · ACC</div>
           <div class="cap-name">교대 요청 보낸 직후 · 포지션 순</div>
           <p class="cap-body">10일 날짜 줄 오른쪽과 펼침의 내 줄에 <strong>Badge neutral 「교대 요청 중」</strong>이 선다 — 근무 취소를 보냈으면 같은 자리에 「취소 요청 중」이다. 배지 문구와 자리는 이대로 확정이다.</p>
-          <p class="cap-body" style="margin-top:8px">하단 버튼 둘이 <strong>비활성이다(「제안」)</strong> — 같은 근무에 교대와 취소를 겹쳐 거는 길을 막는다. disabled 스타일은 schedule-admin.sian.html의 disabled 버튼과 같은 <code>bg.neutral-disabled</code> · <code>fg.neutral-disabled</code>다.</p>
+          <p class="cap-body" style="margin-top:8px">하단 버튼 둘이 <strong>비활성이다</strong> — 같은 근무에 교대와 취소를 겹쳐 거는 길을 막는다. disabled 스타일은 schedule-admin.sian.html의 disabled 버튼과 같은 <code>bg.neutral-disabled</code> · <code>fg.neutral-disabled</code>다.</p>
         </figcaption>
       </figure>
 
@@ -1320,7 +1423,7 @@ body.view-scene .stage.scene-live { display: block; }
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">09 / SENT · SHEET</div>
+          <div class="cap-key">10 / SENT · SHEET</div>
           <div class="cap-name">같은 상태에서 날 시트를 다시 열면</div>
           <p class="cap-body">내 줄에 같은 배지가 서고 버튼 둘은 그대로 비활성이다. <strong>달력 칸은 안 바뀐다</strong> — 10일 칸은 점 그대로고 배지나 다른 표식이 안 붙는다. 승인 전까지 근무가 그대로라서다.</p>
         </figcaption>
@@ -1329,10 +1432,10 @@ body.view-scene .stage.scene-live { display: block; }
     </div>
   </section>
 
-  <!-- 10 -->
+  <!-- 11 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">10 / 실패와 경합</span>
+      <span class="sec-num">11 / 실패와 경합</span>
       <h2>보내지 못했을 때와 후보가 없을 때</h2>
       <p>네트워크 실패로 못 보낸 경우와, 나 말고 승인된 근무자가 없어 교대 후보가 비는 경우다. 사유 글자 상한 100자도 여기서 같이 본다.</p>
     </div>
@@ -1380,7 +1483,7 @@ body.view-scene .stage.scene-live { display: block; }
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">10 / CANCEL · FAIL</div>
+          <div class="cap-key">11 / CANCEL · FAIL</div>
           <div class="cap-name">근무 취소 보내기 실패</div>
           <p class="cap-body">CTA 위에 <strong>오류 블록</strong>이 선다 — 「보내지 못했어요. 다시 시도해주세요」. 입력한 사유는 지우지 않고 그대로 남는다. 면·글자는 <code>bg.critical-weak</code> · <code>fg.critical</code>이다(tokens.md 값) — pages/login.md가 쓰는 알림 블록 계열을 따랐다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>components.md 알림 블록의 오류 정의(글자 fg.neutral + 아이콘 fg.critical)와는 다르다.</strong> 이 상자는 아이콘 없이 글자 자체에 fg.critical을 얹었다 — 짧은 한 줄 오류라 아이콘 없이도 읽힌다고 봤지만, 공용 알림 블록과 다른 배합이라 검수에서 맞출지 정한다.</p>
@@ -1424,21 +1527,21 @@ body.view-scene .stage.scene-live { display: block; }
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">10 / SWAP · EMPTY</div>
+          <div class="cap-key">11 / SWAP · EMPTY</div>
           <div class="cap-name">교대 후보가 없다</div>
-          <p class="cap-body">승인된 근무자가 나뿐이면 후보 목록이 빈다. <strong>부제 자체가 「보낼 사람이 없어요. 관리자에게 바로 보낼 수 있어요」로 바뀐다</strong>(「제안」) — 06의 「여러 명에게 보낼 수 있어요…」 자리를 그대로 갈아 끼운다. 고르는 CTA 대신 <strong>「관리자에게만 보내기」 버튼 하나</strong>만 남는다 — 06의 텍스트 링크가 아니라 이 화면의 유일한 액션이라 Button primary로 세웠다.</p>
+          <p class="cap-body">승인된 근무자가 나뿐이면 후보 목록이 빈다. <strong>부제 자체가 「보낼 사람이 없어요. 관리자에게 바로 보낼 수 있어요」로 바뀐다</strong> — 06의 「여러 명에게 보낼 수 있어요…」 자리를 그대로 갈아 끼운다. 고르는 CTA 대신 <strong>「관리자에게만 보내기」 버튼 하나</strong>만 남는다 — 06의 텍스트 링크가 아니라 이 화면의 유일한 액션이라 Button primary로 세웠다.</p>
         </figcaption>
       </figure>
 
     </div>
   </section>
 
-  <!-- 11 -->
+  <!-- 12 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">11 / 확정 전 — 근무 신청</span>
+      <span class="sec-num">12 / 확정 전 — 근무 신청</span>
       <h2>같은 달력이 접수 중엔 신청서, 마감 뒤엔 대기표다</h2>
-      <p>별도 제출 화면이 없다. 확정 전 달로 넘기면 이 달력이 곧 근무 신청 모드고, 확정되면 같은 자리가 01의 근무표로 바뀐다. 알약이 안 선다 — 명단이 없어 포지션 순이 보여줄 것이 없다. 세 목업은 위 01~10이 그리는 「10월 8일, 확정 푸시 직후」보다 <strong>앞선 시점</strong>이다 — 같은 10월이 만들어지고, 접수받고, 마감되는 과정이다.</p>
+      <p>별도 제출 화면이 없다. 확정 전 달로 넘기면 이 달력이 곧 근무 신청 모드고, 확정되면 같은 자리가 01의 근무표로 바뀐다. 알약이 안 선다 — 명단이 없어 포지션 순이 보여줄 것이 없다. 세 목업은 위 01~11이 그리는 「10월 8일, 확정 푸시 직후」보다 <strong>앞선 시점</strong>이다 — 같은 10월이 만들어지고, 접수받고, 마감되는 과정이다.</p>
     </div>
     <div class="grid">
 
@@ -1496,10 +1599,10 @@ body.view-scene .stage.scene-live { display: block; }
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">11 / APPLY · OPEN</div>
+          <div class="cap-key">12 / APPLY · OPEN</div>
           <div class="cap-name">근무 신청 · 마감 전</div>
-          <p class="cap-body">점선 칸은 <code>stroke.neutral-muted</code>다. 눌러 고른 날은 <strong>관리자 날 열기 모드의 선택 칸과 같은 조합</strong> — <code>bg.brand-weak-selected</code> 면에 <code>stroke.brand-solid</code> 테두리와 체크다(components.md에 없어 「제안」으로 빌렸다). <strong>개수 상한이 없어</strong> 다 골라도 된다.</p>
-          <p class="cap-body" style="margin-top:8px">마감 줄이 달력 위에 선다 — 관리자 달력의 마감 줄과 같은 문구다. 하단 고정 <strong>「보내기」는 BottomCTA</strong>다(「제안」). <strong>0개로도 보낸다</strong>(「제안」) — 이미 낸 신청을 전부 무르는 길이 이것뿐이라서다. 보내면 토스트 「10월 근무 신청을 보냈어요」가 뜨고 달력은 고른 채 그대로다(「제안」) — 이 목업은 토스트가 뜨기 전, 고르는 중을 그렸다.</p>
+          <p class="cap-body">점선 칸은 <code>stroke.neutral-muted</code>다. 눌러 고른 날은 <strong>「확정 전 — 신청에서 고른 날」</strong> — <code>bg.brand-weak-selected</code> 면에 <code>stroke.brand-solid</code> 테두리와 체크다(components.md 「근무표 날짜 칸」 근무자 조회 표의 정본). <strong>개수 상한이 없어</strong> 다 골라도 된다.</p>
+          <p class="cap-body" style="margin-top:8px">마감 줄이 달력 위에 선다 — 관리자 달력의 마감 줄과 같은 문구다. 하단 고정 <strong>「보내기」는 BottomCTA</strong>다. <strong>0개로도 보낸다</strong> — 이미 낸 신청을 전부 무르는 길이 이것뿐이라서다. 보내면 토스트 「10월 근무 신청을 보냈어요」가 뜨고 달력은 고른 채 그대로다 — 이 목업은 토스트가 뜨기 전, 고르는 중을 그렸다.</p>
           <p class="cap-body" style="margin-top:8px">마감 전 재진입도 같은 모습이다 — <strong>보낸 날짜가 선택된 채 열리고</strong>, 고쳐 다시 보내면 이전 제출을 덮어쓴다. 이 목업 하나가 첫 제출 중과 재진입 둘 다를 겸한다.</p>
         </figcaption>
       </figure>
@@ -1556,10 +1659,10 @@ body.view-scene .stage.scene-live { display: block; }
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">11 / APPLY · CLOSED</div>
+          <div class="cap-key">12 / APPLY · CLOSED</div>
           <div class="cap-name">마감 뒤 · 확정 전</div>
           <p class="cap-body">달력이 읽기 전용이다. 내가 보낸 신청이 고른 날 표시 그대로 남고, 날짜가 안 눌리고, <strong>보내기가 없다</strong> — BottomCTA 자체가 사라졌다. 마감 줄이 「스케줄 신청이 10월 2일에 마감됐어요」로 바뀐다.</p>
-          <p class="cap-body" style="margin-top:8px">그 아래 확정 대기 안내 한 줄 — <strong>「근무표를 만들고 있어요. 확정되면 여기에 보여요」</strong>(「제안」). <code>fg.neutral-muted</code> · <code>text-sm</code>이다.</p>
+          <p class="cap-body" style="margin-top:8px">그 아래 확정 대기 안내 한 줄 — <strong>「근무표를 만들고 있어요. 확정되면 여기에 보여요」</strong>. <code>fg.neutral-muted</code> · <code>text-sm</code>이다.</p>
         </figcaption>
       </figure>
 
@@ -1614,9 +1717,9 @@ body.view-scene .stage.scene-live { display: block; }
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">11 / APPLY · NOT MADE</div>
+          <div class="cap-key">12 / APPLY · NOT MADE</div>
           <div class="cap-name">근무표를 아직 안 만든 달</div>
-          <p class="cap-body">관리자가 근무표를 만들어야 접수가 열린다. 안 만든 달은 빈 달력이다 — 같은 점선 칸인데 <strong>아무 날짜도 안 눌리고</strong>, 마감 줄 자리에 안내 한 줄만 선다 — <strong>「아직 10월 근무 신청을 받지 않아요. 열리면 알려드릴게요」</strong>(「제안」). <code>fg.neutral-muted</code> · <code>text-sm</code>이다.</p>
+          <p class="cap-body">관리자가 근무표를 만들어야 접수가 열린다. 안 만든 달은 빈 달력이다 — 같은 점선 칸인데 <strong>아무 날짜도 안 눌리고</strong>, 마감 줄 자리에 안내 한 줄만 선다 — <strong>「아직 10월 근무 신청을 받지 않아요. 열리면 알려드릴게요」</strong>. <code>fg.neutral-muted</code> · <code>text-sm</code>이다.</p>
           <p class="cap-body" style="margin-top:8px">확정된 달인데 열린 날이 하나도 없는 경우는 문서가 「실제로 없다」고 못 박아서 안 그렸다.</p>
         </figcaption>
       </figure>
