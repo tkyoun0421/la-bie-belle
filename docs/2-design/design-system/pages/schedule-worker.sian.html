@@ -1,0 +1,1248 @@
+<!--
+  근무자 근무표 보기 시안 — 사람이 보고 고른 결과다.
+
+  값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../tokens.md이고,
+  무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 schedule-worker.md다.
+  달력 칸의 상태·색은 ../components.md의 「근무표 날짜 칸」(근무자 조회 표)이 정본이다.
+  셋과 이 파일이 어긋나면 저 셋이 이긴다.
+
+  이 파일이 맡는 것은 글로 안 남는 것들이다 — 시트가 올라오는 타이밍, 달력에 점이
+  얼마나 보이는지, 명단 열두 줄이 375픽셀에서 잡아먹는 높이, 그리고 장면 4를
+  처음부터 끝까지 한 장씩 넘겨보는 눈. 구현할 때 이 셋을 같이 연다.
+
+  퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
+  앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../README.md의 「퍼블리싱」에 있다.
+
+  왼쪽 위 그리드/시나리오 토글과 오른쪽 위 라이트/다크 토글은 시안 뷰어 크롬이다.
+  목업 규칙 밖이고 앱에 없다. 시나리오 보기는 그리드의 목업 DOM을 그대로 다시 쓴다 —
+  목업을 복사하지 않고 보이기/숨기기로 한 장씩 세운다.
+
+  tokens.md에 값 없음 — 아래 넷은 이 파일이 임의로 정한 자리다. 값을 여기서 굳히지 않는다.
+  · 시트 뒤 덮개. tokens.md에 bg.scrim이 아예 없다 — dashboard.md와 schedule-admin.md가
+    이미 기다리는 토큰이다. 시안은 덮개 잉크를 팔레트와 같이 뒤집어 임시로 세웠다.
+  · 시트 그림자. tokens.md 5절의 그림자는 shadow-card 하나뿐이다.
+  · 잠금 화면과 푸시 카드. OS 크롬이라 애초에 우리 컴포넌트가 아니다. 팔레트만 빌렸고
+    푸시 문안은 domain/notification.md에 없다 — 시안이 장면 4의 서술로 임시로 세웠다.
+  · 뷰어 크롬(--b-*)의 색. 목업 밖이라 애초에 토큰 대상이 아니다.
+
+  「제안」으로 그린 것 — 결정되면 문서에서 표시를 떼고 여기도 같이 고친다.
+  · 근무 취소 버튼의 마감. 도메인 미정이라 교대와 같은 「전날까지」로 그렸다
+  · 아코디언 기본 펼침. 전부 접힘으로 두고 04·05는 한 날을 누른 뒤를 그렸다
+-->
+<title>근무자 근무표 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+
+<style>
+:root {
+  --b-bg: oklch(0.945 0.004 57);
+  --b-panel: oklch(0.988 0.003 57);
+  --b-ink: oklch(0.27 0.007 57);
+  --b-sub: oklch(0.52 0.006 57);
+  --b-faint: oklch(0.63 0.005 57);
+  --b-line: oklch(0.885 0.005 57);
+  --b-line-strong: oklch(0.8 0.005 57);
+  --b-accent: oklch(0.48 0.115 248);
+  --b-mock-shadow: 0 2px 6px rgba(28,25,22,.06), 0 24px 48px -28px rgba(28,25,22,.5);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+    --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+    --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+    --b-accent: oklch(0.76 0.1 248);
+    --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+  }
+}
+:root[data-theme="dark"] {
+  --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+  --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+  --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+  --b-accent: oklch(0.76 0.1 248);
+  --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--b-bg); color: var(--b-ink);
+  font-family: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1300px; margin: 0 auto; padding: 56px 28px 110px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--b-accent); margin: 0 0 14px;
+}
+h1 { font-size: 36px; line-height: 1.25; font-weight: 700; letter-spacing: -.02em; margin: 0 0 16px; }
+.lede { font-size: 16px; color: var(--b-sub); max-width: 60ch; margin: 0; }
+
+section { margin-top: 70px; }
+.sec-head { border-top: 1px solid var(--b-line-strong); padding-top: 18px; margin-bottom: 28px; }
+.sec-num {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .12em; color: var(--b-faint); display: block; margin-bottom: 7px;
+}
+h2 { font-size: 23px; font-weight: 700; letter-spacing: -.015em; margin: 0 0 10px; }
+.sec-head p { margin: 0; color: var(--b-sub); max-width: 68ch; font-size: 14.5px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, 375px); gap: 44px 30px; justify-content: start; align-items: start; }
+.item > figcaption { margin-top: 16px; }
+.cap-key { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--b-faint); }
+.cap-name { font-size: 17px; font-weight: 700; margin: 3px 0 6px; letter-spacing: -.01em; }
+.cap-body { font-size: 13.5px; color: var(--b-sub); margin: 0; max-width: 46ch; }
+.cap-body strong { color: var(--b-ink); font-weight: 600; }
+figure.item { margin: 0; }
+code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .88em;
+  background: var(--b-panel); border: 1px solid var(--b-line); border-radius: 4px; padding: 1px 5px;
+}
+
+/* 라이트/다크 토글 — 시안 뷰어 크롬이다. 목업 규칙 밖이라 토큰을 안 쓴다 */
+.themetoggle {
+  position: fixed; top: 16px; right: 18px; z-index: 90;
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 34px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: .06em;
+  color: var(--b-sub); background: var(--b-panel); border: 1px solid var(--b-line-strong);
+  box-shadow: 0 8px 22px -16px rgba(0,0,0,.6);
+}
+.themetoggle:hover { color: var(--b-ink); }
+.themetoggle:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+.themetoggle .ic-sun { display: none; }
+:root[data-theme="dark"] .themetoggle .ic-sun { display: block; }
+:root[data-theme="dark"] .themetoggle .ic-moon { display: none; }
+.themetoggle .lab-dark { display: inline; }
+.themetoggle .lab-light { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-dark { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-light { display: inline; }
+
+/* 그리드/시나리오 토글 — 같은 뷰어 크롬이다 */
+.viewtoggle {
+  position: fixed; top: 16px; left: 18px; z-index: 90;
+  display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px;
+  background: var(--b-panel); border: 1px solid var(--b-line-strong);
+  box-shadow: 0 8px 22px -16px rgba(0,0,0,.6);
+}
+.viewtoggle button {
+  border: 0; background: none; cursor: pointer; height: 28px; padding: 0 13px; border-radius: 999px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: .06em;
+  color: var(--b-sub);
+}
+.viewtoggle button.on { background: var(--b-bg); color: var(--b-ink); }
+.viewtoggle button:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+
+/* 시나리오 보기 — 목업은 그리드와 같은 DOM이고 이 크롬만 더 붙는다 */
+.scenebar { border-top: 1px solid var(--b-line-strong); padding-top: 18px; margin-bottom: 28px; }
+.scene-nav { display: flex; align-items: center; gap: 10px; }
+.scene-btn {
+  border: 1px solid var(--b-line-strong); background: var(--b-panel); color: var(--b-sub);
+  height: 32px; padding: 0 15px; border-radius: 999px; cursor: pointer;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: .06em;
+}
+.scene-btn:hover:not(:disabled) { color: var(--b-ink); }
+.scene-btn:disabled { opacity: .38; cursor: default; }
+.scene-btn:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+.scene-count { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: .1em; color: var(--b-faint); }
+.scene-where { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--b-accent); margin-left: auto; }
+.scene-note { margin: 14px 0 0; font-size: 20px; font-weight: 700; letter-spacing: -.015em; color: var(--b-ink); }
+.stage-note { font-size: 13.5px; color: var(--b-sub); margin: 16px 0 0; max-width: 46ch; }
+
+.stage { display: none; }
+body:not(.view-scene) .scenebar { display: none; }
+body.view-scene .wrap > .eyebrow,
+body.view-scene .wrap > h1,
+body.view-scene .wrap > .lede,
+body.view-scene .sec-head { display: none; }
+body.view-scene section { display: none; margin-top: 0; }
+body.view-scene section.scene-live { display: block; }
+body.view-scene .item { display: none; }
+body.view-scene .item.scene-live { display: block; }
+body.view-scene .item > figcaption { display: none; }
+body.view-scene .stage.scene-live { display: block; }
+
+/* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
+.mock {
+  --palette-neutral-00: oklch(1 .0037 57);
+  --palette-neutral-100: oklch(.965 .0037 57);
+  --palette-neutral-200: oklch(.905 .0043 57);
+  --palette-neutral-300: oklch(.845 .0045 57);
+  --palette-neutral-700: oklch(.545 .005 57);
+  --palette-neutral-800: oklch(.455 .005 57);
+  --palette-neutral-1000: oklch(.215 .0055 57);
+  --palette-brand-100: oklch(.965 .0128 57);
+  --palette-brand-800: oklch(.455 .0534 57);
+  --surface-stroke: transparent;
+  --scrim-ink: var(--palette-neutral-1000);
+  --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5);
+}
+.mock.force-dark {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-100: oklch(.205 .0128 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --surface-stroke: var(--palette-neutral-200);
+  --scrim-ink: var(--palette-neutral-00);
+  --card-shadow: none;
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mock:not(.force-light) {
+    --palette-neutral-00: oklch(.155 .0037 57);
+    --palette-neutral-100: oklch(.205 .0037 57);
+    --palette-neutral-200: oklch(.265 .0043 57);
+    --palette-neutral-300: oklch(.32 .0045 57);
+    --palette-neutral-700: oklch(.665 .005 57);
+    --palette-neutral-800: oklch(.745 .005 57);
+    --palette-neutral-1000: oklch(.935 .0055 57);
+    --palette-brand-100: oklch(.205 .0128 57);
+    --palette-brand-800: oklch(.745 .0534 57);
+    --surface-stroke: var(--palette-neutral-200);
+    --scrim-ink: var(--palette-neutral-00);
+    --card-shadow: none;
+    --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+  }
+}
+:root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-100: oklch(.205 .0128 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --surface-stroke: var(--palette-neutral-200);
+  --scrim-ink: var(--palette-neutral-00);
+  --card-shadow: none;
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+}
+.mock {
+  --bg-neutral: var(--palette-neutral-00);
+  --bg-neutral-weak: var(--palette-neutral-100);
+  --bg-neutral-weak-pressed: var(--palette-neutral-200);
+  --bg-neutral-disabled: var(--palette-neutral-100);
+  --bg-brand-solid: var(--palette-brand-800);
+  --bg-brand-weak: var(--palette-brand-100);
+  --fg-neutral: var(--palette-neutral-1000);
+  --fg-neutral-muted: var(--palette-neutral-800);
+  --fg-neutral-subtle: var(--palette-neutral-700);
+  --fg-neutral-contrast: var(--palette-neutral-00);
+  --fg-neutral-disabled: var(--palette-neutral-700);
+  --fg-brand: var(--palette-brand-800);
+  --fg-brand-contrast: var(--palette-neutral-00);
+  --stroke-neutral: var(--palette-neutral-200);
+  --stroke-neutral-muted: var(--palette-neutral-300);
+  --stroke-neutral-disabled: var(--palette-neutral-200);
+  --stroke-brand-solid: var(--palette-brand-800);
+
+  --t-xs: .8125rem; --lh-xs: 1.21875rem;
+  --t-sm: .9375rem; --lh-sm: 1.40625rem;
+  --t-base: 1.0625rem; --lh-base: 1.59375rem;
+  --t-lg: 1.25rem; --lh-lg: 1.8125rem;
+  --t-3xl: 1.875rem; --lh-3xl: 2.5rem;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+  --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms; --d-slower: 300ms;
+  --interval-beat: 1.8s;
+
+  width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  background: var(--bg-neutral); color: var(--fg-neutral);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  font-size: var(--t-base); line-height: var(--lh-base);
+  box-shadow: var(--b-mock-shadow);
+}
+.mock .num { font-variant-numeric: tabular-nums; }
+
+.statusbar {
+  flex: 0 0 auto; height: 46px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px 0 30px; font-size: var(--t-xs); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.sb-right { display: flex; align-items: center; gap: 5px; }
+.appbar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  padding: 4px 24px 12px; min-height: 42px;
+}
+.backic { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); }
+.appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; display: flex; align-items: center; gap: 6px; }
+.appbar .title .nav { color: var(--fg-neutral-muted); display: grid; place-items: center; }
+.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+.spacer { flex: 1 1 auto; min-height: 8px; }
+
+/* 버튼 — components.md Button. rounded-full, font-medium */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 48px; border-radius: 999px; border: 0;
+  font-size: var(--t-sm); font-weight: 500; font-family: inherit;
+  background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
+}
+.btn:disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); cursor: default; }
+.btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+/* 취소가 왼쪽, 교대가 오른쪽. 둘 다 그 자리의 진짜 액션이라 폭을 반씩 나눈다 */
+.rowbtns { display: flex; gap: 8px; margin-top: 16px; }
+.rowbtns .btn { flex: 1 1 0; }
+.linkbtn {
+  display: block; width: 100%; margin-top: 12px; padding: 4px 0; border: 0; background: none;
+  font-family: inherit; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--stroke-neutral-muted); cursor: pointer;
+}
+
+/* 보기 전환 알약 · 내 배정만 */
+.viewbar { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 2px 0 12px; }
+.seg { display: inline-flex; background: var(--bg-neutral-weak); border-radius: 999px; padding: 3px; }
+.seg button {
+  border: 0; background: none; font-family: inherit; padding: 0; cursor: pointer;
+  width: 44px; height: 30px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
+  color: var(--fg-neutral-subtle);
+}
+.seg button.on { background: var(--bg-neutral); color: var(--fg-neutral); box-shadow: var(--card-shadow); }
+.check {
+  display: inline-flex; align-items: center; gap: 6px; margin-left: auto; cursor: pointer;
+  font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted);
+}
+.check .box {
+  width: 16px; height: 16px; border-radius: var(--r-xs); flex: 0 0 auto;
+  border: 1.5px solid var(--stroke-neutral-muted); display: inline-flex; align-items: center; justify-content: center;
+  color: transparent;
+}
+.check.on { color: var(--fg-neutral); font-weight: 500; }
+.check.on .box { background: var(--bg-brand-solid); border-color: var(--stroke-brand-solid); color: var(--fg-brand-contrast); }
+
+/* 달력 — 칸의 상태·색은 components.md 「근무표 날짜 칸」 근무자 조회 표가 정본이다 */
+.dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.dow span { text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 4px; }
+.cell {
+  height: 58px; border-radius: var(--r-sm); display: flex; flex-direction: column; align-items: center;
+  justify-content: space-between; padding: 6px 0; font-variant-numeric: tabular-nums; border: 1px solid transparent;
+}
+.cell b { font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
+/* 안 연 날 — 면 없음 */
+.cell.off b { color: var(--fg-neutral-subtle); font-weight: 400; }
+/* 열린 날은 옅은 면이다. 근무 없는 열린 날만 날짜가 muted로 내려간다 */
+.cell.open, .cell.none { background: var(--bg-neutral-weak); }
+.cell.none b { color: var(--fg-neutral-muted); font-weight: 400; }
+/* 내 근무 점. 교육 배정도 같은 점이다(2026-09-07 — 회색 점 구분을 걷었다) */
+.cell .dot { width: 5px; height: 5px; border-radius: 999px; background: var(--bg-brand-solid); }
+/* 브랜드로 칸이 채워지는 것은 오늘 하루뿐이고, 오늘 칸에는 점이 없다 */
+.cell.today { background: var(--bg-brand-solid); }
+.cell.today b { color: var(--fg-brand-contrast); }
+.legend { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+
+/* 바텀시트와 덮개 */
+.scrim {
+  position: absolute; inset: 0; z-index: 3; background: var(--scrim-ink);
+  opacity: 0; pointer-events: none; transition: opacity var(--d-slow) ease-out;
+}
+.mock.modal-open .scrim { opacity: .42; }
+.rsheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+  background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 10px 24px 24px; box-shadow: var(--sheet-shadow);
+  transform: translateY(102%); transition: transform var(--d-slow) ease-out;
+}
+.mock.modal-open .rsheet { transform: none; }
+.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 10px; }
+.sh-title { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 600; letter-spacing: -.01em; }
+.sh-sub { margin-top: 2px; margin-bottom: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+
+/* 명단 줄 — 포지션 이름과 사람 이름. 내 줄만 면이 갈린다 */
+.mrow {
+  display: flex; align-items: center; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid var(--stroke-neutral);
+  font-size: var(--t-sm); line-height: var(--lh-sm);
+}
+.mrow:last-of-type { border-bottom: 0; }
+.mrow .pos { flex: 0 0 62px; color: var(--fg-neutral-subtle); font-size: var(--t-xs); line-height: var(--lh-xs); }
+.mrow .nm { font-weight: 500; }
+.mrow .nm.vacant { font-weight: 400; color: var(--fg-neutral-subtle); }
+.mrow.me { background: var(--bg-brand-weak); margin: 0 -10px; padding: 8px 10px; border-radius: var(--r-sm); border-bottom: 0; }
+.mrow .meflag { margin-left: auto; font-size: var(--t-xs); color: var(--fg-brand); font-weight: 500; }
+.badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 1px 8px; font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
+.badge.neutral { background: var(--bg-neutral-weak); color: var(--fg-neutral-muted); }
+
+/* 포지션 순 — 날짜 아코디언 */
+.acc { flex: 1 1 auto; overflow: hidden; border-top: 1px solid var(--stroke-neutral); }
+.dayrow {
+  display: flex; align-items: center; gap: 8px; padding: 12px 2px; cursor: pointer;
+  border-bottom: 1px solid var(--stroke-neutral);
+  font-size: var(--t-sm); line-height: var(--lh-sm); font-variant-numeric: tabular-nums;
+}
+.dayrow b { font-weight: 500; }
+.dayrow .tag { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-brand); font-weight: 500; }
+.dayrow .tag.nowork { color: var(--fg-neutral-subtle); font-weight: 400; }
+.dayrow .tag.edu { color: var(--fg-neutral-subtle); font-weight: 500; }
+.dayrow .chev { margin-left: auto; color: var(--fg-neutral-subtle); display: grid; place-items: center; }
+.daybody { border-bottom: 1px solid var(--stroke-neutral); padding: 2px 2px 12px; }
+.daybody .mrow { padding: 6px 0; }
+.daybody .mrow.me { margin: 0 -8px; padding: 6px 8px; }
+.daybody .rowbtns { margin-top: 12px; }
+.daybody .btn { height: 42px; }
+
+/* 교대 후보 목록 */
+.pickrow {
+  display: flex; align-items: center; gap: 10px; padding: 9px 0;
+  border-bottom: 1px solid var(--stroke-neutral); cursor: pointer;
+  font-size: var(--t-sm); line-height: var(--lh-sm);
+}
+.pickrow:last-of-type { border-bottom: 0; }
+.pickrow .ava {
+  width: 32px; height: 32px; border-radius: 999px; flex: 0 0 auto;
+  background: var(--bg-neutral-weak); color: var(--fg-neutral-muted);
+  display: inline-flex; align-items: center; justify-content: center; font-size: var(--t-xs); font-weight: 600;
+}
+.pickrow .who { font-weight: 500; }
+.pickrow .note { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+.pickrow .ring {
+  margin-left: auto; flex: 0 0 auto; width: 20px; height: 20px; border-radius: var(--r-xs);
+  border: 1.5px solid var(--stroke-neutral-muted); display: inline-flex; align-items: center; justify-content: center;
+  color: transparent;
+}
+.pickrow.sel .ring { background: var(--bg-brand-solid); border-color: var(--stroke-brand-solid); color: var(--fg-brand-contrast); }
+
+/* 사유 입력 — components.md Input */
+.field { margin-top: 14px; }
+.field .lab { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); margin-bottom: 6px; }
+.field .box {
+  border-radius: var(--r-md); background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
+  padding: 12px; min-height: 92px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral);
+}
+.field .box.ph { color: var(--fg-neutral-subtle); }
+
+/* 잠금 화면과 푸시 — OS 크롬이다. 우리 컴포넌트가 아니고 팔레트만 빌렸다 */
+.lock { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
+.lock .lt { font-size: var(--t-3xl); line-height: var(--lh-3xl); font-weight: 600; font-variant-numeric: tabular-nums; }
+.lock .ld { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.push {
+  width: 100%; margin-top: 34px; border-radius: var(--r-lg); background: var(--bg-neutral-weak);
+  border: 1px solid var(--surface-stroke); padding: 12px 14px; cursor: pointer;
+}
+.push .pa { display: flex; align-items: center; gap: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+.push .pmark {
+  width: 16px; height: 16px; border-radius: var(--r-xs); background: var(--bg-brand-solid);
+  color: var(--fg-brand-contrast); display: grid; place-items: center; font-size: 9px; font-weight: 700;
+}
+.push .pt { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 600; }
+.lock .tap { margin-top: 26px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+.pushtap { position: absolute; left: 50%; top: 177px; width: 44px; height: 44px; margin-left: -22px; border-radius: 999px; border: 2px solid var(--bg-brand-solid); opacity: 0; animation: tapring var(--interval-beat) ease-out 400ms infinite; }
+@keyframes tapring { 0% { opacity: .55; transform: scale(.55); } 70%, 100% { opacity: 0; transform: scale(1.25); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mock * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+  .pushtap { animation: none; opacity: 0; }
+}
+</style>
+
+<!-- 시안 뷰어 크롬 — 목업이 아니다 -->
+<div class="viewtoggle" role="group" aria-label="보기 전환">
+  <button type="button" class="on" data-view="grid">그리드</button>
+  <button type="button" data-view="scene">시나리오</button>
+</div>
+<button class="themetoggle" type="button" data-theme-toggle aria-label="라이트/다크 전환">
+  <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  <span class="lab-dark">다크로</span>
+  <span class="lab-light">라이트로</span>
+</button>
+
+<div class="wrap">
+  <p class="eyebrow">라비에벨 · 페이지 디자인 04</p>
+  <h1>근무자 근무표 시안</h1>
+  <p class="lede">
+    2026년 10월 근무표를 근무자 지수가 보는 화면이다. 오늘은 10월 8일(목) 저녁 9시,
+    확정 푸시가 온 직후다. 내 근무는 8·10·17·18·24일 다섯이고 18일은 교육이다.
+    왼쪽 위 토글이 그리드와 시나리오를, 오른쪽 위 토글이 라이트와 다크를 오간다.
+  </p>
+
+  <!-- 시나리오 크롬 — 목업이 아니다 -->
+  <div class="scenebar" hidden data-scenebar>
+    <div class="scene-nav">
+      <button class="scene-btn" type="button" data-scene-prev>← 이전</button>
+      <button class="scene-btn" type="button" data-scene-next>다음 →</button>
+      <span class="scene-count"><span data-scene-n>1</span> / <span data-scene-total>5</span></span>
+      <span class="scene-where" data-scene-where></span>
+    </div>
+    <p class="scene-note" data-scene-note></p>
+  </div>
+
+  <!-- 시나리오 전용 장면 — 그리드 절 목록에 없는 진입 화면이다 -->
+  <div class="stage" id="sc-push">
+    <div class="mock">
+      <div class="statusbar"><span>21:04</span><span class="sb-right">
+        <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+        <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+      </span></div>
+      <div class="lock">
+        <div class="lt num">21:04</div>
+        <div class="ld num">10월 8일 목요일</div>
+        <div class="push">
+          <div class="pa"><span class="pmark">라</span>라비에벨 · 지금</div>
+          <div class="pt">10월 근무표가 확정됐어요</div>
+        </div>
+        <div class="tap">눌러서 열기</div>
+      </div>
+      <span class="pushtap" aria-hidden="true"></span>
+    </div>
+    <p class="stage-note">
+      잠금 화면과 푸시 카드는 OS 크롬이라 우리 컴포넌트가 아니다.
+      <strong>푸시 문안은 domain/notification.md에 없다</strong> — 장면 4의 서술로 임시로 세운 자리다.
+      알림을 눌러 들어오는 길의 정본은 dashboard.md의 안 본 알림 CTA 「근무표 보기」다.
+    </p>
+  </div>
+
+  <!-- 01 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">01 / 달력 순 — 기본</span>
+      <h2>점이 내 근무다</h2>
+      <p>월요일 시작, 달 경계를 넘는 주 단위다. 열린 날은 옅은 면이고 내 근무 날에만 브랜드 점이 선다 — 교육 배정도 같은 점이다. 알약은 글자 없이 아이콘 둘이고 「내 배정만」은 이 보기에 없다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-cal">
+        <div class="mock">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              10월 근무표
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+              <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
+              <span class="cell open"><b>17</b><span class="dot"></span></span>
+              <span class="cell open"><b>18</b><span class="dot"></span></span>
+              <span class="cell off"><b>19</b></span><span class="cell off"><b>20</b></span><span class="cell off"><b>21</b></span><span class="cell off"><b>22</b></span><span class="cell off"><b>23</b></span>
+              <span class="cell open"><b>24</b><span class="dot"></span></span>
+              <span class="cell none"><b>25</b></span>
+              <span class="cell off"><b>26</b></span><span class="cell off"><b>27</b></span><span class="cell off"><b>28</b></span><span class="cell off"><b>29</b></span><span class="cell off"><b>30</b></span>
+              <span class="cell none"><b>31</b></span>
+              <span class="cell none"><b>11/1</b></span>
+            </div>
+            <div class="legend">점이 내 근무예요</div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">01 / CAL</div>
+          <div class="cap-name">달력 순 · 기본</div>
+          <p class="cap-body">알약에 글자가 없다 — 접근성 라벨이 <strong>「달력 순」·「포지션 순」</strong>이다. 「내 배정만」은 이 보기에 안 선다(점이 이미 내 근무만 가리킨다). 열린 날은 전부 눌리고 시트가 올라온다 — 내 근무가 없어도 누가 나가는지 본다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>오늘 칸(8일)이 내 근무 날인데 점이 없다.</strong> components.md의 근무자 조회 표가 오늘 칸에 표식을 안 두기 때문이고, 범례 「점이 내 근무예요」와 부딪히는 자리라 시안이 드러내 둔다. 04의 아코디언은 같은 8일을 「안내」로 적는다.</p>
+          <p class="cap-body" style="margin-top:8px">확정 전인 달과 근무표를 아직 안 만든 달의 모습은 <strong>문서의 「아직 안 정한 것」이라 안 그렸다.</strong> 휴무 희망 제출 화면과 같이 정한다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">02 / 날 시트 · 내 근무 날</span>
+      <h2>명단 한 벌과 문 둘</h2>
+      <p>바텀 시트다. 포지션 정본 순서로 줄이 서고 내 줄만 면이 갈린다. 하단은 근무 취소(secondary)와 교대 요청(primary)이고 취소가 왼쪽이다. 마감이 지난 날에는 둘 다 안 선다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-sheet-mine">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 근무표</span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+              <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
+              <span class="cell open"><b>17</b><span class="dot"></span></span>
+              <span class="cell open"><b>18</b><span class="dot"></span></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">10월 10일(토)</div>
+            <div class="sh-sub num">10:00 – 18:00 · 11명</div>
+            <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
+            <div class="mrow"><span class="pos">스캔</span><span class="nm">이서준</span></div>
+            <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
+            <div class="mrow"><span class="pos">드레스</span><span class="nm">김하은</span></div>
+            <div class="mrow"><span class="pos">드레스</span><span class="nm">김지우</span><span class="badge neutral">교육</span></div>
+            <div class="mrow"><span class="pos">축가</span><span class="nm">정우진</span></div>
+            <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호 · 최은우</span></div>
+            <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="meflag">나</span></div>
+            <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+            <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
+            <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
+            <div class="rowbtns">
+              <button class="btn secondary" type="button">근무 취소</button>
+              <button class="btn" type="button">교대 요청</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">02 / SHEET · MINE</div>
+          <div class="cap-name">내 근무 날 시트</div>
+          <p class="cap-body">부제가 근무 시간과 인원이다 — 시간은 날짜마다 하나고 전원에게 같다. 교육 배정도 줄로 서고 <strong>Badge neutral 「교육」</strong>이 붙는다. 내 줄은 <code>bg.brand-weak</code> 면에 오른쪽 끝 「나」다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>부제의 「11명」이 교육을 안 센 수다.</strong> 문서가 교육 배정을 인원에 넣는지 안 넣는지 안 적어서 시안이 한쪽을 골랐다 — 줄은 열두 개고 수는 열하나다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-sheet-today">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 근무표</span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+              <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
+              <span class="cell open"><b>17</b><span class="dot"></span></span>
+              <span class="cell open"><b>18</b><span class="dot"></span></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">10월 8일(목)</div>
+            <div class="sh-sub num">10:00 – 18:00 · 9명</div>
+            <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
+            <div class="mrow"><span class="pos">스캔</span><span class="nm">조은서</span></div>
+            <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
+            <div class="mrow"><span class="pos">드레스</span><span class="nm">김하은</span></div>
+            <div class="mrow"><span class="pos">축가</span><span class="nm">정우진</span></div>
+            <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호</span></div>
+            <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="meflag">나</span></div>
+            <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
+            <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">02 / SHEET · LOCKED</div>
+          <div class="cap-name">내 근무 날인데 버튼이 없다</div>
+          <p class="cap-body">오늘(8일) 근무다. <strong>교대 요청은 근무 전날까지</strong>라 당일부터 버튼이 안 선다. 근무 취소의 마감은 도메인 미정이고 시안이 <strong>같은 「전날까지」로 그렸다(「제안」)</strong>. 지난 날도 같은 모습이다 — 조회만 한다.</p>
+          <p class="cap-body" style="margin-top:8px">내 줄과 「나」는 그대로 남는다. 사라지는 것은 하단 버튼 둘뿐이다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">03 / 날 시트 · 내가 안 나가는 날</span>
+      <h2>같은 명단, 내 줄도 문도 없다</h2>
+      <p>열린 날은 전부 눌린다. 내 배정이 없으면 강조되는 줄이 없고 하단 버튼도 없다. 자리 수보다 배정이 적으면 그 줄이 「빈 자리」로 선다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-sheet-other">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 근무표</span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+              <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
+              <span class="cell open"><b>17</b><span class="dot"></span></span>
+              <span class="cell open"><b>18</b><span class="dot"></span></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">10월 9일(금)</div>
+            <div class="sh-sub num">10:00 – 18:00 · 9명</div>
+            <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
+            <div class="mrow"><span class="pos">스캔</span><span class="nm">조은서</span></div>
+            <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
+            <div class="mrow"><span class="pos">드레스</span><span class="nm">김하은</span></div>
+            <div class="mrow"><span class="pos">드레스</span><span class="nm">김지우</span><span class="badge neutral">교육</span></div>
+            <div class="mrow"><span class="pos">축가</span><span class="nm">정우진</span></div>
+            <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호</span></div>
+            <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+            <div class="mrow"><span class="pos">안내</span><span class="nm vacant">빈 자리</span></div>
+            <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
+            <div class="mrow"><span class="pos">대기실</span><span class="nm">김다은</span></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">03 / SHEET · OTHER</div>
+          <div class="cap-name">내가 안 나가는 날 시트</div>
+          <p class="cap-body">구성은 02와 같고 <strong>내 줄과 버튼 둘만 빠진다.</strong> 안내 한 자리가 아직 안 채워져서 그 줄이 「빈 자리」로 섰다 — <code>fg.neutral-subtle</code>다.</p>
+          <p class="cap-body" style="margin-top:8px">이 날 명단에 내 이름이 없다는 것 자체가 답이라 「근무 없음」 같은 문구를 따로 얹지 않았다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">04 / 포지션 순 — 날짜 아코디언</span>
+      <h2>날짜 줄 오른쪽이 내 상태를 말한다</h2>
+      <p>열린 날이 날짜순으로 서고 접고 펼친다. 기본은 전부 접힘이다(「제안」) — 이 목업은 10일을 누른 뒤다. 펼치면 시트와 같은 명단이고 끝에 같은 버튼 둘이다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-acc">
+        <div class="mock">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              10월 근무표
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" aria-label="달력 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" class="on" aria-label="포지션 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 배정만</span>
+            </div>
+            <div class="acc">
+              <div class="dayrow"><b class="num">10월 8일(목)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 9일(금)</b><span class="tag nowork">근무 없음</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 10일(토)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span></div>
+              <div class="daybody">
+                <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
+                <div class="mrow"><span class="pos">스캔</span><span class="nm">이서준</span></div>
+                <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
+                <div class="mrow"><span class="pos">드레스</span><span class="nm">김하은</span></div>
+                <div class="mrow"><span class="pos">드레스</span><span class="nm">김지우</span><span class="badge neutral">교육</span></div>
+                <div class="mrow"><span class="pos">축가</span><span class="nm">정우진</span></div>
+                <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호 · 최은우</span></div>
+                <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="meflag">나</span></div>
+                <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+                <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
+                <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
+                <div class="rowbtns">
+                  <button class="btn secondary" type="button">근무 취소</button>
+                  <button class="btn" type="button">교대 요청</button>
+                </div>
+              </div>
+              <div class="dayrow"><b class="num">10월 11일(일)</b><span class="tag nowork">근무 없음</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 17일(토)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 18일(일)</b><span class="tag edu">교육 · 드레스</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">04 / ACC</div>
+          <div class="cap-name">포지션 순 · 한 날 펼침</div>
+          <p class="cap-body">날짜 줄 오른쪽이 셋 중 하나다 — <strong>내 포지션 이름(<code>fg.brand</code>) / 「근무 없음」 / 「교육 · 드레스」.</strong> 펼치면 시트와 같은 명단이고 끝에 같은 버튼 둘이다. 「내 배정만」 체크박스는 이 보기에만 서고 여기서는 꺼져 있다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>「교육 · 드레스」의 색이 문서에 없다.</strong> 색 표는 「날짜 줄의 내 포지션」만 <code>fg.brand</code>로 적었고 교육은 배우는 자리라 시안이 <code>fg.neutral-subtle</code>로 뒀다 — 검수에서 정한다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">05 / 포지션 순 — 내 배정만 켬</span>
+      <h2>내 근무 날만 남고 펼침에도 내 줄만</h2>
+      <p>체크를 켜면 근무 없는 날 줄이 사라진다. 펼친 날에도 남는 줄은 내 줄 하나고 버튼 둘은 그대로 선다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-acc-mine">
+        <div class="mock">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              10월 근무표
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" aria-label="달력 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" class="on" aria-label="포지션 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+              <span class="check on"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 배정만</span>
+            </div>
+            <div class="acc">
+              <div class="dayrow"><b class="num">10월 8일(목)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 10일(토)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span></div>
+              <div class="daybody">
+                <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="meflag">나</span></div>
+                <div class="rowbtns">
+                  <button class="btn secondary" type="button">근무 취소</button>
+                  <button class="btn" type="button">교대 요청</button>
+                </div>
+              </div>
+              <div class="dayrow"><b class="num">10월 17일(토)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 18일(일)</b><span class="tag edu">교육 · 드레스</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 24일(토)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">05 / ACC · MINE ONLY</div>
+          <div class="cap-name">내 배정만 켬</div>
+          <p class="cap-body">9일과 11일과 25일이 사라졌다. 펼친 10일에는 <strong>내 줄 하나와 버튼 둘</strong>만 남는다 — 같은 날 누가 더 나오는지는 체크를 끄면 보인다.</p>
+          <p class="cap-body" style="margin-top:8px">8일 줄은 남지만 펼쳐도 버튼이 없다 — 02의 마감 규칙과 같은 자리다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">06 / 교대 요청 시트</span>
+      <h2>여러 명에게 걸고 관리자가 고른다</h2>
+      <p>후보는 나를 뺀 승인된 근무자 전원이다. 그 날 근무가 있는 사람도 후보다 — 맞바꿈이 허용되기 때문이고, 줄마다 그 날 상태를 적는다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-swap">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 근무표</span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">교대 요청 · 10월 10일(토) 안내</div>
+            <div class="sh-sub">여러 명에게 보낼 수 있어요. 수락한 사람 중 관리자가 정해요</div>
+            <div class="pickrow sel"><span class="ava">김</span><span class="who">김다은</span><span class="note">이날 근무 없음</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow sel"><span class="ava">이</span><span class="who">이지원</span><span class="note">이날 근무 없음</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow"><span class="ava">한</span><span class="who">한예린</span><span class="note">이날 근무 없음</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow"><span class="ava">조</span><span class="who">조은서</span><span class="note">이날 근무 없음</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow"><span class="ava">박</span><span class="who">박서연</span><span class="note">이날 안내 근무 · 맞바꿔요</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow"><span class="ava">김</span><span class="who">김민준</span><span class="note">이날 팀장 근무 · 맞바꿔요</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow"><span class="ava">이</span><span class="who">이서준</span><span class="note">이날 스캔 근무 · 맞바꿔요</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="rowbtns"><button class="btn" type="button">2명에게 요청 보내기</button></div>
+            <button class="linkbtn" type="button">고르지 않고 관리자에게만 보내기</button>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">06 / SWAP</div>
+          <div class="cap-name">교대 요청 시트</div>
+          <p class="cap-body">후보를 그 날 쉬는 사람으로 좁히지 않는다 — <strong>근무 중인 사람은 「이날 팀장 근무 · 맞바꿔요」</strong>로 선다. 제한 포지션도 시트에서 미리 막지 않고 절차가 거른다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>목록 순서와 아무도 안 골랐을 때의 라벨이 문서에 없다.</strong> 시안은 쉬는 사람을 위에 올렸고, 0명일 때 CTA가 비활성이라는 것만 문서에 있어 그 상태의 글자는 안 그렸다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">07 / 근무 취소 시트</span>
+      <h2>사유가 필수고 승인 전까지는 근무다</h2>
+      <p>부제가 먼저 말한다 — 보낸다고 빠지는 것이 아니다. 사유가 비어 있으면 보내기가 비활성이다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-cancel-empty">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 근무표</span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">근무 취소 · 10월 10일(토) 안내</div>
+            <div class="sh-sub">관리자가 승인해야 취소돼요. 승인 전까지는 예정대로 근무예요</div>
+            <div class="field">
+              <div class="lab">사유 (필수)</div>
+              <div class="box ph">왜 못 나오는지 적어주세요</div>
+            </div>
+            <div class="rowbtns"><button class="btn" type="button" disabled>취소 요청 보내기</button></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">07 / CANCEL · EMPTY</div>
+          <div class="cap-name">사유가 비면 못 보낸다</div>
+          <p class="cap-body">비활성은 계열을 안 나눈다 — <code>bg.neutral-disabled</code>에 <code>fg.neutral-disabled</code>다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>라벨과 자리표시 글자가 문서에 없다.</strong> components.md가 자리표시로 라벨을 대신하지 말라고 해서 시안이 라벨을 세웠고 문안은 임시다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-cancel-filled">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 근무표</span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">근무 취소 · 10월 10일(토) 안내</div>
+            <div class="sh-sub">관리자가 승인해야 취소돼요. 승인 전까지는 예정대로 근무예요</div>
+            <div class="field">
+              <div class="lab">사유 (필수)</div>
+              <div class="box">그날 집안 행사가 잡혀서 못 나갈 것 같아요</div>
+            </div>
+            <div class="rowbtns"><button class="btn" type="button">취소 요청 보내기</button></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">07 / CANCEL · FILLED</div>
+          <div class="cap-name">사유를 적으면 보내기가 열린다</div>
+          <p class="cap-body">보낸 뒤의 모습 — 요청 중 표시가 이 화면 어디에 남는지 — 는 <strong>도메인 미정과 같이 정한다.</strong> 문서의 「아직 안 정한 것」이라 안 그렸다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 08 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">08 / 다크</span>
+      <h2>같은 화면 둘을 뒤집어 본다</h2>
+      <p>01과 04를 다크에 고정했다. 페이지 토글과 무관하게 항상 다크다 — 옅은 면과 점, 내 줄 면이 어두운 바탕에서 어떻게 갈리는지 보는 자리다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-cal-dark">
+        <div class="mock force-dark">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              10월 근무표
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+              <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
+              <span class="cell open"><b>17</b><span class="dot"></span></span>
+              <span class="cell open"><b>18</b><span class="dot"></span></span>
+              <span class="cell off"><b>19</b></span><span class="cell off"><b>20</b></span><span class="cell off"><b>21</b></span><span class="cell off"><b>22</b></span><span class="cell off"><b>23</b></span>
+              <span class="cell open"><b>24</b><span class="dot"></span></span>
+              <span class="cell none"><b>25</b></span>
+              <span class="cell off"><b>26</b></span><span class="cell off"><b>27</b></span><span class="cell off"><b>28</b></span><span class="cell off"><b>29</b></span><span class="cell off"><b>30</b></span>
+              <span class="cell none"><b>31</b></span>
+              <span class="cell none"><b>11/1</b></span>
+            </div>
+            <div class="legend">점이 내 근무예요</div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">08 / DARK · CAL</div>
+          <div class="cap-name">다크의 달력</div>
+          <p class="cap-body">다크에서 <code>bg.neutral-weak</code>가 바탕보다 밝아진다 — 열린 날이 떠오르고 안 연 날이 가라앉는 관계는 라이트와 같다. <strong>알약 선택 칸은 그림자가 사라져 면 대비만 남는다.</strong></p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-acc-dark">
+        <div class="mock force-dark">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              10월 근무표
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" aria-label="달력 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" class="on" aria-label="포지션 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 배정만</span>
+            </div>
+            <div class="acc">
+              <div class="dayrow"><b class="num">10월 8일(목)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 9일(금)</b><span class="tag nowork">근무 없음</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 10일(토)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span></div>
+              <div class="daybody">
+                <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
+                <div class="mrow"><span class="pos">스캔</span><span class="nm">이서준</span></div>
+                <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
+                <div class="mrow"><span class="pos">드레스</span><span class="nm">김하은</span></div>
+                <div class="mrow"><span class="pos">드레스</span><span class="nm">김지우</span><span class="badge neutral">교육</span></div>
+                <div class="mrow"><span class="pos">축가</span><span class="nm">정우진</span></div>
+                <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호 · 최은우</span></div>
+                <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="meflag">나</span></div>
+                <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+                <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
+                <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
+                <div class="rowbtns">
+                  <button class="btn secondary" type="button">근무 취소</button>
+                  <button class="btn" type="button">교대 요청</button>
+                </div>
+              </div>
+              <div class="dayrow"><b class="num">10월 11일(일)</b><span class="tag nowork">근무 없음</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">08 / DARK · ACC</div>
+          <div class="cap-name">다크의 아코디언</div>
+          <p class="cap-body">내 줄의 <code>bg.brand-weak</code>가 다크에서 아주 어두운 갈색이다 — <strong>면만으로 갈리는지, 「나」와 브랜드 글자가 같이 있어야 읽히는지</strong>를 여기서 본다. secondary 버튼과 Badge neutral이 같은 <code>bg.neutral-weak</code>라 둘의 무게도 같이 확인한다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  // 뷰어 크롬 — 라이트/다크 토글. 목업이 아니라 시안을 보는 도구다
+  (function () {
+    var root = document.documentElement;
+    var btn = document.querySelector("[data-theme-toggle]");
+    if (!btn) return;
+    var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    root.dataset.theme = mq && mq.matches ? "dark" : "light";
+    btn.addEventListener("click", function () {
+      root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+    });
+  })();
+
+  // 뷰어 크롬 — 그리드/시나리오 토글과 장면 넘기기.
+  // 목업은 그리드의 DOM 그대로다. 복사하지 않고 보이기/숨기기만 한다
+  (function () {
+    var scenes = [
+      { id: "sc-push", where: "진입 · 시나리오 전용", note: "저녁 9시, 확정 푸시가 왔다. 눌러서 연다" },
+      { id: "m-cal", where: "01 / 달력 순", note: "10월이 열렸다. 점 넷이 내 근무고 오늘도 근무다" },
+      { id: "m-sheet-mine", where: "02 / 날 시트 · 내 근무 날", note: "10월 10일을 눌렀다. 그 날 나가는 사람과 내 자리가 보인다" },
+      { id: "m-swap", where: "06 / 교대 요청 시트", note: "그 날 일정이 겹쳤다. 대신 나갈 사람을 고른다" },
+      { id: "m-cancel-filled", where: "07 / 근무 취소 시트", note: "교대 대신 취소를 고르면, 사유를 적고 관리자 승인을 기다린다" }
+    ];
+    var bar = document.querySelector("[data-scenebar]");
+    var prev = document.querySelector("[data-scene-prev]");
+    var next = document.querySelector("[data-scene-next]");
+    var nEl = document.querySelector("[data-scene-n]");
+    var totalEl = document.querySelector("[data-scene-total]");
+    var whereEl = document.querySelector("[data-scene-where]");
+    var noteEl = document.querySelector("[data-scene-note]");
+    var viewBtns = document.querySelectorAll("[data-view]");
+    if (!bar || !prev || !next) return;
+
+    var at = 0;
+    totalEl.textContent = String(scenes.length);
+
+    function clear() {
+      document.querySelectorAll(".scene-live").forEach(function (el) { el.classList.remove("scene-live"); });
+    }
+
+    function draw() {
+      clear();
+      var scene = scenes[at];
+      var el = document.getElementById(scene.id);
+      if (el) {
+        el.classList.add("scene-live");
+        var sec = el.closest("section");
+        if (sec) sec.classList.add("scene-live");
+        // 시트가 있는 장면은 올라오는 모습을 다시 재생한다
+        var sheeted = el.querySelector(".mock.modal-open");
+        if (sheeted) {
+          sheeted.classList.remove("modal-open");
+          void sheeted.offsetWidth;
+          sheeted.classList.add("modal-open");
+        }
+      }
+      nEl.textContent = String(at + 1);
+      whereEl.textContent = scene.where;
+      noteEl.textContent = scene.note;
+      prev.disabled = at === 0;
+      next.disabled = at === scenes.length - 1;
+    }
+
+    function setView(mode) {
+      var on = mode === "scene";
+      document.body.classList.toggle("view-scene", on);
+      bar.hidden = !on;
+      viewBtns.forEach(function (b) { b.classList.toggle("on", b.dataset.view === mode); });
+      if (on) draw(); else clear();
+      window.scrollTo(0, 0);
+    }
+
+    viewBtns.forEach(function (b) {
+      b.addEventListener("click", function () { setView(b.dataset.view); });
+    });
+    prev.addEventListener("click", function () { if (at > 0) { at--; draw(); } });
+    next.addEventListener("click", function () { if (at < scenes.length - 1) { at++; draw(); } });
+  })();
+})();
+</script>
