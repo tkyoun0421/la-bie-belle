@@ -366,18 +366,20 @@ code {
 }
 .cell b { font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
 .cell.off b { color: var(--fg-neutral-subtle); font-weight: 400; }
-.cell.open { background: var(--bg-neutral); box-shadow: var(--card-shadow); border-color: var(--surface-stroke); cursor: pointer; }
+/* 열린 날은 옅은 면이다 — 처음엔 카드(흰 면+그림자+테두리)였다(개정 2026-09-07 2차 검수) */
+.cell.open { background: var(--bg-neutral-weak); cursor: pointer; }
 /* 희망 수는 사람 아이콘과 숫자다 — 처음엔 「○2」였다(2026-09-07).
    그날 일하는 인원으로도 읽히니 달력 바로 아래 범례가 「휴무 희망」임을 못 박는다 */
 .cell .hope { display: flex; align-items: center; gap: 2px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-style: normal; }
 .cell .hope svg { flex: 0 0 auto; }
-/* 확정 뒤에만 서는 바닥 단 — 빈 자리가 남은 날의 「빈 1」. 0이면 그 단이 빈다. 모양은 「제안」 */
-.cell .left { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-style: normal; }
-.cell.today { background: var(--bg-brand-solid); box-shadow: none; border-color: transparent; }
+/* 확정 뒤에만 서는 바닥 단 — 빈 자리가 남은 날의 점선 원 + 수(확정 2026-09-07 — 처음 제안은 글자 「빈 1」). 0이면 그 단이 빈다 */
+.cell .left { display: flex; align-items: center; gap: 2px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-style: normal; }
+.cell .left svg { flex: 0 0 auto; }
+.cell.today { background: var(--bg-brand-solid); }
 .cell.today b, .cell.today .hope, .cell.today .left { color: var(--fg-brand-contrast); }
 .legend { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 /* 날 열기 모드 */
-.selmode .cell.open { background: none; box-shadow: none; cursor: default; }
+.selmode .cell.open { background: none; cursor: default; }
 .selmode .cell.open b, .selmode .cell.open .hope { color: var(--fg-neutral-disabled); }
 .selmode .cell.off { cursor: pointer; }
 .cell.sel { background: var(--bg-brand-weak-selected); border-color: var(--stroke-brand-solid); }
@@ -1429,10 +1431,10 @@ code {
               <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
               <span class="cell today"><b>8</b></span>
               <span class="cell open"><b>9</b></span>
-              <span class="cell open"><b>10</b><em class="left num">빈 1</em></span>
+              <span class="cell open"><b>10</b><em class="left num"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 1.7" aria-hidden="true"><circle cx="6" cy="6" r="4.6"/></svg>1</em></span>
               <span class="cell open"><b>11</b></span>
               <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
-              <span class="cell open"><b>17</b><em class="left num">빈 1</em></span>
+              <span class="cell open"><b>17</b><em class="left num"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 1.7" aria-hidden="true"><circle cx="6" cy="6" r="4.6"/></svg>1</em></span>
               <span class="cell open"><b>18</b></span>
               <span class="cell off"><b>19</b></span><span class="cell off"><b>20</b></span><span class="cell off"><b>21</b></span><span class="cell off"><b>22</b></span><span class="cell off"><b>23</b></span>
               <span class="cell open"><b>24</b></span>
@@ -1442,15 +1444,15 @@ code {
               <span class="cell open"><b>11/1</b></span>
             </div>
             <!-- 범례도 모아보기 줄도 없다. 희망 수가 확정 뒤에 숨으니 풀 것이 남지 않는다.
-                 바닥 단에 남는 것은 빈 자리가 있는 날의 「빈 1」뿐이고 그 모양은 「제안」이다 -->
+                 바닥 단에 남는 것은 빈 자리가 있는 날의 점선 원 + 수뿐이다(확정 2026-09-07) -->
             <div class="spacer"></div>
           </div>
         </div>
         <figcaption>
           <div class="cap-key">AFTER / CAL</div>
           <div class="cap-name">확정 배지와 확정 줄</div>
-          <p class="cap-body">확정하기와 마감 줄이 사라지고 <strong>날 열기는 남는다.</strong> 오늘(8일)이 브랜드로 차고, 희망 수와 범례와 모아보기 줄이 같이 숨는다 — 마감이 지나 희망이 더 안 들어오고 확정 뒤의 일은 빈 자리 채우기라서다. 대신 <strong>빈 자리가 남은 날 칸에 「빈 1」이 선다</strong>(10일·17일). 0이면 그 단이 빈다. <strong>모양은 「제안」</strong>이라 실제 화면을 보고 정한다.</p>
-          <p class="cap-body" style="margin-top:8px">여기서 <strong>새로 연 날은 자리 구성을 자유로 고친다</strong> — 그 날 상세에는 확정 전과 같은 자물쇠·끌기·자리 추가가 서고, 사람이 든 자리를 버리면 강제 변경 빼기와 같은 확인과 알림이 걸린다. 「빈 1」은 빈 자리 재촉 셋 중 달력의 몫이고, 나머지 둘은 홈 타일의 경고 승격(01절)과 관리자 푸시다.</p>
+          <p class="cap-body">확정하기와 마감 줄이 사라지고 <strong>날 열기는 남는다.</strong> 오늘(8일)이 브랜드로 차고, 희망 수와 범례와 모아보기 줄이 같이 숨는다 — 마감이 지나 희망이 더 안 들어오고 확정 뒤의 일은 빈 자리 채우기라서다. 대신 <strong>빈 자리가 남은 날 칸에 점선 원과 수가 선다</strong>(10일·17일). 0이면 그 단이 빈다. 처음 제안은 글자 「빈 1」이었고 2차 검수가 점선 원으로 정했다(2026-09-07).</p>
+          <p class="cap-body" style="margin-top:8px">여기서 <strong>새로 연 날은 자리 구성을 자유로 고친다</strong> — 그 날 상세에는 확정 전과 같은 자물쇠·끌기·자리 추가가 서고, 사람이 든 자리를 버리면 강제 변경 빼기와 같은 확인과 알림이 걸린다. 점선 원은 빈 자리 재촉 셋 중 달력의 몫이고, 나머지 둘은 홈 타일의 경고 승격(01절)과 관리자 푸시다.</p>
         </figcaption>
       </figure>
 
@@ -1511,7 +1513,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">10 / 다크</span>
       <h2>팔레트가 통째로 뒤집힌다</h2>
-      <p>칸의 그림자가 사라지고 선이 면을 나눈다. 클래스는 라이트와 같다. 이 둘은 페이지가 라이트여도 늘 다크고, 앞의 아홉 절은 오른쪽 위 토글을 따라간다.</p>
+      <p>팔레트가 뒤집혀도 칸의 언어는 같다 — 열린 날은 옅은 면이다. 클래스는 라이트와 같다. 이 둘은 페이지가 라이트여도 늘 다크고, 앞의 아홉 절은 오른쪽 위 토글을 따라간다.</p>
     </div>
     <div class="grid">
 
@@ -1557,7 +1559,7 @@ code {
         <figcaption>
           <div class="cap-key">DARK / CAL</div>
           <div class="cap-name">달력</div>
-          <p class="cap-body">열린 칸이 그림자 대신 <strong>선으로 떠오른다.</strong> `stroke.surface`가 다크에서만 색을 갖는다.</p>
+          <p class="cap-body">열린 칸이 라이트와 같은 <strong>`bg.neutral-weak` 면이다</strong> — 다크에서는 바탕보다 한 단 밝은 회색으로 선다.</p>
         </figcaption>
       </figure>
 
