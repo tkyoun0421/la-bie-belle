@@ -367,9 +367,14 @@ code {
 .cell b { font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
 .cell.off b { color: var(--fg-neutral-subtle); font-weight: 400; }
 .cell.open { background: var(--bg-neutral); box-shadow: var(--card-shadow); border-color: var(--surface-stroke); cursor: pointer; }
-.cell .hope { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-style: normal; }
+/* 희망 수는 사람 아이콘과 숫자다 — 처음엔 「○2」였다(2026-09-07).
+   그날 일하는 인원으로도 읽히니 달력 바로 아래 범례가 「휴무 희망」임을 못 박는다 */
+.cell .hope { display: flex; align-items: center; gap: 2px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-style: normal; }
+.cell .hope svg { flex: 0 0 auto; }
+/* 확정 뒤에만 서는 바닥 단 — 빈 자리가 남은 날의 「빈 1」. 0이면 그 단이 빈다. 모양은 「제안」 */
+.cell .left { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-style: normal; }
 .cell.today { background: var(--bg-brand-solid); box-shadow: none; border-color: transparent; }
-.cell.today b, .cell.today .hope { color: var(--fg-brand-contrast); }
+.cell.today b, .cell.today .hope, .cell.today .left { color: var(--fg-brand-contrast); }
 .legend { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 /* 날 열기 모드 */
 .selmode .cell.open { background: none; box-shadow: none; cursor: default; }
@@ -577,7 +582,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">01 / 관리자 홈</span>
       <h2>타일 하나와 줄 둘, primary는 없다</h2>
-      <p>근무표 관리만 카드로 떠오르고 설정은 줄로 선다. 가입 대기 줄은 자리만 잡은 「제안」이다.</p>
+      <p>근무표 관리만 카드로 떠오르고 설정은 줄로 선다. 가입 대기 줄은 자리만 잡는다 — 눌렀을 때의 화면은 이 문서 밖이다.</p>
     </div>
     <div class="grid">
 
@@ -613,7 +618,8 @@ code {
         <figcaption>
           <div class="cap-key">HOME</div>
           <div class="cap-name">관리자 홈 뼈대</div>
-          <p class="cap-body">타일 요약 줄이 들어가기 전에 상태를 말한다. <strong>가입 대기는 「제안」</strong> — 자리만 잡았다.</p>
+          <p class="cap-body">타일 요약 줄이 들어가기 전에 상태를 말한다. <strong>가입 대기는 자리만 잡았다</strong> — 대기 인원 수까지다.</p>
+          <p class="cap-body" style="margin-top:8px">요약 줄이 네 모습이다. 목업은 「만드는 중」 하나뿐이고 나머지 셋은 글로 남긴다 — 아직 없음이 「10월 근무표가 아직 없어요」, 확정 뒤가 「10월 근무표를 확정했어요 · 빈 자리 2」다. <strong>확정 뒤 예식이 사흘 안인데 빈 자리가 남으면 요약 줄이 경고 블록으로 승격한다</strong> — 08절 확정 시트와 같은 <code>bg.warning-weak</code> 면에 <code>warning-500</code> 아이콘이고, 글은 「10월 10일 예식에 빈 자리 1 · 3일 남았어요」다. 빈 자리 재촉 셋 중 홈의 몫이다.</p>
         </figcaption>
       </figure>
 
@@ -651,7 +657,7 @@ code {
         <figcaption>
           <div class="cap-key">HOME / SHEET</div>
           <div class="cap-name">근무 시간 기본값</div>
-          <p class="cap-body">도움말이 소급하지 않는다는 것을 미리 말한다 — <strong>이미 연 날은 그대로</strong>다(「제안」).</p>
+          <p class="cap-body">도움말이 소급하지 않는다는 것을 미리 말한다 — <strong>이미 연 날은 그대로</strong>다. 연 날의 근무 시간은 열던 순간 깔린 값이라 바꾸고 싶으면 날 상세에서 하나씩 고친다.</p>
         </figcaption>
       </figure>
 
@@ -663,7 +669,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">02 / 달 근무표 만들기</span>
       <h2>만들기는 달력 화면의 빈 상태다</h2>
-      <p>안 만든 달로 가면 아이콘·제목·아래 줄·버튼이 한 덩이로 화면 세로 가운데에 선다. 만들기 시트가 스케줄 신청 마감일을 같이 받는다.</p>
+      <p>안 만든 달로 가면 아이콘·제목·아래 줄·버튼이 한 덩이로 화면 세로 가운데에 선다. 만들기 시트가 스케줄 신청 마감일을 같이 받는다. 지나가는 중인 달도 만든다 — 차단 축은 달이 아니라 날짜다.</p>
     </div>
     <div class="grid">
 
@@ -694,6 +700,7 @@ code {
           <div class="cap-key">CREATE / EMPTY</div>
           <div class="cap-name">아직 없는 달</div>
           <p class="cap-body">달력 아이콘을 카드에 가두지 않는다 — 이 화면의 내용이 빈 상태 하나뿐이라 <strong>넷이 한 덩이로 화면 세로 가운데에 선다.</strong> 아이콘도 글도 전부 뉴트럴이고 primary는 만들기 하나다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>만들기는 달 단위로 막지 않는다 — 차단 축은 날짜다.</strong> 열 수 있는 날이 하루라도 남았으면 지나가는 중인 달도 만들고, 9월 말에 9월 근무표를 만들면 남은 날짜만 연다. <strong>모든 날짜가 지난 달은 만들기 버튼을 숨기고 빈 상태 제목만 남긴다</strong> — 「9월 근무표가 없어요」 한 줄이고 아래 줄도 버튼도 없다. 그 모습은 목업을 안 세웠다.</p>
         </figcaption>
       </figure>
 
@@ -746,7 +753,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">03 / 월 달력</span>
       <h2>주 단위 묶음이 그대로 보인다</h2>
-      <p>10월 근무표는 10월 5일(월)부터 11월 1일(일)까지다. 범위 줄이 그 답을 미리 하고, 칸은 두 단이다 — 위에 날짜, 바닥에 희망 수뿐이다.</p>
+      <p>10월 근무표는 10월 5일(월)부터 11월 1일(일)까지다. 범위 줄이 그 답을 미리 하고, 칸은 두 단이다 — 위에 날짜, 바닥에 사람 표시와 휴무 희망 수뿐이다.</p>
     </div>
     <div class="grid">
 
@@ -773,19 +780,19 @@ code {
             <div class="cal">
               <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span><span class="cell off"><b>8</b></span>
               <span class="cell open"><b>9</b></span>
-              <span class="cell open"><b>10</b><em class="hope">○2</em></span>
-              <span class="cell open"><b>11</b><em class="hope">○1</em></span>
+              <span class="cell open"><b>10</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
+              <span class="cell open"><b>11</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
               <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
-              <span class="cell open"><b>17</b><em class="hope">○3</em></span>
+              <span class="cell open"><b>17</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>3</em></span>
               <span class="cell open"><b>18</b></span>
               <span class="cell off"><b>19</b></span><span class="cell off"><b>20</b></span><span class="cell off"><b>21</b></span><span class="cell off"><b>22</b></span><span class="cell off"><b>23</b></span>
-              <span class="cell open"><b>24</b><em class="hope">○1</em></span>
-              <span class="cell open"><b>25</b><em class="hope">○2</em></span>
+              <span class="cell open"><b>24</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
+              <span class="cell open"><b>25</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
               <span class="cell off"><b>26</b></span><span class="cell off"><b>27</b></span><span class="cell off"><b>28</b></span><span class="cell off"><b>29</b></span><span class="cell off"><b>30</b></span>
-              <span class="cell open"><b>31</b><em class="hope">○1</em></span>
-              <span class="cell open"><b>11/1</b><em class="hope">○2</em></span>
+              <span class="cell open"><b>31</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
+              <span class="cell open"><b>11/1</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
             </div>
-            <div class="legend">○는 휴무 희망이에요</div>
+            <div class="legend">사람 표시는 휴무 희망이에요</div>
             <div class="rule" style="margin-top:14px"></div>
             <div class="lrow">
               <span class="lk" style="font-size:var(--t-sm)">휴무 희망 12건 모아보기</span>
@@ -801,7 +808,8 @@ code {
         <figcaption>
           <div class="cap-key">CAL / EDITING</div>
           <div class="cap-name">편집 중, 스케줄 신청 마감 전</div>
-          <p class="cap-body">칸에 채움 「9/11」이 없다 — 어느 날이 덜 찼는지는 날 상세의 셈과 홈 타일이 말하고 <strong>달력은 날을 여닫고 들어가는 지도로 남는다.</strong> 확정하기는 스케줄 신청 마감일 전이라 잠겨 있고, 보조 문구가 되는 날을 센다.</p>
+          <p class="cap-body">칸에 채움 「9/11」이 없다 — 어느 날이 덜 찼는지는 날 상세의 셈과 홈 타일이 말하고 <strong>달력은 날을 여닫고 들어가는 지도로 남는다.</strong> 바닥 단의 <strong>사람 표시가 휴무 희망 수</strong>고, 그날 일하는 인원으로 안 읽히게 바로 아래 범례가 못 박는다. 0건이면 그 단이 빈다(9일·18일).</p>
+          <p class="cap-body" style="margin-top:8px">확정하기는 스케줄 신청 마감일 전이라 잠겨 있고, 보조 문구가 되는 날을 센다. <strong>경계는 마감일 다음 날 0시고, 화면을 열어둔 채 자정을 넘기면 그 자리에서는 안 풀린다</strong> — 다시 열거나 새로고침하는 <strong>다음 진입에서 풀린다.</strong> 타이머를 안 둔다.</p>
         </figcaption>
       </figure>
 
@@ -837,7 +845,7 @@ code {
         <figcaption>
           <div class="cap-key">CAL / JUST MADE</div>
           <div class="cap-name">만든 직후</div>
-          <p class="cap-body">전부 닫힌 날이다. 안내 한 줄이 다음 할 일을 말하고 <strong>날을 하나 열면 사라진다</strong>(「제안」).</p>
+          <p class="cap-body">전부 닫힌 날이다. 안내 한 줄이 다음 할 일을 말하고 <strong>날을 하나라도 열면 사라진다.</strong> 이 줄이 없으면 아무것도 안 눌리는 달력이 만들기 실패로 읽힌다.</p>
         </figcaption>
       </figure>
 
@@ -870,20 +878,20 @@ code {
             <div class="cal selmode">
               <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span><span class="cell off"><b>8</b></span>
               <span class="cell open"><b>9</b></span>
-              <span class="cell open"><b>10</b><em class="hope">○2</em></span>
-              <span class="cell open"><b>11</b><em class="hope">○1</em></span>
+              <span class="cell open"><b>10</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
+              <span class="cell open"><b>11</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
               <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span>
               <span class="cell off sel"><b>16</b></span>
-              <span class="cell open"><b>17</b><em class="hope">○3</em></span>
+              <span class="cell open"><b>17</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>3</em></span>
               <span class="cell open"><b>18</b></span>
               <span class="cell off"><b>19</b></span><span class="cell off"><b>20</b></span><span class="cell off"><b>21</b></span><span class="cell off"><b>22</b></span>
               <span class="cell off sel"><b>23</b></span>
-              <span class="cell open"><b>24</b><em class="hope">○1</em></span>
-              <span class="cell open"><b>25</b><em class="hope">○2</em></span>
+              <span class="cell open"><b>24</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
+              <span class="cell open"><b>25</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
               <span class="cell off"><b>26</b></span><span class="cell off"><b>27</b></span><span class="cell off"><b>28</b></span><span class="cell off"><b>29</b></span>
               <span class="cell off sel"><b>30</b></span>
-              <span class="cell open"><b>31</b><em class="hope">○1</em></span>
-              <span class="cell open"><b>11/1</b><em class="hope">○2</em></span>
+              <span class="cell open"><b>31</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
+              <span class="cell open"><b>11/1</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
             </div>
             <div class="spacer"></div>
           </div>
@@ -934,7 +942,8 @@ code {
         <figcaption>
           <div class="cap-key">DAY / CLOSE</div>
           <div class="cap-name">배정 있는 날 닫기</div>
-          <p class="cap-body">왼쪽이 「닫기」가 아니라 <strong>「그만두기」</strong>다 — 「닫기」가 날 닫기와 겹쳐 두 뜻이 되는 자리라서다. 문서의 「규칙과 부딪힌 자리」에 있다.</p>
+          <p class="cap-body">왼쪽이 「닫기」가 아니라 <strong>「그만두기」</strong>다 — 「닫기」가 날 닫기와 겹쳐 두 뜻이 되는 자리라서다. 문서의 「규칙과 부딪힌 자리」에 있다. 오른쪽은 destructive가 아니다 — 날은 다시 열고 다시 배정할 수 있다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>배정이 없으면 이 시트가 아예 안 선다</strong> — 확인 없이 바로 닫히고 달력으로 돌아간다. 잃는 것이 없는데 묻는 것은 뒤로가기 인터럽트와 같은 냄새다.</p>
         </figcaption>
       </figure>
 
@@ -1042,7 +1051,7 @@ code {
         <figcaption style="margin-top:12px">
           <div class="cap-key">DAY / DRAG — DELETE</div>
           <div class="cap-name">자리를 아래로 끌어 버린다</div>
-          <p class="cap-body">잠금을 푼 포지션에서만 된다. 집으면 살짝 커지고 잔상이 남고, <strong>버리는 영역이 아래에서 올라온다.</strong> 배정이 있는 자리면 놓는 순간 확인 시트가 선다(「제안」).</p>
+          <p class="cap-body">잠금을 푼 포지션에서만 된다. 집으면 살짝 커지고 잔상이 남고, <strong>버리는 영역이 아래에서 올라온다.</strong> 빈 자리는 놓는 순간 사라지지만 <strong>사람이 든 자리는 시트가 확인한다</strong> — 「자리를 지울까요? / 박서연 님 배정도 같이 사라져요 / 그만두기 · 지우기」. 그 시트는 목업을 안 세웠다.</p>
         </figcaption>
       </figure>
 
@@ -1069,7 +1078,9 @@ code {
         <figcaption style="margin-top:12px">
           <div class="cap-key">DAY / DRAG — MERGE</div>
           <div class="cap-name">겹치면 겸임 자리가 된다</div>
-          <p class="cap-body">대상 자리에 브랜드 테두리와 라벨이 서고, 놓으면 <strong>자리 둘이 하나가 되고 포지션 이름 둘이 붙는다.</strong> 내준 쪽 셈의 분모가 준다. 둘 다 사람이 든 자리끼리는 안 합쳐진다(「제안」).</p>
+          <p class="cap-body">대상 자리에 브랜드 테두리와 라벨이 서고, 놓으면 <strong>자리 둘이 하나가 되고 포지션 이름 둘이 붙는다.</strong> 내준 쪽 셈의 분모가 준다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>둘 다 사람이 든 자리끼리도 합쳐진다</strong> — 끌려온 사람이 겸임을 맡고 대상 자리에 있던 사람은 빠진다. 사람이 빠지는 순간이라 <strong>놓기 전에 시트가 확인한다</strong> — 「겸임으로 합칠까요? / 김지우 님 배정이 사라져요 / 그만두기 · 합치기」. 그만두면 카드가 잔상 자리로 돌아간다. 여기 재생은 빈 자리에 놓는 쪽이고 그 시트는 목업을 안 세웠다.</p>
+          <p class="cap-body" style="margin-top:8px">되돌리는 길은 끌기가 아니라 시트다 — 겸임 카드를 누르면 「사람 바꾸기 · <strong>자리 나누기</strong> · 자리 비우기 · 닫기」가 서고, 나누면 배정된 사람이 원래 포지션 쪽에 남는다.</p>
         </figcaption>
       </figure>
 
@@ -1081,7 +1092,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">06 / 사람 픽커</span>
       <h2>기본은 넣을 수 있는 사람만</h2>
-      <p>왼쪽 시트의 「전체 보기」는 실제로 펼쳐진다. 배정된 사람은 안 눌리고, 자격 없는 사람을 누르면 시트 내용이 선택지로 바뀐다.</p>
+      <p>왼쪽 시트의 「전체 보기」는 실제로 펼쳐진다. 배정된 사람은 안 눌리고, 자격 없는 사람을 누르면 시트 내용이 선택지로 바뀐다. 배정 가능한 사람이 0명이면 「지금 바로 넣을 수 있는 사람이 없어요」 한 줄과 함께 전체 보기가 펼쳐진 채 열린다 — 그 상태는 목업을 안 세웠다.</p>
     </div>
     <div class="grid">
 
@@ -1288,19 +1299,19 @@ code {
             <div class="cal">
               <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span><span class="cell off"><b>8</b></span>
               <span class="cell open"><b>9</b></span>
-              <span class="cell open"><b>10</b><em class="hope">○2</em></span>
-              <span class="cell open"><b>11</b><em class="hope">○1</em></span>
+              <span class="cell open"><b>10</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
+              <span class="cell open"><b>11</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
               <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
-              <span class="cell open"><b>17</b><em class="hope">○3</em></span>
+              <span class="cell open"><b>17</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>3</em></span>
               <span class="cell open"><b>18</b></span>
               <span class="cell off"><b>19</b></span><span class="cell off"><b>20</b></span><span class="cell off"><b>21</b></span><span class="cell off"><b>22</b></span><span class="cell off"><b>23</b></span>
-              <span class="cell open"><b>24</b><em class="hope">○1</em></span>
-              <span class="cell open"><b>25</b><em class="hope">○2</em></span>
+              <span class="cell open"><b>24</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
+              <span class="cell open"><b>25</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
               <span class="cell off"><b>26</b></span><span class="cell off"><b>27</b></span><span class="cell off"><b>28</b></span><span class="cell off"><b>29</b></span><span class="cell off"><b>30</b></span>
-              <span class="cell open"><b>31</b><em class="hope">○1</em></span>
-              <span class="cell open"><b>11/1</b><em class="hope">○2</em></span>
+              <span class="cell open"><b>31</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
+              <span class="cell open"><b>11/1</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
             </div>
-            <div class="legend">○는 휴무 희망이에요</div>
+            <div class="legend">사람 표시는 휴무 희망이에요</div>
             <div class="spacer"></div>
           </div>
           <div class="ctabar">
@@ -1418,10 +1429,10 @@ code {
               <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
               <span class="cell today"><b>8</b></span>
               <span class="cell open"><b>9</b></span>
-              <span class="cell open"><b>10</b></span>
+              <span class="cell open"><b>10</b><em class="left num">빈 1</em></span>
               <span class="cell open"><b>11</b></span>
               <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
-              <span class="cell open"><b>17</b></span>
+              <span class="cell open"><b>17</b><em class="left num">빈 1</em></span>
               <span class="cell open"><b>18</b></span>
               <span class="cell off"><b>19</b></span><span class="cell off"><b>20</b></span><span class="cell off"><b>21</b></span><span class="cell off"><b>22</b></span><span class="cell off"><b>23</b></span>
               <span class="cell open"><b>24</b></span>
@@ -1430,15 +1441,16 @@ code {
               <span class="cell open"><b>31</b></span>
               <span class="cell open"><b>11/1</b></span>
             </div>
-            <!-- 범례가 없다. 채움은 칸에서 빠졌고 희망 수는 확정 뒤에 숨으니 풀 것이 남지 않는다 —
-                 확정 뒤 범례의 처분은 schedule-admin.md가 안 적었다 -->
+            <!-- 범례도 모아보기 줄도 없다. 희망 수가 확정 뒤에 숨으니 풀 것이 남지 않는다.
+                 바닥 단에 남는 것은 빈 자리가 있는 날의 「빈 1」뿐이고 그 모양은 「제안」이다 -->
             <div class="spacer"></div>
           </div>
         </div>
         <figcaption>
           <div class="cap-key">AFTER / CAL</div>
           <div class="cap-name">확정 배지와 확정 줄</div>
-          <p class="cap-body">확정하기와 마감 줄이 사라지고 <strong>날 열기는 남는다.</strong> 오늘(8일)이 브랜드로 차고, 희망 수는 숨는다(「제안」). 여기서 <strong>새로 연 날은 자리 구성을 자유로 고친다</strong> — 그 날 상세에는 확정 전과 같은 자물쇠·끌기·자리 추가가 서고, 사람이 든 자리를 버리면 강제 변경 빼기와 같은 확인과 알림이 걸린다.</p>
+          <p class="cap-body">확정하기와 마감 줄이 사라지고 <strong>날 열기는 남는다.</strong> 오늘(8일)이 브랜드로 차고, 희망 수와 범례와 모아보기 줄이 같이 숨는다 — 마감이 지나 희망이 더 안 들어오고 확정 뒤의 일은 빈 자리 채우기라서다. 대신 <strong>빈 자리가 남은 날 칸에 「빈 1」이 선다</strong>(10일·17일). 0이면 그 단이 빈다. <strong>모양은 「제안」</strong>이라 실제 화면을 보고 정한다.</p>
+          <p class="cap-body" style="margin-top:8px">여기서 <strong>새로 연 날은 자리 구성을 자유로 고친다</strong> — 그 날 상세에는 확정 전과 같은 자물쇠·끌기·자리 추가가 서고, 사람이 든 자리를 버리면 강제 변경 빼기와 같은 확인과 알림이 걸린다. 「빈 1」은 빈 자리 재촉 셋 중 달력의 몫이고, 나머지 둘은 홈 타일의 경고 승격(01절)과 관리자 푸시다.</p>
         </figcaption>
       </figure>
 
@@ -1485,7 +1497,7 @@ code {
         </div>
         <figcaption>
           <div class="cap-key">AFTER / FORCE</div>
-          <div class="cap-name">강제 변경 — 「제안」</div>
+          <div class="cap-name">강제 변경 — 사람 바꾸기 · 사람 빼기 · 닫기</div>
           <p class="cap-body">확정 뒤 채워진 자리를 누르면 선다. 자물쇠도 끌기도 자리 추가도 이 날 닫기도 없지만 <strong>「교육 붙이기」는 남는다</strong> — 정규 자리를 안 먹어 구조 변경이 아니다. 누르면 픽커가 열리고 고르면 확인 시트가 알림을 예고한다. <strong>무슨 알림이 나가는지를 누르기 전에 말한다</strong> — 빠진 사람과 들어온 사람 둘만이다.</p>
           <p class="cap-body" style="margin-top:8px">확인 시트 문안 넷은 목업을 안 세웠다 — 배정 추가 「김지우 님을 넣을까요? / 김지우 님에게 알림이 가요 / 닫기 · 넣기」, 교육 붙이기 「김지우 님을 교육으로 붙일까요? / 김지우 님에게 알림이 가요 / 닫기 · 붙이기」, 바꾸기 「박서연 님을 빼고 김지우 님을 넣을까요? / 두 사람에게 알림이 가요 / 닫기 · 바꾸기」, 빼기 「박서연 님을 뺄까요? / 박서연 님에게 알림이 가요 · 자리는 비어 남아요 / 닫기 · 빼기」.</p>
         </figcaption>
@@ -1522,19 +1534,19 @@ code {
             <div class="cal">
               <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span><span class="cell off"><b>8</b></span>
               <span class="cell open"><b>9</b></span>
-              <span class="cell open"><b>10</b><em class="hope">○2</em></span>
-              <span class="cell open"><b>11</b><em class="hope">○1</em></span>
+              <span class="cell open"><b>10</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
+              <span class="cell open"><b>11</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
               <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
-              <span class="cell open"><b>17</b><em class="hope">○3</em></span>
+              <span class="cell open"><b>17</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>3</em></span>
               <span class="cell open"><b>18</b></span>
               <span class="cell off"><b>19</b></span><span class="cell off"><b>20</b></span><span class="cell off"><b>21</b></span><span class="cell off"><b>22</b></span><span class="cell off"><b>23</b></span>
-              <span class="cell open"><b>24</b><em class="hope">○1</em></span>
-              <span class="cell open"><b>25</b><em class="hope">○2</em></span>
+              <span class="cell open"><b>24</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
+              <span class="cell open"><b>25</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
               <span class="cell off"><b>26</b></span><span class="cell off"><b>27</b></span><span class="cell off"><b>28</b></span><span class="cell off"><b>29</b></span><span class="cell off"><b>30</b></span>
-              <span class="cell open"><b>31</b><em class="hope">○1</em></span>
-              <span class="cell open"><b>11/1</b><em class="hope">○2</em></span>
+              <span class="cell open"><b>31</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
+              <span class="cell open"><b>11/1</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
             </div>
-            <div class="legend">○는 휴무 희망이에요</div>
+            <div class="legend">사람 표시는 휴무 희망이에요</div>
             <div class="spacer"></div>
           </div>
           <div class="ctabar">
