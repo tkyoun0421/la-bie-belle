@@ -375,8 +375,14 @@ code {
 /* 확정 뒤에만 서는 바닥 단 — 빈 자리가 남은 날의 점선 원 + 수(확정 2026-09-07 — 처음 제안은 글자 「빈 1」). 0이면 그 단이 빈다 */
 .cell .left { display: flex; align-items: center; gap: 2px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-style: normal; }
 .cell .left svg { flex: 0 0 auto; }
-.cell.today { background: var(--bg-brand-solid); }
-.cell.today b, .cell.today .hope, .cell.today .left { color: var(--fg-brand-contrast); }
+/* 오늘 — 배경이 아니라 원이다. 그날의 상태(칸 배경)는 그대로 두고 날짜 숫자만 21px
+   bg.neutral-solid 원이 감싼다. 한 컴포넌트가 화면마다 오늘을 다르게 그리지 않는다
+   (components.md 「근무표 날짜 칸」, foundation/color.md 「근무표에서 색을 쓰는 법」) */
+.cell.today b {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 21px; height: 21px; border-radius: 999px; box-sizing: border-box; line-height: 1;
+  background: var(--bg-neutral-solid); color: var(--fg-neutral-contrast);
+}
 .legend { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 /* 날 열기 모드 */
 .selmode .cell.open { background: none; cursor: default; }
@@ -1550,7 +1556,7 @@ code {
         <figcaption>
           <div class="cap-key">AFTER / CAL</div>
           <div class="cap-name">확정 배지와 확정 줄</div>
-          <p class="cap-body">확정하기와 마감 줄이 사라지고 <strong>날 열기는 남는다.</strong> 오늘(8일)이 브랜드로 차고, 신청 수와 범례와 모아보기 줄이 같이 숨는다 — 마감이 지나 신청이 더 안 들어오고 확정 뒤의 일은 빈 자리 채우기라서다. 대신 <strong>빈 자리가 남은 날 칸에 점선 원과 수가 선다</strong>(10일·17일). 0이면 그 단이 빈다. 처음 제안은 글자 「빈 1」이었고 2차 검수가 점선 원으로 정했다(2026-09-07).</p>
+          <p class="cap-body">확정하기와 마감 줄이 사라지고 <strong>날 열기는 남는다.</strong> 오늘(8일)의 칸 배경은 다른 열린 날과 같고 날짜만 <code>bg.neutral-solid</code> 원이 감싼다. 신청 수와 범례와 모아보기 줄은 같이 숨는다 — 마감이 지나 신청이 더 안 들어오고 확정 뒤의 일은 빈 자리 채우기라서다. 대신 <strong>빈 자리가 남은 날 칸에 점선 원과 수가 선다</strong>(10일·17일). 0이면 그 단이 빈다. 처음 제안은 글자 「빈 1」이었고 2차 검수가 점선 원으로 정했다(2026-09-07).</p>
           <p class="cap-body" style="margin-top:8px">여기서 <strong>새로 연 날은 자리 구성을 자유로 고친다</strong> — 그 날 상세에는 확정 전과 같은 자물쇠·끌기·자리 추가가 서고, 사람이 든 자리를 버리면 강제 변경 빼기와 같은 확인과 알림이 걸린다. 점선 원은 빈 자리 재촉 셋 중 달력의 몫이고, 나머지 둘은 홈 타일의 경고 승격(01절)과 관리자 푸시다.</p>
         </figcaption>
       </figure>

@@ -201,13 +201,18 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 | 상태 | 배경 | 날짜 글자 | 테두리 | 표식 |
 | --- | --- | --- | --- | --- |
-| 오늘이면서 근무 있음 | `bg.brand-solid` | `fg.brand-contrast` | 없음 | 없음 |
-| 오늘이면서 근무 없음 | `bg.brand-solid` | `fg.brand-contrast` | 없음 | 없음 |
-| 근무 있음 | `bg.neutral-weak` | `fg.neutral` | 없음 | `bg.brand-solid` 점 |
+| 근무 있음 | `bg.brand-weak` | `fg.neutral` | 없음 | `bg.brand-solid` 점 |
+| 근무 요청 온 날 | `bg.neutral-weak` | `fg.neutral-muted` | `stroke.brand-solid` 점선, 도는 중 | 없음 |
 | 근무 없음(열린 날) | `bg.neutral-weak` | `fg.neutral-muted` | 없음 | 없음 |
 | 안 연 날 | 없음 | `fg.neutral-subtle` | 없음 | 없음 |
 | 확정 전 | 없음 | `fg.neutral-subtle` | `stroke.neutral-muted` 점선 | 없음 |
 | 확정 전 — 신청에서 고른 날 | `bg.brand-weak-selected` | `fg.neutral` | `stroke.brand-solid` | 체크 |
+
+**오늘은 위 상태들과 나란히 서지 않고 그 위에 얹힌다.** 칸 배경은 그날의 상태를 그대로 두고, 날짜 숫자를 지름 21px의 `bg.neutral-solid` 원이 감싼다. 원 안 숫자는 `fg.neutral-contrast`다. 오늘이면서 근무가 있는 날은 브랜드 면에 검은 원과 그 아래 브랜드 점이 같이 선다 — 상태 둘이 서로를 지우지 않는다.
+
+오늘을 칸 색이 아니라 원으로 그리는 이유는 [foundation/color.md](foundation/color.md#근무표에서-색을-쓰는-법)에 있다.
+
+근무 요청 온 날의 점선은 시계 방향으로 돈다. 주기는 `--interval-dash`고 대시와 간격은 각각 3px다. 요청이 수락·거절·만료로 끝나거나 자리가 차면 이 칸은 「근무 있음」이나 「근무 없음(열린 날)」로 돌아간다. 점선을 `border`가 아니라 SVG의 `stroke-dasharray`로 그리는 것은 `border`가 애니메이션을 못 받고, 확정 전 칸의 점선 `border`와 한 칸에서 부딪히기 때문이다.
 
 관리자 편집 상태다. [pages/schedule-admin.md](pages/schedule-admin.md#달력-칸)가 더한 것을 여기로 합쳤다. 그 문서의 「닫힌 날」은 이 표의 「안 연 날」과 같은 것이다.
 
@@ -215,16 +220,17 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 | --- | --- | --- | --- | --- |
 | 안 연 날 | 없음 | `fg.neutral-subtle` | 없음 | 없음 |
 | 열린 날 | `bg.neutral-weak` | `fg.neutral` | 없음 | 신청 수 또는 빈 자리 |
-| 오늘 | `bg.brand-solid` | `fg.brand-contrast` | 없음 | — |
 | 선택된 날 — 열기 모드 | `bg.brand-weak-selected` | `fg.neutral` | `stroke.brand-solid` | 체크 |
 
-브랜드 색으로 칸이 채워지는 것은 오늘 하루뿐이다. 예식이 있는 열린 날은 옅은 면으로 갈리고 브랜드 색은 점에만 쓴다 — 카드처럼 띄우는 볼록함 대신 면 채움이다.
+오늘은 여기서도 같은 검은 원이다. 한 컴포넌트가 화면마다 오늘을 다르게 그리지 않는다.
+
+브랜드 색으로 칸이 채워지는 자리는 근무자 달력의 내 근무와 열기 모드의 선택 칸 둘뿐이다. 둘 다 옅은 면이고 꽉 찬 브랜드 면은 달력에 없다.
 
 교육 배정은 근무 있음과 같은 칸이다. 교육인지는 칸이 아니라 명단과 목록의 글자가 말한다.
 
 "안 연 날"은 관리자가 그날에 자리를 안 깔아 배정이 불가능한 날이고, "확정 전"은 근무표 자체가 아직 공개되지 않은 상태다. 둘 다 [domain/schedule.md](../../domain/schedule.md)의 용어다. 안 연 날은 확정된 사실이라 흐린 글자로 끝내고, 확정 전은 아직 모른다는 뜻이라 점선으로 그린다.
 
-달력 한 장에서 쓰는 색은 브랜드와 뉴트럴 둘뿐이다. 상태가 여럿인데 색을 둘로 버티는 것은, 상태마다 색을 붙이면 달력이 색 지도가 되고 정작 오늘이 어디인지 안 보이기 때문이다.
+달력 한 장에서 쓰는 색은 브랜드와 뉴트럴 둘뿐이다. 상태가 여럿인데 색을 둘로 버티는 것은, 상태마다 색을 붙이면 달력이 색 지도가 되고 정작 내 근무가 어디인지 안 보이기 때문이다.
 
 ## 빈 상태
 

@@ -295,6 +295,7 @@
 
   --interval-rotate: 4s;
   --interval-beat: 1.8s;
+  --interval-dash: 0.55s;
   --stagger-step: 70ms;
 
   --vendor-google-bg: #131314;
