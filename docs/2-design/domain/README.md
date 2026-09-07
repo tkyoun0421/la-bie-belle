@@ -6,7 +6,7 @@ PRD는 왜 만드는지를 담고 규칙은 안 담는다. `docs/2-design/spec/`
 
 ## 지도
 
-- [schedule.md](schedule.md) — 근무표. 포지션과 자리와 배정, 확정, 휴무 희망
+- [schedule.md](schedule.md) — 근무표. 포지션과 자리와 배정, 확정, 근무 신청과 근무 요청
 - [swap.md](swap.md) — 교대. 요청과 수락과 승인, 강제 변경
 - [attendance.md](attendance.md) — 출근 인증. 위치와 QR, 인증 시각
 - [payroll.md](payroll.md) — 급여. 시급과 가산과 조정과 지급 주기

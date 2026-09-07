@@ -25,7 +25,7 @@ PRD에 넣는 길도 막혔다. 엣지 케이스까지 담으면 PRD가 수백 �
 ```
 docs/2-design/domain/
   README.md      지도와 컨텍스트 경계
-  schedule.md    근무표 — 포지션·자리·배정·확정·휴무 희망
+  schedule.md    근무표 — 포지션·자리·배정·확정·근무 신청
   swap.md        교대 — 요청과 수락과 승인, 강제 변경
   attendance.md  출근 인증 — 위치와 QR, 인증 시각
   payroll.md     급여 — 시급·가산·조정·정산
