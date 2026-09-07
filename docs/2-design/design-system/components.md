@@ -207,6 +207,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 | 근무 없음(열린 날) | `bg.neutral-weak` | `fg.neutral-muted` | 없음 | 없음 |
 | 안 연 날 | 없음 | `fg.neutral-subtle` | 없음 | 없음 |
 | 확정 전 | 없음 | `fg.neutral-subtle` | `stroke.neutral-muted` 점선 | 없음 |
+| 확정 전 — 신청에서 고른 날 | `bg.brand-weak-selected` | `fg.neutral` | `stroke.brand-solid` | 체크 |
 
 관리자 편집 상태다. [pages/schedule-admin.md](pages/schedule-admin.md#달력-칸)가 더한 것을 여기로 합쳤다. 그 문서의 「닫힌 날」은 이 표의 「안 연 날」과 같은 것이다.
 
