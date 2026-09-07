@@ -126,6 +126,7 @@ code {
   --palette-neutral-600: oklch(.625 .005 57);
   --palette-neutral-700: oklch(.545 .005 57);
   --palette-neutral-800: oklch(.455 .005 57);
+  --palette-neutral-900: oklch(.32 .0053 57);
   --palette-neutral-1000: oklch(.215 .0055 57);
   --palette-brand-100: oklch(.965 .0128 57);
   --palette-brand-200: oklch(.905 .022 57);
@@ -136,6 +137,7 @@ code {
   --palette-warning-500: oklch(.68 .1504 88);
   --palette-critical-100: oklch(.965 .0319 27);
   --palette-critical-800: oklch(.455 .1334 27);
+  --palette-informative-400: oklch(.76 .0897 248);
   --surface-stroke: transparent;
   --scrim-ink: var(--palette-neutral-1000);
   --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
@@ -151,6 +153,7 @@ code {
   --palette-neutral-600: oklch(.585 .005 57);
   --palette-neutral-700: oklch(.665 .005 57);
   --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
   --palette-neutral-1000: oklch(.935 .0055 57);
   --palette-brand-100: oklch(.205 .0128 57);
   --palette-brand-200: oklch(.265 .022 57);
@@ -161,6 +164,7 @@ code {
   --palette-warning-500: oklch(.48 .1504 88);
   --palette-critical-100: oklch(.205 .0319 27);
   --palette-critical-800: oklch(.745 .1334 27);
+  --palette-informative-400: oklch(.4 .0897 248);
   --surface-stroke: var(--palette-neutral-200);
   --scrim-ink: var(--palette-neutral-00);
   --card-shadow: none;
@@ -177,6 +181,7 @@ code {
     --palette-neutral-600: oklch(.585 .005 57);
     --palette-neutral-700: oklch(.665 .005 57);
     --palette-neutral-800: oklch(.745 .005 57);
+    --palette-neutral-900: oklch(.845 .0053 57);
     --palette-neutral-1000: oklch(.935 .0055 57);
     --palette-brand-100: oklch(.205 .0128 57);
     --palette-brand-200: oklch(.265 .022 57);
@@ -187,6 +192,7 @@ code {
     --palette-warning-500: oklch(.48 .1504 88);
     --palette-critical-100: oklch(.205 .0319 27);
     --palette-critical-800: oklch(.745 .1334 27);
+    --palette-informative-400: oklch(.4 .0897 248);
     --surface-stroke: var(--palette-neutral-200);
     --scrim-ink: var(--palette-neutral-00);
     --card-shadow: none;
@@ -203,6 +209,7 @@ code {
   --palette-neutral-600: oklch(.585 .005 57);
   --palette-neutral-700: oklch(.665 .005 57);
   --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
   --palette-neutral-1000: oklch(.935 .0055 57);
   --palette-brand-100: oklch(.205 .0128 57);
   --palette-brand-200: oklch(.265 .022 57);
@@ -213,6 +220,7 @@ code {
   --palette-warning-500: oklch(.48 .1504 88);
   --palette-critical-100: oklch(.205 .0319 27);
   --palette-critical-800: oklch(.745 .1334 27);
+  --palette-informative-400: oklch(.4 .0897 248);
   --surface-stroke: var(--palette-neutral-200);
   --scrim-ink: var(--palette-neutral-00);
   --card-shadow: none;
@@ -222,6 +230,7 @@ code {
   --bg-neutral: var(--palette-neutral-00);
   --bg-neutral-weak: var(--palette-neutral-100);
   --bg-neutral-solid: var(--palette-neutral-1000);
+  --bg-neutral-solid-soft: var(--palette-neutral-900);
   --bg-neutral-disabled: var(--palette-neutral-100);
   --bg-brand-solid: var(--palette-brand-800);
   --bg-brand-weak: var(--palette-brand-100);
@@ -234,6 +243,7 @@ code {
   --fg-neutral-muted: var(--palette-neutral-800);
   --fg-neutral-subtle: var(--palette-neutral-700);
   --fg-neutral-contrast: var(--palette-neutral-00);
+  --fg-informative-contrast: var(--palette-informative-400);
   --fg-neutral-disabled: var(--palette-neutral-700);
   --fg-brand: var(--palette-brand-800);
   --fg-brand-contrast: var(--palette-neutral-00);
@@ -502,12 +512,21 @@ code {
 .optrow + .optrow { border-top: 1px solid var(--stroke-neutral); }
 .optrow .ot { font-size: var(--t-sm); font-weight: 500; }
 .optrow .od { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+/* 토스트 — components.md 「토스트」가 정본이다. bg.neutral-solid-soft 반전 면의 알약,
+   내용 폭, shadow-card. 이 화면은 하단 CTA가 있어 화면 아래에서 88px 그대로 둔다 */
 .toast {
-  position: absolute; left: 24px; right: 24px; bottom: 88px; z-index: 6;
-  background: var(--bg-neutral-solid); color: var(--fg-neutral-contrast);
-  border-radius: var(--r-md); padding: 11px 16px; text-align: center;
+  position: absolute; left: 50%; bottom: 88px; z-index: 6; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 8px; max-width: calc(100% - 48px);
+  background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
+  border-radius: 999px; padding: 11px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
+  box-shadow: var(--card-shadow);
 }
+/* 왼쪽 면 아이콘 — 16px, 원이 계열색(fg.informative-contrast)으로 차고 안쪽 표시는
+   토스트 면 색으로 뚫린다. 표시는 원 중심 기준 ×1.35로 키운다(components.md 「토스트」) */
+.toast-ic { flex: 0 0 auto; }
+.toast-ic circle { fill: var(--ic); }
+.toast-ic path, .toast-ic line { fill: none; stroke: var(--bg-neutral-solid-soft); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .morewrap[hidden] { display: none; }
 /* 근무 요청 보내기 체크박스 — 색은 fg.brand, 날 열기 모드의 선택 체크와 같다. 「제안」 */
 .pchk {
@@ -1160,12 +1179,21 @@ code {
               <div class="prow blocked"><span class="pavatar">한</span><span class="pname">한지민</span><span class="pstat">매니저에 배정됨</span></div>
             </div>
           </div>
-          <div class="toast">겸임은 자리를 합쳐 만드세요</div>
+          <div class="toast">
+            <svg class="toast-ic" style="--ic: var(--fg-informative-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </g>
+            </svg>
+            <span>겸임은 자리를 합쳐 만드세요</span>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">PICKER — 눌러보기</div>
           <div class="cap-name">기본과 전체 보기</div>
-          <p class="cap-body">기본 목록은 자격 있고, 그날 배정이 없고, 근무 신청을 낸 사람이다. <strong>배정된 줄을 누르면 토스트</strong>가 「겸임은 자리를 합쳐 만드세요」라고 알린다.</p>
+          <p class="cap-body">기본 목록은 자격 있고, 그날 배정이 없고, 근무 신청을 낸 사람이다. <strong>배정된 줄을 누르면 토스트</strong>가 「겸임은 자리를 합쳐 만드세요」라고 알린다 — 알약 모양에 왼쪽 <code>fg.informative-contrast</code> 면 아이콘이다(components.md 「토스트」).</p>
           <p class="cap-body" style="margin-top:8px"><strong>미신청 줄(박서연)에 체크박스가 붙는다.</strong> 배정으론 안 눌리지만 체크해서 근무 요청을 보낸다 — 체크 표시 색은 <code>fg.brand</code>, 날 열기 모드의 선택 체크와 같다. 색은 「제안」이다.</p>
         </figcaption>
       </figure>

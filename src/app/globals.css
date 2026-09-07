@@ -258,6 +258,7 @@
   --role-bg-neutral-weak: var(--palette-neutral-100);
   --role-bg-neutral-weak-pressed: var(--palette-neutral-200);
   --role-bg-neutral-solid: var(--palette-neutral-1000);
+  --role-bg-neutral-solid-soft: var(--palette-neutral-900);
   --role-bg-neutral-disabled: var(--palette-neutral-100);
   --role-bg-brand-solid: var(--palette-brand-800);
   --role-bg-brand-solid-pressed: var(--palette-brand-900);
@@ -281,6 +282,8 @@
   --role-fg-positive: var(--palette-positive-800);
   --role-fg-critical: var(--palette-critical-800);
   --role-fg-informative: var(--palette-informative-800);
+  --role-fg-positive-contrast: var(--palette-positive-400);
+  --role-fg-informative-contrast: var(--palette-informative-400);
 
   --role-stroke-neutral: var(--palette-neutral-200);
   --role-stroke-neutral-muted: var(--palette-neutral-300);
@@ -430,6 +433,7 @@
   --color-bg-neutral-weak: var(--role-bg-neutral-weak);
   --color-bg-neutral-weak-pressed: var(--role-bg-neutral-weak-pressed);
   --color-bg-neutral-solid: var(--role-bg-neutral-solid);
+  --color-bg-neutral-solid-soft: var(--role-bg-neutral-solid-soft);
   --color-bg-neutral-disabled: var(--role-bg-neutral-disabled);
   --color-bg-brand-solid: var(--role-bg-brand-solid);
   --color-bg-brand-solid-pressed: var(--role-bg-brand-solid-pressed);
@@ -453,6 +457,8 @@
   --color-fg-positive: var(--role-fg-positive);
   --color-fg-critical: var(--role-fg-critical);
   --color-fg-informative: var(--role-fg-informative);
+  --color-fg-positive-contrast: var(--role-fg-positive-contrast);
+  --color-fg-informative-contrast: var(--role-fg-informative-contrast);
 
   --color-stroke-neutral: var(--role-stroke-neutral);
   --color-stroke-neutral-muted: var(--role-stroke-neutral-muted);

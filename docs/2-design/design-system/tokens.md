@@ -153,6 +153,7 @@ hue 248, chroma 최대 0.115.
 | `bg.neutral-weak` | neutral-100 | `#F5F3F1` | `#191715` | `bg-bg-neutral-weak` |
 | `bg.neutral-weak-pressed` | neutral-200 | `#E2DFDD` | `#272523` | `bg-bg-neutral-weak-pressed` |
 | `bg.neutral-solid` | neutral-1000 | `#1B1917` | `#ECE9E6` | `bg-bg-neutral-solid` |
+| `bg.neutral-solid-soft` | neutral-900 | `#353230` | `#CFCBC9` | `bg-bg-neutral-solid-soft` |
 | `bg.neutral-disabled` | neutral-100 | `#F5F3F1` | `#191715` | `bg-bg-neutral-disabled` |
 | `bg.brand-solid` | brand-800 | `#6E4F39` | `#C7A48C` | `bg-bg-brand-solid` |
 | `bg.brand-solid-pressed` | brand-900 | `#442D1B` | `#E4C5B0` | `bg-bg-brand-solid-pressed` |
@@ -180,8 +181,12 @@ hue 248, chroma 최대 0.115.
 | `fg.positive` | positive-800 | `#1A6738` | `#77C08B` | `text-fg-positive` |
 | `fg.critical` | critical-800 | `#93302B` | `#F5897E` | `text-fg-critical` |
 | `fg.informative` | informative-800 | `#1B5A8E` | `#75B2EC` | `text-fg-informative` |
+| `fg.positive-contrast` | positive-400 | `#85C295` | `#18552E` | `text-fg-positive-contrast` |
+| `fg.informative-contrast` | informative-400 | `#83B6E8` | `#184A75` | `text-fg-informative-contrast` |
 
 `fg.warning`은 없다. 만들지 않은 것이라 나중에 필요해 보여도 더하지 않는다.
+
+`-contrast`가 붙은 계열색 둘은 반전 면 위에 서는 자리를 위한 것이다. `fg.positive`가 라이트에서 어두운 녹색(`#1A6738`)이라 토스트처럼 어두운 면 위에 올리면 안 보인다. 팔레트가 적응형이라 `-400` 단계가 그 반전을 그대로 해준다 — 라이트에서 밝고 다크에서 어둡다. `fg.neutral-contrast`가 neutral-00으로 같은 일을 하는 것과 같은 결이다. `fg.critical-contrast`는 만들지 않았다. 쓰는 자리가 없어서다.
 
 ### stroke
 
