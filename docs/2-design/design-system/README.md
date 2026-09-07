@@ -15,6 +15,7 @@
 - [components.md](components.md) — 컴포넌트별 역할 토큰 표
 - [pages/login.md](pages/login.md) — 로그인 화면과 승인 대기 화면
 - [pages/dashboard.md](pages/dashboard.md) — 근무자 대시보드와 출근 인증 화면과 사유 시트
+- [pages/schedule-admin.md](pages/schedule-admin.md) — 관리자 홈과 근무표 제작·확정 화면
 - `pages/*.sian.html` — 화면별 시안. 문서 옆에 같은 이름으로 놓는다
 
 ## 두 축
