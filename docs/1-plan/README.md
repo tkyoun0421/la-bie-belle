@@ -6,6 +6,6 @@
 - `scenarios.md` — 사용자 시나리오. 인물과 상황 단위의 이야기
 - `roadmap.md` — 우선순위와 릴리스 단위
 - `metrics.md` — 성공 지표의 정의
-- `intent/` — 기능·이슈별 디스커버리 산출물. 태관과의 인터뷰가 낳고, spec의 입력이 된다
+- `intent/` — 기능·이슈별 디스커버리 산출물. 인터뷰가 낳고, spec의 입력이 된다
 
 사슬의 첫 고리가 여기다: `intent/<슬러그>.md` → `2-design/spec/<슬러그>.md` → `3-build/plans/<슬러그>.md`. 근거는 ADR-005에 있다.

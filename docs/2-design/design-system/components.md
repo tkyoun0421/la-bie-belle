@@ -197,21 +197,33 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 색 규칙이 가장 쉽게 무너지는 자리다. 규칙의 근거는 [foundation/color.md](foundation/color.md#근무표에서-색을-쓰는-법)에 있고, 여기는 칸별 조합만 적는다.
 
+근무자 조회 상태다.
+
 | 상태 | 배경 | 날짜 글자 | 테두리 | 표식 |
 | --- | --- | --- | --- | --- |
 | 오늘이면서 근무 있음 | `bg.brand-solid` | `fg.brand-contrast` | 없음 | 없음 |
 | 오늘이면서 근무 없음 | `bg.brand-solid` | `fg.brand-contrast` | 없음 | 없음 |
-| 근무 있음 | `bg.neutral` + `shadow-card` | `fg.neutral` | `stroke.surface` | `bg.brand-solid` 점 |
-| 근무 없음 | 없음 | `fg.neutral-muted` | 없음 | 없음 |
+| 근무 있음 | `bg.neutral-weak` | `fg.neutral` | 없음 | `bg.brand-solid` 점 |
+| 근무 없음(열린 날) | `bg.neutral-weak` | `fg.neutral-muted` | 없음 | 없음 |
 | 안 연 날 | 없음 | `fg.neutral-subtle` | 없음 | 없음 |
 | 확정 전 | 없음 | `fg.neutral-subtle` | `stroke.neutral-muted` 점선 | 없음 |
-| 교육 배정 | `bg.neutral` + `shadow-card` | `fg.neutral` | `stroke.surface` | `fg.neutral-subtle` 점 |
 
-브랜드 색으로 칸이 채워지는 것은 오늘 하루뿐이다. 근무가 있는 날은 카드로 떠오르고 브랜드 색은 점에만 쓴다.
+관리자 편집 상태다. [pages/schedule-admin.md](pages/schedule-admin.md#달력-칸)가 더한 것을 여기로 합쳤다. 그 문서의 「닫힌 날」은 이 표의 「안 연 날」과 같은 것이다.
+
+| 상태 | 배경 | 날짜 글자 | 테두리 | 표식 |
+| --- | --- | --- | --- | --- |
+| 안 연 날 | 없음 | `fg.neutral-subtle` | 없음 | 없음 |
+| 열린 날 | `bg.neutral-weak` | `fg.neutral` | 없음 | 희망 수 또는 빈 자리 |
+| 오늘 | `bg.brand-solid` | `fg.brand-contrast` | 없음 | — |
+| 선택된 날 — 열기 모드 | `bg.brand-weak-selected` | `fg.neutral` | `stroke.brand-solid` | 체크 |
+
+브랜드 색으로 칸이 채워지는 것은 오늘 하루뿐이다. 예식이 있는 열린 날은 옅은 면으로 갈리고 브랜드 색은 점에만 쓴다 — 카드처럼 띄우는 볼록함 대신 면 채움이다.
+
+교육 배정은 근무 있음과 같은 칸이다. 교육인지는 칸이 아니라 명단과 목록의 글자가 말한다.
 
 "안 연 날"은 관리자가 그날에 자리를 안 깔아 배정이 불가능한 날이고, "확정 전"은 근무표 자체가 아직 공개되지 않은 상태다. 둘 다 [domain/schedule.md](../../domain/schedule.md)의 용어다. 안 연 날은 확정된 사실이라 흐린 글자로 끝내고, 확정 전은 아직 모른다는 뜻이라 점선으로 그린다.
 
-달력 한 장에서 쓰는 색은 브랜드와 뉴트럴 둘뿐이다. 상태가 일곱인데 색을 둘로 버티는 것은, 상태마다 색을 붙이면 달력이 색 지도가 되고 정작 오늘이 어디인지 안 보이기 때문이다.
+달력 한 장에서 쓰는 색은 브랜드와 뉴트럴 둘뿐이다. 상태가 여럿인데 색을 둘로 버티는 것은, 상태마다 색을 붙이면 달력이 색 지도가 되고 정작 오늘이 어디인지 안 보이기 때문이다.
 
 ## 빈 상태
 
