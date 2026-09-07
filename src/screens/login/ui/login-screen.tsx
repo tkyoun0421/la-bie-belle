@@ -40,9 +40,10 @@ export function LoginScreen({ onSignIn }: { onSignIn: () => Promise<void> }) {
           type="submit"
           className={cn(
             APPEAR,
-            "flex h-12 w-full items-center justify-center rounded-full border border-google-stroke bg-google-bg text-sm font-medium text-google-fg transition-transform duration-[var(--duration-fast)] [--tw-animation-delay:calc(var(--stagger-step)*3)] motion-safe:active:scale-[0.97]",
+            "flex h-12 w-full items-center justify-center gap-3 rounded-full border border-google-stroke bg-google-bg text-sm font-medium text-google-fg transition-transform duration-[var(--duration-fast)] [--tw-animation-delay:calc(var(--stagger-step)*3)] motion-safe:active:scale-[0.97]",
           )}
         >
+          <span className="size-6 shrink-0 bg-[url(/google-g.svg)] bg-contain bg-center bg-no-repeat" />
           Google 계정으로 로그인
         </button>
         <p
