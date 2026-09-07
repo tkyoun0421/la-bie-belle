@@ -28,6 +28,8 @@
   「제안」으로 그린 것 — 결정되면 문서에서 표시를 떼고 여기도 같이 고친다.
   · 근무 취소 버튼의 마감. 도메인 미정이라 교대와 같은 「전날까지」로 그렸다
   · 아코디언 기본 펼침. 전부 접힘으로 두고 04·05는 한 날을 누른 뒤를 그렸다
+  · 09/보낸 뒤의 「요청 중」 배지 문구·자리와 버튼 둘 비활성. 「보낸 뒤」 절 전체가 제안이다
+  · 10/사유 글자 상한 500자. 카운터를 「498 / 500」으로 고정해 거의 찬 상태를 보였다
 -->
 <title>근무자 근무표 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -172,6 +174,8 @@ body.view-scene .stage.scene-live { display: block; }
   --palette-neutral-1000: oklch(.215 .0055 57);
   --palette-brand-100: oklch(.965 .0128 57);
   --palette-brand-800: oklch(.455 .0534 57);
+  --palette-critical-100: oklch(.965 .0319 27);
+  --palette-critical-800: oklch(.455 .1334 27);
   --surface-stroke: transparent;
   --scrim-ink: var(--palette-neutral-1000);
   --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
@@ -187,6 +191,8 @@ body.view-scene .stage.scene-live { display: block; }
   --palette-neutral-1000: oklch(.935 .0055 57);
   --palette-brand-100: oklch(.205 .0128 57);
   --palette-brand-800: oklch(.745 .0534 57);
+  --palette-critical-100: oklch(.205 .0319 27);
+  --palette-critical-800: oklch(.745 .1334 27);
   --surface-stroke: var(--palette-neutral-200);
   --scrim-ink: var(--palette-neutral-00);
   --card-shadow: none;
@@ -203,6 +209,8 @@ body.view-scene .stage.scene-live { display: block; }
     --palette-neutral-1000: oklch(.935 .0055 57);
     --palette-brand-100: oklch(.205 .0128 57);
     --palette-brand-800: oklch(.745 .0534 57);
+    --palette-critical-100: oklch(.205 .0319 27);
+    --palette-critical-800: oklch(.745 .1334 27);
     --surface-stroke: var(--palette-neutral-200);
     --scrim-ink: var(--palette-neutral-00);
     --card-shadow: none;
@@ -219,6 +227,8 @@ body.view-scene .stage.scene-live { display: block; }
   --palette-neutral-1000: oklch(.935 .0055 57);
   --palette-brand-100: oklch(.205 .0128 57);
   --palette-brand-800: oklch(.745 .0534 57);
+  --palette-critical-100: oklch(.205 .0319 27);
+  --palette-critical-800: oklch(.745 .1334 27);
   --surface-stroke: var(--palette-neutral-200);
   --scrim-ink: var(--palette-neutral-00);
   --card-shadow: none;
@@ -242,6 +252,8 @@ body.view-scene .stage.scene-live { display: block; }
   --stroke-neutral-muted: var(--palette-neutral-300);
   --stroke-neutral-disabled: var(--palette-neutral-200);
   --stroke-brand-solid: var(--palette-brand-800);
+  --bg-critical-weak: var(--palette-critical-100);
+  --fg-critical: var(--palette-critical-800);
 
   --t-xs: .8125rem; --lh-xs: 1.21875rem;
   --t-sm: .9375rem; --lh-sm: 1.40625rem;
@@ -285,6 +297,8 @@ body.view-scene .stage.scene-live { display: block; }
 }
 .btn:disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); cursor: default; }
 .btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+/* 09/보낸 뒤 — secondary와 disabled가 같은 버튼에 겹치는 첫 자리라 순서 무관하게 disabled가 이기도록 못 박는다 */
+.btn.secondary:disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); }
 /* 취소가 왼쪽, 교대가 오른쪽. 둘 다 그 자리의 진짜 액션이라 폭을 반씩 나눈다 */
 .rowbtns { display: flex; gap: 8px; margin-top: 16px; }
 .rowbtns .btn { flex: 1 1 0; }
@@ -329,7 +343,7 @@ body.view-scene .stage.scene-live { display: block; }
 /* 열린 날은 옅은 면이다. 근무 없는 열린 날만 날짜가 muted로 내려간다 */
 .cell.open, .cell.none { background: var(--bg-neutral-weak); }
 .cell.none b { color: var(--fg-neutral-muted); font-weight: 400; }
-/* 내 근무 점. 교육 배정도 같은 점이다(2026-09-07 — 회색 점 구분을 걷었다) */
+/* 내 근무 점. 교육 배정도 같은 점이다 */
 .cell .dot { width: 5px; height: 5px; border-radius: 999px; background: var(--bg-brand-solid); }
 /* 브랜드로 칸이 채워지는 것은 오늘 하루뿐이고, 오늘 칸에는 점이 없다 */
 .cell.today { background: var(--bg-brand-solid); }
@@ -415,6 +429,17 @@ body.view-scene .stage.scene-live { display: block; }
   padding: 12px; min-height: 92px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral);
 }
 .field .box.ph { color: var(--fg-neutral-subtle); }
+.field .cnt { margin-top: 6px; text-align: right; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+
+/* 10/실패와 경합 — 오류 블록. components.md 알림 블록의 오류 계열(bg.critical-weak)을 글자만 fg.critical로 단순화했다(아이콘 없음) */
+.errbox {
+  margin-top: 14px; border-radius: var(--r-lg); background: var(--bg-critical-weak); color: var(--fg-critical);
+  padding: 12px 14px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
+}
+/* 교대 후보 빈 목록 */
+.emptypick { margin: 40px 0; text-align: center; }
+.emptypick .ep-t { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.emptypick .ep-s { margin-top: 4px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
 /* 잠금 화면과 푸시 — OS 크롬이다. 우리 컴포넌트가 아니고 팔레트만 빌렸다 */
 .lock { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
@@ -1158,6 +1183,243 @@ body.view-scene .stage.scene-live { display: block; }
           <div class="cap-key">08 / DARK · ACC</div>
           <div class="cap-name">다크의 아코디언</div>
           <p class="cap-body">내 줄의 <code>bg.brand-weak</code>가 다크에서 아주 어두운 갈색이다 — <strong>면만으로 갈리는지, 「나」와 브랜드 글자가 같이 있어야 읽히는지</strong>를 여기서 본다. secondary 버튼과 Badge neutral이 같은 <code>bg.neutral-weak</code>라 둘의 무게도 같이 확인한다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 09 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">09 / 보낸 뒤</span>
+      <h2>배지가 남고 문이 닫힌다</h2>
+      <p>교대·취소 요청을 보내면 시트가 닫히고 그 배정에 「요청 중」이 남는다(「제안」 — 시안 검수로 확정한다). 그 근무의 버튼 둘도 같이 잠긴다. 결과가 오기 전까지 달력 칸은 안 바뀐다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-sent-acc">
+        <div class="mock">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              10월 근무표
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" aria-label="달력 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" class="on" aria-label="포지션 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 배정만</span>
+            </div>
+            <div class="acc">
+              <div class="dayrow"><b class="num">10월 8일(목)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 9일(금)</b><span class="tag nowork">근무 없음</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 10일(토)</b><span class="badge neutral">교대 요청 중</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span></div>
+              <div class="daybody">
+                <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
+                <div class="mrow"><span class="pos">스캔</span><span class="nm">이서준</span></div>
+                <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
+                <div class="mrow"><span class="pos">드레스</span><span class="nm">김하은</span></div>
+                <div class="mrow"><span class="pos">드레스</span><span class="nm">김지우</span><span class="badge neutral">교육</span></div>
+                <div class="mrow"><span class="pos">축가</span><span class="nm">정우진</span></div>
+                <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호 · 최은우</span></div>
+                <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="badge neutral">교대 요청 중</span><span class="meflag">나</span></div>
+                <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+                <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
+                <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
+                <div class="rowbtns">
+                  <button class="btn secondary" type="button" disabled>근무 취소</button>
+                  <button class="btn" type="button" disabled>교대 요청</button>
+                </div>
+              </div>
+              <div class="dayrow"><b class="num">10월 11일(일)</b><span class="tag nowork">근무 없음</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 17일(토)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 18일(일)</b><span class="tag edu">교육 · 드레스</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">09 / SENT · ACC</div>
+          <div class="cap-name">교대 요청 보낸 직후 · 포지션 순</div>
+          <p class="cap-body">10일 날짜 줄 오른쪽과 펼침의 내 줄에 <strong>Badge neutral 「교대 요청 중」</strong>이 선다 — 근무 취소를 보냈으면 같은 자리에 「취소 요청 중」이다. 「보낸 뒤」 절 전체가 <strong>「제안」</strong>이라 배지 문구와 자리는 시안 검수로 확정한다.</p>
+          <p class="cap-body" style="margin-top:8px">하단 버튼 둘이 <strong>비활성이다(「제안」)</strong> — 같은 근무에 교대와 취소를 겹쳐 거는 길을 막는다. disabled 스타일은 schedule-admin.sian.html의 disabled 버튼과 같은 <code>bg.neutral-disabled</code> · <code>fg.neutral-disabled</code>다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-sent-sheet">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 근무표</span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+              <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
+              <span class="cell open"><b>17</b><span class="dot"></span></span>
+              <span class="cell open"><b>18</b><span class="dot"></span></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">10월 10일(토)</div>
+            <div class="sh-sub num">10:00 – 18:00 · 11명</div>
+            <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
+            <div class="mrow"><span class="pos">스캔</span><span class="nm">이서준</span></div>
+            <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
+            <div class="mrow"><span class="pos">드레스</span><span class="nm">김하은</span></div>
+            <div class="mrow"><span class="pos">드레스</span><span class="nm">김지우</span><span class="badge neutral">교육</span></div>
+            <div class="mrow"><span class="pos">축가</span><span class="nm">정우진</span></div>
+            <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호 · 최은우</span></div>
+            <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="badge neutral">교대 요청 중</span><span class="meflag">나</span></div>
+            <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+            <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
+            <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
+            <div class="rowbtns">
+              <button class="btn secondary" type="button" disabled>근무 취소</button>
+              <button class="btn" type="button" disabled>교대 요청</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">09 / SENT · SHEET</div>
+          <div class="cap-name">같은 상태에서 날 시트를 다시 열면</div>
+          <p class="cap-body">내 줄에 같은 배지가 서고 버튼 둘은 그대로 비활성이다. <strong>달력 칸은 안 바뀐다</strong> — 10일 칸은 점 그대로고 배지나 다른 표식이 안 붙는다. 승인 전까지 근무가 그대로라서다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">10 / 실패와 경합</span>
+      <h2>보내지 못했을 때와 후보가 없을 때</h2>
+      <p>네트워크 실패로 못 보낸 경우와, 나 말고 승인된 근무자가 없어 교대 후보가 비는 경우다. 사유 글자 상한 500자(「제안」)도 여기서 같이 본다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-cancel-fail">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 근무표</span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">근무 취소 · 10월 10일(토) 안내</div>
+            <div class="sh-sub">관리자가 승인해야 취소돼요. 승인 전까지는 예정대로 근무예요</div>
+            <div class="field">
+              <div class="lab">사유 (필수)</div>
+              <div class="box">그날 오전 아홉 시부터 지방에서 할머니 팔순 잔치가 있어서 낮 근무 시간에 맞춰 서울로 돌아오기 어려울 것 같아요. 아침 일찍 출발해도 고속도로가 막히면 저녁 무렵에나 도착할 것 같습니다. 미리 말씀드리지 못해서 정말 죄송하고, 대신 다음 주 평일 근무는 언제든 바꿔드릴 수 있어요. 오늘 아침에서야 정확한 시간을 통보받아서 급하게 요청드립니다. 확인하시는 대로 알려주시면 감사하겠고, 필요하시면 전화로 다시 말씀드리겠습니다. 번거롭게 해드려서 죄송합니다.</div>
+              <div class="cnt num">498 / 500</div>
+            </div>
+            <div class="errbox">보내지 못했어요. 다시 시도해주세요</div>
+            <div class="rowbtns"><button class="btn" type="button">취소 요청 보내기</button></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">10 / CANCEL · FAIL</div>
+          <div class="cap-name">근무 취소 보내기 실패</div>
+          <p class="cap-body">CTA 위에 <strong>오류 블록</strong>이 선다 — 「보내지 못했어요. 다시 시도해주세요」. 입력한 사유는 지우지 않고 그대로 남는다. 면·글자는 <code>bg.critical-weak</code> · <code>fg.critical</code>이다(tokens.md 값) — pages/login.md가 쓰는 알림 블록 계열을 따랐다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>components.md 알림 블록의 오류 정의(글자 fg.neutral + 아이콘 fg.critical)와는 다르다.</strong> 이 상자는 아이콘 없이 글자 자체에 fg.critical을 얹었다 — 짧은 한 줄 오류라 아이콘 없이도 읽힌다고 봤지만, 공용 알림 블록과 다른 배합이라 검수에서 맞출지 정한다.</p>
+          <p class="cap-body" style="margin-top:8px">입력 아래 <strong>「498 / 500」 카운터 한 줄</strong>이 사유 글자 상한 500자(「제안」)를 보여준다 — 상한이 거의 찬 상태를 보이려 고른 숫자고, 위 예시 글의 실제 글자 수를 센 것은 아니다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-swap-empty">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 근무표</span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell today"><b>8</b></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">교대 요청 · 10월 10일(토) 안내</div>
+            <div class="sh-sub">여러 명에게 보낼 수 있어요. 수락한 사람 중 관리자가 정해요</div>
+            <div class="emptypick">
+              <div class="ep-t">보낼 사람이 없어요</div>
+              <div class="ep-s">관리자에게 바로 보낼 수 있어요</div>
+            </div>
+            <div class="rowbtns"><button class="btn" type="button">관리자에게만 보내기</button></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">10 / SWAP · EMPTY</div>
+          <div class="cap-name">교대 후보가 없다</div>
+          <p class="cap-body">승인된 근무자가 나뿐이면 후보 목록이 빈다. 빈 자리에 <strong>「보낼 사람이 없어요. 관리자에게 바로 보낼 수 있어요」</strong>가 서고, 고르는 CTA 대신 <strong>「관리자에게만 보내기」 버튼 하나</strong>만 남는다 — 06의 텍스트 링크가 아니라 이 화면의 유일한 액션이라 Button primary로 세웠다.</p>
+          <p class="cap-body" style="margin-top:8px">부제는 후보가 있을 때와 같은 문구를 그대로 뒀다 — 문서가 빈 상태 전용 부제를 따로 안 적어서다. 어색하면 검수에서 고친다.</p>
         </figcaption>
       </figure>
 
