@@ -29,6 +29,8 @@
   · 근무 취소 버튼의 마감. 도메인 미정이라 교대와 같은 「전날까지」로 그렸다
   · 아코디언 기본 펼침. 전부 접힘으로 두고 04·05는 한 날을 누른 뒤를 그렸다
     · 10/사유 글자 상한 100자. 카운터를 「98 / 100」으로 고정해 거의 찬 상태를 보였다
+  · 11/확정 전 — 근무 신청. 고른 날 칸 조합·BottomCTA 「보내기」·마감 뒤와 접수 전 안내 문구,
+    전부 문서가 이미 「제안」으로 표시해둔 것을 그대로 옮겼다. 시안이 새로 제안한 것이 아니다
 -->
 <title>근무자 근무표 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -349,6 +351,21 @@ body.view-scene .stage.scene-live { display: block; }
 .cell.today b { color: var(--fg-brand-contrast); }
 .legend { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
+/* 11/확정 전 — 근무 신청. 「확정 전」 점선 칸이 components.md 근무자 조회 표의 마지막 줄이다 */
+.cell.pre { border: 1px dashed var(--stroke-neutral-muted); }
+.cell.pre b { color: var(--fg-neutral-subtle); font-weight: 400; }
+/* 고른 날 — 관리자 날 열기 모드의 선택 칸과 같은 조합을 빌렸다(문서가 「제안」으로 명시) */
+.cell.pre.sel { background: var(--bg-brand-weak-selected); border: 1px solid var(--stroke-brand-solid); }
+.cell.pre.sel b { color: var(--fg-neutral); font-weight: 500; }
+.cell.pre.sel::after { content: "✓"; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-brand); }
+/* 마감 줄 — 접수 중과 마감 뒤가 같은 자리·같은 색을 쓴다 */
+.deadline { padding: 4px 0 12px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+/* 확정 대기 · 접수 전 안내 한 줄 */
+.waitline { margin-top: 6px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.body > .waitline:first-child { margin-top: 4px; }
+/* BottomCTA — components.md의 정의대로 컨테이너는 bg.neutral에 위쪽 선 stroke.neutral, 버튼은 Button primary다 */
+.ctabar { flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding: 10px 24px 22px; }
+
 /* 바텀시트와 덮개 */
 .scrim {
   position: absolute; inset: 0; z-index: 3; background: var(--scrim-ink);
@@ -435,10 +452,6 @@ body.view-scene .stage.scene-live { display: block; }
   margin-top: 14px; border-radius: var(--r-lg); background: var(--bg-critical-weak); color: var(--fg-critical);
   padding: 12px 14px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
 }
-/* 교대 후보 빈 목록 */
-.emptypick { margin: 40px 0; text-align: center; }
-.emptypick .ep-t { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
-.emptypick .ep-s { margin-top: 4px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
 /* 잠금 화면과 푸시 — OS 크롬이다. 우리 컴포넌트가 아니고 팔레트만 빌렸다 */
 .lock { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
@@ -577,7 +590,7 @@ body.view-scene .stage.scene-live { display: block; }
           <div class="cap-name">달력 순 · 기본</div>
           <p class="cap-body">알약에 글자가 없다 — 접근성 라벨이 <strong>「달력 순」·「포지션 순」</strong>이다. 「내 배정만」은 이 보기에 안 선다(점이 이미 내 근무만 가리킨다). 열린 날은 전부 눌리고 시트가 올라온다 — 내 근무가 없어도 누가 나가는지 본다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>오늘 칸(8일)이 내 근무 날인데 점이 없다.</strong> components.md의 근무자 조회 표가 오늘 칸에 표식을 안 두기 때문이고, 범례 「점이 내 근무예요」와 부딪히는 자리라 시안이 드러내 둔다. 04의 아코디언은 같은 8일을 「안내」로 적는다.</p>
-          <p class="cap-body" style="margin-top:8px">확정 전인 달과 근무표를 아직 안 만든 달의 모습은 <strong>문서의 「아직 안 정한 것」이라 안 그렸다.</strong> 휴무 희망 제출 화면과 같이 정한다.</p>
+          <p class="cap-body" style="margin-top:8px">확정 전인 달과 근무표를 아직 안 만든 달의 모습은 <strong>11절 「확정 전 — 근무 신청」</strong>에서 근무 신청 화면으로 그린다 — 이 절의 달력과는 다른 자리다.</p>
         </figcaption>
       </figure>
 
@@ -1406,19 +1419,205 @@ body.view-scene .stage.scene-live { display: block; }
           <div class="rsheet">
             <div class="grab"></div>
             <div class="sh-title num">교대 요청 · 10월 10일(토) 안내</div>
-            <div class="sh-sub">여러 명에게 보낼 수 있어요. 수락한 사람 중 관리자가 정해요</div>
-            <div class="emptypick">
-              <div class="ep-t">보낼 사람이 없어요</div>
-              <div class="ep-s">관리자에게 바로 보낼 수 있어요</div>
-            </div>
-            <div class="rowbtns"><button class="btn" type="button">관리자에게만 보내기</button></div>
+            <div class="sh-sub">보낼 사람이 없어요. 관리자에게 바로 보낼 수 있어요</div>
+            <div class="rowbtns" style="margin-top:28px"><button class="btn" type="button">관리자에게만 보내기</button></div>
           </div>
         </div>
         <figcaption>
           <div class="cap-key">10 / SWAP · EMPTY</div>
           <div class="cap-name">교대 후보가 없다</div>
-          <p class="cap-body">승인된 근무자가 나뿐이면 후보 목록이 빈다. 빈 자리에 <strong>「보낼 사람이 없어요. 관리자에게 바로 보낼 수 있어요」</strong>가 서고, 고르는 CTA 대신 <strong>「관리자에게만 보내기」 버튼 하나</strong>만 남는다 — 06의 텍스트 링크가 아니라 이 화면의 유일한 액션이라 Button primary로 세웠다.</p>
-          <p class="cap-body" style="margin-top:8px">부제는 후보가 있을 때와 같은 문구를 그대로 뒀다 — 문서가 빈 상태 전용 부제를 따로 안 적어서다. 어색하면 검수에서 고친다.</p>
+          <p class="cap-body">승인된 근무자가 나뿐이면 후보 목록이 빈다. <strong>부제 자체가 「보낼 사람이 없어요. 관리자에게 바로 보낼 수 있어요」로 바뀐다</strong>(「제안」) — 06의 「여러 명에게 보낼 수 있어요…」 자리를 그대로 갈아 끼운다. 고르는 CTA 대신 <strong>「관리자에게만 보내기」 버튼 하나</strong>만 남는다 — 06의 텍스트 링크가 아니라 이 화면의 유일한 액션이라 Button primary로 세웠다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">11 / 확정 전 — 근무 신청</span>
+      <h2>같은 달력이 접수 중엔 신청서, 마감 뒤엔 대기표다</h2>
+      <p>별도 제출 화면이 없다. 확정 전 달로 넘기면 이 달력이 곧 근무 신청 모드고, 확정되면 같은 자리가 01의 근무표로 바뀐다. 알약이 안 선다 — 명단이 없어 포지션 순이 보여줄 것이 없다. 세 목업은 위 01~10이 그리는 「10월 8일, 확정 푸시 직후」보다 <strong>앞선 시점</strong>이다 — 같은 10월이 만들어지고, 접수받고, 마감되는 과정이다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-apply">
+        <div class="mock">
+          <div class="statusbar"><span>09:20</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              10월 근무표
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body">
+            <div class="deadline num">스케줄 신청 마감 10월 2일(금) · 3일 남았어요</div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell pre"><b>5</b></span>
+              <span class="cell pre"><b>6</b></span>
+              <span class="cell pre"><b>7</b></span>
+              <span class="cell pre sel"><b>8</b></span>
+              <span class="cell pre"><b>9</b></span>
+              <span class="cell pre sel"><b>10</b></span>
+              <span class="cell pre"><b>11</b></span>
+              <span class="cell pre"><b>12</b></span>
+              <span class="cell pre"><b>13</b></span>
+              <span class="cell pre"><b>14</b></span>
+              <span class="cell pre"><b>15</b></span>
+              <span class="cell pre"><b>16</b></span>
+              <span class="cell pre sel"><b>17</b></span>
+              <span class="cell pre sel"><b>18</b></span>
+              <span class="cell pre"><b>19</b></span>
+              <span class="cell pre"><b>20</b></span>
+              <span class="cell pre"><b>21</b></span>
+              <span class="cell pre"><b>22</b></span>
+              <span class="cell pre"><b>23</b></span>
+              <span class="cell pre sel"><b>24</b></span>
+              <span class="cell pre"><b>25</b></span>
+              <span class="cell pre"><b>26</b></span>
+              <span class="cell pre"><b>27</b></span>
+              <span class="cell pre"><b>28</b></span>
+              <span class="cell pre"><b>29</b></span>
+              <span class="cell pre"><b>30</b></span>
+              <span class="cell pre"><b>31</b></span>
+              <span class="cell pre"><b>11/1</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="ctabar">
+            <button class="btn" type="button">보내기</button>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">11 / APPLY · OPEN</div>
+          <div class="cap-name">근무 신청 · 마감 전</div>
+          <p class="cap-body">점선 칸은 <code>stroke.neutral-muted</code>다. 눌러 고른 날은 <strong>관리자 날 열기 모드의 선택 칸과 같은 조합</strong> — <code>bg.brand-weak-selected</code> 면에 <code>stroke.brand-solid</code> 테두리와 체크다(components.md에 없어 「제안」으로 빌렸다). <strong>개수 상한이 없어</strong> 다 골라도 된다.</p>
+          <p class="cap-body" style="margin-top:8px">마감 줄이 달력 위에 선다 — 관리자 달력의 마감 줄과 같은 문구다. 하단 고정 <strong>「보내기」는 BottomCTA</strong>다(「제안」). <strong>0개로도 보낸다</strong>(「제안」) — 이미 낸 신청을 전부 무르는 길이 이것뿐이라서다. 보내면 토스트 「10월 근무 신청을 보냈어요」가 뜨고 달력은 고른 채 그대로다(「제안」) — 이 목업은 토스트가 뜨기 전, 고르는 중을 그렸다.</p>
+          <p class="cap-body" style="margin-top:8px">마감 전 재진입도 같은 모습이다 — <strong>보낸 날짜가 선택된 채 열리고</strong>, 고쳐 다시 보내면 이전 제출을 덮어쓴다. 이 목업 하나가 첫 제출 중과 재진입 둘 다를 겸한다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-apply-closed">
+        <div class="mock">
+          <div class="statusbar"><span>09:20</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              10월 근무표
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body">
+            <div class="deadline num">스케줄 신청이 10월 2일에 마감됐어요</div>
+            <div class="waitline">근무표를 만들고 있어요. 확정되면 여기에 보여요</div>
+            <div class="dow" style="margin-top:12px"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell pre"><b>5</b></span>
+              <span class="cell pre"><b>6</b></span>
+              <span class="cell pre"><b>7</b></span>
+              <span class="cell pre sel"><b>8</b></span>
+              <span class="cell pre"><b>9</b></span>
+              <span class="cell pre sel"><b>10</b></span>
+              <span class="cell pre"><b>11</b></span>
+              <span class="cell pre"><b>12</b></span>
+              <span class="cell pre"><b>13</b></span>
+              <span class="cell pre"><b>14</b></span>
+              <span class="cell pre"><b>15</b></span>
+              <span class="cell pre"><b>16</b></span>
+              <span class="cell pre sel"><b>17</b></span>
+              <span class="cell pre sel"><b>18</b></span>
+              <span class="cell pre"><b>19</b></span>
+              <span class="cell pre"><b>20</b></span>
+              <span class="cell pre"><b>21</b></span>
+              <span class="cell pre"><b>22</b></span>
+              <span class="cell pre"><b>23</b></span>
+              <span class="cell pre sel"><b>24</b></span>
+              <span class="cell pre"><b>25</b></span>
+              <span class="cell pre"><b>26</b></span>
+              <span class="cell pre"><b>27</b></span>
+              <span class="cell pre"><b>28</b></span>
+              <span class="cell pre"><b>29</b></span>
+              <span class="cell pre"><b>30</b></span>
+              <span class="cell pre"><b>31</b></span>
+              <span class="cell pre"><b>11/1</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">11 / APPLY · CLOSED</div>
+          <div class="cap-name">마감 뒤 · 확정 전</div>
+          <p class="cap-body">달력이 읽기 전용이다. 내가 보낸 신청이 고른 날 표시 그대로 남고, 날짜가 안 눌리고, <strong>보내기가 없다</strong> — BottomCTA 자체가 사라졌다. 마감 줄이 「스케줄 신청이 10월 2일에 마감됐어요」로 바뀐다.</p>
+          <p class="cap-body" style="margin-top:8px">그 아래 확정 대기 안내 한 줄 — <strong>「근무표를 만들고 있어요. 확정되면 여기에 보여요」</strong>(「제안」). <code>fg.neutral-muted</code> · <code>text-sm</code>이다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-apply-empty">
+        <div class="mock">
+          <div class="statusbar"><span>09:20</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              10월 근무표
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body">
+            <div class="waitline">아직 10월 근무 신청을 받지 않아요. 열리면 알려드릴게요</div>
+            <div class="dow" style="margin-top:12px"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell pre"><b>5</b></span>
+              <span class="cell pre"><b>6</b></span>
+              <span class="cell pre"><b>7</b></span>
+              <span class="cell pre"><b>8</b></span>
+              <span class="cell pre"><b>9</b></span>
+              <span class="cell pre"><b>10</b></span>
+              <span class="cell pre"><b>11</b></span>
+              <span class="cell pre"><b>12</b></span>
+              <span class="cell pre"><b>13</b></span>
+              <span class="cell pre"><b>14</b></span>
+              <span class="cell pre"><b>15</b></span>
+              <span class="cell pre"><b>16</b></span>
+              <span class="cell pre"><b>17</b></span>
+              <span class="cell pre"><b>18</b></span>
+              <span class="cell pre"><b>19</b></span>
+              <span class="cell pre"><b>20</b></span>
+              <span class="cell pre"><b>21</b></span>
+              <span class="cell pre"><b>22</b></span>
+              <span class="cell pre"><b>23</b></span>
+              <span class="cell pre"><b>24</b></span>
+              <span class="cell pre"><b>25</b></span>
+              <span class="cell pre"><b>26</b></span>
+              <span class="cell pre"><b>27</b></span>
+              <span class="cell pre"><b>28</b></span>
+              <span class="cell pre"><b>29</b></span>
+              <span class="cell pre"><b>30</b></span>
+              <span class="cell pre"><b>31</b></span>
+              <span class="cell pre"><b>11/1</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">11 / APPLY · NOT MADE</div>
+          <div class="cap-name">근무표를 아직 안 만든 달</div>
+          <p class="cap-body">관리자가 근무표를 만들어야 접수가 열린다. 안 만든 달은 빈 달력이다 — 같은 점선 칸인데 <strong>아무 날짜도 안 눌리고</strong>, 마감 줄 자리에 안내 한 줄만 선다 — <strong>「아직 10월 근무 신청을 받지 않아요. 열리면 알려드릴게요」</strong>(「제안」). <code>fg.neutral-muted</code> · <code>text-sm</code>이다.</p>
+          <p class="cap-body" style="margin-top:8px">확정된 달인데 열린 날이 하나도 없는 경우는 문서가 「실제로 없다」고 못 박아서 안 그렸다.</p>
         </figcaption>
       </figure>
 

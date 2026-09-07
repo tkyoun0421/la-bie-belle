@@ -358,7 +358,7 @@ code {
 .dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 14px; }
 .dow span { text-align: center; font-size: var(--t-xs); color: var(--fg-neutral-subtle); }
 .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 4px; }
-/* 칸 하나가 두 단이다 — 위에 날짜, 바닥에 희망 수. 채움은 칸에서 뺐다 */
+/* 칸 하나가 두 단이다 — 위에 날짜, 바닥에 신청 수. 채움은 칸에서 뺐다 */
 .cell {
   height: 64px; border-radius: var(--r-sm); display: flex; flex-direction: column; align-items: center;
   justify-content: space-between; padding: 6px 0 4px; font-variant-numeric: tabular-nums; position: relative;
@@ -368,8 +368,8 @@ code {
 .cell.off b { color: var(--fg-neutral-subtle); font-weight: 400; }
 /* 열린 날은 옅은 면이다 — 처음엔 카드(흰 면+그림자+테두리)였다(개정 2026-09-07 2차 검수) */
 .cell.open { background: var(--bg-neutral-weak); cursor: pointer; }
-/* 희망 수는 사람 아이콘과 숫자다 — 처음엔 「○2」였다(2026-09-07).
-   그날 일하는 인원으로도 읽히니 달력 바로 아래 범례가 「휴무 희망」임을 못 박는다 */
+/* 신청 수는 사람 아이콘과 숫자다 — 처음엔 「○2」였다(2026-09-07).
+   그날 일하는 인원으로도 읽히니 달력 바로 아래 범례가 「근무 신청」임을 못 박는다 */
 .cell .hope { display: flex; align-items: center; gap: 2px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-style: normal; }
 .cell .hope svg { flex: 0 0 auto; }
 /* 확정 뒤에만 서는 바닥 단 — 빈 자리가 남은 날의 점선 원 + 수(확정 2026-09-07 — 처음 제안은 글자 「빈 1」). 0이면 그 단이 빈다 */
@@ -621,7 +621,7 @@ code {
           <div class="cap-key">HOME</div>
           <div class="cap-name">관리자 홈 뼈대</div>
           <p class="cap-body">타일 요약 줄이 들어가기 전에 상태를 말한다. <strong>가입 대기는 자리만 잡았다</strong> — 대기 인원 수까지다.</p>
-          <p class="cap-body" style="margin-top:8px">요약 줄이 네 모습이다. 목업은 「만드는 중」 하나뿐이고 나머지 셋은 글로 남긴다 — 아직 없음이 「10월 근무표가 아직 없어요」, 확정 뒤가 「10월 근무표를 확정했어요 · 빈 자리 2」다. <strong>확정 뒤 예식이 사흘 안인데 빈 자리가 남으면 요약 줄이 경고 블록으로 승격한다</strong> — 08절 확정 시트와 같은 <code>bg.warning-weak</code> 면에 <code>warning-500</code> 아이콘이고, 글은 「10월 10일 예식에 빈 자리 1 · 3일 남았어요」다. 빈 자리 재촉 셋 중 홈의 몫이다.</p>
+          <p class="cap-body" style="margin-top:8px">요약 줄이 네 모습이다. 목업은 「만드는 중」 하나뿐이고 나머지 셋은 글로 남긴다 — 아직 없음이 「10월 근무표가 아직 없어요」, 확정 뒤가 「10월 근무표를 확정했어요 · 빈 자리 2」다. <strong>확정 뒤 예식이 사흘 안인데 빈 자리가 남으면 요약 줄이 경고 블록으로 승격한다</strong> — 08절 확정 시트와 같은 <code>bg.warning-weak</code> 면에 <code>warning-500</code> 아이콘이고, 글은 「10월 10일 예식에 빈 자리 1 · 2일 남았어요」다. 빈 자리 재촉 셋 중 홈의 몫이다.</p>
         </figcaption>
       </figure>
 
@@ -693,7 +693,7 @@ code {
             <div class="emptyblock">
               <span class="ic"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span>
               <div class="empty-title">10월 근무표가 아직 없어요</div>
-              <div class="empty-sub">만들면 근무자들이 10월 휴무 희망을 넣을 수 있어요</div>
+              <div class="empty-sub">만들면 근무자들이 10월 근무 신청을 넣을 수 있어요</div>
               <button class="btn">10월 근무표 만들기</button>
             </div>
           </div>
@@ -720,7 +720,7 @@ code {
             <div class="emptyblock">
               <span class="ic"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span>
               <div class="empty-title">10월 근무표가 아직 없어요</div>
-              <div class="empty-sub">만들면 근무자들이 10월 휴무 희망을 넣을 수 있어요</div>
+              <div class="empty-sub">만들면 근무자들이 10월 근무 신청을 넣을 수 있어요</div>
               <button class="btn">10월 근무표 만들기</button>
             </div>
           </div>
@@ -733,7 +733,7 @@ code {
               <div class="box">10월 2일(금)</div>
               <div class="fhint">오늘 이전은 고를 수 없어요</div>
             </div>
-            <div class="fhint" style="margin-top:12px">만드는 순간 10월 휴무 희망 접수가 열려요</div>
+            <div class="fhint" style="margin-top:12px">만드는 순간 10월 근무 신청 접수가 열리고, 근무자 전원에게 알림이 가요</div>
             <div class="rowbtns">
               <button class="btn secondary">닫기</button>
               <button class="btn">만들기</button>
@@ -755,7 +755,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">03 / 월 달력</span>
       <h2>주 단위 묶음이 그대로 보인다</h2>
-      <p>10월 근무표는 10월 5일(월)부터 11월 1일(일)까지다. 범위 줄이 그 답을 미리 하고, 칸은 두 단이다 — 위에 날짜, 바닥에 사람 표시와 휴무 희망 수뿐이다.</p>
+      <p>10월 근무표는 10월 5일(월)부터 11월 1일(일)까지다. 범위 줄이 그 답을 미리 하고, 칸은 두 단이다 — 위에 날짜, 바닥에 사람 표시와 신청 수뿐이다.</p>
     </div>
     <div class="grid">
 
@@ -794,10 +794,10 @@ code {
               <span class="cell open"><b>31</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
               <span class="cell open"><b>11/1</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
             </div>
-            <div class="legend">사람 표시는 휴무 희망이에요</div>
+            <div class="legend">사람 표시는 근무 신청이에요</div>
             <div class="rule" style="margin-top:14px"></div>
             <div class="lrow">
-              <span class="lk" style="font-size:var(--t-sm)">휴무 희망 12건 모아보기</span>
+              <span class="lk" style="font-size:var(--t-sm)">근무 신청 12건 모아보기</span>
               <span class="chev" style="margin-left:auto"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
             <div class="spacer"></div>
@@ -810,7 +810,7 @@ code {
         <figcaption>
           <div class="cap-key">CAL / EDITING</div>
           <div class="cap-name">편집 중, 스케줄 신청 마감 전</div>
-          <p class="cap-body">칸에 채움 「9/11」이 없다 — 어느 날이 덜 찼는지는 날 상세의 셈과 홈 타일이 말하고 <strong>달력은 날을 여닫고 들어가는 지도로 남는다.</strong> 바닥 단의 <strong>사람 표시가 휴무 희망 수</strong>고, 그날 일하는 인원으로 안 읽히게 바로 아래 범례가 못 박는다. 0건이면 그 단이 빈다(9일·18일).</p>
+          <p class="cap-body">칸에 채움 「9/11」이 없다 — 어느 날이 덜 찼는지는 날 상세의 셈과 홈 타일이 말하고 <strong>달력은 날을 여닫고 들어가는 지도로 남는다.</strong> 바닥 단의 <strong>사람 표시가 신청 수</strong>고, 그날 일하는 인원으로 안 읽히게 바로 아래 범례가 못 박는다. 0건이면 그 단이 빈다(9일·18일).</p>
           <p class="cap-body" style="margin-top:8px">확정하기는 스케줄 신청 마감일 전이라 잠겨 있고, 보조 문구가 되는 날을 센다. <strong>경계는 마감일 다음 날 0시고, 화면을 열어둔 채 자정을 넘기면 그 자리에서는 안 풀린다</strong> — 다시 열거나 새로고침하는 <strong>다음 진입에서 풀린다.</strong> 타이머를 안 둔다.</p>
         </figcaption>
       </figure>
@@ -922,7 +922,7 @@ code {
           </div>
           <div class="body">
             <div class="kvline"><span class="k">근무 시간</span><span class="v">10:00–19:00</span></div>
-            <div class="hopeline">휴무 희망 2 · 박서연, 김지우</div>
+            <div class="hopeline">근무 신청 2 · 박서연, 김지우</div>
             <div class="rule"></div>
             <div class="posrow">
               <div class="poshead"><span class="pname">팀장</span><span class="pcnt">1/1</span><span class="sp"></span></div>
@@ -977,7 +977,7 @@ code {
             <div class="kvline"><span class="k">근무 시간</span><span class="v">10:00–19:00</span>
               <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
-            <div class="hopeline">휴무 희망 2 · 박서연, 김지우</div>
+            <div class="hopeline">근무 신청 2 · 박서연, 김지우</div>
             <div class="rule"></div>
             <div class="posrow">
               <div class="poshead"><span class="pname">팀장</span><span class="pcnt">1/1</span><span class="sp"></span><button class="tbtn">교육 붙이기</button><span class="lockic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></div>
@@ -1125,7 +1125,7 @@ code {
             <button class="btn ghost" style="margin:8px auto 0" data-expand>전체 보기</button>
             <div class="morewrap" data-more hidden>
               <div class="rule" style="margin-top:8px"></div>
-              <div class="prow"><span class="pavatar">박</span><span class="pname">박서연</span><span class="pstat">휴무 희망</span></div>
+              <div class="prow blocked"><span class="pavatar">박</span><span class="pname">박서연</span><span class="pstat">신청 안 함</span></div>
               <div class="prow"><span class="pavatar">김</span><span class="pname">김지우</span><span class="pstat">스캔 자격 없음</span></div>
               <div class="prow blocked"><span class="pavatar">강</span><span class="pname">강하늘</span><span class="pstat">안내에 배정됨</span></div>
               <div class="prow blocked"><span class="pavatar">한</span><span class="pname">한지민</span><span class="pstat">매니저에 배정됨</span></div>
@@ -1136,7 +1136,7 @@ code {
         <figcaption>
           <div class="cap-key">PICKER — 눌러보기</div>
           <div class="cap-name">기본과 전체 보기</div>
-          <p class="cap-body">기본 목록은 자격 있고, 그날 배정이 없고, 휴무 희망을 안 낸 사람이다. <strong>배정된 줄을 누르면 토스트</strong>가 「겸임은 자리를 합쳐 만드세요」라고 알린다.</p>
+          <p class="cap-body">기본 목록은 자격 있고, 그날 배정이 없고, 근무 신청을 낸 사람이다. <strong>배정된 줄을 누르면 토스트</strong>가 「겸임은 자리를 합쳐 만드세요」라고 알린다.</p>
         </figcaption>
       </figure>
 
@@ -1181,7 +1181,7 @@ code {
   <!-- 07 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">07 / 휴무 희망 모아보기</span>
+      <span class="sec-num">07 / 근무 신청 모아보기</span>
       <h2>날짜순이 기본, 사람순이 옆에</h2>
       <p>탭은 실제로 눌린다. 마감일 바꾸기가 여기 있고, 열리는 시트가 「스케줄 신청 마감일」이다 — 바꾸면 전원에게 알림이 간다는 것을 경고 줄이 미리 말한다. 그 시트는 목업을 안 세웠다.</p>
     </div>
@@ -1195,7 +1195,7 @@ code {
           </span></div>
           <div class="appbar">
             <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
-            <span class="title">10월 휴무 희망</span>
+            <span class="title">10월 근무 신청</span>
           </div>
           <div class="body">
             <div class="hrow num">마감 10월 2일(금) · 3일 남았어요<span class="sp"></span><span class="linknote">마감일 바꾸기</span></div>
@@ -1248,7 +1248,7 @@ code {
           </span></div>
           <div class="appbar">
             <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
-            <span class="title">10월 휴무 희망</span>
+            <span class="title">10월 근무 신청</span>
           </div>
           <div class="body">
             <div class="hrow num">마감 10월 2일(금) · 3일 남았어요<span class="sp"></span><span class="linknote">마감일 바꾸기</span></div>
@@ -1257,7 +1257,7 @@ code {
               <button class="tab">사람순</button>
             </div>
             <div style="margin-top:120px;text-align:center">
-              <div style="font-size:var(--t-sm);line-height:var(--lh-sm);color:var(--fg-neutral-muted)">아직 들어온 희망이 없어요</div>
+              <div style="font-size:var(--t-sm);line-height:var(--lh-sm);color:var(--fg-neutral-muted)">아직 들어온 신청이 없어요</div>
               <div class="num" style="margin-top:2px;font-size:var(--t-sm);line-height:var(--lh-sm);color:var(--fg-neutral-muted)">마감은 10월 2일이에요</div>
             </div>
             <div class="spacer"></div>
@@ -1265,7 +1265,7 @@ code {
         </div>
         <figcaption>
           <div class="cap-key">HOPES / EMPTY</div>
-          <div class="cap-name">희망 0건</div>
+          <div class="cap-name">신청 0건</div>
           <p class="cap-body">삽화 없이 두 줄이다. 마감일이 같이 서서 <strong>아직 시간이 남았다는 것</strong>을 말한다.</p>
         </figcaption>
       </figure>
@@ -1313,7 +1313,7 @@ code {
               <span class="cell open"><b>31</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
               <span class="cell open"><b>11/1</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
             </div>
-            <div class="legend">사람 표시는 휴무 희망이에요</div>
+            <div class="legend">사람 표시는 근무 신청이에요</div>
             <div class="spacer"></div>
           </div>
           <div class="ctabar">
@@ -1443,7 +1443,7 @@ code {
               <span class="cell open"><b>31</b></span>
               <span class="cell open"><b>11/1</b></span>
             </div>
-            <!-- 범례도 모아보기 줄도 없다. 희망 수가 확정 뒤에 숨으니 풀 것이 남지 않는다.
+            <!-- 범례도 모아보기 줄도 없다. 신청 수가 확정 뒤에 숨으니 풀 것이 남지 않는다.
                  바닥 단에 남는 것은 빈 자리가 있는 날의 점선 원 + 수뿐이다(확정 2026-09-07) -->
             <div class="spacer"></div>
           </div>
@@ -1451,7 +1451,7 @@ code {
         <figcaption>
           <div class="cap-key">AFTER / CAL</div>
           <div class="cap-name">확정 배지와 확정 줄</div>
-          <p class="cap-body">확정하기와 마감 줄이 사라지고 <strong>날 열기는 남는다.</strong> 오늘(8일)이 브랜드로 차고, 희망 수와 범례와 모아보기 줄이 같이 숨는다 — 마감이 지나 희망이 더 안 들어오고 확정 뒤의 일은 빈 자리 채우기라서다. 대신 <strong>빈 자리가 남은 날 칸에 점선 원과 수가 선다</strong>(10일·17일). 0이면 그 단이 빈다. 처음 제안은 글자 「빈 1」이었고 2차 검수가 점선 원으로 정했다(2026-09-07).</p>
+          <p class="cap-body">확정하기와 마감 줄이 사라지고 <strong>날 열기는 남는다.</strong> 오늘(8일)이 브랜드로 차고, 신청 수와 범례와 모아보기 줄이 같이 숨는다 — 마감이 지나 신청이 더 안 들어오고 확정 뒤의 일은 빈 자리 채우기라서다. 대신 <strong>빈 자리가 남은 날 칸에 점선 원과 수가 선다</strong>(10일·17일). 0이면 그 단이 빈다. 처음 제안은 글자 「빈 1」이었고 2차 검수가 점선 원으로 정했다(2026-09-07).</p>
           <p class="cap-body" style="margin-top:8px">여기서 <strong>새로 연 날은 자리 구성을 자유로 고친다</strong> — 그 날 상세에는 확정 전과 같은 자물쇠·끌기·자리 추가가 서고, 사람이 든 자리를 버리면 강제 변경 빼기와 같은 확인과 알림이 걸린다. 점선 원은 빈 자리 재촉 셋 중 달력의 몫이고, 나머지 둘은 홈 타일의 경고 승격(01절)과 관리자 푸시다.</p>
         </figcaption>
       </figure>
@@ -1548,7 +1548,7 @@ code {
               <span class="cell open"><b>31</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>1</em></span>
               <span class="cell open"><b>11/1</b><em class="hope"><svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.4" r="2.3"/><path d="M1.8 11.4a4.2 4.2 0 0 1 8.4 0z"/></svg>2</em></span>
             </div>
-            <div class="legend">사람 표시는 휴무 희망이에요</div>
+            <div class="legend">사람 표시는 근무 신청이에요</div>
             <div class="spacer"></div>
           </div>
           <div class="ctabar">
@@ -1577,7 +1577,7 @@ code {
           </div>
           <div class="body">
             <div class="kvline"><span class="k">근무 시간</span><span class="v">10:00–19:00</span></div>
-            <div class="hopeline">휴무 희망 2 · 박서연, 김지우</div>
+            <div class="hopeline">근무 신청 2 · 박서연, 김지우</div>
             <div class="rule"></div>
             <div class="posrow">
               <div class="poshead"><span class="pname">팀장</span><span class="pcnt">1/1</span><span class="sp"></span><button class="tbtn">교육 붙이기</button><span class="lockic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></div>
