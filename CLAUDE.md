@@ -38,6 +38,7 @@ FSD: `src/` 아래 `app` · `screens` · `features` · `entities` · `shared`. `
 - 기능 task 파이프라인: `test-planner` → writer 셋 → `implementer` → `pr-diff`
 - 화면 디자인 파이프라인: 페이지 문서 → `sian-writer` → `sian-auditor`. 문서를 고쳤으면 시안도 따라가야 하고, 따라갔는지는 감사자가 본다
 - 같은 실패 세 번째면 `codex-rescue`(`--model gpt-5.6-sol`)로 넘긴다. 기준은 `implementer` 정의문
+- 대화에서 하는 설명은 `.claude/skills/explain-simply`의 원칙 넷을 항상 적용한다. 트리거를 기다리지 않는다 — 어렵다는 말이 나온 뒤엔 이미 한 번 어렵게 읽은 뒤다. 화면 문안은 여기가 아니라 `writing.md`가 정본이다
 
 ## 흐름
 

@@ -1,0 +1,1432 @@
+<!--
+  가입 대기 시안 — 관리자가 가입 신청을 받거나 무르는 화면이다.
+
+  값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../tokens.md이고,
+  무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 members-pending.md다.
+  둘과 이 파일이 어긋나면 저 둘이 이긴다.
+
+  이 파일이 맡는 것은 글로 안 남는 것들이다 — 시트 안쪽이 확인으로 바뀌는 모습,
+  처리된 줄이 밀려 나가는 타이밍, 값 넷이 실제로 차지하는 높이, 화면 여럿을
+  나란히 놓고 보는 눈. 구현할 때 이 셋을 같이 연다.
+
+  퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
+  앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../README.md의 「퍼블리싱」에 있다.
+
+  오른쪽 위 라이트/다크 토글은 시안 뷰어 크롬이다. 목업 규칙 밖이고 앱에 없다.
+  누르면 문서 루트에 data-theme이 걸리고 목업 팔레트가 tokens.md 1절의 다크 열로 뒤집힌다.
+
+  문서가 안 적어 이 파일이 임의로 세운 자리다. 값을 여기서 굳히지 않는다.
+  · 시트 그림자. tokens.md 5절의 그림자는 shadow-card 하나뿐이라 시트용 값이 없다.
+  · 더보기 팝오버의 면과 그림자. members-pending.md 「아직 안 정한 것」에 그대로 남아 있다.
+  · 프로필 사진 자리. 저장소에 이미지를 안 넣어 뉴트럴 두 단계의 그러데이션으로 흉내 냈다.
+  · 성별·연락처·구글 계정의 예시 값. domain/account.md가 값 목록과 받는 꼴을 아직 안 정했다.
+  · 뷰어 크롬(--b-*)의 색. 목업 밖이라 애초에 토큰 대상이 아니다.
+-->
+<title>가입 대기 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+
+<style>
+:root {
+  --b-bg: oklch(0.945 0.004 57);
+  --b-panel: oklch(0.988 0.003 57);
+  --b-ink: oklch(0.27 0.007 57);
+  --b-sub: oklch(0.52 0.006 57);
+  --b-faint: oklch(0.63 0.005 57);
+  --b-line: oklch(0.885 0.005 57);
+  --b-line-strong: oklch(0.8 0.005 57);
+  --b-accent: oklch(0.48 0.115 248);
+  --b-mock-shadow: 0 2px 6px rgba(28,25,22,.06), 0 24px 48px -28px rgba(28,25,22,.5);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+    --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+    --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+    --b-accent: oklch(0.76 0.1 248);
+    --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+  }
+}
+:root[data-theme="dark"] {
+  --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+  --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+  --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+  --b-accent: oklch(0.76 0.1 248);
+  --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--b-bg); color: var(--b-ink);
+  font-family: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1300px; margin: 0 auto; padding: 56px 28px 110px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--b-accent); margin: 0 0 14px;
+}
+h1 { font-size: 36px; line-height: 1.25; font-weight: 700; letter-spacing: -.02em; margin: 0 0 16px; }
+.lede { font-size: 16px; color: var(--b-sub); max-width: 60ch; margin: 0; }
+
+section { margin-top: 70px; }
+.sec-head { border-top: 1px solid var(--b-line-strong); padding-top: 18px; margin-bottom: 28px; }
+.sec-num {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .12em; color: var(--b-faint); display: block; margin-bottom: 7px;
+}
+h2 { font-size: 23px; font-weight: 700; letter-spacing: -.015em; margin: 0 0 10px; }
+.sec-head p { margin: 0; color: var(--b-sub); max-width: 68ch; font-size: 14.5px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, 375px); gap: 44px 30px; justify-content: start; align-items: start; }
+.item > figcaption { margin-top: 16px; }
+.cap-key { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--b-faint); }
+.cap-name { font-size: 17px; font-weight: 700; margin: 3px 0 6px; letter-spacing: -.01em; }
+.cap-body { font-size: 13.5px; color: var(--b-sub); margin: 0; max-width: 46ch; }
+.cap-body strong { color: var(--b-ink); font-weight: 600; }
+figure.item { margin: 0; }
+code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .88em;
+  background: var(--b-panel); border: 1px solid var(--b-line); border-radius: 4px; padding: 1px 5px;
+}
+.replay {
+  margin-top: 14px; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--b-accent);
+  background: none; border: 1px solid color-mix(in oklch, var(--b-accent) 40%, transparent);
+  border-radius: 999px; padding: 4px 13px; cursor: pointer;
+}
+.replay:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+
+/* 라이트/다크 토글 — 시안 뷰어 크롬이다. 목업 규칙 밖이라 토큰을 안 쓴다 */
+.themetoggle {
+  position: fixed; top: 16px; right: 18px; z-index: 90;
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 34px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: .06em;
+  color: var(--b-sub); background: var(--b-panel); border: 1px solid var(--b-line-strong);
+  box-shadow: 0 8px 22px -16px rgba(0,0,0,.6);
+}
+.themetoggle:hover { color: var(--b-ink); }
+.themetoggle:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+.themetoggle .ic-sun { display: none; }
+:root[data-theme="dark"] .themetoggle .ic-sun { display: block; }
+:root[data-theme="dark"] .themetoggle .ic-moon { display: none; }
+.themetoggle .lab-dark { display: inline; }
+.themetoggle .lab-light { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-dark { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-light { display: inline; }
+
+/* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
+.mock {
+  --palette-neutral-00: oklch(1 .0037 57);
+  --palette-neutral-100: oklch(.965 .0037 57);
+  --palette-neutral-200: oklch(.905 .0043 57);
+  --palette-neutral-300: oklch(.845 .0045 57);
+  --palette-neutral-400: oklch(.76 .0047 57);
+  --palette-neutral-500: oklch(.68 .005 57);
+  --palette-neutral-600: oklch(.625 .005 57);
+  --palette-neutral-700: oklch(.545 .005 57);
+  --palette-neutral-800: oklch(.455 .005 57);
+  --palette-neutral-900: oklch(.32 .0053 57);
+  --palette-neutral-1000: oklch(.215 .0055 57);
+  --palette-brand-800: oklch(.455 .0534 57);
+  --palette-brand-900: oklch(.32 .0452 57);
+  --palette-positive-400: oklch(.76 .0897 152);
+  --palette-critical-800: oklch(.455 .1334 27);
+  --palette-critical-900: oklch(.32 .1131 27);
+  --palette-informative-400: oklch(.76 .0897 248);
+  --surface-stroke: transparent;
+  --scrim-ink: var(--palette-neutral-1000);
+  --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5);
+  --pop-shadow: 0 1px 2px rgba(28,25,22,.05), 0 14px 30px -18px rgba(28,25,22,.5);
+}
+.mock.force-dark {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-400: oklch(.4 .0047 57);
+  --palette-neutral-500: oklch(.48 .005 57);
+  --palette-neutral-600: oklch(.585 .005 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --palette-brand-900: oklch(.845 .0452 57);
+  --palette-positive-400: oklch(.4 .0897 152);
+  --palette-critical-800: oklch(.745 .1334 27);
+  --palette-critical-900: oklch(.845 .1131 27);
+  --palette-informative-400: oklch(.4 .0897 248);
+  --surface-stroke: var(--palette-neutral-200);
+  --scrim-ink: var(--palette-neutral-00);
+  --card-shadow: none;
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+  --pop-shadow: 0 0 0 1px var(--stroke-neutral);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mock:not(.force-light) {
+    --palette-neutral-00: oklch(.155 .0037 57);
+    --palette-neutral-100: oklch(.205 .0037 57);
+    --palette-neutral-200: oklch(.265 .0043 57);
+    --palette-neutral-300: oklch(.32 .0045 57);
+    --palette-neutral-400: oklch(.4 .0047 57);
+    --palette-neutral-500: oklch(.48 .005 57);
+    --palette-neutral-600: oklch(.585 .005 57);
+    --palette-neutral-700: oklch(.665 .005 57);
+    --palette-neutral-800: oklch(.745 .005 57);
+    --palette-neutral-900: oklch(.845 .0053 57);
+    --palette-neutral-1000: oklch(.935 .0055 57);
+    --palette-brand-800: oklch(.745 .0534 57);
+    --palette-brand-900: oklch(.845 .0452 57);
+    --palette-positive-400: oklch(.4 .0897 152);
+    --palette-critical-800: oklch(.745 .1334 27);
+    --palette-critical-900: oklch(.845 .1131 27);
+    --palette-informative-400: oklch(.4 .0897 248);
+    --surface-stroke: var(--palette-neutral-200);
+    --scrim-ink: var(--palette-neutral-00);
+    --card-shadow: none;
+    --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+    --pop-shadow: 0 0 0 1px var(--stroke-neutral);
+  }
+}
+:root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-400: oklch(.4 .0047 57);
+  --palette-neutral-500: oklch(.48 .005 57);
+  --palette-neutral-600: oklch(.585 .005 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --palette-brand-900: oklch(.845 .0452 57);
+  --palette-positive-400: oklch(.4 .0897 152);
+  --palette-critical-800: oklch(.745 .1334 27);
+  --palette-critical-900: oklch(.845 .1131 27);
+  --palette-informative-400: oklch(.4 .0897 248);
+  --surface-stroke: var(--palette-neutral-200);
+  --scrim-ink: var(--palette-neutral-00);
+  --card-shadow: none;
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+  --pop-shadow: 0 0 0 1px var(--stroke-neutral);
+}
+.mock {
+  --bg-neutral: var(--palette-neutral-00);
+  --bg-neutral-weak: var(--palette-neutral-100);
+  --bg-neutral-weak-pressed: var(--palette-neutral-200);
+  --bg-neutral-solid-soft: var(--palette-neutral-900);
+  --bg-brand-solid: var(--palette-brand-800);
+  --bg-brand-solid-pressed: var(--palette-brand-900);
+  --bg-critical-solid: var(--palette-critical-800);
+  --bg-critical-solid-pressed: var(--palette-critical-900);
+  --fg-neutral: var(--palette-neutral-1000);
+  --fg-neutral-muted: var(--palette-neutral-800);
+  --fg-neutral-subtle: var(--palette-neutral-700);
+  --fg-neutral-contrast: var(--palette-neutral-00);
+  --fg-brand-contrast: var(--palette-neutral-00);
+  --fg-critical: var(--palette-critical-800);
+  --fg-positive-contrast: var(--palette-positive-400);
+  --fg-informative-contrast: var(--palette-informative-400);
+  --stroke-neutral: var(--palette-neutral-200);
+  --stroke-neutral-muted: var(--palette-neutral-300);
+
+  --t-xs: .8125rem; --lh-xs: 1.21875rem;
+  --t-sm: .9375rem; --lh-sm: 1.40625rem;
+  --t-base: 1.0625rem; --lh-base: 1.59375rem;
+  --t-lg: 1.25rem; --lh-lg: 1.8125rem;
+  --t-xl: 1.375rem; --lh-xl: 1.9375rem;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+  --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms; --d-slower: 300ms;
+
+  width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  background: var(--bg-neutral); color: var(--fg-neutral);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  font-size: var(--t-base); line-height: var(--lh-base);
+  box-shadow: var(--b-mock-shadow);
+}
+.mock .num { font-variant-numeric: tabular-nums; }
+
+.statusbar {
+  flex: 0 0 auto; height: 46px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px 0 30px; font-size: var(--t-xs); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.sb-right { display: flex; align-items: center; gap: 5px; }
+/* 앱바 — 뒤로, 제목, 오른쪽 더보기(members-pending.md 「짜임」) */
+.appbar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  padding: 4px 24px 12px; min-height: 42px; position: relative;
+}
+.appbar .sp { flex: 1 1 auto; }
+.backic { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); }
+.appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
+.moreic {
+  flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-right: -4px;
+  color: var(--fg-neutral); background: none; border: 0; padding: 0; cursor: pointer;
+}
+/* 화면 좌우 여백 px-6 = 24px */
+.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+.spacer { flex: 1 1 auto; min-height: 8px; }
+
+/* 더보기 팝오버 — 문서가 모양을 안 적었다. 이 파일이 세운 자리다 */
+.pop {
+  position: absolute; top: 40px; right: 22px; z-index: 7; min-width: 148px;
+  background: var(--bg-neutral); border-radius: var(--r-lg); padding: 6px;
+  box-shadow: var(--pop-shadow); border: 1px solid var(--surface-stroke);
+}
+.pop[hidden] { display: none; }
+.pop button {
+  display: flex; width: 100%; align-items: center; gap: 8px; padding: 10px 12px;
+  border: 0; background: none; border-radius: var(--r-md); cursor: pointer;
+  font-family: inherit; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral); text-align: left;
+}
+.pop button.critical { color: var(--fg-critical); }
+.pop button:hover { background: var(--bg-neutral-weak-pressed); }
+
+/* 줄 하나 — ListRow. 사진 · 이름 · 보조 정보 · 화살표 */
+.mrow { display: flex; align-items: center; gap: 12px; padding: 16px 0; cursor: pointer; }
+.mrow .mid { min-width: 0; }
+.mrow .mname { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.mrow .msub { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+.mrow .chev { margin-left: auto; flex: 0 0 auto; color: var(--fg-neutral-subtle); display: grid; place-items: center; }
+.mrow.pressed { background: var(--bg-neutral-weak-pressed); margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
+/* 구분선은 사진 왼쪽 끝이 아니라 이름 왼쪽 끝(40 + 12 = 52px)부터 긋는다 */
+.mlist .rowwrap + .rowwrap .mrow { border-top: 1px solid var(--stroke-neutral); }
+.mlist .rowwrap + .rowwrap .mrow { margin-left: 52px; padding-left: 0; }
+.mlist .rowwrap + .rowwrap .mrow .av { margin-left: -52px; }
+.rowwrap { overflow: hidden; }
+
+/* 사진 — 원. 테두리는 stroke.neutral.
+   목업이라 실제 이미지 대신 뉴트럴 두 단계의 그러데이션으로 자리를 흉내 냈다 */
+.av {
+  width: 40px; height: 40px; border-radius: 999px; flex: 0 0 auto;
+  border: 1px solid var(--stroke-neutral); box-sizing: border-box;
+  background: linear-gradient(150deg, var(--palette-neutral-300), var(--palette-neutral-500));
+}
+/* 구글이 사진을 안 주는 계정 — 회색 원에 이름 첫 글자 */
+.av.noimg {
+  background: var(--bg-neutral-weak); color: var(--fg-neutral-muted);
+  display: grid; place-items: center; font-size: var(--t-sm); font-weight: 600;
+}
+.av.big { width: 64px; height: 64px; }
+.av.big.noimg { font-size: var(--t-lg); }
+
+/* 빈 상태 — 목록 자리에 한 줄이 선다. 그림을 그리지 않는다 */
+.emptyline { padding: 16px 0; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+
+/* 버튼 */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 48px; border-radius: 999px; border: 0;
+  font-size: var(--t-base); font-weight: 500; font-family: inherit;
+  background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
+}
+.btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+.btn.destructive { background: var(--bg-critical-solid); color: var(--fg-brand-contrast); }
+.btn.pressed { background: var(--bg-brand-solid-pressed); transform: scale(.97); }
+.btn.destructive.pressed { background: var(--bg-critical-solid-pressed); }
+/* 줄 오른쪽의 「차단 풀기」 — 작은 secondary 알약 */
+.btn.mini { width: auto; height: 34px; padding: 0 14px; font-size: var(--t-sm); }
+/* 버튼 둘이 가로로 나란히 서고 폭을 반씩 나눈다. 사이는 gap-3 = 12px */
+.sbtns { display: flex; gap: 12px; margin-top: 24px; }
+.sbtns .btn { flex: 1 1 0; }
+
+/* 바텀시트와 덮개 */
+.scrim {
+  position: absolute; inset: 0; z-index: 3; background: var(--scrim-ink);
+  opacity: 0; pointer-events: none; transition: opacity var(--d-slow) ease-out;
+}
+.mock.modal-open .scrim { opacity: .42; pointer-events: auto; }
+/* 시트 — 위쪽 두 모서리만 rounded-lg, px-6 pt-6, 아래는 pb-6 + safe-area.
+   아래에서 올라오고 --duration-slow(240ms) ease-out이다 */
+.rsheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+  background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 10px 24px calc(24px + env(safe-area-inset-bottom));
+  box-shadow: var(--sheet-shadow);
+  transform: translateY(102%); transition: transform var(--d-slow) ease-out;
+}
+.mock.modal-open .rsheet { transform: none; }
+.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto; }
+.sheethead { display: flex; align-items: center; min-height: 28px; margin: 0 -4px 6px; }
+.sheethead .sp { flex: 1 1 auto; }
+.sheettop { padding-top: 14px; }
+/* 사진과 이름 사이 mt-4, 이름과 값 사이 mt-6 */
+.sh-name { margin-top: 16px; font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 600; letter-spacing: -.01em; }
+.kvs { margin-top: 24px; }
+/* 값 한 줄 py-3 = 12px. 라벨은 fg.neutral-muted, 값은 fg.neutral */
+.kv { display: flex; align-items: baseline; gap: 12px; padding: 12px 0; }
+.kv .k { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.kv .v { margin-left: auto; font-size: var(--t-base); line-height: var(--lh-base); color: var(--fg-neutral); text-align: right; }
+.sent { margin-top: 12px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+/* 확인 모습 — 시트를 새로 쌓지 않고 값 넷 자리에 물음이 선다. 제목은 text-base font-medium에
+   fg.neutral, 아래 줄은 text-sm에 fg.neutral-muted다(members-pending.md 「거절과 차단 확인」) */
+.ask { margin-top: 24px; padding: 12px 0; }
+.ask .at { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.ask .ab { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.face[hidden] { display: none; }
+.face.in { animation: facein var(--d-base) ease-out both; }
+@keyframes facein { from { opacity: 0; } to { opacity: 1; } }
+
+/* 토스트 — components.md 「토스트」가 정본이다. bg.neutral-solid-soft 반전 면의 알약,
+   내용 폭, shadow-card. 이 화면은 하단 CTA가 없어 화면 아래에서 56px이다 */
+.toast {
+  position: absolute; left: 50%; bottom: 56px; z-index: 6; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 8px; max-width: calc(100% - 48px);
+  background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
+  border-radius: 999px; padding: 11px 20px;
+  font-size: var(--t-sm); line-height: var(--lh-sm);
+  box-shadow: var(--card-shadow);
+}
+.toast-ic { flex: 0 0 auto; }
+.toast-ic circle { fill: var(--ic); }
+.toast-ic path, .toast-ic line { fill: none; stroke: var(--bg-neutral-solid-soft); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 줄이 사라질 때 — 옆으로 밀리며 사라지고 아래 줄이 올라온다. --duration-base(180ms) */
+.demo.play .rowwrap.go { animation: rowout var(--d-base) ease-out both; }
+@keyframes rowout {
+  0% { transform: none; opacity: 1; max-height: 74px; }
+  60% { transform: translateX(112%); opacity: 0; max-height: 74px; }
+  100% { transform: translateX(112%); opacity: 0; max-height: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mock * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+</style>
+
+<!-- 시안 뷰어 크롬 — 목업이 아니다 -->
+<button class="themetoggle" type="button" data-theme-toggle aria-label="라이트/다크 전환">
+  <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  <span class="lab-dark">다크로</span>
+  <span class="lab-light">라이트로</span>
+</button>
+
+<div class="wrap">
+  <p class="eyebrow">라비에벨 · 페이지 디자인 05</p>
+  <h1>가입 대기 시안</h1>
+  <p class="lede">
+    관리자 홈의 「가입 대기 · 3명」 줄이 여는 화면이다. 오늘은 2026년 9월 9일(수)이고
+    기다리는 사람은 셋이다. 03절의 시트는 눌린다 — 「거절」과 더보기의 「차단하기」가
+    시트 안쪽을 확인 모습으로 바꾼다. 01절의 줄 사라짐은 다시 볼 수 있다.
+    오른쪽 위 토글이 페이지 전체를 라이트와 다크로 뒤집는다.
+  </p>
+
+  <!-- 01 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">01 / 목록</span>
+      <h2>줄과 화살표뿐, 브랜드 색이 한 자리도 없다</h2>
+      <p>하단 버튼이 없고 줄에 승인 버튼도 없다. 화면 전체를 끝내는 동작이 없어서다. 목록이 말하는 것은 「누가」와 「얼마나 오래」 둘이고, 나머지는 시트가 말한다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:06</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av noimg">김</span>
+                <span class="mid"><span class="mname">김지우</span><br><span class="msub">어제 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">윤태관</span><br><span class="msub">오늘 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">LIST</div>
+          <div class="cap-name">기다리는 사람 셋</div>
+          <p class="cap-body">사진 · 이름 · 보낸 지 얼마나 됐는지 · 화살표다. <strong>날짜를 안 쓰고 며칠 전인지로 적는다</strong> — 여기서 보는 것은 언제 왔는지가 아니라 얼마나 기다렸는지다. 구분선은 사진 왼쪽 끝이 아니라 <strong>이름 왼쪽 끝(52px)부터</strong> 긋는다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>오래 기다린 사람이 위다(제안).</strong> 새로 온 사람을 위에 두면 오래 기다린 사람이 아래로 밀려 계속 안 처리된다. <strong>보조 정보가 기다린 시간인 것도 제안이다</strong> — 성별과 나이를 붙일 수도 있었는데 안 붙였다. 화면에 브랜드 색이 한 자리도 안 서고, 브랜드는 시트의 「승인」 하나로만 나간다. 가운데 줄은 구글이 사진을 안 준 계정이라 <code>bg.neutral-weak</code> 원에 이름 첫 글자다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:07</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="emptyline">기다리는 사람이 없어요</div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">LIST / EMPTY</div>
+          <div class="cap-name">빈 상태 — 한 줄로 끝난다</div>
+          <p class="cap-body">기다리는 사람이 없으면 목록 자리에 한 줄이 선다. <strong>그림을 그리지 않는다.</strong> 관리자 홈의 줄이 「가입 대기 · 0명」이어도 눌린다 — 눌러 보고 비었다는 것을 확인하는 것이 안 눌리는 줄을 보고 왜 안 눌리나 하는 것보다 낫다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>이 한 줄 아래에 무엇을 둘지는 문서가 아직 안 정했다</strong>(members-pending.md 「아직 안 정한 것」). 목업도 아래를 비워 뒀다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:07</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+            <div class="pop">
+              <button type="button">차단한 사람</button>
+            </div>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av noimg">김</span>
+                <span class="mid"><span class="mname">김지우</span><br><span class="msub">어제 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">윤태관</span><br><span class="msub">오늘 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">LIST / MORE</div>
+          <div class="cap-name">앱바 더보기 — 「차단한 사람」 하나</div>
+          <p class="cap-body">문서가 앱바 더보기에 담은 것은 <strong>「차단한 사람」 하나뿐이다.</strong> 매일 보는 목록에 몇 달에 한 번 볼 것을 섞지 않으려고 별도 목록으로 뺐고, 그래서 이 목록에는 상태 배지가 필요 없다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>팝오버의 면·모서리·그림자는 문서에 없다</strong> — 이 파일이 세운 자리다. 값을 여기서 굳히지 않는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock demo" data-demo>
+          <div class="statusbar"><span>21:08</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap go"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av noimg">김</span>
+                <span class="mid"><span class="mname">김지우</span><br><span class="msub">어제 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">윤태관</span><br><span class="msub">오늘 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-play>다시 보기</button>
+        <figcaption>
+          <div class="cap-key">LIST / ROW OUT</div>
+          <div class="cap-name">처리된 줄이 사라진다</div>
+          <p class="cap-body">승인이나 거절이나 차단이 끝나면 그 줄이 <strong>오른쪽으로 밀리며 사라지고 아래 줄이 올라온다.</strong> <code>--duration-base</code>(180ms)에 <code>ease-out</code>이다. 등장 모션은 없다 — 관리자가 필요할 때 드나드는 화면이라 motion.md의 「자주 일어나는 것은 움직이지 않는다」에 든다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>왼쪽이 아니라 오른쪽인 것을 문서가 정했다.</strong> 처리가 끝난 줄이라 목록 밖으로 나가는 쪽이 오른쪽이고, 왼쪽은 뒤로 가는 방향이라 다른 뜻으로 읽힌다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">02 / 상세 시트</span>
+      <h2>값 넷을 보고 나서 정한다</h2>
+      <p>줄을 누르면 아래에서 올라온다. 성별과 생년월일과 연락처가 관리자가 사람을 알아보는 재료고, 구글 계정이 같은 이름 둘을 가르는 마지막 자리다. 「차단」은 버튼으로 안 서고 오른쪽 위 더보기 안에 있다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:08</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av noimg">김</span>
+                <span class="mid"><span class="mname">김지우</span><br><span class="msub">어제 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="sheethead">
+                <span class="sp"></span>
+                <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+              </div>
+              <span class="av big"></span>
+              <div class="sh-name">윤태관</div>
+              <div class="kvs">
+                <div class="kv"><span class="k">성별</span><span class="v">여성</span></div>
+                <div class="kv"><span class="k">생년월일</span><span class="v num">1992년 3월 4일(34세)</span></div>
+                <div class="kv"><span class="k">연락처</span><span class="v num">010-2431-8890</span></div>
+                <div class="kv"><span class="k">구글 계정</span><span class="v">taegwan.yoon@gmail.com</span></div>
+              </div>
+              <div class="sent">9월 9일(수) 21:04에 보냈어요</div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">거절</button>
+                <button class="btn" type="button">승인</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">SHEET</div>
+          <div class="cap-name">값 넷과 버튼 둘</div>
+          <p class="cap-body"><strong>「거절」이 destructive가 아니다.</strong> 거절은 이번만이고 같은 사람이 다시 보낸다. 빨강은 차단 쪽 글자에만 쓴다. 「승인」만 primary고 「거절」은 secondary라 한 화면에 primary는 하나다. <strong>생년월일 옆에 나이를 같이 적는다</strong> — 관리자가 쓰는 것은 나이인데 저장하는 것은 생년월일이라 화면이 그 셈을 대신한다. 생년월일과 연락처에 <code>tabular-nums</code>가 걸린다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>성별·연락처·구글 계정의 값은 목업 더미다.</strong> domain/account.md가 성별 값 목록과 연락처 받는 꼴을 아직 안 정했다 — 「여성」과 「010-2431-8890」은 자리를 재려고 넣은 것이지 정해진 표기가 아니다.</p>
+          <p class="cap-body" style="margin-top:8px">시트는 아래에서 올라오고 <code>--duration-slow</code>(240ms) <code>ease-out</code>이다. <strong>승인을 누르면 확인을 한 번 더 묻지 않는다</strong> — 시트가 바로 닫히고 토스트가 뜬다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:09</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="sheethead">
+                <span class="sp"></span>
+                <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+              </div>
+              <span class="av big noimg">김</span>
+              <div class="sh-name">김지우</div>
+              <div class="kvs">
+                <div class="kv"><span class="k">성별</span><span class="v">여성</span></div>
+                <div class="kv"><span class="k">생년월일</span><span class="v num">1998년 11월 20일(27세)</span></div>
+                <div class="kv"><span class="k">연락처</span><span class="v num">010-5580-1174</span></div>
+                <div class="kv"><span class="k">구글 계정</span><span class="v">jiwoo.kim98@gmail.com</span></div>
+              </div>
+              <div class="sent">9월 8일(화) 13:22에 보냈어요</div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">거절</button>
+                <button class="btn" type="button">승인</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">SHEET / NO PHOTO</div>
+          <div class="cap-name">값이 빈 자리는 사진 하나다</div>
+          <p class="cap-body">구글이 사진을 안 주는 계정이 있다. 그때는 <strong><code>bg.neutral-weak</code> 원에 이름 첫 글자</strong>가 서고 목록 줄에서도 같다. <strong>나머지 넷은 안 빈다</strong> — 프로필을 다 채워야 이 목록에 뜬다(domain/account.md 「가입이 끝나는 때」). 그래서 값 자리가 비는 목업은 이 하나뿐이다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:09</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="sheethead">
+                <span class="sp"></span>
+                <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+              </div>
+              <div class="pop" style="top:22px; right:20px">
+                <button class="critical" type="button">차단하기</button>
+              </div>
+              <span class="av big"></span>
+              <div class="sh-name">윤태관</div>
+              <div class="kvs">
+                <div class="kv"><span class="k">성별</span><span class="v">여성</span></div>
+                <div class="kv"><span class="k">생년월일</span><span class="v num">1992년 3월 4일(34세)</span></div>
+                <div class="kv"><span class="k">연락처</span><span class="v num">010-2431-8890</span></div>
+                <div class="kv"><span class="k">구글 계정</span><span class="v">taegwan.yoon@gmail.com</span></div>
+              </div>
+              <div class="sent">9월 9일(수) 21:04에 보냈어요</div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">거절</button>
+                <button class="btn" type="button">승인</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">SHEET / MORE</div>
+          <div class="cap-name">더보기 안의 「차단하기」</div>
+          <p class="cap-body">화면에서 빨강이 나오는 자리는 여기와 차단 확인의 오른쪽 버튼 둘뿐이다. <strong>「차단하기」 글자가 <code>fg.critical</code>이다.</strong> 관리자가 매일 하는 것은 승인이고 차단은 몇 달에 한 번이라, 계정을 계속 막는 동작을 승인 옆에 두면 잘못 누른다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">03 / 거절과 차단 확인</span>
+      <h2>시트를 새로 쌓지 않고 안쪽을 바꾼다</h2>
+      <p>시트 위에 시트를 얹으면 덮개가 두 겹이 되고 뒤로 가는 길이 두 단이 된다. 물어보는 대상이 같은 사람이라 화면이 바뀔 이유가 없다. 사진과 이름은 그 자리에 남고 값 넷 자리에 물음이 선다. 아래 목업은 눌린다 — 「거절」과 더보기의 「차단하기」, 그리고 「닫기」다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:10</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet" data-faceroot>
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="sheethead">
+                <span class="sp"></span>
+                <button class="moreic face" type="button" aria-label="더보기" data-faceof="detail" data-popbtn><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+              </div>
+              <div class="pop" style="top:22px; right:20px" data-pop hidden>
+                <button class="critical" type="button" data-goface="block">차단하기</button>
+              </div>
+              <span class="av big"></span>
+              <div class="sh-name">윤태관</div>
+
+              <div class="face" data-faceof="detail">
+                <div class="kvs">
+                  <div class="kv"><span class="k">성별</span><span class="v">여성</span></div>
+                  <div class="kv"><span class="k">생년월일</span><span class="v num">1992년 3월 4일(34세)</span></div>
+                  <div class="kv"><span class="k">연락처</span><span class="v num">010-2431-8890</span></div>
+                  <div class="kv"><span class="k">구글 계정</span><span class="v">taegwan.yoon@gmail.com</span></div>
+                </div>
+                <div class="sent">9월 9일(수) 21:04에 보냈어요</div>
+                <div class="sbtns">
+                  <button class="btn secondary" type="button" data-goface="reject">거절</button>
+                  <button class="btn" type="button">승인</button>
+                </div>
+              </div>
+
+              <div class="face" data-faceof="reject" hidden>
+                <div class="ask">
+                  <div class="at">윤태관 님을 안 받을까요</div>
+                  <div class="ab">다시 보내면 목록에 또 떠요</div>
+                </div>
+                <div class="sbtns">
+                  <button class="btn secondary" type="button" data-goface="detail">닫기</button>
+                  <button class="btn secondary" type="button">거절</button>
+                </div>
+              </div>
+
+              <div class="face" data-faceof="block" hidden>
+                <div class="ask">
+                  <div class="at">윤태관 님을 차단할까요</div>
+                  <div class="ab">이 구글 계정으로는 다시 못 들어와요</div>
+                </div>
+                <div class="sbtns">
+                  <button class="btn secondary" type="button" data-goface="detail">닫기</button>
+                  <button class="btn destructive" type="button">차단</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">CONFIRM / LIVE</div>
+          <div class="cap-name">눌러 보는 시트 — 상세 · 거절 · 차단</div>
+          <p class="cap-body">「거절」을 누르면 거절 확인으로, 더보기의 「차단하기」를 누르면 차단 확인으로 바뀐다. <strong>「닫기」는 상세 시트로 돌아간다 — 시트가 통째로 닫히지 않는다.</strong> 「취소」가 아니라 「닫기」인 것은 writing.md의 조항이다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>안쪽이 바뀌는 데 <code>--duration-base</code>가 든다</strong> — 사진과 이름은 안 움직이고 그 아래만 바뀐다. <strong>보낸 시각도 값 넷과 같이 빠진다</strong> — 이 자리가 묻는 것은 「이 사람이 맞나」와 「정말 할 건가」 둘이라 언제 보냈는지는 그 어느 쪽도 아니다. <strong>더보기 아이콘도 감춘다</strong> — 물음이 선 동안 다른 길을 열어두지 않고, 닫기로 상세로 돌아가면 다시 뜬다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:10</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <span class="av big"></span>
+              <div class="sh-name">윤태관</div>
+              <div class="ask">
+                <div class="at">윤태관 님을 안 받을까요</div>
+                <div class="ab">다시 보내면 목록에 또 떠요</div>
+              </div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">닫기</button>
+                <button class="btn secondary" type="button">거절</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">CONFIRM / REJECT</div>
+          <div class="cap-name">거절 — 오른쪽도 secondary다</div>
+          <p class="cap-body">문서의 표가 오른쪽 버튼을 <strong>「거절 (secondary)」</strong>로 못 박았다. 그대로 그리면 「닫기」와 「거절」이 같은 회색이라 무게가 안 갈린다. 문서가 이긴다는 규칙대로 시안은 표를 따랐고, 갈릴 필요가 있는지는 문서 쪽에서 볼 자리다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:11</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <span class="av big"></span>
+              <div class="sh-name">윤태관</div>
+              <div class="ask">
+                <div class="at">윤태관 님을 차단할까요</div>
+                <div class="ab">이 구글 계정으로는 다시 못 들어와요</div>
+              </div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">닫기</button>
+                <button class="btn destructive" type="button">차단</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">CONFIRM / BLOCK</div>
+          <div class="cap-name">차단 — 여기만 destructive다</div>
+          <p class="cap-body"><strong>차단만 <code>bg.critical-solid</code>다.</strong> 계정을 계속 막는 것이고 푸는 데 관리자 손이 또 든다. 거절과 차단이 같은 자리에서 나오는데 색이 갈리는 것이 이 화면에서 destructive를 쓰는 유일한 근거다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">04 / 끝난 뒤</span>
+      <h2>토스트 하나뿐, 되돌리기가 없다</h2>
+      <p>셋 다 성공 토스트로 알린다. 사라지는 것에 액션을 걸면 놓친 사람이 그 액션을 다시 찾을 길이 없어서 「되돌리기」를 안 붙인다. 줄은 목록에서 사라진다 — 승인된 사람은 직원이 되고, 거절된 사람은 다시 보낼 때까지 없고, 차단된 사람은 「차단한 사람」으로 옮겨간다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:11</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av noimg">김</span>
+                <span class="mid"><span class="mname">김지우</span><br><span class="msub">어제 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="toast">
+            <svg class="toast-ic" style="--ic: var(--fg-positive-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
+                <path d="m8.5 12 2.5 2.5 4.5-5"/>
+              </g>
+            </svg>
+            <span>윤태관 님을 승인했어요</span>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DONE / APPROVE</div>
+          <div class="cap-name">승인 토스트</div>
+          <p class="cap-body">시트가 바로 닫히고 토스트가 뜬다. 윤태관 줄은 목록에서 이미 빠졌다. 하단 CTA가 없는 화면이라 <strong>토스트는 화면 아래에서 56px</strong>이다. 성공 아이콘이 <code>fg.positive-contrast</code> 면으로 차고 안쪽 체크가 토스트 면 색으로 뚫린다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>승인 되돌리기가 여기 없다.</strong> 잘못 승인한 사람은 직원 관리 화면에서 되돌린다 — 승인되는 순간 이 목록에서 나간다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:12</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="toast">
+            <svg class="toast-ic" style="--ic: var(--fg-positive-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
+                <path d="m8.5 12 2.5 2.5 4.5-5"/>
+              </g>
+            </svg>
+            <span>윤태관 님을 안 받았어요</span>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DONE / REJECT</div>
+          <div class="cap-name">거절 토스트</div>
+          <p class="cap-body">거절도 <strong>성공 종류의 토스트</strong>다. 조치할 것이 없는 통보라서다 — 토스트에 경고와 오류를 안 싣는 것은 사람이 조치할 것을 사라지는 것에 실으면 안 되기 때문이다. 거절 사유를 안 적는 것도 문서가 정한 자리다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:12</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="toast">
+            <svg class="toast-ic" style="--ic: var(--fg-positive-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
+                <path d="m8.5 12 2.5 2.5 4.5-5"/>
+              </g>
+            </svg>
+            <span>윤태관 님을 차단했어요</span>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DONE / BLOCK</div>
+          <div class="cap-name">차단 토스트</div>
+          <p class="cap-body">차단도 같은 성공 토스트다. <strong>빨강은 확인 버튼에서 끝난다</strong> — 끝난 뒤의 통보에는 계열색이 안 따라온다. 차단된 사람의 줄은 이 목록에서 빠져 「차단한 사람」으로 옮겨간다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:13</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av noimg">김</span>
+                <span class="mid"><span class="mname">김지우</span><br><span class="msub">어제 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="toast">
+            <svg class="toast-ic" style="--ic: var(--fg-informative-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </g>
+            </svg>
+            <span>이미 처리된 사람이에요</span>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DONE / RACE</div>
+          <div class="cap-name">둘이 같은 사람을 동시에 열었을 때(제안)</div>
+          <p class="cap-body"><strong>먼저 누른 쪽이 이긴다(제안).</strong> 늦게 누른 쪽은 시트가 닫히고 이 문장이 <strong>안내 토스트</strong>로 뜨며 목록이 새로 그려진다. 성공이 아니라 안내라 아이콘이 <code>fg.informative-contrast</code>다. 근무 요청의 늦은 수락과 같은 결이다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">05 / 차단한 사람</span>
+      <h2>같은 모양의 목록, 상세 시트는 없다</h2>
+      <p>앱바 더보기로 들어가는 별도 목록이다. 여기서 하는 판단은 「이 사람 맞나」 하나고 그건 사진과 이름이 답한다. 그래서 줄에서 바로 누른다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:14</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">차단한 사람</span>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">윤태관</span><br><span class="msub">오늘 차단했어요</span></span>
+                <button class="btn secondary mini" type="button" style="margin-left:auto">차단 풀기</button>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av noimg">강</span>
+                <span class="mid"><span class="mname">강하늘</span><br><span class="msub">2주 전에 차단했어요</span></span>
+                <button class="btn secondary mini" type="button" style="margin-left:auto">차단 풀기</button>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">BLOCKED / LIST</div>
+          <div class="cap-name">줄마다 「차단 풀기」</div>
+          <p class="cap-body">앱바 제목이 「차단한 사람」이고 화살표 자리에 버튼이 선다. <strong>상세 시트가 없다.</strong> 이 목록에도 배지가 없다 — 차단한 사람을 가입 대기와 한 목록에 섞고 배지로 갈랐다면 매일 보는 목록에 몇 달에 한 번 볼 것이 섞인다.</p>
+          <p class="cap-body" style="margin-top:8px">보조 정보의 문안 셋이 문서의 표에 있다 — 「오늘 차단했어요」·「어제 차단했어요」·「2주 전에 차단했어요」다. <strong>목록과 같은 결로 날짜를 안 쓰고 얼마나 됐는지로 적는다.</strong> <strong>줄 오른쪽의 「차단 풀기」는 secondary 알약이다</strong> — 여럿이 나란히 서는 자리라 어느 하나가 튀면 안 된다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:14</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">차단한 사람</span>
+          </div>
+          <div class="body">
+            <div class="emptyline">차단한 사람이 없어요</div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">BLOCKED / EMPTY</div>
+          <div class="cap-name">빈 상태</div>
+          <p class="cap-body">가입 대기의 빈 상태와 같은 한 줄이고 문장만 갈린다. <strong>오래된 차단을 지우는 규칙은 문서가 아직 안 정했다</strong> — 몇 년 지난 차단이 이 목록에 계속 쌓인다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:15</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">차단한 사람</span>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">윤태관</span><br><span class="msub">오늘 차단했어요</span></span>
+                <button class="btn secondary mini" type="button" style="margin-left:auto">차단 풀기</button>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av noimg">강</span>
+                <span class="mid"><span class="mname">강하늘</span><br><span class="msub">2주 전에 차단했어요</span></span>
+                <button class="btn secondary mini" type="button" style="margin-left:auto">차단 풀기</button>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="ask" style="margin-top:0">
+                <div class="at">윤태관 님의 차단을 풀까요</div>
+                <div class="ab">다시 로그인할 수 있게 돼요</div>
+              </div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">닫기</button>
+                <button class="btn" type="button">차단 풀기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">BLOCKED / CONFIRM</div>
+          <div class="cap-name">차단 풀기 확인</div>
+          <p class="cap-body"><strong>「차단 풀기」는 destructive가 아니다 — 문을 여는 동작이다.</strong> 풀면 그 계정이 다시 로그인할 수 있고, 프로필을 다시 보내면 가입 대기 목록에 뜬다. <strong>시트 오른쪽의 것은 primary다</strong> — 이 화면이 묻는 것에 답하는 버튼이라 여기서는 primary가 하나 선다. 줄 오른쪽의 secondary 알약과 갈리는 자리다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>사진과 이름을 안 세운다.</strong> 물음과 버튼 둘이다 — 줄에서 사진과 이름을 보고 누른 직후라 같은 것을 한 번 더 세울 이유가 없다. 상세 시트에서 오는 거절·차단 확인과 갈린다 — 거기는 시트가 이미 서 있어서 둘이 <strong>남는</strong> 것이고 여기는 새로 <strong>세우는</strong> 것이다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:15</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">차단한 사람</span>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av noimg">강</span>
+                <span class="mid"><span class="mname">강하늘</span><br><span class="msub">2주 전에 차단했어요</span></span>
+                <button class="btn secondary mini" type="button" style="margin-left:auto">차단 풀기</button>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="toast">
+            <svg class="toast-ic" style="--ic: var(--fg-positive-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
+                <path d="m8.5 12 2.5 2.5 4.5-5"/>
+              </g>
+            </svg>
+            <span>윤태관 님의 차단을 풀었어요</span>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">BLOCKED / DONE</div>
+          <div class="cap-name">차단 풀기 토스트</div>
+          <p class="cap-body">줄이 이 목록에서 사라지고 토스트가 뜬다. 여기도 <strong>되돌리기가 없다.</strong> 잘못 풀었으면 그 사람이 다시 보낼 때 가입 대기에서 차단하면 된다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">06 / 다크</span>
+      <h2>팔레트가 뒤집혀도 빨강이 서는 자리는 하나다</h2>
+      <p>클래스는 라이트와 같다. 이 둘은 페이지가 라이트여도 늘 다크고, 앞의 다섯 절은 오른쪽 위 토글을 따라간다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock force-dark">
+          <div class="statusbar"><span>23:02</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av noimg">김</span>
+                <span class="mid"><span class="mname">김지우</span><br><span class="msub">어제 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">윤태관</span><br><span class="msub">오늘 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DARK / LIST</div>
+          <div class="cap-name">목록</div>
+          <p class="cap-body">사진 없는 계정의 원이 다크에서도 <strong>바탕보다 한 단 밝은 <code>bg.neutral-weak</code></strong>다. 구분선은 라이트와 같은 <code>stroke.neutral</code>이고 시작 지점도 같다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock force-dark modal-open">
+          <div class="statusbar"><span>23:03</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">가입 대기</span>
+            <span class="sp"></span>
+            <button class="moreic" type="button" aria-label="더보기"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></button>
+          </div>
+          <div class="body">
+            <div class="mlist">
+              <div class="rowwrap"><div class="mrow">
+                <span class="av"></span>
+                <span class="mid"><span class="mname">박서연</span><br><span class="msub">3일 전에 보냈어요</span></span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <span class="av big"></span>
+              <div class="sh-name">윤태관</div>
+              <div class="ask">
+                <div class="at">윤태관 님을 차단할까요</div>
+                <div class="ab">이 구글 계정으로는 다시 못 들어와요</div>
+              </div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">닫기</button>
+                <button class="btn destructive" type="button">차단</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DARK / BLOCK</div>
+          <div class="cap-name">차단 확인</div>
+          <p class="cap-body">덮개는 다크에서 밝은 막이 되면 안 된다 — <code>bg.scrim</code>이 양쪽 다 어두운 잉크다. <strong><code>bg.critical-solid</code>가 다크에서 밝은 살구빛으로 뒤집히고</strong> 글자는 <code>fg.brand-contrast</code>라 어두워진다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  // 뷰어 크롬 — 라이트/다크 토글. 목업이 아니라 시안을 보는 도구다
+  (function () {
+    var root = document.documentElement;
+    var btn = document.querySelector("[data-theme-toggle]");
+    if (!btn) return;
+    var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    root.dataset.theme = mq && mq.matches ? "dark" : "light";
+    btn.addEventListener("click", function () {
+      root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+    });
+  })();
+
+  // 01 — 줄 사라짐 다시 보기
+  document.querySelectorAll("[data-play]").forEach(function (btn) {
+    var demo = btn.parentElement.querySelector("[data-demo]");
+    if (!demo) return;
+    btn.addEventListener("click", function () {
+      demo.classList.remove("play");
+      void demo.offsetWidth;
+      demo.classList.add("play");
+    });
+  });
+
+  // 03 — 시트 안쪽이 확인으로 바뀐다. 시트를 새로 쌓지 않는다
+  document.querySelectorAll("[data-faceroot]").forEach(function (root) {
+    var pop = root.querySelector("[data-pop]");
+    function show(name) {
+      if (pop) pop.hidden = true;
+      root.querySelectorAll("[data-faceof]").forEach(function (face) {
+        var on = face.dataset.faceof === name;
+        face.hidden = !on;
+        face.classList.remove("in");
+        if (on) {
+          void face.offsetWidth;
+          face.classList.add("in");
+        }
+      });
+    }
+    var popbtn = root.querySelector("[data-popbtn]");
+    if (popbtn && pop) {
+      popbtn.addEventListener("click", function () {
+        pop.hidden = !pop.hidden;
+      });
+    }
+    root.querySelectorAll("[data-goface]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        show(btn.dataset.goface);
+      });
+    });
+  });
+})();
+</script>
