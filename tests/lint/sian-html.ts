@@ -50,12 +50,20 @@ function blankOut(source: string): string {
   return source.replace(COMMENT, blank).replace(RAW_TEXT, blank);
 }
 
-function lineAt(source: string, index: number): number {
+/**
+ * 앞에서 뒤로만 나아가며 줄을 센다. 태그는 나온 순서대로 오니 매번 파일 처음부터
+ * 다시 세지 않는다 — 그렇게 하면 태그 수와 파일 길이를 곱한 만큼 일하게 된다.
+ */
+function lineCounter(source: string): (index: number) => number {
+  let cursor = 0;
   let line = 1;
-  for (let i = 0; i < index; i += 1) {
-    if (source[i] === "\n") line += 1;
-  }
-  return line;
+  return (index) => {
+    while (cursor < index) {
+      if (source[cursor] === "\n") line += 1;
+      cursor += 1;
+    }
+    return line;
+  };
 }
 
 export function sianHtmlViolations(
@@ -66,13 +74,14 @@ export function sianHtmlViolations(
   const scanned = blankOut(raw);
   const violations: SianHtmlViolation[] = [];
   const open: { tag: string; line: number }[] = [];
+  const lineAt = lineCounter(scanned);
 
   for (const match of scanned.matchAll(TAG)) {
     const [, slash, rawTag, attrs] = match;
     const tag = rawTag.toLowerCase();
     if (VOID_TAGS.has(tag) || IGNORED_TAGS.has(tag)) continue;
 
-    const line = lineAt(scanned, match.index);
+    const line = lineAt(match.index);
 
     if (slash === "") {
       if (attrs.trimEnd().endsWith("/")) continue;
