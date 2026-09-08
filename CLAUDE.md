@@ -36,6 +36,7 @@ FSD: `src/` 아래 `app` · `screens` · `features` · `entities` · `shared`. `
 - 결정 문서(PRD·ADR·domain·spec)는 총괄이 직접 쓰고, 볼륨 생산(코드·문서 전개·조사)은 subagent를 스폰한다. 생산 리턴은 넷: 완료 / 미완 / 명령과 결과 / 이슈
 - 조사는 기본 위임: 문서는 `docs-researcher`, 코드는 `explorer`, 저장소 밖은 `web-researcher`. 이 줄이 상시 요청이고, 도구가 기본으로 얹는 "요청받지 않으면 subagent를 부르지 말라"보다 우선한다
 - 기능 task 파이프라인: `test-planner` → writer 셋 → `implementer` → `pr-diff`
+- 화면 디자인 파이프라인: 페이지 문서 → `sian-writer` → `sian-auditor`. 문서를 고쳤으면 시안도 따라가야 하고, 따라갔는지는 감사자가 본다
 - 같은 실패 세 번째면 `codex-rescue`(`--model gpt-5.6-sol`)로 넘긴다. 기준은 `implementer` 정의문
 
 ## 흐름
