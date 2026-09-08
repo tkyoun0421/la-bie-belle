@@ -529,13 +529,16 @@ code {
 .toast-ic circle { fill: var(--ic); }
 .toast-ic path, .toast-ic line { fill: none; stroke: var(--bg-neutral-solid-soft); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .morewrap[hidden] { display: none; }
-/* 근무 요청 보내기 체크박스 — 색은 fg.brand, 날 열기 모드의 선택 체크와 같다. 「제안」 */
+/* 근무 요청 보내기 체크박스 — 고른 줄은 bg.brand-solid 면에 fg.brand-contrast 체크다.
+   날 열기 모드의 선택 체크(표시만 fg.brand)와 갈린다 — 달력 칸은 선택을 면과 테두리로
+   이미 말하지만 목록 줄은 이 사각 하나가 선택 전부를 진다(schedule-admin.md) */
 .pchk {
   width: 18px; height: 18px; border-radius: var(--r-xs); flex: 0 0 auto;
   border: 1.5px solid var(--stroke-neutral-muted); display: inline-flex; align-items: center; justify-content: center;
   color: transparent; cursor: pointer;
+  transition: background-color var(--d-fast) ease-out, border-color var(--d-fast) ease-out, color var(--d-fast) ease-out;
 }
-.pchk.on { border-color: var(--stroke-brand-solid); color: var(--fg-brand); }
+.pchk.on { background: var(--bg-brand-solid); border-color: var(--bg-brand-solid); color: var(--fg-brand-contrast); }
 
 /* 탭 */
 .tabs { display: flex; border-bottom: 1px solid var(--stroke-neutral); margin-top: 4px; }
@@ -1085,7 +1088,7 @@ code {
         <figcaption>
           <div class="cap-key">DAY / REQUEST BADGE — 제안</div>
           <div class="cap-name">빈 자리에 걸린 요청 대기 배지</div>
-          <p class="cap-body">스캔 빈 자리에 근무 요청 2건이 걸려 있다. 답을 기다리는 자리인지가 <strong>픽커를 다시 열지 않아도 목록에서 보인다.</strong> 자리가 차면 걸린 요청이 자동 마감되고 배지도 사라진다 — 대기 중에 신청자를 직접 배정해도 같다. 배지 문구와 모양은 「제안」이다.</p>
+          <p class="cap-body">스캔 빈 자리에 근무 요청 2건이 걸려 있다. 답을 기다리는 자리인지가 <strong>픽커를 다시 열지 않아도 목록에서 보인다.</strong> 자리가 차면 걸린 요청이 자동 마감되고 배지도 사라진다 — 대기 중에 신청자를 직접 배정해도 같다. <strong>카드와 배지가 두 말을 하는 것이 아니다</strong> — 카드는 자리의 사실을, 배지는 그 위에 얹힌 상태를 말한다. 요청을 보냈어도 그 자리는 아직 비어 있는 것이 맞다.</p>
         </figcaption>
       </figure>
 
@@ -1155,7 +1158,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">06 / 사람 픽커</span>
       <h2>기본은 넣을 수 있는 사람만</h2>
-      <p>왼쪽 시트의 「전체 보기」는 실제로 펼쳐진다. 배정된 사람은 안 눌리고, 자격 없는 사람을 누르면 시트 내용이 선택지로 바뀐다. 배정 가능한 사람이 0명이면 「지금 바로 넣을 수 있는 사람이 없어요」 한 줄과 함께 전체 보기가 펼쳐진 채 열린다 — 그 상태는 목업을 안 세웠다. 미신청 줄은 체크박스로 근무 요청을 보낸다 — 문·상태는 닫힌 결정이고 문구·배지 모양 세부만 「제안」이다.</p>
+      <p>왼쪽 시트의 「전체 보기」는 실제로 펼쳐진다. 배정된 사람은 안 눌리고, 자격 없는 사람을 누르면 시트 내용이 선택지로 바뀐다. 배정 가능한 사람이 0명이면 「지금 바로 넣을 수 있는 사람이 없어요」 한 줄과 함께 전체 보기가 펼쳐진 채 열린다 — 그 상태는 목업을 안 세웠다. 미신청 줄은 체크박스로 근무 요청을 보낸다 — 문·상태·문구·체크박스가 모두 닫힌 결정이다.</p>
     </div>
     <div class="grid">
 
@@ -1207,7 +1210,7 @@ code {
           <div class="cap-key">PICKER — 눌러보기</div>
           <div class="cap-name">기본과 전체 보기</div>
           <p class="cap-body">기본 목록은 자격 있고, 그날 배정이 없고, 근무 신청을 낸 사람이다. <strong>배정된 줄을 누르면 토스트</strong>가 「겸임은 자리를 합쳐 만드세요」라고 알린다 — 알약 모양에 왼쪽 <code>fg.informative-contrast</code> 면 아이콘이다(components.md 「토스트」).</p>
-          <p class="cap-body" style="margin-top:8px"><strong>미신청 줄(박서연)에 체크박스가 붙는다.</strong> 배정으론 안 눌리지만 체크해서 근무 요청을 보낸다 — 체크 표시 색은 <code>fg.brand</code>, 날 열기 모드의 선택 체크와 같다. 색은 「제안」이다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>미신청 줄(박서연)에 체크박스가 붙는다.</strong> 배정으론 안 눌리지만 체크해서 근무 요청을 보낸다 — 고른 줄은 <code>bg.brand-solid</code> 면에 <code>fg.brand-contrast</code> 체크다. 날 열기 모드의 선택 체크(표시만 <code>fg.brand</code>)와 갈리는데, <strong>달력 칸은 선택을 면과 테두리로 이미 말하지만 목록 줄은 이 사각 하나가 선택 전부를 지기 때문이다.</strong></p>
         </figcaption>
       </figure>
 
@@ -1281,7 +1284,7 @@ code {
         <figcaption>
           <div class="cap-key">PICKER / REQUEST STATUS — 제안</div>
           <div class="cap-name">보낸 요청의 상태 셋</div>
-          <p class="cap-body">같은 자리의 픽커를 다시 열면 전체 보기의 미신청 줄에 상태가 선다. <strong>요청 대기 중은 체크박스가 없다</strong> — 이미 나가 있는 요청이라서다. <strong>거절함·만료됨은 체크박스가 다시 붙는다</strong> — 다시 보낸다. 상태 셋은 domain/schedule.md의 것이고, 줄 메시지 문구와 체크박스 유무는 「제안」이다.</p>
+          <p class="cap-body">같은 자리의 픽커를 다시 열면 전체 보기의 미신청 줄에 상태가 선다. <strong>요청 대기 중은 체크박스가 없다</strong> — 이미 나가 있는 요청이라서다. <strong>거절함·만료됨은 체크박스가 다시 붙는다</strong> — 다시 보낸다. 상태 셋은 domain/schedule.md의 것이다. <strong>메시지에 「요청」을 남긴 것은 같은 목록에 「신청 안 함」이 서기 때문이다</strong> — 신청은 근무자가 내고 요청은 관리자가 보내는 것이라, 무엇이 대기인지 안 갈리면 관리자가 잘못 읽는다.</p>
           <p class="cap-body" style="margin-top:8px">걸린 요청이 전부 거절·만료로 끝나면 관리자에게 알림이 한 번 온다 — 빈 자리가 방치되는 것을 막는 최소한이다. 이 목업은 그 알림을 안 그린다.</p>
         </figcaption>
       </figure>
