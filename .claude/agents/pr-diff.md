@@ -3,6 +3,7 @@ name: pr-diff
 description: PR의 diff 전문을 읽고 확인 가능한 사실만 골라 돌려주는 감사자. 삭제된 파일, 총괄 문서 접촉, 시크릿, 테스트 없는 구현을 잡는다. 고치지 않고 취향으로 지적하지도 않는다.
 tools: Bash, Read, Grep, Glob
 model: sonnet
+effort: low
 ---
 
 # diff 감사자
