@@ -432,6 +432,10 @@ body.view-scene .stage.scene-live { display: block; }
   font-size: var(--t-sm); line-height: var(--lh-sm);
   box-shadow: var(--card-shadow);
 }
+/* 12/보낸 뒤 — 이 토스트는 BottomCTA(「보내기」) 위에 뜬다. 56px 기본값은 하단에
+   아무것도 없는 화면(08/REQUEST · LATE) 몫이라 못 쓴다. schedule-admin.sian.html이
+   같은 상황(하단 CTA 있는 화면 위 토스트)에서 쓴 88px을 그대로 따른다 */
+.toast.above-cta { bottom: 88px; }
 /* 왼쪽 면 아이콘 — 16px, 원이 계열색(fg.positive-contrast · fg.informative-contrast)으로
    차고 안쪽 표시는 토스트 면 색으로 뚫린다. 표시는 원 중심 기준 ×1.35로 키운다 —
    lucide 기본 크기로는 16px 원 안에서 안 읽힌다(components.md 「토스트」) */
@@ -1774,6 +1778,77 @@ body.view-scene .stage.scene-live { display: block; }
           <p class="cap-body">점선 칸은 <code>stroke.neutral-muted</code>다. 눌러 고른 날은 <strong>「확정 전 — 신청에서 고른 날」</strong> — <code>bg.brand-weak-selected</code> 면에 <code>stroke.brand-solid</code> 테두리와 체크다(components.md 「근무표 날짜 칸」 근무자 조회 표의 정본). <strong>개수 상한이 없어</strong> 다 골라도 된다.</p>
           <p class="cap-body" style="margin-top:8px">마감 줄이 달력 위에 선다 — 관리자 달력의 마감 줄과 같은 문구다. 하단 고정 <strong>「보내기」는 BottomCTA</strong>다. <strong>0개로도 보낸다</strong> — 이미 낸 신청을 전부 무르는 길이 이것뿐이라서다. 보내면 토스트 「10월 근무 신청을 보냈어요」가 뜨고 달력은 고른 채 그대로다 — 이 목업은 토스트가 뜨기 전, 고르는 중을 그렸다.</p>
           <p class="cap-body" style="margin-top:8px">마감 전 재진입도 같은 모습이다 — <strong>보낸 날짜가 선택된 채 열리고</strong>, 고쳐 다시 보내면 이전 제출을 덮어쓴다. 이 목업 하나가 첫 제출 중과 재진입 둘 다를 겸한다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-apply-sent">
+        <div class="mock">
+          <div class="statusbar"><span>09:20</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              10월 근무표
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body">
+            <div class="deadline num">스케줄 신청 마감 10월 2일(금) · 3일 남았어요</div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell pre"><b>5</b></span>
+              <span class="cell pre"><b>6</b></span>
+              <span class="cell pre"><b>7</b></span>
+              <span class="cell pre sel"><b>8</b></span>
+              <span class="cell pre"><b>9</b></span>
+              <span class="cell pre sel"><b>10</b></span>
+              <span class="cell pre"><b>11</b></span>
+              <span class="cell pre"><b>12</b></span>
+              <span class="cell pre"><b>13</b></span>
+              <span class="cell pre"><b>14</b></span>
+              <span class="cell pre"><b>15</b></span>
+              <span class="cell pre"><b>16</b></span>
+              <span class="cell pre sel"><b>17</b></span>
+              <span class="cell pre sel"><b>18</b></span>
+              <span class="cell pre"><b>19</b></span>
+              <span class="cell pre"><b>20</b></span>
+              <span class="cell pre"><b>21</b></span>
+              <span class="cell pre"><b>22</b></span>
+              <span class="cell pre"><b>23</b></span>
+              <span class="cell pre sel"><b>24</b></span>
+              <span class="cell pre"><b>25</b></span>
+              <span class="cell pre"><b>26</b></span>
+              <span class="cell pre"><b>27</b></span>
+              <span class="cell pre"><b>28</b></span>
+              <span class="cell pre"><b>29</b></span>
+              <span class="cell pre"><b>30</b></span>
+              <span class="cell pre"><b>31</b></span>
+              <span class="cell pre"><b>11/1</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="ctabar">
+            <button class="btn" type="button">보내기</button>
+          </div>
+          <div class="toast above-cta">
+            <svg class="toast-ic" style="--ic: var(--fg-positive-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
+                <path d="m9 12 2 2 4-4"/>
+              </g>
+            </svg>
+            <span>10월 근무 신청을 보냈어요</span>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">12 / APPLY · SENT</div>
+          <div class="cap-name">보낸 뒤 — 토스트</div>
+          <p class="cap-body">문서 128행이 못 박은 그대로다 — <strong>보내면 달력은 고른 채 그대로 남는다.</strong> 이 목업은 위 OPEN과 같은 선택(8·10·17·18·24일)을 유지한 채 토스트 「10월 근무 신청을 보냈어요」만 얹었다. <strong>0개를 골라도 보내진다</strong> — 이미 낸 신청을 전부 무르는 길이 이것뿐이라 막지 않는다.</p>
+          <p class="cap-body" style="margin-top:8px">아이콘은 <code>fg.positive-contrast</code>인 <strong>성공 계열</strong>이다 — 08 / REQUEST · LATE의 「자리가 찼어요」(<code>fg.informative-contrast</code>, 안내 계열)와 갈린다. 둘 다 조치할 게 없는 통보라 토스트로 가지만 성격은 다르다(components.md 「토스트」).</p>
+          <p class="cap-body" style="margin-top:8px"><code>bottom</code>은 56px가 아니라 <strong>88px</strong>이다 — 08 / REQUEST · LATE는 하단에 아무것도 없는 화면이라 56px이지만, 이 화면은 BottomCTA(「보내기」)가 그대로 남아 있다. 같은 상황에서 <code>schedule-admin.sian.html</code>이 이미 쓴 88px을 그대로 따랐다 — 새 값을 짓지 않았다.</p>
         </figcaption>
       </figure>
 
