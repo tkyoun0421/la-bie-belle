@@ -139,6 +139,7 @@ const ROLE_TOKEN_SECTION = `## 2. 역할 토큰
 | --- | --- | --- | --- | --- |
 | \`bg.neutral\` | neutral-00 | \`#FFFFFF\` | \`#262626\` | \`bg-bg-neutral\` |
 | \`bg.brand-solid\` | brand-100 | \`#F3D9C2\` | \`#3A2416\` | \`bg-bg-brand-solid\` |
+| \`bg.scrim\` | — | \`#1B19176B\` | \`#0D0C0B6B\` | \`bg-bg-scrim\` |
 
 ### fg
 
@@ -151,7 +152,7 @@ const ROLE_TOKEN_SECTION = `## 2. 역할 토큰
 | 토큰 | 팔레트 | 라이트 | 다크 | Tailwind 유틸 |
 | --- | --- | --- | --- | --- |
 | \`stroke.neutral\` | neutral-100 | \`#EEEEEE\` | \`#333333\` | \`border-stroke-neutral\` |
-| \`stroke.surface\` | — | \`transparent\` | \`#EEEEEE\` | \`border-stroke-surface\` |
+| \`stroke.surface\` | — | \`transparent\` | neutral-200 | \`border-stroke-surface\` |
 `;
 
 const TYPOGRAPHY_SECTION = `## 3. 타이포그래피
@@ -427,7 +428,7 @@ describe("리스크 C — stroke.surface 특수 행과 surface-shadow", () => {
     );
   });
 
-  it("다크 두 블록에서 stroke.surface는 표의 hex가 아니라 neutral-200을 참조한다", () => {
+  it("다크 두 블록에서 stroke.surface는 다크 칸의 단계 이름을 팔레트 변수로 푼다", () => {
     expect(requireDeclaration(darkMediaBody(css), "--surface-stroke")).toBe(
       "var(--palette-neutral-200)",
     );
@@ -454,6 +455,54 @@ describe("리스크 C — stroke.surface 특수 행과 surface-shadow", () => {
     );
     expect(requireDeclaration(darkAttributeBody(css), "--surface-shadow")).toBe(
       "none",
+    );
+  });
+});
+
+describe("리스크 J — 팔레트 칸이 — 인 행이 여럿이고 칸 종류가 섞인다", () => {
+  let css: string;
+
+  beforeAll(async () => {
+    css = await generateGlobalsCss(tokensMdFixture());
+  });
+
+  it.each([
+    ["라이트", lightBody],
+    ["다크 미디어쿼리", darkMediaBody],
+    ["다크 data-theme", darkAttributeBody],
+  ])(
+    "%s 블록에 bg.scrim과 stroke.surface가 둘 다 선다 — 한 행만 받고 멈추지 않는다",
+    (_label, bodyOf) => {
+      const declarations = topLevelDeclarationMap(bodyOf(css));
+
+      expect(Object.keys(declarations)).toEqual(
+        expect.arrayContaining(["--scrim-bg", "--surface-stroke"]),
+      );
+    },
+  );
+
+  it("색 리터럴 칸은 팔레트를 안 거치고 값 그대로 박힌다", () => {
+    expect(requireDeclaration(lightBody(css), "--scrim-bg")).toBe("#1b19176b");
+    expect(requireDeclaration(darkMediaBody(css), "--scrim-bg")).toBe(
+      "#0d0c0b6b",
+    );
+    expect(requireDeclaration(darkAttributeBody(css), "--scrim-bg")).toBe(
+      "#0d0c0b6b",
+    );
+  });
+
+  it("한 행 안에서 라이트가 리터럴이고 다크가 단계 이름이어도 각 칸을 따로 읽는다", () => {
+    expect(requireDeclaration(lightBody(css), "--surface-stroke")).toBe(
+      "transparent",
+    );
+    expect(requireDeclaration(darkAttributeBody(css), "--surface-stroke")).toBe(
+      "var(--palette-neutral-200)",
+    );
+  });
+
+  it("bg.scrim 역할 토큰은 팔레트가 아니라 scrim-bg 변수를 가리킨다", () => {
+    expect(declarationValueAnywhere(css, "--role-bg-scrim")).toBe(
+      "var(--scrim-bg)",
     );
   });
 });
