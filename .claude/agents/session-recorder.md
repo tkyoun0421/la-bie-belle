@@ -2,6 +2,7 @@
 name: session-recorder
 description: 회차를 마감하는 기록자. merge된 PR과 git log를 읽어 회차 로그를 쓰고 backlog.md 상태와 handoff.md를 갱신해 PR을 연다. 결정을 내리지 않는다.
 model: sonnet
+effort: low
 tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

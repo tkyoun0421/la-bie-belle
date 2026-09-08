@@ -2,6 +2,7 @@
 name: sian-writer
 description: 시안 HTML을 만드는 작성자. 완성된 페이지 디자인 문서를 받아 pages/<이름>.sian.html을 그린다. 디자인을 결정하지 않는다 — 문서와 tokens.md가 정본이고 시안은 그것을 눈으로 보게 옮길 뿐이다. 페이지 문서가 서고 나서 부른다.
 model: sonnet
+effort: medium
 tools: Read, Grep, Glob, Write, Edit
 ---
 
