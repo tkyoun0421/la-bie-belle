@@ -430,7 +430,7 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 
 그래서 이 절에 남은 것은 아래 넷뿐이다. 표로 담을 수 없는 뼈대라 이 절이 그것들의 유일한 정본이고, 코드펜스 안을 고치면 다음 생성이 그대로 옮겨 담는다.
 
-블록 선택자와 `color-scheme`은 여기 없다. `:root`와 `@media (prefers-color-scheme: dark)`와 `:root:not([data-theme="light"])`와 `[data-theme="dark"]`는 생성기가 세운다. 면을 띄우는 `--surface-shadow`와 `--surface-stroke`도 없다. 값은 2절과 5절 표에서 오고, 다크에서 선이 `neutral-200`을 가리킨다는 것만 생성기가 안다.
+블록 선택자와 `color-scheme`은 여기 없다. `:root`와 `@media (prefers-color-scheme: dark)`와 `:root:not([data-theme="light"])`와 `[data-theme="dark"]`는 생성기가 세운다. 면을 띄우는 `--surface-shadow`와 `--surface-stroke`도 없다. 값은 2절과 5절 표에서 온다 — 팔레트 칸이 `—`인 행은 라이트·다크 칸이 곧 값이라 생성기가 따로 아는 값이 없다.
 
 `@theme inline`을 쓰는 이유는 Tailwind 4의 동작 때문이다. 그냥 `@theme`은 값을 `:root`에서 한 번 굳혀버려서, 다크에서 팔레트가 바뀌어도 유틸이 옛 값을 계속 가리킨다. `inline`은 유틸에 `var()`를 그대로 심어 요소 자리에서 값을 풀게 한다.
 
