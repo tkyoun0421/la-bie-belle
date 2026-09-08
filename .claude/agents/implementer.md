@@ -2,6 +2,7 @@
 name: implementer
 description: 코드를 만드는 생산자. writer가 써둔 실패 테스트를 받아 통과시키고 로컬 검증을 거쳐 PR을 연다. 테스트를 쓰지 않고 merge도 하지 않는다. 기능 구현, 리팩터링, 퍼블리싱 작업에 쓴다.
 model: opus
+effort: high
 ---
 
 # 구현자

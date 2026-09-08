@@ -52,7 +52,8 @@ const SHADCN_BRIDGE = { subsection: "8.3", nth: 0, label: "shadcn 다리" };
 const BASE_LAYER = { subsection: "8.4", nth: 0, label: "베이스" };
 
 const SURFACE_SHADOW = "--surface-shadow";
-const SURFACE_STROKE_IN_DARK = "var(--palette-neutral-200)";
+const ROLE_LIGHT_COLUMN = 2;
+const ROLE_DARK_COLUMN = 3;
 const STATIC_RADIUS_UTILITIES = new Set(["rounded-none", "rounded-full"]);
 const ALIASED_PREFIX = /^--(?:palette|role|vendor)-/;
 
@@ -114,9 +115,19 @@ function roleVariableOf(token: string): string {
   return `--role-${token.split(".").join("-")}`;
 }
 
-function surfaceVariableOf(token: string): string {
+function offPaletteVariableOf(token: string): string {
   const [property, layer] = token.split(".");
   return `--${layer}-${property}`;
+}
+
+function offPaletteValueOf(cell: string): string {
+  return cell.startsWith("#") || cell === "transparent"
+    ? cell
+    : `var(--palette-${cell})`;
+}
+
+function isOffPalette(row: Row): boolean {
+  return row.cells[1] === EMPTY_CELL;
 }
 
 function paletteGroups(markdown: string, side: Side): Group[] {
@@ -134,33 +145,29 @@ function roleGroups(rows: Row[]): Group[] {
   return bySection(rows).map((section) =>
     section.map((row) => ({
       name: roleVariableOf(row.cells[0]),
-      value:
-        row.cells[1] === EMPTY_CELL
-          ? `var(${surfaceVariableOf(row.cells[0])})`
-          : `var(--palette-${row.cells[1]})`,
+      value: isOffPalette(row)
+        ? `var(${offPaletteVariableOf(row.cells[0])})`
+        : `var(--palette-${row.cells[1]})`,
     })),
   );
 }
 
-function surfaceGroup(markdown: string, roleRows: Row[], side: Side): Group {
+function offPaletteGroup(markdown: string, roleRows: Row[], side: Side): Group {
   const shadow = requireOne(
     requireRows(markdown, SHADOW_HEADER, "그림자"),
     "그림자 표",
   );
-  const stroke = requireOne(
-    roleRows.filter((row) => row.cells[1] === EMPTY_CELL),
-    "팔레트 칸이 — 인 역할 토큰",
-  );
+  const column = side === "light" ? ROLE_LIGHT_COLUMN : ROLE_DARK_COLUMN;
 
   return [
     {
       name: SURFACE_SHADOW,
       value: side === "light" ? shadow.cells[1] : shadow.cells[2],
     },
-    {
-      name: surfaceVariableOf(stroke.cells[0]),
-      value: side === "light" ? stroke.cells[2] : SURFACE_STROKE_IN_DARK,
-    },
+    ...roleRows.filter(isOffPalette).map((row) => ({
+      name: offPaletteVariableOf(row.cells[0]),
+      value: offPaletteValueOf(row.cells[column]),
+    })),
   ];
 }
 
@@ -228,12 +235,12 @@ export async function generateGlobalsCss(markdown: string): Promise<string> {
   const light = renderGroups([
     [themeName("light")],
     ...lightPalette,
-    surfaceGroup(markdown, roleRows, "light"),
+    offPaletteGroup(markdown, roleRows, "light"),
   ]);
   const dark = renderGroups([
     [themeName("dark")],
     ...paletteGroups(markdown, "dark"),
-    surfaceGroup(markdown, roleRows, "dark"),
+    offPaletteGroup(markdown, roleRows, "dark"),
   ]);
 
   const settings = renderGroups([

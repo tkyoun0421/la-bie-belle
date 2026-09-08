@@ -90,6 +90,7 @@
 
   --surface-shadow:
     0 1px 2px rgba(28, 25, 22, 0.05), 0 8px 20px -14px rgba(28, 25, 22, 0.4);
+  --scrim-bg: #1b19176b;
   --surface-stroke: transparent;
 }
 
@@ -170,6 +171,7 @@
     --palette-informative-1000: oklch(0.935 0.069 248);
 
     --surface-shadow: none;
+    --scrim-bg: #0d0c0b6b;
     --surface-stroke: var(--palette-neutral-200);
   }
 }
@@ -250,6 +252,7 @@
   --palette-informative-1000: oklch(0.935 0.069 248);
 
   --surface-shadow: none;
+  --scrim-bg: #0d0c0b6b;
   --surface-stroke: var(--palette-neutral-200);
 }
 
@@ -265,12 +268,14 @@
   --role-bg-brand-weak: var(--palette-brand-100);
   --role-bg-brand-weak-pressed: var(--palette-brand-200);
   --role-bg-brand-weak-selected: var(--palette-brand-100);
+  --role-bg-brand-muted: var(--palette-brand-300);
   --role-bg-positive-weak: var(--palette-positive-100);
   --role-bg-warning-weak: var(--palette-warning-100);
   --role-bg-critical-solid: var(--palette-critical-800);
   --role-bg-critical-solid-pressed: var(--palette-critical-900);
   --role-bg-critical-weak: var(--palette-critical-100);
   --role-bg-informative-weak: var(--palette-informative-100);
+  --role-bg-scrim: var(--scrim-bg);
 
   --role-fg-neutral: var(--palette-neutral-1000);
   --role-fg-neutral-muted: var(--palette-neutral-800);
@@ -440,12 +445,14 @@
   --color-bg-brand-weak: var(--role-bg-brand-weak);
   --color-bg-brand-weak-pressed: var(--role-bg-brand-weak-pressed);
   --color-bg-brand-weak-selected: var(--role-bg-brand-weak-selected);
+  --color-bg-brand-muted: var(--role-bg-brand-muted);
   --color-bg-positive-weak: var(--role-bg-positive-weak);
   --color-bg-warning-weak: var(--role-bg-warning-weak);
   --color-bg-critical-solid: var(--role-bg-critical-solid);
   --color-bg-critical-solid-pressed: var(--role-bg-critical-solid-pressed);
   --color-bg-critical-weak: var(--role-bg-critical-weak);
   --color-bg-informative-weak: var(--role-bg-informative-weak);
+  --color-bg-scrim: var(--role-bg-scrim);
 
   --color-fg-neutral: var(--role-fg-neutral);
   --color-fg-neutral-muted: var(--role-fg-neutral-muted);
