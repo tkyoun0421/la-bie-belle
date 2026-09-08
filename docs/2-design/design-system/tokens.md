@@ -145,6 +145,8 @@ hue 248, chroma 최대 0.115.
 
 **팔레트 열은 한 벌뿐이다.** 라이트와 다크가 같은 단계를 가리키고 팔레트가 알아서 뒤집힌다.
 
+**팔레트 칸이 `—`인 행은 그 규칙 밖이다.** 뒤집히면 안 되는 값이나 팔레트에 없는 값을 쓰는 자리다. 이 행들은 라이트·다크 칸이 곧 값이고, 칸에는 둘 중 하나가 온다 — 색 리터럴(`#`으로 시작하거나 `transparent`)이거나 팔레트 단계 이름(`neutral-200`)이다. 단계 이름이 오면 그 팔레트 변수를 가리키고, 리터럴이 오면 그대로 박힌다. 라이트와 다크가 서로 다른 종류여도 된다.
+
 ### bg
 
 | 토큰 | 팔레트 | 라이트 | 다크 | Tailwind 유틸 |
@@ -160,12 +162,18 @@ hue 248, chroma 최대 0.115.
 | `bg.brand-weak` | brand-100 | `#FBF2EB` | `#1C1612` | `bg-bg-brand-weak` |
 | `bg.brand-weak-pressed` | brand-200 | `#ECDCD2` | `#2E231B` | `bg-bg-brand-weak-pressed` |
 | `bg.brand-weak-selected` | brand-100 | `#FBF2EB` | `#1C1612` | `bg-bg-brand-weak-selected` |
+| `bg.brand-muted` | brand-300 | `#DEC7B7` | `#402F22` | `bg-bg-brand-muted` |
 | `bg.positive-weak` | positive-100 | `#E8F9EB` | `#0E1B11` | `bg-bg-positive-weak` |
 | `bg.warning-weak` | warning-100 | `#FDF3D9` | `#1E1603` | `bg-bg-warning-weak` |
 | `bg.critical-solid` | critical-800 | `#93302B` | `#F5897E` | `bg-bg-critical-solid` |
 | `bg.critical-solid-pressed` | critical-900 | `#60100F` | `#FFAFA4` | `bg-bg-critical-solid-pressed` |
 | `bg.critical-weak` | critical-100 | `#FFECE8` | `#24110F` | `bg-bg-critical-weak` |
 | `bg.informative-weak` | informative-100 | `#E7F5FF` | `#0E1822` | `bg-bg-informative-weak` |
+| `bg.scrim` | — | `#1B19176B` | `#0D0C0B6B` | `bg-bg-scrim` |
+
+`bg.brand-muted`는 옅은 브랜드 면이 중립 면 위에 떠야 하는 자리를 위한 것이다. `bg.brand-weak`는 `brand-100`이라 라이트에서 명도 0.965인데 `bg.neutral-weak`도 0.965다 — 겹쳐 놓으면 두 면이 갈리지 않는다. `bg.brand-weak-pressed`(`brand-200`, 0.905)도 차이가 0.060뿐이라 부족하다. `brand-300`은 0.845로 0.120이 갈린다. 대시보드의 하루 띠 막대가 첫 사용자다.
+
+`bg.scrim`은 팔레트를 안 따른다. 덮개는 뒤를 어둡게 하는 것이 일이라 명도가 뒤집히면 안 되는 몇 안 되는 자리인데, 팔레트가 적응형이라 `bg.neutral-solid`를 쓰면 다크에서 밝은 회색이 되어 화면을 흰 막이 덮는다. 그래서 라이트는 `neutral-1000`, 다크는 `neutral-00`을 값으로 굳혔다 — 양쪽 다 어두운 잉크다. 투명도 42%가 값에 들어 있어 쓰는 쪽이 따로 안 얹는다. 덮개를 자리마다 다르게 진하게 하고 싶으면 그때 토큰을 하나 더 만든다.
 
 ### fg
 
@@ -196,9 +204,9 @@ hue 248, chroma 최대 0.115.
 | `stroke.neutral-muted` | neutral-300 | `#CECBC9` | `#353231` | `border-stroke-neutral-muted` |
 | `stroke.neutral-disabled` | neutral-200 | `#E2DFDD` | `#272523` | `border-stroke-neutral-disabled` |
 | `stroke.brand-solid` | brand-800 | `#6E4F39` | `#C7A48C` | `border-stroke-brand-solid` |
-| `stroke.surface` | — | `transparent` | `#272523` | `border-stroke-surface` |
+| `stroke.surface` | — | `transparent` | neutral-200 | `border-stroke-surface` |
 
-`stroke.surface`는 새 색이 아니다. 라이트에서 그림자로 면을 띄우고 다크에서 선으로 나누는 규칙을 클래스 한 벌로 굴리려고 둔 것이라 라이트에서는 투명이고 다크에서 `neutral-200`을 가리킨다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#그림자와-면-나누기)에 있다.
+`stroke.surface`는 새 색이 아니다. 라이트에서 그림자로 면을 띄우고 다크에서 선으로 나누는 규칙을 클래스 한 벌로 굴리려고 둔 것이라 라이트에서는 투명이고 다크에서 `neutral-200`을 가리킨다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#그림자와-면-나누기)에 있다. 라이트 칸이 리터럴이고 다크 칸이 팔레트 단계 이름인 행이라 위의 「팔레트 칸이 `—`인 행」 규칙이 처음 쓰인 자리다.
 
 ### 팔레트를 직접 쓰는 유일한 자리
 

@@ -195,13 +195,15 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 | 자리 | 토큰 |
 | --- | --- |
 | 면 배경 | `bg.neutral` |
-| 뒤 덮개 | `bg.neutral-solid`에 투명도 |
+| 뒤 덮개 | `bg.scrim` |
 | 제목 | `fg.neutral` |
 | 본문 | `fg.neutral-muted` |
 | 왼쪽 버튼 | Button secondary |
 | 오른쪽 버튼 | Button primary 또는 destructive |
 
 모양은 `rounded-lg`다. 바텀시트는 위쪽 두 모서리만 둥글다.
+
+덮개는 투명도가 토큰 안에 들어 있어 따로 얹지 않는다. `bg.neutral-solid`를 쓰면 안 되는 이유는 그 토큰이 팔레트를 따라 다크에서 밝은 회색이 되어 화면을 흰 막이 덮기 때문이다 — 근거는 [tokens.md](tokens.md#bg)에 있다.
 
 왼쪽 버튼 라벨은 "닫기"다. "취소"라고 쓰지 않는 이유는 [writing.md](writing.md#다이얼로그-왼쪽-버튼은-닫기다)에 있다.
 

@@ -47,7 +47,7 @@ Variant는 같은 Role 안에서 세기를 가른다.
 | --- | --- |
 | `solid` | 색을 꽉 채운다. 그 위에는 `contrast`가 올라간다 |
 | `weak` | 옅게 깐다. 그 위에 `fg.neutral`이 올라간다 |
-| `muted` | 기본보다 한 단계 죽인다 |
+| `muted` | 기본보다 한 단계 죽인다. `bg`에서는 `weak`보다 진하고 `solid`보다 훨씬 옅은 중간 면이다 |
 | `subtle` | 가장 죽인 단계 |
 | `contrast` | `solid` 위에 올라가는 짝 |
 
