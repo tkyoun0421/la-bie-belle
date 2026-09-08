@@ -15,9 +15,9 @@
   오른쪽 위 라이트/다크 토글은 시안 뷰어 크롬이다. 목업 규칙 밖이고 앱에 없다.
   누르면 문서 루트에 data-theme이 걸리고 목업 팔레트가 tokens.md 1절의 다크 열로 뒤집힌다.
 
-  tokens.md에 다크 값 없음 — 아래 셋은 이 파일이 임의로 정한 자리다. 값을 여기서 굳히지 않는다.
-  · 시트 뒤 덮개. tokens.md에 bg.scrim이 아예 없다 — schedule-admin.md의 「규칙과 부딪힌 자리」가
-    기다리는 토큰이다. 시안은 덮개 잉크를 팔레트와 같이 뒤집어 임시로 세웠다.
+  tokens.md에 다크 값 없음 — 아래 둘은 이 파일이 임의로 정한 자리다. 값을 여기서 굳히지 않는다.
+  시트 뒤 덮개는 여기 있다가 bg.scrim으로 tokens.md에 올라갔다 — 시안이 임시로 쓰던
+  라이트 neutral-1000 · 다크 neutral-00 · 투명도 .42가 그대로 정본이 됐다.
   · 시트 그림자. tokens.md 5절의 그림자는 shadow-card 하나뿐이라 다크 값도 라이트 값도 없다.
   · 뷰어 크롬(--b-*)의 색. 목업 밖이라 애초에 토큰 대상이 아니다.
 -->
@@ -1777,7 +1777,7 @@ code {
         <figcaption>
           <div class="cap-key">DARK / PICKER</div>
           <div class="cap-name">날 상세와 픽커</div>
-          <p class="cap-body">덮개는 다크에서 밝은 막이 되면 안 된다 — <strong>`bg.scrim` 제안</strong>을 dashboard.md가 이미 적었고 이 화면의 시트 전부가 그 토큰을 기다린다.</p>
+          <p class="cap-body">덮개는 다크에서 밝은 막이 되면 안 된다 — <strong><code>bg.scrim</code></strong>이 tokens.md에 서면서 이 화면의 시트 전부가 같은 값을 쓴다.</p>
         </figcaption>
       </figure>
 
