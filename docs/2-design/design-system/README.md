@@ -13,9 +13,11 @@
 - [foundation/motion.md](foundation/motion.md) — 언제 움직이고 언제 안 움직이는지, 접근성, base-ui에 애니메이션 붙이기
 - [writing.md](writing.md) — 화면에 나가는 한국어 규칙
 - [components.md](components.md) — 컴포넌트별 역할 토큰 표
-- [pages/login.md](pages/login.md) — 로그인 화면과 승인 대기 화면
+- [pages/login.md](pages/login.md) — 로그인, 프로필 작성, 승인 대기
 - [pages/dashboard.md](pages/dashboard.md) — 근무자 대시보드와 출근 인증 화면과 사유 시트
+- [pages/schedule-worker.md](pages/schedule-worker.md) — 근무자 근무표 보기와 근무 신청
 - [pages/schedule-admin.md](pages/schedule-admin.md) — 관리자 홈과 근무표 제작·확정 화면
+- [pages/members-pending.md](pages/members-pending.md) — 관리자 가입 대기 목록과 차단한 사람
 - `pages/*.sian.html` — 화면별 시안. 문서 옆에 같은 이름으로 놓는다
 
 ## 두 축

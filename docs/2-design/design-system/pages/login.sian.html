@@ -1,0 +1,1112 @@
+<!--
+  로그인·프로필 작성·승인 대기 시안 — 사람이 보고 고른 결과다.
+
+  값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../tokens.md이고,
+  무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 login.md다.
+  조각의 정본은 ../components.md, 문안 규칙의 정본은 ../writing.md다.
+  이 파일과 저것들이 어긋나면 저것들이 이긴다.
+
+  이 파일이 맡는 것은 글로 안 남는 것들이다 — 등장이 계단으로 올라오는 모습,
+  뛰는 점과 도는 문구의 실제 속도, 시트가 올라오는 타이밍, 화면 여럿을 나란히 놓고 보는 눈.
+  구현할 때 문서와 이 파일을 같이 연다.
+
+  퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
+  앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../README.md의 「퍼블리싱」에 있다.
+
+  오른쪽 위 라이트/다크 토글은 시안 뷰어 크롬이다. 목업 규칙 밖이고 앱에 없다.
+  누르면 문서 루트에 data-theme이 걸리고 목업 팔레트가 tokens.md 1절의 다크 열로 뒤집힌다.
+
+  tokens.md에 값 없음 — 아래 다섯은 이 파일이 임의로 정한 자리다. 값을 여기서 굳히지 않는다.
+  · 등장이 아래에서 올라오는 거리(8px). tokens.md 6절에 이동 거리 토큰이 없다.
+  · 뛰는 점이 커지는 배율. login.md는 「커졌다 작아진다」까지만 적는다.
+  · 시트 그림자. tokens.md 5절의 그림자는 shadow-card 하나뿐이다.
+  · 구글 G 로고의 색 넷. login.md가 로고를 signin-assets.zip에서 받아 쓰라고 했고
+    여기 그린 것은 자리를 보기 위한 대역이다. 구현에서 이 SVG를 쓰지 않는다.
+  · 뷰어 크롬(--b-*)의 색. 목업 밖이라 애초에 토큰 대상이 아니다.
+
+  login.md가 「아직 안 정했다」고 적은 자리는 여기서도 안 채웠다 — 성별 세그먼트에 세울 값,
+  생년월일 시트의 모양, 연락처를 받는 꼴, 차단된 사람이 로그인했을 때의 화면 넷이다.
+  각각 캡션에 「아직 안 정함」으로 표시했다.
+-->
+<title>로그인·프로필·승인 대기 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+
+<style>
+:root {
+  --b-bg: oklch(0.945 0.004 57);
+  --b-panel: oklch(0.988 0.003 57);
+  --b-ink: oklch(0.27 0.007 57);
+  --b-sub: oklch(0.52 0.006 57);
+  --b-faint: oklch(0.63 0.005 57);
+  --b-line: oklch(0.885 0.005 57);
+  --b-line-strong: oklch(0.8 0.005 57);
+  --b-accent: oklch(0.48 0.115 248);
+  --b-mock-shadow: 0 2px 6px rgba(28,25,22,.06), 0 24px 48px -28px rgba(28,25,22,.5);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+    --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+    --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+    --b-accent: oklch(0.76 0.1 248);
+    --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+  }
+}
+:root[data-theme="dark"] {
+  --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+  --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+  --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+  --b-accent: oklch(0.76 0.1 248);
+  --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--b-bg); color: var(--b-ink);
+  font-family: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1300px; margin: 0 auto; padding: 56px 28px 110px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--b-accent); margin: 0 0 14px;
+}
+h1 { font-size: 36px; line-height: 1.25; font-weight: 700; letter-spacing: -.02em; margin: 0 0 16px; }
+.lede { font-size: 16px; color: var(--b-sub); max-width: 60ch; margin: 0; }
+
+section { margin-top: 70px; }
+.sec-head { border-top: 1px solid var(--b-line-strong); padding-top: 18px; margin-bottom: 28px; }
+.sec-num {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .12em; color: var(--b-faint); display: block; margin-bottom: 7px;
+}
+h2 { font-size: 23px; font-weight: 700; letter-spacing: -.015em; margin: 0 0 10px; }
+.sec-head p { margin: 0; color: var(--b-sub); max-width: 68ch; font-size: 14.5px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, 375px); gap: 44px 30px; justify-content: start; align-items: start; }
+.item > figcaption { margin-top: 16px; }
+.cap-key { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--b-faint); }
+.cap-name { font-size: 17px; font-weight: 700; margin: 3px 0 6px; letter-spacing: -.01em; }
+.cap-body { font-size: 13.5px; color: var(--b-sub); margin: 0; max-width: 46ch; }
+.cap-body strong { color: var(--b-ink); font-weight: 600; }
+figure.item { margin: 0; }
+code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .88em;
+  background: var(--b-panel); border: 1px solid var(--b-line); border-radius: 4px; padding: 1px 5px;
+}
+.replay {
+  margin-top: 14px; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--b-accent);
+  background: none; border: 1px solid color-mix(in oklch, var(--b-accent) 40%, transparent);
+  border-radius: 999px; padding: 4px 13px; cursor: pointer;
+}
+.replay:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+
+/* 라이트/다크 토글 — 시안 뷰어 크롬이다. 목업 규칙 밖이라 토큰을 안 쓴다 */
+.themetoggle {
+  position: fixed; top: 16px; right: 18px; z-index: 90;
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 34px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: .06em;
+  color: var(--b-sub); background: var(--b-panel); border: 1px solid var(--b-line-strong);
+  box-shadow: 0 8px 22px -16px rgba(0,0,0,.6);
+}
+.themetoggle:hover { color: var(--b-ink); }
+.themetoggle:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+.themetoggle .ic-sun { display: none; }
+:root[data-theme="dark"] .themetoggle .ic-sun { display: block; }
+:root[data-theme="dark"] .themetoggle .ic-moon { display: none; }
+.themetoggle .lab-dark { display: inline; }
+.themetoggle .lab-light { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-dark { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-light { display: inline; }
+
+/* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
+.mock {
+  --palette-neutral-00: oklch(1 .0037 57);
+  --palette-neutral-100: oklch(.965 .0037 57);
+  --palette-neutral-200: oklch(.905 .0043 57);
+  --palette-neutral-300: oklch(.845 .0045 57);
+  --palette-neutral-700: oklch(.545 .005 57);
+  --palette-neutral-800: oklch(.455 .005 57);
+  --palette-neutral-900: oklch(.32 .0053 57);
+  --palette-neutral-1000: oklch(.215 .0055 57);
+  --palette-brand-100: oklch(.965 .0128 57);
+  --palette-brand-800: oklch(.455 .0534 57);
+  --palette-positive-100: oklch(.965 .0253 152);
+  --palette-positive-800: oklch(.455 .1058 152);
+  --palette-informative-100: oklch(.965 .0253 248);
+  --surface-stroke: transparent;
+  /* tokens.md 2절 — 투명도가 값 안에 들어 있다. 쓰는 쪽이 따로 안 얹는다 */
+  --bg-scrim: #1B19176B;
+  --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5);
+}
+.mock.force-dark {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-100: oklch(.205 .0128 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --palette-positive-100: oklch(.205 .0253 152);
+  --palette-positive-800: oklch(.745 .1058 152);
+  --palette-informative-100: oklch(.205 .0253 248);
+  --surface-stroke: var(--palette-neutral-200);
+  --bg-scrim: #0D0C0B6B;
+  --card-shadow: none;
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mock:not(.force-light) {
+    --palette-neutral-00: oklch(.155 .0037 57);
+    --palette-neutral-100: oklch(.205 .0037 57);
+    --palette-neutral-200: oklch(.265 .0043 57);
+    --palette-neutral-300: oklch(.32 .0045 57);
+    --palette-neutral-700: oklch(.665 .005 57);
+    --palette-neutral-800: oklch(.745 .005 57);
+    --palette-neutral-900: oklch(.845 .0053 57);
+    --palette-neutral-1000: oklch(.935 .0055 57);
+    --palette-brand-100: oklch(.205 .0128 57);
+    --palette-brand-800: oklch(.745 .0534 57);
+    --palette-positive-100: oklch(.205 .0253 152);
+    --palette-positive-800: oklch(.745 .1058 152);
+    --palette-informative-100: oklch(.205 .0253 248);
+    --surface-stroke: var(--palette-neutral-200);
+    --bg-scrim: #0D0C0B6B;
+    --card-shadow: none;
+    --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+  }
+}
+:root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-100: oklch(.205 .0128 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --palette-positive-100: oklch(.205 .0253 152);
+  --palette-positive-800: oklch(.745 .1058 152);
+  --palette-informative-100: oklch(.205 .0253 248);
+  --surface-stroke: var(--palette-neutral-200);
+  --bg-scrim: #0D0C0B6B;
+  --card-shadow: none;
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+}
+.mock {
+  --bg-neutral: var(--palette-neutral-00);
+  --bg-neutral-weak: var(--palette-neutral-100);
+  --bg-neutral-solid: var(--palette-neutral-1000);
+  --bg-neutral-disabled: var(--palette-neutral-100);
+  --bg-brand-solid: var(--palette-brand-800);
+  --bg-brand-weak: var(--palette-brand-100);
+  --bg-positive-weak: var(--palette-positive-100);
+  --bg-informative-weak: var(--palette-informative-100);
+  --fg-neutral: var(--palette-neutral-1000);
+  --fg-neutral-muted: var(--palette-neutral-800);
+  --fg-neutral-subtle: var(--palette-neutral-700);
+  --fg-neutral-contrast: var(--palette-neutral-00);
+  --fg-neutral-disabled: var(--palette-neutral-700);
+  --fg-brand: var(--palette-brand-800);
+  --fg-brand-contrast: var(--palette-neutral-00);
+  --fg-positive: var(--palette-positive-800);
+  --stroke-neutral: var(--palette-neutral-200);
+  --stroke-neutral-muted: var(--palette-neutral-300);
+  --stroke-neutral-disabled: var(--palette-neutral-200);
+
+  /* tokens.md 9절 — 바깥이 정한 값. 우리가 못 바꾼다 */
+  --vendor-google-bg: #131314;
+  --vendor-google-stroke: #8E918F;
+  --vendor-google-fg: #E3E3E3;
+
+  --t-xs: .8125rem; --lh-xs: 1.21875rem;
+  --t-sm: .9375rem; --lh-sm: 1.40625rem;
+  --t-base: 1.0625rem; --lh-base: 1.59375rem;
+  --t-lg: 1.25rem; --lh-lg: 1.8125rem;
+  --t-xl: 1.375rem; --lh-xl: 1.9375rem;
+  --t-2xl: 1.625rem; --lh-2xl: 2.1875rem;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+  --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms; --d-slower: 300ms;
+  --interval-rotate: 4s; --interval-beat: 1.8s; --stagger-step: 70ms;
+  /* tokens.md에 없다 — 이 시안이 잡은 등장 이동 거리다 */
+  --rise: 8px;
+
+  width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  background: var(--bg-neutral); color: var(--fg-neutral);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  font-size: var(--t-base); line-height: var(--lh-base);
+  box-shadow: var(--b-mock-shadow);
+}
+.mock .num { font-variant-numeric: tabular-nums; }
+
+.statusbar {
+  flex: 0 0 auto; height: 46px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px 0 30px; font-size: var(--t-xs); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.sb-right { display: flex; align-items: center; gap: 5px; }
+
+/* 화면 좌우 여백 px-6, 아래 여백 pb-6 + safe-area (login.md 「여백과 모양」) */
+.screen {
+  flex: 1 1 auto; display: flex; flex-direction: column;
+  padding: 0 24px calc(24px + env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+.screen.flush { padding-bottom: 0; }
+.sp { flex: 1 1 auto; min-height: 8px; }
+.rule { height: 1px; background: var(--stroke-neutral); flex: 0 0 auto; }
+
+/* ── 등장 — 아래에서 올라오며 duration-slower, 요소 간격 stagger-step ── */
+.rise { opacity: 0; }
+.mock.play .rise {
+  animation: rise var(--d-slower) ease-out both;
+  animation-delay: calc(var(--stagger-step) * var(--i, 0));
+}
+@keyframes rise { from { opacity: 0; transform: translateY(var(--rise)); } to { opacity: 1; transform: none; } }
+
+/* 버튼 — components.md 「Button」. 눌림은 duration-fast에 scale(0.97) */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 48px; border-radius: 999px; border: 0;
+  font-size: var(--t-sm); font-weight: 500; font-family: inherit;
+  background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
+  transition: transform var(--d-fast) ease-out, background-color var(--d-fast) ease-out;
+}
+.btn:active { transform: scale(.97); }
+.btn:disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); cursor: default; }
+.btn:disabled:active { transform: none; }
+.btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+.btn.outline { background: none; color: var(--fg-neutral); border: 1px solid var(--stroke-neutral); }
+.btn.ghost { background: none; color: var(--fg-neutral-muted); }
+.btn .spin {
+  width: 17px; height: 17px; border-radius: 999px;
+  border: 2px solid currentColor; border-top-color: transparent;
+  animation: spin .68s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 구글 버튼 — 우리 팔레트 밖이다. tokens.md 9절의 세 값과 login.md 「구글 버튼은 구글이 정한다」 */
+.gbtn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; height: 48px; border-radius: 999px; cursor: pointer; font-family: inherit;
+  background: var(--vendor-google-bg); color: var(--vendor-google-fg);
+  border: 1px solid var(--vendor-google-stroke);
+  font-size: var(--t-sm); font-weight: 500;
+  transition: transform var(--d-fast) ease-out;
+}
+.gbtn:active { transform: scale(.97); }
+
+/* ── 01 로그인 ── */
+.centerblock { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.brandmark {
+  width: 48px; height: 48px; border-radius: var(--r-lg); background: var(--bg-brand-solid);
+  color: var(--fg-brand-contrast); display: grid; place-items: center;
+  font-size: var(--t-lg); font-weight: 700; margin-bottom: 20px;
+}
+.svcname { font-size: var(--t-2xl); line-height: var(--lh-2xl); font-weight: 700; letter-spacing: -.02em; }
+.svcsub { margin-top: 8px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+.bottomblock { display: flex; flex-direction: column; }
+.gnote {
+  margin-top: 16px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs);
+  color: var(--fg-neutral-subtle);
+}
+
+/* ── 02 프로필 작성 ── */
+.appbar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  padding: 4px 24px 12px; min-height: 42px;
+}
+.appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
+.appbar .sp { min-height: 0; }
+.appbar .signout { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); cursor: pointer; }
+.lede1 { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+.photoblock { margin-top: 24px; display: flex; flex-direction: column; align-items: center; }
+.photo {
+  position: relative; width: 80px; height: 80px; border-radius: 999px;
+  background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
+  display: grid; place-items: center; color: var(--fg-neutral-subtle);
+}
+.photo .swap {
+  position: absolute; right: -2px; bottom: -2px; width: 26px; height: 26px; border-radius: 999px;
+  background: var(--bg-neutral-solid); color: var(--fg-neutral-contrast);
+  display: grid; place-items: center; border: 2px solid var(--bg-neutral);
+}
+.photoblock .swaplabel { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); cursor: pointer; }
+.fieldset { margin-top: 32px; }
+.field + .field { margin-top: 20px; }
+.field .lab { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+.field .box {
+  margin-top: 6px; height: 48px; border-radius: var(--r-md);
+  background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
+  display: flex; align-items: center; gap: 8px; padding: 0 14px;
+  font-size: var(--t-base); color: var(--fg-neutral);
+}
+.field .box.ph { color: var(--fg-neutral-subtle); }
+.field .box .chev { margin-left: auto; color: var(--fg-neutral-subtle); display: grid; place-items: center; }
+/* 세그먼트 — 고른 쪽은 흰 면과 그림자다. 브랜드 색은 이 화면에서 「보내기」 하나뿐 */
+.seg {
+  margin-top: 6px; height: 48px; border-radius: 999px; background: var(--bg-neutral-weak);
+  padding: 4px; display: flex; gap: 4px;
+}
+.seg > span {
+  flex: 1; border-radius: 999px; display: grid; place-items: center;
+  font-size: var(--t-sm); font-weight: 500; color: var(--fg-neutral-subtle); cursor: pointer;
+}
+.seg > span.on { background: var(--bg-neutral); color: var(--fg-neutral); box-shadow: var(--card-shadow); }
+.seg > span.tbd { letter-spacing: .1em; }
+
+/* 하단 고정 CTA — components.md 「BottomCTA」 */
+.ctabar {
+  flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral);
+  padding: 10px 24px calc(22px + env(safe-area-inset-bottom));
+}
+.ctabar .subnote { margin-top: 8px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+
+/* 바텀시트와 덮개 — components.md 「Dialog와 바텀시트」, tokens.md의 bg.scrim */
+.scrim {
+  position: absolute; inset: 0; z-index: 3; background: var(--bg-scrim);
+  opacity: 0; pointer-events: none; transition: opacity var(--d-slow) ease-out;
+}
+.mock.modal-open .scrim { opacity: 1; pointer-events: auto; }
+.rsheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+  background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 10px 24px calc(24px + env(safe-area-inset-bottom)); box-shadow: var(--sheet-shadow);
+  transform: translateY(102%); transition: transform var(--d-slow) ease-out;
+}
+.mock.modal-open .rsheet { transform: none; }
+.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 10px; }
+.sh-title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
+.sh-list { margin-top: 12px; }
+.sh-row { display: flex; align-items: baseline; gap: 12px; padding: 9px 0; }
+.sh-row + .sh-row { border-top: 1px solid var(--stroke-neutral); }
+.sh-row .k { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); flex: 0 0 64px; }
+.sh-row .v { font-size: var(--t-base); font-weight: 500; }
+.sh-note { margin-top: 12px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.rowbtns { display: flex; gap: 8px; margin-top: 18px; }
+.rowbtns .btn.secondary { flex: 0 0 108px; }
+
+/* ── 03 승인 대기 ── */
+.pill {
+  display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px;
+  border-radius: 999px; background: var(--bg-brand-weak); color: var(--fg-brand);
+  font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500;
+}
+.pill.off { background: var(--bg-neutral-weak); color: var(--fg-neutral-muted); }
+.dot { width: 6px; height: 6px; border-radius: 999px; background: var(--bg-brand-solid); }
+.mock.play .dot { animation: beat var(--interval-beat) ease-out infinite; }
+@keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.5); } }
+.waittitle { margin-top: 16px; font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 700; letter-spacing: -.015em; }
+/* 도는 문구 — 두 줄 높이를 미리 잡는다. 넷이 interval-rotate마다 duration-slow로 갈린다 */
+.rotator {
+  margin-top: 8px; position: relative; width: 100%; height: calc(var(--lh-sm) * 2);
+  font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted);
+}
+.rotator span { position: absolute; left: 0; right: 0; top: 0; opacity: 0; }
+.mock.play .rotator span { animation: rotline calc(var(--interval-rotate) * 4) ease-out infinite both; }
+/* 거절된 뒤 — 안 돈다. 한 줄이 선 채로 남는다 */
+.rotator.still span { opacity: 1; }
+.mock.play .rotator.still span { animation: none; }
+.rotator span:nth-child(1) { animation-delay: 0s; }
+.rotator span:nth-child(2) { animation-delay: var(--interval-rotate); }
+.rotator span:nth-child(3) { animation-delay: calc(var(--interval-rotate) * 2); }
+.rotator span:nth-child(4) { animation-delay: calc(var(--interval-rotate) * 3); }
+@keyframes rotline {
+  0% { opacity: 0; transform: translateY(var(--rise)); }
+  1.5% { opacity: 1; transform: none; }
+  25% { opacity: 1; transform: none; }
+  26.5% { opacity: 0; transform: translateY(calc(var(--rise) * -1)); }
+  27% { opacity: 0; transform: translateY(var(--rise)); }
+  100% { opacity: 0; transform: translateY(var(--rise)); }
+}
+
+/* 알림 영역 — 한 자리가 기기 상태에 따라 넷으로 갈린다.
+   면 색과 내용이 duration-base로 함께 바뀐다 */
+.notif {
+  border-radius: var(--r-lg); padding: 16px; text-align: left;
+  background: var(--bg-neutral-weak);
+  transition: background-color var(--d-base) ease-out;
+}
+.notif.done { background: var(--bg-positive-weak); }
+.notif.guide { background: var(--bg-informative-weak); }
+.notif .nhead { display: flex; align-items: center; gap: 8px; }
+.notif .nhead .ic { flex: 0 0 auto; color: var(--fg-positive); display: grid; place-items: center; }
+.mock.play .notif .nhead .ic { animation: zoomin var(--d-base) ease-out both; }
+@keyframes zoomin { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: none; } }
+.notif .nt { font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 600; color: var(--fg-neutral); }
+.notif .nb { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+.notif ol { margin: 8px 0 0; padding-left: 18px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+.notif .btn { margin-top: 16px; height: 40px; }
+
+.account { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.account .ava {
+  width: 32px; height: 32px; border-radius: 999px; background: var(--bg-neutral-weak);
+  display: grid; place-items: center; color: var(--fg-neutral-subtle); flex: 0 0 auto;
+}
+.account .mail { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+.myrule { margin: 20px 0; }
+.afterbtns { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* 이동이 빠지고 밝기만 바뀐다. 점은 멈추고, 글은 그대로 다 돈다 */
+  .mock.play .rise { animation-name: fadein; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  .mock.play .dot { animation: none; }
+  .mock.play .rotator span { animation-name: rotfade; }
+  @keyframes rotfade {
+    0% { opacity: 0; }
+    1.5%, 25% { opacity: 1; }
+    26.5%, 100% { opacity: 0; }
+  }
+  .mock.play .notif .nhead .ic { animation-name: fadein; }
+  .btn:active, .gbtn:active { transform: none; }
+  /* 시트도 이동이 빠지고 밝기만 바뀐다. 덮개는 원래 밝기만 바뀌던 자리라 그대로다 */
+  .rsheet { transform: none; opacity: 0; transition: opacity var(--d-slow) ease-out; }
+  .mock.modal-open .rsheet { opacity: 1; }
+}
+</style>
+
+<!-- 시안 뷰어 크롬 — 목업이 아니다 -->
+<button class="themetoggle" type="button" data-theme-toggle aria-label="라이트/다크 전환">
+  <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  <span class="lab-dark">다크로</span>
+  <span class="lab-light">라이트로</span>
+</button>
+
+<div class="wrap">
+  <p class="eyebrow">라비에벨 · 페이지 디자인 01</p>
+  <h1>로그인·프로필 작성·승인 대기 시안</h1>
+  <p class="lede">
+    앱에 들어오는 세 화면이다. 로그인하면 프로필 작성이 나오고, 보내면 승인 대기가 나오고,
+    승인 대기에서 로그아웃하면 로그인으로 돌아온다. 절 순서가 그 흐름이다.
+    등장 계단과 뛰는 점과 도는 문구는 목업 아래 「다시 보기」로 되감는다.
+    오른쪽 위 토글이 페이지 전체를 라이트와 다크로 뒤집는다.
+  </p>
+
+  <!-- 01 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">01 / 로그인</span>
+      <h2>덩이 둘, 누를 것은 하나다</h2>
+      <p>브랜드 마크·이름·설명이 화면 한가운데에 서고 구글 버튼과 안내 문구가 바닥에 붙는다. 카드를 안 쓰고 로딩 표시도 없다 — 누르면 그 자리에서 구글로 넘어간다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock play">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <div class="brandmark rise" style="--i:0">라</div>
+              <div class="svcname rise" style="--i:1">라비에벨</div>
+              <div class="svcsub rise" style="--i:2">근무표와 급여를 한곳에서 봐요</div>
+            </div>
+            <div class="sp"></div>
+            <div class="bottomblock">
+              <button class="gbtn rise" style="--i:3" type="button">
+                <!-- 자리를 보기 위한 대역이다. 구현은 구글이 배포하는 signin-assets.zip의 로고를 쓴다 -->
+                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+                Google 계정으로 로그인
+              </button>
+              <div class="gnote rise" style="--i:4">가입하면 관리자가 확인한 뒤에<br>근무표가 보여요</div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>등장 다시 보기</button>
+        <figcaption>
+          <div class="cap-key">LOGIN</div>
+          <div class="cap-name">로그인</div>
+          <p class="cap-body">남는 세로 공간을 가운데 덩이의 위아래가 반씩 나눈다. <strong>안내 문구가 승인 대기 화면을 미리 알린다</strong> — 「가입하면 관리자가 확인한 뒤에」에서 줄을 끊는다.</p>
+          <p class="cap-body" style="margin-top:8px">등장은 마크·이름·설명·버튼·안내 순으로 <code>--duration-slower</code>에 <code>--stagger-step</code>이다. 버튼을 눌러 보면 <code>--duration-fast</code>로 <code>scale(0.97)</code>까지 줄어든다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>G 로고는 대역이다.</strong> login.md가 구글이 배포하는 <code>signin-assets.zip</code>을 그대로 쓰라고 했다. 버튼의 면·테두리·글자 셋만 tokens.md 9절의 값이고, 서체는 우리 것이다 — 이 어긋남을 심사가 어떻게 보는지는 문서의 「아직 안 정한 것」에 있다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">02 / 프로필 작성</span>
+      <h2>한 장에 다 세우고, 보내기 전에 한 번 묻는다</h2>
+      <p>읽는 화면이 아니라 적는 화면이라 왼쪽 정렬이다. 채워진 사진이 맨 위에 오고 빈 칸 넷이 그 아래에 선다. 「보내기」를 누르면 바로 안 보내고 시트가 올라온다 — 이름과 성별과 생년월일이 본인 손에서 잠기는 자리다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock play">
+          <div class="statusbar"><span>9:42</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1 rise" style="--i:0">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
+            <div class="photoblock rise" style="--i:1">
+              <div class="photo">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                <span class="swap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
+              </div>
+              <span class="swaplabel">사진 바꾸기</span>
+            </div>
+            <div class="fieldset">
+              <div class="field rise" style="--i:2">
+                <div class="lab">이름</div>
+                <div class="box ph">근무표에 뜰 이름</div>
+              </div>
+              <div class="field rise" style="--i:3">
+                <div class="lab">성별</div>
+                <div class="seg"><span class="tbd">—</span><span class="tbd">—</span></div>
+              </div>
+              <div class="field rise" style="--i:4">
+                <div class="lab">생년월일</div>
+                <div class="box ph">고르기<span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              </div>
+              <div class="field rise" style="--i:5">
+                <div class="lab">연락처</div>
+                <div class="box ph num">010-0000-0000</div>
+              </div>
+            </div>
+            <div class="sp"></div>
+          </div>
+          <div class="ctabar rise" style="--i:6">
+            <button class="btn" type="button" disabled>보내기</button>
+            <div class="subnote">빈 칸을 다 채우면 보낼 수 있어요</div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>등장 다시 보기</button>
+        <figcaption>
+          <div class="cap-key">PROFILE / EMPTY</div>
+          <div class="cap-name">처음 들어왔을 때</div>
+          <p class="cap-body">사진만 채워진 채 시작한다. <strong>빈 칸에 오류 테두리를 두르지 않는다</strong> — 안 눌리는 이유는 버튼 아래 줄이 말한다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>성별 세그먼트의 값은 아직 안 정함.</strong> 알약 둘의 자리만 세우고 글자는 비웠다 — 둘로 끝나는지 셋째가 있는지에 따라 모양이 달라진다(login.md 「아직 안 정한 것」).</p>
+          <p class="cap-body" style="margin-top:8px"><strong>생년월일 시트의 모양도 아직 안 정함.</strong> 굴리는 것 셋인지 달력인지가 안 정해져서 칸을 눌렀을 때의 시트를 안 그렸다. 칸의 오른쪽 표시가 「눌러서 여는 것」임을 말하는 데까지다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock play">
+          <div class="statusbar"><span>9:44</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
+            <div class="photoblock">
+              <div class="photo">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                <span class="swap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
+              </div>
+              <span class="swaplabel">사진 바꾸기</span>
+            </div>
+            <div class="fieldset">
+              <div class="field">
+                <div class="lab">이름</div>
+                <div class="box">박서연</div>
+              </div>
+              <div class="field">
+                <div class="lab">성별</div>
+                <div class="seg"><span class="tbd on">—</span><span class="tbd">—</span></div>
+              </div>
+              <div class="field">
+                <div class="lab">생년월일</div>
+                <div class="box num">1998년 4월 12일<span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              </div>
+              <div class="field">
+                <div class="lab">연락처</div>
+                <div class="box num">010-2345-6789</div>
+              </div>
+            </div>
+            <div class="sp"></div>
+          </div>
+          <div class="ctabar">
+            <button class="btn" type="button">보내기</button>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">PROFILE / FILLED</div>
+          <div class="cap-name">다 채운 뒤</div>
+          <p class="cap-body">넷이 다 차면 「보내기」가 브랜드 면으로 살아나고 <strong>버튼 아래 줄이 사라진다</strong> — 그 줄은 안 눌리는 이유를 말하는 자리라 눌리는 순간 할 말이 없다. 다 채웠을 때의 문안은 login.md에 없다.</p>
+          <p class="cap-body" style="margin-top:8px">생년월일과 연락처에 <code>tabular-nums</code>가 걸린다. <strong>둘의 표기 꼴은 문서에 없다</strong> — 하이픈을 자동으로 넣는지, 생년월일을 어떤 글자로 적는지가 아직 안 정해져서 목업의 두 값은 자리만 보여주는 대역이다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:44</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
+            <div class="photoblock">
+              <div class="photo">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                <span class="swap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
+              </div>
+              <span class="swaplabel">사진 바꾸기</span>
+            </div>
+            <div class="fieldset">
+              <div class="field">
+                <div class="lab">이름</div>
+                <div class="box">박서연</div>
+              </div>
+              <div class="field">
+                <div class="lab">성별</div>
+                <div class="seg"><span class="tbd on">—</span><span class="tbd">—</span></div>
+              </div>
+              <div class="field">
+                <div class="lab">생년월일</div>
+                <div class="box num">1998년 4월 12일<span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              </div>
+              <div class="field">
+                <div class="lab">연락처</div>
+                <div class="box num">010-2345-6789</div>
+              </div>
+            </div>
+            <div class="sp"></div>
+          </div>
+          <div class="ctabar">
+            <button class="btn" type="button">보내기</button>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">이대로 보낼까요</div>
+            <div class="sh-list">
+              <div class="sh-row"><span class="k">이름</span><span class="v">박서연</span></div>
+              <div class="sh-row"><span class="k">성별</span><span class="v">—</span></div>
+              <div class="sh-row"><span class="k">생년월일</span><span class="v num">1998년 4월 12일</span></div>
+            </div>
+            <div class="sh-note">이름과 성별과 생년월일은 보내고 나면 못 고쳐요</div>
+            <div class="rowbtns">
+              <button class="btn secondary" type="button">고칠게요</button>
+              <button class="btn" type="button">보낼게요</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">PROFILE / CONFIRM</div>
+          <div class="cap-name">보내기 전 확인</div>
+          <p class="cap-body">시트가 <code>--duration-slow</code>로 올라온다. <strong>연락처와 사진은 시트에 안 선다</strong> — 이 시트가 말하는 것은 「이건 못 고친다」 하나고, 고칠 수 있는 것을 같이 세우면 무엇이 잠기는지가 흐려진다.</p>
+          <p class="cap-body" style="margin-top:8px">시트에 서는 것은 <strong>잠기는 값 셋</strong>이다 — 이름과 성별과 생년월일. 시트 아래 줄이 부르는 셋과 같다.</p>
+          <p class="cap-body" style="margin-top:8px">왼쪽 버튼이 「고칠게요」다. components.md는 다이얼로그 왼쪽 버튼을 「닫기」로 정했지만 login.md가 이 자리에 두 문안을 따로 적었다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:44</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
+            <div class="photoblock">
+              <div class="photo">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                <span class="swap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
+              </div>
+              <span class="swaplabel">사진 바꾸기</span>
+            </div>
+            <div class="fieldset">
+              <div class="field">
+                <div class="lab">이름</div>
+                <div class="box">박서연</div>
+              </div>
+              <div class="field">
+                <div class="lab">성별</div>
+                <div class="seg"><span class="tbd on">—</span><span class="tbd">—</span></div>
+              </div>
+              <div class="field">
+                <div class="lab">생년월일</div>
+                <div class="box num">1998년 4월 12일<span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              </div>
+              <div class="field">
+                <div class="lab">연락처</div>
+                <div class="box num">010-2345-6789</div>
+              </div>
+            </div>
+            <div class="sp"></div>
+          </div>
+          <div class="ctabar">
+            <button class="btn" type="button">보내기</button>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">이대로 보낼까요</div>
+            <div class="sh-list">
+              <div class="sh-row"><span class="k">이름</span><span class="v">박서연</span></div>
+              <div class="sh-row"><span class="k">성별</span><span class="v">—</span></div>
+              <div class="sh-row"><span class="k">생년월일</span><span class="v num">1998년 4월 12일</span></div>
+            </div>
+            <div class="sh-note">이름과 성별과 생년월일은 보내고 나면 못 고쳐요</div>
+            <div class="rowbtns">
+              <button class="btn secondary" type="button">고칠게요</button>
+              <button class="btn" type="button"><span class="spin"></span></button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">PROFILE / SENDING</div>
+          <div class="cap-name">보내는 동안</div>
+          <p class="cap-body">「보낼게요」 안에 스피너가 돌고 <strong>시트는 열려 있다.</strong> 로그인 화면과 달리 여기는 우리 서버로 보내는 것이라 기다리는 시간이 실제로 있다.</p>
+          <p class="cap-body" style="margin-top:8px">보내고 나면 시트가 닫히고 승인 대기 화면으로 넘어간다. <strong>토스트를 안 띄운다</strong> — 화면이 통째로 바뀌는 것이 이미 결과다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock play">
+          <div class="statusbar"><span>18:20</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1 rise" style="--i:0">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
+            <div class="photoblock rise" style="--i:1">
+              <div class="photo">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                <span class="swap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
+              </div>
+              <span class="swaplabel">사진 바꾸기</span>
+            </div>
+            <div class="fieldset">
+              <div class="field rise" style="--i:2">
+                <div class="lab">이름</div>
+                <div class="box">박서연</div>
+              </div>
+              <div class="field rise" style="--i:3">
+                <div class="lab">성별</div>
+                <div class="seg"><span class="tbd on">—</span><span class="tbd">—</span></div>
+              </div>
+              <div class="field rise" style="--i:4">
+                <div class="lab">생년월일</div>
+                <div class="box num">1998년 4월 12일<span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              </div>
+              <div class="field rise" style="--i:5">
+                <div class="lab">연락처</div>
+                <div class="box num">010-2345-6789</div>
+              </div>
+            </div>
+            <div class="sp"></div>
+          </div>
+          <div class="ctabar rise" style="--i:6">
+            <button class="btn" type="button">보내기</button>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>등장 다시 보기</button>
+        <figcaption>
+          <div class="cap-key">PROFILE / AGAIN</div>
+          <div class="cap-name">거절된 뒤 다시 들어왔을 때</div>
+          <p class="cap-body">승인 대기 화면의 「다시 보내기」로 들어오면 같은 화면이 뜬다. <strong>칸에는 지난번에 보낸 값이 그대로 들어 있고 넷 다 고칠 수 있다.</strong> 아직 승인이 안 났으니 잠글 것이 없다 — 승인이 나면 그때 이름과 성별과 생년월일이 잠긴다.</p>
+          <p class="cap-body" style="margin-top:8px">거절됐다는 말을 이 화면이 다시 하지 않는다. 그 말은 승인 대기 화면이 하고, 여기는 고쳐서 다시 보내는 자리다. 「보내기」를 누르면 위의 확인 시트가 똑같이 올라온다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">03 / 승인 대기</span>
+      <h2>알림 영역 하나가 기기 상태를 따라 넷으로 갈린다</h2>
+      <p>알약·제목·도는 문구가 가운데 덩이고 알림 영역·가는 선·계정 줄·로그아웃이 아래 덩이다. 첫 넷은 같은 화면의 같은 자리고, 마지막 하나는 관리자가 거절한 뒤의 모습이다. 점이 뛰고 문구가 도는 것은 목업에서 실제로 돈다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock play">
+          <div class="statusbar"><span>9:46</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <span class="pill rise" style="--i:0"><span class="dot"></span>승인 기다리는 중</span>
+              <div class="waittitle rise" style="--i:1">관리자가 확인 중이에요</div>
+              <div class="rotator rise" style="--i:2">
+                <span>이번 달 근무표를 한눈에 봐요</span>
+                <span>출근은 현장에서 찍어요</span>
+                <span>일한 시간과 급여를 같이 봐요</span>
+                <span>못 가는 날은 교대를 부탁해요</span>
+              </div>
+            </div>
+            <div class="sp"></div>
+            <div class="rise" style="--i:3">
+              <div class="notif">
+                <div class="nhead"><span class="nt">승인되면 알려드릴까요?</span></div>
+                <div class="nb">알림을 켜두면 앱을 안 열어도 알 수 있어요</div>
+                <button class="btn" type="button">알림 켜기</button>
+              </div>
+              <div class="rule myrule"></div>
+              <div class="account">
+                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+                <span class="mail">seoyeon.park@example.com</span>
+              </div>
+              <div class="afterbtns">
+                <button class="btn outline" type="button">로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>등장 다시 보기</button>
+        <figcaption>
+          <div class="cap-key">WAIT / ASK</div>
+          <div class="cap-name">기다리는 중 · 알림 아직 안 켬</div>
+          <p class="cap-body">들어왔을 때의 기본이다. <strong>저절로 안 띄운다</strong> — 화면에 들어가자마자 권한을 묻지 않고 「알림 켜기」를 눌러야 브라우저가 묻는다.</p>
+          <p class="cap-body" style="margin-top:8px">도는 문구가 <code>--interval-rotate</code>마다 <code>--duration-slow</code>로 밀려 올라가며 갈리고, 자리는 두 줄 높이로 미리 잡혀 있다. 점은 <code>--interval-beat</code>로 뛴다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>이 면만 넷 중 어디도 아니다.</strong> 아직 아무 일도 안 일어난 자리라 알림 블록의 네 색을 안 쓰고 <code>bg.neutral-weak</code>를 깔았다. 알림 켜기는 <code>h-10</code>이고 로그아웃은 <code>h-12</code>다 — 어느 쪽이 이 화면의 끝인지를 높이가 가른다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock play">
+          <div class="statusbar"><span>9:47</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <span class="pill rise" style="--i:0"><span class="dot"></span>승인 기다리는 중</span>
+              <div class="waittitle rise" style="--i:1">관리자가 확인 중이에요</div>
+              <div class="rotator rise" style="--i:2">
+                <span>이번 달 근무표를 한눈에 봐요</span>
+                <span>출근은 현장에서 찍어요</span>
+                <span>일한 시간과 급여를 같이 봐요</span>
+                <span>못 가는 날은 교대를 부탁해요</span>
+              </div>
+            </div>
+            <div class="sp"></div>
+            <div class="rise" style="--i:3">
+              <div class="notif done">
+                <div class="nhead">
+                  <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5 9 17.5 20 6.5"/></svg></span>
+                  <span class="nt">승인되면 알려드릴게요</span>
+                </div>
+                <div class="nb">알림은 설정에서 언제든 끌 수 있어요</div>
+              </div>
+              <div class="rule myrule"></div>
+              <div class="account">
+                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+                <span class="mail">seoyeon.park@example.com</span>
+              </div>
+              <div class="afterbtns">
+                <button class="btn outline" type="button">로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>등장 다시 보기</button>
+        <figcaption>
+          <div class="cap-key">WAIT / ON</div>
+          <div class="cap-name">기다리는 중 · 켠 뒤</div>
+          <p class="cap-body">권한이 실제로 허용됐을 때다. 면이 <code>bg.positive-weak</code>로 갈리고 버튼이 빠지고 체크와 새 문장이 들어온다 — <strong>내용과 색이 <code>--duration-base</code>로 함께 바뀐다.</strong> 따로 끊으면 한 번 누른 것이 두 번 바뀐 것처럼 보인다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>켠 사람에게만 약속한다.</strong> 앞 모습은 묻기만 하고 여기서야 「알려드릴게요」가 된다. 아래 줄이 끄는 길을 바로 알려주는 것은 켠 직후가 그 말을 하기 가장 싼 자리라서다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock play">
+          <div class="statusbar"><span>9:47</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <span class="pill rise" style="--i:0"><span class="dot"></span>승인 기다리는 중</span>
+              <div class="waittitle rise" style="--i:1">관리자가 확인 중이에요</div>
+              <div class="rotator rise" style="--i:2">
+                <span>이번 달 근무표를 한눈에 봐요</span>
+                <span>출근은 현장에서 찍어요</span>
+                <span>일한 시간과 급여를 같이 봐요</span>
+                <span>못 가는 날은 교대를 부탁해요</span>
+              </div>
+            </div>
+            <div class="sp"></div>
+            <div class="rise" style="--i:3">
+              <div class="notif guide">
+                <div class="nhead"><span class="nt">홈 화면에 추가하면 알림을 받아요</span></div>
+                <ol>
+                  <li>아래 공유 버튼을 눌러요</li>
+                  <li>"홈 화면에 추가"를 골라요</li>
+                  <li>홈 화면에서 다시 열어요</li>
+                </ol>
+              </div>
+              <div class="rule myrule"></div>
+              <div class="account">
+                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+                <span class="mail">seoyeon.park@example.com</span>
+              </div>
+              <div class="afterbtns">
+                <button class="btn outline" type="button">로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>등장 다시 보기</button>
+        <figcaption>
+          <div class="cap-key">WAIT / IOS</div>
+          <div class="cap-name">기다리는 중 · 아이폰·홈 화면 전</div>
+          <p class="cap-body"><strong>아이폰을 판별해서 뜨는 것이 아니다.</strong> 첫 모습에서 「알림 켜기」를 눌렀는데 권한 요청이 안 먹히면 그때 이 모습으로 바뀐다. userAgent로 알아내는 것은 자주 틀리지만 눌러본 결과는 안 틀린다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>여기에 버튼이 없다.</strong> 홈 화면 추가는 사파리 공유 메뉴에서만 되는 일이라 누를 것을 두면 눌러도 아무 일이 안 일어난다. 「홈 화면에 추가」는 iOS 메뉴에 실제로 뜨는 이름이라 우리말로 안 다듬는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock play">
+          <div class="statusbar"><span>9:48</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <span class="pill rise" style="--i:0"><span class="dot"></span>승인 기다리는 중</span>
+              <div class="waittitle rise" style="--i:1">관리자가 확인 중이에요</div>
+              <div class="rotator rise" style="--i:2">
+                <span>이번 달 근무표를 한눈에 봐요</span>
+                <span>출근은 현장에서 찍어요</span>
+                <span>일한 시간과 급여를 같이 봐요</span>
+                <span>못 가는 날은 교대를 부탁해요</span>
+              </div>
+            </div>
+            <div class="sp"></div>
+            <div class="rise" style="--i:3">
+              <div class="notif guide">
+                <div class="nhead"><span class="nt">알림이 꺼져 있어요</span></div>
+                <div class="nb">브라우저 설정에서 이 사이트의 알림을 켜면 받을 수 있어요</div>
+              </div>
+              <div class="rule myrule"></div>
+              <div class="account">
+                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+                <span class="mail">seoyeon.park@example.com</span>
+              </div>
+              <div class="afterbtns">
+                <button class="btn outline" type="button">로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>등장 다시 보기</button>
+        <figcaption>
+          <div class="cap-key">WAIT / DENIED</div>
+          <div class="cap-name">기다리는 중 · 거부한 뒤</div>
+          <p class="cap-body">브라우저의 물음에서 거부했을 때다. 여기에도 버튼이 없다 — 한 번 거부하면 브라우저가 다시 묻지 않아서 「알림 켜기」를 그대로 두면 눌러도 아무 일이 안 일어난다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>경고도 오류도 아니다.</strong> 사람이 고른 것을 앱이 잘못이라고 부르지 않아서 안내 면을 그대로 쓴다. 앞 모습과 면 색이 같고 갈리는 것은 담는 말이다 — 그쪽은 물을 길이 없는 것이고 이쪽은 물었는데 거부당한 것이다.</p>
+          <p class="cap-body" style="margin-top:8px">아래 줄이 <code>fg.neutral-muted</code>인 것은 대비 때문이다. 한 단계 흐린 <code>fg.neutral-subtle</code>은 이 면 위에서 4.49로 떨어진다(tokens.md 7절).</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock play">
+          <div class="statusbar"><span>20:12</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <span class="pill off rise" style="--i:0">아직 연결 전</span>
+              <div class="waittitle rise" style="--i:1">이번엔 연결이 안 됐어요</div>
+              <div class="rotator still rise" style="--i:2">
+                <span>프로필을 고쳐서 다시 보낼 수 있어요</span>
+              </div>
+            </div>
+            <div class="sp"></div>
+            <div class="rise" style="--i:3">
+              <div class="account">
+                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+                <span class="mail">seoyeon.park@example.com</span>
+              </div>
+              <div class="afterbtns">
+                <button class="btn" type="button">다시 보내기</button>
+                <button class="btn ghost" type="button">로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>등장 다시 보기</button>
+        <figcaption>
+          <div class="cap-key">WAIT / REJECTED</div>
+          <div class="cap-name">거절된 뒤</div>
+          <p class="cap-body">같은 화면이 다르게 선다. <strong>뛰는 점이 멈추는 게 아니라 사라지고</strong> 알약이 <code>bg.neutral-weak</code> 면의 「아직 연결 전」이 된다 — 거절된 사람은 기다리는 중이 아니라서다. 도는 문구도 안 돌고 한 줄이 선다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>알림 영역이 사라진다.</strong> 알림을 켜 봐야 올 것이 없다. 다시 보내고 나면 원래 자리에 돌아온다.</p>
+          <p class="cap-body" style="margin-top:8px">아래 덩이에 버튼이 둘이 된다 — 「다시 보내기」가 primary로 서고 로그아웃이 ghost로 내려간다. <strong>왜 그랬는지는 안 적는다</strong> — 관리자가 거절에 사유를 안 달아서 화면이 지어낼 것이 없다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>차단된 사람은 이 화면을 안 본다.</strong> 로그인 자체가 막혀서 로그인 화면에서 멈추는데, 그 화면의 모습은 아직 안 정함이라 목업을 안 세웠다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  // 뷰어 크롬 — 라이트/다크 토글. 목업이 아니라 시안을 보는 도구다
+  (function () {
+    var root = document.documentElement;
+    var btn = document.querySelector("[data-theme-toggle]");
+    if (!btn) return;
+    var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    root.dataset.theme = mq && mq.matches ? "dark" : "light";
+    btn.addEventListener("click", function () {
+      root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+    });
+  })();
+
+  // 등장 다시 보기 — 계단을 처음부터 되감는다
+  document.querySelectorAll("[data-replay]").forEach(function (btn) {
+    var mock = btn.parentElement.querySelector(".mock");
+    if (!mock) return;
+    btn.addEventListener("click", function () {
+      mock.classList.remove("play");
+      void mock.offsetWidth;
+      mock.classList.add("play");
+    });
+  });
+})();
+</script>
