@@ -173,7 +173,6 @@ code {
   --bg-neutral-disabled: var(--palette-neutral-100);
   --bg-brand-solid: var(--palette-brand-800);
   --bg-brand-weak: var(--palette-brand-100);
-  --bg-brand-band: var(--palette-brand-300);
   --bg-positive-weak: var(--palette-positive-100);
   --bg-warning-weak: var(--palette-warning-100);
   --bg-critical-weak: var(--palette-critical-100);
@@ -235,19 +234,30 @@ code {
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
 .daybar { padding-top: 26px; }
-.track { position: relative; height: 32px; border-radius: var(--r-sm); background: var(--bg-neutral-weak); }
-.track .work {
-  position: absolute; top: 4px; bottom: 4px; border-radius: var(--r-xs);
-  background: var(--bg-brand-band);
+.bandtop {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px;
 }
-.worklabel {
-  position: absolute; top: -20px; font-size: var(--t-xs); line-height: 1; font-weight: 500;
-  color: var(--fg-neutral); font-variant-numeric: tabular-nums; white-space: nowrap;
+.bandtop .pct {
+  font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 600;
+  color: var(--fg-neutral); font-variant-numeric: tabular-nums;
 }
-.track .now { position: absolute; top: -7px; bottom: -7px; width: 2px; border-radius: 999px; background: var(--bg-brand-solid); }
-.nowlab {
-  position: absolute; top: -22px; transform: translateX(-50%); font-size: var(--t-xs); line-height: 1;
-  font-weight: 600; color: var(--fg-brand); font-variant-numeric: tabular-nums; white-space: nowrap;
+.bandtop .left {
+  font-size: var(--t-xs); line-height: var(--lh-xs);
+  color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums;
+}
+.track { position: relative; height: 8px; border-radius: 999px; background: var(--bg-neutral-weak); }
+.track .fill {
+  position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px;
+  background: var(--bg-brand-solid);
+}
+.track .stamp {
+  position: absolute; top: 0; bottom: 0; width: 2px; border-radius: 999px;
+  background: var(--bg-neutral-solid);
+}
+.bandends {
+  margin-top: 8px; display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  font-size: var(--t-xs); line-height: var(--lh-xs);
+  color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums;
 }
 .barnote {
   margin-top: 10px; display: flex; align-items: center; gap: 6px;
@@ -621,8 +631,8 @@ code {
   <section>
     <div class="sec-head">
       <span class="sec-num">01 / 하루</span>
-      <h2>인증 전, 창이 열린 뒤, 찍은 뒤</h2>
-      <p>바뀌는 것은 띠 위의 「지금」 선과 그 아래 한 줄, 그리고 버튼이다.</p>
+      <h2>인증 전, 창이 열린 뒤, 찍은 뒤, 근무 중</h2>
+      <p>바뀌는 것은 띠의 채움과 네 귀퉁이 글자, 그 아래 한 줄, 그리고 버튼이다.</p>
     </div>
     <div class="grid">
 
@@ -661,10 +671,9 @@ code {
             <div class="rule"></div>
             <div class="daybar">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-                <i class="now" style="left:10%"></i><span class="nowlab" style="left:10%">7:30</span>
-              </div>
+              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">2시간 30분 뒤에 시작해요</span></div>
+              <div class="track"></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <button class="btn h44" style="margin-top:16px" disabled>9:00부터 인증할 수 있어요</button>
@@ -705,10 +714,9 @@ code {
             <div class="rule"></div>
             <div class="daybar">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-                <i class="now" style="left:16.78%"></i><span class="nowlab" style="left:16.78%">8:31</span>
-              </div>
+              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">1시간 29분 뒤에 시작해요</span></div>
+              <div class="track"></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <button class="btn h44" style="margin-top:16px" disabled><span class="num" data-cd>29분</span> 뒤 출근 인증</button>
@@ -749,10 +757,9 @@ code {
             <div class="rule"></div>
             <div class="daybar">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:29.5%">10:00–19:00</span>
-                <i class="now" style="left:22.22%"></i><span class="nowlab" style="left:22.22%">9:20</span>
-              </div>
+              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">40분 뒤에 시작해요</span></div>
+              <div class="track"></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <button class="btn h44" style="margin-top:16px">출근 인증하기</button>
@@ -794,10 +801,9 @@ code {
             <div class="rule"></div>
             <div class="daybar">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:33%">10:00–19:00</span>
-                <i class="now" style="left:25.78%"></i><span class="nowlab" style="left:25.78%">9:52</span>
-              </div>
+              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">8분 뒤에 시작해요</span></div>
+              <div class="track"><i class="stamp" style="left:0"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">
                 <span class="tick"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span>
                 <span class="said"><span class="num">9:52</span>에 출근 인증했어요</span> · 안내 · <span class="num">9시간</span>
@@ -813,6 +819,67 @@ code {
           <div class="cap-key">09:52</div>
           <div class="cap-name">찍은 뒤</div>
           <p class="cap-body"><strong>버튼이 통째로 사라지고</strong> 초록 체크와 시각만 남는다. 화면이 그만큼 짧아진다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>11:20</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
+              <div class="bandtop"><span class="pct">15% 지났어요</span><span class="left">7시간 40분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:14.8%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <button class="btn h44" style="margin-top:16px">출근 인증하기</button>
+            <div class="cta-note">18:00까지 찍을 수 있어요</div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">11:20</div>
+          <div class="cap-name">근무는 시작됐는데 아직 안 찍었다</div>
+          <p class="cap-body">채움이 자라기 시작했고 <strong>인증 눈금은 없다</strong> — 찍은 자리가 아직 없어서다. 버튼 아래 안내가 「홀에서 누르면」에서 <strong>마감 시각으로 바뀐다.</strong> 근무는 19:00에 끝나는데 창은 18:00에 닫힌다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>15:35</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
+              <div class="bandtop"><span class="pct">62% 지났어요</span><span class="left">3시간 25분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:62%"></i><i class="stamp" style="left:9.6%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
+              <div class="barnote">
+                <span class="tick"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span>
+                <span class="said"><span class="num">10:52</span>에 출근 인증했어요</span> · 안내 · <span class="num">9시간</span>
+              </div>
+            </div>
+            <div class="rule" style="margin-top:22px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">15:35</div>
+          <div class="cap-name">근무 중 · 이미 찍었다</div>
+          <p class="cap-body">가장 오래 머무는 모습이다. <strong>눈금이 채움 위에 선다</strong> — 10:52 인증이라 9시간의 9.6% 자리다. 지각이어도 색을 안 바꾼다. 지각인지는 아래 한 줄의 시각이 사실로 말한다.</p>
         </figcaption>
       </figure>
 
@@ -1061,10 +1128,9 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
-              </div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <div class="block warn" style="margin-top:20px">
@@ -1139,10 +1205,9 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
-              </div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <div class="block warn" style="margin-top:20px">
@@ -1217,10 +1282,9 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
-              </div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <div class="block warn" style="margin-top:20px">
@@ -1271,10 +1335,9 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
-              </div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <div class="block warn" style="margin-top:20px">
@@ -1325,10 +1388,9 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
-              </div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <div class="block warn" style="margin-top:20px">
@@ -1379,10 +1441,9 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
-              </div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <div class="block warn" style="margin-top:20px">
@@ -1433,10 +1494,9 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-                <i class="now" style="left:86.67%"></i><span class="nowlab" style="left:86.67%">19:10</span>
-              </div>
+              <div class="bandtop"><span class="pct">오늘 근무가 끝났어요</span></div>
+              <div class="track"><i class="fill" style="width:100%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <div class="block warn" style="margin-top:20px">
@@ -1483,10 +1543,9 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
-              </div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <div class="block warn" style="margin-top:20px">
@@ -1543,9 +1602,9 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">어제 사유가 처리됐어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-              </div>
+              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">48분 뒤에 시작해요</span></div>
+              <div class="track"></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">9월 12일(토) · 9시간</div>
             </div>
             <div class="block crit" style="margin-top:20px">
@@ -1591,8 +1650,7 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline off" style="margin-bottom:20px">오늘은 근무가 없어요</div>
-              <div class="track"><i class="now" style="left:44%"></i><span class="nowlab" style="left:44%">12:36</span></div>
-              <div class="barnote">다음 근무는 <span class="num">9월 12일(토) 10:00</span>이에요</div>
+              <div class="barnote" style="margin-top:0">다음 근무는 <span class="num">9월 12일(토) 10:00</span>이에요</div>
             </div>
             <div class="rule" style="margin-top:22px"></div>
             <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
@@ -1602,7 +1660,7 @@ code {
         </div>
         <figcaption>
           <div class="cap-key">오늘만 없다</div>
-          <div class="cap-name">막대만 없다</div>
+          <div class="cap-name">띠가 통째로 없다</div>
           <p class="cap-body">이번 주 값은 그대로 있다. 삽화를 새로 만들 일이 없다.</p>
         </figcaption>
       </figure>
@@ -1617,8 +1675,7 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline off" style="margin-bottom:20px">이번 주는 근무가 없어요</div>
-              <div class="track"><i class="now" style="left:44%"></i><span class="nowlab" style="left:44%">12:36</span></div>
-              <div class="barnote">다음 근무는 <span class="num">9월 15일(화) 10:00</span>이에요</div>
+              <div class="barnote" style="margin-top:0">다음 근무는 <span class="num">9월 15일(화) 10:00</span>이에요</div>
             </div>
             <div class="rule" style="margin-top:22px"></div>
             <div class="kv"><span class="k">이번 주 근무</span><span class="v none">–</span></div>
@@ -1628,7 +1685,7 @@ code {
         </div>
         <figcaption>
           <div class="cap-key">이번 주 배정 없음</div>
-          <div class="cap-name">트랙은 실선으로 남는다</div>
+          <div class="cap-name">여기도 띠가 없다</div>
           <p class="cap-body">근무표는 나왔는데 나에게 배정이 안 온 것이다. 값 둘이 <code>–</code>가 된다.</p>
         </figcaption>
       </figure>
@@ -1762,10 +1819,9 @@ code {
             <div class="rule"></div>
             <div class="daybar">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:29.5%">10:00–19:00</span>
-                <i class="now" style="left:22.22%"></i><span class="nowlab" style="left:22.22%">9:20</span>
-              </div>
+              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">40분 뒤에 시작해요</span></div>
+              <div class="track"></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <button class="btn h44" style="margin-top:16px">출근 인증하기</button>
@@ -1779,7 +1835,7 @@ code {
         <figcaption>
           <div class="cap-key">다크 · 대시보드</div>
           <div class="cap-name">거리가 위계를 만든다</div>
-          <p class="cap-body">막대는 트랙보다 한 걸음 떨어져 있고 버튼은 배경에서 가장 멀다. 절대값이 아니라 이 거리가 남는다.</p>
+          <p class="cap-body">채움은 트랙보다 한 걸음 떨어져 있고 버튼은 배경에서 가장 멀다. 절대값이 아니라 이 거리가 남는다.</p>
         </figcaption>
       </figure>
 
@@ -1846,10 +1902,9 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="track">
-                <span class="work" style="left:26.67%;width:60%"></span><span class="worklabel" style="left:26.67%">10:00–19:00</span>
-                <i class="now" style="left:84.44%"></i><span class="nowlab" style="left:84.44%">18:40</span>
-              </div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
             <div class="block warn" style="margin-top:20px">
