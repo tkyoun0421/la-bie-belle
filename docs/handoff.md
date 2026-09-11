@@ -96,16 +96,24 @@
 
 **앱바 정본이 시안을 안 보고 쓰여 있었다.** 시안 열둘이 전부 `min-height: 42px`에 `gap: 10px`인데 `components.md`가 `min-h-11`·`gap-2`라 적어뒀다. gap은 문서를 `gap-2.5`(10px)로 내렸고, 높이는 42px가 하한일 뿐 실제 렌더가 이미 44px이라 시안 숫자를 44px로 올려 맞췄다 — 그림은 안 바뀐다.
 
+**마크다운 문서 모듈이 서고 깨진 링크 검사가 `pnpm test`에 꼈다(#303).** 아키텍처 리뷰에서 나온 것이다 — `src/`가 9월 초 이후 정지 상태라 실제로 움직이는 검증 하네스를 봤더니, 마크다운 제목을 읽는 정규식이 저장소 안팎 다섯 곳에 각자 있었고 그중 둘은 저장소 밖 임시 링크 검사가 두 세션에서 따로 짜인 것이었다. 순회는 검사마다 대상이 달라 안 겹쳐서 seam은 마크다운 구조 하나에만 세웠다 — `tests/lint/markdown.ts`가 원문을 받아 제목·GitHub 슬러그·링크·코드스팬·절을 돌려주고 파일시스템을 모른다. 그 위에 `doc-links.ts`(새 adapter)와 `doc-map.ts`(기존 adapter)가 선다. writer의 픽스처 하나가 `docs/a.md` 안에서 `docs/b.md`로 링크를 써서 implementer가 뿌리 기준 fallback을 넣었는데, GitHub은 그 링크를 깨진 것으로 보니 검사만 초록이 되는 자리라 걷었다 — 픽스처 오류는 총괄이 고친다.
+
+**PR #301·#302가 순서대로 merge됐다.** #302가 #301의 커밋 둘을 품고 있어 #301을 먼저 넣고 #302를 `main` 위로 rebase했다. 문서 링크 열여섯이 #302에서 닫혀 있어 #303의 회귀(0건)가 그 위에서만 초록이다.
+
 ## 다음 첫 수
 
-**PR 둘의 순서를 정한다.** #302가 #301의 커밋 둘(`b9ca0e7`·`53045b3`)을 같이 들고 있다 — 브랜치를 안 merge된 `docs/approvals-and-attendance-visibility`에서 땄기 때문이다. #301을 먼저 merge하고 #302를 rebase하는 것이 깔끔하다.
-
 **공용으로 올릴 조각이 여섯이다.** 시안이 스스로 정해 캡션에 밝힌 값들이다 — **스위치**(프로필 알림 줄, 이 앱에서 처음), **세그먼트**(급여와 통계가 같이 쓰니 둘째 사용자가 생겼다), **더보기 팝오버**(가입 대기에 이어 직원 관리가 둘째), **가운데 Dialog 치수**, **시트 그림자**, **「더 보기」**. 값을 맞춰 보고 `components.md`에 올린다. `components.md`의 「빈 상태」 절이 아직 백지인데 새 화면 넷이 빈 상태를 그린다.
+
+**아키텍처 리뷰가 남긴 후보 넷이 있다.** 이번에 A(마크다운 문서 모듈)를 세웠고 나머지는 열려 있다 — 아래 「열린 결정」의 첫 넷. 그중 B(서버 클라이언트 조립이 다섯 곳에 복제)는 구현이 시작되면 화면 수만큼 늘어나는 자리라 데이터 task 전에 닫는 편이 싸다.
 
 **그다음은 구조 설계다.** `docs/2-design/architecture/` 넷(`data-model`·`api`·`runtime`·`flows`)이 자리만 파여 있다. `runtime/README.md`가 캐시 넷(Service Worker·TanStack Query·Next 서버·Supabase realtime)과 시각의 출처, 경쟁 조건을 담을 자리고, 시급·급여 금액을 RLS가 막아야 한다는 제약이 `data-model`과 `api` 양쪽에 걸린다. 그 뒤가 구현이다 — `backlog.md`의 「다음」에 대시보드 구현 task가 서 있고 데이터 task가 먼저다.
 
 ## 열린 결정
 
+- **아키텍처 리뷰 후보 B — 서버 클라이언트 조립이 다섯 곳에 복제.** `createSupabaseServerClient(await cookies())`가 `middleware.ts:27`·`auth-gate.ts:33`·`login/actions.ts:13`·`auth/callback/route.ts:7`·`auth/logout/route.ts:6`에 있다. 호출자마다 Next의 `cookies()`를 알아야 한다. 쿠키 획득을 구현 안으로 넣은 진입점 하나를 두면 인터페이스가 줄고, 저장소가 다른 미들웨어만 인자를 받는 둘째 진입점으로 남는다. ADR-003의 「클라이언트는 `dals`에서만」은 질의를 가리켜 부딪히지 않는다.
+- **후보 C — 조립 코드의 집.** `src/app/auth-gate.ts`가 `entities`와 `shared`를 같이 불러 계층 규칙에 자리가 없고, `src/app/`은 `tdd-guard-unit`이 안 봐서 짝 테스트 없이 e2e만 이 배선을 본다. 관찰 007이 연 것이고 ADR-001 계층 서술을 고치는 결정이라 리팩터만으로 안 닫힌다.
+- **후보 D — `requireEnv`가 두 팩토리에 복제.** `create-supabase-server-client.ts:11-19`와 `create-supabase-browser-client.ts:3-11`이 같은 키 둘을 같은 문구로 던진다. 작아서 B에 얹어 가는 편이 맞다.
+- **후보 E — `SUBSECTION` 정규식 누수.** `generate-globals-css.mts:36`이 `tokens-md.mts`를 import하면서도 `tokens-md.mts:20`과 글자까지 같은 정규식을 따로 정의한다. export 한 줄이다. `tokens-md`의 절 나누기를 `markdown.ts` 위로 옮기는 것과 묶어 갈 자리다.
 - **로고 렌더를 지키는 테스트가 없다.** `public/google-g.svg`를 지워도 e2e 11개가 초록이다. 「버튼 안 로고의 `background-image`가 비어 있지 않다」는 e2e 한 줄이 후보다.
 - **CI가 chromium만 돈다.** 주 타깃이 아이폰 사파리인데 webkit을 안 본다. [ADR-007](2-design/adr/ADR-007-web-pwa-over-native.md)이 PWA로 가며 치르는 값 넷 중 유일하게 열린 채로 둔 것이다.
 - **뛰는 점의 진폭이 `tokens.md`에 없다.** 등장 모션의 최솟값 0.9를 빌려 썼는데(6px 점에서 0.6px 변화라 눈에 잘 안 띈다), 실제 화면을 보고 정한다.
@@ -117,7 +125,6 @@
 - **캔버스가 찾은 지적 셋을 안 고쳤다.** 저장소 시안이 그렇게 그려져 있어서 캔버스만 고치면 둘이 어긋난다. ⓐ `.lrow .lv`가 `fg.neutral-muted`인데 `components.md`는 `fg.neutral`이라 적었다 ⓑ 작은 버튼 높이가 30px인데 세로 44px 규칙과 부딪힌다 ⓒ AdminCalendar가 ListRow를 한 줄짜리로 쓰고 「마감일 당기기」가 누를 것처럼 안 보인다. 시안을 고칠지 조항을 고칠지 정한다.
 - **가운데 Dialog의 치수가 `components.md`에 없다.** 토큰 이름만 있고 폭·안쪽 여백·그림자가 안 적혀 있다. `approvals.sian.html`의 근무 취소 승인 확인이 이 앱에서 그것이 실제로 서는 첫 자리라 시안이 값을 재서 그렸다. `tokens.md`의 「빈자리」로 올릴지 정한다.
 - **단일 선택 목록의 규격이 `components.md`에 없다.** `approvals.md`의 거절 이유가 넷 중 하나를 고르는 자리인데 라디오도 선택 상태의 ListRow도 정본에 없다. 오른쪽 체크(`fg.brand`)로 그렸고, 같은 모양이 다른 화면에서 한 번 더 나오면 공용으로 올린다.
-- **문서 링크의 앵커를 잡는 검사가 없다.** 이번 회차에 임시 스크립트로 전수 검사해 열여섯 곳을 고쳤는데 그 스크립트가 저장소 밖에 있다. `pnpm test`가 문서 구조 검사 둘(`doc-map`·`legacy-doc-paths`)을 이미 도니 그 옆에 앉힐 자리가 있다. 옮길 때 중복 제목의 번호 붙은 앵커(`#색-1`)를 GitHub 규칙대로 세는 것을 같이 넣는다 — 지금 스크립트가 그걸 못 세서 가짜 지적이 하나 난다.
 - **더보기 팝오버의 모양이 `components.md`에 없다.** 가입 대기 시트가 차단을 그 안에 넣었고 직원 관리가 두 번째 사용자다. 두 번 나왔으니 올릴 자리고, 시안 값을 맞춰 보고 올린다.
 - **하루 띠 비교 시안**은 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832)에 있다. 옛 축과 새 축을 나란히 놓은 것이고 저장소 밖이라 같이 안 산다.
 - **캔버스는 저절로 갱신되지 않는다.** 저장소를 안 보고 빌드 때 읽은 값을 품고 있다. 토큰이나 시안이 바뀌면 빌드를 다시 돌려 같은 링크에 올려야 따라온다.
