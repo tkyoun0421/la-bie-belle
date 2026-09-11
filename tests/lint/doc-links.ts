@@ -41,17 +41,13 @@ function decode(part: string): string {
   }
 }
 
-/** 링크는 글이 놓인 자리 기준이고, 저장소 뿌리를 적는 관례도 받는다. */
-function resolveTarget(
-  root: string,
-  from: string,
-  target: string,
-): string | null {
-  return (
-    [path.resolve(path.dirname(from), target), path.resolve(root, target)].find(
-      (candidate) => existsSync(candidate),
-    ) ?? null
-  );
+/**
+ * 링크는 GitHub이 푸는 대로 글이 놓인 자리 기준만 본다. 저장소 뿌리 기준으로 한 번 더
+ * 찾아주면 실제로는 깨진 링크가 초록으로 지나간다.
+ */
+function resolveTarget(from: string, target: string): string | null {
+  const candidate = path.resolve(path.dirname(from), target);
+  return existsSync(candidate) ? candidate : null;
 }
 
 function anchorsOf(source: string): Set<string> {
@@ -88,9 +84,7 @@ export function docLinkViolations(
       const target = hash === -1 ? href : href.slice(0, hash);
       const anchor = hash === -1 ? "" : decode(href.slice(hash + 1));
       const targetPath =
-        target === ""
-          ? absolute
-          : resolveTarget(root, absolute, decode(target));
+        target === "" ? absolute : resolveTarget(absolute, decode(target));
 
       if (targetPath === null) {
         violations.push({ file, href, line, kind: "missing-file" });

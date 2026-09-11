@@ -31,15 +31,30 @@ describe("문서 링크 검사", () => {
 
   it("파일은 있지만 #앵커가 그 파일의 제목에 없으면 missing-anchor를 잡는다", () => {
     const root = tempRoot();
-    write(root, "docs/a.md", "# A\n\n[링크](docs/b.md#없는-앵커)\n");
+    write(root, "docs/a.md", "# A\n\n[링크](b.md#없는-앵커)\n");
     write(root, "docs/b.md", "# B\n\n## 있는 절\n");
 
     expect(docLinkViolations(root)).toEqual([
       {
         file: "docs/a.md",
-        href: "docs/b.md#없는-앵커",
+        href: "b.md#없는-앵커",
         line: 3,
         kind: "missing-anchor",
+      },
+    ]);
+  });
+
+  it("경로는 글이 놓인 자리 기준이다 — 저장소 뿌리 기준으로 쓴 링크는 GitHub처럼 깨진 것으로 본다", () => {
+    const root = tempRoot();
+    write(root, "docs/a.md", "# A\n\n[링크](docs/b.md)\n");
+    write(root, "docs/b.md", "# B\n");
+
+    expect(docLinkViolations(root)).toEqual([
+      {
+        file: "docs/a.md",
+        href: "docs/b.md",
+        line: 3,
+        kind: "missing-file",
       },
     ]);
   });
