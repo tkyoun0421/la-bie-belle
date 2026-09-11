@@ -619,8 +619,8 @@ code {
   <section>
     <div class="sec-head">
       <span class="sec-num">01 / 관리자 홈</span>
-      <h2>타일 하나와 줄 둘, primary는 없다</h2>
-      <p>근무표 관리만 카드로 떠오르고 설정은 줄로 선다. 가입 대기 줄은 자리만 잡는다 — 눌렀을 때의 화면은 이 문서 밖이다.</p>
+      <h2>타일 하나와 줄 셋, primary는 없다</h2>
+      <p>근무표 관리만 카드로 떠오르고 설정·승인·가입은 줄로 선다. 승인할 일 줄이 가입 대기 위에 선다 — 이쪽이 훨씬 잦아서다.</p>
     </div>
     <div class="grid">
 
@@ -646,6 +646,11 @@ code {
               <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
             <div class="lrow">
+              <span class="lk">승인할 일</span>
+              <span class="lv">3건</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow">
               <span class="lk">가입 대기</span>
               <span class="lv">2명</span>
               <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
@@ -656,7 +661,7 @@ code {
         <figcaption>
           <div class="cap-key">HOME</div>
           <div class="cap-name">관리자 홈 뼈대</div>
-          <p class="cap-body">타일 요약 줄이 들어가기 전에 상태를 말한다. <strong>가입 대기는 자리만 잡았다</strong> — 대기 인원 수까지다.</p>
+          <p class="cap-body">타일 요약 줄이 들어가기 전에 상태를 말한다. <strong>승인할 일과 가입 대기는 문이다</strong> — 대기 건수·인원 수가 서고, 누르면 각자의 화면이 열린다(승인할 일은 <code>approvals.md</code>, 가입 대기는 <code>members-pending.md</code>). 승인할 일이 가입 대기 위에 서는 것은 이쪽이 훨씬 잦아서다.</p>
           <p class="cap-body" style="margin-top:8px">요약 줄이 네 모습이다. 목업은 「만드는 중」 하나뿐이고 나머지 셋은 글로 남긴다 — 아직 없음이 「10월 근무표가 아직 없어요」, 확정 뒤가 「10월 근무표를 확정했어요 · 빈 자리 2」다. <strong>확정 뒤 예식이 사흘 안인데 빈 자리가 남으면 요약 줄이 경고 블록으로 승격한다</strong> — 08절 확정 시트와 같은 <code>bg.warning-weak</code> 면에 <code>warning-500</code> 아이콘이고, 글은 「10월 10일 예식에 빈 자리 1 · 2일 남았어요」다. 빈 자리 재촉 셋 중 홈의 몫이다.</p>
         </figcaption>
       </figure>
