@@ -49,7 +49,7 @@
 | 자리 | 토큰 |
 | --- | --- |
 | 화면 바탕 | `bg.neutral` |
-| 앱바 제목 | `fg.neutral-subtle` |
+| 앱바 | [components.md](../components.md#앱바)의 앱바 |
 | 줄 | [components.md](../components.md#listrow)의 ListRow |
 | 종류 배지 | [components.md](../components.md#badge)의 Badge neutral |
 
@@ -59,7 +59,7 @@
 
 | 자리 | 유틸 |
 | --- | --- |
-| 앱바 제목 | `text-sm` |
+| 앱바 제목 | `text-lg font-semibold` |
 | 줄 제목 | `text-base font-medium` |
 | 줄 보조 정보 | `text-sm` |
 | 배지 | `text-xs font-medium` |
