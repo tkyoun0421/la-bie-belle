@@ -270,7 +270,7 @@ code {
 /* 앱바 — 뒤로와 제목뿐이다. 관리자 화면이라 탭 바가 없다(wages.md 짜임) */
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
-  padding: 4px 24px 12px; min-height: 42px; position: relative;
+  padding: 4px 24px 12px; min-height: 44px; position: relative;
 }
 .appbar .sp { flex: 1 1 auto; }
 .backic { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); }
@@ -291,7 +291,7 @@ code {
 /* 가는 선 my-2 = 8px */
 .hr { height: 1px; background: var(--stroke-neutral); margin: 8px 0; }
 
-/* 사람 줄 — ListRow. 사진 36px · 이름 · 값(+기본 배지) · 화살표(wages.md 「사람 줄」) */
+/* 사람 줄 — ListRow. 사진 36px · 이름 · 값 · 화살표(wages.md 「사람 줄」) */
 .prow { display: flex; align-items: center; gap: 12px; padding: 16px 0; cursor: pointer; }
 .prow .pname { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
 .prow .pval { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: var(--t-base); line-height: var(--lh-base); color: var(--fg-neutral); font-variant-numeric: tabular-nums; }
@@ -299,8 +299,6 @@ code {
 .prow.pressed { background: var(--bg-neutral-weak-pressed); margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
 .plist .rowwrap + .rowwrap .prow { border-top: 1px solid var(--stroke-neutral); }
 .rowwrap { overflow: hidden; }
-
-.badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 2px 9px; background: var(--bg-neutral-weak); color: var(--fg-neutral-muted); font-size: var(--t-xs); line-height: 1.4; font-weight: 500; white-space: nowrap; }
 
 /* 사진 — 원. 목업이라 실제 이미지 대신 뉴트럴 두 단계의 그러데이션으로 자리를 흉내 냈다 */
 .av { width: 36px; height: 36px; border-radius: 999px; flex: 0 0 auto; border: 1px solid var(--stroke-neutral); box-sizing: border-box; background: linear-gradient(150deg, var(--palette-neutral-300), var(--palette-neutral-500)); }
@@ -408,7 +406,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">01 / 목록</span>
       <h2>기본 시급이 맨 위에 따로 선다</h2>
-      <p>기본 시급 줄과 사람 목록을 가는 선으로 가른다. 사람 줄은 이름 가나다순이고 개별로 정한 사람을 위로 올리지 않는다. 「기본」 배지가 값만 보고는 갈 수 없는 것을 미리 말한다.</p>
+      <p>기본 시급 줄과 사람 목록을 가는 선으로 가른다. 사람 줄은 이름 가나다순이고 개별로 정한 사람을 위로 올리지 않는다. 기본을 쓰는 사람을 따로 표시하지 않는다 — 이 화면이 답하는 것은 누가 얼마를 받느냐다.</p>
     </div>
     <div class="grid">
 
@@ -470,7 +468,7 @@ code {
         <figcaption>
           <div class="cap-key">LIST</div>
           <div class="cap-name">기본 줄 하나, 사람 줄 다섯</div>
-          <p class="cap-body">기본 시급 줄에는 사진이 없다 — 한 줄이 여러 사람을 한꺼번에 움직이는 자리라 다른 모양으로 세운다. <strong>강하늘과 박서연은 개별로 정했고 배지가 없다.</strong> 김지우·윤태관·이수민은 기본을 쓰고 값 뒤에 <code>Badge neutral</code> 「기본」이 붙는다. 값과 배지는 <code>gap-2</code>(8px)로 붙고 금액엔 <code>tabular-nums</code>가 걸린다.</p>
+          <p class="cap-body">기본 시급 줄에는 사진이 없다 — 한 줄이 여러 사람을 한꺼번에 움직이는 자리라 다른 모양으로 세운다. <strong>강하늘과 박서연은 개별로 정했고 나머지 셋은 기본을 쓰는데 줄만 봐서는 갈리지 않는다.</strong> 누가 기본인지는 그 사람 시트를 열면 나온다. 금액엔 <code>tabular-nums</code>가 걸린다.</p>
           <p class="cap-body" style="margin-top:8px">퇴사한 사람은 이 목록에 없다 — 앞으로 정할 시급이 없고 지난 급여는 이미 그때 시급으로 계산돼 있다.</p>
         </figcaption>
       </figure>
@@ -683,7 +681,7 @@ code {
         <figcaption>
           <div class="cap-key">SHEET / PERSON</div>
           <div class="cap-name">개별 — 되돌리기와 이력 셋</div>
-          <p class="cap-body">가장 오래된 줄(2025년 9월 3일)은 승인 직후라 <strong>그때 기본을 쓰고 있어서 배지가 붙는다.</strong> 그 뒤 두 번 개별로 고쳤다. 이력은 최근이 위고 눌리지 않는다 — 지난 급여가 흔들리면 안 돼서 화살표도 더보기도 없다.</p>
+          <p class="cap-body">가장 오래된 줄(2025년 9월 3일)은 승인 직후라 <strong>그때는 기본 시급을 쓰고 있었다.</strong> 그 뒤 두 번 개별로 고쳤다. 이력은 최근이 위고 눌리지 않는다 — 지난 급여가 흔들리면 안 돼서 화살표도 더보기도 없다.</p>
           <p class="cap-body" style="margin-top:8px">이력 날짜에 연도를 붙였다 — writing.md의 규칙대로, 이력이 지금 보는 달 안에서만 도는 것이 아니라 해를 넘겨 쌓이는 자리라서다.</p>
         </figcaption>
       </figure>
@@ -1075,7 +1073,7 @@ code {
         <figcaption>
           <div class="cap-key">DONE / REVERT</div>
           <div class="cap-name">되돌리기 토스트</div>
-          <p class="cap-body">강하늘이 다시 기본 끈에 붙어 <strong>「기본」 배지</strong>가 붙고 기본을 쓰는 인원이 3명에서 4명으로 바뀐다. 되돌린 날부터 적용되고 이력에 이 줄이 새로 선다.</p>
+          <p class="cap-body">강하늘이 다시 기본 끈에 붙어 <strong>기본 시급 줄의 인원이 3명에서 4명으로 바뀐다.</strong> 목록의 강하늘 줄은 값만 12,000원에서 11,000원으로 바뀌고 생김새는 그대로다. 되돌린 날부터 적용되고 이력에 이 줄이 새로 선다.</p>
         </figcaption>
       </figure>
 

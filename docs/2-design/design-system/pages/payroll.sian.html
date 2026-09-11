@@ -7,7 +7,7 @@
 
   이 파일이 맡는 것은 글로 안 남는 것들이다 — 세그먼트·기간 줄·금액·누적·내역이
   한 화면에서 실제로 차지하는 높이, 「연」 목록 줄을 눌러 「월」로 접히는 손짓,
-  못 가는 화살표가 흐려지는 정도, 화면 여럿을 나란히 놓고 보는 눈.
+  화면 여럿을 나란히 놓고 보는 눈.
 
   퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
   앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../README.md의 「퍼블리싱」에 있다.
@@ -246,7 +246,7 @@ code {
 /* 앱바 — 제목만이 기본이고, 「퇴사한 뒤」에만 뒤로가 선다(components.md 「앱바」) */
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
-  padding: 4px 24px 12px; min-height: 42px; position: relative;
+  padding: 4px 24px 12px; min-height: 44px; position: relative;
 }
 .appbar .sp { flex: 1 1 auto; }
 .backic { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); }
@@ -262,7 +262,7 @@ code {
 }
 .segcell {
   flex: 1 1 0; display: flex; align-items: center; justify-content: center;
-  padding: 8px 0; border-radius: 999px; font-size: var(--t-sm); line-height: var(--lh-sm);
+  min-height: 44px; padding: 8px 0; border-radius: 999px; font-size: var(--t-sm); line-height: var(--lh-sm);
   font-weight: 500; color: var(--fg-neutral-subtle);
 }
 .segcell.on { background: var(--bg-neutral); color: var(--fg-neutral); transition: background var(--d-fast) ease-out; }
@@ -277,7 +277,7 @@ code {
   flex: 0 0 auto; width: 32px; height: 32px; display: grid; place-items: center;
   color: var(--fg-neutral-subtle); background: none; border: 0; padding: 0; cursor: pointer;
 }
-.parrow.off { color: var(--fg-neutral-disabled); cursor: default; }
+.parrow.off { visibility: hidden; }
 
 /* 금액 — 화면에서 가장 큰 글자 */
 .amount {
@@ -685,7 +685,7 @@ code {
         <figcaption>
           <div class="cap-key">ARROW / FORWARD STOP</div>
           <div class="cap-name">지금이 마지막 — 다음으로 못 간다</div>
-          <p class="cap-body">지금 보고 있는 달이 이번 달(10월)이라 오른쪽 화살표가 <code>fg.neutral-disabled</code>로 흐리다. 왼쪽은 그대로 <code>fg.neutral-subtle</code>이라 뒤로는 갈 수 있다는 것이 색으로 갈린다.</p>
+          <p class="cap-body">지금 보고 있는 달이 이번 달(10월)이라 오른쪽 화살표가 <strong>아예 안 보인다</strong>. 자리는 그대로 비워둬서 「2026년 10월」이 가운데에 선 채로 있다. 색으로 흐리게 하지 않는 것은 <code>fg.neutral-disabled</code>가 <code>fg.neutral-subtle</code>과 같은 값이라 눈으로 안 갈려서다 — 대비비 때문에 둘 다 neutral-700으로 올라간 자리다(tokens.md 「떨어진 조합」).</p>
         </figcaption>
       </figure>
 

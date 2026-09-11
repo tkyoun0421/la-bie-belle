@@ -26,10 +26,6 @@
     되돌릴 수 있는 동작이라 destructive는 아니라고 판단했다.
   · Dialog 그림자. tokens.md 5절의 그림자는 shadow-card 하나뿐이고 다이얼로그용 값이 없다.
     시트 그림자와 마찬가지로 이 파일이 임의로 쟀다.
-  · 토스트와 탭 바가 겹치는 문제. components.md의 토스트 규칙은 BottomCTA가 있는 화면만
-    56px에서 88px로 올린다고 적었고 탭 바는 언급이 없다. 이 화면은 탭 바가 늘 서 있어서
-    56px 그대로 두면 토스트가 탭 바에 얹힌다. BottomCTA 예외와 같은 이유로 탭 바 높이만큼
-    올려 80px에 띄웠다 — 문서가 아직 안 정한 자리라 아래 캡션과 리턴의 이슈에도 적는다.
   · 연락처 시트의 제목과 입력 칸 사이, 입력 칸과 도움말 사이 여백. profile.md 여백표에
     없는 자리라 시트 안쪽 리듬(24px, 8px)에 맞춰 임의로 쟀다.
   · 사진 예시. 저장소에 이미지를 안 넣어 뉴트럴 두 단계의 그러데이션으로 흉내 냈다.
@@ -273,7 +269,7 @@ code {
 /* 앱바 — 뒤로가기가 없다. 탭 바를 쓰는 화면이라 나갈 곳이 없다(components.md 「앱바」) */
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
-  padding: 4px 24px 12px; min-height: 42px; position: relative;
+  padding: 4px 24px 12px; min-height: 44px; position: relative;
 }
 .appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
 /* 화면 좌우 여백 px-6 = 24px */
@@ -342,7 +338,7 @@ code {
 .btn.ghost { background: none; color: var(--fg-neutral-muted); }
 .btn.destructive { background: var(--bg-critical-solid); color: var(--fg-brand-contrast); }
 .btn.disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); cursor: not-allowed; }
-.logout { margin-top: 40px; }
+.logout { margin-top: 40px; margin-bottom: 24px; font-size: var(--t-sm); line-height: var(--lh-sm); }
 /* 버튼 둘이 가로로 나란히, 사이는 gap-3 = 12px */
 .sbtns { display: flex; gap: 12px; margin-top: 24px; }
 .sbtns .btn { flex: 1 1 0; height: 48px; }
@@ -411,7 +407,7 @@ code {
 .dbtns .btn { flex: 1 1 0; height: 44px; }
 
 /* 토스트 — components.md 「토스트」가 정본이다. 이 화면은 탭 바가 늘 있어서 56px이
-   아니라 탭 바 위로 올려 80px에 뜬다(이 파일이 정한 자리 — 위 주석과 아래 캡션 참고) */
+   아니라 80px에 뜬다(components.md 토스트 절의 높이 표) */
 .toast {
   position: absolute; left: 50%; bottom: 80px; z-index: 6; transform: translateX(-50%);
   display: inline-flex; align-items: center; gap: 8px; max-width: calc(100% - 48px);
@@ -987,7 +983,7 @@ code {
         <figcaption>
           <div class="cap-key">DONE / CONTACT</div>
           <div class="cap-name">연락처 저장 토스트</div>
-          <p class="cap-body">시트가 닫히고 값이 새 번호로 바뀐 채 토스트가 뜬다. <strong>탭 바가 늘 서 있는 화면이라 56px이 아니라 탭 바 위로 올려 80px</strong>에 띄웠다 — components.md의 토스트 규칙이 탭 바를 언급하지 않아 이 파일이 판단한 자리다.</p>
+          <p class="cap-body">시트가 닫히고 값이 새 번호로 바뀐 채 토스트가 뜬다. <strong>탭 바가 늘 서 있는 화면이라 56px이 아니라 80px</strong>에 뜬다 — components.md 토스트 절의 높이 표가 탭 바만 선 화면을 80px로 정했다.</p>
         </figcaption>
       </figure>
 

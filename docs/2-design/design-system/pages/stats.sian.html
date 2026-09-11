@@ -232,7 +232,7 @@ code {
 /* 앱바 — 뒤로와 「통계」뿐, 오른쪽 액션이 없다(stats.md 「짜임」) */
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
-  padding: 4px 24px 12px; min-height: 42px; position: relative;
+  padding: 4px 24px 12px; min-height: 44px; position: relative;
 }
 .appbar .sp { flex: 1 1 auto; }
 .backic { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); }
@@ -245,7 +245,7 @@ code {
 /* 달 줄 — 앱바와 mt-2(8px), 좌우 화살표 + 가운데 텍스트, py-2 */
 .monthrow { margin-top: 8px; padding: 8px 0; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .marrow { flex: 0 0 auto; width: 28px; height: 28px; display: grid; place-items: center; color: var(--fg-neutral-subtle); cursor: pointer; }
-.marrow.disabled { color: var(--fg-neutral-disabled); cursor: default; }
+.marrow.disabled { visibility: hidden; }
 .mtext { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
 
 /* 세그먼트 — payroll.md 「기간 세그먼트」와 같은 조각. 달 줄과 mt-3(12px) */
@@ -529,35 +529,35 @@ code {
             <div class="sum num">432시간</div>
             <div class="plist listgap" style="margin-top:24px">
               <div class="rowwrap"><div class="prow">
-                <span class="pmid"><span class="ptitle">메인</span><br><span class="psub">48건</span></span>
+                <span class="pmid"><span class="ptitle">메인</span><br><span class="psub">12건</span></span>
                 <span class="pval">108시간</span>
               </div></div>
               <div class="rowwrap"><div class="prow">
-                <span class="pmid"><span class="ptitle">스캔</span><br><span class="psub">40건</span></span>
+                <span class="pmid"><span class="ptitle">스캔</span><br><span class="psub">10건</span></span>
                 <span class="pval">90시간</span>
               </div></div>
               <div class="rowwrap"><div class="prow">
-                <span class="pmid"><span class="ptitle">드레스</span><br><span class="psub">32건</span></span>
+                <span class="pmid"><span class="ptitle">드레스</span><br><span class="psub">8건</span></span>
                 <span class="pval">72시간</span>
               </div></div>
               <div class="rowwrap"><div class="prow">
-                <span class="pmid"><span class="ptitle">안내</span><br><span class="psub">24건</span></span>
+                <span class="pmid"><span class="ptitle">안내</span><br><span class="psub">6건</span></span>
                 <span class="pval">54시간</span>
               </div></div>
               <div class="rowwrap"><div class="prow">
-                <span class="pmid"><span class="ptitle">매니저</span><br><span class="psub">16건</span></span>
+                <span class="pmid"><span class="ptitle">매니저</span><br><span class="psub">4건</span></span>
                 <span class="pval">36시간</span>
               </div></div>
               <div class="rowwrap"><div class="prow">
-                <span class="pmid"><span class="ptitle">팀장</span><br><span class="psub">15건</span></span>
+                <span class="pmid"><span class="ptitle">팀장</span><br><span class="psub">3건</span></span>
                 <span class="pval">30시간</span>
               </div></div>
               <div class="rowwrap"><div class="prow">
-                <span class="pmid"><span class="ptitle">축가</span><br><span class="psub">10건</span></span>
+                <span class="pmid"><span class="ptitle">축가</span><br><span class="psub">3건</span></span>
                 <span class="pval">24시간</span>
               </div></div>
               <div class="rowwrap"><div class="prow">
-                <span class="pmid"><span class="ptitle">드레스실</span><br><span class="psub">9건</span></span>
+                <span class="pmid"><span class="ptitle">드레스실</span><br><span class="psub">2건</span></span>
                 <span class="pval">18시간</span>
               </div></div>
               <div class="rowwrap"><div class="prow zero">
@@ -713,7 +713,7 @@ code {
         <figcaption>
           <div class="cap-key">MONTH / BLOCKED</div>
           <div class="cap-name">이번 달(10월) — 오른쪽만 못 간다</div>
-          <p class="cap-body">오른쪽 화살표만 <code>fg.neutral-disabled</code>다. 다음 주 급여를 볼 것이 없는 [급여 조회]의 「앞으로 못 감」과 같은 규칙이 여기서는 달 단위로 적용된다. 뒤로 가는 화살표는 첫 근무표가 있는 달까지는 계속 <code>fg.neutral-subtle</code>이다.</p>
+          <p class="cap-body">오른쪽 화살표가 안 보이고 자리만 비어 있다. 다음 달은 아직 지나지 않아 셀 것이 없다 — 급여 조회의 「앞으로 못 감」과 같은 규칙이 여기서는 달 단위로 돈다. 뒤로 가는 화살표는 첫 근무표가 있는 달까지 계속 <code>fg.neutral-subtle</code>로 서 있다.</p>
         </figcaption>
       </figure>
 
