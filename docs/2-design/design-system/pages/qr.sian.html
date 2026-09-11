@@ -1,0 +1,688 @@
+<!--
+  QR 시안 — 관리자가 현장 QR을 보고 바꾸는 화면이다.
+
+  값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../tokens.md이고,
+  무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 qr.md다.
+  둘과 이 파일이 어긋나면 저 둘이 이긴다.
+
+  이 파일이 맡는 것은 글로 안 남는 것들이다 — QR 면이 다크 모드에서도 흰 채로 남는
+  모습, 「크게 띄우기」가 화면을 덮는 실제 속도, 새로 뽑기 확인 Dialog가 서는 자리,
+  값 몇 개가 실제로 차지하는 높이. 구현할 때 이 셋을 같이 연다.
+
+  퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
+  앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../README.md의 「퍼블리싱」에 있다.
+
+  오른쪽 위 라이트/다크 토글은 시안 뷰어 크롬이다. 목업 규칙 밖이고 앱에 없다.
+  누르면 문서 루트에 data-theme이 걸리고 목업 팔레트가 tokens.md 1절의 다크 열로 뒤집힌다.
+
+  문서가 안 적어 이 파일이 임의로 세운 자리다. 값을 여기서 굳히지 않는다.
+  · QR 그림. 실제 코드가 아니라 위치 표식 셋과 무작위 칸으로 QR처럼 보이게 그린
+    인라인 SVG다. 값(data-seed)이 같으면 같은 칸 배치가 나온다 — 「새로 뽑기」
+    앞뒤로 다른 seed를 써서 코드가 바뀐 것을 흉내 냈다.
+  · 「흰 면」과 「검은 코드/아이콘」의 정확한 값. qr.md는 흰색·검은색이라는 사실만
+    말하고 hex를 안 정한다. 이 파일은 tokens.md 라이트 열의 neutral-00과
+    neutral-1000 hex(#FFFEFD, #1B1917)를 리터럴로 그대로 썼다 — 이 앱의 나머지
+    화면이 라이트에서 쓰는 흰색·검은 글자색과 같은 값이라 눈으로 볼 때 이질감이
+    없다. 테마를 안 따르는 것은 값이 아니라 「뒤집히지 않는다」는 성질이다.
+  · 새로 뽑기 확인 Dialog의 폭·안쪽 여백·그림자. components.md의 Dialog와
+    바텀시트 절은 rounded-lg와 토큰 이름만 말하고 치수가 없다 — approvals.sian.html의
+    Dialog 치수를 그대로 따랐다.
+  · 크게 띄우기의 닫기 버튼 위치. 문서는 「오른쪽 위」라고만 하고 여백을 안 준다.
+    앱바 아이콘과 같은 24px 안쪽 여백을 썼다.
+  · 뽑은 뒤 화면의 날짜(2026년 9월 11일). 문서의 문안 예시는 첫 코드의
+    날짜(2026년 3월 2일)뿐이라 「오늘」에 해당하는 날짜는 이 파일이 지어낸
+    예시 값이다.
+
+  「인쇄용 그림」(이미지 내려받기의 결과물)은 안 그렸다. qr.md의 「아직 안 정한 것」이
+  크기와 비율을 못 박아뒀다 — 값을 지어내는 대신 리턴의 이슈에 남긴다.
+-->
+<title>QR 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+
+<style>
+:root {
+  --b-bg: oklch(0.945 0.004 57);
+  --b-panel: oklch(0.988 0.003 57);
+  --b-ink: oklch(0.27 0.007 57);
+  --b-sub: oklch(0.52 0.006 57);
+  --b-faint: oklch(0.63 0.005 57);
+  --b-line: oklch(0.885 0.005 57);
+  --b-line-strong: oklch(0.8 0.005 57);
+  --b-accent: oklch(0.48 0.115 248);
+  --b-mock-shadow: 0 2px 6px rgba(28,25,22,.06), 0 24px 48px -28px rgba(28,25,22,.5);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+    --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+    --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+    --b-accent: oklch(0.76 0.1 248);
+    --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+  }
+}
+:root[data-theme="dark"] {
+  --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+  --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+  --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+  --b-accent: oklch(0.76 0.1 248);
+  --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--b-bg); color: var(--b-ink);
+  font-family: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1300px; margin: 0 auto; padding: 56px 28px 110px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--b-accent); margin: 0 0 14px;
+}
+h1 { font-size: 36px; line-height: 1.25; font-weight: 700; letter-spacing: -.02em; margin: 0 0 16px; }
+.lede { font-size: 16px; color: var(--b-sub); max-width: 60ch; margin: 0; }
+
+section { margin-top: 70px; }
+.sec-head { border-top: 1px solid var(--b-line-strong); padding-top: 18px; margin-bottom: 28px; }
+.sec-num {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .12em; color: var(--b-faint); display: block; margin-bottom: 7px;
+}
+h2 { font-size: 23px; font-weight: 700; letter-spacing: -.015em; margin: 0 0 10px; }
+.sec-head p { margin: 0; color: var(--b-sub); max-width: 68ch; font-size: 14.5px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, 375px); gap: 44px 30px; justify-content: start; align-items: start; }
+.item > figcaption { margin-top: 16px; }
+.cap-key { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--b-faint); }
+.cap-name { font-size: 17px; font-weight: 700; margin: 3px 0 6px; letter-spacing: -.01em; }
+.cap-body { font-size: 13.5px; color: var(--b-sub); margin: 0; max-width: 46ch; }
+.cap-body strong { color: var(--b-ink); font-weight: 600; }
+figure.item { margin: 0; }
+code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .88em;
+  background: var(--b-panel); border: 1px solid var(--b-line); border-radius: 4px; padding: 1px 5px;
+}
+
+/* 라이트/다크 토글 — 시안 뷰어 크롬이다. 목업 규칙 밖이라 토큰을 안 쓴다 */
+.themetoggle {
+  position: fixed; top: 16px; right: 18px; z-index: 90;
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 34px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: .06em;
+  color: var(--b-sub); background: var(--b-panel); border: 1px solid var(--b-line-strong);
+  box-shadow: 0 8px 22px -16px rgba(0,0,0,.6);
+}
+.themetoggle:hover { color: var(--b-ink); }
+.themetoggle:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+.themetoggle .ic-sun { display: none; }
+:root[data-theme="dark"] .themetoggle .ic-sun { display: block; }
+:root[data-theme="dark"] .themetoggle .ic-moon { display: none; }
+.themetoggle .lab-dark { display: inline; }
+.themetoggle .lab-light { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-dark { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-light { display: inline; }
+
+/* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
+.mock {
+  --palette-neutral-00: oklch(1 .0037 57);
+  --palette-neutral-100: oklch(.965 .0037 57);
+  --palette-neutral-200: oklch(.905 .0043 57);
+  --palette-neutral-300: oklch(.845 .0045 57);
+  --palette-neutral-700: oklch(.545 .005 57);
+  --palette-neutral-800: oklch(.455 .005 57);
+  --palette-neutral-900: oklch(.32 .0053 57);
+  --palette-neutral-1000: oklch(.215 .0055 57);
+  --palette-brand-800: oklch(.455 .0534 57);
+  --palette-brand-900: oklch(.32 .0452 57);
+  --palette-positive-400: oklch(.76 .0897 152);
+  --surface-stroke: transparent;
+  --scrim-ink: var(--palette-neutral-1000);
+  --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
+  --dialog-shadow: 0 1px 2px rgba(28,25,22,.05), 0 14px 30px -18px rgba(28,25,22,.5);
+  /* 흰 면과 검은 코드 — 테마를 안 따른다. tokens.md 라이트 열의 neutral-00·1000
+     hex를 리터럴로 굳혔다. force-dark나 다크 미디어쿼리 어느 쪽도 이 값을 안 건드린다 */
+  --fixed-bg: #FFFEFD;
+  --fixed-ink: #1B1917;
+}
+.mock.force-dark {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --palette-brand-900: oklch(.845 .0452 57);
+  --palette-positive-400: oklch(.4 .0897 152);
+  --surface-stroke: var(--palette-neutral-200);
+  --scrim-ink: var(--palette-neutral-00);
+  --card-shadow: none;
+  --dialog-shadow: 0 0 0 1px var(--stroke-neutral);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mock:not(.force-light) {
+    --palette-neutral-00: oklch(.155 .0037 57);
+    --palette-neutral-100: oklch(.205 .0037 57);
+    --palette-neutral-200: oklch(.265 .0043 57);
+    --palette-neutral-300: oklch(.32 .0045 57);
+    --palette-neutral-700: oklch(.665 .005 57);
+    --palette-neutral-800: oklch(.745 .005 57);
+    --palette-neutral-900: oklch(.845 .0053 57);
+    --palette-neutral-1000: oklch(.935 .0055 57);
+    --palette-brand-800: oklch(.745 .0534 57);
+    --palette-brand-900: oklch(.845 .0452 57);
+    --palette-positive-400: oklch(.4 .0897 152);
+    --surface-stroke: var(--palette-neutral-200);
+    --scrim-ink: var(--palette-neutral-00);
+    --card-shadow: none;
+    --dialog-shadow: 0 0 0 1px var(--stroke-neutral);
+  }
+}
+:root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --palette-brand-900: oklch(.845 .0452 57);
+  --palette-positive-400: oklch(.4 .0897 152);
+  --surface-stroke: var(--palette-neutral-200);
+  --scrim-ink: var(--palette-neutral-00);
+  --card-shadow: none;
+  --dialog-shadow: 0 0 0 1px var(--stroke-neutral);
+}
+.mock {
+  --bg-neutral: var(--palette-neutral-00);
+  --bg-neutral-weak: var(--palette-neutral-100);
+  --bg-neutral-weak-pressed: var(--palette-neutral-200);
+  --bg-neutral-solid-soft: var(--palette-neutral-900);
+  --bg-brand-solid: var(--palette-brand-800);
+  --bg-brand-solid-pressed: var(--palette-brand-900);
+  --fg-neutral: var(--palette-neutral-1000);
+  --fg-neutral-subtle: var(--palette-neutral-700);
+  --fg-neutral-contrast: var(--palette-neutral-00);
+  --fg-brand-contrast: var(--palette-neutral-00);
+  --fg-positive-contrast: var(--palette-positive-400);
+  --stroke-neutral: var(--palette-neutral-200);
+  --d-base: 180ms;
+
+  width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  background: var(--bg-neutral); color: var(--fg-neutral);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  font-size: 1.0625rem; line-height: 1.59375rem;
+  box-shadow: var(--b-mock-shadow);
+}
+.mock .num { font-variant-numeric: tabular-nums; }
+
+.statusbar {
+  flex: 0 0 auto; height: 46px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px 0 30px; font-size: .8125rem; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.sb-right { display: flex; align-items: center; gap: 5px; }
+/* 앱바 — 뒤로와 「QR」뿐이다. qr.md 「짜임」 */
+.appbar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  padding: 4px 24px 12px; min-height: 44px; position: relative;
+}
+.backic { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); }
+.appbar .title { font-size: 1.25rem; line-height: 1.8125rem; font-weight: 600; letter-spacing: -.01em; }
+/* 화면 좌우 여백 px-6 = 24px */
+.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+.spacer { flex: 1 1 auto; min-height: 8px; }
+
+/* QR — mt-8, 정사각, rounded-xl, 안쪽 p-6, 테두리 stroke.surface.
+   면 자체는 --fixed-bg라 테마를 안 따른다(qr.md 「QR 그림」) */
+.qrwrap { margin-top: 32px; }
+.qrcard {
+  width: 100%; aspect-ratio: 1 / 1; box-sizing: border-box;
+  border-radius: 20px; padding: 24px;
+  background: var(--fixed-bg); border: 1px solid var(--surface-stroke);
+}
+.qrgrid { width: 100%; height: 100%; display: block; shape-rendering: crispEdges; }
+.qrgrid rect { fill: var(--fixed-ink); }
+/* 쓰기 시작한 날 — mt-4, text-sm, fg.neutral-subtle, 숫자 tabular-nums */
+.qrdate { margin-top: 16px; text-align: center; font-size: .9375rem; line-height: 1.40625rem; color: var(--fg-neutral-subtle); }
+
+/* 버튼 셋 — 세로로 쌓는다. 날짜와 첫 버튼 사이 mt-10, 사이 gap-3, 새로 뽑기 위만 mt-6 */
+.btnstack { margin-top: 40px; }
+.btnstack .btn { width: 100%; }
+.btnstack .btn + .btn { margin-top: 12px; }
+.btnstack .btn:last-child { margin-top: 24px; }
+
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: 48px; border-radius: 999px; border: 0;
+  font-size: 1.0625rem; font-weight: 500; font-family: inherit;
+  background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
+}
+.btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+.btn.outline { background: none; color: var(--fg-neutral); border: 1px solid var(--stroke-neutral); }
+.btn.secondary:active, .btn.outline:active { background: var(--bg-neutral-weak-pressed); }
+.btn:active { background: var(--bg-brand-solid-pressed); }
+
+/* 새로 뽑기 확인 Dialog — 화면 가운데. 폭·여백·그림자는 문서에 없어 이 파일이 세운
+   자리다(approvals.sian.html의 Dialog를 그대로 따랐다). 등장 모션이 없다(qr.md 「모션」) */
+.scrim { position: absolute; inset: 0; z-index: 5; background: var(--scrim-ink); opacity: .42; }
+.dialog-wrap { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; padding: 0 32px; }
+.dialog { width: 100%; border-radius: 16px; background: var(--bg-neutral); padding: 24px; box-shadow: var(--dialog-shadow); border: 1px solid var(--surface-stroke); }
+.dg-title { font-size: 1.25rem; line-height: 1.8125rem; font-weight: 600; color: var(--fg-neutral); }
+.dg-body { margin-top: 8px; font-size: .9375rem; line-height: 1.40625rem; color: var(--fg-neutral-subtle); }
+.dg-btns { display: flex; gap: 12px; margin-top: 20px; }
+.dg-btns .btn { flex: 1 1 0; }
+
+/* 토스트 — components.md 「토스트」가 정본이다 */
+.toast {
+  position: absolute; left: 50%; bottom: 56px; z-index: 6; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 8px; max-width: calc(100% - 48px);
+  background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
+  border-radius: 999px; padding: 11px 20px;
+  font-size: .9375rem; line-height: 1.40625rem;
+  box-shadow: var(--card-shadow);
+}
+.toast-ic { flex: 0 0 auto; }
+.toast-ic circle { fill: var(--ic); }
+.toast-ic path { fill: none; stroke: var(--bg-neutral-solid-soft); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 크게 띄우기 — 화면 전체를 덮는 흰 면. 앱바가 없고 나가는 길은 닫기 하나다.
+   --duration-base로 아래에서 차오르고 나갈 때 같은 시간으로 걷힌다(qr.md 「모션」).
+   바탕·상태바 아이콘·닫기 아이콘 전부 --fixed-* 라 테마를 안 따른다 */
+.qrcover {
+  position: absolute; inset: 0; z-index: 8;
+  background: var(--fixed-bg); color: var(--fixed-ink);
+  display: flex; flex-direction: column;
+  transform: translateY(100%);
+  transition: transform var(--d-base) ease-out;
+}
+.mock.qrfull-open .qrcover { transform: translateY(0); }
+.qrcover .statusbar { color: var(--fixed-ink); }
+.qrfull-body { flex: 1 1 auto; position: relative; display: flex; align-items: center; justify-content: center; }
+.qrfull-card { width: calc(100% - 96px); aspect-ratio: 1 / 1; }
+.qrfull-close {
+  position: absolute; top: 8px; right: 20px; z-index: 1;
+  width: 44px; height: 44px; display: grid; place-items: center;
+  background: none; border: 0; padding: 0; cursor: pointer; color: var(--fixed-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mock * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+</style>
+
+<!-- 시안 뷰어 크롬 — 목업이 아니다 -->
+<button class="themetoggle" type="button" data-theme-toggle aria-label="라이트/다크 전환">
+  <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  <span class="lab-dark">다크로</span>
+  <span class="lab-light">라이트로</span>
+</button>
+
+<div class="wrap">
+  <p class="eyebrow">라비에벨 · 페이지 디자인 07</p>
+  <h1>QR 시안</h1>
+  <p class="lede">
+    관리자 홈의 「QR」 줄이 여는 화면이다. 코드는 시간이 지나도 안 도는 고정 코드이고,
+    관리자가 「새로 뽑기」를 눌러야만 바뀐다. 02절의 「크게 띄우기」는 실제로 눌린다 —
+    버튼을 누르면 흰 면이 차오르고 닫기를 누르면 같은 속도로 걷힌다.
+    오른쪽 위 토글이 페이지 전체를 라이트와 다크로 뒤집는다.
+  </p>
+
+  <!-- 01 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">01 / 본 화면</span>
+      <h2>QR 하나, 날짜 한 줄, 버튼 셋</h2>
+      <p>브랜드 색이 한 자리도 없다. 셋 중 무엇을 할지 고르는 자리라 primary가 없고, 「새로 뽑기」만 무게가 가장 약한 outline이면서 위 간격이 넓다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:06</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">QR</span>
+          </div>
+          <div class="body">
+            <div class="qrwrap">
+              <div class="qrcard"><svg class="qrgrid" data-seed="1" viewBox="0 0 21 21" aria-hidden="true"></svg></div>
+              <div class="qrdate num">2026년 3월 2일부터 쓰고 있어요</div>
+            </div>
+            <div class="btnstack">
+              <button class="btn secondary" type="button">이미지 내려받기</button>
+              <button class="btn secondary" type="button">크게 띄우기</button>
+              <button class="btn outline" type="button">새로 뽑기</button>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">MAIN</div>
+          <div class="cap-name">본 화면</div>
+          <p class="cap-body">QR이 화면 가운데에 크게 선다. <strong>이 화면이 들고 있는 것이 그것 하나다.</strong> 아래 날짜가 새로 뽑을지 정하는 유일한 재료라 「몇 년 몇 월 며칠부터」로 적고 해가 붙는다 — 해를 넘겨 안 바꾼 코드가 있을 수 있어서다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>버튼 셋을 세로로 쌓는다.</strong> BottomCTA를 안 쓴다 — 끝에서 한 번 누르는 자리가 아니라 셋 중 하나를 고르는 자리다. 「새로 뽑기」 위만 <code>mt-6</code>(24px)로 넓다 — 앞의 둘은 지금 코드를 쓰는 길이고 이것만 코드를 바꾼다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">02 / 크게 띄우기</span>
+      <h2>화면이 통째로 QR이 된다 — 실제로 눌러본다</h2>
+      <p>「크게 띄우기」를 누르면 흰 면이 아래에서 차오른다. <code>--duration-base</code>(180ms) <code>ease-out</code>이고, 닫기를 누르면 같은 시간으로 걷힌다. 앱바가 없고 나가는 길은 오른쪽 위 닫기 하나다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock" data-fullscreen-demo>
+          <div class="statusbar"><span>21:07</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">QR</span>
+          </div>
+          <div class="body">
+            <div class="qrwrap">
+              <div class="qrcard"><svg class="qrgrid" data-seed="1" viewBox="0 0 21 21" aria-hidden="true"></svg></div>
+              <div class="qrdate num">2026년 3월 2일부터 쓰고 있어요</div>
+            </div>
+            <div class="btnstack">
+              <button class="btn secondary" type="button">이미지 내려받기</button>
+              <button class="btn secondary" type="button" data-open-full>크게 띄우기</button>
+              <button class="btn outline" type="button">새로 뽑기</button>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="qrcover">
+            <div class="statusbar"><span>21:07</span><span class="sb-right">
+              <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+              <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+            </span></div>
+            <div class="qrfull-body">
+              <button class="qrfull-close" type="button" aria-label="닫기" data-close-full>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+              <svg class="qrgrid qrfull-card" data-seed="1" viewBox="0 0 21 21" aria-hidden="true"></svg>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">FULLSCREEN / LIVE</div>
+          <div class="cap-name">눌러보는 크게 띄우기</div>
+          <p class="cap-body">「크게 띄우기」를 누르면 이 목업 안에서 실제로 흰 면이 올라온다. <strong>QR은 화면 폭에서 좌우 48px을 남긴 크기</strong>다. 닫기를 누르면 원래 화면으로 걷힌다 — 같은 코드(seed 1)라 안과 밖의 QR이 같다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>이 모드에 있는 동안 화면 잠금을 막고 밝기는 안 올린다</strong>(qr.md). 목업은 정적 페이지라 이 둘을 실제로 재현하지 않는다 — 잠금 방지는 Wake Lock API, 밝기 유지는 아무 것도 안 하는 것으로 구현 때 붙는다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">03 / 새로 뽑기 확인</span>
+      <h2>두 가지를 같이 말하는 Dialog</h2>
+      <p>「새로 뽑기」를 누르면 화면 가운데에 Dialog가 선다. 옛 코드가 그 자리에서 죽는다는 것과 종이를 갈아야 한다는 것을 한 문장에 담는다. destructive를 안 쓴다 — 파괴가 아니라 새 코드를 뽑는 것이다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:08</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">QR</span>
+          </div>
+          <div class="body">
+            <div class="qrwrap">
+              <div class="qrcard"><svg class="qrgrid" data-seed="1" viewBox="0 0 21 21" aria-hidden="true"></svg></div>
+              <div class="qrdate num">2026년 3월 2일부터 쓰고 있어요</div>
+            </div>
+            <div class="btnstack">
+              <button class="btn secondary" type="button">이미지 내려받기</button>
+              <button class="btn secondary" type="button">크게 띄우기</button>
+              <button class="btn outline" type="button">새로 뽑기</button>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="dialog-wrap">
+            <div class="dialog">
+              <div class="dg-title">QR을 새로 뽑을까요?</div>
+              <div class="dg-body">지금 QR이 바로 끝나요. 홀에 붙여둔 종이도 갈아야 해요</div>
+              <div class="dg-btns">
+                <button class="btn secondary" type="button">닫기</button>
+                <button class="btn" type="button">새로 뽑기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">CONFIRM</div>
+          <div class="cap-name">확인 Dialog</div>
+          <p class="cap-body">뒤에 남은 것이 지금 코드다. <strong>오른쪽 버튼만 이 화면에서 유일하게 서는 primary다</strong> — components.md의 Dialog 표가 오른쪽 버튼을 「primary 또는 destructive」로 정했고, qr.md가 destructive를 명시로 뺐다. 등장 모션이 없다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">04 / 새로 뽑은 뒤</span>
+      <h2>날짜가 오늘로 바뀌고 토스트가 뜬다</h2>
+      <p>QR 그림이 새 코드(다른 자리 배치)로 바뀌고 「쓰기 시작한 날」이 오늘이 된다. 갈아 끼우는 모션은 없다 — 옛 코드와 새 코드가 섞여 보이면 어느 쪽을 인쇄해야 하는지 흐려진다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>21:09</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">QR</span>
+          </div>
+          <div class="body">
+            <div class="qrwrap">
+              <div class="qrcard"><svg class="qrgrid" data-seed="2" viewBox="0 0 21 21" aria-hidden="true"></svg></div>
+              <div class="qrdate num">2026년 9월 11일부터 쓰고 있어요</div>
+            </div>
+            <div class="btnstack">
+              <button class="btn secondary" type="button">이미지 내려받기</button>
+              <button class="btn secondary" type="button">크게 띄우기</button>
+              <button class="btn outline" type="button">새로 뽑기</button>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="toast">
+            <svg class="toast-ic" style="--ic: var(--fg-positive-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
+                <path d="m8.5 12 2.5 2.5 4.5-5"/>
+              </g>
+            </svg>
+            <span>QR을 새로 뽑았어요</span>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DONE</div>
+          <div class="cap-name">뽑은 뒤</div>
+          <p class="cap-body"><strong>날짜가 「2026년 9월 11일부터 쓰고 있어요」로 바뀐다</strong>(이 날짜는 예시로 지어낸 값이다 — 문서의 문안 예시는 첫 코드의 날짜 하나뿐이다). 근무자에게 푸시는 안 간다 — 알아야 할 순간은 옛 코드를 찍었는데 안 되는 그 자리뿐이라서다.</p>
+          <p class="cap-body" style="margin-top:8px">하단 CTA가 없는 화면이라 토스트는 화면 아래에서 <strong>56px</strong>이다. 되돌리기 버튼이 없다 — 사라지는 것에 액션을 걸면 놓친 사람이 다시 찾을 길이 없다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">05 / 다크 — 규칙과 부딪힌 자리</span>
+      <h2>QR이 앉는 면은 다크에서도 흰 채로 남는다</h2>
+      <p>tokens.md가 모든 면을 라이트·다크 양쪽으로 정의하는데 이 자리만 예외다. 카메라 인식이 이유고, 색 규칙이 아니라 기계 제약이라 여기서만 안 뒤집는다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock force-dark">
+          <div class="statusbar"><span>23:02</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">QR</span>
+          </div>
+          <div class="body">
+            <div class="qrwrap">
+              <div class="qrcard"><svg class="qrgrid" data-seed="1" viewBox="0 0 21 21" aria-hidden="true"></svg></div>
+              <div class="qrdate num">2026년 3월 2일부터 쓰고 있어요</div>
+            </div>
+            <div class="btnstack">
+              <button class="btn secondary" type="button">이미지 내려받기</button>
+              <button class="btn secondary" type="button">크게 띄우기</button>
+              <button class="btn outline" type="button">새로 뽑기</button>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DARK / MAIN</div>
+          <div class="cap-name">본 화면 — 앱은 어두운데 QR만 밝다</div>
+          <p class="cap-body"><strong>QR 카드 면이 <code>--fixed-bg</code>(#FFFEFD)로 그대로다.</strong> 둘레의 앱 배경·버튼·글자는 전부 팔레트를 따라 뒤집혔는데 QR 면만 안 뒤집힌다. 테두리(<code>stroke.surface</code>)는 다크에서 선으로 도니 카드 경계가 여기서 처음 보인다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock force-dark qrfull-open">
+          <div class="statusbar"><span>23:03</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">QR</span>
+          </div>
+          <div class="body">
+            <div class="qrwrap">
+              <div class="qrcard"><svg class="qrgrid" data-seed="1" viewBox="0 0 21 21" aria-hidden="true"></svg></div>
+              <div class="qrdate num">2026년 3월 2일부터 쓰고 있어요</div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="qrcover">
+            <div class="statusbar"><span>23:03</span><span class="sb-right">
+              <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+              <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+            </span></div>
+            <div class="qrfull-body">
+              <button class="qrfull-close" type="button" aria-label="닫기">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+              <svg class="qrgrid qrfull-card" data-seed="1" viewBox="0 0 21 21" aria-hidden="true"></svg>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DARK / FULLSCREEN</div>
+          <div class="cap-name">크게 띄우기 — 바탕과 닫기도 고정</div>
+          <p class="cap-body">앱이 강제로 다크인데(<code>force-dark</code>) 크게 띄우기 화면은 <strong>바탕도 닫기 아이콘도 여전히 흰 면·검은 아이콘</strong>이다. 상태바 숫자·아이콘도 이 화면 안에서는 검게 재색됐다 — 흰 바탕 위에 밝은 아이콘이 남으면 안 보인다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  // 뷰어 크롬 — 라이트/다크 토글. 목업이 아니라 시안을 보는 도구다
+  (function () {
+    var root = document.documentElement;
+    var btn = document.querySelector("[data-theme-toggle]");
+    if (!btn) return;
+    var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    root.dataset.theme = mq && mq.matches ? "dark" : "light";
+    btn.addEventListener("click", function () {
+      root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+    });
+  })();
+
+  // QR 그림 — 위치 표식 셋 + 무작위 칸. 같은 seed는 같은 배치를 낸다
+  function mulberry32(seed) {
+    return function () {
+      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function finderDark(rx, ry) {
+    if (rx === 0 || rx === 6 || ry === 0 || ry === 6) return true;
+    if (rx >= 2 && rx <= 4 && ry >= 2 && ry <= 4) return true;
+    return false;
+  }
+  function inFinder(x, y) {
+    var blocks = [[0, 0], [14, 0], [0, 14]];
+    for (var i = 0; i < blocks.length; i++) {
+      var bx = blocks[i][0], by = blocks[i][1];
+      if (x >= bx && x < bx + 7 && y >= by && y < by + 7) return finderDark(x - bx, y - by);
+    }
+    return null;
+  }
+  function buildQR(svg, seed) {
+    var n = 21;
+    var rand = mulberry32(seed);
+    var ns = "http://www.w3.org/2000/svg";
+    var frag = document.createDocumentFragment();
+    for (var y = 0; y < n; y++) {
+      for (var x = 0; x < n; x++) {
+        var f = inFinder(x, y);
+        var dark = f === null ? rand() < 0.46 : f;
+        if (dark) {
+          var r = document.createElementNS(ns, "rect");
+          r.setAttribute("x", x); r.setAttribute("y", y);
+          r.setAttribute("width", 1); r.setAttribute("height", 1);
+          frag.appendChild(r);
+        }
+      }
+    }
+    svg.appendChild(frag);
+  }
+  document.querySelectorAll(".qrgrid[data-seed]").forEach(function (svg) {
+    buildQR(svg, parseInt(svg.dataset.seed, 10));
+  });
+
+  // 02 — 크게 띄우기를 실제로 열고 닫는다
+  document.querySelectorAll("[data-fullscreen-demo]").forEach(function (mock) {
+    var openBtn = mock.querySelector("[data-open-full]");
+    var closeBtn = mock.querySelector("[data-close-full]");
+    if (openBtn) openBtn.addEventListener("click", function () { mock.classList.add("qrfull-open"); });
+    if (closeBtn) closeBtn.addEventListener("click", function () { mock.classList.remove("qrfull-open"); });
+  });
+})();
+</script>

@@ -1,0 +1,737 @@
+<!--
+  통계 시안 — 관리자가 한 달을 숫자로 보는 화면이다.
+
+  값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../tokens.md이고,
+  무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 stats.md다.
+  기간 세그먼트의 모양과 값은 payroll.md의 「기간 세그먼트」 절이 정본이다.
+  셋과 이 파일이 어긋나면 저 문서들이 이긴다.
+
+  이 파일이 맡는 것은 글로 안 남는 것들이다 — 세그먼트를 바꿀 때 고른 칸 면이
+  움직이는 모습, 값 다섯 자리 사람별 목록이 실제로 차지하는 높이, 아홉 포지션이
+  전부 서면서 0시간짜리가 맨 아래 남는 모습. 구현할 때 이 셋을 같이 연다.
+
+  퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
+  앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../README.md의 「퍼블리싱」에 있다.
+
+  오른쪽 위 라이트/다크 토글은 시안 뷰어 크롬이다. 목업 규칙 밖이고 앱에 없다.
+  누르면 문서 루트에 data-theme이 걸리고 목업 팔레트가 tokens.md 1절의 다크 열로 뒤집힌다.
+
+  문서가 안 적어 이 파일이 임의로 세운 자리다. 값을 여기서 굳히지 않는다.
+  · 사람별 목록 다섯 줄, 근태 목록 여섯 줄의 이름·회수·시간·금액. stats.md는
+    사람별 목록 자리 하나(12회 · 108시간)만 문안으로 못 박았다. 나머지는 정렬
+    규칙(금액 큰 순, 가나다순)을 보여주려고 채운 예시고, 인건비 목록의 회수·시간·
+    금액 합은 문서가 준 합계(48건 · 432시간 · 4,812,000원)와 맞도록 역산했다.
+  · 아홉 포지션의 시간·건수 값. 「시간 많은 순」과 「0시간도 선다」만 정해졌고
+    아홉 개별 값은 없다. 여기 값은 합이 432시간(문서가 준 포지션 합계)이 되도록
+    임의로 나눴다.
+  · 근태 탭의 세그먼트-현황 줄 사이(mt-6), 현황 줄-목록 사이(mt-8), 포지션 탭의
+    세그먼트-합계 사이(mt-6), 합계-목록 사이(mt-8). 여백표는 인건비 탭 기준으로만
+    이름을 붙였다(「합계와 안내 사이」 「보조 줄과 목록 사이」). 근태·포지션 탭은
+    그 안내·보조 줄이 없어서, 목록 바로 위에 오는 줄에는 「보조 줄과 목록 사이」
+    (mt-8)를, 세그먼트 바로 아래 오는 줄에는 「세그먼트와 합계 사이」(mt-6)를
+    그대로 옮겨 썼다.
+  · 빈 상태의 모양. stats.md는 「합계 자리는 –로 서고 목록 자리에만 빈 상태가
+    온다」까지만 정했다. 예상치 안내와 보조 줄을 그 상태에서 같이 지울지는
+    안 적혀 있어, 이 파일은 지우는 쪽으로 그렸다 — 근무가 0건일 때 「근무 0건 ·
+    0시간」을 보여주는 것이 더 이상하다고 판단해서다. components.md의 「빈 상태」
+    절도 아직 안 그려봤다고 적혀 있다.
+  · 빈 상태 문구 블록의 안쪽 여백과 정렬(위 여백 64px, 가운데 정렬). 문서에 없다.
+  · 프로필 사진 자리. 저장소에 이미지를 안 넣어 뉴트럴 두 단계의 그러데이션으로 흉내 냈다.
+  · 뷰어 크롬(--b-*)의 색. 목업 밖이라 애초에 토큰 대상이 아니다.
+
+  막대를 안 그렸다. stats.md 「아직 안 정한 것」이 포지션별 시간에 막대를 붙일지를
+  열어 뒀고, 프롬프트가 숫자와 정렬만으로 비교하게 두라고 정했다.
+-->
+<title>통계 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+
+<style>
+:root {
+  --b-bg: oklch(0.945 0.004 57);
+  --b-panel: oklch(0.988 0.003 57);
+  --b-ink: oklch(0.27 0.007 57);
+  --b-sub: oklch(0.52 0.006 57);
+  --b-faint: oklch(0.63 0.005 57);
+  --b-line: oklch(0.885 0.005 57);
+  --b-line-strong: oklch(0.8 0.005 57);
+  --b-accent: oklch(0.48 0.115 248);
+  --b-mock-shadow: 0 2px 6px rgba(28,25,22,.06), 0 24px 48px -28px rgba(28,25,22,.5);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+    --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+    --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+    --b-accent: oklch(0.76 0.1 248);
+    --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+  }
+}
+:root[data-theme="dark"] {
+  --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+  --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+  --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+  --b-accent: oklch(0.76 0.1 248);
+  --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--b-bg); color: var(--b-ink);
+  font-family: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1300px; margin: 0 auto; padding: 56px 28px 110px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--b-accent); margin: 0 0 14px;
+}
+h1 { font-size: 36px; line-height: 1.25; font-weight: 700; letter-spacing: -.02em; margin: 0 0 16px; }
+.lede { font-size: 16px; color: var(--b-sub); max-width: 60ch; margin: 0; }
+
+section { margin-top: 70px; }
+.sec-head { border-top: 1px solid var(--b-line-strong); padding-top: 18px; margin-bottom: 28px; }
+.sec-num {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .12em; color: var(--b-faint); display: block; margin-bottom: 7px;
+}
+h2 { font-size: 23px; font-weight: 700; letter-spacing: -.015em; margin: 0 0 10px; }
+.sec-head p { margin: 0; color: var(--b-sub); max-width: 68ch; font-size: 14.5px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, 375px); gap: 44px 30px; justify-content: start; align-items: start; }
+.item > figcaption { margin-top: 16px; }
+.cap-key { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--b-faint); }
+.cap-name { font-size: 17px; font-weight: 700; margin: 3px 0 6px; letter-spacing: -.01em; }
+.cap-body { font-size: 13.5px; color: var(--b-sub); margin: 0; max-width: 46ch; }
+.cap-body strong { color: var(--b-ink); font-weight: 600; }
+figure.item { margin: 0; }
+code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .88em;
+  background: var(--b-panel); border: 1px solid var(--b-line); border-radius: 4px; padding: 1px 5px;
+}
+.replay {
+  margin-top: 14px; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--b-accent);
+  background: none; border: 1px solid color-mix(in oklch, var(--b-accent) 40%, transparent);
+  border-radius: 999px; padding: 4px 13px; cursor: pointer;
+}
+.replay:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+
+/* 라이트/다크 토글 — 시안 뷰어 크롬이다. 목업 규칙 밖이라 토큰을 안 쓴다 */
+.themetoggle {
+  position: fixed; top: 16px; right: 18px; z-index: 90;
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 34px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: .06em;
+  color: var(--b-sub); background: var(--b-panel); border: 1px solid var(--b-line-strong);
+  box-shadow: 0 8px 22px -16px rgba(0,0,0,.6);
+}
+.themetoggle:hover { color: var(--b-ink); }
+.themetoggle:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+.themetoggle .ic-sun { display: none; }
+:root[data-theme="dark"] .themetoggle .ic-sun { display: block; }
+:root[data-theme="dark"] .themetoggle .ic-moon { display: none; }
+.themetoggle .lab-dark { display: inline; }
+.themetoggle .lab-light { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-dark { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-light { display: inline; }
+
+/* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
+.mock {
+  --palette-neutral-00: oklch(1 .0037 57);
+  --palette-neutral-100: oklch(.965 .0037 57);
+  --palette-neutral-200: oklch(.905 .0043 57);
+  --palette-neutral-300: oklch(.845 .0045 57);
+  --palette-neutral-400: oklch(.76 .0047 57);
+  --palette-neutral-500: oklch(.68 .005 57);
+  --palette-neutral-600: oklch(.625 .005 57);
+  --palette-neutral-700: oklch(.545 .005 57);
+  --palette-neutral-800: oklch(.455 .005 57);
+  --palette-neutral-900: oklch(.32 .0053 57);
+  --palette-neutral-1000: oklch(.215 .0055 57);
+  --surface-stroke: transparent;
+  --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
+}
+.mock.force-dark {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-400: oklch(.4 .0047 57);
+  --palette-neutral-500: oklch(.48 .005 57);
+  --palette-neutral-600: oklch(.585 .005 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --surface-stroke: var(--palette-neutral-200);
+  --card-shadow: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mock:not(.force-light) {
+    --palette-neutral-00: oklch(.155 .0037 57);
+    --palette-neutral-100: oklch(.205 .0037 57);
+    --palette-neutral-200: oklch(.265 .0043 57);
+    --palette-neutral-300: oklch(.32 .0045 57);
+    --palette-neutral-400: oklch(.4 .0047 57);
+    --palette-neutral-500: oklch(.48 .005 57);
+    --palette-neutral-600: oklch(.585 .005 57);
+    --palette-neutral-700: oklch(.665 .005 57);
+    --palette-neutral-800: oklch(.745 .005 57);
+    --palette-neutral-900: oklch(.845 .0053 57);
+    --palette-neutral-1000: oklch(.935 .0055 57);
+    --surface-stroke: var(--palette-neutral-200);
+    --card-shadow: none;
+  }
+}
+:root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-400: oklch(.4 .0047 57);
+  --palette-neutral-500: oklch(.48 .005 57);
+  --palette-neutral-600: oklch(.585 .005 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --surface-stroke: var(--palette-neutral-200);
+  --card-shadow: none;
+}
+.mock {
+  --bg-neutral: var(--palette-neutral-00);
+  --bg-neutral-weak: var(--palette-neutral-100);
+  --fg-neutral: var(--palette-neutral-1000);
+  --fg-neutral-muted: var(--palette-neutral-800);
+  --fg-neutral-subtle: var(--palette-neutral-700);
+  --fg-neutral-disabled: var(--palette-neutral-700);
+  --stroke-neutral: var(--palette-neutral-200);
+
+  --t-xs: .8125rem; --lh-xs: 1.21875rem;
+  --t-sm: .9375rem; --lh-sm: 1.40625rem;
+  --t-base: 1.0625rem; --lh-base: 1.59375rem;
+  --t-lg: 1.25rem; --lh-lg: 1.8125rem;
+  --t-3xl: 1.875rem; --lh-3xl: 2.5rem;
+  --d-fast: 125ms;
+
+  width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  background: var(--bg-neutral); color: var(--fg-neutral);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  font-size: var(--t-base); line-height: var(--lh-base);
+  box-shadow: var(--b-mock-shadow);
+}
+.mock .num { font-variant-numeric: tabular-nums; }
+
+.statusbar {
+  flex: 0 0 auto; height: 46px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px 0 30px; font-size: var(--t-xs); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.sb-right { display: flex; align-items: center; gap: 5px; }
+/* 앱바 — 뒤로와 「통계」뿐, 오른쪽 액션이 없다(stats.md 「짜임」) */
+.appbar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  padding: 4px 24px 12px; min-height: 44px; position: relative;
+}
+.appbar .sp { flex: 1 1 auto; }
+.backic { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); }
+.appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
+
+/* 화면 좌우 여백 px-6 = 24px */
+.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+.spacer { flex: 1 1 auto; min-height: 8px; }
+
+/* 달 줄 — 앱바와 mt-2(8px), 좌우 화살표 + 가운데 텍스트, py-2 */
+.monthrow { margin-top: 8px; padding: 8px 0; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.marrow { flex: 0 0 auto; width: 28px; height: 28px; display: grid; place-items: center; color: var(--fg-neutral-subtle); cursor: pointer; }
+.marrow.disabled { visibility: hidden; }
+.mtext { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+
+/* 세그먼트 — payroll.md 「기간 세그먼트」와 같은 조각. 달 줄과 mt-3(12px) */
+.segwrap { margin-top: 12px; }
+.seg { position: relative; display: flex; background: var(--bg-neutral-weak); border-radius: 999px; padding: 4px; min-height: 44px; align-items: center; }
+.seg .pill {
+  position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3);
+  background: var(--bg-neutral); border-radius: 999px; transition: transform var(--d-fast) ease-out;
+}
+.seg button {
+  position: relative; z-index: 1; flex: 1 1 0; border: 0; background: none; padding: 8px 0;
+  font-family: inherit; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
+  color: var(--fg-neutral-subtle); cursor: pointer;
+}
+.seg button.on { color: var(--fg-neutral); }
+
+/* 합계 — 세그먼트와 mt-6(24px), 큰 글자 */
+.sum { margin-top: 24px; font-size: var(--t-3xl); line-height: var(--lh-3xl); font-weight: 700; color: var(--fg-neutral); }
+.sum.dash { color: var(--fg-neutral); }
+/* 예상치 안내 — 합계와 mt-1(4px) */
+.subnote { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+/* 인건비 보조 줄 / 근태 현황 줄 — 공통. 인건비에서는 안내와 mt-3(12px), 근태에서는 세그먼트와 mt-6(24px) */
+.subline { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.subline.num { font-variant-numeric: tabular-nums; }
+.mt-3 { margin-top: 12px; }
+.mt-6 { margin-top: 24px; }
+/* 보조 줄(또는 현황 줄)과 목록 사이 — mt-8(32px) */
+.listgap { margin-top: 32px; }
+
+/* 목록 — ListRow. 사진 36px, 사진과 이름 사이 gap-3(12px), 줄 py-4(16px) */
+.rowwrap { overflow: hidden; }
+.wrow { display: flex; align-items: center; gap: 12px; padding: 16px 0; }
+.wrow .av36 {
+  width: 36px; height: 36px; border-radius: 999px; flex: 0 0 auto; box-sizing: border-box;
+  border: 1px solid var(--stroke-neutral);
+  background: linear-gradient(150deg, var(--palette-neutral-300), var(--palette-neutral-500));
+}
+.wrow .wmid { min-width: 0; flex: 1 1 auto; }
+.wrow .wtitle { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.wrow .wsub { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+.wrow .wval { margin-left: auto; flex: 0 0 auto; padding-left: 12px; font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; text-align: right; }
+/* 구분선은 사진 왼쪽 끝이 아니라 이름 왼쪽 끝(36 + 12 = 48px)부터 긋는다 */
+.wlist .rowwrap + .rowwrap .wrow { border-top: 1px solid var(--stroke-neutral); margin-left: 48px; padding-left: 0; }
+.wlist .rowwrap + .rowwrap .wrow .av36 { margin-left: -48px; }
+
+/* 포지션 목록 — 사진이 없다. 줄 전체 폭으로 구분선을 긋는다 */
+.prow { display: flex; align-items: baseline; padding: 16px 0; gap: 12px; }
+.prow .pmid { min-width: 0; flex: 1 1 auto; }
+.prow .ptitle { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.prow .psub { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+.prow .pval { margin-left: auto; flex: 0 0 auto; padding-left: 12px; font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; text-align: right; }
+.prow.zero .psub, .prow.zero .pval { color: var(--fg-neutral-subtle); }
+.plist .rowwrap + .rowwrap .prow { border-top: 1px solid var(--stroke-neutral); }
+
+/* 목록 끝 — pb-8(32px) */
+.listend { padding-bottom: 32px; }
+
+/* 빈 상태 — 합계는 그대로 두고(–) 목록 자리에만 문구 둘이 온다. 위치·여백은 문서에 없어 이 파일이 정했다 */
+.emptywrap { margin-top: 64px; text-align: center; padding: 0 8px; }
+.empty-t { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.empty-b { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mock * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+</style>
+
+<!-- 시안 뷰어 크롬 — 목업이 아니다 -->
+<button class="themetoggle" type="button" data-theme-toggle aria-label="라이트/다크 전환">
+  <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  <span class="lab-dark">다크로</span>
+  <span class="lab-light">라이트로</span>
+</button>
+
+<div class="wrap">
+  <p class="eyebrow">라비에벨 · 페이지 디자인</p>
+  <h1>통계 시안</h1>
+  <p class="lede">
+    관리자 홈의 「통계」 줄이 여는 화면이다. 관리자 화면이라 탭 바가 없고 앱바에 뒤로 가기만 있다.
+    달 줄이 세그먼트 위에 서서 인건비·근태·포지션 사이를 오가도 보는 달은 그대로다.
+    막대를 안 그렸다 — 숫자와 정렬만으로 비교하게 두는 것이 문서의 결정이다.
+    오른쪽 위 토글이 페이지 전체를 라이트와 다크로 뒤집는다.
+  </p>
+
+  <!-- 01 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">01 / 인건비</span>
+      <h2>합계가 크게 서고 목록은 금액 큰 순</h2>
+      <p>합계, 예상치 안내, 보조 줄, 사람별 목록 순으로 쌓인다. 이번 달(10월)이라 달 줄의 오른쪽 화살표가 못 간다 — 05절에서 그 상태만 따로 짚는다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:14</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 10월</span>
+              <span class="marrow disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(0%)"></span>
+                <button type="button" class="on">인건비</button>
+                <button type="button">근태</button>
+                <button type="button">포지션</button>
+              </div>
+            </div>
+            <div class="sum num">4,812,000원</div>
+            <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
+            <div class="subline num mt-3">근무 48건 · 432시간</div>
+            <div class="wlist listgap">
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">박서연</span><br><span class="wsub">17회 · 153시간</span></span>
+                <span class="wval">1,700,000원</span>
+              </div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">김민지</span><br><span class="wsub">12회 · 108시간</span></span>
+                <span class="wval">1,188,000원</span>
+              </div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">이하늘</span><br><span class="wsub">10회 · 90시간</span></span>
+                <span class="wval">950,000원</span>
+              </div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">최윤아</span><br><span class="wsub">8회 · 72시간</span></span>
+                <span class="wval">800,000원</span>
+              </div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">정다은</span><br><span class="wsub">1회 · 9시간</span></span>
+                <span class="wval">174,000원</span>
+              </div></div>
+            </div>
+            <div class="listend"></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">PAYROLL</div>
+          <div class="cap-name">금액이 큰 순, 이름순이 아니다</div>
+          <p class="cap-body">줄에 화살표도 누름 배경도 없다 — 눌러도 다음 화면이 없어서다. 왼쪽 사진은 <strong>36px</strong>이고, ListRow의 다른 화면(40px)보다 작다 — stats.md의 여백표가 이 화면만 36px로 못 박았다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>정다은은 금액이 작아 맨 아래 있다.</strong> 퇴사한 사람이든 시급이 기본인 사람이든 이 목록은 표시를 가르지 않는다 — 문서가 명시로 「따로 표시 안 한다」고 정한 자리라 이 다섯 줄 중 누구도 특별히 표시되지 않는다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">02 / 근태</span>
+      <h2>가나다순, 지각 0은 자리가 빈다</h2>
+      <p>현황 한 줄이 그달 전체를 넷으로 세고, 목록은 이름 가나다순이다. 지각이 0인 사람은 「지각 0」을 안 적고 그 자리가 아예 비어 있다. 색으로 지각·결근을 가르지 않는다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:15</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 10월</span>
+              <span class="marrow disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(100%)"></span>
+                <button type="button">인건비</button>
+                <button type="button" class="on">근태</button>
+                <button type="button">포지션</button>
+              </div>
+            </div>
+            <div class="subline num mt-6">출근 41 · 지각 4 · 출근 인정 2 · 결근 1</div>
+            <div class="wlist listgap">
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">김민지</span></span>
+                <span class="wval">출근 9</span>
+              </div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">박서연</span></span>
+                <span class="wval">출근 12 · 지각 1</span>
+              </div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">유하은</span></span>
+                <span class="wval">출근 7 · 결근 1</span>
+              </div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">이하늘</span></span>
+                <span class="wval">출근 6 · 지각 2</span>
+              </div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">정다은</span></span>
+                <span class="wval">출근 6 · 출근 인정 1</span>
+              </div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">최윤아</span></span>
+                <span class="wval">출근 5</span>
+              </div></div>
+            </div>
+            <div class="listend"></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">ATTENDANCE</div>
+          <div class="cap-name">김민지·최윤아는 지각 0이라 자리가 없다</div>
+          <p class="cap-body">여섯 줄 다 「출근 n」으로 시작하고 지각이 있으면만 「· 지각 n」이 붙는다. 결근·출근 인정도 있는 줄에만 뒤에 붙는다 — 유하은은 결근, 정다은은 출근 인정이 붙고 순서가 다른 이유는 지각이 0이라 그 항목이 먼저 빠져서다.</p>
+          <p class="cap-body" style="margin-top:8px">이 목록에 사진 오른쪽 화살표가 없다. 사람별 날짜 내역이 이 화면의 몫이 아니라서다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">03 / 포지션</span>
+      <h2>아홉이 다 서고, 0시간도 선다</h2>
+      <p>합계 아래 아홉 포지션이 시간 많은 순이다. 대기실은 이번 달 내내 아무도 안 들어가 0시간이고, 그 사실 자체가 읽을 거리라 목록에서 빠지지 않는다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:16</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 10월</span>
+              <span class="marrow disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(200%)"></span>
+                <button type="button">인건비</button>
+                <button type="button">근태</button>
+                <button type="button" class="on">포지션</button>
+              </div>
+            </div>
+            <div class="sum num">432시간</div>
+            <div class="plist listgap" style="margin-top:24px">
+              <div class="rowwrap"><div class="prow">
+                <span class="pmid"><span class="ptitle">메인</span><br><span class="psub">12건</span></span>
+                <span class="pval">108시간</span>
+              </div></div>
+              <div class="rowwrap"><div class="prow">
+                <span class="pmid"><span class="ptitle">스캔</span><br><span class="psub">10건</span></span>
+                <span class="pval">90시간</span>
+              </div></div>
+              <div class="rowwrap"><div class="prow">
+                <span class="pmid"><span class="ptitle">드레스</span><br><span class="psub">8건</span></span>
+                <span class="pval">72시간</span>
+              </div></div>
+              <div class="rowwrap"><div class="prow">
+                <span class="pmid"><span class="ptitle">안내</span><br><span class="psub">6건</span></span>
+                <span class="pval">54시간</span>
+              </div></div>
+              <div class="rowwrap"><div class="prow">
+                <span class="pmid"><span class="ptitle">매니저</span><br><span class="psub">4건</span></span>
+                <span class="pval">36시간</span>
+              </div></div>
+              <div class="rowwrap"><div class="prow">
+                <span class="pmid"><span class="ptitle">팀장</span><br><span class="psub">3건</span></span>
+                <span class="pval">30시간</span>
+              </div></div>
+              <div class="rowwrap"><div class="prow">
+                <span class="pmid"><span class="ptitle">축가</span><br><span class="psub">3건</span></span>
+                <span class="pval">24시간</span>
+              </div></div>
+              <div class="rowwrap"><div class="prow">
+                <span class="pmid"><span class="ptitle">드레스실</span><br><span class="psub">2건</span></span>
+                <span class="pval">18시간</span>
+              </div></div>
+              <div class="rowwrap"><div class="prow zero">
+                <span class="pmid"><span class="ptitle">대기실</span><br><span class="psub">0건</span></span>
+                <span class="pval">0시간</span>
+              </div></div>
+            </div>
+            <div class="listend"></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">POSITION</div>
+          <div class="cap-name">대기실 0시간도 목록에 남는다</div>
+          <p class="cap-body">아홉 줄 다 같은 ListRow 모양이고 화살표가 없다. 맨 아래 「대기실」만 값 둘이 <code>fg.neutral-subtle</code>이다 — stats.md 색 표의 「값이 0인 자리」 규칙이다. 겸임 배정은 앞 포지션으로 셌으니 아홉 줄의 건수 합이 인건비 탭의 근무 48건과 같다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">04 / 빈 상태</span>
+      <h2>세 탭이 같은 모양으로 빈다</h2>
+      <p>그달에 확정된 근무표가 없을 때다. 합계 자리는 <code>–</code>로 서고 목록 자리에만 빈 상태가 온다. 인건비 탭 하나로 그렸고 근태·포지션도 같은 모양이라 문서가 셋을 가르지 않는다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:17</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 6월</span>
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(0%)"></span>
+                <button type="button" class="on">인건비</button>
+                <button type="button">근태</button>
+                <button type="button">포지션</button>
+              </div>
+            </div>
+            <div class="sum dash">–</div>
+            <div class="emptywrap">
+              <div class="empty-t">이 달은 아직 근무표가 없어요</div>
+              <div class="empty-b">근무표를 확정하면 여기 숫자가 서요</div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">EMPTY</div>
+          <div class="cap-name">예상치 안내·보조 줄도 같이 사라진다</div>
+          <p class="cap-body">합계만 <code>–</code>로 남고 <strong>그 아래 예상치 안내와 보조 줄은 이 파일이 지웠다</strong> — 근무가 없는데 「근무 0건 · 0시간」을 보여주는 것이 더 이상하다고 판단해서다. stats.md는 이 지점을 안 정했다.</p>
+          <p class="cap-body" style="margin-top:8px">이 달(6월)은 이번 달보다 앞이라 화살표 양쪽 다 갈 수 있다 — 05절의 「못 가는 화살표」와 대비해서 보려고 지난달로 그렸다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">05 / 달 이동</span>
+      <h2>이번 달은 앞으로 못 간다</h2>
+      <p>앞으로는 이번 달에서 멈추고 뒤로는 첫 근무표가 있는 달까지 간다. 왼쪽 두 프레임을 나란히 놓고 화살표 색이 갈리는 것만 본다 — 나머지는 같은 인건비 탭이다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:18</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 9월</span>
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(0%)"></span>
+                <button type="button" class="on">인건비</button>
+                <button type="button">근태</button>
+                <button type="button">포지션</button>
+              </div>
+            </div>
+            <div class="sum num">3,960,000원</div>
+            <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
+            <div class="subline num mt-3">근무 40건 · 360시간</div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">MONTH / CAN GO</div>
+          <div class="cap-name">지난달(9월) — 양쪽 다 갈 수 있다</div>
+          <p class="cap-body">화살표 둘 다 <code>fg.neutral-subtle</code>이다. 목록은 이 절의 핵심이 화살표 색이라 생략했다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:18</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 10월</span>
+              <span class="marrow disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(0%)"></span>
+                <button type="button" class="on">인건비</button>
+                <button type="button">근태</button>
+                <button type="button">포지션</button>
+              </div>
+            </div>
+            <div class="sum num">4,812,000원</div>
+            <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
+            <div class="subline num mt-3">근무 48건 · 432시간</div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">MONTH / BLOCKED</div>
+          <div class="cap-name">이번 달(10월) — 오른쪽만 못 간다</div>
+          <p class="cap-body">오른쪽 화살표가 안 보이고 자리만 비어 있다. 다음 달은 아직 지나지 않아 셀 것이 없다 — 급여 조회의 「앞으로 못 감」과 같은 규칙이 여기서는 달 단위로 돈다. 뒤로 가는 화살표는 첫 근무표가 있는 달까지 계속 <code>fg.neutral-subtle</code>로 서 있다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  // 뷰어 크롬 — 라이트/다크 토글. 목업이 아니라 시안을 보는 도구다
+  var root = document.documentElement;
+  var btn = document.querySelector("[data-theme-toggle]");
+  if (!btn) return;
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  root.dataset.theme = mq && mq.matches ? "dark" : "light";
+  btn.addEventListener("click", function () {
+    root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+  });
+})();
+</script>

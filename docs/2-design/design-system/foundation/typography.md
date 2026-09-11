@@ -87,7 +87,7 @@ TDS가 이 원칙을 명시해뒀고 우리도 그대로 가져온다. 웨딩홀
 
 | 자리 | 단계 | 굵기 |
 | --- | --- | --- |
-| 급여 금액 | `text-3xl` | `font-normal` |
+| 급여 금액 | `text-3xl` | `font-bold` |
 | 화면 제목 | `text-xl` | `font-semibold` |
 | 카드 제목 | `text-lg` | `font-semibold` |
 | 본문 | `text-base` | `font-normal` |
