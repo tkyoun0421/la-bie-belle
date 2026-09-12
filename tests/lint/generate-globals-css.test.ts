@@ -632,12 +632,15 @@ const THREE_ROW_SHADOW_SECTION = `## 5. 라운딩과 그림자
 | \`shadow-sheet\` | \`0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5)\` | \`0 -1px 0 var(--stroke-neutral)\` |
 `;
 
+// 픽스처는 tokens.md 원문 표기(`rgba(28,25,22,.05)`)를 그대로 쓰고, 기대값은
+// 생성기 마지막 단계의 prettier가 정규화한 표기다. 표의 원문이 생성기를 통과하는지와
+// 결과가 저장된 globals.css와 같은 표기인지를 한 픽스처로 같이 지킨다.
 const THREE_ROW_LIGHT_CARD =
-  "0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4)";
+  "0 1px 2px rgba(28, 25, 22, 0.05), 0 8px 20px -14px rgba(28, 25, 22, 0.4)";
 const THREE_ROW_LIGHT_POP =
-  "0 1px 2px rgba(28,25,22,.05), 0 14px 30px -18px rgba(28,25,22,.5)";
+  "0 1px 2px rgba(28, 25, 22, 0.05), 0 14px 30px -18px rgba(28, 25, 22, 0.5)";
 const THREE_ROW_LIGHT_SHEET =
-  "0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5)";
+  "0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28, 25, 22, 0.5)";
 const THREE_ROW_DARK_SHEET = "0 -1px 0 var(--stroke-neutral)";
 
 describe("리스크 K — 그림자 표가 세 줄이어도 생성기가 표의 모든 줄을 읽는다", () => {
