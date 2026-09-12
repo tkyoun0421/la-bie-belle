@@ -11,6 +11,7 @@
 **공용 정본이 여러 차례 갱신됐다.** 색·토큰(`tokens.md`)에 덮개·띠 막대 값, 반전 팔레트 role 토큰 셋, 「팔레트 칸이 `—`인 행」 규칙, 「같은 값으로 갈린 색은 자리를 비운다」 조항이 쌓였다. `components.md`에 토스트·하루 띠·앱바·탭 바가 새 조각으로 섰다. `writing.md`에 「사람이 누르는 버튼은 예외다」·「계산할 것이 없으면 `–`」가 붙었다. 브랜드 색 자리가 다섯(「안 눌리는 표식」 추가), 누를 수 있는 것은 44px 이상, 알림은 읽음·안 읽음 둘로 끝난다는 것이 사람이 직접 정한 규칙으로 박혔다. `sian-auditor`가 서서 화면 디자인 파이프라인이 「페이지 문서 → `sian-writer` → `sian-auditor`」로 CLAUDE.md에 섰고, 태그 균형 검사(`tests/lint/sian-html.ts`)가 `pnpm test`에 낀다.
 
 **아키텍처 리뷰 후보 다섯이 다 닫혔다(#302, #303, #305).** `src/`가 9월 초 이후 정지 상태라 실제 검증 하네스를 먼저 보기로 했고 후보 다섯을 냈다. `architecture/`가 `data-model`·`api`·`runtime`·`flows` 넷으로 갈려 자리만 파였다(300줄 넘는 파일은 도메인으로 가른다는 규칙과 함께). A(마크다운 문서 모듈)는 #303 — `tests/lint/markdown.ts`가 마크다운 구조를 읽는 유일한 seam이고, 그 위에 `doc-links.ts`와 `doc-map.ts`가 선다. B·C·D·E는 #305 한 PR로 갔다(`docs/2-design/spec/supabase-client-entry.md`) — `createSupabaseRequestClient()`가 `cookies()`를 안에 품어 `src/app/` 호출부 넷이 그것만 부르고, 미들웨어만 `createSupabaseServerClient(store)`를 그대로 쓴다. `requireEnv`는 `read-supabase-env.ts` 한 곳, `SUBSECTION`은 `tokens-md.mts` 한 곳이 됐다. 인증 게이트의 조립 로직은 `src/features/auth/read-auth-gate.ts`로 갔고 `src/app/auth-gate.ts`는 `redirect` 위임만 남았다. ADR-001 「레이어」에 「여러 계층을 묶는 조립은 `features`에, `app/`의 `.ts`는 Next API 위임만」 문단이 섰고 관찰 007이 그것으로 `actioned`다.
+**공용 조각 여섯과 빈 상태가 `components.md`에 섰다(#308, #309).** 스위치·세그먼트·더보기 팝오버·가운데 Dialog 치수·「더 보기」가 절로 올라갔고 백지였던 「빈 상태」 절이 채워졌다. 결정 셋 — 세그먼트는 선택 면 하나가 미끄러진다(칸 배경 토글이 아니라), 가운데 Dialog는 approvals 값(양옆 32·안쪽 24·`shadow-pop`+`stroke.surface`), 빈 상태는 목록 자리에 그대로 선다(가운데로 밀지 않는다). 그림자 토큰이 `shadow-card`·`shadow-pop`·`shadow-sheet` 셋이 됐고, 생성기가 그림자 표의 모든 줄을 읽게 고쳐 `globals.css`에 `--surface-shadow-pop`·`--surface-shadow-sheet`가 선다(`docs/2-design/spec/shadow-tokens.md`). 페이지 문서 일곱이 정본을 가리키고, 어긋났던 시안 셋(payroll·stats·wages)은 #309에서 맞췄다.
 
 **PR 순서 — #301 → #302(리베이스) → #303.** #302가 #301의 커밋을 품고 있어 #301을 먼저 넣고 #302를 `main` 위로 다시 얹었다. 문서 링크 감사가 #302에서 열여섯 곳을 닫아, #303의 링크 회귀(0건)는 그 위에서만 초록이다.
 
@@ -18,9 +19,7 @@
 
 ## 다음 첫 수
 
-**공용으로 올릴 조각이 여섯이다.** 시안이 스스로 정해 캡션에 밝힌 값들이다 — **스위치**(프로필 알림 줄, 이 앱에서 처음), **세그먼트**(급여와 통계가 같이 쓰니 둘째 사용자가 생겼다), **더보기 팝오버**(가입 대기에 이어 직원 관리가 둘째), **가운데 Dialog 치수**, **시트 그림자**, **「더 보기」**. 값을 맞춰 보고 `components.md`에 올린다. `components.md`의 「빈 상태」 절이 아직 백지인데 새 화면 넷이 빈 상태를 그린다.
-
-**그다음은 구조 설계다.** `docs/2-design/architecture/` 넷(`data-model`·`api`·`runtime`·`flows`)이 자리만 파여 있다. `runtime/README.md`가 캐시 넷(Service Worker·TanStack Query·Next 서버·Supabase realtime)과 시각의 출처, 경쟁 조건을 담을 자리고, 시급·급여 금액을 RLS가 막아야 한다는 제약이 `data-model`과 `api` 양쪽에 걸린다. 그 뒤가 구현이다 — `backlog.md`의 「다음」에 대시보드 구현 task가 서 있고 데이터 task가 먼저다.
+**구조 설계다.** `docs/2-design/architecture/` 넷(`data-model`·`api`·`runtime`·`flows`)이 자리만 파여 있다. `runtime/README.md`가 캐시 넷(Service Worker·TanStack Query·Next 서버·Supabase realtime)과 시각의 출처, 경쟁 조건을 담을 자리고, 시급·급여 금액을 RLS가 막아야 한다는 제약이 `data-model`과 `api` 양쪽에 걸린다. 그 뒤가 구현이다 — `backlog.md`의 「다음」에 대시보드 구현 task가 서 있고 데이터 task가 먼저다.
 
 ## 열린 결정
 
@@ -35,9 +34,10 @@
 - **`src/` 처분.** "따로 건질 건 없을 것 같다"고 했지만 총괄이 삭제 지시로 읽지 않고 그대로 뒀다 — 되돌리기 어려운 쪽을 기본값으로 삼지 않았다. 실제로 지우려면 말해줘야 한다.
 - **디자인 캔버스 빌드 소스를 저장소에 넣을지.** 지금은 세션 임시 폴더에 있어서 다음 세션이 캔버스를 다시 만들 수 없다. `docs/2-design/design-system/canvas/`가 후보고, 넣으면 `globals.css`가 바뀔 때 다시 돌려 같은 링크에 올리는 일이 회차 절차가 된다.
 - **캔버스가 찾은 지적 셋을 안 고쳤다.** 저장소 시안이 그렇게 그려져 있어서 캔버스만 고치면 둘이 어긋난다. ⓐ `.lrow .lv`가 `fg.neutral-muted`인데 `components.md`는 `fg.neutral`이라 적었다 ⓑ 작은 버튼 높이가 30px인데 세로 44px 규칙과 부딪힌다 ⓒ AdminCalendar가 ListRow를 한 줄짜리로 쓰고 「마감일 당기기」가 누를 것처럼 안 보인다. 시안을 고칠지 조항을 고칠지 정한다.
-- **가운데 Dialog의 치수가 `components.md`에 없다.** 토큰 이름만 있고 폭·안쪽 여백·그림자가 안 적혀 있다. `approvals.sian.html`의 근무 취소 승인 확인이 이 앱에서 그것이 실제로 서는 첫 자리라 시안이 값을 재서 그렸다. `tokens.md`의 「빈자리」로 올릴지 정한다.
+- **스위치 손잡이의 그림자.** 시안이 `0 1px 2px rgba(0,0,0,.2)`로 그렸는데 5절 그림자 셋은 다 면이 뜨는 값이라 20px 손잡이에 안 맞는다. `tokens.md` 「빈자리」에 있고 실제 화면을 보고 넷째 값으로 올릴지 테두리로 바꿀지 정한다.
+- **팝오버가 다크에서 테두리와 그림자 ring을 같이 갖는다.** 시안은 다크 `--pop-shadow`를 `0 0 0 1px stroke.neutral`로 그렸는데 정본은 `none`이다 — 카드처럼 `stroke.surface` 테두리가 다크를 맡는다. 시안 둘(members-pending·members)이 아직 ring을 들고 있고 화면에 안 보이는 차이라 `sian-auditor`에 맡긴다.
+- **테스트 픽스처의 표기 관행이 문서에 없다.** `generate-globals-css.test.ts`의 기대값은 prettier가 정규화한 표기(`rgba(28, 25, 22, 0.05)`)고 `tokens.md` 원문은 축약 표기다. 파일 안 주석 한 줄이 전부라 다음 writer가 표에서 그대로 복사할 자리다.
 - **단일 선택 목록의 규격이 `components.md`에 없다.** `approvals.md`의 거절 이유가 넷 중 하나를 고르는 자리인데 라디오도 선택 상태의 ListRow도 정본에 없다. 오른쪽 체크(`fg.brand`)로 그렸고, 같은 모양이 다른 화면에서 한 번 더 나오면 공용으로 올린다.
-- **더보기 팝오버의 모양이 `components.md`에 없다.** 가입 대기 시트가 차단을 그 안에 넣었고 직원 관리가 두 번째 사용자다. 두 번 나왔으니 올릴 자리고, 시안 값을 맞춰 보고 올린다.
 - **하루 띠 비교 시안**은 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832)에 있다. 옛 축과 새 축을 나란히 놓은 것이고 저장소 밖이라 같이 안 산다.
 - **캔버스는 저절로 갱신되지 않는다.** 저장소를 안 보고 빌드 때 읽은 값을 품고 있다. 토큰이나 시안이 바뀌면 빌드를 다시 돌려 같은 링크에 올려야 따라온다.
 - **캔버스가 Wanted Sans를 못 싣는다.** 아티팩트 CSP가 구글 폰트만 허용해서 시스템 서체로 대체된다. 자간과 줄 높이가 실제 앱과 조금 다르게 보인다.
@@ -62,7 +62,6 @@
 - 급여 확정 축하 모션 — 축하할 순간 후보로 지목됐는데 `payroll.md`가 급여를 확정하지 않는다고 못 박아 대상을 못 정했다.
 - 되돌리기 어려운 동작에 별도 색을 줄지 — 출근 인증과 교대 수락 둘 다 되돌릴 길이 없는데 지금은 같은 `bg.brand-solid`라 한 화면에 브랜드 버튼이 둘 뜰 수 있다.
 - `docs/2-design/design-system/tokens.md`의 "브랜드 색 출처" — 지금 brand 계열이 공식 브랜드 가이드가 아니라 홀 이미지와 웹사이트 내비게이션에서 뽑은 값이다.
-- 세그먼트 목록 — 실제 파일을 보고 정한다.
 - `playwright.config.ts`의 CI 리트라이 2 — e2e가 늘고 `workers: 1`까지 겹쳐 전체 실행 시간이 무거워지고 있다. 유지할지 정한다.
 - CI가 1분대에서 4분대로 늘었던 것 중 analytics(logflare·vector) 몫은 껐다. 문서 전용 PR은 48초로 줄었지만, 코드가 낀 PR의 남은 시간이 여전히 아픈지는 몇 회차 더 겪고 정한다.
 
