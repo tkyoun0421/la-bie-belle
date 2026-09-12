@@ -18,6 +18,8 @@
 
 widgets 레이어는 두지 않는다. 화면 조립 덩이가 실제로 반복되면 그때 넣는다.
 
+여러 계층을 내려다보며 묶는 조립 — `entities`의 질의와 `shared`의 판정을 이어 하나의 답을 내는 것 — 은 `features`에 둔다. use-case가 바로 그것이다. `app/`의 `.ts`는 그 use-case를 부르고 `redirect` 같은 Next API에 넘기는 위임만 한다. 조립이 `app/`에 남으면 훅이 안 보는 자리에 로직이 쌓인다(관찰 007).
+
 ## 세그먼트
 
 슬라이스 안은 성격대로 나눈다. `types`, `components`, `hooks`, `actions`, `dals`, `models` 같은 이름을 쓰고, 목록은 열어둔다. 새 성격이 필요하면 그 자리에서 만든다.

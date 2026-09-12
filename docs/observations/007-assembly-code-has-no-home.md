@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: "제안: 조립 코드의 자리 규칙"
 date: 2026-09-07
-resolved:
+resolved: 2026-09-13
 ---
 
 # 조립 코드가 갈 곳이 없어 훅 사각으로 도피했다
@@ -14,6 +14,8 @@ login-screens 회차에서 라우트 셋이 공유하는 조립 로직(세션 �
 ## 고침
 
 FSD에서 여러 계층을 내려다보며 묶는 조립의 자리를 정한다 — `src/app`을 조립 계층으로 인정하고 그 안 `.ts`도 훅 감시(짝 테스트 요구)에 넣든, features에 조립 슬라이스를 두게 하든. 결정이 ADR-001의 계층 서술에 얹혀야 하니 총괄 몫이다.
+
+정한 것: features에 둔다. ADR-001 「레이어」에 조립 문단이 섰고, `auth-gate.ts`의 로직은 `src/features/auth/read-auth-gate.ts`로 갔다(`docs/2-design/spec/supabase-client-entry.md`). 규칙을 고칠 필요가 없었다 — use-case 정의가 이미 맞고 코드가 잘못 자리한 것이었다.
 
 ## 원칙
 
