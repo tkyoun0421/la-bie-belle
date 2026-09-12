@@ -8,7 +8,7 @@
 
 **공용 정본이 여러 차례 갱신됐다.** 색·토큰(`tokens.md`)에 덮개·띠 막대 값, 반전 팔레트 role 토큰 셋, 「팔레트 칸이 `—`인 행」 규칙, 「같은 값으로 갈린 색은 자리를 비운다」 조항이 쌓였다. `components.md`에 토스트·하루 띠·앱바·탭 바가 새 조각으로 섰다. `writing.md`에 「사람이 누르는 버튼은 예외다」·「계산할 것이 없으면 `–`」가 붙었다. 브랜드 색 자리가 다섯(「안 눌리는 표식」 추가), 누를 수 있는 것은 44px 이상, 알림은 읽음·안 읽음 둘로 끝난다는 것이 사람이 직접 정한 규칙으로 박혔다. `sian-auditor`가 서서 화면 디자인 파이프라인이 「페이지 문서 → `sian-writer` → `sian-auditor`」로 CLAUDE.md에 섰고, 태그 균형 검사(`tests/lint/sian-html.ts`)가 `pnpm test`에 낀다.
 
-**아키텍처 리뷰가 시작됐다(#302, #303).** `src/`가 9월 초 이후 정지 상태라 실제 검증 하네스를 먼저 보기로 했고 후보 다섯을 냈다. `architecture/`가 `data-model`·`api`·`runtime`·`flows` 넷으로 갈려 자리만 파였고(300줄 넘는 파일은 도메인으로 가른다는 규칙과 함께), 그중 후보 A(마크다운 문서 모듈)가 이번에 세워졌다 — `tests/lint/markdown.ts`가 마크다운 구조를 읽는 유일한 seam이고, 그 위에 `doc-links.ts`(새 링크 검사, `pnpm test`에 낌)와 `doc-map.ts`(기존 adapter)가 선다. 나머지 후보 B~E는 「열린 결정」에 남아 있다.
+**아키텍처 리뷰 후보 다섯이 다 닫혔다(#302, #303, #305).** `src/`가 9월 초 이후 정지 상태라 실제 검증 하네스를 먼저 보기로 했고 후보 다섯을 냈다. `architecture/`가 `data-model`·`api`·`runtime`·`flows` 넷으로 갈려 자리만 파였다(300줄 넘는 파일은 도메인으로 가른다는 규칙과 함께). A(마크다운 문서 모듈)는 #303 — `tests/lint/markdown.ts`가 마크다운 구조를 읽는 유일한 seam이고, 그 위에 `doc-links.ts`와 `doc-map.ts`가 선다. B·C·D·E는 #305 한 PR로 갔다(`docs/2-design/spec/supabase-client-entry.md`) — `createSupabaseRequestClient()`가 `cookies()`를 안에 품어 `src/app/` 호출부 넷이 그것만 부르고, 미들웨어만 `createSupabaseServerClient(store)`를 그대로 쓴다. `requireEnv`는 `read-supabase-env.ts` 한 곳, `SUBSECTION`은 `tokens-md.mts` 한 곳이 됐다. 인증 게이트의 조립 로직은 `src/features/auth/read-auth-gate.ts`로 갔고 `src/app/auth-gate.ts`는 `redirect` 위임만 남았다. ADR-001 「레이어」에 「여러 계층을 묶는 조립은 `features`에, `app/`의 `.ts`는 Next API 위임만」 문단이 섰고 관찰 007이 그것으로 `actioned`다.
 
 **PR 순서 — #301 → #302(리베이스) → #303.** #302가 #301의 커밋을 품고 있어 #301을 먼저 넣고 #302를 `main` 위로 다시 얹었다. 문서 링크 감사가 #302에서 열여섯 곳을 닫아, #303의 링크 회귀(0건)는 그 위에서만 초록이다.
 
@@ -18,16 +18,12 @@
 
 **공용으로 올릴 조각이 여섯이다.** 시안이 스스로 정해 캡션에 밝힌 값들이다 — **스위치**(프로필 알림 줄, 이 앱에서 처음), **세그먼트**(급여와 통계가 같이 쓰니 둘째 사용자가 생겼다), **더보기 팝오버**(가입 대기에 이어 직원 관리가 둘째), **가운데 Dialog 치수**, **시트 그림자**, **「더 보기」**. 값을 맞춰 보고 `components.md`에 올린다. `components.md`의 「빈 상태」 절이 아직 백지인데 새 화면 넷이 빈 상태를 그린다.
 
-**아키텍처 리뷰가 남긴 후보 넷이 있다.** 이번에 A(마크다운 문서 모듈)를 세웠고 나머지는 열려 있다 — 아래 「열린 결정」의 첫 넷. 그중 B(서버 클라이언트 조립이 다섯 곳에 복제)는 구현이 시작되면 화면 수만큼 늘어나는 자리라 데이터 task 전에 닫는 편이 싸다.
-
 **그다음은 구조 설계다.** `docs/2-design/architecture/` 넷(`data-model`·`api`·`runtime`·`flows`)이 자리만 파여 있다. `runtime/README.md`가 캐시 넷(Service Worker·TanStack Query·Next 서버·Supabase realtime)과 시각의 출처, 경쟁 조건을 담을 자리고, 시급·급여 금액을 RLS가 막아야 한다는 제약이 `data-model`과 `api` 양쪽에 걸린다. 그 뒤가 구현이다 — `backlog.md`의 「다음」에 대시보드 구현 task가 서 있고 데이터 task가 먼저다.
 
 ## 열린 결정
 
-- **아키텍처 리뷰 후보 B — 서버 클라이언트 조립이 다섯 곳에 복제.** `createSupabaseServerClient(await cookies())`가 `middleware.ts:27`·`auth-gate.ts:33`·`login/actions.ts:13`·`auth/callback/route.ts:7`·`auth/logout/route.ts:6`에 있다. 호출자마다 Next의 `cookies()`를 알아야 한다. 쿠키 획득을 구현 안으로 넣은 진입점 하나를 두면 인터페이스가 줄고, 저장소가 다른 미들웨어만 인자를 받는 둘째 진입점으로 남는다. ADR-003의 「클라이언트는 `dals`에서만」은 질의를 가리켜 부딪히지 않는다.
-- **후보 C — 조립 코드의 집.** `src/app/auth-gate.ts`가 `entities`와 `shared`를 같이 불러 계층 규칙에 자리가 없고, `src/app/`은 `tdd-guard-unit`이 안 봐서 짝 테스트 없이 e2e만 이 배선을 본다. 관찰 007이 연 것이고 ADR-001 계층 서술을 고치는 결정이라 리팩터만으로 안 닫힌다.
-- **후보 D — `requireEnv`가 두 팩토리에 복제.** `create-supabase-server-client.ts:11-19`와 `create-supabase-browser-client.ts:3-11`이 같은 키 둘을 같은 문구로 던진다. 작아서 B에 얹어 가는 편이 맞다.
-- **후보 E — `SUBSECTION` 정규식 누수.** `generate-globals-css.mts:36`이 `tokens-md.mts`를 import하면서도 `tokens-md.mts:20`과 글자까지 같은 정규식을 따로 정의한다. export 한 줄이다. `tokens-md`의 절 나누기를 `markdown.ts` 위로 옮기는 것과 묶어 갈 자리다.
+- **ADR-003 「클라이언트는 `dals`에서만」과 `shared/lib`이 어긋난다.** `get-current-user.ts`·`handle-auth-callback.ts`가 클라이언트를 인자로 받아 `auth.*`를 부르는데 `dals`가 아니다. 조항이 질의만 가리키는지, 인증 호출까지 가리키는지 ADR-003이 안 가른다. #305에서 범위 밖으로 뒀다 — 데이터 task가 `dals`를 늘리기 전에 조항을 한 줄 좁히거나 두 파일을 옮긴다.
+- **`src/app/`의 `.ts`가 여전히 훅 밖이다.** 조립이 `features`로 나가 위임만 남았으니 짝 테스트를 요구할 것이 없어 `SKIP_PREFIXES`는 그대로 뒀다. `src/app/`에 다시 로직이 들어오면 그때 훅을 좁힌다.
 - **로고 렌더를 지키는 테스트가 없다.** `public/google-g.svg`를 지워도 e2e 11개가 초록이다. 「버튼 안 로고의 `background-image`가 비어 있지 않다」는 e2e 한 줄이 후보다.
 - **CI가 chromium만 돈다.** 주 타깃이 아이폰 사파리인데 webkit을 안 본다. [ADR-007](2-design/adr/ADR-007-web-pwa-over-native.md)이 PWA로 가며 치르는 값 넷 중 유일하게 열린 채로 둔 것이다.
 - **뛰는 점의 진폭이 `tokens.md`에 없다.** 등장 모션의 최솟값 0.9를 빌려 썼는데(6px 점에서 0.6px 변화라 눈에 잘 안 띈다), 실제 화면을 보고 정한다.
@@ -74,13 +70,12 @@
 - **`pnpm test`에 문서 구조를 지키는 검사 둘이 낀다.** `tests/lint/doc-map.ts`(CLAUDE.md 문서 지도 경로 실존 확인)와 `tests/lint/legacy-doc-paths.ts`(옛 경로 잔존 검사)다. 문서를 옮길 땐 CLAUDE.md 문서 지도를 같이 갱신하고, 옛 경로 문자열을 새로 남기지 않는다. `docs/log/`는 검사 밖이라 당시 경로를 그대로 써도 된다.
 - **`feat/<슬러그>` 브랜치에서 `src/`를 고치려면 `docs/2-design/spec/<슬러그>.md`가 `status: approved`여야 한다.** `.claude/hooks/spec-gate.py`가 막는다. `feat/`가 아닌 브랜치(문서·리팩터링·수리)는 게이트 밖이다.
 - **`tdd-guard-e2e.py`가 `src/screens/` 아래 순수 `.ts`도 화면으로 오판한다.** `spec_name()`이 접두사만 보고 확장자를 안 봐서, `model/` 아래 로직 파일까지 `tests/e2e/<이름>.spec.ts`를 요구할 수 있다. 관찰 006이 열려 있고 아직 안 고쳐졌다 — 이런 파일을 계획할 때 unit 테스트 작성 순서가 밀릴 수 있다.
-- **여러 계층을 내려다보는 조립 코드는 `src/app/`으로 흘러가고 짝 테스트 요구가 없다.** `auth-gate.ts`가 그 예다 — entities와 shared를 같이 부르는 코드가 FSD 계층 규칙과 `tdd-guard-unit.py` 둘 다 피해 훅 사각으로 갔다. e2e만 이 배선을 검증한다. 관찰 007이 자리 규칙 자체를 총괄 결정 대상으로 올려뒀다.
+- **여러 계층을 묶는 조립은 `features`에 둔다.** ADR-001 「레이어」가 정했다. `src/app/`의 `.ts`는 use-case를 부르고 `redirect` 같은 Next API에 넘기는 위임만 한다 — 로직을 거기 두면 훅이 안 본다. 서버 클라이언트는 `createSupabaseRequestClient()`로 받는다. `cookies()`를 직접 부르는 자리는 그 함수 하나다.
 - **CLAUDE.md는 이제 라우터다.** 왜에 해당하는 산문은 CLAUDE.md에 없고 ADR과 각 정본 문서(design-system README, 정의문)에 있다. CLAUDE.md만 읽고 근거를 찾으려 하지 않는다.
 - **`docs/2-design/spec/`의 완료 조건은 이제 모든 task에 의무다.** ADR-002의 승격 기준(세 문장 넘으면 승격)은 ADR-005가 대체했다 — 문장 길이와 무관하게 spec이 항상 완료 조건의 집이다.
 - **`.prettierignore`가 `*.md`를 거른다.** 문서에 prettier를 돌려도 아무 일도 안 한다. 저장소 전체 방침이다.
 - **pre-commit 훅이 staged 파일의 포맷을 고쳐 인덱스에 다시 올린다.** 일부만 staged된 파일이 포맷에 어긋나면 고치지 않고 커밋을 막는다 — 훅이 고치면 staged 안 한 변경까지 딸려 들어가기 때문이다. 그때는 `pnpm format` 뒤에 직접 `git add` 한다.
 - **`tdd-guard-unit.py`가 `tests/lint/`도 짝 테스트를 요구한다.** 감시 접두사에 `src/`와 `tests/lint/` 둘 다 있다. `tests/` 아래에서는 짝을 `__tests__/`가 아니라 형제 `<이름>.test.ts`로 찾는다 — 그 디렉터리 관례가 형제 배치라서다. `tests/e2e/`는 여전히 감시 밖이라 CI의 `pnpm test`가 대신 잡는다. `tests/lint/rule-check.ts`는 지금 짝 테스트가 없어서 이 파일을 고치려면 먼저 `rule-check.test.ts`를 써야 한다.
-- **`SUBSECTION` 정규식이 `scripts/tokens-md.mts`와 `scripts/generate-globals-css.mts` 두 곳에 있다.** 표 파서 계약을 공유하는 게 아니라 마크다운 heading 정규식이 우연히 겹친 것이다. 표 형식을 바꿀 땐 둘 다 확인한다.
 - **`.mts` 스크립트는 `node --experimental-strip-types`로 돈다.** `pnpm tokens:css`가 그 명령을 감싼다. `tsx`나 `ts-node` 같은 별도 실행기 의존성이 없다.
 - **vitest가 `NEXT_PUBLIC_*`을 `process.env`에 안 얹는다.** Vite의 `envPrefix` 기본값이 `VITE_`라서다. env를 읽는 코드를 테스트하려면 `vi.stubEnv`로 명시로 채워야 한다. `.env.local`에 값이 있어도 소용없다.
 - **`create-supabase-server-client`는 env가 없으면 던진다.** 이 팩토리를 부르는 새 테스트를 쓸 때 `vi.stubEnv`가 필요하다.
