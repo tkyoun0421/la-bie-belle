@@ -1,32 +1,20 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
+import { parseMarkdown } from "@tests/lint/markdown";
 
-const MAP_HEADING = "## 문서 지도";
-const SECTION_HEADING = /^##\s/;
+const MAP_HEADING = "문서 지도";
 const BULLET = /^\s*[-*]\s/;
-const CODE_SPAN = /`([^`]+)`/g;
 const DOCS_PREFIX = "docs/";
 
-function mapSectionLines(markdown: string): string[] {
-  const lines = markdown.split("\n");
-  const heading = lines.findIndex((line) => line.trim() === MAP_HEADING);
-  if (heading === -1) {
-    return [];
-  }
-
-  const afterHeading = lines.slice(heading + 1);
-  const nextHeading = afterHeading.findIndex((line) =>
-    SECTION_HEADING.test(line),
-  );
-
-  return nextHeading === -1 ? afterHeading : afterHeading.slice(0, nextHeading);
-}
-
 function mappedDocPaths(markdown: string): string[] {
-  const mapped = mapSectionLines(markdown)
+  const bullets = parseMarkdown(markdown)
+    .section(MAP_HEADING)
     .filter((line) => BULLET.test(line))
-    .flatMap((line) => [...line.matchAll(CODE_SPAN)].map(([, span]) => span))
-    .filter((span) => span.startsWith(DOCS_PREFIX));
+    .join("\n");
+
+  const mapped = parseMarkdown(bullets)
+    .codeSpans.map((span) => span.text)
+    .filter((text) => text.startsWith(DOCS_PREFIX));
 
   return [...new Set(mapped)];
 }
