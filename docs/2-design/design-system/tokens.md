@@ -305,13 +305,17 @@ Tailwind의 `--spacing` 기본값이 `0.25rem`이라 유틸 숫자에 4를 곱�
 | `rounded-xl` | 20px | 카드 |
 | `rounded-full` | 9999px | 버튼, 배지 |
 
-그림자는 하나뿐이고 라이트에서만 보인다.
+그림자는 셋이다. 면이 화면에서 얼마나 떨어져 있느냐로 갈린다.
 
 | 유틸 | 라이트 | 다크 |
 | --- | --- | --- |
 | `shadow-card` | `0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4)` | `none` |
+| `shadow-pop` | `0 1px 2px rgba(28,25,22,.05), 0 14px 30px -18px rgba(28,25,22,.5)` | `none` |
+| `shadow-sheet` | `0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5)` | `0 -1px 0 var(--stroke-neutral)` |
 
-다크에서는 그림자가 사라지고 `border-stroke-surface`가 선을 그린다. 클래스는 양쪽에서 같다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#그림자와-면-나누기)에 있다.
+`shadow-card`는 화면에 앉은 면이다. `shadow-pop`은 화면 위에 뜬 면 — 더보기 팝오버와 가운데 Dialog — 이라 더 멀리, 더 진하게 진다. `shadow-sheet`는 아래에서 올라온 바텀시트라 위로 진다.
+
+다크에서는 그림자가 사라지고 `border-stroke-surface`가 선을 그린다. 시트만 위쪽 1px 선을 그림자 값 안에 품고 있다 — 시트는 위쪽 한 변만 화면과 닿아서 테두리를 네 변에 두를 이유가 없다. 클래스는 양쪽에서 같다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#그림자와-면-나누기)에 있다.
 
 ---
 
@@ -432,7 +436,7 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 
 그래서 이 절에 남은 것은 아래 넷뿐이다. 표로 담을 수 없는 뼈대라 이 절이 그것들의 유일한 정본이고, 코드펜스 안을 고치면 다음 생성이 그대로 옮겨 담는다.
 
-블록 선택자와 `color-scheme`은 여기 없다. `:root`와 `@media (prefers-color-scheme: dark)`와 `:root:not([data-theme="light"])`와 `[data-theme="dark"]`는 생성기가 세운다. 면을 띄우는 `--surface-shadow`와 `--surface-stroke`도 없다. 값은 2절과 5절 표에서 온다 — 팔레트 칸이 `—`인 행은 라이트·다크 칸이 곧 값이라 생성기가 따로 아는 값이 없다.
+블록 선택자와 `color-scheme`은 여기 없다. `:root`와 `@media (prefers-color-scheme: dark)`와 `:root:not([data-theme="light"])`와 `[data-theme="dark"]`는 생성기가 세운다. 면을 띄우는 `--surface-shadow`·`--surface-shadow-pop`·`--surface-shadow-sheet`와 `--surface-stroke`도 없다. 값은 2절과 5절 표에서 온다 — 팔레트 칸이 `—`인 행은 라이트·다크 칸이 곧 값이라 생성기가 따로 아는 값이 없다.
 
 `@theme inline`을 쓰는 이유는 Tailwind 4의 동작 때문이다. 그냥 `@theme`은 값을 `:root`에서 한 번 굳혀버려서, 다크에서 팔레트가 바뀌어도 유틸이 옛 값을 계속 가리킨다. `inline`은 유틸에 `var()`를 그대로 심어 요소 자리에서 값을 풀게 한다.
 
@@ -502,6 +506,8 @@ Tailwind가 기본으로 들고 오는 것 중 안 쓰는 것을 지우고 서�
     "Apple SD Gothic Neo", sans-serif;
 
   --shadow-card: var(--surface-shadow);
+  --shadow-pop: var(--surface-shadow-pop);
+  --shadow-sheet: var(--surface-shadow-sheet);
 ```
 
 `bg-bg-neutral`처럼 접두사가 겹쳐 보이는 것은 알고 둔 것이다. 역할 토큰 이름이 `bg.neutral`이고 Tailwind 유틸 접두사도 `bg-`라서다. 이름을 하나로 유지해야 위의 표에서 찾은 것을 그대로 옮겨 적을 수 있다.
@@ -641,7 +647,7 @@ Wanted Sans는 Wanted Lab이 만들었고 [SIL Open Font License 1.1](https://sc
 
 **뛰는 점이 커지는 배율.** 5절의 스케일 값 둘은 눌림 0.97과 등장 0.9라 커지는 쪽이 없다. 시안은 1.5로 그렸다. 6px 점이라 실제 화면을 보고 정한다.
 
-**바텀시트 그림자.** 5절에 `shadow-card` 하나뿐인데 시트는 화면 절반을 덮는 면이라 카드와 같은 그림자를 쓸 자리가 아니다. 시안들이 각자 값을 들고 있다.
+**스위치 손잡이의 그림자.** 5절의 셋은 다 면이 화면에서 뜨는 그림자라 20px 손잡이에 쓰기엔 크다. 시안이 `0 1px 2px rgba(0,0,0,.2)`로 그렸다. 실제 화면에서 손잡이가 끔 트랙 위에서 구분되는지 보고 넷째 값으로 올릴지, 테두리로 바꿀지 정한다.
 
 **바텀시트 위의 손잡이.** 시트 맨 위에 짧은 가로 막대를 둘지가 안 정해졌다. 아이폰에서 끌어내려 닫는 것이 되는 시트라는 표시인데, 우리 시트는 버튼으로 닫는 자리라 표시만 있고 동작이 없으면 거짓말이 된다. 끌어내려 닫는 것을 붙일지와 같이 정한다.
 

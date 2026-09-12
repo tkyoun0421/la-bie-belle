@@ -54,15 +54,11 @@ const BASE_LAYER = { subsection: "8.4", nth: 0, label: "베이스" };
 const SURFACE_SHADOW = "--surface-shadow";
 const ROLE_LIGHT_COLUMN = 2;
 const ROLE_DARK_COLUMN = 3;
+const SHADOW_LIGHT_COLUMN = 1;
+const SHADOW_DARK_COLUMN = 2;
+const SHADOW_PREFIX = /^shadow-/;
 const STATIC_RADIUS_UTILITIES = new Set(["rounded-none", "rounded-full"]);
 const ALIASED_PREFIX = /^--(?:palette|role|vendor)-/;
-
-function requireOne(rows: Row[], label: string): Row {
-  if (rows.length !== 1) {
-    throw new Error(`${label} 는 한 줄이어야 하는데 ${rows.length} 줄이다.`);
-  }
-  return rows[0];
-}
 
 function readFences(markdown: string): Map<string, string[]> {
   const lines = markdown.split("\n");
@@ -152,18 +148,26 @@ function roleGroups(rows: Row[]): Group[] {
   );
 }
 
+function shadowVariableOf(utility: string, index: number): string {
+  return index === 0
+    ? SURFACE_SHADOW
+    : `${SURFACE_SHADOW}-${utility.replace(SHADOW_PREFIX, "")}`;
+}
+
+function shadowGroup(markdown: string, side: Side): Group {
+  const column = side === "light" ? SHADOW_LIGHT_COLUMN : SHADOW_DARK_COLUMN;
+
+  return requireRows(markdown, SHADOW_HEADER, "그림자").map((row, index) => ({
+    name: shadowVariableOf(row.cells[0], index),
+    value: row.cells[column],
+  }));
+}
+
 function offPaletteGroup(markdown: string, roleRows: Row[], side: Side): Group {
-  const shadow = requireOne(
-    requireRows(markdown, SHADOW_HEADER, "그림자"),
-    "그림자 표",
-  );
   const column = side === "light" ? ROLE_LIGHT_COLUMN : ROLE_DARK_COLUMN;
 
   return [
-    {
-      name: SURFACE_SHADOW,
-      value: side === "light" ? shadow.cells[1] : shadow.cells[2],
-    },
+    ...shadowGroup(markdown, side),
     ...roleRows.filter(isOffPalette).map((row) => ({
       name: offPaletteVariableOf(row.cells[0]),
       value: offPaletteValueOf(row.cells[column]),
