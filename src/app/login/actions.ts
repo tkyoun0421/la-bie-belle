@@ -1,8 +1,8 @@
 "use server";
 
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/shared/lib/create-supabase-server-client";
+import { createSupabaseRequestClient } from "@/shared/lib/create-supabase-request-client";
 
 export async function signInWithGoogle() {
   const origin = (await headers()).get("origin");
@@ -10,7 +10,7 @@ export async function signInWithGoogle() {
     redirect("/login");
   }
 
-  const client = createSupabaseServerClient(await cookies());
+  const client = await createSupabaseRequestClient();
   const { data, error } = await client.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo: `${origin}/auth/callback` },

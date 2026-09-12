@@ -8,7 +8,7 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 ## 진행
 
-(비어 있음)
+- [ ] Supabase 서버 클라이언트의 진입점을 하나로 모으고 인증 게이트를 features로 옮긴다 — [spec](2-design/spec/supabase-client-entry.md)
 
 ## 완료
 

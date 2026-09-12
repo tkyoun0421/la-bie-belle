@@ -8,6 +8,7 @@ import {
   PALETTE_HEADER,
   requireRows,
   ROLE_HEADER,
+  SUBSECTION,
   type Row,
 } from "./tokens-md.mts";
 
@@ -33,7 +34,6 @@ const DURATION_HEADER = ["변수", "값", "Tailwind 유틸", "쓰는 자리"];
 const CADENCE_HEADER = ["변수", "값", "쓰는 자리"];
 const VENDOR_HEADER = ["변수", "값", "자리", "Tailwind 유틸"];
 
-const SUBSECTION = /^###\s+(.+?)\s*$/;
 const FENCE_OPEN = "```css";
 const FENCE_CLOSE = "```";
 

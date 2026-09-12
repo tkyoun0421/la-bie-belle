@@ -1,10 +1,9 @@
-import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { createSupabaseServerClient } from "@/shared/lib/create-supabase-server-client";
+import { createSupabaseRequestClient } from "@/shared/lib/create-supabase-request-client";
 import { handleAuthCallback } from "@/shared/lib/handle-auth-callback";
 
 export async function GET(request: NextRequest) {
-  const client = createSupabaseServerClient(await cookies());
+  const client = await createSupabaseRequestClient();
 
   const destination = await handleAuthCallback(
     request.nextUrl.searchParams.get("code"),

@@ -17,7 +17,7 @@ export const ROLE_HEADER = [
 
 export const EMPTY_CELL = "—";
 
-const SUBSECTION = /^###\s+(.+?)\s*$/;
+export const SUBSECTION = /^###\s+(.+?)\s*$/;
 
 function cellsOf(line: string): string[] | null {
   const trimmed = line.trim();
