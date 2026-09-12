@@ -617,6 +617,89 @@ describe("리스크 I — 생성기가 비결정적이다", () => {
   });
 });
 
+const THREE_ROW_SHADOW_SECTION = `## 5. 라운딩과 그림자
+
+| 유틸 | 값 | 쓰는 자리 |
+| --- | --- | --- |
+| \`rounded-md\` | 12px | 입력 |
+
+그림자는 셋이다. 면이 화면에서 얼마나 떨어져 있느냐로 갈린다.
+
+| 유틸 | 라이트 | 다크 |
+| --- | --- | --- |
+| \`shadow-card\` | \`0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4)\` | \`none\` |
+| \`shadow-pop\` | \`0 1px 2px rgba(28,25,22,.05), 0 14px 30px -18px rgba(28,25,22,.5)\` | \`none\` |
+| \`shadow-sheet\` | \`0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5)\` | \`0 -1px 0 var(--stroke-neutral)\` |
+`;
+
+const THREE_ROW_LIGHT_CARD =
+  "0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4)";
+const THREE_ROW_LIGHT_POP =
+  "0 1px 2px rgba(28,25,22,.05), 0 14px 30px -18px rgba(28,25,22,.5)";
+const THREE_ROW_LIGHT_SHEET =
+  "0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5)";
+const THREE_ROW_DARK_SHEET = "0 -1px 0 var(--stroke-neutral)";
+
+describe("리스크 K — 그림자 표가 세 줄이어도 생성기가 표의 모든 줄을 읽는다", () => {
+  let css: string;
+
+  beforeAll(async () => {
+    css = await generateGlobalsCss(
+      tokensMdFixture({ roundingShadow: THREE_ROW_SHADOW_SECTION }),
+    );
+  });
+
+  it("shadow-card·shadow-pop·shadow-sheet 세 줄 표를 줘도 생성기가 던지지 않는다", async () => {
+    await expect(
+      generateGlobalsCss(
+        tokensMdFixture({ roundingShadow: THREE_ROW_SHADOW_SECTION }),
+      ),
+    ).resolves.toBeTypeOf("string");
+  });
+
+  it("첫 줄 shadow-card는 지금처럼 --surface-shadow 라이트 값으로 선다", () => {
+    expect(requireDeclaration(lightBody(css), "--surface-shadow")).toBe(
+      THREE_ROW_LIGHT_CARD,
+    );
+  });
+
+  it.each([
+    ["라이트", lightBody, "--surface-shadow-pop", THREE_ROW_LIGHT_POP],
+    ["다크 미디어쿼리", darkMediaBody, "--surface-shadow-pop", "none"],
+    ["다크 data-theme", darkAttributeBody, "--surface-shadow-pop", "none"],
+    ["라이트", lightBody, "--surface-shadow-sheet", THREE_ROW_LIGHT_SHEET],
+    [
+      "다크 미디어쿼리",
+      darkMediaBody,
+      "--surface-shadow-sheet",
+      THREE_ROW_DARK_SHEET,
+    ],
+    [
+      "다크 data-theme",
+      darkAttributeBody,
+      "--surface-shadow-sheet",
+      THREE_ROW_DARK_SHEET,
+    ],
+  ])(
+    "%s 블록에 %s가 표의 값 그대로 선다",
+    (_label, bodyOf, variable, expected) => {
+      expect(requireDeclaration(bodyOf(css), variable)).toBe(expected);
+    },
+  );
+
+  it("--surface-shadow-sheet 다크 값에 var(--stroke-neutral)이 해석 없이 그대로 들어 있다", () => {
+    expect(
+      requireDeclaration(darkAttributeBody(css), "--surface-shadow-sheet"),
+    ).toContain("var(--stroke-neutral)");
+  });
+
+  it("기존 그림자 한 줄 픽스처로 만든 css에는 --surface-shadow-pop이 없다", async () => {
+    const singleRowCss = await generateGlobalsCss(tokensMdFixture());
+
+    expect(singleRowCss).not.toContain("--surface-shadow-pop");
+  });
+});
+
 describe("완료 조건 — 실제 tokens.md에서 실제 globals.css를 그대로 만든다", () => {
   it("tokens.md로 생성한 결과가 저장된 globals.css와 바이트 단위로 같다", async () => {
     const markdown = readFileSync(
