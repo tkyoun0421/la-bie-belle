@@ -16,9 +16,6 @@
   누르면 문서 루트에 data-theme이 걸리고 목업 팔레트가 tokens.md 1절의 다크 열로 뒤집힌다.
 
   문서가 안 적어 이 파일이 임의로 세운 자리다. 값을 여기서 굳히지 않는다.
-  · 빈 상태의 모양. payroll.md가 가리키는 components.md#빈-상태는 "아직 안 그려봤다"고만
-    적혀 있어 정본이 없다. members-pending.sian.html의 한 줄짜리 emptyline을 두 줄로
-    늘려 흉내 냈을 뿐이다 — 그림(일러스트)은 안 그렸다.
   · 「연」 단위 목록 줄에 화살표(chevron)를 붙였다. payroll.md는 이 줄이 눌린다고만
     적었지 화살표를 붙이라 안 했다. components.md의 ListRow 규칙("화살표는 다음
     화면이 있다는 뜻")에서 끌어왔지만 payroll.md 자신의 규정은 아니다.
@@ -255,17 +252,22 @@ code {
 .body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
-/* 기간 세그먼트 — payroll.md 「기간 세그먼트」. components.md에 없는 모양이라 이 문서가 값을 정했다 */
+/* 기간 세그먼트 — components.md 「세그먼트」. stats.sian.html의 pill과 같은 조각이다 */
 .segment {
   margin-top: 8px; /* 앱바와 세그먼트 사이 mt-2 */
-  display: flex; background: var(--bg-neutral-weak); border-radius: 999px; padding: 4px;
+  position: relative; display: flex; background: var(--bg-neutral-weak); border-radius: 999px;
+  padding: 4px; min-height: 44px; align-items: center;
+}
+.segment .pill {
+  position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3);
+  background: var(--bg-neutral); border-radius: 999px; transition: transform var(--d-fast) ease-out;
 }
 .segcell {
-  flex: 1 1 0; display: flex; align-items: center; justify-content: center;
-  min-height: 44px; padding: 8px 0; border-radius: 999px; font-size: var(--t-sm); line-height: var(--lh-sm);
+  position: relative; z-index: 1; flex: 1 1 0; display: flex; align-items: center; justify-content: center;
+  padding: 8px 0; border-radius: 999px; font-size: var(--t-sm); line-height: var(--lh-sm);
   font-weight: 500; color: var(--fg-neutral-subtle);
 }
-.segcell.on { background: var(--bg-neutral); color: var(--fg-neutral); transition: background var(--d-fast) ease-out; }
+.segcell.on { color: var(--fg-neutral); }
 
 /* 기간 줄 — payroll.md 「기간 줄」. 앱바가 아니라 본문 안이다 */
 .periodrow {
@@ -308,10 +310,10 @@ code {
 /* 날마다/줄마다 눌러도 다음 화면이 없다 — 화살표도 누름 배경도 없다 */
 .hrow.day { cursor: default; }
 
-/* 빈 상태 — components.md#빈-상태가 아직 안 정해서 이 파일이 흉내 낸 모양이다 */
-.emptybox { margin-top: 32px; padding: 4px 0; }
-.emptybox .et { font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500; color: var(--fg-neutral); }
-.emptybox .eb { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+/* 빈 상태 — components.md 「빈 상태」 */
+.emptybox { margin-top: 32px; padding: 16px 0; }
+.emptybox .et { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.emptybox .eb { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
 
 /* 탭 바 — components.md 「탭 바」. 아이콘 모양은 이 파일이 지어냈다 */
 .tabbar { flex: 0 0 auto; display: flex; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); }
@@ -365,6 +367,7 @@ code {
           </div>
           <div class="body haspad">
             <div class="segment">
+              <span class="pill" style="transform: translateX(100%)"></span>
               <span class="segcell">주</span>
               <span class="segcell on">월</span>
               <span class="segcell">연</span>
@@ -426,6 +429,7 @@ code {
           </div>
           <div class="body haspad">
             <div class="segment">
+              <span class="pill" style="transform: translateX(0%)"></span>
               <span class="segcell on">주</span>
               <span class="segcell">월</span>
               <span class="segcell">연</span>
@@ -473,6 +477,7 @@ code {
           </div>
           <div class="body haspad">
             <div class="segment">
+              <span class="pill" style="transform: translateX(200%)"></span>
               <span class="segcell">주</span>
               <span class="segcell">월</span>
               <span class="segcell on">연</span>
@@ -535,6 +540,7 @@ code {
           </div>
           <div class="body haspad">
             <div class="segment">
+              <span class="pill" style="transform: translateX(100%)"></span>
               <span class="segcell">주</span>
               <span class="segcell on">월</span>
               <span class="segcell">연</span>
@@ -596,6 +602,7 @@ code {
           </div>
           <div class="body haspad">
             <div class="segment">
+              <span class="pill" style="transform: translateX(100%)"></span>
               <span class="segcell">주</span>
               <span class="segcell on">월</span>
               <span class="segcell">연</span>
@@ -627,7 +634,7 @@ code {
           <div class="cap-key">EMPTY</div>
           <div class="cap-name">근무가 아직 없는 달</div>
           <p class="cap-body">금액은 「–」로 그대로 서고 그 아래 목록 자리에만 빈 상태가 온다. 누적 「근무 0회 · 0시간」은 <strong>이 파일의 추정이다</strong> — 「지각 0회면 그 줄이 없다」는 규칙을 근무 0회에도 같은 결로 넓혀 지각 줄만 지웠다. payroll.md는 근무 0회일 때 누적 줄 자체를 어떻게 할지 명시하지 않았다.</p>
-          <p class="cap-body" style="margin-top:8px">빈 상태 문구 아래로 <strong>그림을 안 그렸다</strong> — components.md#빈-상태가 아직 정해지지 않아서(코멘트 참고), members-pending의 한 줄짜리 emptyline을 두 줄로만 늘렸다.</p>
+          <p class="cap-body" style="margin-top:8px">빈 상태 문구 아래로 <strong>그림을 안 그렸다</strong> — components.md 「빈 상태」의 규칙이다. 그림은 비었다는 사실에 무게를 더할 뿐이고, 이 화면의 주 동작은 이미 세그먼트·기간 줄에 있어 버튼도 안 둔다.</p>
         </figcaption>
       </figure>
 
@@ -654,6 +661,7 @@ code {
           </div>
           <div class="body haspad">
             <div class="segment">
+              <span class="pill" style="transform: translateX(100%)"></span>
               <span class="segcell">주</span>
               <span class="segcell on">월</span>
               <span class="segcell">연</span>
@@ -700,6 +708,7 @@ code {
           </div>
           <div class="body haspad">
             <div class="segment">
+              <span class="pill" style="transform: translateX(100%)"></span>
               <span class="segcell">주</span>
               <span class="segcell on">월</span>
               <span class="segcell">연</span>
@@ -758,6 +767,7 @@ code {
           </div>
           <div class="body">
             <div class="segment">
+              <span class="pill" style="transform: translateX(100%)"></span>
               <span class="segcell">주</span>
               <span class="segcell on">월</span>
               <span class="segcell">연</span>

@@ -17,8 +17,8 @@
   누르면 문서 루트에 data-theme이 걸리고 목업 팔레트가 tokens.md 1절의 다크 열로 뒤집힌다.
 
   문서가 안 적어 이 파일이 임의로 세운 자리다. 값을 여기서 굳히지 않는다.
-  · 시트와 Dialog의 그림자. tokens.md 5절의 그림자는 shadow-card 하나뿐이라 시트·Dialog용
-    값이 따로 없다 — tokens.md 「아직 안 정한 것」의 「바텀시트 그림자」와 같은 구멍이다.
+  · 시트와 Dialog의 그림자. tokens.md 5절에 shadow-sheet와 shadow-pop이 서 있고
+    시안 변수 --sheet-shadow · --pop-shadow가 그 값을 그대로 옮긴다.
   · 「오늘부터 적용돼요」와 인원 줄의 글자 크기. 색은 wages.md 「색」 표에 있는데
     (적용 안내 fg.neutral-subtle, 같이 바뀌는 인원 fg.neutral) 크기 표에는 인원 줄이 없다.
     같은 자리에 나란히 붙는 보조 문구라 판단해 둘 다 text-xs로 그렸다.
@@ -304,8 +304,10 @@ code {
 .av { width: 36px; height: 36px; border-radius: 999px; flex: 0 0 auto; border: 1px solid var(--stroke-neutral); box-sizing: border-box; background: linear-gradient(150deg, var(--palette-neutral-300), var(--palette-neutral-500)); }
 .av.big { width: 64px; height: 64px; }
 
-/* 빈 상태 — 목록 자리에 한 줄이 선다(wages.md 「빈 상태」). 기본 시급 줄은 그대로 선다 */
-.emptyline { padding: 16px 0; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+/* 빈 상태 — 목록 자리에 두 줄이 선다(components.md 「빈 상태」). 기본 시급 줄은 그대로 선다 */
+.emptystate { padding: 16px 0; }
+.es-title { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.es-sub { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
 
 /* 버튼 */
 .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 48px; border-radius: 999px; border: 0; font-size: var(--t-base); font-weight: 500; font-family: inherit; background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer; }
@@ -360,7 +362,7 @@ code {
 /* 되돌리기 확인 — Dialog다. 시트를 새로 쌓지 않는 가입 대기 방식과 달리
    wages.md가 "Dialog 하나"라고 못 박아서 화면 가운데 뜨는 별도 카드로 그렸다.
    짜임은 이 파일이 components.md의 Dialog 토큰표를 얹어 세웠다(맨 위 주석) */
-.dialog { position: absolute; left: 24px; right: 24px; top: 50%; transform: translateY(-50%); z-index: 5; background: var(--bg-neutral); border-radius: var(--r-lg); padding: 20px; box-shadow: var(--sheet-shadow); }
+.dialog { position: absolute; left: 32px; right: 32px; top: 50%; transform: translateY(-50%); z-index: 5; background: var(--bg-neutral); border-radius: var(--r-lg); padding: 24px; box-shadow: var(--pop-shadow); border: 1px solid var(--surface-stroke); }
 .dialog .dtitle { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; color: var(--fg-neutral); }
 .dialog .dbody { margin-top: 8px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 .dialog .sbtns { margin-top: 20px; }
@@ -493,7 +495,10 @@ code {
               <div class="baserow-sub">아직 이 값을 쓰는 사람이 없어요</div>
             </div>
             <div class="hr"></div>
-            <div class="emptyline">아직 승인된 사람이 없어요</div>
+            <div class="emptystate">
+              <div class="es-title">아직 승인된 사람이 없어요</div>
+              <div class="es-sub">가입을 승인하면 여기 서요</div>
+            </div>
             <div class="spacer"></div>
           </div>
         </div>
@@ -583,7 +588,10 @@ code {
               <div class="baserow-sub">아직 이 값을 쓰는 사람이 없어요</div>
             </div>
             <div class="hr"></div>
-            <div class="emptyline">아직 승인된 사람이 없어요</div>
+            <div class="emptystate">
+              <div class="es-title">아직 승인된 사람이 없어요</div>
+              <div class="es-sub">가입을 승인하면 여기 서요</div>
+            </div>
             <div class="spacer"></div>
           </div>
           <div class="scrim"></div>
@@ -763,7 +771,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">05 / 이력이 길 때</span>
       <h2>다섯 줄까지만 보이고 「더 보기」가 붙는다</h2>
-      <p>components.md에 없는 조각이라 이 파일이 Button ghost로 그렸다(wages.md 「규칙과 부딪힌 자리」). 눌러 보면 나머지가 펼쳐진다.</p>
+      <p>components.md의 Button 절 「목록을 접는 더 보기」가 정본이다 — ghost, 목록 폭을 다 쓰고 text-sm, 눌리면 접힌 줄이 그 자리에 펼쳐지고 버튼은 사라진다. 몇 줄부터 접을지는 이 화면이 정한다. 눌러 보면 나머지가 펼쳐진다.</p>
     </div>
     <div class="grid">
 

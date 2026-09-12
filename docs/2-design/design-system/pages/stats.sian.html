@@ -3,7 +3,7 @@
 
   값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../tokens.md이고,
   무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 stats.md다.
-  기간 세그먼트의 모양과 값은 payroll.md의 「기간 세그먼트」 절이 정본이다.
+  세그먼트의 모양과 값은 ../components.md의 「세그먼트」 절이 정본이다.
   셋과 이 파일이 어긋나면 저 문서들이 이긴다.
 
   이 파일이 맡는 것은 글로 안 남는 것들이다 — 세그먼트를 바꿀 때 고른 칸 면이
@@ -30,12 +30,12 @@
     그 안내·보조 줄이 없어서, 목록 바로 위에 오는 줄에는 「보조 줄과 목록 사이」
     (mt-8)를, 세그먼트 바로 아래 오는 줄에는 「세그먼트와 합계 사이」(mt-6)를
     그대로 옮겨 썼다.
-  · 빈 상태의 모양. stats.md는 「합계 자리는 –로 서고 목록 자리에만 빈 상태가
-    온다」까지만 정했다. 예상치 안내와 보조 줄을 그 상태에서 같이 지울지는
-    안 적혀 있어, 이 파일은 지우는 쪽으로 그렸다 — 근무가 0건일 때 「근무 0건 ·
-    0시간」을 보여주는 것이 더 이상하다고 판단해서다. components.md의 「빈 상태」
-    절도 아직 안 그려봤다고 적혀 있다.
-  · 빈 상태 문구 블록의 안쪽 여백과 정렬(위 여백 64px, 가운데 정렬). 문서에 없다.
+  · 빈 상태에서 예상치 안내와 보조 줄을 같이 지울지. stats.md는 「합계 자리는 –로
+    서고 목록 자리에만 빈 상태가 온다」까지만 정했고 이 지점은 stats.md 「아직 안
+    정한 것」에 남아 있다. 이 파일은 지우는 쪽으로 그렸다 — 근무가 0건일 때
+    「근무 0건 · 0시간」을 보여주는 것이 더 이상하다고 판단해서다.
+    빈 상태 문구 블록 자체의 모양(제목·아래 줄 색과 크기, 안쪽 여백, 정렬,
+    목록 자리와 같은 위 여백)은 ../components.md의 「빈 상태」 절이 정본이다.
   · 프로필 사진 자리. 저장소에 이미지를 안 넣어 뉴트럴 두 단계의 그러데이션으로 흉내 냈다.
   · 뷰어 크롬(--b-*)의 색. 목업 밖이라 애초에 토큰 대상이 아니다.
 
@@ -269,7 +269,6 @@ code {
 .subnote { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
 /* 인건비 보조 줄 / 근태 현황 줄 — 공통. 인건비에서는 안내와 mt-3(12px), 근태에서는 세그먼트와 mt-6(24px) */
 .subline { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
-.subline.num { font-variant-numeric: tabular-nums; }
 .mt-3 { margin-top: 12px; }
 .mt-6 { margin-top: 24px; }
 /* 보조 줄(또는 현황 줄)과 목록 사이 — mt-8(32px) */
@@ -303,10 +302,10 @@ code {
 /* 목록 끝 — pb-8(32px) */
 .listend { padding-bottom: 32px; }
 
-/* 빈 상태 — 합계는 그대로 두고(–) 목록 자리에만 문구 둘이 온다. 위치·여백은 문서에 없어 이 파일이 정했다 */
-.emptywrap { margin-top: 64px; text-align: center; padding: 0 8px; }
+/* 빈 상태 — 합계는 그대로 두고(–) 목록 자리에만 문구 둘이 온다. 모양은 components.md 「빈 상태」 절 그대로: 목록 자리에 그대로, 왼쪽 정렬, 위아래 16px */
+.emptywrap { padding: 16px 0; text-align: left; }
 .empty-t { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
-.empty-b { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.empty-b { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
 
 @media (prefers-reduced-motion: reduce) {
   .mock * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
@@ -367,7 +366,7 @@ code {
             </div>
             <div class="sum num">4,812,000원</div>
             <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
-            <div class="subline num mt-3">근무 48건 · 432시간</div>
+            <div class="subline mt-3">근무 48건 · 432시간</div>
             <div class="wlist listgap">
               <div class="rowwrap"><div class="wrow">
                 <span class="av36"></span>
@@ -444,7 +443,7 @@ code {
                 <button type="button">포지션</button>
               </div>
             </div>
-            <div class="subline num mt-6">출근 41 · 지각 4 · 출근 인정 2 · 결근 1</div>
+            <div class="subline mt-6">출근 41 · 지각 4 · 출근 인정 2 · 결근 1</div>
             <div class="wlist listgap">
               <div class="rowwrap"><div class="wrow">
                 <span class="av36"></span>
@@ -527,7 +526,7 @@ code {
               </div>
             </div>
             <div class="sum num">432시간</div>
-            <div class="plist listgap" style="margin-top:24px">
+            <div class="plist listgap">
               <div class="rowwrap"><div class="prow">
                 <span class="pmid"><span class="ptitle">메인</span><br><span class="psub">12건</span></span>
                 <span class="pval">108시간</span>
@@ -614,7 +613,7 @@ code {
               </div>
             </div>
             <div class="sum dash">–</div>
-            <div class="emptywrap">
+            <div class="emptywrap listgap">
               <div class="empty-t">이 달은 아직 근무표가 없어요</div>
               <div class="empty-b">근무표를 확정하면 여기 숫자가 서요</div>
             </div>
@@ -668,7 +667,7 @@ code {
             </div>
             <div class="sum num">3,960,000원</div>
             <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
-            <div class="subline num mt-3">근무 40건 · 360시간</div>
+            <div class="subline mt-3">근무 40건 · 360시간</div>
             <div class="spacer"></div>
           </div>
         </div>
@@ -706,7 +705,7 @@ code {
             </div>
             <div class="sum num">4,812,000원</div>
             <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
-            <div class="subline num mt-3">근무 48건 · 432시간</div>
+            <div class="subline mt-3">근무 48건 · 432시간</div>
             <div class="spacer"></div>
           </div>
         </div>
