@@ -12,6 +12,7 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 ## 완료
 
+- [x] 마크다운 문서를 읽는 모듈을 세우고 깨진 링크를 잡는다 — [spec](2-design/spec/doc-links.md) — [docs/log/2026-09-11.md](log/2026-09-11.md)
 - [x] 로그인 화면과 승인 대기 화면을 만든다 — [spec](2-design/spec/login-screens.md) — [docs/log/2026-09-07.md](log/2026-09-07.md)
 - [x] spec 승인 게이트와 문서 구조 검사를 단다 — [docs/log/2026-09-04.md](log/2026-09-04.md)
 - [x] 근무자 대시보드 디자인을 정한다 — [docs/log/2026-08-30.md](log/2026-08-30.md)
