@@ -17,12 +17,16 @@
 
 **시안·문서 캔버스는 저장소 밖에 있다.** [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)가 토큰·컴포넌트·모션·근무자/관리자 화면을 모은 캔버스고, 빌드 소스는 세션 임시 폴더에 있어 저장소로 옮기지 않는 한 다음 세션이 다시 만들 수 없다. 하루 띠 비교 시안은 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832)에 따로 있다.
 
+**`data-model/README.md`가 섰다.** 인터뷰 스물세 라운드와 `architecture-advisor` 검토 한 번을 거쳤다. 네 원칙 — 사실은 DB에 상태는 계산, 쓰기는 Postgres 함수(security definer)를 `dals`가 `rpc()`로, 이력은 닫고 새로, 막는 것은 데이터. 표 스물하나. 되돌리기 어려운 결정은 프로필 신원 분리(`profiles.id` 별도, `user_id → auth.users`)와 개인정보 표 분리(`profile_private`)다 — 기존 `profiles` 마이그레이션과 integration 테스트가 이것과 어긋나 데이터 task가 갈아엎는다. domain에 두 줄이 따라갔다(account.md 차단·삭제 문장, swap.md 미신청자 교대 틈을 「아직 안 정한 것」으로).
+
 ## 다음 첫 수
 
-**구조 설계다.** `docs/2-design/architecture/` 넷(`data-model`·`api`·`runtime`·`flows`)이 자리만 파여 있다. `runtime/README.md`가 캐시 넷(Service Worker·TanStack Query·Next 서버·Supabase realtime)과 시각의 출처, 경쟁 조건을 담을 자리고, 시급·급여 금액을 RLS가 막아야 한다는 제약이 `data-model`과 `api` 양쪽에 걸린다. 그 뒤가 구현이다 — `backlog.md`의 「다음」에 대시보드 구현 task가 서 있고 데이터 task가 먼저다.
+**`api/README.md`다.** `data-model`이 섰으니 그 위다. 담을 것 — 함수 목록(관리자 쓰기 다섯, 근무자 쓰기 여섯, 프로필 제출·잇기·비우기), 오류의 모양(선착순 실패·인증 창 밖·자격 없음을 화면이 어떻게 가르나), 서버 시각을 어디서 받나, 푸시 경로(Database Webhook → Edge Function → `pushed_at`)와 Edge Function의 테스트 층, 서비스 키 자리 둘. 그 뒤 `runtime/`(캐시 넷·경쟁 조건·오프라인 인증)이고 `flows/`는 독립이라 언제든 된다. 그 뒤가 구현이다 — `backlog.md`의 「다음」에 대시보드 구현 task가 서 있고 데이터 task가 먼저다.
 
 ## 열린 결정
 
+- **pg_cron·Database Webhook이 Supabase Free 플랜에서 되는지 문서로 못 봤다.** `data-model`이 시각 알림을 pg_cron에, 푸시를 Webhook → Edge Function에 걸었다. Free는 1주 무활동이면 프로젝트가 멈춰 셋이 같이 멈춘다. `api/`를 쓰기 전에 `web-researcher`로 확인한다.
+- **「배웠다」의 기준.** 자격을 교육 배정 행에서 계산하기로 했는데 배정이 서면인지 출근 인증까지인지 `schedule.md`가 안 정했다. 나머지 미정은 `data-model/README.md` 「아직 안 정한 것」에 있다.
 - **ADR-003 「클라이언트는 `dals`에서만」과 `shared/lib`이 어긋난다.** `get-current-user.ts`·`handle-auth-callback.ts`가 클라이언트를 인자로 받아 `auth.*`를 부르는데 `dals`가 아니다. 조항이 질의만 가리키는지, 인증 호출까지 가리키는지 ADR-003이 안 가른다. #305에서 범위 밖으로 뒀다 — 데이터 task가 `dals`를 늘리기 전에 조항을 한 줄 좁히거나 두 파일을 옮긴다.
 - **`src/app/`의 `.ts`가 여전히 훅 밖이다.** 조립이 `features`로 나가 위임만 남았으니 짝 테스트를 요구할 것이 없어 `SKIP_PREFIXES`는 그대로 뒀다. `src/app/`에 다시 로직이 들어오면 그때 훅을 좁힌다.
 - **로고 렌더를 지키는 테스트가 없다.** `public/google-g.svg`를 지워도 e2e 11개가 초록이다. 「버튼 안 로고의 `background-image`가 비어 있지 않다」는 e2e 한 줄이 후보다.
