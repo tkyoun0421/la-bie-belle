@@ -4,7 +4,6 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 ## 다음
 
-- [ ] 문서 구조를 고친다 — 여덟 항목이 다 들어갔다. #324가 merge되면 완료로 내린다 — [plan](3-build/plans/docs-structure.md)
 - [ ] Deno Edge Function이 `supabase/functions` 밖의 `src/`를 import할 수 있는지 확인한다 — 되면 `deno.json` 맵핑, 안 되면 CI가 `_shared/`로 복사. 결과를 [api/notification.md](2-design/architecture/api/notification.md)의 그 문단에 적는다. 데이터 task의 첫 스파이크
 - [ ] 계정 데이터 구조를 전환한다 — `profiles.id` 분리와 `user_id → auth.users`, `profile_private`, 로그인 트리거 대신 `ensure_profile()`, 관리자 승인은 security definer 함수. 정본은 [data-model/account.md](2-design/architecture/data-model/account.md)·[api/account.md](2-design/architecture/api/account.md). 기존 마이그레이션과 integration 테스트를 갈아엎는다. plan을 쓴 뒤 잡는다
 - [ ] 인증 진입을 전환한다 — `middleware.ts`를 `proxy.ts`로, 서버 `readAuthGate`의 승인 판정을 클라이언트 `['profile']`로. 정본은 [runtime/account.md](2-design/architecture/runtime/account.md). `matcher`를 이때 같이 본다. 계정 데이터 구조 뒤
@@ -42,6 +41,7 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 ## 완료
 
+- [x] 문서 구조를 고친다 — [plan](3-build/plans/docs-structure.md) — [docs/log/2026-09-14-2.md](log/2026-09-14-2.md)
 - [x] Supabase 서버 클라이언트의 진입점을 하나로 모으고 인증 게이트를 features로 옮긴다 — [plan](3-build/plans/supabase-client-entry.md) — [docs/log/2026-09-13.md](log/2026-09-13.md)
 - [x] 마크다운 문서를 읽는 모듈을 세우고 깨진 링크를 잡는다 — [plan](3-build/plans/doc-links.md) — [docs/log/2026-09-11.md](log/2026-09-11.md)
 - [x] 로그인 화면과 승인 대기 화면을 만든다 — [spec](2-design/spec/login-screens.md) — [docs/log/2026-09-07.md](log/2026-09-07.md)
