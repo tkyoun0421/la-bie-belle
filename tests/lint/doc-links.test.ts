@@ -127,6 +127,30 @@ describe("문서 링크 검사", () => {
 
     expect(docLinkViolations(root)).toEqual([]);
   });
+
+  it("루트 README.md도 검사 대상이고 경로는 저장소 뿌리 기준으로 푼다", () => {
+    const root = tempRoot();
+    write(
+      root,
+      "README.md",
+      [
+        "# la-bie-belle",
+        "",
+        "[핸드오프](docs/handoff.md)",
+        "[지도](CLAUDE.md)",
+      ].join("\n"),
+    );
+    write(root, "docs/handoff.md", "# Handoff\n");
+
+    expect(docLinkViolations(root)).toEqual([
+      {
+        file: "README.md",
+        href: "CLAUDE.md",
+        line: 4,
+        kind: "missing-file",
+      },
+    ]);
+  });
 });
 
 describe("문서 링크 검사 — 실제 저장소 회귀", () => {

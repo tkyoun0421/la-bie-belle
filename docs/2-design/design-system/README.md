@@ -18,6 +18,13 @@
 - [pages/schedule-worker.md](pages/schedule-worker.md) — 근무자 근무표 보기와 근무 신청
 - [pages/schedule-admin.md](pages/schedule-admin.md) — 관리자 홈과 근무표 제작·확정 화면
 - [pages/members-pending.md](pages/members-pending.md) — 관리자 가입 대기 목록과 차단한 사람
+- [pages/payroll.md](pages/payroll.md) — 근무자가 미리 보는 예상 급여
+- [pages/profile.md](pages/profile.md) — 근무자 프로필과 연락처·사진 고치기
+- [pages/approvals.md](pages/approvals.md) — 관리자가 답하는 사유와 근무 취소 요청
+- [pages/members.md](pages/members.md) — 직원 이름 고치기, 관리자 승격과 강등, 퇴사 처리
+- [pages/wages.md](pages/wages.md) — 사람마다의 시간당 단가
+- [pages/stats.md](pages/stats.md) — 한 달 인건비, 사람별 근태, 포지션별 시간
+- [pages/qr.md](pages/qr.md) — 관리자가 보고 바꾸는 현장 QR
 - `pages/*.sian.html` — 화면별 시안. 문서 옆에 같은 이름으로 놓는다
 
 ## 두 축
