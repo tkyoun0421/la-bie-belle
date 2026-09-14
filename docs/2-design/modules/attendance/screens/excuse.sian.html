@@ -1,17 +1,17 @@
 <!--
-  근무자 대시보드 시안 — 사람이 보고 고른 결과다.
+  사유 시트 시안 — 사람이 보고 고른 결과다.
 
-  값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../../design-system/tokens.md이고,
-  무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 dashboard.md다.
+  값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../../../design-system/tokens.md이고,
+  무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 excuse.md다.
   둘과 이 파일이 어긋나면 저 둘이 이긴다.
 
   이 파일이 맡는 것은 글로 안 남는 것들이다 — 움직이는 모습, 겹치는 타이밍,
   실제 비율, 여러 화면을 나란히 놓고 보는 눈. 구현할 때 이 셋을 같이 연다.
 
   퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
-  앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../../design-system/README.md의 「퍼블리싱」에 있다.
+  앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../../../design-system/README.md의 「퍼블리싱」에 있다.
 -->
-<title>근무자 대시보드 시안</title>
+<title>사유 시트 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
@@ -620,211 +620,28 @@ code {
 </style>
 
 <div class="wrap">
-  <p class="eyebrow">라비에벨 · 페이지 디자인 02</p>
-  <h1>근무자 대시보드 시안</h1>
+  <p class="eyebrow">라비에벨 · 페이지 디자인</p>
+  <h1>사유 시트 시안</h1>
   <p class="lede">
     고른 것만 모았다. 같은 사람, 같은 날 — 9월 12일(토) 10:00–19:00 안내 근무다.
-    카운트다운 숫자는 실제로 줄고, 03절의 알림은 눌린다.
   </p>
 
   <!-- 01 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">01 / 하루</span>
-      <h2>인증 전, 창이 열린 뒤, 찍은 뒤, 근무 중</h2>
-      <p>바뀌는 것은 띠의 채움과 네 귀퉁이 글자, 그 아래 한 줄, 그리고 버튼이다.</p>
+      <span class="sec-num">01 / 못 찍었을 때</span>
+      <h2>시트를 열고 거기서 끝낸다</h2>
+      <p>
+        인증 창은 그날 18:00에 닫힌다. 사유는 <strong>바텀시트에서 쓰고 보내고 결과까지 본다.</strong>
+        <code>motion.md</code>의 「로딩은 원형 회전 뒤에 체크로 끝낸다」가 이 자리다 —
+        성공과 실패가 같은 자리에서 다른 모양으로 끝난다. 앞의 둘은 눌러볼 수 있고 뒤의 일곱은 엣지 케이스다.
+      </p>
     </div>
     <div class="grid">
 
       <figure class="item">
-        <div class="mock">
-          <div class="statusbar"><span>7:30</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
-          <div class="body">
-            <div class="noti" data-noti>
-              <div class="noti-h"><span>안 본 알림 <b data-noti-count>2</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-              <div class="noti-slot">
-                <div class="noti-item" data-noti-item>
-                  <i class="unread"></i>
-                  <span class="nt">박서연 님이 9월 13일 근무를 바꾸고 싶어 해요</span>
-                  <div class="noti-meta">
-                    <span class="ns">오늘 7:12</span>
-                    <span class="noti-cta pair">
-                      <button class="btn sm" data-act="yes" style="background:var(--bg-brand-solid);color:var(--fg-brand-contrast)">수락</button>
-                      <button class="btn sm" data-act="no">거절</button>
-                    </span>
-                  </div>
-                </div>
-                <div class="noti-item" data-noti-item>
-                  <i class="unread"></i>
-                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
-                  <div class="noti-meta">
-                    <span class="ns">어제 21:04</span>
-                    <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="rule"></div>
-            <div class="daybar">
-              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">2시간 30분 뒤에 시작해요</span></div>
-              <div class="track"></div>
-              <div class="bandends"><span>10:00</span><span>19:00</span></div>
-              <div class="barnote">안내 · 9시간</div>
-            </div>
-            <button class="btn h44" style="margin-top:16px" disabled>9:00부터 인증할 수 있어요</button>
-            <div class="rule" style="margin-top:20px"></div>
-            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
-            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
-            <div class="spacer"></div>
-          </div>
-        </div>
-        <figcaption>
-          <div class="cap-key">07:30</div>
-          <div class="cap-name">카운트다운이 돌기 전</div>
-          <p class="cap-body">버튼이 눌리지 않고 <strong>라벨이 창이 언제 열리는지 말한다.</strong> 카운트다운은 <code>8:00</code>부터 돈다 — 창이 열리기 한 시간 전이다.</p>
-        </figcaption>
-      </figure>
-
-      <figure class="item">
-        <div class="mock">
-          <div class="statusbar"><span>8:31</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
-          <div class="body">
-            <div class="noti" data-noti>
-              <div class="noti-h"><span>안 본 알림 <b data-noti-count>1</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-              <div class="noti-slot">
-                <div class="noti-item" data-noti-item>
-                  <i class="unread"></i>
-                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
-                  <div class="noti-meta">
-                    <span class="ns">어제 21:04</span>
-                    <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="rule"></div>
-            <div class="daybar">
-              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">1시간 29분 뒤에 시작해요</span></div>
-              <div class="track"></div>
-              <div class="bandends"><span>10:00</span><span>19:00</span></div>
-              <div class="barnote">안내 · 9시간</div>
-            </div>
-            <button class="btn h44" style="margin-top:16px" disabled><span class="num" data-cd>29분</span> 뒤 출근 인증</button>
-            <div class="rule" style="margin-top:20px"></div>
-            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
-            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
-            <div class="spacer"></div>
-          </div>
-        </div>
-        <figcaption>
-          <div class="cap-key">08:31</div>
-          <div class="cap-name">창이 열리기 한 시간 전부터</div>
-          <p class="cap-body">버튼이 눌리지 않고 <strong>남은 시간이 앞, 할 일이 뒤</strong>다. 숫자는 실제로 줄어든다.</p>
-        </figcaption>
-      </figure>
-
-      <figure class="item">
-        <div class="mock">
-          <div class="statusbar"><span>9:20</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
-          <div class="body">
-            <div class="noti" data-noti>
-              <div class="noti-h"><span>안 본 알림 <b data-noti-count>1</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-              <div class="noti-slot">
-                <div class="noti-item" data-noti-item>
-                  <i class="unread"></i>
-                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
-                  <div class="noti-meta">
-                    <span class="ns">어제 21:04</span>
-                    <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="rule"></div>
-            <div class="daybar">
-              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">40분 뒤에 시작해요</span></div>
-              <div class="track"></div>
-              <div class="bandends"><span>10:00</span><span>19:00</span></div>
-              <div class="barnote">안내 · 9시간</div>
-            </div>
-            <button class="btn h44" style="margin-top:16px">출근 인증하기</button>
-            <div class="cta-note">홀에서 누르면 위치로 확인해요</div>
-            <div class="rule" style="margin-top:20px"></div>
-            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
-            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
-            <div class="spacer"></div>
-          </div>
-        </div>
-        <figcaption>
-          <div class="cap-key">09:20</div>
-          <div class="cap-name">창이 열렸다</div>
-          <p class="cap-body">브랜드 색이 꽉 찬 면으로 나타나는 유일한 자리다. 누르면 check-in.sian.html의 지도 화면으로 간다.</p>
-        </figcaption>
-      </figure>
-
-      <figure class="item">
-        <div class="mock">
-          <div class="statusbar"><span>9:52</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
-          <div class="body">
-            <div class="noti" data-noti>
-              <div class="noti-h"><span>안 본 알림 <b data-noti-count>1</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-              <div class="noti-slot">
-                <div class="noti-item" data-noti-item>
-                  <i class="unread"></i>
-                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
-                  <div class="noti-meta">
-                    <span class="ns">어제 21:04</span>
-                    <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="rule"></div>
-            <div class="daybar">
-              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">8분 뒤에 시작해요</span></div>
-              <div class="track"><i class="stamp" style="left:0"></i></div>
-              <div class="bandends"><span>10:00</span><span>19:00</span></div>
-              <div class="barnote">
-                <span class="tick"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span>
-                <span class="said"><span class="num">9:52</span>에 출근 인증했어요</span> · 안내 · <span class="num">9시간</span>
-              </div>
-            </div>
-            <div class="rule" style="margin-top:22px"></div>
-            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
-            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
-            <div class="spacer"></div>
-          </div>
-        </div>
-        <figcaption>
-          <div class="cap-key">09:52</div>
-          <div class="cap-name">찍은 뒤</div>
-          <p class="cap-body"><strong>버튼이 통째로 사라지고</strong> 초록 체크와 시각만 남는다. 화면이 그만큼 짧아진다.</p>
-        </figcaption>
-      </figure>
-
-      <figure class="item">
-        <div class="mock">
-          <div class="statusbar"><span>11:20</span><span class="sb-right">
+        <div class="mock" data-reason-scope data-replay-scope>
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
@@ -832,29 +649,76 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="bandtop"><span class="pct">15% 지났어요</span><span class="left">7시간 40분 남았어요</span></div>
-              <div class="track"><i class="fill" style="width:14.8%"></i></div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
               <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
-            <button class="btn h44" style="margin-top:16px">출근 인증하기</button>
-            <div class="cta-note">18:00까지 찍을 수 있어요</div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
             <div class="rule" style="margin-top:20px"></div>
             <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
             <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
             <div class="spacer"></div>
           </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box ph" data-box>가게에 있었지만 위치가 안 잡혔어요</div>
+                
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send disabled><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+            <div data-pane="ok" hidden>
+              <div class="rres">
+                <div class="mark" data-mark>
+                  <i class="halo"></i><i class="halo h2"></i>
+                  <span class="disc"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></span>
+                </div>
+                <div class="rt">사유를 보냈어요</div>
+                <div class="rb">관리자가 확인하면 알려드릴게요</div>
+              </div>
+            </div>
+            <div data-pane="bad" hidden>
+              <div class="rres">
+                <div class="mark bad" data-mark>
+                  <span class="disc"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/><path d="M17 7 7 17" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></span>
+                </div>
+                <div class="rt">사유를 보내지 못했어요</div>
+                <div class="rb">쓴 내용은 그대로 있어요 · 다시 보내볼게요</div>
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send><span class="lbl">다시 보내기</span></button>
+              </div>
+            </div>
+          </div>
         </div>
+        <button class="replay" type="button" data-replay>다시 보기</button>
         <figcaption>
-          <div class="cap-key">11:20</div>
-          <div class="cap-name">근무는 시작됐는데 아직 안 찍었다</div>
-          <p class="cap-body">채움이 자라기 시작했고 <strong>인증 눈금은 없다</strong> — 찍은 자리가 아직 없어서다. 버튼 아래 안내가 「홀에서 누르면」에서 <strong>마감 시각으로 바뀐다.</strong> 근무는 19:00에 끝나는데 창은 18:00에 닫힌다.</p>
+          <div class="cap-key">18:40</div>
+          <div class="cap-name">시트를 열고 거기서 끝낸다</div>
+          <p class="cap-body">「사유 넣기」를 누르면 <strong>바텀시트가 올라온다.</strong> 보낸 결과도 같은 시트 안에서 나온다. 시트가 닫히면 뒤 화면의 블록과 버튼이 이미 바뀌어 있다. 데모라 글은 저절로 써진다.</p>
         </figcaption>
       </figure>
 
       <figure class="item">
-        <div class="mock">
-          <div class="statusbar"><span>15:35</span><span class="sb-right">
+        <div class="mock" data-reason-scope data-replay-scope data-fail>
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
@@ -862,24 +726,426 @@ code {
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="bandtop"><span class="pct">62% 지났어요</span><span class="left">3시간 25분 남았어요</span></div>
-              <div class="track"><i class="fill" style="width:62%"></i><i class="stamp" style="left:9.6%"></i></div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
               <div class="bandends"><span>10:00</span><span>19:00</span></div>
-              <div class="barnote">
-                <span class="tick"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span>
-                <span class="said"><span class="num">10:52</span>에 출근 인증했어요</span> · 안내 · <span class="num">9시간</span>
-              </div>
+              <div class="barnote">안내 · 9시간</div>
             </div>
-            <div class="rule" style="margin-top:22px"></div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
             <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
             <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
             <div class="spacer"></div>
           </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box ph" data-box>가게에 있었지만 위치가 안 잡혔어요</div>
+                
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send disabled><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+            <div data-pane="ok" hidden>
+              <div class="rres">
+                <div class="mark" data-mark>
+                  <i class="halo"></i><i class="halo h2"></i>
+                  <span class="disc"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></span>
+                </div>
+                <div class="rt">사유를 보냈어요</div>
+                <div class="rb">관리자가 확인하면 알려드릴게요</div>
+              </div>
+            </div>
+            <div data-pane="bad" hidden>
+              <div class="rres">
+                <div class="mark bad" data-mark>
+                  <span class="disc"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/><path d="M17 7 7 17" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></span>
+                </div>
+                <div class="rt">사유를 보내지 못했어요</div>
+                <div class="rb">쓴 내용은 그대로 있어요 · 다시 보내볼게요</div>
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send><span class="lbl">다시 보내기</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>다시 보기</button>
+        <figcaption>
+          <div class="cap-key">보내기 실패</div>
+          <div class="cap-name">쓴 글은 안 날아간다</div>
+          <p class="cap-body">첫 보내기가 실패하는 흐름이다. <strong>원이 흔들리고 ✕가 두 획으로 그어진다.</strong> 성공과 같은 자리 같은 크기인데 모양과 색이 다르다. 쓴 내용은 시트 안에 그대로 남아 다시 누르면 그 글이 간다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box ph" data-box>가게에 있었지만 위치가 안 잡혔어요</div>
+                
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send disabled><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+          </div>
         </div>
         <figcaption>
-          <div class="cap-key">15:35</div>
-          <div class="cap-name">근무 중 · 이미 찍었다</div>
-          <p class="cap-body">가장 오래 머무는 모습이다. <strong>눈금이 채움 위에 선다</strong> — 10:52 인증이라 9시간의 9.6% 자리다. 지각이어도 색을 안 바꾼다. 지각인지는 아래 한 줄의 시각이 사실로 말한다.</p>
+          <div class="cap-key">엣지 ①</div>
+          <div class="cap-name">안 쓰면 못 보낸다</div>
+          <p class="cap-body">열자마자의 모습이다. 자리표시 글이 예시를 준다. <strong>보내기는 잠겨 있다</strong> — 빈 사유가 관리자에게 가면 확인할 것이 없다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box focus" data-box>몸살<i class="caret"></i></div>
+                <div class="fhint">조금 더 자세히 써주세요 · 다섯 자 이상</div>
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send disabled><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ②</div>
+          <div class="cap-name">두 글자로는 안 된다</div>
+          <p class="cap-body">다섯 자 미만이면 보내기가 잠긴 채 <strong>무엇이 모자란지 아래에 적는다.</strong> 테두리를 붉게 물들이지 않는다 — 아직 틀린 것이 아니라 덜 쓴 것이다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span><span class="cnt full num">200/200</span></div>
+                <div class="box focus" data-box>어제 가게 앞에서 넘어져서 병원에 갔다가 늦게 도착했어요. 홀에 들어와서 인증을 누르려는데 지하라 위치가 계속 안 잡혔고, 매니저님께는 도착하자마자 말씀드렸어요. 다음부터는 QR을 먼저 찾아볼<i class="caret"></i></div>
+                <div class="fhint">여기까지만 쓸 수 있어요</div>
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ③</div>
+          <div class="cap-name">200자에서 멈춘다</div>
+          <p class="cap-body">글자 수는 <strong>서른 자가 남았을 때부터</strong> 보인다. 상한에 닿으면 숫자가 critical 색이 되고 더 안 들어간다. 이미 쓴 글을 지우지는 않는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box " data-box>지하라 위치가 안 잡혔어요. 10시에 도착해서 홀에 있었어요.</div>
+                
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close disabled>닫기</button>
+                <button class="btn h44" data-send disabled><span class="lbl">보내는 중</span><i class="spin"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ④</div>
+          <div class="cap-name">보내는 동안은 못 닫는다</div>
+          <p class="cap-body">닫기까지 같이 잠긴다. <strong>중간에 닫으면 갔는지 안 갔는지 알 길이 없다.</strong> 돌기만 하다 끝나지 않게 다음 화면이 반드시 온다 — 체크 아니면 ✕다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>19:10</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
+              <div class="bandtop"><span class="pct">오늘 근무가 끝났어요</span></div>
+              <div class="track"><i class="fill" style="width:100%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>관리자가 확인하면 알려드릴게요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn h44 done" disabled><i class="tickin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></i>사유를 보냈어요</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="sent">
+              <div class="sheet-t">보낸 사유예요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">18:52</span>에 보냈어요</div>
+              <div class="field">
+                <div class="frow"><span class="lab">보낸 내용</span><span class="statechip">확인 중</span></div>
+                <div class="box ro">지하라 위치가 안 잡혔어요. 10시에 도착해서 홀에 있었어요.</div>
+              </div>
+              <div class="rowbtns"><button class="btn secondary h44" style="flex:1 1 auto">닫기</button></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ⑤</div>
+          <div class="cap-name">보낸 뒤에 다시 열면</div>
+          <p class="cap-body">읽기 전용이다. 배경이 같은 <code>bg.neutral-weak</code>인데 테두리가 없어 <strong>쓰는 칸이 아님을 모양으로 말한다.</strong> 고칠 수 있는지는 <code>domain/attendance.md</code>가 아직 안 정했다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
+              <div class="barnote">안내 · 9시간</div>
+            </div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb" data-reason-sub>왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44" data-reason>사유 넣기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim" data-scrim></div>
+          <div class="rsheet lifted" data-rsheet>
+            <div class="grabber"></div>
+            <div data-pane="write">
+              <div class="sheet-t">왜 못 찍었는지 알려주세요</div>
+              <div class="sheet-s"><span class="num">9월 12일(토)</span> · <span class="num">10:00–19:00</span> 근무</div>
+              <div class="field">
+                <div class="frow"><span class="lab">무슨 일이 있었나요</span></div>
+                <div class="box focus" data-box>지하라 위치가 안 잡혔어요.<i class="caret"></i></div>
+                
+              </div>
+              <div class="rowbtns">
+                <button class="btn secondary h44" data-close>닫기</button>
+                <button class="btn h44" data-send><span class="lbl">보내기</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="kbd" aria-hidden="true">
+            <div class="krow"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="krow"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="krow"><i class="w"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="w"></i></div>
+            <div class="krow"><i class="w"></i><i class="sp"></i><i class="w"></i></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ⑥</div>
+          <div class="cap-name">키보드가 올라오면</div>
+          <p class="cap-body">시트가 <strong>키보드 위에 올라앉는다.</strong> 입력 칸과 버튼이 둘 다 보여야 해서, 가려지는 쪽을 밀지 않고 시트째 올린다. 대시보드는 덮개 뒤로 더 가려진다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:12</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="daybar" style="padding-top:6px">
+              <div class="headline" style="margin-bottom:20px">어제 사유가 처리됐어요</div>
+              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">48분 뒤에 시작해요</span></div>
+              <div class="track"></div>
+              <div class="bandends"><span>10:00</span><span>19:00</span></div>
+              <div class="barnote">9월 12일(토) · 9시간</div>
+            </div>
+            <div class="block crit" style="margin-top:20px">
+              <span class="i-crit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16h.01"/></svg></span>
+              <span>
+                <span class="bt">사유가 받아들여지지 않았어요</span>
+                <span class="bb">관리자가 「위치 기록이 없어요」라고 남겼어요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44">사유 다시 쓰기</button></div>
+            <div class="rule" style="margin-top:20px"></div>
+            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">2일</span></div>
+            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">216,000원</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">엣지 ⑦</div>
+          <div class="cap-name">반려되면 다음 날 대시보드에</div>
+          <p class="cap-body">거절은 시트가 아니라 <strong>다음에 앱을 열었을 때 블록으로</strong> 온다. 승인은 알림 하나로 끝나고 거절만 화면에 남는다 — 할 일이 남았기 때문이다. <code>domain/attendance.md</code>가 거절 뒤를 아직 안 정해서 이 화면은 제안이다.</p>
         </figcaption>
       </figure>
 
@@ -889,208 +1155,64 @@ code {
   <!-- 02 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">02 / 근무가 없을 때</span>
-      <h2>값이 없으면 숫자를 안 쓴다</h2>
-      <p><code>0일</code>·<code>0원</code> 대신 <code>–</code>다. 0은 「없다」가 아니라 「세어봤더니 0」이라서 못 번 것처럼 읽힌다.</p>
-    </div>
-    <div class="grid">
-
-      <figure class="item">
-        <div class="mock">
-          <div class="statusbar"><span>12:36</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="appbar"><span class="date num">9월 10일(목)</span><span class="brandmark">라</span></div>
-          <div class="body">
-            <div class="daybar" style="padding-top:6px">
-              <div class="headline off" style="margin-bottom:20px">오늘은 근무가 없어요</div>
-              <div class="barnote" style="margin-top:0">다음 근무는 <span class="num">9월 12일(토) 10:00</span>이에요</div>
-            </div>
-            <div class="rule" style="margin-top:22px"></div>
-            <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
-            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
-            <div class="spacer"></div>
-          </div>
-        </div>
-        <figcaption>
-          <div class="cap-key">오늘만 없다</div>
-          <div class="cap-name">띠가 통째로 없다</div>
-          <p class="cap-body">이번 주 값은 그대로 있다. 삽화를 새로 만들 일이 없다.</p>
-        </figcaption>
-      </figure>
-
-      <figure class="item">
-        <div class="mock">
-          <div class="statusbar"><span>12:36</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="appbar"><span class="date num">9월 10일(목)</span><span class="brandmark">라</span></div>
-          <div class="body">
-            <div class="daybar" style="padding-top:6px">
-              <div class="headline off" style="margin-bottom:20px">이번 주는 근무가 없어요</div>
-              <div class="barnote" style="margin-top:0">다음 근무는 <span class="num">9월 15일(화) 10:00</span>이에요</div>
-            </div>
-            <div class="rule" style="margin-top:22px"></div>
-            <div class="kv"><span class="k">이번 주 근무</span><span class="v none">–</span></div>
-            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v none">–</span></div>
-            <div class="spacer"></div>
-          </div>
-        </div>
-        <figcaption>
-          <div class="cap-key">이번 주 배정 없음</div>
-          <div class="cap-name">여기도 띠가 없다</div>
-          <p class="cap-body">근무표는 나왔는데 나에게 배정이 안 온 것이다. 값 둘이 <code>–</code>가 된다.</p>
-        </figcaption>
-      </figure>
-
-      <figure class="item">
-        <div class="mock">
-          <div class="statusbar"><span>12:36</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="appbar"><span class="date num">8월 28일(금)</span><span class="brandmark">라</span></div>
-          <div class="body">
-            <div class="daybar" style="padding-top:6px">
-              <div class="headline off" style="margin-bottom:20px">9월 근무표는 아직 확정 전이에요</div>
-              <div class="track" style="background:transparent;border:1px dashed var(--stroke-neutral-muted)"></div>
-              <div class="barnote">관리자가 확정하면 알려드릴게요</div>
-            </div>
-            <div class="rule" style="margin-top:22px"></div>
-            <div class="kv"><span class="k">이번 주 근무</span><span class="v none">–</span></div>
-            <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v none">–</span></div>
-            <div class="spacer"></div>
-          </div>
-        </div>
-        <figcaption>
-          <div class="cap-key">확정 전</div>
-          <div class="cap-name">트랙이 점선이 된다</div>
-          <p class="cap-body"><strong>근무 없음과 확정 전은 뜻이 반대다.</strong> <code>color.md</code>가 둘을 다르게 그리라고 정했다.</p>
-        </figcaption>
-      </figure>
-
-    </div>
-  </section>
-
-  <!-- 03 -->
-  <section>
-    <div class="sec-head">
-      <span class="sec-num">03 / 알림</span>
-      <h2>한 줄만 서고 오른쪽이 할 일의 자리다</h2>
-      <p>✕는 우측 상단에서 지운다. CTA는 그 아래 시각과 한 줄이다. 교대 요청은 화면을 안 옮기고 그 줄에서 답한다 — 눌러보면 문구가 바뀐다.</p>
-    </div>
-    <div class="grid">
-
-      <figure class="item">
-        <div class="mock" data-replay-scope style="height:auto;padding:20px 20px 24px;border-radius:var(--r-xl)">
-          <div class="noti" data-noti>
-            <div class="noti-h"><span>안 본 알림 <b data-noti-count>4</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-            <div class="noti-slot">
-              <div class="noti-item" data-noti-item>
-                <i class="unread"></i>
-                <span class="nt">박서연 님이 9월 13일 근무를 바꾸고 싶어 해요</span>
-                <div class="noti-meta">
-                  <span class="ns">오늘 8:12</span>
-                  <span class="noti-cta pair">
-                    <button class="btn sm" data-act="yes" style="background:var(--bg-brand-solid);color:var(--fg-brand-contrast)">수락</button>
-                    <button class="btn sm" data-act="no">거절</button>
-                  </span>
-                </div>
-              </div>
-              <div class="noti-item" data-noti-item>
-                <i class="unread"></i>
-                <span class="nt">내일 9월 13일 10:00 근무가 있어요</span>
-                <div class="noti-meta">
-                  <span class="ns">어제 21:00</span>
-                </div>
-              </div>
-              <div class="noti-item" data-noti-item>
-                <i class="unread"></i>
-                <span class="nt">9월 20일 근무가 스캔에서 메인으로 바뀌었어요</span>
-                <div class="noti-meta">
-                  <span class="ns">어제 18:40</span>
-                  <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
-                </div>
-              </div>
-              <div class="noti-item" data-noti-item>
-                <i class="unread"></i>
-                <span class="nt">이번 주말 주차장 공사로 뒷문을 써주세요</span>
-                <div class="noti-meta">
-                  <span class="ns">9월 10일</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="rule"></div>
-          <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
-          <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
-        </div>
-        <button class="replay" type="button" data-replay>다시 보기</button>
-        <figcaption>
-          <div class="cap-key">4건에서 0건까지</div>
-          <div class="cap-name">지우면 다음이 올라온다</div>
-          <p class="cap-body">
-            수락하면 점이 초록 체크로 바뀌고 문구가 <strong>「관리자가 승인하면 알려드릴게요」</strong>가 된다.
-            줄이 안 사라지는 것은 <code>swap.md</code>가 수락 뒤 관리자 승인이 또 온다고 적었기 때문이다.
-          </p>
-        </figcaption>
-      </figure>
-
-    </div>
-  </section>
-
-  <!-- 04 -->
-  <section>
-    <div class="sec-head">
-      <span class="sec-num">04 / 다크</span>
+      <span class="sec-num">02 / 다크</span>
       <h2>팔레트가 통째로 뒤집힌다</h2>
       <p>역할 토큰 표는 한 벌이다. 지도 타일도 같이 뒤집힌다. 막대 위 글자 대비는 라이트 10.83, 다크 10.56으로 거의 같다.</p>
     </div>
     <div class="grid">
 
       <figure class="item">
-        <div class="mock force-dark">
-          <div class="statusbar"><span>9:20</span><span class="sb-right">
+        <div class="mock force-dark modal-open">
+          <div class="statusbar"><span>18:40</span><span class="sb-right">
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
           <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
           <div class="body">
-            <div class="noti">
-              <div class="noti-h"><span>안 본 알림 <b>1</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-              <div class="noti-slot">
-                <div class="noti-item">
-                  <i class="unread"></i>
-                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
-                  <div class="noti-meta">
-                    <span class="ns">어제 21:04</span>
-                    <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="rule"></div>
-            <div class="daybar">
+            <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
-              <div class="bandtop"><span class="pct">아직 시작 전이에요</span><span class="left">40분 뒤에 시작해요</span></div>
-              <div class="track"></div>
+              <div class="bandtop"><span class="pct">96% 지났어요</span><span class="left">20분 남았어요</span></div>
+              <div class="track"><i class="fill" style="width:96.3%"></i></div>
               <div class="bandends"><span>10:00</span><span>19:00</span></div>
               <div class="barnote">안내 · 9시간</div>
             </div>
-            <button class="btn h44" style="margin-top:16px">출근 인증하기</button>
-            <div class="cta-note">홀에서 누르면 위치로 확인해요</div>
+            <div class="block warn" style="margin-top:20px">
+              <span class="i-warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+              <span>
+                <span class="bt">출근 인증을 못 찍었어요</span>
+                <span class="bb">왜 못 찍었는지 남기면 관리자가 확인하고 근무 시간을 살려요</span>
+              </span>
+            </div>
+            <div class="reasonwrap"><button class="btn secondary h44">사유 넣기</button></div>
             <div class="rule" style="margin-top:20px"></div>
             <div class="kv"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
             <div class="kv"><span class="k">이번 주 예상 급여</span><span class="v num">324,000원</span></div>
             <div class="spacer"></div>
           </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grabber"></div>
+            <div class="rres">
+              <div class="mark bad drawn">
+                <span class="disc"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/><path d="M17 7 7 17" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></span>
+              </div>
+              <div class="rt">사유를 보내지 못했어요</div>
+              <div class="rb">쓴 내용은 그대로 있어요 · 다시 보내볼게요</div>
+            </div>
+            <div class="rowbtns">
+              <button class="btn secondary h44">닫기</button>
+              <button class="btn h44">다시 보내기</button>
+            </div>
+          </div>
         </div>
         <figcaption>
-          <div class="cap-key">다크 · 대시보드</div>
-          <div class="cap-name">거리가 위계를 만든다</div>
-          <p class="cap-body">채움은 트랙보다 한 걸음 떨어져 있고 버튼은 배경에서 가장 멀다. 절대값이 아니라 이 거리가 남는다.</p>
+          <div class="cap-key">다크 · 사유 시트</div>
+          <div class="cap-name">덮개는 밝아지지 않는다</div>
+          <p class="cap-body">
+            뒤 덮개가 <code>bg.neutral-solid</code>인데 다크에서는 그 값이 <strong>밝은 회색으로 뒤집힌다.</strong>
+            그대로 쓰면 화면이 하얗게 떠서, 덮개만 팔레트를 따라가지 않고 어두운 쪽에 고정한다.
+            <code>critical</code>은 뒤집혀도 뜻이 그대로라 그냥 따라간다.
+          </p>
         </figcaption>
       </figure>
 

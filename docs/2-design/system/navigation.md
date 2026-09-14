@@ -28,7 +28,7 @@
 | `/blocked` | [앱을 열면](#앱을-열면) — 차단 | 차단 · [`login.md`](../modules/account/screens/login.md) |
 | `/left` | [앱을 열면](#앱을-열면) — 퇴사 | 퇴사한 뒤 · [`login.md`](../modules/account/screens/login.md#퇴사한-뒤) |
 | `/` | [앱을 열면](#앱을-열면) — 승인됨 | 대시보드 · [`dashboard.md`](screens/dashboard.md) |
-| `/check-in` | [앱을 열면](#앱을-열면) — 승인됨 | 출근 인증 · [`dashboard.md`](screens/dashboard.md#출근-인증) |
+| `/check-in` | [앱을 열면](#앱을-열면) — 승인됨 | 출근 인증 · [`check-in.md`](../modules/attendance/screens/check-in.md) |
 | `/schedule` | [앱을 열면](#앱을-열면) — 승인됨 | 근무자 근무표. `?month=`는 달, `?date=`는 그날 시트 · [`schedule-worker.md`](../modules/schedule/screens/schedule-worker.md) |
 | `/payroll` | [앱을 열면](#앱을-열면) — 승인됨. 퇴사자에게도 열린다 | 급여 · [`payroll.md`](../modules/payroll/screens/payroll.md) |
 | `/me` | [앱을 열면](#앱을-열면) — 승인됨 | 나 · [`profile.md`](../modules/account/screens/profile.md) |

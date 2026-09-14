@@ -90,4 +90,4 @@
 
 ## UI 연결
 
-화면은 [qr](screens/qr.md)과 [dashboard](../../system/screens/dashboard.md)·[approvals](../../system/screens/approvals.md)다.
+화면은 [qr](screens/qr.md)·[check-in](screens/check-in.md)·[excuse](screens/excuse.md)와 [dashboard](../../system/screens/dashboard.md)·[approvals](../../system/screens/approvals.md)다.

@@ -89,10 +89,11 @@ PR 하나가 묶음 하나다. 브랜치는 `docs/authoring-playbook-<글자>`. 
 4. **C. 상태 소유권** — `docs/README.md` 협업 기록 작성법(13.2·13.3), backlog 표, handoff 두 절, CHANGELOG 머리, `session-recorder`·`implementer`·`pr-diff` 정의문, `REVIEW.md` 영향 검토 축, `spec/dashboard.md`와 진행 중 plan에 `sources`
 5. **D. 계정 시범** — `modules/account/` README·design·screens 넷을 5·7장 틀로. 여기서 답하기 어렵거나 겹치는 항목은 B1의 작성법을 고친다
 6. **E. 나머지 영역 다섯** — README·design 열을 5장 틀로
-7. **F1. system 넷과 대시보드 분할** — `system/` 넷을 6.1 틀과 공통 조항 틀로. `dashboard.md`에서 `check-in.md`·`excuse.md`를 빼고 7장 틀로 쓴다. `sian-writer`가 시안 셋, `sian-auditor`가 대조
-8. **F2. 나머지 화면 열** — 7장 틀. 시안은 그대로 두고 `sian-auditor`가 절 이동 뒤에도 어긋남 0인지 본다
-9. **G. 기획** — `prd`·`roadmap`·`scenarios`·`metrics`·`intent/schedule-admin`을 4장 틀로. 목표선 숫자는 채우지 않는다
-10. **H. 검사와 마감** — `tests/lint/` 넷, 전파 확인, 두 제안서 완료 기록, sdlc plan 완료 기준 체크, backlog 행 `done`
+7. **F1. system 넷** — `system/` 넷을 6.1 틀과 공통 조항 틀로
+8. **F2. 대시보드 분할** — `dashboard.md`에서 `check-in.md`·`excuse.md`를 빼고 셋을 7장 틀로 쓴다. `sian-writer`가 시안 셋, `sian-auditor`가 대조
+9. **F3. 나머지 화면 일곱** — `schedule-worker`·`schedule-admin`·`qr`·`payroll`·`wages`·`approvals`·`stats`를 7장 틀로. 시안은 그대로 두고 `sian-auditor`가 절 이동 뒤에도 어긋남 0인지 본다
+10. **G. 기획** — `prd`·`roadmap`·`scenarios`·`metrics`·`intent/schedule-admin`을 4장 틀로. 목표선 숫자는 채우지 않는다
+11. **H. 검사와 마감** — `tests/lint/` 넷, 전파 확인, 두 제안서 완료 기록, sdlc plan 완료 기준 체크, backlog 행 `done`
 
 각 묶음의 분업은 이렇다. 총괄이 B1·B2·C의 작성법 본문과 D~G의 판정 예시·상태 전이·계약 표를 확인하고, subagent가 옮기기·틀 맞추기·시안·검사 코드를 만든다. `docs-researcher`가 묶음마다 옮기기 전 문장 목록을 뽑아 옮긴 뒤와 대조한다.
 
