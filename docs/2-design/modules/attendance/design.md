@@ -14,7 +14,7 @@
 
 ### 인증과 사유는 그날 그 사람에 붙인다
 
-`check_ins(day_id, profile_id, checked_at, reported_at, method) unique(day_id, profile_id)`, `excuses(day_id, profile_id, body, submitted_at, decided_at, decision, decision_reason)`. `checked_at`은 판정에 쓴 시각, `reported_at`은 기기가 누른 시각이다 — 둘이 갈리는 이유는 [누른 시각이 판정이다](#누른-시각이-판정이다)에 있다. 배정이 아니다 — 9시 30분에 찍은 인증이 10시 강제 변경으로 사라지면 안 된다. 근무 시간이 날짜당 하나라 포지션이 바뀌어도 인증 창은 같다. 인증 함수가 「그날 살아 있는 배정이 있나」를 따로 검사한다. `received_at timestamptz`가 서버 수신 시각이다.
+`check_ins(day_id, profile_id, checked_at, reported_at, received_at, method) unique(day_id, profile_id)`, `excuses(day_id, profile_id, body, submitted_at, decided_at, decision, decision_reason)`. `checked_at`은 판정에 쓴 시각, `reported_at`은 기기가 누른 시각이다 — 둘이 갈리는 이유는 [누른 시각이 판정이다](#누른-시각이-판정이다)에 있다. 배정이 아니다 — 9시 30분에 찍은 인증이 10시 강제 변경으로 사라지면 안 된다. 근무 시간이 날짜당 하나라 포지션이 바뀌어도 인증 창은 같다. 인증 함수가 「그날 살아 있는 배정이 있나」를 따로 검사한다. `received_at timestamptz`가 서버 수신 시각이고, 셋의 관계는 [누른 시각이 판정이다](#누른-시각이-판정이다)에 있다.
 
 인증은 되돌릴 수 없다 — 행을 고치는 함수가 없다.
 
