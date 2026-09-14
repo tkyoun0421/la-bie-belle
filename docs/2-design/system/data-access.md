@@ -1,0 +1,128 @@
+# 데이터 접근
+
+테이블과 관계가 산다. 실제 스키마의 정본은 `supabase/migrations/`고 여기는 그 지도와 근거를 담는다.
+
+서버와 주고받는 경계가 산다. 경로, 입출력, 권한이다.
+
+## 네 원칙
+
+- **사실은 DB에, 상태는 계산한다.** 출근 상태·급여·자격·빈 자리는 저장하지 않는다. 인증 시각, 살아 있는 배정, 시급 행 같은 사실만 두고 TypeScript 순수 함수가 상태를 낸다. 잠든 행이 없으니 배치가 없다
+- **쓰기는 함수다.** 화면과 use-case는 `dals`를 부르고, `dals`가 `supabase.rpc()`로 Postgres 함수(security definer)를 부른다. 테이블에 직접 쓰는 정책은 `profile_private` 본인 행(연락처) 하나뿐이다 — 사진은 `profiles`에 있어 `update_my_photo()` 함수다
+- **이력은 닫고 새로 만든다.** 배정·자리·시급이 바뀌면 옛 행에 `ended_at`을 찍고 새 행을 만든다. 살아 있는 것은 `ended_at is null`이다
+- **막는 것은 화면이 아니라 데이터다.** 시급·급여·개인정보·QR 값은 RLS가 행 단위로 막을 수 있게 표를 가른다
+
+## 테이블 목록
+
+| 테이블 | 파일 | 한 줄 |
+| --- | --- | --- |
+| `halls` | 여기 | 홀 하나. 좌표·반경, 자리 기본값, 근무 시간 기본값 |
+
+나머지 행은 각 영역 design의 「소유 데이터」에 있다.
+
+## 홀
+
+`halls(id, lat, lng, radius_m, default_slots jsonb, default_starts, default_ends)`. 지금은 한 행이고 둘째 홀이 생기면 행을 더한다([attendance/README.md](../modules/attendance/README.md)). 좌표·반경은 전원이 읽는다. QR 코드 값은 `hall_secrets`로 갈라 관리자만 읽는다 — 그 표는 [`attendance/design.md`](../modules/attendance/design.md)에 있다.
+
+## 읽기 RLS 기본값
+
+**기본은 「승인된 사람 전원 읽기」다.** 날·자리·배정·요청·인증 상태처럼 전원이 보는 표가 다수라 기본값과 맞는다. `is_approved()`·`is_admin()` 두 SQL 함수를 모든 정책이 공유한다. 둘은 `security definer`·`stable`·`search_path = ''`다 — `profiles` 정책이 `profiles`를 읽는 함수를 부르면 재귀에 걸린다.
+
+승인 전은 자기 `profiles`·`profile_private` 행만 읽는다(ADR-003). 퇴사자는 자기 행만이다 — 자기 배정·인증·시급과 그 배정이 든 `days`. 남의 지난 기록도 안 연다([account/README.md](../modules/account/README.md#퇴사)).
+
+좁히는 표는 이렇다. 안 적은 표는 기본값이다. 왜 좁히는지는 각 도메인 파일에 있다.
+
+행은 각 영역 design의 소유 데이터에 있다.
+
+정책을 고치는 PR은 그 정책의 integration 테스트를 같이 낸다(ADR-003). 새 표에 좁히기를 까먹으면 새는 쪽으로 틀리니 그 테스트가 유일한 장치다.
+
+## 읽기
+
+**`dals`가 표를 직접 `select`하고 PostgREST 임베딩으로 join한다.** 근무표 한 달은 `from('days').select('*, slots(*), assignments(*, profiles(display_name))')` 한 질의다. `assignments`는 `days`에서 바로 임베딩한다 — `slots`를 거치면 `slot_id`가 없는 교육 배정이 빠진다. 임베딩에는 `ended_at is null` 필터를 건다 — 화면은 이력을 안 그린다. 인증은 안 든다. 달력이 인증 상태를 안 그리고 명단이 그날치를 따로 읽는다([`attendance/design.md`](../modules/attendance/design.md)). RLS가 표마다 걸려 임베딩된 표도 걸러진다 — 근무자가 `wage_rates`를 임베딩해도 자기 행만 온다. 단 `grant select`가 없는 표는 빈 결과가 아니라 오류라, 새 표를 만들 때 grant를 빠뜨리면 그 표를 임베딩한 질의 전체가 죽는다.
+
+뷰는 둘뿐이다. `excuse_status`(사유 글을 뺀 판정)와 `open_slots`(빈 자리). 둘 다 `security_invoker`라 RLS를 그대로 탄다. Supabase linter의 `security_definer_view`가 나머지를 잡는다.
+
+임베딩 문자열은 런타임에서만 틀린다. 표가 바뀌면 `dals`의 integration 테스트가 잡는다 — `dals` 함수의 짝 테스트는 integration으로 쓴다. 훅은 unit도 통과시키니 이건 `implementer` 정의문과 `pr-diff`가 본다.
+
+한 질의는 `max_rows`(지금 1000)에서 잘린다. 잘려도 오류가 아니다. 알림처럼 안 지우고 쌓이는 표는 첫 사람이 1000에 닿기 전에 `range()`를 건다 — 어느 표부터인지는 [system/runtime.md](runtime.md#읽기-범위)가 정한다.
+
+**타입은 표에서 뽑는다.** `supabase gen types typescript --local > src/shared/api/database.types.ts`. 파일을 저장소에 넣고 CI가 마이그레이션 뒤 다시 뽑아 diff가 0인지 본다 — 표를 바꾸고 타입을 안 뽑으면 빨간불이다. CLI 버전이 다르면 포맷이 달라 헛빨간불이 나니 CI는 로컬과 같은 버전을 박는다. `pnpm types`가 그 명령을 감싼다. 지금은 `pnpm types`도 CI 검사도 없다 — `backlog.md` 「타입 생성 절차」가 세운다.
+
+## 쓰기 함수
+
+관리자 쓰기(가입 승인, 근무표 확정, 기본 시급 변경, 퇴사 처리)가 함수여야 하는 이유는 컬럼 권한이 역할 단위라서다 — `authenticated`에 `approved_at` 갱신을 열면 본인이 자기 승인을 채운다. 근무자 쓰기(근무 신청 덮어쓰기, 근무 요청 수락, 출근 인증)가 함수여야 하는 이유는 선착순·서버 시각·여러 행 덮어쓰기가 전부 한 트랜잭션이어야 해서다. supabase-js에는 트랜잭션이 없다.
+
+함수 안에서 「호출자가 관리자인가」·「승인됐나」를 검사한다. 이 검사를 빠뜨린 함수가 구멍이라 함수를 만드는 PR은 그 검사의 integration 테스트를 같이 낸다. 목록과 규칙은 [쓰기](#쓰기)에 있다.
+
+## 쓰기
+
+**쓰기는 Postgres 함수고 `dals`가 `rpc()`로 부른다.** 이유는 [쓰기 함수](#쓰기-함수)에 있다. 함수 목록은 도메인 파일에 있고 여기는 규칙이다.
+
+### 이름과 자리
+
+`<동사>_<목적어>` snake_case다. 동사는 도메인 문서의 행위 이름을 따른다 — 승인은 `approve`, 확정은 `confirm`, 강제 변경은 `force`. 마이그레이션 파일은 도메인마다 하나(`<날짜>_<도메인>_functions.sql`)고 함수는 그 안에 모인다.
+
+**호출자가 있는 함수는 `public`, 없는 함수는 `internal` 스키마다.** `public`의 함수는 전부 PostgREST `/rpc/`로 노출되고 로그인한 누구나 부른다. pg_cron이 부르는 함수를 `public`에 두면 근무자가 devtools에서 `expire_requests()`를 불러 남의 요청을 만료시킨다. `internal`은 PostgREST가 모르는 스키마라 까먹으면 새는 쪽이 아니라 안 도는 쪽으로 틀린다.
+
+누구나 부르는 것은 `server_now()` 하나다.
+
+### 함수 안의 규칙
+
+- 첫 줄이 호출자 검사다. `auth.uid()`로 프로필을 찾고 `is_admin()`·`is_approved()`를 본다. 검사가 없는 함수는 구멍이라 함수 PR은 그 검사의 integration 테스트를 같이 낸다
+- 시각 판정은 `now()`다. 인자로 시각을 받지 않는다 — 기기 시계가 들어올 자리가 없다. 예외는 `check_in`의 `reported_at` 하나고 한도가 붙는다([`attendance/design.md`](../modules/attendance/design.md))
+- 여러 행을 바꾸는 것은 전부 한 함수 안이다. 기본 시급 변경이 서른 행을 넣다 끊기면 전부 되돌아간다
+- 사건 알림은 같은 함수 안에서 `notifications`에 넣는다
+- `security definer`, `set search_path = ''`, 표는 스키마를 붙여 부른다(`public.profiles`)
+- 함수는 상수를 리터럴로 든다. 정본은 TypeScript고 대조 테스트가 맞춘다([system/runtime.md](runtime.md#업무-상수))
+- unique·check 제약에 닿기 전에 검사해 코드를 던진다. 제약이 먼저 걸리면 화면이 「다시 시도」를 시킨다
+
+## 오류의 모양
+
+**함수는 실패를 예외로 던지고, 메시지가 고정 코드다.** `raise exception using message = 'slot_full'`. 예외라 트랜잭션이 저절로 되돌아간다.
+
+`dals`가 예외를 둘로 가른다.
+
+- `DomainError` — 메시지가 코드 목록에 있는 것. 코드 목록은 `src/shared/api/error-codes.ts`가 정본이고 대조 테스트가 마이그레이션의 `raise` 문자열과 맞춘다
+- `TransportError` — 그 밖의 전부. 통신 실패, 타임아웃, 모르는 코드
+
+화면은 이 둘만 본다. `TransportError`면 시트를 열어둔 채 「보내지 못했어요. 다시 시도해주세요」다. `DomainError`는 코드마다 페이지 문서가 정한 대로다.
+
+| 코드 | 언제 | 화면 |
+| --- | --- | --- |
+| `slot_full` | 근무 요청 수락이 선착순에 졌다 | 시트 닫고 토스트 「자리가 찼어요」 |
+| `request_closed` | 요청이 만료됐거나 다른 사람이 통과했다 | 시트 닫고 새로 읽기 |
+| `stale` | 화면이 든 id가 닫혔거나 없는 행이다 | 「이 근무가 바뀌었어요」, 새로 읽기 |
+| `already_done` | 재시도가 두 번 닿아 이미 쓴 행이 있다 | 성공으로 처리 |
+| `already_assigned` | 그날 이미 다른 자리에 든 사람이다 | 관리자 화면이 자리 합치기를 안내 |
+| `not_qualified` | 포지션 자격이 없다 | 관리자 컨펌 시트 |
+| `window_closed` | 인증 창·요청 마감·취소 마감 밖이다 | 버튼이 잘못 켜진 것. 새로 읽기 |
+| `too_early` | 신청 마감 전에 확정하려 했다 | 마감일 당기기 안내 |
+| `too_far`, `invalid_qr` | 홀 반경 밖, 옛 코드 | 인증 화면 문안 |
+| `last_admin` | 마지막 관리자를 내리려 했다 | 문안 |
+| `has_future_assignments` | 앞 배정이 남은 사람을 퇴사 처리했다 | 남은 자리 목록은 화면이 먼저 읽어 보여준다 |
+| `not_allowed` | 관리자 검사에 걸렸거나 RLS 거부(`42501`) | 버튼이 잘못 켜진 것. 새로 읽기 |
+
+**`stale`은 닫혔거나 없는 행이다.** 배정·자리·요청이 바뀌면 옛 행이 닫히고 새 행이 선다([`schedule/design.md`](../modules/schedule/design.md#배정)). 확정 전에는 행이 지워진다. 화면이 들고 있던 id가 그 둘 중 하나면 함수가 `stale`을 던진다. 버전 열 없이 「상태가 바뀜」을 잡는다.
+
+**오류에 데이터를 싣지 않는다.** 코드 하나면 화면이 새로 읽는다. 목록이 필요한 자리(퇴사의 남은 배정)는 버튼을 누르기 전에 화면이 읽어둔다. 실을 것이 셋째로 생기면 `using detail`을 연다.
+
+**읽기 오류는 전부 `TransportError`다.** RLS는 읽기를 거부하지 않고 빈 결과를 준다.
+
+## 서비스 키 자리
+
+ADR-003이 「왜 필요한지를 이 문서에 먼저 적는다」고 한 자리다. 둘이다.
+
+- `auth.users` 삭제 — Admin API뿐이다([`account/design.md`](../modules/account/design.md#퇴사-1년-뒤))
+- Edge Function이 `notifications.pushed_at`을 찍는 것 — 함수는 사용자 세션 없이 돈다([`notification/design.md`](../modules/notification/design.md))
+
+ADR-003이 「자리마다 문서에 먼저 적는다」고 한 것. 둘이고 둘 다 Edge Function 안이다. 브라우저와 Next 서버에는 없다.
+
+- **`send-push`** — [`notification/design.md`](../modules/notification/design.md#푸시-보내기)
+- **`erase-account`** — [`account/design.md`](../modules/account/design.md#비우기)
+
+## 컬럼 이름 규칙
+
+- 시점은 `<동사>_at` — `approved_at`, `ended_at`, `checked_at`, `read_at`
+- 날짜는 `<명사>_date` — `work_date`, `effective_date`
+- 사람 참조는 `profile_id`. 행위자를 따로 적을 때는 `<동사>_by` — `ended_by`, `granted_by`
+- 상태 열은 두지 않는다. 예외는 `request_candidates.status`뿐이다
+- 도메인 용어와의 대응: 자리=`slots`, 배정=`assignments`, 근무 신청=`availabilities`, 근무 요청·교대=`requests`, 근무 취소=`cancel_requests`, 인증=`check_ins`, 사유=`excuses`, 조정=`adjustments`, 시급=`wage_rates`, 자격 부여=`position_grants`

@@ -13,20 +13,20 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 - [ ] 계정 데이터 구조를 전환한다 — 기존 마이그레이션과 integration 테스트를 갈아엎는다. 「다음」의 plan 쓰기 뒤
 - [ ] 인증 진입을 전환한다 — `middleware.ts`를 `proxy.ts`로, 서버 `readAuthGate`의 승인 판정을 클라이언트 `['profile']`로. 정본은 [account/design.md](2-design/modules/account/design.md). `matcher`를 이때 같이 본다. 계정 데이터 구조 전환 뒤
-- [ ] 타입 생성 절차를 세운다 — `pnpm types`가 `supabase gen types`를 감싸고 CI가 마이그레이션 뒤 diff 0을 본다. 정본은 [api/README.md](2-design/architecture/api/README.md#읽기). 계정 데이터 구조 전환 뒤
-- 근무표 — 달 만들기·날 열기·신청·확정. [schedule/design.md](2-design/modules/schedule/design.md). 달 키의 범위(달력 달인지 주 범위인지)가 [runtime](2-design/architecture/runtime/README.md#아직-안-정한-것)에 열려 있어 먼저 닫는다
+- [ ] 타입 생성 절차를 세운다 — `pnpm types`가 `supabase gen types`를 감싸고 CI가 마이그레이션 뒤 diff 0을 본다. 정본은 [system/data-access.md](2-design/system/data-access.md#읽기). 계정 데이터 구조 전환 뒤
+- 근무표 — 달 만들기·날 열기·신청·확정. [schedule/design.md](2-design/modules/schedule/design.md). 달 키의 범위(달력 달인지 주 범위인지)가 [schedule/design.md](2-design/modules/schedule/design.md#아직-안-정한-것)에 열려 있어 먼저 닫는다
 - 출근 인증 — [attendance/design.md](2-design/modules/attendance/design.md). 근무표 뒤
 - 급여 계산 — [payroll/design.md](2-design/modules/payroll/design.md). 출근 인증 뒤
 - 알림(1차) — 공통 전송 기반과 1차 알림(승인·확정·전날·직전, [roadmap](1-plan/roadmap.md#릴리스-목록)). [notification/design.md](2-design/modules/notification/design.md#ui-연결). Edge Function 스파이크 뒤
-- 교대 알림·관리자 공지(2차) — 알림(1차) 뒤. 교대 승인 화면이 [flows](2-design/architecture/flows/README.md#아직-안-정한-것)에 열려 있어 먼저 닫는다
+- 교대 알림·관리자 공지(2차) — 알림(1차) 뒤. 교대 승인 화면이 [system/navigation.md](2-design/system/navigation.md#아직-안-정한-것)에 열려 있어 먼저 닫는다
 - 첫 출시 준비 — 배포 문서(적용·확인·되돌리기 순서, 환경별 설정 위치)와 운영 문서(장애 확인 위치·대응 담당·복구 후 확인)의 최소 안내, 지표의 집계 기준(분모·기간·수집 대상, [metrics.md](1-plan/metrics.md)). [5-deploy](5-deploy/README.md)·[6-maintain](6-maintain/README.md). 배포 플랫폼을 정한 뒤 — 1차 기능이 다 선 다음이고 데이터 task의 선행이 아니다
 - [ ] 근무자 대시보드를 만든다 — 위 넷이 서기 전에는 못 연다. 착수할 때 spec을 [설계 안내](2-design/README.md#spec)의 새 형식(요구·설계·완료 조건·범위 밖)으로 다시 쓴다 — [spec](2-design/spec/dashboard.md)
 
 ## 후보
 
 - [ ] 승인 대기 화면의 넷째 도는 문구를 1차 문구로 바꾼다 — 「못 가는 날은 교대를 부탁해요」는 2차 교대 문구다. 문구는 [login.md](2-design/modules/account/screens/login.md#아직-안-정한-것)에서 정하고 문서·시안·`pending-screen.tsx` 셋을 같이 고친다. 1차 배포 전
-- [ ] `architecture/` 넷의 세세함 수준을 정한다 — 산문 반 결정 반이라 plan처럼 읽힌다는 지적. 총괄이 직접 손본다. 그때까지 지금 수준이 정본
-- [ ] iOS 홈 화면 앱에서 기기로 확인할 둘 — 가장자리 스와이프가 `popstate`를 주는지(안 주면 시트를 history에서 뺀다), `visibilitychange`가 앱 전환마다 오는지. [flows](2-design/architecture/flows/README.md#아직-안-정한-것)·[runtime](2-design/architecture/runtime/README.md#아직-안-정한-것)
+- [ ] `system/` 넷의 세세함 수준을 정한다 — 산문 반 결정 반이라 plan처럼 읽힌다는 지적. 총괄이 직접 손본다. 그때까지 지금 수준이 정본
+- [ ] iOS 홈 화면 앱에서 기기로 확인할 둘 — 가장자리 스와이프가 `popstate`를 주는지(안 주면 시트를 history에서 뺀다), `visibilitychange`가 앱 전환마다 오는지. [system/navigation.md](2-design/system/navigation.md#아직-안-정한-것)·[system/runtime.md](2-design/system/runtime.md#아직-안-정한-것)
 - [ ] 로고 렌더를 지키는 e2e 한 줄 — `public/google-g.svg`를 지워도 e2e가 초록이다. 「버튼 안 로고의 `background-image`가 비어 있지 않다」
 - [ ] CI에 webkit을 더한다 — 주 타깃이 아이폰 사파리인데 chromium만 돈다. [ADR-007](2-design/adr/ADR-007-web-pwa-over-native.md)이 열어둔 값
 - [ ] `motion.md`에 `delay-*` 함정을 적고 테스트로 잡는다 — core Tailwind의 `transition-delay`가 이겨서 `tw-animate-css`는 `[--tw-animation-delay]`로 우회하는데, 라이브러리 내부 변수라 이름이 바뀌면 조용히 죽는다

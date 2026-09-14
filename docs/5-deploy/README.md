@@ -13,4 +13,4 @@
 ## 알아둘 것
 
 - Wanted Sans는 CDN(jsdelivr) 의존이다. self-host가 아니라 그 서비스가 죽으면 시스템 폴백으로 떨어진다. `layout.tsx`의 `preconnect`는 지연만 줄인다.
-- Supabase Free는 7일 무활동이면 프로젝트가 멈춘다 — [api/README.md](../2-design/architecture/api/README.md)가 적었다. 출시 전 스테이징이 걸린다.
+- Supabase Free는 7일 무활동이면 프로젝트가 멈춘다 — [environments.md](environments.md#free-플랜)가 든다. 출시 전 스테이징이 걸린다.

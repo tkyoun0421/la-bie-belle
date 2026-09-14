@@ -4,9 +4,9 @@
 
 ## 참조 규칙
 
-공통 스키마·권한·컬럼 규약은 [data-model/README.md](../../architecture/data-model/README.md), 읽기·쓰기·타입·에러 계약은 [api/README.md](../../architecture/api/README.md), 캐시 계층·무효화 표·시각은 [runtime/README.md](../../architecture/runtime/README.md)를 따른다.
+공통 스키마·권한·컬럼 규약과 읽기·쓰기·타입·에러 계약은 [system/data-access.md](../../system/data-access.md), 캐시 계층·시각은 [system/runtime.md](../../system/runtime.md), 시스템 경계는 [system/architecture.md](../../system/architecture.md)를 따른다.
 
-키 넷이다. 무효화는 [runtime/README.md](../../architecture/runtime/README.md#무효화-표)에 있다.
+키 넷이다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
 
 - `['schedule', 'YYYY-MM']` — 한 달의 `days`·`slots`·`assignments`·`profiles(display_name)`를 한 임베딩으로 받는다([행위 밖의 실행 동작](#행위-밖의-실행-동작)). 인증은 안 든다 — 달력이 출근 상태를 안 그린다. 달력·하루·명단의 배정이 전부 이 키에서 갈라 그린다
 - `['availability', 'YYYY-MM']` — 본인 신청. 관리자의 신청 현황은 `['availability', 'YYYY-MM', 'all']`이다. `work_date`에 딸려 `days`에 임베딩할 수 없어 따로 읽는다
@@ -16,6 +16,25 @@
 ## 소유 데이터
 
 표는 `schedules`·`days`·`slots`·`assignments`·`position_grants`·`availabilities`·`requests`·`request_candidates`·`cancel_requests` 아홉이다. `requests`는 교대와 같이 쓴다 — 교대 쪽은 [swap/design.md](../swap/design.md)에 있다.
+
+| 테이블 | 파일 | 한 줄 |
+| --- | --- | --- |
+| `schedules` | schedule | 한 달 근무표. 신청 마감일, 확정 시각 |
+| `days` | schedule | 연 날 하나. 근무 시작·끝 시각, 연 시각 |
+| `slots` | schedule | 어느 날 어느 포지션(들)의 자리 하나. 겸임은 포지션 둘을 든 새 행 |
+| `assignments` | schedule | 자리에 든 사람 하나. 교육 배정도 여기 |
+| `position_grants` | schedule | 관리자가 「자격까지 줌」을 고른 기록 |
+| `availabilities` | schedule | 근무 신청 — 누가 어느 날짜에 일할 수 있나 |
+| `requests` | schedule | 근무 요청과 교대 요청. `kind`로 가른다 |
+| `request_candidates` | schedule | 요청의 갈래 — 누가 답했나 |
+| `cancel_requests` | schedule | 근무자가 자기 배정을 무르는 요청과 판정 |
+
+읽기 RLS는 기본값을 좁힌다.
+
+| 표 | 누가 읽나 |
+| --- | --- |
+| `availabilities` | 본인 행과 관리자 |
+| `cancel_requests` | 본인 행과 관리자 |
 
 ### 날과 자리
 
@@ -54,6 +73,10 @@ unique index 둘이 도메인 규칙을 지킨다.
 
 **따로 둔다.** `cancel_requests(assignment_id, reason, decided_at, decision, decision_reason)`. 거절되면 새 행이다 — 사유와 같은 꼴이다. 본인과 관리자만 읽는다.
 
+### 계산의 예외 하나
+
+「빈 자리」 판정만 SQL이다. `open_slots` 뷰(`security_invoker`)가 살아 있는 자리 중 살아 있는 정규 배정이 없는 것을 낸다. pg_cron의 빈자리 재촉과 관리자 화면이 같은 뷰를 읽는다 — TS와 cron SQL에 같은 규칙이 두 벌 서는 것을 막는다.
+
 ## 행위별 구현 계약
 
 ### 근무표 만들기와 마감일
@@ -62,11 +85,19 @@ unique index 둘이 도메인 규칙을 지킨다.
 | --- | --- |
 | `create_schedule`, `set_application_deadline`, `confirm_schedule` | 근무표 만들기·마감일 바꾸기·확정. 마감 전 확정은 `too_early` |
 
+| 함수 | 무효화 |
+| --- | --- |
+| `create_schedule` · `set_application_deadline` · `confirm_schedule` · `open_day` · `close_day` · `set_day_hours` · `add_slot` · `remove_slot` · `merge_slots` · `split_slot` · `add_assignment` · `remove_assignment` · `force_change` | `['schedule']` `['payroll']` `['requests']` |
+
 ### 근무 신청 내기
 
 | 함수 | 하는 일 |
 | --- | --- |
 | `submit_availability` | 근무 신청. 그 달 행을 지우고 새로 넣는다. 마감 지나면 `window_closed` |
+
+| 함수 | 무효화 |
+| --- | --- |
+| `submit_availability` | `['availability']` |
 
 **근무 신청 체크만 즉시 칠한다.** 달력에서 날짜를 누르면 바로 표시되고 저장 버튼이 `submit_availability`를 한 번 보낸다. 실패하면 서버 값으로 되돌리고 토스트다. 마감이 지나 `window_closed`가 오면 달력을 잠근다.
 
@@ -98,11 +129,19 @@ unique index 둘이 도메인 규칙을 지킨다.
 | --- | --- |
 | `grant_position` | 자격까지 주기 |
 
+| 함수 | 무효화 |
+| --- | --- |
+| `grant_position` | `['members']` |
+
 ### 근무 요청 보내기
 
 | 함수 | 하는 일 |
 | --- | --- |
 | `send_work_request` | 근무 요청 보내기(여럿에게) |
+
+| 함수 | 무효화 |
+| --- | --- |
+| `send_work_request` · `respond_request` · `approve_swap` · `create_swap_request` · `create_cancel_request` · `decide_cancel_request` | `['schedule']` `['payroll']` `['requests']` |
 
 관리자가 날 상세에서 여럿에게 보낸다(`send_work_request`) → 받은 근무자마다 알림 → `/schedule?date=` 그날 시트의 요청 카드 → 「근무할게요」(`respond_request`) → 첫 사람만 통과, 나머지는 `slot_full` → 관리자에게 수락 알림 → 날 상세. 전부 거절이거나 배치 `expire_requests`가 만료시키면 관리자에게 전부 소진 알림 → 날 상세.
 
@@ -137,6 +176,10 @@ unique index 둘이 도메인 규칙을 지킨다.
 
 달을 넘기면 다음 달 키를 읽는다. 앞뒤 한 달은 `prefetchQuery`로 미리 받는다 — 근무표 화면에서 넘기는 일이 잦다. 세 달 밖은 그때 읽는다.
 
+범위 없이 읽는 키의 범위는 이렇다([system/runtime.md](../../system/runtime.md#읽기-범위)).
+
+- `['requests']` — 살아 있는 것과 닫힌 지 30일 안
+
 ## UI 연결
 
 pg_cron(`internal`) — `expire_requests`(48시간·12시간 만료와 「전부 끝남」 알림), `emit_reminders`의 빈자리 재촉이 `open_slots` 뷰를 읽는다.
@@ -145,5 +188,8 @@ pg_cron(`internal`) — `expire_requests`(48시간·12시간 만료와 「전부
 
 ## 아직 안 정한 것
 
+- `schedules`와 주 범위(8월 = 8/3~9/6)의 대응을 누가 계산하나 — 날 열기 함수와 달력 둘 다 필요하다
+- 달 키의 범위 — 달력 달인지 근무표 주 범위인지는 [같은 절의 첫 항목](#아직-안-정한-것)이 열어뒀다. `['schedule']`·`['payroll']`·`['availability']` 키가 그 결정에 딸린다
+- `?month=`가 달력 달인지 근무표 달(10월 5일~11월 1일)인지 — [같은 절의 달 키 항목](#아직-안-정한-것)의 달 키와 같은 결정이다. `?date=2026-11-01` 시트를 닫으면 어느 달로 돌아가나가 여기 걸린다
 - 「배웠다」의 기준 — 교육 배정이 서면인가, 출근 인증까지인가. 자격 계산이 이걸 든다
 - `emit_reminders`의 「주말은 금요일 저녁 9시에 묶어서」 — 함수 하나가 요일을 보고 가르는지, cron 항목을 요일별로 두는지

@@ -17,6 +17,9 @@ const OLD_DOMAIN = legacyPath("docs/", "domain");
 const OLD_ADR = legacyPath("docs/", "adr/");
 const OLD_SPEC = legacyPath("docs/", "spec/");
 const OLD_DESIGN_SYSTEM = legacyPath("docs/", "design-system/");
+const OLD_DESIGN_DOMAIN = legacyPath("docs/2-design/", "domain/");
+const OLD_ARCHITECTURE = legacyPath("docs/2-design/", "architecture/");
+const OLD_PAGES = legacyPath("docs/2-design/", "design-system/pages/");
 
 const RISK_10_CASES: [string, string][] = [
   [OLD_PLAN, `옛 계획 문서였던 ${OLD_PLAN}를 아직 참고한다.`],
@@ -28,6 +31,15 @@ const RISK_10_CASES: [string, string][] = [
     OLD_DESIGN_SYSTEM,
     `옛 디자인 시스템 자리였던 ${OLD_DESIGN_SYSTEM}를 아직 참고한다.`,
   ],
+  [
+    OLD_DESIGN_DOMAIN,
+    `옛 도메인 자리였던 ${OLD_DESIGN_DOMAIN}를 아직 참고한다.`,
+  ],
+  [
+    OLD_ARCHITECTURE,
+    `옛 구조 설계 자리였던 ${OLD_ARCHITECTURE}를 아직 참고한다.`,
+  ],
+  [OLD_PAGES, `옛 페이지 문서 자리였던 ${OLD_PAGES}를 아직 참고한다.`],
 ];
 
 const RISK_14_CASES: [string, string][] = [
@@ -147,6 +159,15 @@ describe("구 경로 잔존 검사", () => {
     expect(violations.map((violation) => violation.pattern)).toContain(
       OLD_PLAN,
     );
+  });
+
+  it("옛 경로를 당시 기록으로 든 문서의 허용 줄은 그 파일에서만 통한다", () => {
+    const root = tempRoot();
+    const sentence = `**수정 대상.** \`${OLD_ARCHITECTURE}flows/README.md\`를 고친다.`;
+    write(root, "docs/proposals/docs-structure-followup.md", `${sentence}\n`);
+    write(root, "docs/proposals/other.md", `${sentence}\n`);
+
+    expect(violatingFiles(root)).toEqual(["docs/proposals/other.md"]);
   });
 
   it.each(RISK_14_CASES)(

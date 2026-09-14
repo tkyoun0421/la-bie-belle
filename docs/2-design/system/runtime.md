@@ -2,8 +2,6 @@
 
 돌아갈 때의 규칙이 산다. 언제 다시 읽나, 무엇을 먼저 그리나, 어긋나면 누가 이기나다.
 
-[`../data-model/`](../data-model/)이 무엇을 저장하는지를 말하고 [`../api/`](../api/)가 어떻게 주고받는지를 말한다면, 여기는 그 위에서 시간과 순서를 다룬다. 이 파일이 가로지르는 것을 들고, 도메인마다의 것은 같은 이름의 파일에 산다 — [`account/design.md`](../../modules/account/design.md) · [`schedule/design.md`](../../modules/schedule/design.md) · [`swap/design.md`](../../modules/swap/design.md) · [`attendance/design.md`](../../modules/attendance/design.md) · [`payroll/design.md`](../../modules/payroll/design.md) · [`notification/design.md`](../../modules/notification/design.md).
-
 ## 캐시 네 계층
 
 | 계층 | 결정 |
@@ -15,7 +13,7 @@
 
 **realtime을 안 쓰는 이유.** 서른 명·홀 하나라 남이 바꾸는 일이 분에 한 번도 안 된다. 선착순은 함수가 풀었고(`slot_full`) 동시 편집은 `stale`이 잡는다 — 막히지 않고 늦게 안다. 소켓 연결·재연결·배터리를 치를 값이 없다.
 
-**서버가 승인을 판정하지 않는 이유.** 승인·차단·퇴사를 서버가 HTML에 그리면 그 HTML이 세션마다 달라 Service Worker가 캐시할 수 없고, 오프라인에 앱이 안 뜬다. 그래서 `proxy`는 세션이 없으면 `/login`으로 보내는 것까지만 하고, 승인·차단·퇴사는 앱이 뜬 뒤 클라이언트가 `['profile']`을 읽어 가른다 — [`account/design.md`](../../modules/account/design.md). 브라우저가 Supabase를 바로 부르니([`../api/`](../api/#경계-하나)) 서버가 데이터를 그릴 이유도 없다.
+**서버가 승인을 판정하지 않는 이유.** 승인·차단·퇴사를 서버가 HTML에 그리면 그 HTML이 세션마다 달라 Service Worker가 캐시할 수 없고, 오프라인에 앱이 안 뜬다. 그래서 `proxy`는 세션이 없으면 `/login`으로 보내는 것까지만 하고, 승인·차단·퇴사는 앱이 뜬 뒤 클라이언트가 `['profile']`을 읽어 가른다 — [`account/design.md`](../modules/account/design.md). 브라우저가 Supabase를 바로 부르니([system/architecture.md](architecture.md#경계-하나)) 서버가 데이터를 그릴 이유도 없다.
 
 ## TanStack Query 규칙
 
@@ -28,26 +26,9 @@
 
 ## 무효화 표
 
-쓰기 함수가 성공하면 무효화하는 키다. 도메인 파일은 이 표를 가리키고 따로 적지 않는다 — 흩어 적으면 어긋나도 아무도 못 본다.
-
 **규칙 하나.** `['schedule']`을 무효화하는 함수는 `['payroll']`도 무효화한다 — 급여는 배정에서 계산한다.
 
-| 함수 | 무효화 |
-| --- | --- |
-| `create_schedule` · `set_application_deadline` · `confirm_schedule` · `open_day` · `close_day` · `set_day_hours` · `add_slot` · `remove_slot` · `merge_slots` · `split_slot` · `add_assignment` · `remove_assignment` · `force_change` | `['schedule']` `['payroll']` `['requests']` |
-| `send_work_request` · `respond_request` · `approve_swap` · `create_swap_request` · `create_cancel_request` · `decide_cancel_request` | `['schedule']` `['payroll']` `['requests']` |
-| `submit_availability` | `['availability']` |
-| `grant_position` | `['members']` |
-| `check_in` | `['attendance', 그날]` |
-| `submit_excuse` · `decide_excuse` | `['attendance', 그날]` `['excuses']` `['payroll']` |
-| `set_wage` · `reset_wage_to_default` · `set_default_wage` · `set_adjustment` | `['payroll']` |
-| `approve_member` | `['members']` `['payroll']` |
-| `reject_member` · `block_member` · `unblock_member` · `set_role` · `mark_leave` · `undo_leave` | `['members']` |
-| `set_display_name` · `submit_profile` | `['profile']` `['members']` `['schedule']` |
-| `set_hall_location` · `set_hall_defaults` | `['hall']` |
-| `rotate_qr` | `['hall', 'qr']` |
-| `post_announcement` · `mark_notifications_read` | `['notifications']` |
-| `save_push_subscription` · `remove_push_subscription` | 없음 |
+무효화 키는 행위를 소유한 영역 design이 든다.
 
 ## 오프라인
 
@@ -57,11 +38,27 @@
 
 띠는 `navigator.onLine`이 아니라 **실제 요청 실패**로 뜬다. `onLine`은 와이파이에 붙었지만 인터넷이 안 되는 상태를 못 가른다. 다시 읽기가 성공하면 띠가 진다.
 
-**쓰기는 큐에 넣지 않는다.** 언제 갈지 모르는 쓰기는 사람이 「됐다」고 믿고 가버리는 것이 문제다. 출근 인증만 예외적으로 화면이 열린 동안 다시 시도한다 — [`attendance/design.md`](../../modules/attendance/design.md).
+**쓰기는 큐에 넣지 않는다.** 언제 갈지 모르는 쓰기는 사람이 「됐다」고 믿고 가버리는 것이 문제다. 출근 인증만 예외적으로 화면이 열린 동안 다시 시도한다 — [`attendance/design.md`](../modules/attendance/design.md).
 
 ## 시각
 
-**앱이 뜨면 `server_now()` 한 번, 그 차이를 기기 시계에 더해 쓴다.** 탭 복귀 때 다시 받는다. 오프셋은 `localStorage`에 남겨 오프라인으로 뜨면 마지막 값을 쓰고, 없으면 0이다. 하루 띠·카운트다운·버튼 켜짐이 이 값이고 매초 도는 것은 로컬 계산이다. 판정은 함수의 `now()`다 — [`../api/`](../api/#서버-시각). 예외는 출근 인증의 `reported_at` 하나다.
+**앱이 뜨면 `server_now()` 한 번, 그 차이를 기기 시계에 더해 쓴다.** 탭 복귀 때 다시 받는다. 오프셋은 `localStorage`에 남겨 오프라인으로 뜨면 마지막 값을 쓰고, 없으면 0이다. 하루 띠·카운트다운·버튼 켜짐이 이 값이고 매초 도는 것은 로컬 계산이다. 판정은 함수의 `now()`다 — [서버 시각](#서버-시각). 예외는 출근 인증의 `reported_at` 하나다.
+
+## 서버 시각
+
+**앱이 뜨면 `server_now()`를 한 번 부르고 차이를 든다.** `offset = server - Date.now()`. 화면은 `Date.now() + offset`을 쓴다. 탭이 돌아올 때(`visibilitychange`) 다시 받는다. 하루 띠가 매초 도는 것은 이 값이다 — 서버를 매초 안 부른다.
+
+화면 시각은 보여주기용이다. 버튼이 켜지는 것, 카운트다운, 남은 시간이 여기 걸리고 판정은 함수의 `now()`다. 기기 시계를 바꿔 버튼을 켜도 눌러보면 `window_closed`가 온다. 언제 다시 받고 오프라인이면 어쩌나는 [시각](#시각)이 정한다.
+
+## 시각 컬럼
+
+**달력 날짜는 `date`, 시점은 전부 `timestamptz`다.** `days.work_date date`(KST 달력의 그날), `days.starts_at/ends_at timestamptz`, 인증·만료·마감·승인 시각 전부 `timestamptz`. `wage_rates.effective_date`·`availabilities.work_date`는 `date`. 함수가 `now()`와 바로 비교한다. 화면은 Asia/Seoul로 바꿔 그린다.
+
+「오늘이 며칠인가」를 SQL에서 쓸 때는 `(now() at time zone 'Asia/Seoul')::date`다. `now()::date`는 UTC 자정 근처에서 하루 틀린다.
+
+## 업무 상수
+
+**TypeScript 한 곳이 정본이다.** 인증 창(1시간 전~18시)·지각 10분·사유 48시간·요청 만료 48시간·교대 수락 12시간·연장 9시간 1.5배가 `src/entities/<도메인>/model/constants.ts`에 산다. 함수가 같은 숫자를 SQL 리터럴로 들고, `tests/lint/`의 대조 테스트가 마이그레이션의 `interval` 문자열과 TS 상수를 맞춘다.
 
 ## 경쟁 조건 기본값
 
@@ -94,15 +91,14 @@
 
 **범위 없이 읽는 키가 문제다.** 쌓이는 표는 여럿이지만 화면이 전체를 읽는 키는 셋이다.
 
-- `['notifications']` — `useInfiniteQuery` + `range()` 50건. 영속은 첫 세 페이지(`maxPages`)
-- `['requests']` — 살아 있는 것과 닫힌 지 30일 안
-- `['excuses']` — 달 단위 `['excuses', 'YYYY-MM']`
+어느 키가 어떤 범위인지는 그 키를 소유한 영역 design에 있다.
 
 통계가 여러 달을 합칠 때는 달마다 질의한다.
 
 ## 아직 안 정한 것
 
-- 달 키의 범위 — 달력 달인지 근무표 주 범위인지는 [`../data-model/`](../data-model/#아직-안-정한-것)이 열어뒀다. `['schedule']`·`['payroll']`·`['availability']` 키가 그 결정에 딸린다
+도메인에 속하는 미정은 각 파일 끝에 있다. 가로지르는 것만 여기다.
+
 - iOS 홈 화면 앱에서 `visibilitychange`가 앱 전환마다 오는지 — 탭 복귀 재조회와 시각 재동기화가 이 이벤트에 산다. 기기 테스트
 - 화면 사이 전환 모션 — `motion.md` 몫이다
 - 「통신 없음」 띠의 모양 — `components.md`에 없다. 알림 블록의 중립 종류가 후보다

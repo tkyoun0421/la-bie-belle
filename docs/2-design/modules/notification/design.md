@@ -4,13 +4,25 @@
 
 ## 참조 규칙
 
-공통 스키마·권한·컬럼 규약은 [data-model/README.md](../../architecture/data-model/README.md), 읽기·쓰기·타입·에러 계약은 [api/README.md](../../architecture/api/README.md), 캐시 계층·무효화 표·시각은 [runtime/README.md](../../architecture/runtime/README.md)를 따른다.
+공통 스키마·권한·컬럼 규약과 읽기·쓰기·타입·에러 계약은 [system/data-access.md](../../system/data-access.md), 캐시 계층·시각은 [system/runtime.md](../../system/runtime.md), 시스템 경계는 [system/architecture.md](../../system/architecture.md)를 따른다.
 
-키는 `['notifications']`(`useInfiniteQuery` + `range()` 50건)와 `['notifications', 'unread']`(안 읽은 수, `head: true` count 질의)다. 무효화는 [runtime/README.md](../../architecture/runtime/README.md#무효화-표)에 있다.
+키는 `['notifications']`(`useInfiniteQuery` + `range()` 50건)와 `['notifications', 'unread']`(안 읽은 수, `head: true` count 질의)다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
 
 ## 소유 데이터
 
 표는 `notifications`·`push_subscriptions` 둘이다.
+
+| 테이블 | 파일 | 한 줄 |
+| --- | --- | --- |
+| `notifications` | notification | 사람에게 간 알림 하나. 읽음·잡음·성공 시각 |
+| `push_subscriptions` | notification | 기기의 Web Push 구독 |
+
+읽기 RLS는 기본값을 좁힌다.
+
+| 표 | 누가 읽나 |
+| --- | --- |
+| `notifications` | 본인 행 |
+| `push_subscriptions` | 본인 행 |
 
 ### 알림 행
 
@@ -36,6 +48,10 @@
 | --- | --- | --- |
 | `post_announcement` | 관리자 | 공지. 승인된 전원에게 행이 선다 |
 
+| 함수 | 무효화 |
+| --- | --- |
+| `post_announcement` · `mark_notifications_read` | `['notifications']` |
+
 ### 읽음 찍기
 
 | 함수 | 누가 | 하는 일 |
@@ -49,6 +65,10 @@ domain대로 ✕·CTA·답 셋 중 하나를 눌러야 읽음이다. 목록을 �
 | 함수 | 누가 | 하는 일 |
 | --- | --- | --- |
 | `save_push_subscription`, `remove_push_subscription` | 근무자 | 기기 구독 |
+
+| 함수 | 무효화 |
+| --- | --- |
+| `save_push_subscription` · `remove_push_subscription` | 없음 |
 
 로그인 뒤 첫 화면에서 `'Notification' in window`를 먼저 본다 — iOS Safari 탭에는 이 객체가 없고 홈 화면 앱에만 있다. `permission === 'granted'`면 `pushManager.getSubscription()`으로 구독을 받아 `save_push_subscription`을 부른다. 권한은 있는데 구독이 없을 수 있고 `endpoint`가 바뀌는 일도 있어 매 진입에 보낸다 — 함수는 `endpoint` upsert다. `default`면 알림 설정 화면의 버튼이 사용자 제스처 안에서 묻는다. 진입 즉시 권한을 묻지 않는다.
 
@@ -74,11 +94,15 @@ Service Worker의 `push` 이벤트가 알림을 **항상** 띄운다 — iOS는 
 
 사건 알림은 함수가 없다 — 사건을 일으킨 함수가 같은 트랜잭션에서 넣는다.
 
+범위 없이 읽는 키의 범위는 이렇다([system/runtime.md](../../system/runtime.md#읽기-범위)).
+
+- `['notifications']` — `useInfiniteQuery` + `range()` 50건. 영속은 첫 세 페이지(`maxPages`)
+
 ## UI 연결
 
 pg_cron(`internal`) — `emit_reminders`(전날 저녁 9시·시작 10분 전·빈자리 재촉), `retry_push`(미발송 알림 다시 쏘기).
 
-푸시를 누르든 대시보드 알림 영역의 CTA를 누르든 같은 곳이다. `payload`가 날짜·달을 든다. 관리자 목적지는 관리자 층으로 바로 착지하고 앱바 뒤로가 부모 경로로 간다([flows/README.md](../../architecture/flows/README.md#뒤로)).
+푸시를 누르든 대시보드 알림 영역의 CTA를 누르든 같은 곳이다. `payload`가 날짜·달을 든다. 관리자 목적지는 관리자 층으로 바로 착지하고 앱바 뒤로가 부모 경로로 간다([system/navigation.md](../../system/navigation.md#뒤로)).
 
 표는 릴리스를 가리지 않고 전부 든다. 교대 다섯 줄과 관리자 공지는 2차다([roadmap](../../../1-plan/roadmap.md#릴리스-목록)) — 1차 알림 task는 나머지만 구현하고, 「교대 수락 → 관리자」의 미정은 2차 교대 알림 task가 닫는다.
 
