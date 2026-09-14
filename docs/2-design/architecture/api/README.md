@@ -2,7 +2,7 @@
 
 서버와 주고받는 경계가 산다. 경로, 입출력, 권한이다.
 
-이 파일이 도메인을 가로지르는 것을 들고, 도메인마다의 함수는 같은 이름의 파일에 산다 — [`account.md`](../../modules/account/design.md) · [`schedule.md`](schedule.md) · [`swap.md`](swap.md) · [`attendance.md`](attendance.md) · [`payroll.md`](payroll.md) · [`notification.md`](notification.md). 표의 모양은 [`../data-model/`](../data-model/)에 있고 여기는 그 표를 누가 어떻게 부르는지다.
+이 파일이 도메인을 가로지르는 것을 들고, 도메인마다의 함수는 같은 이름의 파일에 산다 — [`account/design.md`](../../modules/account/design.md) · [`schedule/design.md`](../../modules/schedule/design.md) · [`swap/design.md`](../../modules/swap/design.md) · [`attendance/design.md`](../../modules/attendance/design.md) · [`payroll/design.md`](../../modules/payroll/design.md) · [`notification/design.md`](../../modules/notification/design.md). 표의 모양은 [`../data-model/`](../data-model/)에 있고 여기는 그 표를 누가 어떻게 부르는지다.
 
 ## 경계 하나
 
@@ -16,7 +16,7 @@ Next 서버가 Supabase를 부르는 자리는 `auth.*`뿐이다 — `proxy`가 
 
 ## 읽기
 
-**`dals`가 표를 직접 `select`하고 PostgREST 임베딩으로 join한다.** 근무표 한 달은 `from('days').select('*, slots(*), assignments(*, profiles(display_name))')` 한 질의다. `assignments`는 `days`에서 바로 임베딩한다 — `slots`를 거치면 `slot_id`가 없는 교육 배정이 빠진다. 임베딩에는 `ended_at is null` 필터를 건다 — 화면은 이력을 안 그린다. 인증은 안 든다. 달력이 인증 상태를 안 그리고 명단이 그날치를 따로 읽는다([`../runtime/attendance.md`](../runtime/attendance.md)). RLS가 표마다 걸려 임베딩된 표도 걸러진다 — 근무자가 `wage_rates`를 임베딩해도 자기 행만 온다. 단 `grant select`가 없는 표는 빈 결과가 아니라 오류라, 새 표를 만들 때 grant를 빠뜨리면 그 표를 임베딩한 질의 전체가 죽는다.
+**`dals`가 표를 직접 `select`하고 PostgREST 임베딩으로 join한다.** 근무표 한 달은 `from('days').select('*, slots(*), assignments(*, profiles(display_name))')` 한 질의다. `assignments`는 `days`에서 바로 임베딩한다 — `slots`를 거치면 `slot_id`가 없는 교육 배정이 빠진다. 임베딩에는 `ended_at is null` 필터를 건다 — 화면은 이력을 안 그린다. 인증은 안 든다. 달력이 인증 상태를 안 그리고 명단이 그날치를 따로 읽는다([`attendance/design.md`](../../modules/attendance/design.md)). RLS가 표마다 걸려 임베딩된 표도 걸러진다 — 근무자가 `wage_rates`를 임베딩해도 자기 행만 온다. 단 `grant select`가 없는 표는 빈 결과가 아니라 오류라, 새 표를 만들 때 grant를 빠뜨리면 그 표를 임베딩한 질의 전체가 죽는다.
 
 뷰는 둘뿐이다. `excuse_status`(사유 글을 뺀 판정)와 `open_slots`(빈 자리). 둘 다 `security_invoker`라 RLS를 그대로 탄다. Supabase linter의 `security_definer_view`가 나머지를 잡는다.
 
@@ -41,7 +41,7 @@ Next 서버가 Supabase를 부르는 자리는 `auth.*`뿐이다 — `proxy`가 
 ### 함수 안의 규칙
 
 - 첫 줄이 호출자 검사다. `auth.uid()`로 프로필을 찾고 `is_admin()`·`is_approved()`를 본다. 검사가 없는 함수는 구멍이라 함수 PR은 그 검사의 integration 테스트를 같이 낸다
-- 시각 판정은 `now()`다. 인자로 시각을 받지 않는다 — 기기 시계가 들어올 자리가 없다. 예외는 `check_in`의 `reported_at` 하나고 한도가 붙는다([`attendance.md`](attendance.md))
+- 시각 판정은 `now()`다. 인자로 시각을 받지 않는다 — 기기 시계가 들어올 자리가 없다. 예외는 `check_in`의 `reported_at` 하나고 한도가 붙는다([`attendance/design.md`](../../modules/attendance/design.md))
 - 여러 행을 바꾸는 것은 전부 한 함수 안이다. 기본 시급 변경이 서른 행을 넣다 끊기면 전부 되돌아간다
 - 사건 알림은 같은 함수 안에서 `notifications`에 넣는다
 - `security definer`, `set search_path = ''`, 표는 스키마를 붙여 부른다(`public.profiles`)
@@ -74,7 +74,7 @@ Next 서버가 Supabase를 부르는 자리는 `auth.*`뿐이다 — `proxy`가 
 | `has_future_assignments` | 앞 배정이 남은 사람을 퇴사 처리했다 | 남은 자리 목록은 화면이 먼저 읽어 보여준다 |
 | `not_allowed` | 관리자 검사에 걸렸거나 RLS 거부(`42501`) | 버튼이 잘못 켜진 것. 새로 읽기 |
 
-**`stale`은 닫혔거나 없는 행이다.** 배정·자리·요청이 바뀌면 옛 행이 닫히고 새 행이 선다([`../data-model/schedule.md`](../data-model/schedule.md#배정)). 확정 전에는 행이 지워진다. 화면이 들고 있던 id가 그 둘 중 하나면 함수가 `stale`을 던진다. 버전 열 없이 「상태가 바뀜」을 잡는다.
+**`stale`은 닫혔거나 없는 행이다.** 배정·자리·요청이 바뀌면 옛 행이 닫히고 새 행이 선다([`schedule/design.md`](../../modules/schedule/design.md#배정)). 확정 전에는 행이 지워진다. 화면이 들고 있던 id가 그 둘 중 하나면 함수가 `stale`을 던진다. 버전 열 없이 「상태가 바뀜」을 잡는다.
 
 **오류에 데이터를 싣지 않는다.** 코드 하나면 화면이 새로 읽는다. 목록이 필요한 자리(퇴사의 남은 배정)는 버튼을 누르기 전에 화면이 읽어둔다. 실을 것이 셋째로 생기면 `using detail`을 연다.
 
@@ -90,8 +90,8 @@ Next 서버가 Supabase를 부르는 자리는 `auth.*`뿐이다 — `proxy`가 
 
 ADR-003이 「자리마다 문서에 먼저 적는다」고 한 것. 둘이고 둘 다 Edge Function 안이다. 브라우저와 Next 서버에는 없다.
 
-- **`send-push`** — [`notification.md`](notification.md#푸시)
-- **`erase-account`** — [`account.md`](../../modules/account/design.md#비우기)
+- **`send-push`** — [`notification/design.md`](../../modules/notification/design.md#푸시-보내기)
+- **`erase-account`** — [`account/design.md`](../../modules/account/design.md#비우기)
 
 ## Free 플랜
 

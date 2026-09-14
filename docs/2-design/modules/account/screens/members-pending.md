@@ -2,7 +2,7 @@
 
 관리자가 가입 신청을 받거나 물리는 화면이다. 값은 [tokens.md](../../../design-system/tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
 
-들어오는 문은 하나다. 관리자 홈의 「가입 대기 · 2명」 줄이고([schedule-admin.md](../../../design-system/pages/schedule-admin.md#관리자-홈)) 그 줄이 이 화면을 연다. 새 신청이 들어와도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([domain/notification.md](../../../domain/notification.md#알림이-안-나가는-자리)).
+들어오는 문은 하나다. 관리자 홈의 「가입 대기 · 2명」 줄이고([schedule-admin.md](../../schedule/screens/schedule-admin.md#관리자-홈)) 그 줄이 이 화면을 연다. 새 신청이 들어와도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([notification/README.md](../../notification/README.md#알림이-안-나가는-자리)).
 
 보내는 쪽 화면은 [login.md](login.md#프로필-작성)에 있다.
 
@@ -26,7 +26,7 @@
 
 **하단 버튼이 없다.** 이 화면의 동작은 줄마다 따로 있고 화면 전체를 끝내는 동작이 없다. [components.md](../../../design-system/components.md#bottomcta)가 「화면의 끝이 아닌 버튼은 여기 오지 않는다」고 정한 자리다.
 
-**여럿을 한 번에 처리하지 않는다.** 체크박스를 두고 「3명 승인」을 만들지 않았다. 사람마다 받을지 말지가 갈리는 판단이고, 한 번에 넘기게 만들면 얼굴을 안 보고 넘기게 된다. 근무 요청 픽커가 여럿을 고르는 것은 같은 물음을 여러 명에게 던지는 것이라 성격이 다르다([schedule-admin.md](../../../design-system/pages/schedule-admin.md#사람-픽커)).
+**여럿을 한 번에 처리하지 않는다.** 체크박스를 두고 「3명 승인」을 만들지 않았다. 사람마다 받을지 말지가 갈리는 판단이고, 한 번에 넘기게 만들면 얼굴을 안 보고 넘기게 된다. 근무 요청 픽커가 여럿을 고르는 것은 같은 물음을 여러 명에게 던지는 것이라 성격이 다르다([schedule-admin.md](../../schedule/screens/schedule-admin.md#사람-픽커)).
 
 ### 줄 하나
 
@@ -244,7 +244,7 @@
 
 줄은 목록에서 사라진다. 승인된 사람은 직원이 되고, 거절된 사람은 다시 보낼 때까지 없고, 차단된 사람은 「차단한 사람」으로 옮겨간다.
 
-**둘이 같은 사람을 동시에 열었으면(제안).** 먼저 누른 쪽이 이긴다. 늦게 누른 쪽은 시트가 닫히고 「이미 처리된 사람이에요」가 안내 토스트로 뜨며 목록이 새로 그려진다. 근무 요청의 늦은 수락과 같은 결이다([schedule-worker.md](../../../design-system/pages/schedule-worker.md)).
+**둘이 같은 사람을 동시에 열었으면(제안).** 먼저 누른 쪽이 이긴다. 늦게 누른 쪽은 시트가 닫히고 「이미 처리된 사람이에요」가 안내 토스트로 뜨며 목록이 새로 그려진다. 근무 요청의 늦은 수락과 같은 결이다([schedule-worker.md](../../schedule/screens/schedule-worker.md)).
 
 ---
 

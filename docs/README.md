@@ -12,7 +12,7 @@
 - [`docs/proposals/`](proposals/) — 단계에 걸치는 변경 방향의 검토 제안. 작성 기준·상태·목록은 그 안 `README.md`, 근거는 ADR-008
 - [`docs/1-plan/`](1-plan/) — 기획: prd, 시나리오, 로드맵, 지표, `intent/`
 - [`docs/2-design/`](2-design/) — 설계. 지도는 그 안 `README.md`
-  - `2-design/system/` — 시스템 전체의 원칙과 복합 화면. `architecture/`에서 옮겨 세운다
+  - [`docs/2-design/system/`](2-design/system/) — 시스템 전체의 원칙과 복합 화면. `architecture/`에서 옮겨 세운다
   - [`docs/2-design/modules/`](2-design/modules/) — 업무 영역별 용어·규칙(`README.md`)·기술 설계(`design.md`)·화면(`screens/`). 영역 지도는 그 안 `README.md`
   - [`docs/2-design/domain/`](2-design/domain/)·[`docs/2-design/architecture/`](2-design/architecture/) — modules로 옮기는 중인 옛 자리. 아직 안 옮긴 영역만 남아 있다
   - [`docs/2-design/design-system/`](2-design/design-system/) — 토큰·컴포넌트·문안의 공통 시각 기준

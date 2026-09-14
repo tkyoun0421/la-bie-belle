@@ -4,16 +4,17 @@
 
 PRD는 왜 만드는지를 담고 규칙은 안 담는다. [`../spec/`](../spec/)은 task 하나가 무엇이 되면 완료인지를 담는다. task가 끝나도 남는 문장이면 여기가 집이다.
 
-영역 하나가 폴더 하나다. `README.md`가 용어와 업무 규칙, `design.md`가 데이터·API·실행 동작, `screens/`가 그 영역이 소유한 화면 문서와 시안이다. 여러 영역에 걸치는 화면(대시보드·승인함·통계)은 `../system/screens/`에 있고 각 영역의 규칙을 링크한다.
+영역 하나가 폴더 하나다. `README.md`가 용어와 업무 규칙, `design.md`가 데이터·API·실행 동작, `screens/`가 그 영역이 소유한 화면 문서와 시안이다. 여러 영역에 걸치는 화면(대시보드·승인함·통계)은 [`../system/screens/`](../system/screens/)에 있고 각 영역의 규칙을 링크한다.
 
 ## 지도
 
 - [account/](account/) — 계정. 프로필과 가입 승인, 관리자 권한. [규칙](account/README.md) · [설계](account/design.md) · 화면: [login](account/screens/login.md) · [profile](account/screens/profile.md) · [members-pending](account/screens/members-pending.md) · [members](account/screens/members.md)
-- schedule — 근무표. 포지션과 자리와 배정, 확정, 근무 신청과 근무 요청. 아직 [옛 자리](../domain/schedule.md)다
-- swap — 교대. 요청과 수락과 승인, 강제 변경. 아직 [옛 자리](../domain/swap.md)다
-- attendance — 출근 인증. 위치와 QR, 인증 시각. 아직 [옛 자리](../domain/attendance.md)다
-- payroll — 급여. 시급과 가산과 조정과 지급 주기. 아직 [옛 자리](../domain/payroll.md)다
-- notification — 알림. 무엇이 언제 누구에게 나가나. 아직 [옛 자리](../domain/notification.md)다
+- [schedule/](schedule/) — 근무표. 포지션과 자리와 배정, 확정, 근무 신청과 근무 요청. [규칙](schedule/README.md) · [설계](schedule/design.md) · 화면: [schedule-worker](schedule/screens/schedule-worker.md) · [schedule-admin](schedule/screens/schedule-admin.md)
+- [swap/](swap/) — 교대. 요청과 수락과 승인, 강제 변경. [규칙](swap/README.md) · [설계](swap/design.md) · 화면은 schedule-worker의 날 시트라 소유 화면이 없다
+- [attendance/](attendance/) — 출근 인증. 위치와 QR, 인증 시각. [규칙](attendance/README.md) · [설계](attendance/design.md) · 화면: [qr](attendance/screens/qr.md)
+- [payroll/](payroll/) — 급여. 시급과 가산과 조정과 지급 주기. [규칙](payroll/README.md) · [설계](payroll/design.md) · 화면: [payroll](payroll/screens/payroll.md) · [wages](payroll/screens/wages.md)
+- [notification/](notification/) — 알림. 무엇이 언제 누구에게 나가나. [규칙](notification/README.md) · [설계](notification/design.md) · 소유 화면이 없다
+- [`../system/screens/`](../system/screens/) — 여러 영역에 걸치는 화면. [dashboard](../system/screens/dashboard.md) · [approvals](../system/screens/approvals.md) · [stats](../system/screens/stats.md)
 
 새 영역이 생기면 폴더를 더하고 여기에 한 줄을 더한다. 파일만 더하고 이 목록을 안 고치면 지도가 거짓말을 한다. 화면 문서가 늘면 소유 영역의 줄에 링크를 더한다 — 빠지면 `pnpm test`의 디자인 지도 검사가 잡는다.
 

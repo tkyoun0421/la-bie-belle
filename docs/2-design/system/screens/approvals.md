@@ -1,14 +1,18 @@
 # 승인할 일
 
-관리자가 근무자에게서 온 요청에 답하는 화면이다. 값은 [tokens.md](../tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
+관리자가 근무자에게서 온 요청에 답하는 화면이다. 값은 [tokens.md](../../design-system/tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
 
-두 가지가 한 목록에 선다. 못 찍은 출근의 [사유](../../domain/attendance.md#못-찍었을-때)와 [근무 취소](../../domain/schedule.md#확정-뒤에-바꾸는-길) 요청이다. 성격은 다르지만 관리자가 하는 일이 같다 — 읽고 승인하거나 이유를 적어 거절한다.
+두 가지가 한 목록에 선다. 못 찍은 출근의 [사유](../../modules/attendance/README.md#못-찍었을-때)와 [근무 취소](../../modules/schedule/README.md#확정-뒤에-바꾸는-길) 요청이다. 성격은 다르지만 관리자가 하는 일이 같다 — 읽고 승인하거나 이유를 적어 거절한다.
 
-들어오는 문은 하나다. 관리자 홈의 「승인할 일 · 3건」 줄이고([schedule-admin.md](schedule-admin.md#관리자-홈)) 그 줄이 이 화면을 연다. 사유가 도착해도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([domain/notification.md](../../domain/notification.md#알림이-안-나가는-자리)). 근무 취소 요청은 푸시로도 온다.
+들어오는 문은 하나다. 관리자 홈의 「승인할 일 · 3건」 줄이고([schedule-admin.md](../../modules/schedule/screens/schedule-admin.md#관리자-홈)) 그 줄이 이 화면을 연다. 사유가 도착해도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([notification/README.md](../../modules/notification/README.md#알림이-안-나가는-자리)). 근무 취소 요청은 푸시로도 온다.
 
-보내는 쪽 화면은 둘이다. 사유는 [dashboard.md](dashboard.md#사유-시트)의 사유 시트, 근무 취소는 [schedule-worker.md](schedule-worker.md#시트의-문)의 날 시트다.
+보내는 쪽 화면은 둘이다. 사유는 [dashboard.md](dashboard.md#사유-시트)의 사유 시트, 근무 취소는 [schedule-worker.md](../../modules/schedule/screens/schedule-worker.md#시트의-문)의 날 시트다.
 
 ---
+
+## 화면 상태와 흐름
+
+근무 취소 승인의 흐름은 [schedule/design.md](../../modules/schedule/design.md#근무-취소-요청과-판정)에 있다.
 
 ## 목록
 
@@ -21,11 +25,11 @@
 
 **섞어서 한 목록이다.** 종류로 탭을 나누지 않는다. 관리자가 여는 이유는 「오늘 답할 것이 있나」지 「사유가 몇 건인가」가 아니고, 탭으로 가르면 다른 탭에 밀린 것을 숫자로만 알게 된다.
 
-**근무 취소가 위에 선다.** 그 안에서는 근무 날이 가까운 것부터고, 사유는 그 아래에 보낸 지 오래된 것부터 붙는다. 취소는 마감(근무 전날)이 있고 승인한 뒤 빈 자리를 채울 시간까지 필요한데, 사유는 [관리자에게 시한이 없다](../../domain/attendance.md#못-찍었을-때).
+**근무 취소가 위에 선다.** 그 안에서는 근무 날이 가까운 것부터고, 사유는 그 아래에 보낸 지 오래된 것부터 붙는다. 취소는 마감(근무 전날)이 있고 승인한 뒤 빈 자리를 채울 시간까지 필요한데, 사유는 [관리자에게 시한이 없다](../../modules/attendance/README.md#못-찍었을-때).
 
 ### 줄 하나
 
-[components.md](../components.md#listrow)의 ListRow다.
+[components.md](../../design-system/components.md#listrow)의 ListRow다.
 
 | 자리 | 담는 것 |
 | --- | --- |
@@ -40,7 +44,7 @@
 
 ### 빈 상태
 
-[components.md](../components.md#빈-상태)의 빈 상태다. 제목과 아래 줄만 있고 버튼이 없다 — 관리자가 여기서 할 일이 없다.
+[components.md](../../design-system/components.md#빈-상태)의 빈 상태다. 제목과 아래 줄만 있고 버튼이 없다 — 관리자가 여기서 할 일이 없다.
 
 관리자 홈의 줄이 「승인할 일 · 0건」이어도 눌린다. 눌러 보고 비었다는 것을 확인하는 것이 안 눌리는 줄을 보고 왜 안 눌리나 하는 것보다 낫다([members-pending.md](../../modules/account/screens/members-pending.md#빈-상태)와 같다).
 
@@ -49,9 +53,9 @@
 | 자리 | 토큰 |
 | --- | --- |
 | 화면 바탕 | `bg.neutral` |
-| 앱바 | [components.md](../components.md#앱바)의 앱바 |
-| 줄 | [components.md](../components.md#listrow)의 ListRow |
-| 종류 배지 | [components.md](../components.md#badge)의 Badge neutral |
+| 앱바 | [components.md](../../design-system/components.md#앱바)의 앱바 |
+| 줄 | [components.md](../../design-system/components.md#listrow)의 ListRow |
+| 종류 배지 | [components.md](../../design-system/components.md#badge)의 Badge neutral |
 
 배지를 neutral로 둔 것은 종류가 급함을 뜻하지 않기 때문이다. 무엇이 먼저인지는 정렬이 이미 말한다.
 
@@ -88,7 +92,7 @@
 
 ### 모션
 
-**등장 모션이 없다.** 관리자가 자주 드나드는 화면이다([motion.md](../foundation/motion.md#자주-일어나는-것은-움직이지-않는다)).
+**등장 모션이 없다.** 관리자가 자주 드나드는 화면이다([motion.md](../../design-system/foundation/motion.md#자주-일어나는-것은-움직이지-않는다)).
 
 처리한 줄이 목록에서 빠질 때만 움직인다. 그 줄이 사라지고 아래가 올라온다.
 
@@ -96,7 +100,7 @@
 
 ## 상세 시트
 
-줄을 누르면 아래에서 올라온다. [components.md](../components.md#dialog와-바텀시트)의 바텀시트고 `--duration-slow`다.
+줄을 누르면 아래에서 올라온다. [components.md](../../design-system/components.md#dialog와-바텀시트)의 바텀시트고 `--duration-slow`다.
 
 ### 짜임
 
@@ -116,7 +120,7 @@
 
 | 자리 | 토큰 |
 | --- | --- |
-| 시트 | [components.md](../components.md#dialog와-바텀시트)의 바텀시트 |
+| 시트 | [components.md](../../design-system/components.md#dialog와-바텀시트)의 바텀시트 |
 | 제목 | `fg.neutral` |
 | 부제 | `fg.neutral-muted` |
 | 보낸 시각 | `fg.neutral-subtle` |
@@ -157,9 +161,9 @@
 | 왼쪽 버튼 | 거절 |
 | 오른쪽 버튼 | 승인 |
 
-시각은 [writing.md](../writing.md#숫자와-단위)대로 24시간제다.
+시각은 [writing.md](../../design-system/writing.md#숫자와-단위)대로 24시간제다.
 
-**관리자 화면은 판정 어휘를 쓴다.** 「승인」과 「거절」이다. [writing.md](../writing.md)의 「사람이 누르는 버튼은 예외다」는 근무자가 상대에게 답하는 자리의 조항이고, 여기는 관리자가 기록에 남길 판정을 고르는 자리다.
+**관리자 화면은 판정 어휘를 쓴다.** 「승인」과 「거절」이다. [writing.md](../../design-system/writing.md)의 「사람이 누르는 버튼은 예외다」는 근무자가 상대에게 답하는 자리의 조항이고, 여기는 관리자가 기록에 남길 판정을 고르는 자리다.
 
 ### 모션
 
@@ -226,9 +230,9 @@
 | 자리 | 토큰·유틸 |
 | --- | --- |
 | 제목 | `fg.neutral` · `text-lg font-semibold` |
-| 이유 줄 | [components.md](../components.md#listrow)의 ListRow |
+| 이유 줄 | [components.md](../../design-system/components.md#listrow)의 ListRow |
 | 고른 표시 | `fg.brand` |
-| 입력 칸 | [components.md](../components.md#input)의 Input |
+| 입력 칸 | [components.md](../../design-system/components.md#input)의 Input |
 | 아래 줄 | `fg.neutral-subtle` · `text-xs` |
 
 이유 줄에는 화살표를 안 붙인다. 다음 화면이 없다.
@@ -249,9 +253,9 @@
 
 ### 보낸 뒤
 
-시트가 닫히고 목록에서 그 줄이 빠진다. 화면 아래에 [토스트](../components.md#토스트)가 뜬다 — 「거절했어요」다.
+시트가 닫히고 목록에서 그 줄이 빠진다. 화면 아래에 [토스트](../../design-system/components.md#토스트)가 뜬다 — 「거절했어요」다.
 
-거절 결과는 그 근무자에게 푸시로 간다. 관리자가 적은 이유가 같이 실린다([domain/notification.md](../../domain/notification.md#누구에게-나가나)).
+거절 결과는 그 근무자에게 푸시로 간다. 관리자가 적은 이유가 같이 실린다([notification/README.md](../../modules/notification/README.md#누구에게-나가나)).
 
 **실패하면 시트가 안 닫힌다.** 오류가 시트 안에 서고 쓴 내용이 그대로 남는다. 오른쪽 버튼이 「다시 보내기」가 된다 — [사유 시트](dashboard.md#사유-시트)가 같은 방식이다.
 
@@ -265,7 +269,7 @@
 
 ### 확인 시트
 
-[components.md](../components.md#dialog와-바텀시트)의 Dialog다. 화면 가운데에 선다.
+[components.md](../../design-system/components.md#dialog와-바텀시트)의 Dialog다. 화면 가운데에 선다.
 
 | 자리 | 문장 |
 | --- | --- |
@@ -278,11 +282,11 @@
 
 ### 승인한 뒤
 
-**그날 [날 상세](schedule-admin.md)로 넘어간다.** 시트와 목록이 닫히고 화면이 바뀐다. 토스트가 「근무를 취소했어요」로 뜬다.
+**그날 [날 상세](../../modules/schedule/screens/schedule-admin.md)로 넘어간다.** 시트와 목록이 닫히고 화면이 바뀐다. 토스트가 「근무를 취소했어요」로 뜬다.
 
-승인한 뒤 관리자가 할 일이 빈 자리를 채우는 것 하나뿐이고, 그 도구가 날 상세에 있다([domain/schedule.md](../../domain/schedule.md#확정-뒤에-바꾸는-길)의 배정 추가). 목록으로 돌아오는 길은 앱바의 뒤로다.
+승인한 뒤 관리자가 할 일이 빈 자리를 채우는 것 하나뿐이고, 그 도구가 날 상세에 있다([schedule/README.md](../../modules/schedule/README.md#확정-뒤에-바꾸는-길)의 배정 추가). 목록으로 돌아오는 길은 앱바의 뒤로다.
 
-토스트에 「자리 채우기」 버튼을 다는 길은 막혀 있다 — [components.md](../components.md#토스트)가 사라지는 것에 액션을 걸지 말라고 한다. 그래서 버튼 대신 화면이 옮겨간다.
+토스트에 「자리 채우기」 버튼을 다는 길은 막혀 있다 — [components.md](../../design-system/components.md#토스트)가 사라지는 것에 액션을 걸지 말라고 한다. 그래서 버튼 대신 화면이 옮겨간다.
 
 ---
 
@@ -290,7 +294,7 @@
 
 「승인」을 누르면 바로 끝난다. 시트가 닫히고 목록에서 줄이 빠지며 토스트가 「사유를 승인했어요」로 뜬다.
 
-승인된 날은 [출근 인정](../../domain/attendance.md#용어)이 된다. 근무표 날 명단에서 그 사람 줄이 「확인 중」에서 「출근 인정」으로 바뀌고([schedule-worker.md](schedule-worker.md#인증-상태)), 급여에서 빠졌던 그날이 돌아온다.
+승인된 날은 [출근 인정](../../modules/attendance/README.md#용어)이 된다. 근무표 날 명단에서 그 사람 줄이 「확인 중」에서 「출근 인정」으로 바뀌고([schedule-worker.md](../../modules/schedule/screens/schedule-worker.md#인증-상태)), 급여에서 빠졌던 그날이 돌아온다.
 
 ---
 
@@ -308,7 +312,7 @@
 
 **끝난 것을 보는 화면.** 위의 이유로 안 만들었다.
 
-**빈 자리를 채우는 화면.** 근무 취소를 승인한 뒤 넘어가는 곳이고 [schedule-admin.md](schedule-admin.md)에 있다.
+**빈 자리를 채우는 화면.** 근무 취소를 승인한 뒤 넘어가는 곳이고 [schedule-admin.md](../../modules/schedule/screens/schedule-admin.md)에 있다.
 
 **통계.** 사람별 출근과 지각 횟수는 [prd.md](../../../1-plan/prd.md)의 통계에 들고 별도 화면이다.
 
@@ -318,13 +322,13 @@
 
 ## 규칙과 부딪힌 자리
 
-**토스트에 액션을 못 건다.** 근무 취소를 승인한 뒤 「빈 자리 채우기」로 잇는 자리인데 [components.md](../components.md#토스트)가 막는다. 버튼을 다는 대신 승인이 곧바로 날 상세로 데려가는 쪽으로 갔다.
+**토스트에 액션을 못 건다.** 근무 취소를 승인한 뒤 「빈 자리 채우기」로 잇는 자리인데 [components.md](../../design-system/components.md#토스트)가 막는다. 버튼을 다는 대신 승인이 곧바로 날 상세로 데려가는 쪽으로 갔다.
 
-**단일 선택 목록의 규격이 없다.** 거절 이유 넷 중 하나를 고르는 자리인데 [components.md](../components.md)에 라디오도 선택 상태의 ListRow도 없다. 오른쪽 체크로 그렸고, 같은 모양이 다른 화면에서 한 번 더 나오면 그때 공용으로 올린다.
+**단일 선택 목록의 규격이 없다.** 거절 이유 넷 중 하나를 고르는 자리인데 [components.md](../../design-system/components.md)에 라디오도 선택 상태의 ListRow도 없다. 오른쪽 체크로 그렸고, 같은 모양이 다른 화면에서 한 번 더 나오면 그때 공용으로 올린다.
 
-**가운데 Dialog의 치수가 정본에 올라갔다.** 좌우 여백과 안쪽 여백과 그림자는 [components.md](../components.md#dialog와-바텀시트)의 「가운데 Dialog」 표가 정본이다. 이 화면이 첫 자리고 시안은 그 값대로 서 있다.
+**가운데 Dialog의 치수가 정본에 올라갔다.** 좌우 여백과 안쪽 여백과 그림자는 [components.md](../../design-system/components.md#dialog와-바텀시트)의 「가운데 Dialog」 표가 정본이다. 이 화면이 첫 자리고 시안은 그 값대로 서 있다.
 
-**배지가 제목 앞에 서서 정렬이 어긋난다.** 「사유」와 「근무 취소」의 폭이 달라 이름 시작이 두 위치로 갈린다. 배지를 오른쪽으로 옮기면 화살표와 겹치고, 줄여 쓰면 [domain 용어](../../domain/schedule.md#확정-뒤에-바꾸는-길)와 어긋난다.
+**배지가 제목 앞에 서서 정렬이 어긋난다.** 「사유」와 「근무 취소」의 폭이 달라 이름 시작이 두 위치로 갈린다. 배지를 오른쪽으로 옮기면 화살표와 겹치고, 줄여 쓰면 [domain 용어](../../modules/schedule/README.md#확정-뒤에-바꾸는-길)와 어긋난다.
 
 ---
 

@@ -12,7 +12,7 @@ status: draft
 
 ## 왜
 
-디자인 문서와 시안이 [pages/dashboard.md](../design-system/pages/dashboard.md)에 다 있는데 붙일 데이터가 없다. 순서를 안 적어두면 화면부터 만들고 가짜 데이터를 박는 길로 간다.
+디자인 문서와 시안이 [dashboard.md](../system/screens/dashboard.md)에 다 있는데 붙일 데이터가 없다. 순서를 안 적어두면 화면부터 만들고 가짜 데이터를 박는 길로 간다.
 
 ## 범위 밖
 

@@ -12,7 +12,7 @@
 
 **`docs/proposals/docs-structure-followup.md` 여덟 항목이 accepted로 다 들어갔다.** 1~7번이 #327~#330으로 정본에 반영됐다 — 사진은 `profiles.photo_url` 유지에 `update_my_photo()` 함수, backlog 「다음」 정의는 유지하고 행만 갈랐고, 알림은 1차·2차 경계가 섰고, 디자인 순서는 roadmap 하나로 모였고, 완료 plan 여덟 개에 log 링크 안내가 붙었고, 관찰 집계 규칙이 3건·후보 등록으로 바뀌었고, 문서 지도 경로가 링크가 되고 `doc-map.ts`·`doc-links.ts`가 그 링크를 읽는다. 8번(첫 출시 준비)은 지금 쓰지 않고 `backlog.md` 「대기」에 등록만 됐다 — 배포 플랫폼을 정한 뒤에 쓴다.
 
-**Edge Function 스파이크가 닫혔다.** Deno는 `supabase/functions` 밖을 못 읽는다 — edge-runtime 컨테이너에 그 폴더만 마운트되니 `deno.json` 맵핑도 심볼릭 링크도 안 통한다. CI가 `_shared/`로 복사하는 쪽으로 [api/notification.md](2-design/architecture/api/notification.md#푸시)가 결론을 담았고, 복사 단계는 알림 task가 `ci.yml`에 붙인다.
+**Edge Function 스파이크가 닫혔다.** Deno는 `supabase/functions` 밖을 못 읽는다 — edge-runtime 컨테이너에 그 폴더만 마운트되니 `deno.json` 맵핑도 심볼릭 링크도 안 통한다. CI가 `_shared/`로 복사하는 쪽으로 [notification/design.md](2-design/modules/notification/design.md#푸시-보내기)가 결론을 담았고, 복사 단계는 알림 task가 `ci.yml`에 붙인다.
 
 코드는 세션 기반과 로그인·승인 대기 화면까지다. 대시보드는 데이터가 없어 못 연다.
 
