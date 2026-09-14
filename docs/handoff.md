@@ -20,7 +20,7 @@
 
 ## 다음 첫 수
 
-**계정 데이터 구조 전환의 plan을 쓴다** — `3-build/plans/account-data.md`. 정본은 [data-model/account.md](2-design/architecture/data-model/account.md)·[api/account.md](2-design/architecture/api/account.md). 그 뒤 순서는 `backlog.md` 「다음」이 든다.
+**계정 데이터 구조를 전환한다** — [plan](3-build/plans/account-data.md)이 섰다. 기능 task 파이프라인(`test-planner` → `integration-test-writer` → `implementer`)으로 간다. 그 뒤 순서는 `backlog.md` 「다음」이 든다.
 
 ## 막는 결정
 
