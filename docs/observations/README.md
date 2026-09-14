@@ -39,7 +39,7 @@ test writer 셋(unit·integration·e2e)은 가족이다. 하나를 겨눈 관찰
 
 status는 open으로 시작한다. 관찰을 반영한 PR이 그 관찰의 status를 actioned로 바꾸고 resolved에 날짜를 적는다 — 반영과 기록을 다른 PR로 가르면 기록 쪽이 샌다. 반영하지 않기로 했으면 declined로 바꾸고 이유를 본문에 한 줄 더한다.
 
-커밋은 둘 중 먼저 오는 쪽이다. task 브랜치에서 일하는 중이면 그 PR에 편승하고, 아니면 session-recorder의 마감 PR에 실린다. 마감 때 session-recorder는 open 관찰을 세어 같은 target 3건이면 handoff.md 열린 결정에 증축 후보를 올리고, resolved 날짜가 지난 파일을 archive/로 옮긴다. 판정은 총괄이 한다.
+커밋은 둘 중 먼저 오는 쪽이다. task 브랜치에서 일하는 중이면 그 PR에 편승하고, 아니면 session-recorder의 마감 PR에 실린다. 마감 때 session-recorder는 open 관찰을 세어 같은 target 3건이면 리턴에 증축 후보와 관찰 번호를 보고하고, `backlog.md` 「후보」에 `증축 후보: <target> (관찰 NNN·NNN·NNN)` 행이 없을 때만 한 줄 더한다 — 다음 마감에 또 세어도 중복 등록되지 않는다. handoff.md에는 안 올린다 — 다음 첫 수를 실제로 막을 때만 총괄이 「막는 결정」에 적는다. resolved 날짜가 지난 파일은 archive/로 옮긴다. 판정은 총괄이 한다.
 
 ## 주의
 
