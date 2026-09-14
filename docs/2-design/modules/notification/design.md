@@ -4,9 +4,9 @@
 
 ## 참조 규칙
 
-공통 스키마·권한·컬럼 규약과 읽기·쓰기·타입·에러 계약은 [system/data-access.md](../../system/data-access.md), 캐시 계층·시각은 [system/runtime.md](../../system/runtime.md), 시스템 경계는 [system/architecture.md](../../system/architecture.md)를 따른다.
+업무 규칙은 [README.md](README.md#업무-규칙)의 `NTF-001`부터 `NTF-032`까지다.
 
-키는 `['notifications']`(`useInfiniteQuery` + `range()` 50건)와 `['notifications', 'unread']`(안 읽은 수, `head: true` count 질의)다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
+공통 스키마·권한·컬럼 규약과 읽기·쓰기·타입·에러 계약은 [system/data-access.md](../../system/data-access.md), 캐시 계층·시각은 [system/runtime.md](../../system/runtime.md), 시스템 경계는 [system/architecture.md](../../system/architecture.md)를 따른다.
 
 ## 소유 데이터
 
@@ -23,6 +23,12 @@
 | --- | --- |
 | `notifications` | 본인 행 |
 | `push_subscriptions` | 본인 행 |
+
+키는 `['notifications']`(`useInfiniteQuery` + `range()` 50건)와 `['notifications', 'unread']`(안 읽은 수, `head: true` count 질의)다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
+
+범위 없이 읽는 키의 범위는 이렇다([system/runtime.md](../../system/runtime.md#읽기-범위)).
+
+- `['notifications']` — `useInfiniteQuery` + `range()` 50건. 영속은 첫 세 페이지(`maxPages`)
 
 ### 알림 행
 
@@ -44,63 +50,51 @@
 
 ### 공지 보내기
 
-| 함수 | 누가 | 하는 일 |
-| --- | --- | --- |
-| `post_announcement` | 관리자 | 공지. 승인된 전원에게 행이 선다 |
-
-| 함수 | 무효화 |
-| --- | --- |
-| `post_announcement` · `mark_notifications_read` | `['notifications']` |
+- 규칙: [NTF-001](README.md#ntf-001)의 관리자 공지 · [NTF-014](README.md#ntf-014)
+- 입력·전제: `post_announcement`이 공지다
+- 읽고 쓰는 데이터: 승인된 전원에게 행이 선다
+- 권한: 관리자
+- 캐시 갱신: `['notifications']`
 
 ### 읽음 찍기
 
-| 함수 | 누가 | 하는 일 |
-| --- | --- | --- |
-| `mark_notifications_read` | 근무자 | 읽음 찍기 |
-
-domain대로 ✕·CTA·답 셋 중 하나를 눌러야 읽음이다. 목록을 훑는 것으로는 안 바뀐다. 누른 행의 `read_at`을 즉시 칠하고 `mark_notifications_read`를 보낸다. 실패하면 되돌린다 — 다시 나타난 행을 사람이 다시 누른다.
+- 규칙: [NTF-023](README.md#ntf-023)·[NTF-024](README.md#ntf-024)·[NTF-025](README.md#ntf-025)
+- 입력·전제: `mark_notifications_read`가 읽음 찍기다. domain대로 ✕·CTA·답 셋 중 하나를 눌러야 읽음이다. 목록을 훑는 것으로는 안 바뀐다
+- 읽고 쓰는 데이터: 누른 행의 `read_at`을 즉시 칠하고 `mark_notifications_read`를 보낸다
+- 권한: 근무자
+- 결과와 실패: 실패하면 되돌린다 — 다시 나타난 행을 사람이 다시 누른다
+- 캐시 갱신: `['notifications']`
 
 ### 기기 구독 저장과 삭제
 
-| 함수 | 누가 | 하는 일 |
-| --- | --- | --- |
-| `save_push_subscription`, `remove_push_subscription` | 근무자 | 기기 구독 |
-
-| 함수 | 무효화 |
-| --- | --- |
-| `save_push_subscription` · `remove_push_subscription` | 없음 |
-
-로그인 뒤 첫 화면에서 `'Notification' in window`를 먼저 본다 — iOS Safari 탭에는 이 객체가 없고 홈 화면 앱에만 있다. `permission === 'granted'`면 `pushManager.getSubscription()`으로 구독을 받아 `save_push_subscription`을 부른다. 권한은 있는데 구독이 없을 수 있고 `endpoint`가 바뀌는 일도 있어 매 진입에 보낸다 — 함수는 `endpoint` upsert다. `default`면 알림 설정 화면의 버튼이 사용자 제스처 안에서 묻는다. 진입 즉시 권한을 묻지 않는다.
+- 규칙: [NTF-016](README.md#ntf-016)·[NTF-017](README.md#ntf-017)·[NTF-021](README.md#ntf-021)·[NTF-027](README.md#ntf-027)
+- 입력·전제: `save_push_subscription`, `remove_push_subscription`이 기기 구독이다. 로그인 뒤 첫 화면에서 `'Notification' in window`를 먼저 본다 — iOS Safari 탭에는 이 객체가 없고 홈 화면 앱에만 있다
+- 읽고 쓰는 데이터: `permission === 'granted'`면 `pushManager.getSubscription()`으로 구독을 받아 `save_push_subscription`을 부른다
+- 권한: 근무자. 본인 행뿐이다
+- 처리와 경쟁: 권한은 있는데 구독이 없을 수 있고 `endpoint`가 바뀌는 일도 있어 매 진입에 보낸다 — 함수는 `endpoint` upsert다
+- 결과와 실패: `default`면 알림 설정 화면의 버튼이 사용자 제스처 안에서 묻는다. 진입 즉시 권한을 묻지 않는다
+- 캐시 갱신: 없음
 
 ### 푸시 보내기
 
-**경로 둘, 함수 하나.** `notifications`에 행이 들어오면 Database Webhook이 Edge Function `send-push`를 부른다. pg_net은 한 번 쏘고 끝이라 놓친 것은 pg_cron의 `retry_push`가 매분 같은 함수를 다시 부른다.
+- 규칙: [NTF-001](README.md#ntf-001)·[NTF-027](README.md#ntf-027)·[NTF-029](README.md#ntf-029)
+- 입력·전제: **경로 둘, 함수 하나.** `notifications`에 행이 들어오면 Database Webhook이 Edge Function `send-push`를 부른다. pg_net은 한 번 쏘고 끝이라 놓친 것은 pg_cron의 `retry_push`가 매분 같은 함수를 다시 부른다
+- 읽고 쓰는 데이터: **잡기와 성공은 다른 열이다.** 함수가 먼저 잡는다 — `update notifications set claimed_at = now(), push_attempts = push_attempts + 1 where id = any($1) and pushed_at is null and push_attempts < 5 and (claimed_at is null or claimed_at < now() - interval '2 minutes') returning *`. 잡힌 행만 보내고 성공한 행에만 `pushed_at`을 찍는다
+- 권한: **service role은 `send-push` 안에만 있다.** 사용자 세션 없이 돌아 `notifications`와 `push_subscriptions`만 만진다 — 서비스 키 자리 둘 중 하나. **비밀은 저장소 밖이다.** VAPID 키는 Edge Function secret이고 공개키만 `NEXT_PUBLIC_VAPID_PUBLIC_KEY`로 브라우저에 간다. Webhook 트리거의 인증 헤더는 Vault에서 읽는다 — 트리거 정의에 리터럴로 넣으면 마이그레이션에 실려 PUBLIC 저장소에 올라간다
+- 처리와 경쟁: 보내다 죽으면 2분 뒤 다시 잡힌다. `retry_push`가 보는 조건이 이 문장과 같아 두 경로가 같은 규칙을 탄다. **Edge Function은 얼개다.** 알림 행 잡기 → `src/features/notification/model/`의 순수 함수로 payload와 처리 방법 정하기 → `npm:web-push`로 보내기 → 성공이면 `pushed_at`, 410이면 구독 지우기. 판단(어떤 실패가 재시도인가, 어떤 것이 구독 폐기인가)은 전부 `src/`의 순수 함수라 unit 테스트가 지킨다. 그 함수들은 Node 전용 API를 안 쓴다 — lint가 `src/features/notification/model/`에서 `node:` import를 막는다
+- 결과와 실패: 다섯 번 넘으면 그만둔다 — 앱을 열면 알림 행은 그대로 있다. Service Worker의 `push` 이벤트가 알림을 **항상** 띄운다 — iOS는 푸시를 받고 알림을 안 띄우는 일이 반복되면 구독을 회수한다. 누르면 `notificationclick`이 `payload`의 화면을 연다
+- 캐시 갱신: 앱이 열려 있으면 `postMessage`로 `['notifications']`를 무효화한다. 사건이 닿는 도메인 키(강제 변경이면 `['schedule']`)는 탭 복귀 재조회에 맡긴다. 푸시가 안 오는 기기는 탭 복귀 때 다시 읽는 것이 전부다
 
-**잡기와 성공은 다른 열이다.** 함수가 먼저 잡는다 — `update notifications set claimed_at = now(), push_attempts = push_attempts + 1 where id = any($1) and pushed_at is null and push_attempts < 5 and (claimed_at is null or claimed_at < now() - interval '2 minutes') returning *`. 잡힌 행만 보내고 성공한 행에만 `pushed_at`을 찍는다. 보내다 죽으면 2분 뒤 다시 잡힌다. `retry_push`가 보는 조건이 이 문장과 같아 두 경로가 같은 규칙을 탄다. 다섯 번 넘으면 그만둔다 — 앱을 열면 알림 행은 그대로 있다.
-
-**Edge Function은 얼개다.** 알림 행 잡기 → `src/features/notification/model/`의 순수 함수로 payload와 처리 방법 정하기 → `npm:web-push`로 보내기 → 성공이면 `pushed_at`, 410이면 구독 지우기. 판단(어떤 실패가 재시도인가, 어떤 것이 구독 폐기인가)은 전부 `src/`의 순수 함수라 unit 테스트가 지킨다. 그 함수들은 Node 전용 API를 안 쓴다 — lint가 `src/features/notification/model/`에서 `node:` import를 막는다.
-
-**Deno는 `supabase/functions` 밖을 못 읽는다.** edge-runtime 컨테이너에 그 폴더 하나만 마운트돼서, `deno.json`이 `../../src/`를 맵핑해도 파일이 컨테이너 안에 없다. 심볼릭 링크도 타깃이 마운트 밖이라 끊긴다. 그래서 CI가 `src/features/notification/model/`을 `supabase/functions/_shared/`로 복사한 뒤 Supabase를 띄운다 — `.github/workflows/ci.yml`의 `ci` 잡, `supabase start` 줄 앞이다 — 그 줄은 지금 `-x`로 `edge-runtime`을 빼고 있어 같이 푼다. 복사본은 생성물이라 커밋하지 않는다. 정본은 `src/`다.
+**Deno는 `supabase/functions` 밖을 못 읽는다.** edge-runtime 컨테이너에 그 폴더 하나만 마운트돼서, `deno.json`이 `../../src/`를 맵핑해도 파일이 컨테이너 안에 없다. 심볼릭 링크도 타깃이 마운트 밖이라 끊긴다. 그래서 CI가 `src/features/notification/model/`을 `supabase/functions/_shared/`로 복사한 뒤 Supabase를 띄운다 — `.github/workflows/ci.yml`의 `ci` 잡, `supabase start` 줄 앞이다. 복사본은 생성물이라 커밋하지 않는다. 정본은 `src/`다.
 
 얼개 자체는 e2e가 본다. CI가 `supabase functions serve`를 띄우고 가짜 푸시 엔드포인트로 한 번 돌린다.
 
-**service role은 `send-push` 안에만 있다.** 사용자 세션 없이 돌아 `notifications`와 `push_subscriptions`만 만진다 — 서비스 키 자리 둘 중 하나.
-
-**비밀은 저장소 밖이다.** VAPID 키는 Edge Function secret이고 공개키만 `NEXT_PUBLIC_VAPID_PUBLIC_KEY`로 브라우저에 간다. Webhook 트리거의 인증 헤더는 Vault에서 읽는다 — 트리거 정의에 리터럴로 넣으면 마이그레이션에 실려 PUBLIC 저장소에 올라간다.
-
-Service Worker의 `push` 이벤트가 알림을 **항상** 띄운다 — iOS는 푸시를 받고 알림을 안 띄우는 일이 반복되면 구독을 회수한다. 누르면 `notificationclick`이 `payload`의 화면을 연다. 앱이 열려 있으면 `postMessage`로 `['notifications']`를 무효화한다. 사건이 닿는 도메인 키(강제 변경이면 `['schedule']`)는 탭 복귀 재조회에 맡긴다. 푸시가 안 오는 기기는 탭 복귀 때 다시 읽는 것이 전부다.
-
 ### 행위 밖의 실행 동작
 
-사건 알림은 함수가 없다 — 사건을 일으킨 함수가 같은 트랜잭션에서 넣는다.
-
-범위 없이 읽는 키의 범위는 이렇다([system/runtime.md](../../system/runtime.md#읽기-범위)).
-
-- `['notifications']` — `useInfiniteQuery` + `range()` 50건. 영속은 첫 세 페이지(`maxPages`)
+- 입력·전제: pg_cron(`internal`) — `emit_reminders`(전날 저녁 9시·시작 10분 전·빈자리 재촉), `retry_push`(미발송 알림 다시 쏘기)
+- 읽고 쓰는 데이터: 사건 알림은 함수가 없다 — 사건을 일으킨 함수가 같은 트랜잭션에서 넣는다
 
 ## UI 연결
-
-pg_cron(`internal`) — `emit_reminders`(전날 저녁 9시·시작 10분 전·빈자리 재촉), `retry_push`(미발송 알림 다시 쏘기).
 
 푸시를 누르든 대시보드 알림 영역의 CTA를 누르든 같은 곳이다. `payload`가 날짜·달을 든다. 관리자 목적지는 관리자 층으로 바로 착지하고 앱바 뒤로가 부모 경로로 간다([system/navigation.md](../../system/navigation.md#뒤로)).
 
@@ -130,7 +124,22 @@ pg_cron(`internal`) — `emit_reminders`(전날 저녁 9시·시작 10분 전·�
 
 목적지로 가는 것과 읽음은 같은 순간이다 — CTA를 누르면 `mark_notifications_read`가 같이 나간다([읽음 찍기](#읽음-찍기)).
 
+## 코드와의 차이
+
+목표와 지금 코드가 다른 자리다.
+
+| 목표 조항 | 확인한 코드와 Git 기준점 | 차이 | 전환 작업·검증 근거 |
+| --- | --- | --- | --- |
+| [푸시 보내기](#푸시-보내기) — CI가 `src/features/notification/model/`을 `supabase/functions/_shared/`로 복사한 뒤 Supabase를 띄운다 | `.github/workflows/ci.yml`, `d1a6ec4` — `supabase start` 줄이 `-x`로 `edge-runtime`을 뺀다 | 복사 단계가 없고 `edge-runtime`이 안 뜬다 | `notification-first` — [backlog.md](../../../backlog.md) |
+
 ## 아직 안 정한 것
 
-- 알림 끄기와 홈 화면 추가 여부를 어디 두나. `push_subscriptions` 없음만으로는 「안드로이드 안 켬」과 「아이폰 홈 추가 안 함」을 못 가른다
-- 알림 하나에 기기 구독이 둘일 때 — `pushed_at`이 행에 하나라 한 기기만 성공한 것을 못 나타낸다. 서른 명 규모에서 드물어 두고 본다
+### Q-01
+
+- 질문: 알림 끄기와 홈 화면 추가 여부를 어디 두나
+- 필요한 근거와 대안: `push_subscriptions` 없음만으로는 「안드로이드 안 켬」과 「아이폰 홈 추가 안 함」을 못 가른다
+
+### Q-02
+
+- 질문: 알림 하나에 기기 구독이 둘일 때 한 기기만 성공한 것을 어떻게 나타내나
+- 필요한 근거와 대안: `pushed_at`이 행에 하나라 한 기기만 성공한 것을 못 나타낸다. 서른 명 규모에서 드물어 두고 본다

@@ -4,7 +4,7 @@
 
 두 가지가 한 목록에 선다. 못 찍은 출근의 [사유](../../modules/attendance/README.md#att-010)와 [근무 취소](../../modules/schedule/README.md#sch-018) 요청이다. 성격은 다르지만 관리자가 하는 일이 같다 — 읽고 승인하거나 이유를 적어 거절한다.
 
-들어오는 문은 하나다. 관리자 홈의 「승인할 일 · 3건」 줄이고([schedule-admin.md](../../modules/schedule/screens/schedule-admin.md#관리자-홈)) 그 줄이 이 화면을 연다. 사유가 도착해도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([notification/README.md](../../modules/notification/README.md#알림이-안-나가는-자리)). 근무 취소 요청은 푸시로도 온다.
+들어오는 문은 하나다. 관리자 홈의 「승인할 일 · 3건」 줄이고([schedule-admin.md](../../modules/schedule/screens/schedule-admin.md#관리자-홈)) 그 줄이 이 화면을 연다. 사유가 도착해도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([notification/README.md](../../modules/notification/README.md#ntf-030)). 근무 취소 요청은 푸시로도 온다.
 
 보내는 쪽 화면은 둘이다. 사유는 [dashboard.md](dashboard.md#사유-시트)의 사유 시트, 근무 취소는 [schedule-worker.md](../../modules/schedule/screens/schedule-worker.md#시트의-문)의 날 시트다.
 
@@ -255,7 +255,7 @@
 
 시트가 닫히고 목록에서 그 줄이 빠진다. 화면 아래에 [토스트](../../design-system/components.md#토스트)가 뜬다 — 「거절했어요」다.
 
-거절 결과는 그 근무자에게 푸시로 간다. 관리자가 적은 이유가 같이 실린다([notification/README.md](../../modules/notification/README.md#누구에게-나가나)).
+거절 결과는 그 근무자에게 푸시로 간다. 관리자가 적은 이유가 같이 실린다([notification/README.md](../../modules/notification/README.md#ntf-014)).
 
 **실패하면 시트가 안 닫힌다.** 오류가 시트 안에 서고 쓴 내용이 그대로 남는다. 오른쪽 버튼이 「다시 보내기」가 된다 — [사유 시트](dashboard.md#사유-시트)가 같은 방식이다.
 

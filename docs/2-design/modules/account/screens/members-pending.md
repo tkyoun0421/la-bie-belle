@@ -4,7 +4,7 @@
 
 관리자가 가입 신청을 받거나 물리는 화면이다. 값은 [tokens.md](../../../design-system/tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
 
-들어오는 문은 하나다. 관리자 홈의 「가입 대기 · 2명」 줄이고([schedule-admin.md](../../schedule/screens/schedule-admin.md#관리자-홈)) 그 줄이 이 화면을 연다. 새 신청이 들어와도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([notification/README.md](../../notification/README.md#알림이-안-나가는-자리)).
+들어오는 문은 하나다. 관리자 홈의 「가입 대기 · 2명」 줄이고([schedule-admin.md](../../schedule/screens/schedule-admin.md#관리자-홈)) 그 줄이 이 화면을 연다. 새 신청이 들어와도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([notification/README.md](../../notification/README.md#ntf-032)).
 
 경로와 역할 조건은 [navigation.md](../../../system/navigation.md#경로)가 든다.
 
