@@ -1,12 +1,18 @@
 # 시급
 
-관리자가 사람마다의 시간당 단가를 정하는 화면이다. 값은 [tokens.md](../tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
+관리자가 사람마다의 시간당 단가를 정하는 화면이다. 값은 [tokens.md](../../../design-system/tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
 
-여기서 정한 값이 [급여 조회](payroll.md)와 [통계](stats.md)의 월별 인건비를 만든다. 규칙은 [domain/payroll.md](../../domain/payroll.md)에 있다.
+여기서 정한 값이 [급여 조회](payroll.md)와 [통계](../../../system/screens/stats.md)의 월별 인건비를 만든다. 규칙은 [payroll/README.md](../README.md)에 있다.
 
-들어오는 문은 [관리자 홈](schedule-admin.md#관리자-홈)의 「시급」 줄이다.
+들어오는 문은 [관리자 홈](../../../modules/schedule/screens/schedule-admin.md#관리자-홈)의 「시급」 줄이다.
 
-**정해야 할 것이 둘이다.** 전원이 기본으로 쓰는 값 하나와, 거기서 벗어난 사람들의 값이다. 따로 안 정한 사람은 [기본 시급](../../domain/payroll.md#기본-시급)을 쓰고, 기본이 바뀌면 그 사람들도 같이 바뀐다.
+**정해야 할 것이 둘이다.** 전원이 기본으로 쓰는 값 하나와, 거기서 벗어난 사람들의 값이다. 따로 안 정한 사람은 [기본 시급](../README.md#기본-시급)을 쓰고, 기본이 바뀌면 그 사람들도 같이 바뀐다.
+
+---
+
+## 화면 상태와 흐름
+
+`/admin/wages`에서 사람 시급(`set_wage`)·기본 시급(`set_default_wage`). 조정은 날 상세의 명단에서(`set_adjustment`). 알림이 없다 — 급여 화면이 다음에 열릴 때 바뀐 값이다.
 
 ---
 
@@ -25,7 +31,7 @@
 
 ### 기본 시급 줄
 
-[components.md](../components.md#listrow)의 ListRow고 오른쪽에 값과 화살표다. 아래에 몇 명이 이 값을 쓰는지 한 줄로 붙는다.
+[components.md](../../../design-system/components.md#listrow)의 ListRow고 오른쪽에 값과 화살표다. 아래에 몇 명이 이 값을 쓰는지 한 줄로 붙는다.
 
 누르면 [기본 시급 시트](#기본-시급-시트)가 올라온다.
 
@@ -44,15 +50,15 @@ ListRow다. 이름 가나다순이고 개별로 정한 사람을 위로 올리�
 
 누가 기본을 따라 움직이는지는 **맨 위 줄이 수로 말하고**([기본 시급 줄](#기본-시급-줄)), 정확히 누구인지는 [기본 시급 시트](#기본-시급-시트)를 열 때 알면 된다. 배지를 줄마다 붙이면 목록의 오른쪽이 값과 표식 둘로 갈려 금액을 세로로 훑기 어려워진다.
 
-**목록에 이름이 잔뜩 서므로 「님」을 뺀다**([writing.md](../writing.md#사람-이름)).
+**목록에 이름이 잔뜩 서므로 「님」을 뺀다**([writing.md](../../../design-system/writing.md#사람-이름)).
 
-**퇴사한 사람은 목록에 없다.** 앞으로 정할 시급이 없다. 지난 급여는 그때 적용되던 시급으로 이미 계산돼 있다([domain/payroll.md](../../domain/payroll.md#확정하지-않는다)).
+**퇴사한 사람은 목록에 없다.** 앞으로 정할 시급이 없다. 지난 급여는 그때 적용되던 시급으로 이미 계산돼 있다([payroll/README.md](../README.md#확정하지-않는다)).
 
 줄을 누르면 [사람 시트](#사람-시트)가 올라온다.
 
 ### 빈 상태
 
-승인된 사람이 하나도 없을 때다. [components.md](../components.md#빈-상태)의 빈 상태고 버튼이 없다.
+승인된 사람이 하나도 없을 때다. [components.md](../../../design-system/components.md#빈-상태)의 빈 상태고 버튼이 없다.
 
 기본 시급 줄은 그때도 그대로 선다. 사람이 없어도 값은 정해둘 수 있고, 첫 사람이 승인되는 순간 그 값이 붙는다.
 
@@ -60,7 +66,7 @@ ListRow다. 이름 가나다순이고 개별로 정한 사람을 위로 올리�
 
 ## 기본 시급 시트
 
-아래에서 올라온다. [components.md](../components.md#dialog와-바텀시트)의 바텀시트고 `--duration-slow`다.
+아래에서 올라온다. [components.md](../../../design-system/components.md#dialog와-바텀시트)의 바텀시트고 `--duration-slow`다.
 
 1. 제목 — 기본 시급
 2. 입력 칸 — 숫자와 「원」이 붙어 오른쪽에 선다
@@ -69,7 +75,7 @@ ListRow다. 이름 가나다순이고 개별로 정한 사람을 위로 올리�
 
 **몇 명이 움직이는지를 저장 전에 말한다.** 한 번 누르면 여러 사람의 급여가 같이 달라지는 자리라 그 수가 손 앞에 있어야 한다. 0명이면 그 줄이 「아직 이 값을 쓰는 사람이 없어요」로 바뀐다.
 
-**적용은 오늘부터다.** 날짜 고르개가 없다. 미리 넣어두는 길도 지난 날로 되돌리는 길도 없고, 근거는 [domain/payroll.md](../../domain/payroll.md#시급-변경)에 있다. 입력 칸 아래에 그 사실을 한 줄로 적는다.
+**적용은 오늘부터다.** 날짜 고르개가 없다. 미리 넣어두는 길도 지난 날로 되돌리는 길도 없고, 근거는 [payroll/README.md](../README.md#시급-변경)에 있다. 입력 칸 아래에 그 사실을 한 줄로 적는다.
 
 **확인을 한 번 더 안 묻는다.** 여러 사람이 움직이지만 되돌릴 수 있는 자리다 — 같은 날 다시 저장하면 그날 줄을 덮어쓰니 잘못 넣은 값이 이력에 쌓이지 않는다.
 
@@ -90,7 +96,7 @@ ListRow다. 이름 가나다순이고 개별로 정한 사람을 위로 올리�
 
 ### 기본으로 되돌리기
 
-입력 칸 아래 한 줄이다. [Button](../components.md#button)의 ghost고 왼쪽 정렬이다.
+입력 칸 아래 한 줄이다. [Button](../../../design-system/components.md#button)의 ghost고 왼쪽 정렬이다.
 
 누르면 그 사람이 다시 기본 끈에 붙는다. 되돌린 날부터 적용되고 이력에 그 줄이 선다.
 
@@ -107,7 +113,7 @@ ListRow다. 이름 가나다순이고 개별로 정한 사람을 위로 올리�
 | 왼쪽 | 적용 시작일 |
 | 오른쪽 | 그때의 시급 |
 
-**지난 줄은 못 고치고 못 지운다.** 화살표도 더보기도 없다. 지난 급여가 흔들리지 않는다는 것이 [domain/payroll.md](../../domain/payroll.md#시급-변경)의 규칙이고, 화면에 고치는 문을 두면 그 규칙이 깨진다.
+**지난 줄은 못 고치고 못 지운다.** 화살표도 더보기도 없다. 지난 급여가 흔들리지 않는다는 것이 [payroll/README.md](../README.md#시급-변경)의 규칙이고, 화면에 고치는 문을 두면 그 규칙이 깨진다.
 
 줄이 하나뿐이면 — 승인되고 아직 한 번도 안 바꾼 사람 — 이력을 안 그린다. 지금 값이 위에 이미 있다.
 
@@ -120,17 +126,17 @@ ListRow다. 이름 가나다순이고 개별로 정한 사람을 위로 올리�
 | 자리 | 토큰 |
 | --- | --- |
 | 화면 바탕 | `bg.neutral` |
-| 앱바 | [components.md](../components.md#앱바)의 앱바 |
-| 기본 시급 줄 | [components.md](../components.md#listrow)의 ListRow |
+| 앱바 | [components.md](../../../design-system/components.md#앱바)의 앱바 |
+| 기본 시급 줄 | [components.md](../../../design-system/components.md#listrow)의 ListRow |
 | 기본 시급 아래 줄 | `fg.neutral-subtle` |
 | 가는 선 | `stroke.neutral` |
 | 사람 줄 | ListRow |
-| 시트 | [components.md](../components.md#dialog와-바텀시트)의 바텀시트 |
-| 입력 칸 | [components.md](../components.md#input)의 Input |
+| 시트 | [components.md](../../../design-system/components.md#dialog와-바텀시트)의 바텀시트 |
+| 입력 칸 | [components.md](../../../design-system/components.md#input)의 Input |
 | 입력 칸 「원」 | `fg.neutral` |
 | 적용 안내 | `fg.neutral-subtle` |
 | 같이 바뀌는 인원 | `fg.neutral` |
-| 기본으로 되돌리기 | [Button](../components.md#button) ghost |
+| 기본으로 되돌리기 | [Button](../../../design-system/components.md#button) ghost |
 | 이력 날짜 | `fg.neutral-muted` |
 | 이력 값 | `fg.neutral` |
 
@@ -206,7 +212,7 @@ ListRow다. 이름 가나다순이고 개별로 정한 사람을 위로 올리�
 | 왼쪽 버튼 | 닫기 |
 | 오른쪽 버튼 | 저장 |
 
-시급은 세 자리마다 쉼표를 찍고 「원」을 붙인다([writing.md](../writing.md#숫자와-단위)). 입력 칸 안에서도 치는 동안 쉼표가 따라 들어간다.
+시급은 세 자리마다 쉼표를 찍고 「원」을 붙인다([writing.md](../../../design-system/writing.md#숫자와-단위)). 입력 칸 안에서도 치는 동안 쉼표가 따라 들어간다.
 
 **「원」이 숫자 바로 뒤에 붙고, 둘이 한 덩이로 칸 오른쪽에 선다.** 숫자를 왼쪽에 두고 「원」만 오른쪽 끝으로 미는 식이 아니다 — 떨어뜨리면 `12,000`과 `원`이 다른 것 둘로 읽히고, 목록과 이력에서는 `12,000원`으로 붙어 있어 한 화면에서 같은 값이 두 모양으로 선다.
 
@@ -224,9 +230,9 @@ ListRow다. 이름 가나다순이고 개별로 정한 사람을 위로 올리�
 
 ## 안 담은 것
 
-**조정.** 배정과 실제가 어긋난 날에 그 건의 근무 시간을 손보는 것은 [domain/payroll.md](../../domain/payroll.md#용어)의 다른 행위고, 자리는 근무표 날 상세다([schedule-admin.md](schedule-admin.md)).
+**조정.** 배정과 실제가 어긋난 날에 그 건의 근무 시간을 손보는 것은 [payroll/README.md](../README.md#용어)의 다른 행위고, 자리는 근무표 날 상세다([schedule-admin.md](../../../modules/schedule/screens/schedule-admin.md)).
 
-**인건비 합계.** 이 화면은 단가를 정하는 자리고 합계는 [통계](stats.md)에 있다.
+**인건비 합계.** 이 화면은 단가를 정하는 자리고 합계는 [통계](../../../system/screens/stats.md)에 있다.
 
 **최저임금 하한 검사.** 아래 [아직 안 정한 것](#아직-안-정한-것)에 있다.
 
@@ -236,9 +242,9 @@ ListRow다. 이름 가나다순이고 개별로 정한 사람을 위로 올리�
 
 ## 규칙과 부딪힌 자리
 
-**한 화면에 사람 목록이 둘이다.** 이 화면과 [직원 관리](../../modules/account/screens/members.md)가 같은 사람들을 늘어놓는다. 갈라둔 것은 하는 일이 달라서다 — 여기는 숫자를 훑으며 인건비 감각을 잡는 자리고, 거기는 한 사람을 놓고 역할과 이름과 퇴사를 다루는 자리다. 같은 시트에 다 넣으면 시급을 고치러 들어간 손이 퇴사 버튼 옆에 선다.
+**한 화면에 사람 목록이 둘이다.** 이 화면과 [직원 관리](../../../modules/account/screens/members.md)가 같은 사람들을 늘어놓는다. 갈라둔 것은 하는 일이 달라서다 — 여기는 숫자를 훑으며 인건비 감각을 잡는 자리고, 거기는 한 사람을 놓고 역할과 이름과 퇴사를 다루는 자리다. 같은 시트에 다 넣으면 시급을 고치러 들어간 손이 퇴사 버튼 옆에 선다.
 
-**「더 보기」가 공용으로 올라갔다.** 이력이 길 때 접는 자리고, 모양과 눌렀을 때의 동작은 [Button](../components.md#button)의 「목록을 접는 더 보기」 문단이 정본이다. 이 화면이 첫 자리고 몇 줄부터 접을지만 여기서 정한다.
+**「더 보기」가 공용으로 올라갔다.** 이력이 길 때 접는 자리고, 모양과 눌렀을 때의 동작은 [Button](../../../design-system/components.md#button)의 「목록을 접는 더 보기」 문단이 정본이다. 이 화면이 첫 자리고 몇 줄부터 접을지만 여기서 정한다.
 
 ---
 
