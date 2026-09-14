@@ -84,9 +84,9 @@ sources:
 PR 하나가 묶음 하나다. 브랜치는 `docs/authoring-playbook-<글자>`. 각 PR이 혼자 CI 초록이어야 하고, 형식을 바꾼 문서와 그것을 읽는 검사·정의문은 같은 PR에 탄다. 작성법이 먼저 서야 그 틀로 다시 쓸 수 있으니 순서가 곧 의존이다.
 
 1. **A. 채택 기록** — 제안 `accepted`와 결정 기록, ADR-010, 이 plan, backlog·handoff, sdlc plan에 D·E·F를 잇는 줄
-2. **B1. 공통 작성법과 기획·설계·구현 README** — `docs/README.md`(2장·13.2·13.3·변경 전파), `1-plan`·`2-design`·`3-build` README를 네 절 틀로 세우고 4·5·6.1·6.2·7·8·9장의 작성법을 옮긴다. `2-design/README.md`의 기존 절(갈래의 경계·규칙 ID·sources·파일 종류별 절 순서·spec·화면 문서)은 새 절 아래로. `design-system`·`modules`·`proposals`·`observations` README도 여기
+2. **B1. 공통 작성법과 기획·설계·구현 README** — `docs/README.md`(2장·변경 전파), `1-plan`·`2-design`·`3-build` README를 네 절 틀로 세우고 4·5·6.1·6.2·7·8·9장의 작성법을 옮긴다. `2-design/README.md`의 기존 절(갈래의 경계·규칙 ID·sources·파일 종류별 절 순서·spec·화면 문서)은 새 절 아래로. `design-system`·`modules`·`proposals`·`observations` README도 여기
 3. **B2. 검증·배포·운영** — `4-test`·`5-deploy`·`6-maintain` README를 네 절 틀로. `strategy.md`에 test-planner의 「층을 고르는 법」·「integration을 고르는 기준」·「중복을 만들지 않는다」와 ADR-003의 테스트 층 조항, `execution.md`에 README의 훅·문서 검사·돌릴 때·integration과 e2e를 실행 항목 틀로. `5-deploy` README의 CI 문단을 `procedure.md`(빌드 전 env 주입)와 `execution.md`로, `environments.md`는 11.1 틀. `6-maintain`의 최소 안내를 세 파일 머리로. `test-planner` 정의문은 strategy를 읽는다
-4. **C. 상태 소유권** — backlog 표, handoff 두 절, CHANGELOG 머리, `session-recorder`·`implementer`·`pr-diff` 정의문, `REVIEW.md` 영향 검토 축, `spec/dashboard.md`와 진행 중 plan에 `sources`
+4. **C. 상태 소유권** — `docs/README.md` 협업 기록 작성법(13.2·13.3), backlog 표, handoff 두 절, CHANGELOG 머리, `session-recorder`·`implementer`·`pr-diff` 정의문, `REVIEW.md` 영향 검토 축, `spec/dashboard.md`와 진행 중 plan에 `sources`
 5. **D. 계정 시범** — `modules/account/` README·design·screens 넷을 5·7장 틀로. 여기서 답하기 어렵거나 겹치는 항목은 B1의 작성법을 고친다
 6. **E. 나머지 영역 다섯** — README·design 열을 5장 틀로
 7. **F1. system 넷과 대시보드 분할** — `system/` 넷을 6.1 틀과 공통 조항 틀로. `dashboard.md`에서 `check-in.md`·`excuse.md`를 빼고 7장 틀로 쓴다. `sian-writer`가 시안 셋, `sian-auditor`가 대조
