@@ -67,7 +67,7 @@ export function designMaps(root: string = process.cwd()): DesignMap[] {
   return [
     {
       file: path.join(root, DESIGN, "modules", "README.md"),
-      heading: "지도",
+      heading: "영역 지도",
     },
   ].map(({ file, heading }) => ({
     markdown: readFileSync(file, "utf8"),
