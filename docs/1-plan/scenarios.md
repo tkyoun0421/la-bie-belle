@@ -12,7 +12,7 @@
 - **언제·계기** — 토요일 아침. 첫 예식이 11시라 9시 10분까지 출근이다(출근 기한은 첫 예식 1시간 50분 전 — 10시 예식이면 8시 20분). 조금 일찍 도착해 탈의실 가기 전에 찍는다
 - **하려는 일** — 홀 100m 안에서 앱을 열고 위치 인증 버튼 한 번으로 출근을 찍는다
 - **성공·실패 뒤 모습** — 성공하면 출근 완료 표시가 바로 뜨고 오늘 근무의 시각과 포지션이 보인다. 위치 인증이 실패하면(GPS 안 잡힘, 100m 밖 판정) 재시도 버튼과 「입구 QR로 찍기」 폴백이 둘 다 보인다. 지각 판정(출근 기한 10분 초과)은 앱이 자동으로 기록한다
-- **관련 설계** — [dashboard.md](../2-design/system/screens/dashboard.md) · [qr.md](../2-design/modules/attendance/screens/qr.md) · [attendance/README.md](../2-design/modules/attendance/README.md)
+- **관련 설계** — [check-in.md](../2-design/modules/attendance/screens/check-in.md) · [qr.md](../2-design/modules/attendance/screens/qr.md) · [attendance/README.md](../2-design/modules/attendance/README.md)
 
 ### 2. 관리자, 근무표 확정
 
