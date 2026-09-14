@@ -9,6 +9,7 @@ PR을 merge 전에 감사하는 기준이다. CI 자동 리뷰(`.github/workflow
 - **시크릿** — 키·토큰·비밀번호로 보이는 문자열, `.env` 파일. 발견하면 값을 그대로 옮기지 말고 위치와 형태만 적는다.
 - **테스트** — 이 저장소는 TDD로 간다. 구현이 바뀌었는데 테스트가 함께 오지 않은 곳을 적는다.
 - **생성 파일** — `pnpm-lock.yaml`처럼 기계가 만든 파일은 줄 단위로 읽지 말고 무엇이 늘고 줄었는지 한 줄로 요약한다.
+- **영향 검토** — 규칙·설계 조항(`docs/2-design/modules/*/README.md`·`design.md`·`docs/2-design/system/*.md`)이 바뀐 PR이면 그것을 `sources`로 든 spec·plan(`grep -rn 'sources' docs/2-design/spec docs/3-build/plans`)을 같은 PR에서 고쳤는지, 영향이 없는 이유를 본문 「영향 확인」 절에 남겼는지, 전환 작업을 연결했는지 본다. 셋 중 하나가 없으면 적는다. 근거는 [ADR-009](docs/2-design/adr/ADR-009-design-modules-and-stage-links.md)다.
 
 ## 지키는 것
 

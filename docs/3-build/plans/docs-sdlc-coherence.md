@@ -1,3 +1,9 @@
+---
+sources:
+  - ../../proposals/docs-sdlc-coherence.md
+  - ../../2-design/adr/ADR-009-design-modules-and-stage-links.md
+---
+
 # SDLC를 유지하며 설계를 업무 영역으로 모은다
 
 [제안](../../proposals/docs-sdlc-coherence.md)을 채택해 실행하는 비기능 task다. 결정은 [ADR-009](../../2-design/adr/ADR-009-design-modules-and-stage-links.md)에 있다. 목표 구조·이관 명세·파일 종류별 절 순서는 제안서가 정본이고 여기 옮겨 적지 않는다. 여기는 실행 묶음, 묶음마다 같이 바꿀 소비자, 검증 방법, 완료 기준이다.
@@ -45,7 +51,7 @@ PR 하나가 묶음 하나다. 각 PR이 혼자 CI 초록이어야 하고, 문�
 - `system/screens/{dashboard,approvals,stats}` — 이동만. dashboard 추출은 D
 - flows 다섯을 화면 문서의 「흐름」 절과 design의 행위별 계약으로 분배. flows/attendance의 출근 인증·사유 흐름은 D까지 dashboard 문서에 둔다
 - `architecture/`·`domain/`·`design-system/pages/` 삭제, `legacy-doc-paths.ts`에 세 경로 추가
-- 소비자: B와 같은 검사·정의문, backlog 「대기」 행의 링크, handoff 링크, `design-system/README.md`의 페이지 목록 제거
+- 소비자: B와 같은 검사·정의문, backlog `blocked` 행의 링크, handoff 링크, `design-system/README.md`의 페이지 목록 제거
 
 ### D. dashboard 추출
 

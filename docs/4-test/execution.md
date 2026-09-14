@@ -98,6 +98,7 @@ CI가 이 명령들을 어디까지 돌리는지는 둘로 갈린다.
 - type-aware lint(`no-floating-promises` 등)는 속도 때문에 안 켜져 있다. await 빠진 Supabase 호출은 lint가 못 잡는다.
 - 디자인 값 lint 규칙은 `src/**/__tests__/**`를 예외로 둔다 — 대조 테스트가 픽스처로 oklch 리터럴을 쥔다.
 - 테스트 픽스처의 표기 — `generate-globals-css.test.ts`의 기대값은 prettier가 정규화한 표기(`rgba(28, 25, 22, 0.05)`)고 `tokens.md` 원문은 축약 표기다. 표에서 그대로 복사하면 틀린다.
+- 새 subagent 정의문은 main에 merge된 뒤에야 호출할 수 있다.
 
 ## integration과 e2e
 

@@ -1,6 +1,6 @@
 # CHANGELOG
 
-무엇이 언제 바뀌었는지의 색인이다. 행 하나가 변경 하나고, 왜는 PR 본문과 `docs/log/`에 있다. 최신이 위다. 날짜는 merge 날짜(`git log --date=short`)고, 회차 마감 때 `session-recorder`가 그 회차의 merge PR을 전부 더한다. 로그가 가리키는 PR이 여기 없으면 `pnpm test`가 실패한다.
+무엇이 언제 바뀌었는지의 색인이다. 작성법은 [docs/README.md](README.md#협업-기록)가 소유한다. 로그가 가리키는 PR이 여기 없으면 `pnpm test`가 실패한다.
 
 | 날짜       | 변경 | PR   |
 | ---------- | ---- | ---- |
