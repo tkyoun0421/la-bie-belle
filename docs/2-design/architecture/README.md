@@ -2,7 +2,7 @@
 
 도메인 용어가 어떤 테이블과 API와 화면 흐름이 되는지가 산다. 개념은 [`../domain/`](../domain/), 시각은 [`../design-system/`](../design-system/), 여기는 구조다.
 
-**목표 설계다.** 코드가 여기 적힌 대로 돼 있다고 읽지 않는다. 지금 코드와 다른 문단은 「지금은 ~」으로 차이를 적고, 그것을 옮기는 task는 [`docs/backlog.md`](../../backlog.md)에 있다. 문서를 코드에 맞추려고 목표를 지우지 않는다.
+목표 설계라는 뜻은 [설계 안내](../README.md)에 있다.
 
 ## 네 갈래
 
@@ -25,7 +25,7 @@
 
 | domain | data-model | api | runtime | flows |
 | --- | --- | --- | --- | --- |
-| [account](../domain/account.md) | [account](data-model/account.md) | [account](api/account.md) | [account](runtime/account.md) | [account](flows/account.md) |
+| [account](../modules/account/README.md) | [design](../modules/account/design.md) | [design](../modules/account/design.md) | [design](../modules/account/design.md) | [screens](../modules/account/screens/login.md) |
 | [schedule](../domain/schedule.md) | [schedule](data-model/schedule.md) | [schedule](api/schedule.md) | [schedule](runtime/schedule.md) | [schedule](flows/schedule.md) |
 | [swap](../domain/swap.md) | [swap](data-model/swap.md) | [swap](api/swap.md) | [swap](runtime/swap.md) | [swap](flows/swap.md) |
 | [attendance](../domain/attendance.md) | [attendance](data-model/attendance.md) | [attendance](api/attendance.md) | [attendance](runtime/attendance.md) | [attendance](flows/attendance.md) |

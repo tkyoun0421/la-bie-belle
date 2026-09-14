@@ -38,13 +38,13 @@ Next.js 16.
 }
 
 describe("문서 지도 일치 검사", () => {
-  it("현재 저장소의 CLAUDE.md 문서 지도 불릿 경로는 전부 실존한다 (회귀)", () => {
-    const claudeMd = readFileSync(
-      path.join(process.cwd(), "CLAUDE.md"),
+  it("현재 저장소의 docs/README.md 문서 지도 불릿 경로는 전부 실존한다 (회귀)", () => {
+    const docsReadme = readFileSync(
+      path.join(process.cwd(), "docs/README.md"),
       "utf8",
     );
 
-    expect(docMapViolations(claudeMd)).toEqual([]);
+    expect(docMapViolations(docsReadme)).toEqual([]);
   });
 
   it("실존하지 않는 docs/ 경로가 불릿에 있으면 검출한다", () => {

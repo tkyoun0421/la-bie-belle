@@ -2,27 +2,27 @@
 
 화면 사이의 흐름이 산다. 어느 화면에서 무엇을 하면 어디로 가는가다.
 
-화면 문서 열둘이 각자 「들어오는 문」을 적어뒀고 여기는 그것을 한 장으로 모은다. 화면 안의 시트·다이얼로그는 화면 문서 몫이고, 여기는 화면과 화면 사이만 본다. 이 파일이 지도를 들고, 도메인마다의 길은 같은 이름의 파일에 산다 — [`account.md`](account.md) · [`schedule.md`](schedule.md) · [`swap.md`](swap.md) · [`attendance.md`](attendance.md) · [`payroll.md`](payroll.md) · [`notification.md`](notification.md).
+화면 문서 열둘이 각자 「들어오는 문」을 적어뒀고 여기는 그것을 한 장으로 모은다. 화면 안의 시트·다이얼로그는 화면 문서 몫이고, 여기는 화면과 화면 사이만 본다. 이 파일이 지도를 들고, 도메인마다의 길은 같은 이름의 파일에 산다 — [`account.md`](../../modules/account/design.md) · [`schedule.md`](schedule.md) · [`swap.md`](swap.md) · [`attendance.md`](attendance.md) · [`payroll.md`](payroll.md) · [`notification.md`](notification.md).
 
 ## 경로
 
 | 경로 | 화면 | 문서 |
 | --- | --- | --- |
-| `/login` | 로그인 | [`login.md`](../../design-system/pages/login.md) |
-| `/pending` | 프로필 작성 · 승인 대기 · 거절된 뒤 | [`login.md`](../../design-system/pages/login.md) |
-| `/blocked` | 차단 | [`login.md`](../../design-system/pages/login.md) |
-| `/left` | 퇴사한 뒤 | [`login.md`](../../design-system/pages/login.md#퇴사한-뒤) |
+| `/login` | 로그인 | [`login.md`](../../modules/account/screens/login.md) |
+| `/pending` | 프로필 작성 · 승인 대기 · 거절된 뒤 | [`login.md`](../../modules/account/screens/login.md) |
+| `/blocked` | 차단 | [`login.md`](../../modules/account/screens/login.md) |
+| `/left` | 퇴사한 뒤 | [`login.md`](../../modules/account/screens/login.md#퇴사한-뒤) |
 | `/` | 대시보드 | [`dashboard.md`](../../design-system/pages/dashboard.md) |
 | `/check-in` | 출근 인증 | [`dashboard.md`](../../design-system/pages/dashboard.md#출근-인증) |
 | `/schedule` | 근무자 근무표. `?month=`는 달, `?date=`는 그날 시트 | [`schedule-worker.md`](../../design-system/pages/schedule-worker.md) |
 | `/payroll` | 급여 | [`payroll.md`](../../design-system/pages/payroll.md) |
-| `/me` | 나 | [`profile.md`](../../design-system/pages/profile.md) |
+| `/me` | 나 | [`profile.md`](../../modules/account/screens/profile.md) |
 | `/admin` | 관리자 홈 | [`schedule-admin.md`](../../design-system/pages/schedule-admin.md#관리자-홈) |
 | `/admin/schedule` | 관리자 달력. `?month=`는 달, `?date=`는 날 상세 | [`schedule-admin.md`](../../design-system/pages/schedule-admin.md) |
 | `/admin/applications` | 근무 신청 모아보기. `?month=` | [`schedule-admin.md`](../../design-system/pages/schedule-admin.md#근무-신청-모아보기) |
 | `/admin/approvals` | 승인할 일 | [`approvals.md`](../../design-system/pages/approvals.md) |
-| `/admin/members/pending` | 가입 대기 | [`members-pending.md`](../../design-system/pages/members-pending.md) |
-| `/admin/members` | 직원 | [`members.md`](../../design-system/pages/members.md) |
+| `/admin/members/pending` | 가입 대기 | [`members-pending.md`](../../modules/account/screens/members-pending.md) |
+| `/admin/members` | 직원 | [`members.md`](../../modules/account/screens/members.md) |
 | `/admin/wages` | 시급 | [`wages.md`](../../design-system/pages/wages.md) |
 | `/admin/qr` | QR | [`qr.md`](../../design-system/pages/qr.md) |
 | `/admin/stats` | 통계 | [`stats.md`](../../design-system/pages/stats.md) |
@@ -33,7 +33,7 @@
 
 ## 앱을 열면
 
-세션 → 프로필 → 승인 순으로 가른다. 규칙은 [domain/account.md](../../domain/account.md)고 판정은 껍데기 하나가 앱이 뜰 때와 탭 복귀에 `['profile']`을 읽어 한다([`../runtime/account.md`](../runtime/account.md)). 라우트 전환은 그 값을 쓴다 — 탭을 옮길 때마다 다시 읽지 않는다.
+세션 → 프로필 → 승인 순으로 가른다. 규칙은 [domain/account.md](../../modules/account/README.md)고 판정은 껍데기 하나가 앱이 뜰 때와 탭 복귀에 `['profile']`을 읽어 한다([`../runtime/account.md`](../../modules/account/design.md)). 라우트 전환은 그 값을 쓴다 — 탭을 옮길 때마다 다시 읽지 않는다.
 
 | 상태 | 간다 |
 | --- | --- |

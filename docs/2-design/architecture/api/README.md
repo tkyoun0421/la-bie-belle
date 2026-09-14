@@ -2,7 +2,7 @@
 
 서버와 주고받는 경계가 산다. 경로, 입출력, 권한이다.
 
-이 파일이 도메인을 가로지르는 것을 들고, 도메인마다의 함수는 같은 이름의 파일에 산다 — [`account.md`](account.md) · [`schedule.md`](schedule.md) · [`swap.md`](swap.md) · [`attendance.md`](attendance.md) · [`payroll.md`](payroll.md) · [`notification.md`](notification.md). 표의 모양은 [`../data-model/`](../data-model/)에 있고 여기는 그 표를 누가 어떻게 부르는지다.
+이 파일이 도메인을 가로지르는 것을 들고, 도메인마다의 함수는 같은 이름의 파일에 산다 — [`account.md`](../../modules/account/design.md) · [`schedule.md`](schedule.md) · [`swap.md`](swap.md) · [`attendance.md`](attendance.md) · [`payroll.md`](payroll.md) · [`notification.md`](notification.md). 표의 모양은 [`../data-model/`](../data-model/)에 있고 여기는 그 표를 누가 어떻게 부르는지다.
 
 ## 경계 하나
 
@@ -12,7 +12,7 @@
 
 **데이터에 닿는 코드는 `dals`뿐이다.** `from()`·`rpc()`·`storage`·`channel()`이 여기서만 나온다. 화면과 use-case는 `dals` 함수를 부른다. `auth.*`(세션 확인·코드 교환·로그아웃)는 데이터가 아니라 `shared/lib`에 산다 — 도메인이 없고 로컬 Supabase가 구글 OAuth를 못 돌려 integration 테스트 대상도 아니다. 조항의 정본은 [ADR-003](../../adr/ADR-003-supabase-and-integration-tests.md#db-접근을-한곳에-모은다)이다.
 
-Next 서버가 Supabase를 부르는 자리는 `auth.*`뿐이다 — `proxy`가 세션이 있는지 본다. 승인·차단·퇴사는 클라이언트가 `profiles`를 읽어 가른다([`../runtime/account.md`](../runtime/account.md)). 데이터를 읽거나 쓰는 서버 코드는 없다.
+Next 서버가 Supabase를 부르는 자리는 `auth.*`뿐이다 — `proxy`가 세션이 있는지 본다. 승인·차단·퇴사는 클라이언트가 `profiles`를 읽어 가른다([`../runtime/account.md`](../../modules/account/design.md)). 데이터를 읽거나 쓰는 서버 코드는 없다.
 
 ## 읽기
 
@@ -91,7 +91,7 @@ Next 서버가 Supabase를 부르는 자리는 `auth.*`뿐이다 — `proxy`가 
 ADR-003이 「자리마다 문서에 먼저 적는다」고 한 것. 둘이고 둘 다 Edge Function 안이다. 브라우저와 Next 서버에는 없다.
 
 - **`send-push`** — [`notification.md`](notification.md#푸시)
-- **`erase-account`** — [`account.md`](account.md#비우기)
+- **`erase-account`** — [`account.md`](../../modules/account/design.md#비우기)
 
 ## Free 플랜
 

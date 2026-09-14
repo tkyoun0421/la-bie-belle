@@ -10,7 +10,7 @@ PRD는 왜 만드는지를 담고 규칙은 안 담는다. `docs/2-design/spec/`
 - [swap.md](swap.md) — 교대. 요청과 수락과 승인, 강제 변경
 - [attendance.md](attendance.md) — 출근 인증. 위치와 QR, 인증 시각
 - [payroll.md](payroll.md) — 급여. 시급과 가산과 조정과 지급 주기
-- [account.md](account.md) — 계정. 프로필과 가입 승인, 관리자 권한
+- [account.md](../modules/account/README.md) — 계정. 프로필과 가입 승인, 관리자 권한
 - [notification.md](notification.md) — 알림. 무엇이 언제 누구에게 나가나
 
 새 영역이 생기면 파일을 더하고 여기에 한 줄을 더한다. 파일만 더하고 이 목록을 안 고치면 지도가 거짓말을 한다.

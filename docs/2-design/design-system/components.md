@@ -103,7 +103,7 @@ BottomCTA 안에 버튼을 둘 두지 않는다. 두 개가 필요해 보이면 
 
 ## 탭 바
 
-근무자 화면 맨 아래에 항상 서는 넷이다. 홈·근무표·급여·나이고, 각각 [대시보드](pages/dashboard.md)·[근무표](pages/schedule-worker.md)·[급여 조회](pages/payroll.md)·[프로필](pages/profile.md)로 간다.
+근무자 화면 맨 아래에 항상 서는 넷이다. 홈·근무표·급여·나이고, 각각 [대시보드](pages/dashboard.md)·[근무표](pages/schedule-worker.md)·[급여 조회](pages/payroll.md)·[프로필](../modules/account/screens/profile.md)로 간다.
 
 | 자리 | 토큰 |
 | --- | --- |
@@ -207,7 +207,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 ## 스위치
 
-켬과 끔 둘뿐인 설정에 쓴다. 프로필의 알림 줄이 첫 자리다([pages/profile.md](pages/profile.md)).
+켬과 끔 둘뿐인 설정에 쓴다. 프로필의 알림 줄이 첫 자리다([pages/profile.md](../modules/account/screens/profile.md)).
 
 | 자리 | 토큰 |
 | --- | --- |
@@ -348,7 +348,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 ## 더보기 팝오버
 
-앱바나 시트 오른쪽 위 더보기(⋯)를 누르면 그 아래로 열리는 짧은 목록이다. 가입 대기의 차단과 직원 관리의 퇴사 처리가 여기다([pages/members-pending.md](pages/members-pending.md), [pages/members.md](pages/members.md)).
+앱바나 시트 오른쪽 위 더보기(⋯)를 누르면 그 아래로 열리는 짧은 목록이다. 가입 대기의 차단과 직원 관리의 퇴사 처리가 여기다([pages/members-pending.md](../modules/account/screens/members-pending.md), [pages/members.md](../modules/account/screens/members.md)).
 
 | 자리 | 토큰 |
 | --- | --- |
@@ -368,7 +368,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 **주 동작을 여기 숨기지 않는다.** 팝오버는 자주 안 쓰지만 있어야 하는 것의 자리다. 차단이 그렇다 — 승인 버튼 옆에 나란히 두면 누르기 쉬워진다.
 
-빨간 글자는 [Button](#button)의 destructive와 같은 기준이다. 되돌릴 길이 없을 때만이다. 차단은 빨갛고 퇴사 처리는 아니다 — 퇴사한 사람은 같은 화면 아래 퇴사 구획에 남아 되돌릴 수 있다([pages/members.md](pages/members.md#퇴사-구획)).
+빨간 글자는 [Button](#button)의 destructive와 같은 기준이다. 되돌릴 길이 없을 때만이다. 차단은 빨갛고 퇴사 처리는 아니다 — 퇴사한 사람은 같은 화면 아래 퇴사 구획에 남아 되돌릴 수 있다([pages/members.md](../modules/account/screens/members.md#퇴사-구획)).
 
 덮개가 없다. 밖을 누르면 닫히고 등장 모션도 없다 — 누른 손가락 바로 아래 뜨는 것이라 움직임이 없어도 어디서 왔는지 안다.
 

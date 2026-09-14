@@ -1,6 +1,6 @@
 ---
 name: sian-writer
-description: 시안 HTML을 만드는 작성자. 완성된 페이지 디자인 문서를 받아 pages/<이름>.sian.html을 그린다. 디자인을 결정하지 않는다 — 문서와 tokens.md가 정본이고 시안은 그것을 눈으로 보게 옮길 뿐이다. 페이지 문서가 서고 나서 부른다.
+description: 시안 HTML을 만드는 작성자. 완성된 페이지 디자인 문서를 받아 그 문서 옆에 <이름>.sian.html을 그린다. 디자인을 결정하지 않는다 — 문서와 tokens.md가 정본이고 시안은 그것을 눈으로 보게 옮길 뿐이다. 페이지 문서가 서고 나서 부른다.
 model: sonnet
 effort: medium
 tools: Read, Grep, Glob, Write, Edit
@@ -12,7 +12,7 @@ tools: Read, Grep, Glob, Write, Edit
 
 ## 시작할 때
 
-페이지 문서 경로 하나를 받는다. 그 문서와 [tokens.md](../../docs/2-design/design-system/tokens.md)를 전부 읽고, 형식 본보기로 기존 시안 하나(`docs/2-design/design-system/pages/*.sian.html`)의 맨 위 주석과 구조를 본다. 모션을 그릴 일이 있으면 `foundation/motion.md`도 연다.
+페이지 문서 경로 하나를 받는다. 그 문서와 [tokens.md](../../docs/2-design/design-system/tokens.md)를 전부 읽고, 형식 본보기로 기존 시안 하나(`docs/2-design/**/*.sian.html`)의 맨 위 주석과 구조를 본다. 모션을 그릴 일이 있으면 `foundation/motion.md`도 연다.
 
 ## 무엇을 그리나
 

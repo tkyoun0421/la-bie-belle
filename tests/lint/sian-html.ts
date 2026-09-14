@@ -8,7 +8,7 @@ export type SianHtmlViolation = {
   line: number;
 };
 
-const PAGES = "docs/2-design/design-system/pages";
+const DESIGN = "docs/2-design";
 
 /** 닫는 태그를 안 쓰는 HTML 요소와 시안이 쓰는 SVG 자식 요소들. */
 const VOID_TAGS = new Set([
@@ -124,8 +124,8 @@ export function sianHtmlViolations(
 }
 
 export function sianHtmlFiles(): string[] {
-  return readdirSync(PAGES)
+  return (readdirSync(DESIGN, { recursive: true }) as string[])
     .filter((name) => name.endsWith(".sian.html"))
-    .sort()
-    .map((name) => path.join(PAGES, name));
+    .map((name) => path.join(DESIGN, name))
+    .sort();
 }

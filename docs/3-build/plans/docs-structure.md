@@ -115,7 +115,7 @@
 
 ### 문제
 
-[api 문서의 읽기](../../2-design/architecture/api/README.md#읽기)는 `pnpm types`와 CI의 타입 diff 검사가 있는 것처럼 적었는데 `package.json`과 `ci.yml`에 없다. [계정 데이터 모델](../../2-design/architecture/data-model/account.md#프로필-신원)은 목표와 기존 마이그레이션의 차이를 적었지만 다른 문서는 그렇지 않다. [아키텍처 안내](../../2-design/architecture/README.md)는 이 문서군이 목표인지 현재인지 말하지 않는다.
+[api 문서의 읽기](../../2-design/architecture/api/README.md#읽기)는 `pnpm types`와 CI의 타입 diff 검사가 있는 것처럼 적었는데 `package.json`과 `ci.yml`에 없다. [계정 데이터 모델](../../2-design/modules/account/design.md#프로필-신원)은 목표와 기존 마이그레이션의 차이를 적었지만 다른 문서는 그렇지 않다. [아키텍처 안내](../../2-design/architecture/README.md)는 이 문서군이 목표인지 현재인지 말하지 않는다.
 
 ### 변경
 

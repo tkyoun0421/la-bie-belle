@@ -66,7 +66,7 @@
 
 근무표와 급여가 외부로 새지 않게 막는 유일한 문이다.
 
-규칙은 [docs/2-design/domain/account.md](../2-design/domain/account.md)에 있다.
+규칙은 [docs/2-design/domain/account.md](../2-design/modules/account/README.md)에 있다.
 
 ### 통계
 
