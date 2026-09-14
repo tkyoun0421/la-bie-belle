@@ -23,6 +23,8 @@
 
 PR 하나가 묶음 하나다. 각 PR이 혼자 CI 초록이어야 하고, 문서 이동과 그 경로를 읽는 검사·정의문·설정은 같은 PR에 탄다. 브랜치는 `docs/sdlc-coherence-<글자>`다.
 
+묶음 D·E·F는 [docs-authoring-playbook plan](docs-authoring-playbook.md)이 이어 나른다 — 옮긴 문서를 틀에 맞춰 다시 쓰는 일과 한 번에 하기 위해서다. 그 plan의 완료가 이 plan의 완료다.
+
 ### A. 채택 기록
 
 제안 status → `accepted`와 결정 기록, ADR-009, 이 plan, ADR-004·ADR-005의 후속 결정 링크, backlog·handoff 갱신.
