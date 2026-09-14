@@ -84,11 +84,11 @@ PR 하나가 묶음 하나다. 각 PR이 혼자 CI 초록이어야 하고, 문�
 
 ## 완료 기준
 
-- [ ] 제안서 「완료 기준」 열한 항목이 전부 선다
-- [ ] 연락처 수정과 통신 지연이 위 결정대로 정본 한 곳에 적히고 다른 문서는 링크한다
-- [ ] 옛 경로 셋(`2-design/domain/`·`2-design/architecture/`·`design-system/pages/`)이 `legacy-doc-paths.ts`에 있고 `docs/log/` 밖에 남지 않는다
-- [ ] 화면 문서·시안 14쌍이 소유 위치에 있고 `sian-html.ts`·`design-map.ts`가 그 자리를 읽는다
-- [ ] 정의문 전부가 새 경로를 가리킨다. 옛 경로를 읽는 정의문이 없다
+- [x] 제안서 「완료 기준」 열한 항목이 전부 선다
+- [x] 연락처 수정과 통신 지연이 위 결정대로 정본 한 곳에 적히고 다른 문서는 링크한다
+- [x] 옛 경로 셋(`2-design/domain/`·`2-design/architecture/`·`design-system/pages/`)이 `legacy-doc-paths.ts`에 있고 `docs/log/` 밖에 남지 않는다
+- [x] 화면 문서·시안 14쌍이 소유 위치에 있고 `sian-html.ts`·`design-map.ts`가 그 자리를 읽는다
+- [x] 정의문 전부가 새 경로를 가리킨다. 옛 경로를 읽는 정의문이 없다
 
 ## 안 하는 것
 
