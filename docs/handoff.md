@@ -25,15 +25,22 @@
 
 **`runtime/`이 섰다.** 인터뷰 일곱 라운드와 조언자 검토 한 번. 캐시 넷 — Service Worker는 껍데기(Serwist), 데이터는 TanStack Query IndexedDB 영속(`buster` = 빌드 id, `networkMode: 'always'`), Next 서버는 `proxy`가 세션만 보고 승인·차단은 클라이언트가 가른다, realtime 안 씀. 되돌리기 어려운 결정 둘 — 승인 게이트를 서버에서 클라이언트로 옮긴다(지금 코드의 `readAuthGate`가 데이터 task에서 옮겨진다), 출근 판정이 누른 시각(`reported_at`, 한도 10분)이라 「인자로 시각을 받지 않는다」에 예외가 섰다. 무효화 표는 `runtime/README.md` 한 곳이다. 정본 넷(api README·account·attendance, data-model account·attendance, domain attendance)이 따라 바뀌었다.
 
+**`flows/`가 섰다 — `architecture/` 넷이 다 찼다.** 조사 넷(화면 문서 열둘 + 알림)과 조언자 검토 한 번. 경로 표 열여덟, 동적 세그먼트 없이 날은 전부 `?date=`(정적 껍데기라 prefetch·SW 캐시). 층 셋 — 근무자 탭 넷, 관리자는 홈 → 달력 → 날 상세, 게이트 넷(`/login`·`/pending`·`/blocked`·`/left`). 앱바 뒤로는 `history.back()`이 아니라 부모 경로로 명시 이동(알림 착지에서도 갈 곳이 있게), 시트는 history에 들어 모바일 뒤로가 시트를 닫는다. 알림 종류마다 목적지 표가 `flows/notification.md`에 있다. 조언자가 잡은 정본 어긋남(관리자 달력이 홈과 별개, 날 상세 뒤로는 달력, 퇴사한 뒤 화면, 교대 알림 두 줄)은 반영됐다.
+
 ## 다음 첫 수
 
-**`flows/`다.** `architecture/`의 마지막 폴더다. 담을 것 — 도메인마다 화면·함수·알림이 이어지는 순서(근무 요청이 나가서 수락되고 배정이 서고 알림이 가기까지), 어느 함수가 어느 알림을 넣나, cron 셋(`expire_requests`·`erase_profiles`·시각 알림)이 어느 순간 끼어드나. `data-model`·`api`·`runtime`이 다 있으니 새 결정보다 이어 붙이기가 많다. 그 뒤가 구현이다 — 데이터 task가 먼저고 첫 스파이크는 Deno Edge Function이 `../../src`를 import할 수 있는지다.
+**구현이다 — 데이터 task가 먼저다.** `architecture/` 넷이 정본이라 이제 `docs/3-build/`의 구현 계획이 그 위에 선다. 첫 스파이크는 Deno Edge Function이 `../../src`를 import할 수 있는지다. 데이터 task가 갈아엎을 것 — 기존 `profiles` 마이그레이션(`profiles.id` 분리·`profile_private`), 승인 게이트를 서버 `readAuthGate`에서 클라이언트로, `middleware.ts` → `proxy.ts`. 착수 전에 `flows/`가 열어둔 결정 중 화면에 닿는 것(교대 승인 화면, `?month=` 뜻)을 먼저 닫는 편이 싸다.
 
 ## 열린 결정
 
 - **Deno Edge Function이 `supabase/functions` 밖의 `src/`를 import할 수 있는지 미확인.** `api/`가 「되면 `deno.json` 맵핑, 안 되면 CI가 `_shared/`로 복사」로 두 길을 적어뒀다. 데이터 task 첫 스파이크다.
 - **「배웠다」의 기준.** 자격을 교육 배정 행에서 계산하기로 했는데 배정이 서면인지 출근 인증까지인지 `schedule.md`가 안 정했다. 나머지 미정은 `data-model/README.md` 「아직 안 정한 것」에 있다.
-- **달 키의 범위.** 근무표 달이 달력 달인지 주 범위(8월 = 8/3~9/6)인지 `data-model`이 열어뒀는데 `runtime`의 `['schedule']`·`['payroll']`·`['availability']` 키가 그 결정에 딸린다. 급여가 달력 달이고 근무표가 주 범위면 급여 한 달이 근무표 두 달을 읽는다.
+- **달 키의 범위.** 근무표 달이 달력 달인지 주 범위(8월 = 8/3~9/6)인지 `data-model`이 열어뒀는데 `runtime`의 `['schedule']`·`['payroll']`·`['availability']` 키와 `flows`의 `?month=`가 그 결정에 딸린다. 급여가 달력 달이고 근무표가 주 범위면 급여 한 달이 근무표 두 달을 읽는다.
+- **교대 승인 화면이 없다.** `schedule-admin.md`가 「관리자 승인 화면은 여기 없다」고 비웠고 `approvals.md`는 근무 취소와 사유만 든다. 교대 수락 알림이 관리자를 어디로 보낼지가 여기 걸려 `flows/notification.md`의 그 줄이 비어 있다. 승인할 일에 교대 종류를 더하는 것이 후보다.
+- **화면이 없는 함수 넷.** `post_announcement`·`set_hall_location`·`undo_leave`·`import_holidays`. 알림 설정과 지난 알림 목록도 화면이 없다. 1차에 그릴지 미룰지 — `flows/README.md` 「아직 안 정한 것」.
+- **관리자 홈 앱바의 뒤로.** `profile.md`는 「관리자 홈 앱바의 뒤로로 돌아온다」, `schedule-admin.md`는 앱바에 「관리자」와 브랜드 마크뿐. `flows`는 `profile.md` 쪽이라 `schedule-admin.md`가 따라와야 한다. `login.md`의 차단 자리 미정(「로그인 화면에 그리는지 다른 자리로 보내는지」)도 `flows`가 `/blocked`로 닫았으니 페이지 문서에 되돌려 적는다.
+- **`architecture/`의 세세함 수준.** 넷이 다 찼는데 결정과 이유가 산문으로 반씩이라 plan 문서처럼 읽힌다는 지적이 있었다. 어느 층까지 적을지(시그니처·타입·파일 트리까지인지, 결정은 그대로 두고 이유만 빼 표로 갈지)는 총괄이 직접 손본다. 그때까지는 지금 수준이 정본이다.
+- **iOS 홈 화면 앱의 가장자리 스와이프가 `popstate`를 주는지.** 시트를 history에 넣는 결정이 여기 걸린다. 안 주면 시트를 history에서 뺀다.
 - **iOS 홈 화면 앱의 `visibilitychange`.** 탭 복귀 재조회와 시각 재동기화가 이 이벤트 하나에 산다. 앱 전환마다 오는지 기기에서 봐야 한다.
 - **스켈레톤 조각과 「통신 없음」 띠가 `components.md`에 없다.** `runtime`이 둘 다 쓴다. 띠는 알림 블록의 중립 종류가 후보라 아래 항목과 같은 자리다.
 - **`src/app/`의 `.ts`가 여전히 훅 밖이다.** 조립이 `features`로 나가 위임만 남았으니 짝 테스트를 요구할 것이 없어 `SKIP_PREFIXES`는 그대로 뒀다. `src/app/`에 다시 로직이 들어오면 그때 훅을 좁힌다.
