@@ -22,7 +22,7 @@ pg_cron(`internal`) — `emit_reminders`(전날 저녁 9시·시작 10분 전·�
 
 **Edge Function은 얼개다.** 알림 행 잡기 → `src/features/notification/model/`의 순수 함수로 payload와 처리 방법 정하기 → `npm:web-push`로 보내기 → 성공이면 `pushed_at`, 410이면 구독 지우기. 판단(어떤 실패가 재시도인가, 어떤 것이 구독 폐기인가)은 전부 `src/`의 순수 함수라 unit 테스트가 지킨다. 그 함수들은 Node 전용 API를 안 쓴다 — lint가 `src/features/notification/model/`에서 `node:` import를 막는다.
 
-Deno가 `supabase/functions` 밖의 `src/`를 import할 수 있는지는 확인 안 됐다. 데이터 task의 첫 스파이크다 — 되면 `deno.json`이 경로를 맵핑하고, 안 되면 CI가 그 폴더를 `_shared/`로 복사한다(생성물, 커밋 안 함). 정본은 어느 쪽이든 `src/`다.
+**Deno는 `supabase/functions` 밖을 못 읽는다.** edge-runtime 컨테이너에 그 폴더 하나만 마운트돼서, `deno.json`이 `../../src/`를 맵핑해도 파일이 컨테이너 안에 없다. 심볼릭 링크도 타깃이 마운트 밖이라 끊긴다. 그래서 CI가 `src/features/notification/model/`을 `supabase/functions/_shared/`로 복사한 뒤 Supabase를 띄운다 — `.github/workflows/ci.yml`의 `ci` 잡, `supabase start` 줄 앞이다 — 그 줄은 지금 `-x`로 `edge-runtime`을 빼고 있어 같이 푼다. 복사본은 생성물이라 커밋하지 않는다. 정본은 `src/`다.
 
 얼개 자체는 e2e가 본다. CI가 `supabase functions serve`를 띄우고 가짜 푸시 엔드포인트로 한 번 돌린다.
 
