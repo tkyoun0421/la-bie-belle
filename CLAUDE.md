@@ -2,20 +2,7 @@
 
 ## 문서 지도
 
-무엇이 어디 있는지는 이 절이 정본이다. 다른 문서는 여기를 가리키고, 새 갈래가 생기면 한 줄을 더한다. 다른 곳에 정본이 있는 내용은 여기 옮겨 적지 않는다. 단계 재편은 ADR-005, 제안과 실행 계획의 구분은 ADR-008에 있다.
-
-- [`docs/handoff.md`](docs/handoff.md) — 지금 상태와 다음 첫 수. 세션은 여기서 시작한다
-- [`docs/backlog.md`](docs/backlog.md) — task 보드. 완료 조건은 행이 링크하는 spec(기능)이나 plan(비기능)에 산다
-- [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — 날짜·변경·PR 표. 왜는 log와 PR에
-- [`docs/log/`](docs/log/) — 회차 기록. 왜 그렇게 정했는지
-- [`docs/observations/`](docs/observations/) — 관찰 로그. 정의문·훅이 삐걱인 자리, 증축 규칙의 카운터. 규칙은 그 안 `README.md`, 근거는 ADR-006
-- [`docs/proposals/`](docs/proposals/) — 단계에 걸치는 변경 방향의 검토 제안. 작성 기준·상태·목록은 그 안 `README.md`, 근거는 ADR-008
-- [`docs/1-plan/`](docs/1-plan/) — 기획: prd, 시나리오, 로드맵, 지표, `intent/`
-- [`docs/2-design/`](docs/2-design/) — 설계: `domain/`(용어·규칙 정본), `architecture/`, `design-system/`, `adr/`, `spec/`(완료 조건·승인 마크)
-- [`docs/3-build/`](docs/3-build/) ~ [`docs/6-maintain/`](docs/6-maintain/) — 구현 계획, 테스트 전략, 배포, 운영. 각 안내는 그 안 `README.md`
-- [`REVIEW.md`](REVIEW.md) — PR 리뷰 정책 정본. CI 자동 리뷰와 `pr-diff`가 같은 축을 읽는다
-- [`.claude/agents/`](.claude/agents/) — subagent 정의문
-- [`.claude/skills/`](.claude/skills/) — 스킬 정의문
+무엇이 어디 있는지는 [`docs/README.md`](docs/README.md)가 정본이다. 세션은 [`docs/handoff.md`](docs/handoff.md)에서 시작하고, task 보드는 [`docs/backlog.md`](docs/backlog.md)다. PR 리뷰 정책은 [`REVIEW.md`](REVIEW.md), subagent 정의문은 [`.claude/agents/`](.claude/agents/), 스킬은 [`.claude/skills/`](.claude/skills/)다.
 
 ## 스택과 명령어
 
