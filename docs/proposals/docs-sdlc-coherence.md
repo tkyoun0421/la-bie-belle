@@ -26,7 +26,7 @@ status: accepted
 
 현재 [system/architecture.md](../2-design/system/architecture.md)는 관심사를 폴더로, 도메인을 파일로 나눈다. 같은 계정의 규칙·데이터·API·실행 동작·화면 흐름이 다섯 곳으로 갈라지고 화면 문서는 다시 별도다.
 
-[설계 안내](../2-design/README.md)는 분야별 기준을 정했지만, [연락처 수정 API](../2-design/modules/account/design.md#행위별-구현-계약)와 [런타임 설명](../2-design/modules/account/design.md#프로필-제출연락처사진)은 직접 갱신과 `submit_profile` 호출로 어긋난다. [출근 규칙](../2-design/modules/attendance/README.md#누가-보나)과 [출근 런타임](../2-design/modules/attendance/design.md#인증은-화면이-열린-동안-다시-시도한다)은 통신 지연의 계산 기준도 다르다. 함께 바뀌는 설계의 위치와 변경 절차를 모두 고칠 필요가 있다.
+[설계 안내](../2-design/README.md)는 분야별 기준을 정했지만, [연락처 수정 API](../2-design/modules/account/design.md#행위별-구현-계약)와 [런타임 설명](../2-design/modules/account/design.md#프로필-제출연락처사진)은 직접 갱신과 `submit_profile` 호출로 어긋난다. [출근 규칙](../2-design/modules/attendance/README.md#att-017)과 [출근 런타임](../2-design/modules/attendance/design.md#출근-인증)은 통신 지연의 계산 기준도 다르다. 함께 바뀌는 설계의 위치와 변경 절차를 모두 고칠 필요가 있다.
 
 | 안 | 장점 | 비용과 한계 | 판단 |
 | --- | --- | --- | --- |

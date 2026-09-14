@@ -2,11 +2,11 @@
 
 관리자가 한 달을 숫자로 보는 화면이다. 값은 [tokens.md](../../design-system/tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
 
-셋이다 — 인건비, 사람별 근태, 포지션별 시간이다. [prd.md](../../../1-plan/prd.md)가 정한 셋이고 근거가 되는 규칙은 [payroll/README.md](../../modules/payroll/README.md)와 [attendance/README.md](../../modules/attendance/README.md#세는-것)에 있다.
+셋이다 — 인건비, 사람별 근태, 포지션별 시간이다. [prd.md](../../../1-plan/prd.md)가 정한 셋이고 근거가 되는 규칙은 [payroll/README.md](../../modules/payroll/README.md)와 [attendance/README.md](../../modules/attendance/README.md#att-023)에 있다.
 
 들어오는 문은 [관리자 홈](../../modules/schedule/screens/schedule-admin.md#관리자-홈)의 「통계」 줄이다.
 
-**세는 단위가 달이다.** 주도 연도 아니다 — 인건비를 묻는 자리가 월 정산이고, 근태도 [attendance/README.md](../../modules/attendance/README.md#세는-것)가 달로 센다고 정했다. [급여 조회](../../modules/payroll/screens/payroll.md)가 주·월·연 셋을 여는 것과 갈린다.
+**세는 단위가 달이다.** 주도 연도 아니다 — 인건비를 묻는 자리가 월 정산이고, 근태도 [attendance/README.md](../../modules/attendance/README.md#att-023)가 달로 센다고 정했다. [급여 조회](../../modules/payroll/screens/payroll.md)가 주·월·연 셋을 여는 것과 갈린다.
 
 **여기 나오는 숫자도 예상치다.** 인건비가 [급여](../../modules/payroll/README.md)에서 나오고 그것이 예상치라서다. 화면이 그 사실을 한 줄로 밝힌다.
 
@@ -74,7 +74,7 @@
 
 ### 현황 줄
 
-그달의 출근·지각·출근 인정·결근 넷을 한 줄에 센다. [attendance/README.md](../../modules/attendance/README.md#세는-것)가 집계에 든다고 정한 넷이다.
+그달의 출근·지각·출근 인정·결근 넷을 한 줄에 센다. [attendance/README.md](../../modules/attendance/README.md#att-023)가 집계에 든다고 정한 넷이다.
 
 **출근과 출근 인정을 합치지 않는다.** 둘을 합치면 인증이 실제로 얼마나 도는지 안 보이고, 그것이 [지표](../../../1-plan/metrics.md)의 출근 인증률이다.
 
@@ -115,7 +115,7 @@ ListRow고 이름 가나다순이다.
 
 **시간이 0인 포지션도 목록에 있다.** 아홉이 다 선다. 빠지면 그 포지션이 이 앱에 없는 것처럼 읽히고, 한 달 내내 아무도 안 들어간 자리가 있다는 것 자체가 읽을 거리다.
 
-**교육 배정도 든다.** 정규 자리를 안 먹을 뿐 그날 나와서 같은 시간을 있었다([attendance/README.md](../../modules/attendance/README.md#누가-보나)). 어느 포지션의 교육이었는지로 센다.
+**교육 배정도 든다.** 정규 자리를 안 먹을 뿐 그날 나와서 같은 시간을 있었다([attendance/README.md](../../modules/attendance/README.md#att-020)). 어느 포지션의 교육이었는지로 센다.
 
 **겸임 자리는 시간을 나눠 세지 않는다.** 한 사람이 두 포지션을 맡아도 근무 시간은 날짜마다 하나고 급여도 한 번만 센다([schedule/README.md](../../modules/schedule/README.md)). 포지션별 시간에서도 같은 시간을 양쪽에 다 얹지 않는다 — 합이 전체보다 커진다. 겸임 자리는 앞 포지션으로 센다.
 
