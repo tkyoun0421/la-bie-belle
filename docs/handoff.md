@@ -1,106 +1,31 @@
 # Handoff
 
-새 총괄 세션은 이 파일부터 읽는다. 회차가 끝날 때마다 `session-recorder`가 덮어쓰고, 회차 중간이라도 작업 하나가 끝나면 총괄이 「다음 첫 수」를 갱신한다 — 어느 시점에든 새 세션이 여기서 이어받을 수 있어야 한다(태관, 2026-09-07).
+새 총괄 세션은 이 파일부터 읽는다. 회차가 끝날 때마다 `session-recorder`가 덮어쓰고, 회차 중간이라도 작업 하나가 끝나면 총괄이 「다음 첫 수」를 갱신한다 — 어느 시점에든 새 세션이 여기서 이어받을 수 있어야 한다.
+
+넷만 담는다 — 지금 상태, 다음 첫 수, 그 수를 막는 결정, 이번 회차에만 필요한 주의. 열린 결정은 정본의 「아직 안 정한 것」에, 할 일은 `backlog.md`에, 정의문·훅의 마찰은 `observations/`에 산다. 상시 주의는 `docs/4-test/README.md`와 `docs/5-deploy/README.md`다.
 
 ## 지금 상태
 
 회차 기록은 `docs/log/2026-09-14.md`(이번 회차)와 `docs/log/2026-09-13.md`(직전 회차)에 있다.
 
-**`architecture/` 넷이 전부 섰다 — data-model·api·runtime·flows (#315~#318, `docs/log/2026-09-14.md`).** 앞 문서가 뒤 문서의 전제가 되는 사슬이라 넷이 순서대로 이어졌다. `data-model/README.md`(#315)가 네 원칙을 세웠다 — 사실은 DB에 상태는 계산, 쓰기는 security definer Postgres 함수를 `dals`가 `rpc()`로, 이력은 닫고 새로, 막는 것은 데이터. 되돌리기 어려운 결정 둘 — 프로필 신원 분리(`profiles.id` 별도, `user_id → auth.users`)와 개인정보 표 분리(`profile_private`) — 가 여기서 났다. 기존 `profiles` 마이그레이션과 integration 테스트는 이 결정과 어긋나 데이터 task가 갈아엎는다.
+**설계가 다 섰다.** 1차 화면 열한 개가 문서와 시안으로 서 있고(`docs/2-design/design-system/pages/`), `architecture/` 넷 — data-model·api·runtime·flows — 이 #315~#318로 채워졌다. 되돌리기 어려운 결정 넷이 거기서 났다 — 프로필 신원 분리(`profiles.id` 별도, `user_id → auth.users`), 개인정보 표 분리(`profile_private`), 승인 게이트가 서버에서 클라이언트로, 출근 판정이 누른 시각(`reported_at`). 기존 `profiles` 마이그레이션·`readAuthGate`·`middleware.ts`는 이 결정과 어긋나 데이터 task가 갈아엎는다.
 
-`api/`(#316)가 경계 하나를 세웠다 — 브라우저가 Supabase를 바로 부르고 Next 서버는 게이트뿐. 읽기는 PostgREST 임베딩(뷰 둘 예외), 쓰기는 함수 마흔쯤을 `public`/`internal`로, 오류는 고정 코드 열둘을 `DomainError`/`TransportError`로, 푸시는 Webhook+pg_cron 재시도에 잡기(`claimed_at`)와 성공(`pushed_at`)을 다른 열로 갈랐다. 이 PR의 둘째 커밋이 `architecture/README.md`의 300줄 규칙을 버렸다 — 폴더를 채우면 도메인 파일 여섯(`account`·`schedule`·`swap`·`attendance`·`payroll`·`notification`)이 같이 서는 구조라 파일 길이 기준이 무의미해서다. `data-model/`·`api/` 둘 다 이제 README(가로지르는 규칙) + 도메인 여섯이다. ADR-003 「`dals`에서만」 조항을 `from`·`rpc`·`storage`·`channel`로 좁히고 `auth.*`를 `shared/lib`으로 못박아 09-13 회차가 열어둔 결정 하나가 닫혔다. 시안 넷의 더미 전화번호 아홉을 `010-0000-000x` 꼴로 바꿨다.
+**문서 구조 task가 거의 끝났다.** `docs/3-build/plans/docs-structure.md` 여덟 항목 중 spec 폴더 정리(#321), 목차와 차단·뒤로 정합(#322), 루트 README·디자인 지도·CHANGELOG(#323), 그리고 backlog·handoff 재편과 architecture 상태 표기가 이 회차에 들어갔다.
 
-`runtime/`(#317)이 캐시 넷을 세웠다 — Service Worker는 껍데기(Serwist), 데이터는 TanStack Query IndexedDB 영속(`buster` = 빌드 id, `networkMode: 'always'`), Next `proxy`는 세션만 보고 승인·차단 판정은 클라이언트가 `['profile']`로 가른다, realtime 안 씀. 되돌리기 어려운 결정 둘 — 승인 게이트가 서버에서 클라이언트로 옮겨간다(지금 코드의 `readAuthGate`가 데이터 task에서 이동 대상), 출근 판정이 누른 시각(`reported_at`, 10분 한도)이라 「인자로 시각을 받지 않는다」에 예외가 섰다. 무효화 키는 `runtime/README.md` 한 곳에 표로 모았다.
+코드는 세션 기반과 로그인·승인 대기 화면까지다. 대시보드는 데이터가 없어 못 연다.
 
-`flows/`(#318)가 마지막 자리를 채웠다 — 경로 열여덟, 동적 세그먼트 없이 날은 전부 `?date=`(정적 껍데기라 prefetch·SW 캐시). 층 셋 — 근무자 탭 넷, 관리자는 홈 → 달력 → 날 상세, 게이트 넷(`/login`·`/pending`·`/blocked`·`/left`). 앱바 뒤로는 `history.back()`이 아니라 부모 경로로 명시 이동, 시트는 history에 들어 모바일 뒤로가 닫는다. 알림 종류별 목적지 표가 `flows/notification.md`에 섰다. 조언자가 정본 어긋남 여럿(관리자 달력이 홈과 별개, 날 상세 뒤로는 달력, 퇴사한 뒤 화면, 교대 알림 두 줄, 대시보드 「이번 주 근무」가 그날 시트까지)을 잡아 반영됐다.
-
-**직전 회차까지의 상태.** 1차 화면 열한 개가 문서와 시안으로 다 섰다(로그인·승인 대기부터 급여·프로필·시급·QR·직원·통계까지, 순서와 PR 번호는 `docs/log/2026-09-07.md`부터 `2026-09-11.md`에 있다). 공용 정본(`tokens.md`·`components.md`·`writing.md`)이 그 과정에서 여러 차례 갱신됐고 `sian-auditor`가 서서 화면 디자인 파이프라인이 「페이지 문서 → `sian-writer` → `sian-auditor`」로 CLAUDE.md에 섰다. 아키텍처 리뷰 후보 다섯(#302, #303, #305)이 09-13 회차에서 다 닫혔다 — 마크다운 문서 모듈(`doc-links.ts`·`doc-map.ts`), Supabase 클라이언트 진입점 통합, 인증 게이트의 `features` 이동. 공용 조각 여섯과 빈 상태가 `components.md`에 섰다(#308, #309). 시안·문서 캔버스는 저장소 밖 [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)에 있고 빌드 소스는 세션 임시 폴더라 다음 세션이 다시 만들 수 없다. 하루 띠 비교 시안은 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832)에 따로 있다.
+저장소 밖 자료 — 시안·문서 캔버스 [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)(빌드 소스는 세션 임시 폴더라 다시 못 만든다), 하루 띠 비교 시안 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832).
 
 ## 다음 첫 수
 
-**문서 구조 task가 먼저, 그다음 데이터 task다.** `docs/3-build/plans/docs-structure.md`의 여덟 항목 중 8·5번(spec은 기능만, 비기능 spec 여섯을 `plans/`로)이 #321로 끝났다. 남은 여섯 중 3번(backlog에 데이터 task 등록, handoff 축약)이 데이터 task의 입구라 그것부터 한다.
+**데이터 task다.** `backlog.md` 「다음」 순서대로 — Edge Function import 스파이크 → 계정 데이터 구조 전환 → 인증 진입 전환 → 타입 생성 절차. 계정 데이터 구조는 비기능이라 spec 없이 `3-build/plans/account-data.md`부터 쓴다.
 
-**구현이다 — 데이터 task가 먼저다.** `architecture/` 넷이 정본이라 이제 `docs/3-build/`의 구현 계획이 그 위에 선다. 첫 스파이크는 Deno Edge Function이 `../../src`를 import할 수 있는지다. 데이터 task가 갈아엎을 것 — 기존 `profiles` 마이그레이션(`profiles.id` 분리·`profile_private`), 승인 게이트를 서버 `readAuthGate`에서 클라이언트로, `middleware.ts` → `proxy.ts`. 착수 전에 `flows/`가 열어둔 결정 중 화면에 닿는 것(교대 승인 화면, `?month=` 뜻)을 먼저 닫는 편이 싸다.
+## 막는 결정
 
-## 열린 결정
-
-- **Deno Edge Function이 `supabase/functions` 밖의 `src/`를 import할 수 있는지 미확인.** `api/`가 「되면 `deno.json` 맵핑, 안 되면 CI가 `_shared/`로 복사」로 두 길을 적어뒀다. 데이터 task 첫 스파이크다.
-- **「배웠다」의 기준.** 자격을 교육 배정 행에서 계산하기로 했는데 배정이 서면인지 출근 인증까지인지 `schedule.md`가 안 정했다. 나머지 미정은 `data-model/README.md` 「아직 안 정한 것」에 있다.
-- **달 키의 범위.** 근무표 달이 달력 달인지 주 범위(8월 = 8/3~9/6)인지 `data-model`이 열어뒀는데 `runtime`의 `['schedule']`·`['payroll']`·`['availability']` 키와 `flows`의 `?month=`가 그 결정에 딸린다. 급여가 달력 달이고 근무표가 주 범위면 급여 한 달이 근무표 두 달을 읽는다.
-- **교대 승인 화면이 없다.** `schedule-admin.md`가 「관리자 승인 화면은 여기 없다」고 비웠고 `approvals.md`는 근무 취소와 사유만 든다. 교대 수락 알림이 관리자를 어디로 보낼지가 여기 걸려 `flows/notification.md`의 그 줄이 비어 있다. 승인할 일에 교대 종류를 더하는 것이 후보다.
-- **화면이 없는 함수 넷.** `post_announcement`·`set_hall_location`·`undo_leave`·`import_holidays`. 알림 설정과 지난 알림 목록도 화면이 없다. 1차에 그릴지 미룰지 — `flows/README.md` 「아직 안 정한 것」.
-- **`architecture/`의 세세함 수준.** 넷이 다 찼는데 결정과 이유가 산문으로 반씩이라 plan 문서처럼 읽힌다는 지적이 있었다. 어느 층까지 적을지(시그니처·타입·파일 트리까지인지, 결정은 그대로 두고 이유만 빼 표로 갈지)는 총괄이 직접 손본다. 그때까지는 지금 수준이 정본이다.
-- **iOS 홈 화면 앱의 가장자리 스와이프가 `popstate`를 주는지.** 시트를 history에 넣는 결정이 여기 걸린다. 안 주면 시트를 history에서 뺀다.
-- **iOS 홈 화면 앱의 `visibilitychange`.** 탭 복귀 재조회와 시각 재동기화가 이 이벤트 하나에 산다. 앱 전환마다 오는지 기기에서 봐야 한다.
-- **스켈레톤 조각과 「통신 없음」 띠가 `components.md`에 없다.** `runtime`이 둘 다 쓴다. 띠는 알림 블록의 중립 종류가 후보라 아래 항목과 같은 자리다.
-- **`src/app/`의 `.ts`가 여전히 훅 밖이다.** 조립이 `features`로 나가 위임만 남았으니 짝 테스트를 요구할 것이 없어 `SKIP_PREFIXES`는 그대로 뒀다. `src/app/`에 다시 로직이 들어오면 그때 훅을 좁힌다.
-- **로고 렌더를 지키는 테스트가 없다.** `public/google-g.svg`를 지워도 e2e 11개가 초록이다. 「버튼 안 로고의 `background-image`가 비어 있지 않다」는 e2e 한 줄이 후보다.
-- **CI가 chromium만 돈다.** 주 타깃이 아이폰 사파리인데 webkit을 안 본다. [ADR-007](2-design/adr/ADR-007-web-pwa-over-native.md)이 PWA로 가며 치르는 값 넷 중 유일하게 열린 채로 둔 것이다.
-- **뛰는 점의 진폭이 `tokens.md`에 없다.** 등장 모션의 최솟값 0.9를 빌려 썼는데(6px 점에서 0.6px 변화라 눈에 잘 안 띈다), 실제 화면을 보고 정한다.
-- **Button hover 조항이 `components.md` 표에 없다.** secondary·ghost·destructive의 눌림 배경도 아직 shadcn 기본값이다.
-- **`motion.md`에 `delay-*` 함정이 문서화돼 있지 않다.** core Tailwind의 `transition-delay`가 이겨서 `tw-animate-css`를 쓰려면 `[--tw-animation-delay]`로 우회해야 하는데, 이게 라이브러리 내부 변수라 이름이 바뀌면 조용히 죽는다. 잡는 테스트가 없다.
-- **`pages/login.md` 25행의 가운데 덩이 위치 서술이 두 가지로 읽힌다.** "남는 공간을 위아래가 반씩 나눈다"와 "화면 한가운데에 선다"가 정확히 같은 자리가 아니다. 탭 제목("La Bie Belle" vs "라비에벨") 조항도 없다.
-- **`src/` 처분.** "따로 건질 건 없을 것 같다"고 했지만 총괄이 삭제 지시로 읽지 않고 그대로 뒀다 — 되돌리기 어려운 쪽을 기본값으로 삼지 않았다. 실제로 지우려면 말해줘야 한다.
-- **디자인 캔버스 빌드 소스를 저장소에 넣을지.** 지금은 세션 임시 폴더에 있어서 다음 세션이 캔버스를 다시 만들 수 없다. `docs/2-design/design-system/canvas/`가 후보고, 넣으면 `globals.css`가 바뀔 때 다시 돌려 같은 링크에 올리는 일이 회차 절차가 된다.
-- **캔버스가 찾은 지적 셋을 안 고쳤다.** 저장소 시안이 그렇게 그려져 있어서 캔버스만 고치면 둘이 어긋난다. ⓐ `.lrow .lv`가 `fg.neutral-muted`인데 `components.md`는 `fg.neutral`이라 적었다 ⓑ 작은 버튼 높이가 30px인데 세로 44px 규칙과 부딪힌다 ⓒ AdminCalendar가 ListRow를 한 줄짜리로 쓰고 「마감일 당기기」가 누를 것처럼 안 보인다. 시안을 고칠지 조항을 고칠지 정한다.
-- **스위치 손잡이의 그림자.** 시안이 `0 1px 2px rgba(0,0,0,.2)`로 그렸는데 5절 그림자 셋은 다 면이 뜨는 값이라 20px 손잡이에 안 맞는다. `tokens.md` 「빈자리」에 있고 실제 화면을 보고 넷째 값으로 올릴지 테두리로 바꿀지 정한다.
-- **팝오버가 다크에서 테두리와 그림자 ring을 같이 갖는다.** 시안은 다크 `--pop-shadow`를 `0 0 0 1px stroke.neutral`로 그렸는데 정본은 `none`이다 — 카드처럼 `stroke.surface` 테두리가 다크를 맡는다. 시안 둘(members-pending·members)이 아직 ring을 들고 있고 화면에 안 보이는 차이라 `sian-auditor`에 맡긴다.
-- **테스트 픽스처의 표기 관행이 문서에 없다.** `generate-globals-css.test.ts`의 기대값은 prettier가 정규화한 표기(`rgba(28, 25, 22, 0.05)`)고 `tokens.md` 원문은 축약 표기다. 파일 안 주석 한 줄이 전부라 다음 writer가 표에서 그대로 복사할 자리다.
-- **단일 선택 목록의 규격이 `components.md`에 없다.** `approvals.md`의 거절 이유가 넷 중 하나를 고르는 자리인데 라디오도 선택 상태의 ListRow도 정본에 없다. 오른쪽 체크(`fg.brand`)로 그렸고, 같은 모양이 다른 화면에서 한 번 더 나오면 공용으로 올린다.
-- **하루 띠 비교 시안**은 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832)에 있다. 옛 축과 새 축을 나란히 놓은 것이고 저장소 밖이라 같이 안 산다.
-- **캔버스는 저절로 갱신되지 않는다.** 저장소를 안 보고 빌드 때 읽은 값을 품고 있다. 토큰이나 시안이 바뀌면 빌드를 다시 돌려 같은 링크에 올려야 따라온다.
-- **캔버스가 Wanted Sans를 못 싣는다.** 아티팩트 CSP가 구글 폰트만 허용해서 시스템 서체로 대체된다. 자간과 줄 높이가 실제 앱과 조금 다르게 보인다.
-- **구글 버튼의 Google Sans Medium.** 구글 문서가 그 서체를 적었는데 서드파티 웹에 배포되지 않아 우리 서체로 그려야 한다. 그 어긋남을 OAuth 심사가 어떻게 보는지 모른다. 버튼 이미지를 통째로 쓰면 규정에 맞지만 문구를 우리말로 못 쓴다.
-- **라이트와 다크에서 구글 버튼 테마를 나눌지.** 지금은 양쪽 다 어두운 배경 하나고, 라이트와 중립 테마의 값은 `tokens.md`에 안 옮겼다. 구글이 테마별로 다른 버튼을 쓰는 것을 막지 않는다. 실제 화면을 보고 정한다.
-- **알림 블록의 중립 종류를 `components.md`에 올릴지.** 「아직 안 켬」이 안내·성공·경고·오류 넷 중 어디도 아니라 `bg.neutral-weak`로 깔았다. 화면 하나를 근거로 공용 컴포넌트를 늘리기에는 일러서 미뤘다. 다른 화면에서 같은 모양이 한 번 더 나오면 그때 올린다.
-- **브랜드 색이 한 화면에 둘인 자리.** 승인 대기 화면에 알약(`bg.brand-weak`)과 「알림 켜기」(`bg.brand-solid`)가 같이 선다. 무게가 갈려 지금은 지나갔지만 실제 화면에서 다시 본다. 헤더에 로고를 두는 화면이 생기면 같은 판단이 한 번 더 필요하다 — `color.md`가 그 조건을 적어뒀다.
-- env가 없으면 미들웨어가 모든 요청에서 던져 앱 전체가 500이 된다. 조용한 로그아웃보다 낫다고 판단해 그렇게 갔지만, 사용자에게는 Next 기본 에러 화면이 뜬다. `error.tsx`를 다룰 때 같이 본다.
-- 미들웨어에 `matcher`가 없다. 함수 안에서 정적 자원을 걸러내는데 `export const config = { matcher }`를 쓰면 실행 자체를 안 한다. 동작은 맞고 명세도 지켰으니 성능 판단으로 남겨뒀다.
-- `playwright.config.ts`에 `workers: 1`과 `fullyParallel: true`가 같이 있다 — 앞이 뒤를 무의미하게 만든다. e2e가 늘면 아플 자리다.
-- Next 16이 `middleware.ts`를 deprecate하고 `proxy`로 밀고 있다 — 테스트가 파일명을 못박아둬서 옮길 때 같이 고쳐야 한다. `runtime`·`api`는 이미 `proxy`라 적었고, 데이터 task가 승인 게이트를 클라이언트로 옮기며 같이 간다.
-- PR #197의 lint 규칙 표가 저장소 안에 없고 PR 본문에만 있다 — 규칙 번호 불변식(`DOCUMENTED_LINT_RULE_COUNT`)이 그 표에 기대는데 정본이 저장소 밖에 있다.
-- `tests/lint/tsx-dumb-ui.test.ts:162`의 인라인 `layout.tsx` 픽스처가 아직 Geist를 가리킨다. 이 파일의 픽스처 다섯(`layout`·`page`·`providers`·`button`·`card`)이 전부 실제 소스를 베낀 인라인 사본이라, 소스가 바뀔 때마다 같은 방식으로 썩는다. `design-token-values.test.ts`처럼 `readFileSync`로 실제 파일을 읽게 옮길지는 안 정했다.
-- 관리자 승인 RLS가 `security definer`를 필요로 한다. 컬럼 권한은 역할 단위라 `authenticated`에 `approved_at`을 열면 관리자든 아니든 다 열린다. 지금 스키마는 그 문을 안 열어뒀다.
-- integration 테스트가 만든 사용자를 치우지 않는다. anon 키로는 `auth.users`를 못 지우고, 프로필 행 삭제는 테스트가 지키는 바로 그 정책에 걸린다. 지우려면 service role이 필요한데 금지다. `supabase/config.toml`이 IP당 5분에 서른 번으로 가입을 막는데 e2e도 이제 사용자를 만드니, 계정 task를 여러 회차 돌리면 닿는다.
-- 테마를 고르는 UI와 그 선택을 어디 저장할지가 미정이다. 기기 설정을 따르되 앱에서 덮을 수 있게 하기로는 정했지만, 그 속성을 실제로 걸어줄 화면이 없다. `docs/2-design/design-system/tokens.md`의 「아직 안 정한 것」에 있다.
-- 도메인 규칙의 미정 항목은 `docs/2-design/domain/`의 각 파일 "아직 안 정한 것" 절이 정본이다. 디자인 값의 미정 항목은 `docs/2-design/design-system/tokens.md`와 `docs/2-design/design-system/pages/`의 같은 이름 절이 정본이다. 여기 옮겨 적지 않는다.
-- 로컬에서 연타하면 가입 rate limit에 걸린다. `supabase/config.toml`이 IP당 5분에 30번이다. CI는 컨테이너가 매번 새로 떠서 무관하다.
-- `authenticated`에 `profiles` 테이블 단위 insert와 delete 권한이 열려 있다. 정책이 없어 RLS가 전부 막는 구조다. 지금은 기본 거부라 안전하고 테스트가 delete 쪽을 지킨다.
-- shadcn `accent` 매핑 — `bg.brand-weak`로 걸면 드롭다운 hover마다 브랜드 색이 깜빡여 절제 규칙과 부딪힌다. 실제 화면을 보고 `bg.neutral-weak`로 내릴지 판단이 필요하다.
-- "8월 28일에 나옵니다" 예시 문장 — 어체가 합쇼체라 해요체 규칙과 어긋나고, `docs/2-design/domain/schedule.md`에 근무표 확정 마감일이 없어 앱이 날짜를 약속할 근거가 없다. `writing.md`에 확인 요청으로 달려 있다.
-- 급여 확정 축하 모션 — 축하할 순간 후보로 지목됐는데 `payroll.md`가 급여를 확정하지 않는다고 못 박아 대상을 못 정했다.
-- 되돌리기 어려운 동작에 별도 색을 줄지 — 출근 인증과 교대 수락 둘 다 되돌릴 길이 없는데 지금은 같은 `bg.brand-solid`라 한 화면에 브랜드 버튼이 둘 뜰 수 있다.
-- `docs/2-design/design-system/tokens.md`의 "브랜드 색 출처" — 지금 brand 계열이 공식 브랜드 가이드가 아니라 홀 이미지와 웹사이트 내비게이션에서 뽑은 값이다.
-- `playwright.config.ts`의 CI 리트라이 2 — e2e가 늘고 `workers: 1`까지 겹쳐 전체 실행 시간이 무거워지고 있다. 유지할지 정한다.
-- CI가 1분대에서 4분대로 늘었던 것 중 analytics(logflare·vector) 몫은 껐다. 문서 전용 PR은 48초로 줄었지만, 코드가 낀 PR의 남은 시간이 여전히 아픈지는 몇 회차 더 겪고 정한다.
+- **달 키의 범위.** 근무표 달이 달력 달인지 주 범위(8월 = 8/3~9/6)인지 — [data-model](2-design/architecture/data-model/README.md#아직-안-정한-것)이 열어뒀고 [runtime](2-design/architecture/runtime/README.md#아직-안-정한-것)의 캐시 키와 [flows](2-design/architecture/flows/README.md#아직-안-정한-것)의 `?month=`가 딸린다. 근무표 task 전에 닫는다.
+- **교대 승인 화면.** `schedule-admin.md`가 비웠고 교대 수락 알림의 목적지가 [flows](2-design/architecture/flows/README.md#아직-안-정한-것)에 비어 있다. 알림 task 전에 닫는다.
 
 ## 주의
 
-- **`docs/`·`.claude/`·루트 마크다운만 바뀐 PR은 CI가 뒤쪽 넷(integration·build·e2e·supabase 기동)을 건너뛴다.** 스킵 패턴이 루트 md까지 넓다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨지는 자리가 있다.
-- **`pnpm test`에 문서 구조를 지키는 검사 둘이 낀다.** `tests/lint/doc-map.ts`(CLAUDE.md 문서 지도 경로 실존 확인)와 `tests/lint/legacy-doc-paths.ts`(옛 경로 잔존 검사)다. 문서를 옮길 땐 CLAUDE.md 문서 지도를 같이 갱신하고, 옛 경로 문자열을 새로 남기지 않는다. `docs/log/`는 검사 밖이라 당시 경로를 그대로 써도 된다.
-- **`feat/<슬러그>` 브랜치에서 `src/`를 고치려면 `docs/2-design/spec/<슬러그>.md`가 `status: approved`여야 한다.** `.claude/hooks/spec-gate.py`가 막는다. `feat/`가 아닌 브랜치(문서·리팩터링·수리)는 게이트 밖이다.
-- **`tdd-guard-e2e.py`가 `src/screens/` 아래 순수 `.ts`도 화면으로 오판한다.** `spec_name()`이 접두사만 보고 확장자를 안 봐서, `model/` 아래 로직 파일까지 `tests/e2e/<이름>.spec.ts`를 요구할 수 있다. 관찰 006이 열려 있고 아직 안 고쳐졌다 — 이런 파일을 계획할 때 unit 테스트 작성 순서가 밀릴 수 있다.
-- **여러 계층을 묶는 조립은 `features`에 둔다.** ADR-001 「레이어」가 정했다. `src/app/`의 `.ts`는 use-case를 부르고 `redirect` 같은 Next API에 넘기는 위임만 한다 — 로직을 거기 두면 훅이 안 본다. 서버 클라이언트는 `createSupabaseRequestClient()`로 받는다. `cookies()`를 직접 부르는 자리는 그 함수 하나다.
-- **CLAUDE.md는 이제 라우터다.** 왜에 해당하는 산문은 CLAUDE.md에 없고 ADR과 각 정본 문서(design-system README, 정의문)에 있다. CLAUDE.md만 읽고 근거를 찾으려 하지 않는다.
-- **`docs/2-design/spec/`의 완료 조건은 이제 모든 task에 의무다.** ADR-002의 승격 기준(세 문장 넘으면 승격)은 ADR-005가 대체했다 — 문장 길이와 무관하게 spec이 항상 완료 조건의 집이다.
-- **`.prettierignore`가 `*.md`를 거른다.** 문서에 prettier를 돌려도 아무 일도 안 한다. 저장소 전체 방침이다.
-- **pre-commit 훅이 staged 파일의 포맷을 고쳐 인덱스에 다시 올린다.** 일부만 staged된 파일이 포맷에 어긋나면 고치지 않고 커밋을 막는다 — 훅이 고치면 staged 안 한 변경까지 딸려 들어가기 때문이다. 그때는 `pnpm format` 뒤에 직접 `git add` 한다.
-- **`tdd-guard-unit.py`가 `tests/lint/`도 짝 테스트를 요구한다.** 감시 접두사에 `src/`와 `tests/lint/` 둘 다 있다. `tests/` 아래에서는 짝을 `__tests__/`가 아니라 형제 `<이름>.test.ts`로 찾는다 — 그 디렉터리 관례가 형제 배치라서다. `tests/e2e/`는 여전히 감시 밖이라 CI의 `pnpm test`가 대신 잡는다. `tests/lint/rule-check.ts`는 지금 짝 테스트가 없어서 이 파일을 고치려면 먼저 `rule-check.test.ts`를 써야 한다.
-- **`.mts` 스크립트는 `node --experimental-strip-types`로 돈다.** `pnpm tokens:css`가 그 명령을 감싼다. `tsx`나 `ts-node` 같은 별도 실행기 의존성이 없다.
-- **vitest가 `NEXT_PUBLIC_*`을 `process.env`에 안 얹는다.** Vite의 `envPrefix` 기본값이 `VITE_`라서다. env를 읽는 코드를 테스트하려면 `vi.stubEnv`로 명시로 채워야 한다. `.env.local`에 값이 있어도 소용없다.
-- **`create-supabase-server-client`는 env가 없으면 던진다.** 이 팩토리를 부르는 새 테스트를 쓸 때 `vi.stubEnv`가 필요하다.
-- **`tests/lint/.tmp-format-check/`를 `.gitignore`에 넣지 않는다.** Prettier 3이 `.gitignore`를 기본 ignore 파일로 읽는다. 넣으면 `format-check.test.ts`가 만든 픽스처를 prettier가 건너뛰어 `--check`가 조용히 0으로 끝난다 — 테스트가 사실상 안 도는데 초록으로 보인다.
-- **`pnpm typecheck`가 `@supabase/supabase-js`를 못 찾으며 깨지는 일이 반복된다.** `pnpm install --frozen-lockfile`로 복구한다.
-- **`pnpm typecheck`와 `pnpm build`가 보는 범위가 다르다.** 빌드는 `tsconfig.build.json`으로 테스트를 뺀 앱 코드만 본다. 테스트 파일의 타입 오류는 `pnpm typecheck`나 `pnpm test`에서만 드러난다.
-- **`tests/lint/` 테스트가 worktree 여러 개를 동시에 돌리면 기본 5초 타임아웃에서 흔들린다.** `new ESLint()`가 next·typescript-eslint 설정을 통째로 로드하는 비용이 첫 테스트에 몰린다. `--testTimeout=60000`을 주면 안정적으로 통과한다.
-- **`supabase/config.toml`의 analytics가 꺼져 있어 Studio에 Logs 탭이 없다.** 로그 자체는 그대로 남으니 `docker logs supabase_db_la-bie-belle`처럼 컨테이너에서 직접 읽는다. RLS가 막은 순간은 `db` 로그에 `permission denied for table ...`로 찍힌다. 화면이 붙고 API 트래픽을 화면에서 걸러 봐야 할 때가 오면 다시 켠다.
-- 저장소는 PUBLIC이다. 시크릿 커밋 금지, pre-commit 스캔이 있다.
-- clone이나 worktree를 새로 만들면 `git config core.hooksPath .githooks`를 실행한다. 포맷 훅도 여기 붙어 있다.
-- 새 subagent 정의문은 main에 merge된 뒤에야 호출할 수 있게 등록된다.
-- 새 개념이 코드에 등장하면 먼저 `docs/2-design/domain/`에 있는지 확인한다. 용어 정본과 코드 이름을 잇는 장치가 없어서 어긋나도 아무도 안 막는다.
-- integration 테스트를 돌리려면 로컬에 Docker가 떠 있어야 한다. `pnpm test:integration`이 `supabase start`부터 하니 못 뜨면 그 자리에서 멈춘다.
-- `vitest.config.ts`가 CommonJS로 읽히는데 ESM 문법이라 실행할 때마다 경고가 뜬다. 동작에는 영향이 없다.
-- type-aware lint(`no-floating-promises` 등)는 속도를 이유로 안 켜져 있다. await 빠진 Supabase 호출 같은 건 lint가 못 잡는다.
-- 디자인 값 lint 규칙은 `src/**/__tests__/**`를 예외로 둔다. 대조 테스트가 픽스처로 oklch 리터럴 문자열을 쥐고 있어서다.
-- Wanted Sans는 CDN(jsdelivr) 의존이다. self-host가 아니라서 그 서비스가 죽으면 폰트가 시스템 폴백으로 떨어진다. `layout.tsx`의 `preconnect`는 지연만 줄일 뿐 가용성을 보장하지 않는다.
-- CI는 `pnpm build` 앞에서 `supabase status`의 값을 `NEXT_PUBLIC_SUPABASE_URL`과 `NEXT_PUBLIC_SUPABASE_ANON_KEY`로 넘긴다. `NEXT_PUBLIC_*`은 빌드 시점에 번들에 박히므로 이 순서가 바뀌면, `/`와 `/auth/logout`이 동적 라우트라 빌드는 그대로 통과하고 실행 시점에 `createSupabaseServerClient`가 던져 요청마다 500이 뜬다.
+- 새 subagent 정의문은 main에 merge된 뒤에야 호출할 수 있다.
+- `session-recorder`가 이 파일을 덮어쓸 때 위 넷 밖의 절을 만들지 않는다. 닫힌 항목은 지우고, 새 열린 결정은 정본으로 보낸다.
