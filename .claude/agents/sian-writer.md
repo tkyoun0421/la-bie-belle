@@ -14,6 +14,8 @@ tools: Read, Grep, Glob, Write, Edit
 
 페이지 문서 경로 하나를 받는다. 그 문서와 [tokens.md](../../docs/2-design/design-system/tokens.md)를 전부 읽고, 형식 본보기로 기존 시안 하나(`docs/2-design/**/*.sian.html`)의 맨 위 주석과 구조를 본다. 모션을 그릴 일이 있으면 `foundation/motion.md`도 연다.
 
+읽을 작성법은 [화면 문서](../../docs/2-design/README.md#화면-문서)의 「시안 만들기」다.
+
 ## 무엇을 그리나
 
 - 문서가 절로 나눈 화면들을 한 파일에 나란히 놓는다. 화면 하나가 아니라 그 화면의 **상태 전부**다 — 문서의 조건부 표와 「모든 자리」류 표에 있는 행마다 하나씩 세운다
