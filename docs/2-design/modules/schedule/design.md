@@ -73,7 +73,7 @@ unique index 둘이 도메인 규칙을 지킨다.
 
 자리를 채우는 길 다섯(배정 추가·교대 승인·강제 변경·근무 요청 수락·날 닫기)이 전부 그 자리의 살아 있는 `requests`를 닫는다. 한 표라 「이 자리의 살아 있는 요청」이 한 질의다.
 
-`request_candidates.status`는 「상태는 저장하지 않는다」의 예외다. 수락 취소가 답을 안 한 상태로 되돌리니([swap/README.md](../swap/README.md#수락-취소)) 시각으로 못 나타낸다.
+`request_candidates.status`는 「상태는 저장하지 않는다」의 예외다. 수락 취소가 답을 안 한 상태로 되돌리니([swap/README.md](../swap/README.md#swp-008)) 시각으로 못 나타낸다.
 
 ### 근무 취소
 
