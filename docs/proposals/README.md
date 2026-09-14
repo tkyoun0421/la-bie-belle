@@ -41,3 +41,4 @@ status: proposed
 ## 제안 목록
 
 - [문서 구조 후속 개선](docs-structure-followup.md) — 릴리스 범위, 계정 계약, 작업 보드, 문서 운영·탐색의 개선 후보
+- [SDLC를 유지하는 문서 구조 개선](docs-sdlc-coherence.md) — 여섯 단계의 하위 파일 배치, 업무별 설계·화면 소유권, 기존 문서 이관 명세, 단계 간 참조 규칙
