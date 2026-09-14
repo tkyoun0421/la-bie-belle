@@ -10,11 +10,12 @@ export type DocLinkViolation = {
 };
 
 const DOCS = "docs";
+const ROOT_DOC = "README.md";
 const EXCLUDED_PREFIXES = [`${DOCS}/log/`];
 const ABSOLUTE_SCHEME = /^(https?|mailto):/i;
 
 /** globSync는 Node 22에서 experimental이라 실행마다 경고를 찍는다. */
-function markdownFiles(root: string): string[] {
+function docsMarkdownFiles(root: string): string[] {
   let entries: string[];
   try {
     entries = readdirSync(path.join(root, DOCS), {
@@ -31,6 +32,13 @@ function markdownFiles(root: string): string[] {
       (file) => !EXCLUDED_PREFIXES.some((prefix) => file.startsWith(prefix)),
     )
     .sort();
+}
+
+/** 루트 README는 저장소의 첫 화면이라 docs/ 밖이어도 같이 본다. */
+function markdownFiles(root: string): string[] {
+  const rootDoc = existsSync(path.join(root, ROOT_DOC)) ? [ROOT_DOC] : [];
+
+  return [...rootDoc, ...docsMarkdownFiles(root)];
 }
 
 function decode(part: string): string {
