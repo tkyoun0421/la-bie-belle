@@ -1,27 +1,40 @@
 # architecture — 구조 설계
 
-도메인 용어가 어떤 테이블과 API와 화면 흐름이 되는지가 산다. 개념은 `../domain/`, 시각은 `../design-system/`, 여기는 구조다.
+도메인 용어가 어떤 테이블과 API와 화면 흐름이 되는지가 산다. 개념은 [`../domain/`](../domain/), 시각은 [`../design-system/`](../design-system/), 여기는 구조다.
 
-**목표 설계다.** 코드가 여기 적힌 대로 돼 있다고 읽지 않는다. 지금 코드와 다른 문단은 「지금은 ~」으로 차이를 적고, 그것을 옮기는 task는 `docs/backlog.md`에 있다. 문서를 코드에 맞추려고 목표를 지우지 않는다.
+**목표 설계다.** 코드가 여기 적힌 대로 돼 있다고 읽지 않는다. 지금 코드와 다른 문단은 「지금은 ~」으로 차이를 적고, 그것을 옮기는 task는 [`docs/backlog.md`](../../backlog.md)에 있다. 문서를 코드에 맞추려고 목표를 지우지 않는다.
 
 ## 네 갈래
 
-- `data-model/` — 테이블과 관계. 실제 스키마의 정본은 `supabase/migrations/`고, 여기는 그 지도와 근거를 담는다
-- `api/` — 서버와 주고받는 경계. 경로, 입출력, 권한
-- `runtime/` — 돌아갈 때의 규칙. 캐시 네 계층, 시각의 출처, 경쟁 조건, 로딩과 낙관적 업데이트
-- `flows/` — 화면 사이의 흐름. 어느 화면에서 무엇을 하면 어디로 가는가
+- [`data-model/`](data-model/) — 테이블과 관계. 실제 스키마의 정본은 [`supabase/migrations/`](../../../supabase/migrations/)고, 여기는 그 지도와 근거를 담는다
+- [`api/`](api/) — 서버와 주고받는 경계. 경로, 입출력, 권한
+- [`runtime/`](runtime/) — 돌아갈 때의 규칙. 캐시 네 계층, 시각의 출처, 경쟁 조건, 로딩과 낙관적 업데이트
+- [`flows/`](flows/) — 화면 사이의 흐름. 어느 화면에서 무엇을 하면 어디로 가는가
 
 ## 가르는 축
 
-**관심사가 폴더고 도메인이 파일이다.** 파일 이름은 `../domain/`의 것을 그대로 쓴다 — `data-model/schedule.md`의 짝은 `domain/schedule.md`다.
+**관심사가 폴더고 도메인이 파일이다.** 파일 이름은 [`../domain/`](../domain/)의 것을 그대로 쓴다 — [`data-model/schedule.md`](data-model/schedule.md)의 짝은 [`domain/schedule.md`](../domain/schedule.md)다.
 
 한 번에 하는 일이 한 폴더에 모이게 하려는 것이다. 마이그레이션을 쓰는 회차는 `data-model/`만 열고, 캐시를 손보는 회차는 `runtime/`만 연다. 대신 한 도메인을 통째로 보려면 폴더 넷을 오가는데, 그 값은 각 폴더의 `README.md`가 전체 지도를 들고 있는 것으로 치른다.
 
-**도메인을 가로지르는 결정은 그 폴더의 `README.md`에 산다.** RLS 기본값과 컬럼 이름 규칙은 `data-model/README.md`, 캐시 계층과 시각의 출처는 `runtime/README.md`다. 도메인 파일에 흩으면 서로 어긋나도 아무도 안 막는다.
+**도메인을 가로지르는 결정은 그 폴더의 `README.md`에 산다.** RLS 기본값과 컬럼 이름 규칙은 [`data-model/README.md`](data-model/README.md), 캐시 계층과 시각의 출처는 [`runtime/README.md`](runtime/README.md)다. 도메인 파일에 흩으면 서로 어긋나도 아무도 안 막는다.
+
+## 도메인 지도
+
+한 도메인을 통째로 볼 때 여기서 출발한다. 한 줄이 도메인 하나고, 칸이 그 도메인의 갈래별 파일이다.
+
+| domain | data-model | api | runtime | flows |
+| --- | --- | --- | --- | --- |
+| [account](../domain/account.md) | [account](data-model/account.md) | [account](api/account.md) | [account](runtime/account.md) | [account](flows/account.md) |
+| [schedule](../domain/schedule.md) | [schedule](data-model/schedule.md) | [schedule](api/schedule.md) | [schedule](runtime/schedule.md) | [schedule](flows/schedule.md) |
+| [swap](../domain/swap.md) | [swap](data-model/swap.md) | [swap](api/swap.md) | [swap](runtime/swap.md) | [swap](flows/swap.md) |
+| [attendance](../domain/attendance.md) | [attendance](data-model/attendance.md) | [attendance](api/attendance.md) | [attendance](runtime/attendance.md) | [attendance](flows/attendance.md) |
+| [payroll](../domain/payroll.md) | [payroll](data-model/payroll.md) | [payroll](api/payroll.md) | [payroll](runtime/payroll.md) | [payroll](flows/payroll.md) |
+| [notification](../domain/notification.md) | [notification](data-model/notification.md) | [notification](api/notification.md) | [notification](runtime/notification.md) | [notification](flows/notification.md) |
 
 ## 도메인 파일은 처음부터 만든다
 
-**폴더를 채우는 순간 도메인 파일 여섯이 같이 선다.** `README.md`는 가로지르는 규칙만 들고, 도메인에 속하는 것은 짧아도 `<도메인>.md`로 간다. `domain/schedule.md`를 읽는 사람이 `data-model/schedule.md`를 바로 옆에서 찾아야 한다 — 그 짝이 README 안의 절이면 이름으로 못 찾는다.
+**폴더를 채우는 순간 도메인 파일 여섯이 같이 선다.** `README.md`는 가로지르는 규칙만 들고, 도메인에 속하는 것은 짧아도 `<도메인>.md`로 간다. [`domain/schedule.md`](../domain/schedule.md)를 읽는 사람이 [`data-model/schedule.md`](data-model/schedule.md)를 바로 옆에서 찾아야 한다 — 그 짝이 README 안의 절이면 이름으로 못 찾는다.
 
 도메인 파일이 300줄을 넘으면 그 안에서 절로 가르되 파일을 더 쪼개지 않는다. `domain/`과 이름이 일대일로 짝지어야 어느 문서가 어느 문서의 구조인지 찾을 수 있다.
 
