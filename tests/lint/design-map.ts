@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { parseMarkdown } from "@tests/lint/markdown";
 
@@ -14,7 +14,6 @@ export type DesignMap = {
 const BULLET = /^\s*[-*]\s/;
 const SCREEN_DOC = ".md";
 const DESIGN = "docs/2-design";
-const LEGACY_PAGES = path.join(DESIGN, "design-system", "pages");
 const SCREENS = "screens";
 
 function withoutAnchor(href: string): string {
@@ -52,26 +51,20 @@ export function designMapViolations(
     .sort();
 }
 
-/** 옛 `design-system/pages/`와 영역마다의 `screens/`가 화면 문서의 자리다. */
+/** 영역마다의 `screens/`가 화면 문서의 자리다. */
 export function screenDirs(root: string = process.cwd()): string[] {
   const design = path.join(root, DESIGN);
-  const found = (readdirSync(design, { recursive: true }) as string[])
+
+  return (readdirSync(design, { recursive: true }) as string[])
     .map((entry) => path.join(design, entry))
     .filter((entry) => path.basename(entry) === SCREENS)
-    .filter((entry) => statSync(entry).isDirectory());
-
-  const legacy = path.join(root, LEGACY_PAGES);
-
-  return [...(existsSync(legacy) ? [legacy] : []), ...found].sort();
+    .filter((entry) => statSync(entry).isDirectory())
+    .sort();
 }
 
-/** 화면 문서를 드는 지도 둘. 영역으로 옮긴 화면은 업무 영역 지도가 든다. */
+/** 화면 문서를 드는 지도는 업무 영역 지도 하나다. */
 export function designMaps(root: string = process.cwd()): DesignMap[] {
   return [
-    {
-      file: path.join(root, DESIGN, "design-system", "README.md"),
-      heading: "문서 지도",
-    },
     {
       file: path.join(root, DESIGN, "modules", "README.md"),
       heading: "지도",

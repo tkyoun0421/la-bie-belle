@@ -2,7 +2,7 @@
 
 돌아갈 때의 규칙이 산다. 언제 다시 읽나, 무엇을 먼저 그리나, 어긋나면 누가 이기나다.
 
-[`../data-model/`](../data-model/)이 무엇을 저장하는지를 말하고 [`../api/`](../api/)가 어떻게 주고받는지를 말한다면, 여기는 그 위에서 시간과 순서를 다룬다. 이 파일이 가로지르는 것을 들고, 도메인마다의 것은 같은 이름의 파일에 산다 — [`account.md`](../../modules/account/design.md) · [`schedule.md`](schedule.md) · [`swap.md`](swap.md) · [`attendance.md`](attendance.md) · [`payroll.md`](payroll.md) · [`notification.md`](notification.md).
+[`../data-model/`](../data-model/)이 무엇을 저장하는지를 말하고 [`../api/`](../api/)가 어떻게 주고받는지를 말한다면, 여기는 그 위에서 시간과 순서를 다룬다. 이 파일이 가로지르는 것을 들고, 도메인마다의 것은 같은 이름의 파일에 산다 — [`account/design.md`](../../modules/account/design.md) · [`schedule/design.md`](../../modules/schedule/design.md) · [`swap/design.md`](../../modules/swap/design.md) · [`attendance/design.md`](../../modules/attendance/design.md) · [`payroll/design.md`](../../modules/payroll/design.md) · [`notification/design.md`](../../modules/notification/design.md).
 
 ## 캐시 네 계층
 
@@ -15,7 +15,7 @@
 
 **realtime을 안 쓰는 이유.** 서른 명·홀 하나라 남이 바꾸는 일이 분에 한 번도 안 된다. 선착순은 함수가 풀었고(`slot_full`) 동시 편집은 `stale`이 잡는다 — 막히지 않고 늦게 안다. 소켓 연결·재연결·배터리를 치를 값이 없다.
 
-**서버가 승인을 판정하지 않는 이유.** 승인·차단·퇴사를 서버가 HTML에 그리면 그 HTML이 세션마다 달라 Service Worker가 캐시할 수 없고, 오프라인에 앱이 안 뜬다. 그래서 `proxy`는 세션이 없으면 `/login`으로 보내는 것까지만 하고, 승인·차단·퇴사는 앱이 뜬 뒤 클라이언트가 `['profile']`을 읽어 가른다 — [`account.md`](../../modules/account/design.md). 브라우저가 Supabase를 바로 부르니([`../api/`](../api/#경계-하나)) 서버가 데이터를 그릴 이유도 없다.
+**서버가 승인을 판정하지 않는 이유.** 승인·차단·퇴사를 서버가 HTML에 그리면 그 HTML이 세션마다 달라 Service Worker가 캐시할 수 없고, 오프라인에 앱이 안 뜬다. 그래서 `proxy`는 세션이 없으면 `/login`으로 보내는 것까지만 하고, 승인·차단·퇴사는 앱이 뜬 뒤 클라이언트가 `['profile']`을 읽어 가른다 — [`account/design.md`](../../modules/account/design.md). 브라우저가 Supabase를 바로 부르니([`../api/`](../api/#경계-하나)) 서버가 데이터를 그릴 이유도 없다.
 
 ## TanStack Query 규칙
 
@@ -57,7 +57,7 @@
 
 띠는 `navigator.onLine`이 아니라 **실제 요청 실패**로 뜬다. `onLine`은 와이파이에 붙었지만 인터넷이 안 되는 상태를 못 가른다. 다시 읽기가 성공하면 띠가 진다.
 
-**쓰기는 큐에 넣지 않는다.** 언제 갈지 모르는 쓰기는 사람이 「됐다」고 믿고 가버리는 것이 문제다. 출근 인증만 예외적으로 화면이 열린 동안 다시 시도한다 — [`attendance.md`](attendance.md).
+**쓰기는 큐에 넣지 않는다.** 언제 갈지 모르는 쓰기는 사람이 「됐다」고 믿고 가버리는 것이 문제다. 출근 인증만 예외적으로 화면이 열린 동안 다시 시도한다 — [`attendance/design.md`](../../modules/attendance/design.md).
 
 ## 시각
 

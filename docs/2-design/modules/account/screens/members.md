@@ -4,7 +4,7 @@
 
 여기서 하는 일이 셋이다 — 이름 고치기, 관리자로 올리고 내리기, 퇴사 처리다. 규칙은 [account/README.md](../README.md)에 있다.
 
-들어오는 문은 [관리자 홈](../../../design-system/pages/schedule-admin.md#관리자-홈)의 「직원」 줄이다.
+들어오는 문은 [관리자 홈](../../schedule/screens/schedule-admin.md#관리자-홈)의 「직원」 줄이다.
 
 **아직 승인 안 된 사람은 여기 없다.** 받을지 말지 정하는 자리는 [가입 대기](members-pending.md)고 차단도 거기 있다. 이 화면은 이미 받은 사람들만 다룬다.
 
@@ -83,7 +83,7 @@
 
 **연락처를 누르면 전화가 걸린다.** 오른쪽에 수화기가 선다. 꼴이 고정이라 누를 수 있는 자리다([account/README.md](../README.md#연락처)).
 
-**시급은 읽기만이다.** 값만 서고 화살표가 없다. 고치는 자리는 [시급](../../../design-system/pages/wages.md)이고, 이 시트에서 바로 열지 않는다 — 한 사람을 놓고 퇴사와 시급을 같은 손짓으로 다루면 잘못 누른다.
+**시급은 읽기만이다.** 값만 서고 화살표가 없다. 고치는 자리는 [시급](../../payroll/screens/wages.md)이고, 이 시트에서 바로 열지 않는다 — 한 사람을 놓고 퇴사와 시급을 같은 손짓으로 다루면 잘못 누른다.
 
 **성별과 생년월일은 값만 있다.** 아무도 못 고친다 — 본인도 관리자도 아니다. [account/README.md](../README.md#프로필에-담기는-것)가 이름만 관리자 몫으로 열어뒀다.
 
@@ -137,7 +137,7 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 배정이 셋을 넘으면 앞의 셋만 적고 「외 n건」이 붙는다.
 
-「근무표로 가기」는 가장 가까운 배정 날의 날 상세로 보낸다([schedule-admin.md](../../../design-system/pages/schedule-admin.md)). 목록으로 돌아오는 길은 앱바의 뒤로다.
+「근무표로 가기」는 가장 가까운 배정 날의 날 상세로 보낸다([schedule-admin.md](../../schedule/screens/schedule-admin.md)). 목록으로 돌아오는 길은 앱바의 뒤로다.
 
 **버튼이 하나뿐인 Dialog다.** [writing.md](../../../design-system/writing.md#다크패턴을-쓰지-않는다)가 막는 것은 버튼 하나로 동의를 받는 자리고, 여기는 동의를 받는 것이 아니라 못 한다는 것을 말하는 자리다.
 
@@ -168,7 +168,7 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 퇴사 처리를 무르는 길이다. 확인을 한 번 묻고, 누르면 재직자 목록으로 돌아온다.
 
-**시급이 그대로 살아 있다.** 퇴사해도 이력을 안 지워서 되돌리면 그때 값이 그대로다. 다시 정할 것이 있으면 [시급](../../../design-system/pages/wages.md)에서 한다.
+**시급이 그대로 살아 있다.** 퇴사해도 이력을 안 지워서 되돌리면 그때 값이 그대로다. 다시 정할 것이 있으면 [시급](../../payroll/screens/wages.md)에서 한다.
 
 **잘못 누른 것을 되돌리는 자리다.** 그만뒀다 다시 오는 사람도 이 길로 돌아온다 — 새로 가입시키면 지난 근무와 급여가 끊긴다.
 
@@ -291,9 +291,9 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 **가입 승인과 거절과 차단.** [members-pending.md](members-pending.md)에 있다.
 
-**시급 고치기.** [wages.md](../../../design-system/pages/wages.md)에 있다. 이 시트는 값을 보여주기만 한다.
+**시급 고치기.** [wages.md](../../payroll/screens/wages.md)에 있다. 이 시트는 값을 보여주기만 한다.
 
-**사람별 출근과 지각 횟수.** [stats.md](../../../design-system/pages/stats.md)에 있다.
+**사람별 출근과 지각 횟수.** [stats.md](../../../system/screens/stats.md)에 있다.
 
 **계정 잇기.** [account/README.md](../README.md#아직-안-정한-것)가 아직 안 정했다. 1차 화면에 안 그린다.
 
@@ -307,7 +307,7 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 **더보기 팝오버가 공용으로 올라갔다.** 모양과 값은 [components.md](../../../design-system/components.md#더보기-팝오버)가 정본이다. [가입 대기](members-pending.md#규칙과-부딪힌-자리)가 첫 자리고 이 화면이 둘째다.
 
-**한 화면에 사람 목록이 둘이다.** [wages.md](../../../design-system/pages/wages.md#규칙과-부딪힌-자리)에 근거가 있다.
+**한 화면에 사람 목록이 둘이다.** [wages.md](../../payroll/screens/wages.md#규칙과-부딪힌-자리)에 근거가 있다.
 
 **퇴사한 사람 사진에 투명도를 건다.** 토큰이 아니라 값이다. `fg.neutral-disabled`는 글자용이고 사진에 걸 면 토큰이 없다.
 

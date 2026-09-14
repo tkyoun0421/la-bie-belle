@@ -1,6 +1,6 @@
 # 관리자 근무표 제작·확정
 
-2026-09-07 태관 인터뷰의 산출물이다. 사슬의 첫 고리로, `2-design/spec/schedule-admin.md`의 입력이 된다(ADR-005). 도메인 규칙은 [domain/schedule.md](../../2-design/domain/schedule.md)가 정본이고, 인터뷰에서 새로 정한 도메인 항목은 이미 그리로 올라갔다 — 여기는 화면 결정만 담는다.
+2026-09-07 태관 인터뷰의 산출물이다. 사슬의 첫 고리로, `2-design/spec/schedule-admin.md`의 입력이 된다(ADR-005). 도메인 규칙은 [schedule/README.md](../../2-design/modules/schedule/README.md)가 정본이고, 인터뷰에서 새로 정한 도메인 항목은 이미 그리로 올라갔다 — 여기는 화면 결정만 담는다.
 
 ## 왜 만들고 무엇을 원하나
 
@@ -45,7 +45,7 @@
 
 - **스케줄 신청 마감일 전에는 확정 불가.** 급하면 마감일을 당긴다. 마감일은 자유 수정(오늘 이전 불가)이고 바뀌면 전원 알림
 - 확정 뒤 날 열기 허용, 빈 자리는 배정 추가 규칙으로 채움 — 도메인 미정이 이 인터뷰에서 해소됐다
-- **강제 변경도 1차에 넣는다.** 통지는 빠진 사람과 들어온 사람 둘만 — [domain/notification.md](../../2-design/domain/notification.md)의 「근무표 변경」 행 그대로다
+- **강제 변경도 1차에 넣는다.** 통지는 빠진 사람과 들어온 사람 둘만 — [notification/README.md](../../2-design/modules/notification/README.md)의 「근무표 변경」 행 그대로다
 
 ## 개정
 

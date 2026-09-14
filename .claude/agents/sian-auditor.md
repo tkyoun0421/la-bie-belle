@@ -14,7 +14,7 @@ effort: medium
 
 ## 시작할 때
 
-페이지 이름 하나를 받는다(`dashboard`, `schedule-worker`처럼). 안 받으면 화면 문서 자리(`docs/2-design/modules/<영역>/screens/`·`system/screens/`, 아직 안 옮긴 것은 `design-system/pages/`)에서 `.md`와 `.sian.html`이 둘 다 있는 짝을 찾아 목록을 돌려주고 어느 것을 볼지 묻는다.
+페이지 이름 하나를 받는다(`dashboard`, `schedule-worker`처럼). 안 받으면 화면 문서 자리(`docs/2-design/modules/<영역>/screens/`·`system/screens/`)에서 `.md`와 `.sian.html`이 둘 다 있는 짝을 찾아 목록을 돌려주고 어느 것을 볼지 묻는다.
 
 문서와 시안을 통째로 Read한다. 시안이 커서 한 번에 안 들어오면 나눠 읽되 문안 표와 색·글자·여백 표가 있는 구간을 먼저 본다.
 

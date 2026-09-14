@@ -13,17 +13,8 @@
 - [foundation/motion.md](foundation/motion.md) — 언제 움직이고 언제 안 움직이는지, 접근성, base-ui에 애니메이션 붙이기
 - [writing.md](writing.md) — 화면에 나가는 한국어 규칙
 - [components.md](components.md) — 컴포넌트별 역할 토큰 표
-- [pages/dashboard.md](pages/dashboard.md) — 근무자 대시보드와 출근 인증 화면과 사유 시트
-- [pages/schedule-worker.md](pages/schedule-worker.md) — 근무자 근무표 보기와 근무 신청
-- [pages/schedule-admin.md](pages/schedule-admin.md) — 관리자 홈과 근무표 제작·확정 화면
-- [pages/payroll.md](pages/payroll.md) — 근무자가 미리 보는 예상 급여
-- [pages/approvals.md](pages/approvals.md) — 관리자가 답하는 사유와 근무 취소 요청
-- [pages/wages.md](pages/wages.md) — 사람마다의 시간당 단가
-- [pages/stats.md](pages/stats.md) — 한 달 인건비, 사람별 근태, 포지션별 시간
-- [pages/qr.md](pages/qr.md) — 관리자가 보고 바꾸는 현장 QR
-- `pages/*.sian.html` — 화면별 시안. 문서 옆에 같은 이름으로 놓는다
 
-화면 문서는 소유 영역의 `screens/`로 옮기는 중이다. 옮긴 화면은 [업무 영역 지도](../modules/README.md#지도)가 들고, 여기에는 아직 안 옮긴 것만 남는다. 화면 문서를 쓰는 틀은 [설계 안내](../README.md#화면-문서)가 소유한다.
+화면 문서는 소유 영역의 `screens/`에 있다 — [업무 영역 지도](../modules/README.md#지도). 화면 문서를 쓰는 틀은 [설계 안내](../README.md#화면-문서)가 소유한다.
 
 ## 두 축
 

@@ -14,10 +14,10 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 - [ ] 계정 데이터 구조를 전환한다 — 기존 마이그레이션과 integration 테스트를 갈아엎는다. 「다음」의 plan 쓰기 뒤
 - [ ] 인증 진입을 전환한다 — `middleware.ts`를 `proxy.ts`로, 서버 `readAuthGate`의 승인 판정을 클라이언트 `['profile']`로. 정본은 [account/design.md](2-design/modules/account/design.md). `matcher`를 이때 같이 본다. 계정 데이터 구조 전환 뒤
 - [ ] 타입 생성 절차를 세운다 — `pnpm types`가 `supabase gen types`를 감싸고 CI가 마이그레이션 뒤 diff 0을 본다. 정본은 [api/README.md](2-design/architecture/api/README.md#읽기). 계정 데이터 구조 전환 뒤
-- 근무표 — 달 만들기·날 열기·신청·확정. [data-model/schedule.md](2-design/architecture/data-model/schedule.md)·[api/schedule.md](2-design/architecture/api/schedule.md). 달 키의 범위(달력 달인지 주 범위인지)가 [runtime](2-design/architecture/runtime/README.md#아직-안-정한-것)에 열려 있어 먼저 닫는다
-- 출근 인증 — [data-model/attendance.md](2-design/architecture/data-model/attendance.md)·[api/attendance.md](2-design/architecture/api/attendance.md). 근무표 뒤
-- 급여 계산 — [data-model/payroll.md](2-design/architecture/data-model/payroll.md)·[api/payroll.md](2-design/architecture/api/payroll.md). 출근 인증 뒤
-- 알림(1차) — 공통 전송 기반과 1차 알림(승인·확정·전날·직전, [roadmap](1-plan/roadmap.md#릴리스-목록)). [data-model/notification.md](2-design/architecture/data-model/notification.md)·[api/notification.md](2-design/architecture/api/notification.md)·[flows/notification.md](2-design/architecture/flows/notification.md#목적지). Edge Function 스파이크 뒤
+- 근무표 — 달 만들기·날 열기·신청·확정. [schedule/design.md](2-design/modules/schedule/design.md). 달 키의 범위(달력 달인지 주 범위인지)가 [runtime](2-design/architecture/runtime/README.md#아직-안-정한-것)에 열려 있어 먼저 닫는다
+- 출근 인증 — [attendance/design.md](2-design/modules/attendance/design.md). 근무표 뒤
+- 급여 계산 — [payroll/design.md](2-design/modules/payroll/design.md). 출근 인증 뒤
+- 알림(1차) — 공통 전송 기반과 1차 알림(승인·확정·전날·직전, [roadmap](1-plan/roadmap.md#릴리스-목록)). [notification/design.md](2-design/modules/notification/design.md#ui-연결). Edge Function 스파이크 뒤
 - 교대 알림·관리자 공지(2차) — 알림(1차) 뒤. 교대 승인 화면이 [flows](2-design/architecture/flows/README.md#아직-안-정한-것)에 열려 있어 먼저 닫는다
 - 첫 출시 준비 — 배포 문서(적용·확인·되돌리기 순서, 환경별 설정 위치)와 운영 문서(장애 확인 위치·대응 담당·복구 후 확인)의 최소 안내, 지표의 집계 기준(분모·기간·수집 대상, [metrics.md](1-plan/metrics.md)). [5-deploy](5-deploy/README.md)·[6-maintain](6-maintain/README.md). 배포 플랫폼을 정한 뒤 — 1차 기능이 다 선 다음이고 데이터 task의 선행이 아니다
 - [ ] 근무자 대시보드를 만든다 — 위 넷이 서기 전에는 못 연다. 착수할 때 spec을 [설계 안내](2-design/README.md#spec)의 새 형식(요구·설계·완료 조건·범위 밖)으로 다시 쓴다 — [spec](2-design/spec/dashboard.md)

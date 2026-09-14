@@ -55,7 +55,7 @@
 
 ### 알림
 
-ListRow에 오른쪽이 스위치다. 끄면 푸시가 통째로 멈춘다 — [domain/notification.md](../../../domain/notification.md)가 근무자에게 열어둔 선택이다.
+ListRow에 오른쪽이 스위치다. 끄면 푸시가 통째로 멈춘다 — [notification/README.md](../../notification/README.md)가 근무자에게 열어둔 선택이다.
 
 **끄기 전에 한 번 묻는다.** 근무표 확정과 근무 요청과 사유의 결과가 다 이 길로 오는데, 끄고 잊으면 앱을 안 여는 동안 아무것도 모르게 된다. Dialog 하나고 [무엇이 안 오게 되는지](#문안)를 그 자리에서 말한다.
 
@@ -65,7 +65,7 @@ ListRow에 오른쪽이 스위치다. 끄면 푸시가 통째로 멈춘다 — [
 
 ### 관리자 모드
 
-**관리자에게만 보인다.** 누르면 [관리자 홈](../../../design-system/pages/schedule-admin.md#관리자-홈)으로 넘어간다.
+**관리자에게만 보인다.** 누르면 [관리자 홈](../../schedule/screens/schedule-admin.md#관리자-홈)으로 넘어간다.
 
 관리자도 자기 근무가 있어 평소에는 근무자 화면을 쓰고([account/README.md](../README.md#관리자)), 관리하러 갈 때만 이 문을 지난다. 근무자 화면 어디에도 관리자 자취가 없는 것이 이 앱의 기본이고, 그 문 하나를 가장 안 붐비는 화면에 둔다.
 
@@ -95,7 +95,7 @@ ListRow에 오른쪽이 스위치다. 끄면 푸시가 통째로 멈춘다 — [
 
 열 때 지금 번호가 채워져 있고 커서가 끝에 간다. 빈 칸으로 열면 지금 번호를 다시 쳐야 한다.
 
-저장하면 시트가 닫히고 [토스트](../../../design-system/components.md#토스트)가 뜬다. 실패하면 시트가 안 닫히고 오류가 시트 안에 선다 — [사유 시트](../../../design-system/pages/dashboard.md#사유-시트)와 같은 방식이다.
+저장하면 시트가 닫히고 [토스트](../../../design-system/components.md#토스트)가 뜬다. 실패하면 시트가 안 닫히고 오류가 시트 안에 선다 — [사유 시트](../../../system/screens/dashboard.md#사유-시트)와 같은 방식이다.
 
 ## 사진 고치기
 
@@ -109,7 +109,7 @@ ListRow에 오른쪽이 스위치다. 끄면 푸시가 통째로 멈춘다 — [
 
 **「구글 사진으로」가 되돌리는 길이다.** 본인이 올린 사진이 마음에 안 들면 처음 값으로 간다. 지금 쓰는 것이 구글 사진이면 이 줄이 없다.
 
-**사진을 지우는 길이 없다.** 사진은 관리자가 [사람 픽커](../../../design-system/pages/schedule-admin.md)와 [명단](../../../design-system/pages/schedule-worker.md)에서 같은 이름 둘을 가르는 근거고([account/README.md](../README.md#이름)), 비면 그 판단이 이름 하나로 좁아진다.
+**사진을 지우는 길이 없다.** 사진은 관리자가 [사람 픽커](../../schedule/screens/schedule-admin.md)와 [명단](../../schedule/screens/schedule-worker.md)에서 같은 이름 둘을 가르는 근거고([account/README.md](../README.md#이름)), 비면 그 판단이 이름 하나로 좁아진다.
 
 고른 사진을 자르는 화면은 안 만든다. 원으로 보이는 자리가 전부라 가운데를 정사각으로 물려 쓴다.
 
@@ -212,9 +212,9 @@ ListRow에 오른쪽이 스위치다. 끄면 푸시가 통째로 멈춘다 — [
 
 ## 안 담은 것
 
-**내 누적.** 이번 달 근무와 지각 횟수는 [급여 조회](../../../design-system/pages/payroll.md#누적)에 있다.
+**내 누적.** 이번 달 근무와 지각 횟수는 [급여 조회](../../payroll/screens/payroll.md#누적)에 있다.
 
-**내 시급.** 위 [payroll.md의 규칙과 부딪힌 자리](../../../design-system/pages/payroll.md#규칙과-부딪힌-자리)에 근거가 있다.
+**내 시급.** 위 [payroll.md의 규칙과 부딪힌 자리](../../payroll/screens/payroll.md#규칙과-부딪힌-자리)에 근거가 있다.
 
 **계정 잇기.** 쓰던 구글 계정을 못 쓰게 됐을 때 새 계정을 잇는 자리인데 [account/README.md](../README.md#아직-안-정한-것)가 아직 안 정했다. 1차 화면에 안 그린다.
 

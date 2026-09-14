@@ -13,7 +13,7 @@
 
 ## 가르는 축
 
-**관심사가 폴더고 도메인이 파일이다.** 파일 이름은 [`../domain/`](../domain/)의 것을 그대로 쓴다 — [`data-model/schedule.md`](data-model/schedule.md)의 짝은 [`domain/schedule.md`](../domain/schedule.md)다.
+**관심사가 폴더고 도메인이 파일이다.** 파일 이름은 [`../domain/`](../domain/)의 것을 그대로 쓴다 — [`schedule/design.md`](../modules/schedule/design.md)의 짝은 [`schedule/README.md`](../modules/schedule/README.md)다.
 
 한 번에 하는 일이 한 폴더에 모이게 하려는 것이다. 마이그레이션을 쓰는 회차는 `data-model/`만 열고, 캐시를 손보는 회차는 `runtime/`만 연다. 대신 한 도메인을 통째로 보려면 폴더 넷을 오가는데, 그 값은 각 폴더의 `README.md`가 전체 지도를 들고 있는 것으로 치른다.
 
@@ -26,15 +26,15 @@
 | domain | data-model | api | runtime | flows |
 | --- | --- | --- | --- | --- |
 | [account](../modules/account/README.md) | [design](../modules/account/design.md) | [design](../modules/account/design.md) | [design](../modules/account/design.md) | [screens](../modules/account/screens/login.md) |
-| [schedule](../domain/schedule.md) | [schedule](data-model/schedule.md) | [schedule](api/schedule.md) | [schedule](runtime/schedule.md) | [schedule](flows/schedule.md) |
-| [swap](../domain/swap.md) | [swap](data-model/swap.md) | [swap](api/swap.md) | [swap](runtime/swap.md) | [swap](flows/swap.md) |
-| [attendance](../domain/attendance.md) | [attendance](data-model/attendance.md) | [attendance](api/attendance.md) | [attendance](runtime/attendance.md) | [attendance](flows/attendance.md) |
-| [payroll](../domain/payroll.md) | [payroll](data-model/payroll.md) | [payroll](api/payroll.md) | [payroll](runtime/payroll.md) | [payroll](flows/payroll.md) |
-| [notification](../domain/notification.md) | [notification](data-model/notification.md) | [notification](api/notification.md) | [notification](runtime/notification.md) | [notification](flows/notification.md) |
+| [schedule](../modules/schedule/README.md) | [design](../modules/schedule/design.md) | [design](../modules/schedule/design.md) | [design](../modules/schedule/design.md) | [screens](../modules/schedule/screens/schedule-worker.md) |
+| [swap](../modules/swap/README.md) | [design](../modules/swap/design.md) | [design](../modules/swap/design.md) | [design](../modules/swap/design.md) | [screens](../modules/schedule/screens/schedule-worker.md) |
+| [attendance](../modules/attendance/README.md) | [design](../modules/attendance/design.md) | [design](../modules/attendance/design.md) | [design](../modules/attendance/design.md) | [screens](../modules/attendance/screens/qr.md) |
+| [payroll](../modules/payroll/README.md) | [design](../modules/payroll/design.md) | [design](../modules/payroll/design.md) | [design](../modules/payroll/design.md) | [screens](../modules/payroll/screens/payroll.md) |
+| [notification](../modules/notification/README.md) | [design](../modules/notification/design.md) | [design](../modules/notification/design.md) | [design](../modules/notification/design.md) | [screens](../system/screens/dashboard.md) |
 
 ## 도메인 파일은 처음부터 만든다
 
-**폴더를 채우는 순간 도메인 파일 여섯이 같이 선다.** `README.md`는 가로지르는 규칙만 들고, 도메인에 속하는 것은 짧아도 `<도메인>.md`로 간다. [`domain/schedule.md`](../domain/schedule.md)를 읽는 사람이 [`data-model/schedule.md`](data-model/schedule.md)를 바로 옆에서 찾아야 한다 — 그 짝이 README 안의 절이면 이름으로 못 찾는다.
+**폴더를 채우는 순간 도메인 파일 여섯이 같이 선다.** `README.md`는 가로지르는 규칙만 들고, 도메인에 속하는 것은 짧아도 `<도메인>.md`로 간다. [`schedule/README.md`](../modules/schedule/README.md)를 읽는 사람이 [`schedule/design.md`](../modules/schedule/design.md)를 바로 옆에서 찾아야 한다 — 그 짝이 README 안의 절이면 이름으로 못 찾는다.
 
 도메인 파일이 300줄을 넘으면 그 안에서 절로 가르되 파일을 더 쪼개지 않는다. `domain/`과 이름이 일대일로 짝지어야 어느 문서가 어느 문서의 구조인지 찾을 수 있다.
 

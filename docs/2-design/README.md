@@ -2,7 +2,7 @@
 
 설계의 전체 그림이 이 파일이다. 갈래마다 정본은 하나다. 배치의 근거는 [ADR-009](adr/ADR-009-design-modules-and-stage-links.md)다.
 
-- `system/` — 시스템 전체의 원칙. `architecture/`의 README 넷에서 옮겨 세운다. `architecture.md`(구성·책임·영역 관계), `data-access.md`(공통 스키마·권한·읽기·쓰기 계약), `runtime.md`(캐시·오프라인·시각·경쟁·로딩·재시도), `navigation.md`(경로·역할별 진입·탐색). 여러 영역에 걸치는 화면은 `screens/`
+- [`system/`](system/) — 시스템 전체의 원칙. `architecture/`의 README 넷에서 옮겨 세운다. `architecture.md`(구성·책임·영역 관계), `data-access.md`(공통 스키마·권한·읽기·쓰기 계약), `runtime.md`(캐시·오프라인·시각·경쟁·로딩·재시도), `navigation.md`(경로·역할별 진입·탐색). 여러 영역에 걸치는 화면은 [`screens/`](system/screens/)
 - [`modules/`](modules/) — 업무 영역별 설계. 영역마다 `README.md`(용어·업무 규칙의 정본), `design.md`(데이터·API·실행 동작), `screens/`(화면 문서와 시안). 영역 지도는 [`modules/README.md`](modules/README.md)
 - [`domain/`](domain/)·[`architecture/`](architecture/) — `modules/`로 옮기는 중인 옛 자리. 아직 안 옮긴 영역만 남아 있고, 영역을 가로지르는 규칙은 `architecture/*/README.md`가 `system/`으로 옮겨질 때까지 든다
 - [`design-system/`](design-system/) — 시각 설계. 토큰·컴포넌트·문안의 공통 기준

@@ -1,14 +1,20 @@
 # 통계
 
-관리자가 한 달을 숫자로 보는 화면이다. 값은 [tokens.md](../tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
+관리자가 한 달을 숫자로 보는 화면이다. 값은 [tokens.md](../../design-system/tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
 
-셋이다 — 인건비, 사람별 근태, 포지션별 시간이다. [prd.md](../../../1-plan/prd.md)가 정한 셋이고 근거가 되는 규칙은 [domain/payroll.md](../../domain/payroll.md)와 [domain/attendance.md](../../domain/attendance.md#세는-것)에 있다.
+셋이다 — 인건비, 사람별 근태, 포지션별 시간이다. [prd.md](../../../1-plan/prd.md)가 정한 셋이고 근거가 되는 규칙은 [payroll/README.md](../../modules/payroll/README.md)와 [attendance/README.md](../../modules/attendance/README.md#세는-것)에 있다.
 
-들어오는 문은 [관리자 홈](schedule-admin.md#관리자-홈)의 「통계」 줄이다.
+들어오는 문은 [관리자 홈](../../modules/schedule/screens/schedule-admin.md#관리자-홈)의 「통계」 줄이다.
 
-**세는 단위가 달이다.** 주도 연도 아니다 — 인건비를 묻는 자리가 월 정산이고, 근태도 [domain/attendance.md](../../domain/attendance.md#세는-것)가 달로 센다고 정했다. [급여 조회](payroll.md)가 주·월·연 셋을 여는 것과 갈린다.
+**세는 단위가 달이다.** 주도 연도 아니다 — 인건비를 묻는 자리가 월 정산이고, 근태도 [attendance/README.md](../../modules/attendance/README.md#세는-것)가 달로 센다고 정했다. [급여 조회](../../modules/payroll/screens/payroll.md)가 주·월·연 셋을 여는 것과 갈린다.
 
-**여기 나오는 숫자도 예상치다.** 인건비가 [급여](../../domain/payroll.md)에서 나오고 그것이 예상치라서다. 화면이 그 사실을 한 줄로 밝힌다.
+**여기 나오는 숫자도 예상치다.** 인건비가 [급여](../../modules/payroll/README.md)에서 나오고 그것이 예상치라서다. 화면이 그 사실을 한 줄로 밝힌다.
+
+---
+
+## 화면 상태와 흐름
+
+`/admin/stats`. 줄을 눌러도 다음 화면이 없다.
 
 ---
 
@@ -23,7 +29,7 @@
 
 **달 줄이 세그먼트 위다.** 셋을 오가도 보는 달은 그대로다. 아래에 두면 탭마다 달이 따로 있는 것처럼 읽힌다.
 
-**세그먼트는 [components.md](../components.md#세그먼트)의 그것이다.** [급여 조회](payroll.md#기간-세그먼트)는 기간 단위를 고르고 여기는 볼 것을 고르는데, 모양과 값이 같다.
+**세그먼트는 [components.md](../../design-system/components.md#세그먼트)의 그것이다.** [급여 조회](../../modules/payroll/screens/payroll.md#기간-세그먼트)는 기간 단위를 고르고 여기는 볼 것을 고르는데, 모양과 값이 같다.
 
 **달 이동에 제한이 없다.** 앞으로는 이번 달에서 멈추고 뒤로는 첫 근무표가 있는 달까지 간다.
 
@@ -42,7 +48,7 @@
 
 ### 사람별 목록
 
-[components.md](../components.md#listrow)의 ListRow고 금액이 큰 순이다.
+[components.md](../../design-system/components.md#listrow)의 ListRow고 금액이 큰 순이다.
 
 | 자리 | 담는 것 |
 | --- | --- |
@@ -53,11 +59,11 @@
 
 **이름순이 아니라 금액순이다.** 이 목록을 훑는 이유가 「누가 얼마나 가져가나」라서 큰 것이 위에 있어야 한다. 사람을 찾으려면 [직원](../../modules/account/screens/members.md)으로 간다.
 
-**줄을 눌러도 다음 화면이 없다.** 화살표를 안 붙인다. 그 사람 급여의 날짜별 내역은 근무자 본인이 보는 것이고([payroll.md](payroll.md)), 관리자가 날마다 파고들어야 하는 자리면 그것은 [조정](../../domain/payroll.md#용어)이라 근무표 날 상세에서 한다.
+**줄을 눌러도 다음 화면이 없다.** 화살표를 안 붙인다. 그 사람 급여의 날짜별 내역은 근무자 본인이 보는 것이고([payroll.md](../../modules/payroll/screens/payroll.md)), 관리자가 날마다 파고들어야 하는 자리면 그것은 [조정](../../modules/payroll/README.md#용어)이라 근무표 날 상세에서 한다.
 
 **퇴사한 사람도 그 달에 일했으면 목록에 있다.** 인건비는 그달의 사실이고 지금 재직 중인지와 무관하다.
 
-**시급이 기본인 사람도 따로 표시 안 한다.** 이 목록이 답하는 것은 얼마 나가는지고 그 값이 어디서 왔는지는 [시급](wages.md)의 몫이다.
+**시급이 기본인 사람도 따로 표시 안 한다.** 이 목록이 답하는 것은 얼마 나가는지고 그 값이 어디서 왔는지는 [시급](../../modules/payroll/screens/wages.md)의 몫이다.
 
 ## 근태
 
@@ -68,7 +74,7 @@
 
 ### 현황 줄
 
-그달의 출근·지각·출근 인정·결근 넷을 한 줄에 센다. [domain/attendance.md](../../domain/attendance.md#세는-것)가 집계에 든다고 정한 넷이다.
+그달의 출근·지각·출근 인정·결근 넷을 한 줄에 센다. [attendance/README.md](../../modules/attendance/README.md#세는-것)가 집계에 든다고 정한 넷이다.
 
 **출근과 출근 인정을 합치지 않는다.** 둘을 합치면 인증이 실제로 얼마나 도는지 안 보이고, 그것이 [지표](../../../1-plan/metrics.md)의 출근 인증률이다.
 
@@ -86,7 +92,7 @@ ListRow고 이름 가나다순이다.
 
 결근과 출근 인정은 있는 사람 줄에만 뒤에 붙는다.
 
-**색으로 안 가른다.** 지각과 결근에 경고색을 쓰면 화면이 사람을 나무라는 자리가 된다 — [날 명단](schedule-worker.md)과 [대시보드](dashboard.md)가 같은 결이다. 이 화면은 여러 달을 겹쳐 보는 자리라 더 그렇다.
+**색으로 안 가른다.** 지각과 결근에 경고색을 쓰면 화면이 사람을 나무라는 자리가 된다 — [날 명단](../../modules/schedule/screens/schedule-worker.md)과 [대시보드](dashboard.md)가 같은 결이다. 이 화면은 여러 달을 겹쳐 보는 자리라 더 그렇다.
 
 **정렬을 지각 순으로 안 바꾼다.** 그렇게 세우면 이 화면의 첫 줄이 늘 누군가를 지목하게 된다. 찾는 눈은 오른쪽 값에서 이미 멈춘다.
 
@@ -99,7 +105,7 @@ ListRow고 이름 가나다순이다.
 
 ### 포지션 목록
 
-아홉 포지션이 시간 많은 순이다([domain/schedule.md](../../domain/schedule.md)).
+아홉 포지션이 시간 많은 순이다([schedule/README.md](../../modules/schedule/README.md)).
 
 | 자리 | 담는 것 |
 | --- | --- |
@@ -109,9 +115,9 @@ ListRow고 이름 가나다순이다.
 
 **시간이 0인 포지션도 목록에 있다.** 아홉이 다 선다. 빠지면 그 포지션이 이 앱에 없는 것처럼 읽히고, 한 달 내내 아무도 안 들어간 자리가 있다는 것 자체가 읽을 거리다.
 
-**교육 배정도 든다.** 정규 자리를 안 먹을 뿐 그날 나와서 같은 시간을 있었다([domain/attendance.md](../../domain/attendance.md#누가-보나)). 어느 포지션의 교육이었는지로 센다.
+**교육 배정도 든다.** 정규 자리를 안 먹을 뿐 그날 나와서 같은 시간을 있었다([attendance/README.md](../../modules/attendance/README.md#누가-보나)). 어느 포지션의 교육이었는지로 센다.
 
-**겸임 자리는 시간을 나눠 세지 않는다.** 한 사람이 두 포지션을 맡아도 근무 시간은 날짜마다 하나고 급여도 한 번만 센다([domain/schedule.md](../../domain/schedule.md)). 포지션별 시간에서도 같은 시간을 양쪽에 다 얹지 않는다 — 합이 전체보다 커진다. 겸임 자리는 앞 포지션으로 센다.
+**겸임 자리는 시간을 나눠 세지 않는다.** 한 사람이 두 포지션을 맡아도 근무 시간은 날짜마다 하나고 급여도 한 번만 센다([schedule/README.md](../../modules/schedule/README.md)). 포지션별 시간에서도 같은 시간을 양쪽에 다 얹지 않는다 — 합이 전체보다 커진다. 겸임 자리는 앞 포지션으로 센다.
 
 ---
 
@@ -119,7 +125,7 @@ ListRow고 이름 가나다순이다.
 
 그달에 확정된 근무표가 없을 때다. 세 탭이 같은 모양으로 빈다.
 
-합계 자리는 `–`로 서고 목록 자리에만 빈 상태가 온다([writing.md](../writing.md#급여는-예상치라고-밝힌다)). [급여 조회](payroll.md#빈-상태)와 같은 방식이다.
+합계 자리는 `–`로 서고 목록 자리에만 빈 상태가 온다([writing.md](../../design-system/writing.md#급여는-예상치라고-밝힌다)). [급여 조회](../../modules/payroll/screens/payroll.md#빈-상태)와 같은 방식이다.
 
 ---
 
@@ -128,16 +134,16 @@ ListRow고 이름 가나다순이다.
 | 자리 | 토큰 |
 | --- | --- |
 | 화면 바탕 | `bg.neutral` |
-| 앱바 | [components.md](../components.md#앱바)의 앱바 |
+| 앱바 | [components.md](../../design-system/components.md#앱바)의 앱바 |
 | 달 줄 글자 | `fg.neutral` |
 | 달 화살표 | `fg.neutral-subtle` |
 | 못 가는 화살표 | 안 그린다. 자리만 남긴다 |
-| 세그먼트 | [components.md](../components.md#세그먼트)의 세그먼트 |
+| 세그먼트 | [components.md](../../design-system/components.md#세그먼트)의 세그먼트 |
 | 합계 | `fg.neutral` |
 | 예상치 안내 | `fg.neutral-subtle` |
 | 보조 줄 | `fg.neutral-muted` |
 | 현황 줄 | `fg.neutral-muted` |
-| 줄 | [components.md](../components.md#listrow)의 ListRow |
+| 줄 | [components.md](../../design-system/components.md#listrow)의 ListRow |
 | 값이 0인 자리 | `fg.neutral-subtle` |
 
 **이 화면에 브랜드 색이 없다.** 버튼이 없고 표식도 없다. 계열색도 안 쓴다 — 지각과 결근에 색을 붙이지 않는 것이 이 화면의 규칙이라, 남은 계열색을 어디에도 안 쓰는 쪽이 일관된다.
@@ -196,9 +202,9 @@ ListRow고 이름 가나다순이다.
 | 빈 상태 제목 | 이 달은 아직 근무표가 없어요 |
 | 빈 상태 아래 줄 | 근무표를 확정하면 여기 숫자가 서요 |
 
-달 줄에 연도가 붙는다. 달을 넘기다 해가 바뀌는 화면이다([writing.md](../writing.md#숫자와-단위)).
+달 줄에 연도가 붙는다. 달을 넘기다 해가 바뀌는 화면이다([writing.md](../../design-system/writing.md#숫자와-단위)).
 
-목록에 이름이 잔뜩 서므로 「님」을 뺀다([writing.md](../writing.md#사람-이름)).
+목록에 이름이 잔뜩 서므로 「님」을 뺀다([writing.md](../../design-system/writing.md#사람-이름)).
 
 ## 모션
 
@@ -210,13 +216,13 @@ ListRow고 이름 가나다순이다.
 
 ## 안 담은 것
 
-**그날 현황 한 줄.** 하루짜리고 [날 명단](schedule-worker.md)에 산다. 이 화면의 근태 현황 줄은 그것의 달 판이다.
+**그날 현황 한 줄.** 하루짜리고 [날 명단](../../modules/schedule/screens/schedule-worker.md)에 산다. 이 화면의 근태 현황 줄은 그것의 달 판이다.
 
-**근무자가 보는 내 누적.** [급여 조회](payroll.md#누적)에 있다.
+**근무자가 보는 내 누적.** [급여 조회](../../modules/payroll/screens/payroll.md#누적)에 있다.
 
 **사람별 날짜 내역.** 위 [사람별 목록](#사람별-목록)에 근거가 있다.
 
-**내보내기.** 엑셀이나 CSV로 뽑는 길을 안 만들었다. 실제 지급 계산이 앱 밖에서 일어나는데([domain/payroll.md](../../domain/payroll.md)) 그 손 계산을 앱이 없애지 않는다는 것이 [prd.md](../../../1-plan/prd.md)의 전제다. 필요해지면 그때 연다.
+**내보내기.** 엑셀이나 CSV로 뽑는 길을 안 만들었다. 실제 지급 계산이 앱 밖에서 일어나는데([payroll/README.md](../../modules/payroll/README.md)) 그 손 계산을 앱이 없애지 않는다는 것이 [prd.md](../../../1-plan/prd.md)의 전제다. 필요해지면 그때 연다.
 
 **여러 달 견주기.** 지난달 대비 같은 것을 안 그린다. 한 달을 정확히 보는 것이 먼저고, 비교는 그 위에 얹는 것이다.
 
@@ -226,9 +232,9 @@ ListRow고 이름 가나다순이다.
 
 ## 규칙과 부딪힌 자리
 
-**세그먼트가 공용으로 올라갔다.** 토큰과 크기는 [components.md](../components.md#세그먼트)가 정본이다. [급여 조회](payroll.md#기간-세그먼트)가 첫 자리고 이 화면이 둘째다.
+**세그먼트가 공용으로 올라갔다.** 토큰과 크기는 [components.md](../../design-system/components.md#세그먼트)가 정본이다. [급여 조회](../../modules/payroll/screens/payroll.md#기간-세그먼트)가 첫 자리고 이 화면이 둘째다.
 
-**겸임 자리를 앞 포지션으로 센다.** 나눠 세면 합이 안 맞고 양쪽에 다 얹으면 전체보다 커진다. 어느 쪽도 사실을 그대로 옮기지 못하는 자리고, 셋 중 합이 맞는 것을 골랐다. [domain/schedule.md](../../domain/schedule.md)가 겸임을 자리 둘을 합친 하나로 정의해서 「앞 포지션」이 무엇인지는 그 자리가 들고 있다.
+**겸임 자리를 앞 포지션으로 센다.** 나눠 세면 합이 안 맞고 양쪽에 다 얹으면 전체보다 커진다. 어느 쪽도 사실을 그대로 옮기지 못하는 자리고, 셋 중 합이 맞는 것을 골랐다. [schedule/README.md](../../modules/schedule/README.md)가 겸임을 자리 둘을 합친 하나로 정의해서 「앞 포지션」이 무엇인지는 그 자리가 들고 있다.
 
 ---
 
@@ -236,7 +242,7 @@ ListRow고 이름 가나다순이다.
 
 임의로 채우지 않는다. 사람이 정하고 나서 이 절에서 뺀다.
 
-- **포지션별 시간에 막대를 붙일지.** 지금은 숫자와 정렬만으로 비교하게 둔다. 막대를 넣으면 아홉 줄이 전부 색 면이 되는데 이 앱에 그런 자리가 [하루 띠](../components.md#하루-띠) 하나뿐이다
+- **포지션별 시간에 막대를 붙일지.** 지금은 숫자와 정렬만으로 비교하게 둔다. 막대를 넣으면 아홉 줄이 전부 색 면이 되는데 이 앱에 그런 자리가 [하루 띠](../../design-system/components.md#하루-띠) 하나뿐이다
 - **인건비에 시급 이력이 걸친 달의 표기.** 달 중간에 시급이 바뀌면 한 사람 몫이 두 단가로 계산되는데, 목록 줄이 그 사실을 말할지 안 정했다
 - **근무자에게 포지션별 시간을 열지.** 지금은 관리자만 본다. 자기가 어느 포지션에 얼마나 들어갔는지는 근무자도 궁금할 수 있다
 - **빈 상태에서 예상치 안내와 보조 줄을 같이 지울지.** 문서는 「합계 자리는 `–`로 서고 목록 자리에만 빈 상태가 온다」까지만 정했다. 시안은 근무 0건일 때 「근무 0건 · 0시간」이 서는 것이 이상하다고 보고 지우는 쪽으로 그렸다
