@@ -151,6 +151,24 @@ describe("문서 링크 검사", () => {
       },
     ]);
   });
+
+  it("루트 CLAUDE.md도 검사 대상이고 경로는 저장소 뿌리 기준으로 푼다", () => {
+    const root = tempRoot();
+    write(
+      root,
+      "CLAUDE.md",
+      ["# la-bie-belle", "", "[깨짐](docs/nowhere.md)"].join("\n"),
+    );
+
+    expect(docLinkViolations(root)).toEqual([
+      {
+        file: "CLAUDE.md",
+        href: "docs/nowhere.md",
+        line: 3,
+        kind: "missing-file",
+      },
+    ]);
+  });
 });
 
 describe("문서 링크 검사 — 실제 저장소 회귀", () => {

@@ -10,7 +10,7 @@ export type DocLinkViolation = {
 };
 
 const DOCS = "docs";
-const ROOT_DOC = "README.md";
+const ROOT_DOCS = ["README.md", "CLAUDE.md"];
 const EXCLUDED_PREFIXES = [`${DOCS}/log/`];
 const ABSOLUTE_SCHEME = /^(https?|mailto):/i;
 
@@ -34,11 +34,11 @@ function docsMarkdownFiles(root: string): string[] {
     .sort();
 }
 
-/** 루트 README는 저장소의 첫 화면이라 docs/ 밖이어도 같이 본다. */
+/** 루트 README와 CLAUDE.md는 저장소의 첫 화면이라 docs/ 밖이어도 같이 본다. */
 function markdownFiles(root: string): string[] {
-  const rootDoc = existsSync(path.join(root, ROOT_DOC)) ? [ROOT_DOC] : [];
+  const rootDocs = ROOT_DOCS.filter((doc) => existsSync(path.join(root, doc)));
 
-  return [...rootDoc, ...docsMarkdownFiles(root)];
+  return [...rootDocs, ...docsMarkdownFiles(root)];
 }
 
 function decode(part: string): string {
