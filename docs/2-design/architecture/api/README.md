@@ -24,7 +24,7 @@ Next 서버가 Supabase를 부르는 자리는 `auth.*`뿐이다 — `proxy`가 
 
 한 질의는 `max_rows`(지금 1000)에서 잘린다. 잘려도 오류가 아니다. 알림처럼 안 지우고 쌓이는 표는 첫 사람이 1000에 닿기 전에 `range()`를 건다 — 어느 표부터인지는 [`../runtime/`](../runtime/)이 정한다.
 
-**타입은 표에서 뽑는다.** `supabase gen types typescript --local > src/shared/api/database.types.ts`. 파일을 저장소에 넣고 CI가 마이그레이션 뒤 다시 뽑아 diff가 0인지 본다 — 표를 바꾸고 타입을 안 뽑으면 빨간불이다. CLI 버전이 다르면 포맷이 달라 헛빨간불이 나니 CI는 로컬과 같은 버전을 박는다. `pnpm types`가 그 명령을 감싼다.
+**타입은 표에서 뽑는다.** `supabase gen types typescript --local > src/shared/api/database.types.ts`. 파일을 저장소에 넣고 CI가 마이그레이션 뒤 다시 뽑아 diff가 0인지 본다 — 표를 바꾸고 타입을 안 뽑으면 빨간불이다. CLI 버전이 다르면 포맷이 달라 헛빨간불이 나니 CI는 로컬과 같은 버전을 박는다. `pnpm types`가 그 명령을 감싼다. 지금은 `pnpm types`도 CI 검사도 없다 — `backlog.md` 「타입 생성 절차」가 세운다.
 
 ## 쓰기
 
