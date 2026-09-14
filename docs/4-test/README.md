@@ -17,10 +17,10 @@
 
 `tests/lint/`의 다섯이 문서를 읽는다. 문서만 바꿔도 깨지는 자리가 있다.
 
-- `doc-map.ts` — CLAUDE.md 문서 지도의 `docs/` 경로가 실존하는지
+- `doc-map.ts` — `docs/README.md` 문서 지도의 `docs/` 경로가 실존하는지
 - `doc-links.ts` — `docs/`와 루트 README의 상대 링크와 앵커. `docs/log/`는 밖이라 당시 경로를 그대로 써도 된다
 - `legacy-doc-paths.ts` — 옮기기 전 경로가 문서·정의문·코드에 남았는지
-- `design-map.ts` — `design-system/pages/*.md`가 디자인 시스템 지도에 다 걸렸는지
+- `design-map.ts` — 화면 문서가 디자인 시스템 지도나 업무 영역 지도에 다 걸렸는지
 - `changelog.ts` — 로그가 가리키는 PR이 CHANGELOG에 있는지
 
 ## 돌릴 때

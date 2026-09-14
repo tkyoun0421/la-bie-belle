@@ -42,7 +42,7 @@
 
 [components.md](../components.md#빈-상태)의 빈 상태다. 제목과 아래 줄만 있고 버튼이 없다 — 관리자가 여기서 할 일이 없다.
 
-관리자 홈의 줄이 「승인할 일 · 0건」이어도 눌린다. 눌러 보고 비었다는 것을 확인하는 것이 안 눌리는 줄을 보고 왜 안 눌리나 하는 것보다 낫다([members-pending.md](members-pending.md#빈-상태)와 같다).
+관리자 홈의 줄이 「승인할 일 · 0건」이어도 눌린다. 눌러 보고 비었다는 것을 확인하는 것이 안 눌리는 줄을 보고 왜 안 눌리나 하는 것보다 낫다([members-pending.md](../../modules/account/screens/members-pending.md#빈-상태)와 같다).
 
 ### 색
 

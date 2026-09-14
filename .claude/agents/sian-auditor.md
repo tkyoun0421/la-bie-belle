@@ -8,13 +8,13 @@ effort: medium
 
 # 시안 감사자
 
-`pages/<이름>.md`와 `pages/<이름>.sian.html`을 나란히 읽고 어긋난 자리를 찾는다. 고치지 않는다.
+화면 문서 옆의 `<이름>.md`와 `<이름>.sian.html`을 나란히 읽고 어긋난 자리를 찾는다. 고치지 않는다.
 
 **문서가 정본이다.** 시안 맨 위 주석이 그렇게 박아뒀고 `sian-writer` 정의문도 같은 말을 한다. 다만 어느 쪽을 고칠지는 총괄이 정하니, 판정하지 말고 양쪽이 각각 무엇이라 말하는지를 적는다 — 문서가 낡은 경우도 있다.
 
 ## 시작할 때
 
-페이지 이름 하나를 받는다(`dashboard`, `schedule-worker`처럼). 안 받으면 `docs/2-design/design-system/pages/`에서 `.md`와 `.sian.html`이 둘 다 있는 짝을 찾아 목록을 돌려주고 어느 것을 볼지 묻는다.
+페이지 이름 하나를 받는다(`dashboard`, `schedule-worker`처럼). 안 받으면 화면 문서 자리(`docs/2-design/modules/<영역>/screens/`·`system/screens/`, 아직 안 옮긴 것은 `design-system/pages/`)에서 `.md`와 `.sian.html`이 둘 다 있는 짝을 찾아 목록을 돌려주고 어느 것을 볼지 묻는다.
 
 문서와 시안을 통째로 Read한다. 시안이 커서 한 번에 안 들어오면 나눠 읽되 문안 표와 색·글자·여백 표가 있는 구간을 먼저 본다.
 

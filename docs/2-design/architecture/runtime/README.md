@@ -2,7 +2,7 @@
 
 돌아갈 때의 규칙이 산다. 언제 다시 읽나, 무엇을 먼저 그리나, 어긋나면 누가 이기나다.
 
-[`../data-model/`](../data-model/)이 무엇을 저장하는지를 말하고 [`../api/`](../api/)가 어떻게 주고받는지를 말한다면, 여기는 그 위에서 시간과 순서를 다룬다. 이 파일이 가로지르는 것을 들고, 도메인마다의 것은 같은 이름의 파일에 산다 — [`account.md`](account.md) · [`schedule.md`](schedule.md) · [`swap.md`](swap.md) · [`attendance.md`](attendance.md) · [`payroll.md`](payroll.md) · [`notification.md`](notification.md).
+[`../data-model/`](../data-model/)이 무엇을 저장하는지를 말하고 [`../api/`](../api/)가 어떻게 주고받는지를 말한다면, 여기는 그 위에서 시간과 순서를 다룬다. 이 파일이 가로지르는 것을 들고, 도메인마다의 것은 같은 이름의 파일에 산다 — [`account.md`](../../modules/account/design.md) · [`schedule.md`](schedule.md) · [`swap.md`](swap.md) · [`attendance.md`](attendance.md) · [`payroll.md`](payroll.md) · [`notification.md`](notification.md).
 
 ## 캐시 네 계층
 
@@ -15,7 +15,7 @@
 
 **realtime을 안 쓰는 이유.** 서른 명·홀 하나라 남이 바꾸는 일이 분에 한 번도 안 된다. 선착순은 함수가 풀었고(`slot_full`) 동시 편집은 `stale`이 잡는다 — 막히지 않고 늦게 안다. 소켓 연결·재연결·배터리를 치를 값이 없다.
 
-**서버가 승인을 판정하지 않는 이유.** 승인·차단·퇴사를 서버가 HTML에 그리면 그 HTML이 세션마다 달라 Service Worker가 캐시할 수 없고, 오프라인에 앱이 안 뜬다. 그래서 `proxy`는 세션이 없으면 `/login`으로 보내는 것까지만 하고, 승인·차단·퇴사는 앱이 뜬 뒤 클라이언트가 `['profile']`을 읽어 가른다 — [`account.md`](account.md). 브라우저가 Supabase를 바로 부르니([`../api/`](../api/#경계-하나)) 서버가 데이터를 그릴 이유도 없다.
+**서버가 승인을 판정하지 않는 이유.** 승인·차단·퇴사를 서버가 HTML에 그리면 그 HTML이 세션마다 달라 Service Worker가 캐시할 수 없고, 오프라인에 앱이 안 뜬다. 그래서 `proxy`는 세션이 없으면 `/login`으로 보내는 것까지만 하고, 승인·차단·퇴사는 앱이 뜬 뒤 클라이언트가 `['profile']`을 읽어 가른다 — [`account.md`](../../modules/account/design.md). 브라우저가 Supabase를 바로 부르니([`../api/`](../api/#경계-하나)) 서버가 데이터를 그릴 이유도 없다.
 
 ## TanStack Query 규칙
 

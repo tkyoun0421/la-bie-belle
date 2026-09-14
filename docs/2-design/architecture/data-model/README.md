@@ -2,7 +2,7 @@
 
 테이블과 관계가 산다. 실제 스키마의 정본은 `supabase/migrations/`고 여기는 그 지도와 근거를 담는다.
 
-이 파일이 도메인을 가로지르는 것을 들고, 도메인마다의 표는 같은 이름의 파일에 산다 — [`account.md`](account.md) · [`schedule.md`](schedule.md) · [`swap.md`](swap.md) · [`attendance.md`](attendance.md) · [`payroll.md`](payroll.md) · [`notification.md`](notification.md). 짝은 [`../../domain/`](../../domain/)의 같은 이름이다.
+이 파일이 도메인을 가로지르는 것을 들고, 도메인마다의 표는 같은 이름의 파일에 산다 — [`account.md`](../../modules/account/design.md) · [`schedule.md`](schedule.md) · [`swap.md`](swap.md) · [`attendance.md`](attendance.md) · [`payroll.md`](payroll.md) · [`notification.md`](notification.md). 짝은 [`../../domain/`](../../domain/)의 같은 이름이다.
 
 ## 네 원칙
 
@@ -59,7 +59,7 @@ halls ─1 hall_secrets              │        │
                                               └─< request_candidates >─ profiles
 ```
 
-`auth.users ─? profiles`는 하나 또는 없음이다. [`account.md`](account.md#프로필-신원)에 있다.
+`auth.users ─? profiles`는 하나 또는 없음이다. [`account.md`](../../modules/account/design.md#프로필-신원)에 있다.
 
 ## 홀
 
@@ -69,7 +69,7 @@ halls ─1 hall_secrets              │        │
 
 **기본은 「승인된 사람 전원 읽기」다.** 날·자리·배정·요청·인증 상태처럼 전원이 보는 표가 다수라 기본값과 맞는다. `is_approved()`·`is_admin()` 두 SQL 함수를 모든 정책이 공유한다. 둘은 `security definer`·`stable`·`search_path = ''`다 — `profiles` 정책이 `profiles`를 읽는 함수를 부르면 재귀에 걸린다.
 
-승인 전은 자기 `profiles`·`profile_private` 행만 읽는다(ADR-003). 퇴사자는 자기 행만이다 — 자기 배정·인증·시급과 그 배정이 든 `days`. 남의 지난 기록도 안 연다([account.md](../../domain/account.md#퇴사)).
+승인 전은 자기 `profiles`·`profile_private` 행만 읽는다(ADR-003). 퇴사자는 자기 행만이다 — 자기 배정·인증·시급과 그 배정이 든 `days`. 남의 지난 기록도 안 연다([account.md](../../modules/account/README.md#퇴사)).
 
 좁히는 표는 이렇다. 안 적은 표는 기본값이다. 왜 좁히는지는 각 도메인 파일에 있다.
 
@@ -97,7 +97,7 @@ halls ─1 hall_secrets              │        │
 
 ADR-003이 「왜 필요한지를 이 문서에 먼저 적는다」고 한 자리다. 둘이다.
 
-- `auth.users` 삭제 — Admin API뿐이다([`account.md`](account.md#퇴사-1년-뒤))
+- `auth.users` 삭제 — Admin API뿐이다([`account.md`](../../modules/account/design.md#퇴사-1년-뒤))
 - Edge Function이 `notifications.pushed_at`을 찍는 것 — 함수는 사용자 세션 없이 돈다([`notification.md`](notification.md))
 
 ## 계산의 예외 하나
