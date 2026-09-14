@@ -1,7 +1,3 @@
----
-status: approved
----
-
 # Supabase 서버 클라이언트의 진입점을 하나로 모으고 인증 게이트를 features로 옮긴다
 
 `createSupabaseServerClient(await cookies())`가 `src/app/` 네 곳에 같은 모양으로 있다. 호출자마다 Next의 `cookies()`를 알아야 하고, 화면이 늘면 같은 줄이 화면 수만큼 는다. 미들웨어만 저장소가 달라 `request.cookies`를 손수 감싼다. 두 팩토리의 `requireEnv`도 글자까지 같은 복제다. 한편 `src/app/auth-gate.ts`는 `entities`와 `shared`를 같이 부르는 조립 코드인데 훅이 안 보는 자리에 있어 e2e만 배선을 밟는다 — 관찰 007이 연 것이다. 아키텍처 리뷰(`docs/log/2026-09-11.md`)의 후보 B·C·D·E를 한 PR로 닫는다.

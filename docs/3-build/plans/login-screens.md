@@ -7,7 +7,7 @@
 - `/login` — 로그인 화면. `src/app/login/page.tsx`가 `src/screens/login/`을 그린다
 - `/pending` — 승인 대기 화면. `src/app/pending/page.tsx`가 `src/screens/pending/`을 그린다. 도메인은 이 상태를 따로 이름짓지 않고 「승인 시각이 비어 있으면 아직 승인 전」이라고만 적어서([account.md](../../2-design/domain/account.md)), 라우트 이름은 화면 이름(승인 대기)에서 딴다
 - `/` — 홈. 지금의 스캐폴드 카드(`src/app/page.tsx`의 통신 포함)를 걷어내고, 대시보드 task가 채울 최소 자리만 남긴다
-- `/auth/callback` — 구글 OAuth 콜백. [session-foundation.md](../../2-design/spec/session-foundation.md)가 이 task로 넘긴 의무다. 기존 `/auth/logout`의 형제로 둔다
+- `/auth/callback` — 구글 OAuth 콜백. [session-foundation.md](session-foundation.md)가 이 task로 넘긴 의무다. 기존 `/auth/logout`의 형제로 둔다
 
 분기 규칙은 [pages/login.md](../../2-design/design-system/pages/login.md) 7행 그대로다 — 세션이 없으면 `/login`, 세션이 있고 승인 시각이 비었으면 `/pending`, 차 있으면 `/`. 세 라우트 각각이 서버에서 이 규칙을 읽어 제자리가 아니면 redirect 한다. 판정은 아래 순수 함수 한 곳에 모은다.
 

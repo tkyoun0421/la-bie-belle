@@ -8,7 +8,7 @@ status: approved
 
 ## 완료 조건
 
-- [pages/login.md](../design-system/pages/login.md)가 적은 두 화면이 실제로 돈다. 로그인하면 승인 상태에 따라 대기 화면이나 홈으로 갈린다. 세션 기반은 이미 깔려 있으니([session-foundation.md](session-foundation.md)) 그 위에 화면만 얹는다.
+- [pages/login.md](../design-system/pages/login.md)가 적은 두 화면이 실제로 돈다. 로그인하면 승인 상태에 따라 대기 화면이나 홈으로 갈린다. 세션 기반은 이미 깔려 있으니([session-foundation.md](../../3-build/plans/session-foundation.md)) 그 위에 화면만 얹는다.
 - 퍼블리싱이 shadcn/ui와 Tailwind 위에 토큰을 갈아끼우는 방식으로 된다. [design-system/README.md](../design-system/README.md#퍼블리싱)가 정한 대로다. 시안 HTML의 CSS를 옮겨 붙이지 않는다 — 그 파일은 눈으로 보는 것이지 복사할 코드가 아니다.
 - 검수 루프가 실제로 한 번 돈다. `README.md`가 「지적마다 이 디렉터리의 조항을 인용해야 반려가 성립한다」고 적어뒀는데 아직 한 번도 안 돌았다. 반려가 성립했는지, 인용할 조항이 없어서 못 반려한 자리가 있었는지를 로그에 남긴다 — 디자인 문서가 구현을 실제로 판정할 만큼 촘촘한지가 여기서 처음 드러난다.
 - 시안 HTML이 구현에 쓰였는지가 로그에 남는다. 문서만으로 충분했는지, 시안을 열어야 알 수 있던 자리가 있었는지다. 이번에 「시안을 문서 옆에 커밋한다」를 규칙으로 세웠으니 그 규칙이 값을 하는지 첫 회차에 확인한다.

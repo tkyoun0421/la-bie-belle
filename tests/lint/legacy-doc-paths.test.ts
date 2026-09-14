@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { legacyPathViolations } from "@tests/lint/legacy-doc-paths";
 
 const ADR_004_RELATIVE = "docs/2-design/adr/ADR-004-domain-rules-home.md";
-const SDLC_GATE_RELATIVE = "docs/2-design/spec/sdlc-gate.md";
+const SDLC_GATE_RELATIVE = "docs/3-build/plans/sdlc-gate.md";
 
 function legacyPath(...parts: string[]): string {
   return parts.join("");

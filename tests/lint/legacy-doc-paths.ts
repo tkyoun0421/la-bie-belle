@@ -57,7 +57,7 @@ const ALLOWED_LINES = [
     marker: "디렉터리로 연다",
   },
   {
-    file: "docs/2-design/spec/sdlc-gate.md",
+    file: "docs/3-build/plans/sdlc-gate.md",
     marker: "옮기기 전 경로",
   },
 ];
