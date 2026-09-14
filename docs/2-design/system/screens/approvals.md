@@ -8,7 +8,7 @@
 
 들어오는 문은 하나다. 관리자 홈의 「승인할 일 · 3건」 줄이고([schedule-admin.md](../../modules/schedule/screens/schedule-admin.md#관리자-홈)) 그 줄이 이 화면을 연다. 사유가 도착해도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([notification/README.md](../../modules/notification/README.md#ntf-030)). 근무 취소 요청은 푸시로도 온다.
 
-보내는 쪽 화면은 둘이다. 사유는 [dashboard.md](dashboard.md#사유-시트)의 사유 시트, 근무 취소는 [schedule-worker.md](../../modules/schedule/screens/schedule-worker.md#시트의-문)의 날 시트다.
+보내는 쪽 화면은 둘이다. 사유는 [excuse.md](../../modules/attendance/screens/excuse.md)의 사유 시트, 근무 취소는 [schedule-worker.md](../../modules/schedule/screens/schedule-worker.md#시트의-문)의 날 시트다.
 
 경로와 역할 조건은 [navigation.md](../navigation.md#경로)가 든다.
 
@@ -18,7 +18,7 @@
 - design의 행위 — [schedule/design.md](../../modules/schedule/design.md#근무-취소-요청과-판정)
 - 탐색 — [navigation.md](../navigation.md#경로)
 - 공통 시각·문안 — [tokens.md](../../design-system/tokens.md), [components.md](../../design-system/components.md), [motion.md](../../design-system/foundation/motion.md), [writing.md](../../design-system/writing.md)
-- 다른 영역 — [dashboard.md](dashboard.md#사유-시트), [schedule-worker.md](../../modules/schedule/screens/schedule-worker.md#시트의-문), [schedule-admin.md](../../modules/schedule/screens/schedule-admin.md), [members-pending.md](../../modules/account/screens/members-pending.md#빈-상태), [prd.md](../../../1-plan/prd.md)
+- 다른 영역 — [excuse.md](../../modules/attendance/screens/excuse.md), [schedule-worker.md](../../modules/schedule/screens/schedule-worker.md#시트의-문), [schedule-admin.md](../../modules/schedule/screens/schedule-admin.md), [members-pending.md](../../modules/account/screens/members-pending.md#빈-상태), [prd.md](../../../1-plan/prd.md)
 
 ## 화면 상태와 흐름
 
@@ -213,7 +213,7 @@
 
 거절 결과는 그 근무자에게 푸시로 간다. 관리자가 적은 이유가 같이 실린다([notification/README.md](../../modules/notification/README.md#ntf-014)).
 
-**실패하면 시트가 안 닫힌다.** 오류가 시트 안에 서고 쓴 내용이 그대로 남는다. 오른쪽 버튼이 「다시 보내기」가 된다 — [사유 시트](dashboard.md#사유-시트)가 같은 방식이다.
+**실패하면 시트가 안 닫힌다.** 오류가 시트 안에 서고 쓴 내용이 그대로 남는다. 오른쪽 버튼이 「다시 보내기」가 된다 — [사유 시트](../../modules/attendance/screens/excuse.md)가 같은 방식이다.
 
 #### 거절 색과 글자
 
@@ -239,7 +239,7 @@
 | 버튼과의 간격 | `mt-6` |
 | 버튼 둘 사이 | `gap-3` |
 
-입력 칸이 [사유 시트](dashboard.md#사유-시트)의 `min-h-22`보다 얕다. 근무자가 무슨 일이 있었는지 적는 자리와 달리 여기는 한두 마디로 끝난다.
+입력 칸이 [사유 시트](../../modules/attendance/screens/excuse.md)의 `min-h-22`보다 얕다. 근무자가 무슨 일이 있었는지 적는 자리와 달리 여기는 한두 마디로 끝난다.
 
 ## 문안
 
@@ -306,7 +306,7 @@
 | 오른쪽 버튼 | 거절 보내기 | — |
 | 보내는 중 | 보내는 중 | 보내는 동안 |
 
-**보내는 동안 버튼 둘이 다 잠긴다.** 「뒤로」까지 막는 것은 요청이 이미 떠난 뒤에 시트를 닫으면 결과를 어디서도 못 보기 때문이다. [사유 시트](dashboard.md#사유-시트)가 같은 방식이다.
+**보내는 동안 버튼 둘이 다 잠긴다.** 「뒤로」까지 막는 것은 요청이 이미 떠난 뒤에 시트를 닫으면 결과를 어디서도 못 보기 때문이다. [사유 시트](../../modules/attendance/screens/excuse.md)가 같은 방식이다.
 
 **셋째를 양쪽에서 다르게 뒀다.** 사유는 거절 뒤에 다시 넣는 것이 정상 흐름이라 「조금 더 자세히 적어 주세요」가 실제로 다음 행동을 부른다. 근무 취소는 다시 요청해도 그날 사정이 그대로일 때가 많아서 같은 문장을 안 놓았다.
 
