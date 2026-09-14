@@ -41,6 +41,13 @@ jobs:
       - run: pnpm format:check
       - run: pnpm typecheck
       - run: pnpm test
+      - name: 승인된 spec의 입력이 바뀌면 PR 본문의 영향 확인 절을 본다
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha }}...HEAD" \
+            | node --experimental-strip-types scripts/check-sources-impact.mts
       - uses: supabase/setup-cli@v1
         if: steps.scope.outputs.code == 'true'
         with:

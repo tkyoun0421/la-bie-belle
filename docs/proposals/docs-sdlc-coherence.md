@@ -8,6 +8,8 @@ status: accepted
 
 2026-09-14에 전부 채택했다. 부분 채택이나 보류 항목은 없다. 근거는 [ADR-009](../2-design/adr/ADR-009-design-modules-and-stage-links.md), 실행은 [plan](../3-build/plans/docs-sdlc-coherence.md)이다. 채택하며 정한 것 둘 — 연락처 수정은 `profile_private` 직접 갱신(api 문장이 정본), 통신 지연은 누른 시각과 닿은 시각의 비교(domain 문장이 정본, `received_at`을 더한다) — 는 plan의 「채택하며 정한 것」에 있다. 채택 조건 하나는 옮기되 바꿔 쓰지 않는 것이다. 그 둘 밖의 정본 문장은 자리만 옮긴다.
 
+2026-09-15에 실행을 마쳤다. [plan](../3-build/plans/docs-sdlc-coherence.md)의 완료 기준 다섯이 전부 섰고 위 「완료 기준」 항목도 전부 섰다. 묶음 A~C는 #335·#336·#337·#339가 날랐고, D~F는 [docs-authoring-playbook plan](../3-build/plans/docs-authoring-playbook.md)이 #338·#340·#341·#342·#343·#344·#345·#346·#347·#348·#349·#350·#351·#352·#353·#354·#355와 #356로 이어 날랐다.
+
 ---
 
 2026-09-14, `cd103dc` 기준 제안이다. 사용자 제약은 **SDLC 유지**이며, 그 안의 하위 구조는 변경할 수 있다. `1-plan`부터 `6-maintain`까지의 단계, 기능별 intent→spec→plan, spec 승인과 TDD 절차를 유지한다. 하위 폴더·파일명·본문 형식·기존 문서의 목적지는 아래 안으로 제안한다. 이 문서는 구조 검토안이며 실제 문서 이동이나 정책 변경을 승인한 기록은 아니다.

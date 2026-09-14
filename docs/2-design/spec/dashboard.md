@@ -2,6 +2,8 @@
 status: draft
 sources:
   - ../system/screens/dashboard.md
+  - ../modules/attendance/screens/check-in.md
+  - ../modules/attendance/screens/excuse.md
 ---
 
 # 근무자 대시보드를 만든다

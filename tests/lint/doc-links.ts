@@ -58,7 +58,8 @@ function resolveTarget(from: string, target: string): string | null {
   return existsSync(candidate) ? candidate : null;
 }
 
-function anchorsOf(source: string): Set<string> {
+/** 문서 하나가 주는 `#앵커` 집합. 제목 슬러그는 이미 소문자다. */
+export function anchorsOf(source: string): Set<string> {
   return new Set(parseMarkdown(source).headings.map((heading) => heading.slug));
 }
 
