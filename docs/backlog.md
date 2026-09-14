@@ -5,6 +5,7 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 ## 다음
 
 - [ ] Deno Edge Function이 `supabase/functions` 밖의 `src/`를 import할 수 있는지 확인한다 — [plan](3-build/plans/edge-function-import.md). 데이터 task의 첫 스파이크
+- [ ] 문서 지도의 경로를 링크로 만들고 검사가 링크를 읽게 한다 — [plan](3-build/plans/doc-map-links.md). 문서와 `tests/lint/doc-map.ts`·`doc-links.ts`를 같은 PR에서
 - [ ] 계정 데이터 구조 전환의 plan을 쓴다 — `3-build/plans/account-data.md`. 정본은 [data-model/account.md](2-design/architecture/data-model/account.md)·[api/account.md](2-design/architecture/api/account.md). 완료 조건은 plan이 서는 것: `profiles.id` 분리와 `user_id → auth.users`, `profile_private`, 로그인 트리거 대신 `ensure_profile()`, 관리자 승인 함수, `update_my_photo()`까지 바꿀 마이그레이션·함수·integration 테스트 목록과 순서. 사진은 본인 변경 성공과 남의 변경 거부를 integration이 본다. plan이 서면 전환 task가 「대기」에서 여기로 올라온다
 
 ## 대기
@@ -19,6 +20,7 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 - 급여 계산 — [data-model/payroll.md](2-design/architecture/data-model/payroll.md)·[api/payroll.md](2-design/architecture/api/payroll.md). 출근 인증 뒤
 - 알림(1차) — 공통 전송 기반과 1차 알림(승인·확정·전날·직전, [roadmap](1-plan/roadmap.md#릴리스-목록)). [data-model/notification.md](2-design/architecture/data-model/notification.md)·[api/notification.md](2-design/architecture/api/notification.md)·[flows/notification.md](2-design/architecture/flows/notification.md#목적지). Edge Function 스파이크 뒤
 - 교대 알림·관리자 공지(2차) — 알림(1차) 뒤. 교대 승인 화면이 [flows](2-design/architecture/flows/README.md#아직-안-정한-것)에 열려 있어 먼저 닫는다
+- 첫 출시 준비 — 배포 문서(적용·확인·되돌리기 순서, 환경별 설정 위치)와 운영 문서(장애 확인 위치·대응 담당·복구 후 확인)의 최소 안내, 지표의 집계 기준(분모·기간·수집 대상, [metrics.md](1-plan/metrics.md)). [5-deploy](5-deploy/README.md)·[6-maintain](6-maintain/README.md). 배포 플랫폼을 정한 뒤 — 1차 기능이 다 선 다음이고 데이터 task의 선행이 아니다
 - [ ] 근무자 대시보드를 만든다 — 위 넷이 서기 전에는 못 연다. 착수할 때 spec을 [설계 안내](2-design/README.md#spec)의 새 형식(요구·설계·완료 조건·범위 밖)으로 다시 쓴다 — [spec](2-design/spec/dashboard.md)
 
 ## 후보
