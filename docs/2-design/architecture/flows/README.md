@@ -82,4 +82,3 @@
 - 교대 승인 화면이 없다 — [`swap.md`](swap.md)
 - `?month=`가 달력 달인지 근무표 달(10월 5일~11월 1일)인지 — [`../runtime/`](../runtime/#아직-안-정한-것)의 달 키와 같은 결정이다. `?date=2026-11-01` 시트를 닫으면 어느 달로 돌아가나가 여기 걸린다
 - 화면이 없는 함수 — `post_announcement`(공지 보내기), `set_hall_location`(홀 좌표·반경), `undo_leave`(퇴사 되돌리기), `import_holidays`. 알림 설정(끄기·다시 켜기)과 지난 알림 목록도 화면이 없다. 1차에 그릴지 미룰지
-- 관리자 홈 앱바의 뒤로 — `profile.md`는 「관리자 홈 앱바의 뒤로」라 적고 `schedule-admin.md`는 앱바에 「관리자」와 브랜드 마크뿐이라 적었다. 이 문서는 `profile.md` 쪽이고 `schedule-admin.md`가 따라와야 한다
