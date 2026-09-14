@@ -1,14 +1,20 @@
 # 직원
 
-관리자가 승인된 사람들을 다루는 화면이다. 값은 [tokens.md](../tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
+관리자가 승인된 사람들을 다루는 화면이다. 값은 [tokens.md](../../../design-system/tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
 
-여기서 하는 일이 셋이다 — 이름 고치기, 관리자로 올리고 내리기, 퇴사 처리다. 규칙은 [domain/account.md](../../domain/account.md)에 있다.
+여기서 하는 일이 셋이다 — 이름 고치기, 관리자로 올리고 내리기, 퇴사 처리다. 규칙은 [domain/account.md](../README.md)에 있다.
 
-들어오는 문은 [관리자 홈](schedule-admin.md#관리자-홈)의 「직원」 줄이다.
+들어오는 문은 [관리자 홈](../../../design-system/pages/schedule-admin.md#관리자-홈)의 「직원」 줄이다.
 
 **아직 승인 안 된 사람은 여기 없다.** 받을지 말지 정하는 자리는 [가입 대기](members-pending.md)고 차단도 거기 있다. 이 화면은 이미 받은 사람들만 다룬다.
 
 ---
+
+## 화면 상태와 흐름
+
+`/admin/members`에서 관리자가 올리고 내린다(`set_role`). 본인이 자신을 내리면 그 자리에서 `/`로 간다. 남이 나를 내리면 내 기기는 다음 진입이나 탭 복귀에 `['profile']`을 읽고 옮긴다 — 즉시가 아니다.
+
+`/admin/members`에서 퇴사 처리(`mark_leave`). 앞 배정이 남았으면 Dialog가 막고 「근무표로 가기」가 가장 가까운 배정 날의 날 상세(`/admin/schedule?date=&from=members`)를 연다. 처리된 사람은 다음 진입부터 `/left`고 거기서 급여만 연다.
 
 ## 목록
 
@@ -24,7 +30,7 @@
 
 ### 재직자 줄
 
-[components.md](../components.md#listrow)의 ListRow다. 이름 가나다순이고 관리자를 위로 올리지 않는다.
+[components.md](../../../design-system/components.md#listrow)의 ListRow다. 이름 가나다순이고 관리자를 위로 올리지 않는다.
 
 | 자리 | 담는 것 |
 | --- | --- |
@@ -34,11 +40,11 @@
 | 보조 정보 | 연락처 |
 | 오른쪽 | 화살표 |
 
-**관리자 배지만 brand다.** 이 화면에서 갈라 봐야 하는 것이 그것 하나고, 배지는 안 눌리는 표식이라 여럿이어도 된다([foundation/color.md](../foundation/color.md#브랜드-색을-아끼는-이유)).
+**관리자 배지만 brand다.** 이 화면에서 갈라 봐야 하는 것이 그것 하나고, 배지는 안 눌리는 표식이라 여럿이어도 된다([foundation/color.md](../../../design-system/foundation/color.md#브랜드-색을-아끼는-이유)).
 
 **연락처가 줄에 이미 서 있다.** 관리자가 이 화면을 여는 흔한 이유가 급히 연락할 사람을 찾는 것이라, 시트를 열어야 번호가 보이면 한 걸음이 더 든다.
 
-목록에 이름이 잔뜩 서므로 「님」을 뺀다([writing.md](../writing.md#사람-이름)).
+목록에 이름이 잔뜩 서므로 「님」을 뺀다([writing.md](../../../design-system/writing.md#사람-이름)).
 
 ### 퇴사 구획
 
@@ -65,7 +71,7 @@
 
 ## 사람 시트
 
-줄을 누르면 아래에서 올라온다. [components.md](../components.md#dialog와-바텀시트)의 바텀시트고 `--duration-slow`다.
+줄을 누르면 아래에서 올라온다. [components.md](../../../design-system/components.md#dialog와-바텀시트)의 바텀시트고 `--duration-slow`다.
 
 ### 짜임
 
@@ -75,24 +81,24 @@
 4. 관리자로 올리기 / 관리자에서 내리기
 5. 더보기 — 퇴사 처리
 
-**연락처를 누르면 전화가 걸린다.** 오른쪽에 수화기가 선다. 꼴이 고정이라 누를 수 있는 자리다([domain/account.md](../../domain/account.md#연락처)).
+**연락처를 누르면 전화가 걸린다.** 오른쪽에 수화기가 선다. 꼴이 고정이라 누를 수 있는 자리다([domain/account.md](../README.md#연락처)).
 
-**시급은 읽기만이다.** 값만 서고 화살표가 없다. 고치는 자리는 [시급](wages.md)이고, 이 시트에서 바로 열지 않는다 — 한 사람을 놓고 퇴사와 시급을 같은 손짓으로 다루면 잘못 누른다.
+**시급은 읽기만이다.** 값만 서고 화살표가 없다. 고치는 자리는 [시급](../../../design-system/pages/wages.md)이고, 이 시트에서 바로 열지 않는다 — 한 사람을 놓고 퇴사와 시급을 같은 손짓으로 다루면 잘못 누른다.
 
-**성별과 생년월일은 값만 있다.** 아무도 못 고친다 — 본인도 관리자도 아니다. [domain/account.md](../../domain/account.md#프로필에-담기는-것)가 이름만 관리자 몫으로 열어뒀다.
+**성별과 생년월일은 값만 있다.** 아무도 못 고친다 — 본인도 관리자도 아니다. [domain/account.md](../README.md#프로필에-담기는-것)가 이름만 관리자 몫으로 열어뒀다.
 
 ### 이름 고치기
 
-[Button](../components.md#button)의 secondary고 전폭이다. 누르면 시트 안쪽이 입력으로 바뀐다. 새 시트를 겹치지 않는다.
+[Button](../../../design-system/components.md#button)의 secondary고 전폭이다. 누르면 시트 안쪽이 입력으로 바뀐다. 새 시트를 겹치지 않는다.
 
 1. 제목 — 이름
 2. 입력 칸 — 지금 이름이 채워져 있다
 3. 아래 줄 — 지난 기록의 이름도 같이 바뀐다는 안내
 4. 하단 버튼 둘 — 「뒤로」(Button secondary)와 「저장」(Button primary)
 
-**과거도 같이 바뀐다는 것을 그 자리에서 말한다.** 화면은 프로필의 지금 이름 하나를 읽어서([domain/account.md](../../domain/account.md#이름)) 고치면 지난 근무표와 급여에 뜨는 이름까지 바뀐다. 오타를 고치는 자리라 그게 맞는 동작인데, 다른 사람으로 바꾸는 데 쓰면 기록이 통째로 어긋난다.
+**과거도 같이 바뀐다는 것을 그 자리에서 말한다.** 화면은 프로필의 지금 이름 하나를 읽어서([domain/account.md](../README.md#이름)) 고치면 지난 근무표와 급여에 뜨는 이름까지 바뀐다. 오타를 고치는 자리라 그게 맞는 동작인데, 다른 사람으로 바꾸는 데 쓰면 기록이 통째로 어긋난다.
 
-빈 칸이면 「저장」이 안 눌린다. 같은 이름 둘을 안 막는다([domain/account.md](../../domain/account.md#이름)).
+빈 칸이면 「저장」이 안 눌린다. 같은 이름 둘을 안 막는다([domain/account.md](../README.md#이름)).
 
 ### 관리자로 올리기와 내리기
 
@@ -100,7 +106,7 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 **둘 다 확인을 한 번 묻는다.** 올리는 것은 그 사람이 근무표와 급여와 남의 프로필을 전부 보게 되는 일이고, 내리는 것은 그 반대다. Dialog 하나다.
 
-**마지막 관리자는 자기를 못 내린다.** 버튼이 잠기고 아래에 이유가 한 줄 선다. 관리자가 하나도 없으면 아무도 승인을 못 해 앱이 잠긴다([domain/account.md](../../domain/account.md#관리자)).
+**마지막 관리자는 자기를 못 내린다.** 버튼이 잠기고 아래에 이유가 한 줄 선다. 관리자가 하나도 없으면 아무도 승인을 못 해 앱이 잠긴다([domain/account.md](../README.md#관리자)).
 
 자기 자신을 내리는 것은 마지막이 아닌 한 막지 않는다. 관리자 전원이 같은 권한이라 누가 누구를 올리고 내리는지에 규칙이 없다.
 
@@ -118,7 +124,7 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 ### 배정이 남아 있으면 — 막는다
 
-[components.md](../components.md#dialog와-바텀시트)의 Dialog다. 버튼이 하나고 퇴사 처리가 안 된다.
+[components.md](../../../design-system/components.md#dialog와-바텀시트)의 Dialog다. 버튼이 하나고 퇴사 처리가 안 된다.
 
 | 자리 | 문장 |
 | --- | --- |
@@ -127,13 +133,13 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 | 아래 줄 | 근무표에서 이 자리를 비우고 다시 눌러 주세요 |
 | 버튼 | 근무표로 가기 |
 
-**저절로 안 빼준다.** 근무표는 이미 나갔고 그날 누가 오는지를 여러 사람이 그 화면을 보고 안다. 빈 자리는 관리자가 본 뒤에 생겨야 한다([domain/account.md](../../domain/account.md#퇴사)).
+**저절로 안 빼준다.** 근무표는 이미 나갔고 그날 누가 오는지를 여러 사람이 그 화면을 보고 안다. 빈 자리는 관리자가 본 뒤에 생겨야 한다([domain/account.md](../README.md#퇴사)).
 
 배정이 셋을 넘으면 앞의 셋만 적고 「외 n건」이 붙는다.
 
-「근무표로 가기」는 가장 가까운 배정 날의 날 상세로 보낸다([schedule-admin.md](schedule-admin.md)). 목록으로 돌아오는 길은 앱바의 뒤로다.
+「근무표로 가기」는 가장 가까운 배정 날의 날 상세로 보낸다([schedule-admin.md](../../../design-system/pages/schedule-admin.md)). 목록으로 돌아오는 길은 앱바의 뒤로다.
 
-**버튼이 하나뿐인 Dialog다.** [writing.md](../writing.md#다크패턴을-쓰지-않는다)가 막는 것은 버튼 하나로 동의를 받는 자리고, 여기는 동의를 받는 것이 아니라 못 한다는 것을 말하는 자리다.
+**버튼이 하나뿐인 Dialog다.** [writing.md](../../../design-system/writing.md#다크패턴을-쓰지-않는다)가 막는 것은 버튼 하나로 동의를 받는 자리고, 여기는 동의를 받는 것이 아니라 못 한다는 것을 말하는 자리다.
 
 ### 배정이 없으면 — 묻는다
 
@@ -146,7 +152,7 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 **destructive를 안 쓴다.** 파괴가 아니다 — 프로필이 남고 기록도 남는다. 아래 [되돌리기](#되돌리기)로 돌아오는 길도 있다.
 
-누르면 시트가 닫히고 그 줄이 재직자 목록에서 퇴사 구획으로 옮겨간다. [토스트](../components.md#토스트)가 뜬다.
+누르면 시트가 닫히고 그 줄이 재직자 목록에서 퇴사 구획으로 옮겨간다. [토스트](../../../design-system/components.md#토스트)가 뜬다.
 
 **그 사람에게 푸시가 안 간다.** 그만두는 것은 앱 밖에서 이미 이야기가 끝난 일이다. 앱이 통보하는 자리가 아니다.
 
@@ -162,7 +168,7 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 퇴사 처리를 무르는 길이다. 확인을 한 번 묻고, 누르면 재직자 목록으로 돌아온다.
 
-**시급이 그대로 살아 있다.** 퇴사해도 이력을 안 지워서 되돌리면 그때 값이 그대로다. 다시 정할 것이 있으면 [시급](wages.md)에서 한다.
+**시급이 그대로 살아 있다.** 퇴사해도 이력을 안 지워서 되돌리면 그때 값이 그대로다. 다시 정할 것이 있으면 [시급](../../../design-system/pages/wages.md)에서 한다.
 
 **잘못 누른 것을 되돌리는 자리다.** 그만뒀다 다시 오는 사람도 이 길로 돌아온다 — 새로 가입시키면 지난 근무와 급여가 끊긴다.
 
@@ -173,19 +179,19 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 | 자리 | 토큰 |
 | --- | --- |
 | 화면 바탕 | `bg.neutral` |
-| 앱바 | [components.md](../components.md#앱바)의 앱바 |
-| 줄 | [components.md](../components.md#listrow)의 ListRow |
-| 관리자 배지 | [components.md](../components.md#badge)의 Badge brand |
+| 앱바 | [components.md](../../../design-system/components.md#앱바)의 앱바 |
+| 줄 | [components.md](../../../design-system/components.md#listrow)의 ListRow |
+| 관리자 배지 | [components.md](../../../design-system/components.md#badge)의 Badge brand |
 | 가는 선 | `stroke.neutral` |
 | 퇴사 머리글 | `fg.neutral-subtle` |
 | 퇴사한 사람 사진 | 투명도 60% |
 | 퇴사한 날 | `fg.neutral-subtle` |
-| 시트 | [components.md](../components.md#dialog와-바텀시트)의 바텀시트 |
+| 시트 | [components.md](../../../design-system/components.md#dialog와-바텀시트)의 바텀시트 |
 | 시트 프로필 이름표 | `fg.neutral-muted` |
 | 시트 프로필 값 | `fg.neutral` |
 | 연락처 수화기 | `fg.neutral` |
 | 잠긴 버튼 아래 줄 | `fg.neutral-subtle` |
-| 입력 칸 | [components.md](../components.md#input)의 Input |
+| 입력 칸 | [components.md](../../../design-system/components.md#input)의 Input |
 
 **퇴사한 사람을 회색 글자로 안 지운다.** 사진만 흐리게 하고 이름은 그대로 `fg.neutral`이다. 이름이 흐려지면 기록을 확인하러 온 사람이 못 읽는다.
 
@@ -269,9 +275,9 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 | 빈 상태 제목 | 아직 승인된 사람이 없어요 |
 | 빈 상태 아래 줄 | 가입을 승인하면 여기 서요 |
 
-퇴사한 날에 연도가 붙는다. 해를 넘긴 기록이 쌓이는 자리다([writing.md](../writing.md#숫자와-단위)).
+퇴사한 날에 연도가 붙는다. 해를 넘긴 기록이 쌓이는 자리다([writing.md](../../../design-system/writing.md#숫자와-단위)).
 
-관리자 화면이라 판정 어휘를 그대로 쓴다 — 「퇴사 처리」다([writing.md](../writing.md#사람이-누르는-버튼은-예외다)).
+관리자 화면이라 판정 어휘를 그대로 쓴다 — 「퇴사 처리」다([writing.md](../../../design-system/writing.md#사람이-누르는-버튼은-예외다)).
 
 ## 모션
 
@@ -285,13 +291,13 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 **가입 승인과 거절과 차단.** [members-pending.md](members-pending.md)에 있다.
 
-**시급 고치기.** [wages.md](wages.md)에 있다. 이 시트는 값을 보여주기만 한다.
+**시급 고치기.** [wages.md](../../../design-system/pages/wages.md)에 있다. 이 시트는 값을 보여주기만 한다.
 
-**사람별 출근과 지각 횟수.** [stats.md](stats.md)에 있다.
+**사람별 출근과 지각 횟수.** [stats.md](../../../design-system/pages/stats.md)에 있다.
 
-**계정 잇기.** [domain/account.md](../../domain/account.md#아직-안-정한-것)가 아직 안 정했다. 1차 화면에 안 그린다.
+**계정 잇기.** [domain/account.md](../README.md#아직-안-정한-것)가 아직 안 정했다. 1차 화면에 안 그린다.
 
-**프로필 지우기.** 1년이 지나면 저절로 지워진다([domain/account.md](../../domain/account.md#퇴사)). 손으로 지우는 문을 안 만든다.
+**프로필 지우기.** 1년이 지나면 저절로 지워진다([domain/account.md](../README.md#퇴사)). 손으로 지우는 문을 안 만든다.
 
 **시안.** 이 문서가 서고 나서 `members.sian.html`을 그린다.
 
@@ -299,9 +305,9 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 ## 규칙과 부딪힌 자리
 
-**더보기 팝오버가 공용으로 올라갔다.** 모양과 값은 [components.md](../components.md#더보기-팝오버)가 정본이다. [가입 대기](members-pending.md#규칙과-부딪힌-자리)가 첫 자리고 이 화면이 둘째다.
+**더보기 팝오버가 공용으로 올라갔다.** 모양과 값은 [components.md](../../../design-system/components.md#더보기-팝오버)가 정본이다. [가입 대기](members-pending.md#규칙과-부딪힌-자리)가 첫 자리고 이 화면이 둘째다.
 
-**한 화면에 사람 목록이 둘이다.** [wages.md](wages.md#규칙과-부딪힌-자리)에 근거가 있다.
+**한 화면에 사람 목록이 둘이다.** [wages.md](../../../design-system/pages/wages.md#규칙과-부딪힌-자리)에 근거가 있다.
 
 **퇴사한 사람 사진에 투명도를 건다.** 토큰이 아니라 값이다. `fg.neutral-disabled`는 글자용이고 사진에 걸 면 토큰이 없다.
 
