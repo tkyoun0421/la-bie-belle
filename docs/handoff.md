@@ -18,6 +18,8 @@
 
 ## 다음 첫 수
 
+**문서 구조 task가 먼저, 그다음 데이터 task다.** `docs/3-build/plans/docs-structure.md`의 여덟 항목 중 8·5번(spec은 기능만, 비기능 spec 여섯을 `plans/`로)이 #321로 끝났다. 남은 여섯 중 3번(backlog에 데이터 task 등록, handoff 축약)이 데이터 task의 입구라 그것부터 한다.
+
 **구현이다 — 데이터 task가 먼저다.** `architecture/` 넷이 정본이라 이제 `docs/3-build/`의 구현 계획이 그 위에 선다. 첫 스파이크는 Deno Edge Function이 `../../src`를 import할 수 있는지다. 데이터 task가 갈아엎을 것 — 기존 `profiles` 마이그레이션(`profiles.id` 분리·`profile_private`), 승인 게이트를 서버 `readAuthGate`에서 클라이언트로, `middleware.ts` → `proxy.ts`. 착수 전에 `flows/`가 열어둔 결정 중 화면에 닿는 것(교대 승인 화면, `?month=` 뜻)을 먼저 닫는 편이 싸다.
 
 ## 열린 결정

@@ -5,7 +5,7 @@
 무엇이 어디 있는지는 이 절이 정본이다. 다른 문서는 여기를 가리키고, 새 갈래가 생기면 한 줄을 더한다. 다른 곳에 정본이 있는 내용은 여기 옮겨 적지 않는다. 재편의 결정과 이행 순서는 ADR-005에 있다.
 
 - `docs/handoff.md` — 지금 상태와 다음 첫 수. 세션은 여기서 시작한다
-- `docs/backlog.md` — task 보드. 완료 조건은 행이 링크하는 spec에 산다
+- `docs/backlog.md` — task 보드. 완료 조건은 행이 링크하는 spec(기능)이나 plan(비기능)에 산다
 - `docs/CHANGELOG.md` — 날짜·변경·PR 표. 왜는 log와 PR에
 - `docs/log/` — 회차 기록. 왜 그렇게 정했는지
 - `docs/observations/` — 관찰 로그. 정의문·훅이 삐걱인 자리, 증축 규칙의 카운터. 규칙은 그 안 `README.md`, 근거는 ADR-006

@@ -1,9 +1,10 @@
 # backlog
 
-task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크하는 spec이 담는다(ADR-005). 「다음」은 위가 먼저다. 큰 순서(릴리스 단위)는 `1-plan/roadmap.md`가 담는다. 끝난 task는 완료로 내리고 로그 링크를 단다.
+task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크하는 spec이나 plan이 담는다(ADR-005). 「다음」은 위가 먼저다. 큰 순서(릴리스 단위)는 `1-plan/roadmap.md`가 담는다. 끝난 task는 완료로 내리고 로그 링크를 단다.
 
 ## 다음
 
+- [ ] 문서 구조를 고친다 — 8·5번이 끝났고 여섯이 남았다 — [plan](3-build/plans/docs-structure.md)
 - [ ] 근무자 대시보드를 만든다 — 데이터 task들이 서기 전에는 못 연다 — [spec](2-design/spec/dashboard.md)
 
 ## 진행
@@ -12,8 +13,8 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 ## 완료
 
-- [x] Supabase 서버 클라이언트의 진입점을 하나로 모으고 인증 게이트를 features로 옮긴다 — [spec](2-design/spec/supabase-client-entry.md) — [docs/log/2026-09-13.md](log/2026-09-13.md)
-- [x] 마크다운 문서를 읽는 모듈을 세우고 깨진 링크를 잡는다 — [spec](2-design/spec/doc-links.md) — [docs/log/2026-09-11.md](log/2026-09-11.md)
+- [x] Supabase 서버 클라이언트의 진입점을 하나로 모으고 인증 게이트를 features로 옮긴다 — [plan](3-build/plans/supabase-client-entry.md) — [docs/log/2026-09-13.md](log/2026-09-13.md)
+- [x] 마크다운 문서를 읽는 모듈을 세우고 깨진 링크를 잡는다 — [plan](3-build/plans/doc-links.md) — [docs/log/2026-09-11.md](log/2026-09-11.md)
 - [x] 로그인 화면과 승인 대기 화면을 만든다 — [spec](2-design/spec/login-screens.md) — [docs/log/2026-09-07.md](log/2026-09-07.md)
 - [x] spec 승인 게이트와 문서 구조 검사를 단다 — [docs/log/2026-09-04.md](log/2026-09-04.md)
 - [x] 근무자 대시보드 디자인을 정한다 — [docs/log/2026-08-30.md](log/2026-08-30.md)
@@ -21,7 +22,7 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 - [x] `src/app/globals.css`를 `tokens.md`에서 생성한다 — [docs/log/2026-08-29-2.md](log/2026-08-29-2.md)
 - [x] 로그인 화면과 승인 대기 화면의 디자인을 정한다 — [docs/log/2026-08-29.md](log/2026-08-29.md)
 - [x] 세션 배선의 조용한 실패 둘을 드러낸다 — [docs/log/2026-08-28-3.md](log/2026-08-28-3.md)
-- [x] 세션 기반을 깐다 — [docs/2-design/spec/session-foundation.md](2-design/spec/session-foundation.md) — [docs/log/2026-08-28-2.md](log/2026-08-28-2.md)
+- [x] 세션 기반을 깐다 — [plan](3-build/plans/session-foundation.md) — [docs/log/2026-08-28-2.md](log/2026-08-28-2.md)
 - [x] `tokens.md` 8절이 덮지 않는 자리 넷을 메운다 — [docs/log/2026-08-28.md](log/2026-08-28.md)
 - [x] 값이 비어 있던 상태 토큰 셋을 채운다 — [docs/log/2026-08-28.md](log/2026-08-28.md)
 - [x] 규율을 lint와 포매터로 기계화한다 — [docs/log/2026-08-26-4.md](log/2026-08-26-4.md)
