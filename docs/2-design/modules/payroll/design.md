@@ -4,9 +4,9 @@
 
 ## 참조 규칙
 
-공통 스키마·권한·컬럼 규약과 읽기·쓰기·타입·에러 계약은 [system/data-access.md](../../system/data-access.md), 캐시 계층·시각은 [system/runtime.md](../../system/runtime.md), 시스템 경계는 [system/architecture.md](../../system/architecture.md)를 따른다.
+업무 규칙은 [README.md](README.md#업무-규칙)의 `PAY-001`부터 `PAY-026`까지다.
 
-키는 `['payroll', 'YYYY-MM']`이고 `wage_rates`·`adjustments`·`excuse_status`를 그달치로 받는다. 배정과 날은 `['schedule', 'YYYY-MM']`을 같이 쓴다 — 급여 화면이 두 키를 읽고 순수 함수에 넣는다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
+공통 스키마·권한·컬럼 규약과 읽기·쓰기·타입·에러 계약은 [system/data-access.md](../../system/data-access.md), 캐시 계층·시각은 [system/runtime.md](../../system/runtime.md), 시스템 경계는 [system/architecture.md](../../system/architecture.md)를 따른다.
 
 ## 소유 데이터
 
@@ -26,11 +26,15 @@
 | `wage_rates` | 본인 행과 관리자 |
 | `default_wage_rates` | 관리자 |
 
+키는 `['payroll', 'YYYY-MM']`이고 `wage_rates`·`adjustments`·`excuse_status`를 그달치로 받는다. 배정과 날은 `['schedule', 'YYYY-MM']`을 같이 쓴다 — 급여 화면이 두 키를 읽고 순수 함수에 넣는다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
+
+급여 달과 근무표 달의 범위가 다르면 급여 한 달이 `['schedule']` 두 달을 읽는다 — [schedule/design.md](../schedule/design.md#아직-안-정한-것)의 달 키 범위가 정해지면 따라간다.
+
 ### 시급 이력은 사람마다 실제 행이다
 
 `wage_rates(profile_id, effective_date, amount, follows_default)`. 기본 시급 변경 함수가 `default_wage_rates(effective_date, amount)`에 한 행을 넣고 `follows_default = true`인 사람 전원에게 같은 날 행을 한 트랜잭션에 넣는다. 급여 계산은 `wage_rates` 하나만 읽고 RLS도 한 표에만 건다. 같은 날 두 번 바꾸면 덮어쓴다 — `(profile_id, effective_date)` unique. 승인 함수가 첫 행(`follows_default = true`)을 넣는다 — 승인된 사람은 곧바로 계산에 든다.
 
-`wage_rates`는 본인 행과 관리자만, `default_wage_rates`는 관리자만 읽는다. 남의 시급을 화면에서 안 그리는 것으로는 직접 질의하는 길이 안 닫힌다([README.md](README.md#시급을-누가-보나)).
+`wage_rates`는 본인 행과 관리자만, `default_wage_rates`는 관리자만 읽는다. 남의 시급을 화면에서 안 그리는 것으로는 직접 질의하는 길이 안 닫힌다([README.md](README.md#pay-018)).
 
 ### 조정
 
@@ -50,32 +54,24 @@
 
 ### 시급과 조정
 
-| 함수 | 하는 일 |
-| --- | --- |
-| `set_wage` | 개인 시급. 적용일은 오늘이고 인자로 안 받는다 |
-| `reset_wage_to_default` | 기본으로 되돌리기. 오늘부터 다시 끈에 붙는다 |
-| `set_default_wage` | 기본 시급. 따르는 전원에게 같은 날 행이 한 트랜잭션에 선다 |
-| `set_adjustment` | 그날 그 사람의 근무 시간 조정 |
-
-| 함수 | 무효화 |
-| --- | --- |
-| `set_wage` · `reset_wage_to_default` · `set_default_wage` · `set_adjustment` | `['payroll']` |
-
-시급·조정 전부다. 돈이라 낙관적으로 칠하지 않는다.
+- 규칙: [PAY-002](README.md#pay-002)·[PAY-008](README.md#pay-008)·[PAY-011](README.md#pay-011)·[PAY-013](README.md#pay-013)·[PAY-014](README.md#pay-014)
+- 입력·전제: `set_wage`가 개인 시급이다 — 적용일은 오늘이고 인자로 안 받는다. `reset_wage_to_default`가 기본으로 되돌리기고 오늘부터 다시 끈에 붙는다. `set_default_wage`가 기본 시급, `set_adjustment`가 그날 그 사람의 근무 시간 조정이다
+- 읽고 쓰는 데이터: `set_default_wage`는 따르는 전원에게 같은 날 행이 한 트랜잭션에 선다
+- 처리와 경쟁: 시급·조정 전부다. 돈이라 낙관적으로 칠하지 않는다
+- 캐시 갱신: `set_wage` · `reset_wage_to_default` · `set_default_wage` · `set_adjustment`는 `['payroll']`
 
 ### 공휴일 넣기
 
-| 함수 | 하는 일 |
-| --- | --- |
-| `import_holidays` | 공휴일 넣기 |
+- 규칙: [PAY-023](README.md#pay-023)·[PAY-024](README.md#pay-024)
+- 입력·전제: `import_holidays`가 공휴일 넣기다
 
 ### 행위 밖의 실행 동작
 
-급여 화면은 `assignments`(살아 있는 것)·`days`·`adjustments`·`excuse_status`·`wage_rates`를 받아 `features/payroll`이 계산한다. 근무자는 RLS가 자기 시급만 주니 자기 금액만 나온다. 통계는 관리자가 전원 행을 받는다 — 한 달치 배정 천 행쯤이라 한 질의다.
-
-저장된 금액이 없다. 두 키가 갖춰지면 `features/payroll`의 순수 함수가 돈다. 서른 명 한 달이면 배정 천 행이라 `useMemo` 하나면 된다. 통계가 여러 달을 합칠 때는 달마다 키를 읽어 더한다.
-
-급여 달과 근무표 달의 범위가 다르면 급여 한 달이 `['schedule']` 두 달을 읽는다 — [schedule/design.md](../schedule/design.md#아직-안-정한-것)의 달 키 범위가 정해지면 따라간다.
+- 규칙: [PAY-015](README.md#pay-015)·[PAY-018](README.md#pay-018)·[PAY-019](README.md#pay-019)·[PAY-020](README.md#pay-020)·[PAY-025](README.md#pay-025)
+- 입력·전제: 급여 화면은 `assignments`(살아 있는 것)·`days`·`adjustments`·`excuse_status`·`wage_rates`를 받아 `features/payroll`이 계산한다
+- 읽고 쓰는 데이터: 저장된 금액이 없다. 두 키가 갖춰지면 `features/payroll`의 순수 함수가 돈다
+- 권한: 근무자는 RLS가 자기 시급만 주니 자기 금액만 나온다. 통계는 관리자가 전원 행을 받는다
+- 처리와 경쟁: 서른 명 한 달이면 배정 천 행이라 `useMemo` 하나면 된다 — 한 달치 배정 천 행쯤이라 한 질의다. 통계가 여러 달을 합칠 때는 달마다 키를 읽어 더한다
 
 ## UI 연결
 
@@ -83,5 +79,12 @@
 
 ## 아직 안 정한 것
 
-- 공휴일을 누가 넣나 — 관리자 버튼 함수면 서비스 키가 안 든다
-- `import_holidays`를 누가 누르나 — 관리자 버튼이면 브라우저가 공공 API를 부르고 결과를 함수에 넘긴다(CORS가 막으면 Edge Function). 연 1회라 자동화 안 한다
+### Q-01
+
+- 질문: 공휴일을 누가 넣나
+- 필요한 근거와 대안: 관리자 버튼 함수면 서비스 키가 안 든다
+
+### Q-02
+
+- 질문: `import_holidays`를 누가 누르나
+- 필요한 근거와 대안: 관리자 버튼이면 브라우저가 공공 API를 부르고 결과를 함수에 넘긴다(CORS가 막으면 Edge Function). 연 1회라 자동화 안 한다
