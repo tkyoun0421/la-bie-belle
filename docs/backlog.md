@@ -5,7 +5,6 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 ## 다음
 
 - [ ] Deno Edge Function이 `supabase/functions` 밖의 `src/`를 import할 수 있는지 확인한다 — [plan](3-build/plans/edge-function-import.md). 데이터 task의 첫 스파이크
-- [ ] 문서 지도의 경로를 링크로 만들고 검사가 링크를 읽게 한다 — [plan](3-build/plans/doc-map-links.md). 문서와 `tests/lint/doc-map.ts`·`doc-links.ts`를 같은 PR에서
 - [ ] 계정 데이터 구조 전환의 plan을 쓴다 — `3-build/plans/account-data.md`. 정본은 [data-model/account.md](2-design/architecture/data-model/account.md)·[api/account.md](2-design/architecture/api/account.md). 완료 조건은 plan이 서는 것: `profiles.id` 분리와 `user_id → auth.users`, `profile_private`, 로그인 트리거 대신 `ensure_profile()`, 관리자 승인 함수, `update_my_photo()`까지 바꿀 마이그레이션·함수·integration 테스트 목록과 순서. 사진은 본인 변경 성공과 남의 변경 거부를 integration이 본다. plan이 서면 전환 task가 「대기」에서 여기로 올라온다
 
 ## 대기
@@ -46,6 +45,8 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 ## 완료
 
+- [x] 문서 지도의 경로를 링크로 만들고 검사가 링크를 읽게 한다 — [plan](3-build/plans/doc-map-links.md) — [docs/log/2026-09-14-3.md](log/2026-09-14-3.md)
+- [x] 문서 구조 후속 개선을 적용한다 — [제안](proposals/docs-structure-followup.md) — [docs/log/2026-09-14-3.md](log/2026-09-14-3.md)
 - [x] 문서 구조를 고친다 — [plan](3-build/plans/docs-structure.md) — [docs/log/2026-09-14-2.md](log/2026-09-14-2.md)
 - [x] Supabase 서버 클라이언트의 진입점을 하나로 모으고 인증 게이트를 features로 옮긴다 — [plan](3-build/plans/supabase-client-entry.md) — [docs/log/2026-09-13.md](log/2026-09-13.md)
 - [x] 마크다운 문서를 읽는 모듈을 세우고 깨진 링크를 잡는다 — [plan](3-build/plans/doc-links.md) — [docs/log/2026-09-11.md](log/2026-09-11.md)
