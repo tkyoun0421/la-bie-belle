@@ -120,7 +120,7 @@
 
 노출 규칙:
 
-- 교대 요청은 근무 전날까지다([swap/README.md](../../../modules/swap/README.md#마감)). 당일부터는 버튼이 안 선다
+- 교대 요청은 근무 전날까지다([swap/README.md](../../../modules/swap/README.md#swp-010)). 당일부터는 버튼이 안 선다
 - 근무 취소도 같은 마감이다 — 근무 전날까지([schedule/README.md](../README.md#sch-018))
 - 지난 날은 조회만 한다. 버튼이 없다
 
@@ -174,7 +174,7 @@
 
 - **시트가 닫히고 그 배정에 「요청 중」이 남는다.** 명단의 내 줄과 아코디언 날짜 줄 오른쪽에 [components.md](../../../design-system/components.md#badge)의 Badge neutral로 「교대 요청 중」 또는 「취소 요청 중」이 선다. 달력 칸은 안 바뀐다 — 승인 전까지 근무가 그대로라서다([schedule/README.md](../README.md#sch-018))
 - **요청 중에는 문이 닫힌다.** 그 배정의 버튼 둘이 비활성이 된다 — 같은 근무에 교대와 취소를 겹쳐 거는 길을 안 둔다. 교대 요청이 거절·만료로 다 끝나면 버튼이 돌아온다
-- **결과는 알림으로 온다.** 수락·거절·만료·승인([swap/README.md](../../../modules/swap/README.md#알림))과 취소 결과([notification/README.md](../../../modules/notification/README.md)). 이 화면은 다음 진입에서 최신 상태를 그린다 — 열어둔 화면을 실시간으로 갱신하지 않는 것은 관리자 화면의 자정 경계와 같은 결이다([schedule-admin.md](schedule-admin.md))
+- **결과는 알림으로 온다.** 수락·거절·만료·승인([swap/README.md](../../../modules/swap/README.md#swp-016))과 취소 결과([notification/README.md](../../../modules/notification/README.md)). 이 화면은 다음 진입에서 최신 상태를 그린다 — 열어둔 화면을 실시간으로 갱신하지 않는 것은 관리자 화면의 자정 경계와 같은 결이다([schedule-admin.md](schedule-admin.md))
 
 ## 실패와 경합
 
