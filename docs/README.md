@@ -18,6 +18,9 @@
   - [`docs/2-design/spec/`](2-design/spec/) — 기능별 완료 조건·승인 마크
   - [`docs/2-design/adr/`](2-design/adr/) — 중요한 선택의 이유
 - [`docs/3-build/`](3-build/) ~ [`docs/6-maintain/`](6-maintain/) — 구현 계획, 테스트 전략, 배포, 운영. 각 안내는 그 안 `README.md`
+  - [`docs/4-test/strategy.md`](4-test/strategy.md)·[`docs/4-test/execution.md`](4-test/execution.md) — 층 배정 기준과 실행·훅·실패 진단
+  - [`docs/5-deploy/environments.md`](5-deploy/environments.md)·[`docs/5-deploy/procedure.md`](5-deploy/procedure.md) — 환경·설정과 적용·되돌리기 순서
+  - [`docs/6-maintain/monitoring.md`](6-maintain/monitoring.md)·[`docs/6-maintain/response.md`](6-maintain/response.md)·[`docs/6-maintain/metrics.md`](6-maintain/metrics.md) — 관측·대응·측정
 - [`REVIEW.md`](../REVIEW.md) — PR 리뷰 정책 정본. CI 자동 리뷰와 `pr-diff`가 같은 축을 읽는다
 - [`.claude/agents/`](../.claude/agents/) — subagent 정의문
 - [`.claude/skills/`](../.claude/skills/) — 스킬 정의문

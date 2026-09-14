@@ -2,7 +2,7 @@
 
 새 총괄 세션은 이 파일부터 읽는다. 회차가 끝날 때마다 `session-recorder`가 덮어쓰고, 회차 중간이라도 작업 하나가 끝나면 총괄이 「다음 첫 수」를 갱신한다 — 어느 시점에든 새 세션이 여기서 이어받을 수 있어야 한다.
 
-넷만 담는다 — 지금 상태, 다음 첫 수, 그 수를 막는 결정, 이번 회차에만 필요한 주의. 열린 결정은 정본의 「아직 안 정한 것」에, 할 일은 `backlog.md`에, 정의문·훅의 마찰은 `observations/`에 산다. 상시 주의는 `docs/4-test/README.md`와 `docs/5-deploy/README.md`다.
+넷만 담는다 — 지금 상태, 다음 첫 수, 그 수를 막는 결정, 이번 회차에만 필요한 주의. 열린 결정은 정본의 「아직 안 정한 것」에, 할 일은 `backlog.md`에, 정의문·훅의 마찰은 `observations/`에 산다. 상시 주의는 `docs/4-test/execution.md`와 `docs/5-deploy/environments.md`다.
 
 ## 지금 상태
 
