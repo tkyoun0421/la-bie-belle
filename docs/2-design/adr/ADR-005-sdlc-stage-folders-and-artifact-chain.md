@@ -2,7 +2,7 @@
 
 2026-09-04에 정했다.
 
-후속 결정: 2026-09-14 [ADR-008](ADR-008-proposals-and-implementation-plans.md)이 단계 밖의 `docs/proposals/`를 추가하고 검토 제안과 실행 계획을 구별했다. 아래 배치와 이행 순서는 당시 결정의 기록이다. 기능의 intent→spec→plan 사슬과 spec 승인 관문은 유지한다.
+후속 결정: 2026-09-14 [ADR-008](ADR-008-proposals-and-implementation-plans.md)이 단계 밖의 `docs/proposals/`를 추가하고 검토 제안과 실행 계획을 구별했다. 같은 날 [ADR-009](ADR-009-design-modules-and-stage-links.md)가 `2-design/` 안을 업무 영역으로 다시 묶고 단계 사이를 `sources` 참조로 이었다. 아래 배치와 이행 순서는 당시 결정의 기록이다. 기능의 intent→spec→plan 사슬과 spec 승인 관문은 유지한다.
 
 ## 결정
 
