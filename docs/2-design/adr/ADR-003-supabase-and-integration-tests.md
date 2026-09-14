@@ -26,7 +26,9 @@ RLS로 막는다. "자기 급여만 읽는다"를 Postgres 정책으로 쓰고, 
 
 ## DB 접근을 한곳에 모은다
 
-Supabase 클라이언트는 `dals` 세그먼트에서만 부른다. ADR-001의 세그먼트 목록에 이미 있던 이름이다. 화면과 use-case는 `dals`의 함수만 쓴다.
+Supabase 클라이언트로 데이터에 닿는 코드는 `dals` 세그먼트에만 둔다 — `from()`·`rpc()`·`storage`·`channel()`이 여기다. ADR-001의 세그먼트 목록에 이미 있던 이름이다. 화면과 use-case는 `dals`의 함수만 쓴다.
+
+`auth.*`(세션 확인·코드 교환·로그아웃)는 이 조항 밖이고 `shared/lib`에 산다. 세션 토큰을 푸는 것이지 표를 읽는 것이 아니라 어느 entity의 `dals`인지 답이 없고, 로컬 Supabase가 구글 OAuth를 못 돌려 integration 테스트로 겨냥할 것도 없다.
 
 한곳에 모이면 integration 테스트가 무엇을 겨냥할지 분명해지고, 나중에 DB를 바꿔도 그 자리만 고친다.
 

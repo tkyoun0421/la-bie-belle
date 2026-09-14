@@ -19,15 +19,18 @@
 
 **`data-model/README.md`가 섰다.** 인터뷰 스물세 라운드와 `architecture-advisor` 검토 한 번을 거쳤다. 네 원칙 — 사실은 DB에 상태는 계산, 쓰기는 Postgres 함수(security definer)를 `dals`가 `rpc()`로, 이력은 닫고 새로, 막는 것은 데이터. 표 스물하나. 되돌리기 어려운 결정은 프로필 신원 분리(`profiles.id` 별도, `user_id → auth.users`)와 개인정보 표 분리(`profile_private`)다 — 기존 `profiles` 마이그레이션과 integration 테스트가 이것과 어긋나 데이터 task가 갈아엎는다. domain에 두 줄이 따라갔다(account.md 차단·삭제 문장, swap.md 미신청자 교대 틈을 「아직 안 정한 것」으로).
 
+**`architecture/`는 도메인 파일을 처음부터 만든다.** 300줄 규칙을 버렸다 — `data-model/`과 `api/` 둘 다 `README.md`(가로지르는 규칙) + 도메인 여섯(`account`·`schedule`·`swap`·`attendance`·`payroll`·`notification`)이다. 축은 관심사 폴더·도메인 파일 그대로. 시안의 더미 전화번호를 전부 `010-0000-00xx`로 바꿨고 CLAUDE.md 「공개 저장소」에 가짜 값 규칙이 섰다.
+
+**`api/`가 섰다.** 인터뷰 열 라운드와 조언자 검토 한 번. 경계 하나 — 브라우저가 Supabase를 바로 부르고 Next는 게이트뿐. 읽기는 PostgREST 임베딩(뷰 둘 예외), 쓰기는 함수 마흔쯤을 `public`(호출자 있음)과 `internal`(pg_cron용) 스키마로 갈랐다. 오류는 예외+고정 코드 열둘을 `DomainError`/`TransportError`로, 서버 시각은 `server_now()` 한 번+offset, 푸시는 Webhook+pg_cron 재시도에 잡기(`claimed_at`)와 성공(`pushed_at`)을 다른 열로. Edge Function 로직은 `src/` 순수 함수로 빼고 얼개만 e2e. ADR-003 「`dals`에서만」 조항을 `from`·`rpc`·`storage`·`channel`로 좁히고 `auth.*`를 `shared/lib`으로 못 박았다. 조언자가 잡은 P0 셋(cron 함수 노출, 재시도 죽는 잡기, 교육 배정 빠지는 임베딩)은 정본에 반영됐다.
+
 ## 다음 첫 수
 
-**`api/README.md`다.** `data-model`이 섰으니 그 위다. 담을 것 — 함수 목록(관리자 쓰기 다섯, 근무자 쓰기 여섯, 프로필 제출·잇기·비우기), 오류의 모양(선착순 실패·인증 창 밖·자격 없음을 화면이 어떻게 가르나), 서버 시각을 어디서 받나, 푸시 경로(Database Webhook → Edge Function → `pushed_at`)와 Edge Function의 테스트 층, 서비스 키 자리 둘. 그 뒤 `runtime/`(캐시 넷·경쟁 조건·오프라인 인증)이고 `flows/`는 독립이라 언제든 된다. 그 뒤가 구현이다 — `backlog.md`의 「다음」에 대시보드 구현 task가 서 있고 데이터 task가 먼저다.
+**`runtime/README.md`다.** `data-model`·`api`가 섰으니 그 위다. 담을 것 — 캐시 넷(Service Worker가 오프라인에서 여는 화면, TanStack Query 키·`staleTime`·무효화, RSC와 클라이언트 경계, realtime을 어느 표에 거나), 경쟁 조건 기본값(선착순은 함수가 이미 풀었고 관리자 동시 편집이 남았다), 로딩·낙관적 업데이트(근무 신청 체크는 즉시, 요청 수락은 절대 아님), 오프라인 인증(큐에 넣나 사유로 보내나), `range()`를 거는 표. `flows/`는 독립이라 언제든 된다. 그 뒤가 구현이다 — 데이터 task가 먼저고 첫 스파이크는 Deno Edge Function이 `../../src`를 import할 수 있는지다.
 
 ## 열린 결정
 
-- **pg_cron·Database Webhook이 Supabase Free 플랜에서 되는지 문서로 못 봤다.** `data-model`이 시각 알림을 pg_cron에, 푸시를 Webhook → Edge Function에 걸었다. Free는 1주 무활동이면 프로젝트가 멈춰 셋이 같이 멈춘다. `api/`를 쓰기 전에 `web-researcher`로 확인한다.
+- **Deno Edge Function이 `supabase/functions` 밖의 `src/`를 import할 수 있는지 미확인.** `api/`가 「되면 `deno.json` 맵핑, 안 되면 CI가 `_shared/`로 복사」로 두 길을 적어뒀다. 데이터 task 첫 스파이크다.
 - **「배웠다」의 기준.** 자격을 교육 배정 행에서 계산하기로 했는데 배정이 서면인지 출근 인증까지인지 `schedule.md`가 안 정했다. 나머지 미정은 `data-model/README.md` 「아직 안 정한 것」에 있다.
-- **ADR-003 「클라이언트는 `dals`에서만」과 `shared/lib`이 어긋난다.** `get-current-user.ts`·`handle-auth-callback.ts`가 클라이언트를 인자로 받아 `auth.*`를 부르는데 `dals`가 아니다. 조항이 질의만 가리키는지, 인증 호출까지 가리키는지 ADR-003이 안 가른다. #305에서 범위 밖으로 뒀다 — 데이터 task가 `dals`를 늘리기 전에 조항을 한 줄 좁히거나 두 파일을 옮긴다.
 - **`src/app/`의 `.ts`가 여전히 훅 밖이다.** 조립이 `features`로 나가 위임만 남았으니 짝 테스트를 요구할 것이 없어 `SKIP_PREFIXES`는 그대로 뒀다. `src/app/`에 다시 로직이 들어오면 그때 훅을 좁힌다.
 - **로고 렌더를 지키는 테스트가 없다.** `public/google-g.svg`를 지워도 e2e 11개가 초록이다. 「버튼 안 로고의 `background-image`가 비어 있지 않다」는 e2e 한 줄이 후보다.
 - **CI가 chromium만 돈다.** 주 타깃이 아이폰 사파리인데 webkit을 안 본다. [ADR-007](2-design/adr/ADR-007-web-pwa-over-native.md)이 PWA로 가며 치르는 값 넷 중 유일하게 열린 채로 둔 것이다.
