@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: docs/CHANGELOG.md
 date: 2026-09-09
-resolved:
+resolved: 2026-09-14
 ---
 
 # CHANGELOG가 2026-09-04에서 멈춰 있다
@@ -22,3 +22,7 @@ ADR-007을 적으려고 `docs/CHANGELOG.md`를 열었더니 마지막 행이 #23
 ## 원칙
 
 채우는 주체가 정의문에 없는 문서는 안 채워진다. 색인을 두려면 누가 언제 쓰는지를 같이 박는다.
+
+## 닫음
+
+첫째 길로 갔다. `session-recorder` 정의문에 「CHANGELOG.md」 절이 서서 회차의 merge PR 전부를 git 날짜로 더하고, `tests/lint/changelog.ts`가 로그의 PR이 표에 없으면 `pnpm test`를 깨뜨린다. 표는 #229부터 git 이력으로 다시 뽑았다.
