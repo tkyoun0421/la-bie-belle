@@ -214,7 +214,7 @@
 
 ## 퇴사한 뒤
 
-**퇴사한 사람도 이 화면을 본다.** [account/README.md](../../../modules/account/README.md#퇴사)가 정한 것이고, 지난 급여와 자기 근무 기록까지가 보이는 전부다.
+**퇴사한 사람도 이 화면을 본다.** [account/README.md](../../../modules/account/README.md#acc-011)가 정한 것이고, 지난 급여와 자기 근무 기록까지가 보이는 전부다.
 
 **탭 바가 없다.** 앱을 열면 대시보드 대신 「근무를 마치셨어요」 한 화면이 서고 거기 버튼 하나로 이 화면에 들어온다([login.md](../../../modules/account/screens/login.md#퇴사한-뒤)). 돌아가는 길은 앱바의 뒤로다.
 

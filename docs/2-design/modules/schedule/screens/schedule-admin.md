@@ -44,7 +44,7 @@
 
 자리가 여덟이다. 근무표 관리와 근무 시간 기본값은 이 화면 안에서 끝나고, 나머지 여섯은 숫자나 값만 말한 뒤 눌리면 각자의 화면이 열린다([approvals.md](../../../system/screens/approvals.md), [members-pending.md](../../../modules/account/screens/members-pending.md), [members.md](../../../modules/account/screens/members.md), [wages.md](../../../modules/payroll/screens/wages.md), [qr.md](../../../modules/attendance/screens/qr.md), [stats.md](../../../system/screens/stats.md)).
 
-들어오는 문은 [프로필](../../../modules/account/screens/profile.md#관리자-모드)의 「관리자 모드」 줄이다. 관리자도 자기 근무가 있어 평소에는 근무자 화면을 쓰고 관리하러 갈 때만 이 문을 지난다([account/README.md](../../../modules/account/README.md#관리자)).
+들어오는 문은 [프로필](../../../modules/account/screens/profile.md#관리자-모드)의 「관리자 모드」 줄이다. 관리자도 자기 근무가 있어 평소에는 근무자 화면을 쓰고 관리하러 갈 때만 이 문을 지난다([account/README.md](../../../modules/account/README.md#acc-008)).
 
 ### 짜임
 
@@ -590,7 +590,7 @@
 
 **기본은 배정 가능한 사람만이다([intent](../../../../1-plan/intent/schedule-admin.md#사람-채우기)).** 그날 근무 신청을 냈고, 배정이 없고, 포지션 자격이 있는 사람이다. 목록 한 줄은 [components.md](../../../design-system/components.md#listrow)의 ListRow다 — 이니셜 원, 이름, 오른쪽은 비운다. 누르면 그 자리에 들어가고 시트가 닫힌다. 확정 전에는 확인이 없다.
 
-**줄에 성별과 나이가 없다.** [account/README.md](../../../modules/account/README.md#성별과-생년월일을-쓰는-곳)가 그 둘을 근무 배정에 쓴다고 정했으니 이 줄이 그것을 드러낼 자리인데, 드러낼지는 아직 안 정했다 — 아래 [「아직 안 정한 것」](#아직-안-정한-것)에 있다. 지금은 이름과 이니셜 원뿐이고, 관리자가 그 둘을 알아야 하면 가입 대기 때 본 것을 기억하거나 직원 관리 화면을 연다.
+**줄에 성별과 나이가 없다.** [account/README.md](../../../modules/account/README.md#acc-002)가 그 둘을 근무 배정에 쓴다고 정했으니 이 줄이 그것을 드러낼 자리인데, 드러낼지는 아직 안 정했다 — 아래 [「아직 안 정한 것」](#아직-안-정한-것)에 있다. 지금은 이름과 이니셜 원뿐이고, 관리자가 그 둘을 알아야 하면 가입 대기 때 본 것을 기억하거나 직원 관리 화면을 연다.
 
 **「전체 보기」를 펼치면 전원이 나온다.** 가는 선 아래로 나머지가 서고 사람마다 상태 메시지가 붙는다.
 
@@ -976,7 +976,7 @@
 
 임의로 채우지 않는다. 사람이 정하고 나서 이 절에서 뺀다. 「제안」으로 그린 것은 결정되면 본문에서 표시를 뗀다.
 
-**사람 픽커 줄에 성별과 나이를 드러낼지.** [account/README.md](../../../modules/account/README.md#성별과-생년월일을-쓰는-곳)가 그 둘을 근무 배정에 쓴다고 정했는데 지금 픽커는 이름만 그린다. 줄에 「김민수 · 남 · 34」로 붙이는 길과, 줄을 눌렀을 때 프로필을 여는 길과, 그대로 두는 길이 있다. 자리를 채우는 속도와 판단 재료가 맞부딪히는 자리라 실제로 배정해 보고 정한다.
+**사람 픽커 줄에 성별과 나이를 드러낼지.** [account/README.md](../../../modules/account/README.md#acc-002)가 그 둘을 근무 배정에 쓴다고 정했는데 지금 픽커는 이름만 그린다. 줄에 「김민수 · 남 · 34」로 붙이는 길과, 줄을 눌렀을 때 프로필을 여는 길과, 그대로 두는 길이 있다. 자리를 채우는 속도와 판단 재료가 맞부딪히는 자리라 실제로 배정해 보고 정한다.
 
 가입 대기 줄을 눌렀을 때 가는 화면은 미정이 아니라 [members-pending.md](../../../modules/account/screens/members-pending.md)에 있다.
 

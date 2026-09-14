@@ -759,7 +759,7 @@ CHANGELOG는 현재의 `날짜 / 변경 / PR` 표를 유지한다. merge 날짜�
 
 ## 14. 한 변경을 문서로 전개하는 예
 
-상위 제안이 발견한 **연락처 수정 경로의 불일치**를 시범 사례로 삼는다. [계정 업무 규칙](../2-design/modules/account/README.md#연락처)은 본인 연락처의 형식을, [API](../2-design/modules/account/design.md#프로필-제출연락처사진)는 본인 행 직접 갱신을, [runtime](../2-design/modules/account/design.md#프로필-제출연락처사진)은 `submit_profile` 호출을 적고 있다. 이 사례의 목적은 두 기술 설명이 일치하도록 작성 방법을 검증하는 것이다. 여기서 최종 호출 경로를 선택하지 않는다.
+상위 제안이 발견한 **연락처 수정 경로의 불일치**를 시범 사례로 삼는다. [계정 업무 규칙](../2-design/modules/account/README.md#acc-004)은 본인 연락처의 형식을, [API](../2-design/modules/account/design.md#프로필-제출연락처사진)는 본인 행 직접 갱신을, [runtime](../2-design/modules/account/design.md#프로필-제출연락처사진)은 `submit_profile` 호출을 적고 있다. 이 사례의 목적은 두 기술 설명이 일치하도록 작성 방법을 검증하는 것이다. 여기서 최종 호출 경로를 선택하지 않는다.
 
 | 순서 | 작성자가 할 일 | 남길 내용 |
 | --- | --- | --- |

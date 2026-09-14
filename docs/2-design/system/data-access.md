@@ -27,7 +27,7 @@
 
 **기본은 「승인된 사람 전원 읽기」다.** 날·자리·배정·요청·인증 상태처럼 전원이 보는 표가 다수라 기본값과 맞는다. `is_approved()`·`is_admin()` 두 SQL 함수를 모든 정책이 공유한다. 둘은 `security definer`·`stable`·`search_path = ''`다 — `profiles` 정책이 `profiles`를 읽는 함수를 부르면 재귀에 걸린다.
 
-승인 전은 자기 `profiles`·`profile_private` 행만 읽는다(ADR-003). 퇴사자는 자기 행만이다 — 자기 배정·인증·시급과 그 배정이 든 `days`. 남의 지난 기록도 안 연다([account/README.md](../modules/account/README.md#퇴사)).
+승인 전은 자기 `profiles`·`profile_private` 행만 읽는다(ADR-003). 퇴사자는 자기 행만이다 — 자기 배정·인증·시급과 그 배정이 든 `days`. 남의 지난 기록도 안 연다([account/README.md](../modules/account/README.md#acc-011)).
 
 좁히는 표는 이렇다. 안 적은 표는 기본값이다. 왜 좁히는지는 각 도메인 파일에 있다.
 
