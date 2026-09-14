@@ -2,6 +2,8 @@
 
 2026-09-04에 정했다.
 
+후속 결정: 2026-09-14 [ADR-008](ADR-008-proposals-and-implementation-plans.md)이 단계 밖의 `docs/proposals/`를 추가하고 검토 제안과 실행 계획을 구별했다. 아래 배치와 이행 순서는 당시 결정의 기록이다. 기능의 intent→spec→plan 사슬과 spec 승인 관문은 유지한다.
+
 ## 결정
 
 `docs/`를 SDLC 단계 폴더로 재편한다. Plan→Design→Build→Test→Deploy→Maintain 여섯이 `1-plan/`부터 `6-maintain/`까지 번호 폴더로 선다. 기능마다 intent→spec→plan 사슬을 만들고, spec 승인 없이 구현을 시작하지 못하게 훅으로 막는다.

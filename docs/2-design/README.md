@@ -14,7 +14,9 @@
 
 ## spec
 
-기능만 들어온다. 사용자에게 보이는 동작이 새로 생기거나 달라지는 task가 기능이다. 리팩터링·문서·토큰·검사 같은 task는 spec을 안 만들고 `3-build/plans/`에 task 문서를 둔다.
+기능만 들어온다. 사용자에게 보이는 동작이 새로 생기거나 달라지는 task가 기능이다. 리팩터링·문서·토큰·검사 같은 비기능 task는 실행 방향이 정해지면 `3-build/plans/`에 task 문서를 둔다. 여러 단계에 걸친 변경 방향의 검토는 [proposals](../proposals/README.md)가 맡는다.
+
+제안이 채택되면 영향을 받는 기획·설계 정본을 먼저 갱신하고 필요한 구현 계획을 쓴다. 중요한 선택과 근거는 ADR에 남긴다. 제안의 채택은 기능 spec의 승인을 대신하지 않는다([ADR-008](adr/ADR-008-proposals-and-implementation-plans.md)).
 
 한 파일은 넷으로 선다.
 

@@ -9,3 +9,5 @@
 - `intent/` — 기능·이슈별 디스커버리 산출물. 인터뷰가 낳고, spec의 입력이 된다
 
 사슬의 첫 고리가 여기다: `intent/<슬러그>.md` → `2-design/spec/<슬러그>.md` → `3-build/plans/<슬러그>.md`. 근거는 ADR-005에 있다.
+
+`intent/`는 제품 기능·이슈에서 어떤 사용자 문제를 풀려는지 기록한다. 문서 구조나 작업 방식처럼 여러 단계에 걸친 변경 방향을 검토할 때는 [proposals](../proposals/README.md)를 쓴다. 구분의 근거는 [ADR-008](../2-design/adr/ADR-008-proposals-and-implementation-plans.md)이다.
