@@ -173,7 +173,7 @@
 
 **근무자는 근무표 전체를 본다.**
 
-- 예외와 경계: 자기가 안 나가는 날에 누가 어느 포지션인지까지 보인다. 날 명단은 이름 옆에 그날의 출근 인증 상태도 그린다. 범위와 까닭은 [attendance/README.md](../attendance/README.md#누가-보나)에 있다
+- 예외와 경계: 자기가 안 나가는 날에 누가 어느 포지션인지까지 보인다. 날 명단은 이름 옆에 그날의 출근 인증 상태도 그린다. 범위와 까닭은 [attendance/README.md](../attendance/README.md#att-016)에 있다
 - 이유와 근거: 관리자가 카톡으로 넘기던 그림을 이 화면이 대신한다
 
 ## 상태 전이
@@ -237,7 +237,7 @@
 | [swap](../swap/README.md) | 교대로는 겸임이 안 생기고 자리를 맞바꾼다 | [SCH-015](#sch-015) | [swap/README.md](../swap/README.md) |
 | [swap](../swap/README.md) | 확정 뒤에 바꾸는 길 다섯 중 교대와 강제 변경의 규칙은 교대가 소유한다 | [SCH-018](#sch-018) | [swap/README.md](../swap/README.md) |
 | [swap](../swap/README.md) | 근무 요청과 교대 요청이 한 표를 쓴다 | [design.md](design.md#요청) | [swap/design.md](../swap/design.md) |
-| [attendance](../attendance/README.md) | 날 명단이 이름 옆에 그날의 출근 인증 상태를 그린다 | [SCH-019](#sch-019) | [attendance/README.md](../attendance/README.md#누가-보나) |
+| [attendance](../attendance/README.md) | 날 명단이 이름 옆에 그날의 출근 인증 상태를 그린다 | [SCH-019](#sch-019) | [attendance/README.md](../attendance/README.md#att-016) |
 
 ## 아직 안 정한 것
 

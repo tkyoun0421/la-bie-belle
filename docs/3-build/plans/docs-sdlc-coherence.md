@@ -15,7 +15,7 @@ sources:
 제안서가 발견한 불일치 둘은 다음으로 닫는다. 정본에 반영하는 자리는 각 PR이다.
 
 - **연락처 수정** — [account/design.md](../../2-design/modules/account/design.md#행위별-구현-계약)가 정본이다. `profile_private` 본인 행 직접 갱신이고 함수가 아니다. [account/design.md](../../2-design/modules/account/design.md#프로필-제출연락처사진)의 「이름·연락처 변경(`set_display_name`·`submit_profile`)」은 「이름 변경(`set_display_name`)과 연락처 변경(`profile_private` 직접 갱신)」으로 고친다. 낙관적 처리는 그대로다.
-- **통신 지연** — [attendance/README.md](../../2-design/modules/attendance/README.md#누가-보나)가 정본이다. 「누른 시각과 닿은 시각이 5분 넘게 다르면」이다. 그러려면 닿은 시각이 저장돼야 하니 `check_ins`에 `received_at`(서버 `now()`)을 더한다. [attendance/design.md](../../2-design/modules/attendance/design.md#인증은-화면이-열린-동안-다시-시도한다)의 「둘이 5분 넘게 다르면」은 「`received_at`과 `reported_at`이 5분 넘게 다르면」으로 고친다. `checked_at`은 판정용으로 그대로다. 10분 초과 지연의 처리는 정하지 않는다.
+- **통신 지연** — [attendance/README.md](../../2-design/modules/attendance/README.md#att-017)가 정본이다. 「누른 시각과 닿은 시각이 5분 넘게 다르면」이다. 그러려면 닿은 시각이 저장돼야 하니 `check_ins`에 `received_at`(서버 `now()`)을 더한다. [attendance/design.md](../../2-design/modules/attendance/design.md#출근-인증)의 「둘이 5분 넘게 다르면」은 「`received_at`과 `reported_at`이 5분 넘게 다르면」으로 고친다. `checked_at`은 판정용으로 그대로다. 10분 초과 지연의 처리는 정하지 않는다.
 
 ## 규칙 ID
 

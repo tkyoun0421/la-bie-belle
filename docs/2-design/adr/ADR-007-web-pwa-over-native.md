@@ -12,7 +12,7 @@
 
 값이 안 맞는다. 쓰는 사람이 한 웨딩홀의 근무자 수십 명이다. 그 규모에 네이티브가 요구하는 것은 개발자 계정 연회비, 심사와 재심사, 근무자마다 설치를 시키는 과정, 그리고 아이폰과 안드로이드 각각의 빌드다. 웹은 주소 하나를 보내면 끝난다.
 
-새로 뽑을 수 있는 것도 적다. 네이티브로 가서 확실해지는 것은 푸시와 권한 재요청 정도인데, 둘 다 이 앱에서 없으면 못 쓰는 기능이 아니다. 알림은 앱을 안 열어도 알게 해주는 몫이지 알림이 없으면 못 아는 구조가 아니고([notification/README.md](../modules/notification/README.md#켜는-자리)), 위치가 막히면 QR이 그 자리를 메운다([attendance/README.md](../modules/attendance/README.md#두-길)).
+새로 뽑을 수 있는 것도 적다. 네이티브로 가서 확실해지는 것은 푸시와 권한 재요청 정도인데, 둘 다 이 앱에서 없으면 못 쓰는 기능이 아니다. 알림은 앱을 안 열어도 알게 해주는 몫이지 알림이 없으면 못 아는 구조가 아니고([notification/README.md](../modules/notification/README.md#켜는-자리)), 위치가 막히면 QR이 그 자리를 메운다([attendance/README.md](../modules/attendance/README.md#att-001)).
 
 ## 값으로 치르는 것
 
