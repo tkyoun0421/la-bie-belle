@@ -18,12 +18,11 @@
 
 ## 다음 첫 수
 
-**데이터 task다.** `backlog.md` 「다음」 순서대로 — Edge Function import 스파이크 → 계정 데이터 구조 전환 → 인증 진입 전환 → 타입 생성 절차. 계정 데이터 구조는 비기능이라 spec 없이 `3-build/plans/account-data.md`부터 쓴다.
+**Edge Function import 스파이크다** — [plan](3-build/plans/edge-function-import.md). 그 뒤 순서는 `backlog.md` 「다음」이 든다.
 
 ## 막는 결정
 
-- **달 키의 범위.** 근무표 달이 달력 달인지 주 범위(8월 = 8/3~9/6)인지 — [data-model](2-design/architecture/data-model/README.md#아직-안-정한-것)이 열어뒀고 [runtime](2-design/architecture/runtime/README.md#아직-안-정한-것)의 캐시 키와 [flows](2-design/architecture/flows/README.md#아직-안-정한-것)의 `?month=`가 딸린다. 근무표 task 전에 닫는다.
-- **교대 승인 화면.** `schedule-admin.md`가 비웠고 교대 수락 알림의 목적지가 [flows](2-design/architecture/flows/README.md#아직-안-정한-것)에 비어 있다. 알림 task 전에 닫는다.
+(없음 — 스파이크는 열린 결정에 안 걸린다. 뒤 task를 막는 미정은 `backlog.md` 「대기」의 각 행이 정본 링크로 든다.)
 
 ## 주의
 

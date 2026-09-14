@@ -7,7 +7,7 @@
 ## 네 원칙
 
 - **사실은 DB에, 상태는 계산한다.** 출근 상태·급여·자격·빈 자리는 저장하지 않는다. 인증 시각, 살아 있는 배정, 시급 행 같은 사실만 두고 TypeScript 순수 함수가 상태를 낸다. 잠든 행이 없으니 배치가 없다
-- **쓰기는 함수다.** 화면과 use-case는 `dals`를 부르고, `dals`가 `supabase.rpc()`로 Postgres 함수(security definer)를 부른다. 테이블에 직접 쓰는 정책은 `profile_private` 본인 행(연락처·사진) 하나뿐이다
+- **쓰기는 함수다.** 화면과 use-case는 `dals`를 부르고, `dals`가 `supabase.rpc()`로 Postgres 함수(security definer)를 부른다. 테이블에 직접 쓰는 정책은 `profile_private` 본인 행(연락처) 하나뿐이다 — 사진은 `profiles`에 있어 `update_my_photo()` 함수다
 - **이력은 닫고 새로 만든다.** 배정·자리·시급이 바뀌면 옛 행에 `ended_at`을 찍고 새 행을 만든다. 살아 있는 것은 `ended_at is null`이다
 - **막는 것은 화면이 아니라 데이터다.** 시급·급여·개인정보·QR 값은 RLS가 행 단위로 막을 수 있게 표를 가른다
 

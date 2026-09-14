@@ -20,8 +20,9 @@
 | --- | --- |
 | `ensure_profile` | 첫 진입에서 자기 프로필 행을 만든다. 있으면 아무것도 안 한다 |
 | `submit_profile` | 프로필 제출. 이름·성별·생년월일은 제출된 뒤 잠기고 거절되면 다시 열린다 |
+| `update_my_photo` | 자기 `profiles.photo_url`을 바꾼다. 본인 행뿐이고 관리자도 남의 것은 못 바꾼다([`../data-model/account.md`](../data-model/account.md#개인정보는-표를-가른다)) |
 
-연락처·사진은 함수가 아니라 `profile_private` 본인 행 직접 갱신이다 — 테이블 직접 쓰기 정책이 있는 유일한 자리.
+연락처는 함수가 아니라 `profile_private` 본인 행 직접 갱신이다 — 테이블 직접 쓰기 정책이 있는 유일한 자리.
 
 pg_cron(`internal`) — `erase_profiles`. 매일 `left_at`이 1년 지난 프로필을 비운다.
 
