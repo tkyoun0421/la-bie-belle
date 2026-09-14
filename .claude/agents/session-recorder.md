@@ -79,7 +79,7 @@ PR 본문이 얇아서 왜를 복원할 수 없으면 억지로 채우지 말고
 
 `docs/observations/`에 아직 커밋 안 된 파일이 있으면 마감 커밋에 함께 싣는다.
 
-frontmatter의 status가 open인 파일을 세어, 같은 target이 3건 이상이면 handoff.md 열린 결정에 `증축 후보: <target> (관찰 NNN·NNN·NNN)` 한 줄을 올린다. 세는 것까지가 이 에이전트 몫이고 판정은 총괄이 한다.
+frontmatter의 status가 open인 파일을 세어, 같은 target이 3건 이상이면 리턴 3번(총괄에게 넘기는 것)에 `증축 후보: <target> (관찰 NNN·NNN·NNN)`을 적고, `docs/backlog.md` 「후보」에 같은 target의 증축 후보 행이 없을 때만 그 한 줄을 더한다. 이미 있으면 관찰 번호만 그 행에 보탠다. handoff.md에는 올리지 않는다 — 절 넷 밖이고, 막는 결정은 총괄이 준 것만 든다. 세는 것까지가 이 에이전트 몫이고 판정은 총괄이 한다.
 
 status가 actioned나 declined이고 resolved 날짜가 오늘보다 앞이면 그 파일을 `docs/observations/archive/`로 옮긴다. 옮기기만 하고 내용은 고치지 않는다. 규칙의 정본은 `docs/observations/README.md`다.
 
