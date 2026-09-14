@@ -12,7 +12,9 @@
 
 `profiles(id, user_id, display_name, photo_url, role, submitted_at, approved_at, rejected_at, blocked_at, left_at, erased_at)`는 승인된 전원이 읽는다. `profile_private(profile_id, phone, birth_date, gender)`는 본인과 관리자만 읽는다. RLS가 행 단위라 한 표로는 열을 못 가른다 — 한 표면 아무 근무자나 `select phone from profiles`로 서른 명 연락처를 받는다. 지금 마이그레이션은 `profiles` 한 표에 연락처가 같이 있다 — 같은 task가 가른다.
 
-`profile_private`의 연락처·사진은 본인이 직접 갱신한다. 테이블 직접 쓰기 정책이 있는 유일한 자리다. 이름·성별·생년월일은 `submit_profile()` 함수로만 들어간다 — 제출된 뒤 잠기고 거절되면 다시 열리는 것을 컬럼 grant로는 못 나타낸다.
+`profile_private`의 연락처는 본인이 직접 갱신한다. 테이블 직접 쓰기 정책이 있는 유일한 자리다. 이름·성별·생년월일은 `submit_profile()` 함수로만 들어간다 — 제출된 뒤 잠기고 거절되면 다시 열리는 것을 컬럼 grant로는 못 나타낸다.
+
+사진은 `profiles.photo_url`이다. 전원이 읽는 표라 `profile_private`로 못 옮긴다 — 사람 픽커와 대기 목록이 이름 옆에 사진을 그린다. 본인이 고치는 길은 `update_my_photo()` 함수 하나다. 전원이 읽는 표에 본인 쓰기 정책을 열지 않아서 직접 쓰기 예외는 그대로 `profile_private` 하나다. 관리자는 남의 사진을 못 고친다.
 
 ## 차단
 

@@ -4,23 +4,26 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 ## 다음
 
-- [ ] Deno Edge Function이 `supabase/functions` 밖의 `src/`를 import할 수 있는지 확인한다 — 되면 `deno.json` 맵핑, 안 되면 CI가 `_shared/`로 복사. 결과를 [api/notification.md](2-design/architecture/api/notification.md)의 그 문단에 적는다. 데이터 task의 첫 스파이크
-- [ ] 계정 데이터 구조를 전환한다 — `profiles.id` 분리와 `user_id → auth.users`, `profile_private`, 로그인 트리거 대신 `ensure_profile()`, 관리자 승인은 security definer 함수. 정본은 [data-model/account.md](2-design/architecture/data-model/account.md)·[api/account.md](2-design/architecture/api/account.md). 기존 마이그레이션과 integration 테스트를 갈아엎는다. plan을 쓴 뒤 잡는다
-- [ ] 인증 진입을 전환한다 — `middleware.ts`를 `proxy.ts`로, 서버 `readAuthGate`의 승인 판정을 클라이언트 `['profile']`로. 정본은 [runtime/account.md](2-design/architecture/runtime/account.md). `matcher`를 이때 같이 본다. 계정 데이터 구조 뒤
-- [ ] 타입 생성 절차를 세운다 — `pnpm types`가 `supabase gen types`를 감싸고 CI가 마이그레이션 뒤 diff 0을 본다. 정본은 [api/README.md](2-design/architecture/api/README.md#읽기). 계정 데이터 구조 뒤
+- [ ] Deno Edge Function이 `supabase/functions` 밖의 `src/`를 import할 수 있는지 확인한다 — [plan](3-build/plans/edge-function-import.md). 데이터 task의 첫 스파이크
+- [ ] 계정 데이터 구조 전환의 plan을 쓴다 — `3-build/plans/account-data.md`. 정본은 [data-model/account.md](2-design/architecture/data-model/account.md)·[api/account.md](2-design/architecture/api/account.md). 완료 조건은 plan이 서는 것: `profiles.id` 분리와 `user_id → auth.users`, `profile_private`, 로그인 트리거 대신 `ensure_profile()`, 관리자 승인 함수, `update_my_photo()`까지 바꿀 마이그레이션·함수·integration 테스트 목록과 순서. 사진은 본인 변경 성공과 남의 변경 거부를 integration이 본다. plan이 서면 전환 task가 「대기」에서 여기로 올라온다
 
 ## 대기
 
-완료 조건이 없다. 대시보드가 이 넷을 기다린다.
+완료 조건이 없거나 선행 task가 남았다. 대시보드가 데이터 넷을 기다린다.
 
+- [ ] 계정 데이터 구조를 전환한다 — 기존 마이그레이션과 integration 테스트를 갈아엎는다. 「다음」의 plan 쓰기 뒤
+- [ ] 인증 진입을 전환한다 — `middleware.ts`를 `proxy.ts`로, 서버 `readAuthGate`의 승인 판정을 클라이언트 `['profile']`로. 정본은 [runtime/account.md](2-design/architecture/runtime/account.md). `matcher`를 이때 같이 본다. 계정 데이터 구조 전환 뒤
+- [ ] 타입 생성 절차를 세운다 — `pnpm types`가 `supabase gen types`를 감싸고 CI가 마이그레이션 뒤 diff 0을 본다. 정본은 [api/README.md](2-design/architecture/api/README.md#읽기). 계정 데이터 구조 전환 뒤
 - 근무표 — 달 만들기·날 열기·신청·확정. [data-model/schedule.md](2-design/architecture/data-model/schedule.md)·[api/schedule.md](2-design/architecture/api/schedule.md). 달 키의 범위(달력 달인지 주 범위인지)가 [runtime](2-design/architecture/runtime/README.md#아직-안-정한-것)에 열려 있어 먼저 닫는다
 - 출근 인증 — [data-model/attendance.md](2-design/architecture/data-model/attendance.md)·[api/attendance.md](2-design/architecture/api/attendance.md). 근무표 뒤
 - 급여 계산 — [data-model/payroll.md](2-design/architecture/data-model/payroll.md)·[api/payroll.md](2-design/architecture/api/payroll.md). 출근 인증 뒤
-- 알림 — [data-model/notification.md](2-design/architecture/data-model/notification.md)·[api/notification.md](2-design/architecture/api/notification.md). Edge Function 스파이크 뒤. 교대 승인 화면이 [flows](2-design/architecture/flows/README.md#아직-안-정한-것)에 열려 있다
+- 알림(1차) — 공통 전송 기반과 1차 알림(승인·확정·전날·직전, [roadmap](1-plan/roadmap.md#릴리스-목록)). [data-model/notification.md](2-design/architecture/data-model/notification.md)·[api/notification.md](2-design/architecture/api/notification.md)·[flows/notification.md](2-design/architecture/flows/notification.md#목적지). Edge Function 스파이크 뒤
+- 교대 알림·관리자 공지(2차) — 알림(1차) 뒤. 교대 승인 화면이 [flows](2-design/architecture/flows/README.md#아직-안-정한-것)에 열려 있어 먼저 닫는다
 - [ ] 근무자 대시보드를 만든다 — 위 넷이 서기 전에는 못 연다. 착수할 때 spec을 [설계 안내](2-design/README.md#spec)의 새 형식(요구·설계·완료 조건·범위 밖)으로 다시 쓴다 — [spec](2-design/spec/dashboard.md)
 
 ## 후보
 
+- [ ] 승인 대기 화면의 넷째 도는 문구를 1차 문구로 바꾼다 — 「못 가는 날은 교대를 부탁해요」는 2차 교대 문구다. 문구는 [login.md](2-design/design-system/pages/login.md#아직-안-정한-것)에서 정하고 문서·시안·`pending-screen.tsx` 셋을 같이 고친다. 1차 배포 전
 - [ ] `architecture/` 넷의 세세함 수준을 정한다 — 산문 반 결정 반이라 plan처럼 읽힌다는 지적. 총괄이 직접 손본다. 그때까지 지금 수준이 정본
 - [ ] iOS 홈 화면 앱에서 기기로 확인할 둘 — 가장자리 스와이프가 `popstate`를 주는지(안 주면 시트를 history에서 뺀다), `visibilitychange`가 앱 전환마다 오는지. [flows](2-design/architecture/flows/README.md#아직-안-정한-것)·[runtime](2-design/architecture/runtime/README.md#아직-안-정한-것)
 - [ ] 로고 렌더를 지키는 e2e 한 줄 — `public/google-g.svg`를 지워도 e2e가 초록이다. 「버튼 안 로고의 `background-image`가 비어 있지 않다」
