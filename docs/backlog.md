@@ -41,7 +41,8 @@ task 보드다. 행 하나가 task 하나고, 완료 조건은 그 행이 링크
 
 ## 진행
 
-- [ ] SDLC를 유지하며 설계를 업무 영역으로 모은다 — [plan](3-build/plans/docs-sdlc-coherence.md). [제안](proposals/docs-sdlc-coherence.md) 채택, 근거는 [ADR-009](2-design/adr/ADR-009-design-modules-and-stage-links.md). 묶음 A~F를 PR 하나씩 나른다
+- [ ] SDLC를 유지하며 설계를 업무 영역으로 모은다 — [plan](3-build/plans/docs-sdlc-coherence.md). [제안](proposals/docs-sdlc-coherence.md) 채택, 근거는 [ADR-009](2-design/adr/ADR-009-design-modules-and-stage-links.md). 묶음 A~C가 끝났고 D~F는 아래 행이 잇는다
+- [ ] SDLC 문서의 작성법과 틀을 정본에 옮기고 활성 문서를 그 틀로 다시 쓴다 — [plan](3-build/plans/docs-authoring-playbook.md). [제안](proposals/docs-authoring-playbook.md) 채택, 근거는 [ADR-010](2-design/adr/ADR-010-authoring-guides-in-stage-readmes.md). 묶음 A~H를 PR 하나씩 나른다
 
 ## 완료
 

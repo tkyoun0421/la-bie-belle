@@ -20,7 +20,7 @@
 
 ## 다음 첫 수
 
-**문서 재편 묶음을 이어 나른다** — [plan](3-build/plans/docs-sdlc-coherence.md)의 묶음 A~F 중 merge 안 된 다음 것. 재편이 끝나기 전에는 설계 정본 경로가 PR마다 바뀌니 계정 데이터 plan(`3-build/plans/account-data.md`)은 그 뒤에 쓴다. 그 뒤 순서는 `backlog.md` 「다음」이 든다.
+**문서 재편 묶음을 이어 나른다** — [sdlc-coherence plan](3-build/plans/docs-sdlc-coherence.md)의 묶음 C가 끝나면 [authoring-playbook plan](3-build/plans/docs-authoring-playbook.md)의 묶음 A~H 중 merge 안 된 다음 것. 재편이 끝나기 전에는 설계 정본 경로가 PR마다 바뀌니 계정 데이터 plan(`3-build/plans/account-data.md`)은 그 뒤에 쓴다. 그 뒤 순서는 `backlog.md` 「다음」이 든다.
 
 ## 막는 결정
 
