@@ -6,11 +6,11 @@
 
 ## 지금 상태
 
-회차 기록은 `docs/log/2026-09-14-2.md`(이번 회차)와 `docs/log/2026-09-14.md`(직전 회차)에 있다.
+회차 기록은 `docs/log/2026-09-14-3.md`(이번 회차)와 `docs/log/2026-09-14-2.md`(직전 회차)에 있다.
 
 **주요 설계 문서가 다 섰다.** 1차 화면의 페이지 문서 12개와 짝 시안이 `docs/2-design/design-system/pages/`에 있고, `architecture/` 넷 — data-model·api·runtime·flows — 이 #315~#318로 채워졌다. 남은 미정은 각 정본의 「아직 안 정한 것」에 있고, 그 미정이 막는 task는 `backlog.md` 「대기」 행이 링크한다 — 착수 전 인터뷰로 닫는다. 되돌리기 어려운 결정 넷이 거기서 났다 — 프로필 신원 분리(`profiles.id` 별도, `user_id → auth.users`), 개인정보 표 분리(`profile_private`), 승인 게이트가 서버에서 클라이언트로, 출근 판정이 누른 시각(`reported_at`). 기존 `profiles` 마이그레이션·`readAuthGate`·`middleware.ts`는 이 결정과 어긋나 데이터 task가 갈아엎는다.
 
-**문서 구조 task가 끝났다.** `docs/3-build/plans/docs-structure.md` 여덟 항목이 #321~#324로 다 들어갔다 — spec 폴더를 기능만으로 좁히고 비기능은 `plans/`로, 목차 허용과 차단·뒤로 정합, 루트 README·디자인 지도·CHANGELOG, backlog·handoff 재편과 architecture 현재 상태 표기.
+**`docs/proposals/docs-structure-followup.md` 여덟 항목이 accepted로 다 들어갔다.** 1~7번이 #327~#330으로 정본에 반영됐다 — 사진은 `profiles.photo_url` 유지에 `update_my_photo()` 함수, backlog 「다음」 정의는 유지하고 행만 갈랐고, 알림은 1차·2차 경계가 섰고, 디자인 순서는 roadmap 하나로 모였고, 완료 plan 여덟 개에 log 링크 안내가 붙었고, 관찰 집계 규칙이 3건·후보 등록으로 바뀌었고, 문서 지도 경로가 링크가 되고 `doc-map.ts`·`doc-links.ts`가 그 링크를 읽는다. 8번(첫 출시 준비)은 지금 쓰지 않고 `backlog.md` 「대기」에 등록만 됐다 — 배포 플랫폼을 정한 뒤에 쓴다.
 
 코드는 세션 기반과 로그인·승인 대기 화면까지다. 대시보드는 데이터가 없어 못 연다.
 
