@@ -53,12 +53,4 @@ halls ─1 hall_secrets              │        │
 
 `auth.users ─? profiles`는 하나 또는 없음이다. [`account/design.md`](../modules/account/design.md#프로필-신원)에 있다.
 
-## 선택 근거·미정
-
-### 채우는 순서
-
-- 적용 범위: 이 문서군을 채우는 순서
-- 기본 계약: `data-model` → `api` → `runtime` 순으로 채운다. `flows`는 화면 문서가 이미 각자의 문을 적어둬서 언제든 모아 그릴 수 있다
-- 이유: 셋이 서로를 물고 있다 — 테이블 모양이 안 정해졌는데 무효화 규칙부터 쓰면 두 번 쓰게 된다
-
 영역별 상세는 [modules](../modules/README.md)에 있다.
