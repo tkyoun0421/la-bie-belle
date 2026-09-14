@@ -207,7 +207,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 ## 스위치
 
-켬과 끔 둘뿐인 설정에 쓴다. 프로필의 알림 줄이 첫 자리다([pages/profile.md](../modules/account/screens/profile.md)).
+켬과 끔 둘뿐인 설정에 쓴다. 프로필의 알림 줄이 첫 자리다([profile.md](../modules/account/screens/profile.md)).
 
 | 자리 | 토큰 |
 | --- | --- |
