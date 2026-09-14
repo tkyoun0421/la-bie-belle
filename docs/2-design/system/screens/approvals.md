@@ -2,7 +2,7 @@
 
 관리자가 근무자에게서 온 요청에 답하는 화면이다. 값은 [tokens.md](../../design-system/tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
 
-두 가지가 한 목록에 선다. 못 찍은 출근의 [사유](../../modules/attendance/README.md#못-찍었을-때)와 [근무 취소](../../modules/schedule/README.md#확정-뒤에-바꾸는-길) 요청이다. 성격은 다르지만 관리자가 하는 일이 같다 — 읽고 승인하거나 이유를 적어 거절한다.
+두 가지가 한 목록에 선다. 못 찍은 출근의 [사유](../../modules/attendance/README.md#못-찍었을-때)와 [근무 취소](../../modules/schedule/README.md#sch-018) 요청이다. 성격은 다르지만 관리자가 하는 일이 같다 — 읽고 승인하거나 이유를 적어 거절한다.
 
 들어오는 문은 하나다. 관리자 홈의 「승인할 일 · 3건」 줄이고([schedule-admin.md](../../modules/schedule/screens/schedule-admin.md#관리자-홈)) 그 줄이 이 화면을 연다. 사유가 도착해도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([notification/README.md](../../modules/notification/README.md#알림이-안-나가는-자리)). 근무 취소 요청은 푸시로도 온다.
 
@@ -284,7 +284,7 @@
 
 **그날 [날 상세](../../modules/schedule/screens/schedule-admin.md)로 넘어간다.** 시트와 목록이 닫히고 화면이 바뀐다. 토스트가 「근무를 취소했어요」로 뜬다.
 
-승인한 뒤 관리자가 할 일이 빈 자리를 채우는 것 하나뿐이고, 그 도구가 날 상세에 있다([schedule/README.md](../../modules/schedule/README.md#확정-뒤에-바꾸는-길)의 배정 추가). 목록으로 돌아오는 길은 앱바의 뒤로다.
+승인한 뒤 관리자가 할 일이 빈 자리를 채우는 것 하나뿐이고, 그 도구가 날 상세에 있다([schedule/README.md](../../modules/schedule/README.md#sch-018)의 배정 추가). 목록으로 돌아오는 길은 앱바의 뒤로다.
 
 토스트에 「자리 채우기」 버튼을 다는 길은 막혀 있다 — [components.md](../../design-system/components.md#토스트)가 사라지는 것에 액션을 걸지 말라고 한다. 그래서 버튼 대신 화면이 옮겨간다.
 
@@ -328,7 +328,7 @@
 
 **가운데 Dialog의 치수가 정본에 올라갔다.** 좌우 여백과 안쪽 여백과 그림자는 [components.md](../../design-system/components.md#dialog와-바텀시트)의 「가운데 Dialog」 표가 정본이다. 이 화면이 첫 자리고 시안은 그 값대로 서 있다.
 
-**배지가 제목 앞에 서서 정렬이 어긋난다.** 「사유」와 「근무 취소」의 폭이 달라 이름 시작이 두 위치로 갈린다. 배지를 오른쪽으로 옮기면 화살표와 겹치고, 줄여 쓰면 [domain 용어](../../modules/schedule/README.md#확정-뒤에-바꾸는-길)와 어긋난다.
+**배지가 제목 앞에 서서 정렬이 어긋난다.** 「사유」와 「근무 취소」의 폭이 달라 이름 시작이 두 위치로 갈린다. 배지를 오른쪽으로 옮기면 화살표와 겹치고, 줄여 쓰면 [domain 용어](../../modules/schedule/README.md#용어)와 어긋난다.
 
 ---
 
