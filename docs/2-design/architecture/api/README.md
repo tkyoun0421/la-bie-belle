@@ -6,17 +6,17 @@
 
 ## 경계 하나
 
-**브라우저가 Supabase를 바로 부른다.** Next 서버는 로그인 게이트와 첫 페이지 껍데기만 준다. 권한을 RLS에 뒀으니 서버가 중간에 서서 검사할 것이 없고, Vercel 서버는 요청이 없으면 잠들어 깨우는 데 1~3초가 든다 — 출근 인증 버튼이 그걸 기다릴 이유가 없다. realtime 구독과 오프라인 캐시도 브라우저가 Supabase를 직접 쥘 때 자연스럽다.
+**브라우저가 Supabase를 바로 부른다.** Next 서버는 로그인 게이트와 첫 페이지 껍데기만 준다. 권한을 RLS에 뒀으니 서버가 중간에 서서 검사할 것이 없고, Vercel 서버는 요청이 없으면 잠들어 깨우는 데 1~3초가 든다 — 출근 인증 버튼이 그걸 기다릴 이유가 없다. 오프라인 캐시도 브라우저가 Supabase를 직접 쥘 때 자연스럽다.
 
 브라우저에 anon key가 보이는 것은 단점이 아니다. 그 키는 공개용이고 권한은 세션 토큰과 RLS가 정한다.
 
 **데이터에 닿는 코드는 `dals`뿐이다.** `from()`·`rpc()`·`storage`·`channel()`이 여기서만 나온다. 화면과 use-case는 `dals` 함수를 부른다. `auth.*`(세션 확인·코드 교환·로그아웃)는 데이터가 아니라 `shared/lib`에 산다 — 도메인이 없고 로컬 Supabase가 구글 OAuth를 못 돌려 integration 테스트 대상도 아니다. 조항의 정본은 [ADR-003](../../adr/ADR-003-supabase-and-integration-tests.md#db-접근을-한곳에-모은다)이다.
 
-Next 서버가 Supabase를 부르는 자리는 `auth.*`와 첫 페이지의 승인 여부 읽기(`readAuthGate`)뿐이다. 데이터를 쓰는 서버 코드는 없다.
+Next 서버가 Supabase를 부르는 자리는 `auth.*`뿐이다 — `proxy`가 세션이 있는지 본다. 승인·차단·퇴사는 클라이언트가 `profiles`를 읽어 가른다([`../runtime/account.md`](../runtime/account.md)). 데이터를 읽거나 쓰는 서버 코드는 없다.
 
 ## 읽기
 
-**`dals`가 표를 직접 `select`하고 PostgREST 임베딩으로 join한다.** 근무표 한 달은 `from('days').select('*, slots(*), assignments(*, profiles(display_name)), check_ins(*)')` 한 질의다. `assignments`는 `days`에서 바로 임베딩한다 — `slots`를 거치면 `slot_id`가 없는 교육 배정이 빠진다. RLS가 표마다 걸려 임베딩된 표도 걸러진다 — 근무자가 `wage_rates`를 임베딩해도 자기 행만 온다. 단 `grant select`가 없는 표는 빈 결과가 아니라 오류라, 새 표를 만들 때 grant를 빠뜨리면 그 표를 임베딩한 질의 전체가 죽는다.
+**`dals`가 표를 직접 `select`하고 PostgREST 임베딩으로 join한다.** 근무표 한 달은 `from('days').select('*, slots(*), assignments(*, profiles(display_name))')` 한 질의다. `assignments`는 `days`에서 바로 임베딩한다 — `slots`를 거치면 `slot_id`가 없는 교육 배정이 빠진다. 임베딩에는 `ended_at is null` 필터를 건다 — 화면은 이력을 안 그린다. 인증은 안 든다. 달력이 인증 상태를 안 그리고 명단이 그날치를 따로 읽는다([`../runtime/attendance.md`](../runtime/attendance.md)). RLS가 표마다 걸려 임베딩된 표도 걸러진다 — 근무자가 `wage_rates`를 임베딩해도 자기 행만 온다. 단 `grant select`가 없는 표는 빈 결과가 아니라 오류라, 새 표를 만들 때 grant를 빠뜨리면 그 표를 임베딩한 질의 전체가 죽는다.
 
 뷰는 둘뿐이다. `excuse_status`(사유 글을 뺀 판정)와 `open_slots`(빈 자리). 둘 다 `security_invoker`라 RLS를 그대로 탄다. Supabase linter의 `security_definer_view`가 나머지를 잡는다.
 
@@ -41,7 +41,7 @@ Next 서버가 Supabase를 부르는 자리는 `auth.*`와 첫 페이지의 승�
 ### 함수 안의 규칙
 
 - 첫 줄이 호출자 검사다. `auth.uid()`로 프로필을 찾고 `is_admin()`·`is_approved()`를 본다. 검사가 없는 함수는 구멍이라 함수 PR은 그 검사의 integration 테스트를 같이 낸다
-- 시각 판정은 `now()`다. 인자로 시각을 받지 않는다 — 기기 시계가 들어올 자리가 없다
+- 시각 판정은 `now()`다. 인자로 시각을 받지 않는다 — 기기 시계가 들어올 자리가 없다. 예외는 `check_in`의 `reported_at` 하나고 한도가 붙는다([`attendance.md`](attendance.md))
 - 여러 행을 바꾸는 것은 전부 한 함수 안이다. 기본 시급 변경이 서른 행을 넣다 끊기면 전부 되돌아간다
 - 사건 알림은 같은 함수 안에서 `notifications`에 넣는다
 - `security definer`, `set search_path = ''`, 표는 스키마를 붙여 부른다(`public.profiles`)
@@ -64,6 +64,7 @@ Next 서버가 Supabase를 부르는 자리는 `auth.*`와 첫 페이지의 승�
 | `slot_full` | 근무 요청 수락이 선착순에 졌다 | 시트 닫고 토스트 「자리가 찼어요」 |
 | `request_closed` | 요청이 만료됐거나 다른 사람이 통과했다 | 시트 닫고 새로 읽기 |
 | `stale` | 화면이 든 id가 닫혔거나 없는 행이다 | 「이 근무가 바뀌었어요」, 새로 읽기 |
+| `already_done` | 재시도가 두 번 닿아 이미 쓴 행이 있다 | 성공으로 처리 |
 | `already_assigned` | 그날 이미 다른 자리에 든 사람이다 | 관리자 화면이 자리 합치기를 안내 |
 | `not_qualified` | 포지션 자격이 없다 | 관리자 컨펌 시트 |
 | `window_closed` | 인증 창·요청 마감·취소 마감 밖이다 | 버튼이 잘못 켜진 것. 새로 읽기 |
@@ -83,7 +84,7 @@ Next 서버가 Supabase를 부르는 자리는 `auth.*`와 첫 페이지의 승�
 
 **앱이 뜨면 `server_now()`를 한 번 부르고 차이를 든다.** `offset = server - Date.now()`. 화면은 `Date.now() + offset`을 쓴다. 탭이 돌아올 때(`visibilitychange`) 다시 받는다. 하루 띠가 매초 도는 것은 이 값이다 — 서버를 매초 안 부른다.
 
-화면 시각은 보여주기용이다. 버튼이 켜지는 것, 카운트다운, 남은 시간이 여기 걸리고 판정은 함수의 `now()`다. 기기 시계를 바꿔 버튼을 켜도 눌러보면 `window_closed`가 온다.
+화면 시각은 보여주기용이다. 버튼이 켜지는 것, 카운트다운, 남은 시간이 여기 걸리고 판정은 함수의 `now()`다. 기기 시계를 바꿔 버튼을 켜도 눌러보면 `window_closed`가 온다. 언제 다시 받고 오프라인이면 어쩌나는 [`../runtime/`](../runtime/#시각)이 정한다.
 
 ## 서비스 키 자리
 
@@ -98,6 +99,4 @@ pg_cron·Database Webhook·Edge Function 셋 다 Free에서 된다. 7일 무활�
 
 ## 아직 안 정한 것
 
-도메인에 속하는 미정은 각 파일 끝에 있다. 가로지르는 것만 여기다.
-
-- realtime 구독을 어느 표에 거나 — [`../runtime/`](../runtime/)이 정한다
+도메인에 속하는 미정은 각 파일 끝에 있다. 가로지르는 것은 지금 없다.
