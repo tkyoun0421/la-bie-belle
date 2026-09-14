@@ -67,7 +67,7 @@ P1은 관련 구현 착수 전, P2는 다음 문서 정리 작업에서, P3는 �
 
 ## 2. 사진 필드의 저장 위치와 수정 경로를 맞춘다
 
-**근거.** [계정 데이터 모델](../2-design/modules/account/design.md)의 13행은 `photo_url`을 `profiles`에 둔다. 바로 아래 15행은 연락처·사진을 `profile_private`에서 직접 갱신한다고 한다. [계정 API](../2-design/modules/account/design.md#행위별-구현-계약)도 같은 갱신 방법을 적지만, 제시된 `profile_private(profile_id, phone, birth_date, gender)`에는 사진 필드가 없다. [system/data-access.md](../2-design/system/data-access.md#네-원칙) 역시 직접 쓰기 예외를 연락처·사진으로 설명한다.
+**근거.** [계정 데이터 모델](../2-design/modules/account/design.md)의 13행은 `photo_url`을 `profiles`에 둔다. 바로 아래 15행은 연락처·사진을 `profile_private`에서 직접 갱신한다고 한다. [계정 API](../2-design/modules/account/design.md#행위별-구현-계약)도 같은 갱신 방법을 적지만, 제시된 `profile_private(profile_id, phone, birth_date, gender)`에는 사진 필드가 없다. [system/data-access.md](../2-design/system/data-access.md#쓰기) 역시 직접 쓰기 예외를 연락처·사진으로 설명한다.
 
 **제안.** 사진 URL이 속하는 표와 본인 수정 경로를 먼저 확정한다. 현재 모델대로 `profiles.photo_url`을 유지한다면 사진을 수정하는 함수 또는 제한된 쓰기 권한을 명시하고, 「직접 쓰기는 `profile_private` 하나뿐」이라는 규칙과 맞춘다. 사진을 다른 표로 옮긴다면 이름·사진을 읽는 조회와 공개 범위도 함께 설명한다. 이미지 파일의 저장소 선택과 URL 컬럼의 소유 표는 별개 질문으로 다룬다.
 
