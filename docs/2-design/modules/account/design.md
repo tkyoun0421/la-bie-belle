@@ -6,7 +6,7 @@
 
 공통 스키마·권한·컬럼 규약은 [data-model/README.md](../../architecture/data-model/README.md), 읽기·쓰기·타입·에러 계약은 [api/README.md](../../architecture/api/README.md), 캐시 계층·무효화 표·시각은 [runtime/README.md](../../architecture/runtime/README.md)를 따른다.
 
-키는 `['profile']`(본인)·`['members']`(관리자 명단)·`['members', 'pending']`이다. 무효화는 [`README.md`](../../architecture/runtime/README.md#무효화-표)에 있다.
+키는 `['profile']`(본인)·`['members']`(관리자 명단)·`['members', 'pending']`이다. 무효화는 [runtime/README.md](../../architecture/runtime/README.md#무효화-표)에 있다.
 
 ## 소유 데이터
 
@@ -14,7 +14,7 @@
 
 ### 프로필 신원
 
-**`profiles.id`는 별도 uuid고 `user_id`가 `auth.users`를 가리킨다.** `user_id uuid unique references auth.users on delete set null`. 지금 마이그레이션은 `id = auth.users.id`(cascade)라 두 가지가 안 된다 — 새 구글 계정을 옛 프로필에 잇는 것([account.md](README.md#구글-계정-변경))과 계정을 지우고 프로필을 남기는 것. 잇기는 `user_id`만 바꾸는 함수다. RLS 술어는 전부 `user_id = auth.uid()`가 된다. 이 전환은 `backlog.md` 「계정 데이터 구조 전환」이다.
+**`profiles.id`는 별도 uuid고 `user_id`가 `auth.users`를 가리킨다.** `user_id uuid unique references auth.users on delete set null`. 지금 마이그레이션은 `id = auth.users.id`(cascade)라 두 가지가 안 된다 — 새 구글 계정을 옛 프로필에 잇는 것([README.md](README.md#구글-계정-변경))과 계정을 지우고 프로필을 남기는 것. 잇기는 `user_id`만 바꾸는 함수다. RLS 술어는 전부 `user_id = auth.uid()`가 된다. 이 전환은 `backlog.md` 「계정 데이터 구조 전환」이다.
 
 새 로그인마다 빈 프로필을 만드는 트리거는 뗀다. 첫 진입에서 `ensure_profile()` 함수가 만들고, 잇기 함수는 그 빈 행을 지운다.
 
@@ -55,7 +55,7 @@
 | 함수 | 하는 일 |
 | --- | --- |
 | `submit_profile` | 프로필 제출. 이름·성별·생년월일은 제출된 뒤 잠기고 거절되면 다시 열린다 |
-| `update_my_photo` | 자기 `profiles.photo_url`을 바꾼다. 본인 행뿐이고 관리자도 남의 것은 못 바꾼다([`../data-model/account.md`](#개인정보는-표를-가른다)) |
+| `update_my_photo` | 자기 `profiles.photo_url`을 바꾼다. 본인 행뿐이고 관리자도 남의 것은 못 바꾼다([개인정보는 표를 가른다](#개인정보는-표를-가른다)) |
 
 연락처는 함수가 아니라 `profile_private` 본인 행 직접 갱신이다 — 테이블 직접 쓰기 정책이 있는 유일한 자리.
 
@@ -103,9 +103,9 @@ pg_cron(`internal`) — `erase_profiles`. 매일 `left_at`이 1년 지난 프로
 
 ## UI 연결
 
-`proxy`의 세션 확인, `/auth/callback`의 코드 교환, `/auth/logout`. 전부 `auth.*`라 `shared/lib`이다. 지금 코드의 첫 페이지 승인 여부 읽기(`readAuthGate`·`getApprovedAt`)는 클라이언트로 옮긴다([`../runtime/account.md`](#첫-진입과-게이트)) — 데이터 task가 같이 고친다.
+`proxy`의 세션 확인, `/auth/callback`의 코드 교환, `/auth/logout`. 전부 `auth.*`라 `shared/lib`이다. 지금 코드의 첫 페이지 승인 여부 읽기(`readAuthGate`·`getApprovedAt`)는 클라이언트로 옮긴다([첫 진입과 게이트](#첫-진입과-게이트)) — 데이터 task가 같이 고친다.
 
-`link_account`(계정 연결)는 1차에 없다 — [domain/account.md](README.md#아직-안-정한-것).
+`link_account`(계정 연결)는 1차에 없다 — [README.md](README.md#아직-안-정한-것).
 
 화면은 [login](screens/login.md)·[profile](screens/profile.md)·[members-pending](screens/members-pending.md)·[members](screens/members.md)다.
 
@@ -120,4 +120,4 @@ pg_cron(`internal`) — `erase_profiles`. 매일 `left_at`이 1년 지난 프로
 
 ## 아직 안 정한 것
 
-- 본인이 올린 사진의 저장 위치 — [domain/account.md](README.md#아직-안-정한-것)가 열려 있다. Supabase Storage면 `dals`의 `storage` 호출이 첫 자리다
+- 본인이 올린 사진의 저장 위치 — [README.md](README.md#아직-안-정한-것)가 열려 있다. Supabase Storage면 `dals`의 `storage` 호출이 첫 자리다

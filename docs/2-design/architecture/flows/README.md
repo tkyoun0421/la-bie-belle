@@ -33,7 +33,7 @@
 
 ## 앱을 열면
 
-세션 → 프로필 → 승인 순으로 가른다. 규칙은 [domain/account.md](../../modules/account/README.md)고 판정은 껍데기 하나가 앱이 뜰 때와 탭 복귀에 `['profile']`을 읽어 한다([`../runtime/account.md`](../../modules/account/design.md)). 라우트 전환은 그 값을 쓴다 — 탭을 옮길 때마다 다시 읽지 않는다.
+세션 → 프로필 → 승인 순으로 가른다. 규칙은 [account/README.md](../../modules/account/README.md)고 판정은 껍데기 하나가 앱이 뜰 때와 탭 복귀에 `['profile']`을 읽어 한다([`account/design.md`](../../modules/account/design.md)). 라우트 전환은 그 값을 쓴다 — 탭을 옮길 때마다 다시 읽지 않는다.
 
 | 상태 | 간다 |
 | --- | --- |
