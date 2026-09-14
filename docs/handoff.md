@@ -19,7 +19,9 @@
 
 **`data-model/README.md`가 섰다.** 인터뷰 스물세 라운드와 `architecture-advisor` 검토 한 번을 거쳤다. 네 원칙 — 사실은 DB에 상태는 계산, 쓰기는 Postgres 함수(security definer)를 `dals`가 `rpc()`로, 이력은 닫고 새로, 막는 것은 데이터. 표 스물하나. 되돌리기 어려운 결정은 프로필 신원 분리(`profiles.id` 별도, `user_id → auth.users`)와 개인정보 표 분리(`profile_private`)다 — 기존 `profiles` 마이그레이션과 integration 테스트가 이것과 어긋나 데이터 task가 갈아엎는다. domain에 두 줄이 따라갔다(account.md 차단·삭제 문장, swap.md 미신청자 교대 틈을 「아직 안 정한 것」으로).
 
-**`api/README.md`가 섰다.** 인터뷰 열 라운드와 조언자 검토 한 번. 경계 하나 — 브라우저가 Supabase를 바로 부르고 Next는 게이트뿐. 읽기는 PostgREST 임베딩(뷰 둘 예외), 쓰기는 함수 마흔쯤을 `public`(호출자 있음)과 `internal`(pg_cron용) 스키마로 갈랐다. 오류는 예외+고정 코드 열둘을 `DomainError`/`TransportError`로, 서버 시각은 `server_now()` 한 번+offset, 푸시는 Webhook+pg_cron 재시도에 잡기(`claimed_at`)와 성공(`pushed_at`)을 다른 열로. Edge Function 로직은 `src/` 순수 함수로 빼고 얼개만 e2e. ADR-003 「`dals`에서만」 조항을 `from`·`rpc`·`storage`·`channel`로 좁히고 `auth.*`를 `shared/lib`으로 못 박았다. 조언자가 잡은 P0 셋(cron 함수 노출, 재시도 죽는 잡기, 교육 배정 빠지는 임베딩)은 정본에 반영됐다.
+**`architecture/`는 도메인 파일을 처음부터 만든다.** 300줄 규칙을 버렸다 — `data-model/`과 `api/` 둘 다 `README.md`(가로지르는 규칙) + 도메인 여섯(`account`·`schedule`·`swap`·`attendance`·`payroll`·`notification`)이다. 축은 관심사 폴더·도메인 파일 그대로. 시안의 더미 전화번호를 전부 `010-0000-00xx`로 바꿨고 CLAUDE.md 「공개 저장소」에 가짜 값 규칙이 섰다.
+
+**`api/`가 섰다.** 인터뷰 열 라운드와 조언자 검토 한 번. 경계 하나 — 브라우저가 Supabase를 바로 부르고 Next는 게이트뿐. 읽기는 PostgREST 임베딩(뷰 둘 예외), 쓰기는 함수 마흔쯤을 `public`(호출자 있음)과 `internal`(pg_cron용) 스키마로 갈랐다. 오류는 예외+고정 코드 열둘을 `DomainError`/`TransportError`로, 서버 시각은 `server_now()` 한 번+offset, 푸시는 Webhook+pg_cron 재시도에 잡기(`claimed_at`)와 성공(`pushed_at`)을 다른 열로. Edge Function 로직은 `src/` 순수 함수로 빼고 얼개만 e2e. ADR-003 「`dals`에서만」 조항을 `from`·`rpc`·`storage`·`channel`로 좁히고 `auth.*`를 `shared/lib`으로 못 박았다. 조언자가 잡은 P0 셋(cron 함수 노출, 재시도 죽는 잡기, 교육 배정 빠지는 임베딩)은 정본에 반영됐다.
 
 ## 다음 첫 수
 

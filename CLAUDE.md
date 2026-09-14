@@ -61,4 +61,4 @@ FSD: `src/` 아래 `app` · `screens` · `features` · `entities` · `shared`. `
 
 ## 공개 저장소
 
-PUBLIC이다. 시크릿 커밋 금지. `.env`는 로컬만, pre-commit 훅이 패턴을 검사한다.
+PUBLIC이다. 시크릿 커밋 금지. `.env`는 로컬만, pre-commit 훅이 패턴을 검사한다. 문서·시안·테스트 픽스처의 사람 이름·전화번호·좌표·QR 값은 전부 가짜다 — 전화번호는 `010-0000-000x` 꼴, 실제 값은 DB에만 산다.
