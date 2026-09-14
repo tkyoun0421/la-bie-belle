@@ -16,7 +16,7 @@
 
 ## 차단
 
-**차단은 `blocked_at`이다.** Auth ban을 안 쓴다 — 구글 로그인은 되지만 미들웨어가 차단 화면으로 보내고 `is_approved()`가 `blocked_at is null`을 품어 행을 안 준다. 서비스 키 자리가 안 는다.
+**차단은 `blocked_at`이다.** Auth ban을 안 쓴다 — 구글 로그인은 되지만 클라이언트가 `blocked_at`을 읽어 차단 화면으로 보내고 `is_approved()`가 `blocked_at is null`을 품어 행을 안 준다. 서비스 키 자리가 안 는다.
 
 ## 퇴사 1년 뒤
 

@@ -23,14 +23,19 @@
 
 **`api/`가 섰다.** 인터뷰 열 라운드와 조언자 검토 한 번. 경계 하나 — 브라우저가 Supabase를 바로 부르고 Next는 게이트뿐. 읽기는 PostgREST 임베딩(뷰 둘 예외), 쓰기는 함수 마흔쯤을 `public`(호출자 있음)과 `internal`(pg_cron용) 스키마로 갈랐다. 오류는 예외+고정 코드 열둘을 `DomainError`/`TransportError`로, 서버 시각은 `server_now()` 한 번+offset, 푸시는 Webhook+pg_cron 재시도에 잡기(`claimed_at`)와 성공(`pushed_at`)을 다른 열로. Edge Function 로직은 `src/` 순수 함수로 빼고 얼개만 e2e. ADR-003 「`dals`에서만」 조항을 `from`·`rpc`·`storage`·`channel`로 좁히고 `auth.*`를 `shared/lib`으로 못 박았다. 조언자가 잡은 P0 셋(cron 함수 노출, 재시도 죽는 잡기, 교육 배정 빠지는 임베딩)은 정본에 반영됐다.
 
+**`runtime/`이 섰다.** 인터뷰 일곱 라운드와 조언자 검토 한 번. 캐시 넷 — Service Worker는 껍데기(Serwist), 데이터는 TanStack Query IndexedDB 영속(`buster` = 빌드 id, `networkMode: 'always'`), Next 서버는 `proxy`가 세션만 보고 승인·차단은 클라이언트가 가른다, realtime 안 씀. 되돌리기 어려운 결정 둘 — 승인 게이트를 서버에서 클라이언트로 옮긴다(지금 코드의 `readAuthGate`가 데이터 task에서 옮겨진다), 출근 판정이 누른 시각(`reported_at`, 한도 10분)이라 「인자로 시각을 받지 않는다」에 예외가 섰다. 무효화 표는 `runtime/README.md` 한 곳이다. 정본 넷(api README·account·attendance, data-model account·attendance, domain attendance)이 따라 바뀌었다.
+
 ## 다음 첫 수
 
-**`runtime/README.md`다.** `data-model`·`api`가 섰으니 그 위다. 담을 것 — 캐시 넷(Service Worker가 오프라인에서 여는 화면, TanStack Query 키·`staleTime`·무효화, RSC와 클라이언트 경계, realtime을 어느 표에 거나), 경쟁 조건 기본값(선착순은 함수가 이미 풀었고 관리자 동시 편집이 남았다), 로딩·낙관적 업데이트(근무 신청 체크는 즉시, 요청 수락은 절대 아님), 오프라인 인증(큐에 넣나 사유로 보내나), `range()`를 거는 표. `flows/`는 독립이라 언제든 된다. 그 뒤가 구현이다 — 데이터 task가 먼저고 첫 스파이크는 Deno Edge Function이 `../../src`를 import할 수 있는지다.
+**`flows/`다.** `architecture/`의 마지막 폴더다. 담을 것 — 도메인마다 화면·함수·알림이 이어지는 순서(근무 요청이 나가서 수락되고 배정이 서고 알림이 가기까지), 어느 함수가 어느 알림을 넣나, cron 셋(`expire_requests`·`erase_profiles`·시각 알림)이 어느 순간 끼어드나. `data-model`·`api`·`runtime`이 다 있으니 새 결정보다 이어 붙이기가 많다. 그 뒤가 구현이다 — 데이터 task가 먼저고 첫 스파이크는 Deno Edge Function이 `../../src`를 import할 수 있는지다.
 
 ## 열린 결정
 
 - **Deno Edge Function이 `supabase/functions` 밖의 `src/`를 import할 수 있는지 미확인.** `api/`가 「되면 `deno.json` 맵핑, 안 되면 CI가 `_shared/`로 복사」로 두 길을 적어뒀다. 데이터 task 첫 스파이크다.
 - **「배웠다」의 기준.** 자격을 교육 배정 행에서 계산하기로 했는데 배정이 서면인지 출근 인증까지인지 `schedule.md`가 안 정했다. 나머지 미정은 `data-model/README.md` 「아직 안 정한 것」에 있다.
+- **달 키의 범위.** 근무표 달이 달력 달인지 주 범위(8월 = 8/3~9/6)인지 `data-model`이 열어뒀는데 `runtime`의 `['schedule']`·`['payroll']`·`['availability']` 키가 그 결정에 딸린다. 급여가 달력 달이고 근무표가 주 범위면 급여 한 달이 근무표 두 달을 읽는다.
+- **iOS 홈 화면 앱의 `visibilitychange`.** 탭 복귀 재조회와 시각 재동기화가 이 이벤트 하나에 산다. 앱 전환마다 오는지 기기에서 봐야 한다.
+- **스켈레톤 조각과 「통신 없음」 띠가 `components.md`에 없다.** `runtime`이 둘 다 쓴다. 띠는 알림 블록의 중립 종류가 후보라 아래 항목과 같은 자리다.
 - **`src/app/`의 `.ts`가 여전히 훅 밖이다.** 조립이 `features`로 나가 위임만 남았으니 짝 테스트를 요구할 것이 없어 `SKIP_PREFIXES`는 그대로 뒀다. `src/app/`에 다시 로직이 들어오면 그때 훅을 좁힌다.
 - **로고 렌더를 지키는 테스트가 없다.** `public/google-g.svg`를 지워도 e2e 11개가 초록이다. 「버튼 안 로고의 `background-image`가 비어 있지 않다」는 e2e 한 줄이 후보다.
 - **CI가 chromium만 돈다.** 주 타깃이 아이폰 사파리인데 webkit을 안 본다. [ADR-007](2-design/adr/ADR-007-web-pwa-over-native.md)이 PWA로 가며 치르는 값 넷 중 유일하게 열린 채로 둔 것이다.
@@ -55,7 +60,7 @@
 - env가 없으면 미들웨어가 모든 요청에서 던져 앱 전체가 500이 된다. 조용한 로그아웃보다 낫다고 판단해 그렇게 갔지만, 사용자에게는 Next 기본 에러 화면이 뜬다. `error.tsx`를 다룰 때 같이 본다.
 - 미들웨어에 `matcher`가 없다. 함수 안에서 정적 자원을 걸러내는데 `export const config = { matcher }`를 쓰면 실행 자체를 안 한다. 동작은 맞고 명세도 지켰으니 성능 판단으로 남겨뒀다.
 - `playwright.config.ts`에 `workers: 1`과 `fullyParallel: true`가 같이 있다 — 앞이 뒤를 무의미하게 만든다. e2e가 늘면 아플 자리다.
-- Next 16이 `middleware.ts`를 deprecate하고 `proxy`로 밀고 있다 — 테스트가 파일명을 못박아둬서 옮길 때 같이 고쳐야 한다.
+- Next 16이 `middleware.ts`를 deprecate하고 `proxy`로 밀고 있다 — 테스트가 파일명을 못박아둬서 옮길 때 같이 고쳐야 한다. `runtime`·`api`는 이미 `proxy`라 적었고, 데이터 task가 승인 게이트를 클라이언트로 옮기며 같이 간다.
 - PR #197의 lint 규칙 표가 저장소 안에 없고 PR 본문에만 있다 — 규칙 번호 불변식(`DOCUMENTED_LINT_RULE_COUNT`)이 그 표에 기대는데 정본이 저장소 밖에 있다.
 - `tests/lint/tsx-dumb-ui.test.ts:162`의 인라인 `layout.tsx` 픽스처가 아직 Geist를 가리킨다. 이 파일의 픽스처 다섯(`layout`·`page`·`providers`·`button`·`card`)이 전부 실제 소스를 베낀 인라인 사본이라, 소스가 바뀔 때마다 같은 방식으로 썩는다. `design-token-values.test.ts`처럼 `readFileSync`로 실제 파일을 읽게 옮길지는 안 정했다.
 - 관리자 승인 RLS가 `security definer`를 필요로 한다. 컬럼 권한은 역할 단위라 `authenticated`에 `approved_at`을 열면 관리자든 아니든 다 열린다. 지금 스키마는 그 문을 안 열어뒀다.

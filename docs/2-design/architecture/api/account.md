@@ -31,4 +31,4 @@ pg_cron(`internal`) — `erase_profiles`. 매일 `left_at`이 1년 지난 프로
 
 ## Next 서버가 부르는 자리
 
-미들웨어의 세션 확인, `/auth/callback`의 코드 교환, `/auth/logout`, 첫 페이지의 승인 여부 읽기(`readAuthGate`). `auth.*`는 `shared/lib`이고 승인 여부 읽기만 `dals`다. 그 `dals`(`getApprovedAt`)는 지금 `id`로 찾는데 `user_id`로 바뀐다 — 데이터 task가 같이 고친다.
+`proxy`의 세션 확인, `/auth/callback`의 코드 교환, `/auth/logout`. 전부 `auth.*`라 `shared/lib`이다. 지금 코드의 첫 페이지 승인 여부 읽기(`readAuthGate`·`getApprovedAt`)는 클라이언트로 옮긴다([`../runtime/account.md`](../runtime/account.md)) — 데이터 task가 같이 고친다.
