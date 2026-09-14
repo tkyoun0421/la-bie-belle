@@ -67,7 +67,7 @@ P1은 관련 구현 착수 전, P2는 다음 문서 정리 작업에서, P3는 �
 
 ## 2. 사진 필드의 저장 위치와 수정 경로를 맞춘다
 
-**근거.** [계정 데이터 모델](../2-design/modules/account/design.md)의 13행은 `photo_url`을 `profiles`에 둔다. 바로 아래 15행은 연락처·사진을 `profile_private`에서 직접 갱신한다고 한다. [계정 API](../2-design/modules/account/design.md#행위별-구현-계약)도 같은 갱신 방법을 적지만, 제시된 `profile_private(profile_id, phone, birth_date, gender)`에는 사진 필드가 없다. [데이터 모델 공통 원칙](../2-design/architecture/data-model/README.md#네-원칙) 역시 직접 쓰기 예외를 연락처·사진으로 설명한다.
+**근거.** [계정 데이터 모델](../2-design/modules/account/design.md)의 13행은 `photo_url`을 `profiles`에 둔다. 바로 아래 15행은 연락처·사진을 `profile_private`에서 직접 갱신한다고 한다. [계정 API](../2-design/modules/account/design.md#행위별-구현-계약)도 같은 갱신 방법을 적지만, 제시된 `profile_private(profile_id, phone, birth_date, gender)`에는 사진 필드가 없다. [system/data-access.md](../2-design/system/data-access.md#네-원칙) 역시 직접 쓰기 예외를 연락처·사진으로 설명한다.
 
 **제안.** 사진 URL이 속하는 표와 본인 수정 경로를 먼저 확정한다. 현재 모델대로 `profiles.photo_url`을 유지한다면 사진을 수정하는 함수 또는 제한된 쓰기 권한을 명시하고, 「직접 쓰기는 `profile_private` 하나뿐」이라는 규칙과 맞춘다. 사진을 다른 표로 옮긴다면 이름·사진을 읽는 조회와 공개 범위도 함께 설명한다. 이미지 파일의 저장소 선택과 URL 컬럼의 소유 표는 별개 질문으로 다룬다.
 
@@ -91,7 +91,7 @@ P1은 관련 구현 착수 전, P2는 다음 문서 정리 작업에서, P3는 �
 
 **근거.** [로드맵의 순서 규칙](../1-plan/roadmap.md#순서-규칙)은 1차 화면 디자인을 전부 끝낸 뒤 구현한다고 정했다. 반면 [디자인 시스템의 순서](../2-design/design-system/README.md#순서)는 기능 개발과 디자인을 병렬로 진행한다고 한다. 두 문서가 적용 시기나 예외를 설명하지 않아 착수 기준이 다르게 읽힌다.
 
-[handoff](../handoff.md#지금-상태)는 「설계가 다 섰다」고 요약하지만, [login.md의 미정](../2-design/modules/account/screens/login.md#아직-안-정한-것)에는 차단 화면의 모습과 생년월일 시트 등이 남아 있다. 1차 포함 여부와 차단 조건을 함께 읽어야 완료를 판단할 수 있다. 수량 표현도 점검할 필요가 있다. handoff는 화면 열한 개라고 쓰고 페이지 문서와 시안은 각각 12개다. 파일 하나가 여러 화면을 담으므로 파일 수와 화면 수를 혼용하지 않아야 한다. [flows의 세 층](../2-design/architecture/flows/README.md#세-층)은 게이트를 「셋」이라고 쓰고 경로 네 개를 나열한다.
+[handoff](../handoff.md#지금-상태)는 「설계가 다 섰다」고 요약하지만, [login.md의 미정](../2-design/modules/account/screens/login.md#아직-안-정한-것)에는 차단 화면의 모습과 생년월일 시트 등이 남아 있다. 1차 포함 여부와 차단 조건을 함께 읽어야 완료를 판단할 수 있다. 수량 표현도 점검할 필요가 있다. handoff는 화면 열한 개라고 쓰고 페이지 문서와 시안은 각각 12개다. 파일 하나가 여러 화면을 담으므로 파일 수와 화면 수를 혼용하지 않아야 한다. [system/navigation.md의 세 층](../2-design/system/navigation.md#세-층)은 게이트를 「셋」이라고 쓰고 경로 네 개를 나열한다.
 
 **제안.** 진행 순서는 로드맵을 정본으로 삼고 디자인 안내가 링크한다. 병렬 진행을 허용하는 적용 범위가 있다면 그 범위만 적는다. 완료 요약은 「주요 설계 문서 작성 완료, 관련 미정은 각 작업 착수 전 해결」처럼 실제 상태를 나타낸다. 미정마다 관련 릴리스와 막는 작업을 연결하되, handoff에 전체 미정 목록을 복제하지 않는다. 수량은 필요한 경우에만 단위를 붙여 쓴다.
 
@@ -123,7 +123,7 @@ P1은 관련 구현 착수 전, P2는 다음 문서 정리 작업에서, P3는 �
 
 ## 7. 문서 간 이동을 링크로 만들고 검사와 함께 바꾼다
 
-**근거.** [CLAUDE.md의 지도](../../CLAUDE.md#문서-지도)와 [기획 안내](../1-plan/README.md), [설계 안내](../2-design/README.md)는 상당수 경로를 인라인 코드로 적는다. 검색은 가능하지만 클릭해서 이동할 수 없다. [아키텍처 안내](../2-design/architecture/README.md#가르는-축)는 한 도메인을 보려면 네 폴더를 오간다는 비용을 이미 인정한다. 하위 README는 각 관심사를 안내하지만, 계정 하나의 도메인·데이터·API·런타임·흐름을 한 줄로 연결하는 입구는 없다.
+**근거.** [CLAUDE.md의 지도](../../CLAUDE.md#문서-지도)와 [기획 안내](../1-plan/README.md), [설계 안내](../2-design/README.md)는 상당수 경로를 인라인 코드로 적는다. 검색은 가능하지만 클릭해서 이동할 수 없다. [system/architecture.md](../2-design/system/architecture.md)는 한 도메인을 보려면 네 폴더를 오간다는 비용을 이미 인정한다. 하위 README는 각 관심사를 안내하지만, 계정 하나의 도메인·데이터·API·런타임·흐름을 한 줄로 연결하는 입구는 없다.
 
 **제안.** 파일을 이동하지 않고 안내 문서의 실존 경로를 상대 링크로 바꾼다. 아키텍처 README에는 도메인 여섯 × 관심사 네 갈래의 링크 표를 둔다. 예를 들어 계정 행은 [domain](../2-design/modules/account/README.md) · [data-model](../2-design/modules/account/design.md) · [api](../2-design/modules/account/design.md) · [runtime](../2-design/modules/account/design.md) · [flows](../2-design/modules/account/design.md)로 이동한다. 표에는 규칙이나 구현 상태를 복제하지 않는다. 다른 README에 같은 표를 다시 만들지 않는다.
 

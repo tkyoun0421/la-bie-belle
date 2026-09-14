@@ -12,7 +12,7 @@
 
 ## 화면 상태와 흐름
 
-`/admin/qr`에서 바꾸면(`rotate_qr`) 즉시 폐기. 옛 QR로 스캔한 사람은 `invalid_qr`이고 `/check-in`에 머문다. 홀 좌표·반경(`set_hall_location`)은 화면이 없다 — [`flows/README.md`](../../../architecture/flows/README.md#아직-안-정한-것).
+`/admin/qr`에서 바꾸면(`rotate_qr`) 즉시 폐기. 옛 QR로 스캔한 사람은 `invalid_qr`이고 `/check-in`에 머문다. 홀 좌표·반경(`set_hall_location`)은 화면이 없다 — [`system/navigation.md`](../../../system/navigation.md#아직-안-정한-것).
 
 ---
 

@@ -655,4 +655,4 @@ Wanted Sans는 Wanted Lab이 만들었고 [SIL Open Font License 1.1](https://sc
 
 **스피너가 도는 시간.** 6절 duration 넷은 시작과 끝이 있는 전환의 값이라 끝없이 도는 것에 안 맞는다. 이징도 `ease-out`이 아니라 `linear`여야 한다 — 도는 것에 가속이 붙으면 멈췄다 가는 것으로 보인다. 6절이 이징을 하나로 못 박아둔 것과 부딪히는 자리다.
 
-**축하 모션을 쓸 자리.** [foundation/motion.md](foundation/motion.md#축하할-순간)에 적었듯 출근 인증 완료 하나는 확실한데, 두 번째로 지목됐던 "급여 확정"은 도메인에 없는 행위다. `docs/2-design/domain/payroll.md`가 급여를 확정하지 않는다고 못 박아뒀다.
+**축하 모션을 쓸 자리.** [foundation/motion.md](foundation/motion.md#축하할-순간)에 적었듯 출근 인증 완료 하나는 확실한데, 두 번째로 지목됐던 "급여 확정"은 도메인에 없는 행위다. `docs/2-design/modules/payroll/README.md`가 급여를 확정하지 않는다고 못 박아뒀다.

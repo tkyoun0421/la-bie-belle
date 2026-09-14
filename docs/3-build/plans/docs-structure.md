@@ -75,7 +75,7 @@
 
 ### 문제
 
-`pages/login.md` 293행은 차단된 사람이 로그인 화면에서 멈춘다고 적고, 646행 「아직 안 정한 것」은 차단 화면 자리를 미정으로 둔다. [flows](../../2-design/architecture/flows/README.md#앱을-열면)는 `/blocked`로 보낸다. 관리자 홈 앱바의 뒤로도 `profile.md`와 `schedule-admin.md`가 다르다. 둘 다 flows를 따른다.
+`pages/login.md` 293행은 차단된 사람이 로그인 화면에서 멈춘다고 적고, 646행 「아직 안 정한 것」은 차단 화면 자리를 미정으로 둔다. [system/navigation.md](../../2-design/system/navigation.md#앱을-열면)는 `/blocked`로 보낸다. 관리자 홈 앱바의 뒤로도 `profile.md`와 `schedule-admin.md`가 다르다. 둘 다 flows를 따른다.
 
 ### 변경
 
@@ -115,7 +115,7 @@
 
 ### 문제
 
-[api 문서의 읽기](../../2-design/architecture/api/README.md#읽기)는 `pnpm types`와 CI의 타입 diff 검사가 있는 것처럼 적었는데 `package.json`과 `ci.yml`에 없다. [계정 데이터 모델](../../2-design/modules/account/design.md#프로필-신원)은 목표와 기존 마이그레이션의 차이를 적었지만 다른 문서는 그렇지 않다. [아키텍처 안내](../../2-design/architecture/README.md)는 이 문서군이 목표인지 현재인지 말하지 않는다.
+[system/data-access.md의 읽기](../../2-design/system/data-access.md#읽기)는 `pnpm types`와 CI의 타입 diff 검사가 있는 것처럼 적었는데 `package.json`과 `ci.yml`에 없다. [계정 데이터 모델](../../2-design/modules/account/design.md#프로필-신원)은 목표와 기존 마이그레이션의 차이를 적었지만 다른 문서는 그렇지 않다. [system/architecture.md](../../2-design/system/architecture.md)는 이 문서군이 목표인지 현재인지 말하지 않는다.
 
 ### 변경
 

@@ -4,13 +4,27 @@
 
 ## 참조 규칙
 
-공통 스키마·권한·컬럼 규약은 [data-model/README.md](../../architecture/data-model/README.md), 읽기·쓰기·타입·에러 계약은 [api/README.md](../../architecture/api/README.md), 캐시 계층·무효화 표·시각은 [runtime/README.md](../../architecture/runtime/README.md)를 따른다.
+공통 스키마·권한·컬럼 규약과 읽기·쓰기·타입·에러 계약은 [system/data-access.md](../../system/data-access.md), 캐시 계층·시각은 [system/runtime.md](../../system/runtime.md), 시스템 경계는 [system/architecture.md](../../system/architecture.md)를 따른다.
 
-키는 `['payroll', 'YYYY-MM']`이고 `wage_rates`·`adjustments`·`excuse_status`를 그달치로 받는다. 배정과 날은 `['schedule', 'YYYY-MM']`을 같이 쓴다 — 급여 화면이 두 키를 읽고 순수 함수에 넣는다. 무효화는 [runtime/README.md](../../architecture/runtime/README.md#무효화-표)에 있다.
+키는 `['payroll', 'YYYY-MM']`이고 `wage_rates`·`adjustments`·`excuse_status`를 그달치로 받는다. 배정과 날은 `['schedule', 'YYYY-MM']`을 같이 쓴다 — 급여 화면이 두 키를 읽고 순수 함수에 넣는다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
 
 ## 소유 데이터
 
 표는 `wage_rates`·`default_wage_rates`·`adjustments`·`holidays` 넷이다.
+
+| 테이블 | 파일 | 한 줄 |
+| --- | --- | --- |
+| `adjustments` | payroll | 관리자가 손본 그날 그 사람의 근무 시간 |
+| `wage_rates` | payroll | 사람별 시급 이력 |
+| `default_wage_rates` | payroll | 기본 시급 이력 |
+| `holidays` | payroll | 공공 API에서 받아둔 공휴일 |
+
+읽기 RLS는 기본값을 좁힌다.
+
+| 표 | 누가 읽나 |
+| --- | --- |
+| `wage_rates` | 본인 행과 관리자 |
+| `default_wage_rates` | 관리자 |
 
 ### 시급 이력은 사람마다 실제 행이다
 
@@ -43,6 +57,10 @@
 | `set_default_wage` | 기본 시급. 따르는 전원에게 같은 날 행이 한 트랜잭션에 선다 |
 | `set_adjustment` | 그날 그 사람의 근무 시간 조정 |
 
+| 함수 | 무효화 |
+| --- | --- |
+| `set_wage` · `reset_wage_to_default` · `set_default_wage` · `set_adjustment` | `['payroll']` |
+
 시급·조정 전부다. 돈이라 낙관적으로 칠하지 않는다.
 
 ### 공휴일 넣기
@@ -57,7 +75,7 @@
 
 저장된 금액이 없다. 두 키가 갖춰지면 `features/payroll`의 순수 함수가 돈다. 서른 명 한 달이면 배정 천 행이라 `useMemo` 하나면 된다. 통계가 여러 달을 합칠 때는 달마다 키를 읽어 더한다.
 
-급여 달과 근무표 달의 범위가 다르면 급여 한 달이 `['schedule']` 두 달을 읽는다 — [runtime/README.md](../../architecture/runtime/README.md#아직-안-정한-것)의 달 키 범위가 정해지면 따라간다.
+급여 달과 근무표 달의 범위가 다르면 급여 한 달이 `['schedule']` 두 달을 읽는다 — [schedule/design.md](../schedule/design.md#아직-안-정한-것)의 달 키 범위가 정해지면 따라간다.
 
 ## UI 연결
 

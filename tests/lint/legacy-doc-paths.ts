@@ -9,6 +9,8 @@ export type LegacyPathViolation = {
 
 const DOCS = "docs/";
 
+const DESIGN = `${DOCS}2-design/`;
+
 const LEGACY_PATTERNS = [
   `${DOCS}plan.md`,
   `${DOCS}prd.md`,
@@ -16,6 +18,9 @@ const LEGACY_PATTERNS = [
   `${DOCS}adr/`,
   `${DOCS}spec/`,
   `${DOCS}design-system/`,
+  `${DESIGN}domain/`,
+  `${DESIGN}architecture/`,
+  `${DESIGN}design-system/pages/`,
 ];
 
 const SCANNED_ROOTS = [
@@ -59,6 +64,26 @@ const ALLOWED_LINES = [
   {
     file: "docs/3-build/plans/sdlc-gate.md",
     marker: "옮기기 전 경로",
+  },
+  {
+    file: "docs/2-design/adr/ADR-002-sdd-ddd-tdd.md",
+    marker: `\`${DESIGN}domain/`,
+  },
+  {
+    file: "docs/2-design/adr/ADR-004-domain-rules-home.md",
+    marker: `${DESIGN}domain/`,
+  },
+  {
+    file: "docs/3-build/plans/session-foundation.md",
+    marker: `\`${DESIGN}domain/account.md\``,
+  },
+  {
+    file: "docs/3-build/plans/doc-map-links.md",
+    marker: `\`${DESIGN}architecture/README.md\``,
+  },
+  {
+    file: "docs/proposals/docs-structure-followup.md",
+    marker: "**수정 대상.**",
   },
 ];
 

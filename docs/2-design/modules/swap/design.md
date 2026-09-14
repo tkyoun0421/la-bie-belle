@@ -4,9 +4,9 @@
 
 ## 참조 규칙
 
-공통 스키마·권한·컬럼 규약은 [data-model/README.md](../../architecture/data-model/README.md), 읽기·쓰기·타입·에러 계약은 [api/README.md](../../architecture/api/README.md), 캐시 계층·무효화 표·시각은 [runtime/README.md](../../architecture/runtime/README.md)를 따른다.
+공통 스키마·권한·컬럼 규약과 읽기·쓰기·타입·에러 계약은 [system/data-access.md](../../system/data-access.md), 캐시 계층·시각은 [system/runtime.md](../../system/runtime.md), 시스템 경계는 [system/architecture.md](../../system/architecture.md)를 따른다.
 
-키는 [schedule/design.md](../schedule/design.md)의 `['requests']`를 같이 쓴다 — 교대는 `requests`의 한 `kind`다. 무효화는 [runtime/README.md](../../architecture/runtime/README.md#무효화-표)에 있다.
+키는 [schedule/design.md](../schedule/design.md)의 `['requests']`를 같이 쓴다 — 교대는 `requests`의 한 `kind`다. 무효화 키는 교대 함수를 든 [schedule/design.md](../schedule/design.md#근무-요청-보내기)에 있고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
 
 ## 소유 데이터
 

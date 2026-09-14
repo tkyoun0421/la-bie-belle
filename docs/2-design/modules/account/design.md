@@ -4,13 +4,24 @@
 
 ## 참조 규칙
 
-공통 스키마·권한·컬럼 규약은 [data-model/README.md](../../architecture/data-model/README.md), 읽기·쓰기·타입·에러 계약은 [api/README.md](../../architecture/api/README.md), 캐시 계층·무효화 표·시각은 [runtime/README.md](../../architecture/runtime/README.md)를 따른다.
+공통 스키마·권한·컬럼 규약과 읽기·쓰기·타입·에러 계약은 [system/data-access.md](../../system/data-access.md), 캐시 계층·시각은 [system/runtime.md](../../system/runtime.md), 시스템 경계는 [system/architecture.md](../../system/architecture.md)를 따른다.
 
-키는 `['profile']`(본인)·`['members']`(관리자 명단)·`['members', 'pending']`이다. 무효화는 [runtime/README.md](../../architecture/runtime/README.md#무효화-표)에 있다.
+키는 `['profile']`(본인)·`['members']`(관리자 명단)·`['members', 'pending']`이다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
 
 ## 소유 데이터
 
 표는 `profiles`·`profile_private` 둘이다.
+
+| 테이블 | 파일 | 한 줄 |
+| --- | --- | --- |
+| `profiles` | account | 사람 하나. 이름·사진·역할·승인·차단·퇴사·비움 시각. `user_id`가 `auth.users`를 가리킨다 |
+| `profile_private` | account | 연락처·생년월일·성별. 본인과 관리자만 |
+
+읽기 RLS는 기본값을 좁힌다.
+
+| 표 | 누가 읽나 |
+| --- | --- |
+| `profile_private` | 본인 행과 관리자 |
 
 ### 프로필 신원
 
@@ -40,7 +51,7 @@
 
 ### 첫 진입과 게이트
 
-`proxy`가 세션 쿠키만 본다 — 없으면 `/login`이다. 승인됐는지·차단됐는지·퇴사했는지는 앱이 뜬 뒤 `['profile']`을 읽고 가른다. 이유는 [`README.md`](../../architecture/runtime/README.md#캐시-네-계층)에 있다 — 서버가 판정을 그리면 껍데기를 캐시할 수 없다. 지금 코드는 `src/middleware.ts`가 세션을 갱신하고 `src/features/auth/read-auth-gate.ts`가 서버에서 `approved_at`을 읽어 가른다 — `backlog.md` 「인증 진입 전환」이 옮긴다.
+`proxy`가 세션 쿠키만 본다 — 없으면 `/login`이다. 승인됐는지·차단됐는지·퇴사했는지는 앱이 뜬 뒤 `['profile']`을 읽고 가른다. 이유는 [system/runtime.md](../../system/runtime.md#캐시-네-계층)에 있다 — 서버가 판정을 그리면 껍데기를 캐시할 수 없다. 지금 코드는 `src/middleware.ts`가 세션을 갱신하고 `src/features/auth/read-auth-gate.ts`가 서버에서 `approved_at`을 읽어 가른다 — `backlog.md` 「인증 진입 전환」이 옮긴다.
 
 `['profile']`이 `blocked_at`을 들면 차단 화면, `left_at`을 들면 퇴사 화면, `approved_at`이 없으면 `/pending`이다. `staleTime`이 0이고 영속하지 않는다 — 차단당한 사람이 옛 프로필로 근무표를 더 보는 일이 없게. 읽는 자리는 껍데기 하나다 — 앱이 뜰 때와 탭 복귀에 읽고 라우트 전환은 그 값을 쓴다. 탭을 옮길 때마다 빈 화면이 끼지 않는다. 읽는 동안은 아무것도 안 그린다.
 
@@ -67,6 +78,11 @@
 | --- | --- |
 | `approve_member`, `reject_member`, `block_member`, `unblock_member` | 가입 승인·거절·차단·해제. 승인은 `wage_rates` 첫 행을 같이 넣는다 |
 
+| 함수 | 무효화 |
+| --- | --- |
+| `approve_member` | `['members']` `['payroll']` |
+| `reject_member` · `block_member` · `unblock_member` · `set_role` · `mark_leave` · `undo_leave` | `['members']` |
+
 ### 관리자 올리기·내리기
 
 | 함수 | 하는 일 |
@@ -78,6 +94,10 @@
 | 함수 | 하는 일 |
 | --- | --- |
 | `set_display_name` | 관리자가 이름을 고친다. 본인은 못 고치니 여기뿐이다 |
+
+| 함수 | 무효화 |
+| --- | --- |
+| `set_display_name` · `submit_profile` | `['profile']` `['members']` `['schedule']` |
 
 ### 계정 잇기
 

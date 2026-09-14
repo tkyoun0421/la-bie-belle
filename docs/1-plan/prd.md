@@ -2,7 +2,7 @@
 
 2026-08-25 인터뷰로 정했다.
 
-계산과 상태 전이 규칙은 여기 없다. `docs/2-design/domain/`이 정본이다. 이 문서는 왜 만드는지와 누구를 위한 것인지와 무엇을 안 하는지를 담는다.
+계산과 상태 전이 규칙은 여기 없다. `docs/2-design/modules/`가 정본이다. 이 문서는 왜 만드는지와 누구를 위한 것인지와 무엇을 안 하는지를 담는다.
 
 ## 무엇을 만드나
 
@@ -66,7 +66,7 @@
 
 근무표와 급여가 외부로 새지 않게 막는 유일한 문이다.
 
-규칙은 [docs/2-design/domain/account.md](../2-design/modules/account/README.md)에 있다.
+규칙은 [modules/account/README.md](../2-design/modules/account/README.md)에 있다.
 
 ### 통계
 
@@ -96,4 +96,4 @@
 
 디자인 방향은 레퍼런스를 보고 사람이 정한다.
 
-도메인 규칙의 빈자리는 `docs/2-design/domain/`의 각 파일 맨 아래 "아직 안 정한 것" 절에 모아뒀다. 급여 쪽이 가장 크고 가장 급하다.
+도메인 규칙의 빈자리는 `docs/2-design/modules/`의 각 파일 맨 아래 "아직 안 정한 것" 절에 모아뒀다. 급여 쪽이 가장 크고 가장 급하다.
