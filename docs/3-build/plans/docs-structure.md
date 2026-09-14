@@ -32,7 +32,7 @@
 - [x] `spec/`에 기능 spec만 남는다.
 - [x] 옮긴 문서를 backlog 행이 링크하고 `pnpm test`의 링크·경로 검사가 통과한다.
 - [x] spec 형식 규칙이 설계 안내에 있다.
-- [ ] `spec/dashboard.md`가 새 형식으로 선다 — 데이터 task가 서서 착수할 때 쓴다.
+- [x] `spec/dashboard.md`를 새 형식으로 세우는 일은 대시보드 task가 착수할 때 한다 — `backlog.md` 「대기」의 그 행에 적었다.
 
 ## 5. spec과 구현 계획의 경계를 적는다
 
