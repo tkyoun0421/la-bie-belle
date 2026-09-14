@@ -108,7 +108,7 @@ unique index 둘이 도메인 규칙을 지킨다.
 
 **시각 알림은 pg_cron이 insert한다.** 전날 저녁 9시 미리알림, 시작 10분 전, 예식 3일 전 빈자리 재촉이 여기다. 매 분 돌며 조건에 맞는 행을 넣는다. 「이미 보냈나」는 cron이 넣는 kind에만 `(profile_id, kind, subject_id)` unique로 막는다 — 사건 알림은 트랜잭션이 이미 중복을 막는다.
 
-`notifications(profile_id, kind, subject_id, payload, created_at, read_at, pushed_at)`. 지워지지 않고 `read_at`만 찍힌다. 푸시가 나가는 길은 [`../api/`](../api/)에 있다 — Database Webhook이 Edge Function을 부르고 거기서 `pushed_at`을 찍는다.
+`notifications(profile_id, kind, subject_id, payload, created_at, read_at, claimed_at, push_attempts, pushed_at)`. 지워지지 않고 `read_at`만 찍힌다. 푸시가 나가는 길은 [`../api/`](../api/#푸시)에 있다 — `claimed_at`은 잡은 시각, `pushed_at`은 성공한 시각이라 둘이 다르다.
 
 ## 홀
 
@@ -118,13 +118,13 @@ unique index 둘이 도메인 규칙을 지킨다.
 
 **`profiles.id`는 별도 uuid고 `user_id`가 `auth.users`를 가리킨다.** `user_id uuid unique references auth.users on delete set null`. 지금 마이그레이션은 `id = auth.users.id`(cascade)라 두 가지가 안 된다 — 새 구글 계정을 옛 프로필에 잇는 것([account.md](../../domain/account.md#구글-계정-변경))과 계정을 지우고 프로필을 남기는 것. 잇기는 `user_id`만 바꾸는 함수다. RLS 술어는 전부 `user_id = auth.uid()`가 된다.
 
-새 로그인마다 빈 프로필을 만드는 트리거는 뗀다. 첫 진입에서 `dals`가 만들고, 잇기 함수는 그 빈 행을 지운다.
+새 로그인마다 빈 프로필을 만드는 트리거는 뗀다. 첫 진입에서 `ensure_profile()` 함수가 만들고, 잇기 함수는 그 빈 행을 지운다.
 
 **개인정보는 표를 가른다.** `profiles`(이름·사진·역할)는 승인된 전원이 읽고 `profile_private`(연락처·생년월일·성별)는 본인과 관리자만 읽는다. RLS가 행 단위라 한 표로는 열을 못 가른다.
 
 **차단은 `blocked_at`이다.** Auth ban을 안 쓴다 — 구글 로그인은 되지만 미들웨어가 차단 화면으로 보내고 `is_approved()`가 `blocked_at is null`을 품어 행을 안 준다. 서비스 키 자리가 안 는다.
 
-**퇴사 1년 뒤의 「삭제」는 비우기다.** `erase_profile()` 함수가 `profile_private` 행을 지우고 사진을 비우고 `erased_at`을 찍는다. 이름은 남는다 — 그게 스냅샷이다. 배정·인증·시급 FK가 그대로 살아 통계와 지난 근무표가 안 흔들린다. `auth.users` 행은 Supabase Admin API로 지운다 — 서비스 키 자리다.
+**퇴사 1년 뒤의 「삭제」는 비우기다.** pg_cron의 `erase_profiles()`가 매일 `left_at`이 1년 지난 프로필의 `profile_private` 행을 지우고 사진을 비우고 `erased_at`을 찍는다. 이름은 남는다 — 그게 스냅샷이다. 배정·인증·시급 FK가 그대로 살아 통계와 지난 근무표가 안 흔들린다. `auth.users` 행은 Supabase Admin API로 지운다 — 서비스 키 자리다.
 
 ## 서비스 키 자리
 
