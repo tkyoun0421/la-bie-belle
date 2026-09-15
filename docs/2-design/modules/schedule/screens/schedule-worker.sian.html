@@ -26,18 +26,30 @@
   · 뷰어 크롬(--b-*)의 색. 목업 밖이라 애초에 토큰 대상이 아니다.
 
   「제안」으로 그린 것 — 결정되면 문서에서 표시를 떼고 여기도 같이 고친다.
-  · 근무 취소 버튼의 마감. 도메인 미정이라 교대와 같은 「전날까지」로 그렸다
   · 아코디언 기본 펼침. 전부 접힘으로 두고 06·07은 한 날을 누른 뒤를 그렸다
     · 13/사유 글자 상한 100자. 카운터를 「98 / 100」으로 고정해 거의 찬 상태를 보였다
-  · 교육 배지 줄·한 포지션 여러 사람 줄의 인증 표기. 05/ATT · FULL은 그 줄들을 빼고
-    단일 배정 열한 자리로만 「전원 출근」을 그렸다 — 「아직 안 정한 것」에도 올렸다
 
   인증 상태·현황 줄의 글자 크기·색과, 내 줄에서 「나」·인증 상태의 자리 순서는 이번
   개정으로 문서에 올라가 표시를 뗐다 — 인증 상태는 fg.neutral-muted · text-xs, 현황
   줄은 fg.neutral-subtle · text-xs에 부제와의 사이 mt-2, 「나」가 왼쪽·인증 상태가
   오른쪽이다. 한 포지션 여러 사람 줄(예: 매니저 · 박지호 / 최은우)도 문서가 사람마다
-  줄을 세우라고 못 박아 그렇게 갈랐다 — 다만 그 줄에 인증 표기가 서는지는 여전히
-  「아직 안 정한 것」이라 05/ATT · FULL이 위 줄대로 빼고 그린다.
+  줄을 세우라고 못 박았고, 인증 상태가 사람에게 붙는 것이라 줄을 나눈 각자에게 그대로
+  선다 — 05/ATT · FULL이 매니저 두 줄 모두에 출근 시각을 그린다.
+
+  이번 개정으로 근무표가 달력 달이 됐다 — schedule-worker.md 「달력 순 — 기본」과
+  components.md 「근무표 날짜 칸」의 「그리드가 이 달 밖으로 남긴 칸은 비운다」가 정본이다.
+  10월 달력이 5줄로 늘고(9월 28~30일, 11월 1일이 빈칸), 01·10·11의 달력과 14의 목업
+  넷이 이 규칙을 같이 따른다. 앞 3칸·뒤 1칸은 날짜 숫자도 배경도 없는 빈 칸이다. 10월
+  1~4일의 상태(안 연 날·열린 날)는 그날 예식이 있는지에 달린 것이라 다른 날과 같은
+  임의의 예시 데이터다.
+
+  교육 배정이 부제·현황 줄의 인원에 든다 — schedule-worker.md 「명단」 절과 ATT-020이
+  닫았다. 03·04·05/ATT·BEFORE·12의 부제가 교육 줄을 센 수로 바뀌었고, 05/ATT·FULL에도
+  교육 배지 줄(김지우 · 드레스)과 그 출근 시각이 선다. 같은 절이 한 포지션 여러 사람
+  줄도 닫아서, 05/ATT · FULL의 「매니저」 두 줄(박지호·최은우)에도 각자 출근 시각이
+  선다 — 자리 기본값 열하나(SCH-011)에 교육 하나가 붙어 부제·현황 줄은 「12명」이다.
+  「교육 배지 줄·한 포지션 여러 사람 줄의 인증 표기」
+  미정은 이걸로 닫혔다.
 
   05/날 시트 · 인증 상태는 이번 개정으로 새로 섰다 — schedule-worker.md 「인증 상태」 절이
   정본이다. 이 절이 새로 서면서 기존 05~13이 한 칸씩 밀려 06~14가 됐다 — 절 안의 상호
@@ -300,7 +312,7 @@ body.view-scene .stage.scene-live { display: block; }
   --t-base: 1.0625rem; --lh-base: 1.59375rem;
   --t-lg: 1.25rem; --lh-lg: 1.8125rem;
   --t-3xl: 1.875rem; --lh-3xl: 2.5rem;
-  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 14px; --r-xl: 20px;
   --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms; --d-slower: 300ms;
   --interval-beat: 1.8s;
   --interval-dash: 0.55s;
@@ -331,10 +343,10 @@ body.view-scene .stage.scene-live { display: block; }
 .body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
-/* 버튼 — components.md Button. rounded-full, font-medium */
+/* 버튼 — components.md Button. rounded-lg, font-medium */
 .btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; height: 48px; border-radius: 999px; border: 0;
+  width: 100%; height: 48px; border-radius: var(--r-lg); border: 0;
   font-size: var(--t-sm); font-weight: 500; font-family: inherit;
   background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
 }
@@ -351,12 +363,12 @@ body.view-scene .stage.scene-live { display: block; }
   text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--stroke-neutral-muted); cursor: pointer;
 }
 
-/* 보기 전환 알약 · 내 배정만 */
+/* 보기 전환 세그먼트 · 내 배정만 */
 .viewbar { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 2px 0 12px; }
-.seg { display: inline-flex; background: var(--bg-neutral-weak); border-radius: 999px; padding: 3px; }
+.seg { display: inline-flex; background: var(--bg-neutral-weak); border-radius: var(--r-lg); padding: 3px; }
 .seg button {
   border: 0; background: none; font-family: inherit; padding: 0; cursor: pointer;
-  width: 44px; height: 30px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 30px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;
   color: var(--fg-neutral-subtle);
 }
 .seg button.on { background: var(--bg-neutral); color: var(--fg-neutral); box-shadow: var(--card-shadow); }
@@ -463,13 +475,13 @@ body.view-scene .stage.scene-live { display: block; }
 .mcell.sel { background: var(--bg-brand-weak-selected); border: 1px solid var(--stroke-brand-solid); color: var(--fg-neutral); }
 .mcell.sel svg { color: var(--fg-brand); flex: 0 0 auto; }
 
-/* 토스트 — components.md 「토스트」가 정본이다. bg.neutral-solid-soft 반전 면의 알약,
+/* 토스트 — components.md 「토스트」가 정본이다. bg.neutral-solid-soft 반전 면,
    내용 폭, shadow-card. 시트가 없는 화면 위라 하단 CTA가 없고 화면 아래에서 56px다 */
 .toast {
-  position: absolute; left: 50%; bottom: 56px; z-index: 6; transform: translateX(-50%);
-  display: inline-flex; align-items: center; gap: 8px; max-width: calc(100% - 48px);
+  position: absolute; left: 24px; right: 24px; bottom: 56px; z-index: 6; margin: 0 auto; width: fit-content;
+  display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
-  border-radius: 999px; padding: 11px 20px;
+  border-radius: var(--r-lg); padding: 11px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
   box-shadow: var(--card-shadow);
 }
@@ -500,7 +512,7 @@ body.view-scene .stage.scene-live { display: block; }
 .mrow .nm.vacant { font-weight: 400; color: var(--fg-neutral-subtle); }
 .mrow.me { background: var(--bg-brand-weak); margin: 0 -10px; padding: 8px 10px; border-radius: var(--r-sm); border-bottom: 0; }
 .mrow .meflag { margin-left: auto; font-size: var(--t-xs); color: var(--fg-brand); font-weight: 500; }
-.badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 1px 8px; font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
+.badge { display: inline-flex; align-items: center; border-radius: var(--r-sm); padding: 1px 8px; font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
 .badge.neutral { background: var(--bg-neutral-weak); color: var(--fg-neutral-muted); }
 
 /* 05/인증 상태 — schedule-worker.md 「인증 상태」. 여섯 다 fg.neutral-muted고 색으로 안
@@ -660,7 +672,7 @@ body.view-scene .stage.scene-live { display: block; }
     <div class="sec-head">
       <span class="sec-num">01 / 달력 순 — 기본</span>
       <h2>점이 내 근무다</h2>
-      <p>월요일 시작, 달 경계를 넘는 주 단위다. 열린 날은 옅은 면이고 내 근무 날에만 브랜드 점이 선다 — 교육 배정도 같은 점이다. 알약은 글자 없이 아이콘 둘이고 「내 배정만」은 이 보기에 없다.</p>
+      <p>월요일 시작, 달 경계를 넘는 주 단위다. 열린 날은 옅은 면이고 내 근무 날에만 브랜드 점이 선다 — 교육 배정도 같은 점이다. 세그먼트는 글자 없이 아이콘 둘이고 「내 배정만」은 이 보기에 없다.</p>
     </div>
     <div class="grid">
 
@@ -688,6 +700,10 @@ body.view-scene .stage.scene-live { display: block; }
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
+              <span class="cell"></span><span class="cell"></span><span class="cell"></span>
+              <span class="cell off"><b>1</b></span><span class="cell off"><b>2</b></span>
+              <span class="cell none"><b>3</b></span>
+              <span class="cell none"><b>4</b></span>
               <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
               <span class="cell open today"><b>8</b><span class="dot"></span></span>
               <span class="cell none"><b>9</b></span>
@@ -701,7 +717,7 @@ body.view-scene .stage.scene-live { display: block; }
               <span class="cell none"><b>25</b></span>
               <span class="cell off"><b>26</b></span><span class="cell off"><b>27</b></span><span class="cell off"><b>28</b></span><span class="cell off"><b>29</b></span><span class="cell off"><b>30</b></span>
               <span class="cell none"><b>31</b></span>
-              <span class="cell none"><b>11/1</b></span>
+              <span class="cell"></span>
             </div>
             <div class="legend">점이 내 근무예요</div>
             <div class="spacer"></div>
@@ -710,7 +726,7 @@ body.view-scene .stage.scene-live { display: block; }
         <figcaption>
           <div class="cap-key">01 / CAL</div>
           <div class="cap-name">달력 순 · 기본</div>
-          <p class="cap-body">알약에 글자가 없다 — 접근성 라벨이 <strong>「달력 순」·「포지션 순」</strong>이다. 「내 배정만」은 이 보기에 안 선다(점이 이미 내 근무만 가리킨다). 열린 날은 전부 눌리고 시트가 올라온다 — 내 근무가 없어도 누가 나가는지 본다.</p>
+          <p class="cap-body">세그먼트에 글자가 없다 — 접근성 라벨이 <strong>「달력 순」·「포지션 순」</strong>이다. 「내 배정만」은 이 보기에 안 선다(점이 이미 내 근무만 가리킨다). 열린 날은 전부 눌리고 시트가 올라온다 — 내 근무가 없어도 누가 나가는지 본다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>오늘(8일)도 내 근무 날이라 브랜드 면 위에 오늘 원과 점이 같이 선다.</strong> 오늘은 칸 배경이 아니라 <code>bg.neutral-solid</code> 21px 원으로 그린다 — 그날의 상태(여기서는 <code>bg.brand-weak</code>)는 그대로 두고 원이 그 위에 얹힐 뿐이라 상태 둘이 서로를 지우지 않는다(components.md 「근무표 날짜 칸」). 06의 아코디언은 같은 8일을 「안내」로 적는다.</p>
           <p class="cap-body" style="margin-top:8px">확정 전인 달과 근무표를 아직 안 만든 달의 모습은 <strong>14절 「확정 전 — 근무 신청」</strong>에서 근무 신청 화면으로 그린다 — 이 절의 달력과는 다른 자리다.</p>
         </figcaption>
@@ -849,7 +865,7 @@ body.view-scene .stage.scene-live { display: block; }
           <div class="rsheet">
             <div class="grab"></div>
             <div class="sh-title num">10월 10일(토)</div>
-            <div class="sh-sub num">10:00 – 18:00 · 11명</div>
+            <div class="sh-sub num">10:00 – 18:00 · 12명</div>
             <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
             <div class="mrow"><span class="pos">스캔</span><span class="nm">이서준</span></div>
             <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
@@ -859,7 +875,7 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호</span></div>
             <div class="mrow"><span class="pos"></span><span class="nm">최은우</span></div>
             <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="meflag">나</span></div>
-            <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+            <div class="mrow"><span class="pos"></span><span class="nm">박서연</span></div>
             <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
             <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
             <div class="rowbtns">
@@ -872,7 +888,7 @@ body.view-scene .stage.scene-live { display: block; }
           <div class="cap-key">03 / SHEET · MINE</div>
           <div class="cap-name">내 근무 날 시트</div>
           <p class="cap-body">부제가 근무 시간과 인원이다 — 시간은 날짜마다 하나고 전원에게 같다. 교육 배정도 줄로 서고 <strong>Badge neutral 「교육」</strong>이 붙는다. 내 줄은 <code>bg.brand-weak</code> 면에 오른쪽 끝 「나」다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>부제의 「11명」이 교육을 안 센 수다.</strong> 문서가 교육 배정을 인원에 넣는지 안 넣는지 안 적어서 시안이 한쪽을 골랐다 — 줄은 열두 개고 수는 열하나다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>부제의 「12명」이 교육을 센 수다.</strong> 줄은 열두 개고 수도 열둘이다 — 교육 줄도 정규와 같아 현황 줄과 부제의 인원에 든다(schedule-worker.md 「명단」, ATT-020).</p>
         </figcaption>
       </figure>
 
@@ -986,7 +1002,7 @@ body.view-scene .stage.scene-live { display: block; }
           <div class="rsheet">
             <div class="grab"></div>
             <div class="sh-title num">10월 9일(금)</div>
-            <div class="sh-sub num">10:00 – 18:00 · 9명</div>
+            <div class="sh-sub num">10:00 – 18:00 · 10명</div>
             <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
             <div class="mrow"><span class="pos">스캔</span><span class="nm">조은서</span></div>
             <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
@@ -995,7 +1011,7 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="mrow"><span class="pos">축가</span><span class="nm">정우진</span></div>
             <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호</span></div>
             <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
-            <div class="mrow"><span class="pos">안내</span><span class="nm vacant">빈 자리</span></div>
+            <div class="mrow"><span class="pos"></span><span class="nm vacant">빈 자리</span></div>
             <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
             <div class="mrow"><span class="pos">대기실</span><span class="nm">김다은</span></div>
           </div>
@@ -1056,7 +1072,7 @@ body.view-scene .stage.scene-live { display: block; }
           <div class="rsheet">
             <div class="grab"></div>
             <div class="sh-title num">10월 10일(토)</div>
-            <div class="sh-sub num">10:00 – 18:00 · 11명</div>
+            <div class="sh-sub num">10:00 – 18:00 · 12명</div>
             <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
             <div class="mrow"><span class="pos">스캔</span><span class="nm">이서준</span></div>
             <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
@@ -1066,7 +1082,7 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호</span></div>
             <div class="mrow"><span class="pos"></span><span class="nm">최은우</span></div>
             <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="meflag">나</span></div>
-            <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+            <div class="mrow"><span class="pos"></span><span class="nm">박서연</span></div>
             <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
             <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
             <div class="rowbtns">
@@ -1176,17 +1192,18 @@ body.view-scene .stage.scene-live { display: block; }
           <div class="rsheet">
             <div class="grab"></div>
             <div class="sh-title num">10월 17일(토)</div>
-            <div class="sh-sub num">10:00 – 18:00 · 11명</div>
-            <p class="statusline">11명 전원 출근</p>
+            <div class="sh-sub num">10:00 – 18:00 · 12명</div>
+            <p class="statusline">12명 전원 출근</p>
             <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span><span class="att num">출근 09:44</span></div>
             <div class="mrow"><span class="pos">스캔</span><span class="nm">이서준</span><span class="att num">출근 09:51</span></div>
             <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span><span class="att num">출근 09:38</span></div>
             <div class="mrow"><span class="pos">드레스</span><span class="nm">김하은</span><span class="att num">출근 09:49</span></div>
-            <div class="mrow"><span class="pos">드레스</span><span class="nm">김지우</span><span class="att num">출근 09:55</span></div>
+            <div class="mrow"><span class="pos">드레스</span><span class="nm">김지우</span><span class="badge neutral">교육</span><span class="att num">출근 09:55</span></div>
             <div class="mrow"><span class="pos">축가</span><span class="nm">정우진</span><span class="att num">출근 09:47</span></div>
             <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호</span><span class="att num">출근 09:41</span></div>
+            <div class="mrow"><span class="pos"></span><span class="nm">최은우</span><span class="att num">출근 09:46</span></div>
             <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="right"><span class="meflag">나</span><span class="att num">출근 09:50</span></span></div>
-            <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span><span class="att num">출근 09:43</span></div>
+            <div class="mrow"><span class="pos"></span><span class="nm">박서연</span><span class="att num">출근 09:43</span></div>
             <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span><span class="att num">출근 09:39</span></div>
             <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span><span class="att num">출근 09:56</span></div>
           </div>
@@ -1194,8 +1211,9 @@ body.view-scene .stage.scene-live { display: block; }
         <figcaption>
           <div class="cap-key">05 / ATT · FULL</div>
           <div class="cap-name">전원 출근한 날의 현황 줄</div>
-          <p class="cap-body">열한 명이 다 제때 찍으면 현황 줄이 개별 집계 대신 <strong>「11명 전원 출근」</strong> 한 마디로 끝난다 — 문서가 못 박은 문안 그대로다. 지난 날을 연 상황이라 버튼이 없다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>교육 배지가 붙은 줄과 한 포지션 여러 사람 줄의 인증 표기는 문서에 없다.</strong> 03의 명단에는 「드레스 · 김지우 · 교육」 줄과 「매니저」 자리에 박지호·최은우가 줄을 나눠 선 자리가 있는데, 인증이 그 줄들에서 누구 기준으로 찍히는지 안 정해서 이 목업은 그 둘(교육 배지 줄, 한 포지션 여러 사람 줄)을 뺀 열한 자리 단일 배정으로만 단순화했다 — 「아직 안 정한 것」에 올린다.</p>
+          <p class="cap-body">열두 명이 다 제때 찍으면 현황 줄이 개별 집계 대신 <strong>「12명 전원 출근」</strong> 한 마디로 끝난다 — 문서가 못 박은 문안을 인원만 바꿔 썼다. 지난 날을 연 상황이라 버튼이 없다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>교육 배지 줄도 인증 상태가 같은 열에 선다.</strong> 「드레스 · 김지우 · 교육」 줄에 출근 시각이 붙고 부제·현황 줄의 인원에 든다(schedule-worker.md 「명단」, ATT-020).</p>
+          <p class="cap-body" style="margin-top:8px"><strong>한 포지션 여러 사람 줄도 사람마다 각자 인증이 선다.</strong> 「매니저」 자리의 박지호·최은우가 줄을 나눠 서고 각 줄 오른쪽 끝에 자기 출근 시각이 붙는다 — 인증 상태가 사람에게 붙는 것이라 줄을 나눈 순간 답은 이미 정해져 있다(schedule-worker.md 「명단」).</p>
         </figcaption>
       </figure>
 
@@ -1248,7 +1266,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호</span></div>
                 <div class="mrow"><span class="pos"></span><span class="nm">최은우</span></div>
                 <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="meflag">나</span></div>
-                <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+                <div class="mrow"><span class="pos"></span><span class="nm">박서연</span></div>
                 <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
                 <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
                 <div class="rowbtns">
@@ -1559,7 +1577,7 @@ body.view-scene .stage.scene-live { display: block; }
         <figcaption>
           <div class="cap-key">09 / CANCEL · FILLED</div>
           <div class="cap-name">사유를 적으면 보내기가 열린다</div>
-          <p class="cap-body">보낸 뒤의 모습 — 요청 중 표시가 이 화면 어디에 남는지 — 는 <strong>도메인 미정과 같이 정한다.</strong> 문서의 「아직 안 정한 것」이라 안 그렸다.</p>
+          <p class="cap-body">보낸 뒤의 모습은 schedule-worker.md 「보낸 뒤」 절이 정했다 — 시트가 닫히고 명단의 내 줄과 아코디언 날짜 줄 오른쪽에 <strong>Badge neutral 「취소 요청 중」</strong>이 남고 그 배정의 버튼 둘이 잠긴다. 같은 자리·같은 배지를 교대 요청으로 12 / SENT · ACC·SENT · SHEET가 그린다 — 취소는 문구만 「취소 요청 중」으로 바뀐다.</p>
         </figcaption>
       </figure>
 
@@ -1764,6 +1782,10 @@ body.view-scene .stage.scene-live { display: block; }
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
+              <span class="cell"></span><span class="cell"></span><span class="cell"></span>
+              <span class="cell off"><b>1</b></span><span class="cell off"><b>2</b></span>
+              <span class="cell none"><b>3</b></span>
+              <span class="cell none"><b>4</b></span>
               <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
               <span class="cell open today"><b>8</b><span class="dot"></span></span>
               <span class="cell none"><b>9</b></span>
@@ -1779,7 +1801,7 @@ body.view-scene .stage.scene-live { display: block; }
               <span class="cell none"><b>25</b></span>
               <span class="cell off"><b>26</b></span><span class="cell off"><b>27</b></span><span class="cell off"><b>28</b></span><span class="cell off"><b>29</b></span><span class="cell off"><b>30</b></span>
               <span class="cell none"><b>31</b></span>
-              <span class="cell none"><b>11/1</b></span>
+              <span class="cell"></span>
             </div>
             <div class="legend">점이 내 근무, 도는 점선이 근무 요청이에요</div>
             <div class="spacer"></div>
@@ -1829,6 +1851,10 @@ body.view-scene .stage.scene-live { display: block; }
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
+              <span class="cell"></span><span class="cell"></span><span class="cell"></span>
+              <span class="cell off"><b>1</b></span><span class="cell off"><b>2</b></span>
+              <span class="cell none"><b>3</b></span>
+              <span class="cell none"><b>4</b></span>
               <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
               <span class="cell open today"><b>8</b><span class="dot"></span></span>
               <span class="cell none"><b>9</b></span>
@@ -1842,7 +1868,7 @@ body.view-scene .stage.scene-live { display: block; }
               <span class="cell none"><b>25</b></span>
               <span class="cell off"><b>26</b></span><span class="cell off"><b>27</b></span><span class="cell off"><b>28</b></span><span class="cell off"><b>29</b></span><span class="cell off"><b>30</b></span>
               <span class="cell none"><b>31</b></span>
-              <span class="cell none"><b>11/1</b></span>
+              <span class="cell"></span>
             </div>
             <div class="legend">점이 내 근무예요</div>
             <div class="spacer"></div>
@@ -1851,7 +1877,7 @@ body.view-scene .stage.scene-live { display: block; }
         <figcaption>
           <div class="cap-key">11 / DARK · CAL</div>
           <div class="cap-name">다크의 달력</div>
-          <p class="cap-body">다크에서 <code>bg.neutral-weak</code>가 바탕보다 밝아진다 — 열린 날이 떠오르고 안 연 날이 가라앉는 관계는 라이트와 같다. <strong>알약 선택 칸은 그림자가 사라져 면 대비만 남는다.</strong></p>
+          <p class="cap-body">다크에서 <code>bg.neutral-weak</code>가 바탕보다 밝아진다 — 열린 날이 떠오르고 안 연 날이 가라앉는 관계는 라이트와 같다. <strong>세그먼트 선택 칸은 그림자가 사라져 면 대비만 남는다.</strong></p>
         </figcaption>
       </figure>
 
@@ -1892,7 +1918,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호</span></div>
                 <div class="mrow"><span class="pos"></span><span class="nm">최은우</span></div>
                 <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="meflag">나</span></div>
-                <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+                <div class="mrow"><span class="pos"></span><span class="nm">박서연</span></div>
                 <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
                 <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
                 <div class="rowbtns">
@@ -1960,7 +1986,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호</span></div>
                 <div class="mrow"><span class="pos"></span><span class="nm">최은우</span></div>
                 <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="badge neutral">교대 요청 중</span><span class="meflag">나</span></div>
-                <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+                <div class="mrow"><span class="pos"></span><span class="nm">박서연</span></div>
                 <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
                 <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
                 <div class="rowbtns">
@@ -2021,7 +2047,7 @@ body.view-scene .stage.scene-live { display: block; }
           <div class="rsheet">
             <div class="grab"></div>
             <div class="sh-title num">10월 10일(토)</div>
-            <div class="sh-sub num">10:00 – 18:00 · 11명</div>
+            <div class="sh-sub num">10:00 – 18:00 · 12명</div>
             <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
             <div class="mrow"><span class="pos">스캔</span><span class="nm">이서준</span></div>
             <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
@@ -2031,7 +2057,7 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호</span></div>
             <div class="mrow"><span class="pos"></span><span class="nm">최은우</span></div>
             <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="badge neutral">교대 요청 중</span><span class="meflag">나</span></div>
-            <div class="mrow"><span class="pos">안내</span><span class="nm">박서연</span></div>
+            <div class="mrow"><span class="pos"></span><span class="nm">박서연</span></div>
             <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
             <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
             <div class="rowbtns">
@@ -2169,7 +2195,7 @@ body.view-scene .stage.scene-live { display: block; }
     <div class="sec-head">
       <span class="sec-num">14 / 확정 전 — 근무 신청</span>
       <h2>같은 달력이 접수 중엔 신청서, 마감 뒤엔 대기표다</h2>
-      <p>별도 제출 화면이 없다. 확정 전 달로 넘기면 이 달력이 곧 근무 신청 모드고, 확정되면 같은 자리가 01의 근무표로 바뀐다. 알약이 안 선다 — 명단이 없어 포지션 순이 보여줄 것이 없다. 세 목업은 위 01~13이 그리는 「10월 8일, 확정 푸시 직후」보다 <strong>앞선 시점</strong>이다 — 같은 10월이 만들어지고, 접수받고, 마감되는 과정이다.</p>
+      <p>별도 제출 화면이 없다. 확정 전 달로 넘기면 이 달력이 곧 근무 신청 모드고, 확정되면 같은 자리가 01의 근무표로 바뀐다. 세그먼트가 안 선다 — 명단이 없어 포지션 순이 보여줄 것이 없다. 세 목업은 위 01~13이 그리는 「10월 8일, 확정 푸시 직후」보다 <strong>앞선 시점</strong>이다 — 같은 10월이 만들어지고, 접수받고, 마감되는 과정이다.</p>
     </div>
     <div class="grid">
 
@@ -2192,6 +2218,13 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="deadline num">스케줄 신청 마감 10월 2일(금) · 3일 남았어요</div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
+              <span class="cell"></span>
+              <span class="cell"></span>
+              <span class="cell"></span>
+              <span class="cell pre"><b>1</b></span>
+              <span class="cell pre"><b>2</b></span>
+              <span class="cell pre"><b>3</b></span>
+              <span class="cell pre"><b>4</b></span>
               <span class="cell pre"><b>5</b></span>
               <span class="cell pre"><b>6</b></span>
               <span class="cell pre"><b>7</b></span>
@@ -2219,7 +2252,7 @@ body.view-scene .stage.scene-live { display: block; }
               <span class="cell pre"><b>29</b></span>
               <span class="cell pre"><b>30</b></span>
               <span class="cell pre"><b>31</b></span>
-              <span class="cell pre"><b>11/1</b></span>
+              <span class="cell"></span>
             </div>
             <div class="spacer"></div>
           </div>
@@ -2255,6 +2288,13 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="deadline num">스케줄 신청 마감 10월 2일(금) · 3일 남았어요</div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
+              <span class="cell"></span>
+              <span class="cell"></span>
+              <span class="cell"></span>
+              <span class="cell pre"><b>1</b></span>
+              <span class="cell pre"><b>2</b></span>
+              <span class="cell pre"><b>3</b></span>
+              <span class="cell pre"><b>4</b></span>
               <span class="cell pre"><b>5</b></span>
               <span class="cell pre"><b>6</b></span>
               <span class="cell pre"><b>7</b></span>
@@ -2282,7 +2322,7 @@ body.view-scene .stage.scene-live { display: block; }
               <span class="cell pre"><b>29</b></span>
               <span class="cell pre"><b>30</b></span>
               <span class="cell pre"><b>31</b></span>
-              <span class="cell pre"><b>11/1</b></span>
+              <span class="cell"></span>
             </div>
             <div class="spacer"></div>
           </div>
@@ -2328,6 +2368,13 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="waitline">근무표를 만들고 있어요. 확정되면 여기에 보여요</div>
             <div class="dow" style="margin-top:12px"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
+              <span class="cell"></span>
+              <span class="cell"></span>
+              <span class="cell"></span>
+              <span class="cell pre"><b>1</b></span>
+              <span class="cell pre"><b>2</b></span>
+              <span class="cell pre"><b>3</b></span>
+              <span class="cell pre"><b>4</b></span>
               <span class="cell pre"><b>5</b></span>
               <span class="cell pre"><b>6</b></span>
               <span class="cell pre"><b>7</b></span>
@@ -2355,7 +2402,7 @@ body.view-scene .stage.scene-live { display: block; }
               <span class="cell pre"><b>29</b></span>
               <span class="cell pre"><b>30</b></span>
               <span class="cell pre"><b>31</b></span>
-              <span class="cell pre"><b>11/1</b></span>
+              <span class="cell"></span>
             </div>
             <div class="spacer"></div>
           </div>
@@ -2387,6 +2434,13 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="waitline">아직 10월 근무 신청을 받지 않아요. 열리면 알려드릴게요</div>
             <div class="dow" style="margin-top:12px"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
+              <span class="cell"></span>
+              <span class="cell"></span>
+              <span class="cell"></span>
+              <span class="cell pre"><b>1</b></span>
+              <span class="cell pre"><b>2</b></span>
+              <span class="cell pre"><b>3</b></span>
+              <span class="cell pre"><b>4</b></span>
               <span class="cell pre"><b>5</b></span>
               <span class="cell pre"><b>6</b></span>
               <span class="cell pre"><b>7</b></span>
@@ -2414,7 +2468,7 @@ body.view-scene .stage.scene-live { display: block; }
               <span class="cell pre"><b>29</b></span>
               <span class="cell pre"><b>30</b></span>
               <span class="cell pre"><b>31</b></span>
-              <span class="cell pre"><b>11/1</b></span>
+              <span class="cell"></span>
             </div>
             <div class="spacer"></div>
           </div>

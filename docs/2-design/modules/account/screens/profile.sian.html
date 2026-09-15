@@ -256,7 +256,7 @@ code {
   --t-base: 1.0625rem; --lh-base: 1.59375rem;
   --t-lg: 1.25rem; --lh-lg: 1.8125rem;
   --t-xl: 1.375rem; --lh-xl: 1.9375rem;
-  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 14px; --r-xl: 20px;
   --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms; --d-slower: 300ms;
 
   width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
@@ -337,7 +337,7 @@ code {
 /* 로그아웃 — Button ghost, 가운데 정렬 */
 .btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; height: 48px; border-radius: 999px; border: 0;
+  width: 100%; height: 48px; border-radius: var(--r-lg); border: 0;
   font-size: var(--t-base); font-weight: 500; font-family: inherit;
   background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
 }
@@ -345,7 +345,7 @@ code {
 .btn.ghost { background: none; color: var(--fg-neutral-muted); }
 .btn.destructive { background: var(--bg-critical-solid); color: var(--fg-brand-contrast); }
 .btn.disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); cursor: not-allowed; }
-.logout { margin-top: 40px; margin-bottom: 24px; font-size: var(--t-sm); line-height: var(--lh-sm); }
+.logout { margin-top: 40px; margin-bottom: 24px; font-size: var(--t-sm); line-height: var(--lh-sm); border-radius: 8px; }
 /* 버튼 둘이 가로로 나란히, 사이는 gap-3 = 12px */
 .sbtns { display: flex; gap: 12px; margin-top: 24px; }
 .sbtns .btn { flex: 1 1 0; height: 48px; }
@@ -429,10 +429,10 @@ code {
 /* 토스트 — components.md 「토스트」가 정본이다. 이 화면은 탭 바가 늘 있어서 56px이
    아니라 80px에 뜬다(components.md 토스트 절의 높이 표) */
 .toast {
-  position: absolute; left: 50%; bottom: 80px; z-index: 6; transform: translateX(-50%);
-  display: inline-flex; align-items: center; gap: 8px; max-width: calc(100% - 48px);
+  position: absolute; left: 24px; right: 24px; bottom: 80px; z-index: 6; margin: 0 auto; width: fit-content;
+  display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
-  border-radius: 999px; padding: 11px 20px;
+  border-radius: var(--r-lg); padding: 11px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
   box-shadow: var(--card-shadow);
 }

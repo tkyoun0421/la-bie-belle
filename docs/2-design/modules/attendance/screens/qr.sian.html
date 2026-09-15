@@ -260,7 +260,7 @@ code {
 
 .btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  height: 48px; border-radius: 999px; border: 0;
+  height: 48px; border-radius: 14px; border: 0;
   font-size: 1.0625rem; font-weight: 500; font-family: inherit;
   background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
 }
@@ -281,10 +281,10 @@ code {
 
 /* 토스트 — components.md 「토스트」가 정본이다 */
 .toast {
-  position: absolute; left: 50%; bottom: 56px; z-index: 6; transform: translateX(-50%);
-  display: inline-flex; align-items: center; gap: 8px; max-width: calc(100% - 48px);
+  position: absolute; left: 24px; right: 24px; bottom: 56px; z-index: 6; margin: 0 auto; width: fit-content;
+  display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
-  border-radius: 999px; padding: 11px 20px;
+  border-radius: 14px; padding: 11px 20px;
   font-size: .9375rem; line-height: 1.40625rem;
   box-shadow: var(--card-shadow);
 }

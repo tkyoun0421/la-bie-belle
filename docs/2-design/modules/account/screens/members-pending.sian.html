@@ -240,7 +240,7 @@ code {
   --t-base: 1.0625rem; --lh-base: 1.59375rem;
   --t-lg: 1.25rem; --lh-lg: 1.8125rem;
   --t-xl: 1.375rem; --lh-xl: 1.9375rem;
-  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 14px; --r-xl: 20px;
   --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms; --d-slower: 300ms;
 
   width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
@@ -322,7 +322,7 @@ code {
 /* 버튼 */
 .btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; height: 48px; border-radius: 999px; border: 0;
+  width: 100%; height: 48px; border-radius: var(--r-lg); border: 0;
   font-size: var(--t-base); font-weight: 500; font-family: inherit;
   background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
 }
@@ -330,7 +330,8 @@ code {
 .btn.destructive { background: var(--bg-critical-solid); color: var(--fg-brand-contrast); }
 .btn.pressed { background: var(--bg-brand-solid-pressed); transform: scale(.97); }
 .btn.destructive.pressed { background: var(--bg-critical-solid-pressed); }
-/* 줄 오른쪽의 「차단 풀기」 — 작은 secondary 알약 */
+/* 줄 오른쪽의 「차단 풀기」 — 작은 secondary 버튼, 34px. 32px 이하만 rounded-sm(8px)이고
+   34px은 그 밖이라 .btn 기본값(--r-lg, 14px)을 그대로 물려받는다 */
 .btn.mini { width: auto; height: 34px; padding: 0 14px; font-size: var(--t-sm); }
 /* 버튼 둘이 가로로 나란히 서고 폭을 반씩 나눈다. 사이는 gap-3 = 12px */
 .sbtns { display: flex; gap: 12px; margin-top: 24px; }
@@ -373,13 +374,13 @@ code {
 .face.in { animation: facein var(--d-base) ease-out both; }
 @keyframes facein { from { opacity: 0; } to { opacity: 1; } }
 
-/* 토스트 — components.md 「토스트」가 정본이다. bg.neutral-solid-soft 반전 면의 알약,
+/* 토스트 — components.md 「토스트」가 정본이다. bg.neutral-solid-soft 반전 면에 rounded-lg,
    내용 폭, shadow-card. 이 화면은 하단 CTA가 없어 화면 아래에서 56px이다 */
 .toast {
-  position: absolute; left: 50%; bottom: 56px; z-index: 6; transform: translateX(-50%);
-  display: inline-flex; align-items: center; gap: 8px; max-width: calc(100% - 48px);
+  position: absolute; left: 24px; right: 24px; bottom: 56px; z-index: 6; margin: 0 auto; width: fit-content;
+  display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
-  border-radius: 999px; padding: 11px 20px;
+  border-radius: var(--r-lg); padding: 11px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
   box-shadow: var(--card-shadow);
 }
@@ -1163,7 +1164,7 @@ code {
           <div class="cap-key">BLOCKED / LIST</div>
           <div class="cap-name">줄마다 「차단 풀기」</div>
           <p class="cap-body">앱바 제목이 「차단한 사람」이고 화살표 자리에 버튼이 선다. <strong>상세 시트가 없다.</strong> 이 목록에도 배지가 없다 — 차단한 사람을 가입 대기와 한 목록에 섞고 배지로 갈랐다면 매일 보는 목록에 몇 달에 한 번 볼 것이 섞인다.</p>
-          <p class="cap-body" style="margin-top:8px">보조 정보의 문안 셋이 문서의 표에 있다 — 「오늘 차단했어요」·「어제 차단했어요」·「2주 전에 차단했어요」다. <strong>목록과 같은 결로 날짜를 안 쓰고 얼마나 됐는지로 적는다.</strong> <strong>줄 오른쪽의 「차단 풀기」는 secondary 알약이다</strong> — 여럿이 나란히 서는 자리라 어느 하나가 튀면 안 된다.</p>
+          <p class="cap-body" style="margin-top:8px">보조 정보의 문안 셋이 문서의 표에 있다 — 「오늘 차단했어요」·「어제 차단했어요」·「2주 전에 차단했어요」다. <strong>목록과 같은 결로 날짜를 안 쓰고 얼마나 됐는지로 적는다.</strong> <strong>줄 오른쪽의 「차단 풀기」는 작은 secondary 버튼이다</strong> — 여럿이 나란히 서는 자리라 어느 하나가 튀면 안 된다.</p>
         </figcaption>
       </figure>
 
@@ -1232,7 +1233,7 @@ code {
         <figcaption>
           <div class="cap-key">BLOCKED / CONFIRM</div>
           <div class="cap-name">차단 풀기 확인</div>
-          <p class="cap-body"><strong>「차단 풀기」는 destructive가 아니다 — 문을 여는 동작이다.</strong> 풀면 그 계정이 다시 로그인할 수 있고, 프로필을 다시 보내면 가입 대기 목록에 뜬다. <strong>시트 오른쪽의 것은 primary다</strong> — 이 화면이 묻는 것에 답하는 버튼이라 여기서는 primary가 하나 선다. 줄 오른쪽의 secondary 알약과 갈리는 자리다.</p>
+          <p class="cap-body"><strong>「차단 풀기」는 destructive가 아니다 — 문을 여는 동작이다.</strong> 풀면 그 계정이 다시 로그인할 수 있고, 프로필을 다시 보내면 가입 대기 목록에 뜬다. <strong>시트 오른쪽의 것은 primary다</strong> — 이 화면이 묻는 것에 답하는 버튼이라 여기서는 primary가 하나 선다. 줄 오른쪽의 작은 secondary 버튼과 갈리는 자리다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>사진과 이름을 안 세운다.</strong> 물음과 버튼 둘이다 — 줄에서 사진과 이름을 보고 누른 직후라 같은 것을 한 번 더 세울 이유가 없다. 상세 시트에서 오는 거절·차단 확인과 갈린다 — 거기는 시트가 이미 서 있어서 둘이 <strong>남는</strong> 것이고 여기는 새로 <strong>세우는</strong> 것이다.</p>
         </figcaption>
       </figure>

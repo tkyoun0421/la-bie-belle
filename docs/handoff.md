@@ -10,7 +10,22 @@
 
 account가 끝났다. 미정이 다 닫혔고(login·README·members-pending·members·profile), 시안 셋이 아티팩트로 승인됐고, 화면 plan 넷이 섰다 — [profile-form](3-build/plans/profile-form.md)·[members-pending](3-build/plans/members-pending.md)·[profile-screen](3-build/plans/profile-screen.md)·[members](3-build/plans/members.md). plan을 쓰다 나온 결정 열둘을 정본에 반영했다 — `already_decided` 코드, `profile_private.email`, `phone` check 제약, 차단 해제가 `submitted_at`도 비우기, `/admin/members/blocked` 경로, `is_admin()`이 퇴사·차단을 보기, `last_admin` 셈에 퇴사·차단 제외와 퇴사 처리도 막기, 쓰기는 전부 응답 대기, 관리자는 자기 이름 고치기 가능, 지난 시간 표기 규칙, 하나 고르는 목록 공용화, `profile-erasure` task 신설.
 
-다음은 **schedule 영역**이다. 미정 일곱 — design.md Q-01~Q-05, schedule-worker.md 교육 배정 인증, schedule-admin.md 사람 픽커 — 을 한 라운드 한 질문으로 닫고, 정본에 반영하고, 시안을 갱신해 아티팩트로 승인받고, plan을 쓴다. 첫 질문(달의 축)은 답이 나왔다 — **달력 달이 축이다**(8월 화면 = 8/1~8/31). 아직 정본에 안 옮겼다.
+**schedule 영역의 미정이 다 닫혔고 정본에 반영됐다.** 결정 다섯이다.
+
+- **근무표는 달력 달이다** — 8월 근무표 = 8월 1일~8월 31일([SCH-010](2-design/modules/schedule/README.md#sch-010)). 주 묶음(8/3~9/6)을 버렸다. 급여 월 조회도 따라 달력 달이 됐고([PAY-022](2-design/modules/payroll/README.md#pay-022)) 달을 걸친 주는 날마다 갈린다. 화면에서는 범위 줄이 사라지고 그리드가 이 달 밖으로 남긴 칸은 빈칸이다
+- **교육 배정 행이 서면 그 자리에서 자격이다** — 교육 날이 안 왔어도, 출근 인증이 없어도 센다([SCH-013](2-design/modules/schedule/README.md#sch-013)). 거두는 길은 배정을 지우는 것 하나
+- **사람 픽커 줄 오른쪽 끝에 성별 기호**(lucide `Venus`/`Mars`, `fg.neutral-subtle`). 색으로는 안 가른다. **길게 누르면 사람 시트**가 겹쳐 올라온다 — 사진·이름·「♀ 여 · 98년생」·자격
+- **나이는 만 나이가 아니라 년생**이다 — `98년생` 꼴([writing.md](2-design/design-system/writing.md#숫자와-단위))
+- **교육 배정도 인증을 찍는다**는 [ATT-020](2-design/modules/attendance/README.md#att-020)이 이미 닫아둔 것이라 화면 문서가 그것을 따랐다 — 부제와 현황 줄 인원에 든다
+- `emit_reminders`는 cron 항목 하나고 함수가 요일을 본다([notification/design.md](2-design/modules/notification/design.md#행위-밖의-실행-동작))
+
+schedule 시안 둘은 갱신해 아티팩트로 올렸고 감사도 마쳤다.
+
+**디자인 시스템의 라운딩이 바뀌었다.** 누를 수 있는 것을 알약에서 내렸다 — `rounded-lg`가 16px에서 **14px**이 되고 버튼·세그먼트·토스트가 거기로 갔다. 배지는 `rounded-sm`(8px), 높이 32px 이하인 작은 버튼도 8px이다. `rounded-full`은 원과 트랙에만 남는다 — 사진·이니셜 원, 점, 시트 손잡이, 하루 띠, 스위치, 글자 없이 아이콘만 든 정사각형 버튼. 정본 셋(`tokens.md`·`spacing-shape.md`·`components.md`)과 화면 문서 여덟, 시안 열넷, `src/app/globals.css`(`pnpm tokens:css`)까지 따라갔다. 구글 로그인 버튼은 근거를 잃어 직사각형 자산으로 바뀌었고, 「알약」이라 부르던 조각 이름은 상태 배지·확인 중 배지·보기 전환 세그먼트·secondary 버튼이 됐다.
+
+토스트도 같이 고쳤다 — `left: 50%`에 `right`가 없어 쓸 수 있는 폭이 화면 절반으로 눌리던 배치 버그였다. 좌우 24px에 `margin: 0 auto`다. 한 줄 규칙과 문안 길이 기준은 `writing.md`의 새 「토스트」 절에 있다.
+
+다음 수는 schedule plan을 쓰는 것이다. 그 뒤가 attendance 영역이다.
 
 같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
 

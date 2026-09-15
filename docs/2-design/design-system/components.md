@@ -36,7 +36,11 @@ shadcn 기본 목록에 없어서 우리가 정의하는 것이 둘이다. `Bott
 | ghost | 없음 | `fg.neutral-muted` | 없음 | `bg.neutral-weak` |
 | destructive | `bg.critical-solid` | `fg.brand-contrast` | 없음 | `bg.critical-solid-pressed` |
 
-모양은 `rounded-full`, 라벨은 `font-medium`이다.
+모양은 `rounded-lg`(14px), 라벨은 `font-medium`이다. 높이가 36·40·48 어느 쪽이든 같은 값이라 버튼 셋이 한 가족으로 선다. 알약을 안 쓰는 이유는 [spacing-shape.md](foundation/spacing-shape.md#누를-수-있는-것은-lg다)에 있다.
+
+**높이 32px 이하인 작은 버튼은 `rounded-sm`(8px)이다.** 그 높이에서 14px은 곡률이 절반에 가까워 알약과 구분이 안 된다. 대시보드 알림 줄의 CTA가 그 자리다.
+
+**가로세로가 같은 아이콘 버튼은 `rounded-full`이다.** 닫기 ✕이나 지도 위 버튼처럼 글자 없이 아이콘만 든 정사각형은 원으로 둔다 — 14px을 주면 모서리만 깎인 네모가 된다.
 
 한 화면에 primary는 하나다. 브랜드 색이 신호로 작동하려면 그 색을 쓰는 버튼이 하나여야 한다. 두 번째 액션은 secondary나 ghost로 내린다.
 
@@ -184,7 +188,7 @@ BottomCTA 안에 버튼을 둘 두지 않는다. 두 개가 필요해 보이면 
 | informative | `bg.informative-weak` | `fg.informative` |
 | warning | `bg.warning-weak` | `fg.neutral` |
 
-모양은 `rounded-full`, 글자는 `text-xs font-medium`이다.
+모양은 `rounded-sm`(8px), 글자는 `text-xs font-medium`이다. 버튼보다 한 단계 아래인 것은 높이가 24px이라 14px을 주면 다시 알약이 되기 때문이다.
 
 warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `fg`를 쓸 수 없어서다. 이유는 [foundation/color.md](foundation/color.md#경고색-제약)에 있다.
 
@@ -263,7 +267,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 | --- | --- |
 | 높이 | 44px |
 | 트랙 안쪽 여백 | 4px |
-| 모양 | 트랙과 선택 칸 모두 `rounded-full` |
+| 모양 | 트랙은 `rounded-lg`(14px), 선택 칸은 안쪽 여백만큼 내린 10px |
 | 글자 | `text-sm font-medium` |
 | 칸 폭 | 모두 같다 |
 
@@ -297,7 +301,11 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 반전 면이라 라이트에서는 어둡고 다크에서는 밝다. 화면 위에 잠깐 뜨는 것이라 배경과 확실히 갈려야 한다. `bg.neutral-solid`보다 한 단계 무른 면을 쓰는 것은 그것이 달력의 오늘 원과 같은 토큰이라 같은 진하기로 뜨면 화면에 앉은 것으로 읽히기 때문이다.
 
-**모양은 알약이다.** `rounded-full`에 내용 폭이고 `shadow-card`로 떠 있다. 좌우로 늘리지 않는다 — 전폭 바에 짧은 문장이 들어가면 Button과 구분이 안 된다. 폭이 화면에 닿을 만큼 긴 문장은 좌우 24px 여백을 남기는 선에서 멈추고 줄을 바꾼다.
+**모양은 `rounded-lg`(14px)다.** 내용 폭이고 `shadow-card`로 떠 있다. 좌우로 늘리지 않는다 — 전폭 바에 짧은 문장이 들어가면 Button과 구분이 안 된다. 좌우 24px 여백은 남긴다.
+
+**한 줄이다.** 줄을 안 바꾼다. 두 줄이 되면 떠 있는 표식이 아니라 덩어리로 읽힌다. 한 줄에 안 들어가는 말은 토스트가 할 말이 아니다 — 길면 문장을 줄이고, 줄일 수 없으면 [알림 블록](#알림-블록)이나 시트로 옮긴다. 문안 길이 기준은 [writing.md](writing.md#토스트)에 있다.
+
+가운데 정렬은 좌우 24px을 양쪽에 두고 `margin: 0 auto`로 잡는다. `left: 50%`에 `translateX(-50%)`를 걸면 절대 위치 요소의 쓸 수 있는 폭이 화면의 절반으로 줄어 짧은 문장도 줄이 바뀐다.
 
 화면 아래에서 56px에 뜬다. 아래에 무엇이 서 있느냐에 따라 올라간다.
 
@@ -414,6 +422,8 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 교육 배정은 근무 있음과 같은 칸이다. 교육인지는 칸이 아니라 명단과 목록의 글자가 말한다.
 
 "안 연 날"은 관리자가 그날에 자리를 안 깔아 배정이 불가능한 날이고, "확정 전"은 근무표 자체가 아직 공개되지 않은 상태다. 둘 다 [schedule/README.md](../modules/schedule/README.md)의 용어다. 안 연 날은 확정된 사실이라 흐린 글자로 끝내고, 확정 전은 아직 모른다는 뜻이라 점선으로 그린다.
+
+**그리드가 이 달 밖으로 남긴 칸은 비운다.** 근무표가 달력 달이라([schedule/README.md](../modules/schedule/README.md#sch-010)) 2026년 10월 화면의 9월 28일 칸과 11월 1일 칸에는 날짜 숫자도 안 쓴다. 흐린 숫자라도 남기면 그 달 근무표에 든 날로 읽히고, 누르면 어디로 가는지를 또 정해야 한다.
 
 달력 한 장에서 쓰는 색은 브랜드와 뉴트럴 둘뿐이다. 상태가 여럿인데 색을 둘로 버티는 것은, 상태마다 색을 붙이면 달력이 색 지도가 되고 정작 내 근무가 어디인지 안 보이기 때문이다.
 
