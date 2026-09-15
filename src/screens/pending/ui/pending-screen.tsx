@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
+import { useAuthGateValue } from "@/features/auth/ui/auth-gate";
 import {
   askForNotificationPermission,
   INITIAL_NOTIFICATION_PROMPT_VIEW,
@@ -153,13 +154,9 @@ function NotificationPrompt() {
   );
 }
 
-export function PendingScreen({
-  email,
-  avatarUrl,
-}: {
-  email: string;
-  avatarUrl: string | null;
-}) {
+export function PendingScreen() {
+  const { email, avatarUrl } = useAuthGateValue();
+
   return (
     <main className="flex flex-1 flex-col items-center bg-bg-neutral px-6 pb-[calc(--spacing(6)+env(safe-area-inset-bottom))]">
       <div className="flex w-full flex-1 flex-col items-center justify-center">

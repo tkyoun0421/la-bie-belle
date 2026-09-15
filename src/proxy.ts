@@ -7,16 +7,30 @@ const STATIC_PATH_PREFIXES = ["/_next/static", "/_next/image"];
 
 const STATIC_FILE_EXTENSION = /\.(?:ico|png|jpe?g|gif|svg|webp|avif)$/i;
 
+const SESSIONLESS_PATH_PREFIXES = ["/login", "/auth"];
+
+function isAtOrUnder(pathname: string, prefix: string): boolean {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
 export function isStaticAssetPath(pathname: string): boolean {
-  const underStaticPrefix = STATIC_PATH_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  const underStaticPrefix = STATIC_PATH_PREFIXES.some((prefix) =>
+    isAtOrUnder(pathname, prefix),
   );
 
   return underStaticPrefix || STATIC_FILE_EXTENSION.test(pathname);
 }
 
-export async function middleware(request: NextRequest) {
-  if (isStaticAssetPath(request.nextUrl.pathname)) {
+function opensWithoutSession(pathname: string): boolean {
+  return SESSIONLESS_PATH_PREFIXES.some((prefix) =>
+    isAtOrUnder(pathname, prefix),
+  );
+}
+
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (isStaticAssetPath(pathname)) {
     return NextResponse.next();
   }
 
@@ -35,9 +49,12 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  await getCurrentUser(client);
+  const user = await getCurrentUser(client);
 
-  const response = NextResponse.next({ request });
+  const response =
+    user || opensWithoutSession(pathname)
+      ? NextResponse.next({ request })
+      : NextResponse.redirect(new URL("/login", request.url));
 
   for (const { name, value, options } of refreshed) {
     response.cookies.set(name, value, options);
@@ -49,3 +66,7 @@ export async function middleware(request: NextRequest) {
 
   return response;
 }
+
+export const config = {
+  matcher: ["/((?!_next/).*)"],
+};

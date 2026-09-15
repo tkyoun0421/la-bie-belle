@@ -91,3 +91,20 @@ export async function createBlockedUser(): Promise<BlockedUser> {
 
   return { ...user, blockedAt };
 }
+
+export type LeftUser = SignedInUser & {
+  approvedAt: string;
+  leftAt: string;
+};
+
+export async function createLeftUser(): Promise<LeftUser> {
+  const user = await createApprovedUser();
+  const leftAt = new Date().toISOString();
+
+  runSql(
+    "update public.profiles set left_at = :'left_at' where user_id = :'user_id';\n",
+    { user_id: user.userId, left_at: leftAt },
+  );
+
+  return { ...user, leftAt };
+}

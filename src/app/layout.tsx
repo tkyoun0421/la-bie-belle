@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthGate } from "@/features/auth/ui/auth-gate";
 import { Providers } from "@/app/providers";
 import "@/app/globals.css";
 
@@ -19,7 +20,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <link rel="stylesheet" href={WANTED_SANS_STYLESHEET} />
       </head>
       <body className="flex min-h-full flex-col">
-        <Providers>{children}</Providers>
+        <Providers>
+          <AuthGate>{children}</AuthGate>
+        </Providers>
       </body>
     </html>
   );

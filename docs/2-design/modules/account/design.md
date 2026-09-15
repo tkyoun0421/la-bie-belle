@@ -129,15 +129,7 @@
 
 ## 코드와의 차이
 
-목표와 지금 코드가 다른 자리다.
-
-| 목표 조항 | 확인한 코드와 Git 기준점 | 차이 | 전환 작업·검증 근거 |
-| --- | --- | --- | --- |
-| [프로필 신원](#프로필-신원) — `profiles.id`와 `user_id`의 분리 | `supabase/migrations/20260825162027_profiles.sql`, `e4ecf84` | 지금 마이그레이션은 `id = auth.users.id`(cascade)라 두 가지가 안 된다 — 새 구글 계정을 옛 프로필에 잇는 것([README.md](README.md#용어))과 계정을 지우고 프로필을 남기는 것 | `account-data` — [backlog.md](../../../backlog.md) |
-| [개인정보는 표를 가른다](#개인정보는-표를-가른다) — `profile_private` 분리 | `supabase/migrations/20260825162027_profiles.sql`, `e4ecf84` — `profiles`는 `id`·`display_name`·`approved_at`·`created_at` 넷뿐이다 | 연락처·생년월일·성별을 담을 자리가 `profiles`에도 없고 `profile_private`도 없다 — 같은 task가 만든다 | `account-data` — [backlog.md](../../../backlog.md) |
-| [프로필 신원](#프로필-신원) — 로그인 트리거 대신 `ensure_profile()` | `supabase/migrations/20260825162027_profiles.sql`, `e4ecf84` | 지금 마이그레이션에 `on_auth_user_created` 트리거와 `create_profile_for_new_user()`가 살아 있다 | `account-data` — [backlog.md](../../../backlog.md) |
-| [첫 진입과 게이트](#첫-진입과-게이트) — 서버 판정을 클라이언트로 | `src/middleware.ts`, `8585ec8`. `src/features/auth/read-auth-gate.ts`, `3adcb7b` | 지금 코드는 `src/middleware.ts`가 세션을 갱신하고 `src/features/auth/read-auth-gate.ts`가 서버에서 `approved_at`을 읽어 가른다 | `auth-entry` — [backlog.md](../../../backlog.md) |
-| [UI 연결](#ui-연결) — `readAuthGate`·`getApprovedAt` 이동 | `src/features/auth/read-auth-gate.ts`, `3adcb7b`. `src/entities/profile/dals/get-approved-at.ts`, `9467c13` | 지금 코드의 첫 페이지 승인 여부 읽기(`readAuthGate`·`getApprovedAt`)는 클라이언트로 옮긴다([첫 진입과 게이트](#첫-진입과-게이트)) | `auth-entry` — [backlog.md](../../../backlog.md) |
+목표와 지금 코드가 다른 자리다. 지금은 없다 — 차이가 생기면 「목표 조항 / 확인한 코드와 Git 기준점 / 차이 / 전환 작업·검증 근거」 표로 적는다.
 
 ## 아직 안 정한 것
 
