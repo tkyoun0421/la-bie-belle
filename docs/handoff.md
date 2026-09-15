@@ -6,7 +6,7 @@
 
 ## 다음 작업
 
-[`account-data`](backlog.md) — **계정 데이터 구조를 전환한다** — [plan](3-build/plans/account-data.md)이 섰다(#359). 기능 task 파이프라인 `test-planner` → `integration-test-writer` → `implementer` → `pr-diff`로 간다. AC-07의 테스트 목록이 입력이고, 마이그레이션 파일 하나를 고쳐 `supabase db reset`으로 세운다. 그 뒤 순서는 `backlog.md`의 `ready`가 든다.
+[`auth-entry`](backlog.md) — **인증 진입을 전환한다** — 계정 데이터 구조가 섰다(#360). 트리거가 빠져 앱이 `ensure_profile()`을 부르기 전까지 실제 로그인으로는 프로필 행이 안 생기니 이 task가 먼저다. plan이 없다 — `3-build/README.md`의 틀로 `3-build/plans/auth-entry.md`를 쓴다. 정본은 [account/design.md](2-design/modules/account/design.md#첫-진입과-게이트)와 「코드와의 차이」 표의 `auth-entry` 행 둘, [system/runtime.md](2-design/system/runtime.md#캐시-네-계층). `types-generation`도 `ready`라 같이 잡을 수 있다.
 
 시안 갱신 후보는 backlog의 `sian-sync` candidate 행이 든다(#358).
 
