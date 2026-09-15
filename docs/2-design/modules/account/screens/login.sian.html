@@ -16,24 +16,67 @@
   오른쪽 위 라이트/다크 토글은 시안 뷰어 크롬이다. 목업 규칙 밖이고 앱에 없다.
   누르면 문서 루트에 data-theme이 걸리고 목업 팔레트가 tokens.md 1절의 다크 열로 뒤집힌다.
 
-  tokens.md에 값 없음 — 아래 다섯은 이 파일이 임의로 정한 자리다. 값을 여기서 굳히지 않는다.
+  tokens.md에 값 없음 — 아래는 이 파일이 임의로 정한 자리다. 값을 여기서 굳히지 않는다.
   · 등장이 아래에서 올라오는 거리(8px). tokens.md 6절에 이동 거리 토큰이 없다.
   · 뛰는 점이 커지는 배율. login.md는 「커졌다 작아진다」까지만 적는다.
   · 시트 그림자. tokens.md 5절의 그림자는 shadow-card 하나뿐이다.
-  · 구글 G 로고의 색 넷. login.md가 로고를 signin-assets.zip에서 받아 쓰라고 했고
-    여기 그린 것은 자리를 보기 위한 대역이다. 구현에서 이 SVG를 쓰지 않는다.
+  · 구글 버튼 SVG 전체. login.md가 signin-assets.zip을 통째로 받아 쓰라고 했고
+    여기 그린 것(면·테두리·글자·G 로고 넷)은 자리와 종횡비를 보기 위한 대역이다.
+    구현에서 이 SVG를 쓰지 않는다.
   · 뷰어 크롬(--b-*)의 색. 목업 밖이라 애초에 토큰 대상이 아니다.
+  · 02 프로토타입의 「보내는 동안」 스피너가 도는 시간(1.2초). 실제 서버 응답을 흉내 낸
+    값이라 토큰이 아니다 — 실제 화면의 스피너는 요청이 끝날 때까지 돈다.
+  · 02 프로토타입의 사진 원을 눌러 올리는 시간(1.2초). 같은 이유다.
+  · 원을 눌러 올린 뒤에 올라오는 가짜 사진 면의 색(neutral-300 대역).
+    실제 사진을 안 올리니 자리만 보이면 되는 회색 면이라 색 자체에 뜻이 없다.
+  · 「보낸 뒤」 폭죽이 퍼지는 시간(600ms)과 화면이 머무는 시간(1.2초). login.md가
+    숫자까지 적어뒀지만 tokens.md의 duration 넷·interval 셋 어디에도 없는 값이다 —
+    login.md 「규칙과 부딪힌 자리」가 이 문서가 정본이라고 밝힌 자리다.
+  · 원과 큰 인사가 끝에서 1.04배 넘쳤다 돌아오는 곡선. tokens.md의 이징은 ease-out
+    하나뿐이라 이 넘침은 이 파일이 cubic-bezier로 임의로 그렸다.
+  · 폭죽 조각의 셋째 색. login.md는 `bg.neutral-muted`라고 적었는데 tokens.md에는
+    그 이름의 bg 토큰이 없다(`fg.neutral-muted`·`stroke.neutral-muted`만 있다).
+    같은 neutral-300 대역인 `--stroke-neutral-muted`로 대신했다 — 리턴의 이슈에 적는다.
 
-  login.md가 「아직 안 정했다」고 적은 자리는 여기서도 안 채웠다 — 차단된 사람이 로그인했을 때의
-  화면이다. 캡션에 「아직 안 정함」으로 표시했다.
-  성별·생년월일·연락처의 꼴은 이제 닫혔다 — login.md의 「칸 넷」과 account/README.md의 ACC-002·ACC-004.
+  성별·생년월일·연락처의 꼴, 프로필 작성의 스텝 구조, 차단된 뒤 화면은 login.md에서 이제 닫혔다 —
+  아래 각 절에서 그 근거를 가리킨다. 프로필 작성에는 더 이상 확인 시트가 없다 — 굳은 줄 넷이
+  이미 확인하는 일을 하고 있어서 시트가 같은 값을 두 번 보여주는 자리가 됐고, login.md가 그 시트를
+  치웠다.
+
+  01 구글 버튼은 우리가 그리지 않는다. login.md 「구글 버튼은 구글이 정한다」가 정한 대로,
+  구글이 배포하는 signin-assets.zip의 SVG(알약 rd, 「Sign in with Google」 SI)를 통째로 쓴다.
+  이 시안은 그 자산과 같은 모양을 흉내 낸 인라인 SVG 하나를 대역으로 세웠다 — 실제 구현은 이
+  자리에 구글 자산 파일을 그대로 넣는다. 면·테두리·글자 색 셋(라이트에서 Dark 자산, 다크에서
+  Light 자산)은 구글 자산이 정한 값이라 tokens.md의 어떤 토큰도 아니다 — --google-fill·
+  --google-stroke·--google-text로 이 파일 안에서만 산다. G 로고 네 색(#4285F4·#34A853·
+  #FBBC05·#EA4335)도 같다, 테마를 안 탄다. tokens.md 9절의 --vendor-google-* 셋은 이제 이
+  시안 어디에도 안 쓴다 — 그 값은 우리가 직접 그린 버튼을 위한 것이었고 자산으로 바뀌면서
+  필요가 없어졌다.
+
+  03 승인 대기 도는 문구는 1차 셋이다. login.md 「승인 대기 문안」의 도는 문구 표가 1차는
+  근무표·출근·급여 셋이고, 「못 가는 날은 교대를 부탁해요」는 교대가 들어오는 2차에 넷째로
+  붙는다고 적었다. .rotator의 keyframe과 delay를 셋 기준(주기 --interval-rotate 4s × 3 = 12s)
+  으로 다시 잡았다.
+
+  06 읽기 실패를 더했다. login.md 「읽기 실패 짜임」이 퇴사·차단과 같은 틀에서 primary가
+  「다시 시도」라고 정했다 — 04·05와 같은 틀을 그대로 재사용했다. 등장 모션이 없는 것도 같다.
+
+  02 프로필 작성은 다시 그렸다. 스텝이 다섯이고 사진이 첫 스텝이다 — 칸 안의 원이 곧 버튼이다.
+  누르면 스피너가 돌고 끝나면 원 안이 새 사진 면으로 바뀌며 곧바로 굳어 오른다. 원 아래 버튼은
+  「기본 사진 쓰기」 하나뿐이고, 누르면 원 안 그대로 굳는다. 칸은 하나고 화면 아래 「보내기」
+  위에 고정이며, 굳은 값은 라벨 없이 더미로 쌓인다 — 줄 사이 선도 라벨도 없다. 움직이는 것은
+  칸이 통째로 올라가는 것 하나뿐이다. 굳은 것을 누르면 그 자리가 옅어지며 작아지고 같은 시간에
+  높이가 접혀 자리째 사라져 아래 것들이 올라와 메운다 — 자리를 비워두지 않는다. 다시 굳을 때는
+  더미의 그 자리가 먼저 벌어지고 칸이 그리로 올라가 닿을 때 자리가 맞는다. 그 위에 실제로
+  눌러보는 프로토타입을 뒀다. 값은 이 페이지 밖으로 안 나간다.
 -->
-<title>로그인·프로필·승인 대기·퇴사한 뒤 시안</title>
+<title>로그인·프로필·승인 대기·퇴사한 뒤·차단된 뒤·읽기 실패 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 
 <style>
+[hidden] { display: none !important; }
 :root {
   --b-bg: oklch(0.945 0.004 57);
   --b-panel: oklch(0.988 0.003 57);
@@ -133,6 +176,8 @@ code {
   --palette-neutral-900: oklch(.32 .0053 57);
   --palette-neutral-1000: oklch(.215 .0055 57);
   --palette-brand-100: oklch(.965 .0128 57);
+  /* tokens.md 1절 bg.brand-muted = brand-300, 그 절의 hex 그대로다 */
+  --palette-brand-300: #DEC7B7;
   --palette-brand-800: oklch(.455 .0534 57);
   --palette-positive-100: oklch(.965 .0253 152);
   --palette-positive-800: oklch(.455 .1058 152);
@@ -154,6 +199,7 @@ code {
   --palette-neutral-900: oklch(.845 .0053 57);
   --palette-neutral-1000: oklch(.935 .0055 57);
   --palette-brand-100: oklch(.205 .0128 57);
+  --palette-brand-300: #402F22;
   --palette-brand-800: oklch(.745 .0534 57);
   --palette-positive-100: oklch(.205 .0253 152);
   --palette-positive-800: oklch(.745 .1058 152);
@@ -163,6 +209,10 @@ code {
   --bg-scrim: #0D0C0B6B;
   --card-shadow: none;
   --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+  /* 구글 자산의 값, 우리 토큰 아님 — 다크 화면엔 구글의 Light 자산 */
+  --google-fill: #FFFFFF;
+  --google-stroke: #747775;
+  --google-text: #1F1F1F;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .mock:not(.force-light) {
@@ -175,6 +225,7 @@ code {
     --palette-neutral-900: oklch(.845 .0053 57);
     --palette-neutral-1000: oklch(.935 .0055 57);
     --palette-brand-100: oklch(.205 .0128 57);
+    --palette-brand-300: #402F22;
     --palette-brand-800: oklch(.745 .0534 57);
     --palette-positive-100: oklch(.205 .0253 152);
     --palette-positive-800: oklch(.745 .1058 152);
@@ -184,6 +235,10 @@ code {
     --bg-scrim: #0D0C0B6B;
     --card-shadow: none;
     --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+    /* 구글 자산의 값, 우리 토큰 아님 — 다크 화면엔 구글의 Light 자산 */
+    --google-fill: #FFFFFF;
+    --google-stroke: #747775;
+    --google-text: #1F1F1F;
   }
 }
 :root[data-theme="dark"] .mock:not(.force-light) {
@@ -196,6 +251,7 @@ code {
   --palette-neutral-900: oklch(.845 .0053 57);
   --palette-neutral-1000: oklch(.935 .0055 57);
   --palette-brand-100: oklch(.205 .0128 57);
+  --palette-brand-300: #402F22;
   --palette-brand-800: oklch(.745 .0534 57);
   --palette-positive-100: oklch(.205 .0253 152);
   --palette-positive-800: oklch(.745 .1058 152);
@@ -205,6 +261,10 @@ code {
   --bg-scrim: #0D0C0B6B;
   --card-shadow: none;
   --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+  /* 구글 자산의 값, 우리 토큰 아님 — 다크 화면엔 구글의 Light 자산 */
+  --google-fill: #FFFFFF;
+  --google-stroke: #747775;
+  --google-text: #1F1F1F;
 }
 .mock {
   --bg-neutral: var(--palette-neutral-00);
@@ -213,6 +273,7 @@ code {
   --bg-neutral-disabled: var(--palette-neutral-100);
   --bg-brand-solid: var(--palette-brand-800);
   --bg-brand-weak: var(--palette-brand-100);
+  --bg-brand-muted: var(--palette-brand-300);
   --bg-positive-weak: var(--palette-positive-100);
   --bg-informative-weak: var(--palette-informative-100);
   --fg-neutral: var(--palette-neutral-1000);
@@ -228,10 +289,10 @@ code {
   --stroke-neutral-muted: var(--palette-neutral-300);
   --stroke-neutral-disabled: var(--palette-neutral-200);
 
-  /* tokens.md 9절 — 바깥이 정한 값. 우리가 못 바꾼다 */
-  --vendor-google-bg: #131314;
-  --vendor-google-stroke: #8E918F;
-  --vendor-google-fg: #E3E3E3;
+  /* 구글 자산의 값, 우리 토큰 아님 — tokens.md 어디에도 없다. 라이트 화면엔 구글의 Dark 자산 */
+  --google-fill: #131314;
+  --google-stroke: #8E918F;
+  --google-text: #E3E3E3;
 
   --t-xs: .8125rem; --lh-xs: 1.21875rem;
   --t-sm: .9375rem; --lh-sm: 1.40625rem;
@@ -244,6 +305,8 @@ code {
   --interval-rotate: 4s; --interval-beat: 1.8s; --stagger-step: 70ms;
   /* tokens.md에 없다 — 이 시안이 잡은 등장 이동 거리다 */
   --rise: 8px;
+  /* tokens.md에 없다 — 사진 원을 눌러 올린 뒤에 서는 가짜 사진 면. neutral-300 대역이다 */
+  --photofill: var(--palette-neutral-300);
 
   width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
   display: flex; flex-direction: column;
@@ -297,19 +360,18 @@ code {
   animation: spin .68s linear infinite;
 }
 .btn .spin { width: 17px; height: 17px; }
-/* 사진을 올리는 동안 — 사진 위 바꾸기 표시 자리에 스피너 */
-.swap .spin { width: 13px; height: 13px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* 구글 버튼 — 우리 팔레트 밖이다. tokens.md 9절의 세 값과 login.md 「구글 버튼은 구글이 정한다」 */
+/* 구글 버튼 — 우리 팔레트 밖이다. login.md 「구글 버튼은 구글이 정한다」.
+   버튼을 직접 그리지 않고 구글 자산(signin-assets.zip)과 같은 모양의 인라인 SVG를 대역으로
+   세운다 — 면·테두리·글자·G 로고가 전부 SVG 안에 있다. <button>은 그 SVG를 감싸 누름 동작만
+   맡는다. 높이 48px 고정, 너비는 자산 종횡비(189:40)대로 따라온다 — 화면 폭을 안 채운다 */
 .gbtn {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; height: 48px; border-radius: 999px; cursor: pointer; font-family: inherit;
-  background: var(--vendor-google-bg); color: var(--vendor-google-fg);
-  border: 1px solid var(--vendor-google-stroke);
-  font-size: var(--t-sm); font-weight: 500;
-  transition: transform var(--d-fast) ease-out;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: auto; height: 48px; padding: 0; margin: 0 auto; border: 0; background: none;
+  cursor: pointer; transition: transform var(--d-fast) ease-out;
 }
+.gbtn svg { display: block; }
 .gbtn:active { transform: scale(.97); }
 
 /* ── 01 로그인 ── */
@@ -321,7 +383,7 @@ code {
 }
 .svcname { font-size: var(--t-2xl); line-height: var(--lh-2xl); font-weight: 700; letter-spacing: -.02em; }
 .svcsub { margin-top: 8px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
-.bottomblock { display: flex; flex-direction: column; }
+.bottomblock { display: flex; flex-direction: column; align-items: center; }
 .gnote {
   margin-top: 16px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs);
   color: var(--fg-neutral-subtle);
@@ -335,41 +397,80 @@ code {
 .appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
 .appbar .sp { min-height: 0; }
 .appbar .signout { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); cursor: pointer; }
+/* 안내 한 줄 — 다섯이 다 굳으면 문구가 밝기(opacity)로 건너간다. login.md 「다 굳었을 때 안내 한 줄이 바뀐다」 */
 .lede1 { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
-.photoblock { margin-top: 24px; display: flex; flex-direction: column; align-items: center; }
+
+/* 사진 원 — 더미에서도 칸에서도 size-20 rounded-full로 같다(login.md 「사진 원」) */
 .photo {
   position: relative; width: 80px; height: 80px; border-radius: 999px;
   background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
-  display: grid; place-items: center; color: var(--fg-neutral-subtle);
+  display: grid; place-items: center; color: var(--fg-neutral-subtle); flex: 0 0 auto;
 }
-.photo .swap {
-  position: absolute; right: -2px; bottom: -2px; width: 26px; height: 26px; border-radius: 999px;
-  background: var(--bg-neutral-solid); color: var(--fg-neutral-contrast);
-  display: grid; place-items: center; border: 2px solid var(--bg-neutral);
-}
-.photoblock .swaplabel { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); cursor: pointer; }
-.fieldset { margin-top: 32px; }
-.field + .field { margin-top: 20px; }
-.field .lab { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
-.field .box {
-  margin-top: 6px; height: 48px; border-radius: var(--r-md);
+.photo .photo-ic { transition: opacity var(--d-base) ease-out; }
+.photo.fake { background: var(--photofill); border-color: transparent; }
+.photo.fake .photo-ic { opacity: 0; }
+.photo .spin { position: absolute; width: 20px; height: 20px; }
+
+/* 굳은 더미 — 사진(원, 가운데) 다음 이름·성별·생년월일·연락처(글, 왼쪽) 순서로 쌓인다.
+   login.md 「굳은 글에 면도 선도 없다」. 면도 선도 라벨도 없다, 값만 선다.
+   첫 줄(이름)만 text-xl font-semibold, 나머지는 text-lg font-medium. 줄 사이 mt-3 */
+.lockstack { margin-top: 32px; }
+.lockphoto { display: flex; justify-content: center; cursor: pointer; }
+/* 더미의 사진과 첫 글 사이 mt-6 */
+.lockphoto + .lockline { margin-top: 24px; }
+.lockline { color: var(--fg-neutral); cursor: pointer; }
+.lockline.name { font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 600; }
+.lockline:not(.name) { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 500; }
+.lockline.num { font-variant-numeric: tabular-nums; }
+.lockline + .lockline { margin-top: 12px; }
+/* 프로토타입 전용 — 안 닿은 스텝은 자리 자체가 없다가, 굳는 순간 자리를 얻는다.
+   pending은 굳는 시작·고치는 동안 즉시 opacity 0 — 여기엔 전환을 안 건다.
+   고치기의 접힘·벌어짐(height·margin-top·opacity·transform)은 JS가 인라인 스타일로
+   duration-slow를 직접 건다 — 자리를 비운 채 높이를 지키지 않는다, 접히면 자리째 사라진다 */
+.mock.proto .lockline { display: none; }
+.mock.proto .lockline.inflow { display: block; }
+.mock.proto .lockline.pending { opacity: 0; }
+.mock.proto .lockphoto { display: none; }
+.mock.proto .lockphoto.inflow { display: flex; }
+.mock.proto .lockphoto.pending { opacity: 0; }
+
+/* 묻는 칸 — 화면 아래 「보내기」 위에 고정. 칸과 「보내기」 사이 mb-4 */
+.askarea { margin-bottom: 16px; }
+.askfield { }
+.asklab { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+.askbox {
+  margin-top: 6px; display: flex; align-items: center; gap: 8px;
+  width: 100%; height: 48px; border-radius: var(--r-md); border: 0;
   background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
-  display: flex; align-items: center; gap: 8px; padding: 0 14px;
-  font-size: var(--t-base); color: var(--fg-neutral);
+  padding: 0 14px; font-size: var(--t-base); color: var(--fg-neutral); font-family: inherit;
 }
-.field .box.ph { color: var(--fg-neutral-subtle); }
+.askbox.ph { color: var(--fg-neutral-subtle); }
+.askbox.num { font-variant-numeric: tabular-nums; }
+.askbox::placeholder { color: var(--fg-neutral-subtle); }
 /* 칸이 규칙에 안 맞을 때 — 칸과 줄 사이 mt-1.5. 오류 테두리는 안 두른다 */
-.field .err { margin-top: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-critical); }
+.askerr { margin-top: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-critical); }
 /* 세그먼트 — 고른 쪽은 흰 면과 그림자다. 브랜드 색은 이 화면에서 「보내기」 하나뿐 */
-.seg {
+.askseg {
   margin-top: 6px; height: 48px; border-radius: 999px; background: var(--bg-neutral-weak);
   padding: 4px; display: flex; gap: 4px;
 }
-.seg > span {
+.askseg > span {
   flex: 1; border-radius: 999px; display: grid; place-items: center;
   font-size: var(--t-sm); font-weight: 500; color: var(--fg-neutral-subtle); cursor: pointer;
 }
-.seg > span.on { background: var(--bg-neutral); color: var(--fg-neutral); box-shadow: var(--card-shadow); }
+.askseg > span.on { background: var(--bg-neutral); color: var(--fg-neutral); box-shadow: var(--card-shadow); }
+
+/* 사진 스텝 — 칸 안 원이 곧 버튼이다, 원 아래엔 「기본 사진 쓰기」 하나.
+   login.md 「사진 스텝은 원을 누르면 고르고 버튼은 하나다」. 원과 버튼 사이 mt-4 */
+.askphotowrap { display: flex; flex-direction: column; align-items: center; }
+.askphotowrap .asklab { text-align: center; }
+.askphotowrap .photo { cursor: pointer; }
+.askphotobtns { margin-top: 16px; display: flex; gap: 8px; }
+.askphotobtns .btn { width: auto; height: 40px; padding: 0 16px; font-size: var(--t-sm); }
+.askphotobtns .btn:disabled { opacity: .55; }
+
+/* 잠김 안내 — 다섯이 다 굳으면 묻는 칸 자리를 대신한다 */
+.locknotice { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
 /* 하단 고정 CTA — components.md 「BottomCTA」 */
 .ctabar {
@@ -378,29 +479,52 @@ code {
 }
 .ctabar .subnote { margin-top: 8px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
-/* 바텀시트와 덮개 — components.md 「Dialog와 바텀시트」, tokens.md의 bg.scrim */
-.scrim {
-  position: absolute; inset: 0; z-index: 3; background: var(--bg-scrim);
-  opacity: 0; pointer-events: none; transition: opacity var(--d-slow) ease-out;
+/* 프로토타입 전용 — 칸이 통째로 더미의 제자리까지 오르는 고스트 셋. login.md 「올라가기」.
+   .flylabel·.flybox는 라벨과 흰 면(또는 세그먼트)의 대역이라 duration-slower로 옮겨가며 사라지고,
+   .flytext는 굳은 글의 크기·굵기로 커지는 진짜 값이다. 사진은 원이 그대로 옮겨가고(photo 클론)
+   버튼은 제자리에서 사라진다(.flybtns). 셋 다 같은 duration-slower로 같이 움직인다.
+   고쳐서 다시 굳을 때는 더미의 그 자리가 duration-slow로 먼저 벌어지고 고스트가 그 최종
+   자리를 목표로 duration-slower로 같이 오른다 — 목표는 벌어지기 전에 미리 재둔다 */
+.mock.proto { position: relative; }
+.flylabel {
+  position: absolute; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted);
+  white-space: nowrap; pointer-events: none;
 }
-.mock.modal-open .scrim { opacity: 1; pointer-events: auto; }
-.rsheet {
-  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
-  background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 10px 24px calc(24px + env(safe-area-inset-bottom)); box-shadow: var(--sheet-shadow);
-  transform: translateY(102%); transition: transform var(--d-slow) ease-out;
+.flybox {
+  position: absolute; height: 48px; border-radius: var(--r-md);
+  background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
+  pointer-events: none;
 }
-.mock.modal-open .rsheet { transform: none; }
-.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 10px; }
-.sh-title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
-.sh-list { margin-top: 12px; }
-.sh-row { display: flex; align-items: baseline; gap: 12px; padding: 9px 0; }
-.sh-row + .sh-row { border-top: 1px solid var(--stroke-neutral); }
-.sh-row .k { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); flex: 0 0 64px; }
-.sh-row .v { font-size: var(--t-base); font-weight: 500; }
-.sh-note { margin-top: 12px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
-.rowbtns { display: flex; gap: 8px; margin-top: 18px; }
-.rowbtns .btn.secondary { flex: 0 0 108px; }
+.flybtns { position: absolute; display: flex; gap: 8px; pointer-events: none; }
+.flytext {
+  position: absolute; white-space: nowrap; color: var(--fg-neutral); pointer-events: none;
+  will-change: transform, font-size, font-weight;
+}
+
+/* 보낸 뒤(제안) — login.md 「보낸 뒤」. 원과 첫 줄만 화면 한가운데로 모이며 커진다.
+   .sentstage는 목업 전체를 덮는 자리표시고, 실제로 움직이는 것은 JS가 만드는 고스트
+   (.flycircle-live·.flytext 재사용)다. 이동이 끝나면 이 자리의 진짜 값으로 바뀐다.
+   size-28(112px)은 원 크기고, 조각은 size-1.5(6px) 여덟이다(login.md 「보낸 뒤 — 폭죽 조각」) */
+.sentstage {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  opacity: 0; pointer-events: none;
+}
+.photo.big { width: 112px; height: 112px; }
+.sentstage .greeting {
+  margin-top: 24px; font-size: var(--t-2xl); line-height: var(--lh-2xl);
+  font-weight: 600; color: var(--fg-neutral);
+}
+.confetti-piece { position: absolute; width: 6px; height: 6px; pointer-events: none; }
+.confetti-piece.sq { border-radius: 2px; }
+.confetti-piece.circle { border-radius: 999px; }
+
+.proto-reset {
+  margin-top: 14px; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--b-faint);
+  background: none; border: 1px solid var(--b-line-strong); border-radius: 999px; padding: 3px 11px; cursor: pointer;
+}
+.proto-reset:hover { color: var(--b-ink); }
+.proto-reset:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
 
 /* ── 03 승인 대기 ── */
 .pill {
@@ -413,26 +537,29 @@ code {
 .mock.play .dot { animation: beat var(--interval-beat) ease-out infinite; }
 @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.5); } }
 .waittitle { margin-top: 16px; font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 700; letter-spacing: -.015em; }
-/* 도는 문구 — 두 줄 높이를 미리 잡는다. 넷이 interval-rotate마다 duration-slow로 갈린다 */
+/* 도는 문구 — 두 줄 높이를 미리 잡는다. 1차는 셋이라 interval-rotate(4s)마다
+   duration-slow로 갈리고 한 바퀴는 4s × 3 = 12s다(login.md 「승인 대기 문안」).
+   교대가 들어오는 2차에 넷째가 붙으면 주기와 퍼센트를 넷 기준으로 다시 잡는다 */
 .rotator {
   margin-top: 8px; position: relative; width: 100%; height: calc(var(--lh-sm) * 2);
   font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted);
 }
 .rotator span { position: absolute; left: 0; right: 0; top: 0; opacity: 0; }
-.mock.play .rotator span { animation: rotline calc(var(--interval-rotate) * 4) ease-out infinite both; }
+.mock.play .rotator span { animation: rotline calc(var(--interval-rotate) * 3) ease-out infinite both; }
 /* 거절된 뒤 — 안 돈다. 한 줄이 선 채로 남는다 */
 .rotator.still span { opacity: 1; }
 .mock.play .rotator.still span { animation: none; }
-.rotator span:nth-child(1) { animation-delay: 0s; }
-.rotator span:nth-child(2) { animation-delay: var(--interval-rotate); }
-.rotator span:nth-child(3) { animation-delay: calc(var(--interval-rotate) * 2); }
-.rotator span:nth-child(4) { animation-delay: calc(var(--interval-rotate) * 3); }
+/* 지연은 위 shorthand보다 특이도가 높아야 산다 — .mock.play를 앞에 붙인다 */
+.mock.play .rotator span:nth-child(1) { animation-delay: 0s; }
+.mock.play .rotator span:nth-child(2) { animation-delay: var(--interval-rotate); }
+.mock.play .rotator span:nth-child(3) { animation-delay: calc(var(--interval-rotate) * 2); }
+/* 퍼센트는 12s 한 바퀴 기준이다 — duration-slow(240ms)가 2%, 한 자리 몫이 4s = 33.333% */
 @keyframes rotline {
   0% { opacity: 0; transform: translateY(var(--rise)); }
-  1.5% { opacity: 1; transform: none; }
-  25% { opacity: 1; transform: none; }
-  26.5% { opacity: 0; transform: translateY(calc(var(--rise) * -1)); }
-  27% { opacity: 0; transform: translateY(var(--rise)); }
+  2% { opacity: 1; transform: none; }
+  33.333% { opacity: 1; transform: none; }
+  35.333% { opacity: 0; transform: translateY(calc(var(--rise) * -1)); }
+  36% { opacity: 0; transform: translateY(var(--rise)); }
   100% { opacity: 0; transform: translateY(var(--rise)); }
 }
 
@@ -475,14 +602,11 @@ code {
   .mock.play .rotator span { animation-name: rotfade; }
   @keyframes rotfade {
     0% { opacity: 0; }
-    1.5%, 25% { opacity: 1; }
-    26.5%, 100% { opacity: 0; }
+    2%, 33.333% { opacity: 1; }
+    35.333%, 100% { opacity: 0; }
   }
   .mock.play .notif .nhead .ic { animation-name: fadein; }
   .btn:active, .gbtn:active { transform: none; }
-  /* 시트도 이동이 빠지고 밝기만 바뀐다. 덮개는 원래 밝기만 바뀌던 자리라 그대로다 */
-  .rsheet { transform: none; opacity: 0; transition: opacity var(--d-slow) ease-out; }
-  .mock.modal-open .rsheet { opacity: 1; }
 }
 </style>
 
@@ -496,11 +620,16 @@ code {
 
 <div class="wrap">
   <p class="eyebrow">라비에벨 · 페이지 디자인 01</p>
-  <h1>로그인·프로필 작성·승인 대기·퇴사한 뒤 시안</h1>
+  <h1>로그인·프로필 작성·승인 대기·퇴사한 뒤·차단된 뒤·읽기 실패 시안</h1>
   <p class="lede">
-    앱에 들어오는 화면 넷이다. 로그인하면 프로필 작성이 나오고, 보내면 승인 대기가 나오고,
+    앱에 들어오는 화면 여섯이다. 로그인하면 프로필 작성이 나오고, 보내면 승인 대기가 나오고,
     승인 대기에서 로그아웃하면 로그인으로 돌아온다. 관리자가 퇴사 처리한 사람이 앱을 열면
-    대시보드 대신 퇴사한 뒤 화면이 선다. 절 순서가 login.md의 「화면 상태와 흐름」 순서다.
+    대시보드 대신 퇴사한 뒤 화면이 서고, 차단한 사람이 앱을 열면 차단된 뒤 화면이 선다.
+    로그인은 됐는데 프로필을 못 읽었을 때는 읽기 실패가 선다 — 퇴사·차단과 같은 틀에서
+    「급여 보기」 자리가 「다시 시도」로 바뀐다.
+    절 순서가 login.md의 「화면 상태와 흐름」 순서다.
+    프로필 작성은 스텝 다섯(사진·이름·성별·생년월일·연락처)을 한 번에 한 칸만 여는 화면이라 확인 시트가 없다.
+    02 맨 앞의 목업은 직접 쳐 보는 프로토타입이다 — 값은 어디에도 안 보낸다.
     등장 계단과 뛰는 점과 도는 문구는 목업 아래 「다시 보기」로 되감는다.
     오른쪽 위 토글이 페이지 전체를 라이트와 다크로 뒤집는다.
   </p>
@@ -529,10 +658,21 @@ code {
             </div>
             <div class="sp"></div>
             <div class="bottomblock">
-              <button class="gbtn rise" style="--i:3" type="button">
-                <!-- 자리를 보기 위한 대역이다. 구현은 구글이 배포하는 signin-assets.zip의 로고를 쓴다 -->
-                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
-                Google 계정으로 로그인
+              <button class="gbtn rise" style="--i:3" type="button" aria-label="Sign in with Google">
+                <!-- 자리와 종횡비를 보기 위한 대역이다. 구현은 구글이 배포하는 signin-assets.zip의
+                     SVG(알약 rd, 「Sign in with Google」 SI)를 통째로 쓴다. 189:40 종횡비, 높이
+                     48px에서 너비 ≈227px — 화면 폭을 안 채운다. 면·테두리·글자 색은 --google-*
+                     (이 파일 안 상수, tokens.md 아님)이고 테마에 따라 갈린다 -->
+                <svg width="226.8" height="48" viewBox="0 0 189 40" role="img" aria-hidden="true">
+                  <rect x="0.5" y="0.5" width="188" height="39" rx="19.5" fill="var(--google-fill)" stroke="var(--google-stroke)"/>
+                  <g transform="translate(12,11)">
+                    <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/>
+                    <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/>
+                    <path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/>
+                    <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/>
+                  </g>
+                  <text x="108" y="25" text-anchor="middle" font-family="'Roboto', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="500" fill="var(--google-text)">Sign in with Google</text>
+                </svg>
               </button>
               <div class="gnote rise" style="--i:4">가입하면 관리자가 확인한 뒤에<br>근무표가 보여요</div>
             </div>
@@ -544,7 +684,8 @@ code {
           <div class="cap-name">로그인</div>
           <p class="cap-body">남는 세로 공간을 가운데 덩이의 위아래가 반씩 나눈다. <strong>안내 문구가 승인 대기 화면을 미리 알린다</strong> — 「가입하면 관리자가 확인한 뒤에」에서 줄을 끊는다.</p>
           <p class="cap-body" style="margin-top:8px">등장은 마크·이름·설명·버튼·안내 순으로 <code>--duration-slower</code>에 <code>--stagger-step</code>이다. 버튼을 눌러 보면 <code>--duration-fast</code>로 <code>scale(0.97)</code>까지 줄어든다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>G 로고는 대역이다.</strong> login.md가 구글이 배포하는 <code>signin-assets.zip</code>을 그대로 쓰라고 했다. 버튼의 면·테두리·글자 셋만 tokens.md 9절의 값이고, 서체는 우리 것이다 — 이 어긋남을 심사가 어떻게 보는지는 문서의 「아직 안 정한 것」에 있다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>구글 버튼은 자산 통째로다 — 이 SVG는 대역이다.</strong> 구현은 <code>signin-assets.zip</code>의 알약 자산을 그대로 넣는다. 문안이 「Google 계정으로 로그인」이 아니라 <strong>「Sign in with Google」</strong>인 것은 서체 규정(영문 Google Sans Medium·한글 Roboto Medium)이 우리 서체를 허용하는지 확인할 길이 없어서 — 심사가 보는 자리는 구글이 만든 것을 그대로 둔다.</p>
+          <p class="cap-body" style="margin-top:8px">높이 48px 고정, 너비는 자산 종횡비(189:40)대로 ≈227px다 — 화면 폭을 안 채운다. 면·테두리·글자 색(<code>--google-fill</code>·<code>--google-stroke</code>·<code>--google-text</code>)은 구글 자산의 값이라 이 파일 안 상수다, tokens.md 어디에도 없다. 라이트 화면엔 Dark 자산(어두운 면), 다크 화면엔 Light 자산(흰 면)이 선다 — 오른쪽 위 토글로 확인한다.</p>
         </figcaption>
       </figure>
 
@@ -555,13 +696,121 @@ code {
   <section>
     <div class="sec-head">
       <span class="sec-num">02 / 프로필 작성</span>
-      <h2>한 장에 다 세우고, 보내기 전에 한 번 묻는다</h2>
-      <p>읽는 화면이 아니라 적는 화면이라 왼쪽 정렬이다. 채워진 사진이 맨 위에 오고 빈 칸 넷이 그 아래에 선다. 「보내기」를 누르면 바로 안 보내고 시트가 올라온다 — 이름과 성별과 생년월일이 본인 손에서 잠기는 자리다.</p>
+      <h2>칸은 하나, 자리는 고정 — 사진이 첫 스텝이고 답한 것은 라벨 없이 더미로 쌓인다</h2>
+      <p>읽는 화면이 아니라 적는 화면이라 왼쪽 정렬이다. 스텝은 다섯이고 사진이 첫 스텝이다 — 칸 안의 원이 곧 버튼이다. 누르면 기기의 사진 고르기가 열리고(프로토타입은 스피너 1.2초로 흉내 낸다) 올라가면 원 안이 새 사진 면으로 바뀌며 곧바로 굳는다. 원 아래 「기본 사진 쓰기」를 누르면 원 안의 것을 그대로 쓰며 굳는다. 그 아래 이름·성별·생년월일·연락처가 라벨 없이 글로 쌓인다 — 면도 선도 없다, 값만 선다. 화면 아래 「보내기」 위에는 묻는 칸이 하나 고정으로 있고, 거기 적은 것이 규칙에 맞으면 칸이 통째로 더미의 제자리까지 올라가 굳는다. 굳은 것을 누르면 그 자리가 옅어지며 작아지고 높이가 접혀 자리째 사라진다 — 아래 것들이 올라와 메운다. 다섯이 다 굳으면 칸 자리에 잠김 안내가 서고 위 안내 한 줄이 「아래 정보가 맞나요?」로 바뀌며 바로 「보내기」가 눌린다. 보내면 곧바로 승인 대기로 가지 않는다 — 원과 첫 줄만 화면 가운데로 모이며 커지고 폭죽이 살짝 터지는 「보낸 뒤」 한 장을 거친다(프로토타입에서 「보내기」를 끝까지 눌러 보면 이어진다).</p>
     </div>
     <div class="grid">
 
       <figure class="item">
-        <div class="mock play">
+        <div class="mock proto" data-proto>
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1" data-lede>자신의 프로필을 작성해 주세요</div>
+            <div class="lockstack" data-stack>
+              <div class="lockphoto" data-photo-line>
+                <div class="photo"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span class="spin" hidden></span></div>
+              </div>
+              <div class="lockline name" data-line="name"></div>
+              <div class="lockline" data-line="gender"></div>
+              <div class="lockline num" data-line="birthdate"></div>
+              <div class="lockline num" data-line="contact"></div>
+            </div>
+            <div class="sp"></div>
+            <div class="askarea" data-ask-area>
+              <div class="askphotowrap" data-ask-photo>
+                <div class="asklab" data-photo-label>사진</div>
+                <div class="photo" data-ask-photo-circle role="button" tabindex="0" aria-label="기기의 사진 고르기">
+                  <svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                  <span class="spin" hidden></span>
+                </div>
+                <div class="askphotobtns">
+                  <button class="btn outline" type="button" data-photo-default>기본 사진 쓰기</button>
+                </div>
+              </div>
+              <form class="askfield" data-ask-field novalidate hidden>
+                <label class="asklab" data-ask-label for="proto-ask">이름</label>
+                <input class="askbox" data-ask-text id="proto-ask" type="text" placeholder="근무표에 뜰 이름" autocomplete="off">
+                <div class="askseg" data-ask-seg hidden>
+                  <span data-seg="여">여</span><span data-seg="남">남</span>
+                </div>
+                <div class="askerr" data-ask-err hidden></div>
+              </form>
+              <div class="locknotice" data-lock-notice hidden>이름과 성별과 생년월일은 보내고 나면 못 고쳐요</div>
+            </div>
+          </div>
+          <div class="ctabar">
+            <button class="btn" type="button" data-cta-btn disabled>
+              <span data-cta-label>보내기</span>
+              <span class="spin" data-cta-spin hidden></span>
+            </button>
+            <div class="subnote" data-cta-note>빈 칸을 다 채우면 보낼 수 있어요</div>
+          </div>
+          <div class="sentstage" data-sent-stage>
+            <div class="photo big" data-sent-photo>
+              <svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+            </div>
+            <div class="greeting" data-sent-greeting></div>
+          </div>
+        </div>
+        <button class="proto-reset" type="button" data-proto-reset>처음부터 다시</button>
+        <figcaption>
+          <div class="cap-key">PROTOTYPE / LIVE</div>
+          <div class="cap-name">직접 쳐 보는 프로토타입</div>
+          <p class="cap-body"><strong>직접 쳐 보는 프로토타입 — 값은 어디에도 안 보낸다.</strong> 원을 누르면(기기의 사진 고르기 흉내) 1.2초 스피너 뒤 원 안이 다른 색 면으로 바뀌며 곧바로 굳는다. 「기본 사진 쓰기」를 누르거나, 이름을 치고 Enter를 누르면 칸이 통째로(라벨·흰 면·원 또는 글자) 더미의 제자리까지 <code>--duration-slower</code>(300ms)로 오른다. 오르는 동안 라벨과 흰 면은 옅어져 사라지고 글자는 굳은 크기·굵기로 바뀐다.</p>
+          <p class="cap-body" style="margin-top:8px">굳은 것을 누르면 <strong>자리째 접힌다</strong> — 그 자리가 <code>--duration-slow</code>(240ms)로 작아지며(0.96배) 옅어지고, 같은 시간에 높이가 0으로 접혀 아래 것들이 올라와 메운다. 자리를 비운 채 높이를 지키지 않는다. 칸은 그 값을 든 채 <code>--duration-base</code>로 밝아져 들어온다. 다시 굳을 때는 더미의 그 자리가 먼저 <code>--duration-slow</code>로 벌어지고 칸이 그리로 <code>--duration-slower</code>로 올라가 닿을 때 자리가 맞는다. 다섯째가 굳으면 위 안내 한 줄이 「아래 정보가 맞나요?」로 바뀌고 칸이 사라지며 잠김 안내가 들어오고 「보내기」가 눌린다. <code>prefers-reduced-motion</code>이면 접힘·벌어짐과 이동 없이 밝기만 바뀐다.</p>
+          <p class="cap-body" style="margin-top:8px">「보내기」를 끝까지 눌러 보면 <strong>보낸 뒤</strong>까지 이어진다. 1.2초 스피너 뒤 앱바·안내·성별·생년월일·연락처·잠김 안내·CTA 바가 <code>--duration-base</code>로 제자리에서 사라지고, 원과 「{이름}님, 반가워요」만 <code>--duration-slower</code>로 화면 한가운데로 모이며 커진다(<code>size-28</code>, <code>text-2xl font-semibold</code>) — 끝에서 1.04배 넘쳤다 돌아온다(제안, tokens.md에 없는 곡선). 닿는 순간 조각 여덟이 600ms 동안 원 지름의 절반(56px)쯤 퍼지며 옅어진다. 1.2초 머문 뒤 목업 전체가 <code>--duration-slower</code> 밝기로 옅어지고 처음 상태로 돌아온다 — 실제 화면은 이 자리에 승인 대기가 들어온다. <code>prefers-reduced-motion</code>이면 이동과 폭죽 없이 원과 큰 인사가 가운데에 밝아지며 서고, 머무는 시간은 같다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1 rise" style="--i:0">자신의 프로필을 작성해 주세요</div>
+            <div class="lockstack"></div>
+            <div class="sp"></div>
+            <div class="askarea rise" style="--i:1">
+              <div class="askphotowrap">
+                <div class="asklab">사진</div>
+                <div class="photo"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div>
+                <div class="askphotobtns">
+                  <button class="btn outline" type="button">기본 사진 쓰기</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ctabar rise" style="--i:2">
+            <button class="btn" type="button" disabled>보내기</button>
+            <div class="subnote">빈 칸을 다 채우면 보낼 수 있어요</div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay>등장 다시 보기</button>
+        <figcaption>
+          <div class="cap-key">STEP-0 / PHOTO</div>
+          <div class="cap-name">스텝 0 — 사진</div>
+          <p class="cap-body">첫 스텝이다. 더미가 <strong>아직 비어 있다</strong> — 사진이 맨 처음이라 위에 쌓인 값이 없다. 칸 안 원(구글 사진 자리, <code>size-20</code>)이 <strong>곧 버튼이다</strong> — 누르면 기기의 사진 고르기가 열린다. 그 아래 버튼은 <strong>「기본 사진 쓰기」 하나뿐</strong>이다, 원과 버튼 사이 <code>mt-4</code>다.</p>
+          <p class="cap-body" style="margin-top:8px">「기본 사진 쓰기」는 원 안의 것(구글 사진)을 그대로 쓰겠다는 뜻이라 누르는 순간 굳는다. 원은 더미에서도 같은 크기 <code>size-20</code>이다. 「보내기」가 안 눌리는 이유는 버튼 아래 줄이 말한다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
           <div class="statusbar"><span>9:42</span><span class="sb-right">
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
@@ -572,51 +821,34 @@ code {
             <span class="signout">로그아웃</span>
           </div>
           <div class="screen flush">
-            <div class="lede1 rise" style="--i:0">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
-            <div class="photoblock rise" style="--i:1">
-              <div class="photo">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                <span class="swap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
-              </div>
-              <span class="swaplabel">사진 바꾸기</span>
-            </div>
-            <div class="fieldset">
-              <div class="field rise" style="--i:2">
-                <div class="lab">이름</div>
-                <div class="box ph">근무표에 뜰 이름</div>
-              </div>
-              <div class="field rise" style="--i:3">
-                <div class="lab">성별</div>
-                <div class="seg"><span>여</span><span>남</span></div>
-              </div>
-              <div class="field rise" style="--i:4">
-                <div class="lab">생년월일</div>
-                <div class="box ph num">19930421</div>
-              </div>
-              <div class="field rise" style="--i:5">
-                <div class="lab">연락처</div>
-                <div class="box ph num">010-0000-0000</div>
-              </div>
+            <div class="lede1">자신의 프로필을 작성해 주세요</div>
+            <div class="lockstack">
+              <div class="lockphoto"><div class="photo"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div></div>
             </div>
             <div class="sp"></div>
+            <div class="askarea">
+              <div class="askfield">
+                <div class="asklab">이름</div>
+                <div class="askbox ph">근무표에 뜰 이름</div>
+              </div>
+            </div>
           </div>
-          <div class="ctabar rise" style="--i:6">
+          <div class="ctabar">
             <button class="btn" type="button" disabled>보내기</button>
             <div class="subnote">빈 칸을 다 채우면 보낼 수 있어요</div>
           </div>
         </div>
-        <button class="replay" type="button" data-replay>등장 다시 보기</button>
         <figcaption>
-          <div class="cap-key">PROFILE / EMPTY</div>
-          <div class="cap-name">처음 들어왔을 때</div>
-          <p class="cap-body">사진만 채워진 채 시작한다. <strong>빈 칸에 오류 테두리를 두르지 않는다</strong> — 안 눌리는 이유는 버튼 아래 줄이 말한다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>생년월일은 바텀시트가 아니라 Input 한 줄이다.</strong> 자리표시는 <code>19930421</code>이고 숫자 키패드가 뜬다. 굴리는 시트는 값을 고르는 데 느리고 여덟 자리는 누구나 외우는 숫자라 치는 쪽이 빠르다.</p>
+          <div class="cap-key">STEP-1 / NAME</div>
+          <div class="cap-name">스텝 1 — 이름</div>
+          <p class="cap-body">사진이 굳어 <strong>더미 맨 위에 원으로 섰다</strong> — 다른 글과 달리 가운데 정렬이다. 사진과 첫 글 사이는 <code>mt-6</code>이다. 묻는 칸은 화면 아래 고정, 자리표시는 「근무표에 뜰 이름」이고 키보드의 완료가 굳는 계기다. 「다음」 버튼이 없다.</p>
+          <p class="cap-body" style="margin-top:8px">빈 칸에 <strong>오류 테두리를 두르지 않는다</strong> — 아직 손대지 않은 칸은 쓰는 중보다도 앞이다.</p>
         </figcaption>
       </figure>
 
       <figure class="item">
-        <div class="mock play">
-          <div class="statusbar"><span>9:43</span><span class="sb-right">
+        <div class="mock">
+          <div class="statusbar"><span>9:42</span><span class="sb-right">
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
@@ -626,50 +858,34 @@ code {
             <span class="signout">로그아웃</span>
           </div>
           <div class="screen flush">
-            <div class="lede1">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
-            <div class="photoblock">
-              <div class="photo">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                <span class="swap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
-              </div>
-              <span class="swaplabel">사진 바꾸기</span>
-            </div>
-            <div class="fieldset">
-              <div class="field">
-                <div class="lab">이름</div>
-                <div class="box">박서연</div>
-              </div>
-              <div class="field">
-                <div class="lab">성별</div>
-                <div class="seg"><span class="on">여</span><span>남</span></div>
-              </div>
-              <div class="field">
-                <div class="lab">생년월일</div>
-                <div class="box num">19981345</div>
-                <div class="err">숫자 8자리로 적어 주세요</div>
-              </div>
-              <div class="field">
-                <div class="lab">연락처</div>
-                <div class="box num">010-1234</div>
-                <div class="err">010으로 시작하는 11자리예요</div>
-              </div>
+            <div class="lede1">자신의 프로필을 작성해 주세요</div>
+            <div class="lockstack">
+              <div class="lockphoto"><div class="photo"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div></div>
+              <div class="lockline name">박서연님, 반가워요</div>
             </div>
             <div class="sp"></div>
+            <div class="askarea">
+              <div class="askfield">
+                <div class="asklab">성별</div>
+                <div class="askseg"><span>여</span><span>남</span></div>
+              </div>
+            </div>
           </div>
           <div class="ctabar">
             <button class="btn" type="button" disabled>보내기</button>
+            <div class="subnote">빈 칸을 다 채우면 보낼 수 있어요</div>
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">PROFILE / INVALID</div>
-          <div class="cap-name">칸이 규칙에 안 맞을 때</div>
-          <p class="cap-body">생년월일이 여덟 자리 날짜가 아니거나 연락처가 010 11자리가 아닌 채 칸을 떠나면 <strong>그 칸 아래 한 줄이 규칙을 말한다.</strong> 색은 <code>fg.critical</code>, 크기는 <code>text-xs</code>, 칸과 줄 사이는 <code>mt-1.5</code>다. <strong>오류 테두리는 안 두른다</strong> — 칸 테두리는 그대로 <code>stroke.neutral</code>이다.</p>
-          <p class="cap-body" style="margin-top:8px">맞게 고치면 줄이 사라진다. 나타나고 사라질 때 모션은 없다 — 치는 중에 옆에서 무엇이 움직이면 눈이 칸을 떠난다. 규칙에 안 맞는 칸이 있는 동안 「보내기」는 안 눌린다.</p>
+          <div class="cap-key">STEP-2 / GENDER</div>
+          <div class="cap-name">스텝 2 — 성별</div>
+          <p class="cap-body">이름이 굳어 더미의 <strong>사진 다음 줄이 됐다</strong> — 「박서연님, 반가워요」, <code>text-xl font-semibold</code>. 라벨이 없다, 이름이 굳는 순간이 이 화면에서 가장 큰 순간이라 인사가 첫 줄에만 붙는다.</p>
+          <p class="cap-body" style="margin-top:8px">세그먼트 둘 다 <strong>아직 아무것도 안 골랐다.</strong> 브랜드 색은 이 화면에서 「보내기」 하나뿐이라 고른 쪽도 흰 면과 그림자로만 표시한다 — 누르는 순간 굳는다.</p>
         </figcaption>
       </figure>
 
       <figure class="item">
-        <div class="mock play">
+        <div class="mock">
           <div class="statusbar"><span>9:43</span><span class="sb-right">
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
@@ -680,49 +896,234 @@ code {
             <span class="signout">로그아웃</span>
           </div>
           <div class="screen flush">
-            <div class="lede1">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
-            <div class="photoblock">
-              <div class="photo">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                <span class="swap"><span class="spin"></span></span>
-              </div>
-              <span class="swaplabel">사진 바꾸기</span>
-            </div>
-            <div class="fieldset">
-              <div class="field">
-                <div class="lab">이름</div>
-                <div class="box">박서연</div>
-              </div>
-              <div class="field">
-                <div class="lab">성별</div>
-                <div class="seg"><span class="on">여</span><span>남</span></div>
-              </div>
-              <div class="field">
-                <div class="lab">생년월일</div>
-                <div class="box num">19980412</div>
-              </div>
-              <div class="field">
-                <div class="lab">연락처</div>
-                <div class="box num">010-0000-0004</div>
-              </div>
+            <div class="lede1">자신의 프로필을 작성해 주세요</div>
+            <div class="lockstack">
+              <div class="lockphoto"><div class="photo"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div></div>
+              <div class="lockline name">박서연님, 반가워요</div>
+              <div class="lockline">여성</div>
             </div>
             <div class="sp"></div>
+            <div class="askarea">
+              <div class="askfield">
+                <div class="asklab">생년월일</div>
+                <div class="askbox ph num">19930421</div>
+              </div>
+            </div>
+          </div>
+          <div class="ctabar">
+            <button class="btn" type="button" disabled>보내기</button>
+            <div class="subnote">빈 칸을 다 채우면 보낼 수 있어요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">STEP-3 / BIRTHDATE</div>
+          <div class="cap-name">스텝 3 — 생년월일</div>
+          <p class="cap-body">더미가 원 하나에 두 줄이다 — 나머지 줄은 <code>text-lg font-medium</code>, 줄 사이 <code>mt-3</code>다. <strong>생년월일은 바텀시트가 아니라 Input 한 줄이다.</strong> 자리표시는 <code>19930421</code>이고 숫자 키패드가 뜬다.</p>
+          <p class="cap-body" style="margin-top:8px">여덟 자리가 실존하는 날짜가 되는 순간 저절로 굳는다. 더미와 칸 사이는 남는 공간 전부고 칸은 아래에 붙는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:43</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1">자신의 프로필을 작성해 주세요</div>
+            <div class="lockstack">
+              <div class="lockphoto"><div class="photo"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div></div>
+              <div class="lockline name">박서연님, 반가워요</div>
+              <div class="lockline">여성</div>
+            </div>
+            <div class="sp"></div>
+            <div class="askarea">
+              <div class="askfield">
+                <div class="asklab">생년월일</div>
+                <div class="askbox num">19931341</div>
+                <div class="askerr">숫자 8자리로 적어 주세요</div>
+              </div>
+            </div>
+          </div>
+          <div class="ctabar">
+            <button class="btn" type="button" disabled>보내기</button>
+            <div class="subnote">빈 칸을 다 채우면 보낼 수 있어요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">STEP-3 / INVALID</div>
+          <div class="cap-name">칸이 규칙에 안 맞을 때</div>
+          <p class="cap-body">여덟 자리가 다 찼는데 <code>19931341</code>은 실존하는 날짜가 아니다. <strong>그 칸 아래 한 줄이 규칙을 말한다</strong> — 「숫자 8자리로 적어 주세요」. 색은 <code>fg.critical</code>, 크기는 <code>text-xs</code>, 칸과 줄 사이는 <code>mt-1.5</code>다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>오류 테두리는 안 두른다</strong> — 칸 테두리는 그대로 <code>stroke.neutral</code>이다. 연락처도 같은 규칙을 따른다 — 010 11자리가 아닌 채 칸을 떠나면 같은 자리에 「010으로 시작하는 11자리예요」가 선다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:44</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1">자신의 프로필을 작성해 주세요</div>
+            <div class="lockstack">
+              <div class="lockphoto"><div class="photo"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div></div>
+              <div class="lockline name">박서연님, 반가워요</div>
+              <div class="lockline">여성</div>
+              <div class="lockline num">1993년 4월 21일</div>
+            </div>
+            <div class="sp"></div>
+            <div class="askarea">
+              <div class="askfield">
+                <div class="asklab">연락처</div>
+                <div class="askbox num">010-0000-00</div>
+              </div>
+            </div>
+          </div>
+          <div class="ctabar">
+            <button class="btn" type="button" disabled>보내기</button>
+            <div class="subnote">빈 칸을 다 채우면 보낼 수 있어요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">STEP-4 / CONTACT</div>
+          <div class="cap-name">스텝 4 — 연락처</div>
+          <p class="cap-body">더미가 원 하나에 세 줄이다. 생년월일 값은 <code>1993년 4월 21일</code>로 말로 갈라 적는다 — 칸에서는 여덟 자리를 쳤지만 읽는 자리에서는 년·월·일이 갈려야 한다. <code>tabular-nums</code>가 걸린다.</p>
+          <p class="cap-body" style="margin-top:8px">연락처 칸에 <code>010-0000-00</code>까지 쳤다. 숫자만 치면 앱이 하이픈을 넣고, 010으로 시작하는 11자리가 되는 순간 저절로 굳는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:44</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1">아래 정보가 맞나요? 틀린 부분을 누르면 다시 적을 수 있어요</div>
+            <div class="lockstack">
+              <div class="lockphoto"><div class="photo"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div></div>
+              <div class="lockline name">박서연님, 반가워요</div>
+              <div class="lockline">여성</div>
+              <div class="lockline num">1993년 4월 21일</div>
+              <div class="lockline num">010-0000-0001</div>
+            </div>
+            <div class="sp"></div>
+            <div class="askarea">
+              <div class="locknotice">이름과 성별과 생년월일은 보내고 나면 못 고쳐요</div>
+            </div>
           </div>
           <div class="ctabar">
             <button class="btn" type="button">보내기</button>
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">PROFILE / UPLOADING</div>
+          <div class="cap-key">DONE / ALL LOCKED</div>
+          <div class="cap-name">다 굳었을 때</div>
+          <p class="cap-body">다섯이 다 굳으면 <strong>위 안내 한 줄이 갈린다</strong> — 「아래 정보가 맞나요? 틀린 부분을 누르면 다시 적을 수 있어요」, <code>--duration-base</code> 밝기로 건너간다. 색은 그대로 <code>fg.neutral-subtle</code>다. <strong>묻는 칸 자리에는 잠김 안내 한 줄이 선다</strong> — 「이름과 성별과 생년월일은 보내고 나면 못 고쳐요」. 「보내기」가 눌린다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>연락처와 사진은 잠김 안내에 안 넣는다.</strong> 이 줄이 말하는 것은 「이건 못 고친다」 하나고, 고칠 수 있는 것을 같이 세우면 무엇이 잠기는지가 흐려진다. <strong>확인 시트는 안 띄운다</strong> — 굳은 값 다섯이 이미 확인하는 일을 하고 있다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:45</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1">자신의 프로필을 작성해 주세요</div>
+            <div class="lockstack">
+              <div class="lockphoto"><div class="photo"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div></div>
+              <div class="lockline name">박서연님, 반가워요</div>
+              <div class="lockline num">1993년 4월 21일</div>
+              <div class="lockline num">010-0000-0001</div>
+            </div>
+            <div class="sp"></div>
+            <div class="askarea">
+              <div class="askfield">
+                <div class="asklab">성별</div>
+                <div class="askseg"><span class="on">여</span><span>남</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="ctabar">
+            <button class="btn" type="button" disabled>보내기</button>
+            <div class="subnote">빈 칸을 다 채우면 보낼 수 있어요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">EDITING / GENDER</div>
+          <div class="cap-name">굳은 것을 눌러 고치는 중</div>
+          <p class="cap-body">DONE에서 「여성」을 눌렀다. <strong>자리가 접혀 사라진다</strong> — 빠지는 순간 더미가 원·「박서연님, 반가워요」·「1993년 4월 21일」·「010-0000-0001」로 붙어 선다, 빈 자리가 안 남는다. 칸은 이미 고른 「여」가 켜진 세그먼트로 열린다.</p>
+          <p class="cap-body" style="margin-top:8px">위 안내 한 줄도 <strong>원래 문구로 돌아간다</strong> — 하나라도 다시 열리면 「자신의 프로필을 작성해 주세요」다. 잠김 안내는 사라지고 <strong>버튼 아래 줄이 다시 서며 「보내기」가 disabled로 돌아간다.</strong> 「다섯이 다 굳기 전에는 안 눌린다」는 규칙은 다시 편 뒤에도 그대로다. 다시 굳으면 그 자리가 먼저 벌어지고 칸이 그리로 올라가 자리가 맞는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">프로필</span>
+            <span class="sp"></span>
+            <span class="signout">로그아웃</span>
+          </div>
+          <div class="screen flush">
+            <div class="lede1">자신의 프로필을 작성해 주세요</div>
+            <div class="lockstack"></div>
+            <div class="sp"></div>
+            <div class="askarea">
+              <div class="askphotowrap">
+                <div class="asklab">사진</div>
+                <div class="photo">
+                  <svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="opacity:.25"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                  <span class="spin"></span>
+                </div>
+                <div class="askphotobtns">
+                  <button class="btn outline" type="button" disabled>기본 사진 쓰기</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ctabar">
+            <button class="btn" type="button" disabled>보내기</button>
+            <div class="subnote">빈 칸을 다 채우면 보낼 수 있어요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">UPLOADING</div>
           <div class="cap-name">사진을 올리는 동안</div>
-          <p class="cap-body">기기에서 사진을 골랐다. <strong>사진 위 바꾸기 표시 자리에 스피너가 돌고 원은 그대로다.</strong> 올라가면 <code>--duration-base</code>로 밝기만 바뀌며 새 사진이 들어온다.</p>
-          <p class="cap-body" style="margin-top:8px">올리기가 실패하면 원 안 사진은 그대로 남고 사진 아래에 <code>fg.critical</code> <code>text-xs</code> 줄이 선다 — 「사진을 올리지 못했어요. 다시 골라 주세요」. 「보내기」와 따로 가는 흐름이라 이 실패가 다른 칸을 막지 않는다.</p>
+          <p class="cap-body">원을 눌렀다. <strong>원 위에 스피너가 돌고 버튼은 disabled다.</strong> 더미는 아직 비어 있다 — 사진이 첫 스텝이라 이 시점엔 아무것도 안 굳었다.</p>
+          <p class="cap-body" style="margin-top:8px">올라가면 원 안이 다른 색 면으로 바뀌며 곧바로 굳어 더미로 오른다 — 한 번 더 누르게 하지 않는다. 올리기가 실패하면 원은 그대로고 아래에 <code>fg.critical</code> <code>text-xs</code> 줄이 선다 — 「사진을 올리지 못했어요. 다시 골라 주세요」.</p>
         </figcaption>
       </figure>
 
       <figure class="item">
-        <div class="mock play">
-          <div class="statusbar"><span>9:44</span><span class="sb-right">
+        <div class="mock">
+          <div class="statusbar"><span>9:45</span><span class="sb-right">
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
@@ -732,183 +1133,67 @@ code {
             <span class="signout">로그아웃</span>
           </div>
           <div class="screen flush">
-            <div class="lede1">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
-            <div class="photoblock">
-              <div class="photo">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                <span class="swap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
-              </div>
-              <span class="swaplabel">사진 바꾸기</span>
-            </div>
-            <div class="fieldset">
-              <div class="field">
-                <div class="lab">이름</div>
-                <div class="box">박서연</div>
-              </div>
-              <div class="field">
-                <div class="lab">성별</div>
-                <div class="seg"><span class="on">여</span><span>남</span></div>
-              </div>
-              <div class="field">
-                <div class="lab">생년월일</div>
-                <div class="box num">19980412</div>
-              </div>
-              <div class="field">
-                <div class="lab">연락처</div>
-                <div class="box num">010-0000-0004</div>
-              </div>
+            <div class="lede1">아래 정보가 맞나요? 틀린 부분을 누르면 다시 적을 수 있어요</div>
+            <div class="lockstack">
+              <div class="lockphoto"><div class="photo"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div></div>
+              <div class="lockline name">박서연님, 반가워요</div>
+              <div class="lockline">여성</div>
+              <div class="lockline num">1993년 4월 21일</div>
+              <div class="lockline num">010-0000-0001</div>
             </div>
             <div class="sp"></div>
+            <div class="askarea">
+              <div class="locknotice">이름과 성별과 생년월일은 보내고 나면 못 고쳐요</div>
+            </div>
           </div>
           <div class="ctabar">
-            <button class="btn" type="button">보내기</button>
+            <button class="btn" type="button"><span class="spin"></span></button>
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">PROFILE / FILLED</div>
-          <div class="cap-name">다 채운 뒤</div>
-          <p class="cap-body">넷이 다 차면 「보내기」가 브랜드 면으로 살아나고 <strong>버튼 아래 줄이 사라진다</strong> — 그 줄은 안 눌리는 이유를 말하는 자리라 눌리는 순간 할 말이 없다. 다 채웠을 때의 문안은 login.md에 없다.</p>
-          <p class="cap-body" style="margin-top:8px">생년월일과 연락처에 <code>tabular-nums</code>가 걸린다. 칸 안에서는 <strong>친 그대로 여덟 자리 숫자</strong>로 남는다 — 하이픈은 연락처에만 앱이 넣는다. 점을 찍어 <code>1998.04.12</code>로 보여주는 것은 뒤에 오는 확인 시트뿐이다(제안).</p>
-        </figcaption>
-      </figure>
-
-      <figure class="item">
-        <div class="mock modal-open">
-          <div class="statusbar"><span>9:44</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="appbar">
-            <span class="title">프로필</span>
-            <span class="sp"></span>
-            <span class="signout">로그아웃</span>
-          </div>
-          <div class="screen flush">
-            <div class="lede1">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
-            <div class="photoblock">
-              <div class="photo">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                <span class="swap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
-              </div>
-              <span class="swaplabel">사진 바꾸기</span>
-            </div>
-            <div class="fieldset">
-              <div class="field">
-                <div class="lab">이름</div>
-                <div class="box">박서연</div>
-              </div>
-              <div class="field">
-                <div class="lab">성별</div>
-                <div class="seg"><span class="on">여</span><span>남</span></div>
-              </div>
-              <div class="field">
-                <div class="lab">생년월일</div>
-                <div class="box num">19980412</div>
-              </div>
-              <div class="field">
-                <div class="lab">연락처</div>
-                <div class="box num">010-0000-0004</div>
-              </div>
-            </div>
-            <div class="sp"></div>
-          </div>
-          <div class="ctabar">
-            <button class="btn" type="button">보내기</button>
-          </div>
-          <div class="scrim"></div>
-          <div class="rsheet">
-            <div class="grab"></div>
-            <div class="sh-title">이대로 보낼까요</div>
-            <div class="sh-list">
-              <div class="sh-row"><span class="k">이름</span><span class="v">박서연</span></div>
-              <div class="sh-row"><span class="k">성별</span><span class="v">여</span></div>
-              <div class="sh-row"><span class="k">생년월일</span><span class="v num">1998.04.12</span></div>
-            </div>
-            <div class="sh-note">이름과 성별과 생년월일은 보내고 나면 못 고쳐요</div>
-            <div class="rowbtns">
-              <button class="btn secondary" type="button">고칠게요</button>
-              <button class="btn" type="button">보낼게요</button>
-            </div>
-          </div>
-        </div>
-        <figcaption>
-          <div class="cap-key">PROFILE / CONFIRM</div>
-          <div class="cap-name">보내기 전 확인</div>
-          <p class="cap-body">시트가 <code>--duration-slow</code>로 올라온다. <strong>연락처와 사진은 시트에 안 선다</strong> — 이 시트가 말하는 것은 「이건 못 고친다」 하나고, 고칠 수 있는 것을 같이 세우면 무엇이 잠기는지가 흐려진다.</p>
-          <p class="cap-body" style="margin-top:8px">시트에 서는 것은 <strong>잠기는 값 셋</strong>이다 — 이름과 성별과 생년월일. 시트 아래 줄이 부르는 셋과 같다.</p>
-          <p class="cap-body" style="margin-top:8px">왼쪽 버튼이 「고칠게요」다. components.md는 다이얼로그 왼쪽 버튼을 「닫기」로 정했지만 login.md가 이 자리에 두 문안을 따로 적었다.</p>
-        </figcaption>
-      </figure>
-
-      <figure class="item">
-        <div class="mock modal-open">
-          <div class="statusbar"><span>9:44</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="appbar">
-            <span class="title">프로필</span>
-            <span class="sp"></span>
-            <span class="signout">로그아웃</span>
-          </div>
-          <div class="screen flush">
-            <div class="lede1">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
-            <div class="photoblock">
-              <div class="photo">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                <span class="swap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
-              </div>
-              <span class="swaplabel">사진 바꾸기</span>
-            </div>
-            <div class="fieldset">
-              <div class="field">
-                <div class="lab">이름</div>
-                <div class="box">박서연</div>
-              </div>
-              <div class="field">
-                <div class="lab">성별</div>
-                <div class="seg"><span class="on">여</span><span>남</span></div>
-              </div>
-              <div class="field">
-                <div class="lab">생년월일</div>
-                <div class="box num">19980412</div>
-              </div>
-              <div class="field">
-                <div class="lab">연락처</div>
-                <div class="box num">010-0000-0004</div>
-              </div>
-            </div>
-            <div class="sp"></div>
-          </div>
-          <div class="ctabar">
-            <button class="btn" type="button">보내기</button>
-          </div>
-          <div class="scrim"></div>
-          <div class="rsheet">
-            <div class="grab"></div>
-            <div class="sh-title">이대로 보낼까요</div>
-            <div class="sh-list">
-              <div class="sh-row"><span class="k">이름</span><span class="v">박서연</span></div>
-              <div class="sh-row"><span class="k">성별</span><span class="v">여</span></div>
-              <div class="sh-row"><span class="k">생년월일</span><span class="v num">1998.04.12</span></div>
-            </div>
-            <div class="sh-note">이름과 성별과 생년월일은 보내고 나면 못 고쳐요</div>
-            <div class="rowbtns">
-              <button class="btn secondary" type="button">고칠게요</button>
-              <button class="btn" type="button"><span class="spin"></span></button>
-            </div>
-          </div>
-        </div>
-        <figcaption>
-          <div class="cap-key">PROFILE / SENDING</div>
+          <div class="cap-key">SENDING</div>
           <div class="cap-name">보내는 동안</div>
-          <p class="cap-body">「보낼게요」 안에 스피너가 돌고 <strong>시트는 열려 있다.</strong> 로그인 화면과 달리 여기는 우리 서버로 보내는 것이라 기다리는 시간이 실제로 있다.</p>
-          <p class="cap-body" style="margin-top:8px">보내고 나면 시트가 닫히고 승인 대기 화면으로 넘어간다. <strong>토스트를 안 띄운다</strong> — 화면이 통째로 바뀌는 것이 이미 결과다.</p>
+          <p class="cap-body">「보내기」를 누르면 <strong>버튼 글자가 사라지고 스피너만 남는다.</strong> 글자와 스피너를 같이 두면 버튼이 넓어졌다 좁아지고, 「보내기」가 남아 있으면 아직 안 눌린 것으로 읽힌다.</p>
+          <p class="cap-body" style="margin-top:8px">굳은 값은 보내는 동안 안 눌린다. <code>submit_profile</code>이 성공하면 <strong>보낸 뒤</strong>로 넘어간다 — 승인 대기로 바로 가지 않는다. 토스트를 안 띄운다, 화면이 통째로 바뀌는 것이 이미 결과다.</p>
         </figcaption>
       </figure>
 
       <figure class="item">
-        <div class="mock play">
+        <div class="mock">
+          <div class="statusbar"><span>9:46</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen" style="position:relative">
+            <div class="sp"></div>
+            <div style="display:flex;flex-direction:column;align-items:center">
+              <div style="position:relative;width:112px;height:112px">
+                <div class="photo big"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div>
+                <span class="confetti-piece circle" style="left:131px;top:85px;opacity:.5;background:var(--bg-brand-solid)"></span>
+                <span class="confetti-piece sq" style="left:85px;top:131px;opacity:.4;background:var(--bg-brand-muted)"></span>
+                <span class="confetti-piece circle" style="left:21px;top:131px;opacity:.35;background:var(--stroke-neutral-muted)"></span>
+                <span class="confetti-piece sq" style="left:-25px;top:85px;opacity:.5;background:var(--bg-brand-solid)"></span>
+                <span class="confetti-piece circle" style="left:-25px;top:21px;opacity:.4;background:var(--bg-brand-muted)"></span>
+                <span class="confetti-piece sq" style="left:21px;top:-25px;opacity:.35;background:var(--stroke-neutral-muted)"></span>
+                <span class="confetti-piece circle" style="left:85px;top:-25px;opacity:.5;background:var(--bg-brand-solid)"></span>
+                <span class="confetti-piece sq" style="left:131px;top:21px;opacity:.4;background:var(--bg-brand-muted)"></span>
+              </div>
+              <div style="margin-top:24px;font-size:var(--t-2xl);line-height:var(--lh-2xl);font-weight:600;color:var(--fg-neutral)">박서연님, 반가워요</div>
+            </div>
+            <div class="sp"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">SENT</div>
+          <div class="cap-name">보낸 뒤</div>
+          <p class="cap-body"><code>submit_profile</code>이 성공한 순간이다. <strong>앱바도 버튼도 없다</strong> — 원(<code>size-28</code>)과 「박서연님, 반가워요」(<code>text-2xl font-semibold</code>)만 화면 한가운데에 있다. 다른 것은 전부 사라졌다.</p>
+          <p class="cap-body" style="margin-top:8px">원 둘레에서 조각 여덟이 퍼지는 중간 순간이다 — 반쯤 퍼져 반쯤 옅은 정지 프레임이다. 실제로는 <code>--duration-slower</code>로 모여 커진 뒤 600ms 동안 이렇게 터진다(직접 쳐 보는 프로토타입 참고). 잠깐 머문 뒤 승인 대기로 넘어간다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>거절된 뒤 다시 보낸 것이면 이 화면이 없다</strong> — 처음 맞는 순간이 아니라서 바로 승인 대기로 간다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
           <div class="statusbar"><span>18:20</span><span class="sb-right">
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
@@ -919,44 +1204,28 @@ code {
             <span class="signout">로그아웃</span>
           </div>
           <div class="screen flush">
-            <div class="lede1 rise" style="--i:0">관리자가 누구인지 알아볼 수 있게 적어 주세요</div>
-            <div class="photoblock rise" style="--i:1">
-              <div class="photo">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                <span class="swap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
-              </div>
-              <span class="swaplabel">사진 바꾸기</span>
-            </div>
-            <div class="fieldset">
-              <div class="field rise" style="--i:2">
-                <div class="lab">이름</div>
-                <div class="box">박서연</div>
-              </div>
-              <div class="field rise" style="--i:3">
-                <div class="lab">성별</div>
-                <div class="seg"><span class="on">여</span><span>남</span></div>
-              </div>
-              <div class="field rise" style="--i:4">
-                <div class="lab">생년월일</div>
-                <div class="box num">19980412</div>
-              </div>
-              <div class="field rise" style="--i:5">
-                <div class="lab">연락처</div>
-                <div class="box num">010-0000-0004</div>
-              </div>
+            <div class="lede1">아래 정보가 맞나요? 틀린 부분을 누르면 다시 적을 수 있어요</div>
+            <div class="lockstack">
+              <div class="lockphoto"><div class="photo"><svg class="photo-ic" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div></div>
+              <div class="lockline name">박서연님, 반가워요</div>
+              <div class="lockline">여성</div>
+              <div class="lockline num">1993년 4월 21일</div>
+              <div class="lockline num">010-0000-0001</div>
             </div>
             <div class="sp"></div>
+            <div class="askarea">
+              <div class="locknotice">이름과 성별과 생년월일은 보내고 나면 못 고쳐요</div>
+            </div>
           </div>
-          <div class="ctabar rise" style="--i:6">
+          <div class="ctabar">
             <button class="btn" type="button">보내기</button>
           </div>
         </div>
-        <button class="replay" type="button" data-replay>등장 다시 보기</button>
         <figcaption>
-          <div class="cap-key">PROFILE / AGAIN</div>
-          <div class="cap-name">거절된 뒤 다시 들어왔을 때</div>
-          <p class="cap-body">승인 대기 화면의 「다시 보내기」로 들어오면 같은 화면이 뜬다. <strong>칸에는 지난번에 보낸 값이 그대로 들어 있고 넷 다 고칠 수 있다.</strong> 아직 승인이 안 났으니 잠글 것이 없다 — 승인이 나면 그때 이름과 성별과 생년월일이 잠긴다.</p>
-          <p class="cap-body" style="margin-top:8px">거절됐다는 말을 이 화면이 다시 하지 않는다. 그 말은 승인 대기 화면이 하고, 여기는 고쳐서 다시 보내는 자리다. 「보내기」를 누르면 위의 확인 시트가 똑같이 올라온다.</p>
+          <div class="cap-key">AGAIN</div>
+          <div class="cap-name">거절된 뒤 다시 보낼 때</div>
+          <p class="cap-body">화면 모양은 <strong>DONE과 같다</strong> — 원과 굳은 글 넷, 잠김 안내, 눌리는 「보내기」, 갈린 안내 한 줄. 값은 지난번에 보낸 값 그대로다.</p>
+          <p class="cap-body" style="margin-top:8px">모양이 같아도 뜻은 다르다. <strong>이때만 이름과 성별과 생년월일이 다시 열린다.</strong> 아직 승인이 안 났으니 잠글 것이 없어서다 — 굳은 것을 눌러 고치면 보통 때와 달리 다시 펼쳐진다. 승인이 나면 그때 잠긴다.</p>
         </figcaption>
       </figure>
 
@@ -987,7 +1256,6 @@ code {
                 <span>이번 달 근무표를 한눈에 봐요</span>
                 <span>출근은 현장에서 찍어요</span>
                 <span>일한 시간과 급여를 같이 봐요</span>
-                <span>못 가는 날은 교대를 부탁해요</span>
               </div>
             </div>
             <div class="sp"></div>
@@ -1013,7 +1281,7 @@ code {
           <div class="cap-key">WAIT / ASK</div>
           <div class="cap-name">기다리는 중 · 알림 아직 안 켬</div>
           <p class="cap-body">들어왔을 때의 기본이다. <strong>저절로 안 띄운다</strong> — 화면에 들어가자마자 권한을 묻지 않고 「알림 켜기」를 눌러야 브라우저가 묻는다.</p>
-          <p class="cap-body" style="margin-top:8px">도는 문구가 <code>--interval-rotate</code>마다 <code>--duration-slow</code>로 밀려 올라가며 갈리고, 자리는 두 줄 높이로 미리 잡혀 있다. 점은 <code>--interval-beat</code>로 뛴다.</p>
+          <p class="cap-body" style="margin-top:8px">도는 문구는 <strong>1차 셋</strong>(근무표·출근·급여)이다 — 교대가 들어오는 2차에 넷째가 붙는다. <code>--interval-rotate</code>(4s)마다 <code>--duration-slow</code>로 밀려 올라가며 갈리고 한 바퀴는 12s다. 자리는 두 줄 높이로 미리 잡혀 있다. 점은 <code>--interval-beat</code>로 뛴다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>이 면만 넷 중 어디도 아니다.</strong> 아직 아무 일도 안 일어난 자리라 알림 블록의 네 색을 안 쓰고 <code>bg.neutral-weak</code>를 깔았다. 알림 켜기는 <code>h-10</code>이고 로그아웃은 <code>h-12</code>다 — 어느 쪽이 이 화면의 끝인지를 높이가 가른다.</p>
         </figcaption>
       </figure>
@@ -1033,7 +1301,6 @@ code {
                 <span>이번 달 근무표를 한눈에 봐요</span>
                 <span>출근은 현장에서 찍어요</span>
                 <span>일한 시간과 급여를 같이 봐요</span>
-                <span>못 가는 날은 교대를 부탁해요</span>
               </div>
             </div>
             <div class="sp"></div>
@@ -1080,7 +1347,6 @@ code {
                 <span>이번 달 근무표를 한눈에 봐요</span>
                 <span>출근은 현장에서 찍어요</span>
                 <span>일한 시간과 급여를 같이 봐요</span>
-                <span>못 가는 날은 교대를 부탁해요</span>
               </div>
             </div>
             <div class="sp"></div>
@@ -1128,7 +1394,6 @@ code {
                 <span>이번 달 근무표를 한눈에 봐요</span>
                 <span>출근은 현장에서 찍어요</span>
                 <span>일한 시간과 급여를 같이 봐요</span>
-                <span>못 가는 날은 교대를 부탁해요</span>
               </div>
             </div>
             <div class="sp"></div>
@@ -1193,7 +1458,7 @@ code {
           <p class="cap-body">같은 화면이 다르게 선다. <strong>뛰는 점이 멈추는 게 아니라 사라지고</strong> 알약이 <code>bg.neutral-weak</code> 면의 「아직 연결 전」이 된다 — 거절된 사람은 기다리는 중이 아니라서다. 도는 문구도 안 돌고 한 줄이 선다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>알림 영역이 사라진다.</strong> 알림을 켜 봐야 올 것이 없다. 다시 보내고 나면 원래 자리에 돌아온다.</p>
           <p class="cap-body" style="margin-top:8px">아래 덩이에 버튼이 둘이 된다 — 「다시 보내기」가 primary로 서고 로그아웃이 ghost로 내려간다. <strong>왜 그랬는지는 안 적는다</strong> — 관리자가 거절에 사유를 안 달아서 화면이 지어낼 것이 없다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>차단된 사람은 이 화면을 안 본다.</strong> 로그인 자체가 막혀서 로그인 화면에서 멈추는데, 그 화면의 모습은 아직 안 정함이라 목업을 안 세웠다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>차단된 사람은 이 화면을 안 본다.</strong> 구글 로그인은 되지만 앱이 <code>blocked_at</code>을 읽어 <code>/blocked</code>로 보낸다 — 그 화면은 05에 있다.</p>
         </figcaption>
       </figure>
 
@@ -1247,6 +1512,133 @@ code {
 
     </div>
   </section>
+
+  <!-- 05 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">05 / 차단된 뒤</span>
+      <h2>퇴사한 뒤와 같은 틀에서 「급여 보기」만 뺀다</h2>
+      <p>관리자가 차단한 사람이 앱을 열면 이 화면이 선다. 구글 로그인은 되지만 <code>blocked_at</code>을 읽어 <code>/blocked</code>로 보낸다. 할 것이 로그아웃 하나뿐이라 primary 자리에 세울 버튼이 없다. 등장 모션은 없다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>10:05</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <div class="leavetitle">이 계정은 지금 이용할 수 없어요</div>
+              <div class="leavesub">궁금한 점은 관리자에게 물어보세요</div>
+            </div>
+            <div class="sp"></div>
+            <div>
+              <div class="rule myrule" style="margin-top:32px"></div>
+              <div class="account">
+                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+                <span class="mail">seoyeon.park@example.com</span>
+              </div>
+              <div class="afterbtns">
+                <button class="btn ghost" type="button">로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">BLOCKED / NORMAL</div>
+          <div class="cap-name">정상</div>
+          <p class="cap-body">퇴사한 뒤와 같은 틀에서 <strong>「급여 보기」만 뺐다.</strong> 차단된 계정은 아무 행도 못 받아서 primary 자리에 세울 것이 없고, 로그아웃이 ghost 그대로 아래 덩이에 선다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>「차단됐어요」를 안 쓴다.</strong> 관리자가 쓰는 말이 화면에 그대로 서면 통보가 된다. 「지금」을 넣는 것은 풀릴 수 있는 상태라서다. <strong>이유를 안 적는다</strong> — 왜 막혔는지는 앱이 대신 말할 것이 없다.</p>
+          <p class="cap-body" style="margin-top:8px">계정 한 줄이 어느 구글 계정이 막힌 것인지만 보여준다 — 다른 계정으로 잘못 들어온 사람이 그것을 보고 로그아웃한다. 관리자가 풀면 다음에 앱을 열 때 원래 자리가 그대로 뜬다 — 따로 알리지 않는다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">06 / 읽기 실패</span>
+      <h2>퇴사·차단과 같은 틀에서 「급여 보기」 자리에 「다시 시도」가 선다</h2>
+      <p>로그인은 됐는데 앱이 뜨면서 프로필을 못 읽었을 때다. 어느 경로에서 실패했든 이 한 장이 그 자리에 선다 — 게이트가 목적지를 못 정한 상태라 화면마다 다른 실패 모습을 그릴 수 없다. 「다시 시도」가 primary고, 누르면 버튼 안 글자가 사라지고 스피너만 남는다 — 프로필 작성의 보내는 동안과 같다. 등장 모션은 없다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>10:05</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <div class="leavetitle">불러오지 못했어요</div>
+              <div class="leavesub">연결을 확인하고 다시 시도해 주세요</div>
+            </div>
+            <div class="sp"></div>
+            <div>
+              <button class="btn" type="button" style="margin-top:32px">다시 시도</button>
+              <div class="rule myrule"></div>
+              <div class="account">
+                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+                <span class="mail">seoyeon.park@example.com</span>
+              </div>
+              <div class="afterbtns">
+                <button class="btn ghost" type="button">로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">READFAIL / NORMAL</div>
+          <div class="cap-name">정상</div>
+          <p class="cap-body">퇴사한 뒤·차단된 뒤와 같은 틀에서 <strong>「급여 보기」 자리에 「다시 시도」가 선다.</strong> 이 화면에서 할 일이 그 하나라 primary다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>「오류가 발생했어요」를 안 쓴다.</strong> 무엇이 안 됐는지를 말한다 — 못 불러온 것이다. 「연결을 확인하고」는 사람이 할 수 있는 유일한 일을 가리킨다.</p>
+          <p class="cap-body" style="margin-top:8px">계정 줄이 있는 것은 로그아웃 때문이다 — 다른 계정으로 들어가고 싶은 사람이 지금 어느 계정인지 알아야 한다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>10:05</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <div class="leavetitle">불러오지 못했어요</div>
+              <div class="leavesub">연결을 확인하고 다시 시도해 주세요</div>
+            </div>
+            <div class="sp"></div>
+            <div>
+              <button class="btn" type="button" style="margin-top:32px"><span class="spin"></span></button>
+              <div class="rule myrule"></div>
+              <div class="account">
+                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+                <span class="mail">seoyeon.park@example.com</span>
+              </div>
+              <div class="afterbtns">
+                <button class="btn ghost" type="button">로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">READFAIL / RETRYING</div>
+          <div class="cap-name">다시 읽는 동안</div>
+          <p class="cap-body">「다시 시도」를 누른 뒤다. <strong>버튼 글자가 사라지고 스피너만 남는다</strong> — 프로필 작성의 「보내기」를 누른 동안과 같은 모양이다. 글자와 스피너를 같이 두면 버튼이 넓어졌다 좁아지고, 글자가 남아 있으면 아직 안 눌린 것으로 읽힌다.</p>
+          <p class="cap-body" style="margin-top:8px">성공하면 원래 가려던 자리가 그대로 뜬다 — 이 화면이 <code>--duration-slower</code> 밝기로 사라지고 목적지의 등장 모션이 돈다. 실패하면 정상으로 돌아온다. 몇 번째 실패인지 세지 않고 문구도 안 바꾼다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
 </div>
 
 <script>
@@ -1273,5 +1665,825 @@ code {
       mock.classList.add("play");
     });
   });
+
+  // 02 프로필 작성 — 직접 쳐 보는 프로토타입. 값은 어디에도 안 보낸다
+  (function () {
+    var mock = document.querySelector("[data-proto]");
+    if (!mock) return;
+
+    var lede = mock.querySelector("[data-lede]");
+    var stack = mock.querySelector("[data-stack]");
+    var photoLine = mock.querySelector("[data-photo-line]");
+    var lines = {};
+    stack.querySelectorAll("[data-line]").forEach(function (el) { lines[el.dataset.line] = el; });
+
+    var askArea = mock.querySelector("[data-ask-area]");
+    var photoWrap = mock.querySelector("[data-ask-photo]");
+    var photoLabel = mock.querySelector("[data-photo-label]");
+    var photoCircle = mock.querySelector("[data-ask-photo-circle]");
+    var photoDefaultBtn = mock.querySelector("[data-photo-default]");
+
+    var form = mock.querySelector("[data-ask-field]");
+    var label = mock.querySelector("[data-ask-label]");
+    var textInput = mock.querySelector("[data-ask-text]");
+    var seg = mock.querySelector("[data-ask-seg]");
+    var errLine = mock.querySelector("[data-ask-err]");
+    var notice = mock.querySelector("[data-lock-notice]");
+    var ctaBtn = mock.querySelector("[data-cta-btn]");
+    var ctaLabel = mock.querySelector("[data-cta-label]");
+    var ctaSpin = mock.querySelector("[data-cta-spin]");
+    var ctaNote = mock.querySelector("[data-cta-note]");
+    var resetBtn = document.querySelector("[data-proto-reset]");
+    // 보낸 뒤(제안) — login.md 「보낸 뒤」
+    var appbarEl = mock.querySelector(".appbar");
+    var ctabarEl = mock.querySelector(".ctabar");
+    var sentStage = mock.querySelector("[data-sent-stage]");
+    var sentPhoto = mock.querySelector("[data-sent-photo]");
+    var sentGreeting = mock.querySelector("[data-sent-greeting]");
+
+    var STEPS = ["photo", "name", "gender", "birthdate", "contact"];
+    var TEXT_STEPS = STEPS.slice(1);
+    var LABEL = { photo: "사진", name: "이름", gender: "성별", birthdate: "생년월일", contact: "연락처" };
+    var PH = { name: "근무표에 뜰 이름", birthdate: "19930421", contact: "010-0000-0000" };
+    var LEDE_ASK = "자신의 프로필을 작성해 주세요";
+    var LEDE_DONE = "아래 정보가 맞나요? 틀린 부분을 누르면 다시 적을 수 있어요";
+
+    var locked = { photo: false, name: false, gender: false, birthdate: false, contact: false };
+    var everLocked = { photo: false, name: false, gender: false, birthdate: false, contact: false };
+    // 한 번이라도 접힌 적 있는 자리는 다시 굳을 때 「벌어지기」를 거친다. 처음 굳는 자리는 안 거친다
+    var everCollapsed = { photo: false, name: false, gender: false, birthdate: false, contact: false };
+    var raw = { photo: "", name: "", gender: "", birthdate: "", contact: "" };
+    var open = "photo";
+    var busy = false; // 올라가는 중 · 접히는 중 · 벌어지는 중 · 올리는 중 · 보내는 중에는 입력을 막는다
+
+    function reduceMotion() {
+      return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+
+    function fmtDate(d) {
+      var y = d.slice(0, 4), m = parseInt(d.slice(4, 6), 10), day = parseInt(d.slice(6, 8), 10);
+      return y + "년 " + m + "월 " + day + "일";
+    }
+
+    function validDate(d) {
+      if (!/^\d{8}$/.test(d)) return false;
+      var y = parseInt(d.slice(0, 4), 10), m = parseInt(d.slice(4, 6), 10), day = parseInt(d.slice(6, 8), 10);
+      if (m < 1 || m > 12 || day < 1 || day > 31) return false;
+      var dt = new Date(y, m - 1, day);
+      return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === day;
+    }
+
+    function fmtContact(digits) {
+      digits = digits.slice(0, 11);
+      var a = digits.slice(0, 3), b = digits.slice(3, 7), c = digits.slice(7, 11);
+      return [a, b, c].filter(Boolean).join("-");
+    }
+
+    function displayText(step) {
+      if (step === "name") return raw.name + "님, 반가워요";
+      if (step === "gender") return raw.gender === "여" ? "여성" : "남성";
+      if (step === "birthdate") return fmtDate(raw.birthdate);
+      return fmtContact(raw.contact);
+    }
+
+    function allLocked() {
+      return STEPS.every(function (s) { return locked[s]; });
+    }
+
+    function nextOpenStep() {
+      for (var i = 0; i < STEPS.length; i++) {
+        if (!locked[STEPS[i]]) return STEPS[i];
+      }
+      return null;
+    }
+
+    function rectRel(el, mockRect) {
+      var r = el.getBoundingClientRect();
+      return { left: r.left - mockRect.left, top: r.top - mockRect.top, width: r.width, height: r.height };
+    }
+
+    // 접힌 자리의 자연 높이·마진·위치를 잰다 — 인라인 오버라이드를 잠깐 지우고 재고 그대로 되돌린다.
+    // 같은 동기 실행 안에서 재고 되돌리므로 화면엔 안 그려진다(페인트가 안 끼어든다)
+    function measureNatural(el, mockRect) {
+      var savedH = el.style.height, savedMT = el.style.marginTop;
+      var savedOv = el.style.overflow, savedTr = el.style.transform;
+      var savedOp = el.style.opacity, savedTrans = el.style.transition;
+      el.style.transition = "none";
+      el.style.height = "";
+      el.style.marginTop = "";
+      el.style.overflow = "";
+      el.style.transform = "none";
+      el.style.opacity = "1";
+      var r = el.getBoundingClientRect();
+      var mt = parseFloat(getComputedStyle(el).marginTop) || 0;
+      var out = { top: r.top - mockRect.top, left: r.left - mockRect.left, height: r.height, marginTop: mt };
+      el.style.height = savedH;
+      el.style.marginTop = savedMT;
+      el.style.overflow = savedOv;
+      el.style.transform = savedTr;
+      el.style.opacity = savedOp;
+      void el.offsetWidth;
+      el.style.transition = savedTrans;
+      return out;
+    }
+
+    // 안내 한 줄 — 다섯이 다 굳으면 문구가 밝기로 건너간다. login.md 「다 굳었을 때 안내 한 줄이 바뀐다」
+    function updateLede(instant) {
+      var text = allLocked() ? LEDE_DONE : LEDE_ASK;
+      if (lede.textContent === text) return;
+      if (instant || reduceMotion()) {
+        lede.textContent = text;
+        return;
+      }
+      lede.style.transition = "opacity var(--d-base) ease-out";
+      lede.style.opacity = "0";
+      setTimeout(function () {
+        lede.textContent = text;
+        requestAnimationFrame(function () { lede.style.opacity = "1"; });
+      }, 180);
+    }
+
+    // ── 묻는 칸을 지금 스텝에 맞게 그린다 ──
+    function renderAsk() {
+      if (!open) {
+        photoWrap.hidden = true;
+        form.hidden = true;
+        notice.hidden = false;
+        ctaBtn.disabled = false;
+        ctaNote.hidden = true;
+        return;
+      }
+      notice.hidden = true;
+      ctaBtn.disabled = true;
+      ctaNote.hidden = false;
+
+      if (open === "photo") {
+        form.hidden = true;
+        photoWrap.hidden = false;
+        renderPhotoField();
+        return;
+      }
+
+      photoWrap.hidden = true;
+      form.hidden = false;
+      label.textContent = LABEL[open];
+      errLine.hidden = true;
+      errLine.textContent = "";
+      if (open === "gender") {
+        textInput.hidden = true;
+        seg.hidden = false;
+        Array.prototype.forEach.call(seg.children, function (s) {
+          s.classList.toggle("on", s.dataset.seg === raw.gender);
+        });
+      } else {
+        seg.hidden = true;
+        textInput.hidden = false;
+        textInput.inputMode = open === "name" ? "text" : "numeric";
+        textInput.placeholder = PH[open] || "";
+        textInput.maxLength = open === "birthdate" ? 8 : open === "contact" ? 13 : 200;
+        textInput.value = open === "contact" ? fmtContact(raw.contact) : raw[open] || "";
+        textInput.focus();
+      }
+    }
+
+    function renderPhotoField() {
+      photoCircle.classList.toggle("fake", raw.photo === "fake");
+      photoCircle.classList.remove("busy");
+      var spin = photoCircle.querySelector(".spin");
+      if (spin) spin.hidden = true;
+      photoDefaultBtn.disabled = false;
+    }
+
+    // 묻는 칸 자리(askarea)를 duration-base로 갈아치운다 — 다음 칸은 제자리에서 나타난다.
+    // 올라가기(고스트)와 겹쳐서 시작한다
+    function swapAskIn() {
+      updateLede();
+      renderAsk();
+      askArea.style.transition = "none";
+      askArea.style.opacity = "0";
+      requestAnimationFrame(function () {
+        askArea.style.transition = "opacity var(--d-base) ease-out";
+        askArea.style.opacity = "1";
+      });
+    }
+
+    // ── 고스트 셋. 라벨·흰 면(또는 세그먼트)은 duration-slower로 옮겨가며 사라지고,
+    //    글자는 굳은 크기·굵기로 커진다. 셋 다 같은 dy로 같이 움직인다 ──
+    function riseLabel(mockRect, fromEl, toTop) {
+      var r = rectRel(fromEl, mockRect);
+      var g = document.createElement("div");
+      g.className = "flylabel";
+      g.textContent = fromEl.textContent;
+      g.style.left = r.left + "px";
+      g.style.top = r.top + "px";
+      mock.appendChild(g);
+      var dy = toTop - r.top;
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          g.style.transition = "transform var(--d-slower) ease-out, opacity var(--d-slower) ease-out";
+          g.style.transform = "translateY(" + dy + "px)";
+          g.style.opacity = "0";
+        });
+      });
+      setTimeout(function () { g.remove(); }, 300);
+    }
+
+    function riseBox(mockRect, fromEl, toTop) {
+      var r = rectRel(fromEl, mockRect);
+      var g = document.createElement("div");
+      g.className = "flybox";
+      g.style.left = r.left + "px";
+      g.style.top = r.top + "px";
+      g.style.width = r.width + "px";
+      mock.appendChild(g);
+      var dy = toTop - r.top;
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          g.style.transition = "transform var(--d-slower) ease-out, opacity var(--d-slower) ease-out";
+          g.style.transform = "translateY(" + dy + "px)";
+          g.style.opacity = "0";
+        });
+      });
+      setTimeout(function () { g.remove(); }, 300);
+    }
+
+    // 굳은 글의 진짜 값 — 칸 위치에서 더미의 제자리(targetRect, mock 기준 상대좌표)까지
+    // 옮겨가며 크기·굵기가 바뀐다. targetRect는 호출부가 미리 잰 값이다 — 다시 굳을 때는
+    // 벌어지기 전에 잰 자연 위치를 쓴다, 접힌 채인 현재 위치를 쓰지 않는다
+    function riseText(sourceEl, targetRect, text, sourceSize, sourceWeight, targetSize, targetWeight, onDone) {
+      var mockRect = mock.getBoundingClientRect();
+      var sr = sourceEl.getBoundingClientRect();
+      var ghost = document.createElement("div");
+      ghost.className = "flytext";
+      ghost.textContent = text;
+      ghost.style.left = (sr.left - mockRect.left) + "px";
+      ghost.style.top = (sr.top - mockRect.top) + "px";
+      ghost.style.fontSize = sourceSize;
+      ghost.style.fontWeight = sourceWeight;
+      mock.appendChild(ghost);
+      var dx = targetRect.left - (sr.left - mockRect.left);
+      var dy = targetRect.top - (sr.top - mockRect.top);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          ghost.style.transition = "transform var(--d-slower) ease-out, font-size var(--d-slower) ease-out, font-weight var(--d-slower) ease-out";
+          ghost.style.transform = "translate(" + dx + "px," + dy + "px)";
+          ghost.style.fontSize = targetSize;
+          ghost.style.fontWeight = targetWeight;
+        });
+      });
+      setTimeout(function () {
+        ghost.remove();
+        onDone();
+      }, 300);
+    }
+
+    // 사진 원 — 모양은 그대로, 자리(targetRect, mock 기준 상대좌표)만 옮겨간다
+    // (login.md 「사진 원은 더미에서도 칸에서도 같다」). 다시 굳을 때는 벌어지기 전에 잰
+    // 자연 위치를 targetRect로 받는다
+    function riseCircle(mockRect, fromEl, targetRect, onDone) {
+      var sr = rectRel(fromEl, mockRect);
+      var g = fromEl.cloneNode(true);
+      g.className = "photo flycircle-live";
+      g.style.position = "absolute";
+      g.style.left = sr.left + "px";
+      g.style.top = sr.top + "px";
+      mock.appendChild(g);
+      var dx = targetRect.left - sr.left, dy = targetRect.top - sr.top;
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          g.style.transition = "transform var(--d-slower) ease-out";
+          g.style.transform = "translate(" + dx + "px," + dy + "px)";
+        });
+      });
+      setTimeout(function () {
+        g.remove();
+        onDone();
+      }, 300);
+    }
+
+    // 사진 스텝의 버튼(기본 사진 쓰기) — 움직이지 않고 제자리에서 사라진다
+    function fadeButtonsInPlace(mockRect, fromEl) {
+      var r = rectRel(fromEl, mockRect);
+      var g = fromEl.cloneNode(true);
+      g.className = "askphotobtns flybtns";
+      g.style.position = "absolute";
+      g.style.left = r.left + "px";
+      g.style.top = r.top + "px";
+      mock.appendChild(g);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          g.style.transition = "opacity var(--d-slower) ease-out";
+          g.style.opacity = "0";
+        });
+      });
+      setTimeout(function () { g.remove(); }, 300);
+    }
+
+    // 자리를 접는다 — duration-slow로 작아지며(0.96배) 옅어지고, 같은 시간에 높이와 그 자리의
+    // 마진이 함께 0으로 접힌다(login.md 「줄 높이가 접힐 때 mt-3 간격도 같이 0이 돼야 한다」).
+    // 자리를 비운 채 높이를 지키지 않는다 — 아래 것들이 그만큼 올라와 메운다
+    function collapseRow(el) {
+      if (reduceMotion()) {
+        el.style.transition = "";
+        el.style.overflow = "hidden";
+        el.style.height = "0px";
+        el.style.marginTop = "0px";
+        el.style.opacity = "0";
+        el.style.transform = "scale(.96)";
+        return;
+      }
+      var r = el.getBoundingClientRect();
+      var mt = parseFloat(getComputedStyle(el).marginTop) || 0;
+      el.style.overflow = "hidden";
+      el.style.height = r.height + "px";
+      el.style.marginTop = mt + "px";
+      el.style.transform = "none";
+      el.style.opacity = "1";
+      void el.offsetWidth;
+      el.style.transition = "height var(--d-slow) ease-out, margin-top var(--d-slow) ease-out, opacity var(--d-slow) ease-out, transform var(--d-slow) ease-out";
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          el.style.height = "0px";
+          el.style.marginTop = "0px";
+          el.style.opacity = "0";
+          el.style.transform = "scale(.96)";
+        });
+      });
+    }
+
+    // 자리를 벌린다 — duration-slow로 접힌 높이·마진이 자연 값까지 벌어진다(아래 것들이 내려간다).
+    // 목표(자연 높이·마진·위치)는 벌어지기 시작하기 전에 미리 재둔다 — 그 값을 고스트의 목표로도 쓴다
+    function expandRow(el, mockRect) {
+      var natural = measureNatural(el, mockRect);
+      if (reduceMotion()) {
+        el.style.transition = "";
+        el.style.overflow = "";
+        el.style.height = "";
+        el.style.marginTop = "";
+        el.style.opacity = "1";
+        el.style.transform = "none";
+        return natural;
+      }
+      // 자리만 벌린다 — 글(원)은 고스트가 닿을 때까지 안 보인다. 보이게 하는 것은 호출부의 onDone
+      el.style.overflow = "hidden";
+      el.style.opacity = "0";
+      el.style.transform = "none";
+      void el.offsetWidth;
+      el.style.transition = "height var(--d-slow) ease-out, margin-top var(--d-slow) ease-out";
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          el.style.height = natural.height + "px";
+          el.style.marginTop = natural.marginTop + "px";
+        });
+      });
+      setTimeout(function () {
+        el.style.transition = "";
+        el.style.overflow = "";
+        el.style.height = "";
+        el.style.marginTop = "";
+        el.style.transform = "";
+      }, 240);
+      return natural;
+    }
+
+    // ── 굳기: 사진 — 원이 그대로 더미로 오르고, 라벨·버튼은 사라진다. 이 자리가 접혀 있던
+    //    상태였으면(다시 굳는 것) 자리가 먼저 벌어지고 원이 그 자연 위치로 같이 오른다 ──
+    function lockPhoto() {
+      if (busy) return;
+      busy = true;
+      everLocked.photo = true;
+      locked.photo = true;
+
+      var stackCircle = photoLine.querySelector(".photo");
+      stackCircle.classList.toggle("fake", raw.photo === "fake");
+
+      if (reduceMotion()) {
+        photoLine.style.transition = "";
+        photoLine.style.overflow = "";
+        photoLine.style.height = "";
+        photoLine.style.marginTop = "";
+        photoLine.style.transform = "none";
+        photoLine.style.opacity = "1";
+        photoLine.classList.add("inflow");
+        everCollapsed.photo = false;
+        open = nextOpenStep();
+        swapAskIn();
+        busy = false;
+        return;
+      }
+
+      var mockRect = mock.getBoundingClientRect();
+
+      if (everCollapsed.photo) {
+        var natural = expandRow(photoLine, mockRect);
+        riseCircle(mockRect, photoCircle, { left: rectRel(stackCircle, mockRect).left, top: natural.top }, function () {
+          photoLine.style.opacity = "1";
+          everCollapsed.photo = false;
+          busy = false;
+        });
+      } else {
+        photoLine.style.transition = "";
+        photoLine.style.opacity = "";
+        photoLine.classList.add("inflow", "pending");
+        var toTop = rectRel(photoLine, mockRect).top;
+        riseLabel(mockRect, photoLabel, toTop);
+        fadeButtonsInPlace(mockRect, photoDefaultBtn.parentElement);
+        riseCircle(mockRect, photoCircle, rectRel(stackCircle, mockRect), function () {
+          photoLine.classList.remove("pending");
+          busy = false;
+        });
+      }
+
+      open = nextOpenStep();
+      swapAskIn();
+    }
+
+    // ── 굳기: 이름·성별·생년월일·연락처 — 칸이 통째로 더미의 제자리까지 오른다. 이 자리가
+    //    접혀 있던 상태였으면 자리가 먼저 벌어지고 칸이 그 자연 위치로 같이 오른다 ──
+    function lockStep(step) {
+      if (busy) return;
+      busy = true;
+      var target = lines[step];
+      everLocked[step] = true;
+      locked[step] = true;
+      var text = displayText(step);
+
+      var isGender = step === "gender";
+      var sourceBoxEl = isGender ? (seg.querySelector(".on") || seg.children[0]) : textInput;
+      var sourceSize = isGender ? "var(--t-sm)" : "var(--t-base)";
+      var sourceWeight = isGender ? "500" : "400";
+      var targetSize = step === "name" ? "var(--t-xl)" : "var(--t-lg)";
+      var targetWeight = step === "name" ? "600" : "500";
+
+      if (textInput) textInput.value = "";
+
+      if (reduceMotion()) {
+        target.style.transition = "";
+        target.style.overflow = "";
+        target.style.height = "";
+        target.style.marginTop = "";
+        target.style.transform = "none";
+        target.style.opacity = "1";
+        target.classList.add("inflow");
+        target.textContent = text;
+        everCollapsed[step] = false;
+        open = nextOpenStep();
+        swapAskIn();
+        busy = false;
+        return;
+      }
+
+      var mockRect = mock.getBoundingClientRect();
+
+      if (everCollapsed[step]) {
+        target.textContent = text;
+        var natural = expandRow(target, mockRect);
+        riseLabel(mockRect, label, natural.top);
+        riseBox(mockRect, isGender ? seg : textInput, natural.top);
+        riseText(sourceBoxEl, natural, text, sourceSize, sourceWeight, targetSize, targetWeight, function () {
+          target.style.opacity = "1";
+          everCollapsed[step] = false;
+          busy = false;
+        });
+      } else {
+        target.style.transition = "";
+        target.style.opacity = "";
+        target.classList.add("inflow", "pending");
+        target.textContent = text;
+        var toTop = rectRel(target, mockRect).top;
+        riseLabel(mockRect, label, toTop);
+        riseBox(mockRect, isGender ? seg : textInput, toTop);
+        riseText(sourceBoxEl, rectRel(target, mockRect), text, sourceSize, sourceWeight, targetSize, targetWeight, function () {
+          target.classList.remove("pending");
+          busy = false;
+        });
+      }
+
+      open = nextOpenStep();
+      swapAskIn();
+    }
+
+    // ── 고치기: 굳은 것을 누르면 자리째 접힌다 — duration-slow로 작아지며 옅어지고 높이·마진이
+    //    같이 0으로 접혀 아래 것들이 올라와 메운다. 자리를 비운 채 높이를 지키지 않는다.
+    //    아래 묻는 칸은 그 값을 든 채 duration-base로 밝아져 들어온다 ──
+    function unlock(step) {
+      if (busy || open === step) return;
+      busy = true;
+      var el = step === "photo" ? photoLine : lines[step];
+      locked[step] = false;
+      everCollapsed[step] = true;
+      collapseRow(el);
+      open = step;
+      swapAskIn();
+      setTimeout(function () { busy = false; }, reduceMotion() ? 180 : 240);
+    }
+
+    photoLine.addEventListener("click", function () {
+      if (!locked.photo || open === "photo") return;
+      unlock("photo");
+    });
+    TEXT_STEPS.forEach(function (step) {
+      lines[step].addEventListener("click", function () {
+        if (!locked[step] || open === step) return;
+        unlock(step);
+      });
+    });
+
+    // 원을 누르면 — 칸 안 원이 곧 버튼이다. 1.2초 스피너 뒤 원이 가짜 사진 면으로 바뀌며 곧바로 굳는다(제안)
+    photoCircle.addEventListener("click", function () {
+      if (busy || open !== "photo") return;
+      busy = true;
+      photoCircle.classList.add("busy");
+      var spin = photoCircle.querySelector(".spin");
+      if (spin) spin.hidden = false;
+      photoDefaultBtn.disabled = true;
+      setTimeout(function () {
+        raw.photo = "fake";
+        photoCircle.classList.remove("busy");
+        if (spin) spin.hidden = true;
+        busy = false;
+        lockPhoto();
+      }, 1200);
+    });
+    photoCircle.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        photoCircle.click();
+      }
+    });
+
+    // 「기본 사진 쓰기」 — 원 안의 것(구글 사진)을 그대로 쓰겠다는 뜻이라 누르는 순간 굳는다
+    photoDefaultBtn.addEventListener("click", function () {
+      if (busy || open !== "photo") return;
+      raw.photo = raw.photo || "google";
+      lockPhoto();
+    });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (busy || open !== "name") return;
+      var v = textInput.value.trim();
+      if (!v) return;
+      raw.name = v;
+      lockStep("name");
+    });
+
+    textInput.addEventListener("input", function () {
+      if (busy) return;
+      if (open === "birthdate") {
+        var d8 = textInput.value.replace(/\D/g, "").slice(0, 8);
+        textInput.value = d8;
+        errLine.hidden = true;
+        if (d8.length === 8) {
+          if (validDate(d8)) {
+            raw.birthdate = d8;
+            lockStep("birthdate");
+          } else {
+            errLine.textContent = "숫자 8자리로 적어 주세요";
+            errLine.hidden = false;
+          }
+        }
+      } else if (open === "contact") {
+        var d11 = textInput.value.replace(/\D/g, "").slice(0, 11);
+        textInput.value = fmtContact(d11);
+        errLine.hidden = true;
+        if (d11.length === 11) {
+          if (d11.indexOf("010") === 0) {
+            raw.contact = d11;
+            lockStep("contact");
+          } else {
+            errLine.textContent = "010으로 시작하는 11자리예요";
+            errLine.hidden = false;
+          }
+        }
+      }
+    });
+
+    textInput.addEventListener("blur", function () {
+      if (open === "birthdate") {
+        var d8 = textInput.value.replace(/\D/g, "");
+        if (d8.length > 0 && d8.length < 8) {
+          errLine.textContent = "숫자 8자리로 적어 주세요";
+          errLine.hidden = false;
+        }
+      } else if (open === "contact") {
+        var d11 = textInput.value.replace(/\D/g, "");
+        if (d11.length > 0 && d11.length < 11) {
+          errLine.textContent = "010으로 시작하는 11자리예요";
+          errLine.hidden = false;
+        }
+      }
+    });
+
+    seg.addEventListener("click", function (e) {
+      var s = e.target.closest("[data-seg]");
+      if (!s || busy || open !== "gender") return;
+      raw.gender = s.dataset.seg;
+      lockStep("gender");
+    });
+
+    ctaBtn.addEventListener("click", function () {
+      if (ctaBtn.disabled || busy) return;
+      busy = true;
+      ctaLabel.hidden = true;
+      ctaSpin.hidden = false;
+      setTimeout(function () {
+        playSent();
+      }, 1200);
+    });
+
+    // 보낸 뒤(제안) — login.md 「보낸 뒤」. ① 앱바·안내·나머지 글 셋(성별·생년월일·연락처)·
+    // 잠김 안내·CTA 바가 duration-base로 제자리에서 사라진다. ② 원과 첫 줄이 duration-slower로
+    // 화면 한가운데로 모이며 커진다 — 끝에서 1.04배 넘쳤다 돌아온다(tokens.md에 없는 곡선).
+    // ③ 닿는 순간 조각 여덟이 600ms 동안 터진다(같은 이유로 tokens.md에 없는 시간).
+    // 1.2초 머문 뒤 목업 전체가 duration-slower 밝기로 옅어지고 처음 상태로 돌아온다 —
+    // 실제로는 이 자리에 승인 대기 화면이 들어온다(캡션에 적는다).
+    function fadeGroupEls() {
+      return [appbarEl, lede, lines.gender, lines.birthdate, lines.contact, notice, ctabarEl].filter(Boolean);
+    }
+
+    function resetFadeEls() {
+      fadeGroupEls().forEach(function (el) {
+        el.style.opacity = "";
+        el.style.transition = "";
+      });
+    }
+
+    function playSent() {
+      var reduce = reduceMotion();
+      var stackCircle = photoLine.querySelector(".photo");
+      var nameLine = lines.name;
+      var greetingText = nameLine.textContent;
+
+      fadeGroupEls().forEach(function (el) {
+        el.style.transition = "opacity var(--d-base) ease-out";
+        el.style.opacity = "0";
+      });
+
+      setTimeout(function () {
+        var mockRect = mock.getBoundingClientRect();
+        sentGreeting.textContent = greetingText;
+        sentPhoto.classList.toggle("fake", raw.photo === "fake");
+
+        if (reduce) {
+          sentStage.style.transition = "opacity var(--d-slower) ease-out";
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { sentStage.style.opacity = "1"; });
+          });
+          setTimeout(function () { holdThenFadeOut(); }, 300);
+          return;
+        }
+
+        // 목표 자리(sentstage 안의 자연 위치)를 미리 잰다 — 화면엔 안 보인 채로
+        sentStage.style.transition = "none";
+        sentStage.style.visibility = "hidden";
+        sentStage.style.opacity = "1";
+        var targetCircle = rectRel(sentPhoto, mockRect);
+        var targetText = rectRel(sentGreeting, mockRect);
+        sentStage.style.opacity = "0";
+        sentStage.style.visibility = "";
+
+        var sr = rectRel(stackCircle, mockRect);
+        var tr = rectRel(nameLine, mockRect);
+        // 고스트가 뜨는 순간 더미의 원본 둘은 숨긴다 — 같은 것이 둘로 보이면 안 된다
+        photoLine.style.transition = "none";
+        photoLine.style.opacity = "0";
+        nameLine.style.transition = "none";
+        nameLine.style.opacity = "0";
+        var gCircle = stackCircle.cloneNode(true);
+        gCircle.className = "photo flycircle-live";
+        gCircle.classList.toggle("fake", raw.photo === "fake");
+        gCircle.style.position = "absolute";
+        gCircle.style.margin = "0";
+        gCircle.style.left = sr.left + "px";
+        gCircle.style.top = sr.top + "px";
+        gCircle.style.width = sr.width + "px";
+        gCircle.style.height = sr.height + "px";
+        mock.appendChild(gCircle);
+
+        var gText = document.createElement("div");
+        gText.className = "flytext";
+        gText.textContent = greetingText;
+        gText.style.left = tr.left + "px";
+        gText.style.top = tr.top + "px";
+        gText.style.fontSize = "var(--t-xl)";
+        gText.style.fontWeight = "600";
+        mock.appendChild(gText);
+
+        var dxC = targetCircle.left - sr.left, dyC = targetCircle.top - sr.top;
+        var dxT = targetText.left - tr.left, dyT = targetText.top - tr.top;
+        // tokens.md에 없는 값 — 끝에서 1.04배 넘쳤다 돌아오는 곡선(제안)
+        var bounce = "cubic-bezier(.32,1.4,.44,1)";
+
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            gCircle.style.transition = "transform var(--d-slower) " + bounce + ", width var(--d-slower) " + bounce + ", height var(--d-slower) " + bounce;
+            gCircle.style.transform = "translate(" + dxC + "px," + dyC + "px)";
+            gCircle.style.width = targetCircle.width + "px";
+            gCircle.style.height = targetCircle.height + "px";
+
+            gText.style.transition = "transform var(--d-slower) " + bounce + ", font-size var(--d-slower) " + bounce;
+            gText.style.transform = "translate(" + dxT + "px," + dyT + "px)";
+            gText.style.fontSize = "var(--t-2xl)";
+          });
+        });
+
+        setTimeout(function () {
+          gCircle.remove();
+          gText.remove();
+          sentStage.style.transition = "none";
+          sentStage.style.opacity = "1";
+          burstConfetti(mockRect);
+          setTimeout(function () { holdThenFadeOut(); }, 600);
+        }, 300);
+      }, reduce ? 0 : 180);
+    }
+
+    // 조각 여덟 — size-1.5(6px), 원·사각 섞어서, bg.brand-solid·bg.brand-muted·bg.neutral-muted
+    // 셋을 섞는다(login.md 「보낸 뒤 — 폭죽 조각」). bg.neutral-muted는 tokens.md에 없는 이름이라
+    // 같은 neutral-300 대역인 stroke.neutral-muted로 대신했다. 600ms 동안 원 지름의 절반(56px)쯤
+    // 퍼지며 옅어진다 — tokens.md에 없는 시간이다(제안)
+    function burstConfetti(mockRect) {
+      var c = rectRel(sentPhoto, mockRect);
+      var cx = c.left + c.width / 2, cy = c.top + c.height / 2;
+      var colors = ["var(--bg-brand-solid)", "var(--bg-brand-muted)", "var(--stroke-neutral-muted)"];
+      var edge = c.width / 2; // 원 둘레에서 시작해 지름의 절반쯤 바깥으로
+      for (var i = 0; i < 8; i++) {
+        var angle = (Math.PI * 2 * i) / 8 + Math.PI / 8;
+        var dist = edge * (0.8 + Math.random() * 0.35);
+        var dx = Math.cos(angle) * dist, dy = Math.sin(angle) * dist;
+        var p = document.createElement("span");
+        p.className = "confetti-piece " + (i % 2 === 0 ? "circle" : "sq");
+        p.style.left = (cx + Math.cos(angle) * edge - 3) + "px";
+        p.style.top = (cy + Math.sin(angle) * edge - 3) + "px";
+        p.style.background = colors[i % 3];
+        mock.appendChild(p);
+        (function (piece, ddx, ddy) {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              piece.style.transition = "transform 600ms ease-out, opacity 600ms ease-out";
+              piece.style.transform = "translate(" + ddx + "px," + ddy + "px)";
+              piece.style.opacity = "0";
+            });
+          });
+          setTimeout(function () { piece.remove(); }, 620);
+        })(p, dx, dy);
+      }
+    }
+
+    // 1.2초 머문 뒤 목업 전체가 duration-slower 밝기로 옅어지고 프로토타입이 처음 상태로
+    // 돌아온다 — 실제로는 이 자리에 승인 대기 화면이 들어온다
+    function holdThenFadeOut() {
+      setTimeout(function () {
+        mock.style.transition = "opacity var(--d-slower) ease-out";
+        mock.style.opacity = "0";
+        setTimeout(function () {
+          sentStage.style.transition = "none";
+          sentStage.style.opacity = "0";
+          photoLine.style.transition = "";
+          photoLine.style.opacity = "";
+          lines.name.style.transition = "";
+          lines.name.style.opacity = "";
+          resetFadeEls();
+          mock.style.transition = "none";
+          mock.style.opacity = "1";
+          resetProto();
+          busy = false;
+        }, 300);
+      }, 1200);
+    }
+
+    function resetProto() {
+      STEPS.forEach(function (step) {
+        locked[step] = false;
+        everLocked[step] = false;
+        everCollapsed[step] = false;
+        raw[step] = "";
+      });
+
+      photoLine.className = "lockphoto";
+      photoLine.removeAttribute("style");
+      photoLine.querySelector(".photo").classList.remove("fake");
+
+      TEXT_STEPS.forEach(function (step) {
+        var el = lines[step];
+        el.className = "lockline" + (step === "name" ? " name" : "") + ((step === "birthdate" || step === "contact") ? " num" : "");
+        el.removeAttribute("style");
+        el.textContent = "";
+      });
+
+      open = "photo";
+      ctaLabel.hidden = false;
+      ctaSpin.hidden = true;
+      askArea.style.opacity = "1";
+      updateLede(true);
+      renderAsk();
+    }
+
+    if (resetBtn) resetBtn.addEventListener("click", function () { if (!busy) resetProto(); });
+
+    renderAsk();
+    updateLede(true);
+  })();
 })();
 </script>

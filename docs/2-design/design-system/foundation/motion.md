@@ -74,7 +74,7 @@ fade-in motion-safe:slide-in-from-bottom-4
 
 **강한 모션은 축하할 순간에만 쓴다.** 매번 축하하면 축하가 아니게 된다.
 
-이 앱에서 확실한 축하는 하나다. **출근 인증 완료**다. 근무자가 현장에서 버튼을 누르고 그날 할 일을 하나 끝내는 순간이고, 되돌리는 길이 없어서([attendance/README.md](../../modules/attendance/README.md)) 확실히 끝났다는 신호가 필요하다.
+이 앱에서 확실한 축하는 둘이다. **출근 인증 완료**다. 근무자가 현장에서 버튼을 누르고 그날 할 일을 하나 끝내는 순간이고, 되돌리는 길이 없어서([attendance/README.md](../../modules/attendance/README.md)) 확실히 끝났다는 신호가 필요하다. 그리고 **가입 프로필을 보낸 순간**이다. 계정마다 한 번뿐이고 앱이 그 사람을 처음 맞는 자리다 — 모습은 [login.md](../../modules/account/screens/login.md#보낸-뒤)에 있다.
 
 두 번째 후보였던 "급여 확정"은 대상을 못 정했다. [payroll/README.md](../../modules/payroll/README.md)가 급여를 확정하지 않는다고 못 박아뒀다. 앱은 매번 다시 계산하고 잠그는 행위가 없다. 축하할 순간이 없다는 뜻인지, 주급이 새로 잡히는 월요일이 그 자리인지 사람이 정한다. [tokens.md의 미정 목록](../tokens.md#아직-안-정한-것)에 올려뒀다.
 
