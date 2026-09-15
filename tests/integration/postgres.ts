@@ -108,3 +108,46 @@ export async function createLeftUser(): Promise<LeftUser> {
 
   return { ...user, leftAt };
 }
+
+export type SubmittedUser = SignedInUser & {
+  displayName: string;
+  phone: string;
+  birthDate: string;
+  gender: string;
+};
+
+export async function createSubmittedUser(): Promise<SubmittedUser> {
+  const user = await createSignedInUser();
+  const displayName = "테스트 이름";
+  const phone = "010-0000-0001";
+  const birthDate = "1993-04-21";
+  const gender = "female";
+
+  const { error } = await user.client.rpc("submit_profile", {
+    display_name: displayName,
+    phone,
+    birth_date: birthDate,
+    gender,
+  });
+  if (error) {
+    throw error;
+  }
+
+  return { ...user, displayName, phone, birthDate, gender };
+}
+
+export type RejectedUser = SubmittedUser;
+
+export async function createRejectedUser(): Promise<RejectedUser> {
+  const user = await createSubmittedUser();
+  const admin = await createAdminUser();
+
+  const { error } = await admin.client.rpc("reject_member", {
+    profile_id: user.profileId,
+  });
+  if (error) {
+    throw error;
+  }
+
+  return user;
+}
