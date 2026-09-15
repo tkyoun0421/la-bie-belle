@@ -6,11 +6,11 @@
 
 ## 다음 작업
 
-[`profile-form`](backlog.md) — **프로필 작성 폼을 만든다** — plan부터 쓴다(`3-build/plans/profile-form.md`, 작성법은 [3-build/README.md](3-build/README.md)). 정본은 [login.md](2-design/modules/account/screens/login.md#프로필-작성)·[퇴사한 뒤](2-design/modules/account/screens/login.md#퇴사한-뒤)와 [account/design.md](2-design/modules/account/design.md#행위별-구현-계약)의 `submit_profile`. `auth-entry`(#363)가 게이트 기계를 세웠으니 `/pending`은 지금 컨텍스트(`useAuthGateValue`)에서 이메일·사진을 받고, `['profile']`이 `submitted_at`·`rejected_at`을 이미 든다. 화면 시안은 `login.sian.html`이 있다 — 시안이 문서와 맞는지 `sian-auditor`로 먼저 본다.
+**구현은 전 영역의 설계가 끝난 뒤 한꺼번에 한다.** task 하나의 plan이 섰다고 그 task를 구현하지 않는다. 영역마다 ① 정본의 「아직 안 정한 것」을 인터뷰로 닫고(한 라운드 한 질문) ② 정본에 반영하고 ③ 시안을 갱신해 아티팩트로 사용자가 보고 승인하고 ④ plan을 쓴다. 순서는 account → schedule → attendance → payroll → notification → system이고 swap은 2차라 뒤다. 실패 테스트 작성부터가 구현 단계라 plan 뒤에 writer를 띄우지 않는다.
+
+지금 account 안이다. 프로필 작성이 멀티스텝(고정된 칸 하나, 답한 것은 라벨 없는 글이 되어 위 더미로 날아가 쌓임, 확인 시트 없음)으로 바뀌었고 `/blocked` 화면이 그려졌다 — [login.md](2-design/modules/account/screens/login.md#프로필-작성-짜임). 시안 `login.sian.html`이 그것을 따라가는 중이고, 아티팩트 승인이 나면 `docs/account-design-close` 브랜치로 PR을 연다. 그 뒤 남은 account 미정 — login.md 「아직 안 정한 것」(게이트 읽기 실패 모습, 넷째 도는 문구, 탭 제목, 구글 서체), README Q-01·Q-03, members-pending.md 넷 — 을 닫고 members·members-pending·profile 화면의 plan을 쓴다. `3-build/plans/profile-form.md`는 따라 고쳤다. `feat/profile-form` 브랜치의 실패 테스트도 시트 기준이라 구현 단계에서 다시 쓴다.
 
 같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
-
-시안 갱신 후보는 backlog의 `sian-sync` candidate 행이 든다(#358).
 
 ## 재개 맥락
 
