@@ -377,9 +377,9 @@ code {
 }
 .cell b { font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
 .cell.off b { color: var(--fg-neutral-subtle); font-weight: 400; }
-/* 열린 날은 옅은 면이다 — 처음엔 카드(흰 면+그림자+테두리)였다(개정 2026-09-07 2차 검수) */
+/* 열린 날은 옅은 면이다 — 처음엔 카드(흰 면+그림자+테두리)였다 */
 .cell.open { background: var(--bg-neutral-weak); cursor: pointer; }
-/* 신청 수는 사람 아이콘과 숫자다 — 처음엔 「○2」였다(2026-09-07).
+/* 신청 수는 사람 아이콘과 숫자다 — 처음엔 「○2」였다.
    그날 일하는 인원으로도 읽히니 달력 바로 아래 범례가 「근무 신청」임을 못 박는다 */
 .cell .hope { display: flex; align-items: center; gap: 2px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-style: normal; }
 .cell .hope svg { flex: 0 0 auto; }
@@ -1625,7 +1625,7 @@ code {
         <figcaption>
           <div class="cap-key">AFTER / CAL</div>
           <div class="cap-name">확정 배지와 확정 줄</div>
-          <p class="cap-body">확정하기와 마감 줄이 사라지고 <strong>날 열기는 남는다.</strong> 오늘(8일)의 칸 배경은 다른 열린 날과 같고 날짜만 <code>bg.neutral-solid</code> 원이 감싼다. 신청 수와 범례와 모아보기 줄은 같이 숨는다 — 마감이 지나 신청이 더 안 들어오고 확정 뒤의 일은 빈 자리 채우기라서다. 대신 <strong>빈 자리가 남은 날 칸에 점선 원과 수가 선다</strong>(10일·17일). 0이면 그 단이 빈다. 처음 제안은 글자 「빈 1」이었고 2차 검수가 점선 원으로 정했다(2026-09-07).</p>
+          <p class="cap-body">확정하기와 마감 줄이 사라지고 <strong>날 열기는 남는다.</strong> 오늘(8일)의 칸 배경은 다른 열린 날과 같고 날짜만 <code>bg.neutral-solid</code> 원이 감싼다. 신청 수와 범례와 모아보기 줄은 같이 숨는다 — 마감이 지나 신청이 더 안 들어오고 확정 뒤의 일은 빈 자리 채우기라서다. 대신 <strong>빈 자리가 남은 날 칸에 점선 원과 수가 선다</strong>(10일·17일). 0이면 그 단이 빈다. 처음 제안은 글자 「빈 1」이었고 2차 검수가 점선 원으로 정했다.</p>
           <p class="cap-body" style="margin-top:8px">여기서 <strong>새로 연 날은 자리 구성을 자유로 고친다</strong> — 그 날 상세에는 확정 전과 같은 자물쇠·끌기·자리 추가가 서고, 사람이 든 자리를 버리면 강제 변경 빼기와 같은 확인과 알림이 걸린다. 점선 원은 빈 자리 재촉 셋 중 달력의 몫이고, 나머지 둘은 홈 타일의 경고 승격(01절)과 관리자 푸시다.</p>
         </figcaption>
       </figure>
