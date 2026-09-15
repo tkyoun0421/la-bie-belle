@@ -61,6 +61,32 @@ export function createGuestClient(): SupabaseClient {
   });
 }
 
+export type SignedInUserWithoutProfile = {
+  client: SupabaseClient;
+  userId: string;
+  email: string;
+};
+
+export async function createSignedInUserWithoutProfile(): Promise<SignedInUserWithoutProfile> {
+  const email = `${randomUUID()}@example.com`;
+  const password = randomUUID();
+  const client = createGuestClient();
+
+  const { data, error } = await client.auth.signUp({ email, password });
+  if (error) {
+    throw error;
+  }
+  if (!data.user || !data.session) {
+    throw new Error(`가입은 됐는데 세션이 없다: ${email}`);
+  }
+
+  return {
+    client,
+    userId: data.user.id,
+    email,
+  };
+}
+
 export async function createSignedInUser(): Promise<SignedInUser> {
   const email = `${randomUUID()}@example.com`;
   const password = randomUUID();
