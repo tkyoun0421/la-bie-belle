@@ -20,8 +20,9 @@
   · 등장이 아래에서 올라오는 거리(8px). tokens.md 6절에 이동 거리 토큰이 없다.
   · 뛰는 점이 커지는 배율. login.md는 「커졌다 작아진다」까지만 적는다.
   · 시트 그림자. tokens.md 5절의 그림자는 shadow-card 하나뿐이다.
-  · 구글 G 로고의 색 넷. login.md가 로고를 signin-assets.zip에서 받아 쓰라고 했고
-    여기 그린 것은 자리를 보기 위한 대역이다. 구현에서 이 SVG를 쓰지 않는다.
+  · 구글 버튼 SVG 전체. login.md가 signin-assets.zip을 통째로 받아 쓰라고 했고
+    여기 그린 것(면·테두리·글자·G 로고 넷)은 자리와 종횡비를 보기 위한 대역이다.
+    구현에서 이 SVG를 쓰지 않는다.
   · 뷰어 크롬(--b-*)의 색. 목업 밖이라 애초에 토큰 대상이 아니다.
   · 02 프로토타입의 「보내는 동안」 스피너가 도는 시간(1.2초). 실제 서버 응답을 흉내 낸
     값이라 토큰이 아니다 — 실제 화면의 스피너는 요청이 끝날 때까지 돈다.
@@ -42,6 +43,24 @@
   이미 확인하는 일을 하고 있어서 시트가 같은 값을 두 번 보여주는 자리가 됐고, login.md가 그 시트를
   치웠다.
 
+  01 구글 버튼은 우리가 그리지 않는다. login.md 「구글 버튼은 구글이 정한다」가 정한 대로,
+  구글이 배포하는 signin-assets.zip의 SVG(알약 rd, 「Sign in with Google」 SI)를 통째로 쓴다.
+  이 시안은 그 자산과 같은 모양을 흉내 낸 인라인 SVG 하나를 대역으로 세웠다 — 실제 구현은 이
+  자리에 구글 자산 파일을 그대로 넣는다. 면·테두리·글자 색 셋(라이트에서 Dark 자산, 다크에서
+  Light 자산)은 구글 자산이 정한 값이라 tokens.md의 어떤 토큰도 아니다 — --google-fill·
+  --google-stroke·--google-text로 이 파일 안에서만 산다. G 로고 네 색(#4285F4·#34A853·
+  #FBBC05·#EA4335)도 같다, 테마를 안 탄다. tokens.md 9절의 --vendor-google-* 셋은 이제 이
+  시안 어디에도 안 쓴다 — 그 값은 우리가 직접 그린 버튼을 위한 것이었고 자산으로 바뀌면서
+  필요가 없어졌다.
+
+  03 승인 대기 도는 문구는 1차 셋이다. login.md 「승인 대기 문안」의 도는 문구 표가 1차는
+  근무표·출근·급여 셋이고, 「못 가는 날은 교대를 부탁해요」는 교대가 들어오는 2차에 넷째로
+  붙는다고 적었다. .rotator의 keyframe과 delay를 셋 기준(주기 --interval-rotate 4s × 3 = 12s)
+  으로 다시 잡았다.
+
+  06 읽기 실패를 더했다. login.md 「읽기 실패 짜임」이 퇴사·차단과 같은 틀에서 primary가
+  「다시 시도」라고 정했다 — 04·05와 같은 틀을 그대로 재사용했다. 등장 모션이 없는 것도 같다.
+
   02 프로필 작성은 다시 그렸다. 스텝이 다섯이고 사진이 첫 스텝이다 — 칸 안의 원이 곧 버튼이다.
   누르면 스피너가 돌고 끝나면 원 안이 새 사진 면으로 바뀌며 곧바로 굳어 오른다. 원 아래 버튼은
   「기본 사진 쓰기」 하나뿐이고, 누르면 원 안 그대로 굳는다. 칸은 하나고 화면 아래 「보내기」
@@ -51,7 +70,7 @@
   더미의 그 자리가 먼저 벌어지고 칸이 그리로 올라가 닿을 때 자리가 맞는다. 그 위에 실제로
   눌러보는 프로토타입을 뒀다. 값은 이 페이지 밖으로 안 나간다.
 -->
-<title>로그인·프로필·승인 대기·퇴사한 뒤·차단된 뒤 시안</title>
+<title>로그인·프로필·승인 대기·퇴사한 뒤·차단된 뒤·읽기 실패 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
@@ -190,6 +209,10 @@ code {
   --bg-scrim: #0D0C0B6B;
   --card-shadow: none;
   --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+  /* 구글 자산의 값, 우리 토큰 아님 — 다크 화면엔 구글의 Light 자산 */
+  --google-fill: #FFFFFF;
+  --google-stroke: #747775;
+  --google-text: #1F1F1F;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .mock:not(.force-light) {
@@ -212,6 +235,10 @@ code {
     --bg-scrim: #0D0C0B6B;
     --card-shadow: none;
     --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+    /* 구글 자산의 값, 우리 토큰 아님 — 다크 화면엔 구글의 Light 자산 */
+    --google-fill: #FFFFFF;
+    --google-stroke: #747775;
+    --google-text: #1F1F1F;
   }
 }
 :root[data-theme="dark"] .mock:not(.force-light) {
@@ -234,6 +261,10 @@ code {
   --bg-scrim: #0D0C0B6B;
   --card-shadow: none;
   --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+  /* 구글 자산의 값, 우리 토큰 아님 — 다크 화면엔 구글의 Light 자산 */
+  --google-fill: #FFFFFF;
+  --google-stroke: #747775;
+  --google-text: #1F1F1F;
 }
 .mock {
   --bg-neutral: var(--palette-neutral-00);
@@ -258,10 +289,10 @@ code {
   --stroke-neutral-muted: var(--palette-neutral-300);
   --stroke-neutral-disabled: var(--palette-neutral-200);
 
-  /* tokens.md 9절 — 바깥이 정한 값. 우리가 못 바꾼다 */
-  --vendor-google-bg: #131314;
-  --vendor-google-stroke: #8E918F;
-  --vendor-google-fg: #E3E3E3;
+  /* 구글 자산의 값, 우리 토큰 아님 — tokens.md 어디에도 없다. 라이트 화면엔 구글의 Dark 자산 */
+  --google-fill: #131314;
+  --google-stroke: #8E918F;
+  --google-text: #E3E3E3;
 
   --t-xs: .8125rem; --lh-xs: 1.21875rem;
   --t-sm: .9375rem; --lh-sm: 1.40625rem;
@@ -331,15 +362,16 @@ code {
 .btn .spin { width: 17px; height: 17px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* 구글 버튼 — 우리 팔레트 밖이다. tokens.md 9절의 세 값과 login.md 「구글 버튼은 구글이 정한다」 */
+/* 구글 버튼 — 우리 팔레트 밖이다. login.md 「구글 버튼은 구글이 정한다」.
+   버튼을 직접 그리지 않고 구글 자산(signin-assets.zip)과 같은 모양의 인라인 SVG를 대역으로
+   세운다 — 면·테두리·글자·G 로고가 전부 SVG 안에 있다. <button>은 그 SVG를 감싸 누름 동작만
+   맡는다. 높이 48px 고정, 너비는 자산 종횡비(189:40)대로 따라온다 — 화면 폭을 안 채운다 */
 .gbtn {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; height: 48px; border-radius: 999px; cursor: pointer; font-family: inherit;
-  background: var(--vendor-google-bg); color: var(--vendor-google-fg);
-  border: 1px solid var(--vendor-google-stroke);
-  font-size: var(--t-sm); font-weight: 500;
-  transition: transform var(--d-fast) ease-out;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: auto; height: 48px; padding: 0; margin: 0 auto; border: 0; background: none;
+  cursor: pointer; transition: transform var(--d-fast) ease-out;
 }
+.gbtn svg { display: block; }
 .gbtn:active { transform: scale(.97); }
 
 /* ── 01 로그인 ── */
@@ -351,7 +383,7 @@ code {
 }
 .svcname { font-size: var(--t-2xl); line-height: var(--lh-2xl); font-weight: 700; letter-spacing: -.02em; }
 .svcsub { margin-top: 8px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
-.bottomblock { display: flex; flex-direction: column; }
+.bottomblock { display: flex; flex-direction: column; align-items: center; }
 .gnote {
   margin-top: 16px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs);
   color: var(--fg-neutral-subtle);
@@ -505,13 +537,15 @@ code {
 .mock.play .dot { animation: beat var(--interval-beat) ease-out infinite; }
 @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.5); } }
 .waittitle { margin-top: 16px; font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 700; letter-spacing: -.015em; }
-/* 도는 문구 — 두 줄 높이를 미리 잡는다. 넷이 interval-rotate마다 duration-slow로 갈린다 */
+/* 도는 문구 — 두 줄 높이를 미리 잡는다. 1차는 셋이라 interval-rotate(4s)마다
+   duration-slow로 갈리고 한 바퀴는 4s × 3 = 12s다(login.md 「승인 대기 문안」).
+   교대가 들어오는 2차에 넷째가 붙으면 주기와 퍼센트를 넷 기준으로 다시 잡는다 */
 .rotator {
   margin-top: 8px; position: relative; width: 100%; height: calc(var(--lh-sm) * 2);
   font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted);
 }
 .rotator span { position: absolute; left: 0; right: 0; top: 0; opacity: 0; }
-.mock.play .rotator span { animation: rotline calc(var(--interval-rotate) * 4) ease-out infinite both; }
+.mock.play .rotator span { animation: rotline calc(var(--interval-rotate) * 3) ease-out infinite both; }
 /* 거절된 뒤 — 안 돈다. 한 줄이 선 채로 남는다 */
 .rotator.still span { opacity: 1; }
 .mock.play .rotator.still span { animation: none; }
@@ -519,13 +553,13 @@ code {
 .mock.play .rotator span:nth-child(1) { animation-delay: 0s; }
 .mock.play .rotator span:nth-child(2) { animation-delay: var(--interval-rotate); }
 .mock.play .rotator span:nth-child(3) { animation-delay: calc(var(--interval-rotate) * 2); }
-.mock.play .rotator span:nth-child(4) { animation-delay: calc(var(--interval-rotate) * 3); }
+/* 퍼센트는 12s 한 바퀴 기준이다 — duration-slow(240ms)가 2%, 한 자리 몫이 4s = 33.333% */
 @keyframes rotline {
   0% { opacity: 0; transform: translateY(var(--rise)); }
-  1.5% { opacity: 1; transform: none; }
-  25% { opacity: 1; transform: none; }
-  26.5% { opacity: 0; transform: translateY(calc(var(--rise) * -1)); }
-  27% { opacity: 0; transform: translateY(var(--rise)); }
+  2% { opacity: 1; transform: none; }
+  33.333% { opacity: 1; transform: none; }
+  35.333% { opacity: 0; transform: translateY(calc(var(--rise) * -1)); }
+  36% { opacity: 0; transform: translateY(var(--rise)); }
   100% { opacity: 0; transform: translateY(var(--rise)); }
 }
 
@@ -568,8 +602,8 @@ code {
   .mock.play .rotator span { animation-name: rotfade; }
   @keyframes rotfade {
     0% { opacity: 0; }
-    1.5%, 25% { opacity: 1; }
-    26.5%, 100% { opacity: 0; }
+    2%, 33.333% { opacity: 1; }
+    35.333%, 100% { opacity: 0; }
   }
   .mock.play .notif .nhead .ic { animation-name: fadein; }
   .btn:active, .gbtn:active { transform: none; }
@@ -586,11 +620,13 @@ code {
 
 <div class="wrap">
   <p class="eyebrow">라비에벨 · 페이지 디자인 01</p>
-  <h1>로그인·프로필 작성·승인 대기·퇴사한 뒤·차단된 뒤 시안</h1>
+  <h1>로그인·프로필 작성·승인 대기·퇴사한 뒤·차단된 뒤·읽기 실패 시안</h1>
   <p class="lede">
-    앱에 들어오는 화면 다섯이다. 로그인하면 프로필 작성이 나오고, 보내면 승인 대기가 나오고,
+    앱에 들어오는 화면 여섯이다. 로그인하면 프로필 작성이 나오고, 보내면 승인 대기가 나오고,
     승인 대기에서 로그아웃하면 로그인으로 돌아온다. 관리자가 퇴사 처리한 사람이 앱을 열면
     대시보드 대신 퇴사한 뒤 화면이 서고, 차단한 사람이 앱을 열면 차단된 뒤 화면이 선다.
+    로그인은 됐는데 프로필을 못 읽었을 때는 읽기 실패가 선다 — 퇴사·차단과 같은 틀에서
+    「급여 보기」 자리가 「다시 시도」로 바뀐다.
     절 순서가 login.md의 「화면 상태와 흐름」 순서다.
     프로필 작성은 스텝 다섯(사진·이름·성별·생년월일·연락처)을 한 번에 한 칸만 여는 화면이라 확인 시트가 없다.
     02 맨 앞의 목업은 직접 쳐 보는 프로토타입이다 — 값은 어디에도 안 보낸다.
@@ -622,10 +658,21 @@ code {
             </div>
             <div class="sp"></div>
             <div class="bottomblock">
-              <button class="gbtn rise" style="--i:3" type="button">
-                <!-- 자리를 보기 위한 대역이다. 구현은 구글이 배포하는 signin-assets.zip의 로고를 쓴다 -->
-                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
-                Google 계정으로 로그인
+              <button class="gbtn rise" style="--i:3" type="button" aria-label="Sign in with Google">
+                <!-- 자리와 종횡비를 보기 위한 대역이다. 구현은 구글이 배포하는 signin-assets.zip의
+                     SVG(알약 rd, 「Sign in with Google」 SI)를 통째로 쓴다. 189:40 종횡비, 높이
+                     48px에서 너비 ≈227px — 화면 폭을 안 채운다. 면·테두리·글자 색은 --google-*
+                     (이 파일 안 상수, tokens.md 아님)이고 테마에 따라 갈린다 -->
+                <svg width="226.8" height="48" viewBox="0 0 189 40" role="img" aria-hidden="true">
+                  <rect x="0.5" y="0.5" width="188" height="39" rx="19.5" fill="var(--google-fill)" stroke="var(--google-stroke)"/>
+                  <g transform="translate(12,11)">
+                    <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/>
+                    <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/>
+                    <path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/>
+                    <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/>
+                  </g>
+                  <text x="108" y="25" text-anchor="middle" font-family="'Roboto', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="500" fill="var(--google-text)">Sign in with Google</text>
+                </svg>
               </button>
               <div class="gnote rise" style="--i:4">가입하면 관리자가 확인한 뒤에<br>근무표가 보여요</div>
             </div>
@@ -637,7 +684,8 @@ code {
           <div class="cap-name">로그인</div>
           <p class="cap-body">남는 세로 공간을 가운데 덩이의 위아래가 반씩 나눈다. <strong>안내 문구가 승인 대기 화면을 미리 알린다</strong> — 「가입하면 관리자가 확인한 뒤에」에서 줄을 끊는다.</p>
           <p class="cap-body" style="margin-top:8px">등장은 마크·이름·설명·버튼·안내 순으로 <code>--duration-slower</code>에 <code>--stagger-step</code>이다. 버튼을 눌러 보면 <code>--duration-fast</code>로 <code>scale(0.97)</code>까지 줄어든다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>G 로고는 대역이다.</strong> login.md가 구글이 배포하는 <code>signin-assets.zip</code>을 그대로 쓰라고 했다. 버튼의 면·테두리·글자 셋만 tokens.md 9절의 값이고, 서체는 우리 것이다 — 이 어긋남을 심사가 어떻게 보는지는 문서의 「아직 안 정한 것」에 있다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>구글 버튼은 자산 통째로다 — 이 SVG는 대역이다.</strong> 구현은 <code>signin-assets.zip</code>의 알약 자산을 그대로 넣는다. 문안이 「Google 계정으로 로그인」이 아니라 <strong>「Sign in with Google」</strong>인 것은 서체 규정(영문 Google Sans Medium·한글 Roboto Medium)이 우리 서체를 허용하는지 확인할 길이 없어서 — 심사가 보는 자리는 구글이 만든 것을 그대로 둔다.</p>
+          <p class="cap-body" style="margin-top:8px">높이 48px 고정, 너비는 자산 종횡비(189:40)대로 ≈227px다 — 화면 폭을 안 채운다. 면·테두리·글자 색(<code>--google-fill</code>·<code>--google-stroke</code>·<code>--google-text</code>)은 구글 자산의 값이라 이 파일 안 상수다, tokens.md 어디에도 없다. 라이트 화면엔 Dark 자산(어두운 면), 다크 화면엔 Light 자산(흰 면)이 선다 — 오른쪽 위 토글로 확인한다.</p>
         </figcaption>
       </figure>
 
@@ -1208,7 +1256,6 @@ code {
                 <span>이번 달 근무표를 한눈에 봐요</span>
                 <span>출근은 현장에서 찍어요</span>
                 <span>일한 시간과 급여를 같이 봐요</span>
-                <span>못 가는 날은 교대를 부탁해요</span>
               </div>
             </div>
             <div class="sp"></div>
@@ -1234,7 +1281,7 @@ code {
           <div class="cap-key">WAIT / ASK</div>
           <div class="cap-name">기다리는 중 · 알림 아직 안 켬</div>
           <p class="cap-body">들어왔을 때의 기본이다. <strong>저절로 안 띄운다</strong> — 화면에 들어가자마자 권한을 묻지 않고 「알림 켜기」를 눌러야 브라우저가 묻는다.</p>
-          <p class="cap-body" style="margin-top:8px">도는 문구가 <code>--interval-rotate</code>마다 <code>--duration-slow</code>로 밀려 올라가며 갈리고, 자리는 두 줄 높이로 미리 잡혀 있다. 점은 <code>--interval-beat</code>로 뛴다.</p>
+          <p class="cap-body" style="margin-top:8px">도는 문구는 <strong>1차 셋</strong>(근무표·출근·급여)이다 — 교대가 들어오는 2차에 넷째가 붙는다. <code>--interval-rotate</code>(4s)마다 <code>--duration-slow</code>로 밀려 올라가며 갈리고 한 바퀴는 12s다. 자리는 두 줄 높이로 미리 잡혀 있다. 점은 <code>--interval-beat</code>로 뛴다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>이 면만 넷 중 어디도 아니다.</strong> 아직 아무 일도 안 일어난 자리라 알림 블록의 네 색을 안 쓰고 <code>bg.neutral-weak</code>를 깔았다. 알림 켜기는 <code>h-10</code>이고 로그아웃은 <code>h-12</code>다 — 어느 쪽이 이 화면의 끝인지를 높이가 가른다.</p>
         </figcaption>
       </figure>
@@ -1254,7 +1301,6 @@ code {
                 <span>이번 달 근무표를 한눈에 봐요</span>
                 <span>출근은 현장에서 찍어요</span>
                 <span>일한 시간과 급여를 같이 봐요</span>
-                <span>못 가는 날은 교대를 부탁해요</span>
               </div>
             </div>
             <div class="sp"></div>
@@ -1301,7 +1347,6 @@ code {
                 <span>이번 달 근무표를 한눈에 봐요</span>
                 <span>출근은 현장에서 찍어요</span>
                 <span>일한 시간과 급여를 같이 봐요</span>
-                <span>못 가는 날은 교대를 부탁해요</span>
               </div>
             </div>
             <div class="sp"></div>
@@ -1349,7 +1394,6 @@ code {
                 <span>이번 달 근무표를 한눈에 봐요</span>
                 <span>출근은 현장에서 찍어요</span>
                 <span>일한 시간과 급여를 같이 봐요</span>
-                <span>못 가는 날은 교대를 부탁해요</span>
               </div>
             </div>
             <div class="sp"></div>
@@ -1495,7 +1539,7 @@ code {
               <div class="rule myrule" style="margin-top:32px"></div>
               <div class="account">
                 <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
-                <span class="mail">seoyeon@example.com</span>
+                <span class="mail">seoyeon.park@example.com</span>
               </div>
               <div class="afterbtns">
                 <button class="btn ghost" type="button">로그아웃</button>
@@ -1509,6 +1553,87 @@ code {
           <p class="cap-body">퇴사한 뒤와 같은 틀에서 <strong>「급여 보기」만 뺐다.</strong> 차단된 계정은 아무 행도 못 받아서 primary 자리에 세울 것이 없고, 로그아웃이 ghost 그대로 아래 덩이에 선다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>「차단됐어요」를 안 쓴다.</strong> 관리자가 쓰는 말이 화면에 그대로 서면 통보가 된다. 「지금」을 넣는 것은 풀릴 수 있는 상태라서다. <strong>이유를 안 적는다</strong> — 왜 막혔는지는 앱이 대신 말할 것이 없다.</p>
           <p class="cap-body" style="margin-top:8px">계정 한 줄이 어느 구글 계정이 막힌 것인지만 보여준다 — 다른 계정으로 잘못 들어온 사람이 그것을 보고 로그아웃한다. 관리자가 풀면 다음에 앱을 열 때 원래 자리가 그대로 뜬다 — 따로 알리지 않는다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">06 / 읽기 실패</span>
+      <h2>퇴사·차단과 같은 틀에서 「급여 보기」 자리에 「다시 시도」가 선다</h2>
+      <p>로그인은 됐는데 앱이 뜨면서 프로필을 못 읽었을 때다. 어느 경로에서 실패했든 이 한 장이 그 자리에 선다 — 게이트가 목적지를 못 정한 상태라 화면마다 다른 실패 모습을 그릴 수 없다. 「다시 시도」가 primary고, 누르면 버튼 안 글자가 사라지고 스피너만 남는다 — 프로필 작성의 보내는 동안과 같다. 등장 모션은 없다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>10:05</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <div class="leavetitle">불러오지 못했어요</div>
+              <div class="leavesub">연결을 확인하고 다시 시도해 주세요</div>
+            </div>
+            <div class="sp"></div>
+            <div>
+              <button class="btn" type="button" style="margin-top:32px">다시 시도</button>
+              <div class="rule myrule"></div>
+              <div class="account">
+                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+                <span class="mail">seoyeon.park@example.com</span>
+              </div>
+              <div class="afterbtns">
+                <button class="btn ghost" type="button">로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">READFAIL / NORMAL</div>
+          <div class="cap-name">정상</div>
+          <p class="cap-body">퇴사한 뒤·차단된 뒤와 같은 틀에서 <strong>「급여 보기」 자리에 「다시 시도」가 선다.</strong> 이 화면에서 할 일이 그 하나라 primary다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>「오류가 발생했어요」를 안 쓴다.</strong> 무엇이 안 됐는지를 말한다 — 못 불러온 것이다. 「연결을 확인하고」는 사람이 할 수 있는 유일한 일을 가리킨다.</p>
+          <p class="cap-body" style="margin-top:8px">계정 줄이 있는 것은 로그아웃 때문이다 — 다른 계정으로 들어가고 싶은 사람이 지금 어느 계정인지 알아야 한다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>10:05</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="screen">
+            <div class="sp"></div>
+            <div class="centerblock">
+              <div class="leavetitle">불러오지 못했어요</div>
+              <div class="leavesub">연결을 확인하고 다시 시도해 주세요</div>
+            </div>
+            <div class="sp"></div>
+            <div>
+              <button class="btn" type="button" style="margin-top:32px"><span class="spin"></span></button>
+              <div class="rule myrule"></div>
+              <div class="account">
+                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+                <span class="mail">seoyeon.park@example.com</span>
+              </div>
+              <div class="afterbtns">
+                <button class="btn ghost" type="button">로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">READFAIL / RETRYING</div>
+          <div class="cap-name">다시 읽는 동안</div>
+          <p class="cap-body">「다시 시도」를 누른 뒤다. <strong>버튼 글자가 사라지고 스피너만 남는다</strong> — 프로필 작성의 「보내기」를 누른 동안과 같은 모양이다. 글자와 스피너를 같이 두면 버튼이 넓어졌다 좁아지고, 글자가 남아 있으면 아직 안 눌린 것으로 읽힌다.</p>
+          <p class="cap-body" style="margin-top:8px">성공하면 원래 가려던 자리가 그대로 뜬다 — 이 화면이 <code>--duration-slower</code> 밝기로 사라지고 목적지의 등장 모션이 돈다. 실패하면 정상으로 돌아온다. 몇 번째 실패인지 세지 않고 문구도 안 바꾼다.</p>
         </figcaption>
       </figure>
 

@@ -131,7 +131,7 @@
 
 `proxy`의 세션 확인, `/auth/callback`의 코드 교환, `/auth/logout`. 전부 `auth.*`라 `shared/lib`이다.
 
-`link_account`(계정 연결)는 1차에 없다 — [README.md](README.md#아직-안-정한-것).
+`link_account`(계정 연결)는 1차에 없다 — [README.md](README.md#용어)의 프로필.
 
 화면은 [login](screens/login.md)·[profile](screens/profile.md)·[members-pending](screens/members-pending.md)·[members](screens/members.md)다.
 

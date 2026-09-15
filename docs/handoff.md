@@ -8,7 +8,7 @@
 
 **구현은 전 영역의 설계가 끝난 뒤 한꺼번에 한다.** task 하나의 plan이 섰다고 그 task를 구현하지 않는다. 영역마다 ① 정본의 「아직 안 정한 것」을 인터뷰로 닫고(한 라운드 한 질문) ② 정본에 반영하고 ③ 시안을 갱신해 아티팩트로 사용자가 보고 승인하고 ④ plan을 쓴다. 순서는 account → schedule → attendance → payroll → notification → system이고 swap은 2차라 뒤다. 실패 테스트 작성부터가 구현 단계라 plan 뒤에 writer를 띄우지 않는다.
 
-지금 account 안이다. 프로필 작성이 멀티스텝(고정된 칸 하나, 답한 것은 라벨 없는 글이 되어 위 더미로 날아가 쌓임, 확인 시트 없음)으로 바뀌었고 `/blocked` 화면이 그려졌다 — [login.md](2-design/modules/account/screens/login.md#프로필-작성-짜임). 시안 `login.sian.html`이 그것을 따라가는 중이고, 아티팩트 승인이 나면 `docs/account-design-close` 브랜치로 PR을 연다. 그 뒤 남은 account 미정 — login.md 「아직 안 정한 것」(게이트 읽기 실패 모습, 넷째 도는 문구, 탭 제목, 구글 서체), README Q-01·Q-03, members-pending.md 넷 — 을 닫고 members·members-pending·profile 화면의 plan을 쓴다. `3-build/plans/profile-form.md`는 따라 고쳤다. `feat/profile-form` 브랜치의 실패 테스트도 시트 기준이라 구현 단계에서 다시 쓴다.
+account의 미정이 다 닫혔다 — login.md(읽기 실패 한 장, 도는 문구 셋, 탭 제목 「라비에벨」, 구글 SVG 자산), README(Q-01 계정 잇기 1차 밖, Q-03 픽커는 이름·사진만), members-pending.md(스크롤로 끝·찾기 없음·차단 안 지움·빈 상태 한 줄), members.md(검색 칸 항상, 되돌리기 시한 없음, 퇴사 구획은 1년 안만 펼치고 「더 보기」), profile.md(「화면」 줄 — 기기 설정대로·밝게·어둡게, `localStorage`). 하나 고르는 목록이 [components.md](2-design/design-system/components.md#하나-고르는-목록)로 올라갔다. 시안은 login이 검증됐고 profile·members가 따라가는 중이다 — 아티팩트 승인이 나면 `docs/account-design-close` 브랜치로 PR을 연다. 그 다음이 members·members-pending·profile 화면의 plan이고, 그 뒤 schedule 영역의 미정 인터뷰다. `feat/profile-form` 브랜치의 실패 테스트는 시트 기준이라 구현 단계에서 다시 쓴다.
 
 같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
 
