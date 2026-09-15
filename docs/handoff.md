@@ -6,7 +6,9 @@
 
 ## 다음 작업
 
-[`auth-entry`](backlog.md) — **인증 진입을 전환한다** — [plan](3-build/plans/auth-entry.md)이 섰다. 범위는 게이트 기계만이다 — `proxy.ts`, 목적지 다섯, 껍데기의 `ensure_profile()` → `['profile']` 판정, 임시 `/blocked`·`/left`. 프로필 작성 폼과 화면 짜임은 다음 task다. 파이프라인은 `test-planner` → writer 셋 → `implementer` → `pr-diff`.
+[`profile-form`](backlog.md) — **프로필 작성 폼을 만든다** — plan부터 쓴다(`3-build/plans/profile-form.md`, 작성법은 [3-build/README.md](3-build/README.md)). 정본은 [login.md](2-design/modules/account/screens/login.md#프로필-작성)·[퇴사한 뒤](2-design/modules/account/screens/login.md#퇴사한-뒤)와 [account/design.md](2-design/modules/account/design.md#행위별-구현-계약)의 `submit_profile`. `auth-entry`(#363)가 게이트 기계를 세웠으니 `/pending`은 지금 컨텍스트(`useAuthGateValue`)에서 이메일·사진을 받고, `['profile']`이 `submitted_at`·`rejected_at`을 이미 든다. 화면 시안은 `login.sian.html`이 있다 — 시안이 문서와 맞는지 `sian-auditor`로 먼저 본다.
+
+같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
 
 시안 갱신 후보는 backlog의 `sian-sync` candidate 행이 든다(#358).
 

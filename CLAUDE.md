@@ -8,7 +8,7 @@
 
 Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui, zustand, TanStack Query, vitest, Playwright. Node 22, pnpm 8.15.2 — 정본은 `package.json`.
 
-- `pnpm dev` / `pnpm build` / `pnpm start`
+- `pnpm dev` / `pnpm build` / `pnpm start` — `build`는 `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`가 env에 있어야 한다(로컬은 `supabase status -o env`)
 - `pnpm lint` / `pnpm typecheck` / `pnpm test`
 - `pnpm test:integration` — 로컬 Supabase 필요 (Docker). 스택이 떠 있으면 `pnpm test:integration:run`
 - `pnpm e2e` — 먼저 `pnpm build`
