@@ -8,7 +8,9 @@
 
 **구현은 전 영역의 설계가 끝난 뒤 한꺼번에 한다.** task 하나의 plan이 섰다고 그 task를 구현하지 않는다. 영역마다 ① 정본의 「아직 안 정한 것」을 인터뷰로 닫고(한 라운드 한 질문) ② 정본에 반영하고 ③ 시안을 갱신해 아티팩트로 사용자가 보고 승인하고 ④ plan을 쓴다. 순서는 account → schedule → attendance → payroll → notification → system이고 swap은 2차라 뒤다. 실패 테스트 작성부터가 구현 단계라 plan 뒤에 writer를 띄우지 않는다.
 
-account의 미정이 다 닫혔다 — login.md(읽기 실패 한 장, 도는 문구 셋, 탭 제목 「라비에벨」, 구글 SVG 자산), README(Q-01 계정 잇기 1차 밖, Q-03 픽커는 이름·사진만), members-pending.md(스크롤로 끝·찾기 없음·차단 안 지움·빈 상태 한 줄), members.md(검색 칸 항상, 되돌리기 시한 없음, 퇴사 구획은 1년 안만 펼치고 「더 보기」), profile.md(「화면」 줄 — 기기 설정대로·밝게·어둡게, `localStorage`). 하나 고르는 목록이 [components.md](2-design/design-system/components.md#하나-고르는-목록)로 올라갔다. 시안은 login이 검증됐고 profile·members가 따라가는 중이다 — 아티팩트 승인이 나면 `docs/account-design-close` 브랜치로 PR을 연다. 그 다음이 members·members-pending·profile 화면의 plan이고, 그 뒤 schedule 영역의 미정 인터뷰다. `feat/profile-form` 브랜치의 실패 테스트는 시트 기준이라 구현 단계에서 다시 쓴다. 구현 때는 worktree에 실제 `node_modules`를 깔고(`pnpm install --frozen-lockfile`) 돈다.
+account가 끝났다. 미정이 다 닫혔고(login·README·members-pending·members·profile), 시안 셋이 아티팩트로 승인됐고, 화면 plan 넷이 섰다 — [profile-form](3-build/plans/profile-form.md)·[members-pending](3-build/plans/members-pending.md)·[profile-screen](3-build/plans/profile-screen.md)·[members](3-build/plans/members.md). plan을 쓰다 나온 결정 열둘을 정본에 반영했다 — `already_decided` 코드, `profile_private.email`, `phone` check 제약, 차단 해제가 `submitted_at`도 비우기, `/admin/members/blocked` 경로, `is_admin()`이 퇴사·차단을 보기, `last_admin` 셈에 퇴사·차단 제외와 퇴사 처리도 막기, 쓰기는 전부 응답 대기, 관리자는 자기 이름 고치기 가능, 지난 시간 표기 규칙, 하나 고르는 목록 공용화, `profile-erasure` task 신설.
+
+다음은 **schedule 영역**이다. 미정 일곱 — design.md Q-01~Q-05, schedule-worker.md 교육 배정 인증, schedule-admin.md 사람 픽커 — 을 한 라운드 한 질문으로 닫고, 정본에 반영하고, 시안을 갱신해 아티팩트로 승인받고, plan을 쓴다. 첫 질문(달의 축)은 답이 나왔다 — **달력 달이 축이다**(8월 화면 = 8/1~8/31). 아직 정본에 안 옮겼다.
 
 같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
 

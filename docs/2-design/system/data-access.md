@@ -99,7 +99,7 @@
 ### 읽기 RLS 기본값
 
 - 적용 범위: 모든 표의 읽기 정책
-- 기본 계약: **기본은 「승인된 사람 전원 읽기」다.** `is_approved()`·`is_admin()` 두 SQL 함수를 모든 정책이 공유한다. 둘은 `security definer`·`stable`·`search_path = ''`다. 좁히는 표는 이렇다. 안 적은 표는 기본값이다. 행은 각 영역 design의 소유 데이터에 있다. 정책을 고치는 PR은 그 정책의 integration 테스트를 같이 낸다(ADR-003)
+- 기본 계약: **기본은 「승인된 사람 전원 읽기」다.** `is_approved()`·`is_admin()` 두 SQL 함수를 모든 정책이 공유한다. 둘은 `security definer`·`stable`·`search_path = ''`다. 둘 다 `left_at`·`blocked_at`이 비어 있어야 참이다 — 퇴사하거나 차단된 관리자의 세션이 관리자 함수를 못 부른다. 좁히는 표는 이렇다. 안 적은 표는 기본값이다. 행은 각 영역 design의 소유 데이터에 있다. 정책을 고치는 PR은 그 정책의 integration 테스트를 같이 낸다(ADR-003)
 - 이유: 날·자리·배정·요청·인증 상태처럼 전원이 보는 표가 다수라 기본값과 맞는다. **막는 것은 화면이 아니라 데이터다** — 시급·급여·개인정보·QR 값은 RLS가 행 단위로 막을 수 있게 표를 가른다. `profiles` 정책이 `profiles`를 읽는 함수를 부르면 재귀에 걸린다. 왜 좁히는지는 각 도메인 파일에 있다. 새 표에 좁히기를 까먹으면 새는 쪽으로 틀리니 그 테스트가 유일한 장치다
 - 예외: 승인 전은 자기 `profiles`·`profile_private` 행만 읽는다(ADR-003). 퇴사자는 자기 행만이다 — 자기 배정·인증·시급과 그 배정이 든 `days`. 남의 지난 기록도 안 연다([account/README.md](../modules/account/README.md#acc-011))
 
@@ -137,6 +137,8 @@
 | `window_closed` | 인증 창·요청 마감·취소 마감 밖이다 | 버튼이 잘못 켜진 것. 새로 읽기 |
 | `too_early` | 신청 마감 전에 확정하려 했다 | 마감일 당기기 안내 |
 | `too_far`, `invalid_qr` | 홀 반경 밖, 옛 코드 | 인증 화면 문안 |
-| `last_admin` | 마지막 관리자를 내리려 했다 | 문안 |
+| `last_admin` | 마지막 관리자를 내리거나 퇴사 처리하려 했다 | 문안 |
+| `already_decided` | 이미 승인·거절·차단된 사람을 다시 처리했다 | 시트 닫고 새로 읽기 |
+| `invalid_gender`, `invalid_phone`, `invalid_name`, `invalid_role` | 값의 꼴이 규칙 밖이다 — 화면이 먼저 막으니 함수가 마지막 문이다 | 버튼이 잘못 켜진 것. 새로 읽기 |
 | `has_future_assignments` | 앞 배정이 남은 사람을 퇴사 처리했다 | 남은 자리 목록은 화면이 먼저 읽어 보여준다 |
 | `not_allowed` | 관리자 검사에 걸렸거나 RLS 거부(`42501`) | 버튼이 잘못 켜진 것. 새로 읽기 |

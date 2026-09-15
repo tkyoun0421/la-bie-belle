@@ -23,7 +23,7 @@
 | --- | --- |
 | `profile_private` | 본인 행과 관리자 |
 
-키는 `['profile']`(본인)·`['members']`(관리자 명단)·`['members', 'pending']`이다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
+키는 `['profile']`(본인)·`['profile', 'private']`(본인의 연락처·성별·생년월일)·`['members']`(관리자 명단)·`['members', 'pending']`·`['members', 'blocked']`다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
 
 ### 프로필 신원
 
@@ -33,7 +33,7 @@
 
 ### 개인정보는 표를 가른다
 
-`profiles(id, user_id, display_name, photo_url, role, submitted_at, approved_at, rejected_at, blocked_at, left_at, erased_at)`는 승인된 전원이 읽는다. `profile_private(profile_id, phone, birth_date, gender)`는 본인과 관리자만 읽는다. RLS가 행 단위라 한 표로는 열을 못 가른다 — 한 표면 아무 근무자나 `select phone from profiles`로 서른 명 연락처를 받는다.
+`profiles(id, user_id, display_name, photo_url, role, submitted_at, approved_at, rejected_at, blocked_at, left_at, erased_at)`는 승인된 전원이 읽는다. `profile_private(profile_id, email, phone, birth_date, gender)`는 본인과 관리자만 읽는다. `email`은 `ensure_profile()`이 `auth.users`에서 옮겨 적는다 — 관리자가 가입 대기 시트에서 구글 계정을 보는데 `auth.users`는 못 읽어서다. `phone`에는 `^010-\d{4}-\d{4}$` check 제약이 있다 — 직접 갱신이라 함수의 검사를 안 지나니 표가 마지막 문이다. RLS가 행 단위라 한 표로는 열을 못 가른다 — 한 표면 아무 근무자나 `select phone from profiles`로 서른 명 연락처를 받는다.
 
 `profile_private`의 연락처는 본인이 직접 갱신한다. 테이블 직접 쓰기 정책이 있는 유일한 자리다. 이름·성별·생년월일은 `submit_profile()` 함수로만 들어간다 — 제출된 뒤 잠기고 거절되면 다시 열리는 것을 컬럼 grant로는 못 나타낸다.
 
@@ -75,13 +75,14 @@
 - 입력·전제: 프로필 제출은 `submit_profile`이다
 - 읽고 쓰는 데이터: 이름·성별·생년월일은 제출된 뒤 잠기고 거절되면 다시 열린다. 연락처는 함수가 아니라 `profile_private` 본인 행 직접 갱신이다 — 테이블 직접 쓰기 정책이 있는 유일한 자리. 사진은 [Storage에 올린 뒤](#사진-저장) `update_my_photo`가 자기 `profiles.photo_url`을 바꾼다
 - 권한: 본인 행뿐이고 관리자도 남의 것은 못 바꾼다([개인정보는 표를 가른다](#개인정보는-표를-가른다))
-- 처리와 경쟁: 이름 변경(`set_display_name`)과 연락처 변경(`profile_private` 직접 갱신)은 즉시 칠하고 실패면 되돌린다. 승인·거절·차단·역할 변경은 응답을 기다린다 — 남에게 닿는다
+- 처리와 경쟁: 전부 응답을 기다린다. 이름 변경(`set_display_name`)과 연락처 변경(`profile_private` 직접 갱신)도 시트 안에서 일어나 실패를 그 자리에 세워야 해서다([profile.md](screens/profile.md#연락처-고치기)·[members.md](screens/members.md#이름-고치기)). 승인·거절·차단·역할 변경은 남에게 닿는다
 
 ### 가입 승인·거절·차단·해제
 
 - 규칙: [ACC-006](README.md#acc-006)·[ACC-007](README.md#acc-007)
 - 입력·전제: `approve_member`, `reject_member`, `block_member`, `unblock_member`가 가입 승인·거절·차단·해제다
-- 읽고 쓰는 데이터: 승인은 `wage_rates` 첫 행을 같이 넣는다
+- 읽고 쓰는 데이터: 승인은 `wage_rates` 첫 행을 같이 넣는다. 해제는 `blocked_at`과 `submitted_at`을 같이 비운다 — 그 사람이 다시 들어오면 프로필 작성이 지난 값을 들고 서고, 보내면 대기 목록에 뜬다
+- 결과와 실패: 대상이 더는 「제출됨」이 아니면(이미 승인·거절·차단됐다) `already_decided`. 둘이 같은 사람을 열었을 때 늦게 누른 쪽이 받는다
 - 처리와 경쟁: 응답을 기다린다 — 남에게 닿는다
 - 캐시 갱신: `approve_member`는 `['members']` `['payroll']`, `reject_member`·`block_member`·`unblock_member`는 `['members']`다
 
@@ -89,7 +90,7 @@
 
 - 규칙: [ACC-008](README.md#acc-008)
 - 입력·전제: `set_role`이 관리자 올리기·내리기다
-- 결과와 실패: 마지막 관리자는 못 내린다 — `last_admin`
+- 결과와 실패: 마지막 관리자는 못 내린다 — `last_admin`. 셈은 [ACC-008](README.md#acc-008)대로 재직 중이고 차단되지 않은 관리자다
 - 캐시 갱신: `['members']`
 
 ### 이름 고치기
@@ -109,7 +110,7 @@
 
 - 규칙: [ACC-010](README.md#acc-010)·[ACC-011](README.md#acc-011)
 - 입력·전제: `mark_leave`, `undo_leave`가 퇴사 처리와 되돌리기다
-- 결과와 실패: 앞 배정이 남았으면 `has_future_assignments`
+- 결과와 실패: 앞 배정이 남았으면 `has_future_assignments`. 마지막 관리자면 `last_admin`
 - 캐시 갱신: `['members']`
 
 ### 로그아웃·퇴사·차단 뒤 기기 정리
