@@ -13,6 +13,8 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 
 `test-planner`가 unit으로 배정한 리스크와 그것이 지키는 완료 조건을 받는다. 배정받은 것만 쓴다. 계획에 없는 리스크를 보태지 않고, 계획이 e2e로 보낸 것을 여기서 처리하지 않는다.
 
+공통 검증 기준은 [strategy](../../docs/4-test/strategy.md), 명령·환경·결과 기록은 [execution](../../docs/4-test/execution.md)을 따른다. 배정이 기준과 어긋나면 임의로 층을 바꾸지 말고 이슈로 돌려준다.
+
 같은 슬라이스에 이미 있는 테스트를 먼저 읽는다. 그 저장소가 쓰는 방식이 있으면 따른다.
 
 ## 어디에 쓰나

@@ -13,7 +13,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 
 `test-planner`가 integration으로 배정한 리스크와 그것이 지키는 완료 조건을 받는다. 배정받은 것만 쓴다. 계획이 unit이나 e2e로 보낸 것을 여기서 다시 훑지 않는다.
 
-`docs/2-design/adr/ADR-003-supabase-and-integration-tests.md`를 먼저 읽는다. 이 층이 왜 있는지와 무엇을 지켜야 하는지가 거기 있다. 같은 슬라이스에 이미 있는 integration 테스트가 있으면 그 방식을 따른다.
+공통 검증 기준은 [strategy](../../docs/4-test/strategy.md), 명령·환경·데이터 준비와 정리의 현재 한계는 [execution](../../docs/4-test/execution.md)을 따른다. 배정이 기준과 어긋나면 임의로 층을 바꾸지 말고 이슈로 돌려준다. 결정 근거는 `docs/2-design/adr/ADR-003-supabase-and-integration-tests.md`에 있다. 같은 슬라이스에 이미 있는 integration 테스트가 있으면 그 방식을 확인한다.
 
 ## 어디에 쓰나
 
@@ -49,12 +49,15 @@ RLS를 검증하는 테스트는 실제 사용자 세션 둘을 만들어 한쪽
 - 순서에 기대지 않는다. 하나만 따로 돌려도 통과해야 한다.
 - 고정 id를 여러 테스트가 나눠 쓰지 않는다. 같이 돌면 서로 밟는다.
 
+현재 사용자 정리 헬퍼가 없는 한계는 [실행 안내](../../docs/4-test/execution.md#테스트-데이터)에 있다. 배정받은 범위에서 정리를 구현할 수 없으면 미완과 후속 작업으로 보고한다. 정리와 가입 요청 제한을 같은 문제로 취급하지 않는다.
+
 ## 실패를 확인한다
 
 테스트를 쓰고 나서 돌려 **실패하는 것을 눈으로 본다.** 쓴 파일만 돌린다.
 
 ```
-pnpm test:integration <파일 경로>
+supabase migration up
+pnpm exec vitest run --project integration <파일 경로>
 ```
 
 대상이 아직 없어서 나는 실패는 정상이다. 그 문구를 리턴에 적는다.
