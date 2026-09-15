@@ -2,6 +2,10 @@ import { execFileSync } from "node:child_process";
 import type { BrowserContext } from "@playwright/test";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import {
+  createSubmittedUser,
+  type SubmittedUser,
+} from "@tests/integration/postgres";
+import {
   createSignedInUser,
   type SignedInUser,
   type SignedInUserWithoutProfile,
@@ -127,5 +131,13 @@ export async function seedSignedInSession(
   baseURL: string,
 ): Promise<SeededSession> {
   const user = await createSignedInUser();
+  return seedSessionForUser(context, baseURL, user);
+}
+
+export async function seedSubmittedSession(
+  context: BrowserContext,
+  baseURL: string,
+): Promise<SubmittedUser> {
+  const user = await createSubmittedUser();
   return seedSessionForUser(context, baseURL, user);
 }

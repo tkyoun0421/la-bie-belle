@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test";
-import { seedSignedInSession } from "@tests/e2e/support/session";
+import { seedSubmittedSession } from "@tests/e2e/support/session";
 
 test("세션은 있지만 승인 전이면 승인 대기 화면으로 간다", async ({
   page,
   context,
   baseURL,
 }) => {
-  const user = await seedSignedInSession(
+  const user = await seedSubmittedSession(
     context,
     baseURL ?? "http://localhost:3000",
   );
@@ -28,7 +28,7 @@ test("「알림 켜기」를 누르면 켠 뒤 모습으로 바뀐다", async ({
   await context.grantPermissions(["notifications"], {
     origin: resolvedBaseURL,
   });
-  await seedSignedInSession(context, resolvedBaseURL);
+  await seedSubmittedSession(context, resolvedBaseURL);
 
   await page.goto("/");
   await expect(page).toHaveURL(/\/pending$/);
@@ -50,7 +50,7 @@ test("Notification API가 없는 기기에서 「알림 켜기」를 누르면 �
     // @ts-expect-error - 테스트에서 의도적으로 API를 지운다
     delete window.Notification;
   });
-  await seedSignedInSession(context, baseURL ?? "http://localhost:3000");
+  await seedSubmittedSession(context, baseURL ?? "http://localhost:3000");
 
   await page.goto("/");
   await expect(page).toHaveURL(/\/pending$/);
