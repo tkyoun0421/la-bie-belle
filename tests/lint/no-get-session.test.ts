@@ -8,7 +8,7 @@ const GET_SESSION_CALL = /\.getSession\s*\(/;
 const USE_CLIENT_DIRECTIVE = /^\s*["']use client["'];?/;
 
 const SESSION_SERVER_FILES = [
-  "src/middleware.ts",
+  "src/proxy.ts",
   "src/shared/lib/get-current-user.ts",
   "src/shared/lib/create-supabase-server-client.ts",
 ];
