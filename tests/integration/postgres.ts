@@ -19,35 +19,35 @@ function dbContainerName(): string {
   return name;
 }
 
+function runSql(sql: string, vars: Record<string, string>): void {
+  const container = dbContainerName();
+
+  const args = [
+    "exec",
+    "-i",
+    container,
+    "psql",
+    "-U",
+    "postgres",
+    "-d",
+    "postgres",
+    "-v",
+    "ON_ERROR_STOP=1",
+  ];
+  for (const [key, value] of Object.entries(vars)) {
+    args.push("-v", `${key}=${value}`);
+  }
+
+  execFileSync("docker", args, { input: sql, encoding: "utf8" });
+}
+
 export function approveProfile(
   userId: string,
   approvedAt: string = new Date().toISOString(),
 ): void {
-  const container = dbContainerName();
-
-  execFileSync(
-    "docker",
-    [
-      "exec",
-      "-i",
-      container,
-      "psql",
-      "-U",
-      "postgres",
-      "-d",
-      "postgres",
-      "-v",
-      "ON_ERROR_STOP=1",
-      "-v",
-      `user_id=${userId}`,
-      "-v",
-      `approved_at=${approvedAt}`,
-    ],
-    {
-      input:
-        "update public.profiles set approved_at = :'approved_at' where id = :'user_id';\n",
-      encoding: "utf8",
-    },
+  runSql(
+    "update public.profiles set approved_at = :'approved_at' where user_id = :'user_id';\n",
+    { user_id: userId, approved_at: approvedAt },
   );
 }
 
@@ -60,4 +60,34 @@ export async function createApprovedUser(): Promise<ApprovedUser> {
   approveProfile(user.userId, approvedAt);
 
   return { ...user, approvedAt };
+}
+
+export type AdminUser = SignedInUser & { approvedAt: string };
+
+export async function createAdminUser(): Promise<AdminUser> {
+  const user = await createApprovedUser();
+
+  runSql(
+    "update public.profiles set role = 'admin' where user_id = :'user_id';\n",
+    { user_id: user.userId },
+  );
+
+  return user;
+}
+
+export type BlockedUser = SignedInUser & {
+  approvedAt: string;
+  blockedAt: string;
+};
+
+export async function createBlockedUser(): Promise<BlockedUser> {
+  const user = await createApprovedUser();
+  const blockedAt = new Date().toISOString();
+
+  runSql(
+    "update public.profiles set blocked_at = :'blocked_at' where user_id = :'user_id';\n",
+    { user_id: user.userId, blocked_at: blockedAt },
+  );
+
+  return { ...user, blockedAt };
 }

@@ -52,7 +52,7 @@ sources:
 
 전부 `security definer`에 `set search_path = ''`이고, 부르는 사람의 프로필을 `auth.uid()`로 찾는다.
 
-- `ensure_profile()` — 자기 프로필 행이 없으면 `user_id`만 채운 행을 넣고, 있으면 아무것도 안 한다. 두 번 불러도 행이 하나다. 세션이 없으면 던진다
+- `ensure_profile()` — 자기 프로필 행이 없으면 `user_id`만 채운 행을 넣고, 있으면 아무것도 안 한다. 두 번 불러도 행이 하나다. 세션이 없으면 `not_allowed`로 던진다
 - `submit_profile(display_name text, phone text, birth_date date, gender text)` — `profiles.display_name`과 `submitted_at`을 채우고 `profile_private` 행을 넣는다(이미 있으면 갱신). 이미 제출됐고 `rejected_at`이 비어 있으면 `already_submitted`로 던진다 — 거절된 뒤에는 다시 받는다. 거절 뒤 재제출은 `rejected_at`을 비운다
 - `update_my_photo(photo_url text)` — 자기 행의 `photo_url`만 바꾼다. 인자는 주소 문자열이다 — 사진을 어디 두는지는 [design.md](../../2-design/modules/account/design.md#q-01)가 열려 있고, 이 task는 주소를 받아 쓰는 자리까지만 만든다
 
@@ -60,7 +60,7 @@ sources:
 
 **관리자 함수.**
 
-`is_admin()`이 거짓이면 `forbidden`으로 던진다.
+`is_admin()`이 거짓이면 `not_allowed`으로 던진다.
 
 - `approve_member(profile_id uuid)` — `approved_at`을 찍고 `rejected_at`을 비운다. 이미 승인된 사람이면 아무것도 안 한다
 - `reject_member(profile_id uuid)` — `rejected_at`을 찍는다. 이미 승인된 사람은 `already_approved`로 던진다
@@ -88,8 +88,8 @@ sources:
 - `ensure_profile` — 처음 부르면 행이 생긴다 / 두 번 불러도 행이 하나다 / 다른 사람이 부르면 그 사람 행이 따로 생긴다
 - `submit_profile` — 제출하면 `profiles.display_name`과 `submitted_at`과 `profile_private` 행이 같이 찬다 / 두 번째 제출은 `already_submitted`로 막힌다 / 거절된 뒤에는 다시 제출된다
 - `update_my_photo` — 본인이 부르면 자기 `photo_url`이 바뀐다 / 남의 프로필은 안 바뀐다(관리자가 불러도 마찬가지)
-- `approve_member` — 관리자가 부르면 `approved_at`이 찍힌다 / 거절됐던 사람을 승인하면 `rejected_at`이 비워진다 / 관리자가 아니면 `forbidden`으로 막힌다
-- `reject_member` — 관리자가 부르면 `rejected_at`이 찍힌다 / 이미 승인된 사람은 `already_approved`로 막힌다 / 관리자가 아니면 `forbidden`으로 막힌다
+- `approve_member` — 관리자가 부르면 `approved_at`이 찍힌다 / 거절됐던 사람을 승인하면 `rejected_at`이 비워진다 / 관리자가 아니면 `not_allowed`으로 막힌다
+- `reject_member` — 관리자가 부르면 `rejected_at`이 찍힌다 / 이미 승인된 사람은 `already_approved`로 막힌다 / 관리자가 아니면 `not_allowed`으로 막힌다
 - `is_approved`·`is_admin` — 세션 없이 부르면 거짓이다 / 프로필이 없으면 거짓이다
 
 헬퍼는 `tests/integration/postgres.ts`에 관리자 사용자와 차단된 사용자를 만드는 것이 는다. 승인 데이터를 손으로 넣는 자리가 헬퍼 하나로 남아야 한다.

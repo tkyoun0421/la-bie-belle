@@ -7,7 +7,7 @@ export async function getApprovedAt(
   const { data, error } = await client
     .from("profiles")
     .select("approved_at")
-    .eq("id", userId)
+    .eq("user_id", userId)
     .maybeSingle<{ approved_at: string | null }>();
 
   if (error) {

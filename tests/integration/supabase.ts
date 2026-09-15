@@ -50,6 +50,7 @@ export type SignedInUser = {
   client: SupabaseClient;
   userId: string;
   email: string;
+  profileId: string;
 };
 
 export function createGuestClient(): SupabaseClient {
@@ -73,5 +74,24 @@ export async function createSignedInUser(): Promise<SignedInUser> {
     throw new Error(`가입은 됐는데 세션이 없다: ${email}`);
   }
 
-  return { client, userId: data.user.id, email };
+  const { error: ensureError } = await client.rpc("ensure_profile");
+  if (ensureError) {
+    throw ensureError;
+  }
+
+  const { data: profile, error: profileError } = await client
+    .from("profiles")
+    .select("id")
+    .eq("user_id", data.user.id)
+    .single<{ id: string }>();
+  if (profileError) {
+    throw profileError;
+  }
+
+  return {
+    client,
+    userId: data.user.id,
+    email,
+    profileId: profile.id,
+  };
 }
