@@ -293,6 +293,40 @@ describe("useAuthGate — 읽기 실패와 재시도", () => {
   });
 });
 
+describe("useAuthGate — userId와 profile 값 노출", () => {
+  it("세션이 있고 읽은 뒤에는 userId가 user.id고 profile이 getMyProfile 행 그대로다", async () => {
+    const user = fakeUser();
+    const row = profileRow({ approved_at: "2026-09-01T00:00:00.000Z" });
+    vi.mocked(getCurrentUser).mockResolvedValue(user);
+    vi.mocked(ensureProfile).mockResolvedValue(undefined);
+    vi.mocked(getMyProfile).mockResolvedValue(row);
+    pathnameMock.mockReturnValue("/");
+
+    const { result } = renderHook(() => useAuthGate(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.status).toBe("ready"));
+
+    expect(result.current.userId).toBe(user.id);
+    expect(result.current.profile).toEqual(row);
+  });
+
+  it("세션이 없으면 userId와 profile이 둘 다 null이다", async () => {
+    vi.mocked(getCurrentUser).mockResolvedValue(null);
+    pathnameMock.mockReturnValue("/");
+
+    const { result } = renderHook(() => useAuthGate(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.status).toBe("ready"));
+
+    expect(result.current.userId).toBeNull();
+    expect(result.current.profile).toBeNull();
+  });
+});
+
 describe("profileQueryOptions — 프로필 쿼리의 캐시 규칙", () => {
   it("queryKey가 ['profile']이고 staleTime이 0이고 refetchOnWindowFocus가 true다", () => {
     const options = profileQueryOptions({} as SupabaseClient, "user-1");
