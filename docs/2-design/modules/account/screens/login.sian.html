@@ -423,10 +423,11 @@ code {
 /* 거절된 뒤 — 안 돈다. 한 줄이 선 채로 남는다 */
 .rotator.still span { opacity: 1; }
 .mock.play .rotator.still span { animation: none; }
-.rotator span:nth-child(1) { animation-delay: 0s; }
-.rotator span:nth-child(2) { animation-delay: var(--interval-rotate); }
-.rotator span:nth-child(3) { animation-delay: calc(var(--interval-rotate) * 2); }
-.rotator span:nth-child(4) { animation-delay: calc(var(--interval-rotate) * 3); }
+/* 지연은 위 shorthand보다 특이도가 높아야 산다 — .mock.play를 앞에 붙인다 */
+.mock.play .rotator span:nth-child(1) { animation-delay: 0s; }
+.mock.play .rotator span:nth-child(2) { animation-delay: var(--interval-rotate); }
+.mock.play .rotator span:nth-child(3) { animation-delay: calc(var(--interval-rotate) * 2); }
+.mock.play .rotator span:nth-child(4) { animation-delay: calc(var(--interval-rotate) * 3); }
 @keyframes rotline {
   0% { opacity: 0; transform: translateY(var(--rise)); }
   1.5% { opacity: 1; transform: none; }
