@@ -114,6 +114,8 @@ TDD 규율은 이 순서 밖이다. 어느 항목과도 흥정하지 않는다.
 
 ## 끝내기 전에
 
+완료 판정은 [테스트 전략](../../docs/4-test/strategy.md#완료-판정), 환경·명령·실패 진단은 [실행 안내](../../docs/4-test/execution.md)를 읽는다. plan의 검증 표와 실제 결과를 연결하고, 필요한 수동 검증은 실행 결과 또는 미실행 사유를 총괄에게 넘긴다. PR과 리턴에 검증한 Git 기준점·명령·결과를 적는다.
+
 `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm build`, `pnpm e2e`를 실제로 돌려 통과를 확인한다. 통과하지 못한 채로 PR을 열지 않는다. 통과가 불가능한 사정이 있으면 PR을 열지 말고 리턴으로 보고한다.
 
 `pnpm format:check`는 pre-commit 훅이 이미 지킨다. staged 파일 중 포맷이 어긋난 것을 훅이 고쳐서 인덱스에 다시 올리니 손으로 돌릴 일이 없다. 목록에 남긴 것은 훅을 안 건 클론에서도 CI 전에 알기 위해서다. 마크다운은 `.prettierignore`가 빼놔서 대상이 아니다.

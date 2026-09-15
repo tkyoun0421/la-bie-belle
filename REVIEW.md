@@ -7,7 +7,7 @@ PR을 merge 전에 감사하는 기준이다. CI 자동 리뷰(`.github/workflow
 - **삭제** — 지워지거나 이름이 바뀐 파일. 삭제가 이 PR의 목적에 들어 있지 않으면 전부 적는다.
 - **총괄 문서 접촉** — `CLAUDE.md`, `REVIEW.md`, `docs/backlog.md`, `docs/handoff.md`, `docs/log/`, `docs/1-plan/prd.md`, `docs/2-design/adr/`, `.claude/`, `.githooks/`, `.github/`가 바뀌었는지. 바뀌었으면 어느 줄인지 적는다.
 - **시크릿** — 키·토큰·비밀번호로 보이는 문자열, `.env` 파일. 발견하면 값을 그대로 옮기지 말고 위치와 형태만 적는다.
-- **테스트** — 이 저장소는 TDD로 간다. 구현이 바뀌었는데 테스트가 함께 오지 않은 곳을 적는다.
+- **테스트** — 이 저장소는 TDD로 간다. 구현이 바뀌었는데 테스트가 함께 오지 않은 곳을 적는다. [완료 판정](docs/4-test/strategy.md#완료-판정)에 따라 plan의 검증 방법과 실제 결과를 대조하고, 필요한 수동 검증의 미실행·검증 기준점 누락을 확인한다.
 - **생성 파일** — `pnpm-lock.yaml`처럼 기계가 만든 파일은 줄 단위로 읽지 말고 무엇이 늘고 줄었는지 한 줄로 요약한다.
 - **영향 검토** — 규칙·설계 조항(`docs/2-design/modules/*/README.md`·`design.md`·`docs/2-design/system/*.md`)이 바뀐 PR이면 그것을 `sources`로 든 spec·plan(`grep -rn 'sources' docs/2-design/spec docs/3-build/plans`)을 같은 PR에서 고쳤는지, 영향이 없는 이유를 본문 「영향 확인」 절에 남겼는지, 전환 작업을 연결했는지 본다. 셋 중 하나가 없으면 적는다. 근거는 [ADR-009](docs/2-design/adr/ADR-009-design-modules-and-stage-links.md)다.
 

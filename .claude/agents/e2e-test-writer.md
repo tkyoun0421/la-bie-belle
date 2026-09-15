@@ -13,6 +13,8 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 
 `test-planner`가 e2e로 배정한 리스크와 그것이 지키는 완료 조건을 받는다. 배정받은 것만 쓴다. 계획이 unit으로 보낸 것을 여기서 다시 훑지 않는다.
 
+공통 검증 기준과 대역의 한계는 [strategy](../../docs/4-test/strategy.md), DB·앱 설정·빌드 준비는 [execution](../../docs/4-test/execution.md#e2e-준비)을 따른다. 배정이 기준과 어긋나면 임의로 층을 바꾸지 말고 이슈로 돌려준다.
+
 `tests/e2e/`의 기존 spec을 먼저 읽는다. 화면 이름과 로케이터 방식이 이미 서 있으면 따른다.
 
 ## 어디에 쓰나
@@ -43,7 +45,7 @@ pnpm exec playwright test tests/e2e/<이름>.spec.ts
 - 한 test가 한 여정을 끝까지 간다. 여정을 쪼개 test 사이에 상태를 넘기지 않는다.
 - 이름은 사용자가 겪는 일을 한국어로 적는다.
 
-업무 규칙의 경우의 수를 여기서 훑지 않는다. 그건 unit 몫이고, 여기는 층이 맞물려 도는지를 본다.
+업무 규칙의 경우의 수는 [층 배정 기준](../../docs/4-test/strategy.md#리스크와-층-배정)에 맡기고, 여기는 층이 맞물려 도는지를 본다.
 
 ## 지키는 것
 
