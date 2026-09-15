@@ -67,7 +67,7 @@ PR 본문이 얇아서 왜를 복원할 수 없으면 억지로 채우지 말고
 - **다음 작업** — 총괄이 준 것을 쓴다. `backlog.md`의 작업 ID와 파일 링크를 함께 쓴다.
 - **재개 맥락** — 그 작업을 재개하는 데 필요한 것만. 지난 회차 문장을 그대로 두지 말고 이번 회차 뒤의 사실로 다시 쓴다. 회차의 세부는 로그가 담으니 여기 되풀이하지 않는다.
 
-열린 결정·상시 주의·완료 목록은 소유 문서로 보낸다. 총괄이 준 열린 결정은 정본이 있으면 그 문서의 「아직 안 정한 것」, 할 일이면 `backlog.md`의 `candidate`, 정의문·훅의 마찰이면 `docs/observations/`로 간다. 상시 규칙은 `docs/4-test/execution.md`·`docs/5-deploy/environments.md`로 보낸다. 보낼 때 목적지의 기존 문장과 먼저 합친다.
+열린 결정·상시 주의·완료 목록은 소유 문서로 보낸다. 총괄이 준 열린 결정은 정본이 있으면 그 문서의 「아직 안 정한 것」, 할 일이면 `backlog.md`의 `candidate`, 정의문·훅의 마찰이면 `docs/observations/`로 간다. 상시 검증 기준은 `docs/4-test/strategy.md`, 실행·훅·CI 주의는 `docs/4-test/execution.md`, 배포 환경 주의는 `docs/5-deploy/environments.md`로 보낸다. 보낼 때 목적지의 기존 문장과 먼저 합친다.
 
 ## CHANGELOG.md
 
