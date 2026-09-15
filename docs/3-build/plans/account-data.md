@@ -73,6 +73,8 @@ sources:
 
 - `src/entities/profile/dals/get-approved-at.ts`가 `eq("id", userId)`를 `eq("user_id", userId)`로 바꾼다. 승인 판정을 클라이언트로 옮기는 일은 이 task가 아니다 — [backlog.md](../../backlog.md)의 `auth-entry` 행이다
 - `tests/integration/postgres.ts`의 `approveProfile`이 `where user_id = ...`로 찾는다. `createApprovedUser`가 그 뒤로도 승인된 사용자를 돌려준다
+- `tests/integration/supabase.ts`의 `createSignedInUser`가 가입 뒤 `ensure_profile()`을 부른다. 트리거가 빠지면 가입만으로는 프로필 행이 없고, 지금 테스트 셋은 행이 있다는 전제 위에 서 있다 — 프로필 행을 만드는 자리도 헬퍼 하나로 남는다
+- `src/entities/profile/dals/__tests__/get-approved-at.integration.test.ts`의 세 단언은 그대로다. 헬퍼가 `ensure_profile()`을 부른 뒤라 전제가 그대로 선다
 
 ### AC-07
 
@@ -106,7 +108,9 @@ sources:
 | --- | --- | --- |
 | `supabase/migrations/20260825162027_profiles.sql` | 표 둘과 제약, 판정 함수 둘, RLS와 grant, 근무자 함수 셋, 관리자 함수 둘 | AC-01·AC-02·AC-03·AC-04·AC-05 |
 | `tests/integration/postgres.ts` | `approveProfile`이 `user_id`로 찾기, 관리자·차단 사용자 헬퍼 | AC-06·AC-07 |
+| `tests/integration/supabase.ts` | `createSignedInUser`가 가입 뒤 `ensure_profile()`을 부른다 | AC-06 |
 | `src/entities/profile/dals/get-approved-at.ts` | 읽는 열을 `user_id`로 | AC-06 |
+| `src/entities/profile/dals/__tests__/get-approved-at.integration.test.ts` | 단언은 그대로. 헬퍼 전제만 바뀐다 | AC-06 |
 | `src/entities/profile/dals/__tests__/profile.integration.test.ts`와 함수별 새 테스트 파일 | 새 RLS 규칙으로 다시 쓰기. 파일은 함수마다 가른다 | AC-07 |
 
 ## 구현 순서

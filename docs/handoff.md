@@ -6,9 +6,9 @@
 
 ## 다음 작업
 
-[`account-data-plan`](backlog.md) — **계정 데이터 plan을 쓴다** — 문서 재편(sdlc-coherence·authoring-playbook)이 #356으로 끝나 설계 정본 경로가 더 안 바뀐다. 정본은 [account/design.md](2-design/modules/account/design.md)의 소유 데이터와 행위별 구현 계약이고, plan은 [3-build/README.md](3-build/README.md)의 작성법 틀로 `3-build/plans/account-data.md`에 쓴다. 그 뒤 순서는 `backlog.md`의 `ready`가 든다.
+[`account-data`](backlog.md) — **계정 데이터 구조를 전환한다** — [plan](3-build/plans/account-data.md)이 섰다(#359). 기능 task 파이프라인 `test-planner` → `integration-test-writer` → `implementer` → `pr-diff`로 간다. AC-07의 테스트 목록이 입력이고, 마이그레이션 파일 하나를 고쳐 `supabase db reset`으로 세운다. 그 뒤 순서는 `backlog.md`의 `ready`가 든다.
 
-시안 갱신 후보가 하나 남아 있다 — 재편 PR(#350~#353)의 `sian-auditor`가 재편 전부터 있던 문서↔시안 어긋남 열 자리쯤을 PR 본문에 남겼다(옛 경로 `domain/*.md` 주석, 안 그린 상태, 토큰 값 차이). backlog에 올릴지는 사용자에게 묻는다.
+시안 갱신 후보는 backlog의 `sian-sync` candidate 행이 든다(#358).
 
 ## 재개 맥락
 
