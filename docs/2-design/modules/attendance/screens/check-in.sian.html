@@ -202,7 +202,7 @@ code {
   --t-base: 1.0625rem; --lh-base: 1.59375rem;
   --t-lg: 1.25rem; --lh-lg: 1.8125rem;
   --t-xl: 1.375rem; --lh-xl: 1.9375rem;
-  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 14px; --r-xl: 20px;
   --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms; --d-slower: 300ms;
   --interval-beat: 1.8s;
 
@@ -328,7 +328,7 @@ code {
 
 .btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; height: 48px; border-radius: 999px; border: 0;
+  width: 100%; height: 48px; border-radius: var(--r-lg); border: 0;
   font-size: var(--t-sm); font-weight: 500; font-family: inherit;
   background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
 }
@@ -336,7 +336,7 @@ code {
 .btn:disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); cursor: default; }
 .btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
 .btn.ghost { background: transparent; color: var(--fg-neutral-muted); }
-.btn.sm { width: auto; height: 30px; padding: 0 12px; font-size: var(--t-xs); background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+.btn.sm { width: auto; height: 30px; padding: 0 12px; border-radius: 8px; font-size: var(--t-xs); background: var(--bg-neutral-weak); color: var(--fg-neutral); }
 .btn .spin {
   width: 17px; height: 17px; border-radius: 999px;
   border: 2px solid currentColor; border-top-color: transparent;
@@ -370,7 +370,7 @@ code {
 .fhint { margin-top: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 .statechip {
   font-size: var(--t-xs); line-height: 1; font-weight: 600; color: var(--fg-neutral-muted);
-  background: var(--bg-neutral-weak); border-radius: 999px; padding: 5px 10px;
+  background: var(--bg-neutral-weak); border-radius: 8px; padding: 5px 10px;
 }
 .field .box {
   border-radius: var(--r-md); background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
@@ -573,7 +573,7 @@ code {
 .hall { position: absolute; left: 41%; top: 28%; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .hall .flag {
   display: flex; align-items: center; gap: 5px; background: var(--bg-neutral-solid); color: var(--fg-neutral-contrast);
-  border-radius: 999px; padding: 5px 11px 5px 8px; font-size: var(--t-xs); line-height: 1; font-weight: 600; white-space: nowrap;
+  border-radius: 8px; padding: 5px 11px 5px 8px; font-size: var(--t-xs); line-height: 1; font-weight: 600; white-space: nowrap;
 }
 .hall .stem { width: 2px; height: 9px; background: var(--bg-neutral-solid); }
 .hall .anchor { width: 9px; height: 9px; border-radius: 999px; background: var(--bg-neutral-solid); border: 2px solid var(--bg-neutral); margin-top: -3px; }

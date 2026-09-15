@@ -38,9 +38,17 @@
 - `['requests']` — 살아 있는 요청과 닫힌 지 30일 안. 근무 요청·교대·근무 취소가 다 든다
 - `['hall']` — 좌표·반경·자리 기본값
 
+사람 픽커의 성별 기호와 [사람 시트](screens/schedule-admin.md#사람-시트)는 account의 `['members']`를 같이 읽는다. 근무표가 소유하지 않은 값이라 `['schedule']` 임베딩에 안 넣는다([account/design.md](../account/design.md)).
+
 범위 없이 읽는 키의 범위는 이렇다([system/runtime.md](../../system/runtime.md#읽기-범위)).
 
 - `['requests']` — 살아 있는 것과 닫힌 지 30일 안
+
+### 달
+
+**근무표 한 행이 달력 달 하나다.** `schedules.month`는 그 달 1일의 `date`이고 unique다. 범위를 계산하는 자리가 없다 — `days.work_date`의 연월이 곧 그 달이라 날을 여는 함수가 `date_trunc('month', work_date)`로 `schedules` 행을 찾거나 만든다([README.md](README.md#sch-010)).
+
+달을 가리키는 것이 셋인데 전부 같은 달력 달이다 — 캐시 키 `['schedule', 'YYYY-MM']`, URL의 `?month=YYYY-MM`, 급여의 월 조회([payroll/README.md](../payroll/README.md#pay-022)). `?date=2026-11-01` 시트를 닫으면 `?month=2026-11`로 돌아간다.
 
 ### 날과 자리
 
@@ -62,6 +70,8 @@ unique index 둘이 도메인 규칙을 지킨다.
 ### 자격
 
 **자격은 계산한다.** 팀장·스캔·메인·드레스·드레스실에 들어갈 수 있는 사람은 그 포지션 `position_grants` 행이 있거나 그 포지션 교육 배정 행이 있는 사람이다. 관리자가 「자격까지 줌」을 고른 것만 저장한다(`position_grants(profile_id, position, granted_by, granted_at)`). 취소된 교육 배정은 `ended_reason`으로 걸러 자격에서 뺀다.
+
+**교육 배정 행이 서는 순간 자격이다.** 날짜가 미래여도, 출근 인증이 없어도 센다 — `days.work_date`도 `attendance`도 안 읽는다([README.md](README.md#sch-013)). 안 나온 사람의 자격을 거두는 길은 관리자가 그 교육 배정을 지우는 것 하나다.
 
 ### 근무 신청
 
@@ -169,29 +179,6 @@ pg_cron(`internal`) — `expire_requests`(48시간·12시간 만료와 「전부
 
 ## 아직 안 정한 것
 
-### Q-01
+지금은 없다.
 
-- 질문: `schedules`와 주 범위(8월 = 8/3~9/6)의 대응을 누가 계산하나
-- 영향: 날 열기 함수와 달력 둘 다 필요하다
-
-### Q-02
-
-- 질문: 달 키의 범위 — 달력 달인지 근무표 주 범위인지
-- 영향: `['schedule']`·`['payroll']`·`['availability']` 키가 그 결정에 딸린다
-- 필요한 근거와 대안: [Q-01](#q-01)이 열어뒀다
-
-### Q-03
-
-- 질문: `?month=`가 달력 달인지 근무표 달(10월 5일~11월 1일)인지
-- 영향: `?date=2026-11-01` 시트를 닫으면 어느 달로 돌아가나가 여기 걸린다
-- 필요한 근거와 대안: [Q-02](#q-02)의 달 키와 같은 결정이다
-
-### Q-04
-
-- 질문: 「배웠다」의 기준 — 교육 배정이 서면인가, 출근 인증까지인가
-- 영향: 자격 계산이 이걸 든다
-
-### Q-05
-
-- 질문: `emit_reminders`의 「주말은 금요일 저녁 9시에 묶어서」
-- 필요한 근거와 대안: 함수 하나가 요일을 보고 가르는지, cron 항목을 요일별로 두는지
+달의 축과 달 키의 범위와 `?month=`는 [달](#달)로, 「배웠다」의 기준은 [자격](#자격)으로 닫혀 올라갔다. `emit_reminders`의 주말 묶기는 [notification/design.md](../notification/design.md#행위-밖의-실행-동작)가 소유한다.

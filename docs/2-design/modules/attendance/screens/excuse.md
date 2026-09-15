@@ -37,7 +37,7 @@
 | 보내는 중 | 「보내기」를 누른다 | 오른쪽 버튼에서 링이 돌고 닫기도 같이 잠긴다 | — | 보냄 또는 못 보냄 |
 | 보냄 | 제출이 기록됐다 | 원과 체크, 결과 제목과 아래 줄 | — | 1.65초 뒤 저절로 닫히고 [dashboard.md](../../../system/screens/dashboard.md) |
 | 못 보냄 | 제출이 실패했다 | 원이 흔들리고 ✕. 쓴 글은 시트에 그대로 | 다시 보내기, 닫기 | 보내는 중 또는 [dashboard.md](../../../system/screens/dashboard.md) |
-| 이미 보낸 뒤 다시 열기 | 이미 낸 날의 「사유 넣기」 | 읽기 전용 칸과 「확인 중」 알약. 버튼은 닫기 하나 | 닫기 | [dashboard.md](../../../system/screens/dashboard.md) |
+| 이미 보낸 뒤 다시 열기 | 이미 낸 날의 「사유 넣기」 | 읽기 전용 칸과 「확인 중」 배지. 버튼은 닫기 하나 | 닫기 | [dashboard.md](../../../system/screens/dashboard.md) |
 | 반려된 뒤 | 관리자가 반려한다 | 시트가 아니라 다음에 앱을 열었을 때 대시보드 블록으로 | 사유 다시 쓰기 | 열자마자 |
 | 키보드가 올라옴 | 칸에 커서가 간다 | 시트가 키보드 위에 올라앉는다 | — | — |
 
@@ -97,7 +97,7 @@
 | 실패 원 | `bg.critical-weak` 면에 `bg.critical-solid` 테두리 2px |
 | 실패 ✕ | `fg.critical` |
 | 읽기 전용 칸 | `bg.neutral-weak`에 테두리 없음. 글자는 `fg.neutral-muted` |
-| 「확인 중」 알약 | `bg.neutral-weak` 면에 `fg.neutral-muted` |
+| 「확인 중」 배지 | `bg.neutral-weak` 면에 `fg.neutral-muted` |
 | 반려 블록 | `bg.critical-weak`. 아이콘은 `fg.critical` |
 
 **성공은 브랜드 색이고 실패는 `critical`이다.** [color.md](../../../design-system/foundation/color.md)가 `critical`을 「오류와 되돌릴 수 없는 파괴. 결근, 삭제」로 정했다. 보내기 실패는 되돌릴 수 없는 것이 아니지만 사람이 알아야 할 나쁜 소식이고, 이 팔레트에서 나쁜 소식을 말하는 색은 그것뿐이다.
@@ -121,7 +121,7 @@
 | 버튼 라벨 | `text-sm font-medium` |
 | 결과 제목 | `text-lg font-bold` |
 | 결과 아래 줄 | `text-sm` |
-| 「확인 중」 알약 | `text-xs font-semibold` |
+| 「확인 중」 배지 | `text-xs font-semibold` |
 
 날짜와 시각과 글자 수에 `tabular-nums`를 건다. 글자 수는 매 글자 바뀌는 숫자라 폭이 흔들리면 라벨 줄 전체가 떨린다.
 
@@ -172,7 +172,7 @@
 | 이미 보낸 뒤 제목 | 보낸 사유예요 |
 | 이미 보낸 뒤 날짜 줄 | 9월 12일(토) · 18:52에 보냈어요 |
 | 이미 보낸 뒤 라벨 | 보낸 내용 |
-| 상태 알약 | 확인 중 |
+| 상태 배지 | 확인 중 |
 | 반려 블록 제목 | 사유가 받아들여지지 않았어요 |
 | 반려 블록 아래 줄 | 관리자가 「위치 기록이 없어요」라고 남겼어요 |
 | 반려 버튼 | 사유 다시 쓰기 |

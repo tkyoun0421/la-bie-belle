@@ -28,7 +28,7 @@
 
 키는 `['payroll', 'YYYY-MM']`이고 `wage_rates`·`adjustments`·`excuse_status`를 그달치로 받는다. 배정과 날은 `['schedule', 'YYYY-MM']`을 같이 쓴다 — 급여 화면이 두 키를 읽고 순수 함수에 넣는다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
 
-급여 달과 근무표 달의 범위가 다르면 급여 한 달이 `['schedule']` 두 달을 읽는다 — [schedule/design.md](../schedule/design.md#아직-안-정한-것)의 달 키 범위가 정해지면 따라간다.
+급여 달과 근무표 달이 같은 달력 달이라([PAY-022](README.md#pay-022)) 급여 한 달이 `['schedule']` 한 달만 읽는다.
 
 ### 시급 이력은 사람마다 실제 행이다
 

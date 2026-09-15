@@ -43,8 +43,12 @@
   이미 확인하는 일을 하고 있어서 시트가 같은 값을 두 번 보여주는 자리가 됐고, login.md가 그 시트를
   치웠다.
 
+  라운딩 갱신(tokens.md 5절, rounded-lg 16px→14px) — 알약(rounded-full)을 버튼 라운딩에서
+  뺀 결정을 따라 구글 버튼 대역도 직사각형 쪽으로 바꿨다. login.md 151절도 같이 「모양은
+  직사각형이다」로 고쳐져 이 시안의 `rx="4"`와 맞물린다.
+
   01 구글 버튼은 우리가 그리지 않는다. login.md 「구글 버튼은 구글이 정한다」가 정한 대로,
-  구글이 배포하는 signin-assets.zip의 SVG(알약 rd, 「Sign in with Google」 SI)를 통째로 쓴다.
+  구글이 배포하는 signin-assets.zip의 SVG(직사각형 rd, 「Sign in with Google」 SI)를 통째로 쓴다.
   이 시안은 그 자산과 같은 모양을 흉내 낸 인라인 SVG 하나를 대역으로 세웠다 — 실제 구현은 이
   자리에 구글 자산 파일을 그대로 넣는다. 면·테두리·글자 색 셋(라이트에서 Dark 자산, 다크에서
   Light 자산)은 구글 자산이 정한 값이라 tokens.md의 어떤 토큰도 아니다 — --google-fill·
@@ -300,7 +304,7 @@ code {
   --t-lg: 1.25rem; --lh-lg: 1.8125rem;
   --t-xl: 1.375rem; --lh-xl: 1.9375rem;
   --t-2xl: 1.625rem; --lh-2xl: 2.1875rem;
-  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 14px; --r-xl: 20px;
   --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms; --d-slower: 300ms;
   --interval-rotate: 4s; --interval-beat: 1.8s; --stagger-step: 70ms;
   /* tokens.md에 없다 — 이 시안이 잡은 등장 이동 거리다 */
@@ -344,7 +348,7 @@ code {
 /* 버튼 — components.md 「Button」. 눌림은 duration-fast에 scale(0.97) */
 .btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; height: 48px; border-radius: 999px; border: 0;
+  width: 100%; height: 48px; border-radius: var(--r-lg); border: 0;
   font-size: var(--t-sm); font-weight: 500; font-family: inherit;
   background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
   transition: transform var(--d-fast) ease-out, background-color var(--d-fast) ease-out;
@@ -451,11 +455,11 @@ code {
 .askerr { margin-top: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-critical); }
 /* 세그먼트 — 고른 쪽은 흰 면과 그림자다. 브랜드 색은 이 화면에서 「보내기」 하나뿐 */
 .askseg {
-  margin-top: 6px; height: 48px; border-radius: 999px; background: var(--bg-neutral-weak);
+  margin-top: 6px; height: 48px; border-radius: var(--r-lg); background: var(--bg-neutral-weak);
   padding: 4px; display: flex; gap: 4px;
 }
 .askseg > span {
-  flex: 1; border-radius: 999px; display: grid; place-items: center;
+  flex: 1; border-radius: 10px; display: grid; place-items: center;
   font-size: var(--t-sm); font-weight: 500; color: var(--fg-neutral-subtle); cursor: pointer;
 }
 .askseg > span.on { background: var(--bg-neutral); color: var(--fg-neutral); box-shadow: var(--card-shadow); }
@@ -529,7 +533,7 @@ code {
 /* ── 03 승인 대기 ── */
 .pill {
   display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px;
-  border-radius: 999px; background: var(--bg-brand-weak); color: var(--fg-brand);
+  border-radius: 8px; background: var(--bg-brand-weak); color: var(--fg-brand);
   font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500;
 }
 .pill.off { background: var(--bg-neutral-weak); color: var(--fg-neutral-muted); }
@@ -590,7 +594,7 @@ code {
 .myrule { margin: 20px 0; }
 .afterbtns { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
 
-/* ── 04 퇴사한 뒤 — 승인 대기와 같은 틀에서 알약·도는 문구·알림 영역이 빠진 모습 ── */
+/* ── 04 퇴사한 뒤 — 승인 대기와 같은 틀에서 상태 배지·도는 문구·알림 영역이 빠진 모습 ── */
 .leavetitle { font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 600; letter-spacing: -.015em; }
 .leavesub { margin-top: 8px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 
@@ -660,11 +664,11 @@ code {
             <div class="bottomblock">
               <button class="gbtn rise" style="--i:3" type="button" aria-label="Sign in with Google">
                 <!-- 자리와 종횡비를 보기 위한 대역이다. 구현은 구글이 배포하는 signin-assets.zip의
-                     SVG(알약 rd, 「Sign in with Google」 SI)를 통째로 쓴다. 189:40 종횡비, 높이
+                     SVG(직사각형 rd, 「Sign in with Google」 SI)를 통째로 쓴다. 189:40 종횡비, 높이
                      48px에서 너비 ≈227px — 화면 폭을 안 채운다. 면·테두리·글자 색은 --google-*
                      (이 파일 안 상수, tokens.md 아님)이고 테마에 따라 갈린다 -->
                 <svg width="226.8" height="48" viewBox="0 0 189 40" role="img" aria-hidden="true">
-                  <rect x="0.5" y="0.5" width="188" height="39" rx="19.5" fill="var(--google-fill)" stroke="var(--google-stroke)"/>
+                  <rect x="0.5" y="0.5" width="188" height="39" rx="4" fill="var(--google-fill)" stroke="var(--google-stroke)"/>
                   <g transform="translate(12,11)">
                     <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/>
                     <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/>
@@ -684,7 +688,7 @@ code {
           <div class="cap-name">로그인</div>
           <p class="cap-body">남는 세로 공간을 가운데 덩이의 위아래가 반씩 나눈다. <strong>안내 문구가 승인 대기 화면을 미리 알린다</strong> — 「가입하면 관리자가 확인한 뒤에」에서 줄을 끊는다.</p>
           <p class="cap-body" style="margin-top:8px">등장은 마크·이름·설명·버튼·안내 순으로 <code>--duration-slower</code>에 <code>--stagger-step</code>이다. 버튼을 눌러 보면 <code>--duration-fast</code>로 <code>scale(0.97)</code>까지 줄어든다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>구글 버튼은 자산 통째로다 — 이 SVG는 대역이다.</strong> 구현은 <code>signin-assets.zip</code>의 알약 자산을 그대로 넣는다. 문안이 「Google 계정으로 로그인」이 아니라 <strong>「Sign in with Google」</strong>인 것은 서체 규정(영문 Google Sans Medium·한글 Roboto Medium)이 우리 서체를 허용하는지 확인할 길이 없어서 — 심사가 보는 자리는 구글이 만든 것을 그대로 둔다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>구글 버튼은 자산 통째로다 — 이 SVG는 대역이다.</strong> 구현은 <code>signin-assets.zip</code>의 직사각형 자산을 그대로 넣는다. 문안이 「Google 계정으로 로그인」이 아니라 <strong>「Sign in with Google」</strong>인 것은 서체 규정(영문 Google Sans Medium·한글 Roboto Medium)이 우리 서체를 허용하는지 확인할 길이 없어서 — 심사가 보는 자리는 구글이 만든 것을 그대로 둔다.</p>
           <p class="cap-body" style="margin-top:8px">높이 48px 고정, 너비는 자산 종횡비(189:40)대로 ≈227px다 — 화면 폭을 안 채운다. 면·테두리·글자 색(<code>--google-fill</code>·<code>--google-stroke</code>·<code>--google-text</code>)은 구글 자산의 값이라 이 파일 안 상수다, tokens.md 어디에도 없다. 라이트 화면엔 Dark 자산(어두운 면), 다크 화면엔 Light 자산(흰 면)이 선다 — 오른쪽 위 토글로 확인한다.</p>
         </figcaption>
       </figure>
@@ -1237,7 +1241,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">03 / 승인 대기</span>
       <h2>알림 영역 하나가 기기 상태를 따라 넷으로 갈린다</h2>
-      <p>알약·제목·도는 문구가 가운데 덩이고 알림 영역·가는 선·계정 줄·로그아웃이 아래 덩이다. 첫 넷은 같은 화면의 같은 자리고, 마지막 하나는 관리자가 거절한 뒤의 모습이다. 점이 뛰고 문구가 도는 것은 목업에서 실제로 돈다.</p>
+      <p>상태 배지·제목·도는 문구가 가운데 덩이고 알림 영역·가는 선·계정 줄·로그아웃이 아래 덩이다. 첫 넷은 같은 화면의 같은 자리고, 마지막 하나는 관리자가 거절한 뒤의 모습이다. 점이 뛰고 문구가 도는 것은 목업에서 실제로 돈다.</p>
     </div>
     <div class="grid">
 
@@ -1455,7 +1459,7 @@ code {
         <figcaption>
           <div class="cap-key">WAIT / REJECTED</div>
           <div class="cap-name">거절된 뒤</div>
-          <p class="cap-body">같은 화면이 다르게 선다. <strong>뛰는 점이 멈추는 게 아니라 사라지고</strong> 알약이 <code>bg.neutral-weak</code> 면의 「아직 연결 전」이 된다 — 거절된 사람은 기다리는 중이 아니라서다. 도는 문구도 안 돌고 한 줄이 선다.</p>
+          <p class="cap-body">같은 화면이 다르게 선다. <strong>뛰는 점이 멈추는 게 아니라 사라지고</strong> 상태 배지가 <code>bg.neutral-weak</code> 면의 「아직 연결 전」이 된다 — 거절된 사람은 기다리는 중이 아니라서다. 도는 문구도 안 돌고 한 줄이 선다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>알림 영역이 사라진다.</strong> 알림을 켜 봐야 올 것이 없다. 다시 보내고 나면 원래 자리에 돌아온다.</p>
           <p class="cap-body" style="margin-top:8px">아래 덩이에 버튼이 둘이 된다 — 「다시 보내기」가 primary로 서고 로그아웃이 ghost로 내려간다. <strong>왜 그랬는지는 안 적는다</strong> — 관리자가 거절에 사유를 안 달아서 화면이 지어낼 것이 없다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>차단된 사람은 이 화면을 안 본다.</strong> 구글 로그인은 되지만 앱이 <code>blocked_at</code>을 읽어 <code>/blocked</code>로 보낸다 — 그 화면은 05에 있다.</p>
@@ -1469,7 +1473,7 @@ code {
   <section>
     <div class="sec-head">
       <span class="sec-num">04 / 퇴사한 뒤</span>
-      <h2>승인 대기와 같은 틀에서 알약·도는 문구·알림 영역이 빠진다</h2>
+      <h2>승인 대기와 같은 틀에서 상태 배지·도는 문구·알림 영역이 빠진다</h2>
       <p>관리자가 퇴사 처리한 사람이 앱을 열면 대시보드 대신 이 화면이 선다. 갈 곳이 급여 하나라 탭 바가 없고, 「급여 보기」가 primary로 서고 로그아웃이 아래 ghost다. 등장 모션은 없다.</p>
     </div>
     <div class="grid">
@@ -1503,7 +1507,7 @@ code {
         <figcaption>
           <div class="cap-key">LEFT / NORMAL</div>
           <div class="cap-name">정상</div>
-          <p class="cap-body"><strong>알약이 없다.</strong> 승인 대기의 알약은 상태가 곧 바뀐다는 뜻인데 여기는 바뀔 것을 기다리는 자리가 아니다. <strong>도는 문구도 알림 영역도 없다</strong> — 기다림도 올 알림도 없다.</p>
+          <p class="cap-body"><strong>상태 배지가 없다.</strong> 승인 대기의 상태 배지는 상태가 곧 바뀐다는 뜻인데 여기는 바뀔 것을 기다리는 자리가 아니다. <strong>도는 문구도 알림 영역도 없다</strong> — 기다림도 올 알림도 없다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>등장 모션이 없다.</strong> 승인 대기의 뛰는 점도 도는 문구도 여기 없어서, 요소가 계단으로 올라오는 <code>.rise</code>를 안 걸었다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>퇴사 날짜를 안 적는다.</strong> 그만둔 날은 본인이 알고, 화면에 박으면 이 자리가 통보처럼 읽힌다.</p>
           <p class="cap-body" style="margin-top:8px">관리자가 퇴사를 되돌리면 다음에 앱을 열 때 대시보드가 그대로 뜬다 — 이 화면이 사라진 것을 따로 알리지 않는다. 그 모습은 대시보드 자체라 이 문서 밖이라 목업을 안 세웠다.</p>

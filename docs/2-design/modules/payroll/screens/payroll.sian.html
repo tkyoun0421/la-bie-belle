@@ -223,7 +223,7 @@ code {
   --t-base: 1.0625rem; --lh-base: 1.59375rem;
   --t-lg: 1.25rem; --lh-lg: 1.8125rem;
   --t-3xl: 1.875rem; --lh-3xl: 2.5rem;
-  --r-lg: 16px;
+  --r-lg: 14px;
   --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms;
 
   width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
@@ -255,16 +255,16 @@ code {
 /* 기간 세그먼트 — components.md 「세그먼트」. stats.sian.html의 pill과 같은 조각이다 */
 .segment {
   margin-top: 8px; /* 앱바와 세그먼트 사이 mt-2 */
-  position: relative; display: flex; background: var(--bg-neutral-weak); border-radius: 999px;
+  position: relative; display: flex; background: var(--bg-neutral-weak); border-radius: var(--r-lg);
   padding: 4px; min-height: 44px; align-items: center;
 }
 .segment .pill {
   position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3);
-  background: var(--bg-neutral); border-radius: 999px; transition: transform var(--d-fast) ease-out;
+  background: var(--bg-neutral); border-radius: 10px; transition: transform var(--d-fast) ease-out;
 }
 .segcell {
   position: relative; z-index: 1; flex: 1 1 0; display: flex; align-items: center; justify-content: center;
-  padding: 8px 0; border-radius: 999px; font-size: var(--t-sm); line-height: var(--lh-sm);
+  padding: 8px 0; border-radius: 10px; font-size: var(--t-sm); line-height: var(--lh-sm);
   font-weight: 500; color: var(--fg-neutral-subtle);
 }
 .segcell.on { color: var(--fg-neutral); }
