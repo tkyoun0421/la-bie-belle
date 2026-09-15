@@ -4,6 +4,7 @@ sources:
   - ../../2-design/modules/account/screens/login.md#거절된-뒤
   - ../../2-design/modules/account/screens/login.md#퇴사한-뒤-짜임
   - ../../2-design/modules/account/screens/login.md#차단된-뒤-짜임
+  - ../../2-design/modules/account/screens/login.md#읽기-실패-짜임
   - ../../2-design/modules/account/screens/login.md#프로필-작성-문안
   - ../../2-design/modules/account/design.md#프로필-제출연락처사진
   - ../../2-design/modules/account/design.md#사진-저장
@@ -98,7 +99,7 @@ sources:
 
 ### AC-10
 
-**`/left`와 `/blocked`가 문서대로 선다.** `src/screens/left/ui/left-screen.tsx`가 [퇴사한 뒤 짜임](../../2-design/modules/account/screens/login.md#퇴사한-뒤-짜임) 순서(제목 「근무를 마치셨어요」 → 「지난 급여는 계속 볼 수 있어요」 → 「급여 보기」 primary → 가는 선 → 계정 한 줄 → 로그아웃 ghost)로 선다. 등장 모션 없음. 「급여 보기」는 `/payroll`로 간다 — 그 경로는 급여 task가 만든다([리스크](#리스크전환되돌리기)). `src/screens/blocked/ui/blocked-screen.tsx`는 [차단된 뒤 짜임](../../2-design/modules/account/screens/login.md#차단된-뒤-짜임) 순서(제목 「이 계정은 지금 이용할 수 없어요」 → 「궁금한 점은 관리자에게 물어보세요」 → 가는 선 → 계정 한 줄 → 로그아웃 ghost)로 선다 — 퇴사 화면에서 「급여 보기」만 뺀 것이라 틀을 같이 쓴다.
+**`/left`와 `/blocked`가 문서대로 선다.** `src/screens/left/ui/left-screen.tsx`가 [퇴사한 뒤 짜임](../../2-design/modules/account/screens/login.md#퇴사한-뒤-짜임) 순서(제목 「근무를 마치셨어요」 → 「지난 급여는 계속 볼 수 있어요」 → 「급여 보기」 primary → 가는 선 → 계정 한 줄 → 로그아웃 ghost)로 선다. 등장 모션 없음. 「급여 보기」는 `/payroll`로 간다 — 그 경로는 급여 task가 만든다([리스크](#리스크전환되돌리기)). `src/screens/blocked/ui/blocked-screen.tsx`는 [차단된 뒤 짜임](../../2-design/modules/account/screens/login.md#차단된-뒤-짜임) 순서(제목 「이 계정은 지금 이용할 수 없어요」 → 「궁금한 점은 관리자에게 물어보세요」 → 가는 선 → 계정 한 줄 → 로그아웃 ghost)로 선다 — 퇴사 화면에서 「급여 보기」만 뺀 것이라 틀을 같이 쓴다. 같은 틀의 셋째가 [읽기 실패 짜임](../../2-design/modules/account/screens/login.md#읽기-실패-짜임)이다 — 게이트가 `ensure_profile()`이나 `['profile']` 읽기에 실패하면 `src/features/auth/ui/gate-failed-screen.tsx`가 제목 「불러오지 못했어요」 → 「연결을 확인하고 다시 시도해 주세요」 → 「다시 시도」 primary(누르면 버튼 안 스피너, `refetch`) → 가는 선 → 계정 한 줄 → 로그아웃 순서로 선다. 성공하면 원래 목적지가 뜨고 실패하면 그대로다.
 
 ### AC-11
 
@@ -110,7 +111,7 @@ sources:
 
 - unit: AC-06의 세 모습 판정, AC-07의 스텝 판정·굳는 판정·하이픈·여덟 자리 → 날짜·굳은 글 표기·보내기 가능 여부, `resize-image`의 크기 계산(canvas는 모의), `DomainError`·`TransportError` 가르기, 코드 목록 대조
 - integration: `submit_profile`의 `invalid_gender`·`invalid_phone`, `get-my-private-profile`(본인 행·없으면 null), `submit-profile` dal의 오류 가르기(`already_submitted` → `DomainError`), Storage 정책(자기 폴더 upload 성공, 남의 폴더 실패, 공개 URL 읽기), `update-my-photo`
-- e2e: 새 사용자가 `/pending`을 열면 프로필 작성이 뜨고 다섯을 채워 보내면 승인 대기로 바뀐다(DB에 `submitted_at`·`profile_private` 행); 거절된 사용자(`createRejectedUser` 헬퍼)가 열면 「거절된 뒤」가 뜨고 「다시 보내기」로 지난 값이 든 폼이 선다; 퇴사자가 `/left`를 열면 제목과 「급여 보기」가 보인다; 차단된 사용자가 `/blocked`를 열면 제목과 로그아웃만 보인다. 기존 `pending.spec.ts`는 시드가 프로필을 안 보낸 사용자라 지금 단언(승인 대기 화면)이 깨진다 — 시드를 「보낸 사용자」로 바꾸는 것만 허용하고 단언은 안 바꾼다
+- e2e: 새 사용자가 `/pending`을 열면 프로필 작성이 뜨고 다섯을 채워 보내면 승인 대기로 바뀐다(DB에 `submitted_at`·`profile_private` 행); 거절된 사용자(`createRejectedUser` 헬퍼)가 열면 「거절된 뒤」가 뜨고 「다시 보내기」로 지난 값이 든 폼이 선다; 퇴사자가 `/left`를 열면 제목과 「급여 보기」가 보인다; 차단된 사용자가 `/blocked`를 열면 제목과 로그아웃만 보인다; `page.route`로 `ensure_profile` 호출을 막고 열면 「불러오지 못했어요」가 뜨고, 막은 것을 풀고 「다시 시도」를 누르면 원래 목적지가 뜬다. 기존 `pending.spec.ts`는 시드가 프로필을 안 보낸 사용자라 지금 단언(승인 대기 화면)이 깨진다 — 시드를 「보낸 사용자」로 바꾸는 것만 허용하고 단언은 안 바꾼다
 
 ### AC-13
 
@@ -127,9 +128,9 @@ sources:
 | `src/features/auth/use-auth-gate.ts`·`ui/auth-gate.tsx`·`__tests__/` | 컨텍스트에 `userId`·프로필 행 | AC-05 |
 | `src/screens/pending/model/*.ts`·`__tests__/` · `ui/pending-screen.tsx`·`ui/profile-form-screen.tsx`(이름은 구현이 정한다) | 세 모습 판정, 폼 계산, 화면 둘 | AC-06~AC-09 |
 | `src/shared/lib/resize-image.ts`·`__tests__/` | 512px 정사각 webp | AC-08 |
-| `src/screens/left/ui/left-screen.tsx` · `src/app/left/page.tsx` · `src/screens/blocked/ui/blocked-screen.tsx` · `src/app/blocked/page.tsx` | 퇴사한 뒤·차단된 뒤 화면 | AC-10 |
+| `src/screens/left/ui/left-screen.tsx` · `src/app/left/page.tsx` · `src/screens/blocked/ui/blocked-screen.tsx` · `src/app/blocked/page.tsx` · `src/features/auth/ui/gate-failed-screen.tsx`(게이트에서 부른다) | 퇴사한 뒤·차단된 뒤·읽기 실패 화면 | AC-10 |
 | `src/shared/ui/input.tsx`·`segmented.tsx`·`spinner.tsx`(이름은 shadcn 관례) | 공용 UI | AC-11 |
-| `tests/integration/postgres.ts` · `tests/e2e/pending.spec.ts`(시드만) · `tests/e2e/profile-form.spec.ts`·`left.spec.ts`·`blocked.spec.ts` | 거절 헬퍼, e2e | AC-12 |
+| `tests/integration/postgres.ts` · `tests/e2e/pending.spec.ts`(시드만) · `tests/e2e/profile-form.spec.ts`·`left.spec.ts`·`blocked.spec.ts`·`gate-failed.spec.ts` | 거절 헬퍼, e2e | AC-12 |
 
 ## 구현 순서
 
@@ -160,14 +161,13 @@ sources:
 | AC-02·AC-03·AC-04 | integration `src/entities/profile/dals/__tests__/*.integration.test.ts`(예정) | `pnpm test:integration:run`, 로컬 Supabase(storage-api 포함) | `invalid_gender`·`invalid_phone`, 자기 폴더만 쓰기, 공개 URL 읽기 |
 | AC-05 | unit `src/features/auth/__tests__/use-auth-gate.test.ts` | `pnpm test` | 컨텍스트 값에 `userId`·프로필 행 |
 | AC-06·AC-07·AC-08 | unit `src/screens/pending/model/__tests__/`(예정), `src/shared/lib/__tests__/resize-image.test.ts`(예정) | `pnpm test` | 세 모습, 칸 검사, 하이픈, 날짜, 크기 계산 |
-| AC-07·AC-08·AC-09·AC-10 | e2e `tests/e2e/profile-form.spec.ts`(예정)·`left.spec.ts`·`blocked.spec.ts` | `pnpm build && pnpm e2e` | 보내면 승인 대기, 거절된 뒤 다시 보내기, 사진 바꾸기, 퇴사·차단 화면 |
+| AC-07·AC-08·AC-09·AC-10 | e2e `tests/e2e/profile-form.spec.ts`(예정)·`left.spec.ts`·`blocked.spec.ts`·`gate-failed.spec.ts` | `pnpm build && pnpm e2e` | 보내면 승인 대기, 거절된 뒤 다시 보내기, 사진 바꾸기, 퇴사·차단·읽기 실패 화면 |
 | AC-11 | e2e 위 spec | 위와 같다 | 컴포넌트가 화면에 선다 |
 | AC-13 | 전부 + `sian-auditor` | 위 명령 전부 | 초록, 시안 어긋남 없음 |
 
 ## 범위 밖
 
-- 게이트 읽기 실패의 모습 — [login.md](../../2-design/modules/account/screens/login.md#아직-안-정한-것)에 열려 있다
-- 승인된 뒤 프로필을 고치는 화면(`/me`)과 연락처 직접 갱신 — 다른 task
+- 승인된 뒤 프로필을 고치는 화면(`/me`)과 연락처 직접 갱신 — [profile-screen](profile-screen.md)
 - 알림 켜기의 실제 푸시 구독 — `notification-first`
 - `/payroll` — 급여 task
 - 옛 사진 파일 정리
