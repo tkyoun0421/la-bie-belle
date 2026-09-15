@@ -4,6 +4,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import {
   createSignedInUser,
   type SignedInUser,
+  type SignedInUserWithoutProfile,
 } from "@tests/integration/supabase";
 
 type LocalSupabase = {
@@ -60,11 +61,11 @@ function toPlaywrightSameSite(
 
 export type SeededSession = SignedInUser;
 
-export async function seedSessionForUser(
+export async function seedSessionForUser<T extends SignedInUserWithoutProfile>(
   context: BrowserContext,
   baseURL: string,
-  user: SignedInUser,
-): Promise<SeededSession> {
+  user: T,
+): Promise<T> {
   const { data: sessionData, error: sessionError } =
     await user.client.auth.getSession();
   if (sessionError || !sessionData.session) {
