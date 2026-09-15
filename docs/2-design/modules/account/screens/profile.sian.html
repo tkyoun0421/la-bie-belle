@@ -30,6 +30,12 @@
     없는 자리라 시트 안쪽 리듬(24px, 8px)에 맞춰 임의로 쟀다.
   · 사진 예시. 저장소에 이미지를 안 넣어 뉴트럴 두 단계의 그러데이션으로 흉내 냈다.
     연락처·이메일 예시 값도 자리를 재려고 넣은 더미다.
+  · 화면 고르기 체크 아이콘의 크기. components.md는 「체크 아이콘」이라고만 적어 크기가
+    없다. 다른 줄의 화살표(rchev)와 같은 18px로 맞췄다 — 당겨 쓴 것이다.
+  · 화면 고르기 줄과 연락처·사진 시트 줄 사이의 여백 리듬(제목 아래 16px). profile.md
+    여백표에 없는 자리라 사진 시트의 plist 리듬을 그대로 이었다.
+  · 사진 올리기 실패 오류 줄과 줄 목록 사이 여백. profile.md 여백표에 없는 자리라
+    연락처 시트의 도움말 여백(8px)에 가깝게 12px로 쟀다.
 -->
 <title>나 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -235,6 +241,7 @@ code {
   --fg-neutral-subtle: var(--palette-neutral-700);
   --fg-neutral-contrast: var(--palette-neutral-00);
   --fg-neutral-disabled: var(--palette-neutral-700);
+  --fg-brand: var(--palette-brand-800);
   --fg-brand-contrast: var(--palette-neutral-00);
   --fg-critical: var(--palette-critical-800);
   --fg-positive-contrast: var(--palette-positive-400);
@@ -280,7 +287,7 @@ code {
 .phead { display: flex; flex-direction: column; align-items: center; margin-top: 24px; text-align: center; }
 .avwrap { position: relative; width: 88px; height: 88px; }
 .av {
-  width: 100%; height: 100%; border-radius: 999px;
+  display: block; width: 100%; height: 100%; border-radius: 999px;
   border: 1px solid var(--stroke-neutral); box-sizing: border-box;
   background: linear-gradient(150deg, var(--palette-neutral-300), var(--palette-neutral-500));
 }
@@ -312,7 +319,7 @@ code {
 /* 스위치 — 이 앱에서 처음 서는 조각. tokens.md에 규격이 없어 이 파일이 쟀다(44×26, 손잡이 20).
    색은 이 화면의 "브랜드 색이 없다" 규칙을 이어 뉴트럴로만 그렸다 */
 .switchslot { margin-left: auto; flex: 0 0 auto; }
-.switch { width: 44px; height: 26px; border-radius: 999px; position: relative; box-sizing: border-box; }
+.switch { display: inline-block; width: 44px; height: 26px; border-radius: 999px; position: relative; box-sizing: border-box; }
 .switch.off { background: var(--bg-neutral-weak-pressed); border: 1px solid var(--stroke-neutral-muted); }
 .switch.on { background: var(--bg-neutral-solid); border: 1px solid transparent; }
 .switch .thumb {
@@ -394,6 +401,19 @@ code {
 }
 .prow2:first-child { border-top: 0; }
 
+/* 화면 고르기 시트 — 하나 고르는 목록(components.md). 고른 줄 오른쪽에 체크(fg.brand), 배경은 안 바뀐다 */
+.crow {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  text-align: left; background: none; border: 0; border-top: 1px solid var(--stroke-neutral);
+  padding: 16px 2px; font-size: var(--t-base); line-height: var(--lh-base); color: var(--fg-neutral);
+  font-family: inherit; cursor: pointer;
+}
+.crow:first-child { border-top: 0; }
+.crow .cchk { flex: 0 0 auto; margin-left: 12px; color: var(--fg-brand); display: grid; place-items: center; }
+
+/* 사진 올리기 실패 — 시트 안 오류 한 줄. 연락처 시트의 fhelp.errortext와 같은 값이다 */
+.sheeterror { margin-top: 12px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-critical); }
+
 /* Dialog — 알림 끄기 확인. 바텀시트가 아니라 가운데 뜬다(components.md 「Dialog와 바텀시트」) */
 .dialogwrap {
   position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center;
@@ -465,7 +485,7 @@ code {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                 </button>
               </div>
-              <div class="pname">윤태관</div>
+              <div class="pname">이도윤</div>
               <div class="prole">근무자</div>
               <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
             </div>
@@ -484,6 +504,11 @@ code {
               <div class="prow">
                 <span class="rl">알림</span>
                 <span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span>
+              </div>
+              <div class="prow interactive">
+                <span class="rl">화면</span>
+                <span class="rv">기기 설정대로</span>
+                <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
               </div>
             </div>
 
@@ -541,6 +566,11 @@ code {
                 <span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span>
               </div>
               <div class="prow interactive">
+                <span class="rl">화면</span>
+                <span class="rv">기기 설정대로</span>
+                <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="prow interactive">
                 <span class="rl">관리자 모드</span>
                 <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
               </div>
@@ -587,7 +617,7 @@ code {
               <div class="avwrap"><span class="av"></span>
                 <button class="pencil" type="button" aria-label="사진 고치기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
               </div>
-              <div class="pname">윤태관</div><div class="prole">근무자</div>
+              <div class="pname">이도윤</div><div class="prole">근무자</div>
               <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
             </div>
             <div class="rows locked">
@@ -598,6 +628,7 @@ code {
             <div class="rows">
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
+              <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -637,7 +668,7 @@ code {
               <div class="avwrap"><span class="av"></span>
                 <button class="pencil" type="button" aria-label="사진 고치기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
               </div>
-              <div class="pname">윤태관</div><div class="prole">근무자</div>
+              <div class="pname">이도윤</div><div class="prole">근무자</div>
               <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
             </div>
             <div class="rows locked">
@@ -648,6 +679,7 @@ code {
             <div class="rows">
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
+              <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -687,7 +719,7 @@ code {
               <div class="avwrap"><span class="av"></span>
                 <button class="pencil" type="button" aria-label="사진 고치기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
               </div>
-              <div class="pname">윤태관</div><div class="prole">근무자</div>
+              <div class="pname">이도윤</div><div class="prole">근무자</div>
               <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
             </div>
             <div class="rows locked">
@@ -698,6 +730,7 @@ code {
             <div class="rows">
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
+              <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -749,7 +782,7 @@ code {
               <div class="avwrap"><span class="av"></span>
                 <button class="pencil" type="button" aria-label="사진 고치기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
               </div>
-              <div class="pname">윤태관</div><div class="prole">근무자</div>
+              <div class="pname">이도윤</div><div class="prole">근무자</div>
               <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
             </div>
             <div class="rows locked">
@@ -760,6 +793,7 @@ code {
             <div class="rows">
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
+              <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -806,6 +840,7 @@ code {
             <div class="rows">
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0002</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
+              <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -825,6 +860,54 @@ code {
           <div class="cap-key">PHOTO / GOOGLE</div>
           <div class="cap-name">구글 사진일 때 — 줄 둘</div>
           <p class="cap-body">지금 사진이 이미 구글 계정 사진이라 <strong>「구글 사진으로」가 없다.</strong> 되돌릴 데가 없어서다. 구글이 사진을 안 준 계정이라 목록과 같은 <code>bg.neutral-weak</code> 원에 이름 첫 글자가 큰 사이즈(88px)로 선다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>09:21</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="title">나</span></div>
+          <div class="body">
+            <div class="phead">
+              <div class="avwrap"><span class="av"></span>
+                <button class="pencil" type="button" aria-label="사진 고치기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+              </div>
+              <div class="pname">이도윤</div><div class="prole">근무자</div>
+              <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
+            </div>
+            <div class="rows locked">
+              <div class="prow"><span class="rl">성별</span><span class="rv">여성</span></div>
+              <div class="prow"><span class="rl">생년월일</span><span class="rv num">1998년 11월 20일</span></div>
+            </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+              <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
+              <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="stitle">사진</div>
+              <div class="plist">
+                <button class="prow2" type="button">사진 고르기</button>
+                <button class="prow2" type="button">구글 사진으로</button>
+                <button class="prow2" type="button">닫기</button>
+              </div>
+              <div class="sheeterror">사진을 올리지 못했어요. 다시 골라 주세요</div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">PHOTO / UPLOAD FAILED</div>
+          <div class="cap-name">올리기 실패 — 시트가 안 닫히고 오류가 선다</div>
+          <p class="cap-body">사진 고르기까지는 했지만 올리기가 실패했다. <strong>시트가 그대로 열려 있고 줄 목록 아래에 오류 한 줄이 선다</strong> — 연락처 저장 실패와 같은 방식이다. 문구 「사진을 올리지 못했어요. 다시 골라 주세요」는 <code>fg.critical</code> <code>text-xs</code>다. 너무 큰 파일은 브라우저가 줄이니 이 오류는 통신이 끊긴 자리뿐이다.</p>
         </figcaption>
       </figure>
 
@@ -852,7 +935,7 @@ code {
               <div class="avwrap"><span class="av"></span>
                 <button class="pencil" type="button" aria-label="사진 고치기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
               </div>
-              <div class="pname">윤태관</div><div class="prole">근무자</div>
+              <div class="pname">이도윤</div><div class="prole">근무자</div>
               <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
             </div>
             <div class="rows locked">
@@ -863,6 +946,7 @@ code {
             <div class="rows">
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
+              <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -897,7 +981,7 @@ code {
               <div class="avwrap"><span class="av"></span>
                 <button class="pencil" type="button" aria-label="사진 고치기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
               </div>
-              <div class="pname">윤태관</div><div class="prole">근무자</div>
+              <div class="pname">이도윤</div><div class="prole">근무자</div>
               <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
             </div>
             <div class="rows locked">
@@ -913,6 +997,11 @@ code {
               <div class="permnote">
                 <div class="pt">알림</div>
                 <div class="pb">브라우저에서 알림을 껐어요. 설정에서 다시 켜주세요</div>
+              </div>
+              <div class="prow interactive">
+                <span class="rl">화면</span>
+                <span class="rv">기기 설정대로</span>
+                <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
               </div>
             </div>
             <div class="spacer"></div>
@@ -931,7 +1020,69 @@ code {
   <!-- 05 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">05 / 끝난 뒤</span>
+      <span class="sec-num">05 / 화면 고르기</span>
+      <h2>고르는 즉시 바뀌고 닫힌다 — 저장 버튼도 토스트도 없다</h2>
+      <p>줄 셋 — 기기 설정대로·밝게·어둡게. 지금 값인 줄 오른쪽에 체크(<code>fg.brand</code>)가 선다. 「하나 고르는 목록」이라 라디오가 아니라 ListRow고 배경은 안 바뀐다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>09:25</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="title">나</span></div>
+          <div class="body">
+            <div class="phead">
+              <div class="avwrap"><span class="av"></span>
+                <button class="pencil" type="button" aria-label="사진 고치기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+              </div>
+              <div class="pname">이도윤</div><div class="prole">근무자</div>
+              <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
+            </div>
+            <div class="rows locked">
+              <div class="prow"><span class="rl">성별</span><span class="rv">여성</span></div>
+              <div class="prow"><span class="rl">생년월일</span><span class="rv num">1998년 11월 20일</span></div>
+            </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+              <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
+              <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="stitle">화면</div>
+              <div class="plist">
+                <button class="crow" type="button">
+                  기기 설정대로
+                  <span class="cchk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></span>
+                </button>
+                <button class="crow" type="button">밝게</button>
+                <button class="crow" type="button">어둡게</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">THEME / PICK</div>
+          <div class="cap-name">화면 고르기 — 지금 값에 체크</div>
+          <p class="cap-body">기본값 「기기 설정대로」 줄 오른쪽에 체크가 선다. 저장 버튼이 없다 — <strong>누르는 즉시 그 줄로 화면이 바뀌고 시트가 닫힌다.</strong> 토스트도 없다, 바뀐 것이 화면 전체라 따로 말할 것이 없어서다. 체크 아이콘은 <code>fg.brand</code>고 크기는 문서에 없어 다른 줄의 화살표와 같은 18px로 맞췄다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">06 / 끝난 뒤</span>
       <h2>시트가 닫히고 토스트 하나</h2>
       <p>연락처를 저장하거나 사진을 바꾸면 시트가 바로 닫히고 성공 토스트가 뜬다. 탭 바가 항상 있는 화면이라 토스트를 그 위로 올렸다.</p>
     </div>
@@ -949,7 +1100,7 @@ code {
               <div class="avwrap"><span class="av"></span>
                 <button class="pencil" type="button" aria-label="사진 고치기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
               </div>
-              <div class="pname">윤태관</div><div class="prole">근무자</div>
+              <div class="pname">이도윤</div><div class="prole">근무자</div>
               <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
             </div>
             <div class="rows locked">
@@ -960,6 +1111,7 @@ code {
             <div class="rows">
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0009</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
+              <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
             <button class="btn ghost logout" type="button">로그아웃</button>
@@ -999,7 +1151,7 @@ code {
               <div class="avwrap"><span class="av"></span>
                 <button class="pencil" type="button" aria-label="사진 고치기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
               </div>
-              <div class="pname">윤태관</div><div class="prole">근무자</div>
+              <div class="pname">이도윤</div><div class="prole">근무자</div>
               <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
             </div>
             <div class="rows locked">
@@ -1010,6 +1162,7 @@ code {
             <div class="rows">
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
+              <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
             <button class="btn ghost logout" type="button">로그아웃</button>
