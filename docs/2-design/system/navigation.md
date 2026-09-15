@@ -37,6 +37,7 @@
 | `/admin/applications` | 관리자만 | 근무 신청 모아보기. `?month=` · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md#근무-신청-모아보기) |
 | `/admin/approvals` | 관리자만 | 승인할 일 · [`approvals.md`](screens/approvals.md) |
 | `/admin/members/pending` | 관리자만 | 가입 대기 · [`members-pending.md`](../modules/account/screens/members-pending.md) |
+| `/admin/members/blocked` | 관리자만 | 차단한 사람. 뒤로는 가입 대기 · [`members-pending.md`](../modules/account/screens/members-pending.md#차단한-사람-짜임) |
 | `/admin/members` | 관리자만 | 직원 · [`members.md`](../modules/account/screens/members.md) |
 | `/admin/wages` | 관리자만 | 시급 · [`wages.md`](../modules/payroll/screens/wages.md) |
 | `/admin/qr` | 관리자만 | QR · [`qr.md`](../modules/attendance/screens/qr.md) |
