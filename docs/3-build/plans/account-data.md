@@ -54,7 +54,7 @@ sources:
 
 - `ensure_profile()` — 자기 프로필 행이 없으면 `user_id`만 채운 행을 넣고, 있으면 아무것도 안 한다. 두 번 불러도 행이 하나다. 세션이 없으면 `not_allowed`로 던진다
 - `submit_profile(display_name text, phone text, birth_date date, gender text)` — `profiles.display_name`과 `submitted_at`을 채우고 `profile_private` 행을 넣는다(이미 있으면 갱신). 이미 제출됐고 `rejected_at`이 비어 있으면 `already_submitted`로 던진다 — 거절된 뒤에는 다시 받는다. 거절 뒤 재제출은 `rejected_at`을 비운다
-- `update_my_photo(photo_url text)` — 자기 행의 `photo_url`만 바꾼다. 인자는 주소 문자열이다 — 사진을 어디 두는지는 [design.md](../../2-design/modules/account/design.md#q-01)가 열려 있고, 이 task는 주소를 받아 쓰는 자리까지만 만든다
+- `update_my_photo(photo_url text)` — 자기 행의 `photo_url`만 바꾼다. 인자는 주소 문자열이다 — 사진을 어디 두는지는 [design.md](../../2-design/modules/account/design.md#사진-저장)가 열려 있고, 이 task는 주소를 받아 쓰는 자리까지만 만든다
 
 ### AC-05
 
@@ -129,7 +129,7 @@ sources:
 - **트리거가 빠진 자리** — 로그인 뒤 프로필이 생기는 자리를 확인한다(AC-08). `ensure_profile()`을 부르는 자리가 서기 전까지 로그인만 한 사람에게는 프로필 행이 없다
 - **기존 integration 테스트의 전제** — 「남의 프로필은 한 행도 읽지 못한다」가 뒤집힌다(AC-07). 고친 테스트가 새 규칙을 다시 적는 것이지 옛 규칙을 통과시키려고 단언을 낮춘 것이 아니어야 한다
 - **정본과 이 plan이 갈리는 자리** — [design.md](../../2-design/modules/account/design.md#가입-승인거절차단해제)는 승인이 `wage_rates` 첫 행을 같이 넣는다고 정했고 이 plan은 `profiles`만 만진다(AC-05). 그 표가 없어서 벌어진 간격이고 급여 task가 닫는다
-- **사진 저장 위치** — [design.md](../../2-design/modules/account/design.md#q-01)가 열린 채라 `update_my_photo`는 주소를 받아 쓰는 자리까지만 선다(AC-04). 저장 위치가 정해지면 그 주소를 만드는 자리가 따로 온다
+- **사진 저장 위치** — [design.md](../../2-design/modules/account/design.md#사진-저장)가 열린 채라 `update_my_photo`는 주소를 받아 쓰는 자리까지만 선다(AC-04). 저장 위치가 정해지면 그 주소를 만드는 자리가 따로 온다
 
 ## 검증 방법
 
@@ -149,6 +149,6 @@ sources:
 - `block_member`·`unblock_member`·`set_role`·`set_display_name`·`link_account`·`mark_leave`·`undo_leave`. 열은 이번에 만들지만 함수는 그 화면을 그리는 task가 만든다. 1차 릴리스 목록에 없다([roadmap](../../1-plan/roadmap.md#릴리스-목록))
 - `erase_profiles()`와 pg_cron 등록, Edge Function `erase-account`. 퇴사가 1년 지난 데이터가 아직 없다
 - `wage_rates` 표와 `approve_member`의 시급 행. 급여 task다
-- 사진 저장 위치와 업로드 경로. `update_my_photo`가 받는 주소를 누가 만드는지는 [design.md](../../2-design/modules/account/design.md#q-01)가 연 채다
+- 사진 저장 위치와 업로드 경로. `update_my_photo`가 받는 주소를 누가 만드는지는 [design.md](../../2-design/modules/account/design.md#사진-저장)가 연 채다
 - 타입 생성(`pnpm types`). 별도 task다
 - 관리자 화면. 함수만 만들고 부르는 화면은 그 task가 만든다
