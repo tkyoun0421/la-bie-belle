@@ -112,7 +112,7 @@ declare
   caller uuid := auth.uid();
 begin
   if caller is null then
-    raise exception using message = 'forbidden';
+    raise exception using message = 'not_allowed';
   end if;
 
   insert into public.profiles (user_id)
@@ -140,7 +140,7 @@ begin
   where user_id = auth.uid();
 
   if not found then
-    raise exception using message = 'forbidden';
+    raise exception using message = 'not_allowed';
   end if;
 
   if caller_profile.submitted_at is not null and caller_profile.rejected_at is null then
@@ -177,7 +177,7 @@ declare
   caller uuid := auth.uid();
 begin
   if caller is null then
-    raise exception using message = 'forbidden';
+    raise exception using message = 'not_allowed';
   end if;
 
   update public.profiles
@@ -194,7 +194,7 @@ create function public.approve_member(profile_id uuid)
 as $$
 begin
   if not public.is_admin() then
-    raise exception using message = 'forbidden';
+    raise exception using message = 'not_allowed';
   end if;
 
   update public.profiles
@@ -213,7 +213,7 @@ create function public.reject_member(profile_id uuid)
 as $$
 begin
   if not public.is_admin() then
-    raise exception using message = 'forbidden';
+    raise exception using message = 'not_allowed';
   end if;
 
   if exists (

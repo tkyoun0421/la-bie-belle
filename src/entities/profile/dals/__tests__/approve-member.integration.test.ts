@@ -43,7 +43,7 @@ describe("approve_member", () => {
     expect(data?.rejected_at).toBeNull();
   });
 
-  it("관리자가 아니면 forbidden으로 막힌다", async () => {
+  it("관리자가 아니면 not_allowed으로 막힌다", async () => {
     const nonAdmin = await createSignedInUser();
     const applicant = await createSignedInUser();
 
@@ -51,6 +51,6 @@ describe("approve_member", () => {
       profile_id: applicant.profileId,
     });
 
-    expect(error?.message).toBe("forbidden");
+    expect(error?.message).toBe("not_allowed");
   });
 });
