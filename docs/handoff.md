@@ -6,7 +6,7 @@
 
 ## 다음 작업
 
-[`profile-form`](backlog.md) — **프로필 작성 폼을 만든다** — plan부터 쓴다(`3-build/plans/profile-form.md`, 작성법은 [3-build/README.md](3-build/README.md)). 정본은 [login.md](2-design/modules/account/screens/login.md#프로필-작성)·[퇴사한 뒤](2-design/modules/account/screens/login.md#퇴사한-뒤)와 [account/design.md](2-design/modules/account/design.md#행위별-구현-계약)의 `submit_profile`. `auth-entry`(#363)가 게이트 기계를 세웠으니 `/pending`은 지금 컨텍스트(`useAuthGateValue`)에서 이메일·사진을 받고, `['profile']`이 `submitted_at`·`rejected_at`을 이미 든다. 화면 시안은 `login.sian.html`이 있다 — 시안이 문서와 맞는지 `sian-auditor`로 먼저 본다.
+[`profile-form`](backlog.md) — **프로필 작성 폼을 만든다** — [plan](3-build/plans/profile-form.md)이 섰다(#366). 미정 넷(성별·생년월일·연락처 꼴, 사진 저장 위치)은 닫혔고 시안도 따라갔다. 파이프라인은 `test-planner` → writer 셋 → `implementer` → `pr-diff`. 순서는 plan 「구현 순서」 — 오류 기계 → 마이그레이션 → dals → 컨텍스트 → 공용 UI → 화면. worktree에 실제 `node_modules`를 깔고(`pnpm install --frozen-lockfile`) 돈다.
 
 같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
 
