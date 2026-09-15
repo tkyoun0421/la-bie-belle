@@ -6,7 +6,7 @@
 
 ## 다음 작업
 
-[`auth-entry`](backlog.md) — **인증 진입을 전환한다** — 계정 데이터 구조가 섰다(#360). 트리거가 빠져 앱이 `ensure_profile()`을 부르기 전까지 실제 로그인으로는 프로필 행이 안 생기니 이 task가 먼저다. plan이 없다 — `3-build/README.md`의 틀로 `3-build/plans/auth-entry.md`를 쓴다. 정본은 [account/design.md](2-design/modules/account/design.md#첫-진입과-게이트)와 「코드와의 차이」 표의 `auth-entry` 행 둘, [system/runtime.md](2-design/system/runtime.md#캐시-네-계층). `types-generation`도 `ready`라 같이 잡을 수 있다.
+[`auth-entry`](backlog.md) — **인증 진입을 전환한다** — [plan](3-build/plans/auth-entry.md)이 섰다. 범위는 게이트 기계만이다 — `proxy.ts`, 목적지 다섯, 껍데기의 `ensure_profile()` → `['profile']` 판정, 임시 `/blocked`·`/left`. 프로필 작성 폼과 화면 짜임은 다음 task다. 파이프라인은 `test-planner` → writer 셋 → `implementer` → `pr-diff`.
 
 시안 갱신 후보는 backlog의 `sian-sync` candidate 행이 든다(#358).
 
