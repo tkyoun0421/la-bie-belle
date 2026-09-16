@@ -1,0 +1,1476 @@
+<!--
+  리허설 화면 시안 — 사람이 보고 고른 결과다.
+
+  값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../../../design-system/tokens.md이고,
+  무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 rehearsal.md다.
+  셋과 이 파일이 어긋나면 저 둘이 이긴다.
+
+  이 파일이 맡는 것은 글로 안 남는 것들이다 — 시트가 올라오는 타이밍, 날짜 칸이
+  달력에서 시트로 이어지는 모습, 375픽셀에서 시트 필드가 잡아먹는 높이. 구현할 때
+  이 셋을 같이 연다.
+
+  퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
+  앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../../../design-system/README.md의 「퍼블리싱」에 있다.
+
+  3차 개정 — 화면이 목록에서 달력으로 통째로 바뀌었다. rehearsal.md가 다시 쓰였고
+  이 파일도 처음부터 다시 그렸다. 옛 판(목록 + 하단 고정 버튼 + 시트 안 날짜 칸)은
+  전부 버렸다 — 새 문서에 그 짜임이 없다.
+
+  4차 개정 — rehearsal.md가 요일 오탈자를 고쳤다(10월 11일→10월 10일, 10월 8일
+  (수)→10월 8일(목)). 이 파일의 모든 인스턴스를 맞춰 고쳤고, 처음에 빠졌던 달력
+  「읽는 중」·「못 읽음」 두 상태를 더했다. 날 시트 짜임 ASCII도 같이 바뀌어
+  「든 날 줄 둘 이상」의 두 줄을 건수 줄+시각 줄 조합(이름 없이)으로 다시 그렸다.
+
+  5차 개정 — 감사가 넷을 잡았다. 「다시 시도」가 secondary였는데 색 표는 ghost라
+  `.btn.ghost`(배경 없음·글자 fg.neutral-muted)를 components.md 「Button」 표를
+  보고 새로 정의해 바꿨다. 겹침 문구(`.overlap`)와 갈래 어긋남 알림 줄(`.mismatch`)
+  에 붙어 있던 `font-weight: 500`을 뺐다 — 글자 표는 `text-xs`만 준다. 관리자가
+  보는 빈 날(문안 표 「빈 날 — 관리자」)을 목업 하나로 더했다 — 근무자 빈 날과
+  문구가 다르고(「이 날 넣은 사람이 없어요」) 「리허설 넣기」가 없다.
+
+  담은 상태 열여덟 — 달력 5(정상·빈 달·관리자·읽는 중·못 읽음), 날 시트 6(빈 날·
+  든 날 줄 하나·든 날 줄 둘 이상·건수 갈래로 이미 넣음·관리자 든 날·관리자 빈 날),
+  넣는 시트 5(시각 갈래·건수 갈래·겹침·갈래 어긋남·저장 실패), 고치는 시트 1,
+  지우기 확인 Dialog 1. 더해 모션 데모 하나 — rehearsal.md 「모션」의 「넣은 뒤
+  새 줄이 오른다」와 「지운 줄은 접히며 사라진다」 둘을 한 목업에서 실제로 돌려
+  보여준다.
+
+  달력 날짜는 실제 2026년 10월 달력을 계산해서 그렸다 — 10월 1일이 목요일이라
+  rehearsal.md의 짜임 ASCII(1~4가 목금토일 자리)와 맞춘다. 같은 ASCII의 점 표시가
+  10월 8일과 10월 10일 아래에 있어 그 두 날에 리허설 시간을 실었다 — 문서가 요일을
+  고친 뒤에도 8일·10일이라는 날짜 자체는 그대로다. 문안 표의 「3건 · 5시간」을
+  실제로 맞추려고 10월 21일에 1시간짜리 항목을 하나 더했다 — 2+2+1=5시간, 항목
+  3개다. 관리자 값(10월 8일 「6시간」, 합계 「5건 · 10시간」)은 rehearsal.md 문안
+  표가 그대로 못박은 값이다.
+
+  날 시트·넣는 시트·고치는 시트의 날짜 예시는 문안 표의 리터럴 값을 그대로 쓴 자리와
+  (「10월 10일(토)」「10월 8일(목)」 — 표가 못박은 고정 문구), 표가 「가변값」이라
+  표시한 자리에 형식만 맞춰 새로 고른 날짜가 섞여 있다(「10월 15일(목)」「10월 18일
+  (일)」 — 둘 다 실제 2026년 요일과도 맞는다). 달력 그리드 안 날짜 숫자와 시트
+  제목의 날짜 문자열은 서로 다른 목업이라 같은 날짜가 다른 시간값으로 겹쳐 있어도
+  화면 안에서 부딪히지 않는다 — 각 목업은 독립된 예시다.
+
+  「못 읽음」 버튼 크기·「읽는 중」의 합계 처리는 rehearsal.md가 값을 안 줘서 미정
+  이다. 각 상태의 figcaption에 어떻게 메웠는지 적어뒀다.
+-->
+<title>리허설 화면 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css">
+
+<style>
+:root {
+  --b-bg: oklch(0.945 0.004 57);
+  --b-panel: oklch(0.988 0.003 57);
+  --b-ink: oklch(0.27 0.007 57);
+  --b-sub: oklch(0.52 0.006 57);
+  --b-faint: oklch(0.63 0.005 57);
+  --b-line: oklch(0.885 0.005 57);
+  --b-line-strong: oklch(0.8 0.005 57);
+  --b-accent: oklch(0.48 0.115 248);
+  --b-mock-shadow: 0 2px 6px rgba(28,25,22,.06), 0 24px 48px -28px rgba(28,25,22,.5);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+    --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+    --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+    --b-accent: oklch(0.76 0.1 248);
+    --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+  }
+}
+:root[data-theme="dark"] {
+  --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+  --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+  --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+  --b-accent: oklch(0.76 0.1 248);
+  --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--b-bg); color: var(--b-ink);
+  font-family: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1300px; margin: 0 auto; padding: 56px 28px 110px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--b-accent); margin: 0 0 14px;
+}
+h1 { font-size: 36px; line-height: 1.25; font-weight: 700; letter-spacing: -.02em; margin: 0 0 16px; }
+.lede { font-size: 16px; color: var(--b-sub); max-width: 60ch; margin: 0; }
+
+section { margin-top: 70px; }
+.sec-head { border-top: 1px solid var(--b-line-strong); padding-top: 18px; margin-bottom: 28px; }
+.sec-num {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .12em; color: var(--b-faint); display: block; margin-bottom: 7px;
+}
+h2 { font-size: 23px; font-weight: 700; letter-spacing: -.015em; margin: 0 0 10px; }
+.sec-head p { margin: 0; color: var(--b-sub); max-width: 68ch; font-size: 14.5px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, 375px); gap: 44px 30px; justify-content: start; align-items: start; }
+.item > figcaption { margin-top: 16px; }
+.cap-key { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--b-faint); }
+.cap-name { font-size: 17px; font-weight: 700; margin: 3px 0 6px; letter-spacing: -.01em; }
+.cap-body { font-size: 13.5px; color: var(--b-sub); margin: 0; max-width: 46ch; }
+.cap-body strong { color: var(--b-ink); font-weight: 600; }
+.cap-body + .cap-body { margin-top: 6px; }
+figure.item { margin: 0; }
+code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .88em;
+  background: var(--b-panel); border: 1px solid var(--b-line); border-radius: 4px; padding: 1px 5px;
+}
+
+/* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
+.mock {
+  --palette-neutral-00: oklch(1 .0037 57);
+  --palette-neutral-100: oklch(.965 .0037 57);
+  --palette-neutral-200: oklch(.905 .0043 57);
+  --palette-neutral-300: oklch(.845 .0045 57);
+  --palette-neutral-700: oklch(.545 .005 57);
+  --palette-neutral-800: oklch(.455 .005 57);
+  --palette-neutral-900: oklch(.32 .0053 57);
+  --palette-neutral-1000: oklch(.215 .0055 57);
+  --palette-brand-100: oklch(.965 .0128 57);
+  --palette-brand-800: oklch(.455 .0534 57);
+  --palette-critical-100: oklch(.965 .0319 27);
+  --palette-critical-800: oklch(.455 .1334 27);
+  --surface-stroke: transparent;
+  --scrim-ink: var(--palette-neutral-1000);
+  --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5);
+  --pop-shadow: 0 1px 2px rgba(28,25,22,.05), 0 14px 30px -18px rgba(28,25,22,.5);
+}
+.mock.force-dark {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-100: oklch(.205 .0128 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --palette-critical-100: oklch(.205 .0319 27);
+  --palette-critical-800: oklch(.745 .1334 27);
+  --surface-stroke: var(--palette-neutral-200);
+  --scrim-ink: var(--palette-neutral-00);
+  --card-shadow: none;
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+  --pop-shadow: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mock:not(.force-light) {
+    --palette-neutral-00: oklch(.155 .0037 57);
+    --palette-neutral-100: oklch(.205 .0037 57);
+    --palette-neutral-200: oklch(.265 .0043 57);
+    --palette-neutral-300: oklch(.32 .0045 57);
+    --palette-neutral-700: oklch(.665 .005 57);
+    --palette-neutral-800: oklch(.745 .005 57);
+    --palette-neutral-900: oklch(.845 .0053 57);
+    --palette-neutral-1000: oklch(.935 .0055 57);
+    --palette-brand-100: oklch(.205 .0128 57);
+    --palette-brand-800: oklch(.745 .0534 57);
+    --palette-critical-100: oklch(.205 .0319 27);
+    --palette-critical-800: oklch(.745 .1334 27);
+    --surface-stroke: var(--palette-neutral-200);
+    --scrim-ink: var(--palette-neutral-00);
+    --card-shadow: none;
+    --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+    --pop-shadow: none;
+  }
+}
+:root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-100: oklch(.205 .0128 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --palette-critical-100: oklch(.205 .0319 27);
+  --palette-critical-800: oklch(.745 .1334 27);
+  --surface-stroke: var(--palette-neutral-200);
+  --scrim-ink: var(--palette-neutral-00);
+  --card-shadow: none;
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+  --pop-shadow: none;
+}
+.mock {
+  --bg-neutral: var(--palette-neutral-00);
+  --bg-neutral-weak: var(--palette-neutral-100);
+  --bg-neutral-solid: var(--palette-neutral-1000);
+  --bg-neutral-disabled: var(--palette-neutral-100);
+  --bg-brand-solid: var(--palette-brand-800);
+  --bg-brand-weak: var(--palette-brand-100);
+  --bg-critical-weak: var(--palette-critical-100);
+  --bg-critical-solid: var(--palette-critical-800);
+  --fg-neutral: var(--palette-neutral-1000);
+  --fg-neutral-muted: var(--palette-neutral-800);
+  --fg-neutral-subtle: var(--palette-neutral-700);
+  --fg-neutral-contrast: var(--palette-neutral-00);
+  --fg-neutral-disabled: var(--palette-neutral-700);
+  --fg-brand: var(--palette-brand-800);
+  --fg-brand-contrast: var(--palette-neutral-00);
+  --fg-critical: var(--palette-critical-800);
+  --stroke-neutral: var(--palette-neutral-200);
+  --stroke-neutral-muted: var(--palette-neutral-300);
+  --stroke-neutral-disabled: var(--palette-neutral-200);
+  --stroke-brand-solid: var(--palette-brand-800);
+
+  --t-xs: .8125rem; --lh-xs: 1.21875rem;
+  --t-sm: .9375rem; --lh-sm: 1.40625rem;
+  --t-base: 1.0625rem; --lh-base: 1.59375rem;
+  --t-lg: 1.25rem; --lh-lg: 1.8125rem;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 14px; --r-xl: 20px;
+  --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms;
+
+  width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  background: var(--bg-neutral); color: var(--fg-neutral);
+  font-family: "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", sans-serif;
+  font-size: var(--t-base); line-height: var(--lh-base);
+  box-shadow: var(--b-mock-shadow);
+}
+.mock .num { font-variant-numeric: tabular-nums; }
+
+.statusbar {
+  flex: 0 0 auto; height: 46px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px 0 30px; font-size: var(--t-xs); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.sb-right { display: flex; align-items: center; gap: 5px; }
+
+/* 앱바 — 뒤로 · 「리허설」뿐, 달은 앱바 아래 별도 줄이다 */
+.appbar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  padding: 4px 24px 8px; min-height: 44px;
+}
+.backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
+/* 아이콘 28px, 닿는 면은 44px — components.md 「앱바」 */
+.backic::after { content: ""; position: absolute; inset: -8px; }
+.appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral); }
+
+.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; }
+
+/* 달 줄 — 왼쪽 달+화살표, 오른쪽 합계. h-12 px-6(.body가 이미 24px 좌우를 준다) */
+.monthbar { flex: 0 0 auto; height: 48px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; position: relative; }
+.monthbar::after { content: ""; position: absolute; inset: -4px 0; }
+.monthbar .m { display: inline-flex; align-items: center; gap: 4px; position: relative; z-index: 1; }
+.monthbar .m span.lab { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.monthbar .m .chev { color: var(--fg-neutral-subtle); display: grid; place-items: center; }
+.monthbar .sum { position: relative; z-index: 1; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+
+/* 달력 — 근무표 날짜 칸 그대로(components.md), 리허설 화면 전용 색만: 브랜드 없음,
+   비활성 없음. 칸 두 단, 위 날짜·아래 시간 */
+.dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 16px; }
+.dow span { text-align: center; font-size: var(--t-xs); color: var(--fg-neutral-subtle); }
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 4px; }
+.cell {
+  height: 64px; border-radius: var(--r-sm); display: flex; flex-direction: column; align-items: center;
+  justify-content: space-between; padding: 6px 0 4px; font-variant-numeric: tabular-nums; position: relative;
+  cursor: pointer;
+}
+.cell.blank { cursor: default; }
+.cell b { font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; color: var(--fg-neutral); }
+.cell.has { background: var(--bg-neutral-weak); }
+.cell .hrs { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+/* 오늘 — 배경이 아니라 검은 원. 지름 21px */
+.cell.today b {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 21px; height: 21px; border-radius: 999px; box-sizing: border-box; line-height: 1;
+  background: var(--bg-neutral-solid); color: var(--fg-neutral-contrast);
+}
+.legend { margin-top: 12px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+.calempty { margin-top: 24px; }
+/* 못 읽음 — 달력 아래 문구 한 줄 + 다시 시도. 문서가 여백값을 못박지 않아 실패
+   블록류(failbox)와 같은 리듬(rounded-md·p-3 대신 텍스트+버튼만이라 간격만 맞춤)로 쟀다 */
+.calfail { margin-top: 16px; text-align: center; }
+.calfail p { margin: 0 0 12px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+.calfail .btn { width: auto; padding: 0 20px; height: 40px; }
+
+/* 버튼 — components.md Button */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 48px; border-radius: var(--r-lg); border: 0;
+  font-size: var(--t-sm); font-weight: 500; font-family: inherit;
+  background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
+}
+.btn:disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); cursor: default; }
+.btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+.btn.destructive { background: var(--bg-critical-solid); color: var(--fg-brand-contrast); }
+/* Button ghost — components.md 「Button」: 배경·테두리 없음, 글자 fg.neutral-muted,
+   눌림만 bg.neutral-weak. 「다시 시도」가 쓴다 */
+.btn.ghost { background: transparent; color: var(--fg-neutral-muted); }
+.rowbtns { display: flex; gap: 8px; margin-top: 16px; }
+.rowbtns .btn { flex: 1 1 0; margin-top: 0; }
+
+/* 빈 상태 — components.md#빈-상태 그대로 */
+.empty { padding: 16px 0; text-align: left; }
+.empty .et { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.empty .es { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+
+/* 바텀시트와 덮개 — components.md 「Dialog와 바텀시트」. 두 겹 — 날 시트(z4)
+   위에 넣는/고치는 시트(z5)가 stacked로 선다. schedule-admin.sian의 사람 시트와
+   같은 문법이다 */
+.scrim {
+  position: absolute; inset: 0; z-index: 3; background: var(--scrim-ink);
+  opacity: 0; pointer-events: none; transition: opacity var(--d-slow) ease-out;
+}
+.mock.modal-open .scrim { opacity: .42; }
+.rsheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+  background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 24px; box-shadow: var(--sheet-shadow);
+  transform: translateY(102%); transition: transform var(--d-slow) ease-out;
+}
+.rsheet.stacked { z-index: 5; }
+.mock.modal-open .rsheet { transform: none; }
+.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 14px; }
+.sh-title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral); }
+
+/* 날 시트 줄 — h-12, 왼쪽 무엇으로 넣었나(+관리자면 이름), 오른쪽 시간, 화살표.
+   관리자는 화살표도 누름 배경도 없다(문서) */
+.daylist { margin-top: 4px; }
+.dayrow { position: relative; display: flex; align-items: center; height: 48px; cursor: pointer; }
+.dayrow.admin { cursor: default; }
+.dayrow .dr-name { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral); }
+.dayrow .dr-kind { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+.dayrow .dr-right { margin-left: auto; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500; color: var(--fg-neutral); }
+.dayrow .chev { margin-left: 6px; color: var(--fg-neutral-subtle); display: grid; place-items: center; }
+/* 가는 선과 합계 — 줄이 둘 이상일 때만. my-2, text-xs subtle */
+.dayrule { height: 1px; background: var(--stroke-neutral-muted); margin: 8px 0; }
+.daysum { display: flex; align-items: center; justify-content: space-between; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+/* 「리허설 넣기」 — 시트 안 맨 아래, mt-4 */
+.sheetcta { margin-top: 16px; }
+
+/* 시트 필드 — 시트 칸 사이 mt-4, 입력 칸 rounded-md·p-3, 시각 칸 둘 사이 gap-3 */
+.field { margin-top: 16px; }
+.field .lab { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); margin-bottom: 6px; }
+.field .box {
+  border-radius: var(--r-md); background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
+  padding: 12px; display: flex; align-items: center; justify-content: space-between;
+  font-size: var(--t-base); line-height: var(--lh-base); color: var(--fg-neutral); min-height: 48px;
+}
+.timerow { display: flex; gap: 12px; }
+.timerow .field { flex: 1 1 0; margin-top: 0; }
+.countrow .box { width: 88px; }
+.field .box .unit { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+
+/* 칸 아래 안내 줄 — mt-2 */
+.guide { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+/* 겹침 문구 — fg.critical, text-xs, 칸 아래 mt-2 */
+.overlap { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-critical); }
+
+/* 갈래 어긋남 알림 줄 — fg.neutral 글자 + bg.neutral-weak 면, text-xs, rounded-md·p-3, 칸 위 mb-4 */
+.mismatch { margin-bottom: 16px; padding: 12px; border-radius: var(--r-md); background: var(--bg-neutral-weak); color: var(--fg-neutral); font-size: var(--t-xs); line-height: var(--lh-xs); }
+
+/* 저장 실패 — 제목 fg.neutral text-sm font-medium, 아래 줄 fg.neutral-subtle text-xs,
+   rounded-md·p-3, 버튼 위 mb-4 */
+.failbox { margin-top: 16px; margin-bottom: 16px; border-radius: var(--r-md); background: var(--bg-neutral-weak); padding: 12px; }
+.failbox .ft { font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500; color: var(--fg-neutral); }
+.failbox .fb { margin-top: 4px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+
+/* 지우기 줄 — fg.critical · text-sm font-medium · h-12, 버튼 위 mb-4 */
+.delrow {
+  position: relative; margin-bottom: 16px; height: 48px; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500; color: var(--fg-critical); cursor: pointer;
+}
+
+/* 가운데 Dialog — 고치는 시트(z5) 위라 z6/z7. components.md 「Dialog와 바텀시트」:
+   좌우 32px, 안쪽 24px, shadow-pop, stroke.surface */
+.dscrim { position: absolute; inset: 0; z-index: 6; background: var(--scrim-ink); opacity: .42; }
+.dialog {
+  position: absolute; left: 32px; right: 32px; top: 50%; transform: translateY(-50%); z-index: 7;
+  background: var(--bg-neutral); border-radius: var(--r-lg); padding: 24px;
+  box-shadow: var(--pop-shadow); border: 1px solid var(--surface-stroke);
+}
+.dialog .dt { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral); }
+.dialog .db { margin-top: 8px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.dialog .drow { display: flex; gap: 12px; margin-top: 20px; }
+.dialog .drow .btn { flex: 1 1 0; margin-top: 0; }
+
+/* 모션 데모 — rehearsal.md 「모션」: 넣은 뒤 새 줄이 --duration-base로 오르고,
+   지운 줄은 --duration-fast로 접히며 사라진다. 데모 트리거 둘은 이 시안에서만 쓰는
+   보조 버튼이라 실제 화면에 없다는 것을 캡션에 밝힌다 */
+.dayrow.ghost { display: none; }
+.dayrow.enter { animation: rowIn var(--d-base) ease-out both; }
+@keyframes rowIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.dayrow.collapsing { overflow: hidden; }
+.democtl { margin-top: 12px; display: flex; gap: 8px; }
+.democtl button { flex: 1 1 0; height: 40px; border-radius: var(--r-md); border: 1px dashed var(--stroke-neutral-muted); background: transparent; color: var(--fg-neutral-subtle); font-size: var(--t-xs); font-family: inherit; cursor: pointer; }
+.democtl button:disabled { opacity: .4; cursor: default; }
+.demohint { margin-top: 10px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mock * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+  .dayrow.enter { animation: fadeOnly 1ms ease-out both; }
+  @keyframes fadeOnly { from { opacity: 0; } to { opacity: 1; } }
+}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">라비에벨 · 페이지 디자인</p>
+  <h1>리허설 화면 시안</h1>
+  <p class="lede">
+    화면이 달력이다. 날을 눌러 그날 시트를 열고 거기서 넣는다 — 근무표와 같은 문법이고
+    하단 고정 버튼이 없다. 넣는 시트에 날짜 칸이 없다. 갈래(시각·건수)는 달력에서 고른
+    날에 이미 정해져 있다.
+  </p>
+
+  <!-- 01 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">01 / 달력</span>
+      <h2>날을 누르면 그날 시트가 열린다</h2>
+      <p>정상, 리허설이 없는 달, 관리자, 읽는 중, 못 읽음 다섯이다. 모든 칸이 눌린다 — 지난 날도 안 연 날 개념도 없다. 바닥 단은 건수가 아니라 시간이다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-cal-normal">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+              <span class="cell"><b>1</b></span><span class="cell"><b>2</b></span><span class="cell"><b>3</b></span><span class="cell"><b>4</b></span>
+              <span class="cell"><b>5</b></span><span class="cell"><b>6</b></span><span class="cell"><b>7</b></span>
+              <span class="cell has today"><b class="num">8</b><span class="hrs num">2시간</span></span>
+              <span class="cell"><b>9</b></span>
+              <span class="cell has"><b class="num">10</b><span class="hrs num">2시간</span></span>
+              <span class="cell"><b>11</b></span>
+              <span class="cell"><b>12</b></span><span class="cell"><b>13</b></span><span class="cell"><b>14</b></span><span class="cell"><b>15</b></span><span class="cell"><b>16</b></span><span class="cell"><b>17</b></span><span class="cell"><b>18</b></span>
+              <span class="cell"><b>19</b></span><span class="cell"><b>20</b></span>
+              <span class="cell has"><b class="num">21</b><span class="hrs num">1시간</span></span>
+              <span class="cell"><b>22</b></span><span class="cell"><b>23</b></span><span class="cell"><b>24</b></span><span class="cell"><b>25</b></span>
+              <span class="cell"><b>26</b></span><span class="cell"><b>27</b></span><span class="cell"><b>28</b></span><span class="cell"><b>29</b></span><span class="cell"><b>30</b></span><span class="cell"><b>31</b></span>
+              <span class="cell blank"></span>
+            </div>
+            <div class="legend">칸 아래 숫자는 그날 리허설 시간이에요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">01 / CAL · NORMAL</div>
+          <div class="cap-name">달력 — 정상</div>
+          <p class="cap-body">10월 8일·10일·21일에 리허설이 있다. 오른쪽 위 합계 「3건 · 5시간」은 2+2+1시간을 더한 값이다. 8일은 오늘이라 날짜가 검은 원에 싸여 있다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-cal-empty">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 11월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+              <span class="cell"><b>1</b></span>
+              <span class="cell"><b>2</b></span><span class="cell"><b>3</b></span><span class="cell"><b>4</b></span><span class="cell"><b>5</b></span><span class="cell"><b>6</b></span><span class="cell"><b>7</b></span><span class="cell"><b>8</b></span>
+              <span class="cell"><b>9</b></span><span class="cell"><b>10</b></span><span class="cell"><b>11</b></span><span class="cell"><b>12</b></span><span class="cell"><b>13</b></span><span class="cell"><b>14</b></span><span class="cell"><b>15</b></span>
+              <span class="cell"><b>16</b></span><span class="cell"><b>17</b></span><span class="cell"><b>18</b></span><span class="cell"><b>19</b></span><span class="cell"><b>20</b></span><span class="cell"><b>21</b></span><span class="cell"><b>22</b></span>
+              <span class="cell"><b>23</b></span><span class="cell"><b>24</b></span><span class="cell"><b>25</b></span><span class="cell"><b>26</b></span><span class="cell"><b>27</b></span><span class="cell"><b>28</b></span><span class="cell"><b>29</b></span>
+              <span class="cell"><b>30</b></span>
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+            </div>
+            <div class="legend">칸 아래 숫자는 그날 리허설 시간이에요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">02 / CAL · EMPTY MONTH</div>
+          <div class="cap-name">달력 — 리허설이 없는 달</div>
+          <p class="cap-body">달력은 그대로 서고 모든 칸이 눌린다. 달 줄 오른쪽 합계 자리가 빈다 — 「0건」을 안 적는다. 범례는 그대로 남는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-cal-admin">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">5건 · 10시간</span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+              <span class="cell"><b>1</b></span><span class="cell"><b>2</b></span><span class="cell"><b>3</b></span><span class="cell"><b>4</b></span>
+              <span class="cell"><b>5</b></span><span class="cell"><b>6</b></span><span class="cell"><b>7</b></span>
+              <span class="cell has today"><b class="num">8</b><span class="hrs num">6시간</span></span>
+              <span class="cell"><b>9</b></span>
+              <span class="cell has"><b class="num">10</b><span class="hrs num">4시간</span></span>
+              <span class="cell"><b>11</b></span>
+              <span class="cell"><b>12</b></span><span class="cell"><b>13</b></span><span class="cell"><b>14</b></span><span class="cell"><b>15</b></span><span class="cell"><b>16</b></span><span class="cell"><b>17</b></span><span class="cell"><b>18</b></span>
+              <span class="cell"><b>19</b></span><span class="cell"><b>20</b></span><span class="cell"><b>21</b></span><span class="cell"><b>22</b></span><span class="cell"><b>23</b></span><span class="cell"><b>24</b></span><span class="cell"><b>25</b></span>
+              <span class="cell"><b>26</b></span><span class="cell"><b>27</b></span><span class="cell"><b>28</b></span><span class="cell"><b>29</b></span><span class="cell"><b>30</b></span><span class="cell"><b>31</b></span>
+              <span class="cell blank"></span>
+            </div>
+            <div class="legend">칸 아래 숫자는 그날 리허설 시간이에요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">03 / CAL · ADMIN</div>
+          <div class="cap-name">달력 — 관리자</div>
+          <p class="cap-body">같은 달력이고 칸의 수가 전원 것을 더한 값이다. 10월 8일에 세 사람이 각각 있어 「6시간」, 10월 10일은 「4시간」이다. 누구 것인지는 날 시트가 말한다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-cal-loading">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 11월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+              <span class="cell"><b>1</b></span>
+              <span class="cell"><b>2</b></span><span class="cell"><b>3</b></span><span class="cell"><b>4</b></span><span class="cell"><b>5</b></span><span class="cell"><b>6</b></span><span class="cell"><b>7</b></span><span class="cell"><b>8</b></span>
+              <span class="cell"><b>9</b></span><span class="cell"><b>10</b></span><span class="cell"><b>11</b></span><span class="cell"><b>12</b></span><span class="cell"><b>13</b></span><span class="cell"><b>14</b></span><span class="cell"><b>15</b></span>
+              <span class="cell"><b>16</b></span><span class="cell"><b>17</b></span><span class="cell"><b>18</b></span><span class="cell"><b>19</b></span><span class="cell"><b>20</b></span><span class="cell"><b>21</b></span><span class="cell"><b>22</b></span>
+              <span class="cell"><b>23</b></span><span class="cell"><b>24</b></span><span class="cell"><b>25</b></span><span class="cell"><b>26</b></span><span class="cell"><b>27</b></span><span class="cell"><b>28</b></span><span class="cell"><b>29</b></span>
+              <span class="cell"><b>30</b></span>
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+            </div>
+            <div class="legend">칸 아래 숫자는 그날 리허설 시간이에요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">04 / CAL · LOADING</div>
+          <div class="cap-name">달력 — 읽는 중</div>
+          <p class="cap-body">달을 넘긴 직후다. 날짜는 그대로 다 보이고 칸도 눌리지만, 아래 단(그날 리허설 시간)만 비어 있다. 합계 자리도 아직 값이 없어 함께 비운다 — 문서가 이 자리를 못박지 않아 「리허설이 없는 달」과 같은 처리로 미뤘다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-cal-error">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 11월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+              <span class="cell"><b>1</b></span>
+              <span class="cell"><b>2</b></span><span class="cell"><b>3</b></span><span class="cell"><b>4</b></span><span class="cell"><b>5</b></span><span class="cell"><b>6</b></span><span class="cell"><b>7</b></span><span class="cell"><b>8</b></span>
+              <span class="cell"><b>9</b></span><span class="cell"><b>10</b></span><span class="cell"><b>11</b></span><span class="cell"><b>12</b></span><span class="cell"><b>13</b></span><span class="cell"><b>14</b></span><span class="cell"><b>15</b></span>
+              <span class="cell"><b>16</b></span><span class="cell"><b>17</b></span><span class="cell"><b>18</b></span><span class="cell"><b>19</b></span><span class="cell"><b>20</b></span><span class="cell"><b>21</b></span><span class="cell"><b>22</b></span>
+              <span class="cell"><b>23</b></span><span class="cell"><b>24</b></span><span class="cell"><b>25</b></span><span class="cell"><b>26</b></span><span class="cell"><b>27</b></span><span class="cell"><b>28</b></span><span class="cell"><b>29</b></span>
+              <span class="cell"><b>30</b></span>
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+            </div>
+            <div class="legend">칸 아래 숫자는 그날 리허설 시간이에요</div>
+            <div class="calfail">
+              <p>리허설을 불러오지 못했어요</p>
+              <button class="btn ghost" type="button">다시 시도</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">05 / CAL · ERROR</div>
+          <div class="cap-name">달력 — 못 읽음</div>
+          <p class="cap-body">질의가 실패했다. 달력 아래에 문구 한 줄과 「다시 시도」가 선다. 누르면 읽는 중으로 돌아간다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">02 / 날 시트</span>
+      <h2>날짜는 이미 골랐다</h2>
+      <p>빈 날, 든 날(줄 하나·줄 둘 이상), 건수 갈래로 이미 넣은 날, 관리자(든 날·빈 날) 여섯이다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-day-empty">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+              <span class="cell"><b>1</b></span><span class="cell"><b>2</b></span><span class="cell"><b>3</b></span><span class="cell"><b>4</b></span>
+              <span class="cell"><b>5</b></span><span class="cell"><b>6</b></span><span class="cell"><b>7</b></span>
+              <span class="cell has today"><b class="num">8</b><span class="hrs num">2시간</span></span>
+              <span class="cell"><b>9</b></span><span class="cell has"><b class="num">10</b><span class="hrs num">2시간</span></span><span class="cell"><b>11</b></span>
+              <span class="cell"><b>12</b></span><span class="cell"><b>13</b></span><span class="cell"><b>14</b></span>
+              <span class="cell"><b>15</b></span><span class="cell"><b>16</b></span><span class="cell"><b>17</b></span><span class="cell"><b>18</b></span>
+              <span class="cell"><b>19</b></span><span class="cell"><b>20</b></span><span class="cell has"><b class="num">21</b><span class="hrs num">1시간</span></span><span class="cell"><b>22</b></span><span class="cell"><b>23</b></span><span class="cell"><b>24</b></span><span class="cell"><b>25</b></span>
+              <span class="cell"><b>26</b></span><span class="cell"><b>27</b></span><span class="cell"><b>28</b></span><span class="cell"><b>29</b></span><span class="cell"><b>30</b></span><span class="cell"><b>31</b></span>
+              <span class="cell blank"></span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 15일(목)</div>
+            <div class="empty">
+              <div class="et">이 날 넣은 리허설이 없어요</div>
+            </div>
+            <button class="btn sheetcta" type="button">리허설 넣기</button>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">06 / DAY · EMPTY</div>
+          <div class="cap-name">날 시트 — 빈 날</div>
+          <p class="cap-body">제목 아래 빈 상태 한 줄, 그림도 안의 버튼도 없다. 넣는 버튼은 시트 맨 아래에 그대로 있다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-day-one">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+              <span class="cell"><b>1</b></span><span class="cell"><b>2</b></span><span class="cell"><b>3</b></span><span class="cell"><b>4</b></span>
+              <span class="cell"><b>5</b></span><span class="cell"><b>6</b></span><span class="cell"><b>7</b></span>
+              <span class="cell has today"><b class="num">8</b><span class="hrs num">2시간</span></span>
+              <span class="cell"><b>9</b></span><span class="cell has"><b class="num">10</b><span class="hrs num">2시간</span></span><span class="cell"><b>11</b></span>
+              <span class="cell"><b>12</b></span><span class="cell"><b>13</b></span><span class="cell"><b>14</b></span><span class="cell"><b>15</b></span><span class="cell"><b>16</b></span><span class="cell"><b>17</b></span><span class="cell"><b>18</b></span>
+              <span class="cell"><b>19</b></span><span class="cell"><b>20</b></span><span class="cell has"><b class="num">21</b><span class="hrs num">1시간</span></span><span class="cell"><b>22</b></span><span class="cell"><b>23</b></span><span class="cell"><b>24</b></span><span class="cell"><b>25</b></span>
+              <span class="cell"><b>26</b></span><span class="cell"><b>27</b></span><span class="cell"><b>28</b></span><span class="cell"><b>29</b></span><span class="cell"><b>30</b></span><span class="cell"><b>31</b></span>
+              <span class="cell blank"></span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 10일(토)</div>
+            <div class="daylist">
+              <div class="dayrow">
+                <span class="dr-kind num">14:00–16:00</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <button class="btn sheetcta" type="button">리허설 넣기</button>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">07 / DAY · ONE ROW</div>
+          <div class="cap-name">날 시트 — 든 날, 줄 하나</div>
+          <p class="cap-body">시각 갈래로 넣은 줄 하나다. 줄이 하나라 합계는 안 그린다 — 같은 숫자가 두 번 서서다. 넣기 버튼은 남는다(시각 갈래는 하루에 여러 줄을 넣을 수 있다).</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-day-two">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+              <span class="cell"><b>1</b></span><span class="cell"><b>2</b></span><span class="cell"><b>3</b></span><span class="cell"><b>4</b></span>
+              <span class="cell"><b>5</b></span><span class="cell"><b>6</b></span><span class="cell"><b>7</b></span>
+              <span class="cell has today"><b class="num">8</b><span class="hrs num">2시간</span></span>
+              <span class="cell"><b>9</b></span><span class="cell has"><b class="num">10</b><span class="hrs num">2시간</span></span><span class="cell"><b>11</b></span>
+              <span class="cell"><b>12</b></span><span class="cell"><b>13</b></span><span class="cell"><b>14</b></span><span class="cell"><b>15</b></span><span class="cell"><b>16</b></span><span class="cell"><b>17</b></span><span class="cell"><b>18</b></span>
+              <span class="cell"><b>19</b></span><span class="cell"><b>20</b></span><span class="cell has"><b class="num">21</b><span class="hrs num">1시간</span></span><span class="cell"><b>22</b></span><span class="cell"><b>23</b></span><span class="cell"><b>24</b></span><span class="cell"><b>25</b></span>
+              <span class="cell"><b>26</b></span><span class="cell"><b>27</b></span><span class="cell"><b>28</b></span><span class="cell"><b>29</b></span><span class="cell"><b>30</b></span><span class="cell"><b>31</b></span>
+              <span class="cell blank"></span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 10일(토)</div>
+            <div class="daylist">
+              <div class="dayrow">
+                <span class="dr-kind num">리허설 2건</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="dayrow">
+                <span class="dr-kind num">14:00–16:00</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <div class="dayrule"></div>
+            <div class="daysum"><span>합계</span><span class="num">4시간</span></div>
+            <button class="btn sheetcta" type="button">리허설 넣기</button>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">08 / DAY · TWO ROWS</div>
+          <div class="cap-name">날 시트 — 든 날, 줄 둘 이상</div>
+          <p class="cap-body">rehearsal.md 「날 시트 짜임」 ASCII를 그대로 옮겼다 — 건수 줄(리허설 2건)과 시각 줄(14:00–16:00)이 함께 선다. 줄이 둘이라 가는 선과 「합계 · 4시간」이 선다 — 2+2시간이다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-day-locked">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+              <span class="cell"><b>1</b></span><span class="cell"><b>2</b></span><span class="cell"><b>3</b></span><span class="cell"><b>4</b></span>
+              <span class="cell"><b>5</b></span><span class="cell"><b>6</b></span><span class="cell"><b>7</b></span>
+              <span class="cell has today"><b class="num">8</b><span class="hrs num">2시간</span></span>
+              <span class="cell"><b>9</b></span><span class="cell has"><b class="num">10</b><span class="hrs num">2시간</span></span><span class="cell"><b>11</b></span>
+              <span class="cell"><b>12</b></span><span class="cell"><b>13</b></span><span class="cell"><b>14</b></span><span class="cell"><b>15</b></span><span class="cell"><b>16</b></span><span class="cell"><b>17</b></span><span class="cell"><b>18</b></span>
+              <span class="cell"><b>19</b></span><span class="cell"><b>20</b></span><span class="cell has"><b class="num">21</b><span class="hrs num">1시간</span></span><span class="cell"><b>22</b></span><span class="cell"><b>23</b></span><span class="cell"><b>24</b></span><span class="cell"><b>25</b></span>
+              <span class="cell"><b>26</b></span><span class="cell"><b>27</b></span><span class="cell"><b>28</b></span><span class="cell"><b>29</b></span><span class="cell"><b>30</b></span><span class="cell"><b>31</b></span>
+              <span class="cell blank"></span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 18일(일)</div>
+            <div class="daylist">
+              <div class="dayrow">
+                <span class="dr-kind num">리허설 2건</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">09 / DAY · COUNT LOCKED</div>
+          <div class="cap-name">날 시트 — 건수 갈래로 이미 넣은 날</div>
+          <p class="cap-body">그날 배정이 있어 건수 갈래고, 하루에 한 줄로 묶여 있어 「리허설 넣기」가 없다. 더 넣으려면 이 줄을 눌러 건수를 올린다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-day-admin">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">5건 · 10시간</span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+              <span class="cell"><b>1</b></span><span class="cell"><b>2</b></span><span class="cell"><b>3</b></span><span class="cell"><b>4</b></span>
+              <span class="cell"><b>5</b></span><span class="cell"><b>6</b></span><span class="cell"><b>7</b></span>
+              <span class="cell has today"><b class="num">8</b><span class="hrs num">6시간</span></span>
+              <span class="cell"><b>9</b></span><span class="cell has"><b class="num">10</b><span class="hrs num">4시간</span></span><span class="cell"><b>11</b></span>
+              <span class="cell"><b>12</b></span><span class="cell"><b>13</b></span><span class="cell"><b>14</b></span><span class="cell"><b>15</b></span><span class="cell"><b>16</b></span><span class="cell"><b>17</b></span><span class="cell"><b>18</b></span>
+              <span class="cell"><b>19</b></span><span class="cell"><b>20</b></span><span class="cell"><b>21</b></span><span class="cell"><b>22</b></span><span class="cell"><b>23</b></span><span class="cell"><b>24</b></span><span class="cell"><b>25</b></span>
+              <span class="cell"><b>26</b></span><span class="cell"><b>27</b></span><span class="cell"><b>28</b></span><span class="cell"><b>29</b></span><span class="cell"><b>30</b></span><span class="cell"><b>31</b></span>
+              <span class="cell blank"></span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 8일(목)</div>
+            <div class="daylist">
+              <div class="dayrow admin">
+                <span class="dr-name">박서연</span><span class="dr-kind num">&nbsp;· 리허설 2건</span>
+                <span class="dr-right num">2시간</span>
+              </div>
+              <div class="dayrow admin">
+                <span class="dr-name">김지우</span><span class="dr-kind num">&nbsp;· 14:00–16:00</span>
+                <span class="dr-right num">2시간</span>
+              </div>
+              <div class="dayrow admin">
+                <span class="dr-name">이하늘</span><span class="dr-kind num">&nbsp;· 리허설 2건</span>
+                <span class="dr-right num">2시간</span>
+              </div>
+            </div>
+            <div class="dayrule"></div>
+            <div class="daysum"><span>합계</span><span class="num">6시간</span></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">10 / DAY · ADMIN</div>
+          <div class="cap-name">날 시트 — 관리자</div>
+          <p class="cap-body">줄마다 이름이 앞에 붙는다(fg.neutral). 「리허설 넣기」가 없고 줄이 안 눌린다 — 화살표도 누름 배경도 없다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-day-admin-empty">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">5건 · 10시간</span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell blank"></span><span class="cell blank"></span><span class="cell blank"></span>
+              <span class="cell"><b>1</b></span><span class="cell"><b>2</b></span><span class="cell"><b>3</b></span><span class="cell"><b>4</b></span>
+              <span class="cell"><b>5</b></span><span class="cell"><b>6</b></span><span class="cell"><b>7</b></span>
+              <span class="cell has today"><b class="num">8</b><span class="hrs num">6시간</span></span>
+              <span class="cell"><b>9</b></span><span class="cell has"><b class="num">10</b><span class="hrs num">4시간</span></span><span class="cell"><b>11</b></span>
+              <span class="cell"><b>12</b></span><span class="cell"><b>13</b></span><span class="cell"><b>14</b></span><span class="cell"><b>15</b></span><span class="cell"><b>16</b></span><span class="cell"><b>17</b></span><span class="cell"><b>18</b></span>
+              <span class="cell"><b>19</b></span><span class="cell"><b>20</b></span><span class="cell"><b>21</b></span><span class="cell"><b>22</b></span><span class="cell"><b>23</b></span><span class="cell"><b>24</b></span><span class="cell"><b>25</b></span>
+              <span class="cell"><b>26</b></span><span class="cell"><b>27</b></span><span class="cell"><b>28</b></span><span class="cell"><b>29</b></span><span class="cell"><b>30</b></span><span class="cell"><b>31</b></span>
+              <span class="cell blank"></span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 15일(목)</div>
+            <div class="empty">
+              <div class="et">이 날 넣은 사람이 없어요</div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">11 / DAY · ADMIN EMPTY</div>
+          <div class="cap-name">날 시트 — 관리자 · 빈 날</div>
+          <p class="cap-body">관리자가 보는 빈 날은 아래 줄 문구가 다르다(「이 날 넣은 사람이 없어요」) — 근무자가 보는 「이 날 넣은 리허설이 없어요」의 관리자 판이다. 「리허설 넣기」가 없다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">03 / 넣는 시트</span>
+      <h2>날짜 칸이 없다</h2>
+      <p>날 시트 위에 한 겹 더 선다. 시각 갈래, 건수 갈래, 겹침, 갈래 어긋남, 저장 실패 다섯이다. 라디오도 탭도 없다 — 이미 정해진 갈래로 바로 칸이 열린다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-add-time">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 10일(토)</div>
+            <div class="daylist">
+              <div class="dayrow">
+                <span class="dr-kind num">14:00–16:00</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <button class="btn sheetcta" type="button">리허설 넣기</button>
+          </div>
+          <div class="rsheet stacked">
+            <div class="grab"></div>
+            <div class="sh-title">리허설 넣기 · 10월 8일(목)</div>
+            <div class="field timerow">
+              <div>
+                <div class="lab">시작</div>
+                <div class="box num">14:00</div>
+              </div>
+              <div>
+                <div class="lab">끝</div>
+                <div class="box num">16:00</div>
+              </div>
+            </div>
+            <div class="guide">이 날은 근무가 없어서 시각으로 넣어요</div>
+            <div class="rowbtns">
+              <button class="btn secondary" type="button">닫기</button>
+              <button class="btn" type="button">넣기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">12 / ADD · TIME</div>
+          <div class="cap-name">넣는 시트 — 시각 갈래</div>
+          <p class="cap-body">고른 날에 내 배정이 없어서 시작·끝 두 칸이 선다. 날짜 칸이 없다 — 제목의 「10월 8일(목)」이 이미 고른 날짜다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-add-count">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 15일(목)</div>
+            <div class="empty">
+              <div class="et">이 날 넣은 리허설이 없어요</div>
+            </div>
+            <button class="btn sheetcta" type="button">리허설 넣기</button>
+          </div>
+          <div class="rsheet stacked">
+            <div class="grab"></div>
+            <div class="sh-title">리허설 넣기 · 10월 18일(일)</div>
+            <div class="field countrow">
+              <div class="lab">몇 건</div>
+              <div class="box num">2<span class="unit">건</span></div>
+            </div>
+            <div class="guide">이 날은 근무가 있어서 건수로 넣어요 · 1건은 1시간이에요</div>
+            <div class="rowbtns">
+              <button class="btn secondary" type="button">닫기</button>
+              <button class="btn" type="button">넣기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">13 / ADD · COUNT</div>
+          <div class="cap-name">넣는 시트 — 건수 갈래</div>
+          <p class="cap-body">고른 날에 내 배정이 있어서 건수 칸 하나가 선다. 건수는 한 자리(1~9)고 옆에 시간 환산 문구가 붙는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-add-overlap">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 10일(토)</div>
+            <div class="daylist">
+              <div class="dayrow">
+                <span class="dr-kind num">14:00–16:00</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <button class="btn sheetcta" type="button">리허설 넣기</button>
+          </div>
+          <div class="rsheet stacked">
+            <div class="grab"></div>
+            <div class="sh-title">리허설 넣기 · 10월 8일(목)</div>
+            <div class="field timerow">
+              <div>
+                <div class="lab">시작</div>
+                <div class="box num">14:30</div>
+              </div>
+              <div>
+                <div class="lab">끝</div>
+                <div class="box num">15:30</div>
+              </div>
+            </div>
+            <div class="overlap">이 시간에 넣은 리허설이 이미 있어요</div>
+            <div class="guide">이 날은 근무가 없어서 시각으로 넣어요</div>
+            <div class="rowbtns">
+              <button class="btn secondary" type="button">닫기</button>
+              <button class="btn" type="button">넣기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">14 / ADD · OVERLAP</div>
+          <div class="cap-name">넣는 시트 — 겹침</div>
+          <p class="cap-body">10월 8일에 이미 14:00–16:00이 있는 채로 14:30–15:30을 시도한다. 칸 아래 <span style="color:var(--b-ink)">critical</span> 문구가 선다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-add-mismatch">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 10일(토)</div>
+            <div class="daylist">
+              <div class="dayrow">
+                <span class="dr-kind num">14:00–16:00</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <button class="btn sheetcta" type="button">리허설 넣기</button>
+          </div>
+          <div class="rsheet stacked">
+            <div class="grab"></div>
+            <div class="sh-title">리허설 넣기 · 10월 15일(목)</div>
+            <div class="mismatch">이 날의 근무가 바뀌었어요 · 다시 넣어주세요</div>
+            <div class="field countrow">
+              <div class="lab">몇 건</div>
+              <div class="box"></div>
+            </div>
+            <div class="guide">이 날은 근무가 있어서 건수로 넣어요 · 1건은 1시간이에요</div>
+            <div class="rowbtns">
+              <button class="btn secondary" type="button">닫기</button>
+              <button class="btn" type="button" disabled>넣기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">15 / ADD · MISMATCH</div>
+          <div class="cap-name">넣는 시트 — 갈래 어긋남</div>
+          <p class="cap-body">시트를 연 사이에 관리자가 10월 15일에 배정을 넣어, 시각 갈래이던 아래 칸이 건수 갈래로 바뀌었다. 고른 날짜(제목)는 그대로다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-add-fail">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 10일(토)</div>
+            <div class="daylist">
+              <div class="dayrow">
+                <span class="dr-kind num">14:00–16:00</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <button class="btn sheetcta" type="button">리허설 넣기</button>
+          </div>
+          <div class="rsheet stacked">
+            <div class="grab"></div>
+            <div class="sh-title">리허설 넣기 · 10월 15일(목)</div>
+            <div class="field timerow">
+              <div>
+                <div class="lab">시작</div>
+                <div class="box num">14:00</div>
+              </div>
+              <div>
+                <div class="lab">끝</div>
+                <div class="box num">16:00</div>
+              </div>
+            </div>
+            <div class="guide">이 날은 근무가 없어서 시각으로 넣어요</div>
+            <div class="failbox">
+              <div class="ft">리허설을 넣지 못했어요</div>
+              <div class="fb">넣은 값은 그대로 있어요 · 다시 넣어볼게요</div>
+            </div>
+            <div class="rowbtns" style="margin-top:0">
+              <button class="btn secondary" type="button">닫기</button>
+              <button class="btn" type="button">넣기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">16 / ADD · FAIL</div>
+          <div class="cap-name">넣는 시트 — 저장 실패</div>
+          <p class="cap-body">저장이 실패해도 넣던 값(시작 14:00, 끝 16:00)은 그대로 남는다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">04 / 고치는 시트</span>
+      <h2>값이 든 채로 열린다</h2>
+      <p>넣는 시트와 같은 칸이 값과 함께 열리고, 아래에 「지우기」 한 줄이 더 선다. 날짜를 못 고친다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-edit">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 10일(토)</div>
+            <div class="daylist">
+              <div class="dayrow">
+                <span class="dr-kind num">14:00–16:00</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <button class="btn sheetcta" type="button">리허설 넣기</button>
+          </div>
+          <div class="rsheet stacked">
+            <div class="grab"></div>
+            <div class="sh-title">리허설 고치기 · 10월 8일(목)</div>
+            <div class="field timerow">
+              <div>
+                <div class="lab">시작</div>
+                <div class="box num">14:00</div>
+              </div>
+              <div>
+                <div class="lab">끝</div>
+                <div class="box num">16:00</div>
+              </div>
+            </div>
+            <div class="guide">이 날은 근무가 없어서 시각으로 넣어요</div>
+            <div class="delrow" style="margin-top:16px">지우기</div>
+            <div class="rowbtns" style="margin-top:0">
+              <button class="btn secondary" type="button">닫기</button>
+              <button class="btn" type="button">저장</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">17 / EDIT</div>
+          <div class="cap-name">고치는 시트 — 값이 든 채로</div>
+          <p class="cap-body">10월 8일 14:00–16:00 리허설을 고치는 중이다. 버튼이 「닫기 · 저장」이고 그 위에 <code>fg.critical</code> 「지우기」 줄이 선다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">05 / 지우기 확인</span>
+      <h2>한 번 더 묻는다</h2>
+      <p>고치는 시트 위에 뜨는 가운데 Dialog다. 지운 값을 되돌리는 길이 없고 급여가 바로 따라 줄어서다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-delete-confirm">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 10일(토)</div>
+            <div class="daylist">
+              <div class="dayrow">
+                <span class="dr-kind num">14:00–16:00</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <button class="btn sheetcta" type="button">리허설 넣기</button>
+          </div>
+          <div class="rsheet stacked">
+            <div class="grab"></div>
+            <div class="sh-title">리허설 고치기 · 10월 8일(목)</div>
+            <div class="field timerow">
+              <div>
+                <div class="lab">시작</div>
+                <div class="box num">14:00</div>
+              </div>
+              <div>
+                <div class="lab">끝</div>
+                <div class="box num">16:00</div>
+              </div>
+            </div>
+            <div class="guide">이 날은 근무가 없어서 시각으로 넣어요</div>
+            <div class="delrow" style="margin-top:16px">지우기</div>
+            <div class="rowbtns" style="margin-top:0">
+              <button class="btn secondary" type="button">닫기</button>
+              <button class="btn" type="button">저장</button>
+            </div>
+          </div>
+          <div class="dscrim"></div>
+          <div class="dialog">
+            <div class="dt">이 리허설을 지울까요?</div>
+            <div class="db">급여에서도 빠져요</div>
+            <div class="drow">
+              <button class="btn secondary" type="button">그만두기</button>
+              <button class="btn destructive" type="button">지우기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">18 / DELETE · CONFIRM</div>
+          <div class="cap-name">지우기 확인 Dialog</div>
+          <p class="cap-body">아래 줄이 결과를 먼저 말한다 — 「급여에서도 빠져요」는 사용자가 모를 수 있는 사실이라서다. 왼쪽 「그만두기」, 오른쪽 destructive 「지우기」다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">06 / 모션 — 넣은 뒤·지운 뒤</span>
+      <h2>줄이 오르고, 줄이 접힌다</h2>
+      <p>아래 목업의 점선 버튼 둘을 눌러본다. 「데모: 새 줄 추가」는 넣은 뒤 날 시트에 새 줄이 <code>--duration-base</code>(180ms)로 오르는 것을, 「데모: 방금 줄 지우기」는 지운 줄이 <code>--duration-fast</code>(125ms)로 접혀 사라지는 것을 보여준다. 이 둘은 시안 전용 보조 버튼이고 실제 화면에는 없다 — 진짜 화면에서는 넣는 시트의 「넣기」와 고치는 시트의 「지우기 → 지우기 확인」이 같은 결과를 일으킨다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-motion-rows">
+        <div class="mock modal-open" data-row-demo>
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">리허설</span>
+          </div>
+          <div class="body">
+            <div class="monthbar">
+              <span class="m"><span class="lab num">2026년 10월</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+              <span class="sum num">3건 · 5시간</span>
+            </div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">10월 8일(목)</div>
+            <div class="daylist" data-rowlist>
+              <div class="dayrow">
+                <span class="dr-kind num">14:00–16:00</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="dayrow ghost" data-ghost>
+                <span class="dr-kind num">20:00–22:00</span>
+                <span class="dr-right num">2시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <div class="dayrule" data-rule hidden></div>
+            <div class="daysum" data-sum hidden><span>합계</span><span class="num">4시간</span></div>
+            <button class="btn sheetcta" type="button">리허설 넣기</button>
+            <div class="democtl">
+              <button type="button" data-demo-add>데모: 새 줄 추가</button>
+              <button type="button" data-demo-del disabled>데모: 방금 줄 지우기</button>
+            </div>
+            <div class="demohint">넣은 뒤 오르는 것과 지운 뒤 접히는 것을 확인한다</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">19 / MOTION · ROW ADD & COLLAPSE</div>
+          <div class="cap-name">날 시트 — 줄이 오르고 접히는 데모</div>
+          <p class="cap-body">「데모: 새 줄 추가」를 누르면 20:00–22:00 줄이 <strong>--duration-base로 아래에서 올라오며</strong> 가는 선과 합계가 함께 뜬다. 이어서 「데모: 방금 줄 지우기」를 누르면 그 줄이 <strong>--duration-fast로 높이가 접히며</strong> 사라지고 합계도 같이 걷힌다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  var demo = document.querySelector("[data-row-demo]");
+  if (!demo) return;
+
+  var ghost = demo.querySelector("[data-ghost]");
+  var rule = demo.querySelector("[data-rule]");
+  var sum = demo.querySelector("[data-sum]");
+  var addBtn = demo.querySelector("[data-demo-add]");
+  var delBtn = demo.querySelector("[data-demo-del]");
+  var FAST = 125; // --duration-fast
+
+  addBtn.addEventListener("click", function () {
+    ghost.style.display = "flex";
+    ghost.classList.add("enter");
+    rule.hidden = false;
+    sum.hidden = false;
+    addBtn.disabled = true;
+    delBtn.disabled = false;
+  });
+
+  delBtn.addEventListener("click", function () {
+    var h = ghost.getBoundingClientRect().height;
+    ghost.style.height = h + "px";
+    ghost.classList.add("collapsing");
+    ghost.style.transition = "height " + FAST + "ms ease-out, opacity " + FAST + "ms ease-out";
+    void ghost.offsetHeight;
+    ghost.style.opacity = "0";
+    ghost.style.height = "0px";
+    setTimeout(function () {
+      ghost.style.display = "none";
+      ghost.classList.remove("enter", "collapsing");
+      ghost.style.transition = "";
+      ghost.style.height = "";
+      ghost.style.opacity = "";
+      rule.hidden = true;
+      sum.hidden = true;
+      addBtn.disabled = false;
+      delBtn.disabled = true;
+    }, FAST);
+  });
+})();
+</script>

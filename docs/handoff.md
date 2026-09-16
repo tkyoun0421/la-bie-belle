@@ -59,7 +59,37 @@ plan을 쓰며 가른 경계 셋이다.
 - **`attendance-excuse`는 문 셋이 남의 task에 있다.** 대시보드 못 찍음 블록, `/admin/approvals` 목록, 근무자 날 시트다. 임시 진입점을 만들지 않고 기다린다
 - **`attendance-checkin`은 사람이 콘솔에서 할 일이 선행이다.** NCP 대표 계정 지정과 지도 키·`customStyleId` 발급이다. 대표 계정을 안 잡으면 첫 호출부터 과금이다
 
-그다음 수는 payroll 영역이다 — 순서대로 ① 미정 인터뷰 ② 정본 반영 ③ 시안 갱신과 승인 ④ plan이다.
+**payroll 영역의 미정이 다 닫혔고 정본에 반영됐다.** 인터뷰가 두 덩이였다 — 공휴일·시급·조회 열, 그리고 그 과정에서 처음 나온 **리허설**이 여덟이다.
+
+첫 덩이 열이다.
+
+- **공휴일은 앱이 알아서 받는다** — pg_cron `fetch_holidays`가 날마다 다음 해가 비었는지 보고 `pg_net`으로 Edge Function `import-holidays`를 쏜다([PAY-023](2-design/modules/payroll/README.md#pay-023)). 한 해에 실제로 밖을 부르는 것은 한 번이고 실패하면 다음 날 같은 조건이 다시 쏜다 — 날마다 도는 것이 곧 재시도라 실패 큐가 없다
+- **임시공휴일은 관리자가 날마다 표시한다**([PAY-027](2-design/modules/payroll/README.md#pay-027)) — 날 상세의 스위치 하나고 `manual`로 따로 남아 받기가 안 덮는다. 받아온 공휴일인 날에는 켜진 채 잠긴다
+- **시급 상한 100,000원**이고 자릿수만 막는다. **이력은 세 줄**까지 보이고 최저임금은 안 본다
+- 급여 화면의 **달을 걸친 주는 「10월 27일~11월 2일」**로 쓰고, **연 조회에만 목록 맨 아래 합계 줄**이 선다 — 안 눌리고 화살표가 없다
+- **`set_adjustment`의 화면이 없던 구멍을 닫았다** — 날 상세에 「근무 조정」 줄이 서고 시트에 그날 배정된 전원이 뜬다([schedule-admin.md](2-design/modules/schedule/screens/schedule-admin.md#근무-조정)). `wages.md`와 `stats.md`가 「날 상세의 명단에서」라 가리키는데 `schedule-admin.md` 짜임에 그 줄이 없었다
+
+**리허설은 문서에 아예 없던 개념이라 새로 세웠다**([SCH-020](2-design/modules/schedule/README.md#sch-020)~[SCH-023](2-design/modules/schedule/README.md#sch-023)·[PAY-028](2-design/modules/payroll/README.md#pay-028)).
+
+- **자격 있는 근무자가 스스로 넣고 승인이 없다.** 자격은 `position_grants`에 `'리허설'` 한 줄이고 관리자가 준다 — 교육 배정으로는 안 생긴다. 리허설 일정은 담당자가 신랑신부와 직접 잡아 관리자가 언제인지 모른다
+- **본인과 관리자만 본다.** 다른 근무자의 그날 명단에 안 뜨고 현황 머릿수에도 안 든다 — [SCH-019](2-design/modules/schedule/README.md#sch-019)의 「근무표 전체를 본다」를 깨는 예외라 명단이 「9명」인 날에 홀에 열 명이 있을 수 있다
+- **아무 날짜에나 넣는다.** 날이 열렸는지, 확정됐는지, 지난 날인지 안 보고 소급 상한도 없다
+- **입력이 두 갈래고 앱이 가른다.** 그날 본인 배정이 없으면 시작·끝 시각, 있으면 건수다 — **1건이 1시간**이고 한 자리까지다. 사람이 갈래를 고르지 않는다
+- **급여는 합산한다.** 배정 9시간 + 리허설 2건 = 11시간이고 그중 2시간이 1.5배다. 나눠 세면 각각 9시간 기준을 따로 받아 연장이 아예 안 난다
+- **넣는 자리는 `/me/rehearsals`다.** 「나」에 자격 있는 사람에게만 줄이 선다. `/schedule`의 날 시트는 확정된 달에서만 열려 아무 날짜나 받는 문이 못 된다. 화면 문서가 새로 섰다 — [rehearsal.md](2-design/modules/schedule/screens/rehearsal.md)
+
+backlog의 `payroll` 한 행을 여섯으로 갈랐다 — `rehearsal`·`payroll-data`·`payroll-holidays`·`payroll-wages`·`payroll-view`·`payroll-adjust`. 임시공휴일 줄과 근무 조정 줄은 근무표 화면에 서지만 값이 급여 표로 가서 `schedule-admin`이 아니라 `payroll-adjust`가 만든다.
+
+시안 넷이 감사를 거쳐 아티팩트로 올라갔고 전부 승인됐다 — `wages`·`payroll`·`schedule-admin`이 갱신됐고 `rehearsal`이 새로 섰다. 총괄이 정한 다섯도 같이 승인됐다 — 결근은 `adjustments.minutes`의 음수, 리허설에 출근 인증 없음, 관리자도 `/me/rehearsals`를 같이 씀, 겸임의 빈 자리는 먼저 만들어진 것, 겸임은 두 줄 다 풀려야 함.
+
+**payroll plan 여섯이 다 섰다.** [rehearsal](3-build/plans/rehearsal.md)·[payroll-data](3-build/plans/payroll-data.md)·[payroll-holidays](3-build/plans/payroll-holidays.md)·[payroll-wages](3-build/plans/payroll-wages.md)·[payroll-view](3-build/plans/payroll-view.md)·[payroll-adjust](3-build/plans/payroll-adjust.md)다.
+
+plan을 쓰며 나온 막힌 것 둘이 착수 전에 닫혀야 한다.
+
+- **리허설 자격을 주는 화면이 정본에 없다.** [자격](2-design/modules/schedule/design.md#자격)이 「관리자가 직접 준 행이 유일한 길」이라 정했는데 그 행을 만드는 자리가 어디에도 안 그려져 있다 — 사람 픽커의 「자격도 주기」는 포지션 배정 맥락이라 안 맞다. 닫히기 전에는 `rehearsal` task가 서도 아무도 자격을 못 받는다
+- **결근 음수가 근무 시간 변경과 어긋난다.** 9시간일 때 넣은 −540분이 8시간으로 줄어든 날에 그대로 남으면 총 −60분이다. 계산에 바닥을 넣을지 근무 시간을 고칠 때 조정을 다시 계산할지가 [payroll-adjust](3-build/plans/payroll-adjust.md#리스크전환되돌리기)의 첫 결정이다
+
+**다음은 notification 영역이다.** 같은 순서를 돈다 — 미정 인터뷰 → 정본 반영 → 시안 갱신과 승인 → plan.
 
 같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
 

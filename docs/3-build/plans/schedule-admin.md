@@ -146,6 +146,7 @@ sources:
 
 - 짜임: 앱바와 채움 → 근무 시간 줄 → 근무 신청 줄 → 가는 선 → 포지션 아홉 줄 → 「이 날 닫기」
 - 근무 시간 줄을 누르면 시트가 열리고 → `set_day_hours`. 끝이 시작보다 이르면 `bad_hours`라 버튼이 먼저 막는다
+- **임시공휴일 줄과 근무 조정 줄은 이 task가 안 만든다.** 문서의 짜임에는 근무 시간 줄 아래에 둘이 있지만 값이 `holidays`와 `adjustments`로 가는 payroll의 것이고 그 표가 아직 없다. 자리만 비워두는 대신 줄 자체를 안 그린다 — 누를 것이 없는 스위치를 세우면 켜지는 줄 알고 누른다. [`payroll-adjust`](../../backlog.md)가 둘을 통째로 더한다
 - 근무 신청 줄은 그날 신청한 사람 목록이다. 0건이면 줄이 통째로 없다
 - 포지션 아홉 줄은 이 task에서 **자리 수와 배정 수만 센 임시 줄**이다. 안쪽은 [`schedule-assign`](../../backlog.md)이 채운다
 - 「이 날 닫기」 → 배정이 있으면 [날 닫기 경고](../../2-design/modules/schedule/screens/schedule-admin.md#날-닫기-경고) 시트(왼쪽 「그만두기」·오른쪽 「배정 지우고 닫기」), 없으면 확인 없이 바로 `close_day`. 닫히면 달력으로 돌아간다
@@ -254,6 +255,7 @@ sources:
 ## 범위 밖
 
 - 자리·배정·사람 픽커·자격·강제 변경과 날 상세 안쪽 — [`schedule-assign`](../../backlog.md)
+- 날 상세의 임시공휴일 줄과 근무 조정 줄 — [`payroll-adjust`](../../backlog.md). 값이 `holidays`와 `adjustments`로 간다
 - 근무 요청 보내기와 요청 상태 — [`schedule-requests`](../../backlog.md)
 - 근무자 근무표 화면 — [`schedule-worker`](../../backlog.md)
 - 승인할 일 목록·가입 대기·직원·시급·QR·통계 화면 — 각자의 task. 이 task는 홈의 줄과 경로까지다

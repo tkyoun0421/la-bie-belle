@@ -6,9 +6,10 @@
   둘과 이 파일이 어긋나면 저 둘이 이긴다.
 
   이 파일이 맡는 것은 글로 안 남는 것들이다 — 입력 칸에 숫자가 채워진 모습,
-  기본 시급 시트의 인원 줄이 실제로 차지하는 자리, 이력이 다섯 줄을 넘길 때
-  「더 보기」가 붙는 모습, 되돌리기 확인이 시트를 쌓지 않고 따로 뜨는 Dialog인 것.
-  구현할 때 이 셋을 같이 연다.
+  기본 시급 시트의 인원 줄이 실제로 차지하는 자리, 이력이 세 줄을 넘길 때
+  「더 보기」가 붙는 모습, 100,000원 상한에 닿았을 때 도움말이 서는 자리,
+  저장 실패 문구가 시트 제목 자리를 대신하는 모습, 되돌리기 확인이 시트를
+  쌓지 않고 따로 뜨는 Dialog인 것. 구현할 때 이 셋을 같이 연다.
 
   퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
   앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../README.md의 「퍼블리싱」에 있다.
@@ -24,6 +25,12 @@
     같은 자리에 나란히 붙는 보조 문구라 판단해 둘 다 text-xs로 그렸다.
   · 이력 제목("이력")의 글자 크기. 표에 이력 줄(text-sm)만 있고 제목은 없어 text-base
     font-medium으로 그렸다.
+  · 상한 도움말("여기까지만 쓸 수 있어요")의 글자 크기. 색은 wages.md가 직접 선례로
+    든 사유 시트의 도움말 색(fg.neutral-muted, excuse.md "사유 시트 색")을 그대로
+    따랐고, 크기 표에는 이 자리가 없어 text-xs로 그렸다.
+  · 저장 실패 아래 줄("넣은 값은 그대로 있어요 · 다시 저장해볼게요")의 글자 크기·색.
+    wages.md가 "사유 시트의 실패와 같은 꼴"이라고 못 박아 그 시트의 결과 아래 줄과
+    같은 text-sm · fg.neutral-muted로 그렸다.
   · 되돌리기 확인 Dialog의 짜임. wages.md는 "Dialog 하나"라고만 적어 시트 안쪽을 바꾸는
     가입 대기 쪽 방식과 다르다는 것만 확정됐다. 제목·본문·버튼 순서와 가운데 뜨는 카드
     모양은 components.md의 Dialog 토큰표를 그대로 얹어 이 파일이 세웠다.
@@ -337,6 +344,12 @@ code {
 .note { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 .withcount { margin-top: 4px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral); font-weight: 500; }
 
+/* 상한 도움말 — 사유 시트의 200자 상한 도움말이 선례다(wages.md 「기본 시급 시트」, 맨 위 주석) */
+.caphint { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+
+/* 저장 실패 아래 줄 — 사유 시트의 결과 아래 줄과 같은 꼴이다(text-sm · fg.neutral-muted, 맨 위 주석) */
+.failsub { margin-top: 5px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+
 /* 시트 제목 — 기본 시급 시트는 글자만, 사람 시트는 사진+이름(wages.md 짜임) */
 .sheettitle { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral); }
 .shperson { display: flex; align-items: center; gap: 12px; }
@@ -409,7 +422,7 @@ code {
   <p class="lede">
     관리자 홈의 「시급」 줄이 여는 화면이다. 정해야 할 것이 둘이다 — 전원이 쓰는 기본 시급 하나와
     거기서 벗어난 사람들의 값이다. 목록은 이름 가나다순으로 강하늘·김지우·박서연·이도윤·이수민
-    다섯이고, 김지우·이도윤·이수민 셋이 기본을 쓴다. 06절의 이력 목업은 「더 보기」가 눌린다.
+    다섯이고, 김지우·이도윤·이수민 셋이 기본을 쓴다. 05절의 이력 목업은 「더 보기」가 눌린다.
     오른쪽 위 토글이 페이지 전체를 라이트와 다크로 뒤집는다.
   </p>
 
@@ -575,6 +588,7 @@ code {
           <div class="cap-key">SHEET / BASE</div>
           <div class="cap-name">인원 있음 — 지금 값이라 저장이 비활성</div>
           <p class="cap-body">입력 칸에 지금 값 11,000원이 채워져 있다. <strong>고치지 않은 채로는 「저장」이 안 눌린다</strong> — 값이 지금과 같으면 버튼이 비활성이다. 인원 줄 「3명의 시급이 같이 바뀌어요」가 <code>fg.neutral</code>로 서서 안내 문장(<code>fg.neutral-subtle</code>)보다 눈에 띈다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>하한은 0 초과 하나고, 최저임금은 안 본다.</strong> 해마다 바뀌는 법정 값을 앱이 들고 있으면 갱신을 안 한 순간 틀린 경고가 되고, 틀린 경고는 없는 경고보다 나쁘다. 수습 시급처럼 정당하게 낮은 값도 있다.</p>
         </figcaption>
       </figure>
 
@@ -626,6 +640,101 @@ code {
           <div class="cap-key">SHEET / BASE 0</div>
           <div class="cap-name">0명 — 문장이 통째로 바뀐다</div>
           <p class="cap-body">인원이 0명이면 「N명의 시급이 같이 바뀌어요」 대신 <strong>「아직 이 값을 쓰는 사람이 없어요」</strong>로 바뀐다. 문구는 목록의 인원 안내와 같은 문장이다. 첫 사람이 승인되는 순간 이 값이 그 사람에게 곧바로 붙는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>20:42</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">시급</span>
+          </div>
+          <div class="body">
+            <div class="baserow">
+              <div class="baserow-top">
+                <span class="btitle">기본 시급</span>
+                <span class="bval">11,000원</span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="baserow-sub">3명이 이 값을 써요</div>
+            </div>
+            <div class="hr"></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="sheettitle">기본 시급</div>
+              <div class="amtfield">
+                <input type="text" inputmode="numeric" size="7" value="100,000">
+                <span class="won">원</span>
+              </div>
+              <div class="caphint">여기까지만 쓸 수 있어요</div>
+              <div class="note">오늘부터 적용돼요</div>
+              <div class="withcount">3명의 시급이 같이 바뀌어요</div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">닫기</button>
+                <button class="btn" type="button">저장</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">SHEET / CAP</div>
+          <div class="cap-name">100,000원에서 더 안 들어간다</div>
+          <p class="cap-body">시급 상한은 100,000원이다 — <strong>자릿수 오타를 거르는 선이다.</strong> 12,000을 120,000으로 치거나 일당 126,000을 시급 칸에 넣는 것이 이 선에 걸린다. 칸이 상한에 닿으면 더 안 들어가고 칸 아래에 「여기까지만 쓸 수 있어요」가 선다 — 사유 시트의 200자 상한 도움말이 선례다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>20:43</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">시급</span>
+          </div>
+          <div class="body">
+            <div class="baserow">
+              <div class="baserow-top">
+                <span class="btitle">기본 시급</span>
+                <span class="bval">11,000원</span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="baserow-sub">3명이 이 값을 써요</div>
+            </div>
+            <div class="hr"></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="sheettitle">시급을 저장하지 못했어요</div>
+              <div class="amtfield">
+                <input type="text" inputmode="numeric" size="6" value="12,000">
+                <span class="won">원</span>
+              </div>
+              <div class="failsub">넣은 값은 그대로 있어요 · 다시 저장해볼게요</div>
+              <div class="withcount">3명의 시급이 같이 바뀌어요</div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">닫기</button>
+                <button class="btn" type="button">저장</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">SHEET / FAILED</div>
+          <div class="cap-name">시트가 안 닫히고 값이 그대로 있다</div>
+          <p class="cap-body">저장이 통신에 실패하면 <strong>시트가 안 닫히고 넣은 값이 칸에 그대로 있다.</strong> 제목이 「시급을 저장하지 못했어요」로 바뀌고 그 아래 줄이 「넣은 값은 그대로 있어요 · 다시 저장해볼게요」를 말한다 — 사람이 가장 먼저 걱정하는 것이 방금 넣은 값이 날아갔는지라 그것을 먼저 말한다. 사유 시트의 실패와 같은 꼴이다. 「저장」을 다시 누를 수 있다.</p>
         </figcaption>
       </figure>
 
@@ -701,6 +810,128 @@ code {
           <div class="cap-name">개별 — 되돌리기와 이력 셋</div>
           <p class="cap-body">가장 오래된 줄(2025년 9월 3일)은 승인 직후라 <strong>그때는 기본 시급을 쓰고 있었다.</strong> 그 뒤 두 번 개별로 고쳤다. 이력은 최근이 위고 눌리지 않는다 — 지난 급여가 흔들리면 안 돼서 화살표도 더보기도 없다.</p>
           <p class="cap-body" style="margin-top:8px">이력 날짜에 연도를 붙였다 — writing.md의 규칙대로, 이력이 지금 보는 달 안에서만 도는 것이 아니라 해를 넘겨 쌓이는 자리라서다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>20:44</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">시급</span>
+          </div>
+          <div class="body">
+            <div class="baserow">
+              <div class="baserow-top">
+                <span class="btitle">기본 시급</span>
+                <span class="bval">11,000원</span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="baserow-sub">3명이 이 값을 써요</div>
+            </div>
+            <div class="hr"></div>
+            <div class="plist">
+              <div class="rowwrap"><div class="prow">
+                <span class="av"></span>
+                <span class="pname">강하늘</span>
+                <span class="pval">13,000원</span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="sheettitle">시급을 저장하지 못했어요</div>
+              <div class="amtfield">
+                <input type="text" inputmode="numeric" size="6" value="14,000">
+                <span class="won">원</span>
+              </div>
+              <div class="failsub">넣은 값은 그대로 있어요 · 다시 저장해볼게요</div>
+              <button class="revertbtn" type="button">기본 시급으로 되돌리기</button>
+              <div class="histhead">이력</div>
+              <div class="histrow"><span class="hdate">2026년 8월 1일</span><span class="hval">13,000원</span></div>
+              <div class="histrow"><span class="hdate">2026년 3월 1일</span><span class="hval">12,000원</span></div>
+              <div class="histrow"><span class="hdate">2025년 9월 3일</span><span class="hval">11,000원</span></div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">닫기</button>
+                <button class="btn" type="button">저장</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">SHEET / PERSON FAILED</div>
+          <div class="cap-name">사람 시트도 같은 실패 문법이다</div>
+          <p class="cap-body">저장이 통신에 실패하면 02절의 <code>SHEET / FAILED</code>와 똑같이 <strong>시트가 안 닫히고 넣은 값(14,000원)이 칸에 그대로 있다.</strong> 제목 자리가 「시급을 저장하지 못했어요」로 바뀌고 그 아래에 「넣은 값은 그대로 있어요 · 다시 저장해볼게요」가 선다. 사람 시트라 되돌리기 줄과 이력 셋이 그 아래 그대로 붙어, 시트 안쪽이 02절보다 길다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>20:44</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">시급</span>
+          </div>
+          <div class="body">
+            <div class="baserow">
+              <div class="baserow-top">
+                <span class="btitle">기본 시급</span>
+                <span class="bval">11,000원</span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="baserow-sub">3명이 이 값을 써요</div>
+            </div>
+            <div class="hr"></div>
+            <div class="plist">
+              <div class="rowwrap"><div class="prow">
+                <span class="av"></span>
+                <span class="pname">강하늘</span>
+                <span class="pval">13,000원</span>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="shperson">
+                <span class="av big"></span>
+                <div class="sh-name">강하늘</div>
+              </div>
+              <div class="amtfield">
+                <input type="text" inputmode="numeric" size="7" value="100,000">
+                <span class="won">원</span>
+              </div>
+              <div class="caphint">여기까지만 쓸 수 있어요</div>
+              <div class="note">오늘부터 적용돼요</div>
+              <button class="revertbtn" type="button">기본 시급으로 되돌리기</button>
+              <div class="histhead">이력</div>
+              <div class="histrow"><span class="hdate">2026년 8월 1일</span><span class="hval">13,000원</span></div>
+              <div class="histrow"><span class="hdate">2026년 3월 1일</span><span class="hval">12,000원</span></div>
+              <div class="histrow"><span class="hdate">2025년 9월 3일</span><span class="hval">11,000원</span></div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">닫기</button>
+                <button class="btn" type="button">저장</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">SHEET / PERSON CAP</div>
+          <div class="cap-name">사람 시트도 같은 상한이다</div>
+          <p class="cap-body">02절의 <code>SHEET / CAP</code>과 같은 상한 100,000원이다 — 두 시트가 같은 칸에 같은 값을 받으니 규칙도 같다. 칸이 상한에 닿으면 더 안 들어가고 칸 아래에 「여기까지만 쓸 수 있어요」가 선다. 되돌리기 줄과 이력이 그 아래 그대로 붙는다.</p>
         </figcaption>
       </figure>
 
@@ -780,7 +1011,7 @@ code {
   <section>
     <div class="sec-head">
       <span class="sec-num">05 / 이력이 길 때</span>
-      <h2>다섯 줄까지만 보이고 「더 보기」가 붙는다</h2>
+      <h2>세 줄까지만 보이고 「더 보기」가 붙는다</h2>
       <p>components.md의 Button 절 「목록을 접는 더 보기」가 정본이다 — ghost, 목록 폭을 다 쓰고 text-sm, 눌리면 접힌 줄이 그 자리에 펼쳐지고 버튼은 사라진다. 몇 줄부터 접을지는 이 화면이 정한다. 눌러 보면 나머지가 펼쳐진다.</p>
     </div>
     <div class="grid">
@@ -833,8 +1064,8 @@ code {
               <div class="histrow"><span class="hdate">2026년 9월 1일</span><span class="hval">12,500원</span></div>
               <div class="histrow"><span class="hdate">2026년 6월 1일</span><span class="hval">12,000원</span></div>
               <div class="histrow"><span class="hdate">2026년 3월 1일</span><span class="hval">12,500원</span></div>
-              <div class="histrow"><span class="hdate">2025년 12월 1일</span><span class="hval">12,000원</span></div>
-              <div class="histrow"><span class="hdate">2025년 9월 1일</span><span class="hval">11,500원</span></div>
+              <div class="histrow" data-hidden-hist hidden><span class="hdate">2025년 12월 1일</span><span class="hval">12,000원</span></div>
+              <div class="histrow" data-hidden-hist hidden><span class="hdate">2025년 9월 1일</span><span class="hval">11,500원</span></div>
               <div class="histrow" data-hidden-hist hidden><span class="hdate">2025년 6월 1일</span><span class="hval">11,000원</span></div>
               <div class="histrow" data-hidden-hist hidden><span class="hdate">2025년 3월 2일</span><span class="hval">11,000원</span></div>
               <button class="morebtn" type="button" data-morebtn>더 보기</button>
@@ -847,8 +1078,8 @@ code {
         </div>
         <figcaption>
           <div class="cap-key">SHEET / MORE</div>
-          <div class="cap-name">일곱 줄 중 다섯만 먼저 보인다</div>
-          <p class="cap-body">박서연의 이력이 일곱 줄이다. <strong>다섯 줄까지만 보이고 그 아래는 「더 보기」 뒤에 접혀 있다.</strong> 몇 줄까지 보일지는 wages.md의 「아직 안 정한 것」에 남은 미정이고, 제안값인 다섯을 그대로 썼다. 더 보기를 누르면 나머지 둘이 펼쳐진다.</p>
+          <div class="cap-name">일곱 줄 중 셋만 먼저 보인다</div>
+          <p class="cap-body">박서연의 이력이 일곱 줄이다. <strong>세 줄까지만 보이고 그 아래는 「더 보기」 뒤에 접혀 있다.</strong> 줄 하나가 대략 한 해라 셋이면 3년치고, 이력에서 실제로 찾는 것(「그전엔 얼마였나」)은 첫 줄에 있다. 더 보기를 누르면 나머지 넷이 펼쳐진다.</p>
         </figcaption>
         <button class="replay" type="button" data-more-reset>다시 접기</button>
       </figure>
