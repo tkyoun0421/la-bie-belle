@@ -23,7 +23,7 @@
     "12회 · 132시간" "1회"뿐이고 나머지 날짜·금액·합계는 이 파일이 자리를 재려고
     지어냈다. 「연장 1시간」의 126,000원도 108,000÷9시간=시급 12,000원을 가정해
     9시간×12,000 + 1시간×1.5×12,000으로 이 파일이 계산한 것이다.
-  · 「연」 단위 목록에 1월~10월만 세웠다. 11·12월(미래)과 취업 전 달을 보여줄지
+  · 「연」 단위 목록에 최근 다섯 달만 세웠다. 11·12월(미래)과 취업 전 달을 보여줄지
     문서가 안 정해서, 화살표가 지금 기간과 첫 달에서 멈추는 규칙과 같은 결로
     맞춰 그렸다 — 확정된 규칙이 아니라 이 파일의 판단이다.
   · 「퇴사한 뒤」의 마지막 근무 달(2026년 8월)과 그 앞 예시들의 인적사항. 전부 더미다.
@@ -320,6 +320,8 @@ code {
 .hrow.yrow { cursor: pointer; }
 /* 날마다/줄마다 눌러도 다음 화면이 없다 — 화살표도 누름 배경도 없다 */
 .hrow.day { cursor: default; }
+/* 「연」 목록 맨 아래 합계 줄 — payroll.md 「내역 목록」. 안 눌린다. 화살표도 누름 배경도 없다 */
+.hrow.sumrow { cursor: default; }
 
 /* 빈 상태 — components.md 「빈 상태」 */
 .emptybox { margin-top: 32px; padding: 16px 0; }
@@ -488,6 +490,54 @@ code {
           </div>
           <div class="body haspad">
             <div class="segment">
+              <span class="pill" style="transform: translateX(0%)"></span>
+              <span class="segcell on">주</span>
+              <span class="segcell">월</span>
+              <span class="segcell">연</span>
+            </div>
+            <div class="periodrow">
+              <button class="parrow" type="button" aria-label="이전 주"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
+              <span class="ptext">10월 27일~11월 2일</span>
+              <button class="parrow" type="button" aria-label="다음 주"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+            </div>
+            <div class="amount num">432,000원</div>
+            <div class="hint">예상치예요. 실제 지급액과 다를 수 있어요</div>
+            <div class="accs">
+              <div class="accrow"><span class="ak">근무</span><span class="av">4회 · 36시간</span></div>
+            </div>
+            <div class="hlist">
+              <div class="hrow day"><div class="hmid"><div class="htitle">11월 2일(월)</div><div class="hsub">메인 · <span class="num">10:00–19:00</span></div></div><div class="hval num">108,000원</div></div>
+              <div class="hrow day"><div class="hmid"><div class="htitle">10월 30일(금)</div><div class="hsub">메인 · <span class="num">10:00–19:00</span></div></div><div class="hval num">108,000원</div></div>
+              <div class="hrow day"><div class="hmid"><div class="htitle">10월 28일(수)</div><div class="hsub">메인 · <span class="num">10:00–19:00</span></div></div><div class="hval num">108,000원</div></div>
+              <div class="hrow day"><div class="hmid"><div class="htitle">10월 27일(화)</div><div class="hsub">메인 · <span class="num">10:00–19:00</span></div></div><div class="hval num">108,000원</div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h5v-5h2v5h5v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.3" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.5-4 4-6 7-6s5.5 2 7 6"/></svg><span class="tlabel">나</span></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">LIST / WEEK — CROSS-MONTH</div>
+          <div class="cap-name">「주」 — 달을 걸칠 때도 날짜만 쓴다</div>
+          <p class="cap-body">가운데 글이 「10월 27일~11월 2일」이다. <strong>달이 갈린다는 말을 따로 안 붙인다</strong> — 주 단위는 실제 지급 단위라(PAY-022) 이 화면의 금액이 곧 그 주에 받는 돈이고, 어느 날이 어느 달에 잡히는지는 아래 내역 목록의 날짜(11월 2일 · 10월 30일 · 10월 28일 · 10월 27일)에서 읽힌다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:17</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="title">급여</span>
+          </div>
+          <div class="body haspad">
+            <div class="segment">
               <span class="pill" style="transform: translateX(200%)"></span>
               <span class="segcell">주</span>
               <span class="segcell">월</span>
@@ -510,6 +560,7 @@ code {
               <div class="hrow yrow"><div class="hmid"><div class="htitle">8월</div></div><div class="hval num">1,296,000원</div><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="hrow yrow"><div class="hmid"><div class="htitle">7월</div></div><div class="hval num">1,296,000원</div><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="hrow yrow"><div class="hmid"><div class="htitle">6월</div></div><div class="hval num">1,296,000원</div><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+              <div class="hrow sumrow"><div class="hmid"><div class="htitle">합계</div></div><div class="hval num">12,960,000원</div></div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -522,9 +573,11 @@ code {
         </div>
         <figcaption>
           <div class="cap-key">LIST / YEAR</div>
-          <div class="cap-name">「연」 — 달마다 한 줄, 그 줄만 눌린다</div>
-          <p class="cap-body">2026년 1월부터 취업했다고 가정해 1~10월 열 달을 세웠다. <strong>11·12월(미래)은 안 보여준다</strong> — 문서가 안 정한 자리라 「앞으로 가는 화살표는 지금 기간에서 멈춘다」는 기존 규칙과 같은 결로 이 파일이 맞췄다. 목록 안에 합계 줄을 둘지도 문서가 「아직 안 정한 것」에 남겨둬서 안 그렸다.</p>
+          <div class="cap-name">「연」 — 달마다 한 줄, 맨 아래는 안 눌리는 합계 줄</div>
+          <p class="cap-body">최근 다섯 달만 그렸다 — 목록 모양을 보는 데 열두 줄이 필요하지 않다. <strong>11·12월(미래)은 안 보여준다</strong> — 문서가 안 정한 자리라 「앞으로 가는 화살표는 지금 기간에서 멈춘다」는 기존 규칙과 같은 결로 이 파일이 맞췄다.</p>
           <p class="cap-body" style="margin-top:8px">화살표(chevron)는 이 줄이 「월」로 눌려 들어간다는 뜻이라 이 파일이 붙였다 — payroll.md 자신은 화살표를 언급하지 않는다. 열두 달 다 같은 1,296,000원인 것도 지어낸 값이다.</p>
+          <p class="cap-body" style="margin-top:8px">맨 아래 <strong>「합계」 줄은 열두 달 밑에 한 줄이고 값은 위 금액과 같다</strong> — 열두 줄을 훑고 내려온 끝에서 다시 위로 안 올라가게 하는 자리다. 같은 금액이 화면에 두 번 서지만 위는 「지금 보는 기간이 얼마인가」고 아래는 「방금 지나온 열두 줄의 끝」이다. 주·월에는 안 붙는다 — 거기는 목록이 짧아 끝까지 가도 위 금액이 아직 화면에 있다.</p>
+          <p class="cap-body" style="margin-top:8px">합계 줄은 <strong>안 눌린다.</strong> 다른 줄은 눌러 그달로 가는데 이 줄에는 갈 곳이 없다 — 화살표도 누름 배경도 없다.</p>
         </figcaption>
       </figure>
 

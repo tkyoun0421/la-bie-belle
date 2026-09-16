@@ -69,7 +69,7 @@ sources:
 
 - `add_slot(p_day_id uuid, p_position text)` — `slots` 행 하나를 넣는다. 상한이 없다([SCH-011](../../2-design/modules/schedule/README.md#sch-011)). 확정 뒤에 확정 시점부터 있던 날이면 `already_confirmed` — 새로 연 날은 통과한다. 그 갈림은 `days.opened_at`이 `schedules.confirmed_at`보다 뒤인지로 본다
 - `remove_slot(p_slot_id uuid)` — 살아 있는 정규 배정이 있으면 같이 닫는다. 확정 전이면 두 행을 지우고, 확정 뒤 새로 연 날이면 `ended_at`을 찍고 알림 대상을 낸다. 같은 `already_confirmed` 갈림이 걸린다
-- `merge_slots(p_target_slot_id uuid, p_source_slot_id uuid)` — 받은 쪽 `positions`에 내준 쪽 포지션을 더하고 내준 쪽 자리를 닫는다. 받은 쪽에 사람이 있으면 그 사람이 겸임을 맡고 **내준 쪽 사람이 빠진다** — 끌려온 사람이 이긴다([잠금과 구조 변경](../../2-design/modules/schedule/screens/schedule-admin.md#잠금과-구조-변경)). 빠진 배정은 확정 전이면 지우고 뒤면 닫는다. 두 자리가 같은 날이 아니면 `not_allowed`
+- `merge_slots(p_day_id uuid, p_from text, p_to text)` — 포지션 이름 둘을 받는다. **양쪽에서 살아 있는 정규 배정이 없는 자리를 하나씩 골라** 받은 쪽 `positions`에 내준 쪽 포지션을 더하고 내준 쪽 자리를 닫는다. 빈 자리가 여럿이면 먼저 만들어진 것이 간다. **사람이 든 자리는 안 건드리고 배정이 사라지는 길이 없다** — 한쪽이라도 빈 자리가 없으면 `no_empty_slot`이다([SCH-015](../../2-design/modules/schedule/README.md#sch-015)). 자리 id가 아니라 포지션 이름을 받는 것은 화면이 집는 것이 줄 머리라서다([잠금과 구조 변경](../../2-design/modules/schedule/screens/schedule-admin.md#잠금과-구조-변경))
 - `split_slot(p_slot_id uuid)` — `positions`가 둘 이상이어야 한다(아니면 `not_merged`). 첫 포지션만 남기고 나머지마다 새 자리를 만든다. **배정된 사람은 남는 쪽에 그대로 있다** — 겸임 카드가 받은 쪽 줄에 서 있으니 나누면 그 자리로 돌아간다
 - `add_assignment(p_slot_id uuid, p_profile_id uuid, p_kind text)` — `kind`가 `regular`면 `slot_id`를 먹고 `training`이면 `p_slot_id`를 무시하고 `day_id`만 든다([SCH-012](../../2-design/modules/schedule/README.md#sch-012)). **그날 `availabilities`에 행이 없으면 `not_applied`** — 신청 안 한 사람은 어느 길로도 못 들어간다([SCH-016](../../2-design/modules/schedule/README.md#sch-016)). 제한 포지션인데 `position_grants`가 없으면 `not_qualified`. 그날 이미 살아 있는 정규 배정이 있으면 `already_assigned`. 자리가 이미 찼으면 `slot_full`
 - `remove_assignment(p_assignment_id uuid)` — 확정 전이면 행을 지우고 뒤면 `ended_at`·`ended_reason`·`ended_by`를 찍는다
@@ -135,10 +135,10 @@ sources:
 
 **잠금과 구조 변경.** 아홉 줄 전부 잠긴 채 열린다.
 
-- 자물쇠를 누르면 **그 포지션만** 풀린다. 자물쇠가 열린 모양이 되고, 자리 카드에 끌기 손잡이가 나타나고, 목록 끝에 점선 「자리 추가」 줄이 서고, 줄 머리 아래 도움말 한 줄 「아래로 끌면 삭제, 다른 포지션 자리에 겹치면 겸임이에요」가 선다. **색으로 말하지 않는다**
+- 자물쇠를 누르면 **그 포지션만** 풀린다. 자물쇠가 열린 모양이 되고, 자리 카드에 끌기 손잡이가 나타나고, 목록 끝에 점선 「자리 추가」 줄이 서고, 줄 머리 아래 도움말 한 줄 「자리는 아래로 끌면 삭제, 줄 머리를 다른 줄 머리에 겹치면 겸임이에요」가 선다. **줄 머리에도 끌기 손잡이가 붙는다** — 집는 것이 둘이고 대상이 갈린다. **색으로 말하지 않는다**
 - 「자리 추가」 → `add_slot`. 상한이 없다
 - 자리를 집어 화면 아래 버리는 영역(`bg.critical-weak` 면, 하단 고정 `h-14` `rounded-lg`, 좌우 `mx-6` 아래 `mb-4` + `env(safe-area-inset-bottom)`)에 놓으면 → `remove_slot`. **빈 자리는 놓는 순간 사라지고, 사람이 든 자리는 시트가 확인한다** — 「박서연 님 배정도 같이 사라져요」
-- 자리를 다른 포지션의 자리에 겹쳐 놓으면 → `merge_slots`. 대상 카드에 `stroke.brand-solid` 테두리가 선다. **둘 다 사람이 들었으면 놓기 전에 시트가 확인한다** — 「김지우 님 배정이 사라져요」. 그만두면 카드가 잔상 자리로 돌아간다
+- **줄 머리를** 다른 포지션의 줄 머리에 겹쳐 놓으면 → `merge_slots`. 대상 줄 머리에 `stroke.brand-solid` 테두리가 선다. **양쪽에 빈 자리가 있고 두 줄 다 풀려 있을 때만 받는다** — 아니면 테두리가 안 서고 손을 떼면 제자리로 돌아가며 토스트 「빈 자리가 있어야 합쳐요」가 뜬다. 확인 시트가 없다, 지워지는 것이 없어서다
 - 겸임 카드를 누르면 시트에 「자리 나누기」가 한 줄 더 선다 → `split_slot`. **끌어서 되돌리는 길을 안 만든다** — 버리기와 손짓이 겹친다
 - 집힌 카드는 면 그대로에 `shadow-card`. 따라가는 동안의 duration은 두지 않는다 — [motion.md](../../2-design/design-system/foundation/motion.md)에 직접 조작 조항이 없다
 
@@ -183,7 +183,7 @@ sources:
 **테스트.**
 
 - unit: AC-02 전부(포지션 줄 가르기·셈·겸임 분모·픽커 목록 가르기·상태 메시지·성별 기호·년생·확정 갈림), 쓰기 dal의 오류 가르기
-- integration: 함수 여덟의 관리자 검사와 오류 코드 전부. 특히 — `add_assignment`가 미신청자에게 `not_applied`, 제한 포지션에 `not_qualified`, 같은 날 둘째 자리에 `already_assigned`, 찬 자리에 `slot_full`; 교육 배정은 넷 중 자격만 안 걸린다; `merge_slots`가 받은 쪽 배열을 늘리고 내준 쪽을 닫고 내준 쪽 사람을 빼는지; `split_slot`이 사람을 남는 쪽에 두는지; `force_change`가 한 트랜잭션이라 새 사람이 실패하면 기존 배정이 살아 있는지; 확정 전은 지우고 확정 뒤는 `ended_at`을 찍는지; 새로 연 날은 `add_slot`이 통과하고 확정 시점 날은 `already_confirmed`인지
+- integration: 함수 여덟의 관리자 검사와 오류 코드 전부. 특히 — `add_assignment`가 미신청자에게 `not_applied`, 제한 포지션에 `not_qualified`, 같은 날 둘째 자리에 `already_assigned`, 찬 자리에 `slot_full`; 교육 배정은 넷 중 자격만 안 걸린다; `merge_slots`가 받은 쪽 배열을 늘리고 내준 쪽 빈 자리를 닫는지, 사람이 든 자리를 안 건드리는지, 한쪽이 다 찼으면 `no_empty_slot`인지; `split_slot`이 사람을 남는 쪽에 두는지; `force_change`가 한 트랜잭션이라 새 사람이 실패하면 기존 배정이 살아 있는지; 확정 전은 지우고 확정 뒤는 `ended_at`을 찍는지; 새로 연 날은 `add_slot`이 통과하고 확정 시점 날은 `already_confirmed`인지
 - e2e(`tests/e2e/schedule-assign.spec.ts`): 관리자가 날 상세에서 빈 자리를 눌러 사람을 넣고 → 줄을 길게 눌러 사람 시트를 보고 → 자격 없는 사람에게 자격을 주며 넣고 → 자물쇠를 풀어 자리를 추가하고 → 확정 뒤 강제 변경에 확인 시트가 서는 데까지. 끌기는 e2e가 흉내 내기 어려워 **자리 추가와 시트 경로만 본다** — 삭제·겸임은 integration이 함수를 직접 본다
 
 ### AC-11
@@ -228,7 +228,7 @@ sources:
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
 | AC-01 | 미신청자가 들어간다, 자격 없이 들어간다, 한 사람이 두 자리를 맡는다 | integration `src/entities/schedule/dals/__tests__/`(예정) | `pnpm test:integration:run` | `not_applied`·`not_qualified`·`already_assigned`·`slot_full` |
-| AC-01 | 겸임이 두 줄에 그려진다, 나누면 사람이 사라진다 | integration 위 | 위와 같다 | 받은 쪽 배열이 늘고 내준 쪽이 닫히고, 나누면 사람이 남는 쪽에 있다 |
+| AC-01 | 겸임이 두 줄에 그려진다, 합치다 배정이 사라진다, 나누면 사람이 사라진다 | integration 위 | 위와 같다 | 받은 쪽 배열이 늘고 내준 쪽 빈 자리가 닫히고, 사람이 든 자리는 그대로고, 나누면 사람이 남는 쪽에 있다 |
 | AC-01 | 강제 변경이 반쪽 난다 | integration 위 | 위와 같다 | 새 사람 실패 시 기존 배정이 살아 있다 |
 | AC-01 | 확정 뒤 구조가 바뀐다 | integration 위 | 위와 같다 | 확정 시점 날은 `already_confirmed`, 새로 연 날은 통과 |
 | AC-02 | 셈이 틀린다, 픽커가 잘못 가른다 | unit `src/screens/schedule-admin/model/__tests__/`(예정) | `pnpm test` | 겸임 분모, 교육 제외, 상태 메시지 넷 |

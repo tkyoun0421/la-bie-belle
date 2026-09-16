@@ -32,6 +32,7 @@
 | `/schedule` | [앱을 열면](#앱을-열면) — 승인됨 | 근무자 근무표. `?month=`는 달, `?date=`는 그날 시트 · [`schedule-worker.md`](../modules/schedule/screens/schedule-worker.md) |
 | `/payroll` | [앱을 열면](#앱을-열면) — 승인됨. 퇴사자에게도 열린다 | 급여 · [`payroll.md`](../modules/payroll/screens/payroll.md) |
 | `/me` | [앱을 열면](#앱을-열면) — 승인됨 | 나 · [`profile.md`](../modules/account/screens/profile.md) |
+| `/me/rehearsals` | 리허설 자격이 있는 사람과 관리자만. `?month=`는 달 | 리허설 · [`rehearsal.md`](../modules/schedule/screens/rehearsal.md) |
 | `/admin` | 관리자만 | 관리자 홈 · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md#관리자-홈) |
 | `/admin/schedule` | 관리자만 | 관리자 달력. `?month=`는 달, `?date=`는 날 상세 · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md) |
 | `/admin/applications` | 관리자만 | 근무 신청 모아보기. `?month=` · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md#근무-신청-모아보기) |
@@ -44,7 +45,7 @@
 | `/admin/stats` | 관리자만 | 통계 · [`stats.md`](screens/stats.md) |
 
 - 적용 범위: 앱의 모든 라우트
-- 기본 계약: **동적 세그먼트가 없다.** 날은 전부 `?date=`다. 근무자에게 `?date=`는 달력 위의 시트고 관리자에게는 날 상세 화면 하나다 — 같은 문법, 다른 모양. `/admin` 아래는 관리자만이다. 근무자가 열면 `/`로 보낸다
+- 기본 계약: **동적 세그먼트가 없다.** 날은 전부 `?date=`다. 근무자에게 `?date=`는 달력 위의 시트고 관리자에게는 날 상세 화면 하나다 — 같은 문법, 다른 모양. `/admin` 아래는 관리자만이다. 근무자가 열면 `/`로 보낸다. `/me/rehearsals`는 `/admin` 밖에 있는 유일한 조건부 경로다 — 역할이 아니라 자격이 문을 가른다. 자격 없는 사람이 열면 `/me`로 보낸다
 - 이유: 라우트가 전부 정적 껍데기라 미리 받고(prefetch) Service Worker가 캐시한다([system/runtime.md](runtime.md#캐시-네-계층))
 - 예외: `?date=`·`?month=`를 읽는 컴포넌트는 Suspense 안에 산다 — 정적 빌드가 요구한다
 
@@ -54,7 +55,7 @@
 
 - 적용 범위: 화면이 쌓이는 방식
 - 기본 계약:
-  - **근무자 층은 탭 넷이 나란히다.** 대시보드 · 근무표 · 급여 · 나. 탭 사이는 뒤로가 없다 — 탭 바가 곧 이동이다. 근무자 층에서 밀려 올라가는 화면은 출근 인증 하나고, 닫으면 대시보드다
+  - **근무자 층은 탭 넷이 나란히다.** 대시보드 · 근무표 · 급여 · 나. 탭 사이는 뒤로가 없다 — 탭 바가 곧 이동이다. 근무자 층에서 밀려 올라가는 화면은 출근 인증과 리허설 둘이다. 출근 인증은 닫으면 대시보드고 리허설은 「나」다 — 온 곳으로 돌아간다. 리허설은 자격이 있는 사람에게만 문이 열리고 관리자도 같은 문을 쓴다([schedule/README.md](../modules/schedule/README.md#sch-020))
   - **관리자 층은 홈 위로 쌓인다.** 「나」의 「관리자 모드」 줄이 `/admin`을 열고, 홈의 줄이 각자의 화면을 연다. 달력은 홈의 근무표 타일이 여는 별개 화면이고 날 상세는 그 위다 — 홈 → 달력 → 날 상세 셋이다. 관리자가 근무자 알림을 누르면 관리자 층을 버리고 근무자 층으로 간다
   - **게이트 층은 넷이 나란히다.** `/login` · `/pending` · `/blocked` · `/left`. 서로 오가지 않고 상태가 바뀌면 껍데기가 옮긴다
 
@@ -69,6 +70,7 @@
 | --- | --- |
 | 탭 넷 | 없음 |
 | 출근 인증 | `/` |
+| 리허설 | `/me` |
 | 관리자 홈 | `/me` |
 | 달력 · 근무 신청 모아보기 · 승인할 일 · 가입 대기 · 직원 · 시급 · QR · 통계 | `/admin` |
 | 날 상세 | 달력. `?from=approvals`면 승인할 일, `?from=members`면 직원 |
@@ -100,5 +102,5 @@
 
 #### Q-02
 
-- 질문: 화면이 없는 함수 — `post_announcement`(공지 보내기), `set_hall_location`(홀 좌표·반경), `undo_leave`(퇴사 되돌리기), `import_holidays`. 알림 설정(끄기·다시 켜기)과 지난 알림 목록도 화면이 없다
+- 질문: 화면이 없는 함수 — `post_announcement`(공지 보내기), `set_hall_location`(홀 좌표·반경), `undo_leave`(퇴사 되돌리기). 알림 설정(끄기·다시 켜기)과 지난 알림 목록도 화면이 없다. `import_holidays`는 목록에서 빠졌다 — cron이 부르는 함수라 사람이 누를 자리가 없다([payroll/design.md](../modules/payroll/design.md#공휴일-받기))
 - 결정 담당과 시점: 1차에 그릴지 미룰지

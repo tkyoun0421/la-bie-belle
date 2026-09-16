@@ -231,6 +231,7 @@ code {
 .mock {
   --bg-neutral: var(--palette-neutral-00);
   --bg-neutral-weak: var(--palette-neutral-100);
+  --bg-neutral-weak-pressed: var(--palette-neutral-200);
   --bg-neutral-solid: var(--palette-neutral-1000);
   --bg-neutral-solid-soft: var(--palette-neutral-900);
   --bg-neutral-disabled: var(--palette-neutral-100);
@@ -420,6 +421,55 @@ code {
 .kvline .k { font-size: var(--t-sm); color: var(--fg-neutral-muted); }
 .kvline .v { margin-left: auto; font-size: var(--t-base); font-weight: 500; font-variant-numeric: tabular-nums; }
 .hopeline { display: flex; align-items: center; gap: 6px; padding-bottom: 12px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+/* 임시공휴일 줄 — 근무 시간 줄 바로 아래, 스위치 하나. 값은 payroll의 holidays로
+   간다(schedule-admin.md 「날 상세 짜임」). 글자 크기는 문서가 못박지 않아 이웃 줄과
+   같은 결로 쟀다 — 라벨은 ListRow 이름표(text-base font-medium), 아래 줄은 도움말류
+   (text-xs)를 따랐다. 스위치 규격은 components.md 「스위치」 그대로(44×26, 손잡이 20) */
+.holidayrow { display: flex; align-items: center; gap: 12px; padding: 12px 0 16px; }
+.holidayrow .hlabel { font-size: var(--t-base); font-weight: 500; color: var(--fg-neutral); }
+.holidayrow .hsub { margin-top: 2px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+.switchslot { flex: 0 0 auto; margin-left: auto; }
+.switch { display: inline-block; width: 44px; height: 26px; border-radius: 999px; position: relative; box-sizing: border-box; }
+.switch.off { background: var(--bg-neutral-weak-pressed); border: 1px solid var(--stroke-neutral-muted); }
+.switch.on { background: var(--bg-neutral-solid); border: 1px solid transparent; }
+.switch .thumb {
+  position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 999px;
+  background: var(--fg-neutral-contrast); box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  transition: transform var(--d-fast) ease-out;
+}
+.switch.on .thumb { transform: translateX(18px); }
+/* 받아온 공휴일인 날 — 켜진 채 잠긴다. 잠금을 표현할 토큰이 문서·components.md에
+   없어 옅기만 낮췄다 — 값을 새로 굳히지 않으려 색은 그대로 두고 불투명도만 썼다 */
+.switch.locked { opacity: .55; cursor: default; }
+/* 근무 조정 줄 — 임시공휴일 줄과 근무 신청 줄 사이. 라벨은 ListRow 이름표와 같은 결
+   (text-base font-medium, fg.neutral), 오른쪽 셈은 text-xs · fg.neutral-subtle
+   (schedule-admin.md 「날 상세 짜임」 「날 상세 색」 「날 상세 글자」).
+   위아래 여백은 근무 시간 줄과 같다 — py-3(12px 0), 「날 상세 여백과 모양」 그대로다 */
+.adjline { display: flex; align-items: center; gap: 10px; padding: 12px 0; cursor: pointer; }
+.adjline .al-label { font-size: var(--t-base); font-weight: 500; color: var(--fg-neutral); }
+.adjline .al-value { margin-left: auto; font-size: var(--t-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+
+/* 근무 조정 시트 — 그날 배정된 사람이 한 줄씩. h-14(56px) px-4(16px), 리허설이
+   붙으면 h-16(64px), 리허설 줄은 이름 아래 mt-0.5(2px). 줄 사이 구분선은
+   stroke.neutral-muted다(schedule-admin.md 「근무 조정」 「날 상세 여백과 모양」) */
+.adjhead { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+.adjlist { margin-top: 10px; }
+.adjrow { display: flex; align-items: center; gap: 8px; height: 56px; padding: 0 16px; cursor: pointer; }
+.adjrow.reh { height: 64px; }
+.adjrow + .adjrow { border-top: 1px solid var(--stroke-neutral-muted); }
+.adjrow .adj-left { flex: 1 1 auto; min-width: 0; }
+.adjrow .adj-name { font-size: var(--t-sm); color: var(--fg-neutral); display: block; }
+.adjrow .rehline { margin-top: 2px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+.adjrow .adj-time { font-size: var(--t-sm); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; }
+.adjrow .adj-prefix { color: var(--fg-neutral-subtle); }
+/* 빈 상태 — components.md 「빈 상태」 그대로. 왼쪽 정렬, 위아래 16px, 화면 가운데로
+   안 민다. 한 문장으로 끝나 제목 없이 아래 줄만 선다(fg.neutral-subtle text-sm) */
+.adjempty { padding: 16px 0; font-size: var(--t-sm); color: var(--fg-neutral-subtle); }
+/* 사람 시트 — 연장 칸. rounded-md(r-md) p-3(12px)는 .field .box 기본값과 같다.
+   단위 「분」은 칸 안 오른쪽에 선다(schedule-admin.md 「날 상세 여백과 모양」 「날 상세 문안」) */
+.field .box.withunit { display: flex; align-items: center; justify-content: space-between; }
+.field .box .unit { color: var(--fg-neutral-subtle); }
+
 .posrow { margin-top: 18px; }
 .poshead { display: flex; align-items: center; gap: 8px; min-height: 32px; }
 .poshead .pname { font-size: var(--t-sm); font-weight: 600; }
@@ -439,6 +489,9 @@ code {
 }
 .seat.empty { background: none; border: 1.5px dashed var(--stroke-neutral-muted); color: var(--fg-neutral-subtle); }
 .seat .handle { margin-left: auto; color: var(--fg-neutral-subtle); display: grid; place-items: center; }
+/* 줄 머리에도 끌기 손잡이가 붙는다 — 잠금이 풀린 줄은 줄 머리도 집을 수 있어서다
+   (schedule-admin.md 「잠금과 구조 변경」). 자물쇠 바로 앞, 오른쪽 끝에 선다 */
+.poshead .handle { color: var(--fg-neutral-subtle); display: grid; place-items: center; }
 .seat.addrow { background: none; border: 1.5px dashed var(--stroke-neutral-muted); color: var(--fg-neutral-muted); justify-content: center; }
 .trainee { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 0 16px; font-size: var(--t-sm); min-height: 30px; }
 .hintline { margin-top: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
@@ -481,27 +534,73 @@ code {
 @keyframes hidelate { 0%, 57% { opacity: 1; } 58%, 100% { opacity: 0; } }
 @keyframes showlate { 0%, 57% { opacity: 0; } 58%, 86% { opacity: 1; } 87%, 100% { opacity: 0; } }
 
-.demo.play .flymerge { animation: dragmerge 3s cubic-bezier(.45,.05,.4,1) 200ms both; z-index: 5; }
-@keyframes dragmerge {
-  0% { transform: none; box-shadow: none; }
-  10% { transform: scale(1.045); box-shadow: var(--card-shadow); }
-  55% { transform: translateY(104px) scale(1.045); box-shadow: var(--card-shadow); opacity: 1; }
-  70% { transform: translateY(104px) scale(.9); opacity: .5; }
-  80%, 100% { transform: translateY(104px) scale(.35); opacity: 0; }
+/* 겸임 합침 — 이제 집는 것이 자리 카드가 아니라 줄 머리다(schedule-admin.md
+   「잠금과 구조 변경」). 실제 줄 머리는 자리에 그대로 있고 — 합친 뒤 셈이 바뀐
+   문구를 그 자리에서 보여줘야 해서다 — 집힌 손짓은 줄 머리 위에 뜨는 작은
+   고스트로 보여준다. 고스트가 shadow-card를 달고 대상 줄 머리까지 내려간다 */
+.demo .poshead { position: relative; }
+.demo .headghost {
+  position: absolute; top: -3px; left: -4px; z-index: 5;
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg-neutral); border-radius: var(--r-md);
+  padding: 4px 10px; font-size: var(--t-sm); font-weight: 600; color: var(--fg-neutral);
+  opacity: 0; pointer-events: none;
 }
-.demo .target { display: grid; align-items: center; }
-.demo .target .before, .demo .target .after { grid-area: 1 / 1; display: flex; align-items: center; gap: 8px; }
-.demo .target .after { opacity: 0; color: var(--fg-neutral); }
-.demo.play .target { animation: targetlit 3s steps(1, end) 200ms both; }
-@keyframes targetlit { 0%, 34% { border-color: var(--stroke-neutral-muted); } 35%, 79% { border-color: var(--stroke-brand-solid); border-style: solid; } 80%, 100% { border-color: transparent; } }
-.demo.play .target { animation-name: targetlit, targetface; animation-duration: 3s, 3s; animation-timing-function: steps(1, end), steps(1, end); animation-delay: 200ms, 200ms; animation-fill-mode: both, both; }
-@keyframes targetface { 0%, 79% { background: none; } 80%, 100% { background: var(--bg-neutral-weak); } }
-.demo.play .target .before { animation: hideat80 3s steps(1, end) 200ms both; }
-.demo.play .target .after { animation: showat80 3s steps(1, end) 200ms both; }
+.demo.play .headghost { animation: headfly 3s cubic-bezier(.45,.05,.4,1) 200ms both; }
+@keyframes headfly {
+  0% { opacity: 0; transform: none; box-shadow: none; }
+  8% { opacity: 1; transform: scale(1.04); box-shadow: var(--card-shadow); }
+  55% { opacity: 1; transform: translateY(150px) scale(1.04); box-shadow: var(--card-shadow); }
+  70% { opacity: .6; transform: translateY(150px) scale(.85); box-shadow: var(--card-shadow); }
+  80%, 100% { opacity: 0; transform: translateY(150px) scale(.6); box-shadow: none; }
+}
+.demo.play .headghost.blocked { animation: headflyblocked 3s cubic-bezier(.45,.05,.4,1) 200ms both; }
+@keyframes headflyblocked {
+  0% { opacity: 0; transform: none; box-shadow: none; }
+  8% { opacity: 1; transform: scale(1.04); box-shadow: var(--card-shadow); }
+  40% { opacity: 1; transform: translateY(104px) scale(1.04); box-shadow: var(--card-shadow); }
+  62% { opacity: 1; transform: translateY(104px) scale(1.04); box-shadow: var(--card-shadow); }
+  78% { opacity: 1; transform: none; box-shadow: none; }
+  100% { opacity: 0; transform: none; box-shadow: none; }
+}
+/* 대상 줄 머리 — 빈 자리가 있을 때만 stroke.brand-solid 테두리와 라벨이 선다.
+   빈 자리가 없으면 이 클래스를 아예 안 건다 — 「테두리가 안 선다」는 상태 자체다 */
+.demo .poshead.target { position: relative; border: 1.5px solid transparent; border-radius: var(--r-md); }
+.demo.play .poshead.target { animation: headtargetlit 3s steps(1, end) 200ms both; }
+@keyframes headtargetlit { 0%, 34% { border-color: transparent; } 35%, 79% { border-color: var(--stroke-brand-solid); } 80%, 100% { border-color: transparent; } }
+
+/* 문구·셈 교차 — 그대로 있는 줄 머리 안에서 텍스트만 바뀐다. block은 자리 카드
+   (전체 폭), inline은 줄 머리 안의 셈(내용 폭)에 쓴다 */
+.demo .morph { display: grid; align-items: center; justify-items: start; }
+.demo .morph.inline { display: inline-grid; }
+.demo .morph > * { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 8px; }
+.demo .morph .after { opacity: 0; }
+.demo.play .morph .before { animation: hideat80 3s steps(1, end) 200ms both; }
+.demo.play .morph .after { animation: showat80 3s steps(1, end) 200ms both; }
 @keyframes hideat80 { 0%, 79% { opacity: 1; } 80%, 100% { opacity: 0; } }
 @keyframes showat80 { 0%, 79% { opacity: 0; } 80%, 100% { opacity: 1; } }
-.demo.play .target .after .badge { animation: bpop var(--d-slow) cubic-bezier(.2,.8,.3,1) 2600ms both; }
+.demo.play .morph .after .badge { animation: bpop var(--d-slow) cubic-bezier(.2,.8,.3,1) 2600ms both; }
 @keyframes bpop { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: none; } }
+
+/* 내준 쪽 줄 — 빈 자리 하나가 접히며 셈의 분모가 준다 */
+.demo .seat.collapsing { overflow: hidden; }
+.demo.play .seat.collapsing { animation: seatfold 3s ease-in-out 200ms both; }
+@keyframes seatfold {
+  0%, 78% { height: 48px; margin-top: 8px; opacity: 1; }
+  92%, 100% { height: 0; margin-top: 0; opacity: 0; }
+}
+
+/* 막힘 — 양쪽 중 한쪽이라도 자리가 다 찼을 때. 대상 줄 머리는 .target을 안 달아
+   테두리가 끝까지 안 선다. 손을 떼면 고스트가 제자리로 돌아가고 토스트가 뜬다.
+   .mock이 overflow: hidden이라 아래로 넘치지 않게 정적 흐름에 둔다(.dropzone과
+   같은 방식) */
+.demo .blocktoast { position: static; margin: 20px auto 0; width: fit-content; opacity: 0; transform: translateY(8px); }
+.demo.play .blocktoast { animation: showblocktoast 3s ease-out 200ms both; }
+@keyframes showblocktoast {
+  0%, 63% { opacity: 0; transform: translateY(8px); }
+  64%, 92% { opacity: 1; transform: none; }
+  93%, 100% { opacity: 0; transform: translateY(8px); }
+}
 .demo .mlabel {
   position: absolute; left: 50%; transform: translate(-50%, 0); top: -26px; white-space: nowrap;
   font-size: 11px; line-height: 1; font-weight: 600; color: var(--fg-brand);
@@ -1076,6 +1175,16 @@ code {
             <div class="kvline"><span class="k">근무 시간</span><span class="v">10:00–19:00</span>
               <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
             </div>
+            <div class="holidayrow">
+              <div>
+                <div class="hlabel">임시공휴일</div>
+                <div class="hsub">급여를 셀 때 공휴일로 봐요</div>
+              </div>
+              <span class="switchslot"><span class="switch off"><span class="thumb"></span></span></span>
+            </div>
+            <div class="adjline"><span class="al-label">근무 조정</span><span class="al-value"></span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
             <div class="hopeline">근무 신청 2 · 박서연, 김지우</div>
             <div class="rule"></div>
             <div class="posrow">
@@ -1124,6 +1233,27 @@ code {
           <div class="cap-key">DAY / LOCKED</div>
           <div class="cap-name">기본 — 전부 잠김</div>
           <p class="cap-body">아홉 줄 전부 자물쇠가 잠겨 있다. <strong>빈 자리를 누르면 픽커</strong>가 열리고, 교육 붙이기는 잠금과 무관하다. 교육 배정 서지우는 셈에 안 든다.</p>
+          <p class="cap-body" style="margin-top:8px">근무 시간 줄 바로 아래 <strong>임시공휴일 줄은 스위치 하나</strong>다. <strong>이 줄이 payroll의 것이다</strong> — 값은 근무표가 아니라 급여 쪽 <code>holidays</code> 표로 가고, <strong>확정 뒤에도 켜고 끌 수 있다.</strong> 임시공휴일 지정이 근무표 확정을 기다려주지 않아서다.</p>
+          <p class="cap-body" style="margin-top:8px">그 아래 <strong>근무 조정 줄</strong>은 조정한 사람이 없어 오른쪽이 비어 있다 — 조정이 아직 없는 날이 기본값이다. 조정 시트를 연 목업들은 「2명 조정됨」이다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock auto" style="border-radius:20px">
+          <div class="body" style="padding-top:20px">
+            <div class="holidayrow" style="padding:0">
+              <div>
+                <div class="hlabel">임시공휴일</div>
+                <div class="hsub">원래 공휴일이에요</div>
+              </div>
+              <span class="switchslot"><span class="switch on locked"><span class="thumb"></span></span></span>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DAY / HOLIDAY LOCKED</div>
+          <div class="cap-name">받아온 공휴일인 날 — 스위치가 켜진 채 잠긴다</div>
+          <p class="cap-body">그 날짜가 <code>holidays</code>에 <code>api</code>로 이미 있으면 <strong>스위치가 켜진 채 눌리지 않는다.</strong> 아래 줄도 「원래 공휴일이에요」로 바뀐다 — 관리자가 끄면 앱이 관리하는 값을 화면에서 지우는 셈이 돼서다.</p>
         </figcaption>
       </figure>
 
@@ -1148,8 +1278,8 @@ code {
           <div class="body" style="padding-top:20px">
             <div class="demo" data-demo>
               <div class="posrow" style="margin-top:0">
-                <div class="poshead"><span class="pname">안내</span><span class="pcnt hot">1/2</span><span class="sp"></span><button class="tbtn">교육 붙이기</button><span class="lockic" style="color:var(--fg-neutral)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.3"/></svg></span></div>
-                <div class="hintline">아래로 끌면 삭제, 다른 포지션 자리에 겹치면 겸임이에요</div>
+                <div class="poshead"><span class="pname">안내</span><span class="pcnt hot">1/2</span><span class="sp"></span><button class="tbtn">교육 붙이기</button><span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span><span class="lockic" style="color:var(--fg-neutral)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.3"/></svg></span></div>
+                <div class="hintline">자리는 아래로 끌면 삭제, 줄 머리를 다른 줄 머리에 겹치면 겸임이에요</div>
                 <div class="seat">강하늘<span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span></div>
                 <div class="slot"><div class="seat empty flyseat">비어 있어요</div></div>
                 <div class="seat addrow">자리 추가</div>
@@ -1177,15 +1307,28 @@ code {
           <div class="body" style="padding-top:20px">
             <div class="demo" data-demo>
               <div class="posrow" style="margin-top:0">
-                <div class="poshead"><span class="pname">메인</span><span class="pcnt">1/1</span><span class="sp"></span><span class="lockic" style="color:var(--fg-neutral)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.3"/></svg></span></div>
-                <div class="slot"><div class="seat flymerge">이준호<span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span></div></div>
+                <div class="poshead">
+                  <span class="pname">메인</span>
+                  <span class="morph inline pcnt hot"><span class="before">1/2</span><span class="after">1/1</span></span>
+                  <span class="sp"></span>
+                  <span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span>
+                  <span class="lockic" style="color:var(--fg-neutral)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.3"/></svg></span>
+                  <span class="headghost">메인<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span>
+                </div>
+                <div class="seat">이준호<span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span></div>
+                <div class="seat empty collapsing">비어 있어요<span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span></div>
               </div>
               <div class="posrow">
-                <div class="poshead"><span class="pname">드레스</span><span class="pcnt hot">0/1</span><span class="sp"></span><span class="lockic" style="color:var(--fg-neutral)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.3"/></svg></span></div>
-                <div class="seat empty target">
+                <div class="poshead target">
                   <span class="mlabel">겸임으로 합치기</span>
+                  <span class="pname">드레스</span><span class="pcnt hot">0/1</span>
+                  <span class="sp"></span>
+                  <span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span>
+                  <span class="lockic" style="color:var(--fg-neutral)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.3"/></svg></span>
+                </div>
+                <div class="seat empty morph">
                   <span class="before">비어 있어요</span>
-                  <span class="after">이준호<span class="badge brand">메인·드레스</span></span>
+                  <span class="after">비어 있어요<span class="badge brand">메인·드레스</span></span>
                 </div>
               </div>
             </div>
@@ -1194,10 +1337,318 @@ code {
         <button class="replay" type="button" data-play>다시 보기</button>
         <figcaption style="margin-top:12px">
           <div class="cap-key">DAY / DRAG — MERGE</div>
-          <div class="cap-name">겹치면 겸임 자리가 된다</div>
-          <p class="cap-body">대상 자리에 브랜드 테두리와 라벨이 서고, 놓으면 <strong>자리 둘이 하나가 되고 포지션 이름 둘이 붙는다.</strong> 내준 쪽 셈의 분모가 준다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>둘 다 사람이 든 자리끼리도 합쳐진다</strong> — 끌려온 사람이 겸임을 맡고 대상 자리에 있던 사람은 빠진다. 사람이 빠지는 순간이라 <strong>놓기 전에 시트가 확인한다</strong> — 「겸임으로 합칠까요? / 김지우 님 배정이 사라져요 / 그만두기 · 합치기」. 그만두면 카드가 잔상 자리로 돌아간다. 여기 재생은 빈 자리에 놓는 쪽이고 그 시트는 목업을 안 세웠다.</p>
-          <p class="cap-body" style="margin-top:8px">되돌리는 길은 끌기가 아니라 시트다 — 겸임 카드를 누르면 「사람 바꾸기 · <strong>자리 나누기</strong> · 자리 비우기 · 닫기」가 서고, 나누면 배정된 사람이 원래 포지션 쪽에 남는다.</p>
+          <div class="cap-name">줄 머리끼리 겹치면 빈 자리가 합쳐진다</div>
+          <p class="cap-body">집는 것이 <strong>자리 카드가 아니라 줄 머리다.</strong> 집힌 줄 머리가 <code>shadow-card</code>를 달고 뜨고, 대상 줄 머리에 <code>stroke.brand-solid</code> 테두리가 서며 「겸임으로 합치기」가 뜬다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>합쳐지는 것은 양쪽의 빈 자리 하나씩이다.</strong> 이준호가 든 메인의 첫 자리는 손대지 않고 그대로 있고, 메인의 빈 자리와 드레스의 빈 자리가 만나 <strong>드레스 쪽에 포지션 배지 둘을 단 빈 자리</strong>로 선다 — 아직 아무도 안 들어 있다. 내준 쪽 메인은 빈 자리 하나가 접히며 셈이 1/2에서 1/1로 준다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>확인 시트가 없다.</strong> 사람이 든 자리는 안 건드리니 지워지는 것이 없어서다. 되돌리는 길은 끌기가 아니라 시트다 — 겸임 카드를 누르면 「사람 바꾸기 · <strong>자리 나누기</strong> · 자리 비우기 · 닫기」가 서고, 나누면 배정된 사람이 원래 포지션 쪽에 남는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock auto" style="border-radius:20px">
+          <div class="body" style="padding-top:20px">
+            <div class="demo" data-demo>
+              <div class="posrow" style="margin-top:0">
+                <div class="poshead">
+                  <span class="pname">스캔</span><span class="pcnt hot">0/1</span>
+                  <span class="sp"></span>
+                  <span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span>
+                  <span class="lockic" style="color:var(--fg-neutral)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.3"/></svg></span>
+                  <span class="headghost blocked">스캔<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span>
+                </div>
+                <div class="seat empty">비어 있어요<span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span></div>
+              </div>
+              <div class="posrow">
+                <div class="poshead">
+                  <span class="pname">팀장</span><span class="pcnt">1/1</span>
+                  <span class="sp"></span>
+                  <span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span>
+                  <span class="lockic" style="color:var(--fg-neutral)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.3"/></svg></span>
+                </div>
+                <div class="seat">최유진<span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span></div>
+              </div>
+              <div class="toast blocktoast">
+                <svg class="toast-ic" style="--ic: var(--fg-informative-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </g>
+                </svg>
+                <span>빈 자리가 있어야 합쳐요</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-play>다시 보기</button>
+        <figcaption style="margin-top:12px">
+          <div class="cap-key">DAY / DRAG — MERGE BLOCKED</div>
+          <div class="cap-name">빈 자리가 없으면 안 합쳐진다</div>
+          <p class="cap-body">팀장은 이미 다 찼다(1/1). 스캔의 줄 머리를 끌어다 겹쳐도 <strong>대상 줄 머리에 테두리가 안 선다</strong> — 합칠 빈 자리가 없어서다. 손을 떼면 <strong>집은 것이 제자리로 돌아가고</strong> 토스트가 「빈 자리가 있어야 합쳐요」를 말한다. 대상 줄이 잠겨 있을 때도 같은 모습이다 — 잠긴 줄 머리는 끌어온 것에 반응하지 않는다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>14:30</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 10일(토)</span>
+            <span class="sp"></span>
+            <span class="meta">9/11</span>
+          </div>
+          <div class="body">
+            <div class="kvline"><span class="k">근무 시간</span><span class="v">10:00–19:00</span></div>
+            <div class="adjline"><span class="al-label">근무 조정</span><span class="al-value">2명 조정됨</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">근무 조정</div>
+            <div class="adjhead num">10:00–19:00 · 9시간</div>
+            <div class="adjlist">
+              <div class="adjrow">
+                <div class="adj-left"><span class="adj-name">박서연</span></div>
+                <span class="adj-time num">9시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow">
+                <div class="adj-left"><span class="adj-name">김지우</span></div>
+                <span class="adj-time num"><span class="adj-prefix">결근</span> 0시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow reh">
+                <div class="adj-left"><span class="adj-name">이하늘</span><div class="rehline">리허설 2건 · 2시간</div></div>
+                <span class="adj-time num"><span class="adj-prefix">연장</span> 11시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow reh">
+                <div class="adj-left"><span class="adj-name">최유진</span><div class="rehline">리허설 14:00–16:00 · 2시간</div></div>
+                <span class="adj-time num">9시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DAY / ADJUST SHEET</div>
+          <div class="cap-name">근무 조정 시트 — 그날 배정된 사람이 한 줄씩</div>
+          <p class="cap-body">머리에 <strong>그날 근무 시간과 길이</strong>가 선다. 줄마다 그날 최종 시간이 서고, 조정이 든 줄은 시간 앞에 「결근」·「연장」이 붙는다. <strong>리허설은 이름 아래 작은 줄로 따로 선다</strong> — 누를 수 없다. 넣고 고치고 지우는 것은 넣은 본인뿐이라서다. 건수로 넣은 것(이하늘 「리허설 2건 · 2시간」)과 시각으로 넣은 것(최유진 「리허설 14:00–16:00 · 2시간」) 두 갈래가 한 화면에 같이 선다.</p>
+          <p class="cap-body" style="margin-top:8px">줄 사이 구분선은 <code>stroke.neutral-muted</code>다 — 포지션 목록의 <code>stroke.neutral</code>보다 한 단 옅다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock auto" style="border-radius:20px">
+          <div class="body" style="padding-top:20px">
+            <div class="sh-title">근무 조정</div>
+            <div class="adjhead num">10:00–19:00 · 9시간</div>
+            <div class="adjempty">아직 배정된 사람이 없어요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DAY / ADJUST SHEET — EMPTY</div>
+          <div class="cap-name">배정이 0명인 날 — 조정 시트가 빈 상태다</div>
+          <p class="cap-body">그날 배정이 하나도 없을 때다. 한 문장으로 끝나 <strong>제목 없이 아래 줄만 선다</strong> — <code>fg.neutral-subtle</code> <code>text-sm</code>, 위아래 16px에 왼쪽 정렬이다. 화면 가운데로 밀지 않는다 — 목록이 서던 자리에 그대로 선다(components.md 「빈 상태」).</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>14:31</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 10일(토)</span>
+            <span class="sp"></span>
+            <span class="meta">9/11</span>
+          </div>
+          <div class="body">
+            <div class="kvline"><span class="k">근무 시간</span><span class="v">10:00–19:00</span></div>
+            <div class="adjline"><span class="al-label">근무 조정</span><span class="al-value">2명 조정됨</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">근무 조정</div>
+            <div class="adjhead num">10:00–19:00 · 9시간</div>
+            <div class="adjlist">
+              <div class="adjrow">
+                <div class="adj-left"><span class="adj-name">박서연</span></div>
+                <span class="adj-time num">9시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow">
+                <div class="adj-left"><span class="adj-name">김지우</span></div>
+                <span class="adj-time num"><span class="adj-prefix">결근</span> 0시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow reh">
+                <div class="adj-left"><span class="adj-name">이하늘</span><div class="rehline">리허설 2건 · 2시간</div></div>
+                <span class="adj-time num"><span class="adj-prefix">연장</span> 11시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow reh">
+                <div class="adj-left"><span class="adj-name">최유진</span><div class="rehline">리허설 14:00–16:00 · 2시간</div></div>
+                <span class="adj-time num">9시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+          </div>
+          <div class="rsheet stacked">
+            <div class="grab"></div>
+            <div class="sh-title">박서연</div>
+            <div style="margin-top:6px">
+              <div class="optrow"><span class="ot">결근이에요</span></div>
+              <div class="optrow"><span class="ot">연장이에요</span></div>
+            </div>
+            <button class="btn secondary" style="margin-top:14px">닫기</button>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DAY / PERSON SHEET — NO ADJUST</div>
+          <div class="cap-name">조정이 없는 사람 — 결근이에요·연장이에요·닫기</div>
+          <p class="cap-body">근무 조정 시트 위로 시트가 한 겹 더 선다. 박서연은 지금 조정이 없어 <strong>「원래대로」가 없다</strong> — 지울 것이 없는 사람에게 지우기를 보여주지 않는다. 결근은 그날 배정 시간을 통째로 빼는 것이라 값을 안 묻고 고른 즉시 반영된다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>14:31</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 10일(토)</span>
+            <span class="sp"></span>
+            <span class="meta">9/11</span>
+          </div>
+          <div class="body">
+            <div class="kvline"><span class="k">근무 시간</span><span class="v">10:00–19:00</span></div>
+            <div class="adjline"><span class="al-label">근무 조정</span><span class="al-value">2명 조정됨</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">근무 조정</div>
+            <div class="adjhead num">10:00–19:00 · 9시간</div>
+            <div class="adjlist">
+              <div class="adjrow">
+                <div class="adj-left"><span class="adj-name">박서연</span></div>
+                <span class="adj-time num">9시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow">
+                <div class="adj-left"><span class="adj-name">김지우</span></div>
+                <span class="adj-time num"><span class="adj-prefix">결근</span> 0시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow reh">
+                <div class="adj-left"><span class="adj-name">이하늘</span><div class="rehline">리허설 2건 · 2시간</div></div>
+                <span class="adj-time num"><span class="adj-prefix">연장</span> 11시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow reh">
+                <div class="adj-left"><span class="adj-name">최유진</span><div class="rehline">리허설 14:00–16:00 · 2시간</div></div>
+                <span class="adj-time num">9시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+          </div>
+          <div class="rsheet stacked">
+            <div class="grab"></div>
+            <div class="sh-title">김지우</div>
+            <div style="margin-top:6px">
+              <div class="optrow"><span class="ot">결근이에요</span></div>
+              <div class="optrow"><span class="ot">연장이에요</span></div>
+              <div class="optrow"><span class="ot">원래대로</span></div>
+            </div>
+            <button class="btn secondary" style="margin-top:14px">닫기</button>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DAY / PERSON SHEET — ADJUSTED</div>
+          <div class="cap-name">조정이 든 사람 — 원래대로가 한 줄 더 선다</div>
+          <p class="cap-body">김지우는 이미 결근 조정이 들어 있어 <strong>「원래대로」가 한 줄 더 선다.</strong> 조정이 없는 사람의 시트와 갈리는 자리는 이 한 줄뿐이다 — 나머지 구성은 같다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>14:32</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">10월 10일(토)</span>
+            <span class="sp"></span>
+            <span class="meta">9/11</span>
+          </div>
+          <div class="body">
+            <div class="kvline"><span class="k">근무 시간</span><span class="v">10:00–19:00</span></div>
+            <div class="adjline"><span class="al-label">근무 조정</span><span class="al-value">2명 조정됨</span></div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">근무 조정</div>
+            <div class="adjhead num">10:00–19:00 · 9시간</div>
+            <div class="adjlist">
+              <div class="adjrow">
+                <div class="adj-left"><span class="adj-name">박서연</span></div>
+                <span class="adj-time num">9시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow">
+                <div class="adj-left"><span class="adj-name">김지우</span></div>
+                <span class="adj-time num"><span class="adj-prefix">결근</span> 0시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow reh">
+                <div class="adj-left"><span class="adj-name">이하늘</span><div class="rehline">리허설 2건 · 2시간</div></div>
+                <span class="adj-time num"><span class="adj-prefix">연장</span> 11시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="adjrow reh">
+                <div class="adj-left"><span class="adj-name">최유진</span><div class="rehline">리허설 14:00–16:00 · 2시간</div></div>
+                <span class="adj-time num">9시간</span>
+                <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+          </div>
+          <div class="rsheet stacked">
+            <div class="grab"></div>
+            <div class="sh-title">박서연</div>
+            <div style="margin-top:6px">
+              <div class="optrow"><span class="ot">결근이에요</span></div>
+              <div class="optrow"><span class="ot" style="color:var(--fg-brand)">연장이에요</span></div>
+            </div>
+            <div class="field" style="margin-top:8px">
+              <div class="lab">몇 분 더 일했나요?</div>
+              <div class="box num withunit"><span>15</span><span class="unit">분</span></div>
+              <div class="fhint">배정 9시간에 더해져요</div>
+            </div>
+            <div class="rowbtns">
+              <button class="btn secondary">닫기</button>
+              <button class="btn">바꾸기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">DAY / PERSON SHEET — EXTEND</div>
+          <div class="cap-name">「연장이에요」를 고른 뒤 분 칸이 열린다</div>
+          <p class="cap-body">고른 줄 아래 분 입력 칸이 열리고 버튼이 「닫기 · 바꾸기」로 바뀐다 — 근무 시간 시트와 같은 짝이다. 칸은 <code>rounded-md</code> <code>p-3</code>이고 단위 「분」이 칸 안 오른쪽에 선다. 아래 「배정 9시간에 더해져요」가 그날 배정 시간을 알린다.</p>
         </figcaption>
       </figure>
 

@@ -11,7 +11,7 @@ PRD는 왜 만드는지를 담고 규칙은 안 담는다. [`../spec/`](../spec/
 ## 영역 지도
 
 - [account/](account/) — 계정. 프로필과 가입 승인, 관리자 권한. [규칙](account/README.md) · [설계](account/design.md) · 화면: [login](account/screens/login.md) · [profile](account/screens/profile.md) · [members-pending](account/screens/members-pending.md) · [members](account/screens/members.md)
-- [schedule/](schedule/) — 근무표. 포지션과 자리와 배정, 확정, 근무 신청과 근무 요청. [규칙](schedule/README.md) · [설계](schedule/design.md) · 화면: [schedule-worker](schedule/screens/schedule-worker.md) · [schedule-admin](schedule/screens/schedule-admin.md)
+- [schedule/](schedule/) — 근무표. 포지션과 자리와 배정, 확정, 근무 신청과 근무 요청. [규칙](schedule/README.md) · [설계](schedule/design.md) · 화면: [schedule-worker](schedule/screens/schedule-worker.md) · [schedule-admin](schedule/screens/schedule-admin.md) · [rehearsal](schedule/screens/rehearsal.md)
 - [swap/](swap/) — 교대. 요청과 수락과 승인, 강제 변경. [규칙](swap/README.md) · [설계](swap/design.md) · 화면은 schedule-worker의 날 시트라 소유 화면이 없다
 - [attendance/](attendance/) — 출근 인증. 위치와 QR, 인증 시각. [규칙](attendance/README.md) · [설계](attendance/design.md) · 화면: [check-in](attendance/screens/check-in.md) · [excuse](attendance/screens/excuse.md) · [qr](attendance/screens/qr.md)
 - [payroll/](payroll/) — 급여. 시급과 가산과 조정과 지급 주기. [규칙](payroll/README.md) · [설계](payroll/design.md) · 화면: [payroll](payroll/screens/payroll.md) · [wages](payroll/screens/wages.md)
