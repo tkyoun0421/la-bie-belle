@@ -14,7 +14,8 @@
     "test:integration": "supabase start && pnpm test:integration:run",
     "e2e": "playwright test",
     "test:integration:run": "supabase migration up && vitest run --project integration",
-    "tokens:css": "node --experimental-strip-types scripts/generate-globals-css.mts"
+    "tokens:css": "node --experimental-strip-types scripts/generate-globals-css.mts",
+    "sian:inline": "node --experimental-strip-types scripts/inline-sian-font.mts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
