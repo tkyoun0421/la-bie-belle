@@ -432,17 +432,8 @@ code {
 .settingnote { display: block; margin: 14px auto 0; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 .map.lost { display: flex; align-items: center; justify-content: center; background: var(--bg-neutral-weak); }
 .maplost-t { max-width: 220px; text-align: center; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
-.linkbtn {
-  position: relative;
-  display: block; margin: 14px auto 0; border: 0; background: none; padding: 6px 4px;
-  font-family: inherit; font-size: var(--t-xs); line-height: var(--lh-xs);
-  color: var(--fg-neutral-muted); cursor: pointer;
-  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--stroke-neutral-muted);
-}
-/* 가로는 이미 44px을 넘어 세로만 넓힌다 — spacing-shape.md의 「누를 수 있는 것은 44px 이상이다」 */
-.linkbtn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
-.linkbtn:hover { color: var(--fg-neutral); }
-.linkbtn:focus-visible { outline: 2px solid var(--stroke-brand-solid); outline-offset: 2px; border-radius: var(--r-xs); }
+/* QR 글 — 버튼도 링크도 아니다. 앱이 데려다줄 수 없는 곳이라 밑줄이 없다 */
+.qrline { display: block; margin: 14px auto 0; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 
 .block { border-radius: var(--r-lg); padding: 14px 16px; display: flex; gap: 11px; align-items: flex-start; }
 .block.warn { background: var(--bg-warning-weak); }
@@ -472,10 +463,12 @@ code {
 .me { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); width: 156px; height: 156px; display: grid; place-items: center; }
 .me .acc { position: absolute; inset: 0; border-radius: 999px; background: var(--bg-brand-solid); opacity: .13; }
 .me .ring {
-  position: absolute; inset: 0; border-radius: 999px; border: 2px solid var(--bg-brand-solid);
+  position: absolute; inset: 0; border-radius: 999px; border: 2px solid var(--stroke-brand-solid);
   opacity: 0; animation: ripple 2.6s cubic-bezier(.2,.6,.3,1) infinite;
 }
-.me .ring:nth-of-type(3) { animation-delay: 1.3s; }
+/* 원 셋이 2.6초 안에서 고르게 어긋난다 — .acc가 첫 <i>라 링은 2·3·4번째다 */
+.me .ring:nth-of-type(3) { animation-delay: .87s; }
+.me .ring:nth-of-type(4) { animation-delay: 1.73s; }
 @keyframes ripple {
   0%   { transform: scale(.18); opacity: 0; }
   18%  { opacity: .85; }
@@ -567,7 +560,7 @@ code {
   100% { transform: scale(1); }
 }
 @keyframes drawline { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
-.me.v-draw .dot.big { background: var(--bg-neutral); color: var(--bg-brand-solid); border-color: var(--bg-brand-solid); }
+.me.v-draw .dot.big { background: var(--bg-neutral); color: var(--fg-brand); border-color: var(--bg-brand-solid); }
 .me.v-draw .acc { background: var(--bg-brand-solid); }
 .cheer.v-draw .dot.big svg { animation: none; opacity: 1; }
 .cheer.v-draw .dot.big path { animation: drawline 520ms cubic-bezier(.35,.72,.2,1) 320ms both; }
@@ -599,7 +592,7 @@ code {
 .grabber { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 16px; }
 .sheet-t { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 700; letter-spacing: -.01em; }
 .sheet-s { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
-.sheet .btn { margin-top: 18px; }
+.sheet .btn { margin-top: 16px; }
 .sheet .btn + .btn { margin-top: 6px; }
 .dots { display: inline-flex; gap: 4px; align-items: center; vertical-align: middle; margin-left: 7px; }
 .dots i { width: 4px; height: 4px; border-radius: 999px; background: var(--palette-neutral-400); animation: beat var(--interval-beat) ease-in-out infinite; }
@@ -679,7 +672,7 @@ code {
               <span class="flag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V4l8 3 8-3v10l-8 3-8-3"/></svg>라비에벨</span>
               <i class="stem"></i><i class="anchor"></i><i class="radius"></i>
             </div>
-            <div class="me"><i class="acc"></i><i class="ring"></i><i class="ring"></i><i class="dot"></i></div>
+            <div class="me"><i class="acc"></i><i class="ring"></i><i class="ring"></i><i class="ring"></i><i class="dot"></i></div>
             <div class="mapchrome">
               <button class="mapbtn" aria-label="닫기"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
               <button class="mapbtn" aria-label="내 위치로"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button>
@@ -690,7 +683,7 @@ code {
               <div class="sheet-t">위치를 확인하고 있어요<span class="dots"><i></i><i></i><i></i></span></div>
               <div class="sheet-s">홀 근처인지 보는 중이에요</div>
               <button class="btn" disabled>출근 인증하기</button>
-              <button class="linkbtn">위치가 안 잡히면 QR로 인증하기</button>
+              <p class="qrline">위치가 안 잡히면 홀 입구의 코드를 카메라로 찍어요</p>
             </div>
           </div>
         </div>
@@ -698,7 +691,7 @@ code {
           <div class="cap-key">① 확인 중</div>
           <div class="cap-name">내 점에서 원이 퍼진다</div>
           <p class="cap-body">
-            옅은 원판은 위치 정확도다. <strong>QR은 밑줄 친 글로 내렸다</strong> — 보조 수단이라 버튼으로 세우면 무게가 위치와 같아진다.
+            옅은 원판은 위치 정확도다. <strong>QR은 밑줄 없는 글로 내렸다</strong> — 보조 수단이라 버튼으로 세우면 무게가 위치와 같아지고, 밑줄을 그으면 앱이 못 데려다주는 곳처럼 읽힌다.
           </p>
         </figcaption>
       </figure>
@@ -760,7 +753,7 @@ code {
             그 자리에 <strong>흰 원 위로 브랜드 색 체크가 왼쪽부터 그어진다.</strong>
             초록 면에 흰 획을 얹던 것을 맞바꿨다 — 화면에서 가장 튀던 색이 사라지고 우리 색만 남는다.
             미리 그려진 체크가 나타나는 것이 아니라 <strong>선이 그어지는 그동안이 인증되는 시간</strong>이다.
-            <code>motion.md</code>가 <strong>「강한 모션은 축하할 순간에만 쓴다. 이 앱에서 확실한 축하는 출근 인증 완료 하나다」</strong>라고 적어둔 그 자리다.
+            <code>motion.md</code>가 <strong>「강한 모션은 축하할 순간에만 쓴다. 이 앱에서 확실한 축하는 둘이다」</strong>라고 적어둔 그 둘 중 하나다 — 나머지 하나는 가입 프로필을 보낸 순간이다.
           </p>
         </figcaption>
       </figure>
@@ -807,7 +800,7 @@ code {
               <div class="sheet-t">홀에서 조금 떨어져 있어요</div>
               <div class="sheet-s">홀에서 <span class="num">320m</span> 거리예요 · <span class="num">100m</span> 안에서 찍을 수 있어요</div>
               <button class="btn">위치 다시 확인하기</button>
-              <button class="linkbtn">위치가 안 잡히면 QR로 인증하기</button>
+              <p class="qrline">위치가 안 잡히면 홀 입구의 코드를 카메라로 찍어요</p>
             </div>
           </div>
         </div>
@@ -834,20 +827,73 @@ code {
             </div>
             <div class="sheet">
               <div class="grabber"></div>
-              <div class="sheet-t">QR로 인증할 수 있어요</div>
-              <div class="sheet-s">현장에 붙은 코드를 찍으면 출근이 남아요</div>
-              <button class="btn">QR 찍기</button>
+              <div class="sheet-t">홀 입구의 코드를 찍어주세요</div>
+              <div class="sheet-s">스마트폰 카메라로 QR을 찍으면 출근이 남아요</div>
               <p class="settingnote">위치로 찍으려면 브라우저 설정에서 위치 권한을 켜요</p>
             </div>
           </div>
         </div>
         <figcaption>
           <div class="cap-key">④ 위치를 못 본다</div>
-          <div class="cap-name">지도가 안 뜨고 QR이 주요 액션이 된다</div>
+          <div class="cap-name">주요 버튼이 없다</div>
           <p class="cap-body">
             권한이 거부되면 지도 자체가 안 뜬다 — 자리는 <code>bg.neutral-weak</code> 빈 면이다.
-            <strong>위치라는 길이 닫혔으니 여기서만 QR이 앞으로 나온다.</strong> 「다시 시도」는 없다 — 브라우저는 한 번 거부하면 다시 안 묻는다.
-            설정 안내 글은 밑줄이 없다 — 앱이 데려다줄 수 없는 곳이다.
+            <strong>앱 안에 스캐너가 없어 QR을 누르라 할 수 없으니</strong> 제목이 곧 할 일을 지시한다. 「다시 시도」는 없다 — 브라우저는 한 번 거부하면 다시 안 묻는다.
+            설정 안내 글은 밑줄이 없다 — 앱이 데려다줄 수 없는 곳이다. 나가는 길은 지도 자리 위의 닫기뿐이다.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:50</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="map lost">
+            <div class="sheet">
+              <div class="grabber"></div>
+              <div class="sheet-t">출근을 남기고 있어요<span class="dots"><i></i><i></i><i></i></span></div>
+              <div class="sheet-s">잠깐만 기다려주세요</div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">⑤ QR로 들어옴</div>
+          <div class="cap-name">버튼이 없다</div>
+          <p class="cap-body">
+            벽의 종이를 기기 카메라로 찍어 <code>/check-in?c=&lt;코드&gt;</code>로 열린 상태다. 코드가 주소에 실린 것이라
+            <strong>주소의 코드가 그대로 근무자가 할 일을 대신한다</strong> — 누를 것이 없다. 인증되면 「인증됐다」와 같은 자리로 끝난다.
+            지도 위 버튼도 없다. 이 화면과 「위치를 못 본다」가 이 절에서 주요 버튼이 없는 두 모습이다.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>9:53</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="map lost">
+            <div class="mapchrome">
+              <button class="mapbtn" aria-label="닫기"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+            </div>
+            <div class="sheet">
+              <div class="grabber"></div>
+              <div class="sheet-t">이 코드는 더 쓰지 않아요</div>
+              <div class="sheet-s">홀 입구의 종이가 바뀌었어요 · 위치로 찍을 수 있어요</div>
+              <button class="btn">위치로 인증하기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">⑥ 코드가 죽었다</div>
+          <div class="cap-name">근무자를 안 탓한다</div>
+          <p class="cap-body">
+            주소의 코드가 지금 코드와 다를 때다. 벽의 종이가 안 갈린 것이고 근무자가 할 수 있는 일이 아니라,
+            <strong>「이 코드는 더 쓰지 않아요」는 코드에 대한 말이지 찍은 사람에 대한 말이 아니다.</strong>
+            근무자는 이미 홀에 서 있으니 주요 버튼은 위치 확인으로 이어지는 열린 길을 내민다.
           </p>
         </figcaption>
       </figure>
@@ -895,7 +941,7 @@ code {
               <span class="flag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V4l8 3 8-3v10l-8 3-8-3"/></svg>라비에벨</span>
               <i class="stem"></i><i class="anchor"></i><i class="radius"></i>
             </div>
-            <div class="me"><i class="acc"></i><i class="ring"></i><i class="ring"></i><i class="dot"></i></div>
+            <div class="me"><i class="acc"></i><i class="ring"></i><i class="ring"></i><i class="ring"></i><i class="dot"></i></div>
             <div class="mapchrome">
               <button class="mapbtn" aria-label="닫기"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
               <button class="mapbtn" aria-label="내 위치로"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button>
@@ -906,7 +952,7 @@ code {
               <div class="sheet-t">위치를 확인하고 있어요<span class="dots"><i></i><i></i><i></i></span></div>
               <div class="sheet-s">홀 근처인지 보는 중이에요</div>
               <button class="btn" disabled>출근 인증하기</button>
-              <button class="linkbtn">위치가 안 잡히면 QR로 인증하기</button>
+              <p class="qrline">위치가 안 잡히면 홀 입구의 코드를 카메라로 찍어요</p>
             </div>
           </div>
         </div>

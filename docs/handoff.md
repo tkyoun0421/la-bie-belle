@@ -42,7 +42,24 @@ plan을 쓰며 가른 경계 넷이다.
 
 다른 영역이 이어받을 자리도 backlog 행에 적었다 — `members`의 `mark_leave` 남은 배정 검사, `attendance`의 인증 상태 열과 approvals 사유 줄이다.
 
-그다음 수는 attendance 영역이다 — 순서대로 ① 미정 인터뷰 ② 정본 반영 ③ 시안 갱신과 승인 ④ plan이다.
+**attendance 영역이 끝났다.** 미정이 다 닫혔고 정본에 반영됐고 시안이 따라갔고 plan 넷이 섰다 — [attendance-data](3-build/plans/attendance-data.md)·[attendance-qr](3-build/plans/attendance-qr.md)·[attendance-checkin](3-build/plans/attendance-checkin.md)·[attendance-excuse](3-build/plans/attendance-excuse.md). backlog의 `attendance` 한 행을 넷으로 갈랐다.
+
+인터뷰로 닫은 결정 넷이다.
+
+- **인쇄용 그림은 A4 비율이다** — 2480×3508픽셀 300dpi에 제목과 안내 한 줄과 자르는 선까지 들어간다. 화면의 QR과 다른 그림이고 브라우저 canvas가 그린다 — 서버에 파일을 두면 `rotate_qr`이 도는 순간 낡은 그림이 남는다
+- **내려받기가 막히면 새 탭에 그림을 띄운다.** 실패를 말하는 문장을 앞에 안 붙이고 토스트가 「그림을 길게 눌러 저장하세요」만 말한다
+- **오래된 QR을 앱이 재촉하지 않는다.** 교체 주기가 규칙으로 안 서 있으니 몇 달이 「오래됐다」인지도 앱이 정할 일이 아니다. 화면은 쓰기 시작한 날만 적는다
+- **종이의 QR이 담는 것은 앱 주소다** — `/check-in?c=<코드>`. 앱 안에 스캐너가 없고 기기 카메라 앱이 찍으면 링크가 앱을 열어 인증한다. 카메라 권한을 안 받는 길이고, 위치 권한을 이미 거부한 사람에게 권한 창을 한 번 더 안 띄운다. 대가는 코드가 주소에 실리는 것이라 [ATT-027](2-design/modules/attendance/README.md#att-027)의 구멍이 조금 넓어진다 — 인증 뒤 주소에서 `c`를 지워 덜 남게 한다
+
+넷째는 정본 둘이 부딪힌 자리에서 나왔다 — `qr.md`가 「앱 안에 스캐너가 없다」고 적고 `check-in.md`가 「QR 시트 → 스캔」이라 적고 있었다. 그 결정이 `/check-in`의 모습을 넷에서 **여섯**으로 늘렸다(「QR로 들어옴」·「코드가 죽었다」). 「위치를 못 본다」의 주요 버튼 「QR 찍기」는 사라졌다 — 앱이 스캐너를 열 수 없으니 누를 것이 없는 버튼이 된다.
+
+plan을 쓰며 가른 경계 셋이다.
+
+- **`attendance-data`가 상태 계산을 소유한다.** 출근·지각·안 찍음·확인 중·인정·결근 여섯이 저장되지 않으니 그 순수 함수가 저장소에 한 벌만 있어야 한다. 명단·대시보드·근태 집계·급여가 전부 그것을 부른다 — payroll이 결근을 다시 세면 두 벌이 선다
+- **`attendance-excuse`는 문 셋이 남의 task에 있다.** 대시보드 못 찍음 블록, `/admin/approvals` 목록, 근무자 날 시트다. 임시 진입점을 만들지 않고 기다린다
+- **`attendance-checkin`은 사람이 콘솔에서 할 일이 선행이다.** NCP 대표 계정 지정과 지도 키·`customStyleId` 발급이다. 대표 계정을 안 잡으면 첫 호출부터 과금이다
+
+그다음 수는 payroll 영역이다 — 순서대로 ① 미정 인터뷰 ② 정본 반영 ③ 시안 갱신과 승인 ④ plan이다.
 
 같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
 

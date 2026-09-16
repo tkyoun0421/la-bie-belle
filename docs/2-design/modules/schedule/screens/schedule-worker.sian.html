@@ -349,7 +349,9 @@ body.view-scene .stage.scene-live { display: block; }
   flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
   padding: 4px 24px 12px; min-height: 44px;
 }
-.backic { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); }
+.backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
+/* 아이콘 28px, 닿는 면은 44px — components.md 「앱바」의 「아이콘은 28px로 그리고 닿는 면은 44px다」 */
+.backic::after { content: ""; position: absolute; inset: -8px; }
 .appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; display: flex; align-items: center; gap: 6px; }
 .appbar .title .nav { position: relative; color: var(--fg-neutral-muted); display: grid; place-items: center; }
 .appbar .title .nav::after { content: ""; position: absolute; inset: -14px; }
