@@ -65,11 +65,25 @@
   정본이다. 앱바 제목이 이번에 「2026년 10월」로 바뀌고 그 오른쪽에 문 표시
   (chevron-down 14px)가 붙었다 — 시트 배경에 앱바만 그리고 화살표를 안 그렸던 figure가
   많아 이 개정으로 여러 figure의 appbar를 한꺼번에 고쳤다.
+
+  이번 개정으로 「내 근무만」이 포지션 순 전용에서 두 보기가 같이 쓰는 체크박스로
+  바뀌었다 — schedule-worker.md 「보기 전환 세그먼트」가 정본이다. 문구도 「내 배정만」에서
+  「내 근무만」으로 바뀌었다. 달력 순 목업 전부의 세그먼트 줄에 .check를 세웠다(포지션 순의
+  마크업·CSS를 그대로 썼다) — 01·02·03~10·11·13의 배경 달력을 포함한 열아홉 자리다.
+  01의 짝으로 15/달력 순 — 내 근무만 켬을 새로 세웠다 — 예식은 있지만 안 나가는 날에서
+  회색 면만 빠지고 날짜 글자는 그대로라 닫힌 날보다 진하고, 근무 요청 온 17일은 면만
+  빠지고 도는 점선이 남는다. 이 절은 기존 14 뒤에 15로 붙였다 — 06(포지션 순 아코디언)이 07(포지션
+  순 켬) 바로 뒤에 서는 것과 달리 01 바로 뒤에 끼워 넣지 않았다. 그러려면 02~14 전체와
+  본문 곳곳의 상호 참조 숫자(예: 「01·10·11의」, 「03의 마감 규칙」, 「09 / REQUEST · LATE」)를
+  전부 다시 매겨야 하는데, 그 범위가 이 개정의 위험을 넘는다고 판단해 절 번호는 안 밀고
+  끝에 붙이는 쪽을 택했다 — 총괄 검토가 필요한 자리다.
 -->
 <title>근무자 근무표 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css">
 
 <style>
 :root {
@@ -320,7 +334,7 @@ body.view-scene .stage.scene-live { display: block; }
   width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
   display: flex; flex-direction: column;
   background: var(--bg-neutral); color: var(--fg-neutral);
-  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  font-family: "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", sans-serif;
   font-size: var(--t-base); line-height: var(--lh-base);
   box-shadow: var(--b-mock-shadow);
 }
@@ -337,7 +351,8 @@ body.view-scene .stage.scene-live { display: block; }
 }
 .backic { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); }
 .appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; display: flex; align-items: center; gap: 6px; }
-.appbar .title .nav { color: var(--fg-neutral-muted); display: grid; place-items: center; }
+.appbar .title .nav { position: relative; color: var(--fg-neutral-muted); display: grid; place-items: center; }
+.appbar .title .nav::after { content: ""; position: absolute; inset: -14px; }
 /* 문의 표시 — 달 이동 화살표(.nav)와 다른 것이다. 제목을 누르면 달 고르기 시트가 열린다 */
 .appbar .title .doorchev { color: var(--fg-neutral-muted); display: grid; place-items: center; }
 .body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
@@ -357,25 +372,35 @@ body.view-scene .stage.scene-live { display: block; }
 /* 취소가 왼쪽, 교대가 오른쪽. 둘 다 그 자리의 진짜 액션이라 폭을 반씩 나눈다 */
 .rowbtns { display: flex; gap: 8px; margin-top: 16px; }
 .rowbtns .btn { flex: 1 1 0; }
+/* 가로(327px)는 이미 44px을 넘어 세로만 ::after로 채운다
+   (foundation/spacing-shape.md 「누를 수 있는 것은 44px 이상이다」) */
 .linkbtn {
+  position: relative;
   display: block; width: 100%; margin-top: 12px; padding: 4px 0; border: 0; background: none;
   font-family: inherit; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted);
   text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--stroke-neutral-muted); cursor: pointer;
 }
+.linkbtn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 
-/* 보기 전환 세그먼트 · 내 배정만 */
+/* 보기 전환 세그먼트 · 내 근무만 */
 .viewbar { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 2px 0 12px; }
-.seg { display: inline-flex; background: var(--bg-neutral-weak); border-radius: var(--r-lg); padding: 3px; }
+/* 세그먼트 — components.md 「세그먼트」 표 값 그대로: 트랙 높이 44px, 안쪽 여백 4px,
+   칸 36px, 선택 칸 10px. 트랙 안쪽 여백이 이미 닿는 면을 44px로 채우니 ::after가 필요 없다 */
+.seg { display: inline-flex; background: var(--bg-neutral-weak); border-radius: var(--r-lg); padding: 4px; }
 .seg button {
+  position: relative;
   border: 0; background: none; font-family: inherit; padding: 0; cursor: pointer;
-  width: 44px; height: 30px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;
   color: var(--fg-neutral-subtle);
 }
+.seg button::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .seg button.on { background: var(--bg-neutral); color: var(--fg-neutral); box-shadow: var(--card-shadow); }
 .check {
+  position: relative;
   display: inline-flex; align-items: center; gap: 6px; margin-left: auto; cursor: pointer;
   font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted);
 }
+.check::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .check .box {
   width: 16px; height: 16px; border-radius: var(--r-xs); flex: 0 0 auto;
   border: 1.5px solid var(--stroke-neutral-muted); display: inline-flex; align-items: center; justify-content: center;
@@ -412,6 +437,12 @@ body.view-scene .stage.scene-live { display: block; }
 .req-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .req-svg rect { fill: none; stroke: var(--stroke-brand-solid); stroke-width: 1; stroke-dasharray: 3 3; animation: req-dash var(--interval-dash) linear infinite; }
 @keyframes req-dash { to { stroke-dashoffset: -6px; } }
+/* 15/달력 순 — 내 근무만 켬. 회색 면은 「그날 예식이 있다」는 말이고 점선은 「나한테
+   요청이 왔다」는 말이라 뜻이 다르다 — 면만 빼고 점선은 남긴다(schedule-worker.md
+   「달력 순 — 기본」) */
+/* 「내 근무만」을 켜면 면만 빠지고 날짜 글자는 그대로다 — 닫힌 날(.cell.off)보다
+   진한 채로 남아야 눌리는 날과 안 눌리는 날이 갈린다 */
+.cell.none.plain, .cell.req.plain { background: none; }
 /* 오늘 — 배경이 아니라 원이다. 그날의 상태(칸 배경)는 그대로 두고 날짜 숫자만 21px
    bg.neutral-solid 원이 감싼다. 오늘이면서 근무가 있는 날은 브랜드 면 위에 이 원과
    브랜드 점이 같이 선다 — 상태 둘이 서로를 지우지 않는다(components.md 「근무표 날짜 칸」,
@@ -459,7 +490,8 @@ body.view-scene .stage.scene-live { display: block; }
    「달 고르기 시트」: 「같은 손짓으로 읽힌다」). 월 12칸은 4열 3행, CTA가 없다 — 고르는
    것이 곧 이동이라 확인을 한 번 더 받을 것이 없다 */
 .yearrow { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 4px 0 16px; }
-.yearrow .nav { color: var(--fg-neutral-muted); display: grid; place-items: center; cursor: pointer; }
+.yearrow .nav { position: relative; color: var(--fg-neutral-muted); display: grid; place-items: center; cursor: pointer; }
+.yearrow .nav::after { content: ""; position: absolute; inset: -14px; }
 .yearrow .yr { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 600; letter-spacing: -.01em; }
 .mgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .mcell {
@@ -529,7 +561,10 @@ body.view-scene .stage.scene-live { display: block; }
 .statusline { margin: 8px 0 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
 /* 포지션 순 — 날짜 아코디언 */
-.acc { flex: 1 1 auto; overflow: hidden; border-top: 1px solid var(--stroke-neutral); }
+/* 세그먼트 줄과 12px 띄운다 — 세그먼트 칸과 「내 근무만」의 닿는 면이 44px이라
+   그만큼 아래로 나간다. 붙여두면 첫 날짜 줄 위쪽을 먹어 날짜를 누르려다
+   세그먼트나 체크박스가 눌린다 */
+.acc { flex: 1 1 auto; margin-top: 12px; overflow: hidden; border-top: 1px solid var(--stroke-neutral); }
 .dayrow {
   display: flex; align-items: center; gap: 8px; padding: 12px 2px; cursor: pointer;
   border-bottom: 1px solid var(--stroke-neutral);
@@ -544,7 +579,10 @@ body.view-scene .stage.scene-live { display: block; }
 .daybody .mrow { padding: 6px 0; }
 .daybody .mrow.me { margin: 0 -8px; padding: 6px 8px; }
 .daybody .rowbtns { margin-top: 12px; }
-.daybody .btn { height: 42px; }
+/* 가로(157.5px)는 이미 44px을 넘어 세로만 ::after로 채운다
+   (foundation/spacing-shape.md 「누를 수 있는 것은 44px 이상이다」) */
+.daybody .btn { position: relative; height: 42px; }
+.daybody .btn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 
 /* 교대 후보 목록 */
 .pickrow {
@@ -672,7 +710,7 @@ body.view-scene .stage.scene-live { display: block; }
     <div class="sec-head">
       <span class="sec-num">01 / 달력 순 — 기본</span>
       <h2>점이 내 근무다</h2>
-      <p>월요일 시작, 달 경계를 넘는 주 단위다. 열린 날은 옅은 면이고 내 근무 날에만 브랜드 점이 선다 — 교육 배정도 같은 점이다. 세그먼트는 글자 없이 아이콘 둘이고 「내 배정만」은 이 보기에 없다.</p>
+      <p>월요일 시작, 달 경계를 넘는 주 단위다. 열린 날은 옅은 면이고 내 근무 날에만 브랜드 점이 선다 — 교육 배정도 같은 점이다. 세그먼트는 글자 없이 아이콘 둘이고, 「내 근무만」은 세그먼트 오른쪽 끝에서 포지션 순과 자리를 같이 쓴다.</p>
     </div>
     <div class="grid">
 
@@ -697,6 +735,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -726,7 +765,7 @@ body.view-scene .stage.scene-live { display: block; }
         <figcaption>
           <div class="cap-key">01 / CAL</div>
           <div class="cap-name">달력 순 · 기본</div>
-          <p class="cap-body">세그먼트에 글자가 없다 — 접근성 라벨이 <strong>「달력 순」·「포지션 순」</strong>이다. 「내 배정만」은 이 보기에 안 선다(점이 이미 내 근무만 가리킨다). 열린 날은 전부 눌리고 시트가 올라온다 — 내 근무가 없어도 누가 나가는지 본다.</p>
+          <p class="cap-body">세그먼트에 글자가 없다 — 접근성 라벨이 <strong>「달력 순」·「포지션 순」</strong>이다. 「내 근무만」 체크박스는 두 보기가 같이 쓴다 — 여기서 켜면 포지션 순으로 옮겨도 켜진 채다(15 / CAL · MINE ONLY). 열린 날은 전부 눌리고 시트가 올라온다 — 내 근무가 없어도 누가 나가는지 본다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>오늘(8일)도 내 근무 날이라 브랜드 면 위에 오늘 원과 점이 같이 선다.</strong> 오늘은 칸 배경이 아니라 <code>bg.neutral-solid</code> 21px 원으로 그린다 — 그날의 상태(여기서는 <code>bg.brand-weak</code>)는 그대로 두고 원이 그 위에 얹힐 뿐이라 상태 둘이 서로를 지우지 않는다(components.md 「근무표 날짜 칸」). 06의 아코디언은 같은 8일을 「안내」로 적는다.</p>
           <p class="cap-body" style="margin-top:8px">확정 전인 달과 근무표를 아직 안 만든 달의 모습은 <strong>14절 「확정 전 — 근무 신청」</strong>에서 근무 신청 화면으로 그린다 — 이 절의 달력과는 다른 자리다.</p>
         </figcaption>
@@ -765,6 +804,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -847,6 +887,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -913,6 +954,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -984,6 +1026,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1057,6 +1100,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1119,6 +1163,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1177,6 +1222,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1250,7 +1296,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" aria-label="달력 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" class="on" aria-label="포지션 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
-              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 배정만</span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="acc">
               <div class="dayrow"><b class="num">10월 8일(목)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
@@ -1283,7 +1329,7 @@ body.view-scene .stage.scene-live { display: block; }
         <figcaption>
           <div class="cap-key">06 / ACC</div>
           <div class="cap-name">포지션 순 · 한 날 펼침</div>
-          <p class="cap-body">날짜 줄 오른쪽이 셋 중 하나다 — <strong>내 포지션 이름(<code>fg.brand</code>) / 「근무 없음」 / 「교육 · 드레스」.</strong> 펼치면 시트와 같은 명단이고 끝에 같은 버튼 둘이다. 「내 배정만」 체크박스는 이 보기에만 서고 여기서는 꺼져 있다.</p>
+          <p class="cap-body">날짜 줄 오른쪽이 셋 중 하나다 — <strong>내 포지션 이름(<code>fg.brand</code>) / 「근무 없음」 / 「교육 · 드레스」.</strong> 펼치면 시트와 같은 명단이고 끝에 같은 버튼 둘이다. 「내 근무만」 체크박스는 달력 순과 자리를 같이 쓰고, 여기서는 꺼져 있다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>「교육 · 드레스」의 색이 문서에 없다.</strong> 색 표는 「날짜 줄의 내 포지션」만 <code>fg.brand</code>로 적었고 교육은 배우는 자리라 시안이 <code>fg.neutral-subtle</code>로 뒀다 — 검수에서 정한다.</p>
         </figcaption>
       </figure>
@@ -1309,7 +1355,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" aria-label="달력 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" class="on" aria-label="포지션 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
-              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 배정만</span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="acc">
               <div class="dayrow"><b class="num">10월 8일(목)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span></div>
@@ -1345,7 +1391,7 @@ body.view-scene .stage.scene-live { display: block; }
   <!-- 07 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">07 / 포지션 순 — 내 배정만 켬</span>
+      <span class="sec-num">07 / 포지션 순 — 내 근무만 켬</span>
       <h2>내 근무 날만 남고 펼침에도 내 줄만</h2>
       <p>체크를 켜면 근무 없는 날 줄이 사라진다. 펼친 날에도 남는 줄은 내 줄 하나고 버튼 둘은 그대로 선다.</p>
     </div>
@@ -1372,7 +1418,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" aria-label="달력 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" class="on" aria-label="포지션 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
-              <span class="check on"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 배정만</span>
+              <span class="check on"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="acc">
               <div class="dayrow"><b class="num">10월 8일(목)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
@@ -1392,7 +1438,7 @@ body.view-scene .stage.scene-live { display: block; }
         </div>
         <figcaption>
           <div class="cap-key">07 / ACC · MINE ONLY</div>
-          <div class="cap-name">내 배정만 켬</div>
+          <div class="cap-name">내 근무만 켬</div>
           <p class="cap-body">9일과 11일과 25일이 사라졌다. 펼친 10일에는 <strong>내 줄 하나와 버튼 둘</strong>만 남는다 — 같은 날 누가 더 나오는지는 체크를 끄면 보인다.</p>
           <p class="cap-body" style="margin-top:8px">8일 줄은 남지만 펼쳐도 버튼이 없다 — 03의 마감 규칙과 같은 자리다.</p>
         </figcaption>
@@ -1431,6 +1477,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1499,6 +1546,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1551,6 +1599,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1614,6 +1663,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1673,6 +1723,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1724,6 +1775,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1779,6 +1831,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1848,6 +1901,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -1902,7 +1956,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" aria-label="달력 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" class="on" aria-label="포지션 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
-              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 배정만</span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="acc">
               <div class="dayrow"><b class="num">10월 8일(목)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
@@ -1970,7 +2024,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" aria-label="달력 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" class="on" aria-label="포지션 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
-              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 배정만</span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="acc">
               <div class="dayrow"><b class="num">10월 8일(목)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
@@ -2029,6 +2083,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -2106,6 +2161,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -2161,6 +2217,7 @@ body.view-scene .stage.scene-live { display: block; }
                 <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
                 <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
               </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
             </div>
             <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
             <div class="cal">
@@ -2478,6 +2535,77 @@ body.view-scene .stage.scene-live { display: block; }
           <div class="cap-name">근무표를 아직 안 만든 달</div>
           <p class="cap-body">관리자가 근무표를 만들어야 접수가 열린다. 안 만든 달은 빈 달력이다 — 같은 점선 칸인데 <strong>아무 날짜도 안 눌리고</strong>, 마감 줄 자리에 안내 한 줄만 선다 — <strong>「아직 10월 근무 신청을 받지 않아요. 열리면 알려드릴게요」</strong>. <code>fg.neutral-muted</code> · <code>text-sm</code>이다.</p>
           <p class="cap-body" style="margin-top:8px">확정된 달인데 열린 날이 하나도 없는 경우는 문서가 「실제로 없다」고 못 박아서 안 그렸다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 15 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">15 / 달력 순 — 내 근무만 켬</span>
+      <h2>회색 면이 빠지고 점과 점선만 남는다</h2>
+      <p>01의 짝이다. 체크를 켜면 예식은 있지만 내가 안 나가는 날이 닫힌 날과 같은 모양이 된다 — 면이 없어진 것이지 날이 없어진 것이 아니라 그대로 눌린다. 근무 요청이 온 날은 회색 면만 빠지고 도는 점선은 남는다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-cal-mine">
+        <div class="mock">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              2026년 10월
+              <span class="doorchev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+              <span class="check on"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell"></span><span class="cell"></span><span class="cell"></span>
+              <span class="cell off"><b>1</b></span><span class="cell off"><b>2</b></span>
+              <span class="cell none plain"><b>3</b></span>
+              <span class="cell none plain"><b>4</b></span>
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell open today"><b>8</b><span class="dot"></span></span>
+              <span class="cell none plain"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none plain"><b>11</b></span>
+              <span class="cell off"><b>12</b></span><span class="cell off"><b>13</b></span><span class="cell off"><b>14</b></span><span class="cell off"><b>15</b></span><span class="cell off"><b>16</b></span>
+              <span class="cell req plain"><b>17</b>
+                <svg class="req-svg" viewBox="0 0 43 58" preserveAspectRatio="none" aria-hidden="true"><rect x="0.5" y="0.5" width="42" height="57" rx="8" ry="8" /></svg>
+              </span>
+              <span class="cell open"><b>18</b><span class="dot"></span></span>
+              <span class="cell off"><b>19</b></span><span class="cell off"><b>20</b></span><span class="cell off"><b>21</b></span><span class="cell off"><b>22</b></span><span class="cell off"><b>23</b></span>
+              <span class="cell open"><b>24</b><span class="dot"></span></span>
+              <span class="cell none plain"><b>25</b></span>
+              <span class="cell off"><b>26</b></span><span class="cell off"><b>27</b></span><span class="cell off"><b>28</b></span><span class="cell off"><b>29</b></span><span class="cell off"><b>30</b></span>
+              <span class="cell none plain"><b>31</b></span>
+              <span class="cell"></span>
+            </div>
+            <div class="legend">점이 내 근무, 도는 점선이 근무 요청이에요</div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">15 / CAL · MINE ONLY</div>
+          <div class="cap-name">달력 순 · 내 근무만 켬</div>
+          <p class="cap-body"><strong>3·4·9·11·25·31일의 회색 면이 빠졌다.</strong> 날짜 숫자는 <code>fg.neutral-muted</code> 그대로라 닫힌 날(<code>fg.neutral-subtle</code>)보다 진하다 — 칸이 그대로 눌리기 때문이다. 여기까지 옅게 하면 눌리는 날과 안 눌리는 날이 같아 보인다(schedule-worker.md 「달력 순 — 기본」). 8·10·17·18·24일의 브랜드 면과 점은 07(포지션 순 켬)과 같은 이유로 그대로 남는다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>17일의 회색 면만 빠지고 도는 점선은 남는다.</strong> 면은 「그날 예식이 있다」는 말이고 점선은 「나한테 요청이 왔다」는 말이라 뜻이 달라서다 — 면까지 지우면 답을 기다리는 날이 빈 달 위에 혼자 선다. 10 / REQUEST · ON CALENDAR의 같은 17일과 비교하면 면 하나만 빠진 차이가 보인다.</p>
+          <p class="cap-body" style="margin-top:8px">달력 아래 줄도 요청을 마저 말해 <strong>「점이 내 근무, 도는 점선이 근무 요청이에요」</strong>로 남는다 — 체크와 무관하게 요청이 있으면 서는 문구라서다.</p>
         </figcaption>
       </figure>
 

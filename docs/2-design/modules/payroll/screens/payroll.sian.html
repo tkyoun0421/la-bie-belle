@@ -35,6 +35,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css">
 
 <style>
 :root {
@@ -229,7 +231,7 @@ code {
   width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
   display: flex; flex-direction: column;
   background: var(--bg-neutral); color: var(--fg-neutral);
-  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  font-family: "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", sans-serif;
   font-size: var(--t-base); line-height: var(--lh-base);
   box-shadow: var(--b-mock-shadow);
 }
@@ -256,7 +258,9 @@ code {
 .segment {
   margin-top: 8px; /* 앱바와 세그먼트 사이 mt-2 */
   position: relative; display: flex; background: var(--bg-neutral-weak); border-radius: var(--r-lg);
-  padding: 4px; min-height: 44px; align-items: center;
+  padding: 4px; min-height: 44px;
+  /* 트랙 44px, 안쪽 여백 4px — components.md 「세그먼트」의 값. 칸은 남는 높이를 그대로 채워 36px이 된다.
+     align-items를 stretch(기본값)로 둬야 칸이 44px 트랙 안에서 뜨지 않고 꽉 찬다 */
 }
 .segment .pill {
   position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3);
@@ -264,9 +268,10 @@ code {
 }
 .segcell {
   position: relative; z-index: 1; flex: 1 1 0; display: flex; align-items: center; justify-content: center;
-  padding: 8px 0; border-radius: 10px; font-size: var(--t-sm); line-height: var(--lh-sm);
+  border-radius: 10px; font-size: var(--t-sm); line-height: var(--lh-sm);
   font-weight: 500; color: var(--fg-neutral-subtle);
 }
+.segcell::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .segcell.on { color: var(--fg-neutral); }
 
 /* 기간 줄 — payroll.md 「기간 줄」. 앱바가 아니라 본문 안이다 */
@@ -276,9 +281,13 @@ code {
 }
 .periodrow .ptext { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
 .parrow {
+  position: relative;
   flex: 0 0 auto; width: 32px; height: 32px; display: grid; place-items: center;
   color: var(--fg-neutral-subtle); background: none; border: 0; padding: 0; cursor: pointer;
 }
+/* 모양은 32px, 닿는 면은 그 밖으로 투명 여백을 둘러 44px로 채운다 — spacing-shape.md의 「누를 수 있는 것은 44px 이상이다」.
+   기간 줄 안에서 가운데 ptext까지 거리가 넉넉해 -6px로 넓혀도 안 겹친다 */
+.parrow::after { content: ""; position: absolute; inset: -6px; }
 .parrow.off { visibility: hidden; }
 
 /* 금액 — 화면에서 가장 큰 글자 */
