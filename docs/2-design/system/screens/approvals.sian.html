@@ -276,7 +276,9 @@ code {
   padding: 4px 24px 12px; min-height: 44px; position: relative;
 }
 .appbar .sp { flex: 1 1 auto; }
-.backic { flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); }
+.backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
+/* 아이콘 28px, 닿는 면은 44px — components.md 「앱바」의 「아이콘은 28px로 그리고 닿는 면은 44px다」 */
+.backic::after { content: ""; position: absolute; inset: -8px; }
 .appbar .title { font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral-subtle); }
 /* 화면 좌우 여백 px-6 = 24px */
 .body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }

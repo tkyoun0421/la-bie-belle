@@ -341,7 +341,7 @@
 | 달력과 범례 사이 | `mt-2` |
 | 범례와 모아보기 줄 사이 | `mt-4` |
 
-칸 폭이 375픽셀에서 43픽셀쯤 된다. 최소 터치 크기 규칙이 [spacing-shape.md](../../../design-system/foundation/spacing-shape.md)에 아직 없어서 이 값을 판정할 근거가 없다 — [excuse.md](../../attendance/screens/excuse.md#규칙과-부딪힌-자리)가 같은 빈자리를 이미 지적했고 여기가 두 번째다.
+**칸 폭이 375픽셀에서 43픽셀쯤 되고, 이것은 가로 예외를 쓴 자리다.** 일곱이 가로로 서니 375픽셀을 나누면 44픽셀이 안 나온다. [spacing-shape.md](../../../design-system/foundation/spacing-shape.md#누를-수-있는-것은-44px-이상이다)가 그때는 세로를 44픽셀 이상으로 두고 가로는 줄 수 있는 만큼 주라고 정했다 — 칸이 `h-16`이라 세로는 64픽셀이다.
 
 ### 날 열기 모드 짜임
 
@@ -1067,7 +1067,7 @@
 
 **`rounded-sm`을 달력 칸에 배정했다 — 해소.** [tokens.md](../../../design-system/tokens.md#5-라운딩과-그림자)와 [spacing-shape.md](../../../design-system/foundation/spacing-shape.md#라운딩)의 표가 「아직 배정 없음」으로 두고 있던 자리에 「배지, 달력 칸」이 적혔다. 라운딩을 알약에서 내리면서 배지가 같은 값으로 들어와 같이 정리됐다.
 
-**최소 터치 크기 규칙이 또 걸린다.** 달력 칸이 43픽셀쯤이다. [excuse.md](../../attendance/screens/excuse.md#규칙과-부딪힌-자리)가 지적한 규칙 부재가 여기서 두 번째로 걸렸다. 규칙이 서면 달력 칸이 먼저 재판정 대상이다.
+**최소 터치 크기 규칙이 또 걸렸다 — 닫혔다.** [spacing-shape.md](../../../design-system/foundation/spacing-shape.md#누를-수-있는-것은-44px-이상이다)에 「누를 수 있는 것은 44px 이상이다」가 섰고, 가로로 여럿이 서는 자리는 세로만 지키면 된다는 예외도 같이 섰다. 달력 칸은 가로 43픽셀에 세로 64픽셀이라 그 예외에 든다.
 
 **BottomCTA의 예가 비어 있었다.** [components.md](../../../design-system/components.md#bottomcta)의 예였던 출근 인증을 [excuse.md](../../attendance/screens/excuse.md#규칙과-부딪힌-자리)가 빼자고 했다. 확정하기가 그 자리의 실제 예가 된다 — 그 문서를 고칠 때 예를 이걸로 바꾼다.
 

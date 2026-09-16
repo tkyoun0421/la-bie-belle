@@ -246,7 +246,8 @@ code {
 
 /* 달 줄 — 앱바와 mt-2(8px), 좌우 화살표 + 가운데 텍스트, py-2 */
 .monthrow { margin-top: 8px; padding: 8px 0; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.marrow { flex: 0 0 auto; width: 28px; height: 28px; display: grid; place-items: center; color: var(--fg-neutral-subtle); cursor: pointer; }
+.marrow { position: relative; flex: 0 0 auto; width: 28px; height: 28px; display: grid; place-items: center; color: var(--fg-neutral-subtle); cursor: pointer; }
+.marrow::after { content: ""; position: absolute; inset: -8px; }
 .marrow.disabled { visibility: hidden; }
 .mtext { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
 
@@ -257,11 +258,14 @@ code {
   position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3);
   background: var(--bg-neutral); border-radius: 10px; transition: transform var(--d-fast) ease-out;
 }
+/* 칸 높이는 components.md 세그먼트 표의 값 그대로다 — 트랙 44px, 안쪽 여백 4px, 칸 36px */
 .seg button {
-  position: relative; z-index: 1; flex: 1 1 0; border: 0; background: none; padding: 8px 0;
+  position: relative; z-index: 1; flex: 1 1 0; height: 36px; border: 0; background: none;
+  display: flex; align-items: center; justify-content: center;
   font-family: inherit; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
   color: var(--fg-neutral-subtle); cursor: pointer;
 }
+.seg button::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .seg button.on { color: var(--fg-neutral); }
 
 /* 합계 — 세그먼트와 mt-6(24px), 큰 글자 */

@@ -308,7 +308,10 @@ code {
 }
 .btn:disabled { background: var(--bg-neutral-disabled); color: var(--fg-neutral-disabled); border: 1px solid var(--stroke-neutral-disabled); cursor: default; }
 .btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
-.btn.ghost { background: transparent; color: var(--fg-neutral-muted); width: auto; height: 34px; padding: 0 10px; font-size: var(--t-xs); }
+/* 「그만두기」「이 날 닫기」「전체 보기」 — 다 홀로 서고 가로가 이미 44px을 넘어
+   세로만 ::after로 채운다(foundation/spacing-shape.md 「누를 수 있는 것은 44px 이상이다」) */
+.btn.ghost { position: relative; background: transparent; color: var(--fg-neutral-muted); width: auto; height: 34px; padding: 0 10px; font-size: var(--t-xs); }
+.btn.ghost::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .btn .spin {
   width: 17px; height: 17px; border-radius: 999px;
   border: 2px solid currentColor; border-top-color: transparent;
@@ -317,7 +320,8 @@ code {
 @keyframes spin { to { transform: rotate(360deg); } }
 .rowbtns { display: flex; gap: 8px; margin-top: 18px; }
 .rowbtns .btn.secondary { flex: 0 0 100px; }
-.linknote { font-size: var(--t-xs); color: var(--fg-neutral-muted); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--stroke-neutral-muted); cursor: pointer; }
+.linknote::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+.linknote { position: relative; font-size: var(--t-xs); color: var(--fg-neutral-muted); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--stroke-neutral-muted); cursor: pointer; }
 
 /* 관리자 홈 */
 .tile {
@@ -419,8 +423,13 @@ code {
 .poshead .pname { font-size: var(--t-sm); font-weight: 600; }
 .poshead .pcnt { font-size: var(--t-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 .poshead .pcnt.hot { color: var(--fg-neutral); font-weight: 500; }
-.tbtn { border: 0; background: none; padding: 4px 6px; font-family: inherit; font-size: var(--t-xs); color: var(--fg-neutral-muted); cursor: pointer; }
-.lockic { display: grid; place-items: center; width: 28px; height: 28px; color: var(--fg-neutral-subtle); cursor: pointer; }
+/* 가로(71.8px)는 이미 44px을 넘어 세로만 ::after로 채운다. 위아래 posrow와는
+   18px·8px 여유가 있어 넓힌 면끼리 겹치지 않는다(foundation/spacing-shape.md
+   「누를 수 있는 것은 44px 이상이다」) */
+.tbtn { position: relative; border: 0; background: none; padding: 4px 6px; font-family: inherit; font-size: var(--t-xs); color: var(--fg-neutral-muted); cursor: pointer; }
+.tbtn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+.lockic { position: relative; display: grid; place-items: center; width: 28px; height: 28px; color: var(--fg-neutral-subtle); cursor: pointer; }
+.lockic::after { content: ""; position: absolute; inset: -8px; }
 .seat {
   margin-top: 8px; height: 48px; border-radius: var(--r-lg); background: var(--bg-neutral-weak);
   display: flex; align-items: center; gap: 8px; padding: 0 16px; font-size: var(--t-sm); cursor: pointer;
@@ -538,11 +547,13 @@ code {
    날 열기 모드의 선택 체크(표시만 fg.brand)와 갈린다 — 달력 칸은 선택을 면과 테두리로
    이미 말하지만 목록 줄은 이 사각 하나가 선택 전부를 진다(schedule-admin.md) */
 .pchk {
+  position: relative;
   width: 18px; height: 18px; border-radius: var(--r-xs); flex: 0 0 auto;
   border: 1.5px solid var(--stroke-neutral-muted); display: inline-flex; align-items: center; justify-content: center;
   color: transparent; cursor: pointer;
   transition: background-color var(--d-fast) ease-out, border-color var(--d-fast) ease-out, color var(--d-fast) ease-out;
 }
+.pchk::after { content: ""; position: absolute; inset: -13px; }
 .pchk.on { background: var(--bg-brand-solid); border-color: var(--bg-brand-solid); color: var(--fg-brand-contrast); }
 
 /* 사람 시트 — 목록 줄을 길게 누르면 픽커 시트 위에 하나 더 겹쳐 올라온다(--duration-base) */
@@ -565,10 +576,15 @@ code {
 
 /* 탭 */
 .tabs { display: flex; border-bottom: 1px solid var(--stroke-neutral); margin-top: 4px; }
+/* 가로(163.5px)는 이미 44px을 넘어 세로만 ::after로 채운다. 밑줄은 box-shadow
+   inset이라 투명한 ::after 밑에서도 그대로 보인다(foundation/spacing-shape.md
+   「누를 수 있는 것은 44px 이상이다」) */
 .tab {
+  position: relative;
   flex: 1; border: 0; background: none; font-family: inherit; padding: 10px 0; cursor: pointer;
   font-size: var(--t-sm); color: var(--fg-neutral-subtle);
 }
+.tab::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .tab.on { color: var(--fg-brand); font-weight: 600; box-shadow: inset 0 -2px 0 var(--stroke-brand-solid); }
 .dhead { margin-top: 16px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 .dnames { font-size: var(--t-sm); line-height: var(--lh-sm); padding: 4px 0 2px; }

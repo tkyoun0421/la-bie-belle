@@ -25,7 +25,13 @@ schedule 시안 둘은 갱신해 아티팩트로 올렸고 감사도 마쳤다.
 
 토스트도 같이 고쳤다 — `left: 50%`에 `right`가 없어 쓸 수 있는 폭이 화면 절반으로 눌리던 배치 버그였다. 좌우 24px에 `margin: 0 auto`다. 한 줄 규칙과 문안 길이 기준은 `writing.md`의 새 「토스트」 절에 있다.
 
-다음 수는 schedule plan을 쓰는 것이다. 그 뒤가 attendance 영역이다.
+**시안 개선 제안서([design-sian-improvements](proposals/design-sian-improvements.md))를 열 항목 다 검토했다.** 최신 결정과 부딪히는 자리는 없다. 판정은 이렇다 — D-01 서체와 D-02 터치 영역은 제안이 아니라 정본 위반이라 바로 고치고, S-01 조작 상태와 S-02 로딩·통신 실패는 `components.md`와 `runtime.md`에 이미 열려 있는 미정이라 채택하되 순서를 뒤로 뒀다. D-03 대시보드 위계와 S-03 미리보기와 C-01 근무 변경 요약과 C-03 첫 출근 안내는 각자 제 영역 차례에 본다. 기각 둘 — D-04는 관리자 홈 화면 문서가 아직 없어서 정할 대상이 없고, C-02는 [급여 화면](2-design/modules/payroll/screens/payroll.md#규칙과-부딪힌-자리)이 「검산이 실제로 막히면 그때 프로필에 「내 시급」을 세운다」로 이미 조건부로 닫아둔 것이라 조건이 안 찼다.
+
+**D-01이 끝났다.** 시안 열넷의 앱 목업이 시스템 서체를 쓰고 있어서 [서체 연결](2-design/design-system/tokens.md#서체-연결)을 그대로 걸게 했다. 아티팩트는 외부 스타일시트를 `fonts.googleapis.com`에서만 받고 Wanted Sans는 Google Fonts에 없어서 그 링크가 조용히 차단된다 — 그래서 `pnpm sian:inline <시안 경로>`가 그 화면에 찍히는 글자가 든 조각만 골라 심은 복사본을 `.artifact/`에 만든다. 절차는 [2-design/README](2-design/README.md)의 시안 만들기 절에 있다.
+
+**D-02가 진행 중이다.** 누를 수 있는데 세로가 44px이 안 되는 자리가 36종이고 시안 열넷에 퍼져 있다. 그리는 크기는 `components.md`가 정한 대로 두고 `::after`로 닿는 면만 넓히는 것이 정본([spacing-shape.md](2-design/design-system/foundation/spacing-shape.md#누를-수-있는-것은-44px-이상이다))이 정한 길이다. 세그먼트만 예외라 그리는 크기 자체를 정본 값(트랙 44px, 안쪽 여백 4px)으로 맞춘다. 실측은 `.artifact/measure-hit.mjs`가 한다.
+
+그다음 수는 schedule plan을 쓰는 것이다. 그 뒤가 attendance 영역이다.
 
 같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
 

@@ -339,7 +339,9 @@ code {
 .btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
 .btn.ghost { background: transparent; color: var(--fg-neutral-muted); }
 /* 높이 32px 이하 작은 버튼 — spacing-shape.md 「누를 수 있는 것은 lg다」가 rounded-sm(8px)으로 내린다 */
-.btn.sm { width: auto; height: 30px; padding: 0 12px; border-radius: var(--r-sm); font-size: var(--t-xs); background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+.btn.sm { position: relative; width: auto; height: 30px; padding: 0 12px; border-radius: var(--r-sm); font-size: var(--t-xs); background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+/* 가로가 이미 44px을 넘어 세로만 넓힌다 — spacing-shape.md 「가로로 여럿이 서는 자리」. 「수락」·「거절」이 한 줄에 나란히 서서 가로로는 안 키운다(겹침 방지) */
+.btn.sm::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .btn .spin {
   width: 17px; height: 17px; border-radius: 999px;
   border: 2px solid currentColor; border-top-color: transparent;

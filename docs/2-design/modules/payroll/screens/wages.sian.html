@@ -319,13 +319,16 @@ code {
 .sbtns { display: flex; gap: 12px; margin-top: 24px; }
 .sbtns .btn { flex: 1 1 0; }
 
-/* 기본으로 되돌리기 — Button ghost, 왼쪽 정렬(wages.md 「기본으로 되돌리기」) */
-.revertbtn { margin-top: 16px; padding: 8px 0; display: inline-flex; align-items: center; background: none; border: 0; color: var(--fg-neutral-muted); font-size: var(--t-base); font-weight: 500; font-family: inherit; cursor: pointer; }
+/* 기본으로 되돌리기 — Button ghost, 왼쪽 정렬(wages.md 「기본으로 되돌리기」)
+   보이는 크기 155.5x37 — 가로는 이미 44px을 넘어 세로만 ::after로 44px을 채운다
+   (foundation/spacing-shape.md 「누를 수 있는 것은 44px 이상이다」) */
+.revertbtn { position: relative; margin-top: 16px; padding: 8px 0; display: inline-flex; align-items: center; background: none; border: 0; color: var(--fg-neutral-muted); font-size: var(--t-base); font-weight: 500; font-family: inherit; cursor: pointer; }
 .revertbtn:hover { color: var(--fg-neutral); }
+.revertbtn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 
 /* 입력 칸 — Input 토큰. 「원」이 숫자 바로 뒤에 붙는다(wages.md 「기본 시급 시트」 「사람 시트」) */
 .amtfield { display: flex; align-items: center; justify-content: flex-end; background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral); border-radius: var(--r-md); padding: 16px; margin-top: 20px; }
-.amtfield input { flex: 0 0 auto; width: auto; min-width: 0; field-sizing: content; border: 0; background: none; outline: none; font: inherit; font-size: var(--t-2xl); line-height: var(--lh-2xl); font-weight: 600; color: var(--fg-neutral); font-variant-numeric: tabular-nums; padding: 0; }
+.amtfield input { flex: 0 0 auto; width: auto; min-width: 0; min-height: 44px; field-sizing: content; border: 0; background: none; outline: none; font: inherit; font-size: var(--t-2xl); line-height: var(--lh-2xl); font-weight: 600; color: var(--fg-neutral); font-variant-numeric: tabular-nums; padding: 0; }
 .amtfield .won { flex: 0 0 auto; margin-left: 0; font-size: var(--t-2xl); line-height: var(--lh-2xl); font-weight: 600; color: var(--fg-neutral); }
 
 /* 적용 안내와 같이 바뀌는 인원 — 색은 문서 표에 있고 크기는 이 파일이 정했다(맨 위 주석) */
@@ -342,8 +345,11 @@ code {
 .histrow { display: flex; align-items: baseline; padding: 12px 0; font-size: var(--t-sm); line-height: var(--lh-sm); }
 .histrow .hdate { color: var(--fg-neutral-muted); font-variant-numeric: tabular-nums; }
 .histrow .hval { margin-left: auto; display: flex; align-items: center; gap: 8px; color: var(--fg-neutral); font-variant-numeric: tabular-nums; }
-.morebtn { margin-top: 4px; width: 100%; background: none; border: 0; padding: 10px 0; color: var(--fg-neutral-muted); font-size: var(--t-sm); font-weight: 500; font-family: inherit; cursor: pointer; text-align: center; }
+/* 보이는 크기 327x40 — 가로는 이미 44px을 넘어 세로만 ::after로 44px을 채운다
+   (foundation/spacing-shape.md 「누를 수 있는 것은 44px 이상이다」) */
+.morebtn { position: relative; margin-top: 4px; width: 100%; background: none; border: 0; padding: 10px 0; color: var(--fg-neutral-muted); font-size: var(--t-sm); font-weight: 500; font-family: inherit; cursor: pointer; text-align: center; }
 .morebtn:hover { color: var(--fg-neutral); }
+.morebtn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .histrow[hidden] { display: none; }
 
 /* 바텀시트와 덮개 */
