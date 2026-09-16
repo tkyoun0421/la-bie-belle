@@ -27,11 +27,22 @@ schedule 시안 둘은 갱신해 아티팩트로 올렸고 감사도 마쳤다.
 
 **시안 개선 제안서([design-sian-improvements](proposals/design-sian-improvements.md))를 열 항목 다 검토했다.** 최신 결정과 부딪히는 자리는 없다. 판정은 이렇다 — D-01 서체와 D-02 터치 영역은 제안이 아니라 정본 위반이라 바로 고치고, S-01 조작 상태와 S-02 로딩·통신 실패는 `components.md`와 `runtime.md`에 이미 열려 있는 미정이라 채택하되 순서를 뒤로 뒀다. D-03 대시보드 위계와 S-03 미리보기와 C-01 근무 변경 요약과 C-03 첫 출근 안내는 각자 제 영역 차례에 본다. 기각 둘 — D-04는 관리자 홈 화면 문서가 아직 없어서 정할 대상이 없고, C-02는 [급여 화면](2-design/modules/payroll/screens/payroll.md#규칙과-부딪힌-자리)이 「검산이 실제로 막히면 그때 프로필에 「내 시급」을 세운다」로 이미 조건부로 닫아둔 것이라 조건이 안 찼다.
 
-**D-01이 끝났다.** 시안 열넷의 앱 목업이 시스템 서체를 쓰고 있어서 [서체 연결](2-design/design-system/tokens.md#서체-연결)을 그대로 걸게 했다. 아티팩트는 외부 스타일시트를 `fonts.googleapis.com`에서만 받고 Wanted Sans는 Google Fonts에 없어서 그 링크가 조용히 차단된다 — 그래서 `pnpm sian:inline <시안 경로>`가 그 화면에 찍히는 글자가 든 조각만 골라 심은 복사본을 `.artifact/`에 만든다. 절차는 [2-design/README](2-design/README.md)의 시안 만들기 절에 있다.
+**D-01과 D-02가 끝났다**([#372](https://github.com/tkyoun0421/la-bie-belle/pull/372)). 시안 열넷의 앱 목업이 시스템 서체를 쓰고 있어서 [서체 연결](2-design/design-system/tokens.md#서체-연결)을 그대로 걸게 했다 — 아티팩트는 외부 스타일시트를 `fonts.googleapis.com`에서만 받고 Wanted Sans는 거기 없어 링크가 조용히 차단되니, `pnpm sian:inline <시안 경로>`가 그 화면에 찍히는 글자가 든 조각만 골라 심은 복사본을 `.artifact/`에 만든다(절차는 [2-design/README](2-design/README.md)의 시안 만들기 절). 누를 수 있는데 세로가 44px이 안 되던 36종은 `::after`로 닿는 면만 넓혀 0이 됐고, 남은 셋은 문서가 허용한 가로 예외다. 실측은 `.artifact/measure-hit.mjs`가 한다.
 
-**D-02가 진행 중이다.** 누를 수 있는데 세로가 44px이 안 되는 자리가 36종이고 시안 열넷에 퍼져 있다. 그리는 크기는 `components.md`가 정한 대로 두고 `::after`로 닿는 면만 넓히는 것이 정본([spacing-shape.md](2-design/design-system/foundation/spacing-shape.md#누를-수-있는-것은-44px-이상이다))이 정한 길이다. 세그먼트만 예외라 그리는 크기 자체를 정본 값(트랙 44px, 안쪽 여백 4px)으로 맞춘다. 실측은 `.artifact/measure-hit.mjs`가 한다.
+제안서의 결정 기록도 채웠다 — [design-sian-improvements](proposals/design-sian-improvements.md)가 `accepted`고 항목별 표가 본문에 있다. 남은 판단 항목이 없다.
 
-그다음 수는 schedule plan을 쓰는 것이다. 그 뒤가 attendance 영역이다.
+**schedule plan 다섯이 다 섰다.** [schedule-data](3-build/plans/schedule-data.md)·[schedule-admin](3-build/plans/schedule-admin.md)·[schedule-assign](3-build/plans/schedule-assign.md)·[schedule-worker](3-build/plans/schedule-worker.md)·[schedule-requests](3-build/plans/schedule-requests.md)다. backlog의 `schedule` 한 행을 다섯으로 갈랐다 — 그 행이 「남은 미정 둘을 먼저 닫는다」로 멈춰 있었는데 미정은 이미 다 닫혔다.
+
+plan을 쓰며 가른 경계 넷이다.
+
+- **날 상세가 두 task로 갈린다.** `schedule-admin`이 앱바·근무 시간 줄·근무 신청 줄·「이 날 닫기」까지 만들고 포지션 줄 자리에 임시 줄을 둔다. `schedule-assign`이 그 임시 줄을 지우며 자리 카드·픽커·잠금·끌기를 채운다. 가르는 선이 `open_day`/`close_day`와 `add_slot`/`add_assignment` 사이다
+- **`schedule-data`는 함수 일곱까지다.** 표 아홉과 뷰와 RLS에 근무표 뼈대 함수(`create_schedule`·`set_application_deadline`·`confirm_schedule`·`open_day`·`close_day`·`set_day_hours`·`set_hall_defaults`)만 낸다. 나머지 열셋은 각 화면 task가 자기 테스트와 같이 낸다
+- **`schedule-worker`는 `schedule-admin`과 나란히 간다.** 선행이 `schedule-data` 하나뿐이다. 달력 그리드·달 고르기 시트·BottomCTA를 둘이 같이 쓰니 먼저 merge되는 쪽이 만든다
+- **`schedule-requests`가 pg_cron을 처음 켠다.** `expire_requests` 하나고 `supabase/config.toml`에 설정이 아직 없다. 자리를 채우는 길 셋(`add_assignment`·`force_change`·`close_day`)을 `create or replace`로 고쳐 요청을 닫는 일도 거기 있다
+
+다른 영역이 이어받을 자리도 backlog 행에 적었다 — `members`의 `mark_leave` 남은 배정 검사, `attendance`의 인증 상태 열과 approvals 사유 줄이다.
+
+그다음 수는 attendance 영역이다 — 순서대로 ① 미정 인터뷰 ② 정본 반영 ③ 시안 갱신과 승인 ④ plan이다.
 
 같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
 
