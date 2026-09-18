@@ -4,7 +4,7 @@
 
 ## 참조 규칙
 
-업무 규칙은 [README.md](README.md#업무-규칙)의 `NTF-001`부터 `NTF-032`까지다.
+업무 규칙은 [README.md](README.md#업무-규칙)의 `NTF-001`부터 `NTF-035`까지다.
 
 공통 스키마·권한·컬럼 규약과 읽기·쓰기·타입·에러 계약은 [system/data-access.md](../../system/data-access.md), 캐시 계층·시각은 [system/runtime.md](../../system/runtime.md), 시스템 경계는 [system/architecture.md](../../system/architecture.md)를 따른다.
 
@@ -23,6 +23,8 @@
 | --- | --- |
 | `notifications` | 본인 행 |
 | `push_subscriptions` | 본인 행 |
+
+뷰 하나가 그 좁힘에 구멍을 내지 않고 관리자에게 필요한 것만 낸다 — `push_reachable`이다([알림을 받나](#알림을-받나)).
 
 키는 `['notifications']`(`useInfiniteQuery` + `range()` 50건)와 `['notifications', 'unread']`(안 읽은 수, `head: true` count 질의)다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
 
@@ -46,6 +48,16 @@
 
 `push_subscriptions(profile_id, endpoint, keys, created_at) unique(endpoint)`. 기기마다 하나라 한 사람에 여럿이다. 본인 행만 읽고, 410이 오면 발송 함수가 지운다.
 
+### 알림을 받나
+
+**의사와 상태를 가른다.** 받겠다는 의사는 `profiles.notifications_enabled`(기본 참)고 기기가 실제로 닿는지는 `push_subscriptions` 행의 유무다. 둘을 곱해 셋이 난다 — 끔, 켰는데 기기가 없음, 켰고 기기가 있음이다([NTF-034](README.md#ntf-034)).
+
+**의사가 `profiles`에 사는 것은 사람에 붙는 값이라서다.** 한 사람이 폰 둘을 써도 끄면 통째로 꺼진다 — 기기마다 따로 끄는 길을 안 연 것은 [NTF-021](README.md#ntf-021)이 「종류별로 나누지 않고 통째로」라 정한 것과 같은 결이다. 표는 account가 소유하고 이 값의 뜻은 여기가 든다.
+
+**발송 함수가 첫 줄에서 본다.** `notifications` 행은 끈 사람에게도 선다 — 앱을 열면 대시보드와 목록에 쌓여 있어야 해서다([NTF-029](README.md#ntf-029)). 안 나가는 것은 푸시뿐이고, 그 행은 `pushed_at`이 빈 채 남는다.
+
+**관리자 화면이 읽는 것은 셈이 아니라 갈래다.** 직원 목록이 사람마다 셋 중 무엇인지를 그린다 — `profiles.notifications_enabled`와 그 사람 `push_subscriptions`의 존재 여부 둘을 같이 받는다. 남의 구독 행을 관리자가 읽는 길은 없으니(`push_subscriptions`는 본인 행만이다) **존재 여부만 내는 뷰 `push_reachable(profile_id, has_device)`가 선다** — `security definer`고 `endpoint`도 `keys`도 안 낸다.
+
 ## 행위별 구현 계약
 
 ### 공지 보내기
@@ -58,8 +70,8 @@
 
 ### 읽음 찍기
 
-- 규칙: [NTF-023](README.md#ntf-023)·[NTF-024](README.md#ntf-024)·[NTF-025](README.md#ntf-025)
-- 입력·전제: `mark_notifications_read`가 읽음 찍기다. domain대로 ✕·CTA·답 셋 중 하나를 눌러야 읽음이다. 목록을 훑는 것으로는 안 바뀐다
+- 규칙: [NTF-023](README.md#ntf-023)·[NTF-024](README.md#ntf-024)·[NTF-025](README.md#ntf-025)·[NTF-033](README.md#ntf-033)
+- 입력·전제: `mark_notifications_read`가 읽음 찍기다. domain대로 ✕·CTA·답 셋 중 하나를 눌러야 읽음이다. 목록을 훑는 것으로는 안 바뀐다. **[알림 목록](screens/notifications.md)에서는 줄을 누르는 것이 넷째 길이다** — 목적지로 가면서 같은 함수가 나간다
 - 읽고 쓰는 데이터: 누른 행의 `read_at`을 즉시 칠하고 `mark_notifications_read`를 보낸다
 - 권한: 근무자
 - 결과와 실패: 실패하면 되돌린다 — 다시 나타난 행을 사람이 다시 누른다
@@ -67,17 +79,20 @@
 
 ### 기기 구독 저장과 삭제
 
-- 규칙: [NTF-016](README.md#ntf-016)·[NTF-017](README.md#ntf-017)·[NTF-021](README.md#ntf-021)·[NTF-027](README.md#ntf-027)
-- 입력·전제: `save_push_subscription`, `remove_push_subscription`이 기기 구독이다. 로그인 뒤 첫 화면에서 `'Notification' in window`를 먼저 본다 — iOS Safari 탭에는 이 객체가 없고 홈 화면 앱에만 있다
+- 규칙: [NTF-016](README.md#ntf-016)·[NTF-017](README.md#ntf-017)·[NTF-021](README.md#ntf-021)·[NTF-027](README.md#ntf-027)·[NTF-034](README.md#ntf-034)
+- 입력·전제: `save_push_subscription`, `remove_push_subscription`이 기기 구독이다. **의사를 바꾸는 것은 `set_notifications_enabled(p_on boolean)`이고 따로 산다** — 끄면 `profiles.notifications_enabled`가 거짓이 되고 그 기기 구독도 같이 지운다. 켜는 것은 순서가 반대다. 먼저 참으로 바꾸고 브라우저 권한을 물어 구독을 만든다 — 권한이 거부되면 의사는 참인 채로 기기가 없는 갈래에 선다
+- 입력·전제: 로그인 뒤 첫 화면에서 `'Notification' in window`를 먼저 본다 — iOS Safari 탭에는 이 객체가 없고 홈 화면 앱에만 있다. **그 객체가 없는 것이 「홈 화면 추가 안 함」의 판정이다**([NTF-027](README.md#ntf-027)) — 화면이 그때 켜기 버튼 대신 추가하는 법을 안내한다
 - 읽고 쓰는 데이터: `permission === 'granted'`면 `pushManager.getSubscription()`으로 구독을 받아 `save_push_subscription`을 부른다
 - 권한: 근무자. 본인 행뿐이다
-- 처리와 경쟁: 권한은 있는데 구독이 없을 수 있고 `endpoint`가 바뀌는 일도 있어 매 진입에 보낸다 — 함수는 `endpoint` upsert다
+- 처리와 경쟁: 권한은 있는데 구독이 없을 수 있고 `endpoint`가 바뀌는 일도 있어 매 진입에 보낸다 — 함수는 `endpoint` upsert다. **의사가 거짓이면 매 진입 저장을 안 한다** — 끈 사람의 구독이 다음 진입에 되살아나면 끄기가 안 끈 것이 된다
 - 결과와 실패: `default`면 알림 설정 화면의 버튼이 사용자 제스처 안에서 묻는다. 진입 즉시 권한을 묻지 않는다
-- 캐시 갱신: 없음
+- 캐시 갱신: `set_notifications_enabled`는 `['members']` — 관리자 직원 목록의 갈래가 그 값으로 갈린다. 구독 저장·삭제는 없음
 
 ### 푸시 보내기
 
-- 규칙: [NTF-001](README.md#ntf-001)·[NTF-027](README.md#ntf-027)·[NTF-029](README.md#ntf-029)
+- 규칙: [NTF-001](README.md#ntf-001)·[NTF-027](README.md#ntf-027)·[NTF-029](README.md#ntf-029)·[NTF-034](README.md#ntf-034)·[NTF-035](README.md#ntf-035)
+- 입력·전제: **끈 사람의 행은 잡지 않는다.** 잡는 질의가 `profiles.notifications_enabled`를 같이 보고 거짓인 행을 거른다 — 행은 서고 푸시만 안 나간다([알림을 받나](#알림을-받나))
+- 입력·전제: **알림끼리 안 묶는다.** 한 사람에게 몇 분 사이로 둘이 잡혀도 각자 간다([NTF-035](README.md#ntf-035)) — 잡는 질의가 같은 사람의 다른 행을 안 본다
 - 입력·전제: **경로 둘, 함수 하나.** `notifications`에 행이 들어오면 Database Webhook이 Edge Function `send-push`를 부른다. pg_net은 한 번 쏘고 끝이라 놓친 것은 pg_cron의 `retry_push`가 매분 같은 함수를 다시 부른다
 - 읽고 쓰는 데이터: **잡기와 성공은 다른 열이다.** 함수가 먼저 잡는다 — `update notifications set claimed_at = now(), push_attempts = push_attempts + 1 where id = any($1) and pushed_at is null and push_attempts < 5 and (claimed_at is null or claimed_at < now() - interval '2 minutes') returning *`. 잡힌 행만 보내고 성공한 행에만 `pushed_at`을 찍는다
 - 권한: **service role은 `send-push` 안에만 있다.** 사용자 세션 없이 돌아 `notifications`와 `push_subscriptions`만 만진다 — 서비스 키 자리 둘 중 하나. **비밀은 저장소 밖이다.** VAPID 키는 Edge Function secret이고 공개키만 `NEXT_PUBLIC_VAPID_PUBLIC_KEY`로 브라우저에 간다. Webhook 트리거의 인증 헤더는 Vault에서 읽는다 — 트리거 정의에 리터럴로 넣으면 마이그레이션에 실려 PUBLIC 저장소에 올라간다
@@ -97,7 +112,9 @@
 
 ## UI 연결
 
-푸시를 누르든 대시보드 알림 영역의 CTA를 누르든 같은 곳이다. `payload`가 날짜·달을 든다. 관리자 목적지는 관리자 층으로 바로 착지하고 앱바 뒤로가 부모 경로로 간다([system/navigation.md](../../system/navigation.md#뒤로)).
+화면은 [notifications](screens/notifications.md) 하나고, 알림이 서는 다른 자리는 [대시보드](../../system/screens/dashboard.md#안-본-알림)의 안 본 알림과 「나」의 [알림 설정](../account/screens/profile.md#알림)이다.
+
+푸시를 누르든 대시보드 알림 영역의 CTA를 누르든 알림 목록의 줄을 누르든 같은 곳이다. `payload`가 날짜·달을 든다. 관리자 목적지는 관리자 층으로 바로 착지하고 앱바 뒤로가 부모 경로로 간다([system/navigation.md](../../system/navigation.md#뒤로)).
 
 표는 릴리스를 가리지 않고 전부 든다. 교대 다섯 줄과 관리자 공지는 2차다([roadmap](../../../1-plan/roadmap.md#릴리스-목록)) — 1차 알림 task는 나머지만 구현하고, 「교대 수락 → 관리자」의 미정은 2차 교대 알림 task가 닫는다.
 
@@ -123,7 +140,9 @@
 | 빈 자리 재촉 | 관리자 | `/admin/schedule?date=` |
 | 관리자 공지 | 승인된 전원 | 없음. 대시보드 알림 영역이 곧 목적지라 CTA가 없고 ✕뿐이다 |
 
-목적지로 가는 것과 읽음은 같은 순간이다 — CTA를 누르면 `mark_notifications_read`가 같이 나간다([읽음 찍기](#읽음-찍기)).
+목적지로 가는 것과 읽음은 같은 순간이다 — CTA를 누르면 `mark_notifications_read`가 같이 나간다([읽음 찍기](#읽음-찍기)). 목록에서 줄을 누르는 것도 같다.
+
+**관리자 공지만 목적지가 없다.** 대시보드에서는 알림 영역이 곧 목적지라 CTA가 없고 ✕뿐인데, 목록에서는 그 줄이 안 눌린다 — 갈 곳이 없어서다. 목록에서 유일하게 안 눌리는 줄이고 화살표도 누름 배경도 없다.
 
 ## 코드와의 차이
 
@@ -135,12 +154,9 @@
 
 ## 아직 안 정한 것
 
+「알림 끄기와 홈 화면 추가 여부를 어디 두나」는 [알림을 받나](#알림을-받나)로 닫혀 올라갔다 — 의사는 `profiles.notifications_enabled`, 기기는 `push_subscriptions` 유무고 둘을 곱해 갈래 셋이다.
+
 ### Q-01
-
-- 질문: 알림 끄기와 홈 화면 추가 여부를 어디 두나
-- 필요한 근거와 대안: `push_subscriptions` 없음만으로는 「안드로이드 안 켬」과 「아이폰 홈 추가 안 함」을 못 가른다
-
-### Q-02
 
 - 질문: 알림 하나에 기기 구독이 둘일 때 한 기기만 성공한 것을 어떻게 나타내나
 - 필요한 근거와 대안: `pushed_at`이 행에 하나라 한 기기만 성공한 것을 못 나타낸다. 서른 명 규모에서 드물어 두고 본다

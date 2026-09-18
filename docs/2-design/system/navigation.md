@@ -33,6 +33,7 @@
 | `/payroll` | [앱을 열면](#앱을-열면) — 승인됨. 퇴사자에게도 열린다 | 급여 · [`payroll.md`](../modules/payroll/screens/payroll.md) |
 | `/me` | [앱을 열면](#앱을-열면) — 승인됨 | 나 · [`profile.md`](../modules/account/screens/profile.md) |
 | `/me/rehearsals` | 리허설 자격이 있는 사람과 관리자만. `?month=`는 달 | 리허설 · [`rehearsal.md`](../modules/schedule/screens/rehearsal.md) |
+| `/notifications` | [앱을 열면](#앱을-열면) — 승인됨 | 알림 목록 · [`notifications.md`](../modules/notification/screens/notifications.md) |
 | `/admin` | 관리자만 | 관리자 홈 · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md#관리자-홈) |
 | `/admin/schedule` | 관리자만 | 관리자 달력. `?month=`는 달, `?date=`는 날 상세 · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md) |
 | `/admin/applications` | 관리자만 | 근무 신청 모아보기. `?month=` · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md#근무-신청-모아보기) |
@@ -55,14 +56,15 @@
 
 - 적용 범위: 화면이 쌓이는 방식
 - 기본 계약:
-  - **근무자 층은 탭 넷이 나란히다.** 대시보드 · 근무표 · 급여 · 나. 탭 사이는 뒤로가 없다 — 탭 바가 곧 이동이다. 근무자 층에서 밀려 올라가는 화면은 출근 인증과 리허설 둘이다. 출근 인증은 닫으면 대시보드고 리허설은 「나」다 — 온 곳으로 돌아간다. 리허설은 자격이 있는 사람에게만 문이 열리고 관리자도 같은 문을 쓴다([schedule/README.md](../modules/schedule/README.md#sch-020))
+  - **근무자 층은 탭 넷이 나란히다.** 대시보드 · 근무표 · 급여 · 나. 탭 사이는 뒤로가 없다 — 탭 바가 곧 이동이다. 근무자 층에서 밀려 올라가는 화면은 출근 인증과 리허설과 알림 목록 셋이다. 출근 인증은 닫으면 대시보드고 리허설은 「나」다 — 온 곳으로 돌아간다. 리허설은 자격이 있는 사람에게만 문이 열리고 관리자도 같은 문을 쓴다([schedule/README.md](../modules/schedule/README.md#sch-020))
+  - **알림 목록만 문이 여럿이다.** 탭 넷 어디서나 앱바의 종 아이콘으로 열리고 관리자 홈에서도 열린다([NTF-033](../modules/notification/README.md#ntf-033)). 그래서 뒤로가 부모 경로가 아니라 온 화면이다 — 관리자 홈에서 열면 닫을 때 관리자 홈이고, 관리자 층을 안 버린다
   - **관리자 층은 홈 위로 쌓인다.** 「나」의 「관리자 모드」 줄이 `/admin`을 열고, 홈의 줄이 각자의 화면을 연다. 달력은 홈의 근무표 타일이 여는 별개 화면이고 날 상세는 그 위다 — 홈 → 달력 → 날 상세 셋이다. 관리자가 근무자 알림을 누르면 관리자 층을 버리고 근무자 층으로 간다
   - **게이트 층은 넷이 나란히다.** `/login` · `/pending` · `/blocked` · `/left`. 서로 오가지 않고 상태가 바뀌면 껍데기가 옮긴다
 
 ### 뒤로
 
 - 적용 범위: 앱바의 뒤로와 브라우저 뒤로
-- 기본 계약: **앱바의 뒤로는 부모 경로로 가는 명시 이동이다.** `history.back()`이 아니다. 부모는 표대로 고정이고, 날 상세만 온 곳이 셋이라 `?from=`으로 출처를 든다. 브라우저 뒤로는 있는 만큼 돈다. 앱바 뒤로는 언제나 표대로다
+- 기본 계약: **앱바의 뒤로는 부모 경로로 가는 명시 이동이다.** `history.back()`이 아니다. 부모는 표대로 고정이고, `?from=`으로 출처를 드는 화면이 둘이다 — 날 상세는 온 곳이 셋이고, 알림 목록은 문이 다섯이다([NTF-033](../modules/notification/README.md#ntf-033)). 브라우저 뒤로는 있는 만큼 돈다. 앱바 뒤로는 언제나 표대로다
 - 이유: 알림으로 바로 착지하면 history가 비어 있어도 뒤로 갈 곳이 있어야 한다
 - 예외: **시트는 history에 든다.** 날 시트·달 고르기·요청 시트가 열리면 `pushState`고, 안드로이드 뒤로 버튼과 iOS 가장자리 스와이프가 시트를 닫는다. 화면을 떠나지 않는다. iOS 홈 화면 앱에서 스와이프가 `popstate`를 안 주면 그때 시트를 history에서 뺀다 — 기기 테스트 항목이다
 
@@ -71,6 +73,7 @@
 | 탭 넷 | 없음 |
 | 출근 인증 | `/` |
 | 리허설 | `/me` |
+| 알림 목록 | 온 화면. `?from=`이 출처를 든다 |
 | 관리자 홈 | `/me` |
 | 달력 · 근무 신청 모아보기 · 승인할 일 · 가입 대기 · 직원 · 시급 · QR · 통계 | `/admin` |
 | 날 상세 | 달력. `?from=approvals`면 승인할 일, `?from=members`면 직원 |
@@ -82,7 +85,9 @@
 ### 알림을 누르면
 
 - 적용 범위: 푸시와 알림 목록에서 여는 이동
-- 기본 계약: **알림이 말한 자리까지 간다.** 날이 있는 알림은 그날 시트가 열린 채로 근무표에 선다(`/schedule?date=`), 관리자 알림은 그날 날 상세다(`/admin/schedule?date=`). 종류마다의 목적지는 [`notification/design.md`](../modules/notification/design.md)에 있다
+- 기본 계약: **알림이 말한 자리까지 간다.** 날이 있는 알림은 그날 시트가 열린 채로 근무표에 선다(`/schedule?date=`), 관리자 알림은 그날 날 상세다(`/admin/schedule?date=`). 종류마다의 목적지는 [`notification/design.md`](../modules/notification/design.md#ui-연결)에 있다
+- 기본 계약: 문이 셋이다 — 푸시, 대시보드 알림 영역의 CTA, [알림 목록](../modules/notification/screens/notifications.md)의 줄. 셋 다 같은 표를 쓰고 가면서 읽음이 찍힌다
+- 예외: 관리자 공지는 목적지가 없다. 대시보드에서는 알림 영역이 곧 목적지고 목록에서는 그 줄이 안 눌린다
 - 예외: 푸시를 눌러 앱이 뜨면 「앱을 열면」 판정을 먼저 거친다 — 차단된 사람은 알림이 어디를 가리키든 `/blocked`다
 
 ### 종이 QR을 찍으면
@@ -102,5 +107,5 @@
 
 #### Q-02
 
-- 질문: 화면이 없는 함수 — `post_announcement`(공지 보내기), `set_hall_location`(홀 좌표·반경), `undo_leave`(퇴사 되돌리기). 알림 설정(끄기·다시 켜기)과 지난 알림 목록도 화면이 없다. `import_holidays`는 목록에서 빠졌다 — cron이 부르는 함수라 사람이 누를 자리가 없다([payroll/design.md](../modules/payroll/design.md#공휴일-받기))
+- 질문: 화면이 없는 함수 — `post_announcement`(공지 보내기), `set_hall_location`(홀 좌표·반경), `undo_leave`(퇴사 되돌리기). `import_holidays`는 목록에서 빠졌다 — cron이 부르는 함수라 사람이 누를 자리가 없다([payroll/design.md](../modules/payroll/design.md#공휴일-받기)). 알림 설정은 「나」의 [알림](../modules/account/screens/profile.md#알림)이고 지난 알림 목록은 [notifications.md](../modules/notification/screens/notifications.md)라 둘 다 목록에서 빠졌다
 - 결정 담당과 시점: 1차에 그릴지 미룰지

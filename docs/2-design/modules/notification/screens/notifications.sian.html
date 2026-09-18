@@ -1,0 +1,696 @@
+<!--
+  알림 목록 화면 시안 — 사람이 보고 고른 결과다.
+
+  값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../../../design-system/tokens.md이고,
+  무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 notifications.md다.
+  셋과 이 파일이 어긋나면 저 둘이 이긴다.
+
+  이 파일이 맡는 것은 글로 안 남는 것들이다 — 날짜 머리 사이 리듬, 읽은 줄과 안 읽은
+  줄이 나란히 섰을 때 실제로 눈에 갈리는 정도, 두 줄 제목이 줄 높이를 밀어내는 모습.
+  구현할 때 이 셋을 같이 연다.
+
+  퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
+  앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../../../design-system/README.md의 「퍼블리싱」에 있다.
+
+  1차 — 처음 그렸다. 담은 것은 notifications.md의 「화면 상태와 흐름」 표 일곱(정상·읽는
+  중·더 읽는 중·끝·빈 상태·못 읽음·더 못 읽음)에 경계 셋을 더한 열 — 안 눌리는 줄(관리자
+  공지), 두 줄짜리 제목이 든 줄, 그리고 앱바 종 아이콘(점 있음·점 없음). 마지막 것은 이
+  화면 자체의 상태가 아니라 이 화면으로 들어오는 문 쪽 컴포넌트다 —
+  components.md#종-아이콘이 정본이라 그쪽 표를 그대로 따라 여기 함께 그렸다.
+
+  문안은 notifications.md의 「문안」 표와 「알림 제목」 표에서만 가져왔다.
+
+  관리자 공지 줄의 본문("이번 주 토요일은 리허설 장소가 바뀌어요")은 지어낸 값이다.
+  문서가 "관리자가 보낸 말이 그대로 선다"고만 정하고 예시 문구를 안 줘서, 줄 모양을
+  보여주려고 형식만 맞춰 지었다 — 실제 문안이 아니다.
+
+  스켈레톤의 맥박 주기는 notifications.md 모션 표가 정한 --interval-beat(1.8s)다.
+
+  스피너가 도는 시간은 tokens.md 「아직 안 정한 것」이 그대로 비워둔 값이다. linear
+  이징(그 문서가 이미 못박음)에 800ms를 얹었고, 이건 토큰이 아니라 이 시안만의 추정값
+  이라고 각주에 적었다. 「다시 시도」 버튼의 폭·높이(auto, 40px)도 문서가 안 준 값이라
+  ../../schedule/screens/rehearsal.sian.html의 같은 자리(.calfail .btn)와 같은 값을
+  가져다 썼다.
+
+  담은 목업 열하나 — 정상, 읽는 중, 더 읽는 중, 끝, 빈 상태, 못 읽음, 더 못 읽음,
+  안 눌리는 줄, 두 줄짜리 제목, 종 아이콘(점 있음·점 없음).
+-->
+<title>알림 목록 화면 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css">
+
+<style>
+:root {
+  --b-bg: oklch(0.945 0.004 57);
+  --b-panel: oklch(0.988 0.003 57);
+  --b-ink: oklch(0.27 0.007 57);
+  --b-sub: oklch(0.52 0.006 57);
+  --b-faint: oklch(0.63 0.005 57);
+  --b-line: oklch(0.885 0.005 57);
+  --b-line-strong: oklch(0.8 0.005 57);
+  --b-accent: oklch(0.48 0.115 248);
+  --b-mock-shadow: 0 2px 6px rgba(28,25,22,.06), 0 24px 48px -28px rgba(28,25,22,.5);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+    --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+    --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+    --b-accent: oklch(0.76 0.1 248);
+    --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+  }
+}
+:root[data-theme="dark"] {
+  --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+  --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+  --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+  --b-accent: oklch(0.76 0.1 248);
+  --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--b-bg); color: var(--b-ink);
+  font-family: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1300px; margin: 0 auto; padding: 56px 28px 110px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--b-accent); margin: 0 0 14px;
+}
+h1 { font-size: 36px; line-height: 1.25; font-weight: 700; letter-spacing: -.02em; margin: 0 0 16px; }
+.lede { font-size: 16px; color: var(--b-sub); max-width: 60ch; margin: 0; }
+
+section { margin-top: 70px; }
+.sec-head { border-top: 1px solid var(--b-line-strong); padding-top: 18px; margin-bottom: 28px; }
+.sec-num {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .12em; color: var(--b-faint); display: block; margin-bottom: 7px;
+}
+h2 { font-size: 23px; font-weight: 700; letter-spacing: -.015em; margin: 0 0 10px; }
+.sec-head p { margin: 0; color: var(--b-sub); max-width: 68ch; font-size: 14.5px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, 375px); gap: 44px 30px; justify-content: start; align-items: start; }
+.item > figcaption { margin-top: 16px; }
+.cap-key { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--b-faint); }
+.cap-name { font-size: 17px; font-weight: 700; margin: 3px 0 6px; letter-spacing: -.01em; }
+.cap-body { font-size: 13.5px; color: var(--b-sub); margin: 0; max-width: 46ch; }
+.cap-body strong { color: var(--b-ink); font-weight: 600; }
+.cap-body + .cap-body { margin-top: 6px; }
+figure.item { margin: 0; }
+
+/* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
+.mock {
+  --palette-neutral-00: oklch(1 .0037 57);
+  --palette-neutral-100: oklch(.965 .0037 57);
+  --palette-neutral-200: oklch(.905 .0043 57);
+  --palette-neutral-300: oklch(.845 .0045 57);
+  --palette-neutral-700: oklch(.545 .005 57);
+  --palette-neutral-800: oklch(.455 .005 57);
+  --palette-neutral-900: oklch(.32 .0053 57);
+  --palette-neutral-1000: oklch(.215 .0055 57);
+  --palette-brand-100: oklch(.965 .0128 57);
+  --palette-brand-800: oklch(.455 .0534 57);
+  --surface-stroke: transparent;
+  --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
+}
+.mock.force-dark {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-100: oklch(.205 .0128 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --surface-stroke: var(--palette-neutral-200);
+  --card-shadow: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mock:not(.force-light) {
+    --palette-neutral-00: oklch(.155 .0037 57);
+    --palette-neutral-100: oklch(.205 .0037 57);
+    --palette-neutral-200: oklch(.265 .0043 57);
+    --palette-neutral-300: oklch(.32 .0045 57);
+    --palette-neutral-700: oklch(.665 .005 57);
+    --palette-neutral-800: oklch(.745 .005 57);
+    --palette-neutral-900: oklch(.845 .0053 57);
+    --palette-neutral-1000: oklch(.935 .0055 57);
+    --palette-brand-100: oklch(.205 .0128 57);
+    --palette-brand-800: oklch(.745 .0534 57);
+    --surface-stroke: var(--palette-neutral-200);
+    --card-shadow: none;
+  }
+}
+:root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(.155 .0037 57);
+  --palette-neutral-100: oklch(.205 .0037 57);
+  --palette-neutral-200: oklch(.265 .0043 57);
+  --palette-neutral-300: oklch(.32 .0045 57);
+  --palette-neutral-700: oklch(.665 .005 57);
+  --palette-neutral-800: oklch(.745 .005 57);
+  --palette-neutral-900: oklch(.845 .0053 57);
+  --palette-neutral-1000: oklch(.935 .0055 57);
+  --palette-brand-100: oklch(.205 .0128 57);
+  --palette-brand-800: oklch(.745 .0534 57);
+  --surface-stroke: var(--palette-neutral-200);
+  --card-shadow: none;
+}
+.mock {
+  --bg-neutral: var(--palette-neutral-00);
+  --bg-neutral-weak: var(--palette-neutral-100);
+  --bg-neutral-weak-pressed: var(--palette-neutral-200);
+  --bg-neutral-solid: var(--palette-neutral-1000);
+  --bg-brand-solid: var(--palette-brand-800);
+  --fg-neutral: var(--palette-neutral-1000);
+  --fg-neutral-muted: var(--palette-neutral-800);
+  --fg-neutral-subtle: var(--palette-neutral-700);
+  --fg-neutral-contrast: var(--palette-neutral-00);
+  --stroke-neutral: var(--palette-neutral-200);
+  --stroke-neutral-muted: var(--palette-neutral-300);
+
+  --t-xs: .8125rem; --lh-xs: 1.21875rem;
+  --t-sm: .9375rem; --lh-sm: 1.40625rem;
+  --t-base: 1.0625rem; --lh-base: 1.59375rem;
+  --t-lg: 1.25rem; --lh-lg: 1.8125rem;
+  --r-lg: 14px;
+  --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms;
+  --i-beat: 1.8s;
+  /* 시안 전용 — 토큰 밖 추정값. 근거는 파일 맨 위 주석에 있다 */
+  --spin-dur: 800ms;
+
+  width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  background: var(--bg-neutral); color: var(--fg-neutral);
+  font-family: "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", sans-serif;
+  font-size: var(--t-base); line-height: var(--lh-base);
+  box-shadow: var(--b-mock-shadow);
+}
+.mock .num { font-variant-numeric: tabular-nums; }
+
+.statusbar {
+  flex: 0 0 auto; height: 46px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px 0 30px; font-size: var(--t-xs); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.sb-right { display: flex; align-items: center; gap: 5px; }
+
+/* 앱바 — 뒤로 · 「알림」 뿐. components.md 「앱바」 */
+.appbar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  padding: 4px 24px 8px; min-height: 44px;
+}
+.backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
+.backic::after { content: ""; position: absolute; inset: -8px; }
+.appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral); }
+
+.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; }
+
+/* 날짜 머리 — mt-6·mb-2, 첫 머리는 mt-4 */
+.datehead { margin: 24px 0 8px; font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; color: var(--fg-neutral-subtle); }
+.datehead.first { margin-top: 16px; }
+
+/* 알림 줄 — ListRow + 화살표. py-3·min-h-14. 줄 사이 선 없음 */
+.ntfrow { position: relative; display: flex; align-items: center; min-height: 56px; padding: 12px 0; cursor: pointer; }
+.ntfrow.admin { cursor: default; }
+.dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 999px; background: var(--bg-brand-solid); margin-right: 8px; }
+.ntfrow .title { flex: 1 1 auto; font-size: var(--t-base); line-height: var(--lh-base); color: var(--fg-neutral); }
+.ntfrow.read .title { color: var(--fg-neutral-muted); }
+.ntfrow .time { flex: 0 0 auto; margin-left: 12px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ntfrow .chev { flex: 0 0 auto; margin-left: 6px; color: var(--fg-neutral-subtle); display: grid; place-items: center; }
+
+/* 스켈레톤 — h-14, 사이 gap-0, 날짜 머리 없음 */
+.sklist { margin-top: 16px; }
+.skrow { height: 56px; display: flex; align-items: center; gap: 12px; }
+.skbar { height: 14px; border-radius: 4px; background: var(--bg-neutral-weak); animation: skPulse var(--i-beat) ease-in-out infinite; }
+.skbar.title { flex: 1 1 auto; max-width: 68%; }
+.skbar.time { flex: 0 0 auto; width: 15%; }
+@keyframes skPulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+
+/* 더 읽는 중 — 목록 아래 스피너 한 줄. linear, 도는 시간은 토큰 밖(주석 참고) */
+.morerow { display: flex; align-items: center; justify-content: center; height: 56px; }
+.spinner { width: 20px; height: 20px; border-radius: 999px; border: 2px solid var(--stroke-neutral); border-top-color: var(--fg-neutral-subtle); animation: spin var(--spin-dur) linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 끝 줄 — 가운데 정렬, text-xs, fg.neutral-subtle, py-8 */
+.endline { padding: 32px 0; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+
+/* 빈 상태 — components.md#빈-상태. 목록 자리에 그대로, 왼쪽 정렬 */
+.ntfempty { margin-top: 16px; padding: 16px 0; text-align: left; }
+.ntfempty .et { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.ntfempty .es { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+
+/* 못 읽음 · 더 못 읽음 — 문구 한 줄 + Button ghost 「다시 시도」.
+   여백·버튼 크기는 문서가 안 줘서 rehearsal.sian.html의 .calfail과 같은 값을 썼다 */
+.ntffail { margin-top: 16px; text-align: center; }
+.ntffail p { margin: 0 0 12px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.ntffail .btn { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 20px; border-radius: var(--r-lg); border: 0; background: transparent; color: var(--fg-neutral-muted); font-size: var(--t-sm); font-weight: 500; font-family: inherit; cursor: pointer; }
+
+/* 종 아이콘 — components.md#종-아이콘. 이 화면 자체가 아니라 들어오는 문 쪽 컴포넌트라
+   전화기 프레임이 아닌 앱바 띠 하나로만 보여준다 */
+.bellstrip {
+  width: 375px; height: 64px; border-radius: 20px; overflow: hidden;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; background: var(--bg-neutral); box-shadow: var(--b-mock-shadow);
+}
+.bellstrip .lab { font-size: 15px; color: var(--fg-neutral-subtle); }
+.bellstrip .right { display: flex; align-items: center; gap: 10px; }
+.bellwrap { position: relative; width: 28px; height: 28px; display: grid; place-items: center; color: var(--fg-neutral); }
+.bellwrap::after { content: ""; position: absolute; inset: -8px; }
+.bellwrap .bdot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; border-radius: 999px; background: var(--bg-brand-solid); border: 2px solid var(--bg-neutral); box-sizing: content-box; }
+.mark { width: 24px; height: 24px; border-radius: 999px; background: var(--bg-neutral-weak); display: grid; place-items: center; font-size: 10px; font-weight: 700; color: var(--fg-neutral-subtle); }
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">라비에벨 · 페이지 디자인</p>
+  <h1>알림 목록 화면 시안</h1>
+  <p class="lede">
+    날짜 머리로 묶은 줄들을 훑는 화면이다. 줄 전체가 눌리고 누르면 읽음이 된다 — 관리자
+    공지 하나만 예외로 안 눌린다. 배경이 아니라 글자 색으로 읽음·안 읽음을 가른다.
+  </p>
+
+  <!-- 01 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">01 / 목록 상태</span>
+      <h2>정상부터 끝까지, 그리고 실패</h2>
+      <p>notifications.md 「화면 상태와 흐름」 표의 일곱 — 정상, 읽는 중, 더 읽는 중, 끝, 빈 상태, 못 읽음, 더 못 읽음.</p>
+    </div>
+    <div class="grid">
+
+      <!-- 정상 -->
+      <figure class="item" id="m-normal">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">알림</span>
+          </div>
+          <div class="body">
+            <div class="datehead first">오늘</div>
+            <div class="ntfrow">
+              <span class="dot"></span>
+              <span class="title">9월 13일 근무가 생겼어요</span>
+              <span class="time num">2시간 전</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="ntfrow read">
+              <span class="title">10월 근무표가 확정됐어요</span>
+              <span class="time num">5시간 전</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="datehead">어제</div>
+            <div class="ntfrow read">
+              <span class="title">내일 근무가 있어요</span>
+              <span class="time num">어제 21:00</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="ntfrow">
+              <span class="dot"></span>
+              <span class="title">박서연 님이 9월 13일 근무를 바꾸고 싶어 해요</span>
+              <span class="time num">어제 14:20</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="datehead">9월 11일(목)</div>
+            <div class="ntfrow read">
+              <span class="title">가입이 승인됐어요</span>
+              <span class="time num">9월 11일</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">01 / NORMAL</div>
+          <div class="cap-name">정상</div>
+          <p class="cap-body">날짜 머리 셋, 줄 다섯. 안 읽은 줄 둘(오늘 첫 줄, 어제 둘째 줄)에 점이 있고 제목이 <strong>fg.neutral</strong>이다. 나머지 셋은 읽음이라 제목이 <strong>fg.neutral-muted</strong>로 한 단계 연하다 — 배경은 안 바뀐다.</p>
+        </figcaption>
+      </figure>
+
+      <!-- 읽는 중 -->
+      <figure class="item" id="m-loading">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">알림</span>
+          </div>
+          <div class="body">
+            <div class="sklist">
+              <div class="skrow"><span class="skbar title"></span><span class="skbar time"></span></div>
+              <div class="skrow"><span class="skbar title"></span><span class="skbar time"></span></div>
+              <div class="skrow"><span class="skbar title"></span><span class="skbar time"></span></div>
+              <div class="skrow"><span class="skbar title"></span><span class="skbar time"></span></div>
+              <div class="skrow"><span class="skbar title"></span><span class="skbar time"></span></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">02 / LOADING · FIRST</div>
+          <div class="cap-name">읽는 중</div>
+          <p class="cap-body">줄 모양 스켈레톤 다섯, 날짜 머리는 안 그린다. 맥박 주기는 문서 모션 표가 정한 <code>--interval-beat</code>(1.8s)다.</p>
+        </figcaption>
+      </figure>
+
+      <!-- 더 읽는 중 -->
+      <figure class="item" id="m-loadingmore">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">알림</span>
+          </div>
+          <div class="body">
+            <div class="datehead first">오늘</div>
+            <div class="ntfrow">
+              <span class="dot"></span>
+              <span class="title">9월 13일 근무가 생겼어요</span>
+              <span class="time num">2시간 전</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="ntfrow read">
+              <span class="title">10월 근무표가 확정됐어요</span>
+              <span class="time num">5시간 전</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="datehead">어제</div>
+            <div class="ntfrow read">
+              <span class="title">내일 근무가 있어요</span>
+              <span class="time num">어제 21:00</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="ntfrow">
+              <span class="dot"></span>
+              <span class="title">박서연 님이 9월 13일 근무를 바꾸고 싶어 해요</span>
+              <span class="time num">어제 14:20</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="datehead">9월 11일(목)</div>
+            <div class="ntfrow read">
+              <span class="title">가입이 승인됐어요</span>
+              <span class="time num">9월 11일</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="morerow"><span class="spinner"></span></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">03 / LOADING · MORE</div>
+          <div class="cap-name">더 읽는 중</div>
+          <p class="cap-body">바닥에 닿아 다음 쪽을 읽는 중이다. 이미 읽은 줄은 그대로 있고 목록 아래에 스피너 한 줄만 더한다. 새 줄은 다 읽히면 그냥 서고 하나씩 나타나지 않는다.</p>
+        </figcaption>
+      </figure>
+
+      <!-- 끝 -->
+      <figure class="item" id="m-end">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">알림</span>
+          </div>
+          <div class="body">
+            <div class="datehead first">오늘</div>
+            <div class="ntfrow">
+              <span class="dot"></span>
+              <span class="title">9월 13일 근무가 생겼어요</span>
+              <span class="time num">2시간 전</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="ntfrow read">
+              <span class="title">10월 근무표가 확정됐어요</span>
+              <span class="time num">5시간 전</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="datehead">어제</div>
+            <div class="ntfrow read">
+              <span class="title">내일 근무가 있어요</span>
+              <span class="time num">어제 21:00</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="ntfrow">
+              <span class="dot"></span>
+              <span class="title">박서연 님이 9월 13일 근무를 바꾸고 싶어 해요</span>
+              <span class="time num">어제 14:20</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="datehead">9월 11일(목)</div>
+            <div class="ntfrow read">
+              <span class="title">가입이 승인됐어요</span>
+              <span class="time num">9월 11일</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="endline">여기까지예요</div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">04 / END</div>
+          <div class="cap-name">끝</div>
+          <p class="cap-body">더 읽을 것이 없을 때 목록 맨 아래에 서는 한 줄. 가운데 정렬, <strong>fg.neutral-subtle</strong>, 안 눌린다.</p>
+        </figcaption>
+      </figure>
+
+      <!-- 빈 상태 -->
+      <figure class="item" id="m-empty">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">알림</span>
+          </div>
+          <div class="body">
+            <div class="ntfempty">
+              <div class="et">아직 받은 알림이 없어요</div>
+              <div class="es">근무표가 확정되면 여기 쌓여요</div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">05 / EMPTY</div>
+          <div class="cap-name">빈 상태</div>
+          <p class="cap-body">받은 알림이 하나도 없는 계정. components.md#빈-상태 그대로 — 그림도 버튼도 없이 목록이 서던 자리에 왼쪽 정렬로 선다.</p>
+        </figcaption>
+      </figure>
+
+      <!-- 못 읽음 -->
+      <figure class="item" id="m-error">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">알림</span>
+          </div>
+          <div class="body">
+            <div class="ntffail">
+              <p>알림을 불러오지 못했어요</p>
+              <button class="btn" type="button">다시 시도</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">06 / ERROR · FIRST</div>
+          <div class="cap-name">못 읽음</div>
+          <p class="cap-body">처음 여는 질의가 실패했다. 문구 한 줄과 Button ghost 「다시 시도」뿐 — 누르면 읽는 중으로 돌아간다.</p>
+        </figcaption>
+      </figure>
+
+      <!-- 더 못 읽음 -->
+      <figure class="item" id="m-errormore">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">알림</span>
+          </div>
+          <div class="body">
+            <div class="datehead first">오늘</div>
+            <div class="ntfrow">
+              <span class="dot"></span>
+              <span class="title">9월 13일 근무가 생겼어요</span>
+              <span class="time num">2시간 전</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="ntfrow read">
+              <span class="title">10월 근무표가 확정됐어요</span>
+              <span class="time num">5시간 전</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="datehead">어제</div>
+            <div class="ntfrow read">
+              <span class="title">내일 근무가 있어요</span>
+              <span class="time num">어제 21:00</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="ntfrow">
+              <span class="dot"></span>
+              <span class="title">박서연 님이 9월 13일 근무를 바꾸고 싶어 해요</span>
+              <span class="time num">어제 14:20</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="ntffail">
+              <p>알림을 불러오지 못했어요</p>
+              <button class="btn" type="button">다시 시도</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">07 / ERROR · MORE</div>
+          <div class="cap-name">더 못 읽음</div>
+          <p class="cap-body">다음 쪽 질의가 실패했다. 이미 읽은 줄(오늘·어제 넉 줄)은 그대로 있고, 그 아래에 같은 문구와 「다시 시도」가 선다 — 읽은 것을 지우지 않는다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">02 / 알림 줄 경계</span>
+      <h2>안 눌리는 줄과 늘어나는 줄</h2>
+      <p>관리자 공지만 안 눌리고, 제목이 두 줄이 되면 줄 높이가 min-h-14를 넘어간다.</p>
+    </div>
+    <div class="grid">
+
+      <!-- 안 눌리는 줄 -->
+      <figure class="item" id="m-adminrow">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">알림</span>
+          </div>
+          <div class="body">
+            <div class="datehead first">오늘</div>
+            <div class="ntfrow">
+              <span class="dot"></span>
+              <span class="title">9월 13일 근무가 생겼어요</span>
+              <span class="time num">2시간 전</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="ntfrow admin">
+              <span class="dot"></span>
+              <span class="title">이번 주 토요일은 리허설 장소가 바뀌어요</span>
+              <span class="time num">1시간 전</span>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">08 / ROW · ADMIN LOCKED</div>
+          <div class="cap-name">안 눌리는 줄 — 관리자 공지</div>
+          <p class="cap-body">위 줄과 달리 화살표가 없고 누름 배경도 안 걸린다 — 갈 곳이 없어서다. 점은 그대로 서고(안 읽은 것은 맞다), 목록을 여는 순간 사라진다. 공지 본문은 지어낸 예시다(파일 맨 위 주석).</p>
+        </figcaption>
+      </figure>
+
+      <!-- 두 줄 제목 -->
+      <figure class="item" id="m-twoline">
+        <div class="mock">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">알림</span>
+          </div>
+          <div class="body">
+            <div class="datehead first">어제</div>
+            <div class="ntfrow read">
+              <span class="title">내일 근무가 있어요</span>
+              <span class="time num">어제 21:00</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="ntfrow">
+              <span class="dot"></span>
+              <span class="title">박서연 님이 9월 13일 근무를 바꾸고 싶어 해요</span>
+              <span class="time num">어제 14:20</span>
+              <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">09 / ROW · TWO-LINE TITLE</div>
+          <div class="cap-name">두 줄짜리 제목이 든 줄</div>
+          <p class="cap-body">「교대 요청 도착」 문구가 375px 폭에서 두 줄로 넘친다. 위 한 줄짜리 읽음 줄과 나란히 놓으면 이 줄만 <code>min-h-14</code>(56px)보다 키가 크다 — 바닥은 그대로고 위가 열려 있다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">03 / 종 아이콘</span>
+      <h2>알림 목록으로 들어오는 문</h2>
+      <p>components.md#종-아이콘이 정본이다. 이 화면 자체의 상태가 아니라 근무자 탭 넷과 관리자 홈 앱바에 서는 컴포넌트라, 전화기 프레임 대신 앱바 띠 하나로만 보여준다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item" id="m-bell-dot">
+        <div class="bellstrip">
+          <span class="lab">앱바 · 다른 화면 예시</span>
+          <span class="right">
+            <span class="bellwrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              <span class="bdot"></span>
+            </span>
+            <span class="mark">LB</span>
+          </span>
+        </div>
+        <figcaption>
+          <div class="cap-key">10 / BELL · UNREAD</div>
+          <div class="cap-name">종 아이콘 — 점 있음</div>
+          <p class="cap-body">안 읽은 알림이 있을 때다. 8px 브랜드 점이 아이콘 오른쪽 위에 물리고, 2px <strong>bg.neutral</strong> 테두리로 아이콘 선과 갈라진다. 수는 안 적는다. 오른쪽 「LB」는 브랜드 마크 자리를 보여주는 자리표시일 뿐 실제 로고가 아니다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-bell-none">
+        <div class="bellstrip">
+          <span class="lab">앱바 · 다른 화면 예시</span>
+          <span class="right">
+            <span class="bellwrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            </span>
+            <span class="mark">LB</span>
+          </span>
+        </div>
+        <figcaption>
+          <div class="cap-key">11 / BELL · NONE</div>
+          <div class="cap-name">종 아이콘 — 점 없음</div>
+          <p class="cap-body">안 읽은 알림이 없을 때다. 아이콘만 그대로 서고 점이 없다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+</div>

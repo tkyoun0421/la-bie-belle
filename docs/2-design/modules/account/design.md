@@ -33,7 +33,7 @@
 
 ### 개인정보는 표를 가른다
 
-`profiles(id, user_id, display_name, photo_url, role, submitted_at, approved_at, rejected_at, blocked_at, left_at, erased_at)`는 승인된 전원이 읽는다. `profile_private(profile_id, email, phone, birth_date, gender)`는 본인과 관리자만 읽는다. `email`은 `ensure_profile()`이 `auth.users`에서 옮겨 적는다 — 관리자가 가입 대기 시트에서 구글 계정을 보는데 `auth.users`는 못 읽어서다. `phone`에는 `^010-\d{4}-\d{4}$` check 제약이 있다 — 직접 갱신이라 함수의 검사를 안 지나니 표가 마지막 문이다. RLS가 행 단위라 한 표로는 열을 못 가른다 — 한 표면 아무 근무자나 `select phone from profiles`로 서른 명 연락처를 받는다.
+`profiles(id, user_id, display_name, photo_url, role, submitted_at, approved_at, rejected_at, blocked_at, left_at, erased_at, notifications_enabled)`는 승인된 전원이 읽는다. `notifications_enabled`는 기본이 참이고 뜻은 [notification/design.md](../notification/design.md#알림을-받나)가 든다 — 사람에 붙는 값이라 여기 살고 쓰는 함수는 알림 쪽이다. `profile_private(profile_id, email, phone, birth_date, gender)`는 본인과 관리자만 읽는다. `email`은 `ensure_profile()`이 `auth.users`에서 옮겨 적는다 — 관리자가 가입 대기 시트에서 구글 계정을 보는데 `auth.users`는 못 읽어서다. `phone`에는 `^010-\d{4}-\d{4}$` check 제약이 있다 — 직접 갱신이라 함수의 검사를 안 지나니 표가 마지막 문이다. RLS가 행 단위라 한 표로는 열을 못 가른다 — 한 표면 아무 근무자나 `select phone from profiles`로 서른 명 연락처를 받는다.
 
 `profile_private`의 연락처는 본인이 직접 갱신한다. 테이블 직접 쓰기 정책이 있는 유일한 자리다. 이름·성별·생년월일은 `submit_profile()` 함수로만 들어간다 — 제출된 뒤 잠기고 거절되면 다시 열리는 것을 컬럼 grant로는 못 나타낸다.
 

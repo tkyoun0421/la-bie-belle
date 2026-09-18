@@ -232,6 +232,20 @@ code {
   color: var(--fg-brand-contrast); display: grid; place-items: center;
   font-size: var(--t-xs); font-weight: 700; flex: 0 0 auto;
 }
+/* 종 아이콘 — components.md의 「종 아이콘」. 브랜드 마크 왼쪽, 사이 gap-2.5(10px) */
+.appbar-right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+.bell {
+  position: relative; flex: 0 0 auto; width: 28px; height: 28px;
+  display: grid; place-items: center; color: var(--fg-neutral);
+  border: 0; background: none; padding: 0; cursor: pointer;
+}
+/* 모양은 28px, 닿는 면은 세로로 넓혀 44px로 채운다 — spacing-shape.md의 「누를 수 있는 것은 44px 이상이다」 */
+.bell::after { content: ""; position: absolute; left: -8px; right: -8px; top: -8px; bottom: -8px; }
+.bell .dot {
+  position: absolute; top: 4px; right: 4px;
+  width: 8px; height: 8px; border-radius: 999px;
+  background: var(--bg-brand-solid); border: 2px solid var(--bg-neutral);
+}
 .body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
@@ -309,6 +323,15 @@ code {
   flex: 0 0 auto; align-self: center; line-height: 1;
   font-size: var(--t-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums;
 }
+/* 제목의 「아래 줄」 — notifications.md 알림 제목 표가 정한 것. 이 화면만 제목 아래 줄까지 그린다(dashboard.md) */
+.noti-item .noti-sub {
+  grid-column: 2; margin-top: 3px;
+  font-size: var(--t-xs); line-height: var(--lh-xs);
+  color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums;
+}
+.noti-item.has-sub .nt { grid-row: 1; }
+.noti-item.has-sub .noti-sub { grid-row: 2; }
+.noti-item.has-sub .noti-meta { grid-row: 3; }
 .noti-close {
   position: relative; flex: 0 0 auto; width: 32px; height: 32px; margin-right: -8px; border: 0; background: none; padding: 0;
   display: grid; place-items: center; color: var(--fg-neutral-subtle); cursor: pointer; border-radius: 999px;
@@ -647,7 +670,7 @@ code {
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
-          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="appbar-right"><button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button><span class="brandmark">라</span></span></div>
           <div class="body">
             <div class="noti" data-noti>
               <div class="noti-h"><span>안 본 알림 <b data-noti-count>2</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
@@ -665,7 +688,7 @@ code {
                 </div>
                 <div class="noti-item" data-noti-item>
                   <i class="unread"></i>
-                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
+                  <span class="nt">10월 근무표가 확정됐어요</span>
                   <div class="noti-meta">
                     <span class="ns">어제 21:04</span>
                     <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
@@ -701,14 +724,14 @@ code {
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
-          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="appbar-right"><button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button><span class="brandmark">라</span></span></div>
           <div class="body">
             <div class="noti" data-noti>
               <div class="noti-h"><span>안 본 알림 <b data-noti-count>1</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
               <div class="noti-slot">
                 <div class="noti-item" data-noti-item>
                   <i class="unread"></i>
-                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
+                  <span class="nt">10월 근무표가 확정됐어요</span>
                   <div class="noti-meta">
                     <span class="ns">어제 21:04</span>
                     <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
@@ -744,14 +767,14 @@ code {
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
-          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="appbar-right"><button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button><span class="brandmark">라</span></span></div>
           <div class="body">
             <div class="noti" data-noti>
               <div class="noti-h"><span>안 본 알림 <b data-noti-count>1</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
               <div class="noti-slot">
                 <div class="noti-item" data-noti-item>
                   <i class="unread"></i>
-                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
+                  <span class="nt">10월 근무표가 확정됐어요</span>
                   <div class="noti-meta">
                     <span class="ns">어제 21:04</span>
                     <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
@@ -788,14 +811,14 @@ code {
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
-          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="appbar-right"><button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button><span class="brandmark">라</span></span></div>
           <div class="body">
             <div class="noti" data-noti>
               <div class="noti-h"><span>안 본 알림 <b data-noti-count>1</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
               <div class="noti-slot">
                 <div class="noti-item" data-noti-item>
                   <i class="unread"></i>
-                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
+                  <span class="nt">10월 근무표가 확정됐어요</span>
                   <div class="noti-meta">
                     <span class="ns">어제 21:04</span>
                     <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
@@ -833,7 +856,7 @@ code {
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
-          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="appbar-right"><button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button><span class="brandmark">라</span></span></div>
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
@@ -863,7 +886,7 @@ code {
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
-          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="appbar-right"><button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button><span class="brandmark">라</span></span></div>
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline" style="margin-bottom:20px">오늘 근무가 있어요</div>
@@ -906,7 +929,7 @@ code {
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
-          <div class="appbar"><span class="date num">9월 10일(목)</span><span class="brandmark">라</span></div>
+          <div class="appbar"><span class="date num">9월 10일(목)</span><span class="appbar-right"><button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button><span class="brandmark">라</span></span></div>
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline off" style="margin-bottom:20px">오늘은 근무가 없어요</div>
@@ -931,7 +954,7 @@ code {
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
-          <div class="appbar"><span class="date num">9월 10일(목)</span><span class="brandmark">라</span></div>
+          <div class="appbar"><span class="date num">9월 10일(목)</span><span class="appbar-right"><button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button><span class="brandmark">라</span></span></div>
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline off" style="margin-bottom:20px">이번 주는 근무가 없어요</div>
@@ -956,7 +979,7 @@ code {
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
-          <div class="appbar"><span class="date num">8월 28일(금)</span><span class="brandmark">라</span></div>
+          <div class="appbar"><span class="date num">8월 28일(금)</span><span class="appbar-right"><button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button><span class="brandmark">라</span></span></div>
           <div class="body">
             <div class="daybar" style="padding-top:6px">
               <div class="headline off" style="margin-bottom:20px">9월 근무표는 아직 확정 전이에요</div>
@@ -1004,16 +1027,17 @@ code {
                   </span>
                 </div>
               </div>
-              <div class="noti-item" data-noti-item>
+              <div class="noti-item has-sub" data-noti-item>
                 <i class="unread"></i>
-                <span class="nt">내일 9월 13일 10:00 근무가 있어요</span>
+                <span class="nt">내일 근무가 있어요</span>
+                <span class="noti-sub num">10:00 · 안내</span>
                 <div class="noti-meta">
                   <span class="ns">어제 21:00</span>
                 </div>
               </div>
               <div class="noti-item" data-noti-item>
                 <i class="unread"></i>
-                <span class="nt">9월 20일 근무가 스캔에서 메인으로 바뀌었어요</span>
+                <span class="nt">9월 20일 근무가 생겼어요</span>
                 <div class="noti-meta">
                   <span class="ns">어제 18:40</span>
                   <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
@@ -1061,14 +1085,14 @@ code {
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
           </span></div>
-          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="brandmark">라</span></div>
+          <div class="appbar"><span class="date num">9월 12일(토)</span><span class="appbar-right"><button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button><span class="brandmark">라</span></span></div>
           <div class="body">
             <div class="noti">
               <div class="noti-h"><span>안 본 알림 <b>1</b></span><button class="noti-close" data-noti-x aria-label="이 알림 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
               <div class="noti-slot">
                 <div class="noti-item">
                   <i class="unread"></i>
-                  <span class="nt">관리자가 9월 근무표를 확정했어요</span>
+                  <span class="nt">10월 근무표가 확정됐어요</span>
                   <div class="noti-meta">
                     <span class="ns">어제 21:04</span>
                     <button class="btn sm noti-cta" data-noti-go>근무표 보기</button>
@@ -1169,7 +1193,8 @@ code {
       var row = act.closest("[data-noti-item]");
       if (!row || row.dataset.answered) return;
       row.dataset.answered = "1";
-      var a = ANSWER[act.dataset.act];
+      var kind = act.dataset.act;
+      var a = ANSWER[kind];
       row.classList.add("swap-out");
       if (count) count.textContent = Math.max(0, (parseInt(count.textContent, 10) || 1) - 1);
       setTimeout(function () {
@@ -1177,7 +1202,14 @@ code {
         row.querySelector(".nt").textContent = a[0];
         row.querySelector(".ns").textContent = a[1];
         var cta = row.querySelector(".noti-cta");
-        if (cta) cta.remove();
+        if (cta) {
+          // 수락한 줄만 자리가 「수락 취소」로 바뀐다 — 관리자 승인 전까지 무를 수 있다(SWP-008). 거절은 CTA가 그냥 빠진다
+          if (kind === "yes") {
+            cta.outerHTML = '<button class="btn sm noti-cta" data-act="cancel">수락 취소</button>';
+          } else {
+            cta.remove();
+          }
+        }
         row.classList.remove("swap-out");
         row.classList.add("swap-in");
       }, BASE);
