@@ -4,7 +4,7 @@
 
 관리자가 사람마다의 시간당 단가를 정하는 화면이다. 값은 [tokens.md](../../../design-system/tokens.md)에만 있고 여기는 토큰 이름으로만 말한다.
 
-여기서 정한 값이 [급여 조회](payroll.md)와 [통계](../../../system/screens/stats.md)의 월별 인건비를 만든다. 규칙은 [payroll/README.md](../README.md)에 있다.
+여기서 정한 값이 [급여 조회](payroll.md)의 금액을 만든다. 규칙은 [payroll/README.md](../README.md)에 있다.
 
 들어오는 문은 [관리자 홈](../../../modules/schedule/screens/schedule-admin.md#관리자-홈)의 「시급」 줄이다.
 
@@ -263,7 +263,7 @@ ListRow다. 이름 가나다순이고 개별로 정한 사람을 위로 올리�
 
 **조정.** 배정과 실제가 어긋난 날에 그 건의 근무 시간을 손보는 것은 [payroll/README.md](../README.md#용어)의 다른 행위고, 자리는 근무표 날 상세다([schedule-admin.md](../../../modules/schedule/screens/schedule-admin.md)).
 
-**인건비 합계.** 이 화면은 단가를 정하는 자리고 합계는 [통계](../../../system/screens/stats.md)에 있다.
+**인건비 합계.** 이 화면은 단가를 정하는 자리고 홀 전체 금액을 세는 자리는 앱에 없다 — [통계](../../../system/screens/stats.md)도 금액을 안 그린다.
 
 **최저임금 하한 검사.** 안 한다. 근거는 아래 [규칙과 부딪힌 자리](#규칙과-부딪힌-자리)에 있다.
 

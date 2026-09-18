@@ -25,7 +25,7 @@
 | `excuses` | 본인 행과 관리자. 전원은 `excuse_status` 뷰 |
 | `hall_secrets` | 관리자 |
 
-키는 `['attendance', 'YYYY-MM-DD']`(그날 `check_ins`와 `excuse_status`)·`['excuses', 'YYYY-MM']`(본인 사유 목록)·`['hall', 'qr']`다. 명단은 이 키와 `['schedule', 그달]`의 배정을 합쳐 그린다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
+키는 `['attendance', 'YYYY-MM-DD']`(그날 `check_ins`와 `excuse_status`)·`['attendance', 'YYYY-MM']`(그달치 같은 둘)·`['excuses', 'YYYY-MM']`(본인 사유 목록)·`['hall', 'qr']`다. 명단은 날 키와 `['schedule', 그달]`의 배정을 합쳐 그린다. 달 키는 [통계](../../system/screens/stats.md)가 쓴다 — 한 달을 날마다 읽으면 서른 질의고 열두 달 그래프에서는 360이 된다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
 
 범위 없이 읽는 키의 범위는 이렇다([system/runtime.md](../../system/runtime.md#읽기-범위)).
 
