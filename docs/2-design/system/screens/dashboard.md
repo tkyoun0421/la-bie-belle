@@ -42,7 +42,7 @@
 
 세로로 쌓는다. 가운데 정렬은 없다.
 
-1. 앱바 — 오늘 날짜와 브랜드 마크
+1. 앱바 — 오늘 날짜, 그리고 오른쪽에 [종 아이콘](../../design-system/components.md#종-아이콘)과 브랜드 마크
 2. 안 본 알림
 3. 가는 선
 4. 오늘 한 줄
@@ -114,6 +114,8 @@
 **겸임이든 교육 배정이든 띠는 하나다.** [schedule/README.md](../../modules/schedule/README.md#용어)가 근무 시간을 「날짜마다 하나이고 그날 배정된 사람 전원에게 같이 적용된다」고 정했다 — 포지션마다 다르지 않다. 한 사람이 두 포지션을 맡아도 출근과 퇴근이 한 번이라 축에 그릴 것이 하나뿐이다. 갈리는 것은 띠 아래 한 줄의 포지션 이름이다.
 
 #### 안 본 알림
+
+**이 자리와 앱바 종 아이콘은 역할이 다르다.** 여기는 안 읽은 것 중 최근 한 건을 세우고 그 자리에서 답을 받는다. 종 아이콘은 지나간 것 전부를 보는 [알림 목록](../../modules/notification/screens/notifications.md)을 연다([NTF-033](../../modules/notification/README.md#ntf-033)) — ✕로 치운 줄도 거기 있다.
 
 **개수와 가장 최근 한 건만 세운다.** 목록을 펼치지 않는다. [notification/README.md](../../modules/notification/README.md#ntf-023)가 안 본 알림은 눌러야 사라진다고 정했는데, 목록을 통째로 세우면 화면 위쪽이 알림에 다 먹히고 오늘 근무가 아래로 밀린다. 한 줄만 서면 몇 건이 밀려 있든 이 자리는 한 줄이다.
 
@@ -188,6 +190,7 @@
 | 화면 바탕 | `bg.neutral` |
 | 브랜드 마크 면 | `bg.brand-solid` |
 | 브랜드 마크 글자 | `fg.brand-contrast` |
+| 종 아이콘 | [components.md](../../design-system/components.md#종-아이콘)의 종 아이콘 |
 | 오늘 날짜 | `fg.neutral-subtle` |
 | 안 본 알림 머리 | `fg.neutral-subtle` |
 | 안 본 알림 개수 | `fg.neutral-muted` |
@@ -273,7 +276,8 @@
 | 자리 | 유틸 |
 | --- | --- |
 | 화면 좌우 여백 | `px-6` |
-| 앱바 높이 | `min-h-10` |
+| 앱바 높이 | `min-h-11` — [components.md](../../design-system/components.md#앱바)가 정본이다 |
+| 종 아이콘과 브랜드 마크 사이 | `gap-2.5` |
 | 브랜드 마크 | `size-7` `rounded-sm` |
 | 안 본 알림 한 건 | 아래 `pb-3` |
 | 안 읽음 점 | `size-1.5` `rounded-full` |
@@ -309,6 +313,8 @@
 ## 문안
 
 ### 대시보드 문안
+
+알림 제목은 여기 없다 — [notifications.md](../../modules/notification/screens/notifications.md#알림-제목)가 정본이고 이 화면이 같은 문장을 쓴다. 이 화면만 제목 아래 줄까지 그린다.
 
 | 자리 | 문장 |
 | --- | --- |

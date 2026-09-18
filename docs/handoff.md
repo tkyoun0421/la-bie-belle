@@ -89,7 +89,32 @@ plan을 쓰며 나온 막힌 것 둘이 착수 전에 닫혀야 한다.
 - **리허설 자격을 주는 화면이 정본에 없다.** [자격](2-design/modules/schedule/design.md#자격)이 「관리자가 직접 준 행이 유일한 길」이라 정했는데 그 행을 만드는 자리가 어디에도 안 그려져 있다 — 사람 픽커의 「자격도 주기」는 포지션 배정 맥락이라 안 맞다. 닫히기 전에는 `rehearsal` task가 서도 아무도 자격을 못 받는다
 - **결근 음수가 근무 시간 변경과 어긋난다.** 9시간일 때 넣은 −540분이 8시간으로 줄어든 날에 그대로 남으면 총 −60분이다. 계산에 바닥을 넣을지 근무 시간을 고칠 때 조정을 다시 계산할지가 [payroll-adjust](3-build/plans/payroll-adjust.md#리스크전환되돌리기)의 첫 결정이다
 
-**다음은 notification 영역이다.** 같은 순서를 돈다 — 미정 인터뷰 → 정본 반영 → 시안 갱신과 승인 → plan.
+**notification 영역이 끝났다.** 미정이 다 닫혔고 정본에 반영됐고 시안 일곱이 승인됐고 plan 다섯이 섰다.
+
+인터뷰로 닫은 결정 여덟이다.
+
+- **지난 알림은 앱바의 종 아이콘에서 본다**([NTF-033](2-design/modules/notification/README.md#ntf-033)). 화면이 새로 섰다 — [notifications.md](2-design/modules/notification/screens/notifications.md). 종은 근무자 탭 넷과 관리자 홈에 서고 **퇴사자가 보는 급여 화면에는 없다**. 수를 안 적고 점만 찍는다
+- **대시보드의 알림 영역은 그대로 남는다.** 처음에 「아이콘만 남긴다」로 갔다가 [prd.md](1-plan/prd.md)가 대시보드 네 항목을 못박아둔 것과 부딪혀 되돌렸다 — 종은 지나간 것 전부, 알림 영역은 안 읽은 것 중 최근 한 건이고 거기서 답한다
+- **알림 목록에서는 줄 전체가 눌린다** — [NTF-024](2-design/modules/notification/README.md#ntf-024)의 예외다. 대시보드는 CTA와 ✕만 눌리는데 목록은 반대고, 누르면 그 알림이 말한 자리로 가며 읽음이 찍힌다. **관리자 공지만 안 눌리고**(갈 곳이 없다) 그것 하나가 여는 것으로 읽음이 찍힌다
+- **알림을 못 받는 사람을 관리자가 본다**([NTF-034](2-design/modules/notification/README.md#ntf-034)). 갈래가 둘이라 화면이 갈라 말한다 — 「· 알림 꺼둠」과 「· 기기 안 연결」이다. 서는 자리가 셋이다 — 직원 목록 줄, 사람 시트, 확정 뒤 확인 시트
+- **RLS를 안 풀고 뷰로 냈다.** `push_subscriptions`는 본인 행만 열고 `security definer` 뷰 `push_reachable(profile_id, has_device)`가 관리자에게 불리언 하나만 낸다 — `endpoint`도 `keys`도 안 낸다
+- **의사와 상태를 가른다.** 받겠다는 의사는 `profiles.notifications_enabled`고 기기가 닿는지는 `push_subscriptions` 행의 유무다. 둘을 곱해 셋이 나고 프로필이 셋을 갈라 말한다 — **스위치를 켜도 기기가 안 닿을 수 있다**
+- **알림끼리 묶지 않는다**([NTF-035](2-design/modules/notification/README.md#ntf-035)). 예외는 주말 미리 알림 하나고 그것은 같은 종류를 묶는 것이다
+- **목록은 전부를 50건씩 끊어 읽는다.** 안 지우는 규칙이라 계속 길어진다
+
+**알림 문장 스물셋이 처음으로 저장소에 섰다.** [알림 제목](2-design/modules/notification/screens/notifications.md#알림-제목) 표가 정본이고 대시보드와 푸시가 같은 것을 쓴다 — 그 문구가 어디에도 없던 자리였다.
+
+**1차 알림의 범위를 다시 그었다.** [roadmap](1-plan/roadmap.md#릴리스-목록)이 알림을 「승인·확정·전날·직전」 넷으로 적었는데 같은 표의 1차 기능에 근무 요청·근무 취소·사유 승인이 들어 있고 2차가 미룬다고 적은 것은 교대와 공지뿐이었다. **1차는 교대와 공지를 뺀 열하나**고 roadmap의 괄호를 그렇게 고쳤다.
+
+backlog의 `notification-first` 한 행을 여섯으로 갈랐다 — [notification-data](3-build/plans/notification-data.md)·[notification-push](3-build/plans/notification-push.md)·[notification-emit](3-build/plans/notification-emit.md)·[notification-schedule](3-build/plans/notification-schedule.md)·[notification-list](3-build/plans/notification-list.md)·`notification-second`. `notification-settings`까지 plan 다섯이 섰고 `notification-second`는 교대 설계가 서야 쓴다. `dashboard`의 선행도 `notification-list`로 바꿨다 — 문장 함수를 거기서 가져다 쓴다.
+
+plan을 쓰며 가른 경계 셋이다.
+
+- **낳기와 보내기가 다른 task다.** `notification-emit`은 함수 안에서 행을 낳고 `notification-push`는 이미 선 행을 집어 기기로 보낸다. 잡기 update의 `returning`이 중복 발송을 막는 자리라 그것만으로 task 하나다
+- **시각을 보는 것이 따로 선다.** `notification-schedule`이 저녁 9시와 출근 10분 전을 맡는다. 금요일에 주말 묶음과 전날 알림이 둘 다 나가면 두 번 울려서 그 조건이 이 task의 핵심 단언이다
+- **문장 함수가 `notification-list`에 산다.** 푸시도 대시보드도 그것을 가져다 쓴다. 두 곳이 문장을 따로 들면 같은 알림이 기기와 화면에서 다르게 읽힌다
+
+**다음은 system 영역이다.** 같은 순서를 돈다 — 미정 인터뷰 → 정본 반영 → 시안 갱신과 승인 → plan. 남은 화면이 [dashboard](2-design/system/screens/dashboard.md)·[approvals](2-design/system/screens/approvals.md)·[stats](2-design/system/screens/stats.md)고, 관리자 홈 화면 문서가 아직 없다는 것이 [시안 개선 제안 D-04](proposals/design-sian-improvements.md)가 기각된 이유였다 — 여기서 그 자리를 본다.
 
 같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
 
