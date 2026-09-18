@@ -159,6 +159,6 @@ sources:
 - 표와 함수 — [`payroll-data`](payroll-data.md)
 - 근무 조정 — 값이 여기가 아니라 날 상세에 산다. [`payroll-adjust`](../../backlog.md)
 - 근무자가 보는 급여 — [`payroll-view`](../../backlog.md)
-- 통계의 인건비 — 통계 화면의 것이다
+- 통계 — 여기서 정한 단가가 통계에 안 간다. 관리자 통계에 금액이 없다([stats.md](../../2-design/system/screens/stats.md#안-담은-것))
 - 직원 시트의 시급 — [`members`](members.md)가 자리를 두었다
 - 알림 — 시급 변경에 알림이 없다. 급여 화면이 다음에 열릴 때 바뀐 값이다

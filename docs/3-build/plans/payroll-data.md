@@ -172,7 +172,7 @@ sources:
 
 ## 리스크·전환·되돌리기
 
-- **계산이 클라이언트에서 돈다.** 시급이 브라우저로 내려간다는 뜻인데, RLS가 자기 행만 주니 근무자에게는 자기 시급만 간다([PAY-018](../../2-design/modules/payroll/README.md#pay-018)). 관리자에게는 전원 시급이 가고 그것이 곧 통계다. **이 구조가 무너지는 자리는 RLS 하나뿐이라 integration이 거기를 본다**
+- **계산이 클라이언트에서 돈다.** 시급이 브라우저로 내려간다는 뜻인데, RLS가 자기 행만 주니 근무자에게는 자기 시급만 간다([PAY-018](../../2-design/modules/payroll/README.md#pay-018)). 관리자에게는 전원 시급이 가고 그 값이 시급 화면과 직원 시트에 선다([PAY-016](../../2-design/modules/payroll/README.md#pay-016)). **이 구조가 무너지는 자리는 RLS 하나뿐이라 integration이 거기를 본다**
 - **`set_default_wage`가 전원에게 행을 넣는다.** 서른 명이면 서른 행이라 지금은 작지만 한 트랜잭션이 커지는 유일한 자리다. 실패하면 통째로 롤백되니 일부만 바뀌는 일은 없다
 - **조정 없는 결근과 조정 든 결근이 둘 다 있다.** 관리자가 아직 안 누른 날은 상태가 결근이고 조정이 0이다. 계산이 그 둘을 같은 금액으로 내야 하는데 경로가 달라 어긋나기 쉽다 — [AC-06](#ac-06)이 그 자리를 적었고 unit이 둘을 나란히 본다
 - **9시간 기준이 법과 어긋난다.** [PAY-026](../../2-design/modules/payroll/README.md#pay-026)이 어긋난 자리 여섯을 이미 적었다. 알고 정한 것이고 앱이 내는 것은 예상치다 — 코드가 그 규칙을 그대로 구현하고 바로잡지 않는다
@@ -207,6 +207,6 @@ sources:
 - `/payroll` 화면 — [`payroll-view`](../../backlog.md)
 - 날 상세의 임시공휴일 줄과 근무 조정 줄 — [`payroll-adjust`](../../backlog.md)
 - pg_cron `fetch_holidays`와 Edge Function `import-holidays` — [`payroll-holidays`](../../backlog.md)
-- 통계의 인건비 — 통계 화면의 것이다
+- 통계 — 금액을 안 그린다. 관리자 통계가 세는 것은 근무 시간과 출결이다([stats.md](../../2-design/system/screens/stats.md#안-담은-것))
 - 공휴일 가산 — [PAY-024](../../2-design/modules/payroll/README.md#pay-024)가 1차 밖으로 뺐다
 - 타입 생성 — [`types-generation`](../../backlog.md)
