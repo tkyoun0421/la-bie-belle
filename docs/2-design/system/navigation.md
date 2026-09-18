@@ -34,6 +34,7 @@
 | `/me` | [앱을 열면](#앱을-열면) — 승인됨 | 나 · [`profile.md`](../modules/account/screens/profile.md) |
 | `/me/rehearsals` | 리허설 자격이 있는 사람과 관리자만. `?month=`는 달 | 리허설 · [`rehearsal.md`](../modules/schedule/screens/rehearsal.md) |
 | `/notifications` | [앱을 열면](#앱을-열면) — 승인됨 | 알림 목록 · [`notifications.md`](../modules/notification/screens/notifications.md) |
+| `/stats` | [앱을 열면](#앱을-열면) — 승인됨 | 근무자 통계 · [`stats.md`](screens/stats.md#근무자--stats) |
 | `/admin` | 관리자만 | 관리자 홈 · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md#관리자-홈) |
 | `/admin/schedule` | 관리자만 | 관리자 달력. `?month=`는 달, `?date=`는 날 상세 · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md) |
 | `/admin/applications` | 관리자만 | 근무 신청 모아보기. `?month=` · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md#근무-신청-모아보기) |
@@ -43,7 +44,7 @@
 | `/admin/members` | 관리자만 | 직원 · [`members.md`](../modules/account/screens/members.md) |
 | `/admin/wages` | 관리자만 | 시급 · [`wages.md`](../modules/payroll/screens/wages.md) |
 | `/admin/qr` | 관리자만 | QR · [`qr.md`](../modules/attendance/screens/qr.md) |
-| `/admin/stats` | 관리자만 | 통계 · [`stats.md`](screens/stats.md) |
+| `/admin/stats` | 관리자만 | 관리자 통계 · [`stats.md`](screens/stats.md#관리자--adminstats) |
 
 - 적용 범위: 앱의 모든 라우트
 - 기본 계약: **동적 세그먼트가 없다.** 날은 전부 `?date=`다. 근무자에게 `?date=`는 달력 위의 시트고 관리자에게는 날 상세 화면 하나다 — 같은 문법, 다른 모양. `/admin` 아래는 관리자만이다. 근무자가 열면 `/`로 보낸다. `/me/rehearsals`는 `/admin` 밖에 있는 유일한 조건부 경로다 — 역할이 아니라 자격이 문을 가른다. 자격 없는 사람이 열면 `/me`로 보낸다

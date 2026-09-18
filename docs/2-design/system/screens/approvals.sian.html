@@ -17,18 +17,11 @@
   누르면 문서 루트에 data-theme이 걸리고 목업 팔레트가 tokens.md 1절의 다크 열로 뒤집힌다.
 
   문서가 안 적어 이 파일이 임의로 세운 자리다. 값을 여기서 굳히지 않는다.
-  · 거절 화면(03절) 안쪽 여백 전부. approvals.md 「거절」 절에는 색과 글자 표만
-    있고 「목록」·「상세 시트」 절과 달리 여백과 모양 표가 없다. 제목과 이유 줄
-    사이, 이유 줄과 입력 칸 사이, 아래 줄과 버튼 사이의 간격은 이 파일이 쟀다.
-  · 근무 취소 승인 확인(04절) Dialog의 폭·안쪽 여백·그림자. components.md의
-    Dialog와 바텀시트 절은 rounded-lg와 토큰 이름만 말하고 치수가 없다.
-    바텀시트 위에 다시 뜨는 층이라 --pop-shadow를 빌려 썼다.
-  · 「직접 쓰기」 글자 수 상한. approvals.md 「아직 안 정한 것」이 제안 100자로만
-    적어뒀고 확정이 아니라서 입력칸에 글자 수 카운터를 안 그렸다.
+  · 거절 화면(03절)의 이유 줄과 입력 칸 사이 간격 하나뿐이다. 「거절 여백과
+    모양」 표가 나머지 다섯(시트 안쪽·제목과 첫 줄·이유 줄·입력 칸·아래 줄·
+    버튼 간격)은 정했지만 이 간격만 표에 없어 이 파일이 쟀다.
   · 보낸 글의 실제 문장. 문서는 자리와 글자 수 상한(사유 200자·취소 100자)만
     정했고 예시 문장은 안 줬다. 아래 목업의 문장은 자리를 재려고 지어낸 것이다.
-  · 통신 실패 화면. approvals.md 「아직 안 정한 것」에 문안이 없다고 적혀 있어
-    이 시안에도 안 그렸다.
 -->
 <title>승인할 일 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -142,6 +135,7 @@ code {
   --palette-brand-800: oklch(.455 .0534 57);
   --palette-brand-900: oklch(.32 .0452 57);
   --palette-positive-400: oklch(.76 .0897 152);
+  --palette-critical-100: oklch(.965 .0319 27);
   --palette-critical-800: oklch(.455 .1334 27);
   --palette-critical-900: oklch(.32 .1131 27);
   --palette-informative-400: oklch(.76 .0897 248);
@@ -166,6 +160,7 @@ code {
   --palette-brand-800: oklch(.745 .0534 57);
   --palette-brand-900: oklch(.845 .0452 57);
   --palette-positive-400: oklch(.4 .0897 152);
+  --palette-critical-100: oklch(.205 .0319 27);
   --palette-critical-800: oklch(.745 .1334 27);
   --palette-critical-900: oklch(.845 .1131 27);
   --palette-informative-400: oklch(.4 .0897 248);
@@ -191,6 +186,7 @@ code {
     --palette-brand-800: oklch(.745 .0534 57);
     --palette-brand-900: oklch(.845 .0452 57);
     --palette-positive-400: oklch(.4 .0897 152);
+    --palette-critical-100: oklch(.205 .0319 27);
     --palette-critical-800: oklch(.745 .1334 27);
     --palette-critical-900: oklch(.845 .1131 27);
     --palette-informative-400: oklch(.4 .0897 248);
@@ -216,6 +212,7 @@ code {
   --palette-brand-800: oklch(.745 .0534 57);
   --palette-brand-900: oklch(.845 .0452 57);
   --palette-positive-400: oklch(.4 .0897 152);
+  --palette-critical-100: oklch(.205 .0319 27);
   --palette-critical-800: oklch(.745 .1334 27);
   --palette-critical-900: oklch(.845 .1131 27);
   --palette-informative-400: oklch(.4 .0897 248);
@@ -234,6 +231,7 @@ code {
   --bg-brand-solid-pressed: var(--palette-brand-900);
   --bg-critical-solid: var(--palette-critical-800);
   --bg-critical-solid-pressed: var(--palette-critical-900);
+  --bg-critical-weak: var(--palette-critical-100);
   --bg-neutral-disabled: var(--palette-neutral-100);
   --fg-neutral: var(--palette-neutral-1000);
   --fg-neutral-muted: var(--palette-neutral-800);
@@ -279,7 +277,8 @@ code {
 .backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
 /* 아이콘 28px, 닿는 면은 44px — components.md 「앱바」의 「아이콘은 28px로 그리고 닿는 면은 44px다」 */
 .backic::after { content: ""; position: absolute; inset: -8px; }
-.appbar .title { font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral-subtle); }
+/* 뒤로 가기가 있는 일반 화면의 제목형 — text-lg font-semibold, fg.neutral(components.md 「앱바」). 탭 바를 쓰는 허브 화면만 작은 제목을 쓰는데 이 화면은 아니다 */
+.appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral); }
 /* 화면 좌우 여백 px-6 = 24px */
 .body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
@@ -355,27 +354,44 @@ code {
 .msgbox p { margin: 0; font-size: var(--t-base); line-height: var(--lh-base); color: var(--fg-neutral); }
 /* 글과 버튼 사이 mt-6 = 24px은 .sbtns의 margin-top으로 이미 처리된다 */
 
-/* 거절 — 이유 고르기. approvals.md 「거절」 절에 여백 표가 없어 이 파일이 쟀다 */
+/* 거절 — 이유 고르기. approvals.md 「거절 여백과 모양」 표가 정본이다.
+   제목과 첫 줄 사이 mt-4(16px), 이유 줄 py-3(12px), 입력 칸 rounded-md p-3(12px) min-h-20(80px),
+   아래 줄 mt-3(12px), 버튼과의 간격 mt-6(24px·.sbtns가 공용), 버튼 둘 사이 gap-3(12px). 표에 없는 값은
+   이유 줄과 입력 칸 사이(.rinput의 margin-top)뿐이고 그 값만 이 파일이 쟀다 */
 .rej-title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral); }
-.rlist { margin-top: 18px; }
-.rrow { display: flex; align-items: center; gap: 12px; padding: 14px 0; cursor: pointer; }
+.rlist { margin-top: 16px; }
+.rrow { display: flex; align-items: center; gap: 12px; padding: 12px 0; cursor: pointer; }
 .rlist .rrow + .rrow { border-top: 1px solid var(--stroke-neutral); }
 .rrow .rlabel { flex: 1 1 auto; font-size: var(--t-base); line-height: var(--lh-base); color: var(--fg-neutral); }
 .rrow .rcheck { flex: 0 0 auto; width: 20px; height: 20px; color: var(--fg-brand); visibility: hidden; }
 .rrow.selected .rcheck { visibility: visible; }
-/* 입력 칸 — 「직접 쓰기」를 골랐을 때만 연다 */
+/* 입력 칸 — 「직접 쓰기」를 골랐을 때만 연다. 이유 줄과 입력 칸 사이 간격만 표에 없어 이 파일이 쟀다 */
 .rinput { margin-top: 14px; }
-.rinput .rlabel-top { display: block; margin-bottom: 6px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+/* 라벨 줄 — components.md 「Input」이 정본이다. 글자 수는 상한까지 서른 자
+   남았을 때 라벨 줄 오른쪽에 나타난다(처음부터 안 센다). fg.neutral-subtle ·
+   text-xs · tabular-nums고 상한에 닿으면 fg.critical · font-semibold다 */
+.rinput .rlabelrow { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.rinput .rlabel-top { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.rcnt { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+.rcnt.cap { color: var(--fg-critical); font-weight: 600; }
 .rinput textarea {
-  display: block; width: 100%; min-height: 88px; resize: none;
+  display: block; width: 100%; min-height: 80px; resize: none;
   border-radius: var(--r-md); border: 1px solid var(--stroke-neutral);
   background: var(--bg-neutral-weak); color: var(--fg-neutral);
   font-family: inherit; font-size: var(--t-base); line-height: var(--lh-base);
-  padding: 12px 14px;
+  padding: 12px;
 }
 .rinput textarea::placeholder { color: var(--fg-neutral-subtle); }
 .rinput textarea:focus { outline: none; border-color: var(--fg-brand); }
-.rnote { margin-top: 14px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+.rnote { margin-top: 12px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+/* 알림 블록 오류 계열 — components.md 「알림 블록」. 배경 bg.critical-weak, 글자
+   fg.neutral, 뜻은 아이콘(fg.critical)이 나른다 */
+.errbox {
+  margin-top: 16px; border-radius: var(--r-lg); background: var(--bg-critical-weak); color: var(--fg-neutral);
+  padding: 12px 14px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
+  display: flex; gap: 10px;
+}
+.errbox .bi { flex: 0 0 auto; margin-top: 2px; color: var(--fg-critical); }
 
 /* 근무 취소 승인 확인 — Dialog. 화면 가운데. 폭·여백·그림자는 문서에 없어 이 파일이 세운 자리다 */
 .dialog-wrap { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; padding: 0 32px; }
@@ -665,6 +681,51 @@ code {
         </figcaption>
       </figure>
 
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:26</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">승인할 일</span>
+          </div>
+          <div class="body">
+            <div class="alist">
+              <div class="rowwrap"><div class="arow">
+                <div class="amid">
+                  <div class="atop"><span class="pill">사유</span><span class="atitle">김민지 · 10월 7일</span></div>
+                  <div class="asub">그날 병원에 급하게 다녀오느라 인증을 못 찍었어요</div>
+                </div>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="sh-title">김민지 · 10월 7일(화) 메인</div>
+              <div class="sh-sub">10:00–19:00</div>
+              <div class="sh-sent">10월 7일 19:40에 보냈어요</div>
+              <div class="msgbox"><p>그날 병원에 급하게 다녀오느라 출근 인증을 못 찍었어요. 진료 확인서가 필요하시면 보내드릴게요.</p></div>
+              <div class="errbox"><span class="bi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span><span>보내지 못했어요. 다시 시도해주세요</span></div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">거절</button>
+                <button class="btn" type="button">다시 시도</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">SHEET / APPROVE FAIL</div>
+          <div class="cap-name">승인 실패 — 시트가 안 닫힌다</div>
+          <p class="cap-body">사유의 「승인」이 통신에 실패했을 때다. <strong>시트가 그대로 열려 있고 하단 버튼 위에 오류 블록이 선다</strong> — 「보내지 못했어요. 다시 시도해주세요」. 오른쪽 버튼만 「다시 시도」로 바뀐다. <strong>왼쪽 「거절」은 그대로다</strong> — 승인이 통신으로 실패한 것과 이 건을 거절할지는 별개라 판정의 한쪽 길을 닫을 이유가 없다. 시트를 닫는 것은 손잡이와 바깥 누르기가 맡는다. 근무 취소 확인의 실패는 <a href="#confirm-cancel-fail">04절</a>에 있다.</p>
+        </figcaption>
+      </figure>
+
     </div>
   </section>
 
@@ -839,8 +900,8 @@ code {
                 </div>
               </div>
               <div class="rinput">
-                <span class="rlabel-top">이유</span>
-                <textarea placeholder="근무자에게 보낼 말을 적어 주세요" rows="3">이번 사유는 근무 기록과 시간이 맞지 않아 다시 확인해 주셔야 해요.</textarea>
+                <div class="rlabelrow"><span class="rlabel-top">이유</span><span class="rcnt num">30 / 100</span></div>
+                <textarea placeholder="근무자에게 보낼 말을 적어 주세요" rows="3">이번 사유는 근무 기록과 시간이 맞지 않아서 다시 확인해 주셔야 해요. 확인되시는 대로 편하게 알려주시면 정말 감사하겠습니다.</textarea>
               </div>
               <div class="rnote">고른 문장이 근무자에게 그대로 가요</div>
               <div class="sbtns">
@@ -853,7 +914,7 @@ code {
         <figcaption>
           <div class="cap-key">REJECT / CUSTOM</div>
           <div class="cap-name">「직접 쓰기」를 고르면 입력 칸이 연다</div>
-          <p class="cap-body">마지막 줄을 고르면 그 아래에 <a href="../components.md#input">Input</a>이 열린다. 라벨 「이유」와 자리표시 「근무자에게 보낼 말을 적어 주세요」는 문서 문안 그대로다. <strong>글자 수 카운터를 안 그렸다</strong> — 상한이 제안(100자) 단계라 확정 값으로 못 박지 않았다.</p>
+          <p class="cap-body">마지막 줄을 고르면 그 아래에 <a href="../../design-system/components.md#input">Input</a>이 열린다. 라벨 「이유」와 자리표시 「근무자에게 보낼 말을 적어 주세요」는 문서 문안 그대로다. <strong>글자 수는 상한까지 서른 자가 남았을 때 라벨 줄 오른쪽에 나타난다</strong>(components.md 「Input」) — 처음부터 안 센다. 여기는 그 시점(30/100)을 그렸다. 100자를 다 채우면 <code>fg.critical</code> · <code>font-semibold</code>로 바뀐다.</p>
         </figcaption>
       </figure>
 
@@ -914,6 +975,63 @@ code {
           <div class="cap-key">REJECT / SENDING</div>
           <div class="cap-name">거절 보내기 — 보내는 동안</div>
           <p class="cap-body">approvals.md 「거절」 절 공통 문안 표의 「보내는 중」이다. <strong>「뒤로」도 같이 잠긴다</strong> — 보내는 도중에 닫으면 갔는지 안 갔는지 알 길이 없어서다(dashboard.md 사유 시트와 같은 방식). 비활성은 계열을 안 나눈다 — <code>bg.neutral-disabled</code> 위에 <code>fg.neutral-disabled</code>다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="reject-send-fail">
+        <div class="mock">
+          <div class="statusbar"><span>09:20</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">승인할 일</span>
+          </div>
+          <div class="body">
+            <div class="alist">
+              <div class="rowwrap"><div class="arow">
+                <div class="amid">
+                  <div class="atop"><span class="pill">근무 취소</span><span class="atitle">이준호 · 10월 12일 메인</span></div>
+                  <div class="asub">그날 가족 행사가 갑자기 잡혀서 근무를 취소하고 싶어요</div>
+                </div>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="rej-title">거절하는 이유</div>
+              <div class="rlist">
+                <div class="rrow">
+                  <span class="rlabel">그날 대신 나올 사람이 없어요</span>
+                  <span class="rcheck"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+                </div>
+                <div class="rrow selected">
+                  <span class="rlabel">근무가 코앞이라 어려워요</span>
+                  <span class="rcheck"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+                </div>
+                <div class="rrow">
+                  <span class="rlabel">직접 쓰기</span>
+                  <span class="rcheck"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+                </div>
+              </div>
+              <div class="errbox"><span class="bi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span><span>보내지 못했어요. 다시 시도해주세요</span></div>
+              <div class="rnote">고른 문장이 근무자에게 그대로 가요</div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">뒤로</button>
+                <button class="btn" type="button">다시 보내기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">REJECT / SEND FAIL</div>
+          <div class="cap-name">보내기 실패 — 쓴 내용이 그대로 남는다</div>
+          <p class="cap-body">approvals.md 「보낸 뒤」 절과 공통 문안 표가 정본이다. <strong>시트가 안 닫히고 오류가 시트 안에, 하단 버튼 위에 선다</strong> — 「보내지 못했어요. 다시 시도해주세요」. 고른 이유(둘째 줄)와 오른쪽 버튼 라벨 「다시 보내기」는 그대로 남는다. <a href="../../modules/attendance/screens/excuse.md">사유 시트</a>와 같은 방식이다.</p>
         </figcaption>
       </figure>
 
@@ -981,6 +1099,62 @@ code {
           <div class="cap-key">CONFIRM / CANCEL</div>
           <div class="cap-name">확인 Dialog가 시트 위에 얹힌다</div>
           <p class="cap-body">상세 시트는 뒤에 그대로 남아 한 번 더 어두워진다. <strong>오른쪽 버튼이 「취소 승인」이지 「취소」가 아니다</strong> — 「취소」라고 쓰면 이 Dialog 자체를 무른다는 뜻으로도 읽혀서다. destructive가 아니라 primary다 — 자리를 비우는 것은 파괴가 아니라 배정을 바꾸는 동작이라서다(components.md 「Button」).</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="confirm-cancel-fail">
+        <div class="mock">
+          <div class="statusbar"><span>09:23</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">승인할 일</span>
+          </div>
+          <div class="body">
+            <div class="alist">
+              <div class="rowwrap"><div class="arow">
+                <div class="amid">
+                  <div class="atop"><span class="pill">근무 취소</span><span class="atitle">이준호 · 10월 12일 메인</span></div>
+                  <div class="asub">그날 가족 행사가 갑자기 잡혀서 근무를 취소하고 싶어요</div>
+                </div>
+                <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div></div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="sh-title">이준호 · 10월 12일(월) 메인</div>
+              <div class="sh-sub">10:00–19:00</div>
+              <div class="sh-sent">10월 10일 08:12에 보냈어요</div>
+              <div class="msgbox"><p>그날 가족 행사가 갑자기 잡혀서 근무를 취소하고 싶어요. 죄송합니다.</p></div>
+              <div class="sbtns">
+                <button class="btn secondary" type="button">거절</button>
+                <button class="btn" type="button">승인</button>
+              </div>
+            </div>
+          </div>
+          <div class="scrim" style="z-index:5; opacity:.5"></div>
+          <div class="dialog-wrap">
+            <div class="dialog">
+              <div class="dg-title">근무를 취소할까요?</div>
+              <div class="dg-body">10월 12일 메인 자리가 비고 이준호님에게 알림이 가요</div>
+              <div class="errbox"><span class="bi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span><span>보내지 못했어요. 다시 시도해주세요</span></div>
+              <div class="dg-btns">
+                <button class="btn secondary" type="button">뒤로</button>
+                <button class="btn" type="button">다시 시도</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">CONFIRM / APPROVE FAIL</div>
+          <div class="cap-name">근무 취소 승인 실패 — Dialog가 안 닫힌다</div>
+          <p class="cap-body">「취소 승인」이 통신에 실패했을 때다. <strong>Dialog가 안 닫히고 하단 버튼 위, 본문 아래에 오류 블록이 선다</strong> — 「보내지 못했어요. 다시 시도해주세요」. 오른쪽 버튼이 「취소 승인」에서 「다시 시도」로 바뀐다. 왼쪽 「뒤로」는 원래도 있던 버튼이라 라벨이 그대로다 — 사유 시트 쪽과 달리 이 Dialog는 실패 전에도 「뒤로」였다.</p>
         </figcaption>
       </figure>
 
@@ -1115,7 +1289,7 @@ code {
         <figcaption>
           <div class="cap-key">DONE / REJECT</div>
           <div class="cap-name">거절 토스트</div>
-          <p class="cap-body">거절도 <strong>성공 종류의 토스트</strong>다 — 조치할 것이 없는 통보라서다. 거절 사유는 토스트에 안 실리고 근무자에게 푸시로 따로 간다. 실패하면 시트가 안 닫히고 쓴 내용이 남는다 — 이 상태는 문서가 「다시 보내기」로만 적었고 정확한 오류 문안이 없어 이 시안에는 안 그렸다.</p>
+          <p class="cap-body">거절도 <strong>성공 종류의 토스트</strong>다 — 조치할 것이 없는 통보라서다. 거절 사유는 토스트에 안 실리고 근무자에게 푸시로 따로 간다. 실패하면 시트가 안 닫히고 쓴 내용이 남는다 — 그 모습은 <a href="#reject-send-fail">03절 「보내기 실패」</a>에 있다.</p>
         </figcaption>
       </figure>
 

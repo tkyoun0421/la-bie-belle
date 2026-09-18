@@ -30,7 +30,7 @@ sources:
 
 정본은 [excuse.md](../../2-design/modules/attendance/screens/excuse.md)와 짝 시안 `excuse.sian.html`이고, 관리자 쪽은 [approvals.md](../../2-design/system/screens/approvals.md)다. 행위 계약은 [design.md](../../2-design/modules/attendance/design.md#사유-제출과-판정), 업무 규칙은 [ATT-010](../../2-design/modules/attendance/README.md#att-010)~[ATT-015](../../2-design/modules/attendance/README.md#att-015)와 [ATT-018](../../2-design/modules/attendance/README.md#att-018)이다.
 
-산출은 셋이다 — 근무자의 사유 바텀시트, `/admin/approvals`의 사유 줄과 판정, 그리고 근무자 명단의 인증 상태 열. 선행은 [`attendance-data`](attendance-data.md)와 [`approvals`](../../backlog.md)다.
+산출은 셋이다 — 근무자의 사유 바텀시트, `/admin/approvals`의 사유 줄과 판정, 그리고 근무자 명단의 인증 상태 열. 선행은 [`attendance-data`](attendance-data.md)와 [`schedule-requests`](schedule-requests.md)와 [`dashboard`](../../backlog.md)다.
 
 정본에서 확인한 넷이 plan의 방향을 정한다.
 
@@ -39,7 +39,7 @@ sources:
 - **오류 테두리를 안 쓴다.** 다섯 자 미만이어도 칸이 안 붉어진다([규칙과 부딪힌 자리](../../2-design/modules/attendance/screens/excuse.md#규칙과-부딪힌-자리)) — 덜 쓴 것은 틀린 것이 아니다. 알리는 것은 칸 아래 도움말 하나다
 - **판정이 결근을 확정하지 않는다.** 거절해도 판정 행만 남고 상태는 [`attendance-data`](attendance-data.md)의 순수 함수가 낸다([ATT-014](../../2-design/modules/attendance/README.md#att-014))
 
-`/admin/approvals`는 [`approvals`](../../backlog.md) task가 가입 승인으로 먼저 세운다. 이 task는 그 목록에 **사유 줄을 더한다** — [`schedule-requests`](schedule-requests.md)의 AC-08이 근무 요청 줄로 같은 자리를 이미 넓혔다.
+`/admin/approvals`의 껍데기는 [`schedule-requests`](schedule-requests.md)의 AC-08이 근무 취소 줄과 함께 먼저 세운다. 이 task는 그 목록에 **사유 줄을 더한다** — 목록이 종류로 탭을 안 가르니([목록 짜임](../../2-design/system/screens/approvals.md#목록-짜임)) 같은 자리가 넓어진다.
 
 ## 완료 조건
 
@@ -142,7 +142,7 @@ sources:
 
 `test-planner` → `unit-test-writer`·`e2e-test-writer` → `implementer` → `sian-auditor` → `pr-diff`.
 
-1. [`attendance-data`](attendance-data.md)와 [`approvals`](../../backlog.md)와 [`dashboard`](../../backlog.md)가 merge된 뒤에 시작한다. **문 셋이 다 남의 task에 있다**
+1. [`attendance-data`](attendance-data.md)와 [`schedule-requests`](schedule-requests.md)와 [`dashboard`](../../backlog.md)가 merge된 뒤에 시작한다. **문 셋이 다 남의 task에 있다**
 2. `test-planner`가 배정한다. 상태 아홉은 unit, 제출부터 반려 뒤 재제출까지의 한 바퀴는 e2e다
 3. `unit-test-writer`가 입력 규칙과 상태 갈림을 쓴다
 4. `e2e-test-writer`가 한 바퀴를 쓴다 — 근무자와 관리자 둘이 번갈아 나오는 시나리오다
@@ -152,7 +152,7 @@ sources:
 
 ## 리스크·전환·되돌리기
 
-- **문 셋이 남의 task에 있다.** 대시보드의 못 찍음 블록, `/admin/approvals` 목록, 날 시트가 각각 [`dashboard`](../../backlog.md)·[`approvals`](../../backlog.md)·[`schedule-worker`](schedule-worker.md)의 것이다. 그쪽이 늦어지면 이 task가 통째로 막힌다 — **순서를 바꾸지 말고 기다린다.** 임시 진입점을 만들면 지울 것이 는다
+- **문 셋이 남의 task에 있다.** 대시보드의 못 찍음 블록, `/admin/approvals` 목록, 날 시트가 각각 [`dashboard`](../../backlog.md)·[`schedule-requests`](schedule-requests.md)·[`schedule-worker`](schedule-worker.md)의 것이다. 그쪽이 늦어지면 이 task가 통째로 막힌다 — **순서를 바꾸지 말고 기다린다.** 임시 진입점을 만들면 지울 것이 는다
 - **키보드 높이가 기기마다 다르다.** `bottom-58`은 기준값이고 실기기에서 어긋나면 문서를 고친다
 - **판정 알림이 이 task 밖이다.** 근무자가 결과를 못 받는 구간이 알림 영역이 설 때까지 남는다. 그 사이에도 명단의 자기 상태가 바뀌니 정보가 사라지지는 않는다
 - **상태 계산을 여기서 다시 짜면 안 된다.** [`attendance-data`](attendance-data.md#ac-06)의 함수를 부른다. 화면이 「확인 중」을 자기 식으로 판정하면 두 벌이 선다 — `pr-diff`가 보는 자리다
@@ -179,7 +179,6 @@ sources:
 
 - `submit_excuse`·`decide_excuse`와 `excuse_status` 뷰 — [`attendance-data`](attendance-data.md)
 - 대시보드의 못 찍음 블록 자체 — [`dashboard`](../../backlog.md)
-- `/admin/approvals` 목록의 껍데기와 가입 승인 줄 — [`approvals`](../../backlog.md)
-- 근무 요청 줄 — [`schedule-requests`](schedule-requests.md)
+- `/admin/approvals` 목록의 껍데기와 근무 취소 줄 — [`schedule-requests`](schedule-requests.md)
 - 판정 결과 알림 발송 — 알림 영역
 - 근태 월 집계 화면 — 통계 화면

@@ -88,6 +88,18 @@
   --palette-informative-900: oklch(0.32 0.0897 248);
   --palette-informative-1000: oklch(0.215 0.069 248);
 
+  --palette-chart-a-200: oklch(0.905 0.03 210);
+  --palette-chart-a-600: oklch(0.625 0.065 210);
+  --palette-chart-a-800: oklch(0.455 0.06 210);
+
+  --palette-chart-b-200: oklch(0.905 0.03 165);
+  --palette-chart-b-600: oklch(0.625 0.065 165);
+  --palette-chart-b-800: oklch(0.455 0.06 165);
+
+  --palette-chart-c-200: oklch(0.905 0.03 340);
+  --palette-chart-c-600: oklch(0.625 0.065 340);
+  --palette-chart-c-800: oklch(0.455 0.06 340);
+
   --surface-shadow:
     0 1px 2px rgba(28, 25, 22, 0.05), 0 8px 20px -14px rgba(28, 25, 22, 0.4);
   --surface-shadow-pop:
@@ -174,6 +186,18 @@
     --palette-informative-900: oklch(0.845 0.0897 248);
     --palette-informative-1000: oklch(0.935 0.069 248);
 
+    --palette-chart-a-200: oklch(0.265 0.03 210);
+    --palette-chart-a-600: oklch(0.585 0.065 210);
+    --palette-chart-a-800: oklch(0.745 0.06 210);
+
+    --palette-chart-b-200: oklch(0.265 0.03 165);
+    --palette-chart-b-600: oklch(0.585 0.065 165);
+    --palette-chart-b-800: oklch(0.745 0.06 165);
+
+    --palette-chart-c-200: oklch(0.265 0.03 340);
+    --palette-chart-c-600: oklch(0.585 0.065 340);
+    --palette-chart-c-800: oklch(0.745 0.06 340);
+
     --surface-shadow: none;
     --surface-shadow-pop: none;
     --surface-shadow-sheet: 0 -1px 0 var(--stroke-neutral);
@@ -257,6 +281,18 @@
   --palette-informative-900: oklch(0.845 0.0897 248);
   --palette-informative-1000: oklch(0.935 0.069 248);
 
+  --palette-chart-a-200: oklch(0.265 0.03 210);
+  --palette-chart-a-600: oklch(0.585 0.065 210);
+  --palette-chart-a-800: oklch(0.745 0.06 210);
+
+  --palette-chart-b-200: oklch(0.265 0.03 165);
+  --palette-chart-b-600: oklch(0.585 0.065 165);
+  --palette-chart-b-800: oklch(0.745 0.06 165);
+
+  --palette-chart-c-200: oklch(0.265 0.03 340);
+  --palette-chart-c-600: oklch(0.585 0.065 340);
+  --palette-chart-c-800: oklch(0.745 0.06 340);
+
   --surface-shadow: none;
   --surface-shadow-pop: none;
   --surface-shadow-sheet: 0 -1px 0 var(--stroke-neutral);
@@ -283,6 +319,12 @@
   --role-bg-critical-solid-pressed: var(--palette-critical-900);
   --role-bg-critical-weak: var(--palette-critical-100);
   --role-bg-informative-weak: var(--palette-informative-100);
+  --role-bg-chart-a: var(--palette-chart-a-600);
+  --role-bg-chart-a-weak: var(--palette-chart-a-200);
+  --role-bg-chart-b: var(--palette-chart-b-600);
+  --role-bg-chart-b-weak: var(--palette-chart-b-200);
+  --role-bg-chart-c: var(--palette-chart-c-600);
+  --role-bg-chart-c-weak: var(--palette-chart-c-200);
   --role-bg-scrim: var(--scrim-bg);
 
   --role-fg-neutral: var(--palette-neutral-1000);
@@ -302,6 +344,7 @@
   --role-stroke-neutral-muted: var(--palette-neutral-300);
   --role-stroke-neutral-disabled: var(--palette-neutral-200);
   --role-stroke-brand-solid: var(--palette-brand-800);
+  --role-stroke-chart-a: var(--palette-chart-a-800);
   --role-stroke-surface: var(--surface-stroke);
 
   --duration-fast: 125ms;
@@ -444,6 +487,18 @@
   --color-informative-900: var(--palette-informative-900);
   --color-informative-1000: var(--palette-informative-1000);
 
+  --color-chart-a-200: var(--palette-chart-a-200);
+  --color-chart-a-600: var(--palette-chart-a-600);
+  --color-chart-a-800: var(--palette-chart-a-800);
+
+  --color-chart-b-200: var(--palette-chart-b-200);
+  --color-chart-b-600: var(--palette-chart-b-600);
+  --color-chart-b-800: var(--palette-chart-b-800);
+
+  --color-chart-c-200: var(--palette-chart-c-200);
+  --color-chart-c-600: var(--palette-chart-c-600);
+  --color-chart-c-800: var(--palette-chart-c-800);
+
   --color-bg-neutral: var(--role-bg-neutral);
   --color-bg-neutral-weak: var(--role-bg-neutral-weak);
   --color-bg-neutral-weak-pressed: var(--role-bg-neutral-weak-pressed);
@@ -462,6 +517,12 @@
   --color-bg-critical-solid-pressed: var(--role-bg-critical-solid-pressed);
   --color-bg-critical-weak: var(--role-bg-critical-weak);
   --color-bg-informative-weak: var(--role-bg-informative-weak);
+  --color-bg-chart-a: var(--role-bg-chart-a);
+  --color-bg-chart-a-weak: var(--role-bg-chart-a-weak);
+  --color-bg-chart-b: var(--role-bg-chart-b);
+  --color-bg-chart-b-weak: var(--role-bg-chart-b-weak);
+  --color-bg-chart-c: var(--role-bg-chart-c);
+  --color-bg-chart-c-weak: var(--role-bg-chart-c-weak);
   --color-bg-scrim: var(--role-bg-scrim);
 
   --color-fg-neutral: var(--role-fg-neutral);
@@ -481,6 +542,7 @@
   --color-stroke-neutral-muted: var(--role-stroke-neutral-muted);
   --color-stroke-neutral-disabled: var(--role-stroke-neutral-disabled);
   --color-stroke-brand-solid: var(--role-stroke-brand-solid);
+  --color-stroke-chart-a: var(--role-stroke-chart-a);
   --color-stroke-surface: var(--role-stroke-surface);
 
   --color-google-bg: var(--vendor-google-bg);

@@ -114,7 +114,35 @@ plan을 쓰며 가른 경계 셋이다.
 - **시각을 보는 것이 따로 선다.** `notification-schedule`이 저녁 9시와 출근 10분 전을 맡는다. 금요일에 주말 묶음과 전날 알림이 둘 다 나가면 두 번 울려서 그 조건이 이 task의 핵심 단언이다
 - **문장 함수가 `notification-list`에 산다.** 푸시도 대시보드도 그것을 가져다 쓴다. 두 곳이 문장을 따로 들면 같은 알림이 기기와 화면에서 다르게 읽힌다
 
-**다음은 system 영역이다.** 같은 순서를 돈다 — 미정 인터뷰 → 정본 반영 → 시안 갱신과 승인 → plan. 남은 화면이 [dashboard](2-design/system/screens/dashboard.md)·[approvals](2-design/system/screens/approvals.md)·[stats](2-design/system/screens/stats.md)고, 관리자 홈 화면 문서가 아직 없다는 것이 [시안 개선 제안 D-04](proposals/design-sian-improvements.md)가 기각된 이유였다 — 여기서 그 자리를 본다.
+**system 영역의 미정이 다 닫혔고 정본에 반영됐다.** 이 영역은 인터뷰가 두 덩이였다 — 「디자인이 단조롭고 차트를 넣어 컨텐츠를 늘려야 한다」에서 시작한 차트 일곱, 그리고 원래 열려 있던 미정 다섯이다.
+
+차트 일곱이다.
+
+- **통계 세 탭 맨 위에 추이 그래프가 선다.** 탭마다 대표 숫자 하나고 기간은 **열두 달**이다 — 예식장은 봄·가을에 몰려서 여섯 달만 보면 10월에 열었을 때 지난봄이 잘린다
+- **목록에도 그림이 붙는다** — 포지션 줄과 인건비 사람별 줄에 [줄 막대](2-design/design-system/components.md#줄-막대), 근태 현황 줄 아래에 [비율 띠](2-design/design-system/components.md#비율-띠)
+- **대시보드 넷이 두꺼워지고 아래 셋이 붙었다.** 이번 주 근무가 월~일 일곱 칸 스트립이 되고 예상 급여에 지난주 대비가 붙었다. 넷 아래에 이번 달 누적·다음 근무·[미니 달력](2-design/design-system/components.md#미니-달력)이 이어진다 — 근무가 없는 날에는 「다음 근무」가 빠진다. 띠 아래 한 줄이 이미 같은 말을 한다
+- **관리자 홈에 셋이 붙었다** — 오늘 현황과 진행 띠, 빈 자리 카드, 이번 달 근무표 미니뷰. 빈 자리 경고가 타일 요약 줄의 승격에서 타일 밖 카드로 나왔다. 오늘 현황의 띠는 몫이 **둘**이고 지각을 안 가른다 — 그 줄이 답하는 것은 「다 왔나」 하나다
+- **차트 전용 색 계열 셋을 새로 열었다**([tokens.md](2-design/design-system/tokens.md)의 `chart-a`·`chart-b`·`chart-c`). 색조가 브랜드(57)에서 멀고 채도가 브랜드 최대치 근처에서 막혀 통계 화면이 브랜드 버튼보다 크게 말하지 못한다. **좋고 나쁨을 안 싣는다** — [stats.md](2-design/system/screens/stats.md)의 「색으로 안 가른다」가 지키던 축(화면이 사람을 나무라지 않기)이 그대로 산다
+- **차트는 브랜드 색 예산 밖이다**([foundation/color.md](2-design/design-system/foundation/color.md#차트가-색을-쓰는-법)). 조각 넷의 정본은 [components.md의 차트 넷](2-design/design-system/components.md#차트-넷)이고 **등장 모션이 없다** — 막대가 자라거나 선이 그려지는 연출을 문서가 막았다
+- **미니 달력은 다섯 줄이나 여섯 줄이다.** 처음 「7×5」로 썼는데 1일이 늦은 요일이고 31일까지인 달은 마지막 주가 사라진다. 아래 내용이 24px 밀리는 쪽을 골랐다
+
+미정 다섯이다.
+
+- **근무자용 통계 화면을 연다** — `/stats`고 탭이 근태·포지션·급여다. 「나」의 「통계」 줄로 들어간다. 관리자는 홈에서 `/admin/stats`로 가고 구조가 대칭이다. [prd.md](1-plan/prd.md)의 「근무자는 자기 것만 본다 — 이번 달에 몇 번 나왔고 몇 번 늦었는지다」가 따라 넓어졌다
+- **화면 문서를 안 갈랐다.** 두 화면이 세그먼트·추이 그래프·줄 막대·비율 띠를 전부 공유하고 갈리는 것은 담는 값과 탭 이름뿐이다 — 파일을 가르면 같은 짜임이 두 벌 선다
+- **인건비 목록은 모든 줄이 눌리고 [구간 내역 시트](2-design/system/screens/stats.md#구간-내역-시트)가 열린다.** 시급이 안 바뀐 사람은 한 줄짜리 시트다 — 걸친 줄만 열리게 하면 안 눌리는 줄을 눌렀을 때 아무 일도 안 일어나는 것이 고장으로 읽힌다
+- **근무 0건인 달은 보조 줄과 예상치 안내가 같이 사라진다.** `–` 하나만 남는다
+- **거절 이유 상한은 100자**고, **승인·거절의 통신 실패는 열려 있는 자리 안에서 말한다** — 시트도 Dialog도 안 닫히고 「보내지 못했어요. 다시 시도해주세요」다. 판정은 [runtime.md](2-design/system/runtime.md#낙관적-업데이트)가 즉시 칠하라고 한 조건(되돌릴 수 있고 남과 안 겹침) 둘 다에 안 맞는다
+
+시안 다섯이 감사를 거쳐 갱신됐다 — `stats`·`dashboard`·`schedule-admin` 셋이 아티팩트로 승인됐고, 그 뒤 미정 결정으로 `stats`·`approvals`·`profile`이 한 번 더 따라갔다.
+
+시안이 잡아낸 문서 결함도 같이 닫았다 — `schedule-admin.md` 문안 표의 요일 둘(10월 1일이 목요일인 시나리오에서 「10월 8일(수)」·「10월 10일(금)」), `dashboard.md`의 「9월 20일(금)」(오늘이 9월 12일(토)이라 그날은 일요일), 미니 달력의 줄 수·칸 라운딩(`rounded-xs`가 「아직 배정 없음」으로 비어 있던 자리를 받았다)·시작 요일·폭 규칙, 통계 가로축 눈금 색이다.
+
+**`attendance-excuse` plan이 없는 task를 가리키고 있었다.** 다섯 자리에서 `approvals`를 선행으로 부르는데 보드에 그 행이 없다 — `/admin/approvals` 껍데기의 주인은 [`schedule-requests`](3-build/plans/schedule-requests.md)의 AC-08이고 plan이 적어둔 「가입 승인 줄」도 `approvals.md`엔 없다. 다섯 자리를 다 고쳤다.
+
+**남은 것은 system plan이다.** backlog에 `stats-admin`·`stats-worker`가 새로 섰고 둘 다 plan이 없다. `dashboard` 행은 착수할 때 spec을 새 형식으로 다시 쓰라고 적어둔 채로 있다. `approvals` 화면은 자기 task가 없고 `schedule-requests`와 `attendance-excuse`가 나눠 만든다.
+
+관리자 홈은 [`admin-home-split`](backlog.md)으로 남겼다 — `schedule-admin.md`에서 빼 `system/screens/admin-home.md`로 옮기는 일이고 들어오는 링크가 22곳(문서 12개)이라 차트 작업과 안 섞었다.
 
 같은 줄의 다른 후보 — [`types-generation`](backlog.md)은 plan이 없고 작다.
 
