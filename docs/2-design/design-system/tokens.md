@@ -135,11 +135,49 @@ hue 248, chroma 최대 0.115.
 | 900 | `#00355E` | `oklch(0.320 0.0897 248)` | `#9DD2FF` | `oklch(0.845 0.0897 248)` |
 | 1000 | `#001A37` | `oklch(0.215 0.0690 248)` | `#C6EFFF` | `oklch(0.935 0.0690 248)` |
 
+### chart-a
+
+hue 210, chroma 최대 0.065. 차트 계열의 첫째다.
+
+| 단계 | 라이트 hex | 라이트 oklch | 다크 hex | 다크 oklch |
+| --- | --- | --- | --- | --- |
+| 200 | `#CAE6EB` | `oklch(0.905 0.0300 210)` | `#12292D` | `oklch(0.265 0.0300 210)` |
+| 600 | `#56939D` | `oklch(0.625 0.0650 210)` | `#4A8791` | `oklch(0.585 0.0650 210)` |
+| 800 | `#286069` | `oklch(0.455 0.0600 210)` | `#7FB7C1` | `oklch(0.745 0.0600 210)` |
+
+### chart-b
+
+hue 165, chroma 최대 0.065. 차트 계열의 둘째다.
+
+| 단계 | 라이트 hex | 라이트 oklch | 다크 hex | 다크 oklch |
+| --- | --- | --- | --- | --- |
+| 200 | `#CEE6DB` | `oklch(0.905 0.0300 165)` | `#172A22` | `oklch(0.265 0.0300 165)` |
+| 600 | `#61947E` | `oklch(0.625 0.0650 165)` | `#558872` | `oklch(0.585 0.0650 165)` |
+| 800 | `#34614E` | `oklch(0.455 0.0600 165)` | `#89B9A3` | `oklch(0.745 0.0600 165)` |
+
+### chart-c
+
+hue 340, chroma 최대 0.065. 차트 계열의 셋째다.
+
+| 단계 | 라이트 hex | 라이트 oklch | 다크 hex | 다크 oklch |
+| --- | --- | --- | --- | --- |
+| 200 | `#EED8E6` | `oklch(0.905 0.0300 340)` | `#2F1F2A` | `oklch(0.265 0.0300 340)` |
+| 600 | `#A37894` | `oklch(0.625 0.0650 340)` | `#966D88` | `oklch(0.585 0.0650 340)` |
+| 800 | `#6D4961` | `oklch(0.455 0.0600 340)` | `#C79EB8` | `oklch(0.745 0.0600 340)` |
+
+차트 셋은 단계가 셋뿐이다. 앞의 여섯은 면·글자·선·눌림·비활성까지 다 맡아 열한 단계가 필요한데, 차트는 옅은 면과 꽉 찬 면과 진한 선 셋으로 끝난다. 쓰는 자리가 늘면 그때 단계를 더한다.
+
+**hue를 40~80에서 멀리 뒀다.** brand가 57이라 그 언저리를 쓰면 차트 면이 브랜드처럼 읽힌다. chroma도 brand의 최대(0.058)와 비슷한 선에 묶었다 — 차트는 면이 크고 줄마다 반복되는데 브랜드보다 진하면 화면에서 제일 센 것이 통계가 된다.
+
+**positive·warning·critical의 hue를 안 빌렸다.** 그 셋은 좋고 나쁨을 말하는 색이라 차트에 쓰면 숫자에 평가가 실린다. 근거는 [foundation/color.md](foundation/color.md#차트가-색을-쓰는-법)에 있다.
+
 ---
 
 ## 2. 역할 토큰
 
-이름은 `Property.Role-Variant-State`다. Property 셋(`fg` `bg` `stroke`), Role 여섯(neutral brand positive warning critical informative), Variant는 solid·weak·muted·subtle·contrast, State는 pressed·selected·disabled.
+이름은 `Property.Role-Variant-State`다. Property 셋(`fg` `bg` `stroke`), Role 아홉(neutral brand positive warning critical informative chart-a chart-b chart-c), Variant는 solid·weak·muted·subtle·contrast, State는 pressed·selected·disabled.
+
+차트 셋만 Role 이름에 번호가 붙는다. 앞의 여섯은 이름이 뜻을 말하는데(경고·위험·정보) 차트는 뜻을 안 싣는 것이 요건이라 이름으로도 아무 말을 안 한다 — 첫째·둘째·셋째일 뿐이다.
 
 문법의 뜻은 [foundation/color.md](foundation/color.md#variant와-state)에 있다.
 
@@ -169,6 +207,12 @@ hue 248, chroma 최대 0.115.
 | `bg.critical-solid-pressed` | critical-900 | `#60100F` | `#FFAFA4` | `bg-bg-critical-solid-pressed` |
 | `bg.critical-weak` | critical-100 | `#FFECE8` | `#24110F` | `bg-bg-critical-weak` |
 | `bg.informative-weak` | informative-100 | `#E7F5FF` | `#0E1822` | `bg-bg-informative-weak` |
+| `bg.chart-a` | chart-a-600 | `#56939D` | `#4A8791` | `bg-bg-chart-a` |
+| `bg.chart-a-weak` | chart-a-200 | `#CAE6EB` | `#12292D` | `bg-bg-chart-a-weak` |
+| `bg.chart-b` | chart-b-600 | `#61947E` | `#558872` | `bg-bg-chart-b` |
+| `bg.chart-b-weak` | chart-b-200 | `#CEE6DB` | `#172A22` | `bg-bg-chart-b-weak` |
+| `bg.chart-c` | chart-c-600 | `#A37894` | `#966D88` | `bg-bg-chart-c` |
+| `bg.chart-c-weak` | chart-c-200 | `#EED8E6` | `#2F1F2A` | `bg-bg-chart-c-weak` |
 | `bg.scrim` | — | `#1B19176B` | `#0D0C0B6B` | `bg-bg-scrim` |
 
 `bg.brand-muted`는 옅은 브랜드 면이 중립 면 위에 떠야 하는 자리를 위한 것이다. `bg.brand-weak`는 `brand-100`이라 라이트에서 명도 0.965인데 `bg.neutral-weak`도 0.965다 — 겹쳐 놓으면 두 면이 갈리지 않는다. `bg.brand-weak-pressed`(`brand-200`, 0.905)도 차이가 0.060뿐이라 부족하다. `brand-300`은 0.845로 0.120이 갈린다. 대시보드의 하루 띠 막대를 위해 섰는데, 그 띠가 축을 근무로 바꾸며 꽉 찬 면(`bg.brand-solid`)으로 올라가서 지금은 쓰는 자리가 없다. 토큰은 남긴다 — 옅은 브랜드 면이 중립 면 위에 떠야 하는 자리는 다시 나온다.
@@ -206,6 +250,7 @@ hue 248, chroma 최대 0.115.
 | `stroke.neutral-muted` | neutral-300 | `#CECBC9` | `#353231` | `border-stroke-neutral-muted` |
 | `stroke.neutral-disabled` | neutral-200 | `#E2DFDD` | `#272523` | `border-stroke-neutral-disabled` |
 | `stroke.brand-solid` | brand-800 | `#6E4F39` | `#C7A48C` | `border-stroke-brand-solid` |
+| `stroke.chart-a` | chart-a-800 | `#286069` | `#7FB7C1` | `border-stroke-chart-a` |
 | `stroke.surface` | — | `transparent` | neutral-200 | `border-stroke-surface` |
 
 `stroke.surface`는 새 색이 아니다. 라이트에서 그림자로 면을 띄우고 다크에서 선으로 나누는 규칙을 클래스 한 벌로 굴리려고 둔 것이라 라이트에서는 투명이고 다크에서 `neutral-200`을 가리킨다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#그림자와-면-나누기)에 있다. 라이트 칸이 리터럴이고 다크 칸이 팔레트 단계 이름인 행이라 위의 「팔레트 칸이 `—`인 행」 규칙이 처음 쓰인 자리다.

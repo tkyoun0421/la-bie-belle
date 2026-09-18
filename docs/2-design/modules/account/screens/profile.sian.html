@@ -319,7 +319,7 @@ code {
 .prole { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 .pnote { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); max-width: 240px; }
 
-/* 줄 — 잠긴 것과 고치는 것. 사이의 가는 선 하나만 문서가 못박았다 */
+/* 줄 — 잠긴 것 / 고치는 것·설정 / 통계·리허설·관리자 모드(문 묶음), 셋으로 가는 선 둘이 가른다 */
 .rows { display: flex; flex-direction: column; }
 .rows.locked { margin-top: 32px; }
 .prow { display: flex; align-items: center; gap: 12px; padding: 16px 0; }
@@ -478,8 +478,8 @@ code {
   <section>
     <div class="sec-head">
       <span class="sec-num">01 / 본 화면</span>
-      <h2>잠긴 것과 고치는 것, 가는 선 하나로 가른다</h2>
-      <p>사진과 이름이 맨 위에 크게 서고, 그 아래 성별·생년월일은 안 눌리고, 연락처·알림·(관리자면) 관리자 모드가 눌린다. 브랜드 색이 한 자리도 없다.</p>
+      <h2>잠긴 것 · 설정 · 문 묶음, 가는 선 둘로 가른다</h2>
+      <p>사진과 이름이 맨 위에 크게 서고, 그 아래 성별·생년월일은 안 눌린다. 연락처·알림·화면이 두 번째 묶음이고, 통계·(자격 있으면) 리허설·(관리자면) 관리자 모드가 가는 선 아래 세 번째 묶음이다 — 「통계」는 조건 없이 모두에게 선다. 브랜드 색이 한 자리도 없다.</p>
     </div>
     <div class="grid">
 
@@ -530,6 +530,13 @@ code {
                 <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
               </div>
             </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive">
+                <span class="rl">통계</span>
+                <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
 
             <div class="spacer"></div>
             <button class="btn ghost logout" type="button">로그아웃</button>
@@ -544,7 +551,7 @@ code {
         <figcaption>
           <div class="cap-key">HOME / WORKER</div>
           <div class="cap-name">근무자 화면 — 리허설 자격 없음</div>
-          <p class="cap-body">앱바 오른쪽에 <strong>종 아이콘</strong>이 선다 — lucide <code>Bell</code> 28px <code>fg.neutral</code>이고, 안 읽은 알림이 있으면 오른쪽 위에 <code>bg.brand-solid</code> 8px 점이 <code>bg.neutral</code> 2px 테두리로 물린다(components.md 「종 아이콘」). 사진(88px 원) · 이름 · 역할이 맨 위에 크게 선다. 이름은 안 눌리고 그 아래 <strong>안내 한 줄이 잠긴 셋(이름·성별·생년월일)을 한꺼번에 말한다.</strong> 성별·생년월일 두 줄에는 화살표도 누름 배경도 없다. <strong>가는 선 하나가 잠긴 것과 고치는 것을 가른다</strong> — 그 위아래로 각 줄 사이에는 선이 없다, 문서가 못박은 선은 이 하나뿐이다. <strong>리허설 줄이 없다</strong> — 이 사람은 리허설 자격이 없다(profile.md 「리허설」).</p>
+          <p class="cap-body">앱바 오른쪽에 <strong>종 아이콘</strong>이 선다 — lucide <code>Bell</code> 28px <code>fg.neutral</code>이고, 안 읽은 알림이 있으면 오른쪽 위에 <code>bg.brand-solid</code> 8px 점이 <code>bg.neutral</code> 2px 테두리로 물린다(components.md 「종 아이콘」). 사진(88px 원) · 이름 · 역할이 맨 위에 크게 선다. 이름은 안 눌리고 그 아래 <strong>안내 한 줄이 잠긴 셋(이름·성별·생년월일)을 한꺼번에 말한다.</strong> 성별·생년월일 두 줄에는 화살표도 누름 배경도 없다. <strong>가는 선이 둘이다</strong> — 하나는 잠긴 것과 고치는 것을 가르고, 다른 하나는 설정(알림·화면)과 「통계」를 시작으로 하는 문 묶음을 가른다(profile.md 「통계」). <strong>「통계」는 조건 없이 모두에게 선다</strong> — 리허설·관리자 모드와 달리 자격을 안 본다. <strong>리허설 줄이 없다</strong> — 이 사람은 리허설 자격이 없다(profile.md 「리허설」).</p>
           <p class="cap-body" style="margin-top:8px">스위치는 이 화면에서 처음 서는 조각이다 — 규격은 <code>components.md</code> 「스위치」가 정본이다. <strong>44×26px 트랙에 20px 손잡이(18px 이동)</strong>고 켬은 <code>bg.neutral-solid</code>, 끔은 <code>bg.neutral-weak-pressed</code>다. 이 화면에 브랜드 색이 한 자리도 없다는 규칙과도 맞아떨어진다 — 스위치의 켬도 브랜드가 아니다.</p>
         </figcaption>
       </figure>
@@ -595,6 +602,13 @@ code {
                 <span class="rv">기기 설정대로</span>
                 <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
               </div>
+            </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive">
+                <span class="rl">통계</span>
+                <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
               <div class="prow interactive">
                 <span class="rl">리허설</span>
                 <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
@@ -614,7 +628,7 @@ code {
         <figcaption>
           <div class="cap-key">HOME / WORKER · REHEARSAL</div>
           <div class="cap-name">근무자 화면 — 리허설 자격 있음</div>
-          <p class="cap-body">설정 아래, 로그아웃 앞에 <strong>「리허설」 줄이 하나 더 선다.</strong> ListRow고 오른쪽에 화살표만 있다 — 값이 없다. 리허설 자격이 있는 사람에게만 서고, 없으면 왼쪽 모습처럼 줄 자체가 없다(profile.md 「리허설」). 누르면 리허설 화면으로 넘어간다.</p>
+          <p class="cap-body">설정과 가는 선 아래, <strong>「통계」가 문 묶음의 첫 줄로 서고 그 아래 「리허설」이 하나 더 선다.</strong> 둘 다 ListRow고 오른쪽에 화살표만 있다 — 값이 없다. 「통계」는 누구에게나 서지만 「리허설」은 자격이 있는 사람에게만 서고, 없으면 왼쪽 모습처럼 줄 자체가 없다(profile.md 「리허설」). 「통계」를 누르면 근무자 통계로, 「리허설」을 누르면 리허설 화면으로 넘어간다.</p>
         </figcaption>
       </figure>
 
@@ -664,6 +678,13 @@ code {
                 <span class="rv">기기 설정대로</span>
                 <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
               </div>
+            </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive">
+                <span class="rl">통계</span>
+                <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
               <div class="prow interactive">
                 <span class="rl">리허설</span>
                 <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
@@ -686,8 +707,8 @@ code {
         </div>
         <figcaption>
           <div class="cap-key">HOME / ADMIN</div>
-          <div class="cap-name">관리자 화면 — 리허설과 관리자 모드 줄이 더 선다</div>
-          <p class="cap-body">근무자 화면과 같은 짜임에 <strong>「리허설」과 「관리자 모드」 줄이 설정 아래로 더 선다.</strong> 역할이 「관리자」로 바뀌는 것 말고는 잠긴 것도 고치는 것도 근무자와 같다. 관리자는 자격과 무관하게 이 줄을 늘 본다 — 전원의 리허설을 그 화면에서 보기 때문이다(profile.md 「리허설」). 두 줄 다 <code>ListRow</code>와 같은 색이라 브랜드로 안 칠했다 — 이 화면에서 가장 자주 눌리는 것이 그때그때 다르다는 문서의 이유 그대로다.</p>
+          <div class="cap-name">관리자 화면 — 통계·리허설·관리자 모드 줄이 더 선다</div>
+          <p class="cap-body">근무자 화면과 같은 짜임에 <strong>「통계」·「리허설」·「관리자 모드」 세 줄이 가는 선 아래 한 묶음으로 선다.</strong> 역할이 「관리자」로 바뀌는 것 말고는 잠긴 것도 고치는 것도 근무자와 같다. 관리자는 자격과 무관하게 이 줄들을 늘 본다 — 전원의 리허설을 그 화면에서 보기 때문이다(profile.md 「리허설」). 여기서 여는 「통계」는 자기 것이고, 홀 전체 통계는 관리자 홈의 「통계」 줄이 연다 — 같은 조각이 다른 값을 연다(profile.md 「통계」). 세 줄 다 <code>ListRow</code>와 같은 색이라 브랜드로 안 칠했다 — 이 화면에서 가장 자주 눌리는 것이 그때그때 다르다는 문서의 이유 그대로다.</p>
         </figcaption>
       </figure>
 
@@ -733,6 +754,10 @@ code {
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
               <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">통계</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -791,6 +816,10 @@ code {
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
               <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">통계</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
             <div class="spacer"></div>
           </div>
           <div class="scrim"></div>
@@ -847,6 +876,10 @@ code {
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
               <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">통계</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -917,6 +950,10 @@ code {
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
               <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">통계</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
             <div class="spacer"></div>
           </div>
           <div class="scrim"></div>
@@ -970,6 +1007,10 @@ code {
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
               <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">통계</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
             <div class="spacer"></div>
           </div>
           <div class="scrim"></div>
@@ -1021,6 +1062,10 @@ code {
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
               <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">통계</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -1088,6 +1133,10 @@ code {
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
               <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">통계</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
             <div class="spacer"></div>
           </div>
           <div class="scrim"></div>
@@ -1150,6 +1199,13 @@ code {
                 <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
               </div>
             </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive">
+                <span class="rl">통계</span>
+                <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
             <div class="spacer"></div>
           </div>
         </div>
@@ -1199,6 +1255,13 @@ code {
               <div class="prow interactive">
                 <span class="rl">화면</span>
                 <span class="rv">기기 설정대로</span>
+                <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive">
+                <span class="rl">통계</span>
                 <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
               </div>
             </div>
@@ -1254,6 +1317,10 @@ code {
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
               <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">통계</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -1323,6 +1390,10 @@ code {
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
               <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">통계</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
             <div class="spacer"></div>
             <button class="btn ghost logout" type="button">로그아웃</button>
           </div>
@@ -1379,6 +1450,10 @@ code {
               <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
               <div class="prow"><span class="rl">알림</span><span class="switchslot"><span class="switch on"><span class="thumb"></span></span></span></div>
               <div class="prow interactive"><span class="rl">화면</span><span class="rv">기기 설정대로</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
+            </div>
+            <div class="hr"></div>
+            <div class="rows">
+              <div class="prow interactive"><span class="rl">통계</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
             </div>
             <div class="spacer"></div>
             <button class="btn ghost logout" type="button">로그아웃</button>

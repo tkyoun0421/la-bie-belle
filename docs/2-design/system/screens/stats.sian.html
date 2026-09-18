@@ -38,9 +38,51 @@
     목록 자리와 같은 위 여백)은 ../components.md의 「빈 상태」 절이 정본이다.
   · 프로필 사진 자리. 저장소에 이미지를 안 넣어 뉴트럴 두 단계의 그러데이션으로 흉내 냈다.
   · 뷰어 크롬(--b-*)의 색. 목업 밖이라 애초에 토큰 대상이 아니다.
+  · 추이 그래프 열두 달의 낱값. components.md 「추이 그래프」는 조각의 모양(선·면·점·
+    높이)만 정했고 세 탭이 달마다 실제로 찍는 숫자는 없다. 이 파일은 stats.md가 말한
+    성수기(봄·가을) 굴곡을 흉내 내 임의로 만들었다 — 인건비·포지션은 같은 굴곡을
+    나눠 썼고(같은 계절 요인이라서), 근태는 출근율이라 굴곡 폭을 더 좁혔다. 보는 달의
+    값(481만·89%·432시간)만 stats.md·기존 목업과 맞췄다.
+  · 그래프 가로축 「나머지는 눈금만」의 모양. components.md는 글자 넷만 정하고 나머지
+    여덟 자리에 무엇을 그릴지는 안 정했다. 이 파일은 4px 세로 획 하나로 그렸다.
+  · 06절(달이 하나뿐)의 합계·보조 줄·목록 값. stats.md 문안표에 없는 첫 달 예시라
+    다른 절 숫자와 안 맞물린다.
+  · 줄 막대 폭(%)은 새로 지은 값이 아니라 같은 절 안의 금액·시간 값(이미 위에서
+    역산·배분한 값)을 최댓값 100% 기준으로 나눈 것이다. 반올림 오차가 있다.
 
-  막대를 안 그렸다. stats.md 「아직 안 정한 것」이 포지션별 시간에 막대를 붙일지를
-  열어 뒀고, 프롬프트가 숫자와 정렬만으로 비교하게 두라고 정했다.
+  막대를 그렸다. 이전 회차에서는 stats.md 「아직 안 정한 것」에 남아 있어 안 그렸는데,
+  이번 회차에 components.md 「차트 넷」이 서면서 줄 막대·비율 띠·추이 그래프 셋의
+  정본이 생겼다. 그 정본을 그대로 옮겼다.
+
+  이번 회차에 구간 내역 시트와 근무자 화면(`/stats`)을 더 그렸다. 이 파일이 새로 임의로
+  세운 자리다.
+  · 구간 내역 시트 두 목업의 이름·기간·단가·시간·조정 값. stats.md는 예시 하나(김지우,
+    10월 1일~14일 · 12,000원 · 18시간 · 216,000원, 합계 1,296,000원)만 문안으로 못
+    박았다. 이 파일은 그 구간을 그대로 쓰고 둘째 구간(10월 15일~31일 · 13,000원 ·
+    84시간 · 1,092,000원)과 조정(결근 1일 · −12,000원)을 합계가 정확히 1,296,000원이
+    되도록 역산해 채웠다 — 조정 줄에 금액이 붙는다는 것 자체가 문서에 없어 구간 줄과
+    같은 짜임(왼쪽 라벨, 오른쪽 금액)을 그대로 가져다 썼다. 구간 하나짜리 목업(이도윤,
+    10월 1일~31일 · 11,000원 · 72시간 · 792,000원)의 이름과 숫자도 임의로 채웠다.
+  · 근무자 근태 탭의 현황·목록 값. stats.md 문안표는 「내 근태 줄」 예시 하나(10월
+    3일(토) · 메인 · 출근 · 09:52)만 못 박았다. 이 파일은 그달 내 근무 12건(급여 탭의
+    문안값)과 안 맞부딪히도록 출근 10 · 지각 1 · 출근 인정 1 · 결근 1(=13일, 결근은
+    급여 12건에서 빠진다)로 현황 줄을 잡고 목록 여섯 줄을 채웠다.
+  · 근무자 포지션 탭의 합계·목록 값. 합계(108시간)와 급여 탭 보조 줄(근무 12건 ·
+    108시간)이 맞물리도록 메인 8건·72시간, 스캔 3건·27시간, 드레스 1건·9시간으로
+    나눴다 — 셋 다 stats.md가 안 준 값이다.
+  · 추이 그래프 값. 근태 92%·포지션 108시간은 임의로 채웠다. 급여 130만은 인건비 탭의
+    「만 단위로 줄여 적는다」 규칙(stats.md 문안표)을 급여에도 그대로 적용해
+    1,296,000원을 반올림한 값이다 — 문서가 급여 그래프 값의 표기를 따로 정하지 않아
+    같은 성격(돈)의 규칙을 옮겨 썼다.
+  · 근무자 빈 상태의 달(2026년 6월)과 곡선. 관리자 04절과 같은 달·같은 곡선을 그대로
+    옮겨 썼다 — 「세 탭이 같은 모양으로 빈다」가 역할 사이에도 같은 그림이라는 뜻인지는
+    문서에 없어서, 그림의 형태 자체는 공용 조각이라는 stats.md 「짜임과 토큰」 서두
+    규칙에 기대 그대로 재사용했다.
+  · 「합계와 「내역 보기」 사이」 mt-8을 어디에 걸지. stats.md 「내 급여」는 짜임을
+    합계 → 예상치 안내 → 보조 줄 → 「내역 보기」 넷으로 나열했는데 여백표는 그 사이
+    간격 하나(mt-8)만 이름 붙였다. 이 파일은 인건비 탭의 「보조 줄과 목록 사이」(mt-8)
+    자리와 같은 것으로 보고 보조 줄과 「내역 보기」 사이에 걸었다 — 「내역 보기」가 이
+    탭에서 목록을 대신하는 자리라서다.
 -->
 <title>통계 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -153,8 +195,15 @@ code {
   --palette-neutral-1000: oklch(.215 .0055 57);
   --surface-stroke: transparent;
   --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
+  /* 구간 내역 시트용 — components.md 「Dialog와 바텀시트」. 덮개 잉크와 시트 그림자,
+     라이트·다크 값은 tokens.md 5절 shadow-sheet와 bg.scrim 그대로다 */
+  --scrim-ink: var(--palette-neutral-1000);
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5);
 }
 .mock.force-dark {
+  --bg-chart-a: oklch(.585 .0650 210); --bg-chart-a-weak: oklch(.265 .0300 210); --stroke-chart-a: oklch(.745 .0600 210);
+  --bg-chart-b: oklch(.585 .0650 165); --bg-chart-b-weak: oklch(.265 .0300 165);
+  --bg-chart-c: oklch(.585 .0650 340); --bg-chart-c-weak: oklch(.265 .0300 340);
   --palette-neutral-00: oklch(.155 .0037 57);
   --palette-neutral-100: oklch(.205 .0037 57);
   --palette-neutral-200: oklch(.265 .0043 57);
@@ -168,9 +217,14 @@ code {
   --palette-neutral-1000: oklch(.935 .0055 57);
   --surface-stroke: var(--palette-neutral-200);
   --card-shadow: none;
+  --scrim-ink: var(--palette-neutral-00);
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .mock:not(.force-light) {
+    --bg-chart-a: oklch(.585 .0650 210); --bg-chart-a-weak: oklch(.265 .0300 210); --stroke-chart-a: oklch(.745 .0600 210);
+    --bg-chart-b: oklch(.585 .0650 165); --bg-chart-b-weak: oklch(.265 .0300 165);
+    --bg-chart-c: oklch(.585 .0650 340); --bg-chart-c-weak: oklch(.265 .0300 340);
     --palette-neutral-00: oklch(.155 .0037 57);
     --palette-neutral-100: oklch(.205 .0037 57);
     --palette-neutral-200: oklch(.265 .0043 57);
@@ -184,9 +238,14 @@ code {
     --palette-neutral-1000: oklch(.935 .0055 57);
     --surface-stroke: var(--palette-neutral-200);
     --card-shadow: none;
+    --scrim-ink: var(--palette-neutral-00);
+    --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
   }
 }
 :root[data-theme="dark"] .mock:not(.force-light) {
+  --bg-chart-a: oklch(.585 .0650 210); --bg-chart-a-weak: oklch(.265 .0300 210); --stroke-chart-a: oklch(.745 .0600 210);
+  --bg-chart-b: oklch(.585 .0650 165); --bg-chart-b-weak: oklch(.265 .0300 165);
+  --bg-chart-c: oklch(.585 .0650 340); --bg-chart-c-weak: oklch(.265 .0300 340);
   --palette-neutral-00: oklch(.155 .0037 57);
   --palette-neutral-100: oklch(.205 .0037 57);
   --palette-neutral-200: oklch(.265 .0043 57);
@@ -200,6 +259,8 @@ code {
   --palette-neutral-1000: oklch(.935 .0055 57);
   --surface-stroke: var(--palette-neutral-200);
   --card-shadow: none;
+  --scrim-ink: var(--palette-neutral-00);
+  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
 }
 .mock {
   --bg-neutral: var(--palette-neutral-00);
@@ -209,6 +270,11 @@ code {
   --fg-neutral-subtle: var(--palette-neutral-700);
   --fg-neutral-disabled: var(--palette-neutral-700);
   --stroke-neutral: var(--palette-neutral-200);
+  --stroke-neutral-muted: var(--palette-neutral-300);
+  /* 차트 색 — tokens.md 1절 chart-a·b·c 팔레트 그대로. 라이트 값이고 다크는 위 세 블록에 각각 얹었다 */
+  --bg-chart-a: oklch(.625 .0650 210); --bg-chart-a-weak: oklch(.905 .0300 210); --stroke-chart-a: oklch(.455 .0600 210);
+  --bg-chart-b: oklch(.625 .0650 165); --bg-chart-b-weak: oklch(.905 .0300 165);
+  --bg-chart-c: oklch(.625 .0650 340); --bg-chart-c-weak: oklch(.905 .0300 340);
 
   --t-xs: .8125rem; --lh-xs: 1.21875rem;
   --t-sm: .9375rem; --lh-sm: 1.40625rem;
@@ -270,9 +336,23 @@ code {
 .seg button::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .seg button.on { color: var(--fg-neutral); }
 
-/* 합계 — 세그먼트와 mt-6(24px), 큰 글자 */
+/* 추이 그래프 — components.md 「추이 그래프」. 세그먼트와 mt-6(24px), 높이 96px, 등장·자람 모션 없음 */
+.trend { position: relative; margin-top: 24px; height: 96px; }
+.trend svg { display: block; width: 100%; height: 96px; overflow: visible; }
+.trend-area { fill: var(--bg-chart-a-weak); }
+.trend-line { fill: none; stroke: var(--stroke-chart-a); stroke-width: 2; }
+.trend-dot { fill: var(--bg-chart-a); stroke: var(--bg-neutral); stroke-width: 2; }
+/* 값 글자 — 보는 달. 점 바로 위 */
+.trend-val { position: absolute; font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; transform: translate(-50%, calc(-100% - 6px)); white-space: nowrap; }
+/* 가로축 — 그래프와 mt-2(8px). 1·4·7·10월만 글자, 나머지는 눈금만(문서가 눈금 모양을 안 정해 짧은 세로 표시로 그렸다) */
+.trend-axis { margin-top: 8px; position: relative; height: 18px; }
+.trend-axis .lab { position: absolute; top: 0; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); transform: translateX(-50%); white-space: nowrap; }
+.trend-axis .tick { position: absolute; top: 7px; width: 1px; height: 4px; background: var(--bg-neutral-weak); transform: translateX(-50%); }
+
+/* 합계 — 세그먼트와 mt-6(24px), 큰 글자. 그래프가 서면 「그래프와 합계 사이」 mt-6이 그 자리를 대신한다 */
 .sum { margin-top: 24px; font-size: var(--t-3xl); line-height: var(--lh-3xl); font-weight: 700; color: var(--fg-neutral); }
 .sum.dash { color: var(--fg-neutral); }
+.sum.aftertrend { margin-top: 24px; }
 /* 예상치 안내 — 합계와 mt-1(4px) */
 .subnote { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
 /* 인건비 보조 줄 / 근태 현황 줄 — 공통. 인건비에서는 안내와 mt-3(12px), 근태에서는 세그먼트와 mt-6(24px) */
@@ -281,6 +361,20 @@ code {
 .mt-6 { margin-top: 24px; }
 /* 보조 줄(또는 현황 줄)과 목록 사이 — mt-8(32px) */
 .listgap { margin-top: 32px; }
+
+/* 비율 띠 — components.md 「비율 띠」. 현황 줄과 mt-3(12px), 높이 8px, 몫 사이 2px 틈 */
+.band { margin-top: 12px; display: flex; gap: 2px; height: 8px; }
+.band > span { display: block; height: 100%; }
+.band > span:first-child { border-top-left-radius: 9999px; border-bottom-left-radius: 9999px; }
+.band > span:last-child { border-top-right-radius: 9999px; border-bottom-right-radius: 9999px; }
+.band .b-a { background: var(--bg-chart-a); }
+.band .b-b { background: var(--bg-chart-b); }
+.band .b-c { background: var(--bg-chart-c); }
+.band .b-n { background: var(--bg-neutral-weak); }
+/* 범례 — 띠와 mt-2(8px), 점 4px, 항목 사이 gap-4(16px) */
+.legend { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 16px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+.legend .li { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.legend .dot { width: 4px; height: 4px; border-radius: 9999px; flex: 0 0 auto; }
 
 /* 목록 — ListRow. 사진 36px, 사진과 이름 사이 gap-3(12px), 줄 py-4(16px) */
 .rowwrap { overflow: hidden; }
@@ -298,6 +392,10 @@ code {
 .wlist .rowwrap + .rowwrap .wrow { border-top: 1px solid var(--stroke-neutral); margin-left: 48px; padding-left: 0; }
 .wlist .rowwrap + .rowwrap .wrow .av36 { margin-left: -48px; }
 
+/* 줄 막대 — components.md 「줄 막대」. 트랙 없이 면만, 줄 아래 mt-2(8px), 높이 4px, 가장 큰 값이 100% */
+.rowbar { margin-top: 8px; height: 4px; border-radius: 9999px; overflow: hidden; }
+.rowbar > span { display: block; height: 100%; background: var(--bg-chart-a); border-radius: 9999px; }
+
 /* 포지션 목록 — 사진이 없다. 줄 전체 폭으로 구분선을 긋는다 */
 .prow { display: flex; align-items: baseline; padding: 16px 0; gap: 12px; }
 .prow .pmid { min-width: 0; flex: 1 1 auto; }
@@ -307,6 +405,15 @@ code {
 .prow.zero .psub, .prow.zero .pval { color: var(--fg-neutral-subtle); }
 .plist .rowwrap + .rowwrap .prow { border-top: 1px solid var(--stroke-neutral); }
 
+/* 내 근태 날짜 목록 — 사진 없이 제목(날짜+요일)·보조(그날 포지션)·값(인증 상태+시각).
+   ListRow 토큰을 그대로 쓰되 포지션 목록처럼 왼쪽 사진 자리가 없다(stats.md 「내 근태 날짜 목록」) */
+.drow { display: flex; align-items: baseline; padding: 16px 0; gap: 12px; }
+.drow .dmid { min-width: 0; flex: 1 1 auto; }
+.drow .dtitle { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.drow .dsub { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+.drow .dval { margin-left: auto; flex: 0 0 auto; padding-left: 12px; font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; text-align: right; }
+.dlist .rowwrap + .rowwrap .drow { border-top: 1px solid var(--stroke-neutral); }
+
 /* 목록 끝 — pb-8(32px) */
 .listend { padding-bottom: 32px; }
 
@@ -314,6 +421,38 @@ code {
 .emptywrap { padding: 16px 0; text-align: left; }
 .empty-t { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
 .empty-b { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+
+/* 인건비 목록 줄의 오른쪽 화살표 — 줄을 누르면 구간 내역 시트가 열린다(stats.md 「인건비 사람별 목록」).
+   ListRow 오른쪽 화살표 토큰(fg.neutral-subtle)을 쓴다, 값과 gap-1(4px) */
+.wrow .wchev { margin-left: 4px; flex: 0 0 auto; display: grid; place-items: center; color: var(--fg-neutral-subtle); }
+
+/* 「내역 보기」 — 급여 탭 맨 아래 ListRow. 왼쪽 사진·보조 정보 없이 제목과 화살표뿐이다 */
+.linkrow { display: flex; align-items: center; padding: 16px 0; cursor: pointer; }
+.linkrow .lr-title { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.linkrow .wchev { margin-left: auto; }
+
+/* 구간 내역 시트 — components.md 「Dialog와 바텀시트」의 바텀시트. 여백은 stats.md 「통계 여백과 모양」 표의
+   시트 항목 넷(이름-구간 mt-4, 구간 줄 py-3, 구간-합계 사이 가는 선 위 mt-2) 그대로다 */
+.scrim { position: absolute; inset: 0; z-index: 3; background: var(--scrim-ink); opacity: .42; }
+.rsheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+  background: var(--bg-neutral); border-radius: 14px 14px 0 0;
+  padding: 10px 24px calc(24px + env(safe-area-inset-bottom));
+  box-shadow: var(--sheet-shadow);
+  max-height: 82%; overflow-y: auto;
+}
+.grab { width: 32px; height: 4px; border-radius: 9999px; background: var(--stroke-neutral-muted); margin: 0 auto; }
+.sheettop { padding-top: 14px; }
+.sheetname { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral); }
+.shlist { margin-top: 16px; }
+.shrow { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 0; }
+.shrow .shperiod { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); font-variant-numeric: tabular-nums; }
+.shrow .shval { flex: 0 0 auto; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; }
+.shrow + .shrow { border-top: 1px solid var(--stroke-neutral); }
+.shhr { margin-top: 8px; border-top: 1px solid var(--stroke-neutral); }
+/* 선 아래-합계 줄 사이 12px은 stats.md에 없다. 여백표는 「가는 선 위 mt-2」까지만 정했고
+   선 아래는 이 파일이 구간 줄(py-3=12px 위아래)과 같은 리듬으로 임의로 잡았다 */
+.shsum { display: flex; align-items: baseline; justify-content: space-between; padding-top: 12px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; }
 
 @media (prefers-reduced-motion: reduce) {
   .mock * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
@@ -334,7 +473,11 @@ code {
   <p class="lede">
     관리자 홈의 「통계」 줄이 여는 화면이다. 관리자 화면이라 탭 바가 없고 앱바에 뒤로 가기만 있다.
     달 줄이 세그먼트 위에 서서 인건비·근태·포지션 사이를 오가도 보는 달은 그대로다.
-    막대를 안 그렸다 — 숫자와 정렬만으로 비교하게 두는 것이 문서의 결정이다.
+    세그먼트 아래 추이 그래프, 목록 줄 아래 줄 막대·비율 띠까지 components.md 「차트 넷」의
+    조각 셋을 그렸다 — 색은 <code>chart-a</code>·<code>chart-b</code>·<code>chart-c</code>뿐이고 브랜드색은 안 쓴다.
+    01~06절이 관리자 화면이고, 07절이 인건비 목록 줄을 누르면 올라오는 구간 내역
+    시트, 08~11절이 근무자가 자기 것만 보는 <code>/stats</code>다 — 세그먼트가
+    근태·포지션·급여로 바뀌고 사람별 목록 자리를 날짜 목록·「내역 보기」가 대신한다.
     오른쪽 위 토글이 페이지 전체를 라이트와 다크로 뒤집는다.
   </p>
 
@@ -372,7 +515,25 @@ code {
                 <button type="button">포지션</button>
               </div>
             </div>
-            <div class="sum num">4,812,000원</div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8 L323,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8"></path>
+                <circle class="trend-dot" cx="323" cy="8" r="3"></circle>
+              </svg>
+              <span class="trend-val num" style="left:323px;top:8px">481만</span>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:62px">1월</span>
+              <span class="lab" style="left:149px">4월</span>
+              <span class="lab" style="left:236px">7월</span>
+              <span class="lab" style="left:323px">10월</span>
+              <span class="tick" style="left:4px"></span><span class="tick" style="left:33px"></span>
+              <span class="tick" style="left:91px"></span><span class="tick" style="left:120px"></span>
+              <span class="tick" style="left:178px"></span><span class="tick" style="left:207px"></span>
+              <span class="tick" style="left:265px"></span><span class="tick" style="left:294px"></span>
+            </div>
+            <div class="sum num aftertrend">4,812,000원</div>
             <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
             <div class="subline mt-3">근무 48건 · 432시간</div>
             <div class="wlist listgap">
@@ -380,27 +541,37 @@ code {
                 <span class="av36"></span>
                 <span class="wmid"><span class="wtitle">박서연</span><br><span class="wsub">17회 · 153시간</span></span>
                 <span class="wval">1,700,000원</span>
-              </div></div>
+                <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="rowbar"><span style="width:100%"></span></div></div>
               <div class="rowwrap"><div class="wrow">
                 <span class="av36"></span>
                 <span class="wmid"><span class="wtitle">김민지</span><br><span class="wsub">12회 · 108시간</span></span>
                 <span class="wval">1,188,000원</span>
-              </div></div>
+                <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="rowbar"><span style="width:70%"></span></div></div>
               <div class="rowwrap"><div class="wrow">
                 <span class="av36"></span>
                 <span class="wmid"><span class="wtitle">이하늘</span><br><span class="wsub">10회 · 90시간</span></span>
                 <span class="wval">950,000원</span>
-              </div></div>
+                <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="rowbar"><span style="width:56%"></span></div></div>
               <div class="rowwrap"><div class="wrow">
                 <span class="av36"></span>
                 <span class="wmid"><span class="wtitle">최윤아</span><br><span class="wsub">8회 · 72시간</span></span>
                 <span class="wval">800,000원</span>
-              </div></div>
+                <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="rowbar"><span style="width:47%"></span></div></div>
               <div class="rowwrap"><div class="wrow">
                 <span class="av36"></span>
                 <span class="wmid"><span class="wtitle">정다은</span><br><span class="wsub">1회 · 9시간</span></span>
                 <span class="wval">174,000원</span>
-              </div></div>
+                <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="rowbar"><span style="width:10%"></span></div></div>
             </div>
             <div class="listend"></div>
             <div class="spacer"></div>
@@ -409,8 +580,9 @@ code {
         <figcaption>
           <div class="cap-key">PAYROLL</div>
           <div class="cap-name">금액이 큰 순, 이름순이 아니다</div>
-          <p class="cap-body">줄에 화살표도 누름 배경도 없다 — 눌러도 다음 화면이 없어서다. 왼쪽 사진은 <strong>36px</strong>이고, ListRow의 다른 화면(40px)보다 작다 — stats.md의 여백표가 이 화면만 36px로 못 박았다.</p>
+          <p class="cap-body">줄 오른쪽에 화살표가 선다 — 누르면 <a href="#구간-내역-시트">구간 내역 시트</a>가 열린다(stats.md 「인건비 사람별 목록」 「구간 내역 시트」). 왼쪽 사진은 <strong>36px</strong>이고, ListRow의 다른 화면(40px)보다 작다 — stats.md의 여백표가 이 화면만 36px로 못 박았다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>정다은은 금액이 작아 맨 아래 있다.</strong> 퇴사한 사람이든 시급이 기본인 사람이든 이 목록은 표시를 가르지 않는다 — 문서가 명시로 「따로 표시 안 한다」고 정한 자리라 이 다섯 줄 중 누구도 특별히 표시되지 않는다.</p>
+          <p class="cap-body" style="margin-top:8px">줄 아래 막대는 박서연(1,700,000원)을 100%로 잡고 견준다. 그래프 열두 점 중 오른쪽 끝(10월)만 점이 서고 값이 <code>481만</code>으로 적힌다 — 나머지 열한 달은 점이 없다.</p>
         </figcaption>
       </figure>
 
@@ -451,7 +623,37 @@ code {
                 <button type="button">포지션</button>
               </div>
             </div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,25.6 L33,28.8 L62,24 L91,21.6 L120,19.2 L149,16 L178,14.4 L207,20 L236,24 L265,25.6 L294,21.6 L323,16.8 L323,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,25.6 L33,28.8 L62,24 L91,21.6 L120,19.2 L149,16 L178,14.4 L207,20 L236,24 L265,25.6 L294,21.6 L323,16.8"></path>
+                <circle class="trend-dot" cx="323" cy="16.8" r="3"></circle>
+              </svg>
+              <span class="trend-val num" style="left:323px;top:16.8px">89%</span>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:62px">1월</span>
+              <span class="lab" style="left:149px">4월</span>
+              <span class="lab" style="left:236px">7월</span>
+              <span class="lab" style="left:323px">10월</span>
+              <span class="tick" style="left:4px"></span><span class="tick" style="left:33px"></span>
+              <span class="tick" style="left:91px"></span><span class="tick" style="left:120px"></span>
+              <span class="tick" style="left:178px"></span><span class="tick" style="left:207px"></span>
+              <span class="tick" style="left:265px"></span><span class="tick" style="left:294px"></span>
+            </div>
             <div class="subline mt-6">출근 41 · 지각 4 · 출근 인정 2 · 결근 1</div>
+            <div class="band">
+              <span class="b-a" style="flex:85.417"></span>
+              <span class="b-b" style="flex:4.167"></span>
+              <span class="b-c" style="flex:8.333"></span>
+              <span class="b-n" style="flex:2.083"></span>
+            </div>
+            <div class="legend">
+              <span class="li"><span class="dot" style="background:var(--bg-chart-a)"></span>출근 41</span>
+              <span class="li"><span class="dot" style="background:var(--bg-chart-b)"></span>인정 2</span>
+              <span class="li"><span class="dot" style="background:var(--bg-chart-c)"></span>지각 4</span>
+              <span class="li"><span class="dot" style="background:var(--bg-neutral-weak)"></span>결근 1</span>
+            </div>
             <div class="wlist listgap">
               <div class="rowwrap"><div class="wrow">
                 <span class="av36"></span>
@@ -493,6 +695,7 @@ code {
           <div class="cap-name">김민지·최윤아는 지각 0이라 자리가 없다</div>
           <p class="cap-body">여섯 줄 다 「출근 n」으로 시작하고 지각이 있으면만 「· 지각 n」이 붙는다. 결근·출근 인정도 있는 줄에만 뒤에 붙는다 — 유하은은 결근, 정다은은 출근 인정이 붙고 순서가 다른 이유는 지각이 0이라 그 항목이 먼저 빠져서다.</p>
           <p class="cap-body" style="margin-top:8px">이 목록에 사진 오른쪽 화살표가 없다. 사람별 날짜 내역이 이 화면의 몫이 아니라서다.</p>
+          <p class="cap-body" style="margin-top:8px">현황 줄 아래 띠는 넷을 몫으로 가른다 — 출근(<code>chart-a</code>)·출근 인정(<code>chart-b</code>)·지각(<code>chart-c</code>)·결근(<code>neutral-weak</code>) 순이다. 넷 다 0이 아니라 범례에서 빠진 것이 없다. 그래프는 열두 달의 출근율을 찍었다 — 인건비·포지션과 다른 값이라 곡선 모양도 다르게 그렸다.</p>
         </figcaption>
       </figure>
 
@@ -533,40 +736,66 @@ code {
                 <button type="button" class="on">포지션</button>
               </div>
             </div>
-            <div class="sum num">432시간</div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8 L323,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8"></path>
+                <circle class="trend-dot" cx="323" cy="8" r="3"></circle>
+              </svg>
+              <span class="trend-val num" style="left:323px;top:8px">432시간</span>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:62px">1월</span>
+              <span class="lab" style="left:149px">4월</span>
+              <span class="lab" style="left:236px">7월</span>
+              <span class="lab" style="left:323px">10월</span>
+              <span class="tick" style="left:4px"></span><span class="tick" style="left:33px"></span>
+              <span class="tick" style="left:91px"></span><span class="tick" style="left:120px"></span>
+              <span class="tick" style="left:178px"></span><span class="tick" style="left:207px"></span>
+              <span class="tick" style="left:265px"></span><span class="tick" style="left:294px"></span>
+            </div>
+            <div class="sum num aftertrend">432시간</div>
             <div class="plist listgap">
               <div class="rowwrap"><div class="prow">
                 <span class="pmid"><span class="ptitle">메인</span><br><span class="psub">12건</span></span>
                 <span class="pval">108시간</span>
-              </div></div>
+              </div>
+              <div class="rowbar"><span style="width:100%"></span></div></div>
               <div class="rowwrap"><div class="prow">
                 <span class="pmid"><span class="ptitle">스캔</span><br><span class="psub">10건</span></span>
                 <span class="pval">90시간</span>
-              </div></div>
+              </div>
+              <div class="rowbar"><span style="width:83%"></span></div></div>
               <div class="rowwrap"><div class="prow">
                 <span class="pmid"><span class="ptitle">드레스</span><br><span class="psub">8건</span></span>
                 <span class="pval">72시간</span>
-              </div></div>
+              </div>
+              <div class="rowbar"><span style="width:67%"></span></div></div>
               <div class="rowwrap"><div class="prow">
                 <span class="pmid"><span class="ptitle">안내</span><br><span class="psub">6건</span></span>
                 <span class="pval">54시간</span>
-              </div></div>
+              </div>
+              <div class="rowbar"><span style="width:50%"></span></div></div>
               <div class="rowwrap"><div class="prow">
                 <span class="pmid"><span class="ptitle">매니저</span><br><span class="psub">4건</span></span>
                 <span class="pval">36시간</span>
-              </div></div>
+              </div>
+              <div class="rowbar"><span style="width:33%"></span></div></div>
               <div class="rowwrap"><div class="prow">
                 <span class="pmid"><span class="ptitle">팀장</span><br><span class="psub">3건</span></span>
                 <span class="pval">30시간</span>
-              </div></div>
+              </div>
+              <div class="rowbar"><span style="width:28%"></span></div></div>
               <div class="rowwrap"><div class="prow">
                 <span class="pmid"><span class="ptitle">축가</span><br><span class="psub">3건</span></span>
                 <span class="pval">24시간</span>
-              </div></div>
+              </div>
+              <div class="rowbar"><span style="width:22%"></span></div></div>
               <div class="rowwrap"><div class="prow">
                 <span class="pmid"><span class="ptitle">드레스실</span><br><span class="psub">2건</span></span>
                 <span class="pval">18시간</span>
-              </div></div>
+              </div>
+              <div class="rowbar"><span style="width:17%"></span></div></div>
               <div class="rowwrap"><div class="prow zero">
                 <span class="pmid"><span class="ptitle">대기실</span><br><span class="psub">0건</span></span>
                 <span class="pval">0시간</span>
@@ -579,7 +808,8 @@ code {
         <figcaption>
           <div class="cap-key">POSITION</div>
           <div class="cap-name">대기실 0시간도 목록에 남는다</div>
-          <p class="cap-body">아홉 줄 다 같은 ListRow 모양이고 화살표가 없다. 맨 아래 「대기실」만 값 둘이 <code>fg.neutral-subtle</code>이다 — stats.md 색 표의 「값이 0인 자리」 규칙이다. 겸임 배정은 앞 포지션으로 셌으니 아홉 줄의 건수 합이 인건비 탭의 근무 48건과 같다.</p>
+          <p class="cap-body">아홉 줄 다 같은 ListRow 모양이고 화살표가 없다. 맨 아래 「대기실」만 값 둘이 <code>fg.neutral-subtle</code>이다 — stats.md 색 표의 「값이 0인 자리」 규칙이다. 겸임 배정은 앞 포지션으로 셌으니 아홉 줄의 건수 합이 인건비 탭의 근무 48건과 같다. <strong>대기실은 0시간이라 막대 자리에 아무것도 없다</strong> — 트랙도 1px도 안 남는다.</p>
+          <p class="cap-body" style="margin-top:8px">그래프와 막대는 값이 다른데도 같은 <code>chart-a</code>다. 문서가 차트 조각 넷에 뜻을 안 싣기로 정해서(색이 좋고 나쁨을 안 말한다) 한 화면 안에서 색을 아끼는 쪽을 골랐다.</p>
         </figcaption>
       </figure>
 
@@ -620,7 +850,23 @@ code {
                 <button type="button">포지션</button>
               </div>
             </div>
-            <div class="sum dash">–</div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,48 L33,54.4 L62,57.6 L91,44 L120,22.4 L149,16 L178,40 L207,54.4 L236,57.6 L265,40 L294,25.6 L294,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,48 L33,54.4 L62,57.6 L91,44 L120,22.4 L149,16 L178,40 L207,54.4 L236,57.6 L265,40 L294,25.6"></path>
+              </svg>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:4px">7월</span>
+              <span class="lab" style="left:91px">10월</span>
+              <span class="lab" style="left:178px">1월</span>
+              <span class="lab" style="left:265px">4월</span>
+              <span class="tick" style="left:33px"></span><span class="tick" style="left:62px"></span>
+              <span class="tick" style="left:120px"></span><span class="tick" style="left:149px"></span>
+              <span class="tick" style="left:207px"></span><span class="tick" style="left:236px"></span>
+              <span class="tick" style="left:294px"></span><span class="tick" style="left:323px"></span>
+            </div>
+            <div class="sum dash aftertrend">–</div>
             <div class="emptywrap listgap">
               <div class="empty-t">이 달은 아직 근무표가 없어요</div>
               <div class="empty-b">근무표를 확정하면 여기 숫자가 서요</div>
@@ -633,6 +879,7 @@ code {
           <div class="cap-name">예상치 안내·보조 줄도 같이 사라진다</div>
           <p class="cap-body">합계만 <code>–</code>로 남고 <strong>그 아래 예상치 안내와 보조 줄은 이 파일이 지웠다</strong> — 근무가 없는데 「근무 0건 · 0시간」을 보여주는 것이 더 이상하다고 판단해서다. stats.md는 이 지점을 안 정했다.</p>
           <p class="cap-body" style="margin-top:8px">이 달(6월)은 이번 달보다 앞이라 화살표 양쪽 다 갈 수 있다 — 05절의 「못 가는 화살표」와 대비해서 보려고 지난달로 그렸다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>그래프는 안 빈다.</strong> 6월(보는 달, 맨 오른쪽 자리)만 점이 없고 선이 5월에서 끊긴다 — 지난 열한 달은 값이 있어 선과 면이 그대로 남는다. 목록이 사라져도 그래프는 통째로 안 접힌다.</p>
         </figcaption>
       </figure>
 
@@ -673,7 +920,25 @@ code {
                 <button type="button">포지션</button>
               </div>
             </div>
-            <div class="sum num">3,960,000원</div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,20 L33,44 L62,52 L91,56 L120,60 L149,48 L178,20 L207,12 L236,40 L265,52 L294,56 L323,25.6 L323,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,20 L33,44 L62,52 L91,56 L120,60 L149,48 L178,20 L207,12 L236,40 L265,52 L294,56 L323,25.6"></path>
+                <circle class="trend-dot" cx="323" cy="25.6" r="3"></circle>
+              </svg>
+              <span class="trend-val num" style="left:323px;top:25.6px">396만</span>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:4px">10월</span>
+              <span class="lab" style="left:91px">1월</span>
+              <span class="lab" style="left:178px">4월</span>
+              <span class="lab" style="left:265px">7월</span>
+              <span class="tick" style="left:33px"></span><span class="tick" style="left:62px"></span>
+              <span class="tick" style="left:120px"></span><span class="tick" style="left:149px"></span>
+              <span class="tick" style="left:207px"></span><span class="tick" style="left:236px"></span>
+              <span class="tick" style="left:294px"></span><span class="tick" style="left:323px"></span>
+            </div>
+            <div class="sum num aftertrend">3,960,000원</div>
             <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
             <div class="subline mt-3">근무 40건 · 360시간</div>
             <div class="spacer"></div>
@@ -682,7 +947,7 @@ code {
         <figcaption>
           <div class="cap-key">MONTH / CAN GO</div>
           <div class="cap-name">지난달(9월) — 양쪽 다 갈 수 있다</div>
-          <p class="cap-body">화살표 둘 다 <code>fg.neutral-subtle</code>이다. 목록은 이 절의 핵심이 화살표 색이라 생략했다.</p>
+          <p class="cap-body">화살표 둘 다 <code>fg.neutral-subtle</code>이다. 목록은 이 절의 핵심이 화살표 색이라 생략했다. 그래프 구간이 오른쪽 프레임(10월)과 한 달 밀려 있다 — 창이 10월 → 9월~전월로 옮겨간 것을 점 위치로 보여준다.</p>
         </figcaption>
       </figure>
 
@@ -711,7 +976,25 @@ code {
                 <button type="button">포지션</button>
               </div>
             </div>
-            <div class="sum num">4,812,000원</div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8 L323,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8"></path>
+                <circle class="trend-dot" cx="323" cy="8" r="3"></circle>
+              </svg>
+              <span class="trend-val num" style="left:323px;top:8px">481만</span>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:62px">1월</span>
+              <span class="lab" style="left:149px">4월</span>
+              <span class="lab" style="left:236px">7월</span>
+              <span class="lab" style="left:323px">10월</span>
+              <span class="tick" style="left:4px"></span><span class="tick" style="left:33px"></span>
+              <span class="tick" style="left:91px"></span><span class="tick" style="left:120px"></span>
+              <span class="tick" style="left:178px"></span><span class="tick" style="left:207px"></span>
+              <span class="tick" style="left:265px"></span><span class="tick" style="left:294px"></span>
+            </div>
+            <div class="sum num aftertrend">4,812,000원</div>
             <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
             <div class="subline mt-3">근무 48건 · 432시간</div>
             <div class="spacer"></div>
@@ -721,6 +1004,625 @@ code {
           <div class="cap-key">MONTH / BLOCKED</div>
           <div class="cap-name">이번 달(10월) — 오른쪽만 못 간다</div>
           <p class="cap-body">오른쪽 화살표가 안 보이고 자리만 비어 있다. 다음 달은 아직 지나지 않아 셀 것이 없다 — 급여 조회의 「앞으로 못 감」과 같은 규칙이 여기서는 달 단위로 돈다. 뒤로 가는 화살표는 첫 근무표가 있는 달까지 계속 <code>fg.neutral-subtle</code>로 서 있다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">06 / 달이 하나뿐</span>
+      <h2>앱을 쓰기 시작한 첫 달 — 점 하나뿐</h2>
+      <p>첫 근무표가 확정된 달이라 그래프에 점이 하나뿐이다. 선도 면도 없다 — 이을 앞 달이 아예 없어서다. 뒤로 가는 화살표는 못 가고 앞으로는 갈 수 있다, 05절의 「못 감」과 반대쪽이다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:19</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 1월</span>
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(0%)"></span>
+                <button type="button" class="on">인건비</button>
+                <button type="button">근태</button>
+                <button type="button">포지션</button>
+              </div>
+            </div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <circle class="trend-dot" cx="323" cy="52" r="3"></circle>
+              </svg>
+              <span class="trend-val num" style="left:323px;top:52px">612,000원</span>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:120px">4월</span>
+              <span class="lab" style="left:207px">7월</span>
+              <span class="lab" style="left:294px">10월</span>
+              <span class="lab" style="left:323px">1월</span>
+              <span class="tick" style="left:4px"></span><span class="tick" style="left:33px"></span>
+              <span class="tick" style="left:62px"></span><span class="tick" style="left:91px"></span>
+              <span class="tick" style="left:149px"></span><span class="tick" style="left:178px"></span>
+              <span class="tick" style="left:236px"></span><span class="tick" style="left:265px"></span>
+            </div>
+            <div class="sum num aftertrend">612,000원</div>
+            <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
+            <div class="subline mt-3">근무 3건 · 27시간</div>
+            <div class="wlist listgap">
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">박서연</span><br><span class="wsub">2회 · 18시간</span></span>
+                <span class="wval">408,000원</span>
+                <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="rowbar"><span style="width:100%"></span></div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">김민지</span><br><span class="wsub">1회 · 9시간</span></span>
+                <span class="wval">204,000원</span>
+                <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="rowbar"><span style="width:50%"></span></div></div>
+            </div>
+            <div class="listend"></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">FIRST MONTH</div>
+          <div class="cap-name">점 하나 — 선도 면도 없다</div>
+          <p class="cap-body">서비스를 쓰기 시작한 첫 달(2026년 1월)이라 이을 앞선 달이 없다. <code>trend-line</code>과 <code>trend-area</code>를 아예 안 그려 점(<code>trend-dot</code>) 하나만 남는다 — components.md 「값이 없는 달은 선이 끊긴다」의 극단값이다.</p>
+          <p class="cap-body" style="margin-top:8px">달 줄 왼쪽 화살표가 안 보인다. 뒤로 갈 첫 근무표가 이 달 자체라서다. 오른쪽 화살표는 열려 있다 — 이번 달(2026년 10월)까지 아직 아홉 달이 남아 있다.</p>
+          <p class="cap-body" style="margin-top:8px">합계·목록 값은 stats.md가 안 준 숫자라 이 파일이 임의로 채웠다 — 다른 절의 값과 이어지지 않는다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section id="구간-내역-시트">
+    <div class="sec-head">
+      <span class="sec-num">07 / 구간 내역 시트</span>
+      <h2>인건비 목록의 줄을 누르면 올라온다</h2>
+      <p>손잡이, 이름, 구간 목록(기간·단가·시간과 오른쪽 금액), 조정 줄, 합계 줄 순이다. 모든 줄에서 열리므로 구간이 하나뿐인 사람도 시트가 뜬다 — 둘을 나란히 놓는다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:20</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 10월</span>
+              <span class="marrow disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(0%)"></span>
+                <button type="button" class="on">인건비</button>
+                <button type="button">근태</button>
+                <button type="button">포지션</button>
+              </div>
+            </div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8 L323,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8"></path>
+                <circle class="trend-dot" cx="323" cy="8" r="3"></circle>
+              </svg>
+              <span class="trend-val num" style="left:323px;top:8px">481만</span>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:62px">1월</span>
+              <span class="lab" style="left:149px">4월</span>
+              <span class="lab" style="left:236px">7월</span>
+              <span class="lab" style="left:323px">10월</span>
+              <span class="tick" style="left:4px"></span><span class="tick" style="left:33px"></span>
+              <span class="tick" style="left:91px"></span><span class="tick" style="left:120px"></span>
+              <span class="tick" style="left:178px"></span><span class="tick" style="left:207px"></span>
+              <span class="tick" style="left:265px"></span><span class="tick" style="left:294px"></span>
+            </div>
+            <div class="sum num aftertrend">4,812,000원</div>
+            <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
+            <div class="subline mt-3">근무 48건 · 432시간</div>
+            <div class="wlist listgap">
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">박서연</span><br><span class="wsub">17회 · 153시간</span></span>
+                <span class="wval">1,700,000원</span>
+                <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="rowbar"><span style="width:100%"></span></div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">김지우</span><br><span class="wsub">15회 · 102시간</span></span>
+                <span class="wval">1,296,000원</span>
+                <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="rowbar"><span style="width:76%"></span></div></div>
+            </div>
+            <div class="listend"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="sheetname">김지우</div>
+              <div class="shlist">
+                <div class="shrow">
+                  <span class="shperiod">10월 1일~14일 · 12,000원 · 18시간</span>
+                  <span class="shval">216,000원</span>
+                </div>
+                <div class="shrow">
+                  <span class="shperiod">10월 15일~31일 · 13,000원 · 84시간</span>
+                  <span class="shval">1,092,000원</span>
+                </div>
+                <div class="shrow">
+                  <span class="shperiod">결근 1일</span>
+                  <span class="shval">−12,000원</span>
+                </div>
+              </div>
+              <div class="shhr"></div>
+              <div class="shsum"><span>합계</span><span>1,296,000원</span></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">SHEET / MULTI</div>
+          <div class="cap-name">구간 둘 + 조정 하나 — 시급이 중간에 바뀌었다</div>
+          <p class="cap-body">10월 15일에 단가가 12,000원에서 13,000원으로 바뀌어 구간이 갈린다. 기간·단가·시간은 <code>fg.neutral-muted</code>인 한 줄이고 금액만 <code>fg.neutral</code>이다. 결근으로 깎인 조정이 구간 뒤에 같은 짜임(왼쪽 라벨, 오른쪽 금액)으로 한 줄 더 선다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>합계(1,296,000원)가 목록 줄의 값과 같다.</strong> 216,000 + 1,092,000 − 12,000이 합계와 맞아떨어지는 것이 이 시트의 쓸모다 — stats.md의 문안 예시(구간 하나, 합계)를 그대로 살려 값을 역산했다.</p>
+          <p class="cap-body" style="margin-top:8px">뒤 목록의 「김지우」줄에는 없던 사람을 시트만 보여주려고 더했다 — 회수·시간(15회·102시간)은 이 파일이 구간의 시간 합(18+84)과 회수를 맞춰 새로 지었다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:20</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 10월</span>
+              <span class="marrow disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(0%)"></span>
+                <button type="button" class="on">인건비</button>
+                <button type="button">근태</button>
+                <button type="button">포지션</button>
+              </div>
+            </div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8 L323,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8"></path>
+                <circle class="trend-dot" cx="323" cy="8" r="3"></circle>
+              </svg>
+              <span class="trend-val num" style="left:323px;top:8px">481만</span>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:62px">1월</span>
+              <span class="lab" style="left:149px">4월</span>
+              <span class="lab" style="left:236px">7월</span>
+              <span class="lab" style="left:323px">10월</span>
+              <span class="tick" style="left:4px"></span><span class="tick" style="left:33px"></span>
+              <span class="tick" style="left:91px"></span><span class="tick" style="left:120px"></span>
+              <span class="tick" style="left:178px"></span><span class="tick" style="left:207px"></span>
+              <span class="tick" style="left:265px"></span><span class="tick" style="left:294px"></span>
+            </div>
+            <div class="sum num aftertrend">4,812,000원</div>
+            <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
+            <div class="subline mt-3">근무 48건 · 432시간</div>
+            <div class="wlist listgap">
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">박서연</span><br><span class="wsub">17회 · 153시간</span></span>
+                <span class="wval">1,700,000원</span>
+                <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="rowbar"><span style="width:100%"></span></div></div>
+              <div class="rowwrap"><div class="wrow">
+                <span class="av36"></span>
+                <span class="wmid"><span class="wtitle">이도윤</span><br><span class="wsub">8회 · 72시간</span></span>
+                <span class="wval">792,000원</span>
+                <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+              <div class="rowbar"><span style="width:47%"></span></div></div>
+            </div>
+            <div class="listend"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sheettop">
+              <div class="sheetname">이도윤</div>
+              <div class="shlist">
+                <div class="shrow">
+                  <span class="shperiod">10월 1일~31일 · 11,000원 · 72시간</span>
+                  <span class="shval">792,000원</span>
+                </div>
+              </div>
+              <div class="shhr"></div>
+              <div class="shsum"><span>합계</span><span>792,000원</span></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">SHEET / SINGLE</div>
+          <div class="cap-name">구간 하나 — 시급이 한 번도 안 바뀐 사람</div>
+          <p class="cap-body">이도윤은 10월 내내 같은 단가(11,000원)를 썼다. 구간 목록이 한 줄뿐이라도 시트는 똑같이 열린다 — 걸친 줄만 열리게 하면 같은 목록에서 어떤 줄은 눌리고 어떤 줄은 안 눌리게 되는 것을 피하려는 규칙이다(stats.md 「구간 내역 시트」).</p>
+          <p class="cap-body" style="margin-top:8px">조정 줄이 없다. 합계 줄(792,000원)이 유일한 구간 줄의 값과 그대로 같다 — 합계가 목록 줄의 값과 다르면 둘 중 하나가 틀린 것이라는 문서의 말을 눈으로 확인할 수 있는 가장 단순한 자리다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 08 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">08 / 근무자 · 근태</span>
+      <h2>세그먼트가 근태 · 포지션 · 급여로 바뀐다</h2>
+      <p><code>/stats</code>는 자기 것만 본다. 앱바·달 줄·세그먼트·추이 그래프 자리는 관리자 쪽과 같은 조각이고, 현황 줄과 비율 띠 아래가 사람별 목록 대신 <strong>날짜 목록</strong>이다 — 줄마다 날짜와 요일, 그날 포지션, 인증 상태와 찍은 시각이 선다. 상태 글자에 색을 안 쓴다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:21</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 10월</span>
+              <span class="marrow disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(0%)"></span>
+                <button type="button" class="on">근태</button>
+                <button type="button">포지션</button>
+                <button type="button">급여</button>
+              </div>
+            </div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,25.6 L33,28.8 L62,24 L91,21.6 L120,19.2 L149,16 L178,14.4 L207,20 L236,24 L265,25.6 L294,21.6 L323,16.8 L323,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,25.6 L33,28.8 L62,24 L91,21.6 L120,19.2 L149,16 L178,14.4 L207,20 L236,24 L265,25.6 L294,21.6 L323,16.8"></path>
+                <circle class="trend-dot" cx="323" cy="16.8" r="3"></circle>
+              </svg>
+              <span class="trend-val num" style="left:323px;top:16.8px">92%</span>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:62px">1월</span>
+              <span class="lab" style="left:149px">4월</span>
+              <span class="lab" style="left:236px">7월</span>
+              <span class="lab" style="left:323px">10월</span>
+              <span class="tick" style="left:4px"></span><span class="tick" style="left:33px"></span>
+              <span class="tick" style="left:91px"></span><span class="tick" style="left:120px"></span>
+              <span class="tick" style="left:178px"></span><span class="tick" style="left:207px"></span>
+              <span class="tick" style="left:265px"></span><span class="tick" style="left:294px"></span>
+            </div>
+            <div class="subline mt-6">출근 10 · 지각 1 · 출근 인정 1 · 결근 1</div>
+            <div class="band">
+              <span class="b-a" style="flex:76.923"></span>
+              <span class="b-b" style="flex:7.692"></span>
+              <span class="b-c" style="flex:7.692"></span>
+              <span class="b-n" style="flex:7.692"></span>
+            </div>
+            <div class="legend">
+              <span class="li"><span class="dot" style="background:var(--bg-chart-a)"></span>출근 10</span>
+              <span class="li"><span class="dot" style="background:var(--bg-chart-b)"></span>인정 1</span>
+              <span class="li"><span class="dot" style="background:var(--bg-chart-c)"></span>지각 1</span>
+              <span class="li"><span class="dot" style="background:var(--bg-neutral-weak)"></span>결근 1</span>
+            </div>
+            <div class="dlist listgap">
+              <div class="rowwrap"><div class="drow">
+                <span class="dmid"><span class="dtitle">10월 2일(금)</span><br><span class="dsub">메인</span></span>
+                <span class="dval num">출근 · 09:47</span>
+              </div></div>
+              <div class="rowwrap"><div class="drow">
+                <span class="dmid"><span class="dtitle">10월 3일(토)</span><br><span class="dsub">메인</span></span>
+                <span class="dval num">출근 · 09:52</span>
+              </div></div>
+              <div class="rowwrap"><div class="drow">
+                <span class="dmid"><span class="dtitle">10월 9일(금)</span><br><span class="dsub">스캔</span></span>
+                <span class="dval num">지각 · 10:14</span>
+              </div></div>
+              <div class="rowwrap"><div class="drow">
+                <span class="dmid"><span class="dtitle">10월 12일(월)</span><br><span class="dsub">드레스</span></span>
+                <span class="dval num">출근 인정</span>
+              </div></div>
+              <div class="rowwrap"><div class="drow">
+                <span class="dmid"><span class="dtitle">10월 16일(금)</span><br><span class="dsub">메인</span></span>
+                <span class="dval num">결근</span>
+              </div></div>
+              <div class="rowwrap"><div class="drow">
+                <span class="dmid"><span class="dtitle">10월 20일(화)</span><br><span class="dsub">스캔</span></span>
+                <span class="dval num">출근 · 09:41</span>
+              </div></div>
+            </div>
+            <div class="listend"></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">WORKER / ATTENDANCE</div>
+          <div class="cap-name">사람별 목록 대신 날짜 목록</div>
+          <p class="cap-body">볼 사람이 자기 하나라 사람별 목록이 한 줄짜리가 되는 대신, 그 자리를 <strong>날짜 목록</strong>이 대신한다(stats.md 「근무자 쪽에는 사람별 목록이 없다」). 줄 왼쪽에 프로필 사진이 없다 — 자기 사진을 자기 목록에 반복해 찍을 이유가 없어서다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>상태 글자가 색으로 안 갈린다.</strong> 「지각」도 「결근」도 <code>fg.neutral</code>이다 — 관리자 쪽 목록과 같은 이유고, 자기 화면이라고 더 세게 말할 일이 아니다(stats.md 「내 근태 날짜 목록」). 못 찍은 날(결근)도 줄로 서지만 그 자리를 눌러 사유 시트가 열리지는 않는다.</p>
+          <p class="cap-body" style="margin-top:8px">현황 줄·비율 띠·범례는 관리자 근태 탭과 같은 조각이고 숫자만 내 것이다. 그래프도 같은 자리인데 찍는 값이 「그달 내 출근율」로 바뀐다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 09 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">09 / 근무자 · 포지션</span>
+      <h2>내가 들어간 포지션만 선다</h2>
+      <p>관리자 쪽이 아홉을 다 세우는 것과 반대다. 관리자는 「아무도 안 들어간 자리」가 읽을 거리지만, 근무자에게 안 한 일의 목록은 읽을 것이 없다(stats.md 「포지션 목록」).</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:22</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 10월</span>
+              <span class="marrow disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(100%)"></span>
+                <button type="button">근태</button>
+                <button type="button" class="on">포지션</button>
+                <button type="button">급여</button>
+              </div>
+            </div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8 L323,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8"></path>
+                <circle class="trend-dot" cx="323" cy="8" r="3"></circle>
+              </svg>
+              <span class="trend-val num" style="left:323px;top:8px">108시간</span>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:62px">1월</span>
+              <span class="lab" style="left:149px">4월</span>
+              <span class="lab" style="left:236px">7월</span>
+              <span class="lab" style="left:323px">10월</span>
+              <span class="tick" style="left:4px"></span><span class="tick" style="left:33px"></span>
+              <span class="tick" style="left:91px"></span><span class="tick" style="left:120px"></span>
+              <span class="tick" style="left:178px"></span><span class="tick" style="left:207px"></span>
+              <span class="tick" style="left:265px"></span><span class="tick" style="left:294px"></span>
+            </div>
+            <div class="sum num aftertrend">108시간</div>
+            <div class="plist listgap">
+              <div class="rowwrap"><div class="prow">
+                <span class="pmid"><span class="ptitle">메인</span><br><span class="psub">8건</span></span>
+                <span class="pval">72시간</span>
+              </div>
+              <div class="rowbar"><span style="width:100%"></span></div></div>
+              <div class="rowwrap"><div class="prow">
+                <span class="pmid"><span class="ptitle">스캔</span><br><span class="psub">3건</span></span>
+                <span class="pval">27시간</span>
+              </div>
+              <div class="rowbar"><span style="width:38%"></span></div></div>
+              <div class="rowwrap"><div class="prow">
+                <span class="pmid"><span class="ptitle">드레스</span><br><span class="psub">1건</span></span>
+                <span class="pval">9시간</span>
+              </div>
+              <div class="rowbar"><span style="width:13%"></span></div></div>
+            </div>
+            <div class="listend"></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">WORKER / POSITION</div>
+          <div class="cap-name">세 줄뿐 — 안 들어간 포지션은 아예 없다</div>
+          <p class="cap-body">관리자 03절은 아홉 줄이 다 서고 0시간짜리도 남지만, 이 목록은 <strong>내가 들어간 포지션 셋뿐</strong>이다. 대기실·팀장 같은 나머지 여섯은 줄 자체가 없다 — 「안 한 일의 목록」은 읽을 것이 없어서다.</p>
+          <p class="cap-body" style="margin-top:8px">합계(108시간)가 <a href="#근무자-급여">급여 탭</a>의 보조 줄(근무 12건 · 108시간)과 같은 시간이다. 막대는 메인(72시간)을 100%로 잡는다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section id="근무자-급여">
+    <div class="sec-head">
+      <span class="sec-num">10 / 근무자 · 급여</span>
+      <h2>합계 아래 「내역 보기」로 급여 조회를 연다</h2>
+      <p>여기 있는 것은 달 하나의 합과 열두 달의 모양뿐이다. 날짜별 내역과 주·연 조회는 급여 조회의 몫이라 「내역 보기」가 그 화면을 연다(stats.md 「내 급여」).</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:23</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 10월</span>
+              <span class="marrow disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(200%)"></span>
+                <button type="button">근태</button>
+                <button type="button">포지션</button>
+                <button type="button" class="on">급여</button>
+              </div>
+            </div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8 L323,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,44 L33,52 L62,56 L91,60 L120,48 L149,20 L178,12 L207,40 L236,52 L265,56 L294,36 L323,8"></path>
+                <circle class="trend-dot" cx="323" cy="8" r="3"></circle>
+              </svg>
+              <span class="trend-val num" style="left:323px;top:8px">130만</span>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:62px">1월</span>
+              <span class="lab" style="left:149px">4월</span>
+              <span class="lab" style="left:236px">7월</span>
+              <span class="lab" style="left:323px">10월</span>
+              <span class="tick" style="left:4px"></span><span class="tick" style="left:33px"></span>
+              <span class="tick" style="left:91px"></span><span class="tick" style="left:120px"></span>
+              <span class="tick" style="left:178px"></span><span class="tick" style="left:207px"></span>
+              <span class="tick" style="left:265px"></span><span class="tick" style="left:294px"></span>
+            </div>
+            <div class="sum num aftertrend">1,296,000원</div>
+            <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
+            <div class="subline mt-3">근무 12건 · 108시간</div>
+            <div class="listgap">
+              <div class="linkrow">
+                <span class="lr-title">내역 보기</span>
+                <span class="wchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+              </div>
+            </div>
+            <div class="listend"></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">WORKER / PAY</div>
+          <div class="cap-name">합계·예상치 안내·보조 줄까지는 인건비 탭과 같은 짜임</div>
+          <p class="cap-body">합계 1,296,000원, 예상치 안내, 보조 줄(근무 12건 · 108시간)까지는 관리자 인건비 탭과 같은 순서다. 그 아래 사람별 목록 대신 <strong>「내역 보기」한 줄</strong>이 선다 — 왼쪽 사진도 오른쪽 값도 없이 제목과 화살표뿐인 ListRow다.</p>
+          <p class="cap-body" style="margin-top:8px">「내역 보기」를 누르면 <a href="../../modules/payroll/screens/payroll.md">급여 조회</a>가 연다. 그래프 값(130만)은 인건비 탭의 「만 단위로 줄여 적는다」 규칙을 급여에도 옮겨 쓴 것이다 — 문서가 급여 그래프 값의 표기를 따로 정하지 않았다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">11 / 근무자 · 빈 상태</span>
+      <h2>문구가 관리자 쪽과 다르다</h2>
+      <p>「이 달은 근무가 없어요」 / 「근무가 잡히면 여기 숫자가 서요」다. 합계는 <code>–</code> 하나만 남고 예상치 안내와 보조 줄이 같이 사라진다 — 04절의 관리자 빈 상태와 같은 규칙, 다른 문안이다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock">
+          <div class="statusbar"><span>09:24</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">통계</span>
+            <span class="sp"></span>
+          </div>
+          <div class="body">
+            <div class="monthrow">
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              <span class="mtext">2026년 6월</span>
+              <span class="marrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="segwrap">
+              <div class="seg">
+                <span class="pill" style="transform: translateX(200%)"></span>
+                <button type="button">근태</button>
+                <button type="button">포지션</button>
+                <button type="button" class="on">급여</button>
+              </div>
+            </div>
+            <div class="trend">
+              <svg viewBox="0 0 327 96" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trend-area" d="M4,48 L33,54.4 L62,57.6 L91,44 L120,22.4 L149,16 L178,40 L207,54.4 L236,57.6 L265,40 L294,25.6 L294,96 L4,96 Z"></path>
+                <path class="trend-line" d="M4,48 L33,54.4 L62,57.6 L91,44 L120,22.4 L149,16 L178,40 L207,54.4 L236,57.6 L265,40 L294,25.6"></path>
+              </svg>
+            </div>
+            <div class="trend-axis">
+              <span class="lab" style="left:4px">7월</span>
+              <span class="lab" style="left:91px">10월</span>
+              <span class="lab" style="left:178px">1월</span>
+              <span class="lab" style="left:265px">4월</span>
+              <span class="tick" style="left:33px"></span><span class="tick" style="left:62px"></span>
+              <span class="tick" style="left:120px"></span><span class="tick" style="left:149px"></span>
+              <span class="tick" style="left:207px"></span><span class="tick" style="left:236px"></span>
+              <span class="tick" style="left:294px"></span><span class="tick" style="left:323px"></span>
+            </div>
+            <div class="sum dash aftertrend">–</div>
+            <div class="emptywrap listgap">
+              <div class="empty-t">이 달은 근무가 없어요</div>
+              <div class="empty-b">근무가 잡히면 여기 숫자가 서요</div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">WORKER / EMPTY</div>
+          <div class="cap-name">「내역 보기」도 같이 사라진다</div>
+          <p class="cap-body">합계만 <code>–</code>로 남고 예상치 안내·보조 줄·「내역 보기」가 사라진다 — 「내역 보기」가 이 탭의 목록 자리를 쓰고 있어서 빈 상태가 그 자리에 들어온다(stats.md 「빈 상태」). 제목·아래 줄 문구가 관리자 쪽(「이 달은 아직 근무표가 없어요」)과 다르다 — stats.md 문안표가 역할별로 따로 못 박았다.</p>
+          <p class="cap-body" style="margin-top:8px">그래프는 04절과 같은 곡선을 그대로 옮겼다 — 그림 조각은 관리자·근무자가 같은 것이라서다. 6월(보는 달)만 점이 없고 선이 5월에서 끊긴다.</p>
         </figcaption>
       </figure>
 

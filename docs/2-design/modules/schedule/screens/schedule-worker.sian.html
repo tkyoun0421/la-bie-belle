@@ -27,7 +27,8 @@
 
   「제안」으로 그린 것 — 결정되면 문서에서 표시를 떼고 여기도 같이 고친다.
   · 아코디언 기본 펼침. 전부 접힘으로 두고 06·07은 한 날을 누른 뒤를 그렸다
-    · 13/사유 글자 상한 100자. 카운터를 「98 / 100」으로 고정해 거의 찬 상태를 보였다
+    · 13/사유 글자 상한 100자. 글자 수를 「98 / 100」으로 고정해 거의 찬 상태를 보였다.
+      보이는 시점과 자리는 components.md의 Input이 정본이다
 
   인증 상태·현황 줄의 글자 크기·색과, 내 줄에서 「나」·인증 상태의 자리 순서는 이번
   개정으로 문서에 올라가 표시를 뗐다 — 인증 상태는 fg.neutral-muted · text-xs, 현황
@@ -622,19 +623,22 @@ body.view-scene .stage.scene-live { display: block; }
 
 /* 사유 입력 — components.md Input */
 .field { margin-top: 14px; }
-.field .lab { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); margin-bottom: 6px; }
+.field .lab { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); margin-bottom: 6px; }
 .field .box {
   border-radius: var(--r-md); background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
   padding: 12px; min-height: 92px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral);
 }
 .field .box.ph { color: var(--fg-neutral-subtle); }
-.field .cnt { margin-top: 6px; text-align: right; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+/* 글자 수 — components.md의 Input. 상한까지 서른 자가 남았을 때 라벨 줄 오른쪽에 나타난다 */
+.field .lab .cnt { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
-/* 13/실패와 경합 — 오류 블록. components.md 알림 블록의 오류 계열(bg.critical-weak)을 글자만 fg.critical로 단순화했다(아이콘 없음) */
+/* 13/실패와 경합 — 오류 블록. components.md 알림 블록의 오류 계열이다. 배경 bg.critical-weak, 글자 fg.neutral, 뜻은 아이콘(fg.critical)이 나른다 */
 .errbox {
-  margin-top: 14px; border-radius: var(--r-lg); background: var(--bg-critical-weak); color: var(--fg-critical);
+  margin-top: 14px; border-radius: var(--r-lg); background: var(--bg-critical-weak); color: var(--fg-neutral);
   padding: 12px 14px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
+  display: flex; gap: 10px;
 }
+.errbox .bi { flex: 0 0 auto; margin-top: 2px; color: var(--fg-critical); }
 
 /* 잠금 화면과 푸시 — OS 크롬이다. 우리 컴포넌트가 아니고 팔레트만 빌렸다 */
 .lock { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
@@ -2217,11 +2221,10 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="sh-title num">근무 취소 · 10월 10일(토) 안내</div>
             <div class="sh-sub">관리자가 승인해야 취소돼요. 승인 전까지는 예정대로 근무예요</div>
             <div class="field">
-              <div class="lab">사유 (필수)</div>
+              <div class="lab">사유 (필수)<span class="cnt num">98 / 100</span></div>
               <div class="box">그날 오전 아홉 시부터 지방에서 할머니 팔순 잔치가 있어서 낮 근무 시간에 맞춰 서울로 돌아오기 어려울 것 같아요. 아침 일찍 출발해도 고속도로가 막히면 저녁 무렵에나 도착할 것 같습니다. 미리 말씀드리지 못해서 정말 죄송하고, 대신 다음 주 평일 근무는 언제든 바꿔드릴 수 있어요. 오늘 아침에서야 정확한 시간을 통보받아서 급하게 요청드립니다. 확인하시는 대로 알려주시면 감사하겠고, 필요하시면 전화로 다시 말씀드리겠습니다. 번거롭게 해드려서 죄송합니다.</div>
-              <div class="cnt num">98 / 100</div>
             </div>
-            <div class="errbox">보내지 못했어요. 다시 시도해주세요</div>
+            <div class="errbox"><span class="bi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span><span>보내지 못했어요. 다시 시도해주세요</span></div>
             <div class="rowbtns"><button class="btn" type="button">취소 요청 보내기</button></div>
           </div>
         </div>
@@ -2229,8 +2232,8 @@ body.view-scene .stage.scene-live { display: block; }
           <div class="cap-key">13 / CANCEL · FAIL</div>
           <div class="cap-name">근무 취소 보내기 실패</div>
           <p class="cap-body">CTA 위에 <strong>오류 블록</strong>이 선다 — 「보내지 못했어요. 다시 시도해주세요」. 입력한 사유는 지우지 않고 그대로 남는다. 면·글자는 <code>bg.critical-weak</code> · <code>fg.critical</code>이다(tokens.md 값) — pages/login.md가 쓰는 알림 블록 계열을 따랐다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>components.md 알림 블록의 오류 정의(글자 fg.neutral + 아이콘 fg.critical)와는 다르다.</strong> 이 상자는 아이콘 없이 글자 자체에 fg.critical을 얹었다 — 짧은 한 줄 오류라 아이콘 없이도 읽힌다고 봤지만, 공용 알림 블록과 다른 배합이라 검수에서 맞출지 정한다.</p>
-          <p class="cap-body" style="margin-top:8px">입력 아래 <strong>「98 / 100」 카운터 한 줄</strong>이 사유 글자 상한 100자를 보여준다 — 상한이 거의 찬 상태를 보이려 고른 숫자고, 위 예시 글의 실제 글자 수를 센 것은 아니다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>components.md 알림 블록의 오류 계열 그대로다</strong> — 배경 <code>bg.critical-weak</code>, 글자 <code>fg.neutral</code>, 아이콘 <code>fg.critical</code>. 뜻은 아이콘이 나르고 글자는 읽히는 데만 집중한다.</p>
+          <p class="cap-body" style="margin-top:8px">라벨 줄 오른쪽의 <strong>「98 / 100」</strong>이 사유 글자 상한 100자를 보여준다. 이 숫자는 상한까지 서른 자가 남았을 때부터 나타난다(<code>components.md</code>의 Input) — 여기서는 거의 찬 상태를 보이려 고른 값이고, 위 예시 글의 실제 글자 수를 센 것은 아니다.</p>
         </figcaption>
       </figure>
 
