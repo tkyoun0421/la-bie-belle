@@ -5,6 +5,9 @@ sources:
   - ../../2-design/system/screens/stats.md#내-근태-날짜-목록
   - ../../2-design/system/screens/stats.md#내-포지션
   - ../../2-design/system/screens/stats.md#내-급여
+  - ../../2-design/system/screens/stats.md#근태-인증률-카드
+  - ../../2-design/design-system/components.md#요약-판
+  - ../../2-design/design-system/components.md#미니-달력
   - ../../2-design/modules/account/screens/profile.md
   - ../../2-design/modules/payroll/screens/payroll.md
   - ../../2-design/modules/attendance/README.md#att-023
@@ -22,15 +25,16 @@ sources:
 
 선행이 셋이다.
 
-- [`stats-admin`](stats-admin.md) — 차트 조각 셋과 집계 순수 함수와 화면 뼈대를 세웠다. **이 task는 그것을 가져다 쓴다**
+- [`stats-admin`](stats-admin.md) — 공용 조각 다섯과 집계 순수 함수와 화면 뼈대를 세웠다. **이 task는 그것을 가져다 쓴다**
 - [`profile-screen`](profile-screen.md) — 「나」의 「통계」 줄이 들어오는 문이다
 - [`payroll-view`](payroll-view.md) — 「내역 보기」가 여는 급여 화면이다
 
 정본에서 확인한 셋이 plan의 방향을 정한다.
 
 - **탭이 셋이고 관리자와 칸이 다르다.** 근태·포지션·급여다. 앱바·달 줄·세그먼트·그래프 넷까지는 같은 자리고 갈리는 것은 칸 이름과 칸 수와 다섯째다
+- **랭킹도 정렬 토글도 없다.** 랭킹은 한 포지션에 여럿이 설 때, 정렬은 줄이 여럿일 때 뜻이 생긴다 — 둘 다 자기 것만 보는 화면에서는 세울 자리가 아니다
 - **여기만 금액이 있다.** 관리자 통계에서 뺀 금액이 근무자 급여 탭에는 그대로 있다 — 자기 급여를 보는 것은 홀 전체 인건비를 보는 것과 다른 자리다. 예상치 안내 한 줄도 이 탭에만 선다
-- **사람별 구획이 없다.** 볼 사람이 자기 하나라 근태는 날짜 목록이, 포지션은 내가 들어간 것만 든 목록이 그 자리를 받는다
+- **사람별 카드가 없다.** 볼 사람이 자기 하나라 근태는 날짜 목록이, 포지션은 내가 들어간 것만 든 목록이 그 자리를 받는다
 
 ## 완료 조건
 
@@ -41,7 +45,8 @@ sources:
 `src/features/stats/model/`
 
 - [`stats-admin` AC-01](stats-admin.md#ac-01)의 `work-totals.ts`를 그대로 부르고 입력을 내 배정으로 좁힌다. **집계를 다시 짜지 않는다**
-- 포지션 탭은 `byPosition`에서 **내가 안 들어간 포지션을 뺀다** — 관리자 쪽이 아홉을 다 세우는 것과 반대다
+- 포지션 탭은 `byPosition`에서 **내가 안 들어간 포지션을 뺀다** — 관리자 쪽이 아홉을 다 세우는 것과 반대다. 랭킹은 안 쓴다
+- 요약 판 넷이 탭마다 다르다 — 포지션은 나온 날·1회 평균·가장 긴 날·지난달 대비고 급여는 건수·시간·1회 평균·지난달 대비다. **관리자 쪽 넷(사람 수·하루 평균)은 자기 화면에서 늘 1이라 안 쓴다**
 - 근태는 [`attendance-data` AC-06](attendance-data.md#ac-06)의 상태 함수를 내 날에 돌린다
 - 급여는 [`payroll-data`](payroll-data.md)의 금액 순수 함수를 부른다. **여기서 금액을 새로 계산하지 않는다**
 
@@ -49,7 +54,7 @@ sources:
 
 **내 근태 탭.**
 
-- 현황 줄 → 비율 띠와 범례 → 날짜 목록이다
+- 인증률 카드(도넛과 요약 판 넷) → 보조 줄 → 비율 띠와 범례 → 날짜 목록이다. 인증률은 [`stats-admin` AC-05](stats-admin.md#ac-05)의 함수를 내 것으로 좁혀 부른다
 - 줄은 날짜와 요일, 보조 정보가 포지션, 오른쪽 값이 인증 상태와 찍은 시각이다. **못 찍었으면 상태만**이다
 - **못 찍은 날도 줄로 선다.** 사유를 냈으면 결과까지 값에 붙고 그 자리를 눌러 사유 시트를 열지는 않는다
 - **색으로 안 가른다.** 「지각」이 붉지 않다. 상태 여섯의 이름은 [attendance/design.md](../../2-design/modules/attendance/design.md)가 정본이다
@@ -59,15 +64,16 @@ sources:
 
 **내 포지션 탭.**
 
-- 합계(내 시간 합) → 내가 들어간 포지션 목록이다
-- 줄의 자리와 줄 막대는 관리자 [포지션 구획](../../2-design/system/screens/stats.md#근무-포지션-구획)과 같다
+- 합계 카드(시간 합과 요약 판 넷) → 날마다 카드 → 내가 들어간 포지션 목록이다
+- **달력은 농도가 아니라 면 하나다.** 하루에 하나씩이라 셀 것이 없다 — `bg.brand-weak`로 내 근무 날을 찍는다
+- 줄은 포지션 이름과 「5일 · 45시간」이다. 관리자 [포지션 카드](../../2-design/system/screens/stats.md#근무-포지션-카드)가 블록 머리에 적는 것과 같은 꼴이고 **랭킹이 그 아래 안 붙는다**
 - 교육 배정도 들고 겸임은 앞 포지션으로 한 번만 센다 — AC-01의 함수가 이미 그렇게 센다
 
 ### AC-04
 
 **내 급여 탭.**
 
-- 합계(금액) → 예상치 안내 한 줄 → 보조 줄(건수와 시간) → 「내역 보기」 줄이다
+- 합계 카드(금액과 요약 판 넷) → 예상치 안내 한 줄 → 「내역 보기」 줄이다
 - **「내역 보기」가 [급여 조회](../../2-design/modules/payroll/screens/payroll.md)를 연다.** ListRow고 오른쪽에 화살표다
 - 그래프 값은 만 단위로 줄여 적는다 — 「130만」이다
 - **날짜별 내역을 여기 안 그린다.** 달 합계와 열두 달 모양까지고 그 뒤는 급여 화면이 든다
@@ -77,7 +83,7 @@ sources:
 **들어오는 문과 빈 상태.**
 
 - 「나」의 「통계」 줄을 누르면 `/stats`다([profile.md](../../2-design/modules/account/screens/profile.md)). 승인된 사람이면 누구나 본다
-- 빈 상태는 그달에 내 근무가 하나도 없을 때고 **세 탭이 같은 모양으로 빈다**. 합계 자리가 `–`, 보조 줄과 예상치 안내가 같이 사라진다
+- 빈 상태는 그달에 내 근무가 하나도 없을 때고 **세 탭이 같은 모양으로 빈다**. 합계 자리가 `–`, 합계 카드와 날마다 카드와 예상치 안내가 같이 사라진다
 - **급여 탭의 「내역 보기」도 사라진다.** 그 줄이 목록 자리를 쓰고 있어서 빈 상태가 그 자리에 들어온다
 - 추이 그래프는 안 빈다
 
@@ -115,6 +121,7 @@ sources:
 | AC-01 | 집계가 관리자 쪽과 다르다 | unit 위 | `pnpm test` | 같은 함수의 값 |
 | AC-02 | 못 찍은 날이 빠진다 | e2e `e2e/stats.spec.ts`(예정) | `pnpm e2e` | 줄로 서고 상태만 |
 | AC-02 | 지각이 붉다 | e2e 위 | `pnpm e2e` | 색으로 안 가른다 |
+| AC-03 | 랭킹이 붙는다 | e2e 위 | `pnpm e2e` | 줄 목록뿐이다 |
 | AC-04 | 「내역 보기」가 안 간다 | e2e 위 | `pnpm e2e` | 급여 화면이 열린다 |
 | AC-04 | 예상치 안내가 없다 | e2e 위 | `pnpm e2e` | 급여 탭에 한 줄 |
 | AC-05 | 빈 달에 「내역 보기」가 남는다 | e2e 위 | `pnpm e2e` | 빈 상태가 그 자리를 받는다 |
@@ -126,7 +133,7 @@ sources:
 ## 범위 밖
 
 - 관리자 통계 `/admin/stats` — [`stats-admin`](stats-admin.md)
-- 차트 조각 셋 — [`stats-admin` AC-05](stats-admin.md#ac-05)가 만든다
+- 공용 조각 다섯 — [`stats-admin` AC-06](stats-admin.md#ac-06)이 만든다
 - 날짜별 급여 내역과 주·연 조회 — [`payroll-view`](payroll-view.md)
 - 「나」 화면 자체 — [`profile-screen`](profile-screen.md). 이 task는 그 줄이 여는 화면까지다
 - 리허설 — 자기 것은 [`rehearsal`](rehearsal.md)의 `/me/rehearsals`가 든다
