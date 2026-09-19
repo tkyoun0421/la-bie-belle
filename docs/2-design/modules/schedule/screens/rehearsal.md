@@ -214,7 +214,7 @@
 | 못 읽음 문구 | `fg.neutral-subtle` |
 | 「다시 시도」 | [components.md](../../../design-system/components.md#button)의 Button ghost |
 
-**critical이 둘뿐이다.** 겹침 문구와 지우기다. [color.md](../../../design-system/foundation/color.md#계열-여섯)가 critical을 「오류와 되돌릴 수 없는 파괴」로 정했고 이 화면에서 그에 닿는 것은 그 둘이다. 갈래 어긋남은 오류가 아니라 앱이 규칙대로 움직인 것이라 중립으로 말한다.
+**critical이 둘뿐이다.** 겹침 문구와 지우기다. [color.md](../../../design-system/foundation/color.md#계열-일곱)가 critical을 「오류와 되돌릴 수 없는 파괴」로 정했고 이 화면에서 그에 닿는 것은 그 둘이다. 갈래 어긋남은 오류가 아니라 앱이 규칙대로 움직인 것이라 중립으로 말한다.
 
 **브랜드가 「리허설 넣기」 하나다.** 달력 칸에 브랜드를 안 쓴다 — 근무표 달력의 색 예산([color.md](../../../design-system/foundation/color.md#근무표에서-색을-쓰는-법))을 이 화면이 다시 깨지 않는다.
 

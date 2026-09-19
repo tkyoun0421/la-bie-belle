@@ -617,7 +617,7 @@
 | 합침 대상 줄 머리 | `stroke.brand-solid` 테두리 |
 | 이 날 닫기 | Button ghost |
 
-**버리는 영역만 critical이다.** [color.md](../../../design-system/foundation/color.md#계열-여섯)가 critical을 「오류와 되돌릴 수 없는 파괴」로 정했다. 자리 삭제 자체는 되돌릴 수 있지만, 끌고 있는 동안 「여기 놓으면 없어진다」를 색이 먼저 말해야 잘못 놓는 것을 막는다. 화면에 상시로 있는 색이 아니라 끄는 동안만 뜬다.
+**버리는 영역만 critical이다.** [color.md](../../../design-system/foundation/color.md#계열-일곱)가 critical을 「오류와 되돌릴 수 없는 파괴」로 정했다. 자리 삭제 자체는 되돌릴 수 있지만, 끌고 있는 동안 「여기 놓으면 없어진다」를 색이 먼저 말해야 잘못 놓는 것을 막는다. 화면에 상시로 있는 색이 아니라 끄는 동안만 뜬다.
 
 #### 날 상세 글자
 
@@ -694,7 +694,7 @@
 
 **[날 열기 모드](#날-열기-모드-짜임)의 선택 체크와 모양이 갈린다.** 그쪽은 체크 표시만 `fg.brand`고 면을 안 채운다 — 달력 칸이 선택을 이미 면(`bg.brand-weak-selected`)과 테두리로 말하고 있어 체크는 그 위 표식으로 족하다. 목록 줄에는 그런 면이 없어서 체크박스 하나가 선택 전부를 진다. 진 무게만큼 채운다.
 
-**체크와 하단 버튼이 둘 다 브랜드인 것은 절제 조항 밖이다.** [color.md](../../../design-system/foundation/color.md#계열-여섯)가 아끼라고 한 것은 한 화면이 브랜드로 여러 곳을 가리키는 자리다. 여기 둘은 한 동작의 시작과 끝이다 — 고른 것이 체크고 그 고른 것을 보내는 것이 버튼이다. 크기도 갈린다. 체크는 16px이고 버튼은 시트 폭 전체다. 누르면 고른 전원에게 요청이 나가고 받은 사람마다 도착 알림이 간다([notification/README.md](../../../modules/notification/README.md)). 시트는 닫히고 자리 카드에 대기 배지가 남는다([포지션과 자리](#포지션과-자리)).
+**체크와 하단 버튼이 둘 다 브랜드인 것은 절제 조항 밖이다.** [color.md](../../../design-system/foundation/color.md#계열-일곱)가 아끼라고 한 것은 한 화면이 브랜드로 여러 곳을 가리키는 자리다. 여기 둘은 한 동작의 시작과 끝이다 — 고른 것이 체크고 그 고른 것을 보내는 것이 버튼이다. 크기도 갈린다. 체크는 16px이고 버튼은 시트 폭 전체다. 누르면 고른 전원에게 요청이 나가고 받은 사람마다 도착 알림이 간다([notification/README.md](../../../modules/notification/README.md)). 시트는 닫히고 자리 카드에 대기 배지가 남는다([포지션과 자리](#포지션과-자리)).
 
 **보낸 요청의 상태가 줄마다 붙는다.** 같은 자리의 픽커를 다시 열면 전체 보기의 미신청 줄에 상태가 선다. 상태 셋 — 대기 중·거절함·만료됨 — 은 [schedule/README.md](../README.md#sch-017)의 것이다.
 
@@ -898,7 +898,7 @@
 
 #### 확정 뒤 달력
 
-- 앱바 제목 옆에 「확정」 배지가 선다 — [components.md](../../../design-system/components.md#badge)의 Badge positive. 확정은 잘 끝난 일이다([color.md](../../../design-system/foundation/color.md#계열-여섯))
+- 앱바 제목 옆에 「확정」 배지가 선다 — [components.md](../../../design-system/components.md#badge)의 Badge positive. 확정은 잘 끝난 일이다([color.md](../../../design-system/foundation/color.md#계열-일곱))
 - 그 아래 확정 줄 — 「10월 3일에 확정했어요 · 14명에게 알림을 보냈어요」
 - 마감 줄과 BottomCTA가 없다
 - 「날 열기」는 그대로 있다. 확정 뒤 날 열기가 허용이라서다([intent](../../../../1-plan/intent/schedule-admin.md#확정과-확정-뒤))
@@ -1246,7 +1246,7 @@
 
 **`bg.scrim`이 여전히 없다.** 시트 뒤 덮개가 다크에서 밝아지는 문제는 [excuse.md](../../attendance/screens/excuse.md#규칙과-부딪힌-자리)가 `bg.scrim` 제안으로 이미 적었다. 이 화면의 시트 전부가 같은 토큰을 기다린다. 새로 제안하지 않고 그 제안에 얹는다.
 
-**`rounded-sm`을 달력 칸에 배정했다 — 해소.** [tokens.md](../../../design-system/tokens.md#5-라운딩과-그림자)와 [spacing-shape.md](../../../design-system/foundation/spacing-shape.md#라운딩)의 표가 「아직 배정 없음」으로 두고 있던 자리에 「배지, 달력 칸」이 적혔다. 라운딩을 알약에서 내리면서 배지가 같은 값으로 들어와 같이 정리됐다.
+**`rounded-sm`을 달력 칸에 배정했다 — 해소.** [tokens.md](../../../design-system/tokens.md#5-라운딩)와 [spacing-shape.md](../../../design-system/foundation/spacing-shape.md#라운딩)의 표가 「아직 배정 없음」으로 두고 있던 자리에 「배지, 달력 칸」이 적혔다. 라운딩을 알약에서 내리면서 배지가 같은 값으로 들어와 같이 정리됐다.
 
 **최소 터치 크기 규칙이 또 걸렸다 — 닫혔다.** [spacing-shape.md](../../../design-system/foundation/spacing-shape.md#누를-수-있는-것은-44px-이상이다)에 「누를 수 있는 것은 44px 이상이다」가 섰고, 가로로 여럿이 서는 자리는 세로만 지키면 된다는 예외도 같이 섰다. 달력 칸은 가로 43픽셀에 세로 64픽셀이라 그 예외에 든다.
 

@@ -305,7 +305,7 @@ ListRow고 이름 가나다순이다.
 | 시트 합계 줄 | `fg.neutral` |
 | 「내역 보기」 화살표 | `fg.neutral-subtle` |
 
-**이 화면에 브랜드 색이 없다.** 버튼이 없고 표식도 없다. 그림이 여럿인데도 브랜드를 안 쓰는 것은 [foundation/color.md](../../design-system/foundation/color.md#차트가-색을-쓰는-법)가 정한 것이다 — 아홉 포지션 막대 중 어느 것도 누르는 자리가 아니다.
+**이 화면에 브랜드 색이 없다.** 버튼이 없고 표식도 없다. 그림이 여럿인데도 브랜드를 안 쓰는 것은 [foundation/color.md](../../design-system/foundation/color.md#그림이-색을-쓰는-법)가 정한 것이다 — 아홉 포지션 막대 중 어느 것도 누르는 자리가 아니다.
 
 **positive·warning·critical도 안 쓴다.** 지각과 결근에 색을 붙이지 않는 것이 이 화면의 규칙이라 차트에도 그대로 간다. 그림이 색을 갈라도 그 색들은 뜻이 없는 계열이다.
 

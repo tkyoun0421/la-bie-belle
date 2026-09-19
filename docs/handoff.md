@@ -123,7 +123,7 @@ plan을 쓰며 가른 경계 셋이다.
 - **대시보드 넷이 두꺼워지고 아래 셋이 붙었다.** 이번 주 근무가 월~일 일곱 칸 스트립이 되고 예상 급여에 지난주 대비가 붙었다. 넷 아래에 이번 달 누적·다음 근무·[미니 달력](2-design/design-system/components.md#미니-달력)이 이어진다 — 근무가 없는 날에는 「다음 근무」가 빠진다. 띠 아래 한 줄이 이미 같은 말을 한다
 - **관리자 홈에 셋이 붙었다** — 오늘 현황과 진행 띠, 빈 자리 카드, 이번 달 근무표 미니뷰. 빈 자리 경고가 타일 요약 줄의 승격에서 타일 밖 카드로 나왔다. 오늘 현황의 띠는 몫이 **둘**이고 지각을 안 가른다 — 그 줄이 답하는 것은 「다 왔나」 하나다
 - **차트 전용 색 계열 셋을 새로 열었다**([tokens.md](2-design/design-system/tokens.md)의 `chart-a`·`chart-b`·`chart-c`). 색조가 브랜드(57)에서 멀고 채도가 브랜드 최대치 근처에서 막혀 통계 화면이 브랜드 버튼보다 크게 말하지 못한다. **좋고 나쁨을 안 싣는다** — [stats.md](2-design/system/screens/stats.md)의 「색으로 안 가른다」가 지키던 축(화면이 사람을 나무라지 않기)이 그대로 산다
-- **차트는 브랜드 색 예산 밖이다**([foundation/color.md](2-design/design-system/foundation/color.md#차트가-색을-쓰는-법)). 조각 넷의 정본은 [components.md의 차트 넷](2-design/design-system/components.md#차트-넷)이고 **등장 모션이 없다** — 막대가 자라거나 선이 그려지는 연출을 문서가 막았다
+- **차트는 브랜드 색 예산 밖이다**([foundation/color.md](2-design/design-system/foundation/color.md#그림이-색을-쓰는-법)). 조각 넷의 정본은 [components.md의 차트 넷](2-design/design-system/components.md#차트-넷)이고 **등장 모션이 없다** — 막대가 자라거나 선이 그려지는 연출을 문서가 막았다
 - **미니 달력은 다섯 줄이나 여섯 줄이다.** 처음 「7×5」로 썼는데 1일이 늦은 요일이고 31일까지인 달은 마지막 주가 사라진다. 아래 내용이 24px 밀리는 쪽을 골랐다
 
 미정 다섯이다.

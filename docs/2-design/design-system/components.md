@@ -186,12 +186,13 @@ BottomCTA 안에 버튼을 둘 두지 않는다. 두 개가 필요해 보이면 
 | 자리 | 토큰 |
 | --- | --- |
 | 배경 | `bg.neutral` |
-| 테두리 | `stroke.surface` |
-| 그림자 | `shadow-card` |
+| 테두리 | `stroke.neutral` |
 | 제목 | `fg.neutral` |
 | 본문 | `fg.neutral-muted` |
 
-모양은 `rounded-xl`이다. 테두리와 그림자를 항상 같이 건다. 라이트에서는 그림자만, 다크에서는 테두리만 보인다.
+모양은 `rounded-xl`이고 안쪽 여백은 `p-5`다. 그림자는 안 건다.
+
+**카드는 강조할 때만이다.** 기본은 화면 폭에 붙는 전폭 섹션이고, 한 화면에 카드는 하나나 둘까지다. 근거는 [spacing-shape.md](foundation/spacing-shape.md#카드는-강조할-때만이다)에 있다.
 
 카드 안에서 한 겹 더 눌린 면이 필요하면 `bg.neutral-weak`를 깐다. 카드를 또 얹지 않는다.
 
@@ -205,7 +206,7 @@ BottomCTA 안에 버튼을 둘 두지 않는다. 두 개가 필요해 보이면 
 | brand | `bg.brand-weak` | `fg.brand` |
 | positive | `bg.positive-weak` | `fg.positive` |
 | critical | `bg.critical-weak` | `fg.critical` |
-| informative | `bg.informative-weak` | `fg.informative` |
+| sky | `bg.sky-weak` | `fg.sky` |
 | warning | `bg.warning-weak` | `fg.neutral` |
 
 모양은 `rounded-sm`(8px), 글자는 `text-xs font-medium`이다. 버튼보다 한 단계 아래인 것은 높이가 24px이라 14px을 주면 다시 알약이 되기 때문이다.
@@ -308,7 +309,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 | 종류 | 배경 | 글자 | 아이콘 |
 | --- | --- | --- | --- |
-| 안내 | `bg.informative-weak` | `fg.neutral` | `fg.informative` |
+| 안내 | `bg.sky-weak` | `fg.neutral` | `fg.sky` |
 | 성공 | `bg.positive-weak` | `fg.neutral` | `fg.positive` |
 | 경고 | `bg.warning-weak` | `fg.neutral` | `warning-500` |
 | 오류 | `bg.critical-weak` | `fg.neutral` | `fg.critical` |
@@ -324,11 +325,11 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 | 배경 | `bg.neutral-solid-soft` |
 | 글자 | `fg.neutral-contrast` |
 | 성공 아이콘 | `fg.positive-contrast` |
-| 안내 아이콘 | `fg.informative-contrast` |
+| 안내 아이콘 | `fg.sky-contrast` |
 
 반전 면이라 라이트에서는 어둡고 다크에서는 밝다. 화면 위에 잠깐 뜨는 것이라 배경과 확실히 갈려야 한다. `bg.neutral-solid`보다 한 단계 무른 면을 쓰는 것은 그것이 달력의 오늘 원과 같은 토큰이라 같은 진하기로 뜨면 화면에 앉은 것으로 읽히기 때문이다.
 
-**모양은 `rounded-lg`(14px)다.** 내용 폭이고 `shadow-card`로 떠 있다. 좌우로 늘리지 않는다 — 전폭 바에 짧은 문장이 들어가면 Button과 구분이 안 된다. 좌우 24px 여백은 남긴다.
+**모양은 `rounded-lg`(14px)다.** 내용 폭이다. 반전 면이라 배경과 명도가 크게 갈려서 테두리도 그림자도 없이 떠 보인다. 좌우로 늘리지 않는다 — 전폭 바에 짧은 문장이 들어가면 Button과 구분이 안 된다. 좌우 24px 여백은 남긴다.
 
 **한 줄이다.** 줄을 안 바꾼다. 두 줄이 되면 떠 있는 표식이 아니라 덩어리로 읽힌다. 한 줄에 안 들어가는 말은 토스트가 할 말이 아니다 — 길면 문장을 줄이고, 줄일 수 없으면 [알림 블록](#알림-블록)이나 시트로 옮긴다. 문안 길이 기준은 [writing.md](writing.md#토스트)에 있다.
 
@@ -372,7 +373,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 앱을 열자마자 바텀시트로 화면을 덮지 않는다.
 
-**바텀시트**는 화면 폭에 붙고 `shadow-sheet`로 뜬다. 카드 그림자를 그대로 쓰지 않는 것은 시트가 화면 절반을 덮는 면이라 그림자가 위로 져야 해서다. 다크에서는 그림자 대신 위쪽 1px 선이 남는다 — 값은 [tokens.md](tokens.md#5-라운딩과-그림자)에 있다. 올라오는 시간은 `--d-slow`다.
+**바텀시트**는 화면 폭에 붙고 위쪽 한 변에만 `stroke.neutral` 1px 선을 둔다. 나머지 세 변은 화면 밖이라 선을 두를 자리가 없다. 뒤가 어두워지는 스크림이 시트를 띄우는 몫을 하므로 그림자가 없어도 앞뒤가 갈린다. 올라오는 시간은 `--d-slow`다.
 
 **가운데 Dialog**는 시트를 쌓지 않고 따로 뜨는 확인이다. 근무 취소 승인([approvals.md](../system/screens/approvals.md))과 시급 되돌리기([wages.md](../modules/payroll/screens/wages.md))가 여기다. 시트 위에서 한 번 더 묻는 자리라 시트와 다른 모양이어야 한다.
 
@@ -380,7 +381,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 | --- | --- |
 | 좌우 여백 | 화면 양옆 32px — 시트보다 좁아 시트가 아니라는 것이 모양으로 읽힌다 |
 | 안쪽 여백 | 24px |
-| 그림자 | `shadow-pop`, 테두리 `stroke.surface` |
+| 테두리 | `stroke.neutral` |
 | 제목 | `text-lg font-semibold` |
 | 본문 | `text-sm`, 제목 아래 8px |
 | 버튼 | 본문 아래 20px, 가로로 둘, 같은 폭, 사이 12px |
@@ -394,8 +395,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 | 자리 | 토큰 |
 | --- | --- |
 | 면 | `bg.neutral` |
-| 테두리 | `stroke.surface` |
-| 그림자 | `shadow-pop` |
+| 테두리 | `stroke.neutral` |
 | 항목 글자 | `fg.neutral` |
 | 항목 누를 때 | `bg.neutral-weak-pressed` |
 | 되돌릴 수 없는 항목 글자 | `fg.critical` |
@@ -412,6 +412,8 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 빨간 글자는 [Button](#button)의 destructive와 같은 기준이다. 되돌릴 길이 없을 때만이다. 차단은 빨갛고 퇴사 처리는 아니다 — 퇴사한 사람은 같은 화면 아래 퇴사 구획에 남아 되돌릴 수 있다([pages/members.md](../modules/account/screens/members.md#퇴사-구획)).
 
 덮개가 없다. 밖을 누르면 닫히고 등장 모션도 없다 — 누른 손가락 바로 아래 뜨는 것이라 움직임이 없어도 어디서 왔는지 안다.
+
+떠 있는 면인데 그림자가 없는 유일한 자리다. 시트와 Dialog는 뒤가 어두워지는 스크림이 앞뒤를 가르는데 팝오버는 덮개가 없어서 테두리 1px만 남는다. 흰 면 위에 흰 팝오버가 서는 화면에서 이 선이 모자라면 면을 `bg.neutral-weak`로 내린다 — 실제 화면을 보고 정한다.
 
 ## 근무표 날짜 칸
 
@@ -488,7 +490,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 ## 차트 넷
 
-숫자를 그림으로 눕히는 조각 넷이다. 색은 [foundation/color.md](foundation/color.md#차트가-색을-쓰는-법)가 소유한다 — 브랜드를 안 쓰고 `chart-a`·`chart-b`·`chart-c` 셋으로만 그린다.
+숫자를 그림으로 눕히는 조각 넷이다. 색은 [foundation/color.md](foundation/color.md#그림이-색을-쓰는-법)가 소유한다 — 첫째 몫이 브랜드고, 몫이 갈리면 `sky`와 `mint`가 이어받고, 작은 몫은 회색이다.
 
 넷이 공유하는 규칙이다.
 
@@ -506,9 +508,9 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 | 자리 | 토큰·값 |
 | --- | --- |
-| 선 | `stroke.chart-a`, 2px |
-| 선 아래 면 | `bg.chart-a-weak` |
-| 점 — 보는 달 | `bg.chart-a`, 6px 원, `bg.neutral` 2px 테두리 |
+| 선 | `stroke.brand-solid`, 2px |
+| 선 아래 면 | `bg.brand-weak` |
+| 점 — 보는 달 | `bg.brand-solid`, 6px 원, `bg.neutral` 2px 테두리 |
 | 점 — 나머지 달 | 없다 |
 | 가로축 글자 | `fg.neutral-subtle`, `text-xs` |
 | 가로축 눈금 — 글자 없는 달 | `bg.neutral-weak`, 너비 1px 세로 4px |
@@ -528,7 +530,7 @@ ListRow의 값 아래에 깔리는 가로 막대다. 같은 종류끼리 크기�
 | 자리 | 토큰·값 |
 | --- | --- |
 | 트랙 | 없다 — 배경 그대로 |
-| 면 | `bg.chart-a` |
+| 면 | `bg.brand-solid` |
 | 높이 | 4px |
 | 라운딩 | `rounded-full` |
 | 자리 | 줄 아래쪽, 줄 폭 전체 |
@@ -543,15 +545,17 @@ ListRow의 값 아래에 깔리는 가로 막대다. 같은 종류끼리 크기�
 
 | 자리 | 토큰·값 |
 | --- | --- |
-| 첫째 몫 | `bg.chart-a` |
-| 둘째 몫 | `bg.chart-b` |
-| 셋째 몫 | `bg.chart-c` |
+| 첫째 몫 | `bg.brand-solid` |
+| 둘째 몫 | `bg.sky` |
+| 셋째 몫 | `bg.mint` |
 | 높이 | 8px |
 | 라운딩 | `rounded-full`, 양 끝만 |
 | 몫 사이 | 2px 틈 — `bg.neutral` |
 | 범례 | 띠 아래, `text-xs`, 색 점 4px과 이름과 수 |
 
-**색이 갈리는 유일한 조각이다.** 나머지 셋은 `chart-a` 하나로 끝난다 — 한 그림 안에 다른 종류가 섞이는 자리가 지금 여기뿐이다.
+**색이 갈리는 유일한 조각이다.** 나머지 셋은 브랜드 하나로 끝난다 — 한 그림 안에 다른 종류가 섞이는 자리가 지금 여기뿐이다.
+
+셋째 몫을 `mint` 대신 회색으로 둘지가 안 정해졌다. 근태에서 셋째가 결근이라 「작은 몫은 회색」 규칙에 걸리는데, 결근이 많은 달에는 작은 몫이 아니게 된다. [통계 화면](../system/screens/stats.md)을 다시 그리며 정한다([ADR-012](../adr/ADR-012-blue-brand-and-looser-density.md)).
 
 **범례를 띠 안에 안 넣는다.** 몫이 작으면 글자가 안 들어가고, 들어가도 면 색 위라 대비가 몫마다 달라진다.
 
@@ -569,8 +573,8 @@ ListRow의 값 아래에 깔리는 가로 막대다. 같은 종류끼리 크기�
 | 요일 머리 | `fg.neutral-subtle`, `text-xs` |
 | 날짜 숫자 | `fg.neutral-subtle`, `text-xs` |
 | 오늘 | `bg.neutral-solid` 원, 글자 `fg.neutral-contrast` |
-| 표식 — 근무자 | `bg.chart-a` 4px 점, 숫자 아래 |
-| 표식 — 관리자 | 칸 배경이 `bg.chart-a-weak`에서 `bg.chart-a`로 진해진다 |
+| 표식 — 근무자 | `bg.brand-solid` 4px 점, 숫자 아래 |
+| 표식 — 관리자 | 칸 배경이 `bg.brand-weak`에서 `bg.brand-solid`로 진해진다 |
 | 이 달 밖 칸 | 빈칸 |
 
 **주는 월요일에 시작한다.** 큰 달력과 같다([schedule-admin.md](../modules/schedule/screens/schedule-admin.md#월-달력-짜임)).

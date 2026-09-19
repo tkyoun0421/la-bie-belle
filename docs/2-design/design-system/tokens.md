@@ -1,6 +1,6 @@
 # 토큰
 
-**이 파일이 값의 유일한 정본이다.** hex와 oklch, 픽셀 수치, 밀리초, 그림자 문자열, 대비비, 폰트 굵기 숫자는 전부 여기에만 적는다. 다른 디자인 시스템 문서는 토큰 이름으로만 말하고 값을 옮겨 적지 않는다.
+**이 파일이 값의 유일한 정본이다.** hex와 oklch, 픽셀 수치, 밀리초, 대비비, 폰트 굵기 숫자는 전부 여기에만 적는다. 다른 디자인 시스템 문서는 토큰 이름으로만 말하고 값을 옮겨 적지 않는다.
 
 이 파일은 값과 검증 결과만 담는다. 규칙과 근거가 어느 문서에 있는지는 [README.md](README.md)가 안내한다.
 
@@ -162,7 +162,7 @@ hue 27, chroma 최대 0.145.
 
 **`informative`도 `sky`가 대신한다.** hue 248이라 브랜드 266과 18도 차이여서, 안내 면과 주요 버튼이 한 화면에 서면 같은 것으로 읽혔다. 근거는 [ADR-012](../adr/ADR-012-blue-brand-and-looser-density.md)에 있다.
 
-**positive·warning·critical의 hue를 그림에 안 빌린다.** 그 셋은 좋고 나쁨을 말하는 색이라 숫자에 평가가 실린다. 근거는 [foundation/color.md](foundation/color.md#차트가-색을-쓰는-법)에 있다.
+**positive·warning·critical의 hue를 그림에 안 빌린다.** 그 셋은 좋고 나쁨을 말하는 색이라 숫자에 평가가 실린다. 근거는 [foundation/color.md](foundation/color.md#그림이-색을-쓰는-법)에 있다.
 
 ---
 
@@ -207,7 +207,7 @@ hue 27, chroma 최대 0.145.
 
 `bg.brand-solid`가 `brand-700`이다. 다른 계열이 `-800`을 꽉 찬 면으로 쓰는 것과 갈리는데, 파랑은 `-800`(`#1D40CF`)이 남색에 가까워져 레퍼런스에서 받은 색과 멀어진다. `-700`이 그 색이고 흰 글자 대비도 5.27로 선다. 눌린 상태가 `-800`을 받아 한 단계씩 밀렸다.
 
-`bg.neutral-muted`는 그림에서 값이 작거나 강조할 것이 아닌 몫을 칠하는 면이다. 막대와 띠가 쓴다 — 근거는 [foundation/color.md](foundation/color.md#차트가-색을-쓰는-법)에 있다.
+`bg.neutral-muted`는 그림에서 값이 작거나 강조할 것이 아닌 몫을 칠하는 면이다. 막대와 띠가 쓴다 — 근거는 [foundation/color.md](foundation/color.md#그림이-색을-쓰는-법)에 있다.
 
 `bg.brand-muted`는 옅은 브랜드 면이 중립 면 위에 떠야 하는 자리를 위한 것이다. `bg.brand-weak`는 `brand-100`이라 라이트에서 명도 0.965인데 `bg.neutral-weak`도 0.965다 — 겹쳐 놓으면 두 면이 갈리지 않는다. `brand-300`은 0.845로 0.120이 갈린다.
 
@@ -247,9 +247,8 @@ hue 27, chroma 최대 0.145.
 | `stroke.brand-solid` | brand-700 | `#2F5CF6` | `#628DFC` | `border-stroke-brand-solid` |
 | `stroke.sky` | sky-600 | `#268BE3` | `#117FD6` | `border-stroke-sky` |
 | `stroke.mint` | mint-600 | `#139D8E` | `#108F81` | `border-stroke-mint` |
-| `stroke.surface` | — | `transparent` | neutral-200 | `border-stroke-surface` |
 
-`stroke.surface`는 새 색이 아니다. 라이트에서 그림자로 면을 띄우고 다크에서 선으로 나누는 규칙을 클래스 한 벌로 굴리려고 둔 것이라 라이트에서는 투명이고 다크에서 `neutral-200`을 가리킨다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#그림자와-면-나누기)에 있다. 라이트 칸이 리터럴이고 다크 칸이 팔레트 단계 이름인 행이라 위의 「팔레트 칸이 `—`인 행」 규칙이 처음 쓰인 자리다.
+면을 나누는 선은 `stroke.neutral` 하나다. 라이트와 다크에서 같은 토큰을 쓴다 — 그림자를 안 쓰기로 하면서 테마마다 다른 방식으로 면을 나눌 이유가 없어졌다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#면-나누기)에 있다.
 
 ### 팔레트를 직접 쓰는 유일한 자리
 
@@ -334,33 +333,23 @@ Tailwind의 `--spacing` 기본값이 `0.25rem`이라 유틸 숫자에 4를 곱�
 
 ---
 
-## 5. 라운딩과 그림자
+## 5. 라운딩
 
 | 유틸 | 값 | 쓰는 자리 |
 | --- | --- | --- |
 | `rounded-none` | 0 | 화면 폭에 붙는 면 |
-| `rounded-xs` | 4px | 아직 배정 없음 |
-| `rounded-sm` | 8px | 배지, 달력 칸 |
+| `rounded-xs` | 4px | 미니 달력 칸 |
+| `rounded-sm` | 8px | 배지, 근무표 날짜 칸 |
 | `rounded-md` | 12px | 입력 |
 | `rounded-lg` | 14px | 버튼, 세그먼트, 토스트, 작은 카드, 다이얼로그 |
-| `rounded-xl` | 20px | 카드 |
+| `rounded-xl` | 20px | 강조 카드 |
 | `rounded-full` | 9999px | 원과 트랙 |
 
 `rounded-full`은 원을 그리는 자리에만 남는다 — 사진과 이니셜 원, 안 읽음 점, 시트 손잡이, 하루 띠의 트랙과 채움, 스위치, 그리고 글자 없이 아이콘만 든 정사각형 버튼. 가로세로가 같거나 높이가 몇 픽셀인 조각이라 값이 바뀌면 모양이 깨진다.
 
 누를 수 있는 것은 `rounded-lg`다. 알약을 버린 것은 버튼 높이의 절반이 곡률이라 48px 버튼이 좌우 반원이 되고, 한 화면에 알약이 여럿 서면 전부 둥글게 읽히기 때문이다. 14px은 입력(12px)보다 크고 카드(20px)보다 작아서 「면 → 누를 것 → 적을 것」 위계가 모서리만으로 읽힌다. 배지는 높이가 24px이라 14px을 주면 다시 알약이 돼서 한 단계 아래인 8px이다.
 
-그림자는 셋이다. 면이 화면에서 얼마나 떨어져 있느냐로 갈린다.
-
-| 유틸 | 라이트 | 다크 |
-| --- | --- | --- |
-| `shadow-card` | `0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4)` | `none` |
-| `shadow-pop` | `0 1px 2px rgba(28,25,22,.05), 0 14px 30px -18px rgba(28,25,22,.5)` | `none` |
-| `shadow-sheet` | `0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5)` | `0 -1px 0 var(--stroke-neutral)` |
-
-`shadow-card`는 화면에 앉은 면이다. `shadow-pop`은 화면 위에 뜬 면 — 더보기 팝오버와 가운데 Dialog — 이라 더 멀리, 더 진하게 진다. `shadow-sheet`는 아래에서 올라온 바텀시트라 위로 진다.
-
-다크에서는 그림자가 사라지고 `border-stroke-surface`가 선을 그린다. 시트만 위쪽 1px 선을 그림자 값 안에 품고 있다 — 시트는 위쪽 한 변만 화면과 닿아서 테두리를 네 변에 두를 이유가 없다. 클래스는 양쪽에서 같다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#그림자와-면-나누기)에 있다.
+그림자 토큰은 없다. 면은 여백과 가는 선으로 나눈다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#그림자를-안-쓰는-이유)에 있다.
 
 ---
 
@@ -484,11 +473,11 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 
 `src/app/globals.css`는 이 파일에서 만든다. `pnpm tokens:css`가 앞 절의 표를 읽어 CSS 한 벌을 새로 쓴다. globals.css를 손으로 고치지 않는다. 다음 실행이 덮는다.
 
-앞 절 표에서 나오는 것은 여기 사본을 두지 않는다. 팔레트도 역할 토큰도 타이포 스케일도 라운딩도 그림자도 모션도 바깥 값도 자기 절이 정본이고, 같은 값을 여기 옮겨 적으면 두 곳이 언젠가 어긋난다.
+앞 절 표에서 나오는 것은 여기 사본을 두지 않는다. 팔레트도 역할 토큰도 타이포 스케일도 라운딩도 모션도 바깥 값도 자기 절이 정본이고, 같은 값을 여기 옮겨 적으면 두 곳이 언젠가 어긋난다.
 
 그래서 이 절에 남은 것은 아래 넷뿐이다. 표로 담을 수 없는 뼈대라 이 절이 그것들의 유일한 정본이고, 코드펜스 안을 고치면 다음 생성이 그대로 옮겨 담는다.
 
-블록 선택자와 `color-scheme`은 여기 없다. `:root`와 `@media (prefers-color-scheme: dark)`와 `:root:not([data-theme="light"])`와 `[data-theme="dark"]`는 생성기가 세운다. 면을 띄우는 `--surface-shadow`·`--surface-shadow-pop`·`--surface-shadow-sheet`와 `--surface-stroke`도 없다. 값은 2절과 5절 표에서 온다 — 팔레트 칸이 `—`인 행은 라이트·다크 칸이 곧 값이라 생성기가 따로 아는 값이 없다.
+블록 선택자와 `color-scheme`은 여기 없다. `:root`와 `@media (prefers-color-scheme: dark)`와 `:root:not([data-theme="light"])`와 `[data-theme="dark"]`는 생성기가 세운다. 팔레트 칸이 `—`인 역할 토큰이 푸는 `--surface-*` 변수들도 없다 — 그 행은 라이트·다크 칸이 곧 값이라 생성기가 2절 표에서 그대로 읽는다.
 
 `@theme inline`을 쓰는 이유는 Tailwind 4의 동작 때문이다. 그냥 `@theme`은 값을 `:root`에서 한 번 굳혀버려서, 다크에서 팔레트가 바뀌어도 유틸이 옛 값을 계속 가리킨다. `inline`은 유틸에 `var()`를 그대로 심어 요소 자리에서 값을 풀게 한다.
 
@@ -523,7 +512,7 @@ Tailwind가 기본으로 들고 오는 것 중 안 쓰는 것을 지우고 서�
 
 펜스 둘이고 순서가 곧 자리다. 첫 펜스는 `@theme` 블록 끝에, 둘째 펜스는 `@theme inline` 블록 머리에 들어간다.
 
-무엇을 왜 지웠는지는 [3절](#3-타이포그래피)과 [5절](#5-라운딩과-그림자)에 있다. 크기는 `text-3xl`까지, 굵기는 넷, 라운딩은 `rounded-xl`까지가 전부다.
+무엇을 왜 지웠는지는 [3절](#3-타이포그래피)과 [5절](#5-라운딩)에 있다. 크기는 `text-3xl`까지, 굵기는 넷, 라운딩은 `rounded-xl`까지가 전부다.
 
 ```css
   --text-4xl: initial;
@@ -556,10 +545,6 @@ Tailwind가 기본으로 들고 오는 것 중 안 쓰는 것을 지우고 서�
   --font-sans:
     "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui,
     "Apple SD Gothic Neo", sans-serif;
-
-  --shadow-card: var(--surface-shadow);
-  --shadow-pop: var(--surface-shadow-pop);
-  --shadow-sheet: var(--surface-shadow-sheet);
 ```
 
 `bg-bg-neutral`처럼 접두사가 겹쳐 보이는 것은 알고 둔 것이다. 역할 토큰 이름이 `bg.neutral`이고 Tailwind 유틸 접두사도 `bg-`라서다. 이름을 하나로 유지해야 위의 표에서 찾은 것을 그대로 옮겨 적을 수 있다.
@@ -695,7 +680,7 @@ Wanted Sans는 Wanted Lab이 만들었고 [SIL Open Font License 1.1](https://sc
 
 **뛰는 점이 커지는 배율.** 5절의 스케일 값 둘은 눌림 0.97과 등장 0.9라 커지는 쪽이 없다. 시안은 1.5로 그렸다. 6px 점이라 실제 화면을 보고 정한다.
 
-**스위치 손잡이의 그림자.** 5절의 셋은 다 면이 화면에서 뜨는 그림자라 20px 손잡이에 쓰기엔 크다. 시안이 `0 1px 2px rgba(0,0,0,.2)`로 그렸다. 실제 화면에서 손잡이가 끔 트랙 위에서 구분되는지 보고 넷째 값으로 올릴지, 테두리로 바꿀지 정한다.
+**스위치 손잡이를 트랙에서 떼는 방법.** 시안이 `0 1px 2px rgba(0,0,0,.2)`짜리 그림자로 그렸는데 그림자를 안 쓰기로 했다. 끔 상태에서 흰 손잡이가 회색 트랙 위에서 구분되는지 실제 화면으로 보고 테두리를 두를지 정한다.
 
 **바텀시트 위의 손잡이.** 시트 맨 위에 짧은 가로 막대를 둘지가 안 정해졌다. 아이폰에서 끌어내려 닫는 것이 되는 시트라는 표시인데, 우리 시트는 버튼으로 닫는 자리라 표시만 있고 동작이 없으면 거짓말이 된다. 끌어내려 닫는 것을 붙일지와 같이 정한다.
 

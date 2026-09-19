@@ -29,7 +29,6 @@ const TYPOGRAPHY_HEADER = [
   "용도",
 ];
 const RADIUS_HEADER = ["유틸", "값", "쓰는 자리"];
-const SHADOW_HEADER = ["유틸", "라이트", "다크"];
 const DURATION_HEADER = ["변수", "값", "Tailwind 유틸", "쓰는 자리"];
 const CADENCE_HEADER = ["변수", "값", "쓰는 자리"];
 const VENDOR_HEADER = ["변수", "값", "자리", "Tailwind 유틸"];
@@ -51,12 +50,8 @@ const THEME_INLINE_HEAD = {
 const SHADCN_BRIDGE = { subsection: "8.3", nth: 0, label: "shadcn 다리" };
 const BASE_LAYER = { subsection: "8.4", nth: 0, label: "베이스" };
 
-const SURFACE_SHADOW = "--surface-shadow";
 const ROLE_LIGHT_COLUMN = 2;
 const ROLE_DARK_COLUMN = 3;
-const SHADOW_LIGHT_COLUMN = 1;
-const SHADOW_DARK_COLUMN = 2;
-const SHADOW_PREFIX = /^shadow-/;
 const STATIC_RADIUS_UTILITIES = new Set(["rounded-none", "rounded-full"]);
 const ALIASED_PREFIX = /^--(?:palette|role|vendor)-/;
 
@@ -148,31 +143,13 @@ function roleGroups(rows: Row[]): Group[] {
   );
 }
 
-function shadowVariableOf(utility: string, index: number): string {
-  return index === 0
-    ? SURFACE_SHADOW
-    : `${SURFACE_SHADOW}-${utility.replace(SHADOW_PREFIX, "")}`;
-}
-
-function shadowGroup(markdown: string, side: Side): Group {
-  const column = side === "light" ? SHADOW_LIGHT_COLUMN : SHADOW_DARK_COLUMN;
-
-  return requireRows(markdown, SHADOW_HEADER, "그림자").map((row, index) => ({
-    name: shadowVariableOf(row.cells[0], index),
-    value: row.cells[column],
-  }));
-}
-
-function offPaletteGroup(markdown: string, roleRows: Row[], side: Side): Group {
+function offPaletteGroup(roleRows: Row[], side: Side): Group {
   const column = side === "light" ? ROLE_LIGHT_COLUMN : ROLE_DARK_COLUMN;
 
-  return [
-    ...shadowGroup(markdown, side),
-    ...roleRows.filter(isOffPalette).map((row) => ({
-      name: offPaletteVariableOf(row.cells[0]),
-      value: offPaletteValueOf(row.cells[column]),
-    })),
-  ];
+  return roleRows.filter(isOffPalette).map((row) => ({
+    name: offPaletteVariableOf(row.cells[0]),
+    value: offPaletteValueOf(row.cells[column]),
+  }));
 }
 
 function typographyGroup(markdown: string): Group {
@@ -239,12 +216,12 @@ export async function generateGlobalsCss(markdown: string): Promise<string> {
   const light = renderGroups([
     [themeName("light")],
     ...lightPalette,
-    offPaletteGroup(markdown, roleRows, "light"),
+    offPaletteGroup(roleRows, "light"),
   ]);
   const dark = renderGroups([
     [themeName("dark")],
     ...paletteGroups(markdown, "dark"),
-    offPaletteGroup(markdown, roleRows, "dark"),
+    offPaletteGroup(roleRows, "dark"),
   ]);
 
   const settings = renderGroups([

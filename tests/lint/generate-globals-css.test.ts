@@ -41,9 +41,7 @@ const THEME_INLINE_HEADER_FENCE = `  --color-*: initial;
 
   --font-sans:
     "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui,
-    "Apple SD Gothic Neo", sans-serif;
-
-  --shadow-card: var(--surface-shadow);`;
+    "Apple SD Gothic Neo", sans-serif;`;
 
 const SHADCN_BRIDGE_FENCE = `@theme inline {
   --color-background: var(--role-bg-neutral);
@@ -163,17 +161,11 @@ const TYPOGRAPHY_SECTION = `## 3. 타이포그래피
 | \`text-base\` | 17px | 25.5px | 1.0625 | 1.59375 | 일반 본문 |
 `;
 
-const ROUNDING_SHADOW_SECTION = `## 5. 라운딩과 그림자
+const ROUNDING_SECTION = `## 5. 라운딩
 
 | 유틸 | 값 | 쓰는 자리 |
 | --- | --- | --- |
 | \`rounded-md\` | 12px | 입력 |
-
-그림자는 하나뿐이고 라이트에서만 보인다.
-
-| 유틸 | 라이트 | 다크 |
-| --- | --- | --- |
-| \`shadow-card\` | \`0 1px 2px rgba(28, 25, 22, 0.05), 0 8px 20px -14px rgba(28, 25, 22, 0.4)\` | \`none\` |
 `;
 
 const MOTION_SECTION = `## 6. 모션
@@ -201,7 +193,7 @@ type FixtureOverrides = {
   palette?: string;
   roleTokens?: string;
   typography?: string;
-  roundingShadow?: string;
+  rounding?: string;
   motion?: string;
   cssFull?: string;
   vendor?: string;
@@ -212,7 +204,7 @@ function tokensMdFixture(overrides: FixtureOverrides = {}): string {
     overrides.palette ?? paletteSection(),
     overrides.roleTokens ?? ROLE_TOKEN_SECTION,
     overrides.typography ?? TYPOGRAPHY_SECTION,
-    overrides.roundingShadow ?? ROUNDING_SHADOW_SECTION,
+    overrides.rounding ?? ROUNDING_SECTION,
     overrides.motion ?? MOTION_SECTION,
     overrides.cssFull ?? CSS_FULL_SECTION,
     overrides.vendor ?? VENDOR_SECTION,
@@ -415,7 +407,7 @@ describe("리스크 B — oklch 표기를 정규화하지 않는다", () => {
   });
 });
 
-describe("리스크 C — stroke.surface 특수 행과 surface-shadow", () => {
+describe("리스크 C — 팔레트 칸이 — 인 특수 행", () => {
   let css: string;
 
   beforeAll(async () => {
@@ -440,21 +432,6 @@ describe("리스크 C — stroke.surface 특수 행과 surface-shadow", () => {
   it("stroke.surface 역할 토큰은 팔레트가 아니라 surface-stroke 변수를 가리킨다", () => {
     expect(declarationValueAnywhere(css, "--role-stroke-surface")).toBe(
       "var(--surface-stroke)",
-    );
-  });
-
-  it("그림자는 라이트에서 표의 값을, 다크 두 블록에서 none을 쓴다", () => {
-    const expectedLightShadow =
-      "0 1px 2px rgba(28, 25, 22, 0.05), 0 8px 20px -14px rgba(28, 25, 22, 0.4)";
-
-    expect(requireDeclaration(lightBody(css), "--surface-shadow")).toBe(
-      expectedLightShadow,
-    );
-    expect(requireDeclaration(darkMediaBody(css), "--surface-shadow")).toBe(
-      "none",
-    );
-    expect(requireDeclaration(darkAttributeBody(css), "--surface-shadow")).toBe(
-      "none",
     );
   });
 });
@@ -614,92 +591,6 @@ describe("리스크 I — 생성기가 비결정적이다", () => {
     const second = await generateGlobalsCss(markdown);
 
     expect(second).toBe(first);
-  });
-});
-
-const THREE_ROW_SHADOW_SECTION = `## 5. 라운딩과 그림자
-
-| 유틸 | 값 | 쓰는 자리 |
-| --- | --- | --- |
-| \`rounded-md\` | 12px | 입력 |
-
-그림자는 셋이다. 면이 화면에서 얼마나 떨어져 있느냐로 갈린다.
-
-| 유틸 | 라이트 | 다크 |
-| --- | --- | --- |
-| \`shadow-card\` | \`0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4)\` | \`none\` |
-| \`shadow-pop\` | \`0 1px 2px rgba(28,25,22,.05), 0 14px 30px -18px rgba(28,25,22,.5)\` | \`none\` |
-| \`shadow-sheet\` | \`0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5)\` | \`0 -1px 0 var(--stroke-neutral)\` |
-`;
-
-// 픽스처는 tokens.md 원문 표기(`rgba(28,25,22,.05)`)를 그대로 쓰고, 기대값은
-// 생성기 마지막 단계의 prettier가 정규화한 표기다. 표의 원문이 생성기를 통과하는지와
-// 결과가 저장된 globals.css와 같은 표기인지를 한 픽스처로 같이 지킨다.
-const THREE_ROW_LIGHT_CARD =
-  "0 1px 2px rgba(28, 25, 22, 0.05), 0 8px 20px -14px rgba(28, 25, 22, 0.4)";
-const THREE_ROW_LIGHT_POP =
-  "0 1px 2px rgba(28, 25, 22, 0.05), 0 14px 30px -18px rgba(28, 25, 22, 0.5)";
-const THREE_ROW_LIGHT_SHEET =
-  "0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28, 25, 22, 0.5)";
-const THREE_ROW_DARK_SHEET = "0 -1px 0 var(--stroke-neutral)";
-
-describe("리스크 K — 그림자 표가 세 줄이어도 생성기가 표의 모든 줄을 읽는다", () => {
-  let css: string;
-
-  beforeAll(async () => {
-    css = await generateGlobalsCss(
-      tokensMdFixture({ roundingShadow: THREE_ROW_SHADOW_SECTION }),
-    );
-  });
-
-  it("shadow-card·shadow-pop·shadow-sheet 세 줄 표를 줘도 생성기가 던지지 않는다", async () => {
-    await expect(
-      generateGlobalsCss(
-        tokensMdFixture({ roundingShadow: THREE_ROW_SHADOW_SECTION }),
-      ),
-    ).resolves.toBeTypeOf("string");
-  });
-
-  it("첫 줄 shadow-card는 지금처럼 --surface-shadow 라이트 값으로 선다", () => {
-    expect(requireDeclaration(lightBody(css), "--surface-shadow")).toBe(
-      THREE_ROW_LIGHT_CARD,
-    );
-  });
-
-  it.each([
-    ["라이트", lightBody, "--surface-shadow-pop", THREE_ROW_LIGHT_POP],
-    ["다크 미디어쿼리", darkMediaBody, "--surface-shadow-pop", "none"],
-    ["다크 data-theme", darkAttributeBody, "--surface-shadow-pop", "none"],
-    ["라이트", lightBody, "--surface-shadow-sheet", THREE_ROW_LIGHT_SHEET],
-    [
-      "다크 미디어쿼리",
-      darkMediaBody,
-      "--surface-shadow-sheet",
-      THREE_ROW_DARK_SHEET,
-    ],
-    [
-      "다크 data-theme",
-      darkAttributeBody,
-      "--surface-shadow-sheet",
-      THREE_ROW_DARK_SHEET,
-    ],
-  ])(
-    "%s 블록에 %s가 표의 값 그대로 선다",
-    (_label, bodyOf, variable, expected) => {
-      expect(requireDeclaration(bodyOf(css), variable)).toBe(expected);
-    },
-  );
-
-  it("--surface-shadow-sheet 다크 값에 var(--stroke-neutral)이 해석 없이 그대로 들어 있다", () => {
-    expect(
-      requireDeclaration(darkAttributeBody(css), "--surface-shadow-sheet"),
-    ).toContain("var(--stroke-neutral)");
-  });
-
-  it("기존 그림자 한 줄 픽스처로 만든 css에는 --surface-shadow-pop이 없다", async () => {
-    const singleRowCss = await generateGlobalsCss(tokensMdFixture());
-
-    expect(singleRowCss).not.toContain("--surface-shadow-pop");
   });
 });
 
