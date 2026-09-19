@@ -18,9 +18,9 @@
 
 ## 1. 팔레트
 
-계열 여섯, 단계 열하나다. CSS에는 oklch를 넣는다. hex는 값을 눈으로 확인하고 시안을 그릴 때 쓰는 참고치다.
+계열 일곱, 단계 열하나다. CSS에는 oklch를 넣는다. hex는 값을 눈으로 확인하고 시안을 그릴 때 쓰는 참고치다.
 
-명도 곡선은 여섯 계열이 공유한다.
+명도 곡선은 일곱 계열이 공유한다.
 
 | | 00 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 1000 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -29,39 +29,77 @@
 
 ### neutral
 
-hue 57, chroma 최대 0.005.
+hue 250, chroma 최대 0.008.
 
 | 단계 | 라이트 hex | 라이트 oklch | 다크 hex | 다크 oklch |
 | --- | --- | --- | --- | --- |
-| 00 | `#FFFEFD` | `oklch(1.000 0.0037 57)` | `#0D0C0B` | `oklch(0.155 0.0037 57)` |
-| 100 | `#F5F3F1` | `oklch(0.965 0.0037 57)` | `#191715` | `oklch(0.205 0.0037 57)` |
-| 200 | `#E2DFDD` | `oklch(0.905 0.0043 57)` | `#272523` | `oklch(0.265 0.0043 57)` |
-| 300 | `#CECBC9` | `oklch(0.845 0.0045 57)` | `#353231` | `oklch(0.320 0.0045 57)` |
-| 400 | `#B3B0AE` | `oklch(0.760 0.0047 57)` | `#4A4745` | `oklch(0.400 0.0047 57)` |
-| 500 | `#9B9795` | `oklch(0.680 0.0050 57)` | `#605D5B` | `oklch(0.480 0.0050 57)` |
-| 600 | `#8A8785` | `oklch(0.625 0.0050 57)` | `#7E7B79` | `oklch(0.585 0.0050 57)` |
-| 700 | `#726F6D` | `oklch(0.545 0.0050 57)` | `#969391` | `oklch(0.665 0.0050 57)` |
-| 800 | `#595654` | `oklch(0.455 0.0050 57)` | `#AFACA9` | `oklch(0.745 0.0050 57)` |
-| 900 | `#353230` | `oklch(0.320 0.0053 57)` | `#CFCBC9` | `oklch(0.845 0.0053 57)` |
-| 1000 | `#1B1917` | `oklch(0.215 0.0055 57)` | `#ECE9E6` | `oklch(0.935 0.0055 57)` |
+| 00 | `#FFFFFF` | `oklch(1.000 0.0001 250)` | `#0C0C0C` | `oklch(0.155 0.0008 250)` |
+| 100 | `#F2F3F4` | `oklch(0.965 0.0018 250)` | `#171718` | `oklch(0.205 0.0018 250)` |
+| 200 | `#DEE0E1` | `oklch(0.905 0.0030 250)` | `#242527` | `oklch(0.265 0.0030 250)` |
+| 300 | `#CACCCF` | `oklch(0.845 0.0046 250)` | `#313335` | `oklch(0.320 0.0046 250)` |
+| 400 | `#AEB1B5` | `oklch(0.760 0.0062 250)` | `#45484B` | `oklch(0.400 0.0062 250)` |
+| 500 | `#95999D` | `oklch(0.680 0.0075 250)` | `#5A5E62` | `oklch(0.480 0.0075 250)` |
+| 600 | `#84888C` | `oklch(0.625 0.0080 250)` | `#787C80` | `oklch(0.585 0.0080 250)` |
+| 700 | `#6D7175` | `oklch(0.545 0.0078 250)` | `#909498` | `oklch(0.665 0.0078 250)` |
+| 800 | `#54575B` | `oklch(0.455 0.0074 250)` | `#A9ADB1` | `oklch(0.745 0.0074 250)` |
+| 900 | `#303336` | `oklch(0.320 0.0062 250)` | `#C9CCD0` | `oklch(0.845 0.0062 250)` |
+| 1000 | `#181A1C` | `oklch(0.215 0.0048 250)` | `#E7EAED` | `oklch(0.935 0.0048 250)` |
+
 
 ### brand
 
-hue 57, chroma 최대 0.058. neutral과 같은 hue다.
+hue 266, chroma 최대 0.24.
 
 | 단계 | 라이트 hex | 라이트 oklch | 다크 hex | 다크 oklch |
 | --- | --- | --- | --- | --- |
-| 00 | `#FFFEFB` | `oklch(1.000 0.0058 57)` | `#0E0C0A` | `oklch(0.155 0.0058 57)` |
-| 100 | `#FBF2EB` | `oklch(0.965 0.0128 57)` | `#1C1612` | `oklch(0.205 0.0128 57)` |
-| 200 | `#ECDCD2` | `oklch(0.905 0.0220 57)` | `#2E231B` | `oklch(0.265 0.0220 57)` |
-| 300 | `#DEC7B7` | `oklch(0.845 0.0336 57)` | `#402F22` | `oklch(0.320 0.0336 57)` |
-| 400 | `#C8AA96` | `oklch(0.760 0.0452 57)` | `#5B422F` | `oklch(0.400 0.0452 57)` |
-| 500 | `#B39078` | `oklch(0.680 0.0545 57)` | `#75563F` | `oklch(0.480 0.0545 57)` |
-| 600 | `#A37F65` | `oklch(0.625 0.0580 57)` | `#97735A` | `oklch(0.585 0.0580 57)` |
-| 700 | `#8A684F` | `oklch(0.545 0.0568 57)` | `#AF8B72` | `oklch(0.665 0.0568 57)` |
-| 800 | `#6E4F39` | `oklch(0.455 0.0534 57)` | `#C7A48C` | `oklch(0.745 0.0534 57)` |
-| 900 | `#442D1B` | `oklch(0.320 0.0452 57)` | `#E4C5B0` | `oklch(0.845 0.0452 57)` |
-| 1000 | `#261508` | `oklch(0.215 0.0348 57)` | `#FCE4D4` | `oklch(0.935 0.0348 57)` |
+| 00 | `#FFFFFF` | `oklch(1.000 0.0001 266)` | `#080C16` | `oklch(0.155 0.0240 266)` |
+| 100 | `#EEF4FF` | `oklch(0.965 0.0160 266)` | `#0C152F` | `oklch(0.205 0.0530 266)` |
+| 200 | `#D2E0FE` | `oklch(0.905 0.0443 266)` | `#102151` | `oklch(0.265 0.0910 266)` |
+| 300 | `#B6CCFE` | `oklch(0.845 0.0740 266)` | `#112878` | `oklch(0.320 0.1390 266)` |
+| 400 | `#8EAFFD` | `oklch(0.760 0.1185 266)` | `#1836AA` | `oklch(0.400 0.1870 266)` |
+| 500 | `#6992FC` | `oklch(0.680 0.1630 266)` | `#2248DA` | `oklch(0.480 0.2256 266)` |
+| 600 | `#507DFC` | `oklch(0.625 0.1951 266)` | `#3E6CFB` | `oklch(0.585 0.2192 266)` |
+| 700 | `#2F5CF6` | `oklch(0.545 0.2350 266)` | `#628DFC` | `oklch(0.665 0.1716 266)` |
+| 800 | `#1D40CF` | `oklch(0.455 0.2210 266)` | `#87AAFD` | `oklch(0.745 0.1266 266)` |
+| 900 | `#0A1990` | `oklch(0.320 0.1870 266)` | `#B6CCFE` | `oklch(0.845 0.0740 266)` |
+| 1000 | `#03015A` | `oklch(0.215 0.1440 266)` | `#E0EAFE` | `oklch(0.935 0.0300 266)` |
+
+### sky
+
+hue 250, chroma 최대 0.16.
+
+| 단계 | 라이트 hex | 라이트 oklch | 다크 hex | 다크 oklch |
+| --- | --- | --- | --- | --- |
+| 00 | `#FFFFFF` | `oklch(1.000 0.0001 250)` | `#070D13` | `oklch(0.155 0.0160 250)` |
+| 100 | `#EBF5FF` | `oklch(0.965 0.0168 250)` | `#0A1827` | `oklch(0.205 0.0354 250)` |
+| 200 | `#C9E3FE` | `oklch(0.905 0.0465 250)` | `#0A2741` | `oklch(0.265 0.0606 250)` |
+| 300 | `#A6D1FE` | `oklch(0.845 0.0776 250)` | `#01345E` | `oklch(0.320 0.0896 250)` |
+| 400 | `#71B6FD` | `oklch(0.760 0.1241 250)` | `#034980` | `oklch(0.400 0.1109 250)` |
+| 500 | `#449DF1` | `oklch(0.680 0.1504 250)` | `#0760A4` | `oklch(0.480 0.1325 250)` |
+| 600 | `#268BE3` | `oklch(0.625 0.1600 250)` | `#117FD6` | `oklch(0.585 0.1600 250)` |
+| 700 | `#0B73C3` | `oklch(0.545 0.1502 250)` | `#3998EF` | `oklch(0.665 0.1566 250)` |
+| 800 | `#065999` | `oklch(0.455 0.1258 250)` | `#66B2FD` | `oklch(0.745 0.1326 250)` |
+| 900 | `#01345E` | `oklch(0.320 0.0896 250)` | `#A6D1FE` | `oklch(0.845 0.0776 250)` |
+| 1000 | `#001A35` | `oklch(0.215 0.0628 250)` | `#DAECFE` | `oklch(0.935 0.0315 250)` |
+
+### mint
+
+hue 183, chroma 최대 0.15.
+
+| 단계 | 라이트 hex | 라이트 oklch | 다크 hex | 다크 oklch |
+| --- | --- | --- | --- | --- |
+| 00 | `#FFFFFF` | `oklch(1.000 0.0002 183)` | `#050E0D` | `oklch(0.155 0.0150 183)` |
+| 100 | `#DCFBF5` | `oklch(0.965 0.0331 183)` | `#021C19` | `oklch(0.205 0.0331 183)` |
+| 200 | `#B6EDE3` | `oklch(0.905 0.0568 183)` | `#002C27` | `oklch(0.265 0.0471 183)` |
+| 300 | `#88DFD1` | `oklch(0.845 0.0868 183)` | `#013C35` | `oklch(0.320 0.0562 183)` |
+| 400 | `#44C9B8` | `oklch(0.760 0.1168 183)` | `#04544B` | `oklch(0.400 0.0697 183)` |
+| 500 | `#17AF9F` | `oklch(0.680 0.1177 183)` | `#096D62` | `oklch(0.480 0.0833 183)` |
+| 600 | `#139D8E` | `oklch(0.625 0.1082 183)` | `#108F81` | `oklch(0.585 0.1013 183)` |
+| 700 | `#0D8275` | `oklch(0.545 0.0945 183)` | `#16AA9A` | `oklch(0.665 0.1151 183)` |
+| 800 | `#07655B` | `oklch(0.455 0.0790 183)` | `#1BC6B4` | `oklch(0.745 0.1289 183)` |
+| 900 | `#013C35` | `oklch(0.320 0.0562 183)` | `#64E5D3` | `oklch(0.845 0.1168 183)` |
+| 1000 | `#001F1B` | `oklch(0.215 0.0391 183)` | `#A2FEEF` | `oklch(0.935 0.0900 183)` |
+
 
 ### positive
 
@@ -117,67 +155,21 @@ hue 27, chroma 최대 0.145.
 | 900 | `#60100F` | `oklch(0.320 0.1131 27)` | `#FFAFA4` | `oklch(0.845 0.1131 27)` |
 | 1000 | `#380002` | `oklch(0.215 0.0870 27)` | `#FFD4CA` | `oklch(0.935 0.0870 27)` |
 
-### informative
 
-hue 248, chroma 최대 0.115.
+**hue를 회색까지 같은 쪽에 뒀다.** `neutral`이 250, `brand`가 266, `sky`가 250이다. 브랜드가 파랑이 되면서 따뜻한 회색이 그 아래에서 누렇게 떠서, 바탕도 차가운 쪽으로 옮겼다.
 
-| 단계 | 라이트 hex | 라이트 oklch | 다크 hex | 다크 oklch |
-| --- | --- | --- | --- | --- |
-| 00 | `#F9FFFF` | `oklch(1.000 0.0115 248)` | `#080D11` | `oklch(0.155 0.0115 248)` |
-| 100 | `#E7F5FF` | `oklch(0.965 0.0253 248)` | `#0E1822` | `oklch(0.205 0.0253 248)` |
-| 200 | `#CAE3FC` | `oklch(0.905 0.0437 248)` | `#132739` | `oklch(0.265 0.0437 248)` |
-| 300 | `#AAD1F6` | `oklch(0.845 0.0667 248)` | `#133553` | `oklch(0.320 0.0667 248)` |
-| 400 | `#83B6E8` | `oklch(0.760 0.0897 248)` | `#184A75` | `oklch(0.400 0.0897 248)` |
-| 500 | `#5F9ED8` | `oklch(0.680 0.1081 248)` | `#216197` | `oklch(0.480 0.1081 248)` |
-| 600 | `#498DC9` | `oklch(0.625 0.1150 248)` | `#3D80BC` | `oklch(0.585 0.1150 248)` |
-| 700 | `#3274AE` | `oklch(0.545 0.1127 248)` | `#5799D5` | `oklch(0.665 0.1127 248)` |
-| 800 | `#1B5A8E` | `oklch(0.455 0.1058 248)` | `#75B2EC` | `oklch(0.745 0.1058 248)` |
-| 900 | `#00355E` | `oklch(0.320 0.0897 248)` | `#9DD2FF` | `oklch(0.845 0.0897 248)` |
-| 1000 | `#001A37` | `oklch(0.215 0.0690 248)` | `#C6EFFF` | `oklch(0.935 0.0690 248)` |
+**`sky`와 `mint`가 그림의 둘째·셋째 몫이다.** 앞서 있던 `chart-a`·`chart-b`·`chart-c`를 대신한다. 그 셋은 chroma가 0.065에 묶여 있었는데, 그것은 브랜드가 0.058짜리 흐린 브라운이라 「차트가 브랜드보다 진하면 안 된다」고 잡은 선이었다. 브랜드가 0.24가 되면서 그 전제가 사라졌다.
 
-### chart-a
+**`informative`도 `sky`가 대신한다.** hue 248이라 브랜드 266과 18도 차이여서, 안내 면과 주요 버튼이 한 화면에 서면 같은 것으로 읽혔다. 근거는 [ADR-012](../adr/ADR-012-blue-brand-and-looser-density.md)에 있다.
 
-hue 210, chroma 최대 0.065. 차트 계열의 첫째다.
-
-| 단계 | 라이트 hex | 라이트 oklch | 다크 hex | 다크 oklch |
-| --- | --- | --- | --- | --- |
-| 200 | `#CAE6EB` | `oklch(0.905 0.0300 210)` | `#12292D` | `oklch(0.265 0.0300 210)` |
-| 600 | `#56939D` | `oklch(0.625 0.0650 210)` | `#4A8791` | `oklch(0.585 0.0650 210)` |
-| 800 | `#286069` | `oklch(0.455 0.0600 210)` | `#7FB7C1` | `oklch(0.745 0.0600 210)` |
-
-### chart-b
-
-hue 165, chroma 최대 0.065. 차트 계열의 둘째다.
-
-| 단계 | 라이트 hex | 라이트 oklch | 다크 hex | 다크 oklch |
-| --- | --- | --- | --- | --- |
-| 200 | `#CEE6DB` | `oklch(0.905 0.0300 165)` | `#172A22` | `oklch(0.265 0.0300 165)` |
-| 600 | `#61947E` | `oklch(0.625 0.0650 165)` | `#558872` | `oklch(0.585 0.0650 165)` |
-| 800 | `#34614E` | `oklch(0.455 0.0600 165)` | `#89B9A3` | `oklch(0.745 0.0600 165)` |
-
-### chart-c
-
-hue 340, chroma 최대 0.065. 차트 계열의 셋째다.
-
-| 단계 | 라이트 hex | 라이트 oklch | 다크 hex | 다크 oklch |
-| --- | --- | --- | --- | --- |
-| 200 | `#EED8E6` | `oklch(0.905 0.0300 340)` | `#2F1F2A` | `oklch(0.265 0.0300 340)` |
-| 600 | `#A37894` | `oklch(0.625 0.0650 340)` | `#966D88` | `oklch(0.585 0.0650 340)` |
-| 800 | `#6D4961` | `oklch(0.455 0.0600 340)` | `#C79EB8` | `oklch(0.745 0.0600 340)` |
-
-차트 셋은 단계가 셋뿐이다. 앞의 여섯은 면·글자·선·눌림·비활성까지 다 맡아 열한 단계가 필요한데, 차트는 옅은 면과 꽉 찬 면과 진한 선 셋으로 끝난다. 쓰는 자리가 늘면 그때 단계를 더한다.
-
-**hue를 40~80에서 멀리 뒀다.** brand가 57이라 그 언저리를 쓰면 차트 면이 브랜드처럼 읽힌다. chroma도 brand의 최대(0.058)와 비슷한 선에 묶었다 — 차트는 면이 크고 줄마다 반복되는데 브랜드보다 진하면 화면에서 제일 센 것이 통계가 된다.
-
-**positive·warning·critical의 hue를 안 빌렸다.** 그 셋은 좋고 나쁨을 말하는 색이라 차트에 쓰면 숫자에 평가가 실린다. 근거는 [foundation/color.md](foundation/color.md#차트가-색을-쓰는-법)에 있다.
+**positive·warning·critical의 hue를 그림에 안 빌린다.** 그 셋은 좋고 나쁨을 말하는 색이라 숫자에 평가가 실린다. 근거는 [foundation/color.md](foundation/color.md#차트가-색을-쓰는-법)에 있다.
 
 ---
 
 ## 2. 역할 토큰
 
-이름은 `Property.Role-Variant-State`다. Property 셋(`fg` `bg` `stroke`), Role 아홉(neutral brand positive warning critical informative chart-a chart-b chart-c), Variant는 solid·weak·muted·subtle·contrast, State는 pressed·selected·disabled.
+이름은 `Property.Role-Variant-State`다. Property 셋(`fg` `bg` `stroke`), Role 일곱(neutral brand sky mint positive warning critical), Variant는 solid·weak·muted·subtle·contrast, State는 pressed·selected·disabled.
 
-차트 셋만 Role 이름에 번호가 붙는다. 앞의 여섯은 이름이 뜻을 말하는데(경고·위험·정보) 차트는 뜻을 안 싣는 것이 요건이라 이름으로도 아무 말을 안 한다 — 첫째·둘째·셋째일 뿐이다.
 
 문법의 뜻은 [foundation/color.md](foundation/color.md#variant와-state)에 있다.
 
@@ -189,68 +181,72 @@ hue 340, chroma 최대 0.065. 차트 계열의 셋째다.
 
 | 토큰 | 팔레트 | 라이트 | 다크 | Tailwind 유틸 |
 | --- | --- | --- | --- | --- |
-| `bg.neutral` | neutral-00 | `#FFFEFD` | `#0D0C0B` | `bg-bg-neutral` |
-| `bg.neutral-weak` | neutral-100 | `#F5F3F1` | `#191715` | `bg-bg-neutral-weak` |
-| `bg.neutral-weak-pressed` | neutral-200 | `#E2DFDD` | `#272523` | `bg-bg-neutral-weak-pressed` |
-| `bg.neutral-solid` | neutral-1000 | `#1B1917` | `#ECE9E6` | `bg-bg-neutral-solid` |
-| `bg.neutral-solid-soft` | neutral-900 | `#353230` | `#CFCBC9` | `bg-bg-neutral-solid-soft` |
-| `bg.neutral-disabled` | neutral-100 | `#F5F3F1` | `#191715` | `bg-bg-neutral-disabled` |
-| `bg.brand-solid` | brand-800 | `#6E4F39` | `#C7A48C` | `bg-bg-brand-solid` |
-| `bg.brand-solid-pressed` | brand-900 | `#442D1B` | `#E4C5B0` | `bg-bg-brand-solid-pressed` |
-| `bg.brand-weak` | brand-100 | `#FBF2EB` | `#1C1612` | `bg-bg-brand-weak` |
-| `bg.brand-weak-pressed` | brand-200 | `#ECDCD2` | `#2E231B` | `bg-bg-brand-weak-pressed` |
-| `bg.brand-weak-selected` | brand-100 | `#FBF2EB` | `#1C1612` | `bg-bg-brand-weak-selected` |
-| `bg.brand-muted` | brand-300 | `#DEC7B7` | `#402F22` | `bg-bg-brand-muted` |
+| `bg.neutral` | neutral-00 | `#FFFFFF` | `#0C0C0C` | `bg-bg-neutral` |
+| `bg.neutral-weak` | neutral-100 | `#F2F3F4` | `#171718` | `bg-bg-neutral-weak` |
+| `bg.neutral-weak-pressed` | neutral-200 | `#DEE0E1` | `#242527` | `bg-bg-neutral-weak-pressed` |
+| `bg.neutral-solid` | neutral-1000 | `#181A1C` | `#E7EAED` | `bg-bg-neutral-solid` |
+| `bg.neutral-solid-soft` | neutral-900 | `#303336` | `#C9CCD0` | `bg-bg-neutral-solid-soft` |
+| `bg.neutral-disabled` | neutral-100 | `#F2F3F4` | `#171718` | `bg-bg-neutral-disabled` |
+| `bg.neutral-muted` | neutral-400 | `#AEB1B5` | `#45484B` | `bg-bg-neutral-muted` |
+| `bg.brand-solid` | brand-700 | `#2F5CF6` | `#628DFC` | `bg-bg-brand-solid` |
+| `bg.brand-solid-pressed` | brand-800 | `#1D40CF` | `#87AAFD` | `bg-bg-brand-solid-pressed` |
+| `bg.brand-weak` | brand-100 | `#EEF4FF` | `#0C152F` | `bg-bg-brand-weak` |
+| `bg.brand-weak-pressed` | brand-200 | `#D2E0FE` | `#102151` | `bg-bg-brand-weak-pressed` |
+| `bg.brand-weak-selected` | brand-100 | `#EEF4FF` | `#0C152F` | `bg-bg-brand-weak-selected` |
+| `bg.brand-muted` | brand-300 | `#B6CCFE` | `#112878` | `bg-bg-brand-muted` |
+| `bg.sky` | sky-600 | `#268BE3` | `#117FD6` | `bg-bg-sky` |
+| `bg.sky-weak` | sky-100 | `#EBF5FF` | `#0A1827` | `bg-bg-sky-weak` |
+| `bg.mint` | mint-600 | `#139D8E` | `#108F81` | `bg-bg-mint` |
+| `bg.mint-weak` | mint-100 | `#DCFBF5` | `#021C19` | `bg-bg-mint-weak` |
 | `bg.positive-weak` | positive-100 | `#E8F9EB` | `#0E1B11` | `bg-bg-positive-weak` |
 | `bg.warning-weak` | warning-100 | `#FDF3D9` | `#1E1603` | `bg-bg-warning-weak` |
 | `bg.critical-solid` | critical-800 | `#93302B` | `#F5897E` | `bg-bg-critical-solid` |
 | `bg.critical-solid-pressed` | critical-900 | `#60100F` | `#FFAFA4` | `bg-bg-critical-solid-pressed` |
 | `bg.critical-weak` | critical-100 | `#FFECE8` | `#24110F` | `bg-bg-critical-weak` |
-| `bg.informative-weak` | informative-100 | `#E7F5FF` | `#0E1822` | `bg-bg-informative-weak` |
-| `bg.chart-a` | chart-a-600 | `#56939D` | `#4A8791` | `bg-bg-chart-a` |
-| `bg.chart-a-weak` | chart-a-200 | `#CAE6EB` | `#12292D` | `bg-bg-chart-a-weak` |
-| `bg.chart-b` | chart-b-600 | `#61947E` | `#558872` | `bg-bg-chart-b` |
-| `bg.chart-b-weak` | chart-b-200 | `#CEE6DB` | `#172A22` | `bg-bg-chart-b-weak` |
-| `bg.chart-c` | chart-c-600 | `#A37894` | `#966D88` | `bg-bg-chart-c` |
-| `bg.chart-c-weak` | chart-c-200 | `#EED8E6` | `#2F1F2A` | `bg-bg-chart-c-weak` |
-| `bg.scrim` | — | `#1B19176B` | `#0D0C0B6B` | `bg-bg-scrim` |
+| `bg.scrim` | — | `#181A1C6B` | `#0C0C0C6B` | `bg-bg-scrim` |
 
-`bg.brand-muted`는 옅은 브랜드 면이 중립 면 위에 떠야 하는 자리를 위한 것이다. `bg.brand-weak`는 `brand-100`이라 라이트에서 명도 0.965인데 `bg.neutral-weak`도 0.965다 — 겹쳐 놓으면 두 면이 갈리지 않는다. `bg.brand-weak-pressed`(`brand-200`, 0.905)도 차이가 0.060뿐이라 부족하다. `brand-300`은 0.845로 0.120이 갈린다. 대시보드의 하루 띠 막대를 위해 섰는데, 그 띠가 축을 근무로 바꾸며 꽉 찬 면(`bg.brand-solid`)으로 올라가서 지금은 쓰는 자리가 없다. 토큰은 남긴다 — 옅은 브랜드 면이 중립 면 위에 떠야 하는 자리는 다시 나온다.
+`bg.brand-solid`가 `brand-700`이다. 다른 계열이 `-800`을 꽉 찬 면으로 쓰는 것과 갈리는데, 파랑은 `-800`(`#1D40CF`)이 남색에 가까워져 레퍼런스에서 받은 색과 멀어진다. `-700`이 그 색이고 흰 글자 대비도 5.27로 선다. 눌린 상태가 `-800`을 받아 한 단계씩 밀렸다.
 
-`bg.scrim`은 팔레트를 안 따른다. 덮개는 뒤를 어둡게 하는 것이 일이라 명도가 뒤집히면 안 되는 몇 안 되는 자리인데, 팔레트가 적응형이라 `bg.neutral-solid`를 쓰면 다크에서 밝은 회색이 되어 화면을 흰 막이 덮는다. 그래서 라이트는 `neutral-1000`, 다크는 `neutral-00`을 값으로 굳혔다 — 양쪽 다 어두운 잉크다. 투명도 42%가 값에 들어 있어 쓰는 쪽이 따로 안 얹는다. 덮개를 자리마다 다르게 진하게 하고 싶으면 그때 토큰을 하나 더 만든다.
+`bg.neutral-muted`는 그림에서 값이 작거나 강조할 것이 아닌 몫을 칠하는 면이다. 막대와 띠가 쓴다 — 근거는 [foundation/color.md](foundation/color.md#차트가-색을-쓰는-법)에 있다.
+
+`bg.brand-muted`는 옅은 브랜드 면이 중립 면 위에 떠야 하는 자리를 위한 것이다. `bg.brand-weak`는 `brand-100`이라 라이트에서 명도 0.965인데 `bg.neutral-weak`도 0.965다 — 겹쳐 놓으면 두 면이 갈리지 않는다. `brand-300`은 0.845로 0.120이 갈린다.
+
+`bg.scrim`은 팔레트를 안 따른다. 덮개는 뒤를 어둡게 하는 것이 일이라 명도가 뒤집히면 안 되는 몇 안 되는 자리인데, 팔레트가 적응형이라 `bg.neutral-solid`를 쓰면 다크에서 밝은 회색이 되어 화면을 흰 막이 덮는다. 그래서 라이트는 `neutral-1000`, 다크는 `neutral-00`을 값으로 굳혔다 — 양쪽 다 어두운 잉크다. 투명도 42%가 값에 들어 있어 쓰는 쪽이 따로 안 얹는다.
 
 ### fg
 
 | 토큰 | 팔레트 | 라이트 | 다크 | Tailwind 유틸 |
 | --- | --- | --- | --- | --- |
-| `fg.neutral` | neutral-1000 | `#1B1917` | `#ECE9E6` | `text-fg-neutral` |
-| `fg.neutral-muted` | neutral-800 | `#595654` | `#AFACA9` | `text-fg-neutral-muted` |
-| `fg.neutral-subtle` | neutral-700 | `#726F6D` | `#969391` | `text-fg-neutral-subtle` |
-| `fg.neutral-contrast` | neutral-00 | `#FFFEFD` | `#0D0C0B` | `text-fg-neutral-contrast` |
-| `fg.neutral-disabled` | neutral-700 | `#726F6D` | `#969391` | `text-fg-neutral-disabled` |
-| `fg.brand` | brand-800 | `#6E4F39` | `#C7A48C` | `text-fg-brand` |
-| `fg.brand-contrast` | neutral-00 | `#FFFEFD` | `#0D0C0B` | `text-fg-brand-contrast` |
+| `fg.neutral` | neutral-1000 | `#181A1C` | `#E7EAED` | `text-fg-neutral` |
+| `fg.neutral-muted` | neutral-800 | `#54575B` | `#A9ADB1` | `text-fg-neutral-muted` |
+| `fg.neutral-subtle` | neutral-700 | `#6D7175` | `#909498` | `text-fg-neutral-subtle` |
+| `fg.neutral-contrast` | neutral-00 | `#FFFFFF` | `#0C0C0C` | `text-fg-neutral-contrast` |
+| `fg.neutral-disabled` | neutral-800 | `#54575B` | `#A9ADB1` | `text-fg-neutral-disabled` |
+| `fg.brand` | brand-700 | `#2F5CF6` | `#628DFC` | `text-fg-brand` |
+| `fg.brand-contrast` | neutral-00 | `#FFFFFF` | `#0C0C0C` | `text-fg-brand-contrast` |
+| `fg.sky` | sky-800 | `#065999` | `#66B2FD` | `text-fg-sky` |
+| `fg.sky-contrast` | sky-400 | `#71B6FD` | `#034980` | `text-fg-sky-contrast` |
+| `fg.mint` | mint-800 | `#07655B` | `#1BC6B4` | `text-fg-mint` |
 | `fg.positive` | positive-800 | `#1A6738` | `#77C08B` | `text-fg-positive` |
 | `fg.critical` | critical-800 | `#93302B` | `#F5897E` | `text-fg-critical` |
-| `fg.informative` | informative-800 | `#1B5A8E` | `#75B2EC` | `text-fg-informative` |
 | `fg.positive-contrast` | positive-400 | `#85C295` | `#18552E` | `text-fg-positive-contrast` |
-| `fg.informative-contrast` | informative-400 | `#83B6E8` | `#184A75` | `text-fg-informative-contrast` |
 
 `fg.warning`은 없다. 만들지 않은 것이라 나중에 필요해 보여도 더하지 않는다.
 
-**`fg.neutral-disabled`와 `fg.neutral-subtle`은 같은 색이다.** 대비비를 재다 둘 다 neutral-700으로 올라갔고(아래 [떨어진 조합](#떨어진-조합)), 그래서 이 둘로는 눈이 갈리지 않는다. 배경과 테두리가 같이 걸리는 버튼에서는 문제가 안 되지만, **글자나 아이콘 하나만 이 색으로 흐리게 해서 「못 누른다」를 말하려는 자리는 안 된다.** 그런 자리는 색을 바꾸지 말고 아예 안 그리고 자리만 남긴다 — 급여 조회와 통계의 못 가는 화살표가 그렇다([payroll.md](../modules/payroll/screens/payroll.md#급여-조회-색), [stats.md](../system/screens/stats.md#통계-색)).
+**`fg.neutral-disabled`와 `fg.neutral-muted`는 같은 색이다.** 회색이 차가운 쪽으로 옮기며 명도 관계가 미세하게 달라져 neutral-700이 비활성 면 위에서 4.43으로 떨어졌고, neutral-800으로 올리면서 `fg.neutral-muted`와 같은 단계가 됐다(아래 [떨어진 조합](#떨어진-조합)). 그래서 이 둘로는 눈이 갈리지 않는다. 배경과 테두리가 같이 걸리는 버튼에서는 문제가 안 되지만, **글자나 아이콘 하나만 이 색으로 흐리게 해서 「못 누른다」를 말하려는 자리는 안 된다.** 그런 자리는 색을 바꾸지 말고 아예 안 그리고 자리만 남긴다 — 급여 조회와 통계의 못 가는 화살표가 그렇다([payroll.md](../modules/payroll/screens/payroll.md#급여-조회-색), [stats.md](../system/screens/stats.md#통계-색)).
 
-`-contrast`가 붙은 계열색 둘은 반전 면 위에 서는 자리를 위한 것이다. `fg.positive`가 라이트에서 어두운 녹색(`#1A6738`)이라 토스트처럼 어두운 면 위에 올리면 안 보인다. 팔레트가 적응형이라 `-400` 단계가 그 반전을 그대로 해준다 — 라이트에서 밝고 다크에서 어둡다. `fg.neutral-contrast`가 neutral-00으로 같은 일을 하는 것과 같은 결이다. `fg.critical-contrast`는 만들지 않았다. 쓰는 자리가 없어서다.
+`-contrast`가 붙은 계열색 둘은 반전 면 위에 서는 자리를 위한 것이다. `fg.positive`가 라이트에서 어두운 녹색(`#1A6738`)이라 토스트처럼 어두운 면 위에 올리면 안 보인다. 팔레트가 적응형이라 `-400` 단계가 그 반전을 그대로 해준다 — 라이트에서 밝고 다크에서 어둡다. `fg.critical-contrast`와 `fg.mint-contrast`는 만들지 않았다. 쓰는 자리가 없어서다.
 
 ### stroke
 
 | 토큰 | 팔레트 | 라이트 | 다크 | Tailwind 유틸 |
 | --- | --- | --- | --- | --- |
-| `stroke.neutral` | neutral-200 | `#E2DFDD` | `#272523` | `border-stroke-neutral` |
-| `stroke.neutral-muted` | neutral-300 | `#CECBC9` | `#353231` | `border-stroke-neutral-muted` |
-| `stroke.neutral-disabled` | neutral-200 | `#E2DFDD` | `#272523` | `border-stroke-neutral-disabled` |
-| `stroke.brand-solid` | brand-800 | `#6E4F39` | `#C7A48C` | `border-stroke-brand-solid` |
-| `stroke.chart-a` | chart-a-800 | `#286069` | `#7FB7C1` | `border-stroke-chart-a` |
+| `stroke.neutral` | neutral-200 | `#DEE0E1` | `#242527` | `border-stroke-neutral` |
+| `stroke.neutral-muted` | neutral-300 | `#CACCCF` | `#313335` | `border-stroke-neutral-muted` |
+| `stroke.neutral-disabled` | neutral-200 | `#DEE0E1` | `#242527` | `border-stroke-neutral-disabled` |
+| `stroke.brand-solid` | brand-700 | `#2F5CF6` | `#628DFC` | `border-stroke-brand-solid` |
+| `stroke.sky` | sky-600 | `#268BE3` | `#117FD6` | `border-stroke-sky` |
+| `stroke.mint` | mint-600 | `#139D8E` | `#108F81` | `border-stroke-mint` |
 | `stroke.surface` | — | `transparent` | neutral-200 | `border-stroke-surface` |
 
 `stroke.surface`는 새 색이 아니다. 라이트에서 그림자로 면을 띄우고 다크에서 선으로 나누는 규칙을 클래스 한 벌로 굴리려고 둔 것이라 라이트에서는 투명이고 다크에서 `neutral-200`을 가리킨다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#그림자와-면-나누기)에 있다. 라이트 칸이 리터럴이고 다크 칸이 팔레트 단계 이름인 행이라 위의 「팔레트 칸이 `—`인 행」 규칙이 처음 쓰인 자리다.
@@ -437,37 +433,44 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 
 | 조합 | 라이트 | 다크 |
 | --- | --- | --- |
-| `fg.neutral` on `bg.neutral` | 17.40 | 16.16 |
-| `fg.neutral-muted` on `bg.neutral` | 7.23 | 8.65 |
-| `fg.neutral-subtle` on `bg.neutral` | 4.95 | 6.40 |
-| `fg.brand` on `bg.neutral` | 7.34 | 8.48 |
-| `fg.brand-contrast` on `bg.brand-solid` | 7.34 | 8.48 |
-| `fg.positive` on `bg.neutral` | 6.86 | 9.02 |
-| `fg.critical` on `bg.neutral` | 7.73 | 8.15 |
-| `fg.informative` on `bg.neutral` | 7.19 | 8.69 |
-| `fg.neutral-disabled` on `bg.neutral-disabled` | 4.51 | 5.86 |
-| `fg.neutral` on `bg.neutral-weak` | 15.84 | 14.78 |
-| `fg.neutral-muted` on `bg.neutral-weak` | 6.58 | 7.91 |
-| `fg.neutral` on `bg.positive-weak` | 16.01 | 14.67 |
-| `fg.neutral-muted` on `bg.positive-weak` | 6.65 | 7.86 |
+| `fg.neutral` on `bg.neutral` | 17.45 | 16.20 |
+| `fg.neutral-muted` on `bg.neutral` | 7.26 | 8.66 |
+| `fg.neutral-subtle` on `bg.neutral` | 4.92 | 6.40 |
+| `fg.brand` on `bg.neutral` | 5.27 | 6.27 |
+| `fg.brand-contrast` on `bg.brand-solid` | 5.27 | 6.27 |
+| `fg.sky` on `bg.neutral` | 7.25 | 8.71 |
+| `fg.mint` on `bg.neutral` | 6.95 | 9.11 |
+| `fg.positive` on `bg.neutral` | 6.91 | 9.03 |
+| `fg.critical` on `bg.neutral` | 7.78 | 8.16 |
+| `fg.neutral-contrast` on `bg.critical-solid` | 7.78 | 8.16 |
+| `fg.neutral-disabled` on `bg.neutral-disabled` | 6.54 | 7.93 |
+| `fg.neutral` on `bg.neutral-weak` | 15.71 | 14.84 |
+| `fg.neutral-muted` on `bg.neutral-weak` | 6.54 | 7.93 |
+| `fg.neutral` on `bg.positive-weak` | 15.94 | 14.69 |
+| `fg.neutral-muted` on `bg.positive-weak` | 6.63 | 7.86 |
 | `fg.positive` on `bg.positive-weak` | 6.31 | 8.19 |
-| `fg.neutral` on `bg.informative-weak` | 15.78 | 14.81 |
-| `fg.neutral-muted` on `bg.informative-weak` | 6.55 | 7.93 |
+| `fg.neutral` on `bg.sky-weak` | 15.82 | 14.83 |
+| `fg.neutral-muted` on `bg.sky-weak` | 6.58 | 7.93 |
+| `fg.sky` on `bg.sky-weak` | 6.57 | 7.97 |
+| `fg.brand` on `bg.brand-weak` | 4.78 | 5.79 |
+
+**브랜드가 파랑이 되며 여유가 줄었다.** 브라운 주 면에 흰 글자가 7.34였던 자리가 5.27이다. 기준은 넘지만 여기서 더 내리면 떨어진다 — 주 면을 한 단계 밝게 올리자는 안이 나오면 이 줄을 먼저 본다.
 
 비활성 글자도 읽혀야 해서 이 줄을 기준 아래로 내리지 않았다. 버튼이 왜 눌리지 않는지는 대개 그 버튼에 적힌 글자가 알려준다.
 
-옅은 면 위의 조합 일곱은 [pages/login.md](../modules/account/screens/login.md#승인-대기-색)의 알림 영역에서 나왔다. 옅은 면에 글자를 올리는 자리는 알림 블록마다 되풀이되니 다른 화면에도 같은 값이 걸린다.
+옅은 면 위의 조합들은 [pages/login.md](../modules/account/screens/login.md#승인-대기-색)의 알림 영역에서 나왔다. 옅은 면에 글자를 올리는 자리는 알림 블록마다 되풀이되니 다른 화면에도 같은 값이 걸린다.
 
 ### 떨어진 조합
 
 | 조합 | 결과 | 판정 |
 | --- | --- | --- |
-| neutral-600 on `bg.neutral` (라이트) | 3.54 | `fg.neutral-subtle`에서 탈락. neutral-700으로 올렸다 |
-| neutral-600 on `bg.neutral-disabled` (라이트) | 3.22 | `fg.neutral-disabled`에서 탈락. neutral-700이 넷 중 유일하게 기준을 넘었다 |
-| brand-800 vs warning-800 (라이트) | 1.02 | 사실상 같은 밝기. warning을 글자색에서 뺐다 |
-| `fg.neutral-subtle` on `bg.informative-weak` (라이트) | 4.49 | 알림 영역 아래 줄에서 탈락. `fg.neutral-muted`로 올렸다 |
+| neutral-600 on `bg.neutral` (라이트) | 3.57 | `fg.neutral-subtle`에서 탈락. neutral-700으로 올렸다 |
+| neutral-700 on `bg.neutral-disabled` (라이트) | 4.43 | `fg.neutral-disabled`에서 탈락. neutral-800으로 올렸다 |
+| brand-800 vs warning-800 (라이트) | 1.08 | 사실상 같은 밝기. warning을 글자색에서 뺐다 |
+| `fg.neutral-contrast` on `bg.sky` (라이트) | 3.57 | 떨어진 채로 둔다 — 아래 규칙을 보라 |
+| `fg.neutral-contrast` on `bg.mint` (라이트) | 3.36 | 같다 |
 
-마지막 줄은 `bg.neutral-weak`에서 4.51, `bg.positive-weak`에서 4.56으로 겨우 넘고 `bg.informative-weak`에서만 떨어진다. 셋을 한 토큰으로 묶는 자리라 셋 다 통과하는 `fg.neutral-muted`를 골랐다. 두 면에서 통과한다고 남겨두면 면 색을 하나 바꿀 때마다 글자색을 다시 재야 한다.
+**`bg.sky`와 `bg.mint` 위에는 글자를 안 올린다.** 그림의 둘째·셋째 몫을 칠하는 면이라 그 위에 글자가 설 일이 없다 — 띠도 막대도 도넛 호도 글자를 면 밖에 둔다. 글자를 올려야 하는 자리가 생기면 `-600`이 아니라 `sky-800`·`mint-800` 면을 쓴다. 그 단계에서는 흰 글자가 7.25와 6.95로 선다.
 
 두 판정의 근거는 [foundation/color.md](foundation/color.md#대비-검증)와 [경고색 제약](foundation/color.md#경고색-제약)에 있다.
 
