@@ -68,7 +68,7 @@ Tailwind는 `p-7`도 만들어준다. 만들어준다고 쓰지 않는다.
 | --- | --- |
 | `rounded-none` | 화면 폭에 붙는 면 |
 | `rounded-xs` | 미니 달력 칸 |
-| `rounded-sm` | 배지, 달력 칸 |
+| `rounded-sm` | 배지, 근무표 날짜 칸 |
 | `rounded-md` | 입력 |
 | `rounded-lg` | 버튼, 세그먼트, 토스트, 작은 카드, 다이얼로그 |
 | `rounded-xl` | 카드 |
