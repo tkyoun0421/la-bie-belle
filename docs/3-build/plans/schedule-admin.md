@@ -61,6 +61,8 @@ sources:
 
 # 관리자 근무표 화면을 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본은 [schedule-admin.md](../../2-design/modules/schedule/screens/schedule-admin.md)다 — [관리자 홈](../../2-design/modules/schedule/screens/schedule-admin.md#관리자-홈)·[달 근무표 만들기](../../2-design/modules/schedule/screens/schedule-admin.md#달-근무표-만들기)·[월 달력](../../2-design/modules/schedule/screens/schedule-admin.md#월-달력)·[날 열기 모드](../../2-design/modules/schedule/screens/schedule-admin.md#날-열기-모드)·[근무 신청 모아보기](../../2-design/modules/schedule/screens/schedule-admin.md#근무-신청-모아보기)·[확정](../../2-design/modules/schedule/screens/schedule-admin.md#확정)·[확정 뒤](../../2-design/modules/schedule/screens/schedule-admin.md#확정-뒤)의 상태 표, 그 짜임 절들, 문안 표 일곱이다. 달 고르기 시트는 근무자 화면과 같은 것이라 [schedule-worker.md](../../2-design/modules/schedule/screens/schedule-worker.md#달-고르기-시트-짜임)가 정본이다. 쓰기 함수는 [schedule-data](schedule-data.md)가 낸 `create_schedule`·`set_application_deadline`·`confirm_schedule`·`open_day`·`close_day`·`set_day_hours`·`set_hall_defaults` 일곱이고, 이 task는 그것을 부르는 화면이다. 규칙은 [SCH-001](../../2-design/modules/schedule/README.md#sch-001)~[SCH-005](../../2-design/modules/schedule/README.md#sch-005)·[SCH-007](../../2-design/modules/schedule/README.md#sch-007)~[SCH-010](../../2-design/modules/schedule/README.md#sch-010)·[SCH-014](../../2-design/modules/schedule/README.md#sch-014)다. 경로와 역할 조건은 [navigation.md](../../2-design/system/navigation.md#경로), 캐시 키와 무효화는 [runtime.md](../../2-design/system/runtime.md#무효화-표)다.
@@ -74,7 +76,7 @@ sources:
 - **오늘이 화면 밖에서 온다.** 확정 잠김·열림, 「지난 날짜는 안 눌린다」, 예식 3일 안 경고가 전부 오늘을 본다. [runtime.md](../../2-design/system/runtime.md#tanstack-query-규칙)의 서버 시각 오프셋을 쓰고 기기 시계를 그대로 믿지 않는다. **자정 경계는 다음 진입이다** — 화면을 열어둔 채 자정을 넘기면 그 자리에서 안 풀린다([세 모습](../../2-design/modules/schedule/screens/schedule-admin.md#세-모습)). 타이머를 두지 않는다
 - **확정은 되돌리는 문이 없다.** 시트가 곧 확인이라 Dialog를 겹치지 않고([확정 시트](../../2-design/modules/schedule/screens/schedule-admin.md#확정-시트)), 빈 자리가 있어도 막지 않는다([SCH-014](../../2-design/modules/schedule/README.md#sch-014)). 화면이 만드는 유일한 안전장치는 버튼 라벨과 아래 줄이다
 
-지금 코드에는 `/admin`이 하나도 없다. 라우트는 `/`·`/login`·`/pending`·`/blocked`·`/left`·`/auth/*`뿐이다. `src/shared/ui/`는 Button·Card뿐이라 앱바·ListRow·바텀시트·Tabs·Badge·알림 블록·BottomCTA·Input·토스트·빈 상태가 없고, 달력 그리드는 이 화면이 처음 세운다. 관리자 경로 보호와 게이트의 `role`은 [members-pending plan](members-pending.md)·[members plan](members.md)의 AC-10이 만든다.
+지금 코드에는 `/admin`이 하나도 없다. 라우트는 `/`·`/login`·`/pending`·`/blocked`·`/left`·`/auth/*`뿐이다. `src/shared/ui/`는 Button·Card뿐이라 앱바·ListRow·바텀시트·Tabs·Badge·알림 블록·BottomCTA·Input·토스트·빈 상태가 없고, 달력 그리드는 이 화면이 처음 세운다. 관리자 경로 보호와 게이트의 `role`은 `members-pending`·`members`의 AC-10이 만든다.
 
 ## 완료 조건
 
@@ -109,7 +111,7 @@ sources:
 
 ### AC-03
 
-**관리자 홈이 선다.** `src/app/admin/page.tsx` → `src/screens/admin-home/`.
+**관리자 홈이 선다.** `/admin/` 화면 → `src/screens/admin-home/`.
 
 - 짜임 순서: 앱바(뒤로 → `/me`의 관리자 모드 줄, 제목 「관리자」, 브랜드 마크) → 근무표 관리 타일(Card `rounded-xl` `p-5`) → 가는 선 `mt-6` → 근무 시간 기본값 줄 → 승인할 일 줄 → 가입 대기 줄 → 가는 선 → 직원·시급·QR·통계 줄. 화면 좌우 `px-6`, 줄은 `py-4`
 - 타일 안에 지금 달 상태 한 줄. 예식 3일 안 빈 자리면 그 자리가 [알림 블록](../../2-design/design-system/components.md#알림-블록) 경고로 바뀐다
@@ -121,13 +123,13 @@ sources:
 
 ### AC-04
 
-**월 달력과 달 만들기가 선다.** `src/app/admin/schedule/page.tsx`가 `?month=`·`?date=`를 읽어 가른다.
+**월 달력과 달 만들기가 선다.** `/admin/schedule/` 화면가 `?month=`·`?date=`를 읽어 가른다.
 
 - `?month=`에 그 달 근무표가 없으면 빈 상태 덩이(달력 아이콘 `size-11`, 제목, 아래 줄, 「10월 근무표 만들기」 Button primary `h-12 rounded-lg`)가 화면 세로 가운데에 선다. 전부 지난 달이면 제목만이다
 - 만들기 버튼 → 마감일 시트(제목, Input 날짜, 안내 줄, 닫기·만들기) → `create_schedule`. 성공하면 전부 닫힌 달력과 그 위 만든 직후 한 줄이 서고, 날을 하나라도 열면 그 줄이 사라진다
 - 근무표가 있으면 달력이다 — 앱바(달 이동 화살표와 「2026년 10월」, 제목을 누르면 달 고르기 시트), 마감 줄, 요일 머리(월요일 시작)와 주 줄들, 범례 한 줄, 근무 신청 모아보기 줄, 하단 고정 「확정하기」([BottomCTA](../../2-design/design-system/components.md#bottomcta))
 - 열린 날을 누르면 `?date=`로 간다. 안 연 날은 안 눌린다
-- 달 이동은 과거로도 간다. 처음 들어온 자리는 오늘이 든 달이고 재진입이면 마지막으로 보던 달이다 — 마지막 달은 `sessionStorage`가 아니라 URL이 든다. 홈 타일이 `?month=`를 붙여 보낸다
+- 달 이동은 과거로도 간다. 처음 들어온 자리는 오늘이 든 달이고 재진입이면 마지막으로 보던 달이다 — 마지막 달은 기기 저장소가 아니라 화면 파라미터가 든다. 홈 타일이 `?month=`를 붙여 보낸다
 - 달 고르기 시트는 [schedule-worker.md](../../2-design/modules/schedule/screens/schedule-worker.md#달-고르기-시트-짜임)의 것이다. 근무자 화면과 같은 조각이라 `src/shared/ui/`로 올린다 — 어느 task가 먼저 만들든 정본은 그 절이다
 
 ### AC-05
@@ -154,7 +156,7 @@ sources:
 
 ### AC-07
 
-**근무 신청 모아보기.** `src/app/admin/applications/page.tsx`, `?month=`.
+**근무 신청 모아보기.** `/admin/applications/` 화면, `?month=`.
 
 - 짜임: 앱바(뒤로 → 달력, 제목 「10월 근무 신청」) → 마감 줄과 밑줄 친 「마감일 바꾸기」 → [Tabs](../../2-design/design-system/components.md#tabs)(날짜순·사람순) → 목록
 - 날짜순이 기본이다. 날짜 머리 아래 이름 줄, 사람순은 이름 아래 날짜들. 이름에 「님」이 없고 날짜에 `tabular-nums`
@@ -197,12 +199,12 @@ sources:
 
 - unit: AC-02 전부(그리드·칸 상태·신청 수·빈 자리 수·확정 세 모습·타일 요약·마감 줄·전부 지난 달·열기 모드 셈·빈 자리 목록·표기), 쓰기 dal의 오류 가르기
 - integration: dal 셋이 관리자 세션에서 값을 받고 근무자 세션에서 RLS대로 좁혀지는지. 쓰기 dal 일곱이 함수의 오류 코드를 `DomainError`로 올리는지
-- e2e(`tests/e2e/schedule-admin.spec.ts`): 관리자가 `/admin`에서 타일을 눌러 빈 상태를 보고 → 마감일을 골라 만들고 → 날 셋을 열고 → 날 상세에서 배정 없는 날을 닫고 → 마감일을 당기고 → 확정해 배지가 서는 데까지 한 줄기. 근무자가 `/admin/schedule`을 열면 `/`로 간다
+- e2e(`schedule-admin` e2e): 관리자가 `/admin`에서 타일을 눌러 빈 상태를 보고 → 마감일을 골라 만들고 → 날 셋을 열고 → 날 상세에서 배정 없는 날을 닫고 → 마감일을 당기고 → 확정해 배지가 서는 데까지 한 줄기. 근무자가 `/admin/schedule`을 열면 `/`로 간다
 - 시드는 `createAdminUser`·`createApprovedUser`와 [schedule-data](schedule-data.md)가 낸 근무표 헬퍼다
 
 ### AC-12
 
-**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·`pnpm build && pnpm e2e` 전부 초록. `sian-auditor`가 `schedule-admin.sian.html`과 문서를 대조한다 — backlog의 [`sian-sync`](../../backlog.md)가 이 시안에 적어둔 어긋남(없는 경로 `domain/schedule.md` 캡션)을 그때 같이 잡는다.
+**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·e2e 명령 전부 초록. `sian-auditor`가 `schedule-admin.sian.html`과 문서를 대조한다 — backlog의 [`sian-sync`](../../backlog.md)가 이 시안에 적어둔 어긋남(없는 경로 `domain/schedule.md` 캡션)을 그때 같이 잡는다.
 
 ## 변경 파일
 
@@ -212,17 +214,17 @@ sources:
 | `src/entities/schedule/dals/create-schedule.ts`·`set-application-deadline.ts`·`confirm-schedule.ts`·`open-day.ts`·`close-day.ts`·`set-day-hours.ts`·`set-hall-defaults.ts`·`__tests__/` | 쓰기 일곱 | AC-01 |
 | `src/screens/schedule-admin/model/*.ts`·`__tests__/` | 그리드·칸 상태·확정 판정·셈·표기 | AC-02 |
 | `src/features/schedule/*.ts`·`__tests__/` | query·mutation과 무효화, 오류 판정(이름은 구현이 정한다) | AC-04~AC-08 |
-| `src/screens/admin-home/ui/*.tsx` · `src/app/admin/page.tsx` | 관리자 홈과 기본값 시트 | AC-03 |
-| `src/screens/schedule-admin/ui/*.tsx` · `src/app/admin/schedule/page.tsx` | 달력·만들기·열기 모드·날 상세 껍데기·확정 | AC-04~AC-06·AC-08·AC-09 |
-| `src/screens/applications/ui/*.tsx` · `src/app/admin/applications/page.tsx` | 모아보기와 마감일 시트 | AC-07 |
+| `src/screens/admin-home/ui/*.tsx` · `/admin/` 화면 | 관리자 홈과 기본값 시트 | AC-03 |
+| `src/screens/schedule-admin/ui/*.tsx` · `/admin/schedule/` 화면 | 달력·만들기·열기 모드·날 상세 껍데기·확정 | AC-04~AC-06·AC-08·AC-09 |
+| `src/screens/applications/ui/*.tsx` · `/admin/applications/` 화면 | 모아보기와 마감일 시트 | AC-07 |
 | `src/shared/ui/bottom-cta.tsx`·`callout.tsx`·`calendar-grid.tsx`·`month-picker-sheet.tsx` · (앞 task가 아직이면) 앱바·ListRow·시트·Tabs·Badge·토스트·빈 상태 | 공용 UI | AC-10 |
-| `tests/e2e/schedule-admin.spec.ts` | e2e 한 줄기 | AC-11 |
+| `schedule-admin` e2e | e2e 한 줄기 | AC-11 |
 
 ## 구현 순서
 
 기능 task 파이프라인이다 — `test-planner` → writer 셋 → `implementer` → `pr-diff`. [`schedule-data`](schedule-data.md)가 merge된 뒤에 시작한다.
 
-1. account 쪽 task 넷의 상태를 본다. 공용 UI와 관리자 경로 보호가 merge됐으면 [변경 파일](#변경-파일)에서 빼고, 아니면 여기서 만든다. 파일 이름은 [members plan](members.md#변경-파일)을 따른다
+1. account 쪽 task 넷의 상태를 본다. 공용 UI와 관리자 경로 보호가 merge됐으면 [변경 파일](#변경-파일)에서 빼고, 아니면 여기서 만든다. 파일 이름은 `members`을 따른다
 2. `test-planner`가 AC-01~AC-10을 층에 배정한다. 계산은 unit, dal과 RLS는 integration, 흐름은 e2e다
 3. writer 셋이 실패 테스트를 쓴다
 4. `implementer`가 dal → model → 공용 UI → 홈 → 달력·만들기 → 열기 모드 → 날 상세 껍데기 → 모아보기 → 확정 → 확정 뒤 순으로 초록을 만든다. model이 서야 달력이 그릴 값이 생기고, 달력이 서야 열기 모드와 확정이 얹힌다
@@ -243,7 +245,7 @@ sources:
 | --- | --- | --- | --- | --- |
 | AC-02 | 그리드가 어긋난다, 확정 버튼이 잘못 켜진다, 셈이 틀린다 | unit `src/screens/schedule-admin/model/__tests__/`(예정) | `pnpm test` | 월요일 시작·빈칸·줄 수, 세 모습, 신청 수·빈 자리 수·「외 n개」 |
 | AC-01 | 근무자에게 남의 신청이 샌다, 한 달이 여러 질의가 된다 | integration `src/entities/schedule/dals/__tests__/`(예정) | `pnpm test:integration:run` | RLS대로 좁혀지고 한 질의로 온다 |
-| AC-04·AC-05·AC-06·AC-07·AC-08 | 흐름이 끊긴다, 쓰기 뒤 달력이 안 바뀐다 | e2e `tests/e2e/schedule-admin.spec.ts`(예정) | `pnpm build && pnpm e2e` | 만들기 → 날 열기 → 날 닫기 → 마감일 당기기 → 확정 한 줄기 |
+| AC-04·AC-05·AC-06·AC-07·AC-08 | 흐름이 끊긴다, 쓰기 뒤 달력이 안 바뀐다 | e2e `schedule-admin` e2e(예정) | e2e 명령 | 만들기 → 날 열기 → 날 닫기 → 마감일 당기기 → 확정 한 줄기 |
 | AC-05 | 부분 실패가 조용히 묻힌다 | e2e 위 spec | 위와 같다 | 실패한 날짜가 토스트에 서고 모드가 안 풀린다 |
 | AC-08 | 확정이 두 번 돈다 | integration 위 | `pnpm test:integration:run` | `already_confirmed`를 성공으로 처리한다 |
 | AC-09 | 확정 뒤에도 마감 줄·BottomCTA가 남는다 | e2e 위 spec | 위와 같다 | 배지와 확정 줄이 서고 넷이 사라진다 |

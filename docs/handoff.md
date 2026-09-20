@@ -21,7 +21,7 @@
 
 **구현은 전 영역의 설계가 끝난 뒤 한꺼번에 한다.** task 하나의 plan이 섰다고 그 task를 구현하지 않는다. 영역마다 ① 정본의 「아직 안 정한 것」을 인터뷰로 닫고(한 라운드 한 질문) ② 정본에 반영하고 ③ 시안을 갱신해 아티팩트로 사용자가 보고 승인하고 ④ plan을 쓴다. 순서는 account → schedule → attendance → payroll → notification → system이고 swap은 2차라 뒤다. 실패 테스트 작성부터가 구현 단계라 plan 뒤에 writer를 띄우지 않는다.
 
-account가 끝났다. 미정이 다 닫혔고(login·README·members-pending·members·profile), 시안 셋이 아티팩트로 승인됐고, 화면 plan 넷이 섰다 — [profile-form](3-build/plans/profile-form.md)·[members-pending](3-build/plans/members-pending.md)·[profile-screen](3-build/plans/profile-screen.md)·[members](3-build/plans/members.md). plan을 쓰다 나온 결정 열둘을 정본에 반영했다 — `already_decided` 코드, `profile_private.email`, `phone` check 제약, 차단 해제가 `submitted_at`도 비우기, `/admin/members/blocked` 경로, `is_admin()`이 퇴사·차단을 보기, `last_admin` 셈에 퇴사·차단 제외와 퇴사 처리도 막기, 쓰기는 전부 응답 대기, 관리자는 자기 이름 고치기 가능, 지난 시간 표기 규칙, 하나 고르는 목록 공용화, `profile-erasure` task 신설.
+account가 끝났다. 미정이 다 닫혔고(login·README·members-pending·members·profile), 시안 셋이 아티팩트로 승인됐고, 화면 plan 넷이 섰다 — `profile-form`·`members-pending`·`profile-screen`·`members`. plan을 쓰다 나온 결정 열둘을 정본에 반영했다 — `already_decided` 코드, `profile_private.email`, `phone` check 제약, 차단 해제가 `submitted_at`도 비우기, `/admin/members/blocked` 경로, `is_admin()`이 퇴사·차단을 보기, `last_admin` 셈에 퇴사·차단 제외와 퇴사 처리도 막기, 쓰기는 전부 응답 대기, 관리자는 자기 이름 고치기 가능, 지난 시간 표기 규칙, 하나 고르는 목록 공용화, `profile-erasure` task 신설.
 
 **schedule 영역의 미정이 다 닫혔고 정본에 반영됐다.** 결정 다섯이다.
 
@@ -55,7 +55,7 @@ plan을 쓰며 가른 경계 넷이다.
 
 다른 영역이 이어받을 자리도 backlog 행에 적었다 — `members`의 `mark_leave` 남은 배정 검사, `attendance`의 인증 상태 열과 approvals 사유 줄이다.
 
-**attendance 영역이 끝났다.** 미정이 다 닫혔고 정본에 반영됐고 시안이 따라갔고 plan 넷이 섰다 — [attendance-data](3-build/plans/attendance-data.md)·[attendance-qr](3-build/plans/attendance-qr.md)·[attendance-checkin](3-build/plans/attendance-checkin.md)·[attendance-excuse](3-build/plans/attendance-excuse.md). backlog의 `attendance` 한 행을 넷으로 갈랐다.
+**attendance 영역이 끝났다.** 미정이 다 닫혔고 정본에 반영됐고 시안이 따라갔고 plan 넷이 섰다 — [attendance-data](3-build/plans/attendance-data.md)·`attendance-qr`·`attendance-checkin`·[attendance-excuse](3-build/plans/attendance-excuse.md). backlog의 `attendance` 한 행을 넷으로 갈랐다.
 
 인터뷰로 닫은 결정 넷이다.
 
@@ -119,7 +119,7 @@ plan을 쓰며 나온 막힌 것 둘이 착수 전에 닫혀야 한다.
 
 **1차 알림의 범위를 다시 그었다.** [roadmap](1-plan/roadmap.md#릴리스-목록)이 알림을 「승인·확정·전날·직전」 넷으로 적었는데 같은 표의 1차 기능에 근무 요청·근무 취소·사유 승인이 들어 있고 2차가 미룬다고 적은 것은 교대와 공지뿐이었다. **1차는 교대와 공지를 뺀 열하나**고 roadmap의 괄호를 그렇게 고쳤다.
 
-backlog의 `notification-first` 한 행을 여섯으로 갈랐다 — [notification-data](3-build/plans/notification-data.md)·[notification-push](3-build/plans/notification-push.md)·[notification-emit](3-build/plans/notification-emit.md)·[notification-schedule](3-build/plans/notification-schedule.md)·[notification-list](3-build/plans/notification-list.md)·`notification-second`. `notification-settings`까지 plan 다섯이 섰고 `notification-second`는 교대 설계가 서야 쓴다. `dashboard`의 선행도 `notification-list`로 바꿨다 — 문장 함수를 거기서 가져다 쓴다.
+backlog의 `notification-first` 한 행을 여섯으로 갈랐다 — [notification-data](3-build/plans/notification-data.md)·`notification-push`·[notification-emit](3-build/plans/notification-emit.md)·[notification-schedule](3-build/plans/notification-schedule.md)·[notification-list](3-build/plans/notification-list.md)·`notification-second`. `notification-settings`까지 plan 다섯이 섰고 `notification-second`는 교대 설계가 서야 쓴다. `dashboard`의 선행도 `notification-list`로 바꿨다 — 문장 함수를 거기서 가져다 쓴다.
 
 plan을 쓰며 가른 경계 셋이다.
 

@@ -55,7 +55,7 @@ sources:
 - **확정 전과 뒤가 다르다.** 확정 전에 배정을 빼면 행을 지우고, 확정 뒤에는 `ended_at`을 찍는다([배정](../../2-design/modules/schedule/design.md#배정)). 함수가 `schedules.confirmed_at`을 보고 가른다. 이 task의 `close_day`가 그 갈림의 첫 사용자다 — [SCH-004](../../2-design/modules/schedule/README.md#sch-004)가 확정 전에만 닫을 수 있다고 정했으니 여기서는 지우는 쪽만 만든다
 - **빈 자리만 SQL이다.** [계산의 예외 하나](../../2-design/modules/schedule/design.md#계산의-예외-하나)가 `open_slots` 뷰(`security_invoker`)를 두라고 정했다. pg_cron과 관리자 화면이 같은 뷰를 읽어 규칙이 두 벌 서지 않게 한다. 나머지 상태(자격·빈 자리 밖의 판정)는 저장도 뷰도 아니고 TypeScript다
 
-지금 코드에는 근무표가 하나도 없다. 마이그레이션은 `supabase/migrations/20260825162027_profiles.sql` 하나뿐이고 거기 `profiles`·`profile_private` 표와 `is_approved`·`is_admin`·`ensure_profile`·`submit_profile`·`update_my_photo`·`approve_member`·`reject_member` 함수, 정책 셋(`profiles_select`·`profile_private_select`·`profile_private_update_own`)이 있다. 직접 쓰기를 막는 모양도 거기 있다 — `revoke all ... from anon, authenticated` 뒤에 필요한 `grant select`만 되돌리는 꼴이고 이 task가 같은 꼴을 쓴다. `is_admin()`은 `role = 'admin'`만 보고 `left_at`·`blocked_at`을 안 본다 — 좁히는 것은 [members-pending plan](members-pending.md)의 몫이라 이 task는 건드리지 않는다. `halls`·`schedules` 아래 아홉과 `open_slots`는 저장소 어디에도 없다. `src/shared/api/` 디렉터리가 없어 `error-codes.ts`도 `database.types.ts`도 없고, `package.json`에 `types` 스크립트가 없다. `tests/integration/postgres.ts`에는 `createApprovedUser`·`createAdminUser`·`createBlockedUser`·`createLeftUser`가 있고 근무표 시드 헬퍼가 없다. `supabase/config.toml`에 pg_cron 설정이 없다 — 배치는 [`schedule-requests`](../../backlog.md)가 처음 필요로 한다.
+지금 코드에는 근무표가 하나도 없다. 마이그레이션은 `supabase/migrations/20260825162027_profiles.sql` 하나뿐이고 거기 `profiles`·`profile_private` 표와 `is_approved`·`is_admin`·`ensure_profile`·`submit_profile`·`update_my_photo`·`approve_member`·`reject_member` 함수, 정책 셋(`profiles_select`·`profile_private_select`·`profile_private_update_own`)이 있다. 직접 쓰기를 막는 모양도 거기 있다 — `revoke all ... from anon, authenticated` 뒤에 필요한 `grant select`만 되돌리는 꼴이고 이 task가 같은 꼴을 쓴다. `is_admin()`은 `role = 'admin'`만 보고 `left_at`·`blocked_at`을 안 본다 — 좁히는 것은 `members-pending`의 몫이라 이 task는 건드리지 않는다. `halls`·`schedules` 아래 아홉과 `open_slots`는 저장소 어디에도 없다. `src/shared/api/` 디렉터리가 없어 `error-codes.ts`도 `database.types.ts`도 없고, `package.json`에 `types` 스크립트가 없다. `tests/integration/postgres.ts`에는 `createApprovedUser`·`createAdminUser`·`createBlockedUser`·`createLeftUser`가 있고 근무표 시드 헬퍼가 없다. `supabase/config.toml`에 pg_cron 설정이 없다 — 배치는 [`schedule-requests`](../../backlog.md)가 처음 필요로 한다.
 
 확인한 코드와 Git 기준점 — `supabase/migrations/20260825162027_profiles.sql`·`tests/integration/postgres.ts`가 `61c5d68`(#363).
 
@@ -163,13 +163,13 @@ sources:
 
 - 이 task가 던지는 코드를 `src/shared/api/error-codes.ts`에 더한다 — `already_exists`·`deadline_past`·`month_over`·`already_confirmed`·`too_early`·`no_schedule`·`already_open`·`not_open`·`bad_hours`·`not_allowed`
 - 대조 테스트가 마이그레이션의 `raise ... using message =` 문자열과 그 목록을 맞춘다([오류의 모양](../../2-design/system/data-access.md#오류의-모양))
-- 그 파일과 대조 테스트는 [profile-form plan](profile-form.md)의 AC-01·AC-11이 세운다. **먼저 merge된 쪽이 만들고 뒤가 얹는다** — 이 task와 `profile-form`은 선행이 갈려 순서가 안 정해졌다. 이 task가 먼저면 여기서 파일과 `tests/lint/error-codes.test.ts`를 세우고, `DomainError`·`TransportError`는 만들지 않는다. 화면이 없어 던진 코드를 받는 쪽이 아직 없고, 오류 기계는 그 plan의 몫이다
+- 그 파일과 대조 테스트는 `profile-form`의 AC-01·AC-11이 세운다. **먼저 merge된 쪽이 만들고 뒤가 얹는다** — 이 task와 `profile-form`은 선행이 갈려 순서가 안 정해졌다. 이 task가 먼저면 여기서 파일과 `tests/lint/error-codes.test.ts`를 세우고, `DomainError`·`TransportError`는 만들지 않는다. 화면이 없어 던진 코드를 받는 쪽이 아직 없고, 오류 기계는 그 plan의 몫이다
 
 타입 생성(`pnpm types`·`database.types.ts`)은 이 task가 하지 않는다 — [`types-generation`](../../backlog.md)이 절차를 세우는 task고 지금 저장소에 그 스크립트가 없다.
 
 ### AC-11
 
-**`mark_leave`의 남은 배정 검사를 잇는다.** [members plan](members.md#ac-11)이 「`assignments` 표가 서는 마이그레이션이 이 함수를 `create or replace`로 고쳐 검사를 넣는다」고 예고한 자리다. [ACC-010](../../2-design/modules/account/README.md#acc-010)이 DB에서 지켜지는 유일한 문이라 잊으면 근무표가 선 뒤로 규칙이 비어 있다.
+**`mark_leave`의 남은 배정 검사를 잇는다.** `members`이 「`assignments` 표가 서는 마이그레이션이 이 함수를 `create or replace`로 고쳐 검사를 넣는다」고 예고한 자리다. [ACC-010](../../2-design/modules/account/README.md#acc-010)이 DB에서 지켜지는 유일한 문이라 잊으면 근무표가 선 뒤로 규칙이 비어 있다.
 
 - `mark_leave`가 살아 있는 `assignments`(`ended_at is null`) 중 `days.work_date`가 `(now() at time zone 'Asia/Seoul')::date`보다 뒤인 행이 있으면 `has_future_assignments`를 던진다. 교육 배정도 센다 — 그날 나와야 하는 것은 같다
 - `error-codes.ts`에 `has_future_assignments`가 든다
@@ -245,4 +245,4 @@ sources:
 - 타입 생성 절차 — [`types-generation`](../../backlog.md)
 - pg_cron 설정과 `expire_requests`·빈 자리 재촉 — [`schedule-requests`](../../backlog.md)와 알림 영역
 - `is_admin()`을 퇴사·차단까지 보게 좁히기 — [`members-pending`](../../backlog.md)
-- `DomainError`·`TransportError` — [profile-form plan](profile-form.md)
+- `DomainError`·`TransportError` — `profile-form`

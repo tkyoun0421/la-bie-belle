@@ -45,6 +45,8 @@ sources:
 
 # 근무 요청과 근무 취소를 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본 셋이 갈라 든다. 요청의 데이터 모양은 [design.md의 요청](../../2-design/modules/schedule/design.md#요청)과 [근무 취소](../../2-design/modules/schedule/design.md#근무-취소), 관리자 쪽 화면은 [schedule-admin.md의 근무 요청 보내기](../../2-design/modules/schedule/screens/schedule-admin.md#근무-요청-보내기), 근무자 쪽 화면은 [schedule-worker.md의 근무 요청 시트](../../2-design/modules/schedule/screens/schedule-worker.md#근무-요청-시트-짜임)와 [근무 취소 시트](../../2-design/modules/schedule/screens/schedule-worker.md#근무-취소-시트-짜임), 판정 화면은 [approvals.md](../../2-design/system/screens/approvals.md)다. 규칙은 [SCH-016](../../2-design/modules/schedule/README.md#sch-016)·[SCH-017](../../2-design/modules/schedule/README.md#sch-017)·[SCH-018](../../2-design/modules/schedule/README.md#sch-018)이다.
@@ -180,11 +182,11 @@ sources:
 
 - unit: 카운트다운 계산(서버 오프셋), 요청 상태 셋과 체크박스 유무 판정, 「전부 소진」 판정, 끝난 요청 시트 갈래, 달력 아래 줄의 사건 문구
 - integration: 함수 넷의 호출자 검사와 오류 코드 전부. 특히 — **선착순**(둘이 같은 자리에 수락하면 하나만 통과하고 나머지가 `slot_full`), `respond_request`가 신청 검사만 건너뛰고 자격은 보는 것, 거절이 마지막 후보면 요청이 닫히는 것, `expires_at`이 48시간과 근무 시작 중 이른 쪽인 것, `expire_requests`가 지난 후보를 만료시키고 요청을 닫는 것, `add_assignment`·`force_change`·`close_day`가 요청을 닫는 것, `create_cancel_request`가 당일에 `window_closed`고 거절 뒤 다시 되는 것, `decide_cancel_request`가 승인 시 배정을 닫고 거절 시 이유를 요구하는 것
-- e2e(`tests/e2e/schedule-requests.spec.ts`): 관리자가 픽커에서 둘을 골라 요청을 보내고 자리 카드에 배지가 서는지 → 근무자가 달력의 점선 날을 눌러 「근무할게요」로 배정되는지 → 다른 근무자가 같은 요청을 눌러 「자리가 찼어요」 토스트를 보는지 → 근무자가 날 시트에서 취소 요청을 보내 「취소 요청 중」 배지가 서는지 → 관리자가 `/admin/approvals`에서 승인해 자리가 비는지
+- e2e(`schedule-requests` e2e): 관리자가 픽커에서 둘을 골라 요청을 보내고 자리 카드에 배지가 서는지 → 근무자가 달력의 점선 날을 눌러 「근무할게요」로 배정되는지 → 다른 근무자가 같은 요청을 눌러 「자리가 찼어요」 토스트를 보는지 → 근무자가 날 시트에서 취소 요청을 보내 「취소 요청 중」 배지가 서는지 → 관리자가 `/admin/approvals`에서 승인해 자리가 비는지
 
 ### AC-11
 
-**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·`pnpm build && pnpm e2e` 전부 초록. `sian-auditor`가 `schedule-admin.sian.html`·`schedule-worker.sian.html`·`approvals.sian.html`과 문서를 대조한다 — backlog의 [`sian-sync`](../../backlog.md)가 approvals 시안에 적어둔 어긋남(앱바 글자·거절 시트 여백 다섯·머리말 주석·「보내기 실패」 상태)과 worker 시안의 「취소 요청 중」 목업을 그때 같이 잡는다.
+**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·e2e 명령 전부 초록. `sian-auditor`가 `schedule-admin.sian.html`·`schedule-worker.sian.html`·`approvals.sian.html`과 문서를 대조한다 — backlog의 [`sian-sync`](../../backlog.md)가 approvals 시안에 적어둔 어긋남(앱바 글자·거절 시트 여백 다섯·머리말 주석·「보내기 실패」 상태)과 worker 시안의 「취소 요청 중」 목업을 그때 같이 잡는다.
 
 ## 변경 파일
 
@@ -196,9 +198,9 @@ sources:
 | `src/entities/schedule/dals/send-work-request.ts`·`respond-request.ts`·`create-cancel-request.ts`·`decide-cancel-request.ts`·`get-slot-requests.ts`·`get-pending-approvals.ts`·`__tests__/` | 쓰기 넷, 읽기 둘 | AC-05~AC-08 |
 | `src/screens/schedule-admin/ui/*.tsx` · `model/*.ts` | 픽커 체크박스·보내기 버튼·요청 상태 줄·자리 카드 배지 | AC-05 |
 | `src/screens/schedule-worker/ui/*.tsx` · `model/*.ts` | 근무 요청 시트·근무 취소 시트·요청 중 배지·달력 점선과 아래 줄 | AC-06·AC-07 |
-| `src/screens/approvals/ui/*.tsx` · `src/app/admin/approvals/page.tsx` | 목록·상세 시트·거절 | AC-08 |
+| `src/screens/approvals/ui/*.tsx` · `/admin/approvals/` 화면 | 목록·상세 시트·거절 | AC-08 |
 | `src/features/schedule/*.ts`·`__tests__/` | mutation과 무효화, 카운트다운 | AC-09 |
-| `tests/e2e/schedule-requests.spec.ts` | e2e | AC-10 |
+| `schedule-requests` e2e | e2e | AC-10 |
 
 ## 구현 순서
 
@@ -231,7 +233,7 @@ sources:
 | AC-04 | 만료가 안 돈다 | integration `expire-requests.integration.test.ts`(예정) | 위와 같다 | 지난 후보가 만료되고 요청이 닫힌다 |
 | AC-04 | `db reset`이 cron에서 깨진다 | — | `supabase db reset` | 오류 없이 돈다 |
 | AC-02 | 당일에 취소 요청이 들어간다, 거절 이유 없이 거절된다 | integration `cancel-request.integration.test.ts`(예정) | `pnpm test:integration:run` | `window_closed`·`invalid_reason`, 승인이 배정을 닫는다 |
-| AC-06 | 늦은 수락에 오류 블록이 선다 | e2e `tests/e2e/schedule-requests.spec.ts`(예정) | `pnpm build && pnpm e2e` | 시트가 닫히고 토스트, 달력 아래 줄이 사건을 말한다 |
+| AC-06 | 늦은 수락에 오류 블록이 선다 | e2e `schedule-requests` e2e(예정) | e2e 명령 | 시트가 닫히고 토스트, 달력 아래 줄이 사건을 말한다 |
 | AC-05·AC-07·AC-08 | 흐름이 끊긴다 | e2e 위 spec | 위와 같다 | 보내기 → 수락 → 취소 요청 → 승인 한 줄기 |
 | AC-11 | 시안이 문서와 어긋난다 | `sian-auditor` | — | 어긋남 없음 |
 

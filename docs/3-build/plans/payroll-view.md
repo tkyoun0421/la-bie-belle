@@ -33,6 +33,8 @@ sources:
 
 # 근무자 급여 화면을 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본은 [payroll.md](../../2-design/modules/payroll/screens/payroll.md) 전체다. 업무 규칙은 [PAY-005](../../2-design/modules/payroll/README.md#pay-005)·[PAY-017](../../2-design/modules/payroll/README.md#pay-017)·[PAY-020](../../2-design/modules/payroll/README.md#pay-020)~[PAY-022](../../2-design/modules/payroll/README.md#pay-022)·[PAY-025](../../2-design/modules/payroll/README.md#pay-025)·[PAY-028](../../2-design/modules/payroll/README.md#pay-028)이고, 근태 쪽은 [ATT-023](../../2-design/modules/attendance/README.md#att-023)·[ATT-024](../../2-design/modules/attendance/README.md#att-024), 퇴사자 진입은 [ACC-011](../../2-design/modules/account/README.md#acc-011)이다.
@@ -121,10 +123,10 @@ sources:
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
 | `src/screens/payroll/model/*.ts`·`__tests__/` | 기간 자르기·누적 셈·목록 줄 만들기·연 접기 | AC-01~AC-05 |
-| `src/screens/payroll/ui/*.tsx` · `src/app/payroll/page.tsx` | 세그먼트·기간 줄·금액·누적·목록 | AC-01~AC-05·AC-07 |
+| `src/screens/payroll/ui/*.tsx` · `/payroll/` 화면 | 세그먼트·기간 줄·금액·누적·목록 | AC-01~AC-05·AC-07 |
 | `src/features/payroll/*.ts`·`__tests__/` | 여러 달 키 읽어 더하기 | AC-06 |
 | `src/shared/ui/segmented.tsx` | 주·월·연 세그먼트 | AC-01 |
-| `tests/e2e/payroll.spec.ts` | e2e | 검증 표 |
+| `payroll` e2e | e2e | 검증 표 |
 
 ## 구현 순서
 
@@ -157,7 +159,7 @@ sources:
 | AC-03 | 리허설만 있는 날이 빠진다 | unit 위 | `pnpm test` | 줄이 서고 금액이 난다 |
 | AC-03 | 연장이 붙은 날에 근거가 없다 | unit 위 | `pnpm test` | 보조 정보에 「연장 1시간」 |
 | AC-04 | 연에 합계 줄이 없거나 눌린다 | unit 위 | `pnpm test` | 맨 아래 한 줄, 안 눌림. 주·월에는 없음 |
-| AC-05 | 첫 달 앞으로 계속 간다 | e2e `tests/e2e/payroll.spec.ts`(예정) | `pnpm e2e` | 화살표가 사라진다 |
+| AC-05 | 첫 달 앞으로 계속 간다 | e2e `payroll` e2e(예정) | e2e 명령 | 화살표가 사라진다 |
 | AC-05 | 퇴사자에게 탭 바가 선다 | e2e 위 | 위와 같다 | 탭 바가 없고 뒤로가 `/left` |
 | AC-06 | 읽는 중에 `–`가 뜬다 | e2e 위 | 위와 같다 | 스켈레톤이고 `–`가 아니다 |
 | AC-07 | 시안과 어긋난다 | 수동 — `sian-auditor` | — | 문안·토큰·상태가 문서와 같다 |

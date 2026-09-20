@@ -32,6 +32,8 @@ sources:
 
 # 시급 화면을 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본은 [wages.md](../../2-design/modules/payroll/screens/wages.md) 전체다. 업무 규칙은 [PAY-008](../../2-design/modules/payroll/README.md#pay-008)·[PAY-010](../../2-design/modules/payroll/README.md#pay-010)~[PAY-015](../../2-design/modules/payroll/README.md#pay-015)이고, 쓰기 함수는 [`payroll-data`](payroll-data.md#ac-03)가 이미 냈다.
@@ -113,10 +115,10 @@ sources:
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
 | `src/screens/wages/model/*.ts`·`__tests__/` | 정렬·인원 셈·상한 검사·이력 자르기 | AC-01~AC-04 |
-| `src/screens/wages/ui/*.tsx` · `src/app/admin/wages/page.tsx` | 목록·시트 둘·Dialog | AC-01~AC-03·AC-06 |
+| `src/screens/wages/ui/*.tsx` · `/admin/wages/` 화면 | 목록·시트 둘·Dialog | AC-01~AC-03·AC-06 |
 | `src/shared/ui/amount-input.tsx` | 쉼표·「원」·상한·하한 | AC-04 |
 | `src/features/payroll/*.ts`·`__tests__/` | query·mutation과 무효화 | AC-05 |
-| `tests/e2e/wages.spec.ts` | e2e | 검증 표 |
+| `wages` e2e | e2e | 검증 표 |
 
 ## 구현 순서
 
@@ -146,7 +148,7 @@ sources:
 | AC-02 | 같이 바뀌는 인원이 틀린다 | unit 위 | `pnpm test` | 가장 최근 행이 `follows_default`인 사람만 센다 |
 | AC-04 | 상한이 한 시트에만 걸린다 | unit 위 | `pnpm test` | 두 시트 다 100,000원에서 멈춘다 |
 | AC-04 | 저장 실패에 값이 날아간다 | unit 위 | `pnpm test` | 칸에 값이 남고 시트가 안 닫힌다 |
-| AC-03 | 기본을 쓰는 사람에게 되돌리기가 뜬다 | e2e `tests/e2e/wages.spec.ts`(예정) | `pnpm e2e` | 그 줄이 없다 |
+| AC-03 | 기본을 쓰는 사람에게 되돌리기가 뜬다 | e2e `wages` e2e(예정) | e2e 명령 | 그 줄이 없다 |
 | AC-03 | 이력이 눌려 고쳐진다 | e2e 위 | 위와 같다 | 지난 줄에 화살표가 없고 안 눌린다 |
 | AC-02 | 기본을 바꿔도 따르는 사람이 안 바뀐다 | e2e 위 | 위와 같다 | 기본을 바꾸면 목록의 그 사람들 값이 같이 바뀐다 |
 | AC-06 | 시안과 어긋난다 | 수동 — `sian-auditor` | — | 문안·토큰·상태가 문서와 같다 |
@@ -160,5 +162,5 @@ sources:
 - 근무 조정 — 값이 여기가 아니라 날 상세에 산다. [`payroll-adjust`](../../backlog.md)
 - 근무자가 보는 급여 — [`payroll-view`](../../backlog.md)
 - 통계 — 여기서 정한 단가가 통계에 안 간다. 관리자 통계에 금액이 없다([stats.md](../../2-design/system/screens/stats.md#안-담은-것))
-- 직원 시트의 시급 — [`members`](members.md)가 자리를 두었다
+- 직원 시트의 시급 — `members`가 자리를 두었다
 - 알림 — 시급 변경에 알림이 없다. 급여 화면이 다음에 열릴 때 바뀐 값이다

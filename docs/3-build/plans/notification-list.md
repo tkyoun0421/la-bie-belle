@@ -16,6 +16,8 @@ sources:
 
 # 알림 목록 화면을 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본은 [notifications.md](../../2-design/modules/notification/screens/notifications.md)다. 종 아이콘은 [components.md](../../2-design/design-system/components.md#종-아이콘), 어디로 가는지는 [design.md의 UI 연결](../../2-design/modules/notification/design.md#ui-연결)과 [navigation.md](../../2-design/system/navigation.md#알림을-누르면)다.
@@ -43,7 +45,7 @@ sources:
 - 스물셋의 종류를 전부 다룬다. 근거는 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표고 **문자열이 그 표와 글자 하나까지 같아야 한다**
 - **아래 줄이 있는 종류가 넷이다** — 신청 접수 열림(마감일), 미리 알림 하루(시각과 포지션), 미리 알림 주말(날짜 둘), 사유 결과 거절(관리자가 적은 이유)
 - 관리자 공지는 `payload`의 본문이 그대로 제목이다
-- **푸시의 payload와 같은 표를 쓴다**([`notification-push` AC-01](notification-push.md#ac-01)). 두 곳이 문장을 따로 들면 같은 알림이 기기와 화면에서 다르게 읽힌다 — 이 함수 하나를 양쪽이 쓴다
+- **푸시의 payload와 같은 표를 쓴다**(`notification-push`). 두 곳이 문장을 따로 들면 같은 알림이 기기와 화면에서 다르게 읽힌다 — 이 함수 하나를 양쪽이 쓴다
 
 ### AC-02
 
@@ -109,7 +111,7 @@ sources:
 | `src/features/notification/api/queries.ts` | `useInfiniteQuery`와 안 읽은 수 | AC-03 |
 | `src/features/notification/model/use-notification-list.ts` | 목록의 상태와 누름 | AC-04·AC-05 |
 | `src/screens/notifications/` | 화면 조립 | AC-04 |
-| `src/app/notifications/page.tsx` | 라우트 | AC-04 |
+| `/notifications/` 화면 | 라우트 | AC-04 |
 | `src/shared/ui/bell.tsx` | 종 아이콘 | AC-06 |
 | `src/shared/ui/appbar.tsx` | 오른쪽에 종을 받는 자리 | AC-06 |
 
@@ -145,19 +147,19 @@ sources:
 | AC-03 | 남의 알림이 섞인다 | integration `tests/integration/notifications-list.test.ts`(예정) | `pnpm test:integration:run` | 본인 것만 |
 | AC-03 | 51번째가 안 온다 | integration 위 | 위와 같다 | 둘째 쪽이 온다 |
 | AC-05 | 목적지가 표와 다르다 | unit `destination.test.ts`(예정) | `pnpm test` | 종류마다 표의 경로 |
-| AC-05 | 관리자 공지가 눌린다 | e2e `e2e/notifications.spec.ts`(예정) | `pnpm e2e` | 안 눌리고 화살표가 없다 |
-| AC-05 | 눌러도 안 읽음 점이 남는다 | e2e 위 | `pnpm e2e` | 돌아오면 점이 없다 |
-| AC-04 | 빈 상태가 안 선다 | e2e 위 | `pnpm e2e` | 「아직 받은 알림이 없어요」 |
-| AC-06 | 퇴사자 화면에 종이 선다 | e2e 위 | `pnpm e2e` | 급여 화면에 종이 없다 |
+| AC-05 | 관리자 공지가 눌린다 | e2e `notifications` e2e(예정) | e2e 명령 | 안 눌리고 화살표가 없다 |
+| AC-05 | 눌러도 안 읽음 점이 남는다 | e2e 위 | e2e 명령 | 돌아오면 점이 없다 |
+| AC-04 | 빈 상태가 안 선다 | e2e 위 | e2e 명령 | 「아직 받은 알림이 없어요」 |
+| AC-06 | 퇴사자 화면에 종이 선다 | e2e 위 | e2e 명령 | 급여 화면에 종이 없다 |
 | AC-06 | 닿는 면이 44px보다 작다 | 수동 — `.artifact/measure-hit.mjs` | — | 44px 이상 |
 
-- 배정하지 않은 것: 푸시를 눌러 앱이 열리는 길 — [`notification-settings`](notification-settings.md)의 Service Worker가 맡는다
+- 배정하지 않은 것: 푸시를 눌러 앱이 열리는 길 — `notification-settings`의 Service Worker가 맡는다
 - 막힌 것: 지금은 없다
 
 ## 범위 밖
 
 - 대시보드의 안 본 알림 영역 — [`dashboard`](../../backlog.md). **AC-01의 문장 함수를 가져다 쓴다**
-- 프로필의 알림 스위치 — [`notification-settings`](notification-settings.md)
+- 프로필의 알림 스위치 — `notification-settings`
 - 알림을 낳는 자리 — [`notification-emit`](notification-emit.md)·[`notification-schedule`](notification-schedule.md)
-- 푸시를 쏘는 자리 — [`notification-push`](notification-push.md)
+- 푸시를 쏘는 자리 — `notification-push`
 - 교대와 공지 종류의 문장 — 표에는 있지만 2차에 행이 안 생긴다. **함수는 스물셋을 다 다룬다** — 문장이 뒤늦게 갈라지는 것을 막는다

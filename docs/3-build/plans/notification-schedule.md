@@ -98,7 +98,7 @@ pg_cron 함수 하나(`emit_reminders`)가 이 task의 산출이다. 사람이 �
 - **cron이 한 번 늦으면 출근 직전이 통째로 빠진다.** 창으로 보는 것이 그 방어다. 창을 좁게 잡으면 같은 구멍이 남는다
 - **이미 지난 근무에 알림이 갈 수 있다.** 배포 직후나 cron이 오래 멈췄다 돌아올 때다. 창의 위쪽 끝을 「지금」으로 막는다
 - **시간대를 빠뜨리면 9시가 다른 시각이 된다.** cron 등록에 시간대가 박히고 함수 안의 날짜 계산도 같은 기준이다 — **둘 중 하나만 맞춰도 조용히 어긋난다**
-- **`emit_before_shift`가 자주 돈다.** 1분마다 질의 하나다. 대부분의 분이 빈손으로 끝나고 이것은 [`notification-push`](notification-push.md#ac-04)의 `retry_push`와 같은 주기다 — 둘을 한 작업으로 합치는 것은 안 한다. 실패가 서로 옮는다
+- **`emit_before_shift`가 자주 돈다.** 1분마다 질의 하나다. 대부분의 분이 빈손으로 끝나고 이것은 `notification-push`의 `retry_push`와 같은 주기다 — 둘을 한 작업으로 합치는 것은 안 한다. 실패가 서로 옮는다
 - 되돌리기는 cron 등록을 지우는 마이그레이션이다. 이미 선 행은 그대로 남는다
 
 ## 검증 방법
@@ -116,12 +116,12 @@ pg_cron 함수 하나(`emit_reminders`)가 이 task의 산출이다. 사람이 �
 | AC-04 | 9시가 다른 시각이 된다 | integration 위 | 위와 같다 | 한국 시각 21시 |
 | AC-01 | 첫 실행이 안 돈다 | 수동 — 배포 뒤 저녁 9시를 본다 | 운영 | 내일 근무자에게 행이 선다 |
 
-- 배정하지 않은 것: 실제 기기가 저녁 9시에 울리는 것 — [`notification-push`](notification-push.md)가 보내고 배포 뒤 손으로 본다
+- 배정하지 않은 것: 실제 기기가 저녁 9시에 울리는 것 — `notification-push`가 보내고 배포 뒤 손으로 본다
 - 막힌 것: 지금은 없다
 
 ## 범위 밖
 
 - 일이 일어나는 순간 나가는 알림 — [`notification-emit`](notification-emit.md)
-- 행을 기기로 보내는 것 — [`notification-push`](notification-push.md)
+- 행을 기기로 보내는 것 — `notification-push`
 - 교대 관련 시각 알림 — 2차다([roadmap](../../1-plan/roadmap.md#릴리스-목록))
 - 알림 목록 화면 — [`notification-list`](notification-list.md)

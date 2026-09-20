@@ -14,6 +14,8 @@ sources:
 
 # 근무자 통계 화면을 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본은 [stats.md](../../2-design/system/screens/stats.md)의 근무자 절이다. 관리자 화면과 문서가 하나라 짜임·색·글자·여백 표를 같이 읽는다.
@@ -23,7 +25,7 @@ sources:
 선행이 셋이다.
 
 - [`stats-admin`](stats-admin.md) — 차트 조각 셋과 집계 순수 함수와 화면 뼈대를 세웠다. **이 task는 그것을 가져다 쓴다**
-- [`profile-screen`](profile-screen.md) — 「나」의 「통계」 줄이 들어오는 문이다
+- `profile-screen` — 「나」의 「통계」 줄이 들어오는 문이다
 - [`payroll-view`](payroll-view.md) — 「내역 보기」가 여는 급여 화면이다
 
 정본에서 확인한 셋이 plan의 방향을 정한다.
@@ -88,7 +90,7 @@ sources:
 | `src/features/stats/model/my-totals.ts` | 내 것으로 좁힌 집계 | AC-01 |
 | `src/features/stats/api/queries.ts` | 내 범위 질의 — `stats-admin`이 만든 파일에 더한다 | AC-01 |
 | `src/screens/stats/` | 화면 조립, 탭 셋 | AC-02~AC-05 |
-| `src/app/stats/page.tsx` | 라우트 | AC-05 |
+| `/stats/` 화면 | 라우트 | AC-05 |
 
 ## 구현 순서
 
@@ -113,12 +115,12 @@ sources:
 | --- | --- | --- | --- | --- |
 | AC-01 | 안 들어간 포지션이 선다 | unit `src/features/stats/model/__tests__/my-totals.test.ts`(예정) | `pnpm test` | 내 것만 |
 | AC-01 | 집계가 관리자 쪽과 다르다 | unit 위 | `pnpm test` | 같은 함수의 값 |
-| AC-02 | 못 찍은 날이 빠진다 | e2e `e2e/stats.spec.ts`(예정) | `pnpm e2e` | 줄로 서고 상태만 |
-| AC-02 | 지각이 붉다 | e2e 위 | `pnpm e2e` | 색으로 안 가른다 |
-| AC-04 | 「내역 보기」가 안 간다 | e2e 위 | `pnpm e2e` | 급여 화면이 열린다 |
-| AC-04 | 예상치 안내가 없다 | e2e 위 | `pnpm e2e` | 급여 탭에 한 줄 |
-| AC-05 | 빈 달에 「내역 보기」가 남는다 | e2e 위 | `pnpm e2e` | 빈 상태가 그 자리를 받는다 |
-| AC-05 | 남의 것이 보인다 | e2e 위 | `pnpm e2e` | 자기 것만 |
+| AC-02 | 못 찍은 날이 빠진다 | e2e `stats` e2e(예정) | e2e 명령 | 줄로 서고 상태만 |
+| AC-02 | 지각이 붉다 | e2e 위 | e2e 명령 | 색으로 안 가른다 |
+| AC-04 | 「내역 보기」가 안 간다 | e2e 위 | e2e 명령 | 급여 화면이 열린다 |
+| AC-04 | 예상치 안내가 없다 | e2e 위 | e2e 명령 | 급여 탭에 한 줄 |
+| AC-05 | 빈 달에 「내역 보기」가 남는다 | e2e 위 | e2e 명령 | 빈 상태가 그 자리를 받는다 |
+| AC-05 | 남의 것이 보인다 | e2e 위 | e2e 명령 | 자기 것만 |
 
 - 배정하지 않은 것: RLS — 선행 task의 integration이 이미 본다
 - 막힌 것: 지금은 없다
@@ -128,5 +130,5 @@ sources:
 - 관리자 통계 `/admin/stats` — [`stats-admin`](stats-admin.md)
 - 차트 조각 셋 — [`stats-admin` AC-05](stats-admin.md#ac-05)가 만든다
 - 날짜별 급여 내역과 주·연 조회 — [`payroll-view`](payroll-view.md)
-- 「나」 화면 자체 — [`profile-screen`](profile-screen.md). 이 task는 그 줄이 여는 화면까지다
+- 「나」 화면 자체 — `profile-screen`. 이 task는 그 줄이 여는 화면까지다
 - 리허설 — 자기 것은 [`rehearsal`](rehearsal.md)의 `/me/rehearsals`가 든다

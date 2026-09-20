@@ -59,7 +59,7 @@ sources:
 - **QR 값이 따로 산다.** `hall_secrets`를 `halls`와 가른 이유는 읽기 범위다 — 좌표·반경은 전원이 읽지만 QR 값은 관리자만이다. 같은 행에 있으면 근무자가 값을 읽어 **스캔 없이 인증 함수에 넣는다**([QR](../../2-design/modules/attendance/design.md#qr))
 - **인증은 되돌릴 수 없다.** 행을 고치는 함수가 없다. 잘못 찍힌 것을 지우는 길도 안 만든다 — [ATT-009](../../2-design/modules/attendance/README.md#att-009)가 한 번 찍으면 버튼이 사라진다고 정했고, 되돌리는 문을 열면 그 규칙이 무너진다
 
-지금 코드에는 출근 인증이 하나도 없다. `halls` 표는 [`schedule-data`](schedule-data.md)가 세우고 이 task가 `hall_secrets`를 그 옆에 더한다. `src/shared/api/error-codes.ts`는 [`profile-form`](profile-form.md)이나 [`schedule-data`](schedule-data.md) 중 먼저 merge된 쪽이 만든다.
+지금 코드에는 출근 인증이 하나도 없다. `halls` 표는 [`schedule-data`](schedule-data.md)가 세우고 이 task가 `hall_secrets`를 그 옆에 더한다. `src/shared/api/error-codes.ts`는 `profile-form`이나 [`schedule-data`](schedule-data.md) 중 먼저 merge된 쪽이 만든다.
 
 ## 완료 조건
 
