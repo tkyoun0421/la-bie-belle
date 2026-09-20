@@ -6,7 +6,9 @@
 
 ## 스택과 명령어
 
-Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui, zustand, TanStack Query, vitest, Playwright. Node 22, pnpm 8.15.2 — 정본은 `package.json`.
+**Expo로 옮기는 중이다** — 근거는 [ADR-011](docs/2-design/adr/ADR-011-expo-native-app.md)이다. 가는 곳은 Expo(Expo Router) + NativeWind + 직접 만든 조각, Jest, Maestro나 Detox, 세션은 SecureStore, 배포는 EAS다. 디자인 정본은 이미 그쪽 기준으로 서 있고 `src/`는 아직 Next다. 골격을 세울 때까지 아래 명령이 그대로 돈다.
+
+지금 저장소는 Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui, zustand, TanStack Query, vitest, Playwright다. Node 22, pnpm 8.15.2 — 정본은 `package.json`.
 
 - `pnpm dev` / `pnpm build` / `pnpm start` — `build`는 `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`가 env에 있어야 한다(로컬은 `supabase status -o env`)
 - `pnpm lint` / `pnpm typecheck` / `pnpm test`

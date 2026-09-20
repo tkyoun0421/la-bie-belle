@@ -2,6 +2,8 @@
 
 실행 전제와 명령, 훅과 문서 검사, 실패 진단, 결과 찾는 자리가 산다. 검증 방법 선택과 완료 판정은 [strategy](strategy.md), 계획·결과 작성법은 [README](README.md)를 따른다.
 
+**여기 적힌 명령은 지금 저장소가 돌리는 것이다.** [ADR-011](../2-design/adr/ADR-011-expo-native-app.md)이 Expo로 옮기기로 하면서 `pnpm build`는 EAS Build로, Playwright는 Maestro나 Detox로, vitest는 Jest로 바뀐다. 이 문서는 Expo 골격이 서는 task에서 그 자리들을 다시 쓴다 — 그때까지 아래가 사실이다.
+
 ## 명령
 
 저장소 루트에서 Node 22와 pnpm 8.15.2로 실행한다. 아래 일곱이 로컬과 CI가 같이 돌리는 명령이다. 정본은 [package.json](../../package.json)의 `scripts`와 [ci.yml](../../.github/workflows/ci.yml)이다.
@@ -48,7 +50,7 @@
 
 ### `pnpm build`
 
-- 전제: `pnpm install --frozen-lockfile`이 끝나 있고 `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`가 env에 있다. 주입 순서는 [배포 절차](../5-deploy/procedure.md)가 든다.
+- 전제: `pnpm install --frozen-lockfile`이 끝나 있고 `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`가 env에 있다. 값은 빌드 시점에 번들에 박히므로 빌드보다 먼저 넘긴다.
 - 실행: `pnpm build` — `next build`.
 - 정상 결과: 컴파일과 라우트 수집이 끝나고 종료 코드 0.
 - 실패할 때: 보는 범위가 `pnpm typecheck`와 다르다 — [돌릴 때](#돌릴-때).
@@ -82,7 +84,7 @@ pnpm exec vitest run --project integration src/entities/profile/dals/__tests__/e
 
 1. Docker가 실행 중인지 확인하고 `supabase start`, `supabase migration up`을 실행한다.
 2. [.env.example](../../.env.example)에 따라 로컬 Supabase의 `API_URL`·`ANON_KEY`를 `.env.local`의 `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`에 설정한다. 값은 `supabase status -o env`로 확인하며 출력 전체를 파일이나 검증 기록에 복사하지 않는다.
-3. `pnpm build`를 실행한다. 앱이 빌드에 쓴 DB와 테스트 헬퍼의 로컬 DB가 같아야 한다. 설정 주입 순서는 [배포 절차](../5-deploy/procedure.md)를 따른다.
+3. `pnpm build`를 실행한다. 앱이 빌드에 쓴 DB와 테스트 헬퍼의 로컬 DB가 같아야 한다. 설정값은 빌드보다 먼저 env에 있어야 한다 — 뒤에 넣으면 빌드는 통과하고 실행 시점에 던진다.
 4. 처음 실행하는 환경이면 `pnpm exec playwright install chromium`으로 설치한다. CI는 Linux 시스템 의존성까지 설치하는 `--with-deps chromium`을 쓴다.
 5. 전체는 `pnpm e2e`, 파일 하나는 다음 명령으로 실행한다.
 
@@ -99,7 +101,7 @@ pnpm exec playwright test tests/e2e/login.spec.ts
 - `docs/`·`.claude/`·루트 마크다운만 바뀐 PR은 뒤쪽 넷(integration·build·e2e·supabase 기동)을 건너뛴다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨진다.
 - 나머지 PR과 main push는 Supabase 기동 → integration → 앱 설정 주입 → build → Chromium 설치 → e2e까지 실행한다. 현재 제외한 Supabase 서비스를 새 테스트가 필요로 하면 CI 기동 범위도 함께 맞춘다.
 - PR은 승인된 spec 입력 변경에 대한 「영향 확인」 검사도 실행한다. 구체적인 명령과 대상은 [문서 검사](#pnpm-test에-끼는-문서-검사)에 있다.
-- 브라우저 프로젝트는 Chromium 하나이며 worker는 1개다. 재시도는 로컬 0회, CI 2회다. WebKit 추가는 [backlog](../backlog.md)의 `webkit-ci` 후보다.
+- 브라우저 프로젝트는 Chromium 하나이며 worker는 1개다. 재시도는 로컬 0회, CI 2회다. 아이폰 사파리를 CI가 못 보는 것은 [ADR-007](../2-design/adr/ADR-007-web-pwa-over-native.md)이 감수한 값이었는데, 네이티브로 옮기면서 그 자리에 실기기와 시뮬레이터가 선다.
 
 | 근거 | 현재 위치와 한계 |
 | --- | --- |
