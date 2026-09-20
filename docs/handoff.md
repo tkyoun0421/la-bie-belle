@@ -6,6 +6,19 @@
 
 ## 다음 작업
 
+**전환 둘이 문서를 훑는 중이다.** [ADR-011](2-design/adr/ADR-011-expo-native-app.md)이 웹 PWA를 버리고 Expo 네이티브 앱으로 갔고([ADR-007](2-design/adr/ADR-007-web-pwa-over-native.md)을 대체한다), [ADR-012](2-design/adr/ADR-012-blue-brand-and-looser-density.md)가 브랜드를 파랑 hue 266으로 옮기고 밀도를 헐겁게 했다. 그림자를 안 쓰고 카드를 겹치지 않고 진한 색면은 화면에 한 장이다.
+
+**설계 층은 다 따라왔다.** design-system 여섯, `system/` 넷, modules design 셋(account·attendance·notification), 화면 문서와 `1-plan`·`4-test`·`5-deploy`·`CLAUDE.md`까지 네이티브 전제로 다시 썼다. 남은 것은 셋이고 backlog에 행이 있다 — `expo-scaffold`(앱 골격), `plans-restate`(이미 쓴 plan 스물넷), `sian-native-pass`(시안 열여섯).
+
+전환이 바꾼 것 중 큰 것 넷이다.
+
+- **푸시가 Web Push에서 기기 푸시로.** `push_subscriptions`가 `push_tokens`가 되고 VAPID가 사라졌다. 부치면 접수증이 먼저 오고 닿았는지는 십오 분쯤 뒤에 따로 물어야 해서, 닿지 않는 주소를 지우는 자리가 발송 직후가 아니라 결과를 읽는 자리로 옮겼다
+- **홈 화면 추가 서사가 통째로 빠졌다.** NTF-019·027·028이 기기 권한을 말하게 바뀌고 승인 대기 화면의 알림 영역이 넷에서 셋, 「나」의 알림 갈래가 셋에서 둘로 줄었다
+- **인쇄용 QR이 그림에서 A4 한 장으로.** 화면에 그린 것을 구우면 크기가 관리자 폰에 묶인다. 공유 판으로 넘기니 「저장이 막히는 자리」가 없어졌다
+- **세션이 쿠키에서 기기 저장소로, 캐시 계층이 넷에서 둘로.** 우리가 돌리는 서버가 없어 판정을 그릴 자리도, 껍데기를 캐시할 자리도 없다
+
+**총괄이 정할 것 둘이 열려 있다.** [navigation Q-03](2-design/system/navigation.md#q-03) — 종이 QR을 앱 없는 기기로 찍으면 무엇이 뜨나. 링크가 앱을 열려면 도메인에 증명 파일이 필요해서 도메인은 어차피 선다. 거기 안내 한 장을 두는 것이 ADR-011의 「웹은 같이 안 낸다」와 같은 것인지가 질문이다. 그리고 [runtime Q-01](2-design/system/runtime.md#q-01) — 오래 안 열었다 여는 앱이 무엇을 다시 읽나.
+
 **구현은 전 영역의 설계가 끝난 뒤 한꺼번에 한다.** task 하나의 plan이 섰다고 그 task를 구현하지 않는다. 영역마다 ① 정본의 「아직 안 정한 것」을 인터뷰로 닫고(한 라운드 한 질문) ② 정본에 반영하고 ③ 시안을 갱신해 아티팩트로 사용자가 보고 승인하고 ④ plan을 쓴다. 순서는 account → schedule → attendance → payroll → notification → system이고 swap은 2차라 뒤다. 실패 테스트 작성부터가 구현 단계라 plan 뒤에 writer를 띄우지 않는다.
 
 account가 끝났다. 미정이 다 닫혔고(login·README·members-pending·members·profile), 시안 셋이 아티팩트로 승인됐고, 화면 plan 넷이 섰다 — [profile-form](3-build/plans/profile-form.md)·[members-pending](3-build/plans/members-pending.md)·[profile-screen](3-build/plans/profile-screen.md)·[members](3-build/plans/members.md). plan을 쓰다 나온 결정 열둘을 정본에 반영했다 — `already_decided` 코드, `profile_private.email`, `phone` check 제약, 차단 해제가 `submitted_at`도 비우기, `/admin/members/blocked` 경로, `is_admin()`이 퇴사·차단을 보기, `last_admin` 셈에 퇴사·차단 제외와 퇴사 처리도 막기, 쓰기는 전부 응답 대기, 관리자는 자기 이름 고치기 가능, 지난 시간 표기 규칙, 하나 고르는 목록 공용화, `profile-erasure` task 신설.
@@ -97,8 +110,8 @@ plan을 쓰며 나온 막힌 것 둘이 착수 전에 닫혀야 한다.
 - **대시보드의 알림 영역은 그대로 남는다.** 처음에 「아이콘만 남긴다」로 갔다가 [prd.md](1-plan/prd.md)가 대시보드 네 항목을 못박아둔 것과 부딪혀 되돌렸다 — 종은 지나간 것 전부, 알림 영역은 안 읽은 것 중 최근 한 건이고 거기서 답한다
 - **알림 목록에서는 줄 전체가 눌린다** — [NTF-024](2-design/modules/notification/README.md#ntf-024)의 예외다. 대시보드는 CTA와 ✕만 눌리는데 목록은 반대고, 누르면 그 알림이 말한 자리로 가며 읽음이 찍힌다. **관리자 공지만 안 눌리고**(갈 곳이 없다) 그것 하나가 여는 것으로 읽음이 찍힌다
 - **알림을 못 받는 사람을 관리자가 본다**([NTF-034](2-design/modules/notification/README.md#ntf-034)). 갈래가 둘이라 화면이 갈라 말한다 — 「· 알림 꺼둠」과 「· 기기 안 연결」이다. 서는 자리가 셋이다 — 직원 목록 줄, 사람 시트, 확정 뒤 확인 시트
-- **RLS를 안 풀고 뷰로 냈다.** `push_subscriptions`는 본인 행만 열고 `security definer` 뷰 `push_reachable(profile_id, has_device)`가 관리자에게 불리언 하나만 낸다 — `endpoint`도 `keys`도 안 낸다
-- **의사와 상태를 가른다.** 받겠다는 의사는 `profiles.notifications_enabled`고 기기가 닿는지는 `push_subscriptions` 행의 유무다. 둘을 곱해 셋이 나고 프로필이 셋을 갈라 말한다 — **스위치를 켜도 기기가 안 닿을 수 있다**
+- **RLS를 안 풀고 뷰로 냈다.** `push_tokens`는 본인 행만 열고 `security definer` 뷰 `push_reachable(profile_id, has_device)`가 관리자에게 불리언 하나만 낸다 — 주소 자체는 안 낸다
+- **의사와 상태를 가른다.** 받겠다는 의사는 `profiles.notifications_enabled`고 기기가 닿는지는 `push_tokens` 행의 유무다. 둘을 곱해 셋이 나고 프로필이 셋을 갈라 말한다 — **스위치를 켜도 기기가 안 닿을 수 있다**
 - **알림끼리 묶지 않는다**([NTF-035](2-design/modules/notification/README.md#ntf-035)). 예외는 주말 미리 알림 하나고 그것은 같은 종류를 묶는 것이다
 - **목록은 전부를 50건씩 끊어 읽는다.** 안 지우는 규칙이라 계속 길어진다
 
