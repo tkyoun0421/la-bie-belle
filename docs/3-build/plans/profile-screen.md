@@ -27,7 +27,7 @@ sources:
   - ../../2-design/design-system/components.md#토스트
   - ../../2-design/design-system/components.md#dialog와-바텀시트
   - ../../2-design/modules/notification/README.md#ntf-021
-  - ../../2-design/modules/notification/design.md#기기-구독-저장과-삭제
+  - ../../2-design/modules/notification/design.md#기기-주소-저장과-삭제
 ---
 
 # 「나」 화면을 만든다 — 구현 계획
@@ -191,7 +191,7 @@ sources:
 
 ## 범위 밖
 
-- **「알림」 줄(스위치·끄기 Dialog·권한 거부 안내).** 정본이 정한 것은 이렇다 — 끄면 통째로([NTF-021](../../2-design/modules/notification/README.md#ntf-021)), 기기 구독은 `push_subscriptions`에 `save_push_subscription`·`remove_push_subscription`으로 저장·삭제([notification/design.md](../../2-design/modules/notification/design.md#기기-구독-저장과-삭제)), 프로필 컬럼은 없다. 정본이 안 정한 것은 「끄기」가 저장되는 자리다([Q-01](../../2-design/modules/notification/design.md#아직-안-정한-것)) — 구독을 지우는 것만으로는 「매 진입에 보낸다」가 다음 진입에 다시 구독한다. 표·함수도 마이그레이션에 없다. 그래서 줄 전부가 `notification-first`(또는 그 뒤의 후속 task) 몫이고, 문안·Dialog·권한 거부 안내의 정본은 그대로 [profile.md](../../2-design/modules/account/screens/profile.md#알림)다
+- **「알림」 줄(스위치·끄기 Dialog·권한 거부 안내).** 정본이 정한 것은 이렇다 — 끄면 통째로([NTF-021](../../2-design/modules/notification/README.md#ntf-021)), 기기 구독은 `push_subscriptions`에 `save_push_subscription`·`remove_push_subscription`으로 저장·삭제([notification/design.md](../../2-design/modules/notification/design.md#기기-주소-저장과-삭제)), 프로필 컬럼은 없다. 정본이 안 정한 것은 「끄기」가 저장되는 자리다([Q-01](../../2-design/modules/notification/design.md#아직-안-정한-것)) — 구독을 지우는 것만으로는 「매 진입에 보낸다」가 다음 진입에 다시 구독한다. 표·함수도 마이그레이션에 없다. 그래서 줄 전부가 `notification-first`(또는 그 뒤의 후속 task) 몫이고, 문안·Dialog·권한 거부 안내의 정본은 그대로 [profile.md](../../2-design/modules/account/screens/profile.md#알림)다
 - 로그아웃 뒤 기기 정리 넷 — 영속·시각·푸시 task
 - `/`·`/schedule`·`/payroll`·`/admin` 화면 — 각자의 task
 - 프로필 작성 폼·`/left`·`/blocked`·오류 기계·버킷·`resize-image` — [profile-form](profile-form.md)

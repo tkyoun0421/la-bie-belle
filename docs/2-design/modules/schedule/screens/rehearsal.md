@@ -266,7 +266,7 @@
 | 저장 실패 | `rounded-md` `p-3`. 버튼 위 `mb-4` |
 | 지우기 줄 | 버튼 위 `mb-4`. `h-12` |
 
-시트 아래 여백에 `env(safe-area-inset-bottom)`을 더한다.
+시트 아래 여백에 `useSafeAreaInsets`의 `bottom`을 더한다.
 
 시트 줄과 지우기 줄이 `h-12`라 44px 규칙을 그린 크기로 이미 넘는다([spacing-shape.md](../../../design-system/foundation/spacing-shape.md)).
 
@@ -317,7 +317,7 @@
 - **넣은 뒤 날 시트의 새 줄이 한 번 올라온다.** `--duration-base`. 어느 줄이 생겼는지를 말한다
 - **지운 줄은 접히며 사라진다.** `--duration-fast`
 - **달력 칸의 숫자는 시트가 닫힌 뒤에 바뀐다.** 시트가 덮고 있는 동안 뒤에서 숫자가 움직이면 무엇이 바뀌었는지 못 본다
-- `prefers-reduced-motion`이면 전부 뜨고 지는 것만 남는다([motion.md](../../../design-system/foundation/motion.md))
+- 움직임을 줄인 사람에게는 전부 뜨고 지는 것만 남는다([motion.md](../../../design-system/foundation/motion.md#접근성))
 
 ## 예외와 미정
 

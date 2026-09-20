@@ -4,7 +4,7 @@ sources:
   - ../../2-design/modules/attendance/screens/qr.md#화면-상태와-흐름
   - ../../2-design/modules/attendance/screens/qr.md#qr-짜임
   - ../../2-design/modules/attendance/screens/qr.md#qr-그림
-  - ../../2-design/modules/attendance/screens/qr.md#이미지-내려받기
+  - ../../2-design/modules/attendance/screens/qr.md#내보내기
   - ../../2-design/modules/attendance/screens/qr.md#크게-띄우기
   - ../../2-design/modules/attendance/screens/qr.md#새로-뽑기
   - ../../2-design/modules/attendance/screens/qr.md#새로-뽑기-확인
@@ -16,7 +16,7 @@ sources:
   - ../../2-design/modules/attendance/screens/qr.md#qr-모션
   - ../../2-design/modules/attendance/screens/qr.md#규칙과-부딪힌-자리
   - ../../2-design/modules/attendance/design.md#qr-바꾸기
-  - ../../2-design/modules/attendance/design.md#인쇄용-그림-내려받기
+  - ../../2-design/modules/attendance/design.md#인쇄용-종이-내보내기
   - ../../2-design/modules/attendance/README.md#att-005
   - ../../2-design/modules/attendance/README.md#att-006
   - ../../2-design/modules/attendance/README.md#att-027
@@ -31,14 +31,14 @@ sources:
 
 ## 입력 명세·기준
 
-정본은 [qr.md](../../2-design/modules/attendance/screens/qr.md)와 짝 시안 `qr.sian.html`이다. 둘이 어긋나면 문서가 이긴다. 행위 계약은 [design.md](../../2-design/modules/attendance/design.md#qr-바꾸기)와 [인쇄용 그림 내려받기](../../2-design/modules/attendance/design.md#인쇄용-그림-내려받기)고, 업무 규칙은 [ATT-005](../../2-design/modules/attendance/README.md#att-005)·[ATT-006](../../2-design/modules/attendance/README.md#att-006)·[ATT-027](../../2-design/modules/attendance/README.md#att-027)이다.
+정본은 [qr.md](../../2-design/modules/attendance/screens/qr.md)와 짝 시안 `qr.sian.html`이다. 둘이 어긋나면 문서가 이긴다. 행위 계약은 [design.md](../../2-design/modules/attendance/design.md#qr-바꾸기)와 [인쇄용 그림 내려받기](../../2-design/modules/attendance/design.md#인쇄용-종이-내보내기)고, 업무 규칙은 [ATT-005](../../2-design/modules/attendance/README.md#att-005)·[ATT-006](../../2-design/modules/attendance/README.md#att-006)·[ATT-027](../../2-design/modules/attendance/README.md#att-027)이다.
 
 `/admin/qr` 하나와 그 안의 상태 다섯이 산출이다. 선행은 [`attendance-data`](attendance-data.md) — `hall_secrets`와 `rotate_qr`과 `['hall', 'qr']` dal이 거기서 온다.
 
 정본에서 확인한 넷이 plan의 방향을 정한다.
 
-- **그림 둘이 다르다.** 화면의 QR과 내려받는 인쇄용 그림은 같은 코드를 담지만 다른 그림이다. 인쇄용은 A4 비율(2480×3508픽셀)에 제목과 안내 한 줄과 자르는 선이 같이 박힌다([이미지 내려받기](../../2-design/modules/attendance/screens/qr.md#이미지-내려받기)). **화면 QR을 그대로 저장하는 것이 아니다**
-- **서버가 파일을 안 만든다.** 브라우저가 canvas로 그려 내려준다([인쇄용 그림 내려받기](../../2-design/modules/attendance/design.md#인쇄용-그림-내려받기)) — 서버에 파일을 두면 `rotate_qr`이 도는 순간 낡은 그림이 남는다
+- **그림 둘이 다르다.** 화면의 QR과 내려받는 인쇄용 그림은 같은 코드를 담지만 다른 그림이다. 인쇄용은 A4 비율(2480×3508픽셀)에 제목과 안내 한 줄과 자르는 선이 같이 박힌다([내보내기](../../2-design/modules/attendance/screens/qr.md#내보내기)). **화면 QR을 그대로 저장하는 것이 아니다**
+- **서버가 파일을 안 만든다.** 브라우저가 canvas로 그려 내려준다([인쇄용 그림 내려받기](../../2-design/modules/attendance/design.md#인쇄용-종이-내보내기)) — 서버에 파일을 두면 `rotate_qr`이 도는 순간 낡은 그림이 남는다
 - **QR 면이 팔레트 밖이다.** 화면 QR도 인쇄용 그림도 항상 흰 면에 검은 코드다([QR 그림](../../2-design/modules/attendance/screens/qr.md#qr-그림)). 다크에서 반전하면 카메라가 못 읽는 기기가 있다. 이 화면에서 **테마를 안 따르는 자리가 넷이다** — QR 면, 크게 띄우기 바탕, 크게 띄우기 닫기 아이콘, 인쇄용 그림 전체
 - **캐시가 짧다.** `['hall', 'qr']`은 `staleTime`이 0이고 영속하지 않는다. 관리자가 두 기기로 열어둔 채 한쪽에서 돌리면 다른 쪽의 옛 값은 이미 죽은 코드다
 
@@ -71,7 +71,7 @@ sources:
 
 ### AC-04
 
-**인쇄용 그림 내려받기.** [이미지 내려받기](../../2-design/modules/attendance/screens/qr.md#이미지-내려받기)의 표가 값의 정본이다.
+**인쇄용 그림 내려받기.** [내보내기](../../2-design/modules/attendance/screens/qr.md#내보내기)의 표가 값의 정본이다.
 
 - 2480×3508 canvas를 만든다. 바탕 흰색, 글자 검정
 - 자르는 선 — 점선, 가장자리에서 **178픽셀** 안쪽, 굵기 **3픽셀**, 색은 팔레트 `neutral-300`의 **라이트 값**

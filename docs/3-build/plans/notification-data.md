@@ -3,10 +3,10 @@ sources:
   - ../../2-design/modules/notification/design.md#소유-데이터
   - ../../2-design/modules/notification/design.md#알림-행
   - ../../2-design/modules/notification/design.md#누가-넣나
-  - ../../2-design/modules/notification/design.md#기기-구독
+  - ../../2-design/modules/notification/design.md#기기-주소
   - ../../2-design/modules/notification/design.md#알림을-받나
   - ../../2-design/modules/notification/design.md#읽음-찍기
-  - ../../2-design/modules/notification/design.md#기기-구독-저장과-삭제
+  - ../../2-design/modules/notification/design.md#기기-주소-저장과-삭제
   - ../../2-design/modules/notification/README.md#ntf-023
   - ../../2-design/modules/notification/README.md#ntf-025
   - ../../2-design/modules/notification/README.md#ntf-026
@@ -22,7 +22,7 @@ sources:
 
 ## 입력 명세·기준
 
-정본은 [notification/design.md](../../2-design/modules/notification/design.md#소유-데이터)의 [소유 데이터](../../2-design/modules/notification/design.md#소유-데이터)와 [읽음 찍기](../../2-design/modules/notification/design.md#읽음-찍기)와 [기기 구독 저장과 삭제](../../2-design/modules/notification/design.md#기기-구독-저장과-삭제)다.
+정본은 [notification/design.md](../../2-design/modules/notification/design.md#소유-데이터)의 [소유 데이터](../../2-design/modules/notification/design.md#소유-데이터)와 [읽음 찍기](../../2-design/modules/notification/design.md#읽음-찍기)와 [기기 주소 저장과 삭제](../../2-design/modules/notification/design.md#기기-주소-저장과-삭제)다.
 
 표 둘과 뷰 하나와 함수 넷이 이 task의 산출이다. **알림을 낳는 자리도 보내는 자리도 안 만든다** — 낳기는 [`notification-emit`](notification-emit.md), 보내기는 [`notification-push`](notification-push.md)다. 이 task는 그 둘이 쓸 그릇만 낸다.
 

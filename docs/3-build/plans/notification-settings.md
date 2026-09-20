@@ -1,8 +1,8 @@
 ---
 sources:
   - ../../2-design/modules/notification/design.md#알림을-받나
-  - ../../2-design/modules/notification/design.md#기기-구독
-  - ../../2-design/modules/notification/design.md#기기-구독-저장과-삭제
+  - ../../2-design/modules/notification/design.md#기기-주소
+  - ../../2-design/modules/notification/design.md#기기-주소-저장과-삭제
   - ../../2-design/modules/notification/README.md#ntf-016
   - ../../2-design/modules/notification/README.md#ntf-021
   - ../../2-design/modules/notification/README.md#ntf-022
@@ -19,7 +19,7 @@ sources:
 
 ## 입력 명세·기준
 
-정본은 [notification/design.md](../../2-design/modules/notification/design.md#알림을-받나)의 [알림을 받나](../../2-design/modules/notification/design.md#알림을-받나)와 [기기 구독](../../2-design/modules/notification/design.md#기기-구독)이다. 화면은 [profile.md](../../2-design/modules/account/screens/profile.md#알림)와 [members.md](../../2-design/modules/account/screens/members.md)와 [schedule-admin.md](../../2-design/modules/schedule/screens/schedule-admin.md#관리자-홈)다.
+정본은 [notification/design.md](../../2-design/modules/notification/design.md#알림을-받나)의 [알림을 받나](../../2-design/modules/notification/design.md#알림을-받나)와 [기기 주소](../../2-design/modules/notification/design.md#기기-주소)이다. 화면은 [profile.md](../../2-design/modules/account/screens/profile.md#알림)와 [members.md](../../2-design/modules/account/screens/members.md)와 [schedule-admin.md](../../2-design/modules/schedule/screens/schedule-admin.md#관리자-홈)다.
 
 Service Worker와 브라우저 권한 받기, 프로필의 알림 스위치, 관리자가 못 받는 사람을 보는 자리 셋이 이 task의 산출이다.
 

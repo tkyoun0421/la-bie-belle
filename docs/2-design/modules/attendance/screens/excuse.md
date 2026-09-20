@@ -147,7 +147,7 @@
 
 시트가 `rounded-lg`인 것은 [components.md](../../../design-system/components.md#dialog와-바텀시트)가 정한 값이다. 인증 화면의 시트가 `rounded-xl`인 것과 다르다 — 그쪽은 지도 위에 얹히는 화면의 일부고 이쪽은 대시보드를 덮는 다이얼로그다.
 
-시트 아래 여백에 `env(safe-area-inset-bottom)`을 더한다.
+시트 아래 여백에 `useSafeAreaInsets`의 `bottom`을 더한다.
 
 ## 문안
 

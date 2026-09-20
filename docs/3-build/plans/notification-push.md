@@ -2,7 +2,7 @@
 sources:
   - ../../2-design/modules/notification/design.md#푸시-보내기
   - ../../2-design/modules/notification/design.md#행위-밖의-실행-동작
-  - ../../2-design/modules/notification/design.md#기기-구독
+  - ../../2-design/modules/notification/design.md#기기-주소
   - ../../2-design/modules/notification/design.md#알림을-받나
   - ../../2-design/modules/notification/design.md#코드와의-차이
   - ../../2-design/modules/notification/README.md#ntf-021
