@@ -361,7 +361,7 @@ Tailwind의 `--spacing` 기본값이 `0.25rem`이라 유틸 숫자에 4를 곱�
 | `--duration-slow` | 240ms | `duration-240` | 바텀시트, 화면 안 큰 덩이 |
 | `--duration-slower` | 300ms | `duration-300` | 화면 전환 |
 
-easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다. cubic-bezier를 직접 적는 자리는 없다.
+easing은 토큰으로 정하지 않았다. 나가는 쪽이 빠르고 들어오는 쪽이 느린 `ease-out` 하나만 쓴다. 곡선을 직접 적는 자리는 없다.
 
 스케일 값 둘이다.
 
@@ -370,7 +370,7 @@ easing은 토큰으로 정하지 않았다. Tailwind 기본 `ease-out`을 쓴다
 | 버튼 눌림 | `scale(0.97)` |
 | 등장 시작 스케일 최솟값 | `0.9` |
 
-등장에는 `tw-animate-css`의 `zoom-in-95`를 쓴다. 시작값이 위 최솟값 안에 든다.
+등장은 0.95에서 시작한다. 위 최솟값 안에 들면서 눈에 띄는 가장 얕은 값이다.
 
 ### 되풀이 주기와 계단
 
