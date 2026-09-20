@@ -281,25 +281,24 @@ hue 27, chroma 최대 0.145.
 | `font-semibold` | 600 |
 | `font-bold` | 700 |
 
-`light`가 지운 쪽에 든 것은 Wanted Sans의 가변 축이 400에서 시작하기 때문이다. `font-light`를 걸어도 300이 400으로 눌려서 `font-normal`과 같은 글자가 나온다. 아무것도 안 하는 유틸을 남겨두면 언젠가 누군가 그걸로 무게를 낮추려 한다.
+`light`가 지운 쪽에 든 것은 Wanted Sans가 Regular(400)부터 배포되기 때문이다. 300짜리 파일이 없어서 `font-light`를 걸어도 `font-normal`과 같은 글자가 나온다. 아무것도 안 하는 유틸을 남겨두면 언젠가 누군가 그걸로 무게를 낮추려 한다.
 
-숫자는 자릿수가 줄맞춤돼야 하는 자리에서 `font-variant-numeric: tabular-nums`를 쓴다. 유틸은 `tabular-nums`고 급여 금액과 근무 시간이 그 자리다. 규칙은 [foundation/typography.md](foundation/typography.md#숫자-정렬)에 있다.
+숫자는 자릿수가 줄맞춤돼야 하는 자리에서 `fontVariant: ["tabular-nums"]`를 쓴다. 유틸은 `tabular-nums`고 급여 금액과 근무 시간이 그 자리다. 규칙은 [foundation/typography.md](foundation/typography.md#숫자-정렬)에 있다.
 
 ### 서체 연결
 
-Wanted Sans를 jsdelivr의 조각 나눔 스타일시트로 가져온다. **저장소에 폰트 파일을 넣지 않는다.**
+Wanted Sans v1.0.3의 정적 `.ttf` 넷을 앱 번들에 넣는다. 원본은 [wanteddev/wanted-sans](https://github.com/wanteddev/wanted-sans)의 `packages/wanted-sans/fonts/ttf/`에 있다.
 
-```html
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous" />
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css"
-/>
-```
+| 굵기 | 유틸 | 파일 | 원본 크기 |
+| --- | --- | --- | --- |
+| 400 | `font-normal` | `WantedSans-Regular.ttf` | 2,345KB |
+| 500 | `font-medium` | `WantedSans-Medium.ttf` | 2,324KB |
+| 600 | `font-semibold` | `WantedSans-SemiBold.ttf` | 2,297KB |
+| 700 | `font-bold` | `WantedSans-Bold.ttf` | 2,290KB |
 
-이 스타일시트는 `@font-face` 아흔둘을 `unicode-range`로 갈라둔다. 브라우저는 그중 화면에 실제로 찍힌 글자가 든 조각만 받는다. 조각 하나가 25KB 남짓이라 첫 화면이 100~300KB로 끝난다. 통짜 한 장은 1,259KB고 첫 글자를 그리기 전에 그걸 다 받아야 한다.
+**파일 이름을 바꾸지 않는다.** 안드로이드는 확장자를 뗀 파일 이름을 폰트 이름으로 읽고 iOS는 파일 안의 PostScript 이름을 읽는다. 배포된 이름이 이미 둘을 맞춰 놓은 값이라 그대로 두면 두 기기에서 같은 이름으로 불린다.
 
-`@font-face`가 선언하는 이름이 `Wanted Sans Variable`이고, 아래 `@theme inline`의 `--font-sans`가 그 이름을 첫 자리에 둔다. `font-display: swap`은 스타일시트가 이미 걸어두었다.
+**넷 다 서브셋을 거쳐 들어간다.** 원본 그대로면 9.0MB가 설치 크기에 실린다. 줄이는 기준과 방법은 [foundation/typography.md](foundation/typography.md#서브셋)에 있고, 줄인 뒤 크기는 실제로 만든 다음 이 표에 열을 더해 적는다.
 
 고른 이유와 라이선스는 [foundation/typography.md](foundation/typography.md#서체)에 있다.
 
@@ -470,6 +469,8 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 ---
 
 ## 8. CSS 전문
+
+**이 절은 웹 전제다.** [ADR-011](../adr/ADR-011-expo-native-app.md)이 Expo로 옮기기로 하면서 `@theme inline`도 shadcn 다리도 `@custom-variant dark`도 갈 자리가 없어진다. 앞 절들이 정한 값은 그대로 남고 그 값을 코드에 옮기는 방법만 바뀌는데, 그 방법은 Expo 골격을 세울 때 정해서 이 절을 통째로 다시 쓴다. 지금 저장소의 `src/app/globals.css`는 아직 웹이라 이 절이 그것의 정본으로 서 있다.
 
 `src/app/globals.css`는 이 파일에서 만든다. `pnpm tokens:css`가 앞 절의 표를 읽어 CSS 한 벌을 새로 쓴다. globals.css를 손으로 고치지 않는다. 다음 실행이 덮는다.
 
