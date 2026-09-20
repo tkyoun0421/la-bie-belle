@@ -159,7 +159,7 @@ sources:
 **관리자 경로 보호와 게이트 확장.** 가입 대기 task가 먼저 만들면 그것을 쓴다.
 
 - `useAuthGateValue()`가 `role`과 `profileId`를 더 준다. `get-my-profile.ts`가 `role`·`id`를 이미 읽으니 컨텍스트에 싣기만 한다. profile-form AC-05가 넓히는 컨텍스트(`userId`·프로필 행)와 같은 자리다 — 먼저 merge된 쪽 위에 얹는다
-- `resolveGateMove`가 `/admin` 아래를 「관리자만」으로 가른다 — 승인된 근무자가 `/admin/members`를 열면 `/`로 보낸다([navigation.md](../../2-design/system/navigation.md#경로)의 「근무자가 열면 `/`로 보낸다」). 판정은 `.ts`고 unit 테스트가 든다. `proxy`는 안 건드린다 — 세션 유무만 보는 것이 [runtime.md](../../2-design/system/runtime.md#캐시-네-계층)의 결정이다
+- `resolveGateMove`가 `/admin` 아래를 「관리자만」으로 가른다 — 승인된 근무자가 `/admin/members`를 열면 `/`로 보낸다([navigation.md](../../2-design/system/navigation.md#경로)의 「근무자가 열면 `/`로 보낸다」). 판정은 `.ts`고 unit 테스트가 든다. `proxy`는 안 건드린다 — 세션 유무만 보는 것이 [runtime.md](../../2-design/system/runtime.md#캐시-두-계층)의 결정이다
 
 ### AC-11
 

@@ -64,7 +64,7 @@
 - 규칙: [ACC-001](README.md#acc-001)·[ACC-006](README.md#acc-006)·[ACC-007](README.md#acc-007)·[ACC-011](README.md#acc-011)
 - 입력·전제: `proxy`가 세션 쿠키만 본다 — 없으면 `/login`이다. 구글 로그인은 `auth.signInWithOAuth`가 페이지를 떠났다 돌아오니 돌아온 자리에서 이 순서가 돈다. `ensure_profile()`을 부르고 `['profile']`을 읽는다
 - 읽고 쓰는 데이터: `ensure_profile`이 첫 진입에서 자기 프로필 행을 만든다. 있으면 아무것도 안 한다
-- 권한: 승인됐는지·차단됐는지·퇴사했는지는 앱이 뜬 뒤 `['profile']`을 읽고 가른다. 이유는 [system/runtime.md](../../system/runtime.md#캐시-네-계층)에 있다 — 서버가 판정을 그리면 껍데기를 캐시할 수 없다
+- 권한: 승인됐는지·차단됐는지·퇴사했는지는 앱이 뜬 뒤 `['profile']`을 읽고 가른다. 이유는 [system/runtime.md](../../system/runtime.md#캐시-두-계층)에 있다 — 판정할 서버가 없다
 - 처리와 경쟁: 읽는 자리는 껍데기 하나다 — 앱이 뜰 때와 탭 복귀에 읽고 라우트 전환은 그 값을 쓴다. 탭을 옮길 때마다 빈 화면이 끼지 않는다. 읽는 동안은 아무것도 안 그린다
 - 결과와 실패: `['profile']`이 `blocked_at`을 들면 차단 화면, `left_at`을 들면 퇴사 화면, `approved_at`이 없으면 `/pending`이다. 없던 사람이면 `/pending`의 프로필 입력 폼이다
 - 캐시 갱신: `staleTime`이 0이고 영속하지 않는다 — 차단당한 사람이 옛 프로필로 근무표를 더 보는 일이 없게
