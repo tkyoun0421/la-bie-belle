@@ -1,5 +1,4 @@
 import { randomUUID } from "node:crypto";
-import { describe, expect, it } from "vitest";
 import { createGuestClient } from "@tests/integration/supabase";
 
 async function signUpWithoutProfile() {

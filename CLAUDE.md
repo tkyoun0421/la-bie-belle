@@ -6,12 +6,14 @@
 
 ## 스택과 명령어
 
-Next.js 16(App Router, TypeScript) + Tailwind CSS 4 + shadcn/ui, zustand, TanStack Query, vitest, Playwright. Node 22, pnpm 8.15.2 — 정본은 `package.json`.
+**Expo로 옮기는 중이다** — 근거는 [ADR-011](docs/2-design/adr/ADR-011-expo-native-app.md)이다. 골격이 서는 중이고 [expo-scaffold](docs/3-build/plans/expo-scaffold.md)가 완료 조건을 든다.
 
-- `pnpm dev` / `pnpm build` / `pnpm start` — `build`는 `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`가 env에 있어야 한다(로컬은 `supabase status -o env`)
+지금 저장소는 Expo SDK 57(Expo Router, TypeScript) + NativeWind v5 + Tailwind CSS 4, zustand, TanStack Query, Jest다. 세션은 SecureStore, 배포는 EAS로 간다. e2e는 지금 없다 — Maestro와 Detox 중 무엇일지 아직 안 정했다. Node 22, pnpm 8.15.2 — 정본은 `package.json`.
+
+- `pnpm dev` — `expo start`. 뜨는 QR을 Expo Go로 찍는다. `EXPO_PUBLIC_SUPABASE_URL`·`EXPO_PUBLIC_SUPABASE_ANON_KEY`가 env에 있어야 한다(로컬은 `supabase status -o env`)
 - `pnpm lint` / `pnpm typecheck` / `pnpm test`
 - `pnpm test:integration` — 로컬 Supabase 필요 (Docker). 스택이 떠 있으면 `pnpm test:integration:run`
-- `pnpm e2e` — 먼저 `pnpm build`
+- `pnpm tokens:css` — `tokens.md` 8절에서 `src/app/globals.css`를 만든다
 
 테스트의 선택 기준은 [strategy](docs/4-test/strategy.md), 로컬·CI 실행과 생략 조건·결과 위치는 [execution](docs/4-test/execution.md)이 정본이다. PR마다 claude 자동 리뷰가 `REVIEW.md` 기준으로 코멘트를 달고, 매주 월요일 보안 스캔이 돌아 발견을 `security` 라벨 Issue로 남긴다.
 

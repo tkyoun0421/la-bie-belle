@@ -186,9 +186,9 @@
 
 | 몫 | 담는 것 | 토큰 |
 | --- | --- | --- |
-| 첫째 | 출근 | `bg.chart-a` |
-| 둘째 | 출근 인정 | `bg.chart-b` |
-| 셋째 | 지각 | `bg.chart-c` |
+| 첫째 | 출근 | `bg.brand-solid` |
+| 둘째 | 출근 인정 | `bg.sky` |
+| 셋째 | 지각 | `bg.mint` |
 | 넷째 | 결근 | `bg.neutral-weak` |
 
 **결근만 중립이다.** 차트 색이 셋뿐이라 넷째가 없고, 넷째를 만드는 대신 「아무것도 안 일어난 몫」을 빈 면으로 둔다 — 결근은 나온 사람이 없는 자리라 색을 줄 일이 아니다.
@@ -283,7 +283,7 @@ ListRow고 이름 가나다순이다.
 | 달 화살표 | `fg.neutral-subtle` |
 | 못 가는 화살표 | 안 그린다. 자리만 남긴다 |
 | 세그먼트 | [components.md](../../design-system/components.md#세그먼트)의 세그먼트 |
-| 합계 | `fg.neutral` |
+| 합계 | 근무자는 `fg.brand`, 관리자는 `fg.neutral` — 브랜드는 내 것인 값에만 간다([typography.md](../../design-system/foundation/typography.md#큰-숫자)) |
 | 예상치 안내 | `fg.neutral-subtle` |
 | 보조 줄 | `fg.neutral-muted` |
 | 현황 줄 | `fg.neutral-muted` |
@@ -293,10 +293,10 @@ ListRow고 이름 가나다순이다.
 | 값이 0인 자리 | `fg.neutral-subtle` |
 | 사람별 줄 화살표 | `fg.neutral-subtle` |
 | 추이 그래프 | [components.md](../../design-system/components.md#추이-그래프)의 값 |
-| 줄 막대 | `bg.chart-a` |
-| 비율 띠 — 출근 | `bg.chart-a` |
-| 비율 띠 — 출근 인정 | `bg.chart-b` |
-| 비율 띠 — 지각 | `bg.chart-c` |
+| 줄 막대 | `bg.brand-solid` |
+| 비율 띠 — 출근 | `bg.brand-solid` |
+| 비율 띠 — 출근 인정 | `bg.sky` |
+| 비율 띠 — 지각 | `bg.mint` |
 | 비율 띠 — 결근 | `bg.neutral-weak` |
 | 범례 글자 | `fg.neutral-muted` |
 | 근무 내역 시트 | [components.md](../../design-system/components.md#dialog와-바텀시트)의 바텀시트 |
@@ -305,7 +305,7 @@ ListRow고 이름 가나다순이다.
 | 시트 합계 줄 | `fg.neutral` |
 | 「내역 보기」 화살표 | `fg.neutral-subtle` |
 
-**이 화면에 브랜드 색이 없다.** 버튼이 없고 표식도 없다. 그림이 여럿인데도 브랜드를 안 쓰는 것은 [foundation/color.md](../../design-system/foundation/color.md#차트가-색을-쓰는-법)가 정한 것이다 — 아홉 포지션 막대 중 어느 것도 누르는 자리가 아니다.
+**브랜드가 그림에만 선다.** 이 화면에 버튼이 없고 표식도 없어 브랜드 색이 가리킬 누를 자리가 없다. 그림의 첫째 몫을 브랜드로 칠하는 것은 [foundation/color.md](../../design-system/foundation/color.md#그림이-색을-쓰는-법)가 정한 것이고, 막대와 띠에서 가장 큰 몫이 그 자리다 — 아홉 포지션 막대 중 어느 것도 누르는 자리가 아니라 색이 누를 곳을 말하는 일과 겹치지 않는다.
 
 **positive·warning·critical도 안 쓴다.** 지각과 결근에 색을 붙이지 않는 것이 이 화면의 규칙이라 차트에도 그대로 간다. 그림이 색을 갈라도 그 색들은 뜻이 없는 계열이다.
 

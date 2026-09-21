@@ -45,6 +45,8 @@ sources:
 
 # 자리와 배정을 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본은 [schedule-admin.md](../../2-design/modules/schedule/screens/schedule-admin.md)의 날 상세와 사람 픽커다 — [날 상세 짜임](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-짜임)·[포지션과 자리](../../2-design/modules/schedule/screens/schedule-admin.md#포지션과-자리)·[잠금과 구조 변경](../../2-design/modules/schedule/screens/schedule-admin.md#잠금과-구조-변경)·[사람 픽커 짜임](../../2-design/modules/schedule/screens/schedule-admin.md#사람-픽커-짜임)·[사람 시트](../../2-design/modules/schedule/screens/schedule-admin.md#사람-시트)·[자격 없는 사람](../../2-design/modules/schedule/screens/schedule-admin.md#자격-없는-사람)·[빈 목록](../../2-design/modules/schedule/screens/schedule-admin.md#빈-목록)·[확정 뒤 날 상세](../../2-design/modules/schedule/screens/schedule-admin.md#확정-뒤-날-상세)와 그 색·글자·여백 표, 문안 표 둘, 모션 둘이다. 쓰기 함수는 [design.md](../../2-design/modules/schedule/design.md#자리-늘리기줄이기겸임)의 `add_slot`·`remove_slot`·`merge_slots`·`split_slot`, [배정과 강제 변경](../../2-design/modules/schedule/design.md#배정과-강제-변경)의 `add_assignment`·`remove_assignment`·`force_change`, [자격 주기](../../2-design/modules/schedule/design.md#자격-주기)의 `grant_position` 여덟이고 **이 task가 처음 만든다** — [schedule-data](schedule-data.md)가 표와 뼈대 함수 일곱까지만 냈다. 규칙은 [SCH-011](../../2-design/modules/schedule/README.md#sch-011)~[SCH-016](../../2-design/modules/schedule/README.md#sch-016)·[SCH-018](../../2-design/modules/schedule/README.md#sch-018)이다.
@@ -113,12 +115,12 @@ sources:
 **사람 픽커.** 빈 자리나 「교육 붙이기」를 누르면 바텀시트가 올라온다.
 
 - 짜임: 손잡이와 제목 「스캔 · 10월 10일(토)」 → 배정 가능한 사람 목록 → 「전체 보기」 → 펼치면 나머지 전원과 상태 메시지 → 하단 「n명에게 근무 요청 보내기」
-- 목록 한 줄은 ListRow — 이니셜 원, 이름, 오른쪽 끝에 성별 기호. 년생이 줄에 없다
+- 목록 한 줄은 ListRow — 이니셜 원, 이름, 이름 바로 뒤에 성별 기호. 년생이 줄에 없다
 - 짧게 누르면 배정이다 → `add_assignment`. 확정 전에는 확인이 없고 시트가 닫힌다
 - 「전체 보기」를 펼치면 상태 셋이 선다 — 미신청(「신청 안 함」, 배정으론 안 눌리고 체크박스로 고른다), 자격 없음(「스캔 자격 없음」, 눌린다), 배정됨(「팀장에 배정됨」, 안 눌린다)
 - **배정된 줄을 누르면 토스트 「겸임은 자리를 합쳐 만드세요」.** 비활성인데 토스트까지 띄우는 것은 안 눌리는 이유를 모르면 고장으로 읽히기 때문이다
 - 배정 가능한 사람이 0명이면 「지금 바로 넣을 수 있는 사람이 없어요」 한 줄과 함께 **전체 보기가 펼쳐진 채** 열린다
-- 시트는 history에 든다 — `pushState`고 브라우저 뒤로가 시트를 닫는다
+- 시트는 기기 뒤로가 닫는다 — 화면이 아니라 시트가 먼저 닫힌다([navigation.md](../../2-design/system/navigation.md#뒤로))
 
 ### AC-05
 
@@ -137,10 +139,10 @@ sources:
 
 - 자물쇠를 누르면 **그 포지션만** 풀린다. 자물쇠가 열린 모양이 되고, 자리 카드에 끌기 손잡이가 나타나고, 목록 끝에 점선 「자리 추가」 줄이 서고, 줄 머리 아래 도움말 한 줄 「자리는 아래로 끌면 삭제, 줄 머리를 다른 줄 머리에 겹치면 겸임이에요」가 선다. **줄 머리에도 끌기 손잡이가 붙는다** — 집는 것이 둘이고 대상이 갈린다. **색으로 말하지 않는다**
 - 「자리 추가」 → `add_slot`. 상한이 없다
-- 자리를 집어 화면 아래 버리는 영역(`bg.critical-weak` 면, 하단 고정 `h-14` `rounded-lg`, 좌우 `mx-6` 아래 `mb-4` + `env(safe-area-inset-bottom)`)에 놓으면 → `remove_slot`. **빈 자리는 놓는 순간 사라지고, 사람이 든 자리는 시트가 확인한다** — 「박서연 님 배정도 같이 사라져요」
+- 자리를 집어 화면 아래 버리는 영역(`bg.critical-weak` 면, 하단 고정 `h-14` `rounded-lg`, 좌우 `mx-6` 아래 `mb-4` + `useSafeAreaInsets`의 `bottom`)에 놓으면 → `remove_slot`. **빈 자리는 놓는 순간 사라지고, 사람이 든 자리는 시트가 확인한다** — 「박서연 님 배정도 같이 사라져요」
 - **줄 머리를** 다른 포지션의 줄 머리에 겹쳐 놓으면 → `merge_slots`. 대상 줄 머리에 `stroke.brand-solid` 테두리가 선다. **양쪽에 빈 자리가 있고 두 줄 다 풀려 있을 때만 받는다** — 아니면 테두리가 안 서고 손을 떼면 제자리로 돌아가며 토스트 「빈 자리가 있어야 합쳐요」가 뜬다. 확인 시트가 없다, 지워지는 것이 없어서다
 - 겸임 카드를 누르면 시트에 「자리 나누기」가 한 줄 더 선다 → `split_slot`. **끌어서 되돌리는 길을 안 만든다** — 버리기와 손짓이 겹친다
-- 집힌 카드는 면 그대로에 `shadow-card`. 따라가는 동안의 duration은 두지 않는다 — [motion.md](../../2-design/design-system/foundation/motion.md)에 직접 조작 조항이 없다
+- 집힌 카드는 면 그대로에 테두리가 한 단계 진해진다(`stroke.neutral-muted`). 따라가는 동안의 duration은 두지 않는다 — [motion.md](../../2-design/design-system/foundation/motion.md)에 직접 조작 조항이 없다
 
 ### AC-07
 
@@ -176,7 +178,7 @@ sources:
 
 - 이 화면이 첫 자리인 것 — 끌어서 옮기기(`draggable-list.tsx` 또는 라이브러리 감싸기), 버리는 영역(`drop-zone.tsx`), 선택지 시트(줄 셋짜리). **선택지 시트는 이름을 붙이지 않는다** — [규칙과 부딪힌 자리](../../2-design/modules/schedule/screens/schedule-admin.md#규칙과-부딪힌-자리)가 「세 번째 자리가 나올 때 정한다」고 했고 이 task에 둘(자격 시트·강제 변경 시트)뿐이다. 화면 안에 두고 `src/shared/ui/`로 안 올린다
 - 이미 있는 것 — ListRow, 바텀시트, Badge, 토스트, 이니셜 원
-- 끌기는 터치 기기가 주 타깃이다. 포인터 이벤트로 짜고 `touch-action`을 세로 스크롤과 안 부딪히게 건다 — 같은 손짓이 목록 스크롤과 겹친다
+- 끌기와 세로 스크롤이 같은 손짓이라 제스처가 서로 안 먹는 자리를 만든다 — 길게 누른 뒤에만 카드가 집히게 하고 그전까지는 목록이 움직인다
 
 ### AC-10
 
@@ -184,11 +186,11 @@ sources:
 
 - unit: AC-02 전부(포지션 줄 가르기·셈·겸임 분모·픽커 목록 가르기·상태 메시지·성별 기호·년생·확정 갈림), 쓰기 dal의 오류 가르기
 - integration: 함수 여덟의 관리자 검사와 오류 코드 전부. 특히 — `add_assignment`가 미신청자에게 `not_applied`, 제한 포지션에 `not_qualified`, 같은 날 둘째 자리에 `already_assigned`, 찬 자리에 `slot_full`; 교육 배정은 넷 중 자격만 안 걸린다; `merge_slots`가 받은 쪽 배열을 늘리고 내준 쪽 빈 자리를 닫는지, 사람이 든 자리를 안 건드리는지, 한쪽이 다 찼으면 `no_empty_slot`인지; `split_slot`이 사람을 남는 쪽에 두는지; `force_change`가 한 트랜잭션이라 새 사람이 실패하면 기존 배정이 살아 있는지; 확정 전은 지우고 확정 뒤는 `ended_at`을 찍는지; 새로 연 날은 `add_slot`이 통과하고 확정 시점 날은 `already_confirmed`인지
-- e2e(`tests/e2e/schedule-assign.spec.ts`): 관리자가 날 상세에서 빈 자리를 눌러 사람을 넣고 → 줄을 길게 눌러 사람 시트를 보고 → 자격 없는 사람에게 자격을 주며 넣고 → 자물쇠를 풀어 자리를 추가하고 → 확정 뒤 강제 변경에 확인 시트가 서는 데까지. 끌기는 e2e가 흉내 내기 어려워 **자리 추가와 시트 경로만 본다** — 삭제·겸임은 integration이 함수를 직접 본다
+- e2e(`schedule-assign` e2e): 관리자가 날 상세에서 빈 자리를 눌러 사람을 넣고 → 줄을 길게 눌러 사람 시트를 보고 → 자격 없는 사람에게 자격을 주며 넣고 → 자물쇠를 풀어 자리를 추가하고 → 확정 뒤 강제 변경에 확인 시트가 서는 데까지. 끌기는 e2e가 흉내 내기 어려워 **자리 추가와 시트 경로만 본다** — 삭제·겸임은 integration이 함수를 직접 본다
 
 ### AC-11
 
-**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·`pnpm build && pnpm e2e` 전부 초록. `sian-auditor`가 `schedule-admin.sian.html`의 날 상세·픽커 절과 문서를 대조한다.
+**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·e2e 명령 전부 초록. `sian-auditor`가 `schedule-admin.sian.html`의 날 상세·픽커 절과 문서를 대조한다.
 
 ## 변경 파일
 
@@ -202,7 +204,7 @@ sources:
 | `src/features/schedule/*.ts`·`__tests__/` | mutation과 무효화, `stale` 처리 | AC-08 |
 | `src/screens/schedule-admin/ui/*.tsx` | 포지션 줄·자리 카드·픽커·사람 시트·선택지 시트·잠금·끌기·확인 시트 | AC-03~AC-07 |
 | `src/shared/ui/draggable-list.tsx`·`drop-zone.tsx` | 끌어서 옮기기 | AC-09 |
-| `tests/e2e/schedule-assign.spec.ts` | e2e | AC-10 |
+| `schedule-assign` e2e | e2e | AC-10 |
 
 ## 구현 순서
 
@@ -217,7 +219,7 @@ sources:
 
 ## 리스크·전환·되돌리기
 
-- **끌기가 이 저장소에서 처음이다.** 터치 기기에서 세로 스크롤과 같은 손짓이라 `touch-action`을 잘못 걸면 목록이 안 움직이거나 카드가 안 집힌다. e2e가 못 보는 자리라 실기기 확인이 필요하다 — 배정하지 않은 것에 적는다
+- **끌기가 이 저장소에서 처음이다.** 세로 스크롤과 같은 손짓이라 경계를 잘못 잡으면 목록이 안 움직이거나 카드가 안 집힌다. e2e가 못 보는 자리라 실기기 확인이 필요하다 — 배정하지 않은 것에 적는다
 - **`force_change`가 한 트랜잭션이어야 한다.** 빼기만 되고 넣기가 실패하면 자리가 빈 채로 남고 알림도 반쪽이다. 함수 안에서 끝내고 화면이 두 번 부르지 않는다. integration이 새 사람 실패 시 기존 배정이 살아 있는지 본다
 - **「이번만 넣기」가 자격 검사를 건너뛴다.** 인자로 여는 문이라 화면이 안 보내면 못 연다. 그 인자를 기본값 `false`로 두고 자격 시트에서만 `true`를 보낸다 — `pr-diff`가 다른 호출자가 그 인자를 쓰는지 본다
 - **요청 상태 줄이 빈 채로 선다.** 픽커의 대기 중·거절함·만료됨은 `requests`를 읽어야 하는데 그것을 붙이는 것은 [`schedule-requests`](../../backlog.md)다. 이 task는 자리와 모양만 두고 값이 비면 줄이 안 선다 — 그 task의 plan이 이 자리를 잇는다
@@ -232,7 +234,7 @@ sources:
 | AC-01 | 강제 변경이 반쪽 난다 | integration 위 | 위와 같다 | 새 사람 실패 시 기존 배정이 살아 있다 |
 | AC-01 | 확정 뒤 구조가 바뀐다 | integration 위 | 위와 같다 | 확정 시점 날은 `already_confirmed`, 새로 연 날은 통과 |
 | AC-02 | 셈이 틀린다, 픽커가 잘못 가른다 | unit `src/screens/schedule-admin/model/__tests__/`(예정) | `pnpm test` | 겸임 분모, 교육 제외, 상태 메시지 넷 |
-| AC-04·AC-05·AC-07 | 흐름이 끊긴다 | e2e `tests/e2e/schedule-assign.spec.ts`(예정) | `pnpm build && pnpm e2e` | 배정 → 사람 시트 → 자격 주며 넣기 → 자리 추가 → 확정 뒤 확인 시트 |
+| AC-04·AC-05·AC-07 | 흐름이 끊긴다 | e2e `schedule-assign` e2e(예정) | e2e 명령 | 배정 → 사람 시트 → 자격 주며 넣기 → 자리 추가 → 확정 뒤 확인 시트 |
 | AC-08 | 경쟁이 시트를 닫는다 | e2e 위 spec | 위와 같다 | `stale`에 시트가 안 닫히고 그 자리만 갱신된다 |
 | AC-11 | 시안이 문서와 어긋난다 | `sian-auditor` | — | 어긋남 없음 |
 

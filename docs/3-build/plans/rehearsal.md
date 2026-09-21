@@ -32,6 +32,8 @@ sources:
 
 # 리허설을 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본은 [schedule/design.md](../../2-design/modules/schedule/design.md#리허설)의 [리허설](../../2-design/modules/schedule/design.md#리허설)과 [리허설 넣기·고치기·지우기](../../2-design/modules/schedule/design.md#리허설-넣기고치기지우기), 화면은 [rehearsal.md](../../2-design/modules/schedule/screens/rehearsal.md) 전체와 [profile.md](../../2-design/modules/account/screens/profile.md#리허설)의 리허설 줄이다. 업무 규칙은 [SCH-020](../../2-design/modules/schedule/README.md#sch-020)~[SCH-023](../../2-design/modules/schedule/README.md#sch-023)이고 급여 쪽 계약은 [PAY-028](../../2-design/modules/payroll/README.md#pay-028)이다.
@@ -151,9 +153,9 @@ sources:
 | `src/shared/api/error-codes.ts` | 코드 넷 | AC-09 |
 | `src/features/rehearsal/model/*.ts`·`__tests__/` | 시간 환산·합계·갈래 판정·넣기 가능 | AC-04 |
 | `src/entities/rehearsal/dals/*.ts`·`__tests__/` | 읽기 둘, 쓰기 셋, 무효화 | AC-05 |
-| `src/screens/rehearsal/ui/*.tsx` · `src/app/me/rehearsals/page.tsx` | 달력·시트 셋·Dialog·가드 | AC-06~AC-08 |
+| `src/screens/rehearsal/ui/*.tsx` · `/me/rehearsals/` 화면 | 달력·시트 셋·Dialog·가드 | AC-06~AC-08 |
 | `src/screens/profile/ui/*.tsx` | 「리허설」 줄 | AC-08 |
-| `tests/e2e/rehearsal.spec.ts` | e2e | 검증 표 |
+| `rehearsal` e2e | e2e | 검증 표 |
 
 ## 구현 순서
 
@@ -189,7 +191,7 @@ sources:
 | AC-03 | 남의 행을 고친다·지운다 | integration 위 | 위와 같다 | 관리자가 불러도 `not_allowed` |
 | AC-04 | 1건이 1시간이 아니다 | unit `src/features/rehearsal/model/__tests__/`(예정) | `pnpm test` | 3건이 3시간, 14:00–16:00이 2시간 |
 | AC-04 | 건수 갈래인 날에 넣기 버튼이 남는다 | unit 위 | `pnpm test` | 줄이 하나면 `canAddOn`이 거짓 |
-| AC-06 | 못 누르는 칸이 생긴다 | e2e `tests/e2e/rehearsal.spec.ts`(예정) | `pnpm e2e` | 근무표에 없는 달의 아무 날이나 눌린다 |
+| AC-06 | 못 누르는 칸이 생긴다 | e2e `rehearsal` e2e(예정) | e2e 명령 | 근무표에 없는 달의 아무 날이나 눌린다 |
 | AC-07 | 갈래가 바뀌면 고른 날짜가 날아간다 | e2e 위 | 위와 같다 | 알림 한 줄, 날짜 그대로, 칸만 바뀜 |
 | AC-08 | 자격 없는 사람이 주소로 들어온다 | e2e 위 | 위와 같다 | `/me`로 보낸다. 「나」에 줄이 없다 |
 | AC-09 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/error-codes.test.ts` | `pnpm test` | 넷이 양쪽에 있다 |

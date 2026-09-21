@@ -3,7 +3,7 @@ sources:
   - ../../2-design/modules/account/design.md#첫-진입과-게이트
   - ../../2-design/modules/account/design.md#코드와의-차이
   - ../../2-design/system/navigation.md#앱을-열면
-  - ../../2-design/system/runtime.md#캐시-네-계층
+  - ../../2-design/system/runtime.md#캐시-두-계층
   - ../../2-design/system/runtime.md#tanstack-query-규칙
 ---
 
@@ -11,7 +11,7 @@ sources:
 
 ## 입력 명세·기준
 
-정본은 [design.md](../../2-design/modules/account/design.md#첫-진입과-게이트)의 「첫 진입과 게이트」와 [navigation.md](../../2-design/system/navigation.md#앱을-열면)의 상태별 목적지 표다. 서버가 승인을 판정하지 않는 이유는 [runtime.md](../../2-design/system/runtime.md#캐시-네-계층)에 있다 — 승인·차단·퇴사를 서버가 HTML에 그리면 그 HTML이 세션마다 달라 Service Worker가 캐시할 수 없다. `['profile']` 키의 규칙은 [runtime.md](../../2-design/system/runtime.md#tanstack-query-규칙)와 design의 「캐시 갱신」 불릿이다 — `staleTime`이 0이고 영속하지 않는다.
+정본은 [design.md](../../2-design/modules/account/design.md#첫-진입과-게이트)의 「첫 진입과 게이트」와 [navigation.md](../../2-design/system/navigation.md#앱을-열면)의 상태별 목적지 표다. 서버가 승인을 판정하지 않는 이유는 [runtime.md](../../2-design/system/runtime.md#캐시-두-계층)에 있다 — 승인·차단·퇴사를 서버가 HTML에 그리면 그 HTML이 세션마다 달라 Service Worker가 캐시할 수 없다. `['profile']` 키의 규칙은 [runtime.md](../../2-design/system/runtime.md#tanstack-query-규칙)와 design의 「캐시 갱신」 불릿이다 — `staleTime`이 0이고 영속하지 않는다.
 
 지금 코드는 반대로 서 있다. `src/middleware.ts`가 세션 쿠키를 갱신하고, `src/app/auth-gate.ts`의 `enterRoute`·`enterPendingRoute`가 서버에서 `readAuthGate`로 `approved_at`을 읽어 `redirect`한다. 목적지는 `/login`·`/pending`·`/` 셋뿐이고 차단·퇴사는 없다. `/pending`은 서버가 넘긴 이메일·사진을 그린다. [design.md](../../2-design/modules/account/design.md#코드와의-차이)의 「코드와의 차이」 표에서 `auth-entry`가 닫아야 할 행이 둘이다 — 서버 판정을 클라이언트로, `readAuthGate`·`getApprovedAt`의 이동.
 

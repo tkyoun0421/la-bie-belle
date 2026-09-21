@@ -162,7 +162,7 @@ design의 「행위별 구현 계약」은 같은 행위를 중심으로 **입�
 
 | 문서 | 본문 틀 | 절별 작성 방법 | 검토 기준 |
 | --- | --- | --- | --- |
-| `system/architecture.md` | 구성과 경계 → 구성 요소의 책임 → 업무 영역 관계 → 주요 데이터 흐름 → 선택 근거·미정 | 브라우저·Next·Supabase·Edge Function을 실제 책임으로 연결한다. 관계도 화살표에는 호출·읽기·쓰기의 뜻을 붙인다. 대표 흐름에는 영역 design을 링크한다 | 어느 구성 요소가 인증·판정·저장을 맡는지 추적되는가 |
+| `system/architecture.md` | 구성과 경계 → 구성 요소의 책임 → 업무 영역 관계 → 주요 데이터 흐름 → 선택 근거·미정 | 앱·Supabase·Edge Function을 실제 책임으로 연결한다. 관계도 화살표에는 호출·읽기·쓰기의 뜻을 붙인다. 대표 흐름에는 영역 design을 링크한다 | 어느 구성 요소가 인증·판정·저장을 맡는지 추적되는가 |
 | `system/data-access.md` | 공유 데이터 → 스키마·타입 규약 → 읽기·쓰기 경계 → 인증·권한 → 결과·오류 계약 → 예외·미정 | 공유 halls와 영역 소유 데이터를 구별한다. DAL·auth·서비스 키의 경계를 정하고, 공통 오류는 의미·반환 위치·호출자 책임을 적는다 | 모든 업무에 적용할 규칙과 특정 업무 예외를 구별했는가 |
 | `system/runtime.md` | 캐시·수명 → 오프라인 → 시각 → 경쟁·재시도 → 로딩·낙관적 처리 → 예외·미정 | 기본값마다 적용 조건과 이유를 적는다. 시각은 발생·보고·수신·판정 중 무엇인지 구별한다. 상수의 코드 원천을 링크하고 영역별 키·무효화 목록은 복사하지 않는다 | 영역 design이 어떤 기본값을 상속하며 언제 예외를 써야 하는가 |
 | `system/navigation.md` | 진입과 역할 → 경로 → 탐색·뒤로 가기 → 딥링크 → 예외·미정 | `경로 / 진입 조건의 참조 / 소유 화면` 표를 둔다. 직접 URL 진입·역할 전환·재진입을 확인한다. 화면 안 버튼별 이동은 소유 화면에 둔다 | 같은 진입 조건이 화면 문서와 충돌하지 않는가 |
@@ -260,11 +260,23 @@ design의 「행위별 구현 계약」은 같은 행위를 중심으로 **입�
 
 시안은 포맷 검사에서 뺀다. 손으로 만든 산출물이라 prettier가 다시 줄을 나누면 사람이 고른 그 모습이 아니게 된다. `.prettierignore`에 자리가 있다.
 
-**시안의 앱 목업은 [서체 연결](design-system/tokens.md#서체-연결)을 그대로 건다.** 시안 바깥 골격 — 캡션, 섹션 번호, 씬 이름 — 은 시안을 설명하는 자리라 다른 서체를 써도 된다.
+**시안의 앱 목업은 Wanted Sans를 건다.** 앱은 폰트 파일을 번들에 넣지만([서체](design-system/foundation/typography.md#서체)) 시안은 브라우저에서 보는 HTML이라 웹폰트 쪽을 쓴다. jsdelivr에 올라간 조각 나눔 스타일시트 한 줄이다.
 
-**아티팩트로 올릴 때는 `pnpm sian:inline <시안 경로>`를 거친다.** 아티팩트는 외부 스타일시트를 `fonts.googleapis.com`에서만 받아서 jsdelivr의 `<link>`가 조용히 차단되고 시스템 서체로 떨어지는데, Wanted Sans는 Google Fonts에 없다. 이 명령이 그 화면에 찍히는 글자가 든 조각만 골라 `@font-face`에 심은 복사본을 `.artifact/`에 만든다. 저장소에 들어가는 시안은 여전히 `<link>` 하나다 — [서체](design-system/foundation/typography.md#서체)가 폰트 파일을 저장소에 안 넣는다고 정했다.
+```html
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous" />
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css"
+/>
+```
 
-**시안의 CSS를 앱으로 옮기지 않는다.** [디자인 시스템의 퍼블리싱](design-system/README.md#퍼블리싱)이 정한 대로 shadcn/ui와 Tailwind 위에 토큰을 갈아끼운다. 시안은 눈으로 보는 것이지 복사할 코드가 아니다.
+`@font-face`가 선언하는 이름은 `Wanted Sans Variable`이다. 시안 바깥 골격 — 캡션, 섹션 번호, 씬 이름 — 은 시안을 설명하는 자리라 다른 서체를 써도 된다.
+
+**아티팩트로 올릴 때는 `pnpm sian:inline <시안 경로>`를 거친다.** 아티팩트는 외부 스타일시트를 `fonts.googleapis.com`에서만 받아서 jsdelivr의 `<link>`가 조용히 차단되고 시스템 서체로 떨어지는데, Wanted Sans는 Google Fonts에 없다. 이 명령이 그 화면에 찍히는 글자가 든 조각만 골라 `@font-face`에 심은 복사본을 `.artifact/`에 만든다. 저장소에 들어가는 시안은 여전히 `<link>` 하나다.
+
+**시안의 CSS를 앱으로 옮기지 않는다.** 시안은 웹이고 앱은 React Native라 CSS가 그대로 서지 않는다. [디자인 시스템의 퍼블리싱](design-system/README.md#퍼블리싱)이 정한 대로 NativeWind 위에 토큰을 얹는다. 시안은 눈으로 보는 것이지 복사할 코드가 아니다.
+
+닿는 면이 그 어긋남이 제일 잘 보이는 자리다. 시안은 `::after`로 투명한 면을 덧대는데 앱에서 그 일을 하는 것은 `Pressable`의 `hitSlop`이다([spacing-shape.md](design-system/foundation/spacing-shape.md#누를-수-있는-것은-44px-이상이다)). 둘은 겹치는 방식도 다르다 — 덧댄 면은 부모 안에서 커지지만 `hitSlop`은 형제와 겹칠 수 있다.
 
 **검토 기준:** 버튼을 누른 뒤 성공·실패의 끝까지 그려졌는가. 적용되는 라이트·다크와 작은 화면에서 글자·터치·포커스를 확인할 수 있는가. 지적마다 근거 조항을 연결할 수 있는가.
 

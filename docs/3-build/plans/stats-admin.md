@@ -18,6 +18,8 @@ sources:
 
 # 관리자 통계 화면을 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본은 [stats.md](../../2-design/system/screens/stats.md)다. 차트 조각 셋은 [components.md의 차트 넷](../../2-design/design-system/components.md#차트-넷), 경로와 역할 조건은 [navigation.md](../../2-design/system/navigation.md#경로)다.
@@ -88,7 +90,7 @@ sources:
 
 `src/shared/ui/`
 
-- `trend-chart.tsx` — 열두 달. 선 2px `stroke.chart-a`, 아래 면 `bg.chart-a-weak`, **점은 보는 달에만**, 높이 96px. 값이 `null`인 달은 선이 끊긴다. 가로축은 1·4·7·10월만 글자고 나머지 여덟은 눈금이다
+- `trend-chart.tsx` — 열두 달. 선 2px `stroke.brand-solid`, 아래 면 `bg.brand-weak`, **점은 보는 달에만**, 높이 96px. 값이 `null`인 달은 선이 끊긴다. 가로축은 1·4·7·10월만 글자고 나머지 여덟은 눈금이다
 - `row-bar.tsx` — 줄 아래 4px `rounded-full`, **트랙이 없다**. 가장 큰 값이 100%고 **0이면 아무것도 안 그린다**
 - `ratio-band.tsx` — 8px `rounded-full`, 몫 사이 2px 틈. 몫이 0이면 그 색과 범례가 같이 빠진다
 - **등장 모션이 없다**([components.md](../../2-design/design-system/components.md#차트-넷)). 막대가 자라거나 선이 그려지지 않는다. 값이 바뀌면 `--duration-base`로 옮겨간다
@@ -148,7 +150,7 @@ sources:
 | `src/shared/ui/row-bar.tsx` | 줄 막대 | AC-05 |
 | `src/shared/ui/ratio-band.tsx` | 비율 띠 | AC-05 |
 | `src/screens/admin-stats/` | 화면 조립, 탭 둘, 시트 | AC-06~AC-09 |
-| `src/app/admin/stats/page.tsx` | 라우트 | AC-06 |
+| `/admin/stats/` 화면 | 라우트 | AC-06 |
 
 ## 구현 순서
 
@@ -185,12 +187,12 @@ sources:
 | AC-04 | 남의 행이 안 온다 | integration `tests/integration/stats-month.test.ts`(예정) | `pnpm test:integration:run` | 관리자는 전원, 근무자는 자기 것 |
 | AC-04 | 한 달을 날마다 읽는다 | integration 위 | 위와 같다 | 한 질의로 그달치 |
 | AC-05 | 0인데 1px 선이 남는다 | unit `row-bar` 계산(예정) | `pnpm test` | 폭이 0이면 안 그린다 |
-| AC-06 | 탭을 옮기면 달이 돌아간다 | e2e `e2e/admin-stats.spec.ts`(예정) | `pnpm e2e` | 보는 달 그대로 |
-| AC-06 | 근무자가 들어간다 | e2e 위 | `pnpm e2e` | 관리자만 |
-| AC-07 | 포지션 줄이 눌린다 | e2e 위 | `pnpm e2e` | 안 눌리고 화살표가 없다 |
-| AC-08 | 시트가 안 열린다 | e2e 위 | `pnpm e2e` | 사람별 줄을 누르면 올라온다 |
-| AC-09 | 빈 달에 그래프가 사라진다 | e2e 위 | `pnpm e2e` | 그래프는 서고 목록만 빈 상태 |
-| AC-09 | 근태 셈이 명단과 다르다 | e2e 위 | `pnpm e2e` | 같은 함수의 값 |
+| AC-06 | 탭을 옮기면 달이 돌아간다 | e2e `admin-stats` e2e(예정) | e2e 명령 | 보는 달 그대로 |
+| AC-06 | 근무자가 들어간다 | e2e 위 | e2e 명령 | 관리자만 |
+| AC-07 | 포지션 줄이 눌린다 | e2e 위 | e2e 명령 | 안 눌리고 화살표가 없다 |
+| AC-08 | 시트가 안 열린다 | e2e 위 | e2e 명령 | 사람별 줄을 누르면 올라온다 |
+| AC-09 | 빈 달에 그래프가 사라진다 | e2e 위 | e2e 명령 | 그래프는 서고 목록만 빈 상태 |
+| AC-09 | 근태 셈이 명단과 다르다 | e2e 위 | e2e 명령 | 같은 함수의 값 |
 
 - 배정하지 않은 것: 차트 조각의 눈으로 보는 확인 — 시안 `stats.sian.html`과 나란히 본다
 - 막힌 것: 지금은 없다

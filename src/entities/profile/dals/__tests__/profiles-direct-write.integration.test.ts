@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { createSignedInUser } from "@tests/integration/supabase";
 
 describe("profiles 표에 직접 쓰지 못한다", () => {

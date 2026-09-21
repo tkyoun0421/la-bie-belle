@@ -173,133 +173,289 @@ code {
 
 /* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
 .mock {
-  --palette-neutral-00: oklch(1 .0037 57);
-  --palette-neutral-100: oklch(.965 .0037 57);
-  --palette-neutral-200: oklch(.905 .0043 57);
-  --palette-neutral-300: oklch(.845 .0045 57);
-  --palette-neutral-700: oklch(.545 .005 57);
-  --palette-neutral-800: oklch(.455 .005 57);
-  --palette-neutral-900: oklch(.32 .0053 57);
-  --palette-neutral-1000: oklch(.215 .0055 57);
-  --palette-brand-100: oklch(.965 .0128 57);
-  /* tokens.md 1절 bg.brand-muted = brand-300, 그 절의 hex 그대로다 */
-  --palette-brand-300: #DEC7B7;
-  --palette-brand-800: oklch(.455 .0534 57);
-  --palette-positive-100: oklch(.965 .0253 152);
-  --palette-positive-800: oklch(.455 .1058 152);
-  --palette-informative-100: oklch(.965 .0253 248);
-  --palette-critical-800: oklch(.455 .1334 27);
-  --surface-stroke: transparent;
-  /* tokens.md 2절 — 투명도가 값 안에 들어 있다. 쓰는 쪽이 따로 안 얹는다 */
-  --bg-scrim: #1B19176B;
-  --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5);
+  --palette-neutral-00: oklch(1.000 0.0001 250);
+  --palette-neutral-100: oklch(0.965 0.0018 250);
+  --palette-neutral-200: oklch(0.905 0.0030 250);
+  --palette-neutral-300: oklch(0.845 0.0046 250);
+  --palette-neutral-400: oklch(0.760 0.0062 250);
+  --palette-neutral-500: oklch(0.680 0.0075 250);
+  --palette-neutral-600: oklch(0.625 0.0080 250);
+  --palette-neutral-700: oklch(0.545 0.0078 250);
+  --palette-neutral-800: oklch(0.455 0.0074 250);
+  --palette-neutral-900: oklch(0.320 0.0062 250);
+  --palette-neutral-1000: oklch(0.215 0.0048 250);
+  --palette-brand-00: oklch(1.000 0.0001 266);
+  --palette-brand-100: oklch(0.965 0.0160 266);
+  --palette-brand-200: oklch(0.905 0.0443 266);
+  --palette-brand-300: oklch(0.845 0.0740 266);
+  --palette-brand-400: oklch(0.760 0.1185 266);
+  --palette-brand-500: oklch(0.680 0.1630 266);
+  --palette-brand-600: oklch(0.625 0.1951 266);
+  --palette-brand-700: oklch(0.545 0.2350 266);
+  --palette-brand-800: oklch(0.455 0.2210 266);
+  --palette-brand-900: oklch(0.320 0.1870 266);
+  --palette-brand-1000: oklch(0.215 0.1440 266);
+  --palette-sky-00: oklch(1.000 0.0001 250);
+  --palette-sky-100: oklch(0.965 0.0168 250);
+  --palette-sky-200: oklch(0.905 0.0465 250);
+  --palette-sky-300: oklch(0.845 0.0776 250);
+  --palette-sky-400: oklch(0.760 0.1241 250);
+  --palette-sky-500: oklch(0.680 0.1504 250);
+  --palette-sky-600: oklch(0.625 0.1600 250);
+  --palette-sky-700: oklch(0.545 0.1502 250);
+  --palette-sky-800: oklch(0.455 0.1258 250);
+  --palette-sky-900: oklch(0.320 0.0896 250);
+  --palette-sky-1000: oklch(0.215 0.0628 250);
+  --palette-mint-00: oklch(1.000 0.0002 183);
+  --palette-mint-100: oklch(0.965 0.0331 183);
+  --palette-mint-200: oklch(0.905 0.0568 183);
+  --palette-mint-300: oklch(0.845 0.0868 183);
+  --palette-mint-400: oklch(0.760 0.1168 183);
+  --palette-mint-500: oklch(0.680 0.1177 183);
+  --palette-mint-600: oklch(0.625 0.1082 183);
+  --palette-mint-700: oklch(0.545 0.0945 183);
+  --palette-mint-800: oklch(0.455 0.0790 183);
+  --palette-mint-900: oklch(0.320 0.0562 183);
+  --palette-mint-1000: oklch(0.215 0.0391 183);
+  --palette-positive-00: oklch(1.000 0.0115 152);
+  --palette-positive-100: oklch(0.965 0.0253 152);
+  --palette-positive-200: oklch(0.905 0.0437 152);
+  --palette-positive-300: oklch(0.845 0.0667 152);
+  --palette-positive-400: oklch(0.760 0.0897 152);
+  --palette-positive-500: oklch(0.680 0.1081 152);
+  --palette-positive-600: oklch(0.625 0.1150 152);
+  --palette-positive-700: oklch(0.545 0.1127 152);
+  --palette-positive-800: oklch(0.455 0.1058 152);
+  --palette-positive-900: oklch(0.320 0.0897 152);
+  --palette-positive-1000: oklch(0.215 0.0690 152);
+  --palette-warning-00: oklch(1.000 0.0160 88);
+  --palette-warning-100: oklch(0.965 0.0352 88);
+  --palette-warning-200: oklch(0.905 0.0608 88);
+  --palette-warning-300: oklch(0.845 0.0928 88);
+  --palette-warning-400: oklch(0.760 0.1248 88);
+  --palette-warning-500: oklch(0.680 0.1504 88);
+  --palette-warning-600: oklch(0.625 0.1600 88);
+  --palette-warning-700: oklch(0.545 0.1568 88);
+  --palette-warning-800: oklch(0.455 0.1472 88);
+  --palette-warning-900: oklch(0.320 0.1248 88);
+  --palette-warning-1000: oklch(0.215 0.0960 88);
+  --palette-critical-00: oklch(1.000 0.0145 27);
+  --palette-critical-100: oklch(0.965 0.0319 27);
+  --palette-critical-200: oklch(0.905 0.0551 27);
+  --palette-critical-300: oklch(0.845 0.0841 27);
+  --palette-critical-400: oklch(0.760 0.1131 27);
+  --palette-critical-500: oklch(0.680 0.1363 27);
+  --palette-critical-600: oklch(0.625 0.1450 27);
+  --palette-critical-700: oklch(0.545 0.1421 27);
+  --palette-critical-800: oklch(0.455 0.1334 27);
+  --palette-critical-900: oklch(0.320 0.1131 27);
+  --palette-critical-1000: oklch(0.215 0.0870 27);
+  --scrim-bg: #181A1C6B;
 }
-.mock.force-dark {
-  --palette-neutral-00: oklch(.155 .0037 57);
-  --palette-neutral-100: oklch(.205 .0037 57);
-  --palette-neutral-200: oklch(.265 .0043 57);
-  --palette-neutral-300: oklch(.32 .0045 57);
-  --palette-neutral-700: oklch(.665 .005 57);
-  --palette-neutral-800: oklch(.745 .005 57);
-  --palette-neutral-900: oklch(.845 .0053 57);
-  --palette-neutral-1000: oklch(.935 .0055 57);
-  --palette-brand-100: oklch(.205 .0128 57);
-  --palette-brand-300: #402F22;
-  --palette-brand-800: oklch(.745 .0534 57);
-  --palette-positive-100: oklch(.205 .0253 152);
-  --palette-positive-800: oklch(.745 .1058 152);
-  --palette-informative-100: oklch(.205 .0253 248);
-  --palette-critical-800: oklch(.745 .1334 27);
-  --surface-stroke: var(--palette-neutral-200);
-  --bg-scrim: #0D0C0B6B;
-  --card-shadow: none;
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
-  /* 구글 자산의 값, 우리 토큰 아님 — 다크 화면엔 구글의 Light 자산 */
-  --google-fill: #FFFFFF;
-  --google-stroke: #747775;
-  --google-text: #1F1F1F;
+.mock.force-dark, :root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(0.155 0.0008 250);
+  --palette-neutral-100: oklch(0.205 0.0018 250);
+  --palette-neutral-200: oklch(0.265 0.0030 250);
+  --palette-neutral-300: oklch(0.320 0.0046 250);
+  --palette-neutral-400: oklch(0.400 0.0062 250);
+  --palette-neutral-500: oklch(0.480 0.0075 250);
+  --palette-neutral-600: oklch(0.585 0.0080 250);
+  --palette-neutral-700: oklch(0.665 0.0078 250);
+  --palette-neutral-800: oklch(0.745 0.0074 250);
+  --palette-neutral-900: oklch(0.845 0.0062 250);
+  --palette-neutral-1000: oklch(0.935 0.0048 250);
+  --palette-brand-00: oklch(0.155 0.0240 266);
+  --palette-brand-100: oklch(0.205 0.0530 266);
+  --palette-brand-200: oklch(0.265 0.0910 266);
+  --palette-brand-300: oklch(0.320 0.1390 266);
+  --palette-brand-400: oklch(0.400 0.1870 266);
+  --palette-brand-500: oklch(0.480 0.2256 266);
+  --palette-brand-600: oklch(0.585 0.2192 266);
+  --palette-brand-700: oklch(0.665 0.1716 266);
+  --palette-brand-800: oklch(0.745 0.1266 266);
+  --palette-brand-900: oklch(0.845 0.0740 266);
+  --palette-brand-1000: oklch(0.935 0.0300 266);
+  --palette-sky-00: oklch(0.155 0.0160 250);
+  --palette-sky-100: oklch(0.205 0.0354 250);
+  --palette-sky-200: oklch(0.265 0.0606 250);
+  --palette-sky-300: oklch(0.320 0.0896 250);
+  --palette-sky-400: oklch(0.400 0.1109 250);
+  --palette-sky-500: oklch(0.480 0.1325 250);
+  --palette-sky-600: oklch(0.585 0.1600 250);
+  --palette-sky-700: oklch(0.665 0.1566 250);
+  --palette-sky-800: oklch(0.745 0.1326 250);
+  --palette-sky-900: oklch(0.845 0.0776 250);
+  --palette-sky-1000: oklch(0.935 0.0315 250);
+  --palette-mint-00: oklch(0.155 0.0150 183);
+  --palette-mint-100: oklch(0.205 0.0331 183);
+  --palette-mint-200: oklch(0.265 0.0471 183);
+  --palette-mint-300: oklch(0.320 0.0562 183);
+  --palette-mint-400: oklch(0.400 0.0697 183);
+  --palette-mint-500: oklch(0.480 0.0833 183);
+  --palette-mint-600: oklch(0.585 0.1013 183);
+  --palette-mint-700: oklch(0.665 0.1151 183);
+  --palette-mint-800: oklch(0.745 0.1289 183);
+  --palette-mint-900: oklch(0.845 0.1168 183);
+  --palette-mint-1000: oklch(0.935 0.0900 183);
+  --palette-positive-00: oklch(0.155 0.0115 152);
+  --palette-positive-100: oklch(0.205 0.0253 152);
+  --palette-positive-200: oklch(0.265 0.0437 152);
+  --palette-positive-300: oklch(0.320 0.0667 152);
+  --palette-positive-400: oklch(0.400 0.0897 152);
+  --palette-positive-500: oklch(0.480 0.1081 152);
+  --palette-positive-600: oklch(0.585 0.1150 152);
+  --palette-positive-700: oklch(0.665 0.1127 152);
+  --palette-positive-800: oklch(0.745 0.1058 152);
+  --palette-positive-900: oklch(0.845 0.0897 152);
+  --palette-positive-1000: oklch(0.935 0.0690 152);
+  --palette-warning-00: oklch(0.155 0.0160 88);
+  --palette-warning-100: oklch(0.205 0.0352 88);
+  --palette-warning-200: oklch(0.265 0.0608 88);
+  --palette-warning-300: oklch(0.320 0.0928 88);
+  --palette-warning-400: oklch(0.400 0.1248 88);
+  --palette-warning-500: oklch(0.480 0.1504 88);
+  --palette-warning-600: oklch(0.585 0.1600 88);
+  --palette-warning-700: oklch(0.665 0.1568 88);
+  --palette-warning-800: oklch(0.745 0.1472 88);
+  --palette-warning-900: oklch(0.845 0.1248 88);
+  --palette-warning-1000: oklch(0.935 0.0960 88);
+  --palette-critical-00: oklch(0.155 0.0145 27);
+  --palette-critical-100: oklch(0.205 0.0319 27);
+  --palette-critical-200: oklch(0.265 0.0551 27);
+  --palette-critical-300: oklch(0.320 0.0841 27);
+  --palette-critical-400: oklch(0.400 0.1131 27);
+  --palette-critical-500: oklch(0.480 0.1363 27);
+  --palette-critical-600: oklch(0.585 0.1450 27);
+  --palette-critical-700: oklch(0.665 0.1421 27);
+  --palette-critical-800: oklch(0.745 0.1334 27);
+  --palette-critical-900: oklch(0.845 0.1131 27);
+  --palette-critical-1000: oklch(0.935 0.0870 27);
+  --scrim-bg: #0C0C0C6B;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .mock:not(.force-light) {
-    --palette-neutral-00: oklch(.155 .0037 57);
-    --palette-neutral-100: oklch(.205 .0037 57);
-    --palette-neutral-200: oklch(.265 .0043 57);
-    --palette-neutral-300: oklch(.32 .0045 57);
-    --palette-neutral-700: oklch(.665 .005 57);
-    --palette-neutral-800: oklch(.745 .005 57);
-    --palette-neutral-900: oklch(.845 .0053 57);
-    --palette-neutral-1000: oklch(.935 .0055 57);
-    --palette-brand-100: oklch(.205 .0128 57);
-    --palette-brand-300: #402F22;
-    --palette-brand-800: oklch(.745 .0534 57);
-    --palette-positive-100: oklch(.205 .0253 152);
-    --palette-positive-800: oklch(.745 .1058 152);
-    --palette-informative-100: oklch(.205 .0253 248);
-    --palette-critical-800: oklch(.745 .1334 27);
-    --surface-stroke: var(--palette-neutral-200);
-    --bg-scrim: #0D0C0B6B;
-    --card-shadow: none;
-    --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
-    /* 구글 자산의 값, 우리 토큰 아님 — 다크 화면엔 구글의 Light 자산 */
-    --google-fill: #FFFFFF;
-    --google-stroke: #747775;
-    --google-text: #1F1F1F;
+    --palette-neutral-00: oklch(0.155 0.0008 250);
+    --palette-neutral-100: oklch(0.205 0.0018 250);
+    --palette-neutral-200: oklch(0.265 0.0030 250);
+    --palette-neutral-300: oklch(0.320 0.0046 250);
+    --palette-neutral-400: oklch(0.400 0.0062 250);
+    --palette-neutral-500: oklch(0.480 0.0075 250);
+    --palette-neutral-600: oklch(0.585 0.0080 250);
+    --palette-neutral-700: oklch(0.665 0.0078 250);
+    --palette-neutral-800: oklch(0.745 0.0074 250);
+    --palette-neutral-900: oklch(0.845 0.0062 250);
+    --palette-neutral-1000: oklch(0.935 0.0048 250);
+    --palette-brand-00: oklch(0.155 0.0240 266);
+    --palette-brand-100: oklch(0.205 0.0530 266);
+    --palette-brand-200: oklch(0.265 0.0910 266);
+    --palette-brand-300: oklch(0.320 0.1390 266);
+    --palette-brand-400: oklch(0.400 0.1870 266);
+    --palette-brand-500: oklch(0.480 0.2256 266);
+    --palette-brand-600: oklch(0.585 0.2192 266);
+    --palette-brand-700: oklch(0.665 0.1716 266);
+    --palette-brand-800: oklch(0.745 0.1266 266);
+    --palette-brand-900: oklch(0.845 0.0740 266);
+    --palette-brand-1000: oklch(0.935 0.0300 266);
+    --palette-sky-00: oklch(0.155 0.0160 250);
+    --palette-sky-100: oklch(0.205 0.0354 250);
+    --palette-sky-200: oklch(0.265 0.0606 250);
+    --palette-sky-300: oklch(0.320 0.0896 250);
+    --palette-sky-400: oklch(0.400 0.1109 250);
+    --palette-sky-500: oklch(0.480 0.1325 250);
+    --palette-sky-600: oklch(0.585 0.1600 250);
+    --palette-sky-700: oklch(0.665 0.1566 250);
+    --palette-sky-800: oklch(0.745 0.1326 250);
+    --palette-sky-900: oklch(0.845 0.0776 250);
+    --palette-sky-1000: oklch(0.935 0.0315 250);
+    --palette-mint-00: oklch(0.155 0.0150 183);
+    --palette-mint-100: oklch(0.205 0.0331 183);
+    --palette-mint-200: oklch(0.265 0.0471 183);
+    --palette-mint-300: oklch(0.320 0.0562 183);
+    --palette-mint-400: oklch(0.400 0.0697 183);
+    --palette-mint-500: oklch(0.480 0.0833 183);
+    --palette-mint-600: oklch(0.585 0.1013 183);
+    --palette-mint-700: oklch(0.665 0.1151 183);
+    --palette-mint-800: oklch(0.745 0.1289 183);
+    --palette-mint-900: oklch(0.845 0.1168 183);
+    --palette-mint-1000: oklch(0.935 0.0900 183);
+    --palette-positive-00: oklch(0.155 0.0115 152);
+    --palette-positive-100: oklch(0.205 0.0253 152);
+    --palette-positive-200: oklch(0.265 0.0437 152);
+    --palette-positive-300: oklch(0.320 0.0667 152);
+    --palette-positive-400: oklch(0.400 0.0897 152);
+    --palette-positive-500: oklch(0.480 0.1081 152);
+    --palette-positive-600: oklch(0.585 0.1150 152);
+    --palette-positive-700: oklch(0.665 0.1127 152);
+    --palette-positive-800: oklch(0.745 0.1058 152);
+    --palette-positive-900: oklch(0.845 0.0897 152);
+    --palette-positive-1000: oklch(0.935 0.0690 152);
+    --palette-warning-00: oklch(0.155 0.0160 88);
+    --palette-warning-100: oklch(0.205 0.0352 88);
+    --palette-warning-200: oklch(0.265 0.0608 88);
+    --palette-warning-300: oklch(0.320 0.0928 88);
+    --palette-warning-400: oklch(0.400 0.1248 88);
+    --palette-warning-500: oklch(0.480 0.1504 88);
+    --palette-warning-600: oklch(0.585 0.1600 88);
+    --palette-warning-700: oklch(0.665 0.1568 88);
+    --palette-warning-800: oklch(0.745 0.1472 88);
+    --palette-warning-900: oklch(0.845 0.1248 88);
+    --palette-warning-1000: oklch(0.935 0.0960 88);
+    --palette-critical-00: oklch(0.155 0.0145 27);
+    --palette-critical-100: oklch(0.205 0.0319 27);
+    --palette-critical-200: oklch(0.265 0.0551 27);
+    --palette-critical-300: oklch(0.320 0.0841 27);
+    --palette-critical-400: oklch(0.400 0.1131 27);
+    --palette-critical-500: oklch(0.480 0.1363 27);
+    --palette-critical-600: oklch(0.585 0.1450 27);
+    --palette-critical-700: oklch(0.665 0.1421 27);
+    --palette-critical-800: oklch(0.745 0.1334 27);
+    --palette-critical-900: oklch(0.845 0.1131 27);
+    --palette-critical-1000: oklch(0.935 0.0870 27);
+    --scrim-bg: #0C0C0C6B;
   }
-}
-:root[data-theme="dark"] .mock:not(.force-light) {
-  --palette-neutral-00: oklch(.155 .0037 57);
-  --palette-neutral-100: oklch(.205 .0037 57);
-  --palette-neutral-200: oklch(.265 .0043 57);
-  --palette-neutral-300: oklch(.32 .0045 57);
-  --palette-neutral-700: oklch(.665 .005 57);
-  --palette-neutral-800: oklch(.745 .005 57);
-  --palette-neutral-900: oklch(.845 .0053 57);
-  --palette-neutral-1000: oklch(.935 .0055 57);
-  --palette-brand-100: oklch(.205 .0128 57);
-  --palette-brand-300: #402F22;
-  --palette-brand-800: oklch(.745 .0534 57);
-  --palette-positive-100: oklch(.205 .0253 152);
-  --palette-positive-800: oklch(.745 .1058 152);
-  --palette-informative-100: oklch(.205 .0253 248);
-  --palette-critical-800: oklch(.745 .1334 27);
-  --surface-stroke: var(--palette-neutral-200);
-  --bg-scrim: #0D0C0B6B;
-  --card-shadow: none;
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
-  /* 구글 자산의 값, 우리 토큰 아님 — 다크 화면엔 구글의 Light 자산 */
-  --google-fill: #FFFFFF;
-  --google-stroke: #747775;
-  --google-text: #1F1F1F;
 }
 .mock {
   --bg-neutral: var(--palette-neutral-00);
   --bg-neutral-weak: var(--palette-neutral-100);
+  --bg-neutral-weak-pressed: var(--palette-neutral-200);
   --bg-neutral-solid: var(--palette-neutral-1000);
+  --bg-neutral-solid-soft: var(--palette-neutral-900);
   --bg-neutral-disabled: var(--palette-neutral-100);
-  --bg-brand-solid: var(--palette-brand-800);
+  --bg-neutral-muted: var(--palette-neutral-400);
+  --bg-brand-solid: var(--palette-brand-700);
+  --bg-brand-solid-pressed: var(--palette-brand-800);
   --bg-brand-weak: var(--palette-brand-100);
+  --bg-brand-weak-pressed: var(--palette-brand-200);
+  --bg-brand-weak-selected: var(--palette-brand-100);
   --bg-brand-muted: var(--palette-brand-300);
+  --bg-sky: var(--palette-sky-600);
+  --bg-sky-weak: var(--palette-sky-100);
+  --bg-mint: var(--palette-mint-600);
+  --bg-mint-weak: var(--palette-mint-100);
   --bg-positive-weak: var(--palette-positive-100);
-  --bg-informative-weak: var(--palette-informative-100);
+  --bg-warning-weak: var(--palette-warning-100);
+  --bg-critical-solid: var(--palette-critical-800);
+  --bg-critical-solid-pressed: var(--palette-critical-900);
+  --bg-critical-weak: var(--palette-critical-100);
   --fg-neutral: var(--palette-neutral-1000);
   --fg-neutral-muted: var(--palette-neutral-800);
   --fg-neutral-subtle: var(--palette-neutral-700);
   --fg-neutral-contrast: var(--palette-neutral-00);
-  --fg-neutral-disabled: var(--palette-neutral-700);
-  --fg-brand: var(--palette-brand-800);
+  --fg-neutral-disabled: var(--palette-neutral-800);
+  --fg-brand: var(--palette-brand-700);
   --fg-brand-contrast: var(--palette-neutral-00);
+  --fg-sky: var(--palette-sky-800);
+  --fg-sky-contrast: var(--palette-sky-400);
+  --fg-mint: var(--palette-mint-800);
   --fg-positive: var(--palette-positive-800);
   --fg-critical: var(--palette-critical-800);
+  --fg-positive-contrast: var(--palette-positive-400);
   --stroke-neutral: var(--palette-neutral-200);
   --stroke-neutral-muted: var(--palette-neutral-300);
   --stroke-neutral-disabled: var(--palette-neutral-200);
-
-  /* 구글 자산의 값, 우리 토큰 아님 — tokens.md 어디에도 없다. 라이트 화면엔 구글의 Dark 자산 */
-  --google-fill: #131314;
-  --google-stroke: #8E918F;
-  --google-text: #E3E3E3;
-
+  --stroke-brand-solid: var(--palette-brand-700);
+  --stroke-sky: var(--palette-sky-600);
+  --stroke-mint: var(--palette-mint-600);
   --t-xs: .8125rem; --lh-xs: 1.21875rem;
   --t-sm: .9375rem; --lh-sm: 1.40625rem;
   --t-base: 1.0625rem; --lh-base: 1.59375rem;
@@ -330,6 +486,7 @@ code {
 .sb-right { display: flex; align-items: center; gap: 5px; }
 
 /* 화면 좌우 여백 px-6, 아래 여백 pb-6 + safe-area (login.md 「여백과 모양」) */
+/* 시안은 브라우저에서 보는 목업이라 아래 여백을 env(safe-area-inset-bottom)로 잡는다. 앱이 쓰는 것은 useSafeAreaInsets가 주는 bottom이다 — components.md의 BottomCTA와 탭 바 */
 .screen {
   flex: 1 1 auto; display: flex; flex-direction: column;
   padding: 0 24px calc(24px + env(safe-area-inset-bottom));
@@ -397,7 +554,7 @@ code {
 
 /* ── 02 프로필 작성 ── */
 .appbar {
-  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
   padding: 4px 24px 12px; min-height: 44px;
 }
 .appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
@@ -421,7 +578,7 @@ code {
 /* 굳은 더미 — 사진(원, 가운데) 다음 이름·성별·생년월일·연락처(글, 왼쪽) 순서로 쌓인다.
    login.md 「굳은 글에 면도 선도 없다」. 면도 선도 라벨도 없다, 값만 선다.
    첫 줄(이름)만 text-xl font-semibold, 나머지는 text-lg font-medium. 줄 사이 mt-3 */
-.lockstack { margin-top: 32px; }
+.lockstack { margin-top: 24px; }
 .lockphoto { display: flex; justify-content: center; cursor: pointer; }
 /* 더미의 사진과 첫 글 사이 mt-6 */
 .lockphoto + .lockline { margin-top: 24px; }
@@ -449,7 +606,7 @@ code {
   margin-top: 6px; display: flex; align-items: center; gap: 8px;
   width: 100%; height: 48px; border-radius: var(--r-md); border: 0;
   background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
-  padding: 0 14px; font-size: var(--t-base); color: var(--fg-neutral); font-family: inherit;
+  padding: 0 12px; font-size: var(--t-base); color: var(--fg-neutral); font-family: inherit;
 }
 .askbox.ph { color: var(--fg-neutral-subtle); }
 .askbox.num { font-variant-numeric: tabular-nums; }
@@ -467,7 +624,7 @@ code {
   font-size: var(--t-sm); font-weight: 500; color: var(--fg-neutral-subtle); cursor: pointer;
 }
 .askseg > span::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
-.askseg > span.on { background: var(--bg-neutral); color: var(--fg-neutral); box-shadow: var(--card-shadow); }
+.askseg > span.on { background: var(--bg-neutral); color: var(--fg-neutral); border: 1px solid var(--stroke-neutral); }
 
 /* 사진 스텝 — 칸 안 원이 곧 버튼이다, 원 아래엔 「기본 사진 쓰기」 하나.
    login.md 「사진 스텝은 원을 누르면 고르고 버튼은 하나다」. 원과 버튼 사이 mt-4 */
@@ -486,7 +643,7 @@ code {
 /* 하단 고정 CTA — components.md 「BottomCTA」 */
 .ctabar {
   flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral);
-  padding: 10px 24px calc(22px + env(safe-area-inset-bottom));
+  padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
 }
 .ctabar .subnote { margin-top: 8px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
@@ -574,7 +731,7 @@ code {
   100% { opacity: 0; transform: translateY(var(--rise)); }
 }
 
-/* 알림 영역 — 한 자리가 기기 상태에 따라 넷으로 갈린다.
+/* 알림 영역 — 한 자리가 권한 상태에 따라 셋으로 갈린다.
    면 색과 내용이 duration-base로 함께 바뀐다 */
 .notif {
   border-radius: var(--r-lg); padding: 16px; text-align: left;
@@ -582,14 +739,13 @@ code {
   transition: background-color var(--d-base) ease-out;
 }
 .notif.done { background: var(--bg-positive-weak); }
-.notif.guide { background: var(--bg-informative-weak); }
+.notif.guide { background: var(--bg-sky-weak); }
 .notif .nhead { display: flex; align-items: center; gap: 8px; }
 .notif .nhead .ic { flex: 0 0 auto; color: var(--fg-positive); display: grid; place-items: center; }
 .mock.play .notif .nhead .ic { animation: zoomin var(--d-base) ease-out both; }
 @keyframes zoomin { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: none; } }
 .notif .nt { font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 600; color: var(--fg-neutral); }
 .notif .nb { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
-.notif ol { margin: 8px 0 0; padding-left: 18px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 /* 보이는 높이는 40px 그대로 두고 닿는 면만 44px로 채운다(foundation/spacing-shape.md 「누를 수 있는 것은 44px 이상이다」) */
 .notif .btn { margin-top: 16px; height: 40px; position: relative; }
 .notif .btn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
@@ -1249,8 +1405,8 @@ code {
   <section>
     <div class="sec-head">
       <span class="sec-num">03 / 승인 대기</span>
-      <h2>알림 영역 하나가 기기 상태를 따라 넷으로 갈린다</h2>
-      <p>상태 배지·제목·도는 문구가 가운데 덩이고 알림 영역·가는 선·계정 줄·로그아웃이 아래 덩이다. 첫 넷은 같은 화면의 같은 자리고, 마지막 하나는 관리자가 거절한 뒤의 모습이다. 점이 뛰고 문구가 도는 것은 목업에서 실제로 돈다.</p>
+      <h2>알림 영역 하나가 권한 상태를 따라 셋으로 갈린다</h2>
+      <p>상태 배지·제목·도는 문구가 가운데 덩이고 알림 영역·가는 선·계정 줄·로그아웃이 아래 덩이다. 첫 셋은 같은 화면의 같은 자리고, 마지막 하나는 관리자가 거절한 뒤의 모습이다. 점이 뛰고 문구가 도는 것은 목업에서 실제로 돈다.</p>
     </div>
     <div class="grid">
 
@@ -1293,9 +1449,9 @@ code {
         <figcaption>
           <div class="cap-key">WAIT / ASK</div>
           <div class="cap-name">기다리는 중 · 알림 아직 안 켬</div>
-          <p class="cap-body">들어왔을 때의 기본이다. <strong>저절로 안 띄운다</strong> — 화면에 들어가자마자 권한을 묻지 않고 「알림 켜기」를 눌러야 브라우저가 묻는다.</p>
+          <p class="cap-body">들어왔을 때의 기본이다. <strong>저절로 안 띄운다</strong> — 화면에 들어가자마자 권한을 묻지 않고 「알림 켜기」를 눌러야 기기가 묻는다.</p>
           <p class="cap-body" style="margin-top:8px">도는 문구는 <strong>1차 셋</strong>(근무표·출근·급여)이다 — 교대가 들어오는 2차에 넷째가 붙는다. <code>--interval-rotate</code>(4s)마다 <code>--duration-slow</code>로 밀려 올라가며 갈리고 한 바퀴는 12s다. 자리는 두 줄 높이로 미리 잡혀 있다. 점은 <code>--interval-beat</code>로 뛴다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>이 면만 넷 중 어디도 아니다.</strong> 아직 아무 일도 안 일어난 자리라 알림 블록의 네 색을 안 쓰고 <code>bg.neutral-weak</code>를 깔았다. 알림 켜기는 <code>h-10</code>이고 로그아웃은 <code>h-12</code>다 — 어느 쪽이 이 화면의 끝인지를 높이가 가른다.</p>
+          <p class="cap-body" style="margin-top:8px">아직 아무 일도 안 일어난 자리라 <code>bg.neutral-weak</code>를 깔았다 — 셋 중 하나다. 알림 켜기는 <code>h-10</code>이고 로그아웃은 <code>h-12</code>다 — 어느 쪽이 이 화면의 끝인지를 높이가 가른다.</p>
         </figcaption>
       </figure>
 
@@ -1347,53 +1503,6 @@ code {
 
       <figure class="item">
         <div class="mock play">
-          <div class="statusbar"><span>9:47</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="screen">
-            <div class="sp"></div>
-            <div class="centerblock">
-              <span class="pill rise" style="--i:0"><span class="dot"></span>승인 기다리는 중</span>
-              <div class="waittitle rise" style="--i:1">관리자가 확인 중이에요</div>
-              <div class="rotator rise" style="--i:2">
-                <span>이번 달 근무표를 한눈에 봐요</span>
-                <span>출근은 현장에서 찍어요</span>
-                <span>일한 시간과 급여를 같이 봐요</span>
-              </div>
-            </div>
-            <div class="sp"></div>
-            <div class="rise" style="--i:3">
-              <div class="notif guide">
-                <div class="nhead"><span class="nt">홈 화면에 추가하면 알림을 받아요</span></div>
-                <ol>
-                  <li>아래 공유 버튼을 눌러요</li>
-                  <li>"홈 화면에 추가"를 골라요</li>
-                  <li>홈 화면에서 다시 열어요</li>
-                </ol>
-              </div>
-              <div class="rule myrule"></div>
-              <div class="account">
-                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
-                <span class="mail">seoyeon.park@example.com</span>
-              </div>
-              <div class="afterbtns">
-                <button class="btn outline" type="button">로그아웃</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <button class="replay" type="button" data-replay>등장 다시 보기</button>
-        <figcaption>
-          <div class="cap-key">WAIT / IOS</div>
-          <div class="cap-name">기다리는 중 · 아이폰·홈 화면 전</div>
-          <p class="cap-body"><strong>아이폰을 판별해서 뜨는 것이 아니다.</strong> 첫 모습에서 「알림 켜기」를 눌렀는데 권한 요청이 안 먹히면 그때 이 모습으로 바뀐다. userAgent로 알아내는 것은 자주 틀리지만 눌러본 결과는 안 틀린다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>여기에 버튼이 없다.</strong> 홈 화면 추가는 사파리 공유 메뉴에서만 되는 일이라 누를 것을 두면 눌러도 아무 일이 안 일어난다. 「홈 화면에 추가」는 iOS 메뉴에 실제로 뜨는 이름이라 우리말로 안 다듬는다.</p>
-        </figcaption>
-      </figure>
-
-      <figure class="item">
-        <div class="mock play">
           <div class="statusbar"><span>9:48</span><span class="sb-right">
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
@@ -1413,7 +1522,7 @@ code {
             <div class="rise" style="--i:3">
               <div class="notif guide">
                 <div class="nhead"><span class="nt">알림이 꺼져 있어요</span></div>
-                <div class="nb">브라우저 설정에서 이 사이트의 알림을 켜면 받을 수 있어요</div>
+                <div class="nb">기기 설정에서 알림을 켜면 받을 수 있어요</div>
               </div>
               <div class="rule myrule"></div>
               <div class="account">
@@ -1430,8 +1539,9 @@ code {
         <figcaption>
           <div class="cap-key">WAIT / DENIED</div>
           <div class="cap-name">기다리는 중 · 거부한 뒤</div>
-          <p class="cap-body">브라우저의 물음에서 거부했을 때다. 여기에도 버튼이 없다 — 한 번 거부하면 브라우저가 다시 묻지 않아서 「알림 켜기」를 그대로 두면 눌러도 아무 일이 안 일어난다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>경고도 오류도 아니다.</strong> 사람이 고른 것을 앱이 잘못이라고 부르지 않아서 안내 면을 그대로 쓴다. 앞 모습과 면 색이 같고 갈리는 것은 담는 말이다 — 그쪽은 물을 길이 없는 것이고 이쪽은 물었는데 거부당한 것이다.</p>
+          <p class="cap-body">기기의 물음에서 거부했을 때다. 여기에도 버튼이 없다 — 한 번 거부하면 기기가 다시 묻지 않아서 「알림 켜기」를 그대로 두면 눌러도 아무 일이 안 일어난다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>경고도 오류도 아니다.</strong> 사람이 고른 것을 앱이 잘못이라고 부르지 않아서 안내 면(<code>bg.sky-weak</code>)을 그대로 쓴다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>기기 종류를 판별해서 뜨는 것이 아니다.</strong> 이 모습은 처음부터 뜨지 않는다 — 첫 모습(아직 안 켬)에서 「알림 켜기」를 눌렀는데 거부로 끝나면 그때 전이된 결과다. 아이폰인지 안드로이드인지로 문안을 가르지 않는다, 눌러본 결과가 안 틀리기 때문이다.</p>
           <p class="cap-body" style="margin-top:8px">아래 줄이 <code>fg.neutral-muted</code>인 것은 대비 때문이다. 한 단계 흐린 <code>fg.neutral-subtle</code>은 이 면 위에서 4.49로 떨어진다(tokens.md 7절).</p>
         </figcaption>
       </figure>

@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { violationsOf } from "@tests/lint/rule-check";
 
 const NO_RESTRICTED_IMPORTS = "no-restricted-imports";

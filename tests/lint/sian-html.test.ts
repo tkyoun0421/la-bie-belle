@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { sianHtmlViolations, sianHtmlFiles } from "@tests/lint/sian-html";
 
 describe("시안 HTML 구조 검사", () => {

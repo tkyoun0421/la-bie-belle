@@ -119,122 +119,246 @@ code {
 
 /* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
 .mock {
-  --palette-neutral-00: oklch(1 .0037 57);
-  --palette-neutral-100: oklch(.965 .0037 57);
-  --palette-neutral-200: oklch(.905 .0043 57);
-  --palette-neutral-300: oklch(.845 .0045 57);
-  --palette-neutral-400: oklch(.76 .0047 57);
-  --palette-neutral-500: oklch(.68 .005 57);
-  --palette-neutral-600: oklch(.625 .005 57);
-  --palette-neutral-700: oklch(.545 .005 57);
-  --palette-neutral-800: oklch(.455 .005 57);
-  --palette-neutral-900: oklch(.32 .0053 57);
-  --palette-neutral-1000: oklch(.215 .0055 57);
-  --palette-brand-100: oklch(.965 .0128 57);
-  --palette-brand-200: oklch(.905 .022 57);
-  --palette-brand-800: oklch(.455 .0534 57);
-  --palette-positive-100: oklch(.965 .0253 152);
-  --palette-positive-800: oklch(.455 .1058 152);
-  --palette-warning-100: oklch(.965 .0352 88);
-  --palette-warning-500: oklch(.68 .1504 88);
-  --palette-critical-100: oklch(.965 .0319 27);
-  --palette-critical-800: oklch(.455 .1334 27);
-  --palette-informative-400: oklch(.76 .0897 248);
-  --palette-chart-a-200: oklch(.905 .03 210);
-  --palette-chart-a-600: oklch(.625 .065 210);
-  --surface-stroke: transparent;
-  --scrim-ink: var(--palette-neutral-1000);
-  --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5);
+  --palette-neutral-00: oklch(1.000 0.0001 250);
+  --palette-neutral-100: oklch(0.965 0.0018 250);
+  --palette-neutral-200: oklch(0.905 0.0030 250);
+  --palette-neutral-300: oklch(0.845 0.0046 250);
+  --palette-neutral-400: oklch(0.760 0.0062 250);
+  --palette-neutral-500: oklch(0.680 0.0075 250);
+  --palette-neutral-600: oklch(0.625 0.0080 250);
+  --palette-neutral-700: oklch(0.545 0.0078 250);
+  --palette-neutral-800: oklch(0.455 0.0074 250);
+  --palette-neutral-900: oklch(0.320 0.0062 250);
+  --palette-neutral-1000: oklch(0.215 0.0048 250);
+  --palette-brand-00: oklch(1.000 0.0001 266);
+  --palette-brand-100: oklch(0.965 0.0160 266);
+  --palette-brand-200: oklch(0.905 0.0443 266);
+  --palette-brand-300: oklch(0.845 0.0740 266);
+  --palette-brand-400: oklch(0.760 0.1185 266);
+  --palette-brand-500: oklch(0.680 0.1630 266);
+  --palette-brand-600: oklch(0.625 0.1951 266);
+  --palette-brand-700: oklch(0.545 0.2350 266);
+  --palette-brand-800: oklch(0.455 0.2210 266);
+  --palette-brand-900: oklch(0.320 0.1870 266);
+  --palette-brand-1000: oklch(0.215 0.1440 266);
+  --palette-sky-00: oklch(1.000 0.0001 250);
+  --palette-sky-100: oklch(0.965 0.0168 250);
+  --palette-sky-200: oklch(0.905 0.0465 250);
+  --palette-sky-300: oklch(0.845 0.0776 250);
+  --palette-sky-400: oklch(0.760 0.1241 250);
+  --palette-sky-500: oklch(0.680 0.1504 250);
+  --palette-sky-600: oklch(0.625 0.1600 250);
+  --palette-sky-700: oklch(0.545 0.1502 250);
+  --palette-sky-800: oklch(0.455 0.1258 250);
+  --palette-sky-900: oklch(0.320 0.0896 250);
+  --palette-sky-1000: oklch(0.215 0.0628 250);
+  --palette-mint-00: oklch(1.000 0.0002 183);
+  --palette-mint-100: oklch(0.965 0.0331 183);
+  --palette-mint-200: oklch(0.905 0.0568 183);
+  --palette-mint-300: oklch(0.845 0.0868 183);
+  --palette-mint-400: oklch(0.760 0.1168 183);
+  --palette-mint-500: oklch(0.680 0.1177 183);
+  --palette-mint-600: oklch(0.625 0.1082 183);
+  --palette-mint-700: oklch(0.545 0.0945 183);
+  --palette-mint-800: oklch(0.455 0.0790 183);
+  --palette-mint-900: oklch(0.320 0.0562 183);
+  --palette-mint-1000: oklch(0.215 0.0391 183);
+  --palette-positive-00: oklch(1.000 0.0115 152);
+  --palette-positive-100: oklch(0.965 0.0253 152);
+  --palette-positive-200: oklch(0.905 0.0437 152);
+  --palette-positive-300: oklch(0.845 0.0667 152);
+  --palette-positive-400: oklch(0.760 0.0897 152);
+  --palette-positive-500: oklch(0.680 0.1081 152);
+  --palette-positive-600: oklch(0.625 0.1150 152);
+  --palette-positive-700: oklch(0.545 0.1127 152);
+  --palette-positive-800: oklch(0.455 0.1058 152);
+  --palette-positive-900: oklch(0.320 0.0897 152);
+  --palette-positive-1000: oklch(0.215 0.0690 152);
+  --palette-warning-00: oklch(1.000 0.0160 88);
+  --palette-warning-100: oklch(0.965 0.0352 88);
+  --palette-warning-200: oklch(0.905 0.0608 88);
+  --palette-warning-300: oklch(0.845 0.0928 88);
+  --palette-warning-400: oklch(0.760 0.1248 88);
+  --palette-warning-500: oklch(0.680 0.1504 88);
+  --palette-warning-600: oklch(0.625 0.1600 88);
+  --palette-warning-700: oklch(0.545 0.1568 88);
+  --palette-warning-800: oklch(0.455 0.1472 88);
+  --palette-warning-900: oklch(0.320 0.1248 88);
+  --palette-warning-1000: oklch(0.215 0.0960 88);
+  --palette-critical-00: oklch(1.000 0.0145 27);
+  --palette-critical-100: oklch(0.965 0.0319 27);
+  --palette-critical-200: oklch(0.905 0.0551 27);
+  --palette-critical-300: oklch(0.845 0.0841 27);
+  --palette-critical-400: oklch(0.760 0.1131 27);
+  --palette-critical-500: oklch(0.680 0.1363 27);
+  --palette-critical-600: oklch(0.625 0.1450 27);
+  --palette-critical-700: oklch(0.545 0.1421 27);
+  --palette-critical-800: oklch(0.455 0.1334 27);
+  --palette-critical-900: oklch(0.320 0.1131 27);
+  --palette-critical-1000: oklch(0.215 0.0870 27);
+  --scrim-bg: #181A1C6B;
 }
-.mock.force-dark {
-  --palette-neutral-00: oklch(.155 .0037 57);
-  --palette-neutral-100: oklch(.205 .0037 57);
-  --palette-neutral-200: oklch(.265 .0043 57);
-  --palette-neutral-300: oklch(.32 .0045 57);
-  --palette-neutral-400: oklch(.4 .0047 57);
-  --palette-neutral-500: oklch(.48 .005 57);
-  --palette-neutral-600: oklch(.585 .005 57);
-  --palette-neutral-700: oklch(.665 .005 57);
-  --palette-neutral-800: oklch(.745 .005 57);
-  --palette-neutral-900: oklch(.845 .0053 57);
-  --palette-neutral-1000: oklch(.935 .0055 57);
-  --palette-brand-100: oklch(.205 .0128 57);
-  --palette-brand-200: oklch(.265 .022 57);
-  --palette-brand-800: oklch(.745 .0534 57);
-  --palette-positive-100: oklch(.205 .0253 152);
-  --palette-positive-800: oklch(.745 .1058 152);
-  --palette-warning-100: oklch(.205 .0352 88);
-  --palette-warning-500: oklch(.48 .1504 88);
-  --palette-critical-100: oklch(.205 .0319 27);
-  --palette-critical-800: oklch(.745 .1334 27);
-  --palette-informative-400: oklch(.4 .0897 248);
-  --palette-chart-a-200: oklch(.265 .03 210);
-  --palette-chart-a-600: oklch(.585 .065 210);
-  --surface-stroke: var(--palette-neutral-200);
-  --scrim-ink: var(--palette-neutral-00);
-  --card-shadow: none;
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+.mock.force-dark, :root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(0.155 0.0008 250);
+  --palette-neutral-100: oklch(0.205 0.0018 250);
+  --palette-neutral-200: oklch(0.265 0.0030 250);
+  --palette-neutral-300: oklch(0.320 0.0046 250);
+  --palette-neutral-400: oklch(0.400 0.0062 250);
+  --palette-neutral-500: oklch(0.480 0.0075 250);
+  --palette-neutral-600: oklch(0.585 0.0080 250);
+  --palette-neutral-700: oklch(0.665 0.0078 250);
+  --palette-neutral-800: oklch(0.745 0.0074 250);
+  --palette-neutral-900: oklch(0.845 0.0062 250);
+  --palette-neutral-1000: oklch(0.935 0.0048 250);
+  --palette-brand-00: oklch(0.155 0.0240 266);
+  --palette-brand-100: oklch(0.205 0.0530 266);
+  --palette-brand-200: oklch(0.265 0.0910 266);
+  --palette-brand-300: oklch(0.320 0.1390 266);
+  --palette-brand-400: oklch(0.400 0.1870 266);
+  --palette-brand-500: oklch(0.480 0.2256 266);
+  --palette-brand-600: oklch(0.585 0.2192 266);
+  --palette-brand-700: oklch(0.665 0.1716 266);
+  --palette-brand-800: oklch(0.745 0.1266 266);
+  --palette-brand-900: oklch(0.845 0.0740 266);
+  --palette-brand-1000: oklch(0.935 0.0300 266);
+  --palette-sky-00: oklch(0.155 0.0160 250);
+  --palette-sky-100: oklch(0.205 0.0354 250);
+  --palette-sky-200: oklch(0.265 0.0606 250);
+  --palette-sky-300: oklch(0.320 0.0896 250);
+  --palette-sky-400: oklch(0.400 0.1109 250);
+  --palette-sky-500: oklch(0.480 0.1325 250);
+  --palette-sky-600: oklch(0.585 0.1600 250);
+  --palette-sky-700: oklch(0.665 0.1566 250);
+  --palette-sky-800: oklch(0.745 0.1326 250);
+  --palette-sky-900: oklch(0.845 0.0776 250);
+  --palette-sky-1000: oklch(0.935 0.0315 250);
+  --palette-mint-00: oklch(0.155 0.0150 183);
+  --palette-mint-100: oklch(0.205 0.0331 183);
+  --palette-mint-200: oklch(0.265 0.0471 183);
+  --palette-mint-300: oklch(0.320 0.0562 183);
+  --palette-mint-400: oklch(0.400 0.0697 183);
+  --palette-mint-500: oklch(0.480 0.0833 183);
+  --palette-mint-600: oklch(0.585 0.1013 183);
+  --palette-mint-700: oklch(0.665 0.1151 183);
+  --palette-mint-800: oklch(0.745 0.1289 183);
+  --palette-mint-900: oklch(0.845 0.1168 183);
+  --palette-mint-1000: oklch(0.935 0.0900 183);
+  --palette-positive-00: oklch(0.155 0.0115 152);
+  --palette-positive-100: oklch(0.205 0.0253 152);
+  --palette-positive-200: oklch(0.265 0.0437 152);
+  --palette-positive-300: oklch(0.320 0.0667 152);
+  --palette-positive-400: oklch(0.400 0.0897 152);
+  --palette-positive-500: oklch(0.480 0.1081 152);
+  --palette-positive-600: oklch(0.585 0.1150 152);
+  --palette-positive-700: oklch(0.665 0.1127 152);
+  --palette-positive-800: oklch(0.745 0.1058 152);
+  --palette-positive-900: oklch(0.845 0.0897 152);
+  --palette-positive-1000: oklch(0.935 0.0690 152);
+  --palette-warning-00: oklch(0.155 0.0160 88);
+  --palette-warning-100: oklch(0.205 0.0352 88);
+  --palette-warning-200: oklch(0.265 0.0608 88);
+  --palette-warning-300: oklch(0.320 0.0928 88);
+  --palette-warning-400: oklch(0.400 0.1248 88);
+  --palette-warning-500: oklch(0.480 0.1504 88);
+  --palette-warning-600: oklch(0.585 0.1600 88);
+  --palette-warning-700: oklch(0.665 0.1568 88);
+  --palette-warning-800: oklch(0.745 0.1472 88);
+  --palette-warning-900: oklch(0.845 0.1248 88);
+  --palette-warning-1000: oklch(0.935 0.0960 88);
+  --palette-critical-00: oklch(0.155 0.0145 27);
+  --palette-critical-100: oklch(0.205 0.0319 27);
+  --palette-critical-200: oklch(0.265 0.0551 27);
+  --palette-critical-300: oklch(0.320 0.0841 27);
+  --palette-critical-400: oklch(0.400 0.1131 27);
+  --palette-critical-500: oklch(0.480 0.1363 27);
+  --palette-critical-600: oklch(0.585 0.1450 27);
+  --palette-critical-700: oklch(0.665 0.1421 27);
+  --palette-critical-800: oklch(0.745 0.1334 27);
+  --palette-critical-900: oklch(0.845 0.1131 27);
+  --palette-critical-1000: oklch(0.935 0.0870 27);
+  --scrim-bg: #0C0C0C6B;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .mock:not(.force-light) {
-    --palette-neutral-00: oklch(.155 .0037 57);
-    --palette-neutral-100: oklch(.205 .0037 57);
-    --palette-neutral-200: oklch(.265 .0043 57);
-    --palette-neutral-300: oklch(.32 .0045 57);
-    --palette-neutral-400: oklch(.4 .0047 57);
-    --palette-neutral-500: oklch(.48 .005 57);
-    --palette-neutral-600: oklch(.585 .005 57);
-    --palette-neutral-700: oklch(.665 .005 57);
-    --palette-neutral-800: oklch(.745 .005 57);
-    --palette-neutral-900: oklch(.845 .0053 57);
-    --palette-neutral-1000: oklch(.935 .0055 57);
-    --palette-brand-100: oklch(.205 .0128 57);
-    --palette-brand-200: oklch(.265 .022 57);
-    --palette-brand-800: oklch(.745 .0534 57);
-    --palette-positive-100: oklch(.205 .0253 152);
-    --palette-positive-800: oklch(.745 .1058 152);
-    --palette-warning-100: oklch(.205 .0352 88);
-    --palette-warning-500: oklch(.48 .1504 88);
-    --palette-critical-100: oklch(.205 .0319 27);
-    --palette-critical-800: oklch(.745 .1334 27);
-    --palette-informative-400: oklch(.4 .0897 248);
-    --palette-chart-a-200: oklch(.265 .03 210);
-    --palette-chart-a-600: oklch(.585 .065 210);
-    --surface-stroke: var(--palette-neutral-200);
-    --scrim-ink: var(--palette-neutral-00);
-    --card-shadow: none;
-    --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+    --palette-neutral-00: oklch(0.155 0.0008 250);
+    --palette-neutral-100: oklch(0.205 0.0018 250);
+    --palette-neutral-200: oklch(0.265 0.0030 250);
+    --palette-neutral-300: oklch(0.320 0.0046 250);
+    --palette-neutral-400: oklch(0.400 0.0062 250);
+    --palette-neutral-500: oklch(0.480 0.0075 250);
+    --palette-neutral-600: oklch(0.585 0.0080 250);
+    --palette-neutral-700: oklch(0.665 0.0078 250);
+    --palette-neutral-800: oklch(0.745 0.0074 250);
+    --palette-neutral-900: oklch(0.845 0.0062 250);
+    --palette-neutral-1000: oklch(0.935 0.0048 250);
+    --palette-brand-00: oklch(0.155 0.0240 266);
+    --palette-brand-100: oklch(0.205 0.0530 266);
+    --palette-brand-200: oklch(0.265 0.0910 266);
+    --palette-brand-300: oklch(0.320 0.1390 266);
+    --palette-brand-400: oklch(0.400 0.1870 266);
+    --palette-brand-500: oklch(0.480 0.2256 266);
+    --palette-brand-600: oklch(0.585 0.2192 266);
+    --palette-brand-700: oklch(0.665 0.1716 266);
+    --palette-brand-800: oklch(0.745 0.1266 266);
+    --palette-brand-900: oklch(0.845 0.0740 266);
+    --palette-brand-1000: oklch(0.935 0.0300 266);
+    --palette-sky-00: oklch(0.155 0.0160 250);
+    --palette-sky-100: oklch(0.205 0.0354 250);
+    --palette-sky-200: oklch(0.265 0.0606 250);
+    --palette-sky-300: oklch(0.320 0.0896 250);
+    --palette-sky-400: oklch(0.400 0.1109 250);
+    --palette-sky-500: oklch(0.480 0.1325 250);
+    --palette-sky-600: oklch(0.585 0.1600 250);
+    --palette-sky-700: oklch(0.665 0.1566 250);
+    --palette-sky-800: oklch(0.745 0.1326 250);
+    --palette-sky-900: oklch(0.845 0.0776 250);
+    --palette-sky-1000: oklch(0.935 0.0315 250);
+    --palette-mint-00: oklch(0.155 0.0150 183);
+    --palette-mint-100: oklch(0.205 0.0331 183);
+    --palette-mint-200: oklch(0.265 0.0471 183);
+    --palette-mint-300: oklch(0.320 0.0562 183);
+    --palette-mint-400: oklch(0.400 0.0697 183);
+    --palette-mint-500: oklch(0.480 0.0833 183);
+    --palette-mint-600: oklch(0.585 0.1013 183);
+    --palette-mint-700: oklch(0.665 0.1151 183);
+    --palette-mint-800: oklch(0.745 0.1289 183);
+    --palette-mint-900: oklch(0.845 0.1168 183);
+    --palette-mint-1000: oklch(0.935 0.0900 183);
+    --palette-positive-00: oklch(0.155 0.0115 152);
+    --palette-positive-100: oklch(0.205 0.0253 152);
+    --palette-positive-200: oklch(0.265 0.0437 152);
+    --palette-positive-300: oklch(0.320 0.0667 152);
+    --palette-positive-400: oklch(0.400 0.0897 152);
+    --palette-positive-500: oklch(0.480 0.1081 152);
+    --palette-positive-600: oklch(0.585 0.1150 152);
+    --palette-positive-700: oklch(0.665 0.1127 152);
+    --palette-positive-800: oklch(0.745 0.1058 152);
+    --palette-positive-900: oklch(0.845 0.0897 152);
+    --palette-positive-1000: oklch(0.935 0.0690 152);
+    --palette-warning-00: oklch(0.155 0.0160 88);
+    --palette-warning-100: oklch(0.205 0.0352 88);
+    --palette-warning-200: oklch(0.265 0.0608 88);
+    --palette-warning-300: oklch(0.320 0.0928 88);
+    --palette-warning-400: oklch(0.400 0.1248 88);
+    --palette-warning-500: oklch(0.480 0.1504 88);
+    --palette-warning-600: oklch(0.585 0.1600 88);
+    --palette-warning-700: oklch(0.665 0.1568 88);
+    --palette-warning-800: oklch(0.745 0.1472 88);
+    --palette-warning-900: oklch(0.845 0.1248 88);
+    --palette-warning-1000: oklch(0.935 0.0960 88);
+    --palette-critical-00: oklch(0.155 0.0145 27);
+    --palette-critical-100: oklch(0.205 0.0319 27);
+    --palette-critical-200: oklch(0.265 0.0551 27);
+    --palette-critical-300: oklch(0.320 0.0841 27);
+    --palette-critical-400: oklch(0.400 0.1131 27);
+    --palette-critical-500: oklch(0.480 0.1363 27);
+    --palette-critical-600: oklch(0.585 0.1450 27);
+    --palette-critical-700: oklch(0.665 0.1421 27);
+    --palette-critical-800: oklch(0.745 0.1334 27);
+    --palette-critical-900: oklch(0.845 0.1131 27);
+    --palette-critical-1000: oklch(0.935 0.0870 27);
+    --scrim-bg: #0C0C0C6B;
   }
-}
-:root[data-theme="dark"] .mock:not(.force-light) {
-  --palette-neutral-00: oklch(.155 .0037 57);
-  --palette-neutral-100: oklch(.205 .0037 57);
-  --palette-neutral-200: oklch(.265 .0043 57);
-  --palette-neutral-300: oklch(.32 .0045 57);
-  --palette-neutral-400: oklch(.4 .0047 57);
-  --palette-neutral-500: oklch(.48 .005 57);
-  --palette-neutral-600: oklch(.585 .005 57);
-  --palette-neutral-700: oklch(.665 .005 57);
-  --palette-neutral-800: oklch(.745 .005 57);
-  --palette-neutral-900: oklch(.845 .0053 57);
-  --palette-neutral-1000: oklch(.935 .0055 57);
-  --palette-brand-100: oklch(.205 .0128 57);
-  --palette-brand-200: oklch(.265 .022 57);
-  --palette-brand-800: oklch(.745 .0534 57);
-  --palette-positive-100: oklch(.205 .0253 152);
-  --palette-positive-800: oklch(.745 .1058 152);
-  --palette-warning-100: oklch(.205 .0352 88);
-  --palette-warning-500: oklch(.48 .1504 88);
-  --palette-critical-100: oklch(.205 .0319 27);
-  --palette-critical-800: oklch(.745 .1334 27);
-  --palette-informative-400: oklch(.4 .0897 248);
-  --palette-chart-a-200: oklch(.265 .03 210);
-  --palette-chart-a-600: oklch(.585 .065 210);
-  --surface-stroke: var(--palette-neutral-200);
-  --scrim-ink: var(--palette-neutral-00);
-  --card-shadow: none;
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
 }
 .mock {
   --bg-neutral: var(--palette-neutral-00);
@@ -243,29 +367,41 @@ code {
   --bg-neutral-solid: var(--palette-neutral-1000);
   --bg-neutral-solid-soft: var(--palette-neutral-900);
   --bg-neutral-disabled: var(--palette-neutral-100);
-  --bg-brand-solid: var(--palette-brand-800);
+  --bg-neutral-muted: var(--palette-neutral-400);
+  --bg-brand-solid: var(--palette-brand-700);
+  --bg-brand-solid-pressed: var(--palette-brand-800);
   --bg-brand-weak: var(--palette-brand-100);
+  --bg-brand-weak-pressed: var(--palette-brand-200);
   --bg-brand-weak-selected: var(--palette-brand-100);
+  --bg-brand-muted: var(--palette-brand-300);
+  --bg-sky: var(--palette-sky-600);
+  --bg-sky-weak: var(--palette-sky-100);
+  --bg-mint: var(--palette-mint-600);
+  --bg-mint-weak: var(--palette-mint-100);
   --bg-positive-weak: var(--palette-positive-100);
   --bg-warning-weak: var(--palette-warning-100);
-  --bg-critical-weak: var(--palette-critical-100);
   --bg-critical-solid: var(--palette-critical-800);
-  --bg-chart-a: var(--palette-chart-a-600);
-  --bg-chart-a-weak: var(--palette-chart-a-200);
+  --bg-critical-solid-pressed: var(--palette-critical-900);
+  --bg-critical-weak: var(--palette-critical-100);
   --fg-neutral: var(--palette-neutral-1000);
   --fg-neutral-muted: var(--palette-neutral-800);
   --fg-neutral-subtle: var(--palette-neutral-700);
   --fg-neutral-contrast: var(--palette-neutral-00);
-  --fg-informative-contrast: var(--palette-informative-400);
-  --fg-neutral-disabled: var(--palette-neutral-700);
-  --fg-brand: var(--palette-brand-800);
+  --fg-neutral-disabled: var(--palette-neutral-800);
+  --fg-brand: var(--palette-brand-700);
   --fg-brand-contrast: var(--palette-neutral-00);
+  --fg-sky: var(--palette-sky-800);
+  --fg-sky-contrast: var(--palette-sky-400);
+  --fg-mint: var(--palette-mint-800);
   --fg-positive: var(--palette-positive-800);
   --fg-critical: var(--palette-critical-800);
+  --fg-positive-contrast: var(--palette-positive-400);
   --stroke-neutral: var(--palette-neutral-200);
   --stroke-neutral-muted: var(--palette-neutral-300);
   --stroke-neutral-disabled: var(--palette-neutral-200);
-  --stroke-brand-solid: var(--palette-brand-800);
+  --stroke-brand-solid: var(--palette-brand-700);
+  --stroke-sky: var(--palette-sky-600);
+  --stroke-mint: var(--palette-mint-600);
 
   --t-xs: .8125rem; --lh-xs: 1.21875rem;
   --t-sm: .9375rem; --lh-sm: 1.40625rem;
@@ -291,7 +427,7 @@ code {
 }
 .sb-right { display: flex; align-items: center; gap: 5px; }
 .appbar {
-  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
   padding: 4px 24px 12px; min-height: 44px;
 }
 .appbar .who { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
@@ -303,7 +439,7 @@ code {
 }
 /* 종 아이콘 — components.md 「종 아이콘」. lucide Bell 28px fg.neutral, 안 읽음 점은
    bg.brand-solid 8px 원에 bg.neutral 2px 테두리. 관리자 홈에서만 브랜드 마크 왼쪽에
-   서고 둘 사이는 gap-2.5(=여기 appbar의 기본 gap 10px과 같다). 점의 자리 top 4px
+   서고 둘 사이는 gap-2(=여기 appbar의 기본 gap 8px과 같다). 점의 자리 top 4px
    right 4px과 닿는 면 44px 정사각도 components.md가 정한 값이다 */
 .bellic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; color: var(--fg-neutral); }
 .bellic::after { content: ""; position: absolute; inset: -8px; }
@@ -334,7 +470,7 @@ code {
 .btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
 /* 「그만두기」「이 날 닫기」「전체 보기」 — 다 홀로 서고 가로가 이미 44px을 넘어
    세로만 ::after로 채운다(foundation/spacing-shape.md 「누를 수 있는 것은 44px 이상이다」) */
-.btn.ghost { position: relative; background: transparent; color: var(--fg-neutral-muted); width: auto; height: 34px; padding: 0 10px; font-size: var(--t-xs); }
+.btn.ghost { position: relative; background: transparent; color: var(--fg-neutral-muted); width: auto; height: 34px; padding: 0 12px; font-size: var(--t-xs); }
 .btn.ghost::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .btn .spin {
   width: 17px; height: 17px; border-radius: 999px;
@@ -342,21 +478,21 @@ code {
   animation: spin .68s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.rowbtns { display: flex; gap: 8px; margin-top: 18px; }
+.rowbtns { display: flex; gap: 8px; margin-top: 16px; }
 .rowbtns .btn.secondary { flex: 0 0 100px; }
 .linknote::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .linknote { position: relative; font-size: var(--t-xs); color: var(--fg-neutral-muted); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--stroke-neutral-muted); cursor: pointer; }
 
 /* 관리자 홈 */
 .tile {
-  border-radius: var(--r-xl); background: var(--bg-neutral); padding: 20px;
-  box-shadow: var(--card-shadow); border: 1px solid var(--surface-stroke);
+  border-radius: var(--r-xl); background: var(--bg-neutral); padding: 24px;
+  border: 1px solid var(--stroke-neutral);
   display: flex; align-items: center; gap: 12px; cursor: pointer;
 }
 .tile .tt { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
 .tile .ts { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 .chev { flex: 0 0 auto; color: var(--fg-neutral-subtle); margin-left: auto; }
-.lrow { display: flex; align-items: center; gap: 10px; padding: 16px 0; cursor: pointer; }
+.lrow { display: flex; align-items: center; gap: 8px; padding: 16px 0; cursor: pointer; }
 .lrow + .lrow { border-top: 1px solid var(--stroke-neutral); }
 .lrow .lk { font-size: var(--t-base); font-weight: 500; }
 .lrow .lv { margin-left: auto; font-size: var(--t-sm); color: var(--fg-neutral-muted); font-variant-numeric: tabular-nums; }
@@ -364,14 +500,14 @@ code {
 
 /* 오늘 현황 — 앱바 바로 아래 첫 자리. 앱바와 사이는 mt-2, 값 줄 아래 띠는 mt-3(schedule-admin.md
    「관리자 홈 여백과 모양」). 이름표와 값 줄 사이 간격은 문서에 없어 mt-1로 작게 뒀다 — 판단한
-   자리다. 지각을 안 가른다 — 몫이 찍은 것(chart-a)과 안 찍은 것(neutral-weak) 둘뿐이다 */
+   자리다. 지각을 안 가른다 — 몫이 찍은 것(brand)과 안 찍은 것(neutral-weak) 둘뿐이다 */
 .todaystat { margin-top: 8px; cursor: pointer; }
 .todaystat .ts-label { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
 .todaystat .ts-row { margin-top: 4px; display: flex; align-items: baseline; gap: 8px; }
 .todaystat .ts-value { font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 700; color: var(--fg-neutral); }
 .todaystat .ts-sub { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 .todaystat .ts-bar { margin-top: 12px; height: 8px; border-radius: 999px; display: flex; gap: 2px; overflow: hidden; }
-.todaystat .ts-bar .done { background: var(--bg-chart-a); border-radius: 999px; }
+.todaystat .ts-bar .done { background: var(--bg-brand-solid); border-radius: 999px; }
 .todaystat .ts-bar .undone { background: var(--bg-neutral-weak); border-radius: 999px; }
 
 /* 빈 자리 카드 — components.md 「알림 블록」의 경고를 그대로 쓴다(.block .warn .bi .bt .bl은
@@ -380,7 +516,7 @@ code {
 .vacancy + .vacancy { margin-top: 8px; }
 
 /* 이번 달 미니뷰 — components.md 「미니 달력」. 칸 20px 정사각, 칸 사이 4px, 관리자 표식은
-   칸 배경이 bg.chart-a-weak~bg.chart-a로 진해진다(문서 값). 인원수별 정확한 진하기 단계는
+   칸 배경이 bg.brand-weak~bg.brand-solid로 진해진다(문서 값). 인원수별 정확한 진하기 단계는
    토큰에 없어 color-mix로 두 토큰 사이를 보간했다 — 새 색 값을 굳히는 것이 아니라 그 사이를
    잇는 방법이다. 이름표 글자색은 문서에 없어 본문 기본색(fg.neutral)으로 뒀다. 안 연 날은
    빈칸이라 날짜 숫자조차 없다 — 오늘만 예외로 항상 원과 숫자가 선다(문서의 「오늘」 규칙이
@@ -399,18 +535,18 @@ code {
 
 /* 바텀시트와 덮개 */
 .scrim {
-  position: absolute; inset: 0; z-index: 3; background: var(--scrim-ink);
+  position: absolute; inset: 0; z-index: 3; background: var(--scrim-bg);
   opacity: 0; pointer-events: none; transition: opacity var(--d-slow) ease-out;
 }
-.mock.modal-open .scrim { opacity: .42; pointer-events: auto; }
+.mock.modal-open .scrim { opacity: 1; pointer-events: auto; }
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 10px 24px 24px; box-shadow: var(--sheet-shadow);
+  padding: 8px 24px 24px; border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) cubic-bezier(.2,.8,.25,1);
 }
 .mock.modal-open .rsheet { transform: none; }
-.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 10px; }
+.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 8px; }
 .sh-title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 700; letter-spacing: -.01em; }
 .sh-sub { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 .field { margin-top: 16px; }
@@ -420,18 +556,18 @@ code {
   padding: 12px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral);
   font-variant-numeric: tabular-nums;
 }
-.fhint { margin-top: 7px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+.fhint { margin-top: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 .fields2 { display: flex; gap: 8px; }
 .fields2 .field { flex: 1; }
 
 /* 달력 */
 .calhead { padding-top: 4px; }
 .hrow { display: flex; align-items: center; gap: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
-.badge { display: inline-flex; align-items: center; border-radius: var(--r-sm); padding: 2px 9px; font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
+.badge { display: inline-flex; align-items: center; border-radius: var(--r-sm); padding: 2px 8px; font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
 .badge.positive { background: var(--bg-positive-weak); color: var(--fg-positive); }
 .badge.brand { background: var(--bg-brand-weak); color: var(--fg-brand); }
 .badge.neutral { background: var(--bg-neutral-weak); color: var(--fg-neutral-muted); }
-.dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 14px; }
+.dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 16px; }
 .dow span { text-align: center; font-size: var(--t-xs); color: var(--fg-neutral-subtle); }
 .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 4px; }
 /* 칸 하나가 두 단이다 — 위에 날짜, 바닥에 신청 수. 채움은 칸에서 뺐다 */
@@ -469,11 +605,11 @@ code {
 .cell.sel::after { content: "✓"; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-brand); }
 
 /* 하단 고정 CTA */
-.ctabar { flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding: 10px 24px 22px; }
+.ctabar { flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding: 8px 24px 24px; }
 .ctabar .subnote { margin-top: 8px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
 /* 날 상세 */
-.kvline { display: flex; align-items: center; gap: 10px; padding: 12px 0; cursor: pointer; }
+.kvline { display: flex; align-items: center; gap: 8px; padding: 12px 0; cursor: pointer; }
 .kvline .k { font-size: var(--t-sm); color: var(--fg-neutral-muted); }
 .kvline .v { margin-left: auto; font-size: var(--t-base); font-weight: 500; font-variant-numeric: tabular-nums; }
 .hopeline { display: flex; align-items: center; gap: 6px; padding-bottom: 12px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
@@ -490,7 +626,7 @@ code {
 .switch.on { background: var(--bg-neutral-solid); border: 1px solid transparent; }
 .switch .thumb {
   position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 999px;
-  background: var(--fg-neutral-contrast); box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  background: var(--fg-neutral-contrast);
   transition: transform var(--d-fast) ease-out;
 }
 .switch.on .thumb { transform: translateX(18px); }
@@ -501,7 +637,7 @@ code {
    (text-base font-medium, fg.neutral), 오른쪽 셈은 text-xs · fg.neutral-subtle
    (schedule-admin.md 「날 상세 짜임」 「날 상세 색」 「날 상세 글자」).
    위아래 여백은 근무 시간 줄과 같다 — py-3(12px 0), 「날 상세 여백과 모양」 그대로다 */
-.adjline { display: flex; align-items: center; gap: 10px; padding: 12px 0; cursor: pointer; }
+.adjline { display: flex; align-items: center; gap: 8px; padding: 12px 0; cursor: pointer; }
 .adjline .al-label { font-size: var(--t-base); font-weight: 500; color: var(--fg-neutral); }
 .adjline .al-value { margin-left: auto; font-size: var(--t-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 
@@ -509,7 +645,7 @@ code {
    붙으면 h-16(64px), 리허설 줄은 이름 아래 mt-0.5(2px). 줄 사이 구분선은
    stroke.neutral-muted다(schedule-admin.md 「근무 조정」 「날 상세 여백과 모양」) */
 .adjhead { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
-.adjlist { margin-top: 10px; }
+.adjlist { margin-top: 8px; }
 .adjrow { display: flex; align-items: center; gap: 8px; height: 56px; padding: 0 16px; cursor: pointer; }
 .adjrow.reh { height: 64px; }
 .adjrow + .adjrow { border-top: 1px solid var(--stroke-neutral-muted); }
@@ -526,13 +662,13 @@ code {
 .field .box.withunit { display: flex; align-items: center; justify-content: space-between; }
 .field .box .unit { color: var(--fg-neutral-subtle); }
 
-.posrow { margin-top: 18px; }
+.posrow { margin-top: 20px; }
 .poshead { display: flex; align-items: center; gap: 8px; min-height: 32px; }
 .poshead .pname { font-size: var(--t-sm); font-weight: 600; }
 .poshead .pcnt { font-size: var(--t-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 .poshead .pcnt.hot { color: var(--fg-neutral); font-weight: 500; }
 /* 가로(71.8px)는 이미 44px을 넘어 세로만 ::after로 채운다. 위아래 posrow와는
-   18px·8px 여유가 있어 넓힌 면끼리 겹치지 않는다(foundation/spacing-shape.md
+   20px·8px 여유가 있어 넓힌 면끼리 겹치지 않는다(foundation/spacing-shape.md
    「누를 수 있는 것은 44px 이상이다」) */
 .tbtn { position: relative; border: 0; background: none; padding: 4px 6px; font-family: inherit; font-size: var(--t-xs); color: var(--fg-neutral-muted); cursor: pointer; }
 .tbtn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
@@ -568,7 +704,7 @@ code {
   opacity: 0; animation: slotfade 3s linear 200ms both;
 }
 @keyframes slotfade { 0%, 6% { opacity: 0; } 12%, 82% { opacity: 1; } 95%, 100% { opacity: 0; } }
-.demo .dropzone { position: static; margin: 22px 0 0; opacity: 0; transform: translateY(14px); display: grid; place-items: center; }
+.demo .dropzone { position: static; margin: 20px 0 0; opacity: 0; transform: translateY(14px); display: grid; place-items: center; }
 .demo .dropzone > span { grid-area: 1 / 1; display: flex; align-items: center; gap: 8px; }
 .demo .dropzone .zone-b { opacity: 0; }
 .demo.play .dropzone { animation: zonecycle 3s ease-out 200ms both; }
@@ -579,9 +715,9 @@ code {
 }
 .demo.play .flyseat { animation: dragdel 3s cubic-bezier(.45,.05,.4,1) 200ms both; z-index: 5; }
 @keyframes dragdel {
-  0% { transform: none; box-shadow: none; }
-  10% { transform: scale(1.045); box-shadow: var(--card-shadow); }
-  58% { transform: translateY(150px) scale(1.045); box-shadow: var(--card-shadow); opacity: 1; }
+  0% { transform: none; border-color: var(--stroke-neutral); }
+  10% { transform: scale(1.045); border-color: var(--stroke-neutral-muted); }
+  58% { transform: translateY(150px) scale(1.045); border-color: var(--stroke-neutral-muted); opacity: 1; }
   72% { transform: translateY(150px) scale(1.02); opacity: .55; }
   86%, 100% { transform: translateY(150px) scale(.4); opacity: 0; }
 }
@@ -599,25 +735,25 @@ code {
   position: absolute; top: -3px; left: -4px; z-index: 5;
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--bg-neutral); border-radius: var(--r-md);
-  padding: 4px 10px; font-size: var(--t-sm); font-weight: 600; color: var(--fg-neutral);
+  padding: 4px 12px; font-size: var(--t-sm); font-weight: 600; color: var(--fg-neutral);
   opacity: 0; pointer-events: none;
 }
 .demo.play .headghost { animation: headfly 3s cubic-bezier(.45,.05,.4,1) 200ms both; }
 @keyframes headfly {
-  0% { opacity: 0; transform: none; box-shadow: none; }
-  8% { opacity: 1; transform: scale(1.04); box-shadow: var(--card-shadow); }
-  55% { opacity: 1; transform: translateY(150px) scale(1.04); box-shadow: var(--card-shadow); }
-  70% { opacity: .6; transform: translateY(150px) scale(.85); box-shadow: var(--card-shadow); }
-  80%, 100% { opacity: 0; transform: translateY(150px) scale(.6); box-shadow: none; }
+  0% { opacity: 0; transform: none; border-color: var(--stroke-neutral); }
+  8% { opacity: 1; transform: scale(1.04); border: 1px solid var(--stroke-neutral); }
+  55% { opacity: 1; transform: translateY(150px) scale(1.04); border: 1px solid var(--stroke-neutral); }
+  70% { opacity: .6; transform: translateY(150px) scale(.85); border: 1px solid var(--stroke-neutral); }
+  80%, 100% { opacity: 0; transform: translateY(150px) scale(.6); border-color: var(--stroke-neutral); }
 }
 .demo.play .headghost.blocked { animation: headflyblocked 3s cubic-bezier(.45,.05,.4,1) 200ms both; }
 @keyframes headflyblocked {
-  0% { opacity: 0; transform: none; box-shadow: none; }
-  8% { opacity: 1; transform: scale(1.04); box-shadow: var(--card-shadow); }
-  40% { opacity: 1; transform: translateY(104px) scale(1.04); box-shadow: var(--card-shadow); }
-  62% { opacity: 1; transform: translateY(104px) scale(1.04); box-shadow: var(--card-shadow); }
-  78% { opacity: 1; transform: none; box-shadow: none; }
-  100% { opacity: 0; transform: none; box-shadow: none; }
+  0% { opacity: 0; transform: none; border-color: var(--stroke-neutral); }
+  8% { opacity: 1; transform: scale(1.04); border: 1px solid var(--stroke-neutral); }
+  40% { opacity: 1; transform: translateY(104px) scale(1.04); border: 1px solid var(--stroke-neutral); }
+  62% { opacity: 1; transform: translateY(104px) scale(1.04); border: 1px solid var(--stroke-neutral); }
+  78% { opacity: 1; transform: none; border-color: var(--stroke-neutral); }
+  100% { opacity: 0; transform: none; border-color: var(--stroke-neutral); }
 }
 /* 대상 줄 머리 — 빈 자리가 있을 때만 stroke.brand-solid 테두리와 라벨이 선다.
    빈 자리가 없으면 이 클래스를 아예 안 건다 — 「테두리가 안 선다」는 상태 자체다 */
@@ -660,13 +796,13 @@ code {
 .demo .mlabel {
   position: absolute; left: 50%; transform: translate(-50%, 0); top: -26px; white-space: nowrap;
   font-size: 11px; line-height: 1; font-weight: 600; color: var(--fg-brand);
-  background: var(--bg-brand-weak); border-radius: var(--r-sm); padding: 5px 9px; opacity: 0;
+  background: var(--bg-brand-weak); border-radius: var(--r-sm); padding: 4px 8px; opacity: 0;
 }
 .demo.play .mlabel { animation: showmid 3s steps(1, end) 200ms both; }
 @keyframes showmid { 0%, 34% { opacity: 0; } 35%, 78% { opacity: 1; } 79%, 100% { opacity: 0; } }
 
 /* 픽커 */
-.prow { display: flex; align-items: center; gap: 12px; padding: 10px 0; cursor: pointer; }
+.prow { display: flex; align-items: center; gap: 12px; padding: 12px 0; cursor: pointer; }
 .prow + .prow { border-top: 1px solid var(--stroke-neutral); }
 .pavatar {
   width: 36px; height: 36px; border-radius: 999px; background: var(--bg-neutral-weak);
@@ -675,12 +811,13 @@ code {
 .prow .pname { font-size: var(--t-base); font-weight: 500; }
 .prow .pstat { margin-left: auto; font-size: var(--t-xs); color: var(--fg-neutral-subtle); }
 .prow.blocked { cursor: default; }
-.prow.blocked .pname, .prow.blocked .pstat { color: var(--fg-neutral-disabled); }
+.prow.blocked .pname, .prow.blocked .pstat, .prow.blocked .psex { color: var(--fg-neutral-disabled); }
 .prow.blocked .pavatar { color: var(--fg-neutral-disabled); }
-/* 줄 오른쪽 끝 성별 기호 — lucide Venus/Mars, size-4, fg.neutral-subtle. 색으로 남녀를 가르지 않는다 */
+/* 이름 바로 뒤 성별 기호 — lucide Venus/Mars, size-4, fg.neutral-subtle. 색으로 남녀를 가르지 않는다 */
+.prow .pnm { display: flex; align-items: center; gap: 4px; min-width: 0; }
 .prow .psex { flex: 0 0 auto; display: inline-flex; align-items: center; color: var(--fg-neutral-subtle); }
 .prow .psex svg { width: 16px; height: 16px; }
-.optrow { display: flex; flex-direction: column; gap: 1px; padding: 14px 0; cursor: pointer; }
+.optrow { display: flex; flex-direction: column; gap: 2px; padding: 16px 0; cursor: pointer; }
 .optrow + .optrow { border-top: 1px solid var(--stroke-neutral); }
 .optrow .ot { font-size: var(--t-sm); font-weight: 500; }
 .optrow .od { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
@@ -690,9 +827,9 @@ code {
   position: absolute; left: 24px; right: 24px; bottom: 88px; z-index: 6; margin: 0 auto; width: fit-content;
   display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
-  border-radius: var(--r-lg); padding: 11px 20px;
+  border-radius: var(--r-lg); padding: 12px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
-  box-shadow: var(--card-shadow);
+  border: 1px solid var(--stroke-neutral);
 }
 /* 왼쪽 면 아이콘 — 16px, 원이 계열색(fg.informative-contrast)으로 차고 안쪽 표시는
    토스트 면 색으로 뚫린다. 표시는 원 중심 기준 ×1.35로 키운다(components.md 「토스트」) */
@@ -738,21 +875,21 @@ code {
    「누를 수 있는 것은 44px 이상이다」) */
 .tab {
   position: relative;
-  flex: 1; border: 0; background: none; font-family: inherit; padding: 10px 0; cursor: pointer;
+  flex: 1; border: 0; background: none; font-family: inherit; padding: 12px 0; cursor: pointer;
   font-size: var(--t-sm); color: var(--fg-neutral-subtle);
 }
 .tab::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .tab.on { color: var(--fg-brand); font-weight: 600; box-shadow: inset 0 -2px 0 var(--stroke-brand-solid); }
 .dhead { margin-top: 16px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 .dnames { font-size: var(--t-sm); line-height: var(--lh-sm); padding: 4px 0 2px; }
-.srow { display: flex; align-items: baseline; gap: 12px; padding: 11px 0; }
+.srow { display: flex; align-items: baseline; gap: 12px; padding: 12px 0; }
 .srow + .srow { border-top: 1px solid var(--stroke-neutral); }
 .srow .sn { font-size: var(--t-base); font-weight: 500; flex: 0 0 auto; }
 .srow .sd { font-size: var(--t-sm); color: var(--fg-neutral-muted); font-variant-numeric: tabular-nums; }
 .pane[hidden] { display: none; }
 
 /* 경고 블록 */
-.block { border-radius: var(--r-lg); padding: 14px 16px; display: flex; gap: 10px; }
+.block { border-radius: var(--r-lg); padding: 16px; display: flex; gap: 8px; }
 .block.warn { background: var(--bg-warning-weak); }
 .block .bi { flex: 0 0 auto; margin-top: 2px; color: var(--palette-warning-500); }
 .block .bt { font-size: var(--t-sm); font-weight: 600; }
@@ -760,7 +897,7 @@ code {
 .block .bend { margin-top: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 
 /* 확정 결과 */
-.rres { display: grid; place-items: center; text-align: center; padding: 10px 0 2px; }
+.rres { display: grid; place-items: center; text-align: center; padding: 12px 0 2px; }
 .mark { position: relative; width: 96px; height: 96px; display: grid; place-items: center; margin-bottom: 16px; }
 .mark .disc {
   width: 64px; height: 64px; border-radius: 999px; display: grid; place-items: center;
@@ -776,7 +913,7 @@ code {
 @keyframes punch { 0% { transform: scale(.5); opacity: 0; } 55% { transform: scale(1.12); opacity: 1; } 100% { transform: none; opacity: 1; } }
 @keyframes drawline { to { stroke-dashoffset: 0; } }
 .rres .rt { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 700; letter-spacing: -.01em; }
-.rres .rb { margin-top: 5px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); font-variant-numeric: tabular-nums; }
+.rres .rb { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); font-variant-numeric: tabular-nums; }
 
 /* 빈 상태 — 카드가 아니라 화면 세로 가운데 덩이다 */
 .emptyblock {
@@ -859,21 +996,21 @@ code {
               <div class="minigrid">
                 <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
                 <span class="minicell"></span><span class="minicell"></span>
-                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-chart-a) 27%, var(--bg-chart-a-weak))">3</span>
-                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-chart-a) 64%, var(--bg-chart-a-weak))">4</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 27%, var(--bg-brand-weak))">3</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 64%, var(--bg-brand-weak))">4</span>
                 <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
                 <span class="minicell today num">8</span>
                 <span class="minicell"></span>
-                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-chart-a) 76%, var(--bg-chart-a-weak))">10</span>
-                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-chart-a) 39%, var(--bg-chart-a-weak))">11</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 76%, var(--bg-brand-weak))">10</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 39%, var(--bg-brand-weak))">11</span>
                 <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
-                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-chart-a) 100%, var(--bg-chart-a-weak))">17</span>
-                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-chart-a) 15%, var(--bg-chart-a-weak))">18</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 100%, var(--bg-brand-weak))">17</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 15%, var(--bg-brand-weak))">18</span>
                 <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
-                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-chart-a) 76%, var(--bg-chart-a-weak))">24</span>
-                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-chart-a) 51%, var(--bg-chart-a-weak))">25</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 76%, var(--bg-brand-weak))">24</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 51%, var(--bg-brand-weak))">25</span>
                 <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
-                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-chart-a) 88%, var(--bg-chart-a-weak))">31</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 88%, var(--bg-brand-weak))">31</span>
                 <span class="minicell"></span>
               </div>
             </div>
@@ -900,9 +1037,9 @@ code {
         <figcaption>
           <div class="cap-key">HOME</div>
           <div class="cap-name">관리자 홈 뼈대</div>
-          <p class="cap-body">짜임이 11자리에서 14자리로 늘었다 — 앱바 다음이 이제 <strong>오늘 현황</strong>이다. 「다 왔나」 하나에만 답한다. 찍은 몫(<code>bg.chart-a</code>)과 안 찍은 몫(<code>bg.neutral-weak</code>) 둘뿐이고 지각은 안 가른다 — 늦은 사람은 날 상세 명단에서 본다. <strong>확정 전에는 값이 「–」다.</strong> 배정이 굳지 않아 분모가 없어서다. <strong>그날 배정이 아예 없으면 이 자리가 통째로 없다</strong> — 앱바 바로 아래가 근무표 관리 타일이 된다. 이 목업은 두 예외 대신 값이 다 찬 모습 하나를 그렸다.</p>
+          <p class="cap-body">짜임이 11자리에서 14자리로 늘었다 — 앱바 다음이 이제 <strong>오늘 현황</strong>이다. 「다 왔나」 하나에만 답한다. 찍은 몫(<code>bg.brand-solid</code>)과 안 찍은 몫(<code>bg.neutral-weak</code>) 둘뿐이고 지각은 안 가른다 — 늦은 사람은 날 상세 명단에서 본다. <strong>확정 전에는 값이 「–」다.</strong> 배정이 굳지 않아 분모가 없어서다. <strong>그날 배정이 아예 없으면 이 자리가 통째로 없다</strong> — 앱바 바로 아래가 근무표 관리 타일이 된다. 이 목업은 두 예외 대신 값이 다 찬 모습 하나를 그렸다.</p>
           <p class="cap-body" style="margin-top:8px">타일 아래 <strong>빈 자리 카드</strong>가 붙었다 — <code>components.md</code> 「알림 블록」의 경고 그대로다(08절 확정 시트가 쓰는 것과 같은 <code>.block.warn</code>). 예전엔 타일 요약 줄이 이 경고로 승격했는데, 그러면 하루치만 말할 수 있었다. 지금은 날짜마다 카드가 한 장씩 쌓여 예식이 겹쳐도 둘 다 급하다고 말한다. 없는 날은 이 자리가 통째로 없다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>이번 달 미니뷰</strong>가 타일과 줄 사이에 낀다 — <code>components.md</code> 「미니 달력」의 관리자 표식이다. 배정 인원이 많을수록 칸이 <code>bg.chart-a-weak</code>에서 <code>bg.chart-a</code>로 진해진다. 이 목업의 9칸은 타일의 「열린 날 9」와 같은 날들이다(주말 아홉). 칸을 따로 안 누른다 — 달력 전체가 근무표 관리로 가는 문 하나다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>이번 달 미니뷰</strong>가 타일과 줄 사이에 낀다 — <code>components.md</code> 「미니 달력」의 관리자 표식이다. 배정 인원이 많을수록 칸이 <code>bg.brand-weak</code>에서 <code>bg.brand-solid</code>로 진해진다. 이 목업의 9칸은 타일의 「열린 날 9」와 같은 날들이다(주말 아홉). 칸을 따로 안 누른다 — 달력 전체가 근무표 관리로 가는 문 하나다.</p>
           <p class="cap-body" style="margin-top:8px">타일 요약 줄이 들어가기 전에 상태를 말한다. <strong>승인할 일과 가입 대기는 문이다</strong> — 대기 건수·인원 수가 서고, 누르면 각자의 화면이 열린다(승인할 일은 <code>approvals.md</code>, 가입 대기는 <code>members-pending.md</code>). 승인할 일이 가입 대기 위에 서는 것은 이쪽이 훨씬 잦아서다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>앱바 오른쪽, 브랜드 마크 왼쪽에 종 아이콘이 선다</strong> — 관리자 홈에만 붙는 자리다(<code>components.md</code> 「종 아이콘」). 여기 목업은 안 읽음 점이 있는 모습이다. 달력·날 상세·모아보기 앱바에는 없다.</p>
           <p class="cap-body" style="margin-top:8px">타일 요약 줄이 네 모습이다. 목업은 「만드는 중」 하나뿐이고 나머지 셋은 글로 남긴다 — 아직 없음이 「10월 근무표가 아직 없어요」, 확정 뒤가 「10월 근무표를 확정했어요 · 빈 자리 2」다. 빈 자리 재촉은 이제 타일 줄이 아니라 위의 빈 자리 카드가 맡는다.</p>
@@ -1106,7 +1243,7 @@ code {
               <span class="cell"></span>
             </div>
             <div class="legend">사람 표시는 근무 신청이에요</div>
-            <div class="rule" style="margin-top:14px"></div>
+            <div class="rule" style="margin-top:16px"></div>
             <div class="lrow">
               <span class="lk" style="font-size:var(--t-sm)">근무 신청 10건 모아보기</span>
               <span class="chev" style="margin-left:auto"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
@@ -1348,7 +1485,7 @@ code {
               <div class="poshead"><span class="pname">대기실</span><span class="pcnt">1/1</span><span class="sp"></span><button class="tbtn">교육 붙이기</button><span class="lockic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></div>
               <div class="seat">임태윤</div>
             </div>
-            <button class="btn ghost" style="margin:22px auto 0">이 날 닫기</button>
+            <button class="btn ghost" style="margin:24px auto 0">이 날 닫기</button>
           </div>
         </div>
         <figcaption>
@@ -1490,7 +1627,7 @@ code {
                 <div class="seat">최유진<span class="handle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></span></div>
               </div>
               <div class="toast blocktoast">
-                <svg class="toast-ic" style="--ic: var(--fg-informative-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                <svg class="toast-ic" style="--ic: var(--fg-sky-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
                   <circle cx="12" cy="12" r="10"/>
                   <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
                     <line x1="12" y1="8" x2="12" y2="12"/>
@@ -1631,7 +1768,7 @@ code {
               <div class="optrow"><span class="ot">결근이에요</span></div>
               <div class="optrow"><span class="ot">연장이에요</span></div>
             </div>
-            <button class="btn secondary" style="margin-top:14px">닫기</button>
+            <button class="btn secondary" style="margin-top:16px">닫기</button>
           </div>
         </div>
         <figcaption>
@@ -1694,7 +1831,7 @@ code {
               <div class="optrow"><span class="ot">연장이에요</span></div>
               <div class="optrow"><span class="ot">원래대로</span></div>
             </div>
-            <button class="btn secondary" style="margin-top:14px">닫기</button>
+            <button class="btn secondary" style="margin-top:16px">닫기</button>
           </div>
         </div>
         <figcaption>
@@ -1782,7 +1919,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">06 / 사람 픽커</span>
       <h2>기본은 넣을 수 있는 사람만</h2>
-      <p>왼쪽 시트의 「전체 보기」는 실제로 펼쳐진다. 배정된 사람은 안 눌리고, 자격 없는 사람을 누르면 시트 내용이 선택지로 바뀐다. 배정 가능한 사람이 0명이면 「지금 바로 넣을 수 있는 사람이 없어요」 한 줄과 함께 전체 보기가 펼쳐진 채 열린다 — 그 상태는 목업을 안 세웠다. 미신청 줄은 체크박스로 근무 요청을 보낸다 — 문·상태·문구·체크박스가 모두 닫힌 결정이다. 줄 오른쪽 끝의 성별 기호(Venus·Mars)는 색이 아니라 모양으로 가른다. 목록 한 줄을 길게 누르면 사람 시트가 픽커 시트 위에 한 겹 더 올라온다.</p>
+      <p>왼쪽 시트의 「전체 보기」는 실제로 펼쳐진다. 배정된 사람은 안 눌리고, 자격 없는 사람을 누르면 시트 내용이 선택지로 바뀐다. 배정 가능한 사람이 0명이면 「지금 바로 넣을 수 있는 사람이 없어요」 한 줄과 함께 전체 보기가 펼쳐진 채 열린다 — 그 상태는 목업을 안 세웠다. 미신청 줄은 체크박스로 근무 요청을 보낸다 — 문·상태·문구·체크박스가 모두 닫힌 결정이다. 이름 바로 뒤의 성별 기호(Venus·Mars)는 색이 아니라 모양으로 가른다. 목록 한 줄을 길게 누르면 사람 시트가 픽커 시트 위에 한 겹 더 올라온다.</p>
     </div>
     <div class="grid">
 
@@ -1807,20 +1944,20 @@ code {
             <div class="grab"></div>
             <div class="sh-title">스캔 · 10월 10일(토)</div>
             <div style="margin-top:8px">
-              <div class="prow"><span class="pavatar">박</span><span class="pname">박민재</span><span class="sp"></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></div>
-              <div class="prow"><span class="pavatar">조</span><span class="pname">조은서</span><span class="sp"></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></div>
+              <div class="prow"><span class="pavatar">박</span><span class="pnm"><span class="pname">박민재</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></span></div>
+              <div class="prow"><span class="pavatar">조</span><span class="pnm"><span class="pname">조은서</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></span></div>
             </div>
             <button class="btn ghost" style="margin:8px auto 0" data-expand>전체 보기</button>
             <div class="morewrap" data-more hidden>
               <div class="rule" style="margin-top:8px"></div>
-              <div class="prow blocked"><span class="pavatar">박</span><span class="pname">박서연</span><span class="pstat">신청 안 함</span><span class="pchk"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></div>
-              <div class="prow"><span class="pavatar">김</span><span class="pname">김지우</span><span class="pstat">스캔 자격 없음</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></div>
-              <div class="prow blocked"><span class="pavatar">강</span><span class="pname">강하늘</span><span class="pstat">안내에 배정됨</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></div>
-              <div class="prow blocked"><span class="pavatar">한</span><span class="pname">한지민</span><span class="pstat">매니저에 배정됨</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></div>
+              <div class="prow blocked"><span class="pavatar">박</span><span class="pnm"><span class="pname">박서연</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></span><span class="pstat">신청 안 함</span><span class="pchk"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+              <div class="prow"><span class="pavatar">김</span><span class="pnm"><span class="pname">김지우</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></span><span class="pstat">스캔 자격 없음</span></div>
+              <div class="prow blocked"><span class="pavatar">강</span><span class="pnm"><span class="pname">강하늘</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></span><span class="pstat">안내에 배정됨</span></div>
+              <div class="prow blocked"><span class="pavatar">한</span><span class="pnm"><span class="pname">한지민</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></span><span class="pstat">매니저에 배정됨</span></div>
             </div>
           </div>
           <div class="toast">
-            <svg class="toast-ic" style="--ic: var(--fg-informative-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <svg class="toast-ic" style="--ic: var(--fg-sky-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="12" cy="12" r="10"/>
               <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
                 <line x1="12" y1="8" x2="12" y2="12"/>
@@ -1835,7 +1972,7 @@ code {
           <div class="cap-name">기본과 전체 보기</div>
           <p class="cap-body">기본 목록은 자격 있고, 그날 배정이 없고, 근무 신청을 낸 사람이다. <strong>배정된 줄을 누르면 토스트</strong>가 「겸임은 자리를 합쳐 만드세요」라고 알린다 — 토스트 모양에 왼쪽 <code>fg.informative-contrast</code> 면 아이콘이다(components.md 「토스트」).</p>
           <p class="cap-body" style="margin-top:8px"><strong>미신청 줄(박서연)에 체크박스가 붙는다.</strong> 배정으론 안 눌리지만 체크해서 근무 요청을 보낸다 — 고른 줄은 <code>bg.brand-solid</code> 면에 <code>fg.brand-contrast</code> 체크다. 날 열기 모드의 선택 체크(표시만 <code>fg.brand</code>)와 갈리는데, <strong>달력 칸은 선택을 면과 테두리로 이미 말하지만 목록 줄은 이 사각 하나가 선택 전부를 지기 때문이다.</strong></p>
-          <p class="cap-body" style="margin-top:8px"><strong>줄 오른쪽 끝의 성별 기호</strong>는 lucide <code>Venus</code>·<code>Mars</code>고 이름과 같은 <code>fg.neutral-subtle</code>다. 색으로 남녀를 가르지 않는다 — 드레스실·대기실을 채울 때 목록을 훑는 것만으로 골라내야 해서다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>이름 바로 뒤의 성별 기호</strong>는 lucide <code>Venus</code>·<code>Mars</code>고 이름과 같은 <code>fg.neutral-subtle</code>다. 색으로 남녀를 가르지 않는다 — 드레스실·대기실을 채울 때 목록을 훑는 것만으로 골라내야 해서다. 이름에 붙이는 것은 성별이 사람의 것이지 줄의 것이 아니고, 오른쪽 끝에는 전체 보기의 상태 메시지와 체크박스가 이미 서기 때문이다.</p>
         </figcaption>
       </figure>
 
@@ -1860,8 +1997,8 @@ code {
             <div class="grab"></div>
             <div class="sh-title">스캔 · 10월 10일(토)</div>
             <div style="margin-top:8px">
-              <div class="prow"><span class="pavatar">박</span><span class="pname">박민재</span><span class="sp"></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></div>
-              <div class="prow"><span class="pavatar">조</span><span class="pname">조은서</span><span class="sp"></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></div>
+              <div class="prow"><span class="pavatar">박</span><span class="pnm"><span class="pname">박민재</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></span></div>
+              <div class="prow"><span class="pavatar">조</span><span class="pnm"><span class="pname">조은서</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></span></div>
             </div>
             <button class="btn ghost" style="margin:8px auto 0">전체 보기</button>
           </div>
@@ -1907,13 +2044,13 @@ code {
             <div class="grab"></div>
             <div class="sh-title">스캔 · 10월 10일(토)</div>
             <div style="margin-top:8px">
-              <div class="prow"><span class="pavatar">박</span><span class="pname">박민재</span><span class="sp"></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></div>
-              <div class="prow"><span class="pavatar">조</span><span class="pname">조은서</span><span class="sp"></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></div>
+              <div class="prow"><span class="pavatar">박</span><span class="pnm"><span class="pname">박민재</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></span></div>
+              <div class="prow"><span class="pavatar">조</span><span class="pnm"><span class="pname">조은서</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></span></div>
               <div class="rule" style="margin-top:8px"></div>
-              <div class="prow blocked"><span class="pavatar">박</span><span class="pname">박서연</span><span class="pstat">신청 안 함</span><span class="pchk on"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></div>
-              <div class="prow"><span class="pavatar">김</span><span class="pname">김지우</span><span class="pstat">스캔 자격 없음</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></div>
-              <div class="prow blocked"><span class="pavatar">강</span><span class="pname">강하늘</span><span class="pstat">안내에 배정됨</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></div>
-              <div class="prow blocked"><span class="pavatar">한</span><span class="pname">한지민</span><span class="pstat">매니저에 배정됨</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></div>
+              <div class="prow blocked"><span class="pavatar">박</span><span class="pnm"><span class="pname">박서연</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></span><span class="pstat">신청 안 함</span><span class="pchk on"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+              <div class="prow"><span class="pavatar">김</span><span class="pnm"><span class="pname">김지우</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></span><span class="pstat">스캔 자격 없음</span></div>
+              <div class="prow blocked"><span class="pavatar">강</span><span class="pnm"><span class="pname">강하늘</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></span><span class="pstat">안내에 배정됨</span></div>
+              <div class="prow blocked"><span class="pavatar">한</span><span class="pnm"><span class="pname">한지민</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></span><span class="pstat">매니저에 배정됨</span></div>
             </div>
             <button class="btn" style="margin-top:16px"><span class="num">1</span>명에게 근무 요청 보내기</button>
           </div>
@@ -1946,10 +2083,10 @@ code {
             <div class="grab"></div>
             <div class="sh-title">스캔 · 10월 10일(토)</div>
             <div style="margin-top:8px">
-              <div class="prow blocked"><span class="pavatar">박</span><span class="pname">박서연</span><span class="pstat">신청 안 함</span><span class="pchk"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></div>
-              <div class="prow blocked"><span class="pavatar">김</span><span class="pname">김지우</span><span class="pstat">요청 대기 중</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></div>
-              <div class="prow blocked"><span class="pavatar">강</span><span class="pname">강하늘</span><span class="pstat">요청 거절함</span><span class="pchk"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></div>
-              <div class="prow blocked"><span class="pavatar">한</span><span class="pname">한지민</span><span class="pstat">요청 만료됨</span><span class="pchk"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></div>
+              <div class="prow blocked"><span class="pavatar">박</span><span class="pnm"><span class="pname">박서연</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></span><span class="pstat">신청 안 함</span><span class="pchk"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+              <div class="prow blocked"><span class="pavatar">김</span><span class="pnm"><span class="pname">김지우</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></span><span class="pstat">요청 대기 중</span></div>
+              <div class="prow blocked"><span class="pavatar">강</span><span class="pnm"><span class="pname">강하늘</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></span><span class="pstat">요청 거절함</span><span class="pchk"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+              <div class="prow blocked"><span class="pavatar">한</span><span class="pnm"><span class="pname">한지민</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></span><span class="pstat">요청 만료됨</span><span class="pchk"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
             </div>
           </div>
         </div>
@@ -1986,7 +2123,7 @@ code {
                 <span class="od">앞으로 스캔 자리에 들어갈 수 있어요</span>
               </div>
             </div>
-            <button class="btn secondary" style="margin-top:14px">닫기</button>
+            <button class="btn secondary" style="margin-top:16px">닫기</button>
           </div>
         </div>
         <figcaption>
@@ -2073,9 +2210,9 @@ code {
               <button class="tab on">날짜순</button>
               <button class="tab">사람순</button>
             </div>
-            <div style="margin-top:120px;text-align:center">
-              <div style="font-size:var(--t-sm);line-height:var(--lh-sm);color:var(--fg-neutral-muted)">아직 들어온 신청이 없어요</div>
-              <div class="num" style="margin-top:2px;font-size:var(--t-sm);line-height:var(--lh-sm);color:var(--fg-neutral-muted)">마감은 10월 2일이에요</div>
+            <div style="padding:16px 0">
+              <div style="font-size:var(--t-base);line-height:var(--lh-base);font-weight:500;color:var(--fg-neutral)">아직 들어온 신청이 없어요</div>
+              <div class="num" style="margin-top:2px;font-size:var(--t-sm);line-height:var(--lh-sm);color:var(--fg-neutral-subtle)">마감은 10월 2일이에요</div>
             </div>
             <div class="spacer"></div>
           </div>
@@ -2170,7 +2307,7 @@ code {
           <div class="rsheet">
             <div class="grab"></div>
             <div class="sh-title">10월 근무표를 확정할까요?</div>
-            <div class="block warn" style="margin-top:14px">
+            <div class="block warn" style="margin-top:16px">
               <span class="bi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
               <div>
                 <div class="bt num">빈 자리 6개가 있어요</div>
@@ -2333,7 +2470,7 @@ code {
                 <span class="od">박서연 님에게 알림이 가요 · 자리는 비어 남아요</span>
               </div>
             </div>
-            <button class="btn secondary" style="margin-top:14px">닫기</button>
+            <button class="btn secondary" style="margin-top:16px">닫기</button>
           </div>
         </div>
         <figcaption>
@@ -2485,8 +2622,8 @@ code {
             <div class="grab"></div>
             <div class="sh-title">스캔 · 10월 10일(토)</div>
             <div style="margin-top:8px">
-              <div class="prow"><span class="pavatar">박</span><span class="pname">박민재</span><span class="sp"></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></div>
-              <div class="prow"><span class="pavatar">조</span><span class="pname">조은서</span><span class="sp"></span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></div>
+              <div class="prow"><span class="pavatar">박</span><span class="pnm"><span class="pname">박민재</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></svg></span></span></div>
+              <div class="prow"><span class="pavatar">조</span><span class="pnm"><span class="pname">조은서</span><span class="psex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg></span></span></div>
             </div>
             <button class="btn ghost" style="margin:8px auto 0">전체 보기</button>
           </div>

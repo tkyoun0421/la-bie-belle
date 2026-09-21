@@ -3,10 +3,10 @@ sources:
   - ../../2-design/modules/notification/design.md#소유-데이터
   - ../../2-design/modules/notification/design.md#알림-행
   - ../../2-design/modules/notification/design.md#누가-넣나
-  - ../../2-design/modules/notification/design.md#기기-구독
+  - ../../2-design/modules/notification/design.md#기기-주소
   - ../../2-design/modules/notification/design.md#알림을-받나
   - ../../2-design/modules/notification/design.md#읽음-찍기
-  - ../../2-design/modules/notification/design.md#기기-구독-저장과-삭제
+  - ../../2-design/modules/notification/design.md#기기-주소-저장과-삭제
   - ../../2-design/modules/notification/README.md#ntf-023
   - ../../2-design/modules/notification/README.md#ntf-025
   - ../../2-design/modules/notification/README.md#ntf-026
@@ -22,16 +22,16 @@ sources:
 
 ## 입력 명세·기준
 
-정본은 [notification/design.md](../../2-design/modules/notification/design.md#소유-데이터)의 [소유 데이터](../../2-design/modules/notification/design.md#소유-데이터)와 [읽음 찍기](../../2-design/modules/notification/design.md#읽음-찍기)와 [기기 구독 저장과 삭제](../../2-design/modules/notification/design.md#기기-구독-저장과-삭제)다.
+정본은 [notification/design.md](../../2-design/modules/notification/design.md#소유-데이터)의 [소유 데이터](../../2-design/modules/notification/design.md#소유-데이터)와 [읽음 찍기](../../2-design/modules/notification/design.md#읽음-찍기)와 [기기 주소 저장과 삭제](../../2-design/modules/notification/design.md#기기-주소-저장과-삭제)다.
 
-표 둘과 뷰 하나와 함수 넷이 이 task의 산출이다. **알림을 낳는 자리도 보내는 자리도 안 만든다** — 낳기는 [`notification-emit`](notification-emit.md), 보내기는 [`notification-push`](notification-push.md)다. 이 task는 그 둘이 쓸 그릇만 낸다.
+표 둘과 뷰 하나와 함수 넷이 이 task의 산출이다. **알림을 낳는 자리도 보내는 자리도 안 만든다** — 낳기는 [`notification-emit`](notification-emit.md), 보내기는 `notification-push`다. 이 task는 그 둘이 쓸 그릇만 낸다.
 
 선행이 없다. 알림 영역의 첫 task고 나머지 넷이 전부 이것을 딛는다.
 
 정본에서 확인한 넷이 plan의 방향을 정한다.
 
-- **의사와 상태가 갈린다.** 받겠다는 의사는 `profiles.notifications_enabled`고 기기가 실제로 닿는지는 `push_subscriptions` 행의 유무다. 둘을 곱해 셋이 나고 화면이 셋을 갈라 말한다([NTF-034](../../2-design/modules/notification/README.md#ntf-034))
-- **구독 원문은 본인만 본다.** `endpoint`와 `keys`는 그 기기로 푸시를 쏠 수 있는 값이라 RLS가 본인 행만 연다. 관리자는 닿나 안 닿나만 알면 되므로 `security definer` 뷰가 불리언 하나만 낸다
+- **의사와 상태가 갈린다.** 받겠다는 의사는 `profiles.notifications_enabled`고 기기가 실제로 닿는지는 `push_tokens` 행의 유무다. 둘을 곱해 셋이 나고 화면이 셋을 갈라 말한다([NTF-034](../../2-design/modules/notification/README.md#ntf-034))
+- **주소 원문은 본인만 본다.** 기기 주소는 그 기기로 푸시를 쏠 수 있는 값이라 RLS가 본인 행만 연다. 관리자는 닿나 안 닿나만 알면 되므로 `security definer` 뷰가 불리언 하나만 낸다
 - **읽음은 눌러야 찍힌다.** 목록을 훑는 것으로는 안 바뀐다([NTF-023](../../2-design/modules/notification/README.md#ntf-023)). 함수를 부르는 자리가 넷이다 — ✕, CTA, 답, 그리고 알림 목록의 줄
 - **지난 알림을 안 지운다.** [NTF-026](../../2-design/modules/notification/README.md#ntf-026)이 그렇게 정해서 이 표에는 지우는 함수가 없다. 사람이 사라질 때만 [`erase_profiles`](../../2-design/modules/account/design.md#비우기)를 따라 함께 간다
 
@@ -53,12 +53,12 @@ sources:
 
 ### AC-02
 
-**`push_subscriptions` 표.**
+**`push_tokens` 표.**
 
-`push_subscriptions(id, profile_id, endpoint, keys, created_at)` — `unique(endpoint)`
+`push_tokens(id, profile_id, token, created_at)` — `unique(token)`
 
-- `endpoint`가 유일하다. 같은 기기가 다시 구독하면 새 행이 아니라 같은 행이다
-- `keys`는 `jsonb`고 `p256dh`와 `auth`를 담는다
+- `token`이 유일하다. 같은 기기가 다시 보내면 새 행이 아니라 같은 행이다
+- 값은 `ExponentPushToken[...]` 꼴의 문자열 하나다 — 주소와 열쇠를 따로 들지 않는다
 - **RLS가 본인 행만 연다.** 읽기도 쓰기도 그렇다. 이 값이 새면 남의 기기로 푸시를 쏠 수 있다
 - 사람 하나에 행이 여럿일 수 있다. 폰과 데스크톱이 각각 하나다
 
@@ -68,8 +68,8 @@ sources:
 
 `push_reachable(profile_id, has_device)` — `security definer`
 
-- `has_device`는 그 사람의 `push_subscriptions` 행이 하나라도 있나다
-- **`endpoint`도 `keys`도 안 낸다.** 관리자가 볼 것은 닿나 안 닿나뿐이다
+- `has_device`는 그 사람의 `push_tokens` 행이 하나라도 있나다
+- **주소 자체는 안 낸다.** 관리자가 볼 것은 닿나 안 닿나뿐이다
 - 관리자만 읽는다. 첫 줄이 `is_admin()` 확인이다
 - `set search_path = ''`
 
@@ -87,12 +87,12 @@ sources:
 
 ### AC-05
 
-**기기 구독 함수 둘.**
+**기기 주소 함수 둘.**
 
-`save_push_subscription(p_endpoint text, p_keys jsonb)`·`remove_push_subscription(p_endpoint text)` — 둘 다 `security definer`
+`save_push_token(p_token text)`·`remove_push_token(p_token text)` — 둘 다 `security definer`
 
-- 저장은 upsert다. `endpoint`가 같으면 `keys`만 갈아 끼운다 — 브라우저가 키를 갱신하는 일이 있다
-- 삭제는 자기 행만이다. 남의 `endpoint`를 넣어도 안 지워진다
+- 저장은 upsert다. 같은 주소가 다시 오면 `created_at`만 갱신한다 — 앱이 매 진입에 보낸다
+- 삭제는 자기 행만이다. 남의 주소를 넣어도 안 지워진다
 - 둘 다 첫 줄이 `is_approved()` 확인이다
 - `set search_path = ''`
 
@@ -103,8 +103,8 @@ sources:
 `set_notifications_enabled(p_on boolean)` — `security definer`
 
 - `profiles.notifications_enabled`를 바꾼다
-- **끄면 그 사람의 `push_subscriptions` 행도 같이 지운다.** 껐는데 구독이 남아 있으면 브라우저가 계속 살아 있는 구독으로 알고, 다시 켤 때 새로 만들지 않는다
-- 켜는 것은 의사만 바꾼다. 기기 구독은 브라우저 권한을 받아야 생겨서 함수가 못 만든다 — [`notification-settings`](notification-settings.md)가 그 자리다
+- **끄면 그 사람의 `push_tokens` 행도 같이 지운다.** 껐는데 주소가 남아 있으면 관리자 화면이 「알림 받는 중」이라 말한다
+- 켜는 것은 의사만 바꾼다. 기기 주소는 앱이 권한을 받아야 생겨서 함수가 못 만든다 — `notification-settings`가 그 자리다
 - 첫 줄이 `is_approved()` 확인이다
 
 ### AC-07
@@ -131,16 +131,16 @@ sources:
 기능 task 파이프라인이다 — `test-planner` → `integration-test-writer` → `implementer` → `pr-diff`.
 
 1. `test-planner`가 AC-01~AC-07을 배정한다. **대부분 integration이다** — RLS와 `security definer`의 경계가 이 task의 본체고 그것은 DB가 있어야 보인다
-2. `integration-test-writer`가 경계를 쓴다. 남의 알림 id로 `mark_notifications_read`를 부르는 것, 남의 `push_subscriptions`를 읽는 것, 관리자 아닌 사람이 뷰를 읽는 것 셋이 핵심이다
+2. `integration-test-writer`가 경계를 쓴다. 남의 알림 id로 `mark_notifications_read`를 부르는 것, 남의 `push_tokens`를 읽는 것, 관리자 아닌 사람이 뷰를 읽는 것 셋이 핵심이다
 3. `implementer`가 표 → 뷰 → 함수 순으로 초록을 만든다
 4. `pr-diff`가 diff를 본다 — RLS를 안 켠 표가 없는지
 
 ## 리스크·전환·되돌리기
 
-- **`push_subscriptions`가 이 저장소에서 가장 민감한 표다.** 행 하나로 그 사람 기기에 푸시를 쏠 수 있다. RLS를 빠뜨리면 승인된 누구나 전원의 구독을 읽는다 — integration이 이것을 본다
+- **`push_tokens`가 이 저장소에서 가장 민감한 표다.** 행 하나로 그 사람 기기에 푸시를 쏠 수 있다. RLS를 빠뜨리면 승인된 누구나 전원의 주소를 읽는다 — integration이 이것을 본다
 - **`security definer` 뷰가 RLS를 우회한다.** 그것이 목적이지만 첫 줄의 `is_admin()`을 빠뜨리면 아무나 전원의 알림 상태를 읽는다. 함수와 달리 뷰는 첫 줄 확인이 눈에 덜 띈다
 - **`payload`가 스키마 없는 `jsonb`다.** 낳는 쪽과 읽는 쪽이 어긋나면 화면에 빈 값이 선다. 종류마다의 모양은 [`notification-emit`](notification-emit.md)이 `src/features/notification/model/`의 타입으로 묶는다 — DB가 아니라 타입이 지킨다
-- **`push_attempts`와 `claimed_at`은 이 task가 열만 낸다.** 쓰는 것은 [`notification-push`](notification-push.md)다. 열이 먼저 서야 그 task가 설 수 있어 여기 든다
+- **`push_attempts`와 `claimed_at`은 이 task가 열만 낸다.** 쓰는 것은 `notification-push`다. 열이 먼저 서야 그 task가 설 수 있어 여기 든다
 - 되돌리기는 표 둘을 drop하는 마이그레이션이다. 아직 아무도 안 쓰는 단계라 값이 안 사라진다
 
 ## 검증 방법
@@ -149,22 +149,22 @@ sources:
 | --- | --- | --- | --- | --- |
 | AC-01 | 남의 알림이 읽힌다 | integration `tests/integration/notifications-rls.test.ts`(예정) | `pnpm test:integration:run` | 다른 사람 행이 0건 |
 | AC-02 | 남의 구독이 읽힌다 | integration 위 | 위와 같다 | 다른 사람 행이 0건 |
-| AC-02 | 같은 기기가 두 행이 된다 | integration 위 | 위와 같다 | 같은 `endpoint`로 두 번 저장해도 행이 1 |
+| AC-02 | 같은 기기가 두 행이 된다 | integration 위 | 위와 같다 | 같은 `token`으로 두 번 저장해도 행이 1 |
 | AC-03 | 관리자 아닌 사람이 뷰를 읽는다 | integration 위 | 위와 같다 | `not_admin` |
-| AC-03 | 뷰가 `endpoint`를 낸다 | integration 위 | 위와 같다 | 컬럼이 둘뿐이다 |
+| AC-03 | 뷰가 주소를 낸다 | integration 위 | 위와 같다 | 컬럼이 둘뿐이다 |
 | AC-04 | 남의 알림에 읽음이 찍힌다 | integration `tests/integration/notifications-read.test.ts`(예정) | 위와 같다 | `read_at`이 그대로 널 |
 | AC-04 | 두 번 읽으면 시각이 덮인다 | integration 위 | 위와 같다 | 첫 시각이 남는다 |
-| AC-06 | 껐는데 구독이 남는다 | integration 위 | 위와 같다 | 끈 뒤 `push_subscriptions` 행이 0 |
+| AC-06 | 껐는데 주소가 남는다 | integration 위 | 위와 같다 | 끈 뒤 `push_tokens` 행이 0 |
 | AC-07 | 코드가 마이그레이션과 어긋난다 | unit `tests/lint/error-codes.test.ts` | `pnpm test` | 양쪽 문자열이 같다 |
 
-- 배정하지 않은 것: 실제 푸시가 나가는 것 — [`notification-push`](notification-push.md)가 본다. 알림 행이 생기는 것 — [`notification-emit`](notification-emit.md)이 본다
+- 배정하지 않은 것: 실제 푸시가 나가는 것 — `notification-push`가 본다. 알림 행이 생기는 것 — [`notification-emit`](notification-emit.md)이 본다
 - 막힌 것: 지금은 없다
 
 ## 범위 밖
 
 - 알림을 낳는 자리 — [`notification-emit`](notification-emit.md)
-- 푸시를 쏘는 자리와 `claimed_at`·`push_attempts`·`pushed_at`을 쓰는 것 — [`notification-push`](notification-push.md)
+- 푸시를 쏘는 자리와 `claimed_at`·`push_attempts`·`pushed_at`을 쓰는 것 — `notification-push`
 - 알림 목록 화면과 종 아이콘 — [`notification-list`](notification-list.md)
-- 프로필의 알림 스위치와 브라우저 권한 받기 — [`notification-settings`](notification-settings.md)
+- 프로필의 알림 스위치와 기기 권한 받기 — `notification-settings`
 - 공지 보내기 `post_announcement` — 2차다([roadmap](../../1-plan/roadmap.md#릴리스-목록))
 - 대시보드의 안 본 알림 영역 — [`dashboard`](../../backlog.md)

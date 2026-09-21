@@ -106,7 +106,7 @@
 ### 서비스 키 자리
 
 - 적용 범위: service role 키를 쥐는 코드
-- 기본 계약: 둘이고 둘 다 Edge Function 안이다. 브라우저와 Next 서버에는 없다
+- 기본 계약: 둘이고 둘 다 Edge Function 안이다. 앱 번들에는 없다
   - **`send-push`** — [`notification/design.md`](../modules/notification/design.md#푸시-보내기)
   - **`erase-account`** — [`account/design.md`](../modules/account/design.md#비우기)
 - 이유: ADR-003이 「왜 필요한지를 이 문서에 먼저 적는다」고 한 자리다. 둘이다

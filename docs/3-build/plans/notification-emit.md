@@ -134,7 +134,7 @@ sources:
 - **남의 task 함수를 고친다.** 이 task의 변경이 계정·근무표·출근 영역 함수 안으로 들어간다. 그 함수들의 기존 integration이 깨지면 안 된다 — `implementer`가 받은 테스트의 단언을 못 바꾸는 규칙이 여기서 특히 중요하다
 - **받는 사람을 잘못 고르면 조용히 틀린다.** 확정 알림이 전원에게 가도 에러가 안 난다. 사람이 「나는 배정 안 됐는데 왜 오지」 하고 알아채는 것이 유일한 신호다 — integration이 인원 수를 센다
 - **트랜잭션이 커진다.** 전원에게 가는 알림은 행이 서른 개다. 접수 열림이 근무표 만들기와 같은 트랜잭션이라 그만큼 길어진다. 서른 명 규모에서는 문제가 아니지만 배열 한 번의 insert로 넣어 왕복을 줄인다
-- **`payload` 모양이 읽는 쪽과 어긋나면 화면에 빈 값이 선다.** DB가 안 막아서 AC-01의 타입이 유일한 방어다. 푸시 쪽 [`notification-push`](notification-push.md#ac-01)와 목록 쪽 [`notification-list`](notification-list.md)가 같은 타입을 쓴다
+- **`payload` 모양이 읽는 쪽과 어긋나면 화면에 빈 값이 선다.** DB가 안 막아서 AC-01의 타입이 유일한 방어다. 푸시 쪽 `notification-push`와 목록 쪽 [`notification-list`](notification-list.md)가 같은 타입을 쓴다
 - 되돌리기는 각 함수에서 `emit_notification` 호출을 빼는 마이그레이션이다. 이미 선 행은 그대로 남는다
 
 ## 검증 방법
@@ -153,12 +153,12 @@ sources:
 | AC-07 | 사유 도착이 관리자에게 간다 | integration `tests/integration/emit-excuse.test.ts`(예정) | 위와 같다 | 행이 0건 |
 | AC-07 | 거절 이유가 안 실린다 | integration 위 | 위와 같다 | `payload`에 이유가 든다 |
 
-- 배정하지 않은 것: 낳은 행이 실제로 기기에 닿는 것 — [`notification-push`](notification-push.md)가 본다
+- 배정하지 않은 것: 낳은 행이 실제로 기기에 닿는 것 — `notification-push`가 본다
 - 막힌 것: 알림을 끼워 넣을 함수들이 아직 안 섰다. 선행 task가 전부 merge되기 전에는 이 task의 대부분이 못 선다 — **자리마다 쪼개 따라가는 것이 대안이고 착수 때 판단한다**
 
 ## 범위 밖
 
 - 시각을 보고 나가는 넷(미리 알림 전날·주말 묶음, 출근 직전, 빈 자리 재촉) — [`notification-schedule`](notification-schedule.md)
 - 교대의 각 단계와 관리자 공지 — 2차다([roadmap](../../1-plan/roadmap.md#릴리스-목록))
-- 행을 기기로 보내는 것 — [`notification-push`](notification-push.md)
+- 행을 기기로 보내는 것 — `notification-push`
 - 문장을 조립해 화면에 세우는 것 — [`notification-list`](notification-list.md)와 [`dashboard`](../../backlog.md)

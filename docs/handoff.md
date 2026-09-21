@@ -6,15 +6,46 @@
 
 ## 다음 작업
 
+**전환 둘이 문서를 훑는 중이다.** [ADR-011](2-design/adr/ADR-011-expo-native-app.md)이 웹 PWA를 버리고 Expo 네이티브 앱으로 갔고([ADR-007](2-design/adr/ADR-007-web-pwa-over-native.md)을 대체한다), [ADR-012](2-design/adr/ADR-012-blue-brand-and-looser-density.md)가 브랜드를 파랑 hue 266으로 옮기고 밀도를 헐겁게 했다. 그림자를 안 쓰고 카드를 겹치지 않고 진한 색면은 화면에 한 장이다.
+
+**설계 층은 다 따라왔다.** design-system 여섯, `system/` 넷, modules design 셋(account·attendance·notification), 화면 문서와 `1-plan`·`4-test`·`5-deploy`·`CLAUDE.md`까지 네이티브 전제로 다시 썼다. 남은 것은 셋이고 backlog에 행이 있다 — `expo-scaffold`(앱 골격), `plans-restate`(이미 쓴 plan 스물넷), `sian-native-pass`(시안 열여섯).
+
+**시안 열여섯을 ADR-012 마감 다섯으로 감사했다.** 그림자·카드·진한 색면·큰 숫자 넷은 열여섯 장이 다 맞았고, 어긋난 자리 열은 닫혔다 — 성별 기호를 이름 옆으로, 화면 문서 셋에 남은 차트 색 이름, `login` 여백, `check-in`의 「브라우저 설정」, `excuse`의 체크 토큰, `payroll`의 `haspad` 누락, `qr`의 인쇄용 종이 개정 미반영(라벨·저장 실패 상태·밀리미터), `stats`의 「브랜드 색이 없다」다.
+
+**시안 열여섯이 다 아티팩트로 올라갔고 승인을 기다린다.** 감사가 웹 PWA 잔재를 넷에서 더 찾아 걷었다 — `login`의 알림 영역이 넷에서 셋으로(홈 화면 추가 안내가 빠졌다), `profile`의 「아이폰 사파리 탭」 모습이 사라져 갈래가 둘로, `members`의 시트 알림 줄이 「기기에서 알림을 꺼서 안 가요」로, `check-in`의 권한 거부 주체가 브라우저에서 앱으로 갔다. 폐기된 `bg.informative-weak`를 들던 `profile` 캡션도 `bg.sky-weak`로 따라갔다.
+
+**`expo-scaffold`가 진행 중이고 파이프라인이 실측으로 섰다.** `globals.css` 생성기가 새 8절(shadcn 다리·베이스 층 없음, 다크 갈래 하나)을 따라가고, `@tailwindcss/postcss` → `react-native-css/compiler`를 실제로 태워 값을 재봤다 — rem 16, `p-4`가 16, `text-base`가 17, OKLCH 팔레트가 빌드 때 hex로 바뀌어 `palette-brand-700`이 라이트 `#2f5cf6`·다크 `#628dfc`로 갈린다. 색 유틸은 hex가 아니라 팔레트 변수 참조로 남고 그 변수가 `prefers-color-scheme` 조건을 달고 둘로 선다. AC-02·03·04의 unit이 이 값을 못박는다.
+
+**NativeWind v5의 Metro 설정이 v4와 다르다.** `withNativewind`가 CSS 진입점을 인자로 안 받고 앱이 `import`한 CSS를 따라간다. 대신 Expo의 Metro가 CSS를 postcss에 태워서 `postcss.config.mjs`가 있어야 한다 — Expo가 찾는 확장자는 `.mjs`·`.js`·`.json` 셋이고 `.cjs`는 안 본다. `nativewind-env.d.ts`와 `expo-env.d.ts`가 `className` prop과 CSS side-effect import의 타입을 댄다.
+
+**터치 면 44px의 수단이 `hitSlop`으로 갔다.** 웹의 가짜 요소는 레이아웃을 차지하지만 `hitSlop`은 안 그래서 「투명한 여백을 둘러」라는 표현이 정본 여섯 자리에서 어긋나 있었다. `components.md` 셋·`spacing-shape.md`·`dashboard.md` 둘을 고쳤다. 시안의 `::after`는 그대로 둔다 — 브라우저 목업에서는 그것이 맞는 수단이다.
+
+**시안 조항 어긋남 넷이 닫혔다.** `.backic`은 열한 장이 28px에 닿는 면 44px이고, 작은 버튼도 모양 30px에 `::after` 44px이고, 「마감일 당기기」는 밑줄과 닿는 면을 갖췄다. 넷째는 충돌이 아니라 한 조항에 두 종류가 눌려 있던 자리였다 — [components.md](2-design/design-system/components.md#listrow)의 ListRow 오른쪽 값을 「그 줄의 데이터면 `fg.neutral`, 화살표 달린 문의 현재 상태면 `fg.neutral-muted`」로 갈랐다. 가르는 질문은 「이 값을 보려고 이 화면에 왔는가」고 시안은 한 장도 안 고쳤다 — 이미 다 그 규칙대로 서 있었다. `popover-dark-ring`이 말한 팝오버 ring도 없다.
+
+감사가 정본 충돌 셋을 드러냈고 셋 다 결정을 받아 닫았다.
+
+- **면의 안쪽 여백이 24px이다.** `spacing-shape.md`만 20px에 남아 화면 문서 열셋·`components.md`·시안 열여섯이 쓰는 24px과 갈려 있었다. 카드 안쪽도 같이 올렸다 — 한 값으로 묶는 근거가 서려면 둘이 같아야 한다
+- **눈금 밖 여백 열셋을 이웃 눈금으로 당겼다.** `gap-2.5`는 `gap-2`, `mt-3.5`는 `mt-3`, `py-3.5`는 `py-4`, `size-9.5`는 `size-10`이다. 눈금은 열셋 그대로다. **시안이 스스로 정한 눈금 밖 값 195곳**은 `sian-native-pass`가 닫는다
+- **대표 숫자가 글자색으로 말한다.** `color.md`의 「진한 색면 한 장이 대표 숫자를 받는다」는 그 한 장을 주요 버튼이 이미 쓰고 있어 면이 한 장 더 들었다. `typography.md`의 산문이 이미 정해둔 「브랜드 색은 「내 것」인 값에만 쓴다」를 표에도 반영해 급여 금액과 근무자 통계 합계를 `fg.brand`로 올렸다. 관리자 통계는 홀 전체라 중립이다. **큰 숫자와 주요 버튼이 한 화면에 같이 서면 그때 다시 본다**
+
+전환이 바꾼 것 중 큰 것 넷이다.
+
+- **푸시가 Web Push에서 기기 푸시로.** `push_subscriptions`가 `push_tokens`가 되고 VAPID가 사라졌다. 부치면 접수증이 먼저 오고 닿았는지는 십오 분쯤 뒤에 따로 물어야 해서, 닿지 않는 주소를 지우는 자리가 발송 직후가 아니라 결과를 읽는 자리로 옮겼다
+- **홈 화면 추가 서사가 통째로 빠졌다.** NTF-019·027·028이 기기 권한을 말하게 바뀌고 승인 대기 화면의 알림 영역이 넷에서 셋, 「나」의 알림 갈래가 셋에서 둘로 줄었다
+- **인쇄용 QR이 그림에서 A4 한 장으로.** 화면에 그린 것을 구우면 크기가 관리자 폰에 묶인다. 공유 판으로 넘기니 「저장이 막히는 자리」가 없어졌다
+- **세션이 쿠키에서 기기 저장소로, 캐시 계층이 넷에서 둘로.** 우리가 돌리는 서버가 없어 판정을 그릴 자리도, 껍데기를 캐시할 자리도 없다
+
+**총괄이 정할 것 둘이 열려 있다.** [navigation Q-03](2-design/system/navigation.md#q-03) — 종이 QR을 앱 없는 기기로 찍으면 무엇이 뜨나. 링크가 앱을 열려면 도메인에 증명 파일이 필요해서 도메인은 어차피 선다. 거기 안내 한 장을 두는 것이 ADR-011의 「웹은 같이 안 낸다」와 같은 것인지가 질문이다. 그리고 [runtime Q-01](2-design/system/runtime.md#q-01) — 오래 안 열었다 여는 앱이 무엇을 다시 읽나.
+
 **구현은 전 영역의 설계가 끝난 뒤 한꺼번에 한다.** task 하나의 plan이 섰다고 그 task를 구현하지 않는다. 영역마다 ① 정본의 「아직 안 정한 것」을 인터뷰로 닫고(한 라운드 한 질문) ② 정본에 반영하고 ③ 시안을 갱신해 아티팩트로 사용자가 보고 승인하고 ④ plan을 쓴다. 순서는 account → schedule → attendance → payroll → notification → system이고 swap은 2차라 뒤다. 실패 테스트 작성부터가 구현 단계라 plan 뒤에 writer를 띄우지 않는다.
 
-account가 끝났다. 미정이 다 닫혔고(login·README·members-pending·members·profile), 시안 셋이 아티팩트로 승인됐고, 화면 plan 넷이 섰다 — [profile-form](3-build/plans/profile-form.md)·[members-pending](3-build/plans/members-pending.md)·[profile-screen](3-build/plans/profile-screen.md)·[members](3-build/plans/members.md). plan을 쓰다 나온 결정 열둘을 정본에 반영했다 — `already_decided` 코드, `profile_private.email`, `phone` check 제약, 차단 해제가 `submitted_at`도 비우기, `/admin/members/blocked` 경로, `is_admin()`이 퇴사·차단을 보기, `last_admin` 셈에 퇴사·차단 제외와 퇴사 처리도 막기, 쓰기는 전부 응답 대기, 관리자는 자기 이름 고치기 가능, 지난 시간 표기 규칙, 하나 고르는 목록 공용화, `profile-erasure` task 신설.
+account가 끝났다. 미정이 다 닫혔고(login·README·members-pending·members·profile), 시안 셋이 아티팩트로 승인됐고, 화면 plan 넷이 섰다 — `profile-form`·`members-pending`·`profile-screen`·`members`. plan을 쓰다 나온 결정 열둘을 정본에 반영했다 — `already_decided` 코드, `profile_private.email`, `phone` check 제약, 차단 해제가 `submitted_at`도 비우기, `/admin/members/blocked` 경로, `is_admin()`이 퇴사·차단을 보기, `last_admin` 셈에 퇴사·차단 제외와 퇴사 처리도 막기, 쓰기는 전부 응답 대기, 관리자는 자기 이름 고치기 가능, 지난 시간 표기 규칙, 하나 고르는 목록 공용화, `profile-erasure` task 신설.
 
 **schedule 영역의 미정이 다 닫혔고 정본에 반영됐다.** 결정 다섯이다.
 
 - **근무표는 달력 달이다** — 8월 근무표 = 8월 1일~8월 31일([SCH-010](2-design/modules/schedule/README.md#sch-010)). 주 묶음(8/3~9/6)을 버렸다. 급여 월 조회도 따라 달력 달이 됐고([PAY-022](2-design/modules/payroll/README.md#pay-022)) 달을 걸친 주는 날마다 갈린다. 화면에서는 범위 줄이 사라지고 그리드가 이 달 밖으로 남긴 칸은 빈칸이다
 - **교육 배정 행이 서면 그 자리에서 자격이다** — 교육 날이 안 왔어도, 출근 인증이 없어도 센다([SCH-013](2-design/modules/schedule/README.md#sch-013)). 거두는 길은 배정을 지우는 것 하나
-- **사람 픽커 줄 오른쪽 끝에 성별 기호**(lucide `Venus`/`Mars`, `fg.neutral-subtle`). 색으로는 안 가른다. **길게 누르면 사람 시트**가 겹쳐 올라온다 — 사진·이름·「♀ 여 · 98년생」·자격
+- **사람 픽커의 이름 바로 뒤에 성별 기호**(lucide `Venus`/`Mars`, `fg.neutral-subtle`). 색으로는 안 가른다. **길게 누르면 사람 시트**가 겹쳐 올라온다 — 사진·이름·「♀ 여 · 98년생」·자격
 - **나이는 만 나이가 아니라 년생**이다 — `98년생` 꼴([writing.md](2-design/design-system/writing.md#숫자와-단위))
 - **교육 배정도 인증을 찍는다**는 [ATT-020](2-design/modules/attendance/README.md#att-020)이 이미 닫아둔 것이라 화면 문서가 그것을 따랐다 — 부제와 현황 줄 인원에 든다
 - `emit_reminders`는 cron 항목 하나고 함수가 요일을 본다([notification/design.md](2-design/modules/notification/design.md#행위-밖의-실행-동작))
@@ -42,7 +73,7 @@ plan을 쓰며 가른 경계 넷이다.
 
 다른 영역이 이어받을 자리도 backlog 행에 적었다 — `members`의 `mark_leave` 남은 배정 검사, `attendance`의 인증 상태 열과 approvals 사유 줄이다.
 
-**attendance 영역이 끝났다.** 미정이 다 닫혔고 정본에 반영됐고 시안이 따라갔고 plan 넷이 섰다 — [attendance-data](3-build/plans/attendance-data.md)·[attendance-qr](3-build/plans/attendance-qr.md)·[attendance-checkin](3-build/plans/attendance-checkin.md)·[attendance-excuse](3-build/plans/attendance-excuse.md). backlog의 `attendance` 한 행을 넷으로 갈랐다.
+**attendance 영역이 끝났다.** 미정이 다 닫혔고 정본에 반영됐고 시안이 따라갔고 plan 넷이 섰다 — [attendance-data](3-build/plans/attendance-data.md)·`attendance-qr`·`attendance-checkin`·[attendance-excuse](3-build/plans/attendance-excuse.md). backlog의 `attendance` 한 행을 넷으로 갈랐다.
 
 인터뷰로 닫은 결정 넷이다.
 
@@ -97,8 +128,8 @@ plan을 쓰며 나온 막힌 것 둘이 착수 전에 닫혀야 한다.
 - **대시보드의 알림 영역은 그대로 남는다.** 처음에 「아이콘만 남긴다」로 갔다가 [prd.md](1-plan/prd.md)가 대시보드 네 항목을 못박아둔 것과 부딪혀 되돌렸다 — 종은 지나간 것 전부, 알림 영역은 안 읽은 것 중 최근 한 건이고 거기서 답한다
 - **알림 목록에서는 줄 전체가 눌린다** — [NTF-024](2-design/modules/notification/README.md#ntf-024)의 예외다. 대시보드는 CTA와 ✕만 눌리는데 목록은 반대고, 누르면 그 알림이 말한 자리로 가며 읽음이 찍힌다. **관리자 공지만 안 눌리고**(갈 곳이 없다) 그것 하나가 여는 것으로 읽음이 찍힌다
 - **알림을 못 받는 사람을 관리자가 본다**([NTF-034](2-design/modules/notification/README.md#ntf-034)). 갈래가 둘이라 화면이 갈라 말한다 — 「· 알림 꺼둠」과 「· 기기 안 연결」이다. 서는 자리가 셋이다 — 직원 목록 줄, 사람 시트, 확정 뒤 확인 시트
-- **RLS를 안 풀고 뷰로 냈다.** `push_subscriptions`는 본인 행만 열고 `security definer` 뷰 `push_reachable(profile_id, has_device)`가 관리자에게 불리언 하나만 낸다 — `endpoint`도 `keys`도 안 낸다
-- **의사와 상태를 가른다.** 받겠다는 의사는 `profiles.notifications_enabled`고 기기가 닿는지는 `push_subscriptions` 행의 유무다. 둘을 곱해 셋이 나고 프로필이 셋을 갈라 말한다 — **스위치를 켜도 기기가 안 닿을 수 있다**
+- **RLS를 안 풀고 뷰로 냈다.** `push_tokens`는 본인 행만 열고 `security definer` 뷰 `push_reachable(profile_id, has_device)`가 관리자에게 불리언 하나만 낸다 — 주소 자체는 안 낸다
+- **의사와 상태를 가른다.** 받겠다는 의사는 `profiles.notifications_enabled`고 기기가 닿는지는 `push_tokens` 행의 유무다. 둘을 곱해 셋이 나고 프로필이 셋을 갈라 말한다 — **스위치를 켜도 기기가 안 닿을 수 있다**
 - **알림끼리 묶지 않는다**([NTF-035](2-design/modules/notification/README.md#ntf-035)). 예외는 주말 미리 알림 하나고 그것은 같은 종류를 묶는 것이다
 - **목록은 전부를 50건씩 끊어 읽는다.** 안 지우는 규칙이라 계속 길어진다
 
@@ -106,7 +137,7 @@ plan을 쓰며 나온 막힌 것 둘이 착수 전에 닫혀야 한다.
 
 **1차 알림의 범위를 다시 그었다.** [roadmap](1-plan/roadmap.md#릴리스-목록)이 알림을 「승인·확정·전날·직전」 넷으로 적었는데 같은 표의 1차 기능에 근무 요청·근무 취소·사유 승인이 들어 있고 2차가 미룬다고 적은 것은 교대와 공지뿐이었다. **1차는 교대와 공지를 뺀 열하나**고 roadmap의 괄호를 그렇게 고쳤다.
 
-backlog의 `notification-first` 한 행을 여섯으로 갈랐다 — [notification-data](3-build/plans/notification-data.md)·[notification-push](3-build/plans/notification-push.md)·[notification-emit](3-build/plans/notification-emit.md)·[notification-schedule](3-build/plans/notification-schedule.md)·[notification-list](3-build/plans/notification-list.md)·`notification-second`. `notification-settings`까지 plan 다섯이 섰고 `notification-second`는 교대 설계가 서야 쓴다. `dashboard`의 선행도 `notification-list`로 바꿨다 — 문장 함수를 거기서 가져다 쓴다.
+backlog의 `notification-first` 한 행을 여섯으로 갈랐다 — [notification-data](3-build/plans/notification-data.md)·`notification-push`·[notification-emit](3-build/plans/notification-emit.md)·[notification-schedule](3-build/plans/notification-schedule.md)·[notification-list](3-build/plans/notification-list.md)·`notification-second`. `notification-settings`까지 plan 다섯이 섰고 `notification-second`는 교대 설계가 서야 쓴다. `dashboard`의 선행도 `notification-list`로 바꿨다 — 문장 함수를 거기서 가져다 쓴다.
 
 plan을 쓰며 가른 경계 셋이다.
 
@@ -122,8 +153,8 @@ plan을 쓰며 가른 경계 셋이다.
 - **목록에도 그림이 붙는다** — 포지션 줄과 사람별 줄에 [줄 막대](2-design/design-system/components.md#줄-막대), 근태 현황 줄 아래에 [비율 띠](2-design/design-system/components.md#비율-띠)
 - **대시보드 넷이 두꺼워지고 아래 셋이 붙었다.** 이번 주 근무가 월~일 일곱 칸 스트립이 되고 예상 급여에 지난주 대비가 붙었다. 넷 아래에 이번 달 누적·다음 근무·[미니 달력](2-design/design-system/components.md#미니-달력)이 이어진다 — 근무가 없는 날에는 「다음 근무」가 빠진다. 띠 아래 한 줄이 이미 같은 말을 한다
 - **관리자 홈에 셋이 붙었다** — 오늘 현황과 진행 띠, 빈 자리 카드, 이번 달 근무표 미니뷰. 빈 자리 경고가 타일 요약 줄의 승격에서 타일 밖 카드로 나왔다. 오늘 현황의 띠는 몫이 **둘**이고 지각을 안 가른다 — 그 줄이 답하는 것은 「다 왔나」 하나다
-- **차트 전용 색 계열 셋을 새로 열었다**([tokens.md](2-design/design-system/tokens.md)의 `chart-a`·`chart-b`·`chart-c`). 색조가 브랜드(57)에서 멀고 채도가 브랜드 최대치 근처에서 막혀 통계 화면이 브랜드 버튼보다 크게 말하지 못한다. **좋고 나쁨을 안 싣는다** — [stats.md](2-design/system/screens/stats.md)의 「색으로 안 가른다」가 지키던 축(화면이 사람을 나무라지 않기)이 그대로 산다
-- **차트는 브랜드 색 예산 밖이다**([foundation/color.md](2-design/design-system/foundation/color.md#차트가-색을-쓰는-법)). 조각 넷의 정본은 [components.md의 차트 넷](2-design/design-system/components.md#차트-넷)이고 **등장 모션이 없다** — 막대가 자라거나 선이 그려지는 연출을 문서가 막았다
+- **그림의 몫을 가르는 색이 셋이다** — 첫째가 브랜드, 둘째가 `sky`, 셋째가 `mint`다([foundation/color.md](2-design/design-system/foundation/color.md#그림이-색을-쓰는-법)). 차트 전용 계열 셋을 따로 열었다가 ADR-012가 브랜드를 진한 파랑으로 올리면서 그 전제(「차트가 브랜드보다 진하면 안 된다」)가 사라져 걷어냈다. **좋고 나쁨을 안 싣는다** — [stats.md](2-design/system/screens/stats.md)의 「색으로 안 가른다」가 지키던 축(화면이 사람을 나무라지 않기)이 그대로 산다
+- **차트는 브랜드 색 예산 밖이다**([foundation/color.md](2-design/design-system/foundation/color.md#그림이-색을-쓰는-법)). 조각 넷의 정본은 [components.md의 차트 넷](2-design/design-system/components.md#차트-넷)이고 **등장 모션이 없다** — 막대가 자라거나 선이 그려지는 연출을 문서가 막았다
 - **미니 달력은 다섯 줄이나 여섯 줄이다.** 처음 「7×5」로 썼는데 1일이 늦은 요일이고 31일까지인 달은 마지막 주가 사라진다. 아래 내용이 24px 밀리는 쪽을 골랐다
 
 미정 다섯이다.

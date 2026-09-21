@@ -214,7 +214,7 @@
 | 못 읽음 문구 | `fg.neutral-subtle` |
 | 「다시 시도」 | [components.md](../../../design-system/components.md#button)의 Button ghost |
 
-**critical이 둘뿐이다.** 겹침 문구와 지우기다. [color.md](../../../design-system/foundation/color.md#계열-여섯)가 critical을 「오류와 되돌릴 수 없는 파괴」로 정했고 이 화면에서 그에 닿는 것은 그 둘이다. 갈래 어긋남은 오류가 아니라 앱이 규칙대로 움직인 것이라 중립으로 말한다.
+**critical이 둘뿐이다.** 겹침 문구와 지우기다. [color.md](../../../design-system/foundation/color.md#계열-일곱)가 critical을 「오류와 되돌릴 수 없는 파괴」로 정했고 이 화면에서 그에 닿는 것은 그 둘이다. 갈래 어긋남은 오류가 아니라 앱이 규칙대로 움직인 것이라 중립으로 말한다.
 
 **브랜드가 「리허설 넣기」 하나다.** 달력 칸에 브랜드를 안 쓴다 — 근무표 달력의 색 예산([color.md](../../../design-system/foundation/color.md#근무표에서-색을-쓰는-법))을 이 화면이 다시 깨지 않는다.
 
@@ -266,7 +266,7 @@
 | 저장 실패 | `rounded-md` `p-3`. 버튼 위 `mb-4` |
 | 지우기 줄 | 버튼 위 `mb-4`. `h-12` |
 
-시트 아래 여백에 `env(safe-area-inset-bottom)`을 더한다.
+시트 아래 여백에 `useSafeAreaInsets`의 `bottom`을 더한다.
 
 시트 줄과 지우기 줄이 `h-12`라 44px 규칙을 그린 크기로 이미 넘는다([spacing-shape.md](../../../design-system/foundation/spacing-shape.md)).
 
@@ -317,7 +317,7 @@
 - **넣은 뒤 날 시트의 새 줄이 한 번 올라온다.** `--duration-base`. 어느 줄이 생겼는지를 말한다
 - **지운 줄은 접히며 사라진다.** `--duration-fast`
 - **달력 칸의 숫자는 시트가 닫힌 뒤에 바뀐다.** 시트가 덮고 있는 동안 뒤에서 숫자가 움직이면 무엇이 바뀌었는지 못 본다
-- `prefers-reduced-motion`이면 전부 뜨고 지는 것만 남는다([motion.md](../../../design-system/foundation/motion.md))
+- 움직임을 줄인 사람에게는 전부 뜨고 지는 것만 남는다([motion.md](../../../design-system/foundation/motion.md#접근성))
 
 ## 예외와 미정
 

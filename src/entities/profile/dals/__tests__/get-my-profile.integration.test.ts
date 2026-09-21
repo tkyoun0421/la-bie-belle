@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { getMyProfile } from "@/entities/profile/dals/get-my-profile";
 import {
   createSignedInUser,

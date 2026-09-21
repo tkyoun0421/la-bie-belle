@@ -1,6 +1,6 @@
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
 import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
 import importPlugin from "eslint-plugin-import";
 import unusedImports from "eslint-plugin-unused-imports";
 import house from "./eslint-rules/index.mjs";
@@ -32,19 +32,25 @@ const layerBoundaries = LAYERS.map((layer, index) => ({
 }));
 
 const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-
   globalIgnores([
     ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-    "test-results/**",
-    "playwright-report/**",
-    "blob-report/**",
+    ".expo/**",
+    "android/**",
+    "ios/**",
+    "expo-env.d.ts",
+    "nativewind-env.d.ts",
     "coverage/**",
   ]),
+
+  {
+    files: ["**/*.{ts,tsx,mts}"],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: { ecmaFeatures: { jsx: true }, sourceType: "module" },
+    },
+    plugins: { "@typescript-eslint": tsPlugin },
+    rules: { ...tsPlugin.configs.recommended.rules },
+  },
 
   {
     files: ["**/*.{ts,tsx,mts,mjs}"],

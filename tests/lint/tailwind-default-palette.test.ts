@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { violationsOf } from "@tests/lint/rule-check";
 
 const NO_DEFAULT_PALETTE_CLASS = "house/no-default-palette-class";

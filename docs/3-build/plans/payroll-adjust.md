@@ -27,6 +27,8 @@ sources:
 
 # 날 상세의 급여 줄 둘을 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본은 [schedule-admin.md](../../2-design/modules/schedule/screens/schedule-admin.md#근무-조정)의 [날 상세 짜임](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-짜임) 3·4번 항목과 [근무 조정](../../2-design/modules/schedule/screens/schedule-admin.md#근무-조정) 절이다. 업무 규칙은 [PAY-003](../../2-design/modules/payroll/README.md#pay-003)·[PAY-027](../../2-design/modules/payroll/README.md#pay-027)·[PAY-028](../../2-design/modules/payroll/README.md#pay-028)이고, 쓰기 함수 둘(`set_adjustment`·`set_holiday`)은 [`payroll-data`](payroll-data.md#ac-04)가 이미 냈다.
@@ -107,7 +109,7 @@ sources:
 | `src/screens/schedule-admin/ui/adjust-sheet.tsx`·`person-sheet.tsx` | 시트 둘 | AC-03·AC-04·AC-06 |
 | `src/features/payroll/*.ts`·`__tests__/` | `set_adjustment`·`set_holiday` mutation과 무효화 | AC-05 |
 | `src/entities/rehearsal/dals/get-all-rehearsals.ts` | 날 상세가 쓰는 달 질의 | AC-05 |
-| `tests/e2e/payroll-adjust.spec.ts` | e2e | 검증 표 |
+| `payroll-adjust` e2e | e2e | 검증 표 |
 
 ## 구현 순서
 
@@ -139,7 +141,7 @@ sources:
 | AC-04 | 결근 음수가 배정 시간과 안 맞는다 | unit 위 | `pnpm test` | 9시간이면 −540분, 8시간이면 −480분 |
 | AC-04 | 조정 없는 사람에게 「원래대로」가 뜬다 | unit 위 | `pnpm test` | 그 줄이 없다 |
 | AC-04 | 연장이 시간 단위로 들어간다 | unit 위 | `pnpm test` | 칸 단위가 분이고 60이 1시간 |
-| AC-03 | 리허설 줄이 눌린다 | e2e `tests/e2e/payroll-adjust.spec.ts`(예정) | `pnpm e2e` | 눌러도 아무 일이 없다 |
+| AC-03 | 리허설 줄이 눌린다 | e2e `payroll-adjust` e2e(예정) | e2e 명령 | 눌러도 아무 일이 없다 |
 | AC-04 | 결근을 넣었다 못 되돌린다 | e2e 위 | 위와 같다 | 「원래대로」 뒤 최종 시간이 배정 시간으로 돌아온다 |
 | AC-01 | 확정 뒤에 스위치가 잠긴다 | e2e 위 | 위와 같다 | 확정 뒤에도 켜고 꺼진다 |
 | AC-06 | 시안과 어긋난다 | 수동 — `sian-auditor` | — | 문안·토큰·상태가 문서와 같다 |

@@ -10,15 +10,15 @@
 
 `src/` 아래 다섯이다.
 
-- `app/` — Next.js 라우팅 전용이다. 얇게 유지하고 화면 조립을 두지 않는다. 전역 provider와 스타일도 여기 산다.
-- `screens/` — 화면 조립. FSD의 pages 레이어인데 Next가 그 이름을 예약어처럼 쓰므로 screens로 부른다. 슬라이스 이름은 라우트 이름과 같게 짓는다.
+- `app/` — 라우팅 전용이다. 얇게 유지하고 화면 조립을 두지 않는다. 전역 provider와 스타일도 여기 산다.
+- `screens/` — 화면 조립. FSD의 pages 레이어인데 라우터가 그 이름을 예약어처럼 쓰므로 screens로 부른다. 슬라이스 이름은 라우트 이름과 같게 짓는다.
 - `features/` — use-case.
 - `entities/` — 도메인 모델과 규칙.
-- `shared/` — 어느 기능에도 매이지 않은 것. `shared/ui`에 shadcn 생성물이, `shared/lib`에 공용 유틸이 산다.
+- `shared/` — 어느 기능에도 매이지 않은 것. `shared/ui`에 조각이, `shared/lib`에 공용 유틸이 산다.
 
 widgets 레이어는 두지 않는다. 화면 조립 덩이가 실제로 반복되면 그때 넣는다.
 
-여러 계층을 내려다보며 묶는 조립 — `entities`의 질의와 `shared`의 판정을 이어 하나의 답을 내는 것 — 은 `features`에 둔다. use-case가 바로 그것이다. `app/`의 `.ts`는 그 use-case를 부르고 `redirect` 같은 Next API에 넘기는 위임만 한다. 조립이 `app/`에 남으면 훅이 안 보는 자리에 로직이 쌓인다(관찰 007).
+여러 계층을 내려다보며 묶는 조립 — `entities`의 질의와 `shared`의 판정을 이어 하나의 답을 내는 것 — 은 `features`에 둔다. use-case가 바로 그것이다. `app/`의 `.ts`는 그 use-case를 부르고 화면을 옮기는 라우터 API에 넘기는 위임만 한다. 조립이 `app/`에 남으면 훅이 안 보는 자리에 로직이 쌓인다(관찰 007).
 
 ## 세그먼트
 

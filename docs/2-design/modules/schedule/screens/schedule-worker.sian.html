@@ -78,6 +78,11 @@
   본문 곳곳의 상호 참조 숫자(예: 「01·10·11의」, 「03의 마감 규칙」, 「09 / REQUEST · LATE」)를
   전부 다시 매겨야 하는데, 그 범위가 이 개정의 위험을 넘는다고 판단해 절 번호는 안 밀고
   끝에 붙이는 쪽을 택했다 — 총괄 검토가 필요한 자리다.
+
+  이번 손질은 여백 값을 tokens.md 4절의 열세 눈금 안으로 당긴 것뿐이다. 배치나 크기는
+  안 바꿨다 — viewbar·yearrow의 gap, ctabar·rsheet의 위쪽 padding과 grab의 아래쪽
+  margin, toast·mrow·mrow.me·pickrow의 gap과 padding, badge의 위아래 padding, field와
+  errbox의 margin-top·padding·gap이 대상이다.
 -->
 <title>근무자 근무표 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -215,112 +220,289 @@ body.view-scene .stage.scene-live { display: block; }
 
 /* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
 .mock {
-  --palette-neutral-00: oklch(1 .0037 57);
-  --palette-neutral-100: oklch(.965 .0037 57);
-  --palette-neutral-200: oklch(.905 .0043 57);
-  --palette-neutral-300: oklch(.845 .0045 57);
-  --palette-neutral-700: oklch(.545 .005 57);
-  --palette-neutral-800: oklch(.455 .005 57);
-  --palette-neutral-900: oklch(.32 .0053 57);
-  --palette-neutral-1000: oklch(.215 .0055 57);
-  --palette-brand-100: oklch(.965 .0128 57);
-  --palette-brand-800: oklch(.455 .0534 57);
-  --palette-positive-400: oklch(.76 .0897 152);
-  --palette-informative-400: oklch(.76 .0897 248);
-  --palette-critical-100: oklch(.965 .0319 27);
-  --palette-critical-800: oklch(.455 .1334 27);
-  --surface-stroke: transparent;
-  --scrim-ink: var(--palette-neutral-1000);
-  --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5);
+  --palette-neutral-00: oklch(1.000 0.0001 250);
+  --palette-neutral-100: oklch(0.965 0.0018 250);
+  --palette-neutral-200: oklch(0.905 0.0030 250);
+  --palette-neutral-300: oklch(0.845 0.0046 250);
+  --palette-neutral-400: oklch(0.760 0.0062 250);
+  --palette-neutral-500: oklch(0.680 0.0075 250);
+  --palette-neutral-600: oklch(0.625 0.0080 250);
+  --palette-neutral-700: oklch(0.545 0.0078 250);
+  --palette-neutral-800: oklch(0.455 0.0074 250);
+  --palette-neutral-900: oklch(0.320 0.0062 250);
+  --palette-neutral-1000: oklch(0.215 0.0048 250);
+  --palette-brand-00: oklch(1.000 0.0001 266);
+  --palette-brand-100: oklch(0.965 0.0160 266);
+  --palette-brand-200: oklch(0.905 0.0443 266);
+  --palette-brand-300: oklch(0.845 0.0740 266);
+  --palette-brand-400: oklch(0.760 0.1185 266);
+  --palette-brand-500: oklch(0.680 0.1630 266);
+  --palette-brand-600: oklch(0.625 0.1951 266);
+  --palette-brand-700: oklch(0.545 0.2350 266);
+  --palette-brand-800: oklch(0.455 0.2210 266);
+  --palette-brand-900: oklch(0.320 0.1870 266);
+  --palette-brand-1000: oklch(0.215 0.1440 266);
+  --palette-sky-00: oklch(1.000 0.0001 250);
+  --palette-sky-100: oklch(0.965 0.0168 250);
+  --palette-sky-200: oklch(0.905 0.0465 250);
+  --palette-sky-300: oklch(0.845 0.0776 250);
+  --palette-sky-400: oklch(0.760 0.1241 250);
+  --palette-sky-500: oklch(0.680 0.1504 250);
+  --palette-sky-600: oklch(0.625 0.1600 250);
+  --palette-sky-700: oklch(0.545 0.1502 250);
+  --palette-sky-800: oklch(0.455 0.1258 250);
+  --palette-sky-900: oklch(0.320 0.0896 250);
+  --palette-sky-1000: oklch(0.215 0.0628 250);
+  --palette-mint-00: oklch(1.000 0.0002 183);
+  --palette-mint-100: oklch(0.965 0.0331 183);
+  --palette-mint-200: oklch(0.905 0.0568 183);
+  --palette-mint-300: oklch(0.845 0.0868 183);
+  --palette-mint-400: oklch(0.760 0.1168 183);
+  --palette-mint-500: oklch(0.680 0.1177 183);
+  --palette-mint-600: oklch(0.625 0.1082 183);
+  --palette-mint-700: oklch(0.545 0.0945 183);
+  --palette-mint-800: oklch(0.455 0.0790 183);
+  --palette-mint-900: oklch(0.320 0.0562 183);
+  --palette-mint-1000: oklch(0.215 0.0391 183);
+  --palette-positive-00: oklch(1.000 0.0115 152);
+  --palette-positive-100: oklch(0.965 0.0253 152);
+  --palette-positive-200: oklch(0.905 0.0437 152);
+  --palette-positive-300: oklch(0.845 0.0667 152);
+  --palette-positive-400: oklch(0.760 0.0897 152);
+  --palette-positive-500: oklch(0.680 0.1081 152);
+  --palette-positive-600: oklch(0.625 0.1150 152);
+  --palette-positive-700: oklch(0.545 0.1127 152);
+  --palette-positive-800: oklch(0.455 0.1058 152);
+  --palette-positive-900: oklch(0.320 0.0897 152);
+  --palette-positive-1000: oklch(0.215 0.0690 152);
+  --palette-warning-00: oklch(1.000 0.0160 88);
+  --palette-warning-100: oklch(0.965 0.0352 88);
+  --palette-warning-200: oklch(0.905 0.0608 88);
+  --palette-warning-300: oklch(0.845 0.0928 88);
+  --palette-warning-400: oklch(0.760 0.1248 88);
+  --palette-warning-500: oklch(0.680 0.1504 88);
+  --palette-warning-600: oklch(0.625 0.1600 88);
+  --palette-warning-700: oklch(0.545 0.1568 88);
+  --palette-warning-800: oklch(0.455 0.1472 88);
+  --palette-warning-900: oklch(0.320 0.1248 88);
+  --palette-warning-1000: oklch(0.215 0.0960 88);
+  --palette-critical-00: oklch(1.000 0.0145 27);
+  --palette-critical-100: oklch(0.965 0.0319 27);
+  --palette-critical-200: oklch(0.905 0.0551 27);
+  --palette-critical-300: oklch(0.845 0.0841 27);
+  --palette-critical-400: oklch(0.760 0.1131 27);
+  --palette-critical-500: oklch(0.680 0.1363 27);
+  --palette-critical-600: oklch(0.625 0.1450 27);
+  --palette-critical-700: oklch(0.545 0.1421 27);
+  --palette-critical-800: oklch(0.455 0.1334 27);
+  --palette-critical-900: oklch(0.320 0.1131 27);
+  --palette-critical-1000: oklch(0.215 0.0870 27);
+  --scrim-bg: #181A1C6B;
 }
-.mock.force-dark {
-  --palette-neutral-00: oklch(.155 .0037 57);
-  --palette-neutral-100: oklch(.205 .0037 57);
-  --palette-neutral-200: oklch(.265 .0043 57);
-  --palette-neutral-300: oklch(.32 .0045 57);
-  --palette-neutral-700: oklch(.665 .005 57);
-  --palette-neutral-800: oklch(.745 .005 57);
-  --palette-neutral-900: oklch(.845 .0053 57);
-  --palette-neutral-1000: oklch(.935 .0055 57);
-  --palette-brand-100: oklch(.205 .0128 57);
-  --palette-brand-800: oklch(.745 .0534 57);
-  --palette-positive-400: oklch(.4 .0897 152);
-  --palette-informative-400: oklch(.4 .0897 248);
-  --palette-critical-100: oklch(.205 .0319 27);
-  --palette-critical-800: oklch(.745 .1334 27);
-  --surface-stroke: var(--palette-neutral-200);
-  --scrim-ink: var(--palette-neutral-00);
-  --card-shadow: none;
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+.mock.force-dark, :root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(0.155 0.0008 250);
+  --palette-neutral-100: oklch(0.205 0.0018 250);
+  --palette-neutral-200: oklch(0.265 0.0030 250);
+  --palette-neutral-300: oklch(0.320 0.0046 250);
+  --palette-neutral-400: oklch(0.400 0.0062 250);
+  --palette-neutral-500: oklch(0.480 0.0075 250);
+  --palette-neutral-600: oklch(0.585 0.0080 250);
+  --palette-neutral-700: oklch(0.665 0.0078 250);
+  --palette-neutral-800: oklch(0.745 0.0074 250);
+  --palette-neutral-900: oklch(0.845 0.0062 250);
+  --palette-neutral-1000: oklch(0.935 0.0048 250);
+  --palette-brand-00: oklch(0.155 0.0240 266);
+  --palette-brand-100: oklch(0.205 0.0530 266);
+  --palette-brand-200: oklch(0.265 0.0910 266);
+  --palette-brand-300: oklch(0.320 0.1390 266);
+  --palette-brand-400: oklch(0.400 0.1870 266);
+  --palette-brand-500: oklch(0.480 0.2256 266);
+  --palette-brand-600: oklch(0.585 0.2192 266);
+  --palette-brand-700: oklch(0.665 0.1716 266);
+  --palette-brand-800: oklch(0.745 0.1266 266);
+  --palette-brand-900: oklch(0.845 0.0740 266);
+  --palette-brand-1000: oklch(0.935 0.0300 266);
+  --palette-sky-00: oklch(0.155 0.0160 250);
+  --palette-sky-100: oklch(0.205 0.0354 250);
+  --palette-sky-200: oklch(0.265 0.0606 250);
+  --palette-sky-300: oklch(0.320 0.0896 250);
+  --palette-sky-400: oklch(0.400 0.1109 250);
+  --palette-sky-500: oklch(0.480 0.1325 250);
+  --palette-sky-600: oklch(0.585 0.1600 250);
+  --palette-sky-700: oklch(0.665 0.1566 250);
+  --palette-sky-800: oklch(0.745 0.1326 250);
+  --palette-sky-900: oklch(0.845 0.0776 250);
+  --palette-sky-1000: oklch(0.935 0.0315 250);
+  --palette-mint-00: oklch(0.155 0.0150 183);
+  --palette-mint-100: oklch(0.205 0.0331 183);
+  --palette-mint-200: oklch(0.265 0.0471 183);
+  --palette-mint-300: oklch(0.320 0.0562 183);
+  --palette-mint-400: oklch(0.400 0.0697 183);
+  --palette-mint-500: oklch(0.480 0.0833 183);
+  --palette-mint-600: oklch(0.585 0.1013 183);
+  --palette-mint-700: oklch(0.665 0.1151 183);
+  --palette-mint-800: oklch(0.745 0.1289 183);
+  --palette-mint-900: oklch(0.845 0.1168 183);
+  --palette-mint-1000: oklch(0.935 0.0900 183);
+  --palette-positive-00: oklch(0.155 0.0115 152);
+  --palette-positive-100: oklch(0.205 0.0253 152);
+  --palette-positive-200: oklch(0.265 0.0437 152);
+  --palette-positive-300: oklch(0.320 0.0667 152);
+  --palette-positive-400: oklch(0.400 0.0897 152);
+  --palette-positive-500: oklch(0.480 0.1081 152);
+  --palette-positive-600: oklch(0.585 0.1150 152);
+  --palette-positive-700: oklch(0.665 0.1127 152);
+  --palette-positive-800: oklch(0.745 0.1058 152);
+  --palette-positive-900: oklch(0.845 0.0897 152);
+  --palette-positive-1000: oklch(0.935 0.0690 152);
+  --palette-warning-00: oklch(0.155 0.0160 88);
+  --palette-warning-100: oklch(0.205 0.0352 88);
+  --palette-warning-200: oklch(0.265 0.0608 88);
+  --palette-warning-300: oklch(0.320 0.0928 88);
+  --palette-warning-400: oklch(0.400 0.1248 88);
+  --palette-warning-500: oklch(0.480 0.1504 88);
+  --palette-warning-600: oklch(0.585 0.1600 88);
+  --palette-warning-700: oklch(0.665 0.1568 88);
+  --palette-warning-800: oklch(0.745 0.1472 88);
+  --palette-warning-900: oklch(0.845 0.1248 88);
+  --palette-warning-1000: oklch(0.935 0.0960 88);
+  --palette-critical-00: oklch(0.155 0.0145 27);
+  --palette-critical-100: oklch(0.205 0.0319 27);
+  --palette-critical-200: oklch(0.265 0.0551 27);
+  --palette-critical-300: oklch(0.320 0.0841 27);
+  --palette-critical-400: oklch(0.400 0.1131 27);
+  --palette-critical-500: oklch(0.480 0.1363 27);
+  --palette-critical-600: oklch(0.585 0.1450 27);
+  --palette-critical-700: oklch(0.665 0.1421 27);
+  --palette-critical-800: oklch(0.745 0.1334 27);
+  --palette-critical-900: oklch(0.845 0.1131 27);
+  --palette-critical-1000: oklch(0.935 0.0870 27);
+  --scrim-bg: #0C0C0C6B;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .mock:not(.force-light) {
-    --palette-neutral-00: oklch(.155 .0037 57);
-    --palette-neutral-100: oklch(.205 .0037 57);
-    --palette-neutral-200: oklch(.265 .0043 57);
-    --palette-neutral-300: oklch(.32 .0045 57);
-    --palette-neutral-700: oklch(.665 .005 57);
-    --palette-neutral-800: oklch(.745 .005 57);
-    --palette-neutral-900: oklch(.845 .0053 57);
-    --palette-neutral-1000: oklch(.935 .0055 57);
-    --palette-brand-100: oklch(.205 .0128 57);
-    --palette-brand-800: oklch(.745 .0534 57);
-    --palette-positive-400: oklch(.4 .0897 152);
-    --palette-informative-400: oklch(.4 .0897 248);
-    --palette-critical-100: oklch(.205 .0319 27);
-    --palette-critical-800: oklch(.745 .1334 27);
-    --surface-stroke: var(--palette-neutral-200);
-    --scrim-ink: var(--palette-neutral-00);
-    --card-shadow: none;
-    --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
+    --palette-neutral-00: oklch(0.155 0.0008 250);
+    --palette-neutral-100: oklch(0.205 0.0018 250);
+    --palette-neutral-200: oklch(0.265 0.0030 250);
+    --palette-neutral-300: oklch(0.320 0.0046 250);
+    --palette-neutral-400: oklch(0.400 0.0062 250);
+    --palette-neutral-500: oklch(0.480 0.0075 250);
+    --palette-neutral-600: oklch(0.585 0.0080 250);
+    --palette-neutral-700: oklch(0.665 0.0078 250);
+    --palette-neutral-800: oklch(0.745 0.0074 250);
+    --palette-neutral-900: oklch(0.845 0.0062 250);
+    --palette-neutral-1000: oklch(0.935 0.0048 250);
+    --palette-brand-00: oklch(0.155 0.0240 266);
+    --palette-brand-100: oklch(0.205 0.0530 266);
+    --palette-brand-200: oklch(0.265 0.0910 266);
+    --palette-brand-300: oklch(0.320 0.1390 266);
+    --palette-brand-400: oklch(0.400 0.1870 266);
+    --palette-brand-500: oklch(0.480 0.2256 266);
+    --palette-brand-600: oklch(0.585 0.2192 266);
+    --palette-brand-700: oklch(0.665 0.1716 266);
+    --palette-brand-800: oklch(0.745 0.1266 266);
+    --palette-brand-900: oklch(0.845 0.0740 266);
+    --palette-brand-1000: oklch(0.935 0.0300 266);
+    --palette-sky-00: oklch(0.155 0.0160 250);
+    --palette-sky-100: oklch(0.205 0.0354 250);
+    --palette-sky-200: oklch(0.265 0.0606 250);
+    --palette-sky-300: oklch(0.320 0.0896 250);
+    --palette-sky-400: oklch(0.400 0.1109 250);
+    --palette-sky-500: oklch(0.480 0.1325 250);
+    --palette-sky-600: oklch(0.585 0.1600 250);
+    --palette-sky-700: oklch(0.665 0.1566 250);
+    --palette-sky-800: oklch(0.745 0.1326 250);
+    --palette-sky-900: oklch(0.845 0.0776 250);
+    --palette-sky-1000: oklch(0.935 0.0315 250);
+    --palette-mint-00: oklch(0.155 0.0150 183);
+    --palette-mint-100: oklch(0.205 0.0331 183);
+    --palette-mint-200: oklch(0.265 0.0471 183);
+    --palette-mint-300: oklch(0.320 0.0562 183);
+    --palette-mint-400: oklch(0.400 0.0697 183);
+    --palette-mint-500: oklch(0.480 0.0833 183);
+    --palette-mint-600: oklch(0.585 0.1013 183);
+    --palette-mint-700: oklch(0.665 0.1151 183);
+    --palette-mint-800: oklch(0.745 0.1289 183);
+    --palette-mint-900: oklch(0.845 0.1168 183);
+    --palette-mint-1000: oklch(0.935 0.0900 183);
+    --palette-positive-00: oklch(0.155 0.0115 152);
+    --palette-positive-100: oklch(0.205 0.0253 152);
+    --palette-positive-200: oklch(0.265 0.0437 152);
+    --palette-positive-300: oklch(0.320 0.0667 152);
+    --palette-positive-400: oklch(0.400 0.0897 152);
+    --palette-positive-500: oklch(0.480 0.1081 152);
+    --palette-positive-600: oklch(0.585 0.1150 152);
+    --palette-positive-700: oklch(0.665 0.1127 152);
+    --palette-positive-800: oklch(0.745 0.1058 152);
+    --palette-positive-900: oklch(0.845 0.0897 152);
+    --palette-positive-1000: oklch(0.935 0.0690 152);
+    --palette-warning-00: oklch(0.155 0.0160 88);
+    --palette-warning-100: oklch(0.205 0.0352 88);
+    --palette-warning-200: oklch(0.265 0.0608 88);
+    --palette-warning-300: oklch(0.320 0.0928 88);
+    --palette-warning-400: oklch(0.400 0.1248 88);
+    --palette-warning-500: oklch(0.480 0.1504 88);
+    --palette-warning-600: oklch(0.585 0.1600 88);
+    --palette-warning-700: oklch(0.665 0.1568 88);
+    --palette-warning-800: oklch(0.745 0.1472 88);
+    --palette-warning-900: oklch(0.845 0.1248 88);
+    --palette-warning-1000: oklch(0.935 0.0960 88);
+    --palette-critical-00: oklch(0.155 0.0145 27);
+    --palette-critical-100: oklch(0.205 0.0319 27);
+    --palette-critical-200: oklch(0.265 0.0551 27);
+    --palette-critical-300: oklch(0.320 0.0841 27);
+    --palette-critical-400: oklch(0.400 0.1131 27);
+    --palette-critical-500: oklch(0.480 0.1363 27);
+    --palette-critical-600: oklch(0.585 0.1450 27);
+    --palette-critical-700: oklch(0.665 0.1421 27);
+    --palette-critical-800: oklch(0.745 0.1334 27);
+    --palette-critical-900: oklch(0.845 0.1131 27);
+    --palette-critical-1000: oklch(0.935 0.0870 27);
+    --scrim-bg: #0C0C0C6B;
   }
-}
-:root[data-theme="dark"] .mock:not(.force-light) {
-  --palette-neutral-00: oklch(.155 .0037 57);
-  --palette-neutral-100: oklch(.205 .0037 57);
-  --palette-neutral-200: oklch(.265 .0043 57);
-  --palette-neutral-300: oklch(.32 .0045 57);
-  --palette-neutral-700: oklch(.665 .005 57);
-  --palette-neutral-800: oklch(.745 .005 57);
-  --palette-neutral-900: oklch(.845 .0053 57);
-  --palette-neutral-1000: oklch(.935 .0055 57);
-  --palette-brand-100: oklch(.205 .0128 57);
-  --palette-brand-800: oklch(.745 .0534 57);
-  --palette-positive-400: oklch(.4 .0897 152);
-  --palette-informative-400: oklch(.4 .0897 248);
-  --palette-critical-100: oklch(.205 .0319 27);
-  --palette-critical-800: oklch(.745 .1334 27);
-  --surface-stroke: var(--palette-neutral-200);
-  --scrim-ink: var(--palette-neutral-00);
-  --card-shadow: none;
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
 }
 .mock {
   --bg-neutral: var(--palette-neutral-00);
   --bg-neutral-weak: var(--palette-neutral-100);
   --bg-neutral-weak-pressed: var(--palette-neutral-200);
-  --bg-neutral-disabled: var(--palette-neutral-100);
   --bg-neutral-solid: var(--palette-neutral-1000);
   --bg-neutral-solid-soft: var(--palette-neutral-900);
-  --bg-brand-solid: var(--palette-brand-800);
+  --bg-neutral-disabled: var(--palette-neutral-100);
+  --bg-neutral-muted: var(--palette-neutral-400);
+  --bg-brand-solid: var(--palette-brand-700);
+  --bg-brand-solid-pressed: var(--palette-brand-800);
   --bg-brand-weak: var(--palette-brand-100);
+  --bg-brand-weak-pressed: var(--palette-brand-200);
   --bg-brand-weak-selected: var(--palette-brand-100);
+  --bg-brand-muted: var(--palette-brand-300);
+  --bg-sky: var(--palette-sky-600);
+  --bg-sky-weak: var(--palette-sky-100);
+  --bg-mint: var(--palette-mint-600);
+  --bg-mint-weak: var(--palette-mint-100);
+  --bg-positive-weak: var(--palette-positive-100);
+  --bg-warning-weak: var(--palette-warning-100);
+  --bg-critical-solid: var(--palette-critical-800);
+  --bg-critical-solid-pressed: var(--palette-critical-900);
+  --bg-critical-weak: var(--palette-critical-100);
   --fg-neutral: var(--palette-neutral-1000);
   --fg-neutral-muted: var(--palette-neutral-800);
   --fg-neutral-subtle: var(--palette-neutral-700);
   --fg-neutral-contrast: var(--palette-neutral-00);
-  --fg-positive-contrast: var(--palette-positive-400);
-  --fg-informative-contrast: var(--palette-informative-400);
-  --fg-neutral-disabled: var(--palette-neutral-700);
-  --fg-brand: var(--palette-brand-800);
+  --fg-neutral-disabled: var(--palette-neutral-800);
+  --fg-brand: var(--palette-brand-700);
   --fg-brand-contrast: var(--palette-neutral-00);
+  --fg-sky: var(--palette-sky-800);
+  --fg-sky-contrast: var(--palette-sky-400);
+  --fg-mint: var(--palette-mint-800);
+  --fg-positive: var(--palette-positive-800);
+  --fg-critical: var(--palette-critical-800);
+  --fg-positive-contrast: var(--palette-positive-400);
   --stroke-neutral: var(--palette-neutral-200);
   --stroke-neutral-muted: var(--palette-neutral-300);
   --stroke-neutral-disabled: var(--palette-neutral-200);
-  --stroke-brand-solid: var(--palette-brand-800);
-  --bg-critical-weak: var(--palette-critical-100);
-  --fg-critical: var(--palette-critical-800);
+  --stroke-brand-solid: var(--palette-brand-700);
+  --stroke-sky: var(--palette-sky-600);
+  --stroke-mint: var(--palette-mint-600);
 
   --t-xs: .8125rem; --lh-xs: 1.21875rem;
   --t-sm: .9375rem; --lh-sm: 1.40625rem;
@@ -347,7 +529,7 @@ body.view-scene .stage.scene-live { display: block; }
 }
 .sb-right { display: flex; align-items: center; gap: 5px; }
 .appbar {
-  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
   padding: 4px 24px 12px; min-height: 44px;
 }
 .backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
@@ -399,7 +581,7 @@ body.view-scene .stage.scene-live { display: block; }
 .linkbtn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 
 /* 보기 전환 세그먼트 · 내 근무만 */
-.viewbar { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 2px 0 12px; }
+.viewbar { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; padding: 2px 0 12px; }
 /* 세그먼트 — components.md 「세그먼트」 표 값 그대로: 트랙 높이 44px, 안쪽 여백 4px,
    칸 36px, 선택 칸 10px. 트랙 안쪽 여백이 이미 닿는 면을 44px로 채우니 ::after가 필요 없다 */
 .seg { display: inline-flex; background: var(--bg-neutral-weak); border-radius: var(--r-lg); padding: 4px; }
@@ -410,7 +592,7 @@ body.view-scene .stage.scene-live { display: block; }
   color: var(--fg-neutral-subtle);
 }
 .seg button::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
-.seg button.on { background: var(--bg-neutral); color: var(--fg-neutral); box-shadow: var(--card-shadow); }
+.seg button.on { background: var(--bg-neutral); color: var(--fg-neutral); border: 1px solid var(--stroke-neutral); }
 .check {
   position: relative;
   display: inline-flex; align-items: center; gap: 6px; margin-left: auto; cursor: pointer;
@@ -483,29 +665,29 @@ body.view-scene .stage.scene-live { display: block; }
 .waitline { margin-top: 6px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 .body > .waitline:first-child { margin-top: 4px; }
 /* BottomCTA — components.md의 정의대로 컨테이너는 bg.neutral에 위쪽 선 stroke.neutral, 버튼은 Button primary다 */
-.ctabar { flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding: 10px 24px 22px; }
+.ctabar { flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding: 12px 24px 24px; }
 
 /* 바텀시트와 덮개 */
 .scrim {
-  position: absolute; inset: 0; z-index: 3; background: var(--scrim-ink);
+  position: absolute; inset: 0; z-index: 3; background: var(--scrim-bg);
   opacity: 0; pointer-events: none; transition: opacity var(--d-slow) ease-out;
 }
-.mock.modal-open .scrim { opacity: .42; }
+.mock.modal-open .scrim { opacity: 1; }
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 10px 24px 24px; box-shadow: var(--sheet-shadow);
+  padding: 12px 24px 24px; border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) ease-out;
 }
 .mock.modal-open .rsheet { transform: none; }
-.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 10px; }
+.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 8px; }
 .sh-title { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 600; letter-spacing: -.01em; }
 .sh-sub { margin-top: 2px; margin-bottom: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 
 /* 02/달 고르기 시트 — 연도 줄은 앱바의 달 이동과 같은 화살표를 쓴다(schedule-worker.md
    「달 고르기 시트」: 「같은 손짓으로 읽힌다」). 월 12칸은 4열 3행, CTA가 없다 — 고르는
    것이 곧 이동이라 확인을 한 번 더 받을 것이 없다 */
-.yearrow { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 4px 0 16px; }
+.yearrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 4px 0 16px; }
 .yearrow .nav { position: relative; color: var(--fg-neutral-muted); display: grid; place-items: center; cursor: pointer; }
 .yearrow .nav::after { content: ""; position: absolute; inset: -14px; }
 .yearrow .yr { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 600; letter-spacing: -.01em; }
@@ -529,9 +711,9 @@ body.view-scene .stage.scene-live { display: block; }
   position: absolute; left: 24px; right: 24px; bottom: 56px; z-index: 6; margin: 0 auto; width: fit-content;
   display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
-  border-radius: var(--r-lg); padding: 11px 20px;
+  border-radius: var(--r-lg); padding: 12px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
-  box-shadow: var(--card-shadow);
+  border: 1px solid var(--stroke-neutral);
 }
 /* 14/확정 전 — 근무 신청. 이 토스트는 BottomCTA(「보내기」) 위에 뜬다. 56px 기본값은 하단에
    아무것도 없는 화면(10/REQUEST · LATE) 몫이라 못 쓴다. schedule-admin.sian.html이
@@ -550,7 +732,7 @@ body.view-scene .stage.scene-live { display: block; }
    최은우). 인증 상태가 사람에게 붙는 것이라 한 줄에 둘을 세우면 상태를 어디에 매달지
    정할 수 없어서다 */
 .mrow {
-  display: flex; align-items: center; gap: 10px; padding: 8px 0;
+  display: flex; align-items: center; gap: 8px; padding: 8px 0;
   border-bottom: 1px solid var(--stroke-neutral);
   font-size: var(--t-sm); line-height: var(--lh-sm);
 }
@@ -558,9 +740,9 @@ body.view-scene .stage.scene-live { display: block; }
 .mrow .pos { flex: 0 0 62px; color: var(--fg-neutral-subtle); font-size: var(--t-xs); line-height: var(--lh-xs); }
 .mrow .nm { font-weight: 500; }
 .mrow .nm.vacant { font-weight: 400; color: var(--fg-neutral-subtle); }
-.mrow.me { background: var(--bg-brand-weak); margin: 0 -10px; padding: 8px 10px; border-radius: var(--r-sm); border-bottom: 0; }
+.mrow.me { background: var(--bg-brand-weak); margin: 0 -8px; padding: 8px 8px; border-radius: var(--r-sm); border-bottom: 0; }
 .mrow .meflag { margin-left: auto; font-size: var(--t-xs); color: var(--fg-brand); font-weight: 500; }
-.badge { display: inline-flex; align-items: center; border-radius: var(--r-sm); padding: 1px 8px; font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
+.badge { display: inline-flex; align-items: center; border-radius: var(--r-sm); padding: 2px 8px; font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
 .badge.neutral { background: var(--bg-neutral-weak); color: var(--fg-neutral-muted); }
 
 /* 05/인증 상태 — schedule-worker.md 「인증 상태」. 여섯 다 fg.neutral-muted고 색으로 안
@@ -569,7 +751,7 @@ body.view-scene .stage.scene-live { display: block; }
 .mrow .att { margin-left: auto; flex: 0 0 auto; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 /* 내 줄은 이미 「나」가 margin-left:auto로 오른쪽 끝을 차지한다. 「나」가 왼쪽, 인증 상태가
    그 오른쪽이라고 문서 「날 시트」 절이 못 박아 한 묶음으로 둔다 */
-.mrow.me .right { margin-left: auto; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 10px; }
+.mrow.me .right { margin-left: auto; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; }
 .mrow.me .right .meflag { margin-left: 0; }
 .mrow.me .right .att { margin-left: 0; }
 /* 현황 줄 — 부제 아래 명단 위. fg.neutral-subtle · text-xs, 부제와의 사이는 mt-2(8px)로
@@ -602,7 +784,7 @@ body.view-scene .stage.scene-live { display: block; }
 
 /* 교대 후보 목록 */
 .pickrow {
-  display: flex; align-items: center; gap: 10px; padding: 9px 0;
+  display: flex; align-items: center; gap: 8px; padding: 8px 0;
   border-bottom: 1px solid var(--stroke-neutral); cursor: pointer;
   font-size: var(--t-sm); line-height: var(--lh-sm);
 }
@@ -622,7 +804,7 @@ body.view-scene .stage.scene-live { display: block; }
 .pickrow.sel .ring { background: var(--bg-brand-solid); border-color: var(--stroke-brand-solid); color: var(--fg-brand-contrast); }
 
 /* 사유 입력 — components.md Input */
-.field { margin-top: 14px; }
+.field { margin-top: 16px; }
 .field .lab { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); margin-bottom: 6px; }
 .field .box {
   border-radius: var(--r-md); background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
@@ -634,9 +816,9 @@ body.view-scene .stage.scene-live { display: block; }
 
 /* 13/실패와 경합 — 오류 블록. components.md 알림 블록의 오류 계열이다. 배경 bg.critical-weak, 글자 fg.neutral, 뜻은 아이콘(fg.critical)이 나른다 */
 .errbox {
-  margin-top: 14px; border-radius: var(--r-lg); background: var(--bg-critical-weak); color: var(--fg-neutral);
-  padding: 12px 14px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
-  display: flex; gap: 10px;
+  margin-top: 16px; border-radius: var(--r-lg); background: var(--bg-critical-weak); color: var(--fg-neutral);
+  padding: 12px 12px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
+  display: flex; gap: 8px;
 }
 .errbox .bi { flex: 0 0 auto; margin-top: 2px; color: var(--fg-critical); }
 
@@ -646,7 +828,7 @@ body.view-scene .stage.scene-live { display: block; }
 .lock .ld { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 .push {
   width: 100%; margin-top: 34px; border-radius: var(--r-lg); background: var(--bg-neutral-weak);
-  border: 1px solid var(--surface-stroke); padding: 12px 14px; cursor: pointer;
+  border: 1px solid var(--stroke-neutral); padding: 12px 14px; cursor: pointer;
 }
 .push .pa { display: flex; align-items: center; gap: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 .push .pmark {
@@ -1828,7 +2010,7 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="spacer"></div>
           </div>
           <div class="toast">
-            <svg class="toast-ic" style="--ic: var(--fg-informative-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <svg class="toast-ic" style="--ic: var(--fg-sky-contrast)" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="12" cy="12" r="10"/>
               <g transform="translate(12,12) scale(1.35) translate(-12,-12)">
                 <line x1="12" y1="8" x2="12" y2="12"/>

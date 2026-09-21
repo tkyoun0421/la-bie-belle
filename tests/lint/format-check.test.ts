@@ -2,7 +2,6 @@ import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const scratchDir = path.join(process.cwd(), "tests/lint/.tmp-format-check");
 const prettierBin = path.join(process.cwd(), "node_modules/.bin/prettier");

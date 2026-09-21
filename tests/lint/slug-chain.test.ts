@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { type BacklogRow } from "@tests/lint/backlog-ids";
 import {
   backlogSlugViolations,

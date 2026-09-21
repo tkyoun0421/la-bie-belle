@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { ensureProfile } from "@/entities/profile/dals/ensure-profile";
 import { createSignedInUserWithoutProfile } from "@tests/integration/supabase";
 

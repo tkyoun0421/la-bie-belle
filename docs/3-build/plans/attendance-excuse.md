@@ -26,6 +26,8 @@ sources:
 
 # 사유 시트와 판정 줄을 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본은 [excuse.md](../../2-design/modules/attendance/screens/excuse.md)와 짝 시안 `excuse.sian.html`이고, 관리자 쪽은 [approvals.md](../../2-design/system/screens/approvals.md)다. 행위 계약은 [design.md](../../2-design/modules/attendance/design.md#사유-제출과-판정), 업무 규칙은 [ATT-010](../../2-design/modules/attendance/README.md#att-010)~[ATT-015](../../2-design/modules/attendance/README.md#att-015)와 [ATT-018](../../2-design/modules/attendance/README.md#att-018)이다.
@@ -50,7 +52,7 @@ sources:
 - 시트는 [Dialog와 바텀시트](../../2-design/design-system/components.md#dialog와-바텀시트)를 그대로 쓴다. 위쪽만 `rounded-lg`, 왼쪽이 「닫기」 오른쪽이 primary
 - **덮개를 눌러도 안 닫힌다.** 쓰던 글이 날아가는 것을 막는다. 닫는 길은 「닫기」 하나다
 - 덮개 색은 `bg.scrim`이다 — 그 토큰이 라이트·다크와 투명도 42%를 값 안에 들고 있다
-- 시트 아래 여백에 `env(safe-area-inset-bottom)`을 더한다
+- 시트 아래 여백에 `useSafeAreaInsets`의 `bottom`을 더한다
 
 ### AC-02
 
@@ -125,7 +127,7 @@ sources:
 
 ### AC-10
 
-**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·`pnpm e2e` 초록.
+**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·e2e 명령 초록.
 
 ## 변경 파일
 
@@ -136,7 +138,7 @@ sources:
 | `src/screens/admin-approvals/` | 사유 줄과 판정 | AC-06 |
 | `src/screens/schedule/` | 날 시트의 인증 상태 열과 현황 줄 | AC-07 |
 | `docs/2-design/modules/attendance/screens/excuse.sian.html` | 낡은 경로 주석을 지운다 | AC-08 |
-| `tests/e2e/excuse.spec.ts` | 제출부터 반려 뒤 재제출까지 | AC-09 |
+| `excuse` e2e | 제출부터 반려 뒤 재제출까지 | AC-09 |
 
 ## 구현 순서
 
@@ -162,13 +164,13 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 덮개를 누르면 쓰던 글이 날아간다 | e2e `tests/e2e/excuse.spec.ts`(예정) | `pnpm e2e` | 덮개를 눌러도 안 닫힌다 |
+| AC-01 | 덮개를 누르면 쓰던 글이 날아간다 | e2e `excuse` e2e(예정) | e2e 명령 | 덮개를 눌러도 안 닫힌다 |
 | AC-02 | 상한이 사람이 세는 것과 다르다 | unit `src/features/attendance/excuse-sheet/__tests__/`(예정) | `pnpm test` | 이모지가 한 글자, 170자에서 숫자가 뜨고 200자에서 색이 바뀐다 |
 | AC-02 | 쓰는 중에 칸이 붉어진다 | unit 위 | `pnpm test` | 다섯 자 미만에도 테두리가 그대로 |
 | AC-03 | 링이 돌다 아무 결과 없이 끝난다 | unit 위 | `pnpm test` | 성공은 체크, 실패는 ✕ |
-| AC-03 | 실패인데 글이 날아간다 | e2e 위 | `pnpm e2e` | 칸에 쓴 글이 남아 있다 |
-| AC-04 | 거절된 글이 새 시트에 채워진다 | e2e 위 | `pnpm e2e` | 빈 시트가 열린다 |
-| AC-06 | 이유 없이 반려된다 | e2e 위 | `pnpm e2e` | 이유가 비면 못 보낸다 |
+| AC-03 | 실패인데 글이 날아간다 | e2e 위 | e2e 명령 | 칸에 쓴 글이 남아 있다 |
+| AC-04 | 거절된 글이 새 시트에 채워진다 | e2e 위 | e2e 명령 | 빈 시트가 열린다 |
+| AC-06 | 이유 없이 반려된다 | e2e 위 | e2e 명령 | 이유가 비면 못 보낸다 |
 | AC-06 | 근무자가 남의 사유 글을 본다 | integration `tests/integration/attendance-rls.test.ts` | `pnpm test:integration:run` | [`attendance-data`](attendance-data.md#ac-02)가 이미 막았다 |
 | AC-07 | 현황 줄에 0이 남는다 | unit 위 | `pnpm test` | 0인 항목이 빠진다 |
 

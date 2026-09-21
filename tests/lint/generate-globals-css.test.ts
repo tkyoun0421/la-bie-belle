@@ -1,21 +1,16 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { format } from "prettier";
-import { beforeAll, describe, expect, it } from "vitest";
 import { generateGlobalsCss } from "@scripts/generate-globals-css.mts";
+import { format } from "prettier";
 
-const SKELETON_FENCE = `@import "tailwindcss";
+const SKELETON_FENCE = `@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
 
-@custom-variant dark {
-  &:where([data-theme="dark"], [data-theme="dark"] *) {
-    @slot;
-  }
+@import "nativewind/theme";
 
-  @media (prefers-color-scheme: dark) {
-    &:where(:not([data-theme="light"], [data-theme="light"] *)) {
-      @slot;
-    }
-  }
+:root {
+  font-size: 16px;
 }`;
 
 const THEME_RESET_FENCE = `  --text-4xl: initial;
@@ -39,40 +34,10 @@ const THEME_INLINE_HEADER_FENCE = `  --color-*: initial;
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  --font-sans:
-    "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui,
-    "Apple SD Gothic Neo", sans-serif;
-
-  --shadow-card: var(--surface-shadow);`;
-
-const SHADCN_BRIDGE_FENCE = `@theme inline {
-  --color-background: var(--role-bg-neutral);
-  --color-foreground: var(--role-fg-neutral);
-  --color-card: var(--role-bg-neutral);
-  --color-card-foreground: var(--role-fg-neutral);
-  --color-popover: var(--role-bg-neutral);
-  --color-popover-foreground: var(--role-fg-neutral);
-  --color-primary: var(--role-bg-brand-solid);
-  --color-primary-foreground: var(--role-fg-brand-contrast);
-  --color-secondary: var(--role-bg-neutral-weak);
-  --color-secondary-foreground: var(--role-fg-neutral);
-  --color-muted: var(--role-bg-neutral-weak);
-  --color-muted-foreground: var(--role-fg-neutral-muted);
-  --color-accent: var(--role-bg-brand-weak);
-  --color-accent-foreground: var(--role-fg-brand);
-  --color-destructive: var(--role-bg-critical-solid);
-  --color-destructive-foreground: var(--role-fg-brand-contrast);
-  --color-border: var(--role-stroke-neutral);
-  --color-input: var(--role-stroke-neutral);
-  --color-ring: var(--role-stroke-brand-solid);
-}`;
-
-const BASE_LAYER_FENCE = `@layer base {
-  body {
-    background-color: var(--role-bg-neutral);
-    color: var(--role-fg-neutral);
-  }
-}`;
+  --font-sans: "WantedSans-Regular";
+  --font-medium: "WantedSans-Medium";
+  --font-semibold: "WantedSans-SemiBold";
+  --font-bold: "WantedSans-Bold";`;
 
 const CSS_FULL_SECTION = `## 8. CSS 전문
 
@@ -90,18 +55,6 @@ ${THEME_RESET_FENCE}
 
 \`\`\`css
 ${THEME_INLINE_HEADER_FENCE}
-\`\`\`
-
-### 8.3 shadcn 다리
-
-\`\`\`css
-${SHADCN_BRIDGE_FENCE}
-\`\`\`
-
-### 8.4 베이스
-
-\`\`\`css
-${BASE_LAYER_FENCE}
 \`\`\`
 `;
 
@@ -163,17 +116,11 @@ const TYPOGRAPHY_SECTION = `## 3. 타이포그래피
 | \`text-base\` | 17px | 25.5px | 1.0625 | 1.59375 | 일반 본문 |
 `;
 
-const ROUNDING_SHADOW_SECTION = `## 5. 라운딩과 그림자
+const ROUNDING_SECTION = `## 5. 라운딩
 
 | 유틸 | 값 | 쓰는 자리 |
 | --- | --- | --- |
 | \`rounded-md\` | 12px | 입력 |
-
-그림자는 하나뿐이고 라이트에서만 보인다.
-
-| 유틸 | 라이트 | 다크 |
-| --- | --- | --- |
-| \`shadow-card\` | \`0 1px 2px rgba(28, 25, 22, 0.05), 0 8px 20px -14px rgba(28, 25, 22, 0.4)\` | \`none\` |
 `;
 
 const MOTION_SECTION = `## 6. 모션
@@ -201,7 +148,7 @@ type FixtureOverrides = {
   palette?: string;
   roleTokens?: string;
   typography?: string;
-  roundingShadow?: string;
+  rounding?: string;
   motion?: string;
   cssFull?: string;
   vendor?: string;
@@ -212,7 +159,7 @@ function tokensMdFixture(overrides: FixtureOverrides = {}): string {
     overrides.palette ?? paletteSection(),
     overrides.roleTokens ?? ROLE_TOKEN_SECTION,
     overrides.typography ?? TYPOGRAPHY_SECTION,
-    overrides.roundingShadow ?? ROUNDING_SHADOW_SECTION,
+    overrides.rounding ?? ROUNDING_SECTION,
     overrides.motion ?? MOTION_SECTION,
     overrides.cssFull ?? CSS_FULL_SECTION,
     overrides.vendor ?? VENDOR_SECTION,
@@ -331,28 +278,63 @@ function darkMediaBody(css: string): string {
       /^@media\s*\(\s*prefers-color-scheme\s*:\s*dark\s*\)$/.test(selector),
     "다크 미디어쿼리",
   );
-  const nested = topLevelBlocks(media.body).find((block) =>
-    /^:root:not\(\s*\[data-theme=(["'])light\1\]/.test(block.selector),
+  const nested = topLevelBlocks(media.body).find(
+    (block) => block.selector === ":root",
   );
   if (!nested) {
-    throw new Error(
-      ":root:not(...) 블록을 다크 미디어쿼리 안에서 찾지 못했다.",
-    );
+    throw new Error(":root 블록을 다크 미디어쿼리 안에서 찾지 못했다.");
   }
   return nested.body;
 }
 
-function darkAttributeBody(css: string): string {
-  const block = requireBlock(
-    css,
-    (selector) => /^\[data-theme=(["'])dark\1\]$/.test(selector),
-    '[data-theme="dark"]',
-  );
-  return block.body;
-}
-
 function requireDeclaration(body: string, name: string): string {
   const value = topLevelDeclarationMap(body)[name];
+  if (value === undefined) {
+    throw new Error(`${name} 선언을 생성 결과에서 찾지 못했다.`);
+  }
+  return value;
+}
+
+function allTopLevelDeclarationMap(body: string): Record<string, string> {
+  const declarations: Record<string, string> = {};
+  let depth = 0;
+  let buffer = "";
+
+  for (let cursor = 0; cursor < body.length; cursor += 1) {
+    const character = body[cursor];
+    if (character === "{") {
+      depth += 1;
+      buffer = "";
+      continue;
+    }
+    if (character === "}") {
+      depth -= 1;
+      buffer = "";
+      continue;
+    }
+    if (depth > 0) {
+      continue;
+    }
+    if (character === ";") {
+      const separator = buffer.indexOf(":");
+      if (separator !== -1) {
+        const name = buffer.slice(0, separator).trim();
+        declarations[name] = buffer
+          .slice(separator + 1)
+          .trim()
+          .replace(/\s+/g, " ");
+      }
+      buffer = "";
+      continue;
+    }
+    buffer += character;
+  }
+
+  return declarations;
+}
+
+function requirePlainDeclaration(body: string, name: string): string {
+  const value = allTopLevelDeclarationMap(body)[name];
   if (value === undefined) {
     throw new Error(`${name} 선언을 생성 결과에서 찾지 못했다.`);
   }
@@ -396,7 +378,6 @@ describe("리스크 A — 팔레트 행이 빠지거나 계열이 섞인다", ()
       const variable = `--palette-${series}-${step}`;
 
       expect(requireDeclaration(lightBody(css), variable)).toBe(light);
-      expect(requireDeclaration(darkAttributeBody(css), variable)).toBe(dark);
       expect(requireDeclaration(darkMediaBody(css), variable)).toBe(dark);
     },
   );
@@ -415,7 +396,7 @@ describe("리스크 B — oklch 표기를 정규화하지 않는다", () => {
   });
 });
 
-describe("리스크 C — stroke.surface 특수 행과 surface-shadow", () => {
+describe("리스크 C — 팔레트 칸이 — 인 특수 행", () => {
   let css: string;
 
   beforeAll(async () => {
@@ -428,11 +409,8 @@ describe("리스크 C — stroke.surface 특수 행과 surface-shadow", () => {
     );
   });
 
-  it("다크 두 블록에서 stroke.surface는 다크 칸의 단계 이름을 팔레트 변수로 푼다", () => {
+  it("다크 미디어쿼리 블록에서 stroke.surface는 다크 칸의 단계 이름을 팔레트 변수로 푼다", () => {
     expect(requireDeclaration(darkMediaBody(css), "--surface-stroke")).toBe(
-      "var(--palette-neutral-200)",
-    );
-    expect(requireDeclaration(darkAttributeBody(css), "--surface-stroke")).toBe(
       "var(--palette-neutral-200)",
     );
   });
@@ -440,21 +418,6 @@ describe("리스크 C — stroke.surface 특수 행과 surface-shadow", () => {
   it("stroke.surface 역할 토큰은 팔레트가 아니라 surface-stroke 변수를 가리킨다", () => {
     expect(declarationValueAnywhere(css, "--role-stroke-surface")).toBe(
       "var(--surface-stroke)",
-    );
-  });
-
-  it("그림자는 라이트에서 표의 값을, 다크 두 블록에서 none을 쓴다", () => {
-    const expectedLightShadow =
-      "0 1px 2px rgba(28, 25, 22, 0.05), 0 8px 20px -14px rgba(28, 25, 22, 0.4)";
-
-    expect(requireDeclaration(lightBody(css), "--surface-shadow")).toBe(
-      expectedLightShadow,
-    );
-    expect(requireDeclaration(darkMediaBody(css), "--surface-shadow")).toBe(
-      "none",
-    );
-    expect(requireDeclaration(darkAttributeBody(css), "--surface-shadow")).toBe(
-      "none",
     );
   });
 });
@@ -469,7 +432,6 @@ describe("리스크 J — 팔레트 칸이 — 인 행이 여럿이고 칸 종�
   it.each([
     ["라이트", lightBody],
     ["다크 미디어쿼리", darkMediaBody],
-    ["다크 data-theme", darkAttributeBody],
   ])(
     "%s 블록에 bg.scrim과 stroke.surface가 둘 다 선다 — 한 행만 받고 멈추지 않는다",
     (_label, bodyOf) => {
@@ -486,16 +448,13 @@ describe("리스크 J — 팔레트 칸이 — 인 행이 여럿이고 칸 종�
     expect(requireDeclaration(darkMediaBody(css), "--scrim-bg")).toBe(
       "#0d0c0b6b",
     );
-    expect(requireDeclaration(darkAttributeBody(css), "--scrim-bg")).toBe(
-      "#0d0c0b6b",
-    );
   });
 
   it("한 행 안에서 라이트가 리터럴이고 다크가 단계 이름이어도 각 칸을 따로 읽는다", () => {
     expect(requireDeclaration(lightBody(css), "--surface-stroke")).toBe(
       "transparent",
     );
-    expect(requireDeclaration(darkAttributeBody(css), "--surface-stroke")).toBe(
+    expect(requireDeclaration(darkMediaBody(css), "--surface-stroke")).toBe(
       "var(--palette-neutral-200)",
     );
   });
@@ -504,19 +463,6 @@ describe("리스크 J — 팔레트 칸이 — 인 행이 여럿이고 칸 종�
     expect(declarationValueAnywhere(css, "--role-bg-scrim")).toBe(
       "var(--scrim-bg)",
     );
-  });
-});
-
-describe("리스크 D — 다크 두 블록이 갈라진다", () => {
-  it("미디어쿼리 갈래와 data-theme 갈래의 선언이 완전히 같다", async () => {
-    const css = await generateGlobalsCss(tokensMdFixture());
-
-    const mediaDeclarations = topLevelDeclarationMap(darkMediaBody(css));
-    const attributeDeclarations = topLevelDeclarationMap(
-      darkAttributeBody(css),
-    );
-
-    expect(mediaDeclarations).toEqual(attributeDeclarations);
   });
 });
 
@@ -563,11 +509,9 @@ describe("리스크 F — 8절 고정 블록을 잘못 잘라 붙인다", () => 
   });
 
   it.each([
-    ["8.1 뼈대(@import와 @custom-variant dark)", SKELETON_FENCE],
+    ["8.1 뼈대(import 넷과 :root font-size)", SKELETON_FENCE],
     ["8.2 Tailwind 기본값 초기화", THEME_RESET_FENCE],
-    ["8.2 @theme inline 머리", THEME_INLINE_HEADER_FENCE],
-    ["8.3 shadcn 다리", SHADCN_BRIDGE_FENCE],
-    ["8.4 베이스(body)", BASE_LAYER_FENCE],
+    ["8.2 @theme inline 머리(서체 넷)", THEME_INLINE_HEADER_FENCE],
   ])("%s 코드펜스가 잘리거나 빠지지 않고 그대로 들어간다", (_label, fence) => {
     expect(css).toContain(fence);
   });
@@ -617,90 +561,37 @@ describe("리스크 I — 생성기가 비결정적이다", () => {
   });
 });
 
-const THREE_ROW_SHADOW_SECTION = `## 5. 라운딩과 그림자
+describe("리스크 K — :root의 font-size가 생성물에서 사라진다", () => {
+  it("8.1 뼈대 펜스의 font-size 선언이 :root에 그대로 살아남는다", async () => {
+    const css = await generateGlobalsCss(tokensMdFixture());
 
-| 유틸 | 값 | 쓰는 자리 |
-| --- | --- | --- |
-| \`rounded-md\` | 12px | 입력 |
+    expect(requirePlainDeclaration(lightBody(css), "font-size")).toBe("16px");
+  });
+});
 
-그림자는 셋이다. 면이 화면에서 얼마나 떨어져 있느냐로 갈린다.
+describe("리스크 L — data-theme 선택자가 생성물에 남는다", () => {
+  it("생성물 어디에도 data-theme 선택자가 없다", async () => {
+    const css = await generateGlobalsCss(tokensMdFixture());
 
-| 유틸 | 라이트 | 다크 |
-| --- | --- | --- |
-| \`shadow-card\` | \`0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4)\` | \`none\` |
-| \`shadow-pop\` | \`0 1px 2px rgba(28,25,22,.05), 0 14px 30px -18px rgba(28,25,22,.5)\` | \`none\` |
-| \`shadow-sheet\` | \`0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5)\` | \`0 -1px 0 var(--stroke-neutral)\` |
-`;
+    expect(css).not.toMatch(/data-theme/);
+  });
+});
 
-// 픽스처는 tokens.md 원문 표기(`rgba(28,25,22,.05)`)를 그대로 쓰고, 기대값은
-// 생성기 마지막 단계의 prettier가 정규화한 표기다. 표의 원문이 생성기를 통과하는지와
-// 결과가 저장된 globals.css와 같은 표기인지를 한 픽스처로 같이 지킨다.
-const THREE_ROW_LIGHT_CARD =
-  "0 1px 2px rgba(28, 25, 22, 0.05), 0 8px 20px -14px rgba(28, 25, 22, 0.4)";
-const THREE_ROW_LIGHT_POP =
-  "0 1px 2px rgba(28, 25, 22, 0.05), 0 14px 30px -18px rgba(28, 25, 22, 0.5)";
-const THREE_ROW_LIGHT_SHEET =
-  "0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28, 25, 22, 0.5)";
-const THREE_ROW_DARK_SHEET = "0 -1px 0 var(--stroke-neutral)";
+describe("리스크 M — shadcn 다리와 베이스 레이어가 생성물에 남는다", () => {
+  it("생성물 어디에도 @layer base가 없다", async () => {
+    const css = await generateGlobalsCss(tokensMdFixture());
 
-describe("리스크 K — 그림자 표가 세 줄이어도 생성기가 표의 모든 줄을 읽는다", () => {
-  let css: string;
-
-  beforeAll(async () => {
-    css = await generateGlobalsCss(
-      tokensMdFixture({ roundingShadow: THREE_ROW_SHADOW_SECTION }),
-    );
+    expect(css).not.toMatch(/@layer\s+base/);
   });
 
-  it("shadow-card·shadow-pop·shadow-sheet 세 줄 표를 줘도 생성기가 던지지 않는다", async () => {
-    await expect(
-      generateGlobalsCss(
-        tokensMdFixture({ roundingShadow: THREE_ROW_SHADOW_SECTION }),
-      ),
-    ).resolves.toBeTypeOf("string");
-  });
+  it.each(["--color-primary", "--color-muted-foreground"])(
+    "생성물 어디에도 shadcn 이름 %s가 없다",
+    async (name) => {
+      const css = await generateGlobalsCss(tokensMdFixture());
 
-  it("첫 줄 shadow-card는 지금처럼 --surface-shadow 라이트 값으로 선다", () => {
-    expect(requireDeclaration(lightBody(css), "--surface-shadow")).toBe(
-      THREE_ROW_LIGHT_CARD,
-    );
-  });
-
-  it.each([
-    ["라이트", lightBody, "--surface-shadow-pop", THREE_ROW_LIGHT_POP],
-    ["다크 미디어쿼리", darkMediaBody, "--surface-shadow-pop", "none"],
-    ["다크 data-theme", darkAttributeBody, "--surface-shadow-pop", "none"],
-    ["라이트", lightBody, "--surface-shadow-sheet", THREE_ROW_LIGHT_SHEET],
-    [
-      "다크 미디어쿼리",
-      darkMediaBody,
-      "--surface-shadow-sheet",
-      THREE_ROW_DARK_SHEET,
-    ],
-    [
-      "다크 data-theme",
-      darkAttributeBody,
-      "--surface-shadow-sheet",
-      THREE_ROW_DARK_SHEET,
-    ],
-  ])(
-    "%s 블록에 %s가 표의 값 그대로 선다",
-    (_label, bodyOf, variable, expected) => {
-      expect(requireDeclaration(bodyOf(css), variable)).toBe(expected);
+      expect(css).not.toContain(`${name}:`);
     },
   );
-
-  it("--surface-shadow-sheet 다크 값에 var(--stroke-neutral)이 해석 없이 그대로 들어 있다", () => {
-    expect(
-      requireDeclaration(darkAttributeBody(css), "--surface-shadow-sheet"),
-    ).toContain("var(--stroke-neutral)");
-  });
-
-  it("기존 그림자 한 줄 픽스처로 만든 css에는 --surface-shadow-pop이 없다", async () => {
-    const singleRowCss = await generateGlobalsCss(tokensMdFixture());
-
-    expect(singleRowCss).not.toContain("--surface-shadow-pop");
-  });
 });
 
 describe("완료 조건 — 실제 tokens.md에서 실제 globals.css를 그대로 만든다", () => {

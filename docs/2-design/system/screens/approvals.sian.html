@@ -121,130 +121,289 @@ code {
 
 /* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
 .mock {
-  --palette-neutral-00: oklch(1 .0037 57);
-  --palette-neutral-100: oklch(.965 .0037 57);
-  --palette-neutral-200: oklch(.905 .0043 57);
-  --palette-neutral-300: oklch(.845 .0045 57);
-  --palette-neutral-400: oklch(.76 .0047 57);
-  --palette-neutral-500: oklch(.68 .005 57);
-  --palette-neutral-600: oklch(.625 .005 57);
-  --palette-neutral-700: oklch(.545 .005 57);
-  --palette-neutral-800: oklch(.455 .005 57);
-  --palette-neutral-900: oklch(.32 .0053 57);
-  --palette-neutral-1000: oklch(.215 .0055 57);
-  --palette-brand-800: oklch(.455 .0534 57);
-  --palette-brand-900: oklch(.32 .0452 57);
-  --palette-positive-400: oklch(.76 .0897 152);
-  --palette-critical-100: oklch(.965 .0319 27);
-  --palette-critical-800: oklch(.455 .1334 27);
-  --palette-critical-900: oklch(.32 .1131 27);
-  --palette-informative-400: oklch(.76 .0897 248);
-  --surface-stroke: transparent;
-  --scrim-ink: var(--palette-neutral-1000);
-  --card-shadow: 0 1px 2px rgba(28,25,22,.05), 0 8px 20px -14px rgba(28,25,22,.4);
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral), 0 -14px 34px -22px rgba(28,25,22,.5);
-  --pop-shadow: 0 1px 2px rgba(28,25,22,.05), 0 14px 30px -18px rgba(28,25,22,.5);
+  --palette-neutral-00: oklch(1.000 0.0001 250);
+  --palette-neutral-100: oklch(0.965 0.0018 250);
+  --palette-neutral-200: oklch(0.905 0.0030 250);
+  --palette-neutral-300: oklch(0.845 0.0046 250);
+  --palette-neutral-400: oklch(0.760 0.0062 250);
+  --palette-neutral-500: oklch(0.680 0.0075 250);
+  --palette-neutral-600: oklch(0.625 0.0080 250);
+  --palette-neutral-700: oklch(0.545 0.0078 250);
+  --palette-neutral-800: oklch(0.455 0.0074 250);
+  --palette-neutral-900: oklch(0.320 0.0062 250);
+  --palette-neutral-1000: oklch(0.215 0.0048 250);
+  --palette-brand-00: oklch(1.000 0.0001 266);
+  --palette-brand-100: oklch(0.965 0.0160 266);
+  --palette-brand-200: oklch(0.905 0.0443 266);
+  --palette-brand-300: oklch(0.845 0.0740 266);
+  --palette-brand-400: oklch(0.760 0.1185 266);
+  --palette-brand-500: oklch(0.680 0.1630 266);
+  --palette-brand-600: oklch(0.625 0.1951 266);
+  --palette-brand-700: oklch(0.545 0.2350 266);
+  --palette-brand-800: oklch(0.455 0.2210 266);
+  --palette-brand-900: oklch(0.320 0.1870 266);
+  --palette-brand-1000: oklch(0.215 0.1440 266);
+  --palette-sky-00: oklch(1.000 0.0001 250);
+  --palette-sky-100: oklch(0.965 0.0168 250);
+  --palette-sky-200: oklch(0.905 0.0465 250);
+  --palette-sky-300: oklch(0.845 0.0776 250);
+  --palette-sky-400: oklch(0.760 0.1241 250);
+  --palette-sky-500: oklch(0.680 0.1504 250);
+  --palette-sky-600: oklch(0.625 0.1600 250);
+  --palette-sky-700: oklch(0.545 0.1502 250);
+  --palette-sky-800: oklch(0.455 0.1258 250);
+  --palette-sky-900: oklch(0.320 0.0896 250);
+  --palette-sky-1000: oklch(0.215 0.0628 250);
+  --palette-mint-00: oklch(1.000 0.0002 183);
+  --palette-mint-100: oklch(0.965 0.0331 183);
+  --palette-mint-200: oklch(0.905 0.0568 183);
+  --palette-mint-300: oklch(0.845 0.0868 183);
+  --palette-mint-400: oklch(0.760 0.1168 183);
+  --palette-mint-500: oklch(0.680 0.1177 183);
+  --palette-mint-600: oklch(0.625 0.1082 183);
+  --palette-mint-700: oklch(0.545 0.0945 183);
+  --palette-mint-800: oklch(0.455 0.0790 183);
+  --palette-mint-900: oklch(0.320 0.0562 183);
+  --palette-mint-1000: oklch(0.215 0.0391 183);
+  --palette-positive-00: oklch(1.000 0.0115 152);
+  --palette-positive-100: oklch(0.965 0.0253 152);
+  --palette-positive-200: oklch(0.905 0.0437 152);
+  --palette-positive-300: oklch(0.845 0.0667 152);
+  --palette-positive-400: oklch(0.760 0.0897 152);
+  --palette-positive-500: oklch(0.680 0.1081 152);
+  --palette-positive-600: oklch(0.625 0.1150 152);
+  --palette-positive-700: oklch(0.545 0.1127 152);
+  --palette-positive-800: oklch(0.455 0.1058 152);
+  --palette-positive-900: oklch(0.320 0.0897 152);
+  --palette-positive-1000: oklch(0.215 0.0690 152);
+  --palette-warning-00: oklch(1.000 0.0160 88);
+  --palette-warning-100: oklch(0.965 0.0352 88);
+  --palette-warning-200: oklch(0.905 0.0608 88);
+  --palette-warning-300: oklch(0.845 0.0928 88);
+  --palette-warning-400: oklch(0.760 0.1248 88);
+  --palette-warning-500: oklch(0.680 0.1504 88);
+  --palette-warning-600: oklch(0.625 0.1600 88);
+  --palette-warning-700: oklch(0.545 0.1568 88);
+  --palette-warning-800: oklch(0.455 0.1472 88);
+  --palette-warning-900: oklch(0.320 0.1248 88);
+  --palette-warning-1000: oklch(0.215 0.0960 88);
+  --palette-critical-00: oklch(1.000 0.0145 27);
+  --palette-critical-100: oklch(0.965 0.0319 27);
+  --palette-critical-200: oklch(0.905 0.0551 27);
+  --palette-critical-300: oklch(0.845 0.0841 27);
+  --palette-critical-400: oklch(0.760 0.1131 27);
+  --palette-critical-500: oklch(0.680 0.1363 27);
+  --palette-critical-600: oklch(0.625 0.1450 27);
+  --palette-critical-700: oklch(0.545 0.1421 27);
+  --palette-critical-800: oklch(0.455 0.1334 27);
+  --palette-critical-900: oklch(0.320 0.1131 27);
+  --palette-critical-1000: oklch(0.215 0.0870 27);
+  --scrim-bg: #181A1C6B;
 }
-.mock.force-dark {
-  --palette-neutral-00: oklch(.155 .0037 57);
-  --palette-neutral-100: oklch(.205 .0037 57);
-  --palette-neutral-200: oklch(.265 .0043 57);
-  --palette-neutral-300: oklch(.32 .0045 57);
-  --palette-neutral-400: oklch(.4 .0047 57);
-  --palette-neutral-500: oklch(.48 .005 57);
-  --palette-neutral-600: oklch(.585 .005 57);
-  --palette-neutral-700: oklch(.665 .005 57);
-  --palette-neutral-800: oklch(.745 .005 57);
-  --palette-neutral-900: oklch(.845 .0053 57);
-  --palette-neutral-1000: oklch(.935 .0055 57);
-  --palette-brand-800: oklch(.745 .0534 57);
-  --palette-brand-900: oklch(.845 .0452 57);
-  --palette-positive-400: oklch(.4 .0897 152);
-  --palette-critical-100: oklch(.205 .0319 27);
-  --palette-critical-800: oklch(.745 .1334 27);
-  --palette-critical-900: oklch(.845 .1131 27);
-  --palette-informative-400: oklch(.4 .0897 248);
-  --surface-stroke: var(--palette-neutral-200);
-  --scrim-ink: var(--palette-neutral-00);
-  --card-shadow: none;
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
-  --pop-shadow: 0 0 0 1px var(--stroke-neutral);
+.mock.force-dark, :root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(0.155 0.0008 250);
+  --palette-neutral-100: oklch(0.205 0.0018 250);
+  --palette-neutral-200: oklch(0.265 0.0030 250);
+  --palette-neutral-300: oklch(0.320 0.0046 250);
+  --palette-neutral-400: oklch(0.400 0.0062 250);
+  --palette-neutral-500: oklch(0.480 0.0075 250);
+  --palette-neutral-600: oklch(0.585 0.0080 250);
+  --palette-neutral-700: oklch(0.665 0.0078 250);
+  --palette-neutral-800: oklch(0.745 0.0074 250);
+  --palette-neutral-900: oklch(0.845 0.0062 250);
+  --palette-neutral-1000: oklch(0.935 0.0048 250);
+  --palette-brand-00: oklch(0.155 0.0240 266);
+  --palette-brand-100: oklch(0.205 0.0530 266);
+  --palette-brand-200: oklch(0.265 0.0910 266);
+  --palette-brand-300: oklch(0.320 0.1390 266);
+  --palette-brand-400: oklch(0.400 0.1870 266);
+  --palette-brand-500: oklch(0.480 0.2256 266);
+  --palette-brand-600: oklch(0.585 0.2192 266);
+  --palette-brand-700: oklch(0.665 0.1716 266);
+  --palette-brand-800: oklch(0.745 0.1266 266);
+  --palette-brand-900: oklch(0.845 0.0740 266);
+  --palette-brand-1000: oklch(0.935 0.0300 266);
+  --palette-sky-00: oklch(0.155 0.0160 250);
+  --palette-sky-100: oklch(0.205 0.0354 250);
+  --palette-sky-200: oklch(0.265 0.0606 250);
+  --palette-sky-300: oklch(0.320 0.0896 250);
+  --palette-sky-400: oklch(0.400 0.1109 250);
+  --palette-sky-500: oklch(0.480 0.1325 250);
+  --palette-sky-600: oklch(0.585 0.1600 250);
+  --palette-sky-700: oklch(0.665 0.1566 250);
+  --palette-sky-800: oklch(0.745 0.1326 250);
+  --palette-sky-900: oklch(0.845 0.0776 250);
+  --palette-sky-1000: oklch(0.935 0.0315 250);
+  --palette-mint-00: oklch(0.155 0.0150 183);
+  --palette-mint-100: oklch(0.205 0.0331 183);
+  --palette-mint-200: oklch(0.265 0.0471 183);
+  --palette-mint-300: oklch(0.320 0.0562 183);
+  --palette-mint-400: oklch(0.400 0.0697 183);
+  --palette-mint-500: oklch(0.480 0.0833 183);
+  --palette-mint-600: oklch(0.585 0.1013 183);
+  --palette-mint-700: oklch(0.665 0.1151 183);
+  --palette-mint-800: oklch(0.745 0.1289 183);
+  --palette-mint-900: oklch(0.845 0.1168 183);
+  --palette-mint-1000: oklch(0.935 0.0900 183);
+  --palette-positive-00: oklch(0.155 0.0115 152);
+  --palette-positive-100: oklch(0.205 0.0253 152);
+  --palette-positive-200: oklch(0.265 0.0437 152);
+  --palette-positive-300: oklch(0.320 0.0667 152);
+  --palette-positive-400: oklch(0.400 0.0897 152);
+  --palette-positive-500: oklch(0.480 0.1081 152);
+  --palette-positive-600: oklch(0.585 0.1150 152);
+  --palette-positive-700: oklch(0.665 0.1127 152);
+  --palette-positive-800: oklch(0.745 0.1058 152);
+  --palette-positive-900: oklch(0.845 0.0897 152);
+  --palette-positive-1000: oklch(0.935 0.0690 152);
+  --palette-warning-00: oklch(0.155 0.0160 88);
+  --palette-warning-100: oklch(0.205 0.0352 88);
+  --palette-warning-200: oklch(0.265 0.0608 88);
+  --palette-warning-300: oklch(0.320 0.0928 88);
+  --palette-warning-400: oklch(0.400 0.1248 88);
+  --palette-warning-500: oklch(0.480 0.1504 88);
+  --palette-warning-600: oklch(0.585 0.1600 88);
+  --palette-warning-700: oklch(0.665 0.1568 88);
+  --palette-warning-800: oklch(0.745 0.1472 88);
+  --palette-warning-900: oklch(0.845 0.1248 88);
+  --palette-warning-1000: oklch(0.935 0.0960 88);
+  --palette-critical-00: oklch(0.155 0.0145 27);
+  --palette-critical-100: oklch(0.205 0.0319 27);
+  --palette-critical-200: oklch(0.265 0.0551 27);
+  --palette-critical-300: oklch(0.320 0.0841 27);
+  --palette-critical-400: oklch(0.400 0.1131 27);
+  --palette-critical-500: oklch(0.480 0.1363 27);
+  --palette-critical-600: oklch(0.585 0.1450 27);
+  --palette-critical-700: oklch(0.665 0.1421 27);
+  --palette-critical-800: oklch(0.745 0.1334 27);
+  --palette-critical-900: oklch(0.845 0.1131 27);
+  --palette-critical-1000: oklch(0.935 0.0870 27);
+  --scrim-bg: #0C0C0C6B;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .mock:not(.force-light) {
-    --palette-neutral-00: oklch(.155 .0037 57);
-    --palette-neutral-100: oklch(.205 .0037 57);
-    --palette-neutral-200: oklch(.265 .0043 57);
-    --palette-neutral-300: oklch(.32 .0045 57);
-    --palette-neutral-400: oklch(.4 .0047 57);
-    --palette-neutral-500: oklch(.48 .005 57);
-    --palette-neutral-600: oklch(.585 .005 57);
-    --palette-neutral-700: oklch(.665 .005 57);
-    --palette-neutral-800: oklch(.745 .005 57);
-    --palette-neutral-900: oklch(.845 .0053 57);
-    --palette-neutral-1000: oklch(.935 .0055 57);
-    --palette-brand-800: oklch(.745 .0534 57);
-    --palette-brand-900: oklch(.845 .0452 57);
-    --palette-positive-400: oklch(.4 .0897 152);
-    --palette-critical-100: oklch(.205 .0319 27);
-    --palette-critical-800: oklch(.745 .1334 27);
-    --palette-critical-900: oklch(.845 .1131 27);
-    --palette-informative-400: oklch(.4 .0897 248);
-    --surface-stroke: var(--palette-neutral-200);
-    --scrim-ink: var(--palette-neutral-00);
-    --card-shadow: none;
-    --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
-    --pop-shadow: 0 0 0 1px var(--stroke-neutral);
+    --palette-neutral-00: oklch(0.155 0.0008 250);
+    --palette-neutral-100: oklch(0.205 0.0018 250);
+    --palette-neutral-200: oklch(0.265 0.0030 250);
+    --palette-neutral-300: oklch(0.320 0.0046 250);
+    --palette-neutral-400: oklch(0.400 0.0062 250);
+    --palette-neutral-500: oklch(0.480 0.0075 250);
+    --palette-neutral-600: oklch(0.585 0.0080 250);
+    --palette-neutral-700: oklch(0.665 0.0078 250);
+    --palette-neutral-800: oklch(0.745 0.0074 250);
+    --palette-neutral-900: oklch(0.845 0.0062 250);
+    --palette-neutral-1000: oklch(0.935 0.0048 250);
+    --palette-brand-00: oklch(0.155 0.0240 266);
+    --palette-brand-100: oklch(0.205 0.0530 266);
+    --palette-brand-200: oklch(0.265 0.0910 266);
+    --palette-brand-300: oklch(0.320 0.1390 266);
+    --palette-brand-400: oklch(0.400 0.1870 266);
+    --palette-brand-500: oklch(0.480 0.2256 266);
+    --palette-brand-600: oklch(0.585 0.2192 266);
+    --palette-brand-700: oklch(0.665 0.1716 266);
+    --palette-brand-800: oklch(0.745 0.1266 266);
+    --palette-brand-900: oklch(0.845 0.0740 266);
+    --palette-brand-1000: oklch(0.935 0.0300 266);
+    --palette-sky-00: oklch(0.155 0.0160 250);
+    --palette-sky-100: oklch(0.205 0.0354 250);
+    --palette-sky-200: oklch(0.265 0.0606 250);
+    --palette-sky-300: oklch(0.320 0.0896 250);
+    --palette-sky-400: oklch(0.400 0.1109 250);
+    --palette-sky-500: oklch(0.480 0.1325 250);
+    --palette-sky-600: oklch(0.585 0.1600 250);
+    --palette-sky-700: oklch(0.665 0.1566 250);
+    --palette-sky-800: oklch(0.745 0.1326 250);
+    --palette-sky-900: oklch(0.845 0.0776 250);
+    --palette-sky-1000: oklch(0.935 0.0315 250);
+    --palette-mint-00: oklch(0.155 0.0150 183);
+    --palette-mint-100: oklch(0.205 0.0331 183);
+    --palette-mint-200: oklch(0.265 0.0471 183);
+    --palette-mint-300: oklch(0.320 0.0562 183);
+    --palette-mint-400: oklch(0.400 0.0697 183);
+    --palette-mint-500: oklch(0.480 0.0833 183);
+    --palette-mint-600: oklch(0.585 0.1013 183);
+    --palette-mint-700: oklch(0.665 0.1151 183);
+    --palette-mint-800: oklch(0.745 0.1289 183);
+    --palette-mint-900: oklch(0.845 0.1168 183);
+    --palette-mint-1000: oklch(0.935 0.0900 183);
+    --palette-positive-00: oklch(0.155 0.0115 152);
+    --palette-positive-100: oklch(0.205 0.0253 152);
+    --palette-positive-200: oklch(0.265 0.0437 152);
+    --palette-positive-300: oklch(0.320 0.0667 152);
+    --palette-positive-400: oklch(0.400 0.0897 152);
+    --palette-positive-500: oklch(0.480 0.1081 152);
+    --palette-positive-600: oklch(0.585 0.1150 152);
+    --palette-positive-700: oklch(0.665 0.1127 152);
+    --palette-positive-800: oklch(0.745 0.1058 152);
+    --palette-positive-900: oklch(0.845 0.0897 152);
+    --palette-positive-1000: oklch(0.935 0.0690 152);
+    --palette-warning-00: oklch(0.155 0.0160 88);
+    --palette-warning-100: oklch(0.205 0.0352 88);
+    --palette-warning-200: oklch(0.265 0.0608 88);
+    --palette-warning-300: oklch(0.320 0.0928 88);
+    --palette-warning-400: oklch(0.400 0.1248 88);
+    --palette-warning-500: oklch(0.480 0.1504 88);
+    --palette-warning-600: oklch(0.585 0.1600 88);
+    --palette-warning-700: oklch(0.665 0.1568 88);
+    --palette-warning-800: oklch(0.745 0.1472 88);
+    --palette-warning-900: oklch(0.845 0.1248 88);
+    --palette-warning-1000: oklch(0.935 0.0960 88);
+    --palette-critical-00: oklch(0.155 0.0145 27);
+    --palette-critical-100: oklch(0.205 0.0319 27);
+    --palette-critical-200: oklch(0.265 0.0551 27);
+    --palette-critical-300: oklch(0.320 0.0841 27);
+    --palette-critical-400: oklch(0.400 0.1131 27);
+    --palette-critical-500: oklch(0.480 0.1363 27);
+    --palette-critical-600: oklch(0.585 0.1450 27);
+    --palette-critical-700: oklch(0.665 0.1421 27);
+    --palette-critical-800: oklch(0.745 0.1334 27);
+    --palette-critical-900: oklch(0.845 0.1131 27);
+    --palette-critical-1000: oklch(0.935 0.0870 27);
+    --scrim-bg: #0C0C0C6B;
   }
-}
-:root[data-theme="dark"] .mock:not(.force-light) {
-  --palette-neutral-00: oklch(.155 .0037 57);
-  --palette-neutral-100: oklch(.205 .0037 57);
-  --palette-neutral-200: oklch(.265 .0043 57);
-  --palette-neutral-300: oklch(.32 .0045 57);
-  --palette-neutral-400: oklch(.4 .0047 57);
-  --palette-neutral-500: oklch(.48 .005 57);
-  --palette-neutral-600: oklch(.585 .005 57);
-  --palette-neutral-700: oklch(.665 .005 57);
-  --palette-neutral-800: oklch(.745 .005 57);
-  --palette-neutral-900: oklch(.845 .0053 57);
-  --palette-neutral-1000: oklch(.935 .0055 57);
-  --palette-brand-800: oklch(.745 .0534 57);
-  --palette-brand-900: oklch(.845 .0452 57);
-  --palette-positive-400: oklch(.4 .0897 152);
-  --palette-critical-100: oklch(.205 .0319 27);
-  --palette-critical-800: oklch(.745 .1334 27);
-  --palette-critical-900: oklch(.845 .1131 27);
-  --palette-informative-400: oklch(.4 .0897 248);
-  --surface-stroke: var(--palette-neutral-200);
-  --scrim-ink: var(--palette-neutral-00);
-  --card-shadow: none;
-  --sheet-shadow: 0 -1px 0 var(--stroke-neutral);
-  --pop-shadow: 0 0 0 1px var(--stroke-neutral);
 }
 .mock {
   --bg-neutral: var(--palette-neutral-00);
   --bg-neutral-weak: var(--palette-neutral-100);
   --bg-neutral-weak-pressed: var(--palette-neutral-200);
+  --bg-neutral-solid: var(--palette-neutral-1000);
   --bg-neutral-solid-soft: var(--palette-neutral-900);
-  --bg-brand-solid: var(--palette-brand-800);
-  --bg-brand-solid-pressed: var(--palette-brand-900);
+  --bg-neutral-disabled: var(--palette-neutral-100);
+  --bg-neutral-muted: var(--palette-neutral-400);
+  --bg-brand-solid: var(--palette-brand-700);
+  --bg-brand-solid-pressed: var(--palette-brand-800);
+  --bg-brand-weak: var(--palette-brand-100);
+  --bg-brand-weak-pressed: var(--palette-brand-200);
+  --bg-brand-weak-selected: var(--palette-brand-100);
+  --bg-brand-muted: var(--palette-brand-300);
+  --bg-sky: var(--palette-sky-600);
+  --bg-sky-weak: var(--palette-sky-100);
+  --bg-mint: var(--palette-mint-600);
+  --bg-mint-weak: var(--palette-mint-100);
+  --bg-positive-weak: var(--palette-positive-100);
+  --bg-warning-weak: var(--palette-warning-100);
   --bg-critical-solid: var(--palette-critical-800);
   --bg-critical-solid-pressed: var(--palette-critical-900);
   --bg-critical-weak: var(--palette-critical-100);
-  --bg-neutral-disabled: var(--palette-neutral-100);
   --fg-neutral: var(--palette-neutral-1000);
   --fg-neutral-muted: var(--palette-neutral-800);
   --fg-neutral-subtle: var(--palette-neutral-700);
-  --fg-neutral-disabled: var(--palette-neutral-700);
   --fg-neutral-contrast: var(--palette-neutral-00);
-  --fg-brand: var(--palette-brand-800);
+  --fg-neutral-disabled: var(--palette-neutral-800);
+  --fg-brand: var(--palette-brand-700);
   --fg-brand-contrast: var(--palette-neutral-00);
+  --fg-sky: var(--palette-sky-800);
+  --fg-sky-contrast: var(--palette-sky-400);
+  --fg-mint: var(--palette-mint-800);
+  --fg-positive: var(--palette-positive-800);
   --fg-critical: var(--palette-critical-800);
   --fg-positive-contrast: var(--palette-positive-400);
-  --fg-informative-contrast: var(--palette-informative-400);
   --stroke-neutral: var(--palette-neutral-200);
   --stroke-neutral-muted: var(--palette-neutral-300);
+  --stroke-neutral-disabled: var(--palette-neutral-200);
+  --stroke-brand-solid: var(--palette-brand-700);
+  --stroke-sky: var(--palette-sky-600);
+  --stroke-mint: var(--palette-mint-600);
 
   --t-xs: .8125rem; --lh-xs: 1.21875rem;
   --t-sm: .9375rem; --lh-sm: 1.40625rem;
@@ -270,7 +429,7 @@ code {
 .sb-right { display: flex; align-items: center; gap: 5px; }
 /* 앱바 — 뒤로와 「승인할 일」뿐이다. 더보기가 없다(approvals.md 「짜임」) */
 .appbar {
-  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
   padding: 4px 24px 12px; min-height: 44px; position: relative;
 }
 .appbar .sp { flex: 1 1 auto; }
@@ -292,11 +451,11 @@ code {
 .atop { display: flex; align-items: baseline; gap: 8px; }
 .pill {
   flex: 0 0 auto; display: inline-flex; align-items: center;
-  border-radius: var(--r-sm); padding: 2px 10px;
+  border-radius: var(--r-sm); padding: 2px 8px;
   font-size: var(--t-xs); line-height: 1.5; font-weight: 500;
   background: var(--bg-neutral-weak); color: var(--fg-neutral-muted);
 }
-.atitle { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); white-space: nowrap; }
+.atitle { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .asub {
   margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -331,19 +490,20 @@ code {
 
 /* 바텀시트와 덮개 */
 .scrim {
-  position: absolute; inset: 0; z-index: 3; background: var(--scrim-ink);
-  opacity: .42; transition: opacity var(--d-slow) ease-out;
+  position: absolute; inset: 0; z-index: 3; background: var(--scrim-bg);
+  opacity: 1; transition: opacity var(--d-slow) ease-out;
 }
 /* 시트 — 위쪽 두 모서리만 rounded-lg, p-6, 아래는 + safe-area.
    아래에서 올라오고 --duration-slow(240ms) ease-out이다 */
+/* 시안은 브라우저에서 보는 목업이라 아래 여백을 env(safe-area-inset-bottom)로 잡는다. 앱이 쓰는 것은 useSafeAreaInsets가 주는 bottom이다 — components.md의 BottomCTA와 탭 바 */
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 10px 24px calc(24px + env(safe-area-inset-bottom));
-  box-shadow: var(--sheet-shadow);
+  padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--stroke-neutral);
 }
 .grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto; }
-.sheettop { padding-top: 14px; }
+.sheettop { padding-top: 16px; }
 
 /* 상세 시트 — 제목 · 부제 · 보낸 시각 · 보낸 글 · 버튼 둘 */
 .sh-title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral); }
@@ -366,11 +526,11 @@ code {
 .rrow .rcheck { flex: 0 0 auto; width: 20px; height: 20px; color: var(--fg-brand); visibility: hidden; }
 .rrow.selected .rcheck { visibility: visible; }
 /* 입력 칸 — 「직접 쓰기」를 골랐을 때만 연다. 이유 줄과 입력 칸 사이 간격만 표에 없어 이 파일이 쟀다 */
-.rinput { margin-top: 14px; }
+.rinput { margin-top: 16px; }
 /* 라벨 줄 — components.md 「Input」이 정본이다. 글자 수는 상한까지 서른 자
    남았을 때 라벨 줄 오른쪽에 나타난다(처음부터 안 센다). fg.neutral-subtle ·
    text-xs · tabular-nums고 상한에 닿으면 fg.critical · font-semibold다 */
-.rinput .rlabelrow { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.rinput .rlabelrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
 .rinput .rlabel-top { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 .rcnt { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 .rcnt.cap { color: var(--fg-critical); font-weight: 600; }
@@ -388,8 +548,8 @@ code {
    fg.neutral, 뜻은 아이콘(fg.critical)이 나른다 */
 .errbox {
   margin-top: 16px; border-radius: var(--r-lg); background: var(--bg-critical-weak); color: var(--fg-neutral);
-  padding: 12px 14px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
-  display: flex; gap: 10px;
+  padding: 12px 16px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
+  display: flex; gap: 8px;
 }
 .errbox .bi { flex: 0 0 auto; margin-top: 2px; color: var(--fg-critical); }
 
@@ -397,7 +557,7 @@ code {
 .dialog-wrap { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; padding: 0 32px; }
 .dialog {
   width: 100%; border-radius: var(--r-lg); background: var(--bg-neutral);
-  padding: 24px; box-shadow: var(--pop-shadow); border: 1px solid var(--surface-stroke);
+  padding: 24px; border: 1px solid var(--stroke-neutral);
 }
 .dg-title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; color: var(--fg-neutral); }
 .dg-body { margin-top: 8px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
@@ -410,9 +570,9 @@ code {
   position: absolute; left: 24px; right: 24px; bottom: 56px; z-index: 6; margin: 0 auto; width: fit-content;
   display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
-  border-radius: var(--r-lg); padding: 11px 20px;
+  border-radius: var(--r-lg); padding: 12px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
-  box-shadow: var(--card-shadow);
+  border: 1px solid var(--stroke-neutral);
 }
 .toast-ic { flex: 0 0 auto; }
 .toast-ic circle { fill: var(--ic); }

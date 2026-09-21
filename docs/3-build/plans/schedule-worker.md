@@ -47,6 +47,8 @@ sources:
 
 # 근무자 근무표 화면을 만든다 — 구현 계획
 
+> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
+
 ## 입력 명세·기준
 
 정본은 [schedule-worker.md](../../2-design/modules/schedule/screens/schedule-worker.md)다 — [근무표](../../2-design/modules/schedule/screens/schedule-worker.md#근무표)·[달 고르기 시트](../../2-design/modules/schedule/screens/schedule-worker.md#달-고르기-시트)·[날 시트](../../2-design/modules/schedule/screens/schedule-worker.md#날-시트)의 상태 표, [보기 전환 세그먼트](../../2-design/modules/schedule/screens/schedule-worker.md#보기-전환-세그먼트)·[달력 순](../../2-design/modules/schedule/screens/schedule-worker.md#달력-순--기본)·[포지션 순](../../2-design/modules/schedule/screens/schedule-worker.md#포지션-순--날짜-아코디언)·[확정 전 — 근무 신청](../../2-design/modules/schedule/screens/schedule-worker.md#확정-전--근무-신청)·[날 시트 짜임](../../2-design/modules/schedule/screens/schedule-worker.md#날-시트-짜임)·[인증 상태](../../2-design/modules/schedule/screens/schedule-worker.md#인증-상태)·[시트의 문](../../2-design/modules/schedule/screens/schedule-worker.md#시트의-문)의 짜임, 색·글자 표, 문안 표 셋이다. 쓰기 함수는 `submit_availability` 하나다([근무 신청 내기](../../2-design/modules/schedule/design.md#근무-신청-내기)) — 이 task가 만든다. 규칙은 [SCH-005](../../2-design/modules/schedule/README.md#sch-005)·[SCH-006](../../2-design/modules/schedule/README.md#sch-006)·[SCH-010](../../2-design/modules/schedule/README.md#sch-010)·[SCH-019](../../2-design/modules/schedule/README.md#sch-019)고, 인증 상태는 [ATT-008](../../2-design/modules/attendance/README.md#att-008)·[ATT-016](../../2-design/modules/attendance/README.md#att-016)·[ATT-020](../../2-design/modules/attendance/README.md#att-020)이다.
@@ -102,7 +104,7 @@ sources:
 
 ### AC-03
 
-**근무표 화면의 뼈대.** `src/app/schedule/page.tsx` → `src/screens/schedule-worker/`.
+**근무표 화면의 뼈대.** `/schedule/` 화면 → `src/screens/schedule-worker/`.
 
 - 앱바 — 「2026년 10월」과 양옆 화살표, 제목 오른쪽에 `chevron-down` 14px. 제목을 누르면 달 고르기 시트. **「근무표」가 제목에 없다**
 - 달 이동에 열람 제한이 없다. 연도 줄도 마찬가지다 — 입사 이전 해로 가면 열두 칸이 전부 흐리다
@@ -159,7 +161,7 @@ sources:
 - 내 줄 — `bg.brand-weak` 면에 오른쪽 끝 「나」(`fg.brand`). 인증 상태가 서는 날은 「나」가 왼쪽, 상태가 오른쪽
 - 빈 자리 — 「빈 자리」(`fg.neutral-subtle`)
 - 하단 버튼 둘 — 「근무 취소」(secondary, 왼쪽)와 「교대 요청」(primary, 오른쪽). 내가 안 나가는 날에는 둘 다 없다. 근무 전날까지고 지난 날은 조회만이다
-- 시트는 history에 든다 — 브라우저 뒤로가 시트를 닫고 화면을 안 떠난다([뒤로](../../2-design/system/navigation.md#뒤로))
+- 시트는 기기 뒤로가 닫고 화면을 안 떠난다([뒤로](../../2-design/system/navigation.md#뒤로))
 - 요청 중이면 내 줄에 Badge neutral 「교대 요청 중」 또는 「취소 요청 중」이 서고 버튼 둘이 비활성이다. **값을 채우는 것은 [`schedule-requests`](../../backlog.md)와 swap이다** — 이 task는 자리와 모양만 둔다
 
 ### AC-08
@@ -197,11 +199,11 @@ sources:
 
 - unit: AC-02 전부(네 모습 판정·칸 상태·「내 근무만」 거르기·아코디언 내 상태·명단 정렬·인원 셈·현황 줄의 0 제외·버튼 노출·마감 줄 문구)
 - integration: `submit_availability`의 승인 검사·마감 뒤 `window_closed`·확정 뒤 `already_confirmed`·덮어쓰기(이전 행이 사라진다)·빈 배열로 전부 지우기·그 달 밖 날짜 `bad_dates`·남의 행을 못 만지는 것. `get-my-availability`가 근무자에게 자기 행만 주는 것
-- e2e(`tests/e2e/schedule-worker.spec.ts`): 근무자가 `/schedule`을 열어 확정 전 달에서 날짜 셋을 고르고 보내고 → 다시 들어와 고른 채 열리는지 → 하나 빼고 다시 보내 덮어쓰는지 → 확정된 달에서 보기를 바꾸고 「내 근무만」을 켜고 → 날을 눌러 시트를 보고 브라우저 뒤로로 닫는 데까지
+- e2e(`schedule-worker` e2e): 근무자가 `/schedule`을 열어 확정 전 달에서 날짜 셋을 고르고 보내고 → 다시 들어와 고른 채 열리는지 → 하나 빼고 다시 보내 덮어쓰는지 → 확정된 달에서 보기를 바꾸고 「내 근무만」을 켜고 → 날을 눌러 시트를 보고 기기 뒤로로 닫는 데까지
 
 ### AC-12
 
-**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·`pnpm build && pnpm e2e` 전부 초록. `sian-auditor`가 `schedule-worker.sian.html`과 문서를 대조한다 — backlog의 [`sian-sync`](../../backlog.md)가 이 시안에 적어둔 어긋남(후보 없음 버튼 문구·「취소 요청 중」과 「보내기 실패」와 「배정이 사라졌을 때」 목업)을 그때 같이 잡는다.
+**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·e2e 명령 전부 초록. `sian-auditor`가 `schedule-worker.sian.html`과 문서를 대조한다 — backlog의 [`sian-sync`](../../backlog.md)가 이 시안에 적어둔 어긋남(후보 없음 버튼 문구·「취소 요청 중」과 「보내기 실패」와 「배정이 사라졌을 때」 목업)을 그때 같이 잡는다.
 
 ## 변경 파일
 
@@ -213,9 +215,9 @@ sources:
 | `src/entities/schedule/dals/get-month-schedule.ts` | 이름 임베딩 | AC-02 |
 | `src/screens/schedule-worker/model/*.ts`·`__tests__/` | 네 모습·칸 상태·거르기·명단·셈·문구 | AC-02 |
 | `src/features/schedule/*.ts`·`__tests__/` | query·mutation과 무효화 | AC-06 |
-| `src/screens/schedule-worker/ui/*.tsx` · `src/app/schedule/page.tsx` | 달력 순·포지션 순·제출 모드·날 시트 | AC-03~AC-08 |
+| `src/screens/schedule-worker/ui/*.tsx` · `/schedule/` 화면 | 달력 순·포지션 순·제출 모드·날 시트 | AC-03~AC-08 |
 | `src/shared/ui/tab-bar.tsx`·`accordion.tsx` · (admin이 아직이면) `calendar-grid.tsx`·`month-picker-sheet.tsx`·`bottom-cta.tsx` | 공용 UI | AC-10 |
-| `tests/e2e/schedule-worker.spec.ts` | e2e | AC-11 |
+| `schedule-worker` e2e | e2e | AC-11 |
 
 ## 구현 순서
 
@@ -244,8 +246,8 @@ sources:
 | AC-01 | 덮어쓰기가 이전 행을 남긴다 | integration 위 | 위와 같다 | 이전 행이 사라지고 빈 배열이 전부 지운다 |
 | AC-02 | 달의 네 모습을 잘못 가른다, 인원을 잘못 센다 | unit `src/screens/schedule-worker/model/__tests__/`(예정) | `pnpm test` | 네 모습, 교육 포함 인원, 현황 줄 0 제외 |
 | AC-05 | 「내 근무만」이 닫힌 날과 안 갈린다 | unit 위 + e2e | 위와 같다 | 면은 빠지고 글자는 `fg.neutral-muted`, 그 날들이 눌린다 |
-| AC-06 | 재진입에 고른 날이 안 뜬다 | e2e `tests/e2e/schedule-worker.spec.ts`(예정) | `pnpm build && pnpm e2e` | 보낸 날짜가 선택된 채 열리고 덮어쓰기가 된다 |
-| AC-07 | 브라우저 뒤로가 화면을 떠난다 | e2e 위 spec | 위와 같다 | 시트만 닫히고 URL이 `?month=`다 |
+| AC-06 | 재진입에 고른 날이 안 뜬다 | e2e `schedule-worker` e2e(예정) | e2e 명령 | 보낸 날짜가 선택된 채 열리고 덮어쓰기가 된다 |
+| AC-07 | 기기 뒤로가 화면을 떠난다 | e2e 위 spec | 위와 같다 | 시트만 닫히고 파라미터가 `?month=`다 |
 | AC-12 | 시안이 문서와 어긋난다 | `sian-auditor` | — | 어긋남 없음 |
 
 - 배정하지 않은 것: 탭 바와 BottomCTA가 겹치는 엄지 자리 — 실기기에서 손으로 본다. 색·여백 토큰 — `sian-auditor`와 디자인 값 lint가 본다

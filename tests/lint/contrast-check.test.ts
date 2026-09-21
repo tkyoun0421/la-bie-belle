@@ -1,6 +1,5 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
 import {
   contrastRatio,
   droppedContrastRows,
@@ -80,30 +79,30 @@ describe("리스크 6 — (라이트)/(다크) 꼬리로 테마를 정한다", (
 describe("리스크 4 — 팔레트 단계와 역할 토큰을 점(.)의 유무로 구분한다", () => {
   it("점이 있는 역할 토큰은 2절 매핑을 거쳐 1절 hex를 찾는다", () => {
     expect(resolveTokenHex(TOKENS_MARKDOWN, "fg.neutral", "light")).toBe(
-      "#1B1917",
+      "#181A1C",
     );
     expect(resolveTokenHex(TOKENS_MARKDOWN, "fg.neutral", "dark")).toBe(
-      "#ECE9E6",
+      "#E7EAED",
     );
   });
 
   it("점이 없는 팔레트 단계는 2절을 거치지 않고 1절을 곧장 찾는다", () => {
     expect(resolveTokenHex(TOKENS_MARKDOWN, "neutral-600", "light")).toBe(
-      "#8A8785",
+      "#84888C",
     );
     expect(resolveTokenHex(TOKENS_MARKDOWN, "brand-800", "dark")).toBe(
-      "#C7A48C",
+      "#87AAFD",
     );
   });
 });
 
 describe("리스크 1·2 — 표 두 개가 통째로 안 읽히거나 일부 행만 스킵되면 행 수가 어긋난다", () => {
-  it("측정한 조합 표는 16행이다", () => {
-    expect(measuredContrastRows(TOKENS_MARKDOWN)).toHaveLength(16);
+  it("측정한 조합 표는 20행이다", () => {
+    expect(measuredContrastRows(TOKENS_MARKDOWN)).toHaveLength(20);
   });
 
-  it("떨어진 조합 표는 4행이다", () => {
-    expect(droppedContrastRows(TOKENS_MARKDOWN)).toHaveLength(4);
+  it("떨어진 조합 표는 5행이다", () => {
+    expect(droppedContrastRows(TOKENS_MARKDOWN)).toHaveLength(5);
   });
 });
 
