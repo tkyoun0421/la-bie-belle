@@ -431,7 +431,7 @@ code {
   padding: 4px 24px 12px; min-height: 44px; position: relative;
 }
 .appbar .sp { flex: 1 1 auto; }
-.backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
+.backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -4px; color: var(--fg-neutral); cursor: pointer; }
 /* 아이콘 28px, 닿는 면은 44px — components.md 「앱바」의 「아이콘은 28px로 그리고 닿는 면은 44px다」 */
 .backic::after { content: ""; position: absolute; inset: -8px; }
 .appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
@@ -456,7 +456,7 @@ code {
 .pop[hidden] { display: none; }
 /* 보이는 높이는 42.5px 그대로 두고 닿는 면만 44px로 채운다(foundation/spacing-shape.md 「누를 수 있는 것은 44px 이상이다」) */
 .pop button {
-  display: flex; width: 100%; align-items: center; gap: 8px; padding: 10px 12px;
+  display: flex; width: 100%; align-items: center; gap: 8px; padding: 12px;
   border: 0; background: none; border-radius: var(--r-md); cursor: pointer;
   font-family: inherit; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral); text-align: left;
   position: relative;
@@ -510,7 +510,7 @@ code {
 /* 줄 오른쪽의 「차단 풀기」 — 작은 secondary 버튼, 34px. 32px 이하만 rounded-sm(8px)이고
    34px은 그 밖이라 .btn 기본값(--r-lg, 14px)을 그대로 물려받는다.
    보이는 높이는 34px 그대로 두고 닿는 면만 44px로 채운다(foundation/spacing-shape.md 「누를 수 있는 것은 44px 이상이다」) */
-.btn.mini { width: auto; height: 34px; padding: 0 14px; font-size: var(--t-sm); position: relative; }
+.btn.mini { width: auto; height: 34px; padding: 0 12px; font-size: var(--t-sm); position: relative; }
 .btn.mini::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 /* 버튼 둘이 가로로 나란히 서고 폭을 반씩 나눈다. 사이는 gap-3 = 12px */
 .sbtns { display: flex; gap: 12px; margin-top: 24px; }
@@ -528,7 +528,7 @@ code {
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 10px 24px calc(24px + env(safe-area-inset-bottom));
+  padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) ease-out;
 }
@@ -536,7 +536,7 @@ code {
 .grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto; }
 .sheethead { display: flex; align-items: center; min-height: 28px; margin: 0 -4px 6px; }
 .sheethead .sp { flex: 1 1 auto; }
-.sheettop { padding-top: 14px; }
+.sheettop { padding-top: 16px; }
 /* 사진과 이름 사이 mt-4, 이름과 값 사이 mt-6 */
 .sh-name { margin-top: 16px; font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 600; letter-spacing: -.01em; }
 .kvs { margin-top: 24px; }
@@ -560,7 +560,7 @@ code {
   position: absolute; left: 24px; right: 24px; bottom: 56px; z-index: 6; margin: 0 auto; width: fit-content;
   display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
-  border-radius: var(--r-lg); padding: 11px 20px;
+  border-radius: var(--r-lg); padding: 12px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
   border: 1px solid var(--stroke-neutral);
 }

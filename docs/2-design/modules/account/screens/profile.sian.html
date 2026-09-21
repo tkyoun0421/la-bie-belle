@@ -523,7 +523,7 @@ code {
 .sbtns .btn { flex: 1 1 0; height: 48px; }
 
 /* 탭 바 — 근무자 화면 맨 아래 항상, 「나」가 지금 탭이다(components.md 「탭 바」) */
-.tabbar { flex: 0 0 auto; display: flex; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding-bottom: 10px; }
+.tabbar { flex: 0 0 auto; display: flex; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding-bottom: 8px; }
 .tabitem { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding-top: 8px; min-height: 56px; color: var(--fg-neutral-subtle); font-size: var(--t-xs); }
 .tabitem.active { color: var(--fg-neutral); }
 
@@ -539,13 +539,13 @@ code {
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 10px 24px calc(24px + env(safe-area-inset-bottom));
+  padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) ease-out;
 }
 .mock.modal-open .rsheet { transform: none; }
 .grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto; }
-.sheettop { padding-top: 14px; }
+.sheettop { padding-top: 16px; }
 .stitle { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; color: var(--fg-neutral); }
 
 /* 연락처 시트 — 입력 칸 하나 */
@@ -559,7 +559,7 @@ code {
 .finput.placeholder { color: var(--fg-neutral-subtle); }
 .finput.focus { border-color: var(--stroke-brand-solid); }
 .finput.errorstate { border-color: var(--bg-critical-solid); }
-.caret { display: inline-block; width: 1px; height: 1.1em; background: var(--fg-neutral); margin-left: 1px; animation: caretblink 1s step-end infinite; }
+.caret { display: inline-block; width: 1px; height: 1.1em; background: var(--fg-neutral); margin-left: 0; animation: caretblink 1s step-end infinite; }
 @keyframes caretblink { 50% { opacity: 0; } }
 .fhelp { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); min-height: 19.5px; }
 .fhelp.errortext { color: var(--fg-critical); }
@@ -605,7 +605,7 @@ code {
   position: absolute; left: 24px; right: 24px; bottom: 80px; z-index: 6; margin: 0 auto; width: fit-content;
   display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
-  border-radius: var(--r-lg); padding: 11px 20px;
+  border-radius: var(--r-lg); padding: 12px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
   border: 1px solid var(--stroke-neutral);
 }
