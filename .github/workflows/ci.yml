@@ -57,19 +57,8 @@ jobs:
         run: supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime
       - run: pnpm test:integration:run
         if: steps.scope.outputs.code == 'true'
-      - name: 로컬 Supabase 접속 정보를 앱 env로 넘긴다
-        if: steps.scope.outputs.code == 'true'
-        run: |
-          supabase status -o env \
-            | sed -n 's/^API_URL="\(.*\)"$/NEXT_PUBLIC_SUPABASE_URL=\1/p' >> "$GITHUB_ENV"
-          supabase status -o env \
-            | sed -n 's/^ANON_KEY="\(.*\)"$/NEXT_PUBLIC_SUPABASE_ANON_KEY=\1/p' >> "$GITHUB_ENV"
-      - run: pnpm build
-        if: steps.scope.outputs.code == 'true'
-      - run: pnpm exec playwright install --with-deps chromium
-        if: steps.scope.outputs.code == 'true'
-      - run: pnpm e2e
-        if: steps.scope.outputs.code == 'true'
+      # 앱을 빌드하는 단계와 e2e가 여기 있었다. 웹을 걷으면서 같이 빠졌다 —
+      # 빌드는 EAS 설정과 같이 서고, e2e는 러너를 고르고 나서다(`e2e-runner`).
 
   # 로컬 pre-commit 훅은 opt-in이라 우회 가능하다. CI에서 결정적으로 한 번 더 막는다.
   secrets:

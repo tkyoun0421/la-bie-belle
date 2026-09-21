@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import {
   INITIAL_NOTIFICATION_PROMPT_VIEW,
   transitionNotificationPromptView,

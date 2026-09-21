@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { errorsOf, fixedCode, violationsOf } from "@tests/lint/rule-check";
 
 const NO_UNUSED_IMPORTS = "unused-imports/no-unused-imports";

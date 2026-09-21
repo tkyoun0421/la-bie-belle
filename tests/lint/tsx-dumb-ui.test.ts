@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { errorsOf, violationsOf } from "@tests/lint/rule-check";
 
 const DUMB_UI = "house/dumb-ui";

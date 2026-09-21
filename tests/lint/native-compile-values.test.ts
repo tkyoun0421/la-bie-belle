@@ -2,7 +2,6 @@ import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { compile } from "react-native-css/compiler";
-import { beforeAll, describe, expect, it } from "vitest";
 
 const GLOBALS_CSS_PATH = path.join(process.cwd(), "src/app/globals.css");
 

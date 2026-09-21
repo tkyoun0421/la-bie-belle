@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { errorsOf, fixedCode, violationsOf } from "@tests/lint/rule-check";
 
 const IMPORT_ORDER = "import/order";

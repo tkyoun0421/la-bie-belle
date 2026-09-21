@@ -1,5 +1,4 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
-import { describe, expect, it } from "vitest";
 import { getCurrentUser } from "@/shared/lib/get-current-user";
 
 function fakeClient(getUserResult: {

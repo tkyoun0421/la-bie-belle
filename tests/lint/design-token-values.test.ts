@@ -1,6 +1,5 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
 import { errorsOf, violationsOf } from "@tests/lint/rule-check";
 
 const NO_ARBITRARY_CLASS_VALUES = "house/no-arbitrary-class-values";

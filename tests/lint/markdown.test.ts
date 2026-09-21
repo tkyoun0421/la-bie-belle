@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { parseMarkdown } from "@tests/lint/markdown";
 
 describe("마크다운 구조 읽기 — 제목", () => {

@@ -1,5 +1,4 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { describe, expect, it } from "vitest";
 import { handleAuthCallback } from "@/shared/lib/handle-auth-callback";
 
 function fakeClient(exchangeResult: {

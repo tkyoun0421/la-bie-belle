@@ -38,7 +38,7 @@ Supabase 클라이언트로 데이터에 닿는 코드는 `dals` 세그먼트에
 
 **DB.** 로컬 Supabase다. `supabase start`로 Docker에 Postgres를 띄우고 거기 붙는다. 내 노트북과 CI가 같은 것을 쓴다.
 
-**러너.** vitest를 파일명으로 두 갈래로 나눈다. `pnpm test`는 unit만 돌아 빠르고, `pnpm test:integration`은 Docker를 띄우고 돈다.
+**러너.** 파일명으로 두 갈래로 나눈다. `pnpm test`는 unit만 돌아 빠르고, `pnpm test:integration`은 Docker를 띄우고 돈다.
 
 **CI.** lint → test → integration → build → e2e 순이다. 단계가 하나 는다.
 

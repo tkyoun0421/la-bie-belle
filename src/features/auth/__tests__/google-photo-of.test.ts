@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { googlePhotoOf } from "@/features/auth/google-photo-of";
 
 describe("googlePhotoOf — 구글 로그인 메타데이터에서 사진 주소를 고른다", () => {

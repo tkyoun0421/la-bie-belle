@@ -11,7 +11,10 @@ export default function TabsLayout() {
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen
         name="index"
-        options={{ title: "홈", tabBarIcon: ({ color }) => <House color={color} size={24} /> }}
+        options={{
+          title: "홈",
+          tabBarIcon: ({ color }) => <House color={color} size={24} />,
+        }}
       />
       <Tabs.Screen
         name="schedule"
@@ -22,11 +25,17 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="payroll"
-        options={{ title: "급여", tabBarIcon: ({ color }) => <Wallet color={color} size={24} /> }}
+        options={{
+          title: "급여",
+          tabBarIcon: ({ color }) => <Wallet color={color} size={24} />,
+        }}
       />
       <Tabs.Screen
         name="me"
-        options={{ title: "나", tabBarIcon: ({ color }) => <User color={color} size={24} /> }}
+        options={{
+          title: "나",
+          tabBarIcon: ({ color }) => <User color={color} size={24} />,
+        }}
       />
     </Tabs>
   );

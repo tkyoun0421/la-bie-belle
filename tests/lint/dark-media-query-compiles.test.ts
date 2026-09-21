@@ -1,7 +1,6 @@
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
-import { beforeAll, describe, expect, it } from "vitest";
 
 const GLOBALS_CSS_PATH = path.join(process.cwd(), "src/app/globals.css");
 const FIXTURE_UTILITY = "dark:border-stroke-neutral";

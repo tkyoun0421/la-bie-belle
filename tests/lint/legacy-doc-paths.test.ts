@@ -1,7 +1,6 @@
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { describe, expect, it } from "vitest";
 import { legacyPathViolations } from "@tests/lint/legacy-doc-paths";
 
 const ADR_004_RELATIVE = "docs/2-design/adr/ADR-004-domain-rules-home.md";

@@ -2,7 +2,7 @@
 
 실행 전제와 명령, 훅과 문서 검사, 실패 진단, 결과 찾는 자리가 산다. 검증 방법 선택과 완료 판정은 [strategy](strategy.md), 계획·결과 작성법은 [README](README.md)를 따른다.
 
-**여기 적힌 명령은 지금 저장소가 돌리는 것이다.** [Expo 골격](../3-build/plans/expo-scaffold.md)이 서는 중이라 아직 안 옮겨진 자리가 있다 — vitest는 Jest로, 걷어낸 e2e는 Maestro나 Detox로 간다. 그 둘이 옮겨지면 이 문서가 따라간다.
+**여기 적힌 명령은 지금 저장소가 돌리는 것이다.** [Expo 골격](../3-build/plans/expo-scaffold.md)이 서는 중이라 아직 안 옮겨진 자리가 하나 있다 — 걷어낸 e2e가 Maestro나 Detox로 간다. 그것이 정해지면 이 문서가 따라간다.
 
 ## 명령
 
@@ -35,7 +35,7 @@
 ### `pnpm test`
 
 - 전제: `pnpm install --frozen-lockfile`이 끝나 있다. unit만 돌아 Docker가 필요 없다.
-- 실행: `pnpm test` — `vitest run --project unit`.
+- 실행: `pnpm test` — `jest`. 갈래는 `jest.config.js`의 `testMatch`가 가르고 integration은 부정 glob으로 빠진다.
 - 정상 결과: 실패 0. `tests/lint/`의 문서 검사도 여기서 같이 돈다 — [`pnpm test`에 끼는 문서 검사](#pnpm-test에-끼는-문서-검사).
 - 실패할 때: 첫 테스트가 타임아웃에서 흔들리거나 픽스처 표기가 어긋나면 [돌릴 때](#돌릴-때)를 본다.
 - 근거 위치: PR의 `ci` 워크플로 `pnpm test` 단계.
@@ -43,7 +43,7 @@
 ### `pnpm test:integration`
 
 - 전제: 로컬 Docker가 떠 있다. 스택이 이미 떠 있으면 `pnpm test:integration:run`으로 기동을 건너뛴다.
-- 실행: `pnpm test:integration` — `supabase start` 뒤 `supabase migration up && vitest run --project integration`.
+- 실행: `pnpm test:integration` — `supabase start` 뒤 `supabase migration up && jest --config jest.integration.config.js`.
 - 정상 결과: 실패 0.
 - 실패할 때: 가입 한도와 로그 읽는 자리는 [integration과 e2e](#integration과-e2e)가 든다.
 - 근거 위치: CI는 테스트가 쓰는 서비스만 `supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime`으로 띄우고 `pnpm test:integration:run`을 돌린다.
@@ -62,7 +62,7 @@
 
 ### 파일을 골라 실행
 
-작성 중에는 바꾼 파일부터 실행한다. 아래는 현재 존재하는 테스트 경로다. `pnpm test`는 unit 프로젝트만 실행하며 integration은 실행하지 않는다.
+작성 중에는 바꾼 파일부터 실행한다. 아래는 현재 존재하는 테스트 경로다. `pnpm test`는 unit만 집고 integration은 실행하지 않는다.
 
 ```sh
 pnpm test src/shared/lib/__tests__/resolve-auth-destination.test.ts
@@ -73,20 +73,21 @@ integration은 준비와 러너 호출을 나눈다. integration 스크립트는
 ```sh
 supabase start
 supabase migration up
-pnpm exec vitest run --project integration src/entities/profile/dals/__tests__/ensure-profile.integration.test.ts
+pnpm exec jest --config jest.integration.config.js src/entities/profile/dals/__tests__/ensure-profile.integration.test.ts
 ```
 
 ## CI와 결과 위치
 
 현재 [ci.yml](../../.github/workflows/ci.yml)의 동작이다. 로컬에서 파일별 검증을 마친 뒤 최종 검증 범위는 이 검사와 작업별 검증 표를 함께 따른다.
 
-- `docs/`·`.claude/`·루트 마크다운만 바뀐 PR은 뒤쪽 넷(integration·build·e2e·supabase 기동)을 건너뛴다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨진다.
-- 나머지 PR과 main push는 Supabase 기동 → integration → 앱 설정 주입 → build → Chromium 설치 → e2e까지 실행한다. 현재 제외한 Supabase 서비스를 새 테스트가 필요로 하면 CI 기동 범위도 함께 맞춘다.
+- `docs/`·`.claude/`·루트 마크다운만 바뀐 PR은 뒤쪽 둘(supabase 기동·integration)을 건너뛴다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨진다.
+- 나머지 PR과 main push는 Supabase 기동 → integration까지 실행한다. 현재 제외한 Supabase 서비스를 새 테스트가 필요로 하면 CI 기동 범위도 함께 맞춘다.
+- 앱을 빌드하는 단계와 e2e가 CI에 없다. 빌드는 EAS 설정과 같이 서고 e2e는 러너를 고르고 나서다.
 - PR은 승인된 spec 입력 변경에 대한 「영향 확인」 검사도 실행한다. 구체적인 명령과 대상은 [문서 검사](#pnpm-test에-끼는-문서-검사)에 있다.
 
 | 근거 | 현재 위치와 한계 |
 | --- | --- |
-| 정적 검사·Vitest 결과 | 로컬 터미널 출력 또는 GitHub Actions의 명령별 로그 |
+| 정적 검사·Jest 결과 | 로컬 터미널 출력 또는 GitHub Actions의 명령별 로그 |
 | CI 파일 산출물 | 현재 workflow에 artifact 업로드 단계가 없음. trace의 영구 공유 링크가 있다고 가정하지 않음 |
 | 수동·실기기 결과 | [evidence](README.md#evidence)에 절차·실제 결과와 보관한 근거 위치를 기록 |
 
@@ -126,11 +127,12 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 integration이 스키마·함수를 찾지 못하면 마이그레이션의 적용 누락과 아직 구현할 스키마를 구별한다. writer는 임의로 마이그레이션을 만들지 않고 준비가 필요한 범위를 보고한다.
 
 - `.prettierignore`가 `*.md`를 거른다. 문서에 prettier를 돌려도 아무 일도 안 한다.
-- vitest가 `EXPO_PUBLIC_*`을 `process.env`에 안 얹는다 — Vite의 `envPrefix` 기본값이 `VITE_`라서다. env를 읽는 코드는 `vi.stubEnv`로 채운다.
+- env를 갈아끼우는 헬퍼가 러너에 없다. `process.env`를 직접 쓰고 `afterEach`에서 원래 값으로 되돌린다 — 없던 키는 지운다. `read-supabase-env.test.ts`가 그 자리고, 두 번째 파일이 필요해지면 그때 공용으로 뺀다.
 - `tests/lint/.tmp-format-check/`를 `.gitignore`에 넣지 않는다. Prettier 3이 `.gitignore`를 ignore 파일로 읽어 픽스처를 건너뛰면 `--check`가 조용히 0으로 끝난다.
 - `pnpm typecheck`가 `@supabase/supabase-js`를 못 찾으면 `pnpm install --frozen-lockfile`.
 - `tests/lint/`를 worktree 여럿에서 동시에 돌리면 첫 테스트가 기본 5초 타임아웃에서 흔들린다(`new ESLint()` 로드 비용). `--testTimeout=60000`.
-- `vitest.config.ts`가 CommonJS로 읽히는데 ESM 문법이라 경고가 뜬다. 동작에는 영향이 없다.
+- 테스트를 ESM으로 돌려서 `NODE_OPTIONS=--experimental-vm-modules`가 스크립트에 박혀 있다. `scripts/generate-globals-css.mts`의 최상위 `await`과 `import.meta.url` 때문이고, 그 둘은 `pnpm tokens:css`가 그 파일을 직접 실행할 때 필요한 것이라 러너에 맞춰 걷지 않는다. 같은 이유로 `jest.mock()`이 안 먹는다 — 대역이 필요하면 `jest.unstable_mockModule`과 동적 import다.
+- `babel.config.js`가 없어서 `jest.config.js`가 babel preset을 직접 물고 있다. 그 파일이 생기면 `.mts`를 TypeScript로 보게 하는 override와 `transformImportMeta: false`가 같이 따라가야 한다.
 - type-aware lint(`no-floating-promises` 등)는 속도 때문에 안 켜져 있다. await 빠진 Supabase 호출은 lint가 못 잡는다.
 - 디자인 값 lint 규칙은 `src/**/__tests__/**`를 예외로 둔다 — 대조 테스트가 픽스처로 oklch 리터럴을 쥔다.
 - 테스트 픽스처의 표기 — `generate-globals-css.test.ts`의 기대값은 prettier가 정규화한 표기(`rgba(28, 25, 22, 0.05)`)고 `tokens.md` 원문은 축약 표기다. 표에서 그대로 복사하면 틀린다.

@@ -1,6 +1,6 @@
 ---
 name: integration-test-writer
-description: integration 테스트를 쓰는 작성자. test-planner가 integration으로 배정한 리스크를 받아 로컬 Supabase에 붙는 실패하는 vitest 테스트를 쓰고 실패를 확인한다. 구현하지 않는다.
+description: integration 테스트를 쓰는 작성자. test-planner가 integration으로 배정한 리스크를 받아 로컬 Supabase에 붙는 실패하는 Jest 테스트를 쓰고 실패를 확인한다. 구현하지 않는다.
 model: sonnet
 tools: Read, Grep, Glob, Edit, Write, Bash
 ---
@@ -19,7 +19,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 
 대상 파일과 같은 레벨의 `__tests__`에 두고 이름에 `.integration`을 넣는다. `src/entities/schedule/dals/assignment.ts`면 `src/entities/schedule/dals/__tests__/assignment.integration.test.ts`다. 훅이 이 경로를 짝으로 인정한다.
 
-러너는 vitest이고 `pnpm test:integration`으로 돈다. `pnpm test`는 unit만 집으므로 여기 쓴 테스트는 거기 안 뜬다.
+러너는 Jest이고 `pnpm test:integration`으로 돈다. `pnpm test`는 unit만 집으므로 여기 쓴 테스트는 거기 안 뜬다. `describe`·`it`·`expect`는 전역이라 import하지 않는다.
 
 ## 진짜 DB에 붙는다
 
@@ -57,7 +57,7 @@ RLS를 검증하는 테스트는 실제 사용자 세션 둘을 만들어 한쪽
 
 ```
 supabase migration up
-pnpm exec vitest run --project integration <파일 경로>
+pnpm exec jest --config jest.integration.config.js <파일 경로>
 ```
 
 대상이 아직 없어서 나는 실패는 정상이다. 그 문구를 리턴에 적는다.

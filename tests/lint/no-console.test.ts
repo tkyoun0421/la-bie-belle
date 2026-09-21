@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { errorsOf, violationsOf } from "@tests/lint/rule-check";
 
 const NO_CONSOLE = "no-console";
