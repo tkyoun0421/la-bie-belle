@@ -403,7 +403,7 @@ code {
 .sb-right { display: flex; align-items: center; gap: 5px; }
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; padding: 4px 24px 14px; min-height: 44px;
+  gap: 8px; padding: 4px 24px 12px; min-height: 44px;
 }
 .appbar .date { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 .brandmark {
@@ -411,7 +411,7 @@ code {
   color: var(--fg-brand-contrast); display: grid; place-items: center;
   font-size: var(--t-xs); font-weight: 700; flex: 0 0 auto;
 }
-/* 종 아이콘 — components.md의 「종 아이콘」. 브랜드 마크 왼쪽, 사이 gap-2.5(10px) */
+/* 종 아이콘 — components.md의 「종 아이콘」. 브랜드 마크 왼쪽, 사이 gap-2(8px) */
 .appbar-right { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 .bell {
   position: relative; flex: 0 0 auto; width: 28px; height: 28px;
@@ -429,9 +429,9 @@ code {
 .body { flex: 1 1 auto; padding: 0 24px; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
-.daybar { padding-top: 26px; }
+.daybar { padding-top: 24px; }
 .bandtop {
-  display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px;
 }
 .bandtop .pct {
   font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 600;
@@ -451,7 +451,7 @@ code {
   background: var(--bg-neutral-solid);
 }
 .bandends {
-  margin-top: 8px; display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  margin-top: 8px; display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
   font-size: var(--t-xs); line-height: var(--lh-xs);
   color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums;
 }
@@ -466,7 +466,7 @@ code {
 .headline.off { color: var(--fg-neutral-muted); font-weight: 600; }
 
 .rule { height: 1px; background: var(--stroke-neutral); }
-.kv { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 11px 0; }
+.kv { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 0; }
 .kv .k { font-size: var(--t-sm); color: var(--fg-neutral-muted); }
 .kv .v { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; font-variant-numeric: tabular-nums; }
 .kv .v.none { color: var(--fg-neutral-subtle); font-weight: 500; }
@@ -510,13 +510,13 @@ code {
   transition: opacity var(--d-base) ease-out, transform var(--d-slow) ease-out;
 }
 .noti-meta {
-  grid-row: 2; grid-column: 2; margin-top: 5px; min-height: 30px;
+  grid-row: 2; grid-column: 2; margin-top: 4px; min-height: 30px;
   display: flex; align-items: center; gap: 12px;
 }
 .noti-meta > .noti-cta { flex: 0 0 auto; margin-left: auto; align-self: center; }
 .noti-cta.pair { display: flex; align-items: center; gap: 6px; }
 .noti-item .unread {
-  grid-area: 1 / 1; align-self: start; margin-top: 9px;
+  grid-area: 1 / 1; align-self: start; margin-top: 8px;
   width: 6px; height: 6px; border-radius: 999px; background: var(--bg-brand-solid);
 }
 .noti-item .donemark { grid-area: 1 / 1; align-self: start; margin-top: 4px; display: grid; place-items: center; color: var(--fg-positive); }
@@ -528,7 +528,7 @@ code {
 }
 /* 제목의 「아래 줄」 — notifications.md 알림 제목 표가 정한 것. 이 화면만 제목 아래 줄까지 그린다(dashboard.md) */
 .noti-item .noti-sub {
-  grid-column: 2; margin-top: 3px;
+  grid-column: 2; margin-top: 4px;
   font-size: var(--t-xs); line-height: var(--lh-xs);
   color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums;
 }
@@ -588,13 +588,13 @@ code {
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 10px 24px 24px; border-top: 1px solid var(--stroke-neutral);
+  padding: 8px 24px 24px; border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) cubic-bezier(.2,.8,.25,1);
 }
 .mock.modal-open .rsheet { transform: none; }
 
 .field { margin-top: 16px; }
-.frow { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.frow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
 .field .lab { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 .cnt { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 .cnt.full { color: var(--fg-critical); font-weight: 600; }
@@ -613,11 +613,11 @@ code {
 .field .box.ro { border-color: transparent; color: var(--fg-neutral-muted); min-height: 0; }
 .caret { display: inline-block; width: 1.5px; height: 1.02em; background: var(--fg-brand); vertical-align: -2px; animation: caret 1s steps(1, end) infinite; }
 @keyframes caret { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
-.rowbtns { display: flex; gap: 8px; margin-top: 18px; }
+.rowbtns { display: flex; gap: 8px; margin-top: 16px; }
 .rowbtns .btn { margin-top: 0; }
 .rowbtns .btn.secondary { flex: 0 0 100px; }
 
-.rres { display: grid; place-items: center; text-align: center; padding: 10px 0 2px; }
+.rres { display: grid; place-items: center; text-align: center; padding: 8px 0 2px; }
 .mark { position: relative; width: 96px; height: 96px; display: grid; place-items: center; margin-bottom: 16px; }
 .mark .disc {
   width: 64px; height: 64px; border-radius: 999px; display: grid; place-items: center;
@@ -639,7 +639,7 @@ code {
   70% { transform: translateX(-4px); } 84% { transform: translateX(2px); } 100% { transform: none; }
 }
 .rres .rt { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 700; letter-spacing: -.01em; }
-.rres .rb { margin-top: 5px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.rres .rb { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 .rres .rb .num { font-variant-numeric: tabular-nums; }
 
 .rsheet.lifted { bottom: 232px; }
@@ -670,7 +670,7 @@ code {
 .linkbtn:hover { color: var(--fg-neutral); }
 .linkbtn:focus-visible { outline: 2px solid var(--stroke-brand-solid); outline-offset: 2px; border-radius: var(--r-xs); }
 
-.block { border-radius: var(--r-lg); padding: 14px 16px; display: flex; gap: 11px; align-items: flex-start; }
+.block { border-radius: var(--r-lg); padding: 16px; display: flex; gap: 12px; align-items: flex-start; }
 .block.warn { background: var(--bg-warning-weak); }
 .block.ok { background: var(--bg-positive-weak); }
 .block .bt { display: block; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 600; color: var(--fg-neutral); }
@@ -1201,7 +1201,7 @@ code {
                 <span class="said"><span class="num">9:52</span>에 출근 인증했어요</span> · 안내 · <span class="num">9시간</span>
               </div>
             </div>
-            <div class="rule" style="margin-top:22px"></div>
+            <div class="rule" style="margin-top:20px"></div>
             <div class="kv" style="padding-bottom:0"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
             <div class="weekstrip">
               <div class="wcol"><span class="wd">월</span><i class="wdot off"></i></div>
@@ -1370,7 +1370,7 @@ code {
                 <span class="said"><span class="num">10:52</span>에 출근 인증했어요</span> · 안내 · <span class="num">9시간</span>
               </div>
             </div>
-            <div class="rule" style="margin-top:22px"></div>
+            <div class="rule" style="margin-top:20px"></div>
             <div class="kv" style="padding-bottom:0"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
             <div class="weekstrip">
               <div class="wcol"><span class="wd">월</span><i class="wdot off"></i></div>
@@ -1668,7 +1668,7 @@ code {
               <div class="headline off" style="margin-bottom:20px">오늘은 근무가 없어요</div>
               <div class="barnote" style="margin-top:0">다음 근무는 <span class="num">9월 12일(토) 10:00</span>이에요</div>
             </div>
-            <div class="rule" style="margin-top:22px"></div>
+            <div class="rule" style="margin-top:20px"></div>
             <div class="kv" style="padding-bottom:0"><span class="k">이번 주 근무</span><span class="v num">3일</span></div>
             <div class="weekstrip">
               <div class="wcol"><span class="wd">월</span><i class="wdot off"></i></div>
@@ -1747,7 +1747,7 @@ code {
               <div class="headline off" style="margin-bottom:20px">이번 주는 근무가 없어요</div>
               <div class="barnote" style="margin-top:0">다음 근무는 <span class="num">9월 15일(화) 10:00</span>이에요</div>
             </div>
-            <div class="rule" style="margin-top:22px"></div>
+            <div class="rule" style="margin-top:20px"></div>
             <div class="kv" style="padding-bottom:0"><span class="k">이번 주 근무</span><span class="v none">–</span></div>
             <div class="weekstrip">
               <div class="wcol"><span class="wd">월</span><i class="wdot off"></i></div>
@@ -1827,7 +1827,7 @@ code {
               <div class="track" style="background:transparent;border:1px dashed var(--stroke-neutral-muted)"></div>
               <div class="barnote">관리자가 확정하면 알려드릴게요</div>
             </div>
-            <div class="rule" style="margin-top:22px"></div>
+            <div class="rule" style="margin-top:20px"></div>
             <div class="kv" style="padding-bottom:0"><span class="k">이번 주 근무</span><span class="v none">–</span></div>
             <div class="weekstrip">
               <div class="wcol"><span class="wd">월</span><i class="wdot off"></i></div>

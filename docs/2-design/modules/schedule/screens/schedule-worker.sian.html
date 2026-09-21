@@ -78,6 +78,11 @@
   본문 곳곳의 상호 참조 숫자(예: 「01·10·11의」, 「03의 마감 규칙」, 「09 / REQUEST · LATE」)를
   전부 다시 매겨야 하는데, 그 범위가 이 개정의 위험을 넘는다고 판단해 절 번호는 안 밀고
   끝에 붙이는 쪽을 택했다 — 총괄 검토가 필요한 자리다.
+
+  이번 손질은 여백 값을 tokens.md 4절의 열세 눈금 안으로 당긴 것뿐이다. 배치나 크기는
+  안 바꿨다 — viewbar·yearrow의 gap, ctabar·rsheet의 위쪽 padding과 grab의 아래쪽
+  margin, toast·mrow·mrow.me·pickrow의 gap과 padding, badge의 위아래 padding, field와
+  errbox의 margin-top·padding·gap이 대상이다.
 -->
 <title>근무자 근무표 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -576,7 +581,7 @@ body.view-scene .stage.scene-live { display: block; }
 .linkbtn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 
 /* 보기 전환 세그먼트 · 내 근무만 */
-.viewbar { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 2px 0 12px; }
+.viewbar { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; padding: 2px 0 12px; }
 /* 세그먼트 — components.md 「세그먼트」 표 값 그대로: 트랙 높이 44px, 안쪽 여백 4px,
    칸 36px, 선택 칸 10px. 트랙 안쪽 여백이 이미 닿는 면을 44px로 채우니 ::after가 필요 없다 */
 .seg { display: inline-flex; background: var(--bg-neutral-weak); border-radius: var(--r-lg); padding: 4px; }
@@ -660,7 +665,7 @@ body.view-scene .stage.scene-live { display: block; }
 .waitline { margin-top: 6px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 .body > .waitline:first-child { margin-top: 4px; }
 /* BottomCTA — components.md의 정의대로 컨테이너는 bg.neutral에 위쪽 선 stroke.neutral, 버튼은 Button primary다 */
-.ctabar { flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding: 10px 24px 22px; }
+.ctabar { flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding: 12px 24px 24px; }
 
 /* 바텀시트와 덮개 */
 .scrim {
@@ -671,18 +676,18 @@ body.view-scene .stage.scene-live { display: block; }
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 10px 24px 24px; border-top: 1px solid var(--stroke-neutral);
+  padding: 12px 24px 24px; border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) ease-out;
 }
 .mock.modal-open .rsheet { transform: none; }
-.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 10px; }
+.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 8px; }
 .sh-title { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 600; letter-spacing: -.01em; }
 .sh-sub { margin-top: 2px; margin-bottom: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 
 /* 02/달 고르기 시트 — 연도 줄은 앱바의 달 이동과 같은 화살표를 쓴다(schedule-worker.md
    「달 고르기 시트」: 「같은 손짓으로 읽힌다」). 월 12칸은 4열 3행, CTA가 없다 — 고르는
    것이 곧 이동이라 확인을 한 번 더 받을 것이 없다 */
-.yearrow { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 4px 0 16px; }
+.yearrow { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 4px 0 16px; }
 .yearrow .nav { position: relative; color: var(--fg-neutral-muted); display: grid; place-items: center; cursor: pointer; }
 .yearrow .nav::after { content: ""; position: absolute; inset: -14px; }
 .yearrow .yr { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 600; letter-spacing: -.01em; }
@@ -706,7 +711,7 @@ body.view-scene .stage.scene-live { display: block; }
   position: absolute; left: 24px; right: 24px; bottom: 56px; z-index: 6; margin: 0 auto; width: fit-content;
   display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
-  border-radius: var(--r-lg); padding: 11px 20px;
+  border-radius: var(--r-lg); padding: 12px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
   border: 1px solid var(--stroke-neutral);
 }
@@ -727,7 +732,7 @@ body.view-scene .stage.scene-live { display: block; }
    최은우). 인증 상태가 사람에게 붙는 것이라 한 줄에 둘을 세우면 상태를 어디에 매달지
    정할 수 없어서다 */
 .mrow {
-  display: flex; align-items: center; gap: 10px; padding: 8px 0;
+  display: flex; align-items: center; gap: 8px; padding: 8px 0;
   border-bottom: 1px solid var(--stroke-neutral);
   font-size: var(--t-sm); line-height: var(--lh-sm);
 }
@@ -735,9 +740,9 @@ body.view-scene .stage.scene-live { display: block; }
 .mrow .pos { flex: 0 0 62px; color: var(--fg-neutral-subtle); font-size: var(--t-xs); line-height: var(--lh-xs); }
 .mrow .nm { font-weight: 500; }
 .mrow .nm.vacant { font-weight: 400; color: var(--fg-neutral-subtle); }
-.mrow.me { background: var(--bg-brand-weak); margin: 0 -10px; padding: 8px 10px; border-radius: var(--r-sm); border-bottom: 0; }
+.mrow.me { background: var(--bg-brand-weak); margin: 0 -8px; padding: 8px 8px; border-radius: var(--r-sm); border-bottom: 0; }
 .mrow .meflag { margin-left: auto; font-size: var(--t-xs); color: var(--fg-brand); font-weight: 500; }
-.badge { display: inline-flex; align-items: center; border-radius: var(--r-sm); padding: 1px 8px; font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
+.badge { display: inline-flex; align-items: center; border-radius: var(--r-sm); padding: 2px 8px; font-size: var(--t-xs); line-height: var(--lh-xs); font-weight: 500; }
 .badge.neutral { background: var(--bg-neutral-weak); color: var(--fg-neutral-muted); }
 
 /* 05/인증 상태 — schedule-worker.md 「인증 상태」. 여섯 다 fg.neutral-muted고 색으로 안
@@ -746,7 +751,7 @@ body.view-scene .stage.scene-live { display: block; }
 .mrow .att { margin-left: auto; flex: 0 0 auto; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 /* 내 줄은 이미 「나」가 margin-left:auto로 오른쪽 끝을 차지한다. 「나」가 왼쪽, 인증 상태가
    그 오른쪽이라고 문서 「날 시트」 절이 못 박아 한 묶음으로 둔다 */
-.mrow.me .right { margin-left: auto; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 10px; }
+.mrow.me .right { margin-left: auto; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; }
 .mrow.me .right .meflag { margin-left: 0; }
 .mrow.me .right .att { margin-left: 0; }
 /* 현황 줄 — 부제 아래 명단 위. fg.neutral-subtle · text-xs, 부제와의 사이는 mt-2(8px)로
@@ -779,7 +784,7 @@ body.view-scene .stage.scene-live { display: block; }
 
 /* 교대 후보 목록 */
 .pickrow {
-  display: flex; align-items: center; gap: 10px; padding: 9px 0;
+  display: flex; align-items: center; gap: 8px; padding: 8px 0;
   border-bottom: 1px solid var(--stroke-neutral); cursor: pointer;
   font-size: var(--t-sm); line-height: var(--lh-sm);
 }
@@ -799,7 +804,7 @@ body.view-scene .stage.scene-live { display: block; }
 .pickrow.sel .ring { background: var(--bg-brand-solid); border-color: var(--stroke-brand-solid); color: var(--fg-brand-contrast); }
 
 /* 사유 입력 — components.md Input */
-.field { margin-top: 14px; }
+.field { margin-top: 16px; }
 .field .lab { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); margin-bottom: 6px; }
 .field .box {
   border-radius: var(--r-md); background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
@@ -811,9 +816,9 @@ body.view-scene .stage.scene-live { display: block; }
 
 /* 13/실패와 경합 — 오류 블록. components.md 알림 블록의 오류 계열이다. 배경 bg.critical-weak, 글자 fg.neutral, 뜻은 아이콘(fg.critical)이 나른다 */
 .errbox {
-  margin-top: 14px; border-radius: var(--r-lg); background: var(--bg-critical-weak); color: var(--fg-neutral);
-  padding: 12px 14px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
-  display: flex; gap: 10px;
+  margin-top: 16px; border-radius: var(--r-lg); background: var(--bg-critical-weak); color: var(--fg-neutral);
+  padding: 12px 12px; font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 500;
+  display: flex; gap: 8px;
 }
 .errbox .bi { flex: 0 0 auto; margin-top: 2px; color: var(--fg-critical); }
 
