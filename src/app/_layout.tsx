@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 
-import "./globals.css";
+import "@/app/globals.css";
 
 /**
  * 층 셋이 나란히 선다 — 게이트·근무자 탭·관리자([navigation.md]의 「세 층」).

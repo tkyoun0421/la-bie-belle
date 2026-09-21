@@ -470,40 +470,37 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 
 ## 8. CSS 전문
 
-**이 절은 웹 전제다.** [ADR-011](../adr/ADR-011-expo-native-app.md)이 Expo로 옮기기로 하면서 `@theme inline`도 shadcn 다리도 `@custom-variant dark`도 갈 자리가 없어진다. 앞 절들이 정한 값은 그대로 남고 그 값을 코드에 옮기는 방법만 바뀌는데, 그 방법은 Expo 골격을 세울 때 정해서 이 절을 통째로 다시 쓴다. 지금 저장소의 `src/app/globals.css`는 아직 웹이라 이 절이 그것의 정본으로 서 있다.
-
 `src/app/globals.css`는 이 파일에서 만든다. `pnpm tokens:css`가 앞 절의 표를 읽어 CSS 한 벌을 새로 쓴다. globals.css를 손으로 고치지 않는다. 다음 실행이 덮는다.
+
+앱은 브라우저가 아니라 React Native다. NativeWind가 이 CSS를 빌드 때 읽어 스타일로 옮기고, 그 컴파일러가 안 받는 문법은 빌드가 실패하거나 조용히 빠진다. 그래서 이 절은 웹에서 되던 것이 아니라 **거기서 도는 것**을 적는다.
 
 앞 절 표에서 나오는 것은 여기 사본을 두지 않는다. 팔레트도 역할 토큰도 타이포 스케일도 라운딩도 모션도 바깥 값도 자기 절이 정본이고, 같은 값을 여기 옮겨 적으면 두 곳이 언젠가 어긋난다.
 
-그래서 이 절에 남은 것은 아래 넷뿐이다. 표로 담을 수 없는 뼈대라 이 절이 그것들의 유일한 정본이고, 코드펜스 안을 고치면 다음 생성이 그대로 옮겨 담는다.
+그래서 이 절에 남은 것은 아래 둘뿐이다. 표로 담을 수 없는 뼈대라 이 절이 그것들의 유일한 정본이고, 코드펜스 안을 고치면 다음 생성이 그대로 옮겨 담는다.
 
-블록 선택자와 `color-scheme`은 여기 없다. `:root`와 `@media (prefers-color-scheme: dark)`와 `:root:not([data-theme="light"])`와 `[data-theme="dark"]`는 생성기가 세운다. 팔레트 칸이 `—`인 역할 토큰이 푸는 `--surface-*` 변수들도 없다 — 그 행은 라이트·다크 칸이 곧 값이라 생성기가 2절 표에서 그대로 읽는다.
+블록 선택자는 여기 없다. `:root`와 `@media (prefers-color-scheme: dark)`는 생성기가 세운다. 팔레트 칸이 `—`인 역할 토큰이 푸는 `--surface-*` 변수들도 없다 — 그 행은 라이트·다크 칸이 곧 값이라 생성기가 2절 표에서 그대로 읽는다.
 
-`@theme inline`을 쓰는 이유는 Tailwind 4의 동작 때문이다. 그냥 `@theme`은 값을 `:root`에서 한 번 굳혀버려서, 다크에서 팔레트가 바뀌어도 유틸이 옛 값을 계속 가리킨다. `inline`은 유틸에 `var()`를 그대로 심어 요소 자리에서 값을 풀게 한다.
+**다크 갈래가 미디어 쿼리 하나다.** 웹에서는 `[data-theme="dark"]` 속성과 `prefers-color-scheme`을 둘 다 받았는데, 네이티브 컴파일러가 `:root`에 클래스나 속성이 붙은 선택자를 거부한다 — 에러 문구가 「Class-qualified `:root` selectors are unsupported on native. Use `@media (prefers-color-scheme: dark)` for dark mode, and React Native `Appearance.setColorScheme()` for manual selection」이다. 앱에서 「밝게·어둡게」를 고르는 길은 선택자가 아니라 `Appearance.setColorScheme()`이고, 그것이 미디어 쿼리가 보는 값을 바꾼다.
+
+**`@theme inline`을 쓴다.** 그냥 `@theme`은 값을 `:root`에서 한 번 굳혀버려서, 다크에서 팔레트가 바뀌어도 유틸이 옛 값을 계속 가리킨다. `inline`은 유틸에 `var()`를 그대로 심어 값을 나중에 풀게 한다.
 
 ### 8.1 뼈대
 
 파일 맨 앞에 그대로 놓인다.
 
-`tw-animate-css`는 [motion.md](foundation/motion.md)가 지목하는 등장 유틸(`animate-in`·`fade-in`·`zoom-in-95` 등)의 출처다. import가 없으면 그 유틸이 존재하지 않아 모션 조항을 코드가 지킬 수 없다 — login-screens 검수 1회차가 그 어긋남을 잡았다.
+**import가 넷으로 쪼개진다.** `@import "tailwindcss"` 한 줄 대신 theme·preflight·utilities를 레이어와 함께 따로 부르고 `nativewind/theme`를 뒤에 붙인다. 한 줄로 부르면 유틸이 캐스케이드에서 밀릴 수 있다.
 
-`@custom-variant dark`가 팔레트를 뒤집는 조건을 `dark:` 유틸리티 쪽에도 건다. Tailwind의 기본 `dark:`는 미디어 쿼리만 보기 때문에, 이것이 없으면 팔레트는 `[data-theme="dark"]`를 따라 뒤집히는데 `dark:` 클래스를 단 자리만 라이트로 남는다. 갈래 둘의 조건이 생성기가 세우는 팔레트 블록 둘과 정확히 같아야 한다. `[data-theme="light"]`가 붙어 있으면 기기가 다크여도 라이트로 남는다.
+**`:root`의 `font-size`가 rem의 자다.** 네이티브 컴파일러는 기본 rem을 14로 잡는다 — 그대로 두면 `--spacing`이 0.25rem이라 `p-6`이 24가 아니라 21이 되고 `text-base`가 17이 아니라 14.875가 된다. 컴파일러가 이 선언을 찾아 배수로 쓰니 16을 박아 4절 눈금과 3절 스케일을 px 그대로 세운다. metro 설정으로 바꾸던 길은 막혔다.
 
 ```css
-@import "tailwindcss";
-@import "tw-animate-css";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
 
-@custom-variant dark {
-  &:where([data-theme="dark"], [data-theme="dark"] *) {
-    @slot;
-  }
+@import "nativewind/theme";
 
-  @media (prefers-color-scheme: dark) {
-    &:where(:not([data-theme="light"], [data-theme="light"] *)) {
-      @slot;
-    }
-  }
+:root {
+  font-size: 16px;
 }
 ```
 
@@ -511,7 +508,7 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 
 Tailwind가 기본으로 들고 오는 것 중 안 쓰는 것을 지우고 서체를 건다. 값이 아니라 「지운다」는 선언이라 표로 담을 자리가 없다.
 
-펜스 둘이고 순서가 곧 자리다. 첫 펜스는 `@theme` 블록 끝에, 둘째 펜스는 `@theme inline` 블록 머리에 들어간다.
+펜스 둘이고 순서가 곧 자리다. 첫 펜스는 `@theme` 블록 끝에, 둘째 펜스는 그 뒤에 들어간다.
 
 무엇을 왜 지웠는지는 [3절](#3-타이포그래피)과 [5절](#5-라운딩)에 있다. 크기는 `text-3xl`까지, 굵기는 넷, 라운딩은 `rounded-xl`까지가 전부다.
 
@@ -536,88 +533,20 @@ Tailwind가 기본으로 들고 오는 것 중 안 쓰는 것을 지우고 서�
 
 `--color-*: initial`은 Tailwind가 들고 오는 기본 팔레트를 지운다. 지우지 않으면 `bg-red-500`이 그대로 먹혀서 우리 팔레트 밖 색이 화면에 섞인다. `bg-white`와 `text-black`도 같이 사라지니 흰 면은 `bg-bg-neutral`을 쓴다.
 
-`--font-sans`의 첫 자리가 [서체 연결](#서체-연결)의 스타일시트가 선언하는 이름이다. 뒤의 넷은 그 폰트를 못 받았을 때의 대체다.
+**굵기마다 서체 이름이 다르다.** 웹은 한 패밀리에 `font-weight`를 얹으면 됐지만, 네이티브는 숫자 굵기로 파일을 고르지 않고 이름으로 고른다 — [서체 연결](#서체-연결)의 정적 넷이 각각 제 이름으로 불린다. 그래서 `--font-*`가 넷이고 `font-sans`가 기본인 Regular를 가리킨다. 굵기를 바꾸는 자리는 `font-medium`이 아니라 `font-medium` 유틸이 가리키는 패밀리다 — 실제로 어느 유틸이 무엇을 부르는지는 골격이 기기에서 확인하고 이 절이 따라간다([expo-scaffold](../../3-build/plans/expo-scaffold.md)).
 
 ```css
   --color-*: initial;
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  --font-sans:
-    "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui,
-    "Apple SD Gothic Neo", sans-serif;
+  --font-sans: "WantedSans-Regular";
+  --font-medium: "WantedSans-Medium";
+  --font-semibold: "WantedSans-SemiBold";
+  --font-bold: "WantedSans-Bold";
 ```
 
 `bg-bg-neutral`처럼 접두사가 겹쳐 보이는 것은 알고 둔 것이다. 역할 토큰 이름이 `bg.neutral`이고 Tailwind 유틸 접두사도 `bg-`라서다. 이름을 하나로 유지해야 위의 표에서 찾은 것을 그대로 옮겨 적을 수 있다.
-
-### 8.3 shadcn 다리
-
-shadcn/ui가 만들어내는 컴포넌트는 `bg-primary`, `text-muted-foreground`, `border-border` 같은 자기 이름을 쓴다. 이 이름들을 우리 역할 토큰에 연결해두면 컴포넌트를 설치한 그 순간부터 우리 색으로 나온다. 연결을 안 하면 shadcn 기본 색이 그대로 남는다.
-
-아래는 결정된 역할 토큰에서 기계적으로 끌어낸 것이다. 새로 정한 색은 없다. 그래도 표에서 뽑아내지 않고 펜스로 두는 것은, 이 짝이 우리 이름 체계가 아니라 shadcn의 이름 체계라서다. 우리 표에 shadcn의 이름을 담을 칸이 없다.
-
-| shadcn 이름 | 우리 역할 토큰 |
-| --- | --- |
-| `background` | `bg.neutral` |
-| `foreground` | `fg.neutral` |
-| `card` | `bg.neutral` |
-| `card-foreground` | `fg.neutral` |
-| `popover` | `bg.neutral` |
-| `popover-foreground` | `fg.neutral` |
-| `primary` | `bg.brand-solid` |
-| `primary-foreground` | `fg.brand-contrast` |
-| `secondary` | `bg.neutral-weak` |
-| `secondary-foreground` | `fg.neutral` |
-| `muted` | `bg.neutral-weak` |
-| `muted-foreground` | `fg.neutral-muted` |
-| `accent` | `bg.brand-weak` |
-| `accent-foreground` | `fg.brand` |
-| `destructive` | `bg.critical-solid` |
-| `destructive-foreground` | `fg.brand-contrast` |
-| `border` | `stroke.neutral` |
-| `input` | `stroke.neutral` |
-| `ring` | `stroke.brand-solid` |
-
-```css
-@theme inline {
-  --color-background: var(--role-bg-neutral);
-  --color-foreground: var(--role-fg-neutral);
-  --color-card: var(--role-bg-neutral);
-  --color-card-foreground: var(--role-fg-neutral);
-  --color-popover: var(--role-bg-neutral);
-  --color-popover-foreground: var(--role-fg-neutral);
-  --color-primary: var(--role-bg-brand-solid);
-  --color-primary-foreground: var(--role-fg-brand-contrast);
-  --color-secondary: var(--role-bg-neutral-weak);
-  --color-secondary-foreground: var(--role-fg-neutral);
-  --color-muted: var(--role-bg-neutral-weak);
-  --color-muted-foreground: var(--role-fg-neutral-muted);
-  --color-accent: var(--role-bg-brand-weak);
-  --color-accent-foreground: var(--role-fg-brand);
-  --color-destructive: var(--role-bg-critical-solid);
-  --color-destructive-foreground: var(--role-fg-brand-contrast);
-  --color-border: var(--role-stroke-neutral);
-  --color-input: var(--role-stroke-neutral);
-  --color-ring: var(--role-stroke-brand-solid);
-}
-```
-
-`accent`가 `bg.brand-weak`로 간 것은 확인이 필요한 자리다. shadcn은 accent를 메뉴 hover 배경에 쓰는데, 그러면 드롭다운을 훑는 동안 브랜드 색이 계속 깜빡인다. [foundation/color.md](foundation/color.md#브랜드-색을-아끼는-이유)의 절제 규칙과 부딪히므로 실제 화면을 보고 `bg.neutral-weak`로 내릴지 판단한다.
-
-### 8.4 베이스
-
-body가 배경색과 글자색을 명시로 받는다. 파일 맨 뒤에 그대로 놓인다.
-
-```css
-@layer base {
-  body {
-    background-color: var(--role-bg-neutral);
-    color: var(--role-fg-neutral);
-  }
-}
-```
-
-`color-scheme: dark`만으로도 브라우저가 알아서 어두운 바탕을 깔지만 그 색은 브라우저마다 다르고 우리 `neutral-00`이 아니다. 화면 전체의 바탕이 팔레트 밖 색이면 그 위에 올린 면과 미세하게 어긋난다. `@layer base`에 두었으니 유틸리티가 언제나 이긴다.
 
 ---
 
