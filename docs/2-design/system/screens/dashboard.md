@@ -189,7 +189,7 @@
 | 자리 | 담는 것 | 토큰 |
 | --- | --- | --- |
 | 요일 머리 | 월~일 | `fg.neutral-subtle` |
-| 근무가 있는 날 | 4px 점 | `bg.chart-a` |
+| 근무가 있는 날 | 4px 점 | `bg.brand-solid` |
 | 근무가 없는 날 | 빈칸 | — |
 | 오늘 | 칸 아래 2px 밑줄 | `bg.neutral-solid` |
 
@@ -257,7 +257,7 @@
 | --- | --- |
 | 이름표 | 9월 |
 | 칸 | 가로 일곱, 날짜 숫자 |
-| 내 근무날 | `bg.chart-a` 4px 점 |
+| 내 근무날 | `bg.brand-solid` 4px 점 |
 | 오늘 | `bg.neutral-solid` 원 |
 
 **이번 주 줄과 역할이 다르다.** 위의 일곱 칸은 이번 주 요일을 말하고 이것은 한 달의 모양을 말한다 — 어느 주에 몰렸는지, 다음 주가 비었는지가 여기서 보인다.
@@ -330,7 +330,7 @@
 | 이름표 | `fg.neutral-subtle` |
 | 값 | `fg.neutral` |
 | 요일 머리 | `fg.neutral-subtle` |
-| 근무가 있는 날 점 | `bg.chart-a` |
+| 근무가 있는 날 점 | `bg.brand-solid` |
 | 오늘 밑줄 | `bg.neutral-solid` |
 | 지난주·지난달 대비 | `fg.neutral-subtle` |
 | 누적 보조 줄 | `fg.neutral-muted` |

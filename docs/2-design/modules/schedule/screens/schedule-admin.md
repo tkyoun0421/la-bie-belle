@@ -164,7 +164,7 @@
 | 이름표 | 오늘 날짜와 요일 | `fg.neutral-subtle` |
 | 값 | 그날 배정 인원 | `fg.neutral` |
 | 보조 | 출근·안 찍음 | `fg.neutral-muted` |
-| 띠 — 찍은 몫 | 출근과 지각을 합친 것 | `bg.chart-a` |
+| 띠 — 찍은 몫 | 출근과 지각을 합친 것 | `bg.brand-solid` |
 | 띠 — 안 찍은 몫 | 나머지 | `bg.neutral-weak` |
 
 **여기서는 지각을 따로 안 가른다.** 이 줄이 답하는 것은 「다 왔나」 하나고, 누가 늦었는지는 날 상세의 명단이 말한다. [통계](../../../system/screens/stats.md#근태-현황-줄)의 비율 띠가 넷으로 갈리는 것과 갈린다 — 그쪽은 달을 돌아보는 자리고 여기는 오늘을 보는 자리다.
@@ -198,7 +198,7 @@
 | --- | --- |
 | 이름표 | 10월 |
 | 칸 | 가로 일곱, 날짜 숫자 |
-| 칸 배경 | 배정 인원이 많을수록 진해진다 — `bg.chart-a-weak`에서 `bg.chart-a`로 |
+| 칸 배경 | 배정 인원이 많을수록 진해진다 — `bg.brand-weak`에서 `bg.brand-solid`로 |
 | 안 연 날 | 빈칸 |
 | 오늘 | `bg.neutral-solid` 원 |
 
@@ -247,10 +247,10 @@
 | 오늘 현황 이름표 | `fg.neutral-subtle` |
 | 오늘 현황 값 | `fg.neutral` |
 | 오늘 현황 보조 | `fg.neutral-muted` |
-| 오늘 현황 띠 — 찍은 몫 | `bg.chart-a` |
+| 오늘 현황 띠 — 찍은 몫 | `bg.brand-solid` |
 | 오늘 현황 띠 — 안 찍은 몫 | `bg.neutral-weak` |
 | 빈 자리 카드 | [components.md](../../../design-system/components.md#알림-블록)의 경고 |
-| 미니뷰 칸 | `bg.chart-a-weak`에서 `bg.chart-a`까지 |
+| 미니뷰 칸 | `bg.brand-weak`에서 `bg.brand-solid`까지 |
 | 미니뷰 오늘 | `bg.neutral-solid` 원에 `fg.neutral-contrast` |
 
 #### 관리자 홈 글자

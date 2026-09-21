@@ -27,7 +27,7 @@ account가 끝났다. 미정이 다 닫혔고(login·README·members-pending·me
 
 - **근무표는 달력 달이다** — 8월 근무표 = 8월 1일~8월 31일([SCH-010](2-design/modules/schedule/README.md#sch-010)). 주 묶음(8/3~9/6)을 버렸다. 급여 월 조회도 따라 달력 달이 됐고([PAY-022](2-design/modules/payroll/README.md#pay-022)) 달을 걸친 주는 날마다 갈린다. 화면에서는 범위 줄이 사라지고 그리드가 이 달 밖으로 남긴 칸은 빈칸이다
 - **교육 배정 행이 서면 그 자리에서 자격이다** — 교육 날이 안 왔어도, 출근 인증이 없어도 센다([SCH-013](2-design/modules/schedule/README.md#sch-013)). 거두는 길은 배정을 지우는 것 하나
-- **사람 픽커 줄 오른쪽 끝에 성별 기호**(lucide `Venus`/`Mars`, `fg.neutral-subtle`). 색으로는 안 가른다. **길게 누르면 사람 시트**가 겹쳐 올라온다 — 사진·이름·「♀ 여 · 98년생」·자격
+- **사람 픽커의 이름 바로 뒤에 성별 기호**(lucide `Venus`/`Mars`, `fg.neutral-subtle`). 색으로는 안 가른다. **길게 누르면 사람 시트**가 겹쳐 올라온다 — 사진·이름·「♀ 여 · 98년생」·자격
 - **나이는 만 나이가 아니라 년생**이다 — `98년생` 꼴([writing.md](2-design/design-system/writing.md#숫자와-단위))
 - **교육 배정도 인증을 찍는다**는 [ATT-020](2-design/modules/attendance/README.md#att-020)이 이미 닫아둔 것이라 화면 문서가 그것을 따랐다 — 부제와 현황 줄 인원에 든다
 - `emit_reminders`는 cron 항목 하나고 함수가 요일을 본다([notification/design.md](2-design/modules/notification/design.md#행위-밖의-실행-동작))
@@ -135,7 +135,7 @@ plan을 쓰며 가른 경계 셋이다.
 - **목록에도 그림이 붙는다** — 포지션 줄과 사람별 줄에 [줄 막대](2-design/design-system/components.md#줄-막대), 근태 현황 줄 아래에 [비율 띠](2-design/design-system/components.md#비율-띠)
 - **대시보드 넷이 두꺼워지고 아래 셋이 붙었다.** 이번 주 근무가 월~일 일곱 칸 스트립이 되고 예상 급여에 지난주 대비가 붙었다. 넷 아래에 이번 달 누적·다음 근무·[미니 달력](2-design/design-system/components.md#미니-달력)이 이어진다 — 근무가 없는 날에는 「다음 근무」가 빠진다. 띠 아래 한 줄이 이미 같은 말을 한다
 - **관리자 홈에 셋이 붙었다** — 오늘 현황과 진행 띠, 빈 자리 카드, 이번 달 근무표 미니뷰. 빈 자리 경고가 타일 요약 줄의 승격에서 타일 밖 카드로 나왔다. 오늘 현황의 띠는 몫이 **둘**이고 지각을 안 가른다 — 그 줄이 답하는 것은 「다 왔나」 하나다
-- **차트 전용 색 계열 셋을 새로 열었다**([tokens.md](2-design/design-system/tokens.md)의 `chart-a`·`chart-b`·`chart-c`). 색조가 브랜드(57)에서 멀고 채도가 브랜드 최대치 근처에서 막혀 통계 화면이 브랜드 버튼보다 크게 말하지 못한다. **좋고 나쁨을 안 싣는다** — [stats.md](2-design/system/screens/stats.md)의 「색으로 안 가른다」가 지키던 축(화면이 사람을 나무라지 않기)이 그대로 산다
+- **그림의 몫을 가르는 색이 셋이다** — 첫째가 브랜드, 둘째가 `sky`, 셋째가 `mint`다([foundation/color.md](2-design/design-system/foundation/color.md#그림이-색을-쓰는-법)). 차트 전용 계열 셋을 따로 열었다가 ADR-012가 브랜드를 진한 파랑으로 올리면서 그 전제(「차트가 브랜드보다 진하면 안 된다」)가 사라져 걷어냈다. **좋고 나쁨을 안 싣는다** — [stats.md](2-design/system/screens/stats.md)의 「색으로 안 가른다」가 지키던 축(화면이 사람을 나무라지 않기)이 그대로 산다
 - **차트는 브랜드 색 예산 밖이다**([foundation/color.md](2-design/design-system/foundation/color.md#그림이-색을-쓰는-법)). 조각 넷의 정본은 [components.md의 차트 넷](2-design/design-system/components.md#차트-넷)이고 **등장 모션이 없다** — 막대가 자라거나 선이 그려지는 연출을 문서가 막았다
 - **미니 달력은 다섯 줄이나 여섯 줄이다.** 처음 「7×5」로 썼는데 1일이 늦은 요일이고 31일까지인 달은 마지막 주가 사라진다. 아래 내용이 24px 밀리는 쪽을 골랐다
 

@@ -186,9 +186,9 @@
 
 | 몫 | 담는 것 | 토큰 |
 | --- | --- | --- |
-| 첫째 | 출근 | `bg.chart-a` |
-| 둘째 | 출근 인정 | `bg.chart-b` |
-| 셋째 | 지각 | `bg.chart-c` |
+| 첫째 | 출근 | `bg.brand-solid` |
+| 둘째 | 출근 인정 | `bg.sky` |
+| 셋째 | 지각 | `bg.mint` |
 | 넷째 | 결근 | `bg.neutral-weak` |
 
 **결근만 중립이다.** 차트 색이 셋뿐이라 넷째가 없고, 넷째를 만드는 대신 「아무것도 안 일어난 몫」을 빈 면으로 둔다 — 결근은 나온 사람이 없는 자리라 색을 줄 일이 아니다.
@@ -293,10 +293,10 @@ ListRow고 이름 가나다순이다.
 | 값이 0인 자리 | `fg.neutral-subtle` |
 | 사람별 줄 화살표 | `fg.neutral-subtle` |
 | 추이 그래프 | [components.md](../../design-system/components.md#추이-그래프)의 값 |
-| 줄 막대 | `bg.chart-a` |
-| 비율 띠 — 출근 | `bg.chart-a` |
-| 비율 띠 — 출근 인정 | `bg.chart-b` |
-| 비율 띠 — 지각 | `bg.chart-c` |
+| 줄 막대 | `bg.brand-solid` |
+| 비율 띠 — 출근 | `bg.brand-solid` |
+| 비율 띠 — 출근 인정 | `bg.sky` |
+| 비율 띠 — 지각 | `bg.mint` |
 | 비율 띠 — 결근 | `bg.neutral-weak` |
 | 범례 글자 | `fg.neutral-muted` |
 | 근무 내역 시트 | [components.md](../../design-system/components.md#dialog와-바텀시트)의 바텀시트 |
