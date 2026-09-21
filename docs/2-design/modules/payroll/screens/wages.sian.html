@@ -535,6 +535,7 @@ code {
 /* 바텀시트와 덮개 */
 .scrim { position: absolute; inset: 0; z-index: 3; background: var(--scrim-bg); opacity: 0; pointer-events: none; transition: opacity var(--d-slow) ease-out; }
 .mock.modal-open .scrim { opacity: 1; pointer-events: auto; }
+/* 시안은 브라우저에서 보는 목업이라 아래 여백을 env(safe-area-inset-bottom)로 잡는다. 앱이 쓰는 것은 useSafeAreaInsets가 주는 bottom이다 — components.md의 BottomCTA와 탭 바 */
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;

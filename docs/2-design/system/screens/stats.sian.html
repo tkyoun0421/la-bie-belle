@@ -666,6 +666,7 @@ code {
 /* 근무 내역 시트 — components.md 「Dialog와 바텀시트」의 바텀시트. 여백은 stats.md 「통계 여백과 모양」 표의
    시트 항목 넷(이름-날짜 목록 mt-4, 날짜 줄 py-3, 목록-합계 사이 가는 선 위 mt-2) 그대로다 */
 .scrim { position: absolute; inset: 0; z-index: 3; background: var(--scrim-bg); opacity: 1; }
+/* 시안은 브라우저에서 보는 목업이라 아래 여백을 env(safe-area-inset-bottom)로 잡는다. 앱이 쓰는 것은 useSafeAreaInsets가 주는 bottom이다 — components.md의 BottomCTA와 탭 바 */
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: 14px 14px 0 0;
@@ -684,8 +685,7 @@ code {
 .shrow + .shrow { border-top: 1px solid var(--stroke-neutral); }
 .shhr { margin-top: 8px; border-top: 1px solid var(--stroke-neutral); }
 /* 합계 줄 — 「합계 · 8회 · 72시간」한 줄짜리 문자열이다(stats.md 문안표), 좌우로 안 가른다.
-   선 아래-합계 줄 사이 12px은 stats.md에 없다. 여백표는 「가는 선 위 mt-2」까지만 정했고
-   선 아래는 이 파일이 날짜 줄(py-3=12px 위아래)과 같은 리듬으로 임의로 잡았다 */
+   선 위 8px과 선 아래 12px은 stats.md 여백표의 「가는 선 위 mt-2, 선 아래 mt-3」이다 */
 .shsum { padding-top: 12px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; }
 
 @media (prefers-reduced-motion: reduce) {

@@ -486,6 +486,7 @@ code {
 .sb-right { display: flex; align-items: center; gap: 5px; }
 
 /* 화면 좌우 여백 px-6, 아래 여백 pb-6 + safe-area (login.md 「여백과 모양」) */
+/* 시안은 브라우저에서 보는 목업이라 아래 여백을 env(safe-area-inset-bottom)로 잡는다. 앱이 쓰는 것은 useSafeAreaInsets가 주는 bottom이다 — components.md의 BottomCTA와 탭 바 */
 .screen {
   flex: 1 1 auto; display: flex; flex-direction: column;
   padding: 0 24px calc(24px + env(safe-area-inset-bottom));
