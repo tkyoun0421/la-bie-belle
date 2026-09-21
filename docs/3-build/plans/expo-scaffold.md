@@ -35,6 +35,7 @@ sources:
 - **NativeWind 문서에 `before:`·`after:` variant가 없다.** 지원한다고도 안 한다고도 안 적는다. 닿는 면을 넓히는 공식 수단은 `Pressable`의 `hitSlop`이고 문서가 「Sets additional distance outside of element in which a press can be detected」라 적는다
 - **`expo-secure-store`의 값 한도가 2048바이트**고 Android·iOS만 지원한다. Supabase 세션은 그보다 커서 실무 패턴이 갈린다 — 열쇠만 SecureStore에 두고 암호화한 본문은 `@react-native-async-storage/async-storage`에 둔다
 - **테마 전환은 `vars()`와 `useColorScheme()`이다.** `data-theme` 속성으로 가르는 길은 문서에 없다
+- **v5의 `withNativewind`는 CSS 진입점을 인자로 안 받는다.** v4의 `{ input }` 옵션이 없어지고, 앱이 `import`한 CSS를 따라간다. 이름도 소문자 `withNativewind`가 정식이고 대문자 쪽은 별칭으로 남았다. CSS는 Expo의 Metro가 postcss 파이프라인에 태우므로 `postcss.config.mjs`가 있어야 하고, Expo가 찾는 확장자는 `.mjs`·`.js`·`.json` 셋이다
 
 ### 저장소 현황
 
@@ -156,7 +157,7 @@ sources:
 
 **Next 자취가 남지 않는다.**
 
-- `next`·`next-env.d.ts`·`next.config.ts`·`eslint-config-next`·`postcss.config.mjs`·`shadcn`·`tw-animate-css`가 빠진다. `tailwindcss`는 4로 남고 `@tailwindcss/postcss`는 NativeWind v5가 무엇을 요구하는지에 달렸다
+- `next`·`next-env.d.ts`·`next.config.ts`·`eslint-config-next`·`shadcn`·`tw-animate-css`가 빠진다. `tailwindcss` 4와 `@tailwindcss/postcss`는 남는다 — NativeWind v5가 CSS를 Expo의 postcss 파이프라인에 태우고, `postcss.config.mjs`도 그래서 Next 것이 아니라 NativeWind 것으로 다시 선다
 - `src/app/`의 Next 라우트 파일과 `src/proxy.ts`가 없어진다
 - `src/shared/ui/`의 `button.tsx`·`card.tsx`는 shadcn 전제라 다시 만든다. 「직접 만든 조각」의 첫 둘이다
 - `pnpm lint`·`pnpm typecheck`·`pnpm test`가 통과한다
@@ -195,7 +196,7 @@ sources:
 | AC-02 | 여백과 글자가 문서보다 작게 나온다 | 수동 + unit | 시뮬레이터, `pnpm test` | `p-6`이 24pt, `text-base`가 17pt다 |
 | AC-03 | 색이 안 나오거나 다른 색이 나온다 | 수동 + unit — 생성기 테스트 | 시뮬레이터, `pnpm test` | 시뮬레이터의 색이 시안과 같다. 변환이 필요하면 sRGB 밖 색에서 생성이 실패한다 |
 | AC-03 | 역할 토큰 이름이 바뀐다 | unit — `tests/lint/design-token-values.test.ts` | `pnpm test` | `tokens.md`의 표와 생성물이 같다 |
-| AC-04 | 다크에서 라이트 색이 나온다 | 수동 + unit — `dark-variant-compiles` | 시뮬레이터, `pnpm test` | 기기 설정을 따르고, 앱에서 고른 값이 그것을 덮는다 |
+| AC-04 | 다크에서 라이트 색이 나온다 | 수동 + unit — `dark-media-query-compiles` | 시뮬레이터, `pnpm test` | 기기 설정을 따르고, `Appearance.setColorScheme()`으로 고른 값이 그것을 덮는다 |
 | AC-05 | 서체가 시스템 것으로 떨어진다 | 수동 | 시뮬레이터 | 굵기 넷이 다 다르게 보인다 |
 | AC-06 | 경로가 빠지거나 층이 섞인다 | unit — 새 테스트 | `pnpm test` | 라우트 파일 목록이 `navigation.md`의 경로 표와 같다 |
 | AC-07 | 앱을 껐다 켜면 로그아웃된다 | 수동 | 시뮬레이터 | 다시 켜도 로그인 상태다 |

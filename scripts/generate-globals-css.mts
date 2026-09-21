@@ -47,8 +47,6 @@ const THEME_INLINE_HEAD = {
   nth: 1,
   label: "@theme inline 머리",
 };
-const SHADCN_BRIDGE = { subsection: "8.3", nth: 0, label: "shadcn 다리" };
-const BASE_LAYER = { subsection: "8.4", nth: 0, label: "베이스" };
 
 const ROLE_LIGHT_COLUMN = 2;
 const ROLE_DARK_COLUMN = 3;
@@ -246,14 +244,11 @@ export async function generateGlobalsCss(markdown: string): Promise<string> {
     renderBlock(":root", light),
     renderBlock(
       "@media (prefers-color-scheme: dark)",
-      renderBlock(':root:not([data-theme="light"])', dark),
+      renderBlock(":root", dark),
     ),
-    renderBlock('[data-theme="dark"]', dark),
     renderBlock(":root", settings),
     renderBlock("@theme", theme),
     renderBlock("@theme inline", themeInline),
-    requireFence(fences, SHADCN_BRIDGE),
-    requireFence(fences, BASE_LAYER),
   ].join("\n\n");
 
   const prettierConfig = await resolveConfig(GLOBALS_PATH);

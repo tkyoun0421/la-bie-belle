@@ -1,8 +1,7 @@
 import { accessSync, constants, existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { ESLint, type Linter } from "eslint";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
 import { beforeAll, describe, expect, it } from "vitest";
 import {
   DOCUMENTED_LINT_RULE_COUNT,
@@ -63,10 +62,10 @@ function ruleIdsOf(mechanisms: EnforcedRule["mechanism"][]) {
 function presetBaselineRuleIds() {
   const baseline = new Set<string>();
 
-  for (const block of [...nextVitals, ...nextTs] as Linter.Config[]) {
-    for (const ruleId of Object.keys(block.rules ?? {})) {
-      baseline.add(ruleId);
-    }
+  for (const ruleId of Object.keys(
+    tsPlugin.configs.recommended.rules as Linter.RulesRecord,
+  )) {
+    baseline.add(ruleId);
   }
 
   return baseline;
