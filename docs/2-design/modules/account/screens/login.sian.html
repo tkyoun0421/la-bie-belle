@@ -731,7 +731,7 @@ code {
   100% { opacity: 0; transform: translateY(var(--rise)); }
 }
 
-/* 알림 영역 — 한 자리가 기기 상태에 따라 넷으로 갈린다.
+/* 알림 영역 — 한 자리가 권한 상태에 따라 셋으로 갈린다.
    면 색과 내용이 duration-base로 함께 바뀐다 */
 .notif {
   border-radius: var(--r-lg); padding: 16px; text-align: left;
@@ -746,7 +746,6 @@ code {
 @keyframes zoomin { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: none; } }
 .notif .nt { font-size: var(--t-sm); line-height: var(--lh-sm); font-weight: 600; color: var(--fg-neutral); }
 .notif .nb { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
-.notif ol { margin: 8px 0 0; padding-left: 16px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 /* 보이는 높이는 40px 그대로 두고 닿는 면만 44px로 채운다(foundation/spacing-shape.md 「누를 수 있는 것은 44px 이상이다」) */
 .notif .btn { margin-top: 16px; height: 40px; position: relative; }
 .notif .btn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
@@ -1406,8 +1405,8 @@ code {
   <section>
     <div class="sec-head">
       <span class="sec-num">03 / 승인 대기</span>
-      <h2>알림 영역 하나가 기기 상태를 따라 넷으로 갈린다</h2>
-      <p>상태 배지·제목·도는 문구가 가운데 덩이고 알림 영역·가는 선·계정 줄·로그아웃이 아래 덩이다. 첫 넷은 같은 화면의 같은 자리고, 마지막 하나는 관리자가 거절한 뒤의 모습이다. 점이 뛰고 문구가 도는 것은 목업에서 실제로 돈다.</p>
+      <h2>알림 영역 하나가 권한 상태를 따라 셋으로 갈린다</h2>
+      <p>상태 배지·제목·도는 문구가 가운데 덩이고 알림 영역·가는 선·계정 줄·로그아웃이 아래 덩이다. 첫 셋은 같은 화면의 같은 자리고, 마지막 하나는 관리자가 거절한 뒤의 모습이다. 점이 뛰고 문구가 도는 것은 목업에서 실제로 돈다.</p>
     </div>
     <div class="grid">
 
@@ -1450,9 +1449,9 @@ code {
         <figcaption>
           <div class="cap-key">WAIT / ASK</div>
           <div class="cap-name">기다리는 중 · 알림 아직 안 켬</div>
-          <p class="cap-body">들어왔을 때의 기본이다. <strong>저절로 안 띄운다</strong> — 화면에 들어가자마자 권한을 묻지 않고 「알림 켜기」를 눌러야 브라우저가 묻는다.</p>
+          <p class="cap-body">들어왔을 때의 기본이다. <strong>저절로 안 띄운다</strong> — 화면에 들어가자마자 권한을 묻지 않고 「알림 켜기」를 눌러야 기기가 묻는다.</p>
           <p class="cap-body" style="margin-top:8px">도는 문구는 <strong>1차 셋</strong>(근무표·출근·급여)이다 — 교대가 들어오는 2차에 넷째가 붙는다. <code>--interval-rotate</code>(4s)마다 <code>--duration-slow</code>로 밀려 올라가며 갈리고 한 바퀴는 12s다. 자리는 두 줄 높이로 미리 잡혀 있다. 점은 <code>--interval-beat</code>로 뛴다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>이 면만 넷 중 어디도 아니다.</strong> 아직 아무 일도 안 일어난 자리라 알림 블록의 네 색을 안 쓰고 <code>bg.neutral-weak</code>를 깔았다. 알림 켜기는 <code>h-10</code>이고 로그아웃은 <code>h-12</code>다 — 어느 쪽이 이 화면의 끝인지를 높이가 가른다.</p>
+          <p class="cap-body" style="margin-top:8px">아직 아무 일도 안 일어난 자리라 <code>bg.neutral-weak</code>를 깔았다 — 셋 중 하나다. 알림 켜기는 <code>h-10</code>이고 로그아웃은 <code>h-12</code>다 — 어느 쪽이 이 화면의 끝인지를 높이가 가른다.</p>
         </figcaption>
       </figure>
 
@@ -1504,53 +1503,6 @@ code {
 
       <figure class="item">
         <div class="mock play">
-          <div class="statusbar"><span>9:47</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="screen">
-            <div class="sp"></div>
-            <div class="centerblock">
-              <span class="pill rise" style="--i:0"><span class="dot"></span>승인 기다리는 중</span>
-              <div class="waittitle rise" style="--i:1">관리자가 확인 중이에요</div>
-              <div class="rotator rise" style="--i:2">
-                <span>이번 달 근무표를 한눈에 봐요</span>
-                <span>출근은 현장에서 찍어요</span>
-                <span>일한 시간과 급여를 같이 봐요</span>
-              </div>
-            </div>
-            <div class="sp"></div>
-            <div class="rise" style="--i:3">
-              <div class="notif guide">
-                <div class="nhead"><span class="nt">홈 화면에 추가하면 알림을 받아요</span></div>
-                <ol>
-                  <li>아래 공유 버튼을 눌러요</li>
-                  <li>"홈 화면에 추가"를 골라요</li>
-                  <li>홈 화면에서 다시 열어요</li>
-                </ol>
-              </div>
-              <div class="rule myrule"></div>
-              <div class="account">
-                <span class="ava"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
-                <span class="mail">seoyeon.park@example.com</span>
-              </div>
-              <div class="afterbtns">
-                <button class="btn outline" type="button">로그아웃</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <button class="replay" type="button" data-replay>등장 다시 보기</button>
-        <figcaption>
-          <div class="cap-key">WAIT / IOS</div>
-          <div class="cap-name">기다리는 중 · 아이폰·홈 화면 전</div>
-          <p class="cap-body"><strong>아이폰을 판별해서 뜨는 것이 아니다.</strong> 첫 모습에서 「알림 켜기」를 눌렀는데 권한 요청이 안 먹히면 그때 이 모습으로 바뀐다. userAgent로 알아내는 것은 자주 틀리지만 눌러본 결과는 안 틀린다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>여기에 버튼이 없다.</strong> 홈 화면 추가는 사파리 공유 메뉴에서만 되는 일이라 누를 것을 두면 눌러도 아무 일이 안 일어난다. 「홈 화면에 추가」는 iOS 메뉴에 실제로 뜨는 이름이라 우리말로 안 다듬는다.</p>
-        </figcaption>
-      </figure>
-
-      <figure class="item">
-        <div class="mock play">
           <div class="statusbar"><span>9:48</span><span class="sb-right">
             <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
             <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
@@ -1570,7 +1522,7 @@ code {
             <div class="rise" style="--i:3">
               <div class="notif guide">
                 <div class="nhead"><span class="nt">알림이 꺼져 있어요</span></div>
-                <div class="nb">브라우저 설정에서 이 사이트의 알림을 켜면 받을 수 있어요</div>
+                <div class="nb">기기 설정에서 알림을 켜면 받을 수 있어요</div>
               </div>
               <div class="rule myrule"></div>
               <div class="account">
@@ -1587,8 +1539,9 @@ code {
         <figcaption>
           <div class="cap-key">WAIT / DENIED</div>
           <div class="cap-name">기다리는 중 · 거부한 뒤</div>
-          <p class="cap-body">브라우저의 물음에서 거부했을 때다. 여기에도 버튼이 없다 — 한 번 거부하면 브라우저가 다시 묻지 않아서 「알림 켜기」를 그대로 두면 눌러도 아무 일이 안 일어난다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>경고도 오류도 아니다.</strong> 사람이 고른 것을 앱이 잘못이라고 부르지 않아서 안내 면을 그대로 쓴다. 앞 모습과 면 색이 같고 갈리는 것은 담는 말이다 — 그쪽은 물을 길이 없는 것이고 이쪽은 물었는데 거부당한 것이다.</p>
+          <p class="cap-body">기기의 물음에서 거부했을 때다. 여기에도 버튼이 없다 — 한 번 거부하면 기기가 다시 묻지 않아서 「알림 켜기」를 그대로 두면 눌러도 아무 일이 안 일어난다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>경고도 오류도 아니다.</strong> 사람이 고른 것을 앱이 잘못이라고 부르지 않아서 안내 면(<code>bg.sky-weak</code>)을 그대로 쓴다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>기기 종류를 판별해서 뜨는 것이 아니다.</strong> 이 모습은 처음부터 뜨지 않는다 — 첫 모습(아직 안 켬)에서 「알림 켜기」를 눌렀는데 거부로 끝나면 그때 전이된 결과다. 아이폰인지 안드로이드인지로 문안을 가르지 않는다, 눌러본 결과가 안 틀리기 때문이다.</p>
           <p class="cap-body" style="margin-top:8px">아래 줄이 <code>fg.neutral-muted</code>인 것은 대비 때문이다. 한 단계 흐린 <code>fg.neutral-subtle</code>은 이 면 위에서 4.49로 떨어진다(tokens.md 7절).</p>
         </figcaption>
       </figure>

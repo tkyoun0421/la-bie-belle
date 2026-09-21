@@ -1246,7 +1246,7 @@ code {
         <figcaption>
           <div class="cap-key">PHOTO / UPLOAD FAILED</div>
           <div class="cap-name">올리기 실패 — 시트가 안 닫히고 오류가 선다</div>
-          <p class="cap-body">사진 고르기까지는 했지만 올리기가 실패했다. <strong>시트가 그대로 열려 있고 줄 목록 아래에 오류 한 줄이 선다</strong> — 연락처 저장 실패와 같은 방식이다. 문구 「사진을 올리지 못했어요. 다시 골라 주세요」는 <code>fg.critical</code> <code>text-xs</code>다. 너무 큰 파일은 브라우저가 줄이니 이 오류는 통신이 끊긴 자리뿐이다.</p>
+          <p class="cap-body">사진 고르기까지는 했지만 올리기가 실패했다. <strong>시트가 그대로 열려 있고 줄 목록 아래에 오류 한 줄이 선다</strong> — 연락처 저장 실패와 같은 방식이다. 문구 「사진을 올리지 못했어요. 다시 골라 주세요」는 <code>fg.critical</code> <code>text-xs</code>다. 너무 큰 파일은 앱이 줄이니 이 오류는 통신이 끊긴 자리뿐이다.</p>
         </figcaption>
       </figure>
 
@@ -1258,7 +1258,7 @@ code {
     <div class="sec-head">
       <span class="sec-num">04 / 알림</span>
       <h2>끄기 전에 한 번 묻고, 권한이 없으면 스위치가 아예 없다</h2>
-      <p>끄는 것은 되돌릴 수 있어 Dialog가 막지 않고 한 번만 묻는다. 브라우저가 권한 자체를 거부했으면 앱이 다시 물을 길이 없어 스위치 대신 안내로 바뀐다. 아이폰 사파리 탭에서 홈 화면에 아직 추가를 안 했으면 <code>Notification</code> 객체 자체가 없어 또 다른 안내(두 줄)로 바뀐다.</p>
+      <p>끄는 것은 되돌릴 수 있어 Dialog가 막지 않고 한 번만 묻는다. 기기에서 알림 권한이 거부돼 있으면 앱이 다시 물을 길이 없어 스위치 대신 안내로 바뀐다.</p>
     </div>
     <div class="grid">
 
@@ -1351,7 +1351,7 @@ code {
               </div>
               <div class="permnote">
                 <div class="pt">알림</div>
-                <div class="pb">브라우저에서 알림을 껐어요. 설정에서 다시 켜주세요</div>
+                <div class="pb">기기에서 알림을 껐어요. 설정에서 다시 켜주세요</div>
               </div>
               <div class="prow interactive">
                 <span class="rl">화면</span>
@@ -1372,66 +1372,7 @@ code {
         <figcaption>
           <div class="cap-key">NOTIFY / DENIED</div>
           <div class="cap-name">알림 권한이 거부됐을 때 — 스위치가 없다</div>
-          <p class="cap-body">브라우저가 거부한 뒤라 앱이 다시 물을 길이 없다. <strong>스위치 자리에 안내가 선다</strong> — login.md 넷째 모습과 같은 결로 <code>bg.informative-weak</code> 면에 제목과 안내 한 줄이다. 버튼이 없다 — 눌러도 브라우저 설정 밖에서는 아무 일도 안 일어나서다.</p>
-        </figcaption>
-      </figure>
-
-      <figure class="item">
-        <div class="mock">
-          <div class="statusbar"><span>09:23</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="appbar">
-            <span class="title">나</span>
-            <button class="bellbtn" type="button" aria-label="알림">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-              <span class="belldot"></span>
-            </button>
-          </div>
-          <div class="body">
-            <div class="phead">
-              <div class="avwrap"><span class="av"></span>
-                <button class="pencil" type="button" aria-label="사진 고치기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
-              </div>
-              <div class="pname">이도윤</div><div class="prole">근무자</div>
-              <div class="pnote">이름·성별·생년월일은 관리자가 고쳐요</div>
-            </div>
-            <div class="rows locked">
-              <div class="prow"><span class="rl">성별</span><span class="rv">여성</span></div>
-              <div class="prow"><span class="rl">생년월일</span><span class="rv num">1998년 11월 20일</span></div>
-            </div>
-            <div class="hr"></div>
-            <div class="rows">
-              <div class="prow interactive"><span class="rl">연락처</span><span class="rv num">010-0000-0001</span><span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span></div>
-              <div class="prow">
-                <span class="rl">알림</span>
-              </div>
-              <div class="permnote">
-                <div class="pt">알림</div>
-                <div class="pb">홈 화면에 추가하면 알림을 받을 수 있어요</div>
-                <div class="pb">공유 버튼을 누르고 「홈 화면에 추가」를 고르세요</div>
-              </div>
-              <div class="prow interactive">
-                <span class="rl">화면</span>
-                <span class="rv">기기 설정대로</span>
-                <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
-              </div>
-            </div>
-            <div class="hr"></div>
-            <div class="rows">
-              <div class="prow interactive">
-                <span class="rl">통계</span>
-                <span class="rchev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
-              </div>
-            </div>
-            <div class="spacer"></div>
-          </div>
-        </div>
-        <figcaption>
-          <div class="cap-key">NOTIFY / ADD TO HOME</div>
-          <div class="cap-name">아이폰 사파리 탭 — 홈 화면에 추가를 안 했을 때</div>
-          <p class="cap-body">사파리 탭에는 <code>Notification</code> 객체 자체가 없어 권한을 물을 대상이 없다(notification/design.md 「기기 구독 저장과 삭제」). <strong>스위치 자리에 안내 두 줄이 선다</strong> — 브라우저 권한 거부와 같은 <code>bg.informative-weak</code> 면이고, 제목 「알림」 아래 안내가 한 줄이 아니라 두 줄이다. 문구는 승인 대기 화면(login.md)이 쓰는 것과 같다(NTF-028).</p>
+          <p class="cap-body">기기에서 알림 권한이 거부돼 있어 앱이 다시 물을 길이 없다. <strong>스위치 자리에 안내가 선다</strong> — login.md 셋째 모습과 같은 결로 <code>bg.sky-weak</code> 면에 제목과 안내 한 줄이다. 버튼이 없다 — 눌러도 기기 설정 밖에서는 아무 일도 안 일어나서다.</p>
         </figcaption>
       </figure>
 
@@ -1637,7 +1578,7 @@ code {
         <figcaption>
           <div class="cap-key">DONE / PHOTO</div>
           <div class="cap-name">사진 저장 토스트</div>
-          <p class="cap-body">사진이 바뀐 채(목업은 같은 그러데이션이라 실제로는 안 보이지만) 시트가 닫히고 토스트가 뜬다. <strong>실패했을 때의 문안은 문서가 아직 안 정했다</strong>(profile.md 「아직 안 정한 것」) — 이 파일도 실패 상태는 안 그렸다.</p>
+          <p class="cap-body">사진이 바뀐 채(목업은 같은 그러데이션이라 실제로는 안 보이지만) 시트가 닫히고 토스트가 뜬다. <strong>실패한 자리는 토스트가 아니다</strong> — 시트가 닫히지 않고 그 안에 오류 한 줄이 선다(PHOTO / UPLOAD FAILED).</p>
         </figcaption>
       </figure>
 
