@@ -513,7 +513,7 @@ code {
 .caphint { margin-top: 8px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 
 /* 저장 실패 아래 줄 — 사유 시트의 결과 아래 줄과 같은 꼴이다(text-sm · fg.neutral-muted, 맨 위 주석) */
-.failsub { margin-top: 5px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.failsub { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 
 /* 시트 제목 — 기본 시급 시트는 글자만, 사람 시트는 사진+이름(wages.md 짜임) */
 .sheettitle { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral); }
@@ -527,7 +527,7 @@ code {
 .histrow .hval { margin-left: auto; display: flex; align-items: center; gap: 8px; color: var(--fg-neutral); font-variant-numeric: tabular-nums; }
 /* 보이는 크기 327x40 — 가로는 이미 44px을 넘어 세로만 ::after로 44px을 채운다
    (foundation/spacing-shape.md 「누를 수 있는 것은 44px 이상이다」) */
-.morebtn { position: relative; margin-top: 4px; width: 100%; background: none; border: 0; padding: 10px 0; color: var(--fg-neutral-muted); font-size: var(--t-sm); font-weight: 500; font-family: inherit; cursor: pointer; text-align: center; }
+.morebtn { position: relative; margin-top: 4px; width: 100%; background: none; border: 0; padding: 12px 0; color: var(--fg-neutral-muted); font-size: var(--t-sm); font-weight: 500; font-family: inherit; cursor: pointer; text-align: center; }
 .morebtn:hover { color: var(--fg-neutral); }
 .morebtn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
 .histrow[hidden] { display: none; }
@@ -539,14 +539,14 @@ code {
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 10px 24px calc(24px + env(safe-area-inset-bottom));
+  padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) ease-out;
   max-height: 90%; overflow-y: auto;
 }
 .mock.modal-open .rsheet { transform: none; }
 .grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto; }
-.sheettop { padding-top: 14px; }
+.sheettop { padding-top: 16px; }
 
 /* 되돌리기 확인 — Dialog다. 시트를 새로 쌓지 않는 가입 대기 방식과 달리
    wages.md가 "Dialog 하나"라고 못 박아서 화면 가운데 뜨는 별도 카드로 그렸다.
@@ -561,7 +561,7 @@ code {
   position: absolute; left: 24px; right: 24px; bottom: 56px; z-index: 6; margin: 0 auto; width: fit-content;
   display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
-  border-radius: var(--r-lg); padding: 11px 20px;
+  border-radius: var(--r-lg); padding: 12px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
   border: 1px solid var(--stroke-neutral);
 }

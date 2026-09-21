@@ -431,7 +431,7 @@ code {
   padding: 4px 24px 12px; min-height: 44px; position: relative;
 }
 .appbar .sp { flex: 1 1 auto; }
-.backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -4px; color: var(--fg-neutral); cursor: pointer; }
+.backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
 /* 아이콘 28px, 닿는 면은 44px — components.md 「앱바」의 「아이콘은 28px로 그리고 닿는 면은 44px다」 */
 .backic::after { content: ""; position: absolute; inset: -8px; }
 .appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
@@ -474,6 +474,7 @@ code {
 .mrow.pressed { background: var(--bg-neutral-weak-pressed); margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
 /* 구분선은 사진 왼쪽 끝이 아니라 이름 왼쪽 끝(40 + 12 = 52px)부터 긋는다 */
 .mlist .rowwrap + .rowwrap .mrow { border-top: 1px solid var(--stroke-neutral); }
+/* 52px은 눈금 밖이지만 자유 여백이 아니다 — 사진 40px에 이름과의 gap-3(12px)을 더한 값이라 구분선이 이름 왼쪽 끝에서 시작한다 */
 .mlist .rowwrap + .rowwrap .mrow { margin-left: 52px; padding-left: 0; }
 .mlist .rowwrap + .rowwrap .mrow .av { margin-left: -52px; }
 .rowwrap { overflow: hidden; }
