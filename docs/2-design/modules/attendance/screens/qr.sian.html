@@ -41,7 +41,7 @@
     구체적인 수치 없이는 그릴 수가 없어서다. QR 둘레의 흰 여백은 코드
     자체에 안쪽 여백(6%)을 줘서 만들었다 — 화면 QR과 같은 이유(카메라가
     경계를 잡는다)다. 테두리는 안 그렸다 — qr.md가 화면 QR에는 카드
-    테두리(stroke.surface)를 적었지만 인쇄용 그림 값 표에는 테두리 행이
+    테두리(stroke.neutral)를 적었지만 인쇄용 그림 값 표에는 테두리 행이
     없다.
   · 「저장이 안 열림」(03절)에서 새 탭을 표현하는 방법. qr.md는 이 상태가
     「새 탭에 인쇄용 그림, 토스트」를 동시에 보여준다고만 적는다. 새 탭이
@@ -456,7 +456,7 @@ code {
 .body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
-/* QR — mt-8, 정사각, rounded-xl, 안쪽 p-6, 테두리 stroke.surface.
+/* QR — mt-8, 정사각, rounded-xl, 안쪽 p-6, 테두리 stroke.neutral.
    면 자체는 --fixed-bg라 테마를 안 따른다(qr.md 「QR 그림」) */
 .qrwrap { margin-top: 32px; }
 .qrcard {
@@ -910,7 +910,7 @@ code {
         <figcaption>
           <div class="cap-key">DARK / MAIN</div>
           <div class="cap-name">본 화면 — 앱은 어두운데 QR만 밝다</div>
-          <p class="cap-body"><strong>QR 카드 면이 <code>--fixed-bg</code>(#FFFEFD)로 그대로다.</strong> 둘레의 앱 배경·버튼·글자는 전부 팔레트를 따라 뒤집혔는데 QR 면만 안 뒤집힌다. 테두리(<code>stroke.surface</code>)는 다크에서 선으로 도니 카드 경계가 여기서 처음 보인다.</p>
+          <p class="cap-body"><strong>QR 카드 면이 <code>--fixed-bg</code>(#FFFEFD)로 그대로다.</strong> 둘레의 앱 배경·버튼·글자는 전부 팔레트를 따라 뒤집혔는데 QR 면만 안 뒤집힌다. 테두리(<code>stroke.neutral</code>)는 다크에서 선으로 도니 카드 경계가 여기서 처음 보인다.</p>
         </figcaption>
       </figure>
 

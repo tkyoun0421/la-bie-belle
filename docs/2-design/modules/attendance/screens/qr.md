@@ -140,7 +140,7 @@ Button outline이다. 셋 중 유일하게 무언가를 바꾸는 버튼인데 �
 | 화면 바탕 | `bg.neutral` |
 | 앱바 | [components.md](../../../design-system/components.md#앱바)의 앱바 |
 | QR이 앉는 면 | 흰 면 — 테마를 안 따른다 |
-| QR 테두리 | `stroke.surface` |
+| QR 테두리 | `stroke.neutral` |
 | 쓰기 시작한 날 | `fg.neutral-subtle` |
 | 내보내기 · 크게 띄우기 | [Button](../../../design-system/components.md#button) secondary |
 | 새로 뽑기 | [Button](../../../design-system/components.md#button) outline |
