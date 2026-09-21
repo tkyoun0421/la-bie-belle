@@ -174,7 +174,7 @@
 | 기간 줄 글자 | `fg.neutral` |
 | 기간 화살표 | `fg.neutral-subtle` |
 | 못 가는 화살표 | 안 그린다. 자리만 남긴다 |
-| 금액 | `fg.neutral` |
+| 금액 | `fg.brand` — 내 급여다([typography.md](../../../design-system/foundation/typography.md#큰-숫자)) |
 | 예상치 안내 | `fg.neutral-subtle` |
 | 누적 이름표 | `fg.neutral-muted` |
 | 누적 값 | `fg.neutral` |

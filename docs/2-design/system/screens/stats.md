@@ -283,7 +283,7 @@ ListRow고 이름 가나다순이다.
 | 달 화살표 | `fg.neutral-subtle` |
 | 못 가는 화살표 | 안 그린다. 자리만 남긴다 |
 | 세그먼트 | [components.md](../../design-system/components.md#세그먼트)의 세그먼트 |
-| 합계 | `fg.neutral` |
+| 합계 | 근무자는 `fg.brand`, 관리자는 `fg.neutral` — 브랜드는 내 것인 값에만 간다([typography.md](../../design-system/foundation/typography.md#큰-숫자)) |
 | 예상치 안내 | `fg.neutral-subtle` |
 | 보조 줄 | `fg.neutral-muted` |
 | 현황 줄 | `fg.neutral-muted` |

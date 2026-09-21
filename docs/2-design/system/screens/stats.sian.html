@@ -580,6 +580,8 @@ code {
 
 /* 합계 — 세그먼트와 mt-6(24px), 큰 글자. 그래프가 서면 「그래프와 합계 사이」 mt-6이 그 자리를 대신한다 */
 .sum { margin-top: 24px; font-size: var(--t-3xl); line-height: var(--lh-3xl); font-weight: 700; color: var(--fg-neutral); }
+/* 근무자 화면의 합계는 내 것이라 브랜드다 — typography.md 「큰 숫자」의 「브랜드 색은 「내 것」인 값에만 쓴다」 */
+.sum.mine { color: var(--fg-brand); }
 .sum.dash { color: var(--fg-neutral); }
 .sum.aftertrend { margin-top: 24px; }
 /* 예상치 안내 — 합계와 mt-1(4px) */
@@ -1683,7 +1685,7 @@ code {
               <span class="tick" style="left:178px"></span><span class="tick" style="left:207px"></span>
               <span class="tick" style="left:265px"></span><span class="tick" style="left:294px"></span>
             </div>
-            <div class="sum num aftertrend">108시간</div>
+            <div class="sum num mine aftertrend">108시간</div>
             <div class="plist listgap">
               <div class="rowwrap"><div class="prow">
                 <span class="pmid"><span class="ptitle">메인</span><br><span class="psub">8건</span></span>
@@ -1768,7 +1770,7 @@ code {
               <span class="tick" style="left:178px"></span><span class="tick" style="left:207px"></span>
               <span class="tick" style="left:265px"></span><span class="tick" style="left:294px"></span>
             </div>
-            <div class="sum num aftertrend">1,296,000원</div>
+            <div class="sum num mine aftertrend">1,296,000원</div>
             <div class="subnote">예상치예요. 실제 지급액과 다를 수 있어요</div>
             <div class="subline mt-3">근무 12건 · 108시간</div>
             <div class="listgap">
