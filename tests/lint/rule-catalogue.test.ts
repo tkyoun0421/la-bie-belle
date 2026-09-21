@@ -1,7 +1,7 @@
 import { accessSync, constants, existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { ESLint, type Linter } from "eslint";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
+import { ESLint, type Linter } from "eslint";
 import { beforeAll, describe, expect, it } from "vitest";
 import {
   DOCUMENTED_LINT_RULE_COUNT,
@@ -11,7 +11,7 @@ import {
   type EnforcedRule,
 } from "@tests/lint/rules";
 
-const PROBE_FILE = "src/shared/ui/card.tsx";
+const PROBE_FILE = "src/shared/ui/not-built-yet.tsx";
 
 const LINT_MECHANISMS: EnforcedRule["mechanism"][] = [
   "eslint",

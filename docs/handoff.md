@@ -14,6 +14,12 @@
 
 **시안 열여섯이 다 아티팩트로 올라갔고 승인을 기다린다.** 감사가 웹 PWA 잔재를 넷에서 더 찾아 걷었다 — `login`의 알림 영역이 넷에서 셋으로(홈 화면 추가 안내가 빠졌다), `profile`의 「아이폰 사파리 탭」 모습이 사라져 갈래가 둘로, `members`의 시트 알림 줄이 「기기에서 알림을 꺼서 안 가요」로, `check-in`의 권한 거부 주체가 브라우저에서 앱으로 갔다. 폐기된 `bg.informative-weak`를 들던 `profile` 캡션도 `bg.sky-weak`로 따라갔다.
 
+**`expo-scaffold`가 진행 중이고 파이프라인이 실측으로 섰다.** `globals.css` 생성기가 새 8절(shadcn 다리·베이스 층 없음, 다크 갈래 하나)을 따라가고, `@tailwindcss/postcss` → `react-native-css/compiler`를 실제로 태워 값을 재봤다 — rem 16, `p-4`가 16, `text-base`가 17, OKLCH 팔레트가 빌드 때 hex로 바뀌어 `palette-brand-700`이 라이트 `#2f5cf6`·다크 `#628dfc`로 갈린다. 색 유틸은 hex가 아니라 팔레트 변수 참조로 남고 그 변수가 `prefers-color-scheme` 조건을 달고 둘로 선다. AC-02·03·04의 unit이 이 값을 못박는다.
+
+**NativeWind v5의 Metro 설정이 v4와 다르다.** `withNativewind`가 CSS 진입점을 인자로 안 받고 앱이 `import`한 CSS를 따라간다. 대신 Expo의 Metro가 CSS를 postcss에 태워서 `postcss.config.mjs`가 있어야 한다 — Expo가 찾는 확장자는 `.mjs`·`.js`·`.json` 셋이고 `.cjs`는 안 본다. `nativewind-env.d.ts`와 `expo-env.d.ts`가 `className` prop과 CSS side-effect import의 타입을 댄다.
+
+**터치 면 44px의 수단이 `hitSlop`으로 갔다.** 웹의 가짜 요소는 레이아웃을 차지하지만 `hitSlop`은 안 그래서 「투명한 여백을 둘러」라는 표현이 정본 여섯 자리에서 어긋나 있었다. `components.md` 셋·`spacing-shape.md`·`dashboard.md` 둘을 고쳤다. 시안의 `::after`는 그대로 둔다 — 브라우저 목업에서는 그것이 맞는 수단이다.
+
 **시안 조항 어긋남 넷이 닫혔다.** `.backic`은 열한 장이 28px에 닿는 면 44px이고, 작은 버튼도 모양 30px에 `::after` 44px이고, 「마감일 당기기」는 밑줄과 닿는 면을 갖췄다. 넷째는 충돌이 아니라 한 조항에 두 종류가 눌려 있던 자리였다 — [components.md](2-design/design-system/components.md#listrow)의 ListRow 오른쪽 값을 「그 줄의 데이터면 `fg.neutral`, 화살표 달린 문의 현재 상태면 `fg.neutral-muted`」로 갈랐다. 가르는 질문은 「이 값을 보려고 이 화면에 왔는가」고 시안은 한 장도 안 고쳤다 — 이미 다 그 규칙대로 서 있었다. `popover-dark-ring`이 말한 팝오버 ring도 없다.
 
 감사가 정본 충돌 셋을 드러냈고 셋 다 결정을 받아 닫았다.

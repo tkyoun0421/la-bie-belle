@@ -142,7 +142,7 @@ sources:
 
 - 모양은 필요한 만큼 그리고 닿는 면을 넓히는 원칙이 그대로다. 수단이 `::after`에서 `Pressable`의 `hitSlop`으로 바뀐다
 - [components.md](../../2-design/design-system/components.md)의 터치 면 조항과 그 조항을 든 화면 문서가 따라간다
-- 시안의 `::after`는 그대로 둔다. 시안은 브라우저에서 보는 목업이고 `::after`가 거기서는 맞는 수단이다 — 다만 시안 주석이 「앱에서는 `hitSlop`이 이 일을 한다」고 가리킨다
+- 시안의 `::after`는 그대로 둔다. 시안은 브라우저에서 보는 목업이고 `::after`가 거기서는 맞는 수단이다 — 열넷에 같은 주석을 박는 대신 [시안 규약](../../2-design/README.md)의 「시안의 CSS를 앱으로 옮기지 않는다」가 둘의 차이를 담는다
 
 ### AC-11
 
@@ -176,7 +176,7 @@ sources:
 
 ## 리스크·전환·되돌리기
 
-**RC를 딛는 것이 이 task의 가장 큰 값이다.** 릴리스 계획이 「API 변경 없이 버그 수정만」이라 적었지만 계획은 미끄러질 수 있다. 골격은 모든 화면 task가 딛는 자리라 여기서 막히면 전부 멈춘다. 되돌리는 길은 v4와 Tailwind 3으로 내려가는 것이고, 그때 같이 움직이는 것이 생성기와 `dark-variant-compiles` 테스트와 lint 규칙 셋이다. **2번 단계에서 막히면 그 자리에서 결정을 다시 받는다** — 뒤 단계를 진행해놓고 나중에 뒤집지 않는다.
+**RC를 딛는 것이 이 task의 가장 큰 값이다.** 릴리스 계획이 「API 변경 없이 버그 수정만」이라 적었지만 계획은 미끄러질 수 있다. 골격은 모든 화면 task가 딛는 자리라 여기서 막히면 전부 멈춘다. 되돌리는 길은 v4와 Tailwind 3으로 내려가는 것이고, 그때 같이 움직이는 것이 생성기와 `dark-media-query-compiles`·`native-compile-values` 테스트와 lint 규칙 셋이다. **2번 단계에서 막히면 그 자리에서 결정을 다시 받는다** — 뒤 단계를 진행해놓고 나중에 뒤집지 않는다.
 
 **색 변환이 팔레트를 바꿀 수 있다.** OKLCH의 채도가 sRGB 밖으로 나가면 같은 색이 안 나온다. 그래서 AC-03이 조용한 보정을 막는다 — 실패하면 `tokens.md`의 팔레트 값을 사람이 다시 고른다. [대비 검증](../../2-design/design-system/tokens.md#7-대비-검증)이 든 조합도 같이 다시 잰다.
 
@@ -193,10 +193,10 @@ sources:
 | 완료 조건 | 깨질 수 있는 것 | 테스트 층·위치 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
 | AC-01 | 앱이 안 뜬다 | 수동 | `pnpm dev` 뒤 시뮬레이터 | iOS·Android 둘 다 첫 화면이 뜬다 |
-| AC-02 | 여백과 글자가 문서보다 작게 나온다 | 수동 + unit | 시뮬레이터, `pnpm test` | `p-6`이 24pt, `text-base`가 17pt다 |
-| AC-03 | 색이 안 나오거나 다른 색이 나온다 | 수동 + unit — 생성기 테스트 | 시뮬레이터, `pnpm test` | 시뮬레이터의 색이 시안과 같다. 변환이 필요하면 sRGB 밖 색에서 생성이 실패한다 |
+| AC-02 | 여백과 글자가 문서보다 작게 나온다 | 수동 + unit — `tests/lint/native-compile-values.test.ts` | 시뮬레이터, `pnpm test` | 네이티브 rem이 14가 아니라 16이고, `p-4`가 16·`text-base`가 17로 컴파일된다 |
+| AC-03 | 색이 안 나오거나 다른 색이 나온다 | 수동 + unit — `tests/lint/native-compile-values.test.ts` | 시뮬레이터, `pnpm test` | 팔레트가 OKLCH가 아니라 hex로 풀리고 브랜드가 ADR-012의 값이다. 시뮬레이터의 색이 시안과 같다 |
 | AC-03 | 역할 토큰 이름이 바뀐다 | unit — `tests/lint/design-token-values.test.ts` | `pnpm test` | `tokens.md`의 표와 생성물이 같다 |
-| AC-04 | 다크에서 라이트 색이 나온다 | 수동 + unit — `dark-media-query-compiles` | 시뮬레이터, `pnpm test` | 기기 설정을 따르고, `Appearance.setColorScheme()`으로 고른 값이 그것을 덮는다 |
+| AC-04 | 다크에서 라이트 색이 나온다 | 수동 + unit — `dark-media-query-compiles`·`native-compile-values` | 시뮬레이터, `pnpm test` | 팔레트 변수가 `prefers-color-scheme` 조건 하나로 둘로 갈린다. 기기 설정을 따르고, `Appearance.setColorScheme()`으로 고른 값이 그것을 덮는다 |
 | AC-05 | 서체가 시스템 것으로 떨어진다 | 수동 | 시뮬레이터 | 굵기 넷이 다 다르게 보인다 |
 | AC-06 | 경로가 빠지거나 층이 섞인다 | unit — 새 테스트 | `pnpm test` | 라우트 파일 목록이 `navigation.md`의 경로 표와 같다 |
 | AC-07 | 앱을 껐다 켜면 로그아웃된다 | 수동 | 시뮬레이터 | 다시 켜도 로그인 상태다 |

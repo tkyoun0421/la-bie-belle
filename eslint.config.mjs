@@ -1,6 +1,6 @@
-import { defineConfig, globalIgnores } from "eslint/config";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
+import { defineConfig, globalIgnores } from "eslint/config";
 import importPlugin from "eslint-plugin-import";
 import unusedImports from "eslint-plugin-unused-imports";
 import house from "./eslint-rules/index.mjs";
@@ -33,6 +33,7 @@ const layerBoundaries = LAYERS.map((layer, index) => ({
 
 const eslintConfig = defineConfig([
   globalIgnores([
+    ".next/**",
     ".expo/**",
     "android/**",
     "ios/**",

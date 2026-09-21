@@ -18,23 +18,3 @@ export function transitionNotificationPromptView(
 
   return current;
 }
-
-async function askBrowser(): Promise<NotificationPromptOutcome> {
-  if (typeof window === "undefined" || !("Notification" in window)) {
-    return "unsupported";
-  }
-
-  try {
-    return (await window.Notification.requestPermission()) === "granted"
-      ? "granted"
-      : "denied";
-  } catch {
-    return "unsupported";
-  }
-}
-
-export async function askForNotificationPermission(
-  current: NotificationPromptView,
-): Promise<NotificationPromptView> {
-  return transitionNotificationPromptView(current, await askBrowser());
-}

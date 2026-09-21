@@ -147,12 +147,12 @@ describe("규칙4 — 하드코딩한 색과 크기", () => {
     );
   });
 
-  it("회귀 — 실제 button.tsx 파일은 규칙4의 어느 규칙도 안 걸린다", async () => {
+  it("회귀 — 실제 not-built-yet.tsx 파일은 규칙4의 어느 규칙도 안 걸린다", async () => {
     const code = readFileSync(
-      path.join(process.cwd(), "src/shared/ui/button.tsx"),
+      path.join(process.cwd(), "src/shared/ui/not-built-yet.tsx"),
       "utf8",
     );
-    const errors = await errorsOf(code, "src/shared/ui/button.tsx");
+    const errors = await errorsOf(code, "src/shared/ui/not-built-yet.tsx");
 
     expect(errors).toEqual([]);
   });

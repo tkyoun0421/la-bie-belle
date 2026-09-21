@@ -220,7 +220,11 @@ describe("유닛 훅", () => {
 
 describe("e2e 훅", () => {
   it("새 라우트에 spec이 없으면 막는다", () => {
-    expect(run("tdd-guard-e2e.py", "src/app/cart/page.tsx", "")).toBe(blocked);
+    expect(run("tdd-guard-e2e.py", "src/app/cart/index.tsx", "")).toBe(blocked);
+  });
+
+  it("디렉터리를 안 끼고 선 라우트도 제 파일명으로 짝을 찾는다", () => {
+    expect(run("tdd-guard-e2e.py", "src/app/cart.tsx", "")).toBe(blocked);
   });
 
   it("screens 슬라이스에 spec이 없으면 막는다", () => {
@@ -230,8 +234,8 @@ describe("e2e 훅", () => {
   });
 
   it("루트 화면은 home spec으로 짝을 찾는다", () => {
-    expect(run("tdd-guard-e2e.py", "src/app/page.tsx", "")).toBe(allowed);
-    expect(run("tdd-guard-e2e.py", "src/app/layout.tsx", "")).toBe(allowed);
+    expect(run("tdd-guard-e2e.py", "src/app/index.tsx", "")).toBe(allowed);
+    expect(run("tdd-guard-e2e.py", "src/app/_layout.tsx", "")).toBe(allowed);
   });
 
   it("짝 spec이 있는 슬라이스는 통과시킨다", () => {
@@ -248,6 +252,28 @@ describe("e2e 훅", () => {
       run("tdd-guard-e2e.py", "src/entities/cart/models/cart.ts", ""),
     ).toBe(allowed);
   });
+
+  /**
+   * e2e 러너를 아직 안 골랐다(ADR-011이 Maestro와 Detox를 열어뒀다). 쓸 자리가
+   * 없는데 화면마다 spec을 요구하면 모든 화면 task가 첫 수에서 막힌다.
+   */
+  it("tests/e2e가 아예 없으면 아무것도 안 막는다", () => {
+    const emptyDir = mkdtempSync(join(tmpdir(), "tdd-guard-no-e2e-"));
+
+    const result = spawnSync("python3", [join(hooksDir, "tdd-guard-e2e.py")], {
+      input: JSON.stringify({
+        tool_name: "Write",
+        tool_input: {
+          file_path: join(emptyDir, "src/app/cart.tsx"),
+          content: "",
+        },
+      }),
+      env: { ...process.env, CLAUDE_PROJECT_DIR: emptyDir },
+      encoding: "utf8",
+    });
+
+    expect(result.status).toBe(allowed);
+  });
 });
 
 describe("훅이 서 있는 자리", () => {
@@ -263,7 +289,7 @@ describe("훅이 서 있는 자리", () => {
   });
 
   it("e2e 훅은 판정에 안 쓰는 파일을 읽지 않는다", () => {
-    const result = spawn("tdd-guard-e2e.py", fifo("src/app/page.tsx"), "", {
+    const result = spawn("tdd-guard-e2e.py", fifo("src/app/index.tsx"), "", {
       timeout: 5_000,
     });
 
