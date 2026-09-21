@@ -32,25 +32,27 @@
   · 뽑은 뒤 화면의 날짜(2026년 9월 11일). 문서의 문안 예시는 첫 코드의
     날짜(2026년 3월 2일)뿐이라 「오늘」에 해당하는 날짜는 이 파일이 지어낸
     예시 값이다.
-  · 인쇄용 그림(02절)의 레이아웃 세부. qr.md는 크기(2480×3508, A4 300dpi)와
-    자르는 선이 점선이라는 것, 제목이 QR 위·안내가 QR 아래라는 자리만 정한다.
-    자르는 선이 가장자리에서 얼마나 들어오는지, 선의 굵기와 색, 제목·QR·안내
-    사이의 간격은 안 적혀 있다. 이 파일은 가장자리에서 7.2% 들어온 점선(폭
-    1.5px, tokens.md neutral-300 hex #CECBC9)을 그었고 세 요소를 세로로
-    가운데 정렬했다 — 인쇄해서 눈으로 비율을 확인하는 것이 이 절의 목적이라
-    구체적인 수치 없이는 그릴 수가 없어서다. QR 둘레의 흰 여백은 코드
-    자체에 안쪽 여백(6%)을 줘서 만들었다 — 화면 QR과 같은 이유(카메라가
-    경계를 잡는다)다. 테두리는 안 그렸다 — qr.md가 화면 QR에는 카드
-    테두리(stroke.neutral)를 적었지만 인쇄용 그림 값 표에는 테두리 행이
-    없다.
-  · 「저장이 안 열림」(03절)에서 새 탭을 표현하는 방법. qr.md는 이 상태가
-    「새 탭에 인쇄용 그림, 토스트」를 동시에 보여준다고만 적는다. 새 탭이
-    원래 앱 탭과 별개 브라우저 컨텍스트인지, 토스트가 그 새 탭 위에 뜨는지
-    원래 앱 화면에 뜨는지는 안 적혀 있다. 이 파일은 상태 표의 「보이는 내용」
-    한 칸에 담긴 두 가지를 한 프레임 안에 같이 그렸다 — 브라우저 주소창
-    모양의 띠(장식일 뿐 앱 UI가 아니고 디자인 시스템 밖이다)를 얹고 그
-    아래에 인쇄용 그림을, 화면 하단에 토스트를 얹었다. 주소창 안의 문구
-    「새 탭」도 이 파일이 채운 자리다 — qr.md에 실제 파일명이나 URL이 없다.
+  · 인쇄용 그림(02절)의 레이아웃 세부. qr.md 「내보내기」 값 표가 크기(A4
+    210×297밀리미터), 자르는 선의 여백(가장자리에서 15밀리미터)·굵기(0.25
+    밀리미터)·색(neutral-300), QR 크기(자르는 선 안쪽 폭의 60% — 약 106밀리
+    미터)를 값으로 준다. 이 파일은 밀리미터를 종이 각 변의 길이로 나눈 비율
+    (가로 7.14%·세로 5.05%)로 옮겨 그었다. 문서가 안 정한 것은 제목·QR·안내
+    사이의 간격뿐이라 이 파일이 세 요소를 세로로 가운데 정렬했다 — 인쇄해서
+    눈으로 비율을 확인하는 것이 이 절의 목적이라 구체적인 수치 없이는 그릴
+    수가 없어서다. QR 둘레의 흰 여백은 코드 자체에 안쪽 여백(6%)을 줘서
+    만들었다 — 화면 QR과 같은 이유(카메라가 경계를 잡는다)다. 테두리는 안
+    그렸다 — qr.md가 화면 QR에는 카드 테두리(stroke.neutral)를 적었지만
+    인쇄용 그림 값 표에는 테두리 행이 없다.
+
+  이번 개정으로 qr.md를 따라 셋을 고쳤다. 첫째 버튼 라벨이 「이미지
+  내려받기」에서 「내보내기」로 바뀌었다(01·03~06절 버튼과 head 주석).
+  「저장이 안 열림」 절이 통째로 빠졌다 — qr.md가 「판은 항상 열려 저장이
+  막히는 자리가 없다」로 정리했고, 뒤따르던 04~07절이 03~06절로 한 칸씩
+  당겨졌다(절 안 상호 참조도 같이 옮겼다). 02절 인쇄용 그림은 픽셀
+  (2480×3508px, 300dpi)이 아니라 qr.md의 밀리미터 표(A4 210×297mm, 자르는
+  선 여백 15mm·굵기 0.25mm, QR 크기는 자르는 선 안쪽 폭의 60%)로 다시
+  그렸다 — 종이 목업 자체는 화면에 보이기 위해 여전히 픽셀(폭 300px)로
+  그리지만 설명 글은 문서를 따라 밀리미터로 말한다.
 -->
 <title>QR 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -445,7 +447,7 @@ code {
 .sb-right { display: flex; align-items: center; gap: 5px; }
 /* 앱바 — 뒤로와 「QR」뿐이다. qr.md 「짜임」 */
 .appbar {
-  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
   padding: 4px 24px 12px; min-height: 44px; position: relative;
 }
 .backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
@@ -529,51 +531,40 @@ code {
   background: none; border: 0; padding: 0; cursor: pointer; color: var(--fixed-ink);
 }
 
-/* 인쇄용 그림 — 이미지 내려받기의 결과물(qr.md 「이미지 내려받기」 값 표).
+/* 인쇄용 그림 — 내보내기의 결과물(qr.md 「내보내기」 값 표).
    .mock이 아니라 종이 한 장이다. 라이트·다크 어느 쪽에서도 항상 흰 바탕에
    검은 글자라 --b-* 토큰 대신 리터럴 hex를 쓴다(tokens.md 라이트 열의
-   neutral-00·1000과 같은 값 — 위 .mock의 --fixed-bg·--fixed-ink와 같은 이유). */
+   neutral-00·1000과 같은 값 — 위 .mock의 --fixed-bg·--fixed-ink와 같은 이유).
+   파일이 따르는 단위는 밀리미터다 — qr.md 「내보내기」 값 표가 정본이고
+   210×297밀리미터가 A4 한 장이다. 이 목업은 화면에 보이기 위해 폭 300px로
+   줄여 그리고, 그 안의 %값은 문서의 밀리미터를 종이 각 변의 실제 길이
+   (가로 210mm·세로 297mm)로 나눈 비율이다. */
 .papermock {
   position: relative; box-sizing: border-box; overflow: hidden;
-  aspect-ratio: 2480 / 3508;
+  aspect-ratio: 210 / 297;
   background: #FFFEFD; color: #1B1917;
   font-family: "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", sans-serif;
 }
 .papermock.standalone { width: 300px; border-radius: 2px; box-shadow: var(--b-mock-shadow); }
-.papermock.compact { width: 200px; border-radius: 2px; box-shadow: 0 1px 4px rgba(27,25,23,.28); }
-/* 자르는 선 — 점선, 가장자리에서 안쪽으로 들어와 선다(qr.md). 여백·굵기·색은
-   문서에 없어 이 파일이 세운 자리다(위 주석) */
-.paper-cutline { position: absolute; inset: 7.2%; border: 1.5px dashed #CECBC9; pointer-events: none; }
+/* 자르는 선 — 점선, 가장자리에서 15밀리미터 안쪽(가로 210mm의 7.14%·세로
+   297mm의 5.05%), 굵기 0.25밀리미터, 색은 neutral-300의 라이트 값(qr.md
+   값 표). 시안의 1.5px는 화면에 보이기 위한 값이고 파일이 따르는 것은
+   0.25밀리미터다(qr.md 「시안의 픽셀 값은 파일 값이 아니다」) */
+.paper-cutline { position: absolute; top: 5.05%; bottom: 5.05%; left: 7.14%; right: 7.14%; border: 1.5px dashed #CECBC9; pointer-events: none; }
 .paper-inner {
-  position: absolute; inset: 7.2%; box-sizing: border-box;
+  position: absolute; top: 5.05%; bottom: 5.05%; left: 7.14%; right: 7.14%; box-sizing: border-box;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 9% 11%; text-align: center;
+  padding: 9% 0; text-align: center;
 }
 .paper-title { font-size: 1.0625rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 7%; }
-.papermock.compact .paper-title { font-size: .625rem; margin-bottom: 6%; }
-/* QR — 가운데, 둘레에 흰 여백(qr.md). 화면 QR과 같은 이유로 코드 자체에
-   안쪽 여백을 줘 흰 띠를 만든다. 테두리는 없다 — 값 표에 테두리 행이 없다 */
-.paper-qrbox { width: 100%; aspect-ratio: 1 / 1; background: #FFFEFD; padding: 6%; box-sizing: border-box; }
+/* QR — 가운데, 자르는 선 안쪽 폭의 60%(qr.md 값 표 — 약 106밀리미터).
+   둘레의 흰 여백은 코드 자체에 안쪽 여백(6%)을 줘서 만들었다 — 화면 QR과
+   같은 이유(카메라가 경계를 잡는다)다. 테두리는 없다 — 값 표에 테두리 행이
+   없다 */
+.paper-qrbox { width: 60%; aspect-ratio: 1 / 1; background: #FFFEFD; padding: 6%; box-sizing: border-box; }
 .paper-qrbox .qrgrid { width: 100%; height: 100%; display: block; shape-rendering: crispEdges; }
 .paper-qrbox .qrgrid rect { fill: #1B1917; }
 .paper-caption { margin-top: 7%; font-size: .75rem; line-height: 1.4; color: rgba(27, 25, 23, .72); max-width: 94%; }
-.papermock.compact .paper-caption { font-size: .5rem; margin-top: 6%; }
-
-/* 「저장이 안 열림」 — 새 탭. 앱바 자리에 브라우저 주소창 모양의 띠를 얹는다.
-   장식일 뿐 앱 UI가 아니고 디자인 시스템 밖이다(위 주석) */
-.browserbar {
-  flex: 0 0 auto; height: 46px; display: flex; align-items: center;
-  padding: 0 20px; border-bottom: 1px solid var(--stroke-neutral);
-}
-.browserbar .url {
-  flex: 1 1 auto; height: 30px; border-radius: 8px; background: var(--bg-neutral-weak);
-  display: flex; align-items: center; gap: 6px; padding: 0 12px;
-  font-size: .75rem; color: var(--fg-neutral-subtle);
-}
-.browserbody {
-  flex: 1 1 auto; display: flex; align-items: center; justify-content: center;
-  padding: 28px 24px; position: relative; background: var(--bg-neutral-weak);
-}
 
 @media (prefers-reduced-motion: reduce) {
   .mock * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
@@ -593,7 +584,7 @@ code {
   <h1>QR 시안</h1>
   <p class="lede">
     관리자 홈의 「QR」 줄이 여는 화면이다. 코드는 시간이 지나도 안 도는 고정 코드이고,
-    관리자가 「새로 뽑기」를 눌러야만 바뀐다. 04절의 「크게 띄우기」는 실제로 눌린다 —
+    관리자가 「새로 뽑기」를 눌러야만 바뀐다. 03절의 「크게 띄우기」는 실제로 눌린다 —
     버튼을 누르면 흰 면이 차오르고 닫기를 누르면 같은 속도로 걷힌다.
     오른쪽 위 토글이 페이지 전체를 라이트와 다크로 뒤집는다.
   </p>
@@ -623,7 +614,7 @@ code {
               <div class="qrdate num">2026년 3월 2일부터 쓰고 있어요</div>
             </div>
             <div class="btnstack">
-              <button class="btn secondary" type="button">이미지 내려받기</button>
+              <button class="btn secondary" type="button">내보내기</button>
               <button class="btn secondary" type="button">크게 띄우기</button>
               <button class="btn outline" type="button">새로 뽑기</button>
             </div>
@@ -645,8 +636,8 @@ code {
   <section>
     <div class="sec-head">
       <span class="sec-num">02 / 인쇄용 그림</span>
-      <h2>「이미지 내려받기」가 내려주는 것 — 화면 QR이 아니다</h2>
-      <p>인쇄해서 홀 입구에 붙이는 종이다. A4 비율(2480×3508px, 300dpi)이라 「용지에 맞춤」으로 줄여도 QR이 안 눌린다. 제목이 QR 위, 안내 한 줄이 QR 아래에 같이 박혀 종이만 보고도 무엇인지 안다.</p>
+      <h2>「내보내기」가 내려주는 것 — 화면 QR이 아니다</h2>
+      <p>인쇄해서 홀 입구에 붙이는 종이다. A4 한 장 — 210×297밀리미터 세로라 「용지에 맞춤」으로 줄여도 QR이 안 눌린다. 제목이 QR 위, 안내 한 줄이 QR 아래에 같이 박혀 종이만 보고도 무엇인지 안다.</p>
     </div>
     <div class="grid">
 
@@ -662,8 +653,8 @@ code {
         <figcaption>
           <div class="cap-key">PRINT</div>
           <div class="cap-name">인쇄용 그림</div>
-          <p class="cap-body"><strong>2480×3508픽셀, A4 300dpi.</strong> 정사각으로 주면 A4에 인쇄할 때 위아래 여백이 크게 남아 QR이 생각보다 작게 나온다. 바탕은 화면의 QR 면과 같은 이유로 라이트·다크 어느 쪽에서도 항상 흰 면에 검은 글자다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>자르는 선이 그림 안에 있다.</strong> 점선 테두리로, 인쇄한 뒤 그 선을 따라 잘라 붙인다 — 어디까지가 붙일 자리인지를 종이가 스스로 말한다. <strong>안내 한 줄이 없으면</strong> 근무자가 무엇으로 찍는지 모른다 — 앱 안 스캐너가 아니라 기기 카메라로 찍는 것이라 그 사실이 벽에 붙은 종이에 있어야 한다.</p>
+          <p class="cap-body"><strong>A4 한 장 — 210×297밀리미터 세로.</strong> 정사각으로 주면 A4에 인쇄할 때 위아래 여백이 크게 남아 QR이 생각보다 작게 나온다. 바탕은 화면의 QR 면과 같은 이유로 라이트·다크 어느 쪽에서도 항상 흰 면에 검은 글자다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>자르는 선이 그림 안에 있다.</strong> 가장자리에서 15밀리미터 안쪽, 굵기 0.25밀리미터의 점선이다. 인쇄한 뒤 그 선을 따라 잘라 붙인다 — 어디까지가 붙일 자리인지를 종이가 스스로 말한다. <strong>QR은 그 안쪽 폭의 60%(약 106밀리미터)</strong>이고, <strong>안내 한 줄이 없으면</strong> 근무자가 무엇으로 찍는지 모른다 — 앱 안 스캐너가 아니라 기기 카메라로 찍는 것이라 그 사실이 벽에 붙은 종이에 있어야 한다.</p>
         </figcaption>
       </figure>
 
@@ -673,52 +664,7 @@ code {
   <!-- 03 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">03 / 저장이 안 열림</span>
-      <h2>브라우저가 파일 저장을 안 열면 새 탭에 같은 그림이 뜬다</h2>
-      <p>「이미지 내려받기」를 눌렀는데 브라우저가 파일 저장을 안 여는 자리가 있다. 그때 같은 인쇄용 그림이 새 탭에 그대로 서고 토스트가 다음 수를 말한다. 실패를 말하는 문장을 앞에 안 붙인다 — 막힌 것이 아니라 다른 길이다.</p>
-    </div>
-    <div class="grid">
-
-      <figure class="item">
-        <div class="mock">
-          <div class="statusbar"><span>21:10</span><span class="sb-right">
-            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
-            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
-          </span></div>
-          <div class="browserbar">
-            <div class="url">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-              <span>새 탭</span>
-            </div>
-          </div>
-          <div class="browserbody">
-            <div class="papermock compact">
-              <div class="paper-cutline"></div>
-              <div class="paper-inner">
-                <div class="paper-title">출근 인증</div>
-                <div class="paper-qrbox"><svg class="qrgrid" data-seed="1" viewBox="0 0 21 21" aria-hidden="true"></svg></div>
-                <div class="paper-caption">스마트폰 카메라로 찍어 출근을 인증하세요</div>
-              </div>
-            </div>
-          </div>
-          <div class="toast">
-            <span>그림을 길게 눌러 저장하세요</span>
-          </div>
-        </div>
-        <figcaption>
-          <div class="cap-key">SAVE FALLBACK</div>
-          <div class="cap-name">저장이 안 열림</div>
-          <p class="cap-body">새 탭에 뜬 것은 화면의 QR이 아니라 <strong>같은 인쇄용 그림</strong>이다 — 「크게 띄우기」로 안 보내는 것은 그쪽이 화면 크기의 QR이라 안내 한 줄과 자르는 선이 안 따라오기 때문이다. 행동은 둘 — 그림을 길게 눌러 저장하거나 탭을 닫는다. 닫으면 정상으로 돌아간다.</p>
-        </figcaption>
-      </figure>
-
-    </div>
-  </section>
-
-  <!-- 04 -->
-  <section>
-    <div class="sec-head">
-      <span class="sec-num">04 / 크게 띄우기</span>
+      <span class="sec-num">03 / 크게 띄우기</span>
       <h2>화면이 통째로 QR이 된다 — 실제로 눌러본다</h2>
       <p>「크게 띄우기」를 누르면 흰 면이 아래에서 차오른다. <code>--duration-base</code>(180ms) <code>ease-out</code>이고, 닫기를 누르면 같은 시간으로 걷힌다. 앱바가 없고 나가는 길은 오른쪽 위 닫기 하나다.</p>
     </div>
@@ -740,7 +686,7 @@ code {
               <div class="qrdate num">2026년 3월 2일부터 쓰고 있어요</div>
             </div>
             <div class="btnstack">
-              <button class="btn secondary" type="button">이미지 내려받기</button>
+              <button class="btn secondary" type="button">내보내기</button>
               <button class="btn secondary" type="button" data-open-full>크게 띄우기</button>
               <button class="btn outline" type="button">새로 뽑기</button>
             </div>
@@ -770,10 +716,10 @@ code {
     </div>
   </section>
 
-  <!-- 05 -->
+  <!-- 04 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">05 / 새로 뽑기 확인</span>
+      <span class="sec-num">04 / 새로 뽑기 확인</span>
       <h2>두 가지를 같이 말하는 Dialog</h2>
       <p>「새로 뽑기」를 누르면 화면 가운데에 Dialog가 선다. 옛 코드가 그 자리에서 죽는다는 것과 종이를 갈아야 한다는 것을 한 문장에 담는다. destructive를 안 쓴다 — 파괴가 아니라 새 코드를 뽑는 것이다.</p>
     </div>
@@ -795,7 +741,7 @@ code {
               <div class="qrdate num">2026년 3월 2일부터 쓰고 있어요</div>
             </div>
             <div class="btnstack">
-              <button class="btn secondary" type="button">이미지 내려받기</button>
+              <button class="btn secondary" type="button">내보내기</button>
               <button class="btn secondary" type="button">크게 띄우기</button>
               <button class="btn outline" type="button">새로 뽑기</button>
             </div>
@@ -823,10 +769,10 @@ code {
     </div>
   </section>
 
-  <!-- 06 -->
+  <!-- 05 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">06 / 새로 뽑은 뒤</span>
+      <span class="sec-num">05 / 새로 뽑은 뒤</span>
       <h2>날짜가 오늘로 바뀌고 토스트가 뜬다</h2>
       <p>QR 그림이 새 코드(다른 자리 배치)로 바뀌고 「쓰기 시작한 날」이 오늘이 된다. 갈아 끼우는 모션은 없다 — 옛 코드와 새 코드가 섞여 보이면 어느 쪽을 인쇄해야 하는지 흐려진다.</p>
     </div>
@@ -848,7 +794,7 @@ code {
               <div class="qrdate num">2026년 9월 11일부터 쓰고 있어요</div>
             </div>
             <div class="btnstack">
-              <button class="btn secondary" type="button">이미지 내려받기</button>
+              <button class="btn secondary" type="button">내보내기</button>
               <button class="btn secondary" type="button">크게 띄우기</button>
               <button class="btn outline" type="button">새로 뽑기</button>
             </div>
@@ -875,10 +821,10 @@ code {
     </div>
   </section>
 
-  <!-- 07 -->
+  <!-- 06 -->
   <section>
     <div class="sec-head">
-      <span class="sec-num">07 / 다크 — 규칙과 부딪힌 자리</span>
+      <span class="sec-num">06 / 다크 — 규칙과 부딪힌 자리</span>
       <h2>QR이 앉는 면은 다크에서도 흰 채로 남는다</h2>
       <p>tokens.md가 모든 면을 라이트·다크 양쪽으로 정의하는데 이 자리만 예외다. 카메라 인식이 이유고, 색 규칙이 아니라 기계 제약이라 여기서만 안 뒤집는다.</p>
     </div>
@@ -900,7 +846,7 @@ code {
               <div class="qrdate num">2026년 3월 2일부터 쓰고 있어요</div>
             </div>
             <div class="btnstack">
-              <button class="btn secondary" type="button">이미지 내려받기</button>
+              <button class="btn secondary" type="button">내보내기</button>
               <button class="btn secondary" type="button">크게 띄우기</button>
               <button class="btn outline" type="button">새로 뽑기</button>
             </div>
@@ -1014,7 +960,7 @@ code {
     buildQR(svg, parseInt(svg.dataset.seed, 10));
   });
 
-  // 02 — 크게 띄우기를 실제로 열고 닫는다
+  // 03 — 크게 띄우기를 실제로 열고 닫는다
   document.querySelectorAll("[data-fullscreen-demo]").forEach(function (mock) {
     var openBtn = mock.querySelector("[data-open-full]");
     var closeBtn = mock.querySelector("[data-close-full]");

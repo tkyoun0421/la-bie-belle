@@ -607,12 +607,12 @@ code {
 .block .i-crit { flex: 0 0 auto; color: var(--fg-critical); margin-top: 1px; }
 
 .cta-note { margin-top: 8px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
-.countnote { margin-top: 14px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
-.settingnote { display: block; margin: 14px auto 0; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+.countnote { margin-top: 12px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+.settingnote { display: block; margin: 12px auto 0; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 .map.lost { display: flex; align-items: center; justify-content: center; background: var(--bg-neutral-weak); }
 .maplost-t { max-width: 220px; text-align: center; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 /* QR 글 — 버튼도 링크도 아니다. 앱이 데려다줄 수 없는 곳이라 밑줄이 없다 */
-.qrline { display: block; margin: 14px auto 0; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+.qrline { display: block; margin: 12px auto 0; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 
 .block { border-radius: var(--r-lg); padding: 14px 16px; display: flex; gap: 11px; align-items: flex-start; }
 .block.warn { background: var(--bg-warning-weak); }
@@ -624,16 +624,16 @@ code {
 
 .map { position: relative; flex: 1 1 auto; overflow: hidden; background: var(--map-ground); }
 .map svg.tiles { position: absolute; inset: 0; width: 100%; height: 100%; }
-.mapchrome { position: absolute; top: 14px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; }
+.mapchrome { position: absolute; top: 16px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; }
 .mapbtn {
   position: relative;
-  width: 38px; height: 38px; border-radius: 999px; border: 0; padding: 0;
+  width: 40px; height: 40px; border-radius: 999px; border: 0; padding: 0;
   background: var(--bg-neutral); color: var(--fg-neutral); display: grid; place-items: center;
   border: 1px solid var(--stroke-neutral); cursor: pointer;
 }
-/* 모양은 38px, 닿는 면은 그 밖으로 투명 여백을 둘러 44px로 채운다 — spacing-shape.md의 「누를 수 있는 것은 44px 이상이다」.
-   두 버튼이 mapchrome 좌우 끝에 떨어져 있어 -3px로 넓혀도 서로 안 겹친다 */
-.mapbtn::after { content: ""; position: absolute; inset: -3px; }
+/* 모양은 40px, 닿는 면은 그 밖으로 투명 여백을 둘러 44px로 채운다 — spacing-shape.md의 「누를 수 있는 것은 44px 이상이다」.
+   두 버튼이 mapchrome 좌우 끝에 떨어져 있어 -2px로 넓혀도 서로 안 겹친다 */
+.mapbtn::after { content: ""; position: absolute; inset: -2px; }
 .attrib {
   position: absolute; right: 10px; font-size: 10px; line-height: 1;
   color: var(--map-label); background: color-mix(in oklch, var(--bg-neutral) 78%, transparent);
