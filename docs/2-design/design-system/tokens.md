@@ -292,16 +292,16 @@ hue 27, chroma 최대 0.145.
 
 Wanted Sans v1.0.3의 정적 `.ttf` 넷을 앱 번들에 넣는다. 원본은 [wanteddev/wanted-sans](https://github.com/wanteddev/wanted-sans)의 `packages/wanted-sans/fonts/ttf/`에 있다.
 
-| 굵기 | 유틸 | 파일 | 원본 크기 |
-| --- | --- | --- | --- |
-| 400 | `font-sans` | `WantedSans-Regular.ttf` | 2,345KB |
-| 500 | `font-medium` | `WantedSans-Medium.ttf` | 2,324KB |
-| 600 | `font-semibold` | `WantedSans-SemiBold.ttf` | 2,297KB |
-| 700 | `font-bold` | `WantedSans-Bold.ttf` | 2,290KB |
+| 굵기 | 유틸 | 파일 | 원본 크기 | 서브셋 크기 |
+| --- | --- | --- | --- | --- |
+| 400 | `font-sans` | `WantedSans-Regular.ttf` | 2,345KB | 443KB |
+| 500 | `font-medium` | `WantedSans-Medium.ttf` | 2,324KB | 439KB |
+| 600 | `font-semibold` | `WantedSans-SemiBold.ttf` | 2,297KB | 435KB |
+| 700 | `font-bold` | `WantedSans-Bold.ttf` | 2,290KB | 436KB |
 
 **파일 이름을 바꾸지 않는다.** 안드로이드는 확장자를 뗀 파일 이름을 폰트 이름으로 읽고 iOS는 파일 안의 PostScript 이름을 읽는다. 배포된 이름이 이미 둘을 맞춰 놓은 값이라 그대로 두면 두 기기에서 같은 이름으로 불린다.
 
-**넷 다 서브셋을 거쳐 들어간다.** 원본 그대로면 9.0MB가 설치 크기에 실린다. 줄이는 기준과 방법은 [foundation/typography.md](foundation/typography.md#서브셋)에 있고, 줄인 뒤 크기는 실제로 만든 다음 이 표에 열을 더해 적는다.
+**번들에 들어가는 것은 서브셋뿐이다.** 원본 넷은 `assets/fonts/`에, 서브셋 넷은 `assets/fonts/subset/`에 산다. 앱이 읽는 것은 뒤쪽이고 원본은 다시 만들 때만 쓴다 — 넷 합계가 9,256KB에서 1,753KB로 줄어 **7.3MB가 설치 크기에서 빠졌다**. 줄이는 기준과 만드는 방법은 [foundation/typography.md](foundation/typography.md#서브셋)에 있다.
 
 고른 이유와 라이선스는 [foundation/typography.md](foundation/typography.md#서체)에 있다.
 

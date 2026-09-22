@@ -6,7 +6,15 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `font-subset`이다.** Wanted Sans 넷이 원본 그대로 번들에 들어가 9.4MB가 설치 크기에 실린다 — [tokens.md](2-design/design-system/tokens.md#서체-연결)가 서브셋을 거친다고 적어둔 자리가 아직 비어 있고, 줄이는 기준과 방법은 [typography.md](2-design/design-system/foundation/typography.md#서브셋)에 있다. 완료 조건은 [backlog.md](backlog.md)가 든다.
+**다음 첫 수는 `e2e-runner`지만 `expo-scaffold`가 선행이다.** 기계만으로 닫을 수 있는 task가 지금 없다 — `ready`에 남은 것이 `e2e-runner`(선행 `expo-scaffold`)와 `edge-function-import`·`types-generation`이다. **`edge-function-import`가 유일하게 선행 없는 `ready`다** — Deno Edge Function이 `supabase/functions` 밖의 `src/`를 import할 수 있는지 보는 스파이크고 [plan](3-build/plans/edge-function-import.md)이 완료 조건을 든다. 그것이 서면 `profile-erasure`와 `notification-push`가 풀린다.
+
+**`font-subset`이 닫혔다.** Wanted Sans 넷 합계가 **9,256KB에서 1,753KB로 줄었다** — 7.3MB가 설치 크기에서 빠졌고 `pnpm bundle`의 자산 목록으로 서브셋만 들어간 것을 확인했다. 원본은 `assets/fonts/`에 남고 앱은 `assets/fonts/subset/`을 읽는다.
+
+남긴 글자는 2,527자고 **집합의 정본이 `tests/lint/font-subset.ts`다** — 상용 2,350자를 표로 안 적고 EUC-KR 완성형 영역(lead `0xB0`–`0xC8`, trail `0xA1`–`0xFE`)을 디코더로 풀어 낸다. 만들어진 `.ttf`의 `cmap`을 읽어 그 집합이 다 들었는지 `pnpm test`가 본다 — 글자가 빠지면 그 자리만 시스템 서체로 떨어지고 앱이 안 죽어서 다른 검사가 못 잡는 자리다.
+
+**상용 2,350자가 기준인 근거가 실측으로 확인됐다.** 음절 11,172자를 다 넣으면 Regular 한 장이 9%만 줄고(2,345KB → 2,129KB), 상용만 남기면 81% 줄었다(→ 443KB). 대신 **이름이 상용 밖 음절을 쓰는 사람은 그 글자만 기기 기본 서체로 떨어진다** — 실제로 생기면 그 음절을 집합에 더해 다시 만든다.
+
+**시안이 쓰는 닫기 기호가 원본 서체에 없다.** 「✕」(U+2715)가 Wanted Sans에 없어서 서브셋에 담을 수 없고 지금도 시스템 서체로 떨어진다 — `cmap` 실측에서 드러났다. 「×」(U+00D7)나 「✗」(U+2717)로 바꾸는 것을 `sian-sync`가 받아뒀다.
 
 **`typed-routes-gate`가 닫혔다.** `.expo/types/`가 `.gitignore` 안이라 CI에 라우트 타입이 없었고, 없으면 `Href`가 `string`으로 떨어져 `router.replace("/없는경로")`가 `pnpm typecheck`를 통과했다. 만드는 명령은 `expo customize tsconfig.json`이다 — Expo CLI의 `setupTypedRoutes`가 Metro나 개발 서버 없이 도는 진입점이 그것 하나고 `expo export`(= `pnpm bundle`)로는 안 생긴다. `pnpm routes:types`가 그것을 부른 뒤 **생성물을 다시 읽어 판정한다** — 생성이 조용히 실패한 상태와 정상 상태가 종료 코드로는 구별되지 않아서다. 판정 규칙 넷은 `tests/lint/route-types.ts`에 있고 [execution.md](4-test/execution.md#pnpm-routestypes)가 근거를 든다. 이것이 `claimed-guards-audit`이 남긴 습관의 첫 적용이다 — 「검사가 잡는다」를 적을 때 잡는 파일 이름을 같이 적었다.
 

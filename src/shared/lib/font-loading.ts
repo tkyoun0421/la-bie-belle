@@ -1,10 +1,10 @@
 import { type FontSource } from "expo-font";
 /* eslint-disable no-restricted-imports -- assets/ 는 src/ 밖이라 @/ 로 가리킬 수 없고,
    Metro는 서체 경로를 정적으로 읽으니 별칭 없이 리터럴 상대 경로로 물려야 한다. */
-import wantedSansBold from "../../../assets/fonts/WantedSans-Bold.ttf";
-import wantedSansMedium from "../../../assets/fonts/WantedSans-Medium.ttf";
-import wantedSansRegular from "../../../assets/fonts/WantedSans-Regular.ttf";
-import wantedSansSemiBold from "../../../assets/fonts/WantedSans-SemiBold.ttf";
+import wantedSansBold from "../../../assets/fonts/subset/WantedSans-Bold.ttf";
+import wantedSansMedium from "../../../assets/fonts/subset/WantedSans-Medium.ttf";
+import wantedSansRegular from "../../../assets/fonts/subset/WantedSans-Regular.ttf";
+import wantedSansSemiBold from "../../../assets/fonts/subset/WantedSans-SemiBold.ttf";
 /* eslint-enable no-restricted-imports */
 
 export type FontFamilyName =
@@ -25,10 +25,10 @@ export type FontLoadingState = {
  * 트랜스포머가 어떤 .ttf든 1로 바꿔서 자산 값으로는 굵기 오배선을 못 잡기 때문이다.
  */
 export const FONT_ASSETS: Record<string, string> = {
-  "WantedSans-Regular": "assets/fonts/WantedSans-Regular.ttf",
-  "WantedSans-Medium": "assets/fonts/WantedSans-Medium.ttf",
-  "WantedSans-SemiBold": "assets/fonts/WantedSans-SemiBold.ttf",
-  "WantedSans-Bold": "assets/fonts/WantedSans-Bold.ttf",
+  "WantedSans-Regular": "assets/fonts/subset/WantedSans-Regular.ttf",
+  "WantedSans-Medium": "assets/fonts/subset/WantedSans-Medium.ttf",
+  "WantedSans-SemiBold": "assets/fonts/subset/WantedSans-SemiBold.ttf",
+  "WantedSans-Bold": "assets/fonts/subset/WantedSans-Bold.ttf",
 } satisfies Record<FontFamilyName, string>;
 
 /**

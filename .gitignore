@@ -27,3 +27,6 @@ __pycache__/
 
 expo-env.d.ts
 # @end expo-cli
+
+# 서브셋이 만드는 목록 — 정본은 tests/lint/font-subset.ts다
+assets/fonts/subset/codepoints.txt
