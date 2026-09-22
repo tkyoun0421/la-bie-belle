@@ -129,7 +129,8 @@ sources:
 **날 열기·닫기.**
 
 - `open_day(p_work_date date)` — [SCH-003](../../2-design/modules/schedule/README.md#sch-003). `date_trunc('month', p_work_date)`로 `schedules` 행을 찾고 없으면 `no_schedule`. `days` 행 하나와 `halls.default_slots`만큼 `slots` 행을 같이 넣는다. 근무 시간도 홀 기본값(`default_starts`·`default_ends`)이다. 이미 열린 날이면 `already_open`
-- `close_day(p_work_date date)` — [SCH-004](../../2-design/modules/schedule/README.md#sch-004). 확정 전에만 닫힌다(`already_confirmed`). `days` 행을 지우면 `slots`·`assignments`가 cascade로 같이 간다 — 규칙이 「배정이 같이 사라진다」고 한 그것이다. 그 자리에 걸린 살아 있는 `requests`도 같이 닫는다(`closed_at`)
+- 지난 날짜면 `date_past`. [SCH-002](../../2-design/modules/schedule/README.md#sch-002)가 「이미 지난 날짜는 열 수 없다」고 정했고 판정 표가 거부로 든다. 오늘은 열린다 — 경계가 「오늘부터」다. 오늘을 재는 것은 `(now() at time zone 'Asia/Seoul')::date`다
+- `close_day(p_work_date date)` — [SCH-004](../../2-design/modules/schedule/README.md#sch-004). 확정 전에만 닫힌다(`already_confirmed`). `days` 행을 지우면 `slots`·`assignments`가 cascade로 같이 간다 — 규칙이 「배정이 같이 사라진다」고 한 그것이다. 그 자리에 걸린 `requests`도 cascade로 따라 사라진다 — `closed_at`을 안 찍는다([요청](../../2-design/modules/schedule/design.md#요청))
 - `set_day_hours(p_work_date date, p_starts time, p_ends time, p_ceremony time)` — 그 날의 시각을 바꾼다. 안 연 날이면 `not_open`. 끝이 시작보다 이르면 `bad_hours`
 - 셋 다 자리 기본값 열한 명을 SQL 리터럴로 들지 않는다. `halls.default_slots`를 읽는 것이 곧 [SCH-011](../../2-design/modules/schedule/README.md#sch-011)의 값을 한 곳에서 쓰는 길이다
 
@@ -138,7 +139,8 @@ sources:
 **홀 기본값.**
 
 - `halls` 표가 아직 없으면 이 task가 만든다 — [data-access.md](../../2-design/system/data-access.md#홀)가 `halls(id, lat, lng, radius_m, default_slots jsonb, default_starts, default_ends)`로 정했고 공유 표다. 좌표·반경은 전원이 읽는다
-- 씨앗 행 하나가 든다. `default_slots`가 [SCH-011](../../2-design/modules/schedule/README.md#sch-011)의 아홉 포지션 열한 명이다. 좌표는 가짜 값이고 실제 값은 운영 DB에만 산다
+- 씨앗 행 하나가 든다. `default_slots`가 [SCH-011](../../2-design/modules/schedule/README.md#sch-011)의 아홉 포지션 열한 명이고 모양은 배열이다 — `[{"positions": ["팀장"], "count": 1}, …]`([홀](../../2-design/system/data-access.md#홀)). 표의 줄 순서가 배열 순서고 그 배열이 포지션 표시 순서의 정본이다. 좌표는 가짜 값이고 실제 값은 운영 DB에만 산다
+- `slots`에 순번 열을 두지 않는다. `open_day`가 깐 행의 순서를 단언하지 않는다 — `ORDER BY` 없는 select의 순서는 Postgres가 보장하지 않는다. 테스트가 보는 것은 열한 행의 포지션별 개수다
 - `set_hall_defaults(p_slots jsonb, p_starts time, p_ends time)` — 관리자만. 자리·근무 시간 기본값을 바꾼다. 이미 연 날에는 소급하지 않는다 — `open_day`가 읽는 값이 바뀔 뿐이다
 - 좌표·반경을 바꾸는 함수는 출근 인증 영역이 낸다. 이 task는 자리와 시간만 건드린다
 
@@ -153,7 +155,7 @@ sources:
 - 호출자 검사 — 근무자가 `create_schedule`·`confirm_schedule`·`open_day`·`close_day`·`set_day_hours`·`set_hall_defaults`를 부르면 `not_allowed`
 - 달 — `create_schedule`이 그 달 1일이 아닌 `month`를 받으면 제약에 걸린다. `open_day`가 `date_trunc`로 맞는 근무표를 찾는다. 달을 걸친 날짜 둘(8월 31일과 9월 1일)이 서로 다른 `schedules` 행에 붙는다
 - 확정 — 마감 전 `confirm_schedule`이 `too_early`. 마감 뒤에는 통과하고 `confirmed_at`이 찍힌다. 확정 뒤 `close_day`가 `already_confirmed`
-- 날 열기 — `open_day` 한 번에 `days` 하나와 `slots` 열한 개가 선다. 두 번 부르면 `already_open`. `close_day`가 `days`를 지우면 `slots`가 같이 사라진다
+- 날 열기 — `open_day` 한 번에 `days` 하나와 `slots` 열한 개가 선다. 두 번 부르면 `already_open`. 어제를 열면 `date_past`고 오늘은 열린다. `close_day`가 `days`를 지우면 `slots`가 같이 사라지고, 그 자리에 걸린 `requests`도 없어진다
 - unique index — 같은 자리에 정규 배정 둘을 넣으면 둘째가 막힌다. 같은 날 같은 사람에게 정규 자리 둘을 주면 막힌다. 교육 배정은 둘 다 안 걸린다. 배정은 아직 함수가 없으니 이 테스트만 직접 `insert`를 쓴다 — `service_role`로 넣어 제약만 본다
 - 뷰 — 자리를 열고 배정을 안 넣으면 `open_slots`에 뜬다. 정규 배정을 넣으면 사라진다. 교육 배정만 넣으면 그대로 뜬다
 
@@ -161,8 +163,9 @@ sources:
 
 **오류 코드 목록.**
 
-- 이 task가 던지는 코드를 `src/shared/api/error-codes.ts`에 더한다 — `already_exists`·`deadline_past`·`month_over`·`already_confirmed`·`too_early`·`no_schedule`·`already_open`·`not_open`·`bad_hours`·`not_allowed`
-- 대조 테스트가 마이그레이션의 `raise ... using message =` 문자열과 그 목록을 맞춘다([오류의 모양](../../2-design/system/data-access.md#오류의-모양))
+- 이 task가 던지는 코드를 `src/shared/api/error-codes.ts`에 더한다 — `already_exists`·`deadline_past`·`date_past`·`month_over`·`already_confirmed`·`too_early`·`no_schedule`·`already_open`·`not_open`·`bad_hours`·`not_allowed`
+- 파일이 내는 이름은 `ERROR_CODES` 하나고 문자열 리터럴 배열이다([오류의 모양](../../2-design/system/data-access.md#오류의-모양))
+- 대조 테스트가 마이그레이션의 `raise ... using message =` 문자열과 그 목록을 맞춘다
 - 그 파일과 대조 테스트는 `profile-form`의 AC-01·AC-11이 세운다. **먼저 merge된 쪽이 만들고 뒤가 얹는다** — 이 task와 `profile-form`은 선행이 갈려 순서가 안 정해졌다. 이 task가 먼저면 여기서 파일과 `tests/lint/error-codes.test.ts`를 세우고, `DomainError`·`TransportError`는 만들지 않는다. 화면이 없어 던진 코드를 받는 쪽이 아직 없고, 오류 기계는 그 plan의 몫이다
 
 타입 생성(`pnpm types`·`database.types.ts`)은 이 task가 하지 않는다 — [`types-generation`](../../backlog.md)이 절차를 세우는 task고 지금 저장소에 그 스크립트가 없다.
@@ -183,12 +186,14 @@ sources:
 | `supabase/migrations/<날짜>_halls.sql` | 홀 표와 씨앗 행. 공유 표라 근무표보다 앞이다 | AC-08 |
 | `supabase/migrations/<날짜>_schedule.sql` | 표 아홉, 제약, 인덱스, `open_slots` 뷰, RLS, 권한 회수 | AC-01~AC-05 |
 | `supabase/migrations/<날짜>_schedule_functions.sql` | 함수 일곱. [이름과 자리](../../2-design/system/data-access.md#이름과-자리)가 도메인마다 파일 하나로 정했다 | AC-06~AC-08 |
-| `src/shared/api/database.types.ts` | `pnpm types`가 다시 뽑는다 | AC-10 |
-| `src/shared/api/error-codes.ts` | 코드 열 | AC-10 |
-| `tests/integration/schedule-rls.test.ts` | RLS와 직접 쓰기 | AC-05·AC-09 |
-| `tests/integration/schedule-functions.test.ts` | 호출자 검사·달·확정·날 열기 | AC-06~AC-09 |
-| `tests/integration/schedule-constraints.test.ts` | unique index와 뷰 | AC-02·AC-04·AC-09 |
-| `tests/integration/postgres.ts` | 근무표 시드 헬퍼 | AC-09 |
+| `src/shared/api/error-codes.ts` | 코드 열하나 | AC-10 |
+| `src/entities/schedule/dals/__tests__/schedule-rls.integration.test.ts` | RLS와 직접 쓰기 | AC-05·AC-09 |
+| `src/entities/schedule/dals/__tests__/schedule-functions.integration.test.ts` | 호출자 검사·달·확정·날 열기 | AC-06~AC-09 |
+| `src/entities/schedule/dals/__tests__/schedule-constraints.integration.test.ts` | 제약·unique index와 뷰 | AC-02~AC-04·AC-09 |
+| `tests/integration/postgres.ts` | 범용 `execSql`과 `backdateDeadline` | AC-09 |
+| `tests/lint/error-codes.ts`·`tests/lint/error-codes.test.ts` | 코드 대조 | AC-10 |
+
+integration 테스트가 `tests/integration/`이 아니라 `src/` 아래인 것은 `jest.integration.config.js`의 `testMatch`가 `<rootDir>/src/**/__tests__/**/*.integration.test.ts`만 잡아서다 — `tests/integration/`에 두면 `No tests found`다. 기존 profile 테스트 열도 같은 자리에 있고 `tests/integration/`에는 헬퍼만 산다.
 
 ## 구현 순서
 
@@ -226,7 +231,7 @@ sources:
 | AC-04 | 배정이 찬 자리가 빈 자리로 뜬다, 교육만 든 자리가 안 뜬다 | integration 위 파일 | 위와 같다 | 정규가 들면 사라지고 교육만이면 남는다 |
 | AC-05 | 남의 근무 신청·취소 사유가 샌다, 표를 직접 쓴다 | integration `tests/integration/schedule-rls.test.ts`(예정) | 위와 같다 | 근무자에게 남의 `availabilities`·`cancel_requests`가 0행, `insert`가 막힌다 |
 | AC-06·AC-07·AC-08 | 근무자가 관리자 함수를 부른다, 마감 전 확정이 통과한다, 확정 뒤 날이 닫힌다 | integration `tests/integration/schedule-functions.test.ts`(예정) | 위와 같다 | `not_allowed`·`too_early`·`already_confirmed` |
-| AC-07 | 날이 엉뚱한 달에 붙는다, 자리가 안 깔린다 | integration 위 파일 | 위와 같다 | 8월 31일과 9월 1일이 다른 `schedules`, `open_day` 한 번에 `slots` 열한 개 |
+| AC-07 | 날이 엉뚱한 달에 붙는다, 자리가 안 깔린다, 지난 날짜가 열린다 | integration 위 파일 | 위와 같다 | 8월 31일과 9월 1일이 다른 `schedules`, `open_day` 한 번에 `slots` 열한 개, 어제는 `date_past`고 오늘은 열린다 |
 | AC-10 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/error-codes.test.ts` | `pnpm test` | 코드 열이 양쪽에 있다 |
 | AC-11 | 앞 배정이 남은 사람이 퇴사 처리된다 | integration `tests/integration/schedule-functions.test.ts`(예정) | `pnpm test:integration:run` | `has_future_assignments`, 지난 배정·끝난 배정은 통과 |
 | 전체 | — | — | `pnpm lint`·`pnpm format:check`·`pnpm typecheck` | 초록 |

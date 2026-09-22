@@ -103,14 +103,14 @@ sources:
 
 ### AC-03
 
-**자리를 채우는 길 셋이 요청을 닫는다.** 앞 task가 만든 함수를 `create or replace`로 고친다.
+**자리를 채우는 길 둘이 요청을 닫는다.** 앞 task가 만든 함수를 `create or replace`로 고친다.
 
 - `add_assignment` — 정규 배정이 들어가면 그 `slot_id`의 살아 있는 요청을 닫는다. 교육 배정은 자리를 안 먹으니 안 닫는다
 - `force_change` — 새 배정이 들어간 자리의 요청을 닫는다
-- `close_day` — 그 날의 모든 자리의 살아 있는 요청을 닫는다. [`schedule-data`](schedule-data.md)가 이미 그 줄을 넣었으면 그대로 두고 테스트만 더한다
+- `close_day`는 안 고친다. 자리가 지워지고 `slot_id`의 cascade를 타고 요청 행이 따라 사라져 닫을 것이 안 남는다([요청](../../2-design/modules/schedule/design.md#요청)). 그래도 「닫힌다」는 결과는 같아 [design.md](../../2-design/modules/schedule/design.md#요청)가 그것을 다섯 중 하나로 센다
 - 교대 승인(`approve_swap`)은 swap 영역이다 — 그 task가 같은 일을 자기 함수에 넣는다. **이 plan이 그 자리를 [범위 밖](#범위-밖)에 남긴다**
 
-닫기가 한 곳에 모이게 `internal.close_slot_requests(p_slot_id uuid)` 하나를 두고 셋이 그것을 부른다 — 같은 규칙이 세 벌 서지 않게 한다([이름과 자리](../../2-design/system/data-access.md#이름과-자리)).
+닫기가 한 곳에 모이게 `internal.close_slot_requests(p_slot_id uuid)` 하나를 두고 둘이 그것을 부른다 — 같은 규칙이 두 벌 서지 않게 한다([이름과 자리](../../2-design/system/data-access.md#이름과-자리)).
 
 ### AC-04
 
@@ -181,7 +181,7 @@ sources:
 **테스트.**
 
 - unit: 카운트다운 계산(서버 오프셋), 요청 상태 셋과 체크박스 유무 판정, 「전부 소진」 판정, 끝난 요청 시트 갈래, 달력 아래 줄의 사건 문구
-- integration: 함수 넷의 호출자 검사와 오류 코드 전부. 특히 — **선착순**(둘이 같은 자리에 수락하면 하나만 통과하고 나머지가 `slot_full`), `respond_request`가 신청 검사만 건너뛰고 자격은 보는 것, 거절이 마지막 후보면 요청이 닫히는 것, `expires_at`이 48시간과 근무 시작 중 이른 쪽인 것, `expire_requests`가 지난 후보를 만료시키고 요청을 닫는 것, `add_assignment`·`force_change`·`close_day`가 요청을 닫는 것, `create_cancel_request`가 당일에 `window_closed`고 거절 뒤 다시 되는 것, `decide_cancel_request`가 승인 시 배정을 닫고 거절 시 이유를 요구하는 것
+- integration: 함수 넷의 호출자 검사와 오류 코드 전부. 특히 — **선착순**(둘이 같은 자리에 수락하면 하나만 통과하고 나머지가 `slot_full`), `respond_request`가 신청 검사만 건너뛰고 자격은 보는 것, 거절이 마지막 후보면 요청이 닫히는 것, `expires_at`이 48시간과 근무 시작 중 이른 쪽인 것, `expire_requests`가 지난 후보를 만료시키고 요청을 닫는 것, `add_assignment`·`force_change`가 요청을 닫는 것, `close_day`가 그 자리의 요청 행을 cascade로 없애는 것, `create_cancel_request`가 당일에 `window_closed`고 거절 뒤 다시 되는 것, `decide_cancel_request`가 승인 시 배정을 닫고 거절 시 이유를 요구하는 것
 - e2e(`schedule-requests` e2e): 관리자가 픽커에서 둘을 골라 요청을 보내고 자리 카드에 배지가 서는지 → 근무자가 달력의 점선 날을 눌러 「근무할게요」로 배정되는지 → 다른 근무자가 같은 요청을 눌러 「자리가 찼어요」 토스트를 보는지 → 근무자가 날 시트에서 취소 요청을 보내 「취소 요청 중」 배지가 서는지 → 관리자가 `/admin/approvals`에서 승인해 자리가 비는지
 
 ### AC-11
@@ -218,7 +218,7 @@ sources:
 - **선착순이 이 저장소에서 처음 진짜 경쟁하는 자리다.** 둘이 같은 순간에 수락하면 unique index가 하나를 떨군다. 함수가 그 예외를 잡아 `slot_full`로 올려야 하고, 안 잡으면 raw Postgres 오류가 화면까지 간다. integration이 두 세션으로 본다
 - **pg_cron을 처음 켠다.** 로컬 Supabase에서 확장을 켜고 crontab을 넣는 것이 CI에서도 돌아야 한다. `supabase db reset`이 통과하는지가 첫 문이고, cron이 실제로 도는지는 시간에 걸려 integration이 **함수를 직접 불러** 본다 — 스케줄러가 부르는 것까지는 안 본다
 - **`expires_at`에 두 시각이 들어간다.** 48시간과 근무 시작 중 이른 쪽인데, 근무 시간이 바뀌면(`set_day_hours`) 이미 나간 요청의 만료가 낡는다. **소급해서 안 고친다** — 근무 시간을 당기는 일은 드물고, cron이 지난 뒤 만료시키는 것이라 늦어질 뿐 틀리지 않는다. 그 판단을 리스크로 남긴다
-- **셋을 `create or replace`로 고친다.** `add_assignment`·`force_change`·`close_day`가 다른 task의 것이라 그쪽 테스트가 이 변경으로 깨질 수 있다. 요청이 없는 경우에 아무것도 안 하게 짜면 기존 테스트가 그대로 통과한다
+- **둘을 `create or replace`로 고친다.** `add_assignment`·`force_change`가 [`schedule-assign`](../../backlog.md)의 것이라 그쪽 테스트가 이 변경으로 깨질 수 있다. 요청이 없는 경우에 아무것도 안 하게 짜면 기존 테스트가 그대로 통과한다
 - **approvals 목록이 반쪽으로 선다.** 사유 줄이 attendance 뒤라 이 PR 시점에는 근무 취소만 뜬다. 빈 상태 문구가 「승인할 일이 없어요」라 반쪽인 줄이 화면에서 안 보인다 — 그 task가 잇는 자리를 backlog에 적는다
 - **수락 취소가 없다.** `request_candidates.status`가 되돌릴 수 있게 생겼지만 그 흐름은 swap의 [SWP-008](../../2-design/modules/swap/README.md)이다. 근무 요청에는 수락 취소가 없다 — 수락이 곧 배정이라 되돌리려면 근무 취소 요청을 낸다
 
