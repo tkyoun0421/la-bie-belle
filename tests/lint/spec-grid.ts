@@ -8,6 +8,7 @@ export type SpecGridViolation =
   | { type: "missing-row"; state: string }
   | { type: "empty-cell"; state: string }
   | { type: "bare-na"; state: string }
+  | { type: "missing-ac"; state: string }
   | { type: "unknown-ac"; state: string; ac: string }
   | { type: "missing-verification-layer"; ac: string };
 
@@ -46,12 +47,9 @@ type GridRow = {
   acs: string[];
 };
 
-/** 「해당 없음」은 이유가 붙어야 답이다. 길이가 아니라 그 말을 덜어낸 자리에 글자가 남는지로 잰다. */
-function isBareNotApplicable(shown: string): boolean {
-  return (
-    shown.includes(NOT_APPLICABLE) &&
-    !WORD.test(shown.split(NOT_APPLICABLE).join(" "))
-  );
+/** 이유는 길이가 아니라 「해당 없음」을 덜어낸 자리에 글자가 남는지로 잰다. */
+function hasReason(shown: string): boolean {
+  return WORD.test(shown.split(NOT_APPLICABLE).join(" "));
 }
 
 function gridRows(lines: string[]): Map<string, GridRow> {
@@ -99,8 +97,15 @@ function rowViolations(
       return [{ type: "empty-cell", state }];
     }
 
-    if (isBareNotApplicable(row.shown)) {
+    const notApplicable = row.shown.includes(NOT_APPLICABLE);
+
+    if (notApplicable && !hasReason(row.shown)) {
       return [{ type: "bare-na", state }];
+    }
+
+    /** 덮을 상태가 있는데 가리킬 AC가 없으면 AC가 모자란 것이다 — 「해당 없음」 줄만 면제다. */
+    if (!notApplicable && row.acs.length === 0) {
+      return [{ type: "missing-ac", state }];
     }
 
     return row.acs
