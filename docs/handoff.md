@@ -8,7 +8,9 @@
 
 **데이터 task를 잇는 중이다.** 화면 task 열넷이 `expo-scaffold`(실기기 확인 — 사람 손)와 데이터 task에 이중으로 막혀 있는데 데이터 쪽은 안 막혀 있다. 그래서 거기부터 친다. 데이터 task는 화면이 없어 spec 대상이 아니라 `chore/` 브랜치로 간다 — [설계 안내](2-design/README.md#spec)가 「spec에는 기능만 들어온다」고 정했고 ADR-005:39가 `feat/`가 아닌 브랜치를 게이트 밖에 뒀다.
 
-`schedule-data`가 [PR #386](https://github.com/tkyoun0421/la-bie-belle/pull/386)으로 들어갔다. 지금은 `attendance-data`(`chore/attendance-data`)고, 그 다음이 `notification-data`(`ready`, plan 있음, 선행 없음)다. `payroll-data`는 `rehearsal`이 `expo-scaffold`에 막혀 있어 아직 못 연다.
+`schedule-data`([PR #386](https://github.com/tkyoun0421/la-bie-belle/pull/386))와 `attendance-data`([PR #387](https://github.com/tkyoun0421/la-bie-belle/pull/387))가 들어갔다. 지금은 `notification-data`(`chore/notification-data`)고 **이것이 선행 없는 마지막 데이터 task다.**
+
+**그 뒤로 사람 손 없이 갈 수 있는 것은 검사 task 넷뿐이다** — `claimed-guards-audit`·`typed-routes-gate`·`plan-sources-gate`·`e2e-runner`(골격 선행). `payroll-data`는 `rehearsal`이 화면(`/me/rehearsals`)을 들어 `expo-scaffold`에 막혀 있다. 화면 task 열넷도 전부 골격 뒤다. **실기기 확인이 유일한 병목이다.**
 
 **실기기 확인이다.** [expo-scaffold](backlog.md)의 AC-01·02·03·04·05·07(재시작)·08·10이 남는다 — 시뮬레이터나 실기기에서만 닫힌다. `pnpm dev`(= `expo start`)를 사람이 별도 터미널에서 띄워 뜨는 QR을 Expo Go로 찍어야 한다. 세션 유지(앱 재시작 후 로그인), 판정이 끝날 때까지 스플래시가 서 있는지, 서체가 바뀌면서 글자가 안 뛰는지가 이 확인의 알맹이다.
 
