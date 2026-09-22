@@ -6,13 +6,9 @@
 
 ## 다음 작업
 
-**PR 셋을 리뷰하고 merge한다.** 셋이 쌓여 있어 순서가 있다 — [#383](https://github.com/tkyoun0421/la-bie-belle/pull/383)(의존성 정렬과 번들 검사)이 [#384](https://github.com/tkyoun0421/la-bie-belle/pull/384)(세션·딥링크·진입 판정)의 선행이고, [#382](https://github.com/tkyoun0421/la-bie-belle/pull/382)(서체 넷)는 따로 선다.
+**실기기 확인이다.** [expo-scaffold](backlog.md)의 AC-01·02·03·04·05·07(재시작)·08·10이 남는다 — 시뮬레이터나 실기기에서만 닫힌다. `pnpm dev`(= `expo start`)를 사람이 별도 터미널에서 띄워 뜨는 QR을 Expo Go로 찍어야 한다. 세션 유지(앱 재시작 후 로그인), 판정이 끝날 때까지 스플래시가 서 있는지, 서체가 바뀌면서 글자가 안 뛰는지가 이 확인의 알맹이다.
 
-**#382와 #384가 `src/app/_layout.tsx`에서 부딪힌다.** 둘 다 `hideAsync()`를 부른다 — merge 뒤 맞는 모양은 서체 로딩과 진입 판정이 **둘 다** 끝났을 때 스플래시를 내리는 것이고, 어느 브랜치도 혼자서는 그 모양을 못 쓴다. 손으로 합쳐야 한다. `.env.example`도 둘이 같이 고쳤다 — 키 아홉이 든 #382 쪽이 온전하다.
-
-**실기기 확인이 남아 있다.** AC-01·02·03·04·05·10과 세션 셋(앱 재시작 후 로그인 유지, 구글 로그인 왕복, 판정 전 스플래시 유지)이 시뮬레이터나 실기기에서만 닫힌다 — `pnpm dev`가 대화형이라 세션에서 못 돌린다. 번들이 만들어진다는 것까지는 `pnpm bundle`이 확인했다.
-
-**구글 로그인 왕복은 로컬에서 못 본다.** `supabase/config.toml`에 구글 프로바이더가 없어서 `/auth/v1/authorize`가 400으로 끝난다. 실 Supabase 프로젝트와 구글 OAuth 클라이언트가 서야 하고, 그 자리는 [environments.md Q-01·Q-03](5-deploy/environments.md#q-01)이다.
+**구글 로그인 왕복은 별도로 막혀 있다.** 로컬 Supabase에 구글 프로바이더가 없어 `/auth/v1/authorize`가 400으로 끝난다 — 실 Supabase 프로젝트와 구글 OAuth 클라이언트가 서야 보이고, 그 자리는 [environments.md Q-01·Q-03](5-deploy/environments.md#q-01)이다.
 
 **`sian-native-pass`도 `active`로 남아 있다.** 시안 열여섯이 ADR-012(브랜드 파랑, 헐거운 밀도) 기준으로 갱신돼 아티팩트로 올라갔고 사람의 승인을 기다린다.
 
@@ -20,23 +16,27 @@
 
 **`plans-restate`는 `blocked`고 `expo-scaffold`가 선행이다.** 남은 plan 열둘이 골격 위에서 파일 배치와 검증 명령을 채우길 기다린다.
 
+**새로 `ready`에 오른 것 셋 — `font-subset`·`typed-routes-gate`·`plan-sources-gate`.** 서체 서브셋으로 9.4MB를 줄이는 것, `typedRoutes`가 CI에서 안 켜져 없는 경로도 `typecheck`를 통과하는 것, plan의 `sources` 영향 검사가 `status: approved`만 보다가 실질적으로 죽어 있는 것 — 셋 다 [backlog.md](backlog.md)가 완료 조건을 든다.
+
 ## 재개 맥락
 
-회차 기록은 `docs/log/2026-09-21.md`(앞 회차)에 있다. 그 앞으로 account·schedule·attendance·payroll·notification·system 여섯 영역의 설계가 전부 닫혔고(#357~#378), 지금은 그 설계를 Expo 네이티브 전제로 옮기는 중이다.
+회차 기록은 `docs/log/2026-09-22.md`다. 그 앞 [2026-09-21](log/2026-09-21.md)이 Expo 골격 뼈대와 토큰 파이프라인, 러너 이사를 세웠고 서체·세션·딥링크·진입 판정을 남겼는데, 이번 회차(#382·#383·#384)가 그 남은 넷을 채웠다.
 
-**번들링이 죽어 있었고 아무 검사도 못 잡았다.** `react-native-svg@15.13.0`이 Node 내장 `buffer`를 import해서 Metro가 번들을 못 묶었는데, `pnpm lint`·`typecheck`·`test`·`format:check` 넷이 다 초록이었다 — 어느 것도 Metro를 돌리지 않는다. 상위가 15.15.3에서 고쳤고 Expo SDK 57이 고정한 값이 15.15.4다. `pnpm bundle`이 그 자리를 막는다([execution.md](4-test/execution.md#pnpm-bundle)).
+**번들링이 죽어 있었는데 검사 넷이 다 초록이었다.** `react-native-svg@15.13.0`이 Node 내장 `buffer`를 import해서 Metro가 번들을 못 묶었다. `pnpm lint`·`typecheck`·`test`·`format:check` 어느 것도 Metro를 안 돌려서 아무도 몰랐다. Expo SDK 57이 고정한 15.15.4로 올리면 해결된다 — 상위가 15.15.3에서 `Buffer`를 `atob()`로 바꿨다. `pnpm bundle`이 이제 그 자리를 막는다([execution.md](4-test/execution.md#pnpm-bundle)).
 
-**서체 유틸 이름이 문서와 실물에서 어긋나 있었다.** 컴파일 실측으로 닫았다 — Tailwind 4에서 `--font-*`는 패밀리 네임스페이스라 `font-medium`·`font-semibold`·`font-bold`가 `fontFamily`를 내고, 400은 `font-normal`이 아니라 `font-sans`다. `font-normal`은 `fontWeight: 400`만 걸어 패밀리를 안 바꾼다 — 그것만 쓰면 시스템 서체가 나온다. `tokens.md`와 `typography.md` 여섯 자리를 고쳤다.
+**서체 유틸 400은 `font-normal`이 아니라 `font-sans`다.** Tailwind 4에서 `--font-*`가 패밀리 네임스페이스라 `font-medium`·`semibold`·`bold`는 `fontFamily`를 내지만 `font-normal`은 `fontWeight: 400`만 걸어 패밀리를 안 바꾼다 — 그것만 쓰면 시스템 서체가 나온다. `tokens.md`·`typography.md` 여섯 자리를 컴파일 실측으로 고쳤다.
 
-**코드 교환이 목적지를 정하고 있었다.** `handle-auth-callback.ts`가 성공 시 `"/"`를 하드코딩해서 새로 들어온 사람도 `/pending` 대신 홈으로 갔다. 성공 여부만 알리게 좁혔고 목적지는 판정 껍데기가 정한다. `read-supabase-env.ts`가 아직 `NEXT_PUBLIC_*`를 읽던 것도 같이 잡았다 — Expo는 `EXPO_PUBLIC_*`만 번들에 인라인해서 실기기에서 env를 못 읽을 자리였다.
+**코드 교환이 목적지를 정하고 있었다.** `handle-auth-callback.ts`가 성공 시 `"/"`를 하드코딩해서 새로 들어온 사람도 `/pending` 대신 홈으로 갔다. 성공 여부만 알리게 좁혔고 목적지는 `decide-entry.ts`가 정한다. `read-supabase-env.ts`가 아직 `NEXT_PUBLIC_*`를 읽던 것도 같이 잡았다 — Expo는 `EXPO_PUBLIC_*`만 번들에 인라인한다.
 
-**판정이 실패할 때 가는 곳이 정본에 없었다.** 화면은 [login.md의 「읽기 실패 짜임」](2-design/modules/account/screens/login.md#읽기-실패-짜임)이 이미 그려뒀는데 경로가 빠져 있었다 — `/retry`로 박았고 게이트 경로가 넷에서 다섯이 됐다.
+**세션은 SecureStore 열쇠 + AsyncStorage 암호문으로 갈랐다.** 세션 JSON이 2048바이트를 넘어 안드로이드 키체인이 못 받는다 — 근거는 [runtime.md 「세션」](2-design/system/runtime.md). 딥링크는 PKCE라 코드를 싣고 돌아오고, GoTrue의 redirect glob는 `*`가 `.`을 못 넘어서 Expo Go 주소는 `**`로 등록해야 한다.
 
-**`react-native`는 Jest에서 대역이 안 먹는다.** `moduleNameMapper`가 그 이름을 절대경로로 리매핑해서, 테스트가 직접 import할 때는 서지만 `src/`의 다른 파일이 안에서 부르면 진짜 모듈이 온다. `AppState`·`Linking`은 대역하지 말고 함수 인자로 주입한다 — [execution.md의 「돌릴 때」](4-test/execution.md#돌릴-때)에 넣었다. `jest` 객체가 전역이 아니라는 것도 같이 적었다.
+**판정 실패는 `/retry`다.** 자동 리뷰가 그 폴백이 `_layout.tsx`(화면 파일)에 앉아 있던 것을 잡아 `decide-entry.ts`로 옮겼다 — 정본은 [navigation.md 「앱을 열면」](2-design/system/navigation.md#앱을-열면)이고 게이트 경로가 넷에서 다섯이 됐다.
+
+**`react-native`는 Jest에서 대역이 안 먹는다.** `moduleNameMapper`가 절대경로로 리매핑해서 `src/` 안쪽 import는 늘 실물을 문다 — `AppState`·`Linking`은 함수 인자로 주입한다. [execution.md 「돌릴 때」](4-test/execution.md#돌릴-때)에 적었다.
 
 **서체는 원본 넷이 9.4MB 그대로 들어간다.** `tokens.md`가 서브셋을 거친다고 적어둔 자리를 아직 안 채웠다 — `font-subset` task로 잡았다.
 
-**스택이 Next.js에서 Expo로 넘어가는 중이다.** ADR-011이 웹 PWA를 버리고 Expo Router + NativeWind + Jest 조합으로 가기로 정했다. NativeWind는 아직 v5 RC다 — stable v4가 Tailwind 3을 요구하는데 디자인 정본이 Tailwind 4 위에 서 있어서다. 토큰 파이프라인은 실측으로 확인했다 — 네이티브 rem 16, `p-4`가 16, `text-base`가 17, 브랜드가 라이트 `#2f5cf6`·다크 `#628dfc`다.
+**plan의 `sources` 영향 검사가 실질적으로 죽어 있다.** `findImpacted`가 `status: approved`인 문서만 보는데(`tests/lint/sources-impact.ts:40`) plan 서른넷 전부 frontmatter에 `status`가 없다 — `plan-sources-gate` task로 잡았다.
 
 **총괄이 정할 것 둘이 여전히 열려 있다.** [navigation Q-03](2-design/system/navigation.md#q-03) — 종이 QR을 앱 없는 기기로 찍으면 무엇이 뜨나. [runtime Q-01](2-design/system/runtime.md#q-01) — 오래 안 열었다 여는 앱이 무엇을 다시 읽나.
 
