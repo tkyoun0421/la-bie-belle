@@ -89,8 +89,9 @@
 - 적용 범위: `public`·`internal`의 모든 쓰기 함수
 - 기본 계약:
   - 첫 줄이 호출자 검사다. `auth.uid()`로 프로필을 찾고 `is_admin()`·`is_approved()`를 본다. 검사가 없는 함수는 구멍이라 함수 PR은 그 검사의 integration 테스트를 같이 낸다
+  - **승인 전에 불려야 하는 함수는 `is_approved()`를 안 쓴다.** 프로필 내기·사진 올리기·알림 켜기·기기 주소 저장·읽음 찍기가 그렇다 — 승인 대기 화면이 부르는 것들이고, 가입 승인 알림이 승인 전에 가야 해서 그 배달 경로도 여기 든다([notification/README.md NTF-006](../modules/notification/README.md#ntf-006)). 대신 `auth.uid()`로 `profiles` 행이 잡히고 그 행의 `blocked_at`·`left_at`이 둘 다 널인지를 본다. **승인 대기 중인 사람이 불러서 성공하는 것을 integration이 단언한다** — 안 그러면 다음 사람이 관성으로 `is_approved()`를 붙인다
   - 시각 판정은 `now()`다. **`public` 함수는 인자로 시각을 받지 않는다** — 기기 시계가 들어올 자리가 없다. 예외는 `check_in`의 `reported_at` 하나고 한도가 붙는다([`attendance/design.md`](../modules/attendance/design.md))
-  - **`internal` 함수는 호출자 검사를 안 한다.** 껍데기가 이미 했고, 알맹이가 다시 하면 테스트가 못 부른다. 대신 `p_profile_id` 같은 인자를 그대로 믿으니 **노출되면 그 순간 남의 이름으로 쓰는 구멍이다.** 막는 것은 `revoke all on schema internal`과 `revoke all on all functions in schema internal` 두 줄과 `config.toml`의 노출 스키마 목록이라, **그 셋이 뚫렸을 때 빨개지는 integration 테스트를 같이 낸다** — 없으면 뚫려도 아무것도 안 빨갛다
+  - **`internal` 함수는 호출자 검사를 안 한다.** 껍데기가 이미 했고, 알맹이가 다시 하면 테스트가 못 부른다. 대신 `p_profile_id` 같은 인자를 그대로 믿으니 **노출되면 그 순간 남의 이름으로 쓰는 구멍이다.** 막는 것은 `revoke all on schema internal`과 `revoke all on all functions in schema internal` 두 줄과 `config.toml`의 노출 스키마 목록이라, **그 셋이 뚫렸을 때 빨개지는 integration 테스트를 같이 낸다** — 없으면 뚫려도 아무것도 안 빨갛다. **인자로 신원을 안 받는 `internal` 함수는 이 테스트가 없어도 된다.** `auth.uid()`만 보는 함수는 노출돼도 부르는 사람 자신을 낼 뿐이라 막을 구멍이 처음부터 없다 — 요구가 걸리는 것은 신원을 인자로 받는 함수다
   - **`internal` 함수는 `security invoker`다 — 위의 「`security definer`」에 대한 의도된 예외다.** 호출자 권한으로 돌아서, 스키마가 노출되고 함수 실행권이 풀려도 표의 `insert` 권한과 RLS 정책이 아직 막는다. 방어가 한 겹이 아니라 세 겹인 이유가 이것이다. **관례에 맞추려고 `security definer`로 고치면 그 두 겹이 한 번에 사라진다** — 고치지 마라
   - **시각 경계가 든 알맹이는 `internal`에 두고 `p_now timestamptz`를 받는다.** `public` 껍데기가 `now()`를 넘기는 유일한 호출자고, `internal`은 PostgREST가 모르는 스키마라 클라이언트가 못 부른다 — 기기 시계를 막는 축은 그대로다. 이렇게 안 가르면 경계 테스트가 실제 시계에 걸린다. 인증 창이 「그날 18시까지」라 한국 시각 18~23시에는 열린 창을 만들 방법 자체가 없고, cron이 부르는 함수도 그 시각이 와야 돈다. integration은 `internal`을 직접 불러 경계를 보고, `public`은 껍데기가 `now()`를 넘긴다는 것만 본다
   - 여러 행을 바꾸는 것은 전부 한 함수 안이다. 기본 시급 변경이 서른 행을 넣다 끊기면 전부 되돌아간다
@@ -147,4 +148,6 @@
 | `already_decided` | 이미 승인·거절·차단된 사람을 다시 처리했다 | 시트 닫고 새로 읽기 |
 | `invalid_gender`, `invalid_phone`, `invalid_name`, `invalid_role` | 값의 꼴이 규칙 밖이다 — 화면이 먼저 막으니 함수가 마지막 문이다 | 버튼이 잘못 켜진 것. 새로 읽기 |
 | `has_future_assignments` | 앞 배정이 남은 사람을 퇴사 처리했다 | 남은 자리 목록은 화면이 먼저 읽어 보여준다 |
-| `not_allowed` | 관리자 검사에 걸렸거나 RLS 거부(`42501`) | 버튼이 잘못 켜진 것. 새로 읽기 |
+| `not_allowed` | 호출자 검사에 걸렸거나 RLS 거부(`42501`) | 버튼이 잘못 켜진 것. 새로 읽기 |
+
+**거절은 `not_allowed` 하나다.** 승인 전이라 막힌 것과 관리자가 아니라 막힌 것을 코드로 가르지 않는다 — 화면이 그 차이로 하는 일이 없고, 가르면 안 부를 사람에게 왜 막혔는지를 알려주는 꼴이다.
