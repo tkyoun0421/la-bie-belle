@@ -104,6 +104,8 @@ sources:
 
 `set_notifications_enabled(p_on boolean)` — `security definer`
 
+- **`profiles.notifications_enabled` 열을 이 task가 만든다.** 지금 `profiles`에 없다 — `boolean not null default true`로 더한다. [design.md 「알림을 받나」](../../2-design/modules/notification/design.md#알림을-받나)가 기본 참으로 정했다. 이 열은 **받겠다는 의사**고 기기 권한이 아니다 — [NTF-016](../../2-design/modules/notification/README.md#ntf-016)·[NTF-017](../../2-design/modules/notification/README.md#ntf-017)의 「켜기를 누른다」는 기기에 권한을 묻는 자리지 이 열을 참으로 만드는 자리가 아니다. 안 끈 사람은 의사가 참인 채 기기가 없는 갈래에 선다
+- 표는 account가 소유한다. 열만 여기서 더하고 뜻은 [design.md](../../2-design/modules/notification/design.md#알림을-받나)가 든다
 - `profiles.notifications_enabled`를 바꾼다
 - **끄면 그 사람의 `push_tokens` 행도 같이 지운다.** 껐는데 주소가 남아 있으면 관리자 화면이 「알림 받는 중」이라 말한다
 - 켜는 것은 의사만 바꾼다. 기기 주소는 앱이 권한을 받아야 생겨서 함수가 못 만든다 — `notification-settings`가 그 자리다
@@ -129,7 +131,7 @@ sources:
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `supabase/migrations/<날짜>_notifications.sql` | 표 둘, 뷰, RLS, 인덱스 | AC-01~AC-03 |
+| `supabase/migrations/<날짜>_notifications.sql` | 표 둘, 뷰, RLS, 인덱스, `profiles.notifications_enabled` 열 | AC-01~AC-03·AC-06 |
 | `supabase/migrations/<날짜>_notification_fns.sql` | 함수 넷과 그 호출자 검사 | AC-04~AC-07 |
 | `src/entities/notification/dals/` | 함수 넷의 `supabase.rpc()` 래퍼. 파일 하나에 함수 하나 | AC-04~AC-06 |
 | `src/entities/notification/model/types.ts` | `kind`와 `payload`의 타입 | AC-01 |
