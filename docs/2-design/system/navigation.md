@@ -18,6 +18,7 @@
 | 차단 | `/blocked` |
 | 퇴사 | `/left` |
 | 승인됨 | `/`. 마지막 경로를 복원하지 않는다 |
+| 판정이 실패함 | `/retry`. 세션은 섰는데 프로필을 못 읽은 자리다 |
 
 ## 경로
 
@@ -27,6 +28,7 @@
 | `/pending` | [앱을 열면](#앱을-열면) — 프로필 없음 · 제출 안 함 · 거절됨 · 승인 대기 | 프로필 작성 · 승인 대기 · 거절된 뒤 · [`login.md`](../modules/account/screens/login.md) |
 | `/blocked` | [앱을 열면](#앱을-열면) — 차단 | 차단 · [`login.md`](../modules/account/screens/login.md) |
 | `/left` | [앱을 열면](#앱을-열면) — 퇴사 | 퇴사한 뒤 · [`login.md`](../modules/account/screens/login.md#퇴사한-뒤) |
+| `/retry` | [앱을 열면](#앱을-열면) — 판정이 실패함 | 읽기 실패 · [`login.md`](../modules/account/screens/login.md#읽기-실패-짜임) |
 | `/` | [앱을 열면](#앱을-열면) — 승인됨 | 대시보드 · [`dashboard.md`](screens/dashboard.md) |
 | `/check-in` | [앱을 열면](#앱을-열면) — 승인됨 | 출근 인증 · [`check-in.md`](../modules/attendance/screens/check-in.md) |
 | `/schedule` | [앱을 열면](#앱을-열면) — 승인됨 | 근무자 근무표. `?month=`는 달, `?date=`는 그날 시트 · [`schedule-worker.md`](../modules/schedule/screens/schedule-worker.md) |

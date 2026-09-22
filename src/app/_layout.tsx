@@ -36,7 +36,9 @@ async function decideEntry(): Promise<AuthDestination> {
 export default function RootLayout() {
   const router = useRouter();
   const [loaded, error] = useFonts(FONT_SOURCES);
-  const [destination, setDestination] = useState<AuthDestination | null>(null);
+  const [destination, setDestination] = useState<
+    AuthDestination | "/retry" | null
+  >(null);
   const splashDismissed = useRef(false);
 
   useEffect(() => wireAutoRefresh(supabase.auth), []);
@@ -44,10 +46,10 @@ export default function RootLayout() {
   useEffect(() => {
     let abandoned = false;
 
-    // 판정을 못 마치면 열린 채로 두지 않고 닫는다. 읽기에 실패했을 때
-    // get-current-user가 고르는 답과 같은 쪽이다.
+    // 판정이 목적지를 못 정한 자리다. 껍데기를 빈 채로 두지 않고 다시 시도할
+    // 화면 하나를 세운다([login.md]의 「읽기 실패 짜임」).
     void decideEntry()
-      .catch((): AuthDestination => "/login")
+      .catch(() => "/retry" as const)
       .then((decided) => {
         if (!abandoned) {
           setDestination(decided);
