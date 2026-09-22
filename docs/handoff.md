@@ -6,6 +6,8 @@
 
 ## 다음 작업
 
+**`schedule-data`가 진행 중이다** — `chore/schedule-data` 브랜치. 화면 task 전부가 `expo-scaffold`(사람 손)와 데이터 task에 이중으로 막혀 있는데 데이터 쪽은 안 막혀 있다. [plan](3-build/plans/schedule-data.md)이 AC-01~AC-11로 다 차 있고 표 아홉·뷰 하나·함수 일곱이 산출이다. 이것이 서면 `schedule-admin`·`schedule-worker`·`rehearsal`·`attendance-data`·`stats-admin`이 풀린다. 화면이 없어 spec 대상이 아니다 — [설계 안내](2-design/README.md#spec)가 「기능만 들어온다」고 정했고 ADR-005:39가 `feat/`가 아닌 브랜치를 게이트 밖에 뒀다. 그 다음은 `notification-data`(`ready`, plan 있음, 선행 없음)다.
+
 **실기기 확인이다.** [expo-scaffold](backlog.md)의 AC-01·02·03·04·05·07(재시작)·08·10이 남는다 — 시뮬레이터나 실기기에서만 닫힌다. `pnpm dev`(= `expo start`)를 사람이 별도 터미널에서 띄워 뜨는 QR을 Expo Go로 찍어야 한다. 세션 유지(앱 재시작 후 로그인), 판정이 끝날 때까지 스플래시가 서 있는지, 서체가 바뀌면서 글자가 안 뛰는지가 이 확인의 알맹이다.
 
 **구글 로그인 왕복은 별도로 막혀 있다.** 로컬 Supabase에 구글 프로바이더가 없어 `/auth/v1/authorize`가 400으로 끝난다 — 실 Supabase 프로젝트와 구글 OAuth 클라이언트가 서야 보이고, 그 자리는 [environments.md Q-01·Q-03](5-deploy/environments.md#q-01)이다.

@@ -1,0 +1,15 @@
+export const ERROR_CODES = [
+  "already_approved",
+  "already_confirmed",
+  "already_exists",
+  "already_open",
+  "already_submitted",
+  "bad_hours",
+  "date_past",
+  "deadline_past",
+  "month_over",
+  "no_schedule",
+  "not_allowed",
+  "not_open",
+  "too_early",
+] as const;

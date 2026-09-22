@@ -18,6 +18,8 @@
 
 - 적용 범위: `halls(id, lat, lng, radius_m, default_slots jsonb, default_starts, default_ends)`
 - 기본 계약: 지금은 한 행이고 둘째 홀이 생기면 행을 더한다([attendance/README.md](../modules/attendance/README.md)). 좌표·반경은 전원이 읽는다
+- `default_slots`는 **배열**이다 — `[{"positions": ["팀장"], "count": 1}, …]`. 항목 하나가 `slots` 행 `count`개로 펴지고 `positions`가 그 행의 `text[]`다. 객체(`{포지션: 인원}`)가 아닌 이유 둘 — jsonb가 키 순서를 안 지키는데 [SCH-011](../modules/schedule/README.md#sch-011)의 아홉 줄이 화면 표시 순서이고, 객체로는 겸임([SCH-015](../modules/schedule/README.md#sch-015))을 못 담는다
+- **포지션 표시 순서의 정본이 그 배열이다.** `slots`에 순번 열을 두지 않는다 — 자리를 합치고 가르면 행마다 든 순번을 다시 매겨야 하고 순서가 두 곳에 산다. 화면은 `halls.default_slots`의 순서로 포지션 줄을 세우고 거기 없는 포지션은 뒤에 붙인다. `slots`를 읽는 질의는 순서를 `ORDER BY` 없이 기대하지 않는다
 - 예외: QR 코드 값은 `hall_secrets`로 갈라 관리자만 읽는다 — 그 표는 [`attendance/design.md`](../modules/attendance/design.md)에 있다
 
 ## 스키마·타입 규약
@@ -119,7 +121,7 @@
 
 - 적용 범위: 쓰기 함수의 실패와 `dals`가 화면에 주는 오류
 - 기본 계약: **함수는 실패를 예외로 던지고, 메시지가 고정 코드다.** `raise exception using message = 'slot_full'`. `dals`가 예외를 둘로 가른다
-  - `DomainError` — 메시지가 코드 목록에 있는 것. 코드 목록은 `src/shared/api/error-codes.ts`가 정본이고 대조 테스트가 마이그레이션의 `raise` 문자열과 맞춘다
+  - `DomainError` — 메시지가 코드 목록에 있는 것. 코드 목록은 `src/shared/api/error-codes.ts`가 정본이고 대조 테스트가 마이그레이션의 `raise` 문자열과 맞춘다. 그 파일이 내는 이름은 `ERROR_CODES` 하나고 문자열 리터럴 배열이다 — 영역마다 코드를 더하는 task가 여럿이라 이름이 갈리면 대조가 한쪽만 읽는다
   - `TransportError` — 그 밖의 전부. 통신 실패, 타임아웃, 모르는 코드
 - 이유: 예외라 트랜잭션이 저절로 되돌아간다. **오류에 데이터를 싣지 않는다** — 코드 하나면 화면이 새로 읽는다. 목록이 필요한 자리(퇴사의 남은 배정)는 버튼을 누르기 전에 화면이 읽어둔다. **`stale`은 닫혔거나 없는 행이다** — 배정·자리·요청이 바뀌면 옛 행이 닫히고 새 행이 선다([`schedule/design.md`](../modules/schedule/design.md#배정)). 확정 전에는 행이 지워진다. 화면이 들고 있던 id가 그 둘 중 하나면 함수가 `stale`을 던진다. 버전 열 없이 「상태가 바뀜」을 잡는다
 - 예외: **읽기 오류는 전부 `TransportError`다.** RLS는 읽기를 거부하지 않고 빈 결과를 준다. 실을 것이 셋째로 생기면 `using detail`을 연다

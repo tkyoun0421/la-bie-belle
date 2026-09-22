@@ -19,7 +19,7 @@ function dbContainerName(): string {
   return name;
 }
 
-function runSql(sql: string, vars: Record<string, string>): void {
+export function execSql(sql: string, vars: Record<string, string> = {}): void {
   const container = dbContainerName();
 
   const args = [
@@ -45,10 +45,48 @@ export function approveProfile(
   userId: string,
   approvedAt: string = new Date().toISOString(),
 ): void {
-  runSql(
+  execSql(
     "update public.profiles set approved_at = :'approved_at' where user_id = :'user_id';\n",
     { user_id: userId, approved_at: approvedAt },
   );
+}
+
+export function backdateDeadline(scheduleId: string, pastDate: string): void {
+  execSql(
+    "update public.schedules set application_deadline = :'past_date' where id = :'schedule_id';\n",
+    { schedule_id: scheduleId, past_date: pastDate },
+  );
+}
+
+const MONTH_TAKEN = new Set(["already_exists", "already_open"]);
+const FRESH_MONTH_ATTEMPTS = 7;
+
+function randomMonthOffset(): number {
+  return 24 + Math.floor(Math.random() * 100000);
+}
+
+function isMonthTaken(error: unknown): boolean {
+  const message = (error as { message?: unknown } | null)?.message;
+  return typeof message === "string" && MONTH_TAKEN.has(message);
+}
+
+export async function withFreshMonth<T>(
+  seed: (monthsFromNow: number) => Promise<T>,
+): Promise<T> {
+  let taken: unknown;
+
+  for (let attempt = 0; attempt < FRESH_MONTH_ATTEMPTS; attempt += 1) {
+    try {
+      return await seed(randomMonthOffset());
+    } catch (error) {
+      if (!isMonthTaken(error)) {
+        throw error;
+      }
+      taken = error;
+    }
+  }
+
+  throw taken;
 }
 
 export type ApprovedUser = SignedInUser & { approvedAt: string };
@@ -67,7 +105,7 @@ export type AdminUser = SignedInUser & { approvedAt: string };
 export async function createAdminUser(): Promise<AdminUser> {
   const user = await createApprovedUser();
 
-  runSql(
+  execSql(
     "update public.profiles set role = 'admin' where user_id = :'user_id';\n",
     { user_id: user.userId },
   );
@@ -84,7 +122,7 @@ export async function createBlockedUser(): Promise<BlockedUser> {
   const user = await createApprovedUser();
   const blockedAt = new Date().toISOString();
 
-  runSql(
+  execSql(
     "update public.profiles set blocked_at = :'blocked_at' where user_id = :'user_id';\n",
     { user_id: user.userId, blocked_at: blockedAt },
   );
@@ -101,7 +139,7 @@ export async function createLeftUser(): Promise<LeftUser> {
   const user = await createApprovedUser();
   const leftAt = new Date().toISOString();
 
-  runSql(
+  execSql(
     "update public.profiles set left_at = :'left_at' where user_id = :'user_id';\n",
     { user_id: user.userId, left_at: leftAt },
   );
