@@ -91,7 +91,7 @@ pnpm exec jest --config jest.integration.config.js src/entities/profile/dals/__t
 - `docs/`·`.claude/`·루트 마크다운만 바뀐 PR은 뒤쪽 둘(supabase 기동·integration)을 건너뛴다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨진다.
 - 나머지 PR과 main push는 Supabase 기동 → integration까지 실행한다. 현재 제외한 Supabase 서비스를 새 테스트가 필요로 하면 CI 기동 범위도 함께 맞춘다.
 - 앱을 빌드하는 단계와 e2e가 CI에 없다. 빌드는 EAS 설정과 같이 서고 e2e는 러너를 고르고 나서다.
-- PR은 승인된 spec 입력 변경에 대한 「영향 확인」 검사도 실행한다. 구체적인 명령과 대상은 [문서 검사](#pnpm-test에-끼는-문서-검사)에 있다.
+- PR은 추적 중인 spec·plan의 입력 변경에 대한 「영향 확인」 검사도 실행한다. 구체적인 명령과 대상은 [문서 검사](#pnpm-test에-끼는-문서-검사)에 있다.
 
 | 근거 | 현재 위치와 한계 |
 | --- | --- |
@@ -124,7 +124,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 - `sources-exist.ts` — spec·plan의 `sources` 경로와 앵커 존재
 - `slug-chain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
 - `backlog-ids.ts` — 작업 ID와 선행 작업 참조
-- `sources-impact.ts` — 승인된 입력 변경의 영향 확인 판정. PR에서는 `scripts/check-sources-impact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사
+- `sources-impact.ts` — 추적 중인 문서의 입력 변경에 대한 영향 확인 판정. 추적 여부는 `spec-docs.ts`가 계산한다 — spec은 `status: approved`, plan은 제목 바로 뒤 완료 머리글(`> 완료된 작업의 당시 계획이다`)이 없으면 추적 대상이다. PR에서는 `scripts/check-sources-impact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사
 
 링크·지도 검사는 내용의 의미나 완료 조건 충족을 대신하지 않는다. 제목·경로를 옮기면 참조도 함께 갱신하고 과거 완료 기록의 본문은 보존한다.
 

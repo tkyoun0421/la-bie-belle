@@ -10,7 +10,9 @@
 
 **데이터 task 셋이 전부 들어갔다** — `schedule-data`([PR #386](https://github.com/tkyoun0421/la-bie-belle/pull/386)), `attendance-data`([PR #387](https://github.com/tkyoun0421/la-bie-belle/pull/387)), `notification-data`([PR #388](https://github.com/tkyoun0421/la-bie-belle/pull/388)). 선행 없는 데이터 task가 더 없다.
 
-**다음 첫 수는 `plan-sources-gate`다.** 사람 손 없이 갈 수 있는 것 중 마찰이 가장 최근이다 — `findImpacted`가 `status: approved`인 문서만 보는데(`tests/lint/sources-impact.ts:40`) plan 서른넷에 `status`가 없어 검사가 통과하면서 아무것도 안 본다. PR #387과 #388에서 ADR-009 영향 검토를 두 번 손으로 했고 두 번 다 이 검사가 조용했다. 그 뒤가 `claimed-guards-audit`(정본이 있다고 적은 가드가 실제로 없던 사례가 셋), `typed-routes-gate`, `font-subset`이다.
+**`plan-sources-gate`가 닫혔다.** `findImpacted`가 이제 `doc.tracked`를 보고, 그 판정은 `spec-docs.ts`가 자리마다 따로 계산한다 — spec은 `status: approved`, plan은 완료 머리글이 없으면 추적 대상이다. plan에 `status`를 새로 들이지 않은 것이 이 task의 알맹이다. 서른넷을 손으로 관리하면 「적어뒀는데 안 맞는」 자리가 또 생긴다. `docs/2-design/system/data-access.md`를 바꾼 목록으로 찍어보면 고치기 전 0건, 고친 뒤 살아 있는 plan 열둘이 나온다.
+
+**다음 첫 수는 `claimed-guards-audit`다.** 정본이 「있다」고 적은 가드가 실제로 없던 사례가 셋인데 방금 닫은 것이 그중 하나다. 그 뒤가 `typed-routes-gate`, `font-subset`이다.
 
 **`payroll-data`는 `rehearsal`이 화면(`/me/rehearsals`)을 들어 `expo-scaffold`에 막혀 있다.** 화면 task 열넷도 전부 골격 뒤다. **실기기 확인이 유일한 병목이다.**
 
@@ -24,7 +26,7 @@
 
 **`plans-restate`는 `blocked`고 `expo-scaffold`가 선행이다.** 남은 plan 열둘이 골격 위에서 파일 배치와 검증 명령을 채우길 기다린다.
 
-**새로 `ready`에 오른 것 셋 — `font-subset`·`typed-routes-gate`·`plan-sources-gate`.** 서체 서브셋으로 9.4MB를 줄이는 것, `typedRoutes`가 CI에서 안 켜져 없는 경로도 `typecheck`를 통과하는 것, plan의 `sources` 영향 검사가 `status: approved`만 보다가 실질적으로 죽어 있는 것 — 셋 다 [backlog.md](backlog.md)가 완료 조건을 든다.
+**`ready`에 남은 것 둘 — `font-subset`·`typed-routes-gate`.** 서체 서브셋으로 9.4MB를 줄이는 것, `typedRoutes`가 CI에서 안 켜져 없는 경로도 `typecheck`를 통과하는 것이다. 같이 올라왔던 `plan-sources-gate`는 닫혔다. 완료 조건은 [backlog.md](backlog.md)가 든다.
 
 ## 재개 맥락
 
@@ -50,7 +52,7 @@
 
 **서체는 원본 넷이 9.4MB 그대로 들어간다.** `tokens.md`가 서브셋을 거친다고 적어둔 자리를 아직 안 채웠다 — `font-subset` task로 잡았다.
 
-**plan의 `sources` 영향 검사가 실질적으로 죽어 있다.** `findImpacted`가 `status: approved`인 문서만 보는데(`tests/lint/sources-impact.ts:40`) plan 서른넷 전부 frontmatter에 `status`가 없다 — `plan-sources-gate` task로 잡았다.
+**죽어 있던 plan의 `sources` 영향 검사를 살렸다.** 필터가 `status: approved`만 보는데 plan 서른넷에 `status`가 없어 검사가 아무것도 안 봤다. PR #387·#388의 ADR-009 영향 검토를 두 번 다 사람이 손으로 한 것이 그 결과다. 이제 `spec-docs.ts`가 `tracked`를 계산해서 준다 — 완료 머리글을 단 plan 아홉만 빠지고 나머지 스물다섯이 검사에 걸린다.
 
 **총괄이 정할 것 둘이 여전히 열려 있다.** [navigation Q-03](2-design/system/navigation.md#q-03) — 종이 QR을 앱 없는 기기로 찍으면 무엇이 뜨나. [runtime Q-01](2-design/system/runtime.md#q-01) — 오래 안 열었다 여는 앱이 무엇을 다시 읽나.
 

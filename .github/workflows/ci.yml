@@ -44,7 +44,7 @@ jobs:
       - name: 번들이 만들어지는지 본다
         if: steps.scope.outputs.code == 'true'
         run: pnpm bundle
-      - name: 승인된 spec의 입력이 바뀌면 PR 본문의 영향 확인 절을 본다
+      - name: 추적 중인 spec·plan의 입력이 바뀌면 PR 본문의 영향 확인 절을 본다
         if: github.event_name == 'pull_request'
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
