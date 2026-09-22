@@ -15,7 +15,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
-export const TYPES_FILE = "src/shared/api/databaseTypes.ts";
+export const TYPES_FILE = "src/shared/api/database-types.ts";
 
 /** `Db` 별명을 내놓는 파일. 맨 `SupabaseClient`를 쓰는 예외는 여기 하나다. */
 export const ALIAS_FILE = "src/shared/api/database.ts";

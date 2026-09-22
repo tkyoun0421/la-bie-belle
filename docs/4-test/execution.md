@@ -73,9 +73,9 @@
 ### `pnpm types`
 
 - 전제: 로컬 Supabase가 떠 있고 마이그레이션이 올라가 있다. 방금 표를 바꿨으면 `supabase db reset`이 먼저다 — `supabase migration up`은 이미 올린 파일을 다시 안 돌린다.
-- 실행: `pnpm types` — `scripts/generateDatabaseTypes.mts`가 `supabase gen types typescript --local --schema public --schema internal`을 부르고, 뽑은 것에 prettier를 먹여 `src/shared/api/databaseTypes.ts`에 쓴 뒤 다시 읽어 판정한다.
-- 정상 결과: `src/shared/api/databaseTypes.ts가 섰다`가 찍히고 종료 코드 0. 표가 안 바뀌었으면 작업 트리도 안 바뀐다.
-- 실패할 때: 스택이 안 떠 있으면 `supabase status`를 가리키고 멈춘다. 뽑기가 절반만 되면 어느 표·뷰·함수가 빠졌는지 찍는다 — 그 판정은 [`tests/lint/databaseTypes.ts`](../../tests/lint/databaseTypes.ts)에 있고 `pnpm test`에서도 돈다.
+- 실행: `pnpm types` — `scripts/generate-database-types.mts`가 `supabase gen types typescript --local --schema public --schema internal`을 부르고, 뽑은 것에 prettier를 먹여 `src/shared/api/database-types.ts`에 쓴 뒤 다시 읽어 판정한다.
+- 정상 결과: `src/shared/api/database-types.ts가 섰다`가 찍히고 종료 코드 0. 표가 안 바뀌었으면 작업 트리도 안 바뀐다.
+- 실패할 때: 스택이 안 떠 있으면 `supabase status`를 가리키고 멈춘다. 뽑기가 절반만 되면 어느 표·뷰·함수가 빠졌는지 찍는다 — 그 판정은 [`tests/lint/database-types.ts`](../../tests/lint/database-types.ts)에 있고 `pnpm test`에서도 돈다.
 - 근거 위치: PR의 `ci` 워크플로 「생성 타입이 마이그레이션과 같은지 본다」 단계.
 
 **왜 `typecheck`에 안 끼우나.** 이 명령은 Docker와 로컬 스택이 필요하다. `pnpm typecheck`는 그것 없이 돌아야 해서 CI에서도 DB를 띄운 뒤에 따로 선다 — 마이그레이션을 올리는 `pnpm test:integration:run` 다음이다.
@@ -153,7 +153,8 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 - `slug-chain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
 - `backlog-ids.ts` — 작업 ID와 선행 작업 참조
 - `route-types.ts` — 생성된 라우트 타입 선언이 온전한지. 판정 규칙 넷(모듈 보강·`__routes` 인터페이스·`href` 멤버·경로 리터럴)을 `pnpm routes:types`가 가져다 쓴다
-- `databaseTypes.ts` — 마이그레이션이 만든 표·뷰·함수가 생성 타입에 다 들었는지, 그리고 생성 타입을 안 물린 `SupabaseClient`를 직접 가져오는 파일이 남았는지. DB 없이 이름만 대조한다 — 실제로 다시 뽑아 diff를 보는 것은 CI가 한다. `pnpm types`가 판정 부분을 가져다 쓴다
+- `file-naming.ts` — 코드 파일 이름이 규약대로인지. 컴포넌트(`.tsx`)는 PascalCase, 훅은 그 훅 이름과 같은 camelCase, 나머지는 kebab-case다 — 판정은 이름 꼴이 아니라 파일이 무엇을 담았는지로 한다. 케이스만 다른 두 파일도 같이 막는다(macOS·윈도우가 대소문자를 안 구별해 git과 어긋난다). `src/app/`은 밖이다 — 거기 파일 이름은 URL이다. 규약의 정본은 [CLAUDE.md](../../CLAUDE.md)의 「코드 구조」다
+- `database-types.ts` — 마이그레이션이 만든 표·뷰·함수가 생성 타입에 다 들었는지, 그리고 생성 타입을 안 물린 `SupabaseClient`를 직접 가져오는 파일이 남았는지. DB 없이 이름만 대조한다 — 실제로 다시 뽑아 diff를 보는 것은 CI가 한다. `pnpm types`가 판정 부분을 가져다 쓴다
 - `font-subset.ts` — 서브셋을 거친 서체 넷이 화면이 찍는 2,527자를 다 들었는지. `.ttf`의 `cmap`을 직접 읽는다 — 글자가 빠지면 그 자리가 시스템 서체로 떨어지고 앱은 안 죽어서 다른 검사가 못 잡는다. 집합의 정본이 이 파일이고 `pnpm fonts:subset`이 가져다 쓴다
 - `sources-impact.ts` — 추적 중인 문서의 입력 변경에 대한 영향 확인 판정. 추적 여부는 `spec-docs.ts`가 계산한다 — spec은 `status: approved`, plan은 제목 바로 뒤 완료 머리글(`> 완료된 작업의 당시 계획이다`)이 없으면 추적 대상이다. PR에서는 `scripts/check-sources-impact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사. **판정은 파일 단위다** — `sources`가 앵커까지 적지만 그것으로 좁히지 않는다. 정본은 절끼리 엮여 있어 한 절이 바뀌면 이웃 절의 뜻도 움직이고, 좁히면 새는 쪽으로 틀린다. 시끄러운 쪽이 맞다
 

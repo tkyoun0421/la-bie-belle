@@ -1,5 +1,5 @@
 /**
- * 로컬 Supabase의 표 정의에서 TypeScript 타입을 뽑아 `src/shared/api/databaseTypes.ts`에 쓴다.
+ * 로컬 Supabase의 표 정의에서 TypeScript 타입을 뽑아 `src/shared/api/database-types.ts`에 쓴다.
  *
  * 뽑은 뒤 prettier를 한 번 더 먹인다 — CLI는 세미콜론 없이 내놓고 저장소는 세미콜론을 쓴다.
  * 이 두 단계가 한 덩이여야 CI가 다시 뽑아 `git diff`를 볼 때 포맷 때문에 헛빨간불이 안 난다.
@@ -19,7 +19,7 @@ import {
   migrationsSql,
   missingObjects,
   TYPES_FILE,
-} from "../tests/lint/databaseTypes.ts";
+} from "../tests/lint/database-types.ts";
 
 const ROOT = path.resolve(fileURLToPath(import.meta.url), "../..");
 const OUTPUT = path.join(ROOT, TYPES_FILE);
