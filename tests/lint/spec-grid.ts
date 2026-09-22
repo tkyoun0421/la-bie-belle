@@ -1,7 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { type MarkdownDoc, parseMarkdown } from "@tests/lint/markdown";
-import { frontmatterStatus } from "@tests/lint/spec-docs";
 
 export type SpecGridViolation =
   | { type: "missing-section" }
@@ -19,7 +18,6 @@ export type SpecGridDoc = {
 };
 
 const SPEC_DIR = "docs/2-design/spec";
-const APPROVED = "approved";
 
 /** `docs/2-design/README.md#spec`이 드는 해피 패스 밖의 여덟 자리. 적는 순서는 안 따진다. */
 const GRID_HEADING = "상태 격자";
@@ -163,7 +161,14 @@ function specFiles(root: string): string[] {
     .map((entry) => `${SPEC_DIR}/${entry}`);
 }
 
-/** 승인된 spec은 당시 기록이라 지금 틀로 다시 재지 않는다. */
+/** `### AC-NN`으로 조건을 나눈 spec만 격자를 든다 — AC가 없는 옛 명세는 지금 틀로 다시 재지 않는다. */
+function hasAcHeadings(markdown: string): boolean {
+  return parseMarkdown(markdown).headings.some((heading) =>
+    AC_HEADING.test(heading.text),
+  );
+}
+
+/** `status`로 안 가른다 — 승인된 spec도 격자가 낡으면 그대로 걸려야 한다. */
 export function repositorySpecGridDocs(
   root: string = process.cwd(),
 ): SpecGridDoc[] {
@@ -172,7 +177,7 @@ export function repositorySpecGridDocs(
       file,
       markdown: readFileSync(path.join(root, file), "utf8"),
     }))
-    .filter(({ markdown }) => frontmatterStatus(markdown) !== APPROVED)
+    .filter(({ markdown }) => hasAcHeadings(markdown))
     .map(({ file, markdown }) => ({
       file,
       violations: specGridViolations(markdown),

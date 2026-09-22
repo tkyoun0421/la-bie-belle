@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 sources:
   - ../modules/attendance/README.md#att-023
   - ../modules/payroll/README.md#pay-025
@@ -97,4 +97,8 @@ sources:
 
 ## 승인 근거
 
-승인 전이라 기록 없음.
+- 승인: 총괄이 이 판정을 세션에 위임했다 — 「승인은 너가 해서 진행해」
+- 날짜: 2026-09-23
+- 기준점: `e763cf4` — 이 spec과 `sources`가 든 문서를 그 커밋에서 읽었다. PR [#392](https://github.com/tkyoun0421/la-bie-belle/pull/392)의 고정 diff다
+- 범위: AC-01~AC-06과 상태 격자 여덟 줄. 「범위 밖」에 적은 것은 승인 밖이고 거기 든 task가 제 spec으로 따로 받는다
+- 제한: 집계와 차트 조각을 [stats-admin](stats-admin.md)이 세운 것에 얹어서 그 task보다 먼저는 못 닫는다.
