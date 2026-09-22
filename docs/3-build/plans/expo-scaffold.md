@@ -133,7 +133,8 @@ sources:
 
 - 세션 → 프로필 → 승인 순이다([navigation.md](../../2-design/system/navigation.md#앱을-열면))
 - 판정은 껍데기 하나가 `['profile']`을 읽어 한다. 화면마다 따로 안 본다
-- 판정이 끝나기 전에는 스플래시가 그대로 떠 있다
+- 판정이 끝나기 전에는 스플래시가 그대로 떠 있다. 서체 로딩도 같은 스플래시를 붙잡으니([AC-05](#ac-05)) 둘 다 끝나야 내려간다
+- 판정 자체가 실패하면 `/retry`다 — 껍데기를 빈 채로 두지 않는다([navigation.md](../../2-design/system/navigation.md#앱을-열면)의 마지막 행)
 - 지금 `src/proxy.ts`(Next middleware)와 `use-auth-gate.ts`가 하던 일이 이 껍데기로 모인다. 둘 다 없어진다
 
 ### AC-10
@@ -198,11 +199,13 @@ sources:
 | AC-03 | 역할 토큰 이름이 바뀐다 | unit — `tests/lint/design-token-values.test.ts` | `pnpm test` | `tokens.md`의 표와 생성물이 같다 |
 | AC-04 | 다크에서 라이트 색이 나온다 | 수동 + unit — `dark-media-query-compiles`·`native-compile-values` | 시뮬레이터, `pnpm test` | 팔레트 변수가 `prefers-color-scheme` 조건 하나로 둘로 갈린다. 기기 설정을 따르고, `Appearance.setColorScheme()`으로 고른 값이 그것을 덮는다 |
 | AC-05 | 서체가 시스템 것으로 떨어진다 | 수동 | 시뮬레이터 | 굵기 넷이 다 다르게 보인다 |
+| AC-05 · AC-09 | 스플래시가 한쪽만 기다리고 내려간다 | 수동 | 시뮬레이터, 콜드 스타트 여러 번 | 글자가 시스템 서체로 한 프레임 그려지지도, 잘못된 층이 비치지도 않는다. 둘이 같은 지점에 걸려서 한 번에 본다 |
 | AC-06 | 경로가 빠지거나 층이 섞인다 | unit — 새 테스트 | `pnpm test` | 라우트 파일 목록이 `navigation.md`의 경로 표와 같다 |
 | AC-07 | 앱을 껐다 켜면 로그아웃된다 | 수동 | 시뮬레이터 | 다시 켜도 로그인 상태다 |
 | AC-07 | 세션이 2048바이트를 넘어 저장이 실패한다 | unit | `pnpm test` | 큰 값이 AsyncStorage로 가고 열쇠만 SecureStore에 남는다 |
 | AC-08 | 로그인 뒤 앱으로 안 돌아온다 | 수동 | 실기기 | 구글 화면에서 앱으로 돌아와 세션이 선다 |
-| AC-09 | 승인 안 된 사람이 탭을 본다 | unit — `resolve-auth-destination` 기존 테스트 | `pnpm test` | 세션·프로필·승인 조합마다 가는 곳이 맞다 |
+| AC-09 | 승인 안 된 사람이 탭을 본다 | unit — `resolve-auth-destination`·`resolve-entry-destination` | `pnpm test` | 세션·프로필·승인 조합마다 가는 곳이 맞고, 세션이 없으면 프로필을 읽지 않는다 |
+| AC-09 | 판정이 실패하면 스플래시에 갇히거나 게이트가 열린 채 홈이 뜬다 | unit — `decide-entry` | `pnpm test` | 세션 읽기든 목적지 판정이든 던지면 `/retry`다. `Error`가 아닌 값을 던져도 같다 |
 | AC-10 | 닿는 면이 44px이 안 된다 | 수동 | 시뮬레이터 | 아이콘 가장자리 밖을 눌러도 먹는다 |
 | AC-11 | 옮긴 lint 테스트가 안 돈다 | unit | `pnpm test` | 34개 중 옮긴 것이 다 통과한다 |
 | AC-12 | Next 자취가 남는다 | unit — 새 테스트 | `pnpm test` | `package.json`과 `src/`에 `next` 문자열이 없다 |

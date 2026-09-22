@@ -9,7 +9,7 @@
 - 적용 범위: 앱이 뜰 때와 앱으로 돌아올 때, 그 뒤의 모든 화면 전환
 - 기본 계약: 세션 → 프로필 → 승인 순으로 가른다. 판정은 껍데기 하나가 앱이 뜰 때와 앱으로 돌아올 때 `['profile']`을 읽어 한다([`account/design.md`](../modules/account/design.md)). 라우트 전환은 그 값을 쓴다 — 탭을 옮길 때마다 다시 읽지 않는다. 상태마다 가는 곳은 아래 표다
 - 이유: 규칙은 [account/README.md](../modules/account/README.md)다
-- 예외: 제 자리가 아닌 경로를 열면 제 자리로 간다 — 승인 안 된 사람이 `/`를, 퇴사자가 `/schedule`을, 근무자가 `/admin`을 열었을 때다. 퇴사자에게 열린 경로는 `/left`와 `/payroll` 둘이다
+- 예외: 제 자리가 아닌 경로를 열면 제 자리로 간다 — 승인 안 된 사람이 `/`를, 퇴사자가 `/schedule`을, 근무자가 `/admin`을 열었을 때다. 퇴사자에게 열린 경로는 `/left`와 `/payroll` 둘이다. 판정이 안 나온 사람의 제 자리는 `/retry`다 — 게이트 경로 넷에 이것까지 다섯이다
 
 | 상태 | 간다 |
 | --- | --- |
@@ -18,6 +18,7 @@
 | 차단 | `/blocked` |
 | 퇴사 | `/left` |
 | 승인됨 | `/`. 마지막 경로를 복원하지 않는다 |
+| 판정이 실패함 | `/retry`. 세션은 섰는데 프로필을 못 읽은 자리다 |
 
 ## 경로
 
@@ -27,6 +28,7 @@
 | `/pending` | [앱을 열면](#앱을-열면) — 프로필 없음 · 제출 안 함 · 거절됨 · 승인 대기 | 프로필 작성 · 승인 대기 · 거절된 뒤 · [`login.md`](../modules/account/screens/login.md) |
 | `/blocked` | [앱을 열면](#앱을-열면) — 차단 | 차단 · [`login.md`](../modules/account/screens/login.md) |
 | `/left` | [앱을 열면](#앱을-열면) — 퇴사 | 퇴사한 뒤 · [`login.md`](../modules/account/screens/login.md#퇴사한-뒤) |
+| `/retry` | [앱을 열면](#앱을-열면) — 판정이 실패함 | 읽기 실패 · [`login.md`](../modules/account/screens/login.md#읽기-실패-짜임) |
 | `/` | [앱을 열면](#앱을-열면) — 승인됨 | 대시보드 · [`dashboard.md`](screens/dashboard.md) |
 | `/check-in` | [앱을 열면](#앱을-열면) — 승인됨 | 출근 인증 · [`check-in.md`](../modules/attendance/screens/check-in.md) |
 | `/schedule` | [앱을 열면](#앱을-열면) — 승인됨 | 근무자 근무표. `?month=`는 달, `?date=`는 그날 시트 · [`schedule-worker.md`](../modules/schedule/screens/schedule-worker.md) |

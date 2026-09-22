@@ -147,9 +147,11 @@ max_indexes = 5
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "http://127.0.0.1:3000"
+site_url = "labiebelle://"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+# Expo Go는 개발 기계의 LAN 주소로 돌아와서 호스트가 사람마다·날마다 달라진다. 그 자리만 열되
+# `*`가 아니라 `**`다 — `*`는 `.`과 `/`를 못 넘어서 `192.168.0.10:8081`을 통째로 못 맞춘다.
+additional_redirect_urls = ["labiebelle://auth/callback", "exp://**/--/auth/callback"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to the local API URL (http://127.0.0.1:<port>/auth/v1).

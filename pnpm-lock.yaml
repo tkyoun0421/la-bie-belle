@@ -14,6 +14,9 @@ dependencies:
   '@tanstack/react-query':
     specifier: ^5.102.3
     version: 5.102.3(react@19.2.3)
+  aes-js:
+    specifier: ^3.1.2
+    version: 3.1.2
   clsx:
     specifier: ^2.1.1
     version: 2.1.1
@@ -68,6 +71,9 @@ dependencies:
   react-native-gesture-handler:
     specifier: ~2.32.0
     version: 2.32.0(react-native@0.86.3)(react@19.2.3)
+  react-native-get-random-values:
+    specifier: ^2.0.0
+    version: 2.0.0(react-native@0.86.3)
   react-native-reanimated:
     specifier: 4.5.1
     version: 4.5.1(react-native-worklets@0.10.1)(react-native@0.86.3)(react@19.2.3)
@@ -97,12 +103,18 @@ devDependencies:
   '@babel/plugin-transform-typescript':
     specifier: ^7.29.0
     version: 7.29.7(@babel/core@7.29.7)
+  '@jest/globals':
+    specifier: ^29
+    version: 29.7.0
   '@react-native/jest-preset':
     specifier: ^0.86.0
     version: 0.86.3(@babel/core@7.29.7)(react@19.2.3)
   '@tailwindcss/postcss':
     specifier: 4.1.12
     version: 4.1.12
+  '@types/aes-js':
+    specifier: ^3.1.4
+    version: 3.1.4
   '@types/jest':
     specifier: ^29
     version: 29.5.14
@@ -2715,6 +2727,10 @@ packages:
     engines: {node: '>= 10'}
     dev: true
 
+  /@types/aes-js@3.1.4:
+    resolution: {integrity: sha512-v3D66IptpUqh+pHKVNRxY8yvp2ESSZXe0rTzsGdzUhEwag7ljVfgCllkWv2YgiYXDhWFBrEywll4A5JToyTNFA==}
+    dev: true
+
   /@types/babel__core@7.20.5:
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
     dependencies:
@@ -3030,6 +3046,10 @@ packages:
     resolution: {integrity: sha512-lGq+9yr1/GuAWaVYIHRjvvySG5/4VfKIvC8EWxStPdcDh/Ka7FG3twP6v4d5BkravUilhIAsG4Qj83t02LWUPQ==}
     engines: {node: '>=0.4.0'}
     hasBin: true
+
+  /aes-js@3.1.2:
+    resolution: {integrity: sha512-e5pEa2kBnBOgR4Y/p20pskXI74UEz7de8ZGVo58asOtvSVG5YAbJeELPZxOmt+Bnz3rX753YKhfIn4X4l1PPRQ==}
+    dev: false
 
   /agent-base@6.0.2:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
@@ -4812,6 +4832,10 @@ packages:
 
   /exponential-backoff@3.1.3:
     resolution: {integrity: sha512-ZgEeZXj30q+I0EN+CbSSpIyPaJ5HVQD18Z1m+u1FXbAeT94mr1zw50q4q6jiiC447Nl/YTcIYSAftiGqetwXCA==}
+
+  /fast-base64-decode@1.0.0:
+    resolution: {integrity: sha512-qwaScUgUGBYeDNRnbc/KyllVU88Jk1pRHPStuF/lO7B0/RTRLj7U0lkdTAutlBblY08rwZDff6tNU9cjv6j//Q==}
+    dev: false
 
   /fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -7736,6 +7760,15 @@ packages:
       invariant: 2.2.4
       react: 19.2.3
       react-native: 0.86.3(@babel/core@7.29.7)(@react-native/jest-preset@0.86.3)(@react-native/metro-config@0.87.1)(@types/react@19.2.18)(react@19.2.3)
+
+  /react-native-get-random-values@2.0.0(react-native@0.86.3):
+    resolution: {integrity: sha512-wx7/aPqsUIiWsG35D+MsUJd8ij96e3JKddklSdrdZUrheTx89gPtz3Q2yl9knBArj5u26Cl23T88ai+Q0vypdQ==}
+    peerDependencies:
+      react-native: '>=0.81'
+    dependencies:
+      fast-base64-decode: 1.0.0
+      react-native: 0.86.3(@babel/core@7.29.7)(@react-native/jest-preset@0.86.3)(@react-native/metro-config@0.87.1)(@types/react@19.2.18)(react@19.2.3)
+    dev: false
 
   /react-native-is-edge-to-edge@1.3.1(react-native@0.86.3)(react@19.2.3):
     resolution: {integrity: sha512-NIXU/iT5+ORyCc7p0z2nnlkouYKX425vuU1OEm6bMMtWWR9yvb+Xg5AZmImTKoF9abxCPqrKC3rOZsKzUYgYZA==}

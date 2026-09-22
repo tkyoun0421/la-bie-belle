@@ -64,11 +64,12 @@
 ### 첫 진입과 게이트
 
 - 규칙: [ACC-001](README.md#acc-001)·[ACC-006](README.md#acc-006)·[ACC-007](README.md#acc-007)·[ACC-011](README.md#acc-011)
-- 입력·전제: 앱이 뜰 때 기기 저장소의 세션부터 본다 — 없으면 로그인 화면이다. 구글 로그인은 브라우저를 열었다 딥링크로 돌아오니 돌아온 자리에서 이 순서가 돈다. `ensure_profile()`을 부르고 `['profile']`을 읽는다
+- 입력·전제: 앱이 뜰 때 기기 저장소의 세션부터 본다 — 없으면 로그인 화면이다. 세션을 어디에 어떻게 남기는지는 [system/runtime.md](../../system/runtime.md#기기에-남기는-자리)가 소유한다. 구글 로그인은 브라우저를 열었다 딥링크로 돌아오니 돌아온 자리에서 이 순서가 돈다. `ensure_profile()`을 부르고 `['profile']`을 읽는다
+- 입력·전제: **돌아온 주소는 세션이 아니라 코드를 싣는다.** PKCE라서다 — `exchangeCodeForSession`이 그 코드를 세션으로 바꾼 뒤에 위 순서가 시작된다. 코드를 바꾸는 자리는 목적지를 정하지 않는다. 성공했는지만 알리고 어디로 갈지는 껍데기가 판정한다 — 새로 들어온 사람은 홈이 아니라 `/pending`이다. 주소 자체는 `makeAuthRedirectUri`가 만든다. Expo Go는 `exp://<호스트>/--/<경로>`, dev client와 스토어 빌드는 `labiebelle://<경로>`다 — 런타임마다 달라서 코드에 문자열을 박지 않는다. 그 주소가 Supabase 허용 목록에 없으면 오류가 아니라 Site URL로 조용히 돌아간다([5-deploy/environments.md](../../../5-deploy/environments.md))
 - 읽고 쓰는 데이터: `ensure_profile`이 첫 진입에서 자기 프로필 행을 만든다. 있으면 아무것도 안 한다
 - 권한: 승인됐는지·차단됐는지·퇴사했는지는 앱이 뜬 뒤 `['profile']`을 읽고 가른다. 이유는 [system/runtime.md](../../system/runtime.md#캐시-두-계층)에 있다 — 판정할 서버가 없다
 - 처리와 경쟁: 읽는 자리는 껍데기 하나다 — 앱이 뜰 때와 앱으로 돌아올 때 읽고 화면 전환은 그 값을 쓴다. 탭을 옮길 때마다 빈 화면이 끼지 않는다. 읽는 동안은 아무것도 안 그린다
-- 결과와 실패: `['profile']`이 `blocked_at`을 들면 차단 화면, `left_at`을 들면 퇴사 화면, `approved_at`이 없으면 `/pending`이다. 없던 사람이면 `/pending`의 프로필 입력 폼이다
+- 결과와 실패: `['profile']`이 `blocked_at`을 들면 차단 화면, `left_at`을 들면 퇴사 화면, `approved_at`이 없으면 `/pending`이다. 없던 사람이면 `/pending`의 프로필 입력 폼이다. 읽기 자체가 실패하면 `/retry`다 — 껍데기를 빈 채로 두지 않는다([읽기 실패 짜임](screens/login.md#읽기-실패-짜임))
 - 캐시 갱신: `staleTime`이 0이고 영속하지 않는다 — 차단당한 사람이 옛 프로필로 근무표를 더 보는 일이 없게
 
 ### 프로필 제출·연락처·사진
