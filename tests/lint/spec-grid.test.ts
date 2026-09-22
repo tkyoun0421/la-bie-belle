@@ -136,6 +136,23 @@ describe("상태 격자 절 — 다섯 규칙을 각각 어기면 위반이 잡�
     ).toBe(false);
   });
 
+  it("무엇이 뜨나는 찼는데 AC 칸이 비면 missing-ac 위반이다", () => {
+    const markdown = VALID_SPEC.replace(
+      "| 로딩 | 스켈레톤 | AC-01 |",
+      "| 로딩 | 스켈레톤 | |",
+    );
+
+    expect(specGridViolations(markdown)).toEqual([
+      { type: "missing-ac", state: "로딩" },
+    ]);
+  });
+
+  it("해당 없음 — 이유 줄은 AC 칸이 비어도 missing-ac가 아니다", () => {
+    expect(
+      specGridViolations(VALID_SPEC).some((v) => v.type === "missing-ac"),
+    ).toBe(false);
+  });
+
   it("AC마다 검증 층 불릿이 없으면 missing-verification-layer 위반이다", () => {
     const markdown = VALID_SPEC.replace(
       "- 검증 층: integration — 서버 응답을 확인해야 한다\n",
