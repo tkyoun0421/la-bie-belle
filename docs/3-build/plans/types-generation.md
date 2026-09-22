@@ -12,8 +12,8 @@ sources:
 
 ## 완료 조건
 
-- **AC-01** `pnpm types`가 로컬 DB에서 타입을 뽑아 `src/shared/api/databaseTypes.ts`에 쓴다. 스키마는 `public`과 `internal` 둘이다 — `internal`을 빼면 integration 테스트가 직접 부르는 함수들이 타입에 없다. 뽑은 뒤 prettier를 먹여서 저장소 포맷과 같은 꼴로 들어간다.
-  - 검증 층: unit(`tests/lint/databaseTypes.test.ts`)과 명령 실행
+- **AC-01** `pnpm types`가 로컬 DB에서 타입을 뽑아 `src/shared/api/database-types.ts`에 쓴다. 스키마는 `public`과 `internal` 둘이다 — `internal`을 빼면 integration 테스트가 직접 부르는 함수들이 타입에 없다. 뽑은 뒤 prettier를 먹여서 저장소 포맷과 같은 꼴로 들어간다.
+  - 검증 층: unit(`tests/lint/database-types.test.ts`)과 명령 실행
 - **AC-02** 뽑기가 조용히 절반만 되는 경우를 스크립트가 직접 판정한다. 마이그레이션이 만든 표·뷰·함수를 생성물과 대조해 빠진 것이 있으면 이름을 찍고 종료 코드 1이다. 종료 코드만 보면 성공과 절반 성공이 구별되지 않는다.
   - 검증 층: unit
 - **AC-03** 같은 대조가 `pnpm test`에서도 돈다. DB 없이 이름만 맞추니 Docker가 없는 자리에서도 문다 — 마이그레이션을 더하고 `pnpm types`를 안 돌린 PR이 여기서 걸린다.

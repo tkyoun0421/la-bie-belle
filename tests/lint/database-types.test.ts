@@ -7,7 +7,7 @@ import {
   missingObjects,
   repositoryDatabaseTypesViolations,
   TYPES_FILE,
-} from "@tests/lint/databaseTypes";
+} from "@tests/lint/database-types";
 
 describe("마이그레이션에서 표·뷰·함수 이름을 뽑는다", () => {
   it("스키마와 갈래를 붙여 낸다", () => {
@@ -242,7 +242,7 @@ describe("저장소 실물 — 마이그레이션과 생성 타입이 맞고 맨
   });
 
   it("생성 타입 파일과 별명 파일의 자리가 정해져 있다", () => {
-    expect(TYPES_FILE).toBe("src/shared/api/databaseTypes.ts");
+    expect(TYPES_FILE).toBe("src/shared/api/database-types.ts");
     expect(ALIAS_FILE).toBe("src/shared/api/database.ts");
   });
 });

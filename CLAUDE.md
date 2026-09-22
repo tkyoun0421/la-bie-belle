@@ -13,7 +13,7 @@
 - `pnpm dev` — `expo start`. 뜨는 QR을 Expo Go로 찍는다. `EXPO_PUBLIC_SUPABASE_URL`·`EXPO_PUBLIC_SUPABASE_ANON_KEY`가 env에 있어야 한다(로컬은 `supabase status -o env`)
 - `pnpm lint` / `pnpm typecheck` / `pnpm test`
 - `pnpm test:integration` — 로컬 Supabase 필요 (Docker). 스택이 떠 있으면 `pnpm test:integration:run`
-- `pnpm types` — 로컬 DB에서 `src/shared/api/databaseTypes.ts`를 뽑는다. 마이그레이션을 고쳤으면 `supabase db reset` 뒤에 돌린다
+- `pnpm types` — 로컬 DB에서 `src/shared/api/database-types.ts`를 뽑는다. 마이그레이션을 고쳤으면 `supabase db reset` 뒤에 돌린다
 - `pnpm tokens:css` — `tokens.md` 8절에서 `src/app/globals.css`를 만든다
 - `pnpm fonts:subset` — Wanted Sans 넷을 `assets/fonts/subset/`으로 줄인다. `pyftsubset` 필요(`pipx install fonttools`), 결과는 커밋한다
 
@@ -22,6 +22,8 @@
 ## 코드 구조
 
 FSD: `src/` 아래 `app` · `screens` · `features` · `entities` · `shared`. `.tsx`는 더미 UI고 계산·상태·통신은 `.ts`로. 근거는 ADR-001.
+
+**파일 이름은 부르는 이름을 따른다.** 컴포넌트(`.tsx`)는 PascalCase — JSX가 `<NotBuiltYet />`으로 부른다. 훅은 그 훅 이름과 같은 camelCase — `useAuthGate.ts`. 부르는 이름이 없는 나머지는 kebab-case다. `tests/lint/file-naming.ts`가 `src`·`tests`·`scripts`·`eslint-rules`에서 이것을 보고, 케이스만 다른 두 파일도 같이 막는다 — macOS와 윈도우가 대소문자를 안 구별해서 그 짝이 git과 어긋난다. `src/app/`은 밖이다: Expo Router가 파일 이름을 URL로 읽고 `/check-in`은 종이 QR에 실려 나간다. `docs/`와 슬러그는 ADR-005가, `.claude/hooks/`는 파이썬 관례가 가진다.
 
 ## 원칙
 

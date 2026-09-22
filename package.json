@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "routes:types": "node --experimental-strip-types scripts/generate-route-types.mts",
-    "types": "node --experimental-strip-types scripts/generateDatabaseTypes.mts",
+    "types": "node --experimental-strip-types scripts/generate-database-types.mts",
     "typecheck": "pnpm routes:types && tsc --noEmit",
     "bundle": "expo export --platform ios --output-dir .expo/bundle-check/ios && expo export --platform android --output-dir .expo/bundle-check/android",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",

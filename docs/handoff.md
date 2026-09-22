@@ -6,11 +6,19 @@
 
 ## 다음 작업
 
-**다음 첫 수는 파일 이름 규약을 camelCase로 바꾸는 것이다.** 총괄이 `types-generation` 도중에 정했다 — 지금 `src/`·`tests/`의 `.ts`는 kebab-case(`create-supabase-client.ts`)고 그것을 `createSupabaseClient.ts`로 옮긴다. **`src/app/` 아래는 건드리면 안 된다** — Expo Router가 파일 이름을 URL로 읽어서 이름을 바꾸면 딥링크 경로가 바뀐다. `docs/`와 `supabase/migrations/`도 밖이다(문서 링크와 마이그레이션 순서가 파일 이름에 걸려 있다). 규약을 어디에 적을지가 같이 정해질 자리다 — 지금 저장소에 파일 이름 규칙을 적은 정본도, 그것을 무는 lint도 없다.
+**다음 첫 수는 `e2e-runner`다.** Maestro와 Detox 중 하나를 골라 첫 스펙을 세워야 `tdd-guard-e2e.py`가 다시 문다 — 지금은 `tests/e2e/`를 못 찾아 아무것도 안 막는다. 선행이 `expo-scaffold`(실기기 확인 — 사람 손)로 걸려 있지만 러너 선택과 첫 스펙 자체는 화면 없이도 선다. 그 밖에 기계만으로 닫을 수 있는 task가 다시 떨어졌다.
 
-**`types-generation`이 닫혔다.** `pnpm types`가 `supabase gen types typescript --local --schema public --schema internal`을 감싸 `src/shared/api/databaseTypes.ts`를 만들고 prettier까지 한 덩이로 먹인다 — 두 단계가 갈리면 CI가 다시 뽑을 때마다 세미콜론 차이로 헛빨간불이 난다. CI는 `pnpm test:integration:run`(그 안에 `supabase migration up`이 있다) 뒤에 다시 뽑아 `git diff --exit-code`를 본다.
+**`file-naming`이 닫혔다 — 규약은 셋이다.** 부르는 이름이 있는 파일은 그 이름을 쓴다. 컴포넌트(`.tsx`)는 PascalCase(JSX가 `<NotBuiltYet />`으로 부른다), 훅은 그 훅 이름과 같은 camelCase(`useAuthGate.ts`), 나머지는 kebab-case다. **판정은 이름 꼴이 아니라 파일이 무엇을 담았는지로 한다** — `.tsx`는 ADR-001이 더미 UI로 못박아서 곧 컴포넌트고, `export function use[A-Z]`를 내놓으면 훅이다. 정본은 [CLAUDE.md](../CLAUDE.md)의 「코드 구조」고 `tests/lint/file-naming.ts`가 `src`·`tests`·`scripts`·`eslint-rules`에서 본다. 훅 판정에서 `tests/`를 뺐다 — 거기 픽스처가 훅 코드를 글자로 들고 있어서 내용으로 판정하면 검사 파일들이 전부 훅으로 읽힌다.
 
-**DB 없이 무는 대조를 따로 세웠다.** `tests/lint/databaseTypes.ts`가 마이그레이션이 만든 표·뷰·함수를 생성 타입과 이름으로 맞춘다 — Docker 없는 자리에서도 물어서, 마이그레이션을 더하고 `pnpm types`를 안 돌린 PR이 `pnpm test`에서 걸린다. 같은 파일이 `SupabaseClient`를 직접 가져오는 파일도 잡는다. 둘 다 일부러 깨뜨려 무는 것을 확인했다.
+**이 결정에 대가가 하나 있고 이미 밟았다.** 규약에 케이스 차원을 들이면 macOS·윈도우가 대소문자를 안 구별해 `Foo.ts`와 `foo.ts`가 OS에는 한 파일, git에는 두 파일이 된다. kebab으로 통일하면 그 차원이 없어지는데(bulletproof-react가 그 길이다) 우리는 부르는 이름을 맞추려고 PascalCase를 골랐다. 검사가 그 짝을 막지만 **macOS에서는 그 검사가 무는 것을 실물로 확인할 수 없다** — 두 파일이 동시에 존재할 수 없다. 규약을 들인 그 자리에서 `rm`이 추적 중인 파일을 지웠고 [관찰 017](observations/017-case-insensitive-rm-deleted-a-tracked-file.md)이 든다.
+
+**`src/app/`은 규약 밖이다.** Expo Router가 `src/app/`을 라우팅 뿌리로 읽는 것을 `.expo/types/router.d.ts`의 경로 유니언으로 확인했다 — `src/app/check-in.tsx`가 `/check-in`이고 그 주소는 [navigation.md](2-design/system/navigation.md#딥링크)가 종이 QR에 실린다고 적은 것이다. Expo Router 문서는 라우트 파일의 케이스를 규정하지 않아서 이 판단은 우리 것이다. `docs/`와 슬러그는 ADR-005가, `.claude/hooks/`는 파이썬 관례가, `supabase/migrations/`는 타임스탬프 순서가 가진다.
+
+**이 조합을 규정한 이름난 문서는 없다.** Airbnb는 Pascal+camel(kebab 언급 없음), Google TypeScript는 snake_case, bulletproof-react는 컴포넌트까지 전부 kebab, Angular·Vue는 kebab이다. React·Next.js·Expo 공식 문서는 파일 케이스 규약 자체가 없다. 셋으로 가른 것은 우리 판단이고 근거는 「부르는 이름과 파일 이름을 맞춘다」 한 줄이다.
+
+**`types-generation`이 닫혔다.** `pnpm types`가 `supabase gen types typescript --local --schema public --schema internal`을 감싸 `src/shared/api/database-types.ts`를 만들고 prettier까지 한 덩이로 먹인다 — 두 단계가 갈리면 CI가 다시 뽑을 때마다 세미콜론 차이로 헛빨간불이 난다. CI는 `pnpm test:integration:run`(그 안에 `supabase migration up`이 있다) 뒤에 다시 뽑아 `git diff --exit-code`를 본다.
+
+**DB 없이 무는 대조를 따로 세웠다.** `tests/lint/database-types.ts`가 마이그레이션이 만든 표·뷰·함수를 생성 타입과 이름으로 맞춘다 — Docker 없는 자리에서도 물어서, 마이그레이션을 더하고 `pnpm types`를 안 돌린 PR이 `pnpm test`에서 걸린다. 같은 파일이 `SupabaseClient`를 직접 가져오는 파일도 잡는다. 둘 다 일부러 깨뜨려 무는 것을 확인했다.
 
 **클라이언트를 받는 자리 스물아홉이 `Db`가 됐다.** `Db = SupabaseClient<Database>`고 `src/shared/api/database.ts`가 내놓는다. 맨 `SupabaseClient`는 스키마가 `any`라 `from("없는표")`도 `tsc`를 통과했다. 타입을 물리자 integration 테스트에서 오류 스물아홉이 드러났고 — 함수 이름을 `string`으로 받는 헬퍼, 인자 없는 함수에 `{}`, RLS가 막는 것을 보는 insert가 필수 열을 안 채운 자리 — 전부 단언을 그대로 두고 타입만 맞췄다.
 

@@ -10,7 +10,7 @@ import {
   type EnforcedRule,
 } from "@tests/lint/rules";
 
-const PROBE_FILE = "src/shared/ui/not-built-yet.tsx";
+const PROBE_FILE = "src/shared/ui/NotBuiltYet.tsx";
 
 const LINT_MECHANISMS: EnforcedRule["mechanism"][] = [
   "eslint",
