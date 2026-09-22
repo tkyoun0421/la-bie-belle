@@ -8,9 +8,11 @@
 
 **데이터 task를 잇는 중이다.** 화면 task 열넷이 `expo-scaffold`(실기기 확인 — 사람 손)와 데이터 task에 이중으로 막혀 있는데 데이터 쪽은 안 막혀 있다. 그래서 거기부터 친다. 데이터 task는 화면이 없어 spec 대상이 아니라 `chore/` 브랜치로 간다 — [설계 안내](2-design/README.md#spec)가 「spec에는 기능만 들어온다」고 정했고 ADR-005:39가 `feat/`가 아닌 브랜치를 게이트 밖에 뒀다.
 
-`schedule-data`([PR #386](https://github.com/tkyoun0421/la-bie-belle/pull/386))와 `attendance-data`([PR #387](https://github.com/tkyoun0421/la-bie-belle/pull/387))가 들어갔다. 지금은 `notification-data`(`chore/notification-data`)고 **이것이 선행 없는 마지막 데이터 task다.**
+**데이터 task 셋이 전부 들어갔다** — `schedule-data`([PR #386](https://github.com/tkyoun0421/la-bie-belle/pull/386)), `attendance-data`([PR #387](https://github.com/tkyoun0421/la-bie-belle/pull/387)), `notification-data`([PR #388](https://github.com/tkyoun0421/la-bie-belle/pull/388)). 선행 없는 데이터 task가 더 없다.
 
-**그 뒤로 사람 손 없이 갈 수 있는 것은 검사 task 넷뿐이다** — `claimed-guards-audit`·`typed-routes-gate`·`plan-sources-gate`·`e2e-runner`(골격 선행). `payroll-data`는 `rehearsal`이 화면(`/me/rehearsals`)을 들어 `expo-scaffold`에 막혀 있다. 화면 task 열넷도 전부 골격 뒤다. **실기기 확인이 유일한 병목이다.**
+**다음 첫 수는 `plan-sources-gate`다.** 사람 손 없이 갈 수 있는 것 중 마찰이 가장 최근이다 — `findImpacted`가 `status: approved`인 문서만 보는데(`tests/lint/sources-impact.ts:40`) plan 서른넷에 `status`가 없어 검사가 통과하면서 아무것도 안 본다. PR #387과 #388에서 ADR-009 영향 검토를 두 번 손으로 했고 두 번 다 이 검사가 조용했다. 그 뒤가 `claimed-guards-audit`(정본이 있다고 적은 가드가 실제로 없던 사례가 셋), `typed-routes-gate`, `font-subset`이다.
+
+**`payroll-data`는 `rehearsal`이 화면(`/me/rehearsals`)을 들어 `expo-scaffold`에 막혀 있다.** 화면 task 열넷도 전부 골격 뒤다. **실기기 확인이 유일한 병목이다.**
 
 **실기기 확인이다.** [expo-scaffold](backlog.md)의 AC-01·02·03·04·05·07(재시작)·08·10이 남는다 — 시뮬레이터나 실기기에서만 닫힌다. `pnpm dev`(= `expo start`)를 사람이 별도 터미널에서 띄워 뜨는 QR을 Expo Go로 찍어야 한다. 세션 유지(앱 재시작 후 로그인), 판정이 끝날 때까지 스플래시가 서 있는지, 서체가 바뀌면서 글자가 안 뛰는지가 이 확인의 알맹이다.
 
@@ -25,6 +27,10 @@
 **새로 `ready`에 오른 것 셋 — `font-subset`·`typed-routes-gate`·`plan-sources-gate`.** 서체 서브셋으로 9.4MB를 줄이는 것, `typedRoutes`가 CI에서 안 켜져 없는 경로도 `typecheck`를 통과하는 것, plan의 `sources` 영향 검사가 `status: approved`만 보다가 실질적으로 죽어 있는 것 — 셋 다 [backlog.md](backlog.md)가 완료 조건을 든다.
 
 ## 재개 맥락
+
+**승인 전에 불려야 하는 함수가 있다.** 알림 함수 넷이 `is_approved()`를 안 쓴다 — [NTF-016](2-design/modules/notification/README.md#ntf-016)이 알림 켜기를 승인 대기 화면에 뒀고 [NTF-006](2-design/modules/notification/README.md#ntf-006)의 가입 승인이 승인 전에 가야 하는 유일한 알림이라, 승인을 요구하면 그 알림이 배달 경로를 잃는다. 대신 `auth.uid()`로 프로필이 잡히고 `blocked_at`·`left_at`이 둘 다 널인지를 본다. [data-access.md 「함수 안의 규칙」](2-design/system/data-access.md#함수-안의-규칙)에 조항으로 섰고 `submit_profile`이 전례다.
+
+**기기 주소는 사람이 아니라 기기를 가리킨다.** 한 기기를 A가 쓰다 로그아웃하고 B가 로그인하면 Expo가 같은 문자열을 준다 — `save_push_token`의 upsert가 `token` 충돌에서 `profile_id`를 부르는 사람으로 옮기지 않으면 A의 알림이 B의 폰에 뜬다.
 
 **퇴사자가 승인된 사람과 똑같이 읽히고 있었다.** `is_approved()`가 `approved_at is not null and blocked_at is null`만 봤다 — [읽기 RLS 기본값](2-design/system/data-access.md#읽기-rls-기본값)은 「둘 다 `left_at`·`blocked_at`이 비어 있어야 참이다」로 정했는데 `left_at`이 빠져 있었다. 근무표 RLS 테스트가 퇴사자를 처음 세워 보면서 드러났고 `20260825162027_profiles.sql`을 직접 고쳤다(배포 전이라 마이그레이션을 고치는 것이 되돌리기다). `is_admin()`은 아직 `role`만 본다 — 같은 계약을 어기고 있고 `members-pending`이 받아뒀다.
 
