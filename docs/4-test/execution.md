@@ -124,7 +124,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 - `sources-exist.ts` — spec·plan의 `sources` 경로와 앵커 존재
 - `slug-chain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
 - `backlog-ids.ts` — 작업 ID와 선행 작업 참조
-- `sources-impact.ts` — 추적 중인 문서의 입력 변경에 대한 영향 확인 판정. 추적 여부는 `spec-docs.ts`가 계산한다 — spec은 `status: approved`, plan은 제목 바로 뒤 완료 머리글(`> 완료된 작업의 당시 계획이다`)이 없으면 추적 대상이다. PR에서는 `scripts/check-sources-impact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사
+- `sources-impact.ts` — 추적 중인 문서의 입력 변경에 대한 영향 확인 판정. 추적 여부는 `spec-docs.ts`가 계산한다 — spec은 `status: approved`, plan은 제목 바로 뒤 완료 머리글(`> 완료된 작업의 당시 계획이다`)이 없으면 추적 대상이다. PR에서는 `scripts/check-sources-impact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사. **판정은 파일 단위다** — `sources`가 앵커까지 적지만 그것으로 좁히지 않는다. 정본은 절끼리 엮여 있어 한 절이 바뀌면 이웃 절의 뜻도 움직이고, 좁히면 새는 쪽으로 틀린다. 시끄러운 쪽이 맞다
 
 링크·지도 검사는 내용의 의미나 완료 조건 충족을 대신하지 않는다. 제목·경로를 옮기면 참조도 함께 갱신하고 과거 완료 기록의 본문은 보존한다.
 
