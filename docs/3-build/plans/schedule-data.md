@@ -76,7 +76,7 @@ sources:
 **자리와 배정.**
 
 - `slots(id uuid primary key default gen_random_uuid(), day_id uuid not null references public.days (id) on delete cascade, positions text[] not null, ended_at timestamptz, ended_by uuid references public.profiles (id), created_at timestamptz not null default now())`
-- `positions`에 `check (array_length(positions, 1) >= 1)`. 겸임은 원소 둘 이상인 행 하나다([SCH-015](../../2-design/modules/schedule/README.md#sch-015))
+- `positions`에 `check (cardinality(positions) >= 1)`. 겸임은 원소 둘 이상인 행 하나다([SCH-015](../../2-design/modules/schedule/README.md#sch-015)). `array_length`가 아닌 것은 빈 배열에서 그것이 `null`을 내 check가 통과해서다 — `cardinality`는 0을 낸다
 - `assignments(id uuid primary key default gen_random_uuid(), day_id uuid not null references public.days (id) on delete cascade, slot_id uuid references public.slots (id) on delete cascade, position text not null, profile_id uuid not null references public.profiles (id), kind text not null check (kind in ('regular', 'training')), started_at timestamptz not null default now(), ended_at timestamptz, ended_reason text, ended_by uuid references public.profiles (id))`
 - `check ((kind = 'regular' and slot_id is not null) or (kind = 'training' and slot_id is null))` — 정규는 자리를 먹고 교육은 안 먹는다([SCH-012](../../2-design/modules/schedule/README.md#sch-012))
 - unique index 둘이다. `(slot_id) where ended_at is null and kind = 'regular'`가 자리당 사람 하나, `(day_id, profile_id) where ended_at is null and kind = 'regular'`가 한 사람이 같은 날 두 자리를 못 맡게 한다. 겸임은 자리 하나라 둘째에 안 걸린다
@@ -110,7 +110,9 @@ sources:
 - 기본은 「승인된 사람 전원 읽기」다([읽기 RLS 기본값](../../2-design/system/data-access.md#읽기-rls-기본값)). `schedules`·`days`·`slots`·`assignments`·`position_grants`·`requests`·`request_candidates`가 `is_approved()`로 읽힌다
 - 좁히는 표 둘이다. `availabilities`와 `cancel_requests`는 본인 행(`profile_id`가 자기 프로필)이거나 `is_admin()`이다 — design.md의 읽기 RLS 표가 정한 것이고, 누가 어느 날 쉬는지와 왜 못 나오는지는 남이 볼 것이 아니다
 - 표 아홉 전부 직접 쓰기 정책이 없다. `insert`·`update`·`delete` 권한을 `authenticated`에서 회수한다 — 바꾸는 길은 함수뿐이다
-- 퇴사자 예외는 이 task가 만들지 않는다. [읽기 RLS 기본값](../../2-design/system/data-access.md#읽기-rls-기본값)의 「퇴사자는 자기 행만」은 `is_approved()`가 `left_at`을 보아 거짓이 되는 것으로 이미 닫힌다 — 퇴사자는 근무표를 아예 못 읽는다. 자기 지난 기록을 여는 길은 급여 영역이 따로 낸다
+- 퇴사자는 근무표를 아예 못 읽는다. `is_approved()`가 `left_at`을 보아 거짓이 되는 것이 그 장치고, 자기 지난 기록을 여는 길은 급여 영역이 따로 낸다
+- **그런데 `is_approved()`가 `left_at`을 안 봤다.** `20260825162027_profiles.sql`이 `approved_at is not null and blocked_at is null`만 보는데 [읽기 RLS 기본값](../../2-design/system/data-access.md#읽기-rls-기본값)은 「둘 다 `left_at`·`blocked_at`이 비어 있어야 참이다」로 정했다. 계약과 어긋나 이 task가 그 파일을 고친다 — 배포한 적이 없어 마이그레이션을 고쳐 다시 만드는 것이 되돌리기다. `create or replace`를 다른 파일에 얹으면 정의가 두 벌 서고 어느 쪽이 사는지 읽는 사람이 모른다
+- `is_admin()`은 여전히 `role = 'admin'`만 본다. 같은 계약이 그것도 좁히라고 하지만 퇴사·차단까지 보게 만드는 것은 [`members-pending`](../../backlog.md)의 몫이다
 
 ### AC-06
 
@@ -123,6 +125,7 @@ sources:
 - `set_application_deadline(p_month date, p_deadline date)` — [SCH-007](../../2-design/modules/schedule/README.md#sch-007). 오늘 이전으로는 못 간다(`deadline_past`). 확정된 달이면 `already_confirmed`
 - `confirm_schedule(p_month date)` — [SCH-008](../../2-design/modules/schedule/README.md#sch-008)·[SCH-009](../../2-design/modules/schedule/README.md#sch-009). 마감일이 안 지났으면 `too_early`. 이미 확정이면 `already_confirmed`. `confirmed_at`을 찍는다. 되돌리는 함수를 만들지 않는다 — 규칙이 되돌릴 수 없다고 정했다
 - 빈 자리인 채로 확정된다([SCH-014](../../2-design/modules/schedule/README.md#sch-014)) — 확정이 자리를 검사하지 않는다
+- `set_application_deadline`과 `confirm_schedule`이 그 달 행을 못 찾으면 `no_schedule`이다. 새 코드를 안 만든다 — `open_day`가 쓰는 것과 같은 뜻이라 목록이 늘지 않는다
 
 ### AC-07
 
@@ -132,6 +135,7 @@ sources:
 - 지난 날짜면 `date_past`. [SCH-002](../../2-design/modules/schedule/README.md#sch-002)가 「이미 지난 날짜는 열 수 없다」고 정했고 판정 표가 거부로 든다. 오늘은 열린다 — 경계가 「오늘부터」다. 오늘을 재는 것은 `(now() at time zone 'Asia/Seoul')::date`다
 - `close_day(p_work_date date)` — [SCH-004](../../2-design/modules/schedule/README.md#sch-004). 확정 전에만 닫힌다(`already_confirmed`). `days` 행을 지우면 `slots`·`assignments`가 cascade로 같이 간다 — 규칙이 「배정이 같이 사라진다」고 한 그것이다. 그 자리에 걸린 `requests`도 cascade로 따라 사라진다 — `closed_at`을 안 찍는다([요청](../../2-design/modules/schedule/design.md#요청))
 - `set_day_hours(p_work_date date, p_starts time, p_ends time, p_ceremony time)` — 그 날의 시각을 바꾼다. 안 연 날이면 `not_open`. 끝이 시작보다 이르면 `bad_hours`
+- `close_day`도 안 연 날이면 `not_open`이다. 같은 뜻이라 새 코드를 안 만든다
 - 셋 다 자리 기본값 열한 명을 SQL 리터럴로 들지 않는다. `halls.default_slots`를 읽는 것이 곧 [SCH-011](../../2-design/modules/schedule/README.md#sch-011)의 값을 한 곳에서 쓰는 길이다
 
 ### AC-08
@@ -165,7 +169,7 @@ sources:
 
 - 이 task가 던지는 코드를 `src/shared/api/error-codes.ts`에 더한다 — `already_exists`·`deadline_past`·`date_past`·`month_over`·`already_confirmed`·`too_early`·`no_schedule`·`already_open`·`not_open`·`bad_hours`·`not_allowed`
 - 파일이 내는 이름은 `ERROR_CODES` 하나고 문자열 리터럴 배열이다([오류의 모양](../../2-design/system/data-access.md#오류의-모양))
-- 대조 테스트가 마이그레이션의 `raise ... using message =` 문자열과 그 목록을 맞춘다
+- 대조 테스트가 마이그레이션의 `raise ... using message =` 문자열과 그 목록을 맞춘다. **양방향이라 목록은 마이그레이션 전체의 합집합이다** — 위 열하나에 `profiles`가 던지는 `already_submitted`·`already_approved`가 더해져 열셋이다
 - 그 파일과 대조 테스트는 `profile-form`의 AC-01·AC-11이 세운다. **먼저 merge된 쪽이 만들고 뒤가 얹는다** — 이 task와 `profile-form`은 선행이 갈려 순서가 안 정해졌다. 이 task가 먼저면 여기서 파일과 `tests/lint/error-codes.test.ts`를 세우고, `DomainError`·`TransportError`는 만들지 않는다. 화면이 없어 던진 코드를 받는 쪽이 아직 없고, 오류 기계는 그 plan의 몫이다
 
 타입 생성(`pnpm types`·`database.types.ts`)은 이 task가 하지 않는다 — [`types-generation`](../../backlog.md)이 절차를 세우는 task고 지금 저장소에 그 스크립트가 없다.

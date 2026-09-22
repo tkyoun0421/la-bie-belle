@@ -33,6 +33,7 @@ as $$
     where user_id = auth.uid()
       and approved_at is not null
       and blocked_at is null
+      and left_at is null
   );
 $$;
 

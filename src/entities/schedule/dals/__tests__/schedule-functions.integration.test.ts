@@ -64,6 +64,10 @@ const DEFAULT_SLOTS: SlotDefault[] = [
   { positions: ["대기실"], count: 1 },
 ];
 
+/** `..._halls.sql` 씨앗 행의 근무 시간 기본값. afterAll이 여기로 되돌린다. */
+const DEFAULT_STARTS = "10:00";
+const DEFAULT_ENDS = "22:00";
+
 function withManagerCount(count: number): SlotDefault[] {
   return DEFAULT_SLOTS.map((entry) =>
     entry.positions[0] === "매니저" ? { ...entry, count } : entry,
@@ -542,6 +546,14 @@ describe("근무표 함수", () => {
   });
 
   describe("홀 기본값", () => {
+    afterAll(async () => {
+      await rpcOrThrow(admin, "set_hall_defaults", {
+        p_slots: DEFAULT_SLOTS,
+        p_starts: DEFAULT_STARTS,
+        p_ends: DEFAULT_ENDS,
+      });
+    });
+
     it("set_hall_defaults는 이미 연 날에 소급하지 않는다", async () => {
       const offset = randomOffset();
       const monthA = firstOfMonthOffset(offset);

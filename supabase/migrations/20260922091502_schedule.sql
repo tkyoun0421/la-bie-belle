@@ -126,23 +126,6 @@ where slots.ended_at is null
       and assignments.kind = 'regular'
   );
 
-create or replace function public.is_approved()
-  returns boolean
-  language sql
-  stable
-  security definer
-  set search_path = ''
-as $$
-  select exists (
-    select 1
-    from public.profiles
-    where user_id = auth.uid()
-      and approved_at is not null
-      and blocked_at is null
-      and left_at is null
-  );
-$$;
-
 alter table public.schedules enable row level security;
 alter table public.days enable row level security;
 alter table public.slots enable row level security;
