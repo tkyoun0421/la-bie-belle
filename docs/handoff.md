@@ -6,7 +6,9 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `typed-routes-gate`다.** `app.json`이 `typedRoutes: true`인데 `.expo/types/`가 CI에 없어서 `Href`가 그냥 `string`으로 떨어진다 — `router.replace("/없는경로")`가 `pnpm typecheck`를 통과한다. 타입을 만드는 명령을 찾아 `typecheck` 앞에 세우거나, 못 세우면 그 사실을 [execution.md](4-test/execution.md)에 적는다. 완료 조건은 [backlog.md](backlog.md)가 든다. 그 뒤가 `font-subset`이다.
+**다음 첫 수는 `font-subset`이다.** Wanted Sans 넷이 원본 그대로 번들에 들어가 9.4MB가 설치 크기에 실린다 — [tokens.md](2-design/design-system/tokens.md#서체-연결)가 서브셋을 거친다고 적어둔 자리가 아직 비어 있고, 줄이는 기준과 방법은 [typography.md](2-design/design-system/foundation/typography.md#서브셋)에 있다. 완료 조건은 [backlog.md](backlog.md)가 든다.
+
+**`typed-routes-gate`가 닫혔다.** `.expo/types/`가 `.gitignore` 안이라 CI에 라우트 타입이 없었고, 없으면 `Href`가 `string`으로 떨어져 `router.replace("/없는경로")`가 `pnpm typecheck`를 통과했다. 만드는 명령은 `expo customize tsconfig.json`이다 — Expo CLI의 `setupTypedRoutes`가 Metro나 개발 서버 없이 도는 진입점이 그것 하나고 `expo export`(= `pnpm bundle`)로는 안 생긴다. `pnpm routes:types`가 그것을 부른 뒤 **생성물을 다시 읽어 판정한다** — 생성이 조용히 실패한 상태와 정상 상태가 종료 코드로는 구별되지 않아서다. 판정 규칙 넷은 `tests/lint/route-types.ts`에 있고 [execution.md](4-test/execution.md#pnpm-routestypes)가 근거를 든다. 이것이 `claimed-guards-audit`이 남긴 습관의 첫 적용이다 — 「검사가 잡는다」를 적을 때 잡는 파일 이름을 같이 적었다.
 
 **spec 게이트는 열렸지만 그것으로 화면 task가 풀리지 않는다.** 화면이 있는 task 스물하나 전부에 spec이 서고 `approved`다 — 남은 미작성은 cron·Edge Function·배포 문서처럼 화면이 없는 것뿐이다. `spec-gate.py`가 이제 `feat/<슬러그>` 브랜치의 `src/` 쓰기를 통과시킨다. 그래도 화면 task 열넷은 여전히 `expo-scaffold`(실기기 확인 — 사람 손)에 막혀 있다. spec은 게이트 조건 중 하나였을 뿐이고, 그 조건이 풀렸다고 남은 조건까지 풀리지는 않는다.
 

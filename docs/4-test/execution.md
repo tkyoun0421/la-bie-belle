@@ -6,7 +6,7 @@
 
 ## 명령
 
-저장소 루트에서 Node 22와 pnpm 8.15.2로 실행한다. 아래 여덟이 로컬과 CI가 같이 돌리는 명령이다. 정본은 [package.json](../../package.json)의 `scripts`와 [ci.yml](../../.github/workflows/ci.yml)이다.
+저장소 루트에서 Node 22와 pnpm 8.15.2로 실행한다. 아래 아홉이 로컬과 CI가 같이 돌리는 명령이다. 정본은 [package.json](../../package.json)의 `scripts`와 [ci.yml](../../.github/workflows/ci.yml)이다.
 
 ### `pnpm lint`
 
@@ -24,12 +24,26 @@
 - 실패할 때: `pnpm format`으로 고치고 다시 `git add` 한다. staged 파일은 pre-commit 훅이 먼저 같은 일을 한다 — [훅](#훅).
 - 근거 위치: PR의 `ci` 워크플로 `pnpm format:check` 단계.
 
+### `pnpm routes:types`
+
+- 전제: `pnpm install --frozen-lockfile`이 끝나 있다.
+- 실행: `pnpm routes:types` — `scripts/generate-route-types.mts`가 `expo customize tsconfig.json`을 부르고 그것이 낸 `.expo/types/router.d.ts`를 다시 읽어 판정한다. `pnpm typecheck`가 앞에 이것을 세워서 따로 부를 일은 드물다.
+- 정상 결과: `.expo/types/router.d.ts가 섰다`가 찍히고 종료 코드 0. `tsconfig.json`은 이미 `.expo/types/**/*.ts`를 `include`해서 안 바뀐다 — 여러 번 돌려도 같다.
+- 실패할 때: 파일이 안 생겼거나 `ExpoRouter.__routes`가 반쯤 섰으면 어느 자리가 빈지 찍고 종료 코드 1이다. 판정하는 규칙 넷은 [`tests/lint/route-types.ts`](../../tests/lint/route-types.ts)에 있고 그 테스트가 `pnpm test`에서 돈다.
+- 근거 위치: PR의 `ci` 워크플로 `pnpm typecheck` 단계 — 같은 단계에서 먼저 돈다.
+
+**왜 생성이 검사 앞에 서나.** `.expo/`는 `.gitignore` 안이라 CI에 라우트 타입이 없다. 없으면 `expo-router`의 `Href`가 `string | HrefObject`로 떨어져 **`router.replace("/없는경로")`가 `tsc`를 통과한다** — 타입 안전이 로컬에서만 켜져 있고 CI에서는 조용히 꺼진 상태다. 종료 코드로는 두 상태가 구별되지 않아서 스크립트가 생성물을 직접 읽어 판정한다.
+
+만드는 명령이 `expo customize tsconfig.json`인 것은 Expo CLI의 `setupTypedRoutes`가 Metro나 개발 서버 없이 도는 진입점이 그것 하나라서다. `expo export`(= `pnpm bundle`)로는 안 생긴다.
+
+**그 명령이 세 파일을 더 건드린다.** `tsconfig.json`(이미 맞아서 안 바뀐다), `.gitignore`의 `@generated expo-cli` 블록, 그리고 `expo-env.d.ts`다. 마지막 둘은 명령이 만들고 무시하라고 적는 파일이라 그렇게 뒀다 — `expo-env.d.ts`는 추적 대상이 아니고 `routes:types`가 매번 다시 만든다. 셋 다 같은 내용을 다시 써서 여러 번 돌려도 작업 트리가 안 더러워진다. 이 명령을 바꿀 때는 그것부터 확인한다.
+
 ### `pnpm typecheck`
 
 - 전제: `pnpm install --frozen-lockfile`이 끝나 있다.
-- 실행: `pnpm typecheck` — `tsc --noEmit`.
+- 실행: `pnpm typecheck` — `pnpm routes:types && tsc --noEmit`. 라우트 타입을 먼저 만들고 검사한다.
 - 정상 결과: tsc 오류 없이 종료 코드 0.
-- 실패할 때: `@supabase/supabase-js`를 못 찾으면 [돌릴 때](#돌릴-때)를 본다.
+- 실패할 때: `@supabase/supabase-js`를 못 찾으면 [돌릴 때](#돌릴-때)를 본다. 라우트 타입 생성이 실패하면 `tsc`까지 가지 않는다 — [`pnpm routes:types`](#pnpm-routestypes)를 본다.
 - 근거 위치: PR의 `ci` 워크플로 `pnpm typecheck` 단계.
 
 ### `pnpm test`
@@ -124,6 +138,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 - `sources-exist.ts` — spec·plan의 `sources` 경로와 앵커 존재
 - `slug-chain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
 - `backlog-ids.ts` — 작업 ID와 선행 작업 참조
+- `route-types.ts` — 생성된 라우트 타입 선언이 온전한지. 판정 규칙 넷(모듈 보강·`__routes` 인터페이스·`href` 멤버·경로 리터럴)을 `pnpm routes:types`가 가져다 쓴다
 - `sources-impact.ts` — 추적 중인 문서의 입력 변경에 대한 영향 확인 판정. 추적 여부는 `spec-docs.ts`가 계산한다 — spec은 `status: approved`, plan은 제목 바로 뒤 완료 머리글(`> 완료된 작업의 당시 계획이다`)이 없으면 추적 대상이다. PR에서는 `scripts/check-sources-impact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사. **판정은 파일 단위다** — `sources`가 앵커까지 적지만 그것으로 좁히지 않는다. 정본은 절끼리 엮여 있어 한 절이 바뀌면 이웃 절의 뜻도 움직이고, 좁히면 새는 쪽으로 틀린다. 시끄러운 쪽이 맞다
 
 링크·지도 검사는 내용의 의미나 완료 조건 충족을 대신하지 않는다. 제목·경로를 옮기면 참조도 함께 갱신하고 과거 완료 기록의 본문은 보존한다.
