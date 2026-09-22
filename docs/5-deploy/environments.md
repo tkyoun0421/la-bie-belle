@@ -22,6 +22,7 @@ pg_cron·Database Webhook·Edge Function 셋 다 Free에서 된다. 7일 무활�
 
 - 서체는 앱 번들에 든다([서체 연결](../2-design/design-system/tokens.md#서체-연결)). 바깥 서비스에 안 매인다.
 - **한 앱이 여러 환경을 못 본다.** 웹은 주소로 스테이징과 운영이 갈렸는데 설치한 앱은 빌드 하나가 한 곳만 본다. 스테이징을 따로 보려면 그 설정으로 빌드를 하나 더 만들어 내부 배포로 깔아야 한다.
+- **로그인이 돌아올 주소를 Supabase 허용 목록에 등록해야 한다.** Authentication → URL Configuration → Redirect URLs다. 런타임마다 주소가 달라서([첫 진입과 게이트](../2-design/modules/account/design.md#첫-진입과-게이트)) 빌드 종류마다 한 줄씩 든다. 빠지면 오류가 아니라 Site URL로 조용히 돌아가서, 로그인이 브라우저에 갇힌 것처럼 보인다.
 
 ## 미정
 

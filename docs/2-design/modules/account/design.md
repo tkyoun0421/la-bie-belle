@@ -64,7 +64,8 @@
 ### 첫 진입과 게이트
 
 - 규칙: [ACC-001](README.md#acc-001)·[ACC-006](README.md#acc-006)·[ACC-007](README.md#acc-007)·[ACC-011](README.md#acc-011)
-- 입력·전제: 앱이 뜰 때 기기 저장소의 세션부터 본다 — 없으면 로그인 화면이다. 구글 로그인은 브라우저를 열었다 딥링크로 돌아오니 돌아온 자리에서 이 순서가 돈다. `ensure_profile()`을 부르고 `['profile']`을 읽는다
+- 입력·전제: 앱이 뜰 때 기기 저장소의 세션부터 본다 — 없으면 로그인 화면이다. 세션을 어디에 어떻게 남기는지는 [system/runtime.md](../../system/runtime.md#기기에-남기는-자리)가 소유한다. 구글 로그인은 브라우저를 열었다 딥링크로 돌아오니 돌아온 자리에서 이 순서가 돈다. `ensure_profile()`을 부르고 `['profile']`을 읽는다
+- 입력·전제: **돌아온 주소는 세션이 아니라 코드를 싣는다.** PKCE라서다 — `exchangeCodeForSession`이 그 코드를 세션으로 바꾼 뒤에 위 순서가 시작된다. 주소 자체는 `makeRedirectUri`가 만든다. Expo Go는 `exp://<호스트>/--/<경로>`, dev client와 스토어 빌드는 `labiebelle://<경로>`다 — 런타임마다 달라서 코드에 문자열을 박지 않는다. 그 주소가 Supabase 허용 목록에 없으면 오류가 아니라 Site URL로 조용히 돌아간다([5-deploy/environments.md](../../../5-deploy/environments.md))
 - 읽고 쓰는 데이터: `ensure_profile`이 첫 진입에서 자기 프로필 행을 만든다. 있으면 아무것도 안 한다
 - 권한: 승인됐는지·차단됐는지·퇴사했는지는 앱이 뜬 뒤 `['profile']`을 읽고 가른다. 이유는 [system/runtime.md](../../system/runtime.md#캐시-두-계층)에 있다 — 판정할 서버가 없다
 - 처리와 경쟁: 읽는 자리는 껍데기 하나다 — 앱이 뜰 때와 앱으로 돌아올 때 읽고 화면 전환은 그 값을 쓴다. 탭을 옮길 때마다 빈 화면이 끼지 않는다. 읽는 동안은 아무것도 안 그린다
