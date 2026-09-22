@@ -58,6 +58,37 @@ export function backdateDeadline(scheduleId: string, pastDate: string): void {
   );
 }
 
+const MONTH_TAKEN = new Set(["already_exists", "already_open"]);
+const FRESH_MONTH_ATTEMPTS = 7;
+
+function randomMonthOffset(): number {
+  return 24 + Math.floor(Math.random() * 100000);
+}
+
+function isMonthTaken(error: unknown): boolean {
+  const message = (error as { message?: unknown } | null)?.message;
+  return typeof message === "string" && MONTH_TAKEN.has(message);
+}
+
+export async function withFreshMonth<T>(
+  seed: (monthsFromNow: number) => Promise<T>,
+): Promise<T> {
+  let taken: unknown;
+
+  for (let attempt = 0; attempt < FRESH_MONTH_ATTEMPTS; attempt += 1) {
+    try {
+      return await seed(randomMonthOffset());
+    } catch (error) {
+      if (!isMonthTaken(error)) {
+        throw error;
+      }
+      taken = error;
+    }
+  }
+
+  throw taken;
+}
+
 export type ApprovedUser = SignedInUser & { approvedAt: string };
 
 export async function createApprovedUser(): Promise<ApprovedUser> {

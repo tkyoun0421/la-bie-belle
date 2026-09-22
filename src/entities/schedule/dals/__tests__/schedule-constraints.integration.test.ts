@@ -3,6 +3,7 @@ import {
   createAdminUser,
   execSql,
   createApprovedUser,
+  withFreshMonth,
   type AdminUser,
   type ApprovedUser,
 } from "@tests/integration/postgres";
@@ -48,35 +49,37 @@ async function openFreshDay(admin: AdminUser): Promise<{
   dayId: string;
   slotIds: string[];
 }> {
-  const month = firstOfMonthOffset(randomOffset());
-  await rpcOrThrow(admin, "create_schedule", {
-    p_month: month,
-    p_deadline: tomorrowDate(),
+  return withFreshMonth(async (monthsFromNow) => {
+    const month = firstOfMonthOffset(monthsFromNow);
+    await rpcOrThrow(admin, "create_schedule", {
+      p_month: month,
+      p_deadline: tomorrowDate(),
+    });
+    await rpcOrThrow(admin, "open_day", { p_work_date: month });
+
+    const { data: day, error: dayError } = await admin.client
+      .from("days")
+      .select("id, schedule_id")
+      .eq("work_date", month)
+      .single<{ id: string; schedule_id: string }>();
+    if (dayError || !day) {
+      throw dayError ?? new Error("연 날을 못 찾았다");
+    }
+
+    const { data: slots, error: slotsError } = await admin.client
+      .from("slots")
+      .select("id")
+      .eq("day_id", day.id);
+    if (slotsError) {
+      throw slotsError;
+    }
+
+    return {
+      scheduleId: day.schedule_id,
+      dayId: day.id,
+      slotIds: (slots ?? []).map((slot) => (slot as { id: string }).id),
+    };
   });
-  await rpcOrThrow(admin, "open_day", { p_work_date: month });
-
-  const { data: day, error: dayError } = await admin.client
-    .from("days")
-    .select("id, schedule_id")
-    .eq("work_date", month)
-    .single<{ id: string; schedule_id: string }>();
-  if (dayError || !day) {
-    throw dayError ?? new Error("연 날을 못 찾았다");
-  }
-
-  const { data: slots, error: slotsError } = await admin.client
-    .from("slots")
-    .select("id")
-    .eq("day_id", day.id);
-  if (slotsError) {
-    throw slotsError;
-  }
-
-  return {
-    scheduleId: day.schedule_id,
-    dayId: day.id,
-    slotIds: (slots ?? []).map((slot) => (slot as { id: string }).id),
-  };
 }
 
 function expectSqlError(action: () => void, pattern: RegExp): void {

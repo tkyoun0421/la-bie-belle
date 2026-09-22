@@ -4,6 +4,7 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  withFreshMonth,
   type AdminUser,
   type ApprovedUser,
 } from "@tests/integration/postgres";
@@ -64,7 +65,6 @@ const DEFAULT_SLOTS: SlotDefault[] = [
   { positions: ["대기실"], count: 1 },
 ];
 
-/** `..._halls.sql` 씨앗 행의 근무 시간 기본값. afterAll이 여기로 되돌린다. */
 const DEFAULT_STARTS = "10:00";
 const DEFAULT_ENDS = "22:00";
 
@@ -85,15 +85,7 @@ async function rpcOrThrow(
   }
 }
 
-async function createScheduleId(
-  admin: AdminUser,
-  month: string,
-  deadline: string,
-): Promise<string> {
-  await rpcOrThrow(admin, "create_schedule", {
-    p_month: month,
-    p_deadline: deadline,
-  });
+async function scheduleIdFor(admin: AdminUser, month: string): Promise<string> {
   const { data, error } = await admin.client
     .from("schedules")
     .select("id")
@@ -115,6 +107,55 @@ async function dayIdFor(admin: AdminUser, workDate: string): Promise<string> {
     throw error ?? new Error("연 날을 못 찾았다");
   }
   return data.id;
+}
+
+async function seedSchedule(
+  admin: AdminUser,
+): Promise<{ month: string; scheduleId: string }> {
+  return withFreshMonth(async (monthsFromNow) => {
+    const month = firstOfMonthOffset(monthsFromNow);
+    await rpcOrThrow(admin, "create_schedule", {
+      p_month: month,
+      p_deadline: tomorrowDate(),
+    });
+    return { month, scheduleId: await scheduleIdFor(admin, month) };
+  });
+}
+
+async function seedOpenDay(
+  admin: AdminUser,
+): Promise<{ month: string; scheduleId: string; dayId: string }> {
+  return withFreshMonth(async (monthsFromNow) => {
+    const month = firstOfMonthOffset(monthsFromNow);
+    await rpcOrThrow(admin, "create_schedule", {
+      p_month: month,
+      p_deadline: tomorrowDate(),
+    });
+    await rpcOrThrow(admin, "open_day", { p_work_date: month });
+    return {
+      month,
+      scheduleId: await scheduleIdFor(admin, month),
+      dayId: await dayIdFor(admin, month),
+    };
+  });
+}
+
+async function seedMonthPair(
+  admin: AdminUser,
+): Promise<{ first: string; second: string; lastOfFirst: string }> {
+  return withFreshMonth(async (monthsFromNow) => {
+    const first = firstOfMonthOffset(monthsFromNow);
+    const second = firstOfMonthOffset(monthsFromNow + 1);
+    await rpcOrThrow(admin, "create_schedule", {
+      p_month: first,
+      p_deadline: tomorrowDate(),
+    });
+    await rpcOrThrow(admin, "create_schedule", {
+      p_month: second,
+      p_deadline: tomorrowDate(),
+    });
+    return { first, second, lastOfFirst: lastOfMonthOffset(monthsFromNow) };
+  });
 }
 
 function countByPosition(
@@ -222,11 +263,7 @@ describe("근무표 함수", () => {
 
   describe("근무표 만들기와 마감일", () => {
     it("같은 달에 두 번 만들면 already_exists", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      await rpcOrThrow(admin, "create_schedule", {
-        p_month: month,
-        p_deadline: tomorrowDate(),
-      });
+      const { month } = await seedSchedule(admin);
 
       const { error } = await admin.client.rpc("create_schedule", {
         p_month: month,
@@ -252,11 +289,7 @@ describe("근무표 함수", () => {
     });
 
     it("마감 전에 확정하면 too_early", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      await rpcOrThrow(admin, "create_schedule", {
-        p_month: month,
-        p_deadline: tomorrowDate(),
-      });
+      const { month } = await seedSchedule(admin);
 
       const { error } = await admin.client.rpc("confirm_schedule", {
         p_month: month,
@@ -265,8 +298,7 @@ describe("근무표 함수", () => {
     });
 
     it("마감 뒤에는 확정이 통과하고 confirmed_at이 찍힌다", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      const scheduleId = await createScheduleId(admin, month, tomorrowDate());
+      const { month, scheduleId } = await seedSchedule(admin);
       backdateDeadline(scheduleId, yesterdayDate());
 
       const { error } = await admin.client.rpc("confirm_schedule", {
@@ -283,8 +315,7 @@ describe("근무표 함수", () => {
     });
 
     it("이미 확정된 달을 다시 확정하면 already_confirmed", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      const scheduleId = await createScheduleId(admin, month, tomorrowDate());
+      const { month, scheduleId } = await seedSchedule(admin);
       backdateDeadline(scheduleId, yesterdayDate());
       await rpcOrThrow(admin, "confirm_schedule", { p_month: month });
 
@@ -295,8 +326,7 @@ describe("근무표 함수", () => {
     });
 
     it("확정된 달의 마감일을 바꾸면 already_confirmed", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      const scheduleId = await createScheduleId(admin, month, tomorrowDate());
+      const { month, scheduleId } = await seedSchedule(admin);
       backdateDeadline(scheduleId, yesterdayDate());
       await rpcOrThrow(admin, "confirm_schedule", { p_month: month });
 
@@ -353,12 +383,7 @@ describe("근무표 함수", () => {
     });
 
     it("같은 날짜를 두 번 열면 already_open", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      await rpcOrThrow(admin, "create_schedule", {
-        p_month: month,
-        p_deadline: tomorrowDate(),
-      });
-      await rpcOrThrow(admin, "open_day", { p_work_date: month });
+      const { month } = await seedOpenDay(admin);
 
       const { error } = await admin.client.rpc("open_day", {
         p_work_date: month,
@@ -367,12 +392,7 @@ describe("근무표 함수", () => {
     });
 
     it("open_day 한 번에 days 하나와 slots 열한 개가 선다", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      await rpcOrThrow(admin, "create_schedule", {
-        p_month: month,
-        p_deadline: tomorrowDate(),
-      });
-      await rpcOrThrow(admin, "open_day", { p_work_date: month });
+      const { month } = await seedOpenDay(admin);
 
       const { data: days } = await admin.client
         .from("days")
@@ -385,14 +405,7 @@ describe("근무표 함수", () => {
     });
 
     it("open_day가 halls.default_slots대로 포지션별 자리 수를 깐다", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      await rpcOrThrow(admin, "create_schedule", {
-        p_month: month,
-        p_deadline: tomorrowDate(),
-      });
-      await rpcOrThrow(admin, "open_day", { p_work_date: month });
-
-      const dayId = await dayIdFor(admin, month);
+      const { dayId } = await seedOpenDay(admin);
       const slots = await slotsForDay(admin, dayId);
 
       expect(slots).toHaveLength(11);
@@ -410,11 +423,7 @@ describe("근무표 함수", () => {
     });
 
     it("연 날이 아니면 set_day_hours가 not_open", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      await rpcOrThrow(admin, "create_schedule", {
-        p_month: month,
-        p_deadline: tomorrowDate(),
-      });
+      const { month } = await seedSchedule(admin);
 
       const { error } = await admin.client.rpc("set_day_hours", {
         p_work_date: month,
@@ -426,12 +435,7 @@ describe("근무표 함수", () => {
     });
 
     it("끝이 시작보다 이르면 bad_hours", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      await rpcOrThrow(admin, "create_schedule", {
-        p_month: month,
-        p_deadline: tomorrowDate(),
-      });
-      await rpcOrThrow(admin, "open_day", { p_work_date: month });
+      const { month } = await seedOpenDay(admin);
 
       const { error } = await admin.client.rpc("set_day_hours", {
         p_work_date: month,
@@ -443,9 +447,7 @@ describe("근무표 함수", () => {
     });
 
     it("확정 뒤에는 close_day가 already_confirmed", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      const scheduleId = await createScheduleId(admin, month, tomorrowDate());
-      await rpcOrThrow(admin, "open_day", { p_work_date: month });
+      const { month, scheduleId } = await seedOpenDay(admin);
       backdateDeadline(scheduleId, yesterdayDate());
       await rpcOrThrow(admin, "confirm_schedule", { p_month: month });
 
@@ -456,14 +458,7 @@ describe("근무표 함수", () => {
     });
 
     it("close_day가 days를 지우면 slots와 그 자리의 requests도 같이 사라진다", async () => {
-      const month = firstOfMonthOffset(randomOffset());
-      await rpcOrThrow(admin, "create_schedule", {
-        p_month: month,
-        p_deadline: tomorrowDate(),
-      });
-      await rpcOrThrow(admin, "open_day", { p_work_date: month });
-
-      const dayId = await dayIdFor(admin, month);
+      const { month, dayId } = await seedOpenDay(admin);
       const slots = await slotsForDay(admin, dayId);
       const slotId = slots[0]!.id;
 
@@ -517,13 +512,14 @@ describe("근무표 함수", () => {
 
   describe("달 경계", () => {
     it("달을 걸친 날짜 둘이 서로 다른 schedules 행에 붙는다", async () => {
-      const offset = randomOffset();
-      const monthA = firstOfMonthOffset(offset);
-      const monthB = firstOfMonthOffset(offset + 1);
-      const lastDayOfMonthA = lastOfMonthOffset(offset);
+      const {
+        first: monthA,
+        second: monthB,
+        lastOfFirst: lastDayOfMonthA,
+      } = await seedMonthPair(admin);
 
-      const scheduleAId = await createScheduleId(admin, monthA, tomorrowDate());
-      const scheduleBId = await createScheduleId(admin, monthB, tomorrowDate());
+      const scheduleAId = await scheduleIdFor(admin, monthA);
+      const scheduleBId = await scheduleIdFor(admin, monthB);
 
       await rpcOrThrow(admin, "open_day", { p_work_date: lastDayOfMonthA });
       await rpcOrThrow(admin, "open_day", { p_work_date: monthB });
@@ -555,12 +551,7 @@ describe("근무표 함수", () => {
     });
 
     it("set_hall_defaults는 이미 연 날에 소급하지 않는다", async () => {
-      const offset = randomOffset();
-      const monthA = firstOfMonthOffset(offset);
-      await rpcOrThrow(admin, "create_schedule", {
-        p_month: monthA,
-        p_deadline: tomorrowDate(),
-      });
+      const { first: monthA, second: monthB } = await seedMonthPair(admin);
       await rpcOrThrow(admin, "open_day", { p_work_date: monthA });
 
       const dayIdA = await dayIdFor(admin, monthA);
@@ -580,11 +571,6 @@ describe("근무표 함수", () => {
       const afterOldDaySlots = await slotsForDay(admin, dayIdA);
       expect(countByPosition(afterOldDaySlots, "매니저")).toBe(2);
 
-      const monthB = firstOfMonthOffset(offset + 1);
-      await rpcOrThrow(admin, "create_schedule", {
-        p_month: monthB,
-        p_deadline: tomorrowDate(),
-      });
       await rpcOrThrow(admin, "open_day", { p_work_date: monthB });
 
       const dayIdB = await dayIdFor(admin, monthB);
