@@ -9,6 +9,8 @@ sources:
 
 # 인증 진입을 전환한다 — 구현 계획
 
+> 완료된 작업의 당시 계획이다. 현재 규칙은 링크된 정본을 따른다 — 완료 기록: [log/2026-09-15.md](../../log/2026-09-15.md)
+
 ## 입력 명세·기준
 
 정본은 [design.md](../../2-design/modules/account/design.md#첫-진입과-게이트)의 「첫 진입과 게이트」와 [navigation.md](../../2-design/system/navigation.md#앱을-열면)의 상태별 목적지 표다. 서버가 승인을 판정하지 않는 이유는 [runtime.md](../../2-design/system/runtime.md#캐시-두-계층)에 있다 — 승인·차단·퇴사를 서버가 HTML에 그리면 그 HTML이 세션마다 달라 Service Worker가 캐시할 수 없다. `['profile']` 키의 규칙은 [runtime.md](../../2-design/system/runtime.md#tanstack-query-규칙)와 design의 「캐시 갱신」 불릿이다 — `staleTime`이 0이고 영속하지 않는다.

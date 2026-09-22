@@ -9,25 +9,17 @@ import {
   shouldDismissSplash,
   shouldRenderApp,
 } from "@/shared/lib/font-loading";
-import { getCurrentUser } from "@/shared/lib/get-current-user";
-import type { AuthDestination } from "@/shared/lib/resolve-auth-destination";
 import { supabase } from "@/shared/lib/supabase";
 import { wireAutoRefresh } from "@/shared/lib/wire-auto-refresh";
-import { resolveEntryDestination } from "@/features/auth/resolve-entry-destination";
+import { decideEntry, type EntryDecision } from "@/features/auth/decide-entry";
 
 // 스플래시가 이미 내려간 뒤에 부르면 reject한다 — 그때는 막을 것도 없으니 삼킨다.
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
-async function decideEntry(): Promise<AuthDestination> {
-  const user = await getCurrentUser(supabase);
-
-  return resolveEntryDestination(user?.id ?? null, { client: supabase });
-}
-
 /**
  * 층 셋이 나란히 선다 — 게이트·근무자 탭·관리자([navigation.md]의 「세 층」).
  * 어느 층으로 가는지는 세션·프로필·승인 판정이 정하고, 그 판정은 이 껍데기
- * 하나가 한다.
+ * 하나가 decide-entry에 물어서 한다.
  *
  * 스플래시는 서체와 판정이 둘 다 끝난 뒤에 내린다. 서체만 기다리면 판정 전에
  * 잘못된 층이 한 프레임 비치고, 판정만 기다리면 시스템 서체로 그려진 글자가
@@ -36,9 +28,7 @@ async function decideEntry(): Promise<AuthDestination> {
 export default function RootLayout() {
   const router = useRouter();
   const [loaded, error] = useFonts(FONT_SOURCES);
-  const [destination, setDestination] = useState<
-    AuthDestination | "/retry" | null
-  >(null);
+  const [destination, setDestination] = useState<EntryDecision | null>(null);
   const splashDismissed = useRef(false);
 
   useEffect(() => wireAutoRefresh(supabase.auth), []);
@@ -46,15 +36,11 @@ export default function RootLayout() {
   useEffect(() => {
     let abandoned = false;
 
-    // 판정이 목적지를 못 정한 자리다. 껍데기를 빈 채로 두지 않고 다시 시도할
-    // 화면 하나를 세운다([login.md]의 「읽기 실패 짜임」).
-    void decideEntry()
-      .catch(() => "/retry" as const)
-      .then((decided) => {
-        if (!abandoned) {
-          setDestination(decided);
-        }
-      });
+    void decideEntry({ client: supabase }).then((decided) => {
+      if (!abandoned) {
+        setDestination(decided);
+      }
+    });
 
     return () => {
       abandoned = true;
