@@ -593,6 +593,53 @@ describe("출근 인증 함수", () => {
     });
   });
 
+  describe("internal.check_in — 검사 순서(거친 것부터)", () => {
+    it("창 밖이면서 QR도 틀리면 invalid_qr이 아니라 window_closed다", async () => {
+      const { dayId, workDate } = await openDayWithAssignment(
+        admin,
+        worker.profileId,
+      );
+      const closesAt = kstInstant(workDate, "18:00:00");
+      const now = isoPlusHours(closesAt, 1);
+
+      expectRaises(
+        () =>
+          callInternalCheckIn({
+            profileId: worker.profileId,
+            dayId,
+            reportedAt: now,
+            method: "qr",
+            lat: null,
+            lng: null,
+            qrCode: "존재하지-않는-코드",
+            now,
+          }),
+        "window_closed",
+      );
+    });
+
+    it("배정도 없고 창도 닫혔으면 window_closed가 아니라 not_allowed다", async () => {
+      const { dayId, workDate } = await openFreshDay(admin);
+      const closesAt = kstInstant(workDate, "18:00:00");
+      const now = isoPlusHours(closesAt, 1);
+
+      expectRaises(
+        () =>
+          callInternalCheckIn({
+            profileId: noAssignmentWorker.profileId,
+            dayId,
+            reportedAt: now,
+            method: "location",
+            lat: hall.lat,
+            lng: hall.lng,
+            qrCode: null,
+            now,
+          }),
+        "not_allowed",
+      );
+    });
+  });
+
   describe("public.check_in — 껍데기", () => {
     it("p_profile_id를 받지 않는다 — 클라이언트가 남의 이름으로 못 찍는다", async () => {
       const { dayId } = await openDayWithAssignment(admin, worker.profileId);
@@ -1087,18 +1134,26 @@ describe("QR과 홀 함수", () => {
 
       await rpcOrThrow(admin, "rotate_qr", {});
 
-      const { dayId } = await openFreshDay(admin);
-      seedAssignment(dayId, worker.profileId, "training");
+      const { dayId, workDate } = await openDayWithAssignment(
+        admin,
+        worker.profileId,
+      );
+      const now = kstInstant(workDate, "10:30:00");
 
-      const { error } = await worker.client.rpc("check_in", {
-        p_day_id: dayId,
-        p_reported_at: new Date().toISOString(),
-        p_method: "qr",
-        p_lat: null,
-        p_lng: null,
-        p_qr_code: oldCode,
-      });
-      expect(error?.message).toBe("invalid_qr");
+      expectRaises(
+        () =>
+          callInternalCheckIn({
+            profileId: worker.profileId,
+            dayId,
+            reportedAt: now,
+            method: "qr",
+            lat: null,
+            lng: null,
+            qrCode: oldCode,
+            now,
+          }),
+        "invalid_qr",
+      );
     });
   });
 

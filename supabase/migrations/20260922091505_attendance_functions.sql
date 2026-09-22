@@ -62,6 +62,15 @@ begin
     raise exception using message = 'not_allowed';
   end if;
 
+  opens_at :=
+    ((target_day.work_date + target_day.starts_at) at time zone 'Asia/Seoul')
+    - interval '1 hour';
+  closes_at := (target_day.work_date + time '18:00') at time zone 'Asia/Seoul';
+
+  if p_now < opens_at or p_now > closes_at then
+    raise exception using message = 'window_closed';
+  end if;
+
   select * into hall
   from public.halls
   limit 1;
@@ -81,15 +90,6 @@ begin
     ) then
       raise exception using message = 'invalid_qr';
     end if;
-  end if;
-
-  opens_at :=
-    ((target_day.work_date + target_day.starts_at) at time zone 'Asia/Seoul')
-    - interval '1 hour';
-  closes_at := (target_day.work_date + time '18:00') at time zone 'Asia/Seoul';
-
-  if p_now < opens_at or p_now > closes_at then
-    raise exception using message = 'window_closed';
   end if;
 
   if exists (
