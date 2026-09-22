@@ -72,6 +72,6 @@
 
 **총괄이 정할 것 둘이 여전히 열려 있다.** [navigation Q-03](2-design/system/navigation.md#q-03) — 종이 QR을 앱 없는 기기로 찍으면 무엇이 뜨나. [runtime Q-01](2-design/system/runtime.md#q-01) — 오래 안 열었다 여는 앱이 무엇을 다시 읽나.
 
-회차 기록은 `docs/log/2026-09-23.md`다. 그 앞 [2026-09-22](log/2026-09-22.md)가 서체·세션·딥링크·진입 판정을 세웠고, 이번 회차(#391·#392)는 spec 양식에 상태 격자를 더하고 화면 task 스물의 spec을 세워 승인했다.
+회차 기록은 `docs/log/2026-09-23.md`다. 그 앞 [2026-09-22](log/2026-09-22.md)가 서체·세션·딥링크·진입 판정을 세웠고, 이번 회차는 두 갈래다 — spec 양식에 상태 격자를 더하고 화면 task 스물의 spec을 세워 승인한 것(#391·#392), 그리고 `claimed-guards-audit`이 사실로만 남기고 넘긴 자리를 포함해 기계만으로 닫히는 task 다섯을 마저 닫은 것(#394~#398: 라우트 타입 게이트, 서체 서브셋, Edge Function import 불가 확인, 생성 타입 대조, 파일 이름 규약)이다.
 
 저장소 밖 자료 — 시안·문서 캔버스 [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)(빌드 소스는 세션 임시 폴더라 다시 못 만든다), 하루 띠 비교 시안 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832).
