@@ -4,48 +4,13 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  kstDate,
+  kstMonthEnd,
+  kstMonthStart,
   withFreshMonth,
   type AdminUser,
   type ApprovedUser,
 } from "@tests/integration/postgres";
-
-function toDateString(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-function todayDate(): string {
-  return toDateString(new Date());
-}
-
-function yesterdayDate(): string {
-  const date = new Date();
-  date.setDate(date.getDate() - 1);
-  return toDateString(date);
-}
-
-function tomorrowDate(): string {
-  const date = new Date();
-  date.setDate(date.getDate() + 1);
-  return toDateString(date);
-}
-
-function firstOfMonthOffset(monthsFromNow: number): string {
-  const date = new Date();
-  date.setDate(1);
-  date.setMonth(date.getMonth() + monthsFromNow);
-  return toDateString(date);
-}
-
-function lastOfMonthOffset(monthsFromNow: number): string {
-  const date = new Date();
-  date.setDate(1);
-  date.setMonth(date.getMonth() + monthsFromNow + 1);
-  date.setDate(0);
-  return toDateString(date);
-}
 
 function randomOffset(): number {
   return 24 + Math.floor(Math.random() * 100000);
@@ -113,10 +78,10 @@ async function seedSchedule(
   admin: AdminUser,
 ): Promise<{ month: string; scheduleId: string }> {
   return withFreshMonth(async (monthsFromNow) => {
-    const month = firstOfMonthOffset(monthsFromNow);
+    const month = kstMonthStart(monthsFromNow);
     await rpcOrThrow(admin, "create_schedule", {
       p_month: month,
-      p_deadline: tomorrowDate(),
+      p_deadline: kstDate(1),
     });
     return { month, scheduleId: await scheduleIdFor(admin, month) };
   });
@@ -126,10 +91,10 @@ async function seedOpenDay(
   admin: AdminUser,
 ): Promise<{ month: string; scheduleId: string; dayId: string }> {
   return withFreshMonth(async (monthsFromNow) => {
-    const month = firstOfMonthOffset(monthsFromNow);
+    const month = kstMonthStart(monthsFromNow);
     await rpcOrThrow(admin, "create_schedule", {
       p_month: month,
-      p_deadline: tomorrowDate(),
+      p_deadline: kstDate(1),
     });
     await rpcOrThrow(admin, "open_day", { p_work_date: month });
     return {
@@ -144,17 +109,17 @@ async function seedMonthPair(
   admin: AdminUser,
 ): Promise<{ first: string; second: string; lastOfFirst: string }> {
   return withFreshMonth(async (monthsFromNow) => {
-    const first = firstOfMonthOffset(monthsFromNow);
-    const second = firstOfMonthOffset(monthsFromNow + 1);
+    const first = kstMonthStart(monthsFromNow);
+    const second = kstMonthStart(monthsFromNow + 1);
     await rpcOrThrow(admin, "create_schedule", {
       p_month: first,
-      p_deadline: tomorrowDate(),
+      p_deadline: kstDate(1),
     });
     await rpcOrThrow(admin, "create_schedule", {
       p_month: second,
-      p_deadline: tomorrowDate(),
+      p_deadline: kstDate(1),
     });
-    return { first, second, lastOfFirst: lastOfMonthOffset(monthsFromNow) };
+    return { first, second, lastOfFirst: kstMonthEnd(monthsFromNow) };
   });
 }
 
@@ -206,44 +171,44 @@ describe("근무표 함수", () => {
   describe("호출자 검사 — 근무자가 부르면 not_allowed", () => {
     it("create_schedule을 근무자가 부르면 not_allowed", async () => {
       const { error } = await worker.client.rpc("create_schedule", {
-        p_month: firstOfMonthOffset(randomOffset()),
-        p_deadline: tomorrowDate(),
+        p_month: kstMonthStart(randomOffset()),
+        p_deadline: kstDate(1),
       });
       expect(error?.message).toBe("not_allowed");
     });
 
     it("set_application_deadline을 근무자가 부르면 not_allowed", async () => {
       const { error } = await worker.client.rpc("set_application_deadline", {
-        p_month: firstOfMonthOffset(randomOffset()),
-        p_deadline: tomorrowDate(),
+        p_month: kstMonthStart(randomOffset()),
+        p_deadline: kstDate(1),
       });
       expect(error?.message).toBe("not_allowed");
     });
 
     it("confirm_schedule을 근무자가 부르면 not_allowed", async () => {
       const { error } = await worker.client.rpc("confirm_schedule", {
-        p_month: firstOfMonthOffset(randomOffset()),
+        p_month: kstMonthStart(randomOffset()),
       });
       expect(error?.message).toBe("not_allowed");
     });
 
     it("open_day를 근무자가 부르면 not_allowed", async () => {
       const { error } = await worker.client.rpc("open_day", {
-        p_work_date: tomorrowDate(),
+        p_work_date: kstDate(1),
       });
       expect(error?.message).toBe("not_allowed");
     });
 
     it("close_day를 근무자가 부르면 not_allowed", async () => {
       const { error } = await worker.client.rpc("close_day", {
-        p_work_date: tomorrowDate(),
+        p_work_date: kstDate(1),
       });
       expect(error?.message).toBe("not_allowed");
     });
 
     it("set_day_hours를 근무자가 부르면 not_allowed", async () => {
       const { error } = await worker.client.rpc("set_day_hours", {
-        p_work_date: tomorrowDate(),
+        p_work_date: kstDate(1),
         p_starts: "10:00",
         p_ends: "22:00",
         p_ceremony: null,
@@ -267,23 +232,23 @@ describe("근무표 함수", () => {
 
       const { error } = await admin.client.rpc("create_schedule", {
         p_month: month,
-        p_deadline: tomorrowDate(),
+        p_deadline: kstDate(1),
       });
       expect(error?.message).toBe("already_exists");
     });
 
     it("마감일이 오늘 이전이면 deadline_past", async () => {
       const { error } = await admin.client.rpc("create_schedule", {
-        p_month: firstOfMonthOffset(randomOffset()),
-        p_deadline: yesterdayDate(),
+        p_month: kstMonthStart(randomOffset()),
+        p_deadline: kstDate(-1),
       });
       expect(error?.message).toBe("deadline_past");
     });
 
     it("열 수 있는 날이 하루도 안 남은 달이면 month_over", async () => {
       const { error } = await admin.client.rpc("create_schedule", {
-        p_month: firstOfMonthOffset(-3),
-        p_deadline: tomorrowDate(),
+        p_month: kstMonthStart(-3),
+        p_deadline: kstDate(1),
       });
       expect(error?.message).toBe("month_over");
     });
@@ -299,7 +264,7 @@ describe("근무표 함수", () => {
 
     it("마감 뒤에는 확정이 통과하고 confirmed_at이 찍힌다", async () => {
       const { month, scheduleId } = await seedSchedule(admin);
-      backdateDeadline(scheduleId, yesterdayDate());
+      backdateDeadline(scheduleId, kstDate(-1));
 
       const { error } = await admin.client.rpc("confirm_schedule", {
         p_month: month,
@@ -316,7 +281,7 @@ describe("근무표 함수", () => {
 
     it("이미 확정된 달을 다시 확정하면 already_confirmed", async () => {
       const { month, scheduleId } = await seedSchedule(admin);
-      backdateDeadline(scheduleId, yesterdayDate());
+      backdateDeadline(scheduleId, kstDate(-1));
       await rpcOrThrow(admin, "confirm_schedule", { p_month: month });
 
       const { error } = await admin.client.rpc("confirm_schedule", {
@@ -327,12 +292,12 @@ describe("근무표 함수", () => {
 
     it("확정된 달의 마감일을 바꾸면 already_confirmed", async () => {
       const { month, scheduleId } = await seedSchedule(admin);
-      backdateDeadline(scheduleId, yesterdayDate());
+      backdateDeadline(scheduleId, kstDate(-1));
       await rpcOrThrow(admin, "confirm_schedule", { p_month: month });
 
       const { error } = await admin.client.rpc("set_application_deadline", {
         p_month: month,
-        p_deadline: tomorrowDate(),
+        p_deadline: kstDate(1),
       });
       expect(error?.message).toBe("already_confirmed");
     });
@@ -341,16 +306,16 @@ describe("근무표 함수", () => {
   describe("날 열기와 닫기", () => {
     it("근무표가 없는 달의 날짜를 열면 no_schedule", async () => {
       const { error } = await admin.client.rpc("open_day", {
-        p_work_date: firstOfMonthOffset(randomOffset()),
+        p_work_date: kstMonthStart(randomOffset()),
       });
       expect(error?.message).toBe("no_schedule");
     });
 
     it("이미 지난 날짜를 열면 date_past", async () => {
-      const month = firstOfMonthOffset(0);
+      const month = kstMonthStart(0);
       const { error: createError } = await admin.client.rpc("create_schedule", {
         p_month: month,
-        p_deadline: tomorrowDate(),
+        p_deadline: kstDate(1),
       });
       if (createError && createError.message !== "already_exists") {
         throw createError;
@@ -363,21 +328,21 @@ describe("근무표 함수", () => {
     });
 
     it("오늘 날짜는 date_past로 거부되지 않는다", async () => {
-      const month = firstOfMonthOffset(0);
+      const month = kstMonthStart(0);
       const { error: createError } = await admin.client.rpc("create_schedule", {
         p_month: month,
-        p_deadline: tomorrowDate(),
+        p_deadline: kstDate(1),
       });
       if (createError && createError.message !== "already_exists") {
         throw createError;
       }
 
-      await admin.client.rpc("open_day", { p_work_date: todayDate() });
+      await admin.client.rpc("open_day", { p_work_date: kstDate() });
 
       const { data, error } = await admin.client
         .from("days")
         .select("id")
-        .eq("work_date", todayDate());
+        .eq("work_date", kstDate());
       expect(error).toBeNull();
       expect(data).toHaveLength(1);
     });
@@ -448,7 +413,7 @@ describe("근무표 함수", () => {
 
     it("확정 뒤에는 close_day가 already_confirmed", async () => {
       const { month, scheduleId } = await seedOpenDay(admin);
-      backdateDeadline(scheduleId, yesterdayDate());
+      backdateDeadline(scheduleId, kstDate(-1));
       await rpcOrThrow(admin, "confirm_schedule", { p_month: month });
 
       const { error } = await admin.client.rpc("close_day", {

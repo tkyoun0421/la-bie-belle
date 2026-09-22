@@ -4,6 +4,8 @@ import {
   createApprovedUser,
   createLeftUser,
   execSql,
+  kstDate,
+  kstMonthStart,
   withFreshMonth,
   type AdminUser,
   type ApprovedUser,
@@ -13,26 +15,6 @@ import {
   createSignedInUser,
   type SignedInUser,
 } from "@tests/integration/supabase";
-
-function toDateString(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-function tomorrowDate(): string {
-  const date = new Date();
-  date.setDate(date.getDate() + 1);
-  return toDateString(date);
-}
-
-function firstOfMonthOffset(monthsFromNow: number): string {
-  const date = new Date();
-  date.setDate(1);
-  date.setMonth(date.getMonth() + monthsFromNow);
-  return toDateString(date);
-}
 
 function randomOffset(): number {
   return 24 + Math.floor(Math.random() * 100000);
@@ -55,10 +37,10 @@ async function seedOpenDay(admin: AdminUser): Promise<{
   slotIds: string[];
 }> {
   return withFreshMonth(async (monthsFromNow) => {
-    const month = firstOfMonthOffset(monthsFromNow);
+    const month = kstMonthStart(monthsFromNow);
     await rpcOrThrow(admin, "create_schedule", {
       p_month: month,
-      p_deadline: tomorrowDate(),
+      p_deadline: kstDate(1),
     });
     await rpcOrThrow(admin, "open_day", { p_work_date: month });
 
@@ -205,7 +187,7 @@ describe("근무표 RLS", () => {
     let cancelRequestId: string;
 
     beforeAll(() => {
-      const workDate = firstOfMonthOffset(randomOffset());
+      const workDate = kstMonthStart(randomOffset());
       availabilityId = seedAvailability(owner.profileId, workDate);
       cancelRequestId = seedCancelRequest(
         trainingAssignmentId,
@@ -277,14 +259,14 @@ describe("근무표 RLS", () => {
   describe("표 아홉에 직접 못 쓴다", () => {
     it("schedules에 근무자가 직접 insert를 못 한다", async () => {
       const { error } = await reader.client.from("schedules").insert({
-        month: firstOfMonthOffset(randomOffset()),
+        month: kstMonthStart(randomOffset()),
       });
       expect(error?.code).toBe("42501");
     });
 
     it("schedules에 관리자도 직접 insert를 못 한다", async () => {
       const { error } = await admin.client.from("schedules").insert({
-        month: firstOfMonthOffset(randomOffset()),
+        month: kstMonthStart(randomOffset()),
       });
       expect(error?.code).toBe("42501");
     });
@@ -292,7 +274,7 @@ describe("근무표 RLS", () => {
     it("days에 직접 insert를 못 한다", async () => {
       const { error } = await reader.client.from("days").insert({
         schedule_id: randomUUID(),
-        work_date: firstOfMonthOffset(randomOffset()),
+        work_date: kstMonthStart(randomOffset()),
         starts_at: "10:00",
         ends_at: "22:00",
       });
@@ -339,7 +321,7 @@ describe("근무표 RLS", () => {
     it("availabilities에 직접 insert를 못 한다", async () => {
       const { error } = await reader.client.from("availabilities").insert({
         profile_id: reader.profileId,
-        work_date: firstOfMonthOffset(randomOffset()),
+        work_date: kstMonthStart(randomOffset()),
       });
       expect(error?.code).toBe("42501");
     });

@@ -22,7 +22,7 @@ describe("사슬 슬러그 일치 검사", () => {
     const violations = sourcesSlugViolations([
       {
         file: "docs/3-build/plans/alpha.md",
-        status: null,
+        tracked: true,
         sources: ["../../2-design/spec/beta.md"],
       },
     ]);
@@ -41,7 +41,7 @@ describe("사슬 슬러그 일치 검사", () => {
     const violations = sourcesSlugViolations([
       {
         file: "docs/2-design/spec/alpha.md",
-        status: "approved",
+        tracked: true,
         sources: ["../../1-plan/intent/beta.md#요구"],
       },
     ]);
@@ -60,7 +60,7 @@ describe("사슬 슬러그 일치 검사", () => {
     const violations = sourcesSlugViolations([
       {
         file: "docs/3-build/plans/alpha.md",
-        status: null,
+        tracked: true,
         sources: ["../../2-design/spec/alpha.md", "../../proposals/other.md"],
       },
     ]);

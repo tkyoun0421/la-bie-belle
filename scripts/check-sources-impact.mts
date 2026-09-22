@@ -1,5 +1,5 @@
-// 승인된 spec의 `sources`가 가리키는 문서를 바꾼 PR이 본문에 「영향 확인」 절을
-// 남겼는지 본다.
+// 추적 중인 spec·plan의 `sources`가 가리키는 문서를 바꾼 PR이 본문에 「영향 확인」
+// 절을 남겼는지 본다.
 //
 //   git diff --name-only <base>...HEAD \
 //     | node --experimental-strip-types scripts/check-sources-impact.mts
@@ -32,7 +32,7 @@ function changedFiles(): string[] {
 const impacted = findImpacted(changedFiles(), sourceDocs());
 
 if (impacted.length === 0) {
-  console.log("승인된 spec·plan의 입력이 바뀌지 않았다.");
+  console.log("추적 중인 spec·plan의 입력이 바뀌지 않았다.");
   process.exit(0);
 }
 

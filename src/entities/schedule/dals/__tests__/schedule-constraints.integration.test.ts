@@ -1,33 +1,15 @@
 import { randomUUID } from "node:crypto";
 import {
   createAdminUser,
-  execSql,
   createApprovedUser,
+  execSql,
+  kstDate,
+  kstMonthStart,
   withFreshMonth,
   type AdminUser,
   type ApprovedUser,
 } from "@tests/integration/postgres";
 import { createSignedInUser } from "@tests/integration/supabase";
-
-function toDateString(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-function tomorrowDate(): string {
-  const date = new Date();
-  date.setDate(date.getDate() + 1);
-  return toDateString(date);
-}
-
-function firstOfMonthOffset(monthsFromNow: number): string {
-  const date = new Date();
-  date.setDate(1);
-  date.setMonth(date.getMonth() + monthsFromNow);
-  return toDateString(date);
-}
 
 function randomOffset(): number {
   return 24 + Math.floor(Math.random() * 100000);
@@ -50,10 +32,10 @@ async function openFreshDay(admin: AdminUser): Promise<{
   slotIds: string[];
 }> {
   return withFreshMonth(async (monthsFromNow) => {
-    const month = firstOfMonthOffset(monthsFromNow);
+    const month = kstMonthStart(monthsFromNow);
     await rpcOrThrow(admin, "create_schedule", {
       p_month: month,
-      p_deadline: tomorrowDate(),
+      p_deadline: kstDate(1),
     });
     await rpcOrThrow(admin, "open_day", { p_work_date: month });
 
@@ -240,7 +222,7 @@ describe("근무표 표 제약과 open_slots 뷰", () => {
     });
 
     it("availabilities는 같은 사람·날짜를 두 번 못 받는다", async () => {
-      const workDate = firstOfMonthOffset(randomOffset());
+      const workDate = kstMonthStart(randomOffset());
       execSql(
         "insert into public.availabilities (profile_id, work_date) values (:'profile_id', :'work_date');\n",
         { profile_id: first.profileId, work_date: workDate },
