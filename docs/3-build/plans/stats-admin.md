@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/stats-admin.md
   - ../../2-design/system/screens/stats.md
   - ../../2-design/system/screens/stats.md#관리자--adminstats
   - ../../2-design/system/screens/stats.md#근무
@@ -35,7 +36,9 @@ sources:
 - **차트 조각 셋이 여기서 처음 선다.** 추이 그래프·줄 막대·비율 띠다. 대시보드([`dashboard`](../../backlog.md))와 근무자 통계([`stats-worker`](stats-worker.md))가 이것을 가져다 쓴다
 - **달 키를 새로 연다.** `['attendance', 'YYYY-MM']`이다([attendance/design.md](../../2-design/modules/attendance/design.md#소유-데이터)). 날 키로 한 달을 읽으면 서른 질의고 열두 달 그래프에서는 360이 된다
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/stats-admin.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 

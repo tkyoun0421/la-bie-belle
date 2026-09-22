@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/schedule-assign.md
   - ../../2-design/modules/schedule/screens/schedule-admin.md#날-상세
   - ../../2-design/modules/schedule/screens/schedule-admin.md#사람-픽커
   - ../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-짜임
@@ -63,7 +64,9 @@ sources:
 
 지금 코드에는 날 상세가 [`schedule-admin`](schedule-admin.md)이 세운 껍데기까지다. `slots`·`assignments`·`position_grants` 표와 `open_slots` 뷰는 [`schedule-data`](schedule-data.md)가 낸다. 끌어서 옮기는 조각이 `src/shared/ui/`에 없다 — 이 화면이 저장소에서 처음 쓴다.
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/schedule-assign.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 

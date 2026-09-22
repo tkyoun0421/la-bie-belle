@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/payroll-adjust.md
   - ../../2-design/modules/schedule/screens/schedule-admin.md#날-상세
   - ../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-짜임
   - ../../2-design/modules/schedule/screens/schedule-admin.md#근무-조정
@@ -44,7 +45,9 @@ sources:
 - **리허설은 읽기 전용이다.** 이름 아래 작은 줄로 서고 안 눌린다 — 조정은 관리자가 쓴 값이고 리허설은 그 사람이 쓴 값이다([SCH-020](../../2-design/modules/schedule/README.md#sch-020))
 - **확정 뒤에도 열린다.** 조정도 임시공휴일도 확정을 안 기다린다([PAY-020](../../2-design/modules/payroll/README.md#pay-020)). 지난 날에도 연다 — 관리자가 달력에서 지난 달로 넘어가는 길이 살아 있어야 한다
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/payroll-adjust.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 

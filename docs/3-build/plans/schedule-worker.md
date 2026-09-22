@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/schedule-worker.md
   - ../../2-design/modules/schedule/screens/schedule-worker.md#근무표
   - ../../2-design/modules/schedule/screens/schedule-worker.md#달-고르기-시트
   - ../../2-design/modules/schedule/screens/schedule-worker.md#날-시트
@@ -65,7 +66,9 @@ sources:
 
 지금 코드에 근무자 화면이 하나도 없고 탭 바도 없다. `/schedule` 라우트가 없다.
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/schedule-worker.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 

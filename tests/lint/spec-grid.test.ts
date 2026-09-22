@@ -185,13 +185,13 @@ describe("상태 격자 절 — 다섯 규칙을 각각 어기면 위반이 잡�
   });
 });
 
-describe("spec 대상 필터링 — status: approved는 검사 밖이다", () => {
-  it("approved 문서는 상태 격자가 없어도 목록에 없다", () => {
+describe("spec 대상 필터링 — AC 제목이 없는 옛 명세만 검사 밖이다", () => {
+  it("AC 제목이 없는 문서는 상태 격자가 없어도 목록에 없다", () => {
     const root = tempRoot();
     write(
       root,
       "docs/2-design/spec/alpha.md",
-      `---\nstatus: approved\n---\n\n# 지어낸 기능\n\n## 완료 조건\n### AC-01\n\n- 전제: x\n`,
+      `---\nstatus: approved\n---\n\n# 지어낸 기능\n\n## 완료 조건\n\n- 잘 돈다\n`,
     );
     write(root, "docs/2-design/spec/beta.md", VALID_SPEC);
 
@@ -199,6 +199,24 @@ describe("spec 대상 필터링 — status: approved는 검사 밖이다", () =>
 
     expect(files).not.toContain("docs/2-design/spec/alpha.md");
     expect(files).toContain("docs/2-design/spec/beta.md");
+  });
+
+  it("승인된 문서도 AC 제목이 있으면 격자를 재고 위반이 잡힌다", () => {
+    const root = tempRoot();
+    write(
+      root,
+      "docs/2-design/spec/delta.md",
+      withoutGridSection(VALID_SPEC).replace(
+        "status: draft",
+        "status: approved",
+      ),
+    );
+
+    const delta = repositorySpecGridDocs(root).find(
+      (doc) => doc.file === "docs/2-design/spec/delta.md",
+    );
+
+    expect(delta?.violations).toEqual([{ type: "missing-section" }]);
   });
 
   it("draft 문서는 위반이 있으면 목록에 그 위반이 든다", () => {
@@ -218,11 +236,11 @@ describe("spec 상태 격자 대조 — 실제 저장소 회귀", () => {
     expect(repositorySpecGridDocs().length).toBeGreaterThan(0);
   });
 
-  it("지금 dashboard.md는 상태 격자가 없어 걸린다", () => {
-    const dashboard = repositorySpecGridDocs().find((doc) =>
-      doc.file.endsWith("dashboard.md"),
-    );
+  it("AC를 나눈 spec 전부가 상태 격자를 든다", () => {
+    const broken = repositorySpecGridDocs()
+      .filter((doc) => doc.violations.length > 0)
+      .map((doc) => ({ file: doc.file, violations: doc.violations }));
 
-    expect(dashboard?.violations.length).toBeGreaterThan(0);
+    expect(broken).toEqual([]);
   });
 });

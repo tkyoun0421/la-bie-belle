@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/payroll-wages.md
   - ../../2-design/modules/payroll/screens/wages.md#시급
   - ../../2-design/modules/payroll/screens/wages.md#시급-짜임
   - ../../2-design/modules/payroll/screens/wages.md#기본-시급-줄
@@ -51,7 +52,9 @@ sources:
 
 지금 코드에는 `/admin/wages`가 없다. 관리자 홈의 「시급」 줄은 [`schedule-admin`](schedule-admin.md)이 이미 세웠다.
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/payroll-wages.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 

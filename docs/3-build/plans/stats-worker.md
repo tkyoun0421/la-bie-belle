@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/stats-worker.md
   - ../../2-design/system/screens/stats.md
   - ../../2-design/system/screens/stats.md#근무자--stats
   - ../../2-design/system/screens/stats.md#내-근태-날짜-목록
@@ -34,7 +35,9 @@ sources:
 - **여기만 금액이 있다.** 관리자 통계에서 뺀 금액이 근무자 급여 탭에는 그대로 있다 — 자기 급여를 보는 것은 홀 전체 인건비를 보는 것과 다른 자리다. 예상치 안내 한 줄도 이 탭에만 선다
 - **사람별 구획이 없다.** 볼 사람이 자기 하나라 근태는 날짜 목록이, 포지션은 내가 들어간 것만 든 목록이 그 자리를 받는다
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/stats-worker.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 
