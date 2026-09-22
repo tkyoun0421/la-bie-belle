@@ -1,8 +1,9 @@
-import type { SupabaseClient, User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 import type { AuthDestination } from "@/shared/lib/resolve-auth-destination";
 import { decideEntry } from "@/features/auth/decide-entry";
 
-const fakeClient = {} as SupabaseClient;
+const fakeClient = {} as Db;
 const fakeUser = { id: "user-1" } as User;
 
 const DESTINATIONS: AuthDestination[] = [

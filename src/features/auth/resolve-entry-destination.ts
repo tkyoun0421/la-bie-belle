@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 import {
   resolveAuthDestination,
   type AuthDestination,
@@ -10,12 +10,9 @@ import {
 } from "@/entities/profile/dals/get-my-profile";
 
 type EntryDeps = {
-  client: SupabaseClient;
-  ensureProfile?: (client: SupabaseClient) => Promise<void>;
-  getMyProfile?: (
-    client: SupabaseClient,
-    userId: string,
-  ) => Promise<MyProfileRow | null>;
+  client: Db;
+  ensureProfile?: (client: Db) => Promise<void>;
+  getMyProfile?: (client: Db, userId: string) => Promise<MyProfileRow | null>;
 };
 
 /**

@@ -1,3 +1,4 @@
+import type { Database } from "@/shared/api/database";
 import {
   createAdminUser,
   createApprovedUser,
@@ -17,10 +18,12 @@ import {
   type SignedInUser,
 } from "@tests/integration/supabase";
 
-async function rpcOrThrow(
+type FunctionName = keyof Database["public"]["Functions"];
+
+async function rpcOrThrow<Name extends FunctionName>(
   admin: AdminUser,
-  fn: string,
-  args: Record<string, unknown>,
+  fn: Name,
+  args: Database["public"]["Functions"][Name]["Args"],
 ): Promise<void> {
   const { error } = await admin.client.rpc(fn, args);
   if (error) {
@@ -355,7 +358,8 @@ describe("출근 인증 RLS", () => {
         p_method: "location",
         p_lat: hall.lat,
         p_lng: hall.lng,
-        p_qr_code: null,
+        // 이 호출은 권한에서 먼저 막혀서 QR 코드 값은 쓰이지 않는다.
+        p_qr_code: "unused",
         p_now: now,
       });
 
@@ -401,7 +405,8 @@ describe("출근 인증 RLS", () => {
         p_method: "location",
         p_lat: hall.lat,
         p_lng: hall.lng,
-        p_qr_code: null,
+        // 이 호출은 권한에서 먼저 막혀서 QR 코드 값은 쓰이지 않는다.
+        p_qr_code: "unused",
         p_now: now,
       });
 
@@ -425,7 +430,8 @@ describe("출근 인증 RLS", () => {
         p_method: "location",
         p_lat: hall.lat,
         p_lng: hall.lng,
-        p_qr_code: null,
+        // 이 호출은 권한에서 먼저 막혀서 QR 코드 값은 쓰이지 않는다.
+        p_qr_code: "unused",
         p_now: now,
       });
 

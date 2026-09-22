@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 
 export type CheckInRow = {
   id: string;
@@ -48,7 +48,7 @@ export function dayAttendanceKey(workDate: string): string[] {
 }
 
 export async function getDayAttendance(
-  client: SupabaseClient,
+  client: Db,
   workDate: string,
 ): Promise<DayAttendance> {
   const { data: day, error: dayError } = await client

@@ -6,7 +6,7 @@
 
 ## 명령
 
-저장소 루트에서 Node 22와 pnpm 8.15.2로 실행한다. 아래 아홉이 로컬과 CI가 같이 돌리는 명령이다. 정본은 [package.json](../../package.json)의 `scripts`와 [ci.yml](../../.github/workflows/ci.yml)이다.
+저장소 루트에서 Node 22와 pnpm 8.15.2로 실행한다. 아래 열이 로컬과 CI가 같이 돌리는 명령이다. 정본은 [package.json](../../package.json)의 `scripts`와 [ci.yml](../../.github/workflows/ci.yml)이다.
 
 ### `pnpm lint`
 
@@ -70,6 +70,20 @@
 - 실패할 때: 가입 한도와 로그 읽는 자리는 [integration과 e2e](#integration과-e2e)가 든다.
 - 근거 위치: CI는 테스트가 쓰는 서비스만 `supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime`으로 띄우고 `pnpm test:integration:run`을 돌린다.
 
+### `pnpm types`
+
+- 전제: 로컬 Supabase가 떠 있고 마이그레이션이 올라가 있다. 방금 표를 바꿨으면 `supabase db reset`이 먼저다 — `supabase migration up`은 이미 올린 파일을 다시 안 돌린다.
+- 실행: `pnpm types` — `scripts/generateDatabaseTypes.mts`가 `supabase gen types typescript --local --schema public --schema internal`을 부르고, 뽑은 것에 prettier를 먹여 `src/shared/api/databaseTypes.ts`에 쓴 뒤 다시 읽어 판정한다.
+- 정상 결과: `src/shared/api/databaseTypes.ts가 섰다`가 찍히고 종료 코드 0. 표가 안 바뀌었으면 작업 트리도 안 바뀐다.
+- 실패할 때: 스택이 안 떠 있으면 `supabase status`를 가리키고 멈춘다. 뽑기가 절반만 되면 어느 표·뷰·함수가 빠졌는지 찍는다 — 그 판정은 [`tests/lint/databaseTypes.ts`](../../tests/lint/databaseTypes.ts)에 있고 `pnpm test`에서도 돈다.
+- 근거 위치: PR의 `ci` 워크플로 「생성 타입이 마이그레이션과 같은지 본다」 단계.
+
+**왜 `typecheck`에 안 끼우나.** 이 명령은 Docker와 로컬 스택이 필요하다. `pnpm typecheck`는 그것 없이 돌아야 해서 CI에서도 DB를 띄운 뒤에 따로 선다 — 마이그레이션을 올리는 `pnpm test:integration:run` 다음이다.
+
+**뽑은 뒤 prettier를 먹이는 이유.** CLI가 세미콜론 없이 내놓고 저장소는 세미콜론을 쓴다. 두 단계가 한 덩이가 아니면 CI가 다시 뽑을 때마다 포맷 차이로 diff가 나서 헛빨간불이 된다.
+
+**함수 인자의 `null`.** 생성기는 함수 인자가 NULL을 받는지 모른다 — `pg_proc`에 그 정보가 없다. 그래서 NULL을 받는 인자도 non-null로 나오고, `null`을 넘기는 호출이 `tsc`에서 막힌다. 안 보내도 되는 인자는 SQL에 `default null`을 적어라. 그러면 생성 타입이 선택 인자(`p_qr_code?: string`)로 내고 호출자가 그 키를 빼고 부른다 — PostgREST가 안 보낸 인자를 SQL 기본값으로 채우니 DB에 가는 값이 같다. 기본값은 뒤쪽 인자에만 붙으니 가운데 인자가 NULL을 받아야 하면 그 자리는 캐스트밖에 없다 — 캐스트를 적기 전에 그 호출이 값을 채워 불러도 되는지 본다.
+
 ### `pnpm dev`
 
 - 전제: `pnpm install --frozen-lockfile`이 끝나 있고 `EXPO_PUBLIC_SUPABASE_URL`·`EXPO_PUBLIC_SUPABASE_ANON_KEY`가 env에 있다. 값은 번들에 박히므로 띄우기 전에 넘긴다.
@@ -102,8 +116,8 @@ pnpm exec jest --config jest.integration.config.js src/entities/profile/dals/__t
 
 현재 [ci.yml](../../.github/workflows/ci.yml)의 동작이다. 로컬에서 파일별 검증을 마친 뒤 최종 검증 범위는 이 검사와 작업별 검증 표를 함께 따른다.
 
-- `docs/`·`.claude/`·루트 마크다운만 바뀐 PR은 뒤쪽 둘(supabase 기동·integration)을 건너뛴다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨진다.
-- 나머지 PR과 main push는 Supabase 기동 → integration까지 실행한다. 현재 제외한 Supabase 서비스를 새 테스트가 필요로 하면 CI 기동 범위도 함께 맞춘다.
+- `docs/`·`.claude/`·루트 마크다운만 바뀐 PR은 뒤쪽 셋(supabase 기동·integration·생성 타입 대조)을 건너뛴다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨진다.
+- 나머지 PR과 main push는 Supabase 기동 → integration → 생성 타입 대조까지 실행한다. 현재 제외한 Supabase 서비스를 새 테스트가 필요로 하면 CI 기동 범위도 함께 맞춘다.
 - 앱을 빌드하는 단계와 e2e가 CI에 없다. 빌드는 EAS 설정과 같이 서고 e2e는 러너를 고르고 나서다.
 - PR은 추적 중인 spec·plan의 입력 변경에 대한 「영향 확인」 검사도 실행한다. 구체적인 명령과 대상은 [문서 검사](#pnpm-test에-끼는-문서-검사)에 있다.
 
@@ -139,6 +153,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 - `slug-chain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
 - `backlog-ids.ts` — 작업 ID와 선행 작업 참조
 - `route-types.ts` — 생성된 라우트 타입 선언이 온전한지. 판정 규칙 넷(모듈 보강·`__routes` 인터페이스·`href` 멤버·경로 리터럴)을 `pnpm routes:types`가 가져다 쓴다
+- `databaseTypes.ts` — 마이그레이션이 만든 표·뷰·함수가 생성 타입에 다 들었는지, 그리고 생성 타입을 안 물린 `SupabaseClient`를 직접 가져오는 파일이 남았는지. DB 없이 이름만 대조한다 — 실제로 다시 뽑아 diff를 보는 것은 CI가 한다. `pnpm types`가 판정 부분을 가져다 쓴다
 - `font-subset.ts` — 서브셋을 거친 서체 넷이 화면이 찍는 2,527자를 다 들었는지. `.ttf`의 `cmap`을 직접 읽는다 — 글자가 빠지면 그 자리가 시스템 서체로 떨어지고 앱은 안 죽어서 다른 검사가 못 잡는다. 집합의 정본이 이 파일이고 `pnpm fonts:subset`이 가져다 쓴다
 - `sources-impact.ts` — 추적 중인 문서의 입력 변경에 대한 영향 확인 판정. 추적 여부는 `spec-docs.ts`가 계산한다 — spec은 `status: approved`, plan은 제목 바로 뒤 완료 머리글(`> 완료된 작업의 당시 계획이다`)이 없으면 추적 대상이다. PR에서는 `scripts/check-sources-impact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사. **판정은 파일 단위다** — `sources`가 앵커까지 적지만 그것으로 좁히지 않는다. 정본은 절끼리 엮여 있어 한 절이 바뀌면 이웃 절의 뜻도 움직이고, 좁히면 새는 쪽으로 틀린다. 시끄러운 쪽이 맞다
 

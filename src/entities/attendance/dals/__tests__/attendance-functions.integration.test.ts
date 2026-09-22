@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { Database } from "@/shared/api/database";
 import {
   createAdminUser,
   createApprovedUser,
@@ -14,12 +15,20 @@ import {
 } from "@tests/integration/postgres";
 import { createSignedInUser } from "@tests/integration/supabase";
 
-async function rpcOrThrow(
+type FunctionName = keyof Database["public"]["Functions"];
+
+type RpcArgs<Name extends FunctionName> = [
+  Database["public"]["Functions"][Name]["Args"],
+] extends [never]
+  ? []
+  : [args: Database["public"]["Functions"][Name]["Args"]];
+
+async function rpcOrThrow<Name extends FunctionName>(
   admin: AdminUser,
-  fn: string,
-  args: Record<string, unknown>,
+  fn: Name,
+  ...rest: RpcArgs<Name>
 ): Promise<void> {
-  const { error } = await admin.client.rpc(fn, args);
+  const { error } = await admin.client.rpc(fn, ...rest);
   if (error) {
     throw error;
   }
@@ -626,6 +635,7 @@ describe("출근 인증 함수", () => {
     it("p_profile_id를 받지 않는다 — 클라이언트가 남의 이름으로 못 찍는다", async () => {
       const { dayId } = await openDayWithAssignment(admin, worker.profileId);
 
+      // 없는 인자를 일부러 넘겨 시그니처 불일치를 확인하는 자리다 — 생성 타입이 막는 게 맞다.
       const { error } = await worker.client.rpc("check_in", {
         p_profile_id: worker.profileId,
         p_day_id: dayId,
@@ -633,8 +643,7 @@ describe("출근 인증 함수", () => {
         p_method: "location",
         p_lat: hall.lat,
         p_lng: hall.lng,
-        p_qr_code: null,
-      });
+      } as unknown as Database["public"]["Functions"]["check_in"]["Args"]);
       expectRpcSignatureMismatch(error);
     });
 
@@ -648,7 +657,6 @@ describe("출근 인증 함수", () => {
         p_method: "location",
         p_lat: hall.lat,
         p_lng: hall.lng,
-        p_qr_code: null,
       });
       expect(error?.message).toBe("not_allowed");
     });
@@ -663,7 +671,6 @@ describe("출근 인증 함수", () => {
         p_method: "location",
         p_lat: hall.lat,
         p_lng: hall.lng,
-        p_qr_code: null,
       });
       expect(error?.message).toBe("window_closed");
     });
@@ -970,7 +977,6 @@ describe("사유 함수", () => {
       const { error } = await worker.client.rpc("decide_excuse", {
         p_excuse_id: excuseId,
         p_approved: true,
-        p_reason: null,
       });
       expect(error?.message).toBe("not_allowed");
     });
@@ -980,13 +986,11 @@ describe("사유 함수", () => {
       await rpcOrThrow(admin, "decide_excuse", {
         p_excuse_id: excuseId,
         p_approved: true,
-        p_reason: null,
       });
 
       const { error } = await admin.client.rpc("decide_excuse", {
         p_excuse_id: excuseId,
         p_approved: true,
-        p_reason: null,
       });
       expect(error?.message).toBe("already_decided");
     });
@@ -997,7 +1001,6 @@ describe("사유 함수", () => {
       const { error } = await admin.client.rpc("decide_excuse", {
         p_excuse_id: excuseId,
         p_approved: true,
-        p_reason: null,
       });
       expect(error).toBeNull();
 
@@ -1079,12 +1082,12 @@ describe("QR과 홀 함수", () => {
 
   describe("rotate_qr", () => {
     it("근무자가 부르면 not_allowed", async () => {
-      const { error } = await worker.client.rpc("rotate_qr", {});
+      const { error } = await worker.client.rpc("rotate_qr");
       expect(error?.message).toBe("not_allowed");
     });
 
     it("관리자가 부르면 hall_secrets가 서고 코드가 바뀐다", async () => {
-      const { error: firstError } = await admin.client.rpc("rotate_qr", {});
+      const { error: firstError } = await admin.client.rpc("rotate_qr");
       expect(firstError).toBeNull();
 
       const { data: firstRow } = await admin.client
@@ -1093,7 +1096,7 @@ describe("QR과 홀 함수", () => {
         .eq("hall_id", hallId)
         .single<{ qr_code: string; rotated_at: string }>();
 
-      const { error: secondError } = await admin.client.rpc("rotate_qr", {});
+      const { error: secondError } = await admin.client.rpc("rotate_qr");
       expect(secondError).toBeNull();
 
       const { data: secondRow } = await admin.client
@@ -1114,7 +1117,7 @@ describe("QR과 홀 함수", () => {
         .single<{ qr_code: string }>();
       const oldCode = before!.qr_code;
 
-      await rpcOrThrow(admin, "rotate_qr", {});
+      await rpcOrThrow(admin, "rotate_qr");
 
       const { dayId, workDate } = await openDayWithAssignment(
         admin,

@@ -130,13 +130,15 @@ begin
 end;
 $$;
 
+-- 뒤 셋은 인증 방법에 따라 한쪽만 온다 — 위치면 좌표, QR이면 코드다.
+-- 기본값을 적으면 생성 타입이 그 자리를 선택 인자로 내고, 안 보내는 쪽을 호출자가 빼고 부른다.
 create function public.check_in(
   p_day_id uuid,
   p_reported_at timestamptz,
   p_method text,
-  p_lat double precision,
-  p_lng double precision,
-  p_qr_code text
+  p_lat double precision default null,
+  p_lng double precision default null,
+  p_qr_code text default null
 )
   returns void
   language plpgsql
@@ -255,10 +257,11 @@ begin
 end;
 $$;
 
+-- 반려 사유는 승인일 때 비어 있다.
 create function public.decide_excuse(
   p_excuse_id uuid,
   p_approved boolean,
-  p_reason text
+  p_reason text default null
 )
   returns void
   language plpgsql

@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 export type HallLocation = {
@@ -8,7 +8,7 @@ export type HallLocation = {
 };
 
 export async function setHallLocation(
-  client: SupabaseClient,
+  client: Db,
   location: HallLocation,
 ): Promise<void> {
   const { error } = await client.rpc("set_hall_location", {

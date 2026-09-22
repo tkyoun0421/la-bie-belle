@@ -1,3 +1,4 @@
+import type { Database } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
 import { submitExcuse } from "@/entities/attendance/dals/submit-excuse";
 import {
@@ -11,10 +12,12 @@ import {
   type ApprovedUser,
 } from "@tests/integration/postgres";
 
-async function rpcOrThrow(
+type FunctionName = keyof Database["public"]["Functions"];
+
+async function rpcOrThrow<Name extends FunctionName>(
   admin: AdminUser,
-  fn: string,
-  args: Record<string, unknown>,
+  fn: Name,
+  args: Database["public"]["Functions"][Name]["Args"],
 ): Promise<void> {
   const { error } = await admin.client.rpc(fn, args);
   if (error) {

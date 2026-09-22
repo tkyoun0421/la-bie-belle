@@ -60,6 +60,13 @@ jobs:
         run: supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime
       - run: pnpm test:integration:run
         if: steps.scope.outputs.code == 'true'
+      # 마이그레이션은 위 단계가 올렸다. 그 뒤의 DB에서 다시 뽑아 커밋된 것과 같은지 본다 —
+      # 표를 바꾸고 `pnpm types`를 안 돌린 PR이 여기서 걸린다.
+      - name: 생성 타입이 마이그레이션과 같은지 본다
+        if: steps.scope.outputs.code == 'true'
+        run: |
+          pnpm types
+          git diff --exit-code -- src/shared/api/databaseTypes.ts
       # e2e가 여기 있었다. 웹을 걷으면서 같이 빠졌다 — 러너를 고르고 나서 선다(`e2e-runner`).
       # 네이티브 컴파일은 EAS 설정과 같이 온다. 위 `pnpm bundle`은 그 앞 단계인
       # JavaScript 번들만 본다 — 검증 넷이 다 초록인데 Metro가 못 묶는 일이 있었다.

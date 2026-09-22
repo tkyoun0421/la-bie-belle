@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { Database } from "@/shared/api/database";
 import {
   createApprovedUser,
   createBlockedUser,
@@ -15,10 +16,12 @@ import {
 
 type Caller = { client: SignedInUser["client"] };
 
-async function rpcOrThrow(
+type FunctionName = keyof Database["public"]["Functions"];
+
+async function rpcOrThrow<Name extends FunctionName>(
   caller: Caller,
-  fn: string,
-  args: Record<string, unknown>,
+  fn: Name,
+  args: Database["public"]["Functions"][Name]["Args"],
 ): Promise<void> {
   const { error } = await caller.client.rpc(fn, args);
   if (error) {

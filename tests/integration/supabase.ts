@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
+import type { Database, Db } from "@/shared/api/database";
 
 type LocalSupabase = {
   apiUrl: string;
@@ -47,22 +48,22 @@ function localSupabase(): LocalSupabase {
 }
 
 export type SignedInUser = {
-  client: SupabaseClient;
+  client: Db;
   userId: string;
   email: string;
   profileId: string;
 };
 
-export function createGuestClient(): SupabaseClient {
+export function createGuestClient(): Db {
   const { apiUrl, anonKey } = localSupabase();
 
-  return createClient(apiUrl, anonKey, {
+  return createClient<Database>(apiUrl, anonKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
 
 export type SignedInUserWithoutProfile = {
-  client: SupabaseClient;
+  client: Db;
   userId: string;
   email: string;
 };

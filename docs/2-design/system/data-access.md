@@ -48,9 +48,13 @@
 
 ### 생성 타입
 
-- 적용 범위: `dals`가 쓰는 생성 타입
-- 기본 계약: **타입은 표에서 뽑는다.** `supabase gen types typescript --local > src/shared/api/database.types.ts`. 파일을 저장소에 넣고 CI가 마이그레이션 뒤 다시 뽑아 diff가 0인지 본다 — 표를 바꾸고 타입을 안 뽑으면 빨간불이다. CLI 버전이 다르면 포맷이 달라 헛빨간불이 나니 CI는 로컬과 같은 버전을 박는다. `pnpm types`가 그 명령을 감싼다
-- 구현 참조: 아직 없음 — 지금은 `pnpm types`도 CI 검사도 없다. [`backlog.md`](../../backlog.md)의 `types-generation`이 세운다
+- 적용 범위: 클라이언트를 받는 모든 자리와 그것이 가리키는 표·뷰·함수
+- 기본 계약:
+  - **타입은 표에서 뽑는다.** `pnpm types`가 `supabase gen types typescript --local`을 감싸 `src/shared/api/databaseTypes.ts`를 만든다. 스키마는 `public`과 `internal` 둘이다 — 시각 경계가 든 함수의 알맹이가 `internal`에 있고 integration 테스트가 그것을 직접 부른다. CLI는 세미콜론 없이 내놓아서 뽑은 뒤 prettier를 한 번 더 먹인다
+  - 파일을 저장소에 넣고 CI가 마이그레이션 뒤 다시 뽑아 diff가 0인지 본다 — 표를 바꾸고 타입을 안 뽑으면 빨간불이다. CLI 버전이 다르면 포맷이 달라 헛빨간불이 나니 CI는 로컬과 같은 버전을 박는다
+  - **클라이언트를 받는 자리는 `Db`를 쓴다.** 생성 타입을 안 물린 `SupabaseClient`는 스키마가 `any`라 `from("없는표")`도 검사를 통과한다. 별명을 내놓는 파일 하나만 그 이름을 직접 쓰고, 나머지가 그걸 어기면 `pnpm test`가 문다
+  - **함수 인자의 nullable은 생성기가 못 적는다.** `pg_proc`에 그 정보가 없어서 NULL을 받는 인자도 non-null로 나온다. 안 보내도 되는 인자는 SQL에 `default null`을 적어라 — 그러면 생성 타입이 선택 인자로 내고 호출자가 그 키를 빼고 부른다. 기본값은 뒤쪽 인자에만 붙일 수 있으니 가운데 인자가 NULL을 받아야 하면 그 자리는 캐스트밖에 없다 — 캐스트를 적기 전에 그 호출이 값을 채워 불러도 되는지부터 본다
+- 구현 참조: [`scripts/generateDatabaseTypes.mts`](../../../scripts/generateDatabaseTypes.mts)가 뽑고, [`tests/lint/databaseTypes.ts`](../../../tests/lint/databaseTypes.ts)가 이름 대조와 맨 클라이언트를 보고, `Db`는 [`src/shared/api/database.ts`](../../../src/shared/api/database.ts)에 있다. CI 단계는 [`ci.yml`](../../../.github/workflows/ci.yml)의 「생성 타입이 마이그레이션과 같은지 본다」다
 
 ## 읽기·쓰기 경계
 

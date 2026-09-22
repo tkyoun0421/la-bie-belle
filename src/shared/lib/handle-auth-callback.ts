@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 
 export type AuthCallbackResult =
   { ok: true } | { ok: false; reason: "missing_code" | "exchange_failed" };
@@ -10,7 +10,7 @@ export type AuthCallbackResult =
  */
 export async function handleAuthCallback(
   code: string | null,
-  client: SupabaseClient,
+  client: Db,
 ): Promise<AuthCallbackResult> {
   if (!code) {
     return { ok: false, reason: "missing_code" };

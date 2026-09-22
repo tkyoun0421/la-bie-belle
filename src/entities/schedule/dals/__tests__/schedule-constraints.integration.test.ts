@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { Database } from "@/shared/api/database";
 import {
   createAdminUser,
   createApprovedUser,
@@ -15,10 +16,12 @@ function randomOffset(): number {
   return 24 + Math.floor(Math.random() * 100000);
 }
 
-async function rpcOrThrow(
+type FunctionName = keyof Database["public"]["Functions"];
+
+async function rpcOrThrow<Name extends FunctionName>(
   admin: AdminUser,
-  fn: string,
-  args: Record<string, unknown>,
+  fn: Name,
+  args: Database["public"]["Functions"][Name]["Args"],
 ): Promise<void> {
   const { error } = await admin.client.rpc(fn, args);
   if (error) {

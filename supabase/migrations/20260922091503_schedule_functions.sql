@@ -204,11 +204,12 @@ begin
 end;
 $$;
 
+-- 본식 시각은 안 정한 날이 있다.
 create function public.set_day_hours(
   p_work_date date,
   p_starts time,
   p_ends time,
-  p_ceremony time
+  p_ceremony time default null
 )
   returns void
   language plpgsql

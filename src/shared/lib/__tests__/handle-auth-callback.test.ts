@@ -1,14 +1,12 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 import { handleAuthCallback } from "@/shared/lib/handle-auth-callback";
 
-function fakeClient(exchangeResult: {
-  error: { message: string } | null;
-}): SupabaseClient {
+function fakeClient(exchangeResult: { error: { message: string } | null }): Db {
   return {
     auth: {
       exchangeCodeForSession: async () => exchangeResult,
     },
-  } as unknown as SupabaseClient;
+  } as unknown as Db;
 }
 
 describe("handleAuthCallback — code 유무와 교환 결과만 알리고 목적지는 판정하지 않는다", () => {
