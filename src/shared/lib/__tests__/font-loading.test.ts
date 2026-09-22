@@ -7,7 +7,9 @@ import {
 } from "@/shared/lib/font-loading";
 
 const GLOBALS_CSS_PATH = path.join(process.cwd(), "src/app/globals.css");
-const FONTS_DIR = path.join(process.cwd(), "assets/fonts");
+
+/** 번들에 들어가는 것은 서브셋뿐이다 — 원본은 다시 만들 때만 쓴다. */
+const FONTS_DIR = path.join(process.cwd(), "assets/fonts/subset");
 
 const EXPECTED_FONT_KEYS = [
   "WantedSans-Regular",
@@ -54,7 +56,7 @@ describe("FONT_ASSETS — useFonts 호출부가 literal require로 옮길 서체
   );
 
   it.each(EXPECTED_FONT_KEYS)(
-    "%s 키의 경로가 실제 assets/fonts/%s.ttf를 가리킨다 — 다른 굵기 파일을 잘못 물리면 여기서 잡힌다",
+    "%s 키의 경로가 실제 assets/fonts/subset/%s.ttf를 가리킨다 — 다른 굵기 파일을 잘못 물리면 여기서 잡힌다",
     (fontKey) => {
       const resolvedPath = path.join(process.cwd(), FONT_ASSETS[fontKey]);
 

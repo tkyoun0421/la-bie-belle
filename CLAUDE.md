@@ -14,6 +14,7 @@
 - `pnpm lint` / `pnpm typecheck` / `pnpm test`
 - `pnpm test:integration` — 로컬 Supabase 필요 (Docker). 스택이 떠 있으면 `pnpm test:integration:run`
 - `pnpm tokens:css` — `tokens.md` 8절에서 `src/app/globals.css`를 만든다
+- `pnpm fonts:subset` — Wanted Sans 넷을 `assets/fonts/subset/`으로 줄인다. `pyftsubset` 필요(`pipx install fonttools`), 결과는 커밋한다
 
 테스트의 선택 기준은 [strategy](docs/4-test/strategy.md), 로컬·CI 실행과 생략 조건·결과 위치는 [execution](docs/4-test/execution.md)이 정본이다. PR마다 claude 자동 리뷰가 `REVIEW.md` 기준으로 코멘트를 달고, 매주 월요일 보안 스캔이 돌아 발견을 `security` 라벨 Issue로 남긴다.
 
