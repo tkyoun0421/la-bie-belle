@@ -106,7 +106,10 @@ describe("표 RLS 대조 — 임시 디렉터리로 여러 마이그레이션 �
       "create table public.days (id uuid primary key);\n",
     );
 
-    expect(repositoryTableRlsViolations(root)).toEqual([{ table: "days" }]);
+    expect(repositoryTableRlsViolations(root)).toEqual([
+      { table: "halls" },
+      { table: "days" },
+    ]);
   });
 });
 
