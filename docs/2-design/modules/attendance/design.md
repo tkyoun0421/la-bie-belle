@@ -39,7 +39,9 @@
 
 ### 사유
 
-거절되면 새 행이다. 판정은 `decided_at`·`decision`으로 남고 글(`body`)은 본인과 관리자만 읽는다. 명단이 그리는 「확인 중·인정·결근」은 판정 결과가 필요하니 `excuse_status` 뷰(`security_invoker`)가 글만 빼고 `(day_id, profile_id, decided_at, decision)`을 전원에게 낸다.
+거절되면 새 행이다. 판정은 `decided_at`·`decision`으로 남고 글(`body`)은 본인과 관리자만 읽는다. 명단이 그리는 「확인 중·인정·결근」은 판정 결과가 필요하니 `excuse_status` 뷰가 글만 빼고 `(day_id, profile_id, submitted_at, decided_at, decision)`을 전원에게 낸다. `submitted_at`이 드는 것은 거절 뒤 다시 낸 날에 행이 여럿이라 어느 것이 최신인지 가려야 해서다.
+
+**이 뷰만 `security_definer`다.** `excuses`의 RLS가 본인과 관리자라 `security_invoker`로 두면 남의 판정이 0행이고 뷰가 있을 이유가 사라진다([읽기](../../system/data-access.md#읽기)). 대신 뷰 몸통이 `where public.is_approved()`를 들어 기본 읽기 계약을 지킨다 — 미승인자와 퇴사자는 0행이다.
 
 ### 상태는 계산한다
 

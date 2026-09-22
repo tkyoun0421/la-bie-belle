@@ -6,7 +6,9 @@
 
 ## 다음 작업
 
-**`schedule-data`가 진행 중이다** — `chore/schedule-data` 브랜치. 화면 task 전부가 `expo-scaffold`(사람 손)와 데이터 task에 이중으로 막혀 있는데 데이터 쪽은 안 막혀 있다. [plan](3-build/plans/schedule-data.md)이 AC-01~AC-11로 다 차 있고 표 아홉·뷰 하나·함수 일곱이 산출이다. 이것이 서면 `schedule-admin`·`schedule-worker`·`rehearsal`·`attendance-data`·`stats-admin`이 풀린다. 화면이 없어 spec 대상이 아니다 — [설계 안내](2-design/README.md#spec)가 「기능만 들어온다」고 정했고 ADR-005:39가 `feat/`가 아닌 브랜치를 게이트 밖에 뒀다. 그 다음은 `notification-data`(`ready`, plan 있음, 선행 없음)다.
+**데이터 task를 잇는 중이다.** 화면 task 열넷이 `expo-scaffold`(실기기 확인 — 사람 손)와 데이터 task에 이중으로 막혀 있는데 데이터 쪽은 안 막혀 있다. 그래서 거기부터 친다. 데이터 task는 화면이 없어 spec 대상이 아니라 `chore/` 브랜치로 간다 — [설계 안내](2-design/README.md#spec)가 「spec에는 기능만 들어온다」고 정했고 ADR-005:39가 `feat/`가 아닌 브랜치를 게이트 밖에 뒀다.
+
+`schedule-data`가 [PR #386](https://github.com/tkyoun0421/la-bie-belle/pull/386)으로 들어갔다. 지금은 `attendance-data`(`chore/attendance-data`)고, 그 다음이 `notification-data`(`ready`, plan 있음, 선행 없음)다. `payroll-data`는 `rehearsal`이 `expo-scaffold`에 막혀 있어 아직 못 연다.
 
 **실기기 확인이다.** [expo-scaffold](backlog.md)의 AC-01·02·03·04·05·07(재시작)·08·10이 남는다 — 시뮬레이터나 실기기에서만 닫힌다. `pnpm dev`(= `expo start`)를 사람이 별도 터미널에서 띄워 뜨는 QR을 Expo Go로 찍어야 한다. 세션 유지(앱 재시작 후 로그인), 판정이 끝날 때까지 스플래시가 서 있는지, 서체가 바뀌면서 글자가 안 뛰는지가 이 확인의 알맹이다.
 
@@ -21,6 +23,8 @@
 **새로 `ready`에 오른 것 셋 — `font-subset`·`typed-routes-gate`·`plan-sources-gate`.** 서체 서브셋으로 9.4MB를 줄이는 것, `typedRoutes`가 CI에서 안 켜져 없는 경로도 `typecheck`를 통과하는 것, plan의 `sources` 영향 검사가 `status: approved`만 보다가 실질적으로 죽어 있는 것 — 셋 다 [backlog.md](backlog.md)가 완료 조건을 든다.
 
 ## 재개 맥락
+
+**퇴사자가 승인된 사람과 똑같이 읽히고 있었다.** `is_approved()`가 `approved_at is not null and blocked_at is null`만 봤다 — [읽기 RLS 기본값](2-design/system/data-access.md#읽기-rls-기본값)은 「둘 다 `left_at`·`blocked_at`이 비어 있어야 참이다」로 정했는데 `left_at`이 빠져 있었다. 근무표 RLS 테스트가 퇴사자를 처음 세워 보면서 드러났고 `20260825162027_profiles.sql`을 직접 고쳤다(배포 전이라 마이그레이션을 고치는 것이 되돌리기다). `is_admin()`은 아직 `role`만 본다 — 같은 계약을 어기고 있고 `members-pending`이 받아뒀다.
 
 회차 기록은 `docs/log/2026-09-22.md`다. 그 앞 [2026-09-21](log/2026-09-21.md)이 Expo 골격 뼈대와 토큰 파이프라인, 러너 이사를 세웠고 서체·세션·딥링크·진입 판정을 남겼는데, 이번 회차(#382·#383·#384)가 그 남은 넷을 채웠다.
 

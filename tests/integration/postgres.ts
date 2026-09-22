@@ -1,4 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import {
   createSignedInUser,
   type SignedInUser,
@@ -61,8 +62,10 @@ export function backdateDeadline(scheduleId: string, pastDate: string): void {
 const MONTH_TAKEN = new Set(["already_exists", "already_open"]);
 const FRESH_MONTH_ATTEMPTS = 7;
 
+// 폭을 90000으로 묶는 것은 연도 네 자리를 지키려는 것이다. 다섯 자리 연도가 나오면
+// `kstInstant`가 만드는 `10278-09-01T22:00:00+09:00`을 Date가 못 읽어 NaN이 된다.
 function randomMonthOffset(): number {
-  return 24 + Math.floor(Math.random() * 100000);
+  return 24 + Math.floor(Math.random() * 90000);
 }
 
 function isMonthTaken(error: unknown): boolean {
@@ -145,4 +148,100 @@ export async function createLeftUser(): Promise<LeftUser> {
   );
 
   return { ...user, leftAt };
+}
+
+export function kstInstant(workDate: string, time: string): string {
+  return `${workDate}T${time}+09:00`;
+}
+
+function kstParts(date: Date): { workDate: string; time: string } {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  const parts: Record<string, string> = {};
+  for (const part of formatter.formatToParts(date)) {
+    parts[part.type] = part.value;
+  }
+  return {
+    workDate: `${parts.year}-${parts.month}-${parts.day}`,
+    time: `${parts.hour}:${parts.minute}:${parts.second}`,
+  };
+}
+
+export function seedAssignment(
+  dayId: string,
+  profileId: string,
+  kind: "regular" | "training" = "training",
+  slotId: string | null = null,
+): string {
+  const id = randomUUID();
+  const slotSql = slotId === null ? "null" : `'${slotId}'`;
+  execSql(
+    `insert into public.assignments (id, day_id, slot_id, position, profile_id, kind) values (:'id', :'day_id', ${slotSql}, '안내', :'profile_id', :'kind');\n`,
+    {
+      id,
+      day_id: dayId,
+      profile_id: profileId,
+      kind,
+    },
+  );
+  return id;
+}
+
+export type SeededPastDay = {
+  dayId: string;
+  scheduleId: string;
+  workDate: string;
+  startsAt: string;
+  endsAt: string;
+};
+
+export async function seedDayEndedHoursAgo(
+  admin: AdminUser,
+  hoursAgo: number,
+  startsAtTime: string = "09:00:00",
+): Promise<SeededPastDay> {
+  const target = new Date(Date.now() - hoursAgo * 3600 * 1000);
+  const { workDate, time: endsAt } = kstParts(target);
+  const month = `${workDate.slice(0, 7)}-01`;
+
+  execSql(
+    [
+      "delete from public.days where work_date = :'work_date';",
+      "insert into public.schedules (month, created_by) values (:'month', :'created_by') on conflict (month) do nothing;",
+      "insert into public.days (schedule_id, work_date, starts_at, ends_at, opened_by)",
+      "select id, :'work_date', :'starts_at', :'ends_at', :'created_by' from public.schedules where month = :'month';",
+    ].join("\n") + "\n",
+    {
+      month,
+      created_by: admin.profileId,
+      work_date: workDate,
+      starts_at: startsAtTime,
+      ends_at: endsAt,
+    },
+  );
+
+  const { data, error } = await admin.client
+    .from("days")
+    .select("id, schedule_id")
+    .eq("work_date", workDate)
+    .single<{ id: string; schedule_id: string }>();
+  if (error || !data) {
+    throw error ?? new Error("만든 날을 못 찾았다");
+  }
+
+  return {
+    dayId: data.id,
+    scheduleId: data.schedule_id,
+    workDate,
+    startsAt: startsAtTime,
+    endsAt,
+  };
 }
