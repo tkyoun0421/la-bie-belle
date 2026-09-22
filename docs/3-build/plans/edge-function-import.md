@@ -1,5 +1,7 @@
 # Deno Edge Function이 `src/`를 import할 수 있는지 확인한다
 
+> 완료된 작업의 당시 계획이다. 결론은 [notification/design.md 「푸시 보내기」](../../2-design/modules/notification/design.md#푸시-보내기)가 든다 — 완료 기록: [PR #396](https://github.com/tkyoun0421/la-bie-belle/pull/396)
+
 스파이크다. 알림의 Edge Function은 판단을 `src/features/notification/model/`의 순수 함수에 두고 얼개만 Deno에 둔다([notification/design.md](../../2-design/modules/notification/design.md#푸시-보내기)). 그 함수를 `supabase/functions` 밖에서 가져올 수 있는지가 확인 안 됐고, 되는지에 따라 CI 단계가 하나 늘거나 안 는다. 데이터 task의 첫 수라 뒤 task가 이 결과에 기댄다.
 
 ## 완료 조건

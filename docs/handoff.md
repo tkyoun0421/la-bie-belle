@@ -6,7 +6,11 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `e2e-runner`지만 `expo-scaffold`가 선행이다.** 기계만으로 닫을 수 있는 task가 지금 없다 — `ready`에 남은 것이 `e2e-runner`(선행 `expo-scaffold`)와 `edge-function-import`·`types-generation`이다. **`edge-function-import`가 유일하게 선행 없는 `ready`다** — Deno Edge Function이 `supabase/functions` 밖의 `src/`를 import할 수 있는지 보는 스파이크고 [plan](3-build/plans/edge-function-import.md)이 완료 조건을 든다. 그것이 서면 `profile-erasure`와 `notification-push`가 풀린다.
+**기계만으로 닫을 수 있는 task가 다 떨어졌다.** `ready`에 남은 것은 `e2e-runner`(선행 `expo-scaffold`)와 `types-generation`(선행 `account-data` — 그건 `done`이라 실은 풀려 있다)뿐이고, 나머지는 전부 실기기 확인이나 사람의 판단 뒤다. **다음 첫 수는 `types-generation`이다** — `pnpm types`가 `supabase gen types`를 감싸고 CI가 마이그레이션 뒤 diff 0을 보는 절차고, 정본은 [data-access.md 「생성 타입」](2-design/system/data-access.md#생성-타입)이다. 그 절이 한 절 안에서 자기를 부정한다는 것을 `claimed-guards-audit`이 남겨뒀으니 같이 푼다.
+
+**`edge-function-import`가 닫혔다 — 결론은 「못 한다」다.** edge-runtime 컨테이너가 `supabase/functions` 하나만 마운트해서(`docker inspect`로 확인) `deno.json`이 `../../src/`를 맵핑해도 그 경로가 컨테이너 안에 없다. **맵핑 자체는 돈다** — `_shared/` 안쪽을 가리키면 통했다. 심볼릭 링크도 타깃이 마운트 밖이라 끊긴다.
+
+**복사도 `cp`만으론 안 된다.** Deno가 import에 `.ts` 확장자를 요구하는데 `src/`는 확장자를 안 적어서 `Maybe add a '.ts' extension`으로 부팅이 깨진다. 확장자를 붙여 옮기니 통했다 — 복사 단계가 옮기면서 import 지정자를 고쳐야 한다는 뜻이고, 그 단계는 `notification-push`의 plan 몫이다. 결론은 [notification/design.md 「푸시 보내기」](2-design/modules/notification/design.md#푸시-보내기)가 든다. 스파이크 파일은 지웠다.
 
 **`font-subset`이 닫혔다.** Wanted Sans 넷 합계가 **9,256KB에서 1,753KB로 줄었다** — 7.3MB가 설치 크기에서 빠졌고 `pnpm bundle`의 자산 목록으로 서브셋만 들어간 것을 확인했다. 원본은 `assets/fonts/`에 남고 앱은 `assets/fonts/subset/`을 읽는다.
 
