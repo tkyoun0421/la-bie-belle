@@ -139,6 +139,22 @@ describe("알림 함수 넷", () => {
         .eq("token", token);
       expect(aRows).toEqual([]);
     });
+
+    it("의사가 거짓이면 저장이 조용히 아무 일도 안 한다", async () => {
+      const fresh = await createApprovedUser();
+      await rpcOrThrow(fresh, "set_notifications_enabled", { p_on: false });
+
+      const { error } = await fresh.client.rpc("save_push_token", {
+        p_token: fnToken(),
+      });
+      expect(error).toBeNull();
+
+      const { data } = await fresh.client
+        .from("push_tokens")
+        .select("id")
+        .eq("profile_id", fresh.profileId);
+      expect(data).toEqual([]);
+    });
   });
 
   describe("remove_push_token(AC-05)", () => {

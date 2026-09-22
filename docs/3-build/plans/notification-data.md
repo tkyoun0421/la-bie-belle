@@ -96,6 +96,8 @@ sources:
 
 - 저장은 upsert다. 같은 주소가 다시 오면 **`profile_id`를 부르는 사람으로 옮기고** `created_at`을 갱신한다 — 앱이 매 진입에 보내고, 기기를 물려받은 사람이 곧 그 주소의 주인이다. `profile_id`를 안 옮기면 앞 사람의 알림이 뒤 사람의 폰에 뜬다
 - 삭제는 자기 행만이다. 남의 주소를 넣어도 안 지워진다
+- **의사가 거짓이면 저장이 아무 일도 안 한다.** 예외가 아니라 조용히 끝난다 — 앱이 매 진입에 보내는데 끈 사람의 주소가 다음 진입에 되살아나면 끄기가 안 끈 것이 된다([design.md 「기기 주소 저장과 삭제」](../../2-design/modules/notification/design.md#기기-주소-저장과-삭제)). **앱이 안 부르는 것으로 막지 않는다** — 막는 것은 화면이 아니라 데이터다([data-access.md](../../2-design/system/data-access.md#읽기-rls-기본값))
+- `profile_id`에 `on delete cascade`다. `notifications`와 같은 결이다 — 남의 기기로 푸시를 쏠 수 있는 값이 주인 없이 남지 않는다
 - 둘 다 첫 줄이 호출자 검사인데 **`is_approved()`가 아니다** — 아래 [AC-07](#ac-07)을 따른다
 - `set search_path = ''`
 
@@ -133,7 +135,7 @@ sources:
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
 | `supabase/migrations/<날짜>_notifications.sql` | 표 둘, 뷰, RLS, 인덱스, `profiles.notifications_enabled` 열 | AC-01~AC-03·AC-06 |
-| `supabase/migrations/<날짜>_notification_fns.sql` | 함수 넷과 그 호출자 검사 | AC-04~AC-07 |
+| `supabase/migrations/<날짜>_notification_functions.sql` | 함수 넷과 그 호출자 검사 | AC-04~AC-07 |
 | `src/entities/notification/dals/` | 함수 넷의 `supabase.rpc()` 래퍼. 파일 하나에 함수 하나 | AC-04~AC-06 |
 | `src/entities/notification/model/types.ts` | `kind`와 `payload`의 타입 | AC-01 |
 
