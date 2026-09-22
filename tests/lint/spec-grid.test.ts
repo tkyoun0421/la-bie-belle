@@ -218,11 +218,11 @@ describe("spec 상태 격자 대조 — 실제 저장소 회귀", () => {
     expect(repositorySpecGridDocs().length).toBeGreaterThan(0);
   });
 
-  it("지금 dashboard.md는 상태 격자가 없어 걸린다", () => {
-    const dashboard = repositorySpecGridDocs().find((doc) =>
-      doc.file.endsWith("dashboard.md"),
-    );
+  it("승인 전 spec 전부가 상태 격자를 든다", () => {
+    const broken = repositorySpecGridDocs()
+      .filter((doc) => doc.violations.length > 0)
+      .map((doc) => ({ file: doc.file, violations: doc.violations }));
 
-    expect(dashboard?.violations.length).toBeGreaterThan(0);
+    expect(broken).toEqual([]);
   });
 });

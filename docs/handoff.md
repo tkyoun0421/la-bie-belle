@@ -14,9 +14,11 @@
 
 **`claimed-guards-audit`가 닫혔다**([PR #390](https://github.com/tkyoun0421/la-bie-belle/pull/390)). 정본이 「기계가 지킨다」고 적은 주장 서른다섯을 훑어 구멍 셋을 메웠다 — RLS를 안 켠 표를 잡는 `tests/lint/table-rls.ts`(정본이 파일 이름까지 적어뒀는데 없었다), `profile_private.phone`의 형식 제약과 `submit_profile`이 먼저 던지는 `invalid_phone`, `notifications`의 `(profile_id, kind, subject_id)` 부분 unique다. **알맹이는 서른다섯 중 서른이 지키는 물건의 이름을 안 적는다는 것이다** — 「검사가 잡는다」까지만 적히면 맞는지 틀리는지 확인할 길이 없고, 지금까지의 사고 셋이 전부 그 서른 쪽에서 났다. 새 주장을 적을 때 파일 이름을 같이 적는 것이 이 감사가 남긴 습관이다. 지금 못 메우는 다섯은 PR 본문에 사실로만 남겼다 — `runtime.md`의 `stale`은 `schedule-requests`가, [생성 타입](2-design/system/data-access.md#생성-타입)이 한 절 안에서 자기를 부정하는 것은 `types-generation`이 받아뒀고, `security_definer_view` 예외는 우리 CI가 Supabase linter를 안 돌려 대상이 없으며, `attendance`·`schedule`·`payroll`·`swap`의 `design.md`에는 「코드와의 차이」 절 자체가 없다.
 
-**지금은 spec을 채우는 중이다.** 화면 task 열넷이 실기기에 막혀 구현을 못 하니 그 앞 단계를 먼저 끝낸다. spec에 「상태 격자」와 「검증 층」을 더했고([2-design/README.md](2-design/README.md#spec)) `tests/lint/spec-grid.ts`가 그 여덟 줄이 찼는지 본다. account 넷(`profile-form`·`members-pending`·`profile-screen`·`members`)이 새 양식으로 섰다.
+**spec 스물하나가 다 섰다.** 화면이 있는 task 전부다 — 남은 미작성은 cron·Edge Function·배포 문서처럼 화면이 없는 것들이다. 양식에 「상태 격자」 여덟 줄과 AC마다의 「검증 층」이 들어갔고([2-design/README.md](2-design/README.md#spec)) `tests/lint/spec-grid.ts`가 그것이 찼는지 본다 — 회귀 단언이 「승인 전 spec 전부가 격자를 든다」다.
 
-**남은 열둘은 「쓰기」가 아니라 「옮기기」다.** `3-build/plans/`의 살아 있는 plan 열둘이 이미 완료 조건 104개를 품고 있다 — ADR-005:51이 「완료 조건은 이제 항상 spec에 산다」고 정했는데 그 자리를 plan이 먹었다. 그래서 할 일은 plan의 AC를 spec으로 옮기며 상태 격자와 검증 층을 더하고, plan에는 바꿀 파일·순서·리스크만 남기는 것이다. plan의 AC 앵커를 가리키는 외부 링크는 다섯뿐이고 넷은 이미 완료된 plan이라 이사 비용은 낮다. plan이 아예 없는 둘은 `attendance-qr`·`attendance-checkin`이고 이쪽은 처음부터 쓴다.
+**같이 고친 것이 자리다.** 살아 있는 기능 plan 열둘이 완료 조건 104개를 품고 있었다 — [3-build/README.md](3-build/README.md)가 「완료 조건은 spec과 `2-design/`이 정본이라 여기 다시 적지 않는다」고 이미 적었는데 지키는지 볼 수 있는 문장이 아니었다. 그 판정을 절 이름으로 풀었다 — **기능 plan에 `## 완료 조건` 절이 있으면 그 기능의 spec이 없다는 뜻**이고, 열둘은 `## 구현 산출물`이 됐다. AC 번호는 그대로라 `attendance-excuse`가 무는 `schedule-worker.md#ac-09`가 살아 있다.
+
+**다음 첫 수는 spec 승인이다.** 스물이 `status: draft`고 `spec-gate.py`가 `approved`만 통과시킨다 — 지금 상태로는 `feat/<슬러그>` 브랜치에서 `src/`를 한 줄도 못 고친다. 승인은 총괄이 문서를 읽고 찍는 판정이라 세션이 대신하지 않는다. 읽는 순서는 계정 넷 → 근무표 다섯 → 출근 인증 셋 → 급여 셋 → 알림 둘 → system 셋이 선행 순서와 같다.
 
 **그 뒤가 `typed-routes-gate`다.** `app.json`이 `typedRoutes: true`인데 `.expo/types/`가 CI에 없어서 `Href`가 그냥 `string`으로 떨어진다 — 없는 경로를 적어도 `pnpm typecheck`가 통과한다. 위 감사가 말한 「이름 없는 주장」과 같은 종류다. 그 뒤가 `font-subset`이다.
 

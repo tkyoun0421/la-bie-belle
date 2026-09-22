@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/notification-list.md
   - ../../2-design/modules/notification/screens/notifications.md
   - ../../2-design/modules/notification/screens/notifications.md#알림-제목
   - ../../2-design/modules/notification/design.md#읽음-찍기
@@ -33,7 +34,9 @@ sources:
 - **문장이 여기 산다.** 스물셋의 문장이 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표에 있고 대시보드도 같은 것을 쓴다. **문장을 조립하는 함수가 이 task의 산출이고 대시보드가 그것을 가져다 쓴다**
 - **지난 것을 안 지운다**([NTF-026](../../2-design/modules/notification/README.md#ntf-026)). 그래서 목록이 계속 길어지고 페이지로 끊어 읽는다 — 50건이다
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/notification-list.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 

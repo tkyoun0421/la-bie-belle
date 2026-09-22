@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/schedule-admin.md
   - ../../2-design/modules/schedule/screens/schedule-admin.md#관리자-홈
   - ../../2-design/modules/schedule/screens/schedule-admin.md#달-근무표-만들기
   - ../../2-design/modules/schedule/screens/schedule-admin.md#월-달력
@@ -78,7 +79,9 @@ sources:
 
 지금 코드에는 `/admin`이 하나도 없다. 라우트는 `/`·`/login`·`/pending`·`/blocked`·`/left`·`/auth/*`뿐이다. `src/shared/ui/`는 Button·Card뿐이라 앱바·ListRow·바텀시트·Tabs·Badge·알림 블록·BottomCTA·Input·토스트·빈 상태가 없고, 달력 그리드는 이 화면이 처음 세운다. 관리자 경로 보호와 게이트의 `role`은 `members-pending`·`members`의 AC-10이 만든다.
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/schedule-admin.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 

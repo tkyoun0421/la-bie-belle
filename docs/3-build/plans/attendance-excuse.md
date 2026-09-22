@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/attendance-excuse.md
   - ../../2-design/modules/attendance/screens/excuse.md#목적과-진입
   - ../../2-design/modules/attendance/screens/excuse.md#화면-상태와-흐름
   - ../../2-design/modules/attendance/screens/excuse.md#사유-시트-짜임
@@ -43,7 +44,9 @@ sources:
 
 `/admin/approvals`의 껍데기는 [`schedule-requests`](schedule-requests.md)의 AC-08이 근무 취소 줄과 함께 먼저 세운다. 이 task는 그 목록에 **사유 줄을 더한다** — 목록이 종류로 탭을 안 가르니([목록 짜임](../../2-design/system/screens/approvals.md#목록-짜임)) 같은 자리가 넓어진다.
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/attendance-excuse.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 

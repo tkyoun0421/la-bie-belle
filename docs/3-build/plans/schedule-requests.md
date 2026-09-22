@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/schedule-requests.md
   - ../../2-design/modules/schedule/design.md#요청
   - ../../2-design/modules/schedule/design.md#근무-취소
   - ../../2-design/modules/schedule/design.md#근무-요청-보내기
@@ -65,7 +66,9 @@ sources:
 
 `supabase/config.toml`에 pg_cron 설정이 없다. **이 task가 처음 켠다.**
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/schedule-requests.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 

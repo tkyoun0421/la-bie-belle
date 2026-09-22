@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/payroll-view.md
   - ../../2-design/modules/payroll/screens/payroll.md#급여-조회
   - ../../2-design/modules/payroll/screens/payroll.md#급여-조회-짜임
   - ../../2-design/modules/payroll/screens/payroll.md#기간-세그먼트
@@ -52,7 +53,9 @@ sources:
 
 지금 코드에는 `/payroll`이 없다. 탭 바는 [`schedule-worker`](schedule-worker.md)가 세웠다.
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/payroll-view.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 

@@ -1,5 +1,6 @@
 ---
 sources:
+  - ../../2-design/spec/rehearsal.md
   - ../../2-design/modules/schedule/design.md#소유-데이터
   - ../../2-design/modules/schedule/design.md#자격
   - ../../2-design/modules/schedule/design.md#리허설
@@ -51,7 +52,9 @@ sources:
 
 지금 코드에는 리허설이 하나도 없다. `position_grants` 표는 [`schedule-data`](schedule-data.md)가 세우고 `grant_position` 함수는 [`schedule-assign`](schedule-assign.md)이 낸다 — 이 task는 그 `position` 열에 `'리허설'` 값이 도는 길만 낸다.
 
-## 완료 조건
+## 구현 산출물
+
+> 관찰 가능한 완료 조건은 [spec](../../2-design/spec/rehearsal.md)이 든다. 여기 있는 것은 그 조건을 세우는 파일·함수·계산이고, 아래 번호를 「변경 파일」과 「검증 방법」 표가 가리킨다.
 
 ### AC-01
 
