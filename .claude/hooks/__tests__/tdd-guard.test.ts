@@ -59,11 +59,11 @@ const allowed = 0;
 
 beforeAll(() => {
   projectDir = mkdtempSync(join(tmpdir(), "tdd-guard-"));
-  write("tests/e2e/home.spec.ts", "");
+  write("tests/e2e/home.yaml", "");
   write("src/shared/lib/utils.ts", "export function cn() {}");
   write("src/shared/lib/__tests__/utils.test.ts", "");
   write("src/screens/orders/__tests__/placeholder", "");
-  write("tests/e2e/orders.spec.ts", "");
+  write("tests/e2e/orders.yaml", "");
   write("src/entities/payroll/dals/__tests__/payroll.integration.test.ts", "");
   write("tests/lint/paired.test.ts", "");
 });
@@ -218,7 +218,7 @@ describe("유닛 훅", () => {
 });
 
 describe("e2e 훅", () => {
-  it("새 라우트에 spec이 없으면 막는다", () => {
+  it("새 라우트에 플로우가 없으면 막는다", () => {
     expect(run("tdd-guard-e2e.py", "src/app/cart/index.tsx", "")).toBe(blocked);
   });
 
@@ -226,21 +226,30 @@ describe("e2e 훅", () => {
     expect(run("tdd-guard-e2e.py", "src/app/cart.tsx", "")).toBe(blocked);
   });
 
-  it("screens 슬라이스에 spec이 없으면 막는다", () => {
+  it("screens 슬라이스에 플로우가 없으면 막는다", () => {
     expect(
       run("tdd-guard-e2e.py", "src/screens/cart/ui/CartScreen.tsx", ""),
     ).toBe(blocked);
   });
 
-  it("루트 화면은 home spec으로 짝을 찾는다", () => {
+  it("루트 화면은 home 플로우로 짝을 찾는다", () => {
     expect(run("tdd-guard-e2e.py", "src/app/index.tsx", "")).toBe(allowed);
     expect(run("tdd-guard-e2e.py", "src/app/_layout.tsx", "")).toBe(allowed);
   });
 
-  it("짝 spec이 있는 슬라이스는 통과시킨다", () => {
+  it("짝 플로우가 있는 슬라이스는 통과시킨다", () => {
     expect(
       run("tdd-guard-e2e.py", "src/screens/orders/ui/OrdersScreen.tsx", ""),
     ).toBe(allowed);
+  });
+
+  /** 러너가 Maestro라 플로우는 YAML이다 — `.spec.ts`를 찾으면 영영 못 찾는다. */
+  it("찾는 짝은 YAML이다", () => {
+    const result = spawn("tdd-guard-e2e.py", "src/app/cart.tsx", "");
+
+    expect(result.status).toBe(blocked);
+    expect(result.stderr).toContain("tests/e2e/cart.yaml");
+    expect(result.stderr).not.toContain(".spec.ts");
   });
 
   it("화면이 아닌 파일은 보지 않는다", () => {
@@ -253,10 +262,23 @@ describe("e2e 훅", () => {
   });
 
   /**
-   * e2e 러너를 아직 안 골랐다(ADR-011이 Maestro와 Detox를 열어뒀다). 쓸 자리가
-   * 없는데 화면마다 spec을 요구하면 모든 화면 task가 첫 수에서 막힌다.
+   * 화면은 `.tsx`다(ADR-001). `src/screens/` 아래 순수 계산 `.ts`를 화면으로
+   * 읽으면 플로우가 있을 수 없는 파일을 막는다 — 관찰 006이 이것이었다.
    */
-  it("tests/e2e가 아예 없으면 아무것도 안 막는다", () => {
+  it("screens 아래 순수 `.ts`는 화면이 아니다", () => {
+    expect(run("tdd-guard-e2e.py", "src/screens/cart/model/total.ts", "")).toBe(
+      allowed,
+    );
+    expect(
+      run("tdd-guard-e2e.py", "src/screens/cart/__tests__/total.test.ts", ""),
+    ).toBe(allowed);
+  });
+
+  /**
+   * 러너가 선 뒤로는 `tests/e2e/`가 없는 것이 면제 사유가 아니다 — 디렉터리를
+   * 지워 게이트를 끄는 자리를 남기지 않는다.
+   */
+  it("tests/e2e가 없어도 라우트를 막는다", () => {
     const emptyDir = mkdtempSync(join(tmpdir(), "tdd-guard-no-e2e-"));
 
     const result = spawnSync("python3", [join(hooksDir, "tdd-guard-e2e.py")], {
@@ -271,7 +293,7 @@ describe("e2e 훅", () => {
       encoding: "utf8",
     });
 
-    expect(result.status).toBe(allowed);
+    expect(result.status).toBe(blocked);
   });
 });
 

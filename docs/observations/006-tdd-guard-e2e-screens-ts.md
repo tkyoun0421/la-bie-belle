@@ -1,8 +1,8 @@
 ---
-status: open
+status: actioned
 target: .claude/hooks/tdd-guard-e2e.py
 date: 2026-09-06
-resolved:
+resolved: 2026-09-23
 ---
 
 # screens 아래 순수 .ts까지 e2e 스펙을 요구한다
@@ -14,6 +14,8 @@ login-screens 회차에서 unit-test-writer가 `src/screens/pending/model/__test
 ## 고침
 
 `spec_name()`의 `src/screens/` 분기가 `.tsx` 파일일 때만 화면 이름을 돌려주게 좁힌다. 로직 `.ts`의 테스트 짝은 `tdd-guard-unit.py`가 이미 지키는 축이라 겹침도 구멍도 없다.
+
+**고쳤다.** `.tsx` 판정을 `spec_name()` 맨 앞으로 올려 `src/screens/`와 `src/app/` 두 분기가 같이 물려받게 했고, 슬라이스 이름은 디렉터리일 때만 뽑는다. 짝 테스트에 `src/screens/<이름>/model/*.ts`와 그 `__tests__/*.test.ts`가 통과하는 단언을 더했다. 러너를 Maestro로 고른 PR에 실었다 — 같은 함수의 다른 줄을 고치는 일이라 갈라서 두 번 만지지 않았다.
 
 ## 원칙
 

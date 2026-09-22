@@ -2,11 +2,11 @@
 
 실행 전제와 명령, 훅과 문서 검사, 실패 진단, 결과 찾는 자리가 산다. 검증 방법 선택과 완료 판정은 [strategy](strategy.md), 계획·결과 작성법은 [README](README.md)를 따른다.
 
-**여기 적힌 명령은 지금 저장소가 돌리는 것이다.** [Expo 골격](../3-build/plans/expo-scaffold.md)이 서는 중이라 아직 안 옮겨진 자리가 하나 있다 — 걷어낸 e2e가 Maestro나 Detox로 간다. 그것이 정해지면 이 문서가 따라간다.
+**여기 적힌 명령은 지금 저장소가 돌리는 것이다.** 하나는 기계가 아직 못 돌린다 — [`pnpm e2e`](#pnpm-e2e)는 설치 가능한 앱을 요구하고 그 빌드가 없다([Expo 골격](../3-build/plans/expo-scaffold.md)).
 
 ## 명령
 
-저장소 루트에서 Node 22와 pnpm 8.15.2로 실행한다. 아래 열이 로컬과 CI가 같이 돌리는 명령이다. 정본은 [package.json](../../package.json)의 `scripts`와 [ci.yml](../../.github/workflows/ci.yml)이다.
+저장소 루트에서 Node 22와 pnpm 8.15.2로 실행한다. 아래 열하나가 로컬과 CI가 돌리는 명령이다. 정본은 [package.json](../../package.json)의 `scripts`와 [ci.yml](../../.github/workflows/ci.yml)이다.
 
 ### `pnpm lint`
 
@@ -92,9 +92,23 @@
 - 실패할 때: NativeWind가 CSS를 빌드 때 읽으니 `globals.css`가 네이티브 컴파일러가 안 받는 문법을 들면 여기서 던진다. 번들이 안 만들어지는 자리는 [`pnpm bundle`](#pnpm-bundle)이 CI에서 먼저 잡는다.
 - 근거 위치: 대화형이라 CI 단계가 없다. 네이티브 컴파일을 검사에 넣는 자리는 EAS 설정과 같이 선다.
 
-### e2e
+### `pnpm e2e`
 
-**지금 없다.** Playwright를 Expo로 옮기며 걷었고 Maestro와 Detox 중 무엇을 쓸지는 아직 안 정했다 — 화면이 하나도 없어 볼 것이 없어서다([expo-scaffold](../3-build/plans/expo-scaffold.md)). 첫 화면 task가 서기 전에 정한다.
+- 전제: Maestro CLI가 PATH에 있고(`curl -Ls "https://get.maestro.mobile.dev" | bash`, 버전을 박으려면 `MAESTRO_VERSION`을 앞에 준다) JVM이 깔려 있다. **설치 가능한 앱이 기기나 시뮬레이터에 올라가 있어야 한다** — Maestro는 `appId`로 앱을 찾아 띄우고 Expo Go는 제 `appId`로 뜬다. 그 빌드는 EAS 설정과 같이 선다.
+- 실행: `pnpm e2e` — `maestro test tests/e2e/`. 한 플로우만 돌릴 땐 `pnpm exec maestro test tests/e2e/login.yaml`.
+- 정상 결과: 플로우마다 커맨드가 초록으로 지나간다.
+- 실패할 때: 어느 커맨드에서 멈췄는지와 그때 화면을 Maestro가 남긴다. `assertVisible`이 못 찾으면 셀렉터부터 본다 — **텍스트 셀렉터는 정규식이다.** 일부만 맞히려면 `.*`를 앞뒤에 붙이고 `$`·`[` 같은 글자는 이스케이프한다.
+- 근거 위치: CI 단계가 없다 — 아래 [CI와 결과 위치](#ci와-결과-위치)의 한계에 든다. 지금은 손으로 돌린 결과를 [evidence](README.md#evidence)에 남긴다.
+
+러너를 Maestro로 고른 근거와 받아들인 비용은 [ADR-013](../2-design/adr/ADR-013-e2e-runner-maestro.md)이다.
+
+**플로우 이름은 훅이 정한다.** `tdd-guard-e2e.py`가 고친 화면에서 이름을 뽑아 `tests/e2e/<이름>.yaml`을 찾는다 — `src/app/login.tsx`면 `login.yaml`이고, 디렉터리를 대표하는 `index.tsx`·`_layout.tsx`는 그 디렉터리 이름, 최상위면 `home`이다. `src/screens/<이름>/`은 그 슬라이스 이름이다.
+
+**`appId`는 플로우마다 적는다.** Maestro의 워크스페이스 `config.yaml`이 받는 키가 아니다 — 앱 ID가 바뀌면 플로우 전부가 따라 바뀐다.
+
+**지금 플로우는 하나다.** `login.yaml`이 세션 없는 차가운 시작이 로그인 화면에 서는지 본다. **아직 한 번도 돌리지 않았다** — 올릴 앱이 없다. 나머지 라우트는 플로우가 없어서 고치려 들면 훅이 막는다. 그것이 이 자리가 서기 전까지 안 물던 게이트다.
+
+**세션을 심는 방법은 안 정했다.** Maestro는 앱 내부를 안 봐서 코드로 세션을 넣을 수 없다. 로그인 뒤 화면에 처음 닿는 task가 정한다.
 
 ### 파일을 골라 실행
 
@@ -118,7 +132,7 @@ pnpm exec jest --config jest.integration.config.js src/entities/profile/dals/__t
 
 - `docs/`·`.claude/`·루트 마크다운만 바뀐 PR은 뒤쪽 셋(supabase 기동·integration·생성 타입 대조)을 건너뛴다. lint·format·typecheck·단위 테스트는 그때도 돈다 — 문서가 테스트 입력이라 문서만 바꿔도 깨진다.
 - 나머지 PR과 main push는 Supabase 기동 → integration → 생성 타입 대조까지 실행한다. 현재 제외한 Supabase 서비스를 새 테스트가 필요로 하면 CI 기동 범위도 함께 맞춘다.
-- 앱을 빌드하는 단계와 e2e가 CI에 없다. 빌드는 EAS 설정과 같이 서고 e2e는 러너를 고르고 나서다.
+- 앱을 빌드하는 단계와 e2e가 CI에 없다. 러너는 Maestro로 정해졌지만([ADR-013](../2-design/adr/ADR-013-e2e-runner-maestro.md)) 돌릴 앱 파일이 없다 — 빌드 단계가 EAS 설정과 같이 서고 e2e가 그 뒤에 붙는다.
 - PR은 추적 중인 spec·plan의 입력 변경에 대한 「영향 확인」 검사도 실행한다. 구체적인 명령과 대상은 [문서 검사](#pnpm-test에-끼는-문서-검사)에 있다.
 
 | 근거 | 현재 위치와 한계 |
@@ -135,7 +149,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 
 - **`spec-gate.py`** — `feat/<슬러그>` 브랜치에서 `src/`를 고치려면 `docs/2-design/spec/<슬러그>.md`가 `status: approved`여야 한다. `feat/`가 아닌 브랜치(문서·리팩터링·수리)는 게이트 밖이다.
 - **`tdd-guard-unit.py`** — `src/`·`tests/lint/`의 실행 코드를 export하는 `.ts`에 짝 테스트를 요구한다. `src/`는 같은 레벨 `__tests__/<이름>.test.ts` 또는 `<이름>.integration.test.ts`, `tests/lint/`는 형제 테스트를 찾는다. `src/app/`·`src/shared/ui/`, 타입 선언·테스트 파일은 예외다. `tests/lint/rule-check.ts`를 고치려면 먼저 짝 테스트가 필요하다. `src/app/`의 예외는 위임만 남는 구조를 전제로 한다.
-- **`tdd-guard-e2e.py`** — `src/screens/` 아래 순수 `.ts`도 화면으로 오판해 `tests/e2e/<이름>.spec.ts`를 요구할 수 있다. 관찰 006이 열려 있다.
+- **`tdd-guard-e2e.py`** — 화면을 고치려면 `tests/e2e/<이름>.yaml`이 있어야 한다. 이름을 뽑는 규칙은 [`pnpm e2e`](#pnpm-e2e)에 있다. `.tsx`만 화면으로 본다 — `src/screens/` 아래 순수 `.ts`는 밖이다.
 - **pre-commit(`.githooks/`)** — 시크릿 패턴을 막고 staged 파일의 포맷을 고쳐 다시 올린다. 일부만 staged된 파일이 포맷에 어긋나면 고치지 않고 막는다 — 그때는 `pnpm format` 뒤 직접 `git add` 한다.
 
 편집 훅은 테스트 파일의 존재를 검사한다. 실패 테스트 실행이나 단언의 품질까지 증명하지 않는다. 실제 실패·통과 확인은 작성자·구현자와 리뷰가 맡는다.
@@ -185,7 +199,7 @@ integration이 스키마·함수를 찾지 못하면 마이그레이션의 적�
 - 로컬 Docker가 떠 있어야 한다. `pnpm test:integration`이 `supabase start`부터 한다.
 - 데이터 준비·정리와 요청 제한은 [테스트 데이터](#테스트-데이터)를 따른다.
 - `supabase/config.toml`의 analytics가 꺼져 있어 Studio에 Logs 탭이 없다. 로그는 `docker logs supabase_db_la-bie-belle`로 읽는다. RLS 조회가 빈 결과인 경우처럼 거부가 항상 로그 오류로 남는 것은 아니므로 사용자 세션과 실제 결과를 함께 확인한다.
-- e2e는 역할과 이름으로 화면을 잡는다. 스타일을 갈아끼워도 그대로 통과해야 한다.
+- e2e는 화면에 보이는 글자로 조각을 잡는다. 글자가 여러 자리에 같이 나와 애매하면 `testID`를 붙이고 그것으로 잡는다. 어느 쪽이든 스타일을 갈아끼워도 그대로 통과해야 한다.
 
 ## 테스트 데이터
 

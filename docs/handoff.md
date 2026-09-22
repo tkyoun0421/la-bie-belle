@@ -6,7 +6,15 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `e2e-runner`다.** Maestro와 Detox 중 하나를 골라 첫 스펙을 세워야 `tdd-guard-e2e.py`가 다시 문다 — 지금은 `tests/e2e/`를 못 찾아 아무것도 안 막는다. 선행이 `expo-scaffold`(실기기 확인 — 사람 손)로 걸려 있지만 러너 선택과 첫 스펙 자체는 화면 없이도 선다. 그 밖에 기계만으로 닫을 수 있는 task가 다시 떨어졌다.
+**다음 첫 수는 사람 손이다 — 기계만으로 닫을 task가 없다.** `expo-scaffold`의 실기기 확인과 `sian-native-pass`의 시안 승인, 그리고 총괄이 정할 결정 둘([navigation Q-03](2-design/system/navigation.md#q-03)·[runtime Q-01](2-design/system/runtime.md#q-01))이 남는다. `ready`로 선 화면 task 넷(`profile-form`·`members-pending`·`profile-screen`·`members`)은 전부 `expo-scaffold`를 선행으로 들어서 그 확인 뒤에 풀린다.
+
+**`e2e-runner`가 닫혔다 — 러너는 Maestro다.** 근거는 [ADR-013](2-design/adr/ADR-013-e2e-runner-maestro.md)이고 셋이다. Expo가 자기 Detox 템플릿을 지우고 공식 e2e 문서로 Maestro를 들었다. Detox는 `expo prebuild`로 네이티브 디렉터리를 꺼내라고 해서 ADR-011의 관리 흐름 선택을 되돌린다. Detox의 딥링크에 안드로이드·iOS 양쪽 열린 버그가 있고 우리 여정의 시작점이 거기다 — 종이 QR과 OAuth 콜백이 딥링크다. 뒤집을 수 있었던 한 가지(앱을 죽이고 상태를 남긴 채 다시 띄우기)는 `stopApp`·`killApp`과 `clearState` 없는 `launchApp`으로 닫혔다.
+
+**게이트가 다시 문다.** `tests/e2e/`가 서면서 `tdd-guard-e2e.py`의 「쓸 자리가 없으면 아무것도 안 막는다」 면제가 사라졌다 — 디렉터리가 없어도 이제 막는다. 찾는 짝을 `.spec.ts`에서 `.yaml`로 바꿨고 [관찰 006](observations/006-tdd-guard-e2e-screens-ts.md)을 같은 PR에서 닫았다(`.tsx`만 화면으로 본다 — `src/screens/` 아래 순수 계산 `.ts`가 화면으로 오판되던 자리다). 플로우는 `login.yaml` 하나뿐이니 **나머지 라우트를 고치려 들면 훅이 막는다.** 그것이 이 task가 세운 압력이고, 막히면 그 화면의 플로우를 먼저 쓰는 것이 답이다.
+
+**한 번도 안 돌렸다.** Maestro는 기기나 시뮬레이터에 올라간 앱을 `appId`(`com.labiebelle.app`)로 찾아 띄우는데 그 EAS 빌드가 없다. Expo 공식 문서도 e2e에 설치 가능한 `.apk`·`.app`을 요구한다. CI 단계를 못 세운 이유도 같다.
+
+**세션을 심는 방법이 열린 채 남았다.** Maestro는 앱 내부를 안 봐서 코드로 세션을 넣을 수 없고, 웹 시절 쿠키 헬퍼는 같이 걷혔다. 로그인 뒤 화면에 처음 닿는 task가 딥링크·화면 조작·테스트용 경로 중에서 정한다. `strategy.md`의 「세션을 심어 화면으로 바로 들어가는 헬퍼」 문장이 있는 헬퍼를 가리키고 있었고 그것을 고쳤다.
 
 **`file-naming`이 닫혔다 — 규약은 셋이다.** 부르는 이름이 있는 파일은 그 이름을 쓴다. 컴포넌트(`.tsx`)는 PascalCase(JSX가 `<NotBuiltYet />`으로 부른다), 훅은 그 훅 이름과 같은 camelCase(`useAuthGate.ts`), 나머지는 kebab-case다. **판정은 이름 꼴이 아니라 파일이 무엇을 담았는지로 한다** — `.tsx`는 ADR-001이 더미 UI로 못박아서 곧 컴포넌트고, `export function use[A-Z]`를 내놓으면 훅이다. 정본은 [CLAUDE.md](../CLAUDE.md)의 「코드 구조」고 `tests/lint/file-naming.ts`가 `src`·`tests`·`scripts`·`eslint-rules`에서 본다. 훅 판정에서 `tests/`를 뺐다 — 거기 픽스처가 훅 코드를 글자로 들고 있어서 내용으로 판정하면 검사 파일들이 전부 훅으로 읽힌다.
 
@@ -24,7 +32,7 @@
 
 **생성기가 함수 인자의 nullable을 못 적는다.** `pg_proc`에 그 정보가 없어서 NULL을 받는 인자도 non-null로 나온다. `check_in`의 `p_lat`·`p_lng`·`p_qr_code`와 `decide_excuse`의 `p_reason`이 그 자리고, SQL에 `default null`을 적어 생성 타입이 선택 인자로 내게 했다 — 호출자가 그 키를 빼고 부르면 PostgREST가 SQL 기본값으로 채워서 DB에 가는 값이 같다. 배포 전이라 `20260922091505_attendance_functions.sql`을 직접 고쳤다(`is_approved()` 때와 같은 판단이다).
 
-**`ready`에 기계만으로 닫을 것이 다시 생겼다.** 위 파일 이름 규약과 `e2e-runner`(선행 `expo-scaffold`)다. 나머지는 전부 실기기 확인이나 사람의 판단 뒤다.
+**`ready`에 기계만으로 닫을 것이 안 남았다.** 남은 것은 전부 실기기 확인이나 사람의 판단 뒤다.
 
 **`edge-function-import`가 닫혔다 — 결론은 「못 한다」다.** edge-runtime 컨테이너가 `supabase/functions` 하나만 마운트해서(`docker inspect`로 확인) `deno.json`이 `../../src/`를 맵핑해도 그 경로가 컨테이너 안에 없다. **맵핑 자체는 돈다** — `_shared/` 안쪽을 가리키면 통했다. 심볼릭 링크도 타깃이 마운트 밖이라 끊긴다.
 
@@ -47,8 +55,6 @@
 **구글 로그인 왕복은 별도로 막혀 있다.** 로컬 Supabase에 구글 프로바이더가 없어 `/auth/v1/authorize`가 400으로 끝난다 — 실 Supabase 프로젝트와 구글 OAuth 클라이언트가 서야 보이고, 그 자리는 [environments.md Q-01·Q-03](5-deploy/environments.md#q-01)이다.
 
 **`sian-native-pass`도 `active`로 남아 있다.** 시안 열여섯이 ADR-012(브랜드 파랑, 헐거운 밀도) 기준으로 갱신돼 아티팩트로 올라갔고 사람의 승인을 기다린다.
-
-**`e2e-runner`는 `ready`고 `expo-scaffold`가 선행이다.** 지금 `tdd-guard-e2e.py`는 `tests/e2e/`를 못 찾아 아무것도 안 막는 상태다 — 이 task가 도구(Maestro나 Detox)를 골라 첫 스펙을 세워야 게이트가 다시 문다.
 
 **`plans-restate`는 `blocked`고 `expo-scaffold`가 선행이다.** 남은 plan 열둘이 골격 위에서 파일 배치와 검증 명령을 채우길 기다린다.
 

@@ -8,12 +8,13 @@
 
 **Expo로 옮기는 중이다** — 근거는 [ADR-011](docs/2-design/adr/ADR-011-expo-native-app.md)이다. 골격이 서는 중이고 [expo-scaffold](docs/3-build/plans/expo-scaffold.md)가 완료 조건을 든다.
 
-지금 저장소는 Expo SDK 57(Expo Router, TypeScript) + NativeWind v5 + Tailwind CSS 4, zustand, TanStack Query, Jest다. 세션은 SecureStore, 배포는 EAS로 간다. e2e는 지금 없다 — Maestro와 Detox 중 무엇일지 아직 안 정했다. Node 22, pnpm 8.15.2 — 정본은 `package.json`.
+지금 저장소는 Expo SDK 57(Expo Router, TypeScript) + NativeWind v5 + Tailwind CSS 4, zustand, TanStack Query, Jest다. 세션은 SecureStore, 배포는 EAS로 간다. e2e는 Maestro다([ADR-013](docs/2-design/adr/ADR-013-e2e-runner-maestro.md)) — 플로우는 `tests/e2e/`에 YAML로 산다. Node 22, pnpm 8.15.2 — 정본은 `package.json`.
 
 - `pnpm dev` — `expo start`. 뜨는 QR을 Expo Go로 찍는다. `EXPO_PUBLIC_SUPABASE_URL`·`EXPO_PUBLIC_SUPABASE_ANON_KEY`가 env에 있어야 한다(로컬은 `supabase status -o env`)
 - `pnpm lint` / `pnpm typecheck` / `pnpm test`
 - `pnpm test:integration` — 로컬 Supabase 필요 (Docker). 스택이 떠 있으면 `pnpm test:integration:run`
 - `pnpm types` — 로컬 DB에서 `src/shared/api/database-types.ts`를 뽑는다. 마이그레이션을 고쳤으면 `supabase db reset` 뒤에 돌린다
+- `pnpm e2e` — `tests/e2e/`의 Maestro 플로우. Maestro CLI와 기기·시뮬레이터에 올라간 앱이 필요하다 — 아직 그 빌드가 없어 못 돌린다
 - `pnpm tokens:css` — `tokens.md` 8절에서 `src/app/globals.css`를 만든다
 - `pnpm fonts:subset` — Wanted Sans 넷을 `assets/fonts/subset/`으로 줄인다. `pyftsubset` 필요(`pipx install fonttools`), 결과는 커밋한다
 

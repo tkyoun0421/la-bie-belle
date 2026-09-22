@@ -17,6 +17,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "test:integration": "supabase start && pnpm test:integration:run",
     "test:integration:run": "supabase migration up && NODE_OPTIONS=--experimental-vm-modules jest --config jest.integration.config.js",
+    "e2e": "maestro test tests/e2e/",
     "tokens:css": "node --experimental-strip-types scripts/generate-globals-css.mts",
     "fonts:subset": "node --experimental-strip-types scripts/font-subset.mts",
     "sian:inline": "node --experimental-strip-types scripts/inline-sian-font.mts"

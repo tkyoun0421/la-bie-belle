@@ -30,7 +30,7 @@ ADR-007이 웹 PWA를 고르며 다시 열 조건 셋을 적어뒀다 — 홈 �
 | --- | --- |
 | Next.js 16 App Router | Expo + Expo Router |
 | Tailwind CSS 4 + shadcn/ui | NativeWind + 직접 만든 조각 |
-| Playwright | Maestro 또는 Detox |
+| Playwright | Maestro — [ADR-013](ADR-013-e2e-runner-maestro.md)이 골랐다 |
 | vitest | Jest |
 | 쿠키와 서버 라우트로 세션 | SecureStore와 딥링크 콜백 |
 | `pnpm build` 뒤 웹 배포 | EAS Build·Submit, JS만 고칠 땐 EAS Update |
