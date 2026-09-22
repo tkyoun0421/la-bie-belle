@@ -59,7 +59,7 @@
 - 적용 범위: `dals`가 보내는 읽기 질의와 그것이 쓰는 표·뷰
 - 기본 계약:
   - **`dals`가 표를 직접 `select`하고 PostgREST 임베딩으로 join한다.** 근무표 한 달은 `from('days').select('*, slots(*), assignments(*, profiles(display_name))')` 한 질의다. `assignments`는 `days`에서 바로 임베딩한다 — `slots`를 거치면 `slot_id`가 없는 교육 배정이 빠진다. 임베딩에는 `ended_at is null` 필터를 건다 — 화면은 이력을 안 그린다. 인증은 안 든다
-  - 뷰는 둘뿐이다. `excuse_status`(사유 글을 뺀 판정)와 `open_slots`(빈 자리). 둘 다 `security_invoker`라 RLS를 그대로 탄다. Supabase linter의 `security_definer_view`가 나머지를 잡는다
+  - 뷰는 둘뿐이다. `excuse_status`(사유 글을 뺀 판정)와 `open_slots`(빈 자리). `open_slots`는 `security_invoker`라 RLS를 그대로 탄다. **`excuse_status`만 `security_definer`다** — `excuses`의 RLS가 본인과 관리자라 `security_invoker`로 두면 남의 판정이 0행이고 뷰가 존재할 이유가 사라진다. 대신 뷰 몸통이 `where public.is_approved()`를 들어 기본 읽기 계약을 지킨다. 낼 열에서 글을 이미 뺐으니 정의자 권한으로 읽어도 새는 것이 없다. Supabase linter의 `security_definer_view`가 이 뷰를 잡으니 예외로 적어둔다
   - 한 질의는 `max_rows`(지금 1000)에서 잘린다. 잘려도 오류가 아니다. 알림처럼 안 지우고 쌓이는 표는 첫 사람이 1000에 닿기 전에 `range()`를 건다 — 어느 표부터인지는 [system/runtime.md](runtime.md#읽기-범위)가 정한다
 - 이유: 달력이 인증 상태를 안 그리고 명단이 그날치를 따로 읽는다([`attendance/design.md`](../modules/attendance/design.md)). RLS가 표마다 걸려 임베딩된 표도 걸러진다 — 근무자가 `wage_rates`를 임베딩해도 자기 행만 온다. 임베딩 문자열은 런타임에서만 틀린다. 표가 바뀌면 `dals`의 integration 테스트가 잡는다 — `dals` 함수의 짝 테스트는 integration으로 쓴다. 훅은 unit도 통과시키니 이건 `implementer` 정의문과 `pr-diff`가 본다
 - 예외: `grant select`가 없는 표는 빈 결과가 아니라 오류라, 새 표를 만들 때 grant를 빠뜨리면 그 표를 임베딩한 질의 전체가 죽는다
@@ -89,12 +89,16 @@
 - 적용 범위: `public`·`internal`의 모든 쓰기 함수
 - 기본 계약:
   - 첫 줄이 호출자 검사다. `auth.uid()`로 프로필을 찾고 `is_admin()`·`is_approved()`를 본다. 검사가 없는 함수는 구멍이라 함수 PR은 그 검사의 integration 테스트를 같이 낸다
-  - 시각 판정은 `now()`다. 인자로 시각을 받지 않는다 — 기기 시계가 들어올 자리가 없다. 예외는 `check_in`의 `reported_at` 하나고 한도가 붙는다([`attendance/design.md`](../modules/attendance/design.md))
+  - 시각 판정은 `now()`다. **`public` 함수는 인자로 시각을 받지 않는다** — 기기 시계가 들어올 자리가 없다. 예외는 `check_in`의 `reported_at` 하나고 한도가 붙는다([`attendance/design.md`](../modules/attendance/design.md))
+  - **`internal` 함수는 호출자 검사를 안 한다.** 껍데기가 이미 했고, 알맹이가 다시 하면 테스트가 못 부른다. 대신 `p_profile_id` 같은 인자를 그대로 믿으니 **노출되면 그 순간 남의 이름으로 쓰는 구멍이다.** 막는 것은 `revoke all on schema internal`과 `revoke all on all functions in schema internal` 두 줄과 `config.toml`의 노출 스키마 목록이라, **그 셋이 뚫렸을 때 빨개지는 integration 테스트를 같이 낸다** — 없으면 뚫려도 아무것도 안 빨갛다
+  - **`internal` 함수는 `security invoker`다 — 위의 「`security definer`」에 대한 의도된 예외다.** 호출자 권한으로 돌아서, 스키마가 노출되고 함수 실행권이 풀려도 표의 `insert` 권한과 RLS 정책이 아직 막는다. 방어가 한 겹이 아니라 세 겹인 이유가 이것이다. **관례에 맞추려고 `security definer`로 고치면 그 두 겹이 한 번에 사라진다** — 고치지 마라
+  - **시각 경계가 든 알맹이는 `internal`에 두고 `p_now timestamptz`를 받는다.** `public` 껍데기가 `now()`를 넘기는 유일한 호출자고, `internal`은 PostgREST가 모르는 스키마라 클라이언트가 못 부른다 — 기기 시계를 막는 축은 그대로다. 이렇게 안 가르면 경계 테스트가 실제 시계에 걸린다. 인증 창이 「그날 18시까지」라 한국 시각 18~23시에는 열린 창을 만들 방법 자체가 없고, cron이 부르는 함수도 그 시각이 와야 돈다. integration은 `internal`을 직접 불러 경계를 보고, `public`은 껍데기가 `now()`를 넘긴다는 것만 본다
   - 여러 행을 바꾸는 것은 전부 한 함수 안이다. 기본 시급 변경이 서른 행을 넣다 끊기면 전부 되돌아간다
   - 사건 알림은 같은 함수 안에서 `notifications`에 넣는다
   - `security definer`, `set search_path = ''`, 표는 스키마를 붙여 부른다(`public.profiles`)
   - 함수는 상수를 리터럴로 든다. 정본은 TypeScript고 대조 테스트가 맞춘다([system/runtime.md](runtime.md#업무-상수))
   - unique·check 제약에 닿기 전에 검사해 코드를 던진다. 제약이 먼저 걸리면 화면이 「다시 시도」를 시킨다
+  - **검사 순서는 거친 것부터다.** 호출자 → 자격(배정이 있나·관리자인가) → 시각 창 → 값 검사(위치·코드·글) → 중복. 화면이 받는 코드가 원인을 가리켜야 하는데, 아직 열리지도 않은 날에 찍은 사람에게 「QR이 올바르지 않아요」를 말하면 원인을 못 찾는다. 두 조건이 같이 틀렸을 때 어느 코드가 나가는지를 테스트가 단언한다
 
 ## 인증·권한
 

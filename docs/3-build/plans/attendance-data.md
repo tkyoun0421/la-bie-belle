@@ -79,7 +79,7 @@ sources:
 
 **뷰와 RLS.**
 
-- `excuse_status`가 `security_invoker = true`로 선다. `(day_id, profile_id, submitted_at, decided_at, decision)`을 낸다 — **`body`와 `decision_reason`을 안 낸다**
+- `excuse_status`가 **`security_definer`로** 선다. `(day_id, profile_id, submitted_at, decided_at, decision)`을 낸다 — **`body`와 `decision_reason`을 안 낸다**. 뷰 몸통이 `where public.is_approved()`를 들어 미승인자와 퇴사자를 0행으로 만든다 — 정의자 권한이라 RLS가 안 걸리니 이 줄이 기본 읽기 계약을 대신 지킨다
 - `check_ins`는 기본값이다 — `is_approved()`면 읽는다([ATT-016](../../2-design/modules/attendance/README.md#att-016)이 같은 날 배정된 사람들이 서로 본다고 정했고, 실제 좁히기는 화면이 그날 명단만 그리는 것으로 난다)
 - `excuses`는 **본인 행과 관리자만**이다. 전원이 보는 것은 뷰다
 - `hall_secrets`는 **관리자만**이다
@@ -93,9 +93,11 @@ sources:
 `check_in(p_day_id uuid, p_reported_at timestamptz, p_method text, p_lat double precision, p_lng double precision, p_qr_code text)`
 
 - **그날 살아 있는 배정이 없으면 `not_allowed`.** `assignments`에서 `ended_at is null`인 행을 본다. 교육 배정도 센다([ATT-020](../../2-design/modules/attendance/README.md#att-020))
-- **인증 창 검사** — 근무 시작 1시간 전부터 오후 6시까지다([ATT-008](../../2-design/modules/attendance/README.md#att-008)). 밖이면 `window_closed`. 이 검사는 `now()`로 한다 — 창은 서버 시각이 정한다
+- **알맹이가 `internal.check_in(p_profile_id uuid, p_day_id uuid, p_reported_at timestamptz, p_method text, p_lat double precision, p_lng double precision, p_qr_code text, p_now timestamptz)`이고 `public.check_in`은 껍데기다.** 껍데기가 `auth.uid()`로 찾은 **자기 프로필 id**와 `now()`를 넘긴다 — `p_profile_id`를 인자로 받는 것은 `internal`뿐이고, `public`이 그것을 클라이언트에게서 받으면 남의 이름으로 찍는 구멍이 된다 인증 창이 「그날 18시까지」라 한국 시각 18~23시에는 열린 창을 만들 방법이 없어 경계 테스트가 실제 시계에 걸린다. `internal`은 PostgREST가 모르는 스키마라 클라이언트가 못 부르고, 기기 시계를 막는 축은 그대로다([함수 안의 규칙](../../2-design/system/data-access.md#함수-안의-규칙)). integration이 `internal`을 직접 불러 경계를 보고 `public`은 껍데기라는 것만 본다
+- **인증 창 검사** — 근무 시작 1시간 전부터 그날 오후 6시까지다([ATT-008](../../2-design/modules/attendance/README.md#att-008)). 밖이면 `window_closed`. `starts_at`이 `time`이라 `(work_date + starts_at) at time zone 'Asia/Seoul'`로 시점을 만들어 비교한다 — 창의 끝은 `starts_at`과 무관하게 그 `work_date`의 18시다
 - **`checked_at` 산출** — `p_reported_at`을 쓰되 한도를 건다. `p_reported_at < now() - interval '10 minutes'`면 `now()`, `p_reported_at > now()`면 `now()`, 그 사이면 `p_reported_at` 그대로다. 10분은 재시도 1분과 화면 잠금 뒤 재개를 덮는 폭이다
 - **`method = 'location'`이면** `halls`의 좌표에서 `radius_m` 안인지 본다. 밖이면 `too_far`. **거리 계산을 함수가 한다** — 화면의 판정을 안 믿는다([ATT-002](../../2-design/modules/attendance/README.md#att-002))
+- 거리는 **haversine을 `internal` 함수 하나에 적는다.** 지구 반지름은 `6371000` 미터다 — 테스트가 경계점을 만들 때 쓰는 값과 같아야 100미터가 흔들리지 않는다. 확장(`cube`·`earthdistance`·PostGIS)을 안 켠다 — 100미터 한 자리를 재려고 확장을 다는 것은 크고, 켜면 배포 환경마다 따라다닌다. 시드의 `radius_m`이 200이라 100미터 경계 테스트는 `set_hall_location`으로 100을 명시하고 시작한다
 - **`method = 'qr'`이면** `hall_secrets.qr_code`와 대조한다. 다르면 `invalid_qr`. 옛 코드는 덮여 사라졌으니 자동으로 걸린다([ATT-005](../../2-design/modules/attendance/README.md#att-005))
 - **이미 찍혀 있으면 `already_done`.** 검사에서 잡거나, 검사와 삽입 사이에 낀 unique 위반(SQLSTATE `23505`)을 함수가 잡아 같은 코드로 던진다 — **재시도가 두 번 닿는 자리라 둘 다 필요하다**
 - `received_at = now()`를 같이 넣는다. `received_at`과 `reported_at`이 5분 넘게 다르면 명단이 「통신 지연」을 그린다([ATT-017](../../2-design/modules/attendance/README.md#att-017)) — 그 판정은 화면이 하고 함수는 값만 남긴다
@@ -106,9 +108,11 @@ sources:
 **사유 함수 둘.**
 
 - `submit_excuse(p_day_id uuid, p_body text)` — `is_approved()`. 그날 자기 배정이 없으면 `not_allowed`
+  - **`check_in`과 같이 갈린다.** 48시간 경계가 시각 판정이라 알맹이가 `internal.submit_excuse(p_profile_id uuid, p_day_id uuid, p_body text, p_now timestamptz)`고 `public`이 껍데기다([함수 안의 규칙](../../2-design/system/data-access.md#함수-안의-규칙)). 안 가르면 47시간·48시간·49시간을 실제 시계로 재게 돼 [ATT-011](../../2-design/modules/attendance/README.md#att-011)의 경계를 초 단위로 못 짚는다. `decide_excuse`는 시한이 없어 안 가른다
   - **근무 끝 48시간이 지나면 `window_closed`**([ATT-011](../../2-design/modules/attendance/README.md#att-011)). 근무 끝은 `days.ends_at`이다
   - 이미 찍혀 있으면 `already_done` — 찍은 사람이 사유를 낼 이유가 없다
-  - 살아 있는 사유(`decided_at is null`)가 있으면 `already_requested`. **거절된 사유가 있는 것은 막지 않는다** — 다시 내는 길이 규칙이다([ATT-013](../../2-design/modules/attendance/README.md#att-013))
+  - 살아 있는 사유(`decided_at is null`)나 **승인된 사유**가 있으면 `already_requested`. **거절된 사유만 다시 낼 수 있다** — 다시 내는 길이 규칙이고([ATT-013](../../2-design/modules/attendance/README.md#att-013)) 승인된 날은 이미 출근 인정이라 낼 이유가 없다
+  - 근무 끝 48시간을 재는 것도 `(work_date + ends_at) at time zone 'Asia/Seoul'`이다 — `ends_at`이 `time`이다
   - 글이 다듬어 빈 문자열이거나 200자를 넘으면 `invalid_reason`. 화면이 먼저 막지만 함수가 마지막 문이다
   - **고치는 함수가 없다**([ATT-012](../../2-design/modules/attendance/README.md#att-012))
 - `decide_excuse(p_excuse_id uuid, p_approved boolean, p_reason text)` — `is_admin()`
@@ -137,13 +141,16 @@ sources:
 | 상태 | 언제 |
 | --- | --- |
 | 안 찍음 | 인증 창이 열렸는데 `check_ins` 행이 없고 사유도 없다. 창이 아직이면 상태 자체가 없다 |
-| 출근 | `checked_at`이 근무 시작 시각 이전이거나 같다 |
-| 지각 | `checked_at`이 근무 시작 시각보다 뒤다 |
+| 출근 | `checked_at`이 근무 시작 시각에서 10분을 안 넘겼다 |
+| 지각 | `checked_at`이 근무 시작 시각에서 10분을 넘겼다([ATT-016](../../2-design/modules/attendance/README.md#att-016)) |
 | 확인 중 | `check_ins`가 없고 살아 있는 사유가 있다(`decided_at is null`) |
 | 출근 인정 | 사유가 승인됐다 |
 | 결근 | `check_ins`가 없고, 인증 창이 닫혔고, 승인된 사유가 없다. 거절된 사유가 있어도 결근이고, 사유를 낼 48시간이 남아 있으면 아직 결근이 아니다 |
 
-- **입력이 전부 인자다.** `check_ins` 행·`excuse_status` 행·`days.starts_at`·`days.ends_at`·지금 시각. 함수 안에서 `Date.now()`를 안 부른다 — 테스트가 시각을 넣어 경계를 본다
+- **입력이 전부 인자다.** `check_ins` 행·`excuse_status` **행 배열**·`days.work_date`·`days.starts_at`·`days.ends_at`·지금 시각. 함수 안에서 `Date.now()`를 안 부른다 — 테스트가 시각을 넣어 경계를 본다
+- `work_date`가 드는 것은 `starts_at`·`ends_at`이 `time`이라 날짜 없이는 시점이 안 되기 때문이다([시각 컬럼](../../2-design/system/runtime.md#시각-컬럼))
+- `excuse_status`가 배열인 것은 거절 뒤 다시 낸 날에 행이 여럿이라서다([ATT-013](../../2-design/modules/attendance/README.md#att-013)). 「승인된 사유가 없다」를 보려면 전부 봐야 하고, 「확인 중」은 살아 있는 행이 있는지로 난다. 최신을 가르는 기준은 `submitted_at` 내림차순이고 그 판단도 이 함수 안이다
+- **지각 유예 10분과 `checked_at` 한도 10분은 다른 상수다.** 앞은 업무 규칙([ATT-016](../../2-design/modules/attendance/README.md#att-016))이고 뒤는 기기 시계 오차를 누르는 폭이다([AC-03](#ac-03)). 숫자가 같아 헷갈리니 `constants.ts`에서 이름으로 가른다
 - 「통신 지연」 판정도 여기다 — `received_at`과 `reported_at`이 5분 넘게 다르면 참이다
 - 현황 줄의 셈도 여기다 — 「11명 중 9명 출근 · 지각 1 · 아직 1」에서 **0인 항목을 뺀다**([schedule-worker.md](../../2-design/modules/schedule/screens/schedule-worker.md#인증-상태))
 - 근태 월 집계도 같은 함수를 돌려 센다([ATT-023](../../2-design/modules/attendance/README.md#att-023)) — **출근 인정은 출근과 따로 센다**([ATT-026](../../2-design/modules/attendance/README.md#att-026))
@@ -156,18 +163,19 @@ sources:
 
 - 읽기 — `get-day-attendance.ts`(`['attendance', 'YYYY-MM-DD']`, 그날 `check_ins`와 `excuse_status`), `get-my-excuses.ts`(`['excuses', 'YYYY-MM']`, 본인 사유 목록), `get-qr-code.ts`(`['hall', 'qr']`, **`staleTime`이 0이고 영속하지 않는다** — 관리자가 돌리면 옛 값이 `invalid_qr`이다)
 - 쓰기 — `check-in.ts`·`submit-excuse.ts`·`decide-excuse.ts`·`rotate-qr.ts`·`set-hall-location.ts`
+- **`DomainError`·`TransportError`를 이 task가 처음 세운다.** [오류의 모양](../../2-design/system/data-access.md#오류의-모양)이 이미 있는 것처럼 적었지만 저장소에 없다 — `error-codes.ts` 옆 `src/shared/api/`에 한 곳으로 둔다. dal마다 각자 가르면 두 벌이 선다. `schedule-data`가 「`profile-form`의 몫」이라 미뤄둔 자리고, 재시도가 둘을 갈라야 도니 여기가 먼저다
 - **`check_in`만 재시도한다.** [재시도](../../2-design/system/runtime.md#재시도)의 「쓰기를 재시도하지 않는다」의 유일한 예외다 — `TransportError`면 지수 백오프로 다섯 번 더, 2·4·8·16·32초로 합쳐 1분쯤이다. `retryDelay`를 명시한다. **큐에 넣지 않는다**
 - 화면 잠금이나 앱 전환으로 iOS가 타이머를 멈추면 돌아올 때 이어 돈다 — **끊지 않는다**
 
 ### AC-08
 
-**오류 코드.** `src/shared/api/error-codes.ts`에 더한다 — `too_far`·`invalid_qr`·`bad_radius`. `window_closed`·`already_done`·`not_allowed`·`invalid_reason`·`already_requested`·`already_decided`는 앞 task들이 이미 넣었다. 대조 테스트가 마이그레이션의 `raise` 문자열과 맞춘다.
+**오류 코드.** `src/shared/api/error-codes.ts`에 **여덟을 더한다** — `too_far`·`invalid_qr`·`bad_radius`·`window_closed`·`already_done`·`invalid_reason`·`already_requested`·`already_decided`. 앞 task들이 넣은 것은 `not_allowed` 하나뿐이고 나머지 다섯은 저장소에 없다. 대조가 양방향이라 던지는 코드를 목록에 안 넣으면 `tests/lint/error-codes.test.ts`가 `missing-from-list`로 빨개진다.
 
 ### AC-09
 
 **테스트.**
 
-- unit: AC-06 전부. 특히 경계 — 근무 시작 정각에 찍으면 출근이고 1초 뒤면 지각, 인증 창이 열리기 전에는 상태가 없고 닫힌 뒤 48시간 안에는 결근이 아니며 그 뒤에는 결근, 거절된 사유가 있어도 결근, 승인된 사유는 출근 인정이고 출근으로 안 센다. 통신 지연 5분 경계. 현황 줄의 0 제외. 쓰기 dal의 오류 가르기와 `check_in`의 재시도 횟수·간격
+- unit: AC-06 전부. 특히 경계 — 근무 시작에서 정확히 10분에 찍으면 출근이고 10분 1초면 지각([ATT-016](../../2-design/modules/attendance/README.md#att-016)), 인증 창이 열리기 전에는 상태가 없고 닫힌 뒤 48시간 안에는 결근이 아니며 그 뒤에는 결근, 거절된 사유가 있어도 결근, 승인된 사유는 출근 인정이고 출근으로 안 센다. 통신 지연 5분 경계. 현황 줄의 0 제외. 쓰기 dal의 오류 가르기와 `check_in`의 재시도 횟수·간격
 - integration: 함수 다섯의 호출자 검사. `check_in`의 배정 없음·창 밖·반경 밖·옛 코드·중복. **`checked_at` 한도** — 10분 넘게 이른 값을 보내면 `now()`로 눌리고, 미래 값도 `now()`로 눌리고, 그 사이는 그대로 산다. **unique 위반이 `already_done`으로 올라오는 것**(두 번 연속 호출). `submit_excuse`의 48시간 경계와 이미 찍힌 날과 살아 있는 사유 중복과 거절 뒤 재제출. `decide_excuse`의 시한 없음과 거절 이유 필수. `rotate_qr`이 옛 코드를 죽이는 것(돌린 뒤 옛 값으로 `check_in`하면 `invalid_qr`). **RLS** — 근무자가 남의 `excuses.body`를 못 읽고 `excuse_status`로는 판정을 읽는다, `hall_secrets`를 근무자가 못 읽는다, 표 셋에 직접 쓰기가 막힌다
 - 시드 헬퍼를 `tests/integration/postgres.ts`에 더한다 — 인증 창이 열린 날, 창이 닫힌 날, 근무 끝 48시간이 지난 날
 
@@ -175,13 +183,26 @@ sources:
 
 **검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run` 전부 초록. e2e는 없다 — 화면이 없다.
 
+### AC-11
+
+**업무 상수 대조를 세운다.** [업무 상수](../../2-design/system/runtime.md#업무-상수)가 「TypeScript 한 곳이 정본이고 함수가 같은 숫자를 SQL 리터럴로 들고 `tests/lint/`의 대조 테스트가 맞춘다」고 정했는데 **그 대조 테스트가 저장소에 없고 `constants.ts`도 하나도 없다.** 지금까지 안 터진 것은 업무 상수가 SQL에 들어간 적이 없어서다.
+
+이 task가 그 첫 자리다. 인증 창의 1시간과 18시, 사유 마감 48시간이 SQL 함수와 TS 상태 계산 **양쪽**에 산다 — 대조가 없으면 한쪽만 고쳐도 아무것도 안 빨갛다.
+
+- `src/entities/attendance/model/constants.ts`가 정본이다. 지각 유예와 `checked_at` 한도는 숫자가 같고 뜻이 달라 이름으로 가른다([AC-06](#ac-06))
+- `tests/lint/`에 대조를 세운다. 마이그레이션의 `interval`·시각 리터럴과 TS 상수를 맞춘다. `error-codes` 대조와 같은 꼴이고 **양방향**이다
+- SQL에만 사는 상수(`checked_at` 한도)와 TS에만 사는 상수(지각 유예)는 대조 대상이 아니다. 두 곳에 사는 것만 본다 — 대조가 한쪽에만 있는 값을 빨갛게 만들면 쓸 수 없다
+
 ## 변경 파일
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
 | `supabase/migrations/<날짜>_attendance.sql` | 표 셋, 뷰, RLS, 권한 회수 | AC-01·AC-02 |
-| `supabase/migrations/<날짜>_attendance_functions.sql` | 함수 다섯 | AC-03~AC-05 |
-| `src/shared/api/error-codes.ts` | `too_far`·`invalid_qr`·`bad_radius` | AC-08 |
+| `supabase/migrations/<날짜>_attendance_functions.sql` | 함수 다섯. 시각 경계는 `internal`이 `p_now`를 받고 `public`이 껍데기다 | AC-03~AC-05 |
+| `src/shared/api/error-codes.ts` | 코드 여덟 | AC-08 |
+| `src/shared/api/errors.ts` | `DomainError`·`TransportError` | AC-07 |
+| `src/entities/attendance/model/constants.ts` | 업무 상수 | AC-06·AC-11 |
+| `tests/lint/` | 업무 상수 대조 | AC-11 |
 | `src/features/attendance/model/*.ts`·`__tests__/` | 상태 여섯·통신 지연·현황 셈·월 집계 | AC-06 |
 | `src/entities/attendance/dals/*.ts`·`__tests__/` | 읽기 셋, 쓰기 다섯, `check_in` 재시도 | AC-07 |
 | `tests/integration/postgres.ts` | 인증 시드 헬퍼 | AC-09 |

@@ -94,8 +94,9 @@
 ### 시각 컬럼
 
 - 적용 범위: 시점과 날짜를 담는 모든 열
-- 기본 계약: **달력 날짜는 `date`, 시점은 전부 `timestamptz`다.** `days.work_date date`(KST 달력의 그날), `days.starts_at/ends_at timestamptz`, 인증·만료·마감·승인 시각 전부 `timestamptz`. `wage_rates.effective_date`·`availabilities.work_date`는 `date`. 함수가 `now()`와 바로 비교한다. 화면은 Asia/Seoul로 바꿔 그린다. 「오늘이 며칠인가」를 SQL에서 쓸 때는 `(now() at time zone 'Asia/Seoul')::date`다
-- 이유: `now()::date`는 UTC 자정 근처에서 하루 틀린다
+- 기본 계약: **달력 날짜는 `date`, 시점은 `timestamptz`, 되풀이되는 벽시계 시각은 `time`이다.** `days.work_date date`(KST 달력의 그날), `days.starts_at/ends_at time`, 인증·만료·마감·승인 시각 전부 `timestamptz`. `wage_rates.effective_date`·`availabilities.work_date`는 `date`. 「오늘이 며칠인가」를 SQL에서 쓸 때는 `(now() at time zone 'Asia/Seoul')::date`다
+- 이유: `now()::date`는 UTC 자정 근처에서 하루 틀린다. 근무 시각은 날마다 되풀이되는 10시·22시라 `time`이고, 날짜를 겹쳐 담으면 `work_date`와 두 벌이 선다
+- 예외: `time`은 시점이 아니라 **그날과 묶어야 비교가 된다.** `(work_date + starts_at) at time zone 'Asia/Seoul'`이 그 근무가 실제로 시작하는 시점이고, 인증 창·지각·사유 마감이 전부 이 꼴로 `now()`와 비교한다. 이 결합을 빼먹으면 `time`이 시점처럼 비교돼 조용히 틀린다
 
 ### 업무 상수
 
