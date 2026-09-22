@@ -24,11 +24,16 @@ function expectSqlError(action: () => void, pattern: RegExp): void {
 
 const UNIQUE_VIOLATION = /violates unique constraint/;
 
-function seedNotification(profileId: string, kind = "signup_approved"): string {
+function seedNotification(
+  profileId: string,
+  kind = "signup_approved",
+  subjectId: string | null = randomUUID(),
+): string {
   const id = randomUUID();
+  const subjectSql = subjectId === null ? "null" : `'${subjectId}'`;
   execSql(
-    "insert into public.notifications (id, profile_id, kind, subject_id, payload) values (:'id', :'profile_id', :'kind', :'subject_id', '{}'::jsonb);\n",
-    { id, profile_id: profileId, kind, subject_id: randomUUID() },
+    `insert into public.notifications (id, profile_id, kind, subject_id, payload) values (:'id', :'profile_id', :'kind', ${subjectSql}, '{}'::jsonb);\n`,
+    { id, profile_id: profileId, kind },
   );
   return id;
 }
@@ -199,6 +204,35 @@ describe("알림 표 둘의 RLS", () => {
         .eq("profile_id", withDevice.profileId);
 
       expect(error).not.toBeNull();
+    });
+  });
+
+  describe("notifications의 (profile_id, kind, subject_id) 부분 unique(AC-04)", () => {
+    it("같은 (profile_id, kind, subject_id)를 두 번 넣으면 두 번째가 unique 위반이다", () => {
+      const subjectId = randomUUID();
+      seedNotification(withDevice.profileId, "shift_reminder", subjectId);
+
+      expectSqlError(
+        () =>
+          seedNotification(withDevice.profileId, "shift_reminder", subjectId),
+        UNIQUE_VIOLATION,
+      );
+    });
+
+    it("subject_id가 널인 행은 같은 (profile_id, kind)로 여러 번 선다", () => {
+      expect(() => {
+        seedNotification(withDevice.profileId, "signup_approved", null);
+        seedNotification(withDevice.profileId, "signup_approved", null);
+      }).not.toThrow();
+    });
+
+    it("사람이 다르면 같은 (kind, subject_id)도 각각 선다", () => {
+      const subjectId = randomUUID();
+
+      expect(() => {
+        seedNotification(withDevice.profileId, "shift_reminder", subjectId);
+        seedNotification(noDevice.profileId, "shift_reminder", subjectId);
+      }).not.toThrow();
     });
   });
 });

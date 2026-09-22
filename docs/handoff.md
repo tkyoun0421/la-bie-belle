@@ -12,7 +12,9 @@
 
 **`plan-sources-gate`가 닫혔다.** `findImpacted`가 이제 `doc.tracked`를 보고, 그 판정은 `spec-docs.ts`가 자리마다 따로 계산한다 — spec은 `status: approved`, plan은 완료 머리글이 없으면 추적 대상이다. plan에 `status`를 새로 들이지 않은 것이 이 task의 알맹이다. 서른넷을 손으로 관리하면 「적어뒀는데 안 맞는」 자리가 또 생긴다. `docs/2-design/system/data-access.md`를 바꾼 목록으로 찍어보면 고치기 전 0건, 고친 뒤 살아 있는 plan 열둘이 나온다.
 
-**다음 첫 수는 `claimed-guards-audit`다.** 정본이 「있다」고 적은 가드가 실제로 없던 사례가 셋인데 방금 닫은 것이 그중 하나다. 그 뒤가 `typed-routes-gate`, `font-subset`이다.
+**`claimed-guards-audit`가 닫혔다**([PR #390](https://github.com/tkyoun0421/la-bie-belle/pull/390)). 정본이 「기계가 지킨다」고 적은 주장 서른다섯을 훑어 구멍 셋을 메웠다 — RLS를 안 켠 표를 잡는 `tests/lint/table-rls.ts`(정본이 파일 이름까지 적어뒀는데 없었다), `profile_private.phone`의 형식 제약과 `submit_profile`이 먼저 던지는 `invalid_phone`, `notifications`의 `(profile_id, kind, subject_id)` 부분 unique다. **알맹이는 서른다섯 중 서른이 지키는 물건의 이름을 안 적는다는 것이다** — 「검사가 잡는다」까지만 적히면 맞는지 틀리는지 확인할 길이 없고, 지금까지의 사고 셋이 전부 그 서른 쪽에서 났다. 새 주장을 적을 때 파일 이름을 같이 적는 것이 이 감사가 남긴 습관이다. 지금 못 메우는 다섯은 PR 본문에 사실로만 남겼다 — `runtime.md`의 `stale`은 `schedule-requests`가, [생성 타입](2-design/system/data-access.md#생성-타입)이 한 절 안에서 자기를 부정하는 것은 `types-generation`이 받아뒀고, `security_definer_view` 예외는 우리 CI가 Supabase linter를 안 돌려 대상이 없으며, `attendance`·`schedule`·`payroll`·`swap`의 `design.md`에는 「코드와의 차이」 절 자체가 없다.
+
+**다음 첫 수는 `typed-routes-gate`다.** `app.json`이 `typedRoutes: true`인데 `.expo/types/`가 CI에 없어서 `Href`가 그냥 `string`으로 떨어진다 — 없는 경로를 적어도 `pnpm typecheck`가 통과한다. 바로 위 감사가 말한 「이름 없는 주장」과 같은 종류다. 그 뒤가 `font-subset`이다.
 
 **`payroll-data`는 `rehearsal`이 화면(`/me/rehearsals`)을 들어 `expo-scaffold`에 막혀 있다.** 화면 task 열넷도 전부 골격 뒤다. **실기기 확인이 유일한 병목이다.**
 

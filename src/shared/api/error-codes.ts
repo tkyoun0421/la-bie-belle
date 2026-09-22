@@ -11,6 +11,7 @@ export const ERROR_CODES = [
   "bad_radius",
   "date_past",
   "deadline_past",
+  "invalid_phone",
   "invalid_qr",
   "invalid_reason",
   "month_over",
