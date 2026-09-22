@@ -6,31 +6,13 @@ import {
   createAdminUser,
   createApprovedUser,
   execSql,
+  kstDate,
+  kstMonthStart,
   seedAssignment,
   withFreshMonth,
   type AdminUser,
   type ApprovedUser,
 } from "@tests/integration/postgres";
-
-function toDateString(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-function tomorrowDate(): string {
-  const date = new Date();
-  date.setDate(date.getDate() + 1);
-  return toDateString(date);
-}
-
-function firstOfMonthOffset(monthsFromNow: number): string {
-  const date = new Date();
-  date.setDate(1);
-  date.setMonth(date.getMonth() + monthsFromNow);
-  return toDateString(date);
-}
 
 async function rpcOrThrow(
   admin: AdminUser,
@@ -47,10 +29,10 @@ async function openFreshDay(
   admin: AdminUser,
 ): Promise<{ dayId: string; workDate: string }> {
   return withFreshMonth(async (monthsFromNow) => {
-    const month = firstOfMonthOffset(monthsFromNow);
+    const month = kstMonthStart(monthsFromNow);
     await rpcOrThrow(admin, "create_schedule", {
       p_month: month,
-      p_deadline: tomorrowDate(),
+      p_deadline: kstDate(1),
     });
     await rpcOrThrow(admin, "open_day", { p_work_date: month });
 
@@ -116,7 +98,7 @@ describe("getDayAttendance — 그날 check_ins와 excuse_status를 같이 읽�
   });
 
   it("연 날이 없으면 빈 배열을 준다", async () => {
-    const workDate = firstOfMonthOffset(500 + Math.floor(Math.random() * 500));
+    const workDate = kstMonthStart(500 + Math.floor(Math.random() * 500));
 
     const result = await getDayAttendance(checkedInWorker.client, workDate);
 

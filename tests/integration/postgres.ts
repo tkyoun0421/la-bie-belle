@@ -175,6 +175,39 @@ function kstParts(date: Date): { workDate: string; time: string } {
   };
 }
 
+function kstTodayUtcMidnight(): Date {
+  return new Date(`${kstParts(new Date()).workDate}T00:00:00Z`);
+}
+
+function toDateString(utcMidnight: Date): string {
+  return [
+    String(utcMidnight.getUTCFullYear()).padStart(4, "0"),
+    String(utcMidnight.getUTCMonth() + 1).padStart(2, "0"),
+    String(utcMidnight.getUTCDate()).padStart(2, "0"),
+  ].join("-");
+}
+
+export function kstDate(daysFromToday: number = 0): string {
+  const day = kstTodayUtcMidnight();
+  day.setUTCDate(day.getUTCDate() + daysFromToday);
+  return toDateString(day);
+}
+
+export function kstMonthStart(monthsFromNow: number): string {
+  const day = kstTodayUtcMidnight();
+  day.setUTCDate(1);
+  day.setUTCMonth(day.getUTCMonth() + monthsFromNow);
+  return toDateString(day);
+}
+
+export function kstMonthEnd(monthsFromNow: number): string {
+  const day = kstTodayUtcMidnight();
+  day.setUTCDate(1);
+  day.setUTCMonth(day.getUTCMonth() + monthsFromNow + 1);
+  day.setUTCDate(0);
+  return toDateString(day);
+}
+
 export function seedAssignment(
   dayId: string,
   profileId: string,

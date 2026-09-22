@@ -97,6 +97,7 @@
 - 기본 계약: **달력 날짜는 `date`, 시점은 `timestamptz`, 되풀이되는 벽시계 시각은 `time`이다.** `days.work_date date`(KST 달력의 그날), `days.starts_at/ends_at time`, 인증·만료·마감·승인 시각 전부 `timestamptz`. `wage_rates.effective_date`·`availabilities.work_date`는 `date`. 「오늘이 며칠인가」를 SQL에서 쓸 때는 `(now() at time zone 'Asia/Seoul')::date`다
 - 이유: `now()::date`는 UTC 자정 근처에서 하루 틀린다. 근무 시각은 날마다 되풀이되는 10시·22시라 `time`이고, 날짜를 겹쳐 담으면 `work_date`와 두 벌이 선다
 - 예외: `time`은 시점이 아니라 **그날과 묶어야 비교가 된다.** `(work_date + starts_at) at time zone 'Asia/Seoul'`이 그 근무가 실제로 시작하는 시점이고, 인증 창·지각·사유 마감이 전부 이 꼴로 `now()`와 비교한다. 이 결합을 빼먹으면 `time`이 시점처럼 비교돼 조용히 틀린다
+- 예외: **테스트가 만드는 날짜 문자열도 KST다.** `new Date().getDate()`로 「오늘」을 만들면 기계의 시간대가 답을 정한다 — CI가 UTC라 한국 시각 자정부터 아침 아홉 시까지는 DB의 「오늘」보다 하루 뒤처진다. 그 아홉 시간 동안만 빨개지는 테스트가 서고, 낮에 돌리는 사람은 평생 못 본다. 날짜 문자열은 `tests/integration/`의 공용 헬퍼가 KST로 낸다
 
 ### 업무 상수
 
