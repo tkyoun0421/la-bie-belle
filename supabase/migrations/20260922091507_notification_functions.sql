@@ -46,7 +46,10 @@ begin
   end if;
 
   insert into public.push_tokens (profile_id, token)
-  values (caller_profile_id, p_token)
+  select caller_profile_id, p_token
+  from public.profiles
+  where id = caller_profile_id
+    and notifications_enabled
   on conflict (token) do update
   set profile_id = excluded.profile_id,
       created_at = now();
