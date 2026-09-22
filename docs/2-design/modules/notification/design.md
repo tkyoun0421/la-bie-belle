@@ -110,7 +110,9 @@
 - 결과와 실패: **누르면 목적지로 간다.** 앱이 떠 있다 눌린 것과 꺼져 있다 알림으로 시작한 것이 다른 길로 들어와, 시작하는 자리에서 「알림으로 열렸나」를 한 번 더 읽는다. 둘 다 `payload`의 화면으로 간다
 - 캐시 갱신: 앱이 떠 있는 동안 푸시가 오면 그 자리에서 `['notifications']`를 무효화한다. 사건이 닿는 도메인 키(강제 변경이면 `['schedule']`)는 앱으로 돌아올 때의 재조회에 맡긴다. 푸시가 안 오는 기기는 앱으로 돌아올 때 다시 읽는 것이 전부다
 
-**Deno는 `supabase/functions` 밖을 못 읽는다.** edge-runtime 컨테이너에 그 폴더 하나만 마운트돼서, `deno.json`이 `../../src/`를 맵핑해도 파일이 컨테이너 안에 없다. 심볼릭 링크도 타깃이 마운트 밖이라 끊긴다. 그래서 CI가 `src/features/notification/model/`을 `supabase/functions/_shared/`로 복사한 뒤 Supabase를 띄운다 — `.github/workflows/ci.yml`의 `ci` 잡, `supabase start` 줄 앞이다. 복사본은 생성물이라 커밋하지 않는다. 정본은 `src/`다.
+**Deno는 `supabase/functions` 밖을 못 읽는다.** edge-runtime 컨테이너에 그 폴더 하나만 마운트돼서, `deno.json`이 `../../src/`를 맵핑해도 파일이 컨테이너 안에 없다 — 맵핑 자체는 도는데 그 경로가 컨테이너 안에 없어 `Module not found`다. 심볼릭 링크도 타깃이 마운트 밖이라 끊긴다. 그래서 CI가 `src/features/notification/model/`을 `supabase/functions/_shared/`로 복사한 뒤 Supabase를 띄운다 — `.github/workflows/ci.yml`의 `ci` 잡, `supabase start` 줄 앞이다. 복사본은 생성물이라 커밋하지 않는다. 정본은 `src/`다.
+
+**복사는 `cp`만으로 안 된다.** Deno는 import에 `.ts` 확장자를 요구하는데 `src/`는 확장자를 안 적는다 — 그대로 옮기면 `Module not found … Maybe add a '.ts' extension`으로 부팅이 깨진다. 복사 단계가 옮기면서 import 지정자에 `.ts`를 붙여야 하고, `@/`로 시작하는 별칭은 복사본 뿌리를 가리키도록 `deno.json`의 `imports`가 다시 맵핑한다. 그 단계를 세우는 것은 알림 task의 plan 몫이다.
 
 얼개 자체는 e2e가 본다. CI가 `supabase functions serve`를 띄우고 가짜 푸시 엔드포인트로 한 번 돌린다.
 
