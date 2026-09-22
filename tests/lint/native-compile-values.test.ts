@@ -7,11 +7,12 @@ const GLOBALS_CSS_PATH = path.join(process.cwd(), "src/app/globals.css");
 
 /**
  * 실제 화면에서 쓰는 유틸 조합이다 — 브랜드 배경 하나, 중립 배경·글자색 하나씩,
- * 스페이싱 눈금 하나(p-4), 타이포 하나(text-base). `@source inline(...)`이 없으면
- * Tailwind가 이 클래스들을 쓰는 곳이 없다고 보고 CSS를 안 만든다.
+ * 스페이싱 눈금 하나(p-4), 타이포 하나(text-base), 서체 유틸 넷. `@source inline(...)`이
+ * 없으면 Tailwind가 이 클래스들을 쓰는 곳이 없다고 보고 CSS를 안 만든다.
  */
 const FIXTURE_UTILITIES =
-  "bg-bg-brand-solid text-fg-neutral bg-bg-neutral p-4 text-base";
+  "bg-bg-brand-solid text-fg-neutral bg-bg-neutral p-4 text-base " +
+  "font-sans font-medium font-semibold font-bold";
 
 const PALETTE_BRAND_700 = "palette-brand-700";
 const PALETTE_NEUTRAL_00 = "palette-neutral-00";
@@ -249,5 +250,38 @@ describe("네이티브 컴파일 파이프라인의 다크 갈래가 시스템 �
     const entries = paletteVariableEntries(sheet, PALETTE_NEUTRAL_00);
 
     expect(darkEntryOf(entries).value).not.toBe(lightValueOf(entries));
+  });
+});
+
+describe("네이티브 컴파일 파이프라인이 서체 유틸을 Wanted Sans 파일 이름으로 내는가 (AC-05)", () => {
+  let sheet: CompiledStylesheet;
+
+  beforeAll(async () => {
+    sheet = await compileNativeStylesheet();
+  });
+
+  function declaredFontFamily(utilityClassName: string): string | undefined {
+    const objects = collectPlainObjects(styleEntry(sheet, utilityClassName).d);
+    const withProperty = objects.find(
+      (object) => typeof object.fontFamily === "string",
+    );
+
+    return withProperty?.fontFamily as string | undefined;
+  }
+
+  it("font-sans의 fontFamily가 WantedSans-Regular다", () => {
+    expect(declaredFontFamily("font-sans")).toBe("WantedSans-Regular");
+  });
+
+  it("font-medium의 fontFamily가 WantedSans-Medium이다", () => {
+    expect(declaredFontFamily("font-medium")).toBe("WantedSans-Medium");
+  });
+
+  it("font-semibold의 fontFamily가 WantedSans-SemiBold다", () => {
+    expect(declaredFontFamily("font-semibold")).toBe("WantedSans-SemiBold");
+  });
+
+  it("font-bold의 fontFamily가 WantedSans-Bold다", () => {
+    expect(declaredFontFamily("font-bold")).toBe("WantedSans-Bold");
   });
 });

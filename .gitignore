@@ -3,6 +3,7 @@
 !.env.example
 node_modules/
 .next/
+.expo/
 .DS_Store
 .claude/worktrees/
 out/

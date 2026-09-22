@@ -28,12 +28,14 @@
 
 | 유틸 | 쓰는 자리 |
 | --- | --- |
-| `font-normal` | 본문 |
+| `font-sans` | 본문 |
 | `font-medium` | 라벨, 버튼 |
 | `font-semibold` | 제목 |
 | `font-bold` | 강조 |
 
 Tailwind가 들고 오는 `font-thin`, `font-extralight`, `font-light`, `font-extrabold`, `font-black`은 지웠다.
+
+**400은 `font-normal`이 아니라 `font-sans`다.** 네 유틸이 굵기 숫자가 아니라 서체 파일 이름을 가리켜서다 — 이유는 [tokens.md 8.2절](../tokens.md#82-tailwind-기본값-초기화와-서체)에 있다. `font-normal`을 걸면 패밀리가 그대로라 시스템 서체가 나온다.
 
 `font-light`가 저 목록에 든 것은 서체 때문이다. Wanted Sans가 Regular(400)부터 배포되어 300짜리 파일이 없다. 남겨두면 눌러도 아무 일이 없는 유틸이 되고, 그걸 모르는 사람이 큰 숫자를 가늘게 만들려고 계속 집는다.
 
@@ -100,7 +102,7 @@ RN은 폰트 목록을 못 받는다. 여러 이름을 줘도 첫 번째만 쓴�
 | 숫자 — 내 것 | `text-3xl` | `font-bold` | `fg.brand` |
 | 숫자 — 내 것이 아닌 것 | `text-3xl` | `font-bold` | `fg.neutral` |
 | 단위 | `text-base` | `font-medium` | `fg.neutral-muted` |
-| 위의 라벨 | `text-sm` | `font-normal` | `fg.neutral-subtle` |
+| 위의 라벨 | `text-sm` | `font-sans` | `fg.neutral-subtle` |
 
 **단위를 숫자와 같은 크기로 키우지 않는다.** 「126,000」이 값이고 「원」은 값이 아니다. 같은 크기로 붙이면 훑는 눈이 「원」까지 읽고 나서야 다음으로 간다. 단위는 두 단계 내리고 굵기도 한 단계 내려서 숫자 옆에 붙어 있게만 한다. 「시간」·「건」·「명」도 같다.
 
@@ -141,9 +143,9 @@ TDS가 이 원칙을 명시해뒀고 우리도 그대로 가져온다. 웨딩홀
 | 큰 숫자 | `text-3xl` | `font-bold` — [큰 숫자](#큰-숫자)를 보라 |
 | 화면 제목 | `text-xl` | `font-semibold` |
 | 섹션 제목 | `text-lg` | `font-semibold` |
-| 본문 | `text-base` | `font-normal` |
+| 본문 | `text-base` | `font-sans` |
 | 목록 한 줄의 이름 | `text-base` | `font-medium` |
-| 목록 한 줄의 보조 정보 | `text-sm` | `font-normal` |
+| 목록 한 줄의 보조 정보 | `text-sm` | `font-sans` |
 | 버튼 라벨 | `text-base` | `font-medium` |
 | 배지, 시각, 날짜 | `text-xs` | `font-medium` |
 

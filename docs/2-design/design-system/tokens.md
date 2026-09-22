@@ -272,16 +272,19 @@ hue 27, chroma 최대 0.145.
 
 `text-4xl`부터 위는 지웠다.
 
-굵기 넷이다. Tailwind 기본값과 같아서 갈아끼울 것이 없고, 쓰지 않는 다섯(`thin` `extralight` `light` `extrabold` `black`)을 지웠다.
+굵기 넷이고, 쓰지 않는 다섯(`thin` `extralight` `light` `extrabold` `black`)을 지웠다. 네이티브는 숫자 굵기로 파일을 고르지 않고 이름으로 골라서 굵기 유틸 셋이 패밀리를 가리킨다 — 이유는 [8.2절](#82-tailwind-기본값-초기화와-서체)에 있다.
 
-| 유틸 | 값 |
+| 유틸 | 컴파일 결과 |
 | --- | --- |
-| `font-normal` | 400 |
-| `font-medium` | 500 |
-| `font-semibold` | 600 |
-| `font-bold` | 700 |
+| `font-sans` | `fontFamily: WantedSans-Regular` |
+| `font-medium` | `fontFamily: WantedSans-Medium` |
+| `font-semibold` | `fontFamily: WantedSans-SemiBold` |
+| `font-bold` | `fontFamily: WantedSans-Bold` |
+| `font-normal` | `fontWeight: 400` |
 
-`light`가 지운 쪽에 든 것은 Wanted Sans가 Regular(400)부터 배포되기 때문이다. 300짜리 파일이 없어서 `font-light`를 걸어도 `font-normal`과 같은 글자가 나온다. 아무것도 안 하는 유틸을 남겨두면 언젠가 누군가 그걸로 무게를 낮추려 한다.
+**400은 `font-sans`다.** `font-normal`은 굵기 숫자만 걸고 패밀리를 건드리지 않아서 그것만 쓰면 시스템 서체가 나온다.
+
+`light`가 지운 쪽에 든 것은 Wanted Sans가 Regular(400)부터 배포되기 때문이다. 300짜리 파일이 없어서 `font-light`를 걸어도 `font-sans`와 같은 글자가 나온다. 아무것도 안 하는 유틸을 남겨두면 언젠가 누군가 그걸로 무게를 낮추려 한다.
 
 숫자는 자릿수가 줄맞춤돼야 하는 자리에서 `fontVariant: ["tabular-nums"]`를 쓴다. 유틸은 `tabular-nums`고 급여 금액과 근무 시간이 그 자리다. 규칙은 [foundation/typography.md](foundation/typography.md#숫자-정렬)에 있다.
 
@@ -291,7 +294,7 @@ Wanted Sans v1.0.3의 정적 `.ttf` 넷을 앱 번들에 넣는다. 원본은 [w
 
 | 굵기 | 유틸 | 파일 | 원본 크기 |
 | --- | --- | --- | --- |
-| 400 | `font-normal` | `WantedSans-Regular.ttf` | 2,345KB |
+| 400 | `font-sans` | `WantedSans-Regular.ttf` | 2,345KB |
 | 500 | `font-medium` | `WantedSans-Medium.ttf` | 2,324KB |
 | 600 | `font-semibold` | `WantedSans-SemiBold.ttf` | 2,297KB |
 | 700 | `font-bold` | `WantedSans-Bold.ttf` | 2,290KB |
@@ -533,7 +536,9 @@ Tailwind가 기본으로 들고 오는 것 중 안 쓰는 것을 지우고 서�
 
 `--color-*: initial`은 Tailwind가 들고 오는 기본 팔레트를 지운다. 지우지 않으면 `bg-red-500`이 그대로 먹혀서 우리 팔레트 밖 색이 화면에 섞인다. `bg-white`와 `text-black`도 같이 사라지니 흰 면은 `bg-bg-neutral`을 쓴다.
 
-**굵기마다 서체 이름이 다르다.** 웹은 한 패밀리에 `font-weight`를 얹으면 됐지만, 네이티브는 숫자 굵기로 파일을 고르지 않고 이름으로 고른다 — [서체 연결](#서체-연결)의 정적 넷이 각각 제 이름으로 불린다. 그래서 `--font-*`가 넷이고 `font-sans`가 기본인 Regular를 가리킨다. 굵기를 바꾸는 자리는 `font-medium`이 아니라 `font-medium` 유틸이 가리키는 패밀리다 — 실제로 어느 유틸이 무엇을 부르는지는 골격이 기기에서 확인하고 이 절이 따라간다([expo-scaffold](../../3-build/plans/expo-scaffold.md)).
+**굵기마다 서체 이름이 다르다.** 웹은 한 패밀리에 `font-weight`를 얹으면 됐지만, 네이티브는 숫자 굵기로 파일을 고르지 않고 이름으로 고른다 — [서체 연결](#서체-연결)의 정적 넷이 각각 제 이름으로 불린다. 그래서 `--font-*`가 넷이고 `font-sans`가 기본인 Regular를 가리킨다. `--font-*`는 Tailwind에서 패밀리 네임스페이스라 `font-medium`·`font-semibold`·`font-bold`가 굵기 유틸에서 패밀리 유틸로 바뀐다 — 컴파일 결과가 `fontWeight`가 아니라 `fontFamily`를 낸다.
+
+**`font-normal`은 여기 들지 않는다.** `--font-weight-normal`을 지우지 않았으니 그 유틸은 그대로 `fontWeight: 400`만 걸고 패밀리를 건드리지 않는다. Regular를 부르는 유틸은 `font-sans`다.
 
 ```css
   --color-*: initial;
