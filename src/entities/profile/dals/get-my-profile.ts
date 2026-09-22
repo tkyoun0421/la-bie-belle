@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 
 export type MyProfileRow = {
   id: string;
@@ -25,7 +25,7 @@ const COLUMNS = [
 ].join(", ");
 
 export async function getMyProfile(
-  client: SupabaseClient,
+  client: Db,
   userId: string,
 ): Promise<MyProfileRow | null> {
   const { data, error } = await client

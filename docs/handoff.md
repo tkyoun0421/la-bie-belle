@@ -6,7 +6,17 @@
 
 ## 다음 작업
 
-**기계만으로 닫을 수 있는 task가 다 떨어졌다.** `ready`에 남은 것은 `e2e-runner`(선행 `expo-scaffold`)와 `types-generation`(선행 `account-data` — 그건 `done`이라 실은 풀려 있다)뿐이고, 나머지는 전부 실기기 확인이나 사람의 판단 뒤다. **다음 첫 수는 `types-generation`이다** — `pnpm types`가 `supabase gen types`를 감싸고 CI가 마이그레이션 뒤 diff 0을 보는 절차고, 정본은 [data-access.md 「생성 타입」](2-design/system/data-access.md#생성-타입)이다. 그 절이 한 절 안에서 자기를 부정한다는 것을 `claimed-guards-audit`이 남겨뒀으니 같이 푼다.
+**다음 첫 수는 파일 이름 규약을 camelCase로 바꾸는 것이다.** 총괄이 `types-generation` 도중에 정했다 — 지금 `src/`·`tests/`의 `.ts`는 kebab-case(`create-supabase-client.ts`)고 그것을 `createSupabaseClient.ts`로 옮긴다. **`src/app/` 아래는 건드리면 안 된다** — Expo Router가 파일 이름을 URL로 읽어서 이름을 바꾸면 딥링크 경로가 바뀐다. `docs/`와 `supabase/migrations/`도 밖이다(문서 링크와 마이그레이션 순서가 파일 이름에 걸려 있다). 규약을 어디에 적을지가 같이 정해질 자리다 — 지금 저장소에 파일 이름 규칙을 적은 정본도, 그것을 무는 lint도 없다.
+
+**`types-generation`이 닫혔다.** `pnpm types`가 `supabase gen types typescript --local --schema public --schema internal`을 감싸 `src/shared/api/databaseTypes.ts`를 만들고 prettier까지 한 덩이로 먹인다 — 두 단계가 갈리면 CI가 다시 뽑을 때마다 세미콜론 차이로 헛빨간불이 난다. CI는 `pnpm test:integration:run`(그 안에 `supabase migration up`이 있다) 뒤에 다시 뽑아 `git diff --exit-code`를 본다.
+
+**DB 없이 무는 대조를 따로 세웠다.** `tests/lint/databaseTypes.ts`가 마이그레이션이 만든 표·뷰·함수를 생성 타입과 이름으로 맞춘다 — Docker 없는 자리에서도 물어서, 마이그레이션을 더하고 `pnpm types`를 안 돌린 PR이 `pnpm test`에서 걸린다. 같은 파일이 `SupabaseClient`를 직접 가져오는 파일도 잡는다. 둘 다 일부러 깨뜨려 무는 것을 확인했다.
+
+**클라이언트를 받는 자리 스물아홉이 `Db`가 됐다.** `Db = SupabaseClient<Database>`고 `src/shared/api/database.ts`가 내놓는다. 맨 `SupabaseClient`는 스키마가 `any`라 `from("없는표")`도 `tsc`를 통과했다. 타입을 물리자 integration 테스트에서 오류 스물아홉이 드러났고 — 함수 이름을 `string`으로 받는 헬퍼, 인자 없는 함수에 `{}`, RLS가 막는 것을 보는 insert가 필수 열을 안 채운 자리 — 전부 단언을 그대로 두고 타입만 맞췄다.
+
+**생성기가 함수 인자의 nullable을 못 적는다.** `pg_proc`에 그 정보가 없어서 NULL을 받는 인자도 non-null로 나온다. `check_in`의 `p_lat`·`p_lng`·`p_qr_code`와 `decide_excuse`의 `p_reason`이 그 자리고, SQL에 `default null`을 적어 생성 타입이 선택 인자로 내게 했다 — 호출자가 그 키를 빼고 부르면 PostgREST가 SQL 기본값으로 채워서 DB에 가는 값이 같다. 배포 전이라 `20260922091505_attendance_functions.sql`을 직접 고쳤다(`is_approved()` 때와 같은 판단이다).
+
+**`ready`에 기계만으로 닫을 것이 다시 생겼다.** 위 파일 이름 규약과 `e2e-runner`(선행 `expo-scaffold`)다. 나머지는 전부 실기기 확인이나 사람의 판단 뒤다.
 
 **`edge-function-import`가 닫혔다 — 결론은 「못 한다」다.** edge-runtime 컨테이너가 `supabase/functions` 하나만 마운트해서(`docker inspect`로 확인) `deno.json`이 `../../src/`를 맵핑해도 그 경로가 컨테이너 안에 없다. **맵핑 자체는 돈다** — `_shared/` 안쪽을 가리키면 통했다. 심볼릭 링크도 타깃이 마운트 밖이라 끊긴다.
 

@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 
 export type ExcuseRow = {
   id: string;
@@ -36,15 +36,14 @@ function nextMonthFirstDay(month: string): string {
 }
 
 export async function getMyExcuses(
-  client: SupabaseClient,
+  client: Db,
   month: string,
 ): Promise<ExcuseRow[]> {
   const { data: days, error: daysError } = await client
     .from("days")
     .select("id")
     .gte("work_date", `${month}-01`)
-    .lt("work_date", nextMonthFirstDay(month))
-    .returns<{ id: string }[]>();
+    .lt("work_date", nextMonthFirstDay(month));
 
   if (daysError) {
     throw daysError;

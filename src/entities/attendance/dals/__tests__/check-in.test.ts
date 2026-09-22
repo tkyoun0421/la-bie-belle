@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 import { DomainError, TransportError } from "@/shared/api/errors";
 import { checkIn } from "@/entities/attendance/dals/check-in";
 
@@ -13,8 +13,8 @@ const PARAMS = {
 
 function fakeClient(
   rpc: (...args: unknown[]) => Promise<{ data: unknown; error: unknown }>,
-): SupabaseClient {
-  return { rpc: jest.fn(rpc) } as unknown as SupabaseClient;
+): Db {
+  return { rpc: jest.fn(rpc) } as unknown as Db;
 }
 
 describe("checkIn dal — TransportError면 재시도하고 DomainError면 즉시 실패한다(AC-07)", () => {
@@ -24,7 +24,7 @@ describe("checkIn dal — TransportError면 재시도하고 DomainError면 즉�
       data: null,
       error: null,
     }));
-    const client = { rpc } as unknown as SupabaseClient;
+    const client = { rpc } as unknown as Db;
 
     await checkIn(PARAMS, { client, wait: async () => {} });
 

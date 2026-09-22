@@ -1,4 +1,5 @@
-import type { SupabaseClient, User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 import { getCurrentUser as readSessionUser } from "@/shared/lib/get-current-user";
 import type { AuthDestination } from "@/shared/lib/resolve-auth-destination";
 import { resolveEntryDestination as resolveDestinationFromProfile } from "@/features/auth/resolve-entry-destination";
@@ -6,11 +7,11 @@ import { resolveEntryDestination as resolveDestinationFromProfile } from "@/feat
 export type EntryDecision = AuthDestination | "/retry";
 
 type DecideEntryDeps = {
-  client: SupabaseClient;
-  getCurrentUser?: (client: SupabaseClient) => Promise<User | null>;
+  client: Db;
+  getCurrentUser?: (client: Db) => Promise<User | null>;
   resolveEntryDestination?: (
     userId: string | null,
-    deps: { client: SupabaseClient },
+    deps: { client: Db },
   ) => Promise<AuthDestination>;
 };
 

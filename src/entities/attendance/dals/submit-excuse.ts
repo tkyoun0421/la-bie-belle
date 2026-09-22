@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 export type SubmitExcuseParams = {
@@ -7,7 +7,7 @@ export type SubmitExcuseParams = {
 };
 
 export async function submitExcuse(
-  client: SupabaseClient,
+  client: Db,
   params: SubmitExcuseParams,
 ): Promise<void> {
   const { error } = await client.rpc("submit_excuse", {

@@ -13,6 +13,7 @@
 - `pnpm dev` — `expo start`. 뜨는 QR을 Expo Go로 찍는다. `EXPO_PUBLIC_SUPABASE_URL`·`EXPO_PUBLIC_SUPABASE_ANON_KEY`가 env에 있어야 한다(로컬은 `supabase status -o env`)
 - `pnpm lint` / `pnpm typecheck` / `pnpm test`
 - `pnpm test:integration` — 로컬 Supabase 필요 (Docker). 스택이 떠 있으면 `pnpm test:integration:run`
+- `pnpm types` — 로컬 DB에서 `src/shared/api/databaseTypes.ts`를 뽑는다. 마이그레이션을 고쳤으면 `supabase db reset` 뒤에 돌린다
 - `pnpm tokens:css` — `tokens.md` 8절에서 `src/app/globals.css`를 만든다
 - `pnpm fonts:subset` — Wanted Sans 넷을 `assets/fonts/subset/`으로 줄인다. `pyftsubset` 필요(`pipx install fonttools`), 결과는 커밋한다
 

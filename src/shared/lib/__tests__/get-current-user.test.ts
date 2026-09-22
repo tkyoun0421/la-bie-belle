@@ -1,15 +1,16 @@
-import type { SupabaseClient, User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 import { getCurrentUser } from "@/shared/lib/get-current-user";
 
 function fakeClient(getUserResult: {
   data: { user: User | null };
   error: { message: string } | null;
-}): SupabaseClient {
+}): Db {
   return {
     auth: {
       getUser: async () => getUserResult,
     },
-  } as unknown as SupabaseClient;
+  } as unknown as Db;
 }
 
 const FAKE_USER = { id: "user-1", email: "person@example.com" } as User;

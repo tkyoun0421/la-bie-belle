@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { Database } from "@/shared/api/database";
 import {
   backdateDeadline,
   createAdminUser,
@@ -39,10 +40,12 @@ function withManagerCount(count: number): SlotDefault[] {
   );
 }
 
-async function rpcOrThrow(
+type FunctionName = keyof Database["public"]["Functions"];
+
+async function rpcOrThrow<Name extends FunctionName>(
   user: AdminUser,
-  fn: string,
-  args: Record<string, unknown>,
+  fn: Name,
+  args: Database["public"]["Functions"][Name]["Args"],
 ): Promise<void> {
   const { error } = await user.client.rpc(fn, args);
   if (error) {
@@ -211,7 +214,6 @@ describe("근무표 함수", () => {
         p_work_date: kstDate(1),
         p_starts: "10:00",
         p_ends: "22:00",
-        p_ceremony: null,
       });
       expect(error?.message).toBe("not_allowed");
     });
@@ -394,7 +396,6 @@ describe("근무표 함수", () => {
         p_work_date: month,
         p_starts: "10:00",
         p_ends: "22:00",
-        p_ceremony: null,
       });
       expect(error?.message).toBe("not_open");
     });
@@ -406,7 +407,6 @@ describe("근무표 함수", () => {
         p_work_date: month,
         p_starts: "22:00",
         p_ends: "10:00",
-        p_ceremony: null,
       });
       expect(error?.message).toBe("bad_hours");
     });

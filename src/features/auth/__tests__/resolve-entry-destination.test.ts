@@ -1,9 +1,9 @@
 import { jest } from "@jest/globals";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Db } from "@/shared/api/database";
 import type { MyProfileRow } from "@/entities/profile/dals/get-my-profile";
 import { resolveEntryDestination } from "@/features/auth/resolve-entry-destination";
 
-const fakeClient = {} as SupabaseClient;
+const fakeClient = {} as Db;
 
 function buildRow(overrides: Partial<MyProfileRow> = {}): MyProfileRow {
   return {

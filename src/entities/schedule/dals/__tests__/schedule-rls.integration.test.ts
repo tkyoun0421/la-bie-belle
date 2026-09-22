@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { Database } from "@/shared/api/database";
 import {
   createAdminUser,
   createApprovedUser,
@@ -20,10 +21,12 @@ function randomOffset(): number {
   return 24 + Math.floor(Math.random() * 100000);
 }
 
-async function rpcOrThrow(
+type FunctionName = keyof Database["public"]["Functions"];
+
+async function rpcOrThrow<Name extends FunctionName>(
   user: { client: SignedInUser["client"] },
-  fn: string,
-  args: Record<string, unknown>,
+  fn: Name,
+  args: Database["public"]["Functions"][Name]["Args"],
 ): Promise<void> {
   const { error } = await user.client.rpc(fn, args);
   if (error) {
@@ -260,6 +263,7 @@ describe("근무표 RLS", () => {
     it("schedules에 근무자가 직접 insert를 못 한다", async () => {
       const { error } = await reader.client.from("schedules").insert({
         month: kstMonthStart(randomOffset()),
+        created_by: reader.profileId,
       });
       expect(error?.code).toBe("42501");
     });
@@ -267,6 +271,7 @@ describe("근무표 RLS", () => {
     it("schedules에 관리자도 직접 insert를 못 한다", async () => {
       const { error } = await admin.client.from("schedules").insert({
         month: kstMonthStart(randomOffset()),
+        created_by: admin.profileId,
       });
       expect(error?.code).toBe("42501");
     });
@@ -277,6 +282,7 @@ describe("근무표 RLS", () => {
         work_date: kstMonthStart(randomOffset()),
         starts_at: "10:00",
         ends_at: "22:00",
+        opened_by: reader.profileId,
       });
       expect(error?.code).toBe("42501");
     });
