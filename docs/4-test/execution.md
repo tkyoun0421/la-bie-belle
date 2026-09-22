@@ -139,6 +139,8 @@ integration이 스키마·함수를 찾지 못하면 마이그레이션의 적�
 - `tests/lint/.tmp-format-check/`를 `.gitignore`에 넣지 않는다. Prettier 3이 `.gitignore`를 ignore 파일로 읽어 픽스처를 건너뛰면 `--check`가 조용히 0으로 끝난다.
 - `pnpm typecheck`가 `@supabase/supabase-js`를 못 찾으면 `pnpm install --frozen-lockfile`.
 - `tests/lint/`를 worktree 여럿에서 동시에 돌리면 첫 테스트가 기본 5초 타임아웃에서 흔들린다(`new ESLint()` 로드 비용). `--testTimeout=60000`.
+- **`react-native`는 대역이 안 먹는다.** `jest.config.js`가 그 이름을 절대경로로 리매핑해서, 테스트 파일이 직접 import할 때는 대역이 서지만 `src/`의 다른 파일이 안에서 `import { AppState } from "react-native"`를 하면 진짜 모듈이 온다(`addEventListener is not a function`). `AppState`·`Linking`처럼 그 네임스페이스에 닿는 것은 대역하지 말고 함수 인자로 주입해라 — 기본값에 실물을 두면 부르는 쪽은 그대로다.
+- **`jest` 객체는 전역이 아니다.** `describe`·`it`·`expect`만 전역이고 `jest.fn()`이나 `jest.unstable_mockModule`을 쓰려면 `@jest/globals`에서 가져와야 한다.
 - 테스트를 ESM으로 돌려서 `NODE_OPTIONS=--experimental-vm-modules`가 스크립트에 박혀 있다. `scripts/generate-globals-css.mts`의 최상위 `await`과 `import.meta.url` 때문이고, 그 둘은 `pnpm tokens:css`가 그 파일을 직접 실행할 때 필요한 것이라 러너에 맞춰 걷지 않는다. 같은 이유로 `jest.mock()`이 안 먹는다 — 대역이 필요하면 `jest.unstable_mockModule`과 동적 import다.
 - `babel.config.js`가 없어서 `jest.config.js`가 babel preset을 직접 물고 있다. 그 파일이 생기면 `.mts`를 TypeScript로 보게 하는 override와 `transformImportMeta: false`가 같이 따라가야 한다.
 - type-aware lint(`no-floating-promises` 등)는 속도 때문에 안 켜져 있다. await 빠진 Supabase 호출은 lint가 못 잡는다.

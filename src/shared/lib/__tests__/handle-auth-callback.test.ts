@@ -11,28 +11,28 @@ function fakeClient(exchangeResult: {
   } as unknown as SupabaseClient;
 }
 
-describe("handleAuthCallback — code 유무와 교환 결과로 목적지를 가른다", () => {
-  it("code 파라미터가 없으면 로그인 화면으로 보낸다", async () => {
+describe("handleAuthCallback — code 유무와 교환 결과만 알리고 목적지는 판정하지 않는다", () => {
+  it("code 파라미터가 없으면 missing_code 실패를 돌려준다", async () => {
     const client = fakeClient({ error: null });
 
-    const destination = await handleAuthCallback(null, client);
+    const result = await handleAuthCallback(null, client);
 
-    expect(destination).toBe("/login");
+    expect(result).toEqual({ ok: false, reason: "missing_code" });
   });
 
-  it("exchangeCodeForSession이 실패하면 로그인 화면으로 보낸다", async () => {
+  it("exchangeCodeForSession이 실패하면 exchange_failed 실패를 돌려준다", async () => {
     const client = fakeClient({ error: { message: "invalid_grant" } });
 
-    const destination = await handleAuthCallback("auth-code", client);
+    const result = await handleAuthCallback("auth-code", client);
 
-    expect(destination).toBe("/login");
+    expect(result).toEqual({ ok: false, reason: "exchange_failed" });
   });
 
-  it("exchangeCodeForSession이 성공하면 홈으로 보낸다", async () => {
+  it("exchangeCodeForSession이 성공하면 성공만 알리고 목적지 문자열을 담지 않는다", async () => {
     const client = fakeClient({ error: null });
 
-    const destination = await handleAuthCallback("auth-code", client);
+    const result = await handleAuthCallback("auth-code", client);
 
-    expect(destination).toBe("/");
+    expect(result).toEqual({ ok: true });
   });
 });
