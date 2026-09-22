@@ -90,6 +90,8 @@
 - 기본 계약:
   - 첫 줄이 호출자 검사다. `auth.uid()`로 프로필을 찾고 `is_admin()`·`is_approved()`를 본다. 검사가 없는 함수는 구멍이라 함수 PR은 그 검사의 integration 테스트를 같이 낸다
   - 시각 판정은 `now()`다. **`public` 함수는 인자로 시각을 받지 않는다** — 기기 시계가 들어올 자리가 없다. 예외는 `check_in`의 `reported_at` 하나고 한도가 붙는다([`attendance/design.md`](../modules/attendance/design.md))
+  - **`internal` 함수는 호출자 검사를 안 한다.** 껍데기가 이미 했고, 알맹이가 다시 하면 테스트가 못 부른다. 대신 `p_profile_id` 같은 인자를 그대로 믿으니 **노출되면 그 순간 남의 이름으로 쓰는 구멍이다.** 막는 것은 `revoke all on schema internal`과 `revoke all on all functions in schema internal` 두 줄과 `config.toml`의 노출 스키마 목록이라, **그 셋이 뚫렸을 때 빨개지는 integration 테스트를 같이 낸다** — 없으면 뚫려도 아무것도 안 빨갛다
+  - **`internal` 함수는 `security invoker`다 — 위의 「`security definer`」에 대한 의도된 예외다.** 호출자 권한으로 돌아서, 스키마가 노출되고 함수 실행권이 풀려도 표의 `insert` 권한과 RLS 정책이 아직 막는다. 방어가 한 겹이 아니라 세 겹인 이유가 이것이다. **관례에 맞추려고 `security definer`로 고치면 그 두 겹이 한 번에 사라진다** — 고치지 마라
   - **시각 경계가 든 알맹이는 `internal`에 두고 `p_now timestamptz`를 받는다.** `public` 껍데기가 `now()`를 넘기는 유일한 호출자고, `internal`은 PostgREST가 모르는 스키마라 클라이언트가 못 부른다 — 기기 시계를 막는 축은 그대로다. 이렇게 안 가르면 경계 테스트가 실제 시계에 걸린다. 인증 창이 「그날 18시까지」라 한국 시각 18~23시에는 열린 창을 만들 방법 자체가 없고, cron이 부르는 함수도 그 시각이 와야 돈다. integration은 `internal`을 직접 불러 경계를 보고, `public`은 껍데기가 `now()`를 넘긴다는 것만 본다
   - 여러 행을 바꾸는 것은 전부 한 함수 안이다. 기본 시급 변경이 서른 행을 넣다 끊기면 전부 되돌아간다
   - 사건 알림은 같은 함수 안에서 `notifications`에 넣는다

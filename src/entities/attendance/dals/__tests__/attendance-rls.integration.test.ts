@@ -3,6 +3,7 @@ import {
   createApprovedUser,
   createLeftUser,
   execSql,
+  kstInstant,
   seedAssignment,
   withFreshMonth,
   type AdminUser,
@@ -47,7 +48,7 @@ async function rpcOrThrow(
 
 async function openFreshDay(
   admin: AdminUser,
-): Promise<{ dayId: string; scheduleId: string }> {
+): Promise<{ dayId: string; scheduleId: string; workDate: string }> {
   return withFreshMonth(async (monthsFromNow) => {
     const month = firstOfMonthOffset(monthsFromNow);
     await rpcOrThrow(admin, "create_schedule", {
@@ -64,7 +65,7 @@ async function openFreshDay(
     if (error || !data) {
       throw error ?? new Error("연 날을 못 찾았다");
     }
-    return { dayId: data.id, scheduleId: data.schedule_id };
+    return { dayId: data.id, scheduleId: data.schedule_id, workDate: month };
   });
 }
 
@@ -322,6 +323,131 @@ describe("출근 인증 RLS", () => {
         qr_code: "다른-값",
       });
       expect(error?.code).toBe("42501");
+    });
+  });
+
+  describe("internal 스키마가 나중에 뚫리면 여기가 빨개진다 — 지금은 revoke 두 줄이 막는다", () => {
+    let hall: { lat: number; lng: number };
+    let victimOfWorker: ApprovedUser;
+    let victimOfAdmin: ApprovedUser;
+    let excuseVictim: ApprovedUser;
+    let workerAttackDay: { dayId: string; workDate: string };
+    let adminAttackDay: { dayId: string; workDate: string };
+    let excuseAttackDay: { dayId: string; workDate: string };
+
+    beforeAll(async () => {
+      const { data: hallRow, error: hallError } = await admin.client
+        .from("halls")
+        .select("lat, lng")
+        .single<{ lat: number; lng: number }>();
+      if (hallError || !hallRow) {
+        throw hallError ?? new Error("홀을 못 찾았다");
+      }
+      hall = hallRow;
+
+      victimOfWorker = await createApprovedUser();
+      victimOfAdmin = await createApprovedUser();
+      excuseVictim = await createApprovedUser();
+
+      workerAttackDay = await openFreshDay(admin);
+      seedAssignment(
+        workerAttackDay.dayId,
+        victimOfWorker.profileId,
+        "training",
+      );
+
+      adminAttackDay = await openFreshDay(admin);
+      seedAssignment(adminAttackDay.dayId, victimOfAdmin.profileId, "training");
+
+      excuseAttackDay = await openFreshDay(admin);
+      seedAssignment(excuseAttackDay.dayId, excuseVictim.profileId, "training");
+    });
+
+    it("근무자 세션이 아직 안 찍은 남의 p_profile_id로 internal.check_in을 불러도 막힌다 — 실제로 뚫리면 그 사람 몫으로 행이 생겨야 하니 그 행이 없는 것으로 잰다", async () => {
+      const now = kstInstant(workerAttackDay.workDate, "10:30:00");
+
+      const { error } = await owner.client.schema("internal").rpc("check_in", {
+        p_profile_id: victimOfWorker.profileId,
+        p_day_id: workerAttackDay.dayId,
+        p_reported_at: now,
+        p_method: "location",
+        p_lat: hall.lat,
+        p_lng: hall.lng,
+        p_qr_code: null,
+        p_now: now,
+      });
+
+      expect(error).not.toBeNull();
+
+      const { data: stolenCheckIn } = await admin.client
+        .from("check_ins")
+        .select("id")
+        .eq("day_id", workerAttackDay.dayId)
+        .eq("profile_id", victimOfWorker.profileId);
+      expect(stolenCheckIn).toEqual([]);
+    });
+
+    it("근무자 세션이 internal.submit_excuse도 못 부른다 — 실제로 뚫리면 그 사람 몫으로 사유가 생겨야 하니 그 행이 없는 것으로 잰다", async () => {
+      const now = kstInstant(excuseAttackDay.workDate, "10:30:00");
+
+      const { error } = await owner.client
+        .schema("internal")
+        .rpc("submit_excuse", {
+          p_profile_id: excuseVictim.profileId,
+          p_day_id: excuseAttackDay.dayId,
+          p_body: "근무자가 남의 이름으로 낸 사유",
+          p_now: now,
+        });
+
+      expect(error).not.toBeNull();
+
+      const { data: stolenExcuse } = await admin.client
+        .from("excuses")
+        .select("id")
+        .eq("day_id", excuseAttackDay.dayId)
+        .eq("profile_id", excuseVictim.profileId);
+      expect(stolenExcuse).toEqual([]);
+    });
+
+    it("관리자 세션도 internal.check_in을 못 부른다 — 역할과 무관하게 막힌다", async () => {
+      const now = kstInstant(adminAttackDay.workDate, "10:30:00");
+
+      const { error } = await admin.client.schema("internal").rpc("check_in", {
+        p_profile_id: victimOfAdmin.profileId,
+        p_day_id: adminAttackDay.dayId,
+        p_reported_at: now,
+        p_method: "location",
+        p_lat: hall.lat,
+        p_lng: hall.lng,
+        p_qr_code: null,
+        p_now: now,
+      });
+
+      expect(error).not.toBeNull();
+
+      const { data: stolenCheckIn } = await admin.client
+        .from("check_ins")
+        .select("id")
+        .eq("day_id", adminAttackDay.dayId)
+        .eq("profile_id", victimOfAdmin.profileId);
+      expect(stolenCheckIn).toEqual([]);
+    });
+
+    it("PostgREST가 internal 스키마 자체를 모른다 — 노출 스키마 목록 밖이라는 오류다", async () => {
+      const now = kstInstant(workerAttackDay.workDate, "10:30:00");
+
+      const { error } = await owner.client.schema("internal").rpc("check_in", {
+        p_profile_id: owner.profileId,
+        p_day_id: workerAttackDay.dayId,
+        p_reported_at: now,
+        p_method: "location",
+        p_lat: hall.lat,
+        p_lng: hall.lng,
+        p_qr_code: null,
+        p_now: now,
+      });
+
+      expect(error?.message ?? "").toMatch(/invalid schema.*internal/i);
     });
   });
 });
