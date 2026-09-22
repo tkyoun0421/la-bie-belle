@@ -6,7 +6,7 @@
 
 ## 명령
 
-저장소 루트에서 Node 22와 pnpm 8.15.2로 실행한다. 아래 일곱이 로컬과 CI가 같이 돌리는 명령이다. 정본은 [package.json](../../package.json)의 `scripts`와 [ci.yml](../../.github/workflows/ci.yml)이다.
+저장소 루트에서 Node 22와 pnpm 8.15.2로 실행한다. 아래 여덟이 로컬과 CI가 같이 돌리는 명령이다. 정본은 [package.json](../../package.json)의 `scripts`와 [ci.yml](../../.github/workflows/ci.yml)이다.
 
 ### `pnpm lint`
 
@@ -40,6 +40,14 @@
 - 실패할 때: 첫 테스트가 타임아웃에서 흔들리거나 픽스처 표기가 어긋나면 [돌릴 때](#돌릴-때)를 본다.
 - 근거 위치: PR의 `ci` 워크플로 `pnpm test` 단계.
 
+### `pnpm bundle`
+
+- 전제: `pnpm install --frozen-lockfile`이 끝나 있다. env는 필요 없다 — `EXPO_PUBLIC_*`가 비어도 번들은 만들어진다.
+- 실행: `pnpm bundle` — `expo export`를 iOS와 안드로이드로 한 번씩 돌려 `.expo/bundle-check/` 아래에 낸다.
+- 정상 결과: 플랫폼마다 `.hbc` 번들 하나와 자산 목록이 나온다. 자산 목록에 서체 넷이 보여야 한다.
+- 실패할 때: Metro가 해석 못 한 import를 `Import stack`으로 짚어준다. 라이브러리가 Node 내장 모듈(`buffer` 같은 것)을 부르면 여기서 막히고, 위 검사 넷은 그것을 못 잡는다.
+- 근거 위치: PR의 `ci` 워크플로 `pnpm bundle` 단계. 문서만 바뀐 PR은 건너뛴다.
+
 ### `pnpm test:integration`
 
 - 전제: 로컬 Docker가 떠 있다. 스택이 이미 떠 있으면 `pnpm test:integration:run`으로 기동을 건너뛴다.
@@ -53,8 +61,8 @@
 - 전제: `pnpm install --frozen-lockfile`이 끝나 있고 `EXPO_PUBLIC_SUPABASE_URL`·`EXPO_PUBLIC_SUPABASE_ANON_KEY`가 env에 있다. 값은 번들에 박히므로 띄우기 전에 넘긴다.
 - 실행: `pnpm dev` — `expo start`. 뜨는 QR을 Expo Go로 찍으면 기기에서 본다.
 - 정상 결과: 번들이 만들어지고 기기에 첫 화면이 뜬다.
-- 실패할 때: NativeWind가 CSS를 빌드 때 읽으니 `globals.css`가 네이티브 컴파일러가 안 받는 문법을 들면 여기서 던진다.
-- 근거 위치: 아직 CI 단계가 없다. 빌드를 검사에 넣는 자리는 EAS 설정과 같이 선다.
+- 실패할 때: NativeWind가 CSS를 빌드 때 읽으니 `globals.css`가 네이티브 컴파일러가 안 받는 문법을 들면 여기서 던진다. 번들이 안 만들어지는 자리는 [`pnpm bundle`](#pnpm-bundle)이 CI에서 먼저 잡는다.
+- 근거 위치: 대화형이라 CI 단계가 없다. 네이티브 컴파일을 검사에 넣는 자리는 EAS 설정과 같이 선다.
 
 ### e2e
 
