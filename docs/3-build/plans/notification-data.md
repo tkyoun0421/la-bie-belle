@@ -45,6 +45,7 @@ sources:
 
 - `profile_id`는 `profiles(id)` 참조고 `on delete cascade`다. 지금 흐름에서는 안 탄다 — 비우기가 `profiles` 행을 남기기 때문이다. 표가 참조 무결성을 스스로 들게 두는 값이다
 - `kind`는 알림 종류다. 문장의 정본은 [notifications.md](../../2-design/modules/notification/screens/notifications.md#알림-제목)의 「알림 제목」 표고 이 열은 그 표의 종류를 가리키는 키다
+- **`kind`에 check 제약을 걸지 않는다.** 키 문자열의 목록이 아직 어디에도 없다 — 짓는 것은 [`notification-emit`](notification-emit.md)이고 종류가 늘 때마다 마이그레이션을 더하게 된다. 막는 자리는 DB가 아니라 `src/entities/notification/model/types.ts`의 유니온이다(AC-01의 `payload`와 같은 결)
 - `subject_id`는 그 알림이 가리키는 것의 id다. 근무면 배정, 교대면 교대다. 종류마다 무엇인지는 [`notification-emit`](notification-emit.md)이 정한다
 - `payload`는 `jsonb`다. 문장의 가변값(달·날짜·이름·수)이 들어간다 — **문장 자체는 안 넣는다.** 문구가 바뀌면 지난 알림까지 같이 바뀌어야 하는데 문장을 박아두면 안 바뀐다
 - `read_at`·`claimed_at`·`pushed_at`은 널 허용이고 `push_attempts`는 기본 0이다
