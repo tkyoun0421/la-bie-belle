@@ -17,3 +17,6 @@ __pycache__/
 
 # 시안을 아티팩트로 올릴 때 만드는 복사본
 .artifact/
+
+# Expo
+.expo/

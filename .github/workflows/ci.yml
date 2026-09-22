@@ -41,6 +41,9 @@ jobs:
       - run: pnpm format:check
       - run: pnpm typecheck
       - run: pnpm test
+      - name: 번들이 만들어지는지 본다
+        if: steps.scope.outputs.code == 'true'
+        run: pnpm bundle
       - name: 승인된 spec의 입력이 바뀌면 PR 본문의 영향 확인 절을 본다
         if: github.event_name == 'pull_request'
         env:
@@ -57,8 +60,9 @@ jobs:
         run: supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime
       - run: pnpm test:integration:run
         if: steps.scope.outputs.code == 'true'
-      # 앱을 빌드하는 단계와 e2e가 여기 있었다. 웹을 걷으면서 같이 빠졌다 —
-      # 빌드는 EAS 설정과 같이 서고, e2e는 러너를 고르고 나서다(`e2e-runner`).
+      # e2e가 여기 있었다. 웹을 걷으면서 같이 빠졌다 — 러너를 고르고 나서 선다(`e2e-runner`).
+      # 네이티브 컴파일은 EAS 설정과 같이 온다. 위 `pnpm bundle`은 그 앞 단계인
+      # JavaScript 번들만 본다 — 검증 넷이 다 초록인데 Metro가 못 묶는 일이 있었다.
 
   # 로컬 pre-commit 훅은 opt-in이라 우회 가능하다. CI에서 결정적으로 한 번 더 막는다.
   secrets:
