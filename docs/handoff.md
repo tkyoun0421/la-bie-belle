@@ -6,7 +6,7 @@
 
 ## 다음 작업
 
-**다음 첫 수는 사람 손이다 — 기계만으로 닫을 task가 또 없다.** `expo-scaffold`의 실기기 확인과 `sian-native-pass`의 시안 승인, 그리고 총괄이 정할 결정 둘([navigation Q-03](2-design/system/navigation.md#q-03)·[runtime Q-01](2-design/system/runtime.md#q-01))이 남는다. `ready`로 선 화면 task 넷(`profile-form`·`members-pending`·`profile-screen`·`members`)은 전부 `expo-scaffold`를 선행으로 들어서 그 확인 뒤에 풀린다.
+**다음 첫 수는 사람 손이다 — 기계만으로 닫을 task가 또 없다.** `expo-scaffold`의 실기기 확인과 `sian-native-pass`의 시안 승인, 그리고 총괄이 정할 결정 둘([navigation Q-03](2-design/system/navigation.md#q-03)·[runtime Q-01](2-design/system/runtime.md#q-01))이 남는다. `ready`로 선 화면 task 넷(`profile-form`·`members-pending`·`profile-screen`·`members`)은 전부 `expo-scaffold`를 선행으로 들어서 그 확인 뒤에 풀린다. `lint-rule-catalogue`·`pending-screen-copy`·`admin-home-split`·`admin-home-sian` 넷은 이번 회차로 `done`이다.
 
 **관리자 홈의 짝 시안도 섰다.** [admin-home.sian.html](2-design/system/screens/admin-home.sian.html)이 목업 여섯이고 원본에서 01절을 빼며 02~10을 01~09로 내렸다. 잘라 붙이지 않고 `sian-writer`가 문서를 읽어 새로 그렸다 — 열 절이 CSS 한 덩이를 나눠 써서 잘라내면 죽은 규칙이 따라온다. **감사가 문서에 없는 조합을 잡았다**: 확정 전 목업에 빈 자리 카드와 오늘 현황 실값이 같이 서 있었다. 카드는 확정 뒤 조건이고 오늘 현황은 확정 전에 「–」라, **근무표 상태 하나가 그 목업의 나머지를 다 정한다** — 미니뷰의 「오늘」 표식까지(확정 전 시나리오는 9월 29일이라 10월 미니뷰에 오늘이 없다). 목업을 상태별로 다시 짜고 재감사에서 어긋남이 없었다.
 
@@ -96,6 +96,6 @@
 
 **총괄이 정할 것 둘이 여전히 열려 있다.** [navigation Q-03](2-design/system/navigation.md#q-03) — 종이 QR을 앱 없는 기기로 찍으면 무엇이 뜨나. [runtime Q-01](2-design/system/runtime.md#q-01) — 오래 안 열었다 여는 앱이 무엇을 다시 읽나.
 
-회차 기록은 `docs/log/2026-09-23.md`다. 그 앞 [2026-09-22](log/2026-09-22.md)가 서체·세션·딥링크·진입 판정을 세웠고, 이번 회차는 세 갈래다 — spec 양식에 상태 격자를 더하고 화면 task 스물의 spec을 세워 승인한 것(#391·#392), `claimed-guards-audit`이 사실로만 남기고 넘긴 자리를 포함해 기계만으로 닫히는 task 다섯을 마저 닫은 것(#394~#398: 라우트 타입 게이트, 서체 서브셋, Edge Function import 불가 확인, 생성 타입 대조, 파일 이름 규약), 그리고 e2e 러너를 Maestro로 정해 `e2e-runner`를 닫은 것(#400).
+회차 기록은 `docs/log/2026-09-23.md`다. 그 앞 [2026-09-22](log/2026-09-22.md)가 서체·세션·딥링크·진입 판정을 세웠고, 이번 회차는 네 갈래다 — spec 양식에 상태 격자를 더하고 화면 task 스물의 spec을 세워 승인한 것(#391·#392), `claimed-guards-audit`이 사실로만 남기고 넘긴 자리를 포함해 기계만으로 닫히는 task 다섯을 마저 닫은 것(#394~#398: 라우트 타입 게이트, 서체 서브셋, Edge Function import 불가 확인, 생성 타입 대조, 파일 이름 규약), e2e 러너를 Maestro로 정해 `e2e-runner`를 닫은 것(#400), 그리고 lint 규칙 표를 저장소로 들이고 승인 대기 문안을 1차 기준에 맞추고 관리자 홈을 문서·시안 둘 다 근무표에서 갈라낸 것(#404~#407) — 마지막 갈래에서 `navigation.md`·`components.md`처럼 팬아웃이 큰 문서를 건드리면 「영향 확인」 게이트가 받는 문서 서른한 개의 이름을 본문에 하나씩 요구한다는 것이 드러났다([관찰 018](observations/018-sources-impact-basename-cost-scales-with-fanout.md)).
 
 저장소 밖 자료 — 시안·문서 캔버스 [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)(빌드 소스는 세션 임시 폴더라 다시 못 만든다), 하루 띠 비교 시안 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832).
