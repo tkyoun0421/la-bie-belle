@@ -10,7 +10,7 @@
 
 근무표를 만들고 날을 열고 확정하는 흐름은 [schedule-admin.md](../../modules/schedule/screens/schedule-admin.md)가 담는다. 예시 값도 그 문서의 시나리오를 그대로 쓴다 — 오늘은 9월 29일(화)이고 2026년 10월 근무표를 만드는 중이다. 오늘 현황과 빈 자리 카드만 확정 뒤인 10월 8일(목)이다. 확정 전에는 오늘 현황의 값이 「–」라 그 자리가 무엇을 말하는지 보여주지 못한다.
 
-움직이는 모습은 아직 [`schedule-admin.sian.html`](../../modules/schedule/screens/schedule-admin.sian.html)의 01절에 있다 — 시안을 갈라 이 문서 옆으로 옮기는 것은 backlog의 `admin-home-sian`이다. 시안과 이 문서가 어긋나면 이 문서가 이긴다.
+움직이는 모습은 옆의 `admin-home.sian.html`을 브라우저로 열어 본다. 시안과 이 문서가 어긋나면 이 문서가 이긴다.
 
 ## 참조 기준
 

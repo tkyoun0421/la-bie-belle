@@ -1,0 +1,1061 @@
+<!--
+  관리자 홈 시안 — 사람이 보고 고른 결과다.
+
+  값의 정본은 이 파일이 아니다. 색과 크기와 시간의 정본은 ../../design-system/tokens.md이고,
+  무엇이 어디 놓이고 무슨 글자가 나오는지의 정본은 admin-home.md다.
+  둘과 이 파일이 어긋나면 저 둘이 이긴다.
+
+  이 파일이 맡는 것은 글로 안 남는 것들이다 — 오늘 현황 띠의 실제 비율, 빈 자리
+  카드가 쌓이는 모습, 시트가 올라오는 타이밍, 화면 여럿을 나란히 놓고 보는 눈.
+  구현할 때 이 셋을 같이 연다.
+
+  퍼블리싱 대상이 아니다. 여기 있는 CSS를 앱으로 옮기지 않는다.
+  앱은 shadcn/ui와 Tailwind 위에 토큰을 갈아끼워 만든다 — ../../design-system/README.md의 「퍼블리싱」에 있다.
+
+  오른쪽 위 라이트/다크 토글은 시안 뷰어 크롬이다. 목업 규칙 밖이고 앱에 없다.
+  누르면 문서 루트에 data-theme이 걸리고 목업 팔레트가 tokens.md 1절의 다크 열로 뒤집힌다.
+
+  이 화면의 목업 둘(HOME 뼈대·HOME/SHEET)은 애초에 schedule-admin.sian.html의 01절에
+  살았다. admin-home.md가 근무표 문서에서 갈라져 나오면서 이 파일도 새로 그렸다 —
+  잘라 붙이지 않고 admin-home.md를 다시 읽어 세웠다. 짜임이 11자리에서 14자리로
+  늘었고(가는 선 둘째와 직원·시급·QR·통계 네 줄), 그 아래로 문서가 든 다섯 상태를
+  전부 다뤘다. 원본이 목업 둘만 그리고 나머지는 캡션 글로 남겼던 판단은 admin-home.md의
+  「화면 상태와 흐름」 표가 다섯을 명시로 들면서 더는 못 쓴다.
+
+  근무표 상태가 목업 하나의 나머지 전부를 정한다 — sian-auditor가 잡은 어긋남이다.
+  확정 전(아직 없음·만드는 중)은 오늘 현황이 「–」고 빈 자리 카드가 없다. 확정 뒤라야
+  오늘 현황에 실값이 서고 빈 자리 카드가 조건 따라 선다. 그래서 다섯 목업이 근무표
+  상태를 먼저 정하고 나머지를 거기 맞춘다 — 「값이 다 찬 모습」은 전부 확정 뒤다.
+  「오늘 근무가 없다」는 근무표 상태와 무관한 별도 조건(그날 배정이 없다)이라
+  「아직 없음」에 흡수하지 않고 다섯째 목업이 확정 뒤에서 따로 그린다. 미니뷰의
+  「오늘」 표식은 각 목업이 쓰는 날짜 시나리오를 그대로 따른다 — 확정 뒤(10/8)를
+  오늘로 쓰는 목업은 8번 칸에, 확정 전(9/29)을 오늘로 쓰는 목업은 9/29가 10월 밖이라
+  표식이 없다. 다섯째 목업만 그날이 비었다는 것을 보이려 오늘을 10/6으로 바꿔 쓴다 —
+  이유는 그 목업 캡션에 있다.
+
+  문서가 안 적어 이 파일이 임의로 세운 자리다. 값을 여기서 굳히지 않는다.
+  · 두 번째 가는 선(짜임 10번)의 위아래 여백 — 문서는 「미니뷰와 선 사이 mt-6」만 적어
+    첫 번째 선에만 값이 있다. 같은 mt-6을 대칭으로 얹었다. 리턴의 이슈에 적는다.
+  · 확정 전 오늘 현황의 렌더링 — 「값이 –」만 문서에 있고 보조 줄·띠를 같이 지우는지는
+    안 적혀 있다. 분모가 없다는 문서 설명을 따라 보조 줄과 띠를 통째로 뺐다 — 판단이고,
+    그 목업의 캡션에도 판단이라고 적었다. 이슈에 남긴다.
+  · 다섯째 목업(오늘 근무가 없다)의 오늘 날짜(10/6) — admin-home.md가 고정한 시나리오는
+    확정 전 9/29와 확정 뒤 10/8 둘뿐이다. 「그날만 빈 오늘」을 보이려면 이미 값이 찬 10/8이
+    아닌 날이 필요해 미니뷰에서 안 열린 평일(10/6, 화) 하나를 새로 골랐다. 리턴의 이슈에 적는다.
+-->
+<title>관리자 홈 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css">
+
+<style>
+:root {
+  --b-bg: oklch(0.945 0.004 57);
+  --b-panel: oklch(0.988 0.003 57);
+  --b-ink: oklch(0.27 0.007 57);
+  --b-sub: oklch(0.52 0.006 57);
+  --b-faint: oklch(0.63 0.005 57);
+  --b-line: oklch(0.885 0.005 57);
+  --b-line-strong: oklch(0.8 0.005 57);
+  --b-accent: oklch(0.48 0.115 248);
+  --b-mock-shadow: 0 2px 6px rgba(28,25,22,.06), 0 24px 48px -28px rgba(28,25,22,.5);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+    --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+    --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+    --b-accent: oklch(0.76 0.1 248);
+    --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+  }
+}
+:root[data-theme="dark"] {
+  --b-bg: oklch(0.165 0.004 57); --b-panel: oklch(0.215 0.004 57);
+  --b-ink: oklch(0.925 0.005 57); --b-sub: oklch(0.665 0.005 57); --b-faint: oklch(0.56 0.005 57);
+  --b-line: oklch(0.305 0.005 57); --b-line-strong: oklch(0.38 0.005 57);
+  --b-accent: oklch(0.76 0.1 248);
+  --b-mock-shadow: 0 0 0 1px oklch(0.31 0.005 57);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--b-bg); color: var(--b-ink);
+  font-family: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1300px; margin: 0 auto; padding: 56px 28px 110px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--b-accent); margin: 0 0 14px;
+}
+h1 { font-size: 36px; line-height: 1.25; font-weight: 700; letter-spacing: -.02em; margin: 0 0 16px; }
+.lede { font-size: 16px; color: var(--b-sub); max-width: 60ch; margin: 0; }
+
+section { margin-top: 70px; }
+.sec-head { border-top: 1px solid var(--b-line-strong); padding-top: 18px; margin-bottom: 28px; }
+.sec-num {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  letter-spacing: .12em; color: var(--b-faint); display: block; margin-bottom: 7px;
+}
+h2 { font-size: 23px; font-weight: 700; letter-spacing: -.015em; margin: 0 0 10px; }
+.sec-head p { margin: 0; color: var(--b-sub); max-width: 68ch; font-size: 14.5px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, 375px); gap: 44px 30px; justify-content: start; align-items: start; }
+.item > figcaption { margin-top: 16px; }
+.cap-key { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--b-faint); }
+.cap-name { font-size: 17px; font-weight: 700; margin: 3px 0 6px; letter-spacing: -.01em; }
+.cap-body { font-size: 13.5px; color: var(--b-sub); margin: 0; max-width: 46ch; }
+.cap-body strong { color: var(--b-ink); font-weight: 600; }
+figure.item { margin: 0; }
+code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .88em;
+  background: var(--b-panel); border: 1px solid var(--b-line); border-radius: 4px; padding: 1px 5px;
+}
+
+/* 라이트/다크 토글 — 시안 뷰어 크롬이다. 목업 규칙 밖이라 토큰을 안 쓴다 */
+.themetoggle {
+  position: fixed; top: 16px; right: 18px; z-index: 90;
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 34px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: .06em;
+  color: var(--b-sub); background: var(--b-panel); border: 1px solid var(--b-line-strong);
+  box-shadow: 0 8px 22px -16px rgba(0,0,0,.6);
+}
+.themetoggle:hover { color: var(--b-ink); }
+.themetoggle:focus-visible { outline: 2px solid var(--b-accent); outline-offset: 2px; }
+.themetoggle .ic-sun { display: none; }
+:root[data-theme="dark"] .themetoggle .ic-sun { display: block; }
+:root[data-theme="dark"] .themetoggle .ic-moon { display: none; }
+.themetoggle .lab-dark { display: inline; }
+.themetoggle .lab-light { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-dark { display: none; }
+:root[data-theme="dark"] .themetoggle .lab-light { display: inline; }
+
+/* ─────────── 앱 목업 · tokens.md 값 그대로 ─────────── */
+.mock {
+  --palette-neutral-00: oklch(1.000 0.0001 250);
+  --palette-neutral-100: oklch(0.965 0.0018 250);
+  --palette-neutral-200: oklch(0.905 0.0030 250);
+  --palette-neutral-300: oklch(0.845 0.0046 250);
+  --palette-neutral-400: oklch(0.760 0.0062 250);
+  --palette-neutral-500: oklch(0.680 0.0075 250);
+  --palette-neutral-600: oklch(0.625 0.0080 250);
+  --palette-neutral-700: oklch(0.545 0.0078 250);
+  --palette-neutral-800: oklch(0.455 0.0074 250);
+  --palette-neutral-900: oklch(0.320 0.0062 250);
+  --palette-neutral-1000: oklch(0.215 0.0048 250);
+  --palette-brand-00: oklch(1.000 0.0001 266);
+  --palette-brand-100: oklch(0.965 0.0160 266);
+  --palette-brand-200: oklch(0.905 0.0443 266);
+  --palette-brand-300: oklch(0.845 0.0740 266);
+  --palette-brand-400: oklch(0.760 0.1185 266);
+  --palette-brand-500: oklch(0.680 0.1630 266);
+  --palette-brand-600: oklch(0.625 0.1951 266);
+  --palette-brand-700: oklch(0.545 0.2350 266);
+  --palette-brand-800: oklch(0.455 0.2210 266);
+  --palette-brand-900: oklch(0.320 0.1870 266);
+  --palette-brand-1000: oklch(0.215 0.1440 266);
+  --palette-sky-00: oklch(1.000 0.0001 250);
+  --palette-sky-100: oklch(0.965 0.0168 250);
+  --palette-sky-200: oklch(0.905 0.0465 250);
+  --palette-sky-300: oklch(0.845 0.0776 250);
+  --palette-sky-400: oklch(0.760 0.1241 250);
+  --palette-sky-500: oklch(0.680 0.1504 250);
+  --palette-sky-600: oklch(0.625 0.1600 250);
+  --palette-sky-700: oklch(0.545 0.1502 250);
+  --palette-sky-800: oklch(0.455 0.1258 250);
+  --palette-sky-900: oklch(0.320 0.0896 250);
+  --palette-sky-1000: oklch(0.215 0.0628 250);
+  --palette-mint-00: oklch(1.000 0.0002 183);
+  --palette-mint-100: oklch(0.965 0.0331 183);
+  --palette-mint-200: oklch(0.905 0.0568 183);
+  --palette-mint-300: oklch(0.845 0.0868 183);
+  --palette-mint-400: oklch(0.760 0.1168 183);
+  --palette-mint-500: oklch(0.680 0.1177 183);
+  --palette-mint-600: oklch(0.625 0.1082 183);
+  --palette-mint-700: oklch(0.545 0.0945 183);
+  --palette-mint-800: oklch(0.455 0.0790 183);
+  --palette-mint-900: oklch(0.320 0.0562 183);
+  --palette-mint-1000: oklch(0.215 0.0391 183);
+  --palette-positive-00: oklch(1.000 0.0115 152);
+  --palette-positive-100: oklch(0.965 0.0253 152);
+  --palette-positive-200: oklch(0.905 0.0437 152);
+  --palette-positive-300: oklch(0.845 0.0667 152);
+  --palette-positive-400: oklch(0.760 0.0897 152);
+  --palette-positive-500: oklch(0.680 0.1081 152);
+  --palette-positive-600: oklch(0.625 0.1150 152);
+  --palette-positive-700: oklch(0.545 0.1127 152);
+  --palette-positive-800: oklch(0.455 0.1058 152);
+  --palette-positive-900: oklch(0.320 0.0897 152);
+  --palette-positive-1000: oklch(0.215 0.0690 152);
+  --palette-warning-00: oklch(1.000 0.0160 88);
+  --palette-warning-100: oklch(0.965 0.0352 88);
+  --palette-warning-200: oklch(0.905 0.0608 88);
+  --palette-warning-300: oklch(0.845 0.0928 88);
+  --palette-warning-400: oklch(0.760 0.1248 88);
+  --palette-warning-500: oklch(0.680 0.1504 88);
+  --palette-warning-600: oklch(0.625 0.1600 88);
+  --palette-warning-700: oklch(0.545 0.1568 88);
+  --palette-warning-800: oklch(0.455 0.1472 88);
+  --palette-warning-900: oklch(0.320 0.1248 88);
+  --palette-warning-1000: oklch(0.215 0.0960 88);
+  --palette-critical-00: oklch(1.000 0.0145 27);
+  --palette-critical-100: oklch(0.965 0.0319 27);
+  --palette-critical-200: oklch(0.905 0.0551 27);
+  --palette-critical-300: oklch(0.845 0.0841 27);
+  --palette-critical-400: oklch(0.760 0.1131 27);
+  --palette-critical-500: oklch(0.680 0.1363 27);
+  --palette-critical-600: oklch(0.625 0.1450 27);
+  --palette-critical-700: oklch(0.545 0.1421 27);
+  --palette-critical-800: oklch(0.455 0.1334 27);
+  --palette-critical-900: oklch(0.320 0.1131 27);
+  --palette-critical-1000: oklch(0.215 0.0870 27);
+  --scrim-bg: #181A1C6B;
+}
+.mock.force-dark, :root[data-theme="dark"] .mock:not(.force-light) {
+  --palette-neutral-00: oklch(0.155 0.0008 250);
+  --palette-neutral-100: oklch(0.205 0.0018 250);
+  --palette-neutral-200: oklch(0.265 0.0030 250);
+  --palette-neutral-300: oklch(0.320 0.0046 250);
+  --palette-neutral-400: oklch(0.400 0.0062 250);
+  --palette-neutral-500: oklch(0.480 0.0075 250);
+  --palette-neutral-600: oklch(0.585 0.0080 250);
+  --palette-neutral-700: oklch(0.665 0.0078 250);
+  --palette-neutral-800: oklch(0.745 0.0074 250);
+  --palette-neutral-900: oklch(0.845 0.0062 250);
+  --palette-neutral-1000: oklch(0.935 0.0048 250);
+  --palette-brand-00: oklch(0.155 0.0240 266);
+  --palette-brand-100: oklch(0.205 0.0530 266);
+  --palette-brand-200: oklch(0.265 0.0910 266);
+  --palette-brand-300: oklch(0.320 0.1390 266);
+  --palette-brand-400: oklch(0.400 0.1870 266);
+  --palette-brand-500: oklch(0.480 0.2256 266);
+  --palette-brand-600: oklch(0.585 0.2192 266);
+  --palette-brand-700: oklch(0.665 0.1716 266);
+  --palette-brand-800: oklch(0.745 0.1266 266);
+  --palette-brand-900: oklch(0.845 0.0740 266);
+  --palette-brand-1000: oklch(0.935 0.0300 266);
+  --palette-sky-00: oklch(0.155 0.0160 250);
+  --palette-sky-100: oklch(0.205 0.0354 250);
+  --palette-sky-200: oklch(0.265 0.0606 250);
+  --palette-sky-300: oklch(0.320 0.0896 250);
+  --palette-sky-400: oklch(0.400 0.1109 250);
+  --palette-sky-500: oklch(0.480 0.1325 250);
+  --palette-sky-600: oklch(0.585 0.1600 250);
+  --palette-sky-700: oklch(0.665 0.1566 250);
+  --palette-sky-800: oklch(0.745 0.1326 250);
+  --palette-sky-900: oklch(0.845 0.0776 250);
+  --palette-sky-1000: oklch(0.935 0.0315 250);
+  --palette-mint-00: oklch(0.155 0.0150 183);
+  --palette-mint-100: oklch(0.205 0.0331 183);
+  --palette-mint-200: oklch(0.265 0.0471 183);
+  --palette-mint-300: oklch(0.320 0.0562 183);
+  --palette-mint-400: oklch(0.400 0.0697 183);
+  --palette-mint-500: oklch(0.480 0.0833 183);
+  --palette-mint-600: oklch(0.585 0.1013 183);
+  --palette-mint-700: oklch(0.665 0.1151 183);
+  --palette-mint-800: oklch(0.745 0.1289 183);
+  --palette-mint-900: oklch(0.845 0.1168 183);
+  --palette-mint-1000: oklch(0.935 0.0900 183);
+  --palette-positive-00: oklch(0.155 0.0115 152);
+  --palette-positive-100: oklch(0.205 0.0253 152);
+  --palette-positive-200: oklch(0.265 0.0437 152);
+  --palette-positive-300: oklch(0.320 0.0667 152);
+  --palette-positive-400: oklch(0.400 0.0897 152);
+  --palette-positive-500: oklch(0.480 0.1081 152);
+  --palette-positive-600: oklch(0.585 0.1150 152);
+  --palette-positive-700: oklch(0.665 0.1127 152);
+  --palette-positive-800: oklch(0.745 0.1058 152);
+  --palette-positive-900: oklch(0.845 0.0897 152);
+  --palette-positive-1000: oklch(0.935 0.0690 152);
+  --palette-warning-00: oklch(0.155 0.0160 88);
+  --palette-warning-100: oklch(0.205 0.0352 88);
+  --palette-warning-200: oklch(0.265 0.0608 88);
+  --palette-warning-300: oklch(0.320 0.0928 88);
+  --palette-warning-400: oklch(0.400 0.1248 88);
+  --palette-warning-500: oklch(0.480 0.1504 88);
+  --palette-warning-600: oklch(0.585 0.1600 88);
+  --palette-warning-700: oklch(0.665 0.1568 88);
+  --palette-warning-800: oklch(0.745 0.1472 88);
+  --palette-warning-900: oklch(0.845 0.1248 88);
+  --palette-warning-1000: oklch(0.935 0.0960 88);
+  --palette-critical-00: oklch(0.155 0.0145 27);
+  --palette-critical-100: oklch(0.205 0.0319 27);
+  --palette-critical-200: oklch(0.265 0.0551 27);
+  --palette-critical-300: oklch(0.320 0.0841 27);
+  --palette-critical-400: oklch(0.400 0.1131 27);
+  --palette-critical-500: oklch(0.480 0.1363 27);
+  --palette-critical-600: oklch(0.585 0.1450 27);
+  --palette-critical-700: oklch(0.665 0.1421 27);
+  --palette-critical-800: oklch(0.745 0.1334 27);
+  --palette-critical-900: oklch(0.845 0.1131 27);
+  --palette-critical-1000: oklch(0.935 0.0870 27);
+  --scrim-bg: #0C0C0C6B;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mock:not(.force-light) {
+    --palette-neutral-00: oklch(0.155 0.0008 250);
+    --palette-neutral-100: oklch(0.205 0.0018 250);
+    --palette-neutral-200: oklch(0.265 0.0030 250);
+    --palette-neutral-300: oklch(0.320 0.0046 250);
+    --palette-neutral-400: oklch(0.400 0.0062 250);
+    --palette-neutral-500: oklch(0.480 0.0075 250);
+    --palette-neutral-600: oklch(0.585 0.0080 250);
+    --palette-neutral-700: oklch(0.665 0.0078 250);
+    --palette-neutral-800: oklch(0.745 0.0074 250);
+    --palette-neutral-900: oklch(0.845 0.0062 250);
+    --palette-neutral-1000: oklch(0.935 0.0048 250);
+    --palette-brand-00: oklch(0.155 0.0240 266);
+    --palette-brand-100: oklch(0.205 0.0530 266);
+    --palette-brand-200: oklch(0.265 0.0910 266);
+    --palette-brand-300: oklch(0.320 0.1390 266);
+    --palette-brand-400: oklch(0.400 0.1870 266);
+    --palette-brand-500: oklch(0.480 0.2256 266);
+    --palette-brand-600: oklch(0.585 0.2192 266);
+    --palette-brand-700: oklch(0.665 0.1716 266);
+    --palette-brand-800: oklch(0.745 0.1266 266);
+    --palette-brand-900: oklch(0.845 0.0740 266);
+    --palette-brand-1000: oklch(0.935 0.0300 266);
+    --palette-sky-00: oklch(0.155 0.0160 250);
+    --palette-sky-100: oklch(0.205 0.0354 250);
+    --palette-sky-200: oklch(0.265 0.0606 250);
+    --palette-sky-300: oklch(0.320 0.0896 250);
+    --palette-sky-400: oklch(0.400 0.1109 250);
+    --palette-sky-500: oklch(0.480 0.1325 250);
+    --palette-sky-600: oklch(0.585 0.1600 250);
+    --palette-sky-700: oklch(0.665 0.1566 250);
+    --palette-sky-800: oklch(0.745 0.1326 250);
+    --palette-sky-900: oklch(0.845 0.0776 250);
+    --palette-sky-1000: oklch(0.935 0.0315 250);
+    --palette-mint-00: oklch(0.155 0.0150 183);
+    --palette-mint-100: oklch(0.205 0.0331 183);
+    --palette-mint-200: oklch(0.265 0.0471 183);
+    --palette-mint-300: oklch(0.320 0.0562 183);
+    --palette-mint-400: oklch(0.400 0.0697 183);
+    --palette-mint-500: oklch(0.480 0.0833 183);
+    --palette-mint-600: oklch(0.585 0.1013 183);
+    --palette-mint-700: oklch(0.665 0.1151 183);
+    --palette-mint-800: oklch(0.745 0.1289 183);
+    --palette-mint-900: oklch(0.845 0.1168 183);
+    --palette-mint-1000: oklch(0.935 0.0900 183);
+    --palette-positive-00: oklch(0.155 0.0115 152);
+    --palette-positive-100: oklch(0.205 0.0253 152);
+    --palette-positive-200: oklch(0.265 0.0437 152);
+    --palette-positive-300: oklch(0.320 0.0667 152);
+    --palette-positive-400: oklch(0.400 0.0897 152);
+    --palette-positive-500: oklch(0.480 0.1081 152);
+    --palette-positive-600: oklch(0.585 0.1150 152);
+    --palette-positive-700: oklch(0.665 0.1127 152);
+    --palette-positive-800: oklch(0.745 0.1058 152);
+    --palette-positive-900: oklch(0.845 0.0897 152);
+    --palette-positive-1000: oklch(0.935 0.0690 152);
+    --palette-warning-00: oklch(0.155 0.0160 88);
+    --palette-warning-100: oklch(0.205 0.0352 88);
+    --palette-warning-200: oklch(0.265 0.0608 88);
+    --palette-warning-300: oklch(0.320 0.0928 88);
+    --palette-warning-400: oklch(0.400 0.1248 88);
+    --palette-warning-500: oklch(0.480 0.1504 88);
+    --palette-warning-600: oklch(0.585 0.1600 88);
+    --palette-warning-700: oklch(0.665 0.1568 88);
+    --palette-warning-800: oklch(0.745 0.1472 88);
+    --palette-warning-900: oklch(0.845 0.1248 88);
+    --palette-warning-1000: oklch(0.935 0.0960 88);
+    --palette-critical-00: oklch(0.155 0.0145 27);
+    --palette-critical-100: oklch(0.205 0.0319 27);
+    --palette-critical-200: oklch(0.265 0.0551 27);
+    --palette-critical-300: oklch(0.320 0.0841 27);
+    --palette-critical-400: oklch(0.400 0.1131 27);
+    --palette-critical-500: oklch(0.480 0.1363 27);
+    --palette-critical-600: oklch(0.585 0.1450 27);
+    --palette-critical-700: oklch(0.665 0.1421 27);
+    --palette-critical-800: oklch(0.745 0.1334 27);
+    --palette-critical-900: oklch(0.845 0.1131 27);
+    --palette-critical-1000: oklch(0.935 0.0870 27);
+    --scrim-bg: #0C0C0C6B;
+  }
+}
+.mock {
+  --bg-neutral: var(--palette-neutral-00);
+  --bg-neutral-weak: var(--palette-neutral-100);
+  --bg-neutral-weak-pressed: var(--palette-neutral-200);
+  --bg-neutral-solid: var(--palette-neutral-1000);
+  --bg-neutral-solid-soft: var(--palette-neutral-900);
+  --bg-neutral-disabled: var(--palette-neutral-100);
+  --bg-neutral-muted: var(--palette-neutral-400);
+  --bg-brand-solid: var(--palette-brand-700);
+  --bg-brand-solid-pressed: var(--palette-brand-800);
+  --bg-brand-weak: var(--palette-brand-100);
+  --bg-brand-weak-pressed: var(--palette-brand-200);
+  --bg-brand-weak-selected: var(--palette-brand-100);
+  --bg-brand-muted: var(--palette-brand-300);
+  --bg-sky: var(--palette-sky-600);
+  --bg-sky-weak: var(--palette-sky-100);
+  --bg-mint: var(--palette-mint-600);
+  --bg-mint-weak: var(--palette-mint-100);
+  --bg-positive-weak: var(--palette-positive-100);
+  --bg-warning-weak: var(--palette-warning-100);
+  --bg-critical-solid: var(--palette-critical-800);
+  --bg-critical-solid-pressed: var(--palette-critical-900);
+  --bg-critical-weak: var(--palette-critical-100);
+  --fg-neutral: var(--palette-neutral-1000);
+  --fg-neutral-muted: var(--palette-neutral-800);
+  --fg-neutral-subtle: var(--palette-neutral-700);
+  --fg-neutral-contrast: var(--palette-neutral-00);
+  --fg-neutral-disabled: var(--palette-neutral-800);
+  --fg-brand: var(--palette-brand-700);
+  --fg-brand-contrast: var(--palette-neutral-00);
+  --fg-sky: var(--palette-sky-800);
+  --fg-sky-contrast: var(--palette-sky-400);
+  --fg-mint: var(--palette-mint-800);
+  --fg-positive: var(--palette-positive-800);
+  --fg-critical: var(--palette-critical-800);
+  --fg-positive-contrast: var(--palette-positive-400);
+  --stroke-neutral: var(--palette-neutral-200);
+  --stroke-neutral-muted: var(--palette-neutral-300);
+  --stroke-neutral-disabled: var(--palette-neutral-200);
+  --stroke-brand-solid: var(--palette-brand-700);
+  --stroke-sky: var(--palette-sky-600);
+  --stroke-mint: var(--palette-mint-600);
+
+  --t-xs: .8125rem; --lh-xs: 1.21875rem;
+  --t-sm: .9375rem; --lh-sm: 1.40625rem;
+  --t-base: 1.0625rem; --lh-base: 1.59375rem;
+  --t-lg: 1.25rem; --lh-lg: 1.8125rem;
+  --t-xl: 1.375rem; --lh-xl: 1.9375rem;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 14px; --r-xl: 20px;
+  --d-fast: 125ms; --d-base: 180ms; --d-slow: 240ms; --d-slower: 300ms;
+
+  width: 375px; height: 764px; border-radius: 26px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  background: var(--bg-neutral); color: var(--fg-neutral);
+  font-family: "Wanted Sans Variable", -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", sans-serif;
+  font-size: var(--t-base); line-height: var(--lh-base);
+  box-shadow: var(--b-mock-shadow);
+}
+.mock .num { font-variant-numeric: tabular-nums; }
+.mock.auto { height: auto; min-height: 0; }
+
+.statusbar {
+  flex: 0 0 auto; height: 46px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px 0 30px; font-size: var(--t-xs); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.sb-right { display: flex; align-items: center; gap: 5px; }
+.appbar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
+  padding: 4px 24px 12px; min-height: 44px;
+}
+.appbar .who { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+.appbar .sp { flex: 1 1 auto; }
+.brandmark {
+  width: 28px; height: 28px; border-radius: var(--r-sm); background: var(--bg-brand-solid);
+  color: var(--fg-brand-contrast); display: grid; place-items: center;
+  font-size: var(--t-xs); font-weight: 700; flex: 0 0 auto;
+}
+/* 종 아이콘 — components.md 「종 아이콘」. lucide Bell 28px fg.neutral, 안 읽음 점은
+   bg.brand-solid 8px 원에 bg.neutral 2px 테두리. 관리자 홈에서만 브랜드 마크 왼쪽에
+   선다(admin-home.md 「관리자 홈 짜임」 1번) */
+.bellic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; color: var(--fg-neutral); }
+.bellic::after { content: ""; position: absolute; inset: -8px; }
+.bellic .dot {
+  position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; border-radius: 999px;
+  background: var(--bg-brand-solid); border: 2px solid var(--bg-neutral); box-sizing: content-box;
+}
+.backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
+.backic::after { content: ""; position: absolute; inset: -8px; }
+.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+.mock.auto .body { overflow: visible; padding-bottom: 24px; }
+.spacer { flex: 1 1 auto; min-height: 8px; }
+.rule { height: 1px; background: var(--stroke-neutral); flex: 0 0 auto; }
+
+/* 버튼 — 기본값 시트의 닫기·바꾸기 */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 48px; border-radius: var(--r-lg); border: 0;
+  font-size: var(--t-sm); font-weight: 500; font-family: inherit;
+  background: var(--bg-brand-solid); color: var(--fg-brand-contrast); cursor: pointer;
+}
+.btn.secondary { background: var(--bg-neutral-weak); color: var(--fg-neutral); }
+.rowbtns { display: flex; gap: 8px; margin-top: 16px; }
+.rowbtns .btn.secondary { flex: 0 0 100px; }
+
+/* 근무표 관리 타일 — components.md 「card」 */
+.tile {
+  border-radius: var(--r-xl); background: var(--bg-neutral); padding: 24px;
+  border: 1px solid var(--stroke-neutral);
+  display: flex; align-items: center; gap: 12px; cursor: pointer;
+}
+.tile .tt { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
+.tile .ts { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.chev { flex: 0 0 auto; color: var(--fg-neutral-subtle); margin-left: auto; }
+
+/* 줄 — components.md 「ListRow」. 값이 없는 줄(직원·시급·QR·통계)은 이름표 뒤에 바로
+   화살표가 붙게 마진을 되돌린다(admin-home.md 「아래 넷에는 숫자가 없다」) */
+.lrow { display: flex; align-items: center; gap: 8px; padding: 16px 0; cursor: pointer; }
+.lrow + .lrow { border-top: 1px solid var(--stroke-neutral); }
+.lrow .lk { font-size: var(--t-base); font-weight: 500; }
+.lrow .lv { margin-left: auto; font-size: var(--t-sm); color: var(--fg-neutral-muted); font-variant-numeric: tabular-nums; }
+.lrow .chev { margin-left: 0; }
+.lrow.novalue .chev { margin-left: auto; }
+
+/* 오늘 현황 — 앱바 바로 아래 첫 자리. 앱바와 사이는 mt-2, 이름표와 값 줄 사이는 mt-1,
+   값 줄 아래 띠는 mt-3(admin-home.md 「관리자 홈 여백과 모양」). 지각을 안 가른다 —
+   몫이 찍은 것(brand)과 안 찍은 것(neutral-weak) 둘뿐이다. 확정 전에는 보조 줄과 띠를
+   통째로 뺀다 — 문서는 값만 「–」라 적고 그 아래를 지우는지는 안 적었다, 판단이다 */
+.todaystat { margin-top: 8px; cursor: pointer; }
+.todaystat .ts-label { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
+.todaystat .ts-row { margin-top: 4px; display: flex; align-items: baseline; gap: 8px; }
+.todaystat .ts-value { font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 700; color: var(--fg-neutral); }
+.todaystat .ts-sub { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.todaystat .ts-bar { margin-top: 12px; height: 8px; border-radius: 999px; display: flex; gap: 2px; overflow: hidden; }
+.todaystat .ts-bar .done { background: var(--bg-brand-solid); border-radius: 999px; }
+.todaystat .ts-bar .undone { background: var(--bg-neutral-weak); border-radius: 999px; }
+
+/* 빈 자리 카드 — components.md 「알림 블록」의 경고를 그대로 쓴다. 타일과 사이 mt-3,
+   카드끼리 mt-2(admin-home.md 「관리자 홈 여백과 모양」) */
+.block { border-radius: var(--r-lg); padding: 16px; display: flex; gap: 8px; }
+.block.warn { background: var(--bg-warning-weak); }
+.block .bi { flex: 0 0 auto; margin-top: 2px; color: var(--palette-warning-500); }
+.block .bt { font-size: var(--t-sm); font-weight: 600; }
+.block .bl { margin-top: 4px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); font-variant-numeric: tabular-nums; }
+.vacancy { cursor: pointer; }
+.vacancy + .vacancy { margin-top: 8px; }
+
+/* 이번 달 미니뷰 — components.md 「미니 달력」. 칸 20px 정사각, 칸 사이 4px, 관리자
+   표식은 칸 배경이 bg.brand-weak~bg.brand-solid로 진해진다(문서 값). 인원수별 정확한
+   진하기 단계는 토큰에 없어 color-mix로 두 토큰 사이를 보간했다. 안 연 날은 빈칸이라
+   날짜 숫자조차 없다 */
+.minical { cursor: pointer; }
+.minical .mc-label { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral); font-weight: 600; }
+.minidow { display: grid; grid-template-columns: repeat(7, 20px); gap: 4px; margin-top: 8px; }
+.minidow span { text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
+.minigrid { display: grid; grid-template-columns: repeat(7, 20px); grid-auto-rows: 20px; gap: 4px; margin-top: 4px; }
+.minicell {
+  width: 20px; height: 20px; border-radius: var(--r-xs); display: flex; align-items: center;
+  justify-content: center; font-size: var(--t-xs); line-height: 1; color: var(--fg-neutral-subtle);
+  font-variant-numeric: tabular-nums;
+}
+.minicell.today { border-radius: 999px; background: var(--bg-neutral-solid); color: var(--fg-neutral-contrast); }
+
+/* 바텀시트와 덮개 */
+.scrim {
+  position: absolute; inset: 0; z-index: 3; background: var(--scrim-bg);
+  opacity: 0; pointer-events: none; transition: opacity var(--d-slow) ease-out;
+}
+.mock.modal-open .scrim { opacity: 1; pointer-events: auto; }
+.rsheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+  background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 8px 24px 24px; border-top: 1px solid var(--stroke-neutral);
+  transform: translateY(102%); transition: transform var(--d-slow) cubic-bezier(.2,.8,.25,1);
+}
+.mock.modal-open .rsheet { transform: none; }
+.grab { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 8px; }
+.sh-title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 700; letter-spacing: -.01em; }
+.field { margin-top: 16px; }
+.field .lab { font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); margin-bottom: 6px; }
+.field .box {
+  border-radius: var(--r-md); background: var(--bg-neutral-weak); border: 1px solid var(--stroke-neutral);
+  padding: 12px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral);
+  font-variant-numeric: tabular-nums;
+}
+.fhint { margin-top: 6px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
+.fields2 { display: flex; gap: 8px; }
+.fields2 .field { flex: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mock * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+</style>
+
+<!-- 시안 뷰어 크롬 — 목업이 아니다 -->
+<button class="themetoggle" type="button" data-theme-toggle aria-label="라이트/다크 전환">
+  <svg class="ic-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="ic-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  <span class="lab-dark">다크로</span>
+  <span class="lab-light">라이트로</span>
+</button>
+
+<div class="wrap">
+  <p class="eyebrow">라비에벨 · 시스템 · 관리자 홈</p>
+  <h1>관리자 홈 시안</h1>
+  <p class="lede">
+    admin-home.md의 시나리오 그대로다 — 오늘은 9월 29일(화)이고 2026년 10월 근무표를
+    만드는 중이다. 오늘 현황과 빈 자리 카드만 확정 뒤인 10월 8일(목) 예시를 쓴다.
+    오른쪽 위 토글이 페이지 전체를 라이트와 다크로 뒤집는다.
+  </p>
+
+  <!-- 01 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">01 / 정상과 근무표 상태</span>
+      <h2>근무표 상태가 나머지 전부를 정한다</h2>
+      <p>확정 전(아직 없음·만드는 중)은 오늘 현황이 「–」고 빈 자리 카드가 없다 — 배정이 안 굳어 분모가 없어서다. 확정 뒤라야 오늘 현황에 실값이 서고 빈 자리 카드가 조건 따라 선다. 그래서 다섯 목업이 저마다 근무표 상태를 먼저 정하고 나머지를 그 상태에 맞춘다 — 어느 목업도 확정 전인데 실값이 있거나 빈 자리 카드가 선 조합을 만들지 않는다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock auto">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span><span class="who">관리자</span><span class="sp"></span><span class="bellic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="dot"></span></span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="todaystat">
+              <div class="ts-label num">10월 8일(목)</div>
+              <div class="ts-row">
+                <span class="ts-value num">9명</span>
+                <span class="ts-sub num">출근 7 · 안 찍음 2</span>
+              </div>
+              <div class="ts-bar">
+                <span class="done" style="flex:7 7 0%"></span>
+                <span class="undone" style="flex:2 2 0%"></span>
+              </div>
+            </div>
+            <div class="tile" style="margin-top:24px">
+              <div>
+                <div class="tt">근무표 관리</div>
+                <div class="ts num">10월 근무표를 확정했어요 · 빈 자리 2</div>
+              </div>
+              <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="block warn vacancy" style="margin-top:12px">
+              <span class="bi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+              <div>
+                <div class="bt">10월 10일(토) 예식에 빈 자리 1</div>
+                <div class="bl">2일 남았어요</div>
+              </div>
+            </div>
+            <div class="minical" style="margin-top:24px">
+              <div class="mc-label">10월</div>
+              <div class="minidow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+              <div class="minigrid">
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 27%, var(--bg-brand-weak))">3</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 64%, var(--bg-brand-weak))">4</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell today num">8</span>
+                <span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 76%, var(--bg-brand-weak))">10</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 39%, var(--bg-brand-weak))">11</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 100%, var(--bg-brand-weak))">17</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 15%, var(--bg-brand-weak))">18</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 76%, var(--bg-brand-weak))">24</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 51%, var(--bg-brand-weak))">25</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 88%, var(--bg-brand-weak))">31</span>
+                <span class="minicell"></span>
+              </div>
+            </div>
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="lrow">
+              <span class="lk">근무 시간 기본값</span>
+              <span class="lv num">10:00–19:00</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow">
+              <span class="lk">승인할 일</span>
+              <span class="lv num">3건</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow">
+              <span class="lk">가입 대기</span>
+              <span class="lv num">2명</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <!-- 짜임 10번째 자리, 「가는 선」 둘째 — 문서 스페이싱 표에 이 자리의 값이 없어
+                 첫 번째 선(미니뷰와 선 사이)과 같은 mt-6을 대칭으로 뒀다. 리턴의 이슈에 적는다 -->
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="lrow novalue">
+              <span class="lk">직원</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow novalue">
+              <span class="lk">시급</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow novalue">
+              <span class="lk">QR</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow novalue">
+              <span class="lk">통계</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">HOME</div>
+          <div class="cap-name">정상 — 확정 뒤, 열넷이 다 선다</div>
+          <p class="cap-body">근무표 상태가 <strong>확정 뒤</strong>라 오늘 현황에 실값이 서고 빈 자리 카드가 조건대로 선다 — 「값이 다 찬 모습」은 확정 뒤에서만 가능하다(만드는 중·아직 없음은 다른 목업). 앱바부터 통계 줄까지 「관리자 홈 짜임」 열넷이 순서대로다. 가는 선이 <strong>둘</strong> — 첫째가 보는 것과 굴리는 것을 가르고, 둘째가 굴리는 것과 어쩌다 한 번인 것(직원·시급·QR·통계)을 가른다. <strong>아래 넷에는 숫자가 없다.</strong></p>
+          <p class="cap-body" style="margin-top:8px">오늘 현황은 찍은 몫(<code>bg.brand-solid</code>)과 안 찍은 몫(<code>bg.neutral-weak</code>) 둘뿐이고 지각은 안 가른다. 안 찍음이 0이면 보조 줄이 「전원 출근했어요」로 바뀐다 — 문안 표의 분기이고 이 목업은 그리지 않았다. 미니뷰의 오늘 표식은 이 목업이 쓰는 오늘(10/8)을 따라 8번 칸에 선다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock auto">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span><span class="who">관리자</span><span class="sp"></span><span class="bellic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="dot"></span></span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="todaystat">
+              <div class="ts-label num">10월 8일(목)</div>
+              <div class="ts-row">
+                <span class="ts-value num">9명</span>
+                <span class="ts-sub num">출근 7 · 안 찍음 2</span>
+              </div>
+              <div class="ts-bar">
+                <span class="done" style="flex:7 7 0%"></span>
+                <span class="undone" style="flex:2 2 0%"></span>
+              </div>
+            </div>
+            <div class="tile" style="margin-top:24px">
+              <div>
+                <div class="tt">근무표 관리</div>
+                <div class="ts num">10월 근무표를 확정했어요 · 빈 자리 2</div>
+              </div>
+              <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="block warn vacancy" style="margin-top:12px">
+              <span class="bi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+              <div>
+                <div class="bt">10월 10일(토) 예식에 빈 자리 1</div>
+                <div class="bl">2일 남았어요</div>
+              </div>
+            </div>
+            <div class="block warn vacancy">
+              <span class="bi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+              <div>
+                <div class="bt">10월 8일(목) 예식에 빈 자리 1</div>
+                <div class="bl">오늘이에요</div>
+              </div>
+            </div>
+            <div class="minical" style="margin-top:24px">
+              <div class="mc-label">10월</div>
+              <div class="minidow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+              <div class="minigrid">
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 27%, var(--bg-brand-weak))">3</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 64%, var(--bg-brand-weak))">4</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell today num">8</span>
+                <span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 76%, var(--bg-brand-weak))">10</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 39%, var(--bg-brand-weak))">11</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 100%, var(--bg-brand-weak))">17</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 15%, var(--bg-brand-weak))">18</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 76%, var(--bg-brand-weak))">24</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 51%, var(--bg-brand-weak))">25</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 88%, var(--bg-brand-weak))">31</span>
+                <span class="minicell"></span>
+              </div>
+            </div>
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="lrow">
+              <span class="lk">근무 시간 기본값</span>
+              <span class="lv num">10:00–19:00</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow">
+              <span class="lk">승인할 일</span>
+              <span class="lv num">3건</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow">
+              <span class="lk">가입 대기</span>
+              <span class="lv num">2명</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">HOME / 빈 자리 둘</div>
+          <div class="cap-name">예식 3일 안에 빈 자리 — 카드가 쌓인다</div>
+          <p class="cap-body">근무표 상태는 정상 목업과 같은 <strong>확정 뒤</strong>다 — 빈 자리 카드 자체가 「확정 뒤 예식이 사흘 안인데 빈 자리가 남았다」는 조건이라 확정 전에는 아예 설 수 없다. 사흘 안에 예식이 둘이면 카드도 둘이다 — 타일 안에 있으면 하루치만 말할 수 있었던 것을 밖으로 뺀 이유다. 카드끼리 <code>mt-2</code>로 붙는다. 둘째 카드가 「오늘이에요」 문구를 쓴다 — 문안 표의 「당일이면 「오늘이에요」」 분기다. 둘째 카드의 정확한 빈 자리 수는 문서에 없어 첫째 카드와 같은 「1」을 그대로 이었다 — 새 수치를 지어내지 않으려는 판단이다. 미니뷰의 오늘 표식은 정상 목업과 같이 8번 칸이다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock auto">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span><span class="who">관리자</span><span class="sp"></span><span class="bellic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="dot"></span></span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="todaystat">
+              <div class="ts-label num">9월 29일(화)</div>
+              <div class="ts-row">
+                <span class="ts-value num">–</span>
+              </div>
+            </div>
+            <div class="tile" style="margin-top:24px">
+              <div>
+                <div class="tt">근무표 관리</div>
+                <div class="ts num">10월 근무표 · 열린 날 9 · 빈 자리 6</div>
+              </div>
+              <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="minical" style="margin-top:24px">
+              <div class="mc-label">10월</div>
+              <div class="minidow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+              <div class="minigrid">
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 27%, var(--bg-brand-weak))">3</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 64%, var(--bg-brand-weak))">4</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell today num">8</span>
+                <span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 76%, var(--bg-brand-weak))">10</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 39%, var(--bg-brand-weak))">11</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 100%, var(--bg-brand-weak))">17</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 15%, var(--bg-brand-weak))">18</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 76%, var(--bg-brand-weak))">24</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 51%, var(--bg-brand-weak))">25</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 88%, var(--bg-brand-weak))">31</span>
+                <span class="minicell"></span>
+              </div>
+            </div>
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="lrow">
+              <span class="lk">근무 시간 기본값</span>
+              <span class="lv num">10:00–19:00</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow">
+              <span class="lk">승인할 일</span>
+              <span class="lv num">3건</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow">
+              <span class="lk">가입 대기</span>
+              <span class="lv num">2명</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">HOME / 만드는 중</div>
+          <div class="cap-name">확정 전 — 값이 「–」고 빈 자리 카드가 없다</div>
+          <p class="cap-body">근무표 상태는 <strong>만드는 중</strong>(확정 전)이고, 그래서 오늘 현황과 빈 자리 카드가 정상 목업과 다르다. 확정 전에는 배정이 안 굳어 분모가 없다 — 값 자리가 「–」 하나뿐이다. <strong>보조 줄과 띠를 같이 뺐다</strong> — 문서는 값만 「–」라고 적고 보조 줄·띠까지 지우는지는 안 적었다, 판단이라 리턴의 이슈에 남긴다. <strong>빈 자리 카드도 없다</strong> — 「확정 뒤 예식이 사흘 안」이 조건이라 확정 전엔 조건 자체가 성립하지 않는다. 타일은 「10월 근무표 · 열린 날 9 · 빈 자리 6」 그대로다. 오늘(9월 29일)이 미니뷰가 보여주는 10월 밖이라 오늘 표식이 없다 — 열린 아홉 칸(주말)은 그대로 보인다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock auto">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span><span class="who">관리자</span><span class="sp"></span><span class="bellic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="dot"></span></span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="tile" style="margin-top:8px">
+              <div>
+                <div class="tt">근무표 관리</div>
+                <div class="ts num">10월 근무표가 아직 없어요</div>
+              </div>
+              <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="minical" style="margin-top:24px">
+              <div class="mc-label">10월</div>
+              <div class="minidow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+              <div class="minigrid">
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+              </div>
+            </div>
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="lrow">
+              <span class="lk">근무 시간 기본값</span>
+              <span class="lv num">10:00–19:00</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow">
+              <span class="lk">승인할 일</span>
+              <span class="lv num">3건</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow">
+              <span class="lk">가입 대기</span>
+              <span class="lv num">2명</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">HOME / 아직 없음</div>
+          <div class="cap-name">근무표 상태가 갈릴 때 — 아직 없음</div>
+          <p class="cap-body">근무표 상태 셋(아직 없음·만드는 중·확정 뒤) 중 나머지 변형이다. 그 달에 연 날이 하나도 없으니 그날 배정도 없어 <strong>오늘 현황 자리가 통째로 없다</strong> — 다만 이 목업이 「오늘 근무가 없다」 상태 자체를 대표하지는 않는다. 그 상태(그날만 비고 나머지는 배정이 있는 경우)는 근무표 상태와 무관한 별도 조건이라 다섯째 목업(HOME / 오늘 근무가 없다)이 확정 뒤에서 따로 그린다. 위 간격을 이어받아 타일이 <code>mt-2</code>로 앱바 바로 아래에 선다. 미니뷰는 연 날이 없어 전부 빈칸이고, 오늘(9월 29일)도 10월 밖이라 표식이 없다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock auto">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span><span class="who">관리자</span><span class="sp"></span><span class="bellic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="dot"></span></span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="tile" style="margin-top:8px">
+              <div>
+                <div class="tt">근무표 관리</div>
+                <div class="ts num">10월 근무표를 확정했어요 · 빈 자리 2</div>
+              </div>
+              <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="minical" style="margin-top:24px">
+              <div class="mc-label">10월</div>
+              <div class="minidow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+              <div class="minigrid">
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 27%, var(--bg-brand-weak))">3</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 64%, var(--bg-brand-weak))">4</span>
+                <span class="minicell"></span>
+                <span class="minicell today num">6</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 76%, var(--bg-brand-weak))">10</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 39%, var(--bg-brand-weak))">11</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 100%, var(--bg-brand-weak))">17</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 15%, var(--bg-brand-weak))">18</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 76%, var(--bg-brand-weak))">24</span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 51%, var(--bg-brand-weak))">25</span>
+                <span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span><span class="minicell"></span>
+                <span class="minicell num" style="background:color-mix(in oklch, var(--bg-brand-solid) 88%, var(--bg-brand-weak))">31</span>
+                <span class="minicell"></span>
+              </div>
+            </div>
+            <div class="rule" style="margin-top:24px"></div>
+            <div class="lrow">
+              <span class="lk">근무 시간 기본값</span>
+              <span class="lv num">10:00–19:00</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow">
+              <span class="lk">승인할 일</span>
+              <span class="lv num">3건</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+            <div class="lrow">
+              <span class="lk">가입 대기</span>
+              <span class="lv num">2명</span>
+              <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">HOME / 오늘 근무가 없다</div>
+          <div class="cap-name">확정 뒤인데 그날만 비었다</div>
+          <p class="cap-body">근무표 상태는 <strong>확정 뒤</strong>다 — 다른 확정 뒤 목업과 같은 「10월 근무표를 확정했어요 · 빈 자리 2」 문구를 쓴다. 조건은 근무표 상태와 무관하게 「그날 배정이 없다」뿐이라(admin-home.md), 확정 뒤인 달에도 오늘만 비면 <strong>오늘 현황 자리가 통째로 없다</strong> — 앱바 바로 아래가 타일이고 위 간격을 이어받아 <code>mt-2</code>로 선다. 빈 자리 카드도 없다 — 10월 10일 예식이 이 목업의 오늘에서 사흘을 넘어서다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>이 목업만 오늘을 10월 6일(화)로 바꿔 그렸다.</strong> admin-home.md가 고정한 확정 뒤 시나리오의 오늘(10/8)은 이미 배정이 9명 찬 날이라 「그날만 빈 오늘」을 보이는 데 못 쓴다 — 미니뷰에서 애초에 안 열린 평일 하나를 새로 골랐다. 미니뷰의 오늘 표식이 8번이 아니라 6번 칸에 선다. 판단이라 리턴의 이슈에 남긴다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">02 / 기본값 시트</span>
+      <h2>출근·퇴근 두 칸과 소급하지 않는다는 말</h2>
+      <p>근무 시간 기본값 줄을 누르면 바텀시트가 아래에서 올라온다 — <code>--duration-slow</code>. 도움말이 소급하지 않는다는 것을 먼저 말한다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>9:41</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar"><span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span><span class="who">관리자</span><span class="sp"></span><span class="bellic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="dot"></span></span><span class="brandmark">라</span></div>
+          <div class="body">
+            <div class="todaystat">
+              <div class="ts-label num">10월 8일(목)</div>
+              <div class="ts-row">
+                <span class="ts-value num">9명</span>
+                <span class="ts-sub num">출근 7 · 안 찍음 2</span>
+              </div>
+              <div class="ts-bar">
+                <span class="done" style="flex:7 7 0%"></span>
+                <span class="undone" style="flex:2 2 0%"></span>
+              </div>
+            </div>
+            <div class="tile" style="margin-top:24px">
+              <div>
+                <div class="tt">근무표 관리</div>
+                <div class="ts num">10월 근무표를 확정했어요 · 빈 자리 2</div>
+              </div>
+            </div>
+            <div class="block warn vacancy" style="margin-top:12px">
+              <span class="bi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+              <div>
+                <div class="bt">10월 10일(토) 예식에 빈 자리 1</div>
+                <div class="bl">2일 남았어요</div>
+              </div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title">근무 시간 기본값</div>
+            <div class="fields2">
+              <div class="field"><div class="lab">출근</div><div class="box">10:00</div></div>
+              <div class="field"><div class="lab">퇴근</div><div class="box">19:00</div></div>
+            </div>
+            <div class="fhint">날을 열면 이 시간이 깔려요. 이미 연 날은 그대로예요</div>
+            <div class="rowbtns">
+              <button class="btn secondary">닫기</button>
+              <button class="btn">바꾸기</button>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">HOME / SHEET</div>
+          <div class="cap-name">근무 시간 기본값</div>
+          <p class="cap-body">도움말이 소급하지 않는다는 것을 미리 말한다 — <strong>이미 연 날은 그대로</strong>다. 연 날의 근무 시간은 열던 순간 깔린 값이라 바꾸고 싶으면 날 상세에서 하나씩 고친다.</p>
+          <p class="cap-body" style="margin-top:8px">시트 뒤로 오늘 현황과 빈 자리 카드가 그대로 깔린다 — 기본값을 시트로 고치는 동안에도 바탕은 같은 관리자 홈이다. 미니뷰와 아래 줄들은 시트가 덮는 자리라 이 목업에서는 뺐다.</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.querySelector("[data-theme-toggle]");
+  if (!btn) return;
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  root.dataset.theme = mq && mq.matches ? "dark" : "light";
+  btn.addEventListener("click", function () {
+    root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+  });
+})();
+</script>
