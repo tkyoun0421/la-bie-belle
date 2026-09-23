@@ -8,20 +8,32 @@ from guard import exists, guard
 
 E2E_ROOT = "tests/e2e"
 
+# Maestro 플로우는 YAML이다(ADR-013).
+FLOW_SUFFIX = ".yaml"
+
 # Expo Router는 `src/app/` 아래 `.tsx`를 전부 라우트로 읽는다. 디렉터리를
-# 대표하는 둘은 그 디렉터리 이름으로, 나머지는 제 파일명으로 스펙을 찾는다.
+# 대표하는 둘은 그 디렉터리 이름으로, 나머지는 제 파일명으로 플로우를 찾는다.
 DIRECTORY_ROUTES = ("index.tsx", "_layout.tsx")
 
 
 def spec_name(path):
+    # 화면은 `.tsx`다(ADR-001). `src/screens/` 아래 순수 계산 `.ts`까지
+    # 화면으로 읽으면 플로우가 있을 수 없는 파일을 막는다.
+    if not path.endswith(".tsx"):
+        return None
+
     if path.startswith("src/screens/"):
         parts = path.split("/")
-        return parts[2] if len(parts) > 2 else None
+        # 슬라이스 이름은 디렉터리다 — `src/screens/<이름>/...`. 디렉터리를 안 끼고
+        # 바로 선 화면은 제 파일명이 이름이다. 그런 자리를 그냥 통과시키면 게이트를
+        # 끄는 구멍이 된다.
+        if len(parts) > 3:
+            return parts[2]
+
+        return parts[2][: -len(".tsx")]
 
     if path.startswith("src/app/"):
         directory, filename = os.path.split(path)
-        if not filename.endswith(".tsx"):
-            return None
 
         if filename not in DIRECTORY_ROUTES:
             return filename[: -len(".tsx")]
@@ -37,22 +49,17 @@ def spec_name(path):
 
 
 def verdict(path, _read):
-    # e2e 러너를 아직 안 골랐다(ADR-011이 Maestro와 Detox를 열어뒀다).
-    # 쓸 자리가 없는 동안은 아무것도 요구하지 않는다.
-    if not exists(E2E_ROOT):
-        return None
-
     name = spec_name(path)
     if not name:
         return None
 
-    expected = f"{E2E_ROOT}/{name}.spec.ts"
+    expected = f"{E2E_ROOT}/{name}{FLOW_SUFFIX}"
     if exists(expected):
         return None
 
     return (
-        f"TDD 차단: {path} 는 화면인데 e2e 테스트가 없다.\n"
-        f"{expected} 를 먼저 쓰고, 그 테스트가 실패하는 것을 확인한 뒤 구현해라.\n"
+        f"TDD 차단: {path} 는 화면인데 e2e 플로우가 없다.\n"
+        f"{expected} 를 먼저 쓰고, 그 플로우가 실패하는 것을 확인한 뒤 구현해라.\n"
     )
 
 

@@ -151,7 +151,7 @@ sources:
 
 - `jest-expo` 프리셋으로 unit 테스트가 돈다
 - `tests/lint/` 34개 중 프레임워크를 안 타는 것은 그대로 옮긴다. Tailwind를 돌리는 둘은 다시 쓴다(AC-03·AC-04)
-- `tests/e2e/` 여덟과 `playwright.config.ts`가 없어진다. Maestro와 Detox 중 어느 쪽인지는 이 task가 안 정한다 — 화면이 하나도 없어 e2e가 볼 것이 없다. [`backlog.md`](../../backlog.md)에 행을 새로 연다
+- `tests/e2e/` 여덟과 `playwright.config.ts`가 없어진다. 어느 러너로 갈지는 이 task가 안 정한다 — 화면이 하나도 없어 e2e가 볼 것이 없다. [`backlog.md`](../../backlog.md)에 행을 새로 열고, 그 `e2e-runner`가 [ADR-013](../../2-design/adr/ADR-013-e2e-runner-maestro.md)으로 Maestro를 골랐다
 - integration 테스트(`src/**/__tests__/**/*.integration.test.ts`)는 Supabase에만 붙어 그대로 돈다
 
 ### AC-12
@@ -185,7 +185,7 @@ sources:
 
 **거부되는 유틸이 있다.** v5 호환성 문서가 네이티브에서 거부하는 목록을 든다 — `fixed`·`sticky`·`overflow-auto`와 축별 overflow·`w-fit` 같은 고유 크기 키워드·`origin-*`·`order-*`·`inset-auto`·`border-none`·`align-baseline` 등이다. 지금 설계 문서에 그 유틸을 든 자리는 없다. 화면을 만들 때 쓰게 되면 그때 걸린다.
 
-**e2e가 한동안 없다.** Playwright를 걷고 Maestro나 Detox를 안 정하니 그 사이에 e2e가 0이다. 화면이 없어 볼 것도 없지만, 첫 화면 task가 서기 전에 그 행이 닫혀야 한다.
+**e2e가 한동안 없었다.** Playwright를 걷고 러너를 안 정한 사이에 e2e가 0이었다. 그 자리는 `e2e-runner`가 닫았다 — [ADR-013](../../2-design/adr/ADR-013-e2e-runner-maestro.md)이 Maestro를 골랐고 플로우는 `tests/e2e/`에 YAML로 산다. 돌릴 앱이 없어 아직 실행은 못 한다.
 
 **되돌리는 단위는 이 task 전체다.** 골격은 쪼개서 되돌릴 수 없다 — Expo가 반쯤 선 저장소는 Next로도 Expo로도 안 돈다.
 

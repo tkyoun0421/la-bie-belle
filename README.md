@@ -14,7 +14,7 @@ pnpm dev
 
 - `pnpm lint` · `pnpm typecheck` · `pnpm test` — 코드와 문서 검사
 - `pnpm test:integration` — 로컬 Supabase를 띄우고 붙는 테스트
-- `pnpm build` 뒤 `pnpm e2e` — Playwright
+- `pnpm e2e` — Maestro 플로우. 기기나 시뮬레이터에 앱이 올라가 있어야 돈다
 
 clone 뒤 한 번 `git config core.hooksPath .githooks`를 돈다. 시크릿 패턴과 포맷을 커밋 전에 검사한다.
 
