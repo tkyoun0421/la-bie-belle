@@ -72,8 +72,8 @@ dependencies:
     specifier: ~2.32.0
     version: 2.32.0(react-native@0.86.3)(react@19.2.3)
   react-native-get-random-values:
-    specifier: ^2.0.0
-    version: 2.0.0(react-native@0.86.3)
+    specifier: ^1.11.0
+    version: 1.11.0(react-native@0.86.3)
   react-native-reanimated:
     specifier: 4.5.1
     version: 4.5.1(react-native-worklets@0.10.1)(react-native@0.86.3)(react@19.2.3)
@@ -7761,10 +7761,10 @@ packages:
       react: 19.2.3
       react-native: 0.86.3(@babel/core@7.29.7)(@react-native/jest-preset@0.86.3)(@react-native/metro-config@0.87.1)(@types/react@19.2.18)(react@19.2.3)
 
-  /react-native-get-random-values@2.0.0(react-native@0.86.3):
-    resolution: {integrity: sha512-wx7/aPqsUIiWsG35D+MsUJd8ij96e3JKddklSdrdZUrheTx89gPtz3Q2yl9knBArj5u26Cl23T88ai+Q0vypdQ==}
+  /react-native-get-random-values@1.11.0(react-native@0.86.3):
+    resolution: {integrity: sha512-4BTbDbRmS7iPdhYLRcz3PGFIpFJBwNZg9g42iwa2P6FOv9vZj/xJc678RZXnLNZzd0qd7Q3CCF6Yd+CU2eoXKQ==}
     peerDependencies:
-      react-native: '>=0.81'
+      react-native: '>=0.56'
     dependencies:
       fast-base64-decode: 1.0.0
       react-native: 0.86.3(@babel/core@7.29.7)(@react-native/jest-preset@0.86.3)(@react-native/metro-config@0.87.1)(@types/react@19.2.18)(react@19.2.3)

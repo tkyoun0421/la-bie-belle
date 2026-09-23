@@ -61,7 +61,7 @@ sources:
 
 **Expo 프로젝트가 선다.**
 
-- SDK 57로 앱이 iOS 시뮬레이터와 Android 에뮬레이터에서 뜬다
+- SDK 57로 앱이 iOS 시뮬레이터와 Android 에뮬레이터에서 뜬다. **안드로이드는 Expo Go로 확인했고 iOS는 Expo Go로 못 한다** — App Store의 Expo Go가 SDK 54에서 멈춰 있다([Expo Go의 한계](../../4-test/execution.md#expo-go의-한계)). iOS 쪽은 개발 빌드가 서야 닫힌다
 - Expo Router를 쓰고 라우트 파일은 `src/app/` 아래다 — FSD의 `app` 층이 그 자리였고 ADR-011이 「`.ts`와 `.tsx`의 경계는 그대로다」라 정했다
 - `tsconfig.json`의 alias 셋이 그대로 돈다
 - `package.json`의 스크립트가 바뀐다 — `dev`가 `expo start`, `build`가 없어지고, `typecheck`에서 `next typegen`이 빠진다. `tokens:css`와 `sian:inline`은 그대로다
