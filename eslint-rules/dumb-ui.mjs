@@ -1,8 +1,5 @@
-import path from "node:path";
-
 const SUPABASE = /^@supabase\//;
 const QUERY_PACKAGE = "@tanstack/react-query";
-const PROVIDER_WIRING = "src/app/providers.tsx";
 const GLOBALS = new Set(["window", "globalThis", "global", "self"]);
 
 const QUERY_HOOKS = new Set([
@@ -37,12 +34,6 @@ const dumbUi = {
     },
   },
   create(context) {
-    const relative = path
-      .relative(context.cwd, context.filename)
-      .split(path.sep)
-      .join("/");
-    const wiresProviders = relative === PROVIDER_WIRING;
-
     const hookBindings = new Map();
     const namespaceBindings = new Set();
     const calls = [];
@@ -51,7 +42,7 @@ const dumbUi = {
       ImportDeclaration(node) {
         const source = node.source.value;
 
-        if (SUPABASE.test(source) && !wiresProviders) {
+        if (SUPABASE.test(source)) {
           context.report({
             node: node.source,
             messageId: "database",
