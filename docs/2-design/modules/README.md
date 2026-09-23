@@ -16,7 +16,7 @@ PRD는 왜 만드는지를 담고 규칙은 안 담는다. [`../spec/`](../spec/
 - [attendance/](attendance/) — 출근 인증. 위치와 QR, 인증 시각. [규칙](attendance/README.md) · [설계](attendance/design.md) · 화면: [check-in](attendance/screens/check-in.md) · [excuse](attendance/screens/excuse.md) · [qr](attendance/screens/qr.md)
 - [payroll/](payroll/) — 급여. 시급과 가산과 조정과 지급 주기. [규칙](payroll/README.md) · [설계](payroll/design.md) · 화면: [payroll](payroll/screens/payroll.md) · [wages](payroll/screens/wages.md)
 - [notification/](notification/) — 알림. 무엇이 언제 누구에게 나가나. [규칙](notification/README.md) · [설계](notification/design.md) · 화면 [notifications](notification/screens/notifications.md)
-- [`../system/screens/`](../system/screens/) — 여러 영역에 걸치는 화면. [dashboard](../system/screens/dashboard.md) · [approvals](../system/screens/approvals.md) · [stats](../system/screens/stats.md)
+- [`../system/screens/`](../system/screens/) — 여러 영역에 걸치는 화면. [dashboard](../system/screens/dashboard.md) · [admin-home](../system/screens/admin-home.md) · [approvals](../system/screens/approvals.md) · [stats](../system/screens/stats.md)
 
 새 영역이 생기면 폴더를 더하고 여기에 한 줄을 더한다. 파일만 더하고 이 목록을 안 고치면 지도가 거짓말을 한다. 화면 문서가 늘면 소유 영역의 줄에 링크를 더한다 — 빠지면 `pnpm test`의 디자인 지도 검사가 잡는다.
 

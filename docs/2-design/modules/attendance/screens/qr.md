@@ -6,7 +6,7 @@
 
 근무자는 홀에서 이 코드를 찍어 출근을 남긴다. 위치와 QR 둘 중 하나만 통과하면 되고, 규칙은 [attendance/README.md](../README.md#att-001)에 있다.
 
-들어오는 문은 [관리자 홈](../../../modules/schedule/screens/schedule-admin.md#관리자-홈)의 「QR」 줄이다.
+들어오는 문은 [관리자 홈](../../../system/screens/admin-home.md)의 「QR」 줄이다.
 
 경로와 역할 조건은 [navigation.md](../../../system/navigation.md#경로)가 든다.
 
@@ -18,7 +18,7 @@
 - design의 행위 — [design.md](../design.md#qr-바꾸기), [design.md](../design.md#홀-좌표와-반경)
 - 탐색 — [navigation.md](../../../system/navigation.md#경로)
 - 공통 시각·문안 — [tokens.md](../../../design-system/tokens.md), [components.md](../../../design-system/components.md), [writing.md](../../../design-system/writing.md)
-- 다른 영역 — [schedule-admin.md](../../../modules/schedule/screens/schedule-admin.md#관리자-홈), [dashboard.md](../../../system/screens/dashboard.md)
+- 다른 영역 — [admin-home.md](../../../system/screens/admin-home.md), [dashboard.md](../../../system/screens/dashboard.md)
 
 ## 화면 상태와 흐름
 

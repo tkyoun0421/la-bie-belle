@@ -1,14 +1,14 @@
 ---
 sources:
   - ../../2-design/spec/schedule-admin.md
-  - ../../2-design/modules/schedule/screens/schedule-admin.md#관리자-홈
+  - ../../2-design/system/screens/admin-home.md
   - ../../2-design/modules/schedule/screens/schedule-admin.md#달-근무표-만들기
   - ../../2-design/modules/schedule/screens/schedule-admin.md#월-달력
   - ../../2-design/modules/schedule/screens/schedule-admin.md#날-열기-모드
   - ../../2-design/modules/schedule/screens/schedule-admin.md#근무-신청-모아보기
   - ../../2-design/modules/schedule/screens/schedule-admin.md#확정
   - ../../2-design/modules/schedule/screens/schedule-admin.md#확정-뒤
-  - ../../2-design/modules/schedule/screens/schedule-admin.md#관리자-홈-짜임
+  - ../../2-design/system/screens/admin-home.md#관리자-홈-짜임
   - ../../2-design/modules/schedule/screens/schedule-admin.md#달-근무표-만들기-짜임
   - ../../2-design/modules/schedule/screens/schedule-admin.md#월-달력-짜임
   - ../../2-design/modules/schedule/screens/schedule-admin.md#달력-칸
@@ -21,7 +21,7 @@ sources:
   - ../../2-design/modules/schedule/screens/schedule-admin.md#결과
   - ../../2-design/modules/schedule/screens/schedule-admin.md#확정-뒤-짜임
   - ../../2-design/modules/schedule/screens/schedule-admin.md#확정-뒤-달력
-  - ../../2-design/modules/schedule/screens/schedule-admin.md#관리자-홈-문안
+  - ../../2-design/system/screens/admin-home.md#관리자-홈-문안
   - ../../2-design/modules/schedule/screens/schedule-admin.md#달-근무표-만들기-문안
   - ../../2-design/modules/schedule/screens/schedule-admin.md#월-달력-문안
   - ../../2-design/modules/schedule/screens/schedule-admin.md#날-열기-모드-문안
@@ -66,7 +66,7 @@ sources:
 
 ## 입력 명세·기준
 
-정본은 [schedule-admin.md](../../2-design/modules/schedule/screens/schedule-admin.md)다 — [관리자 홈](../../2-design/modules/schedule/screens/schedule-admin.md#관리자-홈)·[달 근무표 만들기](../../2-design/modules/schedule/screens/schedule-admin.md#달-근무표-만들기)·[월 달력](../../2-design/modules/schedule/screens/schedule-admin.md#월-달력)·[날 열기 모드](../../2-design/modules/schedule/screens/schedule-admin.md#날-열기-모드)·[근무 신청 모아보기](../../2-design/modules/schedule/screens/schedule-admin.md#근무-신청-모아보기)·[확정](../../2-design/modules/schedule/screens/schedule-admin.md#확정)·[확정 뒤](../../2-design/modules/schedule/screens/schedule-admin.md#확정-뒤)의 상태 표, 그 짜임 절들, 문안 표 일곱이다. 달 고르기 시트는 근무자 화면과 같은 것이라 [schedule-worker.md](../../2-design/modules/schedule/screens/schedule-worker.md#달-고르기-시트-짜임)가 정본이다. 쓰기 함수는 [schedule-data](schedule-data.md)가 낸 `create_schedule`·`set_application_deadline`·`confirm_schedule`·`open_day`·`close_day`·`set_day_hours`·`set_hall_defaults` 일곱이고, 이 task는 그것을 부르는 화면이다. 규칙은 [SCH-001](../../2-design/modules/schedule/README.md#sch-001)~[SCH-005](../../2-design/modules/schedule/README.md#sch-005)·[SCH-007](../../2-design/modules/schedule/README.md#sch-007)~[SCH-010](../../2-design/modules/schedule/README.md#sch-010)·[SCH-014](../../2-design/modules/schedule/README.md#sch-014)다. 경로와 역할 조건은 [navigation.md](../../2-design/system/navigation.md#경로), 캐시 키와 무효화는 [runtime.md](../../2-design/system/runtime.md#무효화-표)다.
+정본은 [schedule-admin.md](../../2-design/modules/schedule/screens/schedule-admin.md)다 — [관리자 홈](../../2-design/system/screens/admin-home.md)·[달 근무표 만들기](../../2-design/modules/schedule/screens/schedule-admin.md#달-근무표-만들기)·[월 달력](../../2-design/modules/schedule/screens/schedule-admin.md#월-달력)·[날 열기 모드](../../2-design/modules/schedule/screens/schedule-admin.md#날-열기-모드)·[근무 신청 모아보기](../../2-design/modules/schedule/screens/schedule-admin.md#근무-신청-모아보기)·[확정](../../2-design/modules/schedule/screens/schedule-admin.md#확정)·[확정 뒤](../../2-design/modules/schedule/screens/schedule-admin.md#확정-뒤)의 상태 표, 그 짜임 절들, 문안 표 일곱이다. 달 고르기 시트는 근무자 화면과 같은 것이라 [schedule-worker.md](../../2-design/modules/schedule/screens/schedule-worker.md#달-고르기-시트-짜임)가 정본이다. 쓰기 함수는 [schedule-data](schedule-data.md)가 낸 `create_schedule`·`set_application_deadline`·`confirm_schedule`·`open_day`·`close_day`·`set_day_hours`·`set_hall_defaults` 일곱이고, 이 task는 그것을 부르는 화면이다. 규칙은 [SCH-001](../../2-design/modules/schedule/README.md#sch-001)~[SCH-005](../../2-design/modules/schedule/README.md#sch-005)·[SCH-007](../../2-design/modules/schedule/README.md#sch-007)~[SCH-010](../../2-design/modules/schedule/README.md#sch-010)·[SCH-014](../../2-design/modules/schedule/README.md#sch-014)다. 경로와 역할 조건은 [navigation.md](../../2-design/system/navigation.md#경로), 캐시 키와 무효화는 [runtime.md](../../2-design/system/runtime.md#무효화-표)다.
 
 **날 상세는 껍데기까지다.** 화면 아홉이 한 흐름이라 한 문서에 있지만 task는 둘로 갈린다. 이 task가 만드는 것은 날 상세의 앱바·근무 시간 줄·근무 신청 줄·「이 날 닫기」와 [날 닫기 경고](../../2-design/modules/schedule/screens/schedule-admin.md#날-닫기-경고)까지고, 포지션 아홉 줄 안쪽 — 자리 카드·자물쇠·끌기·자리 추가·사람 픽커·사람 시트·자격·강제 변경 — 은 [`schedule-assign`](../../backlog.md)이다. 가르는 선이 `open_day`/`close_day`와 `add_slot`/`add_assignment` 사이고, backlog가 이미 그렇게 나눴다. 이 task의 PR에서 포지션 줄 자리는 배정 수만 세는 임시 줄이고, `schedule-assign`이 그 자리를 채우며 임시 줄을 지운다.
 
@@ -103,7 +103,7 @@ sources:
 - 신청 수 — 그 날짜의 `availabilities` 행 수. 확정 뒤에는 세지 않는다([확정 뒤 달력](../../2-design/modules/schedule/screens/schedule-admin.md#확정-뒤-달력))
 - 빈 자리 수 — 그 날의 살아 있는 `slots` 중 살아 있는 정규 `assignments`가 없는 것. 확정 전에는 칸에 안 그린다
 - 확정 버튼의 세 모습 — `confirmed_at`이 있으면 끝남, 없고 오늘이 `application_deadline` 다음 날 이후면 열림, 아니면 잠김. 잠김의 보조 문구가 「10월 3일부터 확정할 수 있어요」다
-- 홈 타일 요약 줄 — 근무표 없음 / 만드는 중 / 확정 뒤로 갈리고, 확정 뒤 예식이 사흘 안인데 빈 자리가 남으면 경고 블록으로 승격한다([관리자 홈 짜임](../../2-design/modules/schedule/screens/schedule-admin.md#관리자-홈-짜임))
+- 홈 타일 요약 줄 — 근무표 없음 / 만드는 중 / 확정 뒤로 갈리고, 확정 뒤 예식이 사흘 안인데 빈 자리가 남으면 경고 블록으로 승격한다([관리자 홈 짜임](../../2-design/system/screens/admin-home.md#관리자-홈-짜임))
 - 마감 줄 — 「스케줄 신청 마감 10월 2일(금) · 3일 남았어요」. 마감이 지났으면 문구가 갈린다
 - 「전부 지난 달」 판정 — 그 달의 마지막 날이 오늘 이전이면 만들기 버튼이 없고 빈 상태 제목만이다([달 근무표 만들기 짜임](../../2-design/modules/schedule/screens/schedule-admin.md#달-근무표-만들기-짜임))
 - 열기 모드의 고를 수 있는 칸 — 안 연 날이면서 오늘 이후. 「n일 열기」가 고른 수를 센다

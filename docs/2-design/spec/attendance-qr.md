@@ -8,7 +8,7 @@ sources:
   - ../modules/attendance/design.md#qr-바꾸기
   - ../modules/attendance/design.md#인쇄용-종이-내보내기
   - ../modules/attendance/screens/qr.md
-  - ../modules/schedule/screens/schedule-admin.md#관리자-홈
+  - ../system/screens/admin-home.md
   - ../system/navigation.md#경로
   - ../system/data-access.md#오류의-모양
 ---
