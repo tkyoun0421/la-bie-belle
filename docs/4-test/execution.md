@@ -86,11 +86,19 @@
 
 ### `pnpm dev`
 
-- 전제: `pnpm install --frozen-lockfile`이 끝나 있고 `EXPO_PUBLIC_SUPABASE_URL`·`EXPO_PUBLIC_SUPABASE_ANON_KEY`가 env에 있다. 값은 번들에 박히므로 띄우기 전에 넘긴다.
+- 전제: `pnpm install --frozen-lockfile`이 끝나 있고 `EXPO_PUBLIC_SUPABASE_URL`·`EXPO_PUBLIC_SUPABASE_ANON_KEY`가 env에 있다. 값은 번들에 박히므로 띄우기 전에 넘긴다. 기기의 Expo Go가 프로젝트와 같은 SDK여야 한다 — 아래 [Expo Go의 한계](#expo-go의-한계).
 - 실행: `pnpm dev` — `expo start`. 뜨는 QR을 Expo Go로 찍으면 기기에서 본다.
 - 정상 결과: 번들이 만들어지고 기기에 첫 화면이 뜬다.
 - 실패할 때: NativeWind가 CSS를 빌드 때 읽으니 `globals.css`가 네이티브 컴파일러가 안 받는 문법을 들면 여기서 던진다. 번들이 안 만들어지는 자리는 [`pnpm bundle`](#pnpm-bundle)이 CI에서 먼저 잡는다.
 - 근거 위치: 대화형이라 CI 단계가 없다. 네이티브 컴파일을 검사에 넣는 자리는 EAS 설정과 같이 선다.
+
+#### Expo Go의 한계
+
+**SDK가 어긋나면 `Project is incompatible with this version of Expo Go`로 끝난다.** Expo Go는 제 바이너리가 아는 SDK만 띄운다.
+
+**iOS는 Expo Go로 이 프로젝트를 못 띄운다.** Expo의 버전 불일치 문서가 App Store의 Expo Go는 SDK 54에서 멈췄다고 적는다 — 프로젝트는 SDK 57이다. 안드로이드는 Play Store 것을 올리면 뜬다. SDK별 Expo Go를 따로 받는 길이 `expo.dev/go?sdkVersion=<번호>&platform=android`고, 그마저 막히면 개발 빌드다.
+
+**네이티브 모듈은 Expo Go 것이 돈다.** 프로젝트가 설치한 버전이 아니라 Expo Go 바이너리에 든 버전이 실행된다 — 둘이 어긋나면 JS는 통과하고 런타임에 조용히 깨진다. `npx expo install --check`가 그 어긋남을 알려주고, Expo Go로 확인하기 전에 맞춰야 그 확인이 무언가를 증명한다.
 
 ### `pnpm e2e`
 

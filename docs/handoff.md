@@ -50,7 +50,15 @@
 
 **spec 게이트는 열렸지만 그것으로 화면 task가 풀리지 않는다.** 화면이 있는 task 스물하나 전부에 spec이 서고 `approved`다 — 남은 미작성은 cron·Edge Function·배포 문서처럼 화면이 없는 것뿐이다. `spec-gate.py`가 이제 `feat/<슬러그>` 브랜치의 `src/` 쓰기를 통과시킨다. 그래도 화면 task 열넷은 여전히 `expo-scaffold`(실기기 확인 — 사람 손)에 막혀 있다. spec은 게이트 조건 중 하나였을 뿐이고, 그 조건이 풀렸다고 남은 조건까지 풀리지는 않는다.
 
-**실기기 확인이 유일한 병목이다.** [expo-scaffold](backlog.md)의 AC-01·02·03·04·05·07(재시작)·08·10이 남는다 — 시뮬레이터나 실기기에서만 닫힌다. `pnpm dev`(= `expo start`)를 사람이 별도 터미널에서 띄워 뜨는 QR을 Expo Go로 찍어야 한다. 세션 유지(앱 재시작 후 로그인), 판정이 끝날 때까지 스플래시가 서 있는지, 서체가 바뀌면서 글자가 안 뛰는지가 이 확인의 알맹이다. `payroll-data`는 `rehearsal`이 화면(`/me/rehearsals`)을 들어 이 병목에 묶인다.
+**안드로이드 실기기 확인을 한 번 돌렸고 결과가 [evidence](4-test/evidence/expo-scaffold.md)에 있다.** 저장소 첫 evidence 파일이다. AC-04(기기 다크 모드를 따른다)와 AC-09(세션 없이 열면 `/login`)가 닫혔다 — AC-04는 plan이 「v4의 `[data-theme]`는 네이티브가 거부한다」를 근거로 `prefers-color-scheme`로 옮긴 자리라 그 옮김이 도는 것을 처음 본 것이다.
+
+**남은 것이 셋으로 갈린다.** iOS는 **Expo Go로 영영 안 된다** — App Store의 Expo Go가 SDK 54에서 멈췄고 프로젝트는 57이다([Expo Go의 한계](4-test/execution.md#expo-go의-한계)). 개발 빌드가 서야 AC-01의 iOS 절반이 닫히고, 같은 빌드가 Maestro 플로우 실행도 막고 있다. AC-07·AC-08은 로그인이 필요한데 로컬 Supabase에 구글 프로바이더가 없다. AC-02·AC-03의 팔레트 대조·AC-05·AC-10은 잴 조각과 누를 조각이 화면에 서야 판정할 수 있어 첫 화면 task를 기다린다 — 자리표시자로 통과를 적지 않는다.
+
+**AC-05는 통과로 안 적었다.** 글자가 그려지는 것이 서체 로드의 증거가 아니다 — `shouldRenderApp`이 `loaded || error !== null`이라 서체가 실패해도 화면이 그려진다.
+
+**AC-04의 「앱에서 덮는다」를 `profile-screen`으로 넘겼다.** 골격의 몫은 기기 설정을 따르는 것까지고, 고르는 자리가 `/me`라 고를 수 없는 값을 저장하는 배선은 검증할 수 없다. `profile-screen` AC-05가 그 조건을 이미 들고 있어 spec은 안 고쳤다.
+
+`payroll-data`는 `rehearsal`이 화면(`/me/rehearsals`)을 들어 이 병목에 묶인다.
 
 **구글 로그인 왕복은 별도로 막혀 있다.** 로컬 Supabase에 구글 프로바이더가 없어 `/auth/v1/authorize`가 400으로 끝난다 — 실 Supabase 프로젝트와 구글 OAuth 클라이언트가 서야 보이고, 그 자리는 [environments.md Q-01·Q-03](5-deploy/environments.md#q-01)이다.
 

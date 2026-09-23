@@ -61,7 +61,7 @@ sources:
 
 **Expo 프로젝트가 선다.**
 
-- SDK 57로 앱이 iOS 시뮬레이터와 Android 에뮬레이터에서 뜬다
+- SDK 57로 앱이 iOS 시뮬레이터와 Android 에뮬레이터에서 뜬다. **안드로이드는 Expo Go로 확인했고 iOS는 Expo Go로 못 한다** — App Store의 Expo Go가 SDK 54에서 멈춰 있다([Expo Go의 한계](../../4-test/execution.md#expo-go의-한계)). iOS 쪽은 개발 빌드가 서야 닫힌다
 - Expo Router를 쓰고 라우트 파일은 `src/app/` 아래다 — FSD의 `app` 층이 그 자리였고 ADR-011이 「`.ts`와 `.tsx`의 경계는 그대로다」라 정했다
 - `tsconfig.json`의 alias 셋이 그대로 돈다
 - `package.json`의 스크립트가 바뀐다 — `dev`가 `expo start`, `build`가 없어지고, `typecheck`에서 `next typegen`이 빠진다. `tokens:css`와 `sian:inline`은 그대로다
@@ -86,10 +86,10 @@ sources:
 **테마가 기기 설정을 따르고 앱에서 덮인다.**
 
 - **지금 방식이 거부된다.** `globals.css`가 `@custom-variant dark`로 `[data-theme]` 속성을 받는데, v5 호환성 문서가 「The v4 class dark mode configuration is rejected with migration guidance」·「Use React Native Appearance and `useColorScheme` for native dark mode」라 적고 `:root.dark` 같은 한정 선택자를 네이티브 컴파일러가 거부한다고 못 박는다
-- `dark:`는 `prefers-color-scheme` 미디어쿼리로 간다. 앱에서 덮는 길은 `Appearance.setColorScheme()`이다 — 「기기 설정대로 · 밝게 · 어둡게」 셋 중 앞엣것이 기본이고 나머지 둘이 덮는다
+- `dark:`는 `prefers-color-scheme` 미디어쿼리로 간다. **기기 설정을 따르는 것까지가 골격의 몫이다**
 - 변수를 갈래마다 다시 정의해야 하면 `VariableContextProvider`를 쓴다. v4의 `vars()`는 폐기 예정이라 안 쓴다
-- 고른 값은 기기 저장소의 `theme` 하나고 계정에 안 둔다. 앱이 뜨면서 그것을 읽어 첫 화면부터 그 테마로 그린다([profile.md](../../2-design/modules/account/screens/profile.md#화면))
 - `dark-variant-compiles.test.ts`가 그 갈래를 실제로 컴파일해 본다. [tokens.md](../../2-design/design-system/tokens.md)의 「적응형 팔레트」와 8.1이 따라간다
+- **앱에서 덮는 것은 여기가 아니다.** 「기기 설정대로 · 밝게 · 어둡게」를 고르고 그 값이 기기 저장소에 남아 다음 실행에 사는 축은 [profile-screen AC-05](../../2-design/spec/profile-screen.md)가 든다 — 고르는 자리가 `/me`고([profile.md](../../2-design/modules/account/screens/profile.md#화면)) 고를 수 없는 값을 저장하는 배선은 검증할 수 없다. `Appearance.setColorScheme()`이 그 길이다
 
 ### AC-05
 
@@ -191,13 +191,15 @@ sources:
 
 ## 검증 방법
 
+수동 확인의 실행 결과는 [evidence](../../4-test/evidence/expo-scaffold.md)가 든다 — 무엇이 통과하고 무엇이 환경 탓에 미실행인지가 거기 있다.
+
 | 완료 조건 | 깨질 수 있는 것 | 테스트 층·위치 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
 | AC-01 | 앱이 안 뜬다 | 수동 | `pnpm dev` 뒤 시뮬레이터 | iOS·Android 둘 다 첫 화면이 뜬다 |
 | AC-02 | 여백과 글자가 문서보다 작게 나온다 | 수동 + unit — `tests/lint/native-compile-values.test.ts` | 시뮬레이터, `pnpm test` | 네이티브 rem이 14가 아니라 16이고, `p-4`가 16·`text-base`가 17로 컴파일된다 |
 | AC-03 | 색이 안 나오거나 다른 색이 나온다 | 수동 + unit — `tests/lint/native-compile-values.test.ts` | 시뮬레이터, `pnpm test` | 팔레트가 OKLCH가 아니라 hex로 풀리고 브랜드가 ADR-012의 값이다. 시뮬레이터의 색이 시안과 같다 |
 | AC-03 | 역할 토큰 이름이 바뀐다 | unit — `tests/lint/design-token-values.test.ts` | `pnpm test` | `tokens.md`의 표와 생성물이 같다 |
-| AC-04 | 다크에서 라이트 색이 나온다 | 수동 + unit — `dark-media-query-compiles`·`native-compile-values` | 시뮬레이터, `pnpm test` | 팔레트 변수가 `prefers-color-scheme` 조건 하나로 둘로 갈린다. 기기 설정을 따르고, `Appearance.setColorScheme()`으로 고른 값이 그것을 덮는다 |
+| AC-04 | 다크에서 라이트 색이 나온다 | 수동 + unit — `dark-media-query-compiles`·`native-compile-values` | 시뮬레이터, `pnpm test` | 팔레트 변수가 `prefers-color-scheme` 조건 하나로 둘로 갈리고, 기기 설정을 켜면 화면이 그것을 따른다 |
 | AC-05 | 서체가 시스템 것으로 떨어진다 | 수동 | 시뮬레이터 | 굵기 넷이 다 다르게 보인다 |
 | AC-05 · AC-09 | 스플래시가 한쪽만 기다리고 내려간다 | 수동 | 시뮬레이터, 콜드 스타트 여러 번 | 글자가 시스템 서체로 한 프레임 그려지지도, 잘못된 층이 비치지도 않는다. 둘이 같은 지점에 걸려서 한 번에 본다 |
 | AC-06 | 경로가 빠지거나 층이 섞인다 | unit — 새 테스트 | `pnpm test` | 라우트 파일 목록이 `navigation.md`의 경로 표와 같다 |
