@@ -6,7 +6,17 @@
 
 ## 다음 작업
 
-**다음 첫 수는 사람 손이다 — 기계만으로 닫을 task가 없다.** `expo-scaffold`의 실기기 확인과 `sian-native-pass`의 시안 승인, 그리고 총괄이 정할 결정 둘([navigation Q-03](2-design/system/navigation.md#q-03)·[runtime Q-01](2-design/system/runtime.md#q-01))이 남는다. `ready`로 선 화면 task 넷(`profile-form`·`members-pending`·`profile-screen`·`members`)은 전부 `expo-scaffold`를 선행으로 들어서 그 확인 뒤에 풀린다.
+**다음 첫 수는 사람 손이다 — 기계만으로 닫을 task가 또 없다.** `expo-scaffold`의 실기기 확인과 `sian-native-pass`의 시안 승인, 그리고 총괄이 정할 결정 둘([navigation Q-03](2-design/system/navigation.md#q-03)·[runtime Q-01](2-design/system/runtime.md#q-01))이 남는다. `ready`로 선 화면 task 넷(`profile-form`·`members-pending`·`profile-screen`·`members`)은 전부 `expo-scaffold`를 선행으로 들어서 그 확인 뒤에 풀린다.
+
+**관리자 홈의 짝 시안도 섰다.** [admin-home.sian.html](2-design/system/screens/admin-home.sian.html)이 목업 여섯이고 원본에서 01절을 빼며 02~10을 01~09로 내렸다. 잘라 붙이지 않고 `sian-writer`가 문서를 읽어 새로 그렸다 — 열 절이 CSS 한 덩이를 나눠 써서 잘라내면 죽은 규칙이 따라온다. **감사가 문서에 없는 조합을 잡았다**: 확정 전 목업에 빈 자리 카드와 오늘 현황 실값이 같이 서 있었다. 카드는 확정 뒤 조건이고 오늘 현황은 확정 전에 「–」라, **근무표 상태 하나가 그 목업의 나머지를 다 정한다** — 미니뷰의 「오늘」 표식까지(확정 전 시나리오는 9월 29일이라 10월 미니뷰에 오늘이 없다). 목업을 상태별로 다시 짜고 재감사에서 어긋남이 없었다.
+
+**관리자 홈이 근무표 문서에서 나왔다.** 거기서 열리는 문이 근무표만이 아니라 승인할 일·가입 대기·직원·시급·QR·통계까지라 근무표 한 영역이 소유할 화면이 아니다. 상태 표·짜임·문안·모션 네 덩이를 글자 그대로 옮기고 경로 깊이만 고쳤고, 들어오는 링크 23곳과 영역 지도를 같이 돌렸다. 옮기다 드러난 자리 둘도 고쳤다 — 「빈 자리 재촉」이 타일 요약 줄 승격이라고 적은 것은 카드로 바뀐 뒤의 옛 서술이었고, 「이 파일의 모든 바텀시트가 같다」는 파일 단위 선언이 첫 화면 절에 얹혀 있어서 `## 모션` 머리로 올렸다.
+
+**「영향 확인」 게이트는 파일 이름을 하나씩 찾는다.** `navigation.md`나 `components.md`처럼 여럿이 `sources`로 드는 문서를 건드리면 받는 spec·plan 서른하나가 걸리고, PR 본문의 그 절에 각 파일 이름이 글자로 있어야 통과한다(판정은 `tests/lint/sources-impact.ts`의 basename 대조다). 산문으로 「전수 확인했다」고만 적으면 막힌다.
+
+**lint 규칙 표가 저장소로 들어왔다.** [execution.md 「집행되는 규칙」](4-test/execution.md#집행되는-규칙)이 정본이고 `tests/lint/rules.ts`가 코드용 사본이다 — 전에는 정본이 PR 본문에만 있어서 `DOCUMENTED_LINT_RULE_COUNT = 14`가 무엇에 근거한 수인지 저장소에서 확인할 수 없었다. **`ENFORCED_RULE_COUNT`는 줄 수가 아니라 마지막 번호다** — 줄은 열일곱, 번호는 1~18이고 미배정 셋(6·7·8)이 빠지며 한 번호를 규칙 ID 둘이 나눠 가진 자리가 둘이다.
+
+**승인 대기 화면의 넷째 도는 문구는 1차에 안 선다.** 그 자리를 다른 문구로 메우지 않고 셋만 돌린다 — 넷째 줄이 소개하는 교대가 2차고, 1차 기능 중 그 자리에 세울 것이 없다.
 
 **`e2e-runner`가 닫혔다 — 러너는 Maestro다.** 근거는 [ADR-013](2-design/adr/ADR-013-e2e-runner-maestro.md)이고 셋이다. Expo가 자기 Detox 템플릿을 지우고 공식 e2e 문서로 Maestro를 들었다. Detox는 `expo prebuild`로 네이티브 디렉터리를 꺼내라고 해서 ADR-011의 관리 흐름 선택을 되돌린다. Detox의 딥링크에 안드로이드·iOS 양쪽 열린 버그가 있고 우리 여정의 시작점이 거기다 — 종이 QR과 OAuth 콜백이 딥링크다. 뒤집을 수 있었던 한 가지(앱을 죽이고 상태를 남긴 채 다시 띄우기)는 `stopApp`·`killApp`과 `clearState` 없는 `launchApp`으로 닫혔다.
 
