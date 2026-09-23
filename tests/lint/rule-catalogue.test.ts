@@ -206,3 +206,94 @@ describe("규칙 번호", () => {
     expect(Math.max(...lintNumbers)).toBe(DOCUMENTED_LINT_RULE_COUNT);
   });
 });
+
+/**
+ * 규칙 목록의 정본은 사람이 읽는 표다 — [execution.md의 「집행되는 규칙」](../../docs/4-test/execution.md#집행되는-규칙).
+ * `rules.ts`는 그 표를 코드가 쓸 수 있게 옮겨둔 사본이고, 여기가 둘이 갈라지는 것을 막는다.
+ *
+ * 표를 저장소로 들이기 전에는 정본이 PR 본문 하나에만 있었다. 그러면 `열넷`이
+ * 무엇에 근거한 수인지 저장소 안에서 확인할 수 없다.
+ */
+describe("규칙 카탈로그의 정본은 문서다", () => {
+  const DOC = "docs/4-test/execution.md";
+  const HEADING = "## 집행되는 규칙";
+
+  type DocRow = {
+    no: number;
+    name: string;
+    mechanism: string;
+    enforces: string;
+    test: string;
+  };
+
+  function documentedRules(): DocRow[] {
+    const body = readFileSync(path.join(process.cwd(), DOC), "utf8");
+    const start = body.indexOf(HEADING);
+
+    if (start === -1) {
+      throw new Error(`${DOC}에 「${HEADING}」 절이 없다`);
+    }
+
+    const section = body.slice(start).split(/\n## /)[0];
+    const cell = (value: string) => value.trim().replace(/^`|`$/g, "");
+
+    return section
+      .split("\n")
+      .filter((line) => /^\| \d+ \|/.test(line))
+      .map((line) => {
+        const [, no, name, mechanism, enforces, test] = line.split("|");
+
+        return {
+          no: Number(cell(no)),
+          name: cell(name),
+          mechanism: cell(mechanism),
+          enforces: cell(enforces),
+          test: cell(test),
+        };
+      });
+  }
+
+  /**
+   * 표가 안 읽히면 아래 대조가 빈 배열끼리 맞춰지며 조용히 통과한다.
+   *
+   * 줄 수와 `ENFORCED_RULE_COUNT`는 다른 수다 — 그 상수는 번호가 1부터 어디까지
+   * 이어지는지(18)고, 줄은 그보다 적다. 미배정 번호 셋이 빠지고 한 번호를 둘이
+   * 나눠 가진 자리가 둘 있다.
+   */
+  it("표를 실제로 읽어낸다", () => {
+    expect(documentedRules().length).toBe(RULES.length);
+    expect(documentedRules().length).toBeGreaterThan(10);
+  });
+
+  it("표와 코드 목록이 한 줄씩 같다", () => {
+    const fromCode = RULES.map((rule) => ({
+      no: rule.no,
+      name: rule.name,
+      mechanism: rule.mechanism,
+      enforces: rule.ruleId ?? rule.enforcedBy,
+      test: rule.test,
+    }));
+
+    expect(documentedRules()).toEqual(fromCode);
+  });
+
+  it("lint가 무는 마지막 번호를 표에서 다시 센다", () => {
+    const fromDoc = documentedRules()
+      .filter((rule) =>
+        LINT_MECHANISMS.includes(rule.mechanism as EnforcedRule["mechanism"]),
+      )
+      .map((rule) => rule.no);
+
+    expect(Math.max(...fromDoc, ...RULE_NUMBERS_NEVER_ASSIGNED)).toBe(
+      DOCUMENTED_LINT_RULE_COUNT,
+    );
+  });
+
+  it("영영 안 쓰는 번호를 표가 쓰지 않는다", () => {
+    const used = documentedRules().map((rule) => rule.no);
+
+    expect(
+      RULE_NUMBERS_NEVER_ASSIGNED.filter((no) => used.includes(no)),
+    ).toEqual([]);
+  });
+});
