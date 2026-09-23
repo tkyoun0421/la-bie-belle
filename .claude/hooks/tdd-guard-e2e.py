@@ -24,8 +24,13 @@ def spec_name(path):
 
     if path.startswith("src/screens/"):
         parts = path.split("/")
-        # 슬라이스 이름은 디렉터리다 — `src/screens/<이름>/...`.
-        return parts[2] if len(parts) > 3 else None
+        # 슬라이스 이름은 디렉터리다 — `src/screens/<이름>/...`. 디렉터리를 안 끼고
+        # 바로 선 화면은 제 파일명이 이름이다. 그런 자리를 그냥 통과시키면 게이트를
+        # 끄는 구멍이 된다.
+        if len(parts) > 3:
+            return parts[2]
+
+        return parts[2][: -len(".tsx")]
 
     if path.startswith("src/app/"):
         directory, filename = os.path.split(path)

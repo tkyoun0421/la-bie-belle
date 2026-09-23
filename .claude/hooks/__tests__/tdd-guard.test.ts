@@ -237,6 +237,14 @@ describe("e2e 훅", () => {
     expect(run("tdd-guard-e2e.py", "src/app/_layout.tsx", "")).toBe(allowed);
   });
 
+  /** 슬라이스 디렉터리를 안 끼고 바로 선 화면도 빠져나가지 못한다. */
+  it("screens 아래 디렉터리 없이 선 화면도 막는다", () => {
+    const result = spawn("tdd-guard-e2e.py", "src/screens/Cart.tsx", "");
+
+    expect(result.status).toBe(blocked);
+    expect(result.stderr).toContain("tests/e2e/Cart.yaml");
+  });
+
   it("짝 플로우가 있는 슬라이스는 통과시킨다", () => {
     expect(
       run("tdd-guard-e2e.py", "src/screens/orders/ui/OrdersScreen.tsx", ""),
