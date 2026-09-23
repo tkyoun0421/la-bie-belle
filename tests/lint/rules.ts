@@ -128,7 +128,7 @@ export const RULES: EnforcedRule[] = [
   },
   {
     no: 16,
-    name: "화면과 라우트를 쓰기 전에 e2e 명세가 있어야 한다",
+    name: "화면과 라우트를 쓰기 전에 e2e 플로우가 있어야 한다",
     mechanism: "hook",
     ruleId: null,
     enforcedBy: ".claude/hooks/tdd-guard-e2e.py",

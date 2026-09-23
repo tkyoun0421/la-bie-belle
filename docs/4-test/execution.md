@@ -162,6 +162,36 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 
 편집 훅은 테스트 파일의 존재를 검사한다. 실패 테스트 실행이나 단언의 품질까지 증명하지 않는다. 실제 실패·통과 확인은 작성자·구현자와 리뷰가 맡는다.
 
+## 집행되는 규칙
+
+기계가 무는 규칙의 정본이다. `tests/lint/rule-catalogue.test.ts`가 이 표를 읽어 `tests/lint/rules.ts`의 목록과 대조하고, 켜져 있다고 적힌 규칙이 실제로 켜져 있는지·짝 테스트 파일이 있는지까지 본다 — 표에 한 줄을 더하고 설정을 안 고치면 `pnpm test`가 막는다.
+
+**번호 6·7·8은 영영 안 쓴다.** 무엇이었는지 끝내 못 찾은 자리고, 그 번호를 새 규칙에 재활용하면 옛 기록이 다른 규칙을 가리키게 된다. 새 규칙은 마지막 번호 다음을 받는다.
+
+| 번호 | 규칙 | 집행 | 집행하는 것 | 짝 테스트 |
+| --- | --- | --- | --- | --- |
+| 1 | 상대 경로 import 금지 | eslint | `no-restricted-imports` | `tests/lint/relative-import.test.ts` |
+| 2 | FSD 역방향 import | eslint | `no-restricted-imports` | `tests/lint/fsd-layer-order.test.ts` |
+| 3 | 같은 층 다른 슬라이스 import | house | `house/no-cross-slice-import` | `tests/lint/fsd-slice-boundary.test.ts` |
+| 4 | 하드코딩한 색과 크기 | house | `house/no-arbitrary-class-values` | `tests/lint/design-token-values.test.ts` |
+| 4 | 하드코딩한 색과 크기 | house | `house/no-color-literals` | `tests/lint/design-token-values.test.ts` |
+| 5 | Tailwind 기본 팔레트 유틸리티 | house | `house/no-default-palette-class` | `tests/lint/tailwind-default-palette.test.ts` |
+| 9 | .tsx는 더미 UI | house | `house/dumb-ui` | `tests/lint/tsx-dumb-ui.test.ts` |
+| 10 | 집중 실행 표시 | eslint | `no-restricted-syntax` | `tests/lint/no-focused-tests.test.ts` |
+| 11 | import 순서 | eslint | `import/order` | `tests/lint/import-order.test.ts` |
+| 12 | Tailwind 클래스 순서 | prettier | `prettier.config.mjs` | `tests/lint/format-check.test.ts` |
+| 13 | console | eslint | `no-console` | `tests/lint/no-console.test.ts` |
+| 14 | 미사용 import와 import type | eslint | `unused-imports/no-unused-imports` | `tests/lint/unused-imports.test.ts` |
+| 14 | 미사용 import와 import type | eslint | `@typescript-eslint/consistent-type-imports` | `tests/lint/unused-imports.test.ts` |
+| 15 | 실행 코드를 쓰기 전에 짝 테스트가 있어야 한다 | hook | `.claude/hooks/tdd-guard-unit.py` | `.claude/hooks/__tests__/tdd-guard.test.ts` |
+| 16 | 화면과 라우트를 쓰기 전에 e2e 플로우가 있어야 한다 | hook | `.claude/hooks/tdd-guard-e2e.py` | `.claude/hooks/__tests__/tdd-guard.test.ts` |
+| 17 | 시크릿과 .env는 커밋할 수 없다 | pre-commit | `.githooks/pre-commit` | `tests/lint/pre-commit.test.ts` |
+| 18 | 승인된 spec 없이 feat 브랜치에서 src/를 고칠 수 없다 | hook | `.claude/hooks/spec-gate.py` | `.claude/hooks/__tests__/spec-gate.test.ts` |
+
+**집행 갈래는 다섯이다.** `eslint`는 기성 규칙, `house`는 [`eslint-rules/`](../../eslint-rules/)의 직접 만든 규칙, `prettier`는 포맷터가 겸하는 것, `hook`은 [`.claude/hooks/`](#훅)의 편집 훅, `pre-commit`은 커밋 앞이다. 앞 셋은 `pnpm lint`나 `pnpm format:check`가 돌리고 뒤 둘은 파일을 쓰는 순간과 커밋하는 순간에 선다.
+
+번호 하나에 줄이 둘인 자리가 있다 — 한 규칙을 규칙 ID 둘이 나눠 무는 경우다. 그래서 **줄 수와 마지막 번호가 다르다** — 번호는 1부터 18까지 이어지고 미배정 셋이 빠지며, 줄은 열일곱이다.
+
 ## `pnpm test`에 끼는 문서 검사
 
 `tests/lint/`의 문서 검사는 `pnpm test`에 포함된다. 문서만 바꿔도 실행한다.
