@@ -10,7 +10,7 @@
 
 **조각을 전부 같이 쓴다.** 세그먼트도 달 줄도 [추이 그래프](../../design-system/components.md#추이-그래프)도 [줄 막대](../../design-system/components.md#줄-막대)도 [비율 띠](../../design-system/components.md#비율-띠)도 같은 것이고, 갈리는 것은 담는 값과 탭 이름과 칸 수뿐이다. 그래서 문서를 안 가른다 — 가르면 같은 짜임이 두 벌 선다.
 
-들어오는 문은 둘이다. 관리자는 [관리자 홈](../../modules/schedule/screens/schedule-admin.md#관리자-홈)의 「통계」 줄, 근무자는 [「나」](../../modules/account/screens/profile.md)의 「통계」 줄이다. 관리자도 근무자라 두 화면을 다 본다 — 홈에서 들어가면 홀 전체고 「나」에서 들어가면 자기 것이다.
+들어오는 문은 둘이다. 관리자는 [관리자 홈](admin-home.md)의 「통계」 줄, 근무자는 [「나」](../../modules/account/screens/profile.md)의 「통계」 줄이다. 관리자도 근무자라 두 화면을 다 본다 — 홈에서 들어가면 홀 전체고 「나」에서 들어가면 자기 것이다.
 
 경로와 역할 조건은 [navigation.md](../navigation.md#경로)가 든다.
 

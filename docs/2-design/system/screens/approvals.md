@@ -6,7 +6,7 @@
 
 두 가지가 한 목록에 선다. 못 찍은 출근의 [사유](../../modules/attendance/README.md#att-010)와 [근무 취소](../../modules/schedule/README.md#sch-018) 요청이다. 성격은 다르지만 관리자가 하는 일이 같다 — 읽고 승인하거나 이유를 적어 거절한다.
 
-들어오는 문은 하나다. 관리자 홈의 「승인할 일 · 3건」 줄이고([schedule-admin.md](../../modules/schedule/screens/schedule-admin.md#관리자-홈)) 그 줄이 이 화면을 연다. 사유가 도착해도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([notification/README.md](../../modules/notification/README.md#ntf-030)). 근무 취소 요청은 푸시로도 온다.
+들어오는 문은 하나다. 관리자 홈의 「승인할 일 · 3건」 줄이고([admin-home.md](admin-home.md)) 그 줄이 이 화면을 연다. 사유가 도착해도 푸시는 안 간다 — 그 줄의 숫자가 유일한 신호다([notification/README.md](../../modules/notification/README.md#ntf-030)). 근무 취소 요청은 푸시로도 온다.
 
 보내는 쪽 화면은 둘이다. 사유는 [excuse.md](../../modules/attendance/screens/excuse.md)의 사유 시트, 근무 취소는 [schedule-worker.md](../../modules/schedule/screens/schedule-worker.md#시트의-문)의 날 시트다.
 

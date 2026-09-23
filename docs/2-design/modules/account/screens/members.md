@@ -6,7 +6,7 @@
 
 여기서 하는 일이 셋이다 — 이름 고치기, 관리자로 올리고 내리기, 퇴사 처리다. 규칙은 [account/README.md](../README.md)에 있다.
 
-들어오는 문은 [관리자 홈](../../schedule/screens/schedule-admin.md#관리자-홈)의 「직원」 줄이다.
+들어오는 문은 [관리자 홈](../../../system/screens/admin-home.md)의 「직원」 줄이다.
 
 경로와 역할 조건은 [navigation.md](../../../system/navigation.md#경로)가 든다.
 

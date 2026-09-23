@@ -6,7 +6,7 @@
 
 여기서 정한 값이 [급여 조회](payroll.md)의 금액을 만든다. 규칙은 [payroll/README.md](../README.md)에 있다.
 
-들어오는 문은 [관리자 홈](../../../modules/schedule/screens/schedule-admin.md#관리자-홈)의 「시급」 줄이다.
+들어오는 문은 [관리자 홈](../../../system/screens/admin-home.md)의 「시급」 줄이다.
 
 경로와 역할 조건은 [navigation.md](../../../system/navigation.md#경로)가 든다.
 

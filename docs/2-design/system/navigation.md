@@ -37,7 +37,7 @@
 | `/me/rehearsals` | 리허설 자격이 있는 사람과 관리자만. `?month=`는 달 | 리허설 · [`rehearsal.md`](../modules/schedule/screens/rehearsal.md) |
 | `/notifications` | [앱을 열면](#앱을-열면) — 승인됨 | 알림 목록 · [`notifications.md`](../modules/notification/screens/notifications.md) |
 | `/stats` | [앱을 열면](#앱을-열면) — 승인됨 | 근무자 통계 · [`stats.md`](screens/stats.md#근무자--stats) |
-| `/admin` | 관리자만 | 관리자 홈 · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md#관리자-홈) |
+| `/admin` | 관리자만 | 관리자 홈 · [`admin-home.md`](screens/admin-home.md) |
 | `/admin/schedule` | 관리자만 | 관리자 달력. `?month=`는 달, `?date=`는 날 상세 · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md) |
 | `/admin/applications` | 관리자만 | 근무 신청 모아보기. `?month=` · [`schedule-admin.md`](../modules/schedule/screens/schedule-admin.md#근무-신청-모아보기) |
 | `/admin/approvals` | 관리자만 | 승인할 일 · [`approvals.md`](screens/approvals.md) |
