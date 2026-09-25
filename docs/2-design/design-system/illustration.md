@@ -176,7 +176,7 @@ Clean, minimal, high resolution, square 1:1 composition, object fills about 80% 
 
 | 규칙 | 값 |
 | --- | --- |
-| 자리 | `assets/tossface/<이름>.svg` — 저장소에 커밋하지 않는다. `pnpm tossface:fetch`가 고정한 커밋에서 아래 표의 스무 장과 라이선스 둘을 받아 오고 그 디렉터리는 `.gitignore`다. 서체 서브셋이 `pnpm fonts:subset`으로 하는 것과 같은 꼴이다 |
+| 자리 | `assets/tossface/<이름>.svg` — 저장소에 커밋하지 않는다. 고정한 커밋에서 아래 표의 스무 장과 라이선스 둘을 받아 오는 스크립트(`pnpm tossface:fetch`)와 그 디렉터리의 `.gitignore` 줄은 `ui-kit`이 세운다 — 아직 없다. 서체 서브셋이 `pnpm fonts:subset`으로 하는 것과 같은 꼴이다 |
 | 이름 | 원본 파일 이름 그대로다 — `u1F4C5.svg`처럼 `u` 뒤에 대문자 코드포인트. 조합 이모지는 `_`로 잇는다 |
 | 라이선스 | `assets/tossface/LICENSE` — 저장소 루트의 `LICENSE` 원문 그대로 |
 | 저작권 안내 | `assets/tossface/COPYRIGHT.md` — toss.im의 「토스페이스 저작권 안내」 원문과 출처 표시 문장 |
