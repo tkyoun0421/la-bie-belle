@@ -24,7 +24,7 @@
 
 | 상태 | 진입 조건·계기 | 보이는 내용 | 가능한 행동 | 다음 상태·목적지 |
 | --- | --- | --- | --- | --- |
-| 정상 | [프로필](../../modules/account/screens/profile.md#관리자-모드)의 「관리자 모드」 줄 | 앱바, 오늘 현황, 근무표 관리 타일, 이번 달 미니뷰, 가는 선, 근무 시간 기본값 줄, 승인할 일 줄, 가입 대기 줄, 가는 선, 직원·시급·QR·통계 줄 | 오늘 현황을 누른다. 타일을 누른다. 미니뷰를 누른다. 기본값 줄을 누른다. 나머지 여섯 줄을 누른다. 앱바의 뒤로 | 날 상세 · [월 달력](../../modules/schedule/screens/schedule-admin.md#월-달력) · 기본값 시트 · 각자의 화면 · 프로필 |
+| 정상 | 근무자 앱바의 「관리자」 스위치, [프로필](../../modules/account/screens/profile.md#관리자-모드)의 「관리자 모드」 줄 | 앱바, 오늘 현황, 근무표 관리 타일, 이번 달 미니뷰, 가는 선, 근무 시간 기본값 줄, 승인할 일 줄, 가입 대기 줄, 가는 선, 직원·시급·QR·통계 줄 | 오늘 현황을 누른다. 타일을 누른다. 미니뷰를 누른다. 기본값 줄을 누른다. 나머지 여섯 줄을 누른다. 앱바의 「관리자」 스위치 | 날 상세 · [월 달력](../../modules/schedule/screens/schedule-admin.md#월-달력) · 기본값 시트 · 각자의 화면 · `/` |
 | 근무표 상태가 갈릴 때 | 그 달 근무표가 아직 없음·만드는 중·확정 뒤 | 타일 안 요약 줄이 지금 상태를 말한다 | 타일을 누른다 | [월 달력](../../modules/schedule/screens/schedule-admin.md#월-달력) 또는 [달 근무표 만들기](../../modules/schedule/screens/schedule-admin.md#달-근무표-만들기) |
 | 예식 3일 안에 빈 자리 | 확정 뒤 예식이 사흘 안인데 빈 자리가 남았다 | 타일 아래에 빈 자리 카드가 날짜마다 한 장 | 카드를 누른다 | 그날 날 상세 |
 | 오늘 근무가 없다 | 그날 배정이 없다 | 오늘 현황 자리가 통째로 없다 | 나머지 그대로 | — |
@@ -34,11 +34,11 @@
 
 ### 관리자 홈 짜임
 
-관리자가 관리자 모드에서 처음 보는 화면이고 관리자 쪽의 허브다. 여기서 갈라지고 앱바의 뒤로로 돌아온다 — 관리자 화면에는 [탭 바](../../design-system/components.md#탭-바)가 없다.
+관리자가 관리자 모드에서 처음 보는 화면이고 관리자 쪽의 허브다. 여기서 갈라지고 앱바의 「관리자」 스위치로 `/`에 돌아온다 — 관리자 화면에는 [탭 바](../../design-system/components.md#탭-바)가 없다.
 
 근무표 관리와 근무 시간 기본값은 이 화면 안에서 끝나고, 아래 여섯 줄은 숫자나 값만 말한 뒤 눌리면 각자의 화면이 열린다([approvals.md](approvals.md), [members-pending.md](../../modules/account/screens/members-pending.md), [members.md](../../modules/account/screens/members.md), [wages.md](../../modules/payroll/screens/wages.md), [qr.md](../../modules/attendance/screens/qr.md), [stats.md](stats.md)).
 
-들어오는 문은 [프로필](../../modules/account/screens/profile.md#관리자-모드)의 「관리자 모드」 줄이다. 관리자도 자기 근무가 있어 평소에는 근무자 화면을 쓰고 관리하러 갈 때만 이 문을 지난다([account/README.md](../../modules/account/README.md#acc-008)).
+들어오는 문은 근무자 앱바의 「관리자」 스위치와 [프로필](../../modules/account/screens/profile.md#관리자-모드)의 「관리자 모드」 줄이다. 관리자도 자기 근무가 있어 평소에는 근무자 화면을 쓰고 관리하러 갈 때만 이 문을 지난다([account/README.md](../../modules/account/README.md#acc-008)).
 
 세로로 쌓는다.
 
@@ -245,7 +245,7 @@
 
 **관리자 공지 보내기, 알림 목록, 설정.** 이 화면의 나머지 자리들이다.
 
-**관리자와 근무자 모드를 오가는 길.** 관리자도 근무자라 대시보드를 본다([dashboard.md](dashboard.md#안-담은-것)). 어디서 갈아타는지는 안 정했다.
+**근무자 쪽 화면.** 관리자도 근무자라 대시보드를 본다([dashboard.md](dashboard.md#안-담은-것)). 오가는 길은 앱바의 「관리자」 스위치 하나고 [navigation.md](../../system/navigation.md#세-층)가 든다.
 
 ### 규칙과 부딪힌 자리
 
