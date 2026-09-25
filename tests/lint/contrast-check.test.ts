@@ -97,12 +97,38 @@ describe("리스크 4 — 팔레트 단계와 역할 토큰을 점(.)의 유무�
 });
 
 describe("리스크 1·2 — 표 두 개가 통째로 안 읽히거나 일부 행만 스킵되면 행 수가 어긋난다", () => {
-  it("측정한 조합 표는 20행이다", () => {
-    expect(measuredContrastRows(TOKENS_MARKDOWN)).toHaveLength(20);
+  it("측정한 조합 표는 23행이다", () => {
+    expect(measuredContrastRows(TOKENS_MARKDOWN)).toHaveLength(23);
   });
 
-  it("떨어진 조합 표는 5행이다", () => {
-    expect(droppedContrastRows(TOKENS_MARKDOWN)).toHaveLength(5);
+  it("떨어진 조합 표는 7행이다", () => {
+    expect(droppedContrastRows(TOKENS_MARKDOWN)).toHaveLength(7);
+  });
+});
+
+describe("리스크 11 — 팔레트 칸이 — 인 역할 토큰은 테마 칸의 단계로 푼다", () => {
+  it("bg.neutral은 라이트에서 neutral-00, 다크에서 neutral-100이다 — 층 셋의 카드 면", () => {
+    expect(resolveTokenHex(TOKENS_MARKDOWN, "bg.neutral", "light")).toBe(
+      "#FFFFFF",
+    );
+    expect(resolveTokenHex(TOKENS_MARKDOWN, "bg.neutral", "dark")).toBe(
+      "#171718",
+    );
+  });
+
+  it("bg.neutral-sunken은 라이트에서 neutral-100, 다크에서 neutral-00이다 — 바닥", () => {
+    expect(resolveTokenHex(TOKENS_MARKDOWN, "bg.neutral-sunken", "light")).toBe(
+      "#F2F3F4",
+    );
+    expect(resolveTokenHex(TOKENS_MARKDOWN, "bg.neutral-sunken", "dark")).toBe(
+      "#0C0C0C",
+    );
+  });
+
+  it("bg.neutral-weak는 다크에서 카드보다 한 단계 밝은 neutral-200이다 — 안쪽 면", () => {
+    expect(resolveTokenHex(TOKENS_MARKDOWN, "bg.neutral-weak", "dark")).toBe(
+      "#242527",
+    );
   });
 });
 

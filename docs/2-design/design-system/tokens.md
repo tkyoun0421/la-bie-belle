@@ -162,7 +162,7 @@ hue 27, chroma 최대 0.145.
 
 **`informative`도 `sky`가 대신한다.** hue 248이라 브랜드 266과 18도 차이여서, 안내 면과 주요 버튼이 한 화면에 서면 같은 것으로 읽혔다. 근거는 [ADR-012](../adr/ADR-012-blue-brand-and-looser-density.md)에 있다.
 
-**positive·warning·critical의 hue를 그림에 안 빌린다.** 그 셋은 좋고 나쁨을 말하는 색이라 숫자에 평가가 실린다. 근거는 [foundation/color.md](foundation/color.md#그림이-색을-쓰는-법)에 있다.
+**positive·warning·critical의 hue를 그림에 안 빌린다.** 그 셋은 좋고 나쁨을 말하는 색이라 숫자에 평가가 실린다. 근거는 [foundation/color.md](foundation/color.md#차트가-색을-쓰는-법)에 있다.
 
 ---
 
@@ -175,14 +175,15 @@ hue 27, chroma 최대 0.145.
 
 **팔레트 열은 한 벌뿐이다.** 라이트와 다크가 같은 단계를 가리키고 팔레트가 알아서 뒤집힌다.
 
-**팔레트 칸이 `—`인 행은 그 규칙 밖이다.** 뒤집히면 안 되는 값이나 팔레트에 없는 값을 쓰는 자리다. 이 행들은 라이트·다크 칸이 곧 값이고, 칸에는 둘 중 하나가 온다 — 색 리터럴(`#`으로 시작하거나 `transparent`)이거나 팔레트 단계 이름(`neutral-200`)이다. 단계 이름이 오면 그 팔레트 변수를 가리키고, 리터럴이 오면 그대로 박힌다. 라이트와 다크가 서로 다른 종류여도 된다.
+**팔레트 칸이 `—`인 행은 그 규칙 밖이다.** 뒤집히면 안 되는 값이나 팔레트에 없는 값을 쓰는 자리, 그리고 라이트와 다크가 다른 단계를 가리켜야 하는 자리다. 이 행들은 라이트·다크 칸이 곧 값이고, 칸에는 둘 중 하나가 온다 — 색 리터럴(`#`으로 시작하거나 `transparent`)이거나 팔레트 단계 이름(`neutral-200`)이다. 단계 이름이 오면 그 팔레트 변수를 가리키고, 리터럴이 오면 그대로 박힌다. 라이트와 다크가 서로 다른 종류여도 된다.
 
 ### bg
 
 | 토큰 | 팔레트 | 라이트 | 다크 | Tailwind 유틸 |
 | --- | --- | --- | --- | --- |
-| `bg.neutral` | neutral-00 | `#FFFFFF` | `#0C0C0C` | `bg-bg-neutral` |
-| `bg.neutral-weak` | neutral-100 | `#F2F3F4` | `#171718` | `bg-bg-neutral-weak` |
+| `bg.neutral-sunken` | — | neutral-100 | neutral-00 | `bg-bg-neutral-sunken` |
+| `bg.neutral` | — | neutral-00 | neutral-100 | `bg-bg-neutral` |
+| `bg.neutral-weak` | — | neutral-100 | neutral-200 | `bg-bg-neutral-weak` |
 | `bg.neutral-weak-pressed` | neutral-200 | `#DEE0E1` | `#242527` | `bg-bg-neutral-weak-pressed` |
 | `bg.neutral-solid` | neutral-1000 | `#181A1C` | `#E7EAED` | `bg-bg-neutral-solid` |
 | `bg.neutral-solid-soft` | neutral-900 | `#303336` | `#C9CCD0` | `bg-bg-neutral-solid-soft` |
@@ -205,11 +206,13 @@ hue 27, chroma 최대 0.145.
 | `bg.critical-weak` | critical-100 | `#FFECE8` | `#24110F` | `bg-bg-critical-weak` |
 | `bg.scrim` | — | `#181A1C6B` | `#0C0C0C6B` | `bg-bg-scrim` |
 
+**층 셋이 라이트와 다크에서 다른 단계를 가리킨다.** 바닥 `bg.neutral-sunken`, 카드 `bg.neutral`, 카드 안의 한 단계 아래 `bg.neutral-weak`다. 라이트는 100 / 00 / 100이고 다크는 00 / 100 / 200이다 — 팔레트를 그대로 뒤집으면 다크에서 카드가 바닥보다 어두워져 파이는데, 카드는 두 테마 모두 바닥 위에 떠 있어야 한다. 그래서 다크는 바닥이 가장 어둡고 카드가 한 단계 밝고 안쪽이 또 한 단계 밝다. 뜻은 [foundation/color.md](foundation/color.md#variant와-state)의 Variant 절이 들고, 근거는 [ADR-014](../adr/ADR-014-toss-like-depth-and-graphics.md)에 있다. 라이트에서 바닥과 안쪽이 같은 `neutral-100`인 것은 그 둘이 한 화면에서 맞닿는 자리가 없어서다 — 안쪽 면은 늘 카드 안에 있고 카드가 그 사이를 가른다.
+
 `bg.brand-solid`가 `brand-700`이다. 다른 계열이 `-800`을 꽉 찬 면으로 쓰는 것과 갈리는데, 파랑은 `-800`(`#1D40CF`)이 남색에 가까워져 레퍼런스에서 받은 색과 멀어진다. `-700`이 그 색이고 흰 글자 대비도 5.27로 선다. 눌린 상태가 `-800`을 받아 한 단계씩 밀렸다.
 
-`bg.neutral-muted`는 그림에서 값이 작거나 강조할 것이 아닌 몫을 칠하는 면이다. 막대와 띠가 쓴다 — 근거는 [foundation/color.md](foundation/color.md#그림이-색을-쓰는-법)에 있다.
+`bg.neutral-muted`는 그림에서 값이 작거나 강조할 것이 아닌 몫을 칠하는 면이다. 막대와 띠가 쓴다 — 근거는 [foundation/color.md](foundation/color.md#차트가-색을-쓰는-법)에 있다.
 
-`bg.brand-muted`는 옅은 브랜드 면이 중립 면 위에 떠야 하는 자리를 위한 것이다. `bg.brand-weak`는 `brand-100`이라 라이트에서 명도 0.965인데 `bg.neutral-weak`도 0.965다 — 겹쳐 놓으면 두 면이 갈리지 않는다. `brand-300`은 0.845로 0.120이 갈린다.
+`bg.brand-weak`는 카드 안에서만 선다. `brand-100`이라 라이트에서 명도 0.965인데 바닥 `bg.neutral-sunken`과 안쪽 면 `bg.neutral-weak`도 0.965다 — 그 둘 위에 놓으면 면이 갈리지 않는다. 카드 면 `neutral-00`은 1.000이라 그 위에서만 옅은 브랜드가 읽힌다. 달력의 내 근무 칸과 Badge brand가 그 자리고, 둘 다 카드 안에 있다. 카드 밖에 옅은 브랜드 면이 필요하면 `bg.brand-muted`다 — `brand-300`이 0.845로 바닥과 0.120이 갈린다.
 
 `bg.scrim`은 팔레트를 안 따른다. 덮개는 뒤를 어둡게 하는 것이 일이라 명도가 뒤집히면 안 되는 몇 안 되는 자리인데, 팔레트가 적응형이라 `bg.neutral-solid`를 쓰면 다크에서 밝은 회색이 되어 화면을 흰 막이 덮는다. 그래서 라이트는 `neutral-1000`, 다크는 `neutral-00`을 값으로 굳혔다 — 양쪽 다 어두운 잉크다. 투명도 42%가 값에 들어 있어 쓰는 쪽이 따로 안 얹는다.
 
@@ -248,7 +251,7 @@ hue 27, chroma 최대 0.145.
 | `stroke.sky` | sky-600 | `#268BE3` | `#117FD6` | `border-stroke-sky` |
 | `stroke.mint` | mint-600 | `#139D8E` | `#108F81` | `border-stroke-mint` |
 
-면을 나누는 선은 `stroke.neutral` 하나다. 라이트와 다크에서 같은 토큰을 쓴다 — 그림자를 안 쓰기로 하면서 테마마다 다른 방식으로 면을 나눌 이유가 없어졌다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#면-나누기)에 있다.
+면을 나누는 선은 `stroke.neutral` 하나다. 카드 안에서 줄과 줄을 가르는 선이고 카드 자체는 선을 안 두른다 — 카드를 바닥에서 띄우는 것은 라이트에서 [그림자](#그림자)고 다크에서는 바닥과 카드의 명도 차 한 단계다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#면-나누기)에 있다.
 
 ### 팔레트를 직접 쓰는 유일한 자리
 
@@ -258,10 +261,11 @@ hue 27, chroma 최대 0.145.
 
 ## 3. 타이포그래피
 
-7단계다. 이름은 Tailwind 기본 이름을 그대로 두고 값만 갈아끼웠다. 이유는 [foundation/typography.md](foundation/typography.md#스케일)에 있다.
+8단계다. 이름은 Tailwind 기본 이름을 그대로 두고 값만 갈아끼웠다. 이유는 [foundation/typography.md](foundation/typography.md#스케일)에 있다.
 
 | 유틸 | 크기 | 행간 | rem 크기 | rem 행간 | 용도 |
 | --- | --- | --- | --- | --- | --- |
+| `text-4xl` | 36px | 44px | 2.25 | 2.75 | 화면의 답인 큰 숫자 |
 | `text-3xl` | 30px | 40px | 1.875 | 2.5 | 아주 큰 제목 |
 | `text-2xl` | 26px | 35px | 1.625 | 2.1875 | 큰 제목 |
 | `text-xl` | 22px | 31px | 1.375 | 1.9375 | 일반 제목 |
@@ -270,7 +274,19 @@ hue 27, chroma 최대 0.145.
 | `text-sm` | 15px | 22.5px | 0.9375 | 1.40625 | 작은 본문 |
 | `text-xs` | 13px | 19.5px | 0.8125 | 1.21875 | 부가 텍스트 |
 
-`text-4xl`부터 위는 지웠다.
+`text-5xl`부터 위는 지웠다. `text-4xl`은 한 화면에 하나뿐인 큰 숫자의 자리다 — 규칙은 [foundation/typography.md](foundation/typography.md#큰-숫자)에 있다.
+
+### 자간
+
+큰 글자 셋에만 자간이 붙는다. 나머지 다섯은 서체 기본값이다.
+
+| 유틸 | 자간 |
+| --- | --- |
+| `text-4xl` | -0.01em |
+| `text-3xl` | -0.01em |
+| `text-2xl` | -0.01em |
+
+`text-2xl`쯤부터 서체 기본 자간이 넓어 보인다 — 글자가 커지면 글자 사이 빈 자리도 같은 비율로 커지는데 눈은 그것을 벌어진 것으로 읽는다. 시안들이 각자 얹던 −0.01~−0.02em 중 얕은 쪽으로 굳혔다. 더 좁히면 숫자 「1」이 옆 숫자에 붙는다.
 
 굵기 넷이고, 쓰지 않는 다섯(`thin` `extralight` `light` `extrabold` `black`)을 지웠다. 네이티브는 숫자 굵기로 파일을 고르지 않고 이름으로 골라서 굵기 유틸 셋이 패밀리를 가리킨다 — 이유는 [8.2절](#82-tailwind-기본값-초기화와-서체)에 있다.
 
@@ -287,6 +303,14 @@ hue 27, chroma 최대 0.145.
 `light`가 지운 쪽에 든 것은 Wanted Sans가 Regular(400)부터 배포되기 때문이다. 300짜리 파일이 없어서 `font-light`를 걸어도 `font-sans`와 같은 글자가 나온다. 아무것도 안 하는 유틸을 남겨두면 언젠가 누군가 그걸로 무게를 낮추려 한다.
 
 숫자는 자릿수가 줄맞춤돼야 하는 자리에서 `fontVariant: ["tabular-nums"]`를 쓴다. 유틸은 `tabular-nums`고 급여 금액과 근무 시간이 그 자리다. 규칙은 [foundation/typography.md](foundation/typography.md#숫자-정렬)에 있다.
+
+### 글자 배율 상한
+
+| 속성 | 값 |
+| --- | --- |
+| `maxFontSizeMultiplier` | 1.3 |
+
+기기 설정의 글자 크기 배율이 이 값까지만 앱 글자에 곱해진다. 상한을 두는 이유는 [foundation/typography.md](foundation/typography.md#시스템-글자-크기를-끄지-않는다)에 있다. CSS로 나가는 값이 아니라 글자를 그리는 조각이 속성으로 받는다.
 
 ### 서체 연결
 
@@ -333,25 +357,45 @@ Tailwind의 `--spacing` 기본값이 `0.25rem`이라 유틸 숫자에 4를 곱�
 
 이 눈금은 우리가 정했다. 타이포그래피와 달리 TDS가 스페이싱을 공개하지 않았다.
 
+### 폭
+
+브레이크포인트는 하나다. Tailwind 기본 다섯(`sm`~`2xl`)은 지운다 — 8.2절의 초기화 펜스가 그 일을 한다.
+
+| 토큰 | 값 | Tailwind 유틸 |
+| --- | --- | --- |
+| `breakpoint.tablet` | 768px | `tablet:` |
+
+768 아래가 폰이고 그 위가 태블릿이다. 어느 화면이 태블릿 레이아웃을 갖는지는 [foundation/spacing-shape.md](foundation/spacing-shape.md#폭)에 있다.
+
 ---
 
-## 5. 라운딩
+## 5. 라운딩과 그림자
 
 | 유틸 | 값 | 쓰는 자리 |
 | --- | --- | --- |
 | `rounded-none` | 0 | 화면 폭에 붙는 면 |
 | `rounded-xs` | 4px | 미니 달력 칸 |
-| `rounded-sm` | 8px | 배지, 근무표 날짜 칸 |
+| `rounded-sm` | 8px | 배지, 근무표 날짜 칸, 스켈레톤의 글 막대 |
 | `rounded-md` | 12px | 입력 |
-| `rounded-lg` | 14px | 버튼, 세그먼트, 토스트, 작은 카드, 다이얼로그 |
-| `rounded-xl` | 20px | 강조 카드 |
+| `rounded-lg` | 14px | 버튼, 세그먼트, 토스트, 다이얼로그 |
+| `rounded-xl` | 20px | 카드 |
 | `rounded-full` | 9999px | 원과 트랙 |
 
 `rounded-full`은 원을 그리는 자리에만 남는다 — 사진과 이니셜 원, 안 읽음 점, 시트 손잡이, 하루 띠의 트랙과 채움, 스위치, 그리고 글자 없이 아이콘만 든 정사각형 버튼. 가로세로가 같거나 높이가 몇 픽셀인 조각이라 값이 바뀌면 모양이 깨진다.
 
 누를 수 있는 것은 `rounded-lg`다. 알약을 버린 것은 버튼 높이의 절반이 곡률이라 48px 버튼이 좌우 반원이 되고, 한 화면에 알약이 여럿 서면 전부 둥글게 읽히기 때문이다. 14px은 입력(12px)보다 크고 카드(20px)보다 작아서 「면 → 누를 것 → 적을 것」 위계가 모서리만으로 읽힌다. 배지는 높이가 24px이라 14px을 주면 다시 알약이 돼서 한 단계 아래인 8px이다.
 
-그림자 토큰은 없다. 면은 여백과 가는 선으로 나눈다. 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#그림자를-안-쓰는-이유)에 있다.
+### 그림자
+
+그림자 토큰은 하나다. 카드만 받고 다크에서는 없다 — 근거는 [foundation/spacing-shape.md](foundation/spacing-shape.md#그림자는-카드-하나다)에 있다.
+
+| 토큰 | 라이트 | 다크 | Tailwind 유틸 |
+| --- | --- | --- | --- |
+| `shadow.card` | `0 2px 8px 0 rgb(0 0 0 / 0.06)` | `none` | `shadow-card` |
+
+값은 CSS `box-shadow` 한 줄이다. React Native 새 아키텍처가 `boxShadow`로 같은 문법을 받고 NativeWind가 그대로 옮기므로 iOS와 안드로이드(9 이상)가 같은 그림자를 그린다. 아래로 2px, 흐림 8px, 검정 6%다 — 카드 아래 가장자리에만 얕게 깔려 카드가 바닥에서 한 장 떠 보이는 가장 옅은 값이고, 이보다 진하면 카드 서너 장이 선 화면에서 그림자끼리 겹쳐 띠가 된다.
+
+다크가 `none`인 것은 바닥이 이미 거의 검정이라 더 어두워질 자리가 없어서다. 다크에서는 카드가 바닥보다 한 단계 밝은 것이 그 몫을 한다([2절 bg](#bg)).
 
 ---
 
@@ -364,7 +408,7 @@ Tailwind의 `--spacing` 기본값이 `0.25rem`이라 유틸 숫자에 4를 곱�
 | `--duration-slow` | 240ms | `duration-240` | 바텀시트, 화면 안 큰 덩이 |
 | `--duration-slower` | 300ms | `duration-300` | 화면 전환 |
 
-easing은 토큰으로 정하지 않았다. 나가는 쪽이 빠르고 들어오는 쪽이 느린 `ease-out` 하나만 쓴다. 곡선을 직접 적는 자리는 없다.
+easing은 토큰으로 정하지 않았다. 나가는 쪽이 빠르고 들어오는 쪽이 느린 `ease-out` 하나만 쓴다. 곡선을 직접 적는 자리는 없다. 예외는 끝없이 도는 것 둘이다 — 아래 `--interval-spin`과 `--interval-shimmer`는 `linear`다. 도는 것에 가속이 붙으면 멈췄다 가는 것으로 보인다.
 
 스케일 값 둘이다.
 
@@ -384,9 +428,11 @@ easing은 토큰으로 정하지 않았다. 나가는 쪽이 빠르고 들어오
 | `--interval-rotate` | 4s | 문구가 저절로 갈리는 주기 |
 | `--interval-beat` | 1.8s | 기다리는 중을 알리는 점이 뛰는 주기 |
 | `--interval-dash` | 0.55s | 답을 기다리는 자리의 점선이 대시 하나만큼 흐르는 주기 |
+| `--interval-shimmer` | 1.6s | 스켈레톤 위로 빛이 한 번 지나가는 주기 |
+| `--interval-spin` | 1s | 버튼 안 스피너가 한 바퀴 도는 주기 |
 | `--stagger-step` | 70ms | 등장할 때 요소끼리 어긋나는 간격 |
 
-Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
+Tailwind 유틸이 없다. 여섯 다 `var()`로 직접 쓴다.
 
 값을 이렇게 잡은 이유다.
 
@@ -396,13 +442,17 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 
 `--interval-dash`가 그보다 훨씬 짧은 것은 한 주기가 옮기는 거리가 다르기 때문이다. 뛰는 점은 한 주기에 점 전체가 커졌다 작아지지만, 흐르는 점선은 한 주기에 대시 하나 길이(3px + 3px)만 움직인다. 같은 1.8초를 주면 초당 3px라 도는 것을 확인하려고 지켜봐야 한다. 0.55초는 초당 11px쯤이고, 눈을 두지 않아도 흐르는 것이 보이면서 재촉으로는 안 읽히는 자리다.
 
+`--interval-shimmer`는 뛰는 점보다 조금 빠르다. 빛 한 줄이 카드 폭을 지나는 데 1.6초면 눈을 두지 않아도 흐르는 것이 보이고, 그보다 빠르면 카드 여럿이 동시에 번쩍여 화면이 깜빡이는 것으로 읽힌다. 내용이 오면 멈추는 움직임이라 재촉으로 읽힐 시간이 짧다.
+
+`--interval-spin`은 한 바퀴 1초다. 스피너는 버튼 라벨 높이의 작은 원이라 더 느리면 멈춘 것처럼 보이고 더 빠르면 획이 뭉개진다. 이징은 shimmer와 같이 `linear`다 — 위 duration의 `ease-out`이 예외를 두는 자리가 이 둘이다.
+
 `--stagger-step`은 요소가 따로 움직인다고 읽히는 최소 간격이다. 더 좁히면 한 덩이가 통째로 올라오는 것으로 보여서 계단을 준 값이 사라진다.
 
-넷 다 [foundation/motion.md](foundation/motion.md)의 규칙 안에 있다. 되풀이 주기 셋이 「자주 일어나는 것은 움직이지 않는다」와 부딪히는 자리는 그 화면의 문서가 따로 적는다.
+여섯 다 [foundation/motion.md](foundation/motion.md)의 규칙 안에 있다. 되풀이 주기 다섯이 「자주 일어나는 것은 움직이지 않는다」와 부딪히는 자리는 그 화면의 문서가 따로 적고, 스켈레톤의 shimmer는 [motion.md](foundation/motion.md#자주-일어나는-것은-움직이지-않는다)가 예외로 든다.
 
 ### 근거 수치
 
-위 넷을 어디서 가져왔는지다. 규칙은 [foundation/motion.md](foundation/motion.md)에 있다.
+위 duration 넷을 어디서 가져왔는지다. 규칙은 [foundation/motion.md](foundation/motion.md)에 있다.
 
 | 관찰 | 출처 |
 | --- | --- |
@@ -424,19 +474,22 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 
 | 조합 | 라이트 | 다크 |
 | --- | --- | --- |
-| `fg.neutral` on `bg.neutral` | 17.45 | 16.20 |
-| `fg.neutral-muted` on `bg.neutral` | 7.26 | 8.66 |
-| `fg.neutral-subtle` on `bg.neutral` | 4.92 | 6.40 |
-| `fg.brand` on `bg.neutral` | 5.27 | 6.27 |
+| `fg.neutral` on `bg.neutral` | 17.45 | 14.84 |
+| `fg.neutral-muted` on `bg.neutral` | 7.26 | 7.93 |
+| `fg.neutral-subtle` on `bg.neutral` | 4.92 | 5.87 |
+| `fg.brand` on `bg.neutral` | 5.27 | 5.75 |
 | `fg.brand-contrast` on `bg.brand-solid` | 5.27 | 6.27 |
-| `fg.sky` on `bg.neutral` | 7.25 | 8.71 |
-| `fg.mint` on `bg.neutral` | 6.95 | 9.11 |
-| `fg.positive` on `bg.neutral` | 6.91 | 9.03 |
-| `fg.critical` on `bg.neutral` | 7.78 | 8.16 |
+| `fg.sky` on `bg.neutral` | 7.25 | 7.98 |
+| `fg.mint` on `bg.neutral` | 6.95 | 8.35 |
+| `fg.positive` on `bg.neutral` | 6.91 | 8.27 |
+| `fg.critical` on `bg.neutral` | 7.78 | 7.47 |
 | `fg.neutral-contrast` on `bg.critical-solid` | 7.78 | 8.16 |
 | `fg.neutral-disabled` on `bg.neutral-disabled` | 6.54 | 7.93 |
-| `fg.neutral` on `bg.neutral-weak` | 15.71 | 14.84 |
-| `fg.neutral-muted` on `bg.neutral-weak` | 6.54 | 7.93 |
+| `fg.neutral` on `bg.neutral-weak` | 15.71 | 12.70 |
+| `fg.neutral-muted` on `bg.neutral-weak` | 6.54 | 6.79 |
+| `fg.neutral` on `bg.neutral-sunken` | 15.71 | 16.20 |
+| `fg.neutral-muted` on `bg.neutral-sunken` | 6.54 | 8.66 |
+| `fg.brand` on `bg.neutral-sunken` | 4.75 | 6.27 |
 | `fg.neutral` on `bg.positive-weak` | 15.94 | 14.69 |
 | `fg.neutral-muted` on `bg.positive-weak` | 6.63 | 7.86 |
 | `fg.positive` on `bg.positive-weak` | 6.31 | 8.19 |
@@ -446,6 +499,8 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 | `fg.brand` on `bg.brand-weak` | 4.78 | 5.79 |
 
 **브랜드가 파랑이 되며 여유가 줄었다.** 브라운 주 면에 흰 글자가 7.34였던 자리가 5.27이다. 기준은 넘지만 여기서 더 내리면 떨어진다 — 주 면을 한 단계 밝게 올리자는 안이 나오면 이 줄을 먼저 본다.
+
+**다크 값은 카드 면 기준이다.** `on bg.neutral`은 다크에서 `neutral-100` 위에서 잰 값이다 — 카드가 바닥보다 한 단계 밝아지면서([2절 bg](#bg)) 다크의 여유가 한 단계씩 줄었다. `fg.neutral-subtle`이 카드 위에서 5.87, 안쪽 면(`neutral-200`) 위에서 5.02다. 바닥 `bg.neutral-sunken`은 다크에서 `neutral-00`이라 옛 `on bg.neutral` 값이 그대로 그 줄로 옮겨 갔다.
 
 비활성 글자도 읽혀야 해서 이 줄을 기준 아래로 내리지 않았다. 버튼이 왜 눌리지 않는지는 대개 그 버튼에 적힌 글자가 알려준다.
 
@@ -457,9 +512,13 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 | --- | --- | --- |
 | neutral-600 on `bg.neutral` (라이트) | 3.57 | `fg.neutral-subtle`에서 탈락. neutral-700으로 올렸다 |
 | neutral-700 on `bg.neutral-disabled` (라이트) | 4.43 | `fg.neutral-disabled`에서 탈락. neutral-800으로 올렸다 |
+| `fg.neutral-subtle` on `bg.neutral-weak` (라이트) | 4.43 | 떨어진 채로 둔다 — 아래 규칙을 보라 |
+| `fg.neutral-subtle` on `bg.neutral-sunken` (라이트) | 4.43 | 같다 |
 | brand-800 vs warning-800 (라이트) | 1.08 | 사실상 같은 밝기. warning을 글자색에서 뺐다 |
 | `fg.neutral-contrast` on `bg.sky` (라이트) | 3.57 | 떨어진 채로 둔다 — 아래 규칙을 보라 |
 | `fg.neutral-contrast` on `bg.mint` (라이트) | 3.36 | 같다 |
+
+**`fg.neutral-subtle`은 카드 면 위에만 선다.** 라이트에서 바닥과 안쪽 면이 같은 `neutral-100`이라 그 위의 `neutral-700`은 비활성 면 위에서 탈락한 그 조합과 같은 4.43이다. 보조 정보·시각·날짜가 이 색을 쓰는데 그 글자들은 전부 카드 안 `bg.neutral` 위에 있다. 안쪽 면 위에 글자가 서는 자리 — 입력 칸의 자리표시 글자, 세그먼트의 다른 칸 글자 — 는 이 줄에 걸려 있다. 어느 쪽을 옮길지는 [components.md](components.md#아직-안-정한-것)에 미정으로 있다.
 
 **`bg.sky`와 `bg.mint` 위에는 글자를 안 올린다.** 그림의 둘째·셋째 몫을 칠하는 면이라 그 위에 글자가 설 일이 없다 — 띠도 막대도 도넛 호도 글자를 면 밖에 둔다. 글자를 올려야 하는 자리가 생기면 `-600`이 아니라 `sky-800`·`mint-800` 면을 쓴다. 그 단계에서는 흰 글자가 7.25와 6.95로 선다.
 
@@ -481,7 +540,7 @@ Tailwind 유틸이 없다. 넷 다 `var()`로 직접 쓴다.
 
 그래서 이 절에 남은 것은 아래 둘뿐이다. 표로 담을 수 없는 뼈대라 이 절이 그것들의 유일한 정본이고, 코드펜스 안을 고치면 다음 생성이 그대로 옮겨 담는다.
 
-블록 선택자는 여기 없다. `:root`와 `@media (prefers-color-scheme: dark)`는 생성기가 세운다. 팔레트 칸이 `—`인 역할 토큰이 푸는 `--surface-*` 변수들도 없다 — 그 행은 라이트·다크 칸이 곧 값이라 생성기가 2절 표에서 그대로 읽는다.
+블록 선택자는 여기 없다. `:root`와 `@media (prefers-color-scheme: dark)`는 생성기가 세운다. 팔레트 칸이 `—`인 역할 토큰이 푸는 `--neutral-bg` 같은 변수들도 없다 — 그 행은 라이트·다크 칸이 곧 값이라 생성기가 2절 표에서 그대로 읽는다. 그림자도 같다 — 5절 표의 라이트·다크 칸이 `--card-shadow`로 갈라 서고 `@theme inline`의 `--shadow-card`가 그것을 가리킨다.
 
 **다크 갈래가 미디어 쿼리 하나다.** 웹에서는 `[data-theme="dark"]` 속성과 `prefers-color-scheme`을 둘 다 받았는데, 네이티브 컴파일러가 `:root`에 클래스나 속성이 붙은 선택자를 거부한다 — 에러 문구가 「Class-qualified `:root` selectors are unsupported on native. Use `@media (prefers-color-scheme: dark)` for dark mode, and React Native `Appearance.setColorScheme()` for manual selection」이다. 앱에서 「밝게·어둡게」를 고르는 길은 선택자가 아니라 `Appearance.setColorScheme()`이고, 그것이 미디어 쿼리가 보는 값을 바꾼다.
 
@@ -513,10 +572,9 @@ Tailwind가 기본으로 들고 오는 것 중 안 쓰는 것을 지우고 서�
 
 펜스 둘이고 순서가 곧 자리다. 첫 펜스는 `@theme` 블록 끝에, 둘째 펜스는 `@theme inline` 블록 머리에 들어간다.
 
-무엇을 왜 지웠는지는 [3절](#3-타이포그래피)과 [5절](#5-라운딩)에 있다. 크기는 `text-3xl`까지, 굵기는 넷, 라운딩은 `rounded-xl`까지가 전부다.
+무엇을 왜 지웠는지는 [3절](#3-타이포그래피)과 [4절](#폭)과 [5절](#5-라운딩과-그림자)에 있다. 크기는 `text-4xl`까지, 굵기는 넷, 라운딩은 `rounded-xl`까지, 브레이크포인트는 `tablet` 하나가 전부다. 브레이크포인트 초기화만 둘째 펜스에 있다 — `--breakpoint-*: initial`은 그 뒤에 오는 선언만 살려서, 표에서 나오는 `--breakpoint-tablet`보다 앞에 서야 한다.
 
 ```css
-  --text-4xl: initial;
   --text-5xl: initial;
   --text-6xl: initial;
   --text-7xl: initial;
@@ -544,6 +602,8 @@ Tailwind가 기본으로 들고 오는 것 중 안 쓰는 것을 지우고 서�
   --color-*: initial;
   --color-transparent: transparent;
   --color-current: currentColor;
+
+  --breakpoint-*: initial;
 
   --font-sans: "WantedSans-Regular";
   --font-medium: "WantedSans-Medium";
@@ -615,12 +675,8 @@ Wanted Sans는 Wanted Lab이 만들었고 [SIL Open Font License 1.1](https://sc
 
 **뛰는 점이 커지는 배율.** 6절의 스케일 값 둘은 눌림 0.97과 등장 0.9라 커지는 쪽이 없다. 시안은 1.5로 그렸다. 6px 점이라 실제 화면을 보고 정한다.
 
-**스위치 손잡이를 트랙에서 떼는 방법.** 시안이 `0 1px 2px rgba(0,0,0,.2)`짜리 그림자로 그렸는데 그림자를 안 쓰기로 했다. 끔 상태에서 흰 손잡이가 회색 트랙 위에서 구분되는지 실제 화면으로 보고 테두리를 두를지 정한다.
+**스위치 손잡이를 트랙에서 떼는 방법.** 시안이 `0 1px 2px rgba(0,0,0,.2)`짜리 그림자로 그렸는데 그림자는 카드 하나뿐이다([5절](#그림자)). 끔 상태에서 흰 손잡이가 회색 트랙 위에서 구분되는지 실제 화면으로 보고 테두리를 두를지 정한다.
 
 **바텀시트 위의 손잡이.** 시트 맨 위에 짧은 가로 막대를 둘지가 안 정해졌다. 아이폰에서 끌어내려 닫는 것이 되는 시트라는 표시인데, 우리 시트는 버튼으로 닫는 자리라 표시만 있고 동작이 없으면 거짓말이 된다. 끌어내려 닫는 것을 붙일지와 같이 정한다.
-
-**큰 글자의 자간.** 4절 타이포 표에 letter-spacing 열이 없다. `text-2xl`쯤부터는 기본 자간이 넓어 보여서 시안들이 −0.01~−0.02em을 각자 얹고 있다.
-
-**스피너가 도는 시간.** 6절 duration 넷은 시작과 끝이 있는 전환의 값이라 끝없이 도는 것에 안 맞는다. 이징도 `ease-out`이 아니라 `linear`여야 한다 — 도는 것에 가속이 붙으면 멈췄다 가는 것으로 보인다. 6절이 이징을 하나로 못 박아둔 것과 부딪히는 자리다.
 
 **축하 모션을 쓸 자리.** [foundation/motion.md](foundation/motion.md#축하할-순간)에 적었듯 출근 인증 완료 하나는 확실한데, 두 번째로 지목됐던 "급여 확정"은 도메인에 없는 행위다. `docs/2-design/modules/payroll/README.md`가 급여를 확정하지 않는다고 못 박아뒀다.

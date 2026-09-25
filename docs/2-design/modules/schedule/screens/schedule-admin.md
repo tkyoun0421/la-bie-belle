@@ -1036,7 +1036,7 @@
 
 **`bg.scrim`이 여전히 없다.** 시트 뒤 덮개가 다크에서 밝아지는 문제는 [excuse.md](../../attendance/screens/excuse.md#규칙과-부딪힌-자리)가 `bg.scrim` 제안으로 이미 적었다. 이 화면의 시트 전부가 같은 토큰을 기다린다. 새로 제안하지 않고 그 제안에 얹는다.
 
-**`rounded-sm`을 달력 칸에 배정했다 — 해소.** [tokens.md](../../../design-system/tokens.md#5-라운딩)와 [spacing-shape.md](../../../design-system/foundation/spacing-shape.md#라운딩)의 표가 「아직 배정 없음」으로 두고 있던 자리에 「배지, 달력 칸」이 적혔다. 라운딩을 알약에서 내리면서 배지가 같은 값으로 들어와 같이 정리됐다.
+**`rounded-sm`을 달력 칸에 배정했다 — 해소.** [tokens.md](../../../design-system/tokens.md#5-라운딩과-그림자)와 [spacing-shape.md](../../../design-system/foundation/spacing-shape.md#라운딩)의 표가 「아직 배정 없음」으로 두고 있던 자리에 「배지, 달력 칸」이 적혔다. 라운딩을 알약에서 내리면서 배지가 같은 값으로 들어와 같이 정리됐다.
 
 **최소 터치 크기 규칙이 또 걸렸다 — 닫혔다.** [spacing-shape.md](../../../design-system/foundation/spacing-shape.md#누를-수-있는-것은-44px-이상이다)에 「누를 수 있는 것은 44px 이상이다」가 섰고, 가로로 여럿이 서는 자리는 세로만 지키면 된다는 예외도 같이 섰다. 달력 칸은 가로 43픽셀에 세로 64픽셀이라 그 예외에 든다.
 

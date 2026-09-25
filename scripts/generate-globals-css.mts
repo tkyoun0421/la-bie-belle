@@ -6,8 +6,10 @@ import {
   bySection,
   EMPTY_CELL,
   PALETTE_HEADER,
+  readRows,
   requireRows,
   ROLE_HEADER,
+  SHADOW_HEADER,
   SUBSECTION,
   type Row,
 } from "./tokens-md.mts";
@@ -28,6 +30,8 @@ const TYPOGRAPHY_HEADER = [
   "rem 행간",
   "용도",
 ];
+const LETTER_SPACING_HEADER = ["유틸", "자간"];
+const BREAKPOINT_HEADER = ["토큰", "값", "Tailwind 유틸"];
 const RADIUS_HEADER = ["유틸", "값", "쓰는 자리"];
 const DURATION_HEADER = ["변수", "값", "Tailwind 유틸", "쓰는 자리"];
 const CADENCE_HEADER = ["변수", "값", "쓰는 자리"];
@@ -50,6 +54,8 @@ const THEME_INLINE_HEAD = {
 
 const ROLE_LIGHT_COLUMN = 2;
 const ROLE_DARK_COLUMN = 3;
+const SHADOW_LIGHT_COLUMN = 1;
+const SHADOW_DARK_COLUMN = 2;
 const STATIC_RADIUS_UTILITIES = new Set(["rounded-none", "rounded-full"]);
 const ALIASED_PREFIX = /^--(?:palette|role|vendor)-/;
 
@@ -150,16 +156,53 @@ function offPaletteGroup(roleRows: Row[], side: Side): Group {
   }));
 }
 
+function shadowGroup(rows: Row[], side: Side): Group {
+  const column = side === "light" ? SHADOW_LIGHT_COLUMN : SHADOW_DARK_COLUMN;
+
+  return rows.map((row) => ({
+    name: offPaletteVariableOf(row.cells[0]),
+    value: row.cells[column],
+  }));
+}
+
+function shadowThemeGroup(rows: Row[]): Group {
+  return rows.map((row) => {
+    const [property, layer] = row.cells[0].split(".");
+    return {
+      name: `--${property}-${layer}`,
+      value: `var(${offPaletteVariableOf(row.cells[0])})`,
+    };
+  });
+}
+
+function textStepOf(utility: string): string {
+  return utility.replace(/^text-/, "");
+}
+
 function typographyGroup(markdown: string): Group {
   return requireRows(markdown, TYPOGRAPHY_HEADER, "타이포그래피").flatMap(
     (row) => {
-      const step = row.cells[0].replace(/^text-/, "");
+      const step = textStepOf(row.cells[0]);
       return [
         { name: `--text-${step}`, value: `${row.cells[3]}rem` },
         { name: `--text-${step}--line-height`, value: `${row.cells[4]}rem` },
       ];
     },
   );
+}
+
+function letterSpacingGroup(markdown: string): Group {
+  return readRows(markdown, LETTER_SPACING_HEADER).map((row) => ({
+    name: `--text-${textStepOf(row.cells[0])}--letter-spacing`,
+    value: row.cells[1],
+  }));
+}
+
+function breakpointGroup(markdown: string): Group {
+  return readRows(markdown, BREAKPOINT_HEADER).map((row) => ({
+    name: `--breakpoint-${row.cells[0].split(".")[1]}`,
+    value: row.cells[1],
+  }));
 }
 
 function radiusGroup(markdown: string): Group {
@@ -205,6 +248,8 @@ export async function generateGlobalsCss(markdown: string): Promise<string> {
   const fences = readFences(markdown);
   const roleRows = requireRows(markdown, ROLE_HEADER, "역할 토큰");
 
+  const shadowRows = readRows(markdown, SHADOW_HEADER);
+
   const lightPalette = paletteGroups(markdown, "light");
   const roles = roleGroups(roleRows);
   const vendor = variableGroup(
@@ -215,11 +260,13 @@ export async function generateGlobalsCss(markdown: string): Promise<string> {
     [themeName("light")],
     ...lightPalette,
     offPaletteGroup(roleRows, "light"),
+    shadowGroup(shadowRows, "light"),
   ]);
   const dark = renderGroups([
     [themeName("dark")],
     ...paletteGroups(markdown, "dark"),
     offPaletteGroup(roleRows, "dark"),
+    shadowGroup(shadowRows, "dark"),
   ]);
 
   const settings = renderGroups([
@@ -230,13 +277,21 @@ export async function generateGlobalsCss(markdown: string): Promise<string> {
   ]);
 
   const theme = [
-    renderGroups([typographyGroup(markdown), radiusGroup(markdown)]),
+    renderGroups([
+      typographyGroup(markdown),
+      letterSpacingGroup(markdown),
+      radiusGroup(markdown),
+    ]),
     requireFence(fences, THEME_RESET),
   ].join("\n\n");
 
   const themeInline = [
     requireFence(fences, THEME_INLINE_HEAD),
-    renderGroups(aliasGroups([...lightPalette, ...roles, vendor])),
+    renderGroups([
+      breakpointGroup(markdown),
+      shadowThemeGroup(shadowRows),
+      ...aliasGroups([...lightPalette, ...roles, vendor]),
+    ]),
   ].join("\n\n");
 
   const assembled = [
