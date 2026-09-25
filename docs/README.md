@@ -14,7 +14,7 @@
 - [`docs/2-design/`](2-design/) — 설계. 지도는 그 안 `README.md`
   - [`docs/2-design/system/`](2-design/system/) — 시스템 전체의 원칙과 복합 화면. 구성(`architecture.md`)·데이터 접근(`data-access.md`)·런타임(`runtime.md`)·탐색(`navigation.md`)
   - [`docs/2-design/modules/`](2-design/modules/) — 업무 영역별 용어·규칙(`README.md`)·기술 설계(`design.md`)·화면(`screens/`). 영역 지도는 그 안 `README.md`
-  - [`docs/2-design/design-system/`](2-design/design-system/) — 토큰·컴포넌트·문안의 공통 시각 기준
+  - [`docs/2-design/design-system/`](2-design/design-system/) — 토큰·컴포넌트·문안·그림의 공통 시각 기준
   - [`docs/2-design/spec/`](2-design/spec/) — 기능별 완료 조건·승인 마크
   - [`docs/2-design/adr/`](2-design/adr/) — 중요한 선택의 이유
 - [`docs/3-build/`](3-build/) ~ [`docs/6-maintain/`](6-maintain/) — 구현 계획, 테스트 전략, 배포, 운영. 각 안내는 그 안 `README.md`
