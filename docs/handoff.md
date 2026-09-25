@@ -6,7 +6,13 @@
 
 ## 다음 작업
 
-**다음 첫 수는 사람 손이다 — 기계만으로 닫을 task가 또 없다.** `expo-scaffold`의 실기기 확인과 `sian-native-pass`의 시안 승인, 그리고 총괄이 정할 결정 둘([navigation Q-03](2-design/system/navigation.md#q-03)·[runtime Q-01](2-design/system/runtime.md#q-01))이 남는다. `ready`로 선 화면 task 넷(`profile-form`·`members-pending`·`profile-screen`·`members`)은 전부 `expo-scaffold`를 선행으로 들어서 그 확인 뒤에 풀린다. `lint-rule-catalogue`·`pending-screen-copy`·`admin-home-split`·`admin-home-sian` 넷은 이번 회차로 `done`이다.
+**다음 첫 수는 `design-system-toss`다 — ADR-014를 디자인 시스템 정본 넷에 전개한다.** 인터뷰(2026-09-25)가 룩앤필 기준점을 토스 홈으로 옮겼고 [ADR-014](2-design/adr/ADR-014-toss-like-depth-and-graphics.md)가 ADR-012의 마감 넷을 뒤집었다 — 회색 바닥 위 흰 카드, `shadow.card` 하나(다크 `none`), 밀도 회복(눈금 20), 36px 큰 숫자 하나(검정), 토스페이스 SVG + AI 3D, 움직이는 스켈레톤, 다크 1차. `sian-native-pass`는 반려로 `done`이고 다시 그리는 일은 `sian-toss-pass`(대시보드 두 장 먼저 승인)다. 나란히 잡을 수 있는 것은 `illustration-style-guide`다. 그 뒤 순서는 시안 → `ui-kit`(조각 라이브러리 + `/_catalog`, 랄프 루프 첫 대상) → 화면 루프다.
+
+**조언자가 초안의 사실 셋을 고쳤고 그 셋이 전개의 축이다.** RN 새 아키텍처 + NativeWind v5는 CSS `box-shadow` 한 값을 양 플랫폼에 같게 그린다(iOS 4값·`elevation` 따로는 옛 전제). 토스페이스는 SIL OFL이 아닌 자체 라이선스라 서브셋이 막히고 배포 폰트가 13MB다 — 서체가 아니라 SVG 개별 파일로 쓴다. 적응형 팔레트 아래서 바닥을 `neutral-100`으로 두면 다크에서 카드가 바닥보다 어두워진다 — 바닥·카드·안쪽 셋을 라이트·다크 다른 단계로 매핑한다(`bg.scrim` 선례). `design-system-toss`가 `navigation.md`·`components.md`를 건드리므로 「영향 확인」 게이트가 spec 서른하나의 이름을 PR 본문에 요구한다.
+
+**IA와 업무 규칙도 같은 인터뷰에서 넷이 섰다.** 관리자 진입은 근무자 앱바의 「관리자」 스위치고 관리자 층은 탭 바 없이 격리된다([navigation.md 세 층](2-design/system/navigation.md#세-층)). 홀 위치·반경은 관리자가 QR 화면에서 지도 핀으로 고치고(≤200m) 다음 날 0시부터 적용된다([ATT-028](2-design/modules/attendance/README.md#att-028), 표 `hall_location_changes`). 출근 인증은 통신이 없으면 기기에 담아두고 연결되면 보내며 2시간 넘으면 `too_late`다([ATT-029](2-design/modules/attendance/README.md#att-029)) — 마이그레이션의 10분 한도는 `attendance-checkin`이 고친다. 앱 없는 기기의 QR은 안내 한 장이다(Q-03 닫힘). `halls` 시드의 `radius_m`이 200인데 ATT-002의 처음 값은 100이다 — `hall-location`이 맞춘다.
+
+**남은 사람 손은 그대로다.** `expo-scaffold`의 실기기 확인과 총괄이 정할 결정 하나([runtime Q-01](2-design/system/runtime.md#q-01))가 남는다 — navigation Q-03은 이번에 닫혔다. `ready`로 선 화면 task 넷(`profile-form`·`members-pending`·`profile-screen`·`members`)은 전부 `expo-scaffold`를 선행으로 들어서 그 확인 뒤에 풀린다. `lint-rule-catalogue`·`pending-screen-copy`·`admin-home-split`·`admin-home-sian` 넷은 이번 회차로 `done`이다.
 
 **관리자 홈의 짝 시안도 섰다.** [admin-home.sian.html](2-design/system/screens/admin-home.sian.html)이 목업 여섯이고 원본에서 01절을 빼며 02~10을 01~09로 내렸다. 잘라 붙이지 않고 `sian-writer`가 문서를 읽어 새로 그렸다 — 열 절이 CSS 한 덩이를 나눠 써서 잘라내면 죽은 규칙이 따라온다. **감사가 문서에 없는 조합을 잡았다**: 확정 전 목업에 빈 자리 카드와 오늘 현황 실값이 같이 서 있었다. 카드는 확정 뒤 조건이고 오늘 현황은 확정 전에 「–」라, **근무표 상태 하나가 그 목업의 나머지를 다 정한다** — 미니뷰의 「오늘」 표식까지(확정 전 시나리오는 9월 29일이라 10월 미니뷰에 오늘이 없다). 목업을 상태별로 다시 짜고 재감사에서 어긋남이 없었다.
 
@@ -94,7 +100,7 @@
 
 **퇴사자가 승인된 사람과 똑같이 읽히던 것을 고쳤다.** `is_approved()`가 `left_at`을 빠뜨렸던 자리를 `schedule-data`에서 잡아 `20260825162027_profiles.sql`을 직접 고쳤다(배포 전이라 마이그레이션을 고치는 것이 되돌리기다). `is_admin()`은 아직 `role`만 본다 — 같은 계약을 어기고 있고 `members-pending`이 받아뒀다.
 
-**총괄이 정할 것 둘이 여전히 열려 있다.** [navigation Q-03](2-design/system/navigation.md#q-03) — 종이 QR을 앱 없는 기기로 찍으면 무엇이 뜨나. [runtime Q-01](2-design/system/runtime.md#q-01) — 오래 안 열었다 여는 앱이 무엇을 다시 읽나.
+**총괄이 정할 것 하나가 여전히 열려 있다.** [runtime Q-01](2-design/system/runtime.md#q-01) — 오래 안 열었다 여는 앱이 무엇을 다시 읽나.
 
 회차 기록은 `docs/log/2026-09-23.md`다. 그 앞 [2026-09-22](log/2026-09-22.md)가 서체·세션·딥링크·진입 판정을 세웠고, 이번 회차는 네 갈래다 — spec 양식에 상태 격자를 더하고 화면 task 스물의 spec을 세워 승인한 것(#391·#392), `claimed-guards-audit`이 사실로만 남기고 넘긴 자리를 포함해 기계만으로 닫히는 task 다섯을 마저 닫은 것(#394~#398: 라우트 타입 게이트, 서체 서브셋, Edge Function import 불가 확인, 생성 타입 대조, 파일 이름 규약), e2e 러너를 Maestro로 정해 `e2e-runner`를 닫은 것(#400), 그리고 lint 규칙 표를 저장소로 들이고 승인 대기 문안을 1차 기준에 맞추고 관리자 홈을 문서·시안 둘 다 근무표에서 갈라낸 것(#404~#407) — 마지막 갈래에서 `navigation.md`·`components.md`처럼 팬아웃이 큰 문서를 건드리면 「영향 확인」 게이트가 받는 문서 서른한 개의 이름을 본문에 하나씩 요구한다는 것이 드러났다([관찰 018](observations/018-sources-impact-basename-cost-scales-with-fanout.md)).
 
