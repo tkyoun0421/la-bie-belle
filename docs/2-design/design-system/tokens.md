@@ -184,14 +184,14 @@ hue 27, chroma 최대 0.145.
 | `bg.neutral-sunken` | — | neutral-100 | neutral-00 | `bg-bg-neutral-sunken` |
 | `bg.neutral` | — | neutral-00 | neutral-100 | `bg-bg-neutral` |
 | `bg.neutral-weak` | — | neutral-100 | neutral-200 | `bg-bg-neutral-weak` |
-| `bg.neutral-weak-pressed` | neutral-200 | `#DEE0E1` | `#242527` | `bg-bg-neutral-weak-pressed` |
+| `bg.neutral-weak-pressed` | — | neutral-200 | neutral-300 | `bg-bg-neutral-weak-pressed` |
 | `bg.neutral-solid` | neutral-1000 | `#181A1C` | `#E7EAED` | `bg-bg-neutral-solid` |
 | `bg.neutral-solid-soft` | neutral-900 | `#303336` | `#C9CCD0` | `bg-bg-neutral-solid-soft` |
-| `bg.neutral-disabled` | neutral-100 | `#F2F3F4` | `#171718` | `bg-bg-neutral-disabled` |
+| `bg.neutral-disabled` | — | neutral-100 | neutral-200 | `bg-bg-neutral-disabled` |
 | `bg.neutral-muted` | neutral-400 | `#AEB1B5` | `#45484B` | `bg-bg-neutral-muted` |
 | `bg.brand-solid` | brand-700 | `#2F5CF6` | `#628DFC` | `bg-bg-brand-solid` |
 | `bg.brand-solid-pressed` | brand-800 | `#1D40CF` | `#87AAFD` | `bg-bg-brand-solid-pressed` |
-| `bg.brand-weak` | brand-100 | `#EEF4FF` | `#0C152F` | `bg-bg-brand-weak` |
+| `bg.brand-weak` | — | brand-100 | brand-200 | `bg-bg-brand-weak` |
 | `bg.brand-weak-pressed` | brand-200 | `#D2E0FE` | `#102151` | `bg-bg-brand-weak-pressed` |
 | `bg.brand-weak-selected` | brand-100 | `#EEF4FF` | `#0C152F` | `bg-bg-brand-weak-selected` |
 | `bg.brand-muted` | brand-300 | `#B6CCFE` | `#112878` | `bg-bg-brand-muted` |
@@ -208,11 +208,13 @@ hue 27, chroma 최대 0.145.
 
 **층 셋이 라이트와 다크에서 다른 단계를 가리킨다.** 바닥 `bg.neutral-sunken`, 카드 `bg.neutral`, 카드 안의 한 단계 아래 `bg.neutral-weak`다. 라이트는 100 / 00 / 100이고 다크는 00 / 100 / 200이다 — 팔레트를 그대로 뒤집으면 다크에서 카드가 바닥보다 어두워져 파이는데, 카드는 두 테마 모두 바닥 위에 떠 있어야 한다. 그래서 다크는 바닥이 가장 어둡고 카드가 한 단계 밝고 안쪽이 또 한 단계 밝다. 뜻은 [foundation/color.md](foundation/color.md#variant와-state)의 Variant 절이 들고, 근거는 [ADR-014](../adr/ADR-014-toss-like-depth-and-graphics.md)에 있다. 라이트에서 바닥과 안쪽이 같은 `neutral-100`인 것은 그 둘이 한 화면에서 맞닿는 자리가 없어서다 — 안쪽 면은 늘 카드 안에 있고 카드가 그 사이를 가른다.
 
+안쪽 면에 얹히는 셋도 따라 움직인다. `bg.neutral-weak-pressed`는 안쪽 면보다 한 단계 진해야 눌림이 보이니 다크에서 `neutral-300`이고, `bg.neutral-disabled`는 안쪽 면과 같은 단계라 다크에서 `neutral-200`이다 — 팔레트를 그대로 뒤집으면 다크에서 눌림이 안쪽 면과 같은 값이 되고 비활성이 카드 면과 같은 값이 된다. `bg.brand-weak`는 다크에서 `brand-200`이다 — `brand-100`은 카드 면과 명도가 같아 채도로만 갈리는데, 옅은 브랜드 면은 카드 안에서 「내 것」을 말하는 자리라 명도로도 갈려야 한다. **라이트와 다크가 다른 단계를 가리키는 `—` 행이 여섯이다 — 하나 더 늘면 다크 곡선을 다시 짠다.** [ADR-014](../adr/ADR-014-toss-like-depth-and-graphics.md)의 재검토 조건이 여섯을 넘을 때다. `bg.scrim`은 단계가 아니라 리터럴이라 그 셈 밖이다.
+
 `bg.brand-solid`가 `brand-700`이다. 다른 계열이 `-800`을 꽉 찬 면으로 쓰는 것과 갈리는데, 파랑은 `-800`(`#1D40CF`)이 남색에 가까워져 레퍼런스에서 받은 색과 멀어진다. `-700`이 그 색이고 흰 글자 대비도 5.27로 선다. 눌린 상태가 `-800`을 받아 한 단계씩 밀렸다.
 
 `bg.neutral-muted`는 그림에서 값이 작거나 강조할 것이 아닌 몫을 칠하는 면이다. 막대와 띠가 쓴다 — 근거는 [foundation/color.md](foundation/color.md#차트가-색을-쓰는-법)에 있다.
 
-`bg.brand-weak`는 카드 안에서만 선다. `brand-100`이라 라이트에서 명도 0.965인데 바닥 `bg.neutral-sunken`과 안쪽 면 `bg.neutral-weak`도 0.965다 — 그 둘 위에 놓으면 면이 갈리지 않는다. 카드 면 `neutral-00`은 1.000이라 그 위에서만 옅은 브랜드가 읽힌다. 달력의 내 근무 칸과 Badge brand가 그 자리고, 둘 다 카드 안에 있다. 카드 밖에 옅은 브랜드 면이 필요하면 `bg.brand-muted`다 — `brand-300`이 0.845로 바닥과 0.120이 갈린다.
+`bg.brand-weak`는 카드 안에서만 선다. 라이트에서 `brand-100`이라 명도 0.965인데 바닥 `bg.neutral-sunken`과 안쪽 면 `bg.neutral-weak`도 0.965다 — 그 둘 위에 놓으면 면이 갈리지 않는다. 카드 면 `neutral-00`은 1.000이라 그 위에서만 옅은 브랜드가 읽힌다. 다크에서 `brand-200`(0.265)인 것도 같은 이유다 — 카드 면 `neutral-100`이 0.205라 한 단계 위여야 갈린다. 달력의 내 근무 칸과 Badge brand가 그 자리고, 둘 다 카드 안에 있다. 카드 밖에 옅은 브랜드 면이 필요하면 `bg.brand-muted`다 — `brand-300`이 0.845로 바닥과 0.120이 갈린다.
 
 `bg.scrim`은 팔레트를 안 따른다. 덮개는 뒤를 어둡게 하는 것이 일이라 명도가 뒤집히면 안 되는 몇 안 되는 자리인데, 팔레트가 적응형이라 `bg.neutral-solid`를 쓰면 다크에서 밝은 회색이 되어 화면을 흰 막이 덮는다. 그래서 라이트는 `neutral-1000`, 다크는 `neutral-00`을 값으로 굳혔다 — 양쪽 다 어두운 잉크다. 투명도 42%가 값에 들어 있어 쓰는 쪽이 따로 안 얹는다.
 
@@ -397,6 +399,19 @@ Tailwind의 `--spacing` 기본값이 `0.25rem`이라 유틸 숫자에 4를 곱�
 
 다크가 `none`인 것은 바닥이 이미 거의 검정이라 더 어두워질 자리가 없어서다. 다크에서는 카드가 바닥보다 한 단계 밝은 것이 그 몫을 한다([2절 bg](#bg)).
 
+### 그림
+
+일러스트가 서는 크기와 파일 상한이다. 어디에 서고 어떻게 만드는지는 [illustration.md](illustration.md)가 든다.
+
+| 자리 | 값 |
+| --- | --- |
+| 3D — 화면이 통째로 빈 자리, 한 장면 화면, 막힌 자리 | 240pt |
+| 3D — 카드 안 목록만 빈 자리 | 120pt |
+| 3D — 한 장 파일 상한 | 120KB |
+| 토스페이스 | 24pt |
+
+3D는 720px 정사각 한 장을 두 크기로 내려 그린다 — 파일이 장면마다 하나다. 토스페이스는 옆 글자 크기를 따르지 않고 한 가지다 — 면으로 그려진 그림이라 16px에서는 뭉개진다. CSS로 나가는 값이 아니라 그림을 그리는 조각이 받는다.
+
 ---
 
 ## 6. 모션
@@ -484,7 +499,7 @@ Tailwind 유틸이 없다. 여섯 다 `var()`로 직접 쓴다.
 | `fg.positive` on `bg.neutral` | 6.91 | 8.27 |
 | `fg.critical` on `bg.neutral` | 7.78 | 7.47 |
 | `fg.neutral-contrast` on `bg.critical-solid` | 7.78 | 8.16 |
-| `fg.neutral-disabled` on `bg.neutral-disabled` | 6.54 | 7.93 |
+| `fg.neutral-disabled` on `bg.neutral-disabled` | 6.54 | 6.79 |
 | `fg.neutral` on `bg.neutral-weak` | 15.71 | 12.70 |
 | `fg.neutral-muted` on `bg.neutral-weak` | 6.54 | 6.79 |
 | `fg.neutral` on `bg.neutral-sunken` | 15.71 | 16.20 |
@@ -496,11 +511,11 @@ Tailwind 유틸이 없다. 여섯 다 `var()`로 직접 쓴다.
 | `fg.neutral` on `bg.sky-weak` | 15.82 | 14.83 |
 | `fg.neutral-muted` on `bg.sky-weak` | 6.58 | 7.93 |
 | `fg.sky` on `bg.sky-weak` | 6.57 | 7.97 |
-| `fg.brand` on `bg.brand-weak` | 4.78 | 5.79 |
+| `fg.brand` on `bg.brand-weak` | 4.78 | 4.96 |
 
 **브랜드가 파랑이 되며 여유가 줄었다.** 브라운 주 면에 흰 글자가 7.34였던 자리가 5.27이다. 기준은 넘지만 여기서 더 내리면 떨어진다 — 주 면을 한 단계 밝게 올리자는 안이 나오면 이 줄을 먼저 본다.
 
-**다크 값은 카드 면 기준이다.** `on bg.neutral`은 다크에서 `neutral-100` 위에서 잰 값이다 — 카드가 바닥보다 한 단계 밝아지면서([2절 bg](#bg)) 다크의 여유가 한 단계씩 줄었다. `fg.neutral-subtle`이 카드 위에서 5.87, 안쪽 면(`neutral-200`) 위에서 5.02다. 바닥 `bg.neutral-sunken`은 다크에서 `neutral-00`이라 옛 `on bg.neutral` 값이 그대로 그 줄로 옮겨 갔다.
+**다크 값은 카드 면 기준이다.** `on bg.neutral`은 다크에서 `neutral-100` 위에서 잰 값이다 — 카드가 바닥보다 한 단계 밝아지면서([2절 bg](#bg)) 다크의 여유가 한 단계씩 줄었다. `fg.neutral-subtle`이 카드 위에서 5.87, 안쪽 면(`neutral-200`) 위에서 5.02다. 바닥 `bg.neutral-sunken`은 다크에서 `neutral-00`이라 옛 `on bg.neutral` 값이 그대로 그 줄로 옮겨 갔다. 가장 여유가 적은 줄은 `fg.brand` on `bg.brand-weak` 다크 4.96이다 — 옅은 브랜드 면이 다크에서 `brand-200`으로 한 단계 올라간 값이고, 여기서 면을 한 단계 더 올리면 떨어진다.
 
 비활성 글자도 읽혀야 해서 이 줄을 기준 아래로 내리지 않았다. 버튼이 왜 눌리지 않는지는 대개 그 버튼에 적힌 글자가 알려준다.
 
