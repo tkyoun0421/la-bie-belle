@@ -6,11 +6,11 @@
 
 무엇이 어디 있는지는 이 절이 정본이다. 새 문서가 생기면 여기에 한 줄을 더한다.
 
-- [tokens.md](tokens.md) — 모든 값의 정본. 팔레트, 역할 토큰, 타이포 스케일, 스페이싱, 라운딩, 모션, 대비 검증. `src/app/globals.css`가 여기서 나온다
-- [foundation/color.md](foundation/color.md) — 적응형 2계층이 왜 필요한지, 브랜드 색을 아끼는 규칙, 경고색 제약
-- [foundation/typography.md](foundation/typography.md) — 스케일과 굵기를 쓰는 법, Wanted Sans, 숫자 정렬
-- [foundation/spacing-shape.md](foundation/spacing-shape.md) — 여백 리듬, 라운딩, 면 나누기
-- [foundation/motion.md](foundation/motion.md) — 언제 움직이고 언제 안 움직이는지, 접근성, 무엇으로 움직이나
+- [tokens.md](tokens.md) — 모든 값의 정본. 팔레트, 역할 토큰, 타이포 스케일, 스페이싱과 브레이크포인트, 라운딩과 그림자, 그림 크기, 모션, 대비 검증. `src/app/globals.css`가 여기서 나온다
+- [foundation/color.md](foundation/color.md) — 적응형 2계층이 왜 필요한지, 층 셋, 브랜드 색을 아끼는 규칙, 경고색 제약, 차트와 일러스트가 색을 쓰는 법
+- [foundation/typography.md](foundation/typography.md) — 스케일과 굵기를 쓰는 법, Wanted Sans, 숫자 정렬, 큰 숫자
+- [foundation/spacing-shape.md](foundation/spacing-shape.md) — 여백 리듬, 폭, 라운딩, 면 나누기, 그림자
+- [foundation/motion.md](foundation/motion.md) — 언제 움직이고 언제 안 움직이는지, 접근성, 무엇으로 움직이나, 스켈레톤
 - [writing.md](writing.md) — 화면에 나가는 한국어 규칙
 - [components.md](components.md) — 컴포넌트별 역할 토큰 표
 - [illustration.md](illustration.md) — 그림이 서는 자리와 안 서는 자리, 3D 오브젝트의 결과 프롬프트 틀, 장면 목록, 토스페이스 사용 규칙, 승인 절차

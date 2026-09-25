@@ -12,11 +12,16 @@ const GLOBALS_CSS_PATH = path.join(process.cwd(), "src/app/globals.css");
  */
 const FIXTURE_UTILITIES =
   "bg-bg-brand-solid text-fg-neutral bg-bg-neutral p-4 text-base " +
-  "font-sans font-medium font-semibold font-bold";
+  "font-sans font-medium font-semibold font-bold shadow-card text-4xl " +
+  "tablet:px-5";
 
 const PALETTE_BRAND_700 = "palette-brand-700";
 const PALETTE_NEUTRAL_00 = "palette-neutral-00";
+const PALETTE_NEUTRAL_100 = "palette-neutral-100";
 const PALETTE_NEUTRAL_1000 = "palette-neutral-1000";
+const NEUTRAL_BG = "neutral-bg";
+const CARD_SHADOW = "card-shadow";
+const TABLET_MIN_WIDTH = 768;
 const SYSTEM_DARK_CONDITION = [["=", "prefers-color-scheme", "dark"]];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -183,6 +188,22 @@ describe("네이티브 컴파일 파이프라인이 치수 정본과 같은 값�
   it("text-base의 fontSize가 17이다 — 정본 --text-base: 1.0625rem × rem 16", () => {
     expect(declaredNumber(sheet, "text-base", "fontSize")).toBe(17);
   });
+
+  it("text-4xl의 fontSize가 36이고 letterSpacing이 붙는다 — 큰 숫자 단계와 자간", () => {
+    expect(declaredNumber(sheet, "text-4xl", "fontSize")).toBe(36);
+    expect(JSON.stringify(styleEntry(sheet, "text-4xl").d)).toContain(
+      '"letterSpacing"',
+    );
+  });
+
+  it("tablet: 변형이 min-width 768 미디어 조건으로 컴파일된다", () => {
+    const rule = sheet.s.find(([name]: CompiledNode) => name === "tablet:px-5");
+    if (!rule) {
+      throw new Error("유틸 tablet:px-5가 컴파일 결과에 없다");
+    }
+
+    expect(rule[1][0].m).toEqual([[">=", "width", TABLET_MIN_WIDTH]]);
+  });
 });
 
 describe("네이티브 컴파일 파이프라인이 색 정본과 같은 값을 내는가 (AC-03)", () => {
@@ -198,10 +219,32 @@ describe("네이티브 컴파일 파이프라인이 색 정본과 같은 값을 
     expect(referencedVariableName(declaration)).toBe(PALETTE_BRAND_700);
   });
 
-  it("bg-bg-neutral은 palette-neutral-00 변수를 가리킨다", () => {
+  it("bg-bg-neutral은 층 셋의 카드 면 변수 neutral-bg를 가리킨다 — 라이트·다크가 다른 단계라 팔레트를 직접 못 가리킨다", () => {
     const declaration = styleEntry(sheet, "bg-bg-neutral").d;
 
-    expect(referencedVariableName(declaration)).toBe(PALETTE_NEUTRAL_00);
+    expect(referencedVariableName(declaration)).toBe(NEUTRAL_BG);
+  });
+
+  it("neutral-bg의 라이트 값은 palette-neutral-00, 다크 값은 palette-neutral-100이다", () => {
+    const entries = paletteVariableEntries(sheet, NEUTRAL_BG);
+
+    expect(referencedVariableName(lightValueOf(entries))).toBe(
+      PALETTE_NEUTRAL_00,
+    );
+    expect(referencedVariableName(darkEntryOf(entries).value)).toBe(
+      PALETTE_NEUTRAL_100,
+    );
+  });
+
+  it("shadow-card는 card-shadow 변수를 boxShadow로 받고 다크 값은 none이다", () => {
+    const declaration = styleEntry(sheet, "shadow-card").d;
+
+    expect(JSON.stringify(declaration)).toContain('"boxShadow"');
+
+    const entries = paletteVariableEntries(sheet, CARD_SHADOW);
+
+    expect(darkEntryOf(entries).value).toBe("none");
+    expect(lightValueOf(entries)).not.toBe("none");
   });
 
   it("text-fg-neutral은 palette-neutral-1000 변수를 가리킨다", () => {

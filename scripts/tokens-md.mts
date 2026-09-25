@@ -15,6 +15,8 @@ export const ROLE_HEADER = [
   "Tailwind 유틸",
 ];
 
+export const SHADOW_HEADER = ["토큰", "라이트", "다크", "Tailwind 유틸"];
+
 export const EMPTY_CELL = "—";
 
 export const SUBSECTION = /^###\s+(.+?)\s*$/;

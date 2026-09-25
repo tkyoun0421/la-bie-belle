@@ -13,8 +13,7 @@ const SKELETON_FENCE = `@import "tailwindcss/theme.css" layer(theme);
   font-size: 16px;
 }`;
 
-const THEME_RESET_FENCE = `  --text-4xl: initial;
-  --text-5xl: initial;
+const THEME_RESET_FENCE = `  --text-5xl: initial;
   --text-6xl: initial;
   --text-7xl: initial;
   --text-8xl: initial;
@@ -33,6 +32,8 @@ const THEME_RESET_FENCE = `  --text-4xl: initial;
 const THEME_INLINE_HEADER_FENCE = `  --color-*: initial;
   --color-transparent: transparent;
   --color-current: currentColor;
+
+  --breakpoint-*: initial;
 
   --font-sans: "WantedSans-Regular";
   --font-medium: "WantedSans-Medium";
@@ -112,15 +113,38 @@ const TYPOGRAPHY_SECTION = `## 3. 타이포그래피
 
 | 유틸 | 크기 | 행간 | rem 크기 | rem 행간 | 용도 |
 | --- | --- | --- | --- | --- | --- |
+| \`text-4xl\` | 36px | 44px | 2.25 | 2.75 | 큰 숫자 |
 | \`text-sm\` | 15px | 22.5px | 0.9375 | 1.40625 | 작은 본문 |
 | \`text-base\` | 17px | 25.5px | 1.0625 | 1.59375 | 일반 본문 |
+
+### 자간
+
+| 유틸 | 자간 |
+| --- | --- |
+| \`text-4xl\` | -0.01em |
+
+---
+
+## 4. 스페이싱
+
+### 폭
+
+| 토큰 | 값 | Tailwind 유틸 |
+| --- | --- | --- |
+| \`breakpoint.tablet\` | 768px | \`tablet:\` |
 `;
 
-const ROUNDING_SECTION = `## 5. 라운딩
+const ROUNDING_SECTION = `## 5. 라운딩과 그림자
 
 | 유틸 | 값 | 쓰는 자리 |
 | --- | --- | --- |
 | \`rounded-md\` | 12px | 입력 |
+
+### 그림자
+
+| 토큰 | 라이트 | 다크 | Tailwind 유틸 |
+| --- | --- | --- | --- |
+| \`shadow.card\` | \`0 2px 8px 0 rgb(0 0 0 / 0.06)\` | \`none\` | \`shadow-card\` |
 `;
 
 const MOTION_SECTION = `## 6. 모션
@@ -463,6 +487,88 @@ describe("리스크 J — 팔레트 칸이 — 인 행이 여럿이고 칸 종�
     expect(declarationValueAnywhere(css, "--role-bg-scrim")).toBe(
       "var(--scrim-bg)",
     );
+  });
+});
+
+describe("리스크 N — 그림자 표를 라이트·다크로 갈라 읽고 @theme inline이 그것을 가리킨다", () => {
+  let css: string;
+
+  beforeAll(async () => {
+    css = await generateGlobalsCss(tokensMdFixture());
+  });
+
+  it("라이트 :root에 card-shadow가 box-shadow 값 그대로 선다", () => {
+    expect(requireDeclaration(lightBody(css), "--card-shadow")).toBe(
+      "0 2px 8px 0 rgb(0 0 0 / 0.06)",
+    );
+  });
+
+  it("다크 미디어쿼리 블록에서 card-shadow는 none이다", () => {
+    expect(requireDeclaration(darkMediaBody(css), "--card-shadow")).toBe(
+      "none",
+    );
+  });
+
+  it("@theme inline의 --shadow-card가 card-shadow 변수를 가리킨다 — 값을 굳히면 다크에서 안 바뀐다", () => {
+    const inline = requireBlock(
+      css,
+      (selector) => selector === "@theme inline",
+      "@theme inline",
+    );
+
+    expect(requireDeclaration(inline.body, "--shadow-card")).toBe(
+      "var(--card-shadow)",
+    );
+  });
+});
+
+describe("리스크 O — 자간 표와 폭 표는 있을 때만 읽고 자기 자리에 선다", () => {
+  let css: string;
+
+  beforeAll(async () => {
+    css = await generateGlobalsCss(tokensMdFixture());
+  });
+
+  it("자간 표의 행이 --text-4xl--letter-spacing으로 @theme에 선다", () => {
+    const theme = requireBlock(
+      css,
+      (selector) => selector === "@theme",
+      "@theme",
+    );
+
+    expect(requireDeclaration(theme.body, "--text-4xl--letter-spacing")).toBe(
+      "-0.01em",
+    );
+  });
+
+  it("폭 표의 행이 --breakpoint-tablet으로 @theme inline의 초기화 뒤에 선다", () => {
+    const inline = requireBlock(
+      css,
+      (selector) => selector === "@theme inline",
+      "@theme inline",
+    );
+
+    expect(requireDeclaration(inline.body, "--breakpoint-tablet")).toBe(
+      "768px",
+    );
+    expect(requiredIndexOf(inline.body, "--color-*: initial")).toBeLessThan(
+      requiredIndexOf(inline.body, "--breakpoint-tablet:"),
+    );
+  });
+
+  it("자간 표와 폭 표가 없어도 생성기가 멈추지 않는다", async () => {
+    const typographyOnly = `## 3. 타이포그래피
+
+| 유틸 | 크기 | 행간 | rem 크기 | rem 행간 | 용도 |
+| --- | --- | --- | --- | --- | --- |
+| \`text-sm\` | 15px | 22.5px | 0.9375 | 1.40625 | 작은 본문 |
+`;
+    const generated = await generateGlobalsCss(
+      tokensMdFixture({ typography: typographyOnly }),
+    );
+
+    expect(generated).not.toContain("--letter-spacing");
+    expect(generated).not.toContain("--breakpoint-tablet");
   });
 });
 

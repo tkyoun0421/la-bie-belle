@@ -1,4 +1,5 @@
 import {
+  EMPTY_CELL,
   PALETTE_HEADER,
   requireRows,
   ROLE_HEADER,
@@ -27,6 +28,7 @@ const COMBO_COLUMN = 0;
 const MEASURED_RATIO_COLUMN: Record<Theme, number> = { light: 1, dark: 2 };
 const DROPPED_RATIO_COLUMN = 1;
 const ROLE_PALETTE_COLUMN = 1;
+const ROLE_THEME_COLUMN: Record<Theme, number> = { light: 2, dark: 3 };
 const PALETTE_HEX_COLUMN: Record<Theme, number> = { light: 1, dark: 3 };
 
 const COMBO_SEPARATOR = /\s+(?:on|vs)\s+/;
@@ -105,7 +107,16 @@ export function parseDroppedComboCell(comboText: string): DroppedCombo {
   };
 }
 
-function paletteStepOf(markdown: string, roleToken: string): string {
+/**
+ * 역할 토큰이 가리키는 팔레트 단계다. 팔레트 칸이 `—`인 행은 라이트·다크 칸이
+ * 곧 값이라 테마 쪽 칸을 읽는다 — `bg.neutral`처럼 두 테마가 다른 단계를
+ * 가리키는 층 셋이 그 행이다.
+ */
+function paletteStepOf(
+  markdown: string,
+  roleToken: string,
+  theme: Theme,
+): string {
   const row = requireRows(markdown, ROLE_HEADER, "역할 토큰").find(
     (candidate) => candidate.cells[COMBO_COLUMN] === roleToken,
   );
@@ -114,7 +125,8 @@ function paletteStepOf(markdown: string, roleToken: string): string {
     throw new Error(`역할 토큰 ${roleToken} 을 tokens.md 2절에서 찾지 못했다.`);
   }
 
-  return row.cells[ROLE_PALETTE_COLUMN];
+  const palette = row.cells[ROLE_PALETTE_COLUMN];
+  return palette === EMPTY_CELL ? row.cells[ROLE_THEME_COLUMN[theme]] : palette;
 }
 
 export function resolveTokenHex(
@@ -123,8 +135,12 @@ export function resolveTokenHex(
   theme: Theme,
 ): string {
   const step = tokenOrStep.includes(".")
-    ? paletteStepOf(markdown, tokenOrStep)
+    ? paletteStepOf(markdown, tokenOrStep, theme)
     : tokenOrStep;
+
+  if (step.startsWith("#")) {
+    return step;
+  }
 
   const boundary = step.lastIndexOf("-");
   const series = step.slice(0, boundary);
