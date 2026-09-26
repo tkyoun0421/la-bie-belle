@@ -737,7 +737,7 @@
 
 **관리자에게 연락할 길.** 둘이 막는다. 첫째로 [account/README.md](../README.md#acc-008)가 관리자를 여럿으로 두고 누가 가입 승인을 맡는지 안 나눴다. 둘째로 승인 전에는 자기 프로필 바깥을 한 행도 못 받아서 앱이 관리자 목록을 이 화면에 띄울 수 없다. 연락처를 코드에 박는 길도 없다 — 저장소가 PUBLIC이다.
 
-**카드.** 두 화면 다 안 쓴다.
+**카드.** 여섯 화면 다 안 쓴다 — [spacing-shape.md](../../../design-system/foundation/spacing-shape.md#카드가-기본이다)의 「카드가 안 서는 화면」이 이 문서를 그 예로 든다. 승인 대기·퇴사한 뒤·차단된 뒤·읽기 실패의 3D 그림(`waiting`·`farewell`·`blocked`·`server-error`)은 [illustration.md](../../../design-system/illustration.md)의 장면 표가 자리와 크기를 정한다 — 제목 위 큰 자리다. 거절된 뒤에는 그림을 내린다.
 
 **로딩 표시.** 구글 버튼 자리에 없다.
 
