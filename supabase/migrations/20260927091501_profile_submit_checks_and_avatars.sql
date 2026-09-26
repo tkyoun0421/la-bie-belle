@@ -67,7 +67,7 @@ $$;
 -- 매번 받으면 화면마다 호출이 늘고 오프라인 캐시가 어렵다. 파일 이름에 uuid가 들어 있어
 -- 주소를 추측으로는 못 연다.
 --
--- 상한 1MB는 앱이 512px 정사각 webp로 줄여 올린다는 전제의 뒷문이다 — 줄이기를 건너뛴
+-- 상한 1MB는 앱이 512px 정사각 JPEG(품질 0.8)로 줄여 올린다는 전제의 뒷문이다 — 줄이기를 건너뛴
 -- 호출이 폰 원본을 그대로 올리는 것을 버킷이 막는다.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
