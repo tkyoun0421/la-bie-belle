@@ -187,10 +187,13 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 | 16 | 화면과 라우트를 쓰기 전에 e2e 플로우가 있어야 한다 | hook | `.claude/hooks/tdd-guard-e2e.py` | `.claude/hooks/__tests__/tdd-guard.test.ts` |
 | 17 | 시크릿과 .env는 커밋할 수 없다 | pre-commit | `.githooks/pre-commit` | `tests/lint/pre-commit.test.ts` |
 | 18 | 승인된 spec 없이 feat 브랜치에서 src/를 고칠 수 없다 | hook | `.claude/hooks/spec-gate.py` | `.claude/hooks/__tests__/spec-gate.test.ts` |
+| 19 | 화면 파일의 시각 유틸리티 | house | `house/no-visual-utility-class` | `eslint-rules/__tests__/no-visual-utility-class.test.ts` |
 
 **집행 갈래는 다섯이다.** `eslint`는 기성 규칙, `house`는 [`eslint-rules/`](../../eslint-rules/)의 직접 만든 규칙, `prettier`는 포맷터가 겸하는 것, `hook`은 [`.claude/hooks/`](#훅)의 편집 훅, `pre-commit`은 커밋 앞이다. 앞 셋은 `pnpm lint`나 `pnpm format:check`가 돌리고 뒤 둘은 파일을 쓰는 순간과 커밋하는 순간에 선다.
 
-번호 하나에 줄이 둘인 자리가 있다 — 한 규칙을 규칙 ID 둘이 나눠 무는 경우다. 그래서 **줄 수와 마지막 번호가 다르다** — 번호는 1부터 18까지 이어지고 미배정 셋이 빠지며, 줄은 열일곱이다.
+번호 하나에 줄이 둘인 자리가 있다 — 한 규칙을 규칙 ID 둘이 나눠 무는 경우다. 그래서 **줄 수와 마지막 번호가 다르다** — 번호는 1부터 19까지 이어지고 미배정 셋이 빠지며, 줄은 열여덟이다.
+
+**규칙 19가 켜지는 자리와 무는 자리가 다르다.** `eslint.config.mjs`는 `src/**/*.tsx` 전체에 켜고, 실제로 무는 두 층(`src/screens/**`·`src/features/**`)은 규칙 자신이 든다 — `src/shared/ui/**`는 조각이 사는 자리라, `src/app/_catalog*`는 그 조각을 늘어놓는 자리라 밖이다. 층을 `files` 글롭으로 좁히면 이 표를 읽는 `rule-catalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과 어긋난다.
 
 ## `pnpm test`에 끼는 문서 검사
 
