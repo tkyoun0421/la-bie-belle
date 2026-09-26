@@ -1,0 +1,23 @@
+# src/app/__test/session.tsx의 짝이다 — 화면이 아니라 문 하나를 본다.
+#
+# 이 문은 __DEV__가 아니면 "/"로 돌려보낸다(_catalog.yaml과 같은 꼴). 그
+# 판정 자체는 unit이 보는 자리고 — 여기 개발 빌드에서는 이 문이 그 몫대로
+# 도는지, 즉 토큰을 실은 딥링크로 들어가면 setSession 뒤 게이트가 판정한
+# 화면에 실제로 서는지 하나만 본다.
+#
+# 어느 상태를 쓰든 같은 것을 증명하므로 가장 간단한 것 — 시드하고 그대로
+# 두면 되는 "fresh"(한 번도 안 보낸 사람) — 을 쓴다. 이 상태가 실제로
+# 프로필 작성 화면까지 가는 전체 여정(다섯 칸을 채워 보내는 것)은
+# tests/e2e/pending.yaml의 AC-01이 이미 본다 — 여기서는 그 화면의 첫 줄이
+# 뜨는 것까지만 확인해 문 자체의 배선을 가른다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: fresh
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- assertVisible: "자신의 프로필을 작성해 주세요"

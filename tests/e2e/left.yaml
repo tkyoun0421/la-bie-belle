@@ -1,0 +1,27 @@
+# 퇴사한 사람이 앱을 열면 /left에 서고 지난 급여까지 닿는다(AC-06).
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약과 근거는
+# tests/e2e/pending.yaml 머리말과 이 task 리턴의 계약 표를 본다.
+#
+# 문안은 docs/2-design/modules/account/screens/login.md 「퇴사한 뒤 문안」
+# 표 글자 그대로다.
+#
+# 「급여 보기」를 누르면 /payroll로 간다. 그 화면 자체는 이 task 밖이라 아직
+# 골격(NotBuiltYet)만 있다 — src/app/(tabs)/payroll.tsx가 세운 자리표시
+# 「아직 없다」·「/payroll」이 뜨는 것으로 이동 자체만 확인한다. payroll 화면이
+# 서면 이 마지막 두 줄을 그 화면의 실제 글자로 바꿔야 한다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: left
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- assertVisible: "근무를 마치셨어요"
+- assertVisible: "지난 급여는 계속 볼 수 있어요"
+- tapOn: "급여 보기"
+- assertVisible: "아직 없다"
+- assertVisible: "/payroll"

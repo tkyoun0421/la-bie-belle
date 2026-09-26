@@ -1,0 +1,22 @@
+# 차단된 사람이 로그인하면 아무 행도 안 오고 /blocked에 선다(AC-06).
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약과 근거는
+# tests/e2e/pending.yaml 머리말과 이 task 리턴의 계약 표를 본다.
+#
+# 문안은 docs/2-design/modules/account/screens/login.md 「차단된 뒤 문안」
+# 표 글자 그대로다. 이 화면은 로그아웃 하나뿐이라 더 갈 곳이 없다 — 로그아웃을
+# 눌러 /login으로 돌아오는 것까지는 login.yaml이 이미 세션 없는 차가운 시작을
+# 보므로 여기서는 버튼이 있다는 것까지만 본다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: blocked
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- assertVisible: "이 계정은 지금 이용할 수 없어요"
+- assertVisible: "궁금한 점은 관리자에게 물어보세요"
+- assertVisible: "로그아웃"
