@@ -62,6 +62,7 @@ export function LeftScreen() {
 
   return (
     <Screen
+      floor="plain"
       style={{ paddingBottom: SCREEN_BOTTOM_PADDING + insets.bottom }}
       className="px-6"
     >

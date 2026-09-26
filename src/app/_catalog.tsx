@@ -35,6 +35,7 @@ import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { RatioBand } from "@/shared/ui/RatioBand";
 import { RowBars } from "@/shared/ui/RowBars";
 import { ScheduleDayCell } from "@/shared/ui/ScheduleDayCell";
+import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { Skeleton, SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
@@ -162,7 +163,7 @@ function Stack({
   );
 }
 
-export default function Screen() {
+export default function Catalog() {
   const [switchOn, setSwitchOn] = useState(true);
   const [tab, setTab] = useState("all");
   const [segment, setSegment] = useState("month");
@@ -358,8 +359,16 @@ export default function Screen() {
         </Stack>
       </Section>
 
-      <Section title="가는 선">
-        <Stack label="성격이 갈리는 두 덩이 사이 — 위아래 여백은 부르는 쪽이 준다">
+      <Section title="화면 바닥과 가는 선">
+        <Row label="바닥 둘 — 카드가 서는 sunken(기본) · 한 장면 화면의 plain">
+          <View className="h-16 w-24 overflow-hidden rounded-md border border-stroke-neutral">
+            <Screen />
+          </View>
+          <View className="h-16 w-24 overflow-hidden rounded-md border border-stroke-neutral">
+            <Screen floor="plain" />
+          </View>
+        </Row>
+        <Stack label="가는 선 — 위아래 여백은 부르는 쪽이 준다">
           <Divider className="my-5" />
         </Stack>
       </Section>

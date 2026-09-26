@@ -303,12 +303,12 @@ export function PendingScreen() {
   }, [everSubmitted, values]);
 
   if (stage === "loading") {
-    return <Screen />;
+    return <Screen floor="plain" />;
   }
 
   if (stage === "celebrating") {
     return (
-      <Screen className="items-center justify-center px-6">
+      <Screen floor="plain" className="items-center justify-center px-6">
         <CelebrationCircle name={values.name} photoUrl={values.photoUrl} />
         <Text size="2xl" weight="semibold" className="mt-6">
           {values.name}님, 반가워요
@@ -322,6 +322,7 @@ export function PendingScreen() {
 
     return (
       <Screen
+        floor="plain"
         style={{ paddingBottom: SCREEN_BOTTOM_PADDING + insets.bottom }}
         className="px-6"
       >
@@ -390,7 +391,7 @@ export function PendingScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       className="flex-1"
     >
-      <Screen>
+      <Screen floor="plain">
         <AppBar
           title="프로필"
           right={
