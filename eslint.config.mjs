@@ -162,6 +162,13 @@ const eslintConfig = defineConfig([
     files: ["src/**/*.tsx"],
     rules: { "house/dumb-ui": "error" },
   },
+
+  // 무는 자리(`src/screens/**`·`src/features/**`)는 규칙이 들고 있다 —
+  // `src/shared/ui/**`와 `src/app/_catalog*`가 규칙 밖인 것도 거기 적혀 있다.
+  {
+    files: ["src/**/*.tsx"],
+    rules: { "house/no-visual-utility-class": "error" },
+  },
 ]);
 
 export default eslintConfig;

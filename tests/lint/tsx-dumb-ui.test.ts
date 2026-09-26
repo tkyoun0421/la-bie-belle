@@ -10,6 +10,9 @@ const DUMB_UI = "house/dumb-ui";
  * `layout.tsx`·`page.tsx`와 shadcn `button.tsx`를 베낀 픽스처 다섯이 그 파일들이
  * 없어진 뒤에도 남아 있었다. 실물이 규칙에 안 걸리는 것은 `pnpm lint`가 저장소
  * 전체에 같은 규칙을 돌려서 이미 본다.
+ *
+ * 클래스는 배치 유틸만 쓴다. 규칙19가 선 뒤로 화면 파일의 색·글자·모양 유틸은 그 자체로
+ * 걸리는 것이라, 여기 두면 이 픽스처가 규칙9가 아니라 규칙19를 재게 된다.
  */
 const DUMB_COMPONENT = `import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -20,13 +23,13 @@ export function Counter({ label, onDone }: { label: string; onDone: () => void }
   const [count, setCount] = useState(0);
 
   return (
-    <View className={cn("gap-2 px-4", count > 0 && "bg-bg-neutral-weak")}>
-      <Text className="text-base text-fg-neutral">{label}</Text>
+    <View className={cn("gap-2 px-4", count > 0 && "items-center")}>
+      <Text className="px-1">{label}</Text>
       <Pressable hitSlop={12} onPress={() => setCount(count + 1)}>
-        <Text className="text-sm text-fg-brand">{count}</Text>
+        <Text className="px-2">{count}</Text>
       </Pressable>
       <Pressable onPress={onDone}>
-        <Text className="text-sm text-fg-neutral-subtle">닫기</Text>
+        <Text className="px-2">닫기</Text>
       </Pressable>
     </View>
   );

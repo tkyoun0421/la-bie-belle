@@ -7,9 +7,9 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 14;
+export const DOCUMENTED_LINT_RULE_COUNT = 19;
 
-export const ENFORCED_RULE_COUNT = 18;
+export const ENFORCED_RULE_COUNT = 19;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -149,5 +149,13 @@ export const RULES: EnforcedRule[] = [
     ruleId: null,
     enforcedBy: ".claude/hooks/spec-gate.py",
     test: ".claude/hooks/__tests__/spec-gate.test.ts",
+  },
+  {
+    no: 19,
+    name: "화면 파일의 시각 유틸리티",
+    mechanism: "house",
+    ruleId: "house/no-visual-utility-class",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/no-visual-utility-class.test.ts",
   },
 ];
