@@ -599,18 +599,21 @@ export type Database = {
       profile_private: {
         Row: {
           birth_date: string | null;
+          email: string | null;
           gender: string | null;
           phone: string | null;
           profile_id: string;
         };
         Insert: {
           birth_date?: string | null;
+          email?: string | null;
           gender?: string | null;
           phone?: string | null;
           profile_id: string;
         };
         Update: {
           birth_date?: string | null;
+          email?: string | null;
           gender?: string | null;
           phone?: string | null;
           profile_id?: string;
@@ -1011,6 +1014,7 @@ export type Database = {
     };
     Functions: {
       approve_member: { Args: { profile_id: string }; Returns: undefined };
+      block_member: { Args: { profile_id: string }; Returns: undefined };
       check_in: {
         Args: {
           p_day_id: string;
@@ -1082,6 +1086,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      unblock_member: { Args: { profile_id: string }; Returns: undefined };
       update_my_photo: { Args: { photo_url: string }; Returns: undefined };
     };
     Enums: {

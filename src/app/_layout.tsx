@@ -1,3 +1,4 @@
+import { QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -9,6 +10,7 @@ import {
   shouldDismissSplash,
   shouldRenderApp,
 } from "@/shared/lib/font-loading";
+import { queryClient } from "@/shared/lib/query-client";
 import { supabase } from "@/shared/lib/supabase";
 import { wireAutoRefresh } from "@/shared/lib/wire-auto-refresh";
 import { decideEntry, type EntryDecision } from "@/features/auth/decide-entry";
@@ -24,6 +26,9 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
  * 스플래시는 서체와 판정이 둘 다 끝난 뒤에 내린다. 서체만 기다리면 판정 전에
  * 잘못된 층이 한 프레임 비치고, 판정만 기다리면 시스템 서체로 그려진 글자가
  * Wanted Sans로 바뀌면서 눈에 보이게 튄다.
+ *
+ * 서버 상태가 사는 `queryClient`도 여기서 트리에 앉는다. 로그아웃이 비우는 쪽과 화면이
+ * 읽는 쪽이 같은 하나여야 해서 그 인스턴스는 `shared/lib`이 들고 있고 여기는 걸기만 한다.
  */
 export default function RootLayout() {
   const router = useRouter();
@@ -65,5 +70,9 @@ export default function RootLayout() {
     return null;
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Stack screenOptions={{ headerShown: false }} />
+    </QueryClientProvider>
+  );
 }

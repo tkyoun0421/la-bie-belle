@@ -1,0 +1,13 @@
+# "/"의 짝이다 — 이번 변경은 src/app/_layout.tsx에 QueryClientProvider를
+# 앉히는 것뿐이고(첫 useQuery task), 홈 화면 자체는 아직 NotBuiltYet이다.
+# 그래서 여기서 볼 것은 「그 배선이 앱을 띄우는 것 자체를 깨지 않았는가」
+# 하나뿐이다.
+#
+# 세션 없는 차가운 시작이 /login에 서는 것은 tests/e2e/login.yaml이 이미
+# 본다 — QueryClientProvider를 넣어도 세션이 없으면 같은 자리(/login)에
+# 서야 하므로, 그 확인을 새로 쓰지 않고 그대로 재사용한다. 화면 스스로
+# 뭔가 겹치는 것을 따로 볼 필요가 없어 flow 하나가 다른 flow를 통째로
+# 불러 쓰는 자리다.
+appId: com.labiebelle.app
+---
+- runFlow: login.yaml

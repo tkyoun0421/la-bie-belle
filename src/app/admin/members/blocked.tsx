@@ -1,5 +1,3 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { MembersBlockedScreen } from "@/screens/members-pending/ui/MembersBlockedScreen";
 
-export default function Screen() {
-  return <NotBuiltYet path="/admin/members/blocked" />;
-}
+export default MembersBlockedScreen;

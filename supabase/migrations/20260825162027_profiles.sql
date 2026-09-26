@@ -49,6 +49,8 @@ as $$
     from public.profiles
     where user_id = auth.uid()
       and role = 'admin'
+      and blocked_at is null
+      and left_at is null
   );
 $$;
 
@@ -198,11 +200,21 @@ begin
     raise exception using message = 'not_allowed';
   end if;
 
+  if not exists (
+    select 1
+    from public.profiles
+    where id = approve_member.profile_id
+      and submitted_at is not null
+      and approved_at is null
+      and rejected_at is null
+      and blocked_at is null
+  ) then
+    raise exception using message = 'already_decided';
+  end if;
+
   update public.profiles
-  set approved_at = now(),
-      rejected_at = null
-  where id = approve_member.profile_id
-    and approved_at is null;
+  set approved_at = now()
+  where id = approve_member.profile_id;
 end;
 $$;
 
@@ -217,13 +229,16 @@ begin
     raise exception using message = 'not_allowed';
   end if;
 
-  if exists (
+  if not exists (
     select 1
     from public.profiles
     where id = reject_member.profile_id
-      and approved_at is not null
+      and submitted_at is not null
+      and approved_at is null
+      and rejected_at is null
+      and blocked_at is null
   ) then
-    raise exception using message = 'already_approved';
+    raise exception using message = 'already_decided';
   end if;
 
   update public.profiles

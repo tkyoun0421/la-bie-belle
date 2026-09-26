@@ -4,7 +4,8 @@
 //   POST http://127.0.0.1:8765/seed  {"state": "rejected"}
 //   → {"access_token": "…", "refresh_token": "…", "user_id": "…", "profile": {…}}
 //
-// 상태는 여섯이다 — fresh · submitted · rejected · left · blocked · read_failure.
+// 상태는 여덟이다 — fresh · submitted · approved · admin · rejected · left · blocked ·
+// read_failure.
 // 부르는 쪽은 `tests/e2e/scripts/seed-session.js`고, 받은 토큰을 개발 빌드의 테스트 문
 // (`src/app/__test/session.tsx`)에 딥링크로 싣는다. 정본은 `docs/4-test/execution.md`의
 // 「`pnpm e2e`」 절이다.
@@ -18,7 +19,7 @@
 import { createServer, type IncomingMessage, type Server } from "node:http";
 import {
   createAdminUser,
-  createBlockedUser,
+  createApprovedUser,
   createLeftUser,
 } from "@tests/integration/postgres";
 import {
@@ -48,6 +49,8 @@ const SEEDED_PROFILE = {
 const STATES = [
   "fresh",
   "submitted",
+  "approved",
+  "admin",
   "rejected",
   "left",
   "blocked",
@@ -105,6 +108,22 @@ async function submitSeededProfile(user: SignedInUser): Promise<void> {
   }
 }
 
+/**
+ * 관리자 판정 하나를 신청자에게 내린다. 화면이 부르는 것과 같은 함수를 부른다 — SQL로
+ * 열을 직접 채우면 e2e가 본 상태와 함수가 만드는 상태가 갈린다.
+ */
+async function decideBy(
+  decision: "reject_member" | "block_member",
+  profileId: string,
+): Promise<void> {
+  const admin = await createAdminUser();
+  const { error } = await admin.client.rpc(decision, { profile_id: profileId });
+
+  if (error) {
+    throw error;
+  }
+}
+
 async function seededUser(
   state: SeedState,
 ): Promise<{ user: SignedInUser; profile: typeof SEEDED_PROFILE | null }> {
@@ -112,8 +131,12 @@ async function seededUser(
     return { user: await createLeftUser(), profile: null };
   }
 
-  if (state === "blocked") {
-    return { user: await createBlockedUser(), profile: null };
+  if (state === "approved") {
+    return { user: await createApprovedUser(), profile: null };
+  }
+
+  if (state === "admin") {
+    return { user: await createAdminUser(), profile: null };
   }
 
   const user = await createSignedInUser();
@@ -125,14 +148,13 @@ async function seededUser(
   await submitSeededProfile(user);
 
   if (state === "rejected") {
-    const admin = await createAdminUser();
-    const { error } = await admin.client.rpc("reject_member", {
-      profile_id: user.profileId,
-    });
+    await decideBy("reject_member", user.profileId);
+  }
 
-    if (error) {
-      throw error;
-    }
+  // 차단은 「제출됨」 사람만 대상이라(design.md 「가입 승인·거절·차단·해제」) 프로필을 먼저
+  // 보낸 뒤 차단한다. 차단한 사람 목록이 이름 있는 줄을 보여줘야 하는 것도 같은 이유다.
+  if (state === "blocked") {
+    await decideBy("block_member", user.profileId);
   }
 
   return { user, profile: SEEDED_PROFILE };

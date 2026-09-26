@@ -33,7 +33,7 @@
 
 ### 개인정보는 표를 가른다
 
-`profiles(id, user_id, display_name, photo_url, role, submitted_at, approved_at, rejected_at, blocked_at, left_at, erased_at, notifications_enabled)`는 승인된 전원이 읽는다. `notifications_enabled`는 기본이 참이고 뜻은 [notification/design.md](../notification/design.md#알림을-받나)가 든다 — 사람에 붙는 값이라 여기 살고 쓰는 함수는 알림 쪽이다. `profile_private(profile_id, email, phone, birth_date, gender)`는 본인과 관리자만 읽는다. `email`은 `ensure_profile()`이 `auth.users`에서 옮겨 적는다 — 관리자가 가입 대기 시트에서 구글 계정을 보는데 `auth.users`는 못 읽어서다. `phone`에는 `^010-\d{4}-\d{4}$` check 제약이 있다 — 직접 갱신이라 함수의 검사를 안 지나니 표가 마지막 문이다. RLS가 행 단위라 한 표로는 열을 못 가른다 — 한 표면 아무 근무자나 `select phone from profiles`로 서른 명 연락처를 받는다.
+`profiles(id, user_id, display_name, photo_url, role, submitted_at, approved_at, rejected_at, blocked_at, left_at, erased_at, notifications_enabled)`는 승인된 전원이 읽는다. `notifications_enabled`는 기본이 참이고 뜻은 [notification/design.md](../notification/design.md#알림을-받나)가 든다 — 사람에 붙는 값이라 여기 살고 쓰는 함수는 알림 쪽이다. `profile_private(profile_id, email, phone, birth_date, gender)`는 본인과 관리자만 읽는다. `email`은 `submit_profile`이 `auth.users`에서 옮겨 적는다 — 관리자가 가입 대기 시트에서 구글 계정을 보는데 `auth.users`는 못 읽어서다. `ensure_profile()`이 적으면 로그인만 한 계정에도 개인정보 행이 미리 생겨 「한 번이라도 보냈나」를 그 행의 유무로 아는 프로필 작성 화면이 어긋난다. `phone`에는 `^010-\d{4}-\d{4}$` check 제약이 있다 — 직접 갱신이라 함수의 검사를 안 지나니 표가 마지막 문이다. RLS가 행 단위라 한 표로는 열을 못 가른다 — 한 표면 아무 근무자나 `select phone from profiles`로 서른 명 연락처를 받는다.
 
 `profile_private`의 연락처는 본인이 직접 갱신한다. 테이블 직접 쓰기 정책이 있는 유일한 자리다. 이름·성별·생년월일은 `submit_profile()` 함수로만 들어간다 — 제출된 뒤 잠기고 거절되면 다시 열리는 것을 컬럼 grant로는 못 나타낸다.
 
@@ -85,7 +85,7 @@
 - 규칙: [ACC-006](README.md#acc-006)·[ACC-007](README.md#acc-007)
 - 입력·전제: `approve_member`, `reject_member`, `block_member`, `unblock_member`가 가입 승인·거절·차단·해제다
 - 읽고 쓰는 데이터: 승인은 `wage_rates` 첫 행을 같이 넣는다. 해제는 `blocked_at`과 `submitted_at`을 같이 비운다 — 그 사람이 다시 들어오면 프로필 작성이 지난 값을 들고 서고, 보내면 대기 목록에 뜬다
-- 결과와 실패: 대상이 더는 「제출됨」이 아니면(이미 승인·거절·차단됐다) `already_decided`. 둘이 같은 사람을 열었을 때 늦게 누른 쪽이 받는다
+- 결과와 실패: 승인·거절·차단은 대상이 더는 「제출됨」이 아니면(이미 승인·거절·차단됐다) `already_decided`. 해제는 대상이 더는 「차단됨」이 아니면 같은 코드다. 둘이 같은 사람을 열었을 때 늦게 누른 쪽이 받는다
 - 처리와 경쟁: 응답을 기다린다 — 남에게 닿는다
 - 캐시 갱신: `approve_member`는 `['members']` `['payroll']`, `reject_member`·`block_member`·`unblock_member`는 `['members']`다
 

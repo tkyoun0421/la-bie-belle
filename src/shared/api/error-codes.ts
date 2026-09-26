@@ -1,5 +1,4 @@
 export const ERROR_CODES = [
-  "already_approved",
   "already_confirmed",
   "already_decided",
   "already_done",

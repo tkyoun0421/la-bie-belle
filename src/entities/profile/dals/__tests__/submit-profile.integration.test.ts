@@ -25,14 +25,17 @@ describe("submit_profile", () => {
 
     const { data: privateRow } = await user.client
       .from("profile_private")
-      .select("phone, birth_date, gender")
+      .select("phone, birth_date, gender, email")
       .eq("profile_id", user.profileId)
       .single();
 
+    // email은 함수가 auth.users에서 옮겨 적는다 — 관리자가 가입 대기 시트에서 구글 계정을
+    // 보는 자리고, 클라이언트는 그 표를 못 읽는다(design.md 「소유 데이터」).
     expect(privateRow).toEqual({
       phone: "010-0000-0001",
       birth_date: "1990-01-01",
       gender: "female",
+      email: user.email,
     });
   });
 

@@ -3,26 +3,28 @@ import type { Db } from "@/shared/api/database";
 /**
  * 개인정보가 사는 표는 프로필 표와 갈려 있다 —
  * `docs/2-design/modules/account/design.md`의 「개인정보는 표를 가른다」다. 본인과 관리자만
- * 읽고, 여기서 읽는 것은 늘 본인 행이다.
+ * 읽고, RLS가 그것을 이미 막으므로 이 문은 profileId 하나만 받는다.
  *
- * 프로필 작성 화면이 거절 뒤·차단 해제 뒤에 지난 값을 굳은 채로 세우려고 읽는다. 행이 없으면
- * 한 번도 안 보낸 사람이다.
+ * 읽는 자리는 둘이다. 프로필 작성 화면이 거절 뒤·차단 해제 뒤에 지난 값을 굳은 채로 세우려고
+ * 제 행을 읽고, 가입 대기 상세 시트가 관리자로서 신청자의 행을 읽는다. 행이 없으면 한 번도
+ * 안 보낸 사람이다.
  */
-export type MyProfilePrivateRow = {
+export type ProfilePrivateRow = {
+  email: string | null;
   phone: string | null;
   birth_date: string | null;
   gender: string | null;
 };
 
-export async function getMyProfilePrivate(
+export async function getProfilePrivate(
   client: Db,
   profileId: string,
-): Promise<MyProfilePrivateRow | null> {
+): Promise<ProfilePrivateRow | null> {
   const { data, error } = await client
     .from("profile_private")
-    .select("phone, birth_date, gender")
+    .select("email, phone, birth_date, gender")
     .eq("profile_id", profileId)
-    .maybeSingle<MyProfilePrivateRow>();
+    .maybeSingle<ProfilePrivateRow>();
 
   if (error) {
     throw error;

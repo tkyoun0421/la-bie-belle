@@ -1,0 +1,38 @@
+# src/app/admin/_layout.tsx의 짝이다 — 관리자가 아닌 사람이 관리자 층을 열면
+# "/"로 튕기는지를 본다. 판정 자체(resolveAdminGuard)는 unit이 이미 순수
+# 함수로 본다(src/shared/lib/__tests__/resolve-admin-guard.test.ts) — 여기서는
+# 그 판정이 실제 라우트 가드로 이어지는지만 확인한다.
+#
+# `/admin` 아래는 모두 같은 _layout.tsx가 지킨다. 대표로 하나만 연다
+# — `/admin/members/pending`. 다른 admin 하위 경로를 따로 열어보는 것은
+# 같은 가드를 또 보는 것이라 배정에 없다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/pending.yaml 머리말과 scripts/e2e-seed-server.mts를 본다.
+#
+# **시드 상태 "approved"가 아직 없다.** scripts/e2e-seed-server.mts의 STATES에
+# "approved"가 없다 — "submitted"나 "fresh"는 승인 전이라 이 화면 자체에
+# 못 들어가는 사람이고, 여기서 보려는 것은 「승인은 됐지만 관리자는 아닌
+# 사람이 관리자 층에서 튕기는지」다. implementer가 STATES에 "approved"를
+# 더하고, 이미 있는 tests/integration/postgres.ts의 createApprovedUser()를
+# 그대로 불러 토큰을 돌려주면 된다. profile은 없어도 된다 — 이 화면은
+# role만 본다.
+#
+# 튕겨간 "/"는 아직 NotBuiltYet 골격이라 그 화면이 보여주는 경로 글자
+# "/"로 확인한다("아직 없다"는 src/shared/ui/NotBuiltYet.tsx 공통 문구다).
+# 그 화면 자체가 서면 이 게이트 검사와는 다른 task 몫이다.
+#
+# 텍스트 셀렉터는 정규식이다. "/"는 정규식에서 뜻이 있는 글자가 아니라 그대로 쓴다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: approved
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://admin/members/pending"
+- assertVisible: "아직 없다"
+- assertVisible: "/"

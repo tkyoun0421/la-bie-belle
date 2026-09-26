@@ -75,7 +75,7 @@ sources:
 
 - 전제: 관리자가 아닌 사람
 - 행동: `/admin/members/pending`에 직접 닿는다
-- 관찰 결과: 그 화면이 안 뜬다. 데이터도 안 온다 — 화면이 막기 전에 RLS가 이미 막는다
+- 관찰 결과: 그 화면이 안 뜬다. 시트가 보이는 값(연락처·생년월일·성별·이메일)도 안 온다 — `profile_private`는 본인과 관리자만 읽어서 화면이 막기 전에 RLS가 이미 막는다. 승인된 근무자에게 `profiles`의 이름·사진이 오는 것은 막지 않는다 — 근무표가 동료의 이름·사진을 쓴다([design.md 「소유 데이터」](../modules/account/design.md#소유-데이터))
 - 검증 층: e2e — 경로 보호가 이 AC고, RLS 쪽은 [account-data](../../3-build/plans/account-data.md)가 integration으로 덮었다
 - 근거: [navigation.md](../system/navigation.md#경로), [ACC-006](../modules/account/README.md#acc-006)
 
@@ -115,3 +115,4 @@ sources:
 - 기준점: `e763cf4` — 이 spec과 `sources`가 든 문서를 그 커밋에서 읽었다. PR [#392](https://github.com/tkyoun0421/la-bie-belle/pull/392)의 고정 diff다
 - 범위: AC-01~AC-07과 상태 격자 여덟 줄. 「범위 밖」에 적은 것은 승인 밖이고 거기 든 task가 제 spec으로 따로 받는다
 - 제한: 승인 알림이 그 사람에게 가는 것은 `notification-emit`이다 — 그릇은 섰고 부치는 자리가 없다.
+- 덧붙임(2026-09-27, 구현 착수): AC-06의 「데이터도 안 온다」를 `profile_private`로 좁혔다 — `profiles`는 승인된 전원이 읽는 표라 문장이 그 표까지 덮으면 design.md와 어긋난다. 승인 범위는 그대로다.
