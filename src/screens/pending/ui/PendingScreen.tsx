@@ -22,7 +22,7 @@ import { Segment } from "@/shared/ui/Segment";
 import { Text } from "@/shared/ui/Text";
 import { uploadAvatar } from "@/entities/profile/dals/avatars-bucket";
 import { getMyProfile } from "@/entities/profile/dals/get-my-profile";
-import { getMyProfilePrivate } from "@/entities/profile/dals/profile-private";
+import { getProfilePrivate } from "@/entities/profile/dals/profile-private";
 import { submitProfile } from "@/entities/profile/dals/submit-profile";
 import { updateMyPhoto } from "@/entities/profile/dals/update-my-photo";
 import { googlePhotoOf } from "@/features/auth/google-photo-of";
@@ -158,7 +158,7 @@ export function PendingScreen() {
 
       const profile = await getMyProfile(supabase, user.id);
       const priv = profile
-        ? await getMyProfilePrivate(supabase, profile.id)
+        ? await getProfilePrivate(supabase, profile.id)
         : null;
 
       if (abandoned) {

@@ -14,6 +14,10 @@ import { Text } from "@/shared/ui/Text";
  * 「이 값을 보려고 이 화면에 왔는가」다. 화살표를 단 줄은 눌러야 나오는 줄이라 `valueTone`의
  * 기본값이 `chevron`을 따라가고, 둘이 어긋나는 자리만 `valueTone`을 직접 준다.
  *
+ * **오른쪽에 동작이 서는 줄은 `right`를 받는다.** 차단한 사람 목록의 「차단 풀기」가 그
+ * 자리다 — 값도 화살표도 아니고 그 줄에서 바로 누르는 버튼이라 줄이 통째로 눌리지 않는다.
+ * `value`·`chevron`과 같이 쓰지 않는다.
+ *
  * 누를 수 있는 줄은 `onPress`를 받은 줄이다. 안 받은 줄에는 누름 배경도 안 걸린다 — 화살표는
  * 다음 화면이 있다는 뜻으로만 쓴다.
  *
@@ -35,6 +39,7 @@ export type ListRowProps = Omit<PressableProps, "children"> & {
   value?: string;
   valueTone?: ListRowValueTone;
   left?: ReactNode;
+  right?: ReactNode;
   chevron?: boolean;
   selected?: boolean;
   unread?: boolean;
@@ -49,6 +54,7 @@ export function ListRow({
   value,
   valueTone,
   left,
+  right,
   chevron = false,
   selected = false,
   unread = false,
@@ -97,6 +103,7 @@ export function ListRow({
           {value}
         </Text>
       ) : null}
+      {right}
       {selected ? (
         <Icon icon={Check} size={ROW_ICON_SIZE} className="text-fg-brand" />
       ) : null}
