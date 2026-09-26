@@ -1,0 +1,35 @@
+# 개발 빌드에서만 뜨는 조각 목록 화면이다.
+#
+# 근거는 ui-kit spec AC-02다 — `/_catalog`를 열면
+# components.md 절 순서대로 조각이 선다. 프로덕션 빌드는 이 라우트를 `/`로
+# 돌려보내지만, 그 판정(`__DEV__` 분기)은 e2e가 아니라 unit이 본다 — 여기 개발
+# 빌드에서 딥링크가 여는 화면 자체만 확인한다.
+#
+# 앱 id·딥링크 스킴은 app.json에서 그대로 읽는다 — bundleIdentifier/package는
+# `com.labiebelle.app`, scheme은 `labiebelle`이다.
+#
+# 절 제목 셋(Button·Card·Skeleton)은 components.md에서 그 순서로 나온다
+# (43번째 줄, 223번째 줄, 258번째 줄). `scrollUntilVisible`을 이어 붙이면 매
+# 단계가 이전 스크롤 위치보다 아래에서 찾으므로, 셋이 이 순서로 통과해야만
+# 플로우가 끝까지 간다 — 순서가 뒤집히면(예: Skeleton이 Card보다 위에 서면)
+# 뒤 단계가 못 찾고 실패한다.
+#
+# 텍스트 셀렉터는 정규식이다. 셋 다 일반 글자라 이스케이프가 필요 없다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- openLink: "labiebelle://_catalog"
+- scrollUntilVisible:
+    element:
+      text: "Button"
+    direction: DOWN
+- scrollUntilVisible:
+    element:
+      text: "Card"
+    direction: DOWN
+- scrollUntilVisible:
+    element:
+      text: "Skeleton"
+    direction: DOWN
