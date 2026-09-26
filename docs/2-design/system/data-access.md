@@ -134,6 +134,7 @@
   - `TransportError` — 그 밖의 전부. 통신 실패, 타임아웃, 모르는 코드
 - 이유: 예외라 트랜잭션이 저절로 되돌아간다. **오류에 데이터를 싣지 않는다** — 코드 하나면 화면이 새로 읽는다. 목록이 필요한 자리(퇴사의 남은 배정)는 버튼을 누르기 전에 화면이 읽어둔다. **`stale`은 닫혔거나 없는 행이다** — 배정·자리·요청이 바뀌면 옛 행이 닫히고 새 행이 선다([`schedule/design.md`](../modules/schedule/design.md#배정)). 확정 전에는 행이 지워진다. 화면이 들고 있던 id가 그 둘 중 하나면 함수가 `stale`을 던진다. 버전 열 없이 「상태가 바뀜」을 잡는다
 - 예외: **읽기 오류는 전부 `TransportError`다.** RLS는 읽기를 거부하지 않고 빈 결과를 준다. 실을 것이 셋째로 생기면 `using detail`을 연다
+- 예외: **표를 직접 쓰는 자리는 check 제약이 마지막 문이다** — `profile_private.phone` 하나다([account/design.md](../modules/account/design.md#개인정보는-표를-가른다)). 제약 위반은 `raise`가 아니라 PostgREST의 `23514`로 오니 그 `dals`가 제약 이름(`profile_private_phone_format`)을 `invalid_phone`으로 바꿔 `DomainError`로 낸다. 코드 목록에 이미 있는 이름이라 대조 테스트는 그대로다
 
 화면은 이 둘만 본다. `TransportError`면 시트를 열어둔 채 「보내지 못했어요. 다시 시도해주세요」다. `DomainError`는 코드마다 페이지 문서가 정한 대로다.
 
