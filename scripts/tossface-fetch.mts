@@ -20,7 +20,7 @@ import {
   TOSSFACE_COMMIT_HASH,
   TOSSFACE_DIR,
   TOSSFACE_LICENSE_FILES,
-  tossfaceDownloadUrl,
+  tossfaceSourceUrl,
   tossfaceFilenames,
 } from "../tests/lint/tossface-fetch.ts";
 
@@ -33,7 +33,7 @@ function fail(message: string): never {
 }
 
 async function download(filename: string): Promise<Uint8Array> {
-  const url = tossfaceDownloadUrl(filename);
+  const url = tossfaceSourceUrl(filename);
   const response = await fetch(url);
 
   if (!response.ok) {

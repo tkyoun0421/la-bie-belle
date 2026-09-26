@@ -74,9 +74,9 @@ describe("tossfaceSourceUrl — 고정 커밋 해시에서 받아 온다 (AC-01)
     );
   });
 
-  it("github.com/toss/tossface/<해시>/dist/svg/<파일> 꼴이다", () => {
+  it("github.com/toss/tossface/raw/<해시>/dist/svg/<파일> 꼴이다 — raw가 없으면 404다", () => {
     expect(tossfaceSourceUrl("u1F492.svg")).toBe(
-      `https://github.com/toss/tossface/${TOSSFACE_COMMIT_HASH}/dist/svg/u1F492.svg`,
+      `https://github.com/toss/tossface/raw/${TOSSFACE_COMMIT_HASH}/dist/svg/u1F492.svg`,
     );
   });
 });

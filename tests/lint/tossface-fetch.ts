@@ -56,26 +56,12 @@ export function codepointToFilename(codepoints: string[]): string {
   return `u${codepoints.map((codepoint) => codepoint.toUpperCase()).join("_")}.svg`;
 }
 
-/** 이 파일이 어느 저장소의 어느 지점에서 왔는지를 가리키는 자리다. */
+/** 파일이 오는 자리다. GitHub은 경로에 `raw` 한 마디가 있어야 파일을 준다 — 빼면 404다. */
 export function tossfaceSourceUrl(
   filename: string,
   commitHash: string = TOSSFACE_COMMIT_HASH,
 ): string {
-  return `https://github.com/toss/tossface/${commitHash}/dist/svg/${filename}`;
-}
-
-/**
- * 실제로 바이트가 오는 자리다. GitHub은 출처 자리에 `raw` 한 마디를 더 받아야 파일을 준다 —
- * 빼면 404다.
- */
-export function tossfaceDownloadUrl(
-  filename: string,
-  commitHash: string = TOSSFACE_COMMIT_HASH,
-): string {
-  return tossfaceSourceUrl(filename, commitHash).replace(
-    `/tossface/${commitHash}/`,
-    `/tossface/raw/${commitHash}/`,
-  );
+  return `https://github.com/toss/tossface/raw/${commitHash}/dist/svg/${filename}`;
 }
 
 export function tossfaceFilenames(): string[] {
