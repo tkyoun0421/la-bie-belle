@@ -20,8 +20,10 @@ import { BottomCTA } from "@/shared/ui/BottomCTA";
 import { BottomSheet } from "@/shared/ui/BottomSheet";
 import { Button } from "@/shared/ui/Button";
 import { Card, CardHeader } from "@/shared/ui/Card";
+import { CelebrationCircle } from "@/shared/ui/CelebrationCircle";
 import { DayBand } from "@/shared/ui/DayBand";
 import { Dialog } from "@/shared/ui/Dialog";
+import { Divider } from "@/shared/ui/Divider";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { Icon } from "@/shared/ui/Icon";
 import { Illustration, Tossface } from "@/shared/ui/Illustration";
@@ -173,6 +175,40 @@ export default function Screen() {
 
   return (
     <ScrollView className="flex-1 bg-bg-neutral-sunken">
+      <Section title="글자">
+        <Stack label="크기 여덟 — 화면은 `text-*`가 아니라 size로 말한다">
+          <Text size="xs">xs · 부가 텍스트</Text>
+          <Text size="sm">sm · 본문 아래 줄</Text>
+          <Text size="base">base · 본문</Text>
+          <Text size="lg">lg · 굳은 값</Text>
+          <Text size="xl">xl · 화면 제목</Text>
+          <Text size="2xl">2xl · 서비스 이름</Text>
+          <Text size="3xl">3xl</Text>
+          <Text size="4xl">4xl</Text>
+        </Stack>
+        <Stack label="색 여덟">
+          <Text tone="neutral">neutral · 본문</Text>
+          <Text tone="muted">muted · 아래 줄</Text>
+          <Text tone="subtle">subtle · 안내</Text>
+          <Text tone="disabled">disabled · 안 눌리는 것</Text>
+          <Text tone="brand">brand · 배지 글자</Text>
+          <Text tone="positive">positive · 승인됨</Text>
+          <Text tone="critical">critical · 인도 줄</Text>
+        </Stack>
+        <Stack label="굵기 넷">
+          <Text weight="regular">regular</Text>
+          <Text weight="medium">medium</Text>
+          <Text weight="semibold">semibold</Text>
+          <Text weight="bold">bold</Text>
+        </Stack>
+        <Stack label="숫자 정렬 — 켜면 자릿수 폭이 고정된다">
+          <Text size="lg">010-0000-0001</Text>
+          <Text size="lg" numeric>
+            010-0000-0001
+          </Text>
+        </Stack>
+      </Section>
+
       <Section title="아이콘">
         <Row label="본문 옆 · 부가 텍스트 옆 · 앱바">
           <Icon icon={Bell} size={17} />
@@ -317,6 +353,15 @@ export default function Screen() {
           <Avatar name="이도윤" size={40} />
           <Avatar name="박서연" size={64} />
         </Row>
+        <Stack label="축하하는 순간의 큰 원 — 둘레에 조각 여덟">
+          <CelebrationCircle name="박서연" className="self-center" />
+        </Stack>
+      </Section>
+
+      <Section title="가는 선">
+        <Stack label="성격이 갈리는 두 덩이 사이 — 위아래 여백은 부르는 쪽이 준다">
+          <Divider className="my-5" />
+        </Stack>
       </Section>
 
       <Section title="Illustration">
@@ -339,6 +384,14 @@ export default function Screen() {
           <Badge variant="critical" label="거절됨" />
           <Badge variant="sky" label="교육" />
           <Badge variant="warning" label="지각" />
+        </Row>
+        <Row label="크기 둘 — 값 옆의 sm · 홀로 서는 md">
+          <Badge variant="brand" label="내 근무" />
+          <Badge variant="brand" size="md" label="승인 기다리는 중" />
+        </Row>
+        <Row label="점 — 상태가 곧 갈릴 자리에만">
+          <Badge variant="brand" size="md" dot label="승인 기다리는 중" />
+          <Badge variant="neutral" size="md" label="아직 연결 전" />
         </Row>
       </Section>
 
