@@ -3,13 +3,14 @@ import {
   createApprovedUser,
   createBlockedUser,
   createRejectedUser,
+  createSubmittedUser,
 } from "@tests/integration/postgres";
 import { createSignedInUser } from "@tests/integration/supabase";
 
 describe("approve_member", () => {
   it("관리자가 부르면 approved_at이 찍힌다", async () => {
     const admin = await createAdminUser();
-    const applicant = await createSignedInUser();
+    const applicant = await createSubmittedUser();
 
     const { error } = await admin.client.rpc("approve_member", {
       profile_id: applicant.profileId,
@@ -53,6 +54,17 @@ describe("approve_member", () => {
 
     const { error } = await admin.client.rpc("approve_member", {
       profile_id: blocked.profileId,
+    });
+
+    expect(error?.message).toBe("already_decided");
+  });
+
+  it("프로필을 안 보낸 사람을 승인하면 already_decided로 막힌다", async () => {
+    const admin = await createAdminUser();
+    const applicant = await createSignedInUser();
+
+    const { error } = await admin.client.rpc("approve_member", {
+      profile_id: applicant.profileId,
     });
 
     expect(error?.message).toBe("already_decided");

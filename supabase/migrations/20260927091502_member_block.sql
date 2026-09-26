@@ -2,9 +2,11 @@
 -- docs/2-design/modules/account/design.md 의 「가입 승인·거절·차단·해제」와
 -- docs/2-design/modules/account/README.md 의 ACC-004·ACC-007 이다.
 --
--- 승인·거절과 같은 문을 쓴다. 관리자가 아니면 not_allowed 고, 대상이 이미 승인·거절·차단된
--- 사람이면 already_decided 다 — 둘이 같은 사람을 동시에 열었을 때 늦게 누른 쪽이 받는 코드가
--- 하나여야 화면이 한 갈래로 답한다.
+-- 승인·거절과 같은 문을 쓴다. 관리자가 아니면 not_allowed 고, 대상이 「제출됨」이 아니면
+-- already_decided 다 — 프로필을 보냈고 아직 아무 판정도 안 난 사람만 대상이라는 뜻이다.
+-- 둘이 같은 사람을 동시에 열었을 때 늦게 누른 쪽이 받는 코드가 하나여야 화면이 한 갈래로
+-- 답한다. 보낸 적 없는 계정이 판정에 들지 않는 것도 같은 조건이 막는다 — 이름도 개인정보도
+-- 없는 사람이 승인되면 근무표가 부를 이름이 없다.
 create function public.block_member(profile_id uuid)
   returns void
   language plpgsql
@@ -16,15 +18,14 @@ begin
     raise exception using message = 'not_allowed';
   end if;
 
-  if exists (
+  if not exists (
     select 1
     from public.profiles
     where id = block_member.profile_id
-      and (
-        approved_at is not null
-        or rejected_at is not null
-        or blocked_at is not null
-      )
+      and submitted_at is not null
+      and approved_at is null
+      and rejected_at is null
+      and blocked_at is null
   ) then
     raise exception using message = 'already_decided';
   end if;

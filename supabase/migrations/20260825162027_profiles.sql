@@ -200,15 +200,14 @@ begin
     raise exception using message = 'not_allowed';
   end if;
 
-  if exists (
+  if not exists (
     select 1
     from public.profiles
     where id = approve_member.profile_id
-      and (
-        approved_at is not null
-        or rejected_at is not null
-        or blocked_at is not null
-      )
+      and submitted_at is not null
+      and approved_at is null
+      and rejected_at is null
+      and blocked_at is null
   ) then
     raise exception using message = 'already_decided';
   end if;
@@ -230,15 +229,14 @@ begin
     raise exception using message = 'not_allowed';
   end if;
 
-  if exists (
+  if not exists (
     select 1
     from public.profiles
     where id = reject_member.profile_id
-      and (
-        approved_at is not null
-        or rejected_at is not null
-        or blocked_at is not null
-      )
+      and submitted_at is not null
+      and approved_at is null
+      and rejected_at is null
+      and blocked_at is null
   ) then
     raise exception using message = 'already_decided';
   end if;
