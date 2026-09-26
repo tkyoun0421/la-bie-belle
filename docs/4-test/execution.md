@@ -68,7 +68,7 @@
 - 실행: `pnpm test:integration` — `supabase start` 뒤 `supabase migration up && jest --config jest.integration.config.js`.
 - 정상 결과: 실패 0.
 - 실패할 때: 가입 한도와 로그 읽는 자리는 [integration과 e2e](#integration과-e2e)가 든다.
-- 근거 위치: CI는 테스트가 쓰는 서비스만 `supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime`으로 띄우고 `pnpm test:integration:run`을 돌린다.
+- 근거 위치: CI는 테스트가 쓰는 서비스만 `supabase start -x realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime`(`storage-api`는 `avatars` 버킷 테스트가 쓴다)으로 띄우고 `pnpm test:integration:run`을 돌린다.
 
 ### `pnpm types`
 
