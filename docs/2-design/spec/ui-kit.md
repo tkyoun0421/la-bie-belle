@@ -26,7 +26,8 @@ sources:
 - **토스페이스 SVG** — [illustration.md](../design-system/illustration.md#토스페이스-사용-규칙). 파일은 커밋하지 않고 스크립트로 받아 온다
 - **글자 배율 상한** — [typography.md](../design-system/foundation/typography.md#큰-숫자)의 `maxFontSizeMultiplier`를 글자 조각 한 곳에서 건다
 - **동작 줄이기** — [motion.md](../design-system/foundation/motion.md#접근성). shimmer와 이동 모션이 기기 설정을 한 곳에서 읽는다
-- **자리** — [ADR-001](../adr/ADR-001-fsd-layout-and-tdd-guard.md). 조각은 `src/shared/ui/`, 순수 계산은 옆 `.ts`와 짝 테스트
+- **자리** — [ADR-001](../adr/ADR-001-fsd-layout-and-tdd-guard.md). 조각(`.tsx`)은 `src/shared/ui/`, 순수 계산(하루 띠 비율·미니 달력 줄·동작 줄이기 판정)은 `src/shared/lib/`의 `.ts`와 `__tests__/` 짝 테스트 — `src/shared/ui/`는 훅이 안 보는 자리라 계산을 거기 두면 짝 테스트가 강제되지 않는다. 토스페이스 파일 이름·URL 계산은 `tests/lint/tossface-fetch.ts`에 두고 `scripts/tossface-fetch.mts`가 가져다 쓴다(`font-subset` 관행)
+- **조각의 렌더 검증** — `@testing-library/react-native`를 devDependency로 들인다. 조각이 기본으로 넘기는 prop(글자 배율 상한·모션 값)을 렌더 결과로 확인하는 데만 쓴다
 
 ## 범위
 
@@ -50,7 +51,7 @@ sources:
 
 - 전제: 조각을 다 만들었다
 - 행동: 개발 빌드에서 `/_catalog`를 연다
-- 관찰 결과: components.md의 절 순서대로 조각이 서고, 절 안의 변형·상태 표 행마다 하나씩 보인다(Button 변형 다섯과 눌림·비활성·스피너, ListRow 오른쪽 값 둘, Skeleton의 shimmer, 토스트 종류…). 라이트·다크가 기기 설정을 따른다. 프로덕션 빌드에서는 이 라우트가 없다
+- 관찰 결과: components.md의 절 순서대로 조각이 서고, 절 안의 변형·상태 표 행마다 하나씩 보인다(Button 변형 다섯과 눌림·비활성·스피너, ListRow 오른쪽 값 둘, Skeleton의 shimmer, 토스트 종류…). 라이트·다크가 기기 설정을 따른다. 프로덕션 빌드에서는 이 라우트가 `/`로 돌려보낸다 — Expo Router는 파일이 있으면 경로를 만들므로 화면이 `__DEV__`가 아닐 때 `Redirect`를 그린다. 그 판정 함수는 `src/shared/lib/`에 산다
 - 검증 층: 사람이 눈으로 본다 — 실기기·시뮬레이터. 자동 판정은 unit이 라우트 노출 조건(`__DEV__`)만 본다
 - 근거: [components.md](../design-system/components.md)
 
@@ -117,7 +118,7 @@ sources:
 
 ## 미니 달력의 새 값
 
-components.md 미니 달력 표에서 둘을 고친다 — 대시보드 제안 시안 승인(2026-09-26)이 근거다. 칸은 20px 그대로되 **열은 카드 폭을 나눠 갖고**(「칸을 화면 폭에 맞춰 늘리지 않는다」 조항은 칸 크기만 지킨다) **줄 사이는 10px**이다. 이 task가 components.md의 그 두 줄을 같이 고친다.
+components.md 미니 달력 표에서 둘을 고친다 — 대시보드 제안 시안 승인(2026-09-26)이 근거다. 칸은 20px 그대로되 **일곱 열이 카드 안쪽 폭을 같은 폭으로 나누고 칸은 열 가운데에 선다**(「칸을 화면 폭에 맞춰 늘리지 않는다」 조항은 칸 크기만 지킨다) **줄 사이는 10px**이다. 이 task가 components.md의 그 두 줄을 같이 고친다.
 
 ## 루프
 
