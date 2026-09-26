@@ -1,5 +1,3 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { LeftScreen } from "@/screens/left/ui/LeftScreen";
 
-export default function Screen() {
-  return <NotBuiltYet path="/left" />;
-}
+export default LeftScreen;

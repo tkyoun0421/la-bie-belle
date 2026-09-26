@@ -26,6 +26,25 @@
 
 **바텀시트는 버전이 걸린다.** `@gorhom/bottom-sheet`는 v5부터 Reanimated v4와 새 아키텍처를 받는다. Expo SDK가 그쪽을 요구하므로 v4 이하를 그대로 들이면 시트가 손짓에 반응하지 않는다.
 
+## 글자
+
+`Text` 조각 하나가 모든 글자를 그린다. 화면 파일은 `text-`·`font-` 유틸을 못 쓰고(규칙 19) 이 조각의 prop으로 고른다 — 크기와 색이 `text-` 한 접두사에 같이 실려 화면에서 둘을 갈라 막을 수 없어서다.
+
+| prop | 값 | 기본 |
+| --- | --- | --- |
+| `size` | `xs`·`sm`·`base`·`lg`·`xl`·`2xl`·`3xl`·`4xl` — [typography.md](foundation/typography.md)의 여덟 단계 | `base` |
+| `tone` | `neutral`·`muted`·`subtle`·`disabled`·`brand`·`contrast`·`positive`·`critical` — `fg.*` 역할 토큰 | `neutral` |
+| `weight` | `regular`·`medium`·`semibold`·`bold` | `regular` |
+| `numeric` | `tabular-nums` | 꺼짐 |
+
+글자 배율 상한(`maxFontSizeMultiplier`)을 이 조각만 건다([tokens.md](tokens.md#글자-배율-상한)). `4xl`은 큰 숫자 한 자리뿐이다([typography.md](foundation/typography.md#큰-숫자)).
+
+## 화면 바닥과 가는 선
+
+**`Screen`** — 화면 한 장이 서는 바닥. `flex-1`과 바닥색뿐이고 여백은 안 든다. 카드가 서는 화면은 `bg.neutral-sunken`이고 카드가 안 서는 한 장면 화면은 `bg.neutral`이다([spacing-shape.md](foundation/spacing-shape.md#카드가-기본이다)) — prop `floor`가 `sunken`·`plain` 둘을 받고 기본은 `sunken`이다.
+
+**`Divider`** — 성격이 다른 두 덩이를 가르는 `stroke.neutral` 1px 선. 위아래 여백은 부르는 쪽이 준다. 목록 줄 사이의 선은 [ListRow](#listrow)가 제 안에 들고 있어 이 조각이 아니다.
+
 ## 아이콘
 
 `lucide-react-native`를 쓴다. 웹에서 쓰던 `lucide-react`와 같은 아이콘셋이라 이름이 그대로 간다. SVG로 그리므로 `react-native-svg`가 같이 선다.
@@ -303,6 +322,10 @@ bg-bg-neutral rounded-xl shadow-card p-5
 
 **사진을 브랜드로 감싸지 않는다.** 테두리도 링도 없다. 사진 자체가 색을 갖고 있어 무엇을 더해도 소음이다.
 
+## 축하 원
+
+`CelebrationCircle` — 프로필을 보낸 뒤 「반가워요」 한 장의 112px 원과 둘레에서 터지는 조각 여덟이다([login.md](../modules/account/screens/login.md#프로필-작성-모션)). [Avatar](#avatar)가 아니다 — 사람 사진이 커진 것이 아니라 그 순간의 모션 조각이라 Avatar에 넷째 크기를 더하지 않았다. 3D 그림도 여기 안 선다([illustration.md](illustration.md)).
+
 ## Illustration
 
 글자와 아이콘이 아닌 그림이다. 출처가 둘이고 서는 자리가 셋이다. 어느 자리에 서고 안 서는지, 스타일과 프롬프트, 장면 목록은 [illustration.md](illustration.md)가 정본이고 크기와 상한은 [tokens.md](tokens.md#그림)에 있다. 색 규칙은 [color.md](foundation/color.md#일러스트가-색을-쓰는-법)에 있다.
@@ -350,6 +373,11 @@ bg-bg-neutral rounded-xl shadow-card p-5
 | warning | `bg.warning-weak` | `fg.neutral` |
 
 모양은 `rounded-sm`(8px), 글자는 `text-xs font-medium`이다. 버튼보다 한 단계 아래인 것은 높이가 24px이라 14px을 주면 다시 알약이 되기 때문이다.
+
+| prop | 값 |
+| --- | --- |
+| `size` | `sm`(기본, 24px `px-2`) · `md`(32px `h-8 px-3`) — 한 장면 화면의 상태 배지가 `md`다([login.md](../modules/account/screens/login.md#승인-대기-짜임)) |
+| `dot` | 글자 앞에 뛰는 점. 색은 그 변형의 진한 면이고 brand는 `bg.brand-solid`다. 기다리는 중임을 말하는 자리에만 |
 
 warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `fg`를 쓸 수 없어서다. 이유는 [foundation/color.md](foundation/color.md#경고색-제약)에 있다.
 

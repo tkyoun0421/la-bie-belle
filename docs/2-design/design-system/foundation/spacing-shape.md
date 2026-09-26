@@ -120,6 +120,8 @@ bg-bg-neutral rounded-xl shadow-card p-5
 
 **카드 안에 카드를 넣지 않는다.** 카드 안에서 한 겹 더 눌린 면이 필요하면 `bg.neutral-weak`를 깐다 — 입력 칸과 secondary 버튼과 트랙이 그 자리다. 카드를 또 얹으면 그림자가 두 겹이 되고 안쪽 여백이 두 번 붙어 글자 폭이 준다. 조각 명세는 [components.md](../components.md#card)에 있다.
 
+**카드가 안 서는 화면이 있다.** 탭 바 없는 한 장면 화면 — 로그인·프로필 작성·승인 대기·퇴사한 뒤·차단된 뒤·읽기 실패([login.md](../../modules/account/screens/login.md)) — 는 흰 바닥(`bg.neutral`) 위에 글과 그림만 선다. 화제가 하나뿐이라 나눌 경계가 없고, 카드 한 장이 화면을 다 차지하면 카드가 아니라 테두리다. 그 화면의 3D 그림은 [illustration.md](../illustration.md)의 장면 표를 따른다.
+
 **바닥 위에 바로 서는 글자는 섹션 제목이다.** 「이번 달 근무」 같은 제목 한 줄이 카드 위에 서서 그 아래 카드가 무엇인지 말한다. 앱바·탭 바·BottomCTA는 자기 면을 갖고 서니 바닥 위 글자가 아니다. 섹션 제목은 `fg.neutral`이다 — 흐린 글자는 바닥 위에서 대비가 모자란다([color.md](color.md#층-셋)).
 
 ### 같은 것이 여럿 이어지면 가는 선이다
