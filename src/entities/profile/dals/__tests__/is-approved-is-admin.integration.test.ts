@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { createAdminUser, execSql } from "@tests/integration/postgres";
 import { createGuestClient } from "@tests/integration/supabase";
 
 async function signUpWithoutProfile() {
@@ -39,5 +40,31 @@ describe("is_approved · is_admin", () => {
     expect(adminError).toBeNull();
     expect(approved).toBe(false);
     expect(admin).toBe(false);
+  });
+
+  it("퇴사한 관리자는 is_admin()이 거짓이다", async () => {
+    const admin = await createAdminUser();
+    execSql(
+      "update public.profiles set left_at = now() where user_id = :'user_id';\n",
+      { user_id: admin.userId },
+    );
+
+    const { data, error } = await admin.client.rpc("is_admin");
+
+    expect(error).toBeNull();
+    expect(data).toBe(false);
+  });
+
+  it("차단된 관리자는 is_admin()이 거짓이다", async () => {
+    const admin = await createAdminUser();
+    execSql(
+      "update public.profiles set blocked_at = now() where user_id = :'user_id';\n",
+      { user_id: admin.userId },
+    );
+
+    const { data, error } = await admin.client.rpc("is_admin");
+
+    expect(error).toBeNull();
+    expect(data).toBe(false);
   });
 });

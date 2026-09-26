@@ -133,6 +133,52 @@ export async function createBlockedUser(): Promise<BlockedUser> {
   return { ...user, blockedAt };
 }
 
+export type RejectedUser = SignedInUser & { rejectedAt: string };
+
+export async function createRejectedUser(): Promise<RejectedUser> {
+  const user = await createSignedInUser();
+  const rejectedAt = new Date().toISOString();
+
+  execSql(
+    "update public.profiles set rejected_at = :'rejected_at' where user_id = :'user_id';\n",
+    { user_id: user.userId, rejected_at: rejectedAt },
+  );
+
+  return { ...user, rejectedAt };
+}
+
+let submittedUserSequence = 0;
+
+export type SubmittedUser = SignedInUser & { submittedAt: string };
+
+/** `submit_profile`을 실제로 불러 「제출됨」(승인·거절·차단 전) 상태를 만든다. */
+export async function createSubmittedUser(): Promise<SubmittedUser> {
+  const user = await createSignedInUser();
+  submittedUserSequence += 1;
+  const phone = `010-0000-${String(submittedUserSequence % 10000).padStart(4, "0")}`;
+
+  const { error } = await user.client.rpc("submit_profile", {
+    display_name: "제출자",
+    phone,
+    birth_date: "1990-01-01",
+    gender: "female",
+  });
+  if (error) {
+    throw error;
+  }
+
+  const { data, error: profileError } = await user.client
+    .from("profiles")
+    .select("submitted_at")
+    .eq("id", user.profileId)
+    .single<{ submitted_at: string }>();
+  if (profileError || !data) {
+    throw profileError ?? new Error("제출된 프로필을 못 찾았다");
+  }
+
+  return { ...user, submittedAt: data.submitted_at };
+}
+
 export type LeftUser = SignedInUser & {
   approvedAt: string;
   leftAt: string;
