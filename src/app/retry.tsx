@@ -1,5 +1,3 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { RetryScreen } from "@/screens/retry/ui/RetryScreen";
 
-export default function Screen() {
-  return <NotBuiltYet path="/retry" />;
-}
+export default RetryScreen;

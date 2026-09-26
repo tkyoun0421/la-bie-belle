@@ -47,8 +47,8 @@ sources:
 
 - 전제: 프로필 작성 화면
 - 행동: 규칙 밖의 값을 넣고 보낸다 — 공백 이름, `010`으로 시작하지 않거나 열한 자리가 아닌 연락처, 실존하지 않는 여덟 자리 생년월일
-- 관찰 결과: 보내지지 않고 그 칸 아래 줄로 규칙을 안내한다. 서버까지 갔을 때는 `invalid_name`·`invalid_phone`·`invalid_gender`가 같은 자리에 뜬다
-- 검증 층: unit — 값의 꼴을 보는 순수 함수다. 서버 쪽 거절은 integration이 이미 본다
+- 관찰 결과: 보내지지 않고 그 칸 아래 줄로 규칙을 안내한다. 서버까지 갔을 때는 `invalid_name`·`invalid_phone`·`invalid_gender`가 같은 자리에 뜬다 — 생년월일은 날짜 고르기가 실존 날짜만 내놓아 서버 코드가 없다
+- 검증 층: unit — 값의 꼴을 보는 순수 함수다. 서버 쪽 거절은 integration — `submit_profile`이 `invalid_phone`만 던지고 있어 `invalid_name`(공백 이름)·`invalid_gender`(`female`·`male` 밖)를 이 task의 마이그레이션이 더하고 `error-codes.ts`에 올린다
 - 근거: [ACC-002](../modules/account/README.md#acc-002), [오류의 모양](../system/data-access.md#오류의-모양)
 
 ### AC-03
@@ -56,7 +56,7 @@ sources:
 - 전제: 프로필 작성 화면. 사진은 구글 것이 기본으로 들어와 있다
 - 행동: 다른 사진을 고른다
 - 관찰 결과: 올리는 동안 원 위에 스피너가 서고, 끝나면 그 사진이 원에 앉는다. 실패하면 원은 그대로고 칸 아래 줄로 실패를 말한다
-- 검증 층: e2e — 기기의 사진 고르기를 거친다
+- 검증 층: e2e — 기기의 사진 고르기를 거친다. `avatars` 버킷과 정책(본인 `<user_id>/` 폴더 쓰기, 공개 읽기, 1MB 상한)은 마이그레이션에 아직 없다 — 이 task가 세우고 integration이 그 셋을 본다
 - 근거: [ACC-003](../modules/account/README.md#acc-003), [design.md 「사진 저장」](../modules/account/design.md#사진-저장)
 
 ### AC-04
@@ -119,3 +119,4 @@ sources:
 - 기준점: `e763cf4` — 이 spec과 `sources`가 든 문서를 그 커밋에서 읽었다. PR [#392](https://github.com/tkyoun0421/la-bie-belle/pull/392)의 고정 diff다
 - 범위: AC-01~AC-07과 상태 격자 여덟 줄. 「범위 밖」에 적은 것은 승인 밖이고 거기 든 task가 제 spec으로 따로 받는다
 - 제한: 승인 대기 화면의 알림 켜기 자리는 [notification-settings](notification-settings.md)가 채운다 — 이 승인은 그 자리를 비워두는 것까지다.
+- 덧붙임(2026-09-27, 구현 착수): 서버 코드 둘과 `avatars` 버킷을 이 task가 세운다(AC-02·03). 로그아웃 넷(pending·left·blocked·retry)이 부르는 기기 정리([design.md](../modules/account/design.md#로그아웃퇴사차단-뒤-기기-정리))를 위해 TanStack `QueryClient`를 `src/app/_layout.tsx`에 처음 배선하고 `signOut` 헬퍼는 `src/shared/lib/`에 짝 테스트와 함께 둔다. 여섯 화면은 카드 없이 흰 바닥이다([spacing-shape.md](../design-system/foundation/spacing-shape.md#카드가-기본이다) 「카드가 안 서는 화면」) — 조각은 `src/shared/ui/`의 것을 쓴다.

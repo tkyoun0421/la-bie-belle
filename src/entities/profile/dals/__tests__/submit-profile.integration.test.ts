@@ -76,4 +76,30 @@ describe("submit_profile", () => {
 
     expect(error).toBeNull();
   });
+
+  it("공백뿐인 이름은 invalid_name으로 거절된다", async () => {
+    const user = await createSignedInUser();
+
+    const { error } = await user.client.rpc("submit_profile", {
+      display_name: "   ",
+      phone: "010-0000-0004",
+      birth_date: "1990-01-01",
+      gender: "female",
+    });
+
+    expect(error?.message).toBe("invalid_name");
+  });
+
+  it("female·male 밖의 성별은 invalid_gender로 거절된다", async () => {
+    const user = await createSignedInUser();
+
+    const { error } = await user.client.rpc("submit_profile", {
+      display_name: "다희",
+      phone: "010-0000-0005",
+      birth_date: "1990-01-01",
+      gender: "기타",
+    });
+
+    expect(error?.message).toBe("invalid_gender");
+  });
 });

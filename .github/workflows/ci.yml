@@ -57,7 +57,8 @@ jobs:
           version: 2.75.0
       - name: 테스트가 쓰는 서비스만 띄운다
         if: steps.scope.outputs.code == 'true'
-        run: supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime
+        # storage-api 가 목록에서 빠진 것은 avatars 버킷 테스트가 그 서비스에 붙기 때문이다.
+        run: supabase start -x realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime
       - run: pnpm test:integration:run
         if: steps.scope.outputs.code == 'true'
       # 마이그레이션은 위 단계가 올렸다. 그 뒤의 DB에서 다시 뽑아 커밋된 것과 같은지 본다 —

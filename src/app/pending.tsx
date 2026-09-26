@@ -1,5 +1,3 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { PendingScreen } from "@/screens/pending/ui/PendingScreen";
 
-export default function Screen() {
-  return <NotBuiltYet path="/pending" />;
-}
+export default PendingScreen;
