@@ -30,3 +30,13 @@ expo-env.d.ts
 
 # 서브셋이 만드는 목록 — 정본은 tests/lint/font-subset.ts다
 assets/fonts/subset/codepoints.txt
+
+# 토스페이스 SVG는 `pnpm tossface:fetch`로 받아 온다 — 커밋하지 않는 근거는
+# docs/2-design/design-system/illustration.md 「토스페이스 사용 규칙」이다.
+# 커밋하는 것은 재배포 조건인 라이선스 둘뿐이다. 디렉터리를 통째로 빼면 git이 그 안으로
+# 안 들어가서 아래 두 줄이 안 먹는다 — 그래서 한 번 풀고 내용만 다시 뺀다.
+assets/tossface/
+!assets/tossface/
+assets/tossface/*
+!assets/tossface/LICENSE
+!assets/tossface/COPYRIGHT.md
