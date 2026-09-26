@@ -116,7 +116,7 @@
 
 **지금 플로우는 하나다.** `login.yaml`이 세션 없는 차가운 시작이 로그인 화면에 서는지 본다. **아직 한 번도 돌리지 않았다** — 올릴 앱이 없다. 나머지 라우트는 플로우가 없어서 고치려 들면 훅이 막는다. 그것이 이 자리가 서기 전까지 안 물던 게이트다.
 
-**세션을 심는 방법은 안 정했다.** Maestro는 앱 내부를 안 봐서 코드로 세션을 넣을 수 없다. 로그인 뒤 화면에 처음 닿는 task가 정한다.
+**세션은 개발 빌드의 테스트 문으로 심는다.** Maestro는 앱 내부를 안 봐서 코드로 세션을 넣을 수 없으니 앱이 문을 하나 낸다 — `src/app/__test/session.tsx`가 `labiebelle://__test/session?access_token=…&refresh_token=…`을 받아 `supabase.auth.setSession`을 부르고 게이트로 넘긴다. `_catalog`와 같은 꼴로 `__DEV__`가 아니면 `/`로 돌려보내 프로덕션에는 문이 없다. 토큰과 DB 상태는 **시드 서버**가 만든다 — `scripts/e2e-seed-server.mts`가 `tests/integration/postgres.ts`의 헬퍼(거절·퇴사·차단 사용자 만들기 등)를 로컬 HTTP(`127.0.0.1:8765`)로 내놓고, 테스트 사용자를 이메일·비밀번호로 만들어 `signInWithPassword`로 받은 토큰을 돌려준다. 플로우는 `runScript`로 그 서버를 부르고 받은 토큰을 `openLink`에 넣는다. 서버는 `pnpm e2e`가 띄우고 끝나면 내린다 — 로컬 Supabase가 떠 있어야 하고 프로덕션 키는 절대 받지 않는다(URL이 `127.0.0.1`이 아니면 서버가 죽는다). 이 문을 처음 세우는 task가 `profile-form`이다 — 로그인 뒤 화면에 처음 닿는 task라서다.
 
 ### 파일을 골라 실행
 
