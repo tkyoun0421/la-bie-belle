@@ -62,8 +62,10 @@ sources:
 
 `is_admin()`이 거짓이면 `not_allowed`으로 던진다.
 
-- `approve_member(profile_id uuid)` — `approved_at`을 찍고 `rejected_at`을 비운다. 이미 승인된 사람이면 아무것도 안 한다
-- `reject_member(profile_id uuid)` — `rejected_at`을 찍는다. 이미 승인된 사람은 `already_approved`로 던진다
+- `approve_member(profile_id uuid)` — `approved_at`을 찍는다
+- `reject_member(profile_id uuid)` — `rejected_at`을 찍는다
+
+둘 다 대상이 「제출됨」이 아니면 `already_decided`로 던진다 — design.md의 계약이고, 처음 구현이 든 no-op과 `already_approved`는 `members-pending`이 이 계약으로 맞췄다(거절된 사람은 `submit_profile`로 다시 보내야 목록에 선다).
 
 `approve_member`는 [design.md](../../2-design/modules/account/design.md#가입-승인거절차단해제)가 정한 대로 `wage_rates` 첫 행도 같이 넣어야 한다. 그 표가 아직 없어 이번에는 `profiles`만 만진다 — 시급 행을 넣는 줄과 그것을 보는 integration 한 줄은 급여 task가 이 함수를 다시 열어 더한다. 급여 task의 완료 조건에 그 줄이 들어가야 승인된 사람의 급여 화면이 빈 채로 남지 않는다.
 
@@ -88,8 +90,8 @@ sources:
 - `ensure_profile` — 처음 부르면 행이 생긴다 / 두 번 불러도 행이 하나다 / 다른 사람이 부르면 그 사람 행이 따로 생긴다
 - `submit_profile` — 제출하면 `profiles.display_name`과 `submitted_at`과 `profile_private` 행이 같이 찬다 / 두 번째 제출은 `already_submitted`로 막힌다 / 거절된 뒤에는 다시 제출된다
 - `update_my_photo` — 본인이 부르면 자기 `photo_url`이 바뀐다 / 남의 프로필은 안 바뀐다(관리자가 불러도 마찬가지)
-- `approve_member` — 관리자가 부르면 `approved_at`이 찍힌다 / 거절됐던 사람을 승인하면 `rejected_at`이 비워진다 / 관리자가 아니면 `not_allowed`으로 막힌다
-- `reject_member` — 관리자가 부르면 `rejected_at`이 찍힌다 / 이미 승인된 사람은 `already_approved`로 막힌다 / 관리자가 아니면 `not_allowed`으로 막힌다
+- `approve_member` — 관리자가 부르면 `approved_at`이 찍힌다 / 이미 승인·거절·차단된 사람은 `already_decided`로 막힌다 / 관리자가 아니면 `not_allowed`으로 막힌다
+- `reject_member` — 관리자가 부르면 `rejected_at`이 찍힌다 / 이미 승인·거절·차단된 사람은 `already_decided`로 막힌다 / 관리자가 아니면 `not_allowed`으로 막힌다
 - `is_approved`·`is_admin` — 세션 없이 부르면 거짓이다 / 프로필이 없으면 거짓이다
 
 헬퍼는 `tests/integration/postgres.ts`에 관리자 사용자와 차단된 사용자를 만드는 것이 는다. 승인 데이터를 손으로 넣는 자리가 헬퍼 하나로 남아야 한다.

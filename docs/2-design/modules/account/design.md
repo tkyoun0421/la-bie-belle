@@ -85,7 +85,7 @@
 - 규칙: [ACC-006](README.md#acc-006)·[ACC-007](README.md#acc-007)
 - 입력·전제: `approve_member`, `reject_member`, `block_member`, `unblock_member`가 가입 승인·거절·차단·해제다
 - 읽고 쓰는 데이터: 승인은 `wage_rates` 첫 행을 같이 넣는다. 해제는 `blocked_at`과 `submitted_at`을 같이 비운다 — 그 사람이 다시 들어오면 프로필 작성이 지난 값을 들고 서고, 보내면 대기 목록에 뜬다
-- 결과와 실패: 대상이 더는 「제출됨」이 아니면(이미 승인·거절·차단됐다) `already_decided`. 둘이 같은 사람을 열었을 때 늦게 누른 쪽이 받는다
+- 결과와 실패: 승인·거절·차단은 대상이 더는 「제출됨」이 아니면(이미 승인·거절·차단됐다) `already_decided`. 해제는 대상이 더는 「차단됨」이 아니면 같은 코드다. 둘이 같은 사람을 열었을 때 늦게 누른 쪽이 받는다
 - 처리와 경쟁: 응답을 기다린다 — 남에게 닿는다
 - 캐시 갱신: `approve_member`는 `['members']` `['payroll']`, `reject_member`·`block_member`·`unblock_member`는 `['members']`다
 
