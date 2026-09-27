@@ -1,14 +1,28 @@
 import { randomUUID } from "node:crypto";
-import { editRehearsal } from "@/entities/rehearsal/dals/edit-rehearsal";
 import { DomainError } from "@/shared/api/errors";
+import { editRehearsal } from "@/entities/rehearsal/dals/edit-rehearsal";
 import {
+  createAdminUser,
   createApprovedUser,
   execSql,
   kstMonthStart,
+  type AdminUser,
 } from "@tests/integration/postgres";
 
 function freshWorkDate(): string {
   return kstMonthStart(24 + Math.floor(Math.random() * 90000));
+}
+
+/**
+ * `edit_rehearsal`도 첫 줄에서 자격을 본다(plan AC-03) — 자격 없는 사람은 제 행이어도
+ * `not_qualified`다. 고치는 길이 열리려면 자격이 있어야 해서 여기서 준다(implementer가 더한
+ * 준비다).
+ */
+function grantRehearsal(profileId: string, grantedBy: string): void {
+  execSql(
+    "insert into public.position_grants (profile_id, position, granted_by) values (:'profile_id', '리허설', :'granted_by');\n",
+    { profile_id: profileId, granted_by: grantedBy },
+  );
 }
 
 function seedTimeRehearsal(
@@ -46,8 +60,15 @@ async function captureDomainError(
 }
 
 describe("editRehearsal dal(plan AC-05) — edit_rehearsal을 부르고 오류를 DomainError로 올린다", () => {
+  let admin: AdminUser;
+
+  beforeAll(async () => {
+    admin = await createAdminUser();
+  });
+
   it("본인 행의 시각을 고치면 값이 바뀐다", async () => {
     const worker = await createApprovedUser();
+    grantRehearsal(worker.profileId, admin.profileId);
     const workDate = freshWorkDate();
     const id = seedTimeRehearsal(worker.profileId, workDate, "14:00", "16:00");
 

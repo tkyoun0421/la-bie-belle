@@ -101,6 +101,8 @@ const WORKER_REQUEST_CLAIMED = "schedule_worker_request_claimed";
 
 const APPROVALS_CANCEL_PENDING = "schedule_approvals_cancel_pending";
 
+const REHEARSAL_QUALIFIED = "rehearsal_qualified";
+
 const STATES = [
   "fresh",
   "submitted",
@@ -122,6 +124,7 @@ const STATES = [
   WORKER_REQUEST_PENDING,
   WORKER_REQUEST_CLAIMED,
   APPROVALS_CANCEL_PENDING,
+  REHEARSAL_QUALIFIED,
 ] as const;
 
 export type SeedState = (typeof STATES)[number];
@@ -153,7 +156,7 @@ const ADMIN_SCHEDULE_STATES = new Set<SeedState>([
  */
 type SchedulePayload = {
   month: string;
-  monthLabel: string;
+  monthLabel?: string;
   day?: string;
   deadlineLabel?: string;
   myDateLabel?: string;
@@ -165,6 +168,10 @@ type SchedulePayload = {
   approvalDetailTitle?: string;
   approvalConfirmBody?: string;
   approvalDayAppbar?: string;
+  assignedDate?: string;
+  freeDate?: string;
+  assignedDateLabel?: string;
+  freeDateLabel?: string;
 };
 
 type SeedResponse = Partial<SchedulePayload> & {
@@ -283,7 +290,8 @@ async function seededUser(
     state === SUBMISSION_WINDOW ||
     state === SCHEDULE_CONFIRMED ||
     state === WORKER_REQUEST_PENDING ||
-    state === WORKER_REQUEST_CLAIMED
+    state === WORKER_REQUEST_CLAIMED ||
+    state === REHEARSAL_QUALIFIED
   ) {
     await decideBy("approve_member", user.profileId);
   }
@@ -796,6 +804,47 @@ async function seedApprovalsCancelPending(): Promise<SchedulePayload> {
   });
 }
 
+/**
+ * 리허설 자격을 받은 근무자 하나와 이번 달의 두 날이다 — 정규 배정이 있는 날(건수로
+ * 넣는다)과 배정이 없는 날(시각으로 넣는다). 계약은 `tests/e2e/rehearsal.yaml`
+ * 머리말에 있다.
+ *
+ * **이번 달을 그대로 쓰는 유일한 상태다.** 배정이 있는 날은 `open_day`가 지난 날짜를
+ * 안 받아서 오늘일 수밖에 없고, 오늘이 든 달은 고를 수가 없다. 그래서 다른 상태처럼
+ * `withFreshMonth`로 먼 달을 비껴갈 수 없고, 로컬 DB를 안 비운 채 두 번 돌리면 두 번째
+ * `create_schedule`이 `already_exists`로 죽는다.
+ */
+async function seedRehearsalQualified(
+  meProfileId: string,
+): Promise<SchedulePayload> {
+  const admin = await createAdminUser();
+  const monthDate = kstMonthStart(0);
+  const month = monthDate.slice(0, 7);
+  const assignedDate = kstDate(0);
+  const freeDate = assignedDate.endsWith("-01") ? `${month}-02` : `${month}-01`;
+
+  const { error } = await admin.client.rpc("grant_position", {
+    p_profile_id: meProfileId,
+    p_position: "리허설",
+  });
+
+  throwIf(error);
+
+  await createSchedule(admin, monthDate, kstDate(3));
+  await openDay(admin, assignedDate);
+
+  const dayId = await dayIdOf(admin, assignedDate);
+  seedAssignment(dayId, meProfileId, "regular", await freeSlotOf(admin, dayId));
+
+  return {
+    month,
+    assignedDate,
+    freeDate,
+    assignedDateLabel: spellWorkDate(assignedDate),
+    freeDateLabel: spellWorkDate(freeDate),
+  };
+}
+
 export type SeedRequest = {
   name?: string;
   month?: string;
@@ -857,6 +906,10 @@ async function schedulePayloadOf(
 
   if (state === APPROVALS_CANCEL_PENDING) {
     return seedApprovalsCancelPending();
+  }
+
+  if (state === REHEARSAL_QUALIFIED) {
+    return seedRehearsalQualified(profileId);
   }
 
   return {};

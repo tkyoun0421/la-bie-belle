@@ -8,7 +8,6 @@ import {
   seedAssignment,
   withFreshMonth,
   type AdminUser,
-  type ApprovedUser,
 } from "@tests/integration/postgres";
 import { createSignedInUser } from "@tests/integration/supabase";
 
