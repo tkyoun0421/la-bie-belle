@@ -16,17 +16,28 @@ import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
+import type { AddAssignmentInput } from "@/entities/schedule/dals/add-assignment";
 import { liveAssignmentCount } from "@/entities/schedule/dals/get-month-schedule";
+import { useMembers } from "@/features/members/model/useMembers";
+import { useAddAssignment } from "@/features/schedule/model/useAddAssignment";
+import { useAddSlot } from "@/features/schedule/model/useAddSlot";
 import { useCloseDay } from "@/features/schedule/model/useCloseDay";
 import { useConfirmSchedule } from "@/features/schedule/model/useConfirmSchedule";
 import { useCreateSchedule } from "@/features/schedule/model/useCreateSchedule";
+import { useForceChange } from "@/features/schedule/model/useForceChange";
+import { useGrantPosition } from "@/features/schedule/model/useGrantPosition";
+import { useMergeSlots } from "@/features/schedule/model/useMergeSlots";
 import { useMonthAvailabilities } from "@/features/schedule/model/useMonthAvailabilities";
 import { useMonthSchedule } from "@/features/schedule/model/useMonthSchedule";
 import { useMonthWindow } from "@/features/schedule/model/useMonthWindow";
 import { useOpenDay } from "@/features/schedule/model/useOpenDay";
 import { useOpenSlots } from "@/features/schedule/model/useOpenSlots";
+import { useQualifications } from "@/features/schedule/model/useQualifications";
+import { useRemoveAssignment } from "@/features/schedule/model/useRemoveAssignment";
+import { useRemoveSlot } from "@/features/schedule/model/useRemoveSlot";
 import { useSetApplicationDeadline } from "@/features/schedule/model/useSetApplicationDeadline";
 import { useSetDayHours } from "@/features/schedule/model/useSetDayHours";
+import { useSplitSlot } from "@/features/schedule/model/useSplitSlot";
 import { DeadlineSheet } from "@/features/schedule/ui/DeadlineSheet";
 import {
   adminCalendarDayState,
@@ -36,6 +47,7 @@ import {
   confirmAffordance,
   confirmUnlockLine,
 } from "@/screens/schedule-admin/model/confirm-affordance";
+import { dayConfirmGate } from "@/screens/schedule-admin/model/confirm-gate";
 import { deadlineLine } from "@/screens/schedule-admin/model/deadline-line";
 import {
   confirmedLine,
@@ -73,8 +85,11 @@ import { DayHoursSheet } from "@/screens/schedule-admin/ui/DayHoursSheet";
  * **날 열기는 같은 달력의 모드다.** 닫힌 날만 골라지고, 여러 날 중 일부만 실패하면 나머지는
  * 열린 채로 모드가 안 풀린다 — 실패한 날을 다시 고를 자리가 필요해서다.
  *
- * **포지션 아홉 줄은 아직 없다.** 자리·배정·사람 픽커는 `schedule-assign`이, 임시공휴일과
- * 근무 조정은 `payroll-adjust`가 더한다(spec 「범위 밖」).
+ * **날 상세가 쓰는 것을 이 껍데기가 모아 넘긴다.** 자리·배정·명단·자격을 읽고 쓰기 여덟을
+ * 거는 자리가 여기고, 어느 시트를 세울지는 `DayDetail`이 정한다 — 달력과 날 상세가 한
+ * 라우트라 훅이 두 갈래로 갈리지 않는다.
+ *
+ * **임시공휴일 줄과 근무 조정 줄은 아직 없다.** `payroll-adjust`가 더한다(spec 「범위 밖」).
  */
 
 /**
@@ -127,6 +142,8 @@ export function ScheduleAdminScreen({
   const { data: days } = useMonthSchedule(supabase, month);
   const { data: openSlots } = useOpenSlots(supabase, month);
   const { data: availabilities } = useMonthAvailabilities(supabase, month);
+  const { data: activeMembers } = useMembers(supabase, "active");
+  const { data: qualifications } = useQualifications(supabase);
 
   const create = useCreateSchedule(supabase);
   const changeDeadline = useSetApplicationDeadline(supabase);
@@ -134,6 +151,29 @@ export function ScheduleAdminScreen({
   const close = useCloseDay(supabase);
   const setHours = useSetDayHours(supabase);
   const confirm = useConfirmSchedule(supabase);
+  const addSlot = useAddSlot(supabase);
+  const removeSlot = useRemoveSlot(supabase);
+  const mergeSlots = useMergeSlots(supabase);
+  const splitSlot = useSplitSlot(supabase);
+  const addAssignment = useAddAssignment(supabase);
+  const removeAssignment = useRemoveAssignment(supabase);
+  const forceChange = useForceChange(supabase);
+  const grantPosition = useGrantPosition(supabase);
+
+  /**
+   * 「자격도 주기」는 한 트랜잭션이 아니라 두 호출이다. 앞이 성공하고 뒤가 실패하면 자격만
+   * 남는데, 자격은 사람의 속성이라 그 상태가 틀린 것이 아니다(plan AC-05).
+   */
+  const grantAndAssign = useCallback(
+    async (input: AddAssignmentInput, position: string) => {
+      await grantPosition.mutateAsync({
+        profileId: input.profileId,
+        position,
+      });
+      addAssignment.mutate(input);
+    },
+    [addAssignment, grantPosition],
+  );
 
   const closeSheet = useCallback(() => setSheet(null), []);
   const hideToast = useCallback(() => setToast(null), []);
@@ -171,6 +211,7 @@ export function ScheduleAdminScreen({
 
   const applicationCountOf = new Map<string, number>();
   const applicationNamesOf = new Map<string, string[]>();
+  const applicationIdsOf = new Map<string, string[]>();
 
   for (const row of applications) {
     applicationCountOf.set(
@@ -182,6 +223,11 @@ export function ScheduleAdminScreen({
 
     names.push(row.profiles?.display_name ?? "");
     applicationNamesOf.set(row.work_date, names);
+
+    const ids = applicationIdsOf.get(row.work_date) ?? [];
+
+    ids.push(row.profile_id);
+    applicationIdsOf.set(row.work_date, ids);
   }
 
   const confirmed = schedule?.confirmedAt != null;
@@ -245,19 +291,49 @@ export function ScheduleAdminScreen({
     return (
       <Screen>
         <DayDetail
+          dayId={day.id}
           workDate={day.work_date}
           startsAt={day.starts_at}
           endsAt={day.ends_at}
-          filledCount={assignmentCount}
-          slotCount={day.slots.filter((slot) => slot.ended_at === null).length}
+          slots={day.slots}
+          assignments={day.assignments}
           applicationNames={applicationNamesOf.get(day.work_date) ?? []}
+          appliedProfileIds={applicationIdsOf.get(day.work_date) ?? []}
+          members={activeMembers ?? []}
+          qualifications={qualifications ?? []}
+          gate={dayConfirmGate({
+            openedAt: day.opened_at,
+            confirmedAt: schedule?.confirmedAt ?? null,
+          })}
           isConfirmed={confirmed}
+          saving={
+            addAssignment.isPending ||
+            removeAssignment.isPending ||
+            forceChange.isPending ||
+            removeSlot.isPending
+          }
           onBack={() => setOpenDate(null)}
           onPressHours={() => setSheet("hours")}
           onCloseDay={() =>
             assignmentCount === 0
               ? close.mutate({ workDate: day.work_date })
               : setSheet("close")
+          }
+          onAddSlot={(id, position) => addSlot.mutate({ dayId: id, position })}
+          onRemoveSlot={(slotId) => removeSlot.mutate({ slotId })}
+          onMergeSlots={(id, from, to) =>
+            mergeSlots.mutate({ dayId: id, from, to })
+          }
+          onSplitSlot={(slotId) => splitSlot.mutate({ slotId })}
+          onAddAssignment={(input) => addAssignment.mutate(input)}
+          onGrantAndAssign={(input, position) =>
+            void grantAndAssign(input, position)
+          }
+          onRemoveAssignment={(assignmentId) =>
+            removeAssignment.mutate({ assignmentId })
+          }
+          onForceChange={(assignmentId, profileId) =>
+            forceChange.mutate({ assignmentId, profileId })
           }
         />
 

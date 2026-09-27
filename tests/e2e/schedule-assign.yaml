@@ -1,0 +1,304 @@
+# 관리자가 열린 날의 빈 자리를 사람으로 채운다 — schedule-admin이 세운 날 상세 껍데기(포지션
+# 아홉 줄) 안쪽을 이 task가 채운다.
+#
+# 근거는 docs/2-design/spec/schedule-assign.md(AC-01·AC-03·AC-04, AC-06의 강제 변경
+# 「빼기」 조각)과 docs/2-design/modules/schedule/screens/schedule-admin.md의 「포지션과
+# 자리」·「잠금과 구조 변경」·「사람 픽커」·「사람 시트」·「자격 없는 사람」·「확정 뒤 날
+# 상세」다. 배정받은 리스크는(schedule-assign-test-plan.md 「배정 → e2e」)
+#   - 열린 날 상세: 빈 자리 → 픽커 → 짧게 눌러 배정 → 카드에 이름·줄 셈 「1/2」·앱바 채움
+#   - 길게 눌러 사람 시트(넣기 버튼 없음)
+#   - 자격 없는 사람 → 「이번만 넣기·자격도 주기·닫기」 → 「자격도 주기」 → 배정됨
+#   - 「교육 붙이기」 → 교육 배지·셈 불변
+#   - 자물쇠 풀기 → 손잡이·「자리 추가」 → 새 빈 카드
+#   - 확정 시점 날(schedule_admin_confirmed 재사용 + 배정 시드): 자물쇠·자리 추가·이 날
+#     닫기 없음, 채워진 자리 → 「사람 바꾸기·사람 빼기·닫기」 → 확인 문구 → 실행
+# 업무 규칙의 경우의 수(add_assignment 검사 순서·merge_slots의 빈 자리 선택·
+# qualifications 뷰의 취소된 교육 배정 제외 등)는 test-planner가 이미 unit·integration으로
+# 배정했다(schedule-assign-test-plan.md 「배정 → unit」「배정 → integration」) — 여기서는
+# 그 규칙이 실제로 화면·훅·함수·DB를 잇는지만 본다.
+#
+# **AC-02(픽커 「전체 보기」의 넷 갈래 판정)는 배정이 unit이라 여기 없다.** 다만 스캔
+# 자리의 기본 목록이 0명이 되는 자리(아래 참고)에서 「지금 바로 넣을 수 있는 사람이
+# 없어요」와 함께 전체 보기가 펼쳐진 채 열리는 것은 부수적으로 지나간다 — 계획이 요구한
+# 것은 아니라 실패해도 이 파일의 실패로 안 세지만, 화면이 실제로 그 상태를 밟는 자리라
+# 남겨둔다.
+#
+# **AC-08(응답을 기다리는 동안 나머지 카드가 계속 만져지는 것, `stale` 재조회)은 뺐다.**
+# schedule-admin.yaml의 확정 실패 경로와 같은 이유다 — 이 층에서 통신을 인위로 끊거나
+# 늦출 손잡이가 없다(execution.md 「pnpm e2e」). 이 검사는 화면·훅을 잇는 것이 아니라
+# 네트워크 타이밍을 흉내 내야 해서, e2e 배정이라 해도 이 도구로는 못 만든다 — unit의
+# `isPending` 가드(schedule-assign-test-plan.md 8번)가 훅 레벨에서 이미 있고 나머지는
+# 실기기 확인으로 남는다.
+#
+# **끌기(자리 버리기·겸임 합치기, AC-05)는 e2e 밖이다.** Maestro로 드래그 앤 드롭을 흉내
+# 내는 것이 spec 자신도 AC-04에서 「끌기는 e2e가 흉내 내기 어려워 삭제·합치기는 integration이
+# 함수를 직접 본다」고 정했다 — 이 파일은 자물쇠를 풀고 「자리 추가」를 누르는 것까지만
+# 밟는다.
+#
+# **확정 뒤 날 상세의 나머지 조합(배정 추가 확인·교육 붙이기 확인·사람 바꾸기)은 뺐다.**
+# plan의 e2e 배정이 「채워진 자리 → 사람 바꾸기·사람 빼기·닫기 → 확인 문구 → 실행」까지만
+# 요구해서, 그중 흐름이 가장 짧은 「빼기」 하나로 확인 시트 문법(문구 → 실행)을 본다.
+# 「바꾸기」는 사람 픽커를 한 번 더 열어야 하고 「배정 추가」·「교육 붙이기」 확인은 빈
+# 자리에서 시작해 이 파일이 이미 쓴 빈 자리 흐름과 겹친다 — 강제 변경 문법 자체는 이
+# 파일의 「빼기」가 이미 증명한다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/schedule-admin.yaml 머리말, scripts/e2e-seed-server.mts,
+# scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의
+# "/admin/schedule"(`?date=` 그대로)이다 — 이 파일은 달력을 거치지 않고 날 상세로 바로
+# 들어간다. 날 열기·달력·확정 자체는 schedule-admin.yaml 몫이라 여기서 다시 안 밟는다.
+#
+# **시드 서버에 상태 하나와 기존 상태 확장 하나가 아직 없다 — implementer가 이 task에서
+# 더한다.**
+#
+# ## schedule_assign_day (새 상태)
+#
+# 관리자 하나, `withFreshMonth`로 고른 달의 1일을 연다. 신청한 근무자 둘과 신청 안 한
+# 근무자 하나를 만든다 — 전부 `createSignedInUser()` → `submitSeededProfile(user, {
+# ...SEEDED_PROFILE, name })` → `decideBy("approve_member", user.profileId)`로 승인까지
+# 마친다.
+#
+# - 박서연 — 신청한다. 아무 자격도 안 준다. 이 사람이 나중에 「메인」 교육 붙이기 →
+#   「안내」 정규 배정 순서로 쓰인다(교육이 먼저라 살아 있는 정규 배정이 아직 없어
+#   already_assigned에 안 걸린다)
+# - 이도윤 — 신청한다. 아무 자격도 안 준다. 스캔 교육 이력이 없는 채로 남아 「자격 없는
+#   사람」 흐름의 주인공이다
+# - 최유진 — 신청을 끝내 안 낸다(submit_availability를 안 부른다). 「전체 보기」의
+#   「신청 안 함」 줄로만 존재를 증명한다 — 이 파일이 직접 단언하지는 않는다
+#
+# ```ts
+# async function seedAssignDay(): Promise<SchedulePayload> {
+#   const admin = await createAdminUser();
+#
+#   const workerA = await createSignedInUser();
+#   await submitSeededProfile(workerA, { ...SEEDED_PROFILE, name: "박서연" });
+#   await decideBy("approve_member", workerA.profileId);
+#
+#   const workerB = await createSignedInUser();
+#   await submitSeededProfile(workerB, { ...SEEDED_PROFILE, name: "이도윤" });
+#   await decideBy("approve_member", workerB.profileId);
+#
+#   const workerD = await createSignedInUser();
+#   await submitSeededProfile(workerD, { ...SEEDED_PROFILE, name: "최유진" });
+#   await decideBy("approve_member", workerD.profileId);
+#
+#   return withFreshMonth(async (monthsFromNow) => {
+#     const monthDate = kstMonthStart(monthsFromNow);
+#     const month = monthDate.slice(0, 7);
+#     const day = "01";
+#     const workDate = `${month}-${day}`;
+#
+#     await createSchedule(admin, monthDate, kstDate(3));
+#     await openDay(admin, workDate);
+#
+#     await workerA.client.rpc("submit_availability", {
+#       p_month: monthDate,
+#       p_dates: [workDate],
+#     });
+#     await workerB.client.rpc("submit_availability", {
+#       p_month: monthDate,
+#       p_dates: [workDate],
+#     });
+#
+#     return { month, day, monthLabel: spellMonth(month) };
+#   });
+# }
+# ```
+#
+# `SchedulePayload`에 `day?: string`를 더하고, `STATES`·`ADMIN_SCHEDULE_STATES`에
+# `"schedule_assign_day"`를 더한다. `schedulePayloadOf`에 갈래를 하나 추가한다.
+# **seed-session.js도 이 상태만 쓰는 `day`를 그대로 통과시켜야 한다** —
+# `schedule_admin_empty_month`의 `deadlineDate`처럼 화면 문구가 아니라 딥링크 조립용
+# raw 값이라 `escapeForTextSelector`를 안 거친다: `if (seeded.day) { output.day =
+# seeded.day; }`.
+#
+# ## schedule_admin_confirmed (기존 상태 확장)
+#
+# 확정 시점 날 시나리오(아래 §확정 뒤)가 「채워진 자리」를 눌러보려면 그 배정이 이미
+# 있어야 한다. 지금은 1일을 열기만 하고 배정은 안 만든다 — 근무자 하나(김하늘. 근무자
+# 화면이 쓰는 이도윤(seedConfirmedMonth)과 겹치지 않는 이름이다)를 만들어 신청까지
+# 시키고, `add_assignment`가 아직 없으니(이 task가 만드는 함수라 시드 시점엔 없다)
+# 기존 `seedAssignment`(SQL 직결)로 「안내」 자리 하나를 채운 뒤 확정한다.
+# `schedule-admin.yaml`은 이 상태의 1일을 들여다보지 않아(3일만 연다) 이 확장이 그
+# 파일의 단언을 안 건드린다.
+#
+# ```ts
+# async function seedAdminConfirmed(): Promise<SchedulePayload> {
+#   const admin = await createAdminUser();
+#
+#   const colleague = await createSignedInUser();
+#   await submitSeededProfile(colleague, { ...SEEDED_PROFILE, name: "김하늘" });
+#   await decideBy("approve_member", colleague.profileId);
+#
+#   return withFreshMonth(async (monthsFromNow) => {
+#     const monthDate = kstMonthStart(monthsFromNow);
+#     const month = monthDate.slice(0, 7);
+#     const workDate = `${month}-01`;
+#
+#     await createSchedule(admin, monthDate, kstDate(1));
+#     await openDay(admin, workDate);
+#
+#     await colleague.client.rpc("submit_availability", {
+#       p_month: monthDate,
+#       p_dates: [workDate],
+#     });
+#
+#     const dayId = await dayIdOf(admin, workDate);
+#     seedAssignment(
+#       dayId,
+#       colleague.profileId,
+#       "regular",
+#       await freeSlotOfPosition(admin, dayId, "안내"),
+#     );
+#
+#     backdateDeadline(await scheduleIdOf(admin, monthDate), kstDate(-1));
+#     await confirmSchedule(admin, monthDate);
+#
+#     return { month, monthLabel: spellMonth(month) };
+#   });
+# }
+#
+# async function freeSlotOfPosition(
+#   admin: AdminUser,
+#   dayId: string,
+#   position: string,
+# ): Promise<string> {
+#   const { data, error } = await admin.client
+#     .from("slots")
+#     .select("id")
+#     .eq("day_id", dayId)
+#     .contains("positions", [position])
+#     .is("ended_at", null)
+#     .limit(1)
+#     .single<{ id: string }>();
+#
+#   if (error || !data) {
+#     throw error ?? new Error(`${position} 자리를 못 찾았다`);
+#   }
+#
+#   return data.id;
+# }
+# ```
+#
+# 응답 필드는 안 늘어난다 — `month`·`monthLabel`만 그대로고, 배정된 사람 이름("김하늘")과
+# 포지션("안내")은 이 파일이 리터럴로 안다(둘 다 이 시드 함수가 고정으로 고른 값이라
+# 라벨화할 동적 근거가 없다).
+#
+# ## 이 task가 요청하는 testID 셋(전부 계열이다 — 포지션·번호가 값으로 갈린다)
+#
+# - `schedule-slot-<position>-<index>` — 포지션 줄의 자리 카드 하나. 빈 자리 카드
+#   문구("비어 있어요")가 아홉 줄 서른 안팎에 반복돼 텍스트로는 어느 자리인지 못
+#   가른다. `<index>`는 그 포지션 안에서 자리가 만들어진 순서(1부터) — 뒤에 「자리
+#   추가」로 는 자리는 이어지는 다음 번호를 받는다. 채워진 자리는 이름 텍스트로 잡을 수
+#   있어 이 testID가 없어도 되지만, 빈 자리는 이 테스트가 잡을 손잡이가 이것뿐이다.
+# - `schedule-position-lock-<position>` — 줄 머리의 자물쇠 토글. 아이콘이라 글자가
+#   없고, 아홉 줄에 하나씩 있어 포지션 이름으로 갈라야 한다.
+# - `schedule-education-button-<position>` — 줄 머리의 「교육 붙이기」 버튼. 문구가
+#   아홉 줄에 똑같이 반복된다.
+#
+# 텍스트 셀렉터는 정규식이다. 이 파일이 쓰는 문구는 전부 문안 표의 고정값이라
+# ".*"로 감쌀 동적 부분이 없다 — 날짜가 들어간 시트 제목("스캔 · 10월 1일(목)")은
+# 요일 계산을 시드가 안 내려주므로 아예 안 잡는다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+# ================================================================
+# 열린 날의 빈 자리를 채운다 — 짧게 눌러 배정, 길게 눌러 사람 시트, 자격 없는 사람,
+# 교육 붙이기(셈 불변), 자물쇠 풀고 자리 추가.
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: schedule_assign_day
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://admin/schedule?date=${output.month}-${output.day}"
+
+- assertVisible: "0/11"
+
+# --- 교육 붙이기 — 메인 줄에 박서연을 교육으로 붙인다. 정규 자리를 안 먹어 셈이 안
+# 변한다. 이 배정이 나중에 사람 시트의 「자격」 줄에 「메인」으로 다시 보인다(살아 있는
+# 교육 배정이 qualifications 뷰에 들어가서다) ---
+- tapOn:
+    id: "schedule-education-button-메인"
+- tapOn: "박서연"
+- assertVisible: "메인 0/1"
+- assertVisible: "교육"
+
+# --- 안내 첫 자리 — 길게 눌러 사람 시트(넣기 버튼 없음, 자격에 「메인」이 이미 있다),
+# 기기 뒤로로 닫고 같은 목록에서 짧게 눌러 확인 없이 배정한다 ---
+- tapOn:
+    id: "schedule-slot-안내-1"
+- longPressOn: "박서연"
+- assertVisible: "남 · 90년생"
+- assertVisible: "자격"
+- assertVisible: "메인"
+- back
+- assertVisible: "박서연"
+- tapOn: "박서연"
+- assertVisible: "안내 1/2"
+- assertVisible: "1/11"
+
+# --- 스캔 자리 — 박서연은 이미 배정돼 있고 이도윤은 스캔 자격이 없어 기본 목록이
+# 0명이다. 전체 보기가 펼쳐진 채 열리고 이도윤의 줄이 곧바로 보인다 ---
+- tapOn:
+    id: "schedule-slot-스캔-1"
+- assertVisible: "지금 바로 넣을 수 있는 사람이 없어요"
+- assertVisible: "이도윤"
+- assertVisible: "스캔 자격 없음"
+- tapOn: "이도윤"
+- assertVisible: "이도윤 님은 스캔 교육 이력이 없어요"
+- assertVisible: "이번만 넣기"
+- assertVisible: "이 자리에만 넣어요"
+- assertVisible: "자격도 주기"
+- assertVisible: "앞으로 스캔 자리에 들어갈 수 있어요"
+- tapOn: "자격도 주기"
+- assertVisible: "스캔 1/1"
+- assertVisible: "이도윤"
+- assertVisible: "2/11"
+
+# --- 매니저 줄 잠금 해제 — 손잡이·「자리 추가」는 잠긴 동안 없다가 풀면 선다. 자리
+# 추가는 새 빈 카드를 만들고 전체 자리 수를 올린다 ---
+- assertNotVisible: "자리 추가"
+- assertNotVisible: "자리는 아래로 끌면 삭제, 줄 머리를 다른 줄 머리에 겹치면 겸임이에요"
+- tapOn:
+    id: "schedule-position-lock-매니저"
+- assertVisible: "자리 추가"
+- assertVisible: "자리는 아래로 끌면 삭제, 줄 머리를 다른 줄 머리에 겹치면 겸임이에요"
+- tapOn: "자리 추가"
+- assertVisible: "매니저 0/3"
+- assertVisible:
+    id: "schedule-slot-매니저-3"
+- assertVisible: "2/12"
+
+# ================================================================
+# 확정 시점 날 — 자물쇠·자리 추가·이 날 닫기가 없다. 채워진 자리를 누르면 강제
+# 변경(사람 바꾸기·사람 빼기·닫기)이고, 「빼기」는 확인 문구 뒤에 실행된다.
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: schedule_admin_confirmed
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://admin/schedule?date=${output.month}-01"
+
+- assertVisible: "안내 1/2"
+- assertNotVisible: "이 날 닫기"
+- assertNotVisible: "자리 추가"
+- assertNotVisible:
+    id: "schedule-position-lock-안내"
+
+- tapOn: "김하늘"
+- assertVisible: "사람 바꾸기"
+- assertVisible: "사람 빼기"
+- assertVisible: "닫기"
+- tapOn: "사람 빼기"
+- assertVisible: "김하늘 님을 뺄까요?"
+- assertVisible: "김하늘 님에게 알림이 가요 · 자리는 비어 남아요"
+- assertVisible: "닫기"
+- assertVisible: "빼기"
+- tapOn: "빼기"
+- assertVisible: "안내 0/2"
+- assertNotVisible: "김하늘"

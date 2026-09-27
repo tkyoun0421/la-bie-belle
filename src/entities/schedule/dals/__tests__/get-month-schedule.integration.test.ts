@@ -152,3 +152,51 @@ describe("getMonthSchedule — days에 check_ins가 임베딩된다(design.md �
     expect(day?.check_ins?.map((row) => row.id)).toEqual([id]);
   });
 });
+
+describe("getMonthSchedule — assignments에 id·slot_id·kind가 온다(schedule-assign)", () => {
+  let admin: AdminUser;
+  let owner: ApprovedUser;
+
+  beforeAll(async () => {
+    admin = await createAdminUser();
+    owner = await createApprovedUser();
+  });
+
+  it("정규 배정은 slot_id가 그 자리의 id다", async () => {
+    const { month, dayId } = await seedOpenDay(admin);
+    const { data: slots, error: slotsError } = await admin.client
+      .from("slots")
+      .select("id")
+      .eq("day_id", dayId)
+      .limit(1);
+    if (slotsError || !slots || slots.length === 0) {
+      throw slotsError ?? new Error("자리를 못 찾았다");
+    }
+    const slotId = (slots[0] as { id: string }).id;
+    const assignmentId = seedAssignment(
+      dayId,
+      owner.profileId,
+      "regular",
+      slotId,
+    );
+
+    const days = await getMonthSchedule(admin.client, month);
+    const day = days.find((row) => row.id === dayId);
+    const assignment = day?.assignments.find((row) => row.id === assignmentId);
+
+    expect(assignment?.slot_id).toBe(slotId);
+    expect(assignment?.kind).toBe("regular");
+  });
+
+  it("교육 배정은 slot_id가 null이다", async () => {
+    const { month, dayId } = await seedOpenDay(admin);
+    const assignmentId = seedAssignment(dayId, owner.profileId, "training");
+
+    const days = await getMonthSchedule(admin.client, month);
+    const day = days.find((row) => row.id === dayId);
+    const assignment = day?.assignments.find((row) => row.id === assignmentId);
+
+    expect(assignment?.slot_id).toBeNull();
+    expect(assignment?.kind).toBe("training");
+  });
+});

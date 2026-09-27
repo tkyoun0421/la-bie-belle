@@ -1,15 +1,14 @@
 // 여러 플로우(pending·left·blocked·retry·session·schedule-worker)가 나눠 쓰는 준비
 // 절차다. runScript로 이 파일을 부르면 로컬 시드 서버(scripts/e2e-seed-server.mts,
-// 127.0.0.1:8765 — 아직 없다. implementer가 이 task에서 세운다)에 사용자 상태를
-// 만들어 달라고 요청하고, 돌아온 세션 토큰을 output에 실어 그 다음 스텝의
-// `openLink`가 쓰게 한다.
+// 127.0.0.1:8765)에 사용자 상태를 만들어 달라고 요청하고, 돌아온 세션 토큰을
+// output에 실어 그 다음 스텝의 `openLink`가 쓰게 한다.
 //
 // 부르는 쪽은 env로 STATE를 준다. 값은
 // "fresh" | "submitted" | "approved" | "admin" | "rejected" | "left" | "blocked" |
 // "read_failure" | "schedule_submission_window" | "schedule_confirmed" |
 // "schedule_admin_empty_month" | "schedule_admin_race_open" |
 // "schedule_admin_confirmable" | "schedule_admin_confirmed" |
-// "schedule_admin_applications" 중 하나다. NAME은 선택이고, 프로필을
+// "schedule_admin_applications" | "schedule_assign_day" 중 하나다. NAME은 선택이고, 프로필을
 // 보내는 상태에서 그 사람의 이름을 고른다 — 한 화면에 승인된 사람을 여럿 세우는
 // members.yaml이 쓴다. 안 주면 시드 서버의 기본 이름이다. MONTH·DAY도 선택이고
 // schedule_admin_race_open만 쓴다 — 이미 로그인된 세션 밖에서 먼저 열 날짜다.
@@ -114,6 +113,12 @@ if (seeded.otherDateLabel) {
 // 입력 칸에 역슬래시가 들어간다.
 if (seeded.deadlineDate) {
   output.deadlineDate = seeded.deadlineDate;
+}
+
+// schedule_assign_day 전용이다. 화면 문구가 아니라 날 상세 딥링크("?date=${month}-${day}")를
+// 조립할 raw "DD"라 deadlineDate와 같은 이유로 escapeForTextSelector를 안 거친다.
+if (seeded.day) {
+  output.day = seeded.day;
 }
 
 // schedule_admin_race_open 전용이다. 부분 실패 토스트가 그대로 부르는 날짜라

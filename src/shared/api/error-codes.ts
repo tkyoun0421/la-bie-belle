@@ -1,4 +1,5 @@
 export const ERROR_CODES = [
+  "already_assigned",
   "already_confirmed",
   "already_decided",
   "already_done",
@@ -19,10 +20,17 @@ export const ERROR_CODES = [
   "invalid_reason",
   "last_admin",
   "month_over",
+  "no_empty_slot",
   "no_schedule",
   "not_allowed",
+  "not_applied",
+  "not_merged",
   "not_open",
+  "not_qualified",
+  "slot_full",
+  "stale",
   "too_early",
   "too_far",
   "window_closed",
+  "wrong_kind",
 ] as const;
