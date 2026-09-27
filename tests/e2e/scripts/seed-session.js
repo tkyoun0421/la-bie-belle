@@ -10,9 +10,11 @@
 // "schedule_admin_confirmable" | "schedule_admin_confirmed" |
 // "schedule_admin_applications" | "schedule_assign_day" |
 // "schedule_admin_request_slot" | "schedule_worker_request_pending" |
-// "schedule_worker_request_claimed" | "schedule_approvals_cancel_pending" 중
-// 하나다(마지막 넷은 schedule-requests task가 더한다 — 계약은
-// tests/e2e/schedule-admin.yaml·schedule-worker.yaml·approvals.yaml 머리말). NAME은 선택이고, 프로필을
+// "schedule_worker_request_claimed" | "schedule_approvals_cancel_pending" |
+// "rehearsal_qualified" 중 하나다(뒤에서 넷째까지는 schedule-requests task가,
+// 마지막은 rehearsal task가 더한다 — 계약은
+// tests/e2e/schedule-admin.yaml·schedule-worker.yaml·approvals.yaml·rehearsal.yaml
+// 머리말). NAME은 선택이고, 프로필을
 // 보내는 상태에서 그 사람의 이름을 고른다 — 한 화면에 승인된 사람을 여럿 세우는
 // members.yaml이 쓴다. 안 주면 시드 서버의 기본 이름이다. MONTH·DAY도 선택이고
 // schedule_admin_race_open만 쓴다 — 이미 로그인된 세션 밖에서 먼저 열 날짜다.
@@ -95,9 +97,55 @@ if (seeded.profile) {
 // 괄호 있는 요일 표기("6월 1일(일)")가 정규식으로 안 깨진다.
 // schedule-worker-test-plan.md 8번 결정이 딱 이 다섯 필드까지고 그 이상은 안
 // 늘린다.
+//
+// **month와 monthLabel의 assign을 따로 뗀다.** rehearsal_qualified(rehearsal
+// task, tests/e2e/rehearsal.yaml 머리말)는 raw month만 주고 monthLabel을 안
+// 준다(총괄 판정 2번이 응답 계약을 그 셋까지로 묶었다) — 한 `if` 블록에 같이
+// 넣으면 `seeded.monthLabel`이 undefined일 때 `.replace`가 죽는다.
 if (seeded.month) {
   output.month = seeded.month;
+}
+
+if (seeded.monthLabel) {
   output.monthLabel = escapeForTextSelector(seeded.monthLabel);
+} else if (seeded.month) {
+  // 서버가 monthLabel을 안 줄 때는 raw month로 spellMonth와 같은 "YYYY년 M월"
+  // 꼴을 여기서 만든다. rehearsal_qualified 전용이다.
+  const [rehearsalYear, rehearsalMonthText] = seeded.month.split("-");
+  output.monthLabel = `${rehearsalYear}년 ${Number(rehearsalMonthText)}월`;
+}
+
+// rehearsal_qualified 전용이다(rehearsal task, tests/e2e/rehearsal.yaml
+// 머리말). assignedDate·freeDate는 testID "schedule-day-<date>" 조립에 쓰는
+// raw "YYYY-MM-DD"라 이스케이프하지 않는다 — deadlineDate·day와 같은 이유다.
+// assignedDateLabel·freeDateLabel은 화면에 그대로 찍히는 문구라 이스케이프한다.
+if (seeded.assignedDate) {
+  output.assignedDate = seeded.assignedDate;
+}
+
+if (seeded.freeDate) {
+  output.freeDate = seeded.freeDate;
+}
+
+if (seeded.assignedDateLabel) {
+  output.assignedDateLabel = escapeForTextSelector(seeded.assignedDateLabel);
+}
+
+if (seeded.freeDateLabel) {
+  output.freeDateLabel = escapeForTextSelector(seeded.freeDateLabel);
+}
+
+// 리허설의 달 고르기 시트에서 누를 "다른 달" 버튼 문구와 그 결과 라벨을 여기서
+// 미리 계산한다. Maestro의 텍스트 셀렉터가 정규식이라 "1월"류의 한 자리 버튼
+// 글자는 "11월"·"12월" 같은 두 자리 월 글자 안에도 걸린다 — 3월·4월만 오가면
+// 어떤 두 자리 달과도 안 겹친다. 지금 달이 3월이면 4월로, 아니면 3월로 간다.
+if (seeded.month) {
+  const [pickerYear, pickerMonthText] = seeded.month.split("-");
+  const pickerMonthNumber = Number(pickerMonthText);
+  const otherMonthNumber = pickerMonthNumber === 3 ? 4 : 3;
+
+  output.otherMonthButtonLabel = `${otherMonthNumber}월`;
+  output.otherMonthLabel = `${pickerYear}년 ${otherMonthNumber}월`;
 }
 
 if (seeded.deadlineLabel) {
