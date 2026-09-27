@@ -2,7 +2,7 @@ import {
   dayTotal,
   rehearsalHours,
   type RehearsalRow,
-} from "@/features/rehearsal/model/rehearsal-hours";
+} from "@/entities/rehearsal/model/rehearsal-hours";
 import { spellMinutes } from "@/screens/rehearsal/model/spell-total";
 
 /**

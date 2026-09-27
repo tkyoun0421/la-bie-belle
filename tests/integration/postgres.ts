@@ -319,6 +319,19 @@ export function kstMonthEnd(monthsFromNow: number): string {
   return toDateString(day);
 }
 
+/**
+ * 정규 배정은 자리에 앉는다 — 표의 check가 `slot_id`를 요구하고 살아 있는 정규 배정은 자리
+ * 하나에 하나다. 자리를 안 넘기면 여기서 새로 하나 세운다.
+ */
+export function seedSlot(dayId: string): string {
+  const id = randomUUID();
+  execSql(
+    "insert into public.slots (id, day_id, positions) values (:'id', :'day_id', array['안내']);\n",
+    { id, day_id: dayId },
+  );
+  return id;
+}
+
 export function seedAssignment(
   dayId: string,
   profileId: string,
@@ -326,7 +339,9 @@ export function seedAssignment(
   slotId: string | null = null,
 ): string {
   const id = randomUUID();
-  const slotSql = slotId === null ? "null" : `'${slotId}'`;
+  const seatId =
+    kind === "regular" && slotId === null ? seedSlot(dayId) : slotId;
+  const slotSql = seatId === null ? "null" : `'${seatId}'`;
   execSql(
     `insert into public.assignments (id, day_id, slot_id, position, profile_id, kind) values (:'id', :'day_id', ${slotSql}, '안내', :'profile_id', :'kind');\n`,
     {

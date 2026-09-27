@@ -2,7 +2,7 @@ import {
   checkInWindowOpensAt,
   type AttendanceStatus,
   type AttendanceStatusInput,
-} from "@/features/attendance/model/attendance-status";
+} from "@/entities/attendance/model/attendance-status";
 import type { AttendanceSummary } from "@/features/attendance/model/attendance-summary";
 
 /**

@@ -51,7 +51,7 @@ sources:
 정본에서 확인한 다섯이 plan의 방향을 정한다.
 
 - **저장된 금액이 없다.** 확정해 잠그는 행이 없어([PAY-020](../../2-design/modules/payroll/README.md#pay-020)) 앱이 매번 다시 계산한다. 이 task가 내는 것은 금액 표가 아니라 순수 함수 하나다. 근무를 고치면 지난주 금액이 따라 바뀌는 것이 규칙이지 버그가 아니다
-- **결근을 다시 짜지 않는다.** [`attendance-data`](attendance-data.md#ac-06)가 상태 여섯을 내는 순수 함수를 이미 냈다. 여기서 또 짜면 두 벌이 서고 어긋날 때 어느 쪽이 정본인지가 사라진다. **그 함수를 import해서 쓴다**
+- **결근을 다시 짜지 않는다.** [`attendance-data`](attendance-data.md#ac-06)가 상태 여섯을 내는 순수 함수를 이미 냈다. 여기서 또 짜면 두 벌이 서고 어긋날 때 어느 쪽이 정본인지가 사라진다. **그 함수를 import해서 쓴다**. 그 함수와 [`rehearsal`](rehearsal.md#ac-04)의 `rehearsalHours`는 지금 `features/`에 있어 `features/payroll`이 못 부른다 — 같은 층의 다른 슬라이스다(lint 규칙 3). **둘을 `entities/<도메인>/model/`로 내린다** — 결근 판정도 리허설 시간 환산도 그 도메인의 규칙이고, `attendance-status.ts`가 쓰는 상수는 이미 `entities/attendance/model/constants.ts`에 산다. `features/payroll`이 아래 층을 부르는 것은 허용이다. 옮기는 것은 자리뿐이고 함수와 단언은 그대로다
 - **결근은 조정 표에 음수로 산다.** 「결근」이라는 값을 따로 두지 않는다 — 관리자가 결근을 고르면 화면이 그날 배정 시간만큼의 음수를 `adjustments.minutes`에 넣는다([조정](../../2-design/modules/payroll/design.md#조정)). 합산 뒤 0분이 되어 그날이 급여에서 빠진다
 - **리허설은 조정이 아니다.** 주인이 달라 표를 안 섞는다 — 조정은 관리자가 쓰고 리허설은 본인이 쓴다. 계산이 배정·조정·리허설 셋을 더하고 그 하나로 9시간 기준을 본다([PAY-028](../../2-design/modules/payroll/README.md#pay-028))
 - **기본 시급이 끈이다.** 승인될 때 한 번 복사되는 첫값이 아니다([PAY-013](../../2-design/modules/payroll/README.md#pay-013)). `set_default_wage`가 따르는 사람 전원에게 같은 날 행을 **한 트랜잭션에** 넣어, 계산은 `wage_rates` 한 표만 읽고 RLS도 한 표에만 건다
@@ -90,9 +90,10 @@ sources:
 **시급 함수 셋.** 셋 다 `security definer`, `set search_path = ''`, 첫 줄이 `is_admin()`이다.
 
 - `set_wage(p_profile_id uuid, p_amount integer)` — **적용일을 인자로 안 받는다.** 오늘이다([PAY-008](../../2-design/modules/payroll/README.md#pay-008)·[PAY-009](../../2-design/modules/payroll/README.md#pay-009)). `(profile_id, 오늘)`에 `follows_default = false`로 upsert한다
-- `reset_wage_to_default(p_profile_id uuid)` — 오늘 날짜에 지금 기본값과 `follows_default = true`로 upsert한다. 되돌린 날부터 다시 끈에 붙는다([PAY-014](../../2-design/modules/payroll/README.md#pay-014))
-- `set_default_wage(p_amount integer)` — `default_wage_rates`에 오늘 행을 넣고, **`follows_default = true`인 사람 전원**에게 같은 날 행을 같은 트랜잭션에 넣는다([PAY-013](../../2-design/modules/payroll/README.md#pay-013))
-  - 「따르는 사람」 판정은 **각자의 가장 최근 행**이 `follows_default = true`인지다. 지난 행이 아니라 지금 상태를 본다
+- `reset_wage_to_default(p_profile_id uuid)` — 오늘 날짜에 지금 기본값과 `follows_default = true`로 upsert한다. 되돌린 날부터 다시 끈에 붙는다([PAY-014](../../2-design/modules/payroll/README.md#pay-014)). 기본값이 아직 없으면 `no_default_wage`
+- `set_default_wage(p_amount integer)` — `default_wage_rates`에 오늘 행을 넣고, **기본을 따르는 사람 전원**에게 같은 날 행을 같은 트랜잭션에 넣는다([PAY-013](../../2-design/modules/payroll/README.md#pay-013))
+  - 「따르는 사람」은 둘이다. 하나는 **각자의 가장 최근 행**이 `follows_default = true`인 사람 — 지난 행이 아니라 지금 상태를 본다. 다른 하나는 **시급 이력이 아예 빈 승인 사원**이다([PAY-012](../../2-design/modules/payroll/README.md#pay-012)). 기본값이 서기 전에 승인된 사람이 여기 들어, 승인과 기본 시급의 순서로 결과가 갈리지 않는다
+  - 빈 쪽을 고를 때 `approved_at`이 있고 `rejected_at`·`blocked_at`·`left_at`·`erased_at`이 없는 사람만 본다. 승인 안 된 사람에게 시급이 서면 안 된다
 - 금액이 범위 밖이면 `bad_amount`. 상한 100,000원은 [wages.md](../../2-design/modules/payroll/screens/wages.md)가 화면에 건 값인데 **함수에도 건다** — 0을 하나 더 친 실수가 한 화면 너머에서 막히면 안 된다
 - **지난 줄을 고치는 함수가 없다.** 소급하는 길을 안 만든다([PAY-010](../../2-design/modules/payroll/README.md#pay-010))
 - 승인 함수가 첫 행(`follows_default = true`)을 넣는다 — [`account-data`](account-data.md)의 승인 함수에 그 줄이 는다. **`wage_rates`가 그 함수보다 늦게 서니 이 task가 그쪽을 고친다**
@@ -112,11 +113,12 @@ sources:
 
 **공휴일 함수 둘.**
 
-- `import_holidays(p_year integer, p_rows jsonb)` — **`internal`이다.** 사람이 부르는 자리가 없고 Edge Function이 서비스 키로 온다([서비스 키 자리](../../2-design/system/data-access.md#서비스-키-자리))
+- `import_holidays(p_year integer, p_rows jsonb)` — **`internal`이다.** `p_rows`의 원소는 `{ "holiday_date": "2026-03-01", "name": "삼일절" }` 꼴이다 — 표의 열 이름을 그대로 쓴다 사람이 부르는 자리가 없고 Edge Function이 서비스 키로 온다([서비스 키 자리](../../2-design/system/data-access.md#서비스-키-자리))
   - 그 해의 `api` 행을 지우고 새로 넣는다. **`manual` 행은 안 건드린다**
   - `p_rows`가 비었으면 아무것도 안 한다 — 지우고 안 넣는 일이 없어야 한다
 - `set_holiday(p_date date, p_on boolean)` — `public`이고 첫 줄이 `is_admin()`이다. 참이면 `manual` 행을 넣고 거짓이면 지운다
   - 같은 날짜에 `api` 행이 이미 있으면 **아무것도 안 한다.** 이미 공휴일이다
+  - **근무를 여는 날인지 다시 검사하지 않는다**([PAY-027](../../2-design/modules/payroll/README.md#pay-027)). 그 조건은 표시하는 화면이 들고, 계산이 `holidays`를 안 읽어 근무 없는 날의 행은 아무 값도 안 바꾼다
 - 계산이 `holidays`를 안 읽는다([PAY-024](../../2-design/modules/payroll/README.md#pay-024)). 데이터만 모은다
 
 ### AC-06
@@ -136,16 +138,16 @@ sources:
 
 ### AC-07
 
-**dal.** 읽기 하나와 쓰기 여섯이다.
+**dal.** 읽기 하나와 쓰기 다섯이다.
 
 - `getPayrollMonth(month)` — 키 `['payroll', 'YYYY-MM']`. `wage_rates`·`adjustments`·`excuse_status`를 그달치로 받는다. 배정과 날은 `['schedule', 'YYYY-MM']`, 리허설은 `['rehearsal', 'YYYY-MM']`이라 **화면이 세 키를 읽어 [AC-06](#ac-06)에 넣는다**
 - `wage_rates`는 RLS가 좁혀 근무자에게 자기 행만 온다. 같은 dal이 관리자에게는 전원을 낸다 — 조건을 코드로 안 나눈다
-- 쓰기 여섯은 `supabase.rpc()`를 감싼다. `import_holidays`는 클라이언트에서 안 부른다 — dal이 없다
+- 쓰기 다섯은 `supabase.rpc()`를 감싼다. 함수는 여섯인데 dal이 다섯인 것은 `import_holidays`를 클라이언트에서 안 불러서다 — [`payroll-holidays`](payroll-holidays.md)의 cron이 부른다
 - 성공하면 `['payroll']`을 무효화한다([무효화 표](../../2-design/system/runtime.md#무효화-표))
 
 ### AC-08
 
-**오류 코드 목록.** `bad_amount`가 `src/shared/api/error-codes.ts`와 마이그레이션 양쪽에 선다. `not_allowed`는 이미 있다.
+**오류 코드 목록.** `bad_amount`와 `no_default_wage`가 `src/shared/api/error-codes.ts`와 마이그레이션 양쪽에 선다. `not_allowed`는 이미 있다.
 
 ## 변경 파일
 
@@ -154,9 +156,11 @@ sources:
 | `supabase/migrations/<날짜>_payroll.sql` | 표 넷, RLS, 권한 회수 | AC-01·AC-02 |
 | `supabase/migrations/<날짜>_payroll_functions.sql` | 함수 여섯 | AC-03~AC-05 |
 | `supabase/migrations/<날짜>_approve_wage_row.sql` | 승인 함수에 첫 시급 행 | AC-03 |
-| `src/shared/api/error-codes.ts` | `bad_amount` | AC-08 |
+| `src/shared/api/error-codes.ts` | `bad_amount`·`no_default_wage` | AC-08 |
 | `src/features/payroll/model/*.ts`·`__tests__/` | 금액 계산·9시간 기준·기간 합계 | AC-06 |
-| `src/entities/payroll/dals/*.ts`·`__tests__/` | 읽기 하나, 쓰기 여섯 | AC-07 |
+| `src/entities/payroll/dals/*.ts`·`__tests__/` | 읽기 하나, 쓰기 다섯 | AC-07 |
+| `src/entities/attendance/model/attendance-status.ts`·`__tests__/`(이동) | `features/attendance/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
+| `src/entities/rehearsal/model/rehearsal-hours.ts`·`__tests__/`(이동) | `features/rehearsal/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
 | `tests/integration/postgres.ts` | 급여 시드 헬퍼 | 검증 표 |
 
 ## 구현 순서
@@ -183,20 +187,23 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-02 | 남의 시급이 보인다 | integration `tests/integration/payroll-rls.test.ts`(예정) | `pnpm test:integration:run` | `wage_rates`는 본인·관리자만, `default_wage_rates`는 관리자만 |
-| AC-03 | 같은 날 두 번 바꿔 이력이 둘 선다 | integration `tests/integration/payroll-functions.test.ts`(예정) | 위와 같다 | 행이 하나, 값이 나중 것 |
+| AC-02 | 남의 시급이 보인다 | integration `src/entities/payroll/dals/__tests__/payroll-rls.integration.test.ts` | `pnpm test:integration:run` | `wage_rates`는 본인·관리자만, `default_wage_rates`는 관리자만 |
+| AC-03 | 같은 날 두 번 바꿔 이력이 둘 선다 | integration `src/entities/payroll/dals/__tests__/payroll-functions.integration.test.ts` | 위와 같다 | 행이 하나, 값이 나중 것 |
 | AC-03 | 기본을 바꿔도 따르는 사람이 안 바뀐다 | integration 위 | 위와 같다 | 따르는 전원에게 같은 날 행, 개별로 정한 사람은 그대로 |
 | AC-03 | 0을 하나 더 친다 | integration 위 | 위와 같다 | 1,200,000원이면 `bad_amount` |
+| AC-03 | 기본 시급보다 먼저 승인된 사람이 계산 밖에 남는다 | integration 위 | 위와 같다 | 기본값 없이 승인하면 행이 없다가, 기본 시급이 처음 서는 순간 그 사람에게도 오늘 행이 선다 |
+| AC-03 | 안 받은 사람에게 시급이 선다 | integration 위 | 위와 같다 | 미승인·거절·차단·퇴사자는 기본 시급을 처음 세워도 행이 안 생긴다 |
+| AC-03 | 되돌릴 기본값이 없는데 되돌린다 | integration 위 | 위와 같다 | `no_default_wage` — `bad_amount`가 아니다 |
 | AC-04 | 조정이 덮어써서 이력이 사라진다 | integration 위 | 위와 같다 | 두 번 부르면 행이 둘, 계산은 마지막 |
 | AC-04 | 배정 없는 사람에게 조정이 붙는다 | integration 위 | 위와 같다 | `not_allowed` |
 | AC-05 | 받기가 손으로 넣은 임시공휴일을 지운다 | integration 위 | 위와 같다 | 다시 받아도 `manual` 행이 남는다 |
 | AC-05 | 빈 목록이 그 해를 비운다 | integration 위 | 위와 같다 | `p_rows`가 비면 기존 `api` 행이 그대로 |
-| AC-06 | 리허설이 따로 세어져 연장이 안 난다 | unit `src/features/payroll/model/__tests__/`(예정) | `pnpm test` | 배정 9시간 + 리허설 2건 = 11시간, 2시간이 1.5배 |
+| AC-06 | 리허설이 따로 세어져 연장이 안 난다 | unit `src/features/payroll/model/__tests__/` | `pnpm test` | 배정 9시간 + 리허설 2건 = 11시간, 2시간이 1.5배 |
 | AC-06 | 배정 없는 날의 리허설이 빠진다 | unit 위 | `pnpm test` | 그날 금액이 리허설 시각만큼 난다 |
 | AC-06 | 결근 판정이 두 벌이라 어긋난다 | unit 위 | `pnpm test` | 조정 든 결근과 안 든 결근이 같은 금액(0) |
 | AC-06 | 그날 시급을 잘못 고른다 | unit 위 | `pnpm test` | 8월 1일에 올리면 7월은 옛 값, 8월 1일부터 새 값 |
 | AC-06 | 달을 걸친 주가 한 달에 통째로 든다 | unit 위 | `pnpm test` | 8월 31일 하루만 8월, 9월 1일부터 엿새는 9월 |
-| AC-08 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/error-codes.test.ts` | `pnpm test` | `bad_amount`가 양쪽에 있다 |
+| AC-08 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/error-codes.test.ts` | `pnpm test` | `bad_amount`와 `no_default_wage`가 양쪽에 있다 |
 
 - 배정하지 않은 것: 실제 한 달치 데이터로 금액이 관리자의 손 계산과 맞는지 — 첫 달 운영에서 대조한다. 앱이 내는 것이 예상치라 이 대조가 곧 규칙 검증이다
 - 막힌 것: 지금은 없다

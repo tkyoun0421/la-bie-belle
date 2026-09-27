@@ -30,6 +30,7 @@ export type Database = {
         Returns: undefined;
       };
       close_slot_requests: { Args: { p_slot_id: string }; Returns: undefined };
+      default_wage_at: { Args: { p_date: string }; Returns: number };
       distance_meters: {
         Args: {
           p_lat_a: number;
@@ -40,6 +41,10 @@ export type Database = {
         Returns: number;
       };
       expire_requests: { Args: never; Returns: undefined };
+      import_holidays: {
+        Args: { p_rows: Json; p_year: number };
+        Returns: undefined;
+      };
       rehearsal_kind_of: {
         Args: { p_profile_id: string; p_work_date: string };
         Returns: string;
@@ -63,6 +68,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      wage_in_range: { Args: { p_amount: number }; Returns: boolean };
     };
     Enums: {
       [_ in never]: never;
@@ -73,6 +79,72 @@ export type Database = {
   };
   public: {
     Tables: {
+      adjustments: {
+        Row: {
+          adjusted_at: string;
+          adjusted_by: string;
+          day_id: string;
+          id: string;
+          minutes: number;
+          profile_id: string;
+          reason: string | null;
+        };
+        Insert: {
+          adjusted_at?: string;
+          adjusted_by: string;
+          day_id: string;
+          id?: string;
+          minutes: number;
+          profile_id: string;
+          reason?: string | null;
+        };
+        Update: {
+          adjusted_at?: string;
+          adjusted_by?: string;
+          day_id?: string;
+          id?: string;
+          minutes?: number;
+          profile_id?: string;
+          reason?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "adjustments_adjusted_by_fkey";
+            columns: ["adjusted_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "adjustments_adjusted_by_fkey";
+            columns: ["adjusted_by"];
+            isOneToOne: false;
+            referencedRelation: "push_reachable";
+            referencedColumns: ["profile_id"];
+          },
+          {
+            foreignKeyName: "adjustments_day_id_fkey";
+            columns: ["day_id"];
+            isOneToOne: false;
+            referencedRelation: "days";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "adjustments_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "adjustments_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "push_reachable";
+            referencedColumns: ["profile_id"];
+          },
+        ];
+      };
       assignments: {
         Row: {
           day_id: string;
@@ -377,6 +449,21 @@ export type Database = {
           },
         ];
       };
+      default_wage_rates: {
+        Row: {
+          amount: number;
+          effective_date: string;
+        };
+        Insert: {
+          amount: number;
+          effective_date: string;
+        };
+        Update: {
+          amount?: number;
+          effective_date?: string;
+        };
+        Relationships: [];
+      };
       excuses: {
         Row: {
           body: string;
@@ -502,6 +589,24 @@ export type Database = {
           lat?: number;
           lng?: number;
           radius_m?: number;
+        };
+        Relationships: [];
+      };
+      holidays: {
+        Row: {
+          holiday_date: string;
+          name: string | null;
+          source: string;
+        };
+        Insert: {
+          holiday_date: string;
+          name?: string | null;
+          source: string;
+        };
+        Update: {
+          holiday_date?: string;
+          name?: string | null;
+          source?: string;
         };
         Relationships: [];
       };
@@ -992,6 +1097,42 @@ export type Database = {
           },
         ];
       };
+      wage_rates: {
+        Row: {
+          amount: number;
+          effective_date: string;
+          follows_default: boolean;
+          profile_id: string;
+        };
+        Insert: {
+          amount: number;
+          effective_date: string;
+          follows_default: boolean;
+          profile_id: string;
+        };
+        Update: {
+          amount?: number;
+          effective_date?: string;
+          follows_default?: boolean;
+          profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wage_rates_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wage_rates_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "push_reachable";
+            referencedColumns: ["profile_id"];
+          },
+        ];
+      };
     };
     Views: {
       excuse_status: {
@@ -1181,6 +1322,10 @@ export type Database = {
       remove_push_token: { Args: { p_token: string }; Returns: undefined };
       remove_rehearsal: { Args: { p_id: string }; Returns: undefined };
       remove_slot: { Args: { p_slot_id: string }; Returns: undefined };
+      reset_wage_to_default: {
+        Args: { p_profile_id: string };
+        Returns: undefined;
+      };
       respond_request: {
         Args: { p_answer: string; p_request_id: string };
         Returns: string;
@@ -1192,6 +1337,15 @@ export type Database = {
         Returns: string;
       };
       server_now: { Args: never; Returns: string };
+      set_adjustment: {
+        Args: {
+          p_day_id: string;
+          p_minutes: number;
+          p_profile_id: string;
+          p_reason: string;
+        };
+        Returns: undefined;
+      };
       set_application_deadline: {
         Args: { p_deadline: string; p_month: string };
         Returns: undefined;
@@ -1205,6 +1359,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      set_default_wage: { Args: { p_amount: number }; Returns: undefined };
       set_display_name: {
         Args: { display_name: string; profile_id: string };
         Returns: undefined;
@@ -1217,12 +1372,20 @@ export type Database = {
         Args: { p_lat: number; p_lng: number; p_radius_m: number };
         Returns: undefined;
       };
+      set_holiday: {
+        Args: { p_date: string; p_on: boolean };
+        Returns: undefined;
+      };
       set_notifications_enabled: {
         Args: { p_on: boolean };
         Returns: undefined;
       };
       set_role: {
         Args: { profile_id: string; role: string };
+        Returns: undefined;
+      };
+      set_wage: {
+        Args: { p_amount: number; p_profile_id: string };
         Returns: undefined;
       };
       split_slot: { Args: { p_slot_id: string }; Returns: undefined };
