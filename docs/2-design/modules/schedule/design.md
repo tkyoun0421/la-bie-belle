@@ -76,6 +76,8 @@ unique index 둘이 도메인 규칙을 지킨다.
 
 **자격은 계산한다.** 팀장·스캔·메인·드레스·드레스실에 들어갈 수 있는 사람은 그 포지션 `position_grants` 행이 있거나 그 포지션 교육 배정 행이 있는 사람이다. 관리자가 「자격까지 줌」을 고른 것만 저장한다(`position_grants(profile_id, position, granted_by, granted_at)`). 취소된 교육 배정은 `ended_reason`으로 걸러 자격에서 뺀다.
 
+**자격 판정은 `qualifications` 뷰 하나다.** `security_invoker` 뷰가 `position_grants`와 살아 있는(`ended_at is null` — 취소된 것은 `ended_reason`으로 걸러진 뒤다) 교육 배정을 `(profile_id, position)`으로 합쳐 낸다. `add_assignment`도 픽커도 이 뷰를 읽는다 — `open_slots`와 같은 이유로 TS와 SQL에 같은 규칙이 두 벌 서는 것을 막는다([계산의 예외 하나](#계산의-예외-하나)).
+
 **교육 배정 행이 서는 순간 자격이다.** 날짜가 미래여도, 출근 인증이 없어도 센다 — `days.work_date`도 `attendance`도 안 읽는다([README.md](README.md#sch-013)). 안 나온 사람의 자격을 거두는 길은 관리자가 그 교육 배정을 지우는 것 하나다.
 
 **리허설 자격도 이 표다.** `position_grants.position`이 아홉 포지션에 `'리허설'` 하나를 더 받는다. 포지션 다섯과 달리 교육 배정으로는 안 생긴다 — 관리자가 직접 준 행이 유일한 길이라 계산이 아니라 존재 확인이다([README.md](README.md#sch-020)). 행을 지우면 더 못 넣지만 이미 넣은 `rehearsals`는 그대로 남는다. 자리를 만들지 않아서 `slots`에도 `assignments`에도 안 닿는다.
@@ -149,9 +151,9 @@ unique index 둘이 도메인 규칙을 지킨다.
 ### 배정과 강제 변경
 
 - 규칙: [SCH-013](README.md#sch-013)·[SCH-014](README.md#sch-014)·[SCH-016](README.md#sch-016)·[SCH-018](README.md#sch-018)
-- 입력·전제: `add_assignment`, `remove_assignment`, `force_change`가 배정 추가(교육 포함)·확정 전 빼기·확정 뒤 바꾸기다
+- 입력·전제: `add_assignment`, `remove_assignment`, `force_change`가 배정 추가(교육 포함)·확정 전 빼기·확정 뒤 바꾸기다. `add_assignment(p_profile_id uuid, p_kind text, p_slot_id uuid default null, p_day_id uuid default null, p_position text default null, p_skip_qualification boolean default false)` — 정규는 `p_slot_id`로 날과 포지션(`positions[1]`, 겸임이면 받은 쪽)을 읽고, 교육은 자리를 안 먹어 `p_day_id`·`p_position`을 받는다([SCH-012](README.md#sch-012) — 「교육 붙이기」는 자리가 아니라 줄 머리에 있다). 갈래와 인자가 안 맞으면 `wrong_kind`. `p_skip_qualification`이 「이번만 넣기」다 — 자격 검사 하나만 건너뛰고 나머지 셋은 그대로다. 「자격도 주기」는 `grant_position` 뒤 `add_assignment` 두 호출이다
 - 처리와 경쟁: 배정 추가·제거·강제 변경·요청 수락·확정은 응답을 기다린다. 확정은 되돌릴 수 없고, 나머지는 남과 겹친다. 잠금은 없다
-- 결과와 실패: 미신청자는 `not_allowed`, 자격 없으면 `not_qualified`, 그날 이미 든 사람은 `already_assigned`. `stale`이 오면 「이 근무가 바뀌었어요」 시트를 닫지 않고 그 자리만 다시 읽는다 — 관리자가 고치던 나머지가 사라지지 않게. `add_assignment`가 `already_assigned`·`slot_full`을 던지면 같은 처리다
+- 결과와 실패: 미신청자는 `not_applied`(처음엔 `not_allowed`로 적었는데 [data-access.md](../../system/data-access.md#오류의-모양)가 그 코드를 호출자 권한 거절 하나로 못 박아 spec대로 갈랐다), 자격 없으면 `not_qualified`, 그날 이미 든 사람은 `already_assigned`. `stale`이 오면 「이 근무가 바뀌었어요」 시트를 닫지 않고 그 자리만 다시 읽는다 — 관리자가 고치던 나머지가 사라지지 않게. `add_assignment`가 `already_assigned`·`slot_full`을 던지면 같은 처리다
 - 캐시 갱신: `['schedule']` `['payroll']` `['requests']`
 
 ### 자격 주기

@@ -76,19 +76,19 @@ sources:
 - `remove_slot(p_slot_id uuid)` — 살아 있는 정규 배정이 있으면 같이 닫는다. 확정 전이면 두 행을 지우고, 확정 뒤 새로 연 날이면 `ended_at`을 찍고 알림 대상을 낸다. 같은 `already_confirmed` 갈림이 걸린다
 - `merge_slots(p_day_id uuid, p_from text, p_to text)` — 포지션 이름 둘을 받는다. **양쪽에서 살아 있는 정규 배정이 없는 자리를 하나씩 골라** 받은 쪽 `positions`에 내준 쪽 포지션을 더하고 내준 쪽 자리를 닫는다. 빈 자리가 여럿이면 먼저 만들어진 것이 간다. **사람이 든 자리는 안 건드리고 배정이 사라지는 길이 없다** — 한쪽이라도 빈 자리가 없으면 `no_empty_slot`이다([SCH-015](../../2-design/modules/schedule/README.md#sch-015)). 자리 id가 아니라 포지션 이름을 받는 것은 화면이 집는 것이 줄 머리라서다([잠금과 구조 변경](../../2-design/modules/schedule/screens/schedule-admin.md#잠금과-구조-변경))
 - `split_slot(p_slot_id uuid)` — `positions`가 둘 이상이어야 한다(아니면 `not_merged`). 첫 포지션만 남기고 나머지마다 새 자리를 만든다. **배정된 사람은 남는 쪽에 그대로 있다** — 겸임 카드가 받은 쪽 줄에 서 있으니 나누면 그 자리로 돌아간다
-- `add_assignment(p_slot_id uuid, p_profile_id uuid, p_kind text)` — `kind`가 `regular`면 `slot_id`를 먹고 `training`이면 `p_slot_id`를 무시하고 `day_id`만 든다([SCH-012](../../2-design/modules/schedule/README.md#sch-012)). **그날 `availabilities`에 행이 없으면 `not_applied`** — 신청 안 한 사람은 어느 길로도 못 들어간다([SCH-016](../../2-design/modules/schedule/README.md#sch-016)). 제한 포지션인데 `position_grants`가 없으면 `not_qualified`. 그날 이미 살아 있는 정규 배정이 있으면 `already_assigned`. 자리가 이미 찼으면 `slot_full`
+- `add_assignment(p_slot_id uuid, p_profile_id uuid, p_kind text)` — `kind`가 `regular`면 `slot_id`를 먹고 `training`이면 `p_slot_id`를 무시하고 `day_id`만 든다([SCH-012](../../2-design/modules/schedule/README.md#sch-012)). 이 시그니처는 교육의 날과 포지션을 받을 인자가 없어 [design.md 「배정과 강제 변경」](../../2-design/modules/schedule/design.md#배정과-강제-변경)이 `add_assignment(p_profile_id, p_kind, p_slot_id, p_day_id, p_position, p_skip_qualification)`으로 다시 정했다 — 정규는 `p_slot_id`, 교육은 `p_day_id`·`p_position`, 어긋나면 `wrong_kind`, `p_skip_qualification`이 「이번만 넣기」다. 자격은 `position_grants`가 아니라 `qualifications` 뷰(자격 부여 ∪ 살아 있는 교육 배정)를 본다. **그날 `availabilities`에 행이 없으면 `not_applied`** — 신청 안 한 사람은 어느 길로도 못 들어간다([SCH-016](../../2-design/modules/schedule/README.md#sch-016)). 제한 포지션인데 `position_grants`가 없으면 `not_qualified`. 그날 이미 살아 있는 정규 배정이 있으면 `already_assigned`. 자리가 이미 찼으면 `slot_full`
 - `remove_assignment(p_assignment_id uuid)` — 확정 전이면 행을 지우고 뒤면 `ended_at`·`ended_reason`·`ended_by`를 찍는다
 - `force_change(p_assignment_id uuid, p_profile_id uuid)` — 확정 뒤 한 자리의 사람을 바꾼다. 기존 배정을 닫고 새 배정을 연다. `add_assignment`와 같은 검사 넷이 새 사람에게 걸린다. **한 트랜잭션이다** — 빼기만 되고 넣기가 실패하면 자리가 빈 채로 남고 알림도 반쪽이 된다
 - `grant_position(p_profile_id uuid, p_position text)` — `position_grants`에 넣는다. 이미 있으면 조용히 통과한다(`on conflict do nothing`) — 자격은 있고 없고뿐이라 두 번 준 것이 오류가 아니다
 
-`error-codes.ts`에 `not_applied`·`not_qualified`·`already_assigned`·`slot_full`·`not_merged`·`stale`이 든다. `already_confirmed`·`not_allowed`는 [schedule-data](schedule-data.md)가 이미 넣었다.
+`error-codes.ts`에 `not_applied`·`not_qualified`·`already_assigned`·`slot_full`·`not_merged`·`stale`이 든다. `merge_slots`의 `no_empty_slot`도 든다 — 위 목록에서 빠져 있었다. `already_confirmed`·`not_allowed`는 [schedule-data](schedule-data.md)가 이미 넣었다.
 
 ### AC-02
 
 **dal과 model이 는다.**
 
 - 쓰기 dal 여덟 — `src/entities/schedule/dals/add-slot.ts`부터 `grant-position.ts`까지. `rpc()`로 부르고 실패를 `DomainError`·`TransportError`로 가른다([오류의 모양](../../2-design/system/data-access.md#오류의-모양))
-- 읽기는 새로 안 만든다. 날 상세가 쓰는 `['schedule', 'YYYY-MM']`과 `['availability', 'YYYY-MM']`은 [schedule-admin](schedule-admin.md#ac-01)의 dal이고, 픽커가 쓰는 명단은 `['members']`다 — account가 낸 `get-members.ts`에 `position_grants` 임베딩을 더한다
+- 읽기는 새로 안 만든다. 날 상세가 쓰는 `['schedule', 'YYYY-MM']`과 `['availability', 'YYYY-MM']`은 [schedule-admin](schedule-admin.md#ac-01)의 dal이고, 픽커가 쓰는 명단은 `['members']`다 — account가 낸 `get-members.ts`에 `position_grants` 임베딩을 더한다. 그 파일의 실제 이름은 `src/entities/profile/dals/list-members.ts`(`listActiveMembers`)고, 임베딩 대신 자격은 새 읽기 `src/entities/schedule/dals/get-qualifications.ts`(`qualifications` 뷰 전체, 키 `['members', 'qualifications']`)가 낸다 — 자격이 `position_grants`만이 아니라서다. 읽기 하나가 더 늘었다. `get-month-schedule.ts`의 `assignments` 임베딩에 `id`·`slot_id`·`kind`가 더 온다 — 같은 포지션 자리가 여럿일 때 배정이 어느 카드에 앉는지 `slot_id`가 가른다
 - model(`src/screens/schedule-admin/model/`)에 붙는 계산
   - 포지션 아홉 줄로 자리를 가르기 — 겸임 자리는 `positions[0]`이 든 줄에만 선다. 나머지 포지션 줄에서는 자리 수가 그만큼 준다
   - 줄 머리의 셈 — 분자는 그 줄 자리 중 살아 있는 정규 배정이 있는 것, 분모는 살아 있는 자리 수. 교육 배정은 안 든다
@@ -189,7 +189,7 @@ sources:
 
 - unit: AC-02 전부(포지션 줄 가르기·셈·겸임 분모·픽커 목록 가르기·상태 메시지·성별 기호·년생·확정 갈림), 쓰기 dal의 오류 가르기
 - integration: 함수 여덟의 관리자 검사와 오류 코드 전부. 특히 — `add_assignment`가 미신청자에게 `not_applied`, 제한 포지션에 `not_qualified`, 같은 날 둘째 자리에 `already_assigned`, 찬 자리에 `slot_full`; 교육 배정은 넷 중 자격만 안 걸린다; `merge_slots`가 받은 쪽 배열을 늘리고 내준 쪽 빈 자리를 닫는지, 사람이 든 자리를 안 건드리는지, 한쪽이 다 찼으면 `no_empty_slot`인지; `split_slot`이 사람을 남는 쪽에 두는지; `force_change`가 한 트랜잭션이라 새 사람이 실패하면 기존 배정이 살아 있는지; 확정 전은 지우고 확정 뒤는 `ended_at`을 찍는지; 새로 연 날은 `add_slot`이 통과하고 확정 시점 날은 `already_confirmed`인지
-- e2e(`schedule-assign` e2e): 관리자가 날 상세에서 빈 자리를 눌러 사람을 넣고 → 줄을 길게 눌러 사람 시트를 보고 → 자격 없는 사람에게 자격을 주며 넣고 → 자물쇠를 풀어 자리를 추가하고 → 확정 뒤 강제 변경에 확인 시트가 서는 데까지. 끌기는 e2e가 흉내 내기 어려워 **자리 추가와 시트 경로만 본다** — 삭제·겸임은 integration이 함수를 직접 본다
+- e2e(`schedule-assign` e2e — 파일은 `tests/e2e/schedule-assign.yaml`. 슬라이스가 `schedule-admin`이라 게이트는 `schedule-admin.yaml`로 열리고 이 파일은 강제되지 않는다, 관찰 021): 관리자가 날 상세에서 빈 자리를 눌러 사람을 넣고 → 줄을 길게 눌러 사람 시트를 보고 → 자격 없는 사람에게 자격을 주며 넣고 → 자물쇠를 풀어 자리를 추가하고 → 확정 뒤 강제 변경에 확인 시트가 서는 데까지. 끌기는 e2e가 흉내 내기 어려워 **자리 추가와 시트 경로만 본다** — 삭제·겸임은 integration이 함수를 직접 본다
 
 ### AC-11
 
@@ -203,6 +203,8 @@ sources:
 | `src/shared/api/error-codes.ts` | `not_applied`·`not_qualified`·`already_assigned`·`slot_full`·`not_merged`·`stale` | AC-01 |
 | `src/entities/schedule/dals/add-slot.ts`·`remove-slot.ts`·`merge-slots.ts`·`split-slot.ts`·`add-assignment.ts`·`remove-assignment.ts`·`force-change.ts`·`grant-position.ts`·`__tests__/` | 쓰기 여덟 | AC-02 |
 | `src/entities/profile/dals/get-members.ts` | `position_grants` 임베딩 | AC-02 |
+| `src/entities/schedule/dals/get-qualifications.ts` | 새 읽기 — `qualifications` 뷰 | AC-02 |
+| `src/entities/schedule/dals/get-month-schedule.ts` | `assignments`에 `id`·`slot_id`·`kind` | AC-02 |
 | `src/screens/schedule-admin/model/*.ts`·`__tests__/` | 포지션 줄·셈·픽커 가르기·표기·확정 갈림 | AC-02 |
 | `src/features/schedule/*.ts`·`__tests__/` | mutation과 무효화, `stale` 처리 | AC-08 |
 | `src/screens/schedule-admin/ui/*.tsx` | 포지션 줄·자리 카드·픽커·사람 시트·선택지 시트·잠금·끌기·확인 시트 | AC-03~AC-07 |
