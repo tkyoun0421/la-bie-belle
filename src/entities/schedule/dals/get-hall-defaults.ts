@@ -6,9 +6,10 @@ import type { Db } from "@/shared/api/database";
  *
  * **홀이 하나다.** 표에 행이 하나뿐이라 무엇을 고를지가 없고, 그래서 인자도 없다.
  *
- * **자리 하나가 한 줄로 온다.** 표는 「매니저 2」처럼 접어 두지만
- * (`supabase/migrations/20260922091501_halls.sql`) 화면은 자리를 하나씩 세고 하나씩
- * 지운다 — 접힌 것을 그대로 올리면 세는 자리마다 다시 편다. 펴는 손을 여기 하나만 둔다.
+ * **자리는 접힌 꼴 그대로 온다.** 「매니저 2」는 두 줄이 아니라 `count: 2`인 한 줄이고
+ * (`supabase/migrations/20260922091501_halls.sql`), `open_day`가 그 꼴을 읽어
+ * `generate_series(1, count)`로 자리를 깐다. 여기서 펴면 표와 함수가 읽는 꼴이 갈린다 —
+ * 자리를 하나씩 세야 하는 화면이 있으면 그 펴기는 그 화면 슬라이스의 순수 함수 몫이다.
  *
  * `default_starts`·`default_ends`는 `time`이라 `"10:00:00"` 꼴로 온다 — 화면에 쓰는
  * `"10:00"`으로 자르는 것은 읽는 쪽 몫이다.
@@ -25,27 +26,6 @@ export type HallDefaults = {
   default_ends: string;
 };
 
-type StoredSlot = { positions?: unknown; count?: unknown };
-
-/** 「같은 자리 n개」를 자리 n줄로 편다. 편 줄은 각각 하나짜리다. */
-export function expandHallSlots(stored: unknown): HallSlot[] {
-  if (!Array.isArray(stored)) {
-    return [];
-  }
-
-  return stored.flatMap((entry: StoredSlot) => {
-    const positions = Array.isArray(entry.positions)
-      ? entry.positions.map(String)
-      : [];
-    const count = typeof entry.count === "number" ? entry.count : 1;
-
-    return Array.from({ length: Math.max(0, count) }, () => ({
-      positions,
-      count: 1,
-    }));
-  });
-}
-
 export async function getHallDefaults(client: Db): Promise<HallDefaults> {
   const { data, error } = await client
     .from("halls")
@@ -57,7 +37,7 @@ export async function getHallDefaults(client: Db): Promise<HallDefaults> {
   }
 
   return {
-    default_slots: expandHallSlots(data.default_slots),
+    default_slots: (data.default_slots ?? []) as HallSlot[],
     default_starts: data.default_starts,
     default_ends: data.default_ends,
   };

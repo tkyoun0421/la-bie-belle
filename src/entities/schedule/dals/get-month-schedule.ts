@@ -85,22 +85,7 @@ export async function getMonthSchedule(
     throw error;
   }
 
-  return (data ?? []).map(withNormalizedCheckIns);
-}
-
-/**
- * 출근 시각을 한 모양으로 올린다. PostgREST는 `timestamptz`를 `"…+00:00"`으로 내놓고
- * 앱의 다른 손들은 `Date`의 `"…Z"`를 쓴다 — 같은 순간을 두 글자로 들고 다니면 비교가
- * 시각이 아니라 표기를 본다.
- */
-function withNormalizedCheckIns(day: ScheduleDay): ScheduleDay {
-  return {
-    ...day,
-    check_ins: day.check_ins.map((checkIn) => ({
-      ...checkIn,
-      checked_at: new Date(checkIn.checked_at).toISOString(),
-    })),
-  };
+  return data ?? [];
 }
 
 /** 그 달 근무표가 없으면 `null`이다 — 접수가 아직 안 열린 달이다. */

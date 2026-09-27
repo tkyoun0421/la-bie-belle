@@ -134,9 +134,12 @@ describe("getMonthSchedule — days에 check_ins가 임베딩된다(design.md �
       expect.objectContaining({
         id,
         profile_id: owner.profileId,
-        checked_at: checkedAt,
+        checked_at: expect.any(String),
       }),
     ]);
+    expect(new Date(day!.check_ins[0].checked_at).getTime()).toBe(
+      new Date(checkedAt).getTime(),
+    );
   });
 
   it("근무자 세션에도 check_ins 행이 함께 온다(RLS는 is_approved)", async () => {

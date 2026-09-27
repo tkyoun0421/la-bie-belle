@@ -38,12 +38,14 @@ async function rpcOrThrow<Name extends FunctionName>(
 }
 
 function countByPosition(
-  slots: { positions: string[] }[],
+  slots: { positions: string[]; count: number }[],
   position: string,
 ): number {
-  return slots.filter(
-    (slot) => slot.positions.length === 1 && slot.positions[0] === position,
-  ).length;
+  return slots
+    .filter(
+      (slot) => slot.positions.length === 1 && slot.positions[0] === position,
+    )
+    .reduce((sum, slot) => sum + slot.count, 0);
 }
 
 /**
