@@ -25,9 +25,11 @@ function wageRateRow(
             eq: (
               column: string,
               value: string,
-            ) => Promise<
-              QueryResult<{ amount: number; follows_default: boolean }>
-            >;
+            ) => {
+              maybeSingle: () => Promise<
+                QueryResult<{ amount: number; follows_default: boolean }>
+              >;
+            };
           };
         };
       };
@@ -36,7 +38,8 @@ function wageRateRow(
     .from("wage_rates")
     .select("amount, follows_default")
     .eq("profile_id", profileId)
-    .eq("effective_date", effectiveDate);
+    .eq("effective_date", effectiveDate)
+    .maybeSingle();
 }
 
 async function captureDomainError(
