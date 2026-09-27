@@ -4,12 +4,13 @@
 //   POST http://127.0.0.1:8765/seed  {"state": "rejected"}
 //   → {"access_token": "…", "refresh_token": "…", "user_id": "…", "profile": {…}}
 //
-// 상태는 스무 개다 — fresh · submitted · approved · admin · rejected · left · blocked ·
+// 상태는 스물두 개다 — fresh · submitted · approved · admin · rejected · left · blocked ·
 // read_failure · schedule_submission_window · schedule_confirmed와, 관리자 근무표 여덟
 // (schedule_admin_empty_month · schedule_admin_race_open · schedule_admin_confirmable ·
 // schedule_admin_confirmed · schedule_admin_applications · schedule_assign_day ·
 // schedule_admin_request_slot · schedule_approvals_cancel_pending), 요청을 받는 근무자 둘
-// (schedule_worker_request_pending · schedule_worker_request_claimed). `name`은
+// (schedule_worker_request_pending · schedule_worker_request_claimed), 리허설 하나
+// (rehearsal_qualified), 시급 하나(payroll_wages). `name`은
 // 선택이고, 프로필을 보내는 상태에서 그 사람의 이름을 고른다(안 주면 SEEDED_PROFILE의
 // 이름이다). 요청의 `month`·`day`도 선택이고 schedule_admin_race_open만 쓴다 — 이미
 // 로그인된 세션 밖에서 먼저 열 날짜다. 응답의 `day`는 schedule_assign_day만 싣는다 —
@@ -44,6 +45,7 @@ import {
   seedAssignment,
   seedCancelRequest,
   seedRequestCandidate,
+  seedWageHistory,
   seedWorkRequest,
   withFreshMonth,
   type AdminUser,
@@ -103,6 +105,8 @@ const APPROVALS_CANCEL_PENDING = "schedule_approvals_cancel_pending";
 
 const REHEARSAL_QUALIFIED = "rehearsal_qualified";
 
+const PAYROLL_WAGES = "payroll_wages";
+
 const STATES = [
   "fresh",
   "submitted",
@@ -125,17 +129,18 @@ const STATES = [
   WORKER_REQUEST_CLAIMED,
   APPROVALS_CANCEL_PENDING,
   REHEARSAL_QUALIFIED,
+  PAYROLL_WAGES,
 ] as const;
 
 export type SeedState = (typeof STATES)[number];
 
 /**
- * 관리자 화면 플로우가 쓰는 여덟이다 — 전부 관리자로 로그인한다.
+ * 관리자 화면 플로우가 쓰는 아홉이다 — 전부 관리자로 로그인한다.
  *
  * 근무 요청을 **받는** 쪽 둘(`schedule_worker_request_*`)은 여기 안 든다. 로그인하는 사람이
  * 요청을 받은 근무자라야 그 시트가 뜬다.
  */
-const ADMIN_SCHEDULE_STATES = new Set<SeedState>([
+const ADMIN_STATES = new Set<SeedState>([
   ADMIN_EMPTY_MONTH,
   ADMIN_RACE_OPEN,
   ADMIN_CONFIRMABLE,
@@ -144,6 +149,7 @@ const ADMIN_SCHEDULE_STATES = new Set<SeedState>([
   ASSIGN_DAY,
   ADMIN_REQUEST_SLOT,
   APPROVALS_CANCEL_PENDING,
+  PAYROLL_WAGES,
 ]);
 
 /**
@@ -246,7 +252,7 @@ async function seededUser(
   state: SeedState,
   name: string,
 ): Promise<{ user: SignedInUser; profile: typeof SEEDED_PROFILE | null }> {
-  if (state === "admin" || ADMIN_SCHEDULE_STATES.has(state)) {
+  if (state === "admin" || ADMIN_STATES.has(state)) {
     return { user: await createAdminUser(), profile: null };
   }
 
@@ -845,6 +851,59 @@ async function seedRehearsalQualified(
   };
 }
 
+/**
+ * 시급 화면이 필요로 하는 다섯 사람과 기본 시급이다. 계약은 `tests/e2e/wages.yaml`
+ * 머리말에 있다 — 이름을 그 파일이 고정으로 단언하므로 여기서도 고정으로 박는다.
+ *
+ * **기본 시급을 먼저 세우고 승인한다.** `approve_member`가 그 순서에서만 오늘 행
+ * (`follows_default = true`)을 같이 넣는다(`approve_wage_row.sql`).
+ *
+ * 임하은의 지난 세 줄은 RPC로 못 만든다 — `set_wage`가 오늘 날짜만 받는다(PAY-008).
+ * `seedWageHistory`가 `backdateDeadline`과 같은 손으로 직접 꽂는다.
+ */
+async function seedPayrollWages(): Promise<Partial<SchedulePayload>> {
+  const admin = await createAdminUser();
+
+  throwIf(
+    (await admin.client.rpc("set_default_wage", { p_amount: 11000 })).error,
+  );
+
+  for (const name of ["윤소율", "차수아"]) {
+    const follower = await createSignedInUser();
+    await submitSeededProfile(follower, { ...SEEDED_PROFILE, name });
+    await decideBy("approve_member", follower.profileId);
+  }
+
+  const historied = await createSignedInUser();
+  await submitSeededProfile(historied, { ...SEEDED_PROFILE, name: "임하은" });
+  await decideBy("approve_member", historied.profileId);
+  seedWageHistory(historied.profileId, [
+    { date: "2024-01-01", amount: 9000, followsDefault: false },
+    { date: "2024-07-01", amount: 9500, followsDefault: false },
+    { date: "2025-01-01", amount: 10000, followsDefault: false },
+  ]);
+
+  // 기본(11,000원)보다 높은 15,000원이라야 되돌리기가 값을 내리는 자리가 된다(AC-04).
+  const individual = await createSignedInUser();
+  await submitSeededProfile(individual, { ...SEEDED_PROFILE, name: "탁현우" });
+  await decideBy("approve_member", individual.profileId);
+  throwIf(
+    (
+      await admin.client.rpc("set_wage", {
+        p_profile_id: individual.profileId,
+        p_amount: 15000,
+      })
+    ).error,
+  );
+
+  const leaver = await createSignedInUser();
+  await submitSeededProfile(leaver, { ...SEEDED_PROFILE, name: "노건우" });
+  await decideBy("approve_member", leaver.profileId);
+  await decideBy("mark_leave", leaver.profileId);
+
+  return {};
+}
+
 export type SeedRequest = {
   name?: string;
   month?: string;
@@ -910,6 +969,10 @@ async function schedulePayloadOf(
 
   if (state === REHEARSAL_QUALIFIED) {
     return seedRehearsalQualified(profileId);
+  }
+
+  if (state === PAYROLL_WAGES) {
+    return seedPayrollWages();
   }
 
   return {};

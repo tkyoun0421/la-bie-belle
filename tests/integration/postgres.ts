@@ -59,6 +59,37 @@ export function backdateDeadline(scheduleId: string, pastDate: string): void {
   );
 }
 
+export type SeededWageRate = {
+  date: string;
+  amount: number;
+  followsDefault: boolean;
+};
+
+/**
+ * 지난 날짜의 시급 행을 직접 꽂는다. `set_wage`는 오늘만 받아서(PAY-008) 이력이 여러 줄인
+ * 사람을 함수로는 못 만든다 — `backdateDeadline`과 같은 손이다.
+ *
+ * 오늘 행은 여기서 안 만든다. 승인과 `set_wage`가 만드는 행이라 부르는 쪽이 함수로 세운다.
+ */
+export function seedWageHistory(
+  profileId: string,
+  rows: readonly SeededWageRate[],
+): void {
+  for (const row of rows) {
+    execSql(
+      "insert into public.wage_rates (profile_id, effective_date, amount, follows_default)\n" +
+        `values (:'profile_id', :'effective_date', :'amount', ${row.followsDefault ? "true" : "false"})\n` +
+        "on conflict (profile_id, effective_date) do update\n" +
+        "set amount = excluded.amount, follows_default = excluded.follows_default;\n",
+      {
+        profile_id: profileId,
+        effective_date: row.date,
+        amount: String(row.amount),
+      },
+    );
+  }
+}
+
 const MONTH_TAKEN = new Set(["already_exists", "already_open"]);
 const FRESH_MONTH_ATTEMPTS = 7;
 
