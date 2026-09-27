@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { Database } from "@/shared/api/database";
 import { getMonthSchedule } from "@/entities/schedule/dals/get-month-schedule";
 import {
@@ -56,6 +57,23 @@ function setDisplayName(profileId: string, displayName: string): void {
   );
 }
 
+function seedCheckIn(
+  dayId: string,
+  profileId: string,
+): { id: string; checkedAt: string } {
+  const id = randomUUID();
+  const checkedAt = new Date().toISOString();
+  execSql(
+    [
+      "insert into public.check_ins",
+      "(id, day_id, profile_id, checked_at, reported_at, received_at, method)",
+      "values (:'id', :'day_id', :'profile_id', :'checked_at', :'checked_at', :'checked_at', 'qr');",
+    ].join(" ") + "\n",
+    { id, day_id: dayId, profile_id: profileId, checked_at: checkedAt },
+  );
+  return { id, checkedAt };
+}
+
 describe("getMonthSchedule — 근무표 한 달을 days·slots·assignments로 읽는다(SCH-019)", () => {
   let admin: AdminUser;
   let worker: ApprovedUser;
@@ -91,5 +109,43 @@ describe("getMonthSchedule — 근무표 한 달을 days·slots·assignments로 
 
     expect(days.some((row) => row.id === inMonth.dayId)).toBe(true);
     expect(days.some((row) => row.id === otherMonth.dayId)).toBe(false);
+  });
+});
+
+describe("getMonthSchedule — days에 check_ins가 임베딩된다(design.md 「행위 밖의 실행 동작」)", () => {
+  let admin: AdminUser;
+  let worker: ApprovedUser;
+  let owner: ApprovedUser;
+
+  beforeAll(async () => {
+    admin = await createAdminUser();
+    worker = await createApprovedUser();
+    owner = await createApprovedUser();
+  });
+
+  it("관리자 세션에 check_ins 행이 함께 온다", async () => {
+    const { month, dayId } = await seedOpenDay(admin);
+    const { id, checkedAt } = seedCheckIn(dayId, owner.profileId);
+
+    const days = await getMonthSchedule(admin.client, month);
+    const day = days.find((row) => row.id === dayId);
+
+    expect(day?.check_ins).toEqual([
+      expect.objectContaining({
+        id,
+        profile_id: owner.profileId,
+        checked_at: checkedAt,
+      }),
+    ]);
+  });
+
+  it("근무자 세션에도 check_ins 행이 함께 온다(RLS는 is_approved)", async () => {
+    const { month, dayId } = await seedOpenDay(admin);
+    const { id } = seedCheckIn(dayId, owner.profileId);
+
+    const days = await getMonthSchedule(worker.client, month);
+    const day = days.find((row) => row.id === dayId);
+
+    expect(day?.check_ins?.map((row) => row.id)).toEqual([id]);
   });
 });
