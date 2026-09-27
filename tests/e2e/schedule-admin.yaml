@@ -1,0 +1,234 @@
+# 관리자 근무표 — 관리자가 빈 달에서 근무표를 만들고, 날을 열고(부분 실패를
+# 포함해), 배정 없는 날을 닫고, 마감 전 확정 잠김을 확인한 뒤, 이미 확정된
+# 달에서 확정 뒤 달력(배지·확정 줄·사라진 줄들)과 확정 뒤에도 날 열기가 되는
+# 것까지 한 여정으로 간다.
+#
+# 근거는 docs/2-design/spec/schedule-admin.md(AC-02·AC-04·AC-05·AC-08, AC-06의
+# 마감일 시트 재사용 조각)과
+# docs/2-design/modules/schedule/screens/schedule-admin.md다. 배정받은
+# 리스크는(schedule-admin-test-plan.md 「배정 → e2e」)
+#   - 빈 상태 → 마감일 시트 → 달 만들기 → 만든 직후 안내 줄
+#   - 날 열기 모드에서 여러 날을 골라 「n일 열기」 → 부분 실패(이미 연 날 하나
+#     섞기) → 토스트 → 모드가 안 풀린다
+#   - 날 상세 껍데기 — 근무 시간 줄·근무 신청 줄만 있고 임시공휴일·근무 조정은
+#     없다(payroll-adjust 몫)
+#   - 배정 없는 날은 확인 없이 바로 닫힌다
+#   - 확정 잠김 문구와 「마감일 당기기」가 모아보기와 같은 마감일 시트를 연다
+#   - 확정된 달 — 배지·확정 줄이 서고 마감 줄·BottomCTA·범례·모아보기 줄이
+#     사라진다. 확정 뒤에도 「날 열기」가 되고 새로 연 날에도 「이 날 닫기」가
+#     없다
+# 업무 규칙의 경우의 수(함수 분기 아홉 개·already_confirmed·set_hall_defaults
+# 캐시 키 등)는 test-planner가 이미 unit·integration으로 배정했다
+# (schedule-admin-test-plan.md 「배정 → unit」「배정 → integration」) — 여기서는
+# 그 규칙이 실제로 화면·훅·API·DB를 잇는지만 본다.
+#
+# 포지션 아홉 줄 안쪽(자리·배정·사람 픽커)은 schedule-assign 몫이라 이 task의
+# 날 상세는 채움 수만 세는 임시 줄이다(spec 「범위 밖」). 그래서 이 파일 안에서는
+# 배정을 하나도 만들지 않고, 「배정이 있는 날 닫기 경고 시트」와 「빈 자리가 있는
+# 확정 시트의 경고 블록」은 이 task의 화면만으로는 밟을 수 없다 — 아래 결과의
+# 「못 쓴 것」에 적는다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/schedule-worker.yaml 머리말, scripts/e2e-seed-server.mts,
+# scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의
+# "/admin/schedule"(`?month=`·`?date=` 그대로) 행이다.
+#
+# **시드 서버에 상태 셋과 액션 하나가 아직 없다 — implementer가 이 task에서
+# 더한다.** 전부 tests/integration/postgres.ts의 헬퍼(withFreshMonth·kstDate·
+# backdateDeadline·createAdminUser)를 그대로 쓴다 — schedule-worker.yaml의
+# 두 상태가 세운 손을 그대로 잇는다.
+#
+# ## schedule_admin_empty_month
+#
+# 관리자 하나를 만들고(createAdminUser) `withFreshMonth`로 고른 달에는 아무것도
+# 만들지 않는다 — 그 달에 `schedules` 행이 없는 채로 둬야 빈 상태(달 근무표
+# 만들기)가 선다. 응답에 `month`(raw "YYYY-MM")·`monthLabel`(spellMonth)·
+# `deadlineDate`(`kstDate(3)`, raw "YYYY-MM-DD" — 마감일 시트의 날짜 입력에
+# 그대로 타이핑할 값)를 싣는다. `deadlineDate`는 화면에 그대로 찍히는 문구가
+# 아니라 입력값이라 seed-session.js의 escapeForTextSelector를 안 거친다.
+#
+# ## schedule_admin_race_open (env MONTH, DAY)
+#
+# 세션을 새로 만들지 않는다 — 이미 로그인된 세션을 그대로 두고 그 사이에 다른
+# 관리자가 날을 먼저 여는 것을 흉내 낸다. seed-session.js가 지금은 `state`·
+# `name` 둘만 요청 본문에 담는데, 이 상태를 쓸 때는 env의 `MONTH`·`DAY`가 있으면
+# `month`·`day` 필드로 같이 보내도록 넓혀야 한다(있을 때만 — 다른 상태를 쓰는
+# 플로우가 이 필드 때문에 깨지면 안 된다). 서버는 `createAdminUser()`로 완전히
+# 새 관리자를 하나 만들어(로그인된 세션과 무관한 사람이어야 진짜 경합처럼
+# 된다) 그 계정으로 `open_day({ p_work_date: "${month}-${day}" })`를 부른다.
+# 응답의 토큰은 이 플로우가 안 쓴다 — 세션을 안 바꾸므로 이어지는 `openLink`가
+# 없다.
+#
+# **왜 이 방식인가.** 화면 문서 「날 열기 모드」가 "닫힌 날만 골라진다... 열린
+# 날은 흐려지고 눌리지 않는다"고 정해서, 관리자 혼자 조작하는 한 이미 열린 날을
+# 선택지에 섞을 방법이 없다. AC-04의 부분 실패는 화면이 그리는 시점(선택할 때는
+# 닫혀 있었다)과 서버가 처리하는 시점(보낼 때는 이미 열려 있다) 사이의 경합이라,
+# 실제로 그 틈을 만들려면 이 세션 밖에서 날을 여는 손이 필요하다.
+#
+# **부분 실패 토스트의 정확한 문구는 화면 문서 어디에도 없다** —
+# schedule-admin.md의 「날 열기 모드 문안」 표에 그 줄이 없고 design.md 「날
+# 열기·닫기」에도 없다. 그래서 이 파일은 토스트 글자를 단언하지 않고, 성공했으면
+# 모드가 풀리는데 실패가 섞이면 안 풀린다는 것(스펙 상태 격자 「성공 직후」·
+# 「실패」 행)으로 부분 실패를 확인한다. 정확한 문구가 생기면 그때 토스트
+# 단언을 더한다 — 아래 「발견한 이슈」에도 적는다.
+#
+# ## schedule_admin_confirmed
+#
+# 관리자 하나, `withFreshMonth`로 고른 달에 `create_schedule`(마감일은 일단
+# `kstDate(1)`로 만들고 `backdateDeadline`으로 `kstDate(-1)`까지 당긴다 —
+# schedule-worker.yaml의 seedConfirmedMonth와 같은 손이다. `create_schedule`
+# 함수 자체가 미래 마감일만 받는다), `open_day`로 1일만 연다(배정은 안
+# 만든다 — 이 task의 날 상세가 배정을 세지 않아 필요 없다). 3일은 안
+# 연 채로 남긴다 — 확정 뒤에도 「날 열기」가 되는 것을 보려면 열 날이
+# 있어야 한다. `confirm_schedule`로 확정한다. 응답은 `month`·`monthLabel`만
+# 싣는다.
+#
+# ## 이 task가 요청하는 testID 둘
+#
+# - `schedule-create-deadline-input` — 달 만들기 시트의 마감일 날짜 입력.
+#   글자로 잡을 라벨이 없는 순수 입력 칸이다.
+# - `schedule-deadline-input` — 마감일 바꾸기 시트(모아보기 줄과 확정 잠김의
+#   「마감일 당기기」가 같이 여는 시트)의 날짜 입력. 이 파일은 이 시트를 열어서
+#   내용만 확인하고 실제로 바꾸지는 않는다 — 아래 「못 쓴 것」에 이유를 적는다.
+#
+# **날짜 입력 위젯과의 실제 상호작용(inputText로 "YYYY-MM-DD"를 그대로
+# 받는지, 아니면 네이티브 피커라 다른 조작이 필요한지)은 한 번도 못
+# 돌려봤다** — scripts/seed-session.js 머리말의 http.post 처럼, Maestro
+# CLI로 실행해 실물 위젯을 보기 전까지는 확인할 수 없는 자리로 남는다.
+#
+# 텍스트 셀렉터는 정규식이다. 월·일처럼 오늘 날짜에 따라 바뀌는 문구는
+# ".*"로 감싸 일부만 맞힌다 — schedule-worker.yaml처럼 시드가 라벨을
+# 내려주는 대신, 여기서는 그 라벨이 필요한 자리에만 seed 응답값을 쓰고
+# 나머지는 정규식으로 날짜 형식(연도 포함 여부 등)에 대한 가정을 줄인다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+# ================================================================
+# 빈 달 → 마감일 시트 → 만들기 → 만든 직후 안내
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: schedule_admin_empty_month
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://admin/schedule?month=${output.month}"
+
+- assertVisible: ".*근무표가 아직 없어요"
+- assertVisible: ".*근무표 만들기"
+- tapOn: ".*근무표 만들기"
+
+- assertVisible: "스케줄 신청 마감일"
+- assertVisible: "오늘 이전은 고를 수 없어요"
+- tapOn:
+    id: "schedule-create-deadline-input"
+- inputText: "${output.deadlineDate}"
+- tapOn: "만들기"
+
+- assertVisible: "전부 닫힌 날이에요. 예식 있는 날을 열어주세요"
+- assertVisible: "날 열기"
+
+# ================================================================
+# 날 열기 모드 — 셋을 고르고, 그중 하나가 보내는 사이에 다른 관리자 손으로
+# 먼저 열려 부분 실패가 난다
+# ================================================================
+- tapOn: "날 열기"
+- assertVisible: "그만두기"
+- assertVisible: "열 날을 고르세요"
+- assertVisible: "닫힌 날만 고를 수 있어요"
+
+- tapOn:
+    id: "schedule-day-${output.month}-02"
+- tapOn:
+    id: "schedule-day-${output.month}-03"
+- tapOn:
+    id: "schedule-day-${output.month}-04"
+- assertVisible:
+    id: "schedule-day-${output.month}-02-selected"
+- assertVisible:
+    id: "schedule-day-${output.month}-03-selected"
+- assertVisible:
+    id: "schedule-day-${output.month}-04-selected"
+- assertVisible: "3일 열기"
+
+# --- 여기서 03일이 다른 관리자에 의해 먼저 열린다(위 계약 참고) ---
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: schedule_admin_race_open
+      MONTH: "${output.month}"
+      DAY: "03"
+
+- tapOn: "3일 열기"
+
+# --- 부분 실패 확인 — 하나라도 실패하면 모드가 안 풀린다(성공이면 여기서
+# 이미 달력으로 돌아가 「그만두기」가 안 보였을 것이다) ---
+- assertVisible: "그만두기"
+- assertVisible: "열 날을 고르세요"
+- tapOn: "그만두기"
+- assertVisible: ".*근무표$"
+
+# ================================================================
+# 날 상세 껍데기 — 근무 시간 줄·근무 신청 줄만, 임시공휴일·근무 조정은 없다.
+# 배정이 없으니 이 날 닫기는 확인 없이 바로 닫힌다.
+# ================================================================
+- tapOn:
+    id: "schedule-day-${output.month}-02"
+- assertVisible: ".*근무 시간.*"
+- assertNotVisible: "임시공휴일"
+- assertNotVisible: "근무 조정"
+- assertNotVisible: "근무 신청"
+
+- tapOn: ".*근무 시간.*"
+- assertVisible: "출근"
+- assertVisible: "퇴근"
+- assertVisible: "이 날 배정된 전원에게 같이 적용돼요"
+- assertVisible: "바꾸기"
+- tapOn: "닫기"
+
+- tapOn: "이 날 닫기"
+- assertVisible: ".*근무표$"
+
+# ================================================================
+# 확정 잠김 — 마감일이 아직 안 지났다. 「마감일 당기기」가 모아보기와 같은
+# 마감일 시트를 연다.
+# ================================================================
+- assertVisible: "확정하기"
+- assertVisible: ".*확정할 수 있어요.*"
+- assertVisible: "마감일 당기기"
+- tapOn: "마감일 당기기"
+- assertVisible: "스케줄 신청 마감일"
+- assertVisible: "오늘 이전은 고를 수 없어요"
+- assertVisible: "바꾸면 전원에게 알림이 가요"
+- assertVisible: "바꾸기"
+- tapOn: "닫기"
+
+# ================================================================
+# 확정된 달 — 배지·확정 줄, 마감 줄·BottomCTA·범례·모아보기 줄 부재. 확정
+# 뒤에도 「날 열기」가 되고 새로 연 날에도 「이 날 닫기」가 없다.
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: schedule_admin_confirmed
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://admin/schedule?month=${output.month}"
+
+- assertVisible: ".*확정했어요.*알림을 보냈어요"
+- assertNotVisible: ".*스케줄 신청 마감.*"
+- assertNotVisible: "확정하기"
+- assertNotVisible: "사람 표시는 근무 신청이에요"
+- assertNotVisible: ".*근무 신청.*모아보기"
+
+- tapOn: "날 열기"
+- tapOn:
+    id: "schedule-day-${output.month}-03"
+- assertVisible:
+    id: "schedule-day-${output.month}-03-selected"
+- tapOn: "1일 열기"
+
+- tapOn:
+    id: "schedule-day-${output.month}-03"
+- assertNotVisible: "이 날 닫기"
