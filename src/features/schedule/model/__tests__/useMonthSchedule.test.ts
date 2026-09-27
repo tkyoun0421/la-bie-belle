@@ -35,35 +35,31 @@ const FAKE_CLIENT = {} as never;
 
 const MONTH = "2026-10";
 
-const MONTH_ROW = {
-  id: "schedule-1",
-  month: "2026-10-01",
-  application_deadline: "2026-10-02",
-  confirmed_at: "2026-09-20T00:00:00+09:00",
-  days: [
-    {
-      id: "day-1",
-      work_date: "2026-10-10",
-      starts_at: "10:00:00",
-      ends_at: "18:00:00",
-      slots: [
-        {
-          id: "slot-1",
-          positions: ["팀장"],
-          assignments: [
-            {
-              id: "assignment-1",
-              position: "팀장",
-              kind: "regular",
-              profile_id: "profile-1",
-              profiles: { display_name: "김지수" },
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
+const MONTH_ROW = [
+  {
+    id: "day-1",
+    work_date: "2026-10-10",
+    starts_at: "10:00:00",
+    ends_at: "18:00:00",
+    slots: [
+      {
+        id: "slot-1",
+        positions: ["팀장"],
+        ended_at: null,
+      },
+    ],
+    assignments: [
+      {
+        id: "assignment-1",
+        position: "팀장",
+        kind: "regular",
+        profile_id: "profile-1",
+        ended_at: null,
+        profiles: { display_name: "김지수" },
+      },
+    ],
+  },
+];
 
 beforeEach(() => {
   getMonthScheduleMock.mockReset();
