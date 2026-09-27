@@ -1,7 +1,10 @@
 name: ci
 
 on:
+  # `edited`가 든 것은 「영향 확인」 게이트가 PR 본문을 읽기 때문이다. 본문만 고치면
+  # 기본 트리거 셋(opened·synchronize·reopened)이 안 돌아 빈 커밋을 밀어야 했다.
   pull_request:
+    types: [opened, synchronize, reopened, edited]
   push:
     branches: [main]
 
