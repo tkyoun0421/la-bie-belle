@@ -1,5 +1,5 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { QrScreen } from "@/screens/qr/ui/QrScreen";
 
 export default function Screen() {
-  return <NotBuiltYet path="/admin/qr" />;
+  return <QrScreen />;
 }
