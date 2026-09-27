@@ -1,8 +1,7 @@
 // 여러 플로우(pending·left·blocked·retry·session·schedule-worker)가 나눠 쓰는 준비
 // 절차다. runScript로 이 파일을 부르면 로컬 시드 서버(scripts/e2e-seed-server.mts,
-// 127.0.0.1:8765 — 아직 없다. implementer가 이 task에서 세운다)에 사용자 상태를
-// 만들어 달라고 요청하고, 돌아온 세션 토큰을 output에 실어 그 다음 스텝의
-// `openLink`가 쓰게 한다.
+// 127.0.0.1:8765)에 사용자 상태를 만들어 달라고 요청하고, 돌아온 세션 토큰을
+// output에 실어 그 다음 스텝의 `openLink`가 쓰게 한다.
 //
 // 부르는 쪽은 env로 STATE를 준다. 값은
 // "fresh" | "submitted" | "approved" | "admin" | "rejected" | "left" | "blocked" |
