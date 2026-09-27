@@ -31,6 +31,12 @@ jobs:
           git show "origin/$GITHUB_BASE_REF:REVIEW.md" > /tmp/review-policy.md \
             || cp REVIEW.md /tmp/review-policy.md
 
+      # 리포트가 붙었는지를 잡 자신이 본다 — 리뷰가 코멘트 없이 초록으로 끝난 것이 세 번이다
+      # (관찰 019). 시작 시각을 적어두고 마지막 단계에서 그 뒤에 붙은 리뷰 코멘트를 센다.
+      - name: 시작 시각을 적는다
+        id: started
+        run: echo "at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -47,3 +53,17 @@ jobs:
             해당 줄에 단다. 코멘트는 한국어로 쓴다.
           claude_args: |
             --allowedTools "Read,Grep,Glob,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),mcp__github_inline_comment__create_inline_comment"
+
+      - name: 리포트 코멘트가 붙었는지 확인한다
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STARTED_AT: ${{ steps.started.outputs.at }}
+        run: |
+          count=$(gh pr view "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}" --json comments \
+            --jq "[.comments[] | select(.createdAt >= \"$STARTED_AT\") | select(.author.login | test(\"claude\"; \"i\"))] | length")
+          if [ "$count" -eq 0 ]; then
+            echo "::error::리뷰가 끝났지만 PR에 리포트 코멘트가 없다. 잡을 초록으로 두면 안 본 것과 구별이 안 된다 — 위 claude-code-action 로그의 result 블록을 본다."
+            exit 1
+          fi
+          echo "리포트 코멘트 $count개 확인"
