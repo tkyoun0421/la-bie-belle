@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 import {
   caseCollisions,
   describeFileNamingViolation,
@@ -189,6 +192,96 @@ describe("이름이 어긋난 파일", () => {
         { file: "src/features/auth/useAuthGate.ts", source: HOOK_SOURCE },
       ]),
     ).toEqual([]);
+  });
+});
+
+describe("__tests__ 안 짝 테스트는 대상의 갈래를 따른다", () => {
+  const HOOK_TARGET_SOURCE = `import { useState } from "react";
+
+export function useMyProfile() {
+  return useState(null);
+}
+`;
+
+  it("훅 대상이 있으면 camelCase 짝 테스트는 위반이 아니다", () => {
+    expect(
+      styleViolations([
+        {
+          file: "src/features/profile/model/useMyProfile.ts",
+          source: HOOK_TARGET_SOURCE,
+        },
+        {
+          file: "src/features/profile/model/__tests__/useMyProfile.test.ts",
+          source: PLAIN_SOURCE,
+        },
+      ]),
+    ).toEqual([]);
+  });
+
+  it("대상이 없으면 camelCase 테스트 파일은 여전히 kebab을 요구한다", () => {
+    expect(
+      styleViolations([
+        {
+          file: "src/features/profile/model/__tests__/useMyProfile.test.ts",
+          source: PLAIN_SOURCE,
+        },
+      ]),
+    ).toEqual([
+      {
+        type: "style",
+        file: "src/features/profile/model/__tests__/useMyProfile.test.ts",
+        style: "kebab",
+        suggestion:
+          "src/features/profile/model/__tests__/use-my-profile.test.ts",
+      },
+    ]);
+  });
+
+  it("kebab 대상의 kebab 짝은 위반이 아니다", () => {
+    expect(
+      styleViolations([
+        {
+          file: "src/entities/attendance/model/price.ts",
+          source: PLAIN_SOURCE,
+        },
+        {
+          file: "src/entities/attendance/model/__tests__/price.test.ts",
+          source: PLAIN_SOURCE,
+        },
+      ]),
+    ).toEqual([]);
+  });
+});
+
+describe("점으로 시작하는 디렉터리는 훑지 않는다", () => {
+  const tmpRoot = path.join(process.cwd(), "tests/lint/.tmp-file-naming-walk");
+
+  beforeAll(() => {
+    for (const scope of SCOPES) {
+      fs.mkdirSync(path.join(tmpRoot, scope), { recursive: true });
+    }
+    fs.mkdirSync(path.join(tmpRoot, "src/.hidden"), { recursive: true });
+    fs.writeFileSync(
+      path.join(tmpRoot, "src/.hidden/inside.ts"),
+      PLAIN_SOURCE,
+      "utf8",
+    );
+    fs.writeFileSync(
+      path.join(tmpRoot, "src/visible.ts"),
+      PLAIN_SOURCE,
+      "utf8",
+    );
+  });
+
+  afterAll(() => {
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
+  });
+
+  it("점 디렉터리 안 파일은 walk 결과에 안 든다", () => {
+    const files = repositoryCodeFiles(tmpRoot).map(({ file }) => file);
+
+    expect(files).toContain("src/visible.ts");
+    expect(files).not.toContain("src/.hidden/inside.ts");
   });
 });
 
