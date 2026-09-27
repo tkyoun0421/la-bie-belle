@@ -118,7 +118,7 @@
 
 #### Q-02
 
-- 질문: 화면이 없는 함수 — `post_announcement`(공지 보내기), `undo_leave`(퇴사 되돌리기). 둘 다 2차다 — 공지는 [roadmap](../../1-plan/roadmap.md)이 2차로 미뤘고 퇴사 되돌리기는 드물어 1차에는 DB에서 한다. `set_hall_location`은 목록에서 빠졌다 — [QR 화면의 「홀 위치」](../modules/attendance/screens/qr.md#홀-위치)가 그 화면이다. `import_holidays`도 빠졌다 — cron이 부르는 함수라 사람이 누를 자리가 없다([payroll/design.md](../modules/payroll/design.md#공휴일-받기)). 알림 설정은 「나」의 [알림](../modules/account/screens/profile.md#알림)이고 지난 알림 목록은 [notifications.md](../modules/notification/screens/notifications.md)라 둘 다 목록에서 빠졌다
+- 질문: 화면이 없는 함수 — `post_announcement`(공지 보내기). 공지는 [roadmap](../../1-plan/roadmap.md)이 2차로 미뤘다. `undo_leave`(퇴사 되돌리기)는 목록에서 빠졌다 — [직원 관리의 「되돌리기」](../modules/account/screens/members.md#되돌리기)가 그 화면이고 spec `members`가 AC-07로 든다. `set_hall_location`은 목록에서 빠졌다 — [QR 화면의 「홀 위치」](../modules/attendance/screens/qr.md#홀-위치)가 그 화면이다. `import_holidays`도 빠졌다 — cron이 부르는 함수라 사람이 누를 자리가 없다([payroll/design.md](../modules/payroll/design.md#공휴일-받기)). 알림 설정은 「나」의 [알림](../modules/account/screens/profile.md#알림)이고 지난 알림 목록은 [notifications.md](../modules/notification/screens/notifications.md)라 둘 다 목록에서 빠졌다
 - 결정 담당과 시점: 2차 착수 때 그린다
 
 Q-03(앱 없는 기기가 QR을 찍으면)은 [앱이 없는 기기가 찍으면](#앱이-없는-기기가-찍으면)으로 올라갔다.
