@@ -22,6 +22,7 @@ export const ERROR_CODES = [
   "invalid_reason",
   "last_admin",
   "month_over",
+  "no_default_wage",
   "no_empty_slot",
   "no_schedule",
   "not_allowed",

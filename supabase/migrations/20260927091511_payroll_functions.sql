@@ -62,7 +62,8 @@ end;
 $$;
 
 -- 되돌린 날부터 다시 끈에 붙는다(PAY-014) — 지난 행은 그대로 두고 오늘 행만 기본값으로
--- 선다. 기본값을 한 번도 안 정했으면 되돌릴 값이 없어 `bad_amount`다.
+-- 선다. 기본값을 한 번도 안 정했으면 돌아갈 자리가 없어 `no_default_wage`다. 금액이 범위
+-- 밖이라는 `bad_amount`와 다른 자리다.
 create function public.reset_wage_to_default(p_profile_id uuid)
   returns void
   language plpgsql
@@ -80,7 +81,7 @@ begin
   default_amount := internal.default_wage_at(today);
 
   if default_amount is null then
-    raise exception using message = 'bad_amount';
+    raise exception using message = 'no_default_wage';
   end if;
 
   insert into public.wage_rates (
@@ -99,8 +100,11 @@ $$;
 -- 기본 시급이 끈이다(PAY-013). 기본값 행 하나와 따르는 사람 전원의 행이 **한 트랜잭션에**
 -- 같이 서서, 계산은 `wage_rates` 한 표만 읽고 RLS도 한 표에만 걸린다.
 --
--- 「따르는 사람」은 **각자의 가장 최근 행**이 `follows_default`인 사람이다. 지난 행이 아니라
--- 지금 상태를 본다 — 과거에 따랐다가 개별로 정한 사람은 여기 안 든다.
+-- 「따르는 사람」은 둘이다. 하나는 **각자의 가장 최근 행**이 `follows_default`인 사람 — 지난
+-- 행이 아니라 지금 상태를 봐서, 과거에 따랐다가 개별로 정한 사람은 여기 안 든다. 다른 하나는
+-- **시급 이력이 아예 빈 승인 사원**이다(PAY-012). 기본값이 서기 전에 승인된 사람이 여기 들어
+-- 승인과 기본 시급의 순서로 결과가 갈리지 않는다 — 빈 쪽은 승인됐고 거절·차단·퇴사·삭제가
+-- 없는 사람만 본다.
 create function public.set_default_wage(p_amount integer)
   returns void
   language plpgsql
@@ -129,15 +133,33 @@ begin
     amount,
     follows_default
   )
-  select latest.profile_id, today, p_amount, true
+  select follower.profile_id, today, p_amount, true
   from (
-    select distinct on (wage_rates.profile_id)
-      wage_rates.profile_id,
-      wage_rates.follows_default
-    from public.wage_rates
-    order by wage_rates.profile_id, wage_rates.effective_date desc
-  ) as latest
-  where latest.follows_default
+    select latest.profile_id
+    from (
+      select distinct on (wage_rates.profile_id)
+        wage_rates.profile_id,
+        wage_rates.follows_default
+      from public.wage_rates
+      order by wage_rates.profile_id, wage_rates.effective_date desc
+    ) as latest
+    where latest.follows_default
+
+    union
+
+    select profiles.id
+    from public.profiles
+    where profiles.approved_at is not null
+      and profiles.rejected_at is null
+      and profiles.blocked_at is null
+      and profiles.left_at is null
+      and profiles.erased_at is null
+      and not exists (
+        select 1
+        from public.wage_rates
+        where wage_rates.profile_id = profiles.id
+      )
+  ) as follower
   on conflict (profile_id, effective_date) do update
   set amount = excluded.amount,
       follows_default = excluded.follows_default;

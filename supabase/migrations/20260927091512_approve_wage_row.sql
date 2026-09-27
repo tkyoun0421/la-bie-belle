@@ -4,9 +4,9 @@
 -- **첫 행은 `follows_default = true`다.** 승인될 때 복사되는 값이 아니라 끈에 묶이는
 -- 자리다(PAY-013) — 그 뒤 기본 시급이 바뀌면 이 사람도 같이 따라간다.
 --
--- 기본 시급을 아직 한 번도 안 정했으면 행을 안 넣는다. 넣을 금액이 없어서인데, 그 사람은
--- 가장 최근 행이 없어 나중에 `set_default_wage`가 도는 자리에도 안 든다 — 관리자가 시급을
--- 직접 정하기 전까지 계산에서 빠진다.
+-- 기본 시급을 아직 한 번도 안 정했으면 행을 안 넣는다. 넣을 금액이 없어서다. 시급 이력이 빈
+-- 그 상태도 「따로 정하지 않은 사람」이라 기본 시급이 처음 서는 순간 `set_default_wage`가
+-- 같이 데려간다(PAY-012) — 승인이 먼저냐 기본 시급이 먼저냐로 결과가 갈리지 않는다.
 create or replace function public.approve_member(profile_id uuid)
   returns void
   language plpgsql
