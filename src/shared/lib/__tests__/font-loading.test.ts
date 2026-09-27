@@ -112,4 +112,22 @@ describe("shouldDismissSplash — 스플래시를 정확히 한 번만 내린다
       false,
     );
   });
+
+  it("테마 복원이 안 끝났으면 서체 로딩이 끝나도 내리지 않는다", () => {
+    expect(
+      shouldDismissSplash({ loaded: true, error: null }, false, false),
+    ).toBe(false);
+  });
+
+  it("서체 로딩과 테마 복원이 둘 다 끝나면 내린다", () => {
+    expect(
+      shouldDismissSplash({ loaded: true, error: null }, false, true),
+    ).toBe(true);
+  });
+
+  it("이미 내렸으면 테마 복원이 안 끝났어도 다시 내리라 하지 않는다", () => {
+    expect(
+      shouldDismissSplash({ loaded: true, error: null }, true, false),
+    ).toBe(false);
+  });
 });

@@ -1,0 +1,125 @@
+# 나 — 근무자가 자기 것을 보고, 연락처와 화면 테마 둘만 고친다.
+#
+# 근거는 docs/2-design/modules/account/screens/profile.md다. 배정받은 리스크는
+# 「approved 시드로 /me 진입 → 다섯 값이 보이고 잠긴 둘엔 화살표가 없다」,
+# 「연락처 시트 → 새 번호 저장 → 토스트·줄 값 갱신」, 「화면 고르기 → 어둡게 →
+# 시트 닫힘 → 재시작 뒤에도 그 테마」, 「admin 시드에서만 관리자 모드 줄」
+# 넷이다. 연락처 저장 실패·전화번호 형식 경계·훅 내부 동작은 unit이 이미
+# 본다(이 task 계획서 배정) — 여기서는 그 규칙이 실제로 화면·훅·시드를 잇는지만
+# 본다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/pending.yaml 머리말, scripts/e2e-seed-server.mts, seed-session.js를
+# 본다. 딥링크는 세션을 심은 뒤 "labiebelle://me"다 — 라우트가
+# src/app/(tabs)/me.tsx인데 그룹을 감싼 괄호 "(tabs)"는 URL 세그먼트가
+# 아니라서 빠진다(tests/e2e/home.yaml의 "/"와 같은 결).
+#
+# **시드 상태 "approved"가 지금은 profile을 null로 돌려준다**
+# (scripts/e2e-seed-server.mts의 createApprovedUser()). 이 화면은 관리자가
+# 아닌 사람의 자기 프로필을 보는 자리라 이름·성별·생년월일·연락처가 반드시
+# 있어야 하는데, 지금 "approved"는 admin.yaml이 쓰던 「role만 본다」는 씬을
+# 위한 것이라 프로필이 없다. implementer가 "approved"에도 "rejected"·
+# "blocked"·"submitted"가 쓰는 것과 같은 SEEDED_PROFILE을 채워야 이 플로우가
+# 선다(제출까지 시키거나 프로필만 얹거나는 구현 몫). 아래 다섯 값 단언은 그
+# 프로필이 SEEDED_PROFILE과 같다고 보고 seed-session.js가 주는
+# ${output.profileName}·${output.profileGenderLabel}·
+# ${output.profileBirthDateLabel}·${output.profilePhone}을 쓴다 — 글자를
+# 박지 않는다.
+#
+# 잠긴 두 줄(성별·생년월일)에 화살표가 없다는 것은 지금 이 층에서 확인할
+# 방법이 없다. 화살표 아이콘(src/shared/ui/ListRow.tsx의 ChevronRight)은
+# 장식이라 접근성 텍스트가 없고, 부모 testID를 받아도 그 아이콘 자체엔 안
+# 실린다(같은 파일 110번째 줄) — assertNotVisible로 "있는지 없는지"를 가를
+# 자리가 지금 코드엔 없다. 아래 두 assertNotVisible은 ListRow가 chevron이 켜진
+# 줄에서만 그 Icon에 `${testID}-chevron`을 실어주고(리턴 4번), 성별·생년월일
+# 줄이 각각 testID "profile-gender-row"·"profile-birthdate-row"를 받는다고
+# 가정한다 — 지금 코드로는 못 채운다.
+#
+# 연락처 시트를 열면 지금 번호가 채워진 채 커서가 끝에 간다고 문서가 못 박아
+# (profile.md 「연락처 고치기」) 필드를 따로 tapOn하지 않고 바로 eraseText로
+# 지운다. 시트 제목·연락처 이름표가 둘 다 "연락처"라 애매하므로, 시트가 뜬
+# 것은 줄에는 없는 라벨 "휴대폰 번호"로 확인한다.
+#
+# 화면 고르기는 시트를 다시 열지 않고도 확인할 수 있다 — "화면" 줄 자체가
+# 오른쪽에 지금 값을 문자로 보여준다(profile.md 「화면」). 그래서 재시작 뒤
+# 테마가 남았는지는 시트를 열지 않고 그 줄의 값 "어둡게"만 본다.
+#
+# admin 시드는 profile이 null이다(scripts/e2e-seed-server.mts). 이 화면은
+# design.md·profile.md에 따르면 관리자도 근무자로서 자기 프로필이 있어야
+# 하는데 지금 시드는 그걸 못 만든다 — 그래서 이 씬은 "관리자 모드" 줄 하나만
+# 보고, 이름·사진 같은 다섯 값은 다시 안 본다(리턴 4번에 한계를 적는다).
+#
+# 텍스트 셀렉터는 정규식이다. 아래 문구는 전부 일반 글자라 이스케이프가
+# 필요 없다.
+appId: com.labiebelle.app
+---
+# --- approved: 내 프로필 다섯 값, 잠긴 줄, 연락처 고치기, 화면 고르기 ---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: approved
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://me"
+
+# 다섯 값 — 사진(testID로만 잡을 수 있다), 이름, 성별, 생년월일, 연락처.
+- assertVisible:
+    id: "profile-avatar"
+- assertVisible: "${output.profileName}"
+- assertVisible: "${output.profileGenderLabel}"
+- assertVisible: "${output.profileBirthDateLabel}"
+- assertVisible: "${output.profilePhone}"
+
+# 관리자가 아니라 "관리자 모드" 줄이 없다.
+- assertNotVisible: "관리자 모드"
+
+# 잠긴 줄에 화살표가 없다 — 머리말의 testID 가정이 필요하다.
+- assertNotVisible:
+    id: "profile-gender-row-chevron"
+- assertNotVisible:
+    id: "profile-birthdate-row-chevron"
+
+# --- 연락처 고치기 ---
+- tapOn: "연락처"
+- assertVisible: "휴대폰 번호"
+- eraseText: 50
+- inputText: "01000000009"
+- tapOn: "저장"
+
+# 저장 뒤 — 시트가 닫히고 토스트가 뜨고 줄 값이 바뀐다.
+- assertVisible: "연락처를 바꿨어요"
+- assertVisible: "010-0000-0009"
+
+# --- 화면 고르기 → 어둡게 ---
+- tapOn: "화면"
+- assertVisible: "기기 설정대로"
+- assertVisible: "밝게"
+- assertVisible: "어둡게"
+- tapOn: "어둡게"
+
+# 고르는 즉시 시트가 닫힌다 — 시트에만 있던 다른 두 줄이 사라지고, "화면" 줄의
+# 지금 값이 "어둡게"로 남는다. 토스트는 없다(profile.md 「화면 고르기」) — 뜨는
+# 토스트가 없으니 없다는 것을 가리키는 고정 문구도 없어 따로 안 잰다.
+- assertNotVisible: "기기 설정대로"
+- assertVisible: "어둡게"
+
+# --- 재시작해도 테마가 남는다 ---
+# clearState·clearKeychain을 안 준다 — 세션(SecureStore)과 테마(AsyncStorage
+# "theme" 키) 둘 다 기기에 남아야 이 확인이 성립한다.
+- launchApp
+- openLink: "labiebelle://me"
+- assertVisible: "어둡게"
+
+# --- admin: 관리자 모드 줄만 본다 ---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: admin
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://me"
+- assertVisible: "관리자 모드"

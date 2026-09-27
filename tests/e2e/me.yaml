@@ -1,0 +1,9 @@
+# src/app/(tabs)/me.tsx의 짝이다 — tests/e2e/profile.yaml과 같은 화면인데
+# 파일 이름이 둘로 갈린다. .claude/hooks/tdd-guard-e2e.py가 훅 대상마다 다른
+# 이름으로 이 플로우를 찾기 때문이다 — src/screens/profile/ 쪽 변경은
+# 슬라이스 이름 "profile"로, src/app/(tabs)/me.tsx 쪽 변경은 라우트 파일명
+# "me"로 찾는다. 같은 화면에 플로우를 둘 안 쓰려고 여기서는 profile.yaml을
+# 그대로 불러 쓴다(tests/e2e/home.yaml이 login.yaml을 부르는 것과 같은 결).
+appId: com.labiebelle.app
+---
+- runFlow: profile.yaml
