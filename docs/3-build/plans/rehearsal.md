@@ -80,6 +80,8 @@ sources:
 
 **함수 셋.** 셋 다 `security definer`, `set search_path = ''`, 첫 줄이 `is_approved()`와 `has_rehearsal_grant(auth.uid())`다.
 
+자격 검사가 `has_rehearsal_grant(p_profile_id uuid)`라 `auth.uid()`를 그대로 못 넘긴다 — `internal.active_profile_id()`로 프로필을 먼저 집고 그것을 넘긴다. 고치기·지우기 둘은 **주인 검사가 자격 검사보다 앞이다**. 남의 행에 손을 대면 자격이 있든 없든 `not_allowed`고, 자격이 뒤에 서야 「남의 행을 고치면 관리자여도 `not_allowed`」가 성립한다.
+
 - `add_rehearsal(p_work_date date, p_starts_at time, p_ends_at time, p_count integer)`
   - **갈래를 함수가 판정한다.** `p_work_date`에 그 사람의 **살아 있는 정규 배정**이 있으면 건수 갈래, 없으면 시각 갈래다. 교육 배정은 안 센다 — [리허설](../../2-design/modules/schedule/design.md#리허설)이 「정규 배정」이라고 적었다
   - 판정한 갈래와 받은 인자가 어긋나면 `wrong_kind`
@@ -91,6 +93,7 @@ sources:
   - 겹침 검사는 자기 자신을 뺀 나머지와 한다
 - `remove_rehearsal(p_id uuid)` — 남의 행이면 `not_allowed`. 지운다
 - 오류 코드 넷이 새로 선다 — `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`. `not_allowed`는 이미 있다. 이 가운데 `error-codes.ts`에 없는 것은 `overlaps` 하나다 — 나머지 셋은 근무표 함수가 이미 올렸다(`tests/lint/error-codes`가 중복을 막는다)
+- 값 자체가 틀린 것도 둘 갈린다 — 건수가 1~9 밖이면 `bad_count`, 끝이 시작보다 이르거나 같으면 `bad_hours`다. 표의 check가 이미 막는 것을 함수가 먼저 받아 코드로 돌려준다 — check 위반은 SQLSTATE `23514`로 올라와 화면이 읽을 코드가 없다. `bad_count`도 `error-codes.ts`에 새로 선다
 
 ### AC-04
 
@@ -99,7 +102,7 @@ sources:
 - `rehearsalHours(row)` — 건수 갈래면 `count * 60`분, 시각 갈래면 `ends_at - starts_at`. **1건이 1시간이다**([SCH-023](../../2-design/modules/schedule/README.md#sch-023))
 - `dayTotal(rows)` · `monthTotal(rows)` — 날 합계와 달 합계. 달력 칸과 달 줄과 날 시트가 같은 함수를 쓴다
 - `kindForDate(date, assignments)` — 화면이 시트를 열기 전에 입력 모양을 고르는 판정이다. **함수와 같은 규칙을 두 벌 짜는 자리라 이 하나만 TS에 두고 SQL 쪽은 [AC-03](#ac-03)이 정본이다** — 어긋나면 저장이 `wrong_kind`로 걸리고 화면이 [AC-07](#ac-07)의 알림 한 줄로 다시 받는다. 두 벌이 서는 것을 막을 길이 없어 **어긋났을 때 사용자가 막히지 않는 것**으로 대신한다
-- `canAddOn(date, rows, kind)` — 건수 갈래인 날에 줄이 이미 하나면 거짓이다. 날 시트의 「리허설 넣기」가 이 값으로 사라진다
+- `canAddOn(kind, rows)` — 건수 갈래인 날에 줄이 이미 하나면 거짓이다. 날 시트의 「리허설 넣기」가 이 값으로 사라진다
 
 ### AC-05
 
@@ -145,7 +148,7 @@ sources:
 
 ### AC-09
 
-**오류 코드 목록.** `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`가 `src/shared/api/error-codes.ts`와 마이그레이션 양쪽에 선다. `tests/lint/error-codes.test.ts`가 둘을 맞춘다. 목록에 새로 드는 것은 `overlaps`다.
+**오류 코드 목록.** `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`·`bad_count`·`bad_hours`가 `src/shared/api/error-codes.ts`와 마이그레이션 양쪽에 선다. `tests/lint/error-codes.test.ts`가 둘을 맞춘다. 목록에 새로 드는 것은 `overlaps`와 `bad_count` 둘이다.
 
 **KST 날짜 손을 `src/shared/lib/kst-date.ts`로 모은다.** `kstDateOf`·`kstToday`·`shiftMonth`·`spellMonth`·`lastDateOfMonth`가 슬라이스 넷(`schedule-worker`·`schedule-admin`·`admin-home`·`applications`)에 각자 서 있었고 이 화면이 다섯째다. 슬라이스끼리는 서로를 못 부르니(lint 규칙 3) 공용 자리로 올리고, 넷은 그 파일을 부른다 — 슬라이스의 기존 테스트는 그대로 통과해야 한다.
 
@@ -155,7 +158,7 @@ sources:
 | --- | --- | --- |
 | `supabase/migrations/<날짜>_rehearsals.sql` | 표, check, unique index, RLS, 권한 회수 | AC-01·AC-02 |
 | `supabase/migrations/<날짜>_rehearsal_functions.sql` | `has_rehearsal_grant`와 함수 셋 | AC-02·AC-03 |
-| `src/shared/api/error-codes.ts` | 코드 하나(`overlaps`) | AC-09 |
+| `src/shared/api/error-codes.ts` | 코드 둘(`overlaps`·`bad_count`) | AC-09 |
 | `src/shared/lib/kst-date.ts`·`__tests__/` | KST 날짜 손 공용화, 슬라이스 넷이 부른다 | AC-09 |
 | `src/shared/ui/MonthPickerSheet.tsx` | 달 고르기 시트 조각 | AC-06 |
 | `src/features/rehearsal/model/*.ts`·`__tests__/` | 시간 환산·합계·갈래 판정·넣기 가능 | AC-04 |
