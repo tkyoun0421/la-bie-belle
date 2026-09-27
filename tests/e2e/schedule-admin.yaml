@@ -209,7 +209,7 @@ appId: com.labiebelle.app
 - assertVisible: "그만두기"
 - assertVisible: "열 날을 고르세요"
 - tapOn: "그만두기"
-- assertVisible: ".*근무표$"
+- assertVisible: "${output.monthLabel}"
 
 # ================================================================
 # 날 상세 껍데기 — 근무 시간 줄·근무 신청 줄만, 임시공휴일·근무 조정은 없다.
@@ -230,7 +230,7 @@ appId: com.labiebelle.app
 - tapOn: "닫기"
 
 - tapOn: "이 날 닫기"
-- assertVisible: ".*근무표$"
+- assertVisible: "${output.monthLabel}"
 
 # ================================================================
 # 확정 잠김 — 마감일이 아직 안 지났다. 「마감일 당기기」가 모아보기와 같은
