@@ -74,6 +74,8 @@
 3. 재직자 목록
 4. 퇴사 구획
 
+**바닥은 회색이고 목록 둘이 각각 카드 한 장이다.** 회색 바닥(`bg.neutral-sunken`) 위에 흰 카드([Card](../../../design-system/components.md#card))가 서고, 줄은 그 카드 안에서 가는 선으로 나뉜다 — [ADR-014](../../../adr/ADR-014-toss-like-depth-and-graphics.md)가 목록 화면(직원·가입 대기·알림)을 그렇게 정했다. 재직자와 퇴사자를 가르는 것은 카드 사이의 빈 면이라 둘 사이에 선을 따로 긋지 않는다.
+
 **퇴사한 사람이 같은 화면 아래에 있다.** 별도 화면으로 안 뺀다 — 실수로 퇴사 처리한 것을 되돌리거나 지난 이름을 확인하는 일이 드물지만 있고, 화면을 하나 더 만들 만큼은 아니다.
 
 #### 재직자 줄
@@ -102,7 +104,7 @@
 
 #### 퇴사 구획
 
-가는 선 아래에 「퇴사」 머리글이 서고 그 아래에 줄이 온다. 퇴사한 날이 늦은 순이다.
+재직자 카드 아래에 「퇴사」 머리글이 서고 그 아래 카드에 줄이 온다. 퇴사한 날이 늦은 순이다.
 
 | 자리 | 담는 것 |
 | --- | --- |
@@ -226,11 +228,12 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 | 자리 | 토큰 |
 | --- | --- |
-| 화면 바탕 | `bg.neutral` |
+| 화면 바탕 | `bg.neutral-sunken` |
 | 앱바 | [components.md](../../../design-system/components.md#앱바)의 앱바 |
+| 카드 | [components.md](../../../design-system/components.md#card)의 Card |
 | 줄 | [components.md](../../../design-system/components.md#listrow)의 ListRow |
 | 관리자 배지 | [components.md](../../../design-system/components.md#badge)의 Badge brand |
-| 가는 선 | `stroke.neutral` |
+| 카드 안 줄 사이 가는 선 | `stroke.neutral` |
 | 퇴사 머리글 | `fg.neutral-subtle` |
 | 퇴사한 사람 사진 | 투명도 60% |
 | 퇴사한 날 | `fg.neutral-subtle` |
@@ -274,16 +277,17 @@ Button secondary고 전폭이다. 지금 역할에 따라 라벨이 갈린다.
 
 | 자리 | 유틸 |
 | --- | --- |
-| 화면 좌우 여백 | `px-6` |
+| 화면 좌우 여백 | `px-5` |
+| 카드 안쪽 | [components.md](../../../design-system/components.md#card)의 Card |
 | 줄 | `py-4` |
 | 사진 | 40px 원 |
 | 사진과 이름 사이 | `gap-3` |
 | 이름과 배지 사이 | `gap-2` |
-| 가는 선 위아래 | `my-4` |
+| 재직자 카드와 퇴사 머리글 사이 | `mt-4` |
 | 퇴사 머리글 | `py-2` |
 | 앱바와 검색 칸 사이 | `mt-2` |
 | 검색 칸 | `rounded-md` `p-3` |
-| 검색 칸과 첫 줄 사이 | `mt-4` |
+| 검색 칸과 첫 카드 사이 | `mt-4` |
 | 시트 안쪽 | `p-6` |
 | 시트 사진 | 56px 원 |
 | 시트 프로필 줄 | `py-3` |

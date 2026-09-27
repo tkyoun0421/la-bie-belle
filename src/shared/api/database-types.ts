@@ -1039,6 +1039,8 @@ export type Database = {
       ensure_profile: { Args: never; Returns: undefined };
       is_admin: { Args: never; Returns: boolean };
       is_approved: { Args: never; Returns: boolean };
+      is_last_admin: { Args: { target_id: string }; Returns: boolean };
+      mark_leave: { Args: { profile_id: string }; Returns: undefined };
       mark_notifications_read: {
         Args: { p_ids: string[] };
         Returns: undefined;
@@ -1061,6 +1063,10 @@ export type Database = {
         };
         Returns: undefined;
       };
+      set_display_name: {
+        Args: { display_name: string; profile_id: string };
+        Returns: undefined;
+      };
       set_hall_defaults: {
         Args: { p_ends: string; p_slots: Json; p_starts: string };
         Returns: undefined;
@@ -1071,6 +1077,10 @@ export type Database = {
       };
       set_notifications_enabled: {
         Args: { p_on: boolean };
+        Returns: undefined;
+      };
+      set_role: {
+        Args: { profile_id: string; role: string };
         Returns: undefined;
       };
       submit_excuse: {
@@ -1087,6 +1097,7 @@ export type Database = {
         Returns: undefined;
       };
       unblock_member: { Args: { profile_id: string }; Returns: undefined };
+      undo_leave: { Args: { profile_id: string }; Returns: undefined };
       update_my_photo: { Args: { photo_url: string }; Returns: undefined };
     };
     Enums: {

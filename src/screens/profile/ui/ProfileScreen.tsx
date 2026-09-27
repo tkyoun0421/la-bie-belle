@@ -16,9 +16,11 @@ import { Avatar } from "@/shared/ui/Avatar";
 import { BellIcon } from "@/shared/ui/BellIcon";
 import { Button } from "@/shared/ui/Button";
 import { Card } from "@/shared/ui/Card";
+import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Icon } from "@/shared/ui/Icon";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Screen } from "@/shared/ui/Screen";
+import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
@@ -28,9 +30,7 @@ import { useUpdateContact } from "@/features/profile/model/useUpdateContact";
 import { useUpdatePhoto } from "@/features/profile/model/useUpdatePhoto";
 import { shouldOfferGooglePhoto } from "@/screens/profile/model/should-offer-google-photo";
 import { ContactSheet } from "@/screens/profile/ui/ContactSheet";
-import { FloatingToast } from "@/screens/profile/ui/FloatingToast";
 import { PhotoSheet } from "@/screens/profile/ui/PhotoSheet";
-import { SheetLayer } from "@/screens/profile/ui/SheetLayer";
 import { THEME_LABEL, ThemeSheet } from "@/screens/profile/ui/ThemeSheet";
 
 /**

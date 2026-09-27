@@ -1,0 +1,201 @@
+# 직원 화면 — 관리자가 재직자를 다루고 퇴사한 사람을 되돌린다.
+#
+# 근거는 docs/2-design/modules/account/screens/members.md다. 배정받은 리스크는
+# 「재직자 줄·퇴사 구획이 함께 보인다」「검색으로 거르기·빈 상태 문구」
+# 「이름 고치기 → 토스트·줄 갱신」「관리자 올리기 확인 → 토스트」
+# 「퇴사 처리 확인 → 퇴사 구획으로」「되돌리기 → 재직으로」다. 마지막 관리자
+# 판정·미래 배정 판정·이름 검증 같은 업무 규칙의 경우의 수는
+# test-planner가 integration으로 이미 배정했다(members-test-plan.md 「배정」) —
+# 여기서는 그 규칙이 실제로 화면·훅·API·DB를 잇는지만 본다. 「근무표로 가기」는
+# 목적지 화면이 없어(계획서 9번) 누르지 않는다 — 그래서 아래 퇴사 대상은 배정을
+# 하나도 안 만들어 항상 「배정이 없으면」 쪽(버튼 둘: 닫기·퇴사 처리)만 서게
+# 한다.
+#
+# 한 여정을 끝까지 간다 — 관리자 하나가 한 세션에서 목록을 보고, 찾고,
+# 고치고, 올리고, 퇴사시키고, 되돌린다. launchApp을 다시 하지 않는다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/pending.yaml 머리말, scripts/e2e-seed-server.mts를 따른다. 딥링크는
+# labiebelle://admin/members다 — src/app/admin/members/index.tsx가 그대로 URL
+# 세그먼트가 된다(admin은 그룹이 아니라 실제 폴더라 pending.yaml의 "/admin/…"과
+# 같은 결).
+#
+# **admin 시드는 자기 프로필을 안 보낸다**(scripts/e2e-seed-server.mts의
+# createAdminUser는 submit_profile을 안 거친다). ACC-001 판정 예시대로 채워진
+# 프로필만 목록에 뜨므로, 로그인한 관리자 자신은 이 화면의 재직자 줄에 안
+# 뜬다 — 그래서 아래 어떤 단언도 세션 주인 자신을 찾지 않는다.
+#
+# **시드 서버에 두 가지가 아직 없다 — implementer가 이 task에서 더한다.**
+#
+# 1. 상태 "approved"가 선택 인자 이름을 받아야 한다(members-test-plan.md 8번).
+#    지금은 SEEDED_PROFILE.name("박서연")으로 고정이라 같은 화면에 이름이 다른
+#    재직자를 여럿 세울 수 없다 — 검색이 한 사람만 남기는지 확인하려면 최소
+#    둘이 필요하다. 계약: seed-session.js가 env의 NAME을 읽어
+#    `JSON.stringify({ state: STATE, name: NAME || undefined })`로 보내고,
+#    e2e-seed-server.mts는 state === "approved"일 때 그 값이 있으면
+#    submitSeededProfile 호출의 display_name을 SEEDED_PROFILE.name 대신 그
+#    값으로 쓴다(성별·생년월일·연락처는 그대로 SEEDED_PROFILE 것을 써도 된다 —
+#    ACC-005가 같은 번호 둘을 막지 않는다). 아래 NAME 값은 이 파일이 고른
+#    값이라 그대로 문자로 단언한다 — 픽스처 기본값이 아니라서 output을 거칠
+#    이유가 없다.
+# 2. 상태 "left"가 이름 있는 퇴사자여야 한다(members-test-plan.md 8번). 지금
+#    e2e-seed-server.mts의 seededUser()는 state === "left"일 때
+#    `createLeftUser()`(tests/integration/postgres.ts, 프로필 없이 SQL로
+#    left_at만 얹는다)를 불러 profile을 null로 돌려준다. "approved"가 이미
+#    하듯 submit_profile → approve_member를 실제로 부른 뒤 관리자 토큰으로
+#    mark_leave까지 불러야 이 화면의 퇴사 구획이 이름 있는 줄을 보여준다.
+#    바뀌면 profile은 SEEDED_PROFILE 그대로다(선택 인자를 요구받지 않았다) —
+#    아래에서 이 사람의 이름은 output.profileName으로 참조한다(픽스처 기본값을
+#    글자로 안 박는다는 원칙, pending.yaml·members-pending.yaml과 같다).
+#    이 참조가 유효하려면 STATE=left 호출이 아래 순서에서 STATE=admin
+#    바로 앞이어야 한다 — admin은 profile: null이라 output.profileName을 안
+#    덮어쓴다(seed-session.js 38번째 줄, if (seeded.profile) 가드).
+#
+# **더보기(⋯) 트리거가 아이콘뿐이라 텍스트로 못 잡는다.** 화살표와 달리 이건
+# 실제로 눌러야 하는 컨트롤이라 장식이 아니다 — testID
+# "members-sheet-more"를 요청한다(재직자 시트와 퇴사한 사람 시트가 같은
+# 컴포넌트를 쓴다면 하나로 충분하다).
+#
+# **퇴사 확인 Dialog의 오른쪽 버튼 "퇴사 처리"가 더보기 팝오버의 항목
+# "퇴사 처리"와 글자가 같다.** members-pending.yaml이 "차단 풀기"에서 겪은
+# 것과 같은 자리다 — 팝오버가 완전히 걷히기 전에 Dialog가 겹쳐 뜨면 같은
+# 글자 둘이 동시에 있을 수 있다. testID "members-mark-leave-confirm"을
+# 요청한다.
+#
+# **이름 고치기 입력 칸도 같은 문제다.** 시트가 열린 동안 그 아래 목록 줄이
+# 걷히는지 지금 이 층에서 확인할 수 없어, 입력 칸에 채워진 지금 이름이 줄의
+# 이름과 동시에 있을 수 있다. 포커스를 주려고 그 글자를 tapOn하면 어느 쪽을
+# 잡을지 애매하다 — testID "members-rename-input"을 요청한다. members.md는
+# 연락처 시트(profile.md)와 달리 커서 위치를 못 박지 않아 eraseText를 바로
+# 쓰지 않는다.
+#
+# 퇴사 처리·되돌리기 뒤에 그 줄이 정말 반대 구획으로 옮겨갔는지는 이름 글자
+# 하나로는 못 가른다(같은 이름이 재직 목록에도 퇴사 구획에도 있을 수 있는
+# 구조). 대신 그 사람 시트를 다시 열어 시트 종류로 확인한다 — 퇴사한 사람
+# 시트만 더보기에 "퇴사 되돌리기"가 있고, 재직자 시트만 "관리자로 올리기"가
+# 있다(members.md 짜임). 이 간접 확인이 이 층의 한계다.
+#
+# 텍스트 셀렉터는 정규식이다. 물음표가 든 문구는 이스케이프한다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+# --- 재직자 넷과 퇴사자 하나를 세운다 ---
+# 이름은 이 파일이 고른 값이다 — SEEDED_PROFILE 기본값이 아니라 문자로 그대로
+# 단언한다.
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: approved
+      NAME: "문세아"
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: approved
+      NAME: "한소이"
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: approved
+      NAME: "오태윤"
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: approved
+      NAME: "배지훈"
+# left는 이름을 못 고른다 — 시드가 돌려주는 output.profileName을 그대로
+# 쓴다. 아래 admin 호출이 profile: null이라 이 값을 안 덮어쓴다.
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: left
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: admin
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://admin/members"
+
+# --- 목록 진입: 재직자 줄과 퇴사 구획이 함께 보인다 ---
+- assertVisible: "직원"
+- assertNotVisible: "아직 승인된 사람이 없어요"
+- assertVisible: "문세아"
+- assertVisible: "한소이"
+- assertVisible: "오태윤"
+- assertVisible: "배지훈"
+- assertVisible: "퇴사"
+- assertVisible: "${output.profileName}"
+
+# --- 검색으로 거르기 ---
+- tapOn: "이름으로 찾기"
+- inputText: "문세"
+- assertVisible: "문세아"
+- assertNotVisible: "한소이"
+- assertNotVisible: "${output.profileName}"
+
+# 지우면 정상으로 돌아온다.
+- eraseText: 10
+- assertVisible: "한소이"
+- assertVisible: "${output.profileName}"
+
+# --- 검색 빈 상태 ---
+- inputText: "존재하지않는이름zzz"
+- assertVisible: "맞는 이름이 없어요"
+- eraseText: 30
+- assertVisible: "한소이"
+
+# --- 이름 고치기 → 토스트·줄 갱신 ---
+- tapOn: "한소이"
+- tapOn: "이름 고치기"
+- assertVisible: "지난 근무표와 급여에 뜨는 이름도 같이 바뀌어요"
+- tapOn:
+    id: "members-rename-input"
+- eraseText: 20
+- inputText: "한소민"
+- tapOn: "저장"
+- assertVisible: "이름을 바꿨어요"
+- assertVisible: "한소민"
+- assertNotVisible: "한소이"
+
+# --- 관리자 올리기 확인 → 토스트 ---
+- tapOn: "오태윤"
+- assertVisible: "관리자로 올리기"
+- tapOn: "관리자로 올리기"
+- assertVisible: "관리자로 올릴까요\\?"
+- assertVisible: "근무표와 급여와 다른 사람의 프로필을 모두 볼 수 있게 돼요"
+- tapOn: "올리기"
+- assertVisible: "관리자로 올렸어요"
+
+# --- 퇴사 처리 확인 → 퇴사 구획으로 ---
+# 배지훈은 배정을 하나도 안 만들어 「배정이 없으면」 쪽만 선다 — 「근무표로
+# 가기」는 여기서 누를 일이 없다.
+- tapOn: "배지훈"
+- tapOn:
+    id: "members-sheet-more"
+- tapOn: "퇴사 처리"
+- assertVisible: "퇴사 처리할까요\\?"
+- assertVisible: "근무표와 근무 신청이 닫히고 지난 급여만 볼 수 있어요"
+- tapOn:
+    id: "members-mark-leave-confirm"
+- assertVisible: "퇴사 처리했어요"
+- assertVisible: "배지훈"
+
+# 시트 종류로 확인한다 — 퇴사한 사람 시트만 더보기에 「퇴사 되돌리기」가 있다.
+- tapOn: "배지훈"
+- tapOn:
+    id: "members-sheet-more"
+- assertVisible: "퇴사 되돌리기"
+
+# --- 되돌리기 → 재직으로 ---
+- tapOn: "퇴사 되돌리기"
+- assertVisible: "퇴사를 되돌릴까요\\?"
+- assertVisible: "다시 근무표에 배정할 수 있게 돼요"
+- tapOn: "되돌리기"
+- assertVisible: "퇴사를 되돌렸어요"
+- assertVisible: "배지훈"
+
+# 다시 재직자 시트로 확인한다 — 「관리자로 올리기」가 다시 있어야 한다.
+- tapOn: "배지훈"
+- assertVisible: "관리자로 올리기"

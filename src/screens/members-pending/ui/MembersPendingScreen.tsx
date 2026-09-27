@@ -1,38 +1,38 @@
 import { useRouter } from "expo-router";
 import { EllipsisVertical } from "lucide-react-native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { DomainError } from "@/shared/api/errors";
+import { queryClient } from "@/shared/lib/query-client";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Card } from "@/shared/ui/Card";
+import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Icon } from "@/shared/ui/Icon";
 import { ListRow } from "@/shared/ui/ListRow";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { Screen } from "@/shared/ui/Screen";
+import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
 import { approveMember } from "@/entities/profile/dals/approve-member";
 import { blockMember } from "@/entities/profile/dals/block-member";
-import {
-  listPendingMembers,
-  type MemberListRow,
-} from "@/entities/profile/dals/list-members";
+import type { MemberListRow } from "@/entities/profile/dals/list-members";
 import {
   getProfilePrivate,
   type ProfilePrivateRow,
 } from "@/entities/profile/dals/profile-private";
 import { rejectMember } from "@/entities/profile/dals/reject-member";
 import { formatElapsedDays } from "@/entities/profile/model/format-elapsed-days";
-import { FloatingToast } from "@/screens/members-pending/ui/FloatingToast";
+import { MEMBERS_KEY } from "@/features/members/model/query-keys";
+import { useMembers } from "@/features/members/model/useMembers";
 import {
   MemberDetailSheet,
   type MemberDecision,
   type SheetFace,
 } from "@/screens/members-pending/ui/MemberDetailSheet";
-import { SheetLayer } from "@/screens/members-pending/ui/SheetLayer";
 
 /**
  * 관리자가 가입 신청을 받거나 돌려보내는 화면이다. 앱 전체의 첫 문이다 — 승인이 없으면
@@ -78,7 +78,7 @@ function sentLine(submittedAt: string | null, now: string): string {
 export function MembersPendingScreen() {
   const router = useRouter();
 
-  const [rows, setRows] = useState<MemberListRow[] | null>(null);
+  const { data: rows } = useMembers(supabase, "pending");
   const [menuOpen, setMenuOpen] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
   const [face, setFace] = useState<SheetFace>("detail");
@@ -88,14 +88,6 @@ export function MembersPendingScreen() {
   const [toast, setToast] = useState<ToastMessage | null>(null);
 
   const now = new Date().toISOString();
-
-  const load = useCallback(async () => {
-    setRows(await listPendingMembers(supabase));
-  }, []);
-
-  useEffect(() => {
-    void load().catch(() => {});
-  }, [load]);
 
   const hideToast = useCallback(() => setToast(null), []);
 
@@ -143,9 +135,9 @@ export function MembersPendingScreen() {
         setSending(false);
       }
 
-      await load().catch(() => {});
+      await queryClient.invalidateQueries({ queryKey: MEMBERS_KEY });
     },
-    [closeSheet, load],
+    [closeSheet],
   );
 
   const open = rows?.find((row) => row.id === openId) ?? null;
@@ -204,7 +196,7 @@ export function MembersPendingScreen() {
 
       <ScrollView>
         <View className="px-5 pb-5">
-          {rows === null ? (
+          {rows === undefined ? (
             <Card>
               {SKELETON_ROWS.map((at) => (
                 <SkeletonLine key={at} className="my-4 w-2/3" />

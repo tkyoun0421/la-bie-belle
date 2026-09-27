@@ -1,25 +1,24 @@
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { DomainError } from "@/shared/api/errors";
+import { queryClient } from "@/shared/lib/query-client";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
 import { Card } from "@/shared/ui/Card";
+import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Screen } from "@/shared/ui/Screen";
+import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
-import {
-  listBlockedMembers,
-  type MemberListRow,
-} from "@/entities/profile/dals/list-members";
 import { unblockMember } from "@/entities/profile/dals/unblock-member";
 import { formatElapsedDays } from "@/entities/profile/model/format-elapsed-days";
-import { FloatingToast } from "@/screens/members-pending/ui/FloatingToast";
-import { SheetLayer } from "@/screens/members-pending/ui/SheetLayer";
+import { MEMBERS_KEY } from "@/features/members/model/query-keys";
+import { useMembers } from "@/features/members/model/useMembers";
 
 /**
  * 차단한 사람을 보고 차단을 푸는 자리다. 가입 대기 앱바의 더보기가 여는 화면이고 정본은
@@ -59,21 +58,13 @@ function blockedLine(blockedAt: string | null, now: string): string {
 export function MembersBlockedScreen() {
   const router = useRouter();
 
-  const [rows, setRows] = useState<MemberListRow[] | null>(null);
+  const { data: rows } = useMembers(supabase, "blocked");
   const [openId, setOpenId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [failed, setFailed] = useState(false);
   const [toast, setToast] = useState<ToastMessage | null>(null);
 
   const now = new Date().toISOString();
-
-  const load = useCallback(async () => {
-    setRows(await listBlockedMembers(supabase));
-  }, []);
-
-  useEffect(() => {
-    void load().catch(() => {});
-  }, [load]);
 
   const hideToast = useCallback(() => setToast(null), []);
 
@@ -106,9 +97,9 @@ export function MembersBlockedScreen() {
         setSending(false);
       }
 
-      await load().catch(() => {});
+      await queryClient.invalidateQueries({ queryKey: MEMBERS_KEY });
     },
-    [closeSheet, load],
+    [closeSheet],
   );
 
   return (
@@ -124,7 +115,7 @@ export function MembersBlockedScreen() {
 
       <ScrollView>
         <View className="px-5 pb-5">
-          {rows === null ? (
+          {rows === undefined ? (
             <Card>
               {SKELETON_ROWS.map((at) => (
                 <SkeletonLine key={at} className="my-4 w-2/3" />
