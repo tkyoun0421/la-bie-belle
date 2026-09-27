@@ -105,7 +105,7 @@
 # }
 # ```
 #
-# `SchedulePayload`에 `day?: string`를 더하고, `STATES`·`ADMIN_SCHEDULE_STATES`에
+# `SchedulePayload`에 `day?: string`를 더하고, `STATES`·`ADMIN_STATES`에
 # `"schedule_assign_day"`를 더한다. `schedulePayloadOf`에 갈래를 하나 추가한다.
 # **seed-session.js도 이 상태만 쓰는 `day`를 그대로 통과시켜야 한다** —
 # `schedule_admin_empty_month`의 `deadlineDate`처럼 화면 문구가 아니라 딥링크 조립용

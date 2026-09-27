@@ -1,0 +1,264 @@
+# 시급 — 관리자가 기본 시급과 사람별 시급을 정한다.
+#
+# 근거는 docs/2-design/spec/payroll-wages.md(AC-01~AC-06)와
+# docs/2-design/modules/payroll/screens/wages.md(짜임·문안 표가 정본)다.
+# 배정받은 리스크는(총괄이 이 e2e-test-writer에게 준 「쓸 것 — 여섯」)
+#   1. 목록 진입(AC-01) — 기본 시급 줄이 맨 위, 인원 수 줄, 이름 뒤 「님」
+#      없음, 배지 없음, 퇴사자 없음
+#   2. 기본 시급 저장(AC-02) — 확인을 안 묻고 저장, 토스트 뒤 따르는
+#      사람들의 줄이 같이 바뀐다
+#   3. 사람 시급 저장(AC-03) — 열 때 값이 채워져 있음(기본을 쓰는
+#      사람도), 저장 뒤 토스트, 다시 열면 되돌리기 줄이 생김
+#   4. 기본으로 되돌리기(AC-04) — 확인 Dialog가 바뀔 값을 말함, 확인 뒤
+#      토스트와 목록 값 하락
+#   5. 값의 규칙(AC-05) — 상한 100,000원 경고 문구, 값이 같거나
+#      빈 칸이면 저장 비활성
+#   6. 이력(AC-06) — 이력 줄이 안 눌림, 네 줄 이상이면 셋만 보이고
+#      「더 보기」
+# 이름 가나다순 정렬·「따로 정한 사람을 안 올린다」 같은 정렬 규칙은
+# test-planner가 unit으로 이미 배정했다(payroll-wages plan 「검증 방법」
+# AC-01 행 둘) — 여기서는 화면·훅·함수가 실제로 잇는지만 본다.
+#
+# 한 여정을 끝까지 간다 — 관리자 하나가 한 세션에서 목록을 보고, 기본
+# 시급을 바꾸고, 사람 시급을 바꾸고, 되돌리고, 값의 규칙을 겪고, 이력을
+# 편다. launchApp을 다시 하지 않는다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/members.yaml 머리말, scripts/e2e-seed-server.mts,
+# scripts/seed-session.js를 따른다. 딥링크는 labiebelle://admin/wages다.
+#
+# **시드 서버에 시급 관련 시드가 하나도 없다 — implementer가 이 task에서
+# 더한다.** 새 SeedState `payroll_wages` 하나로 이 화면이 필요로 하는
+# 다섯 사람과 기본 시급을 한 번에 세운다. 이름은 이 파일이 고른 값이라
+# NAME 인자를 안 받는다(schedule_confirmed의 「이도윤」처럼 함수 안에
+# 고정으로 박는다) — output에 새 필드가 안 늘어난다.
+#
+# ## payroll_wages
+#
+# 관리자로 로그인한다(`ADMIN_STATES`류의 집합에 이 상태도 넣어야
+# `seededUser`가 `createAdminUser()`를 돌려준다 — 이름이 스케줄 전용
+# 집합이라 어색하면 payroll용 집합을 새로 둬도 된다, 이 파일은 동작만
+# 요구한다). `schedulePayloadOf`에 갈래를 하나 추가해 아래 함수를 부른다.
+# 함수는 빈 객체 `{}`를 돌려준다 — 화면 문구가 전부 이 파일이 고정으로
+# 박은 값이라 동적 라벨이 필요 없다.
+#
+# ```ts
+# async function seedPayrollWages(): Promise<SchedulePayload> {
+#   const admin = await createAdminUser();
+#
+#   await admin.client.rpc("set_default_wage", { p_amount: 11000 });
+#
+#   // 기본을 따르는 사람 셋 — 기본 시급이 이미 선 뒤에 승인해야 approve_member가
+#   // 오늘 행(follows_default = true)을 자동으로 넣는다(approve_wage_row.sql).
+#   const followerA = await createSignedInUser();
+#   await submitSeededProfile(followerA, { ...SEEDED_PROFILE, name: "윤소율" });
+#   await decideBy("approve_member", followerA.profileId);
+#
+#   const followerB = await createSignedInUser();
+#   await submitSeededProfile(followerB, { ...SEEDED_PROFILE, name: "차수아" });
+#   await decideBy("approve_member", followerB.profileId);
+#
+#   // 시급 이력 넷짜리 사람 — 오늘 행(11,000원, follows_default=true)은 승인이
+#   // 넣고, 지난 셋은 RPC로 못 만든다(오늘 날짜만 받는다, PAY-008). 새 헬퍼
+#   // seedWageHistory(profileId, rows)를 tests/integration/postgres.ts에 더해
+#   // execSql로 wage_rates에 과거 날짜 행을 직접 꽂는다(backdateDeadline과 같은
+#   // 손).
+#   const historied = await createSignedInUser();
+#   await submitSeededProfile(historied, { ...SEEDED_PROFILE, name: "임하은" });
+#   await decideBy("approve_member", historied.profileId);
+#   seedWageHistory(historied.profileId, [
+#     { date: "2024-01-01", amount: 9000, followsDefault: false },
+#     { date: "2024-07-01", amount: 9500, followsDefault: false },
+#     { date: "2025-01-01", amount: 10000, followsDefault: false },
+#   ]);
+#
+#   // 개별로 정한 사람 — 기본(11,000원)보다 높은 15,000원. AC-04가 「지금 값이
+#   // 기본보다 높으면 누르는 순간 내려간다」를 확인하려면 이 관계가 필요하다.
+#   const individual = await createSignedInUser();
+#   await submitSeededProfile(individual, { ...SEEDED_PROFILE, name: "탁현우" });
+#   await decideBy("approve_member", individual.profileId);
+#   await admin.client.rpc("set_wage", {
+#     p_profile_id: individual.profileId,
+#     p_amount: 15000,
+#   });
+#
+#   // 퇴사한 사람 — 목록에 없어야 한다(AC-01, PAY-020).
+#   const leaver = await createSignedInUser();
+#   await submitSeededProfile(leaver, { ...SEEDED_PROFILE, name: "노건우" });
+#   await decideBy("approve_member", leaver.profileId);
+#   await decideBy("mark_leave", leaver.profileId);
+#
+#   return {};
+# }
+# ```
+#
+# `STATES`에 `"payroll_wages"`를 더하고, `schedulePayloadOf`에
+# `if (state === PAYROLL_WAGES) { return seedPayrollWages(); }` 갈래를 더한다.
+# `seed-session.js`는 안 고친다 — 동적 필드가 없다.
+#
+# **왜 셋이 아니라 넷이 「기본을 따르는 사람」인가.** 윤소율·차수아 말고도
+# 임하은이 승인 시점에 기본 행을 받아 지금 최근 행이 follows_default=true다
+# — 시급 이력이 있어도 가장 최근 행이 기본을 따르면 그 사람도 따르는
+# 사람이다(PAY-012·PAY-013). 그래서 아래 목록 진입 단언은 "3명이 이 값을
+# 써요"다(윤소율·차수아·임하은).
+#
+# 아래 흐름에서 AC-02(기본 시급을 11,000→13,000원으로 바꾼다)가 먼저 돌아,
+# 그 뒤로 등장하는 "13,000원"은 세 따르는 사람의 새 값이고 AC-04에서
+# 되돌리는 목표값도 13,000원이다(기본이 바뀐 뒤라서다). 차수아는 AC-03에서
+# 14,000원으로 개별화되어 그 뒤로는 기본을 안 따른다. 임하은의 이력 넷째
+# 줄(오늘 행)도 이 저장으로 9,000→…→13,000원까지 갈아치워져 최종
+# "13,000원"으로 보인다 — 셋이 아니라 여전히 네 줄이다(같은 날 upsert라
+# 행 수는 안 는다).
+#
+# **testID를 하나 요청한다.** 시트가 열린 동안 그 아래 목록 줄이 걷히는지
+# 이 층에서 확인할 수 없어, 입력 칸에 채워진 지금 값(예: "11,000원")이
+# 목록 줄의 같은 값과 동시에 있을 수 있다(members.yaml의
+# "members-rename-input"과 같은 자리). 기본 시급 시트와 사람 시트가 같은
+# 입력 조각(AmountInput)을 쓰므로 testID "wage-amount-input" 하나로
+# 충분하다.
+#
+# **안 쓰는 것.**
+#   - 저장 실패(통신 끊김) — Maestro가 네트워크를 못 끊는다. 손으로 본다.
+#   - 기본 시급이 아직 없는 상태 — 이 DB에 기본 시급을 이미 세운 다른
+#     시나리오가 없어 안전하지만, 총괄 지시대로 이 화면의 그 상태는
+#     unit이 보고 여기서 새로 안 만든다.
+#   - 권한 없음(AC-07) — 이미 다른 화면들이 덮었다(navigation.md
+#     「경로」 공통 가드).
+#   - 이름 가나다순 정렬 — unit이 이미 본다(payroll-wages plan 검증
+#     방법 AC-01 행). 여기서는 이름 넷이 다 보이는지만 본다.
+#
+# 텍스트 셀렉터는 정규식이라 물음표를 이스케이프한다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: payroll_wages
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://admin/wages"
+
+# ================================================================
+# AC-01 — 목록 진입: 기본 시급 줄이 맨 위, 인원 수, 이름들, 퇴사자 없음,
+# 「님」 없음, 배지 없음
+# ================================================================
+- assertVisible: "시급"
+- assertVisible: "기본 시급"
+- assertVisible: "11,000원"
+- assertVisible: "3명이 이 값을 써요"
+- assertVisible: "윤소율"
+- assertVisible: "차수아"
+- assertVisible: "탁현우"
+- assertVisible: "임하은"
+- assertVisible: "15,000원"
+- assertNotVisible: "노건우"
+- assertNotVisible: "임하은님"
+# 배지 없음은 여기서 못 본다 — Maestro 텍스트 매칭이 부분 일치라
+# `assertNotVisible: "기본"`이 같은 화면의 「기본 시급」에 걸린다. 줄이
+# 금액 말고 아무것도 안 들고 오는 것은 `wage-rows.test.ts`가 본다.
+
+# ================================================================
+# AC-02 — 기본 시급 저장: 확인을 안 묻는다, 토스트 뒤 따르는 사람들의
+# 줄이 같이 바뀐다
+# ================================================================
+- tapOn: "기본 시급"
+- assertVisible: "3명의 시급이 같이 바뀌어요"
+- assertVisible: "오늘부터 적용돼요"
+
+- tapOn:
+    id: "wage-amount-input"
+- eraseText: 20
+- inputText: "13000"
+- assertVisible: "13,000원"
+- tapOn: "저장"
+
+- assertVisible: "기본 시급을 바꿨어요"
+- assertVisible: "윤소율"
+- assertVisible: "13,000원"
+
+# ================================================================
+# AC-03 — 사람 시급 저장: 열 때 값이 채워져 있다(기본을 쓰는 사람도),
+# 저장 뒤 토스트, 다시 열면 되돌리기 줄이 생긴다
+# ================================================================
+- tapOn: "차수아"
+- assertVisible: "차수아"
+- assertVisible: "13,000원"
+- assertVisible: "오늘부터 적용돼요"
+- assertNotVisible: "기본 시급으로 되돌리기"
+
+- tapOn:
+    id: "wage-amount-input"
+- eraseText: 20
+- inputText: "14000"
+- tapOn: "저장"
+
+- assertVisible: "시급을 바꿨어요"
+
+- tapOn: "차수아"
+- assertVisible: "14,000원"
+- assertVisible: "기본 시급으로 되돌리기"
+
+# ================================================================
+# AC-05 — 값의 규칙: 지금과 같거나 빈 칸이면 「저장」이 비활성, 상한
+# 100,000원에 닿으면 경고 문구. 지금 이 사람 시트(차수아)를 그대로 쓴다.
+# ================================================================
+- assertVisible:
+    text: "저장"
+    enabled: false
+
+- tapOn:
+    id: "wage-amount-input"
+- eraseText: 20
+- assertVisible:
+    text: "저장"
+    enabled: false
+
+- inputText: "1000000"
+- assertVisible: "100,000원"
+- assertVisible: "여기까지만 쓸 수 있어요"
+
+- tapOn: "닫기"
+
+# ================================================================
+# AC-04 — 기본으로 되돌리기: 확인 Dialog가 바뀔 값을 말한다, 확인하면
+# 토스트와 목록 값 하락
+# ================================================================
+- tapOn: "탁현우"
+- assertVisible: "15,000원"
+- assertVisible: "기본 시급으로 되돌리기"
+- tapOn: "기본 시급으로 되돌리기"
+
+- assertVisible: "기본 시급으로 되돌릴까요\\?"
+- assertVisible: "오늘부터 13,000원이 적용돼요"
+- tapOn: "되돌리기"
+
+- assertVisible: "기본 시급으로 되돌렸어요"
+- assertVisible: "탁현우"
+- assertVisible: "13,000원"
+
+# 시트를 다시 열어 되돌리기 줄이 사라졌는지 확인한다 — 이제 기본을 쓴다.
+- tapOn: "탁현우"
+- assertVisible: "13,000원"
+- assertNotVisible: "기본 시급으로 되돌리기"
+
+# ================================================================
+# AC-06 — 이력: 안 눌린다, 네 줄 이상이면 셋만 보이고 「더 보기」
+# ================================================================
+- tapOn: "임하은"
+- assertVisible: "임하은"
+- assertVisible: "13,000원"
+- assertVisible: "이력"
+- assertVisible: "10,000원"
+- assertVisible: "9,500원"
+- assertNotVisible: "9,000원"
+- assertVisible: "더 보기"
+
+# 이력 줄을 눌러도 아무 일이 없다 — 시트에 그대로 남아 「저장」이 보인다.
+- tapOn: "10,000원"
+- assertVisible: "저장"
+
+- tapOn: "더 보기"
+- assertVisible: "9,000원"

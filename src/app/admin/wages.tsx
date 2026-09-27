@@ -1,5 +1,3 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { WagesScreen } from "@/screens/wages/ui/WagesScreen";
 
-export default function Screen() {
-  return <NotBuiltYet path="/admin/wages" />;
-}
+export default WagesScreen;

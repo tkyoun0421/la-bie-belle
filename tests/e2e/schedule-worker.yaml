@@ -208,7 +208,7 @@
 #
 # `SchedulePayload`에 `slotClaimedLabel?: string`을 더한다. `STATES`에
 # `"schedule_worker_request_pending"`·`"schedule_worker_request_claimed"`를,
-# `schedulePayloadOf`에 두 갈래를 더한다. **`ADMIN_SCHEDULE_STATES`에는 안
+# `schedulePayloadOf`에 두 갈래를 더한다. **`ADMIN_STATES`에는 안
 # 넣는다** — 로그인하는 사람은 관리자가 아니라 요청을 받는 나다.
 # `seededUser`의 `SUBMISSION_WINDOW || SCHEDULE_CONFIRMED`에서 승인까지
 # 해주는 분기에 이 둘도 같이 넣어야 한다 — 승인 안 된 사람은 근무표 화면

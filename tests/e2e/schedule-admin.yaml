@@ -206,7 +206,7 @@
 #
 # `SchedulePayload`는 안 늘어난다 — `month`·`day`·`monthLabel`뿐이라
 # `schedule_assign_day`가 이미 쓰는 필드 그대로다. `STATES`·
-# `ADMIN_SCHEDULE_STATES`·`schedulePayloadOf`에 `"schedule_admin_request_slot"`을
+# `ADMIN_STATES`·`schedulePayloadOf`에 `"schedule_admin_request_slot"`을
 # `schedule_assign_day`와 같은 자리에 더한다. tests/e2e/scripts/seed-session.js는
 # 안 고쳐도 된다 — 이미 있는 `if (seeded.day)` 통로를 그대로 탄다.
 #
