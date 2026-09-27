@@ -128,14 +128,15 @@ sources:
 | `src/screens/payroll/model/*.ts`·`__tests__/` | 기간 자르기·누적 셈·목록 줄 만들기·연 접기 | AC-01~AC-05 |
 | `src/screens/payroll/ui/*.tsx` · `/payroll/` 화면 | 세그먼트·기간 줄·금액·누적·목록 | AC-01~AC-05·AC-07 |
 | `src/features/payroll/*.ts`·`__tests__/` | 여러 달 키 읽어 더하기 | AC-06 |
-| `src/shared/ui/segmented.tsx` | 주·월·연 세그먼트 | AC-01 |
+| `src/shared/ui/Segment.tsx` | 주·월·연 세그먼트 — 이미 있고 고른 면이 미끄러지는 모션만 는다. `schedule-worker`가 같이 쓰니 그 화면도 회귀로 본다 | AC-01 |
+| `src/features/payroll/model/payroll-days.ts`·`__tests__/` | 시급 없는 날을 버리지 말고 `'wage-pending'`으로 낸다 — [payroll-data AC-06](payroll-data.md#ac-06)의 계약을 넓힌다 | AC-04 |
 | `payroll` e2e | e2e | 검증 표 |
 
 ## 구현 순서
 
 기능 task 파이프라인이다 — `test-planner` → `unit-test-writer`·`e2e-test-writer` → `implementer` → `pr-diff`. [`payroll-data`](payroll-data.md)가 merge된 뒤에 시작한다.
 
-1. `test-planner`가 AC-01~AC-07을 배정한다. **integration이 없다** — 계산과 함수는 앞 task가 이미 봤다
+1. `test-planner`가 AC-01~AC-07을 배정한다. **integration이 없다** — 계산과 함수는 앞 task가 이미 봤다. 예외가 하나다: `payroll-days`가 시급 없는 날을 버리던 계약을 넓히고 그 봉인된 단언 하나를 같이 고친다(총괄이 승인했다)
 2. `unit-test-writer`가 AC-01의 기간 자르기를 먼저 쓴다. 달을 걸친 주가 이 화면의 가장 어려운 자리다
 3. `implementer`가 기간 → 금액·누적 → 목록 → 연 → 경계 셋 순으로 초록을 만든다
 4. `e2e-test-writer`가 주·월·연을 오가며 금액이 따라 움직이는 한 바퀴와 퇴사자 진입을 쓴다
@@ -168,6 +169,7 @@ sources:
 | AC-07 | 시안과 어긋난다 | 수동 — `sian-auditor` | — | 문안·토큰·상태가 문서와 같다 |
 
 - 배정하지 않은 것: 「연」을 처음 열 때의 체감 속도 — 질의 열둘이라 실기기에서 손으로 본다
+- 배정하지 않은 것: 읽기 실패의 자동 확인 — 급여 읽기를 강제로 실패시키는 문이 없다(`/retry` 게이트의 것은 프로필 전용이다). 그 문을 새로 내는 것은 이 task 밖이라 손으로 본다
 - 막힌 것: 지금은 없다
 
 ## 범위 밖
