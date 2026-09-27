@@ -30,7 +30,7 @@ export function FloatingToast({ message, onDone }: FloatingToastProps) {
     <View
       pointerEvents="none"
       style={{ bottom: TOAST_BOTTOM }}
-      className="absolute inset-x-0 px-6"
+      className="absolute inset-x-0 px-5"
     >
       <Toast>{message}</Toast>
     </View>

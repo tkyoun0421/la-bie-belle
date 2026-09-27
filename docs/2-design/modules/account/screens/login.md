@@ -126,7 +126,7 @@
 
 | 자리 | 유틸 |
 | --- | --- |
-| 화면 좌우 여백 | `px-6` |
+| 화면 좌우 여백 | `px-5` — [면의 안쪽 여백은 20px이다](../../../design-system/foundation/spacing-shape.md#면의-안쪽-여백은-20px이다) |
 | 화면 아래 여백 | `pb-6`에 `useSafeAreaInsets`의 `bottom`을 더한다 |
 | 브랜드 마크 | `size-12` `rounded-lg` |
 | 마크와 이름 사이 | `mb-5` |
@@ -272,7 +272,7 @@
 
 | 자리 | 유틸 |
 | --- | --- |
-| 화면 좌우 여백 | `px-6` |
+| 화면 좌우 여백 | `px-5` — [면의 안쪽 여백은 20px이다](../../../design-system/foundation/spacing-shape.md#면의-안쪽-여백은-20px이다) |
 | 안내와 더미 사이 | `mt-6` |
 | 사진 원 | [Avatar](../../../design-system/components.md#avatar) 64px — 더미에서도 칸에서도 같다 |
 | 더미의 사진과 첫 글 사이 | `mt-6` |
@@ -410,7 +410,7 @@
 
 | 자리 | 유틸 |
 | --- | --- |
-| 화면 좌우 여백 | `px-6` |
+| 화면 좌우 여백 | `px-5` — [면의 안쪽 여백은 20px이다](../../../design-system/foundation/spacing-shape.md#면의-안쪽-여백은-20px이다) |
 | 화면 아래 여백 | `pb-6`에 `useSafeAreaInsets`의 `bottom`을 더한다 |
 | 상태 배지 | `h-8` `px-3` `rounded-sm` |
 | 뛰는 점 | `size-1.5` |

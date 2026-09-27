@@ -34,7 +34,7 @@ export function SheetLayer({ onDismiss, children }: SheetLayerProps) {
       </Pressable>
       <BottomSheet
         style={{ paddingBottom: SHEET_BOTTOM_PADDING + insets.bottom }}
-        className="px-6 pt-6"
+        className="px-5 pt-5"
       >
         {children}
       </BottomSheet>

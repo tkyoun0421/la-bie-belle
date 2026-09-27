@@ -116,7 +116,7 @@
 
 | 자리 | 유틸 |
 | --- | --- |
-| 화면 좌우 여백 | `px-6` |
+| 화면 좌우 여백 | `px-5` — [면의 안쪽 여백은 20px이다](../../../design-system/foundation/spacing-shape.md#면의-안쪽-여백은-20px이다) |
 | 줄 | `py-4` |
 | 사진 | `size-10` `rounded-full` |
 | 사진과 글자 사이 | `gap-3` |
@@ -180,7 +180,7 @@
 | 자리 | 유틸 |
 | --- | --- |
 | 시트 | 위쪽 두 모서리만 `rounded-lg` |
-| 시트 안쪽 여백 | `px-6` `pt-6`, 아래는 `pb-6`에 `useSafeAreaInsets`의 `bottom` |
+| 시트 안쪽 여백 | `px-5` `pt-5`, 아래는 `pb-5`에 `useSafeAreaInsets`의 `bottom` |
 | 사진 | `size-16` `rounded-full` |
 | 사진과 이름 사이 | `mt-4` |
 | 이름과 값 사이 | `mt-6` |

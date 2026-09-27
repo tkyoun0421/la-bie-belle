@@ -229,7 +229,7 @@ export function ProfileScreen() {
       />
 
       <ScrollView>
-        <View className="gap-3 px-6 pb-6">
+        <View className="gap-3 px-5 pb-5">
           <Card>
             <View className="items-center">
               <View className="relative">

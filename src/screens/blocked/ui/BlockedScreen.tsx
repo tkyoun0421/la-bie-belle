@@ -65,7 +65,7 @@ export function BlockedScreen() {
     <Screen
       floor="plain"
       style={{ paddingBottom: SCREEN_BOTTOM_PADDING + insets.bottom }}
-      className="px-6"
+      className="px-5"
     >
       <View className="flex-1 items-center justify-center">
         <Illustration scene="blocked" />
