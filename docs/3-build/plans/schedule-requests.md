@@ -96,7 +96,7 @@ sources:
   - 그 배정에 살아 있는 취소 요청(`decided_at is null`)이 있으면 `already_requested`
   - 그 배정이 이미 닫혔으면(`ended_at`) `stale` — 열어둔 사이 강제 변경이 있었다
   - **거절된 뒤 다시 요청할 수 있다.** 새 행이다([근무 취소](../../2-design/modules/schedule/design.md#근무-취소)). 횟수를 안 막는다 — 마감이 이미 막는다
-- `decide_cancel_request(p_cancel_request_id uuid, p_approved boolean, p_reason text) — 실제 시그니처는 `decide_cancel_request(p_cancel_request_id uuid, p_decision text, p_reason text default null)`이고 `p_decision`은 `approved`·`rejected`(아니면 `wrong_kind`)다. boolean 하나로는 갈래 이름이 표(`cancel_requests.decision`)와 어긋나서다` — `is_admin()`
+- `decide_cancel_request(p_cancel_request_id uuid, p_approved boolean, p_reason text)` — 실제 시그니처는 `decide_cancel_request(p_cancel_request_id uuid, p_decision text, p_reason text default null)`이고 `p_decision`은 `approved`·`rejected`(아니면 `wrong_kind`)다. boolean 하나로는 갈래 이름이 표(`cancel_requests.decision`)와 어긋나서다. `is_admin()`
   - 이미 판정됐으면 `already_decided`
   - 승인이면 `decision = 'approved'`·`decided_at`·`decided_by`를 찍고 **그 배정을 닫는다**(확정 뒤라 `ended_at`). 그 자리에 살아 있는 요청이 있으면 같이 닫는다
   - 거절이면 `decision = 'rejected'`고 `decision_reason`이 **필수다** — 비면 `invalid_reason`. 그 글이 근무자에게 그대로 간다
