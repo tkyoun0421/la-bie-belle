@@ -129,7 +129,7 @@ unique index 둘이 도메인 규칙을 지킨다.
 - 입력·전제: `submit_availability`가 근무 신청이다
 - 읽고 쓰는 데이터: 그 달 행을 지우고 새로 넣는다
 - 처리와 경쟁: **근무 신청 체크만 즉시 칠한다.** 달력에서 날짜를 누르면 바로 표시되고 저장 버튼이 `submit_availability`를 한 번 보낸다
-- 결과와 실패: 마감 지나면 `window_closed`. 실패하면 서버 값으로 되돌리고 토스트다. 마감이 지나 `window_closed`가 오면 달력을 잠근다
+- 결과와 실패: 검사 순서는 거친 것부터다 — 승인 전이면 `not_allowed`, 그 달 근무표가 없으면 `no_schedule`, 확정됐으면 `already_confirmed`, 마감 다음날부터 `window_closed`(마감 당일은 받는다), 그 달 밖 날짜가 섞이면 `bad_dates`고 한 트랜잭션이라 하나도 안 들어간다. 확정된 달은 마감도 지나 있어 둘이 겹치는데 `already_confirmed`가 먼저다 — 잠긴 이유를 정확히 말해야 화면이 「근무표가 확정됐어요」와 「마감됐어요」를 가른다. 실패하면 서버 값으로 되돌리고 토스트다. `window_closed`가 오면 달력을 잠근다
 - 캐시 갱신: `['availability']`
 
 ### 날 열기·닫기

@@ -1083,6 +1083,10 @@ export type Database = {
         Args: { profile_id: string; role: string };
         Returns: undefined;
       };
+      submit_availability: {
+        Args: { p_dates: string[]; p_month: string };
+        Returns: undefined;
+      };
       submit_excuse: {
         Args: { p_body: string; p_day_id: string };
         Returns: undefined;

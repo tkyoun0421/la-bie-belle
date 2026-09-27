@@ -12,7 +12,7 @@ import { Text } from "@/shared/ui/Text";
  * `docs/2-design/design-system/components.md`의 「근무표 날짜 칸」이고, 관리자 편집 상태는
  * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「달력 칸」이 더한 것이다.
  *
- * **달력 한 장에서 쓰는 색은 브랜드와 뉴트럴 둘뿐이다.** 상태가 여덟인데 색이 둘인 것은,
+ * **달력 한 장에서 쓰는 색은 브랜드와 뉴트럴 둘뿐이다.** 상태가 아홉인데 색이 둘인 것은,
  * 상태마다 색을 붙이면 달력이 색 지도가 되고 정작 내 근무가 어디인지 안 보이기 때문이다.
  *
  * **오늘은 상태와 나란히 서지 않고 그 위에 얹힌다.** 칸 배경은 그날 상태를 그대로 두고
@@ -22,6 +22,10 @@ import { Text } from "@/shared/ui/Text";
  * **그리드가 이 달 밖으로 남긴 칸은 비운다.** `day`가 `null`이면 자리만 지키고 숫자도 안
  * 쓴다. 흐린 숫자라도 남기면 그 달 근무표에 든 날로 읽히고, 누르면 어디로 가는지를 또
  * 정해야 한다.
+ *
+ * **고른 날의 체크가 `${testID}-selected`를 단다.** 골랐는지 아닌지는 배경색과 테두리와 체크
+ * 아이콘으로만 갈리는데 셋 다 스타일이라 밖에서 못 본다 — [ListRow](ListRow.tsx)가 화살표에
+ * 이름을 실어 주는 것과 같은 자리다.
  *
  * 점선을 `border`가 아니라 SVG의 `stroke-dasharray`로 그리는 것은 `border`가 애니메이션을
  * 못 받고, 확정 전 칸의 점선 `border`와 한 칸에서 부딪히기 때문이다. 요청 온 날의 점선이
@@ -46,6 +50,7 @@ export type ScheduleDayCellState =
   | "assigned"
   | "requested"
   | "open"
+  | "muted"
   | "closed"
   | "unconfirmed"
   | "picked"
@@ -67,6 +72,7 @@ const LOOKS: Record<ScheduleDayCellState, CellLook> = {
     outline: "stroke-stroke-brand-solid",
   },
   open: { surface: "bg-bg-neutral-weak", day: "text-fg-neutral-muted" },
+  muted: { day: "text-fg-neutral-muted" },
   closed: { day: "text-fg-neutral-subtle" },
   unconfirmed: {
     day: "text-fg-neutral-subtle",
@@ -125,7 +131,11 @@ export function ScheduleDayCell({
         <>
           <DayNumber day={day} isToday={isToday} className={look.day} />
           <View className="flex-1 justify-end">
-            <CellMark state={state} applicationCount={applicationCount} />
+            <CellMark
+              state={state}
+              applicationCount={applicationCount}
+              testID={testID}
+            />
           </View>
         </>
       )}
@@ -161,13 +171,20 @@ function DayNumber({
 function CellMark({
   state,
   applicationCount,
+  testID,
 }: {
   state: ScheduleDayCellState;
   applicationCount: number;
+  testID?: string;
 }) {
   if (CHECKED.has(state)) {
     return (
-      <Icon icon={Check} size={MARK_ICON_SIZE} className="text-fg-brand" />
+      <Icon
+        icon={Check}
+        size={MARK_ICON_SIZE}
+        testID={testID ? `${testID}-selected` : undefined}
+        className="text-fg-brand"
+      />
     );
   }
 

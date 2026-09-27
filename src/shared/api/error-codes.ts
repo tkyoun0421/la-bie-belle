@@ -6,6 +6,7 @@ export const ERROR_CODES = [
   "already_open",
   "already_requested",
   "already_submitted",
+  "bad_dates",
   "bad_hours",
   "bad_radius",
   "date_past",

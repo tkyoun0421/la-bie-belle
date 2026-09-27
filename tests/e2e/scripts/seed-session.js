@@ -1,24 +1,41 @@
-// 여러 플로우(pending·left·blocked·retry·session)가 나눠 쓰는 준비 절차다.
-// runScript로 이 파일을 부르면 로컬 시드 서버(scripts/e2e-seed-server.mts,
+// 여러 플로우(pending·left·blocked·retry·session·schedule-worker)가 나눠 쓰는 준비
+// 절차다. runScript로 이 파일을 부르면 로컬 시드 서버(scripts/e2e-seed-server.mts,
 // 127.0.0.1:8765 — 아직 없다. implementer가 이 task에서 세운다)에 사용자 상태를
 // 만들어 달라고 요청하고, 돌아온 세션 토큰을 output에 실어 그 다음 스텝의
 // `openLink`가 쓰게 한다.
 //
 // 부르는 쪽은 env로 STATE를 준다. 값은
 // "fresh" | "submitted" | "approved" | "admin" | "rejected" | "left" | "blocked" |
-// "read_failure" 중 하나다. NAME은 선택이고, 프로필을 보내는 상태에서 그 사람의 이름을
-// 고른다 — 한 화면에 승인된 사람을 여럿 세우는 members.yaml이 쓴다. 안 주면 시드 서버의
-// 기본 이름이다. 계약과 상태별 응답 값은 scripts/e2e-seed-server.mts가 정본이다.
+// "read_failure" | "schedule_submission_window" | "schedule_confirmed" 중 하나다.
+// 뒤 둘은 schedule-worker task가 더하는 것이라 아직 e2e-seed-server.mts에 없다 —
+// 계약은 tests/e2e/schedule-worker.yaml 머리말에 있다. NAME은 선택이고, 프로필을
+// 보내는 상태에서 그 사람의 이름을 고른다 — 한 화면에 승인된 사람을 여럿 세우는
+// members.yaml이 쓴다. 안 주면 시드 서버의 기본 이름이다. 계약과 상태별 응답 값은
+// scripts/e2e-seed-server.mts가 정본이다.
 //
 // NAME이 env에 없으면 그 이름의 전역 자체가 없다 — 그래서 typeof로 먼저 묻는다. 바로
-// 읽으면 NAME을 안 주는 플로우(pending·left·blocked·retry·session)가 ReferenceError로
-// 죽는다.
+// 읽으면 NAME을 안 주는 플로우(pending·left·blocked·retry·session·schedule-worker)가
+// ReferenceError로 죽는다.
 //
 // http·output은 Maestro의 JS 실행기가 주는 전역이다. 여기서 실제로 이 값들이
 // 계약대로 동작하는지는 아직 못 봤다 — Maestro CLI로 한 번도 못 돌려봤다는 것이
 // 이 task 리턴의 「실행」 절이 적은 그대로다. http.post의 옵션 모양과 응답의
 // body가 문자열인지 이미 파싱된 객체인지는 Maestro 문서와 실제 실행으로
 // 확인해야 하는 자리로 남는다.
+
+/**
+ * Maestro의 텍스트 셀렉터는 정규식이다(tests/e2e/README 격 관례,
+ * members.yaml·profile.yaml이 물음표를 "\\?"로 직접 이스케이프하는 것과 같은
+ * 이유). 이 파일이 넘기는 값 중 요일을 괄호로 붙이는 라벨
+ * (writing.md 162번째 줄 "9월 12일(토)" 표기)은 "(", ")"를 그대로 담고 있어
+ * `${output.foo}`로 assertVisible 패턴에 꽂으면 그 괄호가 리터럴이 아니라 정규식
+ * 그룹으로 읽혀 매칭이 깨진다. 화면 문구를 직접 타이핑하는 자리는 사람이 눈으로
+ * 보고 이스케이프하지만, 시드 서버가 돌려주는 동적 값은 그 자리에서 이스케이프할
+ * 수 없으므로 여기서 한 번에 처리해 내보낸다.
+ */
+function escapeForTextSelector(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 const chosenName = typeof NAME === "string" && NAME !== "" ? NAME : undefined;
 
@@ -54,4 +71,30 @@ if (seeded.profile) {
     seeded.profile.gender === "female" ? "여성" : "남성";
   const [birthYear, birthMonth, birthDay] = seeded.profile.birthDate.split("-");
   output.profileBirthDateLabel = `${birthYear}년 ${Number(birthMonth)}월 ${Number(birthDay)}일`;
+}
+
+// schedule_submission_window·schedule_confirmed 전용 필드다. 계약은
+// tests/e2e/schedule-worker.yaml 머리말에 있다 — 두 상태 다 "그 달"의 raw
+// 값(month, "YYYY-MM")과 화면에 그대로 뜨는 한글 라벨을 함께 돌려준다. raw
+// month는 "?month=" 딥링크와 "schedule-day-${output.month}-01" 같은 testID
+// 조립에 쓰고, 라벨 셋(monthLabel·deadlineLabel·myDateLabel·otherDateLabel)은
+// 화면 문구를 그대로 단언하는 데 쓴다 — 이 넷은 escapeForTextSelector를 거쳐야
+// 괄호 있는 요일 표기("6월 1일(일)")가 정규식으로 안 깨진다.
+// schedule-worker-test-plan.md 8번 결정이 딱 이 다섯 필드까지고 그 이상은 안
+// 늘린다.
+if (seeded.month) {
+  output.month = seeded.month;
+  output.monthLabel = escapeForTextSelector(seeded.monthLabel);
+}
+
+if (seeded.deadlineLabel) {
+  output.deadlineLabel = escapeForTextSelector(seeded.deadlineLabel);
+}
+
+if (seeded.myDateLabel) {
+  output.myDateLabel = escapeForTextSelector(seeded.myDateLabel);
+}
+
+if (seeded.otherDateLabel) {
+  output.otherDateLabel = escapeForTextSelector(seeded.otherDateLabel);
 }

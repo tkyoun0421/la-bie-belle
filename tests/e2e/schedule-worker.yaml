@@ -1,0 +1,250 @@
+# 근무자 근무표 — 근무자가 확정된 달을 훑고, 접수 중인 달에 근무 신청을
+# 냈다 고쳤다 하고, 마감 뒤·안 만든 달에서는 손댈 게 없다는 것까지 한 여정으로
+# 간다.
+#
+# 근거는 docs/2-design/spec/schedule-worker.md(AC-01·AC-03·AC-04·AC-05)와
+# docs/2-design/modules/schedule/screens/schedule-worker.md다. 배정받은 리스크는
+# (schedule-worker-test-plan.md 「배정 → e2e」)
+#   - 확정 달: 세그먼트 전환에 「내 근무만」이 유지된다, 날 칸을 눌러 시트를 보고
+#     기기 뒤로가 시트만 닫는다, ?date=로 오면 그 시트가 열린 채로 뜬다
+#   - 접수 중인 달: 날짜 셋을 골라 보내면 토스트가 뜨고, 재진입하면 그 셋이
+#     그대로 선택된 채로 열리고, 하나 빼고 다시 보내면 덮어써지고, 0개로도
+#     보내진다
+#   - 마감 뒤 확정 전인 달: 읽기 전용 문구
+#   - 근무표를 아직 안 만든 달: 점선과 안내
+# 업무 규칙의 경우의 수(승인 전·마감 다음날부터·그 달 밖 날짜·확정 뒤 등 에러
+# 코드 여섯, 덮어쓰기가 트랜잭션인지)는 test-planner가 이미 integration으로
+# 배정했다(schedule-worker-test-plan.md 「배정 → integration」) — 여기서는 그
+# 규칙이 실제로 화면·훅·API·DB를 잇는지만 본다.
+#
+# **점·회색 면·오늘 원은 안 잰다.** components.md 「근무표 날짜 칸」이 이 셋을
+# 배경색과 원 표식으로만 가르는데, 색과 원은 e2e가 못 보는 스타일이다(strategy
+# 「공통 검증 기준과 대역의 한계」). 대신 그 상태가 만드는 사용자 행동
+# 차이 — 내 근무 날 시트에는 버튼 둘이 있고 내가 안 나가는 날 시트에는
+# 없다 — 로 같은 리스크를 확인한다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/pending.yaml 머리말, scripts/e2e-seed-server.mts,
+# scripts/seed-session.js를 따른다. 딥링크는 라우트가 src/app/(tabs)/schedule.tsx인데
+# 그룹을 감싼 괄호 "(tabs)"는 URL 세그먼트가 아니라서 빠져
+# "labiebelle://schedule"이다(tests/e2e/me.yaml의 "/me"와 같은 결). "?month="과
+# "?date="는 spec AC-03·navigation.md 「경로」의 "/schedule" 행이 쓰는 그대로다.
+#
+# **시드 서버에 상태 둘이 아직 없다 — implementer가 이 task에서 더한다.**
+# "schedule_submission_window"와 "schedule_confirmed"다. 계약은 아래와 같다.
+#
+# ## schedule_submission_window
+#
+# 승인된 근무자 하나를 만들고(submit_profile → approve_member, "approved"
+# 상태가 이미 하는 것과 같다), tests/integration/postgres.ts의
+# `withFreshMonth`로 고른 먼 달 하나에 `create_schedule` → `set_application_deadline`을
+# 불러 접수 중인 근무표를 세운다(design.md 「근무표 만들기와 마감일」). 마감일은
+# `kstDate`로 오늘부터 며칠 뒤로 잡아 지금 시각 기준으로 열려 있어야 한다.
+#
+# **그 바로 다음 달에도 근무표를 하나 더 세운다** — 같은 `create_schedule` →
+# `set_application_deadline`인데 이번엔 `backdateDeadline`으로 마감일을
+# `kstDate`의 과거 날짜로 돌려 이미 지난 채로 만든다. 확정은 안 한다(AC-05
+# 「마감일이 지났고 아직 확정 전인 달」). **그다음 달(응답의 달 + 2)은 아예 안
+# 만든다** — 근무표 자체가 없는 안 만든 달 시나리오가 저절로 거기 선다("안 만든
+# 달은 그 다음 달로 진입"이 이 뜻이다, schedule-worker-test-plan.md 8번). 이렇게
+# 한 시드 호출에 달 셋을 걸어두면 아래 플로우가 다음 달 화살표만 두 번 눌러
+# 접수 중 → 마감 뒤 확정 전 → 안 만든 달을 순서대로 지나간다.
+#
+# 응답은 첫 달(접수 중인 달) 기준으로 다음을 싣는다.
+#   - `month` — 그 달의 raw "YYYY-MM". 딥링크와 testID 조립에 쓴다
+#   - `monthLabel` — 앱바에 그대로 뜨는 한글, 예 "2031년 6월"
+#   - `deadlineLabel` — 마감 줄 문구 그대로, 예
+#     "스케줄 신청 마감 6월 3일(화) · 3일 남았어요"(schedule-worker.md 「근무표
+#     문안」의 "마감 줄 — 마감 전" 행과 같은 꼴)
+#
+# ## schedule_confirmed
+#
+# 승인된 근무자 하나(나)와 승인된 근무자 하나(동료)를 만들고, `withFreshMonth`로
+# 고른 또 다른 먼 달에 `create_schedule`로 근무표를 세운 뒤 `open_day`로 그 달
+# 1일과 2일을 연다. `seedAssignment`(tests/integration/postgres.ts)로 1일에는
+# 나를, 2일에는 동료만 배정한다(둘 다 kind: "regular" — 교육 배정이 아니다).
+# `confirm_schedule`로 확정한다(design.md 「배정과 강제 변경」이 확정은 마감이
+# 지나 있어야 한다고 하니 이 달의 마감일도 `backdateDeadline`으로 과거로 돌려둔
+# 채 확정한다).
+#
+# 응답은 다음을 싣는다.
+#   - `month` — 그 달의 raw "YYYY-MM"
+#   - `monthLabel` — 앱바 한글, 예 "2031년 9월"
+#   - `myDateLabel` — 1일의 날 시트 제목·아코디언 날짜 줄과 같은 꼴, 예
+#     "9월 1일(월)"
+#   - `otherDateLabel` — 2일의 같은 꼴, 예 "9월 2일(화)"
+#
+# 1일·2일처럼 날짜를 고정하는 것은 이 플로우가 실제 몇 일인지 몰라도 되게
+# 하려는 것이다 — testID는 `${output.month}-01`·`${output.month}-02`로 항상
+# 조립되고, 어느 달이든 1일과 2일은 있다.
+#
+# ## 이 task가 요청하는 testID 넷
+#
+# - `schedule-month-prev`·`schedule-month-next` — 앱바 양옆 달 이동
+#   화살표(schedule-worker.md 「근무표 짜임」). 아이콘만 있고 글자가 없어 지금
+#   텍스트로 못 잡는다. 세그먼트가 접근성 라벨을 받는 것과 달리 이 화살표에는
+#   라벨 조항이 문서에 없어 testID로 요청한다
+# - `schedule-day-<YYYY-MM-DD>` — 달력 순 그리드의 날짜 칸. 날짜 숫자 글자로
+#   잡으면 그 칸이 선택됐는지 아닌지를 못 가른다(아래 항목), 그래서 칸 자체는
+#   처음부터 testID로 잡는다
+# - `schedule-day-<YYYY-MM-DD>-selected` — 그 칸이 지금 선택된 상태일 때만 뜨는
+#   표식(components.md 「근무표 날짜 칸」의 "확정 전 — 신청에서 고른 날" 체크).
+#   선택 여부는 배경색과 테두리와 체크 아이콘으로만 갈리는데 셋 다 스타일이라
+#   assertVisible로 못 본다 — profile.yaml이 잠긴 줄의 화살표를
+#   `${testID}-chevron`으로 요청한 것과 같은 자리다. 이 표식이 있어야 재진입 →
+#   덮어쓰기 흐름에서 "보낸 날짜가 선택된 채 열린다"(AC-04)를 실제로 확인할 수
+#   있다
+#
+# 텍스트 셀렉터는 정규식이다. 물음표·괄호가 든 문구는 이스케이프한다. 동적
+# 값(monthLabel·deadlineLabel·myDateLabel·otherDateLabel)의 괄호는
+# scripts/seed-session.js의 escapeForTextSelector가 미리 이스케이프해서 내보낸다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+# ================================================================
+# 확정 달 — 세그먼트 전환에 「내 근무만」 유지, 날 칸 → 시트, ?date= 진입
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: schedule_confirmed
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://schedule?month=${output.month}"
+
+- assertVisible: "${output.monthLabel}"
+- assertVisible: "내 근무만"
+
+# --- 「내 근무만」을 켠 채 포지션 순으로 바꿔도 필터가 유지된다 ---
+# 달력 순에서는 필터를 켜도 남의 근무 날이 그대로 눌린다("면이 없어진 것이지
+# 날이 없어진 것이 아니다")라 텍스트로 가를 표시가 없다. 포지션 순 아코디언은
+# 줄 자체가 사라지므로 여기서 필터가 살아있는지가 눈에 보인다.
+- tapOn: "내 근무만"
+- tapOn: "포지션 순"
+- assertVisible: "${output.myDateLabel}"
+- assertNotVisible: "${output.otherDateLabel}"
+
+# 다음 확인을 위해 되돌린다.
+- tapOn: "내 근무만"
+- tapOn: "달력 순"
+
+# --- 내 근무 날 시트 — 버튼 둘, 기기 뒤로는 시트만 닫는다 ---
+- tapOn:
+    id: "schedule-day-${output.month}-01"
+- assertVisible: "${output.myDateLabel}"
+- assertVisible: "나"
+- assertVisible: "근무 취소"
+- assertVisible: "교대 요청"
+- back
+- assertVisible: "${output.monthLabel}"
+- assertNotVisible: "교대 요청"
+
+# --- 내가 안 나가는 날 시트 — 버튼 둘이 없다 ---
+- tapOn:
+    id: "schedule-day-${output.month}-02"
+- assertVisible: "${output.otherDateLabel}"
+- assertNotVisible: "근무 취소"
+- assertNotVisible: "교대 요청"
+- back
+
+# --- ?date=로 오면 그 시트가 열린 채로 뜬다 ---
+- openLink: "labiebelle://schedule?date=${output.month}-01"
+- assertVisible: "${output.myDateLabel}"
+- assertVisible: "근무 취소"
+- back
+
+# ================================================================
+# 접수 중인 달 — 셋 선택 → 보내기 → 재진입 → 덮어쓰기 → 0개
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: schedule_submission_window
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://schedule?month=${output.month}"
+
+- assertVisible: "${output.monthLabel}"
+- assertVisible: "${output.deadlineLabel}"
+# 확정 전 달에는 세그먼트도 체크박스도 안 선다(schedule-worker.md 「보기 전환
+# 세그먼트」).
+- assertNotVisible: "내 근무만"
+
+# --- 날짜 셋을 고른다 ---
+- tapOn:
+    id: "schedule-day-${output.month}-01"
+- tapOn:
+    id: "schedule-day-${output.month}-02"
+- tapOn:
+    id: "schedule-day-${output.month}-03"
+- assertVisible:
+    id: "schedule-day-${output.month}-01-selected"
+- assertVisible:
+    id: "schedule-day-${output.month}-02-selected"
+- assertVisible:
+    id: "schedule-day-${output.month}-03-selected"
+
+# --- 보내기 → 토스트 ---
+- tapOn: "보내기"
+- assertVisible: ".*근무 신청을 보냈어요"
+
+# --- 재진입 — 보낸 셋이 그대로 선택된 채 열린다 ---
+- openLink: "labiebelle://schedule?month=${output.month}"
+- assertVisible:
+    id: "schedule-day-${output.month}-01-selected"
+- assertVisible:
+    id: "schedule-day-${output.month}-02-selected"
+- assertVisible:
+    id: "schedule-day-${output.month}-03-selected"
+
+# --- 하나 빼고 다시 보내면 덮어써진다(둘만 남는다) ---
+- tapOn:
+    id: "schedule-day-${output.month}-01"
+- tapOn: "보내기"
+- assertVisible: ".*근무 신청을 보냈어요"
+- openLink: "labiebelle://schedule?month=${output.month}"
+- assertNotVisible:
+    id: "schedule-day-${output.month}-01-selected"
+- assertVisible:
+    id: "schedule-day-${output.month}-02-selected"
+- assertVisible:
+    id: "schedule-day-${output.month}-03-selected"
+
+# --- 나머지 둘도 지우고 0개로 보내도 통과한다 ---
+- tapOn:
+    id: "schedule-day-${output.month}-02"
+- tapOn:
+    id: "schedule-day-${output.month}-03"
+- assertNotVisible:
+    id: "schedule-day-${output.month}-02-selected"
+- assertNotVisible:
+    id: "schedule-day-${output.month}-03-selected"
+- tapOn: "보내기"
+- assertVisible: ".*근무 신청을 보냈어요"
+- openLink: "labiebelle://schedule?month=${output.month}"
+- assertNotVisible:
+    id: "schedule-day-${output.month}-01-selected"
+- assertNotVisible:
+    id: "schedule-day-${output.month}-02-selected"
+- assertNotVisible:
+    id: "schedule-day-${output.month}-03-selected"
+
+# ================================================================
+# 마감 뒤 확정 전인 달 — schedule_submission_window가 같이 세운 다음 달이다.
+# 다음 달 화살표 한 번으로 온다.
+# ================================================================
+- tapOn:
+    id: "schedule-month-next"
+- assertVisible: ".*스케줄 신청이.*에 마감됐어요"
+- assertVisible: "근무표를 만들고 있어요. 확정되면 여기에 보여요"
+- assertNotVisible: "보내기"
+
+# ================================================================
+# 근무표를 아직 안 만든 달 — 다음 달 화살표 한 번 더. schedule_submission_window가
+# 이 달은 안 만들어서(위 계약 참고) 근무표 자체가 없다.
+# ================================================================
+- tapOn:
+    id: "schedule-month-next"
+- assertVisible: ".*아직.*근무 신청을 받지 않아요.*"
+- assertNotVisible: "보내기"
