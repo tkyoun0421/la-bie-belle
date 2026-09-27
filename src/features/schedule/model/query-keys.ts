@@ -28,6 +28,16 @@ export const REQUESTS_KEY = ["requests"] as const;
 
 export const HALL_KEY = ["hall"] as const;
 
+/**
+ * 자격은 사람의 속성이라 근무표가 아니라 명단 아래 산다 — `grant_position`이 낡게 하는 것도
+ * `['members']` 하나다. 같은 상수가 `features/members`에도 적혀 있는 것은 슬라이스끼리
+ * 서로를 못 import해서다(규칙 3).
+ */
+export const MEMBERS_KEY = ["members"] as const;
+
+/** 자격 키의 꼬리다 — `['members', 'qualifications']`. */
+export const QUALIFICATIONS_SCOPE = "qualifications";
+
 /** 날을 여닫고 확정하는 판정이 같이 낡게 하는 셋이다. */
 export const SCHEDULE_WRITE_KEYS = [
   SCHEDULE_KEY,

@@ -1,5 +1,5 @@
-import { grantPosition } from "@/entities/schedule/dals/grant-position";
 import { DomainError } from "@/shared/api/errors";
+import { grantPosition } from "@/entities/schedule/dals/grant-position";
 import {
   createAdminUser,
   createApprovedUser,

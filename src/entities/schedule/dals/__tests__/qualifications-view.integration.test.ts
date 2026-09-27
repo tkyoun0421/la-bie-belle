@@ -7,7 +7,6 @@ import {
   kstMonthStart,
   withFreshMonth,
   type AdminUser,
-  type ApprovedUser,
 } from "@tests/integration/postgres";
 
 type RpcCaller = { client: AdminUser["client"] };

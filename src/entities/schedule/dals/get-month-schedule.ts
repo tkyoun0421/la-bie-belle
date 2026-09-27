@@ -12,6 +12,12 @@ import type { Db } from "@/shared/api/database";
  * ([SCH-019](../../../../docs/2-design/modules/schedule/README.md#sch-019)) 날 시트를 열 때마다
  * 프로필을 다시 읽지 않는다. `profiles`의 RLS가 승인된 사람에게 이미 열려 있다.
  *
+ * **자리는 만든 순서로 온다.** 날 상세가 「안내 1·안내 2」로 번호를 매기는데 그 번호가 다시
+ * 읽을 때마다 바뀌면 안 된다 — 순서를 화면이 정하지 않고 질의가 싣는다.
+ *
+ * **`slot_id`가 배정을 카드에 앉힌다.** 같은 포지션 자리가 여럿일 때 포지션 이름만으로는
+ * 어느 카드의 사람인지 안 갈린다. 교육 배정은 자리를 안 먹어 `null`이다.
+ *
  * **출근도 같은 질의에 딸려 온다.** 「근무표 한 달은 `days`에서 `slots`·`assignments`·
  * `check_ins`를 임베딩한 한 질의」가 정본이라
  * ([design.md](../../../../docs/2-design/modules/schedule/design.md#행위-밖의-실행-동작))
@@ -31,6 +37,7 @@ export type ScheduleCheckIn = {
 
 export type ScheduleAssignment = {
   id: string;
+  slot_id: string | null;
   position: string;
   kind: string;
   profile_id: string;
@@ -49,6 +56,7 @@ export type ScheduleDay = {
   work_date: string;
   starts_at: string;
   ends_at: string;
+  opened_at: string;
   slots: ScheduleSlot[];
   assignments: ScheduleAssignment[];
   check_ins: ScheduleCheckIn[];
@@ -64,8 +72,9 @@ const DAY_COLUMNS = [
   "work_date",
   "starts_at",
   "ends_at",
+  "opened_at",
   "slots(id, positions, ended_at)",
-  "assignments(id, position, kind, profile_id, ended_at, profiles!assignments_profile_id_fkey(display_name))",
+  "assignments(id, slot_id, position, kind, profile_id, ended_at, profiles!assignments_profile_id_fkey(display_name))",
   "check_ins(id, profile_id, checked_at)",
 ].join(", ");
 
@@ -79,6 +88,7 @@ export async function getMonthSchedule(
     .gte("work_date", monthStart(month))
     .lt("work_date", nextMonthStart(month))
     .order("work_date")
+    .order("created_at", { referencedTable: "slots" })
     .returns<ScheduleDay[]>();
 
   if (error) {

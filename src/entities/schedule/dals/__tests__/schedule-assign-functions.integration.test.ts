@@ -102,9 +102,7 @@ async function slotIdForPosition(
   return slot.id;
 }
 
-async function seedOpenDay(
-  admin: AdminUser,
-): Promise<{
+async function seedOpenDay(admin: AdminUser): Promise<{
   month: string;
   scheduleId: string;
   dayId: string;

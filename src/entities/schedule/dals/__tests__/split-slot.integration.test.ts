@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { splitSlot } from "@/entities/schedule/dals/split-slot";
 import { DomainError } from "@/shared/api/errors";
+import { splitSlot } from "@/entities/schedule/dals/split-slot";
 import {
   createAdminUser,
   execSql,

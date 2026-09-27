@@ -49,7 +49,8 @@ const SIZES: Record<TextSize, string> = {
   "4xl": "text-4xl",
 };
 
-const TONES: Record<TextTone, string> = {
+/** 아이콘도 이 표를 읽는다 — 아이콘 색은 옆 글자와 같은 `fg` 토큰을 따른다(Icon.tsx). */
+export const TONE_CLASS: Record<TextTone, string> = {
   neutral: "text-fg-neutral",
   muted: "text-fg-neutral-muted",
   subtle: "text-fg-neutral-subtle",
@@ -89,7 +90,7 @@ export function Text({
       maxFontSizeMultiplier={maxFontSizeMultiplier}
       className={cn(
         SIZES[size],
-        TONES[tone],
+        TONE_CLASS[tone],
         WEIGHTS[weight],
         numeric && "tabular-nums",
         className,

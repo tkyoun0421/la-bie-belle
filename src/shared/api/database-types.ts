@@ -1011,8 +1011,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      qualifications: {
+        Row: {
+          position: string | null;
+          profile_id: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
+      add_assignment: {
+        Args: {
+          p_day_id?: string;
+          p_kind: string;
+          p_position?: string;
+          p_profile_id: string;
+          p_skip_qualification?: boolean;
+          p_slot_id?: string;
+        };
+        Returns: string;
+      };
+      add_slot: {
+        Args: { p_day_id: string; p_position: string };
+        Returns: undefined;
+      };
       approve_member: { Args: { profile_id: string }; Returns: undefined };
       block_member: { Args: { profile_id: string }; Returns: undefined };
       check_in: {
@@ -1032,11 +1054,20 @@ export type Database = {
         Args: { p_deadline: string; p_month: string };
         Returns: undefined;
       };
+      day_structure_locked: { Args: { p_day_id: string }; Returns: boolean };
       decide_excuse: {
         Args: { p_approved: boolean; p_excuse_id: string; p_reason?: string };
         Returns: undefined;
       };
       ensure_profile: { Args: never; Returns: undefined };
+      force_change: {
+        Args: { p_assignment_id: string; p_profile_id: string };
+        Returns: string;
+      };
+      grant_position: {
+        Args: { p_position: string; p_profile_id: string };
+        Returns: undefined;
+      };
       is_admin: { Args: never; Returns: boolean };
       is_approved: { Args: never; Returns: boolean };
       is_last_admin: { Args: { target_id: string }; Returns: boolean };
@@ -1045,9 +1076,18 @@ export type Database = {
         Args: { p_ids: string[] };
         Returns: undefined;
       };
+      merge_slots: {
+        Args: { p_day_id: string; p_from: string; p_to: string };
+        Returns: undefined;
+      };
       open_day: { Args: { p_work_date: string }; Returns: undefined };
       reject_member: { Args: { profile_id: string }; Returns: undefined };
+      remove_assignment: {
+        Args: { p_assignment_id: string };
+        Returns: undefined;
+      };
       remove_push_token: { Args: { p_token: string }; Returns: undefined };
+      remove_slot: { Args: { p_slot_id: string }; Returns: undefined };
       rotate_qr: { Args: never; Returns: undefined };
       save_push_token: { Args: { p_token: string }; Returns: undefined };
       set_application_deadline: {
@@ -1083,6 +1123,7 @@ export type Database = {
         Args: { profile_id: string; role: string };
         Returns: undefined;
       };
+      split_slot: { Args: { p_slot_id: string }; Returns: undefined };
       submit_availability: {
         Args: { p_dates: string[]; p_month: string };
         Returns: undefined;

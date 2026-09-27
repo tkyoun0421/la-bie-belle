@@ -4,15 +4,17 @@
 //   POST http://127.0.0.1:8765/seed  {"state": "rejected"}
 //   → {"access_token": "…", "refresh_token": "…", "user_id": "…", "profile": {…}}
 //
-// 상태는 열다섯이다 — fresh · submitted · approved · admin · rejected · left · blocked ·
-// read_failure · schedule_submission_window · schedule_confirmed와, 관리자 근무표 다섯
+// 상태는 열여섯이다 — fresh · submitted · approved · admin · rejected · left · blocked ·
+// read_failure · schedule_submission_window · schedule_confirmed와, 관리자 근무표 여섯
 // (schedule_admin_empty_month · schedule_admin_race_open · schedule_admin_confirmable ·
-// schedule_admin_confirmed · schedule_admin_applications). `name`은 선택이고, 프로필을
-// 보내는 상태에서 그 사람의 이름을 고른다(안 주면 SEEDED_PROFILE의 이름이다). `month`·`day`도
-// 선택이고 schedule_admin_race_open만 쓴다 — 이미 로그인된 세션 밖에서 먼저 열 날짜다.
+// schedule_admin_confirmed · schedule_admin_applications · schedule_assign_day). `name`은
+// 선택이고, 프로필을 보내는 상태에서 그 사람의 이름을 고른다(안 주면 SEEDED_PROFILE의
+// 이름이다). 요청의 `month`·`day`도 선택이고 schedule_admin_race_open만 쓴다 — 이미
+// 로그인된 세션 밖에서 먼저 열 날짜다. 응답의 `day`는 schedule_assign_day만 싣는다 —
+// 그 플로우가 달력을 안 거치고 날 상세 딥링크를 바로 조립한다.
 // 근무표 상태들은 사람만이 아니라 그 사람이 볼 근무표까지 세우고, 화면에 그대로 뜨는 라벨을
 // 같이 돌려준다 — 계약은 `tests/e2e/schedule-worker.yaml`과 `tests/e2e/schedule-admin.yaml`과
-// `tests/e2e/applications.yaml` 머리말이다.
+// `tests/e2e/schedule-assign.yaml`과 `tests/e2e/applications.yaml` 머리말이다.
 // 부르는 쪽은 `tests/e2e/scripts/seed-session.js`고, 받은 토큰을 개발 빌드의 테스트 문
 // (`src/app/__test/session.tsx`)에 딥링크로 싣는다. 정본은 `docs/4-test/execution.md`의
 // 「`pnpm e2e`」 절이다.
@@ -84,6 +86,8 @@ const ADMIN_CONFIRMED = "schedule_admin_confirmed";
 
 const ADMIN_APPLICATIONS = "schedule_admin_applications";
 
+const ASSIGN_DAY = "schedule_assign_day";
+
 const STATES = [
   "fresh",
   "submitted",
@@ -100,17 +104,19 @@ const STATES = [
   ADMIN_CONFIRMABLE,
   ADMIN_CONFIRMED,
   ADMIN_APPLICATIONS,
+  ASSIGN_DAY,
 ] as const;
 
 export type SeedState = (typeof STATES)[number];
 
-/** 관리자 근무표 플로우가 쓰는 다섯이다 — 전부 관리자로 로그인한다. */
+/** 관리자 근무표 플로우가 쓰는 여섯이다 — 전부 관리자로 로그인한다. */
 const ADMIN_SCHEDULE_STATES = new Set<SeedState>([
   ADMIN_EMPTY_MONTH,
   ADMIN_RACE_OPEN,
   ADMIN_CONFIRMABLE,
   ADMIN_CONFIRMED,
   ADMIN_APPLICATIONS,
+  ASSIGN_DAY,
 ]);
 
 /**
@@ -124,6 +130,7 @@ const ADMIN_SCHEDULE_STATES = new Set<SeedState>([
 type SchedulePayload = {
   month: string;
   monthLabel: string;
+  day?: string;
   deadlineLabel?: string;
   myDateLabel?: string;
   otherDateLabel?: string;
@@ -335,6 +342,32 @@ async function freeSlotOf(admin: AdminUser, dayId: string): Promise<string> {
   return data.id;
 }
 
+/**
+ * 포지션을 골라 그 날의 빈 자리 하나를 집는다. 날 상세를 들여다보는 플로우는 어느 줄이
+ * 채워졌는지를 단언하므로(`tests/e2e/schedule-assign.yaml`의 「안내 1/2」) 아무 자리나
+ * 집는 `freeSlotOf`로는 그 줄이 회차마다 갈린다.
+ */
+async function freeSlotOfPosition(
+  admin: AdminUser,
+  dayId: string,
+  position: string,
+): Promise<string> {
+  const { data, error } = await admin.client
+    .from("slots")
+    .select("id")
+    .eq("day_id", dayId)
+    .contains("positions", [position])
+    .is("ended_at", null)
+    .limit(1)
+    .single<{ id: string }>();
+
+  if (error || !data) {
+    throw error ?? new Error(`${position} 자리를 못 찾았다`);
+  }
+
+  return data.id;
+}
+
 function setDisplayName(profileId: string, displayName: string): void {
   execSql(
     "update public.profiles set display_name = :'display_name' where id = :'profile_id';\n",
@@ -477,20 +510,92 @@ async function seedAdminConfirmable(): Promise<SchedulePayload> {
   });
 }
 
-/** 이미 확정한 달이다. 3일은 안 연 채로 남긴다 — 확정 뒤에도 열 날이 있어야 한다. */
+/**
+ * 이미 확정한 달이다. 3일은 안 연 채로 남긴다 — 확정 뒤에도 열 날이 있어야 한다.
+ *
+ * 1일의 「안내」 자리 하나는 김하늘로 채워 확정한다. 확정 시점 날의 강제 변경
+ * (`tests/e2e/schedule-assign.yaml`의 「사람 빼기」)이 채워진 자리에서 시작해서다. 근무자
+ * 화면이 쓰는 이도윤(`seedConfirmedMonth`)과 이름을 갈라 한 화면에서 안 겹치게 둔다.
+ * 3일만 들여다보는 `tests/e2e/schedule-admin.yaml`은 이 배정을 안 만난다.
+ */
 async function seedAdminConfirmed(): Promise<SchedulePayload> {
   const admin = await createAdminUser();
+
+  const colleague = await createSignedInUser();
+  await submitSeededProfile(colleague, { ...SEEDED_PROFILE, name: "김하늘" });
+  await decideBy("approve_member", colleague.profileId);
 
   return withFreshMonth(async (monthsFromNow) => {
     const monthDate = kstMonthStart(monthsFromNow);
     const month = monthDate.slice(0, 7);
+    const workDate = `${month}-01`;
 
     await createSchedule(admin, monthDate, kstDate(1));
-    await openDay(admin, `${month}-01`);
+    await openDay(admin, workDate);
+
+    await colleague.client.rpc("submit_availability", {
+      p_month: monthDate,
+      p_dates: [workDate],
+    });
+
+    const dayId = await dayIdOf(admin, workDate);
+
+    seedAssignment(
+      dayId,
+      colleague.profileId,
+      "regular",
+      await freeSlotOfPosition(admin, dayId, "안내"),
+    );
+
     backdateDeadline(await scheduleIdOf(admin, monthDate), kstDate(-1));
     await confirmSchedule(admin, monthDate);
 
     return { month, monthLabel: spellMonth(month) };
+  });
+}
+
+/**
+ * 열린 날 하나와 그 날을 채울 사람 셋이다. 이 상태만 `day`를 같이 싣는다 — 플로우가
+ * 달력을 안 거치고 날 상세로 바로 들어가서다.
+ *
+ * 셋의 역할은 `tests/e2e/schedule-assign.yaml` 머리말이 정한다 — 박서연은 교육 배정과
+ * 정규 배정을 이어 받고, 이도윤은 자격 없는 채로 남아 「이번만 넣기·자격도 주기」 갈래의
+ * 주인공이고, 최유진은 신청을 안 내 「전체 보기」의 「신청 안 함」 줄로만 선다.
+ */
+async function seedAssignDay(): Promise<SchedulePayload> {
+  const admin = await createAdminUser();
+
+  const workerA = await createSignedInUser();
+  await submitSeededProfile(workerA, { ...SEEDED_PROFILE, name: "박서연" });
+  await decideBy("approve_member", workerA.profileId);
+
+  const workerB = await createSignedInUser();
+  await submitSeededProfile(workerB, { ...SEEDED_PROFILE, name: "이도윤" });
+  await decideBy("approve_member", workerB.profileId);
+
+  const workerD = await createSignedInUser();
+  await submitSeededProfile(workerD, { ...SEEDED_PROFILE, name: "최유진" });
+  await decideBy("approve_member", workerD.profileId);
+
+  return withFreshMonth(async (monthsFromNow) => {
+    const monthDate = kstMonthStart(monthsFromNow);
+    const month = monthDate.slice(0, 7);
+    const day = "01";
+    const workDate = `${month}-${day}`;
+
+    await createSchedule(admin, monthDate, kstDate(3));
+    await openDay(admin, workDate);
+
+    await workerA.client.rpc("submit_availability", {
+      p_month: monthDate,
+      p_dates: [workDate],
+    });
+    await workerB.client.rpc("submit_availability", {
+      p_month: monthDate,
+      p_dates: [workDate],
+    });
+
+    return { month, day, monthLabel: spellMonth(month) };
   });
 }
 
@@ -549,6 +654,10 @@ async function schedulePayloadOf(
 
   if (state === ADMIN_APPLICATIONS) {
     return seedAdminApplications();
+  }
+
+  if (state === ASSIGN_DAY) {
+    return seedAssignDay();
   }
 
   return {};

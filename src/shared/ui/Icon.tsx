@@ -1,6 +1,8 @@
 import type { LucideIcon, LucideProps } from "lucide-react-native";
 import { styled } from "nativewind";
 import type { ComponentType } from "react";
+import { cn } from "@/shared/lib/utils";
+import { TONE_CLASS, type TextTone } from "@/shared/ui/Text";
 
 /**
  * lucide 아이콘을 className으로 칠하는 자리다.
@@ -47,19 +49,27 @@ function styledIcon(icon: LucideIcon): ComponentType<LucideProps> {
 export type IconProps = {
   icon: LucideIcon;
   size?: number;
+  tone?: TextTone;
   className?: string;
   fill?: string;
   strokeWidth?: number;
   testID?: string;
 };
 
+/**
+ * `tone`은 화면 파일이 쓰는 문이다 — 색 토큰 이름을 화면이 적지 않게 한다(lint 규칙 19).
+ * `className`은 면(`fill-*`)까지 같이 적어야 하는 조각 안쪽의 문이고, 둘 다 오면 뒤가 이긴다.
+ */
 export function Icon({
   icon,
   size = BODY_ICON_SIZE,
-  className = "text-fg-neutral",
+  tone = "neutral",
+  className,
   ...rest
 }: IconProps) {
   const Styled = styledIcon(icon);
 
-  return <Styled size={size} className={className} {...rest} />;
+  return (
+    <Styled size={size} className={cn(TONE_CLASS[tone], className)} {...rest} />
+  );
 }

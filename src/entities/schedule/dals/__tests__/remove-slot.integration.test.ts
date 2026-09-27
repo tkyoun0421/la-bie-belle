@@ -1,5 +1,5 @@
-import { removeSlot } from "@/entities/schedule/dals/remove-slot";
 import { DomainError } from "@/shared/api/errors";
+import { removeSlot } from "@/entities/schedule/dals/remove-slot";
 import {
   backdateDeadline,
   createAdminUser,

@@ -1,5 +1,5 @@
-import { removeAssignment } from "@/entities/schedule/dals/remove-assignment";
 import { DomainError } from "@/shared/api/errors";
+import { removeAssignment } from "@/entities/schedule/dals/remove-assignment";
 import {
   createAdminUser,
   createApprovedUser,
