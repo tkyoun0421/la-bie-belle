@@ -235,6 +235,26 @@ BottomCTA 안에 버튼을 둘 두지 않는다. 두 개가 필요해 보이면 
 
 읽지 않은 알림처럼 상태를 표시해야 하면 왼쪽에 점을 찍는다. 줄 전체의 배경색을 바꾸지 않는다. 배경으로 상태를 나누면 목록을 스크롤할 때 색 띠가 생기고, 여러 상태가 섞이면 무엇이 중요한지 알 수 없게 된다.
 
+### 명단 줄
+
+그날 나가는 사람 하나가 서는 표의 한 행이다. 근무표의 날 시트와 포지션 순 펼침이 첫 자리다([schedule-worker.md](../modules/schedule/screens/schedule-worker.md#날-시트-짜임)).
+
+| 자리 | 토큰·유틸 |
+| --- | --- |
+| 포지션 열 | `fg.neutral-subtle` · `text-xs`, 폭 56px 고정 |
+| 사람 이름 | `text-sm` |
+| 빈 자리 | `fg.neutral-subtle` · `text-sm` |
+| 내 줄 면 | `bg.brand-weak` · `rounded-sm` |
+| 「나」 | `fg.brand` · `text-sm` |
+| 인증 상태 열 | `fg.neutral-muted` · `text-xs` · `tabular-nums`, 폭 92px 고정, 오른쪽 맞춤 |
+| 줄 사이 선 | `stroke.neutral` |
+
+**[ListRow](#listrow)와 다른 조각이다.** 저쪽은 눌러서 어디로 가는 목록 줄이고 이쪽은 누를 데가 없는 표의 한 행이다 — 글자가 한 단계 작고 왼쪽에 포지션 열이 따로 선다.
+
+**포지션 이름은 첫 줄에만 선다.** 한 포지션에 여럿이면 아래 줄은 이름만 서고 열이 빈다. 열 폭이 고정이라 이름이 늘 같은 자리에서 시작한다.
+
+**인증 상태는 모든 줄에서 같은 자리다.** 눈이 한 열로 훑어야 해서 「나」가 그 왼쪽에 서고 상태가 오른쪽 끝을 잡는다. 인증 창이 열리기 전에는 상태가 안 와서 열이 통째로 없다([schedule-worker.md](../modules/schedule/screens/schedule-worker.md#인증-상태)).
+
 ### 하나 고르는 목록
 
 여럿 중 하나를 고르는 자리는 라디오가 아니라 ListRow다. 고른 줄 오른쪽에 체크 아이콘(`fg.brand`)이 서고 나머지 줄은 오른쪽이 빈다. 배경은 안 바뀐다.
@@ -437,6 +457,52 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 
 라벨은 줄 왼쪽 글자가 맡고 스위치 안에는 글자를 넣지 않는다. 누르면 그 자리에서 바로 바뀌고 저장 버튼이 따로 없다.
 
+## 체크박스
+
+지금 보는 것을 거르는 손잡이다. 근무표의 「내 근무만」이 첫 자리다([schedule-worker.md](../modules/schedule/screens/schedule-worker.md#보기-전환-세그먼트)).
+
+| 자리 | 토큰 |
+| --- | --- |
+| 상자 — 켬 | `bg.brand-solid` 면에 `stroke.brand-solid` |
+| 상자 — 끔 | `bg.neutral` 면에 `stroke.neutral-muted` |
+| 체크 | `fg.neutral-contrast` |
+| 라벨 — 켬 | `fg.neutral` |
+| 라벨 — 끔 | `fg.neutral-subtle` |
+
+| 자리 | 값 |
+| --- | --- |
+| 상자 | 18×18px, `rounded-xs` |
+| 체크 아이콘 | 12px |
+| 상자와 라벨 사이 | 8px |
+| 라벨 | `text-sm` |
+| 닿는 면 | 상자는 18px 그대로고 `hitSlop` 12px이 사방을 받는다. 라벨도 같이 눌린다 |
+
+**[스위치](#스위치)와 자리가 다르다.** 스위치는 설정 줄 오른쪽 끝에 서서 저장 없이 바로 적용되는 설정이고, 체크박스는 본문 위에 서서 지금 보는 것을 거른다. 라벨을 줄 왼쪽에 떼어 두는 스위치와 달리 체크박스는 라벨을 제 옆에 달고 다닌다.
+
+**켬이 브랜드 색이다.** 스위치의 켬이 진한 뉴트럴인 것과 갈리는데, 체크박스는 목록 줄마다 서는 것이 아니라 한 화면에 하나둘이라 브랜드가 색 예산을 안 먹는다. 걸러 보는 중이라는 것은 한눈에 보여야 한다 — 거르고 있다는 것을 잊으면 빠진 줄이 없어진 줄로 읽힌다.
+
+## 아코디언
+
+접었다 펴는 줄이다. 근무표의 포지션 순 보기가 첫 자리다([schedule-worker.md](../modules/schedule/screens/schedule-worker.md#포지션-순--날짜-아코디언)).
+
+| 자리 | 토큰 |
+| --- | --- |
+| 머리 줄 제목 | `fg.neutral` · `text-sm font-medium` |
+| 머리 줄 오른쪽 상태 | 부르는 쪽이 정한다 — 근무표는 `fg.brand`와 `fg.neutral-subtle`을 쓴다 |
+| 펼침 화살표 | `fg.neutral-subtle` 16px |
+| 줄 사이 선 | `stroke.neutral` |
+
+| 자리 | 값 |
+| --- | --- |
+| 머리 줄 위아래 여백 | `py-4` |
+| 펼친 내용 아래 여백 | `pb-4` |
+
+**머리 줄이 접힌 채로도 답을 준다.** 왼쪽 제목과 오른쪽 상태만으로 훑이고, 펴는 것은 그 뒤에 더 볼 것이 있는 사람의 일이다. 머리 줄이 제목만 들면 전부 펴봐야 아는 목록이 된다.
+
+**여러 줄이 동시에 펴진다.** 하나를 펴면 다른 것이 접히는 방식은 안 쓴다 — 두 날을 나란히 보려는 사람이 있고, 그 자리에서 접히면 방금 본 것이 사라진다.
+
+줄 사이 선은 첫 줄 위에 안 긋는다. 카드 맨 위의 선은 카드 테두리처럼 읽히는데 카드에는 테두리가 없다([Card](#card)).
+
 ## Tabs
 
 | 자리 | 토큰 |
@@ -603,6 +669,7 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 | 근무 있음 | `bg.brand-weak` | `fg.neutral` | 없음 | `bg.brand-solid` 점 |
 | 근무 요청 온 날 | `bg.neutral-weak` | `fg.neutral-muted` | `stroke.brand-solid` 점선, 도는 중 | 없음 |
 | 근무 없음(열린 날) | `bg.neutral-weak` | `fg.neutral-muted` | 없음 | 없음 |
+| 근무 없음 — 「내 근무만」을 켰을 때 | 없음 | `fg.neutral-muted` | 없음 | 없음 |
 | 안 연 날 | 없음 | `fg.neutral-subtle` | 없음 | 없음 |
 | 확정 전 | 없음 | `fg.neutral-subtle` | `stroke.neutral-muted` 점선 | 없음 |
 | 확정 전 — 신청에서 고른 날 | `bg.brand-weak-selected` | `fg.neutral` | `stroke.brand-solid` | 체크 |
@@ -626,6 +693,8 @@ warning만 글자가 `fg.neutral`이다. 다른 변형처럼 같은 계열의 `f
 브랜드 색으로 칸이 채워지는 자리는 근무자 달력의 내 근무와 열기 모드의 선택 칸 둘뿐이다. 둘 다 옅은 면이고 꽉 찬 브랜드 면은 달력에 없다.
 
 교육 배정은 근무 있음과 같은 칸이다. 교육인지는 칸이 아니라 명단과 목록의 글자가 말한다.
+
+「내 근무만」을 켜면 내가 안 나가는 날에서 면만 빠지고 날짜 글자는 `fg.neutral-muted` 그대로 남는다. 안 연 날(`fg.neutral-subtle`)보다 진한 채로 있어 둘이 갈리고, 면이 없어진 것이지 날이 없어진 것이 아니라 그 칸은 그대로 눌린다. 근거는 [schedule-worker.md](../modules/schedule/screens/schedule-worker.md#달력-순--기본)에 있다.
 
 "안 연 날"은 관리자가 그날에 자리를 안 깔아 배정이 불가능한 날이고, "확정 전"은 근무표 자체가 아직 공개되지 않은 상태다. 둘 다 [schedule/README.md](../modules/schedule/README.md)의 용어다. 안 연 날은 확정된 사실이라 흐린 글자로 끝내고, 확정 전은 아직 모른다는 뜻이라 점선으로 그린다.
 
