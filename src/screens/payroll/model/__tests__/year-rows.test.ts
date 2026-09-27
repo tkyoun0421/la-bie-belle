@@ -16,11 +16,11 @@ describe("yearRows — 최근이 위다(12월이 맨 위, 1월이 맨 아래)", 
       { month: "2026-02", amount: 200000 },
     ]);
 
-    expect(rows.map((row) => row.type === "month" && row.month)).toEqual([
-      "2026-03",
-      "2026-02",
-      "2026-01",
-    ]);
+    const months = rows.flatMap((row) =>
+      row.type === "month" ? [row.month] : [],
+    );
+
+    expect(months).toEqual(["2026-03", "2026-02", "2026-01"]);
   });
 });
 
