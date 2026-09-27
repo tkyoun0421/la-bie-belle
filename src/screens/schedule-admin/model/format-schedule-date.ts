@@ -40,9 +40,18 @@ export function formatBareDate(workDate: string): string {
   return `${month}월 ${day}일`;
 }
 
-/** 앱바와 타일이 부르는 달 이름이다 — `"10월"`. */
+/** 문안이 부르는 달 이름이다 — `"10월"`. */
 export function formatMonthName(month: string): string {
   return `${Number(month.slice(5, 7))}월`;
+}
+
+/**
+ * 앱바 제목이다 — `"2026년 10월"`. 연도가 붙는 것은 화살표로 해를 넘나드는 화면이라서고,
+ * 근무자 달력의 앱바와 같은 꼴이다. 그쪽 함수를 못 부르는 것은 슬라이스끼리 서로를 못
+ * 부르기 때문이다(lint 규칙 3) — 합칠 자리는 `src/shared/lib/`다.
+ */
+export function formatMonthTitle(month: string): string {
+  return `${Number(month.slice(0, 4))}년 ${Number(month.slice(5, 7))}월`;
 }
 
 export type ConfirmedLineInput = {

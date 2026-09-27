@@ -40,6 +40,7 @@ import { deadlineLine } from "@/screens/schedule-admin/model/deadline-line";
 import {
   confirmedLine,
   formatMonthName,
+  formatMonthTitle,
   kstDateOf,
 } from "@/screens/schedule-admin/model/format-schedule-date";
 import { countOpenSlotsByDate } from "@/screens/schedule-admin/model/group-open-slots";
@@ -361,7 +362,7 @@ export function ScheduleAdminScreen({
                 <Icon icon={ChevronLeft} />
               </Button>
               <Text size="lg" weight="semibold">
-                {`${monthName} 근무표`}
+                {formatMonthTitle(month)}
               </Text>
               <Button
                 variant="ghost"

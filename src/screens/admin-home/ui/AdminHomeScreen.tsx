@@ -23,6 +23,7 @@ import { useOpenSlots } from "@/features/schedule/model/useOpenSlots";
 import { useSetHallDefaults } from "@/features/schedule/model/useSetHallDefaults";
 import { homeTileSummary } from "@/screens/admin-home/model/home-tile-summary";
 import { miniViewLoads } from "@/screens/admin-home/model/mini-view-density";
+import { tileMonth } from "@/screens/admin-home/model/tile-month";
 import {
   kstToday,
   spellDate,
@@ -48,9 +49,9 @@ import { HallDefaultsSheet } from "@/screens/admin-home/ui/HallDefaultsSheet";
  * **자리가 빠지면 위 간격을 이어받는다.** 오늘 배정이 없으면 오늘 현황이 통째로 없고, 빈
  * 자리가 없으면 그 자리도 없다 — 0으로 서지 않는다.
  *
- * **보는 달은 오늘이 든 달이다.** 근무표 화면이 처음 여는 달과 같아야
- * ([schedule-admin.md](../../../../docs/2-design/modules/schedule/screens/schedule-admin.md)의
- * 「처음 들어온 자리는 오늘이 든 달이다」) 타일을 눌렀을 때 같은 달이 열린다.
+ * **타일만 다른 달을 말할 수 있다.** 오늘이 든 달이 확정됐으면 타일은 다음 달로 넘어가고
+ * ([tile-month.ts](../model/tile-month.ts)) 눌렀을 때 그 달이 열린다. 오늘 현황·빈 자리
+ * 카드·미니뷰는 늘 오늘이 든 달이다 — 셋은 지금 벌어지는 일을 보는 자리다.
  *
  * **승인할 일 줄에 건수가 없다.** 사유와 근무 취소 요청을 한 목록으로 세는 손이 아직 없다 —
  * 0으로 적으면 쌓인 것이 없다는 거짓말이 된다(spec 「범위 밖」).
@@ -68,6 +69,15 @@ export function AdminHomeScreen() {
   const { data: openSlots } = useOpenSlots(supabase, month);
   const { data: defaults } = useHallDefaults(supabase);
   const { data: pending } = useMembers(supabase, "pending");
+
+  const tiled = tileMonth({
+    todayMonth: month,
+    todayMonthConfirmed: schedule?.confirmedAt != null,
+  });
+
+  const { data: tileSchedule } = useMonthWindow(supabase, tiled);
+  const { data: tileDays } = useMonthSchedule(supabase, tiled);
+  const { data: tileSlots } = useOpenSlots(supabase, tiled);
 
   const {
     mutate: saveDefaults,
@@ -88,16 +98,22 @@ export function AdminHomeScreen() {
   const vacancies = openSlots ?? [];
   const confirmed = schedule?.confirmedAt != null;
 
+  const tileVacancies = tileSlots ?? [];
+
   const summary = homeTileSummary(
-    schedule == null
-      ? { state: "not_created", month }
-      : confirmed
-        ? { state: "confirmed", month, vacancyCount: vacancies.length }
+    tileSchedule == null
+      ? { state: "not_created", month: tiled }
+      : tileSchedule.confirmedAt != null
+        ? {
+            state: "confirmed",
+            month: tiled,
+            vacancyCount: tileVacancies.length,
+          }
         : {
             state: "in_progress",
-            month,
-            openDays: openDays.length,
-            vacancyCount: vacancies.length,
+            month: tiled,
+            openDays: (tileDays ?? []).length,
+            vacancyCount: tileVacancies.length,
           },
   );
 
@@ -123,10 +139,10 @@ export function AdminHomeScreen() {
     })),
   );
 
-  const goSchedule = (date?: string) =>
-    router.push(
-      date === undefined ? "/admin/schedule" : `/admin/schedule?date=${date}`,
-    );
+  const goMonth = (asked: string) =>
+    router.push(`/admin/schedule?month=${asked}`);
+
+  const goDay = (date: string) => router.push(`/admin/schedule?date=${date}`);
 
   return (
     <Screen>
@@ -151,7 +167,7 @@ export function AdminHomeScreen() {
               testID="admin-home-today-status"
               accessibilityRole="button"
               className="mt-2 py-1"
-              onPress={() => goSchedule(today)}
+              onPress={() => goDay(today)}
             >
               <Text size="sm" tone="subtle">
                 {spellDate(today)}
@@ -189,7 +205,7 @@ export function AdminHomeScreen() {
           <Pressable
             accessibilityRole="button"
             className="mt-6"
-            onPress={() => goSchedule()}
+            onPress={() => goMonth(tiled)}
           >
             <Card>
               <CardHeader title="근무표 관리" />
@@ -204,7 +220,7 @@ export function AdminHomeScreen() {
               key={card.workDate}
               accessibilityRole="button"
               className={at === 0 ? "mt-3" : "mt-2"}
-              onPress={() => goSchedule(card.workDate)}
+              onPress={() => goDay(card.workDate)}
             >
               <NoticeBlock kind="warning">
                 <Text size="sm" weight="medium">
@@ -221,7 +237,7 @@ export function AdminHomeScreen() {
           <Pressable
             accessibilityRole="button"
             className="mt-6"
-            onPress={() => goSchedule()}
+            onPress={() => goMonth(month)}
           >
             <Text size="sm" tone="subtle">
               {`${Number(month.slice(5))}월`}
