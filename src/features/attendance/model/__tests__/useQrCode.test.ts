@@ -106,9 +106,12 @@ describe("useQrCode — getQrCode를 불러 ['hall','qr']에 앉힌다", () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
+    // `Query.options`의 타입은 `QueryOptions`라 `staleTime`을 안 든다 — 그 값을 드는 것은
+    // `QueryObserverOptions`고, 옵저버가 붙으면 런타임에는 같은 객체에 실려 온다.
     const query = queryClient
       .getQueryCache()
-      .find({ queryKey: ["hall", "qr"] });
+      .find({ queryKey: ["hall", "qr"] }) as
+      { options: { staleTime?: number } } | undefined;
 
     expect(query?.options.staleTime).toBe(FAKE_STALE_TIME);
   });
