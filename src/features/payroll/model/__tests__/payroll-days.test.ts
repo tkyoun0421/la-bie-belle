@@ -232,8 +232,8 @@ describe("payrollDays — 교육 배정도 같은 규칙으로 급여가 난다(
   });
 });
 
-describe("payrollDays — 그날 시급이 없으면 결과에서 뺀다(wageAt이 null)", () => {
-  it("첫 시급 행보다 이른 날은 목록에 안 뜬다", () => {
+describe("payrollDays — 그날 시급이 없으면 'wage-pending'으로 선다(결과에서 안 뺀다)", () => {
+  it("첫 시급 행보다 이른 날은 분을 채운 채 금액 0원·kind='wage-pending'으로 뜬다", () => {
     const result = payrollDays(
       baseInput({
         days: [{ id: DAY_ID, work_date: WORK_DATE, ...NINE_HOUR_SHIFT }],
@@ -250,6 +250,11 @@ describe("payrollDays — 그날 시급이 없으면 결과에서 뺀다(wageAt�
       }),
     );
 
-    expect(result.find((day) => day.date === WORK_DATE)).toBeUndefined();
+    expect(result.find((day) => day.date === WORK_DATE)).toEqual({
+      date: WORK_DATE,
+      minutes: 540,
+      amount: 0,
+      kind: "wage-pending",
+    });
   });
 });
