@@ -26,23 +26,30 @@ describe("rotateQr dal — rotate_qr를 부르고 오류를 DomainError로 올�
     hallId = data.id;
   });
 
-  it("성공하면 hall_secrets.qr_code가 실제로 바뀐다", async () => {
+  it("성공하면 hall_secrets.qr_code가 바뀌고 rotated_at이 앞으로 간다", async () => {
     const before = await admin.client
       .from("hall_secrets")
-      .select("qr_code")
+      .select("qr_code, rotated_at")
       .eq("hall_id", hallId)
-      .maybeSingle<{ qr_code: string }>();
+      .maybeSingle<{ qr_code: string; rotated_at: string }>();
 
     await rotateQr(admin.client);
 
     const after = await admin.client
       .from("hall_secrets")
-      .select("qr_code")
+      .select("qr_code, rotated_at")
       .eq("hall_id", hallId)
-      .single<{ qr_code: string }>();
+      .single<{ qr_code: string; rotated_at: string }>();
 
     expect(after.error).toBeNull();
     expect(after.data?.qr_code).not.toBe(before.data?.qr_code);
+
+    const beforeRotatedAtMs = before.data
+      ? new Date(before.data.rotated_at).getTime()
+      : -Infinity;
+    expect(new Date(after.data!.rotated_at).getTime()).toBeGreaterThan(
+      beforeRotatedAtMs,
+    );
   });
 
   it("관리자가 아니면 DomainError('not_allowed')를 던진다", async () => {
