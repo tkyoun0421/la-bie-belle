@@ -149,6 +149,20 @@ function subjectOf(file: string, files: CodeFile[]): CodeFile | undefined {
   );
 }
 
+/**
+ * 대상이 아직 없는 `__tests__/useX.test.ts`. TDD라 테스트가 훅보다 먼저 서는데, 그 사이
+ * 이 검사가 kebab을 요구하면 writer는 kebab으로 짓고 implementer는 훅을 만들면서 다시
+ * 이름을 바꿔야 했다 — 세 task에서 같은 마찰이 났다. `use` 뒤에 대문자가 오는 줄기는
+ * 훅 짝으로 읽고, 실제 훅이 서면 그때 `subjectOf`가 대상의 갈래를 물린다.
+ */
+function isOrphanHookTest(file: string): boolean {
+  return (
+    PAIR_TEST.test(file) &&
+    path.posix.basename(path.posix.dirname(file)) === PAIR_DIRECTORY &&
+    matchesStyle(stemOf(path.posix.basename(file)), "hook")
+  );
+}
+
 export function styleViolations(files: CodeFile[]): FileNamingViolation[] {
   const inspected = files.filter(inScope);
 
@@ -156,7 +170,11 @@ export function styleViolations(files: CodeFile[]): FileNamingViolation[] {
     const base = path.basename(file);
     const stem = stemOf(base);
     const subject = subjectOf(file, inspected);
-    const style = styleFor(subject?.file ?? file, subject?.source ?? source);
+    const style = subject
+      ? styleFor(subject.file, subject.source)
+      : isOrphanHookTest(file)
+        ? "hook"
+        : styleFor(file, source);
 
     if (matchesStyle(stem, style)) {
       return [];
