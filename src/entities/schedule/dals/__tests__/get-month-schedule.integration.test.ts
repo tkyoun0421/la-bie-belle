@@ -1,0 +1,95 @@
+import type { Database } from "@/shared/api/database";
+import { getMonthSchedule } from "@/entities/schedule/dals/get-month-schedule";
+import {
+  createAdminUser,
+  createApprovedUser,
+  execSql,
+  kstDate,
+  kstMonthStart,
+  seedAssignment,
+  withFreshMonth,
+  type AdminUser,
+  type ApprovedUser,
+} from "@tests/integration/postgres";
+
+type FunctionName = keyof Database["public"]["Functions"];
+
+async function rpcOrThrow<Name extends FunctionName>(
+  admin: AdminUser,
+  fn: Name,
+  args: Database["public"]["Functions"][Name]["Args"],
+): Promise<void> {
+  const { error } = await admin.client.rpc(fn, args);
+  if (error) {
+    throw error;
+  }
+}
+
+type SeededDay = { month: string; dayId: string; workDate: string };
+
+async function seedOpenDay(admin: AdminUser): Promise<SeededDay> {
+  return withFreshMonth(async (monthsFromNow) => {
+    const workDate = kstMonthStart(monthsFromNow);
+    await rpcOrThrow(admin, "create_schedule", {
+      p_month: workDate,
+      p_deadline: kstDate(1),
+    });
+    await rpcOrThrow(admin, "open_day", { p_work_date: workDate });
+
+    const { data, error } = await admin.client
+      .from("days")
+      .select("id")
+      .eq("work_date", workDate)
+      .single<{ id: string }>();
+    if (error || !data) {
+      throw error ?? new Error("연 날을 못 찾았다");
+    }
+
+    return { month: workDate.slice(0, 7), dayId: data.id, workDate };
+  });
+}
+
+function setDisplayName(profileId: string, displayName: string): void {
+  execSql(
+    "update public.profiles set display_name = :'display_name' where id = :'profile_id';\n",
+    { profile_id: profileId, display_name: displayName },
+  );
+}
+
+describe("getMonthSchedule — 근무표 한 달을 days·slots·assignments로 읽는다(SCH-019)", () => {
+  let admin: AdminUser;
+  let worker: ApprovedUser;
+  let owner: ApprovedUser;
+
+  beforeAll(async () => {
+    admin = await createAdminUser();
+    worker = await createApprovedUser();
+    owner = await createApprovedUser();
+  });
+
+  it("근무자 세션에서도 배정에 임베드된 profiles.display_name이 온다", async () => {
+    const { month, dayId } = await seedOpenDay(admin);
+    setDisplayName(owner.profileId, "초록잎");
+    seedAssignment(dayId, owner.profileId, "training");
+
+    const days = await getMonthSchedule(worker.client, month);
+
+    const day = days.find((row) => row.id === dayId);
+    expect(day).toBeDefined();
+
+    const assignment = day?.assignments.find(
+      (row) => row.profile_id === owner.profileId,
+    );
+    expect(assignment?.profiles?.display_name).toBe("초록잎");
+  });
+
+  it("그 달 밖의 날은 안 온다", async () => {
+    const inMonth = await seedOpenDay(admin);
+    const otherMonth = await seedOpenDay(admin);
+
+    const days = await getMonthSchedule(worker.client, inMonth.month);
+
+    expect(days.some((row) => row.id === inMonth.dayId)).toBe(true);
+    expect(days.some((row) => row.id === otherMonth.dayId)).toBe(false);
+  });
+});
