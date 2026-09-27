@@ -4,10 +4,15 @@
 // 만들어 달라고 요청하고, 돌아온 세션 토큰을 output에 실어 그 다음 스텝의
 // `openLink`가 쓰게 한다.
 //
-// 부르는 쪽은 env로 STATE 하나만 준다. 값은
-// "fresh" | "submitted" | "rejected" | "left" | "blocked" | "read_failure" 중 하나다.
-// 계약과 상태별 응답 값은 이 task의 리턴에 적은 표가 정본이고, implementer가
-// scripts/e2e-seed-server.mts를 그 표대로 세운다.
+// 부르는 쪽은 env로 STATE를 준다. 값은
+// "fresh" | "submitted" | "approved" | "admin" | "rejected" | "left" | "blocked" |
+// "read_failure" 중 하나다. NAME은 선택이고, 프로필을 보내는 상태에서 그 사람의 이름을
+// 고른다 — 한 화면에 승인된 사람을 여럿 세우는 members.yaml이 쓴다. 안 주면 시드 서버의
+// 기본 이름이다. 계약과 상태별 응답 값은 scripts/e2e-seed-server.mts가 정본이다.
+//
+// NAME이 env에 없으면 그 이름의 전역 자체가 없다 — 그래서 typeof로 먼저 묻는다. 바로
+// 읽으면 NAME을 안 주는 플로우(pending·left·blocked·retry·session)가 ReferenceError로
+// 죽는다.
 //
 // http·output은 Maestro의 JS 실행기가 주는 전역이다. 여기서 실제로 이 값들이
 // 계약대로 동작하는지는 아직 못 봤다 — Maestro CLI로 한 번도 못 돌려봤다는 것이
@@ -15,9 +20,11 @@
 // body가 문자열인지 이미 파싱된 객체인지는 Maestro 문서와 실제 실행으로
 // 확인해야 하는 자리로 남는다.
 
+const chosenName = typeof NAME === "string" && NAME !== "" ? NAME : undefined;
+
 const response = http.post("http://127.0.0.1:8765/seed", {
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ state: STATE }),
+  body: JSON.stringify({ state: STATE, name: chosenName }),
 });
 
 if (response.status !== 200) {

@@ -18,6 +18,11 @@ import { Text } from "@/shared/ui/Text";
  * 버튼은 둘이다. 셋 이상이면 Dialog가 아니라 바텀시트로 간다. 오른쪽은 되돌릴 수 없는
  * 동작일 때만 destructive고 나머지는 primary다.
  *
+ * **`closeLabel`이 `null`이면 버튼이 하나다.** 동의를 받는 자리가 아니라 못 한다는 것을
+ * 말하는 자리에만 준다 — 퇴사를 막는 안내가 그 자리다
+ * (`docs/2-design/modules/account/screens/members.md`의 「퇴사 확인 짜임」). 버튼 하나로
+ * 동의를 받는 것은 `writing.md`가 막는 다크패턴이라 이 꼴에 확인 동작을 싣지 않는다.
+ *
  * 덮개는 투명도가 토큰 안에 들어 있어 따로 얹지 않는다. 시트와 같은 면이라 `BottomSheet`의
  * `Scrim`을 그대로 쓴다.
  */
@@ -26,13 +31,14 @@ export type DialogProps = {
   visible: boolean;
   title?: string;
   children?: ReactNode;
-  closeLabel?: string;
+  closeLabel?: string | null;
   onClose: () => void;
   confirmLabel: string;
   onConfirm: () => void;
   destructive?: boolean;
   className?: string;
   testID?: string;
+  confirmTestID?: string;
 };
 
 export function Dialog({
@@ -46,6 +52,7 @@ export function Dialog({
   destructive = false,
   className,
   testID,
+  confirmTestID,
 }: DialogProps) {
   return (
     <Modal
@@ -76,14 +83,17 @@ export function Dialog({
             </Text>
           ) : null}
           <View className="mt-5 flex-row gap-3">
-            <View className="flex-1">
-              <Button variant="secondary" onPress={onClose}>
-                {closeLabel}
-              </Button>
-            </View>
+            {closeLabel === null ? null : (
+              <View className="flex-1">
+                <Button variant="secondary" onPress={onClose}>
+                  {closeLabel}
+                </Button>
+              </View>
+            )}
             <View className="flex-1">
               <Button
                 variant={destructive ? "destructive" : "primary"}
+                testID={confirmTestID}
                 onPress={onConfirm}
               >
                 {confirmLabel}

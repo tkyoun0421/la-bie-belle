@@ -5,7 +5,8 @@
 //   → {"access_token": "…", "refresh_token": "…", "user_id": "…", "profile": {…}}
 //
 // 상태는 여덟이다 — fresh · submitted · approved · admin · rejected · left · blocked ·
-// read_failure.
+// read_failure. `name`은 선택이고, 프로필을 보내는 상태에서 그 사람의 이름을 고른다
+// (안 주면 SEEDED_PROFILE의 이름이다).
 // 부르는 쪽은 `tests/e2e/scripts/seed-session.js`고, 받은 토큰을 개발 빌드의 테스트 문
 // (`src/app/__test/session.tsx`)에 딥링크로 싣는다. 정본은 `docs/4-test/execution.md`의
 // 「`pnpm e2e`」 절이다.
@@ -17,7 +18,7 @@
 // 이 서버는 사용자를 만들고 관리자 권한을 올리는 일을 하므로 겨눈 곳이 어디인지가 전부다.
 
 import { createServer, type IncomingMessage, type Server } from "node:http";
-import { createAdminUser, createLeftUser } from "@tests/integration/postgres";
+import { createAdminUser } from "@tests/integration/postgres";
 import {
   createSignedInUser,
   type SignedInUser,
@@ -35,6 +36,10 @@ const READ_FAILURE = "read_failure";
  * 프로필을 보낸 사람의 다섯은 고정값이다. `tests/e2e/pending.yaml`이 거절된 사람의 굳은
  * 글에, `tests/e2e/profile.yaml`이 승인된 사람의 「나」 화면에 이 값이 그대로 서는지
  * 단언한다 — 사람 이름과 번호는 전부 가짜다.
+ *
+ * **이름만 부르는 쪽이 고를 수 있다.** 한 화면에 승인된 사람을 여럿 세우는 플로우
+ * (`tests/e2e/members.yaml`)가 검색이 한 줄만 남기는지 보려면 이름이 갈려야 한다. 번호와
+ * 생년월일은 그대로 둔다 — ACC-005가 같은 번호 둘을 안 막는다.
  */
 const SEEDED_PROFILE = {
   name: "박서연",
@@ -92,12 +97,15 @@ async function tokensOf(user: SignedInUser): Promise<{
   };
 }
 
-async function submitSeededProfile(user: SignedInUser): Promise<void> {
+async function submitSeededProfile(
+  user: SignedInUser,
+  profile: typeof SEEDED_PROFILE,
+): Promise<void> {
   const { error } = await user.client.rpc("submit_profile", {
-    display_name: SEEDED_PROFILE.name,
-    phone: SEEDED_PROFILE.phone,
-    birth_date: SEEDED_PROFILE.birthDate,
-    gender: SEEDED_PROFILE.gender,
+    display_name: profile.name,
+    phone: profile.phone,
+    birth_date: profile.birthDate,
+    gender: profile.gender,
   });
 
   if (error) {
@@ -106,11 +114,11 @@ async function submitSeededProfile(user: SignedInUser): Promise<void> {
 }
 
 /**
- * 관리자 판정 하나를 신청자에게 내린다. 화면이 부르는 것과 같은 함수를 부른다 — SQL로
+ * 관리자 판정 하나를 대상에게 내린다. 화면이 부르는 것과 같은 함수를 부른다 — SQL로
  * 열을 직접 채우면 e2e가 본 상태와 함수가 만드는 상태가 갈린다.
  */
 async function decideBy(
-  decision: "approve_member" | "reject_member" | "block_member",
+  decision: "approve_member" | "reject_member" | "block_member" | "mark_leave",
   profileId: string,
 ): Promise<void> {
   const admin = await createAdminUser();
@@ -123,11 +131,8 @@ async function decideBy(
 
 async function seededUser(
   state: SeedState,
+  name: string,
 ): Promise<{ user: SignedInUser; profile: typeof SEEDED_PROFILE | null }> {
-  if (state === "left") {
-    return { user: await createLeftUser(), profile: null };
-  }
-
   if (state === "admin") {
     return { user: await createAdminUser(), profile: null };
   }
@@ -138,7 +143,9 @@ async function seededUser(
     return { user, profile: null };
   }
 
-  await submitSeededProfile(user);
+  const profile = { ...SEEDED_PROFILE, name };
+
+  await submitSeededProfile(user, profile);
 
   // 승인된 사람은 「나」 화면에서 자기 다섯을 본다(tests/e2e/profile.yaml). 열을 SQL로
   // 직접 채우는 createApprovedUser로는 개인정보 행이 안 생겨 그 화면이 빈 줄로 선다 —
@@ -157,11 +164,21 @@ async function seededUser(
     await decideBy("block_member", user.profileId);
   }
 
-  return { user, profile: SEEDED_PROFILE };
+  // 퇴사도 승인된 사람만 대상이라 받고 나서 내보낸다. 직원 화면의 퇴사 구획이 이름 있는
+  // 줄을 보여줘야 해서(tests/e2e/members.yaml) 프로필을 먼저 보낸다.
+  if (state === "left") {
+    await decideBy("approve_member", user.profileId);
+    await decideBy("mark_leave", user.profileId);
+  }
+
+  return { user, profile };
 }
 
-export async function seed(state: SeedState): Promise<SeedResponse> {
-  const { user, profile } = await seededUser(state);
+export async function seed(
+  state: SeedState,
+  name: string = SEEDED_PROFILE.name,
+): Promise<SeedResponse> {
+  const { user, profile } = await seededUser(state, name);
 
   return {
     ...(await tokensOf(user)),
@@ -196,8 +213,9 @@ export function startSeedServer(): Promise<Server> {
       }
 
       try {
-        const { state } = JSON.parse(await readBody(request)) as {
+        const { state, name } = JSON.parse(await readBody(request)) as {
           state?: unknown;
+          name?: unknown;
         };
 
         if (!isSeedState(state)) {
@@ -207,9 +225,12 @@ export function startSeedServer(): Promise<Server> {
           return;
         }
 
+        const chosen =
+          typeof name === "string" && name !== "" ? name : undefined;
+
         response
           .writeHead(200, { "Content-Type": "application/json" })
-          .end(JSON.stringify(await seed(state)));
+          .end(JSON.stringify(await seed(state, chosen)));
       } catch (error) {
         response
           .writeHead(500, { "Content-Type": "application/json" })
