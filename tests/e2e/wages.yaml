@@ -35,7 +35,7 @@
 #
 # ## payroll_wages
 #
-# 관리자로 로그인한다(`ADMIN_SCHEDULE_STATES`류의 집합에 이 상태도 넣어야
+# 관리자로 로그인한다(`ADMIN_STATES`류의 집합에 이 상태도 넣어야
 # `seededUser`가 `createAdminUser()`를 돌려준다 — 이름이 스케줄 전용
 # 집합이라 어색하면 payroll용 집합을 새로 둬도 된다, 이 파일은 동작만
 # 요구한다). `schedulePayloadOf`에 갈래를 하나 추가해 아래 함수를 부른다.

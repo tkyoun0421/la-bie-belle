@@ -52,7 +52,7 @@
 #
 # ## schedule_approvals_cancel_pending
 #
-# 관리자 하나(로그인용, `ADMIN_SCHEDULE_STATES`에 들어야 세션이 관리자로
+# 관리자 하나(로그인용, `ADMIN_STATES`에 들어야 세션이 관리자로
 # 뜬다), 그 안에서 따로 관리자 하나를 더 만들어 근무표를 짓는다(다른
 # 근무표 상태들과 같은 손 — 로그인한 관리자와 시드용 관리자가 같을
 # 필요는 없다). 근무자 하나 — 한소민 — 을 만들어 승인하고, `withFreshMonth`로
@@ -102,7 +102,7 @@
 # `SchedulePayload`에 `approvalListTitle?`·`approvalDetailTitle?`·
 # `approvalConfirmBody?`·`approvalDayAppbar?`를 더한다(전부 optional — 다른
 # 상태는 안 채운다). `STATES`에 `"schedule_approvals_cancel_pending"`을,
-# `ADMIN_SCHEDULE_STATES`에도 같이 더한다. `schedulePayloadOf`에 갈래를
+# `ADMIN_STATES`에도 같이 더한다. `schedulePayloadOf`에 갈래를
 # 하나 추가한다. `tests/e2e/scripts/seed-session.js`는 이 네 필드의 이스케이프
 # 통로를 이미 갖고 있다(이 task가 그 파일도 같이 고쳤다).
 #

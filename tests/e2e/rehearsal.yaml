@@ -34,7 +34,7 @@
 # ```ts
 # const REHEARSAL_QUALIFIED = "rehearsal_qualified";
 #
-# // STATES 배열에 추가한다. ADMIN_SCHEDULE_STATES에는 안 넣는다 — 로그인하는
+# // STATES 배열에 추가한다. ADMIN_STATES에는 안 넣는다 — 로그인하는
 # // 사람이 리허설 자격을 받는 그 근무자다.
 #
 # // seededUser의 SUBMISSION_WINDOW || SCHEDULE_CONFIRMED || ... 분기에
