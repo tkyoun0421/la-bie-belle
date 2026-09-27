@@ -6,7 +6,11 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `payroll-data`고 `attendance-checkin`은 사람 답 둘을 기다린다.** `rehearsal`이 닫히며 선행이 풀려 `payroll-data`가 `ready`가 됐다(`attendance-data`·`rehearsal` 둘 다 `done`). `attendance-checkin`의 정본 모순 둘은 총괄이 spec을 고쳐 닫았고(#437 — AC-07 「10분 클램프」 → 「2시간 넘으면 `too_late` 거절」, AC-08 「큐에 안 넣는다」 → 「담아두고 앱이 앞으로 오면 다시 보낸다」), 남은 둘이 사람 자리다 — **네이버 지도를 어떻게 띄우나**(`react-native-webview`로 웹 SDK를 감싸면 Expo Go에서도 돌지만 Maestro가 지도 안을 못 보고, 네이티브 모듈은 개발 빌드가 있어야 한다)와 **NCP 대표 계정·지도 키·`customStyleId`가 있나**(키 이름은 `EXPO_PUBLIC_NAVER_MAP_CLIENT_ID`로 두고 값은 사람이 채우는 전례가 `EXPO_PUBLIC_APP_URL`이다). 곁가지로 `halls` 시드 반경이 200인데 ATT-002는 처음 값 100이다 — 그 task의 마이그레이션이 100으로 맞춘다. 실기기 확인은 여전히 사람 자리로 남는다(카탈로그·화면 열다섯·테마·끌기·서버 시각 복귀·e2e 플로우 스물아홉 전부 한 번도 기기에서 안 돌았다).
+**다음 첫 수는 `payroll-wages`다.** `payroll-data`가 닫히며 급여 화면 셋(`payroll-wages`·`payroll-view`·`payroll-adjust`)이 전부 `ready`가 됐다. 셋 다 훅이 없는 채로 데이터만 서 있으니 **그 task의 `test-planner`가 훅마다 unit 행을 배정해야 한다**([관찰 020](observations/020-query-hook-has-no-tdd-home.md)) — 무효화는 `['payroll']`이고 [무효화 표](2-design/system/runtime.md#무효화-표)가 정본이다. `payroll-wages`는 착수 전에 정본을 두 자리 봐야 한다 — spec이 「기본을 쓰는 사람에게는 되돌리기 줄이 아예 없다」고 적는데 [PAY-012](2-design/modules/payroll/README.md#pay-012) 뒤로 시급 이력이 빈 승인 사원도 기본을 쓰는 사람이고, 기본 시급이 아직 없을 때의 `no_default_wage` 문안이 안 적혔다. 화면에 붙일 `MonthPickerSheet`도 여기서 처음 붙는다.
+
+**`attendance-checkin`은 사람 답 둘을 기다려 `blocked`로 내렸다.** 정본 모순 둘은 총괄이 spec을 고쳐 닫았고(#437 — AC-07 「10분 클램프」 → 「2시간 넘으면 `too_late` 거절」, AC-08 「큐에 안 넣는다」 → 「담아두고 앱이 앞으로 오면 다시 보낸다」), 남은 둘이 사람 자리다 — **네이버 지도를 어떻게 띄우나**(`react-native-webview`로 웹 SDK를 감싸면 Expo Go에서도 돌지만 Maestro가 지도 안을 못 보고, 네이티브 모듈은 개발 빌드가 있어야 한다)와 **NCP 대표 계정·지도 키·`customStyleId`가 있나**(키 이름은 `EXPO_PUBLIC_NAVER_MAP_CLIENT_ID`로 두고 값은 사람이 채우는 전례가 `EXPO_PUBLIC_APP_URL`이다). 곁가지로 `halls` 시드 반경이 200인데 ATT-002는 처음 값 100이다 — 그 task의 마이그레이션이 100으로 맞춘다. 실기기 확인은 여전히 사람 자리로 남는다(카탈로그·화면 열다섯·테마·끌기·서버 시각 복귀·e2e 플로우 스물아홉 전부 한 번도 기기에서 안 돌았다).
+
+**`payroll-data`가 `done`이다(#442).** 표 넷(`wage_rates`·`default_wage_rates`·`adjustments`·`holidays`)과 함수 여섯, dal 여섯, 금액을 내는 순수 함수 다섯이 섰다. 재사용하는 둘(`attendance-status`·`rehearsal-hours`)은 `entities/`로 내렸다 — `features` 사이를 못 부른다(lint 규칙 3). 총괄 판정 넷 — 「연장」 판정을 화면이 다시 하지 않게 `kind`(`normal`·`overtime`·`absent`)를 계산이 내고, `set_holiday`는 근무를 여는 날인지 다시 검사하지 않으며([PAY-024](2-design/modules/payroll/README.md#pay-024) 뒤로 계산이 `holidays`를 안 읽는다), **기본 시급이 서기 전에 승인된 사람이 계산 밖에 영영 남던 구멍을 막았다** — 「따르는 사람」에 시급 이력이 빈 승인 사원을 더해 승인과 기본 시급의 순서로 결과가 안 갈린다([PAY-012](2-design/modules/payroll/README.md#pay-012)). 되돌릴 기본값이 없는 거절은 `bad_amount`가 아니라 새 코드 `no_default_wage`다. 자동 리뷰가 검증 안 된 분기 둘을 짚어 그 판정 둘이 나왔다 — 리뷰 고침(#439)이 실제로 일한 첫 자리다. 남긴 자리 — 훅 전부(화면 셋 몫), `holidays`는 아직 아무도 안 읽는 표(`payroll-holidays`가 채운다), 실제 한 달치 손 계산 대조(첫 달 운영).
 
 **`rehearsal`이 `done`이다(#438).** `rehearsals` 표(갈래 열 없이 check 셋이 시각·건수를 가른다, 건수는 하루 한 줄인 부분 unique index)와 함수 셋, `/me/rehearsals`, 「나」의 리허설 줄이 섰다. 총괄 판정 다섯 — 새 오류 코드는 `overlaps`·`bad_count` 둘(나머지는 근무표 함수가 이미 올렸다), `rehearsal.md`가 전제하던 **달 고르기 시트를 이 task가 `src/shared/ui/MonthPickerSheet.tsx`로 세웠고**(근무표·급여 화면에 붙이는 것은 남았다), **KST 날짜 손을 `src/shared/lib/kst-date.ts`로 모아** 슬라이스 여섯이 위임한다(다섯째 복제가 될 자리였다), 자격 부여 화면은 이 task 밖(`grant_position` 직접 호출), 고치기·지우기는 주인 검사가 자격 검사보다 앞이다(그래야 남의 행이 관리자에게도 `not_allowed`다). 남긴 자리 — 자격을 주는 화면, 시각 입력이 Maestro `inputText`를 받는지, e2e 시드 `rehearsal_qualified`가 이번 달을 써서 로컬 DB를 안 비우면 두 번째 실행이 `already_exists`로 죽는다(`open_day`가 지난 날짜를 안 받는 제약이 근원이다), `components.md` 「빈 상태」가 그림을 요구하는데 `rehearsal.md` 「빈 날」은 그림이 없다고 적었다.
 
@@ -33,6 +37,8 @@
 **총괄이 착수 전에 정본 모순을 닫는 순서가 이번 구간에서도 반복됐다.** `schedule-admin`(셋)·`schedule-assign`(하나)이 test-planner가 낸 정본 모순을 구현 전에 판정받았고, 그 위에 구현이 섰다.
 
 **KST 날짜 계산이 슬라이스 넷(`schedule-admin`·`admin-home`·`applications`·`qr`)에 중복이다.** 각자 `Intl.DateTimeFormat`을 들고 있고, `src/shared/lib/`로 합치려면 그 자리의 실패 테스트가 먼저 있어야 한다(TDD 훅이 테스트 없는 새 `.ts`를 막는다). 세 번째가 나오면 뺀다고 이전 회차가 적었는데 지금 넷이라 다음에 손댈 때가 됐다.
+
+**픽스처가 한 사실을 여러 psql 호출로 심는 자리가 cron과 경합한다(관찰 024).** `seedWorkRequest`가 요청 행을 넣고 `seedRequestCandidate`가 갈래 행을 넣는 사이에 `internal.expire_requests`의 cron 틱이 떨어지면 요청이 닫힌 채 남는다. 로컬 세 회차에서 매번 다른 요청 테스트가 하나씩 졌고 CI에서는 아직 안 걸렸다 — 요청 테스트가 이유 없이 지면 이것부터 의심한다. `backlog.md`의 `test-seed-transaction`이 받는다.
 
 **관찰 019는 닫혔고 021은 열려 있다.** 019(자동 리뷰가 코멘트 없이 초록)는 `pr-review.yml`의 코멘트 수 확인 단계로 닫혔다. 021(라우트 파일명이 같으면 e2e 게이트가 남의 플로우로 통과)은 `schedule-admin`에서 첫 번째로 났다 — 두 번째가 나오면 `tdd-guard-e2e.py`의 매핑을 디렉터리 경로 이름으로 바꾼다.
 
