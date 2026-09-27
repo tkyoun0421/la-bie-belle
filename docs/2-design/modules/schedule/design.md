@@ -196,6 +196,7 @@ unique index 둘이 도메인 규칙을 지킨다.
 
 - 규칙: [SCH-011](README.md#sch-011)과 [README.md](README.md#용어)의 근무 시간
 - 입력·전제: `set_hall_defaults`가 자리·근무 시간 기본값이다
+- 캐시 갱신: `['hall']` — 시트를 닫은 직후 줄이 새 값을 보여야 한다. 연 날은 안 바뀌므로 `['schedule']`은 안 건드린다
 
 ### 행위 밖의 실행 동작
 
