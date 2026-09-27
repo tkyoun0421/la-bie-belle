@@ -387,7 +387,7 @@
 
 | 자리 | 유틸 |
 | --- | --- |
-| 화면 좌우 여백 | `px-6` |
+| 화면 좌우 여백 | `px-5` — [면의 안쪽 여백은 20px이다](../../design-system/foundation/spacing-shape.md#면의-안쪽-여백은-20px이다) |
 | 앱바 높이 | `min-h-11` — [components.md](../../design-system/components.md#앱바)가 정본이다 |
 | 종 아이콘과 브랜드 마크 사이 | `gap-2` |
 | 브랜드 마크 | `size-7` `rounded-sm` |
