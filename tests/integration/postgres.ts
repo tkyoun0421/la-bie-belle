@@ -336,6 +336,15 @@ export function seedAssignment(
   return id;
 }
 
+export function seedWorkRequest(slotId: string, requestedBy: string): string {
+  const id = randomUUID();
+  execSql(
+    "insert into public.requests (id, kind, slot_id, requested_by, expires_at) values (:'id', 'work', :'slot_id', :'requested_by', now() + interval '1 hour');\n",
+    { id, slot_id: slotId, requested_by: requestedBy },
+  );
+  return id;
+}
+
 export type SeededPastDay = {
   dayId: string;
   scheduleId: string;
