@@ -38,6 +38,8 @@ const ASSIGNED_DOT_SIZE = 4;
 
 const MARK_ICON_SIZE = 12;
 
+const VACANCY_RING_SIZE = 10;
+
 const DASH_STROKE_WIDTH = 1;
 
 /** 대시와 간격이 각각 3px다. */
@@ -98,6 +100,7 @@ export type ScheduleDayCellProps = {
   state: ScheduleDayCellState;
   isToday?: boolean;
   applicationCount?: number;
+  vacancyCount?: number | null;
   onPress?: () => void;
   testID?: string;
 };
@@ -107,6 +110,7 @@ export function ScheduleDayCell({
   state,
   isToday = false,
   applicationCount = 0,
+  vacancyCount = null,
   onPress,
   testID,
 }: ScheduleDayCellProps) {
@@ -134,6 +138,7 @@ export function ScheduleDayCell({
             <CellMark
               state={state}
               applicationCount={applicationCount}
+              vacancyCount={vacancyCount}
               testID={testID}
             />
           </View>
@@ -171,10 +176,12 @@ function DayNumber({
 function CellMark({
   state,
   applicationCount,
+  vacancyCount,
   testID,
 }: {
   state: ScheduleDayCellState;
   applicationCount: number;
+  vacancyCount: number | null;
   testID?: string;
 }) {
   if (CHECKED.has(state)) {
@@ -194,6 +201,20 @@ function CellMark({
         className="rounded-full bg-bg-brand-solid"
         style={{ width: ASSIGNED_DOT_SIZE, height: ASSIGNED_DOT_SIZE }}
       />
+    );
+  }
+
+  if (state === "admin-open" && vacancyCount !== null) {
+    return vacancyCount === 0 ? null : (
+      <View className="flex-row items-center gap-0.5">
+        <View
+          className="rounded-full border border-dashed border-stroke-neutral-muted"
+          style={{ width: VACANCY_RING_SIZE, height: VACANCY_RING_SIZE }}
+        />
+        <Text className="text-xs text-fg-neutral-subtle tabular-nums">
+          {vacancyCount}
+        </Text>
+      </View>
     );
   }
 

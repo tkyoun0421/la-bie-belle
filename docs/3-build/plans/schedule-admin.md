@@ -101,7 +101,7 @@ sources:
 - 그리드 — 그 달 1일이 든 주의 월요일부터, 말일이 든 주의 일요일까지. 이 달 밖 칸은 날짜가 아니라 빈칸이다([월 달력 짜임](../../2-design/modules/schedule/screens/schedule-admin.md#월-달력-짜임)). 줄 수는 달마다 넷·다섯·여섯이라 고정하지 않는다
 - 칸 상태 — 안 연 날(닫힘) · 열린 날 · 오늘 · 지난 날짜 · 열기 모드에서 고른 날 · 확정 뒤 빈 자리 수. 정본 표는 [달력 칸](../../2-design/modules/schedule/screens/schedule-admin.md#달력-칸)과 [components.md](../../2-design/design-system/components.md#근무표-날짜-칸)다
 - 신청 수 — 그 날짜의 `availabilities` 행 수. 확정 뒤에는 세지 않는다([확정 뒤 달력](../../2-design/modules/schedule/screens/schedule-admin.md#확정-뒤-달력))
-- 빈 자리 수 — 그 날의 살아 있는 `slots` 중 살아 있는 정규 `assignments`가 없는 것. 확정 전에는 칸에 안 그린다
+- 빈 자리 수 — 그 날의 살아 있는 `slots` 중 살아 있는 정규 `assignments`가 없는 것. 확정 전에는 칸에 안 그린다. 이 판정은 TS가 다시 세지 않는다 — [design.md](../../2-design/modules/schedule/design.md#계산의-예외-하나)대로 `open_slots` 뷰를 읽는 dal(`get-open-slots.ts`)이 내고, 화면은 날짜별로 묶어 세기만 한다. 뷰가 맞게 내는지는 integration이, 묶기는 unit이 든다
 - 확정 버튼의 세 모습 — `confirmed_at`이 있으면 끝남, 없고 오늘이 `application_deadline` 다음 날 이후면 열림, 아니면 잠김. 잠김의 보조 문구가 「10월 3일부터 확정할 수 있어요」다
 - 홈 타일 요약 줄 — 근무표 없음 / 만드는 중 / 확정 뒤로 갈리고, 확정 뒤 예식이 사흘 안인데 빈 자리가 남으면 경고 블록으로 승격한다([관리자 홈 짜임](../../2-design/system/screens/admin-home.md#관리자-홈-짜임))
 - 마감 줄 — 「스케줄 신청 마감 10월 2일(금) · 3일 남았어요」. 마감이 지났으면 문구가 갈린다
@@ -116,7 +116,7 @@ sources:
 
 **관리자 홈이 선다.** `/admin/` 화면 → `src/screens/admin-home/`.
 
-- 짜임 순서: 앱바(뒤로 → `/me`의 관리자 모드 줄, 제목 「관리자」, 브랜드 마크) → 근무표 관리 타일(Card `rounded-xl` `p-5`) → 가는 선 `mt-6` → 근무 시간 기본값 줄 → 승인할 일 줄 → 가입 대기 줄 → 가는 선 → 직원·시급·QR·통계 줄. 화면 좌우 `px-6`, 줄은 `py-4`
+- 짜임 순서: 앱바(뒤로 → `/me`의 관리자 모드 줄, 제목 「관리자」, 브랜드 마크) → 근무표 관리 타일(Card `rounded-xl` `p-5`) → 가는 선 `mt-6` → 근무 시간 기본값 줄 → 승인할 일 줄 → 가입 대기 줄 → 가는 선 → 직원·시급·QR·통계 줄. 화면 좌우 `px-6`, 줄은 `py-4`. 정본 순서는 [admin-home.md](../../2-design/system/screens/admin-home.md#관리자-홈-짜임)의 열넷이다 — 타일 위에 오늘 현황, 타일 아래에 빈 자리 카드와 이번 달 근무표 미니뷰가 서고, 여백은 [spacing-shape.md](../../2-design/design-system/foundation/spacing-shape.md)의 `px-5`다. 오늘 현황의 출근 수는 `check_ins`에서 온다 — `get-month-schedule.ts`가 `days`에 `check_ins`를 같이 임베딩한다([design.md](../../2-design/modules/schedule/design.md#행위-밖의-실행-동작)). 인증 화면이 서기 전이라 행이 없어 0으로 서는데 그것은 사실이라 그대로 둔다
 - 타일 안에 지금 달 상태 한 줄. 예식 3일 안 빈 자리면 그 자리가 [알림 블록](../../2-design/design-system/components.md#알림-블록) 경고로 바뀐다
 - 근무 시간 기본값 줄을 누르면 바텀시트가 열리고 출근·퇴근 두 칸을 고친다 → `set_hall_defaults`. 도움말이 「이미 연 날은 그대로예요」를 말한다
 - 아래 넷에 숫자가 없다. 승인할 일과 가입 대기에만 건수·인원이 선다
