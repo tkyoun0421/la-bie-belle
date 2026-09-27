@@ -90,7 +90,7 @@ sources:
   - **갈래를 다시 판정하지 않는다.** 그 행이 이미 든 갈래 안에서만 값을 고친다 — 시각 행은 시각을, 건수 행은 건수를. 다른 갈래 인자가 오면 `wrong_kind`
   - 겹침 검사는 자기 자신을 뺀 나머지와 한다
 - `remove_rehearsal(p_id uuid)` — 남의 행이면 `not_allowed`. 지운다
-- 오류 코드 넷이 새로 선다 — `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`. `not_allowed`는 이미 있다
+- 오류 코드 넷이 새로 선다 — `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`. `not_allowed`는 이미 있다. 이 가운데 `error-codes.ts`에 없는 것은 `overlaps` 하나다 — 나머지 셋은 근무표 함수가 이미 올렸다(`tests/lint/error-codes`가 중복을 막는다)
 
 ### AC-04
 
@@ -119,7 +119,7 @@ sources:
 - 칸 아래 단이 **건수가 아니라 시간**이다. 리허설이 있는 날은 배경이 `bg.neutral-weak`고 「2시간」이 선다
 - 읽는 중에는 **바닥 단과 합계만 빈다.** 스켈레톤이 없다 — 달력 뼈대는 날짜만으로 이미 서 있다
 - 못 읽으면 달력 아래 한 줄과 Button ghost 「다시 시도」다
-- 달 오가기는 [schedule-worker](schedule-worker.md)의 달 고르기 시트를 같이 쓴다. `?month=`가 경로에 든다([navigation.md](../../2-design/system/navigation.md#경로))
+- 달 오가기는 [schedule-worker](schedule-worker.md)의 달 고르기 시트를 같이 쓴다. `?month=`가 경로에 든다([navigation.md](../../2-design/system/navigation.md#경로)). 그 시트는 아직 어느 화면에도 안 섰다 — 이 task가 [schedule-worker.md 「달 고르기 시트 짜임」](../../2-design/modules/schedule/screens/schedule-worker.md#달-고르기-시트-짜임)대로 `src/shared/ui/MonthPickerSheet.tsx`를 세우고 근무표 화면은 뒤에 같은 조각을 붙인다
 - 관리자는 같은 달력이고 칸의 수가 전원 것이다
 
 ### AC-07
@@ -145,7 +145,9 @@ sources:
 
 ### AC-09
 
-**오류 코드 목록.** `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`가 `src/shared/api/error-codes.ts`와 마이그레이션 양쪽에 선다. `tests/lint/error-codes.test.ts`가 둘을 맞춘다.
+**오류 코드 목록.** `not_qualified`·`wrong_kind`·`overlaps`·`already_exists`가 `src/shared/api/error-codes.ts`와 마이그레이션 양쪽에 선다. `tests/lint/error-codes.test.ts`가 둘을 맞춘다. 목록에 새로 드는 것은 `overlaps`다.
+
+**KST 날짜 손을 `src/shared/lib/kst-date.ts`로 모은다.** `kstDateOf`·`kstToday`·`shiftMonth`·`spellMonth`·`lastDateOfMonth`가 슬라이스 넷(`schedule-worker`·`schedule-admin`·`admin-home`·`applications`)에 각자 서 있었고 이 화면이 다섯째다. 슬라이스끼리는 서로를 못 부르니(lint 규칙 3) 공용 자리로 올리고, 넷은 그 파일을 부른다 — 슬라이스의 기존 테스트는 그대로 통과해야 한다.
 
 ## 변경 파일
 
@@ -153,7 +155,9 @@ sources:
 | --- | --- | --- |
 | `supabase/migrations/<날짜>_rehearsals.sql` | 표, check, unique index, RLS, 권한 회수 | AC-01·AC-02 |
 | `supabase/migrations/<날짜>_rehearsal_functions.sql` | `has_rehearsal_grant`와 함수 셋 | AC-02·AC-03 |
-| `src/shared/api/error-codes.ts` | 코드 넷 | AC-09 |
+| `src/shared/api/error-codes.ts` | 코드 하나(`overlaps`) | AC-09 |
+| `src/shared/lib/kst-date.ts`·`__tests__/` | KST 날짜 손 공용화, 슬라이스 넷이 부른다 | AC-09 |
+| `src/shared/ui/MonthPickerSheet.tsx` | 달 고르기 시트 조각 | AC-06 |
 | `src/features/rehearsal/model/*.ts`·`__tests__/` | 시간 환산·합계·갈래 판정·넣기 가능 | AC-04 |
 | `src/entities/rehearsal/dals/*.ts`·`__tests__/` | 읽기 둘, 쓰기 셋, 무효화 | AC-05 |
 | `src/screens/rehearsal/ui/*.tsx` · `/me/rehearsals/` 화면 | 달력·시트 셋·Dialog·가드 | AC-06~AC-08 |
