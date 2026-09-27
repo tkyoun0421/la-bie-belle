@@ -76,9 +76,11 @@ export function spellMonth(month: string): string {
 }
 
 /**
- * 달력 위 마감 줄이다. 접수 중이면 남은 날을 같이 적고, 마감 뒤면 마감일만 적는다.
+ * 달력 위 마감 줄이다. 문안 표의 세 행 그대로다 — 마감 전이면 남은 날을, 마감 당일이면
+ * 「오늘까지예요」를, 마감 뒤면 마감일만 적는다.
  *
- * 마감 당일은 남은 날이 0이라 뒤 반절을 뗀다 — 「0일 남았어요」로는 아무도 안 읽는다.
+ * 마감 당일에 「0일 남았어요」를 안 쓰는 것은 그 말이 남은 시간을 안 말하기 때문이다 — 오늘이
+ * 아직 안 지났다는 것이 그날 사람이 알아야 할 전부다.
  */
 export function spellDeadline(deadline: string, today: string): string {
   const [, month, day] = deadline.split("-").map(Number);
@@ -92,7 +94,7 @@ export function spellDeadline(deadline: string, today: string): string {
   }
 
   const weekday = WEEKDAYS[new Date(`${deadline}T00:00:00Z`).getUTCDay()];
-  const head = `스케줄 신청 마감 ${month}월 ${day}일(${weekday})`;
+  const left = remaining === 0 ? "오늘까지예요" : `${remaining}일 남았어요`;
 
-  return remaining === 0 ? head : `${head} · ${remaining}일 남았어요`;
+  return `스케줄 신청 마감 ${month}월 ${day}일(${weekday}) · ${left}`;
 }

@@ -1,5 +1,10 @@
 import { useRouter } from "expo-router";
-import { ChevronLeft, ChevronRight } from "lucide-react-native";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  List,
+} from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BackHandler, ScrollView, View } from "react-native";
 import { getCurrentUser } from "@/shared/lib/get-current-user";
@@ -20,10 +25,8 @@ import { Text } from "@/shared/ui/Text";
 import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
 import { useMonthSchedule } from "@/features/schedule/model/useMonthSchedule";
-import {
-  useMonthWindow,
-  useMyAvailability,
-} from "@/features/schedule/model/useMyAvailability";
+import { useMonthWindow } from "@/features/schedule/model/useMonthWindow";
+import { useMyAvailability } from "@/features/schedule/model/useMyAvailability";
 import { useSubmitAvailability } from "@/features/schedule/model/useSubmitAvailability";
 import {
   myAssignmentOf,
@@ -71,8 +74,12 @@ import {
 const SKELETON_ROWS = [0, 1, 2];
 
 const VIEW_OPTIONS = [
-  { value: "calendar", label: "달력 순" },
-  { value: "position", label: "포지션 순" },
+  {
+    value: "calendar",
+    icon: CalendarDays,
+    accessibilityLabel: "달력 순",
+  },
+  { value: "position", icon: List, accessibilityLabel: "포지션 순" },
 ];
 
 export type ScheduleWorkerScreenProps = {
