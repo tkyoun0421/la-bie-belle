@@ -4,7 +4,11 @@ import {
   type ExcuseStatusRecord,
 } from "@/entities/attendance/model/attendance-status";
 import type { RehearsalRow } from "@/entities/rehearsal/model/rehearsal-hours";
-import { dayAmount, type DayAmount } from "@/features/payroll/model/day-amount";
+import {
+  dayAmount,
+  type DayAmount,
+  type DayKind,
+} from "@/features/payroll/model/day-amount";
 import { dayMinutes } from "@/features/payroll/model/day-minutes";
 import { wageAt, type WageRate } from "@/features/payroll/model/wage-at";
 
@@ -24,7 +28,10 @@ import { wageAt, type WageRate } from "@/features/payroll/model/wage-at";
  * 아직 안 누른 날이 둘 다 있다(plan AC-06). 경로가 달라 어긋나기 쉬운 자리라 결근이면 분도
  * 금액도 0으로 못박는다.
  *
- * **시급이 없는 날은 목록에서 뺀다.** 첫 시급 행보다 이른 날은 승인 전 날짜다.
+ * **시급이 없는 날도 목록에 든다.** 곱할 값이 없어 금액은 0원이지만 분은 그대로 채우고
+ * `'wage-pending'`으로 낸다 — 기본 시급이 서기 전에 승인된 사람의 날이다(PAY-012). 버리면 그
+ * 날의 시각과 분이 화면에 안 닿아 근무 회수·시간에서도 빠지고, 나온 날이 앱에서 사라진다
+ * (`docs/2-design/modules/payroll/screens/payroll.md`의 「내역 목록」).
  *
  * 지각도 출근 인정도 교육 배정도 배정 시간 그대로 센다(PAY-003·PAY-007) — 급여에서 갈리는
  * 상태는 결근 하나뿐이라 나머지는 따로 묻지 않는다.
@@ -76,8 +83,15 @@ export type PayrollDaysInput = {
   now: string;
 };
 
-export type PayrollDay = DayAmount & {
+/**
+ * `dayAmount`가 내는 셋에 `'wage-pending'`이 하나 더 붙는다. 그것은 금액 곡선의 결과가 아니라
+ * 곱할 값이 아직 없다는 사실이라, 시급을 받아야만 도는 `dayAmount`가 낼 수 있는 값이 아니다.
+ */
+export type PayrollDayKind = DayKind | "wage-pending";
+
+export type PayrollDay = Omit<DayAmount, "kind"> & {
   date: string;
+  kind: PayrollDayKind;
 };
 
 const ABSENT: DayAmount = { minutes: 0, amount: 0, kind: "absent" };
@@ -130,13 +144,7 @@ function payrollDate(
   input: PayrollDaysInput,
   dayByDate: ReadonlyMap<string, PayrollWorkDay>,
   date: string,
-): PayrollDay[] {
-  const wage = wageAt(input.rates, date);
-
-  if (wage === null) {
-    return [];
-  }
-
+): PayrollDay {
   const day = dayByDate.get(date) ?? null;
   const assignments =
     day === null
@@ -144,7 +152,7 @@ function payrollDate(
       : input.assignments.filter((row) => row.day_id === day.id);
 
   if (day !== null && isAbsent(input, day, assignments)) {
-    return [{ date, ...ABSENT }];
+    return { date, ...ABSENT };
   }
 
   const minutes = dayMinutes({
@@ -157,7 +165,11 @@ function payrollDate(
     rehearsals: input.rehearsals.filter((row) => row.work_date === date),
   });
 
-  return [{ date, ...dayAmount({ minutes, wage }) }];
+  const wage = wageAt(input.rates, date);
+
+  return wage === null
+    ? { date, minutes, amount: 0, kind: "wage-pending" }
+    : { date, ...dayAmount({ minutes, wage }) };
 }
 
 export function payrollDays(input: PayrollDaysInput): PayrollDay[] {
@@ -177,7 +189,5 @@ export function payrollDays(input: PayrollDaysInput): PayrollDay[] {
     dates.add(rehearsal.work_date);
   }
 
-  return [...dates]
-    .sort()
-    .flatMap((date) => payrollDate(input, dayByDate, date));
+  return [...dates].sort().map((date) => payrollDate(input, dayByDate, date));
 }
