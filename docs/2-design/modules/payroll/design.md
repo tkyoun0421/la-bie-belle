@@ -62,7 +62,7 @@
 
 - 규칙: [PAY-002](README.md#pay-002)·[PAY-008](README.md#pay-008)·[PAY-011](README.md#pay-011)·[PAY-013](README.md#pay-013)·[PAY-014](README.md#pay-014)
 - 입력·전제: `set_wage`가 개인 시급이다 — 적용일은 오늘이고 인자로 안 받는다. `reset_wage_to_default`가 기본으로 되돌리기고 오늘부터 다시 끈에 붙는다. `set_default_wage`가 기본 시급이다. `set_adjustment(p_day_id uuid, p_profile_id uuid, p_minutes integer, p_reason text)`가 그날 그 사람의 근무 시간 조정이고, 관리자가 근무표 날 상세의 「근무 조정」 줄에서 부른다([schedule-admin.md](../schedule/screens/schedule-admin.md#근무-조정))
-- 읽고 쓰는 데이터: `set_default_wage`는 따르는 전원에게 같은 날 행이 한 트랜잭션에 선다
+- 읽고 쓰는 데이터: `set_default_wage`는 따르는 전원에게 같은 날 행이 한 트랜잭션에 선다. 시급 화면이 읽는 키는 `['payroll', 'wages']`다 — 달로 자르지 않고 전원의 `wage_rates` 전부와 `default_wage_rates` 현재값을 받는다. 그 화면은 이력을 그리고 「몇 명이 기본을 쓰나」를 세야 해서 달치(`['payroll', 'YYYY-MM']`)로는 모자란다
 - 처리와 경쟁: 시급·조정 전부다. 돈이라 낙관적으로 칠하지 않는다
 - 캐시 갱신: `set_wage` · `reset_wage_to_default` · `set_default_wage` · `set_adjustment`는 `['payroll']`
 

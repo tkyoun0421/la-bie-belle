@@ -119,15 +119,16 @@ sources:
 | --- | --- | --- |
 | `src/screens/wages/model/*.ts`·`__tests__/` | 정렬·인원 셈·상한 검사·이력 자르기 | AC-01~AC-04 |
 | `src/screens/wages/ui/*.tsx` · `/admin/wages/` 화면 | 목록·시트 둘·Dialog | AC-01~AC-03·AC-06 |
-| `src/shared/ui/amount-input.tsx` | 쉼표·「원」·상한·하한 | AC-04 |
-| `src/features/payroll/*.ts`·`__tests__/` | query·mutation과 무효화 | AC-05 |
+| `src/shared/ui/AmountInput.tsx` | 쉼표·「원」·상한·하한 | AC-04 |
+| `src/entities/payroll/dals/get-wage-rates.ts`·`__tests__/` | 전원의 시급 이력과 기본 시급 현재값을 읽는다 — 달치 `get-payroll-month.ts`로는 못 그린다 | AC-05 |
+| `src/features/payroll/model/use*.ts`·`__tests__/` | 읽기 훅 하나와 쓰기 훅 셋, 무효화 `['payroll']` | AC-05 |
 | `wages` e2e | e2e | 검증 표 |
 
 ## 구현 순서
 
 기능 task 파이프라인이다 — `test-planner` → `unit-test-writer`·`e2e-test-writer` → `implementer` → `pr-diff`. [`payroll-data`](payroll-data.md)가 merge된 뒤에 시작한다.
 
-1. `test-planner`가 AC-01~AC-06을 배정한다. **integration이 없다** — 함수는 앞 task가 이미 봤다
+1. `test-planner`가 AC-01~AC-06을 배정한다. **함수 integration이 없다** — 함수와 RLS는 앞 task가 이미 봤다. 새 읽기 dal의 select 계약 하나만 integration이다
 2. `unit-test-writer`가 AC-04를 먼저 쓴다. 두 시트가 같이 쓰는 조각이라 여기가 깨지면 두 자리가 같이 깨진다
 3. `implementer`가 목록 → 기본 시트 → 사람 시트 → Dialog 순으로 초록을 만든다
 4. `e2e-test-writer`가 기본을 바꿔 따르는 사람이 같이 바뀌는 한 바퀴를 쓴다
