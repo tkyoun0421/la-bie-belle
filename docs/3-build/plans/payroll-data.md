@@ -194,7 +194,7 @@ sources:
 | AC-04 | 배정 없는 사람에게 조정이 붙는다 | integration 위 | 위와 같다 | `not_allowed` |
 | AC-05 | 받기가 손으로 넣은 임시공휴일을 지운다 | integration 위 | 위와 같다 | 다시 받아도 `manual` 행이 남는다 |
 | AC-05 | 빈 목록이 그 해를 비운다 | integration 위 | 위와 같다 | `p_rows`가 비면 기존 `api` 행이 그대로 |
-| AC-06 | 리허설이 따로 세어져 연장이 안 난다 | unit `src/features/payroll/model/__tests__/`(예정) | `pnpm test` | 배정 9시간 + 리허설 2건 = 11시간, 2시간이 1.5배 |
+| AC-06 | 리허설이 따로 세어져 연장이 안 난다 | unit `src/features/payroll/model/__tests__/` | `pnpm test` | 배정 9시간 + 리허설 2건 = 11시간, 2시간이 1.5배 |
 | AC-06 | 배정 없는 날의 리허설이 빠진다 | unit 위 | `pnpm test` | 그날 금액이 리허설 시각만큼 난다 |
 | AC-06 | 결근 판정이 두 벌이라 어긋난다 | unit 위 | `pnpm test` | 조정 든 결근과 안 든 결근이 같은 금액(0) |
 | AC-06 | 그날 시급을 잘못 고른다 | unit 위 | `pnpm test` | 8월 1일에 올리면 7월은 옛 값, 8월 1일부터 새 값 |
