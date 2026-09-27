@@ -1,6 +1,8 @@
 import {
   createAdminUser,
   createApprovedUser,
+  createBlockedUser,
+  createLeftUser,
   createSubmittedUser,
   execSql,
   kstDate,
@@ -98,6 +100,14 @@ function seedDefaultWageRate(effectiveDate: string, amount: number): void {
       "on conflict (effective_date) do update set amount = excluded.amount;\n",
     { effective_date: effectiveDate, amount: String(amount) },
   );
+}
+
+/**
+ * `default_wage_rates`는 `effective_date`가 전역이라 다른 테스트가 남긴 행이 「기본값이
+ * 아예 없다」는 전제를 깬다. 그 전제가 필요한 케이스는 여기서 표를 비우고 시작한다.
+ */
+function clearDefaultWageRates(): void {
+  execSql("delete from public.default_wage_rates;\n");
 }
 
 function seedHolidayRow(holidayDate: string, source: "api" | "manual"): void {
@@ -347,6 +357,17 @@ describe("reset_wage_to_default(plan AC-03) — 오늘 날짜에 그 시점 기�
 
     expect(error?.message).toBe("not_allowed");
   });
+
+  it("기본값이 아직 없으면 no_default_wage다 — bad_amount가 아니다(PAY-014)", async () => {
+    clearDefaultWageRates();
+    const worker = await createApprovedUser();
+
+    const { error } = await rpc(admin, "reset_wage_to_default", {
+      p_profile_id: worker.profileId,
+    });
+
+    expect(error?.message).toBe("no_default_wage");
+  });
 });
 
 describe("set_default_wage(plan AC-03) — 따르는 사람 전원에게 오늘 행이 같이 선다(PAY-013)", () => {
@@ -413,6 +434,43 @@ describe("set_default_wage(plan AC-03) — 따르는 사람 전원에게 오늘 
     });
 
     expect(error?.message).toBe("not_allowed");
+  });
+
+  it("기본값이 한 번도 안 선 상태에서 승인한 사람이, 기본 시급을 처음 세우면 딸려 온다(PAY-012)", async () => {
+    clearDefaultWageRates();
+    const applicant = await createSubmittedUser();
+
+    await rpcOrThrow(admin, "approve_member", {
+      profile_id: applicant.profileId,
+    });
+    expect(
+      await wageRateRow(admin, applicant.profileId, kstDate(0)),
+    ).toBeNull();
+
+    const amount = 12000;
+    const { error } = await rpc(admin, "set_default_wage", {
+      p_amount: amount,
+    });
+
+    expect(error).toBeNull();
+    expect(await wageRateRow(admin, applicant.profileId, kstDate(0))).toEqual({
+      amount,
+      follows_default: true,
+    });
+  });
+
+  it("승인받지 않았거나 차단됐거나 퇴사한 사람에게는 안 선다", async () => {
+    const notApproved = await createSubmittedUser();
+    const blocked = await createBlockedUser();
+    const left = await createLeftUser();
+
+    const amount = 13000 + Math.floor(Math.random() * 1000);
+    await rpcOrThrow(admin, "set_default_wage", { p_amount: amount });
+
+    const today = kstDate(0);
+    expect(await wageRateRow(admin, notApproved.profileId, today)).toBeNull();
+    expect(await wageRateRow(admin, blocked.profileId, today)).toBeNull();
+    expect(await wageRateRow(admin, left.profileId, today)).toBeNull();
   });
 });
 
