@@ -1,5 +1,3 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { ApprovalsScreen } from "@/screens/approvals/ui/ApprovalsScreen";
 
-export default function Screen() {
-  return <NotBuiltYet path="/admin/approvals" />;
-}
+export default ApprovalsScreen;

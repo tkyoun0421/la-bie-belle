@@ -116,7 +116,10 @@ export async function createAdminUser(): Promise<AdminUser> {
   return user;
 }
 
-function queryColumn(sql: string, vars: Record<string, string> = {}): string[] {
+export function queryColumn(
+  sql: string,
+  vars: Record<string, string> = {},
+): string[] {
   const container = dbContainerName();
 
   const args = [
@@ -336,13 +339,100 @@ export function seedAssignment(
   return id;
 }
 
-export function seedWorkRequest(slotId: string, requestedBy: string): string {
+export function seedWorkRequest(
+  slotId: string,
+  requestedBy: string,
+  expiresAt: string | null = null,
+): string {
   const id = randomUUID();
+  const expiresSql =
+    expiresAt === null ? "now() + interval '1 hour'" : ":'expires_at'";
+  const vars: Record<string, string> = {
+    id,
+    slot_id: slotId,
+    requested_by: requestedBy,
+  };
+  if (expiresAt !== null) {
+    vars.expires_at = expiresAt;
+  }
   execSql(
-    "insert into public.requests (id, kind, slot_id, requested_by, expires_at) values (:'id', 'work', :'slot_id', :'requested_by', now() + interval '1 hour');\n",
-    { id, slot_id: slotId, requested_by: requestedBy },
+    `insert into public.requests (id, kind, slot_id, requested_by, expires_at) values (:'id', 'work', :'slot_id', :'requested_by', ${expiresSql});\n`,
+    vars,
   );
   return id;
+}
+
+/**
+ * `requests`의 갈래 하나다 — `request_candidates`. `seedWorkRequest`가 만든 요청에 후보를
+ * 더할 때 쓴다. `pending`이 아니면 `responded_at`도 같이 찍는다.
+ */
+export function seedRequestCandidate(
+  requestId: string,
+  profileId: string,
+  status: "pending" | "accepted" | "declined" = "pending",
+  expiresAt: string | null = null,
+): string {
+  const id = randomUUID();
+  const expiresSql =
+    expiresAt === null ? "now() + interval '1 hour'" : ":'expires_at'";
+  const respondedSql = status === "pending" ? "null" : "now()";
+  const vars: Record<string, string> = {
+    id,
+    request_id: requestId,
+    profile_id: profileId,
+    status,
+  };
+  if (expiresAt !== null) {
+    vars.expires_at = expiresAt;
+  }
+  execSql(
+    `insert into public.request_candidates (id, request_id, profile_id, status, responded_at, expires_at) values (:'id', :'request_id', :'profile_id', :'status', ${respondedSql}, ${expiresSql});\n`,
+    vars,
+  );
+  return id;
+}
+
+/**
+ * 근무 취소 요청 한 행이다. 판정된 것을 시드할 때는 `decision`을 준다 — 그때만
+ * `decided_at`·`decision_reason`을 같이 찍는다.
+ */
+export function seedCancelRequest(
+  assignmentId: string,
+  profileId: string,
+  reason: string = "개인 사정",
+  decision: "approved" | "rejected" | null = null,
+  decisionReason: string | null = null,
+): string {
+  const id = randomUUID();
+  const decisionSql = decision === null ? "null" : ":'decision'";
+  const decidedAtSql = decision === null ? "null" : "now()";
+  const decisionReasonSql =
+    decisionReason === null ? "null" : ":'decision_reason'";
+  const vars: Record<string, string> = {
+    id,
+    assignment_id: assignmentId,
+    profile_id: profileId,
+    reason,
+  };
+  if (decision !== null) {
+    vars.decision = decision;
+  }
+  if (decisionReason !== null) {
+    vars.decision_reason = decisionReason;
+  }
+  execSql(
+    `insert into public.cancel_requests (id, assignment_id, profile_id, reason, decided_at, decision, decision_reason) values (:'id', :'assignment_id', :'profile_id', :'reason', ${decidedAtSql}, ${decisionSql}, ${decisionReasonSql});\n`,
+    vars,
+  );
+  return id;
+}
+
+/** 배정 하나를 끝난 것으로 만든다 — `stale` 판정을 시험할 때 쓴다. */
+export function endAssignment(assignmentId: string): void {
+  execSql(
+    "update public.assignments set ended_at = now(), ended_reason = 'ended_for_test' where id = :'id';\n",
+    { id: assignmentId },
+  );
 }
 
 export type SeededPastDay = {

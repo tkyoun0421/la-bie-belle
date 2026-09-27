@@ -29,6 +29,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      close_slot_requests: { Args: { p_slot_id: string }; Returns: undefined };
       distance_meters: {
         Args: {
           p_lat_a: number;
@@ -38,6 +39,7 @@ export type Database = {
         };
         Returns: number;
       };
+      expire_requests: { Args: never; Returns: undefined };
       submit_excuse: {
         Args: {
           p_body: string;
@@ -1050,11 +1052,23 @@ export type Database = {
       };
       close_day: { Args: { p_work_date: string }; Returns: undefined };
       confirm_schedule: { Args: { p_month: string }; Returns: undefined };
+      create_cancel_request: {
+        Args: { p_assignment_id: string; p_reason: string };
+        Returns: string;
+      };
       create_schedule: {
         Args: { p_deadline: string; p_month: string };
         Returns: undefined;
       };
       day_structure_locked: { Args: { p_day_id: string }; Returns: boolean };
+      decide_cancel_request: {
+        Args: {
+          p_cancel_request_id: string;
+          p_decision: string;
+          p_reason?: string;
+        };
+        Returns: undefined;
+      };
       decide_excuse: {
         Args: { p_approved: boolean; p_excuse_id: string; p_reason?: string };
         Returns: undefined;
@@ -1088,8 +1102,17 @@ export type Database = {
       };
       remove_push_token: { Args: { p_token: string }; Returns: undefined };
       remove_slot: { Args: { p_slot_id: string }; Returns: undefined };
+      respond_request: {
+        Args: { p_answer: string; p_request_id: string };
+        Returns: string;
+      };
       rotate_qr: { Args: never; Returns: undefined };
       save_push_token: { Args: { p_token: string }; Returns: undefined };
+      send_work_request: {
+        Args: { p_profile_ids: string[]; p_slot_id: string };
+        Returns: string;
+      };
+      server_now: { Args: never; Returns: string };
       set_application_deadline: {
         Args: { p_deadline: string; p_month: string };
         Returns: undefined;

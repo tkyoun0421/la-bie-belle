@@ -5,6 +5,8 @@ import {
   createApprovedUser,
   kstDate,
   kstMonthStart,
+  seedRequestCandidate,
+  seedWorkRequest,
   withFreshMonth,
   type AdminUser,
   type ApprovedUser,
@@ -151,5 +153,54 @@ describe("addAssignment dal — add_assignment을 부르고 오류를 DomainErro
     );
 
     expect(error.code).toBe("not_applied");
+  });
+
+  it("정규 배정이 들어가면 그 자리의 살아 있는 요청을 닫는다", async () => {
+    const { dayId, workDate } = await seedOpenDay(admin);
+    const slotId = await slotIdForPosition(admin, dayId, "안내");
+    const requestId = seedWorkRequest(slotId, admin.profileId);
+    const candidate = await createApprovedUser();
+    seedRequestCandidate(requestId, candidate.profileId, "pending");
+
+    const applicant = await createApprovedUser();
+    await applyForDay(applicant, workDate);
+
+    await addAssignment(admin.client, {
+      profileId: applicant.profileId,
+      kind: "regular",
+      slotId,
+    });
+
+    const { data } = await admin.client
+      .from("requests")
+      .select("closed_at")
+      .eq("id", requestId)
+      .single<{ closed_at: string | null }>();
+    expect(data?.closed_at).not.toBeNull();
+  });
+
+  it("교육 배정은 자리를 안 먹어 다른 자리의 요청을 안 닫는다", async () => {
+    const { dayId, workDate } = await seedOpenDay(admin);
+    const slotId = await slotIdForPosition(admin, dayId, "매니저");
+    const requestId = seedWorkRequest(slotId, admin.profileId);
+    const candidate = await createApprovedUser();
+    seedRequestCandidate(requestId, candidate.profileId, "pending");
+
+    const trainee = await createApprovedUser();
+    await applyForDay(trainee, workDate);
+
+    await addAssignment(admin.client, {
+      profileId: trainee.profileId,
+      kind: "training",
+      dayId,
+      position: "안내",
+    });
+
+    const { data } = await admin.client
+      .from("requests")
+      .select("closed_at")
+      .eq("id", requestId)
+      .single<{ closed_at: string | null }>();
+    expect(data?.closed_at).toBeNull();
   });
 });

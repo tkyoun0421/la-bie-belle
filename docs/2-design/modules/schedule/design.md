@@ -88,7 +88,9 @@ unique index 둘이 도메인 규칙을 지킨다.
 
 ### 요청
 
-**근무 요청과 교대 요청은 한 표다.** 여럿에게 묻고 답을 기다리는 모양이 같다. `requests(kind, slot_id, assignment_id, requested_by, expires_at, closed_at, approved_candidate_id)` — `kind = 'work'`면 `slot_id` 필수, `kind = 'swap'`이면 `assignment_id` 필수를 check 제약이 지킨다. 갈래는 `request_candidates(request_id, profile_id, status, responded_at, expires_at)`이고 `request_id`가 진짜 FK다.
+**근무 요청과 교대 요청은 한 표다.** 여럿에게 묻고 답을 기다리는 모양이 같다. `requests(kind, slot_id, assignment_id, requested_by, expires_at, closed_at, approved_candidate_id)` — `kind = 'work'`면 `slot_id` 필수, `kind = 'swap'`이면 `assignment_id` 필수를 check 제약이 지킨다. 갈래는 `request_candidates(request_id, profile_id, status, responded_at, expires_at)`이고 `request_id`가 진짜 FK다. `status`는 `pending`·`accepted`·`declined` 셋이고 「만료됨」은 저장하지 않는다 — `status = 'pending'`이면서 `expires_at`이 지난 것이 만료된 갈래다. `expire_requests`(pg_cron, 매 분)는 살아 있는 갈래가 하나도 안 남은 요청의 `closed_at`을 찍을 뿐 갈래 행은 안 건드린다. 상태 하나를 더 저장하면 cron이 도는 사이 한 분 동안 화면과 표가 어긋난다.
+
+**요청은 관리자와 그 요청의 후보만 읽는다.** `requests`·`request_candidates`의 select 정책이 그렇게 좁다 — 누구에게 물었고 누가 거절했는지는 배정처럼 전원이 볼 것이 아니다. 처음엔 `is_approved()`로 열려 있었고 `schedule-requests`가 좁혔다.
 
 자리를 채우는 길 다섯(배정 추가·교대 승인·강제 변경·근무 요청 수락·날 닫기)이 전부 그 자리의 살아 있는 `requests`를 닫는다. 한 표라 「이 자리의 살아 있는 요청」이 한 질의다.
 

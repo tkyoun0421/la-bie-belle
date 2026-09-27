@@ -20,7 +20,9 @@ import { useHallDefaults } from "@/features/schedule/model/useHallDefaults";
 import { useMonthSchedule } from "@/features/schedule/model/useMonthSchedule";
 import { useMonthWindow } from "@/features/schedule/model/useMonthWindow";
 import { useOpenSlots } from "@/features/schedule/model/useOpenSlots";
+import { usePendingApprovals } from "@/features/schedule/model/usePendingApprovals";
 import { useSetHallDefaults } from "@/features/schedule/model/useSetHallDefaults";
+import { approvalsLine } from "@/screens/admin-home/model/approvals-line";
 import { homeTileSummary } from "@/screens/admin-home/model/home-tile-summary";
 import { miniViewLoads } from "@/screens/admin-home/model/mini-view-density";
 import { tileMonth } from "@/screens/admin-home/model/tile-month";
@@ -53,8 +55,10 @@ import { HallDefaultsSheet } from "@/screens/admin-home/ui/HallDefaultsSheet";
  * ([tile-month.ts](../model/tile-month.ts)) 눌렀을 때 그 달이 열린다. 오늘 현황·빈 자리
  * 카드·미니뷰는 늘 오늘이 든 달이다 — 셋은 지금 벌어지는 일을 보는 자리다.
  *
- * **승인할 일 줄에 건수가 없다.** 사유와 근무 취소 요청을 한 목록으로 세는 손이 아직 없다 —
- * 0으로 적으면 쌓인 것이 없다는 거짓말이 된다(spec 「범위 밖」).
+ * **승인할 일 줄이 건수를 문장 안에 담는다.** 「승인할 일 · 3건」이 한 글월이라 가입 대기처럼
+ * 오른쪽 값으로 안 가른다 — 세는 것이 사람이 아니라 건이라서 숫자만 떼면 무엇의 3인지가
+ * 안 남는다(`admin-home.md`의 「관리자 홈 문안」). 지금 세는 것은 근무 취소 대기뿐이고 사유
+ * 건수는 `attendance-excuse`가 같은 훅에 더한다.
  */
 
 export function AdminHomeScreen() {
@@ -69,6 +73,7 @@ export function AdminHomeScreen() {
   const { data: openSlots } = useOpenSlots(supabase, month);
   const { data: defaults } = useHallDefaults(supabase);
   const { data: pending } = useMembers(supabase, "pending");
+  const { data: approvals } = usePendingApprovals(supabase);
 
   const tiled = tileMonth({
     todayMonth: month,
@@ -264,7 +269,7 @@ export function AdminHomeScreen() {
             onPress={() => setSheetOpen(true)}
           />
           <ListRow
-            title="승인할 일"
+            title={approvalsLine(approvals?.length ?? 0)}
             onPress={() => router.push("/admin/approvals")}
           />
           <ListRow

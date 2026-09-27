@@ -4,10 +4,12 @@
 //   POST http://127.0.0.1:8765/seed  {"state": "rejected"}
 //   → {"access_token": "…", "refresh_token": "…", "user_id": "…", "profile": {…}}
 //
-// 상태는 열여섯이다 — fresh · submitted · approved · admin · rejected · left · blocked ·
-// read_failure · schedule_submission_window · schedule_confirmed와, 관리자 근무표 여섯
+// 상태는 스무 개다 — fresh · submitted · approved · admin · rejected · left · blocked ·
+// read_failure · schedule_submission_window · schedule_confirmed와, 관리자 근무표 여덟
 // (schedule_admin_empty_month · schedule_admin_race_open · schedule_admin_confirmable ·
-// schedule_admin_confirmed · schedule_admin_applications · schedule_assign_day). `name`은
+// schedule_admin_confirmed · schedule_admin_applications · schedule_assign_day ·
+// schedule_admin_request_slot · schedule_approvals_cancel_pending), 요청을 받는 근무자 둘
+// (schedule_worker_request_pending · schedule_worker_request_claimed). `name`은
 // 선택이고, 프로필을 보내는 상태에서 그 사람의 이름을 고른다(안 주면 SEEDED_PROFILE의
 // 이름이다). 요청의 `month`·`day`도 선택이고 schedule_admin_race_open만 쓴다 — 이미
 // 로그인된 세션 밖에서 먼저 열 날짜다. 응답의 `day`는 schedule_assign_day만 싣는다 —
@@ -40,6 +42,9 @@ import {
   kstDate,
   kstMonthStart,
   seedAssignment,
+  seedCancelRequest,
+  seedRequestCandidate,
+  seedWorkRequest,
   withFreshMonth,
   type AdminUser,
 } from "@tests/integration/postgres";
@@ -88,6 +93,14 @@ const ADMIN_APPLICATIONS = "schedule_admin_applications";
 
 const ASSIGN_DAY = "schedule_assign_day";
 
+const ADMIN_REQUEST_SLOT = "schedule_admin_request_slot";
+
+const WORKER_REQUEST_PENDING = "schedule_worker_request_pending";
+
+const WORKER_REQUEST_CLAIMED = "schedule_worker_request_claimed";
+
+const APPROVALS_CANCEL_PENDING = "schedule_approvals_cancel_pending";
+
 const STATES = [
   "fresh",
   "submitted",
@@ -105,11 +118,20 @@ const STATES = [
   ADMIN_CONFIRMED,
   ADMIN_APPLICATIONS,
   ASSIGN_DAY,
+  ADMIN_REQUEST_SLOT,
+  WORKER_REQUEST_PENDING,
+  WORKER_REQUEST_CLAIMED,
+  APPROVALS_CANCEL_PENDING,
 ] as const;
 
 export type SeedState = (typeof STATES)[number];
 
-/** 관리자 근무표 플로우가 쓰는 여섯이다 — 전부 관리자로 로그인한다. */
+/**
+ * 관리자 화면 플로우가 쓰는 여덟이다 — 전부 관리자로 로그인한다.
+ *
+ * 근무 요청을 **받는** 쪽 둘(`schedule_worker_request_*`)은 여기 안 든다. 로그인하는 사람이
+ * 요청을 받은 근무자라야 그 시트가 뜬다.
+ */
 const ADMIN_SCHEDULE_STATES = new Set<SeedState>([
   ADMIN_EMPTY_MONTH,
   ADMIN_RACE_OPEN,
@@ -117,6 +139,8 @@ const ADMIN_SCHEDULE_STATES = new Set<SeedState>([
   ADMIN_CONFIRMED,
   ADMIN_APPLICATIONS,
   ASSIGN_DAY,
+  ADMIN_REQUEST_SLOT,
+  APPROVALS_CANCEL_PENDING,
 ]);
 
 /**
@@ -136,6 +160,11 @@ type SchedulePayload = {
   otherDateLabel?: string;
   deadlineDate?: string;
   failedOpenDayLabel?: string;
+  slotClaimedLabel?: string;
+  approvalListTitle?: string;
+  approvalDetailTitle?: string;
+  approvalConfirmBody?: string;
+  approvalDayAppbar?: string;
 };
 
 type SeedResponse = Partial<SchedulePayload> & {
@@ -250,7 +279,12 @@ async function seededUser(
 
   // 근무표 두 상태의 주인공은 승인된 근무자다. 그 사람 이름이 날 시트 명단에 서야 해서
   // 「승인됨」과 같은 길 — 신청을 보내고 관리자가 받는 — 을 그대로 밟는다.
-  if (state === SUBMISSION_WINDOW || state === SCHEDULE_CONFIRMED) {
+  if (
+    state === SUBMISSION_WINDOW ||
+    state === SCHEDULE_CONFIRMED ||
+    state === WORKER_REQUEST_PENDING ||
+    state === WORKER_REQUEST_CLAIMED
+  ) {
     await decideBy("approve_member", user.profileId);
   }
 
@@ -613,6 +647,155 @@ async function seedAdminApplications(): Promise<SchedulePayload> {
   });
 }
 
+/**
+ * 아무도 신청을 안 낸 열린 날 하나다. 픽커의 기본 목록이 0명이라 전체 보기가 펼쳐진 채로
+ * 열리고, 그 미신청 줄 둘이 근무 요청을 보내는 문이다
+ * (`tests/e2e/schedule-admin.yaml`의 「근무 요청 보내기」 절).
+ */
+async function seedAdminRequestSlot(): Promise<SchedulePayload> {
+  const admin = await createAdminUser();
+
+  const workerA = await createSignedInUser();
+  await submitSeededProfile(workerA, { ...SEEDED_PROFILE, name: "정하윤" });
+  await decideBy("approve_member", workerA.profileId);
+
+  const workerB = await createSignedInUser();
+  await submitSeededProfile(workerB, { ...SEEDED_PROFILE, name: "오수민" });
+  await decideBy("approve_member", workerB.profileId);
+
+  return withFreshMonth(async (monthsFromNow) => {
+    const monthDate = kstMonthStart(monthsFromNow);
+    const month = monthDate.slice(0, 7);
+    const day = "01";
+    const workDate = `${month}-${day}`;
+
+    await createSchedule(admin, monthDate, kstDate(3));
+    await openDay(admin, workDate);
+
+    return { month, day, monthLabel: spellMonth(month) };
+  });
+}
+
+/**
+ * 확정된 달의 안내 자리에 내게 온 근무 요청 하나다. 함수(`send_work_request`)가 아니라
+ * 직결로 심는 것은 시드가 도는 시점의 스키마에 그 함수가 없을 수도 있어서고, 만들어지는
+ * 행의 모양은 함수가 만드는 것과 같다.
+ */
+async function seedWorkerRequestPending(
+  meProfileId: string,
+): Promise<SchedulePayload> {
+  const admin = await createAdminUser();
+
+  return withFreshMonth(async (monthsFromNow) => {
+    const monthDate = kstMonthStart(monthsFromNow);
+    const month = monthDate.slice(0, 7);
+    const workDate = `${month}-01`;
+
+    await createSchedule(admin, monthDate, kstDate(1));
+    await openDay(admin, workDate);
+    backdateDeadline(await scheduleIdOf(admin, monthDate), kstDate(-1));
+    await confirmSchedule(admin, monthDate);
+
+    const dayId = await dayIdOf(admin, workDate);
+    const slotId = await freeSlotOfPosition(admin, dayId, "안내");
+    const requestId = seedWorkRequest(slotId, admin.profileId);
+
+    seedRequestCandidate(requestId, meProfileId, "pending");
+
+    return {
+      month,
+      monthLabel: spellMonth(month),
+      myDateLabel: spellWorkDate(workDate),
+    };
+  });
+}
+
+/**
+ * 위와 같은데 그 자리를 다른 근무자가 이미 채웠다. 내 갈래는 `pending`으로 남아 있어서
+ * 「근무할게요」를 누르는 순간에야 자리가 찼다는 것을 안다 — 늦은 수락이다.
+ */
+async function seedWorkerRequestClaimed(
+  meProfileId: string,
+): Promise<SchedulePayload> {
+  const admin = await createAdminUser();
+  const colleague = await createSignedInUser();
+
+  await submitSeededProfile(colleague, { ...SEEDED_PROFILE, name: "노을" });
+  await decideBy("approve_member", colleague.profileId);
+
+  return withFreshMonth(async (monthsFromNow) => {
+    const monthDate = kstMonthStart(monthsFromNow);
+    const month = monthDate.slice(0, 7);
+    const workDate = `${month}-01`;
+
+    await createSchedule(admin, monthDate, kstDate(1));
+    await openDay(admin, workDate);
+    backdateDeadline(await scheduleIdOf(admin, monthDate), kstDate(-1));
+    await confirmSchedule(admin, monthDate);
+
+    const dayId = await dayIdOf(admin, workDate);
+    const slotId = await freeSlotOfPosition(admin, dayId, "안내");
+    const requestId = seedWorkRequest(slotId, admin.profileId);
+
+    seedRequestCandidate(requestId, meProfileId, "pending");
+    seedAssignment(dayId, colleague.profileId, "regular", slotId);
+
+    return {
+      month,
+      monthLabel: spellMonth(month),
+      slotClaimedLabel: `${formatBareDate(workDate)} 안내 자리는 다른 분이 맡았어요`,
+    };
+  });
+}
+
+/**
+ * 판정을 기다리는 근무 취소 요청 하나다. 로그인하는 사람은 관리자고 요청을 낸 사람은
+ * 한소민이다 — 승인할 일 목록의 줄 하나가 이 행이다.
+ */
+async function seedApprovalsCancelPending(): Promise<SchedulePayload> {
+  const admin = await createAdminUser();
+
+  const worker = await createSignedInUser();
+  await submitSeededProfile(worker, { ...SEEDED_PROFILE, name: "한소민" });
+  await decideBy("approve_member", worker.profileId);
+  setDisplayName(worker.profileId, "한소민");
+
+  return withFreshMonth(async (monthsFromNow) => {
+    const monthDate = kstMonthStart(monthsFromNow);
+    const month = monthDate.slice(0, 7);
+    const workDate = `${month}-01`;
+
+    await createSchedule(admin, monthDate, kstDate(1));
+    await openDay(admin, workDate);
+
+    const dayId = await dayIdOf(admin, workDate);
+    const assignmentId = seedAssignment(
+      dayId,
+      worker.profileId,
+      "regular",
+      await freeSlotOfPosition(admin, dayId, "안내"),
+    );
+
+    backdateDeadline(await scheduleIdOf(admin, monthDate), kstDate(-1));
+    await confirmSchedule(admin, monthDate);
+
+    seedCancelRequest(
+      assignmentId,
+      worker.profileId,
+      "몸이 안 좋아서 못 나가요",
+    );
+
+    return {
+      month,
+      monthLabel: spellMonth(month),
+      approvalListTitle: `한소민 · ${formatBareDate(workDate)} 안내`,
+      approvalDetailTitle: `한소민 · ${spellWorkDate(workDate)} 안내`,
+      approvalConfirmBody: `${formatBareDate(workDate)} 안내 자리가 비고 한소민님에게 알림이 가요`,
+      approvalDayAppbar: spellWorkDate(workDate),
+    };
+  });
+}
+
 export type SeedRequest = {
   name?: string;
   month?: string;
@@ -658,6 +841,22 @@ async function schedulePayloadOf(
 
   if (state === ASSIGN_DAY) {
     return seedAssignDay();
+  }
+
+  if (state === ADMIN_REQUEST_SLOT) {
+    return seedAdminRequestSlot();
+  }
+
+  if (state === WORKER_REQUEST_PENDING) {
+    return seedWorkerRequestPending(profileId);
+  }
+
+  if (state === WORKER_REQUEST_CLAIMED) {
+    return seedWorkerRequestClaimed(profileId);
+  }
+
+  if (state === APPROVALS_CANCEL_PENDING) {
+    return seedApprovalsCancelPending();
   }
 
   return {};

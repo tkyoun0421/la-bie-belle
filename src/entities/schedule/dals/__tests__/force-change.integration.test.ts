@@ -7,6 +7,8 @@ import {
   kstDate,
   kstMonthStart,
   seedAssignment,
+  seedRequestCandidate,
+  seedWorkRequest,
   withFreshMonth,
   type AdminUser,
   type ApprovedUser,
@@ -175,5 +177,28 @@ describe("forceChange dal — force_change를 부르고 오류를 DomainError로
     );
 
     expect(error.code).toBe("not_applied");
+  });
+
+  it("확정 뒤 사람을 바꾸면 그 자리의 살아 있는 요청도 닫는다", async () => {
+    const { scheduleId, workDate, slotId, assignmentId } =
+      await seedOpenAssignment(admin);
+    const requestId = seedWorkRequest(slotId, admin.profileId);
+    const candidate = await createApprovedUser();
+    seedRequestCandidate(requestId, candidate.profileId, "pending");
+
+    const newWorker = await createApprovedUser();
+    await applyForDay(newWorker, workDate);
+
+    backdateDeadline(scheduleId, kstDate(-1));
+    await rpcOrThrow(admin, "confirm_schedule", { p_month: workDate });
+
+    await forceChange(admin.client, assignmentId, newWorker.profileId);
+
+    const { data } = await admin.client
+      .from("requests")
+      .select("closed_at")
+      .eq("id", requestId)
+      .single<{ closed_at: string | null }>();
+    expect(data?.closed_at).not.toBeNull();
   });
 });

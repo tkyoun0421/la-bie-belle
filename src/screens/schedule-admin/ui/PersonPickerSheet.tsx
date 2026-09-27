@@ -2,6 +2,7 @@ import { Mars, Venus } from "lucide-react-native";
 import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
+import { Checkbox } from "@/shared/ui/Checkbox";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
 import type { PickerRow } from "@/screens/schedule-admin/model/person-picker-rows";
@@ -20,8 +21,11 @@ import { genderSymbol } from "@/screens/schedule-admin/model/person-sheet";
  * **짧게 누르면 배정이고 길게 누르면 사람 시트다.** 시트 안에 넣기 버튼을 두지 않아 같은
  * 배정에 문이 둘이 되지 않는다.
  *
- * **요청 상태 줄과 근무 요청 보내기는 아직 없다.** 값이 `requests`에 있고 그것을 읽는 것은
- * `schedule-requests`다 — 이 화면은 자리만 비워 둔다.
+ * **미신청 줄의 유일한 동작이 요청 보내기다.** 신청 안 한 날이 곧 휴무라 배정의 길이 없다
+ * (SCH-016) — 체크박스로 고르고 하단 버튼 하나로 고른 전원에게 한 번에 나간다. 어느 줄에
+ * 상자가 붙는지는 `classifyPickerRows`가 정한다.
+ *
+ * **0명이면 버튼이 없다.** 0명이라고 잠긴 버튼을 세우면 시트 아래가 늘 한 칸 눌려 있다.
  */
 
 const GENDER_ICON_SIZE = 16;
@@ -37,19 +41,27 @@ export type PersonPickerSheetProps = {
   title: string;
   entries: readonly PickerEntry[];
   expanded: boolean;
+  picked: readonly string[];
+  sending: boolean;
   onExpand: () => void;
   onPick: (entry: PickerEntry) => void;
   onInspect: (entry: PickerEntry) => void;
+  onToggle: (profileId: string) => void;
+  onSend: () => void;
 };
 
 function PersonLine({
   entry,
+  checked,
   onPick,
   onInspect,
+  onToggle,
 }: {
   entry: PickerEntry;
+  checked: boolean;
   onPick: (entry: PickerEntry) => void;
   onInspect: (entry: PickerEntry) => void;
+  onToggle: (profileId: string) => void;
 }) {
   const dimmed = entry.category === "assigned";
 
@@ -80,11 +92,21 @@ function PersonLine({
         ) : null}
       </View>
 
-      {entry.message === null ? null : (
-        <Text size="xs" tone="subtle" className="ml-auto">
-          {entry.message}
-        </Text>
-      )}
+      <View className="ml-auto flex-row items-center gap-3">
+        {entry.message === null ? null : (
+          <Text size="xs" tone="subtle">
+            {entry.message}
+          </Text>
+        )}
+        {entry.checkbox ? (
+          <Checkbox
+            label={entry.displayName}
+            labelHidden
+            checked={checked}
+            onCheckedChange={() => onToggle(entry.profileId)}
+          />
+        ) : null}
+      </View>
     </Pressable>
   );
 }
@@ -93,9 +115,13 @@ export function PersonPickerSheet({
   title,
   entries,
   expanded,
+  picked,
+  sending,
   onExpand,
   onPick,
   onInspect,
+  onToggle,
+  onSend,
 }: PersonPickerSheetProps) {
   const { height } = useWindowDimensions();
   const assignable = entries.filter((entry) => entry.category === "assignable");
@@ -117,8 +143,10 @@ export function PersonPickerSheet({
             <PersonLine
               key={entry.profileId}
               entry={entry}
+              checked={picked.includes(entry.profileId)}
               onPick={onPick}
               onInspect={onInspect}
+              onToggle={onToggle}
             />
           ))
         )}
@@ -128,8 +156,10 @@ export function PersonPickerSheet({
             <PersonLine
               key={entry.profileId}
               entry={entry}
+              checked={picked.includes(entry.profileId)}
               onPick={onPick}
               onInspect={onInspect}
+              onToggle={onToggle}
             />
           ))
         ) : (
@@ -138,6 +168,12 @@ export function PersonPickerSheet({
           </Button>
         )}
       </ScrollView>
+
+      {picked.length === 0 ? null : (
+        <Button className="mt-3" loading={sending} onPress={onSend}>
+          {`${picked.length}명에게 근무 요청 보내기`}
+        </Button>
+      )}
     </>
   );
 }

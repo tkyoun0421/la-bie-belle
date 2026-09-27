@@ -4,10 +4,11 @@ import { ScheduleAdminScreen } from "@/screens/schedule-admin/ui/ScheduleAdminSc
 type ScheduleParams = {
   month?: string;
   date?: string;
+  from?: string;
 };
 
 export default function Screen() {
-  const { month, date } = useLocalSearchParams<ScheduleParams>();
+  const { month, date, from } = useLocalSearchParams<ScheduleParams>();
 
-  return <ScheduleAdminScreen month={month} date={date} />;
+  return <ScheduleAdminScreen month={month} date={date} from={from} />;
 }

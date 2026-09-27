@@ -15,6 +15,7 @@ import type {
   ScheduleSlot,
 } from "@/entities/schedule/dals/get-month-schedule";
 import type { Qualification } from "@/entities/schedule/dals/get-qualifications";
+import type { SlotRequest } from "@/entities/schedule/dals/get-slot-requests";
 import {
   allowsStructureChange,
   type DayConfirmGate,
@@ -35,6 +36,7 @@ import {
   groupSlotsByPosition,
   slotFillCount,
 } from "@/screens/schedule-admin/model/position-rows";
+import { slotRequestBadge } from "@/screens/schedule-admin/model/slot-request-badge";
 import { ConfirmChangeSheet } from "@/screens/schedule-admin/ui/ConfirmChangeSheet";
 import { DiscardSlotSheet } from "@/screens/schedule-admin/ui/DiscardSlotSheet";
 import {
@@ -115,6 +117,8 @@ export type DayDetailProps = {
   appliedProfileIds: readonly string[];
   members: readonly DayDetailMember[];
   qualifications: readonly Qualification[];
+  slotRequests: readonly SlotRequest[];
+  serverNowMs: number;
   gate: DayConfirmGate;
   isConfirmed: boolean;
   saving: boolean;
@@ -129,6 +133,7 @@ export type DayDetailProps = {
   onGrantAndAssign: (input: AddAssignmentInput, position: string) => void;
   onRemoveAssignment: (assignmentId: string) => void;
   onForceChange: (assignmentId: string, profileId: string) => void;
+  onSendWorkRequest: (slotId: string, profileIds: readonly string[]) => void;
 };
 
 export function DayDetail({
@@ -142,6 +147,8 @@ export function DayDetail({
   appliedProfileIds,
   members,
   qualifications,
+  slotRequests,
+  serverNowMs,
   gate,
   isConfirmed,
   saving,
@@ -156,10 +163,12 @@ export function DayDetail({
   onGrantAndAssign,
   onRemoveAssignment,
   onForceChange,
+  onSendWorkRequest,
 }: DayDetailProps) {
   const [unlocked, setUnlocked] = useState<readonly string[]>([]);
   const [picker, setPicker] = useState<PickerTarget | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [picked, setPicked] = useState<readonly string[]>([]);
   const [inspecting, setInspecting] = useState<PickerEntry | null>(null);
   const [qualifying, setQualifying] = useState<PickerEntry | null>(null);
   const [openSlotSheet, setOpenSlotSheet] = useState<string | null>(null);
@@ -189,14 +198,76 @@ export function DayDetail({
   const closePicker = useCallback(() => {
     setPicker(null);
     setExpanded(false);
+    setPicked([]);
     setInspecting(null);
     setQualifying(null);
   }, []);
 
+  const requestOf = useMemo(() => {
+    const bySlot = new Map<string, SlotRequest>();
+
+    for (const request of slotRequests) {
+      if (request.slot_id !== null) {
+        bySlot.set(request.slot_id, request);
+      }
+    }
+
+    return bySlot;
+  }, [slotRequests]);
+
+  const requestBadgeOf = useCallback(
+    (slotId: string) => {
+      const request = requestOf.get(slotId);
+
+      return slotRequestBadge(
+        request === undefined
+          ? null
+          : {
+              closed_at: request.closed_at,
+              candidates: request.request_candidates,
+            },
+      );
+    },
+    [requestOf],
+  );
+
+  const toggleRequested = useCallback((profileId: string) => {
+    setPicked((chosen) =>
+      chosen.includes(profileId)
+        ? chosen.filter((one) => one !== profileId)
+        : [...chosen, profileId],
+    );
+  }, []);
+
+  /**
+   * 배정과 같은 손이다 — 시트를 먼저 닫고 보낸다. 요청은 고른 전원에게 한 번에 나가고
+   * 결과는 자리 카드의 배지로 돌아온다.
+   */
+  const sendRequest = useCallback(() => {
+    const slotId = picker?.slotId ?? null;
+
+    if (slotId === null || picked.length === 0) {
+      return;
+    }
+
+    const chosen = picked;
+
+    closePicker();
+    onSendWorkRequest(slotId, chosen);
+  }, [closePicker, onSendWorkRequest, picked, picker]);
+
+  /**
+   * 요청은 빈 자리에만 보낸다 — 교육 픽커에는 자리가 없고 강제 변경 픽커의 자리는 이미
+   * 차 있다. 그 둘에서는 체크박스를 떼어 보낼 길 자체를 없앤다.
+   */
   const entries = useMemo((): PickerEntry[] => {
     if (picker === null) {
       return [];
     }
+
+    const requestable = picker.slotId !== null && picker.replacing === null;
+    const request =
+      picker.slotId === null ? undefined : requestOf.get(picker.slotId);
 
     const classified = classifyPickerRows({
       position: picker.position,
@@ -209,6 +280,8 @@ export function DayDetail({
         .filter((one) => one.position === picker.position)
         .map((one) => one.profile_id),
       dayAssignments: assignments,
+      requestCandidates: request?.request_candidates ?? [],
+      serverNowMs,
     });
 
     return classified.map((row) => {
@@ -216,11 +289,20 @@ export function DayDetail({
 
       return {
         ...row,
+        checkbox: row.checkbox && requestable,
         photoUrl: member?.photo_url ?? null,
         gender: member?.gender ?? null,
       };
     });
-  }, [appliedProfileIds, assignments, members, picker, qualifications]);
+  }, [
+    appliedProfileIds,
+    assignments,
+    members,
+    picker,
+    qualifications,
+    requestOf,
+    serverNowMs,
+  ]);
 
   const run = useCallback(
     (change: PendingChange) => {
@@ -283,7 +365,16 @@ export function DayDetail({
 
   const pick = useCallback(
     (entry: PickerEntry) => {
-      if (picker === null || entry.category === "not_applied") {
+      if (picker === null) {
+        return;
+      }
+
+      if (entry.checkbox) {
+        toggleRequested(entry.profileId);
+        return;
+      }
+
+      if (entry.category === "not_applied") {
         return;
       }
 
@@ -326,7 +417,7 @@ export function DayDetail({
             },
       );
     },
-    [commit, picker],
+    [commit, picker, toggleRequested],
   );
 
   const resolveQualification = useCallback(
@@ -464,6 +555,7 @@ export function DayDetail({
                   unlocked={unlocked.includes(position)}
                   canChangeStructure={canChangeStructure}
                   nameOf={nameOf}
+                  requestBadgeOf={requestBadgeOf}
                   onToggleLock={() =>
                     setUnlocked(
                       unlocked.includes(position)
@@ -505,9 +597,13 @@ export function DayDetail({
               expanded ||
               entries.every((entry) => entry.category !== "assignable")
             }
+            picked={picked}
+            sending={saving}
             onExpand={() => setExpanded(true)}
             onPick={pick}
             onInspect={setInspecting}
+            onToggle={toggleRequested}
+            onSend={sendRequest}
           />
         </SheetLayer>
       )}

@@ -181,4 +181,26 @@ describe("canShowShiftActions — 근무 취소·교대 요청 버튼은 근무 
 
     expect(shown).toBe(false);
   });
+
+  it("살아 있는 취소 요청 중이면 조건을 다 만족해도 안 선다", () => {
+    const shown = canShowShiftActions({
+      isMyAssignment: true,
+      workDate: "2026-10-10",
+      today: "2026-10-09",
+      hasActiveCancelRequest: true,
+    });
+
+    expect(shown).toBe(false);
+  });
+
+  it("취소 요청이 없으면(생략) 그대로 기존 규칙을 따른다", () => {
+    const shown = canShowShiftActions({
+      isMyAssignment: true,
+      workDate: "2026-10-10",
+      today: "2026-10-09",
+      hasActiveCancelRequest: false,
+    });
+
+    expect(shown).toBe(true);
+  });
 });

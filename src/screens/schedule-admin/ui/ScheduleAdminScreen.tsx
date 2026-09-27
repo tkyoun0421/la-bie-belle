@@ -2,6 +2,8 @@ import { useRouter } from "expo-router";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
+import { nowWithOffset } from "@/shared/lib/server-clock";
+import { serverClockStore } from "@/shared/lib/server-clock-store";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Badge } from "@/shared/ui/Badge";
@@ -35,8 +37,10 @@ import { useOpenSlots } from "@/features/schedule/model/useOpenSlots";
 import { useQualifications } from "@/features/schedule/model/useQualifications";
 import { useRemoveAssignment } from "@/features/schedule/model/useRemoveAssignment";
 import { useRemoveSlot } from "@/features/schedule/model/useRemoveSlot";
+import { useSendWorkRequest } from "@/features/schedule/model/useSendWorkRequest";
 import { useSetApplicationDeadline } from "@/features/schedule/model/useSetApplicationDeadline";
 import { useSetDayHours } from "@/features/schedule/model/useSetDayHours";
+import { useSlotRequests } from "@/features/schedule/model/useSlotRequests";
 import { useSplitSlot } from "@/features/schedule/model/useSplitSlot";
 import { DeadlineSheet } from "@/features/schedule/ui/DeadlineSheet";
 import {
@@ -90,6 +94,12 @@ import { DayHoursSheet } from "@/screens/schedule-admin/ui/DayHoursSheet";
  * 라우트라 훅이 두 갈래로 갈리지 않는다.
  *
  * **임시공휴일 줄과 근무 조정 줄은 아직 없다.** `payroll-adjust`가 더한다(spec 「범위 밖」).
+ *
+ * **`?from=`은 앱바 뒤로가 어디로 가는지와 도착 토스트를 정한다.** 승인할 일에서 근무 취소를
+ * 승인하면 그 자리를 채우러 여기로 오는데, 「근무를 취소했어요」는 그 판정이 끝난 뒤에 뜰
+ * 문장이라 떠나는 화면이 아니라 닿는 화면이 띄운다
+ * (`docs/2-design/system/screens/approvals.md`의 「근무 취소 승인」,
+ * [navigation.md](../../../../docs/2-design/system/navigation.md#경로)).
  */
 
 /**
@@ -113,14 +123,20 @@ const EMPTY_ICON_SIZE = 44;
 
 const SKELETON_ROWS = [0, 1, 2];
 
+const APPROVALS_ORIGIN = "approvals";
+
+const CANCELED_TOAST = "근무를 취소했어요";
+
 export type ScheduleAdminScreenProps = {
   month?: string;
   date?: string;
+  from?: string;
 };
 
 export function ScheduleAdminScreen({
   month: monthParam,
   date: dateParam,
+  from,
 }: ScheduleAdminScreenProps) {
   const router = useRouter();
   const now = new Date().toISOString();
@@ -144,6 +160,8 @@ export function ScheduleAdminScreen({
   const { data: availabilities } = useMonthAvailabilities(supabase, month);
   const { data: activeMembers } = useMembers(supabase, "active");
   const { data: qualifications } = useQualifications(supabase);
+  const { data: slotRequests } = useSlotRequests(supabase, month);
+  const clockOffset = serverClockStore((at) => at.offset);
 
   const create = useCreateSchedule(supabase);
   const changeDeadline = useSetApplicationDeadline(supabase);
@@ -159,6 +177,7 @@ export function ScheduleAdminScreen({
   const removeAssignment = useRemoveAssignment(supabase);
   const forceChange = useForceChange(supabase);
   const grantPosition = useGrantPosition(supabase);
+  const sendWorkRequest = useSendWorkRequest(supabase);
 
   /**
    * 「자격도 주기」는 한 트랜잭션이 아니라 두 호출이다. 앞이 성공하고 뒤가 실패하면 자격만
@@ -177,6 +196,12 @@ export function ScheduleAdminScreen({
 
   const closeSheet = useCallback(() => setSheet(null), []);
   const hideToast = useCallback(() => setToast(null), []);
+
+  useEffect(() => {
+    if (from === APPROVALS_ORIGIN) {
+      setToast(CANCELED_TOAST);
+    }
+  }, [from]);
 
   useEffect(() => {
     const asked = monthParam ?? dateParam?.slice(0, 7);
@@ -301,6 +326,10 @@ export function ScheduleAdminScreen({
           appliedProfileIds={applicationIdsOf.get(day.work_date) ?? []}
           members={activeMembers ?? []}
           qualifications={qualifications ?? []}
+          slotRequests={(slotRequests ?? []).filter(
+            (request) => request.slots.days.work_date === day.work_date,
+          )}
+          serverNowMs={nowWithOffset(Date.parse(now), clockOffset)}
           gate={dayConfirmGate({
             openedAt: day.opened_at,
             confirmedAt: schedule?.confirmedAt ?? null,
@@ -310,9 +339,14 @@ export function ScheduleAdminScreen({
             addAssignment.isPending ||
             removeAssignment.isPending ||
             forceChange.isPending ||
-            removeSlot.isPending
+            removeSlot.isPending ||
+            sendWorkRequest.isPending
           }
-          onBack={() => setOpenDate(null)}
+          onBack={() =>
+            from === APPROVALS_ORIGIN
+              ? router.replace("/admin/approvals")
+              : setOpenDate(null)
+          }
           onPressHours={() => setSheet("hours")}
           onCloseDay={() =>
             assignmentCount === 0
@@ -334,6 +368,9 @@ export function ScheduleAdminScreen({
           }
           onForceChange={(assignmentId, profileId) =>
             forceChange.mutate({ assignmentId, profileId })
+          }
+          onSendWorkRequest={(slotId, profileIds) =>
+            sendWorkRequest.mutate({ slotId, profileIds })
           }
         />
 
@@ -362,6 +399,10 @@ export function ScheduleAdminScreen({
               onConfirm={() => close.mutate({ workDate: day.work_date })}
             />
           </SheetLayer>
+        ) : null}
+
+        {toast ? (
+          <FloatingToast kind="success" message={toast} onDone={hideToast} />
         ) : null}
       </Screen>
     );

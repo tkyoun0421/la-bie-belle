@@ -96,7 +96,7 @@ sources:
   - 그 배정에 살아 있는 취소 요청(`decided_at is null`)이 있으면 `already_requested`
   - 그 배정이 이미 닫혔으면(`ended_at`) `stale` — 열어둔 사이 강제 변경이 있었다
   - **거절된 뒤 다시 요청할 수 있다.** 새 행이다([근무 취소](../../2-design/modules/schedule/design.md#근무-취소)). 횟수를 안 막는다 — 마감이 이미 막는다
-- `decide_cancel_request(p_cancel_request_id uuid, p_approved boolean, p_reason text)` — `is_admin()`
+- `decide_cancel_request(p_cancel_request_id uuid, p_approved boolean, p_reason text)` — 실제 시그니처는 `decide_cancel_request(p_cancel_request_id uuid, p_decision text, p_reason text default null)`이고 `p_decision`은 `approved`·`rejected`(아니면 `wrong_kind`)다. boolean 하나로는 갈래 이름이 표(`cancel_requests.decision`)와 어긋나서다. `is_admin()`
   - 이미 판정됐으면 `already_decided`
   - 승인이면 `decision = 'approved'`·`decided_at`·`decided_by`를 찍고 **그 배정을 닫는다**(확정 뒤라 `ended_at`). 그 자리에 살아 있는 요청이 있으면 같이 닫는다
   - 거절이면 `decision = 'rejected'`고 `decision_reason`이 **필수다** — 비면 `invalid_reason`. 그 글이 근무자에게 그대로 간다
@@ -163,7 +163,7 @@ sources:
 
 **판정 화면 — `/admin/approvals`.** 정본은 [approvals.md](../../2-design/system/screens/approvals.md)다.
 
-- 목록에 사유와 근무 취소 요청이 **한 목록으로 섞인다**. 관리자 홈의 「승인할 일 · 3건」이 이 목록의 건수다 — [`schedule-admin`](schedule-admin.md#ac-03)이 자리만 두고 값이 여기서 찬다
+- 목록에 사유와 근무 취소 요청이 **한 목록으로 섞인다**. 관리자 홈의 「승인할 일 · 3건」이 이 목록의 건수다 — [`schedule-admin`](schedule-admin.md#ac-03)이 자리만 두고 값이 여기서 찬다. 이 task가 근무 취소 대기 건수로 그 줄을 켠다(`usePendingApprovals`의 길이) — 사유 건수는 `attendance-excuse`가 같은 훅에 더한다. 0건이어도 「0건」으로 선다
 - 줄을 누르면 상세 시트. 근무 취소 줄이면 날짜·포지션·사유가 서고 버튼 둘
 - 승인 → `decide_cancel_request(true)`. 그 자리로 넘어간다 — `/admin/schedule?date=&from=approvals`. 빈 자리를 바로 채우라는 뜻이다
 - 거절 → 거절 화면이 열려 이유를 받는다. **이유가 필수다** → `decide_cancel_request(false, p_reason)`. 목록에 머문다
@@ -185,7 +185,7 @@ sources:
 
 - unit: 카운트다운 계산(서버 오프셋), 요청 상태 셋과 체크박스 유무 판정, 「전부 소진」 판정, 끝난 요청 시트 갈래, 달력 아래 줄의 사건 문구
 - integration: 함수 넷의 호출자 검사와 오류 코드 전부. 특히 — **선착순**(둘이 같은 자리에 수락하면 하나만 통과하고 나머지가 `slot_full`), `respond_request`가 신청 검사만 건너뛰고 자격은 보는 것, 거절이 마지막 후보면 요청이 닫히는 것, `expires_at`이 48시간과 근무 시작 중 이른 쪽인 것, `expire_requests`가 지난 후보를 만료시키고 요청을 닫는 것, `add_assignment`·`force_change`가 요청을 닫는 것, `close_day`가 그 자리의 요청 행을 cascade로 없애는 것, `create_cancel_request`가 당일에 `window_closed`고 거절 뒤 다시 되는 것, `decide_cancel_request`가 승인 시 배정을 닫고 거절 시 이유를 요구하는 것
-- e2e(`schedule-requests` e2e): 관리자가 픽커에서 둘을 골라 요청을 보내고 자리 카드에 배지가 서는지 → 근무자가 달력의 점선 날을 눌러 「근무할게요」로 배정되는지 → 다른 근무자가 같은 요청을 눌러 「자리가 찼어요」 토스트를 보는지 → 근무자가 날 시트에서 취소 요청을 보내 「취소 요청 중」 배지가 서는지 → 관리자가 `/admin/approvals`에서 승인해 자리가 비는지
+- e2e(`schedule-requests` e2e — 이름 하나지만 파일은 셋이다: `tests/e2e/schedule-admin.yaml`·`schedule-worker.yaml`에 시나리오를 더하고 `approvals.yaml`을 새로 만든다. `tdd-guard-e2e.py`가 고친 슬라이스 이름으로 파일을 찾아서 `schedule-requests.yaml`은 어느 게이트도 열지 못한다([execution.md](../../4-test/execution.md#훅), 관찰 021). 단계 사이는 시드 서버 상태로 이어받는다): 관리자가 픽커에서 둘을 골라 요청을 보내고 자리 카드에 배지가 서는지 → 근무자가 달력의 점선 날을 눌러 「근무할게요」로 배정되는지 → 다른 근무자가 같은 요청을 눌러 「자리가 찼어요」 토스트를 보는지 → 근무자가 날 시트에서 취소 요청을 보내 「취소 요청 중」 배지가 서는지 → 관리자가 `/admin/approvals`에서 승인해 자리가 비는지
 
 ### AC-11
 
@@ -204,6 +204,8 @@ sources:
 | `src/screens/approvals/ui/*.tsx` · `/admin/approvals/` 화면 | 목록·상세 시트·거절 | AC-08 |
 | `src/features/schedule/*.ts`·`__tests__/` | mutation과 무효화, 카운트다운 | AC-09 |
 | `schedule-requests` e2e | e2e | AC-10 |
+| `supabase/migrations/<날짜>_server_now.sql` · `src/entities/clock/dals/get-server-now.ts` · `src/shared/lib/server-clock.ts` | `server_now()`와 오프셋 — [runtime.md 「서버 시각」](../../2-design/system/runtime.md#서버-시각)이 정한 것을 이 task가 처음 세운다. 카운트다운이 첫 사용자다 | AC-06 |
+| `src/screens/admin-home/` | 「승인할 일」 줄 건수 | AC-05 |
 
 ## 구현 순서
 

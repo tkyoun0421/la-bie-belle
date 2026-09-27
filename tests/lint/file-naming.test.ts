@@ -218,7 +218,9 @@ export function useMyProfile() {
     ).toEqual([]);
   });
 
-  it("대상이 없으면 camelCase 테스트 파일은 여전히 kebab을 요구한다", () => {
+  it("대상이 아직 없어도 use로 시작하는 camelCase 짝 테스트는 훅 짝으로 읽는다", () => {
+    // TDD라 테스트가 훅보다 먼저 선다 — 그 사이에 kebab을 요구하면 훅이 서는 순간 다시
+    // 이름을 바꿔야 한다. 세 task에서 같은 마찰이 났다.
     expect(
       styleViolations([
         {
@@ -226,15 +228,18 @@ export function useMyProfile() {
           source: PLAIN_SOURCE,
         },
       ]),
-    ).toEqual([
-      {
-        type: "style",
-        file: "src/features/profile/model/__tests__/useMyProfile.test.ts",
-        style: "kebab",
-        suggestion:
-          "src/features/profile/model/__tests__/use-my-profile.test.ts",
-      },
-    ]);
+    ).toEqual([]);
+  });
+
+  it("대상이 없는 kebab 짝 테스트는 그대로 kebab이다", () => {
+    expect(
+      styleViolations([
+        {
+          file: "src/features/profile/model/__tests__/my-profile.test.ts",
+          source: PLAIN_SOURCE,
+        },
+      ]),
+    ).toEqual([]);
   });
 
   it("kebab 대상의 kebab 짝은 위반이 아니다", () => {

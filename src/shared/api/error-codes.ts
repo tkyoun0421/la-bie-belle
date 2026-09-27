@@ -27,6 +27,7 @@ export const ERROR_CODES = [
   "not_merged",
   "not_open",
   "not_qualified",
+  "request_closed",
   "slot_full",
   "stale",
   "too_early",

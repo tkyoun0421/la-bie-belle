@@ -32,6 +32,7 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { MiniCalendar } from "@/shared/ui/MiniCalendar";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
+import { QuoteBlock } from "@/shared/ui/QuoteBlock";
 import { RatioBand } from "@/shared/ui/RatioBand";
 import { RowBars } from "@/shared/ui/RowBars";
 import { ScheduleDayCell } from "@/shared/ui/ScheduleDayCell";
@@ -450,6 +451,14 @@ export default function Catalog() {
         <NoticeBlock kind="success">근무표가 확정됐어요</NoticeBlock>
         <NoticeBlock kind="warning">아직 알림을 안 켰어요</NoticeBlock>
         <NoticeBlock kind="error">근무표를 못 읽었어요</NoticeBlock>
+      </Section>
+
+      <Section title="인용 면">
+        <QuoteBlock>
+          <Text className="text-base text-fg-neutral">
+            그날 갑자기 일이 생겨서 못 나갈 것 같아요
+          </Text>
+        </QuoteBlock>
       </Section>
 
       <Section title="토스트">

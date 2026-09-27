@@ -1,0 +1,190 @@
+# 승인할 일 — 관리자가 근무 취소 요청을 목록에서 열어 승인하거나 거절한다.
+#
+# 근거는 docs/2-design/spec/schedule-requests.md의 AC-05와
+# docs/2-design/system/screens/approvals.md(목록·상세 시트·근무 취소 확인
+# Dialog·거절 문안 표)다. 이 화면은 사유(excuse) 판정도 같은 목록에 섞지만
+# (approvals.md 「목적과 진입」) 그 갈래는 attendance-excuse task 몫이라 이
+# 파일은 근무 취소 줄만 본다 — schedule-requests-test-plan.md 「범위 밖」이
+# 사유 줄을 명시로 뺐다.
+#
+# 배정받은 리스크는(schedule-requests-test-plan.md 「배정 → e2e」)
+#   - 목록 줄을 눌러 상세 시트 → 「승인」 → 근무 취소 확인 Dialog → 「취소
+#     승인」 → 그 자리로 넘어간다(`/admin/schedule?date=…&from=approvals`) →
+#     토스트
+#   - 상세 시트 → 「거절」 → 이유를 안 고르면 못 보낸다 → 이유를 고르면
+#     보내지고 토스트가 뜬다
+# 두 관리자가 같은 요청을 동시에 판정하는 것(`already_decided`)은
+# test-planner가 이미 integration으로 배정했다 — 여기서는 화면·훅·함수가
+# 실제로 잇는지만 본다.
+#
+# **승인과 거절을 한 세션 안에서 잇지 않는다.** 승인은 그 자리로 화면을
+# 옮기고(`/admin/schedule?date=…`) 앱바 뒤로가 다시 승인할 일로 돌아가는
+# 것은 navigation.md 「경로」의 "날 상세 | ?from=approvals면 승인할 일"
+# 표에 있지만, 그 뒤로 버튼이 아이콘뿐이라 이 층에서 텍스트로 못 잡는다
+# (schedule-admin.yaml·schedule-worker.yaml이 화면 전환에 기기 뒤로
+# 대신 늘 새 세션·새 openLink를 쓰는 것과 같은 이유). 그래서 승인·거절을
+# 절 둘로 나누고 각각 새로 시드해 `/admin/approvals`로 바로 들어간다 —
+# 뒤로 이동 자체를 이 파일이 증명하지는 않는다(아래 「못 쓴 것」 참고).
+#
+# **정본 사이에 어긋난 자리 하나를 여기 적는다.** AC-05 관찰 결과의 마지막
+# 문장 "거절해도 근무는 그대로 남고 목록에 머문다"를 문자 그대로 읽으면
+# 거절 뒤에도 그 줄이 승인할 일 목록에 남는 것처럼 읽힌다. 하지만
+# approvals.md 「끝난 뒤」가 "처리한 건은 목록에서 사라지고 다시 안 보인다.
+# 승인한 것도 거절한 것도 마찬가지다"라고 못 박고, `getPendingApprovals`가
+# 미판정(`decided_at is null`)만 가져오는 것도 같은 판정이다
+# (schedule-requests-test-plan.md 계획 5번). 이 파일은 approvals.md 쪽을
+# 따라 거절 뒤 그 줄이 목록에서 빠지는 것으로 썼다 — "목록에 머문다"는
+# 그 근무(취소 안 된 근무표의 그 배정)가 그대로 남는다는 뜻으로 읽었다.
+# 총괄이 다르게 읽으면 이 절의 마지막 단언을 반대로 뒤집어야 한다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/schedule-admin.yaml 머리말, scripts/e2e-seed-server.mts,
+# scripts/seed-session.js를 따른다. 라우트는 navigation.md 「경로」의
+# "/admin/approvals"다.
+#
+# **시드 서버에 상태 하나가 아직 없다 — implementer가 이 task에서 더한다.**
+# `tests/integration/postgres.ts`의 `seedAssignment`·`seedCancelRequest`를
+# 그대로 쓴다 — `create_cancel_request` RPC는 이 task가 만드는 함수라 시드
+# 시점엔 아직 없다. 직결로 만든 취소 요청 행은 실제 함수가 만드는 모양과
+# 같다(미판정 상태 — `decided_at`이 비어 있다). `scripts/e2e-seed-server.mts`의
+# `@tests/integration/postgres` import 목록에 `seedCancelRequest`를 더해야
+# 쓸 수 있다(`seedAssignment`는 이미 그 목록에 있다).
+#
+# ## schedule_approvals_cancel_pending
+#
+# 관리자 하나(로그인용, `ADMIN_SCHEDULE_STATES`에 들어야 세션이 관리자로
+# 뜬다), 그 안에서 따로 관리자 하나를 더 만들어 근무표를 짓는다(다른
+# 근무표 상태들과 같은 손 — 로그인한 관리자와 시드용 관리자가 같을
+# 필요는 없다). 근무자 하나 — 한소민 — 을 만들어 승인하고, `withFreshMonth`로
+# 고른 달의 1일에 안내 자리 하나를 정규로 채운 뒤 확정하고, 그 배정에
+# `seedCancelRequest`로 미판정 취소 요청을 하나 건다.
+#
+# ```ts
+# async function seedApprovalsCancelPending(): Promise<SchedulePayload> {
+#   const admin = await createAdminUser();
+#
+#   const worker = await createSignedInUser();
+#   await submitSeededProfile(worker, { ...SEEDED_PROFILE, name: "한소민" });
+#   await decideBy("approve_member", worker.profileId);
+#
+#   return withFreshMonth(async (monthsFromNow) => {
+#     const monthDate = kstMonthStart(monthsFromNow);
+#     const month = monthDate.slice(0, 7);
+#     const workDate = `${month}-01`;
+#
+#     await createSchedule(admin, monthDate, kstDate(1));
+#     await openDay(admin, workDate);
+#
+#     const dayId = await dayIdOf(admin, workDate);
+#     const assignmentId = seedAssignment(
+#       dayId,
+#       worker.profileId,
+#       "regular",
+#       await freeSlotOfPosition(admin, dayId, "안내"),
+#     );
+#
+#     backdateDeadline(await scheduleIdOf(admin, monthDate), kstDate(-1));
+#     await confirmSchedule(admin, monthDate);
+#
+#     seedCancelRequest(assignmentId, worker.profileId, "몸이 안 좋아서 못 나가요");
+#
+#     return {
+#       month,
+#       approvalListTitle: `한소민 · ${formatBareDate(workDate)} 안내`,
+#       approvalDetailTitle: `한소민 · ${spellWorkDate(workDate)} 안내`,
+#       approvalConfirmBody: `${formatBareDate(workDate)} 안내 자리가 비고 한소민님에게 알림이 가요`,
+#       approvalDayAppbar: spellWorkDate(workDate),
+#     };
+#   });
+# }
+# ```
+#
+# `SchedulePayload`에 `approvalListTitle?`·`approvalDetailTitle?`·
+# `approvalConfirmBody?`·`approvalDayAppbar?`를 더한다(전부 optional — 다른
+# 상태는 안 채운다). `STATES`에 `"schedule_approvals_cancel_pending"`을,
+# `ADMIN_SCHEDULE_STATES`에도 같이 더한다. `schedulePayloadOf`에 갈래를
+# 하나 추가한다. `tests/e2e/scripts/seed-session.js`는 이 네 필드의 이스케이프
+# 통로를 이미 갖고 있다(이 task가 그 파일도 같이 고쳤다).
+#
+# **거절 시나리오도 같은 상태를 다시 부른다.** `withFreshMonth`가 매번 새
+# 달·새 사람을 뽑아서, 두 번째 호출도 독립된 미판정 취소 요청 하나를 새로
+# 만든다 — 첫 번째 호출에서 처리한 결과와 안 섞인다.
+#
+# 이 절이 요청하는 새 testID는 없다. 목록 줄·시트·Dialog·거절 이유 줄
+# 전부 approvals.md 문안 표의 고정 문구나 seed가 내려주는 동적 라벨로
+# 잡을 수 있다.
+#
+# 텍스트 셀렉터는 정규식이다. 물음표(「근무를 취소할까요?」)는 이스케이프
+# 한다. 동적 값(approvalListTitle·approvalDetailTitle·approvalConfirmBody·
+# approvalDayAppbar)의 괄호·가운뎃점은 seed-session.js의
+# escapeForTextSelector가 미리 이스케이프해서 내보낸다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+# ================================================================
+# 승인 — 목록 → 상세 → 승인 → 근무 취소 확인 Dialog → 그 자리로 이동·토스트
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: schedule_approvals_cancel_pending
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://admin/approvals"
+
+- assertVisible: "승인할 일"
+- assertVisible: "근무 취소"
+- assertVisible: "${output.approvalListTitle}"
+- tapOn: "${output.approvalListTitle}"
+
+- assertVisible: "${output.approvalDetailTitle}"
+- assertVisible: "거절"
+- assertVisible: "승인"
+- tapOn: "승인"
+
+- assertVisible: "근무를 취소할까요\\?"
+- assertVisible: "${output.approvalConfirmBody}"
+- assertVisible: "뒤로"
+- assertVisible: "취소 승인"
+- tapOn: "취소 승인"
+
+- assertVisible: "근무를 취소했어요"
+- assertVisible: "${output.approvalDayAppbar}"
+- assertVisible: "안내 0/2"
+- assertVisible: "비어 있어요"
+
+# ================================================================
+# 거절 — 상세 → 거절 → 이유가 필수다 → 이유를 고르면 보내지고 목록에서
+# 빠진다. 정본이 어긋난 자리는 파일 위 머리말을 본다.
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: schedule_approvals_cancel_pending
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://admin/approvals"
+
+- assertVisible: "${output.approvalListTitle}"
+- tapOn: "${output.approvalListTitle}"
+
+- assertVisible: "${output.approvalDetailTitle}"
+- tapOn: "거절"
+
+- assertVisible: "거절하는 이유"
+- assertVisible: "그날 대신 나올 사람이 없어요"
+- assertVisible: "근무가 코앞이라 어려워요"
+- assertVisible: "직접 쓰기"
+
+# 「아무것도 안 고르면 거절 보내기가 안 눌린다」는 이유 고르기의 업무 규칙이라
+# reject-reason.test.ts(unit)가 이미 본다(schedule-requests-test-plan.md
+# 「배정 → unit」) — 여기서는 고른 뒤 실제로 보내지는 것만 잇는다. 비활성
+# 버튼을 눌렀을 때 Maestro가 무엇을 하는지(조용히 무시하는지 스텝을
+# 실패시키는지)는 이 층에서 확인한 적이 없어 그 확인까지 겹치지 않는다.
+- tapOn: "그날 대신 나올 사람이 없어요"
+- tapOn: "거절 보내기"
+
+- assertVisible: "거절했어요"
+- assertVisible: "승인할 일이 없어요"
+- assertNotVisible: "${output.approvalListTitle}"

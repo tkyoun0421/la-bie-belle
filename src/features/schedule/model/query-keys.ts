@@ -47,3 +47,9 @@ export const SCHEDULE_WRITE_KEYS = [
 
 /** 빈 자리 키의 꼬리다 — `['schedule', month, 'open-slots']`. */
 export const OPEN_SLOTS_SCOPE = "open-slots";
+
+/**
+ * 판정 대기 목록 키의 꼬리다 — `['requests', 'approvals']`. 달로 안 가르는 것은 이 목록이
+ * 달을 안 물어서다. 관리자는 답할 것이 있는지를 묻지 몇 월 것인지를 묻지 않는다.
+ */
+export const APPROVALS_SCOPE = "approvals";

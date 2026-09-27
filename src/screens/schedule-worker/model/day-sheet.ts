@@ -95,18 +95,24 @@ export type ShiftActionsInput = {
   isMyAssignment: boolean;
   workDate: string;
   today: string;
+  hasActiveCancelRequest?: boolean;
 };
 
 /**
- * 「근무 취소」·「교대 요청」 버튼이 서는 날이다. 근무 당일부터는 바꿀 시간이 없어 안 서고,
- * 지난 날은 조회만이다.
+ * 「근무 취소」·「교대 요청」을 지금 누를 수 있는 날이다. 근무 당일부터는 바꿀 시간이 없어
+ * 닫히고, 지난 날은 조회만이다.
+ *
+ * **요청 중에도 닫힌다.** 같은 근무에 교대와 취소를 겹쳐 거는 길을 안 둔다
+ * (`docs/2-design/modules/schedule/screens/schedule-worker.md`의 「보낸 뒤」) — 그때 버튼은
+ * 사라지지 않고 비활성으로 남고 옆에 「취소 요청 중」 배지가 선다.
  */
 export function canShowShiftActions({
   isMyAssignment,
   workDate,
   today,
+  hasActiveCancelRequest = false,
 }: ShiftActionsInput): boolean {
-  return isMyAssignment && today < workDate;
+  return isMyAssignment && today < workDate && !hasActiveCancelRequest;
 }
 
 /**
