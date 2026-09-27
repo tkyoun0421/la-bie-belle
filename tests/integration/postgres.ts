@@ -116,6 +116,68 @@ export async function createAdminUser(): Promise<AdminUser> {
   return user;
 }
 
+function queryColumn(sql: string, vars: Record<string, string> = {}): string[] {
+  const container = dbContainerName();
+
+  const args = [
+    "exec",
+    "-i",
+    container,
+    "psql",
+    "-U",
+    "postgres",
+    "-d",
+    "postgres",
+    "-t",
+    "-A",
+    "-v",
+    "ON_ERROR_STOP=1",
+  ];
+  for (const [key, value] of Object.entries(vars)) {
+    args.push("-v", `${key}=${value}`);
+  }
+
+  const output = execFileSync("docker", args, { input: sql, encoding: "utf8" });
+  return output
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
+/**
+ * 활성 관리자(재직 중·차단 안 됨)가 `adminProfileId` 하나뿐인 상태를 잠시 만든다.
+ * DB에 이미 쌓인 다른 관리자들의 `left_at`을 잠시 `now()`로 밀어 셈에서 빼고, `fn`이
+ * 끝나면(실패해도) 기억해둔 id로 되돌린다. `jest.integration.config.js`가
+ * `maxWorkers: 1`이라 다른 테스트 파일과 겹치지 않는다.
+ */
+export async function withOnlyAdmin<T>(
+  adminProfileId: string,
+  fn: () => Promise<T>,
+): Promise<T> {
+  const otherAdminIds = queryColumn(
+    "select id from public.profiles where role = 'admin' and left_at is null and blocked_at is null and id <> :'admin_id';\n",
+    { admin_id: adminProfileId },
+  );
+
+  if (otherAdminIds.length > 0) {
+    const idList = otherAdminIds.map((id) => `'${id}'`).join(",");
+    execSql(
+      `update public.profiles set left_at = now() where id = any(array[${idList}]::uuid[]);\n`,
+    );
+  }
+
+  try {
+    return await fn();
+  } finally {
+    if (otherAdminIds.length > 0) {
+      const idList = otherAdminIds.map((id) => `'${id}'`).join(",");
+      execSql(
+        `update public.profiles set left_at = null where id = any(array[${idList}]::uuid[]);\n`,
+      );
+    }
+  }
+}
+
 export type BlockedUser = SignedInUser & {
   approvedAt: string;
   blockedAt: string;
