@@ -6,8 +6,9 @@ import type { ReactNode } from "react";
 // `docs/2-design/modules/account/design.md`의 「소유 데이터」가 이미 이 두 키를 다른 화면도
 // 공유하기 때문이다 — 하나로 합쳐 새 키를 만들면 그 공유가 깨진다.
 
-const getMyProfileMock = jest.fn();
-const getProfilePrivateMock = jest.fn();
+const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const getProfilePrivateMock =
+  jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/entities/profile/dals/get-my-profile", () => ({
   getMyProfile: getMyProfileMock,

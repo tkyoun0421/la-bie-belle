@@ -27,6 +27,9 @@ import { Text } from "@/shared/ui/Text";
  *
  * 읽지 않은 알림은 왼쪽 점으로 말한다. 줄 전체의 배경색을 바꾸지 않는다 — 배경으로 상태를
  * 나누면 스크롤할 때 색 띠가 생긴다.
+ *
+ * `testID`를 받은 줄은 화살표에도 `${testID}-chevron`을 실어 준다. 화살표는 장식이라 읽어
+ * 줄 글자가 없어서, 그 이름이 없으면 「이 줄이 눌리는 줄인가」를 밖에서 확인할 길이 없다.
  */
 
 const ROW_ICON_SIZE = 20;
@@ -111,6 +114,7 @@ export function ListRow({
         <Icon
           icon={ChevronRight}
           size={ROW_ICON_SIZE}
+          testID={testID ? `${testID}-chevron` : undefined}
           className="text-fg-neutral-subtle"
         />
       ) : null}

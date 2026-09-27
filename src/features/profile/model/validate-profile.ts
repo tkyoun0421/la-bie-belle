@@ -61,6 +61,11 @@ export function isProfileGender(value: unknown): value is ProfileGender {
   return value === "female" || value === "male";
 }
 
+/** 연락처만 따로 보는 자리가 있다 — 「나」의 연락처 시트는 다섯 중 하나만 고친다. */
+export function isValidPhone(phone: string): boolean {
+  return PHONE_DIGITS.test(phone);
+}
+
 export function validateProfileForm({
   name,
   phone,
@@ -73,7 +78,7 @@ export function validateProfileForm({
     errors.name = NAME_GUIDE;
   }
 
-  if (!PHONE_DIGITS.test(phone)) {
+  if (!isValidPhone(phone)) {
     errors.phone = PHONE_GUIDE;
   }
 

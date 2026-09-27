@@ -12,6 +12,7 @@ import {
 } from "@/shared/lib/font-loading";
 import { queryClient } from "@/shared/lib/query-client";
 import { supabase } from "@/shared/lib/supabase";
+import { useTheme } from "@/shared/lib/useTheme";
 import { wireAutoRefresh } from "@/shared/lib/wire-auto-refresh";
 import { decideEntry, type EntryDecision } from "@/features/auth/decide-entry";
 
@@ -23,9 +24,11 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
  * 어느 층으로 가는지는 세션·프로필·승인 판정이 정하고, 그 판정은 이 껍데기
  * 하나가 decide-entry에 물어서 한다.
  *
- * 스플래시는 서체와 판정이 둘 다 끝난 뒤에 내린다. 서체만 기다리면 판정 전에
- * 잘못된 층이 한 프레임 비치고, 판정만 기다리면 시스템 서체로 그려진 글자가
- * Wanted Sans로 바뀌면서 눈에 보이게 튄다.
+ * 스플래시는 서체와 판정과 테마 복원이 다 끝난 뒤에 내린다. 서체만 기다리면 판정
+ * 전에 잘못된 층이 한 프레임 비치고, 판정만 기다리면 시스템 서체로 그려진 글자가
+ * Wanted Sans로 바뀌면서 눈에 보이게 튄다. 테마를 안 기다리면 어둡게 고른 사람이
+ * 흰 화면을 한 번 보고 나서 어두워진다
+ * ([profile.md](../../docs/2-design/modules/account/screens/profile.md)의 「화면」).
  *
  * 서버 상태가 사는 `queryClient`도 여기서 트리에 앉는다. 로그아웃이 비우는 쪽과 화면이
  * 읽는 쪽이 같은 하나여야 해서 그 인스턴스는 `shared/lib`이 들고 있고 여기는 걸기만 한다.
@@ -35,8 +38,14 @@ export default function RootLayout() {
   const [loaded, error] = useFonts(FONT_SOURCES);
   const [destination, setDestination] = useState<EntryDecision | null>(null);
   const splashDismissed = useRef(false);
+  const themeRestored = useTheme((at) => at.restored);
+  const restoreTheme = useTheme((at) => at.restore);
 
   useEffect(() => wireAutoRefresh(supabase.auth), []);
+
+  useEffect(() => {
+    void restoreTheme();
+  }, [restoreTheme]);
 
   useEffect(() => {
     let abandoned = false;
@@ -57,14 +66,20 @@ export default function RootLayout() {
       return;
     }
 
-    if (!shouldDismissSplash({ loaded, error }, splashDismissed.current)) {
+    if (
+      !shouldDismissSplash(
+        { loaded, error },
+        splashDismissed.current,
+        themeRestored,
+      )
+    ) {
       return;
     }
 
     splashDismissed.current = true;
     router.replace(destination);
     SplashScreen.hideAsync().catch(() => {});
-  }, [destination, loaded, error, router]);
+  }, [destination, loaded, error, themeRestored, router]);
 
   if (!shouldRenderApp({ loaded, error })) {
     return null;

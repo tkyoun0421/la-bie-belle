@@ -50,6 +50,7 @@ export type IconProps = {
   className?: string;
   fill?: string;
   strokeWidth?: number;
+  testID?: string;
 };
 
 export function Icon({

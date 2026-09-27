@@ -18,6 +18,10 @@
  * 거기 `.tsx`는 컴포넌트가 아니라 화면 문서가 정한 주소다. Expo Router 문서는 라우트 파일의
  * 케이스를 규정하지 않아서 이 판단은 우리 것이다.
  *
+ * **짝 테스트는 대상의 이름을 따른다.** `__tests__/` 안의 `*.test.ts`는 제 내용이 아니라
+ * 옆에서 재는 파일의 갈래로 본다 — `useMyProfile.ts`의 짝은 `useMyProfile.test.ts`고,
+ * 그 이름으로 짝을 찾는 것이 `.claude/hooks/tdd-guard-unit.py`다.
+ *
  * `.claude/hooks/`도 밖이다 — 파이썬 훅이 그 생태계 표준인 snake_case를 쓰고, 짝 테스트가
  * 그 이름을 그대로 따라야 무엇의 테스트인지 읽힌다. `docs/`와 슬러그는
  * [ADR-005](../../docs/2-design/adr/ADR-005-feature-chain-and-slug.md)가 소유한다.
@@ -115,11 +119,44 @@ function inScope({ file }: CodeFile): boolean {
   );
 }
 
+const PAIR_TEST = /\.(?:integration\.)?test\.tsx?$/;
+
+const PAIR_DIRECTORY = "__tests__";
+
+/**
+ * 짝 테스트의 갈래는 자기 내용이 아니라 재는 대상의 갈래다. `useMyProfile.ts`의 짝은
+ * `useMyProfile.test.ts`여야 하는데(`.claude/hooks/tdd-guard-unit.py`가 그 이름으로 짝을
+ * 찾는다) 테스트 파일 자체는 훅을 안 내놓아 내용으로 보면 kebab으로 읽힌다 — 두 규칙이
+ * 서로 다른 이름을 요구하게 된다. 대상을 찾아 그쪽 갈래를 물린다.
+ */
+function subjectOf(file: string, files: CodeFile[]): CodeFile | undefined {
+  const directory = path.posix.dirname(file);
+
+  if (
+    !PAIR_TEST.test(file) ||
+    path.posix.basename(directory) !== PAIR_DIRECTORY
+  ) {
+    return undefined;
+  }
+
+  const stem = stemOf(path.posix.basename(file));
+  const beside = path.posix.dirname(directory);
+
+  return files.find(({ file: candidate }) =>
+    EXTENSIONS.some(
+      (extension) => candidate === path.posix.join(beside, stem + extension),
+    ),
+  );
+}
+
 export function styleViolations(files: CodeFile[]): FileNamingViolation[] {
-  return files.filter(inScope).flatMap(({ file, source }) => {
+  const inspected = files.filter(inScope);
+
+  return inspected.flatMap(({ file, source }) => {
     const base = path.basename(file);
     const stem = stemOf(base);
-    const style = styleFor(file, source);
+    const subject = subjectOf(file, inspected);
+    const style = styleFor(subject?.file ?? file, subject?.source ?? source);
 
     if (matchesStyle(stem, style)) {
       return [];
@@ -174,6 +211,11 @@ export function describeFileNamingViolation(
   return `${violation.file}의 ${REASONS[violation.style]} — ${violation.suggestion}로 옮겨라.`;
 }
 
+/**
+ * 점으로 시작하는 디렉터리는 안 본다. 이름을 우리가 고르는 코드가 아니라 도구가 만들었다
+ * 지우는 자리다 — `format-check.test.ts`가 쓰는 `tests/lint/.tmp-format-check`이 그렇고,
+ * 그 검사와 이 검사가 같이 돌면 지워지기 전의 임시 파일이 위반으로 잡힌다.
+ */
 function walk(root: string, relative: string, into: string[]) {
   for (const entry of readdirSync(path.join(root, relative), {
     withFileTypes: true,
@@ -181,7 +223,9 @@ function walk(root: string, relative: string, into: string[]) {
     const next = path.posix.join(relative, entry.name);
 
     if (entry.isDirectory()) {
-      walk(root, next, into);
+      if (!entry.name.startsWith(".")) {
+        walk(root, next, into);
+      }
     } else {
       into.push(next);
     }

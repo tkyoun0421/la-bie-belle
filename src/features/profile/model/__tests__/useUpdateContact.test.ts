@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 // `docs/2-design/modules/account/design.md`의 「프로필 제출·연락처·사진」이다.
 // 성공하면 `['profile','private']`을 무효화한다.
 
-const updateMyContactMock = jest.fn();
+const updateMyContactMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/entities/profile/dals/update-my-contact", () => ({
   updateMyContact: updateMyContactMock,
