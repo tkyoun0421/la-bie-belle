@@ -14,6 +14,11 @@ const APPROVED_SPEC = "---\nstatus: approved\n---\n\n# 제목\n\n본문.\n";
 const DRAFT_SPEC = "---\nstatus: draft\n---\n\n# 제목\n\n본문.\n";
 const NO_FRONTMATTER_SPEC = "# 제목만 있고 프론트매터가 없다\n\n본문.\n";
 
+const PLAN_WITH_AC =
+  "---\nsources:\n  - ../../2-design/modules/cart/design.md\n---\n\n# 제목\n\n## 완료 조건\n\n### AC-01\n\n본문.\n";
+const PLAN_WITHOUT_AC =
+  "---\nsources:\n  - ../../2-design/spec/cart-price.md\n---\n\n# 제목\n\n## 구현 산출물\n\n본문.\n";
+
 function git(projectDir: string, args: string[]) {
   const result = spawnSync("git", args, { cwd: projectDir, encoding: "utf8" });
   if (result.status !== 0) {
@@ -91,6 +96,28 @@ describe("spec 승인 게이트", () => {
     write(projectDir, "docs/2-design/spec/cart-price.md", APPROVED_SPEC);
 
     expect(run(projectDir, "src/entities/cart/model/price.ts")).toBe(allowed);
+  });
+
+  it("spec이 없어도 plan에 「완료 조건」 절이 있으면 통과시킨다 — spec 자리를 그 plan이 든다", () => {
+    const projectDir = createProject("feat/cart-price");
+    write(projectDir, "docs/3-build/plans/cart-price.md", PLAN_WITH_AC);
+
+    expect(run(projectDir, "src/entities/cart/model/price.ts")).toBe(allowed);
+  });
+
+  it("plan이 있어도 「완료 조건」 절이 없으면 막는다 — 그 plan은 승인된 spec을 딛는 쪽이다", () => {
+    const projectDir = createProject("feat/cart-price");
+    write(projectDir, "docs/3-build/plans/cart-price.md", PLAN_WITHOUT_AC);
+
+    expect(run(projectDir, "src/entities/cart/model/price.ts")).toBe(blocked);
+  });
+
+  it("spec이 draft여도 plan에 「완료 조건」이 있으면 spec 쪽이 이긴다 — 막는다", () => {
+    const projectDir = createProject("feat/cart-price");
+    write(projectDir, "docs/2-design/spec/cart-price.md", DRAFT_SPEC);
+    write(projectDir, "docs/3-build/plans/cart-price.md", PLAN_WITH_AC);
+
+    expect(run(projectDir, "src/entities/cart/model/price.ts")).toBe(blocked);
   });
 
   it.each(["main", "fix/foo", "docs/bar"])(
