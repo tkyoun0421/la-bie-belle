@@ -6,7 +6,7 @@
 
 ## 다음 작업
 
-**`ready`에 화면 task가 안 남았다 — 다음 첫 수는 총괄이 정한다.** 랄프 루프(`docs/2-design/spec/ui-kit.md` 「루프」)가 화면 task 넷(`profile-form`·`members-pending`·`profile-screen`·`members`)을 차례로 닫아 지금 남은 화면 task는 `schedule-worker`·`schedule-admin` 둘뿐인데 둘 다 `blocked`다. `schedule-admin`은 `expo-scaffold`(실기기 확인만 남음)와 `schedule-data`(done)가 선행이고, `schedule-worker`도 같다 — 지금까지 화면 task 넷이 전부 「spec approved + `expo-scaffold` 실기기 확인 미완」이라는 같은 조건에서 진행됐다. 그 조건을 유지한 채 다음 화면 task를 여는지, 아니면 실기기 확인을 먼저 받는지는 총괄이 정할 자리다.
+**랄프 루프가 이어진다 — 다음 첫 수는 `schedule-worker`, 그 뒤 `schedule-admin`이다.** 화면 task 넷(`profile-form`·`members-pending`·`profile-screen`·`members`)이 「spec approved + `expo-scaffold` 실기기 확인 미완」 조건에서 닫혔고, 「전체 기능 구현해」(2026-09-27)가 그 조건을 유지한 채 계속 가라는 지시라 `schedule-worker`·`schedule-admin`을 `ready`로 올렸다 — 둘의 선행 `schedule-data`는 done이고 `expo-scaffold`의 남은 것은 실기기 확인뿐이다. 둘은 나란히 갈 수 있고 달력 그리드는 먼저 merge되는 쪽이 만든다. 실기기 확인은 여전히 사람 자리로 남는다(카탈로그·화면 여섯·테마·e2e 플로우 열 남짓 전부 한 번도 기기에서 안 돌았다).
 
 **`members`가 `done`이다(#422).** DB 함수 넷(`set_display_name`·`set_role`·`mark_leave`·`undo_leave`)과 마지막 관리자 셈을 한 자리에 둔 `is_last_admin`이 섰다. `mark_leave`의 남은 배정 검사(`has_future_assignments`)는 `schedule-data` plan AC-11이 넘긴 몫을 여기서 넣었다 — `assignments` 표는 그때 이미 섰지만 함수 자체가 없어 떠돌던 검사였다. **관찰 020이 여기서 정리됐다** — `members-pending`의 가입 대기·차단 읽기를 `useMembers(client, kind)`로 옮겨 목록 넷(재직·퇴사·가입 대기·차단)이 `['members']` 아래 한 쿼리 접두사를 쓴다. `SheetLayer`·`FloatingToast`가 「나」·가입 대기에 이어 직원 화면까지 슬라이스 셋째로 겹쳐 `src/shared/ui`로 승격했다(`components.md`에 「시트 겹과 떠 있는 토스트」 절 추가). 배정 목록과 「외 n건」은 못 넣었다 — 그 값을 읽을 DAL이 없고 새 DAL은 integration 테스트가 먼저 있어야 세울 수 있는데 계획에 배정이 없었다.
 
