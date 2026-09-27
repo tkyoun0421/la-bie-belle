@@ -185,7 +185,7 @@
 | 오늘 현황 이름표와 값 사이 | `mt-1` |
 | 오늘 현황 띠 | 값 줄 아래 `mt-3`, 높이 8px |
 | 오늘 현황과 타일 사이 | `mt-6` |
-| 타일 | `rounded-xl` `p-6` |
+| 타일 | `rounded-xl` `p-5` |
 | 타일과 빈 자리 카드 사이 | `mt-3` |
 | 빈 자리 카드끼리 | `mt-2` |
 | 빈 자리 카드와 미니뷰 사이 | `mt-6` |
@@ -196,6 +196,8 @@
 | 시트 | [components.md](../../design-system/components.md#dialog와-바텀시트)의 바텀시트. 위쪽만 `rounded-lg` |
 
 **자리가 빠지면 위 간격을 이어받는다.** 오늘 현황이 없는 날에는 타일이 앱바 바로 아래에 `mt-2`로 서고, 빈 자리가 없으면 미니뷰가 타일 아래에 `mt-6`으로 선다.
+
+**타일 안쪽이 20px인 것은 카드이기 때문이다.** [ADR-014](../../adr/ADR-014-toss-like-depth-and-graphics.md)가 카드 층의 안쪽 여백을 20px로 못 박았고 [components.md](../../design-system/components.md#card)의 Card가 그 값을 들고 있다 — 이 표가 따로 든 값이 아니다.
 
 ## 문안
 

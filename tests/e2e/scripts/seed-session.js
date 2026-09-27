@@ -6,16 +6,18 @@
 //
 // 부르는 쪽은 env로 STATE를 준다. 값은
 // "fresh" | "submitted" | "approved" | "admin" | "rejected" | "left" | "blocked" |
-// "read_failure" | "schedule_submission_window" | "schedule_confirmed" 중 하나다.
-// 뒤 둘은 schedule-worker task가 더하는 것이라 아직 e2e-seed-server.mts에 없다 —
-// 계약은 tests/e2e/schedule-worker.yaml 머리말에 있다. NAME은 선택이고, 프로필을
+// "read_failure" | "schedule_submission_window" | "schedule_confirmed" |
+// "schedule_admin_empty_month" | "schedule_admin_race_open" |
+// "schedule_admin_confirmable" | "schedule_admin_confirmed" |
+// "schedule_admin_applications" 중 하나다. NAME은 선택이고, 프로필을
 // 보내는 상태에서 그 사람의 이름을 고른다 — 한 화면에 승인된 사람을 여럿 세우는
-// members.yaml이 쓴다. 안 주면 시드 서버의 기본 이름이다. 계약과 상태별 응답 값은
-// scripts/e2e-seed-server.mts가 정본이다.
+// members.yaml이 쓴다. 안 주면 시드 서버의 기본 이름이다. MONTH·DAY도 선택이고
+// schedule_admin_race_open만 쓴다 — 이미 로그인된 세션 밖에서 먼저 열 날짜다.
+// 계약과 상태별 응답 값은 scripts/e2e-seed-server.mts가 정본이다.
 //
-// NAME이 env에 없으면 그 이름의 전역 자체가 없다 — 그래서 typeof로 먼저 묻는다. 바로
-// 읽으면 NAME을 안 주는 플로우(pending·left·blocked·retry·session·schedule-worker)가
-// ReferenceError로 죽는다.
+// NAME·MONTH·DAY가 env에 없으면 그 이름의 전역 자체가 없다 — 그래서 typeof로 먼저
+// 묻는다. 바로 읽으면 그것을 안 주는 플로우(pending·left·blocked·retry·session·
+// schedule-worker)가 ReferenceError로 죽는다.
 //
 // http·output은 Maestro의 JS 실행기가 주는 전역이다. 여기서 실제로 이 값들이
 // 계약대로 동작하는지는 아직 못 봤다 — Maestro CLI로 한 번도 못 돌려봤다는 것이
@@ -38,10 +40,18 @@ function escapeForTextSelector(text) {
 }
 
 const chosenName = typeof NAME === "string" && NAME !== "" ? NAME : undefined;
+const chosenMonth =
+  typeof MONTH === "string" && MONTH !== "" ? MONTH : undefined;
+const chosenDay = typeof DAY === "string" && DAY !== "" ? DAY : undefined;
 
 const response = http.post("http://127.0.0.1:8765/seed", {
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ state: STATE, name: chosenName }),
+  body: JSON.stringify({
+    state: STATE,
+    name: chosenName,
+    month: chosenMonth,
+    day: chosenDay,
+  }),
 });
 
 if (response.status !== 200) {
@@ -97,4 +107,18 @@ if (seeded.myDateLabel) {
 
 if (seeded.otherDateLabel) {
   output.otherDateLabel = escapeForTextSelector(seeded.otherDateLabel);
+}
+
+// schedule_admin_empty_month 전용이다. 화면에 뜨는 문구가 아니라 만들기 시트의 날짜
+// 입력에 그대로 타이핑할 값이라 escapeForTextSelector를 안 거친다 — 이스케이프하면
+// 입력 칸에 역슬래시가 들어간다.
+if (seeded.deadlineDate) {
+  output.deadlineDate = seeded.deadlineDate;
+}
+
+// schedule_admin_race_open 전용이다. 부분 실패 토스트가 그대로 부르는 날짜라
+// (schedule-admin.md 「날 열기 모드 문안」) 다른 동적 라벨과 같은 손을 탄다 — 지금 꼴엔
+// 정규식 특수문자가 없지만 표기가 바뀌어도 안 깨지게 둔다.
+if (seeded.failedOpenDayLabel) {
+  output.failedOpenDayLabel = escapeForTextSelector(seeded.failedOpenDayLabel);
 }

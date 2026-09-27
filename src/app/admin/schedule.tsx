@@ -1,5 +1,13 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { useLocalSearchParams } from "expo-router";
+import { ScheduleAdminScreen } from "@/screens/schedule-admin/ui/ScheduleAdminScreen";
+
+type ScheduleParams = {
+  month?: string;
+  date?: string;
+};
 
 export default function Screen() {
-  return <NotBuiltYet path="/admin/schedule" />;
+  const { month, date } = useLocalSearchParams<ScheduleParams>();
+
+  return <ScheduleAdminScreen month={month} date={date} />;
 }

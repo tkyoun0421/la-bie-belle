@@ -17,6 +17,7 @@ import { Card } from "@/shared/ui/Card";
 import { Checkbox } from "@/shared/ui/Checkbox";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Icon } from "@/shared/ui/Icon";
+import { MonthCalendar } from "@/shared/ui/MonthCalendar";
 import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
@@ -48,7 +49,6 @@ import {
 } from "@/screens/schedule-worker/model/month-state";
 import { toggleSelectedDate } from "@/screens/schedule-worker/model/submission-selection";
 import { DaySheet } from "@/screens/schedule-worker/ui/DaySheet";
-import { MonthCalendar } from "@/screens/schedule-worker/ui/MonthCalendar";
 import {
   ScheduleAgenda,
   type AgendaEntry,
