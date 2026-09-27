@@ -6,7 +6,7 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `attendance-checkin`이고 그 뒤 `rehearsal`이다.** 근무표 모듈(`schedule-worker`·`schedule-admin`·`schedule-assign`·`schedule-requests`)과 `attendance-qr`이 이번 회차에 전부 `done`이 됐다 — [backlog.md](backlog.md#attendance-checkin) 두 행이 `ready`다. `attendance-checkin`은 **NCP 대표 계정 지정과 지도 키·`customStyleId` 발급이 착수 전에 끝나 있어야 한다** — 없으면 사람 자리다. 실기기 확인은 여전히 사람 자리로 남는다(카탈로그·화면 열넷·테마·끌기·서버 시각 복귀·e2e 플로우 스물여섯 전부 한 번도 기기에서 안 돌았다).
+**다음 첫 수는 `attendance-checkin`이고 그 뒤 `rehearsal`이다.** 근무표 모듈(`schedule-worker`·`schedule-admin`·`schedule-assign`·`schedule-requests`)과 `attendance-qr`이 이번 회차에 전부 `done`이 됐다 — [backlog.md](backlog.md) 두 행이 `ready`다. `attendance-checkin`은 **NCP 대표 계정 지정과 지도 키·`customStyleId` 발급이 착수 전에 끝나 있어야 한다** — 없으면 사람 자리다. 실기기 확인은 여전히 사람 자리로 남는다(카탈로그·화면 열넷·테마·끌기·서버 시각 복귀·e2e 플로우 스물여섯 전부 한 번도 기기에서 안 돌았다).
 
 **`attendance-qr`이 `done`이다(#434).** `/admin/qr`이 섰다 — 흰 카드의 QR(`src/shared/ui/QrFace.tsx`, 다크에서도 흰 면), 쓰기 시작한 날, 인쇄용 A4 내보내기(`expo-print`+`expo-sharing`), 크게 띄우기(`expo-keep-awake`), 새로 뽑기(Dialog→`rotate_qr`). 종이와 화면이 `buildQrSvg` 한 장을 같이 쓴다. 총괄 판정 둘 — `hall_secrets`가 `rotate_qr` 전까지 0행이던 빈 상태를 화면이 아니라 마이그레이션(`20260927091507_hall_secrets_seed.sql`)이 첫 코드를 심어 없앴고, 주소 앞부분은 `EXPO_PUBLIC_APP_URL`(비면 마운트 때 던진다)이며 실제 도메인은 첫 출시 준비 몫이다. 남긴 자리 — 실기기 확인(공유 판·인쇄·화면 잠금), KST 날짜 손이 슬라이스 넷에 중복(`src/shared/lib/`로 합치려면 실패 테스트 먼저), 홀 위치 절(`hall-location`), `EXPO_PUBLIC_APP_URL` 실값.
 
