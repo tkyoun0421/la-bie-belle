@@ -156,7 +156,9 @@ appId: com.labiebelle.app
 - assertVisible: "15,000원"
 - assertNotVisible: "노건우"
 - assertNotVisible: "임하은님"
-- assertNotVisible: "기본"
+# 배지 없음은 여기서 못 본다 — Maestro 텍스트 매칭이 부분 일치라
+# `assertNotVisible: "기본"`이 같은 화면의 「기본 시급」에 걸린다. 줄이
+# 금액 말고 아무것도 안 들고 오는 것은 `wage-rows.test.ts`가 본다.
 
 # ================================================================
 # AC-02 — 기본 시급 저장: 확인을 안 묻는다, 토스트 뒤 따르는 사람들의
