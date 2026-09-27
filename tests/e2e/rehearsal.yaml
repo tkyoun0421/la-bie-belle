@@ -1,0 +1,274 @@
+# 리허설 — 자격 있는 근무자가 배정 없는 날엔 시각으로, 배정 있는 날엔 건수로 리허설을
+# 넣고 고치고 지우는 것과, 관리자는 같은 화면에서 이름 있는 줄만 읽는 것과, 자격 없는
+# 근무자는 이 화면에 못 들어오는 것을 한 여정씩 본다.
+#
+# 근거는 docs/2-design/spec/rehearsal.md, docs/3-build/plans/rehearsal.md,
+# docs/2-design/modules/schedule/screens/rehearsal.md(「달력」「날 시트」「넣는
+# 중」「고치는 중」「문안」)다. 배정받은 리스크는(rehearsal-test-plan.md 「배정 →
+# e2e」)
+#   - 배정 없는 날 → 날 시트 빈 문구 → 넣기 → 시각 안내 → 저장 → 칸 「2시간」·합계
+#   - 배정 있는 날 → 건수 안내 → 저장 → 「리허설 넣기」 사라짐 → 줄 → 고치기 → 지우기
+#     Dialog → 그만두기/지우기
+#   - 달 제목 → 달 고르기 시트 → 다른 달
+#   - admin 시드: 줄에 이름, 넣기 없음, 줄이 안 눌린다
+#   - 자격 없는 근무자: /me/rehearsals로 바로 들어가면 /me로 돌아가고 줄이 없다
+# 건수·시각 갈래를 가르는 판정, wrong_kind·overlaps·bad_count 같은 업무 규칙의 경우의
+# 수는 test-planner가 이미 unit·integration으로 배정했다(rehearsal-test-plan.md 「배정
+# → unit」「배정 → integration」) — 여기서는 화면·훅·함수·시드가 실제로 잇는지만 본다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/schedule-worker.yaml 머리말, scripts/e2e-seed-server.mts,
+# scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의
+# "/me/rehearsals" 그대로다 — "me" 세그먼트가 "(tabs)" 같은 괄호 그룹이 아니라서
+# 그대로 URL에 남는다.
+#
+# **시드 서버에 상태 "rehearsal_qualified"가 아직 없다 — implementer가 이 task에서
+# 더한다.** 리허설 자격이 있는 근무자 하나, 오늘(정규 배정이 있는 날)과 이번 달의 다른
+# 하루(배정이 없는 날)를 세운다. 자격은 `grant_position(p_profile_id, '리허설')`로
+# 준다(총괄 판정 2번 — 이미 통하는 함수라 새 검사가 없다). 정규 배정이 있는 날은
+# `open_day`가 "과거 날짜면 date_past"를 던지는 제약 때문에 **오늘일 수밖에 없다** —
+# 이번 달의 다른 날로 잡으면 오늘이 몇 일이냐에 따라 이미 지난 날이 될 수 있어서다.
+# 배정 없는 날은 그런 제약이 없으니(리허설은 `days`를 안 거친다) 이번 달 1일로 고정하되,
+# 오늘이 1일이면 2일로 옮긴다.
+#
+# ```ts
+# const REHEARSAL_QUALIFIED = "rehearsal_qualified";
+#
+# // STATES 배열에 추가한다. ADMIN_SCHEDULE_STATES에는 안 넣는다 — 로그인하는
+# // 사람이 리허설 자격을 받는 그 근무자다.
+#
+# // seededUser의 SUBMISSION_WINDOW || SCHEDULE_CONFIRMED || ... 분기에
+# // REHEARSAL_QUALIFIED도 넣어야 한다 — 승인 안 된 사람은 이 화면 자체가 안
+# // 열린다.
+#
+# async function seedRehearsalQualified(
+#   meProfileId: string,
+# ): Promise<SchedulePayload> {
+#   const admin = await createAdminUser();
+#   const monthDate = kstMonthStart(0);
+#   const month = monthDate.slice(0, 7);
+#   const assignedDate = kstDate(0); // 오늘 — open_day가 과거 날짜를 안 받는다
+#   const freeDate = assignedDate.endsWith("-01") ? `${month}-02` : `${month}-01`;
+#
+#   await admin.client.rpc("grant_position", {
+#     p_profile_id: meProfileId,
+#     p_position: "리허설",
+#   });
+#
+#   await createSchedule(admin, monthDate, kstDate(3));
+#   await openDay(admin, assignedDate);
+#
+#   const dayId = await dayIdOf(admin, assignedDate);
+#   seedAssignment(dayId, meProfileId, "regular", await freeSlotOf(admin, dayId));
+#
+#   return {
+#     month,
+#     assignedDate,
+#     freeDate,
+#     assignedDateLabel: spellWorkDate(assignedDate),
+#     freeDateLabel: spellWorkDate(freeDate),
+#   };
+# }
+# ```
+#
+# `SchedulePayload`에 `assignedDate?: string`·`freeDate?: string`(raw
+# "YYYY-MM-DD", testID 조립용)·`assignedDateLabel?: string`·`freeDateLabel?:
+# string`을 더한다. **총괄이 정한 응답 계약은 `month`·`assignedDateLabel`·
+# `freeDateLabel` 셋뿐이었다** — `assignedDate`·`freeDate`(raw)는 이 파일이 날짜 칸을
+# testID로 잡으려고 추가로 요청하는 것이다. 아래 「이슈」에도 적는다.
+#
+# **"현재 실제 달"을 쓰는 유일한 상태다.** 다른 근무표 상태는 전부 `withFreshMonth`로
+# 먼 미래 달을 골라 서로 안 부딪히게 하는데, 이 상태는 오늘이 든 달을 그대로 쓴다(총괄
+# 판정 2번) — 그래서 로컬 DB를 안 비우고 이 상태를 두 번 돌리면 두 번째 `create_schedule`이
+# `already_exists`로 죽는다. 아래 「이슈」에 적는다.
+#
+# `scripts/seed-session.js`도 이 파일이 고쳤다(그 파일도 tests/e2e/ 안이다). 바뀐 것 셋이다.
+#   - `month`을 받아도 서버가 `monthLabel`을 안 줄 수 있어(위 상태처럼) 그 둘의 assign을
+#     분리했다 — 기존에는 한 `if (seeded.month)` 블록 안에서 같이 넣어 `monthLabel`이
+#     없으면 `.replace`가 undefined에서 죽었다.
+#   - `seeded.monthLabel`이 없고 `seeded.month`만 있으면 "YYYY년 M월" 꼴을 여기서 직접
+#     만든다 — `spellMonth`와 같은 모양이다.
+#   - `assignedDate`·`freeDate`(raw)와 `assignedDateLabel`·`freeDateLabel`을 옮기고,
+#     달 고르기 시트에서 누를 "다른 달" 버튼 문구(`otherMonthButtonLabel`)와 그 달
+#     라벨(`otherMonthLabel`)을 계산해 낸다. 1~9월의 한 자리 버튼 글자는 "11월"·"12월"
+#     같은 두 자리 월 글자의 부분 문자열이 될 수 있어(Maestro의 텍스트 셀렉터가 정규식이라
+#     "1월"이 "11월" 안에서도 매칭된다) 3월·4월만 오간다 — 이 둘은 어떤 두 자리 달의
+#     부분 문자열도 아니다. 지금 달이 3월이면 4월로, 아니면 3월로 간다 — 연도 화살표를 안
+#     눌러도 되는 12칸 그리드 안의 달이라 연도가 안 바뀐다.
+#
+# **날짜 칸은 `schedule-day-<YYYY-MM-DD>` testID를 그대로 쓴다 — 새로 요청하는 것이
+# 아니다.** `src/shared/ui/MonthCalendar.tsx`가 이 testID를 이미 하드코딩하고
+# 있고(69번째 줄) rehearsal.md·plan 9번이 이 화면더러 `MonthCalendar`를 그대로 재사용하라고
+# 해서, 화면 이름이 달라도 testID 접두사는 "schedule-day-"인 채로 남을 것으로 본다. 이
+# 가정이 틀리면(구현이 접두사를 바꾸면) 이 파일의 tapOn id들을 그만큼 고쳐야 한다 — 아래
+# 「이슈」에 적는다.
+#
+# ## 이 task가 요청하는 testID 셋
+#
+# - `rehearsal-starts-input`·`rehearsal-ends-input` — 넣는 시트의 시각 갈래 두 칸.
+#   라벨(「시작」·「끝」)은 있지만 빈 칸에 힌트가 없는 순수 입력이라(rehearsal.md 「빈 칸에
+#   힌트가 없다」) 입력 칸 자체를 잡을 손잡이가 이것뿐이다 —
+#   `schedule-cancel-reason-input`과 같은 자리다.
+# - `rehearsal-count-input` — 건수 갈래 한 칸. 같은 이유다.
+# - `rehearsal-remove-confirm-button` — 지우기 확인 Dialog의 오른쪽 버튼에
+#   `confirmTestID`로 얹는다. 그 버튼 글자 "지우기"가 시트 안의 「지우기」 줄과 완전히
+#   같고 Dialog가 그 줄 위에 겹쳐 뜨는 동안 텍스트 셀렉터만으로는 어느 쪽을 눌렀는지
+#   보장이 안 된다 — `qr.yaml`의 `qr-rotate-confirm-button`과 같은 자리다.
+#
+# **시각 입력이 `inputText`로 "14:00"을 그대로 받는지, 네이티브 피커라 다른 조작이
+# 필요한지는 한 번도 못 돌려봤다** — `schedule-admin.yaml` 머리말의 날짜 입력과 같은
+# 자리로 남는다.
+#
+# 텍스트 셀렉터는 정규식이다. 물음표가 든 문구는 이스케이프한다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+# ================================================================
+# 자격 있는 근무자 — 배정 없는 날은 시각, 배정 있는 날은 건수, 달 고르기
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: rehearsal_qualified
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://me/rehearsals"
+
+- assertVisible: "${output.monthLabel}"
+
+# --- 배정 없는 날 — 빈 문구 → 넣기 → 시각 안내 → 저장 → 칸과 합계 ---
+- tapOn:
+    id: "schedule-day-${output.freeDate}"
+- assertVisible: "${output.freeDateLabel}"
+- assertVisible: "이 날 넣은 리허설이 없어요"
+- tapOn: "리허설 넣기"
+
+- assertVisible: "리허설 넣기 · ${output.freeDateLabel}"
+- assertVisible: "이 날은 근무가 없어서 시각으로 넣어요"
+- assertVisible: "시작"
+- assertVisible: "끝"
+- tapOn:
+    id: "rehearsal-starts-input"
+- inputText: "14:00"
+- tapOn:
+    id: "rehearsal-ends-input"
+- inputText: "16:00"
+- tapOn: "넣기"
+
+# 저장 뒤 — 같은 시트가 목록으로 돌아오고 새 줄이 선다.
+- assertVisible: "${output.freeDateLabel}"
+- assertVisible: "14:00–16:00 · 2시간"
+- back
+
+# 시트를 닫은 뒤라야 달력 칸 숫자가 바뀐다(rehearsal.md 「달력 칸의 숫자는 시트가 닫힌
+# 뒤에 바뀐다」). 이 시점엔 리허설이 이거 하나뿐이라 "2시간"이 화면에 유일하다.
+- assertVisible: "2시간"
+- assertVisible: "1건 · 2시간"
+
+# --- 배정 있는 날 — 건수 안내 → 저장 → 넣기 버튼이 사라짐 → 줄 → 고치기 → 지우기 ---
+- tapOn:
+    id: "schedule-day-${output.assignedDate}"
+- assertVisible: "${output.assignedDateLabel}"
+- assertVisible: "이 날 넣은 리허설이 없어요"
+- tapOn: "리허설 넣기"
+
+- assertVisible: "리허설 넣기 · ${output.assignedDateLabel}"
+- assertVisible: "이 날은 근무가 있어서 건수로 넣어요 · 1건은 1시간이에요"
+- assertVisible: "몇 건"
+- tapOn:
+    id: "rehearsal-count-input"
+- inputText: "2"
+- tapOn: "넣기"
+
+- assertVisible: "${output.assignedDateLabel}"
+- assertVisible: "리허설 2건 · 2시간"
+# 건수 갈래인 날은 줄이 하나로 묶여 있어 넣기 버튼이 사라진다.
+- assertNotVisible: "리허설 넣기"
+
+# --- 그 줄을 눌러 고치기 → 지우기 확인 → 그만두기(안 지워짐) ---
+# rehearsal.md 「고치는 중」 표는 "그만두기·지우기" 둘의 다음 상태를 "날 시트" 한
+# 칸에 같이 적어놨다 — 표만 보면 그만두기도 날 시트로 돌아가는 것처럼 읽히지만,
+# qr.yaml의 "새로 뽑기 확인 → 닫기 → 아무것도 안 바뀐다"와 같은 결로 그만두기는
+# Dialog만 닫고 고치는 시트를 그대로 두는 것이 자연스러운 취소 동작이라고 보고
+# 아래에서 그렇게 단언한다 — 구현이 실제로 날 시트까지 닫아버리면 이 가정이
+# 틀린 것이니 아래 「이슈」에 적는다.
+- tapOn: "리허설 2건 · 2시간"
+- assertVisible: "리허설 고치기 · ${output.assignedDateLabel}"
+- assertVisible: "지우기"
+- tapOn: "지우기"
+
+- assertVisible: "이 리허설을 지울까요\\?"
+- assertVisible: "급여에서도 빠져요"
+- assertVisible: "그만두기"
+- tapOn: "그만두기"
+
+# 그만두면 Dialog만 닫히고 고치는 시트가 값을 든 채 그대로 남는다 — 아직 안 지워졌다.
+- assertNotVisible: "급여에서도 빠져요"
+- assertVisible: "리허설 고치기 · ${output.assignedDateLabel}"
+- assertVisible: "지우기"
+
+# --- 다시 지우기 → 이번엔 실제로 지운다 ---
+- tapOn: "지우기"
+- assertVisible: "이 리허설을 지울까요\\?"
+- tapOn:
+    id: "rehearsal-remove-confirm-button"
+
+# 지운 뒤 — 날 시트가 다시 빈 상태고 넣기 버튼이 돌아온다.
+- assertVisible: "${output.assignedDateLabel}"
+- assertVisible: "이 날 넣은 리허설이 없어요"
+- assertVisible: "리허설 넣기"
+- back
+
+# 배정 없는 날의 항목만 남아 합계가 되돌아온다.
+- assertVisible: "1건 · 2시간"
+
+# --- 달 제목 → 달 고르기 시트 → 다른 달로 이동 ---
+- tapOn: "${output.monthLabel}"
+- assertVisible: "달 고르기"
+- assertVisible: "1월"
+- assertVisible: "12월"
+- tapOn: "${output.otherMonthButtonLabel}"
+
+# 고르는 즉시 시트가 닫히고 그 달로 이동한다 — CTA가 없다.
+- assertNotVisible: "달 고르기"
+- assertVisible: "${output.otherMonthLabel}"
+
+# ================================================================
+# 관리자 — 같은 화면에서 이름 있는 줄만 읽는다. 넣기 없음, 줄이 안 눌린다.
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: admin
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://me/rehearsals?month=${output.month}"
+
+- assertVisible: "${output.monthLabel}"
+- tapOn:
+    id: "schedule-day-${output.freeDate}"
+- assertVisible: "${output.freeDateLabel}"
+
+# 관리자 줄은 이름이 앞에 붙는다 — 시드가 기본 이름(SEEDED_PROFILE)을 그대로 쓴 근무자다.
+- assertVisible: "박서연 · 14:00–16:00 · 2시간"
+- assertNotVisible: "리허설 넣기"
+
+# 줄이 안 눌린다 — 눌러도 고치는 시트가 안 열린다.
+- tapOn: "박서연 · 14:00–16:00 · 2시간"
+- assertNotVisible: "리허설 고치기"
+- back
+
+# ================================================================
+# 자격 없는 근무자 — 주소를 직접 치면 /me로 돌아가고 줄이 없다
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: schedule_confirmed
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://me/rehearsals"
+
+# "나" 화면의 「화면」 줄이 서면 리다이렉트가 됐다는 뜻이다(profile.yaml과 같은 손잡이).
+- assertVisible: "화면"
+- assertNotVisible: "리허설"

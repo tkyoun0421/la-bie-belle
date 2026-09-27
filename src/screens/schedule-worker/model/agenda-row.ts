@@ -7,6 +7,8 @@
  * 하나가 보기마다 다르게 거른다.
  */
 
+import { spellDate } from "@/shared/lib/kst-date";
+
 export type MyAssignment = {
   kind: "regular" | "training";
   position: string;
@@ -16,8 +18,6 @@ export type AgendaDay = {
   workDate: string;
   myAssignment: MyAssignment | null;
 };
-
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 /**
  * 그날 내 배정이다. 끝난 배정은 안 센다 — 강제 변경으로 자리가 넘어간 날은 남의 근무다.
@@ -71,14 +71,10 @@ export function filterAgendaDays(
 }
 
 /**
- * 「10월 10일(토)」다. 날짜 줄과 날 시트 제목이 같은 꼴을 쓴다.
- *
- * `work_date`는 KST 달력의 날짜고 시각이 없다. UTC 자정으로 읽어야 기기 시간대가 어디든 같은
- * 요일이 나온다.
+ * 「10월 10일(토)」다. 날짜 줄과 날 시트 제목이 같은 꼴을 쓴다. 계산은
+ * `@/shared/lib/kst-date`가 소유한다 — 슬라이스 넷에 같은 손이 각자 서 있던 것을 거기로
+ * 모았다.
  */
 export function spellWorkDate(workDate: string): string {
-  const [, month, day] = workDate.split("-").map(Number);
-  const weekday = WEEKDAYS[new Date(`${workDate}T00:00:00Z`).getUTCDay()];
-
-  return `${month}월 ${day}일(${weekday})`;
+  return spellDate(workDate);
 }

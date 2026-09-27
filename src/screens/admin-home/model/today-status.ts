@@ -9,27 +9,11 @@
  * **지각을 따로 안 가른다.** 이 줄이 답하는 것은 「다 왔나」 하나고, 누가 늦었는지는 날
  * 상세의 명단이 말한다.
  *
- * 「오늘」을 KST로 옮기는 손도 여기 산다 — 관리자 홈은 근무표 슬라이스 밖이라 그쪽의 같은
- * 손을 못 부른다(슬라이스끼리는 서로를 못 부른다).
+ * 「오늘」을 KST로 옮기는 손은 `@/shared/lib/kst-date`가 소유한다 — 슬라이스 넷에 같은 손이
+ * 각자 서 있던 것을 거기로 모았고, 이 슬라이스가 부르는 이름은 그대로 두고 이어 낸다.
  */
 
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-
-const KST_DATE = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Asia/Seoul",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
-
-/** 그 순간이 KST로 며칠인지다 — `"2026-10-08"`. */
-export function kstDateOf(instant: string): string {
-  return KST_DATE.format(new Date(instant));
-}
-
-export function kstToday(): string {
-  return KST_DATE.format(new Date());
-}
+export { kstDateOf, kstToday, spellDate } from "@/shared/lib/kst-date";
 
 export type TodayStatus =
   | { kind: "none" }
@@ -92,12 +76,4 @@ export function todayBandShares(
     { key: "unused-mint", label: "", value: 0 },
     { key: "not-checked-in", label: "안 찍음", value: notCheckedInCount },
   ];
-}
-
-/** 날짜를 요일까지 읽는다 — 「10월 8일(목)」. */
-export function spellDate(workDate: string): string {
-  const [, month, day] = workDate.split("-").map(Number);
-  const weekday = WEEKDAYS[new Date(`${workDate}T00:00:00Z`).getUTCDay()];
-
-  return `${month}월 ${day}일(${weekday})`;
 }

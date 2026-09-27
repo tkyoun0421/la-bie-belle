@@ -1,3 +1,4 @@
+import { lastDateOfMonth, shiftMonth } from "@/shared/lib/kst-date";
 import { kstDateOf } from "@/screens/schedule-admin/model/format-schedule-date";
 
 /**
@@ -14,30 +15,15 @@ export type MonthEmptyStateInput = {
   now: string;
 };
 
-export function lastDateOfMonth(month: string): string {
-  const [year, index] = month.slice(0, 7).split("-").map(Number);
-  const last = new Date(Date.UTC(year, index, 0));
-
-  return [
-    String(last.getUTCFullYear()).padStart(4, "0"),
-    String(last.getUTCMonth() + 1).padStart(2, "0"),
-    String(last.getUTCDate()).padStart(2, "0"),
-  ].join("-");
-}
+/**
+ * 그 달의 마지막 날과 달 이동은 `@/shared/lib/kst-date`가 소유한다 — 슬라이스 넷에 같은
+ * 계산이 각자 서 있던 것을 거기로 모았다. 부르는 이름은 그대로다.
+ */
+export { lastDateOfMonth, shiftMonth };
 
 export function isMonthFullyPast({
   month,
   now,
 }: MonthEmptyStateInput): boolean {
   return lastDateOfMonth(month) < kstDateOf(now);
-}
-
-/** 달 이동에 열람 제한이 없다 — 몇 해든 거슬러 가고 앞서 간다. */
-export function shiftMonth(month: string, step: number): string {
-  const [year, index] = month.slice(0, 7).split("-").map(Number);
-  const moved = index - 1 + step;
-  const movedYear = year + Math.floor(moved / 12);
-  const movedIndex = ((moved % 12) + 12) % 12;
-
-  return `${String(movedYear).padStart(4, "0")}-${String(movedIndex + 1).padStart(2, "0")}`;
 }

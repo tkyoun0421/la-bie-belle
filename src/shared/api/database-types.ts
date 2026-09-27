@@ -40,6 +40,20 @@ export type Database = {
         Returns: number;
       };
       expire_requests: { Args: never; Returns: undefined };
+      rehearsal_kind_of: {
+        Args: { p_profile_id: string; p_work_date: string };
+        Returns: string;
+      };
+      rehearsal_overlaps: {
+        Args: {
+          p_ends_at: string;
+          p_except_id: string;
+          p_profile_id: string;
+          p_starts_at: string;
+          p_work_date: string;
+        };
+        Returns: boolean;
+      };
       submit_excuse: {
         Args: {
           p_body: string;
@@ -721,6 +735,51 @@ export type Database = {
           },
         ];
       };
+      rehearsals: {
+        Row: {
+          count: number | null;
+          created_at: string;
+          ends_at: string | null;
+          id: string;
+          profile_id: string;
+          starts_at: string | null;
+          work_date: string;
+        };
+        Insert: {
+          count?: number | null;
+          created_at?: string;
+          ends_at?: string | null;
+          id?: string;
+          profile_id: string;
+          starts_at?: string | null;
+          work_date: string;
+        };
+        Update: {
+          count?: number | null;
+          created_at?: string;
+          ends_at?: string | null;
+          id?: string;
+          profile_id?: string;
+          starts_at?: string | null;
+          work_date?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "rehearsals_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "rehearsals_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "push_reachable";
+            referencedColumns: ["profile_id"];
+          },
+        ];
+      };
       request_candidates: {
         Row: {
           expires_at: string;
@@ -1033,6 +1092,15 @@ export type Database = {
         };
         Returns: string;
       };
+      add_rehearsal: {
+        Args: {
+          p_count?: number;
+          p_ends_at?: string;
+          p_starts_at?: string;
+          p_work_date: string;
+        };
+        Returns: undefined;
+      };
       add_slot: {
         Args: { p_day_id: string; p_position: string };
         Returns: undefined;
@@ -1073,6 +1141,15 @@ export type Database = {
         Args: { p_approved: boolean; p_excuse_id: string; p_reason?: string };
         Returns: undefined;
       };
+      edit_rehearsal: {
+        Args: {
+          p_count?: number;
+          p_ends_at?: string;
+          p_id: string;
+          p_starts_at?: string;
+        };
+        Returns: undefined;
+      };
       ensure_profile: { Args: never; Returns: undefined };
       force_change: {
         Args: { p_assignment_id: string; p_profile_id: string };
@@ -1082,6 +1159,7 @@ export type Database = {
         Args: { p_position: string; p_profile_id: string };
         Returns: undefined;
       };
+      has_rehearsal_grant: { Args: { p_profile_id: string }; Returns: boolean };
       is_admin: { Args: never; Returns: boolean };
       is_approved: { Args: never; Returns: boolean };
       is_last_admin: { Args: { target_id: string }; Returns: boolean };
@@ -1101,6 +1179,7 @@ export type Database = {
         Returns: undefined;
       };
       remove_push_token: { Args: { p_token: string }; Returns: undefined };
+      remove_rehearsal: { Args: { p_id: string }; Returns: undefined };
       remove_slot: { Args: { p_slot_id: string }; Returns: undefined };
       respond_request: {
         Args: { p_answer: string; p_request_id: string };

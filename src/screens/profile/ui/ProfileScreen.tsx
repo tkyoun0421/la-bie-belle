@@ -28,6 +28,8 @@ import { googlePhotoOf } from "@/features/auth/google-photo-of";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
 import { useUpdateContact } from "@/features/profile/model/useUpdateContact";
 import { useUpdatePhoto } from "@/features/profile/model/useUpdatePhoto";
+import { useQualifications } from "@/features/schedule/model/useQualifications";
+import { hasRehearsalGrant } from "@/screens/profile/model/has-rehearsal-grant";
 import { shouldOfferGooglePhoto } from "@/screens/profile/model/should-offer-google-photo";
 import { ContactSheet } from "@/screens/profile/ui/ContactSheet";
 import { PhotoSheet } from "@/screens/profile/ui/PhotoSheet";
@@ -102,6 +104,7 @@ export function ProfileScreen() {
   const chooseTheme = useTheme((at) => at.choose);
 
   const { data, isLoading } = useMyProfile(supabase, me?.id ?? null);
+  const { data: grants } = useQualifications(supabase);
 
   const {
     mutate: saveContact,
@@ -216,6 +219,8 @@ export function ProfileScreen() {
 
   const name = data?.display_name ?? "";
   const admin = data?.role === "admin";
+  /** 관리자에게도 선다 — 전원의 리허설을 그 화면에서 본다(profile.md 「리허설」). */
+  const rehearsal = admin || hasRehearsalGrant(grants ?? [], data?.id ?? null);
   const phone = data?.phone ?? "";
   const contactRejected =
     contactError instanceof DomainError &&
@@ -317,6 +322,15 @@ export function ProfileScreen() {
               chevron
               onPress={() => router.push("/stats")}
             />
+            {rehearsal ? (
+              <ListRow
+                testID="profile-rehearsal-row"
+                title="리허설"
+                divider
+                chevron
+                onPress={() => router.push("/me/rehearsals")}
+              />
+            ) : null}
             {admin ? (
               <ListRow
                 testID="profile-admin-row"

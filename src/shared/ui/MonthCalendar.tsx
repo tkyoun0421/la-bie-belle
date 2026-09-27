@@ -18,7 +18,8 @@ import { Text } from "@/shared/ui/Text";
  * 미니 달력과 큰 달력이 같은 격자를 쓴다.
  *
  * 칸 바닥의 신청 수와 빈 자리 수는 부르는 쪽이 준다. 무엇을 셀지는 달의 상태가 정하는데 그
- * 판정이 화면마다 갈려서다.
+ * 판정이 화면마다 갈려서다. `noteOf`가 내는 짧은 글도 같은 자리고 세 번째 화면인 리허설이
+ * 그 자리에 시간을 적는다.
  */
 
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"];
@@ -31,6 +32,7 @@ export type MonthCalendarProps = {
   canPress: (date: string) => boolean;
   applicationCountOf?: (date: string) => number;
   vacancyCountOf?: (date: string) => number | null;
+  noteOf?: (date: string) => string | null;
 };
 
 export function MonthCalendar({
@@ -41,6 +43,7 @@ export function MonthCalendar({
   canPress,
   applicationCountOf,
   vacancyCountOf,
+  noteOf,
 }: MonthCalendarProps) {
   const [year, index] = month.split("-").map(Number);
 
@@ -75,6 +78,7 @@ export function MonthCalendar({
                   vacancyCount={
                     date === null ? null : (vacancyCountOf?.(date) ?? null)
                   }
+                  note={date === null ? null : (noteOf?.(date) ?? null)}
                   onPress={
                     date !== null && onPressDay && canPress(date)
                       ? () => onPressDay(date)

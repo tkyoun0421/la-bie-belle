@@ -49,6 +49,19 @@
 # 하는데 지금 시드는 그걸 못 만든다 — 그래서 이 씬은 "관리자 모드" 줄 하나만
 # 보고, 이름·사진 같은 다섯 값은 다시 안 본다(리턴 4번에 한계를 적는다).
 #
+# ================================================================
+# rehearsal task가 더하는 것 — 「리허설」 줄의 있고 없음
+# ================================================================
+#
+# 근거는 profile.md 「리허설」과 rehearsal-test-plan.md 「배정 → e2e」다. 위
+# "approved" 씬은 리허설 자격이 없는 사람이라 그 자리에 `assertNotVisible:
+# "리허설"`을 한 줄 더했다(단언·스텝 불변, 추가만). 자격이 있을 때 줄이
+# 서는지는 파일 끝에 새 씬으로 확인한다 — 시드 상태
+# "rehearsal_qualified"(rehearsal task, tests/e2e/rehearsal.yaml 머리말)를
+# 그대로 쓴다. 이 화면에서는 그 줄이 있는지와 눌러서 리허설 화면으로
+# 넘어가는지만 본다 — 리허설 화면 자체의 흐름(넣기·고치기·지우기·달 고르기)은
+# rehearsal.yaml의 몫이다.
+#
 # 텍스트 셀렉터는 정규식이다. 아래 문구는 전부 일반 글자라 이스케이프가
 # 필요 없다.
 appId: com.labiebelle.app
@@ -74,6 +87,10 @@ appId: com.labiebelle.app
 
 # 관리자가 아니라 "관리자 모드" 줄이 없다.
 - assertNotVisible: "관리자 모드"
+
+# 리허설 자격이 없는 사람이라 "리허설" 줄이 없다(rehearsal-test-plan.md 「배정 →
+# e2e」, profile.md 「리허설」).
+- assertNotVisible: "리허설"
 
 # 잠긴 줄에 화살표가 없다 — 머리말의 testID 가정이 필요하다.
 - assertNotVisible:
@@ -123,3 +140,24 @@ appId: com.labiebelle.app
 - openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
 - openLink: "labiebelle://me"
 - assertVisible: "관리자 모드"
+
+# ================================================================
+# rehearsal task가 더하는 것 — 리허설 자격이 있으면 「리허설」 줄이 서고
+# 눌러서 리허설 화면으로 넘어간다
+# ================================================================
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: rehearsal_qualified
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://me"
+- assertVisible: "리허설"
+- tapOn: "리허설"
+
+# 리허설 화면의 범례 한 줄로 넘어간 것을 확인한다 — 이 화면(rehearsal.md
+# 「달력 짜임」)에만 있는 문구라 "나"에 남아있는 것과 갈린다. 나머지 흐름은
+# tests/e2e/rehearsal.yaml의 몫이다.
+- assertVisible: "칸 아래 숫자는 그날 리허설 시간이에요"

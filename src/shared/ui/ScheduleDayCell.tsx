@@ -23,6 +23,10 @@ import { Text } from "@/shared/ui/Text";
  * 쓴다. 흐린 숫자라도 남기면 그 달 근무표에 든 날로 읽히고, 누르면 어디로 가는지를 또
  * 정해야 한다.
  *
+ * **바닥 단에 짧은 글도 선다.** `note`가 그 자리고 표식보다 앞선다 — 리허설 달력이 건수가
+ * 아니라 「2시간」을 적는 자리다(`docs/2-design/modules/schedule/screens/rehearsal.md`의
+ * 「달력 칸」). 무엇을 적을지는 칸이 아니라 부르는 쪽이 안다.
+ *
  * **고른 날의 체크가 `${testID}-selected`를 단다.** 골랐는지 아닌지는 배경색과 테두리와 체크
  * 아이콘으로만 갈리는데 셋 다 스타일이라 밖에서 못 본다 — [ListRow](ListRow.tsx)가 화살표에
  * 이름을 실어 주는 것과 같은 자리다.
@@ -53,6 +57,7 @@ export type ScheduleDayCellState =
   | "requested"
   | "open"
   | "muted"
+  | "plain"
   | "closed"
   | "unconfirmed"
   | "picked"
@@ -75,6 +80,7 @@ const LOOKS: Record<ScheduleDayCellState, CellLook> = {
   },
   open: { surface: "bg-bg-neutral-weak", day: "text-fg-neutral-muted" },
   muted: { day: "text-fg-neutral-muted" },
+  plain: { day: "text-fg-neutral" },
   closed: { day: "text-fg-neutral-subtle" },
   unconfirmed: {
     day: "text-fg-neutral-subtle",
@@ -101,6 +107,7 @@ export type ScheduleDayCellProps = {
   isToday?: boolean;
   applicationCount?: number;
   vacancyCount?: number | null;
+  note?: string | null;
   onPress?: () => void;
   testID?: string;
 };
@@ -111,6 +118,7 @@ export function ScheduleDayCell({
   isToday = false,
   applicationCount = 0,
   vacancyCount = null,
+  note = null,
   onPress,
   testID,
 }: ScheduleDayCellProps) {
@@ -139,6 +147,7 @@ export function ScheduleDayCell({
               state={state}
               applicationCount={applicationCount}
               vacancyCount={vacancyCount}
+              note={note}
               testID={testID}
             />
           </View>
@@ -177,13 +186,23 @@ function CellMark({
   state,
   applicationCount,
   vacancyCount,
+  note,
   testID,
 }: {
   state: ScheduleDayCellState;
   applicationCount: number;
   vacancyCount: number | null;
+  note: string | null;
   testID?: string;
 }) {
+  if (note) {
+    return (
+      <Text className="text-xs text-fg-neutral-subtle tabular-nums">
+        {note}
+      </Text>
+    );
+  }
+
   if (CHECKED.has(state)) {
     return (
       <Icon

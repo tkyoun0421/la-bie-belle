@@ -11,26 +11,17 @@
  * (`docs/2-design/system/runtime.md`의 「TanStack Query 규칙」).
  */
 
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
+import { kstDateOf, spellDate, spellMonth } from "@/shared/lib/kst-date";
 
-const KST_DATE = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Asia/Seoul",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
-
-/** 서버 시각(ISO)이 KST로 어느 날인지다 — `"2026-10-03"`. */
-export function kstDateOf(now: string): string {
-  return KST_DATE.format(new Date(now));
-}
+/**
+ * 날짜 손 셋의 소유자는 `@/shared/lib/kst-date`다. 같은 계산이 슬라이스 넷에 각자 서 있던
+ * 것을 거기로 모았고, 이 슬라이스가 부르는 이름은 그대로 두고 위임만 한다.
+ */
+export { kstDateOf };
 
 /** `"10월 10일(토)"`다. */
 export function formatScheduleDate(workDate: string): string {
-  const [, month, day] = workDate.split("-").map(Number);
-  const weekday = WEEKDAYS[new Date(`${workDate}T00:00:00Z`).getUTCDay()];
-
-  return `${month}월 ${day}일(${weekday})`;
+  return spellDate(workDate);
 }
 
 /** `"10월 10일"`이다 — 날 닫기 경고와 날 열기 실패 토스트가 요일을 안 붙인다. */
@@ -47,11 +38,10 @@ export function formatMonthName(month: string): string {
 
 /**
  * 앱바 제목이다 — `"2026년 10월"`. 연도가 붙는 것은 화살표로 해를 넘나드는 화면이라서고,
- * 근무자 달력의 앱바와 같은 꼴이다. 그쪽 함수를 못 부르는 것은 슬라이스끼리 서로를 못
- * 부르기 때문이다(lint 규칙 3) — 합칠 자리는 `src/shared/lib/`다.
+ * 근무자 달력의 앱바와 같은 꼴이다. 두 벌이던 그 계산은 `@/shared/lib/kst-date`로 합쳤다.
  */
 export function formatMonthTitle(month: string): string {
-  return `${Number(month.slice(0, 4))}년 ${Number(month.slice(5, 7))}월`;
+  return spellMonth(month);
 }
 
 export type ConfirmedLineInput = {
