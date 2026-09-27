@@ -6,20 +6,13 @@
  * **같은 신청을 두 방향으로 든다.** 날짜순은 근무표를 짜는 손을 따라가고, 사람순은 「이
  * 사람이 이번 달 며칠을 일할 수 있나」를 본다. 입력은 한 질의고 재구성만 둘이다.
  *
- * 날짜와 마감 문구가 근무표 슬라이스에 같은 모양으로 또 있는 것은 슬라이스끼리 서로를 못
- * 불러서다(lint 규칙 3). 합칠 자리는 `src/shared/lib/`다.
+ * 날짜를 읽고 적는 손은 `@/shared/lib/kst-date`가 소유한다 — 슬라이스 넷에 같은 계산이 각자
+ * 서 있던 것을 거기로 모았다. 마감 문구는 슬라이스마다 말이 달라 여기 남는다.
  */
 
+import { kstDateOf, spellDate } from "@/shared/lib/kst-date";
+
 const DAY_MS = 24 * 60 * 60 * 1000;
-
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-
-const KST_DATE = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Asia/Seoul",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
 
 export type ApplicationRow = {
   profile_id: string;
@@ -85,10 +78,7 @@ export function groupApplicationsByPerson(
 
 /** 목록 머리와 사람순의 날짜다 — 「10월 10일(토)」. */
 export function spellApplicationDate(workDate: string): string {
-  const [, month, day] = workDate.split("-").map(Number);
-  const weekday = WEEKDAYS[new Date(`${workDate}T00:00:00Z`).getUTCDay()];
-
-  return `${month}월 ${day}일(${weekday})`;
+  return spellDate(workDate);
 }
 
 export type ApplicationsDeadlineInput = {
@@ -109,7 +99,7 @@ export function applicationsDeadlineLine({
   const [, month, day] = applicationDeadline.split("-").map(Number);
   const remaining = Math.round(
     (Date.parse(`${applicationDeadline}T00:00:00Z`) -
-      Date.parse(`${KST_DATE.format(new Date(now))}T00:00:00Z`)) /
+      Date.parse(`${kstDateOf(now)}T00:00:00Z`)) /
       DAY_MS,
   );
 

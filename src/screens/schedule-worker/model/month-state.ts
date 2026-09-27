@@ -46,34 +46,10 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 /**
- * 오늘이다. 기기 시간대가 어디든 홀의 하루로 읽는다 — 서버의 `submit_availability`도
- * `Asia/Seoul`로 오늘을 세므로 두 곳의 경계가 같아야 한다.
+ * 오늘과 달 이동과 앱바 제목은 `@/shared/lib/kst-date`가 소유한다. 같은 손이 슬라이스 넷에
+ * 각자 서 있던 것을 거기로 모았고, 부르는 쪽이 안 바뀌게 이름만 여기서 이어 낸다.
  */
-export function kstToday(now: Date = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Seoul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(now);
-}
-
-/** 달 이동에 열람 제한이 없다 — 몇 해든 거슬러 가고 앞서 간다. */
-export function shiftMonth(month: string, step: number): string {
-  const [year, index] = month.split("-").map(Number);
-  const moved = index - 1 + step;
-  const movedYear = year + Math.floor(moved / 12);
-  const movedIndex = ((moved % 12) + 12) % 12;
-
-  return `${String(movedYear).padStart(4, "0")}-${String(movedIndex + 1).padStart(2, "0")}`;
-}
-
-/** 앱바 제목이다 — 「2026년 10월」. 연도가 붙는 것은 화살표로 해를 넘나드는 화면이라서다. */
-export function spellMonth(month: string): string {
-  const [year, index] = month.split("-").map(Number);
-
-  return `${year}년 ${index}월`;
-}
+export { kstToday, shiftMonth, spellMonth } from "@/shared/lib/kst-date";
 
 /**
  * 달력 위 마감 줄이다. 문안 표의 세 행 그대로다 — 마감 전이면 남은 날을, 마감 당일이면
