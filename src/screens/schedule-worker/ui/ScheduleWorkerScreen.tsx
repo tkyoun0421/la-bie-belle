@@ -7,7 +7,10 @@ import {
 } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BackHandler, ScrollView, View } from "react-native";
+import { DomainError } from "@/shared/api/errors";
 import { getCurrentUser } from "@/shared/lib/get-current-user";
+import { nowWithOffset } from "@/shared/lib/server-clock";
+import { serverClockStore } from "@/shared/lib/server-clock-store";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";
@@ -24,22 +27,29 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
+import type { SlotRequest } from "@/entities/schedule/dals/get-slot-requests";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
+import { useCreateCancelRequest } from "@/features/schedule/model/useCreateCancelRequest";
 import { useMonthSchedule } from "@/features/schedule/model/useMonthSchedule";
 import { useMonthWindow } from "@/features/schedule/model/useMonthWindow";
 import { useMyAvailability } from "@/features/schedule/model/useMyAvailability";
+import { usePendingApprovals } from "@/features/schedule/model/usePendingApprovals";
+import { useRespondRequest } from "@/features/schedule/model/useRespondRequest";
+import { useSlotRequests } from "@/features/schedule/model/useSlotRequests";
 import { useSubmitAvailability } from "@/features/schedule/model/useSubmitAvailability";
 import {
   myAssignmentOf,
   spellWorkDate,
 } from "@/screens/schedule-worker/model/agenda-row";
 import { calendarDayState } from "@/screens/schedule-worker/model/calendar-day-state";
+import { cancelRequestBadge } from "@/screens/schedule-worker/model/cancel-request-sheet";
 import {
   canShowShiftActions,
   daySheetSubtitle,
   rosterHeadcount,
   rosterOfDay,
 } from "@/screens/schedule-worker/model/day-sheet";
+import { hasIncomingRequest } from "@/screens/schedule-worker/model/incoming-request";
 import {
   kstToday,
   monthState,
@@ -47,8 +57,11 @@ import {
   spellDeadline,
   spellMonth,
 } from "@/screens/schedule-worker/model/month-state";
+import { requestSheetState } from "@/screens/schedule-worker/model/request-sheet";
 import { toggleSelectedDate } from "@/screens/schedule-worker/model/submission-selection";
+import { CancelShiftSheet } from "@/screens/schedule-worker/ui/CancelShiftSheet";
 import { DaySheet } from "@/screens/schedule-worker/ui/DaySheet";
+import { RequestSheet } from "@/screens/schedule-worker/ui/RequestSheet";
 import {
   ScheduleAgenda,
   type AgendaEntry,
@@ -66,12 +79,38 @@ import {
  * 번 보낸다([근무 신청 내기](../../../../docs/2-design/modules/schedule/design.md#근무-신청-내기)).
  * 낙관적 업데이트가 아니라서 보내기가 실패해도 고른 날이 그대로 남는다.
  *
- * **아직 안 채운 넷.** 인증 상태 열과 현황 줄은 `check_ins` 표가 서는 attendance task 뒤에
- * 차고, 근무 취소·교대 요청 시트는 각각 다른 task가 낸다. 달 고르기 시트와 요청 온 날의 도는
- * 점선도 아직이다(`docs/3-build/plans/schedule-worker.md`의 AC-09).
+ * **날짜 하나에 문이 둘이다.** 그 날 내게 온 근무 요청이 살아 있으면 요청 시트가 열리고
+ * 아니면 명단 시트다 — 알림도 달력 칸도 같은 `?date=`로 들어오는데(「목적과 진입」) 요청에
+ * 답하는 것이 그 자리에서 할 일이라 명단을 한 번 더 지나게 하지 않는다.
+ *
+ * **늦은 수락은 오류 블록이 아니다.** 시트를 닫고 토스트로 말한 뒤 달력 아래 줄에 그 사건을
+ * 남긴다 — 되살아나지 않는 요청이라 시트에 붙잡아 둘 일이 없다(「실패와 경합」).
+ *
+ * **아직 안 채운 셋.** 인증 상태 열과 현황 줄은 `check_ins` 표가 서는 attendance task 뒤에
+ * 차고, 교대 요청 시트는 swap task가 낸다. 달 고르기 시트도 아직이다
+ * (`docs/3-build/plans/schedule-worker.md`의 AC-09).
  */
 
 const SKELETON_ROWS = [0, 1, 2];
+
+/** 「10월 17일」 — 달력 아래 줄의 사건 문구는 요일을 안 붙인다. */
+function bareDate(workDate: string): string {
+  const [, month, day] = workDate.split("-").map(Number);
+
+  return `${month}월 ${day}일`;
+}
+
+/** 요청 시트 부제 — 「10월 17일(토) · 안내 · 10:00 – 18:00」. */
+function requestSubtitle(request: SlotRequest): string {
+  const { positions, days } = request.slots;
+
+  return `${spellWorkDate(days.work_date)} · ${positions[0] ?? ""} · ${days.starts_at.slice(0, 5)} – ${days.ends_at.slice(0, 5)}`;
+}
+
+/** 늦은 수락이 달력 아래 줄에 남기는 사건 문구다. */
+function claimedLine(request: SlotRequest): string {
+  return `${bareDate(request.slots.days.work_date)} ${request.slots.positions[0] ?? ""} 자리는 다른 분이 맡았어요`;
+}
 
 const VIEW_OPTIONS = [
   {
@@ -104,11 +143,17 @@ export function ScheduleWorkerScreen({
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [toast, setToast] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const [claimed, setClaimed] = useState<string | null>(null);
+  const [answering, setAnswering] = useState<SlotRequest | null>(null);
 
   const { data: profile } = useMyProfile(supabase, me);
   const { data: monthWindow } = useMonthWindow(supabase, month);
   const { data: days } = useMonthSchedule(supabase, month);
   const { data: myDates } = useMyAvailability(supabase, month);
+  const { data: slotRequests } = useSlotRequests(supabase, month);
+  const { data: myCancelRequests } = usePendingApprovals(supabase);
+  const clockOffset = serverClockStore((at) => at.offset);
 
   const {
     mutate: send,
@@ -117,6 +162,23 @@ export function ScheduleWorkerScreen({
     isError: sendFailed,
     reset: resetSend,
   } = useSubmitAvailability(supabase);
+
+  const {
+    mutate: answer,
+    isPending: sendingAnswer,
+    isSuccess: answered,
+    isError: answerFailed,
+    error: answerError,
+    reset: resetAnswer,
+  } = useRespondRequest(supabase);
+
+  const {
+    mutate: askCancel,
+    isPending: sendingCancel,
+    isSuccess: cancelAsked,
+    isError: cancelFailed,
+    reset: resetCancel,
+  } = useCreateCancelRequest(supabase);
 
   const myProfileId = profile?.id ?? null;
 
@@ -131,6 +193,7 @@ export function ScheduleWorkerScreen({
       setMonth(asked);
     }
     setOpenDate(dateParam ?? null);
+    setCancelling(false);
   }, [monthParam, dateParam]);
 
   useEffect(() => {
@@ -154,6 +217,44 @@ export function ScheduleWorkerScreen({
     setToast("보내지 못했어요. 다시 시도해주세요");
     resetSend();
   }, [sendFailed, resetSend]);
+
+  useEffect(() => {
+    if (!answered) {
+      return;
+    }
+
+    setAnswering(null);
+    setOpenDate(null);
+    resetAnswer();
+  }, [answered, resetAnswer]);
+
+  /**
+   * 늦은 수락만 시트를 닫는다. 통신이 끊긴 것은 다시 누를 자리가 시트 안이라 열어 둔다.
+   */
+  useEffect(() => {
+    if (
+      !answerFailed ||
+      !(answerError instanceof DomainError) ||
+      answerError.code !== "slot_full"
+    ) {
+      return;
+    }
+
+    setClaimed(answering === null ? null : claimedLine(answering));
+    setAnswering(null);
+    setOpenDate(null);
+    setToast("자리가 찼어요");
+    resetAnswer();
+  }, [answerFailed, answerError, answering, resetAnswer]);
+
+  useEffect(() => {
+    if (!cancelAsked) {
+      return;
+    }
+
+    setCancelling(false);
+    resetCancel();
+  }, [cancelAsked, resetCancel]);
 
   useEffect(() => {
     if (openDate === null) {
@@ -193,13 +294,56 @@ export function ScheduleWorkerScreen({
   const goMonth = (step: number) => {
     setMonth(shiftMonth(month, step));
     setOpenDate(null);
+    setCancelling(false);
+    setClaimed(null);
     setExpanded([]);
   };
+
+  const requestsOf = useMemo(() => {
+    const byDate = new Map<string, SlotRequest[]>();
+
+    for (const request of slotRequests ?? []) {
+      const date = request.slots.days.work_date;
+
+      byDate.set(date, [...(byDate.get(date) ?? []), request]);
+    }
+
+    return byDate;
+  }, [slotRequests]);
+
+  const serverNowMs = nowWithOffset(Date.now(), clockOffset);
 
   const openDay = dayOf.get(openDate ?? "") ?? null;
   const openRoster = openDay === null ? [] : rosterOfDay(openDay);
   const openMine =
     openDay === null ? null : myAssignmentOf(openDay.assignments, myProfileId);
+
+  const openRequest =
+    openDate === null || myProfileId === null
+      ? null
+      : ((requestsOf.get(openDate) ?? []).find((request) =>
+          request.request_candidates.some(
+            (candidate) =>
+              candidate.profile_id === myProfileId &&
+              candidate.status === "pending",
+          ),
+        ) ?? null);
+
+  const myShift =
+    openDay === null || myProfileId === null
+      ? null
+      : (openDay.assignments.find(
+          (assignment) =>
+            assignment.profile_id === myProfileId &&
+            assignment.kind === "regular" &&
+            assignment.ended_at === null,
+        ) ?? null);
+
+  const cancelAsking = (myCancelRequests ?? []).some(
+    (request) => request.assignment_id === myShift?.id,
+  );
+
+  const myBadge = cancelRequestBadge(cancelAsking) ?? undefined;
 
   const agendaEntries: AgendaEntry[] = (days ?? [])
     .map((day) => {
@@ -230,15 +374,33 @@ export function ScheduleWorkerScreen({
       isMyAssignment:
         day !== undefined &&
         myAssignmentOf(day.assignments, myProfileId) !== null,
-      hasIncomingRequest: false,
+      hasIncomingRequest: hasIncomingRequest(
+        requestsOf.get(date) ?? [],
+        myProfileId,
+      ),
       showMineOnly,
     });
   };
 
-  const pressDay = (date: string) =>
-    collecting
-      ? setSelected(toggleSelectedDate(selected, date))
-      : setOpenDate(date);
+  const anyIncoming = [...requestsOf.keys()].some((date) =>
+    hasIncomingRequest(requestsOf.get(date) ?? [], myProfileId),
+  );
+
+  const calendarNote =
+    claimed ??
+    (anyIncoming
+      ? "점이 내 근무, 도는 점선이 근무 요청이에요"
+      : "점이 내 근무예요");
+
+  const pressDay = (date: string) => {
+    if (collecting) {
+      setSelected(toggleSelectedDate(selected, date));
+      return;
+    }
+
+    setCancelling(false);
+    setOpenDate(date);
+  };
 
   const calendar = (
     <Card>
@@ -316,7 +478,10 @@ export function ScheduleWorkerScreen({
                     onToggle={(workDate) =>
                       setExpanded(toggleSelectedDate(expanded, workDate))
                     }
-                    onCancelShift={() => undefined}
+                    onCancelShift={(workDate) => {
+                      setOpenDate(workDate);
+                      setCancelling(true);
+                    }}
                     onRequestSwap={() => undefined}
                   />
                 </Card>
@@ -325,7 +490,7 @@ export function ScheduleWorkerScreen({
               )}
 
               <Text size="xs" tone="subtle">
-                점이 내 근무예요
+                {calendarNote}
               </Text>
             </>
           ) : (
@@ -366,25 +531,75 @@ export function ScheduleWorkerScreen({
         </BottomCTA>
       ) : null}
 
-      {openDay !== null ? (
-        <SheetLayer onDismiss={() => setOpenDate(null)}>
-          <DaySheet
-            title={spellWorkDate(openDay.work_date)}
-            subtitle={daySheetSubtitle(
-              openDay.starts_at,
-              openDay.ends_at,
-              rosterHeadcount(openRoster),
-            )}
-            rows={openRoster}
-            myProfileId={myProfileId}
-            showActions={canShowShiftActions({
-              isMyAssignment: openMine !== null,
-              workDate: openDay.work_date,
-              today,
+      {openRequest !== null ? (
+        <SheetLayer
+          onDismiss={() => {
+            setOpenDate(null);
+            resetAnswer();
+          }}
+        >
+          <RequestSheet
+            subtitle={requestSubtitle(openRequest)}
+            state={requestSheetState({
+              closedAt: openRequest.closed_at,
+              expiresAt: openRequest.expires_at,
+              serverNowMs,
             })}
-            onCancelShift={() => undefined}
-            onRequestSwap={() => undefined}
+            sending={sendingAnswer}
+            failed={answerFailed}
+            onDecline={() => {
+              setAnswering(openRequest);
+              answer({ requestId: openRequest.id, answer: "decline" });
+            }}
+            onAccept={() => {
+              setAnswering(openRequest);
+              answer({ requestId: openRequest.id, answer: "accept" });
+            }}
           />
+        </SheetLayer>
+      ) : openDay !== null ? (
+        <SheetLayer
+          onDismiss={() => {
+            setOpenDate(null);
+            setCancelling(false);
+            resetCancel();
+          }}
+        >
+          {cancelling && myShift !== null ? (
+            <CancelShiftSheet
+              title={`근무 취소 · ${spellWorkDate(openDay.work_date)} ${myShift.position}`}
+              sending={sendingCancel}
+              failed={cancelFailed}
+              onSend={(reason) =>
+                askCancel({ assignmentId: myShift.id, reason })
+              }
+            />
+          ) : (
+            <DaySheet
+              title={spellWorkDate(openDay.work_date)}
+              subtitle={daySheetSubtitle(
+                openDay.starts_at,
+                openDay.ends_at,
+                rosterHeadcount(openRoster),
+              )}
+              rows={openRoster}
+              myProfileId={myProfileId}
+              myBadge={myBadge}
+              showActions={canShowShiftActions({
+                isMyAssignment: openMine !== null,
+                workDate: openDay.work_date,
+                today,
+              })}
+              actionsEnabled={canShowShiftActions({
+                isMyAssignment: openMine !== null,
+                workDate: openDay.work_date,
+                today,
+                hasActiveCancelRequest: cancelAsking,
+              })}
+              onCancelShift={() => setCancelling(true)}
+              onRequestSwap={() => undefined}
+            />
+          )}
         </SheetLayer>
       ) : null}
 

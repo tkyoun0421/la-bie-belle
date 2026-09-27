@@ -3,6 +3,7 @@ import { Modal, View } from "react-native";
 import { cn } from "@/shared/lib/utils";
 import { Scrim } from "@/shared/ui/BottomSheet";
 import { Button } from "@/shared/ui/Button";
+import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
 
 /**
@@ -25,12 +26,18 @@ import { Text } from "@/shared/ui/Text";
  *
  * 덮개는 투명도가 토큰 안에 들어 있어 따로 얹지 않는다. 시트와 같은 면이라 `BottomSheet`의
  * `Scrim`을 그대로 쓴다.
+ *
+ * **`notice`는 여기서 보낸 것이 실패했을 때 선다.** 자리는 하단 버튼 위고 Dialog는 안 닫힌다 —
+ * 확인을 받으려고 연 자리에서 그 확인이 통신에 실패한 것이라 사람이 다시 누를 자리가 여기여야
+ * 한다(`docs/2-design/system/screens/approvals.md`의 「통신에 실패했을 때」). 본문과 달리
+ * 알림 블록이라 오류라는 것이 색과 아이콘으로도 읽힌다.
  */
 
 export type DialogProps = {
   visible: boolean;
   title?: string;
   children?: ReactNode;
+  notice?: string;
   closeLabel?: string | null;
   onClose: () => void;
   confirmLabel: string;
@@ -45,6 +52,7 @@ export function Dialog({
   visible,
   title,
   children,
+  notice,
   closeLabel = "닫기",
   onClose,
   confirmLabel,
@@ -81,6 +89,11 @@ export function Dialog({
             >
               {children}
             </Text>
+          ) : null}
+          {notice ? (
+            <NoticeBlock kind="error" className="mt-4 p-4">
+              {notice}
+            </NoticeBlock>
           ) : null}
           <View className="mt-5 flex-row gap-3">
             {closeLabel === null ? null : (

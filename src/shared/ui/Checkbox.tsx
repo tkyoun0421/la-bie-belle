@@ -17,6 +17,10 @@ import { Text } from "@/shared/ui/Text";
  *
  * 상자는 18px 그대로 두고 `hitSlop`이 사방을 받아 닿는 면을 넓힌다. 라벨도 같이 눌린다 —
  * 상자만 눌리게 하면 손가락이 18px 과녁을 맞혀야 한다.
+ *
+ * **`labelHidden`은 글자만 감춘다.** 목록 줄 끝에 서는 상자가 그 자리다 — 줄이 이미 그
+ * 사람의 이름을 말하고 있어 같은 글자를 한 번 더 세우지 않는다. 읽어 주는 이름은 그대로
+ * `label`이라 화면 낭독기에는 안 감춰진다.
  */
 
 const BOX_SIZE = 18;
@@ -27,6 +31,7 @@ const HIT_SLOP = 12;
 
 export type CheckboxProps = Omit<PressableProps, "onPress" | "children"> & {
   label: string;
+  labelHidden?: boolean;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
   className?: string;
@@ -35,6 +40,7 @@ export type CheckboxProps = Omit<PressableProps, "onPress" | "children"> & {
 
 export function Checkbox({
   label,
+  labelHidden = false,
   checked,
   onCheckedChange,
   className,
@@ -69,9 +75,11 @@ export function Checkbox({
           />
         ) : null}
       </View>
-      <Text size="sm" tone={checked ? "neutral" : "subtle"}>
-        {label}
-      </Text>
+      {labelHidden ? null : (
+        <Text size="sm" tone={checked ? "neutral" : "subtle"}>
+          {label}
+        </Text>
+      )}
     </Pressable>
   );
 }

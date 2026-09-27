@@ -30,6 +30,9 @@ import {
  * 답한다.
  *
  * **교육 붙이기는 잠금과 무관하다.** 자리를 안 먹어 구조 변경이 아니다(SCH-012).
+ *
+ * **대기 배지는 카드 문구를 안 건드린다.** 비어 있다는 사실과 물어봤다는 사실은 다른 것이라
+ * 「비어 있어요」 위에 배지가 얹힌다. 합친 자리면 겸임 배지와 나란히 선다.
  */
 
 const LOCK_ICON_SIZE = 18;
@@ -47,6 +50,7 @@ export type PositionRowProps = {
   unlocked: boolean;
   canChangeStructure: boolean;
   nameOf: (profileId: string) => string;
+  requestBadgeOf: (slotId: string) => string | null;
   onToggleLock: () => void;
   onPressEducation: () => void;
   onPressSlot: (slotId: string) => void;
@@ -60,6 +64,7 @@ export function PositionRow({
   unlocked,
   canChangeStructure,
   nameOf,
+  requestBadgeOf,
   onToggleLock,
   onPressEducation,
   onPressSlot,
@@ -135,14 +140,22 @@ export function PositionRow({
         {slots.map((slot, index) => {
           const taken = assignmentForSlot(slot.id, assignments);
           const merged = slot.positions.length > 1;
+          const waiting = requestBadgeOf(slot.id);
           const card = (
             <SlotCard
               variant={taken === null ? "empty" : "filled"}
               testID={`schedule-slot-${position}-${index + 1}`}
               onPress={() => onPressSlot(slot.id)}
               right={
-                merged ? (
-                  <Badge label={slot.positions.join("·")} variant="brand" />
+                merged || waiting !== null ? (
+                  <View className="flex-row items-center gap-1">
+                    {merged ? (
+                      <Badge label={slot.positions.join("·")} variant="brand" />
+                    ) : null}
+                    {waiting === null ? null : (
+                      <Badge label={waiting} variant="neutral" />
+                    )}
+                  </View>
                 ) : undefined
               }
             >

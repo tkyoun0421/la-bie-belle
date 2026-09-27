@@ -3,6 +3,7 @@ import { useFonts } from "expo-font";
 import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef, useState } from "react";
+import { AppState } from "react-native";
 
 import "@/app/globals.css";
 import {
@@ -11,9 +12,11 @@ import {
   shouldRenderApp,
 } from "@/shared/lib/font-loading";
 import { queryClient } from "@/shared/lib/query-client";
+import { serverClockStore } from "@/shared/lib/server-clock-store";
 import { supabase } from "@/shared/lib/supabase";
 import { useTheme } from "@/shared/lib/useTheme";
 import { wireAutoRefresh } from "@/shared/lib/wire-auto-refresh";
+import { getServerNow } from "@/entities/clock/dals/get-server-now";
 import { decideEntry, type EntryDecision } from "@/features/auth/decide-entry";
 
 // 스플래시가 이미 내려간 뒤에 부르면 reject한다 — 그때는 막을 것도 없으니 삼킨다.
@@ -32,6 +35,11 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
  *
  * 서버 상태가 사는 `queryClient`도 여기서 트리에 앉는다. 로그아웃이 비우는 쪽과 화면이
  * 읽는 쪽이 같은 하나여야 해서 그 인스턴스는 `shared/lib`이 들고 있고 여기는 걸기만 한다.
+ *
+ * **서버 시각 오프셋은 스플래시를 안 기다린다.** 앱이 뜰 때와 앞으로 돌아올 때 한 번씩
+ * 재는데([runtime.md](../../docs/2-design/system/runtime.md#서버-시각)) 그 답을 기다리면
+ * 통신이 느린 자리에서 앱이 스플래시에 갇힌다 — 지난번에 잰 차이를 먼저 깔고 답이 오면
+ * 덮는다. 시각은 보여주기용이고 판정은 함수의 `now()`가 한다.
  */
 export default function RootLayout() {
   const router = useRouter();
@@ -46,6 +54,28 @@ export default function RootLayout() {
   useEffect(() => {
     void restoreTheme();
   }, [restoreTheme]);
+
+  useEffect(() => {
+    const clock = serverClockStore.getState();
+
+    void clock.restore();
+
+    const sync = () => {
+      void getServerNow(supabase)
+        .then((iso) => clock.adopt(iso, Date.now()))
+        .catch(() => {});
+    };
+
+    sync();
+
+    const subscription = AppState.addEventListener("change", (next) => {
+      if (next === "active") {
+        sync();
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   useEffect(() => {
     let abandoned = false;

@@ -16,6 +16,10 @@ import { Text } from "@/shared/ui/Text";
  *
  * **인증 상태는 모든 줄에서 같은 자리다.** 눈이 한 열로 훑어야 해서 「나」가 그 왼쪽에 서고
  * 상태가 오른쪽 끝을 잡는다. 창이 열리기 전에는 `status`가 안 와서 열이 통째로 없다.
+ *
+ * **`badge`는 그 줄에 걸린 요청을 말한다** — 「취소 요청 중」·「교대 요청 중」이다. 교육
+ * 배지가 그 사람이 무엇인지를 말하는 것과 달리 이쪽은 지금 무슨 답을 기다리는지라 「나」
+ * 옆에 붙는다.
  */
 
 const POSITION_COLUMN_WIDTH = 56;
@@ -27,6 +31,7 @@ export type RosterRowProps = {
   name?: string;
   training?: boolean;
   mine?: boolean;
+  badge?: string;
   status?: string;
   divider?: boolean;
   testID?: string;
@@ -37,6 +42,7 @@ export function RosterRow({
   name,
   training = false,
   mine = false,
+  badge,
   status,
   divider = false,
   testID,
@@ -72,6 +78,8 @@ export function RosterRow({
           나
         </Text>
       ) : null}
+
+      {badge === undefined ? null : <Badge variant="neutral" label={badge} />}
 
       {status === undefined ? null : (
         <View style={{ width: STATUS_COLUMN_WIDTH }}>
