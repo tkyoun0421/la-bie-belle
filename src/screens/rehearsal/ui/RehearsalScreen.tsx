@@ -21,13 +21,13 @@ import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
 import type { Rehearsal } from "@/entities/rehearsal/dals/get-my-rehearsals";
-import { useMyProfile } from "@/features/profile/model/useMyProfile";
-import { canAddOn } from "@/features/rehearsal/model/can-add-on";
-import { kindForDate } from "@/features/rehearsal/model/kind-for-date";
 import {
   dayTotal,
   monthTotal,
-} from "@/features/rehearsal/model/rehearsal-hours";
+} from "@/entities/rehearsal/model/rehearsal-hours";
+import { useMyProfile } from "@/features/profile/model/useMyProfile";
+import { canAddOn } from "@/features/rehearsal/model/can-add-on";
+import { kindForDate } from "@/features/rehearsal/model/kind-for-date";
 import { useAddRehearsal } from "@/features/rehearsal/model/useAddRehearsal";
 import { useAllRehearsals } from "@/features/rehearsal/model/useAllRehearsals";
 import { useEditRehearsal } from "@/features/rehearsal/model/useEditRehearsal";

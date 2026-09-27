@@ -1,4 +1,4 @@
-import type { AttendanceStatusInput } from "@/features/attendance/model/attendance-status";
+import type { AttendanceStatusInput } from "@/entities/attendance/model/attendance-status";
 import type { AttendanceSummary } from "@/features/attendance/model/attendance-summary";
 import {
   attendanceSummaryLine,
