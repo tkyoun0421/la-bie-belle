@@ -90,9 +90,10 @@ sources:
 **시급 함수 셋.** 셋 다 `security definer`, `set search_path = ''`, 첫 줄이 `is_admin()`이다.
 
 - `set_wage(p_profile_id uuid, p_amount integer)` — **적용일을 인자로 안 받는다.** 오늘이다([PAY-008](../../2-design/modules/payroll/README.md#pay-008)·[PAY-009](../../2-design/modules/payroll/README.md#pay-009)). `(profile_id, 오늘)`에 `follows_default = false`로 upsert한다
-- `reset_wage_to_default(p_profile_id uuid)` — 오늘 날짜에 지금 기본값과 `follows_default = true`로 upsert한다. 되돌린 날부터 다시 끈에 붙는다([PAY-014](../../2-design/modules/payroll/README.md#pay-014))
-- `set_default_wage(p_amount integer)` — `default_wage_rates`에 오늘 행을 넣고, **`follows_default = true`인 사람 전원**에게 같은 날 행을 같은 트랜잭션에 넣는다([PAY-013](../../2-design/modules/payroll/README.md#pay-013))
-  - 「따르는 사람」 판정은 **각자의 가장 최근 행**이 `follows_default = true`인지다. 지난 행이 아니라 지금 상태를 본다
+- `reset_wage_to_default(p_profile_id uuid)` — 오늘 날짜에 지금 기본값과 `follows_default = true`로 upsert한다. 되돌린 날부터 다시 끈에 붙는다([PAY-014](../../2-design/modules/payroll/README.md#pay-014)). 기본값이 아직 없으면 `no_default_wage`
+- `set_default_wage(p_amount integer)` — `default_wage_rates`에 오늘 행을 넣고, **기본을 따르는 사람 전원**에게 같은 날 행을 같은 트랜잭션에 넣는다([PAY-013](../../2-design/modules/payroll/README.md#pay-013))
+  - 「따르는 사람」은 둘이다. 하나는 **각자의 가장 최근 행**이 `follows_default = true`인 사람 — 지난 행이 아니라 지금 상태를 본다. 다른 하나는 **시급 이력이 아예 빈 승인 사원**이다([PAY-012](../../2-design/modules/payroll/README.md#pay-012)). 기본값이 서기 전에 승인된 사람이 여기 들어, 승인과 기본 시급의 순서로 결과가 갈리지 않는다
+  - 빈 쪽을 고를 때 `approved_at`이 있고 `rejected_at`·`blocked_at`·`left_at`·`erased_at`이 없는 사람만 본다. 승인 안 된 사람에게 시급이 서면 안 된다
 - 금액이 범위 밖이면 `bad_amount`. 상한 100,000원은 [wages.md](../../2-design/modules/payroll/screens/wages.md)가 화면에 건 값인데 **함수에도 건다** — 0을 하나 더 친 실수가 한 화면 너머에서 막히면 안 된다
 - **지난 줄을 고치는 함수가 없다.** 소급하는 길을 안 만든다([PAY-010](../../2-design/modules/payroll/README.md#pay-010))
 - 승인 함수가 첫 행(`follows_default = true`)을 넣는다 — [`account-data`](account-data.md)의 승인 함수에 그 줄이 는다. **`wage_rates`가 그 함수보다 늦게 서니 이 task가 그쪽을 고친다**
@@ -146,7 +147,7 @@ sources:
 
 ### AC-08
 
-**오류 코드 목록.** `bad_amount`가 `src/shared/api/error-codes.ts`와 마이그레이션 양쪽에 선다. `not_allowed`는 이미 있다.
+**오류 코드 목록.** `bad_amount`와 `no_default_wage`가 `src/shared/api/error-codes.ts`와 마이그레이션 양쪽에 선다. `not_allowed`는 이미 있다.
 
 ## 변경 파일
 
@@ -155,7 +156,7 @@ sources:
 | `supabase/migrations/<날짜>_payroll.sql` | 표 넷, RLS, 권한 회수 | AC-01·AC-02 |
 | `supabase/migrations/<날짜>_payroll_functions.sql` | 함수 여섯 | AC-03~AC-05 |
 | `supabase/migrations/<날짜>_approve_wage_row.sql` | 승인 함수에 첫 시급 행 | AC-03 |
-| `src/shared/api/error-codes.ts` | `bad_amount` | AC-08 |
+| `src/shared/api/error-codes.ts` | `bad_amount`·`no_default_wage` | AC-08 |
 | `src/features/payroll/model/*.ts`·`__tests__/` | 금액 계산·9시간 기준·기간 합계 | AC-06 |
 | `src/entities/payroll/dals/*.ts`·`__tests__/` | 읽기 하나, 쓰기 다섯 | AC-07 |
 | `src/entities/attendance/model/attendance-status.ts`·`__tests__/`(이동) | `features/attendance/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
@@ -190,6 +191,9 @@ sources:
 | AC-03 | 같은 날 두 번 바꿔 이력이 둘 선다 | integration `src/entities/payroll/dals/__tests__/payroll-functions.integration.test.ts` | 위와 같다 | 행이 하나, 값이 나중 것 |
 | AC-03 | 기본을 바꿔도 따르는 사람이 안 바뀐다 | integration 위 | 위와 같다 | 따르는 전원에게 같은 날 행, 개별로 정한 사람은 그대로 |
 | AC-03 | 0을 하나 더 친다 | integration 위 | 위와 같다 | 1,200,000원이면 `bad_amount` |
+| AC-03 | 기본 시급보다 먼저 승인된 사람이 계산 밖에 남는다 | integration 위 | 위와 같다 | 기본값 없이 승인하면 행이 없다가, 기본 시급이 처음 서는 순간 그 사람에게도 오늘 행이 선다 |
+| AC-03 | 안 받은 사람에게 시급이 선다 | integration 위 | 위와 같다 | 미승인·거절·차단·퇴사자는 기본 시급을 처음 세워도 행이 안 생긴다 |
+| AC-03 | 되돌릴 기본값이 없는데 되돌린다 | integration 위 | 위와 같다 | `no_default_wage` — `bad_amount`가 아니다 |
 | AC-04 | 조정이 덮어써서 이력이 사라진다 | integration 위 | 위와 같다 | 두 번 부르면 행이 둘, 계산은 마지막 |
 | AC-04 | 배정 없는 사람에게 조정이 붙는다 | integration 위 | 위와 같다 | `not_allowed` |
 | AC-05 | 받기가 손으로 넣은 임시공휴일을 지운다 | integration 위 | 위와 같다 | 다시 받아도 `manual` 행이 남는다 |
@@ -199,7 +203,7 @@ sources:
 | AC-06 | 결근 판정이 두 벌이라 어긋난다 | unit 위 | `pnpm test` | 조정 든 결근과 안 든 결근이 같은 금액(0) |
 | AC-06 | 그날 시급을 잘못 고른다 | unit 위 | `pnpm test` | 8월 1일에 올리면 7월은 옛 값, 8월 1일부터 새 값 |
 | AC-06 | 달을 걸친 주가 한 달에 통째로 든다 | unit 위 | `pnpm test` | 8월 31일 하루만 8월, 9월 1일부터 엿새는 9월 |
-| AC-08 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/error-codes.test.ts` | `pnpm test` | `bad_amount`가 양쪽에 있다 |
+| AC-08 | 코드 목록과 마이그레이션이 어긋난다 | unit `tests/lint/error-codes.test.ts` | `pnpm test` | `bad_amount`와 `no_default_wage`가 양쪽에 있다 |
 
 - 배정하지 않은 것: 실제 한 달치 데이터로 금액이 관리자의 손 계산과 맞는지 — 첫 달 운영에서 대조한다. 앱이 내는 것이 예상치라 이 대조가 곧 규칙 검증이다
 - 막힌 것: 지금은 없다
