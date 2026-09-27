@@ -308,7 +308,7 @@ export function PendingScreen() {
 
   if (stage === "celebrating") {
     return (
-      <Screen floor="plain" className="items-center justify-center px-6">
+      <Screen floor="plain" className="items-center justify-center px-5">
         <CelebrationCircle name={values.name} photoUrl={values.photoUrl} />
         <Text size="2xl" weight="semibold" className="mt-6">
           {values.name}님, 반가워요
@@ -324,7 +324,7 @@ export function PendingScreen() {
       <Screen
         floor="plain"
         style={{ paddingBottom: SCREEN_BOTTOM_PADDING + insets.bottom }}
-        className="px-6"
+        className="px-5"
       >
         <View className="flex-1 items-center justify-center">
           {rejected ? (
@@ -403,7 +403,7 @@ export function PendingScreen() {
           }
         />
 
-        <View className="flex-1 px-6">
+        <View className="flex-1 px-5">
           <Text size="sm" tone="subtle">
             {open === null
               ? "아래 정보가 맞나요? 틀린 부분을 누르면 다시 적을 수 있어요"

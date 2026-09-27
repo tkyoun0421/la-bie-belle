@@ -40,4 +40,11 @@ if (seeded.profile) {
   output.profileGender = seeded.profile.gender;
   output.profileBirthDate = seeded.profile.birthDate;
   output.profilePhone = seeded.profile.phone;
+  // 화면은 원값이 아니라 한글 문구·조사 뗀 날짜로 보여준다
+  // (profile.md 문안 표, members-pending.md 상세 시트와 같은 표기). profile.yaml이
+  // 원값 대신 이 둘을 쓴다 — "male"·"1990-11-05"는 화면 어디에도 그대로 안 뜬다.
+  output.profileGenderLabel =
+    seeded.profile.gender === "female" ? "여성" : "남성";
+  const [birthYear, birthMonth, birthDay] = seeded.profile.birthDate.split("-");
+  output.profileBirthDateLabel = `${birthYear}년 ${Number(birthMonth)}월 ${Number(birthDay)}일`;
 }

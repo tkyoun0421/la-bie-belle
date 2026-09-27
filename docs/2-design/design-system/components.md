@@ -314,7 +314,8 @@ bg-bg-neutral rounded-xl shadow-card p-5
 | --- | --- | --- |
 | 24px | 목록 줄 앞, 배지 옆 | `text-xs font-medium` |
 | 40px | ListRow의 왼쪽, 사람 픽커 | `text-base font-medium` |
-| 64px | 프로필 머리 | `text-2xl font-semibold` |
+| 64px | 시트의 프로필 머리 | `text-2xl font-semibold` |
+| 88px | [「나」](../modules/account/screens/profile.md#프로필-짜임)의 첫 카드 머리 | `text-3xl font-semibold` |
 
 모양은 `rounded-full`이다.
 
@@ -326,7 +327,7 @@ bg-bg-neutral rounded-xl shadow-card p-5
 
 ## 축하 원
 
-`CelebrationCircle` — 프로필을 보낸 뒤 「반가워요」 한 장의 112px 원과 둘레에서 터지는 조각 여덟이다([login.md](../modules/account/screens/login.md#프로필-작성-모션)). [Avatar](#avatar)가 아니다 — 사람 사진이 커진 것이 아니라 그 순간의 모션 조각이라 Avatar에 넷째 크기를 더하지 않았다. 3D 그림도 여기 안 선다([illustration.md](illustration.md)).
+`CelebrationCircle` — 프로필을 보낸 뒤 「반가워요」 한 장의 112px 원과 둘레에서 터지는 조각 여덟이다([login.md](../modules/account/screens/login.md#프로필-작성-모션)). [Avatar](#avatar)가 아니다 — 사람 사진이 커진 것이 아니라 그 순간의 모션 조각이라 Avatar에 그 크기를 더하지 않았다. 3D 그림도 여기 안 선다([illustration.md](illustration.md)).
 
 ## Illustration
 

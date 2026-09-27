@@ -17,11 +17,7 @@
 // 이 서버는 사용자를 만들고 관리자 권한을 올리는 일을 하므로 겨눈 곳이 어디인지가 전부다.
 
 import { createServer, type IncomingMessage, type Server } from "node:http";
-import {
-  createAdminUser,
-  createApprovedUser,
-  createLeftUser,
-} from "@tests/integration/postgres";
+import { createAdminUser, createLeftUser } from "@tests/integration/postgres";
 import {
   createSignedInUser,
   type SignedInUser,
@@ -36,8 +32,9 @@ const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost"]);
 const READ_FAILURE = "read_failure";
 
 /**
- * 거절된 사람의 다섯은 고정값이다. `tests/e2e/pending.yaml`이 굳은 글에 이 값이 그대로
- * 서는지 단언한다 — 사람 이름과 번호는 전부 가짜다.
+ * 프로필을 보낸 사람의 다섯은 고정값이다. `tests/e2e/pending.yaml`이 거절된 사람의 굳은
+ * 글에, `tests/e2e/profile.yaml`이 승인된 사람의 「나」 화면에 이 값이 그대로 서는지
+ * 단언한다 — 사람 이름과 번호는 전부 가짜다.
  */
 const SEEDED_PROFILE = {
   name: "박서연",
@@ -113,7 +110,7 @@ async function submitSeededProfile(user: SignedInUser): Promise<void> {
  * 열을 직접 채우면 e2e가 본 상태와 함수가 만드는 상태가 갈린다.
  */
 async function decideBy(
-  decision: "reject_member" | "block_member",
+  decision: "approve_member" | "reject_member" | "block_member",
   profileId: string,
 ): Promise<void> {
   const admin = await createAdminUser();
@@ -131,10 +128,6 @@ async function seededUser(
     return { user: await createLeftUser(), profile: null };
   }
 
-  if (state === "approved") {
-    return { user: await createApprovedUser(), profile: null };
-  }
-
   if (state === "admin") {
     return { user: await createAdminUser(), profile: null };
   }
@@ -146,6 +139,13 @@ async function seededUser(
   }
 
   await submitSeededProfile(user);
+
+  // 승인된 사람은 「나」 화면에서 자기 다섯을 본다(tests/e2e/profile.yaml). 열을 SQL로
+  // 직접 채우는 createApprovedUser로는 개인정보 행이 안 생겨 그 화면이 빈 줄로 선다 —
+  // 신청자를 만들어 관리자가 받는 실제 경로를 그대로 밟는다.
+  if (state === "approved") {
+    await decideBy("approve_member", user.profileId);
+  }
 
   if (state === "rejected") {
     await decideBy("reject_member", user.profileId);

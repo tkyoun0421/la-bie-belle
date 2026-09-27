@@ -12,16 +12,18 @@ import { Text } from "@/shared/ui/Text";
  * **사진을 브랜드로 감싸지 않는다.** 테두리도 링도 없다. 사진 자체가 색을 갖고 있어 무엇을
  * 더해도 소음이다.
  *
- * 크기가 셋뿐인 것은 서는 자리가 셋이라서다 — 24는 목록 줄 앞과 배지 옆, 40은 ListRow의 왼쪽과
- * 사람 픽커, 64는 프로필 머리다. 글자 크기가 원 크기를 따라가므로 그 밖의 값은 못 받는다.
+ * 크기가 넷뿐인 것은 서는 자리가 넷이라서다 — 24는 목록 줄 앞과 배지 옆, 40은 ListRow의 왼쪽과
+ * 사람 픽커, 64는 시트의 프로필 머리, 88은 「나」의 머리다. 글자 크기가 원 크기를 따라가므로
+ * 그 밖의 값은 못 받는다.
  */
 
-export type AvatarSize = 24 | 40 | 64;
+export type AvatarSize = 24 | 40 | 64 | 88;
 
 const INITIAL_TEXT: Record<AvatarSize, string> = {
   24: "font-medium text-xs",
   40: "font-medium text-base",
   64: "font-semibold text-2xl",
+  88: "font-semibold text-3xl",
 };
 
 export type AvatarProps = ViewProps & {

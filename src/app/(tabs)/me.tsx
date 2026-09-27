@@ -1,5 +1,3 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { ProfileScreen } from "@/screens/profile/ui/ProfileScreen";
 
-export default function Screen() {
-  return <NotBuiltYet path="/me" />;
-}
+export default ProfileScreen;

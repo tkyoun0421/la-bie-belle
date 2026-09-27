@@ -4,9 +4,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheet, Scrim } from "@/shared/ui/BottomSheet";
 
 /**
- * 화면 위에 덮개와 시트를 한 겹 얹는다. 가입 대기의 상세 시트와 차단한 사람의 확인 시트가
- * 같은 자리를 쓴다 — 시트 위에 시트를 쌓지 않는다는 결정이라
- * (`docs/2-design/modules/account/screens/members-pending.md`) 이 겹은 늘 하나다.
+ * 화면 위에 덮개와 시트를 한 겹 얹는다. 「나」의 시트 셋 — 연락처·사진·화면 — 이 같은 자리를
+ * 쓴다. 한 번에 하나만 서므로 이 겹도 늘 하나다.
  *
  * 덮개를 누르면 닫힌다. 안쪽 여백은 화면 좌우 여백과 같고 아래는 기기의 안전 영역만큼 더
  * 내려간다.

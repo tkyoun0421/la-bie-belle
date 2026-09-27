@@ -203,7 +203,7 @@ export function MembersPendingScreen() {
       />
 
       <ScrollView>
-        <View className="px-6 pb-6">
+        <View className="px-5 pb-5">
           {rows === null ? (
             <Card>
               {SKELETON_ROWS.map((at) => (
