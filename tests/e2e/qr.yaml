@@ -1,0 +1,112 @@
+# QR — 관리자가 QR 화면에 들어와 앱바·QR 그림·쓰기 시작한 날·버튼 셋을 보고,
+# 크게 띄워 근무자에게 보여준 뒤 되돌리고, 새로 뽑기를 확인 없이 닫아 아무것도
+# 안 바뀌는 것을 본 다음, 실제로 새로 뽑아 토스트까지 받는 것을 한 여정으로
+# 간다.
+#
+# 근거는 docs/2-design/spec/attendance-qr.md와
+# docs/2-design/modules/attendance/screens/qr.md(「QR 상태와 흐름」·「QR
+# 문안」)다. 배정받은 리스크는(attendance-qr-test-plan.md 「배정 → e2e」)
+#   - 관리자 홈에서 들어온 화면에 앱바·QR 그림·쓰기 시작한 날·버튼 셋이 선다
+#   - 크게 띄우기 → 앱바가 없어진다 → 닫기 → 원래 화면으로 되돌아온다
+#   - 새로 뽑기 → 확인 Dialog(제목·본문 두 문장) → 닫기 → 아무것도 안 바뀐다
+#   - 다시 새로 뽑기 → 새로 뽑기 → 토스트 「QR을 새로 뽑았어요」
+# 업무 규칙의 경우의 수(반경 200 상한·invalid_radius, rotate_qr의
+# not_allowed, hall_secrets 마이그레이션 등)는 test-planner가 이미
+# unit·integration으로 배정했다(attendance-qr-test-plan.md 「배정 →
+# unit」「배정 → integration」) — 여기서는 그 화면이 실제로 라우트·훅·API를
+# 잇는지만 본다.
+#
+# **hall_secrets는 빈 상태가 없다.** 마이그레이션
+# `20260927091507_hall_secrets_seed.sql`이 모든 홀에 첫 코드를 심어서, "admin"
+# 시드는 스케줄 계열 상태처럼 별도 payload를 안 보내도 이 화면이 곧장 값 있는
+# QR로 선다(attendance-qr-test-plan.md 총괄 판정 2번). 새 시드 상태를 더하지
+# 않는다.
+#
+# **쓰기 시작한 날은 마이그레이션이 도는 시점에 매인다.** 언제 이 플로우를
+# 돌리든 날짜가 다르니 "…부터 쓰고 있어요"는 정규식으로만 잡는다 — 실제 날짜
+# 값은 안 본다. 새로 뽑은 뒤에도 같은 정규식만 다시 확인한다 — 값이 오늘로
+# 바뀌었는지 정확한 날짜까지는 이 층에서 못 잰다(아래 「못 쓴 것」).
+#
+# **홀 위치 절은 이 화면에 같이 있지만 이 파일이 안 본다.** qr.md가 QR 버튼
+# 셋 아래에 두는 절인데, attendance-qr-test-plan.md 「범위 밖」이 명시로
+# 뺐다(hall-location task 몫). 아래 「못 쓴 것」에도 적는다.
+#
+# **내보내기는 안 누른다.** 기기의 공유 판이 뜨는 자리라 앱 밖이고 e2e가 볼
+# 수 있는 화면 밖이다(qr.md 「내보내기」 — "누르면 기기의 공유 판이
+# 올라온다"). 버튼이 있다는 것만 본다.
+#
+# **크게 띄우기는 앱바 부재로 확인한다.** qr.md 「QR 짜임」이 정상 화면의
+# 첫 조각을 앱바(뒤로 + "QR")로 두고 「크게 띄우기」 표는 "앱바가 없다"고
+# 못박는다 — 화면에서 "QR" 글자가 서는 자리는 이 앱바 제목 하나뿐이라
+# assertNotVisible로 그 부재를 본다. 되돌아오는 길은 접근성 라벨이 "닫기"인
+# 오른쪽 위 아이콘 버튼이다(approvals.yaml이 아이콘 버튼 "뒤로"를 라벨
+# 텍스트로 잡는 것과 같은 손). 이 아이콘 버튼을 실제로 누르는 손은 이번이
+# 처음이라 — 라벨을 보는 것과 눌러서 반응하는지는 다른 확인이라 — Maestro로
+# 한 번도 못 돌려봐서 먹히는지 확인이 안 됐다.
+#
+# **새로 뽑기 확인 Dialog의 오른쪽 버튼 "새로 뽑기"가 그 뒤에 깔린 화면의
+# 셋째 버튼과 글자가 완전히 같다.** members.yaml의 확인 Dialog들이나
+# schedule-admin.yaml의 확정 시트 버튼과 같은 자리라, 시트가 버튼 위에 겹쳐
+# 뜨는 동안 텍스트 셀렉터만으로는 어느 쪽을 눌렀는지 보장이 안 된다. 이
+# 파일은 testID `qr-rotate-confirm-button`로 그 버튼만 짚는다 — 아래 「이
+# task가 요청하는 testID」에 적는다.
+#
+# ## 이 task가 요청하는 testID
+#
+# - `qr-rotate-confirm-button` — 새로 뽑기 확인 Dialog의 오른쪽 버튼에
+#   `confirmTestID`로 얹는다. `src/shared/ui/Dialog.tsx`가 이미 그 자리를
+#   받고(`confirmTestID?: string`), `src/screens/members/ui/MemberDialog.tsx`의
+#   `MARK_LEAVE_CONFIRM_TEST_ID`가 같은 손을 쓴 전례다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/schedule-worker.yaml 머리말과 scripts/e2e-seed-server.mts를
+# 따른다. "admin" 상태는 이미 있다(스케줄이나 QR 전용 payload를 안 보낸다).
+# 딥링크는 navigation.md 「경로」의 "/admin/qr" 그대로다.
+#
+# 텍스트 셀렉터는 정규식이다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: admin
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://admin/qr"
+
+# --- 진입: 앱바 · QR 그림 자리 · 쓰기 시작한 날 · 버튼 셋 ---
+- assertVisible: "QR"
+- assertVisible: ".*부터 쓰고 있어요"
+- assertVisible: "내보내기"
+- assertVisible: "크게 띄우기"
+- assertVisible: "새로 뽑기"
+
+# --- 크게 띄우기 → 앱바가 없어진다 → 닫기 → 원래 화면으로 되돌아온다 ---
+- tapOn: "크게 띄우기"
+- assertNotVisible: "QR"
+- assertVisible: "닫기"
+- tapOn: "닫기"
+- assertVisible: "QR"
+- assertVisible: "내보내기"
+- assertVisible: "크게 띄우기"
+- assertVisible: "새로 뽑기"
+
+# --- 새로 뽑기 확인 → 닫기 → 아무것도 안 바뀐다 ---
+- tapOn: "새로 뽑기"
+- assertVisible: "QR을 새로 뽑을까요\\?"
+- assertVisible: "지금 QR이 바로 끝나요. 홀에 붙여둔 종이도 갈아야 해요"
+- assertVisible: "닫기"
+- tapOn: "닫기"
+- assertVisible: ".*부터 쓰고 있어요"
+- assertVisible: "새로 뽑기"
+
+# --- 다시 새로 뽑기 → 이번엔 실제로 새로 뽑는다 → 토스트 ---
+- tapOn: "새로 뽑기"
+- assertVisible: "QR을 새로 뽑을까요\\?"
+- tapOn:
+    id: "qr-rotate-confirm-button"
+- assertVisible: "QR을 새로 뽑았어요"
+- assertVisible: ".*부터 쓰고 있어요"

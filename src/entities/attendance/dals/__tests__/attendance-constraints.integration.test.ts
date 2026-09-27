@@ -190,6 +190,13 @@ describe("출근 인증 표 제약", () => {
       execSql("delete from public.hall_secrets where hall_id = :'hall_id';\n", {
         hall_id: baseHallId,
       });
+
+      // 20260927091507_hall_secrets_seed.sql 이 홀마다 행 하나를 심어 「빈 상태가 없다」를
+      // 보장한다. 지운 자리를 안 되돌리면 이 파일 뒤에 도는 스위트가 그 전제를 잃는다.
+      execSql(
+        "insert into public.hall_secrets (hall_id, qr_code) values (:'hall_id', :'qr_code');\n",
+        { hall_id: baseHallId, qr_code: randomUUID() },
+      );
     });
   });
 });
