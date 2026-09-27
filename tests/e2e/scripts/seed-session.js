@@ -8,7 +8,11 @@
 // "read_failure" | "schedule_submission_window" | "schedule_confirmed" |
 // "schedule_admin_empty_month" | "schedule_admin_race_open" |
 // "schedule_admin_confirmable" | "schedule_admin_confirmed" |
-// "schedule_admin_applications" | "schedule_assign_day" 중 하나다. NAME은 선택이고, 프로필을
+// "schedule_admin_applications" | "schedule_assign_day" |
+// "schedule_admin_request_slot" | "schedule_worker_request_pending" |
+// "schedule_worker_request_claimed" | "schedule_approvals_cancel_pending" 중
+// 하나다(마지막 넷은 schedule-requests task가 더한다 — 계약은
+// tests/e2e/schedule-admin.yaml·schedule-worker.yaml·approvals.yaml 머리말). NAME은 선택이고, 프로필을
 // 보내는 상태에서 그 사람의 이름을 고른다 — 한 화면에 승인된 사람을 여럿 세우는
 // members.yaml이 쓴다. 안 주면 시드 서버의 기본 이름이다. MONTH·DAY도 선택이고
 // schedule_admin_race_open만 쓴다 — 이미 로그인된 세션 밖에서 먼저 열 날짜다.
@@ -126,4 +130,34 @@ if (seeded.day) {
 // 정규식 특수문자가 없지만 표기가 바뀌어도 안 깨지게 둔다.
 if (seeded.failedOpenDayLabel) {
   output.failedOpenDayLabel = escapeForTextSelector(seeded.failedOpenDayLabel);
+}
+
+// schedule_worker_request_claimed 전용이다(schedule-requests task,
+// tests/e2e/schedule-worker.yaml 머리말). 늦은 수락 뒤 달력 아래 줄에 남는 사건
+// 문구다 — "10월 1일 안내 자리는 다른 분이 맡았어요" 꼴로 화면에 그대로 찍힌다.
+if (seeded.slotClaimedLabel) {
+  output.slotClaimedLabel = escapeForTextSelector(seeded.slotClaimedLabel);
+}
+
+// schedule_approvals_cancel_pending 전용 넷이다(schedule-requests task,
+// tests/e2e/approvals.yaml 머리말) — 승인할 일 목록 줄, 상세 시트 제목, 근무
+// 취소 확인 Dialog 본문. 전부 화면에 그대로 찍히는 문구라 이스케이프한다.
+if (seeded.approvalListTitle) {
+  output.approvalListTitle = escapeForTextSelector(seeded.approvalListTitle);
+}
+
+if (seeded.approvalDetailTitle) {
+  output.approvalDetailTitle = escapeForTextSelector(
+    seeded.approvalDetailTitle,
+  );
+}
+
+if (seeded.approvalConfirmBody) {
+  output.approvalConfirmBody = escapeForTextSelector(
+    seeded.approvalConfirmBody,
+  );
+}
+
+if (seeded.approvalDayAppbar) {
+  output.approvalDayAppbar = escapeForTextSelector(seeded.approvalDayAppbar);
 }
