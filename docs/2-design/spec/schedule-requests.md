@@ -72,7 +72,7 @@ sources:
 
 - 전제: 관리자. `/admin/approvals`에 근무 취소 요청이 있다
 - 행동: 줄을 눌러 승인하거나 거절한다
-- 관찰 결과: 승인하면 그 배정이 닫히고 **그 자리로 넘어간다**(`/admin/schedule?date=&from=approvals`) — 빈 자리를 바로 채우라는 뜻이다. 거절은 이유가 **필수**고 그 글이 근무자에게 그대로 간다. 거절해도 근무는 그대로 남고 목록에 머문다
+- 관찰 결과: 승인하면 그 배정이 닫히고 **그 자리로 넘어간다**(`/admin/schedule?date=&from=approvals`) — 빈 자리를 바로 채우라는 뜻이다. 거절은 이유가 **필수**고 그 글이 근무자에게 그대로 간다. 거절해도 근무는 그대로 남고 목록에 머문다 — 머무는 것은 관리자다(승인처럼 날 상세로 넘어가지 않는다). 처리한 줄은 승인이든 거절이든 목록에서 빠진다([approvals.md 「끝난 뒤」](../system/screens/approvals.md#끝난-뒤))
 - 검증 층: e2e
 - 근거: [approvals.md](../system/screens/approvals.md), [design.md 「근무 취소 요청과 판정」](../modules/schedule/design.md#근무-취소-요청과-판정)
 
