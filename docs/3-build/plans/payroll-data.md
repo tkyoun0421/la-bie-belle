@@ -51,7 +51,7 @@ sources:
 정본에서 확인한 다섯이 plan의 방향을 정한다.
 
 - **저장된 금액이 없다.** 확정해 잠그는 행이 없어([PAY-020](../../2-design/modules/payroll/README.md#pay-020)) 앱이 매번 다시 계산한다. 이 task가 내는 것은 금액 표가 아니라 순수 함수 하나다. 근무를 고치면 지난주 금액이 따라 바뀌는 것이 규칙이지 버그가 아니다
-- **결근을 다시 짜지 않는다.** [`attendance-data`](attendance-data.md#ac-06)가 상태 여섯을 내는 순수 함수를 이미 냈다. 여기서 또 짜면 두 벌이 서고 어긋날 때 어느 쪽이 정본인지가 사라진다. **그 함수를 import해서 쓴다**
+- **결근을 다시 짜지 않는다.** [`attendance-data`](attendance-data.md#ac-06)가 상태 여섯을 내는 순수 함수를 이미 냈다. 여기서 또 짜면 두 벌이 서고 어긋날 때 어느 쪽이 정본인지가 사라진다. **그 함수를 import해서 쓴다**. 그 함수와 [`rehearsal`](rehearsal.md#ac-04)의 `rehearsalHours`는 지금 `features/`에 있어 `features/payroll`이 못 부른다 — 같은 층의 다른 슬라이스다(lint 규칙 3). **둘을 `entities/<도메인>/model/`로 내린다** — 결근 판정도 리허설 시간 환산도 그 도메인의 규칙이고, `attendance-status.ts`가 쓰는 상수는 이미 `entities/attendance/model/constants.ts`에 산다. `features/payroll`이 아래 층을 부르는 것은 허용이다. 옮기는 것은 자리뿐이고 함수와 단언은 그대로다
 - **결근은 조정 표에 음수로 산다.** 「결근」이라는 값을 따로 두지 않는다 — 관리자가 결근을 고르면 화면이 그날 배정 시간만큼의 음수를 `adjustments.minutes`에 넣는다([조정](../../2-design/modules/payroll/design.md#조정)). 합산 뒤 0분이 되어 그날이 급여에서 빠진다
 - **리허설은 조정이 아니다.** 주인이 달라 표를 안 섞는다 — 조정은 관리자가 쓰고 리허설은 본인이 쓴다. 계산이 배정·조정·리허설 셋을 더하고 그 하나로 9시간 기준을 본다([PAY-028](../../2-design/modules/payroll/README.md#pay-028))
 - **기본 시급이 끈이다.** 승인될 때 한 번 복사되는 첫값이 아니다([PAY-013](../../2-design/modules/payroll/README.md#pay-013)). `set_default_wage`가 따르는 사람 전원에게 같은 날 행을 **한 트랜잭션에** 넣어, 계산은 `wage_rates` 한 표만 읽고 RLS도 한 표에만 건다
@@ -136,11 +136,11 @@ sources:
 
 ### AC-07
 
-**dal.** 읽기 하나와 쓰기 여섯이다.
+**dal.** 읽기 하나와 쓰기 다섯이다.
 
 - `getPayrollMonth(month)` — 키 `['payroll', 'YYYY-MM']`. `wage_rates`·`adjustments`·`excuse_status`를 그달치로 받는다. 배정과 날은 `['schedule', 'YYYY-MM']`, 리허설은 `['rehearsal', 'YYYY-MM']`이라 **화면이 세 키를 읽어 [AC-06](#ac-06)에 넣는다**
 - `wage_rates`는 RLS가 좁혀 근무자에게 자기 행만 온다. 같은 dal이 관리자에게는 전원을 낸다 — 조건을 코드로 안 나눈다
-- 쓰기 여섯은 `supabase.rpc()`를 감싼다. `import_holidays`는 클라이언트에서 안 부른다 — dal이 없다
+- 쓰기 다섯은 `supabase.rpc()`를 감싼다. 함수는 여섯인데 dal이 다섯인 것은 `import_holidays`를 클라이언트에서 안 불러서다 — [`payroll-holidays`](payroll-holidays.md)의 cron이 부른다
 - 성공하면 `['payroll']`을 무효화한다([무효화 표](../../2-design/system/runtime.md#무효화-표))
 
 ### AC-08
@@ -156,7 +156,9 @@ sources:
 | `supabase/migrations/<날짜>_approve_wage_row.sql` | 승인 함수에 첫 시급 행 | AC-03 |
 | `src/shared/api/error-codes.ts` | `bad_amount` | AC-08 |
 | `src/features/payroll/model/*.ts`·`__tests__/` | 금액 계산·9시간 기준·기간 합계 | AC-06 |
-| `src/entities/payroll/dals/*.ts`·`__tests__/` | 읽기 하나, 쓰기 여섯 | AC-07 |
+| `src/entities/payroll/dals/*.ts`·`__tests__/` | 읽기 하나, 쓰기 다섯 | AC-07 |
+| `src/entities/attendance/model/attendance-status.ts`·`__tests__/`(이동) | `features/attendance/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
+| `src/entities/rehearsal/model/rehearsal-hours.ts`·`__tests__/`(이동) | `features/rehearsal/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
 | `tests/integration/postgres.ts` | 급여 시드 헬퍼 | 검증 표 |
 
 ## 구현 순서
@@ -183,8 +185,8 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-02 | 남의 시급이 보인다 | integration `tests/integration/payroll-rls.test.ts`(예정) | `pnpm test:integration:run` | `wage_rates`는 본인·관리자만, `default_wage_rates`는 관리자만 |
-| AC-03 | 같은 날 두 번 바꿔 이력이 둘 선다 | integration `tests/integration/payroll-functions.test.ts`(예정) | 위와 같다 | 행이 하나, 값이 나중 것 |
+| AC-02 | 남의 시급이 보인다 | integration `src/entities/payroll/dals/__tests__/payroll-rls.integration.test.ts` | `pnpm test:integration:run` | `wage_rates`는 본인·관리자만, `default_wage_rates`는 관리자만 |
+| AC-03 | 같은 날 두 번 바꿔 이력이 둘 선다 | integration `src/entities/payroll/dals/__tests__/payroll-functions.integration.test.ts` | 위와 같다 | 행이 하나, 값이 나중 것 |
 | AC-03 | 기본을 바꿔도 따르는 사람이 안 바뀐다 | integration 위 | 위와 같다 | 따르는 전원에게 같은 날 행, 개별로 정한 사람은 그대로 |
 | AC-03 | 0을 하나 더 친다 | integration 위 | 위와 같다 | 1,200,000원이면 `bad_amount` |
 | AC-04 | 조정이 덮어써서 이력이 사라진다 | integration 위 | 위와 같다 | 두 번 부르면 행이 둘, 계산은 마지막 |
