@@ -112,11 +112,12 @@ sources:
 
 **공휴일 함수 둘.**
 
-- `import_holidays(p_year integer, p_rows jsonb)` — **`internal`이다.** 사람이 부르는 자리가 없고 Edge Function이 서비스 키로 온다([서비스 키 자리](../../2-design/system/data-access.md#서비스-키-자리))
+- `import_holidays(p_year integer, p_rows jsonb)` — **`internal`이다.** `p_rows`의 원소는 `{ "holiday_date": "2026-03-01", "name": "삼일절" }` 꼴이다 — 표의 열 이름을 그대로 쓴다 사람이 부르는 자리가 없고 Edge Function이 서비스 키로 온다([서비스 키 자리](../../2-design/system/data-access.md#서비스-키-자리))
   - 그 해의 `api` 행을 지우고 새로 넣는다. **`manual` 행은 안 건드린다**
   - `p_rows`가 비었으면 아무것도 안 한다 — 지우고 안 넣는 일이 없어야 한다
 - `set_holiday(p_date date, p_on boolean)` — `public`이고 첫 줄이 `is_admin()`이다. 참이면 `manual` 행을 넣고 거짓이면 지운다
   - 같은 날짜에 `api` 행이 이미 있으면 **아무것도 안 한다.** 이미 공휴일이다
+  - **근무를 여는 날인지 다시 검사하지 않는다**([PAY-027](../../2-design/modules/payroll/README.md#pay-027)). 그 조건은 표시하는 화면이 들고, 계산이 `holidays`를 안 읽어 근무 없는 날의 행은 아무 값도 안 바꾼다
 - 계산이 `holidays`를 안 읽는다([PAY-024](../../2-design/modules/payroll/README.md#pay-024)). 데이터만 모은다
 
 ### AC-06
