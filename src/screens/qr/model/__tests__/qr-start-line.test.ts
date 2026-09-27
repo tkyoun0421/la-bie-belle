@@ -13,8 +13,8 @@ describe("qrStartLine — 지금 코드를 쓰기 시작한 날을 KST로 알린
     );
   });
 
-  it("KST 자정 직전(15:29)이면 아직 전날이다", () => {
-    expect(qrStartLine("2026-03-01T15:29:00Z")).toBe(
+  it("KST 자정 직전(14:59)이면 아직 전날이다", () => {
+    expect(qrStartLine("2026-03-01T14:59:00Z")).toBe(
       "2026년 3월 1일부터 쓰고 있어요",
     );
   });
