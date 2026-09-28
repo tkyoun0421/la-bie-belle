@@ -26,7 +26,7 @@
 | `wage_rates` | 본인 행과 관리자 |
 | `default_wage_rates` | 관리자 |
 
-키는 `['payroll', 'YYYY-MM']`이고 `wage_rates`·`adjustments`·`excuse_status`를 그달치로 받는다. 배정과 날은 `['schedule', 'YYYY-MM']`을, 리허설은 `['rehearsal', 'YYYY-MM']`을 같이 쓴다 — 급여 화면이 세 키를 읽고 순수 함수에 넣는다. 리허설이 `['schedule']`에 안 실리는 까닭은 [schedule/design.md](../schedule/design.md#소유-데이터)에 있다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
+키는 `['payroll', 'YYYY-MM']`이고 `wage_rates`·`adjustments`·`excuse_status`·`holidays`를 그달치로 받는다. 배정과 날은 `['schedule', 'YYYY-MM']`을, 리허설은 `['rehearsal', 'YYYY-MM']`을 같이 쓴다 — 급여 화면이 세 키를 읽고 순수 함수에 넣는다. 리허설이 `['schedule']`에 안 실리는 까닭은 [schedule/design.md](../schedule/design.md#소유-데이터)에 있다. 무효화 키는 행위마다 적고 공통 규칙은 [system/runtime.md](../../system/runtime.md#무효화-표)에 있다.
 
 급여 달과 근무표 달이 같은 달력 달이라([PAY-022](README.md#pay-022)) 급여 한 달이 `['schedule']` 한 달만 읽는다.
 
@@ -39,6 +39,8 @@
 ### 조정
 
 `adjustments(day_id, profile_id, minutes, reason, adjusted_by, adjusted_at)`. 그날 그 사람에 붙는다 — 인증과 같은 이유다. 이력이 남는다고 domain이 정했으니 같은 날 두 번 손보면 새 행이고 계산은 마지막 행을 쓴다.
+
+`reason`은 화면이 고른 갈래 이름이다 — 「결근」·「연장」·「원래대로」 셋이고 사람에게 사유를 묻지 않는다([schedule-admin.md](../schedule/screens/schedule-admin.md#근무-조정)). 표에 제약은 안 건다. 갈래를 `minutes`의 부호로 다시 읽으면 되는데도 값을 남기는 것은 이력 표라서다 — 0분 행이 「원래대로」인지 「연장 0분」인지는 부호로 못 가른다.
 
 `minutes`가 더할 분이다. 연장이면 양수, 결근이면 그날 배정 시간을 지우는 음수다 — 「결근」이라는 값을 따로 두지 않고 관리자가 결근을 고르면 화면이 그날 배정 시간만큼의 음수를 넣는다. 그래서 합산 뒤 0분이 되고 그날이 급여에서 빠진다([PAY-003](README.md#pay-003)).
 
@@ -54,7 +56,7 @@
 
 ### 공휴일
 
-`holidays(holiday_date, name, source)`. 지금 계산은 안 쓰고 데이터만 모은다.
+`holidays(holiday_date, name, source)`. 지금 계산은 안 쓰고 데이터만 모은다. 읽는 자리는 날 상세의 임시공휴일 스위치 하나고, 달치 키 `['payroll', 'YYYY-MM']`이 나머지 셋과 같이 싣는다 — 한 달에 많아야 서너 행이라 키를 따로 세울 값이 아니고, `set_holiday`의 무효화도 이미 `['payroll']`이다. 같은 날짜에 `api` 행과 `manual` 행이 같이 설 수 있어(받기가 `manual`을 안 지운다) 읽기는 둘을 합치지 않고 그대로 준다 — 잠금 판정이 `api`의 유무만 본다.
 
 `source`가 `api`와 `manual`을 가른다 — 앞은 해마다 한 번 공공 API에서 받은 것이고 뒤는 관리자가 날 상세에서 표시한 임시공휴일이다([PAY-027](README.md#pay-027)). 가르는 이유는 받기 규칙이 뒤에 바뀌어 이미 받은 해를 다시 받게 될 때 손으로 넣은 값이 조용히 사라지지 않게 하는 것이다 — 받기는 `api` 행만 덮는다.
 
