@@ -42,6 +42,6 @@
 
 **루프가 사람을 부르는 자리 넷은 그대로다.** 실기기 확인(카탈로그·화면·테마·끌기·서버 시각 복귀·e2e), NCP 대표 계정과 지도 키·`customStyleId`(`attendance-checkin` 착수 전), 3D 석 장(`no-schedule`·`all-clear`·`server-error`), 로컬 Supabase 구글 프로바이더.
 
-회차 기록은 [docs/log/2026-09-27.md](log/2026-09-27.md)다. 첫 절(#409~#423)이 룩앤필 기준점 이동과 화면 task 넷을, 둘째 절(#424~#435)이 근무표 모듈 전체와 `attendance-qr`을, 셋째 절(#437~#443)이 `attendance-checkin` spec 정정·`rehearsal`·저장소 검사 고침 셋·`payroll-data`를 다룬다.
+회차 기록은 [docs/log/2026-09-28.md](log/2026-09-28.md)다. `payroll-wages`(#446, 앞 회차 마지막)를 이어받아 `payroll-view`(#448)와 `payroll-adjust`(#451)가 서고 급여 모듈이 닫힌다. 그 앞은 [docs/log/2026-09-27.md](log/2026-09-27.md)다 — 첫 절(#409~#423)이 룩앤필 기준점 이동과 화면 task 넷을, 둘째 절(#424~#435)이 근무표 모듈 전체와 `attendance-qr`을, 셋째 절(#437~#443)이 `attendance-checkin` spec 정정·`rehearsal`·저장소 검사 고침 셋·`payroll-data`를 다룬다.
 
 저장소 밖 자료 — 시안·문서 캔버스 [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)(빌드 소스는 세션 임시 폴더라 다시 못 만든다), 하루 띠 비교 시안 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832).
