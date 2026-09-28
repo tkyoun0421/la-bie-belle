@@ -39,11 +39,22 @@ jest.unstable_mockModule(
   { virtual: true },
 );
 
+const getFirstScheduleMonthMock =
+  jest.fn<(...args: unknown[]) => Promise<string | null>>();
+
+jest.unstable_mockModule(
+  "@/entities/schedule/dals/get-first-schedule-month",
+  () => ({
+    getFirstScheduleMonth: getFirstScheduleMonthMock,
+    firstScheduleMonthKey: () => ["schedule", "first-month"],
+  }),
+);
+
 const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useWorkMonths, useAttendanceMonths } =
+const { useWorkMonths, useAttendanceMonths, useFirstScheduleMonth } =
   await import("@/features/stats/api/useStatsQueries");
 
 function createWrapper() {
@@ -59,7 +70,7 @@ function createWrapper() {
     );
   }
 
-  return { wrapper };
+  return { wrapper, queryClient };
 }
 
 const FAKE_CLIENT = {} as never;
@@ -82,6 +93,7 @@ const TWELVE_MONTHS = Array.from(
 beforeEach(() => {
   getMonthScheduleMock.mockReset();
   getMonthAttendanceMock.mockReset();
+  getFirstScheduleMonthMock.mockReset();
 });
 
 describe("useWorkMonths — 근무 탭은 달마다 getMonthSchedule만 부른다", () => {
@@ -173,5 +185,37 @@ describe("useAttendanceMonths — 결과가 달마다 구분돼 돌아온다", (
     expect(result.current.data?.[0]?.attendance.checkIns).toHaveLength(2);
     expect(result.current.data?.[1]?.month).toBe("2026-09");
     expect(result.current.data?.[1]?.attendance.checkIns).toHaveLength(0);
+  });
+});
+
+describe("useFirstScheduleMonth — 키가 달을 안 물어 근무표 캐시 무효화에 그대로 얹힌다", () => {
+  it("쿼리 캐시가 firstScheduleMonthKey()의 값인 ['schedule','first-month'] 자리에 값을 담는다", async () => {
+    getFirstScheduleMonthMock.mockResolvedValue("2026-01-01");
+    const { wrapper, queryClient } = createWrapper();
+
+    const { result } = renderHook(() => useFirstScheduleMonth(FAKE_CLIENT), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(queryClient.getQueryData(["schedule", "first-month"])).toBe(
+      "2026-01-01",
+    );
+  });
+});
+
+describe("useFirstScheduleMonth — 근무표가 하나도 없으면 달 줄이 더는 뒤로 못 간다", () => {
+  it("getFirstScheduleMonth가 null이면 훅의 data도 null이다", async () => {
+    getFirstScheduleMonthMock.mockResolvedValue(null);
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => useFirstScheduleMonth(FAKE_CLIENT), {
+      wrapper,
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toBeNull();
   });
 });

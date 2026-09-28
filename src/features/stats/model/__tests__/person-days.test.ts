@@ -25,9 +25,32 @@ describe("computePersonDays — 한 사람의 날짜별 근무가 날짜순으�
     const result = computePersonDays("p1", ASSIGNMENTS, DAYS);
 
     expect(result.days).toEqual([
-      { workDate: "2026-09-01", position: "메인", minutes: 480 },
-      { workDate: "2026-09-03", position: "안내", minutes: 360 },
+      { workDate: "2026-09-01", position: "메인", minutes: 480, label: "메인" },
+      {
+        workDate: "2026-09-03",
+        position: "안내",
+        minutes: 360,
+        label: "안내 교육",
+      },
     ]);
+  });
+});
+
+describe("computePersonDays — 교육 배정은 어느 포지션의 교육이었는지를 한 줄에 적는다(stats.md 「근무 내역 시트」)", () => {
+  it("김지우(p1)의 9월 3일 교육 배정은 label이 '안내 교육'이다 — position만으로는 교육인지가 안 드러난다", () => {
+    const result = computePersonDays("p1", ASSIGNMENTS, DAYS);
+    const trainingRow = result.days.find(
+      (row) => row.workDate === "2026-09-03",
+    );
+
+    expect(trainingRow?.label).toBe("안내 교육");
+  });
+
+  it("정규 배정은 label이 포지션 이름 그대로다 — '메인 교육'처럼 안 붙는다", () => {
+    const result = computePersonDays("p1", ASSIGNMENTS, DAYS);
+    const regularRow = result.days.find((row) => row.workDate === "2026-09-01");
+
+    expect(regularRow?.label).toBe("메인");
   });
 });
 
@@ -56,7 +79,12 @@ describe("computePersonDays — 겸임인 날은 앞 포지션만 낸다", () =>
     const result = computePersonDays("p2", ASSIGNMENTS, DAYS);
 
     expect(result.days).toEqual([
-      { workDate: "2026-09-02", position: "드레스실", minutes: 480 },
+      {
+        workDate: "2026-09-02",
+        position: "드레스실",
+        minutes: 480,
+        label: "드레스실",
+      },
     ]);
   });
 });

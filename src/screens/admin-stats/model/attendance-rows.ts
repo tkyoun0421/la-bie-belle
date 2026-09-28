@@ -1,8 +1,8 @@
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
 import {
   tallyMonthlyAttendance,
   type MonthlyAttendanceTally,
-} from "@/features/attendance/model/attendance-summary";
+} from "@/entities/attendance/model/attendance-summary";
+import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
 import {
   buildAttendanceInputs,
   type AttendanceInputCheckIn,

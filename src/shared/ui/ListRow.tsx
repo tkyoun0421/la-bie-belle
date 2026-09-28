@@ -14,6 +14,10 @@ import { Text } from "@/shared/ui/Text";
  * 「이 값을 보려고 이 화면에 왔는가」다. 화살표를 단 줄은 눌러야 나오는 줄이라 `valueTone`의
  * 기본값이 `chevron`을 따라가고, 둘이 어긋나는 자리만 `valueTone`을 직접 준다.
  *
+ * **값이 0인 줄은 셋째 색이다**(`fg.neutral-subtle`). 자리를 지키려고 남은 줄이라 답도
+ * 미리보기도 아니다 — 통계의 아무도 안 선 포지션이 그 자리다. 0을 답과 같은 색으로 두면
+ * 목록을 훑을 때 값이 있는 줄과 구별이 안 간다.
+ *
  * **오른쪽에 동작이 서는 줄은 `right`를 받는다.** 차단한 사람 목록의 「차단 풀기」가 그
  * 자리다 — 값도 화살표도 아니고 그 줄에서 바로 누르는 버튼이라 줄이 통째로 눌리지 않는다.
  * `value`·`chevron`과 같이 쓰지 않는다.
@@ -34,7 +38,13 @@ import { Text } from "@/shared/ui/Text";
 
 const ROW_ICON_SIZE = 20;
 
-export type ListRowValueTone = "answer" | "preview";
+export type ListRowValueTone = "answer" | "preview" | "zero";
+
+const VALUE_TONE_CLASSES: Record<ListRowValueTone, string> = {
+  answer: "text-fg-neutral",
+  preview: "text-fg-neutral-muted",
+  zero: "text-fg-neutral-subtle",
+};
 
 export type ListRowProps = Omit<PressableProps, "children"> & {
   title: string;
@@ -97,12 +107,7 @@ export function ListRow({
         ) : null}
       </View>
       {value ? (
-        <Text
-          className={cn(
-            "text-base",
-            tone === "answer" ? "text-fg-neutral" : "text-fg-neutral-muted",
-          )}
-        >
+        <Text className={cn("text-base", VALUE_TONE_CLASSES[tone])}>
           {value}
         </Text>
       ) : null}

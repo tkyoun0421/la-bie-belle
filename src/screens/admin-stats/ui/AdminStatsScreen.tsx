@@ -32,8 +32,6 @@ import {
   useAttendanceMonths,
   useFirstScheduleMonth,
   useWorkMonths,
-  type AttendanceMonth,
-  type WorkMonth,
 } from "@/features/stats/api/useStatsQueries";
 import { computePersonDays } from "@/features/stats/model/person-days";
 import { buildTrend, trendMonths } from "@/features/stats/model/trend";
@@ -47,6 +45,13 @@ import {
   buildAttendanceTab,
   type AttendanceTab,
 } from "@/screens/admin-stats/model/attendance-rows";
+import {
+  attendanceValues,
+  monthIn,
+  percentLabel,
+  workValues,
+  NO_VALUE,
+} from "@/screens/admin-stats/model/chart-values";
 import {
   canGoBack,
   canGoForward,
@@ -84,11 +89,7 @@ const EMPTY_DESCRIPTION = "근무를 넣으면 여기 숫자가 서요";
 
 const READ_FAILED = "통계를 불러오지 못했어요";
 
-const NO_VALUE = "–";
-
 const AVATAR_SIZE = 40;
-
-const PERCENT = 100;
 
 const SKELETON_ROWS = [0, 1, 2];
 
@@ -319,6 +320,7 @@ export function AdminStatsScreen() {
                           title={row.position}
                           detail={`${row.count}건`}
                           value={hoursLabel(row.minutes)}
+                          valueTone={row.minutes === 0 ? "zero" : "answer"}
                         />
                       ),
                     }))}
@@ -390,7 +392,7 @@ export function AdminStatsScreen() {
             name={personName}
             rows={personDays.days.map((row) => ({
               key: `${row.workDate}-${row.position}`,
-              title: `${spellDate(row.workDate)} · ${row.position}`,
+              title: `${spellDate(row.workDate)} · ${row.label}`,
               value: hoursLabel(row.minutes),
             }))}
             total={`합계 · ${personDays.totalCount}회 · ${hoursLabel(personDays.totalMinutes)}`}
@@ -413,61 +415,4 @@ function SectionHeader({ label }: { label: string }) {
       </View>
     </View>
   );
-}
-
-function monthIn<Loaded extends { month: string }>(
-  loaded: Loaded[] | undefined,
-  month: string,
-): Loaded | undefined {
-  return loaded?.find((one) => one.month === month);
-}
-
-/**
- * 날이 하나도 안 열린 달은 값이 없다 — 0으로 이으면 그 달에 일을 안 한 것으로 읽힌다
- * (`stats.md` 「추이 그래프」).
- */
-function workValues(loaded: WorkMonth[] | undefined): Map<string, number> {
-  return new Map(
-    (loaded ?? [])
-      .filter((one) => one.days.length > 0)
-      .map((one) => {
-        const inputs = workInputsOf(one.days);
-
-        return [
-          one.month,
-          computeWorkTotals(inputs.assignments, inputs.days).totalMinutes,
-        ];
-      }),
-  );
-}
-
-function attendanceValues(
-  loaded: AttendanceMonth[] | undefined,
-  tabs: ReadonlyMap<string, AttendanceTab>,
-): Map<string, number> {
-  return new Map(
-    (loaded ?? []).flatMap((one) => {
-      const rate = attendanceRate(tabs.get(one.month));
-
-      return rate === null ? [] : [[one.month, rate] as [string, number]];
-    }),
-  );
-}
-
-/** 출근율은 인증이 실제로 얼마나 도는지다 — 출근 인정을 출근에 안 얹는다(ATT-023). */
-function attendanceRate(tab: AttendanceTab | undefined): number | null {
-  if (tab === undefined) {
-    return null;
-  }
-
-  const { present, late, absent, excused } = tab.tally;
-  const counted = present + late + absent + excused;
-
-  return counted === 0 ? null : Math.round((present / counted) * PERCENT);
-}
-
-function percentLabel(tab: AttendanceTab): string {
-  const rate = attendanceRate(tab);
-
-  return rate === null ? NO_VALUE : `${rate}%`;
 }

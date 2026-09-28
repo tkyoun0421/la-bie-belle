@@ -270,13 +270,12 @@
 #   눌러도 달이 안 바뀐다"를 확인하려면 탭할 손잡이가 이것뿐이다. 손짓
 #   테스트(components.md 「집기」)의 조각들과 달리 이 그래프는 지금까지 이
 #   화면에서 처음 서는 조각이라 testID가 아예 없다.
-# - `stats-attendance-legend` — 근태 탭의 범례 한 줄(비율 띠 아래). 몫이 0인
-#   갈래가 빠지는지를 보려면 이 줄의 정확한 텍스트를 봐야 하는데, 그 위 현황
-#   줄("출근 n · 지각 n · 출근 인정 n · 결근 n")이 0을 어떻게 적는지가 문서에
-#   없어(아래 「이슈」) 같은 낱말("결근"·숫자)이 화면 두 자리에 설 수 있다.
-#   Maestro의 텍스트 단언은 화면 전체를 보므로 범례 줄만 짚어 정확한 문자열을
-#   대조하려면 이 id가 필요하다 — `id`와 `text`를 같이 주는 선택자로 그 줄 하나만
-#   본다.
+# - `stats-attendance-legend-<몫>` — 근태 탭 범례의 칸 하나(비율 띠 아래).
+#   `RatioBand`가 몫마다 `${testID}-legend-${key}`를 글자에 실어 준다(띠 쪽
+#   `${testID}-share-${key}`와 같은 꼴). 그 위 현황 줄("출근 n · 지각 n · 출근
+#   인정 n · 결근 n")에 같은 낱말과 숫자가 이미 서 있어, 컨테이너 id에 글자만
+#   맞추면 범례가 안 그려져도 현황 줄이 대신 통과시킨다. 몫이 0인 달에
+#   `assertNotVisible`로 그 칸의 부재를 보는 것도 이 id라야 된다.
 #
 # **`repeat` 커맨드를 한 번도 못 돌려봤다.** Maestro 문서상 `repeat: {times, commands}`
 # 문법인데, 이 저장소의 다른 플로우는 아직 안 쓴다 — CLI로 실제 파싱되는지 확인한
@@ -418,9 +417,22 @@ appId: com.labiebelle.app
 - assertVisible: "지각 1"
 - assertVisible: "출근 인정 1"
 - assertVisible: "결근 1"
+
+# 범례는 몫마다 "라벨 값" 한 칸이 제 id로 선다 — "·" 이음표는 현황 줄에만
+# 있고 범례엔 없다(RatioBand.tsx의 legend map). 칸마다 id가 있어 위 현황
+# 줄의 같은 글자가 대신 통과시키지 못한다. 넷 다 몫이 있어 넷 다 선다.
 - assertVisible:
-    id: "stats-attendance-legend"
-    text: "출근 1 · 인정 1 · 지각 1 · 결근 1"
+    id: "stats-attendance-legend-present"
+    text: "출근 1"
+- assertVisible:
+    id: "stats-attendance-legend-excused"
+    text: "인정 1"
+- assertVisible:
+    id: "stats-attendance-legend-late"
+    text: "지각 1"
+- assertVisible:
+    id: "stats-attendance-legend-absent"
+    text: "결근 1"
 
 # --- 근태 줄은 안 눌린다 ---
 - tapOn: "강태오"
@@ -435,9 +447,20 @@ appId: com.labiebelle.app
 - assertVisible: "${output.statsSecondMonthLabel}"
 - assertVisible: "출근 2"
 - assertVisible: "지각 1"
+
+# 결근·출근 인정 두 몫이 0이라 범례에서 아예 빠진다(entry.share.value > 0
+# 필터, RatioBand.tsx) — 남은 둘만 칸으로 선다. 없어진 둘은 id로 짚어
+# 부재를 단언한다: 글자로 보면 위 현황 줄의 "결근 0"이 걸릴 수 있다.
 - assertVisible:
-    id: "stats-attendance-legend"
-    text: "출근 2 · 지각 1"
+    id: "stats-attendance-legend-present"
+    text: "출근 2"
+- assertVisible:
+    id: "stats-attendance-legend-late"
+    text: "지각 1"
+- assertNotVisible:
+    id: "stats-attendance-legend-excused"
+- assertNotVisible:
+    id: "stats-attendance-legend-absent"
 
 # --- 같은 달, 근무 탭으로 돌아가 총계가 달라졌는지 본다(달마다 따로 읽는다) ---
 - tapOn: "근무"

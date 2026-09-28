@@ -18,9 +18,18 @@
 // - 재직 여부는 이 함수의 입력에 없다 — 그달 배정이 있으면 무조건 byPerson에 선다
 //   (퇴사한 사람도 같다)
 
+import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
 import { POSITION_ORDER } from "@/entities/schedule/model/positions";
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
-import { computeWorkTotals } from "@/features/stats/model/work-totals";
+import {
+  computeWorkTotals,
+  dayMinutes,
+  hoursLabel,
+  isLiveAssignment,
+  workInputsOf,
+  type WorkAssignment,
+  type WorkDay,
+} from "@/features/stats/model/work-totals";
 
 describe("computeWorkTotals — 사람별 합·포지션별 합·전체 합이 같다", () => {
   it("byPerson 시간 합과 byPosition 시간 합이 totalMinutes와 같다", () => {
@@ -155,5 +164,152 @@ describe("computeWorkTotals — 배정도 날도 없으면 전부 0이다", () =
     expect(totals.totalMinutes).toBe(0);
     expect(totals.totalCount).toBe(0);
     expect(totals.byPosition.every((row) => row.minutes === 0)).toBe(true);
+  });
+});
+
+function scheduleDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
+  return {
+    id: "day-1",
+    work_date: "2026-09-01",
+    starts_at: "10:00:00",
+    ends_at: "18:00:00",
+    opened_at: "2026-09-01T00:00:00.000Z",
+    slots: [],
+    check_ins: [],
+    assignments: [],
+    ...overrides,
+  };
+}
+
+describe("workInputsOf — get-month-schedule이 실어 온 이름을 사람별 구획이 다시 안 읽고 그대로 옮긴다", () => {
+  it("assignment.profiles.display_name이 있으면 그 이름을 display_name으로 낸다", () => {
+    const inputs = workInputsOf([
+      scheduleDay({
+        assignments: [
+          {
+            id: "a1",
+            slot_id: null,
+            position: "메인",
+            kind: "regular",
+            profile_id: "p1",
+            ended_at: null,
+            profiles: { display_name: "김지우" },
+          },
+        ],
+      }),
+    ]);
+
+    expect(inputs.assignments).toEqual([
+      {
+        id: "a1",
+        day_id: "day-1",
+        profile_id: "p1",
+        display_name: "김지우",
+        position: "메인",
+        kind: "regular",
+        ended_at: null,
+      },
+    ]);
+  });
+
+  it("profiles가 null이면 display_name이 빈 문자열이다 — 프로필을 다시 읽으러 가지 않는다", () => {
+    const inputs = workInputsOf([
+      scheduleDay({
+        assignments: [
+          {
+            id: "a1",
+            slot_id: null,
+            position: "메인",
+            kind: "regular",
+            profile_id: "p1",
+            ended_at: null,
+            profiles: null,
+          },
+        ],
+      }),
+    ]);
+
+    expect(inputs.assignments[0]?.display_name).toBe("");
+  });
+
+  it("days는 work-totals가 쓰는 시각 필드 넷만 남기고 slots·check_ins는 안 딸려 온다", () => {
+    const inputs = workInputsOf([
+      scheduleDay({
+        slots: [{ id: "slot-1", positions: ["메인"], ended_at: null }],
+      }),
+    ]);
+
+    expect(inputs.days).toEqual([
+      {
+        id: "day-1",
+        work_date: "2026-09-01",
+        starts_at: "10:00:00",
+        ends_at: "18:00:00",
+      },
+    ]);
+  });
+
+  it("날이 없으면 assignments도 days도 빈 배열이다", () => {
+    const inputs = workInputsOf([]);
+
+    expect(inputs).toEqual({ assignments: [], days: [] });
+  });
+});
+
+describe("hoursLabel — 30분 꼬리를 반올림해 지우면 사람별 합과 포지션 합이 화면에서 안 맞아 보인다", () => {
+  it("480분은 정각이라 '8시간'이다", () => {
+    expect(hoursLabel(480)).toBe("8시간");
+  });
+
+  it("450분은 꼬리를 살려 '7.5시간'이다", () => {
+    expect(hoursLabel(450)).toBe("7.5시간");
+  });
+
+  it("0분은 '0시간'이다", () => {
+    expect(hoursLabel(0)).toBe("0시간");
+  });
+});
+
+const LIVE_ASSIGNMENT: WorkAssignment = {
+  id: "a1",
+  day_id: "day-1",
+  profile_id: "p1",
+  display_name: "김지우",
+  position: "메인",
+  kind: "regular",
+  ended_at: null,
+};
+
+describe("isLiveAssignment — 배정이 끝난 자국은 취소·교대로 넘어간 자리라 셈에서 빠질 대상이다", () => {
+  it("ended_at이 null이면 산 배정이라 true다", () => {
+    expect(isLiveAssignment(LIVE_ASSIGNMENT)).toBe(true);
+  });
+
+  it("ended_at이 차 있으면 false다", () => {
+    expect(
+      isLiveAssignment({
+        ...LIVE_ASSIGNMENT,
+        ended_at: "2026-09-05T00:00:00.000Z",
+      }),
+    ).toBe(false);
+  });
+});
+
+const BASE_DAY: WorkDay = {
+  id: "day-1",
+  work_date: "2026-09-01",
+  starts_at: "10:00:00",
+  ends_at: "18:00:00",
+};
+
+describe("dayMinutes — 그날 근무 시간은 마감에서 시작을 뺀 값이라 사람마다 다시 안 잰다", () => {
+  it("10:00:00~18:00:00은 480분이다", () => {
+    expect(dayMinutes(BASE_DAY)).toBe(480);
+  });
+
+  it("09:00:00~17:30:00처럼 30분 꼬리가 있으면 510분으로 그 꼬리가 그대로 남는다", () => {
+    expect(
+      dayMinutes({ ...BASE_DAY, starts_at: "09:00:00", ends_at: "17:30:00" }),
+    ).toBe(510);
   });
 });

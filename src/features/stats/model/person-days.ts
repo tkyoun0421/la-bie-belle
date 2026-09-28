@@ -16,13 +16,19 @@ import {
  * **겸임인 날도 한 줄이다.** 배정 하나가 줄 하나고 그 `position`이 이미 앞 포지션이라 두
  * 포지션을 다 적을 길이 없다 — 적으면 시간이 두 번 든 것처럼 읽힌다.
  *
+ * **교육 배정은 어느 포지션의 교육이었는지를 적는다** — 「안내 교육」 꼴이다. 그 글이
+ * `label`이고 `position`은 그대로 남는다 — 시트가 줄의 열쇠를 그것으로 짠다.
+ *
  * **날짜순이다.** 한 달을 따라 읽는 자리라 달력 순서가 그대로 순서고, 시간 긴 날이 위로 오지
  * 않는다.
  */
 
+const TRAINING_KIND = "training";
+
 export type PersonDayRow = {
   workDate: string;
   position: string;
+  label: string;
   minutes: number;
 };
 
@@ -53,6 +59,7 @@ export function computePersonDays(
             {
               workDate: day.work_date,
               position: assignment.position,
+              label: rowLabel(assignment),
               minutes: dayMinutes(day),
             },
           ];
@@ -64,4 +71,10 @@ export function computePersonDays(
     totalMinutes: rows.reduce((sum, row) => sum + row.minutes, 0),
     totalCount: rows.length,
   };
+}
+
+function rowLabel(assignment: WorkAssignment): string {
+  return assignment.kind === TRAINING_KIND
+    ? `${assignment.position} 교육`
+    : assignment.position;
 }
