@@ -368,19 +368,86 @@ export function seedAssignment(
   profileId: string,
   kind: "regular" | "training" = "training",
   slotId: string | null = null,
+  position: string = "안내",
 ): string {
   const id = randomUUID();
   const seatId =
     kind === "regular" && slotId === null ? seedSlot(dayId) : slotId;
   const slotSql = seatId === null ? "null" : `'${seatId}'`;
   execSql(
-    `insert into public.assignments (id, day_id, slot_id, position, profile_id, kind) values (:'id', :'day_id', ${slotSql}, '안내', :'profile_id', :'kind');\n`,
+    `insert into public.assignments (id, day_id, slot_id, position, profile_id, kind) values (:'id', :'day_id', ${slotSql}, :'position', :'profile_id', :'kind');\n`,
     {
       id,
       day_id: dayId,
       profile_id: profileId,
       kind,
+      position,
     },
+  );
+  return id;
+}
+
+/**
+ * 지난 달의 근무표·날·자리를 직접 꽂는 셋이다. `create_schedule`도 `open_day`도 오늘보다 이른
+ * 날짜를 거절해서(`date_past`) 급여 화면의 시드는 RPC로 못 만든다 — `backdateDeadline`과 같은
+ * 손이다.
+ *
+ * 결근은 저장하는 배치가 없다. 「인증 창이 닫혔고 그 뒤로 48시간이 지났다」를 그때그때 계산하는
+ * 값이라 진짜로 지나간 달력 날짜라야 결근한 날이 선다.
+ */
+export function seedPastSchedule(monthStart: string, createdBy: string): void {
+  execSql(
+    "insert into public.schedules (month, created_by) values (:'month', :'created_by')\n" +
+      "on conflict (month) do nothing;\n",
+    { month: monthStart, created_by: createdBy },
+  );
+}
+
+export function seedPastDay(
+  workDate: string,
+  monthStart: string,
+  startsAt: string,
+  endsAt: string,
+  openedBy: string,
+): void {
+  execSql(
+    "delete from public.days where work_date = :'work_date';\n" +
+      "insert into public.days (schedule_id, work_date, starts_at, ends_at, opened_by)\n" +
+      "select id, :'work_date', :'starts_at', :'ends_at', :'opened_by'\n" +
+      "from public.schedules where month = :'month';\n",
+    {
+      work_date: workDate,
+      starts_at: startsAt,
+      ends_at: endsAt,
+      month: monthStart,
+      opened_by: openedBy,
+    },
+  );
+}
+
+/**
+ * 그 날 제시간에 눌렀다는 사실이다. 지난 날은 인증 창이 이미 닫혀 이 행이 없으면 결근으로
+ * 판정된다(attendance/README.md) — 지난 달에 일한 날을 심으려면 배정과 이 행이 한 짝이다.
+ */
+export function seedCheckIn(
+  dayId: string,
+  profileId: string,
+  checkedAt: string,
+): void {
+  execSql(
+    "insert into public.check_ins (day_id, profile_id, checked_at, reported_at, received_at, method)\n" +
+      "values (:'day_id', :'profile_id', :'checked_at', :'checked_at', :'checked_at', 'qr')\n" +
+      "on conflict (day_id, profile_id) do nothing;\n",
+    { day_id: dayId, profile_id: profileId, checked_at: checkedAt },
+  );
+}
+
+/** 포지션 하나짜리 자리다. 내역 줄이 그 포지션을 그대로 적어(payroll.md 「내역 목록」) 자리와 배정이 같은 이름을 들어야 한다. */
+export function seedSlotOfPosition(dayId: string, position: string): string {
+  const id = randomUUID();
+  execSql(
+    "insert into public.slots (id, day_id, positions) values (:'id', :'day_id', array[:'position']);\n",
+    { id, day_id: dayId, position },
   );
   return id;
 }

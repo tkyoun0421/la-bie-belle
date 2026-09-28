@@ -7,7 +7,10 @@
 //
 // 배정이 없는 날은 attendance 판정 자체를 안 건다 — 배정 없이는 결근일 수 없다.
 
-import { payrollDays } from "@/features/payroll/model/payroll-days";
+import {
+  payrollDays,
+  payrollViewDays,
+} from "@/features/payroll/model/payroll-days";
 
 const RATES = [{ effective_date: "2026-08-01", amount: 12000 }];
 
@@ -232,8 +235,8 @@ describe("payrollDays — 교육 배정도 같은 규칙으로 급여가 난다(
   });
 });
 
-describe("payrollDays — 그날 시급이 없으면 결과에서 뺀다(wageAt이 null)", () => {
-  it("첫 시급 행보다 이른 날은 목록에 안 뜬다", () => {
+describe("payrollDays — 그날 시급이 없으면 'wage-pending'으로 선다(결과에서 안 뺀다)", () => {
+  it("첫 시급 행보다 이른 날은 분을 채운 채 금액 0원·kind='wage-pending'으로 뜬다", () => {
     const result = payrollDays(
       baseInput({
         days: [{ id: DAY_ID, work_date: WORK_DATE, ...NINE_HOUR_SHIFT }],
@@ -250,6 +253,322 @@ describe("payrollDays — 그날 시급이 없으면 결과에서 뺀다(wageAt�
       }),
     );
 
-    expect(result.find((day) => day.date === WORK_DATE)).toBeUndefined();
+    expect(result.find((day) => day.date === WORK_DATE)).toEqual({
+      date: WORK_DATE,
+      minutes: 540,
+      amount: 0,
+      kind: "wage-pending",
+    });
+  });
+});
+
+// payrollViewDays(source) — 세 키(급여 재료·근무표·리허설)를 payrollDays의 입력으로 접는다.
+// 화면이 profileId 하나만 들고 부르는 자리라 셋 중 하나가 비어도 죽지 않아야 하고, 날짜는
+// 세 갈래(배정·조정·리허설)의 합집합이어야 하고, 금액 계산 자체는 payrollDays를 그대로 불러야
+// 한다(다시 짜면 두 벌이 서서 어긋날 수 있다).
+
+describe("payrollViewDays — 근무표(days)가 비어도 리허설만으로 죽지 않는다", () => {
+  it("배정도 조정도 없이 리허설만 있으면 그 날짜가 뜬다", () => {
+    const rehearsalDate = "2026-09-11";
+    const result = payrollViewDays({
+      profileId: "profile-1",
+      days: [],
+      rates: [],
+      adjustments: [],
+      excuses: [],
+      rehearsals: [
+        {
+          work_date: rehearsalDate,
+          starts_at: "14:00",
+          ends_at: "16:00",
+          count: null,
+        },
+      ],
+      now: "2026-09-11T00:00:00.000Z",
+    });
+
+    expect(result).toEqual([
+      {
+        date: rehearsalDate,
+        minutes: 120,
+        amount: 0,
+        kind: "wage-pending",
+        position: null,
+        startsAt: null,
+        endsAt: null,
+        isEducation: false,
+        overtimeMinutes: 0,
+        rehearsalMinutes: 120,
+        attendance: null,
+      },
+    ]);
+  });
+});
+
+describe("payrollViewDays — 리허설이 비어도 배정만으로 죽지 않는다", () => {
+  it("배정과 출근만 있어도 그 날짜가 배정 시간대로 뜬다", () => {
+    const dayId = "day-view-1";
+    const workDate = "2026-09-10";
+
+    const result = payrollViewDays({
+      profileId: "profile-1",
+      days: [
+        {
+          id: dayId,
+          work_date: workDate,
+          starts_at: "10:00:00",
+          ends_at: "19:00:00",
+          opened_at: "2026-09-01T00:00:00.000Z",
+          slots: [],
+          assignments: [
+            {
+              id: "assignment-1",
+              slot_id: null,
+              position: "hall",
+              kind: "regular",
+              profile_id: "profile-1",
+              ended_at: null,
+              profiles: null,
+            },
+          ],
+          check_ins: [
+            {
+              id: "check-in-1",
+              profile_id: "profile-1",
+              checked_at: "2026-09-10T01:00:00.000Z",
+              reported_at: "2026-09-10T01:00:00.000Z",
+              received_at: "2026-09-10T01:00:00.000Z",
+            },
+          ],
+        },
+      ],
+      rates: [
+        {
+          effective_date: "2026-08-01",
+          amount: 12000,
+          profile_id: "profile-1",
+        },
+      ],
+      adjustments: [],
+      excuses: [],
+      rehearsals: [],
+      now: "2026-09-10T01:00:00.000Z",
+    });
+
+    expect(result.find((day) => day.date === workDate)).toMatchObject({
+      minutes: 540,
+      amount: 108000,
+      kind: "normal",
+      position: "hall",
+      startsAt: "10:00",
+      endsAt: "19:00",
+      rehearsalMinutes: 0,
+    });
+  });
+});
+
+describe("payrollViewDays — 시급(rates)이 비어도 안 죽고 wage-pending으로 뜬다", () => {
+  it("배정만 있고 시급이 없으면 금액 0원·kind='wage-pending'이다", () => {
+    const dayId = "day-view-2";
+    const workDate = "2026-09-10";
+
+    const result = payrollViewDays({
+      profileId: "profile-1",
+      days: [
+        {
+          id: dayId,
+          work_date: workDate,
+          starts_at: "10:00:00",
+          ends_at: "19:00:00",
+          opened_at: "2026-09-01T00:00:00.000Z",
+          slots: [],
+          assignments: [
+            {
+              id: "assignment-2",
+              slot_id: null,
+              position: "hall",
+              kind: "regular",
+              profile_id: "profile-1",
+              ended_at: null,
+              profiles: null,
+            },
+          ],
+          check_ins: [
+            {
+              id: "check-in-2",
+              profile_id: "profile-1",
+              checked_at: "2026-09-10T01:00:00.000Z",
+              reported_at: "2026-09-10T01:00:00.000Z",
+              received_at: "2026-09-10T01:00:00.000Z",
+            },
+          ],
+        },
+      ],
+      rates: [],
+      adjustments: [],
+      excuses: [],
+      rehearsals: [],
+      now: "2026-09-10T01:00:00.000Z",
+    });
+
+    expect(result.find((day) => day.date === workDate)).toMatchObject({
+      minutes: 540,
+      amount: 0,
+      kind: "wage-pending",
+    });
+  });
+});
+
+describe("payrollViewDays — 배정·조정·리허설 세 갈래의 날짜가 합집합으로 뜬다", () => {
+  it("배정만 있는 날, 리허설만 있는 날, 조정만 있는 날 셋이 모두 결과에 선다", () => {
+    const assignedDate = "2026-09-10";
+    const rehearsalOnlyDate = "2026-09-11";
+    const adjustmentOnlyDate = "2026-09-12";
+
+    const result = payrollViewDays({
+      profileId: "profile-1",
+      days: [
+        {
+          id: "day-assigned",
+          work_date: assignedDate,
+          starts_at: "10:00:00",
+          ends_at: "19:00:00",
+          opened_at: "2026-09-01T00:00:00.000Z",
+          slots: [],
+          assignments: [
+            {
+              id: "assignment-3",
+              slot_id: null,
+              position: "hall",
+              kind: "regular",
+              profile_id: "profile-1",
+              ended_at: null,
+              profiles: null,
+            },
+          ],
+          check_ins: [
+            {
+              id: "check-in-3",
+              profile_id: "profile-1",
+              checked_at: "2026-09-10T01:00:00.000Z",
+              reported_at: "2026-09-10T01:00:00.000Z",
+              received_at: "2026-09-10T01:00:00.000Z",
+            },
+          ],
+        },
+        {
+          id: "day-adjustment-only",
+          work_date: adjustmentOnlyDate,
+          starts_at: "10:00:00",
+          ends_at: "19:00:00",
+          opened_at: "2026-09-01T00:00:00.000Z",
+          slots: [],
+          assignments: [],
+          check_ins: [],
+        },
+      ],
+      rates: [
+        {
+          effective_date: "2026-08-01",
+          amount: 12000,
+          profile_id: "profile-1",
+        },
+      ],
+      adjustments: [
+        {
+          day_id: "day-adjustment-only",
+          minutes: 60,
+          adjusted_at: "2026-09-12T00:00:00.000Z",
+          profile_id: "profile-1",
+        },
+      ],
+      excuses: [],
+      rehearsals: [
+        {
+          work_date: rehearsalOnlyDate,
+          starts_at: "14:00",
+          ends_at: "16:00",
+          count: null,
+        },
+      ],
+      now: "2026-09-12T00:00:00.000Z",
+    });
+
+    expect(result.map((day) => day.date).sort()).toEqual(
+      [assignedDate, rehearsalOnlyDate, adjustmentOnlyDate].sort(),
+    );
+  });
+});
+
+describe("payrollViewDays — payrollDays를 다시 짜지 않고 그대로 부른다", () => {
+  it("같은 배정·시급 입력이면 date·minutes·amount·kind가 payrollDays 결과와 같다", () => {
+    const dayId = "day-parity";
+    const workDate = "2026-09-10";
+    const profileId = "profile-1";
+    const checkIn = {
+      checked_at: "2026-09-10T01:00:00.000Z",
+      reported_at: "2026-09-10T01:00:00.000Z",
+      received_at: "2026-09-10T01:00:00.000Z",
+    };
+    const now = "2026-09-10T01:00:00.000Z";
+    const rate = { effective_date: "2026-08-01", amount: 12000 };
+
+    const viewResult = payrollViewDays({
+      profileId,
+      days: [
+        {
+          id: dayId,
+          work_date: workDate,
+          starts_at: "10:00:00",
+          ends_at: "19:00:00",
+          opened_at: "2026-09-01T00:00:00.000Z",
+          slots: [],
+          assignments: [
+            {
+              id: "assignment-parity",
+              slot_id: null,
+              position: "hall",
+              kind: "regular",
+              profile_id: profileId,
+              ended_at: null,
+              profiles: null,
+            },
+          ],
+          check_ins: [
+            { id: "check-in-parity", profile_id: profileId, ...checkIn },
+          ],
+        },
+      ],
+      rates: [{ ...rate, profile_id: profileId }],
+      adjustments: [],
+      excuses: [],
+      rehearsals: [],
+      now,
+    }).map((day) => ({
+      date: day.date,
+      minutes: day.minutes,
+      amount: day.amount,
+      kind: day.kind,
+    }));
+
+    const rawResult = payrollDays({
+      days: [
+        {
+          id: dayId,
+          work_date: workDate,
+          starts_at: "10:00:00",
+          ends_at: "19:00:00",
+        },
+      ],
+      assignments: [{ day_id: dayId }],
+      adjustments: [],
+      checkIns: [{ day_id: dayId, ...checkIn }],
+      excuses: [],
+      rehearsals: [],
+      rates: [rate],
+      now,
+    });
+
+    expect(viewResult).toEqual(rawResult);
   });
 });

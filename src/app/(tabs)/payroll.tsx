@@ -1,5 +1,3 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { PayrollScreen } from "@/screens/payroll/ui/PayrollScreen";
 
-export default function Screen() {
-  return <NotBuiltYet path="/payroll" />;
-}
+export default PayrollScreen;

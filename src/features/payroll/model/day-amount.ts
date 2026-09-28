@@ -20,7 +20,8 @@ export type DayAmount = {
   kind: DayKind;
 };
 
-const REGULAR_MINUTES = 540;
+/** 1배로 세는 몫의 상한이다. 넘는 몫이 연장이고, 화면이 그 초과분을 줄에 적는다. */
+export const REGULAR_MINUTES = 540;
 
 const SCALE = 120;
 

@@ -1,0 +1,433 @@
+# 급여 — 근무자가 자기 급여를 주·월·연으로 보고, 연 목록에서 달을 짚어 들어가고,
+# 퇴사한 사람도 지난 급여에 닿는 것을 한 여정씩 본다.
+#
+# 근거는 docs/2-design/spec/payroll-view.md(AC-01·AC-02·AC-04·AC-05·AC-06과 상태 격자의
+# 빈 상태)와 docs/2-design/modules/payroll/screens/payroll.md(「급여 조회 문안」 표가
+# 문구의 정본)다. 배정받은 리스크는(총괄이 이 e2e-test-writer에게 준 「쓸 것 — 여섯」)
+#   1. 처음 열면 「월」이고 세그먼트가 금액 위에 선다(AC-01), 예상치 안내 한 줄
+#   2. 주·월·연을 오간다(AC-02·AC-05) — 세그먼트를 바꾸면 기간 줄 라벨이 그 단위 꼴로
+#      바뀌고 금액과 누적이 같이 움직인다, 기간 화살표로 앞뒤로 가면 라벨과 금액이
+#      따라 바뀐다
+#   3. 내역 줄(AC-04) — 날짜·요일 제목, 포지션·시각 보조 정보, 오른쪽 금액. 연장이 붙은
+#      날은 보조 정보에 그 사실이 붙는다. 결근한 날은 금액 자리가 「–」. 줄을 눌러도
+#      아무 일이 없다
+#   4. 연에서 달 줄을 누른다(AC-05) — 단위가 「월」로 바뀌고 기간 줄이 그 달로 간다. 연
+#      단위 목록 맨 아래에 합계 줄이 있고 그 줄은 안 눌린다
+#   5. 빈 기간(상태 격자) — 금액 자리는 「–」로 그대로 서고 그 아래 목록 자리에만 빈
+#      상태가 온다
+#   6. 퇴사자 진입(AC-06) — 퇴사한 사람이 /left의 「급여 보기」로 들어오면 탭 바가 없고
+#      앱바 뒤로가 /left로 간다. 퇴사한 달에서 앞으로 가는 화살표가 사라진다
+# 업무 규칙의 경우의 수(달을 걸친 주가 날마다 갈리는 계산, 누적의 셈, 0인 줄을 빼는
+# 판정, 결근 판정 자체)는 test-planner가 이미 unit으로 배정했다(payroll-view plan
+# 「검증 방법」 AC-01~AC-04 행) — 여기서는 화면·훅·함수·시드가 실제로 잇는지만 본다.
+#
+# **읽기 실패(통신 끊김)는 안 쓴다.** 급여 읽기를 강제로 실패시키는 문이 없다 — plan
+# 「검증 방법」이 이미 "손으로 본다"로 배정했다.
+#
+# **「시급 미정」 줄은 안 쓴다.** 그 상태를 시드로 만들면(기본 시급이 아직 없는 채로
+# 승인된 사람) 이 DB의 다른 시나리오(wages.yaml 등)가 이미 기본 시급을 세운 뒤라
+# 어긋난다 — 총괄 지시대로 unit이 본다.
+#
+# **권한·게이트는 안 쓴다.** navigation.md 「경로」의 공통 가드를 이미 다른 화면들이
+# 덮었다.
+#
+# **세그먼트가 금액 위에 선다는 배치 자체는 안 잰다.** 좌표·화면 구조 순서에 안
+# 기댄다(strategy 「공통 검증 기준과 대역의 한계」). 대신 AC-01을 "처음 열면 세그먼트가
+# '월'이다"로 바꿔 단언한다 — 초기 진입에서 보이는 기간 줄이 월 꼴(예: "2026년 10월")인
+# 것으로 확인한다. 선택된 세그먼트 칸의 색은 스타일이라 못 잰다(payroll.md 「고른 칸을
+# 브랜드로 안 칠한다」).
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/schedule-worker.yaml 머리말, scripts/e2e-seed-server.mts,
+# scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의 "/payroll" 그대로다
+# — "(tabs)" 그룹은 URL에서 빠져 "labiebelle://payroll"이다. **"/payroll"에는 "?month="
+# 같은 딥링크 인자가 없다**(navigation.md 「경로」 표의 그 행에 적혀 있지 않다) — 그래서
+# 이 화면은 언제나 "이번 달"에서 시작하고(AC-01), 그 밖의 달을 보려면 화면 안의
+# 세그먼트·화살표·연 목록으로 움직여야 한다.
+#
+# ================================================================
+# 시드 — payroll_wages류 시급 시드가 있어도(wages.yaml) 이 화면 전용 배정·리허설 시드는
+# 하나도 없다. implementer가 이 task에서 상태 둘을 더한다.
+# ================================================================
+#
+# ## 왜 "이번 달"이 아니라 "지난달"에 배정을 까는가
+#
+# 결근은 저장하는 배치가 없다 — attendance-data의 순수 함수가 "check_ins가 없고, 인증
+# 창이 닫혔고(그날 근무가 끝난 시각이 지났고), 승인된 사유도 없고, 그 뒤로 48시간이
+# 지났다"를 그때그때 계산한다(attendance-data plan AC-06). 그런데 `open_day`는 오늘보다
+# 이른 날짜를 "date_past"로 거절한다 — 그래서 결근 날을 만들려면 실제로 벌써 지난
+# 달력 날짜여야 하고, `withFreshMonth`가 고르는 먼 미래 달로는 영영 결근이 안 된다(그
+# 날짜가 미래인 한 인증 창이 닫힐 일이 없다).
+#
+# 그래서 이 시드만은 실제 "지난달"(`kstMonthStart(-1)`)을 쓰고, `days`·`schedules`는
+# `open_day`·`create_schedule` RPC를 안 쓰고 `backdateDeadline`·`seedWageHistory`와 같은
+# 손 — `execSql`로 직접 SQL을 꽂는다. 두 RPC 다 과거 날짜를 거절해서 못 쓴다.
+#
+# **"이번 달"은 일부러 비워 둔다.** 이 화면이 "?month=" 없이 언제나 "이번 달"에서
+# 시작하니(위 참고), 이 시드가 심는 사람은 오늘 막 만든 새 프로필이라 이번 달엔 원래
+# 아무 배정도 없다 — 그 자연 상태를 그대로 "빈 기간"(AC-05 상태 격자) 검증에 쓴다.
+# 그래서 특별한 사흘(연장·결근·리허설만)은 전부 "지난달"에, 연 합계를 보여줄 둘째 달은
+# "지난달과 같은 해의 다른 달"에 심는다.
+#
+# **연 합계용 둘째 달을 고르는 법.** 지난달이 1월이면(오늘이 2월이라는 뜻) 그 앞엔 같은
+# 해가 없어 대신 다음 달(오늘 기준 +1, 즉 3월)을 쓴다 — "이번 달"(+0)은 비워 둬야 해서
+# 건너뛴다. 지난달이 1월이 아니면 그 전달(오늘 기준 -2)을 쓴다 — 둘 다 같은 해다.
+#
+# ```ts
+# function secondMonthOffset(): number {
+#   const lastMonth = kstMonthStart(-1);
+#   return lastMonth.slice(5, 7) === "01" ? 1 : -2;
+# }
+# ```
+#
+# 날짜는 어느 달에도 있는 5일·10일·15일로 고정한다 — 28일이 없는 2월도 안 걸리게
+# 하려는 것이다. 기본 시급은 12,000원으로 세운다 — README.md의 PAY-005 원문 예시("시급
+# 12,000원인 사람이 10시간 일하면... 126,000원이다")와 같은 값이라, 이 파일이 단언하는
+# 금액이 그 예시와 그대로 검산된다.
+#
+# | 날짜 | 무엇을 심나 | 계산(12,000원/시) |
+# | --- | --- | --- |
+# | 지난달 5일 | 배정(포지션 "메인", 10:00–20:00 = 10시간) | 9시간 정상 + 1시간 연장(1.5배) = 126,000원 |
+# | 지난달 10일 | 배정(포지션 "안내", 10:00–19:00 = 9시간), 인증 없음 | 결근이라 0원 |
+# | 지난달 15일 | 배정 없이 리허설만(14:00–16:00 = 2시간) | 24,000원 |
+# | 지난달 합계 | — | 150,000원 |
+# | 둘째 달 5일 | 배정(포지션 "메인", 10:00–19:00 = 9시간, 정상) | 108,000원 — payroll.md 「내역 줄 값」 예시와 같은 수 |
+# | 연 합계(지난달+둘째 달) | — | 258,000원 |
+#
+# 리허설만 있는 날의 보조 정보는 payroll.md 「급여 조회 문안」 표가 「리허설 2시간」으로
+# 정했다 — 이 파일이 비워 뒀던 자리고, 문구가 서면서 단언 한 줄이 늘었다.
+#
+# ## SchedulePayload에 더할 필드
+#
+# `month`(raw "YYYY-MM", 지난달) · `monthLabel`(지난달, `spellMonth`) ·
+# `currentMonthLabel`(이번 달, `spellMonth`) · `yearLabel`("2026년" 꼴, 지난달의 해) ·
+# `overtimeDateLabel`·`absentDateLabel`·`rehearsalOnlyDateLabel`(각 날짜,
+# `spellWorkDate`) · `lastMonthShortLabel`·`secondMonthShortLabel`("10월" 꼴 — 연 목록
+# 줄 제목과 같은 짧은 꼴이라 `Number(month.slice(5,7))+"월"`로 이 시드가 직접 만든다.
+# 화면이 다른 함수로 다른 꼴을 내면 이 파일이 깨진다 — 아래 「이슈」).
+#
+# `spellMonth`·`spellWorkDate`는 이미 다른 상태들이 쓰는 함수를 그대로 재사용한다 —
+# 급여 화면이 아직 없어 이 화면 전용 포맷터가 그것들과 같은 꼴을 낼지는 구현이
+# 정한다(아래 「이슈」).
+#
+# ## 새 SeedState 둘 — payroll_view · payroll_view_left
+#
+# 둘 다 위 표를 심는 같은 내부 함수를 쓴다. `STATES`에 추가하고 `ADMIN_STATES`에는 안
+# 넣는다 — 로그인하는 사람이 급여를 보는 근무자 본인이다. `seededUser`의
+# `SUBMISSION_WINDOW || SCHEDULE_CONFIRMED || ...` 분기(승인까지 해주는 자리)에 둘 다
+# 넣는다 — 승인 안 된 사람은 "/payroll"에 못 온다. **`payroll_view_left`를 "left"처럼
+# `seededUser` 안에서 바로 `mark_leave`까지 하면 안 된다** — 리허설을 넣는 `add_rehearsal`
+# 함수가 첫 줄에서 `is_approved()`를 보는데 퇴사자는 그 조건을 못 지킬 수 있다(계정
+# 판정이 승인+미퇴사를 같이 볼 가능성이 있다). 그래서 `mark_leave`는 아래
+# `seedPayrollView`가 리허설까지 다 넣은 **뒤에** `schedulePayloadOf`의
+# `payroll_view_left` 갈래에서 부른다.
+#
+# **`schedulePayloadOf`가 지금은 `profileId`만 받는다.** 리허설은 본인만 넣을 수 있어
+# (`add_rehearsal`) 이 사람의 로그인한 `client`가 필요하다 — 시그니처를
+# `schedulePayloadOf(state, user: SignedInUser, asked)`로 넓히고(admin류 상태는
+# `user`에서 `.profileId`만 꺼내 쓰던 자리를 그대로 바꾼다), `seed()`가 이미 갖고 있는
+# `user`를 그대로 넘긴다.
+#
+# ```ts
+# const PAYROLL_VIEW = "payroll_view";
+# const PAYROLL_VIEW_LEFT = "payroll_view_left";
+#
+# function secondMonthOffset(lastMonth: string): number {
+#   return lastMonth.slice(5, 7) === "01" ? 1 : -2;
+# }
+#
+# // seedDayEndedHoursAgo와 같은 손 — 과거 날짜를 거절하는 open_day/create_schedule을
+# // 피해 직접 꽂는다. 아래 셋(upsertPastSchedule·insertPastDay·insertSlotForPosition)은
+# // 전부 tests/integration/postgres.ts에 더하고 export한다 — randomUUID·execSql이 이미
+# // 그 파일에 있어 e2e-seed-server.mts의 기존 import 줄에 이름만 보태면 된다.
+# function upsertPastSchedule(month: string, createdBy: string): void {
+#   execSql(
+#     "insert into public.schedules (month, created_by) values (:'month', :'created_by')\n" +
+#       "on conflict (month) do nothing;\n",
+#     { month, created_by: createdBy },
+#   );
+# }
+#
+# function insertPastDay(
+#   workDate: string,
+#   month: string,
+#   startsAt: string,
+#   endsAt: string,
+#   openedBy: string,
+# ): void {
+#   execSql(
+#     "delete from public.days where work_date = :'work_date';\n" +
+#       "insert into public.days (schedule_id, work_date, starts_at, ends_at, opened_by)\n" +
+#       "select id, :'work_date', :'starts_at', :'ends_at', :'opened_by'\n" +
+#       "from public.schedules where month = :'month';\n",
+#     { work_date: workDate, starts_at: startsAt, ends_at: endsAt, month, opened_by: openedBy },
+#   );
+# }
+#
+# function insertSlotForPosition(dayId: string, position: string): string {
+#   const id = randomUUID();
+#   execSql(
+#     "insert into public.slots (id, day_id, positions) values (:'id', :'day_id', array[:'position']);\n",
+#     { id, day_id: dayId, position },
+#   );
+#   return id;
+# }
+#
+# async function seedPayrollView(
+#   me: SignedInUser,
+# ): Promise<Partial<SchedulePayload>> {
+#   const admin = await createAdminUser();
+#
+#   // 승인보다 먼저 서야 approve_member가 오늘 행(follows_default=true)을 자동으로
+#   // 넣는다(PAY-012, wages.yaml의 payroll_wages와 같은 순서 의존 — seededUser가 이
+#   // 함수를 부르기 전에 이미 승인을 끝냈다면 이 rpc가 승인보다 늦어 문제다. 아래
+#   // 「이슈」에 이 순서 가정을 적는다).
+#   throwIf((await admin.client.rpc("set_default_wage", { p_amount: 12000 })).error);
+#
+#   const lastMonth = kstMonthStart(-1);
+#   const secondMonth = kstMonthStart(secondMonthOffset(lastMonth));
+#   const lastMonthKey = lastMonth.slice(0, 7);
+#   const secondMonthKey = secondMonth.slice(0, 7);
+#
+#   upsertPastSchedule(lastMonthKey, admin.profileId);
+#   upsertPastSchedule(secondMonthKey, admin.profileId);
+#
+#   const overtimeDate = `${lastMonthKey}-05`;
+#   const absentDate = `${lastMonthKey}-10`;
+#   const rehearsalOnlyDate = `${lastMonthKey}-15`;
+#   const secondDate = `${secondMonthKey}-05`;
+#
+#   insertPastDay(overtimeDate, lastMonthKey, "10:00:00", "20:00:00", admin.profileId);
+#   const overtimeDayId = await dayIdOf(admin, overtimeDate);
+#   seedAssignment(
+#     overtimeDayId, me.profileId, "regular",
+#     insertSlotForPosition(overtimeDayId, "메인"),
+#   );
+#
+#   insertPastDay(absentDate, lastMonthKey, "10:00:00", "19:00:00", admin.profileId);
+#   const absentDayId = await dayIdOf(admin, absentDate);
+#   seedAssignment(
+#     absentDayId, me.profileId, "regular",
+#     insertSlotForPosition(absentDayId, "안내"),
+#   );
+#   // check_ins 행을 안 넣는다 — 그것이 결근의 정체다.
+#
+#   insertPastDay(secondDate, secondMonthKey, "10:00:00", "19:00:00", admin.profileId);
+#   const secondDayId = await dayIdOf(admin, secondDate);
+#   seedAssignment(
+#     secondDayId, me.profileId, "regular",
+#     insertSlotForPosition(secondDayId, "메인"),
+#   );
+#
+#   // 리허설 자격을 준 뒤 본인 세션으로 넣는다 — 관리자에게는 남의 리허설을 넣는 길이
+#   // 없다(schedule/design.md 「리허설」).
+#   throwIf(
+#     (await admin.client.rpc("grant_position", {
+#       p_profile_id: me.profileId,
+#       p_position: "리허설",
+#     })).error,
+#   );
+#   throwIf(
+#     (await me.client.rpc("add_rehearsal", {
+#       p_work_date: rehearsalOnlyDate,
+#       p_starts_at: "14:00:00",
+#       p_ends_at: "16:00:00",
+#     })).error,
+#   );
+#
+#   return {
+#     month: lastMonthKey,
+#     monthLabel: spellMonth(lastMonthKey),
+#     currentMonthLabel: spellMonth(kstMonthStart(0).slice(0, 7)),
+#     yearLabel: `${lastMonthKey.slice(0, 4)}년`,
+#     overtimeDateLabel: spellWorkDate(overtimeDate),
+#     absentDateLabel: spellWorkDate(absentDate),
+#     rehearsalOnlyDateLabel: spellWorkDate(rehearsalOnlyDate),
+#     lastMonthShortLabel: `${Number(lastMonthKey.slice(5, 7))}월`,
+#     secondMonthShortLabel: `${Number(secondMonthKey.slice(5, 7))}월`,
+#   };
+# }
+# ```
+#
+# `schedulePayloadOf`의 두 갈래.
+#
+# ```ts
+# if (state === PAYROLL_VIEW) {
+#   return seedPayrollView(user);
+# }
+#
+# if (state === PAYROLL_VIEW_LEFT) {
+#   const payload = await seedPayrollView(user);
+#   await decideBy("mark_leave", user.profileId); // 리허설까지 다 넣은 뒤에 퇴사시킨다
+#   return payload;
+# }
+# ```
+#
+# ## 이슈 — 이 파일이 깔고 가는 가정
+#
+# - **`spellMonth`·`spellWorkDate` 재사용 가정.** 급여 화면이 아직 없어 이 화면이 정말
+#   같은 포맷 함수를 쓸지, 아니면 새 포맷터를 따로 만들지는 구현이 정한다. 새로
+#   만들면서 꼴이 달라지면(예: 요일 괄호 표기가 다르면) 이 파일의 라벨 단언이 전부
+#   깨진다.
+# - **`lastMonthShortLabel`·`secondMonthShortLabel`("10월" 꼴)을 이 시드가 직접
+#   문자열로 만든다.** 화면이 "연" 목록 줄 제목을 다른 함수·다른 꼴(예: 앞에 0을 붙인
+#   "03월")로 내면 이 파일이 깨진다.
+# - 닫혔다: 리허설만 있는 날의 보조 정보 문구. payroll.md 「급여 조회 문안」 표에
+#   「리허설 2시간」이 서서 이 파일이 그 줄을 단언한다.
+# - 닫혔다: 승인된 달이 지난달보다 늦던 자리. 뒤로 가는 화살표의 바닥은 승인된 달이고
+#   (PAY-025) 승인 함수가 넣는 시급 행의 적용일은 오늘이라(PAY-008), 오늘 승인된 사람은
+#   지난달에 닿지도 못하고 닿아도 그날 시급이 없었다. `seedPayrollView`가 `approveProfile`과
+#   `seedWageHistory`로 둘을 근무가 선 두 달 중 이른 달의 1일로 내린다.
+# - 닫혔다: `set_default_wage`가 승인보다 먼저 서야 한다는 순서 의존. `seededUser`가 이
+#   상태 둘만 승인 앞에서 기본 시급을 세운다 — PAY-012대로 "따로 정하지 않은 사람"이
+#   되려면 승인 시점에 기본 시급이 이미 서 있어야 한다(`payroll_wages`도 같은 순서를 진다).
+# - **`add_rehearsal`이 퇴사자를 막는지 확인 안 됐다.** `is_approved()`의 정의가
+#   "승인됨과 미퇴사"를 같이 보는지, "승인됨"만 보는지 이 저장소 코드로 못 읽었다(화면이
+#   없어 함수도 아직 없다). 막는 쪽이면 이 파일이 짠 순서(승인 → 리허설 → 퇴사)가
+#   맞고, 안 막는 쪽이면 순서를 안 지켜도 되지만 그렇다고 틀리지는 않는다.
+# - **"주" 세그먼트의 정확한 기간 줄 문구를 안 단언한다.** 세그먼트를 바꿀 때 화면이
+#   어느 날을 기준으로 "이번 주"를 고르는지(오늘 기준인지, 보던 달의 기준일인지)가
+#   문서에 안 적혀 있다 — 그래서 이 파일은 월 라벨이 사라지는 것만 보고 정확한 주
+#   날짜 범위 문구는 안 잰다. 그 계산 자체는 spec AC-02가 이미 unit에 배정했다.
+# - **연장 붙은 날·리허설만 있는 날·둘째 달의 금액(126,000원·24,000원·108,000원·
+#   150,000원·258,000원)은 전부 이 파일이 손으로 계산한 값이다.** README.md PAY-005의
+#   원문 예시(12,000원×10시간=126,000원)와 payroll.md 문안 표의 예시(108,000원)를 그대로
+#   가져와 검산했지만, 실제 구현이 이 파일이 모르는 규칙(예: 리허설 시간의 반올림)을
+#   더 가지고 있으면 숫자가 어긋날 수 있다.
+#
+# ## 이 task가 요청하는 testID 다섯
+#
+# - `payroll-period-prev`·`payroll-period-next` — 기간 줄 좌우 화살표. 아이콘만 있고
+#   글자가 없어 스케줄 근무표의 `schedule-month-prev`·`schedule-month-next`와 같은
+#   자리다.
+# - `payroll-segment-week`·`payroll-segment-month`·`payroll-segment-year` — 주·월·연
+#   세그먼트 칸. 글자 자체는 "월"·"주"·"연"이지만 기간 줄 라벨("2026년 10월")이 이미
+#   "월"을 포함하고 있어 텍스트 셀렉터(부분 일치, wages.yaml의 "기본" 사례 참고)로
+#   세그먼트만 집을 수 없다 — 그래서 칸을 testID로 요청한다.
+#
+# 텍스트 셀렉터는 정규식이다. 문안에 물음표는 없다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+# ================================================================
+# AC-01 — 처음 열면 「월」이고 이번 달은 비어 있다. 예상치 안내 한 줄.
+# 상태 격자 「빈 상태」 — 금액 자리는 「–」로 서고 그 아래에만 빈 상태가 온다.
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: payroll_view
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://payroll"
+
+- assertVisible: "급여"
+- assertVisible: "${output.currentMonthLabel}"
+- assertVisible: "예상치예요. 실제 지급액과 다를 수 있어요"
+- assertVisible: "–"
+- assertVisible: "아직 근무가 없어요"
+- assertVisible: "근무한 날이 생기면 여기 서요"
+
+# --- 세그먼트를 「주」로 바꾸면 월 라벨이 사라진다 — 왕복해도 「월」 상태가 그대로다 ---
+- tapOn:
+    id: "payroll-segment-week"
+- assertNotVisible: "${output.currentMonthLabel}"
+- tapOn:
+    id: "payroll-segment-month"
+- assertVisible: "${output.currentMonthLabel}"
+- assertVisible: "아직 근무가 없어요"
+
+# ================================================================
+# AC-02·AC-04 — 이전 달 화살표로 지난달로 간다. 라벨과 금액이 따라 바뀌고, 내역
+# 목록에 연장 붙은 날·결근한 날·리허설만 있는 날이 선다. 줄을 눌러도 다음 화면이
+# 없다.
+# ================================================================
+- tapOn:
+    id: "payroll-period-prev"
+- assertVisible: "${output.monthLabel}"
+- assertNotVisible: "${output.currentMonthLabel}"
+
+- assertVisible: "${output.overtimeDateLabel}"
+- assertVisible: "메인 · 10:00–20:00 · 연장 1시간"
+- assertVisible: "126,000원"
+
+- assertVisible: "${output.absentDateLabel}"
+- assertVisible: "결근"
+
+- assertVisible: "${output.rehearsalOnlyDateLabel}"
+- assertVisible: "리허설 2시간"
+- assertVisible: "24,000원"
+
+- assertVisible: "150,000원"
+
+# --- 줄을 눌러도 아무 일이 없다 ---
+- tapOn: "${output.overtimeDateLabel}"
+- assertVisible: "급여"
+- assertVisible: "${output.overtimeDateLabel}"
+- assertVisible: "126,000원"
+
+# ================================================================
+# AC-05 — 「연」으로 바꾸면 달마다 한 줄로 접히고 맨 아래에 합계 줄이 선다(안
+# 눌린다). 달 줄을 누르면 「월」로 바뀌고 그 달로 간다.
+# ================================================================
+- tapOn:
+    id: "payroll-segment-year"
+- assertVisible: "${output.yearLabel}"
+- assertVisible: "${output.lastMonthShortLabel}"
+- assertVisible: "150,000원"
+- assertVisible: "${output.secondMonthShortLabel}"
+- assertVisible: "108,000원"
+- assertVisible: "합계"
+- assertVisible: "258,000원"
+
+# --- 합계 줄은 안 눌린다 — 눌러도 여전히 연 목록이다 ---
+- tapOn: "합계"
+- assertVisible: "합계"
+- assertVisible: "${output.secondMonthShortLabel}"
+
+# --- 지난달 줄을 누르면 「월」로 바뀌고 그 달로 간다 ---
+- tapOn: "${output.lastMonthShortLabel}"
+- assertVisible: "${output.monthLabel}"
+- assertVisible: "${output.overtimeDateLabel}"
+
+# --- 다음 달 화살표로 「이번 달」로 되돌아온다 — 빈 상태가 다시 보인다 ---
+- tapOn:
+    id: "payroll-period-next"
+- assertVisible: "${output.currentMonthLabel}"
+- assertVisible: "아직 근무가 없어요"
+
+# ================================================================
+# AC-06 — 퇴사한 사람이 /left의 「급여 보기」로 들어온다. 탭 바가 없고 앱바 뒤로가
+# /left다. 퇴사한 달(=이번 달, 방금 퇴사시켰다)에서 앞으로 가는 화살표가 사라지고,
+# 지난 급여는 그대로 다 보인다.
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: payroll_view_left
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+
+# 퇴사자는 앱을 열면 게이트가 곧장 /left로 보낸다(left.yaml과 같은 진입).
+- assertVisible: "근무를 마치셨어요"
+- tapOn: "급여 보기"
+
+- assertVisible: "급여"
+- assertVisible: "${output.currentMonthLabel}"
+- assertNotVisible: "근무표"
+- assertNotVisible:
+    id: "payroll-period-next"
+
+# --- 이전 달 화살표는 살아 있다 — 지난 급여가 그대로 보인다 ---
+- tapOn:
+    id: "payroll-period-prev"
+- assertVisible: "${output.monthLabel}"
+- assertVisible: "${output.overtimeDateLabel}"
+- assertVisible: "126,000원"
+- assertVisible: "${output.absentDateLabel}"
+- assertVisible: "결근"
+
+# --- 앱바 뒤로는 /left로 간다 ---
+- back
+- assertVisible: "근무를 마치셨어요"

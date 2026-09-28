@@ -29,10 +29,16 @@ import type { Db } from "@/shared/api/database";
  * 달을 날짜로 들고 다닌다.
  */
 
+/**
+ * 신고 시각과 접수 시각도 같이 온다 — 근태 판정(`entities/attendance`)이 인증 한 건을
+ * 그 셋으로 읽어서, 급여가 결근을 다시 판정할 때 이 행을 그대로 넘긴다.
+ */
 export type ScheduleCheckIn = {
   id: string;
   profile_id: string;
   checked_at: string;
+  reported_at: string;
+  received_at: string;
 };
 
 export type ScheduleAssignment = {
@@ -75,7 +81,7 @@ const DAY_COLUMNS = [
   "opened_at",
   "slots(id, positions, ended_at)",
   "assignments(id, slot_id, position, kind, profile_id, ended_at, profiles!assignments_profile_id_fkey(display_name))",
-  "check_ins(id, profile_id, checked_at)",
+  "check_ins(id, profile_id, checked_at, reported_at, received_at)",
 ].join(", ");
 
 export async function getMonthSchedule(

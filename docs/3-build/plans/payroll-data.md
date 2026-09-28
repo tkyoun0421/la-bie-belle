@@ -125,11 +125,12 @@ sources:
 
 **금액을 내는 순수 함수.** `src/features/payroll/model`에 산다. **이 task의 가장 어려운 조각이다.**
 
-- 입력은 살아 있는 `assignments`·`days`·`adjustments`·`rehearsals`·`excuse_status`·`wage_rates`다. 출력은 날짜마다의 `{ minutes, amount, kind }`와 기간 합계다
+- 입력은 살아 있는 `assignments`·`days`·`adjustments`·`rehearsals`·`excuse_status`·`wage_rates`다. 출력은 날짜마다의 `{ minutes, amount, kind }`와 기간 합계다. `kind`는 `'normal'`·`'overtime'`·`'absent'`·`'wage-pending'` 넷이다
 - **날짜를 세 키의 합집합에서 모은다.** `['schedule']`만 훑으면 배정 없이 리허설만 있는 날이 빠진다([행위 밖의 실행 동작](../../2-design/modules/payroll/design.md#행위-밖의-실행-동작))
 - 그날 총 분 = **배정 시간 + 조정 분(마지막 행) + 리허설 시간**이다. 배정 시간은 `days.starts_at`~`ends_at`이고 휴게를 안 뺀다([PAY-004](../../2-design/modules/payroll/README.md#pay-004))
 - 리허설 시간은 [`rehearsal`](rehearsal.md#ac-04)의 `rehearsalHours`를 import한다. 1건이 1시간이다
 - **9시간 기준을 총 분 하나로 본다**([PAY-028](../../2-design/modules/payroll/README.md#pay-028)). 540분까지 1배, 넘는 몫이 1.5배다. 배정 9시간 + 리허설 2건이면 11시간이고 그중 2시간이 가산이다 — 따로 세면 둘 다 9시간 미만이라 가산이 아예 안 난다
+- **시급이 없는 날도 목록에 든다.** 기본 시급이 서기 전에 승인된 사람의 날이다([PAY-012](../../2-design/modules/payroll/README.md#pay-012)). `kind`가 `'wage-pending'`이고 분은 그대로 차고 금액이 0이다 — 결근과 같은 꼴이라 합계는 안 움직이고 화면이 금액 자리에 줄표를 그린다. **버리지 않는다** — 버리면 그 날의 시각·포지션·분이 화면에 안 닿아 근무 회수·시간에서도 빠진다([payroll.md 「내역 목록」](../../2-design/modules/payroll/screens/payroll.md#내역-목록))
 - **결근 판정은 [`attendance-data`](attendance-data.md#ac-06)의 함수를 부른다.** 여기서 다시 짜지 않는다. 결근인 날은 조정 음수가 이미 들어 총 분이 0이 되지만, **조정이 안 들어간 결근도 있다** — 관리자가 아직 안 누른 날이다. 그 날은 상태가 결근이라 금액을 0으로 내고 목록에 사실로 선다
 - 출근 인정(사유 승인)은 **배정된 시간대로 센다**([PAY-003](../../2-design/modules/payroll/README.md#pay-003))
 - 교육 배정도 같은 규칙이다([PAY-007](../../2-design/modules/payroll/README.md#pay-007))
