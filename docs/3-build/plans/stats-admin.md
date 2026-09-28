@@ -69,7 +69,7 @@ sources:
 
 **열두 달 추이.**
 
-`src/features/stats/model/trend.ts`와 `src/features/stats/api/queries.ts`
+`src/features/stats/model/trend.ts`와 `src/features/stats/api/useStatsQueries.ts`
 
 - 보는 달에서 열한 달을 거슬러 올라간 열두 달이고 보는 달이 오른쪽 끝이다
 - **달마다 키를 읽어 더한다**([읽기 범위](../../2-design/system/runtime.md#읽기-범위)). 근무 탭은 `['schedule', 'YYYY-MM']` 열둘, 근태 탭은 거기에 `['attendance', 'YYYY-MM']` 열둘이다 — `useQueries`로 나란히 읽는다
@@ -147,7 +147,7 @@ sources:
 | `src/features/stats/model/work-totals.ts` | 사람별·포지션별 집계 | AC-01 |
 | `src/features/stats/model/person-days.ts` | 한 사람의 날짜별 근무 | AC-02 |
 | `src/features/stats/model/trend.ts` | 열두 달 대표 숫자 | AC-03 |
-| `src/features/stats/api/queries.ts` | 달마다의 `useQueries`와 캐시 키 | AC-03 |
+| `src/features/stats/api/useStatsQueries.ts` | 달마다의 `useQueries`와 캐시 키 | AC-03 |
 | `src/entities/attendance/dals/get-month-attendance.ts`·`__tests__/` | `['attendance', 'YYYY-MM']`. 반환은 [`get-day-attendance.ts`](../../../src/entities/attendance/dals/get-day-attendance.ts)의 `{ checkIns, excuseStatuses }`와 같은 모양이고 필터만 날에서 달로 넓힌다 | AC-04 |
 | `src/shared/ui/TrendChart.tsx`·`RowBars.tsx`·`RatioBand.tsx` | **이미 섰다** — [`ui-kit`](../../2-design/spec/ui-kit.md)이 세웠고 입력 타입도 그 파일이 든다. 이 task는 붙이기만 한다 | AC-05 |
 | `src/screens/admin-stats/` | 화면 조립, 탭 둘, 시트 | AC-06~AC-09 |
