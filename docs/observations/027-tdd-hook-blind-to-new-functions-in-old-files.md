@@ -1,5 +1,5 @@
 ---
-status: open
+status: actioned
 target: .claude/hooks/tdd-guard-unit.py
 date: 2026-09-28
 ---
@@ -22,7 +22,13 @@ date: 2026-09-28
 
 이름 단위로 봐도 둘째 사례(기존 함수가 필드 하나를 더 내는 것)는 못 잡는다. 그쪽까지 잡으려면 커버리지 도구가 바뀐 줄을 보는 쪽이라 훅의 일이 아니다.
 
-세 번째가 나오면 짓는다. 지금은 카운터 둘이다.
+**셋째가 `stats-admin`에서 났고 이번엔 아홉이다.** 구현자가 스스로 다섯을 신고했는데(`workInputsOf`·`hoursLabel`·`buildAttendanceTab`·`attendanceRowValue`·`useFirstScheduleMonth`) `pr-diff`가 새로 생긴 `export`를 전수로 훑자 넷이 더 나왔다 — `isLiveAssignment`·`dayMinutes`·`monthAttendanceKey`·`firstScheduleMonthKey`다. 파일 여섯 다 짝 테스트가 있어 훅도 감사자의 파일 단위 눈도 통과했다.
+
+## 지은 것
+
+훅이 이름 단위로 본다. 쓰려는 조각에서 `export function`·`export const`의 이름을 뽑아 **지금 저장된 파일에 없는 이름**만 새것으로 세고, 짝 테스트 본문에 그 이름이 안 나오면 막는다. 전부터 무검증으로 서 있던 `export`를 고치는 걸음은 안 막는다 — 막으면 손댈 길이 사라진다.
+
+짝을 읽으려고 `guard.py`에 `contents()`가 서고, 쓰려는 조각을 보려고 `read("incoming")`이 생겼다. 규칙 15의 이름도 「내보내는 함수마다 그것을 부르는 짝 테스트가 먼저 있어야 한다」로 바뀐다.
 
 ## 원칙
 

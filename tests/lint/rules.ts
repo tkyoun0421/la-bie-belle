@@ -120,7 +120,7 @@ export const RULES: EnforcedRule[] = [
   },
   {
     no: 15,
-    name: "실행 코드를 쓰기 전에 짝 테스트가 있어야 한다",
+    name: "내보내는 함수마다 그것을 부르는 짝 테스트가 먼저 있어야 한다",
     mechanism: "hook",
     ruleId: null,
     enforcedBy: ".claude/hooks/tdd-guard-unit.py",

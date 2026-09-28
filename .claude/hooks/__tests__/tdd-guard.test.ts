@@ -64,8 +64,15 @@ beforeAll(() => {
   write("src/shared/lib/__tests__/utils.test.ts", "");
   write("src/screens/orders/__tests__/placeholder", "");
   write("tests/e2e/orders.yaml", "");
-  write("src/entities/payroll/dals/__tests__/payroll.integration.test.ts", "");
-  write("tests/lint/paired.test.ts", "");
+  write(
+    "src/entities/payroll/dals/__tests__/payroll.integration.test.ts",
+    "fetchPayroll();",
+  );
+  write("tests/lint/paired.test.ts", "paired();");
+  write("src/features/cart/model/sum.ts", "export function sum() {}");
+  write("src/features/cart/model/__tests__/sum.test.ts", "sum();\nhalf();");
+  write("src/features/cart/model/loose.ts", "export function loose() {}");
+  write("src/features/cart/model/__tests__/loose.test.ts", "");
 });
 
 describe("유닛 훅", () => {
@@ -202,6 +209,43 @@ describe("유닛 훅", () => {
         "tdd-guard-unit.py",
         "tests/lint/checker.test.ts",
         "export function x() {}",
+      ),
+    ).toBe(allowed);
+  });
+
+  /**
+   * 파일 단위로만 보면 짝이 있는 파일에 함수를 얹는 걸음이 그냥 지나간다 — 관찰 027이
+   * 그것이었다. 짝 안이 그 이름을 부르는지까지 본다.
+   */
+  it("있는 파일에 얹는 새 함수를 짝 테스트가 안 부르면 막는다", () => {
+    const result = spawn(
+      "tdd-guard-unit.py",
+      "src/features/cart/model/sum.ts",
+      "export function sum() {}\nexport function average() {}",
+    );
+
+    expect(result.status).toBe(blocked);
+    expect(result.stderr).toContain("average");
+    expect(result.stderr).not.toContain("  sum\n");
+  });
+
+  it("새 함수를 짝 테스트가 부르면 통과시킨다", () => {
+    expect(
+      run(
+        "tdd-guard-unit.py",
+        "src/features/cart/model/sum.ts",
+        "export function sum() {}\nexport const half = () => {}",
+      ),
+    ).toBe(allowed);
+  });
+
+  /** 이미 무검증으로 서 있는 export를 고치는 걸음까지 막으면 손댈 길이 사라진다. */
+  it("전부터 있던 export는 짝이 안 불러도 통과시킨다", () => {
+    expect(
+      run(
+        "tdd-guard-unit.py",
+        "src/features/cart/model/loose.ts",
+        "export function loose() { return 1; }",
       ),
     ).toBe(allowed);
   });
