@@ -54,11 +54,16 @@ jobs:
             위험은 `mcp__github_inline_comment__create_inline_comment`(confirmed: true)로
             해당 줄에 단다. 코멘트는 한국어로 쓴다.
 
+            **리포트를 `/tmp/review.md`에 쓰고 `gh pr comment ... --body-file /tmp/review.md`로
+            넘긴다.** 셸 인자에 긴 한국어를 직접 실으면 따옴표에서 깨진다.
+
             도구가 막히거나 다 못 본 자리가 있으면 그 사실을 리포트의 「못 본 곳」에
             적어라. 어떤 경우에도 코멘트 하나는 남긴다 — 빈손으로 끝내면 안 본 것과
-            구별이 안 된다(관찰 022).
+            구별이 안 된다(관찰 022). 한 길이 막히면 다른 길로 남겨라: 파일로 못 쓰면
+            `--body`에 짧게라도 적고, 그것도 막히면 무엇이 막혔는지만이라도 코멘트로
+            남긴다(관찰 026).
           claude_args: |
-            --allowedTools "Read,Grep,Glob,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(ls:*),Bash(wc:*),Bash(head:*),Bash(tail:*),Bash(sed:*),Bash(sort:*),Bash(uniq:*),mcp__github_inline_comment__create_inline_comment"
+            --allowedTools "Read,Write,Grep,Glob,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(ls:*),Bash(wc:*),Bash(head:*),Bash(tail:*),Bash(sed:*),Bash(sort:*),Bash(uniq:*),mcp__github_inline_comment__create_inline_comment"
 
       # 워크플로 파일 자체를 고친 PR에서는 액션이 「기본 브랜치와 다르다」며 스스로 건너뛴다
       # (execution_file이 빈다). 그때는 셀 것이 없으니 이 단계도 건너뛴다 — #430에서 봤다.
