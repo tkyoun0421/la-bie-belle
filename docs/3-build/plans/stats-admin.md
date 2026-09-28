@@ -89,13 +89,13 @@ sources:
 
 ### AC-05
 
-**차트 조각 셋.**
+**차트 조각 셋.** 이미 [`ui-kit`](../../2-design/spec/ui-kit.md)이 세웠다 — `src/shared/ui/TrendChart.tsx`·`RowBars.tsx`·`RatioBand.tsx`고 입력 타입(`TrendChartProps`·`RowBarsProps`·`RatioBandProps`)도 그 파일이 든다. 이 task는 그 조각에 값을 먹이는 자리고, 아래는 그 조각이 이미 지키고 있어야 할 계약이다 — 어긋나면 조각을 고치는 것이 아니라 총괄에게 보고한다.
 
 `src/shared/ui/`
 
-- `trend-chart.tsx` — 열두 달. 선 2px `stroke.brand-solid`, 아래 면 `bg.brand-weak`, **점은 보는 달에만**, 높이 96px. 값이 `null`인 달은 선이 끊긴다. 가로축은 1·4·7·10월만 글자고 나머지 여덟은 눈금이다
-- `row-bar.tsx` — 줄 아래 4px `rounded-full`, **트랙이 없다**. 가장 큰 값이 100%고 **0이면 아무것도 안 그린다**
-- `ratio-band.tsx` — 8px `rounded-full`, 몫 사이 2px 틈. 몫이 0이면 그 색과 범례가 같이 빠진다
+- `TrendChart.tsx` — 열두 달. 선 2px `stroke.brand-solid`, 아래 면 `bg.brand-weak`, **점은 보는 달에만**, 높이 96px. 값이 `null`인 달은 선이 끊긴다. 가로축은 1·4·7·10월만 글자고 나머지 여덟은 눈금이다
+- `RowBars.tsx` — 줄 아래 4px `rounded-full`, **트랙이 없다**. 가장 큰 값이 100%고 **0이면 아무것도 안 그린다**
+- `RatioBand.tsx` — 8px `rounded-full`, 몫 사이 2px 틈. 몫이 0이면 그 색과 범례가 같이 빠진다
 - **등장 모션이 없다**([components.md](../../2-design/design-system/components.md#차트-넷)). 막대가 자라거나 선이 그려지지 않는다. 값이 바뀌면 `--duration-base`로 옮겨간다
 - 계산은 `.ts`에 있고 `.tsx`는 좌표와 폭을 받아 그리기만 한다
 
@@ -148,12 +148,10 @@ sources:
 | `src/features/stats/model/person-days.ts` | 한 사람의 날짜별 근무 | AC-02 |
 | `src/features/stats/model/trend.ts` | 열두 달 대표 숫자 | AC-03 |
 | `src/features/stats/api/queries.ts` | 달마다의 `useQueries`와 캐시 키 | AC-03 |
-| `src/entities/attendance/dals/get-month-attendance.ts` | `['attendance', 'YYYY-MM']` | AC-04 |
-| `src/shared/ui/trend-chart.tsx` | 추이 그래프 | AC-05 |
-| `src/shared/ui/row-bar.tsx` | 줄 막대 | AC-05 |
-| `src/shared/ui/ratio-band.tsx` | 비율 띠 | AC-05 |
+| `src/entities/attendance/dals/get-month-attendance.ts`·`__tests__/` | `['attendance', 'YYYY-MM']`. 반환은 [`get-day-attendance.ts`](../../../src/entities/attendance/dals/get-day-attendance.ts)의 `{ checkIns, excuseStatuses }`와 같은 모양이고 필터만 날에서 달로 넓힌다 | AC-04 |
+| `src/shared/ui/TrendChart.tsx`·`RowBars.tsx`·`RatioBand.tsx` | **이미 섰다** — [`ui-kit`](../../2-design/spec/ui-kit.md)이 세웠고 입력 타입도 그 파일이 든다. 이 task는 붙이기만 한다 | AC-05 |
 | `src/screens/admin-stats/` | 화면 조립, 탭 둘, 시트 | AC-06~AC-09 |
-| `/admin/stats/` 화면 | 라우트 | AC-06 |
+| `src/app/admin/stats.tsx` | 라우트. 지금은 `NotBuiltYet` 한 줄이다 | AC-06 |
 
 ## 구현 순서
 
