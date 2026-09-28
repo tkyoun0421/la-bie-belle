@@ -55,7 +55,8 @@ function assignedMinutes(input: DayMinutesInput): number {
   );
 }
 
-function adjustedMinutes(rows: readonly AdjustmentRow[]): number {
+/** 지금 유효한 조정 분이다 — 행이 없으면 0이고, 여럿이면 `adjusted_at`이 가장 늦은 행이다. */
+export function adjustedMinutes(rows: readonly AdjustmentRow[]): number {
   const latest = rows.reduce<AdjustmentRow | null>(
     (kept, row) =>
       kept === null || row.adjusted_at > kept.adjusted_at ? row : kept,

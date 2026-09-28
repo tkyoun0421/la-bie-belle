@@ -4,18 +4,19 @@
 //   POST http://127.0.0.1:8765/seed  {"state": "rejected"}
 //   → {"access_token": "…", "refresh_token": "…", "user_id": "…", "profile": {…}}
 //
-// 상태는 스물네 개다 — fresh · submitted · approved · admin · rejected · left · blocked ·
+// 상태는 스물다섯 개다 — fresh · submitted · approved · admin · rejected · left · blocked ·
 // read_failure · schedule_submission_window · schedule_confirmed와, 관리자 근무표 여덟
 // (schedule_admin_empty_month · schedule_admin_race_open · schedule_admin_confirmable ·
 // schedule_admin_confirmed · schedule_admin_applications · schedule_assign_day ·
 // schedule_admin_request_slot · schedule_approvals_cancel_pending), 요청을 받는 근무자 둘
 // (schedule_worker_request_pending · schedule_worker_request_claimed), 리허설 하나
 // (rehearsal_qualified), 시급 하나(payroll_wages), 급여 조회 둘(payroll_view ·
-// payroll_view_left). `name`은
+// payroll_view_left), 근무 조정 하나(payroll_adjust). `name`은
 // 선택이고, 프로필을 보내는 상태에서 그 사람의 이름을 고른다(안 주면 SEEDED_PROFILE의
 // 이름이다). 요청의 `month`·`day`도 선택이고 schedule_admin_race_open만 쓴다 — 이미
-// 로그인된 세션 밖에서 먼저 열 날짜다. 응답의 `day`는 schedule_assign_day만 싣는다 —
-// 그 플로우가 달력을 안 거치고 날 상세 딥링크를 바로 조립한다.
+// 로그인된 세션 밖에서 먼저 열 날짜다. 응답의 `day`는 schedule_assign_day와
+// payroll_adjust가 싣는다 — 그 플로우들이 달력을 안 거치고 날 상세 딥링크를 바로 조립한다.
+// `holidayDay`는 payroll_adjust만 싣는다 — 받아온 공휴일이 심긴 다른 날짜다.
 // 근무표 상태들은 사람만이 아니라 그 사람이 볼 근무표까지 세우고, 화면에 그대로 뜨는 라벨을
 // 같이 돌려준다 — 계약은 `tests/e2e/schedule-worker.yaml`과 `tests/e2e/schedule-admin.yaml`과
 // `tests/e2e/schedule-assign.yaml`과 `tests/e2e/applications.yaml` 머리말이다.
@@ -50,6 +51,7 @@ import {
   seedCheckIn,
   seedPastDay,
   seedPastSchedule,
+  seedHoliday,
   seedRequestCandidate,
   seedSlotOfPosition,
   seedWageHistory,
@@ -118,6 +120,8 @@ const PAYROLL_VIEW = "payroll_view";
 
 const PAYROLL_VIEW_LEFT = "payroll_view_left";
 
+const PAYROLL_ADJUST = "payroll_adjust";
+
 /**
  * 급여 조회가 심는 기본 시급이다. `README.md`의 PAY-005 원문 예시(「시급 12,000원인 사람이
  * 10시간 일하면 126,000원이다」)와 같은 값이라 `tests/e2e/payroll.yaml`이 단언하는 금액이 그
@@ -150,12 +154,13 @@ const STATES = [
   PAYROLL_WAGES,
   PAYROLL_VIEW,
   PAYROLL_VIEW_LEFT,
+  PAYROLL_ADJUST,
 ] as const;
 
 export type SeedState = (typeof STATES)[number];
 
 /**
- * 관리자 화면 플로우가 쓰는 아홉이다 — 전부 관리자로 로그인한다.
+ * 관리자 화면 플로우가 쓰는 열이다 — 전부 관리자로 로그인한다.
  *
  * 근무 요청을 **받는** 쪽 둘(`schedule_worker_request_*`)은 여기 안 든다. 로그인하는 사람이
  * 요청을 받은 근무자라야 그 시트가 뜬다.
@@ -170,6 +175,7 @@ const ADMIN_STATES = new Set<SeedState>([
   ADMIN_REQUEST_SLOT,
   APPROVALS_CANCEL_PENDING,
   PAYROLL_WAGES,
+  PAYROLL_ADJUST,
 ]);
 
 /**
@@ -184,6 +190,7 @@ type SchedulePayload = {
   month: string;
   monthLabel?: string;
   day?: string;
+  holidayDay?: string;
   deadlineLabel?: string;
   myDateLabel?: string;
   otherDateLabel?: string;
@@ -735,6 +742,108 @@ async function seedAdminRequestSlot(): Promise<SchedulePayload> {
 }
 
 /**
+ * 배정 셋이 선 열린 날 하나와, 받아온 공휴일이 심긴 다른 날 하나다
+ * (`tests/e2e/schedule-admin.yaml`의 「payroll-adjust」 절).
+ *
+ * **근무 시간을 10:00–19:00으로 못 박는다.** 조정 시트의 문구가 문안 표 예시와 같은 숫자로
+ * 서서, 플로우가 시간을 계산하지 않고 표를 그대로 베낀다.
+ *
+ * **셋의 포지션을 가른다.** `freeSlotOf`는 점유를 안 보고 그 날의 아무 자리나 줘서 세 번
+ * 부르면 같은 자리를 세 번 준다 — `freeSlotOfPosition`으로 안내·스캔·메인을 나눠 집는다.
+ */
+async function seedPayrollAdjust(): Promise<SchedulePayload> {
+  const admin = await createAdminUser();
+
+  const absentee = await createSignedInUser();
+  await submitSeededProfile(absentee, { ...SEEDED_PROFILE, name: "정민아" });
+  await decideBy("approve_member", absentee.profileId);
+
+  const overtimeWorker = await createSignedInUser();
+  await submitSeededProfile(overtimeWorker, {
+    ...SEEDED_PROFILE,
+    name: "한서준",
+  });
+  await decideBy("approve_member", overtimeWorker.profileId);
+
+  const rehearsed = await createSignedInUser();
+  await submitSeededProfile(rehearsed, { ...SEEDED_PROFILE, name: "유하린" });
+  await decideBy("approve_member", rehearsed.profileId);
+
+  // 리허설 자격은 관리자가 주는 행이 유일한 길이다(schedule/design.md 「자격」).
+  throwIf(
+    (
+      await admin.client.rpc("grant_position", {
+        p_profile_id: rehearsed.profileId,
+        p_position: "리허설",
+      })
+    ).error,
+  );
+
+  return withFreshMonth(async (monthsFromNow) => {
+    const monthDate = kstMonthStart(monthsFromNow);
+    const month = monthDate.slice(0, 7);
+    const day = "01";
+    const workDate = `${month}-${day}`;
+    const holidayDay = "05";
+    const holidayDate = `${month}-${holidayDay}`;
+
+    await createSchedule(admin, monthDate, kstDate(3));
+    await openDay(admin, workDate);
+    // 날 상세로 들어가려면 그 날도 열려 있어야 한다.
+    await openDay(admin, holidayDate);
+
+    throwIf(
+      (
+        await admin.client.rpc("set_day_hours", {
+          p_work_date: workDate,
+          p_starts: "10:00",
+          p_ends: "19:00",
+        })
+      ).error,
+    );
+
+    const dayId = await dayIdOf(admin, workDate);
+
+    seedAssignment(
+      dayId,
+      absentee.profileId,
+      "regular",
+      await freeSlotOfPosition(admin, dayId, "안내"),
+    );
+    seedAssignment(
+      dayId,
+      overtimeWorker.profileId,
+      "regular",
+      await freeSlotOfPosition(admin, dayId, "스캔"),
+      "스캔",
+    );
+    seedAssignment(
+      dayId,
+      rehearsed.profileId,
+      "regular",
+      await freeSlotOfPosition(admin, dayId, "메인"),
+      "메인",
+    );
+
+    // 정규 배정이 이미 있는 날이라 갈래가 건수로 판정된다
+    // (rehearsal_functions.sql의 `internal.rehearsal_kind_of`) — 화면이 부르는 것과 같은
+    // 함수를 그대로 쓴다.
+    throwIf(
+      (
+        await rehearsed.client.rpc("add_rehearsal", {
+          p_work_date: workDate,
+          p_count: 2,
+        })
+      ).error,
+    );
+
+    seedHoliday(holidayDate, "api", "대체공휴일");
+
+    return { month, day, holidayDay };
+  });
+}
+
+/**
  * 확정된 달의 안내 자리에 내게 온 근무 요청 하나다. 함수(`send_work_request`)가 아니라
  * 직결로 심는 것은 시드가 도는 시점의 스키마에 그 함수가 없을 수도 있어서고, 만들어지는
  * 행의 모양은 함수가 만드는 것과 같다.
@@ -1177,6 +1286,10 @@ async function schedulePayloadOf(
 
   if (state === PAYROLL_WAGES) {
     return seedPayrollWages();
+  }
+
+  if (state === PAYROLL_ADJUST) {
+    return seedPayrollAdjust();
   }
 
   if (state === PAYROLL_VIEW) {

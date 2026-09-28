@@ -18,16 +18,17 @@ export type MonthScheduleResult = {
   data: ScheduleDay[] | undefined;
   error: Error | null;
   isLoading: boolean;
+  refetch: () => void;
 };
 
 export function useMonthSchedule(
   client: Db,
   month: string,
 ): MonthScheduleResult {
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading, refetch } = useQuery({
     queryKey: [...SCHEDULE_KEY, month],
     queryFn: () => getMonthSchedule(client, month),
   });
 
-  return { data, error, isLoading };
+  return { data, error, isLoading, refetch: () => void refetch() };
 }

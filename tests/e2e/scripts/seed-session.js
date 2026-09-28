@@ -11,8 +11,11 @@
 // "schedule_admin_applications" | "schedule_assign_day" |
 // "schedule_admin_request_slot" | "schedule_worker_request_pending" |
 // "schedule_worker_request_claimed" | "schedule_approvals_cancel_pending" |
-// "rehearsal_qualified" 중 하나다(뒤에서 넷째까지는 schedule-requests task가,
-// 마지막은 rehearsal task가 더한다 — 계약은
+// "rehearsal_qualified" | "payroll_wages" | "payroll_view" | "payroll_view_left" |
+// "payroll_adjust" 중 하나다(요청 넷(schedule_admin_request_slot ·
+// schedule_worker_request_pending · schedule_worker_request_claimed ·
+// schedule_approvals_cancel_pending)은 schedule-requests task가, rehearsal_qualified는
+// rehearsal task가, payroll_* 넷은 급여 task들이 더한다 — 계약은
 // tests/e2e/schedule-admin.yaml·schedule-worker.yaml·approvals.yaml·rehearsal.yaml
 // 머리말). NAME은 선택이고, 프로필을
 // 보내는 상태에서 그 사람의 이름을 고른다 — 한 화면에 승인된 사람을 여럿 세우는
@@ -167,10 +170,17 @@ if (seeded.deadlineDate) {
   output.deadlineDate = seeded.deadlineDate;
 }
 
-// schedule_assign_day 전용이다. 화면 문구가 아니라 날 상세 딥링크("?date=${month}-${day}")를
-// 조립할 raw "DD"라 deadlineDate와 같은 이유로 escapeForTextSelector를 안 거친다.
+// schedule_assign_day·payroll_adjust가 쓴다. 화면 문구가 아니라 날 상세
+// 딥링크("?date=${month}-${day}")를 조립할 raw "DD"라 deadlineDate와 같은 이유로
+// escapeForTextSelector를 안 거친다.
 if (seeded.day) {
   output.day = seeded.day;
+}
+
+// payroll_adjust 전용이다. 받아온 공휴일이 심긴 다른 날짜의 raw "DD"고, day와 같은 이유로
+// 이스케이프를 안 거친다.
+if (seeded.holidayDay) {
+  output.holidayDay = seeded.holidayDay;
 }
 
 // schedule_admin_race_open 전용이다. 부분 실패 토스트가 그대로 부르는 날짜라

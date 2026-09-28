@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
@@ -8,6 +8,7 @@ import { DropZone } from "@/shared/ui/DropZone";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { ListRow } from "@/shared/ui/ListRow";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
+import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
 import type { AddAssignmentInput } from "@/entities/schedule/dals/add-assignment";
 import type {
@@ -16,6 +17,22 @@ import type {
 } from "@/entities/schedule/dals/get-month-schedule";
 import type { Qualification } from "@/entities/schedule/dals/get-qualifications";
 import type { SlotRequest } from "@/entities/schedule/dals/get-slot-requests";
+import {
+  absenceMinutes,
+  assignedMinutes,
+} from "@/screens/schedule-admin/model/absence-minutes";
+import {
+  showRevertOption,
+  type AdjustChoiceRow,
+} from "@/screens/schedule-admin/model/adjust-choice-state";
+import {
+  adjustSheetHead,
+  adjustSheetRows,
+  type AdjustSheetAdjustment,
+  type AdjustSheetRehearsal,
+} from "@/screens/schedule-admin/model/adjust-sheet-rows";
+import { adjustmentCountLine } from "@/screens/schedule-admin/model/adjustment-count";
+import { adjustmentFailureAction } from "@/screens/schedule-admin/model/adjustment-failure";
 import {
   allowsStructureChange,
   type DayConfirmGate,
@@ -28,6 +45,10 @@ import { dayHoursLine } from "@/screens/schedule-admin/model/day-hours-form";
 import { discardSlotJudgement } from "@/screens/schedule-admin/model/discard-slot";
 import type { ForceChangeCopyInput } from "@/screens/schedule-admin/model/force-change-copy";
 import { formatScheduleDate } from "@/screens/schedule-admin/model/format-schedule-date";
+import {
+  holidaySwitchState,
+  type HolidayRow,
+} from "@/screens/schedule-admin/model/holiday-switch";
 import { mergeTargetValidity } from "@/screens/schedule-admin/model/merge-target";
 import { classifyPickerRows } from "@/screens/schedule-admin/model/person-picker-rows";
 import {
@@ -37,6 +58,8 @@ import {
   slotFillCount,
 } from "@/screens/schedule-admin/model/position-rows";
 import { slotRequestBadge } from "@/screens/schedule-admin/model/slot-request-badge";
+import { AdjustChoiceSheet } from "@/screens/schedule-admin/ui/AdjustChoiceSheet";
+import { AdjustSheet } from "@/screens/schedule-admin/ui/AdjustSheet";
 import { ConfirmChangeSheet } from "@/screens/schedule-admin/ui/ConfirmChangeSheet";
 import { DiscardSlotSheet } from "@/screens/schedule-admin/ui/DiscardSlotSheet";
 import {
@@ -63,10 +86,25 @@ import { SlotSheet } from "@/screens/schedule-admin/ui/SlotSheet";
  * **판정은 전부 `model/`에 있다.** 이 파일이 하는 일은 어느 시트를 세울지 고르고 받은
  * 판정대로 콜백을 부르는 것까지다 — 누가 어느 줄에 앉고 무엇이 합쳐지는지는 순수 함수가 안다.
  *
- * **임시공휴일 줄과 근무 조정 줄은 아직 없다.** `payroll-adjust`가 더한다(spec 「범위 밖」).
+ * **임시공휴일 줄과 근무 조정 줄은 확정 잠금 밖이다.** `canChangeStructure`는 포지션과 자리의
+ * 것이고, 조정도 임시공휴일도 근무표 확정을 안 기다린다(PAY-020·PAY-027).
  */
 
 const DROP_ZONE_ID = "discard";
+
+export const SCHEDULE_HOLIDAY_SWITCH_TEST_ID = "schedule-holiday-switch";
+
+const HOLIDAY_LABEL = "임시공휴일";
+
+const ADJUST_LABEL = "근무 조정";
+
+const ABSENCE_REASON = "결근";
+
+const EXTRA_REASON = "연장";
+
+const REVERT_REASON = "원래대로";
+
+const REVERT_MINUTES = 0;
 
 const EDUCATION_KIND = "training";
 
@@ -118,10 +156,16 @@ export type DayDetailProps = {
   members: readonly DayDetailMember[];
   qualifications: readonly Qualification[];
   slotRequests: readonly SlotRequest[];
+  holidays: readonly HolidayRow[];
+  adjustments: readonly AdjustSheetAdjustment[];
+  rehearsals: readonly AdjustSheetRehearsal[];
   serverNowMs: number;
   gate: DayConfirmGate;
   isConfirmed: boolean;
   saving: boolean;
+  adjusting: boolean;
+  adjusted: boolean;
+  adjustError: Error | null;
   onBack: () => void;
   onPressHours: () => void;
   onCloseDay: () => void;
@@ -134,6 +178,14 @@ export type DayDetailProps = {
   onRemoveAssignment: (assignmentId: string) => void;
   onForceChange: (assignmentId: string, profileId: string) => void;
   onSendWorkRequest: (slotId: string, profileIds: readonly string[]) => void;
+  onSetHoliday: (on: boolean) => void;
+  onSetAdjustment: (input: {
+    profileId: string;
+    minutes: number;
+    reason: string;
+  }) => void;
+  onAdjustSettled: () => void;
+  onReloadDay: () => void;
 };
 
 export function DayDetail({
@@ -148,10 +200,16 @@ export function DayDetail({
   members,
   qualifications,
   slotRequests,
+  holidays,
+  adjustments,
+  rehearsals,
   serverNowMs,
   gate,
   isConfirmed,
   saving,
+  adjusting,
+  adjusted,
+  adjustError,
   onBack,
   onPressHours,
   onCloseDay,
@@ -164,6 +222,10 @@ export function DayDetail({
   onRemoveAssignment,
   onForceChange,
   onSendWorkRequest,
+  onSetHoliday,
+  onSetAdjustment,
+  onAdjustSettled,
+  onReloadDay,
 }: DayDetailProps) {
   const [unlocked, setUnlocked] = useState<readonly string[]>([]);
   const [picker, setPicker] = useState<PickerTarget | null>(null);
@@ -178,11 +240,65 @@ export function DayDetail({
     name: string;
   } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [adjustOpen, setAdjustOpen] = useState(false);
+  const [chosen, setChosen] = useState<string | null>(null);
 
   const rows = dayDetailRows({ applicationCount: applicationNames.length });
   const groups = groupSlotsByPosition(slots);
   const fill = slotFillCount(slots, assignments);
   const canChangeStructure = allowsStructureChange(gate);
+
+  const dayHours = useMemo(
+    () => ({ starts_at: startsAt, ends_at: endsAt }),
+    [startsAt, endsAt],
+  );
+
+  const holiday = holidaySwitchState(holidays);
+
+  const adjustRows = useMemo(
+    () =>
+      adjustSheetRows({
+        day: dayHours,
+        assignments: assignments.map((one) => ({
+          profile_id: one.profile_id,
+          name: one.profiles?.display_name ?? "",
+          kind: one.kind,
+          ended_at: one.ended_at,
+        })),
+        adjustments,
+        rehearsals,
+      }),
+    [adjustments, assignments, dayHours, rehearsals],
+  );
+
+  const chosenRow = adjustRows.find((row) => row.profile_id === chosen) ?? null;
+
+  const chosenAdjustments: AdjustChoiceRow[] = adjustments.filter(
+    (row) => row.profile_id === chosen,
+  );
+
+  /**
+   * `not_allowed`는 그날 배정이 사라진 것이라 고르기 시트를 닫고 목록을 다시 읽는다. 나머지
+   * 실패는 시트를 열어둔 채 문구만 띄운다 — 넣던 분이 남아야 다시 보낼 수 있다.
+   */
+  const failure =
+    adjustError === null ? null : adjustmentFailureAction(adjustError);
+
+  const staleDay = failure !== null && failure.refetch;
+
+  useEffect(() => {
+    if (!adjusted && !staleDay) {
+      return;
+    }
+
+    setChosen(null);
+
+    if (staleDay) {
+      onReloadDay();
+    }
+
+    onAdjustSettled();
+  }, [adjusted, staleDay, onAdjustSettled, onReloadDay]);
 
   const nameOf = useCallback(
     (profileId: string) =>
@@ -194,6 +310,20 @@ export function DayDetail({
   );
 
   const hideToast = useCallback(() => setToast(null), []);
+
+  const closeChoice = useCallback(() => {
+    setChosen(null);
+    onAdjustSettled();
+  }, [onAdjustSettled]);
+
+  const sendAdjustment = useCallback(
+    (minutes: number, reason: string) => {
+      if (chosen !== null) {
+        onSetAdjustment({ profileId: chosen, minutes, reason });
+      }
+    },
+    [chosen, onSetAdjustment],
+  );
 
   const closePicker = useCallback(() => {
     setPicker(null);
@@ -528,21 +658,48 @@ export function DayDetail({
         <ScrollView>
           <View className="gap-3 px-5 pb-8">
             <Card className="py-0">
-              {rows.map((row) =>
-                row === "hours" ? (
-                  <ListRow
-                    key={row}
-                    title={dayHoursLine(startsAt, endsAt)}
-                    onPress={onPressHours}
-                  />
-                ) : (
-                  <ListRow
-                    key={row}
-                    title={dayApplicationsLine(applicationNames)}
-                    chevron={false}
-                  />
-                ),
-              )}
+              {rows.includes("hours") ? (
+                <ListRow
+                  title={dayHoursLine(startsAt, endsAt)}
+                  onPress={onPressHours}
+                />
+              ) : null}
+
+              <View className="flex-row items-center gap-3 py-3">
+                <View className="flex-1">
+                  <Text size="base" weight="medium">
+                    {HOLIDAY_LABEL}
+                  </Text>
+                  <Text size="xs" tone="subtle" className="mt-0.5">
+                    {holiday.helperLine}
+                  </Text>
+                </View>
+                <Switch
+                  testID={SCHEDULE_HOLIDAY_SWITCH_TEST_ID}
+                  value={holiday.checked}
+                  disabled={holiday.locked}
+                  onValueChange={onSetHoliday}
+                />
+              </View>
+
+              <ListRow
+                title={ADJUST_LABEL}
+                right={
+                  <Text size="xs" tone="subtle" numeric>
+                    {adjustmentCountLine(adjustments)}
+                  </Text>
+                }
+                chevron
+                className="py-3"
+                onPress={() => setAdjustOpen(true)}
+              />
+
+              {rows.includes("applications") ? (
+                <ListRow
+                  title={dayApplicationsLine(applicationNames)}
+                  chevron={false}
+                />
+              ) : null}
             </Card>
 
             <View>
@@ -666,6 +823,39 @@ export function DayDetail({
               })
             }
             onClose={() => setOpenSlotSheet(null)}
+          />
+        </SheetLayer>
+      )}
+
+      {adjustOpen ? (
+        <SheetLayer
+          onDismiss={() => {
+            setAdjustOpen(false);
+            setChosen(null);
+          }}
+        >
+          <AdjustSheet
+            head={adjustSheetHead(dayHours)}
+            rows={adjustRows}
+            onPickPerson={setChosen}
+          />
+        </SheetLayer>
+      ) : null}
+
+      {chosenRow === null ? null : (
+        <SheetLayer onDismiss={closeChoice}>
+          <AdjustChoiceSheet
+            name={chosenRow.name}
+            assignedMinutes={assignedMinutes(dayHours)}
+            canRevert={showRevertOption(chosenAdjustments)}
+            sending={adjusting}
+            failureMessage={failure === null ? null : failure.message}
+            onAbsent={() =>
+              sendAdjustment(absenceMinutes(dayHours), ABSENCE_REASON)
+            }
+            onRevert={() => sendAdjustment(REVERT_MINUTES, REVERT_REASON)}
+            onExtend={(minutes) => sendAdjustment(minutes, EXTRA_REASON)}
+            onClose={closeChoice}
           />
         </SheetLayer>
       )}

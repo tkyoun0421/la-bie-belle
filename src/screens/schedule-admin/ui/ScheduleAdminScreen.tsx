@@ -21,6 +21,10 @@ import { Text } from "@/shared/ui/Text";
 import type { AddAssignmentInput } from "@/entities/schedule/dals/add-assignment";
 import { liveAssignmentCount } from "@/entities/schedule/dals/get-month-schedule";
 import { useMembers } from "@/features/members/model/useMembers";
+import { usePayrollMonths } from "@/features/payroll/model/usePayrollMonths";
+import { useSetAdjustment } from "@/features/payroll/model/useSetAdjustment";
+import { useSetHoliday } from "@/features/payroll/model/useSetHoliday";
+import { useAllRehearsals } from "@/features/rehearsal/model/useAllRehearsals";
 import { useAddAssignment } from "@/features/schedule/model/useAddAssignment";
 import { useAddSlot } from "@/features/schedule/model/useAddSlot";
 import { useCloseDay } from "@/features/schedule/model/useCloseDay";
@@ -93,7 +97,9 @@ import { DayHoursSheet } from "@/screens/schedule-admin/ui/DayHoursSheet";
  * 거는 자리가 여기고, 어느 시트를 세울지는 `DayDetail`이 정한다 — 달력과 날 상세가 한
  * 라우트라 훅이 두 갈래로 갈리지 않는다.
  *
- * **임시공휴일 줄과 근무 조정 줄은 아직 없다.** `payroll-adjust`가 더한다(spec 「범위 밖」).
+ * **날 상세가 읽는 키가 넷이다.** 자리·배정의 `['schedule']`에 임시공휴일과 조정을 실은
+ * `['payroll', 'YYYY-MM']`과 그달 전원 리허설 `['rehearsal', 'YYYY-MM', 'all']`이 붙는다 —
+ * 조정 시트가 줄마다 세는 최종 시간이 셋을 다 쓴다(plan payroll-adjust AC-05).
  *
  * **`?from=`은 앱바 뒤로가 어디로 가는지와 도착 토스트를 정한다.** 승인할 일에서 근무 취소를
  * 승인하면 그 자리를 채우러 여기로 오는데, 「근무를 취소했어요」는 그 판정이 끝난 뒤에 뜰
@@ -155,12 +161,14 @@ export function ScheduleAdminScreen({
     supabase,
     month,
   );
-  const { data: days } = useMonthSchedule(supabase, month);
+  const { data: days, refetch: reloadDays } = useMonthSchedule(supabase, month);
   const { data: openSlots } = useOpenSlots(supabase, month);
   const { data: availabilities } = useMonthAvailabilities(supabase, month);
   const { data: activeMembers } = useMembers(supabase, "active");
   const { data: qualifications } = useQualifications(supabase);
   const { data: slotRequests } = useSlotRequests(supabase, month);
+  const { data: payroll } = usePayrollMonths(supabase, [month]);
+  const { data: rehearsals } = useAllRehearsals(supabase, month);
   const clockOffset = serverClockStore((at) => at.offset);
 
   const create = useCreateSchedule(supabase);
@@ -178,6 +186,8 @@ export function ScheduleAdminScreen({
   const forceChange = useForceChange(supabase);
   const grantPosition = useGrantPosition(supabase);
   const sendWorkRequest = useSendWorkRequest(supabase);
+  const setHoliday = useSetHoliday(supabase);
+  const setAdjustment = useSetAdjustment(supabase);
 
   /**
    * 「자격도 주기」는 한 트랜잭션이 아니라 두 호출이다. 앞이 성공하고 뒤가 실패하면 자격만
@@ -329,6 +339,15 @@ export function ScheduleAdminScreen({
           slotRequests={(slotRequests ?? []).filter(
             (request) => request.slots.days.work_date === day.work_date,
           )}
+          holidays={(payroll?.holidays ?? []).filter(
+            (row) => row.holiday_date === day.work_date,
+          )}
+          adjustments={(payroll?.adjustments ?? []).filter(
+            (row) => row.day_id === day.id,
+          )}
+          rehearsals={(rehearsals ?? []).filter(
+            (row) => row.work_date === day.work_date,
+          )}
           serverNowMs={nowWithOffset(Date.parse(now), clockOffset)}
           gate={dayConfirmGate({
             openedAt: day.opened_at,
@@ -342,6 +361,9 @@ export function ScheduleAdminScreen({
             removeSlot.isPending ||
             sendWorkRequest.isPending
           }
+          adjusting={setAdjustment.isPending}
+          adjusted={setAdjustment.isSuccess}
+          adjustError={setAdjustment.error}
           onBack={() =>
             from === APPROVALS_ORIGIN
               ? router.replace("/admin/approvals")
@@ -372,6 +394,17 @@ export function ScheduleAdminScreen({
           onSendWorkRequest={(slotId, profileIds) =>
             sendWorkRequest.mutate({ slotId, profileIds })
           }
+          onSetHoliday={(on) => setHoliday.mutate({ date: day.work_date, on })}
+          onSetAdjustment={({ profileId, minutes, reason }) =>
+            setAdjustment.mutate({
+              dayId: day.id,
+              profileId,
+              minutes,
+              reason,
+            })
+          }
+          onAdjustSettled={setAdjustment.reset}
+          onReloadDay={reloadDays}
         />
 
         {sheet === "hours" ? (

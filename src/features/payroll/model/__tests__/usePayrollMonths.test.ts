@@ -68,6 +68,13 @@ function monthPayload(month: string) {
         decision: null,
       },
     ],
+    holidays: [
+      {
+        holiday_date: `${month}-25`,
+        source: "api",
+        name: `${month} holiday`,
+      },
+    ],
   };
 }
 
@@ -159,5 +166,49 @@ describe("usePayrollMonths — 전부 오면 달치가 합쳐져 나온다", () 
     expect(
       result.current.data?.adjustments.map((row: { id: string }) => row.id),
     ).toEqual(expect.arrayContaining(["adj-2026-09", "adj-2026-10"]));
+  });
+
+  it("두 달의 holidays가 달 순서를 따라 하나로 합쳐진다", async () => {
+    getPayrollMonthMock.mockImplementation(async (_client, month) =>
+      monthPayload(month as string),
+    );
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(
+      () => usePayrollMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(
+      result.current.data?.holidays.map(
+        (row: { holiday_date: string }) => row.holiday_date,
+      ),
+    ).toEqual(["2026-09-25", "2026-10-25"]);
+  });
+
+  it("한 달의 holidays가 비어 있어도 나머지 달의 것이 그대로 나온다", async () => {
+    getPayrollMonthMock.mockImplementation(async (_client, month) => {
+      const payload = monthPayload(month as string);
+      if (month === "2026-09") {
+        return { ...payload, holidays: [] };
+      }
+      return payload;
+    });
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(
+      () => usePayrollMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(
+      result.current.data?.holidays.map(
+        (row: { holiday_date: string }) => row.holiday_date,
+      ),
+    ).toEqual(["2026-10-25"]);
   });
 });

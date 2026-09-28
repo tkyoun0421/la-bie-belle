@@ -55,7 +55,8 @@ sources:
 
 - 날 상세 짜임의 3번이다. **스위치 하나**고([components.md](../../2-design/design-system/components.md#스위치)) 라벨 아래에 무엇에 쓰이는지 한 줄이 붙는다
 - 켜면 `set_holiday(p_date, true)`, 끄면 `false`다
-- **받아온 공휴일인 날은 켜진 채 잠긴다.** 아래 줄 문구가 「원래 공휴일이에요」로 바뀐다 — 이미 공휴일이라 손댈 것이 없다
+- **받아온 공휴일인 날은 켜진 채 잠긴다.** 아래 줄 문구가 「원래 공휴일이에요」로 바뀐다 — 이미 공휴일이라 손댈 것이 없다. 판정은 그 날짜에 `source = 'api'` 행이 있는가 하나고, 같은 날짜에 `manual` 행이 같이 서 있어도 잠금이 이긴다([공휴일](../../2-design/modules/payroll/design.md#공휴일))
+- **확정 뒤 잠금 게이트에 안 태운다.** 날 상세가 이미 쓰는 `canChangeStructure`는 포지션과 자리의 것이다
 - **확정 뒤에도 켜고 끌 수 있다** — 임시공휴일 지정이 근무표 확정을 안 기다린다([PAY-027](../../2-design/modules/payroll/README.md#pay-027))
 - 근무를 여는 날에만 선다. 날 상세가 곧 열린 날이라 이 조건은 화면 위치가 이미 만족한다
 
@@ -64,6 +65,7 @@ sources:
 **근무 조정 줄.**
 
 - 날 상세 짜임의 4번이다. 라벨 오른쪽에 「2명 조정됨」이 서고 **조정한 사람이 없으면 오른쪽이 빈다** — 「0명 조정됨」이 아니다
+- 세는 것은 **마지막 조정 행의 분이 0이 아닌 사람**이다. 되돌린 사람은 손본 사람이 아니라 안 센다([근무 조정](../../2-design/modules/schedule/screens/schedule-admin.md#근무-조정))
 - 누르면 [근무 조정 시트](../../2-design/modules/schedule/screens/schedule-admin.md#근무-조정)가 열린다
 - 근무 시간 줄이 그날 전원에게 같이 걸리는 하나의 값이라면 이 줄은 그 값에서 사람마다 어긋난 자리를 담는다
 
@@ -71,8 +73,9 @@ sources:
 
 **근무 조정 시트.**
 
-- 제목 아래에 그날 근무 시각과 시간이 선다. **그날 배정된 사람이 한 줄씩**이다
+- 제목 아래에 그날 근무 시각과 시간이 서고 그 아래 도움말 한 줄이 선다. **그날 배정된 사람이 한 줄씩**이다 — 살아 있는 배정만이고 교육 배정도 든다([PAY-007](../../2-design/modules/payroll/README.md#pay-007))
 - **줄마다 그날 최종 시간이 선다** — 배정 시간 + 조정 + 리허설이다([PAY-028](../../2-design/modules/payroll/README.md#pay-028)). 관리자가 고치기 전에 지금 얼마로 세고 있는지를 먼저 본다
+- **그 시간은 근태를 안 본다.** 인증이 없어 결근으로 판정된 날을 급여 계산이 0으로 덮는 층은 여기 안 그린다 — 대신 머리 아래 도움말 한 줄이 그 층을 말한다([근무 조정](../../2-design/modules/schedule/screens/schedule-admin.md#근무-조정))
 - 조정이 든 줄은 시간 앞에 「결근」이나 「연장」이 붙는다
 - **리허설이 있는 사람은 이름 아래 작은 줄이다.** 건수면 「리허설 2건 · 2시간」, 시각이면 「리허설 14:00–16:00 · 2시간」이다. **안 눌린다**
   - 시각 갈래가 여기 서는 것은 배정 없는 날에 넣어둔 뒤 관리자가 나중에 그날 배정을 넣은 날이다 — 이미 선 행은 갈래를 다시 판정하지 않는다([리허설](../../2-design/modules/schedule/design.md#리허설))
@@ -81,25 +84,25 @@ sources:
 
 ### AC-04
 
-**사람 시트.** 조정 시트 위에 한 겹 더 선다.
+**조정 고르기 시트.** 조정 시트 위에 한 겹 더 선다. 이름이 「사람 시트」가 아닌 것은 [사람 픽커](../../2-design/modules/schedule/screens/schedule-admin.md#사람-시트)가 그 이름을 이미 써서다.
 
-- 「결근이에요 · 연장이에요」 둘이고 **조정이 이미 든 사람에게만 「원래대로」가 한 줄 더 선다** — 지울 것이 없는 사람에게 지우기를 안 보여준다
+- 「결근이에요 · 연장이에요」 둘이고 **조정 행이 하나라도 있는 사람에게만 「원래대로」가 한 줄 더 선다** — 지울 것이 없는 사람에게 지우기를 안 보여준다. 마지막 행이 0분인 사람에게도 선다(이미 되돌린 사람이다)
 - **결근은 값을 안 묻는다.** 고른 즉시 반영이고 화면이 **그날 배정 시간만큼의 음수**를 계산해 넣는다
 - **연장을 고르면 분을 넣는 칸이 열리고 버튼이 「닫기 · 바꾸기」로 바뀐다.** 단위가 분이다
 - 「원래대로」는 `p_minutes = 0`인 새 행이다 — 지우지 않는다([payroll-data AC-04](payroll-data.md#ac-04))
-- 저장은 셋 다 `set_adjustment`다
+- 저장은 셋 다 `set_adjustment`고 `p_reason`은 고른 갈래 이름이다 — 「결근」·「연장」·「원래대로」([조정](../../2-design/modules/payroll/design.md#조정))
 
 ### AC-05
 
 **읽기와 무효화.**
 
-- 조정 시트는 `['schedule']`(배정과 날)·`['payroll']`(조정)·`['rehearsal', 'YYYY-MM', 'all']`(그날 전원 리허설)을 읽는다. **날 상세가 이미 읽은 것에 리허설 키 하나가 는다**
+- 조정 시트는 `['schedule']`(배정과 날)·`['payroll', 'YYYY-MM']`(조정과 공휴일)·`['rehearsal', 'YYYY-MM', 'all']`(그날 전원 리허설)을 읽는다. **날 상세가 지금 읽는 것은 `['schedule']`뿐이라 키 둘이 는다** — 앞 두 줄이 「하나가 는다」로 적혀 있던 자리다
 - 최종 시간 셈은 [`payroll-data`](payroll-data.md#ac-06)의 순수 함수를 쓴다. **여기서 다시 짜지 않는다** — 급여 화면과 이 시트가 다른 시간을 말하면 안 된다
 - `set_adjustment`·`set_holiday`가 성공하면 `['payroll']`을 무효화한다([무효화 표](../../2-design/system/runtime.md#무효화-표))
 
 ### AC-06
 
-**색·글자·여백·문안·모션.** [날 상세 색](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-색)·[날 상세 글자](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-글자)·[날 상세 여백과 모양](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-여백과-모양)·[날 상세 문안](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-문안)·[날 상세 모션](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-모션) 표에서 **임시공휴일·근무 조정·조정 시트·사람 시트 행이 이 task의 것이다.**
+**색·글자·여백·문안·모션.** [날 상세 색](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-색)·[날 상세 글자](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-글자)·[날 상세 여백과 모양](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-여백과-모양)·[날 상세 문안](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-문안)·[날 상세 모션](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-모션) 표에서 **임시공휴일·근무 조정·조정 시트·조정 고르기 시트 행이 이 task의 것이다.**
 
 시안 `schedule-admin.sian.html`을 옆에 열고 맞춘다. **시안과 문서가 어긋나면 문서가 이긴다.**
 
@@ -108,26 +111,28 @@ sources:
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
 | `src/screens/schedule-admin/model/*.ts`·`__tests__/` | 결근 음수 계산·조정 인원 셈·리허설 줄 문구 | AC-02~AC-04 |
-| `src/screens/schedule-admin/ui/day-detail.tsx` | 줄 둘을 짜임에 끼운다 | AC-01·AC-02 |
-| `src/screens/schedule-admin/ui/adjust-sheet.tsx`·`person-sheet.tsx` | 시트 둘 | AC-03·AC-04·AC-06 |
-| `src/features/payroll/*.ts`·`__tests__/` | `set_adjustment`·`set_holiday` mutation과 무효화 | AC-05 |
+| `src/screens/schedule-admin/ui/DayDetail.tsx` | 줄 둘을 짜임에 끼운다 | AC-01·AC-02 |
+| `src/screens/schedule-admin/ui/AdjustSheet.tsx`·`AdjustChoiceSheet.tsx` | 시트 둘. 둘째 이름이 `PersonSheet`가 아닌 것은 사람 픽커가 그 이름을 이미 써서다 | AC-03·AC-04·AC-06 |
+| `src/features/payroll/model/useSetAdjustment.ts`·`useSetHoliday.ts`·`__tests__/` | mutation과 `['payroll']` 무효화 | AC-05 |
+| `src/entities/payroll/dals/get-payroll-month.ts`·`__tests__/` | `holidays`를 그달치로 같이 싣는다 | AC-01 |
+| `src/features/payroll/model/usePayrollMonth.ts`(있으면 재사용) | 날 상세가 `['payroll', 'YYYY-MM']`을 읽는다 | AC-01·AC-05 |
 | `src/entities/rehearsal/dals/get-all-rehearsals.ts` | 날 상세가 쓰는 달 질의 | AC-05 |
-| `payroll-adjust` e2e | e2e | 검증 표 |
+| `tests/e2e/schedule-admin.yaml` | 새 절을 이어 붙인다. 새 파일이 아니다 | 검증 표 |
 
 ## 구현 순서
 
 기능 task 파이프라인이다 — `test-planner` → `unit-test-writer`·`e2e-test-writer` → `implementer` → `pr-diff`. [`payroll-data`](payroll-data.md)와 [`schedule-admin`](schedule-admin.md)이 둘 다 merge된 뒤에 시작한다.
 
-1. `test-planner`가 AC-01~AC-06을 배정한다. **integration이 없다** — 함수는 앞 task가 이미 봤다
+1. `test-planner`가 AC-01~AC-06을 배정한다. **함수 거절은 앞 task가 이미 봤다** — 새 integration은 `get_payroll_month`가 `holidays`를 싣는 자리 하나뿐이다
 2. `unit-test-writer`가 AC-04의 결근 음수를 먼저 쓴다. 이 task의 위험이 거기 있다 — 화면이 값을 만들어 넣는 유일한 자리다
-3. `implementer`가 임시공휴일 줄 → 조정 줄 → 조정 시트 → 사람 시트 순으로 초록을 만든다
+3. `implementer`가 임시공휴일 줄 → 조정 줄 → 조정 시트 → 조정 고르기 시트 순으로 초록을 만든다
 4. `e2e-test-writer`가 결근을 넣었다 원래대로 돌리는 한 바퀴를 쓴다
 5. `pr-diff`가 diff를 본다 — 최종 시간 셈이 여기서 다시 짜이지 않았는지, 리허설 줄에 누르는 길이 생기지 않았는지
 6. `sian-auditor`가 문서와 시안과 구현을 대조한다
 
 ## 리스크·전환·되돌리기
 
-- **결근 음수를 화면이 계산한다.** 함수가 분만 받아서다. 그날 근무 시간을 관리자가 나중에 고치면 **이미 넣은 음수가 새 배정 시간과 안 맞는다** — 9시간일 때 넣은 −540분이 8시간으로 줄어든 날에 −540분으로 남아 총 −60분이 된다. 계산이 음수 총합을 0으로 바닥 처리하지 않으면 금액이 음수가 된다. **[payroll-data AC-06](payroll-data.md#ac-06)이 그 바닥을 안 적었다** — 이 task가 그 자리를 열어 계산 쪽에 바닥을 넣거나, 근무 시간을 고칠 때 조정을 다시 계산하게 해야 한다. **둘 중 어느 쪽인지가 이 task의 첫 결정이다**
+- **결근 음수는 고른 순간의 배정 시간이다.** 함수가 분만 받아서 화면이 그날 배정 시간만큼의 음수를 넣는다. 그날 근무 시간을 관리자가 나중에 고치면 그 음수가 새 배정 시간과 안 맞는다. **판정은 계산 쪽 바닥이고, 근무 시간을 고칠 때 조정을 다시 계산하지 않는다** — 조정은 이력이 남는 사람 손이라([payroll/design.md](../../2-design/modules/payroll/design.md#조정)) 근무 시간 변경이 남의 조정 행을 말없이 고치면 그 이력이 거짓이 된다. 시간이 줄어 총합이 음수가 되는 쪽은 [`dayMinutes`](../../../src/features/payroll/model/day-minutes.ts)의 `Math.max(total, 0)`이 이미 막는다. 시간이 늘어 총합이 양수로 남는 쪽(9시간일 때 넣은 −540분이 10시간이 된 날에 60분을 남긴다)은 막지 않는다 — 배정을 늘리는 것이 관리자의 손이고, 그 손 바로 옆 조정 시트가 줄마다 최종 시간을 보여줘 「1시간」이 눈에 선다([schedule-admin.md](../../2-design/modules/schedule/screens/schedule-admin.md#근무-조정)). 결근으로 되돌리려면 그 시트에서 「결근」을 다시 고른다 — 같은 날 두 번 조정은 새 행이고 계산은 마지막 행을 쓴다
 - **리허설 키 하나가 날 상세에 는다.** 관리자가 날을 열 때마다 그달 전원 리허설을 받는다. 서른 명 한 달이면 수십 행이라 작지만, 날 상세가 읽는 키가 넷이 된다
 - **읽기 전용 줄이 눌릴 위험.** 리허설 줄이 조정 줄 바로 아래 붙어 있어 손가락이 스친다. 누름 배경도 화살표도 없는 것이 유일한 구분이라 히트 영역이 안 겹치게 둔다
 - **날 상세가 두 영역의 값을 같이 든다.** 근무표 화면에 급여 표로 가는 쓰기가 둘 선다 — 경계를 넘는 자리라 `pr-diff`가 그 dal이 `entities/payroll`에 사는지 본다
