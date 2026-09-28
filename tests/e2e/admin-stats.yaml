@@ -1,0 +1,478 @@
+# 관리자 통계 — 관리자가 근무 탭에서 이번 달 합계·사람별·포지션 구획을 보고, 사람별
+# 줄을 눌러 근무 내역 시트를 확인하고, 포지션 줄은 안 눌리는 것을 보고, 근태 탭으로
+# 건너가 달이 유지되는 채로 현황·비율 띠·범례를 보고, 달을 앞뒤로 옮기며 화살표
+# 경계와 빈 상태(근무가 하나도 없는 달)를 겪는 것까지 한 여정으로 간다.
+#
+# 근거는 docs/2-design/spec/stats-admin.md(AC-02·AC-04·AC-05, 상태 격자 「빈
+# 상태」·「경계」)와 docs/3-build/plans/stats-admin.md(AC-06~AC-09, 「착수 판정」)와
+# docs/2-design/system/screens/stats.md(「관리자 — /admin/stats」·「짜임과 토큰」·
+# 「문안」)다. 배정받은 리스크는(총괄 지시 「쓸 것 — 한 여정」)
+#   - 앱바·달 줄·세그먼트·추이 그래프까지의 짜임
+#   - 근무 탭 — 합계·보조 줄·사람별 구획·포지션 구획에 값이 실제로 도착한다(셋의
+#     합이 같은 것은 unit이 이미 본다 — work-totals.test.ts)
+#   - 사람별 줄 → 근무 내역 시트 → 합계가 구획 줄과 같다
+#   - 포지션 줄은 안 눌린다(화살표가 없다)
+#   - 근태 탭 — 달이 유지된 채로 현황 줄·비율 띠·범례. 몫이 0인 갈래는 범례에서
+#     빠진다
+#   - 달 앞뒤 이동 — 이번 달에서 앞 화살표가 사라지고 첫 근무표가 있는 달에서 뒤
+#     화살표가 사라진다
+#   - 그래프를 눌러도 달이 안 바뀐다
+#   - 근무가 없는 달 — 합계 `–`, 목록 자리에 빈 상태, 그래프는 안 빈다
+# AC-01(사람별 합·포지션 합·전체가 같은지, 겸임·교육·리허설 처리)과 AC-03(열두 달
+# 추이의 계산)은 test-planner가 이미 unit으로 배정했다(work-totals.test.ts·
+# trend.test.ts) — 여기서는 그 계산이 실제 화면에 도착하는지, 탭과 달 이동이 실제로
+# 이어지는지만 본다. AC-07(근무자 리다이렉트)은 안 쓴다 — `/admin` 아래를 지키는
+# `_layout.tsx` 가드는 tests/e2e/admin.yaml이 대표로 이미 본다(plan 「착수 판정」의
+# 같은 판정).
+#
+# **겸임 시트 표기에 관해 정본과 배정이 갈린다.** 배정 지시문은 "겸임인 날에
+# 포지션 둘이 뜬다"고 적었지만, docs/2-design/system/screens/stats.md 「근무 내역
+# 시트」는 "겸임인 날은 앞 포지션만 적는다 — 포지션 구획이 세는 방식과 같다. 두
+# 포지션을 다 적으면 시간이 두 번 든 것처럼 읽힌다"고 명시하고,
+# docs/2-design/spec/stats-admin.md AC-02도 "겸임인 날은 앞 포지션만 낸다 — 구획과
+# 같은 규칙이라 두 값이 맞는다"고 같은 말을 한다. 이 파일은 **정본(두 문서가 일치하는
+# 쪽)을 따라 앞 포지션 하나만 뜨는 것으로 적는다** — 배정 지시문 쪽 문구가 오기이거나
+# 다른 화면(예: 근무표 날 상세의 겸임 배지 "메인·드레스")과 혼동됐을 가능성을 아래
+# 「발견한 이슈」에 적어 돌려준다. 구현이 실제로 포지션 둘을 낸다면 그것은 이 정본과
+# 어긋나는 것이라 이 플로우가 그 쪽으로 잡히면 안 된다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/schedule-worker.yaml 머리말, scripts/e2e-seed-server.mts,
+# scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의 "/admin/stats"
+# 그대로다.
+#
+# **`/admin/stats`는 "?month="을 안 받는다.** navigation.md 「경로」 표의
+# "/admin/schedule"·"/me/rehearsals" 행은 "?month="를 명시로 적지만
+# "/admin/stats" 행에는 그 언급이 없다 — stats-admin plan의 AC-06 화면 뼈대
+# 절에도 쿼리 파라미터가 없고, 상태 격자 「재진입」이 "다시 들어오면 이번 달로
+# 돌아간다 — 보던 달을 기억하지 않는다"고 정한 것과도 맞는다. **그래서 이 화면은
+# 딥링크로 바로 어느 달에 못 간다** — 항상 실제 오늘이 든 달("이번 달")로 열리고,
+# 다른 달을 보려면 화면 안에서 달 화살표를 눌러야 한다. 아래 시드가 만드는 세 달
+# 전부 이 방식(화살표 반복)으로만 닿는다.
+#
+# **시드 서버에 상태 "stats_admin_overview"가 아직 없다 — implementer가 이 task에서
+# 더한다.** 관리자 하나와 근무자 넷, 그리고 진짜 과거 세 달(오프셋 -3·-4·-5)을
+# 세운다. `create_schedule`·`open_day`는 지난 날짜를 거절해서(`date_past`) 이
+# 화면처럼 과거 달을 보여줘야 하는 시드는 `seedPastSchedule`·`seedPastDay`(직접
+# SQL, tests/e2e/payroll.yaml의 `seedPayrollView`와 같은 손)로 심는다.
+# `seedPastSchedule`이 `confirmed_at`을 안 채우는데, 이 화면은 확정 여부를 안 보므로
+# (plan 「착수 판정」 — "배정이 있으면 센다") 그대로 써도 된다.
+#
+# **왜 오프셋 -3·-4·-5인가.** 이번 달(0)은 `rehearsal_qualified`가, -1과 -2는
+# `payroll_view`/`payroll_view_left`가 이미 건드린다(-2는 `secondMonthOffset`이
+# 지난달이 1월이 아닌 한 고르는 값이다) — `pnpm e2e`가 `tests/e2e/` 전체를 한
+# 로컬 DB 위에서 돈다면(execution.md 「pnpm e2e」, 리셋 시점은 문서에 없다) 그 두
+# 상태와 겹치지 않을 달이 필요하다. -3·-4·-5는 그 넷과 안 겹치는 가장 가까운
+# 구간이라는 추정이고, **이후에 다른 task가 같은 구간의 과거 달을 쓰면 다시
+# 부딪힐 수 있는 임시방편이다** — 아래 「이슈」에도 적는다. 세 달이 화살표
+# 반복(최대 5번)으로 닿을 만큼 가까운 것과, `payroll_view`류를 피하는 것 사이의
+# 타협이다.
+#
+# ```ts
+# const STATS_ADMIN_OVERVIEW = "stats_admin_overview";
+#
+# // STATES 배열과 ADMIN_STATES 집합 둘 다에 더한다 — 로그인하는 사람이 관리자다.
+#
+# // SchedulePayload에 이 셋을 더한다(전부 optional). "?month="이 없는 화면이라
+# // 원값 month는 안 싣는다 — 화면 문구를 그대로 단언하는 라벨 셋만 쓴다.
+# //   statsWorkMonthLabel?: string;
+# //   statsSecondMonthLabel?: string;
+# //   statsEmptyMonthLabel?: string;
+#
+# async function seedStatsAdminOverview(): Promise<Partial<SchedulePayload>> {
+#   const admin = await createAdminUser();
+#
+#   const jointWorker = await createSignedInUser();
+#   await submitSeededProfile(jointWorker, { ...SEEDED_PROFILE, name: "고은채" });
+#   await decideBy("approve_member", jointWorker.profileId);
+#
+#   const trainee = await createSignedInUser();
+#   await submitSeededProfile(trainee, { ...SEEDED_PROFILE, name: "강태오" });
+#   await decideBy("approve_member", trainee.profileId);
+#
+#   const absentee = await createSignedInUser();
+#   await submitSeededProfile(absentee, { ...SEEDED_PROFILE, name: "윤소현" });
+#   await decideBy("approve_member", absentee.profileId);
+#
+#   const excused = await createSignedInUser();
+#   await submitSeededProfile(excused, { ...SEEDED_PROFILE, name: "민하율" });
+#   await decideBy("approve_member", excused.profileId);
+#
+#   const workMonth = kstMonthStart(-3);
+#   const secondMonth = kstMonthStart(-4);
+#   const emptyMonth = kstMonthStart(-5);
+#   const workMonthKey = workMonth.slice(0, 7);
+#   const secondMonthKey = secondMonth.slice(0, 7);
+#
+#   // ---- workMonth: 겸임 하나·교육 하나·근태 네 갈래(출근·지각·결근·출근 인정)
+#   // 각 하나. 대기실은 아무도 안 서 "아무도 안 선 포지션"을 그대로 채운다. ----
+#   seedPastSchedule(workMonth, admin.profileId);
+#
+#   const wDay1 = `${workMonthKey}-01`; // 고은채 — 겸임(메인·드레스), 출근
+#   const wDay2 = `${workMonthKey}-02`; // 강태오 — 안내 교육, 지각
+#   const wDay3 = `${workMonthKey}-03`; // 윤소현 — 스캔, 결근
+#   const wDay4 = `${workMonthKey}-04`; // 민하율 — 매니저, 출근 인정
+#
+#   seedPastDay(wDay1, workMonth, "10:00:00", "19:00:00", admin.profileId);
+#   seedPastDay(wDay2, workMonth, "10:00:00", "16:00:00", admin.profileId);
+#   seedPastDay(wDay3, workMonth, "10:00:00", "18:00:00", admin.profileId);
+#   seedPastDay(wDay4, workMonth, "10:00:00", "17:00:00", admin.profileId);
+#
+#   const wDay1Id = await dayIdOf(admin, wDay1);
+#   const wDay2Id = await dayIdOf(admin, wDay2);
+#   const wDay3Id = await dayIdOf(admin, wDay3);
+#   const wDay4Id = await dayIdOf(admin, wDay4);
+#
+#   // 겸임 자리 — "메인"·"드레스"를 합친 슬롯 하나에 한 사람. 앞 포지션("메인")으로
+#   // 센다(stats.md 「근무 포지션 구획」). seedJointSlot은 아래 postgres.ts 추가
+#   // 제안을 쓴다.
+#   const jointSlotId = seedJointSlot(wDay1Id, ["메인", "드레스"]);
+#   seedAssignment(wDay1Id, jointWorker.profileId, "regular", jointSlotId, "메인");
+#   seedCheckIn(wDay1Id, jointWorker.profileId, kstInstant(wDay1, "09:58:00"));
+#
+#   // 교육 배정 — kind: "training"은 slot_id가 없다(schedule.sql의 check 제약).
+#   seedAssignment(wDay2Id, trainee.profileId, "training", null, "안내");
+#   seedCheckIn(wDay2Id, trainee.profileId, kstInstant(wDay2, "10:15:00")); // 10분 넘어 지각
+#
+#   // 결근 — 인증도 사유도 없다. 지난 달이라 마감(48시간, ATT-023)이 이미 지나 있다.
+#   seedAssignment(
+#     wDay3Id,
+#     absentee.profileId,
+#     "regular",
+#     seedSlotOfPosition(wDay3Id, "스캔"),
+#     "스캔",
+#   );
+#
+#   // 출근 인정 — 승인된 사유, 인증은 없다. seedExcuse는 아래 postgres.ts 추가
+#   // 제안을 쓴다.
+#   seedAssignment(
+#     wDay4Id,
+#     excused.profileId,
+#     "regular",
+#     seedSlotOfPosition(wDay4Id, "매니저"),
+#     "매니저",
+#   );
+#   seedExcuse(wDay4Id, excused.profileId, "approved");
+#
+#   // ---- secondMonth: 결근·출근 인정 두 몫이 0인 달 — 범례가 그 둘을 빼는지
+#   // 본다. 강태오가 이틀 나와 "출근 n · 지각 n"이 둘 다 찍히는 사람별 목록 줄도
+#   // 겸사겸사 만든다. ----
+#   seedPastSchedule(secondMonth, admin.profileId);
+#
+#   const sDay1 = `${secondMonthKey}-01`; // 고은채 — 메인, 출근
+#   const sDay2 = `${secondMonthKey}-02`; // 강태오 — 스캔, 출근
+#   const sDay3 = `${secondMonthKey}-03`; // 강태오 — 스캔, 지각
+#
+#   seedPastDay(sDay1, secondMonth, "10:00:00", "18:00:00", admin.profileId);
+#   seedPastDay(sDay2, secondMonth, "10:00:00", "18:00:00", admin.profileId);
+#   seedPastDay(sDay3, secondMonth, "10:00:00", "19:00:00", admin.profileId);
+#
+#   const sDay1Id = await dayIdOf(admin, sDay1);
+#   const sDay2Id = await dayIdOf(admin, sDay2);
+#   const sDay3Id = await dayIdOf(admin, sDay3);
+#
+#   seedAssignment(
+#     sDay1Id,
+#     jointWorker.profileId,
+#     "regular",
+#     seedSlotOfPosition(sDay1Id, "메인"),
+#     "메인",
+#   );
+#   seedCheckIn(sDay1Id, jointWorker.profileId, kstInstant(sDay1, "09:55:00"));
+#
+#   seedAssignment(
+#     sDay2Id,
+#     trainee.profileId,
+#     "regular",
+#     seedSlotOfPosition(sDay2Id, "스캔"),
+#     "스캔",
+#   );
+#   seedCheckIn(sDay2Id, trainee.profileId, kstInstant(sDay2, "09:50:00"));
+#
+#   seedAssignment(
+#     sDay3Id,
+#     trainee.profileId,
+#     "regular",
+#     seedSlotOfPosition(sDay3Id, "스캔"),
+#     "스캔",
+#   );
+#   seedCheckIn(sDay3Id, trainee.profileId, kstInstant(sDay3, "10:15:00"));
+#
+#   // ---- emptyMonth: schedules 행만 있고 days가 없다. 세 달 중 가장 이른 달이라
+#   // "첫 근무표가 있는 달"의 바닥이 되면서 동시에 "근무가 하나도 없다" 빈 상태를
+#   // 만든다(plan 「착수 판정」 — 확정 여부는 안 본다). ----
+#   seedPastSchedule(emptyMonth, admin.profileId);
+#
+#   return {
+#     statsWorkMonthLabel: spellMonth(workMonthKey),
+#     statsSecondMonthLabel: spellMonth(secondMonthKey),
+#     statsEmptyMonthLabel: spellMonth(emptyMonth.slice(0, 7)),
+#   };
+# }
+#
+# // schedulePayloadOf에 분기를 더한다.
+# if (state === STATS_ADMIN_OVERVIEW) {
+#   return seedStatsAdminOverview();
+# }
+# ```
+#
+# **postgres.ts에 새 헬퍼 둘이 필요하다.**
+#
+# ```ts
+# /** 포지션 둘을 합친 겸임 자리다. 앉는 사람은 하나고 앞 포지션(positions[0])으로
+#  * 센다(stats.md 「근무 포지션 구획」). */
+# export function seedJointSlot(
+#   dayId: string,
+#   positions: [string, string],
+# ): string {
+#   const id = randomUUID();
+#   execSql(
+#     "insert into public.slots (id, day_id, positions) values (:'id', :'day_id', array[:'position_a', :'position_b']);\n",
+#     { id, day_id: dayId, position_a: positions[0], position_b: positions[1] },
+#   );
+#   return id;
+# }
+#
+# /** 사유 하나를 직접 심는다. "approved"면 출근 인정으로 잡힌다
+#  * (attendance-status.ts의 getAttendanceStatus, excuses.some(isApproved)).
+#  * `submit_excuse`·`decide_excuse` RPC로는 지난 날짜의 사유를 못 만든다 —
+#  * backdateDeadline과 같은 손이다. */
+# export function seedExcuse(
+#   dayId: string,
+#   profileId: string,
+#   decision: "approved" | "rejected" | null = "approved",
+# ): void {
+#   const decisionSql = decision === null ? "null" : ":'decision'";
+#   const decidedAtSql = decision === null ? "null" : "now()";
+#   const vars: Record<string, string> = { day_id: dayId, profile_id: profileId };
+#   if (decision !== null) {
+#     vars.decision = decision;
+#   }
+#   execSql(
+#     `insert into public.excuses (day_id, profile_id, body, decided_at, decision) values (:'day_id', :'profile_id', '개인 사정', ${decidedAtSql}, ${decisionSql});\n`,
+#     vars,
+#   );
+# }
+# ```
+#
+# `tests/e2e/scripts/seed-session.js`는 이 task가 이미 고쳤다(위 SchedulePayload
+# 세 필드를 escapeForTextSelector로 감싸 내보내는 블록과 STATE 주석 목록 갱신).
+#
+# ## 이 task가 요청하는 testID 넷
+#
+# - `stats-month-prev`·`stats-month-next` — 달 줄의 좌우 화살표. 아이콘만 있고
+#   글자가 없어(schedule-month-prev·next와 같은 이유) 텍스트로 못 잡고, 이
+#   화면은 "?month="이 없어 화살표를 실제로 여러 번 눌러야만 과거 달에 닿는다 —
+#   그래서 다른 화면보다 더 이 testID에 기댄다. **화살표가 사라졌는지도 이
+#   id로 본다** — "못 가는 화살표는 안 그리고 자리만 남긴다"(stats.md)이므로
+#   `assertNotVisible: {id: ...}`가 그 부재를 확인하는 유일한 손잡이다.
+# - `stats-trend-chart` — 추이 그래프 전체 영역. 점·선·면에 글자가 없어 "그래프를
+#   눌러도 달이 안 바뀐다"를 확인하려면 탭할 손잡이가 이것뿐이다. 손짓
+#   테스트(components.md 「집기」)의 조각들과 달리 이 그래프는 지금까지 이
+#   화면에서 처음 서는 조각이라 testID가 아예 없다.
+# - `stats-attendance-legend` — 근태 탭의 범례 한 줄(비율 띠 아래). 몫이 0인
+#   갈래가 빠지는지를 보려면 이 줄의 정확한 텍스트를 봐야 하는데, 그 위 현황
+#   줄("출근 n · 지각 n · 출근 인정 n · 결근 n")이 0을 어떻게 적는지가 문서에
+#   없어(아래 「이슈」) 같은 낱말("결근"·숫자)이 화면 두 자리에 설 수 있다.
+#   Maestro의 텍스트 단언은 화면 전체를 보므로 범례 줄만 짚어 정확한 문자열을
+#   대조하려면 이 id가 필요하다 — `id`와 `text`를 같이 주는 선택자로 그 줄 하나만
+#   본다.
+#
+# **`repeat` 커맨드를 한 번도 못 돌려봤다.** Maestro 문서상 `repeat: {times, commands}`
+# 문법인데, 이 저장소의 다른 플로우는 아직 안 쓴다 — CLI로 실제 파싱되는지 확인한
+# 적이 없다. 안 되면 `tapOn`을 그 수만큼 풀어 쓰는 것으로 바꾼다.
+#
+# 텍스트 셀렉터는 정규식이다. "·"는 정규식에서 뜻이 있는 글자가 아니라 그대로
+# 쓴다. "–"(엔대시)도 마찬가지다.
+#
+# ## 손계산 표
+#
+# ### statsWorkMonth(오프셋 -3) — 근무 탭 주 데이터
+#
+# | 사람 | 날 | 포지션(앞 포지션) | 시간 | 근태 |
+# | --- | --- | --- | --- | --- |
+# | 고은채 | 1일 | 메인(드레스와 겸임) | 9시간(10:00–19:00) | 출근(09:58 체크인) |
+# | 강태오 | 2일 | 안내(교육) | 6시간(10:00–16:00) | 지각(10:15 체크인, 10분 초과) |
+# | 윤소현 | 3일 | 스캔 | 8시간(10:00–18:00) | 결근(체크인·사유 없음) |
+# | 민하율 | 4일 | 매니저 | 7시간(10:00–17:00) | 출근 인정(승인된 사유) |
+#
+# - 합계: **30시간**, 근무 **4건**
+# - 사람별: 고은채 9시간·1회 > 윤소현 8시간·1회 > 민하율 7시간·1회 > 강태오
+#   6시간·1회 (겹치는 시간 값이 없어 순서 무관하게 이름+시간 조합으로 특정된다)
+# - 포지션: 메인 9시간·1건, 스캔 8시간·1건, 매니저 7시간·1건, 안내 6시간·1건.
+#   나머지 다섯(팀장·드레스·축가·드레스실·대기실)은 0시간 — "드레스"가 0인
+#   것이 겸임을 양쪽에 안 얹었다는 증거이지만, 정확한 "0시간" 표기 확인은
+#   이 파일이 안 한다(아래 「뺀 단언」)
+# - 근태 현황: 출근 1·지각 1·출근 인정 1·결근 1 — 범례 **"출근 1 · 인정 1 · 지각 1 · 결근 1"**
+#   (넷 다 0이 아니라 아무것도 안 빠진다)
+# - 고은채 시트: 손잡이·이름·날짜 목록 한 줄(1일·메인·9시간)·합계 줄 **"합계 · 1회 · 9시간"**
+#
+# ### statsSecondMonth(오프셋 -4) — 두 몫이 0인 달
+#
+# | 사람 | 날 | 포지션 | 시간 | 근태 |
+# | --- | --- | --- | --- | --- |
+# | 고은채 | 1일 | 메인 | 8시간(10:00–18:00) | 출근(09:55 체크인) |
+# | 강태오 | 2일 | 스캔 | 8시간(10:00–18:00) | 출근(09:50 체크인) |
+# | 강태오 | 3일 | 스캔 | 9시간(10:00–19:00) | 지각(10:15 체크인) |
+#
+# - 합계: **25시간**, 근무 **3건**
+# - 사람별: 고은채 8시간·1회, 강태오 17시간(8+9)·2회
+# - 포지션: 메인 8시간·1건, 스캔 17시간·2건
+# - 근태 현황: 출근 2·지각 1·출근 인정 0·결근 0 — 범례 **"출근 2 · 지각 1"**
+#   (출근 인정·결근 둘 다 몫이 0이라 빠진다)
+#
+# ### statsEmptyMonth(오프셋 -5) — 근무가 하나도 없는 달
+#
+# `schedules` 행만 있고 `days`가 없다. 세 달 중 가장 이르므로 뒤로 가는 화살표가
+# 여기서 사라진다. 합계 자리 "–", 구획 머리글(사람별·포지션) 없음, 목록 자리에
+# 빈 상태 제목·아래 줄, 추이 그래프는 그대로 선다(그 달만 점이 빠진 채).
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: stats_admin_overview
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://admin/stats"
+
+# ================================================================
+# 랜딩(이번 달) — 짜임과 이번 달의 화살표 경계
+# ================================================================
+- assertVisible: "통계"
+- assertVisible: ".*[0-9]{4}년 [0-9]+월.*"
+- assertVisible: "근무"
+- assertVisible: "근태"
+- assertVisible:
+    id: "stats-trend-chart"
+
+# 이번 달이라 앞으로 갈 화살표가 없다 — 자리만 남고 안 그린다(stats.md).
+- assertNotVisible:
+    id: "stats-month-next"
+
+# --- 한 달 물러나면 앞 화살표가 다시 선다 ---
+- tapOn:
+    id: "stats-month-prev"
+- assertVisible:
+    id: "stats-month-next"
+
+# ================================================================
+# statsWorkMonth — 근무 탭: 합계·보조 줄·사람별 구획·포지션 구획
+# ================================================================
+- repeat:
+    times: 2
+    commands:
+      - tapOn:
+          id: "stats-month-prev"
+- assertVisible: "${output.statsWorkMonthLabel}"
+
+# --- 그래프를 눌러도 달이 안 바뀐다 ---
+- tapOn:
+    id: "stats-trend-chart"
+- assertVisible: "${output.statsWorkMonthLabel}"
+
+- tapOn: "근무"
+- assertVisible: "30시간"
+- assertVisible: "근무 4건"
+
+# --- 사람별 구획 — 값이 화면에 도착하는지만 본다(합이 맞는지는 unit이 본다) ---
+- assertVisible: "사람별"
+- assertVisible: "고은채"
+- assertVisible: "9시간"
+- assertVisible: "윤소현"
+- assertVisible: "8시간"
+- assertVisible: "민하율"
+- assertVisible: "7시간"
+- assertVisible: "강태오"
+- assertVisible: "6시간"
+
+# --- 포지션 구획 — 아홉이 다 서고 0시간 포지션("대기실")도 행으로 남는다 ---
+- assertVisible: "포지션"
+- assertVisible: "메인"
+- assertVisible: "스캔"
+- assertVisible: "매니저"
+- assertVisible: "안내"
+- assertVisible: "대기실"
+
+# --- 포지션 줄은 안 눌린다 — 눌러도 근무 내역 시트가 안 열린다 ---
+- tapOn: "대기실"
+- assertNotVisible: "합계 · "
+
+# --- 사람별 줄 → 근무 내역 시트 → 합계가 구획 줄의 값과 같다 ---
+# 겸임인 날은 앞 포지션("메인")만 낸다(stats.md·spec AC-02 — 위 머리말의 「겸임
+# 시트 표기」 참고, 포지션 둘을 동시에 보이는 단언은 정본과 어긋나 안 쓴다).
+- tapOn: "고은채"
+- assertVisible: "고은채"
+- assertVisible: "메인"
+- assertVisible: "합계 · 1회 · 9시간"
+- back
+
+# ================================================================
+# statsWorkMonth — 근태 탭: 달 유지, 현황 줄, 비율 띠와 범례(넷 다 0이 아니다)
+# ================================================================
+- tapOn: "근태"
+- assertVisible: "${output.statsWorkMonthLabel}"
+- assertVisible: "출근 1"
+- assertVisible: "지각 1"
+- assertVisible: "출근 인정 1"
+- assertVisible: "결근 1"
+- assertVisible:
+    id: "stats-attendance-legend"
+    text: "출근 1 · 인정 1 · 지각 1 · 결근 1"
+
+# --- 근태 줄은 안 눌린다 ---
+- tapOn: "강태오"
+- assertNotVisible: "합계 · "
+
+# ================================================================
+# statsSecondMonth — 근태 탭 유지한 채 한 달 더 물러난다. 결근·출근 인정 두
+# 몫이 0이라 범례에서 빠진다.
+# ================================================================
+- tapOn:
+    id: "stats-month-prev"
+- assertVisible: "${output.statsSecondMonthLabel}"
+- assertVisible: "출근 2"
+- assertVisible: "지각 1"
+- assertVisible:
+    id: "stats-attendance-legend"
+    text: "출근 2 · 지각 1"
+
+# --- 같은 달, 근무 탭으로 돌아가 총계가 달라졌는지 본다(달마다 따로 읽는다) ---
+- tapOn: "근무"
+- assertVisible: "25시간"
+- assertVisible: "근무 3건"
+- assertVisible: "고은채"
+- assertVisible: "8시간"
+- assertVisible: "강태오"
+- assertVisible: "17시간"
+
+# ================================================================
+# statsEmptyMonth — 근무가 하나도 없는 달. 세 달 중 가장 이른 달이라 뒤로 가는
+# 화살표가 여기서 사라진다.
+# ================================================================
+- tapOn:
+    id: "stats-month-prev"
+- assertVisible: "${output.statsEmptyMonthLabel}"
+- assertNotVisible:
+    id: "stats-month-prev"
+
+- assertVisible: "–"
+- assertVisible: "이 달은 아직 근무표가 없어요"
+- assertVisible: "근무를 넣으면 여기 숫자가 서요"
+- assertNotVisible: "사람별"
+- assertNotVisible: "포지션"
+# 추이 그래프는 안 빈다 — 다른 달의 값이 그대로 있다.
+- assertVisible:
+    id: "stats-trend-chart"
+
+# --- 근태 탭도 같은 모양으로 빈다 ---
+- tapOn: "근태"
+- assertVisible: "이 달은 아직 근무표가 없어요"
+- assertVisible: "근무를 넣으면 여기 숫자가 서요"
+
+# --- 그래프를 눌러도 달이 안 바뀐다(빈 달에서도 같다) ---
+- tapOn:
+    id: "stats-trend-chart"
+- assertVisible: "${output.statsEmptyMonthLabel}"

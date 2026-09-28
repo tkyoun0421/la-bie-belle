@@ -12,12 +12,13 @@
 // "schedule_admin_request_slot" | "schedule_worker_request_pending" |
 // "schedule_worker_request_claimed" | "schedule_approvals_cancel_pending" |
 // "rehearsal_qualified" | "payroll_wages" | "payroll_view" | "payroll_view_left" |
-// "payroll_adjust" 중 하나다(요청 넷(schedule_admin_request_slot ·
+// "payroll_adjust" | "stats_admin_overview" 중 하나다(요청 넷(schedule_admin_request_slot ·
 // schedule_worker_request_pending · schedule_worker_request_claimed ·
 // schedule_approvals_cancel_pending)은 schedule-requests task가, rehearsal_qualified는
-// rehearsal task가, payroll_* 넷은 급여 task들이 더한다 — 계약은
-// tests/e2e/schedule-admin.yaml·schedule-worker.yaml·approvals.yaml·rehearsal.yaml
-// 머리말). NAME은 선택이고, 프로필을
+// rehearsal task가, payroll_* 넷은 급여 task들이, stats_admin_overview는 stats-admin
+// task가 더한다 — 계약은
+// tests/e2e/schedule-admin.yaml·schedule-worker.yaml·approvals.yaml·rehearsal.yaml·
+// admin-stats.yaml 머리말). NAME은 선택이고, 프로필을
 // 보내는 상태에서 그 사람의 이름을 고른다 — 한 화면에 승인된 사람을 여럿 세우는
 // members.yaml이 쓴다. 안 주면 시드 서버의 기본 이름이다. MONTH·DAY도 선택이고
 // schedule_admin_race_open만 쓴다 — 이미 로그인된 세션 밖에서 먼저 열 날짜다.
@@ -218,4 +219,28 @@ if (seeded.approvalConfirmBody) {
 
 if (seeded.approvalDayAppbar) {
   output.approvalDayAppbar = escapeForTextSelector(seeded.approvalDayAppbar);
+}
+
+// stats_admin_overview 전용 셋이다(stats-admin task, tests/e2e/admin-stats.yaml
+// 머리말). 관리자 통계 화면은 "?month="을 안 받아서(navigation.md 「경로」에
+// "/admin/stats" 행에 다른 화면과 달리 그 언급이 없다) 달마다 화살표로만 옮겨야
+// 한다 — 그래서 시드가 만든 세 달(데이터 두 달·빈 달 하나)의 라벨을 미리 받아
+// 화면 문구를 그대로 단언하는 데 쓴다. 랜딩 달(오늘)은 라벨을 안 받는다 —
+// 정규식 ".*[0-9]{4}년 [0-9]+월.*"로 느슨하게만 본다.
+if (seeded.statsWorkMonthLabel) {
+  output.statsWorkMonthLabel = escapeForTextSelector(
+    seeded.statsWorkMonthLabel,
+  );
+}
+
+if (seeded.statsSecondMonthLabel) {
+  output.statsSecondMonthLabel = escapeForTextSelector(
+    seeded.statsSecondMonthLabel,
+  );
+}
+
+if (seeded.statsEmptyMonthLabel) {
+  output.statsEmptyMonthLabel = escapeForTextSelector(
+    seeded.statsEmptyMonthLabel,
+  );
 }
