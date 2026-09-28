@@ -40,9 +40,11 @@ export function AdjustSheet({ head, rows, onPickPerson }: AdjustSheetProps) {
         {head}
       </Text>
 
-      <Text size="xs" tone="muted" className="mt-1">
-        {HELP_LINE}
-      </Text>
+      {rows.length === 0 ? null : (
+        <Text size="xs" tone="muted" className="mt-1">
+          {HELP_LINE}
+        </Text>
+      )}
 
       {rows.length === 0 ? (
         <Text size="sm" tone="subtle" className="py-4">

@@ -593,21 +593,26 @@ code {
    붙으면 h-16(64px), 리허설 줄은 이름 아래 mt-0.5(2px). 줄 사이 구분선은
    stroke.neutral-muted다(schedule-admin.md 「근무 조정」 「날 상세 여백과 모양」) */
 .adjhead { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+/* 머리 바로 아래 도움말 한 줄 — mt-1(4px), fg.neutral-muted text-xs
+   (schedule-admin.md 「근무 조정」 「날 상세 여백과 모양」) */
+.adjhint { margin-top: 4px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
 .adjlist { margin-top: 8px; }
 .adjrow { display: flex; align-items: center; gap: 8px; height: 56px; padding: 0 16px; cursor: pointer; }
 .adjrow.reh { height: 64px; }
 .adjrow + .adjrow { border-top: 1px solid var(--stroke-neutral-muted); }
 .adjrow .adj-left { flex: 1 1 auto; min-width: 0; }
-.adjrow .adj-name { font-size: var(--t-sm); color: var(--fg-neutral); display: block; }
-.adjrow .rehline { margin-top: 2px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-muted); }
-.adjrow .adj-time { font-size: var(--t-sm); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; }
+/* 사람 줄은 ListRow를 그대로 쓴다 — 이름 text-base, 최종 시간 text-base font-medium,
+   리허설 줄(보조 정보 자리) text-sm(schedule-admin.md 「날 상세 글자」) */
+.adjrow .adj-name { font-size: var(--t-base); color: var(--fg-neutral); display: block; }
+.adjrow .rehline { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
+.adjrow .adj-time { font-size: var(--t-base); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; }
 .adjrow .adj-prefix { color: var(--fg-neutral-subtle); }
 /* 빈 상태 — components.md 「빈 상태」 그대로. 왼쪽 정렬, 위아래 16px, 화면 가운데로
    안 민다. 한 문장으로 끝나 제목 없이 아래 줄만 선다(fg.neutral-subtle text-sm) */
 .adjempty { padding: 16px 0; font-size: var(--t-sm); color: var(--fg-neutral-subtle); }
-/* 사람 시트 — 연장 칸. rounded-md(r-md) p-3(12px)는 .field .box 기본값과 같다.
+/* 조정 고르기 시트 — 연장 칸. AmountInput을 그대로 쓴다 — rounded-md(r-md) p-4(16px).
    단위 「분」은 칸 안 오른쪽에 선다(schedule-admin.md 「날 상세 여백과 모양」 「날 상세 문안」) */
-.field .box.withunit { display: flex; align-items: center; justify-content: space-between; }
+.field .box.withunit { display: flex; align-items: center; justify-content: space-between; padding: 16px; }
 .field .box .unit { color: var(--fg-neutral-subtle); }
 
 .posrow { margin-top: 20px; }
@@ -1459,6 +1464,7 @@ code {
             <div class="grab"></div>
             <div class="sh-title">근무 조정</div>
             <div class="adjhead num">10:00–19:00 · 9시간</div>
+            <div class="adjhint">출근 인증이 없는 날은 급여에서 따로 빠져요</div>
             <div class="adjlist">
               <div class="adjrow">
                 <div class="adj-left"><span class="adj-name">박서연</span></div>
@@ -1528,6 +1534,7 @@ code {
             <div class="grab"></div>
             <div class="sh-title">근무 조정</div>
             <div class="adjhead num">10:00–19:00 · 9시간</div>
+            <div class="adjhint">출근 인증이 없는 날은 급여에서 따로 빠져요</div>
             <div class="adjlist">
               <div class="adjrow">
                 <div class="adj-left"><span class="adj-name">박서연</span></div>
@@ -1562,7 +1569,7 @@ code {
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">DAY / PERSON SHEET — NO ADJUST</div>
+          <div class="cap-key">DAY / ADJUST PICK SHEET — NO ADJUST</div>
           <div class="cap-name">조정이 없는 사람 — 결근이에요·연장이에요·닫기</div>
           <p class="cap-body">근무 조정 시트 위로 시트가 한 겹 더 선다. 박서연은 지금 조정이 없어 <strong>「원래대로」가 없다</strong> — 지울 것이 없는 사람에게 지우기를 보여주지 않는다. 결근은 그날 배정 시간을 통째로 빼는 것이라 값을 안 묻고 고른 즉시 반영된다.</p>
         </figcaption>
@@ -1590,6 +1597,7 @@ code {
             <div class="grab"></div>
             <div class="sh-title">근무 조정</div>
             <div class="adjhead num">10:00–19:00 · 9시간</div>
+            <div class="adjhint">출근 인증이 없는 날은 급여에서 따로 빠져요</div>
             <div class="adjlist">
               <div class="adjrow">
                 <div class="adj-left"><span class="adj-name">박서연</span></div>
@@ -1625,7 +1633,7 @@ code {
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">DAY / PERSON SHEET — ADJUSTED</div>
+          <div class="cap-key">DAY / ADJUST PICK SHEET — ADJUSTED</div>
           <div class="cap-name">조정이 든 사람 — 원래대로가 한 줄 더 선다</div>
           <p class="cap-body">김지우는 이미 결근 조정이 들어 있어 <strong>「원래대로」가 한 줄 더 선다.</strong> 조정이 없는 사람의 시트와 갈리는 자리는 이 한 줄뿐이다 — 나머지 구성은 같다.</p>
         </figcaption>
@@ -1653,6 +1661,7 @@ code {
             <div class="grab"></div>
             <div class="sh-title">근무 조정</div>
             <div class="adjhead num">10:00–19:00 · 9시간</div>
+            <div class="adjhint">출근 인증이 없는 날은 급여에서 따로 빠져요</div>
             <div class="adjlist">
               <div class="adjrow">
                 <div class="adj-left"><span class="adj-name">박서연</span></div>
@@ -1695,9 +1704,9 @@ code {
           </div>
         </div>
         <figcaption>
-          <div class="cap-key">DAY / PERSON SHEET — EXTEND</div>
+          <div class="cap-key">DAY / ADJUST PICK SHEET — EXTEND</div>
           <div class="cap-name">「연장이에요」를 고른 뒤 분 칸이 열린다</div>
-          <p class="cap-body">고른 줄 아래 분 입력 칸이 열리고 버튼이 「닫기 · 바꾸기」로 바뀐다 — 근무 시간 시트와 같은 짝이다. 칸은 <code>rounded-md</code> <code>p-3</code>이고 단위 「분」이 칸 안 오른쪽에 선다. 아래 「배정 9시간에 더해져요」가 그날 배정 시간을 알린다.</p>
+          <p class="cap-body">고른 줄 아래 분 입력 칸이 열리고 버튼이 「닫기 · 바꾸기」로 바뀐다 — 근무 시간 시트와 같은 짝이다. 칸은 AmountInput을 그대로 쓴다 — <code>rounded-md</code> <code>p-4</code>이고 단위 「분」이 칸 안 오른쪽에 선다. 아래 「배정 9시간에 더해져요」가 그날 배정 시간을 알린다.</p>
         </figcaption>
       </figure>
 
