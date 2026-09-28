@@ -6,7 +6,7 @@
 // 줄로 접히고 최근이 위다(12월이 맨 위, 1월이 맨 아래). 맨 아래에 합계 줄이
 // 하나 더 붙고 값은 열두 달 합과 같다. 주·월 단위에는 이 함수 자체를 안 부른다.
 
-import { yearRows } from "@/screens/payroll/model/year-rows";
+import { monthRowsOfDays, yearRows } from "@/screens/payroll/model/year-rows";
 
 describe("yearRows — 최근이 위다(12월이 맨 위, 1월이 맨 아래)", () => {
   it("입력 순서와 무관하게 달을 내림차순으로 접는다", () => {
@@ -64,5 +64,37 @@ describe("yearRows — 합계 줄은 달 개수와 무관하게 항상 선다", 
 
     expect(rows).toHaveLength(2);
     expect(rows[1]).toEqual({ type: "total", amountLabel: "50,000원" });
+  });
+});
+
+// monthRowsOfDays(days) — 날 목록을 달 줄로 접는다. 날이 있는 달만 선다
+// (payroll.md 「내역 목록」의 「빈 상태」).
+
+describe("monthRowsOfDays — 날이 있는 달만 줄로 선다", () => {
+  it("1월과 3월에만 날이 있으면 2월 줄은 없다", () => {
+    const rows = monthRowsOfDays([
+      { date: "2026-01-05", amount: 10000 },
+      { date: "2026-03-10", amount: 20000 },
+    ]);
+
+    expect(rows.map((row) => row.month).sort()).toEqual(["2026-01", "2026-03"]);
+  });
+});
+
+describe("monthRowsOfDays — 한 달에 여러 날이면 금액이 합쳐진다", () => {
+  it("같은 달 세 날의 금액이 한 줄로 더해진다", () => {
+    const rows = monthRowsOfDays([
+      { date: "2026-06-01", amount: 10000 },
+      { date: "2026-06-15", amount: 20000 },
+      { date: "2026-06-30", amount: 5000 },
+    ]);
+
+    expect(rows).toEqual([{ month: "2026-06", amount: 35000 }]);
+  });
+});
+
+describe("monthRowsOfDays — 날이 하나도 없으면 빈 배열이다", () => {
+  it("빈 목록을 넣으면 달 줄도 없다", () => {
+    expect(monthRowsOfDays([])).toEqual([]);
   });
 });

@@ -11,8 +11,12 @@
 // 주는 월요일~일요일이다(PAY-021).
 
 import {
+  isInPeriod,
   periodLabel,
   periodMonthKeys,
+  periodOf,
+  periodStartDate,
+  periodUnitOf,
   shiftPeriod,
 } from "@/screens/payroll/model/period";
 
@@ -124,5 +128,130 @@ describe("periodMonthKeys — 연은 열두 키를 읽는다", () => {
       "2026-11",
       "2026-12",
     ]);
+  });
+});
+
+// periodOf(date, unit) — 화면이 들고 있는 날짜 하나와 단위에서 기간을 낸다(PAY-021·PAY-022).
+
+describe("periodOf — 주 단위는 그 날짜가 든 주의 월요일을 낸다", () => {
+  it("2026-10-07(수)이 든 주는 2026-10-05(월)에서 시작한다", () => {
+    expect(periodOf("2026-10-07", "week")).toEqual({
+      unit: "week",
+      weekStart: "2026-10-05",
+    });
+  });
+});
+
+describe("periodOf — 연 경계를 넘는 주도 그 주의 월요일로 접힌다", () => {
+  it("2027-01-01(금)이 든 주는 2026-12-28(월)에서 시작한다", () => {
+    expect(periodOf("2027-01-01", "week")).toEqual({
+      unit: "week",
+      weekStart: "2026-12-28",
+    });
+  });
+});
+
+describe("periodOf — 월 단위는 그 날짜가 든 달을 낸다", () => {
+  it("2026-10-15는 2026-10월이다", () => {
+    expect(periodOf("2026-10-15", "month")).toEqual({
+      unit: "month",
+      month: "2026-10",
+    });
+  });
+});
+
+describe("periodOf — 연 단위는 그 날짜가 든 해를 낸다", () => {
+  it("2026-10-15는 2026년이다", () => {
+    expect(periodOf("2026-10-15", "year")).toEqual({
+      unit: "year",
+      year: "2026",
+    });
+  });
+});
+
+// periodStartDate(period) — 기간을 다시 날짜 하나로 잡아두는 자리다.
+
+describe("periodStartDate — 주의 시작일은 weekStart 그대로다", () => {
+  it("weekStart가 2026-10-05면 시작일도 2026-10-05다", () => {
+    expect(periodStartDate({ unit: "week", weekStart: "2026-10-05" })).toBe(
+      "2026-10-05",
+    );
+  });
+});
+
+describe("periodStartDate — 월의 시작일은 그 달 1일이다", () => {
+  it("2026-10월의 시작일은 2026-10-01이다", () => {
+    expect(periodStartDate({ unit: "month", month: "2026-10" })).toBe(
+      "2026-10-01",
+    );
+  });
+});
+
+describe("periodStartDate — 연의 시작일은 1월 1일이다", () => {
+  it("2026년의 시작일은 2026-01-01이다", () => {
+    expect(periodStartDate({ unit: "year", year: "2026" })).toBe("2026-01-01");
+  });
+});
+
+// isInPeriod(period, date) — 달치로 읽은 날들 중 그 기간 안인 것만 가린다.
+
+describe("isInPeriod — 주의 첫날과 마지막날 모두 그 주 안이다", () => {
+  it("2026-10-05(월)와 2026-10-11(일) 둘 다 그 주 기간 안이다", () => {
+    const period = { unit: "week" as const, weekStart: "2026-10-05" };
+
+    expect(isInPeriod(period, "2026-10-05")).toBe(true);
+    expect(isInPeriod(period, "2026-10-11")).toBe(true);
+  });
+});
+
+describe("isInPeriod — 달을 걸친 주는 두 달의 날짜 모두 그 주 기간 안이다", () => {
+  it("2026-10-26 주의 11월 첫날(2026-11-01)도 그 주 기간 안이다", () => {
+    const period = { unit: "week" as const, weekStart: "2026-10-26" };
+
+    expect(isInPeriod(period, "2026-10-26")).toBe(true);
+    expect(isInPeriod(period, "2026-11-01")).toBe(true);
+  });
+});
+
+describe("isInPeriod — 다음 주로 넘어간 날짜는 기간 밖이다", () => {
+  it("2026-11-02(월)는 2026-10-26 주 기간 밖이다", () => {
+    expect(
+      isInPeriod({ unit: "week", weekStart: "2026-10-26" }, "2026-11-02"),
+    ).toBe(false);
+  });
+});
+
+describe("isInPeriod — 월 단위는 그 달 안의 날짜만 참이다", () => {
+  it("2026-10-31은 2026-10월 안이고 2026-11-01은 밖이다", () => {
+    const period = { unit: "month" as const, month: "2026-10" };
+
+    expect(isInPeriod(period, "2026-10-31")).toBe(true);
+    expect(isInPeriod(period, "2026-11-01")).toBe(false);
+  });
+});
+
+describe("isInPeriod — 연 경계에서 12월 31일은 그 해 안, 1월 1일은 다음 해다", () => {
+  it("2026년 기간은 2026-12-31을 품고 2027-01-01은 밖이다", () => {
+    const period = { unit: "year" as const, year: "2026" };
+
+    expect(isInPeriod(period, "2026-12-31")).toBe(true);
+    expect(isInPeriod(period, "2027-01-01")).toBe(false);
+  });
+});
+
+// periodUnitOf(value) — 세그먼트가 고른 칸을 단위로 읽는다. 모르는 값은 「월」이다(PAY-025).
+
+describe("periodUnitOf — 유효한 값 셋을 그대로 낸다", () => {
+  it("week·month·year를 각각 그대로 읽는다", () => {
+    expect(periodUnitOf("week")).toBe("week");
+    expect(periodUnitOf("month")).toBe("month");
+    expect(periodUnitOf("year")).toBe("year");
+  });
+});
+
+describe("periodUnitOf — 모르는 값은 월이다(PAY-025)", () => {
+  it("빈 문자열이나 오타는 'month'로 읽는다", () => {
+    expect(periodUnitOf("")).toBe("month");
+    expect(periodUnitOf("weekly")).toBe("month");
   });
 });
