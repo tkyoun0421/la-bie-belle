@@ -1,4 +1,9 @@
-// 구현 대상: src/features/stats/api/queries.ts
+// 구현 대상: src/features/stats/api/useStatsQueries.ts
+//
+// plan stats-admin의 「변경 파일」 표는 이 자리를 `queries.ts`로 적었지만 그 이름은
+// tests/lint/file-naming.ts가 막는다 — 훅을 내놓는 .ts는 이름이 `use`로 시작해야 한다
+// (CLAUDE.md 「파일 이름은 부르는 이름을 따른다」). 파일과 짝 테스트를 같이 옮기고 아래
+// import 경로 한 줄만 바꿨다. 단언은 그대로다.
 //
 // useWorkMonths(client, months) — 근무 탭의 열두 달 창을 읽는 훅이다. 달마다
 // getMonthSchedule을 부르고(['schedule', 'YYYY-MM']) 달치를 useQueries로
@@ -39,7 +44,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useWorkMonths, useAttendanceMonths } =
-  await import("@/features/stats/api/queries");
+  await import("@/features/stats/api/useStatsQueries");
 
 function createWrapper() {
   const queryClient = new QueryClient({

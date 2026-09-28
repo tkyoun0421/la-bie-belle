@@ -8,20 +8,14 @@
  * 길이가 자리 수보다 길어질 수 있다.
  *
  * **순서는 포지션 정본 순서다** — 이름순도 배정순도 아니다. 같은 날을 여럿이 볼 때 줄 자리가
- * 같아야 서로 「위에서 세 번째」로 말한다.
+ * 같아야 서로 「위에서 세 번째」로 말한다. 그 순서는 업무 상수라
+ * [`entities/schedule/model/positions.ts`](../../../entities/schedule/model/positions.ts)가
+ * 들고, 이 파일은 부르던 이름을 그대로 두려고 다시 내보낸다.
  */
 
-export const POSITION_ORDER = [
-  "팀장",
-  "스캔",
-  "메인",
-  "드레스",
-  "축가",
-  "매니저",
-  "안내",
-  "드레스실",
-  "대기실",
-] as const;
+import { POSITION_ORDER } from "@/entities/schedule/model/positions";
+
+export { POSITION_ORDER };
 
 export type RosterSlot = {
   position: string;

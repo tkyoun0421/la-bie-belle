@@ -19,8 +19,8 @@
 //   (퇴사한 사람도 같다)
 
 import { POSITION_ORDER } from "@/entities/schedule/model/positions";
-import { computeWorkTotals } from "@/features/stats/model/work-totals";
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
+import { computeWorkTotals } from "@/features/stats/model/work-totals";
 
 describe("computeWorkTotals — 사람별 합·포지션별 합·전체 합이 같다", () => {
   it("byPerson 시간 합과 byPosition 시간 합이 totalMinutes와 같다", () => {

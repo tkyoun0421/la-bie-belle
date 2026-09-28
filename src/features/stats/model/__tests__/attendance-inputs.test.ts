@@ -17,6 +17,12 @@
 //   같은 사람의 다른 날 기록이 섞이지 않는다
 // - 출근(present)과 출근 인정(excused)을 합치지 않는다(ATT-023)
 
+// 이 한 줄이 lint 규칙 3(같은 층 다른 슬라이스)을 넘는다. 실제 조립은 위 층
+// (`screens/admin-stats/model/attendance-rows.ts`)이 하고 구현 코드는 규칙을 안 넘는데,
+// 「buildAttendanceInputs의 결과를 tallyMonthlyAttendance에 먹이면 넷이 갈린다」가 이 테스트가
+// 지키는 리스크라 여기서는 두 슬라이스를 같이 부를 수밖에 없다. 규칙을 푸는 것이 아니라 이
+// 자리만 연다 — 옮긴다면 `tallyMonthlyAttendance`가 entities로 내려가는 쪽이다.
+// eslint-disable-next-line house/no-cross-slice-import
 import { tallyMonthlyAttendance } from "@/features/attendance/model/attendance-summary";
 import { buildAttendanceInputs } from "@/features/stats/model/attendance-inputs";
 
