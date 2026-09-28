@@ -6,7 +6,13 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `payroll-adjust`다.** 날 상세의 급여 줄 둘 — 임시공휴일 스위치([PAY-027](2-design/modules/payroll/README.md#pay-027))와 근무 조정 줄·시트(결근·연장, 리허설은 읽기 전용)다. 근무표 화면에 서지만 값이 급여 표로 가서 `schedule-admin`이 아니라 여기가 만든다. 훅이 없는 채로 데이터만 서 있으니 **`test-planner`가 훅마다 unit 행을 배정해야 한다**([관찰 020](observations/020-query-hook-has-no-tdd-home.md)) — `set_adjustment`·`set_holiday`의 무효화는 `['payroll']`이고 [무효화 표](2-design/system/runtime.md#무효화-표)가 정본이다. 이 task가 급여 모듈의 마지막 `ready`고, 그 뒤 `payroll-holidays`는 Edge Function에 막혀 있다. **`MonthPickerSheet`는 여전히 안 붙었다** — `payroll-view`도 세그먼트·화살표로 갔지 시트를 안 썼다.
+**다음 첫 수는 `stats-admin`이다.** 관리자 통계 `/admin/stats`고, 탭 둘(근무·근태)에 열두 달 추이 그래프·줄 막대·비율 띠가 선다. **차트 조각 셋이 여기서 처음 서고**([components.md 「차트 넷」](2-design/design-system/components.md#차트-넷)) `['attendance', 'YYYY-MM']` 달 키도 여기서 연다. 이것이 서야 `stats-worker`가 열린다 — 그쪽은 조각을 다 가져다 쓴다. 정본은 [stats.md](2-design/system/screens/stats.md#관리자--adminstats)다. 훅에는 TDD 집이 없으니 `test-planner`가 훅마다 unit 행을 배정해야 한다([관찰 020](observations/020-query-hook-has-no-tdd-home.md)).
+
+**`ready`가 여덟이다.** 이번 회차에 상태를 손봤다 — 의존이 전부 `done`인데 `blocked`로 남아 있던 것들이다(`stats-admin`·`notification-list`·`notification-settings`·`notification-push`·`payroll-holidays`·`profile-erasure`·`plans-restate`·`sian-sync`). `blocked`로 남은 쪽의 이유는 셋뿐이다 — **NCP 자격**(`attendance-checkin`·`hall-location`), **도메인**(`qr-landing-page`·`first-release`), **앞 task의 사슬**(`dashboard`가 `attendance-checkin`을 기다리고 `attendance-excuse`·`notification-emit` 이하가 그 뒤에 선다). `stats-worker`는 `stats-admin`이 서면 바로 풀린다.
+
+**`MonthPickerSheet`는 여전히 안 붙었다** — `payroll-view`도 세그먼트·화살표로 갔지 시트를 안 썼다. `stats-admin`의 「달 고르기」가 다음 자리다.
+
+**`payroll-adjust`가 `done`이다(#451).** 날 상세에 임시공휴일 스위치와 근무 조정 줄이 섰다 — 모델 여섯, 훅 둘, 시트 둘, `getPayrollMonth`가 `holidays`를 같이 싣는다. **총괄 판정 다섯** — 둘째 시트 이름은 「조정 고르기 시트」(사람 픽커가 「사람 시트」를 이미 쓴다), `holidays`는 달치 키가 같이 싣는다(키를 안 늘린다), 「N명 조정됨」은 마지막 행의 분이 0이 아닌 사람을 센다(「원래대로」 줄이 서는 조건과 축이 다르다), `reason`은 갈래 이름 셋(0분 행의 뜻을 부호로 못 갈라서 남긴다), **조정 시트의 최종 시간은 근태를 안 본다**(반영하면 연장을 넣은 관리자가 인증 없는 날에 0시간을 보게 된다 — 대신 도움말 한 줄이 그 층을 말하고, 배정이 0명이면 그 줄도 없다). 조각 쪽으로 내린 것 둘(사람 줄은 `ListRow`, 연장 칸은 금액 칸 `p-4`)과 정본을 고친 것 하나 — **`components.md` 「빈 상태」 표가 그림이 서는 갈래 하나만 적었는데** 알림·통계·조정 시트 셋이 이미 「한 문장이면 그림 없이 왼쪽 정렬」로 서 있어 그 갈래를 표로 적었다. 남긴 자리 — 스위치의 잠김과 분 입력 칸을 Maestro가 잡는지 못 봤다.
 
 **`payroll-view`가 `done`이다(#448).** `/payroll`이 섰다 — 주·월·연 세그먼트와 기간 화살표, 내역 목록과 연 단위 합계 줄, 퇴사자 진입. 훅 셋(`usePayrollMonths`·`useScheduleMonths`·`useRehearsalMonths`)이 달치 키 여럿을 `useQueries`로 한꺼번에 읽고 모델 다섯(`period`·`boundary`·`summary`·`history-rows`·`year-rows`)이 계산한다. **총괄 판정 둘** — 시급이 없는 날을 계산에서 아예 빼던 계약을 넓혀 `{ amount: 0, kind: 'wage-pending' }`으로 내보내게 했고(그래야 「시급 미정」 줄이 서고 그날 시간이 누적에 든다 — 봉인 단언 하나를 고치도록 허가했다), e2e 시드가 사람을 오늘 승인하고 근무만 지난달에 깔던 것을 `approveProfile`·`seedWageHistory`로 앞 달에 물렸다(승인된 달이 뒤로 가는 화살표의 바닥이고 승인이 넣는 시급 행의 적용일이 오늘이라, 그대로면 지난달에 닿지도 못하고 닿아도 전부 「시급 미정」이었다). 남긴 자리 — 읽기 실패 한 줄과 「연」 첫 로딩 체감(질의 서른여섯)은 손으로 볼 자리다.
 
@@ -29,6 +35,8 @@
 **KST 날짜 계산이 슬라이스 다섯(`schedule-admin`·`admin-home`·`applications`·`qr`, 그리고 `rehearsal`이 세운 `src/shared/lib/kst-date.ts`)에 흩어져 있다.** 넷은 각자 `Intl.DateTimeFormat`을 들고, 다섯째는 공용 자리다 — 다음에 손댈 때는 넷을 그 공용 자리로 옮기는 쪽이다.
 
 **픽스처가 한 사실을 여러 psql 호출로 심는 자리가 cron과 경합한다(관찰 024, open).** `seedWorkRequest`가 요청 행을 넣고 `seedRequestCandidate`가 갈래 행을 넣는 사이에 `internal.expire_requests`의 cron 틱이 떨어지면 요청이 닫힌 채 남는다. 로컬 세 회차에서 매번 다른 요청 테스트가 하나씩 졌고 CI에서는 아직 안 걸렸다 — 요청 테스트가 이유 없이 지면 이것부터 의심한다. `backlog.md`의 `test-seed-transaction`이 받는다.
+
+**관찰 027이 카운터 둘이다.** TDD 훅이 새 `.ts` 파일만 보고 기존 파일 안에 선 새 함수·넓어진 함수는 못 본다 — `payroll-view`에서 계산 함수 여섯이, `payroll-adjust`에서 `usePayrollMonths`의 `holidays` 합치기가 그 틈으로 왔다. 둘 다 사람과 `pr-diff`가 잡았다. 세 번째가 나오면 짓는다.
 
 **관찰 021은 열려 있다.** 라우트 파일명이 같으면 e2e 게이트가 남의 플로우로 통과하는 자리다 — `schedule-admin`에서 첫 번째로 났다. 두 번째가 나오면 `tdd-guard-e2e.py`의 매핑을 디렉터리 경로 이름으로 바꾼다.
 
