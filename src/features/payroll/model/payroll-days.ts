@@ -1,11 +1,18 @@
 import {
   getAttendanceStatus,
+  type AttendanceStatusInput,
+  type CheckInRecord,
   type ExcuseDecision,
   type ExcuseStatusRecord,
 } from "@/entities/attendance/model/attendance-status";
-import type { RehearsalRow } from "@/entities/rehearsal/model/rehearsal-hours";
+import {
+  rehearsalHours,
+  type RehearsalRow,
+} from "@/entities/rehearsal/model/rehearsal-hours";
+import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
 import {
   dayAmount,
+  REGULAR_MINUTES,
   type DayAmount,
   type DayKind,
 } from "@/features/payroll/model/day-amount";
@@ -190,4 +197,141 @@ export function payrollDays(input: PayrollDaysInput): PayrollDay[] {
   }
 
   return [...dates].sort().map((date) => payrollDate(input, dayByDate, date));
+}
+
+/**
+ * 세 키가 낸 행을 이 모듈의 입력으로 접는 자리다 — 급여 재료(`['payroll']`)와 근무표
+ * (`['schedule']`)와 리허설(`['rehearsal']`)이 따로 오는 것을 화면이 손으로 맞추지 않게
+ * 한다(`docs/2-design/modules/payroll/design.md`의 「행위 밖의 실행 동작」).
+ *
+ * **남의 행을 여기서 거른다.** 관리자 세션에는 RLS가 전원 행을 내주고, 근무표의 배정과
+ * 인증은 애초에 그 날 전원의 것이다 — 한 사람의 급여를 내는 이 자리가 `profileId` 하나로
+ * 좁힌다.
+ *
+ * **금액 말고도 그날의 사실을 같이 낸다.** 포지션·근무 시각·교육 여부·연장 분·리허설 분과
+ * 지각을 판정할 재료다. 화면이 그것들을 근무표 행에서 다시 캐면 「어느 배정이 내 것인가」와
+ * 「연장이 몇 분인가」가 두 벌 서고, 급여 표의 값과 줄의 설명이 어긋날 수 있다.
+ */
+export type PayrollViewSource = {
+  profileId: string;
+  days: readonly ScheduleDay[];
+  rates: readonly (WageRate & { profile_id: string })[];
+  adjustments: readonly (PayrollAdjustment & { profile_id: string })[];
+  excuses: readonly (PayrollExcuse & { profile_id: string })[];
+  rehearsals: readonly PayrollRehearsal[];
+  now: string;
+};
+
+export type PayrollViewDay = PayrollDay & {
+  position: string | null;
+  startsAt: string | null;
+  endsAt: string | null;
+  isEducation: boolean;
+  overtimeMinutes: number;
+  rehearsalMinutes: number;
+  attendance: AttendanceStatusInput | null;
+};
+
+const EDUCATION_KIND = "education";
+
+/** DB는 초까지 싣고 화면은 안 싣는다 — `"10:00:00"`이 `"10:00"`이다. */
+function clockLabel(clock: string): string {
+  return clock.slice(0, 5);
+}
+
+function mine<Row extends { profile_id: string }>(
+  rows: readonly Row[],
+  profileId: string,
+): Row[] {
+  return rows.filter((row) => row.profile_id === profileId);
+}
+
+/** 취소되거나 교대로 넘어간 배정은 안 센다 — `ended_at`이 그 자국이다. */
+function myAssignment(day: ScheduleDay, profileId: string) {
+  return (
+    day.assignments.find(
+      (assignment) =>
+        assignment.profile_id === profileId && assignment.ended_at === null,
+    ) ?? null
+  );
+}
+
+function myCheckIn(day: ScheduleDay, profileId: string): CheckInRecord | null {
+  const row = day.check_ins.find((check) => check.profile_id === profileId);
+
+  return row === undefined
+    ? null
+    : {
+        checkedAt: row.checked_at,
+        reportedAt: row.reported_at,
+        receivedAt: row.received_at,
+      };
+}
+
+export function payrollViewDays(source: PayrollViewSource): PayrollViewDay[] {
+  const { profileId, now } = source;
+  const myExcuses = mine(source.excuses, profileId);
+  const dayByDate = new Map(source.days.map((day) => [day.work_date, day]));
+
+  const computed = payrollDays({
+    days: source.days.map((day) => ({
+      id: day.id,
+      work_date: day.work_date,
+      starts_at: day.starts_at,
+      ends_at: day.ends_at,
+    })),
+    assignments: source.days.flatMap((day) =>
+      myAssignment(day, profileId) === null ? [] : [{ day_id: day.id }],
+    ),
+    adjustments: mine(source.adjustments, profileId),
+    checkIns: source.days.flatMap((day) =>
+      mine(day.check_ins, profileId).map((row) => ({
+        day_id: day.id,
+        checked_at: row.checked_at,
+        reported_at: row.reported_at,
+        received_at: row.received_at,
+      })),
+    ),
+    excuses: myExcuses,
+    rehearsals: source.rehearsals,
+    rates: mine(source.rates, profileId),
+    now,
+  });
+
+  return computed.map((day) => {
+    const scheduled = dayByDate.get(day.date) ?? null;
+    const assignment =
+      scheduled === null ? null : myAssignment(scheduled, profileId);
+
+    return {
+      ...day,
+      position: assignment === null ? null : assignment.position,
+      startsAt:
+        scheduled === null || assignment === null
+          ? null
+          : clockLabel(scheduled.starts_at),
+      endsAt:
+        scheduled === null || assignment === null
+          ? null
+          : clockLabel(scheduled.ends_at),
+      isEducation: assignment !== null && assignment.kind === EDUCATION_KIND,
+      overtimeMinutes: Math.max(0, day.minutes - REGULAR_MINUTES),
+      rehearsalMinutes: source.rehearsals
+        .filter((row) => row.work_date === day.date)
+        .reduce((sum, row) => sum + rehearsalHours(row), 0),
+      attendance:
+        scheduled === null || assignment === null
+          ? null
+          : {
+              workDate: scheduled.work_date,
+              startsAt: scheduled.starts_at,
+              endsAt: scheduled.ends_at,
+              checkIn: myCheckIn(scheduled, profileId),
+              excuses: myExcuses
+                .filter((row) => row.day_id === scheduled.id)
+                .map(excuseRecord),
+              now,
+            },
+    };
+  });
 }

@@ -19,6 +19,25 @@ export type PayrollMonthRow = {
   amount: number;
 };
 
+/**
+ * 날들을 달로 접는다. **날이 하나도 없는 달은 줄도 없다** — 열두 줄을 늘 세우면 승인된 지
+ * 한 달 된 사람이 「0원」 열한 줄을 읽게 되고, 한 해가 통째로 빈 자리에 빈 상태가 설 길이
+ * 사라진다(`payroll.md`의 「빈 상태」).
+ */
+export function monthRowsOfDays(
+  days: readonly { date: string; amount: number }[],
+): PayrollMonthRow[] {
+  const byMonth = new Map<string, number>();
+
+  for (const day of days) {
+    const month = day.date.slice(0, 7);
+
+    byMonth.set(month, (byMonth.get(month) ?? 0) + day.amount);
+  }
+
+  return [...byMonth].map(([month, amount]) => ({ month, amount }));
+}
+
 export type PayrollYearRow =
   | { type: "month"; month: string; title: string; amountLabel: string }
   | { type: "total"; amountLabel: string };

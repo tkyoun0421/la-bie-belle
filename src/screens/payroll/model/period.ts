@@ -117,3 +117,53 @@ export function anchorOfDate(date: string, unit: PeriodUnit): string {
       return date.slice(0, 4);
   }
 }
+
+/**
+ * 그 날짜가 든 기간이다. 화면은 날짜 하나와 단위만 들고 있고 기간은 그 둘에서 난다 — 단위를
+ * 바꿔도 보던 자리를 안 잃는 것이 이 꼴이라서다. 세그먼트를 「주」로 갔다 「월」로 돌아오면
+ * 같은 날짜가 다시 제 달을 낸다.
+ */
+export function periodOf(date: string, unit: PeriodUnit): Period {
+  switch (unit) {
+    case "week":
+      return { unit, weekStart: weekStartOf(date) };
+    case "month":
+      return { unit, month: date.slice(0, 7) };
+    case "year":
+      return { unit, year: date.slice(0, 4) };
+  }
+}
+
+/** 기간의 첫날이다. 화살표가 옮긴 기간을 다시 날짜 하나로 잡아두는 자리다. */
+export function periodStartDate(period: Period): string {
+  switch (period.unit) {
+    case "week":
+      return period.weekStart;
+    case "month":
+      return `${period.month}-01`;
+    case "year":
+      return `${period.year}-01-01`;
+  }
+}
+
+/**
+ * 그 날짜가 이 기간 안인가. 달치로 읽은 날들에는 기간 밖이 섞여 있다 — 달을 걸친 주는 키가
+ * 둘이라 그 두 달 전부가 손에 온다.
+ */
+export function isInPeriod(period: Period, date: string): boolean {
+  return anchorOfDate(date, period.unit) === periodAnchor(period);
+}
+
+/**
+ * 세그먼트가 고른 칸을 단위로 읽는다. 모르는 값은 「월」이다 — 처음 열면 「월」인 것과 같은
+ * 바닥이다([PAY-025](../../../../docs/2-design/modules/payroll/README.md#pay-025)).
+ */
+export function periodUnitOf(value: string): PeriodUnit {
+  switch (value) {
+    case "week":
+    case "year":
+      return value;
+    default:
+      return "month";
+  }
+}
