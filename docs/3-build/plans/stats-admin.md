@@ -199,7 +199,8 @@ sources:
 | AC-02 | 시트 합계가 줄 값과 다르다 | unit `person-days.test.ts`(예정) | `pnpm test` | 회수와 시간이 구획 줄과 같다 |
 | AC-03 | 값 없는 달을 0으로 잇는다 | unit `trend.test.ts`(예정) | `pnpm test` | `null`이라 선이 끊긴다 |
 | AC-03 | 지난달을 골랐는데 구간이 안 밀린다 | unit 위 | `pnpm test` | 보는 달이 오른쪽 끝 |
-| AC-04 | 남의 행이 안 온다 | integration `tests/integration/stats-month.test.ts`(예정) | `pnpm test:integration:run` | 관리자는 전원, 근무자는 자기 것 |
+| AC-04 | 달 경계 밖이 섞인다 | integration `src/entities/attendance/dals/__tests__/get-month-attendance.integration.test.ts` | `pnpm test:integration:run` | 전달 마지막 날과 다음 달 첫날이 안 온다. **세션별 차이는 안 본다** — 근무·근태 읽기는 홀 전체 공개다(위 「착수 판정」) |
+| AC-04 | 뒤로 가는 바닥을 못 낸다 | integration `src/entities/schedule/dals/__tests__/get-first-schedule-month.integration.test.ts` | `pnpm test:integration:run` | 달이 여럿이면 가장 이른 것 |
 | AC-04 | 한 달을 날마다 읽는다 | integration 위 | 위와 같다 | 한 질의로 그달치 |
 | AC-05 | 0인데 1px 선이 남는다 | unit `row-bar` 계산(예정) | `pnpm test` | 폭이 0이면 안 그린다 |
 | AC-06 | 탭을 옮기면 달이 돌아간다 | e2e `admin-stats` e2e(예정) | e2e 명령 | 보는 달 그대로 |
