@@ -1,7 +1,7 @@
 import type { Db } from "@/shared/api/database";
 
 /**
- * 그 달 급여의 재료 셋이다 — 시급 이력, 조정, 사유 상태. 배정과 날은 `['schedule']`이고
+ * 그 달 급여의 재료 넷이다 — 시급 이력, 조정, 사유 상태, 공휴일. 배정과 날은 `['schedule']`이고
  * 리허설은 `['rehearsal']`이라 화면이 세 키를 읽어 계산에 넣는다
  * (`docs/2-design/modules/payroll/design.md`의 「급여는 계산한다」).
  *
@@ -14,6 +14,10 @@ import type { Db } from "@/shared/api/database";
  *
  * **날 묶음을 먼저 읽는다.** `adjustments`와 `excuse_status`가 날짜를 안 들고 `day_id`만
  * 들어서, 그 달의 날을 먼저 집어 그 묶음으로 좁힌다.
+ *
+ * **공휴일은 날을 안 거친다.** 근무를 안 여는 날에도 행이 서서 `holiday_date`로 바로 자른다.
+ * 같은 날짜에 `api` 행과 `manual` 행이 같이 설 수 있어 둘을 합치지 않고 그대로 준다 — 잠금
+ * 판정이 `api`의 유무만 본다(`docs/2-design/modules/payroll/design.md`의 「공휴일」).
  */
 
 export type WageRateRow = {
@@ -39,10 +43,17 @@ export type ExcuseStatusRow = {
   decision: string | null;
 };
 
+export type HolidayRow = {
+  holiday_date: string;
+  source: string;
+  name: string | null;
+};
+
 export type PayrollMonth = {
   wageRates: WageRateRow[];
   adjustments: AdjustmentRow[];
   excuseStatus: ExcuseStatusRow[];
+  holidays: HolidayRow[];
 };
 
 const WAGE_RATE_COLUMNS = [
@@ -67,6 +78,8 @@ const EXCUSE_STATUS_COLUMNS = [
   "decided_at",
   "decision",
 ].join(", ");
+
+const HOLIDAY_COLUMNS = ["holiday_date", "source", "name"].join(", ");
 
 export function payrollMonthKey(month: string): string[] {
   return ["payroll", month.slice(0, 7)];
@@ -110,7 +123,7 @@ export async function getPayrollMonth(
 ): Promise<PayrollMonth> {
   const dayIds = await monthDayIds(client, month);
 
-  const [wageRates, adjustments, excuseStatus] = await Promise.all([
+  const [wageRates, adjustments, excuseStatus, holidays] = await Promise.all([
     client
       .from("wage_rates")
       .select(WAGE_RATE_COLUMNS)
@@ -126,6 +139,12 @@ export async function getPayrollMonth(
       .select(EXCUSE_STATUS_COLUMNS)
       .in("day_id", dayIds)
       .returns<ExcuseStatusRow[]>(),
+    client
+      .from("holidays")
+      .select(HOLIDAY_COLUMNS)
+      .gte("holiday_date", monthStart(month))
+      .lt("holiday_date", nextMonthStart(month))
+      .returns<HolidayRow[]>(),
   ]);
 
   if (wageRates.error) {
@@ -137,10 +156,14 @@ export async function getPayrollMonth(
   if (excuseStatus.error) {
     throw excuseStatus.error;
   }
+  if (holidays.error) {
+    throw holidays.error;
+  }
 
   return {
     wageRates: wageRates.data ?? [],
     adjustments: adjustments.data ?? [],
     excuseStatus: excuseStatus.data ?? [],
+    holidays: holidays.data ?? [],
   };
 }

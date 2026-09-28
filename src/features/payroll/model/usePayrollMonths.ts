@@ -30,6 +30,7 @@ function mergeMonths(months: readonly PayrollMonth[]): PayrollMonth {
     wageRates: months.flatMap((month) => month.wageRates),
     adjustments: months.flatMap((month) => month.adjustments),
     excuseStatus: months.flatMap((month) => month.excuseStatus),
+    holidays: months.flatMap((month) => month.holidays),
   };
 }
 

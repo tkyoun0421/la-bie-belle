@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 import type { Database } from "@/shared/api/database";
-import { getPayrollMonth } from "@/entities/payroll/dals/get-payroll-month";
+import {
+  getPayrollMonth,
+  type HolidayRow,
+  type PayrollMonth,
+} from "@/entities/payroll/dals/get-payroll-month";
 import {
   createAdminUser,
   createApprovedUser,
@@ -110,17 +114,8 @@ function seedExcuse(dayId: string, profileId: string): void {
 
 type HolidaySource = "api" | "manual";
 
-type HolidayRow = {
-  holiday_date: string;
-  source: HolidaySource;
-  name: string | null;
-};
-
-type PayrollMonthWithHolidays = { holidays: HolidayRow[] };
-
-/** 지금 `getPayrollMonth`는 `holidays`를 안 실으니 이 캐스트가 런타임에 `undefined`를 낸다. */
-function holidaysOf(result: unknown): HolidayRow[] {
-  return (result as PayrollMonthWithHolidays).holidays;
+function holidaysOf(result: PayrollMonth): HolidayRow[] {
+  return result.holidays;
 }
 
 /** 달마다 임의로 멀리 떨어뜨려 다른 테스트가 심은 공휴일과 안 겹치게 한다. */

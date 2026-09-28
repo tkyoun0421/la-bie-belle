@@ -442,6 +442,24 @@ export function seedCheckIn(
   );
 }
 
+/**
+ * 공휴일 한 줄을 직접 꽂는다. `api` 행을 넣는 길은 `internal.import_holidays` 하나인데 그
+ * 함수가 `internal`이라 PostgREST로 못 부른다 — `seedWageHistory`·`backdateDeadline`과 같은
+ * 손이다(payroll/design.md 「공휴일 넣기」).
+ */
+export function seedHoliday(
+  holidayDate: string,
+  source: "api" | "manual",
+  name: string | null = null,
+): void {
+  execSql(
+    "insert into public.holidays (holiday_date, source, name)\n" +
+      "values (:'holiday_date', :'source', :'name')\n" +
+      "on conflict (holiday_date, source) do update set name = excluded.name;\n",
+    { holiday_date: holidayDate, source, name: name ?? "" },
+  );
+}
+
 /** 포지션 하나짜리 자리다. 내역 줄이 그 포지션을 그대로 적어(payroll.md 「내역 목록」) 자리와 배정이 같은 이름을 들어야 한다. */
 export function seedSlotOfPosition(dayId: string, position: string): string {
   const id = randomUUID();
