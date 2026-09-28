@@ -6,11 +6,17 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `stats-admin`이다.** 관리자 통계 `/admin/stats`고, 탭 둘(근무·근태)에 열두 달 추이 그래프·줄 막대·비율 띠가 선다. **차트 조각 셋이 여기서 처음 서고**([components.md 「차트 넷」](2-design/design-system/components.md#차트-넷)) `['attendance', 'YYYY-MM']` 달 키도 여기서 연다. 이것이 서야 `stats-worker`가 열린다 — 그쪽은 조각을 다 가져다 쓴다. 정본은 [stats.md](2-design/system/screens/stats.md#관리자--adminstats)다. 훅에는 TDD 집이 없으니 `test-planner`가 훅마다 unit 행을 배정해야 한다([관찰 020](observations/020-query-hook-has-no-tdd-home.md)).
+**다음 첫 수는 `stats-worker`다.** 근무자 통계고 `stats-admin`이 세운 것을 거의 다 가져다 쓴다 — 차트 조각 셋, `features/stats/model`의 집계 함수 넷, `entities/schedule/model/positions.ts`, `['attendance', 'YYYY-MM']` 달 키가 그대로 있다. 탭이 셋(근태·포지션·급여)이라 관리자 쪽과 갈리고 금액이 든다. 정본은 [stats.md](2-design/system/screens/stats.md)고 [spec](2-design/spec/stats-worker.md)·[plan](3-build/plans/stats-worker.md)이 이미 섰다. 훅에는 TDD 집이 없으니 `test-planner`가 훅마다 unit 행을 배정해야 한다([관찰 020](observations/020-query-hook-has-no-tdd-home.md)).
 
-**`ready`가 여덟이다.** 이번 회차에 상태를 손봤다 — 의존이 전부 `done`인데 `blocked`로 남아 있던 것들이다(`stats-admin`·`notification-list`·`notification-settings`·`notification-push`·`payroll-holidays`·`profile-erasure`·`plans-restate`·`sian-sync`). `blocked`로 남은 쪽의 이유는 셋뿐이다 — **NCP 자격**(`attendance-checkin`·`hall-location`), **도메인**(`qr-landing-page`·`first-release`), **앞 task의 사슬**(`dashboard`가 `attendance-checkin`을 기다리고 `attendance-excuse`·`notification-emit` 이하가 그 뒤에 선다). `stats-worker`는 `stats-admin`이 서면 바로 풀린다.
+**`ready`가 여덟이다.** `stats-admin`이 빠지고 `stats-worker`가 들어왔다 — `notification-list`·`notification-settings`·`notification-push`·`payroll-holidays`·`profile-erasure`·`plans-restate`·`sian-sync`가 나머지다. `blocked`로 남은 쪽의 이유는 셋뿐이다 — **NCP 자격**(`attendance-checkin`·`hall-location`), **도메인**(`qr-landing-page`·`first-release`), **앞 task의 사슬**(`dashboard`가 `attendance-checkin`을 기다리고 `attendance-excuse`·`notification-emit` 이하가 그 뒤에 선다).
 
-**`MonthPickerSheet`는 여전히 안 붙었다** — `payroll-view`도 세그먼트·화살표로 갔지 시트를 안 썼다. `stats-admin`의 「달 고르기」가 다음 자리다.
+**`MonthPickerSheet`는 `rehearsal` 제 화면 말고는 아직 안 붙었다** — `payroll-view`도 `stats-admin`도 세그먼트·화살표와 달 줄로 갔다. 근무표·급여 화면이 남은 자리다.
+
+**`stats-admin`이 `done`이다(#454).** `/admin/stats`가 섰다 — 탭 둘, 열두 달 추이, 줄 막대, 비율 띠, 근무 내역 시트다. 차트 조각 셋이 처음 값을 먹었고 포지션 아홉의 정본이 `entities/schedule/model/positions.ts`로 올라갔다(두 슬라이스에 두 벌이던 것을 셋째 사본 대신 올렸다).
+
+**감사가 정본 충돌 여섯을 끌어낸 것이 이 task의 진짜 수확이다.** 출근율의 셈이 코드에만 있었고(출근 ÷ (출근+지각+결근+출근 인정), 출근 인정은 분모에만), 범례를 stats.md 문안 표만 「·」로 이어 적었고(`components.md`와 코드는 몫마다 따로 세운다 — 깨져 있던 e2e 단언의 근원이 그 표 행이었다), 사진 36px가 `Avatar`의 크기 넷에 없었고, 「값이 0인 자리」의 `fg.neutral-subtle`을 `ListRow`가 못 줬고, 시트 손잡이는 문서 넷이 그리라 하는데 `DraggableSheet`가 지웠고, 교육 라벨이 근무자 화면과 달랐다. 앞 넷은 닫았고 손잡이는 `sheet-handle`로 갈랐고([관찰 028](observations/028-sheet-handle-doc-and-piece-disagree.md)) 라벨은 자리가 달라 둘 다 맞다(시트는 그날 한 일, 아코디언은 내 상태).
+
+**계산 다섯이 `.tsx` 안에 살던 것도 여기서 나왔다.** `AdminStatsScreen.tsx`의 `attendanceRate`·`percentLabel` 따위가 ADR-001을 어겼는데 `eslint-rules/dumb-ui.mjs`가 통신 축(`useQuery`·`supabase`·`fetch`)만 봐서 통과했다. `chart-values.ts`로 내렸다 — **같은 틈이 차트 조각 셋에도 있어** `chart-math-out-of-tsx`로 backlog에 섰다.
 
 **`payroll-adjust`가 `done`이다(#451).** 날 상세에 임시공휴일 스위치와 근무 조정 줄이 섰다 — 모델 여섯, 훅 둘, 시트 둘, `getPayrollMonth`가 `holidays`를 같이 싣는다. **총괄 판정 다섯** — 둘째 시트 이름은 「조정 고르기 시트」(사람 픽커가 「사람 시트」를 이미 쓴다), `holidays`는 달치 키가 같이 싣는다(키를 안 늘린다), 「N명 조정됨」은 마지막 행의 분이 0이 아닌 사람을 센다(「원래대로」 줄이 서는 조건과 축이 다르다), `reason`은 갈래 이름 셋(0분 행의 뜻을 부호로 못 갈라서 남긴다), **조정 시트의 최종 시간은 근태를 안 본다**(반영하면 연장을 넣은 관리자가 인증 없는 날에 0시간을 보게 된다 — 대신 도움말 한 줄이 그 층을 말하고, 배정이 0명이면 그 줄도 없다). 조각 쪽으로 내린 것 둘(사람 줄은 `ListRow`, 연장 칸은 금액 칸 `p-4`)과 정본을 고친 것 하나 — **`components.md` 「빈 상태」 표가 그림이 서는 갈래 하나만 적었는데** 알림·통계·조정 시트 셋이 이미 「한 문장이면 그림 없이 왼쪽 정렬」로 서 있어 그 갈래를 표로 적었다. 남긴 자리 — 스위치의 잠김과 분 입력 칸을 Maestro가 잡는지 못 봤다.
 
@@ -36,7 +42,9 @@
 
 **픽스처가 한 사실을 여러 psql 호출로 심는 자리가 cron과 경합한다(관찰 024, open).** `seedWorkRequest`가 요청 행을 넣고 `seedRequestCandidate`가 갈래 행을 넣는 사이에 `internal.expire_requests`의 cron 틱이 떨어지면 요청이 닫힌 채 남는다. 로컬 세 회차에서 매번 다른 요청 테스트가 하나씩 졌고 CI에서는 아직 안 걸렸다 — 요청 테스트가 이유 없이 지면 이것부터 의심한다. `backlog.md`의 `test-seed-transaction`이 받는다.
 
-**관찰 027이 카운터 둘이다.** TDD 훅이 새 `.ts` 파일만 보고 기존 파일 안에 선 새 함수·넓어진 함수는 못 본다 — `payroll-view`에서 계산 함수 여섯이, `payroll-adjust`에서 `usePayrollMonths`의 `holidays` 합치기가 그 틈으로 왔다. 둘 다 사람과 `pr-diff`가 잡았다. 세 번째가 나오면 짓는다.
+**관찰 027을 닫고 TDD 훅을 지었다(#454).** 세 번째가 `stats-admin`에서 났고 이번엔 무검증 export가 아홉이었다 — 구현자가 다섯을 신고했고 `pr-diff`가 새로 생긴 `export`를 전수로 훑어 넷을 더 찾았다. `tdd-guard-unit.py`가 이제 이름 단위로 본다: 쓰려는 조각의 `export` 이름 중 저장된 파일에 없는 것만 새것으로 세고, 짝 테스트 본문이 그 이름을 안 부르면 막는다. 전부터 무검증인 `export`를 고치는 걸음은 안 막는다. **그러니 구현 중 함수를 새로 내보내려면 짝 테스트가 먼저 있어야 한다** — writer 라운드에서 배정을 빠뜨리면 구현자가 그 자리에서 막힌다.
+
+**관찰 029가 열렸다.** PR 본문만 고쳐도 `review` 잡이 빨개진다 — `edited`로 다시 뜬 리뷰어가 앞 실행의 코멘트를 보고 더 달 것이 없다고 끝내는데, 게이트는 제 실행 시작 시각 뒤의 코멘트만 센다. 관찰 026이 세운 검사가 반대로 걸린 자리다. 재실행하면 풀리니 본문을 고칠 일이 있으면 코드 push보다 **먼저** 하는 쪽이 낫다.
 
 **관찰 021은 열려 있다.** 라우트 파일명이 같으면 e2e 게이트가 남의 플로우로 통과하는 자리다 — `schedule-admin`에서 첫 번째로 났다. 두 번째가 나오면 `tdd-guard-e2e.py`의 매핑을 디렉터리 경로 이름으로 바꾼다.
 
