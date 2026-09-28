@@ -38,6 +38,7 @@ import {
   spellMonth,
 } from "@/screens/schedule-worker/model/month-state";
 import {
+  approveProfile,
   backdateDeadline,
   createAdminUser,
   execSql,
@@ -1017,7 +1018,8 @@ async function seedWorkedDay(
  * `create_schedule` 대신 `seedPastDay`·`seedPastSchedule`이 직접 꽂는다 — 두 RPC 다 지난
  * 날짜를 거절한다.
  *
- * 기본 시급은 `seededUser`가 승인보다 먼저 세운다(PAY-012).
+ * 기본 시급은 `seededUser`가 승인보다 먼저 세우고(PAY-012), 이 함수가 그 승인일과 첫 시급 행을
+ * 다시 근무보다 앞 달로 물린다 — 아래 `floorMonth`가 그 자리다.
  */
 async function seedPayrollView(
   me: SignedInUser,
@@ -1028,6 +1030,16 @@ async function seedPayrollView(
   const secondMonth = kstMonthStart(secondMonthOffset(lastMonth));
   const lastMonthKey = lastMonth.slice(0, 7);
   const secondMonthKey = secondMonth.slice(0, 7);
+
+  // 승인과 첫 시급 행을 근무보다 앞으로 물린다. 승인 함수가 넣는 행은 적용일이 오늘이고
+  // (PAY-008) 뒤로 가는 화살표의 바닥도 승인된 달이라(PAY-025), 오늘 승인된 채로 두면 지난
+  // 달에 닿을 길이 없고 닿아도 그날 시급이 없어 전부 「시급 미정」이 된다.
+  const floorMonth = secondMonth < lastMonth ? secondMonth : lastMonth;
+
+  approveProfile(me.userId, kstInstant(floorMonth, "00:00:00"));
+  seedWageHistory(me.profileId, [
+    { date: floorMonth, amount: PAYROLL_VIEW_WAGE, followsDefault: true },
+  ]);
 
   seedPastSchedule(lastMonth, admin.profileId);
   seedPastSchedule(secondMonth, admin.profileId);
