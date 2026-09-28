@@ -9,7 +9,18 @@
  *
  * **셈의 분자는 살아 있는 정규 배정이 있는 자리 수다.** 교육 배정은 자리를 안 먹어 안 든다
  * (SCH-012).
+ *
+ * 아홉과 그 순서는 업무 상수라
+ * [`entities/schedule/model/positions.ts`](../../../entities/schedule/model/positions.ts)가
+ * 들고, 이 파일은 부르던 이름을 그대로 두려고 다시 내보낸다.
  */
+
+import {
+  POSITION_ORDER,
+  type Position,
+} from "@/entities/schedule/model/positions";
+
+export { POSITION_ORDER, type Position };
 
 export type PositionSlot = {
   id: string;
@@ -28,20 +39,6 @@ export type SlotFill = {
   filled: number;
   total: number;
 };
-
-export const POSITION_ORDER = [
-  "팀장",
-  "스캔",
-  "메인",
-  "드레스",
-  "축가",
-  "매니저",
-  "안내",
-  "드레스실",
-  "대기실",
-] as const;
-
-export type Position = (typeof POSITION_ORDER)[number];
 
 function isLiveRegular(assignment: PositionAssignment): boolean {
   return assignment.ended_at === null && assignment.kind === "regular";

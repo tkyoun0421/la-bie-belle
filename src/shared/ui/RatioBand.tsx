@@ -17,6 +17,11 @@ import { Text } from "@/shared/ui/Text";
  * **몫이 0이면 그 색이 아예 없다.** 범례에서도 빠진다 — 지각이 0인 달에 「지각 0」이
  * 범례에 서면 없는 것을 세 번 말하게 된다.
  *
+ * **띠와 범례가 몫마다 이름을 하나씩 갖는다**(`${testID}-share-${key}`·
+ * `${testID}-legend-${key}`). 범례 글자가 같은 화면의 다른 줄과 겹칠 수 있어, 이름 없이
+ * 글자로만 짚으면 범례가 안 그려져도 통과하는 단언이 선다. 범례 쪽 이름은 점이 아니라
+ * 글자에 붙는다 — 밖에서 확인할 것이 「무엇이 몇」이라는 그 글자다.
+ *
  * 라운딩이 양 끝에만 남는 것은 띠 전체를 `rounded-full`로 깎고 몫을 그 안에 가두기
  * 때문이다. 몫 사이 2px 틈은 띠 바탕이 그대로 비치는 자리다.
  */
@@ -74,7 +79,12 @@ export function RatioBand({ shares, testID }: RatioBandProps) {
               className={cn("rounded-full", entry.fill)}
               style={{ width: LEGEND_DOT_SIZE, height: LEGEND_DOT_SIZE }}
             />
-            <Text className="text-xs text-fg-neutral-muted tabular-nums">
+            <Text
+              testID={
+                testID ? `${testID}-legend-${entry.share.key}` : undefined
+              }
+              className="text-xs text-fg-neutral-muted tabular-nums"
+            >
               {entry.share.label} {entry.share.value}
             </Text>
           </View>

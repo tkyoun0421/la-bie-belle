@@ -69,7 +69,7 @@ sources:
 
 **열두 달 추이.**
 
-`src/features/stats/model/trend.ts`와 `src/features/stats/api/queries.ts`
+`src/features/stats/model/trend.ts`와 `src/features/stats/api/useStatsQueries.ts`
 
 - 보는 달에서 열한 달을 거슬러 올라간 열두 달이고 보는 달이 오른쪽 끝이다
 - **달마다 키를 읽어 더한다**([읽기 범위](../../2-design/system/runtime.md#읽기-범위)). 근무 탭은 `['schedule', 'YYYY-MM']` 열둘, 근태 탭은 거기에 `['attendance', 'YYYY-MM']` 열둘이다 — `useQueries`로 나란히 읽는다
@@ -89,13 +89,13 @@ sources:
 
 ### AC-05
 
-**차트 조각 셋.**
+**차트 조각 셋.** 이미 [`ui-kit`](../../2-design/spec/ui-kit.md)이 세웠다 — `src/shared/ui/TrendChart.tsx`·`RowBars.tsx`·`RatioBand.tsx`고 입력 타입(`TrendChartProps`·`RowBarsProps`·`RatioBandProps`)도 그 파일이 든다. 이 task는 그 조각에 값을 먹이는 자리고, 아래는 그 조각이 이미 지키고 있어야 할 계약이다 — 어긋나면 조각을 고치는 것이 아니라 총괄에게 보고한다.
 
 `src/shared/ui/`
 
-- `trend-chart.tsx` — 열두 달. 선 2px `stroke.brand-solid`, 아래 면 `bg.brand-weak`, **점은 보는 달에만**, 높이 96px. 값이 `null`인 달은 선이 끊긴다. 가로축은 1·4·7·10월만 글자고 나머지 여덟은 눈금이다
-- `row-bar.tsx` — 줄 아래 4px `rounded-full`, **트랙이 없다**. 가장 큰 값이 100%고 **0이면 아무것도 안 그린다**
-- `ratio-band.tsx` — 8px `rounded-full`, 몫 사이 2px 틈. 몫이 0이면 그 색과 범례가 같이 빠진다
+- `TrendChart.tsx` — 열두 달. 선 2px `stroke.brand-solid`, 아래 면 `bg.brand-weak`, **점은 보는 달에만**, 높이 96px. 값이 `null`인 달은 선이 끊긴다. 가로축은 1·4·7·10월만 글자고 나머지 여덟은 눈금이다
+- `RowBars.tsx` — 줄 아래 4px `rounded-full`, **트랙이 없다**. 가장 큰 값이 100%고 **0이면 아무것도 안 그린다**
+- `RatioBand.tsx` — 8px `rounded-full`, 몫 사이 2px 틈. 몫이 0이면 그 색과 범례가 같이 빠진다
 - **등장 모션이 없다**([components.md](../../2-design/design-system/components.md#차트-넷)). 막대가 자라거나 선이 그려지지 않는다. 값이 바뀌면 `--duration-base`로 옮겨간다
 - 계산은 `.ts`에 있고 `.tsx`는 좌표와 폭을 받아 그리기만 한다
 
@@ -147,13 +147,11 @@ sources:
 | `src/features/stats/model/work-totals.ts` | 사람별·포지션별 집계 | AC-01 |
 | `src/features/stats/model/person-days.ts` | 한 사람의 날짜별 근무 | AC-02 |
 | `src/features/stats/model/trend.ts` | 열두 달 대표 숫자 | AC-03 |
-| `src/features/stats/api/queries.ts` | 달마다의 `useQueries`와 캐시 키 | AC-03 |
-| `src/entities/attendance/dals/get-month-attendance.ts` | `['attendance', 'YYYY-MM']` | AC-04 |
-| `src/shared/ui/trend-chart.tsx` | 추이 그래프 | AC-05 |
-| `src/shared/ui/row-bar.tsx` | 줄 막대 | AC-05 |
-| `src/shared/ui/ratio-band.tsx` | 비율 띠 | AC-05 |
+| `src/features/stats/api/useStatsQueries.ts` | 달마다의 `useQueries`와 캐시 키 | AC-03 |
+| `src/entities/attendance/dals/get-month-attendance.ts`·`__tests__/` | `['attendance', 'YYYY-MM']`. 반환은 [`get-day-attendance.ts`](../../../src/entities/attendance/dals/get-day-attendance.ts)의 `{ checkIns, excuseStatuses }`와 같은 모양이고 필터만 날에서 달로 넓힌다 | AC-04 |
+| `src/shared/ui/TrendChart.tsx`·`RowBars.tsx`·`RatioBand.tsx` | **이미 섰다** — [`ui-kit`](../../2-design/spec/ui-kit.md)이 세웠고 입력 타입도 그 파일이 든다. 이 task는 붙이기만 한다 | AC-05 |
 | `src/screens/admin-stats/` | 화면 조립, 탭 둘, 시트 | AC-06~AC-09 |
-| `/admin/stats/` 화면 | 라우트 | AC-06 |
+| `src/app/admin/stats.tsx` | 라우트. 지금은 `NotBuiltYet` 한 줄이다 | AC-06 |
 
 ## 구현 순서
 
@@ -165,6 +163,20 @@ sources:
 4. `e2e-test-writer`가 탭 둘과 시트와 빈 상태를 쓴다
 5. `implementer`가 순수 함수 → dal → 조각 → 화면 순으로 초록을 만든다
 6. `pr-diff`가 diff를 본다 — `.tsx`에 계산이 든 자리가 없는지, 상태 계산이 두 벌 생기지 않았는지
+
+## 착수 판정
+
+`test-planner`가 막힌 자리 다섯을 올렸다. 정본이 여기서 닫는다.
+
+**포지션 아홉의 정본을 `src/entities/schedule/model/positions.ts`로 올린다.** 지금 `POSITION_ORDER`가 `screens/schedule-worker/model/day-sheet.ts`와 `screens/schedule-admin/model/position-rows.ts`에 같은 값으로 두 벌 있고, lint 규칙 3이 슬라이스 사이를 막아 이 task가 셋째 사본을 세울 자리였다. 포지션 목록은 화면 것이 아니라 업무 상수다([schedule/README.md](../../2-design/modules/schedule/README.md)의 용어 표가 정본이다) — 이 task가 올리고 기존 둘이 그것을 부른다. `kst-date.ts`가 앞서 밟은 길이다.
+
+**확정 여부를 안 본다 — 배정이 있으면 센다.** [stats.md](../../2-design/system/screens/stats.md)의 상태표가 「확정된 근무표가 없다」로, [spec](../../2-design/spec/stats-admin.md)의 상태 격자가 「근무가 없으면」으로 갈려 있었다. **spec 쪽이다.** 관리자가 이번 달 배정을 짜면서 사람별 시간 균형을 보는 것이 이 화면의 실제 쓰임인데, 확정을 기다리면 가장 쓸모 있는 순간에 빈 화면이 된다. 급여도 확정을 안 기다린다([PAY-020](../../2-design/modules/payroll/README.md#pay-020)). `work-totals.ts`도 `trend.ts`도 `confirmed_at`을 입력으로 안 받는다.
+
+**뒤로 가는 바닥은 새 dal이 낸다** — `src/entities/schedule/dals/get-first-schedule-month.ts`, 키 `['schedule', 'first-month']`. `schedules`의 가장 이른 `month` 한 줄이다. 급여가 승인일로 대신한 것은([payroll.md](../../2-design/modules/payroll/screens/payroll.md) 「첫 달 앞」) 그 화면의 바닥이 사람마다 달라서고, 여기 바닥은 홀 하나라 질의 한 번이면 된다.
+
+**근태 월 집계의 입력을 만드는 자리는 `src/features/stats/model/attendance-inputs.ts`다.** 그달 배정·날 시각과 `checkIns`·`excuseStatuses`를 `(day_id, profile_id)`로 맞물려 `AttendanceStatusInput[]`을 낸다. 세는 것은 이미 있는 `tallyMonthlyAttendance`고 **다시 짜지 않는다**.
+
+**AC-07의 방어선은 RLS가 아니라 라우트 가드다.** spec이 「남의 근무·근태는 RLS가 좁힌다」고 적었지만 실제 읽기는 홀 전체 공개다([attendance-data](attendance-data.md)의 그 판정과 [SCH-019](../../2-design/modules/schedule/README.md#sch-019)) — 근무자 세션으로도 같은 행이 온다. spec 문구를 고치고 검증은 `admin/_layout.tsx` 가드를 이미 보는 [`tests/e2e/admin.yaml`](../../../tests/e2e/admin.yaml)에 맡긴다. 이 task는 그 층에 아무것도 안 더한다.
 
 ## 리스크·전환·되돌리기
 
@@ -187,7 +199,8 @@ sources:
 | AC-02 | 시트 합계가 줄 값과 다르다 | unit `person-days.test.ts`(예정) | `pnpm test` | 회수와 시간이 구획 줄과 같다 |
 | AC-03 | 값 없는 달을 0으로 잇는다 | unit `trend.test.ts`(예정) | `pnpm test` | `null`이라 선이 끊긴다 |
 | AC-03 | 지난달을 골랐는데 구간이 안 밀린다 | unit 위 | `pnpm test` | 보는 달이 오른쪽 끝 |
-| AC-04 | 남의 행이 안 온다 | integration `tests/integration/stats-month.test.ts`(예정) | `pnpm test:integration:run` | 관리자는 전원, 근무자는 자기 것 |
+| AC-04 | 달 경계 밖이 섞인다 | integration `src/entities/attendance/dals/__tests__/get-month-attendance.integration.test.ts` | `pnpm test:integration:run` | 전달 마지막 날과 다음 달 첫날이 안 온다. **세션별 차이는 안 본다** — 근무·근태 읽기는 홀 전체 공개다(위 「착수 판정」) |
+| AC-04 | 뒤로 가는 바닥을 못 낸다 | integration `src/entities/schedule/dals/__tests__/get-first-schedule-month.integration.test.ts` | `pnpm test:integration:run` | 달이 여럿이면 가장 이른 것 |
 | AC-04 | 한 달을 날마다 읽는다 | integration 위 | 위와 같다 | 한 질의로 그달치 |
 | AC-05 | 0인데 1px 선이 남는다 | unit `row-bar` 계산(예정) | `pnpm test` | 폭이 0이면 안 그린다 |
 | AC-06 | 탭을 옮기면 달이 돌아간다 | e2e `admin-stats` e2e(예정) | e2e 명령 | 보는 달 그대로 |

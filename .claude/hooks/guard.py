@@ -12,6 +12,17 @@ def exists(relative_path):
     return os.path.exists(os.path.join(ROOT, relative_path))
 
 
+def contents(relative_path):
+    """저장된 파일을 읽는다. 없거나 못 읽으면 빈 문자열이다."""
+    try:
+        with open(
+            os.path.join(ROOT, relative_path), encoding="utf-8", errors="ignore"
+        ) as handle:
+            return handle.read()
+    except OSError:
+        return ""
+
+
 def _payload():
     try:
         return json.load(sys.stdin)
@@ -27,9 +38,11 @@ def _relative_path(raw_path):
 
 
 def _reader(tool_input, relative_path):
-    def read():
-        incoming = "\n".join(str(tool_input.get(key, "")) for key in CONTENT_KEYS)
-        if relative_path.startswith(".."):
+    incoming = "\n".join(str(tool_input.get(key, "")) for key in CONTENT_KEYS)
+
+    def read(source="disk"):
+        """`"disk"`는 지금 저장된 내용, `"incoming"`은 이번에 쓰려는 조각이다."""
+        if source == "incoming" or relative_path.startswith(".."):
             return incoming
         try:
             with open(

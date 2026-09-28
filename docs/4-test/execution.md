@@ -183,7 +183,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 | 13 | console | eslint | `no-console` | `tests/lint/no-console.test.ts` |
 | 14 | 미사용 import와 import type | eslint | `unused-imports/no-unused-imports` | `tests/lint/unused-imports.test.ts` |
 | 14 | 미사용 import와 import type | eslint | `@typescript-eslint/consistent-type-imports` | `tests/lint/unused-imports.test.ts` |
-| 15 | 실행 코드를 쓰기 전에 짝 테스트가 있어야 한다 | hook | `.claude/hooks/tdd-guard-unit.py` | `.claude/hooks/__tests__/tdd-guard.test.ts` |
+| 15 | 내보내는 함수마다 그것을 부르는 짝 테스트가 먼저 있어야 한다 | hook | `.claude/hooks/tdd-guard-unit.py` | `.claude/hooks/__tests__/tdd-guard.test.ts` |
 | 16 | 화면과 라우트를 쓰기 전에 e2e 플로우가 있어야 한다 | hook | `.claude/hooks/tdd-guard-e2e.py` | `.claude/hooks/__tests__/tdd-guard.test.ts` |
 | 17 | 시크릿과 .env는 커밋할 수 없다 | pre-commit | `.githooks/pre-commit` | `tests/lint/pre-commit.test.ts` |
 | 18 | 승인된 spec 없이 feat 브랜치에서 src/를 고칠 수 없다 | hook | `.claude/hooks/spec-gate.py` | `.claude/hooks/__tests__/spec-gate.test.ts` |

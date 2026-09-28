@@ -470,6 +470,52 @@ export function seedSlotOfPosition(dayId: string, position: string): string {
   return id;
 }
 
+/**
+ * 포지션 둘을 합친 겸임 자리다. 앉는 사람은 하나고 앞 포지션(`positions[0]`)으로 센다
+ * (`docs/2-design/system/screens/stats.md`의 「근무 포지션 구획」).
+ */
+export function seedJointSlot(
+  dayId: string,
+  positions: [string, string],
+): string {
+  const id = randomUUID();
+  execSql(
+    "insert into public.slots (id, day_id, positions) values (:'id', :'day_id', array[:'position_a', :'position_b']);\n",
+    { id, day_id: dayId, position_a: positions[0], position_b: positions[1] },
+  );
+  return id;
+}
+
+/**
+ * 사유 하나를 직접 꽂는다. `"approved"`면 출근 인정으로 잡힌다
+ * (`entities/attendance/model/attendance-status.ts`의 `getAttendanceStatus`).
+ *
+ * `submit_excuse`·`decide_excuse` RPC로는 지난 날짜의 사유를 못 만든다 — `backdateDeadline`과
+ * 같은 손이다.
+ */
+export function seedExcuse(
+  dayId: string,
+  profileId: string,
+  decision: "approved" | "rejected" | null = "approved",
+): void {
+  const decisionSql = decision === null ? "null" : ":'decision'";
+  const decidedAtSql = decision === null ? "null" : "now()";
+  const vars: Record<string, string> = {
+    day_id: dayId,
+    profile_id: profileId,
+  };
+
+  if (decision !== null) {
+    vars.decision = decision;
+  }
+
+  execSql(
+    "insert into public.excuses (day_id, profile_id, body, decided_at, decision)\n" +
+      `values (:'day_id', :'profile_id', '개인 사정', ${decidedAtSql}, ${decisionSql});\n`,
+    vars,
+  );
+}
+
 export function seedWorkRequest(
   slotId: string,
   requestedBy: string,

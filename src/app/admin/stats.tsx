@@ -1,5 +1,5 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { AdminStatsScreen } from "@/screens/admin-stats/ui/AdminStatsScreen";
 
 export default function Screen() {
-  return <NotBuiltYet path="/admin/stats" />;
+  return <AdminStatsScreen />;
 }

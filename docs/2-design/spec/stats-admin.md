@@ -85,8 +85,8 @@ sources:
 
 - 전제: 근무자
 - 행동: `/admin/stats`에 직접 닿는다
-- 관찰 결과: 화면이 안 뜨고 `/`로 간다. 남의 근무·근태는 RLS가 좁힌다
-- 검증 층: integration — 읽기 범위가 RLS에 걸려 있다
+- 관찰 결과: 화면이 안 뜨고 `/`로 간다
+- 검증 층: 없다 — `/admin` 아래가 한 `_layout.tsx` 가드를 쓰고 [`tests/e2e/admin.yaml`](../../../tests/e2e/admin.yaml)이 이미 그것을 본다. **막는 것은 RLS가 아니라 이 가드다** — 근무·근태 읽기는 홀 전체 공개라([SCH-019](../modules/schedule/README.md#sch-019)) 근무자 세션으로 불러도 같은 행이 온다
 - 근거: [navigation.md 「경로」](../system/navigation.md#경로)
 
 ## 상태 격자
