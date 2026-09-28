@@ -164,6 +164,20 @@ sources:
 5. `implementer`가 순수 함수 → dal → 조각 → 화면 순으로 초록을 만든다
 6. `pr-diff`가 diff를 본다 — `.tsx`에 계산이 든 자리가 없는지, 상태 계산이 두 벌 생기지 않았는지
 
+## 착수 판정
+
+`test-planner`가 막힌 자리 다섯을 올렸다. 정본이 여기서 닫는다.
+
+**포지션 아홉의 정본을 `src/entities/schedule/model/positions.ts`로 올린다.** 지금 `POSITION_ORDER`가 `screens/schedule-worker/model/day-sheet.ts`와 `screens/schedule-admin/model/position-rows.ts`에 같은 값으로 두 벌 있고, lint 규칙 3이 슬라이스 사이를 막아 이 task가 셋째 사본을 세울 자리였다. 포지션 목록은 화면 것이 아니라 업무 상수다([schedule/README.md](../../2-design/modules/schedule/README.md)의 용어 표가 정본이다) — 이 task가 올리고 기존 둘이 그것을 부른다. `kst-date.ts`가 앞서 밟은 길이다.
+
+**확정 여부를 안 본다 — 배정이 있으면 센다.** [stats.md](../../2-design/system/screens/stats.md)의 상태표가 「확정된 근무표가 없다」로, [spec](../../2-design/spec/stats-admin.md)의 상태 격자가 「근무가 없으면」으로 갈려 있었다. **spec 쪽이다.** 관리자가 이번 달 배정을 짜면서 사람별 시간 균형을 보는 것이 이 화면의 실제 쓰임인데, 확정을 기다리면 가장 쓸모 있는 순간에 빈 화면이 된다. 급여도 확정을 안 기다린다([PAY-020](../../2-design/modules/payroll/README.md#pay-020)). `work-totals.ts`도 `trend.ts`도 `confirmed_at`을 입력으로 안 받는다.
+
+**뒤로 가는 바닥은 새 dal이 낸다** — `src/entities/schedule/dals/get-first-schedule-month.ts`, 키 `['schedule', 'first-month']`. `schedules`의 가장 이른 `month` 한 줄이다. 급여가 승인일로 대신한 것은([payroll.md](../../2-design/modules/payroll/screens/payroll.md) 「첫 달 앞」) 그 화면의 바닥이 사람마다 달라서고, 여기 바닥은 홀 하나라 질의 한 번이면 된다.
+
+**근태 월 집계의 입력을 만드는 자리는 `src/features/stats/model/attendance-inputs.ts`다.** 그달 배정·날 시각과 `checkIns`·`excuseStatuses`를 `(day_id, profile_id)`로 맞물려 `AttendanceStatusInput[]`을 낸다. 세는 것은 이미 있는 `tallyMonthlyAttendance`고 **다시 짜지 않는다**.
+
+**AC-07의 방어선은 RLS가 아니라 라우트 가드다.** spec이 「남의 근무·근태는 RLS가 좁힌다」고 적었지만 실제 읽기는 홀 전체 공개다([attendance-data](attendance-data.md)의 그 판정과 [SCH-019](../../2-design/modules/schedule/README.md#sch-019)) — 근무자 세션으로도 같은 행이 온다. spec 문구를 고치고 검증은 `admin/_layout.tsx` 가드를 이미 보는 [`tests/e2e/admin.yaml`](../../../tests/e2e/admin.yaml)에 맡긴다. 이 task는 그 층에 아무것도 안 더한다.
+
 ## 리스크·전환·되돌리기
 
 - **합이 어긋나는 것이 이 task의 핵심 위험이다.** 사람별 구획과 포지션 구획이 한 화면에 같이 서서 둘의 합이 다르면 그 자리에서 들킨다. 겸임을 양쪽에 얹거나 교육을 빠뜨리면 바로 어긋난다 — unit이 합 셋을 나란히 단언한다
