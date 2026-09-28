@@ -2,10 +2,12 @@
 status: approved
 sources:
   - ../modules/payroll/README.md#pay-002
+  - ../modules/payroll/README.md#pay-003
   - ../modules/payroll/README.md#pay-020
   - ../modules/payroll/README.md#pay-027
   - ../modules/payroll/README.md#pay-028
   - ../modules/payroll/design.md#시급과-조정
+  - ../modules/payroll/design.md#조정
   - ../modules/schedule/screens/schedule-admin.md#근무-조정
   - ../modules/schedule/design.md#리허설
   - ../system/runtime.md#로딩
