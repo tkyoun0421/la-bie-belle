@@ -9,6 +9,7 @@ import {
   shiftMonth,
   spellMonth,
 } from "@/shared/lib/kst-date";
+import { canGoBack, canGoForward } from "@/shared/lib/month-boundary";
 import { NO_VALUE } from "@/shared/lib/no-value";
 import { queryClient } from "@/shared/lib/query-client";
 import { nowWithOffset } from "@/shared/lib/server-clock";
@@ -27,8 +28,6 @@ import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
-import { tallyMonthlyAttendance } from "@/entities/attendance/model/attendance-summary";
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
 import { payrollViewDays } from "@/features/payroll/model/payroll-days";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
 import { useRehearsalMonths } from "@/features/rehearsal/model/useRehearsalMonths";
@@ -38,7 +37,6 @@ import {
   usePayrollMonthsByMonth,
   useWorkMonths,
 } from "@/features/stats/api/useStatsQueries";
-import { buildAttendanceInputs } from "@/features/stats/model/attendance-inputs";
 import {
   computeMyWorkTotals,
   type MyWorkTotals,
@@ -51,6 +49,7 @@ import {
 } from "@/screens/stats/model/attendance-days";
 import { attendanceRatioShares } from "@/screens/stats/model/attendance-shares";
 import { attendanceSummaryLine } from "@/screens/stats/model/attendance-summary-line";
+import { myAttendanceTally } from "@/screens/stats/model/attendance-tally";
 import {
   myAttendanceValues,
   myPayrollValues,
@@ -121,27 +120,6 @@ function ArrowSlot() {
   return <View className="h-8 w-8" />;
 }
 
-/**
- * 그달 날들을 내 배정만 남기고 좁힌다. 남의 배정이 섞이면 그 사람의 결근까지 내 현황 줄에 든다.
- *
- * 같은 손이 `screens/stats/model/chart-values.ts` 안에도 산다 — 거기는 열두 달치를, 여기는 보는
- * 달 하나를 좁힌다. 한 자리에 두려면 그 파일이 이 이름을 내보내야 하는데 짝 테스트에 그 이름이
- * 없어 TDD 훅이 막는다.
- */
-function myDaysOf(days: readonly ScheduleDay[], profileId: string | null) {
-  return profileId === null
-    ? []
-    : days.map((day) => ({
-        id: day.id,
-        work_date: day.work_date,
-        starts_at: day.starts_at,
-        ends_at: day.ends_at,
-        assignments: day.assignments.filter(
-          (assignment) => assignment.profile_id === profileId,
-        ),
-      }));
-}
-
 export function StatsScreen() {
   const router = useRouter();
   const today = kstToday();
@@ -194,13 +172,12 @@ export function StatsScreen() {
 
   const tally = useMemo(
     () =>
-      tallyMonthlyAttendance(
-        buildAttendanceInputs(
-          myDaysOf(shownAttendance?.days ?? [], profileId),
-          shownAttendance?.attendance.checkIns ?? [],
-          shownAttendance?.attendance.excuseStatuses ?? [],
-          now,
-        ),
+      myAttendanceTally(
+        shownAttendance?.days ?? [],
+        shownAttendance?.attendance.checkIns ?? [],
+        shownAttendance?.attendance.excuseStatuses ?? [],
+        profileId,
+        now,
       ),
     [shownAttendance, profileId, now],
   );
@@ -317,7 +294,7 @@ export function StatsScreen() {
       <ScrollView>
         <View className="px-5 pb-8">
           <View className="mt-2 flex-row items-center justify-center gap-2 py-2">
-            {firstMonth.data != null && month > monthOf(firstMonth.data) ? (
+            {firstMonth.data != null && canGoBack(month, firstMonth.data) ? (
               <Button
                 variant="ghost"
                 size="compact"
@@ -335,7 +312,7 @@ export function StatsScreen() {
               {spellMonth(month)}
             </Text>
 
-            {month < monthOf(today) ? (
+            {canGoForward(month, today) ? (
               <Button
                 variant="ghost"
                 size="compact"

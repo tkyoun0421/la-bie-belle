@@ -1,7 +1,4 @@
-import {
-  attendanceRate,
-  tallyMonthlyAttendance,
-} from "@/entities/attendance/model/attendance-summary";
+import { attendanceRate } from "@/entities/attendance/model/attendance-summary";
 import type { PayrollMonth } from "@/entities/payroll/dals/get-payroll-month";
 import type { Rehearsal } from "@/entities/rehearsal/dals/get-my-rehearsals";
 import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
@@ -11,9 +8,9 @@ import type {
   AttendanceMonth,
   WorkMonth,
 } from "@/features/stats/api/useStatsQueries";
-import { buildAttendanceInputs } from "@/features/stats/model/attendance-inputs";
 import { computeMyWorkTotals } from "@/features/stats/model/my-totals";
 import { workInputsOf } from "@/features/stats/model/work-totals";
+import { myAttendanceTally } from "@/screens/stats/model/attendance-tally";
 
 /**
  * 근무자 통계가 읽어 온 열두 달을 추이 그래프가 먹는 값으로 옮긴다. 탭이 셋이라 값도 셋이다 —
@@ -24,7 +21,7 @@ import { workInputsOf } from "@/features/stats/model/work-totals";
  * 근무표를 안 연 달이다 — 그래프는 그 달의 점을 안 찍는다. 세어 봤더니 0인 달은 0으로 남는다.
  *
  * **어느 셈도 여기서 새로 짜지 않는다.** 근무 시간은 `computeMyWorkTotals`, 근태 판정은
- * `buildAttendanceInputs`와 `tallyMonthlyAttendance`, 금액은 `payrollViewDays`가 낸다 —
+ * `myAttendanceTally`, 금액은 `payrollViewDays`가 낸다 —
  * 여기가 하는 일은 달마다 그 함수를 한 번씩 돌려 값을 모으는 것뿐이다(plan stats-worker AC-01).
  */
 
@@ -63,13 +60,12 @@ export function myAttendanceValues(
   return new Map(
     (loaded ?? []).flatMap((one) => {
       const rate = attendanceRate(
-        tallyMonthlyAttendance(
-          buildAttendanceInputs(
-            myDaysOf(one.days, profileId),
-            one.attendance.checkIns,
-            one.attendance.excuseStatuses,
-            now,
-          ),
+        myAttendanceTally(
+          one.days,
+          one.attendance.checkIns,
+          one.attendance.excuseStatuses,
+          profileId,
+          now,
         ),
       );
 
@@ -127,20 +123,4 @@ function myPayrollDays(
     rehearsals,
     now,
   }).filter((day) => day.date.slice(0, MONTH_LENGTH) === one.month);
-}
-
-/**
- * 그달 날들을 내 배정만 남기고 좁힌다. 남의 배정이 섞이면 그 사람의 출근까지 내 출근율에 든다 —
- * 관리자 쪽 `buildAttendanceTab`이 사람마다 밟는 길과 같은 손이다.
- */
-function myDaysOf(days: readonly ScheduleDay[], profileId: string) {
-  return days.map((day) => ({
-    id: day.id,
-    work_date: day.work_date,
-    starts_at: day.starts_at,
-    ends_at: day.ends_at,
-    assignments: day.assignments.filter(
-      (assignment) => assignment.profile_id === profileId,
-    ),
-  }));
 }
