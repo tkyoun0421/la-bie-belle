@@ -156,6 +156,10 @@ sources:
 - 배정하지 않은 것: 낳은 행이 실제로 기기에 닿는 것 — `notification-push`가 본다
 - 막힌 것: 알림을 끼워 넣을 함수들이 아직 안 섰다. 선행 task가 전부 merge되기 전에는 이 task의 대부분이 못 선다 — **자리마다 쪼개 따라가는 것이 대안이고 착수 때 판단한다**
 
+## 앞 task에서 넘어온 것
+
+**푸시 트리거가 사건 함수의 트랜잭션을 안 말리는지를 여기서 한 번 더 본다.** [`notification-push`](notification-push.md#ac-08)가 `notifications`에 행이 들어올 때 Edge Function을 쏘는 트리거를 세웠고, 그 쏘기가 던지면 근무표 확정 자체가 롤백된다. 그 task는 `insert into public.notifications`를 직접 불러 트리거 자신이 안 던지는 것까지만 봤다 — **사건 함수가 여러 쓰기와 함께 알림을 낳는 자리는 이 task가 처음 만든다.** vault 항목을 지워 쏘기를 실패시킨 채 `confirm_schedule` 같은 함수를 부르고, 배정과 알림 행이 둘 다 남는지를 단언한다.
+
 ## 범위 밖
 
 - 시각을 보고 나가는 넷(미리 알림 전날·주말 묶음, 출근 직전, 빈 자리 재촉) — [`notification-schedule`](notification-schedule.md)
