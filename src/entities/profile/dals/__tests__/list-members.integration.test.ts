@@ -1,13 +1,30 @@
 import {
+  listActiveMembers,
+  listLeftMembers,
+  type MemberRow,
+} from "@/entities/profile/dals/list-members";
+import {
   createAdminUser,
   createApprovedUser,
   createBlockedUser,
+  createLeftUser,
   createRejectedUser,
   createSubmittedUser,
   execSql,
+  seedPushToken,
+  type AdminUser,
 } from "@tests/integration/postgres";
 
+// 구현 대상: src/entities/profile/dals/list-members.ts
+// AC-08(docs/3-build/plans/notification-settings.md) — 직원 목록이 notifications_enabled와
+// push_tokens 유무(has_device)를 같이 읽어 갈래 셋을 구별하게 한다. 퇴사자에게는 안 붙는다.
+
 type PendingRow = { id: string; submitted_at: string | null };
+
+type MemberReachRow = MemberRow & {
+  notifications_enabled?: boolean;
+  has_device?: boolean;
+};
 
 function setSubmittedAt(userId: string, submittedAt: string): void {
   execSql(
@@ -92,5 +109,59 @@ describe("관리자가 profiles를 읽어 대기 목록을 만든다", () => {
 
     expect(error).toBeNull();
     expect(data).toEqual([{ id: applicant.profileId }]);
+  });
+});
+
+describe("재직자 목록이 알림 갈래를 같이 낸다(AC-08)", () => {
+  it("끈 사람·켰는데 기기 없는 사람·켰고 기기 있는 사람이 각자 값으로 구별된다", async () => {
+    const admin: AdminUser = await createAdminUser();
+
+    const off = await createApprovedUser();
+    setSubmittedAt(off.userId, new Date().toISOString());
+    const { error: turnOffError } = await off.client.rpc(
+      "set_notifications_enabled",
+      { p_on: false },
+    );
+    expect(turnOffError).toBeNull();
+
+    const onNoDevice = await createApprovedUser();
+    setSubmittedAt(onNoDevice.userId, new Date().toISOString());
+
+    const onWithDevice = await createApprovedUser();
+    setSubmittedAt(onWithDevice.userId, new Date().toISOString());
+    seedPushToken(onWithDevice.profileId);
+
+    const rows = (await listActiveMembers(
+      admin.client,
+    )) as unknown as MemberReachRow[];
+    const byId = new Map(rows.map((row) => [row.id, row]));
+
+    expect(byId.get(off.profileId)?.notifications_enabled).toBe(false);
+    expect(byId.get(off.profileId)?.has_device).toBe(false);
+
+    expect(byId.get(onNoDevice.profileId)?.notifications_enabled).toBe(true);
+    expect(byId.get(onNoDevice.profileId)?.has_device).toBe(false);
+
+    expect(byId.get(onWithDevice.profileId)?.notifications_enabled).toBe(true);
+    expect(byId.get(onWithDevice.profileId)?.has_device).toBe(true);
+  });
+});
+
+describe("퇴사 구획에는 알림 갈래가 안 붙는다(AC-08)", () => {
+  it("퇴사한 사람의 목록 행에 notifications_enabled·has_device가 없다", async () => {
+    const admin: AdminUser = await createAdminUser();
+
+    const left = await createLeftUser();
+    setSubmittedAt(left.userId, new Date().toISOString());
+    seedPushToken(left.profileId);
+
+    const rows = (await listLeftMembers(
+      admin.client,
+    )) as unknown as MemberReachRow[];
+    const row = rows.find((entry) => entry.id === left.profileId);
+
+    expect(row).toBeDefined();
+    expect(row?.notifications_enabled).toBeUndefined();
+    expect(row?.has_device).toBeUndefined();
   });
 });
