@@ -9,11 +9,17 @@
  *
  * 목록은 `useInfiniteQuery`라 키 아래 쪽이 쌓이고, 안 읽은 수는 행을 안 받는 count 질의라
  * 범위를 따로 뗀다.
+ *
+ * `['members']`가 여기에도 적혀 있는 것은 슬라이스끼리 서로를 못 import해서다(규칙 3).
+ * 알림을 켜고 끄면 관리자 직원 목록의 갈래가 갈리므로 그 키를 같이 무효화한다
+ * (`docs/2-design/modules/notification/design.md`의 「알림을 받나」).
  */
 
 export const NOTIFICATIONS_KEY = ["notifications"] as const;
 
 export const NOTIFICATIONS_UNREAD_KEY = ["notifications", "unread"] as const;
+
+export const MEMBERS_KEY = ["members"] as const;
 
 /** 영속되는 쪽 수다 — 끝없이 내려도 메모리가 안 는다(design.md 「소유 데이터」). */
 export const NOTIFICATIONS_MAX_PAGES = 3;

@@ -16,9 +16,15 @@ describe("transitionNotificationPromptView — 권한 요청 결과로만 모습
     expect(next).toBe("enabled");
   });
 
-  it("권한 요청 자체가 안 먹히면 아이폰 안내 모습으로 전이한다", () => {
+  it("권한 요청을 거부하면 거부한 뒤 모습으로 전이한다 — 셋째 모습이다", () => {
+    const next = transitionNotificationPromptView("idle", "denied");
+
+    expect(next).toBe("denied");
+  });
+
+  it("권한 요청 자체가 안 먹히는 기기도 같은 거부한 뒤 모습으로 전이한다 — 넷째 모습을 안 만든다", () => {
     const next = transitionNotificationPromptView("idle", "unsupported");
 
-    expect(next).toBe("unsupported");
+    expect(next).toBe("denied");
   });
 });

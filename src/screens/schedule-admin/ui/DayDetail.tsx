@@ -18,6 +18,11 @@ import type {
 import type { Qualification } from "@/entities/schedule/dals/get-qualifications";
 import type { SlotRequest } from "@/entities/schedule/dals/get-slot-requests";
 import {
+  PERMISSION_OF_OTHERS,
+  REACHABLE,
+  getReachState,
+} from "@/features/notification/model/reach-state";
+import {
   absenceMinutes,
   assignedMinutes,
 } from "@/screens/schedule-admin/model/absence-minutes";
@@ -116,6 +121,8 @@ export type DayDetailMember = {
   photo_url: string | null;
   gender: string | null;
   birth_date: string | null;
+  notifications_enabled: boolean;
+  has_device: boolean;
 };
 
 /** 확정 뒤에 확인 시트를 거쳐 나가는 변경들이다. 확정 전에는 같은 값이 바로 실행된다. */
@@ -133,15 +140,25 @@ type PendingChange =
       kind: "swap";
       assignmentId: string;
       profileId: string;
+      outgoingProfileId: string;
       outgoingName: string;
       incomingName: string;
     }
-  | { kind: "remove"; assignmentId: string; outgoingName: string };
+  | {
+      kind: "remove";
+      assignmentId: string;
+      outgoingProfileId: string;
+      outgoingName: string;
+    };
 
 type PickerTarget = {
   position: string;
   slotId: string | null;
-  replacing: { assignmentId: string; outgoingName: string } | null;
+  replacing: {
+    assignmentId: string;
+    outgoingProfileId: string;
+    outgoingName: string;
+  } | null;
 };
 
 export type DayDetailProps = {
@@ -307,6 +324,23 @@ export function DayDetail({
       members.find((one) => one.id === profileId)?.display_name ??
       "",
     [assignments, members],
+  );
+
+  /** 목록에 없는 사람은 못 받는 쪽으로 읽는다 — 안 가는 것을 간다고 말하지 않는다. */
+  const canNotify = useCallback(
+    (profileId: string) => {
+      const member = members.find((one) => one.id === profileId);
+
+      return (
+        member !== undefined &&
+        getReachState({
+          notificationsEnabled: member.notifications_enabled,
+          hasDevice: member.has_device,
+          permission: PERMISSION_OF_OTHERS,
+        }) === REACHABLE
+      );
+    },
+    [members],
   );
 
   const hideToast = useCallback(() => setToast(null), []);
@@ -523,6 +557,7 @@ export function DayDetail({
           kind: "swap",
           assignmentId: picker.replacing.assignmentId,
           profileId: entry.profileId,
+          outgoingProfileId: picker.replacing.outgoingProfileId,
           outgoingName: picker.replacing.outgoingName,
           incomingName: entry.displayName,
         });
@@ -805,6 +840,7 @@ export function DayDetail({
                 slotId: openSlot.id,
                 replacing: {
                   assignmentId: openAssignment.id,
+                  outgoingProfileId: openAssignment.profile_id,
                   outgoingName: nameOf(openAssignment.profile_id),
                 },
               });
@@ -819,6 +855,7 @@ export function DayDetail({
               commit({
                 kind: "remove",
                 assignmentId: openAssignment.id,
+                outgoingProfileId: openAssignment.profile_id,
                 outgoingName: nameOf(openAssignment.profile_id),
               })
             }
@@ -863,7 +900,7 @@ export function DayDetail({
       {pending === null ? null : (
         <SheetLayer onDismiss={() => setPending(null)}>
           <ConfirmChangeSheet
-            copy={confirmCopyOf(pending)}
+            copy={confirmCopyOf(pending, canNotify)}
             saving={saving}
             onClose={() => setPending(null)}
             onConfirm={() => {
@@ -896,17 +933,22 @@ export function DayDetail({
 }
 
 /**
- * 알림을 받을 수 있는지는 푸시 토큰이 아는데 그 읽기는 `notification-emit`의 몫이다. 여기서는
- * 「간다」로 두고, 못 받는 사람의 문안은 `force-change-copy.ts`가 이미 들고 있다.
+ * 알림이 그 사람에게 닿는지는 의사와 기기 둘로 갈린다(`reach-state.ts`) — 목록이 그 둘을
+ * 같이 실어 와서 여기서 한 번 더 읽을 것이 없다. 못 받는 사람의 문안은 `force-change-copy.ts`
+ * 가 들고 있고, 이 자리는 갈래를 합쳐 「닿나」 하나로만 넘긴다 — 그 자리에서 관리자가 할 일이
+ * 어느 갈래든 따로 연락 하나라서다.
  */
-function confirmCopyOf(change: PendingChange): ForceChangeCopyInput {
+function confirmCopyOf(
+  change: PendingChange,
+  canNotify: (profileId: string) => boolean,
+): ForceChangeCopyInput {
   if (change.kind === "swap") {
     return {
       kind: "swap",
       outgoingName: change.outgoingName,
-      outgoingCanNotify: true,
+      outgoingCanNotify: canNotify(change.outgoingProfileId),
       incomingName: change.incomingName,
-      incomingCanNotify: true,
+      incomingCanNotify: canNotify(change.profileId),
     };
   }
 
@@ -914,13 +956,13 @@ function confirmCopyOf(change: PendingChange): ForceChangeCopyInput {
     return {
       kind: "remove",
       outgoingName: change.outgoingName,
-      outgoingCanNotify: true,
+      outgoingCanNotify: canNotify(change.outgoingProfileId),
     };
   }
 
   return {
     kind: change.kind,
     incomingName: change.name,
-    incomingCanNotify: true,
+    incomingCanNotify: canNotify(change.profileId),
   };
 }

@@ -1,0 +1,169 @@
+# 알림을 켜고 끄는 자리 — 승인 대기 화면에서 켜고, 「나」 화면에서 끄고, 권한을
+# 거부한 사람에게는 스위치 대신 안내가 선다.
+#
+# 근거는 docs/2-design/spec/notification-settings.md의 AC-01·AC-02·AC-03과
+# docs/3-build/plans/notification-settings.md(AC-06 — 안드로이드 채널)다.
+# 문안은 docs/2-design/modules/account/screens/profile.md의 「알림」 절과
+# 「프로필 문안」 표, docs/2-design/modules/account/screens/login.md의
+# 「알림 영역의 세 모습」과 「승인 대기 문안」이 정본이다. 업무 규칙의 경우의
+# 수(갈래 판정, 순서, 훅 내부 동작)는 test-planner가 이미 unit·integration으로
+# 배정했다 — 여기서는 그 규칙이 실제로 화면·훅·기기 권한을 잇는지만 본다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/pending.yaml·profile.yaml 머리말, scripts/e2e-seed-server.mts,
+# tests/e2e/scripts/seed-session.js를 그대로 따른다. 딥링크는
+# "labiebelle://__test/session?..." 뒤 "labiebelle://me"다(profile.yaml과 같은
+# 결) — "(tabs)" 그룹은 URL 세그먼트가 아니라서 빠진다.
+#
+# ================================================================
+# 기기 권한 창을 다루는 방식 — 저장소에 선례가 없어 이 파일이 고른다
+# ================================================================
+#
+# 이 저장소의 기존 tests/e2e/*.yaml 어디에도 OS 권한 창을 다루는 관례가 없다
+# (grep 결과 없음). Maestro의 `launchApp.permissions` 맵으로
+# `notifications: allow` | `deny`를 미리 준다 — 이 값을 주면 앱이
+# `requestPermissionsAsync`를 부르는 시점에 실제 시스템 다이얼로그를 Maestro가
+# 대신 처리해(iOS는 시뮬레이터 TCC를 미리 승인, 안드로이드는 런타임 권한을
+# 미리 grant) 화면이 곧장 허락·거부 결과를 받는다. 이 파일은 그 방식을
+# 택했다 — 총괄이 다른 방식(예: 개발 빌드에 테스트 전용 mock 권한 모듈을
+# 심는 것)을 원하면 이 절만 고치면 된다.
+#
+# 이 설정으로는 "진입 즉시 실제 시스템 다이얼로그가 하나도 안 떴다"는 사실
+# 자체를 Maestro 화면 검증으로 증명할 수 없다(OS 레이어라 화면 밖이다). 대신
+# 이 파일은 화면이 들어간 직후에도 "아직 안 켬" 모습(「알림 켜기」 버튼)을
+# 유지하고 "켠 뒤" 모습으로 저절로 안 바뀐다는 것으로 간접 확인한다 — 「알림
+# 켜기」를 눌러야만 모습이 바뀐다.
+#
+# ================================================================
+# 요청하는 testID — 지금 코드로는 못 채운다
+# ================================================================
+#
+# "notification-switch" — 「나」 화면 알림 줄의 스위치(src/shared/ui/Switch.tsx가
+# 이미 testID를 받지만 이 화면이 아직 그 줄 자체가 없다 — 이 task가 만든다).
+# 스위치는 글자를 안 담는 순수 컴포넌트라(Switch.tsx 주석 "라벨은 줄 왼쪽
+# 글자가 맡고 스위치 안에는 글자를 넣지 않는다") 텍스트 셀렉터로 못 잡는다 —
+# tests/e2e/notifications.yaml의 "bell-icon"과 같은 자리다. ListRow가 오른쪽에
+# Switch를 `right`로 받는 짜임이면(profile.md 「알림」) 줄 자체(`title`)에는
+# onPress가 없어 "알림" 텍스트를 눌러도 안 토글된다 — 스위치 자체를 눌러야
+# 하므로 이 testID가 없으면 이 씬을 못 돌린다.
+#
+# ================================================================
+# STATE=approved의 초깃값 가정 — implementer가 시드를 바꾸면 깨질 수 있다
+# ================================================================
+#
+# 「나」의 스위치 끄기 씬은 진입 직후 스위치가 "켜짐"이라고 가정한다.
+# `supabase/migrations/20260922091506_notifications.sql`의
+# `notifications_enabled boolean not null default true`가 근거고, 지금
+# `scripts/e2e-seed-server.mts`의 createApprovedUser 계열은 이 열을 따로 안
+# 건드린다(grep 결과 없음) — 그러니 DB 기본값 그대로 참이다. implementer가
+# 이 STATE에 알림 관련 필드를 새로 채우면서 기본값을 거짓으로 바꾸면 이 씬의
+# 첫 tapOn이 "켜짐→끄기 확인 Dialog"가 아니라 "꺼짐→바로 켜짐"으로 어긋난다.
+#
+# ================================================================
+# AC-06(plan) — 안드로이드 알림 채널은 이 층에서 못 본다
+# ================================================================
+#
+# 채널 생성은 화면에 아무 흔적도 안 남기는 OS 레벨 이벤트라(design.md 「기기
+# 주소 저장과 삭제」) 텍스트·testID 어느 쪽으로도 관찰할 길이 없다. 안드로이드
+# 실기기·에뮬레이터에서 "허락" 씬이 실제로 채널을 먼저 만들고 권한 창을
+# 띄우는지는 손 확인이 남는다(plan 「리스크·전환·되돌리기」와 같은 결).
+#
+# 텍스트 셀렉터는 정규식이다. 물음표(「알림을 끌까요?」)는 이스케이프한다.
+appId: com.labiebelle.app
+---
+# ================================================================
+# AC-01 — 승인 대기 화면에서 「알림 켜기」를 누르면 그때 기기가 묻고, 허락하면
+# 알림 영역이 「켠 뒤」 모습으로 바뀐다. 화면은 안 넘어간다
+# ================================================================
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    permissions:
+      notifications: allow
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: submitted
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+
+- assertVisible: "승인 기다리는 중"
+- assertVisible: "관리자가 확인 중이에요"
+
+# 아직 안 켬 — 진입 직후엔 버튼만 있고 "켠 뒤" 모습이 아니다(진입 즉시 안 묻는다).
+- assertVisible: "알림 켜기"
+- assertNotVisible: "승인되면 알려드릴게요"
+
+- tapOn: "알림 켜기"
+
+# 켠 뒤 — 알림 영역이 바뀌고, 버튼은 빠진다.
+- assertVisible: "승인되면 알려드릴게요"
+- assertVisible: "알림은 설정에서 언제든 끌 수 있어요"
+- assertNotVisible: "알림 켜기"
+
+# 화면은 안 넘어간다 — 승인 대기 제목이 그대로 있다.
+- assertVisible: "관리자가 확인 중이에요"
+
+# ================================================================
+# AC-02 — 「나」의 스위치를 끄면 확인 Dialog가 먼저 뜨고, 「알림 끄기」를
+# 눌러야 꺼진다. 「닫기」면 켜진 채로 남는다
+# ================================================================
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    permissions:
+      notifications: allow
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: approved
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://me"
+
+- assertVisible: "알림"
+- assertVisible:
+    id: "notification-switch"
+
+# --- 끄려고 누르면 확인 Dialog가 뜬다 ---
+- tapOn:
+    id: "notification-switch"
+- assertVisible: "알림을 끌까요\\?"
+- assertVisible: "근무표가 확정되거나 근무 요청이 와도 알림이 안 와요"
+
+# --- 「닫기」 — 꺼지지 않고 켜진 채로 남는다. 다시 누르면 Dialog가 다시 뜨는
+# 것으로 "여전히 켜져 있다"를 확인한다 ---
+- tapOn: "닫기"
+- assertNotVisible: "알림을 끌까요\\?"
+- tapOn:
+    id: "notification-switch"
+- assertVisible: "알림을 끌까요\\?"
+
+# --- 「알림 끄기」 — 이번엔 정말 꺼진다 ---
+- tapOn: "알림 끄기"
+- assertNotVisible: "알림을 끌까요\\?"
+
+# 꺼진 뒤 다시 누르면 켜는 것이라 Dialog 없이 바로 켜진다(순서가 반대다) —
+# Dialog가 안 뜨는 것으로 "방금 정말 꺼졌다"를 확인한다.
+- tapOn:
+    id: "notification-switch"
+- assertNotVisible: "알림을 끌까요\\?"
+
+# ================================================================
+# AC-03 — 기기 권한을 거부한 사람은 「나」 화면의 알림 자리에 스위치 대신
+# 안내 두 줄이 선다. 승인 대기 화면 셋째 모습과 같은 문장이다
+# ================================================================
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    permissions:
+      notifications: deny
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: approved
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://me"
+
+- assertVisible: "알림이 꺼져 있어요"
+- assertVisible: "기기 설정에서 알림을 켜면 받을 수 있어요"
+- assertNotVisible:
+    id: "notification-switch"

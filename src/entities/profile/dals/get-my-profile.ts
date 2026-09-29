@@ -11,6 +11,7 @@ export type MyProfileRow = {
   rejected_at: string | null;
   blocked_at: string | null;
   left_at: string | null;
+  notifications_enabled: boolean;
 };
 
 const COLUMNS = [
@@ -23,6 +24,7 @@ const COLUMNS = [
   "rejected_at",
   "blocked_at",
   "left_at",
+  "notifications_enabled",
 ].join(", ");
 
 /**

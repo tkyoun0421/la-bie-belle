@@ -3,7 +3,7 @@ import * as ImagePicker from "expo-image-picker";
 import { usePathname, useRouter } from "expo-router";
 import { Pencil } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { AppState, ScrollView, View } from "react-native";
 import { DomainError } from "@/shared/api/errors";
 import { getCurrentUser } from "@/shared/lib/get-current-user";
 import { queryClient } from "@/shared/lib/query-client";
@@ -16,15 +16,29 @@ import { Avatar } from "@/shared/ui/Avatar";
 import { BellIcon } from "@/shared/ui/BellIcon";
 import { Button } from "@/shared/ui/Button";
 import { Card } from "@/shared/ui/Card";
+import { Dialog } from "@/shared/ui/Dialog";
 import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { Icon } from "@/shared/ui/Icon";
 import { ListRow } from "@/shared/ui/ListRow";
+import { PushNotice } from "@/shared/ui/PushNotice";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
 import { googlePhotoOf } from "@/features/auth/google-photo-of";
+import { getProfileNotificationRow } from "@/features/notification/model/profile-notification-row";
+import { PUSH_DEPS } from "@/features/notification/model/push-deps";
+import {
+  getPushPermission,
+  requestPushPermission,
+} from "@/features/notification/model/push-permission";
+import {
+  getReachState,
+  type PushPermission,
+} from "@/features/notification/model/reach-state";
+import { useNotificationSwitch } from "@/features/notification/model/useNotificationSwitch";
+import { useSavePushToken } from "@/features/notification/model/useSavePushToken";
 import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
 import { useUpdateContact } from "@/features/profile/model/useUpdateContact";
@@ -48,8 +62,14 @@ import { THEME_LABEL, ThemeSheet } from "@/screens/profile/ui/ThemeSheet";
  *
  * **시트는 한 번에 하나다.** 연락처·사진·화면 셋이 같은 겹을 쓴다.
  *
- * 알림 스위치는 자리만이다. 켜고 끄는 일과 권한이 거부된 자리의 안내는
- * `notification-settings`가 채운다(spec 「범위 밖」).
+ * **알림 자리는 권한이 정한다.** 거부된 기기에는 스위치 대신 안내 두 줄이 서고, 그 갈림은
+ * [`profile-notification-row`](../../../features/notification/model/profile-notification-row.ts)가
+ * 낸다. 이 기기에 주소가 섰는지는 「나」가 읽는 값이 아니라 권한이 허락일 때만 서는 것이라
+ * 갈래를 물을 때 권한을 그 자리에 넣는다 — 켜진 스위치와 안 닿는 기기를 근무자에게 갈라
+ * 말하지 않아서 둘이 같은 모습이다(profile.md 「알림」).
+ *
+ * **끄기 전에 한 번 묻는다.** 켜기는 바로 켜지고 끄기만 Dialog를 거친다 — 되돌리는 길은 같은
+ * 스위치라 조르지 않는다.
  */
 
 const AVATAR_SIZE = 88;
@@ -102,6 +122,11 @@ export function ProfileScreen() {
   const [toast, setToast] = useState<string | null>(null);
   const [picking, setPicking] = useState(false);
   const [pickFailed, setPickFailed] = useState(false);
+  const [permission, setPermission] = useState<PushPermission | null>(null);
+  const [pushToken, setPushToken] = useState<string | null>(null);
+  const [turningOff, setTurningOff] = useState(false);
+
+  useSavePushToken(supabase, pushToken, AppState);
 
   const theme = useTheme((at) => at.theme);
   const chooseTheme = useTheme((at) => at.choose);
@@ -125,6 +150,30 @@ export function ProfileScreen() {
     isSuccess: photoSaved,
     reset: resetPhoto,
   } = useUpdatePhoto(supabase);
+
+  const askPushPermission = useCallback(async () => {
+    const asked = await requestPushPermission(PUSH_DEPS);
+
+    setPermission(asked.permission);
+
+    if (asked.permission === "granted" && asked.token !== null) {
+      setPushToken(asked.token);
+    }
+
+    return asked.permission === "granted";
+  }, []);
+
+  const notification = useNotificationSwitch(
+    supabase,
+    data?.notifications_enabled ?? false,
+    askPushPermission,
+  );
+
+  useEffect(() => {
+    void getPushPermission(PUSH_DEPS.getPermissionsAsync)
+      .then(setPermission)
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     void getCurrentUser(supabase).then((user) =>
@@ -228,6 +277,14 @@ export function ProfileScreen() {
   const contactRejected =
     contactError instanceof DomainError &&
     contactError.code === "invalid_phone";
+  const notificationRow = getProfileNotificationRow(
+    getReachState({
+      notificationsEnabled: data ? notification.enabled : null,
+      hasDevice: permission === null ? null : permission === "granted",
+      permission,
+    }),
+    notification.isPending,
+  );
 
   return (
     <Screen>
@@ -312,10 +369,30 @@ export function ProfileScreen() {
           </Card>
 
           <Card className="py-0">
-            <ListRow
-              title="알림"
-              right={<Switch value onValueChange={() => {}} disabled />}
-            />
+            {isLoading ? (
+              <SkeletonLine className="my-4 w-2/3" />
+            ) : notificationRow.kind === "switch" ? (
+              <ListRow
+                title="알림"
+                right={
+                  <Switch
+                    testID="notification-switch"
+                    value={notification.enabled}
+                    disabled={notificationRow.state === "locked"}
+                    onValueChange={(next) =>
+                      next ? notification.turnOn() : setTurningOff(true)
+                    }
+                  />
+                }
+              />
+            ) : (
+              <PushNotice
+                className="my-4"
+                tone="denied"
+                title={notificationRow.title}
+                subline={notificationRow.subline}
+              />
+            )}
             <ListRow
               testID="profile-theme-row"
               title="화면"
@@ -404,6 +481,20 @@ export function ProfileScreen() {
           <ThemeSheet theme={theme} onChoose={onChooseTheme} />
         </SheetLayer>
       ) : null}
+
+      <Dialog
+        visible={turningOff}
+        title="알림을 끌까요?"
+        closeLabel="닫기"
+        confirmLabel="알림 끄기"
+        onClose={() => setTurningOff(false)}
+        onConfirm={() => {
+          setTurningOff(false);
+          notification.turnOff();
+        }}
+      >
+        근무표가 확정되거나 근무 요청이 와도 알림이 안 와요
+      </Dialog>
 
       {toast ? <FloatingToast message={toast} onDone={hideToast} /> : null}
     </Screen>

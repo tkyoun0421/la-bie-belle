@@ -24,6 +24,10 @@ import { formatBirthDate } from "@/entities/profile/model/format-birth-date";
  * 없으니 더보기가 안 선다. 시트가 서는 것은 지난 근무표의 이름이 누구였는지 확인하는 자리라서다.
  *
  * **시급 줄이 없다.** 시급 표가 서기 전에는 붙일 값이 없다 — 붙이는 것은 급여 쪽이다.
+ *
+ * **알림을 못 받는 사람에게는 프로필 아래 한 줄이 더 선다.** 목록 줄의 한 마디를 여기서는
+ * 문장으로 편다 — 관리자가 전화하기 전에 무슨 말을 할지가 그 줄에 있다. 고치는 길은 없다 —
+ * 관리자가 남의 알림을 켜주지 못한다([NTF-022](../../../../docs/2-design/modules/notification/README.md#ntf-022)).
  */
 
 const AVATAR_SIZE = 64;
@@ -58,6 +62,7 @@ export type MemberSheetProps = {
   member: MemberRow;
   today: string;
   lastAdmin: boolean;
+  reachLine: string | null;
   face: MemberSheetFace;
   draft: string;
   sending: boolean;
@@ -107,6 +112,7 @@ export function MemberSheet({
   member,
   today,
   lastAdmin,
+  reachLine,
   face,
   draft,
   sending,
@@ -212,6 +218,11 @@ export function MemberSheet({
               member.birth_date ? formatBirthDate(member.birth_date, today) : ""
             }
           />
+          {reachLine ? (
+            <Text size="xs" tone="subtle" className="mt-1">
+              {reachLine}
+            </Text>
+          ) : null}
         </View>
       )}
 
