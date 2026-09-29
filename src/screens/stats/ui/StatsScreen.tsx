@@ -28,7 +28,6 @@ import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
-import { payrollViewDays } from "@/features/payroll/model/payroll-days";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
 import { useRehearsalMonths } from "@/features/rehearsal/model/useRehearsalMonths";
 import {
@@ -51,10 +50,11 @@ import { attendanceRatioShares } from "@/screens/stats/model/attendance-shares";
 import { attendanceSummaryLine } from "@/screens/stats/model/attendance-summary-line";
 import { myAttendanceTally } from "@/screens/stats/model/attendance-tally";
 import {
+  joinPayrollByMonth,
   myAttendanceValues,
+  myPayrollDaysOfMonth,
   myPayrollValues,
   myWorkValues,
-  type PayrollByMonth,
 } from "@/screens/stats/model/chart-values";
 import { tenThousandWonLabel } from "@/screens/stats/model/money-label";
 import { myPayrollSubtitle } from "@/screens/stats/model/payroll-summary";
@@ -206,40 +206,22 @@ export function StatsScreen() {
     return computeMyWorkTotals(inputs.assignments, inputs.days, profileId);
   }, [shownWork, profileId]);
 
-  const payrollLoaded = useMemo<PayrollByMonth[] | undefined>(() => {
-    const days = work.data;
-    const rates = payroll.data;
+  const payrollLoaded = useMemo(
+    () => joinPayrollByMonth(work.data, payroll.data),
+    [work.data, payroll.data],
+  );
 
-    if (days === undefined || rates === undefined) {
-      return undefined;
-    }
-
-    const daysByMonth = new Map(days.map((one) => [one.month, one.days]));
-
-    return rates.map((one) => ({
-      month: one.month,
-      days: daysByMonth.get(one.month) ?? [],
-      payroll: one.payroll,
-    }));
-  }, [work.data, payroll.data]);
-
-  const payrollDays = useMemo(() => {
-    const one = payrollLoaded?.find((row) => row.month === month);
-
-    if (one === undefined || profileId === null) {
-      return [];
-    }
-
-    return payrollViewDays({
-      profileId,
-      days: one.days,
-      rates: one.payroll.wageRates,
-      adjustments: one.payroll.adjustments,
-      excuses: one.payroll.excuseStatus,
-      rehearsals: rehearsal.data ?? [],
-      now,
-    }).filter((day) => day.date.slice(0, MONTH_LENGTH) === month);
-  }, [payrollLoaded, month, profileId, rehearsal.data, now]);
+  const payrollDays = useMemo(
+    () =>
+      myPayrollDaysOfMonth(
+        payrollLoaded,
+        month,
+        profileId,
+        now,
+        rehearsal.data ?? [],
+      ),
+    [payrollLoaded, month, profileId, rehearsal.data, now],
+  );
 
   const values = useMemo(() => {
     if (profileId === null) {

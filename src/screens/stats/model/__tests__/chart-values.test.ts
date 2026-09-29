@@ -59,7 +59,9 @@ import type {
   WorkMonth,
 } from "@/features/stats/api/useStatsQueries";
 import {
+  joinPayrollByMonth,
   myAttendanceValues,
+  myPayrollDaysOfMonth,
   myPayrollValues,
   myWorkValues,
 } from "@/screens/stats/model/chart-values";
@@ -419,5 +421,161 @@ describe("myPayrollValues — 리허설이 붙은 날은 그 몫만큼 그달 �
 
     expect(withoutRehearsal.get("2026-08")).toBe(96000);
     expect(withRehearsal.get("2026-08")).toBeGreaterThan(96000);
+  });
+});
+
+// pr-diff 감사가 StatsScreen.tsx 205~240행에서 더 찾은 계산 둘이다. 화면은 `work.data`·
+// `payroll.data`를 달로 조인해 `payrollLoaded`를 만들고(①), 그중 보는 달 하나를 골라
+// `payrollViewDays`를 부른 뒤 그 달 날짜로 한 번 더 거른다(②) — 리허설이 달마다 안 갈려
+// 뭉쳐 오기 때문이다(myPayrollValues 위 설명의 PAY-028과 같은 이유). `myPayrollValues`가
+// 이미 열두 달치로 접어 둔 것과 같은 모양이라 여기서도 같은 함수를 부르는 꼴로 접는다.
+
+describe("joinPayrollByMonth — work.data와 payroll.data를 달로 묶어 PayrollByMonth[]를 만든다", () => {
+  it("근무표와 급여 재료가 둘 다 있는 달은 days와 payroll이 한 행으로 묶인다", () => {
+    const day = scheduleDay({ work_date: "2026-08-10" });
+    const work: WorkMonth[] = [{ month: "2026-08", days: [day] }];
+    const payroll: { month: string; payroll: PayrollMonth }[] = [
+      { month: "2026-08", payroll: emptyPayrollMonth() },
+    ];
+
+    const joined = joinPayrollByMonth(work, payroll);
+
+    expect(joined).toEqual([
+      { month: "2026-08", days: [day], payroll: emptyPayrollMonth() },
+    ]);
+  });
+
+  it("급여 재료는 있는데 근무표가 없는 달은 days가 빈 배열로 선다", () => {
+    const work: WorkMonth[] = [];
+    const payroll: { month: string; payroll: PayrollMonth }[] = [
+      { month: "2026-09", payroll: emptyPayrollMonth() },
+    ];
+
+    const joined = joinPayrollByMonth(work, payroll);
+
+    expect(joined).toEqual([
+      { month: "2026-09", days: [], payroll: emptyPayrollMonth() },
+    ]);
+  });
+
+  it("근무표는 열렸는데 급여 재료가 아직 없는 달은 결과에서 빠진다(rates가 도는 축이다)", () => {
+    const day = scheduleDay({ work_date: "2026-08-10" });
+    const work: WorkMonth[] = [{ month: "2026-08", days: [day] }];
+    const payroll: { month: string; payroll: PayrollMonth }[] = [];
+
+    const joined = joinPayrollByMonth(work, payroll);
+
+    expect(joined).toEqual([]);
+  });
+
+  it("work나 payroll 중 하나라도 아직 안 왔으면(undefined) undefined다", () => {
+    expect(joinPayrollByMonth(undefined, [])).toBeUndefined();
+    expect(joinPayrollByMonth([], undefined)).toBeUndefined();
+  });
+});
+
+describe("myPayrollDaysOfMonth — 다른 달 리허설이 그 달 결과에 안 낀다", () => {
+  it("리허설 목록에 다음 달 날짜가 섞여 있어도 그 달 날로 걸러져 안 든다", () => {
+    const day = scheduleDay({
+      id: "day-aug",
+      work_date: "2026-08-10",
+      starts_at: "10:00:00",
+      ends_at: "18:00:00",
+      assignments: [assignment({ id: "a-aug" })],
+      check_ins: [
+        {
+          id: "check-aug",
+          profile_id: PROFILE_ID,
+          checked_at: "2026-08-10T01:00:00.000Z",
+          reported_at: "2026-08-10T01:00:00.000Z",
+          received_at: "2026-08-10T01:00:00.000Z",
+        },
+      ],
+    });
+
+    const loaded = [
+      {
+        month: "2026-08",
+        days: [day],
+        payroll: emptyPayrollMonth({
+          wageRates: [
+            {
+              profile_id: PROFILE_ID,
+              effective_date: "2026-08-01",
+              amount: 12000,
+              follows_default: false,
+            },
+          ],
+        }),
+      },
+    ];
+
+    const days = myPayrollDaysOfMonth(
+      loaded,
+      "2026-08",
+      PROFILE_ID,
+      "2026-08-31T00:00:00.000Z",
+      [
+        rehearsal({ id: "r-aug", work_date: "2026-08-20" }),
+        rehearsal({ id: "r-sep", work_date: "2026-09-05" }),
+      ],
+    );
+
+    expect(days.map((one) => one.date).sort()).toEqual([
+      "2026-08-10",
+      "2026-08-20",
+    ]);
+  });
+});
+
+describe("myPayrollDaysOfMonth — 그 달 행이 loaded에 없으면 빈 배열이다", () => {
+  it("보는 달이 payrollLoaded에 없으면 빈 배열이다", () => {
+    const loaded = [
+      { month: "2026-08", days: [], payroll: emptyPayrollMonth() },
+    ];
+
+    const days = myPayrollDaysOfMonth(
+      loaded,
+      "2026-09",
+      PROFILE_ID,
+      "2026-09-30T00:00:00.000Z",
+      [],
+    );
+
+    expect(days).toEqual([]);
+  });
+
+  it("loaded가 아직 안 왔으면(undefined) 빈 배열이다", () => {
+    const days = myPayrollDaysOfMonth(
+      undefined,
+      "2026-08",
+      PROFILE_ID,
+      "2026-08-31T00:00:00.000Z",
+      [],
+    );
+
+    expect(days).toEqual([]);
+  });
+});
+
+describe("myPayrollDaysOfMonth — profileId가 아직 없으면(프로필 로딩 전) 빈 배열이다", () => {
+  it("그 달 행이 있어도 profileId가 null이면 빈 배열이다", () => {
+    const day = scheduleDay({
+      work_date: "2026-08-10",
+      assignments: [assignment()],
+    });
+    const loaded = [
+      { month: "2026-08", days: [day], payroll: emptyPayrollMonth() },
+    ];
+
+    const days = myPayrollDaysOfMonth(
+      loaded,
+      "2026-08",
+      null,
+      "2026-08-31T00:00:00.000Z",
+      [],
+    );
+
+    expect(days).toEqual([]);
   });
 });
