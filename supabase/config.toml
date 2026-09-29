@@ -366,6 +366,14 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+# 퇴사 1년 뒤 계정 삭제다. `verify_jwt`는 게이트웨이가 토큰이 유효한지만 보는 겉문이라
+# anon 키도 통과한다 — 남의 계정이 사라지는 문이라 그 한 겹으로는 모자라서, 함수가 첫 줄에서
+# Authorization 헤더를 service role 키와 직접 대조한다. 겉문을 켜둔 것은 토큰 없는 호출이
+# 함수 코드에 닿기 전에 끊기게 하려는 것이다.
+[functions.erase-account]
+enabled = true
+verify_jwt = true
+
 [analytics]
 enabled = false
 port = 54327

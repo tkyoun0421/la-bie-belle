@@ -59,7 +59,9 @@ pg_cron 작업 하나(`erase_profiles`)와 Edge Function 하나(`erase-account`)
 - 행마다 `pg_net`으로 Edge Function `erase-account`를 한 번 쏜다. 본문에 그 행의 `user_id`를 싣는다
 - **응답을 안 기다린다.** `pg_net`이 응답을 제 표에 남기지만 이 함수는 안 읽는다. 결과는 다음 날 같은 조건이 말해준다
 - **같은 행이 이틀 연속 나갈 수 있다.** 계정이 지워졌는데 그 행의 `user_id`가 아직 널이 아닌 순간이 있어서다 — 받는 쪽이 멱등이어야 한다([AC-03](#ac-03))
+- **쏘기가 던진 예외를 삼킨다.** `begin ... exception when others then raise warning ...; end`로 감싸 [AC-01](#ac-01)이 지운 것이 롤백에 되살아나지 않게 한다([비우기](../../2-design/modules/account/design.md#비우기)). `net.http_post`는 vault 항목이 비었거나 주소가 널이면 예외를 던지는데, 한 트랜잭션으로 두면 그날 비우기가 통째로 없던 일이 되고 다음 날 같은 실패가 되풀이돼 **개인정보가 영영 안 지워진다**
 - Edge Function 주소와 서비스 키는 `vault`에 둔다. **마이그레이션에는 비밀의 이름만 들어가고 값이 안 들어간다**
+- **로컬 테스트는 그 vault 항목을 스스로 만든다.** 이름만 있고 값이 없으면 `net.http_post`가 아예 안 불려 쏘는 조건을 못 본다. `seed.sql`로 심으면 `supabase db reset`마다 도는 전역 상태가 돼 다른 테스트에 새니, 테스트가 `beforeAll`에서 `vault.create_secret`으로 로컬 전용 가짜 주소(`http://127.0.0.1:54321/functions/v1/erase-account`)를 넣고 끝나며 지운다. [`payroll-holidays`](payroll-holidays.md)가 같은 구멍을 안고 있어 그 task도 이 길을 쓴다
 
 ### AC-03
 
@@ -81,6 +83,7 @@ pg_cron 작업 하나(`erase_profiles`)와 Edge Function 하나(`erase-account`)
 - `create extension if not exists pg_cron` — [`schedule-requests`](schedule-requests.md#ac-04)가 이미 켰다
 - **한국 시각 새벽 4시에 하루 한 번이다**([비우기](../../2-design/modules/account/design.md#비우기)). crontab은 UTC로 읽혀 `0 19 * * *`고, 같은 마이그레이션 파일에 든다. 로컬에서도 같은 줄이 돌아 `pnpm test:integration:run`이 작업의 존재를 본다([`schedule-requests`](schedule-requests.md#ac-04)의 선례)
 - 등록하는 문장이 `internal.erase_profiles(now())`를 부른다 — `p_now`에 실제 시각이 들어가는 유일한 자리다
+- **작업 이름은 `erase-profiles`다.** `cron.job`을 읽는 테스트가 그 이름으로 단언하고, `expire-requests`가 같은 꼴로 앞섰다
 
 ### AC-05
 
@@ -89,6 +92,7 @@ pg_cron 작업 하나(`erase_profiles`)와 Edge Function 하나(`erase-account`)
 - `internal`은 PostgREST가 모르는 스키마다. `supabase/config.toml`의 노출 목록이 `["public", "graphql_public"]`이고 마이그레이션이 `revoke all on all functions in schema internal from anon, authenticated`를 건다
 - **integration이 그것을 단언한다.** 로그인한 클라이언트가 `rpc("erase_profiles")`를 불러 못 잡히는 것을 본다 — `import_holidays`가 같은 테스트를 이미 들고 있다
 - [함수 안의 규칙](../../2-design/system/data-access.md#함수-안의-규칙)은 신원을 인자로 안 받는 `internal` 함수에 이 테스트를 면제한다. **면제되는 쪽인데도 낸다** — 뚫렸을 때 사라지는 것이 개인정보라 한 겹을 더 둔다
+- **다만 이 테스트가 보는 것은 세 겹 중 라우팅 한 겹이다.** `internal`이 `config.toml`의 노출 목록에 없으면 PostgREST가 함수 이름을 몰라 요청이 Postgres까지 안 간다 — `revoke` 두 줄이 통째로 빠져도 초록이 난다. 저장소에 선 같은 테스트가 다 그렇고([관찰 031](../../observations/031-internal-exposure-test-covers-one-layer.md)) 이 task가 만든 구멍이 아니다. 「세 겹을 지킨다」의 근거로 쓰지 않는다
 
 ## 변경 파일
 

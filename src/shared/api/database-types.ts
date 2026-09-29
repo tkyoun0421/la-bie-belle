@@ -40,6 +40,7 @@ export type Database = {
         };
         Returns: number;
       };
+      erase_profiles: { Args: { p_now: string }; Returns: undefined };
       expire_requests: { Args: never; Returns: undefined };
       import_holidays: {
         Args: { p_rows: Json; p_year: number };
