@@ -6,7 +6,15 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `notification-settings`다** — backlog의 `ready` 맨 위다. plan은 아직 없고 spec은 있다: [2-design/spec/notification-settings.md](2-design/spec/notification-settings.md). 권한 받기와 기기 주소 저장, 프로필의 알림 스위치 두 모드, 관리자가 못 받는 사람을 보는 자리 셋([NTF-034](2-design/modules/notification/README.md#ntf-034))이다. **안드로이드는 알림 채널이 먼저 서야 권한 창이 뜨고**, 개발 빌드가 아니면 푸시가 안 와 실기기 확인이 출시 판정에 든다. 함수 넷(`save_push_token`·`remove_push_token`·`set_notifications_enabled`·뷰 `push_reachable`)은 `notification-data`가 이미 냈다. 사용자의 상시 지시는
+**다음 첫 수는 `sian-sync`다** — `ready`에 남은 하나다. 재편 전부터 있던 문서↔시안 어긋남을 시안 쪽에서 맞춘다. 값은 문서와 [tokens.md](2-design/design-system/tokens.md)가 정본이라 시안만 고친다. 자리는 backlog 행이 화면별로 든다. 나머지 `blocked`는 `attendance-checkin`의 NCP 자격에 묶인 사슬이다.
+
+**`notification-settings`가 `done`이다(#475 정본, #476 구현).** 권한 감싸기(`push-permission.ts`, 기기에 붙는 함수는 전부 주입), 갈래 판정(`reach-state.ts`)과 자리별 문장(`reach-message.ts`), 켜고 끄는 훅, 매 진입 주소 보내기, 「나」의 알림 줄과 승인 대기 켜기 자리, 관리자 세 자리의 갈래 표시가 섰다. **매 진입을 붙인 자리는 `src/app/(tabs)/_layout.tsx`다** — 세션이 있는 사람만 지나고 앱이 떠 있는 동안 안 내려간다.
+
+**총괄이 정본에 박은 판정이 여덟이다.** 「나」의 거부 안내를 승인 대기 화면과 같은 두 줄로 맞췄고, 확정 뒤 확인 자리는 갈래를 안 가르고 한 줄로 합친다(그 자리에서 할 일이 어느 갈래든 따로 연락 하나다). 갈래 표시는 재직자에게만 붙는다. 「매 진입」은 앱이 뜰 때와 포그라운드 복귀마다다. 승인 대기 뷰 값은 `"idle" | "enabled" | "denied"`고 `"unsupported"` 결과도 셋째 모습으로 간다. 의사를 읽기 전에는 스위치 대신 스켈레톤이다. 안드로이드 채널 이름은 「근무 알림」이다. AC-05·AC-07의 DB 자리는 이미 선 함수와 테스트가 덮어 재배정 안 했다.
+
+**남은 것은 기기가 있어야 닫힌다.** 권한 창을 거치는 AC-01·AC-03·AC-06과 `app.json`의 `extra.eas.projectId` 실값이다. 그 값이 없으면 `null`로 서서 「켰는데 기기가 없음」 갈래가 된다. `tests/e2e/notification-settings.yaml`이 여정을 들고 기다린다.
+
+**관찰 셋이 열렸다.** [037](observations/037-planner-reported-absent-what-was-there.md) — 계획자가 「정본에 없다」고 한 문구 둘이 실제로는 있었다(찾은 말이 정본의 말과 달랐다). [038](observations/038-fixture-user-misses-member-list.md) — `createApprovedUser`가 `submitted_at`을 안 채워 그 사람이 `listActiveMembers`에 안 잡힌다. [039](observations/039-e2e-only-assignment-blocks-the-hook.md) — **e2e로만 배정된 `.ts`를 TDD 훅이 못 통과시킨다.** 이번에 `push-permission.ts`가 그것에 막혀 구현이 두 라운드로 갈렸다.
 
 **`notification-push`가 `done`이다(#472).** 트리거와 cron `retry-push`(매분)가 같은 Edge Function `send-push`를 부르고, 잡기(`claim_notifications`)의 `returning`이 두 경로의 중복 발송을 막는다. **잡기는 한 문장이다** — `update ... returning`을 CTE로 두고 밖에서 `array_agg`로 주소를 묶는다(조인하면 주소가 둘인 사람의 행에 매치가 여럿 붙어 한쪽만 남는다). 껍데기 넷의 첫 줄이 전부 `auth.role() is distinct from 'service_role'`이고, 트리거의 쏘는 단계는 예외를 삼켜 사건 함수의 트랜잭션을 안 말린다.
 
@@ -30,7 +38,7 @@
 
 **`plans-restate`가 `done`이다(#459, #460).** plan 열둘의 「변경 파일」 표가 디렉터리 대신 구현 파일을 하나씩 들고, 검증 표의 `(예정)`과 「e2e 명령」이 실재 경로와 `pnpm e2e`로 섰다. 채우는 일보다 낡은 서술을 걷어낸 쪽이 컸다 — 계획서가 「누가 무엇을 세우는가」를 적는데 실제 merge 순서가 그것과 달라, dal과 공용 조각의 주체가 뒤바뀐 자리 넷과 달 고르기 시트를 서로 미루던 자리 다섯이 나왔다. `attendance-excuse` AC-05의 「iOS 사파리 visual viewport」는 네이티브에 사파리가 없어 `KeyboardAvoidingView`로 판정했다(선례는 `src/screens/pending/ui/PendingScreen.tsx:390`). **다음 화면 task가 plan을 읽을 때 이 정정을 믿어도 된다** — 열둘 다 지금 코드와 대조했다.
 
-**`ready`가 둘이다.** `notification-settings`가 맨 위고 `sian-sync`가 뒤다. 알림 영역에서 남은 `notification-emit`·`notification-schedule`·`notification-second`는 `attendance-excuse`(그 앞이 `dashboard`, 그 앞이 `attendance-checkin`의 NCP 자격)에 묶여 있다.
+**`ready`가 `sian-sync` 하나다.** 알림 영역에서 남은 `notification-emit`·`notification-schedule`·`notification-second`는 `attendance-excuse`(그 앞이 `dashboard`, 그 앞이 `attendance-checkin`의 NCP 자격)에 묶여 있다.
 
 **`notification-push`의 plan이 섰고 정본에 판정 셋을 박았다.** 보낼 것이 없어도 접수증을 긁는다([Q-02](2-design/modules/notification/design.md#아직-안-정한-것) 닫음), 잡기와 결과 쓰기가 `public` 껍데기를 탄다, 접수증 번호 열(`push_receipt_id`)은 그 task가 붙인다. **문장 함수의 주인은 `notification-list`다** — spec과 plan 둘이 그렇게 적어둬서 순서를 뒤집는 대신 `notification-push`를 그 뒤로 보냈다. **[관찰 035](observations/035-edge-function-reaches-outside-mount.md)가 열려 있다** — `import-holidays`가 마운트 밖의 `src/`를 import하는데 edge-runtime을 안 띄워 아무 검사도 안 잡았다. `notification-push`의 AC-09가 복사 단계를 세우며 같이 고친다. `blocked`로 남은 쪽의 이유는 셋뿐이다 — **NCP 자격**(`attendance-checkin`·`hall-location`), **도메인**(`qr-landing-page`·`first-release`), **앞 task의 사슬**(`dashboard`가 `attendance-checkin`을 기다리고 `attendance-excuse`·`notification-emit` 이하가 그 뒤에 선다).
 
