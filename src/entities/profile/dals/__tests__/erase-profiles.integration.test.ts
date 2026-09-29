@@ -145,19 +145,19 @@ async function uploadAvatar(user: ApprovedUser): Promise<void> {
   }
 }
 
-function latestNetResponseId(): number {
+// pg_net은 요청 행만 그 자리에서 넣고 응답 행은 백그라운드 워커가 나중에 쓴다.
+// net._http_response를 부른 직후에 세면 아직 안 쓰인 것을 0으로 읽는다.
+// 요청 번호를 내주는 시퀀스는 net.http_post가 동기로 당기니 그쪽을 센다.
+function netRequestCursor(): number {
   const rows = queryColumn(
-    "select coalesce(max(id), 0) from net._http_response;\n",
+    "select case when is_called then last_value else 0 end\n" +
+      "from net.http_request_queue_id_seq;\n",
   );
   return Number(rows[0] ?? "0");
 }
 
-function netResponseCountAfter(id: number): number {
-  const rows = queryColumn(
-    "select count(*) from net._http_response where id > :'after_id';\n",
-    { after_id: String(id) },
-  );
-  return Number(rows[0] ?? "0");
+function netRequestCountAfter(cursor: number): number {
+  return netRequestCursor() - cursor;
 }
 
 type ProfileSnapshot = {
@@ -435,22 +435,22 @@ describe("internal.erase_profiles — 쏘는 단계(plan AC-02)", () => {
     trackUser(member.userId);
     setErasedAt(member.profileId, new Date().toISOString());
     clearUserId(member.profileId);
-    const before = latestNetResponseId();
+    const before = netRequestCursor();
 
     callEraseProfiles(new Date().toISOString());
 
-    expect(netResponseCountAfter(before)).toBe(0);
+    expect(netRequestCountAfter(before)).toBe(0);
   });
 
   it("erased_at이 옛 시각이고 user_id가 있으면 다시 한 번 쏜다 — 어제 못 지운 계정의 재시도", async () => {
     const member = await createApprovedUser();
     trackUser(member.userId);
     setErasedAt(member.profileId, oneDayAgo(new Date().toISOString()));
-    const before = latestNetResponseId();
+    const before = netRequestCursor();
 
     callEraseProfiles(new Date().toISOString());
 
-    expect(netResponseCountAfter(before)).toBe(1);
+    expect(netRequestCountAfter(before)).toBe(1);
   });
 
   it("vault 항목이 없어 쏘기가 실패해도 비운 것은 롤백되지 않는다", async () => {

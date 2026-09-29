@@ -37,19 +37,19 @@ function callFetchHolidays(): void {
   execSql("select internal.fetch_holidays();\n");
 }
 
-function latestNetResponseId(): number {
+// pg_net은 요청 행만 그 자리에서 넣고 응답 행은 백그라운드 워커가 나중에 쓴다.
+// net._http_response를 부른 직후에 세면 아직 안 쓰인 것을 0으로 읽는다.
+// 요청 번호를 내주는 시퀀스는 net.http_post가 동기로 당기니 그쪽을 센다.
+function netRequestCursor(): number {
   const rows = queryColumn(
-    "select coalesce(max(id), 0) from net._http_response;\n",
+    "select case when is_called then last_value else 0 end\n" +
+      "from net.http_request_queue_id_seq;\n",
   );
   return Number(rows[0] ?? "0");
 }
 
-function netResponseCountAfter(id: number): number {
-  const rows = queryColumn(
-    "select count(*) from net._http_response where id > :'after_id';\n",
-    { after_id: String(id) },
-  );
-  return Number(rows[0] ?? "0");
+function netRequestCountAfter(cursor: number): number {
+  return netRequestCursor() - cursor;
 }
 
 function rpc(
@@ -116,37 +116,37 @@ describe("internal.fetch_holidays — 다음 해 조건(plan AC-01)", () => {
 
   it("다음 해에 api 공휴일이 있으면 pg_net을 부르지 않는다", () => {
     seedTrackedHoliday(randomDayInYear(nextYear()), "api");
-    const before = latestNetResponseId();
+    const before = netRequestCursor();
 
     callFetchHolidays();
 
-    expect(netResponseCountAfter(before)).toBe(0);
+    expect(netRequestCountAfter(before)).toBe(0);
   });
 
   it("다음 해에 api 공휴일이 하나도 없으면 pg_net을 한 번 부른다", () => {
-    const before = latestNetResponseId();
+    const before = netRequestCursor();
 
     callFetchHolidays();
 
-    expect(netResponseCountAfter(before)).toBe(1);
+    expect(netRequestCountAfter(before)).toBe(1);
   });
 
   it("올해 api 공휴일이 있어도 다음 해가 비어 있으면 여전히 부른다 — 다음 해만 본다", () => {
     seedTrackedHoliday(randomDayInYear(nextYear() - 1), "api");
-    const before = latestNetResponseId();
+    const before = netRequestCursor();
 
     callFetchHolidays();
 
-    expect(netResponseCountAfter(before)).toBe(1);
+    expect(netRequestCountAfter(before)).toBe(1);
   });
 
   it("다음 해에 manual 공휴일만 있으면 받아진 해로 안 쳐서 부른다", () => {
     seedTrackedHoliday(randomDayInYear(nextYear()), "manual");
-    const before = latestNetResponseId();
+    const before = netRequestCursor();
 
     callFetchHolidays();
 
-    expect(netResponseCountAfter(before)).toBe(1);
+    expect(netRequestCountAfter(before)).toBe(1);
   });
 
   it("vault 항목이 없어도 예외 없이 끝난다", () => {
