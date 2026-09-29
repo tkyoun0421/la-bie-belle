@@ -369,7 +369,9 @@ export function ProfileScreen() {
           </Card>
 
           <Card className="py-0">
-            {notificationRow.kind === "switch" ? (
+            {isLoading ? (
+              <SkeletonLine className="my-4 w-2/3" />
+            ) : notificationRow.kind === "switch" ? (
               <ListRow
                 title="알림"
                 right={

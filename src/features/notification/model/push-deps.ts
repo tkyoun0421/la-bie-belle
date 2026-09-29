@@ -18,7 +18,7 @@ import { Platform } from "react-native";
 
 const CHANNEL_ID = "default";
 
-const CHANNEL_NAME = "알림";
+const CHANNEL_NAME = "근무 알림";
 
 const eas = Constants.expoConfig?.extra?.eas as
   { projectId?: string } | undefined;
