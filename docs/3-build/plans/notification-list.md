@@ -29,7 +29,7 @@ sources:
 
 - **여기서만 줄 전체가 눌린다.** 대시보드는 CTA와 ✕만 눌리는데([NTF-024](../../2-design/modules/notification/README.md#ntf-024)) 목록은 반대다. 줄을 누르면 그 알림이 말한 자리로 가고 가면서 읽음이 찍힌다
 - **관리자 공지만 안 눌린다.** 갈 곳이 없는 유일한 종류다. 그런데 **읽음은 여는 것으로 찍힌다** — 규칙의 예외가 둘 겹친 자리다
-- **문장이 여기 산다.** 스물셋의 문장이 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표에 있고 대시보드도 같은 것을 쓴다. **문장을 조립하는 함수가 이 task의 산출이고 대시보드가 그것을 가져다 쓴다**
+- **문장이 여기 산다.** 1차 열여덟의 문장이 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표에 있고 대시보드도 같은 것을 쓴다. **문장을 조립하는 함수가 이 task의 산출이고 대시보드가 그것을 가져다 쓴다**
 - **지난 것을 안 지운다**([NTF-026](../../2-design/modules/notification/README.md#ntf-026)). 그래서 목록이 계속 길어지고 페이지로 끊어 읽는다 — 50건이다
 
 ## 구현 산출물
@@ -43,10 +43,11 @@ sources:
 `src/features/notification/model/title.ts`
 
 - 알림 행 하나를 받아 `{ title, sub }`을 낸다. `sub`는 없을 수 있다
-- 스물셋의 종류를 전부 다룬다. 근거는 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표고 **문자열이 그 표와 글자 하나까지 같아야 한다**
+- **1차 열여덟만 문장을 낸다.** 근거는 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표고 **문자열이 그 표와 글자 하나까지 같아야 한다**. 2차 다섯(교대 넷과 관리자 공지)은 널을 낸다 — 유니온에는 있어 switch가 빠짐을 컴파일에서 잡되 문장은 2차 task가 채운다([kind와 payload](../../2-design/modules/notification/design.md#kind와-payload))
+- **`kind` 문자열과 `payload` 열쇠는 [kind와 payload](../../2-design/modules/notification/design.md#kind와-payload) 표가 정본이다.** 낳는 쪽이 아직 안 선 task라(`notification-emit`) 이 함수가 그 계약의 첫 독자다
 - **아래 줄이 있는 종류가 넷이다** — 신청 접수 열림(마감일), 미리 알림 하루(시각과 포지션), 미리 알림 주말(날짜 둘), 사유 결과 거절(관리자가 적은 이유)
-- 관리자 공지는 `payload`의 본문이 그대로 제목이다
-- **푸시의 payload와 같은 표를 쓴다**(`notification-push`). 두 곳이 문장을 따로 들면 같은 알림이 기기와 화면에서 다르게 읽힌다 — 이 함수 하나를 양쪽이 쓴다
+- 관리자 공지는 2차라 여기서 널이다. 그 종류의 제목이 `payload.body` 그대로라는 것은 표가 든다
+- **푸시도 이 함수를 쓴다**([`notification-push`](notification-push.md#ac-06)). 두 곳이 문장을 따로 들면 같은 알림이 기기와 화면에서 다르게 읽힌다 — 이 함수 하나를 양쪽이 쓴다
 
 ### AC-02
 
@@ -85,10 +86,11 @@ sources:
 **줄을 누르면.**
 
 - `mark_notifications_read`를 부르고 목적지로 간다. **둘이 같은 순간이다**([읽음 찍기](../../2-design/modules/notification/design.md#읽음-찍기))
-- 목적지는 [UI 연결](../../2-design/modules/notification/design.md#ui-연결) 표다. 날이 있는 알림은 `/schedule?date=`, 관리자 알림은 `/admin/schedule?date=`다
+- 목적지는 [UI 연결](../../2-design/modules/notification/design.md#ui-연결) 표다. 날이 있는 알림은 `/schedule?date=`, 관리자 알림은 `/admin/schedule?date=`다. **문장과 같은 갈래로 1차 열여덟만 낸다** — 2차 다섯은 널이고, 「교대 수락 → 관리자」의 목적지가 아직 미정이라 지금 채우면 그 미정이 코드로 샌다([swap/design.md](../../2-design/modules/swap/design.md#아직-안-정한-것))
 - 가는 자리에 `?from=notifications`를 실어 그 화면의 뒤로가 여기로 온다
 - `['notifications']`와 `['notifications','unread']`를 무효화한다([무효화 표](../../2-design/system/runtime.md#무효화-표))
-- **관리자 공지는 여는 것으로 읽음이 찍힌다.** 누를 자리가 없어서 목록에 뜨는 순간이 아니라 화면에 들어온 순간이다
+- **관리자 공지는 여는 것으로 읽음이 찍힌다.** 누를 자리가 없어서 목록에 뜨는 순간이 아니라 화면에 들어온 순간이다. 그 판정(읽어 온 줄 중 안 읽은 공지의 id만 거르기)은 `notification-rows.ts`가 낸다 — 화면 `.tsx`의 `useEffect` 안에서 고르면 계산이 UI로 샌다(ADR-001)
+- **읽음이 실패해도 조용하다.** 이동이 먼저라 그 사람은 이미 다른 화면에 있다. 토스트도 되돌림도 없고 다음 읽기가 맞춘다([읽음 찍기](../../2-design/modules/notification/design.md#읽음-찍기)) — `press-notification.ts`가 실패를 삼킨다
 
 ### AC-06
 
@@ -110,14 +112,14 @@ sources:
 | --- | --- | --- |
 | `src/entities/notification/dals/get-notifications.ts` | `range()`로 50건씩 읽는 페이지 질의와 키 `['notifications']` | AC-03 |
 | `src/entities/notification/dals/count-unread-notifications.ts` | 안 읽은 수와 키 `['notifications', 'unread']` | AC-03·AC-06 |
-| `src/entities/notification/model/types.ts` | `kind`가 지금 `string`이다 — 스물셋을 유니온으로 좁혀야 문장 함수가 빠짐을 컴파일에서 잡는다 | AC-01 |
-| `src/features/notification/model/title.ts` | 스물셋의 문장 | AC-01 |
+| `src/entities/notification/model/types.ts` | `kind`가 지금 `string`이다 — [kind와 payload](../../2-design/modules/notification/design.md#kind와-payload) 표의 스물셋을 유니온으로 좁혀야 문장 함수가 빠짐을 컴파일에서 잡는다 | AC-01 |
+| `src/features/notification/model/title.ts` | 1차 열여덟의 문장, 2차 다섯은 널 | AC-01 |
 | `src/features/notification/model/when.ts` | 날짜 머리와 받은 시각 | AC-02 |
 | `src/features/notification/model/destination.ts` | 종류마다의 목적지 | AC-05 |
 | `src/features/notification/model/useNotifications.ts` | `useInfiniteQuery`와 `maxPages` 3 | AC-03 |
 | `src/features/notification/model/useUnreadCount.ts` | 종의 점이 보는 수 | AC-03·AC-06 |
 | `src/features/notification/model/useMarkNotificationsRead.ts` | [`notification-data`](notification-data.md)가 낸 [`mark-notifications-read.ts`](../../../src/entities/notification/dals/mark-notifications-read.ts) 호출과 무효화 둘 | AC-05 |
-| `src/screens/notifications/model/notification-rows.ts` | 날짜 머리로 끊은 줄 목록과 일곱 상태 | AC-04 |
+| `src/screens/notifications/model/notification-rows.ts` | 날짜 머리로 끊은 줄 목록, 일곱 상태, 안 읽은 관리자 공지 id 거르기 | AC-04·AC-05 |
 | `src/screens/notifications/model/press-notification.ts` | 줄을 누를 때 — 이동이 먼저고 읽음이 뒤따른다 | AC-05 |
 | `src/screens/notifications/ui/NotificationsScreen.tsx` | 화면 조립 | AC-04 |
 | `src/app/notifications.tsx` | 라우트. 지금은 `NotBuiltYet` 한 줄이다 | AC-04 |
@@ -126,6 +128,7 @@ sources:
 | `src/screens/schedule-worker/ui/ScheduleWorkerScreen.tsx`·`src/screens/payroll/ui/PayrollScreen.tsx`·`src/screens/profile/ui/ProfileScreen.tsx`·`src/screens/admin-home/ui/AdminHomeScreen.tsx` | 앱바 오른쪽에 종을 세운다. 대시보드 앱바는 [`dashboard`](../../backlog.md)가 세우고 그 task가 같이 단다 | AC-06 |
 | `src/features/notification/model/__tests__/`·`src/screens/notifications/model/__tests__/` | 문장·시각·목적지·줄 목록의 unit | AC-01·AC-02·AC-04·AC-05 |
 | `src/entities/notification/dals/__tests__/get-notifications.integration.test.ts` | 페이지와 남의 알림 | AC-03 |
+| `src/entities/notification/dals/__tests__/count-unread-notifications.integration.test.ts` | 안 읽은 수가 50건 창에 안 갇히는 것 | AC-03·AC-06 |
 | `tests/e2e/notifications.yaml` | 줄을 눌러 목적지로 가고 점이 사라지는 한 여정 | AC-04~AC-06 |
 | `scripts/e2e-seed-server.mts` | 알림 50건을 넘기는 시드 상태 | AC-03·AC-04 |
 
@@ -134,7 +137,7 @@ sources:
 기능 task 파이프라인이다 — `test-planner` → writer 셋 → `implementer` → `pr-diff`. [`notification-data`](notification-data.md)가 merge된 뒤에 시작한다.
 
 1. `test-planner`가 AC-01~AC-06을 배정한다. **AC-01·AC-02·AC-05의 목적지는 unit, AC-03은 integration, AC-04는 e2e다**
-2. `unit-test-writer`가 문장 스물셋을 쓴다. **표의 문자열을 그대로 단언한다** — 이 테스트가 문서와 코드를 묶는 자리다
+2. `unit-test-writer`가 문장 열여덟을 쓴다. **표의 문자열을 그대로 단언한다** — 이 테스트가 문서와 코드를 묶는 자리다
 3. `integration-test-writer`가 페이지를 쓴다. 50건을 넘겼을 때 둘째 쪽이 오는 것과 남의 알림이 안 섞이는 것이다
 4. `e2e-test-writer`가 줄을 눌러 목적지로 가고 안 읽음 점이 사라지는 것을 쓴다
 5. `implementer`가 순수 함수 → 질의 → 화면 → 종 순으로 초록을 만든다
@@ -142,7 +145,7 @@ sources:
 
 ## 리스크·전환·되돌리기
 
-- **문장이 두 곳에 생길 위험이 이 task의 핵심이다.** 푸시도 목록도 같은 스물셋을 쓴다. AC-01의 함수 하나를 양쪽이 쓰게 묶지 않으면 기기와 화면이 다르게 말한다 — `pr-diff`가 문자열 리터럴이 두 번 선 자리를 본다
+- **문장이 두 곳에 생길 위험이 이 task의 핵심이다.** 푸시도 목록도 같은 표를 쓴다. AC-01의 함수 하나를 양쪽이 쓰게 묶지 않으면 기기와 화면이 다르게 말한다 — `pr-diff`가 문자열 리터럴이 두 번 선 자리를 본다
 - **읽음과 이동이 같은 순간이라 하나가 실패하면 어긋난다.** 읽음을 찍고 가다가 함수가 실패하면 갔는데 안 읽음으로 남는다. 반대면 읽음인데 못 갔다 — **이동을 먼저 하고 읽음은 뒤따르게 한다.** 못 찍힌 읽음은 다음에 누르면 찍히고, 못 간 이동은 사람이 막힌다
 - **목록이 계속 길어진다.** 안 지우는 규칙이라 한 사람의 행이 해마다 쌓인다. 50건씩 끊어 읽는 것이 그 방어고 `maxPages` 3이 메모리를 막는다. 서른 명 규모에서 표가 커지는 것 자체는 문제가 아니다
 - **날짜 머리가 해를 넘길 때 틀리기 쉽다.** 「12월 31일(수)」과 「2025년 12월 31일(수)」이 갈린다. unit이 기준 시각을 고정해 본다
@@ -153,7 +156,7 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 문장이 표와 다르다 | unit `src/features/notification/model/__tests__/title.test.ts`(예정) | `pnpm test` | 스물셋이 표 그대로 |
+| AC-01 | 문장이 표와 다르다 | unit `src/features/notification/model/__tests__/title.test.ts`(예정) | `pnpm test` | 열여덟이 표 그대로고 2차 다섯이 널 |
 | AC-01 | 아래 줄이 있는 넷에 아래 줄이 없다 | unit 위 | `pnpm test` | `sub`가 든다 |
 | AC-01 | 푸시와 목록이 다르게 말한다 | unit 위 | `pnpm test` | 같은 함수를 쓴다 |
 | AC-02 | 해를 넘기면 날짜 머리가 틀린다 | unit `src/features/notification/model/__tests__/when.test.ts`(예정) | `pnpm test` | 「2025년 12월 31일(수)」 |
@@ -176,4 +179,4 @@ sources:
 - 프로필의 알림 스위치 — `notification-settings`
 - 알림을 낳는 자리 — [`notification-emit`](notification-emit.md)·[`notification-schedule`](notification-schedule.md)
 - 푸시를 쏘는 자리 — `notification-push`
-- 교대와 공지 종류의 문장 — 표에는 있지만 2차에 행이 안 생긴다. **함수는 스물셋을 다 다룬다** — 문장이 뒤늦게 갈라지는 것을 막는다
+- 교대와 공지 종류의 문장과 목적지 — 2차다. **유니온에는 스물셋이 다 들어간다** — 종류만 늘면 switch가 조용히 통과해서다. 문장과 목적지는 널이고 2차 task가 채운다

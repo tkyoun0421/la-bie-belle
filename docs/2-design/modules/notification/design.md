@@ -38,6 +38,40 @@
 
 `claimed_at`은 푸시를 잡은 시각, `pushed_at`은 성공한 시각이다. 둘이 다른 이유와 재시도는 [푸시 보내기](#푸시-보내기)에 있다.
 
+### kind와 payload
+
+**`kind` 문자열과 `payload` 열쇠가 계약이다.** 낳는 쪽(`notification-emit`·cron)과 읽는 쪽(문장·목적지 함수)이 다른 task라, 한쪽이 `work_date`로 넣고 다른 쪽이 `date`로 읽으면 화면이 조용히 빈칸을 그린다. DB는 `kind`에 제약을 안 걸고([알림 행](#알림-행)) 막는 자리가 `src/entities/notification/model/types.ts`의 유니온이라, 그 유니온이 이 표를 옮긴다.
+
+날짜는 `2026-09-13` 꼴의 한국 달력일, 달은 `2026-10` 꼴, 시각은 ISO 문자열이다. 문장은 [알림 제목](screens/notifications.md#알림-제목), 목적지는 [UI 연결](#ui-연결)이 정본이고 여기는 열쇠 이름만 든다.
+
+| 종류 | `kind` | `payload` 열쇠 | 릴리스 |
+| --- | --- | --- | --- |
+| 가입 승인 | `signup_approved` | 없음 | 1차 |
+| 신청 접수 열림 | `requests_open` | `month`·`deadline` | 1차 |
+| 마감일 변경 | `deadline_changed` | `month`·`deadline` | 1차 |
+| 근무표 확정 | `schedule_confirmed` | `month` | 1차 |
+| 근무표 변경 — 들어옴 | `assignment_added` | `work_date` | 1차 |
+| 근무표 변경 — 빠짐 | `assignment_removed` | `work_date`·`month` | 1차 |
+| 미리 알림 — 하루 | `shift_reminder` | `work_date`·`start_at`·`position` | 1차 |
+| 미리 알림 — 주말 묶음 | `weekend_reminder` | `work_date`·`dates` | 1차 |
+| 출근 직전 | `before_shift` | `work_date` | 1차 |
+| 근무 요청 도착 | `work_requested` | `work_date` | 1차 |
+| 근무 요청 수락 | `work_request_accepted` | `actor_name`·`work_date` | 1차 |
+| 근무 요청 전부 소진 | `work_request_exhausted` | `work_date`·`position` | 1차 |
+| 근무 취소 요청 | `cancel_requested` | `actor_name`·`work_date` | 1차 |
+| 근무 취소 결과 — 승인 | `cancel_approved` | `work_date`·`month` | 1차 |
+| 근무 취소 결과 — 거절 | `cancel_rejected` | `work_date` | 1차 |
+| 사유 결과 — 승인 | `excuse_approved` | `work_date` | 1차 |
+| 사유 결과 — 거절 | `excuse_rejected` | `work_date`·`reason` | 1차 |
+| 빈 자리 재촉 | `vacancy_nudge` | `work_date`·`count` | 1차 |
+| 관리자 공지 | `admin_notice` | `body` | 2차 |
+| 교대 요청 도착 | `swap_requested` | `actor_name`·`work_date` | 2차 |
+| 교대 수락 | `swap_accepted` | `work_date` | 2차 |
+| 교대 승인 | `swap_approved` | `work_date` | 2차 |
+| 교대 전부 소진 | `swap_exhausted` | `work_date` | 2차 |
+
+**유니온은 스물셋을 다 든다.** 2차 다섯도 지금 유니온에 넣어 문장·목적지 함수가 빠짐을 컴파일에서 잡게 한다 — 나중에 종류만 늘리면 그 함수들이 조용히 통과한다. **다만 문장과 목적지는 1차 열여덟만 낸다.** 2차 다섯은 널을 내고, 그 널이 「못 보낸 채 남는다」와 「안 눌린다」로 읽힌다([푸시 보내기](#푸시-보내기)·[UI 연결](#ui-연결)). 「교대 수락 → 관리자」의 목적지가 아직 미정이라([swap/design.md](../swap/design.md#아직-안-정한-것)), 2차를 지금 채우면 그 미정이 코드로 새어 든다.
+
 ### 누가 넣나
 
 **사건 알림은 같은 함수 트랜잭션 안에서 insert한다.** `approve_swap()`이 배정을 바꾸고 같은 함수 안에서 `notifications` 행을 넣는다 — 배정은 바뀌었는데 알림이 없는 상태가 안 생긴다. 「자기 행동은 안 알린다」·「전부 끝나면 한 번」 같은 묶기 규칙이 함수 안에 산다.
@@ -80,8 +114,8 @@
 - 입력·전제: `mark_notifications_read`가 읽음 찍기다. domain대로 ✕·CTA·답 셋 중 하나를 눌러야 읽음이다. 목록을 훑는 것으로는 안 바뀐다. **[알림 목록](screens/notifications.md)에서는 줄을 누르는 것이 넷째 길이다** — 목적지로 가면서 같은 함수가 나간다
 - 읽고 쓰는 데이터: 누른 행의 `read_at`을 즉시 칠하고 `mark_notifications_read`를 보낸다
 - 권한: 프로필이 있고 차단·퇴사가 아닌 사람. **승인 전도 포함이다** — [NTF-006](README.md#ntf-006)의 가입 승인 알림을 받은 사람이 그것을 닫아야 한다
-- 결과와 실패: 실패하면 되돌린다 — 다시 나타난 행을 사람이 다시 누른다
-- 캐시 갱신: `['notifications']`
+- 결과와 실패: 실패하면 되돌린다 — 다시 나타난 행을 사람이 다시 누른다. **줄을 눌러 목적지로 간 자리는 다르다** — 이동이 먼저고 읽음 실패는 조용하다. 토스트도 되돌림 애니메이션도 없고 다음 읽기가 맞춘다([알림 목록](screens/notifications.md)). 이미 다른 화면에 선 사람에게 앞 화면의 되돌림을 보여줄 방법이 없다
+- 캐시 갱신: `['notifications']`와 `['notifications', 'unread']`. 안 읽은 수가 종 아이콘의 점이라 같이 안 무효화하면 점이 안 꺼진다
 
 ### 기기 주소 저장과 삭제
 
