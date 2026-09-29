@@ -1,0 +1,198 @@
+# 알림 목록 — 근무자가 종 아이콘을 눌러 알림을 보고, 줄을 눌러 목적지로 갔다가
+# 뒤로 두 번으로 되돌아오면서 안 읽음 점이 종과 줄 양쪽에서 사라지는 것을 한
+# 여정으로 본다. 빈 상태와 쉰 건을 넘긴 목록은 별도 씬이다.
+#
+# 근거는 docs/2-design/spec/notification-list.md(AC-01·AC-04·AC-05·AC-06과
+# 상태 격자의 빈 상태)와 docs/2-design/modules/notification/screens/notifications.md
+# (문안 표가 정본)다. 배정받은 리스크는
+#   - 근무자 화면의 종 아이콘에 점이 있고, 눌러 "/notifications"로 간다(AC-06)
+#   - 목록이 최근부터 서고 탭 바가 없다. 앱바는 뒤로와 "알림"이다(AC-01·AC-04)
+#   - 줄을 누르면 목적지로 가고, 뒤로가 다시 이 목록으로 온다. 그 줄에 점이
+#     없다(AC-05)
+#   - 마지막 안 읽은 알림을 읽으면 종의 점이 사라진다(AC-05·AC-06)
+#   - 빈 상태 — 알림이 하나도 없는 사람의 목록(상태 격자)
+#   - 50건을 넘겨 끝까지 내리면 끝 문구가 선다(AC-04)
+# 업무 규칙의 경우의 수(문장 열여덟이 표와 같은지, 날짜 머리·받은 시각의 경계,
+# 목적지 표)는 test-planner가 이미 unit으로 배정했다 — 여기서는 그 계산이 실제로
+# 화면·훅·시드를 잇는지만 본다.
+#
+# 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
+# tests/e2e/schedule-worker.yaml 머리말, scripts/e2e-seed-server.mts,
+# tests/e2e/scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의
+# "/notifications" 그대로다 — "(tabs)" 그룹은 URL에서 빠진다(다른 파일들과 같은 결).
+#
+# ================================================================
+# 시드 — implementer가 이 task에서 셋을 더한다. scripts/e2e-seed-server.mts 전용
+# 영역이라 이 파일이 직접 만들 수 없는 부분은 그대로 이 시드 서버 쪽에 넣었다.
+# ================================================================
+#
+# ## notification_list
+#
+# 근무표를 아직 안 만든 달(schedule_admin_empty_month와 같은 손 — withFreshMonth로
+# 고른 달에 아무것도 안 심는다) 하나와, 그 사람에게 온 알림 한 건(kind
+# "signup_approved", payload 없음)이다. 근무표 내용은 이 시나리오와 무관해
+# 가장 값싼 상태를 그대로 쓴다 — "안 만든 달"의 앱바에도 종 아이콘이 서므로
+# 그 문구("아직 근무 신청을 받지 않아요")로 화면이 떴다는 것만 확인한다.
+#
+# 알림을 "signup_approved" 하나로 고정한 것은 payload 열쇠가 없는 유일한 1차
+# 종류라서다(design.md 「kind와 payload」) — 다른 종류는 work_date 같은 열쇠가
+# 있어야 문장이 서는데 시드가 쓰는 tests/integration/postgres.ts의
+# seedNotifications는 payload를 늘 "{}"로 고정해서 못 심는다. 이 알림의 문장은
+# "가입이 승인됐어요"(고정, 가변값 없음)고 목적지는 "/"다(design.md 「UI 연결」의
+# "가입 승인" 행).
+#
+# 응답은 raw "month"(딥링크 "?month="에 쓴다) 하나만 싣는다.
+#
+# ## notification_list_empty
+#
+# 위와 같은 손으로 근무표를 안 만들고, 알림도 하나도 안 심는다. 응답은 같은
+# "month" 하나다.
+#
+# ## notification_list_many
+#
+# 알림 쉰다섯 건이다(seedNotifications, kind 기본값 "signup_approved" 그대로).
+# 이 화면은 "?month=" 같은 딥링크 인자가 없어(navigation.md 「경로」의
+# "/notifications" 행) 근무표 세팅이 필요 없다 — 딥링크로 곧장 "/notifications"에
+# 들어간다. 응답은 셋 다 스물세 종류 중 "signup_approved" 문장이라 제목이 전부
+# 같은 글자로 겹치는데, 이 씬이 보는 것은 쪽 나누기(50건 경계)뿐이라 문제가
+# 안 된다.
+#
+# ## 세 상태가 공통으로 겪는 제약 — output.notificationId를 못 쓴다
+#
+# 세 상태 모두 시드 서버가 만든 알림 행의 id를 응답에 안 싣는다.
+# tests/e2e/scripts/seed-session.js가 새 필드를 output으로 릴레이하는 자리인데
+# 이 task가 쓸 수 있는 파일은 tests/e2e/notifications.yaml과
+# scripts/e2e-seed-server.mts 둘뿐이라 그 파일을 못 고친다 — 그래서 schedule-worker.yaml의
+# "schedule-day-${output.month}-01-selected" 같은 id 기반 testID를 이 파일은
+# 못 쓴다. notification_list가 알림을 정확히 한 건만 심는 것은 이 제약을
+# 피하려는 것이다 — 줄이 하나뿐이면 kind로 조립한 testID("이 task가 요청하는
+# testID" 참고)가 안 겹친다.
+#
+# ================================================================
+# 이 task가 요청하는 testID 셋
+# ================================================================
+#
+# - "bell-icon" — 앱바의 종 아이콘(src/shared/ui/BellIcon.tsx). 글자가 없는
+#   순수 아이콘이라 텍스트 셀렉터로 못 잡는다 — schedule-worker.yaml의
+#   "schedule-month-prev"·"schedule-month-next"와 같은 자리다. BellIcon이 이미
+#   `PressableProps`를 펼쳐 받아 testID를 그대로 Pressable에 흘리므로(코드
+#   확인함), 화면들이 `<BellIcon testID="bell-icon" .../>`로 넘기기만 하면 된다.
+# - "bell-icon-unread" — 종 오른쪽 어깨의 안 읽음 점(BellIcon.tsx의
+#   `unread ? <View .../> : null` 자리). 8px 원은 색으로만 서서(bg.brand-solid)
+#   앱을 안 보고는 있는지 없는지를 가를 수 없다 — 그 View가 testID
+#   "${testID}-unread"를 받아야 한다. 지금 BellIcon.tsx는 이 자리에 testID를
+#   안 흘린다 — src/ 변경이 필요하다(리턴 4번).
+# - "notification-row-signup_approved-unread" — 알림 목록 줄의 안 읽음
+#   점(notifications.md 「알림 줄」 표의 왼쪽 자리, 8px 원). 위 제약대로 행 id를
+#   못 받아 kind로 이름을 조립한다 — notification_list 상태가 그 kind의 알림을
+#   한 건만 심으므로 이 파일이 쓰는 범위에서는 안 겹친다. 구현이 행 id 기반
+#   testID를 더 선호하면 tests/e2e/scripts/seed-session.js에 알림 id 릴레이를
+#   더하는 후속 변경이 필요하다(리턴 4번).
+#
+# 텍스트 셀렉터는 정규식이다. 이 파일이 쓰는 문안("가입이 승인됐어요",
+# "아직 받은 알림이 없어요" 등)은 전부 일반 글자라 이스케이프가 필요 없다.
+#
+# ================================================================
+# 관리자 공지 줄은 안 담았다
+# ================================================================
+#
+# "관리자 공지 줄은 안 눌린다"(notifications.md 「안 눌리는 줄」)를 확인하려면
+# 그 줄에 뜰 글자를 알아야 하는데, 이 task의 title.ts는 2차 다섯(관리자 공지
+# 포함)의 문장을 전부 널로 낸다(plan AC-01) — "payload.body 그대로"라는 미래
+# 문구는 2차 task가 채운다. 그러니 지금 이 화면이 kind "admin_notice" 행을
+# 받으면 제목 자리에 무엇을 그릴지가 정본에 없다 — execSql로 직접 그 kind를
+# 심는 것 자체는 가능하지만(seedNotifications가 아니라 raw insert가 필요하다),
+# 결과 화면의 모습을 예측할 근거가 없어 무엇을 assertVisible할지 정할 수 없다.
+# 그래서 이 리스크는 안 담았다 — 2차 관리자 공지 task가 문장을 채운 뒤에 쓸 수
+# 있다.
+appId: com.labiebelle.app
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+# ================================================================
+# 종 아이콘의 점 → 목록 → 줄을 눌러 목적지로 → 뒤로 두 번으로 되돌아온다
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: notification_list
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://schedule?month=${output.month}"
+
+- assertVisible: ".*아직.*근무 신청을 받지 않아요.*"
+- assertVisible:
+    id: "bell-icon"
+- assertVisible:
+    id: "bell-icon-unread"
+
+- tapOn:
+    id: "bell-icon"
+
+# --- 목록 — 최근부터, 탭 바가 없고 앱바는 뒤로와 「알림」이다 ---
+- assertVisible: "알림"
+- assertNotVisible: "근무표"
+- assertVisible: "오늘"
+- assertVisible: "가입이 승인됐어요"
+- assertVisible: "방금"
+- assertVisible:
+    id: "notification-row-signup_approved-unread"
+
+# --- 줄을 누르면 읽음이 찍히며 목적지로 간다 ---
+- tapOn: "가입이 승인됐어요"
+- assertNotVisible: "알림"
+- assertVisible: "근무표"
+
+# --- 뒤로 — 다시 이 목록으로 온다. 읽은 줄엔 점이 없다 ---
+- back
+- assertVisible: "알림"
+- assertNotVisible: "근무표"
+- assertVisible: "가입이 승인됐어요"
+- assertNotVisible:
+    id: "notification-row-signup_approved-unread"
+
+# --- 뒤로 한 번 더 — 종을 눌렀던 근무표 화면으로 온다. 마지막 안 읽은 알림을
+# 읽어 종의 점도 같이 사라졌다 ---
+- back
+- assertVisible: ".*아직.*근무 신청을 받지 않아요.*"
+- assertNotVisible:
+    id: "bell-icon-unread"
+
+# ================================================================
+# 빈 상태 — 알림이 하나도 없는 사람. 종에도 점이 없다
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: notification_list_empty
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://schedule?month=${output.month}"
+
+- assertVisible:
+    id: "bell-icon"
+- assertNotVisible:
+    id: "bell-icon-unread"
+
+- tapOn:
+    id: "bell-icon"
+
+- assertVisible: "알림"
+- assertVisible: "아직 받은 알림이 없어요"
+- assertVisible: "근무표가 확정되면 여기 쌓여요"
+
+# ================================================================
+# 알림이 쉰 건을 넘는다 — 끝까지 내리면 끝 문구가 선다
+# ================================================================
+- runScript:
+    file: scripts/seed-session.js
+    env:
+      STATE: notification_list_many
+- openLink: "labiebelle://__test/session?access_token=${output.accessToken}&refresh_token=${output.refreshToken}"
+- openLink: "labiebelle://notifications"
+
+- assertVisible: "알림"
+- scrollUntilVisible:
+    element:
+      text: "여기까지예요"
+    direction: DOWN

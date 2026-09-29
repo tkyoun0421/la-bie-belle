@@ -623,6 +623,32 @@ export function endAssignment(assignmentId: string): void {
   );
 }
 
+/**
+ * 알림 여러 건을 한 문장으로 심는다. `created_at`을 index만큼 과거로 밀어 순서를 고정한다 —
+ * `ids[0]`이 가장 최근이고 `ids[count - 1]`이 가장 오래됐다. 여러 `execSql` 호출로 나누면 그
+ * 사이 틈을 배경 작업이 볼 수 있어서(관찰 024) 한 INSERT에 값을 전부 담는다.
+ */
+export function seedNotifications(
+  profileId: string,
+  count: number,
+  kind: string = "signup_approved",
+): string[] {
+  const ids = Array.from({ length: count }, () => randomUUID());
+  const values = ids
+    .map(
+      (id, index) =>
+        `('${id}', '${profileId}', '${kind}', '{}'::jsonb, now() - interval '${index} seconds')`,
+    )
+    .join(",\n");
+
+  execSql(
+    "insert into public.notifications (id, profile_id, kind, payload, created_at) values\n" +
+      `${values};\n`,
+  );
+
+  return ids;
+}
+
 export type SeededPastDay = {
   dayId: string;
   scheduleId: string;

@@ -87,7 +87,7 @@ sources:
 
 - `mark_notifications_read`를 부르고 목적지로 간다. **둘이 같은 순간이다**([읽음 찍기](../../2-design/modules/notification/design.md#읽음-찍기))
 - 목적지는 [UI 연결](../../2-design/modules/notification/design.md#ui-연결) 표다. 날이 있는 알림은 `/schedule?date=`, 관리자 알림은 `/admin/schedule?date=`다. **문장과 같은 갈래로 1차 열여덟만 낸다** — 2차 다섯은 널이고, 「교대 수락 → 관리자」의 목적지가 아직 미정이라 지금 채우면 그 미정이 코드로 샌다([swap/design.md](../../2-design/modules/swap/design.md#아직-안-정한-것))
-- 가는 자리에 `?from=notifications`를 실어 그 화면의 뒤로가 여기로 온다
+- **`?from=notifications`는 앱바 뒤로가 있는 화면에만 싣는다** — 관리자 날 상세(`/admin/schedule?date=`)와 승인할 일(`/admin/approvals`)이다. 탭 화면은 앱바 뒤로가 없어([뒤로](../../2-design/system/navigation.md#뒤로)) 실어도 받을 자리가 없다
 - `['notifications']`와 `['notifications','unread']`를 무효화한다([무효화 표](../../2-design/system/runtime.md#무효화-표))
 - **관리자 공지는 여는 것으로 읽음이 찍힌다.** 누를 자리가 없어서 목록에 뜨는 순간이 아니라 화면에 들어온 순간이다. 그 판정(읽어 온 줄 중 안 읽은 공지의 id만 거르기)은 `notification-rows.ts`가 낸다 — 화면 `.tsx`의 `useEffect` 안에서 고르면 계산이 UI로 샌다(ADR-001)
 - **읽음이 실패해도 조용하다.** 이동이 먼저라 그 사람은 이미 다른 화면에 있다. 토스트도 되돌림도 없고 다음 읽기가 맞춘다([읽음 찍기](../../2-design/modules/notification/design.md#읽음-찍기)) — `press-notification.ts`가 실패를 삼킨다

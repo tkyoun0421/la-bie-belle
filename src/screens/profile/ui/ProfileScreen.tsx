@@ -1,6 +1,6 @@
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import { Pencil } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
@@ -25,6 +25,7 @@ import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
 import { googlePhotoOf } from "@/features/auth/google-photo-of";
+import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
 import { useUpdateContact } from "@/features/profile/model/useUpdateContact";
 import { useUpdatePhoto } from "@/features/profile/model/useUpdatePhoto";
@@ -93,6 +94,8 @@ function hyphenate(digits: string): string {
 
 export function ProfileScreen() {
   const router = useRouter();
+  const pathname = usePathname();
+  const unreadCount = useUnreadCount(supabase);
 
   const [me, setMe] = useState<Me | null>(null);
   const [sheet, setSheet] = useState<SheetName>(null);
@@ -230,7 +233,13 @@ export function ProfileScreen() {
     <Screen>
       <AppBar
         title="나"
-        right={<BellIcon onPress={() => router.push("/notifications")} />}
+        right={
+          <BellIcon
+            testID="bell-icon"
+            unread={(unreadCount.data ?? 0) > 0}
+            onPress={() => router.push(`/notifications?from=${pathname}`)}
+          />
+        }
       />
 
       <ScrollView>
