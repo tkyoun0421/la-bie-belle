@@ -51,16 +51,41 @@ const SECTION_KINDS: Record<string, DatabaseObjectKind> = {
   Functions: "function",
 };
 
+/** 반환형은 머리와 같은 줄에도, 그 아래 몇 줄 뒤(`as $$` 앞)에도 온다. */
+const RETURNS = /\breturns\s+([a-z_]+)/i;
+const BODY_START = /\bas\s+\$\$/i;
+
 function key({ schema, kind, name }: DatabaseObject): string {
   return `${schema}.${kind}.${name}`;
+}
+
+/**
+ * 트리거 함수는 생성 타입에 안 선다. PostgREST가 `/rpc/`로 못 부르는 함수라 `supabase gen
+ * types`가 아예 안 내놓는다 — 여기서 안 빼면 영영 못 지우는 위반이 하나 남는다.
+ */
+function returnsTrigger(lines: string[], head: number): boolean {
+  for (let index = head; index < lines.length; index += 1) {
+    const returns = RETURNS.exec(lines[index]);
+
+    if (returns !== null) {
+      return returns[1].toLowerCase() === "trigger";
+    }
+
+    if (index > head && BODY_START.test(lines[index])) {
+      return false;
+    }
+  }
+
+  return false;
 }
 
 /** 마이그레이션 SQL이 만드는 것들. 같은 함수를 두 번 적어도(`or replace`) 한 번만 센다. */
 export function migrationObjects(sql: string): DatabaseObject[] {
   const found: DatabaseObject[] = [];
   const seen = new Set<string>();
+  const lines = sql.split("\n");
 
-  for (const line of sql.split("\n")) {
+  for (const [index, line] of lines.entries()) {
     const match = DDL.exec(line.trim());
 
     if (match === null) {
@@ -70,6 +95,11 @@ export function migrationObjects(sql: string): DatabaseObject[] {
     const kind = match[1].toLowerCase().endsWith("view")
       ? "view"
       : (match[1].toLowerCase() as DatabaseObjectKind);
+
+    if (kind === "function" && returnsTrigger(lines, index)) {
+      continue;
+    }
+
     const object = { schema: match[2], kind, name: match[3] };
 
     if (!seen.has(key(object))) {

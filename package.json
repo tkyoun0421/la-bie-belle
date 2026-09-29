@@ -4,7 +4,8 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
-    "dev": "expo start",
+    "dev": "pnpm edge:sync && expo start",
+    "edge:sync": "node --experimental-strip-types scripts/sync-edge-shared.mts",
     "ios": "expo start --ios",
     "android": "expo start --android",
     "lint": "eslint",

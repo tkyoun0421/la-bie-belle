@@ -58,6 +58,11 @@ jobs:
         if: steps.scope.outputs.code == 'true'
         with:
           version: 2.75.0
+      # edge-runtime 컨테이너는 `supabase/functions` 한 폴더만 마운트한다. Edge Function이
+      # 쓰는 `src/`의 순수 함수를 그 안으로 복사해두지 않으면 배포한 함수가 부팅에서 깨진다.
+      - name: Edge Function이 쓰는 순수 함수를 마운트 안으로 복사한다
+        if: steps.scope.outputs.code == 'true'
+        run: pnpm edge:sync
       - name: 테스트가 쓰는 서비스만 띄운다
         if: steps.scope.outputs.code == 'true'
         # storage-api 가 목록에서 빠진 것은 avatars 버킷 테스트가 그 서비스에 붙기 때문이다.

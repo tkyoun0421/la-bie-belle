@@ -8,6 +8,7 @@ playwright-report/
 blob-report/
 supabase/.branches/
 supabase/.temp/
+supabase/functions/_shared/
 pnpm-lock.yaml
 *.md
 docs/2-design/**/*.sian.html

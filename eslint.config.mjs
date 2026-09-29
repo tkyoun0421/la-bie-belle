@@ -40,6 +40,9 @@ const eslintConfig = defineConfig([
     "expo-env.d.ts",
     "nativewind-env.d.ts",
     "coverage/**",
+    // `pnpm edge:sync`가 만드는 복사본이다. 정본은 `src/`고 이 아래는 생성물이라 커밋도
+    // 검사도 안 한다.
+    "supabase/functions/_shared/**",
   ]),
 
   {
@@ -82,6 +85,12 @@ const eslintConfig = defineConfig([
           "newlines-between": "ignore",
         },
       ],
+      // 무는 자리는 규칙 둘이 저마다 들고 있다 — 마운트 경계는 `supabase/functions/`,
+      // Deno로 복사되는 폴더는 `src/features/notification/model/`이다. 여기서 글롭으로
+      // 좁히면 `rule-catalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과
+      // 어긋난다.
+      "house/no-edge-function-src-import": "error",
+      "house/no-node-import-in-edge-shared": "error",
       "no-restricted-syntax": [
         "error",
         {

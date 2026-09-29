@@ -16,6 +16,7 @@ export type Database = {
     };
     Functions: {
       active_profile_id: { Args: never; Returns: string };
+      call_send_push: { Args: { p_ids: string[] }; Returns: undefined };
       check_in: {
         Args: {
           p_day_id: string;
@@ -27,6 +28,20 @@ export type Database = {
           p_qr_code: string;
           p_reported_at: string;
         };
+        Returns: undefined;
+      };
+      claim_notifications: {
+        Args: { p_ids: string[]; p_now: string };
+        Returns: {
+          addresses: string[];
+          id: string;
+          kind: string;
+          payload: Json;
+          profile_id: string;
+        }[];
+      };
+      clear_receipts: {
+        Args: { p_dead_tokens: string[]; p_ids: string[] };
         Returns: undefined;
       };
       close_slot_requests: { Args: { p_slot_id: string }; Returns: undefined };
@@ -47,6 +62,14 @@ export type Database = {
         Args: { p_rows: Json; p_year: number };
         Returns: undefined;
       };
+      receipts_to_scrape: {
+        Args: { p_now: string };
+        Returns: {
+          addresses: string[];
+          id: string;
+          receipt_id: string;
+        }[];
+      };
       rehearsal_kind_of: {
         Args: { p_profile_id: string; p_work_date: string };
         Returns: string;
@@ -60,6 +83,10 @@ export type Database = {
           p_work_date: string;
         };
         Returns: boolean;
+      };
+      settle_push: {
+        Args: { p_dead_tokens: string[]; p_pushed: Json };
+        Returns: undefined;
       };
       submit_excuse: {
         Args: {
@@ -621,6 +648,7 @@ export type Database = {
           payload: Json;
           profile_id: string;
           push_attempts: number;
+          push_receipt_id: string | null;
           pushed_at: string | null;
           read_at: string | null;
           subject_id: string | null;
@@ -633,6 +661,7 @@ export type Database = {
           payload?: Json;
           profile_id: string;
           push_attempts?: number;
+          push_receipt_id?: string | null;
           pushed_at?: string | null;
           read_at?: string | null;
           subject_id?: string | null;
@@ -645,6 +674,7 @@ export type Database = {
           payload?: Json;
           profile_id?: string;
           push_attempts?: number;
+          push_receipt_id?: string | null;
           pushed_at?: string | null;
           read_at?: string | null;
           subject_id?: string | null;
@@ -1261,6 +1291,20 @@ export type Database = {
         };
         Returns: undefined;
       };
+      claim_notifications: {
+        Args: { p_ids: string[] };
+        Returns: {
+          addresses: string[];
+          id: string;
+          kind: string;
+          payload: Json;
+          profile_id: string;
+        }[];
+      };
+      clear_receipts: {
+        Args: { p_dead_tokens: string[]; p_ids: string[] };
+        Returns: undefined;
+      };
       close_day: { Args: { p_work_date: string }; Returns: undefined };
       confirm_schedule: { Args: { p_month: string }; Returns: undefined };
       create_cancel_request: {
@@ -1320,6 +1364,14 @@ export type Database = {
         Returns: undefined;
       };
       open_day: { Args: { p_work_date: string }; Returns: undefined };
+      receipts_to_scrape: {
+        Args: never;
+        Returns: {
+          addresses: string[];
+          id: string;
+          receipt_id: string;
+        }[];
+      };
       reject_member: { Args: { profile_id: string }; Returns: undefined };
       remove_assignment: {
         Args: { p_assignment_id: string };
@@ -1392,6 +1444,10 @@ export type Database = {
       };
       set_wage: {
         Args: { p_amount: number; p_profile_id: string };
+        Returns: undefined;
+      };
+      settle_push: {
+        Args: { p_dead_tokens: string[]; p_pushed: Json };
         Returns: undefined;
       };
       split_slot: { Args: { p_slot_id: string }; Returns: undefined };

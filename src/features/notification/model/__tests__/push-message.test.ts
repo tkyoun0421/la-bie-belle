@@ -30,10 +30,8 @@ function claimedRow(
 
 describe("buildPushMessages — 주소마다 메시지가 하나씩 난다", () => {
   it("주소가 둘이면 메시지도 둘이다", async () => {
-    const { buildPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { buildPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const messages = buildPushMessages([
       claimedRow({
@@ -45,10 +43,8 @@ describe("buildPushMessages — 주소마다 메시지가 하나씩 난다", () 
   });
 
   it("주소가 없으면 메시지가 0건이다", async () => {
-    const { buildPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { buildPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const messages = buildPushMessages([claimedRow({ tokens: [] })]);
 
@@ -58,10 +54,8 @@ describe("buildPushMessages — 주소마다 메시지가 하나씩 난다", () 
 
 describe("buildPushMessages — data에는 kind와 목적지만 든다", () => {
   it("문안(제목 문자열)이 data 어디에도 없다", async () => {
-    const { buildPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { buildPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const messages = buildPushMessages([claimedRow()]);
     const serialized = JSON.stringify(messages[0].data);
@@ -70,10 +64,8 @@ describe("buildPushMessages — data에는 kind와 목적지만 든다", () => {
   });
 
   it("data의 키가 kind와 destination 둘뿐이다", async () => {
-    const { buildPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { buildPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const messages = buildPushMessages([claimedRow()]);
 
@@ -84,10 +76,8 @@ describe("buildPushMessages — data에는 kind와 목적지만 든다", () => {
   });
 
   it("data.kind가 그 행의 kind와 같다", async () => {
-    const { buildPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { buildPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const messages = buildPushMessages([
       claimedRow({ kind: "schedule_confirmed", payload: { month: "2025-10" } }),
@@ -97,10 +87,8 @@ describe("buildPushMessages — data에는 kind와 목적지만 든다", () => {
   });
 
   it("data.destination이 UI 연결 표의 경로와 같다", async () => {
-    const { buildPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { buildPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const messages = buildPushMessages([
       claimedRow({
@@ -115,10 +103,8 @@ describe("buildPushMessages — data에는 kind와 목적지만 든다", () => {
 
 describe("buildPushMessages — 제목과 아래 줄은 title.ts가 낸다", () => {
   it("assignment_added의 title이 '9월 13일 근무가 생겼어요'다", async () => {
-    const { buildPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { buildPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const messages = buildPushMessages([
       claimedRow({
@@ -131,10 +117,8 @@ describe("buildPushMessages — 제목과 아래 줄은 title.ts가 낸다", () 
   });
 
   it("아래 줄이 있는 종류는 body가 null이 아니다", async () => {
-    const { buildPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { buildPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const messages = buildPushMessages([
       claimedRow({
@@ -155,10 +139,8 @@ describe("buildPushMessages — 2차 다섯은 문장이 없어 메시지가 0�
     "swap_approved",
     "swap_exhausted",
   ])("%s는 메시지를 안 낸다", async (kind) => {
-    const { buildPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { buildPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const messages = buildPushMessages([claimedRow({ kind, payload: {} })]);
 
@@ -168,10 +150,8 @@ describe("buildPushMessages — 2차 다섯은 문장이 없어 메시지가 0�
 
 describe("buildPushMessages — 메시지마다 알림 id와 토큰을 든다", () => {
   it("나중에 {id, receipt_id}를 조립할 수 있게 알림 id를 싣는다", async () => {
-    const { buildPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { buildPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const messages = buildPushMessages([claimedRow({ id: "notif-77" })]);
 
@@ -179,10 +159,8 @@ describe("buildPushMessages — 메시지마다 알림 id와 토큰을 든다", 
   });
 
   it("메시지의 to가 그 기기의 토큰과 같다", async () => {
-    const { buildPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { buildPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const messages = buildPushMessages([
       claimedRow({ tokens: ["exp-tok[ccc]"] }),
@@ -207,10 +185,8 @@ describe("chunkPushMessages — 백 건 경계", () => {
   }
 
   it("100건이면 묶음이 하나다", async () => {
-    const { chunkPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { chunkPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const chunks = chunkPushMessages(manyMessages(100));
 
@@ -218,10 +194,8 @@ describe("chunkPushMessages — 백 건 경계", () => {
   });
 
   it("101건이면 묶음이 둘이다", async () => {
-    const { chunkPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { chunkPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const chunks = chunkPushMessages(manyMessages(101));
 
@@ -229,10 +203,8 @@ describe("chunkPushMessages — 백 건 경계", () => {
   });
 
   it("250건이면 묶음이 셋이고 크기가 100·100·50이다", async () => {
-    const { chunkPushMessages } = await import(
-      // @ts-expect-error 대상 모듈이 아직 없다
-      "@/features/notification/model/push-message"
-    );
+    const { chunkPushMessages } =
+      await import("@/features/notification/model/push-message");
 
     const chunks = chunkPushMessages(manyMessages(250));
 

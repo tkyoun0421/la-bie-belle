@@ -7,9 +7,9 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 19;
+export const DOCUMENTED_LINT_RULE_COUNT = 21;
 
-export const ENFORCED_RULE_COUNT = 19;
+export const ENFORCED_RULE_COUNT = 21;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -157,5 +157,21 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/no-visual-utility-class",
     enforcedBy: null,
     test: "eslint-rules/__tests__/no-visual-utility-class.test.ts",
+  },
+  {
+    no: 20,
+    name: "Edge Function의 마운트 밖 import",
+    mechanism: "house",
+    ruleId: "house/no-edge-function-src-import",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/no-edge-function-src-import.test.ts",
+  },
+  {
+    no: 21,
+    name: "Deno로 복사되는 폴더의 node: import",
+    mechanism: "house",
+    ruleId: "house/no-node-import-in-edge-shared",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/no-node-import-in-edge-shared.test.ts",
   },
 ];
