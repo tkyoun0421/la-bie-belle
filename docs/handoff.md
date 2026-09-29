@@ -6,7 +6,7 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `notification-push`다** — backlog의 `ready` 맨 위다. plan이 이미 서 있다: [3-build/plans/notification-push.md](3-build/plans/notification-push.md). AC 아홉이고 무게 중심이 셋이다 — 잡기 질의의 `returning`이 두 경로(트리거·cron)의 중복 발송을 막는 것, 트리거가 사건 함수의 트랜잭션 안이라 쏘기가 예외를 삼켜야 하는 것, `_shared` 복사 단계([관찰 035](observations/035-edge-function-reaches-outside-mount.md))다. 문장은 `notification-list`가 낸 `src/features/notification/model/title.ts`를 가져다 쓴다. 사용자의 상시 지시는
+**다음 첫 수는 `notification-push`다** — backlog의 `ready` 맨 위다. plan이 이미 서 있다: [3-build/plans/notification-push.md](3-build/plans/notification-push.md). AC 아홉이고 무게 중심이 셋이다 — 잡기 질의의 `returning`이 두 경로(트리거·cron)의 중복 발송을 막는 것, 트리거가 사건 함수의 트랜잭션 안이라 쏘기가 예외를 삼켜야 하는 것, `_shared` 복사 단계([관찰 035](observations/035-edge-function-reaches-outside-mount.md))다. 문장은 `notification-list`가 낸 `src/features/notification/model/title.ts`를 가져다 쓴다.
 
 **`notification-list`가 `done`이다(#468).** 알림 목록 화면과 앱바 종이 섰고, 순수 함수 셋(`title`·`when`·`destination`)과 훅 셋, 읽는 손 둘이 같이 왔다. **문장·목적지는 1차 열여덟만 낸다** — 2차 다섯은 널이고 `kind` 유니온만 스물셋을 든다. `kind` 문자열과 `payload` 열쇠는 [design.md 「kind와 payload」](2-design/modules/notification/design.md#kind와-payload)가 정본이고 **`notification-emit`이 그 표에 맞춰 행을 낳아야 한다**. 판정 둘을 정본에 박았다 — 줄을 눌러 간 자리의 읽음 실패는 조용하고(토스트 없음, [runtime.md](2-design/system/runtime.md)에 예외 한 줄), `?from=notifications`는 앱바 뒤로가 있는 관리자 두 화면에만 싣는다(탭 화면은 받을 자리가 없다, [navigation.md](2-design/system/navigation.md#뒤로)).
 
@@ -28,7 +28,7 @@
 
 **`notification-push`의 plan이 섰고 정본에 판정 셋을 박았다.** 보낼 것이 없어도 접수증을 긁는다([Q-02](2-design/modules/notification/design.md#아직-안-정한-것) 닫음), 잡기와 결과 쓰기가 `public` 껍데기를 탄다, 접수증 번호 열(`push_receipt_id`)은 그 task가 붙인다. **문장 함수의 주인은 `notification-list`다** — spec과 plan 둘이 그렇게 적어둬서 순서를 뒤집는 대신 `notification-push`를 그 뒤로 보냈다. **[관찰 035](observations/035-edge-function-reaches-outside-mount.md)가 열려 있다** — `import-holidays`가 마운트 밖의 `src/`를 import하는데 edge-runtime을 안 띄워 아무 검사도 안 잡았다. `notification-push`의 AC-09가 복사 단계를 세우며 같이 고친다. `blocked`로 남은 쪽의 이유는 셋뿐이다 — **NCP 자격**(`attendance-checkin`·`hall-location`), **도메인**(`qr-landing-page`·`first-release`), **앞 task의 사슬**(`dashboard`가 `attendance-checkin`을 기다리고 `attendance-excuse`·`notification-emit` 이하가 그 뒤에 선다).
 
-**관찰 021·027·030은 아직 archive로 안 옮겼다.** `resolved: 2026-09-29`가 찍혀 있는데 오늘이 아직 그 날짜라 archive 조건(그 날짜가 지나는 것)을 아직 안 채운다. 다음 마감이 옮긴다.
+**관찰 021·027·030은 아직 archive로 안 옮겼다.** `resolved: 2026-09-29`가 찍혀 있는데 오늘이 아직 그 날짜라 archive 조건(그 날짜가 지나는 것)을 아직 안 채운다. 다음 마감이 옮긴다. 025·026은 `resolved: 2026-09-28`로 날짜가 지나 이번 회차에 archive로 옮겼다.
 
 **앞선 `stats-worker`(#457)와 급여 모듈(`payroll-wages`·`payroll-view`·`payroll-adjust`)은 로그가 담는다.** 세부는 [2026-09-29 로그](log/2026-09-29.md)와 [2026-09-28 로그](log/2026-09-28.md)가 담는다.
 
@@ -48,6 +48,6 @@
 
 **루프가 사람을 부르는 자리 넷은 그대로다.** 실기기 확인(카탈로그·화면·테마·끌기·서버 시각 복귀·e2e), NCP 대표 계정과 지도 키·`customStyleId`(`attendance-checkin` 착수 전), 3D 석 장(`no-schedule`·`all-clear`·`server-error`), 로컬 Supabase 구글 프로바이더. 여기에 Edge Function 배포 뒤 손 확인(`profile-erasure`의 AC-03)이 더해졌다.
 
-회차 기록은 [docs/log/2026-09-29-2.md](log/2026-09-29-2.md)다. plan 열둘의 사후 기록(#459)을 이어받아 `profile-erasure`(#461·#462)가 서고 계정 삭제 파이프라인이 닫힌다. 그 앞은 [docs/log/2026-09-29.md](log/2026-09-29.md)(통계 모듈)와 [docs/log/2026-09-28.md](log/2026-09-28.md)(급여 모듈)다.
+회차 기록은 [docs/log/2026-09-29-3.md](log/2026-09-29-3.md)다. `payroll-holidays`(#464)가 서며 서비스 키가 `internal`에 못 닿는다는 판정이 나고, `notification-push`의 plan(#466)과 `kind`·`payload` 계약(#467)이 서야 `notification-list`(#468)가 문장 범위를 정해 구현됐다. 그 앞은 [docs/log/2026-09-29-2.md](log/2026-09-29-2.md)(계정 삭제 파이프라인)와 [docs/log/2026-09-29.md](log/2026-09-29.md)(통계 모듈)와 [docs/log/2026-09-28.md](log/2026-09-28.md)(급여 모듈)다.
 
 저장소 밖 자료 — 시안·문서 캔버스 [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)(빌드 소스는 세션 임시 폴더라 다시 못 만든다), 하루 띠 비교 시안 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832).
