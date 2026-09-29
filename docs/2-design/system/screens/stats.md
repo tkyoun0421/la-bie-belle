@@ -239,7 +239,9 @@ ListRow고 이름 가나다순이다.
 
 **보조 정보의 교육 배정은 「안내 교육」 꼴이다.** 근무 내역 시트와 같다 — 둘 다 「그날 무엇을 했나」를 적는 자리다.
 
-**못 찍은 날도 줄로 선다.** 사유를 냈으면 결과까지 오른쪽 값에 붙는다 — 그 자리를 눌러 사유 시트를 열지는 않는다. 사유는 [대시보드](dashboard.md)와 [날 시트](../../modules/schedule/screens/schedule-worker.md)의 문으로 들어간다.
+**못 찍은 날도 줄로 선다.** 사유를 냈으면 결과까지 오른쪽 값에 붙는다 — 상태 자체가 「확인 중」이나 「인정」이나 「결근」으로 바뀌는 것이고 그 옆에 다른 문구를 더 달지 않는다. 그 자리를 눌러 사유 시트를 열지도 않는다.
+
+**인증 창이 아직 안 열린 날은 목록에 없다.** 이 탭이 답하는 것은 「언제 늦었나」라 결과가 없는 날은 읽을 것이 없다 — 근무 시작 한 시간 전에 창이 열린다([ATT-008](../../modules/attendance/README.md#att-008)). [근무표 명단](../../modules/schedule/screens/schedule-worker.md#인증-상태)이 창 전에 상태 열을 통째로 비우는 것과 같은 이유다. 이번 달 남은 근무가 몇 개인지는 [근무표](../../modules/schedule/screens/schedule-worker.md)가 답한다. 사유는 [대시보드](dashboard.md)와 [날 시트](../../modules/schedule/screens/schedule-worker.md)의 문으로 들어간다.
 
 #### 내 포지션
 

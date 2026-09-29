@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -11,9 +12,14 @@ E2E_ROOT = "tests/e2e"
 # Maestro 플로우는 YAML이다(ADR-013).
 FLOW_SUFFIX = ".yaml"
 
-# Expo Router는 `src/app/` 아래 `.tsx`를 전부 라우트로 읽는다. 디렉터리를
-# 대표하는 둘은 그 디렉터리 이름으로, 나머지는 제 파일명으로 플로우를 찾는다.
-DIRECTORY_ROUTES = ("index.tsx", "_layout.tsx")
+# 라우트가 세우는 슬라이스다 — `@/screens/<이름>/...`.
+SCREEN_IMPORT = re.compile(r"""["']@/screens/([^/"']+)/""")
+
+
+def route_slice(text):
+    """라우트가 부르는 슬라이스 이름. 화면을 아직 안 붙인 라우트는 `None`이다."""
+    found = SCREEN_IMPORT.search(text)
+    return found.group(1) if found else None
 
 
 def spec_name(path):
@@ -32,26 +38,25 @@ def spec_name(path):
 
         return parts[2][: -len(".tsx")]
 
-    if path.startswith("src/app/"):
-        directory, filename = os.path.split(path)
-
-        if filename not in DIRECTORY_ROUTES:
-            return filename[: -len(".tsx")]
-
-        segments = [
-            part
-            for part in directory[len("src/app/"):].split("/")
-            if part and not part.startswith("(") and not part.startswith("@")
-        ]
-        return segments[-1] if segments else "home"
-
     return None
 
 
-def verdict(path, _read):
-    name = spec_name(path)
-    if not name:
-        return None
+def verdict(path, read):
+    # 라우트는 얇다(CLAUDE.md) — 화면은 슬라이스가 들고 라우트는 그것을 부르기만 한다.
+    # 그래서 라우트의 짝도 제 파일명이 아니라 **부르는 슬라이스**의 플로우다. 파일명으로
+    # 찾으면 `src/app/admin/stats.tsx`와 `src/app/stats.tsx`가 같은 `stats.yaml`을 가리켜
+    # 한쪽이 남의 증거로 열린다(관찰 021).
+    #
+    # 보는 것은 저장된 파일이 아니라 **이번에 쓰려는 조각**이다 — 라우트를 세우는 걸음이
+    # 화면을 붙이는 걸음이라 그 조각에 import가 있고, 판정에 안 쓰는 파일을 읽지 않는다.
+    if path.startswith("src/app/") and path.endswith(".tsx"):
+        name = route_slice(read("incoming"))
+        if not name:
+            return None
+    else:
+        name = spec_name(path)
+        if not name:
+            return None
 
     expected = f"{E2E_ROOT}/{name}{FLOW_SUFFIX}"
     if exists(expected):
