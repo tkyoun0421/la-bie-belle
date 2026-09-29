@@ -12,7 +12,7 @@ date: 2026-09-28
 
 `ci.yml`의 `pull_request: types`에 `edited`가 있어 본문 수정이 워크플로를 다시 띄운다 — 「영향 확인」 게이트가 본문을 읽으니 그래야 한다. 그런데 `review` 잡도 같이 뜨고, 리뷰어는 32초에 여섯 턴을 돌고 코멘트 없이 끝냈다(`is_error: false`, `permission_denials_count: 0`). diff가 앞 실행과 같고 그 리뷰 코멘트가 이미 PR에 서 있으니 다시 달 것이 없다고 본 듯하다.
 
-막은 것은 그다음 걸음이다. 「리포트 코멘트가 붙었는지 확인한다」가 `createdAt >= STARTED_AT`인 코멘트만 세서 0이 나왔다 — 앞 실행이 단 코멘트는 그 시각보다 앞이라 안 든다. 이 검사가 선 것은 [관찰 026](026-review-agent-has-no-hand-to-write-the-report.md)에서 리뷰어가 보고서를 못 써도 잡이 초록이던 자리를 막으려던 것이었다. 이번엔 반대로 걸렸다.
+막은 것은 그다음 걸음이다. 「리포트 코멘트가 붙었는지 확인한다」가 `createdAt >= STARTED_AT`인 코멘트만 세서 0이 나왔다 — 앞 실행이 단 코멘트는 그 시각보다 앞이라 안 든다. 이 검사가 선 것은 [관찰 026](archive/026-review-agent-has-no-hand-to-write-the-report.md)에서 리뷰어가 보고서를 못 써도 잡이 초록이던 자리를 막으려던 것이었다. 이번엔 반대로 걸렸다.
 
 ## 볼 자리
 
