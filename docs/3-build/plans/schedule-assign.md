@@ -46,8 +46,6 @@ sources:
 
 # 자리와 배정을 만든다 — 구현 계획
 
-> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
-
 ## 입력 명세·기준
 
 정본은 [schedule-admin.md](../../2-design/modules/schedule/screens/schedule-admin.md)의 날 상세와 사람 픽커다 — [날 상세 짜임](../../2-design/modules/schedule/screens/schedule-admin.md#날-상세-짜임)·[포지션과 자리](../../2-design/modules/schedule/screens/schedule-admin.md#포지션과-자리)·[잠금과 구조 변경](../../2-design/modules/schedule/screens/schedule-admin.md#잠금과-구조-변경)·[사람 픽커 짜임](../../2-design/modules/schedule/screens/schedule-admin.md#사람-픽커-짜임)·[사람 시트](../../2-design/modules/schedule/screens/schedule-admin.md#사람-시트)·[자격 없는 사람](../../2-design/modules/schedule/screens/schedule-admin.md#자격-없는-사람)·[빈 목록](../../2-design/modules/schedule/screens/schedule-admin.md#빈-목록)·[확정 뒤 날 상세](../../2-design/modules/schedule/screens/schedule-admin.md#확정-뒤-날-상세)와 그 색·글자·여백 표, 문안 표 둘, 모션 둘이다. 쓰기 함수는 [design.md](../../2-design/modules/schedule/design.md#자리-늘리기줄이기겸임)의 `add_slot`·`remove_slot`·`merge_slots`·`split_slot`, [배정과 강제 변경](../../2-design/modules/schedule/design.md#배정과-강제-변경)의 `add_assignment`·`remove_assignment`·`force_change`, [자격 주기](../../2-design/modules/schedule/design.md#자격-주기)의 `grant_position` 여덟이고 **이 task가 처음 만든다** — [schedule-data](schedule-data.md)가 표와 뼈대 함수 일곱까지만 냈다. 규칙은 [SCH-011](../../2-design/modules/schedule/README.md#sch-011)~[SCH-016](../../2-design/modules/schedule/README.md#sch-016)·[SCH-018](../../2-design/modules/schedule/README.md#sch-018)이다.
@@ -70,7 +68,7 @@ sources:
 
 ### AC-01
 
-**쓰기 함수 여덟이 선다.** `supabase/migrations/<날짜>_schedule_functions.sql`에 더한다 — [schedule-data](schedule-data.md)가 만든 파일이고 배포한 적이 없어 파일을 고친다. 여덟 다 `security definer`·`set search_path = ''`고 첫 줄이 `is_admin()` 검사, 아니면 `not_allowed`다.
+**쓰기 함수 여덟이 선다.** `supabase/migrations/20260927091505_schedule_assign.sql`을 새로 세운다 — [schedule-data](schedule-data.md)가 낸 `20260922091503_schedule_functions.sql`은 안 고친다. 여덟 다 `security definer`·`set search_path = ''`고 첫 줄이 `is_admin()` 검사, 아니면 `not_allowed`다.
 
 - `add_slot(p_day_id uuid, p_position text)` — `slots` 행 하나를 넣는다. 상한이 없다([SCH-011](../../2-design/modules/schedule/README.md#sch-011)). 확정 뒤에 확정 시점부터 있던 날이면 `already_confirmed` — 새로 연 날은 통과한다. 그 갈림은 `days.opened_at`이 `schedules.confirmed_at`보다 뒤인지로 본다
 - `remove_slot(p_slot_id uuid)` — 살아 있는 정규 배정이 있으면 같이 닫는다. 확정 전이면 두 행을 지우고, 확정 뒤 새로 연 날이면 `ended_at`을 찍고 알림 대상을 낸다. 같은 `already_confirmed` 갈림이 걸린다
@@ -193,23 +191,25 @@ sources:
 
 ### AC-11
 
-**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·e2e 명령 전부 초록. `sian-auditor`가 `schedule-admin.sian.html`의 날 상세·픽커 절과 문서를 대조한다.
+**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·`pnpm e2e` 전부 초록. `sian-auditor`가 `schedule-admin.sian.html`의 날 상세·픽커 절과 문서를 대조한다.
 
 ## 변경 파일
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `supabase/migrations/<날짜>_schedule_functions.sql` | 함수 여덟 | AC-01 |
-| `src/shared/api/error-codes.ts` | `not_applied`·`not_qualified`·`already_assigned`·`slot_full`·`not_merged`·`stale` | AC-01 |
-| `src/entities/schedule/dals/add-slot.ts`·`remove-slot.ts`·`merge-slots.ts`·`split-slot.ts`·`add-assignment.ts`·`remove-assignment.ts`·`force-change.ts`·`grant-position.ts`·`__tests__/` | 쓰기 여덟 | AC-02 |
-| `src/entities/profile/dals/get-members.ts` | `position_grants` 임베딩 | AC-02 |
-| `src/entities/schedule/dals/get-qualifications.ts` | 새 읽기 — `qualifications` 뷰 | AC-02 |
-| `src/entities/schedule/dals/get-month-schedule.ts` | `assignments`에 `id`·`slot_id`·`kind` | AC-02 |
-| `src/screens/schedule-admin/model/*.ts`·`__tests__/` | 포지션 줄·셈·픽커 가르기·표기·확정 갈림 | AC-02 |
-| `src/features/schedule/*.ts`·`__tests__/` | mutation과 무효화, `stale` 처리 | AC-08 |
-| `src/screens/schedule-admin/ui/*.tsx` | 포지션 줄·자리 카드·픽커·사람 시트·선택지 시트·잠금·끌기·확인 시트 | AC-03~AC-07 |
-| `src/shared/ui/draggable-list.tsx`·`drop-zone.tsx` | 끌어서 옮기기 | AC-09 |
-| `schedule-assign` e2e | e2e | AC-10 |
+| `supabase/migrations/20260927091505_schedule_assign.sql` | 함수 여덟과 `qualifications` 뷰 | AC-01 |
+| `src/shared/api/error-codes.ts` · `database-types.ts` | `not_applied`·`not_qualified`·`already_assigned`·`slot_full`·`not_merged`·`stale`·`no_empty_slot`·`wrong_kind`와 다시 뽑은 생성 타입 | AC-01 |
+| `src/entities/schedule/dals/add-slot.ts` · `remove-slot.ts` · `merge-slots.ts` · `split-slot.ts` · `add-assignment.ts` · `remove-assignment.ts` · `force-change.ts` · `grant-position.ts` | 쓰기 여덟 | AC-02 |
+| `src/entities/schedule/dals/get-qualifications.ts` | 새 읽기 — `qualifications` 뷰, 키 `['members', 'qualifications']` | AC-02 |
+| `src/entities/schedule/dals/get-month-schedule.ts` | `assignments`에 `id`·`slot_id`·`kind`, `slots`를 `created_at` 순으로 | AC-02 |
+| `src/entities/schedule/dals/__tests__/` | 함수 여덟과 뷰의 integration | AC-10 |
+| `src/features/schedule/model/query-keys.ts` · `useAddSlot.ts` · `useRemoveSlot.ts` · `useMergeSlots.ts` · `useSplitSlot.ts` · `useAddAssignment.ts` · `useRemoveAssignment.ts` · `useForceChange.ts` · `useGrantPosition.ts` · `useQualifications.ts` · `__tests__/` | mutation 여덟과 읽기 하나, 무효화와 보내는 동안의 잠금 | AC-08 |
+| `src/screens/schedule-admin/model/position-rows.ts` · `person-picker-rows.ts` · `person-sheet.ts` · `confirm-gate.ts` · `merge-target.ts` · `discard-slot.ts` · `force-change-copy.ts` · `__tests__/` | 포지션 줄 가르기와 셈 / 픽커 넷 갈래 / 성별 기호·년생·자격 / 확정 갈림 / 겸임이 되는 조합인지 / 버릴 자리에 사람이 들었는지 / 확인 시트 문안 | AC-02 |
+| `src/screens/schedule-admin/ui/PositionRow.tsx` · `PersonPickerSheet.tsx` · `PersonSheet.tsx` · `QualificationSheet.tsx` · `SlotSheet.tsx` · `DiscardSlotSheet.tsx` · `ConfirmChangeSheet.tsx` · `DayDetail.tsx` · `ScheduleAdminScreen.tsx` | 포지션 줄·자리 카드·픽커·사람 시트·자격 시트·자리 시트·자리 버리기 시트·확인 시트, 그리고 임시 줄 제거 | AC-03~AC-07 |
+| `src/shared/ui/DragAndDrop.tsx` · `DropZone.tsx` · `SlotCard.tsx` | 끌어서 옮기기, 버리는 영역, 자리 카드 | AC-09 |
+| `src/shared/ui/Icon.tsx` · `Text.tsx` | 아이콘 `tone` — 규칙 19가 `src/screens/`의 색 유틸리티를 막는다 | AC-03 |
+| `scripts/e2e-seed-server.mts` · `tests/e2e/scripts/seed-session.js` · `tests/integration/postgres.ts` | 시드 상태 `schedule_assign_day`와 시드 헬퍼 | AC-10 |
+| `tests/e2e/schedule-assign.yaml` | e2e | AC-10 |
 
 ## 구현 순서
 
@@ -234,17 +234,18 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 미신청자가 들어간다, 자격 없이 들어간다, 한 사람이 두 자리를 맡는다 | integration `src/entities/schedule/dals/__tests__/`(예정) | `pnpm test:integration:run` | `not_applied`·`not_qualified`·`already_assigned`·`slot_full` |
+| AC-01 | 미신청자가 들어간다, 자격 없이 들어간다, 한 사람이 두 자리를 맡는다 | integration `src/entities/schedule/dals/__tests__/` | `pnpm test:integration:run` | `not_applied`·`not_qualified`·`already_assigned`·`slot_full` |
 | AC-01 | 겸임이 두 줄에 그려진다, 합치다 배정이 사라진다, 나누면 사람이 사라진다 | integration 위 | 위와 같다 | 받은 쪽 배열이 늘고 내준 쪽 빈 자리가 닫히고, 사람이 든 자리는 그대로고, 나누면 사람이 남는 쪽에 있다 |
 | AC-01 | 강제 변경이 반쪽 난다 | integration 위 | 위와 같다 | 새 사람 실패 시 기존 배정이 살아 있다 |
 | AC-01 | 확정 뒤 구조가 바뀐다 | integration 위 | 위와 같다 | 확정 시점 날은 `already_confirmed`, 새로 연 날은 통과 |
-| AC-02 | 셈이 틀린다, 픽커가 잘못 가른다 | unit `src/screens/schedule-admin/model/__tests__/`(예정) | `pnpm test` | 겸임 분모, 교육 제외, 상태 메시지 넷 |
-| AC-04·AC-05·AC-07 | 흐름이 끊긴다 | e2e `schedule-assign` e2e(예정) | e2e 명령 | 배정 → 사람 시트 → 자격 주며 넣기 → 자리 추가 → 확정 뒤 확인 시트 |
+| AC-02 | 셈이 틀린다, 픽커가 잘못 가른다 | unit `src/screens/schedule-admin/model/__tests__/` | `pnpm test` | 겸임 분모, 교육 제외, 상태 메시지 넷 |
+| AC-04·AC-05·AC-07 | 흐름이 끊긴다 | e2e `tests/e2e/schedule-assign.yaml` | `pnpm e2e` | 배정 → 사람 시트 → 자격 주며 넣기 → 자리 추가 → 확정 뒤 확인 시트 |
 | AC-08 | 경쟁이 시트를 닫는다 | e2e 위 spec | 위와 같다 | `stale`에 시트가 안 닫히고 그 자리만 갱신된다 |
 | AC-11 | 시안이 문서와 어긋난다 | `sian-auditor` | — | 어긋남 없음 |
 
 - 배정하지 않은 것: 끌어서 삭제·겸임의 손짓 — e2e가 흉내 내기 어렵다. 실기기에서 한 번 손으로 본다. 집힌 카드의 그림자와 대상 테두리 — `sian-auditor`가 본다
 - 막힌 것: 픽커의 요청 상태 줄은 [`schedule-requests`](../../backlog.md) 뒤에 값이 찬다
+- 막힌 것: e2e는 기기·시뮬레이터 빌드가 없어 미실행이다
 
 ## 범위 밖
 

@@ -27,8 +27,6 @@ sources:
 
 # 사유 시트와 판정 줄을 만든다 — 구현 계획
 
-> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
-
 ## 입력 명세·기준
 
 정본은 [excuse.md](../../2-design/modules/attendance/screens/excuse.md)와 짝 시안 `excuse.sian.html`이고, 관리자 쪽은 [approvals.md](../../2-design/system/screens/approvals.md)다. 행위 계약은 [design.md](../../2-design/modules/attendance/design.md#사유-제출과-판정), 업무 규칙은 [ATT-010](../../2-design/modules/attendance/README.md#att-010)~[ATT-015](../../2-design/modules/attendance/README.md#att-015)와 [ATT-018](../../2-design/modules/attendance/README.md#att-018)이다.
@@ -94,7 +92,7 @@ sources:
 
 **키보드.** 칸에 커서가 가면 **시트째 올라앉는다**(`bottom-58`). 가려지는 쪽만 밀면 칸과 버튼 중 하나가 화면 밖으로 나간다.
 
-- iOS 사파리의 visual viewport로 잰다 — 고정 높이 하나로 두면 키보드 높이가 다른 기기에서 어긋난다. 문서의 `bottom-58`은 기준값이다
+- `KeyboardAvoidingView`가 올린다. `behavior`는 iOS에서 `padding`이고 안드로이드에서는 안 준다 — [`PendingScreen.tsx`](../../../src/screens/pending/ui/PendingScreen.tsx)가 이미 그 꼴이다. 고정 높이 하나로 두면 키보드 높이가 다른 기기에서 어긋난다. 문서의 `bottom-58`은 기준값이다
 
 ### AC-06
 
@@ -130,18 +128,30 @@ sources:
 
 ### AC-10
 
-**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·e2e 명령 초록.
+**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·`pnpm e2e` 초록.
 
 ## 변경 파일
 
+아직 안 선 task라 자리는 저장소 배치 관례를 보고 잡은 것이다. `features/<영역>/`의 조각은 `model/`과 `ui/` 둘로 갈리고([`features/schedule/ui/DeadlineSheet.tsx`](../../../src/features/schedule/ui/DeadlineSheet.tsx)가 그 꼴이다) 세그먼트 이름이 따로 나지 않는다. 화면 디렉터리는 라우트가 아니라 화면 이름을 따른다 — `/admin/approvals`는 `src/screens/approvals/`, 근무자 근무표는 `src/screens/schedule-worker/`다.
+
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `src/features/attendance/excuse-sheet/`·`__tests__/` | 시트 상태 아홉, 입력 규칙, 결과 모션 | AC-01~AC-05 |
-| `src/screens/dashboard/` | 못 찍음 블록과 반려 블록에서 시트를 연다 | AC-04 |
-| `src/screens/admin-approvals/` | 사유 줄과 판정 | AC-06 |
-| `src/screens/schedule/` | 날 시트의 인증 상태 열과 현황 줄 | AC-07 |
+| `src/features/attendance/model/excuse-sheet.ts` | 상태 아홉의 갈림과 결과 모션 시각 | AC-01·AC-03 |
+| `src/features/attendance/model/excuse-input.ts` | 사람이 보는 글자로 세는 길이, 다섯 자 잠금, 170자·200자 경계와 도움말 | AC-02 |
+| `src/features/attendance/model/useSubmitExcuse.ts` | [`submit-excuse.ts`](../../../src/entities/attendance/dals/submit-excuse.ts) 호출과 무효화 | AC-03 |
+| `src/features/attendance/model/useDecideExcuse.ts` | [`decide-excuse.ts`](../../../src/entities/attendance/dals/decide-excuse.ts) 호출과 무효화 | AC-06 |
+| `src/features/attendance/ui/ExcuseSheet.tsx` | 시트 조립 — 덮개가 안 닫고, 닿는 면과 아래 여백이 `useSafeAreaInsets`를 탄다 | AC-01~AC-05 |
+| `src/screens/dashboard/model/excuse-entry.ts`·`src/screens/dashboard/ui/DashboardScreen.tsx` | 못 찍음 블록과 반려 블록에서 시트를 연다. 블록 자체는 [`dashboard`](../../backlog.md)가 세운다 | AC-04 |
+| `src/screens/approvals/model/approvals-list.ts` | `ApprovalKind`에 사유가 붙고 「근무 취소가 위」라는 둘째 기준이 선다 | AC-06 |
+| `src/screens/approvals/model/approval-detail.ts` | 사유 줄의 제목·본문과 `excuses.body` 전문 | AC-06 |
+| `src/screens/approvals/model/reject-reason.ts` | 사유 반려의 이유가 비면 못 보낸다 | AC-06 |
+| `src/screens/approvals/ui/ApprovalsScreen.tsx`·`ApprovalDetailSheet.tsx` | 사유 줄과 판정. 판정한 줄이 그 자리에서 결과로 바뀐다 | AC-06 |
+| `src/screens/schedule-worker/model/attendance-column.ts` | **이미 섰다** — 창이 열렸는지와 현황 줄의 0 제외를 [`schedule-worker`](schedule-worker.md)가 세웠다. 이 task는 상태 여섯을 줄마다 붙이는 손만 더한다 | AC-07 |
+| `src/screens/schedule-worker/ui/DayRoster.tsx`·`DaySheet.tsx` | 명단 줄의 인증 상태 열과 그 위 현황 줄. `RosterRow`의 `status`가 이미 받는 자리다 | AC-07 |
 | `docs/2-design/modules/attendance/screens/excuse.sian.html` | 낡은 경로 주석을 지운다 | AC-08 |
-| `excuse` e2e | 제출부터 반려 뒤 재제출까지 | AC-09 |
+| `src/features/attendance/model/__tests__/`·`src/screens/approvals/model/__tests__/`·`src/screens/schedule-worker/model/__tests__/attendance-column.test.ts` | 입력 규칙과 상태 갈림, 판정 줄, 현황 줄의 unit | AC-09 |
+| `tests/e2e/excuse.yaml` | 제출부터 반려 뒤 재제출까지 | AC-09 |
+| `scripts/e2e-seed-server.mts` | 못 찍은 날과 낸 사유와 반려된 사유가 있는 시드 상태 | AC-09 |
 
 ## 구현 순서
 
@@ -167,18 +177,18 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 덮개를 누르면 쓰던 글이 날아간다 | e2e `excuse` e2e(예정) | e2e 명령 | 덮개를 눌러도 안 닫힌다 |
-| AC-02 | 상한이 사람이 세는 것과 다르다 | unit `src/features/attendance/excuse-sheet/__tests__/`(예정) | `pnpm test` | 이모지가 한 글자, 170자에서 숫자가 뜨고 200자에서 색이 바뀐다 |
+| AC-01 | 덮개를 누르면 쓰던 글이 날아간다 | e2e `tests/e2e/excuse.yaml`(예정) | `pnpm e2e` | 덮개를 눌러도 안 닫힌다 |
+| AC-02 | 상한이 사람이 세는 것과 다르다 | unit `src/features/attendance/model/__tests__/excuse-input.test.ts`(예정) | `pnpm test` | 이모지가 한 글자, 170자에서 숫자가 뜨고 200자에서 색이 바뀐다 |
 | AC-02 | 쓰는 중에 칸이 붉어진다 | unit 위 | `pnpm test` | 다섯 자 미만에도 테두리가 그대로 |
-| AC-03 | 링이 돌다 아무 결과 없이 끝난다 | unit 위 | `pnpm test` | 성공은 체크, 실패는 ✕ |
-| AC-03 | 실패인데 글이 날아간다 | e2e 위 | e2e 명령 | 칸에 쓴 글이 남아 있다 |
-| AC-04 | 거절된 글이 새 시트에 채워진다 | e2e 위 | e2e 명령 | 빈 시트가 열린다 |
-| AC-06 | 이유 없이 반려된다 | e2e 위 | e2e 명령 | 이유가 비면 못 보낸다 |
-| AC-06 | 근무자가 남의 사유 글을 본다 | integration `tests/integration/attendance-rls.test.ts` | `pnpm test:integration:run` | [`attendance-data`](attendance-data.md#ac-02)가 이미 막았다 |
-| AC-07 | 현황 줄에 0이 남는다 | unit 위 | `pnpm test` | 0인 항목이 빠진다 |
+| AC-03 | 링이 돌다 아무 결과 없이 끝난다 | unit `src/features/attendance/model/__tests__/excuse-sheet.test.ts`(예정) | `pnpm test` | 성공은 체크, 실패는 ✕ |
+| AC-03 | 실패인데 글이 날아간다 | e2e 위 | `pnpm e2e` | 칸에 쓴 글이 남아 있다 |
+| AC-04 | 거절된 글이 새 시트에 채워진다 | e2e 위 | `pnpm e2e` | 빈 시트가 열린다 |
+| AC-06 | 이유 없이 반려된다 | e2e 위 | `pnpm e2e` | 이유가 비면 못 보낸다 |
+| AC-06 | 근무자가 남의 사유 글을 본다 | integration `src/entities/attendance/dals/__tests__/attendance-rls.integration.test.ts` | `pnpm test:integration:run` | [`attendance-data`](attendance-data.md#ac-02)가 이미 막았다 |
+| AC-07 | 현황 줄에 0이 남는다 | unit `src/screens/schedule-worker/model/__tests__/attendance-column.test.ts` | `pnpm test` | 0인 항목이 빠진다 |
 
 - 배정하지 않은 것: 실기기에서 키보드가 올라올 때 칸과 버튼이 둘 다 보이는지 — 시뮬레이터의 키보드 높이가 실기기와 다르다
-- 막힌 것: 지금은 없다
+- 막힌 것: e2e는 기기·시뮬레이터 빌드가 없어 미실행이다
 
 ## 범위 밖
 

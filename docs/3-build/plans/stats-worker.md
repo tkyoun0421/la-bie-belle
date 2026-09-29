@@ -15,8 +15,6 @@ sources:
 
 # 근무자 통계 화면을 만든다 — 구현 계획
 
-> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
-
 ## 입력 명세·기준
 
 정본은 [stats.md](../../2-design/system/screens/stats.md)의 근무자 절이다. 관리자 화면과 문서가 하나라 짜임·색·글자·여백 표를 같이 읽는다.
@@ -91,12 +89,31 @@ sources:
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `src/features/stats/model/my-totals.ts` | 내 것으로 좁힌 집계 | AC-01 |
-| `src/entities/attendance/model/attendance-summary.ts` | 출근율 셈이 여기로 내려온다 — 두 화면이 부른다 | AC-02 |
-| `src/features/stats/api/useStatsQueries.ts` | 내 범위 질의 — `stats-admin`이 만든 파일에 더한다 | AC-01 |
-| `src/screens/stats/model/` | 급여 호출과 날짜 목록·비율 띠 몫·만원 라벨 | AC-02~AC-04 |
-| `src/screens/stats/` | 화면 조립, 탭 셋 | AC-02~AC-05 |
-| `/stats/` 화면 | 라우트 | AC-05 |
+| `src/features/stats/model/my-totals.ts` | 내 배정으로 좁힌 집계. `computeWorkTotals`를 그대로 부르고 내가 안 들어간 포지션과 사람 축을 뺀다 | AC-01·AC-03 |
+| `src/entities/attendance/model/attendance-summary.ts` | `attendanceRate`가 `screens/admin-stats/model/chart-values.ts`에서 여기로 내려온다 — 인자가 `AttendanceTab`이 아니라 tally다 | AC-01·AC-02 |
+| `src/features/stats/api/useStatsQueries.ts` | `usePayrollMonthsByMonth`가 붙는다 — 급여 열두 달을 달마다 한 칸으로 읽는다 | AC-01·AC-04 |
+| `src/screens/stats/model/attendance-tally.ts` | 그달 날들을 내 배정으로 좁혀 넷으로 센다 — 좁히기부터 셈까지가 한 덩이다 | AC-02 |
+| `src/screens/stats/model/attendance-days.ts` | 근태 탭 날짜 목록 — 날짜·요일·포지션과 상태·찍은 시각. 못 찍은 날도 줄로 선다 | AC-02 |
+| `src/screens/stats/model/attendance-shares.ts` | 비율 띠 몫 넷의 고정 순서와 범례 라벨 | AC-02 |
+| `src/screens/stats/model/attendance-summary-line.ts` | 현황 줄 — 넷을 늘 다 적는다 | AC-02 |
+| `src/screens/stats/model/payroll-summary.ts` | 급여 탭 보조 줄. 위 금액과 같은 날들을 센다 | AC-04 |
+| `src/screens/stats/model/money-label.ts` | 그래프 값의 만 단위 라벨 | AC-04 |
+| `src/screens/stats/model/chart-values.ts` | 열두 달을 탭 셋의 그래프 값으로 옮기고 급여를 달에 맞물린다. `features/payroll`을 부르는 자리가 여기다 | AC-01~AC-04 |
+| `src/screens/stats/ui/StatsScreen.tsx` | 화면 조립, 탭 셋, 빈 상태 | AC-02~AC-05 |
+| `src/app/stats.tsx` | 라우트. `NotBuiltYet`에서 `StatsScreen`으로 바뀐다 | AC-05 |
+| `src/shared/lib/spell-number.ts` | 금액 꼴 `spellWon`이 `screens/wages/model/wage-amount.ts`와 `screens/payroll/model/summary.ts`의 두 벌에서 여기로 모인다 | AC-04 |
+| `src/shared/lib/no-value.ts` | `NO_VALUE`(`–`)가 `screens/admin-stats/model/chart-values.ts`에서 올라온다 | AC-05 |
+| `src/shared/lib/month-boundary.ts` | 달 줄 경계가 `screens/admin-stats/model/`에서 올라온다 — 두 통계가 같은 경계를 쓴다 | AC-05 |
+| `src/screens/admin-stats/model/chart-values.ts`·`src/screens/admin-stats/ui/AdminStatsScreen.tsx` | 올라간 셋을 새 자리에서 부른다 | AC-01 |
+| `src/screens/payroll/model/summary.ts`·`history-rows.ts`·`year-rows.ts` | `spellAmount`를 버리고 `spellWon`을 부른다. `NO_AMOUNT`가 `NO_VALUE`를 가리킨다 | AC-04 |
+| `src/screens/wages/model/wage-amount.ts`·`src/screens/wages/ui/WagesScreen.tsx`·`MemberWageSheet.tsx`·`ResetWageDialog.tsx` | 같은 자리 — 제 슬라이스의 `spellWon`을 버리고 shared 것을 부른다 | AC-04 |
+| `src/features/payroll/model/payroll-days.ts` | 교육 배정의 `kind`가 `'education'`이 아니라 표가 드는 `'training'`이다 | AC-03 |
+| `src/features/stats/model/__tests__/my-totals.test.ts`·`src/features/stats/api/__tests__/useStatsQueries.test.ts` | 좁힌 집계와 급여 질의의 unit | AC-01 |
+| `src/screens/stats/model/__tests__/` | 탭 셋 모델 일곱의 unit | AC-02~AC-04 |
+| `src/entities/attendance/model/__tests__/attendance-summary.test.ts`·`src/shared/lib/__tests__/month-boundary.test.ts`·`src/shared/lib/__tests__/spell-number.test.ts`·`src/features/payroll/model/__tests__/payroll-days.test.ts` | 내려가고 올라간 함수들의 unit | AC-01·AC-04·AC-05 |
+| `tests/e2e/stats.yaml` | 「나」의 통계 줄 → 탭 셋 → 「내역 보기」 → 빈 상태 한 여정. `stats-admin`이 두었던 shim을 대신한다 | AC-02~AC-05 |
+| `tests/e2e/admin-stats.yaml` | 올라간 경계·라벨을 따라 손본다 | AC-01 |
+| `scripts/e2e-seed-server.mts` | 근무자 시드 상태 | AC-02~AC-05 |
 
 ## 구현 순서
 
@@ -119,17 +136,17 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 안 들어간 포지션이 선다 | unit `src/features/stats/model/__tests__/my-totals.test.ts`(예정) | `pnpm test` | 내 것만 |
+| AC-01 | 안 들어간 포지션이 선다 | unit `src/features/stats/model/__tests__/my-totals.test.ts` | `pnpm test` | 내 것만 |
 | AC-01 | 집계가 관리자 쪽과 다르다 | unit 위 | `pnpm test` | 같은 함수의 값 |
-| AC-02 | 못 찍은 날이 빠진다 | e2e `stats` e2e(예정) | e2e 명령 | 줄로 서고 상태만 |
-| AC-02 | 지각이 붉다 | e2e 위 | e2e 명령 | 색으로 안 가른다 |
-| AC-04 | 「내역 보기」가 안 간다 | e2e 위 | e2e 명령 | 급여 화면이 열린다 |
-| AC-04 | 예상치 안내가 없다 | e2e 위 | e2e 명령 | 급여 탭에 한 줄 |
-| AC-05 | 빈 달에 「내역 보기」가 남는다 | e2e 위 | e2e 명령 | 빈 상태가 그 자리를 받는다 |
-| AC-05 | 남의 것이 보인다 | e2e 위 | e2e 명령 | 자기 것만 |
+| AC-02 | 못 찍은 날이 빠진다 | e2e `tests/e2e/stats.yaml` | `pnpm e2e` | 줄로 서고 상태만 |
+| AC-02 | 지각이 붉다 | e2e 위 | `pnpm e2e` | 색으로 안 가른다 |
+| AC-04 | 「내역 보기」가 안 간다 | e2e 위 | `pnpm e2e` | 급여 화면이 열린다 |
+| AC-04 | 예상치 안내가 없다 | e2e 위 | `pnpm e2e` | 급여 탭에 한 줄 |
+| AC-05 | 빈 달에 「내역 보기」가 남는다 | e2e 위 | `pnpm e2e` | 빈 상태가 그 자리를 받는다 |
+| AC-05 | 남의 것이 보인다 | e2e 위 | `pnpm e2e` | 자기 것만 |
 
 - 배정하지 않은 것: RLS — 선행 task의 integration이 이미 본다
-- 막힌 것: 지금은 없다
+- 막힌 것: e2e는 기기·시뮬레이터 빌드가 없어 미실행이다
 
 ## 범위 밖
 
