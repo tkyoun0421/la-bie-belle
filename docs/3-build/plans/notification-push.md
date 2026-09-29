@@ -64,9 +64,9 @@ sources:
 - 조건은 정본의 질의 그대로다 — `pushed_at is null and push_attempts < 5 and (claimed_at is null or claimed_at < p_now - interval '2 minutes')`. 잡으면서 `claimed_at = p_now`, `push_attempts = push_attempts + 1`
 - **`p_ids`가 널이면 조건에 맞는 행 전부를 잡는다.** 트리거는 방금 들어온 id 하나를 넘기고 `retry_push`는 널을 넘긴다 — 같은 함수가 두 경로를 받는다
 - **끈 사람의 행은 안 잡힌다.** `profiles.notifications_enabled`가 거짓이면 조건 밖이다([알림을 받나](../../2-design/modules/notification/design.md#알림을-받나)). 행은 그대로 서고 푸시만 안 나간다
-- **주소가 없는 사람의 행도 안 잡힌다.** `push_tokens`가 없으면 보낼 곳이 없어 시도만 다섯 번 태운다([NTF-029](../../2-design/modules/notification/README.md#ntf-029))
+- **주소가 없는 사람의 행도 잡힌다.** 잡는 조건에 `push_tokens`를 안 넣는다 — 메시지가 0건이라 아무것도 안 나가고 시도만 오르다 다섯 번째에 멈춘다([NTF-029](../../2-design/modules/notification/README.md#ntf-029)). **안 잡는 쪽으로 만들면 그 행이 영원히 대상으로 남아**, 그 사람이 한 달 뒤 앱을 깔았을 때 지난 알림이 한꺼번에 날아간다
 - **알림끼리 안 묶는다.** 한 사람의 행 둘이 같은 회차에 잡혀도 각자 한 건이다([NTF-035](../../2-design/modules/notification/README.md#ntf-035))
-- 돌려주는 것은 잡힌 행의 `id`·`profile_id`·`kind`·`payload`와 그 사람의 주소 목록이다
+- 돌려주는 것은 잡힌 행의 `id`·`profile_id`·`kind`·`payload`와 그 사람의 주소 목록이다. **주소는 배열 한 칸에 모은다** — `update ... from push_tokens`로 조인하면 주소가 둘인 사람의 행에 여러 매치가 붙어 한쪽만 남는다. `update ... returning`을 CTE로 두고 밖에서 `array_agg`로 묶는다
 - 껍데기의 첫 줄이 `auth.role() is distinct from 'service_role'`을 보고 아니면 거절한다. **`<>`가 아니다** — JWT 없는 호출은 `auth.role()`이 널이고 널 비교는 널이라 검사를 그냥 통과한다([payroll-holidays AC-04](payroll-holidays.md#ac-02))
 - 알맹이는 `security invoker`로 두고 시각을 `p_now`로 받는다([함수 안의 규칙](../../2-design/system/data-access.md#함수-안의-규칙))
 
@@ -84,7 +84,7 @@ sources:
 
 **긁는 함수.**
 
-`public.receipts_to_scrape(p_now timestamptz)`와 `public.clear_receipts(p_ids uuid[], p_dead_tokens text[])`다.
+`internal.receipts_to_scrape`·`internal.clear_receipts`와 그 짝인 `public` 껍데기 둘이다. **호출자 검사는 AC-02·AC-03과 같다** — 껍데기 첫 줄이 `auth.role() is distinct from 'service_role'`을 본다. 검사가 없으면 로그인한 아무나 `clear_receipts`로 남의 기기 주소를 지울 수 있다([함수 안의 규칙](../../2-design/system/data-access.md#함수-안의-규칙)).
 
 - 앞엣것이 AC-01의 조건으로 대상 행의 `id`·`push_receipt_id`·주소를 낸다
 - 뒤엣것이 긁은 행의 `push_receipt_id`를 널로 되돌리고, 죽은 주소를 지운다
@@ -128,8 +128,8 @@ sources:
 
 - `notifications`에 행이 들어오면 `after insert` 트리거가 `pg_net`으로 `send-push`를 쏜다. 본문에 그 행의 `id`를 싣는다
 - **인증 헤더를 Vault에서 읽는다.** 트리거 정의에 리터럴로 넣으면 마이그레이션에 실려 PUBLIC 저장소에 올라간다([푸시 보내기](../../2-design/modules/notification/design.md#푸시-보내기))
-- **쏘는 단계가 예외를 삼킨다.** 알림 행을 낳는 것은 사건 함수의 트랜잭션 안이라, 쏘기가 던지면 근무표 확정 자체가 롤백된다([profile-erasure AC-02](profile-erasure.md#ac-02)가 밟은 자리와 같다)
-- cron `retry_push`가 매분 같은 함수를 부른다. 본문의 id는 널이다
+- **쏘는 단계가 예외를 삼킨다.** 알림 행을 낳는 것은 사건 함수의 트랜잭션 안이라, 쏘기가 던지면 근무표 확정 자체가 롤백된다([profile-erasure AC-02](profile-erasure.md#ac-02)가 밟은 자리와 같다). **이 task가 보는 것은 트리거 자신이 안 던진다는 것까지다** — 사건 함수가 알림을 낳는 줄은 [`notification-emit`](notification-emit.md)이 심어서, 「여러 쓰기와 한 트랜잭션에 있어도 안 말린다」는 그 task가 확정 함수로 한 번 더 본다
+- cron `retry_push`가 매분 같은 함수를 부른다. 본문의 id는 널이다. **작업 이름은 `retry-push`**고 vault 항목은 `send_push_url`·`send_push_service_role_key`다 — `erase-profiles`·`fetch-holidays`가 같은 꼴로 앞섰다
 
 ### AC-09
 
@@ -139,6 +139,16 @@ sources:
 - 복사본은 생성물이라 커밋하지 않는다. `.gitignore`에 든다. 정본은 `src/`다
 - **`import-holidays`도 같은 길로 옮긴다.** 지금 그 함수가 `../../../src/`를 직접 import하는데, 마운트 경계 밖이라 로컬에서 서면 부팅이 깨진다. edge-runtime을 안 띄워 아직 안 드러났을 뿐이다([관찰 035](../../observations/035-edge-function-reaches-outside-mount.md))
 - `pnpm dev`와 CI가 이 단계를 부른다
+
+### AC-10
+
+**경계를 글자로 막는 lint 규칙.**
+
+`supabase/functions/` 아래에서 `../../../src/`로 시작하는 import를 막는다.
+
+- **복사 단계만으로는 재발을 못 막는다.** edge-runtime을 안 띄우니 다음 Edge Function이 또 마운트 밖을 가리켜도 어떤 검사도 안 걸린다([관찰 035](../../observations/035-edge-function-reaches-outside-mount.md)). 경계 위반이 이미 main에 한 번 들어갔다(#464)
+- `eslint-rules/`의 기존 규칙과 같은 꼴로 세우고 `docs/4-test/lint-rules.md` 표에 줄을 더한다
+- 고치는 길은 `_shared` 복사본을 가리키는 것이다. 규칙 메시지가 그 길을 든다
 
 ## 변경 파일
 
@@ -153,6 +163,7 @@ sources:
 | `scripts/sync-edge-shared.mts` | 복사와 import 고쳐 쓰기 | AC-09 |
 | `.github/workflows/ci.yml` | `supabase start` 앞에 복사 단계 | AC-09 |
 | `package.json` | 복사 스크립트 항목 | AC-09 |
+| `eslint-rules/<이름>.mjs`·`eslint.config.mjs`·`docs/4-test/lint-rules.md` | `supabase/functions/`에서 마운트 밖 import 막기 | AC-10 |
 | `src/features/notification/model/__tests__/*.test.ts` | 메시지 만들기, 실패 가르기 | AC-06·AC-07 |
 | `src/entities/notification/dals/__tests__/push-dispatch.integration.test.ts` | 잡기 조건, 끈 사람, 주소 없는 사람, 재시도 상한, 결과 쓰기, 긁기, 트리거와 cron | AC-01~AC-04·AC-08 |
 
@@ -160,7 +171,7 @@ sources:
 
 기능 task 파이프라인이다 — `test-planner` → `unit-test-writer`·`integration-test-writer` → `implementer` → `pr-diff`.
 
-1. `test-planner`가 AC-01~AC-09를 배정한다. **정본 모순을 명시로 돌려받는다** — 특히 AC-09의 CI 단계를 어느 층이 지키는지, AC-05를 로컬에서 볼 수 있는지
+1. `test-planner`가 AC-01~AC-10을 배정한다. **정본 모순을 명시로 돌려받는다** — 특히 AC-09의 CI 단계를 어느 층이 지키는지, AC-05를 로컬에서 볼 수 있는지
 2. `unit-test-writer`가 AC-06~AC-07을 쓴다. 폐기 갈래가 좁은지가 이 층의 중심이다
 3. `integration-test-writer`가 잡는 함수를 직접 불러 조건을 때린다. `p_now`를 2분 경계 앞뒤로 넘기고 `push_attempts`를 5로 밀어 상한을 본다
 4. `implementer`가 열 → 함수 → 트리거·cron → 복사 스크립트 → Edge Function 순으로 초록을 만든다
@@ -203,6 +214,12 @@ sources:
 | AC-07 | 자격 증명 오류를 계속 되쏜다 | unit 위 | 위와 같다 | 재시도 갈래에 안 든다 |
 | AC-09 | 복사본이 옛것이다 | 수동 — 복사 뒤 `_shared`를 읽는다 | `pnpm edge:sync` | 파일 내용이 `src/`와 같고 import에 `.ts`가 붙는다 |
 | AC-09 | 복사본이 커밋에 든다 | 수동 — `pr-diff`가 diff를 본다 | — | `supabase/functions/_shared/`가 diff에 없다 |
+| AC-10 | 마운트 밖 import가 또 들어온다 | unit `tests/lint/`의 규칙 테스트(예정) | `pnpm test` | `supabase/functions/x/index.ts`의 `../../../src/...` import가 걸리고 `_shared` 경로는 안 걸린다 |
+| AC-02 | 주소가 둘인 사람의 행이 쪼개지거나 주소가 하나만 실린다 | integration 위 | 위와 같다 | 행은 하나고 주소 배열에 둘 다 든다 |
+| AC-02 | 주소가 없는 사람의 행이 안 잡힌다 | integration 위 | 위와 같다 | 잡히고 `push_attempts`가 오른다 |
+| AC-02·AC-03·AC-04 | JWT가 아예 없는 호출이 검사를 그냥 지난다 | integration 위 — `execSql`로 직접 부른다(그 세션은 `auth.role()`이 널이다) | 위와 같다 | `not_allowed`가 던져진다 — `<>`가 아니라 `is distinct from`인 것을 때리는 자리다 |
+| AC-06 | 2차 kind에도 메시지가 나간다 | unit 위 | 위와 같다 | 문장이 널인 행은 메시지가 0건 |
+| AC-07 | 자격 증명 오류가 어느 갈래도 아니다 | unit 위 | 위와 같다 | 넷째 갈래로 나오고 재시도에 안 든다 |
 | AC-05 | 아무나 불러 발송을 태운다 | 수동 — 배포 뒤 anon 키로 부른다 | 운영 | 거절된다 |
 | AC-05 | 기기에 알림이 안 뜬다 | 수동 — 실기기에서 알림을 받는다 | 개발 빌드 | 제목이 표의 문장이고 누르면 목적지로 간다 |
 | AC-05·AC-08 | 접근 토큰이나 서비스 키가 커밋에 든다 | 수동 — `pr-diff`가 diff 전문을 본다 | — | 그 문자열이 어느 파일에도 없다 |
