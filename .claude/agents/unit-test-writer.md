@@ -36,11 +36,13 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 **아직 없는 모듈은 동적 import로 부른다.** 정적 `import`로 적으면 `TS2307: Cannot find module`이 나 typecheck가 죽는다. 저장소에 정적 import로 쓴 테스트가 있지만 그것들은 그 시점에 typecheck를 통과하지 못했다 — 따라 하지 않는다.
 
 ```ts
-// @ts-expect-error 대상 모듈이 아직 없다
-const { toIsoDate } = await import("@/features/payroll/model/holiday-api-response");
+const { toIsoDate } = await import(
+  // @ts-expect-error 대상 모듈이 아직 없다
+  "@/features/payroll/model/holiday-api-response"
+);
 ```
 
-`@ts-expect-error`는 **바로 다음 한 줄에만** 붙는다. `import(...)`를 여러 줄로 쪼개면 TS가 오류를 다른 줄에 붙여 지시자가 헛돌고 `TS2578`이 따라 난다 — 호출 전체를 한 줄로 합친다. 구현이 선 뒤 정적 import로 되돌리고 지시자를 떼는 것은 구현자 몫이다.
+**지시자를 괄호 안, 경로 문자열 바로 위에 둔다.** 오류가 붙는 자리가 그 문자열이라 여기서만 정확히 맞는다. 호출 전체를 한 줄로 합쳐 그 위에 두는 꼴은 못 쓴다 — **Prettier가 긴 줄을 쪼개면 지시자와 문자열 사이에 줄이 끼어 `TS2578 Unused '@ts-expect-error' directive`가 난다.** 커밋 훅이 포맷을 고치니 네가 한 줄로 써도 그 자리에서 쪼개진다. 구현이 선 뒤 정적 import로 되돌리고 지시자를 떼는 것은 구현자 몫이다.
 
 ## 무엇을 단언하나
 

@@ -6,7 +6,11 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `notification-list`다** — backlog의 `ready` 맨 위다. plan이 이미 서 있다: [3-build/plans/notification-list.md](3-build/plans/notification-list.md). 알림 목록 화면(`/notifications`)과 앱바 종 아이콘이고, **AC-01의 문장 함수(`src/features/notification/model/title.ts`)가 이 task의 무게 중심이다** — 대시보드와 푸시가 그 함수를 가져다 쓴다. `notification-push`가 이것 때문에 뒤로 갔다. 사용자의 상시 지시는 「전체 기능 구현」이다: 시안 열다섯을 건너뛰고 화면 task가 [ADR-014](2-design/adr/ADR-014-toss-like-depth-and-graphics.md)를 코드로 옮기는 랄프 루프를 돌리는 중이고, 루프의 정본은 [spec/ui-kit.md](2-design/spec/ui-kit.md)의 「루프」 절이다.
+**다음 첫 수는 `notification-push`다** — backlog의 `ready` 맨 위다. plan이 이미 서 있다: [3-build/plans/notification-push.md](3-build/plans/notification-push.md). AC 아홉이고 무게 중심이 셋이다 — 잡기 질의의 `returning`이 두 경로(트리거·cron)의 중복 발송을 막는 것, 트리거가 사건 함수의 트랜잭션 안이라 쏘기가 예외를 삼켜야 하는 것, `_shared` 복사 단계([관찰 035](observations/035-edge-function-reaches-outside-mount.md))다. 문장은 `notification-list`가 낸 `src/features/notification/model/title.ts`를 가져다 쓴다. 사용자의 상시 지시는
+
+**`notification-list`가 `done`이다(#468).** 알림 목록 화면과 앱바 종이 섰고, 순수 함수 셋(`title`·`when`·`destination`)과 훅 셋, 읽는 손 둘이 같이 왔다. **문장·목적지는 1차 열여덟만 낸다** — 2차 다섯은 널이고 `kind` 유니온만 스물셋을 든다. `kind` 문자열과 `payload` 열쇠는 [design.md 「kind와 payload」](2-design/modules/notification/design.md#kind와-payload)가 정본이고 **`notification-emit`이 그 표에 맞춰 행을 낳아야 한다**. 판정 둘을 정본에 박았다 — 줄을 눌러 간 자리의 읽음 실패는 조용하고(토스트 없음, [runtime.md](2-design/system/runtime.md)에 예외 한 줄), `?from=notifications`는 앱바 뒤로가 있는 관리자 두 화면에만 싣는다(탭 화면은 받을 자리가 없다, [navigation.md](2-design/system/navigation.md#뒤로)).
+
+**구현자가 남긴 발견 둘이 열려 있다.** 아래 줄(`sub`) 문안이 정본에 없어 데이터를 잇는 꼴로 지어 넣었다 — 목록은 안 그려 지금은 안 보이지만 대시보드와 푸시가 그릴 자리다. 그리고 **로컬 DB가 1000행을 넘으면 `getWageRates`가 조용히 잘린다** — 범위 없이 읽어 PostgREST 기본 상한에 걸리고, CI는 매번 빈 DB라 안 걸린다. `runtime.md` 「읽기 범위」가 막으려던 자리다.
 
 **`payroll-holidays`가 `done`이다(#464).** `internal.fetch_holidays()`가 날마다 다음 해에 `source = 'api'` 공휴일이 있는지 보고, 비었으면 `pg_net`으로 Edge Function `import-holidays`를 쏜다. 그 함수가 공공데이터포털에서 열두 달을 순차로 받아 한 달이라도 실패하면 아무것도 안 넣고, 성공하면 `public.import_holidays(p_year, p_rows)`를 부른다. **서비스 키로도 `internal`은 못 부른다** — PostgREST가 노출 목록(`public`·`graphql_public`) 밖의 스키마를 라우팅 단계에서 끊어 키와 무관하게 `PGRST106`이다. 그래서 `public` 껍데기가 서고 그 첫 줄이 `auth.role() is distinct from 'service_role'`을 본다(`<>`면 JWT 없는 호출의 널 비교가 널이라 검사를 그냥 통과한다). 판정은 [data-access.md](2-design/system/data-access.md)의 「서비스 키 자리」가 정본이고 [관찰 033](observations/033-service-key-cannot-reach-internal.md)이 경위를 담는다.
 
@@ -20,7 +24,7 @@
 
 **`plans-restate`가 `done`이다(#459, #460).** plan 열둘의 「변경 파일」 표가 디렉터리 대신 구현 파일을 하나씩 들고, 검증 표의 `(예정)`과 「e2e 명령」이 실재 경로와 `pnpm e2e`로 섰다. 채우는 일보다 낡은 서술을 걷어낸 쪽이 컸다 — 계획서가 「누가 무엇을 세우는가」를 적는데 실제 merge 순서가 그것과 달라, dal과 공용 조각의 주체가 뒤바뀐 자리 넷과 달 고르기 시트를 서로 미루던 자리 다섯이 나왔다. `attendance-excuse` AC-05의 「iOS 사파리 visual viewport」는 네이티브에 사파리가 없어 `KeyboardAvoidingView`로 판정했다(선례는 `src/screens/pending/ui/PendingScreen.tsx:390`). **다음 화면 task가 plan을 읽을 때 이 정정을 믿어도 된다** — 열둘 다 지금 코드와 대조했다.
 
-**`ready`가 넷이다.** `notification-list`가 맨 위고 `notification-push`·`notification-settings`·`sian-sync`가 뒤를 잇는다.
+**`ready`가 셋이다.** `notification-push`가 맨 위고 `notification-settings`·`sian-sync`가 뒤를 잇는다.
 
 **`notification-push`의 plan이 섰고 정본에 판정 셋을 박았다.** 보낼 것이 없어도 접수증을 긁는다([Q-02](2-design/modules/notification/design.md#아직-안-정한-것) 닫음), 잡기와 결과 쓰기가 `public` 껍데기를 탄다, 접수증 번호 열(`push_receipt_id`)은 그 task가 붙인다. **문장 함수의 주인은 `notification-list`다** — spec과 plan 둘이 그렇게 적어둬서 순서를 뒤집는 대신 `notification-push`를 그 뒤로 보냈다. **[관찰 035](observations/035-edge-function-reaches-outside-mount.md)가 열려 있다** — `import-holidays`가 마운트 밖의 `src/`를 import하는데 edge-runtime을 안 띄워 아무 검사도 안 잡았다. `notification-push`의 AC-09가 복사 단계를 세우며 같이 고친다. `blocked`로 남은 쪽의 이유는 셋뿐이다 — **NCP 자격**(`attendance-checkin`·`hall-location`), **도메인**(`qr-landing-page`·`first-release`), **앞 task의 사슬**(`dashboard`가 `attendance-checkin`을 기다리고 `attendance-excuse`·`notification-emit` 이하가 그 뒤에 선다).
 
