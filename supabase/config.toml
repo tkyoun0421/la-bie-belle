@@ -374,6 +374,13 @@ deno_version = 2
 enabled = true
 verify_jwt = true
 
+# 다음 해 공휴일 받아오기다. `internal.fetch_holidays`가 pg_net으로 쏘는 자리라 사람이 부를
+# 일이 없는데, 겉문만으로는 인증된 클라이언트 아무나 이 주소를 되풀이해 불러 공공 API 쿼터를
+# 태운다 — `erase-account`와 같이 함수가 첫 줄에서 service role 키를 직접 대조한다.
+[functions.import-holidays]
+enabled = true
+verify_jwt = true
+
 [analytics]
 enabled = false
 port = 54327
