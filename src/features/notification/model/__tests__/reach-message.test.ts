@@ -1,8 +1,5 @@
 const { getMemberListSuffix, getMemberSheetLine, getUnreachableConfirmLine } =
-  await import(
-    // @ts-expect-error 대상 모듈이 아직 없다
-    "@/features/notification/model/reach-message"
-  );
+  await import("@/features/notification/model/reach-message");
 
 describe("getMemberListSuffix — 직원 목록 줄의 알림 표시 문안", () => {
   it("스스로 끈 재직자는 '· 알림 꺼둠'이다", () => {

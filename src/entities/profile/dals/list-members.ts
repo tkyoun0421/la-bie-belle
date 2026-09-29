@@ -21,6 +21,11 @@ import {
  * (`screens/members.md`), 줄을 누를 때마다 표 하나를 더 읽으면 시트가 빈 채로 먼저 뜬다.
  * 개인정보 표는 관리자에게 열려 있어([design.md](../../../../docs/2-design/modules/account/design.md#개인정보는-표를-가른다))
  * 같은 왕복에 담긴다. 가입 대기와 차단 목록은 그 값을 줄에 안 세워서 안 싣는다.
+ *
+ * **재직자 줄은 알림 갈래도 같이 싣는다.** 받겠다는 의사는 `profiles`에 있고 기기가 닿는지는
+ * `push_reachable` 뷰에 있어 왕복이 둘이다 — 남의 주소 행을 읽는 길이 없어 존재 여부만 내는
+ * 뷰가 따로 선다([notification/design.md](../../../../docs/2-design/modules/notification/design.md#알림을-받나)).
+ * **퇴사 구획에는 안 붙는다** — 보낼 알림이 없어 갈래가 붙어도 관리자가 할 일이 없다.
  */
 
 export type MemberListRow = MemberProfileRow & {
@@ -34,6 +39,12 @@ export type MemberRow = MemberListRow & {
   phone: string | null;
   birth_date: string | null;
   gender: string | null;
+};
+
+/** 재직자 줄에만 붙는 알림 갈래 둘이다 — 받겠다는 의사와 기기가 닿는지. */
+export type ActiveMemberRow = MemberRow & {
+  notifications_enabled: boolean;
+  has_device: boolean;
 };
 
 const COLUMNS = [
@@ -54,22 +65,71 @@ const MEMBER_COLUMNS = [
   "profile_private(phone, birth_date, gender)",
 ].join(", ");
 
-type EmbeddedMemberRow = Omit<MemberRow, "phone" | "birth_date" | "gender"> & {
-  profile_private: {
-    phone: string | null;
-    birth_date: string | null;
-    gender: string | null;
-  } | null;
+const ACTIVE_COLUMNS = [MEMBER_COLUMNS, "notifications_enabled"].join(", ");
+
+type Contact = {
+  phone: string | null;
+  birth_date: string | null;
+  gender: string | null;
+};
+
+type EmbeddedMemberRow = Omit<MemberRow, keyof Contact> & {
+  profile_private: Contact | null;
+};
+
+type EmbeddedActiveRow = EmbeddedMemberRow & {
+  notifications_enabled: boolean;
 };
 
 /** 개인정보가 표 하나 건너에 있는 것은 읽기 권한이 거기서 갈리기 때문이고, 화면이 알 일은 아니다. */
-function flatten(rows: EmbeddedMemberRow[]): MemberRow[] {
+function flatten<Row extends EmbeddedMemberRow>(
+  rows: readonly Row[],
+): (Omit<Row, "profile_private"> & Contact)[] {
   return rows.map(({ profile_private: contact, ...row }) => ({
     ...row,
     phone: contact?.phone ?? null,
     birth_date: contact?.birth_date ?? null,
     gender: contact?.gender ?? null,
   }));
+}
+
+/**
+ * 목록에 선 사람들의 기기가 닿는지다. 관리자가 아니면 뷰가 빈 결과를 내므로 아무에게도
+ * 안 붙는다.
+ *
+ * **줄에 선 사람만 묻는다.** 이 뷰는 사람 수만큼 행을 내는데 PostgREST가 한 응답을
+ * `max_rows`(`supabase/config.toml`)에서 자른다 — 조건 없이 읽으면 그 선을 넘은 사람이
+ * 조용히 「기기 없음」으로 읽힌다. 재직자 목록은 이미 손에 있으니 그 id만 실어 보낸다.
+ *
+ * 같은 뷰를 [`notification`의 dal](../../notification/dals/get-push-reachable.ts)도 읽는다 —
+ * 슬라이스끼리는 서로를 못 부르고(규칙 3) 목록이 갈래를 같이 내야 해서 읽는 손이 둘이다.
+ * 뷰가 내는 열 둘이 정본이고 두 손은 그것을 각자 제 모양으로 받는다.
+ */
+async function readDevices(
+  client: Db,
+  profileIds: readonly string[],
+): Promise<Map<string, boolean>> {
+  if (profileIds.length === 0) {
+    return new Map();
+  }
+
+  const { data, error } = await client
+    .from("push_reachable")
+    .select("profile_id, has_device")
+    .in("profile_id", [...profileIds])
+    .returns<{ profile_id: string | null; has_device: boolean | null }[]>();
+
+  if (error) {
+    throw error;
+  }
+
+  return new Map(
+    (data ?? []).flatMap((row) =>
+      row.profile_id === null
+        ? []
+        : [[row.profile_id, row.has_device ?? false] as const],
+    ),
+  );
 }
 
 export async function listPendingMembers(client: Db): Promise<MemberListRow[]> {
@@ -112,22 +172,35 @@ export async function listBlockedMembers(client: Db): Promise<MemberListRow[]> {
  * ([ACC-001](../../../../docs/2-design/modules/account/README.md#acc-001)). `approve_member`를
  * 지난 사람은 다 보낸 사람이라, 이 조건에 걸리는 것은 손으로 넣은 첫 관리자뿐이다.
  */
-export async function listActiveMembers(client: Db): Promise<MemberRow[]> {
+export async function listActiveMembers(
+  client: Db,
+): Promise<ActiveMemberRow[]> {
   const { data, error } = await client
     .from("profiles")
-    .select(MEMBER_COLUMNS)
+    .select(ACTIVE_COLUMNS)
     .not("submitted_at", "is", null)
     .not("approved_at", "is", null)
     .is("left_at", null)
     .is("blocked_at", null)
     .is("rejected_at", null)
-    .returns<EmbeddedMemberRow[]>();
+    .returns<EmbeddedActiveRow[]>();
 
   if (error) {
     throw error;
   }
 
-  return sortActiveMembers(flatten(data ?? []));
+  const rows = flatten(data ?? []);
+  const devices = await readDevices(
+    client,
+    rows.map((row) => row.id),
+  );
+
+  return sortActiveMembers(
+    rows.map((row) => ({
+      ...row,
+      has_device: devices.get(row.id) ?? false,
+    })),
+  );
 }
 
 /**

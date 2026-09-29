@@ -18,10 +18,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useNotificationSwitch } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/features/notification/model/useNotificationSwitch"
-);
+const { useNotificationSwitch } =
+  await import("@/features/notification/model/useNotificationSwitch");
 
 function createWrapper() {
   const queryClient = new QueryClient({

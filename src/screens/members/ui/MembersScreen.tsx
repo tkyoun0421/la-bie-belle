@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { DomainError } from "@/shared/api/errors";
 import { supabase } from "@/shared/lib/supabase";
@@ -26,6 +26,14 @@ import { useMembers } from "@/features/members/model/useMembers";
 import { useSetDisplayName } from "@/features/members/model/useSetDisplayName";
 import { useSetRole } from "@/features/members/model/useSetRole";
 import { useUndoLeave } from "@/features/members/model/useUndoLeave";
+import {
+  getMemberListSuffix,
+  getMemberSheetLine,
+} from "@/features/notification/model/reach-message";
+import {
+  PERMISSION_OF_OTHERS,
+  getReachState,
+} from "@/features/notification/model/reach-state";
 import {
   MemberDialog,
   type MemberDialogKind,
@@ -76,6 +84,11 @@ function codeOf(error: Error | null): string | null {
 
 function unexpected(error: Error | null): boolean {
   return error !== null && !HANDLED_CODES.has(codeOf(error) ?? "");
+}
+
+/** 연락처 바로 뒤라 다음 손짓이 이어진다 — 알림이 안 가는 사람에게 할 일이 전화다. */
+function detailOf(phone: string | null, suffix: string | null): string {
+  return [phone ?? "", suffix ?? ""].filter((part) => part !== "").join(" ");
 }
 
 export function MembersScreen() {
@@ -190,6 +203,28 @@ export function MembersScreen() {
   const rows = [...(active ?? []), ...(left ?? [])];
   const open = rows.find((row) => row.id === openId) ?? null;
 
+  /**
+   * 갈래는 재직자에게만 붙는다 — 퇴사 구획은 이 표에 아예 안 든다. 남의 기기 권한은 알
+   * 길이 없어 판정 축이 의사와 기기 둘뿐이다(`reach-state.ts`).
+   */
+  const reach = useMemo(() => {
+    const suffixes = new Map<string, string | null>();
+    const lines = new Map<string, string | null>();
+
+    for (const row of active ?? []) {
+      const state = getReachState({
+        notificationsEnabled: row.notifications_enabled,
+        hasDevice: row.has_device,
+        permission: PERMISSION_OF_OTHERS,
+      });
+
+      suffixes.set(row.id, getMemberListSuffix(state, true));
+      lines.set(row.id, getMemberSheetLine(state, true));
+    }
+
+    return { suffixes, lines };
+  }, [active]);
+
   const refused =
     leaveCode === "has_future_assignments"
       ? "blocked"
@@ -303,7 +338,10 @@ export function MembersScreen() {
                     <ListRow
                       key={row.id}
                       title={row.display_name ?? ""}
-                      detail={row.phone ?? ""}
+                      detail={detailOf(
+                        row.phone,
+                        reach.suffixes.get(row.id) ?? null,
+                      )}
                       left={
                         <Avatar
                           name={row.display_name ?? ""}
@@ -374,6 +412,7 @@ export function MembersScreen() {
             member={open}
             today={now}
             lastAdmin={isLastAdmin(active ?? [], open.id)}
+            reachLine={reach.lines.get(open.id) ?? null}
             face={face}
             draft={draft}
             sending={savingName}

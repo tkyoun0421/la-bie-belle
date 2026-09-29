@@ -1,7 +1,5 @@
-const { getReachState } = await import(
-  // @ts-expect-error 대상 모듈이 아직 없다
-  "@/features/notification/model/reach-state"
-);
+const { getReachState } =
+  await import("@/features/notification/model/reach-state");
 
 describe("getReachState — 값을 다 못 읽은 동안은 로딩이라 네 갈래 중 무엇도 아니다", () => {
   it("의사를 아직 못 읽었으면 로딩이다", () => {
