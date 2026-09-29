@@ -15,6 +15,11 @@ import type { ReachState } from "@/features/notification/model/reach-state";
  *
  * 닿는 사람에게 따로 한 마디를 안 붙이는 것은 그것이 기본이라서다 — 전원에게 붙는 표시는
  * 아무것도 안 가른다.
+ *
+ * **확정 뒤 확인 자리의 문장은 지금 두 벌이다.**
+ * [`force-change-copy`](../../../screens/schedule-admin/model/force-change-copy.ts)가 같은
+ * 문장을 제 표 안에서 이미 들고 있다 — 그쪽은 「두 사람」으로 묶는 경우까지 맡아 입력이
+ * 갈래가 아니라 「닿나」 하나다. 한 벌로 합칠지는 총괄의 판정이 남았다.
  */
 
 const UNREACHABLE: ReadonlySet<ReachState> = new Set<ReachState>([

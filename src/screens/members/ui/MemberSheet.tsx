@@ -26,7 +26,7 @@ import { formatBirthDate } from "@/entities/profile/model/format-birth-date";
  * **시급 줄이 없다.** 시급 표가 서기 전에는 붙일 값이 없다 — 붙이는 것은 급여 쪽이다.
  *
  * **알림을 못 받는 사람에게는 프로필 아래 한 줄이 더 선다.** 목록 줄의 한 마디를 여기서는
- * 문장으로 편다 — 관리자가 전화하기 전에 무슨 말을 할지가 그 줄에 있다. 고치는 길은 없다:
+ * 문장으로 편다 — 관리자가 전화하기 전에 무슨 말을 할지가 그 줄에 있다. 고치는 길은 없다 —
  * 관리자가 남의 알림을 켜주지 못한다([NTF-022](../../../../docs/2-design/modules/notification/README.md#ntf-022)).
  */
 
