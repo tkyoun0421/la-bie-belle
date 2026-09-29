@@ -29,7 +29,7 @@ sources:
 
 - **경로 둘, 함수 하나.** 행이 들어오면 트리거가 `send-push`를 쏘고, 놓친 것은 매분 도는 `retry_push`가 같은 함수를 다시 부른다([푸시 보내기](../../2-design/modules/notification/design.md#푸시-보내기))
 - **잡기와 성공이 다른 열이다.** `claimed_at`·`push_attempts`로 잡고 `pushed_at`으로 성공을 찍는다. 잡는 질의의 `returning`이 두 경로가 같은 행을 두 번 보내는 것을 막는다
-- **서비스 키로는 `internal`에 못 닿는다.** PostgREST가 노출 목록 밖의 스키마를 라우팅 단계에서 끊어 키와 무관하게 `PGRST106`이다([관찰 033](../../observations/033-service-key-cannot-reach-internal.md)). 그래서 잡기가 `public` 껍데기를 타고, 그 첫 줄이 `auth.role()`을 본다 — [`payroll-holidays`](payroll-holidays.md#ac-04)가 낸 길 그대로다
+- **서비스 키로는 `internal`에 못 닿는다.** PostgREST가 노출 목록 밖의 스키마를 라우팅 단계에서 끊어 키와 무관하게 `PGRST106`이다([관찰 033](../../observations/033-service-key-cannot-reach-internal.md)). 그래서 잡기가 `public` 껍데기를 타고, 그 첫 줄이 `auth.role()`을 본다 — [`payroll-holidays`](payroll-holidays.md#ac-02)가 낸 길 그대로다
 - **Deno는 `supabase/functions` 밖을 못 읽는다.** edge-runtime 컨테이너에 그 폴더 하나만 마운트된다([edge-function-import](edge-function-import.md)). 정본이 복사 단계를 이 task 몫으로 뒀다([푸시 보내기](../../2-design/modules/notification/design.md#푸시-보내기))
 - **부치는 답과 닿은 결과가 다른 순간에 온다.** 접수증이 먼저 오고 기기까지 닿았는지는 십오 분쯤 뒤에 따로 물어야 안다. 접수증 번호를 알림 행에 적고 다음 회차가 긁는다
 - **문장은 여기서 안 만든다.** 푸시의 제목이 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표의 문장인데 그 함수는 [`notification-list`](notification-list.md#ac-01)의 산출이다 — 이 task가 그것을 가져다 쓴다. 두 곳이 문장을 따로 들면 같은 알림이 기기와 화면에서 다르게 읽힌다
@@ -67,7 +67,7 @@ sources:
 - **주소가 없는 사람의 행도 안 잡힌다.** `push_tokens`가 없으면 보낼 곳이 없어 시도만 다섯 번 태운다([NTF-029](../../2-design/modules/notification/README.md#ntf-029))
 - **알림끼리 안 묶는다.** 한 사람의 행 둘이 같은 회차에 잡혀도 각자 한 건이다([NTF-035](../../2-design/modules/notification/README.md#ntf-035))
 - 돌려주는 것은 잡힌 행의 `id`·`profile_id`·`kind`·`payload`와 그 사람의 주소 목록이다
-- 껍데기의 첫 줄이 `auth.role() is distinct from 'service_role'`을 보고 아니면 거절한다. **`<>`가 아니다** — JWT 없는 호출은 `auth.role()`이 널이고 널 비교는 널이라 검사를 그냥 통과한다([payroll-holidays AC-04](payroll-holidays.md#ac-04))
+- 껍데기의 첫 줄이 `auth.role() is distinct from 'service_role'`을 보고 아니면 거절한다. **`<>`가 아니다** — JWT 없는 호출은 `auth.role()`이 널이고 널 비교는 널이라 검사를 그냥 통과한다([payroll-holidays AC-04](payroll-holidays.md#ac-02))
 - 알맹이는 `security invoker`로 두고 시각을 `p_now`로 받는다([함수 안의 규칙](../../2-design/system/data-access.md#함수-안의-규칙))
 
 ### AC-03
@@ -215,5 +215,5 @@ sources:
 - 알림을 낳는 자리 — [`notification-emit`](notification-emit.md)이다. 이 task는 이미 들어온 행을 보낸다
 - 시각을 보고 나가는 알림 — [`notification-schedule`](notification-schedule.md)이다
 - 알림 목록 화면과 안 본 알림, 문장을 조립하는 순수 함수 — [`notification-list`](notification-list.md)다. 이 task는 그 함수를 가져다 쓴다
-- 권한 받기와 주소 저장, 알림 스위치 — [`notification-settings`](notification-settings.md)다. `save_push_token`은 [`notification-data`](notification-data.md#ac-03)가 이미 냈다
+- 권한 받기와 주소 저장, 알림 스위치 — `notification-settings`다([backlog.md](../../backlog.md)). `save_push_token`은 [`notification-data`](notification-data.md#ac-03)가 이미 냈다
 - 한 알림에 기기가 둘일 때 한쪽만 성공한 것을 나타내는 일 — [Q-01](../../2-design/modules/notification/design.md#q-01)로 남는다
