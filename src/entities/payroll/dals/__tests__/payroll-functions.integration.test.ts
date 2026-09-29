@@ -591,7 +591,7 @@ describe("import_holidays(plan AC-05) — internal, 그 해 api 행만 갈아치
     expect(apiDates).toEqual([`${year}-05-01`]);
   });
 
-  it("internal 스키마라 public.rpc('import_holidays')로는 안 잡힌다", async () => {
+  it("관리자가 import_holidays를 불러도 거절된다 — 서비스 키 자리다", async () => {
     const admin = await createAdminUser();
     const year = freshHolidayYear();
 
