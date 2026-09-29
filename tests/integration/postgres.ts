@@ -59,6 +59,17 @@ export function backdateDeadline(scheduleId: string, pastDate: string): void {
   );
 }
 
+/**
+ * 퇴사 시각을 과거로 민다. `createLeftUser`는 `left_at = now()`만 만들어 1년 경계를
+ * 못 때린다 — `backdateDeadline`과 같은 손이다.
+ */
+export function backdateLeftAt(userId: string, pastIso: string): void {
+  execSql(
+    "update public.profiles set left_at = :'left_at' where user_id = :'user_id';\n",
+    { user_id: userId, left_at: pastIso },
+  );
+}
+
 export type SeededWageRate = {
   date: string;
   amount: number;
