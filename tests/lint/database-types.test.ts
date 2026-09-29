@@ -50,6 +50,23 @@ create or replace function public.submit_profile(phone text) returns void as $$ 
     ]);
   });
 
+  /** 트리거 함수는 PostgREST가 못 부르는 함수라 생성 타입에 아예 안 선다. */
+  it("`returns trigger` 함수는 안 센다", () => {
+    const sql = `
+create function internal.call_send_push_on_insert()
+  returns trigger
+as $$ begin return null; end; $$;
+
+create function internal.call_send_push(p_ids uuid[])
+  returns void
+as $$ begin end; $$;
+`;
+
+    expect(migrationObjects(sql)).toEqual([
+      { schema: "internal", kind: "function", name: "call_send_push" },
+    ]);
+  });
+
   /** 주석 안의 DDL을 세면 영영 안 사라지는 위반이 생긴다. */
   it("주석 줄은 안 센다", () => {
     const sql = `-- create table public.dropped (id uuid);`;

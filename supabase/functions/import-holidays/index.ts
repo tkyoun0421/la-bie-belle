@@ -6,12 +6,16 @@
 // 서비스 키를 쥐는 자리 셋 중 하나라 호출자 검사가 이 파일의 첫 일이다. 게이트웨이의
 // `verify_jwt`는 유효한 토큰인지만 봐서 anon 키도 통과한다 — 안 막으면 인증된 클라이언트
 // 아무나 이 주소를 되풀이해 불러 우리 공공 API 쿼터를 태운다.
+//
+// `_shared`는 `pnpm edge:sync`가 만드는 복사본이다. edge-runtime 컨테이너에 `supabase/functions`
+// 한 폴더만 마운트돼서 `src/`를 직접 가리키면 배포한 함수가 부팅에서 깨진다 — 로컬과 CI가
+// edge-runtime을 빼고 띄워 안 드러났을 뿐이다(관찰 035).
 import { createClient } from "npm:@supabase/supabase-js@2.112.4";
 
 import {
   type HolidayRow,
   parseHolidayApiResponse,
-} from "../../../src/features/payroll/model/holiday-api-response.ts";
+} from "../_shared/payroll/holiday-api-response.ts";
 
 const BEARER = "Bearer ";
 

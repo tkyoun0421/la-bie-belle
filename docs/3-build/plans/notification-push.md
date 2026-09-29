@@ -120,7 +120,7 @@ sources:
 - 부친 답을 받아 셋으로 가른다 — 성공(접수증 번호), 주소 폐기, 다시 시도
 - 기기가 등록을 잃은 것(`DeviceNotRegistered`)이 주소 폐기다. 너무 잦은 것은 다시 시도고, 자격 증명이 틀린 것은 사람이 봐야 해 로그만 남기고 다시 시도로 안 친다([푸시 보내기](../../2-design/modules/notification/design.md#푸시-보내기))
 - 긁은 접수증도 같은 갈래로 가른다
-- **`node:` import를 안 쓴다.** lint가 `src/features/notification/model/`에서 막는다
+- **`node:` import를 안 쓴다.** 그 폴더가 Deno로 복사돼 돈다 — 막는 규칙은 AC-10이 세운다
 
 ### AC-08
 
@@ -142,12 +142,12 @@ sources:
 
 ### AC-10
 
-**경계를 글자로 막는 lint 규칙.**
+**경계를 글자로 막는 lint 규칙 둘.**
 
-`supabase/functions/` 아래에서 `../../../src/`로 시작하는 import를 막는다.
+하나는 `supabase/functions/` 아래에서 `../../../src/`로 시작하는 import를 막는다. 다른 하나는 `src/features/notification/model/`에서 `node:` import를 막는다 — **그 폴더가 Deno로 복사돼 도는 자리라** Node 전용 API를 쓰면 런타임에서 깨진다([푸시 보내기](../../2-design/modules/notification/design.md#푸시-보내기)가 「lint가 막는다」고 이미 적는데 그 규칙이 저장소에 없다).
 
 - **복사 단계만으로는 재발을 못 막는다.** edge-runtime을 안 띄우니 다음 Edge Function이 또 마운트 밖을 가리켜도 어떤 검사도 안 걸린다([관찰 035](../../observations/035-edge-function-reaches-outside-mount.md)). 경계 위반이 이미 main에 한 번 들어갔다(#464)
-- `eslint-rules/`의 기존 규칙과 같은 꼴로 세우고 `docs/4-test/lint-rules.md` 표에 줄을 더한다
+- `eslint-rules/`의 기존 규칙과 같은 꼴로 세운다. **규칙 카탈로그에도 줄을 더해야 한다** — `tests/lint/rules.ts`와 그 표를 읽는 테스트가 빠진 줄을 잡는다
 - 고치는 길은 `_shared` 복사본을 가리키는 것이다. 규칙 메시지가 그 길을 든다
 
 ## 변경 파일
@@ -163,7 +163,7 @@ sources:
 | `scripts/sync-edge-shared.mts` | 복사와 import 고쳐 쓰기 | AC-09 |
 | `.github/workflows/ci.yml` | `supabase start` 앞에 복사 단계 | AC-09 |
 | `package.json` | 복사 스크립트 항목 | AC-09 |
-| `eslint-rules/<이름>.mjs`·`eslint.config.mjs`·`docs/4-test/lint-rules.md` | `supabase/functions/`에서 마운트 밖 import 막기 | AC-10 |
+| `eslint-rules/<이름>.mjs` 둘·`eslint-rules/index.mjs`·`eslint.config.mjs`·`tests/lint/rules.ts`와 그 표 | 마운트 밖 import 막기, `node:` import 막기 | AC-10 |
 | `src/features/notification/model/__tests__/*.test.ts` | 메시지 만들기, 실패 가르기 | AC-06·AC-07 |
 | `src/entities/notification/dals/__tests__/push-dispatch.integration.test.ts` | 잡기 조건, 끈 사람, 주소 없는 사람, 재시도 상한, 결과 쓰기, 긁기, 트리거와 cron | AC-01~AC-04·AC-08 |
 
@@ -214,7 +214,8 @@ sources:
 | AC-07 | 자격 증명 오류를 계속 되쏜다 | unit 위 | 위와 같다 | 재시도 갈래에 안 든다 |
 | AC-09 | 복사본이 옛것이다 | 수동 — 복사 뒤 `_shared`를 읽는다 | `pnpm edge:sync` | 파일 내용이 `src/`와 같고 import에 `.ts`가 붙는다 |
 | AC-09 | 복사본이 커밋에 든다 | 수동 — `pr-diff`가 diff를 본다 | — | `supabase/functions/_shared/`가 diff에 없다 |
-| AC-10 | 마운트 밖 import가 또 들어온다 | unit `tests/lint/`의 규칙 테스트(예정) | `pnpm test` | `supabase/functions/x/index.ts`의 `../../../src/...` import가 걸리고 `_shared` 경로는 안 걸린다 |
+| AC-10 | 마운트 밖 import가 또 들어온다 | unit `eslint-rules/__tests__/`의 규칙 테스트(예정) | `pnpm test` | `supabase/functions/x/index.ts`의 `../../../src/...` import가 걸리고 `_shared`·`npm:`·`jsr:`·`https:`는 안 걸린다 |
+| AC-10 | 복사되는 폴더에 `node:` import가 들어온다 | unit 위 | 위와 같다 | `src/features/notification/model/`의 `node:crypto` import가 걸리고 다른 폴더는 안 걸린다 |
 | AC-02 | 주소가 둘인 사람의 행이 쪼개지거나 주소가 하나만 실린다 | integration 위 | 위와 같다 | 행은 하나고 주소 배열에 둘 다 든다 |
 | AC-02 | 주소가 없는 사람의 행이 안 잡힌다 | integration 위 | 위와 같다 | 잡히고 `push_attempts`가 오른다 |
 | AC-02·AC-03·AC-04 | JWT가 아예 없는 호출이 검사를 그냥 지난다 | integration 위 — `execSql`로 직접 부른다(그 세션은 `auth.role()`이 널이다) | 위와 같다 | `not_allowed`가 던져진다 — `<>`가 아니라 `is distinct from`인 것을 때리는 자리다 |

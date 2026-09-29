@@ -381,6 +381,13 @@ verify_jwt = true
 enabled = true
 verify_jwt = true
 
+# 알림 푸시 발송이다. `notifications` 트리거와 매분 도는 cron이 pg_net으로 쏘는 자리라 사람이
+# 부를 일이 없는데, 겉문만으로는 인증된 클라이언트 아무나 이 주소를 되풀이해 불러 남의 기기로
+# 가는 발송을 태운다 — 앞 둘과 같이 함수가 첫 줄에서 service role 키를 직접 대조한다.
+[functions.send-push]
+enabled = true
+verify_jwt = true
+
 [analytics]
 enabled = false
 port = 54327
