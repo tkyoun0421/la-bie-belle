@@ -6,7 +6,9 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `plans-restate`다** — backlog의 `ready` 맨 위다. 사용자의 상시 지시는 「전체 기능 구현」이다: 시안 열다섯을 건너뛰고 화면 task가 [ADR-014](2-design/adr/ADR-014-toss-like-depth-and-graphics.md)를 코드로 옮기는 랄프 루프를 돌리는 중이고, 루프의 정본은 [spec/ui-kit.md](2-design/spec/ui-kit.md)의 「루프」 절이다.
+**다음 첫 수는 `profile-erasure`다** — backlog의 `ready` 맨 위다. plan이 없어 쓰는 것부터고, 정본은 [account/design.md](2-design/modules/account/design.md#퇴사-1년-뒤)의 「퇴사 1년 뒤」와 「비우기」다. 사용자의 상시 지시는 「전체 기능 구현」이다: 시안 열다섯을 건너뛰고 화면 task가 [ADR-014](2-design/adr/ADR-014-toss-like-depth-and-graphics.md)를 코드로 옮기는 랄프 루프를 돌리는 중이고, 루프의 정본은 [spec/ui-kit.md](2-design/spec/ui-kit.md)의 「루프」 절이다.
+
+**`plans-restate`가 `done`이다(#459).** plan 열둘의 「변경 파일」 표가 디렉터리 대신 구현 파일을 하나씩 들고, 검증 표의 `(예정)`과 「e2e 명령」이 실재 경로와 `pnpm e2e`로 섰다. **채우는 일보다 낡은 서술을 걷어낸 쪽이 컸다** — 계획서가 「누가 무엇을 세우는가」를 적는데 실제 merge 순서가 그것과 달라, dal과 공용 조각의 주체가 뒤바뀐 자리 넷과 달 고르기 시트를 서로 미루던 자리 다섯이 나왔다. `attendance-excuse` AC-05의 「iOS 사파리 visual viewport」는 네이티브에 사파리가 없어 `KeyboardAvoidingView`로 판정했다(선례는 `src/screens/pending/ui/PendingScreen.tsx:390`). **다음 화면 task가 plan을 읽을 때 이 정정을 믿어도 된다** — 열둘 다 지금 코드와 대조했다.
 
 **`stats-worker`가 `done`이다(#457).** `/stats`가 섰다 — 탭 셋(근태·포지션·급여), 날짜 목록, 내가 들어간 포지션만 든 목록, 「내역 보기」가 급여 화면을 연다. 관리자 쪽이 세운 조각·집계 함수·달 키를 그대로 가져다 썼다. **판정 PR(#456)이 정본 모순 여섯을 계획 단계에서 먼저 막은 것이 이 task의 진짜 수확이다** — 급여 계산은 `screens` 층에서 부르고(lint 규칙 3이 `features/stats`가 `features/payroll`을 못 부르게 막는다), 출근율 셈은 `entities/attendance/model/attendance-summary.ts`로 내리고, 급여 탭 보조 줄은 급여 화면과 같은 날을 세고, 근태 상태 여섯은 한 줄에 하나씩이라 안 줄이고, 교육 보조 정보는 「안내 교육」이고, 「나」의 통계 줄이 `navigation.md`의 「세 층」·「뒤로」 표에 빠져 있어 더했다. **`stats-admin`에서는 같은 성격의 자리 여섯이 감사까지 가서야 드러났는데 이번엔 계획 단계에서 잡았다** — `test-planner`에 「정본 모순을 명시로 돌려달라」를 지시문에 실은 값이다.
 
@@ -18,7 +20,7 @@
 
 **`joinPayrollByMonth`를 짜다 이름 부딪힘을 하나 더 봤다.** `PayrollByMonth`라는 같은 이름이 `screens/stats/model/chart-values.ts`와 `features/stats/api/useStatsQueries.ts`에 다른 모양으로 있다 — `payroll-by-month-name-collision` candidate로 세웠다.
 
-**`ready`가 일곱이다.** `stats-worker`가 빠지고 `plans-restate`가 맨 위로 올라왔다 — `notification-list`·`notification-settings`·`notification-push`·`payroll-holidays`·`profile-erasure`·`sian-sync`가 나머지다. `blocked`로 남은 쪽의 이유는 셋뿐이다 — **NCP 자격**(`attendance-checkin`·`hall-location`), **도메인**(`qr-landing-page`·`first-release`), **앞 task의 사슬**(`dashboard`가 `attendance-checkin`을 기다리고 `attendance-excuse`·`notification-emit` 이하가 그 뒤에 선다).
+**`ready`가 여섯이다.** `profile-erasure`가 맨 위고 `payroll-holidays`·`notification-push`·`notification-list`·`notification-settings`·`sian-sync`가 뒤를 잇는다. 맨 위 둘은 Edge Function과 pg_cron을 쓰는 서버 쪽이라 화면 task와 결이 다르다. `blocked`로 남은 쪽의 이유는 셋뿐이다 — **NCP 자격**(`attendance-checkin`·`hall-location`), **도메인**(`qr-landing-page`·`first-release`), **앞 task의 사슬**(`dashboard`가 `attendance-checkin`을 기다리고 `attendance-excuse`·`notification-emit` 이하가 그 뒤에 선다).
 
 **관찰 021·027·030에 `resolved: 2026-09-29`를 찍었다.** 셋 다 고친 것이 이 회차 안에 있다. archive 조건은 그 날짜가 지나는 것이라 다음 마감이 `archive/`로 옮긴다.
 
