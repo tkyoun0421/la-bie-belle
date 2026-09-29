@@ -16,6 +16,7 @@ function buildRow(overrides: Partial<MyProfileRow> = {}): MyProfileRow {
     rejected_at: null,
     blocked_at: null,
     left_at: null,
+    notifications_enabled: true,
     ...overrides,
   };
 }

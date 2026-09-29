@@ -1,3 +1,5 @@
+import type { PushPermission } from "@/features/notification/model/reach-state";
+
 /**
  * 승인 대기 화면 알림 영역의 모습 셋이다. 정본은
  * `docs/2-design/modules/account/screens/login.md`의 「알림 영역의 세 모습」이다.
@@ -13,6 +15,19 @@
 export type NotificationPromptView = "idle" | "enabled" | "denied";
 
 export type NotificationPromptOutcome = "granted" | "denied" | "unsupported";
+
+/**
+ * 물어본 뒤에도 「안 물어본 상태」로 남았다는 것은 기기가 물음 자체를 못 띄웠다는 뜻이다 —
+ * 사람이 거부한 것과 다르지만 켜는 길이 기기 설정뿐인 것은 같아서 같은 모습으로 간다.
+ */
+export const PROMPT_OUTCOME_OF: Record<
+  PushPermission,
+  NotificationPromptOutcome
+> = {
+  granted: "granted",
+  denied: "denied",
+  undetermined: "unsupported",
+};
 
 export const INITIAL_NOTIFICATION_PROMPT_VIEW: NotificationPromptView = "idle";
 

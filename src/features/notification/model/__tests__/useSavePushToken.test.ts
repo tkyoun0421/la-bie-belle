@@ -13,7 +13,6 @@ jest.unstable_mockModule(
 const { renderHook, act, waitFor } =
   await import("@testing-library/react-native");
 const { useSavePushToken } =
-  // @ts-expect-error 대상 모듈이 아직 없다
   await import("@/features/notification/model/useSavePushToken");
 
 const FAKE_CLIENT = {} as never;

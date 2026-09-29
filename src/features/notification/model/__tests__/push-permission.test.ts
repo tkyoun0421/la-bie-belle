@@ -12,7 +12,6 @@ function createDeferred<T>() {
 }
 
 const { mapPermissionStatus, getPushPermission, requestPushPermission } =
-  // @ts-expect-error 대상 모듈이 아직 없다
   await import("@/features/notification/model/push-permission");
 
 describe("mapPermissionStatus — 기기 응답을 권한 상태 셋으로 옮긴다", () => {

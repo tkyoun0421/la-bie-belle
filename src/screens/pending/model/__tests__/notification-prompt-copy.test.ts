@@ -1,5 +1,4 @@
 const { getNotificationPromptCopy } =
-  // @ts-expect-error 대상 모듈이 아직 없다
   await import("@/screens/pending/model/notification-prompt-copy");
 
 describe("getNotificationPromptCopy — 아직 안 켬은 제목과 켜기 버튼이 있는 안내다", () => {
@@ -35,7 +34,6 @@ describe("getNotificationPromptCopy — 거부한 뒤는 버튼 없이 설정으
 describe("getNotificationPromptCopy — 거부한 뒤 문장은 「나」 화면의 알림 안내와 같다", () => {
   it("denied 모습의 제목과 아래 줄이 프로필 알림 안내 문구와 일치한다", async () => {
     const { getProfileNotificationRow } =
-      // @ts-expect-error 대상 모듈이 아직 없다
       await import("@/features/notification/model/profile-notification-row");
 
     const promptCopy = getNotificationPromptCopy("denied");

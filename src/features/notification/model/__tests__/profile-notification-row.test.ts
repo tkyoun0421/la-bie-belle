@@ -1,5 +1,4 @@
 const { getProfileNotificationRow } =
-  // @ts-expect-error 대상 모듈이 아직 없다
   await import("@/features/notification/model/profile-notification-row");
 
 describe("getProfileNotificationRow — 읽는 중에는 스위치가 잠긴 채 움직이지 않는다", () => {

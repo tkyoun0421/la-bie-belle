@@ -1,8 +1,15 @@
 import { Tabs } from "expo-router";
 import { CalendarDays, House, User, Wallet } from "lucide-react-native";
 import { useEffect, useState } from "react";
+import { AppState } from "react-native";
 import { getCurrentUser } from "@/shared/lib/get-current-user";
 import { supabase } from "@/shared/lib/supabase";
+import { PUSH_DEPS } from "@/features/notification/model/push-deps";
+import {
+  getPushPermission,
+  requestPushPermission,
+} from "@/features/notification/model/push-permission";
+import { useSavePushToken } from "@/features/notification/model/useSavePushToken";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
 
 /**
@@ -14,13 +21,38 @@ import { useMyProfile } from "@/features/profile/model/useMyProfile";
  * (`docs/2-design/system/navigation.md`의 「경로」) 탭을 남기면 눌러도 안 열리는 탭이 셋
  * 선다. 판정이 화면이 아니라 여기 있는 것은 탭 바가 이 껍데기의 것이라서다 — 급여 화면은
  * 두 껍데기에 같은 모습으로 들어간다.
+ *
+ * **매 진입에 기기 주소를 보내는 자리도 여기다**
+ * (`docs/2-design/spec/notification-settings.md`의 AC-04). 이 껍데기는 세션이 있는 사람만
+ * 지나고 앱이 떠 있는 동안 안 내려가서, 앱이 뜰 때 한 번과 앞으로 돌아올 때마다를 한 자리에서
+ * 받는다. 뿌리 껍데기에 두면 로그인 전에도 부르게 되고, 화면 하나에 두면 그 탭을 안 연 사람의
+ * 주소가 안 선다.
+ *
+ * **여기서는 안 묻는다.** 이미 허락된 기기의 주소만 받아 온다 — 묻는 것은 사람이 누를 때뿐이다
+ * ([NTF-017](../../../../docs/2-design/modules/notification/README.md#ntf-017)).
  */
 export default function TabsLayout() {
   const [userId, setUserId] = useState<string | null>(null);
+  const [pushToken, setPushToken] = useState<string | null>(null);
   const { data: profile } = useMyProfile(supabase, userId);
+
+  useSavePushToken(supabase, pushToken, AppState);
 
   useEffect(() => {
     void getCurrentUser(supabase).then((user) => setUserId(user?.id ?? null));
+  }, []);
+
+  useEffect(() => {
+    void getPushPermission(PUSH_DEPS.getPermissionsAsync)
+      .then((permission) =>
+        permission === "granted" ? requestPushPermission(PUSH_DEPS) : null,
+      )
+      .then((asked) => {
+        if (asked?.permission === "granted") {
+          setPushToken(asked.token);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   return (

@@ -2,7 +2,13 @@ import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, View } from "react-native";
+import {
+  AppState,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getCurrentUser } from "@/shared/lib/get-current-user";
 import { queryClient } from "@/shared/lib/query-client";
@@ -17,6 +23,7 @@ import { CelebrationCircle } from "@/shared/ui/CelebrationCircle";
 import { Divider } from "@/shared/ui/Divider";
 import { Illustration } from "@/shared/ui/Illustration";
 import { Input } from "@/shared/ui/Input";
+import { PushNotice } from "@/shared/ui/PushNotice";
 import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { Text } from "@/shared/ui/Text";
@@ -26,11 +33,24 @@ import { getProfilePrivate } from "@/entities/profile/dals/profile-private";
 import { submitProfile } from "@/entities/profile/dals/submit-profile";
 import { updateMyPhoto } from "@/entities/profile/dals/update-my-photo";
 import { googlePhotoOf } from "@/features/auth/google-photo-of";
+import { PUSH_DEPS } from "@/features/notification/model/push-deps";
+import { requestPushPermission } from "@/features/notification/model/push-permission";
+import { useSavePushToken } from "@/features/notification/model/useSavePushToken";
 import {
   isProfileGender,
   validateProfileForm,
   type ProfileGender,
 } from "@/features/profile/model/validate-profile";
+import {
+  INITIAL_NOTIFICATION_PROMPT_VIEW,
+  PROMPT_OUTCOME_OF,
+  transitionNotificationPromptView,
+  type NotificationPromptView,
+} from "@/screens/pending/model/notification-prompt";
+import {
+  getNotificationPromptCopy,
+  NOTIFICATION_PROMPT_BUTTON,
+} from "@/screens/pending/model/notification-prompt-copy";
 
 /**
  * 로그인한 사람이 프로필을 적어 가입을 끝내는 자리다. 한 경로가 장면 넷을 든다 — 프로필
@@ -47,7 +67,10 @@ import {
  * 한 번이라도 보낸 적이 있는지는 개인정보 행이 있는지로 안다 — 차단이 풀린 사람은
  * `submitted_at`이 비워진 채 지난 값만 남아서 그 자리에 다시 선다.
  *
- * 알림 켜기 자리는 `notification-settings`가 채운다(spec 「승인 근거」의 제한).
+ * **알림 영역은 기다리는 중에만 선다.** 거절된 뒤에는 알림을 켜 봐야 올 것이 없어 자리째
+ * 사라진다(login.md 「거절된 뒤」). 저절로 안 묻고 사람이 「알림 켜기」를 눌러야 기기가
+ * 묻는다 — 켜도 화면이 안 넘어가고 안 켜도 안 막힌다
+ * ([NTF-018](../../../../docs/2-design/modules/notification/README.md#ntf-018)).
  */
 
 const STEPS = ["photo", "name", "gender", "birthDate", "phone"] as const;
@@ -144,6 +167,12 @@ export function PendingScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [submitFailed, setSubmitFailed] = useState(false);
   const [line, setLine] = useState(0);
+  const [promptView, setPromptView] = useState<NotificationPromptView>(
+    INITIAL_NOTIFICATION_PROMPT_VIEW,
+  );
+  const [pushToken, setPushToken] = useState<string | null>(null);
+
+  useSavePushToken(supabase, pushToken, AppState);
 
   useEffect(() => {
     let abandoned = false;
@@ -224,6 +253,18 @@ export function PendingScreen() {
       clearQueryClient: () => queryClient.clear(),
     }).then(() => router.replace("/login"));
   }, [router]);
+
+  const turnOnNotifications = useCallback(async () => {
+    const asked = await requestPushPermission(PUSH_DEPS);
+
+    if (asked.permission === "granted" && asked.token !== null) {
+      setPushToken(asked.token);
+    }
+
+    setPromptView((at) =>
+      transitionNotificationPromptView(at, PROMPT_OUTCOME_OF[asked.permission]),
+    );
+  }, []);
 
   const freeze = useCallback((step: Step) => {
     setFrozen((at) => (at.includes(step) ? at : [...at, step]));
@@ -319,6 +360,7 @@ export function PendingScreen() {
 
   if (stage === "waiting" || stage === "rejected") {
     const rejected = stage === "rejected";
+    const prompt = getNotificationPromptCopy(promptView);
 
     return (
       <Screen
@@ -346,6 +388,24 @@ export function PendingScreen() {
         </View>
 
         <View>
+          {rejected ? null : (
+            <PushNotice
+              tone={promptView}
+              title={prompt.title}
+              subline={prompt.subline}
+              action={
+                prompt.hasButton ? (
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onPress={() => void turnOnNotifications()}
+                  >
+                    {NOTIFICATION_PROMPT_BUTTON}
+                  </Button>
+                ) : undefined
+              }
+            />
+          )}
           <Divider className="my-5" />
           <View className="flex-row items-center justify-center gap-3">
             <Avatar name={email} photoUrl={values.photoUrl} size={24} />
