@@ -75,7 +75,7 @@
 - 규칙: [PAY-023](README.md#pay-023)·[PAY-024](README.md#pay-024)·[PAY-027](README.md#pay-027)
 - 입력·전제: `import_holidays(p_year integer, p_rows jsonb)`가 받아온 목록을 넣는다. 부르는 것은 Edge Function `import-holidays`고 그 함수가 공공 API를 부른다 — Postgres 함수가 외부 HTTP를 못 부르니 계기와 호출이 갈린다. 관리자가 손으로 표시하는 임시공휴일은 `set_holiday(p_date date, p_on boolean)`이고 `manual`로 넣는다
 - 읽고 쓰는 데이터: `import_holidays`는 그 해의 `api` 행을 지우고 새로 넣는다 — `manual` 행은 안 건드린다. `set_holiday`는 `p_on`이 참이면 `manual` 행을 넣고 거짓이면 지운다. 같은 날짜에 `api` 행이 이미 있으면 `set_holiday`가 아무것도 안 한다 — 이미 공휴일이다
-- 권한: `import_holidays`는 `internal`이다. 사람이 부르는 자리가 없고 Edge Function이 서비스 키로 온다 — [서비스 키 자리](../../system/data-access.md#서비스-키-자리) 셋 중 하나다. `set_holiday`는 `public`이고 첫 줄이 `is_admin()`이다
+- 권한: 알맹이 `import_holidays`는 `internal`이고 사람이 부르는 자리가 없다. **Edge Function은 같은 이름의 `public` 껍데기를 통해 온다** — 서비스 키로도 `internal`은 PostgREST가 라우팅을 안 해 못 닿는다([서비스 키 자리](../../system/data-access.md#서비스-키-자리)). 껍데기 첫 줄이 `auth.role() = 'service_role'`을 본다. `set_holiday`는 `public`이고 첫 줄이 `is_admin()`이다
 - 처리와 경쟁: 받는 계기는 pg_cron이다. 아래 [행위 밖의 실행 동작](#행위-밖의-실행-동작)에 있다
 
 ### 공휴일 받기

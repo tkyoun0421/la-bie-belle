@@ -1,6 +1,6 @@
 // 공휴일 받기의 밖으로 나가는 한 걸음이다. `internal.fetch_holidays`가 다음 해가 비어 있는
 // 것을 보고 pg_net으로 이 함수를 쏘면, 여기가 공공 API(한국천문연구원 특일 정보)를 부르고
-// 받은 목록을 service role로 `internal.import_holidays`에 넘긴다 — Postgres 함수가 외부 HTTP를
+// 받은 목록을 service role로 `public.import_holidays`에 넘긴다 — Postgres 함수가 외부 HTTP를
 // 못 부른다(payroll/design.md 「공휴일 받기」).
 //
 // 서비스 키를 쥐는 자리 셋 중 하나라 호출자 검사가 이 파일의 첫 일이다. 게이트웨이의
@@ -158,7 +158,9 @@ Deno.serve(async (request: Request): Promise<Response> => {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  const { error } = await admin.schema("internal").rpc("import_holidays", {
+  // `public` 껍데기다. 서비스 키로도 `internal`은 PostgREST가 라우팅을 안 해 못 닿는다
+  // (data-access.md 「서비스 키 자리」). 껍데기가 첫 줄에서 service role인지 보고 알맹이를 부른다.
+  const { error } = await admin.rpc("import_holidays", {
     p_year: year,
     p_rows: rows,
   });

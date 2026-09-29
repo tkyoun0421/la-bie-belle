@@ -1,4 +1,10 @@
-import { execSql, queryColumn, seedHoliday } from "@tests/integration/postgres";
+import {
+  type AdminUser,
+  createAdminUser,
+  execSql,
+  queryColumn,
+  seedHoliday,
+} from "@tests/integration/postgres";
 
 const FETCH_HOLIDAYS_URL_SECRET_NAME = "import_holidays_url";
 const FETCH_HOLIDAYS_SERVICE_KEY_SECRET_NAME =
@@ -42,6 +48,32 @@ function netResponseCountAfter(id: number): number {
   const rows = queryColumn(
     "select count(*) from net._http_response where id > :'after_id';\n",
     { after_id: String(id) },
+  );
+  return Number(rows[0] ?? "0");
+}
+
+function rpc(
+  user: { client: AdminUser["client"] },
+  fn: string,
+  args: Record<string, unknown>,
+): Promise<{ error: { message: string } | null }> {
+  return (
+    user.client as unknown as {
+      rpc: (
+        fn: string,
+        args: Record<string, unknown>,
+      ) => Promise<{ error: { message: string } | null }>;
+    }
+  ).rpc(fn, args);
+}
+
+function apiHolidayCountInYear(year: number): number {
+  const rows = queryColumn(
+    "select count(*) from public.holidays\n" +
+      "where source = 'api'\n" +
+      "  and holiday_date >= make_date(:'year'::integer, 1, 1)\n" +
+      "  and holiday_date < make_date(:'year'::integer + 1, 1, 1);\n",
+    { year: String(year) },
   );
   return Number(rows[0] ?? "0");
 }
@@ -125,6 +157,21 @@ describe("internal.fetch_holidays — 다음 해 조건(plan AC-01)", () => {
     } finally {
       createFetchHolidaysVaultSecrets();
     }
+  });
+});
+
+describe("public.import_holidays 껍데기(plan AC-02) — service role만 통과한다", () => {
+  it("로그인한 클라이언트가 rpc('import_holidays')를 부르면 not_allowed로 거절되고 아무것도 안 들어간다", async () => {
+    const admin = await createAdminUser();
+    const year = 2050 + Math.floor(Math.random() * 900);
+
+    const { error } = await rpc(admin, "import_holidays", {
+      p_year: year,
+      p_rows: [{ holiday_date: `${year}-03-01`, name: "공개호출" }],
+    });
+
+    expect(error?.message).toBe("not_allowed");
+    expect(apiHolidayCountInYear(year)).toBe(0);
   });
 });
 

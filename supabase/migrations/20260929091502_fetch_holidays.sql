@@ -79,6 +79,34 @@ begin
 end;
 $$;
 
+-- 받는 쪽이다. 알맹이는 `internal.import_holidays`인데 **서비스 키로도 `internal`은 못 부른다**
+-- — PostgREST가 노출 목록(`public`·`graphql_public`) 밖의 스키마를 라우팅 단계에서 끊어 키와
+-- 무관하게 `PGRST106`이다. 그래서 Edge Function이 닿는 문을 `public`에 세운다
+-- (data-access.md 「서비스 키 자리」).
+--
+-- **`internal`을 노출 목록에 넣는 길은 안 간다.** 그 한 줄이 신원을 인자로 받는 다른 `internal`
+-- 함수까지 같이 연다.
+--
+-- 껍데기·알맹이의 평소 관례 그대로다 — 호출자 검사는 여기가 하고 알맹이는 안 한다. 다른
+-- 껍데기가 `is_admin()`을 보는 자리에서 이것만 `auth.role()`을 보는데, 부르는 것이 사람이
+-- 아니라 cron이 쏘는 Edge Function이라 볼 프로필이 없어서다.
+create function public.import_holidays(p_year integer, p_rows jsonb)
+  returns void
+  language plpgsql
+  security definer
+  set search_path = ''
+as $$
+begin
+  -- `is distinct from`이다. JWT가 없는 호출은 `auth.role()`이 널이고, `<>`로 쓰면 널 비교가
+  -- 널이라 조건이 거짓이 되어 그대로 통과한다.
+  if auth.role() is distinct from 'service_role' then
+    raise exception using message = 'not_allowed';
+  end if;
+
+  perform internal.import_holidays(p_year, p_rows);
+end;
+$$;
+
 -- 한국 시각 새벽 3시에 하루 한 번이다. crontab은 UTC로 읽혀 18시다. 비우기가 새벽 4시라
 -- 한 시간 앞에 둔다 — 둘이 같은 시각에 몰릴 이유가 없고 갈라두면 로그를 읽기 쉽다.
 select cron.schedule(

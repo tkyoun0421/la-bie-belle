@@ -1303,6 +1303,10 @@ export type Database = {
         Returns: undefined;
       };
       has_rehearsal_grant: { Args: { p_profile_id: string }; Returns: boolean };
+      import_holidays: {
+        Args: { p_rows: Json; p_year: number };
+        Returns: undefined;
+      };
       is_admin: { Args: never; Returns: boolean };
       is_approved: { Args: never; Returns: boolean };
       is_last_admin: { Args: { target_id: string }; Returns: boolean };

@@ -58,6 +58,8 @@ pg_cron 작업 하나(`fetch-holidays`)와 Edge Function 하나(`import-holidays
 - 공공 API(한국천문연구원 특일 정보)를 부른다. **API 키는 Edge Function secret이다** — 저장소에 안 들어간다([공휴일 받기](../../2-design/modules/payroll/design.md#공휴일-받기))
 - **호출자가 service role인지 먼저 본다.** 게이트웨이의 `verify_jwt`는 유효한 토큰인지만 봐서 anon 키도 통과한다. 안 막으면 인증된 클라이언트 아무나 이 주소를 되풀이해 불러 **우리 공공 API 쿼터를 태운다.** `supabase/functions/erase-account/index.ts`가 그 검사를 이미 하니 같은 손을 쓴다
 - 받은 목록을 `{ holiday_date, name }` 배열로 바꿔 `import_holidays(p_year, p_rows)`에 넘긴다. 서비스 키로 부른다
+- **부르는 것은 `public` 껍데기다.** 서비스 키로도 `internal`은 PostgREST가 라우팅을 안 해 `PGRST106`으로 막힌다([서비스 키 자리](../../2-design/system/data-access.md#서비스-키-자리)). 이 task가 `public.import_holidays(p_year, p_rows)`를 세우고 그 첫 줄이 `auth.role() = 'service_role'`을 본 뒤 `internal.import_holidays`를 부른다. 알맹이는 `payroll-data`가 낸 그대로 안 건드린다
+- **같은 날짜가 두 번 들어가면 통째로 실패한다.** `internal.import_holidays`의 `insert ... on conflict do update`가 한 문장 안의 중복 행을 못 받는다(`ON CONFLICT DO UPDATE command cannot affect row a second time`). 열두 달을 합칠 때 `holiday_date`로 한 번 거른다 — 한 번 걸리면 그 해가 영영 안 들어온다
 - **실패하면 아무것도 안 넣는다.** 부분 성공이 없다 — 한 해치를 통째로 넣거나 아무것도 안 넣는다. 열두 달 중 한 달이 실패해도 그 해를 안 넣고 다음 날 cron이 같은 조건을 다시 본다
 - 응답이 비어 있으면 `import_holidays`를 안 부른다. [payroll-data AC-05](payroll-data.md#ac-05)가 빈 목록을 방어하지만 여기서도 안 보낸다
 - 로그에 성공·실패와 넣은 건수를 남긴다. 사람이 안 보는 동작이라 로그가 유일한 창이다
@@ -105,8 +107,8 @@ export function parseHolidayApiResponse(body: unknown): { holiday_date: string; 
 
 | 파일 | 책임 |
 | --- | --- |
-| `supabase/migrations/<타임스탬프>_fetch_holidays.sql` | 확장, `internal.fetch_holidays`, cron 등록 |
-| `supabase/functions/import-holidays/index.ts` | 열두 달 호출, 파싱 함수 부르기, `import_holidays`에 넘기기, 호출자 검사 |
+| `supabase/migrations/<타임스탬프>_fetch_holidays.sql` | 확장, `internal.fetch_holidays`, `public.import_holidays` 껍데기, cron 등록 |
+| `supabase/functions/import-holidays/index.ts` | 열두 달 호출, 파싱 함수 부르기, 껍데기에 넘기기, 호출자 검사 |
 | `src/features/payroll/model/holiday-api-response.ts` | `toIsoDate`·`parseHolidayApiResponse` |
 | `src/features/payroll/model/__tests__/holiday-api-response.test.ts` | 그 짝 |
 | `src/entities/payroll/dals/__tests__/fetch-holidays.integration.test.ts` | cron 조건과 등록 |
@@ -148,6 +150,7 @@ export function parseHolidayApiResponse(body: unknown): { holiday_date: string; 
 | AC-02 | 빈 결과가 예외로 튄다 | unit 위 | `pnpm test` | `items`가 빈 문자열이면 빈 배열 |
 | AC-02 | 공휴일이 아닌 날이 급여 계산에 든다 | unit 위 | `pnpm test` | `isHoliday`가 `"N"`인 항목이 빠진다 |
 | AC-02 | 정상 응답을 옮기다 값이 어긋난다 | unit 위 | `pnpm test` | `{ holiday_date, name }[]`로 정확히 옮겨진다 |
+| AC-02 | 껍데기를 아무나 불러 그 해 공휴일을 갈아엎는다 | integration `src/entities/payroll/dals/__tests__/fetch-holidays.integration.test.ts` | `pnpm test:integration:run` | 로그인한 클라이언트의 `rpc("import_holidays")`가 거절된다 |
 | AC-03 | 키가 커밋에 든다 | 수동 — `pr-diff`가 diff 전문을 본다 | — | API 키와 서비스 키 문자열이 어느 파일에도 없다 |
 | AC-01 | 첫 실행이 안 돈다 | 수동 — 배포 뒤 다음 해 행을 본다 | 운영 | 새벽 한 번 뒤 그 해 `api` 행이 선다 |
 

@@ -125,6 +125,7 @@
   - `auth.users` 삭제 — Admin API뿐이다([`account/design.md`](../modules/account/design.md#퇴사-1년-뒤))
   - Edge Function이 `notifications.pushed_at`을 찍는 것 — 함수는 사용자 세션 없이 돈다([`notification/design.md`](../modules/notification/design.md))
   - Edge Function이 `import_holidays`로 한 해치 공휴일을 넣는 것 — cron이 쏘는 함수라 사용자 세션이 없다([`payroll/design.md`](../modules/payroll/design.md#공휴일-받기))
+- **서비스 키로도 `internal`은 못 부른다.** PostgREST가 노출 목록(`public`·`graphql_public`) 밖의 스키마를 아예 라우팅하지 않아 키와 무관하게 `PGRST106`이다. Edge Function이 DB 함수를 부를 자리에는 **`public` 껍데기를 세우고 그 첫 줄이 `auth.role() = 'service_role'`을 본다** — 위의 「함수 안의 규칙」이 정한 껍데기·알맹이 관례를 서비스 키 쪽에 그대로 적용한 것이다. `internal`을 노출 목록에 넣는 길은 안 간다. 그 한 줄이 모든 `internal` 함수를 같이 열어서다
 
 ## 결과·오류 계약
 
