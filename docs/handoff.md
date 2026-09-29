@@ -6,7 +6,11 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `payroll-holidays`다** — backlog의 `ready` 맨 위다. plan이 이미 서 있다: [3-build/plans/payroll-holidays.md](3-build/plans/payroll-holidays.md). 공휴일 받기를 만든다 — pg_cron `fetch_holidays`가 날마다 다음 해가 비었는지 보고 `pg_net`으로 Edge Function `import-holidays`를 쏜다. API 키는 Edge Function secret이라 저장소에 안 들어간다. 정본은 [payroll/design.md](2-design/modules/payroll/design.md#공휴일-받기)다. **vault 시크릿의 로컬 값을 넣는 길은 `profile-erasure`가 이미 밟았다** — 테스트가 `beforeAll`에서 `vault.create_secret`으로 로컬 전용 가짜 값을 넣고 `afterAll`에서 지운다. `seed.sql`은 `db reset`마다 도는 전역 상태라 안 쓴다. 사용자의 상시 지시는 「전체 기능 구현」이다: 시안 열다섯을 건너뛰고 화면 task가 [ADR-014](2-design/adr/ADR-014-toss-like-depth-and-graphics.md)를 코드로 옮기는 랄프 루프를 돌리는 중이고, 루프의 정본은 [spec/ui-kit.md](2-design/spec/ui-kit.md)의 「루프」 절이다.
+**다음 첫 수는 `notification-push`다** — backlog의 `ready` 맨 위다. **plan이 아직 없다 — 총괄이 먼저 쓴다**(`profile-erasure`가 #461로 밟은 순서다). 푸시를 쏘는 자리를 만든다 — Edge Function `send-push`, Database Webhook, pg_cron `retry_push`. 잡기 update의 `returning`이 중복 발송을 막고 다섯 번이 끝이다. 정본은 [notification/design.md](2-design/modules/notification/design.md)다. **이 task가 [관찰 033](observations/033-service-key-cannot-reach-internal.md)을 먼저 읽어야 한다** — `send-push`가 `notifications.pushed_at`을 찍는 쓰기가 `internal` 함수를 타면 서비스 키로도 못 닿는다. `public` 껍데기를 세우고 그 첫 줄이 `auth.role()`을 보는 길이 `payroll-holidays`에서 이미 섰다. 사용자의 상시 지시는 「전체 기능 구현」이다: 시안 열다섯을 건너뛰고 화면 task가 [ADR-014](2-design/adr/ADR-014-toss-like-depth-and-graphics.md)를 코드로 옮기는 랄프 루프를 돌리는 중이고, 루프의 정본은 [spec/ui-kit.md](2-design/spec/ui-kit.md)의 「루프」 절이다.
+
+**`payroll-holidays`가 `done`이다(#464).** `internal.fetch_holidays()`가 날마다 다음 해에 `source = 'api'` 공휴일이 있는지 보고, 비었으면 `pg_net`으로 Edge Function `import-holidays`를 쏜다. 그 함수가 공공데이터포털에서 열두 달을 순차로 받아 한 달이라도 실패하면 아무것도 안 넣고, 성공하면 `public.import_holidays(p_year, p_rows)`를 부른다. **서비스 키로도 `internal`은 못 부른다** — PostgREST가 노출 목록(`public`·`graphql_public`) 밖의 스키마를 라우팅 단계에서 끊어 키와 무관하게 `PGRST106`이다. 그래서 `public` 껍데기가 서고 그 첫 줄이 `auth.role() is distinct from 'service_role'`을 본다(`<>`면 JWT 없는 호출의 널 비교가 널이라 검사를 그냥 통과한다). 판정은 [data-access.md](2-design/system/data-access.md)의 「서비스 키 자리」가 정본이고 [관찰 033](observations/033-service-key-cannot-reach-internal.md)이 경위를 담는다.
+
+**pg_net 호출 횟수는 응답 표가 아니라 요청 시퀀스로 센다.** `net.http_post`는 요청 행만 그 자리에서 넣고 응답 행은 백그라운드 워커가 나중에 쓴다 — `net._http_response`를 부른 직후에 세면 로컬에서는 맞고 CI에서는 0이 나온다. 통합 테스트 둘이 이 경쟁으로 깨졌고 `net.http_request_queue_id_seq`의 차를 세는 쪽으로 옮겼다([관찰 034](observations/034-pg-net-response-row-is-async.md)). `send-push`도 「쏘았는가」를 세게 되니 같은 길을 탄다.
 
 **`profile-erasure`가 `done`이다(#461 plan, #462 구현).** 퇴사 1년 뒤 비우기가 섰다 — `internal.erase_profiles(p_now)`가 1년 경계로 `profile_private`를 지우고 `avatars` 사진을 비우고 `erased_at`을 찍은 뒤, `pg_net`으로 Edge Function `erase-account`를 쏴서 `auth.users`를 지운다. **plan을 쓰며 정본에 판정 넷을 박았다** — 도는 시각은 한국 새벽 4시, 사진은 주소만이 아니라 파일도 지운다, 알림 행은 안 비운다(`notification-data`가 넘긴 판정), 계정이 살아 있는 하루 동안 본인은 이름·지난 급여·근무 기록을 그대로 본다. 이 넷은 `account/design.md`의 「비우기」 절이 정본이다.
 
@@ -16,7 +20,7 @@
 
 **`plans-restate`가 `done`이다(#459, #460).** plan 열둘의 「변경 파일」 표가 디렉터리 대신 구현 파일을 하나씩 들고, 검증 표의 `(예정)`과 「e2e 명령」이 실재 경로와 `pnpm e2e`로 섰다. 채우는 일보다 낡은 서술을 걷어낸 쪽이 컸다 — 계획서가 「누가 무엇을 세우는가」를 적는데 실제 merge 순서가 그것과 달라, dal과 공용 조각의 주체가 뒤바뀐 자리 넷과 달 고르기 시트를 서로 미루던 자리 다섯이 나왔다. `attendance-excuse` AC-05의 「iOS 사파리 visual viewport」는 네이티브에 사파리가 없어 `KeyboardAvoidingView`로 판정했다(선례는 `src/screens/pending/ui/PendingScreen.tsx:390`). **다음 화면 task가 plan을 읽을 때 이 정정을 믿어도 된다** — 열둘 다 지금 코드와 대조했다.
 
-**`ready`가 다섯이다.** `payroll-holidays`가 맨 위고 `notification-push`·`notification-list`·`notification-settings`·`sian-sync`가 뒤를 잇는다. 맨 위는 Edge Function과 pg_cron을 쓰는 서버 쪽이라 화면 task와 결이 다르다. `blocked`로 남은 쪽의 이유는 셋뿐이다 — **NCP 자격**(`attendance-checkin`·`hall-location`), **도메인**(`qr-landing-page`·`first-release`), **앞 task의 사슬**(`dashboard`가 `attendance-checkin`을 기다리고 `attendance-excuse`·`notification-emit` 이하가 그 뒤에 선다).
+**`ready`가 넷이다.** `notification-push`가 맨 위고 `notification-list`·`notification-settings`·`sian-sync`가 뒤를 잇는다. 맨 위는 Edge Function과 pg_cron을 쓰는 서버 쪽이라 화면 task와 결이 다르다. `blocked`로 남은 쪽의 이유는 셋뿐이다 — **NCP 자격**(`attendance-checkin`·`hall-location`), **도메인**(`qr-landing-page`·`first-release`), **앞 task의 사슬**(`dashboard`가 `attendance-checkin`을 기다리고 `attendance-excuse`·`notification-emit` 이하가 그 뒤에 선다).
 
 **관찰 021·027·030은 아직 archive로 안 옮겼다.** `resolved: 2026-09-29`가 찍혀 있는데 오늘이 아직 그 날짜라 archive 조건(그 날짜가 지나는 것)을 아직 안 채운다. 다음 마감이 옮긴다.
 
@@ -26,9 +30,9 @@
 
 **spec 게이트가 열려 있고 화면 task 전부 `approved`다.** `feat/<슬러그>` 브랜치의 `src/` 쓰기를 spec `status: approved`가 통과시킨다. spec 파일이 없는 데이터 task는 plan의 `## 완료 조건` 절로도 통과한다(#441) — `attendance-checkin`의 병목은 spec이 아니라 NCP 자격(대표 계정·지도 키·`customStyleId`)이다.
 
-**저장소의 첫 Edge Function이 섰다.** `supabase/functions/erase-account/index.ts` — service role로 Admin API를 불러 계정을 지운다. `tsconfig.json`이 `supabase/functions`를 `exclude`에 두는데, 그 폴더가 Deno 런타임이라 `Deno` 전역도 `npm:` 지정자도 우리 `tsc`로는 안 풀려서다. Edge Function을 타입 검사하는 자리가 아직 없다 — CI에 Deno가 없다. `payroll-holidays`의 `import-holidays`가 둘째 Edge Function이 될 자리라, 검사 단계를 세울지는 그 task에서 다시 볼 만하다.
+**저장소의 첫 Edge Function이 섰다.** `supabase/functions/erase-account/index.ts` — service role로 Admin API를 불러 계정을 지운다. `tsconfig.json`이 `supabase/functions`를 `exclude`에 두는데, 그 폴더가 Deno 런타임이라 `Deno` 전역도 `npm:` 지정자도 우리 `tsc`로는 안 풀려서다. Edge Function을 타입 검사하는 자리가 아직 없다 — CI에 Deno가 없다. `import-holidays`(#464)가 둘째로 섰고 검사 단계는 여전히 안 세웠다. `send-push`가 셋째다.
 
-**vault로 로컬 시크릿을 심는 길이 섰다.** integration 테스트가 `beforeAll`/`afterAll`에서 `vault.create_secret`/삭제로 로컬 전용 가짜 값을 넣고 뺀다. `seed.sql`(전역 상태, `db reset`마다 돎)은 이 용도로 안 쓴다 — `payroll-holidays`가 같은 길을 그대로 탄다.
+**vault로 로컬 시크릿을 심는 길이 섰다.** integration 테스트가 `beforeAll`/`afterAll`에서 `vault.create_secret`/삭제로 로컬 전용 가짜 값을 넣고 뺀다. `seed.sql`(전역 상태, `db reset`마다 돎)은 이 용도로 안 쓴다 — `payroll-holidays`가 같은 길을 그대로 탔고 `notification-push`도 부치는 접근 토큰을 이렇게 심는다.
 
 **금액 꼴은 `shared/lib/spell-number.ts` 하나로 모였고, 시간 길이 꼴은 아직 슬라이스 셋에 흩어져 있다.** `screens/payroll/model/summary.ts`의 `spellWorkedHours`(「0시간 30분」)와 `screens/schedule-admin/model/adjust-sheet-rows.ts`의 `spellHours`·`features/rehearsal/model/spell-total.ts`의 `spellMinutes`(「30분」)가 갈려 있다 — `writing.md`가 「30분」 쪽으로 판정했으니 `summary.ts`가 어긋난 쪽이다. `spell-number-shared` candidate가 받는다.
 
