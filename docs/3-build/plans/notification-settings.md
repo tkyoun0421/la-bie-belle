@@ -34,12 +34,13 @@ sources:
 - **막는 자리가 앱이 아니라 함수 안이다.** 끈 사람의 주소가 매 진입 흐름을 타고 되살아나면 끄기가 안 끈 것이 된다 — `save_push_token`이 그것을 막는다(AC-05)
 - **관리자는 주소를 못 읽는다.** `push_reachable` 뷰가 `profile_id`와 `has_device`만 내고, 관리자가 아니면 예외가 아니라 빈 결과다(AC-07)
 
-저장소에서 확인한 것이 넷이다. **`expo-notifications`가 아직 의존성에 없다**(`package.json`). 함수 넷은 `supabase/migrations/20260922091506_notifications.sql`에 서 있고, 「나」 화면(`src/screens/profile/`)·승인 대기 화면(`src/screens/pending/`)·직원 목록(`src/screens/members/`)·배정(`src/features/schedule-assign/`)이 이미 섰다.
+저장소에서 확인한 것이 여섯이다. **`expo-notifications`가 아직 의존성에 없다**(`package.json`). 함수 넷은 `supabase/migrations/20260922091506_notifications.sql`에 서 있고, 「나」 화면(`src/screens/profile/`)·승인 대기 화면(`src/screens/pending/`)·직원 목록(`src/screens/members/`)·확정 뒤 확인(`src/screens/schedule-admin/`)이 이미 섰다. **`save_push_token`이 이미 의사를 본다** — `supabase/migrations/20260922091507_notification_functions.sql`의 `where id = caller_profile_id and notifications_enabled`라 AC-05에 마이그레이션이 안 든다. **`push_reachable`은 이미 `where public.is_admin()`이라** 비관리자에게 예외가 아니라 빈 결과고, 그 사실과 주소를 안 내는 것은 `notification-functions.integration.test.ts`·`notification-rls.integration.test.ts`가 이미 덮는다.
 
 ## 이 plan이 정본에 박은 판정
 
 - **iOS 쪽 차이를 정본이 안 적는다.** 안드로이드의 알림 채널만 적혀 있다(AC-06). iOS는 채널 개념이 없고 권한 요청이 곧 시스템 창이라 **추가 단계가 없다** — 이 plan이 그 사실을 적고 화면은 플랫폼 분기 하나로 끝낸다
 - **주소를 받으려면 `projectId`가 든다.** Expo 푸시 주소는 EAS 프로젝트에 묶여 `app.json`의 `extra.eas.projectId`를 읽어 넘긴다. 그 값이 없으면 개발 빌드에서 주소 발급이 실패한다 — 화면은 그 실패를 「켰는데 기기가 없음」 갈래로 받는다
+- **승인 대기 화면의 모습이 셋인데 코드의 값은 다른 셋이다.** `src/screens/pending/model/notification-prompt.ts`가 `"idle" | "enabled" | "unsupported"`를 들고 `"denied"` 결과를 받으면 `current`를 그대로 돌려줘 **거부해도 화면이 안 넘어간다**. [login.md 「알림 영역의 세 모습」](../../2-design/modules/account/screens/login.md#알림-영역의-세-모습)의 셋째가 「거부한 뒤」니 뷰 값을 `"idle" | "enabled" | "denied"`로 맞추고, 기기가 물음 자체를 못 띄우는 `"unsupported"` 결과도 같은 셋째 모습으로 보낸다 — 넷째 모습이 정본에 없다. **`src/screens/pending/model/__tests__/notification-prompt.test.ts`의 `toBe("unsupported")` 단언이 이 판정으로 바뀐다** — `unit-test-writer`가 고쳐 쓰고 `implementer`는 받은 것을 그대로 통과시킨다
 
 ## 완료 조건
 
@@ -79,6 +80,7 @@ sources:
 
 **매 진입에 주소를 보낸다.**
 
+- **진입은 앱이 뜰 때 한 번과 포그라운드로 돌아올 때마다다**([기기 주소](../../2-design/modules/notification/design.md#기기-주소)). 화면 사이를 오가는 것은 진입이 아니다. `AppState` 선례가 저장소에 없으니 이 task가 첫 자리를 만든다 — 구독은 훅 안에 두고 순수 함수는 상태 전이만 받는다
 - 앱이 떠 있는 동안 주소가 바뀌는 것도 같은 자리에서 받는다
 - 같은 주소를 다시 보내도 행이 안 는다 — `save_push_token`의 upsert가 `token`으로 부딪힌다
 - **한 기기를 A가 쓰다 B가 로그인하면 주소가 B에게 옮겨간다.** 함수 안의 일이고 이 task는 부르기만 한다([기기 주소](../../2-design/modules/notification/design.md#기기-주소))
@@ -87,7 +89,8 @@ sources:
 
 **끈 사람의 주소가 안 되살아난다.**
 
-- `save_push_token`이 의사가 거짓이면 아무 일도 안 한다. **이미 선 함수라 이 task가 고칠 것이 있는지부터 확인한다** — 막는 겹이 없으면 마이그레이션 한 줄이 이 task에 든다
+- `save_push_token`이 의사가 거짓이면 아무 일도 안 한다. **이미 그렇게 서 있다** — `where id = caller_profile_id and notifications_enabled`라 마이그레이션이 안 든다
+- **테스트가 이미 덮는다** — `notification-functions.integration.test.ts`가 그 자리를 본다. 이 task는 재배정하지 않는다
 - 앱도 안 부르지만 그것은 한 겹 더일 뿐이다
 
 ### AC-06
@@ -107,7 +110,7 @@ sources:
 `src/screens/profile/`의 설정 카드 안이다.
 
 - 스위치 하나가 통째로 든다. 종류별로 안 나눈다([NTF-021](../../2-design/modules/notification/README.md#ntf-021))
-- 권한 거부면 스위치 대신 안내 한 줄이다
+- 권한 거부면 스위치 대신 안내 두 줄이다 — 「알림이 꺼져 있어요」와 「기기 설정에서 알림을 켜면 받을 수 있어요」고 [승인 대기 화면](../../2-design/modules/account/screens/login.md#승인-대기-문안)과 같은 문장이다([profile.md 문안](../../2-design/modules/account/screens/profile.md#프로필-문안))
 - **켰는데 기기가 안 닿는 것을 근무자에게 안 말한다** — 고칠 것이 없는 경고가 된다([profile.md](../../2-design/modules/account/screens/profile.md#알림))
 
 ### AC-08
@@ -117,9 +120,10 @@ sources:
 자리 셋이다 — 직원 목록의 사람 줄, 사람 시트, 확정 뒤 배정을 바꾸는 확인.
 
 - 읽는 것은 `push_reachable` 뷰다. `profile_id`와 `has_device`만 오고 주소는 안 온다
-- 화면이 「꺼두었어요」와 「기기가 안 연결됐어요」를 갈라 말한다([NTF-034](../../2-design/modules/notification/README.md#ntf-034))
-- **관리자가 아니면 빈 결과다** — 예외가 아니다. 그 사실이 DB에 있어 integration이 본다
-- 문안은 `writing.md`와 그 화면 문서가 정본이다
+- **가르는 자리와 합치는 자리가 다르다.** 직원 목록과 사람 시트는 갈라 말하고([members.md 문안](../../2-design/modules/account/screens/members.md#목록-문안)), 확정 뒤 확인 자리는 「…은 알림을 못 받아요 · 따로 연락해주세요」 한 줄이다([schedule-admin.md](../../2-design/modules/schedule/screens/schedule-admin.md#확정-뒤-날-상세)). 그 자리에서 관리자가 할 일이 어느 갈래든 따로 연락 하나다
+- **재직자에게만 붙는다.** 퇴사 구획과 퇴사한 사람 시트에는 안 선다
+- **관리자가 아니면 빈 결과다** — `push_reachable`이 이미 `where public.is_admin()`이고 `notification-rls.integration.test.ts`가 그 자리를 본다. 이 task는 재배정하지 않는다
+- 문안은 그 화면 문서의 문안 표가 정본이다 — 목록은 「· 알림 꺼둠」·「· 기기 안 연결」, 사람 시트는 「알림을 꺼두었어요」·「기기에서 알림을 꺼서 안 가요」다. `list-members.ts`가 아직 `notifications_enabled`를 안 읽어 읽는 자리가 는다
 
 ## 변경 파일
 
@@ -134,8 +138,9 @@ sources:
 | `src/entities/notification/dals/get-push-reachable.ts` | `push_reachable` 뷰 읽기 | AC-08 |
 | `src/screens/profile/` | 알림 줄과 끄기 확인 Dialog | AC-07 |
 | `src/screens/pending/` | 켜기 자리 | AC-06 |
-| `src/screens/members/`·사람 시트·배정 확인 | 갈래 표시 | AC-08 |
-| `supabase/migrations/<날짜>_*.sql` — **필요할 때만** | `save_push_token`에 의사 검사가 없으면 더한다 | AC-05 |
+| `src/screens/members/`·`src/screens/schedule-admin/` | 갈래 표시. 확정 뒤 확인은 한 줄로 합친다 | AC-08 |
+| `src/entities/profile/dals/list-members.ts` | 목록이 `push_reachable`과 의사를 같이 읽는다 | AC-08 |
+| `src/screens/pending/model/notification-prompt.ts` | 뷰 값을 `"denied"`로 맞춘다 | AC-06 |
 | `src/features/notification/model/__tests__/`·`src/entities/notification/dals/__tests__/` | 갈래 판정과 함수의 짝 | AC-02·AC-04·AC-05·AC-08 |
 | `tests/e2e/notification-settings.yaml` | 켜기·끄기·거부의 여정 | AC-01·AC-03·AC-06·AC-07 |
 
@@ -143,9 +148,9 @@ sources:
 
 기능 task 파이프라인이다 — `test-planner` → writer 셋 → `implementer` → `pr-diff`.
 
-1. `test-planner`가 AC-01~AC-08을 배정한다. **정본 모순을 명시로 돌려받는다** — 특히 AC-05의 함수가 이미 막는지, 권한을 쥔 기기 동작을 어느 층이 보나
-2. `unit-test-writer`가 갈래 판정과 훅의 순서(켜기는 의사 먼저, 끄기는 반대)를 쓴다
-3. `integration-test-writer`가 주소가 사람 사이를 옮기는 것, 끈 사람의 주소가 안 되살아나는 것, 뷰가 주소를 안 내고 관리자가 아니면 빈 결과인 것을 쓴다
+1. `test-planner`가 AC-01~AC-08을 배정한다 — 돌았고 판정 여섯이 위 두 절에 박혔다
+2. `unit-test-writer`가 갈래 판정과 훅의 순서(켜기는 의사 먼저, 끄기는 반대)와 승인 대기 뷰 전이를 쓴다. **`notification-prompt.test.ts`의 `"unsupported"` 단언을 `"denied"`로 고쳐 쓴다**
+3. `integration-test-writer`가 주소가 사람 사이를 옮기는 것을 쓴다. **AC-05와 AC-07의 DB 자리는 이미 선 테스트가 덮어 재배정하지 않는다**
 4. `e2e-test-writer`가 켜기·끄기·거부의 여정을 쓴다. **못 돌린다** — 기기 빌드가 없다
 5. `implementer`가 의존성 → 권한 감싸기 → 훅 → 화면 넷 순으로 초록을 만든다
 6. `pr-diff`가 diff를 본다
@@ -155,7 +160,7 @@ sources:
 - **기기 권한은 시뮬레이터로 다 못 본다.** 거부 상태의 화면, 안드로이드 채널, 실제 주소 발급은 개발 빌드가 있어야 닫힌다. **AC-01·AC-06은 배포 뒤 손 확인이 남는다**
 - **`expo-notifications`가 새 의존성이다.** 네이티브 모듈이라 Expo Go에서 일부가 안 돈다 — 개발 빌드가 없는 지금은 화면이 뜨는지까지만 본다
 - **끄기가 통째다.** 폰 둘을 쓰는 사람이 한 기기만 끌 길이 없다([NTF-019](../../2-design/modules/notification/README.md#ntf-019)). 1차의 판정이고 고치려면 의사를 기기에 붙여야 한다
-- **관리자 화면 셋에 같은 표시가 붙는다.** 문장이 세 곳에서 갈라지면 같은 상태가 다르게 읽힌다 — 조각 하나를 세 화면이 쓴다
+- **관리자 화면 셋의 문장이 두 벌이다.** 목록과 사람 시트는 갈래 둘, 확정 뒤 확인은 합친 한 줄이다. 판정은 한 함수가 내고 문장만 자리마다 고른다 — 판정을 두 벌 만들면 같은 사람이 화면마다 다른 갈래로 읽힌다
 - 되돌리기는 화면에서 알림 줄을 빼는 것이다. 표와 함수는 `notification-data`의 것이라 남는다
 
 ## 범위 밖
