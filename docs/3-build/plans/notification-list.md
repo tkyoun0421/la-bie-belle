@@ -17,8 +17,6 @@ sources:
 
 # 알림 목록 화면을 만든다 — 구현 계획
 
-> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
-
 ## 입력 명세·기준
 
 정본은 [notifications.md](../../2-design/modules/notification/screens/notifications.md)다. 종 아이콘은 [components.md](../../2-design/design-system/components.md#종-아이콘), 어디로 가는지는 [design.md의 UI 연결](../../2-design/modules/notification/design.md#ui-연결)과 [navigation.md](../../2-design/system/navigation.md#알림을-누르면)다.
@@ -96,7 +94,7 @@ sources:
 
 **종 아이콘.**
 
-`src/shared/ui/bell.tsx`
+`src/shared/ui/BellIcon.tsx` — [`ui-kit`](../../2-design/spec/ui-kit.md)이 이미 세웠다. 이 task는 안 읽음 여부를 먹이고 누름을 잇는다.
 
 - lucide `Bell` 28px `fg.neutral`. 안 읽음 점은 `bg.brand-solid` 8px 원, 자리는 `top: 4px` `right: 4px`, 테두리 `bg.neutral` 2px
 - **닿는 면 44px 정사각.** 아이콘은 28px 그대로고 둘레가 투명하다
@@ -106,17 +104,30 @@ sources:
 
 ## 변경 파일
 
+아직 안 선 task라 자리는 저장소 배치 관례를 보고 잡은 것이다. DB를 읽는 손은 `entities/<영역>/dals/`에 파일 하나씩, 그것을 감싸는 훅은 `features/<영역>/model/useXxx.ts`에 훅 하나씩 산다 — `features/schedule/model/`의 스물몇이 그 꼴이고, `tests/lint/file-naming.ts`가 훅을 내놓는 `.ts`에 훅 이름을 요구해서 `queries.ts`라는 이름은 못 선다.
+
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
+| `src/entities/notification/dals/get-notifications.ts` | `range()`로 50건씩 읽는 페이지 질의와 키 `['notifications']` | AC-03 |
+| `src/entities/notification/dals/count-unread-notifications.ts` | 안 읽은 수와 키 `['notifications', 'unread']` | AC-03·AC-06 |
+| `src/entities/notification/model/types.ts` | `kind`가 지금 `string`이다 — 스물셋을 유니온으로 좁혀야 문장 함수가 빠짐을 컴파일에서 잡는다 | AC-01 |
 | `src/features/notification/model/title.ts` | 스물셋의 문장 | AC-01 |
 | `src/features/notification/model/when.ts` | 날짜 머리와 받은 시각 | AC-02 |
 | `src/features/notification/model/destination.ts` | 종류마다의 목적지 | AC-05 |
-| `src/features/notification/api/queries.ts` | `useInfiniteQuery`와 안 읽은 수 | AC-03 |
-| `src/features/notification/model/use-notification-list.ts` | 목록의 상태와 누름 | AC-04·AC-05 |
-| `src/screens/notifications/` | 화면 조립 | AC-04 |
-| `/notifications/` 화면 | 라우트 | AC-04 |
-| `src/shared/ui/bell.tsx` | 종 아이콘 | AC-06 |
-| `src/shared/ui/appbar.tsx` | 오른쪽에 종을 받는 자리 | AC-06 |
+| `src/features/notification/model/useNotifications.ts` | `useInfiniteQuery`와 `maxPages` 3 | AC-03 |
+| `src/features/notification/model/useUnreadCount.ts` | 종의 점이 보는 수 | AC-03·AC-06 |
+| `src/features/notification/model/useMarkNotificationsRead.ts` | [`notification-data`](notification-data.md)가 낸 [`mark-notifications-read.ts`](../../../src/entities/notification/dals/mark-notifications-read.ts) 호출과 무효화 둘 | AC-05 |
+| `src/screens/notifications/model/notification-rows.ts` | 날짜 머리로 끊은 줄 목록과 일곱 상태 | AC-04 |
+| `src/screens/notifications/model/press-notification.ts` | 줄을 누를 때 — 이동이 먼저고 읽음이 뒤따른다 | AC-05 |
+| `src/screens/notifications/ui/NotificationsScreen.tsx` | 화면 조립 | AC-04 |
+| `src/app/notifications.tsx` | 라우트. 지금은 `NotBuiltYet` 한 줄이다 | AC-04 |
+| `src/shared/ui/BellIcon.tsx` | **이미 섰다** — [`ui-kit`](../../2-design/spec/ui-kit.md)이 아이콘·점·44px 닿는 면까지 세웠다. 이 task는 `unread`와 누름을 먹인다 | AC-06 |
+| `src/shared/ui/AppBar.tsx` | **이미 `right`를 받는다.** 고칠 것이 없고 종을 그 자리에 넣는 것이 이 task 몫이다 | AC-06 |
+| `src/screens/schedule-worker/ui/ScheduleWorkerScreen.tsx`·`src/screens/payroll/ui/PayrollScreen.tsx`·`src/screens/profile/ui/ProfileScreen.tsx`·`src/screens/admin-home/ui/AdminHomeScreen.tsx` | 앱바 오른쪽에 종을 세운다. 대시보드 앱바는 [`dashboard`](../../backlog.md)가 세우고 그 task가 같이 단다 | AC-06 |
+| `src/features/notification/model/__tests__/`·`src/screens/notifications/model/__tests__/` | 문장·시각·목적지·줄 목록의 unit | AC-01·AC-02·AC-04·AC-05 |
+| `src/entities/notification/dals/__tests__/get-notifications.integration.test.ts` | 페이지와 남의 알림 | AC-03 |
+| `tests/e2e/notifications.yaml` | 줄을 눌러 목적지로 가고 점이 사라지는 한 여정 | AC-04~AC-06 |
+| `scripts/e2e-seed-server.mts` | 알림 50건을 넘기는 시드 상태 | AC-03·AC-04 |
 
 ## 구현 순서
 
@@ -145,19 +156,19 @@ sources:
 | AC-01 | 문장이 표와 다르다 | unit `src/features/notification/model/__tests__/title.test.ts`(예정) | `pnpm test` | 스물셋이 표 그대로 |
 | AC-01 | 아래 줄이 있는 넷에 아래 줄이 없다 | unit 위 | `pnpm test` | `sub`가 든다 |
 | AC-01 | 푸시와 목록이 다르게 말한다 | unit 위 | `pnpm test` | 같은 함수를 쓴다 |
-| AC-02 | 해를 넘기면 날짜 머리가 틀린다 | unit `when.test.ts`(예정) | `pnpm test` | 「2025년 12월 31일(수)」 |
+| AC-02 | 해를 넘기면 날짜 머리가 틀린다 | unit `src/features/notification/model/__tests__/when.test.ts`(예정) | `pnpm test` | 「2025년 12월 31일(수)」 |
 | AC-02 | 한 시간 안인데 「1시간 전」이라 한다 | unit 위 | `pnpm test` | 「12분 전」 |
-| AC-03 | 남의 알림이 섞인다 | integration `tests/integration/notifications-list.test.ts`(예정) | `pnpm test:integration:run` | 본인 것만 |
+| AC-03 | 남의 알림이 섞인다 | integration `src/entities/notification/dals/__tests__/get-notifications.integration.test.ts`(예정) | `pnpm test:integration:run` | 본인 것만 |
 | AC-03 | 51번째가 안 온다 | integration 위 | 위와 같다 | 둘째 쪽이 온다 |
-| AC-05 | 목적지가 표와 다르다 | unit `destination.test.ts`(예정) | `pnpm test` | 종류마다 표의 경로 |
-| AC-05 | 관리자 공지가 눌린다 | e2e `notifications` e2e(예정) | e2e 명령 | 안 눌리고 화살표가 없다 |
-| AC-05 | 눌러도 안 읽음 점이 남는다 | e2e 위 | e2e 명령 | 돌아오면 점이 없다 |
-| AC-04 | 빈 상태가 안 선다 | e2e 위 | e2e 명령 | 「아직 받은 알림이 없어요」 |
-| AC-06 | 퇴사자 화면에 종이 선다 | e2e 위 | e2e 명령 | 급여 화면에 종이 없다 |
-| AC-06 | 닿는 면이 44px보다 작다 | 수동 — `.artifact/measure-hit.mjs` | — | 44px 이상 |
+| AC-05 | 목적지가 표와 다르다 | unit `src/features/notification/model/__tests__/destination.test.ts`(예정) | `pnpm test` | 종류마다 표의 경로 |
+| AC-05 | 관리자 공지가 눌린다 | e2e `tests/e2e/notifications.yaml`(예정) | `pnpm e2e` | 안 눌리고 화살표가 없다 |
+| AC-05 | 눌러도 안 읽음 점이 남는다 | e2e 위 | `pnpm e2e` | 돌아오면 점이 없다 |
+| AC-04 | 빈 상태가 안 선다 | e2e 위 | `pnpm e2e` | 「아직 받은 알림이 없어요」 |
+| AC-06 | 퇴사자 화면에 종이 선다 | e2e 위 | `pnpm e2e` | 급여 화면에 종이 없다 |
+| AC-06 | 닿는 면이 44px보다 작다 | 수동 — 시뮬레이터에서 아이콘 가장자리 밖을 누른다 | `pnpm dev` | 아이콘 밖 8px까지 먹는다 |
 
-- 배정하지 않은 것: 푸시를 눌러 앱이 열리는 길 — `notification-settings`의 Service Worker가 맡는다
-- 막힌 것: 지금은 없다
+- 배정하지 않은 것: 푸시를 눌러 앱이 열리는 길 — `notification-settings`가 맡는다
+- 막힌 것: e2e는 기기·시뮬레이터 빌드가 없어 미실행이다
 
 ## 범위 밖
 

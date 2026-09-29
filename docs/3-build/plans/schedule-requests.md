@@ -46,8 +46,6 @@ sources:
 
 # 근무 요청과 근무 취소를 만든다 — 구현 계획
 
-> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
-
 ## 입력 명세·기준
 
 정본 셋이 갈라 든다. 요청의 데이터 모양은 [design.md의 요청](../../2-design/modules/schedule/design.md#요청)과 [근무 취소](../../2-design/modules/schedule/design.md#근무-취소), 관리자 쪽 화면은 [schedule-admin.md의 근무 요청 보내기](../../2-design/modules/schedule/screens/schedule-admin.md#근무-요청-보내기), 근무자 쪽 화면은 [schedule-worker.md의 근무 요청 시트](../../2-design/modules/schedule/screens/schedule-worker.md#근무-요청-시트-짜임)와 [근무 취소 시트](../../2-design/modules/schedule/screens/schedule-worker.md#근무-취소-시트-짜임), 판정 화면은 [approvals.md](../../2-design/system/screens/approvals.md)다. 규칙은 [SCH-016](../../2-design/modules/schedule/README.md#sch-016)·[SCH-017](../../2-design/modules/schedule/README.md#sch-017)·[SCH-018](../../2-design/modules/schedule/README.md#sch-018)이다.
@@ -59,12 +57,12 @@ sources:
 정본에서 확인한 다섯이 plan의 방향을 정한다.
 
 - **요청은 자리 단위고 답은 선착순이다.** [SCH-017](../../2-design/modules/schedule/README.md#sch-017)이 「먼저 수락한 사람이 배정되고 자리가 차면 나머지 요청은 마감된다」고 정했다. `respond_request`가 배정까지 한 트랜잭션에서 끝내야 둘이 동시에 눌러도 하나만 들어간다 — [`schedule-data`](schedule-data.md)가 낸 `(slot_id) where ended_at is null and kind = 'regular'` unique index가 마지막 문이고, 진 쪽이 `slot_full`을 받는다
-- **자리를 채우는 길 다섯이 전부 요청을 닫는다.** [요청](../../2-design/modules/schedule/design.md#요청)이 「배정 추가·교대 승인·강제 변경·근무 요청 수락·날 닫기가 전부 그 자리의 살아 있는 `requests`를 닫는다」고 정했다. **그중 셋은 이미 다른 task가 만든 함수다** — `add_assignment`·`force_change`·`close_day`. 이 task가 그 셋을 `create or replace`로 고쳐 닫는 일을 넣는다
+- **자리를 채우는 길 다섯이 전부 요청을 닫는다.** [요청](../../2-design/modules/schedule/design.md#요청)이 「배정 추가·교대 승인·강제 변경·근무 요청 수락·날 닫기가 전부 그 자리의 살아 있는 `requests`를 닫는다」고 정했다. **그중 셋은 이미 다른 task가 만든 함수다** — `add_assignment`·`force_change`·`close_day`. 이 task가 고치는 것은 `add_assignment` 하나고 나머지 둘은 그대로 둔다([AC-03](#ac-03))
 - **만료가 둘이다.** 48시간이 지나거나 근무 날이 시작되면 만료되고 **먼저 오는 쪽이 마감이다**([SCH-017](../../2-design/modules/schedule/README.md#sch-017)). `expires_at`을 넣을 때 두 시각 중 이른 쪽을 고른다 — cron이 그것만 보면 된다
 - **수락 취소가 상태를 되돌린다.** `request_candidates.status`가 저장소에서 유일한 상태 열인 근거가 이것이다([요청](../../2-design/modules/schedule/design.md#요청)). 수락했다가 취소하면 답 안 한 상태로 돌아가야 해서 시각으로 못 나타낸다. **교대 쪽 규칙이라 이 task는 `status` 열을 쓰기만 하고 수락 취소 흐름은 swap이 만든다**
 - **거절은 건건이 안 알린다.** 자리의 요청이 전부 거절·만료로 끝나면 그때 관리자에게 한 번 간다([근무 요청 시트 짜임](../../2-design/modules/schedule/screens/schedule-worker.md#근무-요청-시트-짜임)). 그 판정이 함수 안에 있다 — 마지막 후보가 답하는 순간과 cron이 마지막을 만료시키는 순간 둘 다에서 걸린다
 
-`supabase/config.toml`에 pg_cron 설정이 없다. **이 task가 처음 켠다.**
+pg_cron을 저장소에서 처음 켜는 자리다. `supabase/config.toml`이 아니라 **마이그레이션 안에서 `create extension if not exists pg_cron`으로 켠다.**
 
 ## 구현 산출물
 
@@ -72,7 +70,7 @@ sources:
 
 ### AC-01
 
-**근무 요청 함수 둘.** `supabase/migrations/<날짜>_schedule_functions.sql`에 더한다. 둘 다 `security definer`·`set search_path = ''`다.
+**근무 요청 함수 둘.** `supabase/migrations/20260927091506_schedule_requests.sql`에 더한다. 둘 다 `security definer`·`set search_path = ''`다.
 
 - `send_work_request(p_slot_id uuid, p_profile_ids uuid[])` — 첫 줄이 `is_admin()`, 아니면 `not_allowed`. `requests` 한 행(`kind = 'work'`, `slot_id`)과 받은 사람마다 `request_candidates` 행(`status = 'pending'`)을 넣는다
   - `expires_at`은 **`now() + 48시간`과 그 날 근무 시작 시각 중 이른 쪽**이다. `request_candidates.expires_at`도 같은 값이다
@@ -106,21 +104,21 @@ sources:
 
 ### AC-03
 
-**자리를 채우는 길 둘이 요청을 닫는다.** 앞 task가 만든 함수를 `create or replace`로 고친다.
+**자리를 채우는 길 둘이 요청을 닫는다.** 앞 task가 만든 `add_assignment`를 `create or replace`로 고친다.
 
 - `add_assignment` — 정규 배정이 들어가면 그 `slot_id`의 살아 있는 요청을 닫는다. 교육 배정은 자리를 안 먹으니 안 닫는다
-- `force_change` — 새 배정이 들어간 자리의 요청을 닫는다
+- `force_change`는 `add_assignment`를 다시 불러 같은 닫기를 탄다([`schedule-assign`](schedule-assign.md)) — 따로 안 고친다
 - `close_day`는 안 고친다. 자리가 지워지고 `slot_id`의 cascade를 타고 요청 행이 따라 사라져 닫을 것이 안 남는다([요청](../../2-design/modules/schedule/design.md#요청)). 그래도 「닫힌다」는 결과는 같아 [design.md](../../2-design/modules/schedule/design.md#요청)가 그것을 다섯 중 하나로 센다
 - 교대 승인(`approve_swap`)은 swap 영역이다 — 그 task가 같은 일을 자기 함수에 넣는다. **이 plan이 그 자리를 [범위 밖](#범위-밖)에 남긴다**
 
-닫기가 한 곳에 모이게 `internal.close_slot_requests(p_slot_id uuid)` 하나를 두고 둘이 그것을 부른다 — 같은 규칙이 두 벌 서지 않게 한다([이름과 자리](../../2-design/system/data-access.md#이름과-자리)).
+닫기가 한 곳에 모이게 `internal.close_slot_requests(p_slot_id uuid)` 하나를 두고 자리를 채우는 함수들이 그것을 부른다 — 같은 규칙이 두 벌 서지 않게 한다([이름과 자리](../../2-design/system/data-access.md#이름과-자리)).
 
 ### AC-04
 
 **`expire_requests` cron.**
 
 - `internal.expire_requests()` — 매 분 돈다. `expires_at`이 지난 `pending` 후보를 만료시키고, 남은 `pending`이 없는 요청을 닫는다. 닫을 때 「전부 소진」 알림 대상을 낸다
-- `supabase/config.toml`에 pg_cron을 켜고 crontab 항목을 마이그레이션에 넣는다. **`internal` 스키마라 호출자 검사가 없다** — cron만 부른다([이름과 자리](../../2-design/system/data-access.md#이름과-자리))
+- pg_cron은 마이그레이션 첫 줄의 `create extension if not exists pg_cron`이 켜고 crontab 항목도 같은 파일에 든다. **`internal` 스키마라 호출자 검사가 없다** — cron만 부른다([이름과 자리](../../2-design/system/data-access.md#이름과-자리))
 - 근무 날 시작으로 만료되는 몫은 `expires_at`에 이미 들어 있다([AC-01](#ac-01)) — cron이 두 조건을 따로 보지 않는다
 - **화면의 카운트다운은 로컬 계산이다.** `expires_at`과 서버 시각 오프셋으로 세고 0이 되면 버튼이 잠긴다([서버 시각](../../2-design/system/runtime.md#서버-시각)). cron이 매 분 도니 몇십 초 어긋나면 `request_closed`가 잡는다
 
@@ -189,23 +187,31 @@ sources:
 
 ### AC-11
 
-**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·e2e 명령 전부 초록. `sian-auditor`가 `schedule-admin.sian.html`·`schedule-worker.sian.html`·`approvals.sian.html`과 문서를 대조한다 — backlog의 [`sian-sync`](../../backlog.md)가 approvals 시안에 적어둔 어긋남(앱바 글자·거절 시트 여백 다섯·머리말 주석·「보내기 실패」 상태)과 worker 시안의 「취소 요청 중」 목업을 그때 같이 잡는다.
+**검증.** `pnpm lint`·`pnpm format:check`·`pnpm typecheck`·`pnpm test`·`pnpm test:integration:run`·`pnpm e2e` 전부 초록. `sian-auditor`가 `schedule-admin.sian.html`·`schedule-worker.sian.html`·`approvals.sian.html`과 문서를 대조한다 — backlog의 [`sian-sync`](../../backlog.md)가 approvals 시안에 적어둔 어긋남(앱바 글자·거절 시트 여백 다섯·머리말 주석·「보내기 실패」 상태)과 worker 시안의 「취소 요청 중」 목업을 그때 같이 잡는다.
 
 ## 변경 파일
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `supabase/migrations/<날짜>_schedule_functions.sql` | 함수 넷, `close_slot_requests`, 셋의 `create or replace` | AC-01~AC-03 |
-| `supabase/migrations/<날짜>_schedule_cron.sql` · `supabase/config.toml` | `expire_requests`와 crontab, pg_cron 켜기 | AC-04 |
-| `src/shared/api/error-codes.ts` | `request_closed`·`already_requested`·`invalid_reason`·`already_decided` | AC-01·AC-02 |
-| `src/entities/schedule/dals/send-work-request.ts`·`respond-request.ts`·`create-cancel-request.ts`·`decide-cancel-request.ts`·`get-slot-requests.ts`·`get-pending-approvals.ts`·`__tests__/` | 쓰기 넷, 읽기 둘 | AC-05~AC-08 |
-| `src/screens/schedule-admin/ui/*.tsx` · `model/*.ts` | 픽커 체크박스·보내기 버튼·요청 상태 줄·자리 카드 배지 | AC-05 |
-| `src/screens/schedule-worker/ui/*.tsx` · `model/*.ts` | 근무 요청 시트·근무 취소 시트·요청 중 배지·달력 점선과 아래 줄 | AC-06·AC-07 |
-| `src/screens/approvals/ui/*.tsx` · `/admin/approvals/` 화면 | 목록·상세 시트·거절 | AC-08 |
-| `src/features/schedule/*.ts`·`__tests__/` | mutation과 무효화, 카운트다운 | AC-09 |
-| `schedule-requests` e2e | e2e | AC-10 |
-| `supabase/migrations/<날짜>_server_now.sql` · `src/entities/clock/dals/get-server-now.ts` · `src/shared/lib/server-clock.ts` | `server_now()`와 오프셋 — [runtime.md 「서버 시각」](../../2-design/system/runtime.md#서버-시각)이 정한 것을 이 task가 처음 세운다. 카운트다운이 첫 사용자다 | AC-06 |
-| `src/screens/admin-home/` | 「승인할 일」 줄 건수 | AC-05 |
+| `supabase/migrations/20260927091506_schedule_requests.sql` | 함수 넷, `internal.close_slot_requests`, `add_assignment`의 `create or replace`, `internal.expire_requests`와 `cron.schedule`, `pg_cron` 켜기, `public.server_now()` | AC-01~AC-04 |
+| `src/shared/api/error-codes.ts` · `database-types.ts` | `request_closed`·`already_requested`·`invalid_reason`·`already_decided`와 다시 뽑은 생성 타입 | AC-01·AC-02 |
+| `src/entities/schedule/dals/send-work-request.ts` · `respond-request.ts` · `create-cancel-request.ts` · `decide-cancel-request.ts` | 쓰기 넷 | AC-05~AC-08 |
+| `src/entities/schedule/dals/get-slot-requests.ts` · `get-pending-approvals.ts` | 자리의 요청과 판정 대기 목록 | AC-05·AC-08 |
+| `src/entities/schedule/dals/__tests__/` | 함수 넷과 cron, 요청을 닫는 `add_assignment`·`force_change`의 integration | AC-10 |
+| `src/entities/clock/dals/get-server-now.ts` · `src/shared/lib/server-clock.ts` · `server-clock-store.ts` · `src/app/_layout.tsx` | `server_now()`와 오프셋 — [runtime.md 「서버 시각」](../../2-design/system/runtime.md#서버-시각)이 정한 것을 이 task가 처음 세운다. 앱이 뜰 때와 앞으로 돌아올 때 재고 스플래시는 안 기다린다 | AC-06 |
+| `src/features/schedule/model/query-keys.ts` · `useSendWorkRequest.ts` · `useRespondRequest.ts` · `useCreateCancelRequest.ts` · `useDecideCancelRequest.ts` · `useSlotRequests.ts` · `usePendingApprovals.ts` · `__tests__/` | mutation 넷과 읽기 둘, 무효화와 보내는 동안의 잠금 | AC-09 |
+| `src/screens/schedule-admin/model/person-picker-rows.ts` · `slot-request-badge.ts` · `__tests__/` | 미신청 줄의 요청 상태 셋과 체크박스 유무 / 자리 카드 배지 문구 | AC-05 |
+| `src/screens/schedule-admin/ui/PersonPickerSheet.tsx` · `PositionRow.tsx` · `DayDetail.tsx` · `ScheduleAdminScreen.tsx` | 픽커 체크박스·보내기 버튼·요청 상태 줄·자리 카드 배지 | AC-05 |
+| `src/screens/schedule-worker/model/request-sheet.ts` · `cancel-request-sheet.ts` · `incoming-request.ts` · `day-sheet.ts` · `__tests__/` | 요청 시트 갈래 / 사유 검사와 배지 / 요청 온 날 판정 / 요청 중이면 버튼 둘 잠금 | AC-06·AC-07 |
+| `src/screens/schedule-worker/ui/RequestSheet.tsx` · `CancelShiftSheet.tsx` · `DaySheet.tsx` · `DayRoster.tsx` · `ScheduleWorkerScreen.tsx` | 근무 요청 시트·근무 취소 시트·요청 중 배지·달력 점선과 아래 줄 | AC-06·AC-07 |
+| `src/screens/approvals/model/approvals-list.ts` · `approval-detail.ts` · `reject-reason.ts` · `__tests__/` | 목록 정렬과 지우기 / 상세 문안 / 거절 이유 검사 | AC-08 |
+| `src/screens/approvals/ui/ApprovalsScreen.tsx` · `ApprovalDetailSheet.tsx` · `src/app/admin/approvals.tsx` · `src/app/admin/schedule.tsx` | 목록·상세 시트·거절과 `?from=approvals`로 넘어가는 길 | AC-08 |
+| `src/screens/admin-home/model/approvals-line.ts` · `__tests__/` · `ui/AdminHomeScreen.tsx` | 「승인할 일 · n건」 | AC-05 |
+| `src/shared/ui/QuoteBlock.tsx` | 사람이 쓴 사유가 앉는 면 | AC-08 |
+| `src/shared/ui/Checkbox.tsx` · `Dialog.tsx` · `RosterRow.tsx` · `src/app/_catalog.tsx` | 픽커 체크박스·승인 확인 Dialog·명단 줄 배지 | AC-05~AC-08 |
+| `scripts/e2e-seed-server.mts` · `tests/e2e/scripts/seed-session.js` · `tests/integration/postgres.ts` | 시드 상태 넷과 요청·취소 요청 시드 헬퍼 | AC-10 |
+| `tests/e2e/approvals.yaml` · `schedule-admin.yaml` · `schedule-worker.yaml` | e2e | AC-10 |
+| `tests/lint/file-naming.ts` · `file-naming.test.ts` | 파일 이름 검사가 새 자리를 보게 | AC-10 |
 
 ## 구현 순서
 
@@ -223,7 +229,7 @@ sources:
 - **선착순이 이 저장소에서 처음 진짜 경쟁하는 자리다.** 둘이 같은 순간에 수락하면 unique index가 하나를 떨군다. 함수가 그 예외를 잡아 `slot_full`로 올려야 하고, 안 잡으면 raw Postgres 오류가 화면까지 간다. integration이 두 세션으로 본다
 - **pg_cron을 처음 켠다.** 로컬 Supabase에서 확장을 켜고 crontab을 넣는 것이 CI에서도 돌아야 한다. `supabase db reset`이 통과하는지가 첫 문이고, cron이 실제로 도는지는 시간에 걸려 integration이 **함수를 직접 불러** 본다 — 스케줄러가 부르는 것까지는 안 본다
 - **`expires_at`에 두 시각이 들어간다.** 48시간과 근무 시작 중 이른 쪽인데, 근무 시간이 바뀌면(`set_day_hours`) 이미 나간 요청의 만료가 낡는다. **소급해서 안 고친다** — 근무 시간을 당기는 일은 드물고, cron이 지난 뒤 만료시키는 것이라 늦어질 뿐 틀리지 않는다. 그 판단을 리스크로 남긴다
-- **둘을 `create or replace`로 고친다.** `add_assignment`·`force_change`가 [`schedule-assign`](../../backlog.md)의 것이라 그쪽 테스트가 이 변경으로 깨질 수 있다. 요청이 없는 경우에 아무것도 안 하게 짜면 기존 테스트가 그대로 통과한다
+- **남의 함수를 `create or replace`로 고친다.** `add_assignment`가 [`schedule-assign`](../../backlog.md)의 것이고 `force_change`가 그것을 다시 부르니, 그쪽 테스트 둘이 이 변경으로 같이 깨질 수 있다. 요청이 없는 경우에 아무것도 안 하게 짜면 기존 테스트가 그대로 통과한다
 - **approvals 목록이 반쪽으로 선다.** 사유 줄이 attendance 뒤라 이 PR 시점에는 근무 취소만 뜬다. 빈 상태 문구가 「승인할 일이 없어요」라 반쪽인 줄이 화면에서 안 보인다 — 그 task가 잇는 자리를 backlog에 적는다
 - **수락 취소가 없다.** `request_candidates.status`가 되돌릴 수 있게 생겼지만 그 흐름은 swap의 [SWP-008](../../2-design/modules/swap/README.md)이다. 근무 요청에는 수락 취소가 없다 — 수락이 곧 배정이라 되돌리려면 근무 취소 요청을 낸다
 
@@ -231,19 +237,20 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 둘이 같은 자리에 들어간다 | integration `src/entities/schedule/dals/__tests__/respond-request.integration.test.ts`(예정), 두 세션 | `pnpm test:integration:run` | 하나만 통과하고 나머지가 `slot_full` |
+| AC-01 | 둘이 같은 자리에 들어간다 | integration `src/entities/schedule/dals/__tests__/respond-request.integration.test.ts`, 두 세션 | `pnpm test:integration:run` | 하나만 통과하고 나머지가 `slot_full` |
 | AC-01 | 신청 안 한 사람이 수락으로도 못 들어간다 | integration 위 | 위와 같다 | 신청 검사만 건너뛰고 자격은 본다 |
 | AC-01 | 전부 거절인데 요청이 안 닫힌다 | integration 위 | 위와 같다 | 마지막 후보가 거절하면 `closed_at`이 찍힌다 |
-| AC-03 | 자리가 찼는데 배지가 남는다 | integration `add-assignment.integration.test.ts`(예정) | 위와 같다 | 배정이 들어가면 그 자리 요청이 닫힌다 |
-| AC-04 | 만료가 안 돈다 | integration `expire-requests.integration.test.ts`(예정) | 위와 같다 | 지난 후보가 만료되고 요청이 닫힌다 |
+| AC-03 | 자리가 찼는데 배지가 남는다 | integration `add-assignment.integration.test.ts`·`force-change.integration.test.ts` | 위와 같다 | 배정이 들어가면 그 자리 요청이 닫힌다 |
+| AC-04 | 만료가 안 돈다 | integration `expire-requests.integration.test.ts` | 위와 같다 | 지난 후보가 만료되고 요청이 닫힌다 |
 | AC-04 | `db reset`이 cron에서 깨진다 | — | `supabase db reset` | 오류 없이 돈다 |
-| AC-02 | 당일에 취소 요청이 들어간다, 거절 이유 없이 거절된다 | integration `cancel-request.integration.test.ts`(예정) | `pnpm test:integration:run` | `window_closed`·`invalid_reason`, 승인이 배정을 닫는다 |
-| AC-06 | 늦은 수락에 오류 블록이 선다 | e2e `schedule-requests` e2e(예정) | e2e 명령 | 시트가 닫히고 토스트, 달력 아래 줄이 사건을 말한다 |
-| AC-05·AC-07·AC-08 | 흐름이 끊긴다 | e2e 위 spec | 위와 같다 | 보내기 → 수락 → 취소 요청 → 승인 한 줄기 |
+| AC-02 | 당일에 취소 요청이 들어간다, 거절 이유 없이 거절된다 | integration `create-cancel-request.integration.test.ts`·`decide-cancel-request.integration.test.ts` | `pnpm test:integration:run` | `window_closed`·`invalid_reason`, 승인이 배정을 닫는다 |
+| AC-06 | 늦은 수락에 오류 블록이 선다 | e2e `tests/e2e/schedule-worker.yaml` | `pnpm e2e` | 시트가 닫히고 토스트, 달력 아래 줄이 사건을 말한다 |
+| AC-05·AC-07·AC-08 | 흐름이 끊긴다 | e2e `tests/e2e/schedule-admin.yaml`·`schedule-worker.yaml`·`approvals.yaml` | 위와 같다 | 보내기 → 수락 → 취소 요청 → 승인 한 줄기 |
 | AC-11 | 시안이 문서와 어긋난다 | `sian-auditor` | — | 어긋남 없음 |
 
 - 배정하지 않은 것: cron 스케줄러가 실제로 매 분 부르는지 — 시간에 걸려 함수 호출까지만 본다. 푸시가 실제로 도착하는지 — 알림 영역의 것이다
 - 막힌 것: approvals 목록의 사유 줄은 `attendance` 뒤에 찬다
+- 막힌 것: e2e는 기기·시뮬레이터 빌드가 없어 미실행이다
 
 ## 범위 밖
 

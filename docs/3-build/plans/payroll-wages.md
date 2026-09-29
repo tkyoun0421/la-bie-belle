@@ -33,8 +33,6 @@ sources:
 
 # 시급 화면을 만든다 — 구현 계획
 
-> 앱 골격(`expo-scaffold`)이 선 뒤에 파일 배치와 검증 명령을 채운다. 업무 규칙과 완료 조건은 그대로 선다.
-
 ## 입력 명세·기준
 
 정본은 [wages.md](../../2-design/modules/payroll/screens/wages.md) 전체다. 업무 규칙은 [PAY-008](../../2-design/modules/payroll/README.md#pay-008)·[PAY-010](../../2-design/modules/payroll/README.md#pay-010)~[PAY-015](../../2-design/modules/payroll/README.md#pay-015)이고, 쓰기 함수는 [`payroll-data`](payroll-data.md#ac-03)가 이미 냈다.
@@ -50,7 +48,7 @@ sources:
 - **이력은 읽기만이다.** 지난 줄에 화살표도 더보기도 없다([PAY-010](../../2-design/modules/payroll/README.md#pay-010)). 고치는 문을 두면 「지난 급여는 흔들리지 않는다」가 깨진다
 - **상한·하한·저장 실패가 두 시트에 똑같이 걸린다.** [기본 시급 시트](../../2-design/modules/payroll/screens/wages.md#기본-시급-시트) 절이 그 셋을 적고 사람 시트에서 다시 안 적었다 — **구현도 조각 하나를 두 시트가 같이 쓴다**
 
-지금 코드에는 `/admin/wages`가 없다. 관리자 홈의 「시급」 줄은 [`schedule-admin`](schedule-admin.md)이 이미 세웠다.
+관리자 홈의 「시급」 줄은 [`schedule-admin`](schedule-admin.md)이 이미 세웠다 — 이 task는 그 줄이 여는 화면을 채운다.
 
 ## 구현 산출물
 
@@ -117,12 +115,24 @@ sources:
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `src/screens/wages/model/*.ts`·`__tests__/` | 정렬·인원 셈·상한 검사·이력 자르기 | AC-01~AC-04 |
-| `src/screens/wages/ui/*.tsx` · `/admin/wages/` 화면 | 목록·시트 둘·Dialog | AC-01~AC-03·AC-06 |
-| `src/shared/ui/AmountInput.tsx` | 쉼표·「원」·상한·하한 | AC-04 |
-| `src/entities/payroll/dals/get-wage-rates.ts`·`__tests__/` | 전원의 시급 이력과 기본 시급 현재값을 읽는다 — 달치 `get-payroll-month.ts`로는 못 그린다 | AC-05 |
-| `src/features/payroll/model/use*.ts`·`__tests__/` | 읽기 훅 하나와 쓰기 훅 셋, 무효화 `['payroll']` | AC-05 |
-| `wages` e2e | e2e | 검증 표 |
+| `src/screens/wages/model/wage-rows.ts` | 목록 줄을 세우고 「가장 최근 `wage_rates` 행」을 고르는 손을 가진다 | AC-01 |
+| `src/screens/wages/model/follower-count.ts` | 기본 시급을 따르는 인원을 센다 — 이력이 빈 사람도 따르는 사람이다 | AC-01·AC-02 |
+| `src/screens/wages/model/can-reset-to-default.ts` | 사람 시트에 되돌리기 줄을 그릴지 | AC-03 |
+| `src/screens/wages/model/wage-history.ts` | 이력을 세 줄로 자르고 시트 입력 칸의 초깃값을 낸다 | AC-03 |
+| `src/screens/wages/model/wage-amount.ts` | 상한·하한·저장 가능 여부와 「두 시트 다」 문안. 금액을 글자로 옮기는 손은 뒤에 `src/shared/lib/spell-number.ts`로 올라갔다 | AC-04 |
+| `src/screens/wages/model/__tests__/` | 위 다섯의 unit | AC-01~AC-04 |
+| `src/screens/wages/ui/WagesScreen.tsx` | 기본 시급 줄과 사람 목록, 빈 상태 | AC-01·AC-06 |
+| `src/screens/wages/ui/DefaultWageSheet.tsx` | 기본 시급 시트 — 입력 칸과 같이 바뀌는 인원 줄 | AC-02·AC-06 |
+| `src/screens/wages/ui/MemberWageSheet.tsx` | 사람 시트 — 입력 칸·적용 안내·되돌리기 줄·이력 | AC-03·AC-06 |
+| `src/screens/wages/ui/ResetWageDialog.tsx` | 되돌리기 확인 Dialog. 바뀔 값을 그 자리에서 말한다 | AC-03·AC-06 |
+| `src/app/admin/wages.tsx` | `NotBuiltYet`을 걷고 `/admin/wages`에 화면을 붙인다 | AC-01 |
+| `src/shared/ui/AmountInput.tsx` | 숫자와 「원」을 한 덩이로 오른쪽에 세운다. 쉼표와 상한은 안 세고 부르는 쪽의 순수 함수가 든다 | AC-04 |
+| `src/entities/payroll/dals/get-wage-rates.ts`·`__tests__/get-wage-rates.integration.test.ts` | 전원의 시급 이력과 기본 시급 현재값을 읽는다 — 달치 `get-payroll-month.ts`로는 못 그린다 | AC-05 |
+| `src/features/payroll/model/useWageRates.ts`·`__tests__/useWageRates.test.ts` | 읽기 훅 하나. 목록과 시트 이력이 이 한 응답에서 갈린다 | AC-05 |
+| `src/features/payroll/model/useSetWage.ts`·`useSetDefaultWage.ts`·`useResetWageToDefault.ts`·`__tests__/` | 쓰기 훅 셋, 무효화 `['payroll']` | AC-05 |
+| `src/features/payroll/model/query-keys.ts` | `['payroll']`과 `['payroll', 'wages']` 두 키 | AC-05 |
+| `tests/e2e/wages.yaml` | 기본을 바꿔 따르는 사람이 같이 바뀌는 한 바퀴 | 검증 표 |
+| `scripts/e2e-seed-server.mts`·`tests/integration/postgres.ts` | `payroll_wages` 시드 — 사람 다섯과 기본 시급, 지난 이력 세 줄을 SQL로 꽂는다 | 검증 표 |
 
 ## 구현 순서
 
@@ -147,18 +157,19 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 퇴사자가 목록에 선다 | unit `src/screens/wages/model/__tests__/`(예정) | `pnpm test` | 퇴사한 사람이 빠진다 |
-| AC-01 | 개별로 정한 사람이 위로 올라간다 | unit 위 | `pnpm test` | 이름 가나다순 하나 |
-| AC-02 | 같이 바뀌는 인원이 틀린다 | unit 위 | `pnpm test` | 가장 최근 행이 `follows_default`인 사람만 센다 |
-| AC-04 | 상한이 한 시트에만 걸린다 | unit 위 | `pnpm test` | 두 시트 다 100,000원에서 멈춘다 |
+| AC-01 | 개별로 정한 사람이 위로 올라간다 | unit `src/screens/wages/model/__tests__/wage-rows.test.ts` | `pnpm test` | 이름 가나다순 하나 |
+| AC-02 | 같이 바뀌는 인원이 틀린다 | unit `src/screens/wages/model/__tests__/follower-count.test.ts` | `pnpm test` | 가장 최근 행이 `follows_default`인 사람만 센다 |
+| AC-04 | 상한이 한 시트에만 걸린다 | unit `src/screens/wages/model/__tests__/wage-amount.test.ts` | `pnpm test` | 두 시트 다 100,000원에서 멈춘다 |
 | AC-04 | 저장 실패에 값이 날아간다 | unit 위 | `pnpm test` | 칸에 값이 남고 시트가 안 닫힌다 |
-| AC-03 | 기본을 쓰는 사람에게 되돌리기가 뜬다 | e2e `wages` e2e(예정) | e2e 명령 | 그 줄이 없다 |
+| AC-05 | 목록 질의가 이력을 잘라 온다 | integration `src/entities/payroll/dals/__tests__/get-wage-rates.integration.test.ts` | `pnpm test:integration:run` | 한 사람의 `wage_rates`가 전부 오고 기본 시급은 가장 최근 행 하나다 |
+| AC-01 | 퇴사자가 목록에 선다 | e2e `tests/e2e/wages.yaml` | `pnpm e2e` | 퇴사한 사람이 빠진다 |
+| AC-03 | 기본을 쓰는 사람에게 되돌리기가 뜬다 | e2e 위 | 위와 같다 | 그 줄이 없다 |
 | AC-03 | 이력이 눌려 고쳐진다 | e2e 위 | 위와 같다 | 지난 줄에 화살표가 없고 안 눌린다 |
 | AC-02 | 기본을 바꿔도 따르는 사람이 안 바뀐다 | e2e 위 | 위와 같다 | 기본을 바꾸면 목록의 그 사람들 값이 같이 바뀐다 |
 | AC-06 | 시안과 어긋난다 | 수동 — `sian-auditor` | — | 문안·토큰·상태가 문서와 같다 |
 
-- 배정하지 않은 것: 실기기에서 금액 칸에 숫자 키패드가 뜨는지 — iOS 사파리 동작이라 손으로 본다
-- 막힌 것: 지금은 없다
+- 배정하지 않은 것: 실기기에서 금액 칸에 숫자 키패드가 뜨는지 — `AmountInput.tsx`의 `keyboardType`이 기기마다 다르게 풀려 손으로 본다
+- 막힌 것: e2e는 기기·시뮬레이터 빌드가 없어 미실행이다
 
 ## 범위 밖
 
