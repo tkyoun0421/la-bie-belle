@@ -472,14 +472,16 @@ appId: com.labiebelle.app
 - assertVisible: "17시간"
 
 # ================================================================
-# statsEmptyMonth — 근무가 하나도 없는 달. 세 달 중 가장 이른 달이라 뒤로 가는
-# 화살표가 여기서 사라진다.
+# statsEmptyMonth — 근무가 하나도 없는 달.
 # ================================================================
+# 뒤로 가는 화살표가 여기서 사라지는지는 안 잰다. 바닥은 `getFirstScheduleMonth`가
+# 내는 전역 값이라 역할과 무관하고, 다른 상태가 더 이른 달을 심으면 이 단언이 그대로
+# 깨진다(stats_worker_overview가 오프셋 -6을 쓴다). 그 바닥 로직은
+# src/shared/lib/__tests__/month-boundary.test.ts의 canGoBack이
+# unit으로 이미 진다.
 - tapOn:
     id: "stats-month-prev"
 - assertVisible: "${output.statsEmptyMonthLabel}"
-- assertNotVisible:
-    id: "stats-month-prev"
 
 - assertVisible: "–"
 - assertVisible: "이 달은 아직 근무표가 없어요"

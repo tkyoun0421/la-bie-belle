@@ -1,4 +1,4 @@
-import { spellAmount } from "@/screens/payroll/model/summary";
+import { spellWon } from "@/shared/lib/spell-number";
 
 /**
  * 「연」 단위의 목록이다(`docs/2-design/modules/payroll/screens/payroll.md`의 「내역 목록」).
@@ -53,8 +53,8 @@ export function yearRows(months: readonly PayrollMonthRow[]): PayrollYearRow[] {
       type: "month",
       month: row.month,
       title: `${Number(row.month.slice(5, 7))}월`,
-      amountLabel: spellAmount(row.amount),
+      amountLabel: spellWon(row.amount),
     })),
-    { type: "total", amountLabel: spellAmount(total) },
+    { type: "total", amountLabel: spellWon(total) },
   ];
 }

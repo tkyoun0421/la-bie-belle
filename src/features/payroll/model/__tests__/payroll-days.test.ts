@@ -500,6 +500,60 @@ describe("payrollViewDays — 배정·조정·리허설 세 갈래의 날짜가 
   });
 });
 
+describe("payrollViewDays — 교육 배정(kind: 'training')은 isEducation이 참이다", () => {
+  it("DB check 제약과 같은 kind 값 'training'이면 그 날이 isEducation: true로 선다", () => {
+    const dayId = "day-education-1";
+    const workDate = "2026-09-15";
+
+    const result = payrollViewDays({
+      profileId: "profile-1",
+      days: [
+        {
+          id: dayId,
+          work_date: workDate,
+          starts_at: "10:00:00",
+          ends_at: "19:00:00",
+          opened_at: "2026-09-01T00:00:00.000Z",
+          slots: [],
+          assignments: [
+            {
+              id: "assignment-education-1",
+              slot_id: null,
+              position: "hall",
+              kind: "training",
+              profile_id: "profile-1",
+              ended_at: null,
+              profiles: null,
+            },
+          ],
+          check_ins: [
+            {
+              id: "check-in-education-1",
+              profile_id: "profile-1",
+              checked_at: "2026-09-15T01:00:00.000Z",
+              reported_at: "2026-09-15T01:00:00.000Z",
+              received_at: "2026-09-15T01:00:00.000Z",
+            },
+          ],
+        },
+      ],
+      rates: [
+        {
+          effective_date: "2026-08-01",
+          amount: 12000,
+          profile_id: "profile-1",
+        },
+      ],
+      adjustments: [],
+      excuses: [],
+      rehearsals: [],
+      now: "2026-09-15T01:00:00.000Z",
+    });
+
+    expect(result.find((day) => day.date === workDate)?.isEducation).toBe(true);
+  });
+});
+
 describe("payrollViewDays — payrollDays를 다시 짜지 않고 그대로 부른다", () => {
   it("같은 배정·시급 입력이면 date·minutes·amount·kind가 payrollDays 결과와 같다", () => {
     const dayId = "day-parity";

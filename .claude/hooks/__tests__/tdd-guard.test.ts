@@ -263,11 +263,46 @@ describe("유닛 훅", () => {
 
 describe("e2e 훅", () => {
   it("새 라우트에 플로우가 없으면 막는다", () => {
-    expect(run("tdd-guard-e2e.py", "src/app/cart/index.tsx", "")).toBe(blocked);
+    expect(
+      run(
+        "tdd-guard-e2e.py",
+        "src/app/cart/index.tsx",
+        'import { CartScreen } from "@/screens/cart/ui/CartScreen";',
+      ),
+    ).toBe(blocked);
   });
 
-  it("디렉터리를 안 끼고 선 라우트도 제 파일명으로 짝을 찾는다", () => {
-    expect(run("tdd-guard-e2e.py", "src/app/cart.tsx", "")).toBe(blocked);
+  /**
+   * 라우트는 얇아서 화면을 슬라이스가 든다. 제 파일명으로 짝을 찾으면
+   * `src/app/admin/stats.tsx`와 `src/app/stats.tsx`가 같은 `stats.yaml`을 가리켜
+   * 한쪽이 남의 증거로 열린다 — 관찰 021이 그것이었다.
+   */
+  it("같은 이름인 두 라우트가 저마다 부르는 슬라이스로 갈린다", () => {
+    expect(
+      run(
+        "tdd-guard-e2e.py",
+        "src/app/admin/orders.tsx",
+        'import { AdminOrdersScreen } from "@/screens/admin-orders/ui/AdminOrdersScreen";',
+      ),
+    ).toBe(blocked);
+    expect(
+      run(
+        "tdd-guard-e2e.py",
+        "src/app/orders.tsx",
+        'import { OrdersScreen } from "@/screens/orders/ui/OrdersScreen";',
+      ),
+    ).toBe(allowed);
+  });
+
+  /** 화면을 아직 안 붙인 라우트는 막을 것이 없다 — 세울 플로우도 아직 없다. */
+  it("스텁만 세운 라우트는 안 막는다", () => {
+    expect(
+      run(
+        "tdd-guard-e2e.py",
+        "src/app/cart.tsx",
+        'import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";',
+      ),
+    ).toBe(allowed);
   });
 
   it("screens 슬라이스에 플로우가 없으면 막는다", () => {
@@ -276,7 +311,7 @@ describe("e2e 훅", () => {
     ).toBe(blocked);
   });
 
-  it("루트 화면은 home 플로우로 짝을 찾는다", () => {
+  it("화면을 안 부르는 레이아웃과 루트는 안 막는다", () => {
     expect(run("tdd-guard-e2e.py", "src/app/index.tsx", "")).toBe(allowed);
     expect(run("tdd-guard-e2e.py", "src/app/_layout.tsx", "")).toBe(allowed);
   });
@@ -297,7 +332,11 @@ describe("e2e 훅", () => {
 
   /** 러너가 Maestro라 플로우는 YAML이다 — `.spec.ts`를 찾으면 영영 못 찾는다. */
   it("찾는 짝은 YAML이다", () => {
-    const result = spawn("tdd-guard-e2e.py", "src/app/cart.tsx", "");
+    const result = spawn(
+      "tdd-guard-e2e.py",
+      "src/app/cart.tsx",
+      'import { CartScreen } from "@/screens/cart/ui/CartScreen";',
+    );
 
     expect(result.status).toBe(blocked);
     expect(result.stderr).toContain("tests/e2e/cart.yaml");
@@ -338,7 +377,7 @@ describe("e2e 훅", () => {
         tool_name: "Write",
         tool_input: {
           file_path: join(emptyDir, "src/app/cart.tsx"),
-          content: "",
+          content: 'import { CartScreen } from "@/screens/cart/ui/CartScreen";',
         },
       }),
       env: { ...process.env, CLAUDE_PROJECT_DIR: emptyDir },

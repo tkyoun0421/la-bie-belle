@@ -232,7 +232,8 @@ export type PayrollViewDay = PayrollDay & {
   attendance: AttendanceStatusInput | null;
 };
 
-const EDUCATION_KIND = "education";
+/** 표가 드는 값이다 — `assignments.kind`의 check 제약이 `'regular'`과 `'training'` 둘뿐이다. */
+const EDUCATION_KIND = "training";
 
 /** DB는 초까지 싣고 화면은 안 싣는다 — `"10:00:00"`이 `"10:00"`이다. */
 function clockLabel(clock: string): string {

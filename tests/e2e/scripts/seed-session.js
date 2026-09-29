@@ -12,13 +12,14 @@
 // "schedule_admin_request_slot" | "schedule_worker_request_pending" |
 // "schedule_worker_request_claimed" | "schedule_approvals_cancel_pending" |
 // "rehearsal_qualified" | "payroll_wages" | "payroll_view" | "payroll_view_left" |
-// "payroll_adjust" | "stats_admin_overview" 중 하나다(요청 넷(schedule_admin_request_slot ·
+// "payroll_adjust" | "stats_admin_overview" | "stats_worker_overview" 중
+// 하나다(요청 넷(schedule_admin_request_slot ·
 // schedule_worker_request_pending · schedule_worker_request_claimed ·
 // schedule_approvals_cancel_pending)은 schedule-requests task가, rehearsal_qualified는
 // rehearsal task가, payroll_* 넷은 급여 task들이, stats_admin_overview는 stats-admin
-// task가 더한다 — 계약은
+// task가, stats_worker_overview는 stats-worker task가 더한다 — 계약은
 // tests/e2e/schedule-admin.yaml·schedule-worker.yaml·approvals.yaml·rehearsal.yaml·
-// admin-stats.yaml 머리말). NAME은 선택이고, 프로필을
+// admin-stats.yaml·stats.yaml 머리말). NAME은 선택이고, 프로필을
 // 보내는 상태에서 그 사람의 이름을 고른다 — 한 화면에 승인된 사람을 여럿 세우는
 // members.yaml이 쓴다. 안 주면 시드 서버의 기본 이름이다. MONTH·DAY도 선택이고
 // schedule_admin_race_open만 쓴다 — 이미 로그인된 세션 밖에서 먼저 열 날짜다.
@@ -242,5 +243,39 @@ if (seeded.statsSecondMonthLabel) {
 if (seeded.statsEmptyMonthLabel) {
   output.statsEmptyMonthLabel = escapeForTextSelector(
     seeded.statsEmptyMonthLabel,
+  );
+}
+
+// stats_worker_overview 전용 다섯이다(stats-worker task, tests/e2e/stats.yaml
+// 머리말). "/stats"도 "?month="을 안 받아서 달마다 화살표로만 옮겨야 한다 — 시드가
+// 만든 달의 라벨과 그 달 날짜 넷의 라벨을 미리 받아 화면 문구를 그대로 단언한다.
+// 날짜 라벨의 "(토)" 같은 괄호가 정규식으로 읽히지 않게 넷 다 이스케이프한다.
+if (seeded.statsWorkerMonthLabel) {
+  output.statsWorkerMonthLabel = escapeForTextSelector(
+    seeded.statsWorkerMonthLabel,
+  );
+}
+
+if (seeded.statsWorkerPresentDateLabel) {
+  output.statsWorkerPresentDateLabel = escapeForTextSelector(
+    seeded.statsWorkerPresentDateLabel,
+  );
+}
+
+if (seeded.statsWorkerLateDateLabel) {
+  output.statsWorkerLateDateLabel = escapeForTextSelector(
+    seeded.statsWorkerLateDateLabel,
+  );
+}
+
+if (seeded.statsWorkerAbsentDateLabel) {
+  output.statsWorkerAbsentDateLabel = escapeForTextSelector(
+    seeded.statsWorkerAbsentDateLabel,
+  );
+}
+
+if (seeded.statsWorkerExcusedDateLabel) {
+  output.statsWorkerExcusedDateLabel = escapeForTextSelector(
+    seeded.statsWorkerExcusedDateLabel,
   );
 }

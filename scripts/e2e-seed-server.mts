@@ -4,15 +4,15 @@
 //   POST http://127.0.0.1:8765/seed  {"state": "rejected"}
 //   → {"access_token": "…", "refresh_token": "…", "user_id": "…", "profile": {…}}
 //
-// 상태는 스물여섯 개다 — fresh · submitted · approved · admin · rejected · left · blocked ·
+// 상태는 스물일곱 개다 — fresh · submitted · approved · admin · rejected · left · blocked ·
 // read_failure · schedule_submission_window · schedule_confirmed와, 관리자 근무표 여덟
 // (schedule_admin_empty_month · schedule_admin_race_open · schedule_admin_confirmable ·
 // schedule_admin_confirmed · schedule_admin_applications · schedule_assign_day ·
 // schedule_admin_request_slot · schedule_approvals_cancel_pending), 요청을 받는 근무자 둘
 // (schedule_worker_request_pending · schedule_worker_request_claimed), 리허설 하나
 // (rehearsal_qualified), 시급 하나(payroll_wages), 급여 조회 둘(payroll_view ·
-// payroll_view_left), 근무 조정 하나(payroll_adjust), 관리자 통계 하나
-// (stats_admin_overview). `name`은
+// payroll_view_left), 근무 조정 하나(payroll_adjust), 통계 둘(stats_admin_overview ·
+// stats_worker_overview). `name`은
 // 선택이고, 프로필을 보내는 상태에서 그 사람의 이름을 고른다(안 주면 SEEDED_PROFILE의
 // 이름이다). 요청의 `month`·`day`도 선택이고 schedule_admin_race_open만 쓴다 — 이미
 // 로그인된 세션 밖에서 먼저 열 날짜다. 응답의 `day`는 schedule_assign_day와
@@ -127,6 +127,15 @@ const PAYROLL_ADJUST = "payroll_adjust";
 
 const STATS_ADMIN_OVERVIEW = "stats_admin_overview";
 
+const STATS_WORKER_OVERVIEW = "stats_worker_overview";
+
+/**
+ * 근무자 통계가 심는 시급이다. `tests/e2e/stats.yaml` 머리말의 손계산 표가 이 값으로
+ * 검산된다 — 급여 조회가 쓰는 값과 같지만 그쪽은 PAY-005 예시를 따라가는 자리라 상수를
+ * 나눠 둔다.
+ */
+const STATS_WORKER_WAGE = 12000;
+
 /**
  * 급여 조회가 심는 기본 시급이다. `README.md`의 PAY-005 원문 예시(「시급 12,000원인 사람이
  * 10시간 일하면 126,000원이다」)와 같은 값이라 `tests/e2e/payroll.yaml`이 단언하는 금액이 그
@@ -161,6 +170,7 @@ const STATES = [
   PAYROLL_VIEW_LEFT,
   PAYROLL_ADJUST,
   STATS_ADMIN_OVERVIEW,
+  STATS_WORKER_OVERVIEW,
 ] as const;
 
 export type SeedState = (typeof STATES)[number];
@@ -222,6 +232,11 @@ type SchedulePayload = {
   statsWorkMonthLabel?: string;
   statsSecondMonthLabel?: string;
   statsEmptyMonthLabel?: string;
+  statsWorkerMonthLabel?: string;
+  statsWorkerPresentDateLabel?: string;
+  statsWorkerLateDateLabel?: string;
+  statsWorkerAbsentDateLabel?: string;
+  statsWorkerExcusedDateLabel?: string;
 };
 
 type SeedResponse = Partial<SchedulePayload> & {
@@ -341,7 +356,8 @@ async function seededUser(
     state === SCHEDULE_CONFIRMED ||
     state === WORKER_REQUEST_PENDING ||
     state === WORKER_REQUEST_CLAIMED ||
-    state === REHEARSAL_QUALIFIED
+    state === REHEARSAL_QUALIFIED ||
+    state === STATS_WORKER_OVERVIEW
   ) {
     await decideBy("approve_member", user.profileId);
   }
@@ -1373,6 +1389,96 @@ async function seedStatsAdminOverview(): Promise<Partial<SchedulePayload>> {
   };
 }
 
+/**
+ * 근무자 통계가 보는 한 달이다. 근태 네 갈래(출근·지각·결근·인정)와 포지션 둘(메인·스캔)이
+ * 한 사람에게 붙어, 안 들어간 일곱이 목록에서 빠지는 것과 결근한 날이 급여 보조 줄에서
+ * 빠지는 것을 한 달로 같이 본다. 손계산 표는 `tests/e2e/stats.yaml` 머리말이다.
+ *
+ * **이번 달은 비워 둔다.** 이 화면은 `?month=`을 안 받아 언제나 이번 달에서 열리는데
+ * (navigation.md 「경로」) 방금 만든 사람에게 이번 달은 원래 비어 있다 — 그 자연 상태를
+ * 빈 상태 검증에 그대로 쓴다(`seedPayrollView`와 같은 손이다).
+ *
+ * **오프셋 -6이다.** -1·-2는 급여 조회가, -3·-4·-5는 관리자 통계가, 0은 리허설이 이미
+ * 쓴다 — 넷과 안 겹치는 가장 가까운 달이다.
+ *
+ * **시급 행을 그 달 1일자로 직접 꽂는다.** 승인이 넣는 행은 적용일이 오늘이라(PAY-008)
+ * 여섯 달 전 근무에 안 닿는다. `set_default_wage`는 안 쓴다 — 이 상태에서 세는 근무가
+ * 나 하나뿐이라 개인 이력만으로 충분하다.
+ */
+async function seedStatsWorkerOverview(
+  meProfileId: string,
+): Promise<Partial<SchedulePayload>> {
+  const admin = await createAdminUser();
+
+  const workMonth = kstMonthStart(-6);
+  const workMonthKey = workMonth.slice(0, 7);
+
+  seedWageHistory(meProfileId, [
+    { date: workMonth, amount: STATS_WORKER_WAGE, followsDefault: true },
+  ]);
+
+  seedPastSchedule(workMonth, admin.profileId);
+
+  const presentDate = `${workMonthKey}-01`;
+  const lateDate = `${workMonthKey}-02`;
+  const absentDate = `${workMonthKey}-03`;
+  const excusedDate = `${workMonthKey}-04`;
+
+  seedPastDay(presentDate, workMonth, "10:00:00", "19:00:00", admin.profileId);
+  seedPastDay(lateDate, workMonth, "10:00:00", "16:00:00", admin.profileId);
+  seedPastDay(absentDate, workMonth, "10:00:00", "18:00:00", admin.profileId);
+  seedPastDay(excusedDate, workMonth, "10:00:00", "18:00:00", admin.profileId);
+
+  const presentDayId = await dayIdOf(admin, presentDate);
+  const lateDayId = await dayIdOf(admin, lateDate);
+  const absentDayId = await dayIdOf(admin, absentDate);
+  const excusedDayId = await dayIdOf(admin, excusedDate);
+
+  seedAssignment(
+    presentDayId,
+    meProfileId,
+    "regular",
+    seedSlotOfPosition(presentDayId, "메인"),
+    "메인",
+  );
+  seedCheckIn(presentDayId, meProfileId, kstInstant(presentDate, "09:58:00"));
+
+  seedAssignment(
+    lateDayId,
+    meProfileId,
+    "regular",
+    seedSlotOfPosition(lateDayId, "메인"),
+    "메인",
+  );
+  seedCheckIn(lateDayId, meProfileId, kstInstant(lateDate, "10:15:00"));
+
+  // 결근 — 인증도 사유도 없다. 지난 달이라 사유 마감(48시간, ATT-023)이 이미 지났다.
+  seedAssignment(
+    absentDayId,
+    meProfileId,
+    "regular",
+    seedSlotOfPosition(absentDayId, "스캔"),
+    "스캔",
+  );
+
+  seedAssignment(
+    excusedDayId,
+    meProfileId,
+    "regular",
+    seedSlotOfPosition(excusedDayId, "스캔"),
+    "스캔",
+  );
+  seedExcuse(excusedDayId, meProfileId);
+
+  return {
+    statsWorkerMonthLabel: spellMonth(workMonthKey),
+    statsWorkerPresentDateLabel: spellWorkDate(presentDate),
+    statsWorkerLateDateLabel: spellWorkDate(lateDate),
+    statsWorkerAbsentDateLabel: spellWorkDate(absentDate),
+    statsWorkerExcusedDateLabel: spellWorkDate(excusedDate),
+  };
+}
+
 /** 신청을 보내고 관리자가 받는 실제 경로를 그대로 밟는다 — 이름이 명단에 서야 해서다. */
 async function approvedWorker(name: string): Promise<SignedInUser> {
   const worker = await createSignedInUser();
@@ -1466,6 +1572,10 @@ async function schedulePayloadOf(
 
   if (state === STATS_ADMIN_OVERVIEW) {
     return seedStatsAdminOverview();
+  }
+
+  if (state === STATS_WORKER_OVERVIEW) {
+    return seedStatsWorkerOverview(profileId);
   }
 
   // 리허설을 다 넣은 뒤에 퇴사시킨다 — `add_rehearsal`이 첫 줄에서 보는 `is_approved()`가

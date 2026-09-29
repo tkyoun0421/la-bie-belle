@@ -3,6 +3,11 @@ import type { Db } from "@/shared/api/database";
 import { getMonthAttendance } from "@/entities/attendance/dals/get-month-attendance";
 import type { MonthAttendance } from "@/entities/attendance/dals/get-month-attendance";
 import {
+  getPayrollMonth,
+  payrollMonthKey,
+} from "@/entities/payroll/dals/get-payroll-month";
+import type { PayrollMonth } from "@/entities/payroll/dals/get-payroll-month";
+import {
   firstScheduleMonthKey,
   getFirstScheduleMonth,
 } from "@/entities/schedule/dals/get-first-schedule-month";
@@ -41,6 +46,11 @@ export type AttendanceMonth = {
   month: string;
   days: ScheduleDay[];
   attendance: MonthAttendance;
+};
+
+export type PayrollByMonth = {
+  month: string;
+  payroll: PayrollMonth;
 };
 
 export type MonthsResult<Loaded> = {
@@ -95,6 +105,34 @@ export function useAttendanceMonths(
           checkIns: [],
           excuseStatuses: [],
         }) as MonthAttendance,
+      })),
+  });
+}
+
+/**
+ * 급여 탭 그래프가 읽는 달치 창이다. `features/payroll`의 `usePayrollMonths`가 이미 달치를
+ * 읽지만 그쪽은 여러 달을 한 배열로 이어 붙여서 「몇 월이 비었나」가 사라진다 — 위 둘과 같은
+ * 이유로 달마다 한 칸이다.
+ *
+ * **키가 `usePayrollMonths`의 것과 같다.** `payrollMonthKey`를 그대로 불러서 급여 화면이 읽어둔
+ * 달은 캐시에서 오고, 조정이나 시급을 고쳐 `['payroll']`이 낡으면 이 화면도 같이 따라간다.
+ *
+ * DAL을 슬라이스가 직접 부르는 것은 `features/stats`가 `features/payroll`을 못 불러서다
+ * (lint 규칙 3) — `entities`는 아래층이라 양쪽이 같은 자리를 부를 수 있다.
+ */
+export function usePayrollMonthsByMonth(
+  client: Db,
+  months: readonly string[],
+): MonthsResult<PayrollByMonth> {
+  return useQueries({
+    queries: months.map((month) => ({
+      queryKey: payrollMonthKey(month),
+      queryFn: () => getPayrollMonth(client, month),
+    })),
+    combine: (results): MonthsResult<PayrollByMonth> =>
+      combineMonths(results, months, (at) => ({
+        month: months[at],
+        payroll: results[at].data as PayrollMonth,
       })),
   });
 }

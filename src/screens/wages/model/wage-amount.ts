@@ -56,8 +56,3 @@ export function atWageCap(digits: string): boolean {
 export function formatAmountDisplay(digits: string): string {
   return digits.replace(THOUSANDS, ",");
 }
-
-/** 목록·이력·확인 문구가 쓰는 꼴이다 — 숫자와 「원」이 한 덩이다(writing.md 「숫자와 단위」). */
-export function spellWon(amount: number): string {
-  return `${formatAmountDisplay(String(amount))}원`;
-}

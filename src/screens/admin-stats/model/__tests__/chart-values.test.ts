@@ -8,12 +8,14 @@
 // workValues(loaded) — 근무 탭 추이 그래프의 달별 총 근무 분이다. 날이 하나도
 // 안 열린 달은 Map에서 빠진다(0으로 이으면 「안 일한 달」로 읽힌다).
 // attendanceValues(loaded, tabs) — 근태 탭 추이 그래프의 달별 출근율이다.
-// attendanceRate(tab)이 null을 내는 달은 빠진다.
-// attendanceRate(tab) — 출근율은 인증이 실제로 몇 번 돌았나다(docs/2-design/
-// system/screens/stats.md 「추이 그래프」). 출근을 출근·지각·결근·출근 인정의
-// 합으로 나누고, 출근 인정은 분모에만 든다. 넷이 다 0이면 null이다.
+// attendanceRate가 null을 내는 달은 빠진다.
 // percentLabel(tab) — attendanceRate가 null이면 값 없음 표시("–")고, 아니면
 // "60%" 꼴이다.
+//
+// attendanceRate 자체는 plan stats-worker AC-01로 entities/attendance/model/
+// attendance-summary.ts에 내려갔다(인자도 AttendanceTab이 아니라
+// MonthlyAttendanceTally다) — attendanceValues와 percentLabel은 그 함수를 안에서
+// 불러 쓴다.
 
 import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
 import type {
@@ -22,7 +24,6 @@ import type {
 } from "@/features/stats/api/useStatsQueries";
 import type { AttendanceTab } from "@/screens/admin-stats/model/attendance-rows";
 import {
-  attendanceRate,
   attendanceValues,
   monthIn,
   percentLabel,
@@ -142,24 +143,10 @@ describe("attendanceValues — 출근율을 못 구하는 달은 그래프에서
   });
 });
 
-describe("attendanceRate — 출근율은 인증이 실제로 몇 번 돌았나다(stats.md 「추이 그래프」)", () => {
-  it("출근·지각·결근·출근 인정의 합이 분모고 출근 인정은 분모에만 든다", () => {
-    const tab: AttendanceTab = {
-      tally: { present: 6, late: 1, absent: 1, excused: 2 },
-      rows: [],
-    };
-
-    expect(attendanceRate(tab)).toBe(60);
-  });
-
-  it("넷이 다 0이면 null이다 — 그 달은 점을 안 찍는다", () => {
-    expect(attendanceRate(EMPTY_TAB)).toBeNull();
-  });
-
-  it("그 달의 tab 자체가 없어도 null이다", () => {
-    expect(attendanceRate(undefined)).toBeNull();
-  });
-});
+// attendanceRate는 src/entities/attendance/model/attendance-summary.ts로 내려갔다
+// (plan stats-worker AC-01). 그 자리의 단언은
+// entities/attendance/model/__tests__/attendance-summary.test.ts가 든다 — 인자도
+// AttendanceTab이 아니라 MonthlyAttendanceTally 하나로 바뀌었다.
 
 describe("percentLabel — 값이 없는 달은 백분율 대신 빈 표시가 선다", () => {
   it("출근율을 구할 수 있으면 '60%'꼴이다", () => {

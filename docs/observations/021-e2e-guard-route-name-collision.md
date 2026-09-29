@@ -1,5 +1,5 @@
 ---
-status: open
+status: actioned
 target: .claude/hooks/tdd-guard-e2e.py
 date: 2026-09-27
 resolved:
@@ -13,9 +13,15 @@ resolved:
 
 첫 번째다. 라우트가 얇아 슬라이스 플로우가 사실상 덮는다는 것을 알고 우회했다.
 
-## 고침
+**둘째가 `stats-worker`에서 났다.** `src/app/admin/stats.tsx`와 `src/app/stats.tsx`가 둘 다 `tests/e2e/stats.yaml`을 가리킨다. 그 파일은 `stats-admin`이 훅을 채우려고 끼워 넣은 `runFlow: admin-stats.yaml` 위임이었고, 이번에 근무자 여정으로 갈아엎으니 이제는 반대로 관리자 라우트가 근무자 증거로 열린다. e2e writer가 짚었다.
 
-두 번째가 나오면 `src/app/` 매핑을 디렉터리 경로를 이어 붙인 이름(`admin-schedule`)으로 바꾸거나, 얇은 라우트는 게이트 밖으로 빼고 슬라이스만 본다. 지금은 test-planner가 writer에게 「슬라이스 플로우가 진다」를 명시한다.
+## 지은 것
+
+**라우트의 짝을 파일명이 아니라 부르는 슬라이스로 찾는다.** 라우트는 얇아서(CLAUDE.md) 화면을 슬라이스가 들고 라우트는 그것을 부르기만 한다 — `src/app/admin/stats.tsx`가 `@/screens/admin-stats/`를 부르면 짝은 `tests/e2e/admin-stats.yaml`이다. 이름 공간이 슬라이스 하나로 모여 같은 이름이 둘 설 자리가 없어진다.
+
+보는 것은 저장된 파일이 아니라 쓰려는 조각이다. 라우트를 세우는 걸음이 곧 화면을 붙이는 걸음이라 그 조각에 import가 있고, 판정에 안 쓰는 파일을 읽지 않는다는 앞선 계약(fifo 테스트)도 지킨다. 화면을 아직 안 붙인 스텁 라우트는 통과한다 — 세울 플로우가 아직 없다.
+
+`DIRECTORY_ROUTES`로 `index.tsx`·`_layout.tsx`를 가르던 손은 걷혔다. 레이아웃은 화면을 안 불러 저절로 통과한다.
 
 ## 원칙
 

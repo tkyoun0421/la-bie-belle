@@ -1,5 +1,5 @@
+import { spellWon } from "@/shared/lib/spell-number";
 import { Dialog } from "@/shared/ui/Dialog";
-import { spellWon } from "@/screens/wages/model/wage-amount";
 
 /**
  * 기본으로 되돌리기 전에 한 번 묻는 자리다. 지금 값이 기본보다 높으면 누르는 순간

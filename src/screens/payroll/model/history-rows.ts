@@ -1,6 +1,7 @@
 import { spellDate } from "@/shared/lib/kst-date";
+import { spellWon } from "@/shared/lib/spell-number";
 import type { PayrollDayKind } from "@/features/payroll/model/payroll-days";
-import { NO_AMOUNT, spellAmount } from "@/screens/payroll/model/summary";
+import { NO_AMOUNT } from "@/screens/payroll/model/summary";
 
 /**
  * 내역 목록의 줄이다(`docs/2-design/modules/payroll/screens/payroll.md`의 「내역 목록」).
@@ -88,7 +89,7 @@ function subtitleOf(day: PayrollHistoryDay): string {
 function amountLabelOf(day: PayrollHistoryDay): string {
   return day.kind === "absent" || day.kind === "wage-pending"
     ? NO_AMOUNT
-    : spellAmount(day.amount);
+    : spellWon(day.amount);
 }
 
 export function payrollHistoryRows(
