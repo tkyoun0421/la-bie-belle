@@ -1,0 +1,143 @@
+import { execSql, queryColumn, seedHoliday } from "@tests/integration/postgres";
+
+const FETCH_HOLIDAYS_URL_SECRET_NAME = "import_holidays_url";
+const FETCH_HOLIDAYS_SERVICE_KEY_SECRET_NAME =
+  "import_holidays_service_role_key";
+
+function createFetchHolidaysVaultSecrets(): void {
+  execSql(
+    "select vault.create_secret(:'url', :'url_name');\n" +
+      "select vault.create_secret(:'key', :'key_name');\n",
+    {
+      url: "http://127.0.0.1:54321/functions/v1/import-holidays",
+      url_name: FETCH_HOLIDAYS_URL_SECRET_NAME,
+      key: "local-only-fake-service-key",
+      key_name: FETCH_HOLIDAYS_SERVICE_KEY_SECRET_NAME,
+    },
+  );
+}
+
+function deleteFetchHolidaysVaultSecrets(): void {
+  execSql(
+    "delete from vault.secrets where name in (:'url_name', :'key_name');\n",
+    {
+      url_name: FETCH_HOLIDAYS_URL_SECRET_NAME,
+      key_name: FETCH_HOLIDAYS_SERVICE_KEY_SECRET_NAME,
+    },
+  );
+}
+
+function callFetchHolidays(): void {
+  execSql("select internal.fetch_holidays();\n");
+}
+
+function latestNetResponseId(): number {
+  const rows = queryColumn(
+    "select coalesce(max(id), 0) from net._http_response;\n",
+  );
+  return Number(rows[0] ?? "0");
+}
+
+function netResponseCountAfter(id: number): number {
+  const rows = queryColumn(
+    "select count(*) from net._http_response where id > :'after_id';\n",
+    { after_id: String(id) },
+  );
+  return Number(rows[0] ?? "0");
+}
+
+function nextYear(): number {
+  return new Date().getUTCFullYear() + 1;
+}
+
+function randomDayInYear(year: number): string {
+  const month = String(1 + Math.floor(Math.random() * 12)).padStart(2, "0");
+  const day = String(1 + Math.floor(Math.random() * 28)).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+let trackedHolidays: { date: string; source: "api" | "manual" }[] = [];
+
+function seedTrackedHoliday(date: string, source: "api" | "manual"): void {
+  seedHoliday(date, source);
+  trackedHolidays.push({ date, source });
+}
+
+afterEach(() => {
+  for (const { date, source } of trackedHolidays) {
+    execSql(
+      "delete from public.holidays where holiday_date = :'date' and source = :'source';\n",
+      { date, source },
+    );
+  }
+  trackedHolidays = [];
+});
+
+describe("internal.fetch_holidays — 다음 해 조건(plan AC-01)", () => {
+  beforeAll(() => {
+    createFetchHolidaysVaultSecrets();
+  });
+
+  afterAll(() => {
+    deleteFetchHolidaysVaultSecrets();
+  });
+
+  it("다음 해에 api 공휴일이 있으면 pg_net을 부르지 않는다", () => {
+    seedTrackedHoliday(randomDayInYear(nextYear()), "api");
+    const before = latestNetResponseId();
+
+    callFetchHolidays();
+
+    expect(netResponseCountAfter(before)).toBe(0);
+  });
+
+  it("다음 해에 api 공휴일이 하나도 없으면 pg_net을 한 번 부른다", () => {
+    const before = latestNetResponseId();
+
+    callFetchHolidays();
+
+    expect(netResponseCountAfter(before)).toBe(1);
+  });
+
+  it("올해 api 공휴일이 있어도 다음 해가 비어 있으면 여전히 부른다 — 다음 해만 본다", () => {
+    seedTrackedHoliday(randomDayInYear(nextYear() - 1), "api");
+    const before = latestNetResponseId();
+
+    callFetchHolidays();
+
+    expect(netResponseCountAfter(before)).toBe(1);
+  });
+
+  it("다음 해에 manual 공휴일만 있으면 받아진 해로 안 쳐서 부른다", () => {
+    seedTrackedHoliday(randomDayInYear(nextYear()), "manual");
+    const before = latestNetResponseId();
+
+    callFetchHolidays();
+
+    expect(netResponseCountAfter(before)).toBe(1);
+  });
+
+  it("vault 항목이 없어도 예외 없이 끝난다", () => {
+    deleteFetchHolidaysVaultSecrets();
+
+    try {
+      expect(() => callFetchHolidays()).not.toThrow();
+    } finally {
+      createFetchHolidaysVaultSecrets();
+    }
+  });
+});
+
+describe("cron 등록(plan AC-03) — 매일 한국 새벽 3시(UTC 18시)에 fetch-holidays가 돈다", () => {
+  it("cron.job에 fetch-holidays 이름의 행이 하나고 스케줄이 0 18 * * *다", () => {
+    const jobNames = queryColumn(
+      "select jobname from cron.job where jobname = 'fetch-holidays';\n",
+    );
+    expect(jobNames).toEqual(["fetch-holidays"]);
+
+    const schedules = queryColumn(
+      "select schedule from cron.job where jobname = 'fetch-holidays';\n",
+    );
+    expect(schedules).toEqual(["0 18 * * *"]);
+  });
+});

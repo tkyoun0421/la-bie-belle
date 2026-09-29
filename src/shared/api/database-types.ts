@@ -42,6 +42,7 @@ export type Database = {
       };
       erase_profiles: { Args: { p_now: string }; Returns: undefined };
       expire_requests: { Args: never; Returns: undefined };
+      fetch_holidays: { Args: never; Returns: undefined };
       import_holidays: {
         Args: { p_rows: Json; p_year: number };
         Returns: undefined;

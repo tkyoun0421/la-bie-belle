@@ -117,12 +117,14 @@
 ### 서비스 키 자리
 
 - 적용 범위: service role 키를 쥐는 코드
-- 기본 계약: 둘이고 둘 다 Edge Function 안이다. 앱 번들에는 없다
+- 기본 계약: 셋이고 셋 다 Edge Function 안이다. 앱 번들에는 없다
   - **`send-push`** — [`notification/design.md`](../modules/notification/design.md#푸시-보내기)
   - **`erase-account`** — [`account/design.md`](../modules/account/design.md#비우기)
-- 이유: ADR-003이 「왜 필요한지를 이 문서에 먼저 적는다」고 한 자리다. 둘이다
+  - **`import-holidays`** — [`payroll/design.md`](../modules/payroll/design.md#공휴일-받기)
+- 이유: ADR-003이 「왜 필요한지를 이 문서에 먼저 적는다」고 한 자리다. 셋이다
   - `auth.users` 삭제 — Admin API뿐이다([`account/design.md`](../modules/account/design.md#퇴사-1년-뒤))
   - Edge Function이 `notifications.pushed_at`을 찍는 것 — 함수는 사용자 세션 없이 돈다([`notification/design.md`](../modules/notification/design.md))
+  - Edge Function이 `import_holidays`로 한 해치 공휴일을 넣는 것 — cron이 쏘는 함수라 사용자 세션이 없다([`payroll/design.md`](../modules/payroll/design.md#공휴일-받기))
 
 ## 결과·오류 계약
 
