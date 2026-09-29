@@ -48,7 +48,8 @@ sources:
 - [`stats-admin` AC-01](stats-admin.md#ac-01)의 `work-totals.ts`를 그대로 부르고 입력을 내 배정으로 좁힌다. **집계를 다시 짜지 않는다**
 - 포지션 탭은 `byPosition`에서 **내가 안 들어간 포지션을 뺀다** — 관리자 쪽이 아홉을 다 세우는 것과 반대다
 - 근태는 [`attendance-data` AC-06](attendance-data.md#ac-06)의 상태 함수를 내 날에 돌린다
-- 급여는 [`payroll-data`](payroll-data.md)의 금액 순수 함수를 부른다. **여기서 금액을 새로 계산하지 않는다**
+- 급여는 [`payroll-data`](payroll-data.md)의 금액 순수 함수를 부른다. **여기서 금액을 새로 계산하지 않는다**. **부르는 자리는 `src/screens/stats/model/`이다** — `features/stats`가 `features/payroll`을 부르면 lint 규칙 3에 걸린다. [`PayrollScreen.tsx`](../../../src/screens/payroll/ui/PayrollScreen.tsx)가 앞서 밟은 길이고, 보조 줄의 건수·시간도 그 함수들이 낸다([stats.md 「내 급여」](../../2-design/system/screens/stats.md#내-급여))
+- **출근율 셈을 `entities`로 내린다.** `attendanceRate`가 지금 `screens/admin-stats/model/chart-values.ts`에 있어 `screens/stats`가 규칙 3으로 못 부른다. 두 화면이 같은 공식을 쓰니 `src/entities/attendance/model/attendance-summary.ts`로 내리고 둘이 그것을 부른다 — `tallyMonthlyAttendance`와 `positions.ts`가 앞서 밟은 길이다. 내리면서 인자를 `AttendanceTab`이 아니라 tally만 받게 바꾼다(`AttendanceTab`은 `screens` 타입이다)
 
 ### AC-02
 
@@ -91,7 +92,9 @@ sources:
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
 | `src/features/stats/model/my-totals.ts` | 내 것으로 좁힌 집계 | AC-01 |
-| `src/features/stats/api/queries.ts` | 내 범위 질의 — `stats-admin`이 만든 파일에 더한다 | AC-01 |
+| `src/entities/attendance/model/attendance-summary.ts` | 출근율 셈이 여기로 내려온다 — 두 화면이 부른다 | AC-02 |
+| `src/features/stats/api/useStatsQueries.ts` | 내 범위 질의 — `stats-admin`이 만든 파일에 더한다 | AC-01 |
+| `src/screens/stats/model/` | 급여 호출과 날짜 목록·비율 띠 몫·만원 라벨 | AC-02~AC-04 |
 | `src/screens/stats/` | 화면 조립, 탭 셋 | AC-02~AC-05 |
 | `/stats/` 화면 | 라우트 | AC-05 |
 
