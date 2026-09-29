@@ -17,7 +17,6 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-// @ts-expect-error 대상 모듈이 아직 없다
 const { useNotifications } =
   await import("@/features/notification/model/useNotifications");
 

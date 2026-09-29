@@ -16,7 +16,6 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-// @ts-expect-error 대상 모듈이 아직 없다
 const { useUnreadCount } =
   await import("@/features/notification/model/useUnreadCount");
 

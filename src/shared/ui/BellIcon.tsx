@@ -14,6 +14,10 @@ import { Icon } from "@/shared/ui/Icon";
  *
  * 점이 종의 오른쪽 어깨에 물리면서도 따로 읽히는 것은 둘레의 테두리가 바닥과 같은 색이라서다.
  * 테두리까지 합쳐 12px 상자이므로 안쪽 원이 8px로 남는다.
+ *
+ * `testID`를 받은 종은 점에도 `${testID}-unread`를 실어 준다. 점은 색으로만 서서 읽어 줄
+ * 글자가 없어, 그 이름이 없으면 「새것이 있는가」를 밖에서 확인할 길이 없다
+ * ([ListRow](ListRow.tsx)의 화살표와 같은 자리다).
  */
 
 const BELL_ICON_SIZE = 28;
@@ -22,23 +26,29 @@ const BELL_HIT_SLOP = 8;
 
 export type BellIconProps = Omit<PressableProps, "children"> & {
   unread?: boolean;
+  testID?: string;
 };
 
 export function BellIcon({
   unread = false,
   className,
+  testID,
   ...rest
 }: BellIconProps) {
   return (
     <Pressable
       accessibilityRole="button"
       hitSlop={BELL_HIT_SLOP}
+      testID={testID}
       className={cn("relative h-7 w-7 items-center justify-center", className)}
       {...rest}
     >
       <Icon icon={Bell} size={BELL_ICON_SIZE} className="text-fg-neutral" />
       {unread ? (
-        <View className="absolute top-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-bg-neutral bg-bg-brand-solid" />
+        <View
+          testID={testID ? `${testID}-unread` : undefined}
+          className="absolute top-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-bg-neutral bg-bg-brand-solid"
+        />
       ) : null}
     </Pressable>
   );

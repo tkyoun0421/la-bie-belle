@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { supabase } from "@/shared/lib/supabase";
@@ -16,6 +16,7 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
 import { liveAssignmentCount } from "@/entities/schedule/dals/get-month-schedule";
 import { useMembers } from "@/features/members/model/useMembers";
+import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
 import { useHallDefaults } from "@/features/schedule/model/useHallDefaults";
 import { useMonthSchedule } from "@/features/schedule/model/useMonthSchedule";
 import { useMonthWindow } from "@/features/schedule/model/useMonthWindow";
@@ -63,6 +64,8 @@ import { HallDefaultsSheet } from "@/screens/admin-home/ui/HallDefaultsSheet";
 
 export function AdminHomeScreen() {
   const router = useRouter();
+  const pathname = usePathname();
+  const unreadCount = useUnreadCount(supabase);
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const today = kstToday();
@@ -156,7 +159,11 @@ export function AdminHomeScreen() {
         title="관리자"
         right={
           <View className="flex-row items-center gap-1">
-            <BellIcon onPress={() => router.push("/notifications")} />
+            <BellIcon
+              testID="bell-icon"
+              unread={(unreadCount.data ?? 0) > 0}
+              onPress={() => router.push(`/notifications?from=${pathname}`)}
+            />
             <AdminSwitch
               destination="worker"
               onPress={() => router.push("/")}

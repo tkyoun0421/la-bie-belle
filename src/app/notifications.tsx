@@ -1,5 +1,12 @@
-import { NotBuiltYet } from "@/shared/ui/NotBuiltYet";
+import { useLocalSearchParams } from "expo-router";
+import { NotificationsScreen } from "@/screens/notifications/ui/NotificationsScreen";
+
+type NotificationsParams = {
+  from?: string;
+};
 
 export default function Screen() {
-  return <NotBuiltYet path="/notifications" />;
+  const { from } = useLocalSearchParams<NotificationsParams>();
+
+  return <NotificationsScreen from={from} />;
 }

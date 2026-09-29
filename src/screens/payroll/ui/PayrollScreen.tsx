@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
@@ -18,6 +18,7 @@ import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
+import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
 import { payrollViewDays } from "@/features/payroll/model/payroll-days";
 import { PAYROLL_KEY } from "@/features/payroll/model/query-keys";
 import { usePayrollMonths } from "@/features/payroll/model/usePayrollMonths";
@@ -86,6 +87,8 @@ function ArrowSlot() {
 
 export function PayrollScreen() {
   const router = useRouter();
+  const pathname = usePathname();
+  const unreadCount = useUnreadCount(supabase);
   const today = kstToday();
 
   const [me, setMe] = useState<string | null>(null);
@@ -177,7 +180,11 @@ export function PayrollScreen() {
         onBack={hasLeft ? () => router.replace("/left") : undefined}
         right={
           hasLeft ? undefined : (
-            <BellIcon onPress={() => router.push("/notifications")} />
+            <BellIcon
+              testID="bell-icon"
+              unread={(unreadCount.data ?? 0) > 0}
+              onPress={() => router.push(`/notifications?from=${pathname}`)}
+            />
           )
         }
       />

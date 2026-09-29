@@ -1,4 +1,3 @@
-// @ts-expect-error 대상 모듈이 아직 없다
 const { toNotificationDateHeader, toNotificationReceivedTime } =
   await import("@/features/notification/model/when");
 

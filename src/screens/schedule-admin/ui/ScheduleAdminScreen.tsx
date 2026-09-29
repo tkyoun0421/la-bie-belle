@@ -106,6 +106,10 @@ import { DayHoursSheet } from "@/screens/schedule-admin/ui/DayHoursSheet";
  * 문장이라 떠나는 화면이 아니라 닿는 화면이 띄운다
  * (`docs/2-design/system/screens/approvals.md`의 「근무 취소 승인」,
  * [navigation.md](../../../../docs/2-design/system/navigation.md#경로)).
+ *
+ * **알림 목록에서 와도 같은 자리다.** `?from=notifications`면 뒤로가 그 목록으로 간다
+ * ([navigation.md 「뒤로」](../../../../docs/2-design/system/navigation.md#뒤로)) — 토스트는
+ * 없다. 알림은 일어난 일을 알리는 것이지 방금 누른 판정의 결과가 아니다.
  */
 
 /**
@@ -130,6 +134,8 @@ const EMPTY_ICON_SIZE = 44;
 const SKELETON_ROWS = [0, 1, 2];
 
 const APPROVALS_ORIGIN = "approvals";
+
+const NOTIFICATIONS_ORIGIN = "notifications";
 
 const CANCELED_TOAST = "근무를 취소했어요";
 
@@ -364,11 +370,19 @@ export function ScheduleAdminScreen({
           adjusting={setAdjustment.isPending}
           adjusted={setAdjustment.isSuccess}
           adjustError={setAdjustment.error}
-          onBack={() =>
-            from === APPROVALS_ORIGIN
-              ? router.replace("/admin/approvals")
-              : setOpenDate(null)
-          }
+          onBack={() => {
+            if (from === APPROVALS_ORIGIN) {
+              router.replace("/admin/approvals");
+              return;
+            }
+
+            if (from === NOTIFICATIONS_ORIGIN) {
+              router.replace("/notifications");
+              return;
+            }
+
+            setOpenDate(null);
+          }}
           onPressHours={() => setSheet("hours")}
           onCloseDay={() =>
             assignmentCount === 0

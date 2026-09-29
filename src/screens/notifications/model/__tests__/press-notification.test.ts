@@ -1,6 +1,5 @@
 import { jest } from "@jest/globals";
 
-// @ts-expect-error 대상 모듈이 아직 없다
 const { pressNotification } =
   await import("@/screens/notifications/model/press-notification");
 

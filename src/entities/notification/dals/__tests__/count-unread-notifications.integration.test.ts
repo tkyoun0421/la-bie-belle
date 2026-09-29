@@ -8,7 +8,6 @@ import {
 // AC-03·AC-06(docs/3-build/plans/notification-list.md) — 안 읽은 수는 ['notifications','unread']
 // 키로 따로 센다. range()를 타면 50에서 멈추니 head:true count 질의라야 한다.
 
-// @ts-expect-error 대상 모듈이 아직 없다
 const { countUnreadNotifications } =
   await import("@/entities/notification/dals/count-unread-notifications");
 

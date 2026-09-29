@@ -7,7 +7,6 @@ import {
 // 구현 대상: src/entities/notification/dals/get-notifications.ts
 // AC-03(docs/3-build/plans/notification-list.md) — range()로 50건씩, ['notifications'] 키.
 
-// @ts-expect-error 대상 모듈이 아직 없다
 const { getNotifications } =
   await import("@/entities/notification/dals/get-notifications");
 

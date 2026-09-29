@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import {
   CalendarDays,
   ChevronLeft,
@@ -28,6 +28,7 @@ import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
 import type { SlotRequest } from "@/entities/schedule/dals/get-slot-requests";
+import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
 import { useCreateCancelRequest } from "@/features/schedule/model/useCreateCancelRequest";
 import { useMonthSchedule } from "@/features/schedule/model/useMonthSchedule";
@@ -131,6 +132,8 @@ export function ScheduleWorkerScreen({
   date: dateParam,
 }: ScheduleWorkerScreenProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const unreadCount = useUnreadCount(supabase);
   const today = kstToday();
 
   const [me, setMe] = useState<string | null>(null);
@@ -442,7 +445,13 @@ export function ScheduleWorkerScreen({
             </Button>
           </View>
         }
-        right={<BellIcon onPress={() => router.push("/notifications")} />}
+        right={
+          <BellIcon
+            testID="bell-icon"
+            unread={(unreadCount.data ?? 0) > 0}
+            onPress={() => router.push(`/notifications?from=${pathname}`)}
+          />
+        }
       />
 
       <ScrollView>
