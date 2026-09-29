@@ -699,3 +699,80 @@ export async function seedDayEndedHoursAgo(
     endsAt,
   };
 }
+
+export type SeedNotificationRowInput = {
+  profileId: string;
+  kind?: string;
+  payload?: Record<string, unknown>;
+  claimedAt?: string | null;
+  pushAttempts?: number;
+  pushedAt?: string | null;
+  pushReceiptId?: string | null;
+};
+
+export function seedNotificationRow(input: SeedNotificationRowInput): string {
+  const id = randomUUID();
+  const columns = ["id", "profile_id", "kind", "payload", "push_attempts"];
+  const values = [
+    ":'id'",
+    ":'profile_id'",
+    ":'kind'",
+    ":'payload'::jsonb",
+    ":'push_attempts'::integer",
+  ];
+  const vars: Record<string, string> = {
+    id,
+    profile_id: input.profileId,
+    kind: input.kind ?? "test_kind",
+    payload: JSON.stringify(input.payload ?? {}),
+    push_attempts: String(input.pushAttempts ?? 0),
+  };
+
+  if (input.claimedAt !== undefined) {
+    columns.push("claimed_at");
+    if (input.claimedAt === null) {
+      values.push("null");
+    } else {
+      values.push(":'claimed_at'::timestamptz");
+      vars.claimed_at = input.claimedAt;
+    }
+  }
+
+  if (input.pushedAt !== undefined) {
+    columns.push("pushed_at");
+    if (input.pushedAt === null) {
+      values.push("null");
+    } else {
+      values.push(":'pushed_at'::timestamptz");
+      vars.pushed_at = input.pushedAt;
+    }
+  }
+
+  if (input.pushReceiptId !== undefined) {
+    columns.push("push_receipt_id");
+    if (input.pushReceiptId === null) {
+      values.push("null");
+    } else {
+      values.push(":'push_receipt_id'");
+      vars.push_receipt_id = input.pushReceiptId;
+    }
+  }
+
+  execSql(
+    `insert into public.notifications (${columns.join(", ")})\n` +
+      `values (${values.join(", ")});\n`,
+    vars,
+  );
+  return id;
+}
+
+export function seedPushToken(
+  profileId: string,
+  token: string = `ExponentPushToken[${randomUUID()}]`,
+): string {
+  execSql(
+    "insert into public.push_tokens (profile_id, token) values (:'profile_id', :'token');\n",
+    { profile_id: profileId, token },
+  );
+  return token;
+}
