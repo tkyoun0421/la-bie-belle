@@ -2,7 +2,7 @@
 status: actioned
 target: .claude/hooks/tdd-guard-e2e.py
 date: 2026-09-27
-resolved:
+resolved: 2026-09-29
 ---
 
 # 라우트 파일명이 같으면 e2e 게이트가 남의 플로우로 통과한다

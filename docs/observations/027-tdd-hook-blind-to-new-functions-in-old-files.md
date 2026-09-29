@@ -2,6 +2,7 @@
 status: actioned
 target: .claude/hooks/tdd-guard-unit.py
 date: 2026-09-28
+resolved: 2026-09-29
 ---
 
 # TDD 훅이 기존 파일 안에 선 새 함수를 못 본다

@@ -2,6 +2,7 @@
 status: actioned
 target: .claude/agents/test-planner.md
 date: 2026-09-29
+resolved: 2026-09-29
 ---
 
 # 이름 단위 훅이 서자 계획의 빠진 함수가 구현을 멈춘다
