@@ -17,6 +17,16 @@
 // flatMap으로 여러 달의 행을 하나의 배열로 뭉갠다. 이 훅은 그러면 안 된다 —
 // 추이 그래프가 「몇 월이 비었나」를 알아야 해서, data는 달 수만큼의 길이고
 // 항목마다 그 달의 month가 붙는다.
+//
+// usePayrollMonthsByMonth(client, months) — 급여 탭 그래프가 쓰는 달치
+// 창이다. features/payroll/model/usePayrollMonths.ts가 이미 달치를 읽지만
+// mergeMonths가 flatMap으로 여러 달을 하나로 뭉갠다 — 추이 그래프는 달마다
+// 구분된 값이 필요해 그대로 못 쓴다(위 useWorkMonths·useAttendanceMonths와
+// 같은 이유). features/stats가 features/payroll을 부르면 lint 규칙 3에
+// 걸리므로 entities/payroll/dals/get-payroll-month.ts의 getPayrollMonth·
+// payrollMonthKey를 이 훅이 직접 부른다 — entities는 아래층이라 괜찮다.
+// 쿼리 키도 payrollMonthKey를 그대로 써서 usePayrollMonths와 캐시를
+// 나눈다.
 
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
@@ -50,12 +60,23 @@ jest.unstable_mockModule(
   }),
 );
 
+const getPayrollMonthMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+
+jest.unstable_mockModule("@/entities/payroll/dals/get-payroll-month", () => ({
+  getPayrollMonth: getPayrollMonthMock,
+  payrollMonthKey: (month: string) => ["payroll", month],
+}));
+
 const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useWorkMonths, useAttendanceMonths, useFirstScheduleMonth } =
-  await import("@/features/stats/api/useStatsQueries");
+const {
+  useWorkMonths,
+  useAttendanceMonths,
+  useFirstScheduleMonth,
+  usePayrollMonthsByMonth,
+} = await import("@/features/stats/api/useStatsQueries");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -94,7 +115,26 @@ beforeEach(() => {
   getMonthScheduleMock.mockReset();
   getMonthAttendanceMock.mockReset();
   getFirstScheduleMonthMock.mockReset();
+  getPayrollMonthMock.mockReset();
 });
+
+function emptyPayrollMonth() {
+  return { wageRates: [], adjustments: [], excuseStatus: [], holidays: [] };
+}
+
+function emptyPayrollMonth1WageRate() {
+  return {
+    ...emptyPayrollMonth(),
+    wageRates: [
+      {
+        profile_id: "profile-1",
+        effective_date: "2026-08-01",
+        amount: 12000,
+        follows_default: false,
+      },
+    ],
+  };
+}
 
 describe("useWorkMonths — 근무 탭은 달마다 getMonthSchedule만 부른다", () => {
   it("열두 달이면 getMonthSchedule이 정확히 12번, getMonthAttendance는 0번이다", async () => {
@@ -185,6 +225,59 @@ describe("useAttendanceMonths — 결과가 달마다 구분돼 돌아온다", (
     expect(result.current.data?.[0]?.attendance.checkIns).toHaveLength(2);
     expect(result.current.data?.[1]?.month).toBe("2026-09");
     expect(result.current.data?.[1]?.attendance.checkIns).toHaveLength(0);
+  });
+});
+
+describe("usePayrollMonthsByMonth — 달마다 getPayrollMonth를 부른다", () => {
+  it("열두 달이면 getPayrollMonth가 정확히 12번 불린다", async () => {
+    getPayrollMonthMock.mockImplementation(async () => emptyPayrollMonth());
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(
+      () => usePayrollMonthsByMonth(FAKE_CLIENT, TWELVE_MONTHS),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(getPayrollMonthMock).toHaveBeenCalledTimes(12);
+  });
+});
+
+describe("usePayrollMonthsByMonth — 결과가 달마다 구분돼 돌아온다(flatMap으로 안 뭉갠다)", () => {
+  it("한 달은 시급 행이 있고 한 달은 빈 달이어도 data 길이가 달 수(2)와 같다", async () => {
+    getPayrollMonthMock.mockImplementation(async (_client, month) =>
+      month === "2026-08" ? emptyPayrollMonth1WageRate() : emptyPayrollMonth(),
+    );
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(
+      () => usePayrollMonthsByMonth(FAKE_CLIENT, ["2026-08", "2026-09"]),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.data).toHaveLength(2);
+    expect(result.current.data?.[0]?.month).toBe("2026-08");
+    expect(result.current.data?.[0]?.payroll.wageRates).toHaveLength(1);
+    expect(result.current.data?.[1]?.month).toBe("2026-09");
+    expect(result.current.data?.[1]?.payroll.wageRates).toHaveLength(0);
+  });
+
+  it("빈 달이 있어도 data 길이가 요청한 달 수와 같다(하나라도 안 오면 로딩)", async () => {
+    getPayrollMonthMock.mockImplementation(async () => emptyPayrollMonth());
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(
+      () =>
+        usePayrollMonthsByMonth(FAKE_CLIENT, ["2026-08", "2026-09", "2026-10"]),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.data).toHaveLength(3);
   });
 });
 

@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { spellWon } from "@/shared/lib/spell-number";
 import { AmountInput } from "@/shared/ui/AmountInput";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
@@ -9,7 +10,6 @@ import {
   canSaveWage,
   formatAmountDisplay,
   nextAmountDigits,
-  spellWon,
   WAGE_CAP_HINT,
   WAGE_SAVE_FAILED_SUB,
   WAGE_SAVE_FAILED_TITLE,

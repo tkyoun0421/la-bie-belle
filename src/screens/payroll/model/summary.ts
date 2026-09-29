@@ -1,4 +1,5 @@
 import { NO_VALUE } from "@/shared/lib/no-value";
+import { spellWon } from "@/shared/lib/spell-number";
 import {
   getAttendanceStatus,
   type AttendanceStatusInput,
@@ -13,8 +14,9 @@ import type { PayrollDayKind } from "@/features/payroll/model/payroll-days";
  * 달은 계산이 돌아서 0이 난 것이라 근무자가 그 0을 읽어야 한다. `–`는 「아직 셀 것이 없다」는
  * 뜻이고, 읽는 중에는 이 자리가 스켈레톤이라 `–`를 쓰지 않는다(「빈 상태」).
  *
- * **금액 문구를 이 파일이 소유한다.** 내역 줄과 연 줄도 같은 꼴을 써야 하는데(writing.md
- * 「숫자와 단위」) 세 자리가 각자 적으면 쉼표와 「원」이 자리마다 갈린다.
+ * **금액 문구는 `shared/lib/spell-number.ts`가 소유한다.** 급여 화면과 시급 화면과 통계가 같은
+ * 꼴을 써야 하는데(writing.md 「숫자와 단위」) 슬라이스마다 적으면 쉼표와 「원」이 화면마다
+ * 갈린다.
  *
  * **지각 판정을 다시 짜지 않는다.** `entities/attendance`의 함수를 그대로 부른다. 배정이 없는
  * 날은 판정 대상이 아니다 — 설 자리가 없으면 늦을 자리도 없다.
@@ -26,8 +28,6 @@ import type { PayrollDayKind } from "@/features/payroll/model/payroll-days";
 
 /** 금액 자리가 비는 꼴이다. 내역 줄의 결근·시급 미정도 같은 글자를 쓴다. */
 export const NO_AMOUNT = NO_VALUE;
-
-const THOUSANDS = /\B(?=(\d{3})+(?!\d))/g;
 
 const MINUTES_PER_HOUR = 60;
 
@@ -43,10 +43,6 @@ export type PayrollAccrual = {
   work: string;
   late: string | null;
 };
-
-export function spellAmount(amount: number): string {
-  return `${String(amount).replace(THOUSANDS, ",")}원`;
-}
 
 /** 누적의 시간 합이다 — 0도 「0시간」으로 적는다. 근무 회수와 나란히 서는 자리라서다. */
 function spellWorkedHours(minutes: number): string {
@@ -67,7 +63,7 @@ export function summarizeAmount(days: readonly PayrollSummaryDay[]): string {
     return NO_AMOUNT;
   }
 
-  return spellAmount(days.reduce((sum, day) => sum + day.amount, 0));
+  return spellWon(days.reduce((sum, day) => sum + day.amount, 0));
 }
 
 export function summarizeAccrual(
