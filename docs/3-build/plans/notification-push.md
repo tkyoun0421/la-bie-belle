@@ -23,7 +23,7 @@ sources:
 
 산출은 넷이다 — Edge Function `send-push`, 그 함수가 부르는 DB 함수 하나, `notifications`를 행 하나가 들어올 때 쏘는 트리거와 매분 도는 cron, 그리고 `src/features/notification/model/`의 순수 함수들이다. **표는 안 만든다** — `notifications`와 `push_tokens`는 [`notification-data`](notification-data.md#ac-01)가 이미 냈다. 열 하나만 붙는다(AC-01).
 
-선행이 셋이다. [`notification-data`](notification-data.md)가 표와 뷰와 함수 넷을 냈고, [`edge-function-import`](edge-function-import.md)가 Deno의 마운트 경계를 확인했고, [`profile-erasure`](profile-erasure.md)·[`payroll-holidays`](payroll-holidays.md)가 pg_cron·pg_net·Edge Function의 길을 밟았다.
+선행이 넷이다. [`notification-data`](notification-data.md)가 표와 뷰와 함수 넷을 냈고, [`notification-list`](notification-list.md)가 문장을 조립하는 순수 함수를 내고, [`edge-function-import`](edge-function-import.md)가 Deno의 마운트 경계를 확인했고, [`profile-erasure`](profile-erasure.md)·[`payroll-holidays`](payroll-holidays.md)가 pg_cron·pg_net·Edge Function의 길을 밟았다.
 
 정본과 저장소에서 확인한 여섯이 plan의 방향을 정한다.
 
@@ -32,7 +32,7 @@ sources:
 - **서비스 키로는 `internal`에 못 닿는다.** PostgREST가 노출 목록 밖의 스키마를 라우팅 단계에서 끊어 키와 무관하게 `PGRST106`이다([관찰 033](../../observations/033-service-key-cannot-reach-internal.md)). 그래서 잡기가 `public` 껍데기를 타고, 그 첫 줄이 `auth.role()`을 본다 — [`payroll-holidays`](payroll-holidays.md#ac-04)가 낸 길 그대로다
 - **Deno는 `supabase/functions` 밖을 못 읽는다.** edge-runtime 컨테이너에 그 폴더 하나만 마운트된다([edge-function-import](edge-function-import.md)). 정본이 복사 단계를 이 task 몫으로 뒀다([푸시 보내기](../../2-design/modules/notification/design.md#푸시-보내기))
 - **부치는 답과 닿은 결과가 다른 순간에 온다.** 접수증이 먼저 오고 기기까지 닿았는지는 십오 분쯤 뒤에 따로 물어야 안다. 접수증 번호를 알림 행에 적고 다음 회차가 긁는다
-- **문장을 세우는 자리가 여기다.** 푸시의 제목이 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표의 문장이라, 그 표를 코드로 옮기는 순수 함수가 `notification-list`보다 먼저 필요하다
+- **문장은 여기서 안 만든다.** 푸시의 제목이 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표의 문장인데 그 함수는 [`notification-list`](notification-list.md#ac-01)의 산출이다 — 이 task가 그것을 가져다 쓴다. 두 곳이 문장을 따로 들면 같은 알림이 기기와 화면에서 다르게 읽힌다
 
 저장소에서 확인한 것이 넷이다. pg_cron과 pg_net은 이미 켜져 있고(`supabase/migrations/20260927091506_schedule_requests.sql`, `20260929091501_profile_erasure.sql`), Edge Function이 둘 서 있고(`erase-account`·`import-holidays`), CI는 `supabase start -x ... edge-runtime`으로 edge-runtime을 빼고 띄우고(`.github/workflows/ci.yml`), `deno.json`은 아직 어디에도 없다.
 
@@ -41,7 +41,7 @@ sources:
 정본이 이 task에 미뤄둔 것과 정본끼리 부딪힌 자리를 여기서 닫았다. 문서는 같은 PR이 고친다.
 
 - **보낼 것이 없어도 긁는다**([Q-02](../../2-design/modules/notification/design.md#아직-안-정한-것) 닫음). `send-push`의 첫 단계가 언제나 접수증 긁기고, 잡을 알림이 없으면 거기서 끝난다. 긁기 전용 cron을 따로 두지 않는 것은 서비스 키를 쥔 자리를 안 늘리려는 것이다([서비스 키 자리](../../2-design/system/data-access.md#서비스-키-자리))
-- **문장 조립은 이 task가 세운다.** [`notification-list`](notification-list.md)가 가져다 쓴다 — 푸시가 먼저 서는데 제목이 없으면 보낼 것이 없다
+- **`notification-list`가 앞에 선다.** 푸시 제목이 그 task의 문장 함수라 순서가 뒤집히면 보낼 제목이 없다. backlog의 `ready` 순서도 그렇게 세웠다
 - **접수증 번호 열은 이 task가 붙인다.** `notification-data`의 표에 `push_receipt_id`가 없다. 정본이 「알림 행에 적어두고」라 적었으니 열 이름만 여기서 정한다
 
 ## 완료 조건
@@ -108,22 +108,10 @@ sources:
 
 - 잡힌 행과 주소 목록을 받아 부칠 메시지 배열을 낸다. 주소가 둘이면 메시지도 둘이다
 - 실을 것은 `kind`와 목적지뿐이다. **문안을 `data`에 안 싣는다** — payload가 4KB를 넘으면 통째로 거절당하고 문안은 화면이 그린다([푸시 보내기](../../2-design/modules/notification/design.md#푸시-보내기))
-- 제목과 아래 줄은 AC-07이 낸다
+- 제목과 아래 줄은 [`notification-list`](notification-list.md#ac-01)의 문장 함수가 낸다. 그 함수가 널을 내는 종류(2차 다섯과 관리자 공지)는 못 보낸 채 남는다
 - 백 건씩 끊는 것도 여기다 — 부치는 자리는 끊긴 묶음을 받기만 한다
 
 ### AC-07
-
-**순수 함수 — 문장 조립.**
-
-`src/features/notification/model/compose-notification-text.ts`.
-
-- [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표를 그대로 옮긴다. **1차 대상은 열일곱이다** — 교대 다섯과 관리자 공지는 2차다([UI 연결](../../2-design/modules/notification/design.md#ui-연결))
-- 날짜가 문장 앞이고, 사람 이름이 앞에 오는 셋(교대 요청은 2차라 빠져 근무 취소 요청·근무 요청 수락 둘)은 예외다. 「님」을 붙인다
-- 아래 줄이 있는 넷(신청 접수 열림·미리 알림 둘·사유 거절)은 제목과 아래 줄을 따로 낸다
-- **모르는 `kind`는 던지지 않고 널을 낸다.** 2차 종류가 먼저 들어와도 발송 회차 전체가 죽으면 안 된다 — 그 행은 못 보낸 채 남는다
-- `notification-list`가 같은 함수를 쓴다
-
-### AC-08
 
 **순수 함수 — 실패를 가르기.**
 
@@ -134,7 +122,7 @@ sources:
 - 긁은 접수증도 같은 갈래로 가른다
 - **`node:` import를 안 쓴다.** lint가 `src/features/notification/model/`에서 막는다
 
-### AC-09
+### AC-08
 
 **두 경로 — 트리거와 cron.**
 
@@ -143,7 +131,7 @@ sources:
 - **쏘는 단계가 예외를 삼킨다.** 알림 행을 낳는 것은 사건 함수의 트랜잭션 안이라, 쏘기가 던지면 근무표 확정 자체가 롤백된다([profile-erasure AC-02](profile-erasure.md#ac-02)가 밟은 자리와 같다)
 - cron `retry_push`가 매분 같은 함수를 부른다. 본문의 id는 널이다
 
-### AC-10
+### AC-09
 
 **`_shared` 복사 단계.**
 
@@ -156,25 +144,24 @@ sources:
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `supabase/migrations/<날짜>_notification_push.sql` — **날짜 자리는 구현이 정한다** | `push_receipt_id` 열, 함수 다섯(알맹이·껍데기), 트리거, cron 등록 | AC-01~AC-04·AC-09 |
+| `supabase/migrations/<날짜>_notification_push.sql` — **날짜 자리는 구현이 정한다** | `push_receipt_id` 열, 함수 다섯(알맹이·껍데기), 트리거, cron 등록 | AC-01~AC-04·AC-08 |
 | `supabase/functions/send-push/index.ts` | 긁기·잡기·부치기·쓰기의 순서와 HTTP | AC-05 |
-| `supabase/functions/import-holidays/index.ts` | `_shared` 복사본을 보도록 import를 고친다 | AC-10 |
+| `supabase/functions/import-holidays/index.ts` | `_shared` 복사본을 보도록 import를 고친다 | AC-09 |
 | `supabase/config.toml` | `send-push` 항목 | AC-05 |
 | `src/features/notification/model/push-message.ts` | 메시지 만들기와 백 건 끊기 | AC-06 |
-| `src/features/notification/model/compose-notification-text.ts` | 제목과 아래 줄 열일곱 | AC-07 |
-| `src/features/notification/model/push-result.ts` | 성공·폐기·재시도 가르기 | AC-08 |
-| `scripts/sync-edge-shared.mts` | 복사와 import 고쳐 쓰기 | AC-10 |
-| `.github/workflows/ci.yml` | `supabase start` 앞에 복사 단계 | AC-10 |
-| `package.json` | 복사 스크립트 항목 | AC-10 |
-| `src/features/notification/model/__tests__/*.test.ts` | 문장 열일곱, 메시지 만들기, 실패 가르기 | AC-06~AC-08 |
-| `src/entities/notification/dals/__tests__/push-dispatch.integration.test.ts` | 잡기 조건, 끈 사람, 주소 없는 사람, 재시도 상한, 결과 쓰기, 긁기, 트리거와 cron | AC-01~AC-04·AC-09 |
+| `src/features/notification/model/push-result.ts` | 성공·폐기·재시도 가르기 | AC-07 |
+| `scripts/sync-edge-shared.mts` | 복사와 import 고쳐 쓰기 | AC-09 |
+| `.github/workflows/ci.yml` | `supabase start` 앞에 복사 단계 | AC-09 |
+| `package.json` | 복사 스크립트 항목 | AC-09 |
+| `src/features/notification/model/__tests__/*.test.ts` | 메시지 만들기, 실패 가르기 | AC-06·AC-07 |
+| `src/entities/notification/dals/__tests__/push-dispatch.integration.test.ts` | 잡기 조건, 끈 사람, 주소 없는 사람, 재시도 상한, 결과 쓰기, 긁기, 트리거와 cron | AC-01~AC-04·AC-08 |
 
 ## 구현 순서
 
 기능 task 파이프라인이다 — `test-planner` → `unit-test-writer`·`integration-test-writer` → `implementer` → `pr-diff`.
 
-1. `test-planner`가 AC-01~AC-10을 배정한다. **정본 모순을 명시로 돌려받는다** — 특히 AC-10의 CI 단계를 어느 층이 지키는지, AC-05를 로컬에서 볼 수 있는지
-2. `unit-test-writer`가 AC-06~AC-08을 쓴다. 문장 열일곱이 표와 글자까지 같은지가 이 층의 중심이다
+1. `test-planner`가 AC-01~AC-09를 배정한다. **정본 모순을 명시로 돌려받는다** — 특히 AC-09의 CI 단계를 어느 층이 지키는지, AC-05를 로컬에서 볼 수 있는지
+2. `unit-test-writer`가 AC-06~AC-07을 쓴다. 폐기 갈래가 좁은지가 이 층의 중심이다
 3. `integration-test-writer`가 잡는 함수를 직접 불러 조건을 때린다. `p_now`를 2분 경계 앞뒤로 넘기고 `push_attempts`를 5로 밀어 상한을 본다
 4. `implementer`가 열 → 함수 → 트리거·cron → 복사 스크립트 → Edge Function 순으로 초록을 만든다
 5. `pr-diff`가 diff를 본다 — **부치는 접근 토큰과 서비스 키가 커밋에 든 줄이 없는지.** 이 task가 저장소에서 시크릿 위험이 가장 높다
@@ -206,21 +193,19 @@ sources:
 | AC-03 | 죽은 주소가 안 지워진다 | integration 위 | 위와 같다 | 넘긴 주소의 `push_tokens` 행이 없다 |
 | AC-01·AC-04 | 긁을 것을 못 찾는다 | integration 위 | 위와 같다 | 부친 지 16분이면 나오고 14분이면 안 나온다 |
 | AC-04 | 긁은 뒤에도 또 긁힌다 | integration 위 | 위와 같다 | `clear_receipts` 뒤에는 대상에서 빠진다 |
-| AC-09 | 행이 들어와도 안 쏜다 | integration 위 — `net`의 요청 시퀀스를 센다([관찰 034](../../observations/034-pg-net-response-row-is-async.md)) | 위와 같다 | `notifications` insert 하나에 호출이 1 |
-| AC-09 | 쏘기가 실패해 사건이 롤백된다 | integration 위 — vault 항목을 지우고 알림을 낳는다 | 위와 같다 | 알림 행이 남고 예외가 안 난다 |
-| AC-09 | crontab 항목이 안 선다 | integration 위 — `cron.job`을 읽는다 | 위와 같다 | `retry_push` 행이 하나 |
-| AC-07 | 문장이 표와 다르다 | unit `src/features/notification/model/__tests__/compose-notification-text.test.ts`(예정) | `pnpm test` | 열일곱이 글자까지 같다 |
-| AC-07 | 모르는 종류에서 회차가 죽는다 | unit 위 | 위와 같다 | 2차 종류를 넣으면 널이 나온다 |
-| AC-06 | payload에 문안이 실린다 | unit `push-message.test.ts`(예정) | 위와 같다 | `data`에 `kind`와 목적지만 있다 |
+| AC-08 | 행이 들어와도 안 쏜다 | integration 위 — `net`의 요청 시퀀스를 센다([관찰 034](../../observations/034-pg-net-response-row-is-async.md)) | 위와 같다 | `notifications` insert 하나에 호출이 1 |
+| AC-08 | 쏘기가 실패해 사건이 롤백된다 | integration 위 — vault 항목을 지우고 알림을 낳는다 | 위와 같다 | 알림 행이 남고 예외가 안 난다 |
+| AC-08 | crontab 항목이 안 선다 | integration 위 — `cron.job`을 읽는다 | 위와 같다 | `retry_push` 행이 하나 |
+| AC-06 | payload에 문안이 실린다 | unit `src/features/notification/model/__tests__/push-message.test.ts`(예정) | `pnpm test` | `data`에 `kind`와 목적지만 있다 |
 | AC-06 | 백 건을 안 끊는다 | unit 위 | 위와 같다 | 250건이 묶음 셋이 된다 |
 | AC-06 | 주소 둘인 사람에게 한 번만 간다 | unit 위 | 위와 같다 | 메시지가 둘이다 |
-| AC-08 | 살아 있는 주소를 지운다 | unit `push-result.test.ts`(예정) | 위와 같다 | 폐기는 기기 등록이 사라진 답 하나뿐이다 |
-| AC-08 | 자격 증명 오류를 계속 되쏜다 | unit 위 | 위와 같다 | 재시도 갈래에 안 든다 |
-| AC-10 | 복사본이 옛것이다 | 수동 — 복사 뒤 `_shared`를 읽는다 | `pnpm edge:sync` | 파일 내용이 `src/`와 같고 import에 `.ts`가 붙는다 |
-| AC-10 | 복사본이 커밋에 든다 | 수동 — `pr-diff`가 diff를 본다 | — | `supabase/functions/_shared/`가 diff에 없다 |
+| AC-07 | 살아 있는 주소를 지운다 | unit `push-result.test.ts`(예정) | 위와 같다 | 폐기는 기기 등록이 사라진 답 하나뿐이다 |
+| AC-07 | 자격 증명 오류를 계속 되쏜다 | unit 위 | 위와 같다 | 재시도 갈래에 안 든다 |
+| AC-09 | 복사본이 옛것이다 | 수동 — 복사 뒤 `_shared`를 읽는다 | `pnpm edge:sync` | 파일 내용이 `src/`와 같고 import에 `.ts`가 붙는다 |
+| AC-09 | 복사본이 커밋에 든다 | 수동 — `pr-diff`가 diff를 본다 | — | `supabase/functions/_shared/`가 diff에 없다 |
 | AC-05 | 아무나 불러 발송을 태운다 | 수동 — 배포 뒤 anon 키로 부른다 | 운영 | 거절된다 |
 | AC-05 | 기기에 알림이 안 뜬다 | 수동 — 실기기에서 알림을 받는다 | 개발 빌드 | 제목이 표의 문장이고 누르면 목적지로 간다 |
-| AC-05·AC-09 | 접근 토큰이나 서비스 키가 커밋에 든다 | 수동 — `pr-diff`가 diff 전문을 본다 | — | 그 문자열이 어느 파일에도 없다 |
+| AC-05·AC-08 | 접근 토큰이나 서비스 키가 커밋에 든다 | 수동 — `pr-diff`가 diff 전문을 본다 | — | 그 문자열이 어느 파일에도 없다 |
 
 - 배정하지 않은 것: 기기에 실제로 알림이 뜨는 것과 접수증 서비스의 답 — 로컬과 CI가 edge-runtime을 빼고 띄우고 개발 빌드가 아직 없다
 - 막힌 것: 지금은 없다
@@ -229,7 +214,6 @@ sources:
 
 - 알림을 낳는 자리 — [`notification-emit`](notification-emit.md)이다. 이 task는 이미 들어온 행을 보낸다
 - 시각을 보고 나가는 알림 — [`notification-schedule`](notification-schedule.md)이다
-- 알림 목록 화면과 안 본 알림 — [`notification-list`](notification-list.md)다. 문장 함수만 여기서 서고 화면은 거기가 그린다
+- 알림 목록 화면과 안 본 알림, 문장을 조립하는 순수 함수 — [`notification-list`](notification-list.md)다. 이 task는 그 함수를 가져다 쓴다
 - 권한 받기와 주소 저장, 알림 스위치 — [`notification-settings`](notification-settings.md)다. `save_push_token`은 [`notification-data`](notification-data.md#ac-03)가 이미 냈다
-- 교대 다섯과 관리자 공지의 문장 — 2차다([roadmap](../../1-plan/roadmap.md#릴리스-목록))
 - 한 알림에 기기가 둘일 때 한쪽만 성공한 것을 나타내는 일 — [Q-01](../../2-design/modules/notification/design.md#q-01)로 남는다
