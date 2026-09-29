@@ -16,7 +16,11 @@ import {
   getAttendanceStatus,
   type AttendanceStatusInput,
 } from "@/entities/attendance/model/attendance-status";
-import { tallyMonthlyAttendance } from "@/entities/attendance/model/attendance-summary";
+import {
+  attendanceRate,
+  tallyMonthlyAttendance,
+  type MonthlyAttendanceTally,
+} from "@/entities/attendance/model/attendance-summary";
 
 function buildDay(
   overrides: Partial<AttendanceStatusInput> = {},
@@ -122,5 +126,48 @@ describe("tallyMonthlyAttendance — entities로 내려와도 getAttendanceStatu
 
     expect(status).toBe("late");
     expect(tally).toEqual({ present: 0, late: 1, absent: 0, excused: 0 });
+  });
+});
+
+describe("attendanceRate — screens/admin-stats/chart-values.ts에서 내려와 tally 하나만 받는다(stats.md 「추이 그래프」)", () => {
+  it("출근·지각·결근·출근 인정의 합이 분모고 출근 인정은 분모에만 든다", () => {
+    const tally: MonthlyAttendanceTally = {
+      present: 6,
+      late: 1,
+      absent: 1,
+      excused: 2,
+    };
+
+    expect(attendanceRate(tally)).toBe(60);
+  });
+
+  it("넷이 다 0이면 null이다 — 그 달은 점을 안 찍는다", () => {
+    const tally: MonthlyAttendanceTally = {
+      present: 0,
+      late: 0,
+      absent: 0,
+      excused: 0,
+    };
+
+    expect(attendanceRate(tally)).toBeNull();
+  });
+
+  it("AttendanceTab(screens 타입)이 아니라 tally를 직접 받는다 — tally 자체가 없어도 null이다", () => {
+    expect(attendanceRate(undefined)).toBeNull();
+  });
+
+  it("tallyMonthlyAttendance가 낸 값을 그대로 넣어도 같은 공식으로 셈한다", () => {
+    const day = buildDay({
+      now: "2026-09-10T01:00:00.000Z",
+      checkIn: {
+        checkedAt: "2026-09-10T01:00:00.000Z",
+        reportedAt: "2026-09-10T01:00:00.000Z",
+        receivedAt: "2026-09-10T01:00:00.000Z",
+      },
+    });
+
+    const tally = tallyMonthlyAttendance([day]);
+
+    expect(attendanceRate(tally)).toBe(100);
   });
 });

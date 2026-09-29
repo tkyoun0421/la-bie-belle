@@ -1,3 +1,4 @@
+import { NO_VALUE } from "@/shared/lib/no-value";
 import {
   getAttendanceStatus,
   type AttendanceStatusInput,
@@ -24,7 +25,7 @@ import type { PayrollDayKind } from "@/features/payroll/model/payroll-days";
  */
 
 /** 금액 자리가 비는 꼴이다. 내역 줄의 결근·시급 미정도 같은 글자를 쓴다. */
-export const NO_AMOUNT = "–";
+export const NO_AMOUNT = NO_VALUE;
 
 const THOUSANDS = /\B(?=(\d{3})+(?!\d))/g;
 
