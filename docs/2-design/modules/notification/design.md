@@ -196,7 +196,7 @@
 
 | 목표 조항 | 확인한 코드와 Git 기준점 | 차이 | 전환 작업·검증 근거 |
 | --- | --- | --- | --- |
-| [푸시 보내기](#푸시-보내기) — CI가 `src/features/notification/model/`을 `supabase/functions/_shared/`로 복사한 뒤 Supabase를 띄운다 | `.github/workflows/ci.yml`, `d1a6ec4` — `supabase start` 줄이 `-x`로 `edge-runtime`을 뺀다 | 복사 단계가 없고 `edge-runtime`이 안 뜬다 | `notification-first` — [backlog.md](../../../backlog.md) |
+| [푸시 보내기](#푸시-보내기) — CI가 복사한 `_shared`를 edge-runtime이 읽는다 | `.github/workflows/ci.yml`, `417c55f` — `supabase start` 앞에 `pnpm edge:sync`가 서고, 그 `start` 줄은 여전히 `-x`로 `edge-runtime`을 뺀다 | 복사 단계는 섰고 `edge-runtime`은 아직 안 뜬다. Edge Function이 실제로 도는 것은 배포 뒤 손 확인이다 | `first-release` — [backlog.md](../../../backlog.md) |
 
 ## 아직 안 정한 것
 
