@@ -4,7 +4,7 @@
 //   POST http://127.0.0.1:8765/seed  {"state": "rejected"}
 //   → {"access_token": "…", "refresh_token": "…", "user_id": "…", "profile": {…}}
 //
-// 상태는 스물일곱 개다 — fresh · submitted · approved · admin · rejected · left · blocked ·
+// 상태는 서른 개다 — fresh · submitted · approved · admin · rejected · left · blocked ·
 // read_failure · schedule_submission_window · schedule_confirmed와, 관리자 근무표 여덟
 // (schedule_admin_empty_month · schedule_admin_race_open · schedule_admin_confirmable ·
 // schedule_admin_confirmed · schedule_admin_applications · schedule_assign_day ·
@@ -12,7 +12,8 @@
 // (schedule_worker_request_pending · schedule_worker_request_claimed), 리허설 하나
 // (rehearsal_qualified), 시급 하나(payroll_wages), 급여 조회 둘(payroll_view ·
 // payroll_view_left), 근무 조정 하나(payroll_adjust), 통계 둘(stats_admin_overview ·
-// stats_worker_overview). `name`은
+// stats_worker_overview), 알림 목록 셋(notification_list · notification_list_empty ·
+// notification_list_many). `name`은
 // 선택이고, 프로필을 보내는 상태에서 그 사람의 이름을 고른다(안 주면 SEEDED_PROFILE의
 // 이름이다). 요청의 `month`·`day`도 선택이고 schedule_admin_race_open만 쓴다 — 이미
 // 로그인된 세션 밖에서 먼저 열 날짜다. 응답의 `day`는 schedule_assign_day와
@@ -20,7 +21,8 @@
 // `holidayDay`는 payroll_adjust만 싣는다 — 받아온 공휴일이 심긴 다른 날짜다.
 // 근무표 상태들은 사람만이 아니라 그 사람이 볼 근무표까지 세우고, 화면에 그대로 뜨는 라벨을
 // 같이 돌려준다 — 계약은 `tests/e2e/schedule-worker.yaml`과 `tests/e2e/schedule-admin.yaml`과
-// `tests/e2e/schedule-assign.yaml`과 `tests/e2e/applications.yaml` 머리말이다.
+// `tests/e2e/schedule-assign.yaml`과 `tests/e2e/applications.yaml` 머리말이다. 알림 목록
+// 셋의 계약은 `tests/e2e/notifications.yaml` 머리말이다.
 // 부르는 쪽은 `tests/e2e/scripts/seed-session.js`고, 받은 토큰을 개발 빌드의 테스트 문
 // (`src/app/__test/session.tsx`)에 딥링크로 싣는다. 정본은 `docs/4-test/execution.md`의
 // 「`pnpm e2e`」 절이다.
@@ -52,6 +54,7 @@ import {
   seedCheckIn,
   seedExcuse,
   seedJointSlot,
+  seedNotifications,
   seedPastDay,
   seedPastSchedule,
   seedHoliday,
@@ -129,6 +132,12 @@ const STATS_ADMIN_OVERVIEW = "stats_admin_overview";
 
 const STATS_WORKER_OVERVIEW = "stats_worker_overview";
 
+const NOTIFICATION_LIST = "notification_list";
+
+const NOTIFICATION_LIST_EMPTY = "notification_list_empty";
+
+const NOTIFICATION_LIST_MANY = "notification_list_many";
+
 /**
  * 근무자 통계가 심는 시급이다. `tests/e2e/stats.yaml` 머리말의 손계산 표가 이 값으로
  * 검산된다 — 급여 조회가 쓰는 값과 같지만 그쪽은 PAY-005 예시를 따라가는 자리라 상수를
@@ -171,6 +180,9 @@ const STATES = [
   PAYROLL_ADJUST,
   STATS_ADMIN_OVERVIEW,
   STATS_WORKER_OVERVIEW,
+  NOTIFICATION_LIST,
+  NOTIFICATION_LIST_EMPTY,
+  NOTIFICATION_LIST_MANY,
 ] as const;
 
 export type SeedState = (typeof STATES)[number];
@@ -357,7 +369,10 @@ async function seededUser(
     state === WORKER_REQUEST_PENDING ||
     state === WORKER_REQUEST_CLAIMED ||
     state === REHEARSAL_QUALIFIED ||
-    state === STATS_WORKER_OVERVIEW
+    state === STATS_WORKER_OVERVIEW ||
+    state === NOTIFICATION_LIST ||
+    state === NOTIFICATION_LIST_EMPTY ||
+    state === NOTIFICATION_LIST_MANY
   ) {
     await decideBy("approve_member", user.profileId);
   }
@@ -1489,6 +1504,63 @@ async function approvedWorker(name: string): Promise<SignedInUser> {
   return worker;
 }
 
+const NOTIFICATION_LIST_MANY_COUNT = 55;
+
+/**
+ * 알림이 하나 쌓인 근무표 화면이다. 종 아이콘의 점, 목록 줄의 점, 읽으면 둘 다 사라지는
+ * 것을 `tests/e2e/notifications.yaml`이 한 여정으로 본다.
+ *
+ * **근무표는 일부러 안 만든다.** `seedAdminEmptyMonth`와 같은 손이다 — `withFreshMonth`로
+ * 고른 달에 아무 것도 안 심으면 그 달은 「근무표를 아직 안 만든 달」로 선다. 이 시나리오가
+ * 보는 것은 근무표 내용이 아니라 앱바의 종이라, 근무표 쪽 상태는 무엇이든 상관없이 가장
+ * 값싼 상태를 그대로 쓴다.
+ *
+ * **알림은 `signup_approved` 하나뿐이다.** `payload` 열쇠가 없는 유일한 1차 종류라
+ * `seedNotifications`(payload를 늘 `{}`로 고정한다)로도 화면이 낼 문장과 어긋나지 않게
+ * 심을 수 있다. 다른 1차 종류는 `work_date` 같은 열쇠가 필요해 이 헬퍼로는 못 심는다.
+ *
+ * **행 id를 안 돌려준다.** `tests/e2e/scripts/seed-session.js`가 새 필드를 output으로
+ * 릴레이하는 자리인데 이 task가 쓸 수 있는 파일은 `tests/e2e/notifications.yaml`과 이
+ * 파일 둘뿐이라 그 파일을 못 고친다. 그래서 이 상태는 알림을 한 건만 심어 행이 하나뿐이게
+ * 만들고, 줄의 안 읽음 점은 `notifications.yaml`이 id가 아니라 `kind`로 조립한 testID로
+ * 잡는다 — 그 파일의 「이 task가 요청하는 testID」참고.
+ */
+async function seedNotificationList(
+  meProfileId: string,
+): Promise<Partial<SchedulePayload>> {
+  seedNotifications(meProfileId, 1, "signup_approved");
+
+  return withFreshMonth(async (monthsFromNow) => {
+    const month = kstMonthStart(monthsFromNow).slice(0, 7);
+
+    return { month };
+  });
+}
+
+/**
+ * 받은 알림이 하나도 없는 사람이다. `seedNotificationList`와 같은 손으로 근무표를 안
+ * 만들고, 알림도 하나도 안 심는다 — 종 아이콘에 점이 없고 목록이 빈 상태로 서는 자리다.
+ */
+async function seedNotificationListEmpty(): Promise<Partial<SchedulePayload>> {
+  return withFreshMonth(async (monthsFromNow) => {
+    const month = kstMonthStart(monthsFromNow).slice(0, 7);
+
+    return { month };
+  });
+}
+
+/**
+ * 알림이 50건을 넘는 사람이다. 근무표는 필요 없다 — 이 시나리오는 딥링크로 곧장
+ * "/notifications"에 들어가 목록만 본다.
+ */
+async function seedNotificationListMany(
+  meProfileId: string,
+): Promise<Partial<SchedulePayload>> {
+  seedNotifications(meProfileId, NOTIFICATION_LIST_MANY_COUNT);
+
+  return {};
+}
+
 export type SeedRequest = {
   name?: string;
   month?: string;
@@ -1576,6 +1648,18 @@ async function schedulePayloadOf(
 
   if (state === STATS_WORKER_OVERVIEW) {
     return seedStatsWorkerOverview(profileId);
+  }
+
+  if (state === NOTIFICATION_LIST) {
+    return seedNotificationList(profileId);
+  }
+
+  if (state === NOTIFICATION_LIST_EMPTY) {
+    return seedNotificationListEmpty();
+  }
+
+  if (state === NOTIFICATION_LIST_MANY) {
+    return seedNotificationListMany(profileId);
   }
 
   // 리허설을 다 넣은 뒤에 퇴사시킨다 — `add_rehearsal`이 첫 줄에서 보는 `is_approved()`가
