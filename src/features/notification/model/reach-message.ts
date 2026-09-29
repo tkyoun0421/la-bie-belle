@@ -7,19 +7,16 @@ import type { ReachState } from "@/features/notification/model/reach-state";
  * **가르는 자리와 합치는 자리가 다르다.** 직원 목록과 사람 시트는 스스로 끈 사람과 기기가
  * 안 연결된 사람을 갈라 적는다 — 관리자가 할 말이 다르다
  * (`docs/2-design/modules/account/screens/members.md`의 「목록 문안」·「사람 시트 문안」).
- * 확정 뒤 배정을 바꾸는 확인 자리는 한 줄로 합친다 — 그 자리에서 할 일이 어느 갈래든 따로
- * 연락 하나다(`docs/2-design/modules/schedule/screens/schedule-admin.md`의 「확정 뒤 문안」).
+ * 확정 뒤 배정을 바꾸는 확인 자리는 한 줄로 합쳐 말하는데 그 문장은 여기 없다 —
+ * [`force-change-copy`](../../../screens/schedule-admin/model/force-change-copy.ts)가
+ * 제 표 안에서 들고 「두 사람」으로 묶는 경우까지 맡는다. 그 자리는 갈래가 아니라 「닿나」
+ * 하나만 받으면 되고, 받는 불린은 이 파일과 같은 판정에서 나온다.
  *
  * **퇴사한 사람에게는 아무것도 안 선다.** 보낼 알림이 없어 갈래가 붙어도 관리자가 할 일이
  * 없고, 1년이 지나 비워진 사람은 계정이 지워져 갈래 자체가 안 나온다.
  *
  * 닿는 사람에게 따로 한 마디를 안 붙이는 것은 그것이 기본이라서다 — 전원에게 붙는 표시는
  * 아무것도 안 가른다.
- *
- * **확정 뒤 확인 자리의 문장은 지금 두 벌이다.**
- * [`force-change-copy`](../../../screens/schedule-admin/model/force-change-copy.ts)가 같은
- * 문장을 제 표 안에서 이미 들고 있다 — 그쪽은 「두 사람」으로 묶는 경우까지 맡아 입력이
- * 갈래가 아니라 「닿나」 하나다. 한 벌로 합칠지는 총괄의 판정이 남았다.
  */
 
 const UNREACHABLE: ReadonlySet<ReachState> = new Set<ReachState>([
@@ -36,8 +33,6 @@ const SHEET_LINE: Partial<Record<ReachState, string>> = {
   off: "알림을 꺼두었어요",
   "no-device": "기기에서 알림을 꺼서 안 가요",
 };
-
-const UNREACHABLE_TAIL = "은 알림을 못 받아요 · 따로 연락해주세요";
 
 function shows(reach: ReachState, active: boolean): boolean {
   return active && UNREACHABLE.has(reach);
@@ -57,13 +52,4 @@ export function getMemberSheetLine(
   active: boolean,
 ): string | null {
   return shows(reach, active) ? (SHEET_LINE[reach] ?? null) : null;
-}
-
-/** 확정 뒤 확인 자리의 둘째 줄이다 — 갈래를 안 가르고 한 줄로 합친다. */
-export function getUnreachableConfirmLine(
-  name: string,
-  reach: ReachState,
-  active: boolean,
-): string | null {
-  return shows(reach, active) ? `${name} 님${UNREACHABLE_TAIL}` : null;
 }
