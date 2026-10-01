@@ -9,7 +9,7 @@
 - `entities/` — queries와 모델과 제약. 이 도메인을 어떻게 읽고, 무엇이 참이고, 무엇이 금지인가
 - `features/` — mutations의 use case. 누가 무엇을 바꾸나
 
-**세그먼트는 다섯으로 고정한다.** 목록을 열어두지 않는다.
+**세그먼트는 여덟로 고정한다.** 목록을 열어두지 않는다.
 
 **파일 이름은 camelCase에 성격을 접미사로 단다.** kebab-case를 버린다.
 
@@ -49,19 +49,36 @@ ADR-001은 세그먼트를 「`types`, `components`, `hooks`, `actions`, `dals`,
 
 손으로 판정할 다섯은 이렇다 — `profile/dals/avatarsBucket.ts`는 버킷 주소를 읽고 파일을 올려 둘을 다 하고, 훅 넷(`useSavePushToken`·`usePayrollMonths`·`useRehearsalMonths`·`useScheduleMonths`)은 쿼리도 뮤테이션도 아니라 다른 훅을 조합하거나 효과만 낸다.
 
-## 세그먼트 다섯
+## 세그먼트 여덟
 
 | 세그먼트 | 담는 것 | 판정 기준 | 서는 층 |
 | --- | --- | --- | --- |
 | `ui` | 받은 것을 그리는 `.tsx` | 계산·상태·통신이 없다 | screens · features · shared |
-| `hooks` | React 훅 | `use`로 시작하고 React를 쓴다 | entities · features · shared |
-| `api` | 통신 — 서버 함수·표·버킷·설정 | Supabase 클라이언트에 닿는다 | entities · features · shared |
-| `model` | 도메인의 모양과 규칙 — 타입·검증·제약·전역 상태 | 그 도메인이 무엇이고 무엇이 참인지 말한다 | entities · features · screens |
+| `hooks` | React 훅 | `use`로 시작하고 React를 쓴다 | 전부 |
+| `api` | 통신 — 서버 함수·표·버킷 | Supabase 클라이언트의 표·함수에 닿는다 | entities · features · shared |
+| `model` | 도메인의 모양과 규칙 — 타입·검증·판정·전역 상태 | 그 도메인이 무엇이고 무엇이 참인지 말한다 | 전부 |
+| `consts` | 정해진 값 | 코드가 고쳐 쓰지 않고, 환경이 바뀌어도 안 바뀐다 | 전부 |
+| `config` | 환경이 주는 값 | 환경이 바뀌면 값이 바뀐다 | 전부 |
+| `lib` | 부작용을 내는 손 | 순수하지 않고, 통신도 React 훅도 아니다 | 전부 |
 | `utils` | 순수 도구 — 꼴 바꾸기·고르기·세기 | 업무 판정이 없고, 같은 입력에 늘 같은 값을 준다 | 전부 |
 
 `shared/`는 슬라이스가 없어 세그먼트가 바로 온다.
 
+**이 목록도 닫혀 있다.** 여덟이 전부고 새 이름은 ADR을 고쳐야 생긴다. 여는 값이 큰 것은 앞선 판이 겪었다 — ADR-001이 「목록은 열어둔다」로 뒀더니 같은 성격이 슬라이스마다 다른 자리에 살아 `dals` 일흔넷과 `api` 하나가 같은 일을 했다. 이름을 여는 것과 목록을 여는 것은 다르다.
+
 **`model`과 `utils`는 판정하느냐로 갈린다.** `model`은 「이것이 허용인가」에 답하고 `utils`는 「이것을 저 꼴로」에 답한다. 「마지막 관리자는 역할을 못 내린다」는 `model`이고 「분을 1시간 30분으로」는 `utils`다. 업무 규칙이 `utils`에 숨는 것이 이 가름이 막는 일이라, 애매하면 `model`로 보낸다 — 거기 있는 것은 테스트가 업무 문장으로 읽히고, `utils`에 있는 것은 입출력 표로 읽힌다.
+
+**`consts`와 `config`는 값이 바뀌는 까닭으로 갈린다.** 지각 유예 10분은 업무가 정해 `consts`고, Supabase 주소는 환경이 정해 `config`다. 스토리지 키(`THEME_STORAGE_KEY`)는 `consts`다 — 어느 기계에서 돌든 같은 글자다. 판정 질문은 「개발과 운영에서 값이 다른가」고, 다르면 `config`다.
+
+**`consts`가 열려 `[domain].type.ts`는 타입만 든다.** 앞선 판은 그 접미사가 「타입과 상수」를 담게 뒀는데, 상수가 제 세그먼트를 얻으면 한 파일이 두 성격을 드는 자리가 아니게 된다. 업무 상수가 `model/`에 숨어 「이 도메인의 규칙 숫자가 무엇인가」에 답하려면 타입 파일을 열어야 했던 것이 그 결정이 남긴 자리다.
+
+**`lib`은 「순수하지 않은 손」이고 그것이 이름이 말하는 전부다.** 앞선 판이 `shared/lib`을 해체한 까닭은 그 폴더가 **아무 성격도 말하지 않았기 때문**이지 폴더가 남아서가 아니었다 — 통신과 훅과 순수 함수가 한 자리에 섞여 있었다. 지금 `lib`은 판정 기준을 가진다: **부작용을 내는데 통신도 React 훅도 아닌 것.** OS·플랫폼 SDK를 부르고, 바깥 저장소를 읽고 쓰고, 세션을 조작하고, 제가 시계를 읽는 자리다.
+
+**`lib`과 `api`가 갈리는 축은 「무엇에 닿나」다.** `api`는 Supabase의 표와 서버 함수와 버킷에 닿는다. `supabase.auth.signOut()`은 같은 클라이언트를 쓰지만 표도 함수도 아니라 세션 조작이고, 그래서 `lib`이다 — 캐시 키로 낡게 할 것이 없고 RLS도 안 탄다.
+
+**`lib`이 선 뒤에도 `policy`는 순수하다.** 「지금 지각인가」가 시각을 인자로 받는 것은 그대로다. `lib`은 그 시각을 **읽어 주는** 자리고, 판정은 받아서 한다 — 둘이 한 파일에 있으면 테스트가 시계를 흉내야 한다.
+
+**`hooks`가 모든 층에 선다.** `screens`에도 선다 — ADR-001이 「계산, 상태 규칙, 통신은 전부 `.ts`로」라 적었는데 `screens`에 훅의 집이 없어 `useState`와 `useEffect`가 `.tsx`에 남았다. 화면 하나가 `screens/<슬라이스>/hooks/use<화면>.ts`를 갖고 `.tsx`는 그것이 돌려준 것을 그린다.
 
 **`hooks`가 `entities`에도 선다.** 쿼리 훅은 읽기 쪽이라 entities가 가진다 — 그 도메인을 읽는 길이 dal과 훅 둘이고, 둘이 한 슬라이스에 있어야 한 쌍으로 고쳐진다.
 
@@ -73,7 +90,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 「RLS가 유일한 방어인 자리」 스물다섯 개가 한 줄로 나온다. 보안 스캔과 사람 리뷰가 볼 자리를 좁히는 데는 그 줄로 충분하고, 세그먼트를 하나 늘리는 값보다 이름이 적은 값이 크다. 통신은 통신이고 그 안의 갈래는 코드가 말한다.
 
-**캐시 키와 설정도 `api`다.** `queryKeys`·`queryClient`·`readSupabaseEnv`는 통신 계층의 약속이라 `shared/api`에 산다. 색·서체처럼 통신과 무관한 값은 `shared/utils`다.
+**캐시 키는 `api`고 설정은 `config`다.** `queryKeys`·`queryClient`는 통신 계층의 약속이라 `shared/api`에 산다. `readSupabaseEnv`는 앞선 판이 같이 뒀는데 그것이 읽는 것은 환경 변수라 `shared/config`로 간다 — 통신의 약속이 아니라 통신이 붙을 주소다. 색·서체처럼 통신과 무관한 값은 `shared/utils`다.
 
 **전역 상태는 `model`이다.** zustand store가 그 자리다 — ADR-001이 「계산, 상태 규칙, 통신은 전부 `.ts`로」라 적을 때 상태 규칙을 계산 쪽에 세웠다. `use`로 시작하는 store 훅은 `hooks`다.
 
@@ -87,22 +104,27 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 | 접미사 | 사는 자리 | 담는 것 |
 | --- | --- | --- |
-| `[domain].type.ts` | `model` | 타입과 상수. 런타임에 아무것도 안 한다 |
+| `[domain].type.ts` | `model` | 타입. 런타임에 아무것도 안 한다 |
 | `[domain].schema.ts` | `model` | 바깥에서 들어온 값의 꼴 검증. API 응답·딥링크 파라미터·QR 문자열 |
 | `<이름>.policy.ts` | `model` | 업무 판정. 순수 함수여야 하고 사이드 이펙트가 없다 |
 | `[domain].store.ts` | `model` | zustand store |
+| `[domain].const.ts` | `consts` | 정해진 값 |
+| `[domain].config.ts` | `config` | 환경이 주는 값을 읽는 손 |
 | `<이름>.utils.ts` | `utils` | 그 도메인의 순수 도구 |
+| `<이름>.lib.ts` | `lib` | 부작용을 내는 손 하나 |
 | `[action].api.ts` | `api` | 통신 하나 |
 | `use[Action]Query.ts` | `hooks` | 읽기 훅 |
 | `use[Action]Mutation.ts` | `hooks` | 쓰기 훅 |
 
 **`use*`로 불리는 store는 `hooks/`에 제 이름으로 산다.** zustand의 `create`가 돌려주는 것은 훅이라 `[domain].store.ts`와 「훅 파일은 그 훅 이름」이 한 파일에서 부딪힌다 — 부르는 이름이 이긴다. `shared/hooks/useTheme.ts`가 그 꼴이고, 훅으로 안 불리는 store는 `model/`에서 접미사를 받는다(`entities/clock/model/clock.store.ts`). 「`hooks/` 밖에서 `use*` export 금지」도 그 편이다.
 
-**여덟 꼴에 안 맞는 파일은 접미사가 없다.** `shared/api/queryKeys.ts`처럼 통신 행위가 아니라 통신의 약속인 것, `shared/utils/`의 색 표처럼 도메인이 없는 것이 그렇다. 접미사는 성격이 섞이는 자리를 가르는 장치라, 섞일 것이 없으면 안 붙인다.
+**열한 꼴에 안 맞는 파일은 접미사가 없다.** `shared/api/queryKeys.ts`처럼 통신 행위가 아니라 통신의 약속인 것, `shared/utils/`의 색 표처럼 도메인이 없는 것이 그렇다. 접미사는 성격이 섞이는 자리를 가르는 장치라, 섞일 것이 없으면 안 붙인다.
 
 **`type`과 `schema`가 둘인 까닭은 사는 시간이 달라서다.** 타입은 컴파일 때 사라지고, 바깥에서 들어온 값은 런타임에 꼴을 확인해야 한다. 지금 `validateProfile`과 홀리데이 API 응답 파싱이 그 일을 손으로 하는데 둘이 다른 자리에 있다. 검증 라이브러리를 들이든 손으로 쓰든 자리는 `schema`다.
 
 **`policy`는 순수다.** 통신도 시계도 난수도 못 쓴다 — 「지금 지각인가」를 판정하려면 시각을 받아야 하고 제가 읽어선 안 된다. 그래서 테스트가 입력만 주면 돌고, 같은 판정을 서버 함수가 SQL로 또 쓸 때 두 쪽을 같은 표로 맞출 수 있다.
+
+**화면 훅은 그 화면 이름을 받는다.** `screens/<슬라이스>/hooks/use<화면>.ts`고 `Query`·`Mutation` 접미사는 안 붙는다 — 그 둘은 서버 상태를 읽고 쓰는 훅의 표시고, 화면 훅은 그것들을 모아 화면 하나가 쓸 꼴로 내놓는다. `screens/wages/hooks/useWagesScreen.ts`가 그 꼴이다.
 
 **훅 이름에 `Query`와 `Mutation`을 박는다.** 파일 이름과 export 이름이 같아야 코드에서 파일로 바로 건너가니 함수 이름도 같이 바뀐다 — `useMonthSchedule`이 `useMonthScheduleQuery`가 된다. 호출부가 그 이름만 보고 읽기인지 쓰기인지 알고, 층의 뜻(entities는 읽기·features는 쓰기)이 import 줄에서 보인다.
 
@@ -132,7 +154,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 ## 집행
 
-검사 여덟을 세운다. 폴더와 이름이 뜻을 가지면 그 뜻을 기계가 지킨다 — 안 그러면 다음 task가 아무 데나 넣고 폴더는 한 달 안에 뜻을 잃는다.
+검사 열둘을 세운다. 폴더와 이름이 뜻을 가지면 그 뜻을 기계가 지킨다 — 안 그러면 다음 task가 아무 데나 넣고 폴더는 한 달 안에 뜻을 잃는다.
 
 | 규칙 | 막는 것 | 지키는 것 | 보는 것 |
 | --- | --- | --- | --- |
@@ -144,6 +166,14 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 | 이름이 camelCase인지 | kebab이 다시 들어오기 | 꼴 하나 | `tests/lint/fileNaming.ts` |
 | 폴더 이름이 camelCase인지 | 폴더만 kebab으로 남기 | 꼴 하나 | `tests/lint/fileNaming.ts` |
 | 캐시 키 배열 리터럴 금지 | 키를 손으로 쓰기 | 팩토리가 유일한 문이라는 것 | lint 규칙 |
+| `consts/` 밖의 `export const <대문자_스네이크>` 금지 | 업무 상수가 판정 파일에 숨기 | 상수의 집이 하나라는 것 | lint 규칙 |
+| `process.env`·`Constants`를 `config/` 밖에서 읽기 금지 | 환경값을 코드 아무 데서나 읽기 | 환경이 들어오는 문이 하나라는 것 | lint 규칙 |
+| `expo-*`·`react-native` SDK를 `lib/`·`ui/`·`hooks/` 밖에서 import 금지 | 부작용이 `model`·`utils`에 숨기 | `policy`와 `utils`가 순수하다는 것 | lint 규칙 |
+| `.tsx`에서 `useState`·`useEffect`·`useReducer` 금지 | 상태가 화면 파일에 남기 | ADR-001의 「화면과 로직」 | lint 규칙 |
+
+**마지막 줄이 가장 많이 걸린다.** 지금 `.tsx` 마흔여섯이 상태·효과를 들고 호출이 이백아흔둘이다 — 그 걸음이 `dumb-ui-widen`이고 규칙은 그것이 끝난 뒤에 켠다. `className` 조립과 `isLoading` 분기는 통과시킨다.
+
+**`export const <대문자_스네이크>` 금지에 예외가 둘이다.** `queryKeys`·`staleTogether`는 통신의 약속이라 `api`에 살고 꼴이 camel이다. 열거 목록을 타입이 바로 읽는 자리(`ERROR_CODES` → `ErrorCode`)는 `consts/`에 두고 `model/`이 그것을 import한다 — 타입이 상수를 읽는 방향은 허용이고 그 반대는 아니다.
 
 셋째 줄이 이 ADR의 핵심을 지킨다. 첫 줄은 [ADR-003](ADR-003-supabase-and-integration-tests.md)의 「클라이언트는 `dals`에서만」을 새 이름으로 옮긴 것이다 — 세그먼트가 `api`로 바뀌었으니 그 규칙도 `api`를 가리킨다.
 

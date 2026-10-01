@@ -7,11 +7,11 @@ sources:
 
 # FSD 층 재편 — 구현 계획
 
-[ADR-015](../../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)를 코드에 전개한다. 이름을 camelCase로 바꾸고, 캐시 키를 팩토리로 모으고, 세그먼트를 다섯으로 모으면서 성격 접미사를 같이 달고, 층의 뜻을 읽기와 쓰기로 가르고, 타입을 빼내고, 뭉친 슬라이스를 쪼갠다.
+[ADR-015](../../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)를 코드에 전개한다. 이름을 camelCase로 바꾸고, 캐시 키를 팩토리로 모으고, 세그먼트를 여덟로 모으면서 성격 접미사를 같이 달고, 층의 뜻을 읽기와 쓰기로 가르고, 타입을 빼내고, 뭉친 슬라이스를 쪼갠다.
 
 ## 입력 명세·기준
 
-**정본은 ADR-015다.** 층의 뜻, 세그먼트 다섯의 판정 기준, 슬라이스 쪼개는 기준, 이름 규약, 검사 여덟이 거기 산다. 이 계획은 그것을 몇 번에 나눠 어떤 순서로 옮기는지만 적는다.
+**정본은 ADR-015다.** 층의 뜻, 세그먼트 여덟의 판정 기준, 슬라이스 쪼개는 기준, 이름 규약, 검사 열둘이 거기 산다. 이 계획은 그것을 몇 번에 나눠 어떤 순서로 옮기는지만 적는다.
 
 **저장소에서 확인한 것.**
 
@@ -154,7 +154,60 @@ sources:
 - 돌면서 나온 것 — **일괄 치환이 마크다운 상대 링크를 안 먹는다.** `"@/..."` 꼴만 바꿔서 문서의 `../../../src/...` 링크 서른둘이 깨졌다. `docLinks.test.ts`가 잡았고, 경로 조각으로 한 번 더 치환했다
 - 돌면서 나온 것 — **주석이 가리키는 경로는 아무 검사도 안 본다.** 테스트 머리글의 `// 구현 대상: src/...` 마흔셋이 옮기기 전 자리를 그대로 들고 있었다. import가 아니라 글자라 lint도 typecheck도 안 울고, 링크가 아니라 `docLinks.test.ts`도 안 본다 — 짝 구현 파일을 찾아 주는 유일한 줄이라 틀리면 다음 사람이 없는 파일을 뒤진다. 실재하지 않는 `src/` 경로를 전수로 뽑아 고쳤다
 
-### AC-08 — 검사 여덟이 선다
+### AC-09 — `lib`이 선다
+
+- 전제: 부작용을 내는 파일이 `model`·`utils`·`hooks`에 흩어져 있다. 플랫폼 SDK를 당기는 열하나, 제가 시계를 읽는 셋, 세션을 조작하는 하나다
+- 행동
+  - `<이름>.lib.ts`로 이름을 받아 `<층>/<슬라이스>/lib/`으로 옮긴다
+  - 묶음 8가에서 **접미사를 못 받은 여섯**이 여기서 집을 얻는다 — `exportQrPaper`·`handleAuthCallback`·`signOut`·`resolveEntryDestination`·`pushPermission`·`pushDeps`
+  - 시계를 읽는 셋은 **가른다.** `serverClock.policy.ts`는 시각을 인자로 받아 순수하므로 그대로 두고, `kstDate.ts`의 `kstToday()`처럼 제가 `new Date()`를 부르는 함수만 `lib`으로 뺀다
+- 관찰 결과: `entities`·`features`·`screens`의 `model/`과 `utils/`에 `expo-*`·`react-native` import가 없다. `.policy.ts`에 `Date.now`·`Math.random`이 없다. 셋이 초록이다
+- 왜 여기인가: `consts`·`config`가 가를 파일 중 일부가 이 묶음에서 먼저 움직인다 — `pushDeps`는 부작용과 환경값을 같이 들어 `lib`으로 간 뒤 그 안에서 환경 읽기가 `config`로 갈린다
+
+### AC-10 — `consts`가 선다
+
+- 전제: `export const <대문자_스네이크>`가 파일 스물여섯에 살고 **그중 스물이 함수와 같이 산다.** `wageAmount.policy.ts` 하나가 업무 상수 하나와 문안 넷과 판정 셋을 든다
+- 행동
+  - `<도메인>.const.ts`로 모아 `<층>/<슬라이스>/consts/`에 둔다. `[domain]`은 슬라이스 이름이라 슬라이스마다 한 파일이다
+  - `<도메인>.type.ts`에 든 상수가 나간다 — 근태 일곱, 알림 넷, 근무표 하나
+  - 열거 목록이 타입의 바탕인 자리는 `consts`에 두고 `model`이 import한다(`ERROR_CODES` → `ErrorCode`)
+- 관찰 결과: `consts/` 밖에 `export const <대문자_스네이크>`가 없다. `.type.ts`를 열면 타입만 있다. 셋이 초록이다
+- `queryKeys`·`staleTogether`는 밖이다 — 통신의 약속이고 꼴이 camel이다
+
+### AC-11 — `config`가 선다
+
+- 전제: 환경값을 읽는 자리가 넷이다 — `readSupabaseEnv`(Supabase 주소·키), `readAppUrl`(앱 주소), `pushDeps`(EAS 프로젝트 id·플랫폼), `authRedirect.utils`(실행 환경)
+- 행동
+  - `shared/config/`를 세워 `readSupabaseEnv`·`readAppUrl`을 옮긴다. ADR-015의 「캐시 키는 `api`고 설정은 `config`다」가 그 자리를 정한다
+  - `pushDeps`와 `authRedirect`에서 환경 읽기만 `<도메인>.config.ts`로 가른다
+  - `__DEV__`를 인자로 받는 둘(`isDevDoorOpen`·`isCatalogVisible`)은 **안 건드린다** — 받아서 판정하는 꼴이라 이미 순수하다
+- 관찰 결과: `config/` 밖에 `process.env`·`Constants` 읽기가 없다. 셋이 초록이다
+
+### AC-12 — `screens`에 `hooks`가 선다
+
+- 전제: `.tsx` 마흔여섯이 상태·효과를 들고 호출이 **이백아흔둘**이다(`screens` 252 · `app` 22 · `shared` 17 · `features` 1). `DayDetail.tsx` 하나가 서른셋을 든다
+- 행동
+  - 화면마다 `screens/<슬라이스>/hooks/use<화면>.ts`를 세워 `useState`·`useEffect`·`useMemo`·`useCallback`·`useReducer`와 핸들러를 옮긴다. `.tsx`는 그 훅이 돌려준 것을 구조분해해 그린다
+  - `shared/ui/DragAndDrop.tsx`의 열은 화면이 아니라 재사용 컴포넌트라 `shared/hooks/`로 간다 — 「`hooks/` 밖에서 `use*` export 금지」가 그 파일에서만 걸리던 자리다
+  - `src/app/`의 스물둘은 라우트 파일이라 **얇게 남긴다** — `_layout.tsx`의 효과 다섯은 앱 수명이고 화면 상태가 아니다
+  - 빼낸 훅마다 짝 테스트가 붙어 TDD를 탄다
+- 관찰 결과: `screens/*/ui/*.tsx`에 `useState`·`useEffect`·`useReducer`가 없다. 셋이 초록이다
+- 보드의 `dumb-ui-widen`이 이 걸음이다 — 그 행이 든 「업무 상수와 판정과 가공 함수가 화면 파일에 남았다」는 AC-10과 이 묶음이 같이 걷는다
+- 가장 큰 묶음이다. 화면 단위로 쪼개 PR을 여럿 낸다
+
+### AC-13 — 중복 넷이 접힌다
+
+- 전제: 같은 이름의 export 함수가 두 자리에 산다
+  - `canGoBack`·`canGoForward` — `screens/payroll/model/boundary.policy.ts`와 `shared/utils/monthBoundary.ts`
+  - `dayMinutes` — `features/payrollCompute/model/dayMinutes.policy.ts`와 `features/stats/model/workTotals.policy.ts`
+  - `attendanceSummaryLine` — `screens/scheduleWorker/model/attendanceColumn.policy.ts`와 `screens/stats/utils/attendanceSummaryLine.utils.ts`
+- 행동: 몸이 같은 것은 하나로 접고, 다른 것은 **이름을 갈라** 무엇이 다른지 이름이 말하게 한다
+- 관찰 결과: 같은 이름의 export 함수가 두 자리에 없다. 셋이 초록이다
+- 묶음 6가가 `monthStart` 사본 넷을 접은 것과 같은 일이다
+
+### AC-08 — 검사 열둘이 선다
+
+**번호는 여덟인데 차례는 마지막이다.** AC-09~AC-13이 뒤에 생겨 문서 차례와 번호가 어긋났다 — 번호를 다시 매기면 merge된 PR 본문과 커밋 메시지가 가리키는 이름이 깨진다.
 
 - 전제: `house/dumb-ui`가 `.tsx`의 Supabase import·`fetch()`·쿼리 훅 호출만 잡는다. 세그먼트와 층의 뜻과 접미사를 지키는 검사가 없다
 - 행동: 규칙을 더하고 `tests/lint/`에 각각의 테스트를 쓴다. [execution.md의 「집행되는 규칙」](../../4-test/execution.md#집행되는-규칙) 표에 행을 더한다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다
@@ -163,9 +216,14 @@ sources:
   - `entities/`에서 `useMutation` 금지 · `features/`에서 `useQuery` 금지
   - `.policy.ts`에서 통신·`Date.now`·`Math.random` 금지
   - 캐시 키 배열 리터럴 금지 — `queryKeys` 팩토리만 쓴다
+  - `consts/` 밖에서 `export const <대문자_스네이크>` 금지 — `queryKeys`·`staleTogether`는 예외다(camel이고 통신의 약속이다)
+  - `process.env`·`Constants`를 `config/` 밖에서 읽기 금지
+  - `expo-*`·`react-native` SDK를 `lib/`·`ui/`·`hooks/` 밖에서 import 금지 — 타입만 import하는 것은 통과시킨다
+  - `.tsx`에서 `useState`·`useEffect`·`useReducer` 금지 — `className` 조립과 `isLoading` 분기는 통과시킨다
   - 접미사가 사는 세그먼트와 맞는지 — `fileNaming.ts`
   - 이름이 camelCase인지 · 폴더 이름이 camelCase인지 — `fileNaming.ts`가 AC-01·AC-02에서 이미 본다
-- 관찰 결과: 각 규칙이 위반 픽스처에서 걸리고 정상 픽스처를 통과시킨다. 저장소 전체가 여덟을 통과한다
+- 관찰 결과: 각 규칙이 위반 픽스처에서 걸리고 정상 픽스처를 통과시킨다. 저장소 전체가 열둘을 통과한다
+- 마지막 줄은 AC-12가 끝나야 켤 수 있다 — 지금 켜면 `.tsx` 마흔여섯이 빨개진다
 
 ## 변경 파일
 
@@ -263,9 +321,13 @@ sources:
 | `eslint-rules/hooksSegment.mjs` | 신설 — `hooks/` 밖의 `use*` export를 막는다 |
 | `eslint-rules/readWriteLayers.mjs` | 신설 — `entities/`의 `useMutation`과 `features/`의 `useQuery`를 막는다 |
 | `eslint-rules/purePolicy.mjs` | 신설 — `.policy.ts`의 통신·시계·난수를 막는다 |
-| `eslint-rules/index.mjs` · `eslint.config.mjs` | 규칙 넷을 등록한다 |
-| `tests/lint/supabaseClientInApi.test.ts` 외 셋 | 신설 — 규칙마다 위반·정상 픽스처 |
-| `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 넷을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
+| `eslint-rules/constsSegment.mjs` | 신설 — `consts/` 밖의 `export const <대문자_스네이크>`를 막는다 |
+| `eslint-rules/configSegment.mjs` | 신설 — `config/` 밖에서 `process.env`·`Constants`를 읽는 것을 막는다 |
+| `eslint-rules/nativeSdkSegment.mjs` | 신설 — `lib/`·`ui/`·`hooks/` 밖에서 `expo-*`·`react-native` SDK import를 막는다 |
+| `eslint-rules/dumbUi.mjs` | `.tsx`의 `useState`·`useEffect`·`useReducer`를 막는 축을 더한다 — **AC-12가 끝나야 켠다** |
+| `eslint-rules/index.mjs` · `eslint.config.mjs` | 신설 규칙 일곱을 등록한다 |
+| `tests/lint/supabaseClientInApi.test.ts` 외 여섯 | 신설 — 규칙마다 위반·정상 픽스처 |
+| `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 여덟을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
 | `scripts/syncEdgeShared.mts` | 복사 경로 넷 — 알림 셋이 `entities/notification/model/`과 `features/pushSwitch/model/`로, 공휴일 하나가 `features/holiday/model/`로 |
 | `eslint-rules/noNodeImportInEdgeShared.mjs` | 같은 경로 한 줄 |
 | `tests/lint/attendanceConstants.ts` | `src/entities/attendance/model/attendance.type.ts`를 문자열로 박아 뒀다 — AC-07이 슬라이스 이름을 `attendance`로 두므로 안 바뀌지만, 바꾸면 이 줄도 같이 간다 |
@@ -304,8 +366,13 @@ sources:
 6. **AC-06가 — `shared/` 재편 + 교차를 만드는 순수 함수 추출** ✅ 쉰아홉을 `git mv`하고 `monthStart` 사본 넷을 접었다. 교차가 0이 됐다
 7. **AC-07 — 슬라이스 쪼개기** ✅ 268개를 `git mv`했다. 교차 0이고 깨져 있던 엣지 import 셋을 고쳤다
 8. **AC-06나-1 — `model`/`utils` 가르기 + 접미사** ✅ 123개와 짝 테스트 120개를 `git mv`했다. 판정 예순하나·꼴 바꾸기 쉰여섯·타입 셋·검증 둘·store 하나
-9. **AC-06나-2 — 타입 빼기** `<슬라이스>.type.ts`로
-10. **AC-08 — 검사 여덟**
+9. **AC-06나-2 — 타입 빼기** `<슬라이스>.type.ts`로 예순다섯
+10. **AC-09 — `lib` 세우기** 부작용을 내는 손을 `model`·`utils`에서 걷는다
+11. **AC-10 — `consts` 세우기** 정해진 값을 판정 파일에서 걷는다
+12. **AC-11 — `config` 세우기** 환경이 주는 값이 들어오는 문을 하나로
+13. **AC-12 — `screens`의 `hooks`** `.tsx`에서 상태와 효과를 걷는다. 보드의 `dumb-ui-widen`이 이 걸음이다
+14. **AC-13 — 중복 넷 접기** 같은 이름의 함수가 두 자리에 산다
+15. **AC-08 — 검사 열둘**
 
 **AC-06을 갈라 AC-07을 그 사이에 끼운다.** 두 방향 다 한 번은 걸린다.
 

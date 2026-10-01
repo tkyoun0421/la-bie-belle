@@ -6,7 +6,13 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 아홉째 묶음이다 — 타입 빼내기(AC-06나-2).** `<슬라이스>.type.ts`로 뺄 것은 **도메인의 모양을 말하는 타입**이고, 함수 하나의 인자 꼴이나 훅의 반환 꼴은 그 파일에 남는다. 측정해 두었다 — 선언 483개 중 **다른 파일이 import하는 것이 125개**고 나머지 358개는 제 파일에서만 쓰인다. import된다는 것이 곧 도메인 모양은 아니다: `AddRehearsalInput`·`SetWageInput`처럼 통신 하나의 인자 꼴은 짝 훅이 당겨 쓸 뿐이라 남고, `.tsx`가 내놓는 prop·상태 유니언(`ToastKind`·`MemberSheetFace`)도 `ui`에 접미사가 없어 그 자리에 남는다. **`shared/`는 밖이다** — 도메인이 없어 `<슬라이스>.type.ts`가 안 선다(`DB`·`Theme`·`MonthsResult`). 이 묶음은 `git mv`가 아니라 선언을 파일 밖으로 꺼내는 일이라 diff가 내용으로 보인다 — 그래서 접미사 묶음과 PR을 갈랐다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
+**다음 첫 수는 `fsd-read-write-layers`의 아홉째 묶음이다 — 타입 빼내기(AC-06나-2).** `<슬라이스>.type.ts`로 예순다섯이 간다. 범위는 `entities`와 `features`뿐이다 — `screens/` 슬라이스는 라우트 이름이라 도메인이 아니고 그 타입은 같은 슬라이스의 `.tsx` 하나가 받는 뷰 줄 꼴이며, `shared/`는 도메인이 없어 그 파일이 안 선다. 통신 하나의 인자 꼴(`SetWageInput` 여덞)은 ADR이 「함수 하나의 인자 꼴은 그 파일에 남는다」를 명시해 안 뺀다. `git mv`가 아니라 선언을 꺼내 붙이는 일이라 rename 추적이 없다.
+
+**세그먼트가 다섯에서 여덟로 열렸다.** `consts`(정해진 값)·`config`(환경이 주는 값)·`lib`(부작용을 내는 손)이 더해지고 `hooks`가 모든 층에 선다 — `screens`도 그렇다. 그래서 남은 묶음이 넷 늘었다: AC-09(`lib`) · AC-10(`consts`, 파일 스물여섯 중 스물이 함수와 동거) · AC-11(`config`, 넷) · AC-12(`screens`의 `hooks`, `.tsx` 마흔여섯에 호출 이백아흔둘) · AC-13(중복 넷) · AC-08(검사 열둘). **AC-12가 보드의 `dumb-ui-widen`이다** — 그 행이 이 묶음으로 들어왔다. 가장 커서 화면 단위로 PR을 쪼갠다.
+
+**열지 않기로 한 것 셋도 적어 둔다** — `ui`를 바탕 조각·조립물로 가르기(`shared/ui` 51개가 평평하다), `mapper`로 DB 행 누출 끊기(`api`가 선언한 `*Row` 열다섯 중 일곱이 화면까지 닿는다), 문안을 한 자리로(`.tsx` 안 한국어 508개/76파일). 셋 다 실물이 있는 마찰이고 여덞을 선 뒤에 다시 잰다.
+
+**이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
 
 
 **묶음 여덟이 끝났다(#483~#489 그리고 8가).** 이름이 camelCase가 되고(535개, `Db`→`DB` 334회), 폴더도 camelCase가 되고, 캐시 키가 `src/shared/api/queryKeys.ts` 팩토리 하나로 모이고, 통신 74개가 `entities/*/api/`의 `[action].api.ts`가 되고, 훅 59개가 `hooks/`로 가며 읽기·쓰기로 층이 갈렸다. 그리고 `shared/lib`이 사라져 `api`·`hooks`·`utils`로 갈리고 층이 틀린 아홉이 `features/auth`·`entities/session`·`entities/clock`으로 갔다. 그리고 슬라이스가 **entities 14 · features 22**로 쪼개졌고, `model` 파일 123개가 성격 접미사를 받아 판정 예순하나는 `.policy.ts`로, 꼴 바꾸기 쉰여섯은 `utils/`의 `.utils.ts`로 갈렸다 — `no-cross-slice-import`가 0건이다. 지금 **`entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다.**
