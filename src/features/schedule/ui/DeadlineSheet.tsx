@@ -6,7 +6,7 @@ import { Text } from "@/shared/ui/Text";
 
 /**
  * 스케줄 신청 마감일을 바꾸는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「근무 신청 모아보기 짜임」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「근무 신청 모아보기 짜임」이다.
  *
  * **문이 둘이고 시트는 하나다.** 모아보기의 「마감일 바꾸기」와 확정 잠김의 「마감일 당기기」가
  * 같은 것을 연다 — 당길 일이 생기는 자리가 둘이라서다. 그 둘이 다른 슬라이스에 살아

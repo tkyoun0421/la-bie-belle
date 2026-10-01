@@ -22,7 +22,7 @@ import { cn } from "@/shared/lib/utils";
  * 영역으로, 줄 머리는 다른 줄 머리로 간다.
  *
  * **여기 사는 것은 손짓과 좌표뿐이다.** 놓아도 되는지는 부르는 쪽이 `canDrop`으로 답한다 —
- * 그 판정은 업무 규칙이라 `screens/schedule-admin/model/`의 순수 함수들이 갖는다(ADR-001).
+ * 그 판정은 업무 규칙이라 `screens/scheduleAdmin/model/`의 순수 함수들이 갖는다(ADR-001).
  * 이 파일은 「지금 손가락 아래 무엇이 있나」까지만 안다.
  *
  * **자리는 집는 순간 다시 잰다.** 목록이 스크롤되면 처음 잰 좌표가 어긋나므로 `onLayout`에

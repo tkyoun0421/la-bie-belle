@@ -296,6 +296,75 @@ describe("점으로 시작하는 디렉터리는 훑지 않는다", () => {
   });
 });
 
+describe("이름이 어긋난 폴더", () => {
+  it("하이픈 든 슬라이스 폴더를 잡는다", async () => {
+    const { folderViolations } = await import("@tests/lint/fileNaming");
+
+    expect(
+      folderViolations([
+        {
+          file: "src/screens/admin-home/ui/AdminHomeScreen.tsx",
+          source: "",
+        },
+      ]),
+    ).toEqual([
+      {
+        type: "folder",
+        folder: "src/screens/admin-home",
+        suggestion: "src/screens/adminHome",
+      },
+    ]);
+  });
+
+  /** 범위의 첫 조각은 저장소 맨 위 이름이라 이 규약의 대상이 아니다. */
+  it("범위 이름 자체는 안 본다", async () => {
+    const { folderViolations } = await import("@tests/lint/fileNaming");
+
+    expect(
+      folderViolations([{ file: "eslint-rules/dumbUi.mjs", source: "" }]),
+    ).toEqual([]);
+  });
+
+  it("`src/app/`은 안 본다", async () => {
+    const { folderViolations } = await import("@tests/lint/fileNaming");
+
+    expect(
+      folderViolations([{ file: "src/app/(admin)/check-in.tsx", source: "" }]),
+    ).toEqual([]);
+  });
+
+  /** Jest가 그 이름으로 짝 테스트 자리를 안다. */
+  it("`__tests__`는 밖이다", async () => {
+    const { folderViolations } = await import("@tests/lint/fileNaming");
+
+    expect(
+      folderViolations([
+        {
+          file: "src/entities/attendance/model/__tests__/price.test.ts",
+          source: PLAIN_SOURCE,
+        },
+      ]),
+    ).toEqual([]);
+  });
+
+  it("같은 폴더를 한 번만 낸다", async () => {
+    const { folderViolations } = await import("@tests/lint/fileNaming");
+
+    expect(
+      folderViolations([
+        { file: "src/screens/admin-home/model/tileMonth.ts", source: "" },
+        { file: "src/screens/admin-home/model/todayStatus.ts", source: "" },
+      ]),
+    ).toHaveLength(1);
+  });
+
+  it("저장소 실물에 위반이 없다", async () => {
+    const { folderViolations } = await import("@tests/lint/fileNaming");
+
+    expect(folderViolations(repositoryCodeFiles())).toEqual([]);
+  });
+});
+
 describe("케이스만 다른 파일", () => {
   it("한 짝으로 묶어 낸다", () => {
     expect(

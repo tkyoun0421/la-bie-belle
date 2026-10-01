@@ -5,7 +5,7 @@
 #
 # 근거는 docs/2-design/spec/schedule-admin.md(AC-02·AC-04·AC-05·AC-07·AC-08,
 # AC-06의 마감일 시트 재사용 조각)과
-# docs/2-design/modules/schedule/screens/schedule-admin.md다. 배정받은
+# docs/2-design/modules/schedule/screens/scheduleAdmin.md다. 배정받은
 # 리스크는(schedule-admin-test-plan.md 「배정 → e2e」, 확정 조각은 총괄이
 # 판정을 넓혀 직접 추가했다)
 #   - 빈 상태 → 마감일 시트 → 달 만들기 → 만든 직후 안내 줄
@@ -148,7 +148,7 @@
 # 그 task와 별개인 schedule-requests task가 파일 끝에 새 절로 붙인 것이다.
 #
 # 근거는 docs/2-design/spec/schedule-requests.md의 AC-01과
-# docs/2-design/modules/schedule/screens/schedule-admin.md의 「근무 요청
+# docs/2-design/modules/schedule/screens/scheduleAdmin.md의 「근무 요청
 # 보내기」·「포지션과 자리」다. 배정받은 리스크는(schedule-requests-test-plan.md
 # 「배정 → e2e」)
 #   - 전체 보기의 미신청 줄을 체크박스로 골라 「n명에게 근무 요청 보내기」 →
@@ -224,7 +224,7 @@
 # 위에서 고쳤다(무엇을 고쳤는지는 이 파일을 돌려준 보고에 있다).
 #
 # 근거는 docs/2-design/spec/payroll-adjust.md의 AC-01·AC-02·AC-04·AC-05와 상태
-# 격자, docs/2-design/modules/schedule/screens/schedule-admin.md의 「근무 조정」과
+# 격자, docs/2-design/modules/schedule/screens/scheduleAdmin.md의 「근무 조정」과
 # 「날 상세 문안」 표다. 배정받은 리스크는
 #   - 배정이 있는 열린 날의 날 상세에 「임시공휴일」·「근무 조정」 줄이 선다
 #   - 임시공휴일 스위치를 켜고 끈다. 받아온(`api`) 공휴일인 날은 스위치가 잠긴 채

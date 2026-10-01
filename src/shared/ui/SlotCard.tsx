@@ -4,7 +4,7 @@ import { cn } from "@/shared/lib/utils";
 
 /**
  * 근무표 날 상세의 자리 카드다. 높이 하나에 모양이 둘 — 사람이 든 자리는 면이 있고 빈 자리는
- * 점선이다(`docs/2-design/modules/schedule/screens/schedule-admin.md`의 「날 상세 색」).
+ * 점선이다(`docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 상세 색」).
  *
  * **자리 추가 줄도 이 조각이다.** 빈 자리와 같은 점선이고 글자만 다르다 — 목록 끝에서 같은
  * 폭 같은 높이로 서야 「여기도 자리」로 읽힌다.

@@ -1,4 +1,4 @@
-import { AdminStatsScreen } from "@/screens/admin-stats/ui/AdminStatsScreen";
+import { AdminStatsScreen } from "@/screens/adminStats/ui/AdminStatsScreen";
 
 export default function Screen() {
   return <AdminStatsScreen />;

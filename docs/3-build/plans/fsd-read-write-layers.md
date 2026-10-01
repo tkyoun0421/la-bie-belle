@@ -45,7 +45,7 @@ sources:
 - 돌면서 나온 것 — **ESLint 규칙 이름은 kebab으로 되돌렸다.** 일괄 치환이 `house/dumb-ui` 같은 규칙 ID까지 먹었는데 그것은 파일 이름이 아니라 생태계 식별자고 소스의 `eslint-disable` 주석이 그 이름을 쓴다. 규칙 파일은 camel, 등록 키는 kebab이다
 - 돌면서 나온 것 — **`fileNaming.test.ts`의 픽스처가 정답으로 뒤집혔다.** 그 파일 주석이 그 위험을 미리 적어뒀고(「일괄 치환이 이 파일을 지나가면 픽스처가 정답으로 바뀌어 단언이 조용히 무의미해진다」) 실제로 났다 — `kebabWanted`를 `camelWanted`로 뒤집었다
 
-### AC-02 — 폴더 이름이 camelCase가 된다
+### AC-02 — 폴더 이름이 camelCase가 된다 ✅
 
 - 전제: `screens/`의 슬라이스 폴더 다섯이 kebab이다
 - 행동
@@ -54,6 +54,8 @@ sources:
   - `src/app/`의 라우트 파일이 그 폴더를 import하는 자리를 고친다
 - 관찰 결과: 하이픈 든 폴더가 `src/app/`과 `eslint-rules/` 밖에 없다. 셋이 초록이다
 - `screens/` 슬라이스가 라우트와 1:1인 것은 그대로다 — `/admin-home` 라우트의 슬라이스가 `screens/adminHome`이다
+- 범위의 첫 조각은 검사 밖이다 — `src`·`tests`·`scripts`·`eslint-rules`는 저장소 맨 위 이름이고 마지막은 ESLint 플러그인 이름이다. `__tests__`도 밖이다: Jest가 그 이름으로 짝 테스트 자리를 알고 `tdd-guard-unit.py`가 그 자리를 본다
+- 문서는 안 고쳤다 — `src/screens/<kebab>`을 글자로 적은 문서 열둘이 전부 완료된 plan과 보관된 관찰이다
 
 ### AC-03 — 캐시 키가 팩토리 하나가 된다
 
@@ -234,7 +236,7 @@ sources:
 묶음 여덟을 PR 하나씩 나른다. 앞 묶음이 merge되고 나서 다음을 뗀다 — 같은 파일을 연달아 옮기므로 겹치면 충돌이 손으로 풀 수 없게 커진다.
 
 1. **AC-01 — 파일 이름 camel.** ✅ 535개를 `git mv`했다
-2. **AC-02 — 폴더 이름 camel.** `screens/` 다섯과 폴더 검사
+2. **AC-02 — 폴더 이름 camel.** ✅ `screens/` 다섯을 `git mv`하고 폴더 검사를 세웠다
 3. **AC-03 — 캐시 키 팩토리.** 다섯을 `shared/api/queryKeys.ts` 하나로. 키 문자열을 한 글자도 안 바꾼다
 4. **AC-04 — 통신을 `api/`로 + `.api.ts`**
 5. **AC-05 — 훅을 `hooks/`로 + 층 가르기 + `Query`·`Mutation`**

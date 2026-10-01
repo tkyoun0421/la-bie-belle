@@ -6,7 +6,7 @@ import { toApiError } from "@/shared/api/errors";
  * 어긋난 자리는 근무 조정이 따로 담는다.
  *
  * 예식 시각(`p_ceremony`)은 이 task가 안 쓴다 — 날 상세의 근무 시간 시트가 출근·퇴근 둘만
- * 받는다(`docs/2-design/modules/schedule/screens/schedule-admin.md`의 「날 상세 문안」).
+ * 받는다(`docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 상세 문안」).
  *
  * 거절 셋 — 끝이 시작보다 이르거나 같으면 `bad_hours`, 안 연 날이면 `not_open`,
  * 관리자가 아니면 `not_allowed`다.

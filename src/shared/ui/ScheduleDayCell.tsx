@@ -10,7 +10,7 @@ import { Text } from "@/shared/ui/Text";
 /**
  * 근무표 달력의 날짜 칸 하나다. 정본은
  * `docs/2-design/design-system/components.md`의 「근무표 날짜 칸」이고, 관리자 편집 상태는
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「달력 칸」이 더한 것이다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「달력 칸」이 더한 것이다.
  *
  * **달력 한 장에서 쓰는 색은 브랜드와 뉴트럴 둘뿐이다.** 상태가 아홉인데 색이 둘인 것은,
  * 상태마다 색을 붙이면 달력이 색 지도가 되고 정작 내 근무가 어디인지 안 보이기 때문이다.

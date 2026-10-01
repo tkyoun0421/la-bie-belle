@@ -3,7 +3,7 @@
 # 각자의 자리로 가는 것까지 한 여정으로 간다.
 #
 # 근거는 docs/2-design/spec/schedule-admin.md(AC-01)와
-# docs/2-design/system/screens/admin-home.md다. 배정받은 리스크는
+# docs/2-design/system/screens/adminHome.md다. 배정받은 리스크는
 # (schedule-admin-test-plan.md 「배정 → e2e」)
 #   - 타일에 지금 달 상태(근무표 없음)가 한 줄로 선다
 #   - 근무 시간 기본값 줄 → 시트 → 출근·퇴근 고침 → 줄 값이 그 자리에서 갱신된다

@@ -3,7 +3,7 @@
 # 간다.
 #
 # 근거는 docs/2-design/spec/schedule-worker.md(AC-01·AC-03·AC-04·AC-05)와
-# docs/2-design/modules/schedule/screens/schedule-worker.md다. 배정받은 리스크는
+# docs/2-design/modules/schedule/screens/scheduleWorker.md다. 배정받은 리스크는
 # (schedule-worker-test-plan.md 「배정 → e2e」)
 #   - 확정 달: 세그먼트 전환에 「내 근무만」이 유지된다, 날 칸을 눌러 시트를 보고
 #     기기 뒤로가 시트만 닫는다, ?date=로 오면 그 시트가 열린 채로 뜬다
@@ -108,7 +108,7 @@
 # 붙인 것이다.
 #
 # 근거는 docs/2-design/spec/schedule-requests.md의 AC-02·AC-03·AC-04와
-# docs/2-design/modules/schedule/screens/schedule-worker.md의 「근무 요청
+# docs/2-design/modules/schedule/screens/scheduleWorker.md의 「근무 요청
 # 시트」·「근무 취소 시트」·「보낸 뒤」·「실패와 경합」이다. 배정받은 리스크는
 # (schedule-requests-test-plan.md 「배정 → e2e」)
 #   - 점선 날의 요청 시트에서 「근무할게요」 → 시트가 닫히고 그 날이 바로 내

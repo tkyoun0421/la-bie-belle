@@ -1,3 +1,3 @@
-import { MembersBlockedScreen } from "@/screens/members-pending/ui/MembersBlockedScreen";
+import { MembersBlockedScreen } from "@/screens/membersPending/ui/MembersBlockedScreen";
 
 export default MembersBlockedScreen;

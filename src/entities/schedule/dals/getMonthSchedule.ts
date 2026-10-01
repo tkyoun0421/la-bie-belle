@@ -5,7 +5,7 @@ import type { DB } from "@/shared/api/database";
  *
  * **둘이 갈린 것은 날이 하나도 없는 달이 있기 때문이다.** 관리자가 근무표를 만들고 아직 날을
  * 안 열었으면 `days`가 비는데, 그 빈 배열은 「근무표를 아직 안 만든 달」과 구별되지 않는다.
- * 화면이 그 둘을 다르게 말해야 해서(`schedules/screens/schedule-worker.md`의 「마감 뒤 —
+ * 화면이 그 둘을 다르게 말해야 해서(`schedules/screens/scheduleWorker.md`의 「마감 뒤 —
  * 확정 전」과 「근무표를 아직 안 만든 달」) 근무표 행을 따로 묻는다.
  *
  * **배정에 이름을 임베딩한다.** 근무자도 근무표 전체를 보고 명단에 남의 이름이 서므로

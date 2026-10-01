@@ -210,7 +210,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 - `slugChain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
 - `backlogIds.ts` — 작업 ID와 선행 작업 참조
 - `routeTypes.ts` — 생성된 라우트 타입 선언이 온전한지. 판정 규칙 넷(모듈 보강·`__routes` 인터페이스·`href` 멤버·경로 리터럴)을 `pnpm routes:types`가 가져다 쓴다
-- `fileNaming.ts` — 코드 파일 이름이 규약대로인지. 컴포넌트(`.tsx`)는 PascalCase, 나머지 `.ts`는 camelCase고 훅은 그 훅 이름과 같다 — 판정은 이름 꼴이 아니라 파일이 무엇을 담았는지로 한다. 케이스만 다른 두 파일도 같이 막는다. `src/app/`은 밖이다 — 거기 파일 이름은 URL이다. 왜 그 꼴인지는 [ADR-015](../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md#파일-이름)가 가진다
+- `fileNaming.ts` — 코드 파일과 폴더 이름이 규약대로인지. 컴포넌트(`.tsx`)는 PascalCase, 나머지 `.ts`는 camelCase고 훅은 그 훅 이름과 같다 — 판정은 이름 꼴이 아니라 파일이 무엇을 담았는지로 한다. 폴더도 camelCase고 `__tests__`만 밖이다. 케이스만 다른 두 파일도 같이 막는다. `src/app/`은 밖이다 — 거기 파일과 폴더 이름은 URL이다. 왜 그 꼴인지는 [ADR-015](../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md#파일-이름)가 가진다
 - `databaseTypes.ts` — 마이그레이션이 만든 표·뷰·함수가 생성 타입에 다 들었는지, 그리고 생성 타입을 안 물린 `SupabaseClient`를 직접 가져오는 파일이 남았는지. DB 없이 이름만 대조한다 — 실제로 다시 뽑아 diff를 보는 것은 CI가 한다. `pnpm types`가 판정 부분을 가져다 쓴다
 - `fontSubset.ts` — 서브셋을 거친 서체 넷이 화면이 찍는 2,527자를 다 들었는지. `.ttf`의 `cmap`을 직접 읽는다 — 글자가 빠지면 그 자리가 시스템 서체로 떨어지고 앱은 안 죽어서 다른 검사가 못 잡는다. 집합의 정본이 이 파일이고 `pnpm fonts:subset`이 가져다 쓴다
 - `sourcesImpact.ts` — 추적 중인 문서의 입력 변경에 대한 영향 확인 판정. 추적 여부는 `specDocs.ts`가 계산한다 — spec은 `status: approved`, plan은 제목 바로 뒤 완료 머리글(`> 완료된 작업의 당시 계획이다`)이 없으면 추적 대상이다. PR에서는 `scripts/checkSourcesImpact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사. **판정은 파일 단위다** — `sources`가 앵커까지 적지만 그것으로 좁히지 않는다. 정본은 절끼리 엮여 있어 한 절이 바뀌면 이웃 절의 뜻도 움직이고, 좁히면 새는 쪽으로 틀린다. 시끄러운 쪽이 맞다

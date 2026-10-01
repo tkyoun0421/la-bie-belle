@@ -1,6 +1,6 @@
 /**
  * 근무 신청 모아보기가 세는 것 전부다 — 날짜순·사람순 재구성과 머리·마감·빈 상태의 문구다.
- * 정본은 `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「근무 신청 모아보기
+ * 정본은 `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「근무 신청 모아보기
  * 짜임」과 그 문안 표다.
  *
  * **같은 신청을 두 방향으로 든다.** 날짜순은 근무표를 짜는 손을 따라가고, 사람순은 「이
