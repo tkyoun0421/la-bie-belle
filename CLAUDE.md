@@ -24,9 +24,11 @@
 
 FSD: `src/` 아래 `app` · `screens` · `features` · `entities` · `shared`. `.tsx`는 더미 UI고 계산·상태·통신은 `.ts`로. 근거는 ADR-001.
 
-**층은 읽기와 쓰기로 갈린다** — `entities`가 queries와 모델과 제약을, `features`가 mutations의 use case를 가진다. 세그먼트는 여섯으로 고정이다: `ui` · `hooks` · `api`(서버 함수 `rpc`) · `db`(표 직접 `from`) · `model`(순수 판정) · `config`. `shared`는 슬라이스 없이 `utils`와 `store`를 더 가진다. 슬라이스는 entities가 도메인 하나, features가 use case 하나고 `screens`는 라우트 이름이라 안 쪼갠다. 근거는 [ADR-015](docs/2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md), 집행은 lint 규칙 넷이다.
+**층은 읽기와 쓰기로 갈린다** — `entities`가 queries와 모델과 제약을, `features`가 mutations의 use case를 가진다. 세그먼트는 다섯으로 고정이다: `ui` · `hooks` · `api`(통신) · `model`(타입·검증·판정·전역 상태) · `utils`(순수 도구). `model`과 `utils`는 판정하느냐로 갈려 업무 규칙은 `model`이다. 슬라이스는 entities가 도메인 하나, features가 use case 하나고 `screens`는 라우트 이름이라 안 쪼갠다. 근거는 [ADR-015](docs/2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md), 집행은 검사 여섯이다.
 
 **파일 이름은 부르는 이름을 따른다.** 컴포넌트(`.tsx`)는 PascalCase — JSX가 `<NotBuiltYet />`으로 부른다. 훅은 그 훅 이름과 같은 camelCase — `useAuthGate.ts`. 부르는 이름이 없는 나머지는 kebab-case다. `tests/lint/file-naming.ts`가 `src`·`tests`·`scripts`·`eslint-rules`에서 이것을 보고, 케이스만 다른 두 파일도 같이 막는다 — macOS와 윈도우가 대소문자를 안 구별해서 그 짝이 git과 어긋난다. `src/app/`은 밖이다: Expo Router가 파일 이름을 URL로 읽고 `/check-in`은 종이 QR에 실려 나간다. `docs/`와 슬러그는 ADR-005가, `.claude/hooks/`는 파이썬 관례가 가진다.
+
+**이 kebab 규칙은 교체되는 중이다.** ADR-015가 camelCase와 성격 접미사 여덟 꼴로 정했고 `fsd-read-write-layers`의 AC-01이 검사와 파일 535개를 같이 옮긴다. 그때까지 새 `.ts`는 kebab으로 짓는다 — 검사가 아직 그것을 요구한다.
 
 ## 원칙
 
