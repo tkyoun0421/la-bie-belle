@@ -4,7 +4,7 @@ import type { MonthsResult } from "@/shared/api/monthsQuery";
 import type { MonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
 import { useMonthsAttendanceQuery } from "@/entities/attendance/hooks/useMonthsAttendanceQuery";
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
-import { useWorkMonthsQuery } from "@/entities/schedule/hooks/useWorkMonthsQuery";
+import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 
 /**
  * 근태 탭의 열두 달 창이다. 달 하나에 배정과 체크인 둘이 필요하고(`attendanceInputs.ts`의

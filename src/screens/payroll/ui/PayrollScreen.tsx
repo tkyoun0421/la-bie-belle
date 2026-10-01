@@ -23,7 +23,7 @@ import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCoun
 import { usePayrollMonthsQuery } from "@/entities/payroll/hooks/usePayrollMonthsQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
-import { useScheduleMonthsQuery } from "@/entities/schedule/hooks/useScheduleMonthsQuery";
+import { useScheduleMonthsQuery } from "@/entities/schedule/services/useScheduleMonthsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { payrollViewDays } from "@/features/payrollCompute/model/payrollDays.policy";
 import {

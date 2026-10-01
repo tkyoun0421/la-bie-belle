@@ -13,9 +13,9 @@ import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import type { PendingApproval } from "@/entities/workRequest/api/getPendingApprovals.api";
-import { usePendingApprovalsQuery } from "@/entities/workRequest/hooks/usePendingApprovalsQuery";
+import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
 import type { CancelDecision } from "@/features/workRequest/api/decideCancelRequest.api";
-import { useDecideCancelRequestMutation } from "@/features/workRequest/hooks/useDecideCancelRequestMutation";
+import { useDecideCancelRequestMutation } from "@/features/workRequest/services/useDecideCancelRequestMutation";
 import {
   ApprovalDetailSheet,
   type ApprovalSheetFace,

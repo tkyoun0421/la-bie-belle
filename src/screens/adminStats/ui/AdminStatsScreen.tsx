@@ -30,8 +30,8 @@ import {
 import { canGoBack, canGoForward } from "@/shared/utils/monthBoundary";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
-import { useFirstScheduleMonthQuery } from "@/entities/schedule/hooks/useFirstScheduleMonthQuery";
-import { useWorkMonthsQuery } from "@/entities/schedule/hooks/useWorkMonthsQuery";
+import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
+import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   computeWorkTotals,

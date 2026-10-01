@@ -25,7 +25,7 @@ import {
   dayTotal,
   monthTotal,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
-import { useMonthScheduleQuery } from "@/entities/schedule/hooks/useMonthScheduleQuery";
+import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { useAddRehearsalMutation } from "@/features/rehearsalEdit/hooks/useAddRehearsalMutation";
 import { useEditRehearsalMutation } from "@/features/rehearsalEdit/hooks/useEditRehearsalMutation";

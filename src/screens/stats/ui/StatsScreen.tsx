@@ -26,8 +26,8 @@ import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/hooks/usePayrollMonthsByMonthQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
-import { useFirstScheduleMonthQuery } from "@/entities/schedule/hooks/useFirstScheduleMonthQuery";
-import { useWorkMonthsQuery } from "@/entities/schedule/hooks/useWorkMonthsQuery";
+import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
+import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";
 import {

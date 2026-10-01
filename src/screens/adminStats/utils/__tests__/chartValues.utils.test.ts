@@ -18,7 +18,7 @@
 // 불러 쓴다.
 
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
-import type { WorkMonth } from "@/entities/schedule/hooks/useWorkMonthsQuery";
+import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
 import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
 import type { AttendanceTab } from "@/screens/adminStats/utils/attendanceRows.utils";
 import {
