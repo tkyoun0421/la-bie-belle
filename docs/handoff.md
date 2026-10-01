@@ -6,13 +6,15 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 둘째 묶음이다 — 캐시 키 모으기.** 다섯 군데 `queryKeys.ts`를 `src/shared/api/queryKeys.ts` 하나로 모으고 import를 고친다. 키 문자열을 한 글자도 안 바꾸는 것이 완료 조건이고 기존 테스트가 그대로 초록이면 된다. 쓰기 슬라이스가 낡게 할 키는 읽기 슬라이스 것이고 `no-cross-slice-import`가 그 import를 막아서, 이것이 안 서면 슬라이스 쪼개기(묶음 5)가 막힌다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
+**다음 첫 수는 `fsd-read-write-layers`의 여섯째 묶음이다 — 타입 빼내기와 `model`·`utils` 가르기(AC-06).** 타입 선언 360개 중 도메인의 모양을 말하는 것을 `[domain].type.ts`로 빼고, 순수 함수를 판정(`[domain].policy.ts`)과 꼴 바꾸기(`[domain].utils.ts`)로 갈라 옮기고, 바깥 값 검증을 `[domain].schema.ts`로, zustand store를 `[domain].store.ts`로 모은다. `shared/lib/` 29개도 `api`·`hooks`·`utils` 셋으로 가르고 층이 틀린 열은 `features/auth`·`entities/session`·`entities/clock`으로 보낸다. **같이 고칠 두 줄이 여기 있다** — `scripts/syncEdgeShared.mts`와 `eslint-rules/noNodeImportInEdgeShared.mjs`가 `features/notification/model/`을 글자로 박고 있고 그 폴더의 파일들이 이 묶음에서 움직인다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
 
-**묶음 1이 끝났다 — 이름이 camelCase다.** 535개를 `git mv`하고 참조 1062건과 문서 링크 14건과 규칙 표 27건을 고쳤다. `Db` 타입은 `DB`가 됐다(334회). 검사는 `tests/lint/fileNaming.ts`고 「저장소 실물에 위반이 없다」 단언이 그것을 지킨다. 돌면서 둘이 드러났다 — 일괄 치환이 **ESLint 규칙 ID**(`house/dumb-ui`)까지 먹어 kebab으로 되돌렸고(규칙 파일은 camel, 등록 키는 kebab), `fileNaming.test.ts`의 **픽스처가 정답으로 뒤집혀** `kebabWanted`를 `camelWanted`로 고쳤다. 그 파일 주석이 그 위험을 미리 적어둔 자리였다.
+**묶음 다섯이 끝났다(#483·#484·#485·#486·#487).** 이름이 camelCase가 되고(535개, `Db`→`DB` 334회), 폴더도 camelCase가 되고, 캐시 키가 `src/shared/api/queryKeys.ts` 팩토리 하나로 모이고, 통신 74개가 `entities/*/api/`의 `[action].api.ts`가 되고, 훅 59개가 `hooks/`로 가며 읽기·쓰기로 층이 갈렸다. 지금 **`entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다.**
 
-**문서에서 규약 설명을 걷었다.** 파일 구조와 lint가 정본이 되니 `CLAUDE.md`와 `execution.md`는 꼴 한 줄과 검사 위치만 들고, 왜 그 꼴인지는 ADR-015가 가진다.
+**묶음마다 커밋이 성격으로 갈려 있다** — 자리와 이름만 바꾸는 커밋은 내용 0줄이고 참조 수정이 그 뒤에 온다. `git log --follow`가 이동을 따라가게 하는 값이고, 리뷰도 생각이 든 커밋만 읽으면 된다. 남은 묶음 셋도 같은 꼴로 간다.
 
-**이 가름이 싸게 되는 까닭은 섞인 파일이 없어서다.** dal 74개가 읽기 24·쓰기 49로, 훅 58개가 쿼리 17·뮤테이션 37로 갈리는데 **둘을 다 하는 파일이 하나도 없다.** `rpc`와 `from`도 49/25로 겹침이 없다. 손으로 판정할 것은 다섯뿐이고 plan이 각각 어디로 갈지 적었다. import는 802줄이 바뀌는데 1658개 중 1654개가 `@/` 절대 경로라 치환으로 끝난다.
+**일괄 치환에서 세 번 밟은 자리가 있다.** `tests/lint/fileNaming.test.ts`의 픽스처가 어긋난 이름을 리터럴로 들고 있어 치환이 지나가면 **정답으로 뒤집힌다** — 묶음 1·3에서 두 번 났고 묶음 5는 `tests/lint/`를 치환 범위 밖에 두어 막았다. ESLint 규칙 ID(`house/dumb-ui`)도 파일 이름이 아니라 생태계 식별자라 kebab으로 되돌렸다.
+
+**계획이 둔 자리를 규칙에 대보지 않은 것이 두 번 났다([관찰 046](observations/046-plan-placement-not-checked-against-rules.md), open).** `useStatsQueries.ts`를 AC-04가 한 번, AC-05가 한 번 잘못 배치했다 — 그 파일만 `entities` 세 슬라이스를 함께 읽어 `no-cross-slice-import`에 걸린다. 묶음 5에서 넷으로 가르며 정했다. `removePushToken`도 같은 꼴로 걸렸다(짝 테스트가 `features`의 함수를 쓴다). **AC-07이 슬라이스를 열여섯·스물로 쪼개므로 그 묶음에 들어가기 전에 자리마다 import 방향을 먼저 대본다.**
 
 **그리고 `shared/lib` 스물아홉 중 열은 층이 틀렸다.** 인증 흐름은 로그인이라는 use case에 매여 있어 `features/auth`로, 「누가 들어왔나」 판정은 읽기라 새로 서는 `entities/session`으로, 서버 시각 둘은 이미 있던 `entities/clock`으로 간다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거였다.
 
