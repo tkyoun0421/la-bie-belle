@@ -6,7 +6,11 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `ready`가 비었다는 것이다.** 보드의 `ready`가 하나도 안 남았다 — 남은 `blocked`는 전부 `attendance-checkin`의 NCP 자격(대표 계정·지도 키·`customStyleId`)에 묶인 사슬이고, 그 자격은 사람이 가져와야 한다. 사람을 부르는 자리는 「재개 맥락」의 넷이다. `candidate`에서 하나를 올려 잡으려면 `spell-number-shared`·`test-seed-transaction`·`internal-grants-public`·`unbounded-read-truncates` 중에서 고른다.
+**다음 첫 수는 사람이 NCP에서 자격을 받아 오는 것이다.** 받을 것은 [배포 환경](5-deploy/environments.md#데이터와-외부-의존성)의 「지도 키」 줄이 든다 — 대표 계정을 먼저 지정하고, Application 하나에 Maps → Dynamic Map을 켜 안드로이드·iOS 식별자(둘 다 `com.labiebelle.app`)를 등록해 Client ID 한 쌍을 받고, Map Style Editor로 라이트·다크 스타일을 만들어 `customStyleId` 둘을 받는다. 그것이 오면 `attendance-checkin`이 풀리고 그 뒤로 `dashboard`·`attendance-excuse`·`notification-emit` 사슬이 선다. 기다리는 동안 `candidate`를 올려 잡으려면 `spell-number-shared`·`test-seed-transaction`·`internal-grants-public`·`unbounded-read-truncates`·`stats-density-salvage` 중에서 고른다.
+
+**지도의 정본 전제를 웹에서 네이티브로 옮겼다.** [출근 인증](2-design/modules/attendance/screens/check-in.md#출근-인증-짜임)이 「웹에서 `submodules=gl`로 띄운다」고 적고 있었는데 [ADR-011](2-design/adr/ADR-011-expo-native-app.md) 뒤로 그 전제가 죽었다. `customStyleId`는 iOS·Android SDK 둘 다 받아 색 표는 그대로 유효하고, `nightModeEnabled`는 듣는 지도 타입이 플랫폼마다 갈려(iOS는 Basic·Navi·Terrain, 안드로이드는 Navi만) 안 쓴다. 카카오를 다시 재볼 필요도 없다 — 카카오 SDK의 `MapType`이 `NORMAL`·`SKYVIEW` 둘뿐이고 데브톡 답변이 다크 모드 미지원을 밝혔다.
+
+**[PR #379](https://github.com/tkyoun0421/la-bie-belle/pull/379)를 닫았다.** 열흘 묶여 있던 통계 밀도 작업인데 그 사이 main이 같은 파일을 스물한 번 고쳤고, 무엇보다 이 브랜치가 [ADR-014](2-design/adr/ADR-014-toss-like-depth-and-graphics.md)보다 닷새 앞선 글이라 충돌을 푸는 일이 다시 쓰는 일과 같아졌다. **브랜치 `feat/stats-density`는 안 지웠다** — `stats-density-salvage` candidate가 거기서 살릴 판정을 고른다. 조각 절 둘(요약 판·사람 겹침)은 main에 아예 없고, 도넛·미니 달력·추이 그래프·차트 색 규칙은 main에 이미 있어 대조가 필요하다.
 
 **`sian-sync`가 `done`이다.** 열일곱 장을 감사 넷으로 훑고 작성자 여섯으로 고쳤다. 가장 큰 자리는 **화면 좌우 여백**이었다 — 시안 전부가 24px로 그렸고 문서 전부가 `px-5`(20px)라 시안을 내렸다. [여백은 문서가 정본](observations/README.md)이라는 앞선 판정 그대로다.
 

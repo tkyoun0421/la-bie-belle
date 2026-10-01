@@ -22,6 +22,8 @@ pg_cron·Database Webhook·Edge Function 셋 다 Free에서 된다. 7일 무활�
 
 - 서체는 앱 번들에 든다([서체 연결](../2-design/design-system/tokens.md#서체-연결)). 바깥 서비스에 안 매인다.
 - **한 앱이 여러 환경을 못 본다.** 웹은 주소로 스테이징과 운영이 갈렸는데 설치한 앱은 빌드 하나가 한 곳만 본다. 스테이징을 따로 보려면 그 설정으로 빌드를 하나 더 만들어 내부 배포로 깔아야 한다.
+- **지도 키는 사람이 NCP 콘솔에서 받아 와야 한다.** 네이버 클라우드 플랫폼의 Application 하나에 Maps → Dynamic Map을 켜고 안드로이드 패키지명·iOS Bundle ID를 같이 등록하면 Client ID가 나온다. 둘 다 `com.labiebelle.app`이다. 키가 그 식별자에 묶이니 빌드 종류가 늘어도 식별자가 같으면 한 쌍으로 충분하다. 타일 색은 키가 아니라 Map Style Editor의 스타일이라 라이트·다크 둘을 만들고 각 `customStyleId`를 같이 받는다 — 색 표는 [출근 인증](../2-design/modules/attendance/screens/check-in.md#출근-인증-색)이 정본이다.
+- **대표 계정을 먼저 지정한다.** 무료 이용량이 전화번호나 사업자번호 기준 계정 하나에만 붙고, 지정 안 된 계정은 첫 호출부터 과금이다([출근 인증](../2-design/modules/attendance/screens/check-in.md#출근-인증-짜임)). 키를 발급하기 전에 잡는다.
 - **로그인이 돌아올 주소를 Supabase 허용 목록에 등록해야 한다.** Authentication → URL Configuration → Redirect URLs다. 런타임마다 주소가 달라서([첫 진입과 게이트](../2-design/modules/account/design.md#첫-진입과-게이트)) 빌드 종류마다 한 줄씩 든다. 빠지면 오류가 아니라 Site URL로 조용히 돌아가서, 로그인이 브라우저에 갇힌 것처럼 보인다.
 
 ## 미정
