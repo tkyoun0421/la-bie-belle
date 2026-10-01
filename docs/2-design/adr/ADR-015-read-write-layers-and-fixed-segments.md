@@ -104,7 +104,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 | 접미사 | 사는 자리 | 담는 것 |
 | --- | --- | --- |
-| `[domain].type.ts` | `model` | 타입. 런타임에 아무것도 안 한다 |
+| `[domain].type.ts` | `model` | 그 도메인의 모양. 런타임에 아무것도 안 한다 |
 | `[domain].schema.ts` | `model` | 바깥에서 들어온 값의 꼴 검증. API 응답·딥링크 파라미터·QR 문자열 |
 | `<이름>.policy.ts` | `model` | 업무 판정. 순수 함수여야 하고 사이드 이펙트가 없다 |
 | `[domain].store.ts` | `model` | zustand store |
@@ -112,17 +112,25 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 | `[domain].config.ts` | `config` | 환경이 주는 값을 읽는 손 |
 | `<이름>.utils.ts` | `utils` | 그 도메인의 순수 도구 |
 | `<이름>.lib.ts` | `lib` | 부작용을 내는 손 하나 |
+| `[domain].dto.ts` | `api` | 통신이 주고받는 꼴. DB 열 이름을 그대로 든다 |
+| `<이름>.mapper.ts` | `utils` | DTO를 도메인 모양으로 바꾸는 순수 함수 |
 | `[action].api.ts` | `api` | 통신 하나 |
 | `use[Action]Query.ts` | `hooks` | 읽기 훅 |
 | `use[Action]Mutation.ts` | `hooks` | 쓰기 훅 |
 
 **`use*`로 불리는 store는 `hooks/`에 제 이름으로 산다.** zustand의 `create`가 돌려주는 것은 훅이라 `[domain].store.ts`와 「훅 파일은 그 훅 이름」이 한 파일에서 부딪힌다 — 부르는 이름이 이긴다. `shared/hooks/useTheme.ts`가 그 꼴이고, 훅으로 안 불리는 store는 `model/`에서 접미사를 받는다(`entities/clock/model/clock.store.ts`). 「`hooks/` 밖에서 `use*` export 금지」도 그 편이다.
 
-**열한 꼴에 안 맞는 파일은 접미사가 없다.** `shared/api/queryKeys.ts`처럼 통신 행위가 아니라 통신의 약속인 것, `shared/utils/`의 색 표처럼 도메인이 없는 것이 그렇다. 접미사는 성격이 섞이는 자리를 가르는 장치라, 섞일 것이 없으면 안 붙인다.
+**열세 꼴에 안 맞는 파일은 접미사가 없다.** `shared/api/queryKeys.ts`처럼 통신 행위가 아니라 통신의 약속인 것, `shared/utils/`의 색 표처럼 도메인이 없는 것이 그렇다. 접미사는 성격이 섞이는 자리를 가르는 장치라, 섞일 것이 없으면 안 붙인다.
 
 **`type`과 `schema`가 둘인 까닭은 사는 시간이 달라서다.** 타입은 컴파일 때 사라지고, 바깥에서 들어온 값은 런타임에 꼴을 확인해야 한다. 지금 `validateProfile`과 홀리데이 API 응답 파싱이 그 일을 손으로 하는데 둘이 다른 자리에 있다. 검증 라이브러리를 들이든 손으로 쓰든 자리는 `schema`다.
 
 **`policy`는 순수다.** 통신도 시계도 난수도 못 쓴다 — 「지금 지각인가」를 판정하려면 시각을 받아야 하고 제가 읽어선 안 된다. 그래서 테스트가 입력만 주면 돌고, 같은 판정을 서버 함수가 SQL로 또 쓸 때 두 쪽을 같은 표로 맞출 수 있다.
+
+**`dto`와 `type`이 둘인 까닭은 누가 그 모양을 정하느냐가 달라서다.** DTO는 DB 스키마가 정하고 마이그레이션이 바꾼다. `type`은 우리가 정하고 업무가 바뀔 때 바뀐다. 한 파일에 섞으면 「이 도메인의 모양이 무엇인가」에 답하려고 열었을 때 절반이 DB 열 이름이고, 열 이름을 바꿀 때 무엇이 깨지는지도 그 파일 전체를 읽어야 안다.
+
+**`Row` 접미사가 정반대 둘을 가리키고 있었다.** 저장소의 `*Row` 서른아홉 중 열여섯은 Supabase가 돌려주는 생 꼴이고(`entities/*/api/`) 스물셋은 「이 목록의 한 줄」이라는 뷰 꼴이다(`screens/*/utils`·`model`). `MemberRow`와 `PickerRow`가 같은 이름을 쓰는데 하나는 DB 계약이고 하나는 우리가 조립한 것이다. 앞의 열여섯이 `dto`를 받고 뒤의 스물셋은 그 자리에 남는다 — 그것들은 DB를 안 보는 순수 가공물이다.
+
+**DTO는 `api` 세그먼트를 안 떠난다.** `.api.ts`가 돌려주기 전에 `.mapper.ts`를 불러 도메인 모양으로 바꾼다 — 매퍼는 꼴 바꾸기라 `utils`에 살고(ADR이 `utils`를 「꼴 바꾸기·고르기·세기」로 적는다) 순수해서 짝 테스트가 붙는다. 지금 통신 열이 생 행을 그대로 내보내 DB 열 이름이 뷰까지 닿아 있다 — `MembersScreen.tsx`가 `MemberRow`를 그대로 받는다.
 
 **화면 훅은 그 화면 이름을 받는다.** `screens/<슬라이스>/hooks/use<화면>.ts`고 `Query`·`Mutation` 접미사는 안 붙는다 — 그 둘은 서버 상태를 읽고 쓰는 훅의 표시고, 화면 훅은 그것들을 모아 화면 하나가 쓸 꼴로 내놓는다. `screens/wages/hooks/useWagesScreen.ts`가 그 꼴이다.
 
@@ -154,7 +162,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 ## 집행
 
-검사 열둘을 세운다. 폴더와 이름이 뜻을 가지면 그 뜻을 기계가 지킨다 — 안 그러면 다음 task가 아무 데나 넣고 폴더는 한 달 안에 뜻을 잃는다.
+검사 열셋을 세운다. 폴더와 이름이 뜻을 가지면 그 뜻을 기계가 지킨다 — 안 그러면 다음 task가 아무 데나 넣고 폴더는 한 달 안에 뜻을 잃는다.
 
 | 규칙 | 막는 것 | 지키는 것 | 보는 것 |
 | --- | --- | --- | --- |
@@ -170,8 +178,9 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 | `process.env`·`Constants`를 `config/` 밖에서 읽기 금지 | 환경값을 코드 아무 데서나 읽기 | 환경이 들어오는 문이 하나라는 것 | lint 규칙 |
 | `expo-*`·`react-native` SDK를 `lib/`·`ui/`·`hooks/` 밖에서 import 금지 | 부작용이 `model`·`utils`에 숨기 | `policy`와 `utils`가 순수하다는 것 | lint 규칙 |
 | `.tsx`에서 `useState`·`useEffect`·`useReducer` 금지 | 상태가 화면 파일에 남기 | ADR-001의 「화면과 로직」 | lint 규칙 |
+| `.dto.ts`를 `api/` 밖에서 import 금지 | DB 열 이름이 화면까지 닿기 | DTO가 통신의 계약이라는 것 | lint 규칙 |
 
-**마지막 줄이 가장 많이 걸린다.** 지금 `.tsx` 마흔여섯이 상태·효과를 들고 호출이 이백아흔둘이다 — 그 걸음이 `dumb-ui-widen`이고 규칙은 그것이 끝난 뒤에 켠다. `className` 조립과 `isLoading` 분기는 통과시킨다.
+**`.tsx`의 상태 금지가 가장 많이 걸린다.** 지금 `.tsx` 마흔여섯이 상태·효과를 들고 호출이 이백아흔둘이다 — 그 걸음이 `dumb-ui-widen`이고 규칙은 그것이 끝난 뒤에 켠다. `className` 조립과 `isLoading` 분기는 통과시킨다.
 
 **`export const <대문자_스네이크>` 금지에 예외가 둘이다.** `queryKeys`·`staleTogether`는 통신의 약속이라 `api`에 살고 꼴이 camel이다. 열거 목록을 타입이 바로 읽는 자리(`ERROR_CODES` → `ErrorCode`)는 `consts/`에 두고 `model/`이 그것을 import한다 — 타입이 상수를 읽는 방향은 허용이고 그 반대는 아니다.
 

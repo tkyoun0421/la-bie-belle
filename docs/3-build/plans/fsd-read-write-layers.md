@@ -11,7 +11,7 @@ sources:
 
 ## 입력 명세·기준
 
-**정본은 ADR-015다.** 층의 뜻, 세그먼트 여덟의 판정 기준, 슬라이스 쪼개는 기준, 이름 규약, 검사 열둘이 거기 산다. 이 계획은 그것을 몇 번에 나눠 어떤 순서로 옮기는지만 적는다.
+**정본은 ADR-015다.** 층의 뜻, 세그먼트 여덟의 판정 기준, 슬라이스 쪼개는 기준, 이름 규약, 검사 열셋이 거기 산다. 이 계획은 그것을 몇 번에 나눠 어떤 순서로 옮기는지만 적는다.
 
 **저장소에서 확인한 것.**
 
@@ -46,18 +46,20 @@ sources:
 
 도메인의 경계는 `entities` 슬라이스의 소유권이다. 그 도메인을 읽는 `features`와 그리는 `screens`가 같은 묶음에 든다.
 
-| 묶음 | 품는 슬라이스 | 이동할 것 | 안쪽에서 쪼갤 것 |
-| --- | --- | --- | --- |
-| 공용 | `shared/*` · `entities/clock` · `src/app/` | 타입 12 · 상수 7 · SDK 5 · 환경값 2 · 시계 2 | `_catalog` 624줄 · `DragAndDrop` export 다섯 · `kstDate` export 일곱 |
-| 근무표 | schedule · availability · hall · workRequest + features 일곱 + screens 셋 | 타입 15 · 상수 2 | `DayDetail` 969줄에 훅 서른여덟 · `ScheduleAdminScreen` 736줄 |
-| 급여 | payroll + payrollCompute · wageAdmin · adjustment · holiday + screens 둘 | 타입 15 · 상수 7 | `payrollDays.policy` 339줄 · `period.policy` export 아홉 |
-| 구성원 | member · profile + memberAdmin · profileEdit · qualificationGrant + screens 여섯 | 타입 8 · 상수 8 | `PendingScreen` 689줄 · `ProfileScreen` 506줄 · `MembersScreen` 446줄 |
-| 근태 | attendance · excuse + attendanceCheckin · excuse + approvals | 타입 8 · 상수 9 | `ApprovalsScreen` 235줄 |
-| 알림 | notification + pushSwitch · notificationRead + notifications | 타입 2 · 상수 11 · SDK 1 · 환경값 1 · 시계 1 | Edge Function의 복사 경로가 여기 걸린다 |
-| 리허설 | rehearsal + rehearsalEdit + rehearsal | 타입 5 · 상수 2 | `RehearsalScreen` 427줄에 훅 열넷 |
-| 통계 | stats + stats · adminStats · adminHome | 타입 9 | `StatsScreen` 470줄 · `AdminStatsScreen` 414줄 · `workTotals.policy` export 다섯 |
-| 인증 | session + auth + retry | 타입 2 · 상수 1 · SDK 2 · 환경값 1 | `signOut`·`handleAuthCallback`이 `lib`을 받는다 |
-| QR | qr + qrAdmin + qr | 타입 1 · 상수 2 | `QrScreen` 204줄 |
+| 묶음 | 품는 슬라이스 | 이동할 것 | DTO·매퍼 | 안쪽에서 쪼갤 것 |
+| --- | --- | --- | --- | --- |
+| 공용 | `shared/*` · `entities/clock` · `src/app/` | 타입 12 · 상수 7 · SDK 5 · 환경값 2 · 시계 2 | — | `_catalog` 624줄 · `DragAndDrop` export 다섯 · `kstDate` export 일곱 |
+| 근무표 | schedule · availability · hall · workRequest + features 일곱 + screens 셋 | 타입 15 · 상수 2 | DTO 4 · 매퍼 4 | `DayDetail` 969줄에 훅 서른여덟 · `ScheduleAdminScreen` 736줄 |
+| 급여 | payroll + payrollCompute · wageAdmin · adjustment · holiday + screens 둘 | 타입 15 · 상수 7 | DTO 6 · 매퍼 1 | `payrollDays.policy` 339줄 · `period.policy` export 아홉 |
+| 구성원 | member · profile + memberAdmin · profileEdit · qualificationGrant + screens 여섯 | 타입 8 · 상수 8 | DTO 5 | `PendingScreen` 689줄 · `ProfileScreen` 506줄 · `MembersScreen` 446줄 |
+| 근태 | attendance · excuse + attendanceCheckin · excuse + approvals | 타입 8 · 상수 9 | DTO 3 · 매퍼 1 | `ApprovalsScreen` 235줄 |
+| 알림 | notification + pushSwitch · notificationRead + notifications | 타입 2 · 상수 11 · SDK 1 · 환경값 1 · 시계 1 | DTO 2 · 매퍼 2 | Edge Function의 복사 경로가 여기 걸린다 |
+| 리허설 | rehearsal + rehearsalEdit + rehearsal | 타입 5 · 상수 2 | DTO 2 · 매퍼 2 | `RehearsalScreen` 427줄에 훅 열넷 |
+| 통계 | stats + stats · adminStats · adminHome | 타입 9 | — | `StatsScreen` 470줄 · `AdminStatsScreen` 414줄 · `workTotals.policy` export 다섯 |
+| 인증 | session + auth + retry | 타입 2 · 상수 1 · SDK 2 · 환경값 1 | — | `signOut`·`handleAuthCallback`이 `lib`을 받는다 |
+| QR | qr + qrAdmin + qr | 타입 1 · 상수 2 | — | `QrScreen` 204줄 |
+
+**DTO 스물둘은 여섯 묶음에만 있다** — 공용·통계·인증·QR은 통신이 DB 행을 그대로 내는 자리가 없다. 매퍼 열은 `.returns<>`로 생 행을 내보내면서 꼴을 안 바꾸는 통신이고, 이미 조립하는 다섯(`getPayrollMonth` 같은)은 그 안에서 매퍼를 꺼내는 일만 남는다. `ExcuseStatusRow`는 근태와 급여 두 자리에 각자 선언돼 있어 **중복 축이기도 하다** — 뒤에 오는 급여가 접는다.
 
 **공용이 맨 앞이다.** 이동할 것이 거기 쏠려 있고(SDK 다섯·환경값 둘·시계 둘이 전부 `shared/`와 `entities/clock`이다) 나머지 아홉이 전부 `shared/`를 당긴다 — 먼저 굳히지 않으면 뒤 아홉이 움직이는 바닥 위에서 일한다.
 
@@ -178,6 +180,7 @@ sources:
 - 전제: 타입 선언 492개가 파일 186개에 흩어져 있고, `model` 파일 119개 중 88개가 함수와 타입을 같이 든다
 - 행동
   - 도메인의 모양을 말하는 타입을 `[domain].type.ts`로 뺀다. 함수 하나의 인자 꼴이나 훅의 반환 꼴처럼 좁은 타입은 그 파일에 남긴다
+  - **통신이 주고받는 꼴은 `[domain].dto.ts`로 따로 간다.** `api/`에 선언됐고 DB 열 이름을 그대로 드는 열여섯이 그 대상이고, `.api.ts`가 돌려주기 전에 `utils/`의 `.mapper.ts`를 불러 도메인 모양으로 바꾼다. DTO와 모델을 한 파일에 모으면 「이 도메인의 모양이 무엇인가」에 답하려고 열었을 때 절반이 DB 열 이름이다
   - 순수 함수를 판정(`model`)과 꼴 바꾸기(`utils`)로 갈라 옮기고 각자 이름에 `.policy.ts`·`.utils.ts`를 붙인다. **모으는 것은 타입뿐이다** — 판정을 슬라이스 이름으로 모으면 `screens/scheduleAdmin`의 `model/` 23개가 1292줄짜리 한 파일이 되고 짝 테스트 125개가 29개로 합쳐진다. ADR-015가 「한 파일을 열면 그 도메인이 읽힌다」를 논증한 자리도 `.type.ts`뿐이다
   - 바깥 값 검증을 `[domain].schema.ts`로 — `validateProfile`과 홀리데이 API 응답 파싱이 그 자리다
   - zustand store를 `[domain].store.ts`로
@@ -185,6 +188,7 @@ sources:
 - 왜 여기인가: 접미사가 성격을 말하므로 성격을 정하는 이 묶음에서 같이 붙인다. AC-07 뒤인 까닭은 `[domain]`이 슬라이스 이름이기 때문이다 — 쪼개기 전에 모으면 도메인 여섯이 한 파일로 합쳐지고 AC-07이 그것을 다시 가른다
 - **접미사 붙이기(묶음 8가)와 타입 빼기(묶음 8나)를 두 PR로 가른다.** 앞의 것은 `git mv`와 지정자 치환이라 기계가 끝내고 rename 추적이 남는다. 뒤의 것은 선언을 파일 밖으로 꺼내 다른 파일에 붙이는 일이라 rename이 아니고 diff가 내용으로 보인다 — 한 PR에 섞으면 123개의 이름 변경 속에서 타입 이동을 읽을 수 없다
 - 돌면서 나온 것 — **판정과 꼴 바꾸기의 비율이 거의 반반이다.** 백스물아홉 중 판정 예순하나·꼴 바꾸기 쉰여섯이고, 그 가름이 `model`과 `utils` 두 폴더로 눈에 보이게 됐다. 접미사를 안 받는 여섯은 부작용이 있어 `policy`가 못 되고 통신도 아니다 — 공유 시트를 열고(`exportQrPaper`), 인증을 호출하고(`handleAuthCallback`·`signOut`·`resolveEntryDestination`), OS 권한을 묻고(`pushPermission`), 의존을 묶는다(`pushDeps`). **세그먼트 다섯에 「부작용을 내는 순수하지 않은 손」의 자리가 없다** — 지금은 `model`에 접미사 없이 산다
+- 돌면서 나온 것 — **`Row` 접미사가 정반대 둘을 가리키고 있었다.** 타입을 빼려고 `*Row` 서른아홉을 세어 보니 열여섯은 Supabase가 돌려주는 생 꼴이고(`entities/*/api/`) 스물셋은 「이 목록의 한 줄」이라는 뷰 꼴이다(`screens/*/utils`·`model`). `MemberRow`와 `PickerRow`가 같은 이름을 쓰는데 하나는 DB 계약이고 하나는 우리가 조립한 것이다. **DB 꼴이 화면까지 닿은 자리가 열이다** — `MembersScreen.tsx`가 `MemberRow`를 그대로 받아 열 이름이 뷰에 박혀 있다. 그래서 `[domain].dto.ts`가 서고, 한 접미사가 두 뜻을 갖던 것이 갈렸다
 - 돌면서 나온 것 — **boolean만 보면 판정의 절반을 놓친다.** 반환 타입으로 1차 분류해 보니 boolean을 내는 것이 스물넷인데, 상태 유니언을 내는 판정이 그만큼 더 있었다(`AttendanceStatus`·`ReachState`·`DayConfirmGate`·`RehearsalKind`…). 「참·거짓」이 아니라 「이것이 어떤 상태인가」가 기준이라 자동 분류가 안 되고 파일마다 손으로 봤다
 
 ### AC-07 — 슬라이스가 쪼개진다 ✅
@@ -254,7 +258,7 @@ sources:
 - 묶음 6가가 `monthStart` 사본 넷을 접은 것과 같은 일이다
 - 넷이 묶음을 가로지른다 — `canGoBack`·`canGoForward`는 급여와 공용, `dayMinutes`는 급여와 통계, `attendanceSummaryLine`은 근무표와 통계다. **뒤에 오는 쪽의 이동 PR이 접는다** — 둘 다 자리를 잡은 뒤에야 어느 쪽으로 접을지 보인다
 
-### AC-08 — 검사 열둘이 선다
+### AC-08 — 검사 열셋이 선다
 
 **번호는 여덟인데 차례는 마지막이다.** AC-09~AC-13이 뒤에 생겨 문서 차례와 번호가 어긋났다 — 번호를 다시 매기면 merge된 PR 본문과 커밋 메시지가 가리키는 이름이 깨진다.
 
@@ -269,9 +273,10 @@ sources:
   - `process.env`·`Constants`를 `config/` 밖에서 읽기 금지
   - `expo-*`·`react-native` SDK를 `lib/`·`ui/`·`hooks/` 밖에서 import 금지 — 타입만 import하는 것은 통과시킨다
   - `.tsx`에서 `useState`·`useEffect`·`useReducer` 금지 — `className` 조립과 `isLoading` 분기는 통과시킨다
+  - `.dto.ts`를 `api/` 밖에서 import 금지 — DTO는 통신의 계약이라 `api` 세그먼트를 안 떠난다
   - 접미사가 사는 세그먼트와 맞는지 — `fileNaming.ts`
   - 이름이 camelCase인지 · 폴더 이름이 camelCase인지 — `fileNaming.ts`가 AC-01·AC-02에서 이미 본다
-- 관찰 결과: 각 규칙이 위반 픽스처에서 걸리고 정상 픽스처를 통과시킨다. 저장소 전체가 열둘을 통과한다
+- 관찰 결과: 각 규칙이 위반 픽스처에서 걸리고 정상 픽스처를 통과시킨다. 저장소 전체가 열셋을 통과한다
 - 마지막 줄은 AC-12가 끝나야 켤 수 있다 — 지금 켜면 `.tsx` 마흔여섯이 빨개진다
 
 ## 변경 파일
@@ -374,9 +379,10 @@ sources:
 | `eslint-rules/configSegment.mjs` | 신설 — `config/` 밖에서 `process.env`·`Constants`를 읽는 것을 막는다 |
 | `eslint-rules/nativeSdkSegment.mjs` | 신설 — `lib/`·`ui/`·`hooks/` 밖에서 `expo-*`·`react-native` SDK import를 막는다 |
 | `eslint-rules/dumbUi.mjs` | `.tsx`의 `useState`·`useEffect`·`useReducer`를 막는 축을 더한다 — **AC-12가 끝나야 켠다** |
-| `eslint-rules/index.mjs` · `eslint.config.mjs` | 신설 규칙 일곱을 등록한다 |
-| `tests/lint/supabaseClientInApi.test.ts` 외 여섯 | 신설 — 규칙마다 위반·정상 픽스처 |
-| `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 여덟을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
+| `eslint-rules/dtoSegment.mjs` | 신설 — `api/` 밖에서 `.dto.ts` import를 막는다 |
+| `eslint-rules/index.mjs` · `eslint.config.mjs` | 신설 규칙 여덞을 등록한다 |
+| `tests/lint/supabaseClientInApi.test.ts` 외 일곱 | 신설 — 규칙마다 위반·정상 픽스처 |
+| `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 아홉을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
 | `scripts/syncEdgeShared.mts` | 복사 경로 넷 — 알림 셋이 `entities/notification/model/`과 `features/pushSwitch/model/`로, 공휴일 하나가 `features/holiday/model/`로 |
 | `eslint-rules/noNodeImportInEdgeShared.mjs` | 같은 경로 한 줄 |
 | `tests/lint/attendanceConstants.ts` | `src/entities/attendance/model/attendance.type.ts`를 문자열로 박아 뒀다 — AC-07이 슬라이스 이름을 `attendance`로 두므로 안 바뀌지만, 바꾸면 이 줄도 같이 간다 |
@@ -417,7 +423,7 @@ PR 하나씩 나른다. **이동하는 묶음은 앞의 것이 merge되고 나�
 8. **AC-06나-1 — `model`/`utils` 가르기 + 접미사** ✅ 123개와 짝 테스트 120개를 `git mv`했다. 판정 예순하나·꼴 바꾸기 쉰여섯·타입 셋·검증 둘·store 하나
 9. **이동 열 — 도메인 열을 직렬로.** PR 하나가 그 도메인의 타입(AC-06나-2)·`lib`(AC-09)·`consts`(AC-10)·`config`(AC-11)·중복(AC-13)을 같이 옮긴다. 순서는 공용 → 근무표 → 급여 → 구성원 → 근태 → 알림 → 리허설 → 통계 → 인증 → QR이고, 앞의 것이 main에 든 뒤 다음을 딴다
 10. **안쪽 열 — 도메인 열을 병렬로.** AC-12다. PR 하나가 그 도메인 `.tsx`의 상태와 효과를 `screens/<슬라이스>/hooks/`로 빼고 큰 파일을 책임으로 쪼갠다. worktree를 열로 떼어 같이 돈다
-11. **AC-08 — 검사 열둘** 열둘째 줄(`.tsx`의 `useState` 금지)은 안쪽 열이 끝나야 켠다
+11. **AC-08 — 검사 열셋** `.tsx`의 `useState` 금지는 안쪽 열이 끝나야 켠다
 
 **AC-06을 갈라 AC-07을 그 사이에 끼운다.** 두 방향 다 한 번은 걸린다.
 
