@@ -157,6 +157,22 @@ sources:
 | `scripts/sync-edge-shared.mts` | 복사 경로를 `entities/notification/model/`로 |
 | `eslint-rules/no-node-import-in-edge-shared.mjs` | 같은 경로 한 줄 |
 
+### 경로를 적은 활성 정본 — 묶음 2가 같이 고친다
+
+`shared/lib`을 경로로 든 문장이 활성 문서 다섯에 있다. **지금은 그 문장이 현재 코드를 맞게 적고 있어** 미리 고치지 않는다 — 묶음 2가 파일을 옮기는 커밋에서 같이 고친다. 코드와 문서가 한 커밋에서 맞아야 중간 상태에 거짓 문장이 안 생긴다.
+
+| 문서 | 고칠 문장 |
+| --- | --- |
+| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「레이어」 | 「`shared/lib`에 공용 유틸이 산다」 → `shared/utils` |
+| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「화면과 로직」 | `house/dumb-ui` 설명의 `@/shared/lib/` 경로 |
+| [ADR-003](../../2-design/adr/ADR-003-supabase-and-integration-tests.md) | 「`auth.*`는 `shared/lib`에 산다」 → `features/auth`와 `entities/session` |
+| [architecture.md](../../2-design/system/architecture.md) | 같은 예외 문장 |
+| [account/design.md](../../2-design/modules/account/design.md) | 「전부 `auth.*`라 `shared/lib`이다」 |
+| [spec/ui-kit.md](../../2-design/spec/ui-kit.md) | 「자리」와 AC의 순수 계산 경로 둘 |
+| [execution.md](../../4-test/execution.md) | 테스트 명령 예시의 `src/shared/lib/__tests__/` 경로 |
+
+**완료된 과거 plan은 안 건드린다.** [3-build 안내](../README.md#구현-계획)가 「완료된 과거 계획은 소급 변경하지 않는다」고 적는다 — `login-screens`·`rehearsal`·`stats-worker` 등 열 넘는 plan이 `shared/lib` 경로를 들지만 그것은 당시 작업의 기록이다.
+
 ## 구현 순서
 
 묶음 다섯을 PR 하나씩 나른다. 앞 묶음이 merge되고 나서 다음을 뗀다 — 같은 파일을 연달아 옮기므로 겹치면 충돌이 손으로 풀 수 없게 커진다.
