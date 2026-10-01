@@ -140,12 +140,15 @@ sources:
 - 관찰 결과: `entities/`·`features/`의 `utils/`에 업무 판정이 없다 — 참·거짓이나 허용·금지를 돌려주는 함수가 `model/`에 산다. `shared/utils/`는 밖이다: 글꼴이 떴나·개발 문이 열렸나 같은 판정은 업무 규칙이 아니고 담을 도메인이 없어 `shared/`에 `model`이 안 선다. `[domain].type.ts`를 열면 그 도메인의 모양이 한 파일에서 읽힌다. 셋이 초록이다
 - 왜 여기인가: 접미사가 성격을 말하므로 성격을 정하는 이 묶음에서 같이 붙인다. AC-07 뒤인 까닭은 `[domain]`이 슬라이스 이름이기 때문이다 — 쪼개기 전에 모으면 도메인 여섯이 한 파일로 합쳐지고 AC-07이 그것을 다시 가른다
 
-### AC-07 — 슬라이스가 쪼개진다
+### AC-07 — 슬라이스가 쪼개진다 ✅
 
 - 전제: `features/schedule` 하나에 훅 서른이, `entities/schedule`에 dal 서른이 들어 있다
-- 행동: `entities` 7→14, `features` 9→21로 쪼갠다. 슬라이스 폴더 이름은 camel이다
+- 행동: `entities` 7→14, `features` 9→22로 쪼갠다. 슬라이스 폴더 이름은 camel이다
 - 관찰 결과: 슬라이스마다 「이 슬라이스는 무엇을 하나」에 한 문장으로 답할 수 있다. `no-cross-slice-import`가 한 건도 안 걸린다 — 걸리면 그 import가 위 층으로 올라가야 하는 조립이다
 - `screens/`는 안 쪼갠다
+- 돌면서 나온 것 — **`attendanceSummary.ts`가 두 층에 각자 있었다.** 배정 표는 `attendance-summary`를 하나로 적는데 실물이 둘이고 하는 일이 다르다 — `entities` 쪽은 월 집계와 출근율(`tallyMonthlyAttendance`·`attendanceRate`), `features` 쪽은 현황 줄에서 0인 항목을 빼는 것(`summarizeAttendanceStatuses`)이다. 둘 다 읽기 쪽 판정이라 한 슬라이스로 가는데 이름이 겹친다. 부르는 이름을 따라 후자가 `summarizeAttendanceStatuses.ts`를 받았다. 옮기기 전에 목적지가 이미 있는지 보는 줄이 스크립트에 섰다
+- 돌면서 나온 것 — **Edge Function 둘이 없는 파일을 부르고 있었다.** 복사 경로를 고치려고 열어 보니 묶음 1이 바꾼 이름을 부르는 쪽이 안 따라갔고, 그 뒤로 묶음 다섯이 지나갔다. `supabase/functions/`가 검사 셋 전부의 밖인 것이 그 까닭이다([관찰 049](../../observations/049-edge-functions-outside-every-check.md))
+- 돌면서 나온 것 — **일괄 치환이 마크다운 상대 링크를 안 먹는다.** `"@/..."` 꼴만 바꿔서 문서의 `../../../src/...` 링크 서른둘이 깨졌다. `docLinks.test.ts`가 잡았고, 경로 조각으로 한 번 더 치환했다
 
 ### AC-08 — 검사 여덟이 선다
 
@@ -295,7 +298,7 @@ sources:
 4. **AC-04 — 통신을 `api/`로 + `.api.ts`** ✅ 172개를 `git mv`했다
 5. **AC-05 — 훅을 `hooks/`로 + 층 가르기 + `Query`·`Mutation`** ✅ 205개를 `git mv`하고 `useStatsQueries`를 넷으로 갈랐다 — 관찰 046
 6. **AC-06가 — `shared/` 재편 + 교차를 만드는 순수 함수 추출** ✅ 쉰아홉을 `git mv`하고 `monthStart` 사본 넷을 접었다. 교차가 0이 됐다
-7. **AC-07 — 슬라이스 쪼개기**
+7. **AC-07 — 슬라이스 쪼개기** ✅ 268개를 `git mv`했다. 교차 0이고 깨져 있던 엣지 import 셋을 고쳤다
 8. **AC-06나 — 타입 빼기 + `model`/`utils` 가르기 + 나머지 접미사**
 9. **AC-08 — 검사 여덟**
 

@@ -6,15 +6,19 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 일곱째 묶음이다 — 슬라이스 쪼개기(AC-07).** 계획의 「슬라이스 배정」 표 둘이 `entities` 14와 `features` 22를 이름까지 적어 두고, 그 표를 지금 코드에 대본 결과가 **쪼갠 뒤 교차 0·역방향 0**이다. 묶음 6가가 교차를 만들던 `monthStart` 사본 넷을 걷어 그 숫자를 만들었다. 묶음 순서가 아홉이 됐다 — 6가(끝) → **7** → 6나(타입·접미사) → 8(검사). **같이 고칠 줄들이 여기 있다** — `scripts/syncEdgeShared.mts`와 `eslint-rules/noNodeImportInEdgeShared.mjs`가 `features/notification/model/`을, `tests/lint/attendanceConstants.ts`가 `src/entities/attendance/model/constants.ts`를 글자로 박고 있다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
+**다음 첫 수는 `fsd-read-write-layers`의 여덟째 묶음이다 — 타입 빼내기와 `model`·`utils` 가르기(AC-06나).** 타입 선언 492개가 파일 186개에 흩어져 있고 `model` 파일 119개 중 88개가 함수와 타입을 같이 든다. 도메인의 모양을 말하는 타입을 `[domain].type.ts`로 빼고(훅의 반환 꼴처럼 좁은 것은 그 파일에 남는다), 순수 함수를 판정(`[domain].policy.ts`)과 꼴 바꾸기(`[domain].utils.ts`)로 갈라 옮기고, 바깥 값 검증을 `[domain].schema.ts`로, zustand store를 `[domain].store.ts`로 모은다. `[domain]`은 **쪼개진 뒤의 슬라이스 이름**이다 — 그래서 이 묶음이 AC-07 뒤다. **같이 고칠 두 줄이 있다** — `runtime.md`가 「상수는 `src/entities/<도메인>/model/constants.ts`에 산다」고 적어 ADR-015의 `[domain].type.ts`(「타입과 상수」)와 어긋나고, `tests/lint/attendanceConstants.ts`가 그 경로를 글자로 박고 있다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
 
-**묶음 여섯이 끝났다(#483·#484·#485·#486·#487 그리고 6가).** 이름이 camelCase가 되고(535개, `Db`→`DB` 334회), 폴더도 camelCase가 되고, 캐시 키가 `src/shared/api/queryKeys.ts` 팩토리 하나로 모이고, 통신 74개가 `entities/*/api/`의 `[action].api.ts`가 되고, 훅 59개가 `hooks/`로 가며 읽기·쓰기로 층이 갈렸다. 그리고 `shared/lib`이 사라져 `api`·`hooks`·`utils`로 갈리고 층이 틀린 아홉이 `features/auth`·`entities/session`·`entities/clock`으로 갔다. 지금 **`entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다.**
+**묶음 일곱이 끝났다(#483·#484·#485·#486·#487·#488 그리고 7).** 이름이 camelCase가 되고(535개, `Db`→`DB` 334회), 폴더도 camelCase가 되고, 캐시 키가 `src/shared/api/queryKeys.ts` 팩토리 하나로 모이고, 통신 74개가 `entities/*/api/`의 `[action].api.ts`가 되고, 훅 59개가 `hooks/`로 가며 읽기·쓰기로 층이 갈렸다. 그리고 `shared/lib`이 사라져 `api`·`hooks`·`utils`로 갈리고 층이 틀린 아홉이 `features/auth`·`entities/session`·`entities/clock`으로 갔다. 그리고 슬라이스가 **entities 14 · features 22**로 쪼개졌다 — `no-cross-slice-import`가 0건이다. 지금 **`entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다.**
 
 **묶음마다 커밋이 성격으로 갈려 있다** — 자리와 이름만 바꾸는 커밋은 내용 0줄이고 참조 수정이 그 뒤에 온다. `git log --follow`가 이동을 따라가게 하는 값이고, 리뷰도 생각이 든 커밋만 읽으면 된다. 남은 묶음 셋도 같은 꼴로 간다.
 
 **일괄 치환에서 세 번 밟은 자리가 있다.** `tests/lint/fileNaming.test.ts`의 픽스처가 어긋난 이름을 리터럴로 들고 있어 치환이 지나가면 **정답으로 뒤집힌다** — 묶음 1·3에서 두 번 났고 묶음 5는 `tests/lint/`를 치환 범위 밖에 두어 막았다. ESLint 규칙 ID(`house/dumb-ui`)도 파일 이름이 아니라 생태계 식별자라 kebab으로 되돌렸다.
 
 **계획이 둔 자리를 규칙에 대보지 않은 것이 두 번 났다([관찰 046](observations/046-plan-placement-not-checked-against-rules.md), open).** `useStatsQueries.ts`를 AC-04가 한 번, AC-05가 한 번 잘못 배치했다 — 그 파일만 `entities` 세 슬라이스를 함께 읽어 `no-cross-slice-import`에 걸린다. 묶음 5에서 넷으로 가르며 정했다. `removePushToken`도 같은 꼴로 걸렸다(짝 테스트가 `features`의 함수를 쓴다). **AC-07이 슬라이스를 열여섯·스물로 쪼개므로 그 묶음에 들어가기 전에 자리마다 import 방향을 먼저 대본다.**
+
+**Edge Function 둘이 없는 파일을 부르고 있었다([관찰 049](observations/049-edge-functions-outside-every-check.md), open).** 묶음 1이 `src/`의 이름을 camel로 바꿀 때 `supabase/functions/_shared/`의 복사본은 따라갔고 **부르는 쪽이 안 따라갔다** — `send-push`가 `push-message.ts`를, `import-holidays`가 `holiday-api-response.ts`를 부르는데 그 이름이 없다. 묶음 다섯이 지나가는 동안 아무것도 안 울었다: `supabase/functions/`가 `typecheck`의 `exclude`에 들고, CI는 `edge-runtime`을 안 띄우고, `_shared`는 생성물이라 diff에도 안 뜬다. **지정자가 복사본에 실제로 있는지 보는 줄 하나를 `syncEdgeShared.mts`에 세우는 것이 남았다** — 그 스크립트가 이미 두 목록을 다 들고 있다.
+
+**쪼갠 뒤 `attendanceSummary.ts`가 둘이 됐다.** 배정 표가 이름을 하나로 적는데 실물이 두 층에 각자 있고 하는 일이 다르다 — 월 집계·출근율과, 현황 줄에서 0을 빼는 것이다. 후자가 `summarizeAttendanceStatuses.ts`를 받았다. **옮기기 전에 목적지가 이미 있는지 보는 줄**이 이동 스크립트에 섰다 — 배정 표를 코드에 대보는 일이 이름 겹침까지는 안 봤다.
 
 **`sessionStorage`는 계획이 보낸 자리에 못 섰다.** `features/auth`로 보내면 `shared/api/createSupabaseClient`가 그것을 당겨 「`shared`는 `features`를 모른다」에 걸린다 — 세션을 만드는 쓰기가 아니라 클라이언트가 받는 저장소 어댑터고, 그래서 떠나는 열이 아홉이 됐다. `fontLoading`도 계획이 `useFontLoading`으로 이름을 바꾸라 적었는데 그 파일에 훅이 없어 `utils`로 갔다.
 
