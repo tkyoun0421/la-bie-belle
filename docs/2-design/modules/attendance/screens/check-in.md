@@ -45,9 +45,9 @@
 2. 지도 위 버튼 둘 — 왼쪽 위에 닫기, 오른쪽 위에 내 위치로
 3. 아래 시트 — 제목, 아래 줄, 버튼
 
-**네이버 지도를 쓴다.** 갈림길은 다크 타일이었다. 카카오맵 SDK에는 그것이 없다 — 안드로이드 `MapType`이 `NORMAL`과 `SKYVIEW` 둘뿐이고, `mapStyle`은 기본값 밖을 쓰려면 문의를 거치라고 적혀 있으며, 카카오는 데브톡 답변에서 SDK의 다크 모드를 지원하지 않는다고 밝혔다. 네이버는 iOS·Android SDK 둘 다 NCP 콘솔의 Map Style Editor에서 만든 스타일을 `customStyleId`로 받아 라이트·다크 프리셋과 요소별 색 편집을 준다. 아래 색 표가 그 편집으로 들어간다.
+**네이버 지도를 쓴다.** 갈림길은 다크 타일이었다. 카카오맵 SDK에는 그것이 없다 — 안드로이드 `MapType`이 `NORMAL`과 `SKYVIEW` 둘뿐이고 그 밖의 지도는 문의가 필요하다고 적혀 있으며, 카카오가 데브톡 답변에서 SDK의 다크 모드를 지원하지 않는다고 밝혔다(출처는 [지도 구성하기](https://apis.map.kakao.com/android_v2/docs/getting-started/maptype_overlay/)와 [데브톡 문의](https://devtalk.kakao.com/t/sdk-v2-mapstyle/151789)). 네이버는 iOS·Android SDK 둘 다 NCP 콘솔의 Map Style Editor에서 만든 스타일을 `customStyleId`로 받아 라이트·다크 프리셋과 요소별 색 편집을 준다 — 출처는 [NMFMapView](https://navermaps.github.io/ios-map-sdk/reference/Classes/NMFMapView.html)와 [NaverMapOptions](https://navermaps.github.io/android-map-sdk/reference/com/naver/maps/map/NaverMapOptions.html)다. 아래 색 표가 그 편집으로 들어간다.
 
-`nightModeEnabled`는 SDK에 있지만 안 쓴다. 듣는 지도 타입이 플랫폼마다 갈려서다 — iOS는 Basic·Navi·Terrain에서 듣고 안드로이드는 Navi에서만 듣는다. 한쪽에서만 되는 것은 쓸 수 없어 커스텀 스타일 하나로 간다.
+`nightModeEnabled`는 SDK에 있지만 안 쓴다. 두 플랫폼 레퍼런스가 똑같이 「지도 유형이 야간 모드를 지원하지 않으면 활성화하더라도 아무 변화가 일어나지 않습니다」라고만 적고 **어느 유형이 듣는지는 열거하지 않는다**. 켜도 안 바뀌는 자리가 어디인지 모르는 설정으로 다크를 세울 수 없어 커스텀 스타일 하나로 간다.
 
 **이 화면은 Expo Go로 못 뜬다.** 지도가 네이티브 모듈이라 개발 빌드가 서야 한다 — 래퍼와 빌드 설정은 이 task의 plan이 가진다.
 
