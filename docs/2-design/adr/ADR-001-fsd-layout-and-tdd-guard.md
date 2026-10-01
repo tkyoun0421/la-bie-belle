@@ -32,7 +32,7 @@ widgets 레이어는 두지 않는다. 화면 조립 덩이가 실제로 반복�
 
 `.tsx`는 더미 UI다. 받은 것을 그리기만 한다. 계산, 상태 규칙, 통신은 전부 `.ts`로 뺀다.
 
-집행은 `house/dumb-ui` lint 규칙이 한다(`eslint-rules/dumb-ui.mjs`, `src/**/*.tsx`에 걸린다). `.tsx` 안의 `@supabase/*` import와 `fetch()` 호출과 TanStack Query 훅 직접 호출을 잡는다.
+집행은 `house/dumb-ui` lint 규칙이 한다(`eslint-rules/dumbUi.mjs`, `src/**/*.tsx`에 걸린다). `.tsx` 안의 `@supabase/*` import와 `fetch()` 호출과 TanStack Query 훅 직접 호출을 잡는다.
 
 ## 테스트 자리
 

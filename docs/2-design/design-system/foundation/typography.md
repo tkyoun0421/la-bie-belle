@@ -78,7 +78,7 @@ Wanted Sans를 쓴다. Wanted Lab이 만들었고 [SIL Open Font License 1.1](ht
 
 **원본에 없는 글자는 서브셋에 못 담는다.** 시안이 닫기에 쓰는 「✕」(U+2715)가 그 경우다 — Wanted Sans에 없어서 지금도 시스템 서체로 떨어진다. 쓸 수 있는 것은 「×」(U+00D7)와 「✗」(U+2717)다.
 
-집합의 실물은 [`tests/lint/font-subset.ts`](../../../../tests/lint/fontSubset.ts)가 계산하고, 만들어진 `.ttf`의 `cmap`을 읽어 그 집합이 다 들었는지 `pnpm test`가 본다. 상용 2,350자는 표로 적지 않는다 — EUC-KR 완성형 영역(lead `0xB0`–`0xC8`, trail `0xA1`–`0xFE`)을 디코더로 풀면 정확히 그 2,350자다.
+집합의 실물은 [`tests/lint/fontSubset.ts`](../../../../tests/lint/fontSubset.ts)가 계산하고, 만들어진 `.ttf`의 `cmap`을 읽어 그 집합이 다 들었는지 `pnpm test`가 본다. 상용 2,350자는 표로 적지 않는다 — EUC-KR 완성형 영역(lead `0xB0`–`0xC8`, trail `0xA1`–`0xFE`)을 디코더로 풀면 정확히 그 2,350자다.
 
 만드는 명령은 `pnpm fonts:subset`이고 `pyftsubset`이 PATH에 있어야 한다(`pipx install fonttools`). 결과는 커밋하니 CI는 이 명령을 안 돌린다.
 

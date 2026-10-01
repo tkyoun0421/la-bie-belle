@@ -195,25 +195,25 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 
 번호 하나에 줄이 둘인 자리가 있다 — 한 규칙을 규칙 ID 둘이 나눠 무는 경우다. 그래서 **줄 수와 마지막 번호가 다르다** — 번호는 1부터 21까지 이어지고 미배정 셋이 빠지며, 줄은 스물이다.
 
-**규칙 19·20·21은 켜지는 자리와 무는 자리가 다르다.** `eslint.config.mjs`가 넓게 켜고 실제로 무는 자리는 규칙 자신이 든다. 19는 `src/**/*.tsx` 전체에 켜고 무는 것은 두 층(`src/screens/**`·`src/features/**`)이다 — `src/shared/ui/**`는 조각이 사는 자리라, `src/app/_catalog*`는 그 조각을 늘어놓는 자리라 밖이다. 20은 `supabase/functions/` 아래만, 21은 `pnpm edge:sync`가 Deno로 복사하는 폴더(`src/features/notification/model/`)만 문다. 층을 `files` 글롭으로 좁히면 이 표를 읽는 `rule-catalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과 어긋난다.
+**규칙 19·20·21은 켜지는 자리와 무는 자리가 다르다.** `eslint.config.mjs`가 넓게 켜고 실제로 무는 자리는 규칙 자신이 든다. 19는 `src/**/*.tsx` 전체에 켜고 무는 것은 두 층(`src/screens/**`·`src/features/**`)이다 — `src/shared/ui/**`는 조각이 사는 자리라, `src/app/_catalog*`는 그 조각을 늘어놓는 자리라 밖이다. 20은 `supabase/functions/` 아래만, 21은 `pnpm edge:sync`가 Deno로 복사하는 폴더(`src/features/notification/model/`)만 문다. 층을 `files` 글롭으로 좁히면 이 표를 읽는 `ruleCatalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과 어긋난다.
 
 ## `pnpm test`에 끼는 문서 검사
 
 `tests/lint/`의 문서 검사는 `pnpm test`에 포함된다. 문서만 바꿔도 실행한다.
 
-- `doc-map.ts` — `docs/README.md` 문서 지도의 `docs/` 경로가 실존하는지
-- `doc-links.ts` — `docs/`·루트 README·CLAUDE.md의 상대 링크와 앵커. `docs/log/`는 밖이라 당시 경로를 그대로 써도 된다
-- `legacy-doc-paths.ts` — 옮기기 전 경로가 문서·정의문·코드에 남았는지
-- `design-map.ts` — 화면 문서가 업무 영역 지도에 다 걸렸는지
+- `docMap.ts` — `docs/README.md` 문서 지도의 `docs/` 경로가 실존하는지
+- `docLinks.ts` — `docs/`·루트 README·CLAUDE.md의 상대 링크와 앵커. `docs/log/`는 밖이라 당시 경로를 그대로 써도 된다
+- `legacyDocPaths.ts` — 옮기기 전 경로가 문서·정의문·코드에 남았는지
+- `designMap.ts` — 화면 문서가 업무 영역 지도에 다 걸렸는지
 - `changelog.ts` — 로그가 가리키는 PR이 CHANGELOG에 있는지
-- `sources-exist.ts` — spec·plan의 `sources` 경로와 앵커 존재
-- `slug-chain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
-- `backlog-ids.ts` — 작업 ID와 선행 작업 참조
-- `route-types.ts` — 생성된 라우트 타입 선언이 온전한지. 판정 규칙 넷(모듈 보강·`__routes` 인터페이스·`href` 멤버·경로 리터럴)을 `pnpm routes:types`가 가져다 쓴다
+- `sourcesExist.ts` — spec·plan의 `sources` 경로와 앵커 존재
+- `slugChain.ts` — 적용 대상 기능의 intent·spec·plan 슬러그와 참조 연결
+- `backlogIds.ts` — 작업 ID와 선행 작업 참조
+- `routeTypes.ts` — 생성된 라우트 타입 선언이 온전한지. 판정 규칙 넷(모듈 보강·`__routes` 인터페이스·`href` 멤버·경로 리터럴)을 `pnpm routes:types`가 가져다 쓴다
 - `fileNaming.ts` — 코드 파일 이름이 규약대로인지. 컴포넌트(`.tsx`)는 PascalCase, 나머지 `.ts`는 camelCase고 훅은 그 훅 이름과 같다 — 판정은 이름 꼴이 아니라 파일이 무엇을 담았는지로 한다. 케이스만 다른 두 파일도 같이 막는다. `src/app/`은 밖이다 — 거기 파일 이름은 URL이다. 왜 그 꼴인지는 [ADR-015](../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md#파일-이름)가 가진다
-- `database-types.ts` — 마이그레이션이 만든 표·뷰·함수가 생성 타입에 다 들었는지, 그리고 생성 타입을 안 물린 `SupabaseClient`를 직접 가져오는 파일이 남았는지. DB 없이 이름만 대조한다 — 실제로 다시 뽑아 diff를 보는 것은 CI가 한다. `pnpm types`가 판정 부분을 가져다 쓴다
-- `font-subset.ts` — 서브셋을 거친 서체 넷이 화면이 찍는 2,527자를 다 들었는지. `.ttf`의 `cmap`을 직접 읽는다 — 글자가 빠지면 그 자리가 시스템 서체로 떨어지고 앱은 안 죽어서 다른 검사가 못 잡는다. 집합의 정본이 이 파일이고 `pnpm fonts:subset`이 가져다 쓴다
-- `sources-impact.ts` — 추적 중인 문서의 입력 변경에 대한 영향 확인 판정. 추적 여부는 `spec-docs.ts`가 계산한다 — spec은 `status: approved`, plan은 제목 바로 뒤 완료 머리글(`> 완료된 작업의 당시 계획이다`)이 없으면 추적 대상이다. PR에서는 `scripts/checkSourcesImpact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사. **판정은 파일 단위다** — `sources`가 앵커까지 적지만 그것으로 좁히지 않는다. 정본은 절끼리 엮여 있어 한 절이 바뀌면 이웃 절의 뜻도 움직이고, 좁히면 새는 쪽으로 틀린다. 시끄러운 쪽이 맞다
+- `databaseTypes.ts` — 마이그레이션이 만든 표·뷰·함수가 생성 타입에 다 들었는지, 그리고 생성 타입을 안 물린 `SupabaseClient`를 직접 가져오는 파일이 남았는지. DB 없이 이름만 대조한다 — 실제로 다시 뽑아 diff를 보는 것은 CI가 한다. `pnpm types`가 판정 부분을 가져다 쓴다
+- `fontSubset.ts` — 서브셋을 거친 서체 넷이 화면이 찍는 2,527자를 다 들었는지. `.ttf`의 `cmap`을 직접 읽는다 — 글자가 빠지면 그 자리가 시스템 서체로 떨어지고 앱은 안 죽어서 다른 검사가 못 잡는다. 집합의 정본이 이 파일이고 `pnpm fonts:subset`이 가져다 쓴다
+- `sourcesImpact.ts` — 추적 중인 문서의 입력 변경에 대한 영향 확인 판정. 추적 여부는 `specDocs.ts`가 계산한다 — spec은 `status: approved`, plan은 제목 바로 뒤 완료 머리글(`> 완료된 작업의 당시 계획이다`)이 없으면 추적 대상이다. PR에서는 `scripts/checkSourcesImpact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사. **판정은 파일 단위다** — `sources`가 앵커까지 적지만 그것으로 좁히지 않는다. 정본은 절끼리 엮여 있어 한 절이 바뀌면 이웃 절의 뜻도 움직이고, 좁히면 새는 쪽으로 틀린다. 시끄러운 쪽이 맞다
 
 링크·지도 검사는 내용의 의미나 완료 조건 충족을 대신하지 않는다. 제목·경로를 옮기면 참조도 함께 갱신하고 과거 완료 기록의 본문은 보존한다.
 
@@ -224,7 +224,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 integration이 스키마·함수를 찾지 못하면 마이그레이션의 적용 누락과 아직 구현할 스키마를 구별한다. writer는 임의로 마이그레이션을 만들지 않고 준비가 필요한 범위를 보고한다.
 
 - `.prettierignore`가 `*.md`를 거른다. 문서에 prettier를 돌려도 아무 일도 안 한다.
-- env를 갈아끼우는 헬퍼가 러너에 없다. `process.env`를 직접 쓰고 `afterEach`에서 원래 값으로 되돌린다 — 없던 키는 지운다. `read-supabase-env.test.ts`가 그 자리고, 두 번째 파일이 필요해지면 그때 공용으로 뺀다.
+- env를 갈아끼우는 헬퍼가 러너에 없다. `process.env`를 직접 쓰고 `afterEach`에서 원래 값으로 되돌린다 — 없던 키는 지운다. `readSupabaseEnv.test.ts`가 그 자리고, 두 번째 파일이 필요해지면 그때 공용으로 뺀다.
 - `tests/lint/.tmp-format-check/`를 `.gitignore`에 넣지 않는다. Prettier 3이 `.gitignore`를 ignore 파일로 읽어 픽스처를 건너뛰면 `--check`가 조용히 0으로 끝난다.
 - `pnpm typecheck`가 `@supabase/supabase-js`를 못 찾으면 `pnpm install --frozen-lockfile`.
 - `tests/lint/`를 worktree 여럿에서 동시에 돌리면 첫 테스트가 기본 5초 타임아웃에서 흔들린다(`new ESLint()` 로드 비용). `--testTimeout=60000`.
@@ -235,7 +235,7 @@ integration이 스키마·함수를 찾지 못하면 마이그레이션의 적�
 - `babel.config.js`가 없어서 `jest.config.js`가 babel preset을 직접 물고 있다. 그 파일이 생기면 `.mts`를 TypeScript로 보게 하는 override와 `transformImportMeta: false`가 같이 따라가야 한다.
 - type-aware lint(`no-floating-promises` 등)는 속도 때문에 안 켜져 있다. await 빠진 Supabase 호출은 lint가 못 잡는다.
 - 디자인 값 lint 규칙은 `src/**/__tests__/**`를 예외로 둔다 — 대조 테스트가 픽스처로 oklch 리터럴을 쥔다.
-- 테스트 픽스처의 표기 — `generate-globals-css.test.ts`의 기대값은 prettier가 정규화한 표기(`rgba(28, 25, 22, 0.05)`)고 `tokens.md` 원문은 축약 표기다. 표에서 그대로 복사하면 틀린다.
+- 테스트 픽스처의 표기 — `generateGlobalsCss.test.ts`의 기대값은 prettier가 정규화한 표기(`rgba(28, 25, 22, 0.05)`)고 `tokens.md` 원문은 축약 표기다. 표에서 그대로 복사하면 틀린다.
 - 새 subagent 정의문은 main에 merge된 뒤에야 호출할 수 있다.
 
 ## integration과 e2e

@@ -31,7 +31,7 @@ supabase/functions/_shared/
 expo-env.d.ts
 # @end expo-cli
 
-# 서브셋이 만드는 목록 — 정본은 tests/lint/font-subset.ts다
+# 서브셋이 만드는 목록 — 정본은 tests/lint/fontSubset.ts다
 assets/fonts/subset/codepoints.txt
 
 # 토스페이스 SVG는 `pnpm tossface:fetch`로 받아 온다 — 커밋하지 않는 근거는

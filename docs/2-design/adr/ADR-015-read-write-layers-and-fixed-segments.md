@@ -22,11 +22,11 @@ ADR-001은 세그먼트를 「`types`, `components`, `hooks`, `actions`, `dals`,
 - 데이터 접근이 둘로 갈렸다 — `entities/*/dals/` 일흔넷과 `features/stats/api/` 하나가 같은 일을 한다
 - React 훅과 순수 계산이 한 폴더에 섞였다 — `features/*/model/`에 훅 쉰여덟과 순수 함수 서른넷이 나란히 있다
 - 슬라이스 하나가 여러 가지를 말한다 — `features/schedule`에 훅 서른이 들어 있어 「이 슬라이스는 무엇을 하나」에 답할 수 없다
-- 읽기와 쓰기가 층을 가로질러 흩어졌다 — `get-month-schedule.ts`는 `entities`에 있고 그것만 부르는 `useMonthSchedule.ts`는 `features`에 있어, 한 읽기를 고치려면 두 층을 왕복한다
+- 읽기와 쓰기가 층을 가로질러 흩어졌다 — `getMonthSchedule.ts`는 `entities`에 있고 그것만 부르는 `useMonthSchedule.ts`는 `features`에 있어, 한 읽기를 고치려면 두 층을 왕복한다
 
 세그먼트 이름을 고르는 일이 매번 판단이 되면 그 판단이 슬라이스마다 갈린다. 이름을 고정하고 판정 기준을 기계가 읽을 수 있게 적는다.
 
-**파일 이름도 성격을 안 말한다.** `profile/model/`에 `can-save-display-name.ts`·`format-birth-date.ts`·`sort-members.ts`가 나란히 있는데 첫째는 업무 판정이고 나머지 둘은 꼴 바꾸기다. 이름만 보고는 어느 것이 업무 규칙인지 몰라, 규칙을 고칠 때 폴더를 다 열어야 한다. 성격을 접미사로 달면 그 질문이 파일 목록에서 끝난다.
+**파일 이름도 성격을 안 말한다.** `profile/model/`에 `canSaveDisplayName.ts`·`formatBirthDate.ts`·`sortMembers.ts`가 나란히 있는데 첫째는 업무 판정이고 나머지 둘은 꼴 바꾸기다. 이름만 보고는 어느 것이 업무 규칙인지 몰라, 규칙을 고칠 때 폴더를 다 열어야 한다. 성격을 접미사로 달면 그 질문이 파일 목록에서 끝난다.
 
 ## 읽기와 쓰기
 
@@ -41,7 +41,7 @@ ADR-001은 세그먼트를 「`types`, `components`, `hooks`, `actions`, `dals`,
 | dal — `entities/*/dals/` | 24 | 49 | 0 | 1 |
 | 훅 — `features/*/model/use*.ts` | 17 | 37 | 0 | 4 |
 
-손으로 판정할 다섯은 이렇다 — `profile/dals/avatars-bucket.ts`는 버킷 주소를 읽고 파일을 올려 둘을 다 하고, 훅 넷(`useSavePushToken`·`usePayrollMonths`·`useRehearsalMonths`·`useScheduleMonths`)은 쿼리도 뮤테이션도 아니라 다른 훅을 조합하거나 효과만 낸다.
+손으로 판정할 다섯은 이렇다 — `profile/dals/avatarsBucket.ts`는 버킷 주소를 읽고 파일을 올려 둘을 다 하고, 훅 넷(`useSavePushToken`·`usePayrollMonths`·`useRehearsalMonths`·`useScheduleMonths`)은 쿼리도 뮤테이션도 아니라 다른 훅을 조합하거나 효과만 낸다.
 
 ## 세그먼트 다섯
 
@@ -73,7 +73,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 ## 파일 이름
 
-**kebab-case를 버리고 camelCase로 간다.** `.ts`가 내놓는 것은 함수와 타입이고 코드에서 부르는 이름이 camelCase다 — `getMonthSchedule`을 `get-month-schedule.ts`에서 가져오면 import 줄에서 이름이 두 번 꼴을 바꾼다. 꼴을 하나로 맞추면 파일을 찾을 때 이름을 변환하지 않는다.
+**kebab-case를 버리고 camelCase로 간다.** `.ts`가 내놓는 것은 함수와 타입이고 코드에서 부르는 이름이 camelCase다 — `getMonthSchedule`을 `getMonthSchedule.ts`에서 가져오면 import 줄에서 이름이 두 번 꼴을 바꾼다. 꼴을 하나로 맞추면 파일을 찾을 때 이름을 변환하지 않는다.
 
 **케이스 충돌이 안 생기는 까닭은 확장자가 꼴을 가르기 때문이다.** ADR-001이 `.tsx`를 더미 UI로 못박아 PascalCase는 `.tsx`에만, camelCase는 `.ts`에만 산다 — `CheckIn.tsx`와 `checkIn.ts`는 소문자화해도 확장자가 달라 한 파일이 되지 않는다. 그 짝을 보는 검사는 보험으로 남긴다.
 
@@ -106,7 +106,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **캐시 키는 팩토리 객체 하나다.** 배열 리터럴을 손으로 쓰면 같은 키가 자리마다 조금씩 다르게 적힌다. `queryKeys.schedule.month(month)` 꼴로 함수를 타면 접두사가 한 곳에서 나오고, 쓰기가 낡게 할 범위도 `queryKeys.schedule.all`처럼 이름으로 고른다.
 
-**`ui`와 `screens`는 접미사가 없다.** `.tsx`가 곧 컴포넌트라 성격이 하나뿐이고, 이름은 PascalCase 그대로다. `src/app/`도 밖이다 — Expo Router가 파일 이름을 URL로 읽어 `check-in.tsx`가 `/check-in`이고 그 주소는 종이 QR에 실려 나간다.
+**`ui`와 `screens`는 접미사가 없다.** `.tsx`가 곧 컴포넌트라 성격이 하나뿐이고, 이름은 PascalCase 그대로다. `src/app/`도 밖이다 — Expo Router가 파일 이름을 URL로 읽어 `checkIn.tsx`가 `/check-in`이고 그 주소는 종이 QR에 실려 나간다.
 
 **Supabase 클라이언트 타입은 `DB`다.** 데이터베이스의 약자라 두 글자가 다 대문자다. 약어가 이름 안에 올 때도 같다 — `words()`가 소문자 뒤의 대문자만 가르니 약어를 붙여 쓰면 camel 변환이 그 조각을 못 나눈다는 것은 알고 쓴다.
 

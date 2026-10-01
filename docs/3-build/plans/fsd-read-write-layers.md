@@ -24,8 +24,8 @@ sources:
 - 이름이 바뀌는 폴더 5개 — `screens/`의 `admin-home`·`admin-stats`·`members-pending`·`schedule-admin`·`schedule-worker`. `eslint-rules`는 밖이다
 - 타입 선언 360개가 파일 192개에 산다
 - `Db` 타입을 쓰는 자리 149개 파일 319회. 파일 이름에는 안 들어간다
-- `query-keys.ts`가 다섯 군데에 산다 — `features/`의 `schedule`·`notification`·`rehearsal`·`profile`·`members`
-- 실제 경로를 박은 검사·스크립트 넷 — `scripts/sync-edge-shared.mts`, `eslint-rules/no-node-import-in-edge-shared.mjs`, `tests/lint/attendance-constants.ts`, `eslint-rules/no-visual-utility-class.mjs`
+- `queryKeys.ts`가 다섯 군데에 산다 — `features/`의 `schedule`·`notification`·`rehearsal`·`profile`·`members`
+- 실제 경로를 박은 검사·스크립트 넷 — `scripts/syncEdgeShared.mts`, `eslint-rules/noNodeImportInEdgeShared.mjs`, `tests/lint/attendanceConstants.ts`, `eslint-rules/noVisualUtilityClass.mjs`
 
 **Git 기준점**은 ADR-015가 merge된 커밋이다.
 
@@ -33,12 +33,12 @@ sources:
 
 ### AC-01 — 파일 이름이 camelCase가 된다 ✅
 
-- 전제: `tests/lint/file-naming.ts`가 kebab-case를 요구하고 535개 파일이 그 꼴이다
+- 전제: `tests/lint/fileNaming.ts`가 kebab-case를 요구하고 535개 파일이 그 꼴이다
 - 행동
-  - `file-naming.ts`의 `kebab` 갈래를 `camel`로 바꾼다 — `matchesStyle`은 `/^[a-z][a-zA-Z0-9]*$/`, `toStyle`은 조각을 camel로 합친다
+  - `fileNaming.ts`의 `kebab` 갈래를 `camel`로 바꾼다 — `matchesStyle`은 `/^[a-z][a-zA-Z0-9]*$/`, `toStyle`은 조각을 camel로 합친다
   - 그 검사가 내놓는 `suggestion`대로 `git mv`하고 import를 치환한다
   - `Db` 타입을 `DB`로 바꾼다
-  - 자기 이름이 바뀌는 파일 둘을 같이 옮긴다 — `tests/lint/file-naming.ts` → `fileNaming.ts`, `tests/lint/file-naming.test.ts` → `fileNaming.test.ts`
+  - 자기 이름이 바뀌는 파일 둘을 같이 옮긴다 — `tests/lint/fileNaming.ts` → `fileNaming.ts`, `tests/lint/fileNaming.test.ts` → `fileNaming.test.ts`
 - 관찰 결과: `pnpm test -- fileNaming`이 초록이고 하이픈 든 파일이 `src/app/` 밖에 없다. `pnpm lint`·`pnpm typecheck`·`pnpm test` 셋이 초록이다
 - `src/app/`은 안 건드린다 — Expo Router가 파일 이름을 URL로 읽고 `/check-in`은 종이 QR에 실려 나간다
 - 왜 먼저인가: 뒤 묶음이 파일을 만들고 옮긴다. 이름 규칙이 먼저 바뀌어야 그 파일들이 새 꼴로 선다
@@ -216,7 +216,7 @@ sources:
 
 | 문서 | 고칠 문장 | 같이 가는 묶음 |
 | --- | --- | --- |
-| `CLAUDE.md` 「코드 구조」 | 「부르는 이름이 없는 나머지는 kebab-case다」와 `file-naming.ts` 경로 | AC-01 |
+| `CLAUDE.md` 「코드 구조」 | 「부르는 이름이 없는 나머지는 kebab-case다」와 `fileNaming.ts` 경로 | AC-01 |
 | [execution.md](../../4-test/execution.md) 「집행되는 규칙」 | 파일 이름 규칙 행의 kebab 문장과 검사 파일 이름 | AC-01 |
 | [ADR-005](../../2-design/adr/ADR-005-sdlc-stage-folders-and-artifact-chain.md) | 문서 슬러그는 kebab 그대로다 — **안 고친다**, 코드 이름과 다른 축이다 | — |
 | [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「레이어」 | 「`shared/lib`에 공용 유틸이 산다」 → `shared/utils` | AC-03 |
