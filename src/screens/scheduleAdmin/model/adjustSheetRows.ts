@@ -7,7 +7,7 @@ import {
   dayMinutes,
   type AdjustmentRow,
   type WorkDayHours,
-} from "@/features/payroll/model/dayMinutes";
+} from "@/features/payrollCompute/model/dayMinutes";
 import { assignedMinutes } from "@/screens/scheduleAdmin/model/absenceMinutes";
 
 /**

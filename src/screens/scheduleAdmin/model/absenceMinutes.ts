@@ -1,7 +1,7 @@
 import {
   dayMinutes,
   type WorkDayHours,
-} from "@/features/payroll/model/dayMinutes";
+} from "@/features/payrollCompute/model/dayMinutes";
 
 /**
  * 결근을 고른 순간 화면이 넣는 분이다 — 그날 배정 시간만큼의 음수다

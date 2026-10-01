@@ -30,16 +30,15 @@ const SHARED = path.join(ROOT, "supabase/functions/_shared");
 
 /** Edge Function이 `_shared`에서 직접 가져오는 파일들이다. */
 const ENTRIES = [
-  "src/features/notification/model/pushMessage.ts",
-  "src/features/notification/model/pushResult.ts",
-  "src/features/payroll/model/holidayApiResponse.ts",
+  "src/entities/notification/model/pushMessage.ts",
+  "src/entities/notification/model/pushResult.ts",
+  "src/features/holiday/model/holidayApiResponse.ts",
 ];
 
 /** `src/`의 어느 자리가 복사본의 어느 자리로 가는지다. */
 const FOLDERS = [
-  { from: "src/features/notification/model", to: "notification" },
-  { from: "src/entities/notification/model", to: "notification/entities" },
-  { from: "src/features/payroll/model", to: "payroll" },
+  { from: "src/entities/notification/model", to: "notification" },
+  { from: "src/features/holiday/model", to: "holiday" },
 ];
 
 const SPECIFIER = /(\bfrom\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g;

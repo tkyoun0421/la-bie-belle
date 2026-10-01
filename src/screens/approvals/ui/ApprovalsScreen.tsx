@@ -12,10 +12,10 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
-import type { PendingApproval } from "@/entities/schedule/api/getPendingApprovals.api";
-import { usePendingApprovalsQuery } from "@/entities/schedule/hooks/usePendingApprovalsQuery";
-import type { CancelDecision } from "@/features/schedule/api/decideCancelRequest.api";
-import { useDecideCancelRequestMutation } from "@/features/schedule/hooks/useDecideCancelRequestMutation";
+import type { PendingApproval } from "@/entities/workRequest/api/getPendingApprovals.api";
+import { usePendingApprovalsQuery } from "@/entities/workRequest/hooks/usePendingApprovalsQuery";
+import type { CancelDecision } from "@/features/workRequest/api/decideCancelRequest.api";
+import { useDecideCancelRequestMutation } from "@/features/workRequest/hooks/useDecideCancelRequestMutation";
 import {
   cancelApprovalConfirmBody,
   cancelApprovalDetail,

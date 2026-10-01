@@ -10,18 +10,18 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
-import type {
-  ScheduleAssignment,
-  ScheduleSlot,
-} from "@/entities/schedule/api/getMonthSchedule.api";
-import type { Qualification } from "@/entities/schedule/api/getQualifications.api";
-import type { SlotRequest } from "@/entities/schedule/api/getSlotRequests.api";
+import type { Qualification } from "@/entities/member/api/getQualifications.api";
 import {
   PERMISSION_OF_OTHERS,
   REACHABLE,
   getReachState,
-} from "@/features/notification/model/reachState";
-import type { AddAssignmentInput } from "@/features/schedule/api/addAssignment.api";
+} from "@/entities/notification/model/reachState";
+import type {
+  ScheduleAssignment,
+  ScheduleSlot,
+} from "@/entities/schedule/api/getMonthSchedule.api";
+import type { SlotRequest } from "@/entities/workRequest/api/getSlotRequests.api";
+import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import {
   absenceMinutes,
   assignedMinutes,

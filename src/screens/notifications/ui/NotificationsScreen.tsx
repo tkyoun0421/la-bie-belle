@@ -17,14 +17,14 @@ import { Text } from "@/shared/ui/Text";
 import { nowWithOffset } from "@/entities/clock/model/serverClock";
 import { serverClockStore } from "@/entities/clock/model/serverClockStore";
 import { useNotificationsQuery } from "@/entities/notification/hooks/useNotificationsQuery";
+import { toNotificationDestination } from "@/entities/notification/model/destination";
+import { toNotificationTitle } from "@/entities/notification/model/title";
 import type { NotificationRow as Notification } from "@/entities/notification/model/types";
-import { useMarkNotificationsReadMutation } from "@/features/notification/hooks/useMarkNotificationsReadMutation";
-import { toNotificationDestination } from "@/features/notification/model/destination";
-import { toNotificationTitle } from "@/features/notification/model/title";
 import {
   toNotificationDateHeader,
   toNotificationReceivedTime,
-} from "@/features/notification/model/when";
+} from "@/entities/notification/model/when";
+import { useMarkNotificationsReadMutation } from "@/features/notificationRead/hooks/useMarkNotificationsReadMutation";
 import {
   groupNotificationsByDate,
   resolveNotificationsListState,

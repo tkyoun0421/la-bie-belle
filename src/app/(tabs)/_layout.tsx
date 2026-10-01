@@ -5,12 +5,12 @@ import { AppState } from "react-native";
 import { supabase } from "@/shared/api/supabase";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { useSavePushTokenMutation } from "@/features/notification/hooks/useSavePushTokenMutation";
-import { PUSH_DEPS } from "@/features/notification/model/pushDeps";
+import { useSavePushTokenMutation } from "@/features/pushSwitch/hooks/useSavePushTokenMutation";
+import { PUSH_DEPS } from "@/features/pushSwitch/model/pushDeps";
 import {
   getPushPermission,
   requestPushPermission,
-} from "@/features/notification/model/pushPermission";
+} from "@/features/pushSwitch/model/pushPermission";
 
 /**
  * 근무자 탭 넷이다 — 홈·근무표·급여·나(components.md의 「탭 바」).

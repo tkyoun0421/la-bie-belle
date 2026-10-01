@@ -27,23 +27,23 @@ import { Segment } from "@/shared/ui/Segment";
 import { Text } from "@/shared/ui/Text";
 import { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
 import { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
+import {
+  isProfileGender,
+  validateProfileForm,
+  type ProfileGender,
+} from "@/entities/profile/model/validateProfile";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/model/signOut";
 import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf";
-import { useSavePushTokenMutation } from "@/features/notification/hooks/useSavePushTokenMutation";
-import { PUSH_DEPS } from "@/features/notification/model/pushDeps";
-import { requestPushPermission } from "@/features/notification/model/pushPermission";
-import { uploadAvatar } from "@/features/profile/api/avatarsBucket.api";
-import { submitProfile } from "@/features/profile/api/submitProfile.api";
-import { updateMyPhoto } from "@/features/profile/api/updateMyPhoto.api";
-import {
-  isProfileGender,
-  validateProfileForm,
-  type ProfileGender,
-} from "@/features/profile/model/validateProfile";
+import { uploadAvatar } from "@/features/profileEdit/api/avatarsBucket.api";
+import { submitProfile } from "@/features/profileEdit/api/submitProfile.api";
+import { updateMyPhoto } from "@/features/profileEdit/api/updateMyPhoto.api";
+import { useSavePushTokenMutation } from "@/features/pushSwitch/hooks/useSavePushTokenMutation";
+import { PUSH_DEPS } from "@/features/pushSwitch/model/pushDeps";
+import { requestPushPermission } from "@/features/pushSwitch/model/pushPermission";
 import {
   INITIAL_NOTIFICATION_PROMPT_VIEW,
   PROMPT_OUTCOME_OF,

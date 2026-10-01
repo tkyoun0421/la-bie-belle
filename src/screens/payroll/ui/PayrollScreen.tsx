@@ -24,7 +24,7 @@ import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
 import { useScheduleMonthsQuery } from "@/entities/schedule/hooks/useScheduleMonthsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { payrollViewDays } from "@/features/payroll/model/payrollDays";
+import { payrollViewDays } from "@/features/payrollCompute/model/payrollDays";
 import { canGoBack, canGoForward } from "@/screens/payroll/model/boundary";
 import { payrollHistoryRows } from "@/screens/payroll/model/historyRows";
 import {

@@ -1,7 +1,7 @@
 import {
   PUSH_DENIED_SUBLINE,
   PUSH_DENIED_TITLE,
-} from "@/features/notification/model/profileNotificationRow";
+} from "@/entities/notification/model/profileNotificationRow";
 import type { NotificationPromptView } from "@/screens/pending/model/notificationPrompt";
 
 /**

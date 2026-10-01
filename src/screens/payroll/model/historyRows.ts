@@ -1,6 +1,6 @@
 import { spellDate } from "@/shared/utils/kstDate";
 import { spellWon } from "@/shared/utils/spellNumber";
-import type { PayrollDayKind } from "@/features/payroll/model/payrollDays";
+import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays";
 import { NO_AMOUNT } from "@/screens/payroll/model/summary";
 
 /**

@@ -80,7 +80,7 @@ pg_cron 함수 하나(`emit_reminders`)가 이 task의 산출이다. 사람이 �
 | `supabase/migrations/<날짜>_emit_reminders.sql` | 저녁 9시 셋, cron 등록 | AC-01·AC-04 |
 | `supabase/migrations/<날짜>_emit_before_shift.sql` | 출근 직전, cron 등록 | AC-02·AC-04 |
 | `supabase/migrations/<날짜>_notification_unique.sql` | 부분 유일 인덱스 | AC-03 |
-| `src/features/notification/model/kinds.ts` | 넷의 payload 타입 | AC-01·AC-02 |
+| `src/entities/notification/model/kinds.ts` | 넷의 payload 타입 | AC-01·AC-02 |
 
 ## 구현 순서
 

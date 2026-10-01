@@ -4,7 +4,7 @@
 //
 // **여기에는 HTTP와 순서만 산다.** 무엇을 부칠지와 어떤 실패가 무슨 갈래인지는 전부
 // `_shared/notification/`의 순수 함수가 정하고 unit 테스트가 지킨다. 그 복사본은
-// `pnpm edge:sync`가 만든다 — 정본은 `src/features/notification/model/`이다.
+// `pnpm edge:sync`가 만든다 — 정본은 `src/entities/notification/model/`이다.
 //
 // 서비스 키를 쥐는 자리 셋 중 하나라 호출자 검사가 이 파일의 첫 일이다. 게이트웨이의
 // `verify_jwt`는 유효한 토큰인지만 봐서 anon 키도 통과한다.
@@ -15,12 +15,12 @@ import {
   chunkPushMessages,
   type ClaimedPushNotification,
   type PushMessage,
-} from "../_shared/notification/push-message.ts";
+} from "../_shared/notification/pushMessage.ts";
 import {
   type PushOutcome,
   type PushResponse,
   splitPushResults,
-} from "../_shared/notification/push-result.ts";
+} from "../_shared/notification/pushResult.ts";
 
 const BEARER = "Bearer ";
 

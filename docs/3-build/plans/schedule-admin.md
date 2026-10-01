@@ -217,7 +217,7 @@ sources:
 | `src/entities/schedule/api/create-schedule.ts` · `set-application-deadline.ts` · `confirm-schedule.ts` · `open-day.ts` · `close-day.ts` · `set-day-hours.ts` · `set-hall-defaults.ts` | 쓰기 일곱 | AC-01 |
 | `src/entities/schedule/api/__tests__/` | 읽기 넷·쓰기 일곱의 integration | AC-11 |
 | `src/features/schedule/model/query-keys.ts` · `useMonthAvailabilities.ts` · `useHallDefaults.ts` · `useOpenSlots.ts` · `useCreateSchedule.ts` · `useSetApplicationDeadline.ts` · `useConfirmSchedule.ts` · `useOpenDay.ts` · `useCloseDay.ts` · `useSetDayHours.ts` · `useSetHallDefaults.ts` · `__tests__/` | query 셋과 mutation 일곱, 무효화, 확정의 `already_confirmed`를 성공으로 삼키기 | AC-04~AC-08 |
-| `src/features/schedule/ui/DeadlineSheet.tsx` | 마감일 시트 — 모아보기와 확정 잠김 두 문이 같이 쓴다 | AC-07·AC-08 |
+| `src/features/availabilitySubmit/ui/DeadlineSheet.tsx` | 마감일 시트 — 모아보기와 확정 잠김 두 문이 같이 쓴다 | AC-07·AC-08 |
 | `src/screens/schedule-admin/model/admin-calendar-day-state.ts` · `confirm-affordance.ts` · `deadline-line.ts` · `format-schedule-date.ts` · `group-open-slots.ts` · `month-empty-state.ts` · `open-mode-selection.ts` · `day-detail-rows.ts` · `day-hours-form.ts` · `__tests__/` | 칸 상태와 빈 자리 수 / 확정 세 모습 / 마감 줄 / 날짜·확정 줄 표기 / 빈 자리 묶기와 「외 n개」 / 전부 지난 달 / 열기 모드의 고를 수 있는 칸과 「n일 열기」 / 날 상세 줄 갈래 / 근무 시간 시트 | AC-02 |
 | `src/screens/admin-home/model/tile-month.ts` · `home-tile-summary.ts` · `today-status.ts` · `vacancy-cards.ts` · `mini-view-density.ts` · `__tests__/` | 타일이 말하는 달 / 요약 줄 세 갈래 / 오늘 현황과 비율 띠 / 빈 자리 카드와 사흘 안 승격 / 미니뷰 진하기 | AC-02·AC-03 |
 | `src/screens/applications/model/applications-grouping.ts` · `__tests__/` | 날짜순·사람순 묶기와 표기 | AC-07 |
