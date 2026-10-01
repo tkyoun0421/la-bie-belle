@@ -23,7 +23,7 @@ import { canGoBack, canGoForward } from "@/shared/utils/monthBoundary";
 import { spellWon } from "@/shared/utils/spellNumber";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
-import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/hooks/usePayrollMonthsByMonthQuery";
+import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";

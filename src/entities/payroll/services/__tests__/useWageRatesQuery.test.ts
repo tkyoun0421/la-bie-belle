@@ -12,7 +12,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useWageRatesQuery } =
-  await import("@/entities/payroll/hooks/useWageRatesQuery");
+  await import("@/entities/payroll/services/useWageRatesQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

@@ -1,4 +1,4 @@
-// 구현 대상: src/entities/payroll/hooks/usePayrollMonthsByMonthQuery.ts
+// 구현 대상: src/entities/payroll/services/usePayrollMonthsByMonthQuery.ts
 //
 // usePayrollMonthsByMonthQuery(client, months) — 급여 탭 그래프가 쓰는 달치 창이다.
 // `usePayrollMonthsQuery`가 이미 달치를 읽지만 그쪽은 mergeMonths가 flatMap으로 여러
@@ -25,7 +25,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { usePayrollMonthsByMonthQuery } =
-  await import("@/entities/payroll/hooks/usePayrollMonthsByMonthQuery");
+  await import("@/entities/payroll/services/usePayrollMonthsByMonthQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

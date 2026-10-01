@@ -1,4 +1,4 @@
-// 구현 대상: src/features/adjustment/hooks/useSetAdjustmentMutation.ts
+// 구현 대상: src/features/adjustment/services/useSetAdjustmentMutation.ts
 //
 // `set_adjustment`를 부르는 mutation이다(payroll-adjust plan AC-05). 성공하면
 // `['payroll']`을 무효화한다. `p_reason`은 화면이 고른 갈래 이름이고 셋 중 하나다 —
@@ -21,7 +21,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
 const { useSetAdjustmentMutation } =
-  await import("@/features/adjustment/hooks/useSetAdjustmentMutation");
+  await import("@/features/adjustment/services/useSetAdjustmentMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

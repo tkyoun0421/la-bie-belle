@@ -1,4 +1,4 @@
-// 구현 대상: src/entities/payroll/hooks/usePayrollMonthsQuery.ts
+// 구현 대상: src/entities/payroll/services/usePayrollMonthsQuery.ts
 //
 // usePayrollMonthsQuery(client, months) — 여러 달 키를 결합해 읽는 훅이다(plan
 // payroll-view AC-06 「기간이 달을 걸치면 키를 둘 읽어 합친다」·「연은 열두 키를
@@ -19,7 +19,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { usePayrollMonthsQuery } =
-  await import("@/entities/payroll/hooks/usePayrollMonthsQuery");
+  await import("@/entities/payroll/services/usePayrollMonthsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
