@@ -7,11 +7,11 @@ sources:
 
 # FSD 층 재편 — 구현 계획
 
-[ADR-015](../../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)를 코드에 전개한다. 이름을 camelCase로 바꾸고, 캐시 키를 팩토리로 모으고, 세그먼트를 다섯으로 모으면서 성격 접미사를 같이 달고, 층의 뜻을 읽기와 쓰기로 가르고, 타입을 빼내고, 뭉친 슬라이스를 쪼갠다.
+[ADR-015](../../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)를 코드에 전개한다. 이름을 camelCase로 바꾸고, 캐시 키를 팩토리로 모으고, 세그먼트를 여덟로 모으면서 성격 접미사를 같이 달고, 층의 뜻을 읽기와 쓰기로 가르고, 타입을 빼내고, 뭉친 슬라이스를 쪼갠다.
 
 ## 입력 명세·기준
 
-**정본은 ADR-015다.** 층의 뜻, 세그먼트 다섯의 판정 기준, 슬라이스 쪼개는 기준, 이름 규약, 검사 여덟이 거기 산다. 이 계획은 그것을 몇 번에 나눠 어떤 순서로 옮기는지만 적는다.
+**정본은 ADR-015다.** 층의 뜻, 세그먼트 여덟의 판정 기준, 슬라이스 쪼개는 기준, 이름 규약, 검사 열둘이 거기 산다. 이 계획은 그것을 몇 번에 나눠 어떤 순서로 옮기는지만 적는다.
 
 **저장소에서 확인한 것.**
 
@@ -321,9 +321,13 @@ sources:
 | `eslint-rules/hooksSegment.mjs` | 신설 — `hooks/` 밖의 `use*` export를 막는다 |
 | `eslint-rules/readWriteLayers.mjs` | 신설 — `entities/`의 `useMutation`과 `features/`의 `useQuery`를 막는다 |
 | `eslint-rules/purePolicy.mjs` | 신설 — `.policy.ts`의 통신·시계·난수를 막는다 |
-| `eslint-rules/index.mjs` · `eslint.config.mjs` | 규칙 넷을 등록한다 |
-| `tests/lint/supabaseClientInApi.test.ts` 외 셋 | 신설 — 규칙마다 위반·정상 픽스처 |
-| `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 넷을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
+| `eslint-rules/constsSegment.mjs` | 신설 — `consts/` 밖의 `export const <대문자_스네이크>`를 막는다 |
+| `eslint-rules/configSegment.mjs` | 신설 — `config/` 밖에서 `process.env`·`Constants`를 읽는 것을 막는다 |
+| `eslint-rules/nativeSdkSegment.mjs` | 신설 — `lib/`·`ui/`·`hooks/` 밖에서 `expo-*`·`react-native` SDK import를 막는다 |
+| `eslint-rules/dumbUi.mjs` | `.tsx`의 `useState`·`useEffect`·`useReducer`를 막는 축을 더한다 — **AC-12가 끝나야 켠다** |
+| `eslint-rules/index.mjs` · `eslint.config.mjs` | 신설 규칙 일곱을 등록한다 |
+| `tests/lint/supabaseClientInApi.test.ts` 외 여섯 | 신설 — 규칙마다 위반·정상 픽스처 |
+| `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 여덟을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
 | `scripts/syncEdgeShared.mts` | 복사 경로 넷 — 알림 셋이 `entities/notification/model/`과 `features/pushSwitch/model/`로, 공휴일 하나가 `features/holiday/model/`로 |
 | `eslint-rules/noNodeImportInEdgeShared.mjs` | 같은 경로 한 줄 |
 | `tests/lint/attendanceConstants.ts` | `src/entities/attendance/model/attendance.type.ts`를 문자열로 박아 뒀다 — AC-07이 슬라이스 이름을 `attendance`로 두므로 안 바뀌지만, 바꾸면 이 줄도 같이 간다 |
