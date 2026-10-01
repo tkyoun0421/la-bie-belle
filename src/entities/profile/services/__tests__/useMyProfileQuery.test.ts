@@ -23,7 +23,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useMyProfileQuery } =
-  await import("@/entities/profile/hooks/useMyProfileQuery");
+  await import("@/entities/profile/services/useMyProfileQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

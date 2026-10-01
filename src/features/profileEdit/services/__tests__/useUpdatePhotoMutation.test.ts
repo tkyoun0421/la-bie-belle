@@ -29,7 +29,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useUpdatePhotoMutation } =
-  await import("@/features/profileEdit/hooks/useUpdatePhotoMutation");
+  await import("@/features/profileEdit/services/useUpdatePhotoMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

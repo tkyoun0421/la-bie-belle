@@ -15,7 +15,7 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { spellWon } from "@/shared/utils/spellNumber";
-import { useMembersQuery } from "@/entities/member/hooks/useMembersQuery";
+import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { useWageRatesQuery } from "@/entities/payroll/services/useWageRatesQuery";
 import { useResetWageToDefaultMutation } from "@/features/wageAdmin/services/useResetWageToDefaultMutation";
 import { useSetDefaultWageMutation } from "@/features/wageAdmin/services/useSetDefaultWageMutation";

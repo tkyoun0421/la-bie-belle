@@ -24,22 +24,22 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
-import { useQualificationsQuery } from "@/entities/member/hooks/useQualificationsQuery";
+import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
 import { getProfileNotificationRow } from "@/entities/notification/model/profileNotificationRow.policy";
 import {
   getReachState,
   type PushPermission,
 } from "@/entities/notification/model/reachState.policy";
-import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
+import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/model/signOut";
 import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
-import { useUpdateContactMutation } from "@/features/profileEdit/hooks/useUpdateContactMutation";
-import { useUpdatePhotoMutation } from "@/features/profileEdit/hooks/useUpdatePhotoMutation";
+import { useUpdateContactMutation } from "@/features/profileEdit/services/useUpdateContactMutation";
+import { useUpdatePhotoMutation } from "@/features/profileEdit/services/useUpdatePhotoMutation";
 import { useNotificationSwitchMutation } from "@/features/pushSwitch/hooks/useNotificationSwitchMutation";
 import { useSavePushTokenMutation } from "@/features/pushSwitch/hooks/useSavePushTokenMutation";
 import { PUSH_DEPS } from "@/features/pushSwitch/model/pushDeps";

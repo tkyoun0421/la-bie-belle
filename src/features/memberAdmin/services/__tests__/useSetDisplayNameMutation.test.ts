@@ -21,7 +21,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
 const { useSetDisplayNameMutation } =
-  await import("@/features/memberAdmin/hooks/useSetDisplayNameMutation");
+  await import("@/features/memberAdmin/services/useSetDisplayNameMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
