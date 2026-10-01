@@ -1,10 +1,8 @@
 import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getMonthSchedule,
-  type ScheduleDay,
-} from "@/entities/schedule/api/getMonthSchedule.api";
+import { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
+import { type ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 
 /**
  * 여러 달치 근무 날들을 한 덩이로 읽는다. 급여 화면이 기간을 달과 안 맞게 자르기 때문이다 —

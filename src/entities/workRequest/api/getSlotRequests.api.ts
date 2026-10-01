@@ -1,5 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
+import type { SlotRequest } from "@/entities/workRequest/api/workRequest.dto";
 
 /**
  * 그 달 살아 있는 근무 요청을 자리·날과 함께 읽는다. 관리자는 전부 보고 근무자는 자기
@@ -17,25 +18,6 @@ import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
  * `expires_at`이 갈래마다 실려 오는 것은 「만료됨」을 저장하지 않기 때문이다. 만료는 화면이
  * 서버 시각과 견줘 파생한다.
  */
-
-export type SlotRequestCandidate = {
-  profile_id: string;
-  status: string;
-  expires_at: string;
-};
-
-export type SlotRequest = {
-  id: string;
-  slot_id: string | null;
-  closed_at: string | null;
-  expires_at: string;
-  request_candidates: SlotRequestCandidate[];
-  slots: {
-    id: string;
-    positions: string[];
-    days: { work_date: string; starts_at: string; ends_at: string };
-  };
-};
 
 const REQUEST_COLUMNS = [
   "id",

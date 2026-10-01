@@ -1,5 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
+import type { OpenSlot } from "@/entities/schedule/api/schedule.dto";
 
 /**
  * 그 달 빈 자리다. 「살아 있는 자리 중 살아 있는 정규 배정이 없는 것」을 TS가 다시 세지
@@ -10,13 +11,6 @@ import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
  * 뷰의 열이 전부 nullable로 생성되는 것은 뷰라서지 값이 빈다는 뜻이 아니다 — 부르는 쪽이
  * 날짜와 자리를 늘 쥐게 여기서 좁혀 낸다.
  */
-
-export type OpenSlot = {
-  slot_id: string;
-  day_id: string;
-  work_date: string;
-  positions: string[];
-};
 
 type OpenSlotRow = {
   slot_id: string | null;

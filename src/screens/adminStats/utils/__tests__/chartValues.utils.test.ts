@@ -17,7 +17,7 @@
 // MonthlyAttendanceTally다) — attendanceValues와 percentLabel은 그 함수를 안에서
 // 불러 쓴다.
 
-import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
 import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
 import type { AttendanceTab } from "@/screens/adminStats/utils/attendanceRows.utils";

@@ -1,6 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-import type { HallSlot } from "@/entities/hall/api/getHallDefaults.api";
+import type { HallSlot } from "@/entities/hall/api/hall.dto";
 
 /**
  * 홀의 자리·근무 시간 기본값을 바꾼다. 다음에 여는 날부터 이 값이 깔리고 **이미 연 날은

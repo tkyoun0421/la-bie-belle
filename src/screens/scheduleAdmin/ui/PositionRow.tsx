@@ -11,7 +11,7 @@ import { Draggable, DropTarget } from "@/shared/ui/DragAndDrop";
 import { Icon } from "@/shared/ui/Icon";
 import { SlotCard } from "@/shared/ui/SlotCard";
 import { Text } from "@/shared/ui/Text";
-import type { ScheduleAssignment } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
 import {
   assignmentForSlot,
   slotFillCount,

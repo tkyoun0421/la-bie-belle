@@ -1,4 +1,4 @@
-import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import { POSITION_ORDER } from "@/entities/schedule/model/schedule.type";
 
 /**

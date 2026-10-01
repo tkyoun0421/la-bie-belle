@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getHallDefaults,
-  type HallDefaults,
-} from "@/entities/hall/api/getHallDefaults.api";
+import { getHallDefaults } from "@/entities/hall/api/getHallDefaults.api";
+import { type HallDefaults } from "@/entities/hall/api/hall.dto";
 
 /**
  * 홀의 자리·근무 시간 기본값이다. 관리자 홈의 기본값 줄과 기본값 시트가 같은 값을 본다.

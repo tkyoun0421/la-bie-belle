@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getSlotRequests,
-  type SlotRequest,
-} from "@/entities/workRequest/api/getSlotRequests.api";
+import { getSlotRequests } from "@/entities/workRequest/api/getSlotRequests.api";
+import { type SlotRequest } from "@/entities/workRequest/api/workRequest.dto";
 
 /**
  * 그 달 살아 있는 근무 요청이다. 관리자 화면은 자리 카드의 배지와 픽커의 요청 상태를,

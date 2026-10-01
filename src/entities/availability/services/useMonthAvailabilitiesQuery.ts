@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getMonthAvailabilities,
-  type AvailabilityRow,
-} from "@/entities/availability/api/getMonthAvailabilities.api";
+import { type AvailabilityRow } from "@/entities/availability/api/availability.dto";
+import { getMonthAvailabilities } from "@/entities/availability/api/getMonthAvailabilities.api";
 
 /**
  * 그 달 근무 신청을 신청자 이름과 함께 읽는다. 달력 칸의 신청 수, 날 상세의 근무 신청 줄,

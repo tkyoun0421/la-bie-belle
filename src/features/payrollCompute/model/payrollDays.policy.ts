@@ -16,7 +16,7 @@ import {
   rehearsalHours,
   type RehearsalRow,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
-import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import { dayMinutes } from "@/features/payrollCompute/model/dayMinutes.policy";
 
 /**

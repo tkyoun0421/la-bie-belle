@@ -2,10 +2,8 @@ import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { combineMonths, type MonthsResult } from "@/shared/api/monthsQuery";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getMonthSchedule,
-  type ScheduleDay,
-} from "@/entities/schedule/api/getMonthSchedule.api";
+import { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
+import { type ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 
 /**
  * 통계 근무 탭이 여는 열두 달 창이다. 달마다 `['schedule', 'YYYY-MM']` 하나를 읽는다

@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getPendingApprovals,
-  type PendingApproval,
-} from "@/entities/workRequest/api/getPendingApprovals.api";
+import { getPendingApprovals } from "@/entities/workRequest/api/getPendingApprovals.api";
+import { type PendingApproval } from "@/entities/workRequest/api/workRequest.dto";
 
 /**
  * 판정을 기다리는 근무 취소 요청들이다. 「승인할 일」 화면의 목록이고 관리자 홈의 건수도

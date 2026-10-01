@@ -1,5 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
+import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 
 /**
  * 그 달 근무표를 읽는 두 손이다 — 연 날들과, 그 달 근무표 자체의 상태.
@@ -29,45 +30,6 @@ import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
  * 날짜로 받든 같은 달을 가리키게 `monthStart`가 맞춰준다 — 근무표를 만들고 여는 손들이
  * 달을 날짜로 들고 다닌다.
  */
-
-/**
- * 신고 시각과 접수 시각도 같이 온다 — 근태 판정(`entities/attendance`)이 인증 한 건을
- * 그 셋으로 읽어서, 급여가 결근을 다시 판정할 때 이 행을 그대로 넘긴다.
- */
-export type ScheduleCheckIn = {
-  id: string;
-  profile_id: string;
-  checked_at: string;
-  reported_at: string;
-  received_at: string;
-};
-
-export type ScheduleAssignment = {
-  id: string;
-  slot_id: string | null;
-  position: string;
-  kind: string;
-  profile_id: string;
-  ended_at: string | null;
-  profiles: { display_name: string | null } | null;
-};
-
-export type ScheduleSlot = {
-  id: string;
-  positions: string[];
-  ended_at: string | null;
-};
-
-export type ScheduleDay = {
-  id: string;
-  work_date: string;
-  starts_at: string;
-  ends_at: string;
-  opened_at: string;
-  slots: ScheduleSlot[];
-  assignments: ScheduleAssignment[];
-  check_ins: ScheduleCheckIn[];
-};
 
 export type MonthWindow = {
   applicationDeadline: string | null;
