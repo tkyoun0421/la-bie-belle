@@ -79,25 +79,36 @@ sources:
   - 짝 테스트도 같이 — `getMonthSchedule.api.test.ts`·`getMonthSchedule.api.integration.test.ts`
 - 관찰 결과: `dals` 폴더가 없고 `api/` 아래 모든 파일이 `.api.ts`다. 셋이 초록이다
 - 손으로 판정할 하나: `avatarsBucket.ts`는 버킷 주소를 읽고 파일을 올려 둘을 다 하는데, 둘 다 통신이라 `api/`다
-- `features/stats/api/useStatsQueries.ts`는 **접미사를 안 받는다** — 통신이 아니라 쿼리 훅이고, AC-05가 `entities/stats/hooks/`로 내린다. 앞선 판이 이 자리에 접미사를 붙이라고 적었는데 그러면 훅에 `.api`가 달린다
+- `features/stats/api/useStatsQueries.ts`는 **접미사를 안 받는다** — 통신이 아니라 쿼리 훅이고 AC-05가 그 자리를 다시 정한다. 앞선 판이 이 자리에 접미사를 붙이라고 적었는데 그러면 훅에 `.api`가 달린다
 - 돌면서 나온 것 — **문서 링크 26건이 깨졌다.** 완료된 plan 스물셋이 dal 파일을 상대 경로로 걸고 있었다. 「과거 계획은 소급 변경하지 않는다」의 예외로 링크만 고쳤다 — 누른 사람이 404를 보고 `docLinks.test.ts`가 빨개진다
 
-### AC-05 — 훅이 `hooks/`로 가고 층이 갈리고 접미사가 붙는다
+### AC-05 — 훅이 `hooks/`로 가고 층이 갈리고 접미사가 붙는다 ✅
 
-- 전제: 훅 58개가 `features/*/model/`에 순수 계산과 섞여 있고, 읽는 dal과 그 쿼리 훅이 두 층에 떨어져 있다
-- **쓰는 통신 49개가 여기서 두 번째로 움직인다.** 「각 파일이 한 번만 움직인다」의 예외고 `no-cross-slice-import`가 그렇게 가른다 — 쓰는 통신을 `features/<슬라이스>/api/`로 올리면 그것을 부르는 뮤테이션 훅이 같은 슬라이스에 있어야 하는데, 지금 훅은 다른 슬라이스의 `model/`에 있고 같은 층 슬라이스끼리 import는 규칙이 막는다. 통신과 그 훅이 같은 걸음에 가야 한다. 이름은 AC-04에서 한 번만 붙었고 이 걸음은 자리만 바꾼다
+- 전제: 훅 59개가 `features/*/model/`에 순수 계산과 섞여 있고, 읽는 dal과 그 쿼리 훅이 두 층에 떨어져 있다
+- **쓰는 통신 45개가 여기서 두 번째로 움직인다.** 「각 파일이 한 번만 움직인다」의 예외고 `no-cross-slice-import`가 그렇게 가른다 — 쓰는 통신을 `features/<슬라이스>/api/`로 올리면 그것을 부르는 뮤테이션 훅이 같은 슬라이스에 있어야 하는데, 지금 훅은 다른 슬라이스의 `model/`에 있고 같은 층 슬라이스끼리 import는 규칙이 막는다. 통신과 그 훅이 같은 걸음에 가야 한다. 이름은 AC-04에서 한 번만 붙었고 이 걸음은 자리만 바꾼다
+- **슬라이스 이름은 이 걸음에서 안 건드린다.** 뮤테이션 훅이 지금 사는 슬라이스가 그 통신의 슬라이스고, 쪼개고 이름을 고치는 일은 AC-07이 한다 — 자리와 이름을 한 걸음에 다 바꾸면 어느 쪽이 깨뜨렸는지 못 가린다
 - 행동
-  - 쿼리 훅 17개를 `entities/<도메인>/hooks/`로 내리고 `use[Action]Query.ts`로 — **export 이름도 같이 바뀐다**
-  - 뮤테이션 훅 37개를 `features/<use-case>/hooks/`로 올리고 `use[Action]Mutation.ts`로
-  - 쓰는 dal 49개를 `entities/*/api/` → `features/<use-case>/api/`로 올린다
+  - 쿼리 훅 20개를 `entities/<도메인>/hooks/`로 내리고 `use[Action]Query.ts`로 — **export 이름도 같이 바뀐다.** 스물한째인 `useStatsQueries`는 아래 「손으로 판정할 여섯」이 가른다
+  - 뮤테이션 훅 37개를 `features/<지금 슬라이스>/hooks/`로 옮기고 `use[Action]Mutation.ts`로
+  - 쓰는 dal 45개를 `entities/*/api/` → `features/<지금 슬라이스>/api/`로 올린다. 쓰는 것은 50개고 다섯이 남는다 — 아래가 그 까닭을 든다
   - 호출부(`screens/`·`src/app/`)의 훅 이름을 다 고친다
 - 관찰 결과: `entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다. 읽는 dal과 그 쿼리 훅이 같은 슬라이스에 있다. 셋이 초록이다
-- 손으로 판정할 넷
-  - `useSavePushToken` — 쿼리도 뮤테이션도 아니고 앱 진입에 주소를 보내는 효과다. 쓰기 쪽이라 `features/pushSwitch/hooks/useSavePushTokenMutation.ts`
+- 손으로 판정할 여섯
+  - `useSavePushToken` — 쿼리도 뮤테이션도 아니고 앱 진입에 주소를 보내는 효과다. 쓰기 쪽이라 `features/notification/hooks/useSavePushTokenMutation.ts`고, 슬라이스를 `pushSwitch`로 가르는 일은 AC-07 몫이다
+  - **부르는 쪽이 없는 쓰기 넷은 `entities/*/api/`에 남는다** — `checkIn`·`submitExcuse`·`decideExcuse`·`setHallLocation`이다. 화면과 훅이 아직 없어 슬라이스를 고를 근거가 없고, 지금 이름을 지어 두면 그 사슬(`attendance-checkin`·`attendance-excuse`)이 제 슬라이스를 정할 때 한 번 더 움직인다. AC-07이 슬라이스를 쪼갤 때 같이 올라간다
+    - `removePushToken`만 밖이다 — 부르는 쪽은 없지만 짝 테스트가 `savePushToken`으로 토큰을 깔고 시작해서, 그것이 `features`로 올라가면 `entities`가 `features`를 부르는 꼴이 된다(`no-restricted-imports`). 둘이 한 쌍이라 같이 올라간다
+  - 쓰기 다섯은 뮤테이션 훅이 없고 `.tsx`가 직접 부른다 — `approveMember`·`blockMember`·`rejectMember`·`unblockMember`는 `features/members/api/`, `submitProfile`은 `features/profile/api/`다. 같은 슬라이스의 다른 훅들이 이미 거기 있어서다. 훅 없이 부르는 것 자체는 `dumb-ui-widen`이 막을 자리고 이 걸음은 통신의 집만 정한다
   - `usePayrollMonths`·`useRehearsalMonths`·`useScheduleMonths` — 다른 쿼리를 조합해 달 목록을 낸다. 읽기 쪽이라 각 `entities/<도메인>/hooks/use[X]MonthsQuery.ts`
   - `ensureProfile` — 쓰기인데 `entities/profile/api/`에 **남는다.** 부르는 쪽이 `features/auth/resolveEntryDestination.ts`고 그것은 AC-06에서 `entities/session`으로 내려간다 — `entities`가 `features`를 부르는 것은 층 방향을 거스른다. 「없으면 만든다」가 진입 판정의 일부라, 쓰기라는 성격보다 누가 부르느냐가 자리를 정한다
-  - `features/stats/api/useStatsQueries.ts` — 통신이 아니라 쿼리 훅 묶음이라 `entities/stats/hooks/`로 내린다
-- 같이 고치는 두 줄: `scripts/syncEdgeShared.mts`와 `eslint-rules/noNodeImportInEdgeShared.mjs`가 보는 경로
+  - `features/stats/api/useStatsQueries.ts` — 쿼리 훅 넷이 한 파일에 있고 셋은 제 도메인으로 내려가지만 `useAttendanceMonths`는 schedule과 attendance 둘을 함께 읽어 `entities` 어디에도 못 앉는다(`no-cross-slice-import`). 그래서 **파일을 가른다**
+    - `useWorkMonths`·`useFirstScheduleMonth` → `entities/schedule/hooks/`, `usePayrollMonthsByMonth` → `entities/payroll/hooks/`
+    - `useAttendanceMonths`는 근태 열두 달을 읽는 `entities/attendance/hooks/useMonthsAttendanceQuery.ts`와, 그것을 `useWorkMonthsQuery`와 달마다 맞추는 `features/stats/hooks/useAttendanceMonths.ts`로 갈린다. 맞추는 쪽은 `useQuery`를 안 가져 AC-08의 「`features/`에서 `useQuery` 금지」가 선다
+    - 넷이 나눠 쓰는 `MonthsResult`와 `combineMonths`는 `shared/api/monthsQuery.ts`로 — 두 `entities` 슬라이스가 같이 쓰므로 둘 중 한쪽에 둘 수 없다
+    - **키 배열 리터럴 둘이 여기 남아 있다** — `[SCHEDULE_KEY, month]`·`[ATTENDANCE_KEY, month]`가 AC-03의 팩토리 전환에서 빠졌다. 파일을 가르는 이 걸음에서 `queryKeys.schedule.month`·`queryKeys.attendance.month`로 바꾼다
+    - 이 가름만 커밋을 따로 쓴다 — 나머지 이동은 기계적이고 이것은 모양을 바꾼다
+- 돌면서 나온 것 — **`removePushToken`이 짝 테스트에 끌려 올라갔다.** 부르는 쪽이 없어 `entities`에 남길 자리였는데, 그 통합 테스트가 `savePushToken`으로 토큰을 깔고 시작한다. `savePushToken`이 `features`로 가자 `entities`가 `features`를 부르는 꼴이 되어 `no-restricted-imports`가 잡았다 — **부르는 쪽이 없다는 판정에 짝 테스트를 안 셌다.**
+- 돌면서 나온 것 — **계획이 `useStatsQueries`를 둘 자리를 규칙에 안 대봤다.** AC-04가 「AC-05가 `entities/stats/hooks/`로 내린다」고 적었는데 그 파일은 entities 세 슬라이스를 함께 읽어 `no-cross-slice-import`에 걸린다. 같은 파일을 두 AC가 연달아 잘못 배치했고([관찰 046](../../observations/046-plan-placement-not-checked-against-rules.md)) 이번에 가르면서 정했다
+- 돌면서 나온 것 — **쿼리 훅이 하나도 `features`를 안 당겼다.** 스물이 전부 `entities` 한 도메인과 `shared`만 import해서 내려보내는 데 손이 들지 않았다. 반대로 뮤테이션 훅은 서른여덞이 각자 제 통신 하나만 불러 1:1이었다 — 둘이 기계적으로 갈린 것이 이 묶음을 치환으로 끝낸 바탕이다
 
 ### AC-06 — 타입이 빠지고 `model`·`utils`가 갈리고 접미사가 붙는다
 
