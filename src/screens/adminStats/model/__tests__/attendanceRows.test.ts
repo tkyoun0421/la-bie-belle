@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/admin-stats/model/attendanceRows.ts
+// 구현 대상: src/screens/adminStats/model/attendanceRows.ts
 //
 // buildAttendanceRows(people) — 근태 탭 사람별 목록을 조립한다(plan·spec
 // stats-admin AC-09, stats.md「근태 사람별 목록」). AttendanceRowInput은
@@ -21,7 +21,7 @@ import {
   buildAttendanceRows,
   buildAttendanceTab,
   type AttendanceRow,
-} from "@/screens/admin-stats/model/attendanceRows";
+} from "@/screens/adminStats/model/attendanceRows";
 
 describe("buildAttendanceRows — 이름 가나다순이다(근무 탭과 반대)", () => {
   it("입력 순서와 무관하게 김지우·박서연·최윤아 순으로 선다", () => {

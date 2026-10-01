@@ -1,11 +1,11 @@
-// 구현 대상: src/screens/schedule-admin/model/adjustChoiceState.ts
+// 구현 대상: src/screens/scheduleAdmin/model/adjustChoiceState.ts
 //
 // 조정 고르기 시트의 「원래대로」 노출 여부다(payroll-adjust AC-04). 조건은 조정 행이
 // 하나라도 있는 것이다 — 마지막 행이 0분이어도(이미 되돌린 사람이어도) 선다. 세는 축과
 // 보여주는 축이 다르다: 「N명 조정됨」은 마지막 행의 분을 보지만 이 노출 여부는 행의
 // 유무만 본다(schedule-admin.md 「근무 조정」).
 
-import { showRevertOption } from "@/screens/schedule-admin/model/adjustChoiceState";
+import { showRevertOption } from "@/screens/scheduleAdmin/model/adjustChoiceState";
 
 describe("showRevertOption — 조정 행이 없으면 원래대로가 안 선다", () => {
   it("빈 배열이면 false다", () => {

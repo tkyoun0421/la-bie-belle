@@ -6,7 +6,7 @@ import { Text } from "@/shared/ui/Text";
 
 /**
  * 근무 시간 기본값을 고치는 시트다. 정본은
- * `docs/2-design/system/screens/admin-home.md`의 「기본값 시트」다.
+ * `docs/2-design/system/screens/adminHome.md`의 「기본값 시트」다.
  *
  * **바꿔도 이미 연 날은 그대로다.** 연 날의 근무 시간은 열던 순간 깔린 값이고 소급해서
  * 덮으면 이미 손본 날까지 되돌아간다 — 도움말이 그 말을 한다.

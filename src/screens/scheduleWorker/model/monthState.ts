@@ -1,6 +1,6 @@
 /**
  * 한 화면이 달의 상태를 탄다 — 같은 `/schedule`이 확정된 달에서는 근무표고 확정 전 달에서는
- * 제출 모드다(`docs/2-design/modules/schedule/screens/schedule-worker.md`의 「확정 전 — 근무
+ * 제출 모드다(`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「확정 전 — 근무
  * 신청」). 무엇을 그릴지가 여기서 갈린다.
  *
  * **마감은 그 날 끝까지다.** 마감일 당일은 아직 접수 중이고 다음날부터 닫힌다 — 서버의

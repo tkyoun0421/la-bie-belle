@@ -1,6 +1,6 @@
 /**
  * 확정 뒤 확인 시트 문안 넷이다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「확정 뒤 문안」 표다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「확정 뒤 문안」 표다.
  *
  * **확정 전과의 갈림이 이 시트다.** 확정 전 배정은 관리자 혼자의 일이고, 확정 뒤 배정은 그
  * 사람의 근무가 생기고 없어지는 사건이라 알림이 나간다 — 무엇이 나가는지를 누르기 전에

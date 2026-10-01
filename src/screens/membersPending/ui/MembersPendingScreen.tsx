@@ -32,12 +32,12 @@ import {
   MemberDetailSheet,
   type MemberDecision,
   type SheetFace,
-} from "@/screens/members-pending/ui/MemberDetailSheet";
+} from "@/screens/membersPending/ui/MemberDetailSheet";
 
 /**
  * 관리자가 가입 신청을 받거나 돌려보내는 화면이다. 앱 전체의 첫 문이다 — 승인이 없으면
  * 근무표도 급여도 안 열린다. 정본은
- * `docs/2-design/modules/account/screens/members-pending.md`고 완료 조건은
+ * `docs/2-design/modules/account/screens/membersPending.md`고 완료 조건은
  * `docs/2-design/spec/members-pending.md`다.
  *
  * **줄에서 바로 판정하지 않는다.** 누르면 시트가 올라오고 거기서 정한다. 줄에서 승인하면

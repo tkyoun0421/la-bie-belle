@@ -1,12 +1,12 @@
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
-import { closeDayWarningLine } from "@/screens/schedule-admin/model/dayDetailRows";
-import { formatBareDate } from "@/screens/schedule-admin/model/formatScheduleDate";
+import { closeDayWarningLine } from "@/screens/scheduleAdmin/model/dayDetailRows";
+import { formatBareDate } from "@/screens/scheduleAdmin/model/formatScheduleDate";
 
 /**
  * 배정이 든 날을 닫기 전에 서는 확인이다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「날 닫기 경고」다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 닫기 경고」다.
  *
  * **왼쪽이 「닫기」가 아니라 「그만두기」다.** 이 시트에서 「닫기」는 시트를 닫는 것과 날을
  * 닫는 것 둘로 읽힌다 — 규칙이 「취소」를 막은 이유가 여기서는 「닫기」에 붙는다.

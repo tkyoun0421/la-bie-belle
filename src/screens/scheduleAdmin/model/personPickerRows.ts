@@ -1,6 +1,6 @@
 /**
  * 사람 픽커의 「전체 보기」가 사람마다 매기는 상태다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「사람 픽커」 표와 「근무 요청
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「사람 픽커」 표와 「근무 요청
  * 보내기」 표고 문구는 「사람 픽커 문안」 그대로다.
  *
  * **배정됨이 가장 세다.** 그날 이미 든 사람은 왜 못 넣는지가 신청·자격·요청보다 앞서는

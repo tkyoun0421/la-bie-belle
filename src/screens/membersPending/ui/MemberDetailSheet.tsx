@@ -12,7 +12,7 @@ import { formatBirthDate } from "@/entities/profile/model/formatBirthDate";
 /**
  * 대기 중인 한 사람을 여는 시트다. 관리자가 사람을 알아보는 재료 넷과 보낸 시각을 세우고
  * 거기서 판정한다 — 정본은
- * `docs/2-design/modules/account/screens/members-pending.md`의 「상세 시트 짜임」이다.
+ * `docs/2-design/modules/account/screens/membersPending.md`의 「상세 시트 짜임」이다.
  *
  * **얼굴이 셋인데 시트는 하나다.** 거절과 차단은 새 시트를 쌓지 않고 이 시트의 값 넷 자리를
  * 물음으로 바꾼다. 사진과 이름은 그 자리에 남는다 — 묻는 대상이 같은 사람이라 화면이 바뀔

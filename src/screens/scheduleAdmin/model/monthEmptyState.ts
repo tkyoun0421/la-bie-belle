@@ -1,10 +1,10 @@
 import { lastDateOfMonth, shiftMonth } from "@/shared/lib/kstDate";
-import { kstDateOf } from "@/screens/schedule-admin/model/formatScheduleDate";
+import { kstDateOf } from "@/screens/scheduleAdmin/model/formatScheduleDate";
 
 /**
  * 「전부 지난 달」 판정이다 — 그 달의 마지막 날이 오늘(KST) 이전이면 만들기 버튼이 없고
  * 빈 상태 제목만 남는다
- * (`docs/2-design/modules/schedule/screens/schedule-admin.md`의 「달 근무표 만들기 짜임」).
+ * (`docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「달 근무표 만들기 짜임」).
  *
  * **차단 축은 달이 아니라 날짜다.** 열 수 있는 날이 하루라도 남았으면(SCH-002) 지나가는
  * 중인 달도 만든다 — 마지막 날이 오늘이면 아직 안 지난 것이다.

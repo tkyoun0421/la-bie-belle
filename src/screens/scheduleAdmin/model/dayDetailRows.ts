@@ -7,7 +7,7 @@
  * 없는 스위치를 세우면 켜지는 줄 알고 누른다. `payroll-adjust`가 둘을 통째로 더한다.
  *
  * **근무 신청이 0건이면 줄이 통째로 없다.** 「0명 신청」을 적으면 읽을 것이 있는 줄처럼
- * 보인다(`docs/2-design/modules/schedule/screens/schedule-admin.md`의 「근무 신청 0건」).
+ * 보인다(`docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「근무 신청 0건」).
  */
 
 export type DayDetailRow = "hours" | "applications";

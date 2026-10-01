@@ -1,6 +1,6 @@
 /**
  * 달 고르기 시트의 셈이다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-worker.md`의 「달 고르기 시트 짜임」이다 —
+ * `docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「달 고르기 시트 짜임」이다 —
  * 연도 줄이 해를 오가고 그 아래 월 12칸이 4열 3행으로 선다.
  *
  * **연도 이동에 열람 제한이 없다.** 입사 이전 해로도 넘어간다 — 무제한으로 거슬러 보는

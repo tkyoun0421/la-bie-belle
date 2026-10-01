@@ -3,7 +3,7 @@ import type { AttendanceSummary } from "@/features/attendance/model/attendanceSu
 import {
   attendanceSummaryLine,
   isAttendanceColumnVisible,
-} from "@/screens/schedule-worker/model/attendanceColumn";
+} from "@/screens/scheduleWorker/model/attendanceColumn";
 
 const BASE_INPUT: AttendanceStatusInput = {
   workDate: "2026-10-10",

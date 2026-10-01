@@ -7,7 +7,7 @@
 //
 // payroll-data plan이 attendance-status.ts·rehearsal-hours.ts에 쓴 전례를 따라
 // 이 함수를 entities/attendance/model/로 내린다 — 결근 판정이 이미 이 자리
-// (attendance-status.ts)의 규칙이고, features/stats·screens/admin-stats 양쪽 다
+// (attendance-status.ts)의 규칙이고, features/stats·screens/adminStats 양쪽 다
 // entities는 슬라이스 제한 없이 부를 수 있다. 옮기는 것은 자리뿐이고 함수와
 // 단언은 features/attendance/model/__tests__/attendanceSummary.test.ts의
 // tallyMonthlyAttendance 몫과 같다.
@@ -129,7 +129,7 @@ describe("tallyMonthlyAttendance — entities로 내려와도 getAttendanceStatu
   });
 });
 
-describe("attendanceRate — screens/admin-stats/chart-values.ts에서 내려와 tally 하나만 받는다(stats.md 「추이 그래프」)", () => {
+describe("attendanceRate — screens/adminStats/chart-values.ts에서 내려와 tally 하나만 받는다(stats.md 「추이 그래프」)", () => {
   it("출근·지각·결근·출근 인정의 합이 분모고 출근 인정은 분모에만 든다", () => {
     const tally: MonthlyAttendanceTally = {
       present: 6,

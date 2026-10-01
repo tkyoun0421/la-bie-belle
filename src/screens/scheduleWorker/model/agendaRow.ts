@@ -1,6 +1,6 @@
 /**
  * 포지션 순 보기의 날짜 줄이다. 아코디언 한 줄이 날짜 하나고, 오른쪽에 그날 내가 무엇인지가
- * 한 마디로 선다(`docs/2-design/modules/schedule/screens/schedule-worker.md`의 「포지션 순 —
+ * 한 마디로 선다(`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「포지션 순 —
  * 날짜 아코디언」).
  *
  * **「내 근무만」이 여기서는 줄을 지운다.** 달력은 면을 빼고 목록은 줄을 뺀다 — 같은 체크

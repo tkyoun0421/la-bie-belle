@@ -1,6 +1,6 @@
 /**
  * 관리자 홈 첫 자리의 오늘 현황이다
- * (`docs/2-design/system/screens/admin-home.md`의 「오늘 현황」).
+ * (`docs/2-design/system/screens/adminHome.md`의 「오늘 현황」).
  *
  * **근무가 없는 날은 자리가 통째로 없다.** 띠가 0으로 서는 것이 아니라 볼 것이 없다.
  *
@@ -62,7 +62,7 @@ export type TodayBandShare = {
 
 /**
  * 오늘 현황 띠의 몫들이다. 안 찍은 몫이 `bg.neutral-weak`라
- * (`docs/2-design/system/screens/admin-home.md`의 「관리자 홈 색」) 비율 띠의 넷째 자리에
+ * (`docs/2-design/system/screens/adminHome.md`의 「관리자 홈 색」) 비율 띠의 넷째 자리에
  * 서야 하고 — 그 자리가 「아무것도 안 일어난 몫」이다 — 사이의 둘은 0으로 비운다. 0인 몫은
  * 띠에서도 범례에서도 빠진다.
  */

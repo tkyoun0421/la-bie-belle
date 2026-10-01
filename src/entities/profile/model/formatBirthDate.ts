@@ -1,7 +1,7 @@
 /**
  * 생년월일을 만 나이와 함께 적는다 — 「1992년 3월 4일(34세)」다. 관리자가 실제로 쓰는 것은
  * 나이인데 저장하는 것은 생년월일이라 화면이 그 셈을 대신한다
- * (`docs/2-design/modules/account/screens/members-pending.md`의 「생년월일 옆에 나이를 같이
+ * (`docs/2-design/modules/account/screens/membersPending.md`의 「생년월일 옆에 나이를 같이
  * 적는다」).
  *
  * **나이는 생일이 지났는지로만 갈린다.** 월·일을 견줘 아직 안 왔으면 한 살 뺀다. 2월 29일생이

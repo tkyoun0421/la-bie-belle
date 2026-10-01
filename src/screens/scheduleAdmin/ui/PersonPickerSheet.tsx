@@ -5,12 +5,12 @@ import { Button } from "@/shared/ui/Button";
 import { Checkbox } from "@/shared/ui/Checkbox";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
-import type { PickerRow } from "@/screens/schedule-admin/model/personPickerRows";
-import { genderSymbol } from "@/screens/schedule-admin/model/personSheet";
+import type { PickerRow } from "@/screens/scheduleAdmin/model/personPickerRows";
+import { genderSymbol } from "@/screens/scheduleAdmin/model/personSheet";
 
 /**
  * 빈 자리나 「교육 붙이기」를 누르면 올라오는 사람 픽커다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「사람 픽커 짜임」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「사람 픽커 짜임」이다.
  *
  * **기본은 배정 가능한 사람만이다.** 나머지는 「전체 보기」 아래로 내려가고 줄마다 왜 못
  * 넣는지가 붙는다 — 배정 가능한 사람이 0명이면 한 줄과 함께 펼쳐진 채로 열린다.

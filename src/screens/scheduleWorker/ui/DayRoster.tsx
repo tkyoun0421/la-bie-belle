@@ -1,10 +1,10 @@
 import { View } from "react-native";
 import { RosterRow } from "@/shared/ui/RosterRow";
-import type { RosterRow as RosterRowValue } from "@/screens/schedule-worker/model/daySheet";
+import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet";
 
 /**
  * 명단 한 벌이다. 날 시트와 포지션 순 펼침이 같은 구성을 쓴다
- * (`docs/2-design/modules/schedule/screens/schedule-worker.md`의 「날 시트 짜임」).
+ * (`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「날 시트 짜임」).
  *
  * 인증 상태는 아직 안 온다 — `check_ins` 표가 서는 attendance task 뒤에 찬다
  * (`docs/3-build/plans/schedule-worker.md`의 AC-09).

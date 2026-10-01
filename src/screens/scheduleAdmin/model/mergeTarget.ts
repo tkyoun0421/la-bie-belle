@@ -1,6 +1,6 @@
 /**
  * 줄 머리를 다른 줄 머리에 겹쳤을 때 합침이 유효한지를 데이터로만 판정한다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「잠금과 구조 변경」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「잠금과 구조 변경」이다.
  *
  * **좌표는 안 본다.** 어디에 겹쳤는지는 끌기 조각이 알고, 겹친 뒤에 받을지 말지는 여기가
  * 정한다 — 그래야 대상 줄 머리에 테두리를 세울지도 `merge_slots`가 던질 `no_empty_slot`도

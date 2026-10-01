@@ -1,6 +1,6 @@
 /**
  * 근무표 관리 타일 안의 요약 줄이다. 문안 표
- * (`docs/2-design/system/screens/admin-home.md`의 「관리자 홈 문안」) 그대로 세 갈래다 —
+ * (`docs/2-design/system/screens/adminHome.md`의 「관리자 홈 문안」) 그대로 세 갈래다 —
  * 아직 없음 · 만드는 중 · 확정 뒤.
  *
  * **이 줄은 근무표 상태 하나만 말한다.** 예전에는 예식 3일 안 빈 자리면 이 줄이 경고로

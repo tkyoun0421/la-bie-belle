@@ -41,36 +41,36 @@ import { useSubmitAvailability } from "@/features/schedule/model/useSubmitAvaila
 import {
   myAssignmentOf,
   spellWorkDate,
-} from "@/screens/schedule-worker/model/agendaRow";
-import { calendarDayState } from "@/screens/schedule-worker/model/calendarDayState";
-import { cancelRequestBadge } from "@/screens/schedule-worker/model/cancelRequestSheet";
+} from "@/screens/scheduleWorker/model/agendaRow";
+import { calendarDayState } from "@/screens/scheduleWorker/model/calendarDayState";
+import { cancelRequestBadge } from "@/screens/scheduleWorker/model/cancelRequestSheet";
 import {
   canShowShiftActions,
   daySheetSubtitle,
   rosterHeadcount,
   rosterOfDay,
-} from "@/screens/schedule-worker/model/daySheet";
-import { hasIncomingRequest } from "@/screens/schedule-worker/model/incomingRequest";
+} from "@/screens/scheduleWorker/model/daySheet";
+import { hasIncomingRequest } from "@/screens/scheduleWorker/model/incomingRequest";
 import {
   kstToday,
   monthState,
   shiftMonth,
   spellDeadline,
   spellMonth,
-} from "@/screens/schedule-worker/model/monthState";
-import { requestSheetState } from "@/screens/schedule-worker/model/requestSheet";
-import { toggleSelectedDate } from "@/screens/schedule-worker/model/submissionSelection";
-import { CancelShiftSheet } from "@/screens/schedule-worker/ui/CancelShiftSheet";
-import { DaySheet } from "@/screens/schedule-worker/ui/DaySheet";
-import { RequestSheet } from "@/screens/schedule-worker/ui/RequestSheet";
+} from "@/screens/scheduleWorker/model/monthState";
+import { requestSheetState } from "@/screens/scheduleWorker/model/requestSheet";
+import { toggleSelectedDate } from "@/screens/scheduleWorker/model/submissionSelection";
+import { CancelShiftSheet } from "@/screens/scheduleWorker/ui/CancelShiftSheet";
+import { DaySheet } from "@/screens/scheduleWorker/ui/DaySheet";
+import { RequestSheet } from "@/screens/scheduleWorker/ui/RequestSheet";
 import {
   ScheduleAgenda,
   type AgendaEntry,
-} from "@/screens/schedule-worker/ui/ScheduleAgenda";
+} from "@/screens/scheduleWorker/ui/ScheduleAgenda";
 
 /**
  * 근무자가 보는 근무표다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-worker.md`고 완료 조건은
+ * `docs/2-design/modules/schedule/screens/scheduleWorker.md`고 완료 조건은
  * `docs/2-design/spec/schedule-worker.md`다.
  *
  * **한 화면이 달의 상태를 탄다.** 확정된 달은 근무표고 확정 전 달은 같은 자리가 제출 모드다 —

@@ -1,4 +1,4 @@
-import { toggleSelectedDate } from "@/screens/schedule-worker/model/submissionSelection";
+import { toggleSelectedDate } from "@/screens/scheduleWorker/model/submissionSelection";
 
 describe("toggleSelectedDate — 날짜를 골랐다 무른다", () => {
   it("안 고른 날짜를 누르면 목록에 더해진다", () => {

@@ -9,7 +9,7 @@ import { Text } from "@/shared/ui/Text";
 
 /**
  * 달을 고르는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-worker.md`의 「달 고르기 시트 짜임」이고
+ * `docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「달 고르기 시트 짜임」이고
  * 값은 `docs/2-design/design-system/components.md`의 「달 고르기 시트」가 든다.
  *
  * **제목이 곧 문이라 화면마다 같은 시트가 열린다.** 근무표·급여·리허설이 달을 오가는 손짓이

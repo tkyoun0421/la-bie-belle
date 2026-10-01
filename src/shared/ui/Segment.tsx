@@ -24,7 +24,7 @@ import { Text } from "@/shared/ui/Text";
  *
  * **칸은 글자거나 아이콘이고 둘을 섞지 않는다.** 아이콘 칸은 `accessibilityLabel`을 꼭 받는다 —
  * 글자가 없으면 그 칸이 무엇인지 말할 데가 거기뿐이다. 근무표의 달력 순·포지션 순이 첫
- * 자리다([schedule-worker.md](../../../docs/2-design/modules/schedule/screens/schedule-worker.md#보기-전환-세그먼트)).
+ * 자리다([schedule-worker.md](../../../docs/2-design/modules/schedule/screens/scheduleWorker.md#보기-전환-세그먼트)).
  *
  * **면 하나가 미끄러진다.** 칸마다 배경을 켜고 끄면 고른 자리가 사라졌다 다시 생기는 것으로
  * 읽히는데, 세그먼트가 말하는 것은 「하나를 골랐다」는 사실이라 그 하나가 자리를 옮겨야 한다.

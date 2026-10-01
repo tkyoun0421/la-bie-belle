@@ -16,11 +16,11 @@ import {
   assignmentForSlot,
   slotFillCount,
   type PositionSlot,
-} from "@/screens/schedule-admin/model/positionRows";
+} from "@/screens/scheduleAdmin/model/positionRows";
 
 /**
  * 포지션 한 줄이다 — 줄 머리와 그 아래 자리 카드들
- * (`docs/2-design/modules/schedule/screens/schedule-admin.md`의 「포지션과 자리」).
+ * (`docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「포지션과 자리」).
  *
  * **줄 머리의 이름과 셈이 한 글월이다.** 「안내 1/2」로 붙여 읽히는 하나라 두 조각으로
  * 쪼개지 않는다 — 크기와 색만 안쪽에서 갈린다.

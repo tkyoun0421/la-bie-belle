@@ -3,7 +3,7 @@ import { ListRow } from "@/shared/ui/ListRow";
 
 /**
  * 채워진 자리를 누르면 서는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「포지션과 자리」와 「확정 뒤
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「포지션과 자리」와 「확정 뒤
  * 날 상세」다.
  *
  * **확정 전과 뒤에서 가운데 줄의 이름이 갈린다.** 확정 전은 「자리 비우기」고 확정 뒤는

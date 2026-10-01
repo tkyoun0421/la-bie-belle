@@ -2,11 +2,11 @@ import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
-import type { RequestSheetState } from "@/screens/schedule-worker/model/requestSheet";
+import type { RequestSheetState } from "@/screens/scheduleWorker/model/requestSheet";
 
 /**
  * 관리자가 보낸 근무 요청에 답하는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-worker.md`의 「근무 요청 시트 짜임」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「근무 요청 시트 짜임」이다.
  *
  * **제목이 「근무 요청이 왔어요」다.** 교대·취소 시트처럼 하려는 일의 이름을 달면 내가 요청을
  * 보내는 화면으로 읽힌다 — 이 시트는 받은 것에 답하는 자리다.

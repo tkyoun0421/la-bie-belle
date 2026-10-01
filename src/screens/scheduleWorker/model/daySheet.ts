@@ -1,6 +1,6 @@
 /**
  * 날 시트와 아코디언 펼침이 같이 쓰는 명단이다
- * (`docs/2-design/modules/schedule/screens/schedule-worker.md`의 「날 시트 짜임」).
+ * (`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「날 시트 짜임」).
  *
  * **자리와 사람이 다른 것이다.** 정규 배정은 자리 하나를 먹고, 자리가 남으면 그 줄이 「빈
  * 자리」로 서고, 교육 배정은 자리를 안 먹고 그 포지션 끝에 덧붙는다
@@ -97,7 +97,7 @@ export type ShiftActionsInput = {
  * 닫히고, 지난 날은 조회만이다.
  *
  * **요청 중에도 닫힌다.** 같은 근무에 교대와 취소를 겹쳐 거는 길을 안 둔다
- * (`docs/2-design/modules/schedule/screens/schedule-worker.md`의 「보낸 뒤」) — 그때 버튼은
+ * (`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「보낸 뒤」) — 그때 버튼은
  * 사라지지 않고 비활성으로 남고 옆에 「취소 요청 중」 배지가 선다.
  */
 export function canShowShiftActions({

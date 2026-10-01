@@ -1,8 +1,8 @@
-import { RESTRICTED_POSITIONS } from "@/screens/schedule-admin/model/personPickerRows";
+import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/model/personPickerRows";
 
 /**
  * 사람 시트의 표기다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「사람 시트」다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「사람 시트」다.
  *
  * **성별은 색이 아니라 모양으로 가른다.** lucide의 `Venus`·`Mars`고
  * (`docs/2-design/modules/account/README.md`의 ACC-002) 색 하나로만 말하면 색각 이상인

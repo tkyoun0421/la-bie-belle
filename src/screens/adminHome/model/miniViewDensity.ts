@@ -1,7 +1,7 @@
 /**
  * 이번 달 근무표 미니뷰의 칸 진하기다 — 배정 인원이 많을수록 `bg.brand-weak`에서
  * `bg.brand-solid`로 진해지고 안 연 날은 빈칸이다
- * (`docs/2-design/system/screens/admin-home.md`의 「이번 달 근무표 미니뷰」).
+ * (`docs/2-design/system/screens/adminHome.md`의 「이번 달 근무표 미니뷰」).
  *
  * **여기서 나오는 것은 0~1의 비율이고 토큰이 아니다.** 어느 비율이 어느 단계로 가는지는
  * 미니 달력 조각이 든다 — 화면이 색 이름을 고르면 디자인이 두 곳에서 바뀐다.

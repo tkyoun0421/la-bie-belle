@@ -3,11 +3,11 @@ import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Text } from "@/shared/ui/Text";
-import { formatMonthName } from "@/screens/schedule-admin/model/formatScheduleDate";
+import { formatMonthName } from "@/screens/scheduleAdmin/model/formatScheduleDate";
 
 /**
  * 달 근무표를 만드는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「달 근무표 만들기 짜임」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「달 근무표 만들기 짜임」이다.
  *
  * **만들기와 마감일이 한 동작이다.** 마감일 없이 만드는 길이 없어서(SCH-005) 화면도 둘을 안
  * 가른다. 만드는 순간 접수가 열리고 전원에게 알림이 나가므로 안내 줄이 누르기 전에 그것을

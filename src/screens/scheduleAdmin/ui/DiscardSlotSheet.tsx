@@ -1,11 +1,11 @@
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
-import { discardSlotWarningLine } from "@/screens/schedule-admin/model/discardSlot";
+import { discardSlotWarningLine } from "@/screens/scheduleAdmin/model/discardSlot";
 
 /**
  * 사람이 든 자리를 버리기 전에 서는 확인이다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「날 상세 문안」 「배정 있는
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 상세 문안」 「배정 있는
  * 자리 버릴 때」 행이다.
  *
  * **빈 자리에는 이 시트가 안 선다** — 놓는 순간 사라진다. 그 갈림은 `discard-slot.ts`가 한다.

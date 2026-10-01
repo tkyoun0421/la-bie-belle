@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/admin-stats/model/chartValues.ts (아직 없다)
+// 구현 대상: src/screens/adminStats/model/chartValues.ts (아직 없다)
 //
 // AdminStatsScreen.tsx(418·429·444·458·469행)에 살던 계산 함수 다섯을 이 파일로
 // 내린다(ADR-001, eslint-rules/dumbUi.mjs는 통신 축만 봐서 못 걸렀다). 함수와
@@ -22,13 +22,13 @@ import type {
   AttendanceMonth,
   WorkMonth,
 } from "@/features/stats/api/useStatsQueries";
-import type { AttendanceTab } from "@/screens/admin-stats/model/attendanceRows";
+import type { AttendanceTab } from "@/screens/adminStats/model/attendanceRows";
 import {
   attendanceValues,
   monthIn,
   percentLabel,
   workValues,
-} from "@/screens/admin-stats/model/chartValues";
+} from "@/screens/adminStats/model/chartValues";
 
 function workedDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
   return {

@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/schedule-admin/model/adjustmentCount.ts
+// 구현 대상: src/screens/scheduleAdmin/model/adjustmentCount.ts
 //
 // 근무 조정 줄 오른쪽의 「N명 조정됨」이다(payroll-adjust AC-02). 세는 것은 마지막 조정
 // 행의 분이 0이 아닌 사람이다 — 되돌린 사람(마지막 행이 0분)은 안 센다
@@ -7,7 +7,7 @@
 import {
   adjustmentCountLine,
   type AdjustmentCountRow,
-} from "@/screens/schedule-admin/model/adjustmentCount";
+} from "@/screens/scheduleAdmin/model/adjustmentCount";
 
 describe("adjustmentCountLine — 조정한 사람이 없으면 빈 문자열이다", () => {
   it("행이 0개면 빈 문자열이다", () => {

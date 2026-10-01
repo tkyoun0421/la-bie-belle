@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/admin-home/model/vacancyCards.ts
+// 구현 대상: src/screens/adminHome/model/vacancyCards.ts
 //
 // 빈 자리 카드다(admin-home.md 「빈 자리 카드」) — 예식이 사흘 안인데 자리가 비어 있는
 // 날마다 한 장, 없으면 이 자리가 통째로 없다. 사흘 기준은 NTF-013과 같다. 시나리오는
@@ -7,7 +7,7 @@
 import {
   vacancyCards,
   vacancyDaysLeftLine,
-} from "@/screens/admin-home/model/vacancyCards";
+} from "@/screens/adminHome/model/vacancyCards";
 
 const TODAY = "2026-10-08T00:00:00Z";
 

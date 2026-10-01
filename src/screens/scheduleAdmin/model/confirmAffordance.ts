@@ -1,8 +1,8 @@
-import { kstDateOf } from "@/screens/schedule-admin/model/formatScheduleDate";
+import { kstDateOf } from "@/screens/scheduleAdmin/model/formatScheduleDate";
 
 /**
  * 확정 버튼의 세 모습이다 — 잠김·열림·끝남
- * (`docs/2-design/modules/schedule/screens/schedule-admin.md`의 「세 모습」).
+ * (`docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「세 모습」).
  *
  * **경계는 날짜가 바뀌는 자정이다.** 마감 당일까지는 잠김이고 다음 날 KST 0시부터 열린다
  * (SCH-008). 화면을 열어둔 채 자정을 넘기면 그 자리에서는 안 풀리고 다음 진입에서 풀린다 —

@@ -1,3 +1,3 @@
-import { MembersPendingScreen } from "@/screens/members-pending/ui/MembersPendingScreen";
+import { MembersPendingScreen } from "@/screens/membersPending/ui/MembersPendingScreen";
 
 export default MembersPendingScreen;

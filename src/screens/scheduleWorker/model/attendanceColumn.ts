@@ -7,7 +7,7 @@ import type { AttendanceSummary } from "@/features/attendance/model/attendanceSu
 
 /**
  * 날 시트 명단의 오른쪽 끝 열과 그 위 현황 줄이다
- * (`docs/2-design/modules/schedule/screens/schedule-worker.md`의 「인증 상태」).
+ * (`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「인증 상태」).
  *
  * **창이 열리기 전에는 열이 통째로 없다.** 다음 주 토요일 명단에 「아직 안 찍음」이 열한 줄
  * 서면 안 온 사람들처럼 읽힌다. 창이 열리는 시각의 정본은

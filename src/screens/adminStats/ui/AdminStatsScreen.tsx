@@ -46,14 +46,14 @@ import {
   attendanceRowValue,
   buildAttendanceTab,
   type AttendanceTab,
-} from "@/screens/admin-stats/model/attendanceRows";
+} from "@/screens/adminStats/model/attendanceRows";
 import {
   attendanceValues,
   monthIn,
   percentLabel,
   workValues,
-} from "@/screens/admin-stats/model/chartValues";
-import { WorkDaysSheet } from "@/screens/admin-stats/ui/WorkDaysSheet";
+} from "@/screens/adminStats/model/chartValues";
+import { WorkDaysSheet } from "@/screens/adminStats/ui/WorkDaysSheet";
 
 /**
  * 관리자가 한 달을 숫자로 보는 화면이다. 정본은

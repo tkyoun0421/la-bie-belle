@@ -5,11 +5,11 @@ import {
   adjustRowLabel,
   spellHours,
   type AdjustSheetRow,
-} from "@/screens/schedule-admin/model/adjustSheetRows";
+} from "@/screens/scheduleAdmin/model/adjustSheetRows";
 
 /**
  * 근무 조정 줄을 누르면 서는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「근무 조정」이고 문안은 같은
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「근무 조정」이고 문안은 같은
  * 문서 「날 상세 문안」의 조정 시트 행들이다.
  *
  * **머리 아래 한 줄이 근태 층을 말한다.** 줄마다 서는 최종 시간은 인증을 안 봐서, 그 층이 따로

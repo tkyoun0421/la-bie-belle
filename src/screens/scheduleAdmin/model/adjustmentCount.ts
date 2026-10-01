@@ -2,7 +2,7 @@ import { adjustedMinutes } from "@/features/payroll/model/dayMinutes";
 
 /**
  * 날 상세 근무 조정 줄 오른쪽의 셈이다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「근무 조정」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「근무 조정」이다.
  *
  * **세는 것은 마지막 조정 행의 분이 0이 아닌 사람이다.** 이 줄이 말하는 것은 「지금 손본 사람이
  * 몇인가」라, 되돌린 사람은 행이 남아 있어도 손본 사람이 아니다 — 조정 고르기 시트의

@@ -10,11 +10,11 @@ import {
   genderSymbol,
   restrictedQualifications,
   type Gender,
-} from "@/screens/schedule-admin/model/personSheet";
+} from "@/screens/scheduleAdmin/model/personSheet";
 
 /**
  * 픽커 줄을 길게 누르면 그 위에 겹쳐 올라오는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「사람 시트」다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「사람 시트」다.
  *
  * **배정하지 않는다.** 읽고 닫으면 픽커 목록 그대로다 — 넣으려면 닫고 줄을 짧게 다시 누른다.
  *

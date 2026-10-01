@@ -8,11 +8,11 @@ import {
   type AdjustmentRow,
   type WorkDayHours,
 } from "@/features/payroll/model/dayMinutes";
-import { assignedMinutes } from "@/screens/schedule-admin/model/absenceMinutes";
+import { assignedMinutes } from "@/screens/scheduleAdmin/model/absenceMinutes";
 
 /**
  * 근무 조정 시트의 사람 줄들이다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「근무 조정」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「근무 조정」이다.
  *
  * **그날 배정에서 출발한다.** 살아 있는 배정만 서고 교육 배정도 든다(PAY-007). 리허설만 있고
  * 배정이 없는 사람은 이 목록에 없다 — 그 사람을 보는 자리는 리허설 화면이다.

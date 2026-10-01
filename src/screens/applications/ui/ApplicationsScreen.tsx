@@ -25,7 +25,7 @@ import {
 
 /**
  * 그 달 근무 신청을 두 방향으로 보는 화면이다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「근무 신청 모아보기 짜임」이고
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「근무 신청 모아보기 짜임」이고
  * 완료 조건은 `docs/2-design/spec/schedule-admin.md`의 AC-06이다.
  *
  * **같은 한 질의를 두 번 접는다.** 날짜순은 근무표를 짜는 손을 따라가고 사람순은 「이 사람이

@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/schedule-admin/model/groupOpenSlots.ts
+// 구현 대상: src/screens/scheduleAdmin/model/groupOpenSlots.ts
 //
 // `open_slots` 뷰 행을 화면이 날짜별로 묶어 세기만 한다 — 판정 자체는 이미 뷰가 끝냈다
 // (design.md 「계산의 예외 하나」, plan AC-02). 확정 시트의 빈 자리 목록은 「날짜·포지션」
@@ -8,7 +8,7 @@ import {
   countOpenSlotsByDate,
   summarizeOpenSlots,
   type OpenSlotRow,
-} from "@/screens/schedule-admin/model/groupOpenSlots";
+} from "@/screens/scheduleAdmin/model/groupOpenSlots";
 
 function row(workDate: string, positions: string[] = ["스캔"]): OpenSlotRow {
   return {

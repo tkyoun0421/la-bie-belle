@@ -1,6 +1,6 @@
 /**
  * 관리자 근무표의 날짜 표기다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「표기」와 「확정 뒤 문안」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「표기」와 「확정 뒤 문안」이다.
  *
  * **달력 날짜와 시각을 갈라 읽는다.** `work_date`는 시각 없는 KST 달력 날짜라 UTC 자정으로
  * 읽어야 기기 시간대가 어디든 같은 요일이 나온다. `confirmed_at`은 실제 타임스탬프라

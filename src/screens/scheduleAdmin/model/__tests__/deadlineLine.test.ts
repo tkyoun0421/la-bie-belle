@@ -1,9 +1,9 @@
-// 구현 대상: src/screens/schedule-admin/model/deadlineLine.ts
+// 구현 대상: src/screens/scheduleAdmin/model/deadlineLine.ts
 //
 // 월 달력 머리의 마감 줄이다. 문안 표(schedule-admin.md 「월 달력 문안」) 그대로다.
 // 시나리오는 문서 예시와 같다 — 오늘 2026-09-29(화), 마감일 2026-10-02(금).
 
-import { deadlineLine } from "@/screens/schedule-admin/model/deadlineLine";
+import { deadlineLine } from "@/screens/scheduleAdmin/model/deadlineLine";
 
 describe("deadlineLine — 마감 전에는 날짜와 요일, 남은 날을 말한다", () => {
   it("오늘이 9월 29일이면 「스케줄 신청 마감 10월 2일(금) · 3일 남았어요」다", () => {

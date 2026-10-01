@@ -25,64 +25,64 @@ import {
 import {
   absenceMinutes,
   assignedMinutes,
-} from "@/screens/schedule-admin/model/absenceMinutes";
+} from "@/screens/scheduleAdmin/model/absenceMinutes";
 import {
   showRevertOption,
   type AdjustChoiceRow,
-} from "@/screens/schedule-admin/model/adjustChoiceState";
+} from "@/screens/scheduleAdmin/model/adjustChoiceState";
 import {
   adjustSheetHead,
   adjustSheetRows,
   type AdjustSheetAdjustment,
   type AdjustSheetRehearsal,
-} from "@/screens/schedule-admin/model/adjustSheetRows";
-import { adjustmentCountLine } from "@/screens/schedule-admin/model/adjustmentCount";
-import { adjustmentFailureAction } from "@/screens/schedule-admin/model/adjustmentFailure";
+} from "@/screens/scheduleAdmin/model/adjustSheetRows";
+import { adjustmentCountLine } from "@/screens/scheduleAdmin/model/adjustmentCount";
+import { adjustmentFailureAction } from "@/screens/scheduleAdmin/model/adjustmentFailure";
 import {
   allowsStructureChange,
   type DayConfirmGate,
-} from "@/screens/schedule-admin/model/confirmGate";
+} from "@/screens/scheduleAdmin/model/confirmGate";
 import {
   dayApplicationsLine,
   dayDetailRows,
-} from "@/screens/schedule-admin/model/dayDetailRows";
-import { dayHoursLine } from "@/screens/schedule-admin/model/dayHoursForm";
-import { discardSlotJudgement } from "@/screens/schedule-admin/model/discardSlot";
-import type { ForceChangeCopyInput } from "@/screens/schedule-admin/model/forceChangeCopy";
-import { formatScheduleDate } from "@/screens/schedule-admin/model/formatScheduleDate";
+} from "@/screens/scheduleAdmin/model/dayDetailRows";
+import { dayHoursLine } from "@/screens/scheduleAdmin/model/dayHoursForm";
+import { discardSlotJudgement } from "@/screens/scheduleAdmin/model/discardSlot";
+import type { ForceChangeCopyInput } from "@/screens/scheduleAdmin/model/forceChangeCopy";
+import { formatScheduleDate } from "@/screens/scheduleAdmin/model/formatScheduleDate";
 import {
   holidaySwitchState,
   type HolidayRow,
-} from "@/screens/schedule-admin/model/holidaySwitch";
-import { mergeTargetValidity } from "@/screens/schedule-admin/model/mergeTarget";
-import { classifyPickerRows } from "@/screens/schedule-admin/model/personPickerRows";
+} from "@/screens/scheduleAdmin/model/holidaySwitch";
+import { mergeTargetValidity } from "@/screens/scheduleAdmin/model/mergeTarget";
+import { classifyPickerRows } from "@/screens/scheduleAdmin/model/personPickerRows";
 import {
   POSITION_ORDER,
   assignmentForSlot,
   groupSlotsByPosition,
   slotFillCount,
-} from "@/screens/schedule-admin/model/positionRows";
-import { slotRequestBadge } from "@/screens/schedule-admin/model/slotRequestBadge";
-import { AdjustChoiceSheet } from "@/screens/schedule-admin/ui/AdjustChoiceSheet";
-import { AdjustSheet } from "@/screens/schedule-admin/ui/AdjustSheet";
-import { ConfirmChangeSheet } from "@/screens/schedule-admin/ui/ConfirmChangeSheet";
-import { DiscardSlotSheet } from "@/screens/schedule-admin/ui/DiscardSlotSheet";
+} from "@/screens/scheduleAdmin/model/positionRows";
+import { slotRequestBadge } from "@/screens/scheduleAdmin/model/slotRequestBadge";
+import { AdjustChoiceSheet } from "@/screens/scheduleAdmin/ui/AdjustChoiceSheet";
+import { AdjustSheet } from "@/screens/scheduleAdmin/ui/AdjustSheet";
+import { ConfirmChangeSheet } from "@/screens/scheduleAdmin/ui/ConfirmChangeSheet";
+import { DiscardSlotSheet } from "@/screens/scheduleAdmin/ui/DiscardSlotSheet";
 import {
   PersonPickerSheet,
   type PickerEntry,
-} from "@/screens/schedule-admin/ui/PersonPickerSheet";
-import { PersonSheet } from "@/screens/schedule-admin/ui/PersonSheet";
+} from "@/screens/scheduleAdmin/ui/PersonPickerSheet";
+import { PersonSheet } from "@/screens/scheduleAdmin/ui/PersonSheet";
 import {
   PositionRow,
   ROW_DRAG_PREFIX,
   SLOT_DRAG_PREFIX,
-} from "@/screens/schedule-admin/ui/PositionRow";
-import { QualificationSheet } from "@/screens/schedule-admin/ui/QualificationSheet";
-import { SlotSheet } from "@/screens/schedule-admin/ui/SlotSheet";
+} from "@/screens/scheduleAdmin/ui/PositionRow";
+import { QualificationSheet } from "@/screens/scheduleAdmin/ui/QualificationSheet";
+import { SlotSheet } from "@/screens/scheduleAdmin/ui/SlotSheet";
 
 /**
  * 열린 날 하나의 상세다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「날 상세 짜임」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 상세 짜임」이다.
  *
  * **확정 갈림이 둘이다.** 알림이 나가는지는 그 달이 확정됐는지로 갈리고(확인 시트), 자물쇠와
  * 끌기와 자리 추가가 서는지는 그 날이 확정 시점에 있던 날인지로 갈린다(`confirm-gate.ts`).

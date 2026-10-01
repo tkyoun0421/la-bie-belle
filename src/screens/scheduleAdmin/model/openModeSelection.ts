@@ -1,11 +1,11 @@
 import {
   formatBareDate,
   kstDateOf,
-} from "@/screens/schedule-admin/model/formatScheduleDate";
+} from "@/screens/scheduleAdmin/model/formatScheduleDate";
 
 /**
  * 날 열기 모드의 셈이다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「날 열기 모드 짜임」과
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 열기 모드 짜임」과
  * 「날 열기 모드 문안」이다.
  *
  * **고를 수 있는 칸은 안 연 날 중 오늘부터다.** 지난 날을 열면 그 배정이 급여 계산을 바로

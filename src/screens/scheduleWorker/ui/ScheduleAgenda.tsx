@@ -7,13 +7,13 @@ import {
   agendaRowStatusLabel,
   spellWorkDate,
   type MyAssignment,
-} from "@/screens/schedule-worker/model/agendaRow";
-import type { RosterRow as RosterRowValue } from "@/screens/schedule-worker/model/daySheet";
-import { DayRoster } from "@/screens/schedule-worker/ui/DayRoster";
+} from "@/screens/scheduleWorker/model/agendaRow";
+import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet";
+import { DayRoster } from "@/screens/scheduleWorker/ui/DayRoster";
 
 /**
  * 포지션 순 보기다. 열린 날이 날짜순 아코디언으로 서고 기본은 전부 접힘이다
- * (`docs/2-design/modules/schedule/screens/schedule-worker.md`의 「포지션 순 — 날짜
+ * (`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「포지션 순 — 날짜
  * 아코디언」).
  *
  * 현황 줄은 여기서 안 선다 — 날짜 줄이 이미 그 자리를 쓴다.

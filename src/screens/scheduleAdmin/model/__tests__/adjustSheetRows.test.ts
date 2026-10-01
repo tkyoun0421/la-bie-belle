@@ -1,11 +1,11 @@
-// 구현 대상: src/screens/schedule-admin/model/adjustSheetRows.ts
+// 구현 대상: src/screens/scheduleAdmin/model/adjustSheetRows.ts
 //
 // 근무 조정 시트의 사람 줄 목록이다(payroll-adjust AC-03). 그날 살아 있는 배정만이고
 // 교육 배정도 든다(PAY-007). 줄마다 그날 최종 시간이 서고, 조정이 든 줄은 「결근」·「연장」
 // 앞머리가 붙는다. 리허설이 있는 사람은 이름 아래 작은 줄이 따로 선다(건수·시각 두 갈래).
 // 리허설만 있고 배정이 없는 사람은 이 목록에 없다 — 이 시트는 그날 배정에서 출발한다.
 
-import { adjustSheetRows } from "@/screens/schedule-admin/model/adjustSheetRows";
+import { adjustSheetRows } from "@/screens/scheduleAdmin/model/adjustSheetRows";
 
 const DAY = { starts_at: "10:00", ends_at: "19:00" };
 

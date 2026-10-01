@@ -1,6 +1,6 @@
 /**
  * 날 상세 임시공휴일 줄의 스위치 상태와 아래 줄 문구다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「날 상세 짜임」과 「날 상세
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 상세 짜임」과 「날 상세
  * 문안」이다.
  *
  * **판정은 `api` 행의 유무 하나다.** 같은 날짜에 받아온 행과 손으로 넣은 행이 같이 설 수 있고

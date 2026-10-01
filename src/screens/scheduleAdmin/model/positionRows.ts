@@ -1,6 +1,6 @@
 /**
  * 날 상세의 포지션 아홉 줄이다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「포지션과 자리」고 순서는
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「포지션과 자리」고 순서는
  * `docs/2-design/modules/schedule/README.md`의 SCH-011이다.
  *
  * **겸임 자리는 받은 쪽 줄에만 선다.** `positions[0]`이 받은 쪽이다(SQL의 `positions[1]`).

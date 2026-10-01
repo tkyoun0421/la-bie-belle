@@ -50,38 +50,38 @@ import { DeadlineSheet } from "@/features/schedule/ui/DeadlineSheet";
 import {
   adminCalendarDayState,
   confirmedVacancyCount,
-} from "@/screens/schedule-admin/model/adminCalendarDayState";
+} from "@/screens/scheduleAdmin/model/adminCalendarDayState";
 import {
   confirmAffordance,
   confirmUnlockLine,
-} from "@/screens/schedule-admin/model/confirmAffordance";
-import { dayConfirmGate } from "@/screens/schedule-admin/model/confirmGate";
-import { deadlineLine } from "@/screens/schedule-admin/model/deadlineLine";
+} from "@/screens/scheduleAdmin/model/confirmAffordance";
+import { dayConfirmGate } from "@/screens/scheduleAdmin/model/confirmGate";
+import { deadlineLine } from "@/screens/scheduleAdmin/model/deadlineLine";
 import {
   confirmedLine,
   formatMonthName,
   formatMonthTitle,
   kstDateOf,
-} from "@/screens/schedule-admin/model/formatScheduleDate";
-import { countOpenSlotsByDate } from "@/screens/schedule-admin/model/groupOpenSlots";
+} from "@/screens/scheduleAdmin/model/formatScheduleDate";
+import { countOpenSlotsByDate } from "@/screens/scheduleAdmin/model/groupOpenSlots";
 import {
   isMonthFullyPast,
   shiftMonth,
-} from "@/screens/schedule-admin/model/monthEmptyState";
+} from "@/screens/scheduleAdmin/model/monthEmptyState";
 import {
   isSelectableForOpening,
   openDaysButtonLabel,
   openDaysFailureToast,
-} from "@/screens/schedule-admin/model/openModeSelection";
-import { CloseDayWarningSheet } from "@/screens/schedule-admin/ui/CloseDayWarningSheet";
-import { ConfirmSheet } from "@/screens/schedule-admin/ui/ConfirmSheet";
-import { CreateScheduleSheet } from "@/screens/schedule-admin/ui/CreateScheduleSheet";
-import { DayDetail } from "@/screens/schedule-admin/ui/DayDetail";
-import { DayHoursSheet } from "@/screens/schedule-admin/ui/DayHoursSheet";
+} from "@/screens/scheduleAdmin/model/openModeSelection";
+import { CloseDayWarningSheet } from "@/screens/scheduleAdmin/ui/CloseDayWarningSheet";
+import { ConfirmSheet } from "@/screens/scheduleAdmin/ui/ConfirmSheet";
+import { CreateScheduleSheet } from "@/screens/scheduleAdmin/ui/CreateScheduleSheet";
+import { DayDetail } from "@/screens/scheduleAdmin/ui/DayDetail";
+import { DayHoursSheet } from "@/screens/scheduleAdmin/ui/DayHoursSheet";
 
 /**
  * 관리자가 근무표를 짜는 화면이다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`고 완료 조건은
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`고 완료 조건은
  * `docs/2-design/spec/schedule-admin.md`다.
  *
  * **한 라우트가 달력과 날 상세를 둘 다 든다.** `?date=`가 있으면 그 날의 상세고 없으면

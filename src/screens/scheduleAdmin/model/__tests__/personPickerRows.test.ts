@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/schedule-admin/model/personPickerRows.ts
+// 구현 대상: src/screens/scheduleAdmin/model/personPickerRows.ts
 //
 // 사람 픽커의 「전체 보기」가 사람마다 매기는 상태 넷이다(schedule-admin.md 「사람 픽커
 // 짜임」 표) — 배정 가능(신청했고, 그날 배정이 없고, 자격이 있다) / 신청 안 함 / 자격 없음
@@ -14,7 +14,7 @@ import {
   RESTRICTED_POSITIONS,
   classifyPickerRows,
   type PersonPickerRowsInput,
-} from "@/screens/schedule-admin/model/personPickerRows";
+} from "@/screens/scheduleAdmin/model/personPickerRows";
 
 const MEMBERS = [
   { profileId: "profile-1", displayName: "박서연" },

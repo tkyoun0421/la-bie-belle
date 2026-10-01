@@ -4,11 +4,11 @@ import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
-import { isValidCancelReason } from "@/screens/schedule-worker/model/cancelRequestSheet";
+import { isValidCancelReason } from "@/screens/scheduleWorker/model/cancelRequestSheet";
 
 /**
  * 내 근무를 못 나가게 됐다고 관리자에게 알리는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-worker.md`의 「근무 취소 시트 짜임」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「근무 취소 시트 짜임」이다.
  *
  * **보내는 것은 취소가 아니라 취소 요청이다.** 관리자가 승인해야 자리가 비고 그때까지는
  * 예정대로 근무라, 부제와 버튼 둘이 그 사실을 말한다(SCH-018).

@@ -1,6 +1,6 @@
 /**
  * 조정 고르기 시트에 「원래대로」가 서는지다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「근무 조정」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「근무 조정」이다.
  *
  * **조건은 조정 행의 유무다.** 마지막 행이 0분이어서 지금 손본 것이 없는 사람에게도 선다 —
  * 「원래대로」가 행을 지우는 것이 아니라 0분인 새 행을 넣는 것이라 한 번 더 눌러도 틀린 동작이

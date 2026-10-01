@@ -4,11 +4,11 @@ import { Text } from "@/shared/ui/Text";
 import {
   forceChangeCopy,
   type ForceChangeCopyInput,
-} from "@/screens/schedule-admin/model/forceChangeCopy";
+} from "@/screens/scheduleAdmin/model/forceChangeCopy";
 
 /**
  * 확정 뒤 모든 변경 앞에 서는 확인이다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「확정 뒤 문안」이다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「확정 뒤 문안」이다.
  *
  * **오른쪽이 critical이 아니다.** 자리는 남고 다시 채울 수 있다.
  *

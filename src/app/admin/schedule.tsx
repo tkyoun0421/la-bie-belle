@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { ScheduleAdminScreen } from "@/screens/schedule-admin/ui/ScheduleAdminScreen";
+import { ScheduleAdminScreen } from "@/screens/scheduleAdmin/ui/ScheduleAdminScreen";
 
 type ScheduleParams = {
   month?: string;

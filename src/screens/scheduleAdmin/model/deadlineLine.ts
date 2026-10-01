@@ -2,11 +2,11 @@ import {
   formatBareDate,
   formatScheduleDate,
   kstDateOf,
-} from "@/screens/schedule-admin/model/formatScheduleDate";
+} from "@/screens/scheduleAdmin/model/formatScheduleDate";
 
 /**
  * 월 달력 머리의 마감 줄이다. 문안 표
- * (`docs/2-design/modules/schedule/screens/schedule-admin.md`의 「월 달력 문안」) 그대로
+ * (`docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「월 달력 문안」) 그대로
  * 마감 전이면 남은 날을, 마감 뒤면 마감일만 적는다.
  *
  * **마감 당일에 「0일 남았어요」를 안 쓴다.** 그 말은 남은 시간을 안 말한다 — 오늘이 아직

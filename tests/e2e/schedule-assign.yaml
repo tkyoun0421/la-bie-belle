@@ -2,7 +2,7 @@
 # 아홉 줄) 안쪽을 이 task가 채운다.
 #
 # 근거는 docs/2-design/spec/schedule-assign.md(AC-01·AC-03·AC-04, AC-06의 강제 변경
-# 「빼기」 조각)과 docs/2-design/modules/schedule/screens/schedule-admin.md의 「포지션과
+# 「빼기」 조각)과 docs/2-design/modules/schedule/screens/scheduleAdmin.md의 「포지션과
 # 자리」·「잠금과 구조 변경」·「사람 픽커」·「사람 시트」·「자격 없는 사람」·「확정 뒤 날
 # 상세」다. 배정받은 리스크는(schedule-assign-test-plan.md 「배정 → e2e」)
 #   - 열린 날 상세: 빈 자리 → 픽커 → 짧게 눌러 배정 → 카드에 이름·줄 셈 「1/2」·앱바 채움

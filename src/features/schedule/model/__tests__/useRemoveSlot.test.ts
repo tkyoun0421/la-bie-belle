@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 // 잠금이 풀린 포지션에서 자리를 버리는 손짓의 서버 쪽이다. `removeSlot(client, slotId)`를
 // 부르고 자리 늘리기·줄이기·겸임 셋과 같은 캐시 갱신 — `['schedule']` `['payroll']`
 // `['requests']`다(design.md 「자리 늘리기·줄이기·겸임」). 빈 자리와 사람 든 자리를 가르는
-// 확인 시트 판정은 `screens/schedule-admin/model/discardSlot.ts`의 몫이라 이 훅은 안 본다.
+// 확인 시트 판정은 `screens/scheduleAdmin/model/discardSlot.ts`의 몫이라 이 훅은 안 본다.
 
 const removeSlotMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 

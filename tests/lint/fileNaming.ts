@@ -1,6 +1,6 @@
 /**
- * 코드 파일 이름이 규약대로인지 본다 — 컴포넌트는 PascalCase, 나머지 `.ts`는 camelCase고
- * 훅은 그 훅 이름과 같다.
+ * 코드 파일과 폴더 이름이 규약대로인지 본다 — 컴포넌트는 PascalCase, 나머지 `.ts`는
+ * camelCase고 훅은 그 훅 이름과 같다. 폴더는 camelCase다.
  *
  * **무엇이 들었는지가 갈래를 정한다.** [ADR-001](../../docs/2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md)이
  * `.tsx`를 더미 UI로 못박아서 이 저장소에서 `.tsx`는 곧 컴포넌트고, 컴포넌트는 JSX 안에서
@@ -107,6 +107,7 @@ export function toStyle(stem: string, style: NameStyle): string {
 
 export type FileNamingViolation =
   | { type: "style"; file: string; style: NameStyle; suggestion: string }
+  | { type: "folder"; folder: string; suggestion: string }
   | { type: "case-collision"; files: string[] };
 
 export type CodeFile = { file: string; source: string };
@@ -193,6 +194,54 @@ export function styleViolations(files: CodeFile[]): FileNamingViolation[] {
   });
 }
 
+/**
+ * 폴더 이름을 안 보는 자리. `__tests__`는 Jest 생태계가 그 이름으로 짝 테스트 자리를
+ * 알고 `.claude/hooks/tdd-guard-unit.py`가 그 자리를 본다.
+ */
+const EXCLUDED_FOLDER_NAMES = ["__tests__"];
+
+/**
+ * 폴더 이름도 camelCase다. 저장소에 꼴이 둘이면 import 줄에서 어느 조각이 폴더고 어느
+ * 것이 파일인지 눈으로 가려야 한다.
+ *
+ * **범위의 첫 조각은 안 본다** — `src`·`tests`·`scripts`·`eslint-rules`는 저장소 맨 위
+ * 이름이고 마지막은 ESLint 플러그인 이름이다. `src/app/`은 파일과 같은 까닭으로 밖이다:
+ * Expo Router가 폴더 이름도 URL로 읽는다.
+ *
+ * `screens/`의 슬라이스는 ADR-001이 라우트 이름과 1:1을 요구하는데, 그 짝을 camel로
+ * 읽어 1:1을 지킨다 — `/admin-home` 라우트의 슬라이스가 `screens/adminHome`이다.
+ */
+export function folderViolations(files: CodeFile[]): FileNamingViolation[] {
+  const folders = new Set<string>();
+
+  for (const { file } of files.filter(inScope)) {
+    let directory = path.posix.dirname(file);
+
+    while (directory.includes("/")) {
+      folders.add(directory);
+      directory = path.posix.dirname(directory);
+    }
+  }
+
+  return [...folders]
+    .sort()
+    .filter((folder) => {
+      const name = path.posix.basename(folder);
+
+      return (
+        !EXCLUDED_FOLDER_NAMES.includes(name) && !matchesStyle(name, "camel")
+      );
+    })
+    .map((folder) => ({
+      type: "folder" as const,
+      folder,
+      suggestion: path.posix.join(
+        path.posix.dirname(folder),
+        toStyle(path.posix.basename(folder), "camel"),
+      ),
+    }));
+}
+
 /** 케이스만 달라 대소문자를 안 구별하는 파일 시스템에서 한 파일이 되는 짝. */
 export function caseCollisions(files: CodeFile[]): FileNamingViolation[] {
   const byLowered = new Map<string, string[]>();
@@ -209,7 +258,11 @@ export function caseCollisions(files: CodeFile[]): FileNamingViolation[] {
 }
 
 export function fileNamingViolations(files: CodeFile[]): FileNamingViolation[] {
-  return [...styleViolations(files), ...caseCollisions(files)];
+  return [
+    ...styleViolations(files),
+    ...folderViolations(files),
+    ...caseCollisions(files),
+  ];
 }
 
 const REASONS: Record<NameStyle, string> = {
@@ -223,6 +276,10 @@ export function describeFileNamingViolation(
 ): string {
   if (violation.type === "case-collision") {
     return `${violation.files.join("과 ")}가 케이스만 다르다 — macOS와 윈도우에서 한 파일이 돼 체크아웃이 깨진다.`;
+  }
+
+  if (violation.type === "folder") {
+    return `${violation.folder}의 이름이 camelCase가 아니다 — ${violation.suggestion}로 옮겨라.`;
   }
 
   return `${violation.file}의 ${REASONS[violation.style]} — ${violation.suggestion}로 옮겨라.`;

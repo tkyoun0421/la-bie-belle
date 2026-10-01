@@ -1,11 +1,11 @@
-// 구현 대상: src/screens/schedule-admin/model/absenceMinutes.ts
+// 구현 대상: src/screens/scheduleAdmin/model/absenceMinutes.ts
 //
 // 결근을 고른 순간 화면이 계산해 넣는 음수다 — 그날 배정 시간만큼이다
 // (payroll-adjust plan 「결근 음수는 고른 순간의 배정 시간이다」). 시:분 파싱을 새로
 // 짜지 않고 `@/features/payroll/model/dayMinutes`의 `dayMinutes`를 재사용해야
 // 두 화면(급여 화면과 이 시트)이 같은 시간을 말한다.
 
-import { absenceMinutes } from "@/screens/schedule-admin/model/absenceMinutes";
+import { absenceMinutes } from "@/screens/scheduleAdmin/model/absenceMinutes";
 
 describe("absenceMinutes — 그날 배정 시간만큼의 음수다", () => {
   it("9시간 배정이면 -540분이다", () => {

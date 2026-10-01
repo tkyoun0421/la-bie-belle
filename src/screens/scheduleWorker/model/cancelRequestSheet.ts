@@ -1,6 +1,6 @@
 /**
  * 근무 취소 시트의 사유 판정과 「보낸 뒤」 배지다
- * (`docs/2-design/modules/schedule/screens/schedule-worker.md`의 「근무 취소 시트 짜임」과
+ * (`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「근무 취소 시트 짜임」과
  * 「보낸 뒤」).
  *
  * **상한이 `create_cancel_request`와 같은 100자다.** 화면이 먼저 막고 함수가 마지막 문이라

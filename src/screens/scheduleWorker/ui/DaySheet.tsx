@@ -1,12 +1,12 @@
 import { ScrollView, View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
-import type { RosterRow as RosterRowValue } from "@/screens/schedule-worker/model/daySheet";
-import { DayRoster } from "@/screens/schedule-worker/ui/DayRoster";
+import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet";
+import { DayRoster } from "@/screens/scheduleWorker/ui/DayRoster";
 
 /**
  * 날 하나의 명단 시트다. 닫고 다른 날을 바로 눌러 훑는 흐름이 가벼우라고 별도 화면 대신
- * 바텀시트다(`docs/2-design/modules/schedule/screens/schedule-worker.md`의 「날 시트 짜임」).
+ * 바텀시트다(`docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「날 시트 짜임」).
  *
  * **버튼 둘은 내 근무 날에만, 근무 전날까지만 선다.** 교대 요청은 아직 누를 곳이 없어 자리와
  * 모양만 둔다 — 숨기면 어느 task가 그 자리를 채우는지가 화면에서 사라진다

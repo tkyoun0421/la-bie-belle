@@ -5,16 +5,16 @@ import { Button } from "@/shared/ui/Button";
 import { Icon } from "@/shared/ui/Icon";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
-import { formatMonthName } from "@/screens/schedule-admin/model/formatScheduleDate";
+import { formatMonthName } from "@/screens/scheduleAdmin/model/formatScheduleDate";
 import {
   openSlotLine,
   summarizeOpenSlots,
   type OpenSlotRow,
-} from "@/screens/schedule-admin/model/groupOpenSlots";
+} from "@/screens/scheduleAdmin/model/groupOpenSlots";
 
 /**
  * 확정 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/schedule-admin.md`의 「확정 시트」와 「결과」다.
+ * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「확정 시트」와 「결과」다.
  *
  * **시트 자체가 확인이다.** 확인을 한 번 더 겹치지 않고, 되돌릴 수 없다는 것을 아래 줄과
  * 버튼 라벨이 두 번 말한다.

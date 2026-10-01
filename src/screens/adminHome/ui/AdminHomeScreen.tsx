@@ -23,27 +23,27 @@ import { useMonthWindow } from "@/features/schedule/model/useMonthWindow";
 import { useOpenSlots } from "@/features/schedule/model/useOpenSlots";
 import { usePendingApprovals } from "@/features/schedule/model/usePendingApprovals";
 import { useSetHallDefaults } from "@/features/schedule/model/useSetHallDefaults";
-import { approvalsLine } from "@/screens/admin-home/model/approvalsLine";
-import { homeTileSummary } from "@/screens/admin-home/model/homeTileSummary";
-import { miniViewLoads } from "@/screens/admin-home/model/miniViewDensity";
-import { tileMonth } from "@/screens/admin-home/model/tileMonth";
+import { approvalsLine } from "@/screens/adminHome/model/approvalsLine";
+import { homeTileSummary } from "@/screens/adminHome/model/homeTileSummary";
+import { miniViewLoads } from "@/screens/adminHome/model/miniViewDensity";
+import { tileMonth } from "@/screens/adminHome/model/tileMonth";
 import {
   kstToday,
   spellDate,
   todayBandShares,
   todayStatus,
-} from "@/screens/admin-home/model/todayStatus";
+} from "@/screens/adminHome/model/todayStatus";
 import {
   vacancyCardTitle,
   vacancyCards,
   vacancyDaysLeftLine,
   vacancyDaysOf,
-} from "@/screens/admin-home/model/vacancyCards";
-import { HallDefaultsSheet } from "@/screens/admin-home/ui/HallDefaultsSheet";
+} from "@/screens/adminHome/model/vacancyCards";
+import { HallDefaultsSheet } from "@/screens/adminHome/ui/HallDefaultsSheet";
 
 /**
  * 관리자가 관리자 모드에서 처음 보는 허브다. 정본은
- * `docs/2-design/system/screens/admin-home.md`고 완료 조건은
+ * `docs/2-design/system/screens/adminHome.md`고 완료 조건은
  * `docs/2-design/spec/schedule-admin.md`의 AC-01이다.
  *
  * **보는 것이 먼저고 하는 것이 뒤다.** 위 묶음(오늘 현황·타일·빈 자리·미니뷰)은 지금 무슨

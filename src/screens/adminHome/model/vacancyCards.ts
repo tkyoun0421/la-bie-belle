@@ -1,8 +1,8 @@
-import { kstDateOf, spellDate } from "@/screens/admin-home/model/todayStatus";
+import { kstDateOf, spellDate } from "@/screens/adminHome/model/todayStatus";
 
 /**
  * 관리자 홈의 빈 자리 카드다 — 예식이 사흘 안인데 자리가 비어 있는 날마다 한 장이고 없으면
- * 이 자리가 통째로 없다(`docs/2-design/system/screens/admin-home.md`의 「빈 자리 카드」).
+ * 이 자리가 통째로 없다(`docs/2-design/system/screens/adminHome.md`의 「빈 자리 카드」).
  *
  * **사흘이 기준인 것은 NTF-013과 같다.** 푸시가 예식 3일 전 저녁 9시에 한 번 가고 이 카드는
  * 그 뒤로 채워질 때까지 화면에 남는다 — 푸시는 한 번이고 카드는 상태다.
