@@ -22,7 +22,7 @@ widgets 레이어는 두지 않는다. 화면 조립 덩이가 실제로 반복�
 
 ## 세그먼트
 
-**이 절은 [ADR-015](ADR-015-read-write-layers-and-fixed-segments.md)가 대체했다.** 세그먼트는 여섯으로 고정됐고 층의 뜻도 읽기·쓰기로 갈렸다. 아래는 그 전에 무엇을 왜 열어뒀는지의 기록이다.
+**이 절은 [ADR-015](ADR-015-read-write-layers-and-fixed-segments.md)가 대체했다.** 세그먼트는 다섯(`ui`·`hooks`·`api`·`model`·`utils`)으로 고정됐고 층의 뜻도 읽기·쓰기로 갈렸다. 아래는 그 전에 무엇을 왜 열어뒀는지의 기록이다.
 
 슬라이스 안은 성격대로 나눈다. `types`, `components`, `hooks`, `actions`, `dals`, `models` 같은 이름을 쓰고, 목록은 열어둔다. 새 성격이 필요하면 그 자리에서 만든다.
 
