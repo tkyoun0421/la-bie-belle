@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/rehearsal/model/daySheetRows.ts
+// 구현 대상: src/screens/rehearsal/utils/daySheetRows.utils.ts
 //
 // 날 시트의 줄 문구다(rehearsal.md 「날 시트 짜임」·「문안」) — 시각 줄은
 // 「14:00–16:00 · 2시간」, 건수 줄은 「리허설 2건 · 2시간」, 관리자는 이름이 앞에 붙어

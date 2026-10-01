@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/slotRequestBadge.ts
+// 구현 대상: src/screens/scheduleAdmin/model/slotRequestBadge.policy.ts
 //
 // 날 상세 자리 카드의 요청 대기 배지다(schedule-admin.md 「포지션과 자리」·「날 상세
 // 문안」의 「요청 2건 대기 중」). 살아 있는 요청의 pending 후보 수를 센다 — 닫힌

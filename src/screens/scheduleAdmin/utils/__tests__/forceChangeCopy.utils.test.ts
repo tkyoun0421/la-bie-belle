@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/forceChangeCopy.ts
+// 구현 대상: src/screens/scheduleAdmin/utils/forceChangeCopy.utils.ts
 //
 // 확정 뒤 확인 시트 문안 넷이다 — 배정 추가·교육 붙이기·바꾸기·빼기(schedule-admin.md
 // 「확정 뒤 문안」 표 그대로). 알림을 못 받는 사람이면 「…에게 알림이 가요」 대신 「…은

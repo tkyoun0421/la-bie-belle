@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/dayHoursForm.ts
+// 구현 대상: src/screens/scheduleAdmin/model/dayHoursForm.policy.ts
 //
 // 근무 시간 시트의 저장 버튼 활성 판정이다. 끝이 시작보다 이르면 화면이 먼저 막고
 // 서버까지 가면 `bad_hours`다(plan AC-05, schedule-admin.md AC-05).

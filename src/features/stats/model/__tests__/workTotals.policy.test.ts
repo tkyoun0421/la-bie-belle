@@ -1,4 +1,4 @@
-// 구현 대상: src/features/stats/model/workTotals.ts
+// 구현 대상: src/features/stats/model/workTotals.policy.ts
 //
 // computeWorkTotals(assignments, days) — 그달의 배정 목록과 날 목록을 받아
 // { totalMinutes, totalCount, byPerson, byPosition }을 낸다

@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/payroll/model/historyRows.ts
+// 구현 대상: src/screens/payroll/utils/historyRows.utils.ts
 //
 // PayrollHistoryDay = { date, amount, kind, position, startsAt, endsAt,
 // isEducation, overtimeMinutes }다. position·startsAt·endsAt은 배정이 없는 날

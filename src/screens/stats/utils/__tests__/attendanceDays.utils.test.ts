@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/stats/model/attendanceDays.ts (아직 없다)
+// 구현 대상: src/screens/stats/utils/attendanceDays.utils.ts (아직 없다)
 //
 // buildMyAttendanceDays(profileId, days, checkIns, excuseStatuses, now) — 근태
 // 탭 날짜 목록의 재료다(plan stats-worker AC-01, spec AC-02). 판정은

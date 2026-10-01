@@ -1,4 +1,4 @@
-// 구현 대상: src/features/holiday/model/holidayApiResponse.ts
+// 구현 대상: src/features/holiday/model/holiday.schema.ts
 //
 // 공공 API(한국천문연구원 특일 정보)의 응답을 { holiday_date, name }[]로 옮기는 순수
 // 함수 둘이다(payroll-holidays plan AC-02 「공공 API의 모양」). `import-holidays` Edge

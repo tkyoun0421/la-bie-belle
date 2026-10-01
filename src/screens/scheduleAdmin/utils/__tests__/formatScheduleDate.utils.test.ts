@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/formatScheduleDate.ts
+// 구현 대상: src/screens/scheduleAdmin/utils/formatScheduleDate.utils.ts
 //
 // 날짜 표기(schedule-admin.md 「표기」) — 「10월 10일(토)」와 확정 줄 「10월 3일에
 // 확정했어요 · 14명에게 알림을 보냈어요」(같은 문서 「확정 뒤 짜임」). `work_date`는

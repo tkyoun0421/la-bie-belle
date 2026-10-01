@@ -1,4 +1,4 @@
-// 구현 대상: src/features/payrollCompute/model/payrollDays.ts
+// 구현 대상: src/features/payrollCompute/model/payrollDays.policy.ts
 //
 // payrollDays(input) — assignments·days·adjustments·rehearsals의 날짜 합집합을 훑어
 // 날마다 dayMinutes·wageAt·dayAmount를 부르고, 결근이면(entities/attendance의

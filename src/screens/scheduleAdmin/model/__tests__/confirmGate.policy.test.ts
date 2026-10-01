@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/confirmGate.ts
+// 구현 대상: src/screens/scheduleAdmin/model/confirmGate.policy.ts
 //
 // 날 상세가 「확정 시점에 있던 날」인지 「새로 연 날」인지를 가른다(schedule-admin.md
 // 「확정 뒤 날 상세」 — 「새로 연 날(`days.opened_at`이 `confirmed_at`보다 뒤)」, plan

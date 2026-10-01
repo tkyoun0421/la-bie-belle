@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/adminHome/model/homeTileSummary.ts
+// 구현 대상: src/screens/adminHome/model/homeTileSummary.policy.ts
 //
 // 근무표 관리 타일 안 요약 줄이다. 문안 표(admin-home.md 「관리자 홈 문안」) 그대로다 —
 // 아직 없음 / 만드는 중(열린 날 수·빈 자리 수) / 확정 뒤(빈 자리 수).

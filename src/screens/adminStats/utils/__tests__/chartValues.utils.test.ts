@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/adminStats/model/chartValues.ts (아직 없다)
+// 구현 대상: src/screens/adminStats/utils/chartValues.utils.ts (아직 없다)
 //
 // AdminStatsScreen.tsx(418·429·444·458·469행)에 살던 계산 함수 다섯을 이 파일로
 // 내린다(ADR-001, eslint-rules/dumbUi.mjs는 통신 축만 봐서 못 걸렀다). 함수와
@@ -141,7 +141,7 @@ describe("attendanceValues — 출근율을 못 구하는 달은 그래프에서
   });
 });
 
-// attendanceRate는 src/entities/attendance/model/attendanceSummary.ts로 내려갔다
+// attendanceRate는 src/entities/attendance/utils/attendanceSummary.utils.ts로 내려갔다
 // (plan stats-worker AC-01). 그 자리의 단언은
 // entities/attendance/model/__tests__/attendanceSummary.test.ts가 든다 — 인자도
 // AttendanceTab이 아니라 MonthlyAttendanceTally 하나로 바뀌었다.

@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/adminCalendarDayState.ts
+// 구현 대상: src/screens/scheduleAdmin/model/adminCalendarDayState.policy.ts
 //
 // 관리자 달력 칸 하나가 어느 상태로 서는지와, 확정 뒤 빈 자리 수를 칸에 그릴지를 가른다.
 // 색과 모양의 정본은 `docs/2-design/design-system/components.md`의 「근무표 날짜 칸」과

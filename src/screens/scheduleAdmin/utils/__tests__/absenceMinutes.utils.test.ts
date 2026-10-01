@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/absenceMinutes.ts
+// 구현 대상: src/screens/scheduleAdmin/utils/absenceMinutes.utils.ts
 //
 // 결근을 고른 순간 화면이 계산해 넣는 음수다 — 그날 배정 시간만큼이다
 // (payroll-adjust plan 「결근 음수는 고른 순간의 배정 시간이다」). 시:분 파싱을 새로

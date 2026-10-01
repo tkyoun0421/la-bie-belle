@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/positionRows.ts
+// 구현 대상: src/screens/scheduleAdmin/utils/positionRows.utils.ts
 //
 // 포지션 아홉 줄로 자리를 가르고 줄 머리의 셈을 낸다(schedule-assign plan AC-02, 화면
 // 「포지션과 자리」). 겸임 자리는 `positions[0]`이 든 줄에만 선다 — TS의 `positions[0]`이

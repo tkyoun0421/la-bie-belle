@@ -1,4 +1,4 @@
-// 구현 대상: src/entities/payroll/model/wageAt.ts
+// 구현 대상: src/entities/payroll/model/wageAt.policy.ts
 //
 // wageAt(rates, date) — effective_date <= date인 행 중 가장 늦은 행의 amount를 낸다
 // (plan AC-06, PAY-008·PAY-011). 첫 행보다 이른 날은 null이다 — 승인 전 날짜라 계산에서

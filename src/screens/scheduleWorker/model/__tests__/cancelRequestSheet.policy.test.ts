@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleWorker/model/cancelRequestSheet.ts
+// 구현 대상: src/screens/scheduleWorker/model/cancelRequestSheet.policy.ts
 //
 // 근무 취소 시트의 사유 유효성과 「보낸 뒤」 배지다(schedule-worker.md 「근무 취소
 // 시트」·「보낸 뒤」). 사유는 1~100자(design.md AC-02의 `invalid_reason`과 같은 경계),

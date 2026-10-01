@@ -1,4 +1,4 @@
-// 구현 대상: src/entities/notification/model/pushResult.ts (notification-push plan AC-07)
+// 구현 대상: src/entities/notification/model/pushResult.policy.ts (notification-push plan AC-07)
 //
 // 함수 이름은 splitPushResults로 정했다 — plan이 이름을 비워둬 이 테스트가 계약을 정한다.
 // 부친 답 하나마다 {id, token, response}를 받아 넷으로 가른다 — 성공(접수증 번호),

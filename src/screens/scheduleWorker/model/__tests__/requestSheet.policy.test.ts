@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleWorker/model/requestSheet.ts
+// 구현 대상: src/screens/scheduleWorker/model/requestSheet.policy.ts
 //
 // 근무 요청 시트가 정상인지 끝났는지를 가른다(schedule-worker.md 「근무 요청 시트」의
 // 「끝난 요청」 상태). 서버가 닫았으면(`closed_at`) 물론이고, cron이 아직 안 돈

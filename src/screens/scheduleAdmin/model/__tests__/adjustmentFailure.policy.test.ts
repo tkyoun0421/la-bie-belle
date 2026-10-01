@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/adjustmentFailure.ts
+// 구현 대상: src/screens/scheduleAdmin/model/adjustmentFailure.policy.ts
 //
 // `set_adjustment`·`set_holiday`가 실패했을 때 시트가 할 일이다(payroll-adjust 상태 격자
 // 「실패」). `not_allowed`는 그날 배정이 사라진 것이라 시트를 다시 읽는다. 그 밖은

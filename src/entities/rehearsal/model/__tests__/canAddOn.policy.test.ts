@@ -1,4 +1,4 @@
-// 구현 대상: src/entities/rehearsal/model/canAddOn.ts
+// 구현 대상: src/entities/rehearsal/model/canAddOn.policy.ts
 //
 // 날 시트의 「리허설 넣기」가 사라지는 조건이다(plan AC-04, SCH-023) — 건수 갈래인 날에
 // 줄이 이미 있으면 하루 한 줄로 묶여 있어서 더 못 넣는다. 시각 갈래는 구간이 안 겹치기만

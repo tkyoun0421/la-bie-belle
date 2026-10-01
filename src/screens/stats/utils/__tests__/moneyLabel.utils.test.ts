@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/stats/model/moneyLabel.ts (아직 없다)
+// 구현 대상: src/screens/stats/utils/moneyLabel.utils.ts (아직 없다)
 //
 // tenThousandWonLabel(amount) — 근무자 급여 탭 추이 그래프의 값이다(plan
 // stats-worker AC-01, spec AC-04). 「1,296,000원」이 그래프에서는 「130만」이

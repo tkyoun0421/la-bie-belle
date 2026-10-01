@@ -9,7 +9,7 @@ import { violationsOf } from "@tests/lint/ruleCheck";
 
 const RULE_ID = "house/no-node-import-in-edge-shared";
 
-const SHARED_FILE = "src/entities/notification/model/pushMessage.ts";
+const SHARED_FILE = "src/entities/notification/utils/pushMessage.utils.ts";
 
 function importCode(specifier: string) {
   return `import { thing } from "${specifier}";\n\nexport function run() {\n  return thing;\n}\n`;

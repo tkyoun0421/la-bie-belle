@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/confirmAffordance.ts
+// 구현 대상: src/screens/scheduleAdmin/model/confirmAffordance.policy.ts
 //
 // 확정 버튼의 세 모습(schedule-admin.md 「세 모습」) — 잠김·열림·끝남. 마감일 경계는
 // 자정이다: 마감 당일까지는 잠김이고 다음 날 KST 0시부터 열린다(같은 문서 「마감일 경계는

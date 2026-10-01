@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/adjustChoiceState.ts
+// 구현 대상: src/screens/scheduleAdmin/model/adjustChoiceState.policy.ts
 //
 // 조정 고르기 시트의 「원래대로」 노출 여부다(payroll-adjust AC-04). 조건은 조정 행이
 // 하나라도 있는 것이다 — 마지막 행이 0분이어도(이미 되돌린 사람이어도) 선다. 세는 축과

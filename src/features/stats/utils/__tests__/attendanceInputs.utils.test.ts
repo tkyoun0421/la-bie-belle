@@ -1,4 +1,4 @@
-// 구현 대상: src/features/stats/model/attendanceInputs.ts
+// 구현 대상: src/features/stats/utils/attendanceInputs.utils.ts
 //
 // buildAttendanceInputs(days, checkIns, excuseStatuses, now) — 그달 배정·날
 // 시각과 checkIns·excuseStatuses를 (day_id, profile_id)로 맞물려

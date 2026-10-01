@@ -1,4 +1,4 @@
-// 구현 대상: src/features/stats/model/trend.ts
+// 구현 대상: src/features/stats/utils/trend.utils.ts
 //
 // trendMonths(viewingMonth) — 보는 달에서 열한 달을 거슬러 올라간 열두 달이다.
 // 오래된 달이 먼저, 보는 달이 마지막(오른쪽 끝)이다(plan·spec stats-admin AC-03).

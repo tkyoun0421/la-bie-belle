@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/profile/model/hasRehearsalGrant.ts
+// 구현 대상: src/screens/profile/model/hasRehearsalGrant.policy.ts
 //
 // 「나」의 리허설 줄과 /me/rehearsals 가드가 같이 쓰는 판정이다(profile.md 「리허설」,
 // design.md 「자격」) — useQualificationsQuery(client)가 낸 행 중에 내 profile_id와 position이

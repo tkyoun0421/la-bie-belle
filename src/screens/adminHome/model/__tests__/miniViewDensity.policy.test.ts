@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/adminHome/model/miniViewDensity.ts
+// 구현 대상: src/screens/adminHome/model/miniViewDensity.policy.ts
 //
 // 이번 달 근무표 미니뷰의 칸 진하기다(admin-home.md 「이번 달 근무표 미니뷰」) — 배정
 // 인원이 많을수록 `bg.brand-weak`에서 `bg.brand-solid`로 진해지고, 안 연 날은 빈칸이다.

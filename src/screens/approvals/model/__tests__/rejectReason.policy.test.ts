@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/approvals/model/rejectReason.ts
+// 구현 대상: src/screens/approvals/model/rejectReason.policy.ts
 //
 // 거절 이유 고르기의 유효성이다(approvals.md 「거절 짜임」). 아무것도 안 고르면
 // 「거절 보내기」가 비활성이고, 「직접 쓰기」를 고르면 1~100자만 유효하다 — 근무자가

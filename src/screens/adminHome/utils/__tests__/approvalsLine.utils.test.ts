@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/adminHome/model/approvalsLine.ts
+// 구현 대상: src/screens/adminHome/utils/approvalsLine.utils.ts
 //
 // 「승인할 일」 줄의 문구다(admin-home.md 「관리자 홈 문안」의 「승인할 일 · 3건」).
 // 이 task는 근무 취소 대기 건수로 이 줄을 켠다 — `usePendingApprovalsQuery`의 길이다(plan

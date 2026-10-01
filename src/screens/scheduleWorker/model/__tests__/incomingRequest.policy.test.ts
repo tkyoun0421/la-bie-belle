@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleWorker/model/incomingRequest.ts
+// 구현 대상: src/screens/scheduleWorker/model/incomingRequest.policy.ts
 //
 // 달력의 요청 온 날 점선(schedule-worker.md 「달력 순 — 기본」)이 서는 조건이다. 그
 // 날짜의 살아 있는 근무 요청에 내 pending 갈래가 있으면 참이다.

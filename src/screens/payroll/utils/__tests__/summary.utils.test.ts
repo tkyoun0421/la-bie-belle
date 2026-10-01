@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/payroll/model/summary.ts
+// 구현 대상: src/screens/payroll/utils/summary.utils.ts
 //
 // PayrollSummaryDay = { date, minutes, amount, kind, attendance }다. kind는
 // payrollDays.ts가 내는 'normal'·'overtime'·'absent'·'wage-pending' 넷이고,

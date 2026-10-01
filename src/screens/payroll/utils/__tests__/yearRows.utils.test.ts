@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/payroll/model/yearRows.ts
+// 구현 대상: src/screens/payroll/utils/yearRows.utils.ts
 //
 // PayrollMonthRow = { month: "YYYY-MM", amount }다.
 //

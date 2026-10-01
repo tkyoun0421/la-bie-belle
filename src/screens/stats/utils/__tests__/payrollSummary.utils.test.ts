@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/stats/model/payrollSummary.ts (아직 없다)
+// 구현 대상: src/screens/stats/utils/payrollSummary.utils.ts (아직 없다)
 //
 // myPayrollSubtitle(days) — 근무자 급여 탭의 보조 줄이다(plan stats-worker
 // AC-01, spec AC-04). 「근무 12건 · 108시간」 꼴이다.

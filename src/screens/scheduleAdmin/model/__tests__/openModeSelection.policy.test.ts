@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/openModeSelection.ts
+// 구현 대상: src/screens/scheduleAdmin/model/openModeSelection.policy.ts
 //
 // 날 열기 모드에서 고를 수 있는 칸 — 안 연 날이면서 오늘 이후(plan AC-02). SCH-002가
 // 「열 수 있는 날 — 오늘부터의 날짜 — 이 하루라도 남았으면」이라고 정해 오늘 당일도

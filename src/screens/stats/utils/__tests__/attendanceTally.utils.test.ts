@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/stats/model/attendanceTally.ts (아직 없다)
+// 구현 대상: src/screens/stats/utils/attendanceTally.utils.ts (아직 없다)
 //
 // myAttendanceTally(days, checkIns, excuseStatuses, profileId, now) — 내 근태
 // tally를 한 자리로 접는다. StatsScreen.tsx의 myDaysOf(그달 날을 내 배정만

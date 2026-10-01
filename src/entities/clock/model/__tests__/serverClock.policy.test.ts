@@ -1,4 +1,4 @@
-// 구현 대상: src/entities/clock/model/serverClock.ts
+// 구현 대상: src/entities/clock/model/serverClock.policy.ts
 //
 // 서버 시각 오프셋과 만료 판정의 순수 계산이다(runtime.md 「서버 시각」, plan
 // schedule-requests.md 「총괄이 정한 것」 2·3). `serverOffset`이 앱이 뜰 때 한 번 잰

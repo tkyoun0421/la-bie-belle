@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/payroll/model/boundary.ts
+// 구현 대상: src/screens/payroll/model/boundary.policy.ts
 //
 // Period는 period.ts와 같은 꼴이다 — { unit: "week"; weekStart } |
 // { unit: "month"; month } | { unit: "year"; year }.

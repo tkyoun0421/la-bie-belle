@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/approvals/model/approvalDetail.ts
+// 구현 대상: src/screens/approvals/utils/approvalDetail.utils.ts
 //
 // 근무 취소 상세 시트의 문안이다. 정본은 approvals.md 「상세 시트 문안」 표 그대로다 —
 // 제목이 사람 이름·근무 날·요일·포지션, 부제가 그날 근무 시간, 보낸 시각 줄, 사유는

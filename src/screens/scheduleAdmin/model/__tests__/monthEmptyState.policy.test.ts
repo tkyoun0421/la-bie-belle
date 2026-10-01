@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/monthEmptyState.ts
+// 구현 대상: src/screens/scheduleAdmin/model/monthEmptyState.policy.ts
 //
 // 「전부 지난 달」 판정이다 — 그 달의 마지막 날이 오늘(KST) 이전이면 만들기 버튼이 없고
 // 빈 상태 제목만 남는다(plan AC-02, schedule-admin.md 「달 근무표 만들기 짜임」의

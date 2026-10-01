@@ -1,4 +1,4 @@
-// 구현 대상: src/entities/attendance/model/attendanceSummary.ts (아직 없다)
+// 구현 대상: src/entities/attendance/utils/attendanceSummary.utils.ts (아직 없다)
 //
 // tallyMonthlyAttendance는 지금 features/attendance/model/attendanceSummary.ts에
 // 산다. features/stats/model/__tests__/attendanceInputs.test.ts가 이것을 부르려고

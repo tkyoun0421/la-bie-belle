@@ -1,6 +1,6 @@
-// 구현 대상: src/screens/stats/model/chartValues.ts (아직 없다)
+// 구현 대상: src/screens/stats/utils/chartValues.utils.ts (아직 없다)
 //
-// 관리자 쪽 src/screens/adminStats/model/chartValues.ts의 workValues·
+// 관리자 쪽 src/screens/adminStats/utils/chartValues.utils.ts의 workValues·
 // attendanceValues에 해당하는 것이 근무자에게 없다(stats.md 「추이 그래프」
 // 표). 근무자는 탭이 셋이라 값도 셋이다 — 근태는 내 출근율, 포지션은 내
 // 근무 시간 합, 급여는 내 급여 합이다.

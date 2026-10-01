@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/scheduleAdmin/model/mergeTarget.ts
+// 구현 대상: src/screens/scheduleAdmin/model/mergeTarget.policy.ts
 //
 // 줄 머리를 다른 줄 머리에 겹쳤을 때 합침이 유효한지를 좌표가 아니라 데이터로만 판정한다
 // (schedule-admin.md 「잠금과 구조 변경」 — 「양쪽에 빈 자리가 없으면 안 놓인다」·「두 줄 다

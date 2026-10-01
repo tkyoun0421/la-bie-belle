@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/stats/model/attendanceSummaryLine.ts (아직 없다)
+// 구현 대상: src/screens/stats/utils/attendanceSummaryLine.utils.ts (아직 없다)
 //
 // attendanceSummaryLine(tally) — 근태 현황 줄이다(stats.md 「근태 현황
 // 줄」·「통계 문안」의 「출근 41 · 지각 4 · 출근 인정 2 · 결근 1」). 관리자

@@ -1,4 +1,4 @@
-// 구현 대상: src/features/payrollCompute/model/payrollTotal.ts
+// 구현 대상: src/features/payrollCompute/utils/payrollTotal.utils.ts
 //
 // weekTotals(days) — 주는 월요일에 시작해 일요일에 끝난다(PAY-021). 달을 걸친 주도
 // 주 하나로 묶는다.

@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/stats/model/attendanceShares.ts (아직 없다)
+// 구현 대상: src/screens/stats/utils/attendanceShares.utils.ts (아직 없다)
 //
 // attendanceRatioShares(tally) — 근태 탭 비율 띠의 몫 넷이다(plan stats-worker
 // AC-01, spec AC-02). 순서는 출근→인정→지각→결근이고(stats.md 「근태 현황

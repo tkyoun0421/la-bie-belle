@@ -1,4 +1,4 @@
-// 구현 대상: src/features/stats/model/myTotals.ts (아직 없다)
+// 구현 대상: src/features/stats/utils/myTotals.utils.ts (아직 없다)
 //
 // computeMyWorkTotals(assignments, days, profileId) — workTotals.ts의
 // computeWorkTotals를 그대로 불러 입력을 그 사람 배정으로 좁힌다(plan

@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/payroll/model/period.ts
+// 구현 대상: src/screens/payroll/model/period.policy.ts
 //
 // Period는 { unit: "week"; weekStart } | { unit: "month"; month } | { unit: "year"; year }다
 // (weekStart는 그 주의 월요일 "YYYY-MM-DD", month는 "YYYY-MM", year는 "YYYY").

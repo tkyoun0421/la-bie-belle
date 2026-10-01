@@ -1,4 +1,4 @@
-// 구현 대상: src/features/stats/model/personDays.ts
+// 구현 대상: src/features/stats/utils/personDays.utils.ts
 //
 // computePersonDays(profileId, assignments, days) — 한 사람의 날짜별 근무다
 // (plan stats-admin AC-02, spec stats-admin AC-02). WorkAssignment·WorkDay는

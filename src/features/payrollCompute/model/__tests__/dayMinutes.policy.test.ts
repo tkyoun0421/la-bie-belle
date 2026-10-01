@@ -1,4 +1,4 @@
-// 구현 대상: src/features/payrollCompute/model/dayMinutes.ts
+// 구현 대상: src/features/payrollCompute/model/dayMinutes.policy.ts
 //
 // dayMinutes({ assignments, day, adjustments, rehearsals }) — 그날 총 분을 낸다
 // (plan AC-06). 배정 시간은 day.starts_at~ends_at 그대로고 휴게를 안 뺀다(PAY-004).

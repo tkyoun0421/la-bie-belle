@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/adminStats/model/attendanceRows.ts
+// 구현 대상: src/screens/adminStats/utils/attendanceRows.utils.ts
 //
 // buildAttendanceRows(people) — 근태 탭 사람별 목록을 조립한다(plan·spec
 // stats-admin AC-09, stats.md「근태 사람별 목록」). AttendanceRowInput은
