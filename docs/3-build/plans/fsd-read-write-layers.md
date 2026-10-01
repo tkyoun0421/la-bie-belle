@@ -114,7 +114,7 @@ sources:
 
 **둘로 갈라 AC-07을 그 사이에 끼운다.** 가는 자리를 정리하고 나는 이름을 붙인다 — 까닭은 아래 「구현 순서」가 든다.
 
-#### AC-06가 — `shared/`가 세그먼트로 갈리고 층이 틀린 것이 제 층으로 간다
+#### AC-06가 — `shared/`가 세그먼트로 갈리고 층이 틀린 것이 제 층으로 간다 ✅
 
 - 전제: `shared/lib/` 스물아홉이 세그먼트 없이 한 폴더에 섞여 있고, 그중 열은 기능이나 도메인에 매여 있다. 달 경계를 내는 순수 함수가 dal 넷에 사본으로 흩어져 있다
 - 행동
@@ -124,6 +124,10 @@ sources:
   - `features/auth/`에서 세그먼트 없이 슬라이스 루트에 사는 셋(`decideEntry`·`googlePhotoOf`·`resolveEntryDestination`)에 세그먼트를 준다
 - 관찰 결과: `pnpm lint`의 `no-cross-slice-import`가 0건이고, `src/` 아래 모든 `.ts`가 세그먼트 다섯 중 하나 안에 산다. 셋이 초록이다
 - 왜 여기인가: AC-07의 완료 조건이 「교차 0건」인데 교차를 만드는 함수가 아직 아래층에 사본으로 있다. 그 사본을 먼저 걷어야 쪼개기가 걸리는지 아닌지로 배정을 판정할 수 있다
+- 돌면서 나온 것 — **`sessionStorage`는 `shared/api`에 남는다.** 계획이 인증 흐름 다섯에 넣어 `features/auth`로 보냈는데, 그러면 `shared/api/createSupabaseClient`가 그것을 당겨 「`shared`는 `features`를 모른다」에 걸린다. 세션을 만들고 끊는 쓰기가 아니라 클라이언트가 받는 저장소 어댑터고 부르는 쪽도 그 팩토리 하나다 — 떠나는 열이 아홉이 된다
+- 돌면서 나온 것 — **`fontLoading`에 훅이 없다.** 계획이 `useFontLoading`으로 이름을 바꿔 `hooks`에 넣으라고 적었는데 그 파일이 내놓는 것은 자산 표와 판정 둘(`shouldRenderApp`·`shouldDismissSplash`)뿐이다. 이름을 안 바꾸고 `utils`로 보냈다. 그 판정이 `utils`에 사는 것은 업무 규칙이 아니고 `shared/`에 `model`이 안 서기 때문이다 — AC-06나의 관찰 결과에 그 범위를 적었다
+- 돌면서 나온 것 — **jest 갈래 둘이 ESM 판정 캐시를 나눠 써 스위트 하나가 뜨지 못했다.** `jest-resolve`가 그 판정을 경로만으로 캐시해서, 한 워커가 `logic`과 `components`를 번갈아 받으면 먼저 본 갈래의 답이 다음 갈래에도 적용된다. `cn.ts`처럼 양쪽이 다 쓰는 파일이 그 자리고 묶음 5가 흔들림으로 한 번 봤다. `pnpm test`가 `jest`를 두 번 돌리게 고쳤다([관찰 048](../../observations/048-jest-projects-share-esm-cache.md))
+- 돌면서 나온 것 — **쪼갠 뒤 교차가 0이 되는 것을 확인했다.** 배정 표를 파일마다 대보는 스크립트로 세 교차 0·역방향 0이다. 교차를 만들던 둘은 `monthStart` 사본이었고 이 묶음이 걷었다
 
 #### AC-06나 — 타입·검증·상태·판정이 접미사를 받는다
 
@@ -216,11 +220,11 @@ sources:
 
 ### shared 재편
 
-**이 표는 `shared/` 전체다** — `shared/lib`의 스물아홉뿐 아니라 이미 `shared/api`에 사는 `database`·`errors` 같은 것도 든다. 떠나는 열을 뺀 열아홉이 `shared/lib`에서 온다.
+**이 표는 `shared/` 전체다** — `shared/lib`의 스물아홉뿐 아니라 이미 `shared/api`에 사는 `database`·`errors` 같은 것도 든다. 떠나는 아홉을 뺀 스물이 `shared/lib`에서 온다.
 
 | 세그먼트 | 담는 것 |
 | --- | --- |
-| `api` | `database` `database-types` `errors` `error-codes` `supabase` `create-supabase-client` **`query-keys`(다섯에서 모음)** `query-client` `read-supabase-env` `read-app-url` |
+| `api` | `database` `database-types` `errors` `error-codes` `supabase` `create-supabase-client` `session-storage` **`query-keys`(다섯에서 모음)** `query-client` `read-supabase-env` `read-app-url` `months-query` |
 | `hooks` | `useTheme` |
 | `utils` | `kst-date` `spell-number` `cn`(`utils`에서 이름 바꿈) `month-boundary` **`month-range`(새로 선다)** `mini-calendar` `month-picker` `day-band` `no-value` `reduce-motion` `catalog-visibility` `dev-door` `theme` `font-loading` |
 | `ui` | 조각 쉰하나 — 그대로 |
@@ -231,11 +235,11 @@ sources:
 
 **zustand store 둘의 자리가 갈린다.** `use*`로 불리는 것은 훅이라 `hooks/`에 제 이름으로 살고(`shared/hooks/useTheme.ts`), 그렇지 않은 것은 `model/`에서 `[domain].store.ts`를 받는다(`entities/clock/model/clock.store.ts`). ADR-015의 「전역 상태는 `model`」과 「훅 파일은 그 훅 이름」이 한 파일에서 부딪히는 자리고, 부르는 이름을 이긴 쪽으로 둔다 — AC-08의 「`hooks/` 밖에서 `use*` export 금지」도 그 편이다.
 
-**`shared/lib`를 떠나는 열.** 인증 흐름은 로그인이라는 use case에 매여 있어 「어느 기능에도 매이지 않은 것」이 아니고, 서버 시각은 `entities/clock`이 이미 있는데 거기 안 들어가 있었다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거다.
+**`shared/lib`를 떠나는 아홉.** 인증 흐름은 로그인이라는 use case에 매여 있어 「어느 기능에도 매이지 않은 것」이 아니고, 서버 시각은 `entities/clock`이 이미 있는데 거기 안 들어가 있었다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거다.
 
 | 가는 곳 | 파일 | 왜 |
 | --- | --- | --- |
-| `features/auth` | `auth-redirect` `handle-auth-callback` `sign-out` `wire-auto-refresh` `session-storage` | 세션을 만들고 끊고 잇는 쓰기다 |
+| `features/auth` | `auth-redirect` `handle-auth-callback` `sign-out` `wire-auto-refresh` | 세션을 만들고 끊고 잇는 쓰기다 |
 | `entities/session` | `get-current-user` `resolve-admin-guard` `resolve-auth-destination` | 누가 들어왔고 어디로 보낼 수 있나 — 읽기와 제약이다 |
 | `entities/clock` | `server-clock` `server-clock-store` | 이미 그 슬라이스가 있다 |
 
@@ -290,7 +294,7 @@ sources:
 3. **AC-03 — 캐시 키 팩토리.** ✅ 여섯과 dal 키 함수 여섯을 `shared/api/queryKeys.ts` 하나로. 키 하나를 정본 쪽으로 되돌렸다 — 관찰 045의 겹침
 4. **AC-04 — 통신을 `api/`로 + `.api.ts`** ✅ 172개를 `git mv`했다
 5. **AC-05 — 훅을 `hooks/`로 + 층 가르기 + `Query`·`Mutation`** ✅ 205개를 `git mv`하고 `useStatsQueries`를 넷으로 갈랐다 — 관찰 046
-6. **AC-06가 — `shared/` 재편 + 교차를 만드는 순수 함수 추출**
+6. **AC-06가 — `shared/` 재편 + 교차를 만드는 순수 함수 추출** ✅ 쉰아홉을 `git mv`하고 `monthStart` 사본 넷을 접었다. 교차가 0이 됐다
 7. **AC-07 — 슬라이스 쪼개기**
 8. **AC-06나 — 타입 빼기 + `model`/`utils` 가르기 + 나머지 접미사**
 9. **AC-08 — 검사 여덟**

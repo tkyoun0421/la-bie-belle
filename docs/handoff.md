@@ -6,9 +6,9 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 여섯째 묶음이다 — 타입 빼내기와 `model`·`utils` 가르기(AC-06).** 타입 선언 360개 중 도메인의 모양을 말하는 것을 `[domain].type.ts`로 빼고, 순수 함수를 판정(`[domain].policy.ts`)과 꼴 바꾸기(`[domain].utils.ts`)로 갈라 옮기고, 바깥 값 검증을 `[domain].schema.ts`로, zustand store를 `[domain].store.ts`로 모은다. `shared/lib/` 29개도 `api`·`hooks`·`utils` 셋으로 가르고 층이 틀린 열은 `features/auth`·`entities/session`·`entities/clock`으로 보낸다. **같이 고칠 두 줄이 여기 있다** — `scripts/syncEdgeShared.mts`와 `eslint-rules/noNodeImportInEdgeShared.mjs`가 `features/notification/model/`을 글자로 박고 있고 그 폴더의 파일들이 이 묶음에서 움직인다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
+**다음 첫 수는 `fsd-read-write-layers`의 일곱째 묶음이다 — 슬라이스 쪼개기(AC-07).** 계획의 「슬라이스 배정」 표 둘이 `entities` 14와 `features` 22를 이름까지 적어 두고, 그 표를 지금 코드에 대본 결과가 **쪼갠 뒤 교차 0·역방향 0**이다. 묶음 6가가 교차를 만들던 `monthStart` 사본 넷을 걷어 그 숫자를 만들었다. 묶음 순서가 아홉이 됐다 — 6가(끝) → **7** → 6나(타입·접미사) → 8(검사). **같이 고칠 줄들이 여기 있다** — `scripts/syncEdgeShared.mts`와 `eslint-rules/noNodeImportInEdgeShared.mjs`가 `features/notification/model/`을, `tests/lint/attendanceConstants.ts`가 `src/entities/attendance/model/constants.ts`를 글자로 박고 있다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
 
-**묶음 다섯이 끝났다(#483·#484·#485·#486·#487).** 이름이 camelCase가 되고(535개, `Db`→`DB` 334회), 폴더도 camelCase가 되고, 캐시 키가 `src/shared/api/queryKeys.ts` 팩토리 하나로 모이고, 통신 74개가 `entities/*/api/`의 `[action].api.ts`가 되고, 훅 59개가 `hooks/`로 가며 읽기·쓰기로 층이 갈렸다. 지금 **`entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다.**
+**묶음 여섯이 끝났다(#483·#484·#485·#486·#487 그리고 6가).** 이름이 camelCase가 되고(535개, `Db`→`DB` 334회), 폴더도 camelCase가 되고, 캐시 키가 `src/shared/api/queryKeys.ts` 팩토리 하나로 모이고, 통신 74개가 `entities/*/api/`의 `[action].api.ts`가 되고, 훅 59개가 `hooks/`로 가며 읽기·쓰기로 층이 갈렸다. 그리고 `shared/lib`이 사라져 `api`·`hooks`·`utils`로 갈리고 층이 틀린 아홉이 `features/auth`·`entities/session`·`entities/clock`으로 갔다. 지금 **`entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다.**
 
 **묶음마다 커밋이 성격으로 갈려 있다** — 자리와 이름만 바꾸는 커밋은 내용 0줄이고 참조 수정이 그 뒤에 온다. `git log --follow`가 이동을 따라가게 하는 값이고, 리뷰도 생각이 든 커밋만 읽으면 된다. 남은 묶음 셋도 같은 꼴로 간다.
 
@@ -16,7 +16,9 @@
 
 **계획이 둔 자리를 규칙에 대보지 않은 것이 두 번 났다([관찰 046](observations/046-plan-placement-not-checked-against-rules.md), open).** `useStatsQueries.ts`를 AC-04가 한 번, AC-05가 한 번 잘못 배치했다 — 그 파일만 `entities` 세 슬라이스를 함께 읽어 `no-cross-slice-import`에 걸린다. 묶음 5에서 넷으로 가르며 정했다. `removePushToken`도 같은 꼴로 걸렸다(짝 테스트가 `features`의 함수를 쓴다). **AC-07이 슬라이스를 열여섯·스물로 쪼개므로 그 묶음에 들어가기 전에 자리마다 import 방향을 먼저 대본다.**
 
-**그리고 `shared/lib` 스물아홉 중 열은 층이 틀렸다.** 인증 흐름은 로그인이라는 use case에 매여 있어 `features/auth`로, 「누가 들어왔나」 판정은 읽기라 새로 서는 `entities/session`으로, 서버 시각 둘은 이미 있던 `entities/clock`으로 간다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거였다.
+**`sessionStorage`는 계획이 보낸 자리에 못 섰다.** `features/auth`로 보내면 `shared/api/createSupabaseClient`가 그것을 당겨 「`shared`는 `features`를 모른다」에 걸린다 — 세션을 만드는 쓰기가 아니라 클라이언트가 받는 저장소 어댑터고, 그래서 떠나는 열이 아홉이 됐다. `fontLoading`도 계획이 `useFontLoading`으로 이름을 바꾸라 적었는데 그 파일에 훅이 없어 `utils`로 갔다.
+
+**`pnpm test`가 이제 `jest`를 두 번 돌린다([관찰 048](observations/048-jest-projects-share-esm-cache.md), closed).** 갈래 둘이 `.ts`를 ESM으로 볼지에서 갈리는데 `jest-resolve`가 그 판정을 경로만으로 캐시해서, 한 워커가 두 갈래를 번갈아 받으면 먼저 본 답이 다음 갈래에도 적용된다. 양쪽이 다 쓰는 `.ts`에서 「Must use import to load ES Module」이 뜨고 스위트 순서에 따라 뜨다 말다 한다 — 묶음 5가 애니메이션 타이머로 짚었던 흔들림이 이 자리였다. 필터(`pnpm test -- X`)는 두 갈래에 그대로 가고 안 걸리는 쪽은 넘어간다.
 
 **NCP 자격은 사람이 받아 와야 한다.** 받을 것은 [배포 환경](5-deploy/environments.md#데이터와-외부-의존성)의 「지도 키」 줄이 든다 — 대표 계정을 먼저 지정하고, Application 하나에 Maps → Dynamic Map을 켜 안드로이드·iOS 식별자(둘 다 `com.labiebelle.app`)를 등록해 Client ID 한 쌍을 받고, Map Style Editor로 라이트·다크 스타일을 만들어 `customStyleId` 둘을 받는다. 그것이 오면 `attendance-checkin`이 풀리고 그 뒤로 `dashboard`·`attendance-excuse`·`notification-emit` 사슬이 선다. 기다리는 동안 `candidate`를 올려 잡으려면 `spell-number-shared`·`test-seed-transaction`·`internal-grants-public`·`unbounded-read-truncates`·`stats-density-salvage` 중에서 고른다.
 
