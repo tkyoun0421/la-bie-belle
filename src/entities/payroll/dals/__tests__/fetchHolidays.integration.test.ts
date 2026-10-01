@@ -78,6 +78,30 @@ function apiHolidayCountInYear(year: number): number {
   return Number(rows[0] ?? "0");
 }
 
+/**
+ * `public.holidays`에 아직 아무 행도 없는 연도. 범위가 `payrollFunctions.integration.test.ts`와
+ * 안 겹친다 — 둘이 같은 풀에서 뽑던 판에서 아래 「아무것도 안 들어간다」 단언이 그 파일의
+ * 행을 세며 깨졌다.
+ */
+function freshHolidayYear(): number {
+  for (
+    let year = 2500 + Math.floor(Math.random() * 400);
+    year < 2950;
+    year += 1
+  ) {
+    const used = queryColumn(
+      "select count(*) from public.holidays\n" +
+        "where holiday_date >= make_date(:'year'::integer, 1, 1)\n" +
+        "  and holiday_date < make_date(:'year'::integer + 1, 1, 1);\n",
+      { year: String(year) },
+    );
+    if (Number(used[0] ?? "0") === 0) {
+      return year;
+    }
+  }
+  throw new Error("빈 공휴일 연도가 없다 — 2500~2949가 다 찼다");
+}
+
 function nextYear(): number {
   return new Date().getUTCFullYear() + 1;
 }
@@ -163,7 +187,7 @@ describe("internal.fetch_holidays — 다음 해 조건(plan AC-01)", () => {
 describe("public.import_holidays 껍데기(plan AC-02) — service role만 통과한다", () => {
   it("로그인한 클라이언트가 rpc('import_holidays')를 부르면 not_allowed로 거절되고 아무것도 안 들어간다", async () => {
     const admin = await createAdminUser();
-    const year = 2050 + Math.floor(Math.random() * 900);
+    const year = freshHolidayYear();
 
     const { error } = await rpc(admin, "import_holidays", {
       p_year: year,

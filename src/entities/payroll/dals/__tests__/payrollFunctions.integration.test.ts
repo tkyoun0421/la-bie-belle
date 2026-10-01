@@ -7,6 +7,7 @@ import {
   execSql,
   kstDate,
   kstMonthStart,
+  queryColumn,
   seedAssignment,
   withFreshMonth,
   type AdminUser,
@@ -72,8 +73,29 @@ function freshPastDate(): string {
   return kstDate(-(24 + Math.floor(Math.random() * 90000)));
 }
 
+/**
+ * `public.holidays`는 테스트마다 안 비워져서 연도로 자리를 가른다. **범위가
+ * `fetchHolidays.integration.test.ts`와 겹치지 않아야 한다** — 둘이 같은 풀에서
+ * 뽑던 판에서 그 파일의 「아무것도 안 들어간다」 단언이 이쪽 행을 세며 깨졌다.
+ * 뽑은 연도가 이미 쓰였으면 다음 연도로 민다.
+ */
 function freshHolidayYear(): number {
-  return 2050 + Math.floor(Math.random() * 900);
+  for (
+    let year = 2050 + Math.floor(Math.random() * 450);
+    year < 2500;
+    year += 1
+  ) {
+    const used = queryColumn(
+      "select count(*) from public.holidays\n" +
+        "where holiday_date >= make_date(:'year'::integer, 1, 1)\n" +
+        "  and holiday_date < make_date(:'year'::integer + 1, 1, 1);\n",
+      { year: String(year) },
+    );
+    if (Number(used[0] ?? "0") === 0) {
+      return year;
+    }
+  }
+  throw new Error("빈 공휴일 연도가 없다 — 2050~2499가 다 찼다");
 }
 
 function seedWageRate(
