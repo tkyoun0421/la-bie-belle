@@ -8,9 +8,12 @@ import type { ReactNode } from "react";
 
 const editRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/rehearsal/api/editRehearsal.api", () => ({
-  editRehearsal: editRehearsalMock,
-}));
+jest.unstable_mockModule(
+  "@/features/rehearsalEdit/api/editRehearsal.api",
+  () => ({
+    editRehearsal: editRehearsalMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
@@ -19,7 +22,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useEditRehearsalMutation } =
-  await import("@/features/rehearsal/hooks/useEditRehearsalMutation");
+  await import("@/features/rehearsalEdit/hooks/useEditRehearsalMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

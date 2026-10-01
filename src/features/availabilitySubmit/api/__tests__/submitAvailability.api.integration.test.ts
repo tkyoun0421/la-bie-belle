@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
-import { submitAvailability } from "@/features/schedule/api/submitAvailability.api";
+import { submitAvailability } from "@/features/availabilitySubmit/api/submitAvailability.api";
 import {
   backdateDeadline,
   createAdminUser,

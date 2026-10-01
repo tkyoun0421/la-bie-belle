@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { DB } from "@/shared/api/database";
 import { DomainError, TransportError } from "@/shared/api/errors";
-import { checkIn } from "@/entities/attendance/api/checkIn.api";
+import { checkIn } from "@/features/attendanceCheckin/api/checkIn.api";
 
 const PARAMS = {
   dayId: "day-1",

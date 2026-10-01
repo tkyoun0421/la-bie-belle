@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import { createCancelRequest } from "@/features/schedule/api/createCancelRequest.api";
+import { createCancelRequest } from "@/features/workRequest/api/createCancelRequest.api";
 
 /**
  * 근무자가 자기 근무를 취소해 달라고 낸다. 근무는 아직 그대로지만 그 배정에 「취소 요청 중」이

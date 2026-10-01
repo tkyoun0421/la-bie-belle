@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const openDayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/schedule/api/openDay.api", () => ({
+jest.unstable_mockModule("@/features/scheduleDay/api/openDay.api", () => ({
   openDay: openDayMock,
 }));
 
@@ -21,7 +21,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useOpenDayMutation } =
-  await import("@/features/schedule/hooks/useOpenDayMutation");
+  await import("@/features/scheduleDay/hooks/useOpenDayMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

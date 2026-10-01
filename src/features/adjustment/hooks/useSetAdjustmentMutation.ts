@@ -5,7 +5,7 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   setAdjustment,
   type SetAdjustmentInput,
-} from "@/features/payroll/api/setAdjustment.api";
+} from "@/features/adjustment/api/setAdjustment.api";
 
 /**
  * 그날 그 사람의 근무 시간을 조정한다. 응답을 기다린다 — 고치는 자리가 시트 안이고 그날 배정이

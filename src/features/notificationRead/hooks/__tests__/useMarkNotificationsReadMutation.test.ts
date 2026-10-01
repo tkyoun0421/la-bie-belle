@@ -5,7 +5,7 @@ const markNotificationsReadMock =
   jest.fn<(...args: unknown[]) => Promise<void>>();
 
 jest.unstable_mockModule(
-  "@/features/notification/api/markNotificationsRead.api",
+  "@/features/notificationRead/api/markNotificationsRead.api",
   () => ({
     markNotificationsRead: markNotificationsReadMock,
   }),
@@ -17,7 +17,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useMarkNotificationsReadMutation } =
-  await import("@/features/notification/hooks/useMarkNotificationsReadMutation");
+  await import("@/features/notificationRead/hooks/useMarkNotificationsReadMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

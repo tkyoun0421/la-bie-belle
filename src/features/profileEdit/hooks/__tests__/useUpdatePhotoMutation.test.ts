@@ -8,14 +8,20 @@ import type { ReactNode } from "react";
 const uploadAvatarMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const updateMyPhotoMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/profile/api/avatarsBucket.api", () => ({
-  uploadAvatar: uploadAvatarMock,
-  AVATARS_BUCKET: "avatars",
-}));
+jest.unstable_mockModule(
+  "@/features/profileEdit/api/avatarsBucket.api",
+  () => ({
+    uploadAvatar: uploadAvatarMock,
+    AVATARS_BUCKET: "avatars",
+  }),
+);
 
-jest.unstable_mockModule("@/features/profile/api/updateMyPhoto.api", () => ({
-  updateMyPhoto: updateMyPhotoMock,
-}));
+jest.unstable_mockModule(
+  "@/features/profileEdit/api/updateMyPhoto.api",
+  () => ({
+    updateMyPhoto: updateMyPhotoMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
@@ -23,7 +29,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useUpdatePhotoMutation } =
-  await import("@/features/profile/hooks/useUpdatePhotoMutation");
+  await import("@/features/profileEdit/hooks/useUpdatePhotoMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

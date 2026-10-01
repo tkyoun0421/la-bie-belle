@@ -1,4 +1,4 @@
-import type { PayrollDayKind } from "@/features/payroll/model/payrollDays";
+import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays";
 
 /**
  * 급여 탭 보조 줄이다 — 「근무 12건 · 108시간」

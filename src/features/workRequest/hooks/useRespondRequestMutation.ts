@@ -5,7 +5,7 @@ import { staleTogether } from "@/shared/api/queryKeys";
 import {
   respondRequest,
   type RequestAnswer,
-} from "@/features/schedule/api/respondRequest.api";
+} from "@/features/workRequest/api/respondRequest.api";
 
 /**
  * 근무자가 받은 요청에 답한다. 수락이 곧 배정이라 근무표와 급여와 요청이 같이 낡는다.

@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { getMyExcuses } from "@/entities/attendance/api/getMyExcuses.api";
+import { getMyExcuses } from "@/entities/excuse/api/getMyExcuses.api";
 import {
   createAdminUser,
   createApprovedUser,

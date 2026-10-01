@@ -2,7 +2,7 @@ import {
   isLeftOverAYear,
   sortActiveMembers,
   sortLeftMembers,
-} from "@/entities/profile/model/sortMembers";
+} from "@/entities/member/model/sortMembers";
 
 // 직원 화면의 두 목록을 정렬한다(`docs/2-design/modules/account/screens/members.md`의
 // 「재직자 줄」·「퇴사 구획」). 재직자는 가나다순이고 관리자를 위로 올리지 않는다 — 이

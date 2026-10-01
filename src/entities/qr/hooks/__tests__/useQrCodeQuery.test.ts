@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 const getQrCodeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const FAKE_STALE_TIME = 12345;
 
-jest.unstable_mockModule("@/entities/attendance/api/getQrCode.api", () => ({
+jest.unstable_mockModule("@/entities/qr/api/getQrCode.api", () => ({
   getQrCode: getQrCodeMock,
   QR_CODE_STALE_TIME_MS: FAKE_STALE_TIME,
 }));
@@ -19,8 +19,7 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useQrCodeQuery } =
-  await import("@/entities/attendance/hooks/useQrCodeQuery");
+const { useQrCodeQuery } = await import("@/entities/qr/hooks/useQrCodeQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

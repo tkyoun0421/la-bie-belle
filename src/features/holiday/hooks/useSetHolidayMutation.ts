@@ -5,7 +5,7 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   setHoliday,
   type SetHolidayInput,
-} from "@/features/payroll/api/setHoliday.api";
+} from "@/features/holiday/api/setHoliday.api";
 
 /**
  * 임시공휴일을 켜고 끈다. 값이 급여 쪽 표로 가므로 무효화도 `['payroll']`이다

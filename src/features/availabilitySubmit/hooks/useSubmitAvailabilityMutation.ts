@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { submitAvailability } from "@/features/schedule/api/submitAvailability.api";
+import { submitAvailability } from "@/features/availabilitySubmit/api/submitAvailability.api";
 
 /**
  * 그 달 근무 신청을 보낸다. 고른 날짜를 통째로 보내고 서버가 그 달 행을 덮어쓴다

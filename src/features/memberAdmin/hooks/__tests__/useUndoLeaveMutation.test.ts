@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 
 const undoLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/members/api/undoLeave.api", () => ({
+jest.unstable_mockModule("@/features/memberAdmin/api/undoLeave.api", () => ({
   undoLeave: undoLeaveMock,
 }));
 
@@ -18,7 +18,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useUndoLeaveMutation } =
-  await import("@/features/members/hooks/useUndoLeaveMutation");
+  await import("@/features/memberAdmin/hooks/useUndoLeaveMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

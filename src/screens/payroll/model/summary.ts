@@ -4,7 +4,7 @@ import {
   getAttendanceStatus,
   type AttendanceStatusInput,
 } from "@/entities/attendance/model/attendanceStatus";
-import type { PayrollDayKind } from "@/features/payroll/model/payrollDays";
+import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays";
 
 /**
  * 금액 한 줄과 누적 두 줄이다(`docs/2-design/modules/payroll/screens/payroll.md`의 「금액」·

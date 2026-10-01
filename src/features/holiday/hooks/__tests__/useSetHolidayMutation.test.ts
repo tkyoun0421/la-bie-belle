@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const setHolidayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/payroll/api/setHoliday.api", () => ({
+jest.unstable_mockModule("@/features/holiday/api/setHoliday.api", () => ({
   setHoliday: setHolidayMock,
 }));
 
@@ -19,7 +19,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useSetHolidayMutation } =
-  await import("@/features/payroll/hooks/useSetHolidayMutation");
+  await import("@/features/holiday/hooks/useSetHolidayMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

@@ -5,7 +5,7 @@ const submitAvailabilityMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/features/schedule/api/submitAvailability.api",
+  "@/features/availabilitySubmit/api/submitAvailability.api",
   () => ({
     submitAvailability: submitAvailabilityMock,
   }),
@@ -18,7 +18,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useSubmitAvailabilityMutation } =
-  await import("@/features/schedule/hooks/useSubmitAvailabilityMutation");
+  await import("@/features/availabilitySubmit/hooks/useSubmitAvailabilityMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

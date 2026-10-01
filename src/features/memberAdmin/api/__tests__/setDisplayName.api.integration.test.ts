@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { setDisplayName } from "@/features/members/api/setDisplayName.api";
+import { setDisplayName } from "@/features/memberAdmin/api/setDisplayName.api";
 import {
   createAdminUser,
   createApprovedUser,

@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Text } from "@/shared/ui/Text";
-import { isValidPhone } from "@/features/profile/model/validateProfile";
+import { isValidPhone } from "@/entities/profile/model/validateProfile";
 import { canSaveContact } from "@/screens/profile/model/canSaveContact";
 
 /**

@@ -14,7 +14,7 @@ const listPendingMembersMock =
 const listBlockedMembersMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/api/listMembers.api", () => ({
+jest.unstable_mockModule("@/entities/member/api/listMembers.api", () => ({
   listActiveMembers: listActiveMembersMock,
   listLeftMembers: listLeftMembersMock,
   listPendingMembers: listPendingMembersMock,
@@ -26,7 +26,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useMembersQuery } =
-  await import("@/entities/profile/hooks/useMembersQuery");
+  await import("@/entities/member/hooks/useMembersQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

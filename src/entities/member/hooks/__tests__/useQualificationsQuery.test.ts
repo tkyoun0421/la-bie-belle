@@ -12,19 +12,16 @@ import type { ReactNode } from "react";
 const getQualificationsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule(
-  "@/entities/schedule/api/getQualifications.api",
-  () => ({
-    getQualifications: getQualificationsMock,
-  }),
-);
+jest.unstable_mockModule("@/entities/member/api/getQualifications.api", () => ({
+  getQualifications: getQualificationsMock,
+}));
 
 const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useQualificationsQuery } =
-  await import("@/entities/schedule/hooks/useQualificationsQuery");
+  await import("@/entities/member/hooks/useQualificationsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

@@ -24,29 +24,29 @@ import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
 import type { Theme } from "@/shared/utils/theme";
+import { useQualificationsQuery } from "@/entities/member/hooks/useQualificationsQuery";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
+import { getProfileNotificationRow } from "@/entities/notification/model/profileNotificationRow";
+import {
+  getReachState,
+  type PushPermission,
+} from "@/entities/notification/model/reachState";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
-import { useQualificationsQuery } from "@/entities/schedule/hooks/useQualificationsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/model/signOut";
 import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf";
-import { useNotificationSwitchMutation } from "@/features/notification/hooks/useNotificationSwitchMutation";
-import { useSavePushTokenMutation } from "@/features/notification/hooks/useSavePushTokenMutation";
-import { getProfileNotificationRow } from "@/features/notification/model/profileNotificationRow";
-import { PUSH_DEPS } from "@/features/notification/model/pushDeps";
+import { useUpdateContactMutation } from "@/features/profileEdit/hooks/useUpdateContactMutation";
+import { useUpdatePhotoMutation } from "@/features/profileEdit/hooks/useUpdatePhotoMutation";
+import { useNotificationSwitchMutation } from "@/features/pushSwitch/hooks/useNotificationSwitchMutation";
+import { useSavePushTokenMutation } from "@/features/pushSwitch/hooks/useSavePushTokenMutation";
+import { PUSH_DEPS } from "@/features/pushSwitch/model/pushDeps";
 import {
   getPushPermission,
   requestPushPermission,
-} from "@/features/notification/model/pushPermission";
-import {
-  getReachState,
-  type PushPermission,
-} from "@/features/notification/model/reachState";
-import { useUpdateContactMutation } from "@/features/profile/hooks/useUpdateContactMutation";
-import { useUpdatePhotoMutation } from "@/features/profile/hooks/useUpdatePhotoMutation";
+} from "@/features/pushSwitch/model/pushPermission";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant";
 import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto";
 import { ContactSheet } from "@/screens/profile/ui/ContactSheet";

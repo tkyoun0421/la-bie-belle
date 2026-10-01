@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { undoLeave } from "@/features/members/api/undoLeave.api";
+import { undoLeave } from "@/features/memberAdmin/api/undoLeave.api";
 import {
   createAdminUser,
   createApprovedUser,

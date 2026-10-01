@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { undoLeave } from "@/features/members/api/undoLeave.api";
+import { undoLeave } from "@/features/memberAdmin/api/undoLeave.api";
 
 /**
  * 퇴사 처리를 무른다. 시한이 없어 언제 눌러도 되고, 성공하면 그 줄이 퇴사 구획에서 재직자

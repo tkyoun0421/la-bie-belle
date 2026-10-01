@@ -8,7 +8,7 @@ import { Icon } from "@/shared/ui/Icon";
 import { Input } from "@/shared/ui/Input";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { Text } from "@/shared/ui/Text";
-import type { MemberRow } from "@/entities/profile/api/listMembers.api";
+import type { MemberRow } from "@/entities/member/api/listMembers.api";
 import { canSaveDisplayName } from "@/entities/profile/model/canSaveDisplayName";
 import { formatBirthDate } from "@/entities/profile/model/formatBirthDate";
 

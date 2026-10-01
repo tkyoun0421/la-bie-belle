@@ -40,7 +40,7 @@ sources:
 
 **문장을 조립하는 순수 함수.**
 
-`src/features/notification/model/title.ts`
+`src/entities/notification/model/title.ts`
 
 - 알림 행 하나를 받아 `{ title, sub }`을 낸다. `sub`는 없을 수 있다
 - **1차 열여덟만 문장을 낸다.** 근거는 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표고 **문자열이 그 표와 글자 하나까지 같아야 한다**. 2차 다섯(교대 넷과 관리자 공지)은 널을 낸다 — 유니온에는 있어 switch가 빠짐을 컴파일에서 잡되 문장은 2차 task가 채운다([kind와 payload](../../2-design/modules/notification/design.md#kind와-payload))
@@ -53,7 +53,7 @@ sources:
 
 **받은 시각과 날짜 머리.**
 
-`src/features/notification/model/when.ts`
+`src/entities/notification/model/when.ts`
 
 - 날짜 머리 셋 — 「오늘」·「어제」·「9월 11일(목)」. **해가 다르면 「2025년 12월 31일(수)」**
 - 받은 시각 셋 — 오늘이면 「2시간 전」(한 시간 안이면 「방금」·「12분 전」), 어제면 「어제 21:00」, 그 앞이면 「9월 11일」
@@ -113,12 +113,12 @@ sources:
 | `src/entities/notification/api/get-notifications.ts` | `range()`로 50건씩 읽는 페이지 질의와 키 `['notifications']` | AC-03 |
 | `src/entities/notification/api/count-unread-notifications.ts` | 안 읽은 수와 키 `['notifications', 'unread']` | AC-03·AC-06 |
 | `src/entities/notification/model/types.ts` | `kind`가 지금 `string`이다 — [kind와 payload](../../2-design/modules/notification/design.md#kind와-payload) 표의 스물셋을 유니온으로 좁혀야 문장 함수가 빠짐을 컴파일에서 잡는다 | AC-01 |
-| `src/features/notification/model/title.ts` | 1차 열여덟의 문장, 2차 다섯은 널 | AC-01 |
-| `src/features/notification/model/when.ts` | 날짜 머리와 받은 시각 | AC-02 |
-| `src/features/notification/model/destination.ts` | 종류마다의 목적지 | AC-05 |
+| `src/entities/notification/model/title.ts` | 1차 열여덟의 문장, 2차 다섯은 널 | AC-01 |
+| `src/entities/notification/model/when.ts` | 날짜 머리와 받은 시각 | AC-02 |
+| `src/entities/notification/model/destination.ts` | 종류마다의 목적지 | AC-05 |
 | `src/features/notification/model/useNotifications.ts` | `useInfiniteQuery`와 `maxPages` 3 | AC-03 |
 | `src/features/notification/model/useUnreadCount.ts` | 종의 점이 보는 수 | AC-03·AC-06 |
-| `src/features/notification/model/useMarkNotificationsRead.ts` | [`notification-data`](notification-data.md)가 낸 [`mark-notifications-read.ts`](../../../src/features/notification/api/markNotificationsRead.api.ts) 호출과 무효화 둘 | AC-05 |
+| `src/features/notification/model/useMarkNotificationsRead.ts` | [`notification-data`](notification-data.md)가 낸 [`mark-notifications-read.ts`](../../../src/features/notificationRead/api/markNotificationsRead.api.ts) 호출과 무효화 둘 | AC-05 |
 | `src/screens/notifications/model/notification-rows.ts` | 날짜 머리로 끊은 줄 목록, 일곱 상태, 안 읽은 관리자 공지 id 거르기 | AC-04·AC-05 |
 | `src/screens/notifications/model/press-notification.ts` | 줄을 누를 때 — 이동이 먼저고 읽음이 뒤따른다 | AC-05 |
 | `src/screens/notifications/ui/NotificationsScreen.tsx` | 화면 조립 | AC-04 |
@@ -156,14 +156,14 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 문장이 표와 다르다 | unit `src/features/notification/model/__tests__/title.test.ts`(예정) | `pnpm test` | 열여덟이 표 그대로고 2차 다섯이 널 |
+| AC-01 | 문장이 표와 다르다 | unit `src/entities/notification/model/__tests__/title.test.ts`(예정) | `pnpm test` | 열여덟이 표 그대로고 2차 다섯이 널 |
 | AC-01 | 아래 줄이 있는 넷에 아래 줄이 없다 | unit 위 | `pnpm test` | `sub`가 든다 |
 | AC-01 | 푸시와 목록이 다르게 말한다 | unit 위 | `pnpm test` | 같은 함수를 쓴다 |
-| AC-02 | 해를 넘기면 날짜 머리가 틀린다 | unit `src/features/notification/model/__tests__/when.test.ts`(예정) | `pnpm test` | 「2025년 12월 31일(수)」 |
+| AC-02 | 해를 넘기면 날짜 머리가 틀린다 | unit `src/entities/notification/model/__tests__/when.test.ts`(예정) | `pnpm test` | 「2025년 12월 31일(수)」 |
 | AC-02 | 한 시간 안인데 「1시간 전」이라 한다 | unit 위 | `pnpm test` | 「12분 전」 |
 | AC-03 | 남의 알림이 섞인다 | integration `src/entities/notification/api/__tests__/get-notifications.integration.test.ts`(예정) | `pnpm test:integration:run` | 본인 것만 |
 | AC-03 | 51번째가 안 온다 | integration 위 | 위와 같다 | 둘째 쪽이 온다 |
-| AC-05 | 목적지가 표와 다르다 | unit `src/features/notification/model/__tests__/destination.test.ts`(예정) | `pnpm test` | 종류마다 표의 경로 |
+| AC-05 | 목적지가 표와 다르다 | unit `src/entities/notification/model/__tests__/destination.test.ts`(예정) | `pnpm test` | 종류마다 표의 경로 |
 | AC-05 | 관리자 공지가 눌린다 | e2e `tests/e2e/notifications.yaml`(예정) | `pnpm e2e` | 안 눌리고 화살표가 없다 |
 | AC-05 | 눌러도 안 읽음 점이 남는다 | e2e 위 | `pnpm e2e` | 돌아오면 점이 없다 |
 | AC-04 | 빈 상태가 안 선다 | e2e 위 | `pnpm e2e` | 「아직 받은 알림이 없어요」 |

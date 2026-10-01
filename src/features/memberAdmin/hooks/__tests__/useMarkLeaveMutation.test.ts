@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const markLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/members/api/markLeave.api", () => ({
+jest.unstable_mockModule("@/features/memberAdmin/api/markLeave.api", () => ({
   markLeave: markLeaveMock,
 }));
 
@@ -19,7 +19,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useMarkLeaveMutation } =
-  await import("@/features/members/hooks/useMarkLeaveMutation");
+  await import("@/features/memberAdmin/hooks/useMarkLeaveMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

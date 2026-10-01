@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { DomainError } from "@/shared/api/errors";
-import { removePushToken } from "@/features/notification/api/removePushToken.api";
-import { savePushToken } from "@/features/notification/api/savePushToken.api";
+import { removePushToken } from "@/features/pushSwitch/api/removePushToken.api";
+import { savePushToken } from "@/features/pushSwitch/api/savePushToken.api";
 import {
   createApprovedUser,
   createBlockedUser,

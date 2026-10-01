@@ -16,7 +16,7 @@ resolved:
 ```ts
 // @ts-expect-error 대상 모듈이 아직 없다
 const { toNotificationTitle } =
-  await import("@/features/notification/model/title");
+  await import("@/entities/notification/model/title");
 ```
 
 지시자가 붙은 줄은 `const { … } =`이고 `TS2307`이 나는 줄은 그 다음이다. 지시자가 헛돌아 `TS2578 Unused '@ts-expect-error' directive`가 여덟 번 났다. 구현자가 받자마자 typecheck가 죽어 있었고, 받은 테스트에서 그 여덟 줄을 지우는 것이 첫 일이 됐다.

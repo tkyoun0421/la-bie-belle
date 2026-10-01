@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 
 const setRoleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/members/api/setRole.api", () => ({
+jest.unstable_mockModule("@/features/memberAdmin/api/setRole.api", () => ({
   setRole: setRoleMock,
 }));
 
@@ -18,7 +18,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useSetRoleMutation } =
-  await import("@/features/members/hooks/useSetRoleMutation");
+  await import("@/features/memberAdmin/hooks/useSetRoleMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

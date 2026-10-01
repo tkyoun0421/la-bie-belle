@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 const removeRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/features/rehearsal/api/removeRehearsal.api",
+  "@/features/rehearsalEdit/api/removeRehearsal.api",
   () => ({
     removeRehearsal: removeRehearsalMock,
   }),
@@ -22,7 +22,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useRemoveRehearsalMutation } =
-  await import("@/features/rehearsal/hooks/useRemoveRehearsalMutation");
+  await import("@/features/rehearsalEdit/hooks/useRemoveRehearsalMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

@@ -6,18 +6,18 @@ import {
   type ExcuseStatusRecord,
 } from "@/entities/attendance/model/attendanceStatus";
 import {
-  rehearsalHours,
-  type RehearsalRow,
-} from "@/entities/rehearsal/model/rehearsalHours";
-import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
-import {
   dayAmount,
   REGULAR_MINUTES,
   type DayAmount,
   type DayKind,
-} from "@/features/payroll/model/dayAmount";
-import { dayMinutes } from "@/features/payroll/model/dayMinutes";
-import { wageAt, type WageRate } from "@/features/payroll/model/wageAt";
+} from "@/entities/payroll/model/dayAmount";
+import { wageAt, type WageRate } from "@/entities/payroll/model/wageAt";
+import {
+  rehearsalHours,
+  type RehearsalRow,
+} from "@/entities/rehearsal/model/rehearsalHours";
+import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
+import { dayMinutes } from "@/features/payrollCompute/model/dayMinutes";
 
 /**
  * 한 사람의 그 기간 급여를 날짜마다 낸다. 이 모듈이 급여 계산의 유일한 입구고, 아래 넷은

@@ -1,5 +1,5 @@
 const { toNotificationDestination } =
-  await import("@/features/notification/model/destination");
+  await import("@/entities/notification/model/destination");
 
 type RawNotificationRow = {
   id: string;

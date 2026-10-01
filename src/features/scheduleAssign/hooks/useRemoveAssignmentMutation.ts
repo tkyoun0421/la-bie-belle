@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import { removeAssignment } from "@/features/schedule/api/removeAssignment.api";
+import { removeAssignment } from "@/features/scheduleAssign/api/removeAssignment.api";
 
 /**
  * 「자리 비우기」와 강제 변경의 「사람 빼기」다. 확정 전이면 행이 지워지고 확정 뒤면

@@ -7,9 +7,12 @@ import type { ReactNode } from "react";
 
 const setDisplayNameMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/members/api/setDisplayName.api", () => ({
-  setDisplayName: setDisplayNameMock,
-}));
+jest.unstable_mockModule(
+  "@/features/memberAdmin/api/setDisplayName.api",
+  () => ({
+    setDisplayName: setDisplayNameMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
@@ -18,7 +21,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useSetDisplayNameMutation } =
-  await import("@/features/members/hooks/useSetDisplayNameMutation");
+  await import("@/features/memberAdmin/hooks/useSetDisplayNameMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

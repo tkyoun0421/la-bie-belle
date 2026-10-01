@@ -3,7 +3,7 @@
 // dayAmount({ minutes, wage }) — 540분까지 1배, 넘는 몫은 1.5배다(PAY-005·PAY-028).
 // 0분은 결근이라 0원이고 kind가 'absent'다.
 
-import { dayAmount } from "@/features/payroll/model/dayAmount";
+import { dayAmount } from "@/entities/payroll/model/dayAmount";
 
 const WAGE = 12000;
 

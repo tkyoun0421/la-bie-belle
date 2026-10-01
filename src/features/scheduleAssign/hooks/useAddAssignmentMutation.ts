@@ -5,7 +5,7 @@ import { staleTogether } from "@/shared/api/queryKeys";
 import {
   addAssignment,
   type AddAssignmentInput,
-} from "@/features/schedule/api/addAssignment.api";
+} from "@/features/scheduleAssign/api/addAssignment.api";
 
 /**
  * 배정 추가 — 정규와 교육이 이 훅 하나로 간다. 갈래는 화면이 이미 정해 보낸다(빈 자리를

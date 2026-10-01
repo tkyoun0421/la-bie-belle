@@ -1,4 +1,4 @@
-import type { ReachState } from "@/features/notification/model/reachState";
+import type { ReachState } from "@/entities/notification/model/reachState";
 
 /**
  * 갈래를 받아 그 자리의 문장을 고른다. 판정은 [`reach-state`](reachState.ts) 하나가 내고

@@ -10,9 +10,12 @@ import type { ReactNode } from "react";
 
 const addAssignmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/schedule/api/addAssignment.api", () => ({
-  addAssignment: addAssignmentMock,
-}));
+jest.unstable_mockModule(
+  "@/features/scheduleAssign/api/addAssignment.api",
+  () => ({
+    addAssignment: addAssignmentMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
@@ -21,7 +24,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useAddAssignmentMutation } =
-  await import("@/features/schedule/hooks/useAddAssignmentMutation");
+  await import("@/features/scheduleAssign/hooks/useAddAssignmentMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

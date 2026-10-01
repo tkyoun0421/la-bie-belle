@@ -7,7 +7,7 @@ const requestNotificationPermissionMock =
   jest.fn<(...args: unknown[]) => Promise<boolean>>();
 
 jest.unstable_mockModule(
-  "@/features/notification/api/setNotificationsEnabled.api",
+  "@/features/pushSwitch/api/setNotificationsEnabled.api",
   () => ({
     setNotificationsEnabled: setNotificationsEnabledMock,
   }),
@@ -19,7 +19,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useNotificationSwitchMutation } =
-  await import("@/features/notification/hooks/useNotificationSwitchMutation");
+  await import("@/features/pushSwitch/hooks/useNotificationSwitchMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

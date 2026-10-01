@@ -1,5 +1,5 @@
 const { toNotificationDateHeader, toNotificationReceivedTime } =
-  await import("@/features/notification/model/when");
+  await import("@/entities/notification/model/when");
 
 const NOW = new Date("2025-09-13T22:00:00+09:00");
 

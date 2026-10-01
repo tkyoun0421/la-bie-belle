@@ -17,23 +17,23 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
-import type { MemberRow } from "@/entities/profile/api/listMembers.api";
-import { useMembersQuery } from "@/entities/profile/hooks/useMembersQuery";
-import { isLastAdmin } from "@/entities/profile/model/isLastAdmin";
-import { searchMembers } from "@/entities/profile/model/searchMembers";
-import { isLeftOverAYear } from "@/entities/profile/model/sortMembers";
-import { useMarkLeaveMutation } from "@/features/members/hooks/useMarkLeaveMutation";
-import { useSetDisplayNameMutation } from "@/features/members/hooks/useSetDisplayNameMutation";
-import { useSetRoleMutation } from "@/features/members/hooks/useSetRoleMutation";
-import { useUndoLeaveMutation } from "@/features/members/hooks/useUndoLeaveMutation";
+import type { MemberRow } from "@/entities/member/api/listMembers.api";
+import { useMembersQuery } from "@/entities/member/hooks/useMembersQuery";
+import { isLastAdmin } from "@/entities/member/model/isLastAdmin";
+import { searchMembers } from "@/entities/member/model/searchMembers";
+import { isLeftOverAYear } from "@/entities/member/model/sortMembers";
 import {
   getMemberListSuffix,
   getMemberSheetLine,
-} from "@/features/notification/model/reachMessage";
+} from "@/entities/notification/model/reachMessage";
 import {
   PERMISSION_OF_OTHERS,
   getReachState,
-} from "@/features/notification/model/reachState";
+} from "@/entities/notification/model/reachState";
+import { useMarkLeaveMutation } from "@/features/memberAdmin/hooks/useMarkLeaveMutation";
+import { useSetDisplayNameMutation } from "@/features/memberAdmin/hooks/useSetDisplayNameMutation";
+import { useSetRoleMutation } from "@/features/memberAdmin/hooks/useSetRoleMutation";
+import { useUndoLeaveMutation } from "@/features/memberAdmin/hooks/useUndoLeaveMutation";
 import {
   MemberDialog,
   type MemberDialogKind,

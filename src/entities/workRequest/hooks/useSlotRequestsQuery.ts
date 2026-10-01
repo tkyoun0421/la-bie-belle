@@ -4,7 +4,7 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getSlotRequests,
   type SlotRequest,
-} from "@/entities/schedule/api/getSlotRequests.api";
+} from "@/entities/workRequest/api/getSlotRequests.api";
 
 /**
  * 그 달 살아 있는 근무 요청이다. 관리자 화면은 자리 카드의 배지와 픽커의 요청 상태를,

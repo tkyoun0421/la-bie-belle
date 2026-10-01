@@ -1,4 +1,4 @@
-import { getSlotRequests } from "@/entities/schedule/api/getSlotRequests.api";
+import { getSlotRequests } from "@/entities/workRequest/api/getSlotRequests.api";
 import {
   createAdminUser,
   createApprovedUser,

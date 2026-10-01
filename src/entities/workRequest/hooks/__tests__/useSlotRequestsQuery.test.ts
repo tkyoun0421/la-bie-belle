@@ -10,16 +10,19 @@ import type { ReactNode } from "react";
 
 const getSlotRequestsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/getSlotRequests.api", () => ({
-  getSlotRequests: getSlotRequestsMock,
-}));
+jest.unstable_mockModule(
+  "@/entities/workRequest/api/getSlotRequests.api",
+  () => ({
+    getSlotRequests: getSlotRequestsMock,
+  }),
+);
 
 const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useSlotRequestsQuery } =
-  await import("@/entities/schedule/hooks/useSlotRequestsQuery");
+  await import("@/entities/workRequest/hooks/useSlotRequestsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

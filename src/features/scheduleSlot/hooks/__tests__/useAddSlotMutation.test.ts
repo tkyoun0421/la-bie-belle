@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 
 const addSlotMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/schedule/api/addSlot.api", () => ({
+jest.unstable_mockModule("@/features/scheduleSlot/api/addSlot.api", () => ({
   addSlot: addSlotMock,
 }));
 
@@ -20,7 +20,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useAddSlotMutation } =
-  await import("@/features/schedule/hooks/useAddSlotMutation");
+  await import("@/features/scheduleSlot/hooks/useAddSlotMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

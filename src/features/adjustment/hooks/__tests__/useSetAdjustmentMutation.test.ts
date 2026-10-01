@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const setAdjustmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/payroll/api/setAdjustment.api", () => ({
+jest.unstable_mockModule("@/features/adjustment/api/setAdjustment.api", () => ({
   setAdjustment: setAdjustmentMock,
 }));
 
@@ -21,7 +21,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useSetAdjustmentMutation } =
-  await import("@/features/payroll/hooks/useSetAdjustmentMutation");
+  await import("@/features/adjustment/hooks/useSetAdjustmentMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

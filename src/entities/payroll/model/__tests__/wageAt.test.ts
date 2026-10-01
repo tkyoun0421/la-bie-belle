@@ -4,7 +4,7 @@
 // (plan AC-06, PAY-008·PAY-011). 첫 행보다 이른 날은 null이다 — 승인 전 날짜라 계산에서
 // 뺀다.
 
-import { wageAt } from "@/features/payroll/model/wageAt";
+import { wageAt } from "@/entities/payroll/model/wageAt";
 
 describe("wageAt — effective_date == date는 그 행을 쓴다(경계 동일)", () => {
   it("조회 날짜와 effective_date가 같은 행이 적용된다", () => {

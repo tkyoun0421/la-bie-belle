@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { rotateQr } from "@/features/attendance/api/rotateQr.api";
+import { rotateQr } from "@/features/qrAdmin/api/rotateQr.api";
 
 /**
  * 관리자가 「새로 뽑기」를 눌렀을 때다. 옛 코드는 그 자리에서 죽는다

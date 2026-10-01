@@ -1,4 +1,4 @@
-import { isLastAdmin } from "@/entities/profile/model/isLastAdmin";
+import { isLastAdmin } from "@/entities/member/model/isLastAdmin";
 
 // 관리자 내리기·퇴사 처리 버튼을 화면이 미리 잠그는 판정이다(`docs/2-design/modules/
 // account/screens/members.md`의 「마지막 관리자」). 셈은 [account/README.md ACC-008]대로

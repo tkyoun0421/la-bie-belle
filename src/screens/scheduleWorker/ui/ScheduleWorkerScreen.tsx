@@ -23,21 +23,21 @@ import { Segment } from "@/shared/ui/Segment";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
+import { useMyAvailabilityQuery } from "@/entities/availability/hooks/useMyAvailabilityQuery";
 import { nowWithOffset } from "@/entities/clock/model/serverClock";
 import { serverClockStore } from "@/entities/clock/model/serverClockStore";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
-import type { SlotRequest } from "@/entities/schedule/api/getSlotRequests.api";
 import { useMonthScheduleQuery } from "@/entities/schedule/hooks/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/hooks/useMonthWindowQuery";
-import { useMyAvailabilityQuery } from "@/entities/schedule/hooks/useMyAvailabilityQuery";
-import { usePendingApprovalsQuery } from "@/entities/schedule/hooks/usePendingApprovalsQuery";
-import { useSlotRequestsQuery } from "@/entities/schedule/hooks/useSlotRequestsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { useCreateCancelRequestMutation } from "@/features/schedule/hooks/useCreateCancelRequestMutation";
-import { useRespondRequestMutation } from "@/features/schedule/hooks/useRespondRequestMutation";
-import { useSubmitAvailabilityMutation } from "@/features/schedule/hooks/useSubmitAvailabilityMutation";
+import type { SlotRequest } from "@/entities/workRequest/api/getSlotRequests.api";
+import { usePendingApprovalsQuery } from "@/entities/workRequest/hooks/usePendingApprovalsQuery";
+import { useSlotRequestsQuery } from "@/entities/workRequest/hooks/useSlotRequestsQuery";
+import { useSubmitAvailabilityMutation } from "@/features/availabilitySubmit/hooks/useSubmitAvailabilityMutation";
+import { useCreateCancelRequestMutation } from "@/features/workRequest/hooks/useCreateCancelRequestMutation";
+import { useRespondRequestMutation } from "@/features/workRequest/hooks/useRespondRequestMutation";
 import {
   myAssignmentOf,
   spellWorkDate,

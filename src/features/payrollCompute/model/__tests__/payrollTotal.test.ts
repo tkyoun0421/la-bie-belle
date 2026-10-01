@@ -5,7 +5,10 @@
 // monthTotal(days, month) — 월은 달력 달이다(PAY-022). 달을 걸친 주는 날짜로 갈라 각
 // 달의 합계에 따로 든다 — 8월 31일이 월요일이면 그 하루만 8월, 9월 1일부터 엿새는 9월.
 
-import { monthTotal, weekTotals } from "@/features/payroll/model/payrollTotal";
+import {
+  monthTotal,
+  weekTotals,
+} from "@/features/payrollCompute/model/payrollTotal";
 
 function payrollDay(date: string, amount: number, minutes = 480) {
   return { date, minutes, amount, kind: "normal" as const };

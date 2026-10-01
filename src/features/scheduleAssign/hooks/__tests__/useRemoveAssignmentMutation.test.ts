@@ -12,7 +12,7 @@ const removeAssignmentMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/features/schedule/api/removeAssignment.api",
+  "@/features/scheduleAssign/api/removeAssignment.api",
   () => ({
     removeAssignment: removeAssignmentMock,
   }),
@@ -25,7 +25,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useRemoveAssignmentMutation } =
-  await import("@/features/schedule/hooks/useRemoveAssignmentMutation");
+  await import("@/features/scheduleAssign/hooks/useRemoveAssignmentMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

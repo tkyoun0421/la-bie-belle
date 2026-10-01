@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { setRole } from "@/features/members/api/setRole.api";
+import { setRole } from "@/features/memberAdmin/api/setRole.api";
 import {
   createAdminUser,
   createApprovedUser,

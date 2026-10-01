@@ -13,7 +13,7 @@ const getMonthAvailabilitiesMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/api/getMonthAvailabilities.api",
+  "@/entities/availability/api/getMonthAvailabilities.api",
   () => ({
     getMonthAvailabilities: getMonthAvailabilitiesMock,
   }),
@@ -24,7 +24,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useMonthAvailabilitiesQuery } =
-  await import("@/entities/schedule/hooks/useMonthAvailabilitiesQuery");
+  await import("@/entities/availability/hooks/useMonthAvailabilitiesQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

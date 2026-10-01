@@ -1,5 +1,5 @@
 const { isForegroundEntry } =
-  await import("@/features/notification/model/appEntry");
+  await import("@/entities/notification/model/appEntry");
 
 describe("isForegroundEntry — 앱이 뜰 때와 포그라운드로 돌아올 때가 진입이다", () => {
   it("이전 상태를 모르는 첫 진입에서 active로 오면 진입이다", () => {

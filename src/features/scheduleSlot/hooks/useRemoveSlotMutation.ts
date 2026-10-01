@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import { removeSlot } from "@/features/schedule/api/removeSlot.api";
+import { removeSlot } from "@/features/scheduleSlot/api/removeSlot.api";
 
 /**
  * 자리를 버리는 손짓의 서버 쪽이다. 빈 자리와 사람 든 자리를 가르는 확인 시트는 화면의

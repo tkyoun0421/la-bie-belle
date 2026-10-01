@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { setDefaultWage } from "@/features/payroll/api/setDefaultWage.api";
+import { setDefaultWage } from "@/features/wageAdmin/api/setDefaultWage.api";
 
 /**
  * 기본 시급을 정한다. 한 번에 여러 사람의 행이 서므로(PAY-013) 성공한 뒤 `['payroll']`을

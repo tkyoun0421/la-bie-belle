@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { setRole } from "@/features/members/api/setRole.api";
+import { setRole } from "@/features/memberAdmin/api/setRole.api";
 
 /**
  * 관리자로 올리고 내린다. 남에게 닿는 판정이라 응답을 기다린다

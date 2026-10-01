@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 
 const mergeSlotsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/schedule/api/mergeSlots.api", () => ({
+jest.unstable_mockModule("@/features/scheduleSlot/api/mergeSlots.api", () => ({
   mergeSlots: mergeSlotsMock,
 }));
 
@@ -20,7 +20,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useMergeSlotsMutation } =
-  await import("@/features/schedule/hooks/useMergeSlotsMutation");
+  await import("@/features/scheduleSlot/hooks/useMergeSlotsMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

@@ -12,7 +12,7 @@ const getPendingApprovalsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/api/getPendingApprovals.api",
+  "@/entities/workRequest/api/getPendingApprovals.api",
   () => ({
     getPendingApprovals: getPendingApprovalsMock,
   }),
@@ -23,7 +23,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { usePendingApprovalsQuery } =
-  await import("@/entities/schedule/hooks/usePendingApprovalsQuery");
+  await import("@/entities/workRequest/hooks/usePendingApprovalsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

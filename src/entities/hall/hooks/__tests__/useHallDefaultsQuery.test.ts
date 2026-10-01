@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const getHallDefaultsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/getHallDefaults.api", () => ({
+jest.unstable_mockModule("@/entities/hall/api/getHallDefaults.api", () => ({
   getHallDefaults: getHallDefaultsMock,
 }));
 
@@ -19,7 +19,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useHallDefaultsQuery } =
-  await import("@/entities/schedule/hooks/useHallDefaultsQuery");
+  await import("@/entities/hall/hooks/useHallDefaultsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

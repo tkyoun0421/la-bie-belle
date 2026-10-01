@@ -1,5 +1,5 @@
 import type { Database } from "@/shared/api/database";
-import { setHallDefaults } from "@/features/schedule/api/setHallDefaults.api";
+import { setHallDefaults } from "@/features/hallDefaults/api/setHallDefaults.api";
 import { createAdminUser, type AdminUser } from "@tests/integration/postgres";
 
 type SlotDefault = { positions: string[]; count: number };

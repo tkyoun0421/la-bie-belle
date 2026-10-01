@@ -5,7 +5,7 @@ import {
   getQrCode,
   QR_CODE_STALE_TIME_MS,
   type HallQrCode,
-} from "@/entities/attendance/api/getQrCode.api";
+} from "@/entities/qr/api/getQrCode.api";
 
 /**
  * 관리자 QR 화면이 지금 코드를 읽는 자리다. 키와 `staleTime`은 DAL이 든 값을 그대로 쓴다 —

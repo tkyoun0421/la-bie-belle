@@ -5,7 +5,7 @@ const getMyAvailabilityMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/api/getMyAvailability.api",
+  "@/entities/availability/api/getMyAvailability.api",
   () => ({
     getMyAvailability: getMyAvailabilityMock,
   }),
@@ -16,7 +16,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useMyAvailabilityQuery } =
-  await import("@/entities/schedule/hooks/useMyAvailabilityQuery");
+  await import("@/entities/availability/hooks/useMyAvailabilityQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

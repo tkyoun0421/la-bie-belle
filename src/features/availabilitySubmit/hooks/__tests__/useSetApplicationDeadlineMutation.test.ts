@@ -12,7 +12,7 @@ const setApplicationDeadlineMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/features/schedule/api/setApplicationDeadline.api",
+  "@/features/availabilitySubmit/api/setApplicationDeadline.api",
   () => ({
     setApplicationDeadline: setApplicationDeadlineMock,
   }),
@@ -25,7 +25,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useSetApplicationDeadlineMutation } =
-  await import("@/features/schedule/hooks/useSetApplicationDeadlineMutation");
+  await import("@/features/availabilitySubmit/hooks/useSetApplicationDeadlineMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

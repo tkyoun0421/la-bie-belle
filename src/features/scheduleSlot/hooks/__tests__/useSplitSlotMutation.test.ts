@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const splitSlotMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/schedule/api/splitSlot.api", () => ({
+jest.unstable_mockModule("@/features/scheduleSlot/api/splitSlot.api", () => ({
   splitSlot: splitSlotMock,
 }));
 
@@ -19,7 +19,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useSplitSlotMutation } =
-  await import("@/features/schedule/hooks/useSplitSlotMutation");
+  await import("@/features/scheduleSlot/hooks/useSplitSlotMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

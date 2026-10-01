@@ -12,7 +12,7 @@ const createCancelRequestMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/features/schedule/api/createCancelRequest.api",
+  "@/features/workRequest/api/createCancelRequest.api",
   () => ({
     createCancelRequest: createCancelRequestMock,
   }),
@@ -25,7 +25,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useCreateCancelRequestMutation } =
-  await import("@/features/schedule/hooks/useCreateCancelRequestMutation");
+  await import("@/features/workRequest/hooks/useCreateCancelRequestMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

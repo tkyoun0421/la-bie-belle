@@ -5,7 +5,7 @@
 // 조정은 이력 중 adjusted_at이 가장 늦은 행의 분만 쓴다. 리허설은 시각 갈래·건수 갈래를
 // 모두 더한다(PAY-028, rehearsalHours가 두 갈래를 하나의 분으로 낸다).
 
-import { dayMinutes } from "@/features/payroll/model/dayMinutes";
+import { dayMinutes } from "@/features/payrollCompute/model/dayMinutes";
 
 const NINE_HOUR_DAY = { starts_at: "10:00:00", ends_at: "19:00:00" };
 

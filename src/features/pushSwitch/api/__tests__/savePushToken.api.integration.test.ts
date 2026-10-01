@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { DomainError } from "@/shared/api/errors";
-import { savePushToken } from "@/features/notification/api/savePushToken.api";
+import { savePushToken } from "@/features/pushSwitch/api/savePushToken.api";
 import {
   createApprovedUser,
   createLeftUser,

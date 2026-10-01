@@ -10,9 +10,12 @@ import type { ReactNode } from "react";
 
 const respondRequestMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/schedule/api/respondRequest.api", () => ({
-  respondRequest: respondRequestMock,
-}));
+jest.unstable_mockModule(
+  "@/features/workRequest/api/respondRequest.api",
+  () => ({
+    respondRequest: respondRequestMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
@@ -21,7 +24,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useRespondRequestMutation } =
-  await import("@/features/schedule/hooks/useRespondRequestMutation");
+  await import("@/features/workRequest/hooks/useRespondRequestMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

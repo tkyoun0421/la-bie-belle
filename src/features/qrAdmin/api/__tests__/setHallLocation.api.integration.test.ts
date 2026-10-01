@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { setHallLocation } from "@/entities/attendance/api/setHallLocation.api";
+import { setHallLocation } from "@/features/qrAdmin/api/setHallLocation.api";
 import {
   createAdminUser,
   createApprovedUser,

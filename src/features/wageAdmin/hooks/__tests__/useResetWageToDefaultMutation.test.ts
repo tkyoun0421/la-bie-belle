@@ -5,7 +5,7 @@ const resetWageToDefaultMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/features/payroll/api/resetWageToDefault.api",
+  "@/features/wageAdmin/api/resetWageToDefault.api",
   () => ({
     resetWageToDefault: resetWageToDefaultMock,
   }),
@@ -18,7 +18,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useResetWageToDefaultMutation } =
-  await import("@/features/payroll/hooks/useResetWageToDefaultMutation");
+  await import("@/features/wageAdmin/hooks/useResetWageToDefaultMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

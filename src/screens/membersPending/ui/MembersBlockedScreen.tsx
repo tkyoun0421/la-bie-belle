@@ -16,9 +16,9 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
-import { useMembersQuery } from "@/entities/profile/hooks/useMembersQuery";
-import { formatElapsedDays } from "@/entities/profile/model/formatElapsedDays";
-import { unblockMember } from "@/features/members/api/unblockMember.api";
+import { useMembersQuery } from "@/entities/member/hooks/useMembersQuery";
+import { formatElapsedDays } from "@/entities/member/model/formatElapsedDays";
+import { unblockMember } from "@/features/memberAdmin/api/unblockMember.api";
 
 /**
  * 차단한 사람을 보고 차단을 푸는 자리다. 가입 대기 앱바의 더보기가 여는 화면이고 정본은

@@ -3,17 +3,14 @@ import type { AppStateStatus } from "react-native";
 
 const savePushTokenMock = jest.fn<(...args: unknown[]) => Promise<void>>();
 
-jest.unstable_mockModule(
-  "@/features/notification/api/savePushToken.api",
-  () => ({
-    savePushToken: savePushTokenMock,
-  }),
-);
+jest.unstable_mockModule("@/features/pushSwitch/api/savePushToken.api", () => ({
+  savePushToken: savePushTokenMock,
+}));
 
 const { renderHook, act, waitFor } =
   await import("@testing-library/react-native");
 const { useSavePushTokenMutation } =
-  await import("@/features/notification/hooks/useSavePushTokenMutation");
+  await import("@/features/pushSwitch/hooks/useSavePushTokenMutation");
 
 const FAKE_CLIENT = {} as never;
 

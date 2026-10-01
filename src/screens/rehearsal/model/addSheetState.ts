@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import type { RehearsalKind } from "@/features/rehearsal/model/kindForDate";
+import type { RehearsalKind } from "@/entities/rehearsal/model/kindForDate";
 
 /**
  * 넣는 시트와 고치는 시트가 같이 쓰는 상태다

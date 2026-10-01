@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const rotateQrMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/attendance/api/rotateQr.api", () => ({
+jest.unstable_mockModule("@/features/qrAdmin/api/rotateQr.api", () => ({
   rotateQr: rotateQrMock,
 }));
 
@@ -19,7 +19,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useRotateQrMutation } =
-  await import("@/features/attendance/hooks/useRotateQrMutation");
+  await import("@/features/qrAdmin/hooks/useRotateQrMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

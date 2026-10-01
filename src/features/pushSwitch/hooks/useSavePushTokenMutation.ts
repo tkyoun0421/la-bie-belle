@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import type { AppStateStatus } from "react-native";
 import type { DB } from "@/shared/api/database";
-import { savePushToken } from "@/features/notification/api/savePushToken.api";
-import { isForegroundEntry } from "@/features/notification/model/appEntry";
+import { isForegroundEntry } from "@/entities/notification/model/appEntry";
+import { savePushToken } from "@/features/pushSwitch/api/savePushToken.api";
 
 /**
  * 매 진입에 이 기기의 주소를 보낸다. 정본은

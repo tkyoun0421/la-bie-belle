@@ -10,9 +10,12 @@ import type { ReactNode } from "react";
 
 const grantPositionMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/schedule/api/grantPosition.api", () => ({
-  grantPosition: grantPositionMock,
-}));
+jest.unstable_mockModule(
+  "@/features/qualificationGrant/api/grantPosition.api",
+  () => ({
+    grantPosition: grantPositionMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
@@ -21,7 +24,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useGrantPositionMutation } =
-  await import("@/features/schedule/hooks/useGrantPositionMutation");
+  await import("@/features/qualificationGrant/hooks/useGrantPositionMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

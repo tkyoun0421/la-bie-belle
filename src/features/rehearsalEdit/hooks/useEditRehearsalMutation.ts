@@ -5,7 +5,7 @@ import { staleTogether } from "@/shared/api/queryKeys";
 import {
   editRehearsal,
   type EditRehearsalInput,
-} from "@/features/rehearsal/api/editRehearsal.api";
+} from "@/features/rehearsalEdit/api/editRehearsal.api";
 
 /**
  * 리허설 고치기다. 넣기와 같은 둘을 낡게 한다 — `['rehearsal']`과 `['payroll']`이고

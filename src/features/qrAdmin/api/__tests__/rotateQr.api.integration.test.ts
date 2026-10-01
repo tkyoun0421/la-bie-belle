@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { rotateQr } from "@/features/attendance/api/rotateQr.api";
+import { rotateQr } from "@/features/qrAdmin/api/rotateQr.api";
 import {
   createAdminUser,
   createApprovedUser,

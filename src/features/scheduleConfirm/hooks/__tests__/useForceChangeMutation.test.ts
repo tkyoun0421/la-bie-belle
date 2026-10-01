@@ -10,9 +10,12 @@ import type { ReactNode } from "react";
 
 const forceChangeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/schedule/api/forceChange.api", () => ({
-  forceChange: forceChangeMock,
-}));
+jest.unstable_mockModule(
+  "@/features/scheduleConfirm/api/forceChange.api",
+  () => ({
+    forceChange: forceChangeMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
@@ -21,7 +24,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useForceChangeMutation } =
-  await import("@/features/schedule/hooks/useForceChangeMutation");
+  await import("@/features/scheduleConfirm/hooks/useForceChangeMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

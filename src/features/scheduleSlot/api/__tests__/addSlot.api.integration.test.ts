@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { addSlot } from "@/features/schedule/api/addSlot.api";
+import { addSlot } from "@/features/scheduleSlot/api/addSlot.api";
 import {
   backdateDeadline,
   createAdminUser,

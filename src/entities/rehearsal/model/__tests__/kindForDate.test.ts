@@ -5,7 +5,7 @@
 // SQL 쪽(add_rehearsal)이 정본이고 이 함수는 화면이 입력 모양을 미리 고르는 용도라 어긋나면
 // 저장이 wrong_kind로 다시 받는다.
 
-import { kindForDate } from "@/features/rehearsal/model/kindForDate";
+import { kindForDate } from "@/entities/rehearsal/model/kindForDate";
 
 const DATE = "2026-10-10";
 

@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 
 const setDayHoursMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/schedule/api/setDayHours.api", () => ({
+jest.unstable_mockModule("@/features/scheduleDay/api/setDayHours.api", () => ({
   setDayHours: setDayHoursMock,
 }));
 
@@ -20,7 +20,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useSetDayHoursMutation } =
-  await import("@/features/schedule/hooks/useSetDayHoursMutation");
+  await import("@/features/scheduleDay/hooks/useSetDayHoursMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

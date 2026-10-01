@@ -34,7 +34,7 @@ describe("getNotificationPromptCopy — 거부한 뒤는 버튼 없이 설정으
 describe("getNotificationPromptCopy — 거부한 뒤 문장은 「나」 화면의 알림 안내와 같다", () => {
   it("denied 모습의 제목과 아래 줄이 프로필 알림 안내 문구와 일치한다", async () => {
     const { getProfileNotificationRow } =
-      await import("@/features/notification/model/profileNotificationRow");
+      await import("@/entities/notification/model/profileNotificationRow");
 
     const promptCopy = getNotificationPromptCopy("denied");
     const profileRow = getProfileNotificationRow("denied", false);

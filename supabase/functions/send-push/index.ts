@@ -15,12 +15,12 @@ import {
   chunkPushMessages,
   type ClaimedPushNotification,
   type PushMessage,
-} from "../_shared/notification/push-message.ts";
+} from "../_shared/notification/pushMessage.ts";
 import {
   type PushOutcome,
   type PushResponse,
   splitPushResults,
-} from "../_shared/notification/push-result.ts";
+} from "../_shared/notification/pushResult.ts";
 
 const BEARER = "Bearer ";
 

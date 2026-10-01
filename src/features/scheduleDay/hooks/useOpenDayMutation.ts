@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import { openDay } from "@/features/schedule/api/openDay.api";
+import { openDay } from "@/features/scheduleDay/api/openDay.api";
 
 /**
  * 날 하나를 연다. 함수가 날 하나를 받는 모양이라

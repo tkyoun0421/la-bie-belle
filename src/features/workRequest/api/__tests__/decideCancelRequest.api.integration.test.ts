@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { decideCancelRequest } from "@/features/schedule/api/decideCancelRequest.api";
+import { decideCancelRequest } from "@/features/workRequest/api/decideCancelRequest.api";
 import {
   createAdminUser,
   createApprovedUser,

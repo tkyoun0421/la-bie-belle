@@ -9,9 +9,12 @@ import type { ReactNode } from "react";
 
 const setHallDefaultsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/schedule/api/setHallDefaults.api", () => ({
-  setHallDefaults: setHallDefaultsMock,
-}));
+jest.unstable_mockModule(
+  "@/features/hallDefaults/api/setHallDefaults.api",
+  () => ({
+    setHallDefaults: setHallDefaultsMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
@@ -20,7 +23,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useSetHallDefaultsMutation } =
-  await import("@/features/schedule/hooks/useSetHallDefaultsMutation");
+  await import("@/features/hallDefaults/hooks/useSetHallDefaultsMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

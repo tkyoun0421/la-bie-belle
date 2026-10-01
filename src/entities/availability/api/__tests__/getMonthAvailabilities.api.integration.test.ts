@@ -1,4 +1,4 @@
-import { getMonthAvailabilities } from "@/entities/schedule/api/getMonthAvailabilities.api";
+import { getMonthAvailabilities } from "@/entities/availability/api/getMonthAvailabilities.api";
 import {
   createAdminUser,
   createApprovedUser,

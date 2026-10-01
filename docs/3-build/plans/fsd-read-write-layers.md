@@ -94,7 +94,7 @@ sources:
   - 호출부(`screens/`·`src/app/`)의 훅 이름을 다 고친다
 - 관찰 결과: `entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다. 읽는 dal과 그 쿼리 훅이 같은 슬라이스에 있다. 셋이 초록이다
 - 손으로 판정할 여섯
-  - `useSavePushToken` — 쿼리도 뮤테이션도 아니고 앱 진입에 주소를 보내는 효과다. 쓰기 쪽이라 `features/notification/hooks/useSavePushTokenMutation.ts`고, 슬라이스를 `pushSwitch`로 가르는 일은 AC-07 몫이다
+  - `useSavePushToken` — 쿼리도 뮤테이션도 아니고 앱 진입에 주소를 보내는 효과다. 쓰기 쪽이라 `features/pushSwitch/hooks/useSavePushTokenMutation.ts`고, 슬라이스를 `pushSwitch`로 가르는 일은 AC-07 몫이다
   - **부르는 쪽이 없는 쓰기 넷은 `entities/*/api/`에 남는다** — `checkIn`·`submitExcuse`·`decideExcuse`·`setHallLocation`이다. 화면과 훅이 아직 없어 슬라이스를 고를 근거가 없고, 지금 이름을 지어 두면 그 사슬(`attendance-checkin`·`attendance-excuse`)이 제 슬라이스를 정할 때 한 번 더 움직인다. AC-07이 슬라이스를 쪼갤 때 같이 올라간다
     - `removePushToken`만 밖이다 — 부르는 쪽은 없지만 짝 테스트가 `savePushToken`으로 토큰을 깔고 시작해서, 그것이 `features`로 올라가면 `entities`가 `features`를 부르는 꼴이 된다(`no-restricted-imports`). 둘이 한 쌍이라 같이 올라간다
   - 쓰기 다섯은 뮤테이션 훅이 없고 `.tsx`가 직접 부른다 — `approveMember`·`blockMember`·`rejectMember`·`unblockMember`는 `features/members/api/`, `submitProfile`은 `features/profile/api/`다. 같은 슬라이스의 다른 훅들이 이미 거기 있어서다. 훅 없이 부르는 것 자체는 `dumb-ui-widen`이 막을 자리고 이 걸음은 통신의 집만 정한다

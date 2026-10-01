@@ -2,7 +2,7 @@ import {
   listActiveMembers,
   listLeftMembers,
   type MemberRow,
-} from "@/entities/profile/api/listMembers.api";
+} from "@/entities/member/api/listMembers.api";
 import {
   createAdminUser,
   createApprovedUser,

@@ -5,7 +5,7 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   setHallDefaults,
   type HallDefaultsInput,
-} from "@/features/schedule/api/setHallDefaults.api";
+} from "@/features/hallDefaults/api/setHallDefaults.api";
 
 /**
  * 홀의 자리·근무 시간 기본값을 바꾼다.

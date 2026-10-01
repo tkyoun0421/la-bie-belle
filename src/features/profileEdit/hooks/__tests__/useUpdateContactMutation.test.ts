@@ -8,9 +8,12 @@ import type { ReactNode } from "react";
 
 const updateMyContactMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/profile/api/updateMyContact.api", () => ({
-  updateMyContact: updateMyContactMock,
-}));
+jest.unstable_mockModule(
+  "@/features/profileEdit/api/updateMyContact.api",
+  () => ({
+    updateMyContact: updateMyContactMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
@@ -19,7 +22,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useUpdateContactMutation } =
-  await import("@/features/profile/hooks/useUpdateContactMutation");
+  await import("@/features/profileEdit/hooks/useUpdateContactMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

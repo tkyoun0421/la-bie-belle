@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 const setDefaultWageMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/payroll/api/setDefaultWage.api", () => ({
+jest.unstable_mockModule("@/features/wageAdmin/api/setDefaultWage.api", () => ({
   setDefaultWage: setDefaultWageMock,
 }));
 
@@ -14,7 +14,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useSetDefaultWageMutation } =
-  await import("@/features/payroll/hooks/useSetDefaultWageMutation");
+  await import("@/features/wageAdmin/hooks/useSetDefaultWageMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

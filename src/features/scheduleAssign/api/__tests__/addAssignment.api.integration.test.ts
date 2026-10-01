@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { addAssignment } from "@/features/schedule/api/addAssignment.api";
+import { addAssignment } from "@/features/scheduleAssign/api/addAssignment.api";
 import {
   createAdminUser,
   createApprovedUser,

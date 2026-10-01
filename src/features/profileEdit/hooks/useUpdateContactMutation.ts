@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { updateMyContact } from "@/features/profile/api/updateMyContact.api";
+import { updateMyContact } from "@/features/profileEdit/api/updateMyContact.api";
 
 /**
  * 연락처 저장이다. 낙관적으로 먼저 칠하지 않고 응답을 기다린다 — 고치는 자리가 시트 안이라

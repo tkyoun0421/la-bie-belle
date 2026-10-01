@@ -15,7 +15,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.112.4";
 import {
   type HolidayRow,
   parseHolidayApiResponse,
-} from "../_shared/payroll/holiday-api-response.ts";
+} from "../_shared/holiday/holidayApiResponse.ts";
 
 const BEARER = "Bearer ";
 

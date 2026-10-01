@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
-import { submitExcuse } from "@/entities/attendance/api/submitExcuse.api";
+import { submitExcuse } from "@/features/excuse/api/submitExcuse.api";
 import {
   createAdminUser,
   createApprovedUser,

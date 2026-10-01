@@ -10,9 +10,12 @@ import type { ReactNode } from "react";
 
 const createScheduleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/features/schedule/api/createSchedule.api", () => ({
-  createSchedule: createScheduleMock,
-}));
+jest.unstable_mockModule(
+  "@/features/scheduleDay/api/createSchedule.api",
+  () => ({
+    createSchedule: createScheduleMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");
@@ -21,7 +24,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
 const { useCreateScheduleMutation } =
-  await import("@/features/schedule/hooks/useCreateScheduleMutation");
+  await import("@/features/scheduleDay/hooks/useCreateScheduleMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
