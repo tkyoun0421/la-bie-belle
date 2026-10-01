@@ -48,7 +48,7 @@ sources:
 
 | 묶음 | 품는 슬라이스 | 이동할 것 | 안쪽에서 쪼갤 것 |
 | --- | --- | --- | --- |
-| 공용 | `shared/*` · `entities/clock` · `src/app/` | 타입 18 · 상수 7 · SDK 5 · 환경값 2 · 시계 2 | `databaseTypes` 1609줄 · `_catalog` 624줄 · `DragAndDrop` export 다섯 · `kstDate` export 일곱 |
+| 공용 | `shared/*` · `entities/clock` · `src/app/` | 타입 12 · 상수 7 · SDK 5 · 환경값 2 · 시계 2 | `_catalog` 624줄 · `DragAndDrop` export 다섯 · `kstDate` export 일곱 |
 | 근무표 | schedule · availability · hall · workRequest + features 일곱 + screens 셋 | 타입 15 · 상수 2 | `DayDetail` 969줄에 훅 서른여덟 · `ScheduleAdminScreen` 736줄 |
 | 급여 | payroll + payrollCompute · wageAdmin · adjustment · holiday + screens 둘 | 타입 15 · 상수 7 | `payrollDays.policy` 339줄 · `period.policy` export 아홉 |
 | 구성원 | member · profile + memberAdmin · profileEdit · qualificationGrant + screens 여섯 | 타입 8 · 상수 8 | `PendingScreen` 689줄 · `ProfileScreen` 506줄 · `MembersScreen` 446줄 |
@@ -60,6 +60,10 @@ sources:
 | QR | qr + qrAdmin + qr | 타입 1 · 상수 2 | `QrScreen` 204줄 |
 
 **공용이 맨 앞이다.** 이동할 것이 거기 쏠려 있고(SDK 다섯·환경값 둘·시계 둘이 전부 `shared/`와 `entities/clock`이다) 나머지 아홉이 전부 `shared/`를 당긴다 — 먼저 굳히지 않으면 뒤 아홉이 움직이는 바닥 위에서 일한다.
+
+**`databaseTypes.ts` 1609줄은 밖이다.** `pnpm types`가 로컬 DB에서 뽑는 생성물이고 `scripts/generateDatabaseTypes.mts`가 통째로 덮어쓴다 — 쪼개면 다음 `pnpm types`가 되돌린다. 거기 선언된 여덞 중 밖에서 당기는 것은 `Database` 하나뿐이고 그것도 `shared/api/database.ts`가 한 번 받아 `DB`로 내보낸다. 당김 백쉰셋이 그 이름 하나로 모여 있어 **옮길 자리도 없다.**
+
+**`shared/ui/*.tsx`의 `*Props` 여든하나도 밖이다.** `.tsx`는 접미사를 안 받고, 컴포넌트 하나의 인자 꼴은 ADR-015가 「함수 하나의 인자 꼴은 그 파일에 남는다」로 이미 그 파일에 묶었다. 밖에서 당기는 것이 다섯뿐인 것도 그 편이다 — `ScheduleDayCellState`·`ToastKind`·`ShiftWindow`·`Theme`·`IllustrationScene`이고 나머지는 선언한 파일만 쓴다.
 
 **`features/notificationRead` 넷이 주인 없이 떠 있었다.** 묶음을 그려 보니 어느 `entities`도 안 당기고 아무 묶음에도 안 들었다 — 알림에 붙인다.
 
