@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getQrCode,
-  qrCodeKey,
   QR_CODE_STALE_TIME_MS,
   type HallQrCode,
 } from "@/entities/attendance/dals/getQrCode";
@@ -20,7 +20,7 @@ export type QrCodeResult = {
 
 export function useQrCode(client: DB): QrCodeResult {
   const { data, error, isLoading } = useQuery({
-    queryKey: qrCodeKey(),
+    queryKey: queryKeys.hall.qr(),
     queryFn: () => getQrCode(client),
     staleTime: QR_CODE_STALE_TIME_MS,
   });

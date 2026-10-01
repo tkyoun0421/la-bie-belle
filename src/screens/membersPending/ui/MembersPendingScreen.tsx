@@ -3,6 +3,7 @@ import { EllipsisVertical } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { DomainError } from "@/shared/api/errors";
+import { queryKeys } from "@/shared/api/queryKeys";
 import { queryClient } from "@/shared/lib/queryClient";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
@@ -26,7 +27,6 @@ import {
 } from "@/entities/profile/dals/profilePrivate";
 import { rejectMember } from "@/entities/profile/dals/rejectMember";
 import { formatElapsedDays } from "@/entities/profile/model/formatElapsedDays";
-import { MEMBERS_KEY } from "@/features/members/model/queryKeys";
 import { useMembers } from "@/features/members/model/useMembers";
 import {
   MemberDetailSheet,
@@ -135,7 +135,7 @@ export function MembersPendingScreen() {
         setSending(false);
       }
 
-      await queryClient.invalidateQueries({ queryKey: MEMBERS_KEY });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.member.all });
     },
     [closeSheet],
   );

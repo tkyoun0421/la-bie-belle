@@ -43,10 +43,6 @@ const EXCUSE_STATUS_COLUMNS = [
 
 const EMPTY: DayAttendance = { checkIns: [], excuseStatuses: [] };
 
-export function dayAttendanceKey(workDate: string): string[] {
-  return ["attendance", workDate];
-}
-
 export async function getDayAttendance(
   client: DB,
   workDate: string,

@@ -45,11 +45,11 @@ import { pressNotification } from "@/screens/notifications/model/pressNotificati
  *
  * **관리자 공지 줄만 안 눌린다.** 갈 곳이 없어서고, 그래서 그 줄의 읽음은 누르는 것이 아니라
  * 화면에 들어오는 것으로 찍힌다. 어느 줄이 그 자리인지는
- * [notification-rows](../model/notification-rows.ts)가 고른다 — 여기서 고르면 계산이 UI로
+ * [notification-rows](../model/notificationRows.ts)가 고른다 — 여기서 고르면 계산이 UI로
  * 샌다(ADR-001).
  *
  * **읽음이 실패해도 조용하다.** 이동이 먼저라 그 사람은 이미 다른 화면에 있다
- * ([press-notification](../model/press-notification.ts)).
+ * ([press-notification](../model/pressNotification.ts)).
  *
  * **문장이 없는 줄은 안 그린다.** 2차 다섯은 제목이 아직 널이라(plan AC-01) 그릴 글자가
  * 없다 — 빈 줄을 세우면 눌러도 아무 일이 없는 자리가 목록에 남는다.

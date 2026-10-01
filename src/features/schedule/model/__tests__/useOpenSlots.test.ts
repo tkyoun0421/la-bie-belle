@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 // 구현 대상: src/features/schedule/model/useOpenSlots.ts
 //
 // 빈 자리를 `open_slots` 뷰로 읽는다 — TS가 다시 세지 않는다(design.md 「계산의 예외
-// 하나」). 화면은 `group-open-slots.ts`로 날짜별 수만 묶는다. 캐시 키는 이 문서 어디에도
+// 하나」). 화면은 `groupOpenSlots.ts`로 날짜별 수만 묶는다. 캐시 키는 이 문서 어디에도
 // 못 박혀 있지 않아 이 테스트가 `useMonthWindow`(['schedule', month, 'window'])와 같은
 // 접미사 관례로 `['schedule', month, 'open-slots']`를 고른다 — `['schedule']`
 // 무효화가 이 값도 낡게 해야 하므로 SCHEDULE_KEY 아래 둔다.

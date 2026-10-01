@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 // 구현 대상: src/features/schedule/model/useRespondRequest.ts
 //
-// 근무자가 근무 요청에 답한다(`respond-request.ts`의
+// 근무자가 근무 요청에 답한다(`respondRequest.ts`의
 // `respondRequest(client, requestId, answer)` — answer는 'accept'·'decline'). 성공하면
 // `['schedule']`·`['payroll']`·`['requests']`를 무효화한다(design.md 「요청에 답하기」).
 // AC-09는 응답을 기다리라고 정했다 — 보내는 동안 버튼 둘이 잠긴다.

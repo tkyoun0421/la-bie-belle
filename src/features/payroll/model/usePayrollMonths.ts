@@ -1,8 +1,8 @@
 import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getPayrollMonth,
-  payrollMonthKey,
   type PayrollMonth,
 } from "@/entities/payroll/dals/getPayrollMonth";
 
@@ -40,7 +40,7 @@ export function usePayrollMonths(
 ): PayrollMonthsResult {
   return useQueries({
     queries: months.map((month) => ({
-      queryKey: payrollMonthKey(month),
+      queryKey: queryKeys.payroll.month(month),
       queryFn: () => getPayrollMonth(client, month),
     })),
     combine: (results): PayrollMonthsResult => {

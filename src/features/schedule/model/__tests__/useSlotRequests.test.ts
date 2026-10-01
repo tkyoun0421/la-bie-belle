@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 // 구현 대상: src/features/schedule/model/useSlotRequests.ts
 //
-// 그 달 살아 있는 근무 요청을 읽는다(`get-slot-requests.ts`의
+// 그 달 살아 있는 근무 요청을 읽는다(`getSlotRequests.ts`의
 // `getSlotRequests(client, month)`). 캐시 키는 plan schedule-requests.md 「총괄이 정한
 // 것」 5가 `['requests', month]`로 못 박았다 — `['requests']` 무효화가 이 값도 낡게
 // 해야 해서 REQUESTS_KEY 아래 둔다.

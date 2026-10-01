@@ -11,7 +11,7 @@
 //
 // useAttendanceMonths(client, months) — 근태 탭의 열두 달 창이다. 근무 탭과 같은
 // getMonthSchedule 열둘에 getMonthAttendance(['attendance', 'YYYY-MM']) 열둘이
-// 더 붙는다 — 그달 배정·날 시각이 attendance-inputs.ts의 재료라서다.
+// 더 붙는다 — 그달 배정·날 시각이 attendanceInputs.ts의 재료라서다.
 //
 // **결과가 달별로 구분돼 돌아온다.** useScheduleMonths·usePayrollMonths는
 // flatMap으로 여러 달의 행을 하나의 배열로 뭉갠다. 이 훅은 그러면 안 된다 —
@@ -56,7 +56,6 @@ jest.unstable_mockModule(
   "@/entities/schedule/dals/getFirstScheduleMonth",
   () => ({
     getFirstScheduleMonth: getFirstScheduleMonthMock,
-    firstScheduleMonthKey: () => ["schedule", "first-month"],
   }),
 );
 
@@ -64,7 +63,6 @@ const getPayrollMonthMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/entities/payroll/dals/getPayrollMonth", () => ({
   getPayrollMonth: getPayrollMonthMock,
-  payrollMonthKey: (month: string) => ["payroll", month],
 }));
 
 const { renderHook, waitFor } = await import("@testing-library/react-native");
@@ -282,7 +280,7 @@ describe("usePayrollMonthsByMonth — 결과가 달마다 구분돼 돌아온다
 });
 
 describe("useFirstScheduleMonth — 키가 달을 안 물어 근무표 캐시 무효화에 그대로 얹힌다", () => {
-  it("쿼리 캐시가 firstScheduleMonthKey()의 값인 ['schedule','first-month'] 자리에 값을 담는다", async () => {
+  it("쿼리 캐시가 queryKeys.schedule.firstMonth()의 값인 ['schedule','first-month'] 자리에 값을 담는다", async () => {
     getFirstScheduleMonthMock.mockResolvedValue("2026-01-01");
     const { wrapper, queryClient } = createWrapper();
 

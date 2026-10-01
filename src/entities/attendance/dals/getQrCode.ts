@@ -20,10 +20,6 @@ export type HallQrCode = {
   rotatedAt: string;
 };
 
-export function qrCodeKey(): string[] {
-  return ["hall", "qr"];
-}
-
 export async function getQrCode(client: DB): Promise<HallQrCode | null> {
   const { data, error } = await client
     .from("hall_secrets")

@@ -205,7 +205,7 @@ export function MembersScreen() {
 
   /**
    * 갈래는 재직자에게만 붙는다 — 퇴사 구획은 이 표에 아예 안 든다. 남의 기기 권한은 알
-   * 길이 없어 판정 축이 의사와 기기 둘뿐이다(`reach-state.ts`).
+   * 길이 없어 판정 축이 의사와 기기 둘뿐이다(`reachState.ts`).
    */
   const reach = useMemo(() => {
     const suffixes = new Map<string, string | null>();

@@ -3,7 +3,7 @@
 
 import path from "node:path";
 
-/** `spec-docs.ts`의 `SourceDoc`이 이 모양을 만족한다. */
+/** `specDocs.ts`의 `SourceDoc`이 이 모양을 만족한다. */
 export type ImpactDoc = {
   file: string;
   tracked: boolean;
@@ -27,7 +27,7 @@ function target(file: string, source: string): string {
 
 /**
  * 추적 중인 문서의 입력이 이 PR에서 바뀌었는지 본다. 추적 판정은 자리마다 달라
- * `spec-docs.ts`가 소유한다.
+ * `specDocs.ts`가 소유한다.
  */
 export function findImpacted(
   changedFiles: string[],

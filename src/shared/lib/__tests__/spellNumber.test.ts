@@ -2,13 +2,13 @@
 //
 // spellWon(amount) — 금액을 세 자리마다 쉼표로 끊고 「원」을 붙인다. 지금
 // screens/payroll/model/summary.ts의 spellAmount와 screens/wages/model/
-// wage-amount.ts의 spellWon이 각자 THOUSANDS 정규식을 들고 같은 값을 낸다
+// wageAmount.ts의 spellWon이 각자 THOUSANDS 정규식을 들고 같은 값을 낸다
 // (backlog spell-number-shared). 이 파일이 그 둘의 계약을 그대로 옮긴 셋째
 // 자리다 — 슬라이스끼리 서로를 못 불러서(lint 규칙 3) screens/stats의 급여
 // 탭이 이 셋째 사본을 세우려던 참이었다.
 //
 // 두 기존 파일을 읽어 확인한 계약: summary.ts의 spellAmount(amount)와
-// wage-amount.ts의 spellWon(digits 문자열을 formatAmountDisplay로 거쳐 원을
+// wageAmount.ts의 spellWon(digits 문자열을 formatAmountDisplay로 거쳐 원을
 // 붙인 것)이 같은 입력에 같은 문자열을 낸다 — 쉼표 위치도 「원」 접미사도
 // 어긋나지 않는다. 계약 불일치는 없었다.
 

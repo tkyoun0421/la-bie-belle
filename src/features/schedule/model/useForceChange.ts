@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
 import { forceChange } from "@/entities/schedule/dals/forceChange";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 확정 뒤 「사람 바꾸기」다. 옛 배정을 닫고 새 배정을 여는 한 트랜잭션이 함수 안에서
@@ -31,7 +31,7 @@ export function useForceChange(client: DB): ForceChangeResult {
     mutationFn: ({ assignmentId, profileId }: ForceChangeInput) =>
       forceChange(client, assignmentId, profileId),
     onSuccess: () => {
-      for (const queryKey of SCHEDULE_WRITE_KEYS) {
+      for (const queryKey of staleTogether.scheduleWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

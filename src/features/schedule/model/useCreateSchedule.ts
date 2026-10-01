@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
 import { createSchedule } from "@/entities/schedule/dals/createSchedule";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 그 달 근무표를 만든다. 마감일을 같이 정하는 한 동작이라 입력도 한 묶음이다
@@ -33,7 +33,7 @@ export function useCreateSchedule(client: DB): CreateScheduleResult {
     mutationFn: ({ month, deadline }: CreateScheduleInput) =>
       createSchedule(client, month, deadline),
     onSuccess: () => {
-      for (const queryKey of SCHEDULE_WRITE_KEYS) {
+      for (const queryKey of staleTogether.scheduleWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

@@ -4,7 +4,7 @@
 // 탭 날짜 목록의 재료다(plan stats-worker AC-01, spec AC-02). 판정은
 // entities/attendance의 getAttendanceStatus 하나고 여기서 다시 안 짠다 —
 // features/stats/model/attendanceInputs.ts의 buildAttendanceInputs로 재료를
-// 맞물린 뒤 그 상태 함수에 그대로 넣는다(admin의 attendance-rows.ts
+// 맞물린 뒤 그 상태 함수에 그대로 넣는다(admin의 attendanceRows.ts
 // buildAttendanceTab과 같은 전례다).
 //
 // - 내 배정이 있는 날만 남는다(ended_at이 null인 산 배정)

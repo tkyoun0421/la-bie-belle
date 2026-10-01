@@ -6,7 +6,7 @@ import type {
 
 /**
  * 그달치 인증과 사유다. 키가 `['attendance', 'YYYY-MM']`이고 날 키
- * ([`get-day-attendance.ts`](get-day-attendance.ts))와 같은 모양을 낸다 — 상태 여섯을 내는
+ * ([`getDayAttendance.ts`](getDayAttendance.ts))와 같은 모양을 낸다 — 상태 여섯을 내는
  * 순수 함수가 두 키 위에서 그대로 돈다. **상태 계산을 여기서 다시 짜지 않는다.**
  *
  * **한 달을 날마다 읽지 않는다.** 서른 명 규모에서 한 달이면 수백 행이라 그것을 서른 번에
@@ -14,7 +14,7 @@ import type {
  * 먼저 집고 그 날들로 표 둘을 각각 한 번씩 읽는다.
  *
  * 달의 경계를 여기서 재는 것은 `entities/schedule`을 못 불러서다(lint 규칙 3) — 같은 계산이
- * `get-month-schedule.ts`에도 있다.
+ * `getMonthSchedule.ts`에도 있다.
  */
 
 export type MonthAttendance = {
@@ -41,10 +41,6 @@ const EXCUSE_STATUS_COLUMNS = [
 ].join(", ");
 
 const EMPTY: MonthAttendance = { checkIns: [], excuseStatuses: [] };
-
-export function monthAttendanceKey(month: string): string[] {
-  return ["attendance", month.slice(0, 7)];
-}
 
 export async function getMonthAttendance(
   client: DB,

@@ -53,7 +53,7 @@ import { HallDefaultsSheet } from "@/screens/adminHome/ui/HallDefaultsSheet";
  * 자리가 없으면 그 자리도 없다 — 0으로 서지 않는다.
  *
  * **타일만 다른 달을 말할 수 있다.** 오늘이 든 달이 확정됐으면 타일은 다음 달로 넘어가고
- * ([tile-month.ts](../model/tile-month.ts)) 눌렀을 때 그 달이 열린다. 오늘 현황·빈 자리
+ * ([tileMonth.ts](../model/tileMonth.ts)) 눌렀을 때 그 달이 열린다. 오늘 현황·빈 자리
  * 카드·미니뷰는 늘 오늘이 든 달이다 — 셋은 지금 벌어지는 일을 보는 자리다.
  *
  * **승인할 일 줄이 건수를 문장 안에 담는다.** 「승인할 일 · 3건」이 한 글월이라 가입 대기처럼

@@ -1,7 +1,5 @@
-import {
-  firstScheduleMonthKey,
-  getFirstScheduleMonth,
-} from "@/entities/schedule/dals/getFirstScheduleMonth";
+import { queryKeys } from "@/shared/api/queryKeys";
+import { getFirstScheduleMonth } from "@/entities/schedule/dals/getFirstScheduleMonth";
 import {
   createAdminUser,
   execSql,
@@ -29,7 +27,10 @@ describe("getFirstScheduleMonth — schedules의 가장 이른 month 한 줄을 
   });
 
   it("캐시 키는 ['schedule', 'first-month']다 — 달을 안 물어 새 달이 생겨도 그대로 낡는다", () => {
-    expect(firstScheduleMonthKey()).toEqual(["schedule", "first-month"]);
+    expect(queryKeys.schedule.firstMonth()).toEqual([
+      "schedule",
+      "first-month",
+    ]);
   });
 
   it("달이 여럿이면 그중 가장 이른 것을 낸다", async () => {

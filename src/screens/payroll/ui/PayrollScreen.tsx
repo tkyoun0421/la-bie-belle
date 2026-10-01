@@ -2,6 +2,7 @@ import { usePathname, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
+import { queryKeys } from "@/shared/api/queryKeys";
 import { getCurrentUser } from "@/shared/lib/getCurrentUser";
 import { kstDateOf, kstToday } from "@/shared/lib/kstDate";
 import { queryClient } from "@/shared/lib/queryClient";
@@ -20,12 +21,9 @@ import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
 import { payrollViewDays } from "@/features/payroll/model/payrollDays";
-import { PAYROLL_KEY } from "@/features/payroll/model/queryKeys";
 import { usePayrollMonths } from "@/features/payroll/model/usePayrollMonths";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
-import { REHEARSAL_KEY } from "@/features/rehearsal/model/queryKeys";
 import { useRehearsalMonths } from "@/features/rehearsal/model/useRehearsalMonths";
-import { SCHEDULE_KEY } from "@/features/schedule/model/queryKeys";
 import { useScheduleMonths } from "@/features/schedule/model/useScheduleMonths";
 import { canGoBack, canGoForward } from "@/screens/payroll/model/boundary";
 import { payrollHistoryRows } from "@/screens/payroll/model/historyRows";
@@ -168,7 +166,11 @@ export function PayrollScreen() {
   };
 
   const retry = () => {
-    for (const key of [PAYROLL_KEY, SCHEDULE_KEY, REHEARSAL_KEY]) {
+    for (const key of [
+      queryKeys.payroll.all,
+      queryKeys.schedule.all,
+      queryKeys.rehearsal.all,
+    ]) {
       void queryClient.invalidateQueries({ queryKey: key });
     }
   };

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
 import { splitSlot } from "@/entities/schedule/dals/splitSlot";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 겸임 자리를 나눈다 — 겸임 카드 시트의 「자리 나누기」다. 배정된 사람은 받은 쪽에 그대로
@@ -28,7 +28,7 @@ export function useSplitSlot(client: DB): SplitSlotResult {
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: ({ slotId }: SplitSlotInput) => splitSlot(client, slotId),
     onSuccess: () => {
-      for (const queryKey of SCHEDULE_WRITE_KEYS) {
+      for (const queryKey of staleTogether.scheduleWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

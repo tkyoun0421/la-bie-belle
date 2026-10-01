@@ -72,7 +72,7 @@ export type WorkInputs = {
 
 /**
  * 읽어 온 달을 이 모듈이 세는 모양으로 옮긴다. 배정 행이 이름을 임베딩해 오므로
- * (`get-month-schedule.ts`) 사람별 구획이 프로필을 다시 읽지 않는다.
+ * (`getMonthSchedule.ts`) 사람별 구획이 프로필을 다시 읽지 않는다.
  *
  * 옮기는 손이 여기 있는 것은 `WorkAssignment`·`WorkDay`를 이 파일이 소유해서다 — 부르는
  * 쪽마다 짜면 필드 하나가 늘 때 그만큼 고쳐야 한다.

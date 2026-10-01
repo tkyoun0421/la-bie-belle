@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 // 구현 대상: src/features/schedule/model/useCreateCancelRequest.ts
 //
-// 근무자가 근무 취소를 요청한다(`create-cancel-request.ts`의
+// 근무자가 근무 취소를 요청한다(`createCancelRequest.ts`의
 // `createCancelRequest(client, assignmentId, reason)`). 성공하면
 // `['schedule']`·`['payroll']`·`['requests']`를 무효화한다(design.md 「근무 취소 요청과
 // 판정」).

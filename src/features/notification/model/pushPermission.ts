@@ -18,7 +18,7 @@ import type { PushPermission } from "@/features/notification/model/reachState";
  *
  * 기기에 붙는 함수는 전부 주입받는다. 여기가 `expo-notifications`를 직접 물면 이 판정이
  * 기기 없이는 안 돈다 — 실물을 묶는 자리는
- * [`push-deps`](push-deps.ts)다.
+ * [`push-deps`](pushDeps.ts)다.
  */
 
 export type PermissionResponse = { status: string };

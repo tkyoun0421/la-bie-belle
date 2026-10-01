@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import {
   uploadAvatar,
   type UploadAvatarInput,
 } from "@/entities/profile/dals/avatarsBucket";
 import { updateMyPhoto } from "@/entities/profile/dals/updateMyPhoto";
-import { PROFILE_KEY } from "@/features/profile/model/queryKeys";
 
 /**
  * 사진 바꾸기다. 들어오는 길이 둘이고 나가는 자리는 하나다 — 기기에서 고른 사진은 버킷에
@@ -47,7 +47,8 @@ export function useUpdatePhoto(client: DB): UpdatePhotoResult {
 
       await updateMyPhoto(client, photoUrl);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: PROFILE_KEY }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.profile.all }),
   });
 
   return { mutate, isPending, isSuccess, isError, error, reset };

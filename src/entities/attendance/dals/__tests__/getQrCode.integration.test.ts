@@ -1,4 +1,5 @@
-import { getQrCode, qrCodeKey } from "@/entities/attendance/dals/getQrCode";
+import { queryKeys } from "@/shared/api/queryKeys";
+import { getQrCode } from "@/entities/attendance/dals/getQrCode";
 import {
   createAdminUser,
   createApprovedUser,
@@ -42,7 +43,7 @@ describe("getQrCode — 관리자만 읽는 QR 값(AC-07)", () => {
   });
 
   it("캐시 키는 ['hall', 'qr']이다", () => {
-    expect(qrCodeKey()).toEqual(["hall", "qr"]);
+    expect(queryKeys.hall.qr()).toEqual(["hall", "qr"]);
   });
 
   it("관리자는 hall_secrets의 값과 회전 시각을 그대로 받는다", async () => {

@@ -85,7 +85,7 @@ import { SlotSheet } from "@/screens/scheduleAdmin/ui/SlotSheet";
  * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 상세 짜임」이다.
  *
  * **확정 갈림이 둘이다.** 알림이 나가는지는 그 달이 확정됐는지로 갈리고(확인 시트), 자물쇠와
- * 끌기와 자리 추가가 서는지는 그 날이 확정 시점에 있던 날인지로 갈린다(`confirm-gate.ts`).
+ * 끌기와 자리 추가가 서는지는 그 날이 확정 시점에 있던 날인지로 갈린다(`confirmGate.ts`).
  * 확정 뒤에 새로 연 날은 앞은 참이고 뒤도 참이다.
  *
  * **판정은 전부 `model/`에 있다.** 이 파일이 하는 일은 어느 시트를 세울지 고르고 받은
@@ -933,8 +933,8 @@ export function DayDetail({
 }
 
 /**
- * 알림이 그 사람에게 닿는지는 의사와 기기 둘로 갈린다(`reach-state.ts`) — 목록이 그 둘을
- * 같이 실어 와서 여기서 한 번 더 읽을 것이 없다. 못 받는 사람의 문안은 `force-change-copy.ts`
+ * 알림이 그 사람에게 닿는지는 의사와 기기 둘로 갈린다(`reachState.ts`) — 목록이 그 둘을
+ * 같이 실어 와서 여기서 한 번 더 읽을 것이 없다. 못 받는 사람의 문안은 `forceChangeCopy.ts`
  * 가 들고 있고, 이 자리는 갈래를 합쳐 「닿나」 하나로만 넘긴다 — 그 자리에서 관리자가 할 일이
  * 어느 갈래든 따로 연락 하나라서다.
  */

@@ -1,8 +1,6 @@
 import type { Database } from "@/shared/api/database";
-import {
-  getMyExcuses,
-  myExcusesKey,
-} from "@/entities/attendance/dals/getMyExcuses";
+import { queryKeys } from "@/shared/api/queryKeys";
+import { getMyExcuses } from "@/entities/attendance/dals/getMyExcuses";
 import {
   createAdminUser,
   createApprovedUser,
@@ -63,7 +61,7 @@ describe("getMyExcuses — 본인 사유를 그달 단위로 읽는다(AC-07)", 
   });
 
   it("캐시 키는 ['excuses', 그달]이다", () => {
-    expect(myExcusesKey("2026-09")).toEqual(["excuses", "2026-09"]);
+    expect(queryKeys.excuse.month("2026-09")).toEqual(["excuses", "2026-09"]);
   });
 
   it("그달 안의 본인 사유만 오고 남의 사유는 안 온다", async () => {

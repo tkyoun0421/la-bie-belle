@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
 import { createCancelRequest } from "@/entities/schedule/dals/createCancelRequest";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 근무자가 자기 근무를 취소해 달라고 낸다. 근무는 아직 그대로지만 그 배정에 「취소 요청 중」이
@@ -30,7 +30,7 @@ export function useCreateCancelRequest(client: DB): CreateCancelRequestResult {
     mutationFn: ({ assignmentId, reason }: CreateCancelRequestInput) =>
       createCancelRequest(client, assignmentId, reason),
     onSuccess: () => {
-      for (const queryKey of SCHEDULE_WRITE_KEYS) {
+      for (const queryKey of staleTogether.scheduleWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

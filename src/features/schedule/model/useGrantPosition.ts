@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import { grantPosition } from "@/entities/schedule/dals/grantPosition";
-import { MEMBERS_KEY } from "@/features/schedule/model/queryKeys";
 
 /**
  * 자격 없는 사람 시트의 「자격도 주기」다. 이 훅만 `['members']`를 무효화한다
@@ -36,7 +36,7 @@ export function useGrantPosition(client: DB): GrantPositionResult {
       mutationFn: ({ profileId, position }: GrantPositionInput) =>
         grantPosition(client, profileId, position),
       onSuccess: () => {
-        void queryClient.invalidateQueries({ queryKey: MEMBERS_KEY });
+        void queryClient.invalidateQueries({ queryKey: queryKeys.member.all });
       },
     });
 

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import { setRole } from "@/entities/profile/dals/setRole";
-import { MEMBERS_KEY } from "@/features/members/model/queryKeys";
 
 /**
  * 관리자로 올리고 내린다. 남에게 닿는 판정이라 응답을 기다린다
@@ -32,7 +32,8 @@ export function useSetRole(client: DB): SetRoleResult {
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: ({ profileId, role }: SetRoleInput) =>
       setRole(client, profileId, role),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: MEMBERS_KEY }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.member.all }),
   });
 
   const send = useCallback(

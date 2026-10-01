@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
 import {
   respondRequest,
   type RequestAnswer,
 } from "@/entities/schedule/dals/respondRequest";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 근무자가 받은 요청에 답한다. 수락이 곧 배정이라 근무표와 급여와 요청이 같이 낡는다.
@@ -36,7 +36,7 @@ export function useRespondRequest(client: DB): RespondRequestResult {
     mutationFn: ({ requestId, answer }: RespondRequestInput) =>
       respondRequest(client, requestId, answer),
     onSuccess: () => {
-      for (const queryKey of SCHEDULE_WRITE_KEYS) {
+      for (const queryKey of staleTogether.scheduleWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

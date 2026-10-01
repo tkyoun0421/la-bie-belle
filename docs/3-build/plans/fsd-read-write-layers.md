@@ -24,7 +24,7 @@ sources:
 - 이름이 바뀌는 폴더 5개 — `screens/`의 `admin-home`·`admin-stats`·`members-pending`·`schedule-admin`·`schedule-worker`. `eslint-rules`는 밖이다
 - 타입 선언 360개가 파일 192개에 산다
 - `Db` 타입을 쓰는 자리 149개 파일 319회. 파일 이름에는 안 들어간다
-- `queryKeys.ts`가 다섯 군데에 산다 — `features/`의 `schedule`·`notification`·`rehearsal`·`profile`·`members`
+- `queryKeys.ts`가 여섯 군데에 산다 — `features/`의 `schedule`·`notification`·`payroll`·`profile`·`members`·`rehearsal`. dal 여섯이 키 함수를 따로 들고 있고 `features/stats`는 문자열을 다시 적는다
 - 실제 경로를 박은 검사·스크립트 넷 — `scripts/syncEdgeShared.mts`, `eslint-rules/noNodeImportInEdgeShared.mjs`, `tests/lint/attendanceConstants.ts`, `eslint-rules/noVisualUtilityClass.mjs`
 
 **Git 기준점**은 ADR-015가 merge된 커밋이다.
@@ -57,15 +57,19 @@ sources:
 - 범위의 첫 조각은 검사 밖이다 — `src`·`tests`·`scripts`·`eslint-rules`는 저장소 맨 위 이름이고 마지막은 ESLint 플러그인 이름이다. `__tests__`도 밖이다: Jest가 그 이름으로 짝 테스트 자리를 알고 `tdd-guard-unit.py`가 그 자리를 본다
 - 문서는 안 고쳤다 — `src/screens/<kebab>`을 글자로 적은 문서 열둘이 전부 완료된 plan과 보관된 관찰이다
 
-### AC-03 — 캐시 키가 팩토리 하나가 된다
+### AC-03 — 캐시 키가 팩토리 하나가 된다 ✅
 
-- 전제: `queryKeys.ts`가 `features/` 아래 다섯 슬라이스에 흩어져 있고, 쓰는 쪽이 배열 리터럴을 손으로 적는 자리가 있다
+- 전제: `queryKeys.ts`가 `features/` 아래 여섯 슬라이스에 흩어져 있고, dal 여섯이 키 함수를 따로 들고, `features/stats`는 문자열을 다시 적는다
 - 행동
-  - 다섯을 `src/shared/api/queryKeys.ts` 하나로 모으고 **팩토리 객체**로 쓴다 — `queryKeys.schedule.all`과 `queryKeys.schedule.month(month)` 꼴
+  - 여섯을 `src/shared/api/queryKeys.ts` 하나로 모으고 **팩토리 객체**로 쓴다 — `queryKeys.schedule.all`과 `queryKeys.schedule.month(month)` 꼴
+  - dal의 키 함수 여섯(`dayAttendanceKey`·`monthAttendanceKey`·`myExcusesKey`·`qrCodeKey`·`payrollMonthKey`·`firstScheduleMonthKey`)을 빼고 팩토리 항목으로 옮긴다
   - 배열 리터럴로 키를 적은 자리를 전부 팩토리 호출로 바꾼다
-  - 키 문자열이 [runtime.md](../../2-design/system/runtime.md)의 표와 같은지 대조한다
-- 관찰 결과: 키 문자열이 하나도 안 바뀐다. `pnpm test`가 초록이고 캐시 무효화 동작이 그대로다. 다섯 파일이 사라지고 하나가 선다
+  - 키 문자열을 [runtime.md](../../2-design/system/runtime.md#tanstack-query-규칙)의 꼴과 대조한다
+- 관찰 결과: 키 문자열이 하나만 바뀐다(아래). `pnpm test`가 초록이고 캐시 무효화 동작이 그대로다. 여섯 파일이 사라지고 하나가 선다
 - 왜 여기인가: 쓰기 슬라이스가 성공한 뒤 낡게 할 키는 읽기 슬라이스의 것이고, `no-cross-slice-import`가 그 import를 막는다. 이것이 안 서면 AC-07이 막힌다
+- 돌면서 나온 것 — **키 하나를 바꿨다.** `useMyAvailability`와 `useMonthAvailabilities`가 `['availability', month]`를 나눠 쓰는데 내놓는 모양이 달라, 한 세션에서 둘이 돌면 먼저 캐시에 든 쪽이 이긴다. 앞쪽을 `['availability', month, 'mine']`으로 내렸다 — 접두사가 겹쳐 무효화 동작은 그대로다([관찰 045](../../observations/045-two-queries-share-one-cache-key.md))
+- 돌면서 나온 것 — **정본 충돌을 고쳤다.** `runtime.md`가 「도메인 파일이 각자의 키를 적는다」고 적어 ADR-015의 팩토리 결정과 부딪혔다. 그 줄을 팩토리로 고쳤다 — 조항이 선 뒤 슬라이스 import를 막는 규칙이 생겨 같은 상수가 복제됐고 그 복제가 위 결함의 바탕이다
+- 돌면서 나온 것 — **무효화 묶음은 키가 아니라 정책이라 이름을 갈랐다.** `staleTogether.scheduleWrite`·`rehearsalWrite`가 그 자리고, 어느 쓰기가 어느 키를 낡게 하느냐의 결정은 영역 design이 그대로 가진다
 
 ### AC-04 — 통신이 `api/`로 모이고 `.api.ts`가 된다
 
@@ -228,6 +232,7 @@ sources:
 | [account/design.md](../../2-design/modules/account/design.md) | 「전부 `auth.*`라 `shared/lib`이다」 | AC-06 |
 | [spec/ui-kit.md](../../2-design/spec/ui-kit.md) | 「자리」와 AC의 순수 계산 경로 둘 | AC-06 |
 | [execution.md](../../4-test/execution.md) | 테스트 명령 예시의 `src/shared/lib/__tests__/` 경로 | AC-06 |
+| [runtime.md](../../2-design/system/runtime.md) | 「도메인 파일이 각자의 키를 적는다」 → 팩토리 하나 | AC-03 |
 
 **완료된 과거 plan은 안 건드린다.** [3-build 안내](../README.md#구현-계획)가 「완료된 과거 계획은 소급 변경하지 않는다」고 적는다 — `login-screens`·`rehearsal`·`stats-worker` 등 열 넘는 plan이 `shared/lib`과 kebab 경로를 들지만 그것은 당시 작업의 기록이다.
 
@@ -237,7 +242,7 @@ sources:
 
 1. **AC-01 — 파일 이름 camel.** ✅ 535개를 `git mv`했다
 2. **AC-02 — 폴더 이름 camel.** ✅ `screens/` 다섯을 `git mv`하고 폴더 검사를 세웠다
-3. **AC-03 — 캐시 키 팩토리.** 다섯을 `shared/api/queryKeys.ts` 하나로. 키 문자열을 한 글자도 안 바꾼다
+3. **AC-03 — 캐시 키 팩토리.** ✅ 여섯과 dal 키 함수 여섯을 `shared/api/queryKeys.ts` 하나로. 키 하나만 바꿨다 — 관찰 045의 겹침
 4. **AC-04 — 통신을 `api/`로 + `.api.ts`**
 5. **AC-05 — 훅을 `hooks/`로 + 층 가르기 + `Query`·`Mutation`**
 6. **AC-06 — 타입 빼기 + `model`/`utils` 가르기 + 나머지 접미사**

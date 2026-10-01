@@ -10,7 +10,7 @@
 //   null이면(프로필을 아직 못 읽은 순간) 좁힌 날이 빈 배열이라 넷 다 0이다.
 // - 좁힌 뒤에는 features/stats/model/attendanceInputs.ts의
 //   buildAttendanceInputs로 재료를 맞물리고 entities/attendance/model/
-//   attendance-summary.ts의 tallyMonthlyAttendance로 센다 — 판정도 셈도
+//   attendanceSummary.ts의 tallyMonthlyAttendance로 센다 — 판정도 셈도
 //   여기서 다시 안 짠다.
 // - 확인 중(pending)과 안 찍음(unmarked)은 넷(출근·지각·결근·인정) 중
 //   어디에도 안 든다(tallyMonthlyAttendance의 계약 그대로).

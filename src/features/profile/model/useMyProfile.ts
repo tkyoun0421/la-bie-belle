@@ -1,5 +1,6 @@
 import { skipToken, useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getMyProfile,
   type MyProfileRow,
@@ -8,10 +9,6 @@ import {
   getProfilePrivate,
   type ProfilePrivateRow,
 } from "@/entities/profile/dals/profilePrivate";
-import {
-  PROFILE_KEY,
-  PROFILE_PRIVATE_KEY,
-} from "@/features/profile/model/queryKeys";
 
 /**
  * 「나」 화면이 보는 다섯은 표 둘에 나뉘어 산다 — 이름과 사진과 역할은 `profiles`,
@@ -42,14 +39,14 @@ export function useMyProfile(
   userId: string | null,
 ): MyProfileResult {
   const profile = useQuery({
-    queryKey: PROFILE_KEY,
+    queryKey: queryKeys.profile.all,
     queryFn: userId === null ? skipToken : () => getMyProfile(client, userId),
   });
 
   const profileId = profile.data?.id ?? null;
 
   const contact = useQuery({
-    queryKey: PROFILE_PRIVATE_KEY,
+    queryKey: queryKeys.profile.private(),
     queryFn:
       profileId === null
         ? skipToken

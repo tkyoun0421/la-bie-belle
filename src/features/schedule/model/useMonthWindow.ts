@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getMonthWindow,
   type MonthWindow,
 } from "@/entities/schedule/dals/getMonthSchedule";
-import { SCHEDULE_KEY } from "@/features/schedule/model/queryKeys";
 
 /**
  * 그 달 접수 창이다 — 마감일과 확정 시각. 근무표가 아직 없으면 `null`이 와서 화면이 「안 만든
@@ -26,7 +26,7 @@ export type MonthWindowResult = {
 
 export function useMonthWindow(client: DB, month: string): MonthWindowResult {
   const { data, error, isLoading } = useQuery({
-    queryKey: [...SCHEDULE_KEY, month, "window"],
+    queryKey: queryKeys.schedule.monthWindow(month),
     queryFn: () => getMonthWindow(client, month),
   });
 

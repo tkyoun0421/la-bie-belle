@@ -4,7 +4,7 @@
 // 제목이 사람 이름·근무 날·요일·포지션, 부제가 그날 근무 시간, 보낸 시각 줄, 사유는
 // 받은 글 그대로다. `work_date`는 시각 없는 KST 달력 날짜라 UTC 자정으로 요일을 읽고,
 // 보낸 시각은 실제 타임스탬프라 Asia/Seoul로 옮겨야 달력 날짜·시각이 맞는다
-// (schedule-admin.md의 `format-schedule-date.ts`와 같은 결이다 — 슬라이스끼리 못 불러
+// (schedule-admin.md의 `formatScheduleDate.ts`와 같은 결이다 — 슬라이스끼리 못 불러
 // 이 슬라이스가 다시 짠다, lint 규칙 3).
 
 import { cancelApprovalDetail } from "@/screens/approvals/model/approvalDetail";

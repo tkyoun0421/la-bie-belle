@@ -1,7 +1,7 @@
 import type { ReachState } from "@/features/notification/model/reachState";
 
 /**
- * 갈래를 받아 그 자리의 문장을 고른다. 판정은 [`reach-state`](reach-state.ts) 하나가 내고
+ * 갈래를 받아 그 자리의 문장을 고른다. 판정은 [`reach-state`](reachState.ts) 하나가 내고
  * 여기는 고르기만 한다 — 판정을 자리마다 만들면 같은 사람이 화면마다 다른 갈래로 읽힌다.
  *
  * **가르는 자리와 합치는 자리가 다르다.** 직원 목록과 사람 시트는 스스로 끈 사람과 기기가

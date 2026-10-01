@@ -1,10 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import { markNotificationsRead } from "@/entities/notification/dals/markNotificationsRead";
-import {
-  NOTIFICATIONS_KEY,
-  NOTIFICATIONS_UNREAD_KEY,
-} from "@/features/notification/model/queryKeys";
 
 /**
  * 누른 알림에 읽음을 찍는다. 정본은
@@ -25,8 +22,10 @@ export function useMarkNotificationsRead(client: DB) {
     mutationFn: (ids: string[]) => markNotificationsRead(client, ids),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_KEY }),
-        queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_UNREAD_KEY }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.notification.all }),
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.notification.unread(),
+        }),
       ]),
   });
 }

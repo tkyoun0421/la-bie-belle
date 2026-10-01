@@ -81,10 +81,6 @@ const EXCUSE_STATUS_COLUMNS = [
 
 const HOLIDAY_COLUMNS = ["holiday_date", "source", "name"].join(", ");
 
-export function payrollMonthKey(month: string): string[] {
-  return ["payroll", month.slice(0, 7)];
-}
-
 /** `"2026-12"`도 `"2026-12-25"`도 `"2026-12-01"`이다. */
 function monthStart(month: string): string {
   return `${month.slice(0, 7)}-01`;

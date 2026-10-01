@@ -1,13 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getQualifications,
   type Qualification,
 } from "@/entities/schedule/dals/getQualifications";
-import {
-  MEMBERS_KEY,
-  QUALIFICATIONS_SCOPE,
-} from "@/features/schedule/model/queryKeys";
 
 /**
  * 자격 전체다. 판정은 `qualifications` 뷰가 끝냈고 화면은 픽커 목록과 합쳐 쓰기만 한다
@@ -26,7 +23,7 @@ export type QualificationsResult = {
 
 export function useQualifications(client: DB): QualificationsResult {
   const { data, error, isLoading } = useQuery({
-    queryKey: [...MEMBERS_KEY, QUALIFICATIONS_SCOPE],
+    queryKey: queryKeys.member.qualifications(),
     queryFn: () => getQualifications(client),
   });
 

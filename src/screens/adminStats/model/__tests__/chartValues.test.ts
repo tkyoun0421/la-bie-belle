@@ -13,7 +13,7 @@
 // "60%" 꼴이다.
 //
 // attendanceRate 자체는 plan stats-worker AC-01로 entities/attendance/model/
-// attendance-summary.ts에 내려갔다(인자도 AttendanceTab이 아니라
+// attendanceSummary.ts에 내려갔다(인자도 AttendanceTab이 아니라
 // MonthlyAttendanceTally다) — attendanceValues와 percentLabel은 그 함수를 안에서
 // 불러 쓴다.
 
