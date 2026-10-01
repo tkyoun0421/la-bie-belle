@@ -2,6 +2,7 @@ import { usePathname, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { supabase } from "@/shared/api/supabase";
+import { kstToday } from "@/shared/lib/kstToday.lib";
 import { AdminSwitch } from "@/shared/ui/AdminSwitch";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";
@@ -27,7 +28,6 @@ import { homeTileSummary } from "@/screens/adminHome/model/homeTileSummary.polic
 import { miniViewLoads } from "@/screens/adminHome/model/miniViewDensity.policy";
 import { tileMonth } from "@/screens/adminHome/model/tileMonth.policy";
 import {
-  kstToday,
   spellDate,
   todayBandShares,
   todayStatus,

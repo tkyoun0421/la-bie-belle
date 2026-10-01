@@ -1,5 +1,6 @@
 import type { DB } from "@/shared/api/database";
-import { DomainError, toApiError } from "@/shared/api/errors";
+import { toApiError } from "@/shared/api/errors";
+import { DomainError } from "@/shared/model/error.type";
 
 export type CheckInMethod = "location" | "qr";
 

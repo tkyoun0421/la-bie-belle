@@ -1,8 +1,8 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { DomainError } from "@/shared/api/errors";
 import { supabase } from "@/shared/api/supabase";
+import { DomainError } from "@/shared/model/error.type";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Badge } from "@/shared/ui/Badge";

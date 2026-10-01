@@ -1,30 +1,16 @@
-import { ERROR_CODES } from "@/shared/api/errorCodes";
+import { ERROR_CODES } from "@/shared/consts/error.const";
+import {
+  DomainError,
+  type ErrorCode,
+  TransportError,
+} from "@/shared/model/error.type";
 
-export type ErrorCode = (typeof ERROR_CODES)[number];
+/**
+ * Supabase가 돌려준 무엇이든 받아 `model`의 오류 둘 중 하나로 옮긴다. 통신 객체를 아는
+ * 손이라 `api`에 남는다 — 가름의 꼴 자체는 `shared/model/error.type.ts`가 든다.
+ */
 
 const KNOWN_CODES: ReadonlySet<string> = new Set(ERROR_CODES);
-
-export class DomainError extends Error {
-  readonly code: ErrorCode;
-
-  constructor(code: ErrorCode) {
-    super(code);
-    this.name = "DomainError";
-    this.code = code;
-    Object.setPrototypeOf(this, DomainError.prototype);
-  }
-}
-
-export class TransportError extends Error {
-  readonly origin: unknown;
-
-  constructor(message: string, origin: unknown) {
-    super(message);
-    this.name = "TransportError";
-    this.origin = origin;
-    Object.setPrototypeOf(this, TransportError.prototype);
-  }
-}
 
 const UNKNOWN_TRANSPORT_MESSAGE = "통신이 끊겼다";
 

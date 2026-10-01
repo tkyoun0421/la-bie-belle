@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/api/errors";
+import { DomainError } from "@/shared/model/error.type";
 
 /**
  * 조정과 임시공휴일 저장이 실패했을 때 시트가 할 일이다. 정본은

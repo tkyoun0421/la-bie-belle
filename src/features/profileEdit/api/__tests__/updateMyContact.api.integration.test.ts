@@ -1,4 +1,4 @@
-import { DomainError, TransportError } from "@/shared/api/errors";
+import { DomainError, TransportError } from "@/shared/model/error.type";
 import { updateMyContact } from "@/features/profileEdit/api/updateMyContact.api";
 import { createSubmittedUser } from "@tests/integration/postgres";
 

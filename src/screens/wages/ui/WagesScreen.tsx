@@ -1,8 +1,9 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { DomainError } from "@/shared/api/errors";
 import { supabase } from "@/shared/api/supabase";
+import { kstToday } from "@/shared/lib/kstToday.lib";
+import { DomainError } from "@/shared/model/error.type";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Divider } from "@/shared/ui/Divider";
@@ -13,7 +14,6 @@ import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
-import { kstToday } from "@/shared/utils/kstDate";
 import { spellWon } from "@/shared/utils/spellNumber";
 import { useMembersQuery } from "@/entities/member/hooks/useMembersQuery";
 import { useWageRatesQuery } from "@/entities/payroll/hooks/useWageRatesQuery";

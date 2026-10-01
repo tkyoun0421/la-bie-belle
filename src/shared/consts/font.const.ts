@@ -1,28 +1,18 @@
 import { type FontSource } from "expo-font";
 /* eslint-disable no-restricted-imports -- assets/ 는 src/ 밖이라 @/ 로 가리킬 수 없고,
    Metro는 서체 경로를 정적으로 읽으니 별칭 없이 리터럴 상대 경로로 물려야 한다. */
+import type { FontFamilyName } from "@/shared/model/font.type";
 import wantedSansBold from "../../../assets/fonts/subset/WantedSans-Bold.ttf";
 import wantedSansMedium from "../../../assets/fonts/subset/WantedSans-Medium.ttf";
 import wantedSansRegular from "../../../assets/fonts/subset/WantedSans-Regular.ttf";
 import wantedSansSemiBold from "../../../assets/fonts/subset/WantedSans-SemiBold.ttf";
 /* eslint-enable no-restricted-imports */
 
-export type FontFamilyName =
-  | "WantedSans-Regular"
-  | "WantedSans-Medium"
-  | "WantedSans-SemiBold"
-  | "WantedSans-Bold";
-
-export type FontLoadingState = {
-  loaded: boolean;
-  error: Error | null;
-};
-
 /**
- * 키는 globals.css의 --font-sans·--font-medium·--font-semibold·--font-bold 값과
- * 글자까지 같아야 한다 — 어긋나면 유틸이 없는 서체를 물고 기본 서체로 떨어진다.
- * 값을 불러온 자산이 아니라 저장소 뿌리 기준 경로로 두는 이유는 Jest의 에셋
- * 트랜스포머가 어떤 .ttf든 1로 바꿔서 자산 값으로는 굵기 오배선을 못 잡기 때문이다.
+ * 서체 넷이 어디 있고 무엇으로 불리는지다. 어느 기기에서 돌든 같은 값이라 `consts`가 집이다.
+ *
+ * 값을 불러온 자산이 아니라 저장소 뿌리 기준 경로로 두는 이유는 Jest의 에셋 트랜스포머가
+ * 어떤 .ttf든 1로 바꿔서 자산 값으로는 굵기 오배선을 못 잡기 때문이다.
  */
 export const FONT_ASSETS: Record<string, string> = {
   "WantedSans-Regular": "assets/fonts/subset/WantedSans-Regular.ttf",
@@ -41,21 +31,3 @@ export const FONT_SOURCES: Record<FontFamilyName, FontSource> = {
   "WantedSans-SemiBold": wantedSansSemiBold,
   "WantedSans-Bold": wantedSansBold,
 };
-
-export function shouldRenderApp({ loaded, error }: FontLoadingState): boolean {
-  return loaded || error !== null;
-}
-
-/**
- * 테마 복원이 셋째 조건이다. 저장소에서 고른 화면을 읽기 전에 스플래시를 내리면 어둡게
- * 고른 사람이 흰 화면을 한 프레임 보고 나서 어두워진다
- * (`docs/2-design/modules/account/screens/profile.md`의 「화면」). 기본값이 참인 것은
- * 테마를 안 기다리는 자리가 이 인자를 안 주고도 그대로 서게 하려는 것이다.
- */
-export function shouldDismissSplash(
-  state: FontLoadingState,
-  alreadyDismissed: boolean,
-  themeRestored: boolean = true,
-): boolean {
-  return !alreadyDismissed && themeRestored && shouldRenderApp(state);
-}

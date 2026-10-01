@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/api/errors";
+import { DomainError } from "@/shared/model/error.type";
 import { resetWageToDefault } from "@/features/wageAdmin/api/resetWageToDefault.api";
 import {
   createAdminUser,

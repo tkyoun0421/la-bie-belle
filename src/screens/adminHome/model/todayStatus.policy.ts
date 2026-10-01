@@ -13,7 +13,7 @@
  * 각자 서 있던 것을 거기로 모았고, 이 슬라이스가 부르는 이름은 그대로 두고 이어 낸다.
  */
 
-export { kstDateOf, kstToday, spellDate } from "@/shared/utils/kstDate";
+export { kstDateOf, spellDate } from "@/shared/utils/kstDate";
 
 export type TodayStatus =
   | { kind: "none" }

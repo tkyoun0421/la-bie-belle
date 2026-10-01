@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { DomainError } from "@/shared/api/errors";
+import { DomainError } from "@/shared/model/error.type";
 import { sendWorkRequest } from "@/features/workRequest/api/sendWorkRequest.api";
 import {
   createAdminUser,

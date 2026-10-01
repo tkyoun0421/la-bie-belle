@@ -1,4 +1,4 @@
-import { readAppUrl } from "@/shared/api/readAppUrl";
+import { readAppUrl } from "@/shared/config/app.config";
 
 const original = new Map<string, string | undefined>();
 

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
-import { DomainError } from "@/shared/api/errors";
 import { staleTogether } from "@/shared/api/queryKeys";
+import { DomainError } from "@/shared/model/error.type";
 import { confirmSchedule } from "@/features/scheduleConfirm/api/confirmSchedule.api";
 
 /**

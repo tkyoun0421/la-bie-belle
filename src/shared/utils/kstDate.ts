@@ -26,11 +26,6 @@ export function kstDateOf(instant: string | Date): string {
   return KST_DATE.format(instant instanceof Date ? instant : new Date(instant));
 }
 
-/** 오늘이다. 기기 시간대와 무관하게 홀의 하루로 읽는다. */
-export function kstToday(now: Date = new Date()): string {
-  return KST_DATE.format(now);
-}
-
 /** 날짜에서 그 달을 뗀다 — `"2026-10-10"`은 `"2026-10"`이다. */
 export function monthOf(date: string): string {
   return date.slice(0, 7);

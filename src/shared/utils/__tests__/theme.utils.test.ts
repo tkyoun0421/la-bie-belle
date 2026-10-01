@@ -1,4 +1,4 @@
-import { parseStoredTheme, toColorScheme } from "@/shared/utils/theme";
+import { parseStoredTheme, toColorScheme } from "@/shared/utils/theme.utils";
 
 // 기기 저장소 `theme` 값을 읽고 NativeWind의 colorScheme으로 잇는 순수 함수 둘.
 // 정본은 `docs/2-design/modules/account/screens/profile.md`의 「화면」·「화면 고르기」다.

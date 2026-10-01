@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/api/errors";
+import { DomainError } from "@/shared/model/error.type";
 import { grantPosition } from "@/features/qualificationGrant/api/grantPosition.api";
 import {
   createAdminUser,

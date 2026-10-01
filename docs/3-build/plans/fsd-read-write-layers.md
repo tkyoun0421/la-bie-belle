@@ -214,6 +214,8 @@ sources:
 - 관찰 결과: `entities`·`features`·`screens`의 `model/`과 `utils/`에 `expo-*`·`react-native` import가 없다. `.policy.ts`에 `Date.now`·`Math.random`이 없다. 셋이 초록이다
 - 도메인으로 쪼갠다 — 공용 다섯·알림 하나·인증 둘이고 나머지 일곱 묶음에는 SDK를 당기는 `.ts`가 없다
 - `pushDeps`는 부작용과 환경값을 한 파일에 들어 `lib`으로 간 뒤 그 안에서 환경 읽기가 `config`로 갈린다. 같은 묶음(알림)의 같은 PR이 둘을 같이 한다
+- 돌면서 나온 것 — **재수출이 층을 우회하고 있었다.** `screens/scheduleWorker/model/monthState.policy.ts`와 `screens/adminHome/model/todayStatus.policy.ts`가 `kstToday`를 그대로 내보내, 화면 둘이 `model`을 거쳐 바깥을 읽는 손을 당기고 있었다. `export { ... } from`은 import가 아니라 export라 「`model`에 SDK·시계 금지」 축의 어느 검사도 안 본다 — 재수출을 떼고 화면이 `lib`에서 직접 당긴다
+- 돌면서 나온 것 — **`sessionStorage`의 자리를 뒤집었다.** 묶음 4가 「통신의 약속이라 `shared/api`에 남는다」로 판정한 파일인데, 그때 `lib`이 없어 `api`가 유일한 후보였다. 세션 토큰을 디스크에 쓰는 손이라 지금은 `shared/lib/sessionStorage.lib.ts`다 — 세그먼트가 늘면 앞선 판정이 다시 열린다
 
 ### AC-10 — `consts`가 선다
 
@@ -225,6 +227,7 @@ sources:
 - 관찰 결과: `consts/` 밖에 `export const <대문자_스네이크>`가 없다. `.type.ts`를 열면 타입만 있다. 셋이 초록이다
 - `queryKeys`·`staleTogether`는 밖이다 — 통신의 약속이고 꼴이 camel이다
 - 도메인으로 쪼갠다 — 알림 열하나·근태 아홉·구성원 여덟·급여 일곱·공용 일곱이 큰 쪽이다
+- 돌면서 나온 것 — **가름이 테스트도 가른다.** `fontLoading.ts`의 짝 테스트가 자산 표 검사와 판정 둘 검사를 한 파일에 들고 있었다. 구현이 `consts`와 `utils`로 갈리면 테스트 하나가 두 대상을 보게 되고 「짝 테스트는 대상 옆에」가 깨진다 — `consts/__tests__/font.const.test.ts`와 `utils/__tests__/fontLoading.utils.test.ts`로 같이 갈랐다. 단언은 한 줄도 안 바뀐다
 
 ### AC-11 — `config`가 선다
 
@@ -265,13 +268,15 @@ sources:
 
 ### AC-15 — `stores`가 선다
 
-- 전제: zustand store 둘의 자리가 갈려 있다 — `entities/clock/model/clock.store.ts`와 `shared/hooks/useTheme.ts`다. ADR-015가 「`use*`로 불리는 store는 부르는 이름이 이긴다」로 봉합하고 있었다
+- 전제: zustand store 둘의 자리가 갈려 있다 — `entities/clock/stores/clock.store.ts`와 `shared/hooks/useTheme.ts`다. ADR-015가 「`use*`로 불리는 store는 부르는 이름이 이긴다」로 봉합하고 있었다
 - 행동
   - 둘을 `<층>/stores/`로 옮긴다. `useTheme.ts`는 `shared/stores/theme.store.ts`가 되고 쓰는 쪽은 그대로 `useTheme()`이다
   - `shared/ui/DragAndDrop.tsx`의 Context와 훅 둘이 `shared/stores/drag.context.ts`로 — AC-12와 같은 걸음이다
   - 「`use*` export는 `hooks`·`services`·`stores`만」으로 규칙을 넓힌다
 - 관찰 결과: `stores/` 밖에 `create()`·`createContext` 호출이 없다. 셋이 초록이다
 - 파일 둘이라 공용 묶음이 같이 한다
+- 돌면서 나온 것 — **`.store.ts`가 「훅 파일은 그 훅 이름과 같다」와 부딪혔다.** `theme.store.ts`가 `useTheme`을 내보내니 `fileNaming.ts`가 파일 이름을 `useTheme.ts`로 요구했다. ADR-015가 그 자리를 폴더와 접미사에 맡겼으므로 `stores/*.store.ts`만 훅 판정에서 빼는 면제가 섰다 — 같은 폴더의 다른 파일은 면제 밖이고, 그 경계를 테스트 둘이 지킨다
+- 돌면서 나온 것 — **store 둘이 저장과 상태를 한 파일에 들고 있었다.** 디스크를 읽고 쓰는 손이 `create()` 옆에 있어 `stores`가 바로 `lib`의 일을 했다. `themeStorage.lib.ts`와 `clockStorage.lib.ts`로 떼어, store는 값을 들고 `lib`이 디스크에 닿는다 — ADR-015의 「`stores`는 누가 값을 들고 있느냐」가 그 가름이다
 
 ### AC-13 — 중복 넷이 접힌다
 
@@ -373,16 +378,30 @@ sources:
 
 | 세그먼트 | 담는 것 |
 | --- | --- |
-| `api` | `database` `database-types` `errors` `error-codes` `supabase` `create-supabase-client` `session-storage` **`query-keys`(다섯에서 모음)** `query-client` `read-supabase-env` `read-app-url` `months-query` |
-| `hooks` | `useTheme` |
-| `utils` | `kst-date` `spell-number` `cn`(`utils`에서 이름 바꿈) `month-boundary` **`month-range`(새로 선다)** `mini-calendar` `month-picker` `day-band` `no-value` `reduce-motion` `catalog-visibility` `dev-door` `theme` `font-loading` |
+| `api` | `database` `databaseTypes` `errors` `supabase` `createSupabaseClient` **`queryKeys`(다섯에서 모음)** `queryClient` `monthsQuery` |
+| `model` | `error.type` `font.type` `theme.type` |
+| `consts` | `error.const` `font.const` `noValue.const` `theme.const` |
+| `config` | `supabase.config` `app.config` |
+| `lib` | `kstToday.lib` `reduceMotion.lib` `sessionStorage.lib` `themeStorage.lib` |
+| `stores` | `theme.store` |
+| `utils` | `kstDate` `spellNumber` `cn`(`lib`에서 이름 바꿈) `monthBoundary` **`monthRange`(새로 선다)** `miniCalendar` `monthPicker` `dayBand` `catalogVisibility` `devDoor` `theme.utils` `fontLoading.utils` |
 | `ui` | 조각 쉰하나 — 그대로 |
 
-`shared/`에 `model`이 안 선다 — 도메인이 없어 담을 것이 없다. `theme`가 `utils`인 까닭은 색과 서체가 통신과 무관한 값이기 때문이고, env를 읽는 둘은 통신 설정이라 `api`다.
+`shared/model`에 도메인 타입은 없고 오류·서체·테마의 꼴만 산다 — 홀의 업무가 아니라 앱 자체의 값이라 슬라이스가 없다. `theme`가 `api`가 아닌 까닭은 색과 서체가 통신과 무관한 값이기 때문이고, env를 읽는 둘은 통신 설정이 아니라 환경이 주는 값이라 `config`다.
+
+**세그먼트가 서면서 공용 파일 다섯이 갈렸다.** 한 파일이 타입과 상수와 판정과 저장을 같이 들고 있던 자리다.
+
+| 갈린 파일 | 나온 조각 |
+| --- | --- |
+| `shared/api/errors.ts` | `model/error.type`(가름의 꼴) · `api/errors`(Supabase 객체를 받는 변환) |
+| `shared/utils/theme.ts` | `model/theme.type` · `consts/theme.const` · `utils/theme.utils` · `lib/themeStorage.lib` |
+| `shared/utils/fontLoading.ts` | `model/font.type` · `consts/font.const` · `utils/fontLoading.utils` |
+| `shared/utils/kstDate.ts` | `lib/kstToday.lib`(제가 `new Date()`를 부른다) · 나머지 여섯은 `utils`에 남는다 |
+| `entities/clock/model/clock.store.ts` | `consts/clock.const` · `lib/clockStorage.lib` · `stores/clock.store` |
 
 **`month-range`가 새로 선다.** `monthStart`와 `nextMonthStart`가 dal 넷에 사본으로 산다 — `getMonthSchedule`이 내보내고 `getMonthAttendance`·`getMyAvailability`·`getPayrollMonth`가 각자 제 사본을 든다. 내보내는 쪽을 당기는 셋(`getOpenSlots`·`getMonthAvailabilities`·`getSlotRequests`)은 지금 같은 슬라이스라 안 걸리지만 AC-07이 쪼개면 교차가 된다. 한 자리로 올리고 사본 셋을 지운다.
 
-**zustand store 둘의 자리가 갈린다.** `use*`로 불리는 것은 훅이라 `hooks/`에 제 이름으로 살고(`shared/hooks/useTheme.ts`), 그렇지 않은 것은 `model/`에서 `[domain].store.ts`를 받는다(`entities/clock/model/clock.store.ts`). ADR-015의 「전역 상태는 `model`」과 「훅 파일은 그 훅 이름」이 한 파일에서 부딪히는 자리고, 부르는 이름을 이긴 쪽으로 둔다 — AC-08의 「`hooks/` 밖에서 `use*` export 금지」도 그 편이다.
+**zustand store 둘이 `stores/`에서 같은 접미사를 받는다.** `use*`로 불리느냐로 자리를 갈랐던 앞선 판을 AC-15가 뒤집었다 — 폴더가 성격을 말하니 `shared/stores/theme.store.ts`와 `entities/clock/stores/clock.store.ts`가 나란히 서고 쓰는 쪽은 그대로 `useTheme()`이다.
 
 **`shared/lib`를 떠나는 아홉.** 인증 흐름은 로그인이라는 use case에 매여 있어 「어느 기능에도 매이지 않은 것」이 아니고, 서버 시각은 `entities/clock`이 이미 있는데 거기 안 들어가 있었다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거다.
 
@@ -400,7 +419,7 @@ sources:
 
 | 파일 | 바꿀 책임 |
 | --- | --- |
-| `tests/lint/fileNaming.ts` | `kebab` 갈래를 `camel`로 — AC-01. 폴더 이름 검사 — AC-02. 접미사 검사 — AC-08 |
+| `tests/lint/fileNaming.ts` | `kebab` 갈래를 `camel`로 — AC-01. 폴더 이름 검사 — AC-02. `stores/*.store.ts`를 훅 판정에서 빼는 면제 — AC-15. 접미사 검사 — AC-08 |
 | `eslint-rules/supabaseClientInApi.mjs` | 신설 — `api/` 밖에서 Supabase 클라이언트 import를 막는다 |
 | `eslint-rules/hooksSegment.mjs` | 신설 — `hooks/` 밖의 `use*` export를 막는다 |
 | `eslint-rules/readWriteLayers.mjs` | 신설 — `entities/`의 `useMutation`과 `features/`의 `useQuery`를 막는다 |
@@ -437,8 +456,8 @@ sources:
 | [spec/ui-kit.md](../../2-design/spec/ui-kit.md) | 「자리」와 AC의 순수 계산 경로 둘 | AC-06가 |
 | [execution.md](../../4-test/execution.md) | 테스트 명령 예시의 `src/shared/lib/__tests__/` 경로 | AC-06가 |
 | [runtime.md](../../2-design/system/runtime.md) | 「도메인 파일이 각자의 키를 적는다」 → 팩토리 하나 | AC-03 |
-| [runtime.md](../../2-design/system/runtime.md) 「업무 상수」 | 「상수는 `src/entities/<도메인>/model/constants.ts`에 산다」 → `<도메인>.type.ts`. ADR-015의 `[domain].type.ts`가 「타입과 상수」를 담는다 | AC-06나 |
-| `tests/lint/attendanceConstants.ts` | 그 경로를 문자열로 박아 둔 한 줄 | AC-06나 |
+| [runtime.md](../../2-design/system/runtime.md) 「업무 상수」 | 「상수는 `src/entities/<도메인>/model/<도메인>.type.ts`에 산다」 → `consts/<도메인>.const.ts`. AC-10이 상수를 `.type.ts`에서 빼내 그 자리를 옮긴다 | AC-10(근태) |
+| `tests/lint/attendanceConstants.ts` | 그 경로를 문자열로 박아 둔 한 줄 | AC-10(근태) |
 
 **완료된 과거 plan은 안 건드린다.** [3-build 안내](../README.md#구현-계획)가 「완료된 과거 계획은 소급 변경하지 않는다」고 적는다 — `login-screens`·`rehearsal`·`stats-worker` 등 열 넘는 plan이 `shared/lib`과 kebab 경로를 들지만 그것은 당시 작업의 기록이다.
 

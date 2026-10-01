@@ -22,7 +22,7 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { DomainError } = await import("@/shared/api/errors");
+const { DomainError } = await import("@/shared/model/error.type");
 const { useSendWorkRequestMutation } =
   await import("@/features/workRequest/hooks/useSendWorkRequestMutation");
 

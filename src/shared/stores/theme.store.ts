@@ -1,12 +1,11 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { colorScheme } from "react-native-css";
 import { create } from "zustand";
 import {
-  parseStoredTheme,
-  THEME_STORAGE_KEY,
-  toColorScheme,
-  type Theme,
-} from "@/shared/utils/theme";
+  applyColorScheme,
+  readStoredTheme,
+  writeStoredTheme,
+} from "@/shared/lib/themeStorage.lib";
+import type { Theme } from "@/shared/model/theme.type";
+import { parseStoredTheme } from "@/shared/utils/theme.utils";
 
 /**
  * 고른 화면이 사는 자리 하나다. 고르는 곳은 「나」의 화면 줄이고 쓰는 곳은 앱 전체라,
@@ -20,8 +19,7 @@ import {
  * 어둡게 고른 사람이 흰 화면을 한 번 보고 나서 어두워진다. 스플래시가 이 값을 셋째 조건으로
  * 기다린다(`shouldDismissSplash`).
  *
- * 저장소가 실패해도 앱은 선다 — 읽기가 실패하면 기본값으로 복원을 끝내고, 쓰기가 실패하면
- * 이번 실행 동안만 고른 값이 산다. 화면 색 하나 때문에 앱이 스플래시에 갇히지 않는다.
+ * 디스크와 네이티브에 닿는 손은 `shared/lib/themeStorage.lib.ts`다 — 여기는 상태만 든다.
  */
 
 type ThemeStore = {
@@ -31,18 +29,6 @@ type ThemeStore = {
   choose: (theme: Theme) => void;
 };
 
-async function readStoredTheme(): Promise<string | null> {
-  try {
-    return await AsyncStorage.getItem(THEME_STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function apply(theme: Theme): void {
-  colorScheme.set(toColorScheme(theme));
-}
-
 export const useTheme = create<ThemeStore>((set) => ({
   theme: "system",
   restored: false,
@@ -50,13 +36,13 @@ export const useTheme = create<ThemeStore>((set) => ({
   async restore() {
     const theme = parseStoredTheme(await readStoredTheme());
 
-    apply(theme);
+    applyColorScheme(theme);
     set({ theme, restored: true });
   },
 
   choose(theme) {
-    apply(theme);
+    applyColorScheme(theme);
     set({ theme });
-    void AsyncStorage.setItem(THEME_STORAGE_KEY, theme).catch(() => {});
+    writeStoredTheme(theme);
   },
 }));
