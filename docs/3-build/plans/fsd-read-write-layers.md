@@ -199,7 +199,7 @@ sources:
 
 | 파일 | 바꿀 책임 |
 | --- | --- |
-| `tests/lint/fileNaming.ts` | `kebab` 갈래를 `camel`로 — AC-01. 접미사 검사를 더한다 — AC-07 |
+| `tests/lint/fileNaming.ts` | `kebab` 갈래를 `camel`로 — AC-01. 폴더 이름 검사 — AC-02. 접미사 검사 — AC-08 |
 | `eslint-rules/supabaseClientInApi.mjs` | 신설 — `api/` 밖에서 Supabase 클라이언트 import를 막는다 |
 | `eslint-rules/hooksSegment.mjs` | 신설 — `hooks/` 밖의 `use*` export를 막는다 |
 | `eslint-rules/readWriteLayers.mjs` | 신설 — `entities/`의 `useMutation`과 `features/`의 `useQuery`를 막는다 |
@@ -219,13 +219,13 @@ sources:
 | `CLAUDE.md` 「코드 구조」 | 「부르는 이름이 없는 나머지는 kebab-case다」와 `fileNaming.ts` 경로 | AC-01 |
 | [execution.md](../../4-test/execution.md) 「집행되는 규칙」 | 파일 이름 규칙 행의 kebab 문장과 검사 파일 이름 | AC-01 |
 | [ADR-005](../../2-design/adr/ADR-005-sdlc-stage-folders-and-artifact-chain.md) | 문서 슬러그는 kebab 그대로다 — **안 고친다**, 코드 이름과 다른 축이다 | — |
-| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「레이어」 | 「`shared/lib`에 공용 유틸이 산다」 → `shared/utils` | AC-03 |
-| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「화면과 로직」 | `house/dumb-ui` 설명의 `@/shared/lib/` 경로 | AC-03 |
-| [ADR-003](../../2-design/adr/ADR-003-supabase-and-integration-tests.md) | 「`auth.*`는 `shared/lib`에 산다」 → `features/auth`와 `entities/session` | AC-04 |
-| [architecture.md](../../2-design/system/architecture.md) | 같은 예외 문장 | AC-04 |
-| [account/design.md](../../2-design/modules/account/design.md) | 「전부 `auth.*`라 `shared/lib`이다」 | AC-04 |
-| [spec/ui-kit.md](../../2-design/spec/ui-kit.md) | 「자리」와 AC의 순수 계산 경로 둘 | AC-03 |
-| [execution.md](../../4-test/execution.md) | 테스트 명령 예시의 `src/shared/lib/__tests__/` 경로 | AC-03 |
+| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「레이어」 | 「`shared/lib`에 공용 유틸이 산다」 → `shared/utils` | AC-06 |
+| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「화면과 로직」 | `house/dumb-ui` 설명의 `@/shared/lib/` 경로 | AC-06 |
+| [ADR-003](../../2-design/adr/ADR-003-supabase-and-integration-tests.md) | 「`auth.*`는 `shared/lib`에 산다」 → `features/auth`와 `entities/session` | AC-06 |
+| [architecture.md](../../2-design/system/architecture.md) | 같은 예외 문장 | AC-06 |
+| [account/design.md](../../2-design/modules/account/design.md) | 「전부 `auth.*`라 `shared/lib`이다」 | AC-06 |
+| [spec/ui-kit.md](../../2-design/spec/ui-kit.md) | 「자리」와 AC의 순수 계산 경로 둘 | AC-06 |
+| [execution.md](../../4-test/execution.md) | 테스트 명령 예시의 `src/shared/lib/__tests__/` 경로 | AC-06 |
 
 **완료된 과거 plan은 안 건드린다.** [3-build 안내](../README.md#구현-계획)가 「완료된 과거 계획은 소급 변경하지 않는다」고 적는다 — `login-screens`·`rehearsal`·`stats-worker` 등 열 넘는 plan이 `shared/lib`과 kebab 경로를 들지만 그것은 당시 작업의 기록이다.
 
@@ -250,9 +250,9 @@ sources:
 
 ## 리스크·전환·되돌리기
 
-**사용자 대면 동작이 하나도 안 바뀐다.** 묶음 1~6은 파일 자리와 이름과 import만 고치고 묶음 7은 검사만 더한다. 마이그레이션도 없다.
+**사용자 대면 동작이 하나도 안 바뀐다.** 묶음 1~7은 파일 자리와 이름과 import만 고치고 묶음 8은 검사만 더한다. 마이그레이션도 없다.
 
-**되돌리기 단위는 PR 하나다.** 묶음 1·3·4·5·6은 `git mv`와 치환뿐이라 revert 한 번으로 돌아간다. 묶음 2는 키 문자열을 안 바꿔 revert해도 캐시가 깨지지 않는다.
+**되돌리기 단위는 PR 하나다.** 묶음 1·2·4·5·6·7은 `git mv`와 치환뿐이라 revert 한 번으로 돌아간다. 묶음 3은 키 문자열을 안 바꿔 revert해도 캐시가 깨지지 않는다.
 
 **이름만 바꾸는 커밋과 import를 고치는 커밋을 가른다.** 한 커밋에 섞이면 git이 rename 추적을 놓쳐 `git log --follow`가 끊긴다. 묶음 1이 가장 크니 거기서 특히 지킨다.
 
@@ -262,7 +262,7 @@ sources:
 
 **가장 큰 위험은 묶음이 겹치는 것이다.** 다른 task가 같은 기간에 `src/`를 고치면 충돌이 수백 줄이 된다. 이 task가 도는 동안 다른 코드 task를 띄우지 않는다.
 
-**묶음 5에서 `no-cross-slice-import`가 걸릴 수 있다.** 쪼갠 슬라이스끼리 부르는 자리가 나오면 그것은 위 층(`screens`)이 조립할 일이다. 그 목록이 길면 쪼개는 단위가 틀린 것이므로 묶음 5를 멈추고 배정 표를 고친다.
+**묶음 7에서 `no-cross-slice-import`가 걸릴 수 있다.** 쪼갠 슬라이스끼리 부르는 자리가 나오면 그것은 위 층(`screens`)이 조립할 일이다. 그 목록이 길면 쪼개는 단위가 틀린 것이므로 묶음 7을 멈추고 배정 표를 고친다.
 
 ## 검증 방법
 
@@ -272,18 +272,20 @@ sources:
 | AC-01 | rename이 빠져 모듈을 못 찾는다 | 타입 검사 | `pnpm typecheck` | 초록 |
 | AC-01 | 하이픈이 남는다 | 손 확인 | `find src tests scripts eslint-rules -name '*-*' -name '*.ts*' \! -path 'src/app/*'` | 결과 없음 |
 | AC-01 | `Db`가 남는다 | 손 확인 | `grep -rn '\bDb\b' src tests scripts` | 결과 없음 |
-| AC-02 | 키 문자열이 바뀌어 캐시 무효화가 어긋난다 | 기존 unit·integration 전부 | `pnpm test` | 초록. `queryKeys.ts`가 하나만 남는다 |
-| AC-02 | 모은 파일이 `runtime.md`의 키 표와 어긋난다 | 손 확인 | — | `shared/api/queryKeys.ts`의 키가 [runtime.md](../../2-design/system/runtime.md)와 일치 |
-| AC-03 | `dals`가 남는다 | 손 확인 | `find src -type d -name dals` | 결과 없음 |
-| AC-03 | 업무 판정이 `utils`에 숨는다 | 손 확인 | — | `utils/`의 함수가 참·거짓이나 허용·금지를 안 돌려준다 |
-| AC-04 | `entities`에 뮤테이션이, `features`에 쿼리가 남는다 | 새 lint 규칙(묶음 7) | `pnpm lint` | 묶음 7이 선 뒤 0건 |
-| AC-04 | Edge Function 복사가 빠진 경로를 본다 | 기존 integration | `pnpm test:integration` | `import-holidays`·`send-push` 관련 초록 |
-| AC-05 | 쪼갠 슬라이스끼리 import가 생긴다 | 기존 lint 규칙 | `pnpm lint` | `no-cross-slice-import` 0건 |
-| AC-05 | 슬라이스 이름이 라우트와 어긋난다 | 손 확인 | — | `screens/`는 안 건드렸다 |
-| AC-06 | 훅 export 이름을 안 바꿔 파일과 어긋난다 | 기존 unit | `pnpm test -- fileNaming` | 초록 |
-| AC-06 | 접미사가 세그먼트와 어긋난다 | 새 검사(묶음 7) | `pnpm test -- fileNaming` | 묶음 7이 선 뒤 초록 |
-| AC-07 | 규칙이 정상 코드를 막는다 | unit | `tests/lint/supabaseClientInApi.test.ts` 외 셋 (신설) | 위반 픽스처에서 걸리고 정상에서 통과 |
-| AC-07 | 규칙 표가 실제 규칙과 어긋난다 | 기존 검사 | `pnpm test -- ruleCatalogue` | 초록 |
+| AC-02 | 하이픈 든 폴더가 남는다 | 손 확인 | `find src -type d -name '*-*' \! -path 'src/app/*'` | 결과 없음 |
+| AC-02 | 라우트가 슬라이스를 못 찾는다 | 타입 검사 | `pnpm typecheck` | 초록 |
+| AC-03 | 키 문자열이 바뀌어 캐시 무효화가 어긋난다 | 기존 unit·integration 전부 | `pnpm test` | 초록. `queryKeys.ts`가 하나만 남는다 |
+| AC-03 | 모은 파일이 `runtime.md`의 키 표와 어긋난다 | 손 확인 | — | `shared/api/queryKeys.ts`의 키가 [runtime.md](../../2-design/system/runtime.md)와 일치 |
+| AC-04 | `dals`가 남는다 | 손 확인 | `find src -type d -name dals` | 결과 없음 |
+| AC-05 | `entities`에 뮤테이션이, `features`에 쿼리가 남는다 | 새 lint 규칙(묶음 8) | `pnpm lint` | 묶음 8이 선 뒤 0건 |
+| AC-05 | 훅 export 이름을 안 바꿔 파일과 어긋난다 | 기존 unit | `pnpm test -- fileNaming` | 초록 |
+| AC-05 | Edge Function 복사가 빠진 경로를 본다 | 기존 integration | `pnpm test:integration` | `import-holidays`·`send-push` 관련 초록 |
+| AC-06 | 업무 판정이 `utils`에 숨는다 | 손 확인 | — | `utils/`의 함수가 참·거짓이나 허용·금지를 안 돌려준다 |
+| AC-06 | 접미사가 세그먼트와 어긋난다 | 새 검사(묶음 8) | `pnpm test -- fileNaming` | 묶음 8이 선 뒤 초록 |
+| AC-07 | 쪼갠 슬라이스끼리 import가 생긴다 | 기존 lint 규칙 | `pnpm lint` | `no-cross-slice-import` 0건 |
+| AC-07 | 슬라이스 이름이 라우트와 어긋난다 | 손 확인 | — | `screens/`는 안 건드렸다 |
+| AC-08 | 규칙이 정상 코드를 막는다 | unit | `tests/lint/supabaseClientInApi.test.ts` 외 셋 (신설) | 위반 픽스처에서 걸리고 정상에서 통과 |
+| AC-08 | 규칙 표가 실제 규칙과 어긋난다 | 기존 검사 | `pnpm test -- ruleCatalogue` | 초록 |
 
 **e2e는 안 돈다.** 기기 빌드가 없어 `pnpm e2e`가 실행 불가다([execution](../../4-test/execution.md)). 이 task는 사용자 대면 동작을 안 바꾸므로 e2e가 막는 자리도 없다.
 
