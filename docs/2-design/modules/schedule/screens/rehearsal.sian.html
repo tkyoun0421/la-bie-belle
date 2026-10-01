@@ -436,16 +436,17 @@ code {
 /* 앱바 — 뒤로 · 「리허설」뿐, 달은 앱바 아래 별도 줄이다 */
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
-  padding: 4px 24px 8px; min-height: 44px;
+  padding: 4px 20px 8px; min-height: 44px;
 }
 .backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
 /* 아이콘 28px, 닿는 면은 44px — components.md 「앱바」 */
 .backic::after { content: ""; position: absolute; inset: -8px; }
 .appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; color: var(--fg-neutral); }
 
-.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; }
+.body { flex: 1 1 auto; padding: 0 20px; overflow: hidden; }
 
-/* 달 줄 — 왼쪽 달+화살표, 오른쪽 합계. h-12 px-6(.body가 이미 24px 좌우를 준다) */
+/* 달 줄 — 왼쪽 달+화살표, 오른쪽 합계. h-12 px-5(.body가 이미 20px 좌우를 준다,
+   rehearsal.md 「구현이 이 문서와 갈린 자리」의 px-6→px-5 보정) */
 .monthbar { flex: 0 0 auto; height: 48px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; position: relative; }
 .monthbar::after { content: ""; position: absolute; inset: -4px 0; }
 .monthbar .m { display: inline-flex; align-items: center; gap: 4px; position: relative; z-index: 1; }
@@ -513,7 +514,7 @@ code {
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 24px; border-top: 1px solid var(--stroke-neutral);
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom)) 20px; border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) ease-out;
 }
 .rsheet.stacked { z-index: 5; }

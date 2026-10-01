@@ -6,7 +6,17 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `sian-sync`다** — `ready`에 남은 하나다. 재편 전부터 있던 문서↔시안 어긋남을 시안 쪽에서 맞춘다. 값은 문서와 [tokens.md](2-design/design-system/tokens.md)가 정본이라 시안만 고친다. 자리는 backlog 행이 화면별로 든다. 나머지 `blocked`는 `attendance-checkin`의 NCP 자격에 묶인 사슬이다.
+**다음 첫 수는 `ready`가 비었다는 것이다.** 보드의 `ready`가 하나도 안 남았다 — 남은 `blocked`는 전부 `attendance-checkin`의 NCP 자격(대표 계정·지도 키·`customStyleId`)에 묶인 사슬이고, 그 자격은 사람이 가져와야 한다. 사람을 부르는 자리는 「재개 맥락」의 넷이다. `candidate`에서 하나를 올려 잡으려면 `spell-number-shared`·`test-seed-transaction`·`internal-grants-public`·`unbounded-read-truncates` 중에서 고른다.
+
+**`sian-sync`가 `done`이다.** 열일곱 장을 감사 넷으로 훑고 작성자 여섯으로 고쳤다. 가장 큰 자리는 **화면 좌우 여백**이었다 — 시안 전부가 24px로 그렸고 문서 전부가 `px-5`(20px)라 시안을 내렸다. [여백은 문서가 정본](observations/README.md)이라는 앞선 판정 그대로다.
+
+**정본이 비운 자리 둘을 박았다.** [components.md 「Dialog와 바텀시트」](2-design/design-system/components.md#dialog와-바텀시트)에 바텀시트 안쪽 여백(좌우·아래 20px, 아래는 안전영역을 더한다)이 섰고, [「BottomCTA」](2-design/design-system/components.md#bottomcta)에 같은 값이 섰다. 그 값이 없어서 화면 문서 아홉이 시트 여백을 제각각(`p-6`·`px-6`·`p-5`·`px-5`) 적고 있었다 — 24px 쪽 넷과 알림 목록의 화면 좌우 `px-6`을 20px로 맞췄다.
+
+**목업 셋이 새로 섰다.** 근무표의 「취소 요청 중」과 「보내는 사이 배정이 사라졌을 때」, 관리자 근무표의 「확정 실패」다. 셋 다 문서 상태표에 선 모습인데 시안이 안 그리고 있었다. 대시보드와 근무표에 탭 바를 세웠고, 닫기 기호 ✕(U+2715)를 ×로 바꿨다 — Wanted Sans에 없는 글자다.
+
+**`sian-writer` 정의문에 규칙 셋이 들어갔다.** 탭 화면이면 탭 바를 목업마다 그린다, 로딩 모습은 문서 상태표에 선 것만 그린다(「첫 진입에 스켈레톤」은 `runtime.md`의 전역 계약이라 그것만 근거로 열일곱 장에 회색 덩이를 반복하지 않는다), **캡션이 문서를 인용하면 그 문서에서 읽은 문장이어야 한다**([관찰 040](observations/040-sian-captions-cite-what-they-invent.md)).
+
+**관찰 둘이 더 열렸다.** [040](observations/040-sian-captions-cite-what-they-invent.md)은 actioned다 — 시안 캡션 셋이 문서를 근거로 들면서 그 문서에 없는 말을 적었다(제 값을 문서 탓으로 돌리거나, 이미 정해진 것을 「아직 안 정했다」고 적었다). [041](observations/041-mcp-instructions-read-as-injection.md)은 open이다 — subagent 넷 중 셋이 MCP 서버 지시문을 프롬프트 주입으로 보고 무시했다는 말을 리턴에 붙였다. 판단은 맞았지만 작성자마다 그 글을 재는 비용이 든다.
 
 **`notification-settings`가 `done`이다(#475 정본, #476 구현).** 권한 감싸기(`push-permission.ts`, 기기에 붙는 함수는 전부 주입), 갈래 판정(`reach-state.ts`)과 자리별 문장(`reach-message.ts`), 켜고 끄는 훅, 매 진입 주소 보내기, 「나」의 알림 줄과 승인 대기 켜기 자리, 관리자 세 자리의 갈래 표시가 섰다. **매 진입을 붙인 자리는 `src/app/(tabs)/_layout.tsx`다** — 세션이 있는 사람만 지나고 앱이 떠 있는 동안 안 내려간다.
 

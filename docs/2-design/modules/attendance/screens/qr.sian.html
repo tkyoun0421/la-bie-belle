@@ -28,7 +28,7 @@
     바텀시트 절은 rounded-lg와 토큰 이름만 말하고 치수가 없다 — approvals.sian.html의
     Dialog 치수를 그대로 따랐다.
   · 크게 띄우기의 닫기 버튼 위치. 문서는 「오른쪽 위」라고만 하고 여백을 안 준다.
-    앱바 아이콘과 같은 24px 안쪽 여백을 썼다.
+    앱바 아이콘과 같은 20px 안쪽 여백을 썼다.
   · 뽑은 뒤 화면의 날짜(2026년 9월 11일). 문서의 문안 예시는 첫 코드의
     날짜(2026년 3월 2일)뿐이라 「오늘」에 해당하는 날짜는 이 파일이 지어낸
     예시 값이다.
@@ -448,14 +448,14 @@ code {
 /* 앱바 — 뒤로와 「QR」뿐이다. qr.md 「짜임」 */
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
-  padding: 4px 24px 12px; min-height: 44px; position: relative;
+  padding: 4px 20px 12px; min-height: 44px; position: relative;
 }
 .backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
 /* 아이콘 28px, 닿는 면은 44px — components.md 「앱바」의 「아이콘은 28px로 그리고 닿는 면은 44px다」 */
 .backic::after { content: ""; position: absolute; inset: -8px; }
 .appbar .title { font-size: 1.25rem; line-height: 1.8125rem; font-weight: 600; letter-spacing: -.01em; }
-/* 화면 좌우 여백 px-6 = 24px */
-.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+/* 화면 좌우 여백 px-5 = 20px */
+.body { flex: 1 1 auto; padding: 0 20px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
 /* QR — mt-8, 정사각, rounded-xl, 안쪽 p-6, 테두리 stroke.neutral.

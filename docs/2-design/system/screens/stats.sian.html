@@ -520,7 +520,7 @@ code {
 /* 앱바 — 뒤로와 「통계」뿐, 오른쪽 액션이 없다(stats.md 「짜임」) */
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
-  padding: 4px 24px 12px; min-height: 44px; position: relative;
+  padding: 4px 20px 12px; min-height: 44px; position: relative;
 }
 .appbar .sp { flex: 1 1 auto; }
 .backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
@@ -528,8 +528,8 @@ code {
 .backic::after { content: ""; position: absolute; inset: -8px; }
 .appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
 
-/* 화면 좌우 여백 px-6 = 24px */
-.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+/* 화면 좌우 여백 px-5 = 20px */
+.body { flex: 1 1 auto; padding: 0 20px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
 /* 달 줄 — 앱바와 mt-2(8px), 좌우 화살표 + 가운데 텍스트, py-2 */
@@ -607,11 +607,11 @@ code {
 .legend .li { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
 .legend .dot { width: 4px; height: 4px; border-radius: 9999px; flex: 0 0 auto; }
 
-/* 목록 — ListRow. 사진 36px, 사진과 이름 사이 gap-3(12px), 줄 py-4(16px) */
+/* 목록 — ListRow. 사진 40px, 사진과 이름 사이 gap-3(12px), 줄 py-4(16px) */
 .rowwrap { overflow: hidden; }
 .wrow { display: flex; align-items: center; gap: 12px; padding: 16px 0; }
-.wrow .av36 {
-  width: 36px; height: 36px; border-radius: 999px; flex: 0 0 auto; box-sizing: border-box;
+.wrow .av40 {
+  width: 40px; height: 40px; border-radius: 999px; flex: 0 0 auto; box-sizing: border-box;
   border: 1px solid var(--stroke-neutral);
   background: linear-gradient(150deg, var(--palette-neutral-300), var(--palette-neutral-500));
 }
@@ -619,9 +619,9 @@ code {
 .wrow .wtitle { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
 .wrow .wsub { margin-top: 2px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 .wrow .wval { margin-left: auto; flex: 0 0 auto; padding-left: 12px; font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; text-align: right; }
-/* 구분선은 사진 왼쪽 끝이 아니라 이름 왼쪽 끝(36 + 12 = 48px)부터 긋는다 */
-.wlist .rowwrap + .rowwrap .wrow { border-top: 1px solid var(--stroke-neutral); margin-left: 48px; padding-left: 0; }
-.wlist .rowwrap + .rowwrap .wrow .av36 { margin-left: -48px; }
+/* 구분선은 사진 왼쪽 끝이 아니라 이름 왼쪽 끝(40 + 12 = 52px)부터 긋는다 */
+.wlist .rowwrap + .rowwrap .wrow { border-top: 1px solid var(--stroke-neutral); margin-left: 52px; padding-left: 0; }
+.wlist .rowwrap + .rowwrap .wrow .av40 { margin-left: -52px; }
 
 /* 줄 막대 — components.md 「줄 막대」. 트랙 없이 면만, 줄 아래 mt-2(8px), 높이 4px, 가장 큰 값이 100% */
 .rowbar { margin-top: 8px; height: 4px; border-radius: 9999px; overflow: hidden; }
@@ -670,7 +670,7 @@ code {
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: 14px 14px 0 0;
-  padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
+  padding: 8px 20px calc(20px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--stroke-neutral);
   max-height: 82%; overflow-y: auto;
 }
@@ -776,35 +776,35 @@ code {
               <div class="sechead">사람별</div>
               <div class="wlist">
                 <div class="rowwrap"><div class="wrow">
-                  <span class="av36"></span>
+                  <span class="av40"></span>
                   <span class="wmid"><span class="wtitle">박서연</span><br><span class="wsub">17회</span></span>
                   <span class="wval">153시간</span>
                   <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
                 </div>
                 <div class="rowbar"><span style="width:100%"></span></div></div>
                 <div class="rowwrap"><div class="wrow">
-                  <span class="av36"></span>
+                  <span class="av40"></span>
                   <span class="wmid"><span class="wtitle">김민지</span><br><span class="wsub">12회</span></span>
                   <span class="wval">108시간</span>
                   <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
                 </div>
                 <div class="rowbar"><span style="width:71%"></span></div></div>
                 <div class="rowwrap"><div class="wrow">
-                  <span class="av36"></span>
+                  <span class="av40"></span>
                   <span class="wmid"><span class="wtitle">이하늘</span><br><span class="wsub">10회</span></span>
                   <span class="wval">90시간</span>
                   <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
                 </div>
                 <div class="rowbar"><span style="width:59%"></span></div></div>
                 <div class="rowwrap"><div class="wrow">
-                  <span class="av36"></span>
+                  <span class="av40"></span>
                   <span class="wmid"><span class="wtitle">최윤아</span><br><span class="wsub">8회</span></span>
                   <span class="wval">72시간</span>
                   <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
                 </div>
                 <div class="rowbar"><span style="width:47%"></span></div></div>
                 <div class="rowwrap"><div class="wrow">
-                  <span class="av36"></span>
+                  <span class="av40"></span>
                   <span class="wmid"><span class="wtitle">정다은</span><br><span class="wsub">1회</span></span>
                   <span class="wval">9시간</span>
                   <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
@@ -868,7 +868,7 @@ code {
         <figcaption>
           <div class="cap-key">WORK</div>
           <div class="cap-name">사람별은 시간 큰 순, 포지션도 시간 큰 순</div>
-          <p class="cap-body">사람별 줄 오른쪽에만 화살표가 선다 — 누르면 <a href="#근무-내역-시트">근무 내역 시트</a>가 열린다(stats.md 「근무 사람별 구획」 「근무 내역 시트」). 포지션 줄에는 화살표가 없다 — 「포지션 줄은 안 눌린다」. 왼쪽 사진은 <strong>36px</strong>이고, ListRow의 다른 화면(40px)보다 작다 — stats.md의 여백표가 이 화면만 36px로 못 박았다.</p>
+          <p class="cap-body">사람별 줄 오른쪽에만 화살표가 선다 — 누르면 <a href="#근무-내역-시트">근무 내역 시트</a>가 열린다(stats.md 「근무 사람별 구획」 「근무 내역 시트」). 포지션 줄에는 화살표가 없다 — 「포지션 줄은 안 눌린다」. 왼쪽 사진은 <strong>40px</strong>이다 — stats.md 「통계 여백과 모양」이 「Avatar의 크기 넷 중 목록 줄 자리」라고 적어 다른 화면의 ListRow와 같다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>두 구획이 같은 432시간을 두 축으로 가른다.</strong> 사람별 다섯 줄의 시간 합과 포지션 아홉 줄의 시간 합이 둘 다 432시간이다 — 겸임 배정을 앞 포지션 하나로만 세서 건수 합(48건)도 서로 같다. 구획 머리글(「사람별」·「포지션」)은 <a href="../../modules/account/screens/members.md#퇴사-구획">직원 화면 퇴사 구획</a>과 같은 꼴(가는 선 아래 머리글, <code>fg.neutral-subtle</code>, <code>text-xs font-medium</code>, <code>py-2</code>)이다.</p>
           <p class="cap-body" style="margin-top:8px"><strong>대기실은 0시간이라 막대가 없다.</strong> 아홉 포지션이 다 서고 0시간짜리도 목록에 남는다 — 「대기실은 이번 달 내내 아무도 안 들어갔다」는 사실 자체가 읽을 거리라서다. 값 둘은 <code>fg.neutral-subtle</code>이다(색 표 「값이 0인 자리」).</p>
         </figcaption>
@@ -943,32 +943,32 @@ code {
             </div>
             <div class="wlist listgap">
               <div class="rowwrap"><div class="wrow">
-                <span class="av36"></span>
+                <span class="av40"></span>
                 <span class="wmid"><span class="wtitle">김민지</span></span>
                 <span class="wval">출근 9</span>
               </div></div>
               <div class="rowwrap"><div class="wrow">
-                <span class="av36"></span>
+                <span class="av40"></span>
                 <span class="wmid"><span class="wtitle">박서연</span></span>
                 <span class="wval">출근 12 · 지각 1</span>
               </div></div>
               <div class="rowwrap"><div class="wrow">
-                <span class="av36"></span>
+                <span class="av40"></span>
                 <span class="wmid"><span class="wtitle">유하은</span></span>
                 <span class="wval">출근 7 · 결근 1</span>
               </div></div>
               <div class="rowwrap"><div class="wrow">
-                <span class="av36"></span>
+                <span class="av40"></span>
                 <span class="wmid"><span class="wtitle">이하늘</span></span>
                 <span class="wval">출근 6 · 지각 2</span>
               </div></div>
               <div class="rowwrap"><div class="wrow">
-                <span class="av36"></span>
+                <span class="av40"></span>
                 <span class="wmid"><span class="wtitle">정다은</span></span>
                 <span class="wval">출근 6 · 출근 인정 1</span>
               </div></div>
               <div class="rowwrap"><div class="wrow">
-                <span class="av36"></span>
+                <span class="av40"></span>
                 <span class="wmid"><span class="wtitle">최윤아</span></span>
                 <span class="wval">출근 5</span>
               </div></div>
@@ -1234,14 +1234,14 @@ code {
               <div class="sechead">사람별</div>
               <div class="wlist">
                 <div class="rowwrap"><div class="wrow">
-                  <span class="av36"></span>
+                  <span class="av40"></span>
                   <span class="wmid"><span class="wtitle">박서연</span><br><span class="wsub">2회</span></span>
                   <span class="wval">18시간</span>
                   <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
                 </div>
                 <div class="rowbar"><span style="width:100%"></span></div></div>
                 <div class="rowwrap"><div class="wrow">
-                  <span class="av36"></span>
+                  <span class="av40"></span>
                   <span class="wmid"><span class="wtitle">김민지</span><br><span class="wsub">1회</span></span>
                   <span class="wval">9시간</span>
                   <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
@@ -1365,14 +1365,14 @@ code {
               <div class="sechead">사람별</div>
               <div class="wlist">
                 <div class="rowwrap"><div class="wrow">
-                  <span class="av36"></span>
+                  <span class="av40"></span>
                   <span class="wmid"><span class="wtitle">박서연</span><br><span class="wsub">17회</span></span>
                   <span class="wval">153시간</span>
                   <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
                 </div>
                 <div class="rowbar"><span style="width:100%"></span></div></div>
                 <div class="rowwrap"><div class="wrow">
-                  <span class="av36"></span>
+                  <span class="av40"></span>
                   <span class="wmid"><span class="wtitle">최윤아</span><br><span class="wsub">8회</span></span>
                   <span class="wval">72시간</span>
                   <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
@@ -1482,14 +1482,14 @@ code {
               <div class="sechead">사람별</div>
               <div class="wlist">
                 <div class="rowwrap"><div class="wrow">
-                  <span class="av36"></span>
+                  <span class="av40"></span>
                   <span class="wmid"><span class="wtitle">박서연</span><br><span class="wsub">17회</span></span>
                   <span class="wval">153시간</span>
                   <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
                 </div>
                 <div class="rowbar"><span style="width:100%"></span></div></div>
                 <div class="rowwrap"><div class="wrow">
-                  <span class="av36"></span>
+                  <span class="av40"></span>
                   <span class="wmid"><span class="wtitle">정다은</span><br><span class="wsub">1회</span></span>
                   <span class="wval">9시간</span>
                   <span class="wchev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>

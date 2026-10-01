@@ -428,7 +428,7 @@ code {
 .sb-right { display: flex; align-items: center; gap: 5px; }
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
-  padding: 4px 24px 12px; min-height: 44px;
+  padding: 4px 20px 12px; min-height: 44px;
 }
 .appbar .who { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
 .appbar .sp, .poshead .sp, .hrow .sp { flex: 1 1 auto; }
@@ -444,7 +444,7 @@ code {
 .appbar .title .nav { color: var(--fg-neutral-muted); display: grid; place-items: center; }
 .appbar .title .doorchev { color: var(--fg-neutral-muted); display: grid; place-items: center; }
 .appbar .meta { font-size: var(--t-xs); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
-.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+.body { flex: 1 1 auto; padding: 0 20px; overflow: hidden; display: flex; flex-direction: column; }
 .mock.auto .body { overflow: visible; padding-bottom: 24px; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 .rule { height: 1px; background: var(--stroke-neutral); flex: 0 0 auto; }
@@ -490,7 +490,7 @@ code {
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 8px 24px 24px; border-top: 1px solid var(--stroke-neutral);
+  padding: 8px 20px calc(20px + env(safe-area-inset-bottom)) 20px; border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) cubic-bezier(.2,.8,.25,1);
 }
 .mock.modal-open .rsheet { transform: none; }
@@ -553,7 +553,7 @@ code {
 .cell.sel::after { content: "✓"; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-brand); }
 
 /* 하단 고정 CTA */
-.ctabar { flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding: 8px 24px 24px; }
+.ctabar { flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding: 8px 20px calc(20px + env(safe-area-inset-bottom)); }
 .ctabar .subnote { margin-top: 8px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 
 /* 날 상세 */
@@ -867,6 +867,23 @@ code {
 @keyframes drawline { to { stroke-dashoffset: 0; } }
 .rres .rt { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 700; letter-spacing: -.01em; }
 .rres .rb { margin-top: 4px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); font-variant-numeric: tabular-nums; }
+/* 확정 실패 — schedule-admin.md 「확정」의 「실패」 행. 원이 흔들리고 ×가 선다.
+   「✕」(U+2715)는 Wanted Sans에 없어 쓰지 않는다 — 쓸 수 있는 것은 「×」(U+00D7)와
+   「✗」(U+2717)뿐이다(foundation/typography.md 「원본에 없는 글자는 서브셋에 못 담는다」).
+   여기서는 아이콘을 SVG 패스로 그려 글자 자체를 아예 안 쓴다.
+   흔들림 지속시간은 재량이 아니다 — schedule-admin.md 「드래그와 버리기」가 잠긴
+   포지션의 자물쇠 좌우 흔들림을 `--duration-base`로 못 박았고, 확정 실패의 원
+   흔들림도 같은 결이라 같은 토큰(`--d-base`)을 쓴다 */
+.mark.fail .disc { border-color: var(--bg-critical-solid); color: var(--bg-critical-solid); }
+.mark.fail .halo { border-color: var(--bg-critical-solid); }
+.mark.fail.go .disc { animation: punch 620ms cubic-bezier(.16,.95,.2,1) both, shake var(--d-base) ease-in-out 260ms both; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(3px); }
+}
 
 /* 빈 상태 — 카드가 아니라 화면 세로 가운데 덩이다 */
 .emptyblock {
@@ -1892,7 +1909,7 @@ code {
         <figcaption>
           <div class="cap-key">PICKER / REQUEST STATUS</div>
           <div class="cap-name">보낸 요청의 상태 셋</div>
-          <p class="cap-body">같은 자리의 픽커를 다시 열면 전체 보기의 미신청 줄에 상태가 선다. <strong>요청 대기 중은 체크박스가 없다</strong> — 이미 나가 있는 요청이라서다. <strong>거절함·만료됨은 체크박스가 다시 붙는다</strong> — 다시 보낸다. 상태 셋은 domain/schedule.md의 것이다. <strong>메시지에 「요청」을 남긴 것은 같은 목록에 「신청 안 함」이 서기 때문이다</strong> — 신청은 근무자가 내고 요청은 관리자가 보내는 것이라, 무엇이 대기인지 안 갈리면 관리자가 잘못 읽는다.</p>
+          <p class="cap-body">같은 자리의 픽커를 다시 열면 전체 보기의 미신청 줄에 상태가 선다. <strong>요청 대기 중은 체크박스가 없다</strong> — 이미 나가 있는 요청이라서다. <strong>거절함·만료됨은 체크박스가 다시 붙는다</strong> — 다시 보낸다. 상태 셋은 schedule/README.md의 SCH-017의 것이다. <strong>메시지에 「요청」을 남긴 것은 같은 목록에 「신청 안 함」이 서기 때문이다</strong> — 신청은 근무자가 내고 요청은 관리자가 보내는 것이라, 무엇이 대기인지 안 갈리면 관리자가 잘못 읽는다.</p>
           <p class="cap-body" style="margin-top:8px">걸린 요청이 전부 거절·만료로 끝나면 관리자에게 알림이 한 번 온다 — 빈 자리가 방치되는 것을 막는 최소한이다. 이 목업은 그 알림을 안 그린다.</p>
         </figcaption>
       </figure>
@@ -2164,6 +2181,49 @@ code {
           <div class="cap-key">CONFIRM / DONE</div>
           <div class="cap-name">결과 — 알림 발송이 보인다</div>
           <p class="cap-body">사유 시트의 어휘다 — 링 둘, 원, 그어지는 체크. 1.65초 뒤 저절로 닫히고 <strong>같은 문장이 달력 머리에 남는다.</strong></p>
+        </figcaption>
+      </figure>
+
+      <figure class="item">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>10:15</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              2026년 10월
+              <span class="doorchev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+          </div>
+          <div class="body"><div class="spacer"></div></div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="rres">
+              <div class="mark fail go" data-mark>
+                <i class="halo"></i><i class="halo h2"></i>
+                <span class="disc">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                </span>
+              </div>
+              <div class="rt">확정하지 못했어요</div>
+              <div class="rb">근무표는 그대로 있어요 · 다시 해볼게요</div>
+            </div>
+            <div class="rowbtns" style="margin-top:20px">
+              <button class="btn num">다시 확정하기</button>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-mark-replay>다시 보기</button>
+        <figcaption style="margin-top:12px">
+          <div class="cap-key">CONFIRM / FAIL</div>
+          <div class="cap-name">실패 — 원이 흔들리고 ×가 선다</div>
+          <p class="cap-body">시트가 안 닫히고 <strong>원이 흔들리고 ×가 선다</strong>(schedule-admin.md 「확정」) — 성공과 같은 자리, 같은 링·원 문법이고 색과 끝 모양만 갈린다. <strong>「✕」(U+2715)는 Wanted Sans에 없어 쓰지 않았다</strong> — SVG 패스로 그린 ×라 글꼴 글자가 아니다(foundation/typography.md).</p>
+          <p class="cap-body" style="margin-top:8px">「닫기」가 없다 — <strong>문서가 실패 버튼을 「다시 확정하기」 하나만 적었다.</strong> 닫으려면 시트를 끌어내리거나 덮개를 눌러야 한다.</p>
         </figcaption>
       </figure>
 

@@ -530,7 +530,7 @@ body.view-scene .stage.scene-live { display: block; }
 .sb-right { display: flex; align-items: center; gap: 5px; }
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
-  padding: 4px 24px 12px; min-height: 44px;
+  padding: 4px 20px 12px; min-height: 44px;
 }
 .backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
 /* 아이콘 28px, 닿는 면은 44px — components.md 「앱바」의 「아이콘은 28px로 그리고 닿는 면은 44px다」 */
@@ -553,8 +553,17 @@ body.view-scene .stage.scene-live { display: block; }
   width: 8px; height: 8px; border-radius: 999px;
   background: var(--bg-brand-solid); border: 2px solid var(--bg-neutral);
 }
-.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+.body { flex: 1 1 auto; padding: 0 20px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
+
+/* 탭 바 — components.md 「탭 바」. 근무자 탭 넷 중 하나라 목업마다 선다(sian-writer
+   정의문). 아이콘 모양은 payroll.sian.html·profile.sian.html과 같은 선 아이콘을
+   그대로 썼다 — components.md가 어떤 lucide 아이콘인지 못박지 않아 그 두 파일이
+   이미 지어낸 모양을 따른다 */
+.tabbar { flex: 0 0 auto; display: flex; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); }
+.tabitem { flex: 1 1 0; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--fg-neutral-subtle); }
+.tabitem.on { color: var(--fg-neutral); }
+.tabitem .tlabel { font-size: var(--t-xs); line-height: 1; }
 
 /* 버튼 — components.md Button. rounded-lg, font-medium */
 .btn {
@@ -665,7 +674,7 @@ body.view-scene .stage.scene-live { display: block; }
 .waitline { margin-top: 6px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-muted); }
 .body > .waitline:first-child { margin-top: 4px; }
 /* BottomCTA — components.md의 정의대로 컨테이너는 bg.neutral에 위쪽 선 stroke.neutral, 버튼은 Button primary다 */
-.ctabar { flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding: 12px 24px 24px; }
+.ctabar { flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral); padding: 12px 20px calc(20px + env(safe-area-inset-bottom)); }
 
 /* 바텀시트와 덮개 */
 .scrim {
@@ -676,7 +685,7 @@ body.view-scene .stage.scene-live { display: block; }
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 12px 24px 24px; border-top: 1px solid var(--stroke-neutral);
+  padding: 12px 20px calc(20px + env(safe-area-inset-bottom)) 20px; border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) ease-out;
 }
 .mock.modal-open .rsheet { transform: none; }
@@ -706,18 +715,19 @@ body.view-scene .stage.scene-live { display: block; }
 .mcell.sel svg { color: var(--fg-brand); flex: 0 0 auto; }
 
 /* 토스트 — components.md 「토스트」가 정본이다. bg.neutral-solid-soft 반전 면,
-   내용 폭, shadow-card. 시트가 없는 화면 위라 하단 CTA가 없고 화면 아래에서 56px다 */
+   내용 폭, shadow-card. 좌우 24px은 토스트 자신의 값이라 화면 좌우 여백(20px)과
+   안 묶인다(components.md 「가운데 정렬은 좌우 24px을 남긴 자리 안에서」). 이 화면은
+   탭 바가 모든 목업에 서므로 기본은 탭 바 위 80px이다(components.md 「토스트」 표) */
 .toast {
-  position: absolute; left: 24px; right: 24px; bottom: 56px; z-index: 6; margin: 0 auto; width: fit-content;
+  position: absolute; left: 24px; right: 24px; bottom: 80px; z-index: 6; margin: 0 auto; width: fit-content;
   display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
   background: var(--bg-neutral-solid-soft); color: var(--fg-neutral-contrast);
   border-radius: var(--r-lg); padding: 12px 20px;
   font-size: var(--t-sm); line-height: var(--lh-sm);
   border: 1px solid var(--stroke-neutral);
 }
-/* 14/확정 전 — 근무 신청. 이 토스트는 BottomCTA(「보내기」) 위에 뜬다. 56px 기본값은 하단에
-   아무것도 없는 화면(10/REQUEST · LATE) 몫이라 못 쓴다. schedule-admin.sian.html이
-   같은 상황(하단 CTA 있는 화면 위 토스트)에서 쓴 88px을 그대로 따른다 */
+/* 14/확정 전 — 근무 신청. 이 토스트는 탭 바 위에 선 BottomCTA(「보내기」) 위에 뜬다.
+   components.md 「토스트」 표의 「탭 바 위에 BottomCTA | 88px」 그대로다 */
 .toast.above-cta { bottom: 88px; }
 /* 왼쪽 면 아이콘 — 16px, 원이 계열색(fg.positive-contrast · fg.informative-contrast)으로
    차고 안쪽 표시는 토스트 면 색으로 뚫린다. 표시는 원 중심 기준 ×1.35로 키운다 —
@@ -821,6 +831,12 @@ body.view-scene .stage.scene-live { display: block; }
   display: flex; gap: 8px;
 }
 .errbox .bi { flex: 0 0 auto; margin-top: 2px; color: var(--fg-critical); }
+/* 「보내는 사이 배정이 사라졌을 때」 — schedule-worker.md 「실패와 경합」이 이 자리를
+   「전용 오류 줄」이라고만 적고 모양은 못박지 않았다. 오류 블록(.errbox)의 면·배경과
+   갈라 보이려고 이 파일이 면 없는 줄로 그렸다 — 재량이고 검수에서 정한다. 색은
+   오류 블록과 같은 fg.critical 아이콘을 쓴다 */
+.errline { margin-top: 16px; display: flex; align-items: flex-start; gap: 6px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-critical); }
+.errline svg { flex: 0 0 auto; margin-top: 2px; }
 
 /* 잠금 화면과 푸시 — OS 크롬이다. 우리 컴포넌트가 아니고 팔레트만 빌렸다 */
 .lock { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
@@ -963,6 +979,12 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="legend">점이 내 근무예요</div>
             <div class="spacer"></div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">01 / CAL</div>
@@ -1046,6 +1068,12 @@ body.view-scene .stage.scene-live { display: block; }
               <span class="mcell dim">12월</span>
             </div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">02 / MONTH</div>
@@ -1128,6 +1156,12 @@ body.view-scene .stage.scene-live { display: block; }
               <button class="btn" type="button">교대 요청</button>
             </div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">03 / SHEET · MINE</div>
@@ -1188,6 +1222,12 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="meflag">나</span></div>
             <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
             <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -1263,6 +1303,12 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="mrow"><span class="pos"></span><span class="nm vacant">빈 자리</span></div>
             <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
             <div class="mrow"><span class="pos">대기실</span><span class="nm">김다은</span></div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -1341,6 +1387,12 @@ body.view-scene .stage.scene-live { display: block; }
               <button class="btn" type="button">교대 요청</button>
             </div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">05 / ATT · BEFORE</div>
@@ -1398,6 +1450,12 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="right"><span class="meflag">나</span><span class="att">확인 중</span></span></div>
             <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span><span class="att">출근 인정</span></div>
             <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span><span class="att">결근</span></div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -1461,6 +1519,12 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="mrow"><span class="pos"></span><span class="nm">박서연</span><span class="att num">출근 09:43</span></div>
             <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span><span class="att num">출근 09:39</span></div>
             <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span><span class="att num">출근 09:56</span></div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -1535,6 +1599,12 @@ body.view-scene .stage.scene-live { display: block; }
               <div class="dayrow"><b class="num">10월 18일(일)</b><span class="tag edu">교육 · 드레스</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
             </div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">06 / ACC</div>
@@ -1587,6 +1657,12 @@ body.view-scene .stage.scene-live { display: block; }
               <div class="dayrow"><b class="num">10월 17일(토)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
               <div class="dayrow"><b class="num">10월 18일(일)</b><span class="tag edu">교육 · 드레스</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
             </div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -1646,6 +1722,12 @@ body.view-scene .stage.scene-live { display: block; }
               <div class="dayrow"><b class="num">10월 18일(일)</b><span class="tag edu">교육 · 드레스</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
               <div class="dayrow"><b class="num">10월 24일(토)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
             </div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -1717,6 +1799,12 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="rowbtns"><button class="btn" type="button">2명에게 요청 보내기</button></div>
             <button class="linkbtn" type="button">고르지 않고 관리자에게만 보내기</button>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">08 / SWAP</div>
@@ -1783,6 +1871,12 @@ body.view-scene .stage.scene-live { display: block; }
             </div>
             <div class="rowbtns"><button class="btn" type="button" disabled>취소 요청 보내기</button></div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">09 / CANCEL · EMPTY</div>
@@ -1836,6 +1930,12 @@ body.view-scene .stage.scene-live { display: block; }
               <div class="box">그날 집안 행사가 잡혀서 못 나갈 것 같아요</div>
             </div>
             <div class="rowbtns"><button class="btn" type="button">취소 요청 보내기</button></div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -1907,6 +2007,12 @@ body.view-scene .stage.scene-live { display: block; }
               <button class="btn" type="button">근무할게요</button>
             </div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">10 / REQUEST · OPEN</div>
@@ -1961,6 +2067,12 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="sh-title">근무 요청이 끝났어요</div>
             <div class="sh-sub num">10월 17일(토) · 안내 · 10:00 – 18:00</div>
             <div class="waitline">자리가 찼거나 기간이 지났어요</div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -2018,6 +2130,12 @@ body.view-scene .stage.scene-live { display: block; }
               </g>
             </svg>
             <span>자리가 찼어요</span>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -2077,6 +2195,12 @@ body.view-scene .stage.scene-live { display: block; }
             </div>
             <div class="legend">점이 내 근무, 도는 점선이 근무 요청이에요</div>
             <div class="spacer"></div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -2147,6 +2271,12 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="legend">점이 내 근무예요</div>
             <div class="spacer"></div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">11 / DARK · CAL</div>
@@ -2203,6 +2333,12 @@ body.view-scene .stage.scene-live { display: block; }
               </div>
               <div class="dayrow"><b class="num">10월 11일(일)</b><span class="tag nowork">근무 없음</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
             </div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -2275,12 +2411,83 @@ body.view-scene .stage.scene-live { display: block; }
               <div class="dayrow"><b class="num">10월 18일(일)</b><span class="tag edu">교육 · 드레스</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
             </div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">12 / SENT · ACC</div>
           <div class="cap-name">교대 요청 보낸 직후 · 포지션 순</div>
           <p class="cap-body">10일 날짜 줄 오른쪽과 펼침의 내 줄에 <strong>Badge neutral 「교대 요청 중」</strong>이 선다 — 근무 취소를 보냈으면 같은 자리에 「취소 요청 중」이다. 배지 문구와 자리는 이대로 확정이다.</p>
           <p class="cap-body" style="margin-top:8px">하단 버튼 둘이 <strong>비활성이다</strong> — 같은 근무에 교대와 취소를 겹쳐 거는 길을 막는다. disabled 스타일은 schedule-admin.sian.html의 disabled 버튼과 같은 <code>bg.neutral-disabled</code> · <code>fg.neutral-disabled</code>다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-sent-cancel">
+        <div class="mock">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              2026년 10월
+              <span class="doorchev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+            <button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" aria-label="달력 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" class="on" aria-label="포지션 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
+            </div>
+            <div class="acc">
+              <div class="dayrow"><b class="num">10월 8일(목)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 9일(금)</b><span class="tag nowork">근무 없음</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 10일(토)</b><span class="badge neutral">취소 요청 중</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span></div>
+              <div class="daybody">
+                <div class="mrow"><span class="pos">팀장</span><span class="nm">김민준</span></div>
+                <div class="mrow"><span class="pos">스캔</span><span class="nm">이서준</span></div>
+                <div class="mrow"><span class="pos">메인</span><span class="nm">이준호</span></div>
+                <div class="mrow"><span class="pos">드레스</span><span class="nm">김하은</span></div>
+                <div class="mrow"><span class="pos">드레스</span><span class="nm">김지우</span><span class="badge neutral">교육</span></div>
+                <div class="mrow"><span class="pos">축가</span><span class="nm">정우진</span></div>
+                <div class="mrow"><span class="pos">매니저</span><span class="nm">박지호</span></div>
+                <div class="mrow"><span class="pos"></span><span class="nm">최은우</span></div>
+                <div class="mrow me"><span class="pos">안내</span><span class="nm">지수</span><span class="badge neutral">취소 요청 중</span><span class="meflag">나</span></div>
+                <div class="mrow"><span class="pos"></span><span class="nm">박서연</span></div>
+                <div class="mrow"><span class="pos">드레스실</span><span class="nm">한소희</span></div>
+                <div class="mrow"><span class="pos">대기실</span><span class="nm">오유진</span></div>
+                <div class="rowbtns">
+                  <button class="btn secondary" type="button" disabled>근무 취소</button>
+                  <button class="btn" type="button" disabled>교대 요청</button>
+                </div>
+              </div>
+              <div class="dayrow"><b class="num">10월 11일(일)</b><span class="tag nowork">근무 없음</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 17일(토)</b><span class="tag">안내</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+              <div class="dayrow"><b class="num">10월 18일(일)</b><span class="tag edu">교육 · 드레스</span><span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">12 / SENT · CANCEL</div>
+          <div class="cap-name">근무 취소 보낸 직후 · 포지션 순</div>
+          <p class="cap-body">앞 목업의 짝이다 — <strong>근무 취소를 보내면 같은 자리에 Badge neutral 「취소 요청 중」</strong>이 선다(schedule-worker.md 「보낸 뒤」·「교대 요청 시트 문안」). 배지 말고는 앞 목업과 전부 같다 — 하단 버튼 둘이 비활성인 것도 같다.</p>
         </figcaption>
       </figure>
 
@@ -2342,6 +2549,12 @@ body.view-scene .stage.scene-live { display: block; }
               <button class="btn secondary" type="button" disabled>근무 취소</button>
               <button class="btn" type="button" disabled>교대 요청</button>
             </div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -2409,6 +2622,12 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="errbox"><span class="bi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span><span>보내지 못했어요. 다시 시도해주세요</span></div>
             <div class="rowbtns"><button class="btn" type="button">취소 요청 보내기</button></div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">13 / CANCEL · FAIL</div>
@@ -2460,11 +2679,81 @@ body.view-scene .stage.scene-live { display: block; }
             <div class="sh-sub">보낼 사람이 없어요. 관리자에게 바로 보낼 수 있어요</div>
             <div class="rowbtns" style="margin-top:28px"><button class="btn" type="button">관리자에게만 보내기</button></div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">13 / SWAP · EMPTY</div>
           <div class="cap-name">교대 후보가 없다</div>
           <p class="cap-body">승인된 근무자가 나뿐이면 후보 목록이 빈다. <strong>부제 자체가 「보낼 사람이 없어요. 관리자에게 바로 보낼 수 있어요」로 바뀐다</strong> — 08의 「여러 명에게 보낼 수 있어요…」 자리를 그대로 갈아 끼운다. 고르는 CTA 대신 <strong>「관리자에게만 보내기」 버튼 하나</strong>만 남는다 — 08의 텍스트 링크가 아니라 이 화면의 유일한 액션이라 Button primary로 세웠다.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="item" id="m-swap-gone">
+        <div class="mock modal-open">
+          <div class="statusbar"><span>21:04</span><span class="sb-right">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.3" y="5" width="3" height="6" rx="1"/><rect x="8.6" y="2.5" width="3" height="8.5" rx="1"/><rect x="12.9" width="3" height="11" rx="1" opacity=".35"/></svg>
+            <svg width="22" height="11" viewBox="0 0 22 11" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="18" height="10" rx="3" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="12" height="7" rx="1.6" fill="currentColor"/><path d="M20 4v3a2 2 0 0 0 0-3z" fill="currentColor" opacity=".4"/></svg>
+          </span></div>
+          <div class="appbar">
+            <span class="backic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+            <span class="title">
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></span>
+              2026년 10월
+              <span class="doorchev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+              <span class="nav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </span>
+            <button class="bell" type="button" aria-label="알림"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><i class="dot"></i></button>
+          </div>
+          <div class="body">
+            <div class="viewbar">
+              <span class="seg">
+                <button type="button" class="on" aria-label="달력 순" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+                <button type="button" aria-label="포지션 순" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+              </span>
+              <span class="check"><span class="box"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span>내 근무만</span>
+            </div>
+            <div class="dow"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
+            <div class="cal">
+              <span class="cell off"><b>5</b></span><span class="cell off"><b>6</b></span><span class="cell off"><b>7</b></span>
+              <span class="cell open today"><b>8</b><span class="dot"></span></span>
+              <span class="cell none"><b>9</b></span>
+              <span class="cell open"><b>10</b><span class="dot"></span></span>
+              <span class="cell none"><b>11</b></span>
+            </div>
+            <div class="spacer"></div>
+          </div>
+          <div class="scrim"></div>
+          <div class="rsheet">
+            <div class="grab"></div>
+            <div class="sh-title num">교대 요청 · 10월 10일(토) 안내</div>
+            <div class="sh-sub">여러 명에게 보낼 수 있어요. 수락한 사람 중 관리자가 정해요</div>
+            <div class="pickrow sel"><span class="ava">김</span><span class="who">김다은</span><span class="note">이날 근무 없음</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow sel"><span class="ava">이</span><span class="who">이지원</span><span class="note">이날 근무 없음</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow"><span class="ava">한</span><span class="who">한예린</span><span class="note">이날 근무 없음</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow"><span class="ava">조</span><span class="who">조은서</span><span class="note">이날 근무 없음</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow"><span class="ava">박</span><span class="who">박서연</span><span class="note">이날 안내 근무 · 맞바꿔요</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow"><span class="ava">김</span><span class="who">김민준</span><span class="note">이날 팀장 근무 · 맞바꿔요</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="pickrow"><span class="ava">이</span><span class="who">이서준</span><span class="note">이날 스캔 근무 · 맞바꿔요</span><span class="ring"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg></span></div>
+            <div class="errline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg><span>이 근무가 바뀌었어요. 근무표를 다시 확인해주세요</span></div>
+            <div class="rowbtns"><button class="btn" type="button" disabled>2명에게 요청 보내기</button></div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
+        </div>
+        <figcaption>
+          <div class="cap-key">13 / SWAP · GONE</div>
+          <div class="cap-name">보내는 사이 배정이 사라졌을 때</div>
+          <p class="cap-body">시트를 열어둔 채 관리자가 강제 변경으로 내 배정을 뺐을 때다(schedule-worker.md 「실패와 경합」). <strong>「이 근무가 바뀌었어요. 근무표를 다시 확인해주세요」</strong>가 서고 CTA가 막힌다 — 할 수 있는 것은 시트를 닫아 최신 근무표를 보는 것뿐이라 재시도를 안 둔다.</p>
+          <p class="cap-body" style="margin-top:8px">문서가 이 줄을 <strong>「전용 오류 줄」</strong>이라고만 적고 모양은 안 정했다 — 네트워크 실패(13/CANCEL · FAIL)의 면 있는 오류 블록과 갈라 보이려고 이 파일이 면 없는 줄로 그렸다. 같은 문구가 근무 취소 시트에도 선다(schedule-worker.md 「근무 취소 시트 문안」) — 재량이고 검수에서 정한다.</p>
         </figcaption>
       </figure>
 
@@ -2540,6 +2829,12 @@ body.view-scene .stage.scene-live { display: block; }
           </div>
           <div class="ctabar">
             <button class="btn" type="button">보내기</button>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -2621,6 +2916,12 @@ body.view-scene .stage.scene-live { display: block; }
             </svg>
             <span>10월 근무 신청을 보냈어요</span>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">14 / APPLY · SENT</div>
@@ -2690,6 +2991,12 @@ body.view-scene .stage.scene-live { display: block; }
             </div>
             <div class="spacer"></div>
           </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
+          </div>
         </div>
         <figcaption>
           <div class="cap-key">14 / APPLY · CLOSED</div>
@@ -2756,6 +3063,12 @@ body.view-scene .stage.scene-live { display: block; }
               <span class="cell"></span>
             </div>
             <div class="spacer"></div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>
@@ -2827,6 +3140,12 @@ body.view-scene .stage.scene-live { display: block; }
             </div>
             <div class="legend">점이 내 근무, 도는 점선이 근무 요청이에요</div>
             <div class="spacer"></div>
+          </div>
+          <div class="tabbar">
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span class="tlabel">홈</span></div>
+            <div class="tabitem on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="tlabel">근무표</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg><span class="tlabel">급여</span></div>
+            <div class="tabitem"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg><span class="tlabel">나</span></div>
           </div>
         </div>
         <figcaption>

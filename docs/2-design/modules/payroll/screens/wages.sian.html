@@ -444,40 +444,40 @@ code {
 /* 앱바 — 뒤로와 제목뿐이다. 관리자 화면이라 탭 바가 없다(wages.md 짜임) */
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
-  padding: 4px 24px 12px; min-height: 44px; position: relative;
+  padding: 4px 20px 12px; min-height: 44px; position: relative;
 }
 .appbar .sp { flex: 1 1 auto; }
 .backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
 /* 아이콘 28px, 닿는 면은 44px — components.md 「앱바」의 「아이콘은 28px로 그리고 닿는 면은 44px다」 */
 .backic::after { content: ""; position: absolute; inset: -8px; }
 .appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
-/* 화면 좌우 여백 px-6 = 24px */
-.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+/* 화면 좌우 여백 px-5 = 20px */
+.body { flex: 1 1 auto; padding: 0 20px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
 /* 기본 시급 줄 — ListRow인데 사진이 없다. 오른쪽에 값+화살표, 아래에 인원 안내 */
 .baserow { padding: 16px 0; cursor: pointer; }
 .baserow-top { display: flex; align-items: center; gap: 12px; }
 .baserow-top .btitle { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
-.baserow-top .bval { margin-left: auto; font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
+.baserow-top .bval { margin-left: auto; font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); font-variant-numeric: tabular-nums; }
 .baserow-top .chev { flex: 0 0 auto; color: var(--fg-neutral-subtle); display: grid; place-items: center; }
 .baserow-sub { margin-top: 4px; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
-.baserow.pressed { background: var(--bg-neutral-weak-pressed); margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
+.baserow.pressed { background: var(--bg-neutral-weak-pressed); margin: 0 -20px; padding-left: 20px; padding-right: 20px; }
 
 /* 가는 선 my-2 = 8px */
 .hr { height: 1px; background: var(--stroke-neutral); margin: 8px 0; }
 
-/* 사람 줄 — ListRow. 사진 36px · 이름 · 값 · 화살표(wages.md 「사람 줄」) */
+/* 사람 줄 — ListRow. 사진 40px · 이름 · 값 · 화살표(wages.md 「사람 줄」) */
 .prow { display: flex; align-items: center; gap: 12px; padding: 16px 0; cursor: pointer; }
 .prow .pname { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
 .prow .pval { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: var(--t-base); line-height: var(--lh-base); color: var(--fg-neutral); font-variant-numeric: tabular-nums; }
 .prow .chev { flex: 0 0 auto; color: var(--fg-neutral-subtle); display: grid; place-items: center; }
-.prow.pressed { background: var(--bg-neutral-weak-pressed); margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
+.prow.pressed { background: var(--bg-neutral-weak-pressed); margin: 0 -20px; padding-left: 20px; padding-right: 20px; }
 .plist .rowwrap + .rowwrap .prow { border-top: 1px solid var(--stroke-neutral); }
 .rowwrap { overflow: hidden; }
 
 /* 사진 — 원. 목업이라 실제 이미지 대신 뉴트럴 두 단계의 그러데이션으로 자리를 흉내 냈다 */
-.av { width: 36px; height: 36px; border-radius: 999px; flex: 0 0 auto; border: 1px solid var(--stroke-neutral); box-sizing: border-box; background: linear-gradient(150deg, var(--palette-neutral-300), var(--palette-neutral-500)); }
+.av { width: 40px; height: 40px; border-radius: 999px; flex: 0 0 auto; border: 1px solid var(--stroke-neutral); box-sizing: border-box; background: linear-gradient(150deg, var(--palette-neutral-300), var(--palette-neutral-500)); }
 .av.big { width: 64px; height: 64px; }
 
 /* 빈 상태 — 목록 자리에 두 줄이 선다(components.md 「빈 상태」). 기본 시급 줄은 그대로 선다 */
@@ -539,7 +539,7 @@ code {
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
+  padding: 8px 20px calc(20px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) ease-out;
   max-height: 90%; overflow-y: auto;

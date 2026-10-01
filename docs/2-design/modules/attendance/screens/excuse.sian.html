@@ -403,7 +403,7 @@ code {
 .sb-right { display: flex; align-items: center; gap: 5px; }
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; padding: 4px 24px 16px; min-height: 44px;
+  gap: 12px; padding: 4px 20px 16px; min-height: 44px;
 }
 .appbar .date { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); font-variant-numeric: tabular-nums; }
 .brandmark {
@@ -411,7 +411,7 @@ code {
   color: var(--fg-brand-contrast); display: grid; place-items: center;
   font-size: var(--t-xs); font-weight: 700; flex: 0 0 auto;
 }
-.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+.body { flex: 1 1 auto; padding: 0 20px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
 .daybar { padding-top: 24px; }
@@ -538,7 +538,7 @@ code {
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 8px 24px 24px; border-top: 1px solid var(--stroke-neutral);
+  padding: 8px 20px calc(20px + env(safe-area-inset-bottom)); border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) cubic-bezier(.2,.8,.25,1);
 }
 .mock.modal-open .rsheet { transform: none; }
@@ -765,7 +765,7 @@ code {
 .sheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
   background: var(--bg-neutral); border-radius: var(--r-xl) var(--r-xl) 0 0;
-  padding: 8px 24px 24px; border-top: 1px solid var(--stroke-neutral);
+  padding: 8px 20px calc(20px + env(safe-area-inset-bottom)); border-top: 1px solid var(--stroke-neutral);
 }
 .grabber { width: 32px; height: 4px; border-radius: 999px; background: var(--stroke-neutral-muted); margin: 0 auto 16px; }
 .sheet-t { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 700; letter-spacing: -.01em; }
@@ -969,7 +969,7 @@ code {
         <figcaption>
           <div class="cap-key">보내기 실패</div>
           <div class="cap-name">쓴 글은 안 날아간다</div>
-          <p class="cap-body">첫 보내기가 실패하는 흐름이다. <strong>원이 흔들리고 ✕가 두 획으로 그어진다.</strong> 성공과 같은 자리 같은 크기인데 모양과 색이 다르다. 쓴 내용은 시트 안에 그대로 남아 다시 누르면 그 글이 간다.</p>
+          <p class="cap-body">첫 보내기가 실패하는 흐름이다. <strong>원이 흔들리고 ×가 두 획으로 그어진다.</strong> 성공과 같은 자리 같은 크기인데 모양과 색이 다르다. 쓴 내용은 시트 안에 그대로 남아 다시 누르면 그 글이 간다.</p>
         </figcaption>
       </figure>
 
@@ -1181,7 +1181,7 @@ code {
         <figcaption>
           <div class="cap-key">엣지 ④</div>
           <div class="cap-name">보내는 동안은 못 닫는다</div>
-          <p class="cap-body">닫기까지 같이 잠긴다. <strong>중간에 닫으면 갔는지 안 갔는지 알 길이 없다.</strong> 돌기만 하다 끝나지 않게 다음 화면이 반드시 온다 — 체크 아니면 ✕다.</p>
+          <p class="cap-body">닫기까지 같이 잠긴다. <strong>중간에 닫으면 갔는지 안 갔는지 알 길이 없다.</strong> 돌기만 하다 끝나지 않게 다음 화면이 반드시 온다 — 체크 아니면 ×다.</p>
         </figcaption>
       </figure>
 
@@ -1230,7 +1230,7 @@ code {
         <figcaption>
           <div class="cap-key">엣지 ⑤</div>
           <div class="cap-name">보낸 뒤에 다시 열면</div>
-          <p class="cap-body">읽기 전용이다. 배경이 같은 <code>bg.neutral-weak</code>인데 테두리가 없어 <strong>쓰는 칸이 아님을 모양으로 말한다.</strong> 고칠 수 있는지는 <code>domain/attendance.md</code>가 아직 안 정했다.</p>
+          <p class="cap-body">읽기 전용이다. 배경이 같은 <code>bg.neutral-weak</code>인데 테두리가 없어 <strong>쓰는 칸이 아님을 모양으로 말한다.</strong> 보낸 사유는 못 고친다 — <code>attendance/README.md</code>의 ATT-012다.</p>
         </figcaption>
       </figure>
 
@@ -1325,7 +1325,7 @@ code {
         <figcaption>
           <div class="cap-key">엣지 ⑦</div>
           <div class="cap-name">반려되면 다음 날 대시보드에</div>
-          <p class="cap-body">거절은 시트가 아니라 <strong>다음에 앱을 열었을 때 블록으로</strong> 온다. 승인은 알림 하나로 끝나고 거절만 화면에 남는다 — 할 일이 남았기 때문이다. <code>domain/attendance.md</code>가 거절 뒤를 아직 안 정해서 이 화면은 제안이다.</p>
+          <p class="cap-body">거절은 시트가 아니라 <strong>다음에 앱을 열었을 때 블록으로</strong> 온다. 승인은 알림 하나로 끝나고 거절만 화면에 남는다 — 할 일이 남았기 때문이다. <code>excuse.md</code>의 상태 표가 「반려된 뒤」를 「열자마자」로 보내고, <code>attendance/README.md</code>의 ATT-013이 「거절되면 다시 넣는다」로 정했다.</p>
         </figcaption>
       </figure>
 
