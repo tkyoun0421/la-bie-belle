@@ -1,0 +1,47 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
+import { closeDay } from "@/features/schedule/api/closeDay.api";
+
+/**
+ * 날 하나를 닫는다. 배정이 있으면 화면이 먼저 경고 시트로 확인받고 이 훅은 그 뒤에 불린다
+ * (`docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 닫기 경고」).
+ */
+
+export type CloseDayInput = {
+  workDate: string;
+};
+
+export type CloseDayResult = {
+  mutate: (input: CloseDayInput) => void;
+  isPending: boolean;
+  isSuccess: boolean;
+  isError: boolean;
+  error: Error | null;
+  reset: () => void;
+};
+
+export function useCloseDayMutation(client: DB): CloseDayResult {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
+    mutationFn: ({ workDate }: CloseDayInput) => closeDay(client, workDate),
+    onSuccess: () => {
+      for (const queryKey of staleTogether.scheduleWrite) {
+        void queryClient.invalidateQueries({ queryKey });
+      }
+    },
+  });
+
+  const send = useCallback(
+    (input: CloseDayInput) => {
+      if (!isPending) {
+        mutate(input);
+      }
+    },
+    [isPending, mutate],
+  );
+
+  return { mutate: send, isPending, isSuccess, isError, error, reset };
+}

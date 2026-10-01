@@ -16,11 +16,11 @@ import { NotificationRow } from "@/shared/ui/NotificationRow";
 import { Screen } from "@/shared/ui/Screen";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
+import { useNotificationsQuery } from "@/entities/notification/hooks/useNotificationsQuery";
 import type { NotificationRow as Notification } from "@/entities/notification/model/types";
+import { useMarkNotificationsReadMutation } from "@/features/notification/hooks/useMarkNotificationsReadMutation";
 import { toNotificationDestination } from "@/features/notification/model/destination";
 import { toNotificationTitle } from "@/features/notification/model/title";
-import { useMarkNotificationsRead } from "@/features/notification/model/useMarkNotificationsRead";
-import { useNotifications } from "@/features/notification/model/useNotifications";
 import {
   toNotificationDateHeader,
   toNotificationReceivedTime,
@@ -93,9 +93,9 @@ export function NotificationsScreen({ from }: NotificationsScreenProps) {
   const clockOffset = serverClockStore((at) => at.offset);
   const now = new Date(nowWithOffset(Date.now(), clockOffset));
 
-  const notifications = useNotifications(supabase);
+  const notifications = useNotificationsQuery(supabase);
   const { mutate: markRead, mutateAsync: markReadAsync } =
-    useMarkNotificationsRead(supabase);
+    useMarkNotificationsReadMutation(supabase);
 
   const rows: Notification[] = (notifications.data?.pages ?? []).flat();
   const state = resolveNotificationsListState({

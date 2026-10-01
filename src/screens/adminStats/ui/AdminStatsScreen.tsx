@@ -30,11 +30,9 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
-import {
-  useAttendanceMonths,
-  useFirstScheduleMonth,
-  useWorkMonths,
-} from "@/features/stats/api/useStatsQueries";
+import { useFirstScheduleMonthQuery } from "@/entities/schedule/hooks/useFirstScheduleMonthQuery";
+import { useWorkMonthsQuery } from "@/entities/schedule/hooks/useWorkMonthsQuery";
+import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";
 import { computePersonDays } from "@/features/stats/model/personDays";
 import { buildTrend, trendMonths } from "@/features/stats/model/trend";
 import {
@@ -114,12 +112,12 @@ export function AdminStatsScreen() {
   const clockOffset = serverClockStore((at) => at.offset);
   const months = useMemo(() => trendMonths(month), [month]);
 
-  const work = useWorkMonths(supabase, tab === WORK ? months : NO_MONTHS);
+  const work = useWorkMonthsQuery(supabase, tab === WORK ? months : NO_MONTHS);
   const attendance = useAttendanceMonths(
     supabase,
     tab === ATTENDANCE ? months : NO_MONTHS,
   );
-  const firstMonth = useFirstScheduleMonth(supabase);
+  const firstMonth = useFirstScheduleMonthQuery(supabase);
 
   const workInputs = useMemo(
     () => workInputsOf(monthIn(work.data, month)?.days ?? []),

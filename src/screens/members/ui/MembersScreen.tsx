@@ -18,14 +18,14 @@ import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
 import type { MemberRow } from "@/entities/profile/api/listMembers.api";
+import { useMembersQuery } from "@/entities/profile/hooks/useMembersQuery";
 import { isLastAdmin } from "@/entities/profile/model/isLastAdmin";
 import { searchMembers } from "@/entities/profile/model/searchMembers";
 import { isLeftOverAYear } from "@/entities/profile/model/sortMembers";
-import { useMarkLeave } from "@/features/members/model/useMarkLeave";
-import { useMembers } from "@/features/members/model/useMembers";
-import { useSetDisplayName } from "@/features/members/model/useSetDisplayName";
-import { useSetRole } from "@/features/members/model/useSetRole";
-import { useUndoLeave } from "@/features/members/model/useUndoLeave";
+import { useMarkLeaveMutation } from "@/features/members/hooks/useMarkLeaveMutation";
+import { useSetDisplayNameMutation } from "@/features/members/hooks/useSetDisplayNameMutation";
+import { useSetRoleMutation } from "@/features/members/hooks/useSetRoleMutation";
+import { useUndoLeaveMutation } from "@/features/members/hooks/useUndoLeaveMutation";
 import {
   getMemberListSuffix,
   getMemberSheetLine,
@@ -102,8 +102,8 @@ export function MembersScreen() {
   const [asked, setAsked] = useState<MemberDialogKind | null>(null);
   const [toast, setToast] = useState<ToastMessage | null>(null);
 
-  const { data: active } = useMembers(supabase, "active");
-  const { data: left } = useMembers(supabase, "left");
+  const { data: active } = useMembersQuery(supabase, "active");
+  const { data: left } = useMembersQuery(supabase, "left");
 
   const {
     mutate: saveName,
@@ -111,28 +111,28 @@ export function MembersScreen() {
     isSuccess: nameSaved,
     error: nameError,
     reset: resetName,
-  } = useSetDisplayName(supabase);
+  } = useSetDisplayNameMutation(supabase);
 
   const {
     mutate: saveRole,
     isSuccess: roleSaved,
     error: roleError,
     reset: resetRole,
-  } = useSetRole(supabase);
+  } = useSetRoleMutation(supabase);
 
   const {
     mutate: sendLeave,
     isSuccess: leaveDone,
     error: leaveError,
     reset: resetLeave,
-  } = useMarkLeave(supabase);
+  } = useMarkLeaveMutation(supabase);
 
   const {
     mutate: sendUndo,
     isSuccess: undoDone,
     error: undoError,
     reset: resetUndo,
-  } = useUndoLeave(supabase);
+  } = useUndoLeaveMutation(supabase);
 
   const now = new Date().toISOString();
 

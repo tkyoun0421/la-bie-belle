@@ -12,10 +12,10 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
-import type { CancelDecision } from "@/entities/schedule/api/decideCancelRequest.api";
 import type { PendingApproval } from "@/entities/schedule/api/getPendingApprovals.api";
-import { useDecideCancelRequest } from "@/features/schedule/model/useDecideCancelRequest";
-import { usePendingApprovals } from "@/features/schedule/model/usePendingApprovals";
+import { usePendingApprovalsQuery } from "@/entities/schedule/hooks/usePendingApprovalsQuery";
+import type { CancelDecision } from "@/features/schedule/api/decideCancelRequest.api";
+import { useDecideCancelRequestMutation } from "@/features/schedule/hooks/useDecideCancelRequestMutation";
 import {
   cancelApprovalConfirmBody,
   cancelApprovalDetail,
@@ -91,9 +91,9 @@ function namesOf(row: CancelRow) {
 export function ApprovalsScreen() {
   const router = useRouter();
 
-  const { data: approvals } = usePendingApprovals(supabase);
+  const { data: approvals } = usePendingApprovalsQuery(supabase);
   const { mutate, isPending, isSuccess, isError, reset } =
-    useDecideCancelRequest(supabase);
+    useDecideCancelRequestMutation(supabase);
 
   const [openId, setOpenId] = useState<string | null>(null);
   const [face, setFace] = useState<ApprovalSheetFace>("detail");

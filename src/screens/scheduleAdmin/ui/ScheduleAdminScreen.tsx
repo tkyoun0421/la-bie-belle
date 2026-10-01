@@ -18,34 +18,34 @@ import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
-import type { AddAssignmentInput } from "@/entities/schedule/api/addAssignment.api";
+import { usePayrollMonthsQuery } from "@/entities/payroll/hooks/usePayrollMonthsQuery";
+import { useMembersQuery } from "@/entities/profile/hooks/useMembersQuery";
+import { useAllRehearsalsQuery } from "@/entities/rehearsal/hooks/useAllRehearsalsQuery";
 import { liveAssignmentCount } from "@/entities/schedule/api/getMonthSchedule.api";
-import { useMembers } from "@/features/members/model/useMembers";
-import { usePayrollMonths } from "@/features/payroll/model/usePayrollMonths";
-import { useSetAdjustment } from "@/features/payroll/model/useSetAdjustment";
-import { useSetHoliday } from "@/features/payroll/model/useSetHoliday";
-import { useAllRehearsals } from "@/features/rehearsal/model/useAllRehearsals";
-import { useAddAssignment } from "@/features/schedule/model/useAddAssignment";
-import { useAddSlot } from "@/features/schedule/model/useAddSlot";
-import { useCloseDay } from "@/features/schedule/model/useCloseDay";
-import { useConfirmSchedule } from "@/features/schedule/model/useConfirmSchedule";
-import { useCreateSchedule } from "@/features/schedule/model/useCreateSchedule";
-import { useForceChange } from "@/features/schedule/model/useForceChange";
-import { useGrantPosition } from "@/features/schedule/model/useGrantPosition";
-import { useMergeSlots } from "@/features/schedule/model/useMergeSlots";
-import { useMonthAvailabilities } from "@/features/schedule/model/useMonthAvailabilities";
-import { useMonthSchedule } from "@/features/schedule/model/useMonthSchedule";
-import { useMonthWindow } from "@/features/schedule/model/useMonthWindow";
-import { useOpenDay } from "@/features/schedule/model/useOpenDay";
-import { useOpenSlots } from "@/features/schedule/model/useOpenSlots";
-import { useQualifications } from "@/features/schedule/model/useQualifications";
-import { useRemoveAssignment } from "@/features/schedule/model/useRemoveAssignment";
-import { useRemoveSlot } from "@/features/schedule/model/useRemoveSlot";
-import { useSendWorkRequest } from "@/features/schedule/model/useSendWorkRequest";
-import { useSetApplicationDeadline } from "@/features/schedule/model/useSetApplicationDeadline";
-import { useSetDayHours } from "@/features/schedule/model/useSetDayHours";
-import { useSlotRequests } from "@/features/schedule/model/useSlotRequests";
-import { useSplitSlot } from "@/features/schedule/model/useSplitSlot";
+import { useMonthAvailabilitiesQuery } from "@/entities/schedule/hooks/useMonthAvailabilitiesQuery";
+import { useMonthScheduleQuery } from "@/entities/schedule/hooks/useMonthScheduleQuery";
+import { useMonthWindowQuery } from "@/entities/schedule/hooks/useMonthWindowQuery";
+import { useOpenSlotsQuery } from "@/entities/schedule/hooks/useOpenSlotsQuery";
+import { useQualificationsQuery } from "@/entities/schedule/hooks/useQualificationsQuery";
+import { useSlotRequestsQuery } from "@/entities/schedule/hooks/useSlotRequestsQuery";
+import { useSetAdjustmentMutation } from "@/features/payroll/hooks/useSetAdjustmentMutation";
+import { useSetHolidayMutation } from "@/features/payroll/hooks/useSetHolidayMutation";
+import type { AddAssignmentInput } from "@/features/schedule/api/addAssignment.api";
+import { useAddAssignmentMutation } from "@/features/schedule/hooks/useAddAssignmentMutation";
+import { useAddSlotMutation } from "@/features/schedule/hooks/useAddSlotMutation";
+import { useCloseDayMutation } from "@/features/schedule/hooks/useCloseDayMutation";
+import { useConfirmScheduleMutation } from "@/features/schedule/hooks/useConfirmScheduleMutation";
+import { useCreateScheduleMutation } from "@/features/schedule/hooks/useCreateScheduleMutation";
+import { useForceChangeMutation } from "@/features/schedule/hooks/useForceChangeMutation";
+import { useGrantPositionMutation } from "@/features/schedule/hooks/useGrantPositionMutation";
+import { useMergeSlotsMutation } from "@/features/schedule/hooks/useMergeSlotsMutation";
+import { useOpenDayMutation } from "@/features/schedule/hooks/useOpenDayMutation";
+import { useRemoveAssignmentMutation } from "@/features/schedule/hooks/useRemoveAssignmentMutation";
+import { useRemoveSlotMutation } from "@/features/schedule/hooks/useRemoveSlotMutation";
+import { useSendWorkRequestMutation } from "@/features/schedule/hooks/useSendWorkRequestMutation";
+import { useSetApplicationDeadlineMutation } from "@/features/schedule/hooks/useSetApplicationDeadlineMutation";
+import { useSetDayHoursMutation } from "@/features/schedule/hooks/useSetDayHoursMutation";
+import { useSplitSlotMutation } from "@/features/schedule/hooks/useSplitSlotMutation";
 import { DeadlineSheet } from "@/features/schedule/ui/DeadlineSheet";
 import {
   adminCalendarDayState,
@@ -163,37 +163,40 @@ export function ScheduleAdminScreen({
   const [sheet, setSheet] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
-  const { data: schedule, isLoading: loadingWindow } = useMonthWindow(
+  const { data: schedule, isLoading: loadingWindow } = useMonthWindowQuery(
     supabase,
     month,
   );
-  const { data: days, refetch: reloadDays } = useMonthSchedule(supabase, month);
-  const { data: openSlots } = useOpenSlots(supabase, month);
-  const { data: availabilities } = useMonthAvailabilities(supabase, month);
-  const { data: activeMembers } = useMembers(supabase, "active");
-  const { data: qualifications } = useQualifications(supabase);
-  const { data: slotRequests } = useSlotRequests(supabase, month);
-  const { data: payroll } = usePayrollMonths(supabase, [month]);
-  const { data: rehearsals } = useAllRehearsals(supabase, month);
+  const { data: days, refetch: reloadDays } = useMonthScheduleQuery(
+    supabase,
+    month,
+  );
+  const { data: openSlots } = useOpenSlotsQuery(supabase, month);
+  const { data: availabilities } = useMonthAvailabilitiesQuery(supabase, month);
+  const { data: activeMembers } = useMembersQuery(supabase, "active");
+  const { data: qualifications } = useQualificationsQuery(supabase);
+  const { data: slotRequests } = useSlotRequestsQuery(supabase, month);
+  const { data: payroll } = usePayrollMonthsQuery(supabase, [month]);
+  const { data: rehearsals } = useAllRehearsalsQuery(supabase, month);
   const clockOffset = serverClockStore((at) => at.offset);
 
-  const create = useCreateSchedule(supabase);
-  const changeDeadline = useSetApplicationDeadline(supabase);
-  const open = useOpenDay(supabase);
-  const close = useCloseDay(supabase);
-  const setHours = useSetDayHours(supabase);
-  const confirm = useConfirmSchedule(supabase);
-  const addSlot = useAddSlot(supabase);
-  const removeSlot = useRemoveSlot(supabase);
-  const mergeSlots = useMergeSlots(supabase);
-  const splitSlot = useSplitSlot(supabase);
-  const addAssignment = useAddAssignment(supabase);
-  const removeAssignment = useRemoveAssignment(supabase);
-  const forceChange = useForceChange(supabase);
-  const grantPosition = useGrantPosition(supabase);
-  const sendWorkRequest = useSendWorkRequest(supabase);
-  const setHoliday = useSetHoliday(supabase);
-  const setAdjustment = useSetAdjustment(supabase);
+  const create = useCreateScheduleMutation(supabase);
+  const changeDeadline = useSetApplicationDeadlineMutation(supabase);
+  const open = useOpenDayMutation(supabase);
+  const close = useCloseDayMutation(supabase);
+  const setHours = useSetDayHoursMutation(supabase);
+  const confirm = useConfirmScheduleMutation(supabase);
+  const addSlot = useAddSlotMutation(supabase);
+  const removeSlot = useRemoveSlotMutation(supabase);
+  const mergeSlots = useMergeSlotsMutation(supabase);
+  const splitSlot = useSplitSlotMutation(supabase);
+  const addAssignment = useAddAssignmentMutation(supabase);
+  const removeAssignment = useRemoveAssignmentMutation(supabase);
+  const forceChange = useForceChangeMutation(supabase);
+  const grantPosition = useGrantPositionMutation(supabase);
+  const sendWorkRequest = useSendWorkRequestMutation(supabase);
+  const setHoliday = useSetHolidayMutation(supabase);
+  const setAdjustment = useSetAdjustmentMutation(supabase);
 
   /**
    * 「자격도 주기」는 한 트랜잭션이 아니라 두 호출이다. 앞이 성공하고 뒤가 실패하면 자격만

@@ -15,11 +15,11 @@ import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
-import { useMembers } from "@/features/members/model/useMembers";
-import { useResetWageToDefault } from "@/features/payroll/model/useResetWageToDefault";
-import { useSetDefaultWage } from "@/features/payroll/model/useSetDefaultWage";
-import { useSetWage } from "@/features/payroll/model/useSetWage";
-import { useWageRates } from "@/features/payroll/model/useWageRates";
+import { useWageRatesQuery } from "@/entities/payroll/hooks/useWageRatesQuery";
+import { useMembersQuery } from "@/entities/profile/hooks/useMembersQuery";
+import { useResetWageToDefaultMutation } from "@/features/payroll/hooks/useResetWageToDefaultMutation";
+import { useSetDefaultWageMutation } from "@/features/payroll/hooks/useSetDefaultWageMutation";
+import { useSetWageMutation } from "@/features/payroll/hooks/useSetWageMutation";
 import { countFollowers } from "@/screens/wages/model/followerCount";
 import { prefillWageAmount } from "@/screens/wages/model/wageHistory";
 import { buildWageRows, wageRatesOf } from "@/screens/wages/model/wageRows";
@@ -73,8 +73,8 @@ export function WagesScreen() {
   const [asking, setAsking] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  const { data: members } = useMembers(supabase, "active");
-  const { data: wages } = useWageRates(supabase);
+  const { data: members } = useMembersQuery(supabase, "active");
+  const { data: wages } = useWageRatesQuery(supabase);
 
   const {
     mutate: saveWage,
@@ -82,7 +82,7 @@ export function WagesScreen() {
     isSuccess: wageSaved,
     error: wageError,
     reset: resetWageSave,
-  } = useSetWage(supabase);
+  } = useSetWageMutation(supabase);
 
   const {
     mutate: saveDefaultWage,
@@ -90,14 +90,14 @@ export function WagesScreen() {
     isSuccess: defaultWageSaved,
     error: defaultWageError,
     reset: resetDefaultWageSave,
-  } = useSetDefaultWage(supabase);
+  } = useSetDefaultWageMutation(supabase);
 
   const {
     mutate: sendReset,
     isSuccess: resetDone,
     error: resetError,
     reset: resetResetSend,
-  } = useResetWageToDefault(supabase);
+  } = useResetWageToDefaultMutation(supabase);
 
   const close = useCallback(() => {
     setSheet(null);

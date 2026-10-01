@@ -28,14 +28,12 @@ import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
-import { useMyProfile } from "@/features/profile/model/useMyProfile";
-import { useRehearsalMonths } from "@/features/rehearsal/model/useRehearsalMonths";
-import {
-  useAttendanceMonths,
-  useFirstScheduleMonth,
-  usePayrollMonthsByMonth,
-  useWorkMonths,
-} from "@/features/stats/api/useStatsQueries";
+import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/hooks/usePayrollMonthsByMonthQuery";
+import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
+import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
+import { useFirstScheduleMonthQuery } from "@/entities/schedule/hooks/useFirstScheduleMonthQuery";
+import { useWorkMonthsQuery } from "@/entities/schedule/hooks/useWorkMonthsQuery";
+import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   computeMyWorkTotals,
   type MyWorkTotals,
@@ -128,7 +126,7 @@ export function StatsScreen() {
   const [tab, setTab] = useState(ATTENDANCE);
   const [month, setMonth] = useState(() => monthOf(today));
 
-  const { data: profile, isLoading: profileLoading } = useMyProfile(
+  const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
     supabase,
     me,
   );
@@ -142,20 +140,23 @@ export function StatsScreen() {
   const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
   const profileId = profile?.id ?? null;
 
-  const work = useWorkMonths(supabase, tab === ATTENDANCE ? NO_MONTHS : months);
+  const work = useWorkMonthsQuery(
+    supabase,
+    tab === ATTENDANCE ? NO_MONTHS : months,
+  );
   const attendance = useAttendanceMonths(
     supabase,
     tab === ATTENDANCE ? months : NO_MONTHS,
   );
-  const payroll = usePayrollMonthsByMonth(
+  const payroll = usePayrollMonthsByMonthQuery(
     supabase,
     tab === PAYROLL ? months : NO_MONTHS,
   );
-  const rehearsal = useRehearsalMonths(
+  const rehearsal = useRehearsalMonthsQuery(
     supabase,
     tab === PAYROLL ? months : NO_MONTHS,
   );
-  const firstMonth = useFirstScheduleMonth(supabase);
+  const firstMonth = useFirstScheduleMonthQuery(supabase);
 
   const sources: readonly { isLoading: boolean; error: Error | null }[] =
     tab === ATTENDANCE

@@ -22,9 +22,9 @@
 // 달별 내 급여 합이다. 관리자 통계에 없는 축이라 admin-stats에 견줄 짝이
 // 없다.
 //
-// 재료는 usePayrollMonthsByMonth(features/stats/api/useStatsQueries.ts,
+// 재료는 usePayrollMonthsByMonthQuery(entities/payroll/hooks,
 // 아직 없다)가 달마다 내는 원재료(entities/payroll/api/getPayrollMonth.api.ts의
-// PayrollMonth — 시급 이력·조정·사유 상태·공휴일)와, useWorkMonths가 이미
+// PayrollMonth — 시급 이력·조정·사유 상태·공휴일)와, useWorkMonthsQuery가 이미
 // 내는 그 달 ScheduleDay 목록이다. 금액 자체는 features/payroll/model/
 // payrollDays.ts의 payrollViewDays를 그대로 불러 날마다 낸 amount를
 // 더한다 — 여기서 급여 계산을 다시 짜지 않는다(plan stats-worker AC-01
@@ -54,10 +54,8 @@ import type { PayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
 import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
 import type { ScheduleAssignment } from "@/entities/schedule/api/getMonthSchedule.api";
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
-import type {
-  AttendanceMonth,
-  WorkMonth,
-} from "@/features/stats/api/useStatsQueries";
+import type { WorkMonth } from "@/entities/schedule/hooks/useWorkMonthsQuery";
+import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   joinPayrollByMonth,
   myAttendanceValues,

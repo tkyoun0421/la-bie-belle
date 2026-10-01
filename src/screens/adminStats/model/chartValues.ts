@@ -1,9 +1,7 @@
 import { NO_VALUE } from "@/shared/lib/noValue";
 import { attendanceRate } from "@/entities/attendance/model/attendanceSummary";
-import type {
-  AttendanceMonth,
-  WorkMonth,
-} from "@/features/stats/api/useStatsQueries";
+import type { WorkMonth } from "@/entities/schedule/hooks/useWorkMonthsQuery";
+import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   computeWorkTotals,
   workInputsOf,

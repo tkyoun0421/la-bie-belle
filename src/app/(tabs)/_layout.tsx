@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { AppState } from "react-native";
 import { getCurrentUser } from "@/shared/lib/getCurrentUser";
 import { supabase } from "@/shared/lib/supabase";
+import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
+import { useSavePushTokenMutation } from "@/features/notification/hooks/useSavePushTokenMutation";
 import { PUSH_DEPS } from "@/features/notification/model/pushDeps";
 import {
   getPushPermission,
   requestPushPermission,
 } from "@/features/notification/model/pushPermission";
-import { useSavePushToken } from "@/features/notification/model/useSavePushToken";
-import { useMyProfile } from "@/features/profile/model/useMyProfile";
 
 /**
  * 근무자 탭 넷이다 — 홈·근무표·급여·나(components.md의 「탭 바」).
@@ -34,9 +34,9 @@ import { useMyProfile } from "@/features/profile/model/useMyProfile";
 export default function TabsLayout() {
   const [userId, setUserId] = useState<string | null>(null);
   const [pushToken, setPushToken] = useState<string | null>(null);
-  const { data: profile } = useMyProfile(supabase, userId);
+  const { data: profile } = useMyProfileQuery(supabase, userId);
 
-  useSavePushToken(supabase, pushToken, AppState);
+  useSavePushTokenMutation(supabase, pushToken, AppState);
 
   useEffect(() => {
     void getCurrentUser(supabase).then((user) => setUserId(user?.id ?? null));

@@ -12,10 +12,10 @@ import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { QrCard } from "@/shared/ui/QrFace";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
+import { useQrCodeQuery } from "@/entities/attendance/hooks/useQrCodeQuery";
 import { buildCheckInUrl } from "@/entities/attendance/model/checkInUrl";
+import { useRotateQrMutation } from "@/features/attendance/hooks/useRotateQrMutation";
 import { exportQrPaper } from "@/features/attendance/model/exportQrPaper";
-import { useQrCode } from "@/features/attendance/model/useQrCode";
-import { useRotateQr } from "@/features/attendance/model/useRotateQr";
 import { buildQrPaperHtml } from "@/screens/qr/model/qrPaper";
 import { qrStartLine } from "@/screens/qr/model/qrStartLine";
 import { buildQrSvg } from "@/screens/qr/model/qrSvg";
@@ -73,13 +73,13 @@ export function QrScreen() {
   const [exporting, setExporting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  const { data: qr } = useQrCode(supabase);
+  const { data: qr } = useQrCodeQuery(supabase);
   const {
     mutate: rotate,
     isSuccess: rotated,
     isError: rotateFailed,
     reset: resetRotate,
-  } = useRotateQr(supabase);
+  } = useRotateQrMutation(supabase);
 
   const code = qr?.qrCode ?? null;
 
