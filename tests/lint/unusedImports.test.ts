@@ -94,7 +94,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 `;
 
-    const errors = await errorsOf(code, "src/shared/lib/utils.ts");
+    const errors = await errorsOf(code, "src/shared/utils/cn.ts");
 
     expect(errors).toEqual([]);
   });
@@ -103,7 +103,7 @@ export function cn(...inputs: ClassValue[]) {
     const code = `import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/shared/lib/utils"
+import { cn } from "@/shared/utils/cn"
 
 const buttonVariants = cva("inline-flex items-center", {
   variants: {

@@ -1,5 +1,5 @@
 import { View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 화면 한 장이 서는 바닥이다. `flex-1`과 바닥색뿐이고 여백은 안 든다 — 화면마다 좌우 여백이

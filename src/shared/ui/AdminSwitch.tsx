@@ -4,9 +4,9 @@ import {
   type LucideIcon,
 } from "lucide-react-native";
 import { Pressable, type PressableProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 근무자 층과 관리자 층 사이를 오가는 문이다. 근무자 화면에서는 관리자 홈을 열고, 관리자 홈에서는

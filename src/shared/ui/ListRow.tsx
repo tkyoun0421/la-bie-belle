@@ -1,9 +1,9 @@
 import { Check, ChevronRight } from "lucide-react-native";
 import type { ReactNode } from "react";
 import { Pressable, View, type PressableProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 목록의 한 줄이다. 왼쪽에 아이콘이나 프로필, 가운데에 제목과 보조 정보, 오른쪽에 값이나

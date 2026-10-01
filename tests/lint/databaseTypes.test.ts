@@ -191,13 +191,13 @@ describe("생성 타입을 안 물린 클라이언트를 쓰는 파일", () => {
   it("한 줄에 여러 이름을 가져와도 잡는다", () => {
     const files = [
       {
-        file: "src/shared/lib/getCurrentUser.ts",
+        file: "src/entities/session/api/getCurrentUser.api.ts",
         source: `import type { SupabaseClient, User } from "@supabase/supabase-js";`,
       },
     ];
 
     expect(bareClientFiles(files)).toEqual([
-      "src/shared/lib/getCurrentUser.ts",
+      "src/entities/session/api/getCurrentUser.api.ts",
     ]);
   });
 
@@ -216,7 +216,7 @@ describe("생성 타입을 안 물린 클라이언트를 쓰는 파일", () => {
   it("`User`만 가져오는 파일은 안 잡는다", () => {
     const files = [
       {
-        file: "src/shared/lib/getCurrentUser.ts",
+        file: "src/entities/session/api/getCurrentUser.api.ts",
         source: `import type { User } from "@supabase/supabase-js";`,
       },
     ];

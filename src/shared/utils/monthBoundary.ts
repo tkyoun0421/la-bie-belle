@@ -1,4 +1,4 @@
-import { monthOf } from "@/shared/lib/kstDate";
+import { monthOf } from "@/shared/utils/kstDate";
 
 /**
  * 달 줄의 화살표가 서는지다. 못 가는 화살표는 흐리게 그리지 않고 아예 안 그린다 — 자리만

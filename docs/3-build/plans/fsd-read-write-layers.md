@@ -133,7 +133,7 @@ sources:
   - 순수 함수를 판정(`model`)과 꼴 바꾸기(`utils`)로 갈라 옮기고 `[domain].policy.ts`·`[domain].utils.ts`로 모은다
   - 바깥 값 검증을 `[domain].schema.ts`로 — `validateProfile`과 홀리데이 API 응답 파싱이 그 자리다
   - zustand store를 `[domain].store.ts`로
-- 관찰 결과: `utils/`의 함수가 참·거짓이나 허용·금지를 안 돌려준다. `[domain].type.ts`를 열면 그 도메인의 모양이 한 파일에서 읽힌다. 셋이 초록이다
+- 관찰 결과: `entities/`·`features/`의 `utils/`에 업무 판정이 없다 — 참·거짓이나 허용·금지를 돌려주는 함수가 `model/`에 산다. `shared/utils/`는 밖이다: 글꼴이 떴나·개발 문이 열렸나 같은 판정은 업무 규칙이 아니고 담을 도메인이 없어 `shared/`에 `model`이 안 선다. `[domain].type.ts`를 열면 그 도메인의 모양이 한 파일에서 읽힌다. 셋이 초록이다
 - 왜 여기인가: 접미사가 성격을 말하므로 성격을 정하는 이 묶음에서 같이 붙인다. AC-07 뒤인 까닭은 `[domain]`이 슬라이스 이름이기 때문이다 — 쪼개기 전에 모으면 도메인 여섯이 한 파일로 합쳐지고 AC-07이 그것을 다시 가른다
 
 ### AC-07 — 슬라이스가 쪼개진다
@@ -221,8 +221,8 @@ sources:
 | 세그먼트 | 담는 것 |
 | --- | --- |
 | `api` | `database` `database-types` `errors` `error-codes` `supabase` `create-supabase-client` **`query-keys`(다섯에서 모음)** `query-client` `read-supabase-env` `read-app-url` |
-| `hooks` | `useTheme` `useFontLoading`(`font-loading`에서 이름 바꿈) |
-| `utils` | `kst-date` `spell-number` `cn`(`utils`에서 이름 바꿈) `month-boundary` **`month-range`(새로 선다)** `mini-calendar` `month-picker` `day-band` `no-value` `reduce-motion` `catalog-visibility` `dev-door` `theme` |
+| `hooks` | `useTheme` |
+| `utils` | `kst-date` `spell-number` `cn`(`utils`에서 이름 바꿈) `month-boundary` **`month-range`(새로 선다)** `mini-calendar` `month-picker` `day-band` `no-value` `reduce-motion` `catalog-visibility` `dev-door` `theme` `font-loading` |
 | `ui` | 조각 쉰하나 — 그대로 |
 
 `shared/`에 `model`이 안 선다 — 도메인이 없어 담을 것이 없다. `theme`가 `utils`인 까닭은 색과 서체가 통신과 무관한 값이기 때문이고, env를 읽는 둘은 통신 설정이라 `api`다.

@@ -145,7 +145,7 @@ describe("프로필 접근 권한", () => {
 
   it("회귀 — utils.test.ts는 어느 규칙도 안 걸린다", async () => {
     const code = `import { describe, expect, it } from "vitest";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 describe("cn", () => {
   it("공백으로 클래스를 잇는다", () => {
@@ -164,7 +164,7 @@ describe("cn", () => {
 
     const errors = await errorsOf(
       code,
-      "src/shared/lib/__tests__/utils.test.ts",
+      "src/shared/utils/__tests__/cn.test.ts",
     );
 
     expect(errors).toEqual([]);

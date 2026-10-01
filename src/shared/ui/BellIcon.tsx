@@ -1,7 +1,7 @@
 import { Bell } from "lucide-react-native";
 import { Pressable, type PressableProps, View } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 앱바 오른쪽에 서서 알림 목록을 여는 종이다. 서는 화면은 근무자 탭 넷과 관리자 홈이고, 그 밖의

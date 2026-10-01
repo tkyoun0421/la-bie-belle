@@ -12,7 +12,7 @@ jest.unstable_mockModule("expo-constants", () => ({
 }));
 
 const { makeAuthRedirectUri, extractAuthCode } =
-  await import("@/shared/lib/authRedirect");
+  await import("@/features/auth/model/authRedirect");
 
 describe("makeAuthRedirectUri — 실행 환경마다 다른 딥링크 주소를 만든다", () => {
   it("Expo Go(storeClient)에서는 exp://<호스트>/--/<경로> 꼴이다", () => {

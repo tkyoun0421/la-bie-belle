@@ -2,17 +2,20 @@ import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getCurrentUser } from "@/shared/lib/getCurrentUser";
-import { queryClient } from "@/shared/lib/queryClient";
-import { DEVICE_CLEANUP_NOT_WIRED_YET, signOut } from "@/shared/lib/signOut";
-import { supabase } from "@/shared/lib/supabase";
+import { queryClient } from "@/shared/api/queryClient";
+import { supabase } from "@/shared/api/supabase";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
 import { Divider } from "@/shared/ui/Divider";
 import { Illustration } from "@/shared/ui/Illustration";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
-import { googlePhotoOf } from "@/features/auth/googlePhotoOf";
+import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import {
+  DEVICE_CLEANUP_NOT_WIRED_YET,
+  signOut,
+} from "@/features/auth/model/signOut";
+import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf";
 
 /**
  * 차단된 사람이 앱을 열면 서는 자리다. 구글 로그인은 되지만 아무 행도 안 온다([ACC-007]).

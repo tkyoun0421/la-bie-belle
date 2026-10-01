@@ -48,7 +48,7 @@ afterAll(() => {
 describe("규칙17 — 시크릿과 .env", () => {
   it("평범한 소스 파일만 staged면 통과시킨다", () => {
     reset();
-    stage("src/shared/lib/utils.ts", "export const answer = 42;\n");
+    stage("src/shared/utils/cn.ts", "export const answer = 42;\n");
 
     expect(runHook()).toBe(allowed);
   });

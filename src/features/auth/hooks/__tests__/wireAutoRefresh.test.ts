@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { wireAutoRefresh } from "@/shared/lib/wireAutoRefresh";
+import { wireAutoRefresh } from "@/features/auth/hooks/wireAutoRefresh";
 
 type AppStateListener = (state: string) => void;
 

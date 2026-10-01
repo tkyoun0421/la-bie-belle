@@ -1,6 +1,6 @@
 import { Pressable, View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 화면 위쪽에 깔려 화면을 가르는 탭이다. 누르면 아래 내용이 다른 화면으로 바뀐다 — 같은 자료를

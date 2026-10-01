@@ -1,6 +1,6 @@
 import { Image, View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 사람 사진이 서는 원이다. 목록 줄 앞, 프로필 머리, 사람 픽커가 그 자리다.

@@ -8,10 +8,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BackHandler, ScrollView, View } from "react-native";
 import { DomainError } from "@/shared/api/errors";
-import { getCurrentUser } from "@/shared/lib/getCurrentUser";
-import { nowWithOffset } from "@/shared/lib/serverClock";
-import { serverClockStore } from "@/shared/lib/serverClockStore";
-import { supabase } from "@/shared/lib/supabase";
+import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";
 import { BottomCTA } from "@/shared/ui/BottomCTA";
@@ -26,6 +23,8 @@ import { Segment } from "@/shared/ui/Segment";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
+import { nowWithOffset } from "@/entities/clock/model/serverClock";
+import { serverClockStore } from "@/entities/clock/model/serverClockStore";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
@@ -35,6 +34,7 @@ import { useMonthWindowQuery } from "@/entities/schedule/hooks/useMonthWindowQue
 import { useMyAvailabilityQuery } from "@/entities/schedule/hooks/useMyAvailabilityQuery";
 import { usePendingApprovalsQuery } from "@/entities/schedule/hooks/usePendingApprovalsQuery";
 import { useSlotRequestsQuery } from "@/entities/schedule/hooks/useSlotRequestsQuery";
+import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { useCreateCancelRequestMutation } from "@/features/schedule/hooks/useCreateCancelRequestMutation";
 import { useRespondRequestMutation } from "@/features/schedule/hooks/useRespondRequestMutation";
 import { useSubmitAvailabilityMutation } from "@/features/schedule/hooks/useSubmitAvailabilityMutation";

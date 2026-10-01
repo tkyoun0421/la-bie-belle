@@ -1,7 +1,7 @@
 import type { User } from "@supabase/supabase-js";
 import type { DB } from "@/shared/api/database";
-import type { AuthDestination } from "@/shared/lib/resolveAuthDestination";
-import { decideEntry } from "@/features/auth/decideEntry";
+import type { AuthDestination } from "@/entities/session/model/resolveAuthDestination";
+import { decideEntry } from "@/features/auth/model/decideEntry";
 
 const fakeClient = {} as DB;
 const fakeUser = { id: "user-1" } as User;

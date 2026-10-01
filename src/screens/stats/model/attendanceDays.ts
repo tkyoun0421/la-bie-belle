@@ -1,4 +1,4 @@
-import { spellDate } from "@/shared/lib/kstDate";
+import { spellDate } from "@/shared/utils/kstDate";
 import {
   getAttendanceStatus,
   type AttendanceStatus,

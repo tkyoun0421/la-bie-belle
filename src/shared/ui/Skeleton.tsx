@@ -1,5 +1,5 @@
 import { View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 화면이 데이터를 기다리는 동안 그 자리에 서는 회색 덩이다. 카드 모양 그대로라 내용이 오면
@@ -7,7 +7,7 @@ import { cn } from "@/shared/lib/utils";
  *
  * shimmer는 덩이 위로 옅은 빛 한 줄이 지나가는 것이고, 「동작 줄이기」가 켜져 있으면 서지
  * 않고 덩이만 남는다(`docs/2-design/design-system/foundation/motion.md` 「접근성」).
- * 판정은 `src/shared/lib/reduceMotion.ts`가 읽어 넘긴다 — 조각은 받은 값을 그리기만 한다.
+ * 판정은 `src/shared/utils/reduceMotion.ts`가 읽어 넘긴다 — 조각은 받은 값을 그리기만 한다.
  */
 
 export type SkeletonProps = ViewProps & {

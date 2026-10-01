@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database, DB } from "@/shared/api/database";
-import { sessionStorage } from "@/shared/lib/sessionStorage";
+import { sessionStorage } from "@/shared/api/sessionStorage";
 
 export function createSupabaseClient(url: string, anonKey: string): DB {
   return createClient<Database>(url, anonKey, {

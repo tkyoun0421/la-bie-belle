@@ -1,9 +1,9 @@
 import { View } from "react-native";
-import { spellWon } from "@/shared/lib/spellNumber";
 import { AmountInput } from "@/shared/ui/AmountInput";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
+import { spellWon } from "@/shared/utils/spellNumber";
 import { canResetToDefault } from "@/screens/wages/model/canResetToDefault";
 import {
   atWageCap,

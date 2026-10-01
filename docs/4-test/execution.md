@@ -49,10 +49,14 @@
 ### `pnpm test`
 
 - 전제: `pnpm install --frozen-lockfile`이 끝나 있다. unit만 돌아 Docker가 필요 없다.
-- 실행: `pnpm test` — `jest`. 갈래는 `jest.config.js`의 `testMatch`가 가르고 integration은 부정 glob으로 빠진다.
-- 정상 결과: 실패 0. `tests/lint/`의 문서 검사도 여기서 같이 돈다 — [`pnpm test`에 끼는 문서 검사](#pnpm-test에-끼는-문서-검사).
+- 실행: `pnpm test` — `jest`를 **두 번** 돌린다. `logic` 갈래(계산·문서 검사)와 `components` 갈래(조각 렌더)가 각자의 프로세스를 받고, 앞이 빨개지면 뒤는 안 돈다. 갈래는 `jest.projects.js`의 `testMatch`가 가르고 integration은 부정 glob으로 빠진다.
+- 정상 결과: 실패 0. 요약이 갈래마다 하나씩 둘 찍힌다. `tests/lint/`의 문서 검사는 `logic` 갈래에서 돈다 — [`pnpm test`에 끼는 문서 검사](#pnpm-test에-끼는-문서-검사).
 - 실패할 때: 첫 테스트가 타임아웃에서 흔들리거나 픽스처 표기가 어긋나면 [돌릴 때](#돌릴-때)를 본다.
 - 근거 위치: PR의 `ci` 워크플로 `pnpm test` 단계.
+
+**왜 프로세스를 가르나.** 두 갈래가 `.ts`를 ESM으로 볼지에서 갈린다 — `logic`은 최상위 `await`을 쓰는 테스트가 많아 ESM으로 보고, `components`는 네이티브 조각을 `require`로 올려 CJS로 본다. 그런데 `jest-resolve`가 그 판정을 **경로만으로 캐시**해서, 한 워커가 두 갈래의 스위트를 번갈아 받으면 먼저 본 갈래의 답이 다음 갈래에도 적용된다. `shared/utils/cn.ts`처럼 양쪽이 다 쓰는 파일에서 「Must use import to load ES Module」이 뜨는 것이 그 꼴이고, 스위트 순서에 따라 뜨다 말다 한다. 프로세스를 가르면 캐시가 안 겹친다([관찰 048](../observations/048-jest-projects-share-esm-cache.md)).
+
+필터를 주면(`pnpm test -- fileNaming`) 두 갈래에 그대로 가고, 걸리는 것이 없는 갈래는 `--passWithNoTests`로 넘어간다. 필터 없이 돌 때는 그 꼬리표가 안 붙어 「테스트가 하나도 안 걸렸다」가 빨간불로 남는다.
 
 ### `pnpm bundle`
 
@@ -123,7 +127,7 @@
 작성 중에는 바꾼 파일부터 실행한다. 아래는 현재 존재하는 테스트 경로다. `pnpm test`는 unit만 집고 integration은 실행하지 않는다.
 
 ```sh
-pnpm test src/shared/lib/__tests__/resolveAuthDestination.test.ts
+pnpm test src/entities/session/model/__tests__/resolveAuthDestination.test.ts
 ```
 
 integration은 준비와 러너 호출을 나눈다. integration 스크립트는 여러 명령을 연결하므로 파일 인자 전달에 기대지 않는다.

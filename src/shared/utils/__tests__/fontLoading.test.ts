@@ -4,7 +4,7 @@ import {
   FONT_ASSETS,
   shouldDismissSplash,
   shouldRenderApp,
-} from "@/shared/lib/fontLoading";
+} from "@/shared/utils/fontLoading";
 
 const GLOBALS_CSS_PATH = path.join(process.cwd(), "src/app/globals.css");
 

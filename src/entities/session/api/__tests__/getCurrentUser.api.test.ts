@@ -1,6 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 import type { DB } from "@/shared/api/database";
-import { getCurrentUser } from "@/shared/lib/getCurrentUser";
+import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 
 function fakeClient(getUserResult: {
   data: { user: User | null };

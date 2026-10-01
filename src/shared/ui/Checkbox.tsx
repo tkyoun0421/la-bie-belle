@@ -1,8 +1,8 @@
 import { Check } from "lucide-react-native";
 import { Pressable, View, type PressableProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 켜고 끄는 상자 하나에 글자 라벨이 붙는다. 정본은

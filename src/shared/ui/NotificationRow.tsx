@@ -1,8 +1,8 @@
 import { ChevronRight } from "lucide-react-native";
 import { Pressable, View, type PressableProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 알림 목록의 한 줄이다. 정본은

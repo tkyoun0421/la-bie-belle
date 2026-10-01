@@ -6,7 +6,7 @@ describe("규칙2 — FSD 역방향 import", () => {
   it("shared가 entities를 import하면 걸린다", async () => {
     const code = `import { Profile } from "@/entities/profile/model/profile";\n\nexport const value = Profile;\n`;
 
-    const violations = await violationsOf(code, "src/shared/lib/fixture.ts");
+    const violations = await violationsOf(code, "src/shared/utils/fixture.ts");
 
     expect(violations.map((violation) => violation.ruleId)).toContain(
       NO_RESTRICTED_IMPORTS,
@@ -89,7 +89,7 @@ describe("규칙2 — FSD 역방향 import", () => {
   });
 
   it("entities가 shared를 import하면 통과한다", async () => {
-    const code = `import { cn } from "@/shared/lib/utils";\n\nexport const value = cn;\n`;
+    const code = `import { cn } from "@/shared/utils/cn";\n\nexport const value = cn;\n`;
 
     const violations = await violationsOf(
       code,

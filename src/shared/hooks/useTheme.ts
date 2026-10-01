@@ -6,7 +6,7 @@ import {
   THEME_STORAGE_KEY,
   toColorScheme,
   type Theme,
-} from "@/shared/lib/theme";
+} from "@/shared/utils/theme";
 
 /**
  * 고른 화면이 사는 자리 하나다. 고르는 곳은 「나」의 화면 줄이고 쓰는 곳은 앱 전체라,

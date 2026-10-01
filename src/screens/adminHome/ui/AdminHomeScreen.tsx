@@ -1,7 +1,7 @@
 import { usePathname, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import { supabase } from "@/shared/lib/supabase";
+import { supabase } from "@/shared/api/supabase";
 import { AdminSwitch } from "@/shared/ui/AdminSwitch";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";

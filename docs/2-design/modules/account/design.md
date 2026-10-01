@@ -136,7 +136,7 @@
 
 ## UI 연결
 
-앱이 뜰 때의 세션 확인, 딥링크로 돌아온 자리의 코드 교환, 로그아웃. 전부 `auth.*`라 `shared/lib`이다.
+앱이 뜰 때의 세션 확인, 딥링크로 돌아온 자리의 코드 교환, 로그아웃. 전부 `auth.*`다 — 세션을 만들고 끊는 쪽이 `features/auth`, 누가 들어왔나를 읽는 쪽이 `entities/session`이다.
 
 `link_account`(계정 연결)는 1차에 없다 — [README.md](README.md#용어)의 프로필.
 

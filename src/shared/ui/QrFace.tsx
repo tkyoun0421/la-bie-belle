@@ -1,7 +1,7 @@
 import { X } from "lucide-react-native";
 import { Pressable, View, type ViewProps } from "react-native";
 import { SvgXml } from "react-native-svg";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * QR이 앉는 흰 면이다. 값의 정본은

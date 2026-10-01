@@ -6,9 +6,9 @@ import {
   TriangleAlert,
 } from "lucide-react-native";
 import { View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 화면 안에 끼는 안내 상자다. 종류는 안내·성공·경고·오류 넷이다.

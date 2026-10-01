@@ -1,5 +1,5 @@
-import { createSupabaseClient } from "@/shared/lib/createSupabaseClient";
-import { readSupabaseEnv } from "@/shared/lib/readSupabaseEnv";
+import { createSupabaseClient } from "@/shared/api/createSupabaseClient";
+import { readSupabaseEnv } from "@/shared/api/readSupabaseEnv";
 
 const { url, anonKey } = readSupabaseEnv();
 

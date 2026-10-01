@@ -1,4 +1,4 @@
-// 구현 대상: src/shared/lib/kstDate.ts
+// 구현 대상: src/shared/utils/kstDate.ts
 //
 // KST 날짜 손 공용화(plan AC-09) — 슬라이스 넷(schedule-worker·schedule-admin·admin-home·
 // applications)에 각자 서 있던 kstDateOf·kstToday·shiftMonth·spellMonth·lastDateOfMonth·
@@ -14,7 +14,7 @@ import {
   shiftMonth,
   spellDate,
   spellMonth,
-} from "@/shared/lib/kstDate";
+} from "@/shared/utils/kstDate";
 
 describe("kstDateOf — KST 자정 경계로 날짜를 가른다", () => {
   it("UTC 14:59는 아직 전날이다", () => {

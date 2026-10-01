@@ -1,5 +1,5 @@
 import type { DB } from "@/shared/api/database";
-import { lastDateOfMonth, monthOf } from "@/shared/lib/kstDate";
+import { lastDateOfMonth, monthOf } from "@/shared/utils/kstDate";
 
 /**
  * 그 달 본인 리허설이다. **조건이 날짜 범위뿐이다** — RLS가 이미 본인 행으로 좁혀

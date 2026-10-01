@@ -1,4 +1,4 @@
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 describe("cn", () => {
   it("공백으로 클래스를 잇는다", () => {

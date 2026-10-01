@@ -7,15 +7,15 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
-import { nowWithOffset } from "@/shared/lib/serverClock";
-import { serverClockStore } from "@/shared/lib/serverClockStore";
-import { supabase } from "@/shared/lib/supabase";
+import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
 import { NotificationRow } from "@/shared/ui/NotificationRow";
 import { Screen } from "@/shared/ui/Screen";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
+import { nowWithOffset } from "@/entities/clock/model/serverClock";
+import { serverClockStore } from "@/entities/clock/model/serverClockStore";
 import { useNotificationsQuery } from "@/entities/notification/hooks/useNotificationsQuery";
 import type { NotificationRow as Notification } from "@/entities/notification/model/types";
 import { useMarkNotificationsReadMutation } from "@/features/notification/hooks/useMarkNotificationsReadMutation";

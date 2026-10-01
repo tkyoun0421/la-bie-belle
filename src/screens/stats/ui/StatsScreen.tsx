@@ -2,20 +2,8 @@ import { useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { getCurrentUser } from "@/shared/lib/getCurrentUser";
-import {
-  kstToday,
-  monthOf,
-  shiftMonth,
-  spellMonth,
-} from "@/shared/lib/kstDate";
-import { canGoBack, canGoForward } from "@/shared/lib/monthBoundary";
-import { NO_VALUE } from "@/shared/lib/noValue";
-import { queryClient } from "@/shared/lib/queryClient";
-import { nowWithOffset } from "@/shared/lib/serverClock";
-import { serverClockStore } from "@/shared/lib/serverClockStore";
-import { spellWon } from "@/shared/lib/spellNumber";
-import { supabase } from "@/shared/lib/supabase";
+import { queryClient } from "@/shared/api/queryClient";
+import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
 import { EmptyState } from "@/shared/ui/EmptyState";
@@ -28,11 +16,23 @@ import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
+import {
+  kstToday,
+  monthOf,
+  shiftMonth,
+  spellMonth,
+} from "@/shared/utils/kstDate";
+import { canGoBack, canGoForward } from "@/shared/utils/monthBoundary";
+import { NO_VALUE } from "@/shared/utils/noValue";
+import { spellWon } from "@/shared/utils/spellNumber";
+import { nowWithOffset } from "@/entities/clock/model/serverClock";
+import { serverClockStore } from "@/entities/clock/model/serverClockStore";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/hooks/usePayrollMonthsByMonthQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/hooks/useFirstScheduleMonthQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/hooks/useWorkMonthsQuery";
+import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   computeMyWorkTotals,

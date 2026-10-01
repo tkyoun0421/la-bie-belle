@@ -1,7 +1,7 @@
 import { View } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/shared/ui/Badge";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 그날 나가는 사람 하나가 서는 줄이다. 정본은

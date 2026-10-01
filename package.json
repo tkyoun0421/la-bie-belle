@@ -15,7 +15,7 @@
     "types": "node --experimental-strip-types scripts/generateDatabaseTypes.mts",
     "typecheck": "pnpm routes:types && tsc --noEmit",
     "bundle": "expo export --platform ios --output-dir .expo/bundle-check/ios && expo export --platform android --output-dir .expo/bundle-check/android",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules sh -c 'jest --selectProjects logic ${1+--passWithNoTests} \"$@\" && jest --selectProjects components ${1+--passWithNoTests} \"$@\"' --",
     "test:integration": "supabase start && pnpm test:integration:run",
     "test:integration:run": "supabase migration up && NODE_OPTIONS=--experimental-vm-modules jest --config jest.integration.config.js",
     "e2e": "node --experimental-strip-types --import ./scripts/registerModuleAlias.mjs scripts/e2e.mts",

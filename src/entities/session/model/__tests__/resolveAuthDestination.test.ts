@@ -1,7 +1,7 @@
 import {
   resolveAuthDestination,
   resolveGateMove,
-} from "@/shared/lib/resolveAuthDestination";
+} from "@/entities/session/model/resolveAuthDestination";
 
 const emptyProfile = { approvedAt: null, blockedAt: null, leftAt: null };
 

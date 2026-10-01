@@ -5,8 +5,8 @@ import {
   Pressable,
   type PressableProps,
 } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 누르는 것 한 벌이다. 변형과 높이만 고르면 색과 모서리가 따라오므로 화면은 색을 안 고른다.

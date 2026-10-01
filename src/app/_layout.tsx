@@ -6,18 +6,21 @@ import { useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 
 import "@/app/globals.css";
+import { queryClient } from "@/shared/api/queryClient";
+import { supabase } from "@/shared/api/supabase";
+import { useTheme } from "@/shared/hooks/useTheme";
 import {
   FONT_SOURCES,
   shouldDismissSplash,
   shouldRenderApp,
-} from "@/shared/lib/fontLoading";
-import { queryClient } from "@/shared/lib/queryClient";
-import { serverClockStore } from "@/shared/lib/serverClockStore";
-import { supabase } from "@/shared/lib/supabase";
-import { useTheme } from "@/shared/lib/useTheme";
-import { wireAutoRefresh } from "@/shared/lib/wireAutoRefresh";
+} from "@/shared/utils/fontLoading";
 import { getServerNow } from "@/entities/clock/api/getServerNow.api";
-import { decideEntry, type EntryDecision } from "@/features/auth/decideEntry";
+import { serverClockStore } from "@/entities/clock/model/serverClockStore";
+import { wireAutoRefresh } from "@/features/auth/hooks/wireAutoRefresh";
+import {
+  decideEntry,
+  type EntryDecision,
+} from "@/features/auth/model/decideEntry";
 
 // 스플래시가 이미 내려간 뒤에 부르면 reject한다 — 그때는 막을 것도 없으니 삼킨다.
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -34,7 +37,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
  * ([profile.md](../../docs/2-design/modules/account/screens/profile.md)의 「화면」).
  *
  * 서버 상태가 사는 `queryClient`도 여기서 트리에 앉는다. 로그아웃이 비우는 쪽과 화면이
- * 읽는 쪽이 같은 하나여야 해서 그 인스턴스는 `shared/lib`이 들고 있고 여기는 걸기만 한다.
+ * 읽는 쪽이 같은 하나여야 해서 그 인스턴스는 `shared/api`가 들고 있고 여기는 걸기만 한다.
  *
  * **서버 시각 오프셋은 스플래시를 안 기다린다.** 앱이 뜰 때와 앞으로 돌아올 때 한 번씩
  * 재는데([runtime.md](../../docs/2-design/system/runtime.md#서버-시각)) 그 답을 기다리면

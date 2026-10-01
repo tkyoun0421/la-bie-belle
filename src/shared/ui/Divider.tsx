@@ -1,5 +1,5 @@
 import { View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 가로로 긋는 가는 선 하나다. 위아래 여백은 안 든다 — 무엇과 무엇을 가르는지에 따라 달라서

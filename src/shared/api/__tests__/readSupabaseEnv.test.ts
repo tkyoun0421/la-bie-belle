@@ -1,4 +1,4 @@
-import { readSupabaseEnv } from "@/shared/lib/readSupabaseEnv";
+import { readSupabaseEnv } from "@/shared/api/readSupabaseEnv";
 
 const original = new Map<string, string | undefined>();
 

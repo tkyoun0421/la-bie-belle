@@ -1,5 +1,5 @@
 import { View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 사람이 쓴 글이 그대로 앉는 면이다. 승인할 일의 취소 사유와 출근 사유가 여기 선다 —

@@ -1,4 +1,4 @@
-import { readAppUrl } from "@/shared/lib/readAppUrl";
+import { readAppUrl } from "@/shared/api/readAppUrl";
 
 const original = new Map<string, string | undefined>();
 

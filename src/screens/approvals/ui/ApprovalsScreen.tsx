@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { supabase } from "@/shared/lib/supabase";
+import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Badge } from "@/shared/ui/Badge";
 import { Card } from "@/shared/ui/Card";

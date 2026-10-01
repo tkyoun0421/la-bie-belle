@@ -1,6 +1,6 @@
 # src/app/admin/_layout.tsx의 짝이다 — 관리자가 아닌 사람이 관리자 층을 열면
 # "/"로 튕기는지를 본다. 판정 자체(resolveAdminGuard)는 unit이 이미 순수
-# 함수로 본다(src/shared/lib/__tests__/resolveAdminGuard.test.ts) — 여기서는
+# 함수로 본다(src/entities/session/model/__tests__/resolveAdminGuard.test.ts) — 여기서는
 # 그 판정이 실제 라우트 가드로 이어지는지만 확인한다.
 #
 # `/admin` 아래는 모두 같은 _layout.tsx가 지킨다. 대표로 하나만 연다
