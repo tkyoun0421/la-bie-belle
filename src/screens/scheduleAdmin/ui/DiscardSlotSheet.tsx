@@ -8,7 +8,7 @@ import { discardSlotWarningLine } from "@/screens/scheduleAdmin/model/discardSlo
  * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「날 상세 문안」 「배정 있는
  * 자리 버릴 때」 행이다.
  *
- * **빈 자리에는 이 시트가 안 선다** — 놓는 순간 사라진다. 그 갈림은 `discard-slot.ts`가 한다.
+ * **빈 자리에는 이 시트가 안 선다** — 놓는 순간 사라진다. 그 갈림은 `discardSlot.ts`가 한다.
  *
  * 왼쪽이 「그만두기」인 것은 [날 닫기 경고](CloseDayWarningSheet.tsx)와 같은 이유다 — 이
  * 시트에서 「닫기」는 시트를 닫는 것과 자리를 닫는 것 둘로 읽힌다.

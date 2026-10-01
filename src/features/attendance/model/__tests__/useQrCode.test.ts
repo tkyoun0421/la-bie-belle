@@ -12,7 +12,6 @@ const FAKE_STALE_TIME = 12345;
 
 jest.unstable_mockModule("@/entities/attendance/dals/getQrCode", () => ({
   getQrCode: getQrCodeMock,
-  qrCodeKey: () => ["hall", "qr"],
   QR_CODE_STALE_TIME_MS: FAKE_STALE_TIME,
 }));
 
@@ -87,7 +86,7 @@ describe("useQrCode — getQrCode를 불러 ['hall','qr']에 앉힌다", () => {
     await waitFor(() => expect(result.current.error).not.toBeNull());
   });
 
-  it("캐시 키는 qrCodeKey()가 낸 ['hall','qr']이다", async () => {
+  it("캐시 키는 queryKeys.hall.qr()가 낸 ['hall','qr']이다", async () => {
     getQrCodeMock.mockResolvedValue(QR_DATA);
     const { wrapper, queryClient } = createWrapper();
 

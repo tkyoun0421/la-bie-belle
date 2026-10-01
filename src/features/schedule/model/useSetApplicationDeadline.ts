@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
 import { setApplicationDeadline } from "@/entities/schedule/dals/setApplicationDeadline";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 스케줄 신청 마감일을 옮긴다. 모아보기의 「마감일 바꾸기」와 확정 잠김의 「마감일 당기기」가
@@ -33,7 +33,7 @@ export function useSetApplicationDeadline(
     mutationFn: ({ month, deadline }: SetApplicationDeadlineInput) =>
       setApplicationDeadline(client, month, deadline),
     onSuccess: () => {
-      for (const queryKey of SCHEDULE_WRITE_KEYS) {
+      for (const queryKey of staleTogether.scheduleWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

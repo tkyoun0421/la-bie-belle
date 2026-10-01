@@ -1,10 +1,10 @@
 import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getMonthSchedule,
   type ScheduleDay,
 } from "@/entities/schedule/dals/getMonthSchedule";
-import { SCHEDULE_KEY } from "@/features/schedule/model/queryKeys";
 
 /**
  * 여러 달치 근무 날들을 한 덩이로 읽는다. 급여 화면이 기간을 달과 안 맞게 자르기 때문이다 —
@@ -30,7 +30,7 @@ export function useScheduleMonths(
 ): ScheduleMonthsResult {
   return useQueries({
     queries: months.map((month) => ({
-      queryKey: [...SCHEDULE_KEY, month],
+      queryKey: queryKeys.schedule.month(month),
       queryFn: () => getMonthSchedule(client, month),
     })),
     combine: (results): ScheduleMonthsResult => {

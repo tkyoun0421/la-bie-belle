@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
 import {
   addAssignment,
   type AddAssignmentInput,
 } from "@/entities/schedule/dals/addAssignment";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 배정 추가 — 정규와 교육이 이 훅 하나로 간다. 갈래는 화면이 이미 정해 보낸다(빈 자리를
@@ -29,7 +29,7 @@ export function useAddAssignment(client: DB): AddAssignmentResult {
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: (input: AddAssignmentInput) => addAssignment(client, input),
     onSuccess: () => {
-      for (const queryKey of SCHEDULE_WRITE_KEYS) {
+      for (const queryKey of staleTogether.scheduleWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

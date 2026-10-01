@@ -10,7 +10,7 @@ import { isForegroundEntry } from "@/features/notification/model/appEntry";
  * `docs/2-design/spec/notification-settings.md`의 AC-04다.
  *
  * **진입이 둘이다.** 앱이 뜰 때 한 번과 포그라운드로 돌아올 때마다다. 무엇이 진입인지는
- * [`app-entry`](app-entry.ts)가 정하고 구독은 여기가 든다.
+ * [`app-entry`](appEntry.ts)가 정하고 구독은 여기가 든다.
  *
  * **주소가 바뀌는 것도 같은 자리에서 받는다.** 앱이 떠 있는 동안 사람이 권한을 켜면 그때
  * 주소가 처음 서는데, 그 걸음이 앱을 다시 띄우지 않아 진입으로는 안 잡힌다.

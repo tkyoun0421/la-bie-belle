@@ -22,10 +22,6 @@ const COLUMNS = [
   "decision_reason",
 ].join(", ");
 
-export function myExcusesKey(month: string): string[] {
-  return ["excuses", month];
-}
-
 function nextMonthFirstDay(month: string): string {
   const [year, monthOfYear] = month.split("-").map(Number);
   const rolls = monthOfYear === 12;

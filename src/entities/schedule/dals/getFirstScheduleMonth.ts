@@ -12,12 +12,6 @@ import type { DB } from "@/shared/api/database";
  * `null`이고, 그때 달 줄은 뒤로 못 간다.
  */
 
-export const FIRST_MONTH_SCOPE = "first-month";
-
-export function firstScheduleMonthKey(): string[] {
-  return ["schedule", FIRST_MONTH_SCOPE];
-}
-
 export async function getFirstScheduleMonth(
   client: DB,
 ): Promise<string | null> {

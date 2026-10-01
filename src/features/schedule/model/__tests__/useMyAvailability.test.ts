@@ -103,7 +103,12 @@ describe("useMyAvailability — getMyAvailability를 그 달로 불러 ['availab
     await waitFor(() => expect(result.current.error).not.toBeNull());
   });
 
-  it("캐시 키는 ['availability', month]다", async () => {
+  /**
+   * 전원 신청을 읽는 `useMonthAvailabilities`는 꼬리가 `'all'`인 제 키를 쓴다 — 같은 달을
+   * 쥐면 내놓는 모양이 달라 한쪽이 남의 데이터를 읽는다
+   * ([관찰 045](../../../../../docs/observations/045-two-queries-share-one-cache-key.md)).
+   */
+  it("캐시 키는 ['availability', month]이고 전원 키와 안 겹친다", async () => {
     getMyAvailabilityMock.mockResolvedValue(DATES);
     const { wrapper, queryClient } = createWrapper();
 
@@ -114,5 +119,8 @@ describe("useMyAvailability — getMyAvailability를 그 달로 불러 ['availab
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(queryClient.getQueryData(["availability", MONTH])).toEqual(DATES);
+    expect(
+      queryClient.getQueryData(["availability", MONTH, "all"]),
+    ).toBeUndefined();
   });
 });

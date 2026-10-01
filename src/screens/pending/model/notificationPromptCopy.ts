@@ -8,7 +8,7 @@ import type { NotificationPromptView } from "@/screens/pending/model/notificatio
  * 승인 대기 화면 알림 영역의 문안이다. 정본은
  * `docs/2-design/modules/account/screens/login.md`의 「승인 대기 문안」이고 모습 셋은 같은
  * 문서의 「알림 영역의 세 모습」이다. 어느 모습인지는
- * [`notification-prompt`](notification-prompt.ts)가 정하고 여기는 문장만 고른다.
+ * [`notification-prompt`](notificationPrompt.ts)가 정하고 여기는 문장만 고른다.
  *
  * **켠 사람에게만 약속한다.** 아직 안 켠 모습은 묻기만 하고, 켠 뒤에야 「알려드릴게요」라고
  * 적는다 — 안 켠 사람에게 앱이 알려줄 길이 없다.

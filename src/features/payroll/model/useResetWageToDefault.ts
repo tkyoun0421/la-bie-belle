@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import { resetWageToDefault } from "@/entities/payroll/dals/resetWageToDefault";
-import { PAYROLL_KEY } from "@/features/payroll/model/queryKeys";
 
 /**
  * 한 사람을 다시 기본 끈에 붙인다(PAY-014). 오늘부터 적용되고 지난 행은 그대로 남는다.
@@ -27,7 +27,7 @@ export function useResetWageToDefault(client: DB): ResetWageToDefaultResult {
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: (profileId: string) => resetWageToDefault(client, profileId),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: PAYROLL_KEY });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.payroll.all });
     },
   });
 

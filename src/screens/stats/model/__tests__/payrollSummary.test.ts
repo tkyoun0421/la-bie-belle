@@ -10,7 +10,7 @@
 // screens/stats 쪽에서 다시 세운다. 값은 features/payroll/model/payrollDays.ts가
 // 낸 날짜별 분·kind를 그대로 받는다.
 //
-// days는 { minutes, kind }만 쓴다. kind는 payroll-days.ts의 PayrollDayKind —
+// days는 { minutes, kind }만 쓴다. kind는 payrollDays.ts의 PayrollDayKind —
 // 'normal' | 'overtime' | 'absent' | 'wage-pending' 넷이다.
 
 import { myPayrollSubtitle } from "@/screens/stats/model/payrollSummary";

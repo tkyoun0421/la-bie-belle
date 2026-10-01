@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import { setDefaultWage } from "@/entities/payroll/dals/setDefaultWage";
-import { PAYROLL_KEY } from "@/features/payroll/model/queryKeys";
 
 /**
  * 기본 시급을 정한다. 한 번에 여러 사람의 행이 서므로(PAY-013) 성공한 뒤 `['payroll']`을
@@ -27,7 +27,7 @@ export function useSetDefaultWage(client: DB): SetDefaultWageResult {
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: (amount: number) => setDefaultWage(client, amount),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: PAYROLL_KEY });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.payroll.all });
     },
   });
 

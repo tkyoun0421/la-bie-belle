@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
 import {
   decideCancelRequest,
   type CancelDecision,
 } from "@/entities/schedule/dals/decideCancelRequest";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 관리자가 근무 취소 요청을 승인하거나 거절한다. 승인이면 자리가 비므로 근무표와 급여가
@@ -41,7 +41,7 @@ export function useDecideCancelRequest(client: DB): DecideCancelRequestResult {
     }: DecideCancelRequestInput) =>
       decideCancelRequest(client, cancelRequestId, decision, reason),
     onSuccess: () => {
-      for (const queryKey of SCHEDULE_WRITE_KEYS) {
+      for (const queryKey of staleTogether.scheduleWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

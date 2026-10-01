@@ -58,11 +58,18 @@ export type NotificationRow = {
 };
 
 /**
- * 한 쪽에 담는 수다. 읽는 손(`dals/get-notifications.ts`의 `range()`)과 다음 쪽이 있는지를
+ * 한 쪽에 담는 수다. 읽는 손(`dals/getNotifications.ts`의 `range()`)과 다음 쪽이 있는지를
  * 세는 손(`features/notification/model/useNotifications.ts`)이 같은 수를 봐야 해서, 둘 다
  * 아는 아래층에 둔다 — 쪽이 이 수보다 적게 오면 그것이 마지막 쪽이다.
  */
 export const NOTIFICATION_PAGE_SIZE = 50;
+
+/**
+ * 쥐고 있는 쪽 수의 한도다. 지난 알림을 안 지우는 규칙이라(NTF-026) 한 사람의 목록이 해마다
+ * 길어지는데, 이 수가 끝없이 내려도 메모리가 안 늘게 막는다 — 위로 되감으면 앞 쪽을 다시
+ * 읽는다. 쪽 크기와 같은 자리에 두는 것은 둘이 같은 질의의 설정이라서다.
+ */
+export const NOTIFICATION_MAX_PAGES = 3;
 
 /** 목록에서 유일하게 안 눌리는 종류다 — 갈 곳이 없어 여는 것으로 읽음이 찍힌다. */
 export const ADMIN_NOTICE: NotificationKind = "admin_notice";

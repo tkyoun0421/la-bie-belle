@@ -7,7 +7,7 @@ import type { ScheduleDayCellState } from "@/shared/ui/ScheduleDayCell";
  *
  * **고른 것이 열린 것을 덮는다.** 열기 모드에서 고른 칸은 열렸든 안 열렸든 고른 모습이다 —
  * 무엇을 고르고 있는지가 그 모드의 전부라서다. 이미 연 날은 애초에 안 골라지고
- * (`open-mode-selection.ts`) 그 판정은 이 칸 상태가 아니라 누를 수 있는지가 든다.
+ * (`openModeSelection.ts`) 그 판정은 이 칸 상태가 아니라 누를 수 있는지가 든다.
  *
  * **오늘과 지난 날은 여기 없다.** 오늘은 칸 배경이 아니라 날짜를 감싸는 검은 원이라
  * `ScheduleDayCell`이 `isToday`로 따로 그리고, 지난 날짜는 고를 수 있는지의 문제다.

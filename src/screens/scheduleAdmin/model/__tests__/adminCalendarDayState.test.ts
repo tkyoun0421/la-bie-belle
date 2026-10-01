@@ -7,7 +7,7 @@
 // `admin-open`·`admin-picked`를 그대로 쓴다 — 새 상태를 안 만든다.
 //
 // 「오늘」과 「지난 날」은 이 칸 상태 계산과 무관하다 — 오늘은 `ScheduleDayCell`이
-// `isToday`로 따로 그리고, 지난 날의 선택 가능 여부는 `open-mode-selection.ts`가 가른다.
+// `isToday`로 따로 그리고, 지난 날의 선택 가능 여부는 `openModeSelection.ts`가 가른다.
 // 이 테스트가 그 무관함을 명시로 확인한다.
 
 import {

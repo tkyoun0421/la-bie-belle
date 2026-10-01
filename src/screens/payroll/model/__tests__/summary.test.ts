@@ -1,7 +1,7 @@
 // 구현 대상: src/screens/payroll/model/summary.ts
 //
 // PayrollSummaryDay = { date, minutes, amount, kind, attendance }다. kind는
-// payroll-days.ts가 내는 'normal'·'overtime'·'absent'·'wage-pending' 넷이고,
+// payrollDays.ts가 내는 'normal'·'overtime'·'absent'·'wage-pending' 넷이고,
 // attendance는 그날 배정이 있을 때만 채우는 AttendanceStatusInput이며 배정 없이
 // 리허설·조정만 있는 날은 null이다(지각은 배정이 있어야 판정된다).
 //

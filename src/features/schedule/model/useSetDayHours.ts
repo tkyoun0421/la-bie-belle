@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
 import { setDayHours } from "@/entities/schedule/dals/setDayHours";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 그 날의 근무 시간을 고친다. 끝이 시작보다 이르면 시트의 버튼이 먼저 막지만, 벽은
@@ -31,7 +31,7 @@ export function useSetDayHours(client: DB): SetDayHoursResult {
     mutationFn: ({ workDate, starts, ends }: SetDayHoursInput) =>
       setDayHours(client, workDate, starts, ends),
     onSuccess: () => {
-      for (const queryKey of SCHEDULE_WRITE_KEYS) {
+      for (const queryKey of staleTogether.scheduleWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
+import { staleTogether } from "@/shared/api/queryKeys";
 import { confirmSchedule } from "@/entities/schedule/dals/confirmSchedule";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 그 달 근무표를 확정한다. 되돌리는 문이 없다(SCH-014).
@@ -46,7 +46,7 @@ export function useConfirmSchedule(client: DB): ConfirmScheduleResult {
       }
     },
     onSuccess: () => {
-      for (const queryKey of SCHEDULE_WRITE_KEYS) {
+      for (const queryKey of staleTogether.scheduleWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

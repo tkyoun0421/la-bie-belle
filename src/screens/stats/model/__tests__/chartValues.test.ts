@@ -8,7 +8,7 @@
 // myWorkValues(loaded, profileId) — 포지션 탭 그래프의 달별 내 근무 분
 // 합이다. 관리자 workValues와 같은 결로, 그 달에 근무표 자체가 안 열렸으면
 // (days.length === 0) Map에서 빠진다. 집계는 features/stats/model/
-// work-totals.ts의 workInputsOf·computeMyWorkTotals를 그대로 부른다 —
+// workTotals.ts의 workInputsOf·computeMyWorkTotals를 그대로 부른다 —
 // 여기서 다시 짜지 않는다.
 //
 // myAttendanceValues(loaded, profileId, now) — 근태 탭 그래프의 달별 내
@@ -26,7 +26,7 @@
 // 아직 없다)가 달마다 내는 원재료(entities/payroll/dals/getPayrollMonth.ts의
 // PayrollMonth — 시급 이력·조정·사유 상태·공휴일)와, useWorkMonths가 이미
 // 내는 그 달 ScheduleDay 목록이다. 금액 자체는 features/payroll/model/
-// payroll-days.ts의 payrollViewDays를 그대로 불러 날마다 낸 amount를
+// payrollDays.ts의 payrollViewDays를 그대로 불러 날마다 낸 amount를
 // 더한다 — 여기서 급여 계산을 다시 짜지 않는다(plan stats-worker AC-01
 // "여기서 금액을 새로 계산하지 않는다").
 //
@@ -47,7 +47,7 @@
 // 0 — myWorkValues와 같은 신호. 스케줄은 열렸는데 내가 이 달에 급여로
 // 잡을 날이 하나도 없으면 0으로 남는다) 이거나 ②근무표는 없어도 그 달
 // 날짜로 걸러진 payrollViewDays 결과가 있는 달(리허설은 days 없이도 서는
-// 달이 있다 — get-my-rehearsals.ts의 SCH-022, "근무표가 없는 달에도 행이
+// 달이 있다 — getMyRehearsals.ts의 SCH-022, "근무표가 없는 달에도 행이
 // 선다"). 둘 다 아니면 Map에서 빠진다.
 
 import type { PayrollMonth } from "@/entities/payroll/dals/getPayrollMonth";

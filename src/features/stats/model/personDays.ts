@@ -10,7 +10,7 @@ import {
  * `docs/2-design/system/screens/stats.md`의 「근무 내역 시트」고 완료 조건은
  * `docs/2-design/spec/stats-admin.md`의 AC-02다.
  *
- * **합계가 구획 줄의 값과 같다.** 같은 배정을 [`work-totals.ts`](work-totals.ts)와 같은
+ * **합계가 구획 줄의 값과 같다.** 같은 배정을 [`workTotals.ts`](workTotals.ts)와 같은
  * 규칙으로 세므로 시트를 열어 눈으로 검산할 수 있다 — 그것이 이 시트의 쓸모다.
  *
  * **겸임인 날도 한 줄이다.** 배정 하나가 줄 하나고 그 `position`이 이미 앞 포지션이라 두

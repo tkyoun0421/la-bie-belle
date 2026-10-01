@@ -1,8 +1,6 @@
 import type { Database } from "@/shared/api/database";
-import {
-  getMonthAttendance,
-  monthAttendanceKey,
-} from "@/entities/attendance/dals/getMonthAttendance";
+import { queryKeys } from "@/shared/api/queryKeys";
+import { getMonthAttendance } from "@/entities/attendance/dals/getMonthAttendance";
 import {
   createAdminUser,
   createApprovedUser,
@@ -79,11 +77,17 @@ describe("getMonthAttendance — 그달치 check_ins와 excuse_status를 한 질
   });
 
   it("캐시 키는 ['attendance', 그달]이다 — 날 키(get-day-attendance)와 같은 모양이라 상태 계산 함수가 두 키 위에서 그대로 돈다", () => {
-    expect(monthAttendanceKey("2026-09")).toEqual(["attendance", "2026-09"]);
+    expect(queryKeys.attendance.month("2026-09")).toEqual([
+      "attendance",
+      "2026-09",
+    ]);
   });
 
   it("달이 아니라 그달 안의 날짜를 넣어도 앞 7자로 접혀 같은 키가 된다", () => {
-    expect(monthAttendanceKey("2026-09-20")).toEqual(["attendance", "2026-09"]);
+    expect(queryKeys.attendance.month("2026-09-20")).toEqual([
+      "attendance",
+      "2026-09",
+    ]);
   });
 
   it("그달 여러 사람·여러 날의 행이 한 번에 온다", async () => {

@@ -9,7 +9,7 @@ import { kstDateOf, spellDate } from "@/screens/adminHome/model/todayStatus";
  *
  * **지난 날은 안 센다.** 남은 날이 음수인 날은 재촉할 것이 없다.
  *
- * 오늘은 `now`에서 KST로 옮겨 센다 — 그 손은 [오늘 현황](today-status.ts)이 쥔다.
+ * 오늘은 `now`에서 KST로 옮겨 센다 — 그 손은 [오늘 현황](todayStatus.ts)이 쥔다.
  */
 
 const DAY_MS = 24 * 60 * 60 * 1000;

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
-import { qrCodeKey } from "@/entities/attendance/dals/getQrCode";
+import { queryKeys } from "@/shared/api/queryKeys";
 import { rotateQr } from "@/entities/attendance/dals/rotateQr";
 
 /**
@@ -28,7 +28,8 @@ export function useRotateQr(client: DB): RotateQrResult {
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: () => rotateQr(client),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: qrCodeKey() }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.hall.qr() }),
   });
 
   const send = useCallback(() => {

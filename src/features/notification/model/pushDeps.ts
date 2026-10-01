@@ -3,7 +3,7 @@ import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
 /**
- * 기기에 붙는 함수들을 [`push-permission`](push-permission.ts)이 받는 꼴로 묶는 자리다.
+ * 기기에 붙는 함수들을 [`push-permission`](pushPermission.ts)이 받는 꼴로 묶는 자리다.
  * 판정은 저쪽이 하고 여기는 실물만 건넨다 — 판정이 `expo-notifications`를 직접 물면 기기
  * 없이는 안 돈다.
  *

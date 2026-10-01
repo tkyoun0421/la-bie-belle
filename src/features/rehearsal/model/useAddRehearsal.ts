@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
 import {
   addRehearsal,
   type AddRehearsalInput,
 } from "@/entities/rehearsal/dals/addRehearsal";
-import { REHEARSAL_WRITE_KEYS } from "@/features/rehearsal/model/queryKeys";
 
 /**
  * 리허설 넣기다. 성공하면 `['rehearsal']`과 `['payroll']`이 낡는다 —
@@ -31,7 +31,7 @@ export function useAddRehearsal(client: DB): AddRehearsalResult {
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: (input: AddRehearsalInput) => addRehearsal(client, input),
     onSuccess: () => {
-      for (const queryKey of REHEARSAL_WRITE_KEYS) {
+      for (const queryKey of staleTogether.rehearsalWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { staleTogether } from "@/shared/api/queryKeys";
 import { removeSlot } from "@/entities/schedule/dals/removeSlot";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 자리를 버리는 손짓의 서버 쪽이다. 빈 자리와 사람 든 자리를 가르는 확인 시트는 화면의
@@ -29,7 +29,7 @@ export function useRemoveSlot(client: DB): RemoveSlotResult {
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: ({ slotId }: RemoveSlotInput) => removeSlot(client, slotId),
     onSuccess: () => {
-      for (const queryKey of SCHEDULE_WRITE_KEYS) {
+      for (const queryKey of staleTogether.scheduleWrite) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

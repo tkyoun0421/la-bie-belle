@@ -1,10 +1,10 @@
 import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getMyRehearsals,
   type Rehearsal,
 } from "@/entities/rehearsal/dals/getMyRehearsals";
-import { REHEARSAL_KEY } from "@/features/rehearsal/model/queryKeys";
 
 /**
  * 여러 달치 본인 리허설을 한 덩이로 읽는다. 급여 화면이 기간을 달과 안 맞게 자르기 때문이다 —
@@ -29,7 +29,7 @@ export function useRehearsalMonths(
 ): RehearsalMonthsResult {
   return useQueries({
     queries: months.map((month) => ({
-      queryKey: [...REHEARSAL_KEY, month],
+      queryKey: queryKeys.rehearsal.mine(month),
       queryFn: () => getMyRehearsals(client, month),
     })),
     combine: (results): RehearsalMonthsResult => {

@@ -18,7 +18,7 @@ import { spellHours } from "@/screens/scheduleAdmin/model/adjustSheetRows";
  * 그쪽은 읽기 전용 카드고 이쪽은 값을 쓰는 자리다.
  *
  * **결근은 값을 안 묻는다.** 고른 즉시 나가고, 넣을 음수는 부르는 쪽이 그날 배정 시간에서
- * 계산한다(`absence-minutes.ts`).
+ * 계산한다(`absenceMinutes.ts`).
  *
  * **연장을 고르면 분 칸이 열리고 버튼이 「닫기 · 바꾸기」로 바뀐다.** 근무 시간 시트와 같은
  * 짝이다.

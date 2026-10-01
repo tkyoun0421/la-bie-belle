@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import {
   listActiveMembers,
   listBlockedMembers,
@@ -9,7 +10,6 @@ import {
   type MemberListRow,
   type MemberRow,
 } from "@/entities/profile/dals/listMembers";
-import { MEMBERS_KEY } from "@/features/members/model/queryKeys";
 
 /**
  * 관리자가 보는 사람 목록 넷을 한 훅으로 읽는다 — 재직·퇴사·가입 대기·차단. 네 목록이 같은
@@ -56,7 +56,7 @@ export function useMembers<Kind extends MemberKind>(
   const list = LIST_OF[kind] as (client: DB) => Promise<RowOf[Kind][]>;
 
   const { data, error, isLoading } = useQuery({
-    queryKey: [...MEMBERS_KEY, kind],
+    queryKey: queryKeys.member.list(kind),
     queryFn: () => list(client),
   });
 

@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getAllRehearsals,
   type RehearsalWithName,
 } from "@/entities/rehearsal/dals/getAllRehearsals";
-import { ALL_SCOPE, REHEARSAL_KEY } from "@/features/rehearsal/model/queryKeys";
 
 /**
  * 관리자가 보는 그 달 전원 리허설이다 — 키는 `['rehearsal', 'YYYY-MM', 'all']`
@@ -25,7 +25,7 @@ export function useAllRehearsals(
   enabled = true,
 ): AllRehearsalsResult {
   const { data, error, isLoading, refetch } = useQuery({
-    queryKey: [...REHEARSAL_KEY, month, ALL_SCOPE],
+    queryKey: queryKeys.rehearsal.everyone(month),
     queryFn: () => getAllRehearsals(client, month),
     enabled,
   });

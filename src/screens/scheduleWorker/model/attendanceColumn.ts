@@ -12,7 +12,7 @@ import type { AttendanceSummary } from "@/features/attendance/model/attendanceSu
  * **창이 열리기 전에는 열이 통째로 없다.** 다음 주 토요일 명단에 「아직 안 찍음」이 열한 줄
  * 서면 안 온 사람들처럼 읽힌다. 창이 열리는 시각의 정본은
  * [ATT-008](../../../../docs/2-design/modules/attendance/README.md#att-008)이고 계산은
- * `attendance-status.ts`가 소유한다 — 여기서 다시 세지 않는다.
+ * `attendanceStatus.ts`가 소유한다 — 여기서 다시 세지 않는다.
  */
 export function isAttendanceColumnVisible(
   input: AttendanceStatusInput,

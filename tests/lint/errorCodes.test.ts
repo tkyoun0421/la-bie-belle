@@ -51,7 +51,7 @@ describe("마이그레이션의 raise 문자열을 읽는다", () => {
   });
 });
 
-describe("error-codes.ts의 ERROR_CODES 목록을 읽는다", () => {
+describe("errorCodes.ts의 ERROR_CODES 목록을 읽는다", () => {
   it("export const ERROR_CODES 배열 안의 문자열 리터럴을 뽑는다", () => {
     const source = `
       export const ERROR_CODES = [
@@ -164,7 +164,7 @@ describe("저장소 전체 대조 — 임시 디렉터리", () => {
 });
 
 describe("코드 목록 대조 — 실제 저장소 회귀", () => {
-  it("현재 저장소의 error-codes.ts와 마이그레이션이 서로 맞는다 (회귀)", () => {
+  it("현재 저장소의 errorCodes.ts와 마이그레이션이 서로 맞는다 (회귀)", () => {
     expect(repositoryErrorCodeViolations(process.cwd())).toEqual([]);
   });
 });

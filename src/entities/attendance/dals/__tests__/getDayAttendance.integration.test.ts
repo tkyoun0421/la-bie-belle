@@ -1,8 +1,6 @@
 import type { Database } from "@/shared/api/database";
-import {
-  dayAttendanceKey,
-  getDayAttendance,
-} from "@/entities/attendance/dals/getDayAttendance";
+import { queryKeys } from "@/shared/api/queryKeys";
+import { getDayAttendance } from "@/entities/attendance/dals/getDayAttendance";
 import {
   createAdminUser,
   createApprovedUser,
@@ -63,7 +61,7 @@ describe("getDayAttendance — 그날 check_ins와 excuse_status를 같이 읽�
   });
 
   it("캐시 키는 ['attendance', 그날]이다", () => {
-    expect(dayAttendanceKey("2026-09-20")).toEqual([
+    expect(queryKeys.attendance.day("2026-09-20")).toEqual([
       "attendance",
       "2026-09-20",
     ]);

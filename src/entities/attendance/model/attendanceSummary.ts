@@ -5,7 +5,7 @@ import {
 } from "@/entities/attendance/model/attendanceStatus";
 
 /**
- * 한 달치 근태를 네 갈래로 센다. 판정은 [`attendance-status.ts`](attendance-status.ts)의
+ * 한 달치 근태를 네 갈래로 센다. 판정은 [`attendanceStatus.ts`](attendanceStatus.ts)의
  * `getAttendanceStatus` 하나고 여기서 다시 짜지 않는다 — 세는 자리가 판정을 따로 가지면
  * 화면에 뜬 상태와 집계가 갈린다.
  *

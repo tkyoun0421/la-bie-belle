@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
+import { queryKeys } from "@/shared/api/queryKeys";
 import { markLeave } from "@/entities/profile/dals/markLeave";
-import { MEMBERS_KEY } from "@/features/members/model/queryKeys";
 
 /**
  * 그만둔 사람을 퇴사로 옮긴다. 성공하면 그 줄이 재직자 목록에서 빠지고 퇴사 구획에 서는데,
@@ -30,7 +30,8 @@ export function useMarkLeave(client: DB): MarkLeaveResult {
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({
     mutationFn: ({ profileId }: MarkLeaveInput) => markLeave(client, profileId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: MEMBERS_KEY }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.member.all }),
   });
 
   const send = useCallback(
