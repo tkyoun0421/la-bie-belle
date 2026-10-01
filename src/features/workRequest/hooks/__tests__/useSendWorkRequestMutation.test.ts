@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useSendWorkRequestMutation.ts
+// 구현 대상: src/features/workRequest/hooks/useSendWorkRequestMutation.ts
 //
 // 관리자가 픽커의 미신청 줄에서 고른 사람들에게 근무 요청을 보낸다
 // (`sendWorkRequest.ts`의 `sendWorkRequest(client, slotId, profileIds)`). 성공하면

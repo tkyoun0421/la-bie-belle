@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useRemoveAssignmentMutation.ts
+// 구현 대상: src/features/scheduleAssign/hooks/useRemoveAssignmentMutation.ts
 //
 // 「자리 비우기」 · 강제 변경의 「사람 빼기」다. `removeAssignment(client, assignmentId)`를
 // 부른다 — 확정 전이면 행이 지워지고 확정 뒤면 `ended_at`이 찍히는 갈림은 함수 안에서

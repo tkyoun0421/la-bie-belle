@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useCloseDayMutation.ts
+// 구현 대상: src/features/scheduleDay/hooks/useCloseDayMutation.ts
 //
 // 날 하나를 닫는다. 배정이 있으면 화면이 먼저 경고 시트로 확인받고 이 훅은 그 뒤에
 // `close_day`만 부른다(`schedule-admin.md`의 「날 닫기 경고」). 캐시 갱신은

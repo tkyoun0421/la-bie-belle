@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/schedule/hooks/useMonthAvailabilitiesQuery.ts
+// 구현 대상: src/entities/availability/hooks/useMonthAvailabilitiesQuery.ts
 //
 // 그 달 전원의 근무 신청을 프로필 이름과 같이 읽는다. 달력 칸의 신청 수, 날 상세의 근무
 // 신청 줄, 모아보기 화면이 같은 키 `['availability', month, 'all']`을 쓴다

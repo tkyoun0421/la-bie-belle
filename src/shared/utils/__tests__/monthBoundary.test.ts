@@ -13,7 +13,7 @@
 //
 // month는 "YYYY-MM", firstScheduleMonth·today는 "YYYY-MM-DD"(전체 날짜)다.
 //
-// 관리자 통계(src/screens/adminStats/model/monthBoundary.ts)와 근무자
+// 관리자 통계(src/shared/utils/monthBoundary.ts)와 근무자
 // 통계(src/screens/stats/ui/StatsScreen.tsx)가 같은 경계를 인라인으로 각각
 // 판정하고 있었다 — lint 규칙 3으로는 두 통계 슬라이스가 서로를 못 불러
 // 사본이 둘로 늘던 자리를 shared/utils로 올려 하나로 묶는다. 계약은 관리자

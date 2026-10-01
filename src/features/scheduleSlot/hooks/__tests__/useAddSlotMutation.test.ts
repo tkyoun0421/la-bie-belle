@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useAddSlotMutation.ts
+// 구현 대상: src/features/scheduleSlot/hooks/useAddSlotMutation.ts
 //
 // 잠금이 풀린 포지션의 「자리 추가」다. `addSlot(client, dayId, position)`을 부르고
 // 자리 늘리기·줄이기·겸임 셋과 같은 캐시 갱신 — `['schedule']` `['payroll']` `['requests']`다

@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/attendance/hooks/useQrCodeQuery.ts
+// 구현 대상: src/entities/qr/hooks/useQrCodeQuery.ts
 //
 // 관리자 QR 화면이 현재 코드를 읽는 훅이다. 캐시 키·staleTime은
 // `@/entities/attendance/api/getQrCode.api`가 정한 상수를 그대로 쓴다

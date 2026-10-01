@@ -149,6 +149,7 @@ sources:
 - 돌면서 나온 것 — **`attendanceSummary.ts`가 두 층에 각자 있었다.** 배정 표는 `attendance-summary`를 하나로 적는데 실물이 둘이고 하는 일이 다르다 — `entities` 쪽은 월 집계와 출근율(`tallyMonthlyAttendance`·`attendanceRate`), `features` 쪽은 현황 줄에서 0인 항목을 빼는 것(`summarizeAttendanceStatuses`)이다. 둘 다 읽기 쪽 판정이라 한 슬라이스로 가는데 이름이 겹친다. 부르는 이름을 따라 후자가 `summarizeAttendanceStatuses.ts`를 받았다. 옮기기 전에 목적지가 이미 있는지 보는 줄이 스크립트에 섰다
 - 돌면서 나온 것 — **Edge Function 둘이 없는 파일을 부르고 있었다.** 복사 경로를 고치려고 열어 보니 묶음 1이 바꾼 이름을 부르는 쪽이 안 따라갔고, 그 뒤로 묶음 다섯이 지나갔다. `supabase/functions/`가 검사 셋 전부의 밖인 것이 그 까닭이다([관찰 049](../../observations/049-edge-functions-outside-every-check.md))
 - 돌면서 나온 것 — **일괄 치환이 마크다운 상대 링크를 안 먹는다.** `"@/..."` 꼴만 바꿔서 문서의 `../../../src/...` 링크 서른둘이 깨졌다. `docLinks.test.ts`가 잡았고, 경로 조각으로 한 번 더 치환했다
+- 돌면서 나온 것 — **주석이 가리키는 경로는 아무 검사도 안 본다.** 테스트 머리글의 `// 구현 대상: src/...` 마흔셋이 옮기기 전 자리를 그대로 들고 있었다. import가 아니라 글자라 lint도 typecheck도 안 울고, 링크가 아니라 `docLinks.test.ts`도 안 본다 — 짝 구현 파일을 찾아 주는 유일한 줄이라 틀리면 다음 사람이 없는 파일을 뒤진다. 실재하지 않는 `src/` 경로를 전수로 뽑아 고쳤다
 
 ### AC-08 — 검사 여덟이 선다
 
@@ -354,7 +355,7 @@ sources:
 | AC-06나 | 업무 판정이 `utils`에 숨는다 | 손 확인 | — | `utils/`의 함수가 참·거짓이나 허용·금지를 안 돌려준다 |
 | AC-06나 | 접미사가 세그먼트와 어긋난다 | 새 검사(묶음 8) | `pnpm test -- fileNaming` | 묶음 8이 선 뒤 초록 |
 | AC-07 | 쪼갠 슬라이스끼리 import가 생긴다 | 기존 lint 규칙 | `pnpm lint` | `no-cross-slice-import` 0건 |
-| AC-07 | 슬라이스 이름이 라우트와 어긋난다 | 손 확인 | — | `screens/`는 안 건드렸다 |
+| AC-07 | 슬라이스 이름이 라우트와 어긋난다 | 손 확인 | — | `screens/` 슬라이스가 안 쪼개졌다 — 바뀐 것은 import 줄뿐이다 |
 | AC-08 | 규칙이 정상 코드를 막는다 | unit | `tests/lint/supabaseClientInApi.test.ts` 외 셋 (신설) | 위반 픽스처에서 걸리고 정상에서 통과 |
 | AC-08 | 규칙 표가 실제 규칙과 어긋난다 | 기존 검사 | `pnpm test -- ruleCatalogue` | 초록 |
 

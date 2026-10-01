@@ -1,4 +1,4 @@
-// 구현 대상: src/features/payroll/hooks/useSetHolidayMutation.ts
+// 구현 대상: src/features/holiday/hooks/useSetHolidayMutation.ts
 //
 // `set_holiday`를 부르는 mutation이다(payroll-adjust plan AC-05). 성공하면
 // `['payroll']`을 무효화한다. 거절은 삼키지 않고 그대로 error에 싣는다.

@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useSplitSlotMutation.ts
+// 구현 대상: src/features/scheduleSlot/hooks/useSplitSlotMutation.ts
 //
 // 겸임 자리를 나눈다. `splitSlot(client, slotId)`를 부르고 배정된 사람은 받은 쪽에 그대로
 // 남는다(design.md 「날과 자리」). 캐시 갱신은 `['schedule']` `['payroll']` `['requests']`다.

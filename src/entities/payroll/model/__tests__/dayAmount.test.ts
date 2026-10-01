@@ -1,4 +1,4 @@
-// 구현 대상: src/features/payroll/model/dayAmount.ts
+// 구현 대상: src/entities/payroll/model/dayAmount.ts
 //
 // dayAmount({ minutes, wage }) — 540분까지 1배, 넘는 몫은 1.5배다(PAY-005·PAY-028).
 // 0분은 결근이라 0원이고 kind가 'absent'다.

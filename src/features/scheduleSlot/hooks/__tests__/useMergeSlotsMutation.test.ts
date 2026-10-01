@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useMergeSlotsMutation.ts
+// 구현 대상: src/features/scheduleSlot/hooks/useMergeSlotsMutation.ts
 //
 // 줄 머리를 다른 줄 머리에 겹쳐 겸임을 만든다. `mergeSlots(client, dayId, from, to)`는
 // 자리 id가 아니라 포지션 이름 둘을 받는다 — 화면이 집는 것이 줄 머리라서다

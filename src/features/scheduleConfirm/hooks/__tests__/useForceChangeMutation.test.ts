@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useForceChangeMutation.ts
+// 구현 대상: src/features/scheduleConfirm/hooks/useForceChangeMutation.ts
 //
 // 확정 뒤 「사람 바꾸기」다. `forceChange(client, assignmentId, profileId)`가 한
 // 트랜잭션으로 옛 배정을 닫고 새 배정을 연다(design.md 「배정과 강제 변경」 — 「한

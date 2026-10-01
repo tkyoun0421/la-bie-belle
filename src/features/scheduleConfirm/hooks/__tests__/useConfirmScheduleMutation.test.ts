@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useConfirmScheduleMutation.ts
+// 구현 대상: src/features/scheduleConfirm/hooks/useConfirmScheduleMutation.ts
 //
 // 달을 확정한다. `already_confirmed`는 관리자 둘이 같은 달을 확정했거나 재시도가 두 번
 // 닿은 것이라 결과가 같으므로 이 훅이 성공으로 처리한다

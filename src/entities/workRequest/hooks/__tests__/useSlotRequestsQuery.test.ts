@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/schedule/hooks/useSlotRequestsQuery.ts
+// 구현 대상: src/entities/workRequest/hooks/useSlotRequestsQuery.ts
 //
 // 그 달 살아 있는 근무 요청을 읽는다(`getSlotRequests.ts`의
 // `getSlotRequests(client, month)`). 캐시 키는 plan schedule-requests.md 「총괄이 정한

@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useCreateCancelRequestMutation.ts
+// 구현 대상: src/features/workRequest/hooks/useCreateCancelRequestMutation.ts
 //
 // 근무자가 근무 취소를 요청한다(`createCancelRequest.ts`의
 // `createCancelRequest(client, assignmentId, reason)`). 성공하면

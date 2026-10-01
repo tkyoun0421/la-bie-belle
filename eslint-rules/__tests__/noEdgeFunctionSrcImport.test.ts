@@ -16,7 +16,7 @@ function importCode(specifier: string) {
 describe("house/no-edge-function-src-import — 마운트 밖 src import를 글자로 막는다", () => {
   it("supabase/functions/ 아래에서 ../../../src/... import가 걸린다", async () => {
     const violations = await violationsOf(
-      importCode("../../../src/features/notification/model/pushMessage"),
+      importCode("../../../src/entities/notification/model/pushMessage"),
       "supabase/functions/send-push/index.ts",
     );
 
@@ -51,7 +51,7 @@ describe("house/no-edge-function-src-import — 마운트 밖 src import를 글�
 
   it("규칙 메시지가 고치는 길(_shared 복사본)을 가리킨다", async () => {
     const violations = await violationsOf(
-      importCode("../../../src/features/notification/model/pushMessage"),
+      importCode("../../../src/entities/notification/model/pushMessage"),
       "supabase/functions/send-push/index.ts",
     );
     const target = violations.find((violation) => violation.ruleId === RULE_ID);
@@ -61,7 +61,7 @@ describe("house/no-edge-function-src-import — 마운트 밖 src import를 글�
 
   it("supabase/functions/ 밖의 파일에는 이 규칙이 안 걸린다", async () => {
     const violations = await violationsOf(
-      importCode("../../../src/features/notification/model/pushMessage"),
+      importCode("../../../src/entities/notification/model/pushMessage"),
       "scripts/unrelated-script.ts",
     );
 

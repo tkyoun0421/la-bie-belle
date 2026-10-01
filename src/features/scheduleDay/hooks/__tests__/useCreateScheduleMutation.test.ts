@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useCreateScheduleMutation.ts
+// 구현 대상: src/features/scheduleDay/hooks/useCreateScheduleMutation.ts
 //
 // 달 근무표를 만든다(`docs/2-design/modules/schedule/design.md`의 「근무표 만들기와
 // 마감일」). 성공하면 그 캐시 갱신 행대로 `['schedule']` `['payroll']` `['requests']`

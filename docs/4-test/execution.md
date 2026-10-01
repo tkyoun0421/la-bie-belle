@@ -135,7 +135,7 @@ integration은 준비와 러너 호출을 나눈다. integration 스크립트는
 ```sh
 supabase start
 supabase migration up
-pnpm exec jest --config jest.integration.config.js src/entities/profile/api/__tests__/ensureProfile.integration.test.ts
+pnpm exec jest --config jest.integration.config.js src/entities/profile/api/__tests__/ensureProfile.api.integration.test.ts
 ```
 
 ## CI와 결과 위치

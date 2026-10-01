@@ -1,4 +1,4 @@
-// 구현 대상: src/features/payroll/hooks/useSetAdjustmentMutation.ts
+// 구현 대상: src/features/adjustment/hooks/useSetAdjustmentMutation.ts
 //
 // `set_adjustment`를 부르는 mutation이다(payroll-adjust plan AC-05). 성공하면
 // `['payroll']`을 무효화한다. `p_reason`은 화면이 고른 갈래 이름이고 셋 중 하나다 —

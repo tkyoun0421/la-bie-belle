@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useRespondRequestMutation.ts
+// 구현 대상: src/features/workRequest/hooks/useRespondRequestMutation.ts
 //
 // 근무자가 근무 요청에 답한다(`respondRequest.ts`의
 // `respondRequest(client, requestId, answer)` — answer는 'accept'·'decline'). 성공하면

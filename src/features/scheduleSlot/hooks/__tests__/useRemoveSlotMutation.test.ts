@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useRemoveSlotMutation.ts
+// 구현 대상: src/features/scheduleSlot/hooks/useRemoveSlotMutation.ts
 //
 // 잠금이 풀린 포지션에서 자리를 버리는 손짓의 서버 쪽이다. `removeSlot(client, slotId)`를
 // 부르고 자리 늘리기·줄이기·겸임 셋과 같은 캐시 갱신 — `['schedule']` `['payroll']`

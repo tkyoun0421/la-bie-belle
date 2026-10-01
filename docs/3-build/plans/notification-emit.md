@@ -40,7 +40,7 @@ sources:
 
 **payload의 모양을 타입이 묶는다.**
 
-`src/features/notification/model/kinds.ts`
+`src/entities/notification/model/kinds.ts`
 
 - 종류마다 `payload`에 무엇이 드는지를 타입으로 정한다. 근거는 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표의 「가변값」 열이다
 - 낳는 쪽과 읽는 쪽이 같은 타입을 쓴다. **DB의 `jsonb`는 모양을 안 지켜서 여기가 유일한 방어다**
@@ -113,7 +113,7 @@ sources:
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `src/features/notification/model/kinds.ts` | 종류와 payload 타입 | AC-01 |
+| `src/entities/notification/model/kinds.ts` | 종류와 payload 타입 | AC-01 |
 | `supabase/migrations/<날짜>_emit_notification.sql` | 헬퍼 | AC-08 |
 | `supabase/migrations/<날짜>_emit_account.sql` | 가입 승인 | AC-02 |
 | `supabase/migrations/<날짜>_emit_schedule.sql` | 접수 열림·마감일·확정·변경 | AC-03·AC-04 |

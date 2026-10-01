@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/schedule/hooks/usePendingApprovalsQuery.ts
+// 구현 대상: src/entities/workRequest/hooks/usePendingApprovalsQuery.ts
 //
 // 미판정 근무 취소 요청을 읽는다(`getPendingApprovals.ts`의
 // `getPendingApprovals(client)`). 캐시 키는 plan schedule-requests.md 「총괄이 정한

@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/hooks/useAddAssignmentMutation.ts
+// 구현 대상: src/features/scheduleAssign/hooks/useAddAssignmentMutation.ts
 //
 // 배정 추가 — 정규와 교육 둘 다 이 훅 하나로 간다. `addAssignment(client, { profileId, kind,
 // slotId?, dayId?, position?, skipQualification? })`(design.md 「배정과 강제 변경」)의 인자
