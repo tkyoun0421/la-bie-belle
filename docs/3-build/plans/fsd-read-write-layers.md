@@ -29,7 +29,7 @@ sources:
 
 ## 완료 조건
 
-### AC-01 — 파일 이름이 camelCase가 된다
+### AC-01 — 파일 이름이 camelCase가 된다 ✅
 
 - 전제: `tests/lint/file-naming.ts`가 kebab-case를 요구하고 535개 파일이 그 꼴이다
 - 행동
@@ -40,6 +40,8 @@ sources:
 - 관찰 결과: `pnpm test -- fileNaming`이 초록이고 하이픈 든 파일이 `src/app/` 밖에 없다. `pnpm lint`·`pnpm typecheck`·`pnpm test` 셋이 초록이다
 - `src/app/`은 안 건드린다 — Expo Router가 파일 이름을 URL로 읽고 `/check-in`은 종이 QR에 실려 나간다
 - 왜 먼저인가: 뒤 묶음이 파일을 만들고 옮긴다. 이름 규칙이 먼저 바뀌어야 그 파일들이 새 꼴로 선다
+- 돌면서 나온 것 — **ESLint 규칙 이름은 kebab으로 되돌렸다.** 일괄 치환이 `house/dumb-ui` 같은 규칙 ID까지 먹었는데 그것은 파일 이름이 아니라 생태계 식별자고 소스의 `eslint-disable` 주석이 그 이름을 쓴다. 규칙 파일은 camel, 등록 키는 kebab이다
+- 돌면서 나온 것 — **`fileNaming.test.ts`의 픽스처가 정답으로 뒤집혔다.** 그 파일 주석이 그 위험을 미리 적어뒀고(「일괄 치환이 이 파일을 지나가면 픽스처가 정답으로 바뀌어 단언이 조용히 무의미해진다」) 실제로 났다 — `kebabWanted`를 `camelWanted`로 뒤집었다
 
 ### AC-02 — 캐시 키가 한 자리에 모인다
 

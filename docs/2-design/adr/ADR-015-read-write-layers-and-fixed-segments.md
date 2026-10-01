@@ -100,7 +100,9 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **`ui`와 `screens`는 접미사가 없다.** `.tsx`가 곧 컴포넌트라 성격이 하나뿐이고, 이름은 PascalCase 그대로다. `src/app/`도 밖이다 — Expo Router가 파일 이름을 URL로 읽어 `check-in.tsx`가 `/check-in`이고 그 주소는 종이 QR에 실려 나간다.
 
-**Supabase 클라이언트 타입은 `DB`다.** 지금 이름이 `Db`인데 데이터베이스의 약자라 두 글자가 다 대문자여야 한다. 쓰는 자리가 백마흔아홉 파일이고 파일 이름에는 안 들어가 치환으로 끝난다.
+**Supabase 클라이언트 타입은 `DB`다.** 데이터베이스의 약자라 두 글자가 다 대문자다. 약어가 이름 안에 올 때도 같다 — `words()`가 소문자 뒤의 대문자만 가르니 약어를 붙여 쓰면 camel 변환이 그 조각을 못 나눈다는 것은 알고 쓴다.
+
+**ESLint 규칙 이름은 kebab으로 둔다.** `house/dumb-ui`는 파일 이름이 아니라 그 생태계의 식별자고, 소스의 `eslint-disable` 주석이 그 이름을 그대로 쓴다. 규칙 파일(`eslint-rules/dumbUi.mjs`)은 camel이고 등록 키는 kebab이다.
 
 ## 슬라이스를 쪼개는 기준
 
