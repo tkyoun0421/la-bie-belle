@@ -52,7 +52,9 @@
 
 **`notification-push`의 plan이 섰고 정본에 판정 셋을 박았다.** 보낼 것이 없어도 접수증을 긁는다([Q-02](2-design/modules/notification/design.md#아직-안-정한-것) 닫음), 잡기와 결과 쓰기가 `public` 껍데기를 탄다, 접수증 번호 열(`push_receipt_id`)은 그 task가 붙인다. **문장 함수의 주인은 `notification-list`다** — spec과 plan 둘이 그렇게 적어둬서 순서를 뒤집는 대신 `notification-push`를 그 뒤로 보냈다. **[관찰 035](observations/035-edge-function-reaches-outside-mount.md)가 열려 있다** — `import-holidays`가 마운트 밖의 `src/`를 import하는데 edge-runtime을 안 띄워 아무 검사도 안 잡았다. `notification-push`의 AC-09가 복사 단계를 세우며 같이 고친다. `blocked`로 남은 쪽의 이유는 셋뿐이다 — **NCP 자격**(`attendance-checkin`·`hall-location`), **도메인**(`qr-landing-page`·`first-release`), **앞 task의 사슬**(`dashboard`가 `attendance-checkin`을 기다리고 `attendance-excuse`·`notification-emit` 이하가 그 뒤에 선다).
 
-**관찰 021·027·030은 아직 archive로 안 옮겼다.** `resolved: 2026-09-29`가 찍혀 있는데 오늘이 아직 그 날짜라 archive 조건(그 날짜가 지나는 것)을 아직 안 채운다. 다음 마감이 옮긴다. 025·026은 `resolved: 2026-09-28`로 날짜가 지나 이번 회차에 archive로 옮겼다.
+**관찰 021·027·030은 `archive/`로 옮겼다.** `resolved: 2026-09-29`가 이번 마감 날짜(2026-10-01)를 지나 조건을 채웠다. 가리키던 링크(`docs/log/2026-09-29.md`)도 `archive/` 경로로 같이 고쳤다. 025·026은 지난 회차에 옮겼다.
+
+**같은 target이 3건 겹치는 자리가 났다.** `.claude/agents/test-planner.md`에 관찰 020·037·039가 쌓였다 — 정본을 못 찾아 「없다」고 돌려준 판정이 세 번째다. `backlog.md`의 `candidate`에 `test-planner-ground-truth`로 올렸다.
 
 **앞선 `stats-worker`(#457)와 급여 모듈(`payroll-wages`·`payroll-view`·`payroll-adjust`)은 로그가 담는다.** 세부는 [2026-09-29 로그](log/2026-09-29.md)와 [2026-09-28 로그](log/2026-09-28.md)가 담는다.
 
@@ -72,6 +74,6 @@
 
 **루프가 사람을 부르는 자리 넷은 그대로다.** 실기기 확인(카탈로그·화면·테마·끌기·서버 시각 복귀·e2e), NCP 대표 계정과 지도 키·`customStyleId`(`attendance-checkin` 착수 전), 3D 석 장(`no-schedule`·`all-clear`·`server-error`), 로컬 Supabase 구글 프로바이더. 여기에 Edge Function 배포 뒤 손 확인(`profile-erasure`의 AC-03)이 더해졌다.
 
-회차 기록은 [docs/log/2026-09-29-3.md](log/2026-09-29-3.md)다. `payroll-holidays`(#464)가 서며 서비스 키가 `internal`에 못 닿는다는 판정이 나고, `notification-push`의 plan(#466)과 `kind`·`payload` 계약(#467)이 서야 `notification-list`(#468)가 문장 범위를 정해 구현됐다. 그 앞은 [docs/log/2026-09-29-2.md](log/2026-09-29-2.md)(계정 삭제 파이프라인)와 [docs/log/2026-09-29.md](log/2026-09-29.md)(통계 모듈)와 [docs/log/2026-09-28.md](log/2026-09-28.md)(급여 모듈)다.
+회차 기록은 [docs/log/2026-10-01.md](log/2026-10-01.md)다 — `notification-settings`의 막힌 판정 여섯(#475)과 그 구현(#476), 관찰 정리(#477), 시안↔문서 여백 어긋남을 시안 쪽에서 맞춘 `sian-sync`(#478)가 들었다. 그 앞은 [docs/log/2026-09-29-3.md](log/2026-09-29-3.md)(공휴일 받기·알림 목록)와 [docs/log/2026-09-29-2.md](log/2026-09-29-2.md)(계정 삭제 파이프라인)와 [docs/log/2026-09-29.md](log/2026-09-29.md)(통계 모듈)와 [docs/log/2026-09-28.md](log/2026-09-28.md)(급여 모듈)다.
 
 저장소 밖 자료 — 시안·문서 캔버스 [claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107](https://claude.ai/code/artifact/e3d33589-684d-4d7b-8b24-4c5190772107)(빌드 소스는 세션 임시 폴더라 다시 못 만든다), 하루 띠 비교 시안 [claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832](https://claude.ai/code/artifact/05c8b04f-ce99-4c57-8ab1-5e7728d53832).

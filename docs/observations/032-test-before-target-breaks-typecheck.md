@@ -24,7 +24,7 @@ const { toIsoDate } = await import("@/features/payroll/model/holiday-api-respons
 
 ## 볼 자리
 
-[관찰 030](030-export-gate-needs-complete-writer-assignment.md)의 곁가지로 `unit-test-writer`에 「`pnpm typecheck`와 `pnpm lint`도 통과해야 한다」를 이미 박았다. **요구는 섰는데 방법이 없었다.** writer마다 같은 자리에서 새로 발명하고, 발명이 안 되면 그대로 넘겨 구현자가 받자마자 막힌다.
+[관찰 030](archive/030-export-gate-needs-complete-writer-assignment.md)의 곁가지로 `unit-test-writer`에 「`pnpm typecheck`와 `pnpm lint`도 통과해야 한다」를 이미 박았다. **요구는 섰는데 방법이 없었다.** writer마다 같은 자리에서 새로 발명하고, 발명이 안 되면 그대로 넘겨 구현자가 받자마자 막힌다.
 
 요구만 적고 방법을 안 적으면 그 요구는 매번 다시 풀린다. 이 저장소에서 「어떻게」가 한 줄이면 끝나는 자리는 정의문에 그 한 줄을 넣는 쪽이 싸다.
 
