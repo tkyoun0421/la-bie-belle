@@ -22,7 +22,7 @@ import { isForegroundEntry } from "@/features/notification/model/appEntry";
  * **같은 주소를 다시 보내도 행이 안 는다.** 겹침과 사람 사이를 옮기는 일과 끈 사람을 막는
  * 일은 전부 `save_push_token` 안에 있다 — 이 훅은 부르기만 한다(AC-05).
  *
- * `AppState`를 주입받는 것은 [`wire-auto-refresh`](../../../shared/lib/wireAutoRefresh.ts)와
+ * `AppState`를 주입받는 것은 [`wire-auto-refresh`](../../../features/auth/hooks/wireAutoRefresh.ts)와
  * 같은 이유다 — 러너가 `react-native`를 실물로 묶어 대역이 안 선다.
  */
 

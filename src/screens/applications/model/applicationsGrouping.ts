@@ -6,11 +6,11 @@
  * **같은 신청을 두 방향으로 든다.** 날짜순은 근무표를 짜는 손을 따라가고, 사람순은 「이
  * 사람이 이번 달 며칠을 일할 수 있나」를 본다. 입력은 한 질의고 재구성만 둘이다.
  *
- * 날짜를 읽고 적는 손은 `@/shared/lib/kstDate`가 소유한다 — 슬라이스 넷에 같은 계산이 각자
+ * 날짜를 읽고 적는 손은 `@/shared/utils/kstDate`가 소유한다 — 슬라이스 넷에 같은 계산이 각자
  * 서 있던 것을 거기로 모았다. 마감 문구는 슬라이스마다 말이 달라 여기 남는다.
  */
 
-import { kstDateOf, spellDate } from "@/shared/lib/kstDate";
+import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

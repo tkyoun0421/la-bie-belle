@@ -14,7 +14,7 @@
 - `screens/` — 화면 조립. FSD의 pages 레이어인데 라우터가 그 이름을 예약어처럼 쓰므로 screens로 부른다. 슬라이스 이름은 라우트 이름과 같게 짓는다.
 - `features/` — use-case.
 - `entities/` — 도메인 모델과 규칙.
-- `shared/` — 어느 기능에도 매이지 않은 것. `shared/ui`에 조각이, `shared/lib`에 공용 유틸이 산다.
+- `shared/` — 어느 기능에도 매이지 않은 것. `shared/ui`에 조각이, `shared/utils`에 공용 도구가, `shared/api`에 통신 설정이, `shared/hooks`에 공용 훅이 산다.
 
 widgets 레이어는 두지 않는다. 화면 조립 덩이가 실제로 반복되면 그때 넣는다.
 
@@ -62,6 +62,6 @@ widgets 레이어는 두지 않는다. 화면 조립 덩이가 실제로 반복�
 
 라우트 이름을 짝짓기에 쓰므로, 서로 다른 라우트가 마지막 디렉터리 이름을 공유하면 spec 하나를 함께 가리킨다. 그런 라우트가 생기면 이름을 다르게 짓는다.
 
-`house/dumb-ui`는 `.tsx`가 직접 쓰는 것만 본다. `@/shared/lib/`를 한 겹 거치면 통과한다. `src/app/page.tsx`가 지금 그 상태다 — `getCurrentUser`를 불러 Supabase에 붙는데 lint는 아무 말도 안 한다.
+`house/dumb-ui`는 `.tsx`가 직접 쓰는 것만 본다. `@/shared/`나 `@/entities/`를 한 겹 거치면 통과한다. 로그인 화면이 지금 그 상태다 — `getCurrentUser`를 불러 Supabase에 붙는데 lint는 아무 말도 안 한다.
 
 규칙의 버그가 아니라 type-aware lint를 안 켜기로 한 결정의 대가다. 어떤 `.ts` 함수가 통신하는지 알려면 타입 정보가 필요한데, 그건 lint 속도를 이유로 이미 접었다(`docs/log/2026-08-26-4.md`의 lint 회차 「범위 밖」). 그러니 `.tsx`와 통신 사이의 경계는 lint가 아니라 리뷰가 지킨다.

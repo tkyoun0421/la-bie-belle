@@ -1,8 +1,5 @@
 import type { DB } from "@/shared/api/database";
-import {
-  monthStart,
-  nextMonthStart,
-} from "@/entities/schedule/api/getMonthSchedule.api";
+import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
 
 /**
  * 그 달 살아 있는 근무 요청을 자리·날과 함께 읽는다. 관리자는 전부 보고 근무자는 자기

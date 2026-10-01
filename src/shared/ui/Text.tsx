@@ -1,5 +1,5 @@
 import { Text as RNText, type TextProps as RNTextProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 글자를 그리는 한 자리다. 화면 파일은 `maxFontSizeMultiplier`를 적지 않는다 — 상한을 여기서만

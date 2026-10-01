@@ -1,5 +1,5 @@
-import { spellWon } from "@/shared/lib/spellNumber";
 import { Dialog } from "@/shared/ui/Dialog";
+import { spellWon } from "@/shared/utils/spellNumber";
 
 /**
  * 기본으로 되돌리기 전에 한 번 묻는 자리다. 지금 값이 기본보다 높으면 누르는 순간

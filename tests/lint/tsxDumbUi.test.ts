@@ -17,7 +17,7 @@ const DUMB_UI = "house/dumb-ui";
 const DUMB_COMPONENT = `import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 export function Counter({ label, onDone }: { label: string; onDone: () => void }) {
   const [count, setCount] = useState(0);

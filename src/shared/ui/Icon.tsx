@@ -1,8 +1,8 @@
 import type { LucideIcon, LucideProps } from "lucide-react-native";
 import { styled } from "nativewind";
 import type { ComponentType } from "react";
-import { cn } from "@/shared/lib/utils";
 import { TONE_CLASS, type TextTone } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * lucide 아이콘을 className으로 칠하는 자리다.

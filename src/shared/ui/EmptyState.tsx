@@ -1,7 +1,7 @@
 import { View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Illustration, type IllustrationScene } from "@/shared/ui/Illustration";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 목록이 설 자리에 아직 올 것이 없을 때 그 자리에 그대로 서는 조각이다. 근무한 날이 없는 급여,

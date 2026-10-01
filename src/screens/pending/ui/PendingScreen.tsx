@@ -10,10 +10,8 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getCurrentUser } from "@/shared/lib/getCurrentUser";
-import { queryClient } from "@/shared/lib/queryClient";
-import { DEVICE_CLEANUP_NOT_WIRED_YET, signOut } from "@/shared/lib/signOut";
-import { supabase } from "@/shared/lib/supabase";
+import { queryClient } from "@/shared/api/queryClient";
+import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Badge } from "@/shared/ui/Badge";
@@ -29,7 +27,12 @@ import { Segment } from "@/shared/ui/Segment";
 import { Text } from "@/shared/ui/Text";
 import { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
 import { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
-import { googlePhotoOf } from "@/features/auth/googlePhotoOf";
+import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import {
+  DEVICE_CLEANUP_NOT_WIRED_YET,
+  signOut,
+} from "@/features/auth/model/signOut";
+import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf";
 import { useSavePushTokenMutation } from "@/features/notification/hooks/useSavePushTokenMutation";
 import { PUSH_DEPS } from "@/features/notification/model/pushDeps";
 import { requestPushPermission } from "@/features/notification/model/pushPermission";

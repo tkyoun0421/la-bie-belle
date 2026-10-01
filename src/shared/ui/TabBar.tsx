@@ -1,9 +1,9 @@
 import type { LucideIcon } from "lucide-react-native";
 import { Pressable, View, type ViewProps } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 근무자 화면 맨 아래에 항상 서는 넷이다. 값의 정본은

@@ -1,9 +1,9 @@
 import { ChevronDown, ChevronUp } from "lucide-react-native";
 import type { ReactNode } from "react";
 import { Pressable, View } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 접었다 펴는 줄이다. 정본은 `docs/2-design/design-system/components.md`의 「아코디언」이고

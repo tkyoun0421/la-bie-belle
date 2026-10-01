@@ -2,10 +2,10 @@ import { Check, User } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, View, type LayoutChangeEvent } from "react-native";
 import Svg from "react-native-svg";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
 import { Rect } from "@/shared/ui/SvgPaint";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 근무표 달력의 날짜 칸 하나다. 정본은

@@ -2,19 +2,8 @@ import { useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
-import {
-  kstToday,
-  monthOf,
-  shiftMonth,
-  spellDate,
-  spellMonth,
-} from "@/shared/lib/kstDate";
-import { canGoBack, canGoForward } from "@/shared/lib/monthBoundary";
-import { NO_VALUE } from "@/shared/lib/noValue";
-import { queryClient } from "@/shared/lib/queryClient";
-import { nowWithOffset } from "@/shared/lib/serverClock";
-import { serverClockStore } from "@/shared/lib/serverClockStore";
-import { supabase } from "@/shared/lib/supabase";
+import { queryClient } from "@/shared/api/queryClient";
+import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
@@ -30,6 +19,17 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
+import {
+  kstToday,
+  monthOf,
+  shiftMonth,
+  spellDate,
+  spellMonth,
+} from "@/shared/utils/kstDate";
+import { canGoBack, canGoForward } from "@/shared/utils/monthBoundary";
+import { NO_VALUE } from "@/shared/utils/noValue";
+import { nowWithOffset } from "@/entities/clock/model/serverClock";
+import { serverClockStore } from "@/entities/clock/model/serverClockStore";
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/hooks/useFirstScheduleMonthQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/hooks/useWorkMonthsQuery";
 import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";

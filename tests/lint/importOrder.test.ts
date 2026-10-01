@@ -10,7 +10,7 @@ function importSources(code: string) {
 
 describe("규칙11 — import 순서", () => {
   it("app 레이어를 shared보다 먼저 import하면 import/order가 걸린다", async () => {
-    const code = `import { Home } from "@/screens/home/ui/home";\nimport { cn } from "@/shared/lib/utils";\n\nexport const value = { Home, cn };\n`;
+    const code = `import { Home } from "@/screens/home/ui/home";\nimport { cn } from "@/shared/utils/cn";\n\nexport const value = { Home, cn };\n`;
 
     const violations = await violationsOf(
       code,
@@ -23,7 +23,7 @@ describe("규칙11 — import 순서", () => {
   });
 
   it("shared → entities → features → screens → app 순서는 import/order가 안 걸린다", async () => {
-    const code = `import { cn } from "@/shared/lib/utils";\nimport { Profile } from "@/entities/profile/model/profile";\nimport { trackAttendance } from "@/features/attendance/model/attendance";\nimport { Home } from "@/screens/home/ui/home";\n\nexport const value = { cn, Profile, trackAttendance, Home };\n`;
+    const code = `import { cn } from "@/shared/utils/cn";\nimport { Profile } from "@/entities/profile/model/profile";\nimport { trackAttendance } from "@/features/attendance/model/attendance";\nimport { Home } from "@/screens/home/ui/home";\n\nexport const value = { cn, Profile, trackAttendance, Home };\n`;
 
     const violations = await violationsOf(code, "src/app/fixture.ts");
 
@@ -33,7 +33,7 @@ describe("규칙11 — import 순서", () => {
   });
 
   it("외부 패키지가 먼저 오고 FSD 그룹이 순서대로면 import/order가 안 걸린다", async () => {
-    const code = `import { describe } from "vitest";\nimport { cn } from "@/shared/lib/utils";\nimport { Profile } from "@/entities/profile/model/profile";\n\nexport const value = { describe, cn, Profile };\n`;
+    const code = `import { describe } from "vitest";\nimport { cn } from "@/shared/utils/cn";\nimport { Profile } from "@/entities/profile/model/profile";\n\nexport const value = { describe, cn, Profile };\n`;
 
     const violations = await violationsOf(
       code,
@@ -46,7 +46,7 @@ describe("규칙11 — import 순서", () => {
   });
 
   it("--fix를 적용하면 import 순서가 바로잡힌다", async () => {
-    const code = `import { Home } from "@/screens/home/ui/home";\nimport { cn } from "@/shared/lib/utils";\n\nexport const value = { Home, cn };\n`;
+    const code = `import { Home } from "@/screens/home/ui/home";\nimport { cn } from "@/shared/utils/cn";\n\nexport const value = { Home, cn };\n`;
 
     const output = await fixedCode(
       code,
@@ -54,13 +54,13 @@ describe("규칙11 — import 순서", () => {
     );
 
     expect(importSources(output)).toEqual([
-      "@/shared/lib/utils",
+      "@/shared/utils/cn",
       "@/screens/home/ui/home",
     ]);
   });
 
   it("CSS side-effect import가 섞여도 크래시나 오탐 없이 import/order가 안 걸린다", async () => {
-    const code = `import "@/app/globals.css";\nimport { cn } from "@/shared/lib/utils";\nimport { Home } from "@/screens/home/ui/home";\n\nexport const value = { cn, Home };\n`;
+    const code = `import "@/app/globals.css";\nimport { cn } from "@/shared/utils/cn";\nimport { Home } from "@/screens/home/ui/home";\n\nexport const value = { cn, Home };\n`;
 
     const violations = await violationsOf(code, "src/app/fixture.ts");
 

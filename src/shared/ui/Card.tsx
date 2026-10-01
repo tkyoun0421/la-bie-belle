@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 화면의 기본 단위다. 회색 바닥 위에 흰 카드가 서너 장 서고 글자 대부분이 카드 안에 있다.

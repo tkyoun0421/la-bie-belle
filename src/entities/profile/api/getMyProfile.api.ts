@@ -1,5 +1,5 @@
 import type { DB } from "@/shared/api/database";
-import { takeProfileReadFailure } from "@/shared/lib/devDoor";
+import { takeProfileReadFailure } from "@/shared/utils/devDoor";
 
 export type MyProfileRow = {
   id: string;

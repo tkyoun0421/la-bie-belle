@@ -22,7 +22,7 @@
 - 적용 범위: `from()`·`rpc()`·`storage`·`channel()`을 부르는 코드 전부
 - 기본 계약: **데이터에 닿는 코드는 `dals`뿐이다.** 화면과 use-case는 `dals` 함수를 부른다
 - 이유: 조항의 정본은 [ADR-003](../adr/ADR-003-supabase-and-integration-tests.md#db-접근을-한곳에-모은다)이다
-- 예외: `auth.*`(세션 확인·코드 교환·로그아웃)는 데이터가 아니라 `shared/lib`에 산다 — 도메인이 없고 로컬 Supabase가 구글 OAuth를 못 돌려 integration 테스트 대상도 아니다
+- 예외: `auth.*`(세션 확인·코드 교환·로그아웃)는 데이터가 아니라 `features/auth`와 `entities/session`에 산다 — 쓰기와 읽기로 갈리고, 로컬 Supabase가 구글 OAuth를 못 돌려 integration 테스트 대상도 아니다
 
 ### 세션을 드는 자리
 

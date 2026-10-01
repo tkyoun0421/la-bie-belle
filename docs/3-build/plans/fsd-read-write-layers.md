@@ -99,7 +99,7 @@ sources:
     - `removePushToken`만 밖이다 — 부르는 쪽은 없지만 짝 테스트가 `savePushToken`으로 토큰을 깔고 시작해서, 그것이 `features`로 올라가면 `entities`가 `features`를 부르는 꼴이 된다(`no-restricted-imports`). 둘이 한 쌍이라 같이 올라간다
   - 쓰기 다섯은 뮤테이션 훅이 없고 `.tsx`가 직접 부른다 — `approveMember`·`blockMember`·`rejectMember`·`unblockMember`는 `features/members/api/`, `submitProfile`은 `features/profile/api/`다. 같은 슬라이스의 다른 훅들이 이미 거기 있어서다. 훅 없이 부르는 것 자체는 `dumb-ui-widen`이 막을 자리고 이 걸음은 통신의 집만 정한다
   - `usePayrollMonths`·`useRehearsalMonths`·`useScheduleMonths` — 다른 쿼리를 조합해 달 목록을 낸다. 읽기 쪽이라 각 `entities/<도메인>/hooks/use[X]MonthsQuery.ts`
-  - `ensureProfile` — 쓰기인데 `entities/profile/api/`에 **남는다.** 부르는 쪽이 `features/auth/resolveEntryDestination.ts`고 그것은 AC-06에서 `entities/session`으로 내려간다 — `entities`가 `features`를 부르는 것은 층 방향을 거스른다. 「없으면 만든다」가 진입 판정의 일부라, 쓰기라는 성격보다 누가 부르느냐가 자리를 정한다
+  - `ensureProfile` — 쓰기인데 `entities/profile/api/`에 **남는다.** 「없으면 만든다」가 진입 판정의 일부고 그 판정(`resolveEntryDestination`)은 프로필을 읽어 길을 고르는 조립이라 `features/auth`에 산다. 올리면 `features/auth`가 제 슬라이스 밖의 프로필 쓰기를 들게 되고, 지금 자리는 그 도메인의 통신이 그 도메인에 있는 꼴이다. 뮤테이션 훅이 없으니 「`entities`에 `useMutation` 금지」도 안 걸린다
   - `features/stats/api/useStatsQueries.ts` — 쿼리 훅 넷이 한 파일에 있고 셋은 제 도메인으로 내려가지만 `useAttendanceMonths`는 schedule과 attendance 둘을 함께 읽어 `entities` 어디에도 못 앉는다(`no-cross-slice-import`). 그래서 **파일을 가른다**
     - `useWorkMonths`·`useFirstScheduleMonth` → `entities/schedule/hooks/`, `usePayrollMonthsByMonth` → `entities/payroll/hooks/`
     - `useAttendanceMonths`는 근태 열두 달을 읽는 `entities/attendance/hooks/useMonthsAttendanceQuery.ts`와, 그것을 `useWorkMonthsQuery`와 달마다 맞추는 `features/stats/hooks/useAttendanceMonths.ts`로 갈린다. 맞추는 쪽은 `useQuery`를 안 가져 AC-08의 「`features/`에서 `useQuery` 금지」가 선다
@@ -112,20 +112,38 @@ sources:
 
 ### AC-06 — 타입이 빠지고 `model`·`utils`가 갈리고 접미사가 붙는다
 
-- 전제: 타입 선언 360개가 파일 192개에 흩어져 있고, 순수 함수가 판정과 꼴 바꾸기로 안 갈려 있다
+**둘로 갈라 AC-07을 그 사이에 끼운다.** 가는 자리를 정리하고 나는 이름을 붙인다 — 까닭은 아래 「구현 순서」가 든다.
+
+#### AC-06가 — `shared/`가 세그먼트로 갈리고 층이 틀린 것이 제 층으로 간다 ✅
+
+- 전제: `shared/lib/` 스물아홉이 세그먼트 없이 한 폴더에 섞여 있고, 그중 열은 기능이나 도메인에 매여 있다. 달 경계를 내는 순수 함수가 dal 넷에 사본으로 흩어져 있다
 - 행동
-  - 도메인의 모양을 말하는 타입을 `[domain].type.ts`로 뺀다. 함수 하나의 인자 꼴처럼 좁은 타입은 그 파일에 남긴다
+  - `shared/lib/` 스물아홉을 `api`·`hooks`·`utils`로 가른다 — 표는 아래 「shared 재편」
+  - 층이 틀린 열을 `features/auth`·`entities/session`·`entities/clock`으로 옮긴다
+  - 슬라이스를 가로지르게 만드는 순수 함수를 `shared/utils/`로 뺀다 — `monthStart`·`nextMonthStart`가 지금 dal 넷에 사본으로 산다
+  - `features/auth/`에서 세그먼트 없이 슬라이스 루트에 사는 셋(`decideEntry`·`googlePhotoOf`·`resolveEntryDestination`)에 세그먼트를 준다
+- 관찰 결과: `pnpm lint`의 `no-cross-slice-import`가 0건이고, `src/` 아래 모든 `.ts`가 세그먼트 다섯 중 하나 안에 산다. 셋이 초록이다
+- 왜 여기인가: AC-07의 완료 조건이 「교차 0건」인데 교차를 만드는 함수가 아직 아래층에 사본으로 있다. 그 사본을 먼저 걷어야 쪼개기가 걸리는지 아닌지로 배정을 판정할 수 있다
+- 돌면서 나온 것 — **`sessionStorage`는 `shared/api`에 남는다.** 계획이 인증 흐름 다섯에 넣어 `features/auth`로 보냈는데, 그러면 `shared/api/createSupabaseClient`가 그것을 당겨 「`shared`는 `features`를 모른다」에 걸린다. 세션을 만들고 끊는 쓰기가 아니라 클라이언트가 받는 저장소 어댑터고 부르는 쪽도 그 팩토리 하나다 — 떠나는 열이 아홉이 된다
+- 돌면서 나온 것 — **`fontLoading`에 훅이 없다.** 계획이 `useFontLoading`으로 이름을 바꿔 `hooks`에 넣으라고 적었는데 그 파일이 내놓는 것은 자산 표와 판정 둘(`shouldRenderApp`·`shouldDismissSplash`)뿐이다. 이름을 안 바꾸고 `utils`로 보냈다. 그 판정이 `utils`에 사는 것은 업무 규칙이 아니고 `shared/`에 `model`이 안 서기 때문이다 — AC-06나의 관찰 결과에 그 범위를 적었다
+- 돌면서 나온 것 — **jest 갈래 둘이 ESM 판정 캐시를 나눠 써 스위트 하나가 뜨지 못했다.** `jest-resolve`가 그 판정을 경로만으로 캐시해서, 한 워커가 `logic`과 `components`를 번갈아 받으면 먼저 본 갈래의 답이 다음 갈래에도 적용된다. `cn.ts`처럼 양쪽이 다 쓰는 파일이 그 자리고 묶음 5가 흔들림으로 한 번 봤다. `pnpm test`가 `jest`를 두 번 돌리게 고쳤다([관찰 048](../../observations/048-jest-projects-share-esm-cache.md))
+- 돌면서 나온 것 — **쪼갠 뒤 교차가 0이 되는 것을 확인했다.** 배정 표를 파일마다 대보는 스크립트로 세 교차 0·역방향 0이다. 교차를 만들던 둘은 `monthStart` 사본이었고 이 묶음이 걷었다
+
+#### AC-06나 — 타입·검증·상태·판정이 접미사를 받는다
+
+- 전제: 타입 선언 492개가 파일 186개에 흩어져 있고, `model` 파일 119개 중 88개가 함수와 타입을 같이 든다
+- 행동
+  - 도메인의 모양을 말하는 타입을 `[domain].type.ts`로 뺀다. 함수 하나의 인자 꼴이나 훅의 반환 꼴처럼 좁은 타입은 그 파일에 남긴다
   - 순수 함수를 판정(`model`)과 꼴 바꾸기(`utils`)로 갈라 옮기고 `[domain].policy.ts`·`[domain].utils.ts`로 모은다
   - 바깥 값 검증을 `[domain].schema.ts`로 — `validateProfile`과 홀리데이 API 응답 파싱이 그 자리다
   - zustand store를 `[domain].store.ts`로
-  - `shared/lib/` 29개를 `api`·`hooks`·`utils` 셋으로 가르고, 층이 틀린 열을 `features/auth`·`entities/session`·`entities/clock`으로 옮긴다
-- 관찰 결과: `utils/`의 함수가 참·거짓이나 허용·금지를 안 돌려준다. `[domain].type.ts`를 열면 그 도메인의 모양이 한 파일에서 읽힌다. 셋이 초록이다
-- 왜 여기인가: 접미사가 성격을 말하므로 성격을 정하는 이 묶음에서 같이 붙인다
+- 관찰 결과: `entities/`·`features/`의 `utils/`에 업무 판정이 없다 — 참·거짓이나 허용·금지를 돌려주는 함수가 `model/`에 산다. `shared/utils/`는 밖이다: 글꼴이 떴나·개발 문이 열렸나 같은 판정은 업무 규칙이 아니고 담을 도메인이 없어 `shared/`에 `model`이 안 선다. `[domain].type.ts`를 열면 그 도메인의 모양이 한 파일에서 읽힌다. 셋이 초록이다
+- 왜 여기인가: 접미사가 성격을 말하므로 성격을 정하는 이 묶음에서 같이 붙인다. AC-07 뒤인 까닭은 `[domain]`이 슬라이스 이름이기 때문이다 — 쪼개기 전에 모으면 도메인 여섯이 한 파일로 합쳐지고 AC-07이 그것을 다시 가른다
 
 ### AC-07 — 슬라이스가 쪼개진다
 
 - 전제: `features/schedule` 하나에 훅 서른이, `entities/schedule`에 dal 서른이 들어 있다
-- 행동: `entities` 7→16, `features` 9→20으로 쪼갠다. 슬라이스 폴더 이름은 camel이다
+- 행동: `entities` 7→14, `features` 9→21로 쪼갠다. 슬라이스 폴더 이름은 camel이다
 - 관찰 결과: 슬라이스마다 「이 슬라이스는 무엇을 하나」에 한 문장으로 답할 수 있다. `no-cross-slice-import`가 한 건도 안 걸린다 — 걸리면 그 import가 위 층으로 올라가야 하는 조립이다
 - `screens/`는 안 쪼갠다
 
@@ -144,76 +162,90 @@ sources:
 
 ## 변경 파일
 
-**아래 표는 현재 이름으로 배정을 적는다.** 이름 자체는 AC-01이 camel로, AC-06이 접미사로 바꾼다 — 배정과 이름을 한 표에 섞으면 어느 묶음이 무엇을 하는지 읽히지 않는다.
+**아래 표는 AC-01 이전 이름으로 배정을 적는다.** camel로 바뀐 지금 이름은 같은 낱말의 꼴만 다르고(`get-month-schedule`이 `getMonthSchedule`이다) AC-06나가 접미사를 더 붙인다 — 배정과 이름을 한 표에 섞으면 어느 묶음이 무엇을 하는지 읽히지 않는다.
 
-### 슬라이스 배정 — entities 16
+### 슬라이스 배정 — entities 14
 
 | 슬라이스 | 읽는 dal | 쿼리 훅 | 모델·제약 |
 | --- | --- | --- | --- |
-| `schedule` | `get-month-schedule` `get-first-schedule-month` `get-open-slots` | `useMonthSchedule` `useMonthWindow` `useOpenSlots` `useScheduleMonths` | `positions` |
+| `schedule` | `get-month-schedule` `get-first-schedule-month` `get-open-slots` | `useMonthSchedule` `useMonthWindow` `useOpenSlots` `useScheduleMonths` `useWorkMonths` `useFirstScheduleMonth` | `positions` |
 | `availability` | `get-my-availability` `get-month-availabilities` | `useMyAvailability` `useMonthAvailabilities` | — |
 | `work-request` | `get-slot-requests` `get-pending-approvals` | `useSlotRequests` `usePendingApprovals` | — |
-| `qualification` | `get-qualifications` | `useQualifications` | — |
 | `hall` | `get-hall-defaults` | `useHallDefaults` | — |
-| `attendance` | `get-day-attendance` `get-month-attendance` | — | `attendance-status` `attendance-summary` `constants` `communication-delay` |
+| `attendance` | `get-day-attendance` `get-month-attendance` | `useMonthsAttendance` | `attendance-status` `attendance-summary` `constants` `communication-delay` |
 | `excuse` | `get-my-excuses` | — | — |
 | `qr` | `get-qr-code` | `useQrCode` | `check-in-url` `export-qr-paper` |
-| `profile` | `get-my-profile` `profile-private` | `useMyProfile` | `can-save-display-name` `format-birth-date` `validate-profile` |
-| `member` | `list-members` | `useMembers` | `is-last-admin` `sort-members` `filter-members` `search-members` `format-elapsed-days` |
+| `profile` | `get-my-profile` `profile-private` `ensure-profile`(쓰기인데 남는다) | `useMyProfile` | `can-save-display-name` `format-birth-date` `validate-profile` |
+| `member` | `list-members` `get-qualifications` | `useMembers` `useQualifications` | `is-last-admin` `sort-members` `filter-members` `search-members` `format-elapsed-days` |
 | `notification` | `get-notifications` `count-unread-notifications` `get-push-reachable` | `useNotifications` `useUnreadCount` | `title` `when` `destination` `reach-state` `reach-message` `profile-notification-row` `push-message` `push-result` `app-entry` `types` |
-| `payroll` | `get-payroll-month` `get-wage-rates` | `useWageRates` `usePayrollMonths` | `day-amount` `day-minutes` `wage-at` `payroll-days` `payroll-total` `holiday-api-response` |
+| `payroll` | `get-payroll-month` `get-wage-rates` | `useWageRates` `usePayrollMonths` `usePayrollMonthsByMonth` | `day-amount` `wage-at` |
 | `rehearsal` | `get-all-rehearsals` `get-my-rehearsals` | `useAllRehearsals` `useMyRehearsals` `useRehearsalMonths` | `rehearsal-hours` `kind-for-date` `can-add-on` `spell-total` |
 | `clock` | `get-server-now` | — | `server-clock` `server-clock-store` |
-| `stats` | — | `useStatsQueries` | `trend` `my-totals` `work-totals` `person-days` `attendance-inputs` |
-| `session` | `get-current-user` | — | `decide-entry` `resolve-entry-destination` `resolve-admin-guard` `google-photo-of` |
+| `session` | `get-current-user` | — | `resolve-admin-guard` `resolve-auth-destination` |
 
-### 슬라이스 배정 — features 20
+**`entities/stats`가 없다.** 통계는 근무·근태·급여를 합쳐 읽어서 도메인 하나가 아니고, `entities` 슬라이스끼리는 서로를 못 부른다 — 자리가 `features/stats`다. 근거는 [ADR-015의 「읽기와 쓰기」](../../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md#읽기와-쓰기)고, 이 자리를 묶음 5가 밟아 관찰 046이 됐다.
+
+**자격이 `member`에 든다.** `queryKeys`가 그 읽기를 `["members", "qualifications"]`로 적고 [schedule/design.md](../../2-design/modules/schedule/design.md)도 자격을 사람의 속성으로 적는다 — 슬라이스를 따로 세우면 `member`와 자격이 서로를 못 부른다.
+
+**급여 계산 셋이 `features`에 남는다.** `payroll-days`는 근태·리허설·근무를, `day-minutes`는 리허설을 읽는다. 아래 `features/payroll-compute`다.
+
+### 슬라이스 배정 — features 22
+
+**스물둘 중 둘은 쓰기가 없다.** `stats`와 `payroll-compute`는 도메인을 가로질러 읽기만 하고, 그것이 `features`인 까닭은 [ADR-015의 「읽기와 쓰기」](../../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md#읽기와-쓰기)가 든다. 둘은 제 질의를 열지 않고 `entities`의 쿼리 훅을 불러 맞춘다.
 
 | 슬라이스 | 바꾸는 것 | 쓰는 dal | 뮤테이션 훅 |
 | --- | --- | --- | --- |
+| `stats` | — (읽기만 합친다) | — | `hooks/useAttendanceMonths` `model/trend` `model/my-totals` `model/work-totals` `model/person-days` `model/attendance-inputs` |
+| `payroll-compute` | — (읽기만 합친다) | — | `model/day-minutes` `model/payroll-days` `model/payroll-total` |
 | `schedule-day` | 관리자가 날을 만들고 열고 닫고 시간을 고친다 | `create-schedule` `open-day` `close-day` `set-day-hours` | `useCreateSchedule` `useOpenDay` `useCloseDay` `useSetDayHours` |
 | `schedule-slot` | 관리자가 자리를 더하고 빼고 합치고 나눈다 | `add-slot` `remove-slot` `merge-slots` `split-slot` | `useAddSlot` `useRemoveSlot` `useMergeSlots` `useSplitSlot` |
 | `schedule-assign` | 관리자가 사람을 배정하고 뺀다 | `add-assignment` `remove-assignment` | `useAddAssignment` `useRemoveAssignment` |
 | `schedule-confirm` | 관리자가 확정하고 확정 뒤 강제로 고친다 | `confirm-schedule` `force-change` | `useConfirmSchedule` `useForceChange` |
-| `availability-submit` | 근무자가 신청하고 관리자가 마감일을 정한다 | `submit-availability` `set-application-deadline` | `useSubmitAvailability` `useSetApplicationDeadline` |
+| `availability-submit` | 근무자가 신청하고 관리자가 마감일을 정한다 | `submit-availability` `set-application-deadline` | `useSubmitAvailability` `useSetApplicationDeadline` + `ui/DeadlineSheet` |
 | `work-request` | 근무 요청을 보내고 받고 취소 요청을 판정한다 | `send-work-request` `respond-request` `create-cancel-request` `decide-cancel-request` | `useSendWorkRequest` `useRespondRequest` `useCreateCancelRequest` `useDecideCancelRequest` |
 | `qualification-grant` | 관리자가 포지션 자격을 준다 | `grant-position` | `useGrantPosition` |
 | `hall-defaults` | 관리자가 홀 기본값을 고친다 | `set-hall-defaults` | `useSetHallDefaults` |
 | `attendance-checkin` | 근무자가 출근을 인증한다 | `check-in` | — (그 task가 세운다) |
 | `excuse` | 근무자가 사유를 내고 관리자가 판정한다 | `submit-excuse` `decide-excuse` | — (그 task가 세운다) |
 | `qr-admin` | 관리자가 QR을 새로 뽑고 홀 위치를 고친다 | `rotate-qr` `set-hall-location` | `useRotateQr` |
-| `profile-edit` | 본인이 프로필·연락처·사진을 고친다 | `submit-profile` `ensure-profile` `set-display-name` `update-my-contact` `update-my-photo` `avatars-bucket` | `useUpdateContact` `useUpdatePhoto` `useSetDisplayName` |
-| `member-admin` | 관리자가 승인·차단·퇴사·역할을 바꾼다 | `approve-member` `reject-member` `block-member` `unblock-member` `mark-leave` `undo-leave` `set-role` | `useMarkLeave` `useUndoLeave` `useSetRole` |
+| `profile-edit` | 본인이 프로필·연락처·사진을 고친다 | `submit-profile` `update-my-contact` `update-my-photo` `avatars-bucket` | `useUpdateContact` `useUpdatePhoto` |
+| `member-admin` | 관리자가 승인·차단·퇴사·역할·표시 이름을 바꾼다 | `approve-member` `reject-member` `block-member` `unblock-member` `mark-leave` `undo-leave` `set-role` `set-display-name` | `useMarkLeave` `useUndoLeave` `useSetRole` `useSetDisplayName` |
 | `wage-admin` | 관리자가 시급을 고치고 되돌린다 | `set-wage` `set-default-wage` `reset-wage-to-default` | `useSetWage` `useSetDefaultWage` `useResetWageToDefault` |
 | `adjustment` | 관리자가 급여를 조정한다 | `set-adjustment` | `useSetAdjustment` |
-| `holiday` | 공휴일을 받고 고친다 | `set-holiday` | `useSetHoliday` |
+| `holiday` | 공휴일을 받고 고친다 | `set-holiday` | `useSetHoliday` + `model/holiday-api-response` |
 | `notification-read` | 알림을 읽음으로 표시한다 | `mark-notifications-read` | `useMarkNotificationsRead` |
 | `push-switch` | 기기 주소를 올리고 알림을 켜고 끈다 | `save-push-token` `remove-push-token` `set-notifications-enabled` | `useNotificationSwitch` `useSavePushToken` + `model/push-deps` `model/push-permission` |
 | `rehearsal-edit` | 관리자가 리허설을 더하고 고치고 뺀다 | `add-rehearsal` `edit-rehearsal` `remove-rehearsal` | `useAddRehearsal` `useEditRehearsal` `useRemoveRehearsal` |
-| `auth` | 세션을 만들고 끊고 잇는다 | — (OAuth라 dal이 없다) | `model/sign-out` `model/auth-redirect` `model/handle-auth-callback` `hooks/wire-auto-refresh` `lib/session-storage` |
+| `auth` | 세션을 만들고 끊고 잇고 들어온 사람을 어디로 보낼지 정한다 | — (OAuth라 dal이 없다) | `model/sign-out` `model/auth-redirect` `model/handle-auth-callback` `model/decide-entry` `model/resolve-entry-destination` `hooks/wire-auto-refresh` `api/session-storage` `utils/google-photo-of` |
 
 ### shared 재편
 
-**이 표는 `shared/` 전체다** — `shared/lib`의 스물아홉뿐 아니라 이미 `shared/api`에 사는 `database`·`errors` 같은 것도 든다. 떠나는 열을 뺀 열아홉이 `shared/lib`에서 온다.
+**이 표는 `shared/` 전체다** — `shared/lib`의 스물아홉뿐 아니라 이미 `shared/api`에 사는 `database`·`errors` 같은 것도 든다. 떠나는 아홉을 뺀 스물이 `shared/lib`에서 온다.
 
 | 세그먼트 | 담는 것 |
 | --- | --- |
-| `api` | `database` `database-types` `errors` `error-codes` `supabase` `create-supabase-client` **`query-keys`(다섯에서 모음)** `query-client` `read-supabase-env` `read-app-url` |
-| `hooks` | `useTheme` `useFontLoading`(`font-loading`에서 이름 바꿈) |
-| `utils` | `kst-date` `spell-number` `cn`(`utils`에서 이름 바꿈) `month-boundary` `mini-calendar` `month-picker` `day-band` `no-value` `reduce-motion` `catalog-visibility` `dev-door` `theme` |
+| `api` | `database` `database-types` `errors` `error-codes` `supabase` `create-supabase-client` `session-storage` **`query-keys`(다섯에서 모음)** `query-client` `read-supabase-env` `read-app-url` `months-query` |
+| `hooks` | `useTheme` |
+| `utils` | `kst-date` `spell-number` `cn`(`utils`에서 이름 바꿈) `month-boundary` **`month-range`(새로 선다)** `mini-calendar` `month-picker` `day-band` `no-value` `reduce-motion` `catalog-visibility` `dev-door` `theme` `font-loading` |
 | `ui` | 조각 쉰하나 — 그대로 |
 
 `shared/`에 `model`이 안 선다 — 도메인이 없어 담을 것이 없다. `theme`가 `utils`인 까닭은 색과 서체가 통신과 무관한 값이기 때문이고, env를 읽는 둘은 통신 설정이라 `api`다.
 
-**`shared/lib`를 떠나는 열.** 인증 흐름은 로그인이라는 use case에 매여 있어 「어느 기능에도 매이지 않은 것」이 아니고, 서버 시각은 `entities/clock`이 이미 있는데 거기 안 들어가 있었다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거다.
+**`month-range`가 새로 선다.** `monthStart`와 `nextMonthStart`가 dal 넷에 사본으로 산다 — `getMonthSchedule`이 내보내고 `getMonthAttendance`·`getMyAvailability`·`getPayrollMonth`가 각자 제 사본을 든다. 내보내는 쪽을 당기는 셋(`getOpenSlots`·`getMonthAvailabilities`·`getSlotRequests`)은 지금 같은 슬라이스라 안 걸리지만 AC-07이 쪼개면 교차가 된다. 한 자리로 올리고 사본 셋을 지운다.
+
+**zustand store 둘의 자리가 갈린다.** `use*`로 불리는 것은 훅이라 `hooks/`에 제 이름으로 살고(`shared/hooks/useTheme.ts`), 그렇지 않은 것은 `model/`에서 `[domain].store.ts`를 받는다(`entities/clock/model/clock.store.ts`). ADR-015의 「전역 상태는 `model`」과 「훅 파일은 그 훅 이름」이 한 파일에서 부딪히는 자리고, 부르는 이름을 이긴 쪽으로 둔다 — AC-08의 「`hooks/` 밖에서 `use*` export 금지」도 그 편이다.
+
+**`shared/lib`를 떠나는 아홉.** 인증 흐름은 로그인이라는 use case에 매여 있어 「어느 기능에도 매이지 않은 것」이 아니고, 서버 시각은 `entities/clock`이 이미 있는데 거기 안 들어가 있었다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거다.
 
 | 가는 곳 | 파일 | 왜 |
 | --- | --- | --- |
-| `features/auth` | `auth-redirect` `handle-auth-callback` `sign-out` `wire-auto-refresh` `session-storage` | 세션을 만들고 끊고 잇는 쓰기다 |
+| `features/auth` | `auth-redirect` `handle-auth-callback` `sign-out` `wire-auto-refresh` | 세션을 만들고 끊고 잇는 쓰기다 |
 | `entities/session` | `get-current-user` `resolve-admin-guard` `resolve-auth-destination` | 누가 들어왔고 어디로 보낼 수 있나 — 읽기와 제약이다 |
 | `entities/clock` | `server-clock` `server-clock-store` | 이미 그 슬라이스가 있다 |
 
-**`entities/session`이 새로 선다.** `features/auth`에 지금 있는 순수 판정 셋(`decide-entry`·`resolve-entry-destination`·`google-photo-of`)도 여기로 내린다. 로그인은 읽기와 쓰기가 한 use case에 섞인 유일한 자리인데, 가르면 「누가 들어왔나」(읽기·제약)와 「세션을 만들고 끊는다」(쓰기)로 깔끔히 나뉘어 lint 규칙에 예외를 둘 필요가 없다.
+**`entities/session`이 새로 선다.** 로그인은 읽기와 쓰기가 한 use case에 섞인 유일한 자리인데, 가르면 「누가 들어왔나」(읽기·제약)와 「세션을 만들고 끊는다」(쓰기)로 나뉘어 lint 규칙에 예외를 둘 필요가 없다.
+
+**사슬 셋은 `features/auth`에 남는다.** `decide-entry`·`resolve-entry-destination`·`google-photo-of`를 `entities/session`으로 내리면 `resolve-entry-destination`이 `entities/profile`의 `ensure-profile`과 `get-my-profile`을 부르는 자리가 같은 층 교차가 된다. 위층에 두면 안 걸린다 — 프로필을 읽어 진입을 판정하는 것은 도메인 둘을 잇는 조립이고 그 자리가 `features`다.
 
 ### 검사·설정
 
@@ -227,8 +259,9 @@ sources:
 | `eslint-rules/index.mjs` · `eslint.config.mjs` | 규칙 넷을 등록한다 |
 | `tests/lint/supabaseClientInApi.test.ts` 외 셋 | 신설 — 규칙마다 위반·정상 픽스처 |
 | `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 넷을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
-| `scripts/syncEdgeShared.mts` | 복사 경로를 `entities/notification/model/`로 |
+| `scripts/syncEdgeShared.mts` | 복사 경로 넷 — 알림 셋이 `entities/notification/model/`과 `features/pushSwitch/model/`로, 공휴일 하나가 `features/holiday/model/`로 |
 | `eslint-rules/noNodeImportInEdgeShared.mjs` | 같은 경로 한 줄 |
+| `tests/lint/attendanceConstants.ts` | `src/entities/attendance/model/constants.ts`를 문자열로 박아 뒀다 — AC-07이 슬라이스 이름을 `attendance`로 두므로 안 바뀌지만, 바꾸면 이 줄도 같이 간다 |
 
 ### 경로·이름을 적은 활성 정본
 
@@ -239,41 +272,51 @@ sources:
 | `CLAUDE.md` 「코드 구조」 | 「부르는 이름이 없는 나머지는 kebab-case다」와 `fileNaming.ts` 경로 | AC-01 |
 | [execution.md](../../4-test/execution.md) 「집행되는 규칙」 | 파일 이름 규칙 행의 kebab 문장과 검사 파일 이름 | AC-01 |
 | [ADR-005](../../2-design/adr/ADR-005-sdlc-stage-folders-and-artifact-chain.md) | 문서 슬러그는 kebab 그대로다 — **안 고친다**, 코드 이름과 다른 축이다 | — |
-| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「레이어」 | 「`shared/lib`에 공용 유틸이 산다」 → `shared/utils` | AC-06 |
-| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「화면과 로직」 | `house/dumb-ui` 설명의 `@/shared/lib/` 경로 | AC-06 |
-| [ADR-003](../../2-design/adr/ADR-003-supabase-and-integration-tests.md) | 「`auth.*`는 `shared/lib`에 산다」 → `features/auth`와 `entities/session` | AC-06 |
-| [architecture.md](../../2-design/system/architecture.md) | 같은 예외 문장 | AC-06 |
-| [account/design.md](../../2-design/modules/account/design.md) | 「전부 `auth.*`라 `shared/lib`이다」 | AC-06 |
-| [spec/ui-kit.md](../../2-design/spec/ui-kit.md) | 「자리」와 AC의 순수 계산 경로 둘 | AC-06 |
-| [execution.md](../../4-test/execution.md) | 테스트 명령 예시의 `src/shared/lib/__tests__/` 경로 | AC-06 |
+| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「레이어」 | 「`shared/lib`에 공용 유틸이 산다」 → `shared/utils` | AC-06가 |
+| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「화면과 로직」 | `house/dumb-ui` 설명의 `@/shared/lib/` 경로 | AC-06가 |
+| [ADR-003](../../2-design/adr/ADR-003-supabase-and-integration-tests.md) | 「`auth.*`는 `shared/lib`에 산다」 → `features/auth`와 `entities/session` | AC-06가 |
+| [architecture.md](../../2-design/system/architecture.md) | 같은 예외 문장 | AC-06가 |
+| [account/design.md](../../2-design/modules/account/design.md) | 「전부 `auth.*`라 `shared/lib`이다」 | AC-06가 |
+| [spec/ui-kit.md](../../2-design/spec/ui-kit.md) | 「자리」와 AC의 순수 계산 경로 둘 | AC-06가 |
+| [execution.md](../../4-test/execution.md) | 테스트 명령 예시의 `src/shared/lib/__tests__/` 경로 | AC-06가 |
 | [runtime.md](../../2-design/system/runtime.md) | 「도메인 파일이 각자의 키를 적는다」 → 팩토리 하나 | AC-03 |
+| [runtime.md](../../2-design/system/runtime.md) 「업무 상수」 | 「상수는 `src/entities/<도메인>/model/constants.ts`에 산다」 → `<도메인>.type.ts`. ADR-015의 `[domain].type.ts`가 「타입과 상수」를 담는다 | AC-06나 |
+| `tests/lint/attendanceConstants.ts` | 그 경로를 문자열로 박아 둔 한 줄 | AC-06나 |
 
 **완료된 과거 plan은 안 건드린다.** [3-build 안내](../README.md#구현-계획)가 「완료된 과거 계획은 소급 변경하지 않는다」고 적는다 — `login-screens`·`rehearsal`·`stats-worker` 등 열 넘는 plan이 `shared/lib`과 kebab 경로를 들지만 그것은 당시 작업의 기록이다.
 
 ## 구현 순서
 
-묶음 여덟을 PR 하나씩 나른다. 앞 묶음이 merge되고 나서 다음을 뗀다 — 같은 파일을 연달아 옮기므로 겹치면 충돌이 손으로 풀 수 없게 커진다.
+묶음 아홉을 PR 하나씩 나른다. 앞 묶음이 merge되고 나서 다음을 뗀다 — 같은 파일을 연달아 옮기므로 겹치면 충돌이 손으로 풀 수 없게 커진다.
 
 1. **AC-01 — 파일 이름 camel.** ✅ 535개를 `git mv`했다
 2. **AC-02 — 폴더 이름 camel.** ✅ `screens/` 다섯을 `git mv`하고 폴더 검사를 세웠다
 3. **AC-03 — 캐시 키 팩토리.** ✅ 여섯과 dal 키 함수 여섯을 `shared/api/queryKeys.ts` 하나로. 키 하나를 정본 쪽으로 되돌렸다 — 관찰 045의 겹침
 4. **AC-04 — 통신을 `api/`로 + `.api.ts`** ✅ 172개를 `git mv`했다
-5. **AC-05 — 훅을 `hooks/`로 + 층 가르기 + `Query`·`Mutation`**
-6. **AC-06 — 타입 빼기 + `model`/`utils` 가르기 + 나머지 접미사**
+5. **AC-05 — 훅을 `hooks/`로 + 층 가르기 + `Query`·`Mutation`** ✅ 205개를 `git mv`하고 `useStatsQueries`를 넷으로 갈랐다 — 관찰 046
+6. **AC-06가 — `shared/` 재편 + 교차를 만드는 순수 함수 추출** ✅ 쉰아홉을 `git mv`하고 `monthStart` 사본 넷을 접었다. 교차가 0이 됐다
 7. **AC-07 — 슬라이스 쪼개기**
-8. **AC-08 — 검사 여덟**
+8. **AC-06나 — 타입 빼기 + `model`/`utils` 가르기 + 나머지 접미사**
+9. **AC-08 — 검사 여덟**
+
+**AC-06을 갈라 AC-07을 그 사이에 끼운다.** 두 방향 다 한 번은 걸린다.
+
+- 6가가 AC-07보다 먼저인 까닭: AC-07의 완료 조건이 「`no-cross-slice-import` 0건」인데 쪼갠 뒤 교차가 되는 자리가 지금 둘 있고 둘 다 같은 원인이다 — `getMonthAvailabilities`와 `getSlotRequests`가 `getMonthSchedule`에서 `monthStart`를 당긴다. 안 걷고 쪼개면 걸린 건수를 보고 「배정이 틀렸나 사본 탓인가」를 가를 수 없다
+- 6나가 AC-07보다 나중인 까닭: `[domain]`이 슬라이스 이름이다. 쪼개기 전에 `[domain].type.ts`로 모으면 `entities/schedule` 하나에 도메인 여섯의 타입이 한 파일로 들어가고 AC-07이 그것을 다시 가른다 — 파일이 두 번 움직여 rename 추적이 끊긴다
+
+6가의 완료 조건은 `pnpm lint`에 교차가 0건인 것이다. 남으면 6가를 안 끝낸 것이다.
 
 **이동과 이름을 한 묶음에서 한다.** 앞선 판은 이동(묶음 3~5)과 접미사(묶음 6)를 갈랐는데, 그러면 같은 파일을 두 번 옮기고 rename 추적이 두 번 끊긴다. 지금은 각 파일이 한 번만 움직인다 — 그 자리의 성격이 정해지는 묶음에서 이름까지 받는다.
 
 **묶음마다 커밋을 둘로 가른다.** 이름·자리만 바꾸는 커밋과 참조를 고치는 커밋이다. 섞이면 git이 rename 추적을 놓쳐 `git log --follow`가 끊긴다.
 
-**이동만 하는 묶음(1·2·4·5·7)에 새 테스트를 만들지 않는다.** [3-build 안내](../README.md#구현-계획)가 「문서만 고치는 작업은 관련 기존 문서 검사로 확인하며 형식만 베끼는 새 테스트를 만들지 않는다」고 적는데, 파일 이동도 같다 — 기존 테스트가 새 경로에서 그대로 초록인 것이 그 묶음의 완료 조건이다. 테스트를 쓰는 묶음은 8뿐이고, 묶음 3과 6은 기존 테스트가 새 호출 꼴로 바뀐다.
+**이동만 하는 묶음(1·2·4·5·6가·7)에 새 테스트를 만들지 않는다.** [3-build 안내](../README.md#구현-계획)가 「문서만 고치는 작업은 관련 기존 문서 검사로 확인하며 형식만 베끼는 새 테스트를 만들지 않는다」고 적는데, 파일 이동도 같다 — 기존 테스트가 새 경로에서 그대로 초록인 것이 그 묶음의 완료 조건이다. 테스트를 쓰는 묶음은 9뿐이고, 묶음 3과 6나는 기존 테스트가 새 호출 꼴로 바뀐다.
 
 ## 리스크·전환·되돌리기
 
-**사용자 대면 동작이 하나도 안 바뀐다.** 묶음 1~7은 파일 자리와 이름과 import만 고치고 묶음 8은 검사만 더한다. 마이그레이션도 없다.
+**사용자 대면 동작이 하나도 안 바뀐다.** 묶음 1~8은 파일 자리와 이름과 import만 고치고 묶음 9는 검사만 더한다. 마이그레이션도 없다.
 
-**되돌리기 단위는 PR 하나다.** 묶음 1·2·4·5·6·7은 `git mv`와 치환뿐이라 revert 한 번으로 돌아간다. 묶음 3은 키 문자열을 안 바꿔 revert해도 캐시가 깨지지 않는다.
+**되돌리기 단위는 PR 하나다.** 묶음 1·2·4·5·6가·7·6나는 `git mv`와 치환뿐이라 revert 한 번으로 돌아간다. 묶음 3은 키 문자열을 안 바꿔 revert해도 캐시가 깨지지 않는다.
 
 **이름만 바꾸는 커밋과 import를 고치는 커밋을 가른다.** 한 커밋에 섞이면 git이 rename 추적을 놓쳐 `git log --follow`가 끊긴다. 묶음 1이 가장 크니 거기서 특히 지킨다.
 
@@ -283,7 +326,11 @@ sources:
 
 **가장 큰 위험은 묶음이 겹치는 것이다.** 다른 task가 같은 기간에 `src/`를 고치면 충돌이 수백 줄이 된다. 이 task가 도는 동안 다른 코드 task를 띄우지 않는다.
 
-**묶음 7에서 `no-cross-slice-import`가 걸릴 수 있다.** 쪼갠 슬라이스끼리 부르는 자리가 나오면 그것은 위 층(`screens`)이 조립할 일이다. 그 목록이 길면 쪼개는 단위가 틀린 것이므로 묶음 7을 멈추고 배정 표를 고친다.
+**묶음 7에서 `no-cross-slice-import`가 걸릴 수 있다.** 쪼갠 슬라이스끼리 부르는 자리가 나오면 그것은 위 층(`features`나 `screens`)이 조립할 일이다. 그 목록이 길면 쪼개는 단위가 틀린 것이므로 묶음 7을 멈추고 배정 표를 고친다.
+
+배정 표를 지금 코드에 대본 결과는 **교차 둘**이고 둘 다 `monthStart`라 묶음 6가가 걷는다. 아래층이 위층을 부르는 자리는 **0**이다. 슬라이스를 못 가린 파일 스물여덟은 DB 자체를 보는 integration 테스트들인데 `@/shared`와 `@tests/`만 당겨 어느 슬라이스에도 안 매인다.
+
+**계획이 둔 자리를 규칙에 대보는 검사가 없다.** 묶음 5가 `useStatsQueries`를 `entities/stats/hooks/`에 두라고 적은 계획을 그대로 따라가다 돌면서 걸렸다 — [관찰 046](../../observations/046-plan-placement-not-checked-against-rules.md)이다. 그래서 위 숫자를 묶음 7을 뗄 때 다시 센다. 세는 일이 스크립트라 손 판정이 아니다.
 
 ## 검증 방법
 
@@ -301,8 +348,8 @@ sources:
 | AC-05 | `entities`에 뮤테이션이, `features`에 쿼리가 남는다 | 새 lint 규칙(묶음 8) | `pnpm lint` | 묶음 8이 선 뒤 0건 |
 | AC-05 | 훅 export 이름을 안 바꿔 파일과 어긋난다 | 기존 unit | `pnpm test -- fileNaming` | 초록 |
 | AC-05 | Edge Function 복사가 빠진 경로를 본다 | 기존 integration | `pnpm test:integration` | `import-holidays`·`send-push` 관련 초록 |
-| AC-06 | 업무 판정이 `utils`에 숨는다 | 손 확인 | — | `utils/`의 함수가 참·거짓이나 허용·금지를 안 돌려준다 |
-| AC-06 | 접미사가 세그먼트와 어긋난다 | 새 검사(묶음 8) | `pnpm test -- fileNaming` | 묶음 8이 선 뒤 초록 |
+| AC-06나 | 업무 판정이 `utils`에 숨는다 | 손 확인 | — | `utils/`의 함수가 참·거짓이나 허용·금지를 안 돌려준다 |
+| AC-06나 | 접미사가 세그먼트와 어긋난다 | 새 검사(묶음 8) | `pnpm test -- fileNaming` | 묶음 8이 선 뒤 초록 |
 | AC-07 | 쪼갠 슬라이스끼리 import가 생긴다 | 기존 lint 규칙 | `pnpm lint` | `no-cross-slice-import` 0건 |
 | AC-07 | 슬라이스 이름이 라우트와 어긋난다 | 손 확인 | — | `screens/`는 안 건드렸다 |
 | AC-08 | 규칙이 정상 코드를 막는다 | unit | `tests/lint/supabaseClientInApi.test.ts` 외 셋 (신설) | 위반 픽스처에서 걸리고 정상에서 통과 |

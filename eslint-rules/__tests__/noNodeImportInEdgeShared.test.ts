@@ -38,7 +38,7 @@ describe("house/no-node-import-in-edge-shared — Deno로 복사되는 폴더의
   it("복사되지 않는 폴더의 node: import는 안 걸린다", async () => {
     const violations = await violationsOf(
       importCode("node:crypto"),
-      "src/shared/lib/spellNumber.ts",
+      "src/shared/utils/spellNumber.ts",
     );
 
     expect(violations.map((violation) => violation.ruleId)).not.toContain(

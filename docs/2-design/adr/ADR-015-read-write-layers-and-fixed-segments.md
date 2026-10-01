@@ -34,6 +34,12 @@ ADR-001은 세그먼트를 「`types`, `components`, `hooks`, `actions`, `dals`,
 
 제약도 읽기 쪽이다. 「마지막 관리자는 역할을 못 내린다」(`is-last-admin`)와 「출근인가 지각인가」(`attendance-status`)는 그 도메인이 참이라고 하는 것이고, 쓰기 전에 읽어 판정한다.
 
+**도메인 둘 이상을 읽는 것은 읽기라도 `features`에 산다.** `entities` 슬라이스는 도메인 하나고 같은 층 슬라이스끼리는 서로를 못 부른다 — 근무와 근태를 함께 읽는 질의, 근무·근태·리허설을 합쳐 급여를 내는 계산, 프로필을 읽어 진입을 판정하는 사슬은 `entities` 어디에도 앉을 자리가 없다. 조립은 위층 일이고, `features`가 그 위층이다. 그래서 `features`의 뜻은 「쓰기 use case」에 「도메인을 가로지르는 읽기」가 더해진다.
+
+같은 함수를 `screens` 둘로 올리면 사본이 둘 생기고(`screens` 슬라이스끼리도 서로를 못 부른다) `shared`로 올리면 도메인이 없다는 전제가 깨진다. 그 둘보다 `features`가 싸다 — 슬라이스 이름이 「무엇을 합치나」를 말한다.
+
+**그래서 `features`에 쓰기가 없는 슬라이스가 있을 수 있다.** `features/stats`가 그렇다. 통계는 바꾸는 것이 하나도 없고 근무·근태·급여를 합쳐 읽기만 한다.
+
 **이 가름이 싸게 되는 까닭은 섞인 파일이 없어서다.**
 
 | 센 것 | 읽기만 | 쓰기만 | 둘 다 | 손으로 판정 |
@@ -90,6 +96,8 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 | `use[Action]Query.ts` | `hooks` | 읽기 훅 |
 | `use[Action]Mutation.ts` | `hooks` | 쓰기 훅 |
 
+**`use*`로 불리는 store는 `hooks/`에 제 이름으로 산다.** zustand의 `create`가 돌려주는 것은 훅이라 `[domain].store.ts`와 「훅 파일은 그 훅 이름」이 한 파일에서 부딪힌다 — 부르는 이름이 이긴다. `shared/hooks/useTheme.ts`가 그 꼴이고, 훅으로 안 불리는 store는 `model/`에서 접미사를 받는다(`entities/clock/model/clock.store.ts`). 「`hooks/` 밖에서 `use*` export 금지」도 그 편이다.
+
 **여덟 꼴에 안 맞는 파일은 접미사가 없다.** `shared/api/queryKeys.ts`처럼 통신 행위가 아니라 통신의 약속인 것, `shared/utils/`의 색 표처럼 도메인이 없는 것이 그렇다. 접미사는 성격이 섞이는 자리를 가르는 장치라, 섞일 것이 없으면 안 붙인다.
 
 **`type`과 `schema`가 둘인 까닭은 사는 시간이 달라서다.** 타입은 컴파일 때 사라지고, 바깥에서 들어온 값은 런타임에 꼴을 확인해야 한다. 지금 `validateProfile`과 홀리데이 API 응답 파싱이 그 일을 손으로 하는데 둘이 다른 자리에 있다. 검증 라이브러리를 들이든 손으로 쓰든 자리는 `schema`다.
@@ -118,6 +126,8 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **`features`는 use case 하나다.** 기준은 「누가 무엇을 바꾸나」고, 그 쓰기를 하는 dal과 뮤테이션 훅이 한 슬라이스에 산다. entities와 같은 이름으로 쪼개지 않는다 — 그러면 features가 엔티티를 거울처럼 베낀 층이 되고, 층이 둘인 뜻이 사라진다.
 
+**도메인을 합치는 읽기도 `features` 슬라이스 하나다.** 기준은 「무엇을 합치나」고 쓰기가 없어도 된다(위 「읽기와 쓰기」). 합치는 슬라이스는 제 질의를 열지 않고 `entities`의 쿼리 훅을 불러 맞춘다 — 그래서 「`features/`의 `useQuery` 금지」가 그 자리에서도 선다.
+
 **`screens`는 쪼개지 않는다.** ADR-001이 「슬라이스 이름은 라우트 이름과 같게 짓는다」로 정했고 라우트가 하나면 슬라이스도 하나다. 그 안을 `ui`와 `model`로 가르는 것이 할 수 있는 전부다.
 
 ## 집행
@@ -126,7 +136,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 | 규칙 | 막는 것 | 지키는 것 | 보는 것 |
 | --- | --- | --- | --- |
-| `api/` 밖에서 Supabase 클라이언트 import 금지 | 통신이 `model`이나 `hooks`로 새기 | `api`가 통신의 유일한 문이라는 것 | lint 규칙 |
+| `@supabase/supabase-js`를 `api/` 밖에서 import 금지 | 통신이 `model`이나 `hooks`로 새기 | `api`가 통신의 유일한 문이라는 것 | lint 규칙 |
 | `hooks/` 밖의 `use*` export 금지 | 훅이 `model`이나 `api`에 섞이기 | 세그먼트의 뜻 | lint 규칙 |
 | `entities/`의 `useMutation` 금지 · `features/`의 `useQuery` 금지 | 층을 가로지르는 읽기·쓰기 | **층의 뜻** | lint 규칙 |
 | `.policy.ts`에서 통신·시계·난수 금지 | 판정이 바깥을 읽기 | policy가 순수하다는 것 | lint 규칙 |
@@ -136,6 +146,8 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 | 캐시 키 배열 리터럴 금지 | 키를 손으로 쓰기 | 팩토리가 유일한 문이라는 것 | lint 규칙 |
 
 셋째 줄이 이 ADR의 핵심을 지킨다. 첫 줄은 [ADR-003](ADR-003-supabase-and-integration-tests.md)의 「클라이언트는 `dals`에서만」을 새 이름으로 옮긴 것이다 — 세그먼트가 `api`로 바뀌었으니 그 규칙도 `api`를 가리킨다.
+
+**첫 줄이 막는 것은 SDK를 당기는 것이고 손잡이를 받는 것이 아니다.** `@supabase/supabase-js`를 import하면 클라이언트를 만들거나 그 타입을 짓는 자리고 그것이 `api`의 일이다. 반면 `shared/api`의 싱글턴을 당겨 아래로 넘기는 것은 화면의 일이다 — 지금 `screens/`와 `src/app/`의 스물넷이 그렇게 받아 훅과 통신에 넘긴다. 둘을 한 규칙으로 묶으면 의존성 주입이 선 방식 자체가 막힌다. 화면이 통신을 **직접 부르는** 축은 `house/dumb-ui`가 이미 막는다.
 
 `fileNaming.ts`는 지금 kebab을 요구하는 자리라 그것을 camel로 바꾸고 접미사 검사를 더한다. 「훅 파일은 `use`로 시작한다」와 케이스 충돌 검사는 그대로 산다.
 

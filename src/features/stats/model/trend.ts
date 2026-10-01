@@ -1,4 +1,4 @@
-import { shiftMonth } from "@/shared/lib/kstDate";
+import { shiftMonth } from "@/shared/utils/kstDate";
 
 /**
  * 추이 그래프가 찍는 열두 달이다. 정본은 `docs/2-design/system/screens/stats.md`의 「추이

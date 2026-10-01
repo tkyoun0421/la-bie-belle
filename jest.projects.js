@@ -69,6 +69,7 @@ function transformOf(preset) {
  */
 const logic = {
   ...withoutRunnerOnlyOptions(nodePreset),
+  displayName: "logic",
   rootDir: __dirname,
   testMatch: [
     "<rootDir>/src/**/__tests__/**/*.test.ts",
@@ -94,6 +95,7 @@ const logic = {
  */
 const components = {
   ...withoutRunnerOnlyOptions(iosPreset),
+  displayName: "components",
   rootDir: __dirname,
   testMatch: ["<rootDir>/src/shared/ui/__tests__/**/*.test.tsx"],
   transform: transformOf(iosPreset),

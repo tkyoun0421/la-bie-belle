@@ -1,6 +1,6 @@
 import { Image, View, type DimensionValue, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 축하하는 순간에 화면 한가운데로 튀어나오는 큰 원이다. 프로필을 처음 보낸 순간이 그

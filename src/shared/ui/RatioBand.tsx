@@ -1,6 +1,6 @@
 import { View } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 한 줄 안에서 전체를 몫으로 가르는 띠다. 정본은

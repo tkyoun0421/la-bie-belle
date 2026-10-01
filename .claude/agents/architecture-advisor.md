@@ -27,7 +27,7 @@ effort: xhigh
 - `docs/2-design/spec/` — 완료 조건. 구조가 어느 spec을 막거나 열어야 하는지
 - `docs/2-design/README.md`와 `docs/2-design/system/`의 넷 — 갈래의 경계와 공통 원칙. 읽을 작성법은 그 README의 [공통 설계](../../docs/2-design/README.md#공통-설계)와 [기술 설계](../../docs/2-design/README.md#기술-설계)다
 - `supabase/migrations/` — 실제 스키마. 소유 데이터 초안은 이것과 대조한다
-- `src/` — 지금 있는 배선. `shared/lib`·`entities`·`app`이 어디까지 와 있나
+- `src/` — 지금 있는 배선. `shared`·`entities`·`app`이 어디까지 와 있나
 - `docs/handoff.md` 「열린 결정」 — 이미 열려 있는 것을 다시 열지 않는다
 - 저장소 밖 — Supabase RLS·realtime, Next 16 캐시, TanStack Query, Service Worker처럼 초안이 기대는 동작은 공식 문서로 확인한다. 기억으로 답하지 않는다
 

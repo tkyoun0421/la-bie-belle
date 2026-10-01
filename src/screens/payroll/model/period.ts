@@ -1,4 +1,4 @@
-import { shiftMonth, spellMonth } from "@/shared/lib/kstDate";
+import { shiftMonth, spellMonth } from "@/shared/utils/kstDate";
 import { weekStartOf } from "@/features/payroll/model/payrollTotal";
 
 /**

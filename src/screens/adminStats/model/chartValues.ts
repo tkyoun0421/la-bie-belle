@@ -1,4 +1,4 @@
-import { NO_VALUE } from "@/shared/lib/noValue";
+import { NO_VALUE } from "@/shared/utils/noValue";
 import { attendanceRate } from "@/entities/attendance/model/attendanceSummary";
 import type { WorkMonth } from "@/entities/schedule/hooks/useWorkMonthsQuery";
 import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";

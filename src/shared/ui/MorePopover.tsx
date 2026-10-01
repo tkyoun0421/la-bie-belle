@@ -1,6 +1,6 @@
 import { Pressable, View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 앱바나 시트 오른쪽 위 더보기(⋯)를 누르면 그 아래로 열리는 짧은 목록이다. 가입 대기의 차단과

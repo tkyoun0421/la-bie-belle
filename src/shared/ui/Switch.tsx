@@ -1,5 +1,5 @@
 import { Pressable, View, type PressableProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 켬과 끔 둘뿐인 설정에 서는 스위치다. 라벨은 줄 왼쪽 글자가 맡고 스위치 안에는 글자를 넣지

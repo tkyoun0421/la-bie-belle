@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 import { Modal, View } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Scrim } from "@/shared/ui/BottomSheet";
 import { Button } from "@/shared/ui/Button";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 시트를 쌓지 않고 따로 뜨는 확인이다. 근무 취소 승인과 시급 되돌리기가 여기다 — 시트 위에서

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TextInput, View, type TextInputProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 글을 받는 칸이다. 라벨과 오류 문구와 글자 수가 칸을 둘러싼다.

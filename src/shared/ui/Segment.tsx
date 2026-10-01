@@ -5,9 +5,9 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 같은 자료를 다른 단위로 보는 스위치다. 급여 조회의 달·주와 통계의 기간이 여기다. `Tabs`와

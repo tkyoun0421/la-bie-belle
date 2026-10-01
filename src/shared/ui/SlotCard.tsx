@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Pressable, View, type PressableProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 근무표 날 상세의 자리 카드다. 높이 하나에 모양이 둘 — 사람이 든 자리는 면이 있고 빈 자리는

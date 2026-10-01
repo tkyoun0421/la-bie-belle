@@ -1,9 +1,9 @@
 import { ChevronLeft } from "lucide-react-native";
 import type { ReactNode } from "react";
 import { Pressable, View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 화면 맨 위 한 줄이다. 여기가 어디인지와 나가는 길을 말한다. 값의 정본은

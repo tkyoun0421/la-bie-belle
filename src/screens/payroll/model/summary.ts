@@ -1,5 +1,5 @@
-import { NO_VALUE } from "@/shared/lib/noValue";
-import { spellWon } from "@/shared/lib/spellNumber";
+import { NO_VALUE } from "@/shared/utils/noValue";
+import { spellWon } from "@/shared/utils/spellNumber";
 import {
   getAttendanceStatus,
   type AttendanceStatusInput,
@@ -14,7 +14,7 @@ import type { PayrollDayKind } from "@/features/payroll/model/payrollDays";
  * 달은 계산이 돌아서 0이 난 것이라 근무자가 그 0을 읽어야 한다. `–`는 「아직 셀 것이 없다」는
  * 뜻이고, 읽는 중에는 이 자리가 스켈레톤이라 `–`를 쓰지 않는다(「빈 상태」).
  *
- * **금액 문구는 `shared/lib/spellNumber.ts`가 소유한다.** 급여 화면과 시급 화면과 통계가 같은
+ * **금액 문구는 `shared/utils/spellNumber.ts`가 소유한다.** 급여 화면과 시급 화면과 통계가 같은
  * 꼴을 써야 하는데(writing.md 「숫자와 단위」) 슬라이스마다 적으면 쉼표와 「원」이 화면마다
  * 갈린다.
  *

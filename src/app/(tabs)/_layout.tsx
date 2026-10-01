@@ -2,9 +2,9 @@ import { Tabs } from "expo-router";
 import { CalendarDays, House, User, Wallet } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { AppState } from "react-native";
-import { getCurrentUser } from "@/shared/lib/getCurrentUser";
-import { supabase } from "@/shared/lib/supabase";
+import { supabase } from "@/shared/api/supabase";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
+import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { useSavePushTokenMutation } from "@/features/notification/hooks/useSavePushTokenMutation";
 import { PUSH_DEPS } from "@/features/notification/model/pushDeps";
 import {

@@ -1,9 +1,9 @@
 import { CircleCheck } from "lucide-react-native";
 import type { ReactNode } from "react";
 import { View, type ViewProps } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 알림을 켜는 자리에 서는 안내 면이다. 정본은

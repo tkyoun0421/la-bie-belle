@@ -5,12 +5,9 @@ import { Pencil } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { AppState, ScrollView, View } from "react-native";
 import { DomainError } from "@/shared/api/errors";
-import { getCurrentUser } from "@/shared/lib/getCurrentUser";
-import { queryClient } from "@/shared/lib/queryClient";
-import { DEVICE_CLEANUP_NOT_WIRED_YET, signOut } from "@/shared/lib/signOut";
-import { supabase } from "@/shared/lib/supabase";
-import type { Theme } from "@/shared/lib/theme";
-import { useTheme } from "@/shared/lib/useTheme";
+import { queryClient } from "@/shared/api/queryClient";
+import { supabase } from "@/shared/api/supabase";
+import { useTheme } from "@/shared/hooks/useTheme";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { BellIcon } from "@/shared/ui/BellIcon";
@@ -26,10 +23,16 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
+import type { Theme } from "@/shared/utils/theme";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { useQualificationsQuery } from "@/entities/schedule/hooks/useQualificationsQuery";
-import { googlePhotoOf } from "@/features/auth/googlePhotoOf";
+import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import {
+  DEVICE_CLEANUP_NOT_WIRED_YET,
+  signOut,
+} from "@/features/auth/model/signOut";
+import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf";
 import { useNotificationSwitchMutation } from "@/features/notification/hooks/useNotificationSwitchMutation";
 import { useSavePushTokenMutation } from "@/features/notification/hooks/useSavePushTokenMutation";
 import { getProfileNotificationRow } from "@/features/notification/model/profileNotificationRow";

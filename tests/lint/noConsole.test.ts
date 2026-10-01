@@ -90,7 +90,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 `;
 
-    const errors = await errorsOf(code, "src/shared/lib/utils.ts");
+    const errors = await errorsOf(code, "src/shared/utils/cn.ts");
 
     expect(errors).toEqual([]);
   });

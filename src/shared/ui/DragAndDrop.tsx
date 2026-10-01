@@ -15,7 +15,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 집어서 다른 곳에 놓는 손짓이다. 근무표 날 상세가 저장소에서 처음 쓴다 — 자리 카드는 버리는

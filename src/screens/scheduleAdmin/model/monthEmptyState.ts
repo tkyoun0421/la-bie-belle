@@ -1,4 +1,4 @@
-import { lastDateOfMonth, shiftMonth } from "@/shared/lib/kstDate";
+import { lastDateOfMonth, shiftMonth } from "@/shared/utils/kstDate";
 import { kstDateOf } from "@/screens/scheduleAdmin/model/formatScheduleDate";
 
 /**
@@ -16,7 +16,7 @@ export type MonthEmptyStateInput = {
 };
 
 /**
- * 그 달의 마지막 날과 달 이동은 `@/shared/lib/kstDate`가 소유한다 — 슬라이스 넷에 같은
+ * 그 달의 마지막 날과 달 이동은 `@/shared/utils/kstDate`가 소유한다 — 슬라이스 넷에 같은
  * 계산이 각자 서 있던 것을 거기로 모았다. 부르는 이름은 그대로다.
  */
 export { lastDateOfMonth, shiftMonth };

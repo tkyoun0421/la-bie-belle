@@ -1,6 +1,6 @@
 import { TextInput, View } from "react-native";
-import { cn } from "@/shared/lib/utils";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 금액을 받는 칸이다. 시급 두 시트가 이 하나를 같이 쓰고, 뒤에 오는 금액 칸도 같은 것을

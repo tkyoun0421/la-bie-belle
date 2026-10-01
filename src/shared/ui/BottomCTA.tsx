@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { View, type ViewProps } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { cn } from "@/shared/lib/utils";
 import { Text } from "@/shared/ui/Text";
+import { cn } from "@/shared/utils/cn";
 
 /**
  * 화면 바닥에 붙어 마지막 한 번을 받는 자리다. 근무표의 「확정하기」와 근무 신청의 「보내기」가

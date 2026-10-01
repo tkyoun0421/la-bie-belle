@@ -1,4 +1,4 @@
-import { spellWon } from "@/shared/lib/spellNumber";
+import { spellWon } from "@/shared/utils/spellNumber";
 
 /**
  * 「연」 단위의 목록이다(`docs/2-design/modules/payroll/screens/payroll.md`의 「내역 목록」).

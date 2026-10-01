@@ -1,10 +1,10 @@
 import { View } from "react-native";
-import { miniCalendarGrid } from "@/shared/lib/miniCalendar";
 import {
   ScheduleDayCell,
   type ScheduleDayCellState,
 } from "@/shared/ui/ScheduleDayCell";
 import { Text } from "@/shared/ui/Text";
+import { miniCalendarGrid } from "@/shared/utils/miniCalendar";
 
 /**
  * 한 달 달력이다. 근무자 조회와 제출 모드, 관리자 편집과 날 열기 모드가 같은 그리드를 쓴다 —
@@ -14,7 +14,7 @@ import { Text } from "@/shared/ui/Text";
  * **두 슬라이스가 쓰므로 조각도 공용이다.** 근무자 화면이 먼저 세웠지만 관리자 화면이 같은
  * 격자를 쓰게 되면서 `src/shared/ui`로 올렸다 — 슬라이스끼리는 서로를 못 부른다.
  *
- * 주가 월요일에 시작하고 이 달 밖 칸을 비우는 계산은 `@/shared/lib/miniCalendar`가 소유한다 —
+ * 주가 월요일에 시작하고 이 달 밖 칸을 비우는 계산은 `@/shared/utils/miniCalendar`가 소유한다 —
  * 미니 달력과 큰 달력이 같은 격자를 쓴다.
  *
  * 칸 바닥의 신청 수와 빈 자리 수는 부르는 쪽이 준다. 무엇을 셀지는 달의 상태가 정하는데 그

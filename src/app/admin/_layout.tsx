@@ -1,9 +1,9 @@
 import { Redirect, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { getCurrentUser } from "@/shared/lib/getCurrentUser";
-import { resolveAdminGuard } from "@/shared/lib/resolveAdminGuard";
-import { supabase } from "@/shared/lib/supabase";
+import { supabase } from "@/shared/api/supabase";
 import { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
+import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import { resolveAdminGuard } from "@/entities/session/model/resolveAdminGuard";
 
 /**
  * 관리자 층의 문지기다. `/admin` 아래는 전부 이 껍데기를 지난다 —

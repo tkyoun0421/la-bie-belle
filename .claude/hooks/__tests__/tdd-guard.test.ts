@@ -60,8 +60,8 @@ const allowed = 0;
 beforeAll(() => {
   projectDir = mkdtempSync(join(tmpdir(), "tdd-guard-"));
   write("tests/e2e/home.yaml", "");
-  write("src/shared/lib/utils.ts", "export function cn() {}");
-  write("src/shared/lib/__tests__/utils.test.ts", "");
+  write("src/shared/utils/cn.ts", "export function cn() {}");
+  write("src/shared/utils/__tests__/cn.test.ts", "");
   write("src/screens/orders/__tests__/placeholder", "");
   write("tests/e2e/orders.yaml", "");
   write(
@@ -120,7 +120,7 @@ describe("유닛 훅", () => {
     expect(
       run(
         "tdd-guard-unit.py",
-        "src/shared/lib/utils.ts",
+        "src/shared/utils/cn.ts",
         "export function cn() {}",
       ),
     ).toBe(allowed);
