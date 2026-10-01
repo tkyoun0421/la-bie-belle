@@ -6,7 +6,9 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 첫 묶음이다.** [ADR-015](2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)가 섰다 — 층의 뜻을 읽기와 쓰기로 가르고(`entities`가 queries·모델·제약, `features`가 mutations의 use case) 세그먼트를 여섯으로 고정했다. [ADR-001](2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md)의 「세그먼트」 절만 대체하고 나머지는 그대로 산다. **[plan](3-build/plans/fsd-read-write-layers.md)이 묶음 다섯을 PR 하나씩 나르고 첫 묶음은 캐시 키 모으기다** — 다섯 군데 `query-keys.ts`를 `shared/config`로 모은다. 쓰기 슬라이스가 낡게 할 키는 읽기 슬라이스 것이고 `no-cross-slice-import`가 그 import를 막아서, 이것이 안 서면 슬라이스 쪼개기가 막힌다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
+**다음 첫 수는 `fsd-read-write-layers`의 첫 묶음이다.** [ADR-015](2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)가 섰다 — 층의 뜻을 읽기와 쓰기로 가르고(`entities`가 queries·모델·제약, `features`가 mutations의 use case) 세그먼트를 다섯(`ui`·`hooks`·`api`·`model`·`utils`)으로 고정하고 파일 이름을 camelCase에 성격 접미사로 정했다. [ADR-001](2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md)의 「세그먼트」 절만 대체하고 나머지는 그대로 산다. **[plan](3-build/plans/fsd-read-write-layers.md)이 묶음 일곱을 PR 하나씩 나르고 첫 묶음은 이름 바꾸기다** — `tests/lint/file-naming.ts`의 kebab 갈래를 camel로 고치고 535개(`src` 450·`tests` 59·`scripts` 13·`eslint-rules` 13)를 `git mv`하고 `Db` 타입을 `DB`로 바꾼다. 이름만 바꾸는 커밋과 import를 고치는 커밋을 가른다 — 섞이면 git이 rename 추적을 놓친다. 둘째 묶음이 캐시 키 모으기고, 다섯 군데 `queryKeys.ts`를 `shared/api`로 모은다. 쓰기 슬라이스가 낡게 할 키는 읽기 슬라이스 것이고 `no-cross-slice-import`가 그 import를 막아서, 이것이 안 서면 슬라이스 쪼개기가 막힌다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
+
+**`CLAUDE.md`의 파일 이름 단락은 아직 kebab이다.** 결정은 camel인데 `file-naming.ts`가 아직 kebab을 요구해서, 그 단락은 「교체되는 중이고 그때까지 새 `.ts`는 kebab으로」라는 줄만 달고 그대로 뒀다. 묶음 1이 검사와 파일과 그 단락을 한 커밋에서 같이 옮긴다. 세그먼트 단락은 다르다 — 거기 적혀 있던 「여섯」과 `db`·`config`는 어떤 시점에도 참이 아니라 지금 고쳤다.
 
 **이 가름이 싸게 되는 까닭은 섞인 파일이 없어서다.** dal 74개가 읽기 24·쓰기 49로, 훅 58개가 쿼리 17·뮤테이션 37로 갈리는데 **둘을 다 하는 파일이 하나도 없다.** `rpc`와 `from`도 49/25로 겹침이 없다. 손으로 판정할 것은 다섯뿐이고 plan이 각각 어디로 갈지 적었다. import는 802줄이 바뀌는데 1658개 중 1654개가 `@/` 절대 경로라 치환으로 끝난다.
 
