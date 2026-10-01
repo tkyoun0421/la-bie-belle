@@ -4,7 +4,7 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getOpenSlots,
   type OpenSlot,
-} from "@/entities/schedule/dals/getOpenSlots";
+} from "@/entities/schedule/api/getOpenSlots.api";
 
 /**
  * 그 달 빈 자리다. 판정은 `open_slots` 뷰가 끝냈고 화면은 날짜별로 묶어 세기만 한다

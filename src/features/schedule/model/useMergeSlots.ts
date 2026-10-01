@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import { mergeSlots } from "@/entities/schedule/dals/mergeSlots";
+import { mergeSlots } from "@/entities/schedule/api/mergeSlots.api";
 
 /**
  * 줄 머리를 다른 줄 머리에 겹쳐 겸임을 만든다. 자리 id가 아니라 포지션 이름 둘을 보내는

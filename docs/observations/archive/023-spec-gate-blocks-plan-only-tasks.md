@@ -12,7 +12,7 @@ resolved: 2026-09-27
 `payroll-data`의 integration writer가 `feat/payroll-data`에서 첫 파일을 쓰자마자 막혔다.
 
 ```
-spec 차단: src/entities/payroll/dals/__tests__/payroll-rls.integration.test.ts 는
+spec 차단: src/entities/payroll/api/__tests__/payroll-rls.integration.test.ts 는
 feat/payroll-data 브랜치의 src/ 수정인데 승인된 spec이 없다.
 ```
 

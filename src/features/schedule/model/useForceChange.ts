@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import { forceChange } from "@/entities/schedule/dals/forceChange";
+import { forceChange } from "@/entities/schedule/api/forceChange.api";
 
 /**
  * 확정 뒤 「사람 바꾸기」다. 옛 배정을 닫고 새 배정을 여는 한 트랜잭션이 함수 안에서

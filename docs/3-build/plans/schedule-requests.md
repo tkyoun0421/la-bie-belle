@@ -195,10 +195,10 @@ pg_cron을 저장소에서 처음 켜는 자리다. `supabase/config.toml`이 �
 | --- | --- | --- |
 | `supabase/migrations/20260927091506_schedule_requests.sql` | 함수 넷, `internal.close_slot_requests`, `add_assignment`의 `create or replace`, `internal.expire_requests`와 `cron.schedule`, `pg_cron` 켜기, `public.server_now()` | AC-01~AC-04 |
 | `src/shared/api/error-codes.ts` · `database-types.ts` | `request_closed`·`already_requested`·`invalid_reason`·`already_decided`와 다시 뽑은 생성 타입 | AC-01·AC-02 |
-| `src/entities/schedule/dals/send-work-request.ts` · `respond-request.ts` · `create-cancel-request.ts` · `decide-cancel-request.ts` | 쓰기 넷 | AC-05~AC-08 |
-| `src/entities/schedule/dals/get-slot-requests.ts` · `get-pending-approvals.ts` | 자리의 요청과 판정 대기 목록 | AC-05·AC-08 |
-| `src/entities/schedule/dals/__tests__/` | 함수 넷과 cron, 요청을 닫는 `add_assignment`·`force_change`의 integration | AC-10 |
-| `src/entities/clock/dals/get-server-now.ts` · `src/shared/lib/server-clock.ts` · `server-clock-store.ts` · `src/app/_layout.tsx` | `server_now()`와 오프셋 — [runtime.md 「서버 시각」](../../2-design/system/runtime.md#서버-시각)이 정한 것을 이 task가 처음 세운다. 앱이 뜰 때와 앞으로 돌아올 때 재고 스플래시는 안 기다린다 | AC-06 |
+| `src/entities/schedule/api/send-work-request.ts` · `respond-request.ts` · `create-cancel-request.ts` · `decide-cancel-request.ts` | 쓰기 넷 | AC-05~AC-08 |
+| `src/entities/schedule/api/get-slot-requests.ts` · `get-pending-approvals.ts` | 자리의 요청과 판정 대기 목록 | AC-05·AC-08 |
+| `src/entities/schedule/api/__tests__/` | 함수 넷과 cron, 요청을 닫는 `add_assignment`·`force_change`의 integration | AC-10 |
+| `src/entities/clock/api/get-server-now.ts` · `src/shared/lib/server-clock.ts` · `server-clock-store.ts` · `src/app/_layout.tsx` | `server_now()`와 오프셋 — [runtime.md 「서버 시각」](../../2-design/system/runtime.md#서버-시각)이 정한 것을 이 task가 처음 세운다. 앱이 뜰 때와 앞으로 돌아올 때 재고 스플래시는 안 기다린다 | AC-06 |
 | `src/features/schedule/model/query-keys.ts` · `useSendWorkRequest.ts` · `useRespondRequest.ts` · `useCreateCancelRequest.ts` · `useDecideCancelRequest.ts` · `useSlotRequests.ts` · `usePendingApprovals.ts` · `__tests__/` | mutation 넷과 읽기 둘, 무효화와 보내는 동안의 잠금 | AC-09 |
 | `src/screens/schedule-admin/model/person-picker-rows.ts` · `slot-request-badge.ts` · `__tests__/` | 미신청 줄의 요청 상태 셋과 체크박스 유무 / 자리 카드 배지 문구 | AC-05 |
 | `src/screens/schedule-admin/ui/PersonPickerSheet.tsx` · `PositionRow.tsx` · `DayDetail.tsx` · `ScheduleAdminScreen.tsx` | 픽커 체크박스·보내기 버튼·요청 상태 줄·자리 카드 배지 | AC-05 |
@@ -237,7 +237,7 @@ pg_cron을 저장소에서 처음 켜는 자리다. `supabase/config.toml`이 �
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 둘이 같은 자리에 들어간다 | integration `src/entities/schedule/dals/__tests__/respond-request.integration.test.ts`, 두 세션 | `pnpm test:integration:run` | 하나만 통과하고 나머지가 `slot_full` |
+| AC-01 | 둘이 같은 자리에 들어간다 | integration `src/entities/schedule/api/__tests__/respond-request.integration.test.ts`, 두 세션 | `pnpm test:integration:run` | 하나만 통과하고 나머지가 `slot_full` |
 | AC-01 | 신청 안 한 사람이 수락으로도 못 들어간다 | integration 위 | 위와 같다 | 신청 검사만 건너뛰고 자격은 본다 |
 | AC-01 | 전부 거절인데 요청이 안 닫힌다 | integration 위 | 위와 같다 | 마지막 후보가 거절하면 `closed_at`이 찍힌다 |
 | AC-03 | 자리가 찼는데 배지가 남는다 | integration `add-assignment.integration.test.ts`·`force-change.integration.test.ts` | 위와 같다 | 배정이 들어가면 그 자리 요청이 닫힌다 |

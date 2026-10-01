@@ -1,13 +1,13 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { getMonthAttendance } from "@/entities/attendance/dals/getMonthAttendance";
-import type { MonthAttendance } from "@/entities/attendance/dals/getMonthAttendance";
-import { getPayrollMonth } from "@/entities/payroll/dals/getPayrollMonth";
-import type { PayrollMonth } from "@/entities/payroll/dals/getPayrollMonth";
-import { getFirstScheduleMonth } from "@/entities/schedule/dals/getFirstScheduleMonth";
-import { getMonthSchedule } from "@/entities/schedule/dals/getMonthSchedule";
-import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
+import { getMonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
+import type { MonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
+import { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import type { PayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import { getFirstScheduleMonth } from "@/entities/schedule/api/getFirstScheduleMonth.api";
+import { getMonthSchedule } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
 
 /**
  * 통계가 여는 열두 달 창이다. 근무 탭은 `['schedule', 'YYYY-MM']` 열둘, 근태 탭은 거기에

@@ -4,7 +4,7 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getPendingApprovals,
   type PendingApproval,
-} from "@/entities/schedule/dals/getPendingApprovals";
+} from "@/entities/schedule/api/getPendingApprovals.api";
 
 /**
  * 판정을 기다리는 근무 취소 요청들이다. 「승인할 일」 화면의 목록이고 관리자 홈의 건수도

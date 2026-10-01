@@ -191,9 +191,9 @@ sources:
 | `supabase/migrations/<날짜>_schedule.sql` | 표 아홉, 제약, 인덱스, `open_slots` 뷰, RLS, 권한 회수 | AC-01~AC-05 |
 | `supabase/migrations/<날짜>_schedule_functions.sql` | 함수 일곱. [이름과 자리](../../2-design/system/data-access.md#이름과-자리)가 도메인마다 파일 하나로 정했다 | AC-06~AC-08 |
 | `src/shared/api/error-codes.ts` | 코드 열하나 | AC-10 |
-| `src/entities/schedule/dals/__tests__/schedule-rls.integration.test.ts` | RLS와 직접 쓰기 | AC-05·AC-09 |
-| `src/entities/schedule/dals/__tests__/schedule-functions.integration.test.ts` | 호출자 검사·달·확정·날 열기 | AC-06~AC-09 |
-| `src/entities/schedule/dals/__tests__/schedule-constraints.integration.test.ts` | 제약·unique index와 뷰 | AC-02~AC-04·AC-09 |
+| `src/entities/schedule/api/__tests__/schedule-rls.integration.test.ts` | RLS와 직접 쓰기 | AC-05·AC-09 |
+| `src/entities/schedule/api/__tests__/schedule-functions.integration.test.ts` | 호출자 검사·달·확정·날 열기 | AC-06~AC-09 |
+| `src/entities/schedule/api/__tests__/schedule-constraints.integration.test.ts` | 제약·unique index와 뷰 | AC-02~AC-04·AC-09 |
 | `tests/integration/postgres.ts` | 범용 `execSql`과 `backdateDeadline` | AC-09 |
 | `tests/lint/error-codes.ts`·`tests/lint/error-codes.test.ts` | 코드 대조 | AC-10 |
 

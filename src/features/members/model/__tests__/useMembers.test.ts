@@ -14,7 +14,7 @@ const listPendingMembersMock =
 const listBlockedMembersMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/dals/listMembers", () => ({
+jest.unstable_mockModule("@/entities/profile/api/listMembers.api", () => ({
   listActiveMembers: listActiveMembersMock,
   listLeftMembers: listLeftMembersMock,
   listPendingMembers: listPendingMembersMock,

@@ -9,7 +9,7 @@ import {
   type ActiveMemberRow,
   type MemberListRow,
   type MemberRow,
-} from "@/entities/profile/dals/listMembers";
+} from "@/entities/profile/api/listMembers.api";
 
 /**
  * 관리자가 보는 사람 목록 넷을 한 훅으로 읽는다 — 재직·퇴사·가입 대기·차단. 네 목록이 같은

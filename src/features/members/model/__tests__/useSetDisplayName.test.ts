@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 
 const setDisplayNameMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/dals/setDisplayName", () => ({
+jest.unstable_mockModule("@/entities/profile/api/setDisplayName.api", () => ({
   setDisplayName: setDisplayNameMock,
 }));
 

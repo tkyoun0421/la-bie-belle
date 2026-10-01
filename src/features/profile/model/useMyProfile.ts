@@ -4,11 +4,11 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getMyProfile,
   type MyProfileRow,
-} from "@/entities/profile/dals/getMyProfile";
+} from "@/entities/profile/api/getMyProfile.api";
 import {
   getProfilePrivate,
   type ProfilePrivateRow,
-} from "@/entities/profile/dals/profilePrivate";
+} from "@/entities/profile/api/profilePrivate.api";
 
 /**
  * 「나」 화면이 보는 다섯은 표 둘에 나뉘어 산다 — 이름과 사진과 역할은 `profiles`,

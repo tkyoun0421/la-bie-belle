@@ -11,9 +11,12 @@ import type { ReactNode } from "react";
 
 const getMyRehearsalsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/rehearsal/dals/getMyRehearsals", () => ({
-  getMyRehearsals: getMyRehearsalsMock,
-}));
+jest.unstable_mockModule(
+  "@/entities/rehearsal/api/getMyRehearsals.api",
+  () => ({
+    getMyRehearsals: getMyRehearsalsMock,
+  }),
+);
 
 const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =

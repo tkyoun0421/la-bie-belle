@@ -12,7 +12,7 @@ const decideCancelRequestMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/dals/decideCancelRequest",
+  "@/entities/schedule/api/decideCancelRequest.api",
   () => ({
     decideCancelRequest: decideCancelRequestMock,
   }),

@@ -134,14 +134,14 @@ sources:
 | `src/features/notification/model/reach-state.ts` | 갈래 판정 순수 함수 | AC-02·AC-07·AC-08 |
 | `src/features/notification/model/useNotificationSwitch.ts` | 켜기·끄기의 순서와 실패 되돌리기 | AC-03 |
 | `src/features/notification/model/useSavePushToken.ts` | 매 진입 주소 보내기 | AC-04 |
-| `src/entities/notification/dals/save-push-token.ts`·`remove-push-token.ts`·`set-notifications-enabled.ts` | 함수 넷 중 이 화면이 부르는 셋 | AC-03·AC-04 |
-| `src/entities/notification/dals/get-push-reachable.ts` | `push_reachable` 뷰 읽기 | AC-08 |
+| `src/entities/notification/api/save-push-token.ts`·`remove-push-token.ts`·`set-notifications-enabled.ts` | 함수 넷 중 이 화면이 부르는 셋 | AC-03·AC-04 |
+| `src/entities/notification/api/get-push-reachable.ts` | `push_reachable` 뷰 읽기 | AC-08 |
 | `src/screens/profile/` | 알림 줄과 끄기 확인 Dialog | AC-07 |
 | `src/screens/pending/` | 켜기 자리 | AC-06 |
 | `src/screens/members/`·`src/screens/schedule-admin/` | 갈래 표시. 확정 뒤 확인은 한 줄로 합친다 | AC-08 |
-| `src/entities/profile/dals/list-members.ts` | 목록이 `push_reachable`과 의사를 같이 읽는다 | AC-08 |
+| `src/entities/profile/api/list-members.ts` | 목록이 `push_reachable`과 의사를 같이 읽는다 | AC-08 |
 | `src/screens/pending/model/notification-prompt.ts` | 뷰 값을 `"denied"`로 맞춘다 | AC-06 |
-| `src/features/notification/model/__tests__/`·`src/entities/notification/dals/__tests__/` | 갈래 판정과 함수의 짝 | AC-02·AC-04·AC-05·AC-08 |
+| `src/features/notification/model/__tests__/`·`src/entities/notification/api/__tests__/` | 갈래 판정과 함수의 짝 | AC-02·AC-04·AC-05·AC-08 |
 | `tests/e2e/notification-settings.yaml` | 켜기·끄기·거부의 여정 | AC-01·AC-03·AC-06·AC-07 |
 
 ## 구현 순서

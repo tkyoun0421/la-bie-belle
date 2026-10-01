@@ -3,9 +3,12 @@ import type { ReactNode } from "react";
 
 const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/getMonthSchedule", () => ({
-  getMonthWindow: getMonthWindowMock,
-}));
+jest.unstable_mockModule(
+  "@/entities/schedule/api/getMonthSchedule.api",
+  () => ({
+    getMonthWindow: getMonthWindowMock,
+  }),
+);
 
 const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =

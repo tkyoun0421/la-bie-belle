@@ -1,7 +1,7 @@
 import { attendanceRate } from "@/entities/attendance/model/attendanceSummary";
-import type { PayrollMonth } from "@/entities/payroll/dals/getPayrollMonth";
-import type { Rehearsal } from "@/entities/rehearsal/dals/getMyRehearsals";
-import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
+import type { PayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
+import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
 import { payrollViewDays } from "@/features/payroll/model/payrollDays";
 import type { PayrollViewDay } from "@/features/payroll/model/payrollDays";
 import type {

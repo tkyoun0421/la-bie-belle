@@ -4,7 +4,7 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getMyRehearsals,
   type Rehearsal,
-} from "@/entities/rehearsal/dals/getMyRehearsals";
+} from "@/entities/rehearsal/api/getMyRehearsals.api";
 
 /**
  * 그 달 본인 리허설이다 — 키는 `['rehearsal', 'YYYY-MM']`

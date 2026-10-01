@@ -21,7 +21,7 @@ describe("규칙3 — 같은 층 다른 슬라이스 import", () => {
 
     const violations = await violationsOf(
       code,
-      "src/entities/profile/dals/fixture.ts",
+      "src/entities/profile/api/fixture.api.ts",
     );
 
     expect(violations.map((violation) => violation.ruleId)).not.toContain(

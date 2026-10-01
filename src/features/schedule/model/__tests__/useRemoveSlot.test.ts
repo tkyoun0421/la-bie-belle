@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const removeSlotMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/removeSlot", () => ({
+jest.unstable_mockModule("@/entities/schedule/api/removeSlot.api", () => ({
   removeSlot: removeSlotMock,
 }));
 

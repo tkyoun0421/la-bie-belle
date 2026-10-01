@@ -10,11 +10,11 @@ const getMyProfileMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const getProfilePrivateMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/dals/getMyProfile", () => ({
+jest.unstable_mockModule("@/entities/profile/api/getMyProfile.api", () => ({
   getMyProfile: getMyProfileMock,
 }));
 
-jest.unstable_mockModule("@/entities/profile/dals/profilePrivate", () => ({
+jest.unstable_mockModule("@/entities/profile/api/profilePrivate.api", () => ({
   getProfilePrivate: getProfilePrivateMock,
 }));
 

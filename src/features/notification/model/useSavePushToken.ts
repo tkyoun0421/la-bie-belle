@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { AppStateStatus } from "react-native";
 import type { DB } from "@/shared/api/database";
-import { savePushToken } from "@/entities/notification/dals/savePushToken";
+import { savePushToken } from "@/entities/notification/api/savePushToken.api";
 import { isForegroundEntry } from "@/features/notification/model/appEntry";
 
 /**

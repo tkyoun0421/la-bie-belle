@@ -4,8 +4,8 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   uploadAvatar,
   type UploadAvatarInput,
-} from "@/entities/profile/dals/avatarsBucket";
-import { updateMyPhoto } from "@/entities/profile/dals/updateMyPhoto";
+} from "@/entities/profile/api/avatarsBucket.api";
+import { updateMyPhoto } from "@/entities/profile/api/updateMyPhoto.api";
 
 /**
  * 사진 바꾸기다. 들어오는 길이 둘이고 나가는 자리는 하나다 — 기기에서 고른 사진은 버킷에

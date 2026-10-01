@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const setAdjustmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/payroll/dals/setAdjustment", () => ({
+jest.unstable_mockModule("@/entities/payroll/api/setAdjustment.api", () => ({
   setAdjustment: setAdjustmentMock,
 }));
 

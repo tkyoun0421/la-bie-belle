@@ -83,7 +83,7 @@ sources:
 
 ### AC-01
 
-**읽기 dal 셋이 선다.** `src/entities/schedule/dals/`.
+**읽기 dal 셋이 선다.** `src/entities/schedule/api/`.
 
 - `get-month-schedule.ts` — `['schedule', 'YYYY-MM']`. `schedules` 한 행(`month`·`application_deadline`·`confirmed_at`)과 그 달의 `days`, 각 날의 `slots`·`assignments`를 한 질의로 받는다. 그 달 `schedules` 행이 없으면 `null`이다 — 그것이 「아직 안 만든 달」이다
 - `get-month-availabilities.ts` — `['availability', 'YYYY-MM']`. 그 달 `availabilities`를 프로필 이름과 같이 받는다. 달력 칸의 신청 수, 날 상세의 근무 신청 줄, 모아보기 화면이 같은 키를 쓴다
@@ -212,10 +212,10 @@ sources:
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `src/entities/schedule/dals/get-month-schedule.ts` | [`schedule-worker`](schedule-worker.md)가 세운 읽기에 `check_ins` 임베딩을 더한다 | AC-01·AC-03 |
-| `src/entities/schedule/dals/get-month-availabilities.ts` · `get-hall-defaults.ts` · `get-open-slots.ts` | 그 달 신청, 홀 기본값, `open_slots` 뷰 | AC-01·AC-02 |
-| `src/entities/schedule/dals/create-schedule.ts` · `set-application-deadline.ts` · `confirm-schedule.ts` · `open-day.ts` · `close-day.ts` · `set-day-hours.ts` · `set-hall-defaults.ts` | 쓰기 일곱 | AC-01 |
-| `src/entities/schedule/dals/__tests__/` | 읽기 넷·쓰기 일곱의 integration | AC-11 |
+| `src/entities/schedule/api/get-month-schedule.ts` | [`schedule-worker`](schedule-worker.md)가 세운 읽기에 `check_ins` 임베딩을 더한다 | AC-01·AC-03 |
+| `src/entities/schedule/api/get-month-availabilities.ts` · `get-hall-defaults.ts` · `get-open-slots.ts` | 그 달 신청, 홀 기본값, `open_slots` 뷰 | AC-01·AC-02 |
+| `src/entities/schedule/api/create-schedule.ts` · `set-application-deadline.ts` · `confirm-schedule.ts` · `open-day.ts` · `close-day.ts` · `set-day-hours.ts` · `set-hall-defaults.ts` | 쓰기 일곱 | AC-01 |
+| `src/entities/schedule/api/__tests__/` | 읽기 넷·쓰기 일곱의 integration | AC-11 |
 | `src/features/schedule/model/query-keys.ts` · `useMonthAvailabilities.ts` · `useHallDefaults.ts` · `useOpenSlots.ts` · `useCreateSchedule.ts` · `useSetApplicationDeadline.ts` · `useConfirmSchedule.ts` · `useOpenDay.ts` · `useCloseDay.ts` · `useSetDayHours.ts` · `useSetHallDefaults.ts` · `__tests__/` | query 셋과 mutation 일곱, 무효화, 확정의 `already_confirmed`를 성공으로 삼키기 | AC-04~AC-08 |
 | `src/features/schedule/ui/DeadlineSheet.tsx` | 마감일 시트 — 모아보기와 확정 잠김 두 문이 같이 쓴다 | AC-07·AC-08 |
 | `src/screens/schedule-admin/model/admin-calendar-day-state.ts` · `confirm-affordance.ts` · `deadline-line.ts` · `format-schedule-date.ts` · `group-open-slots.ts` · `month-empty-state.ts` · `open-mode-selection.ts` · `day-detail-rows.ts` · `day-hours-form.ts` · `__tests__/` | 칸 상태와 빈 자리 수 / 확정 세 모습 / 마감 줄 / 날짜·확정 줄 표기 / 빈 자리 묶기와 「외 n개」 / 전부 지난 달 / 열기 모드의 고를 수 있는 칸과 「n일 열기」 / 날 상세 줄 갈래 / 근무 시간 시트 | AC-02 |
@@ -253,7 +253,7 @@ sources:
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
 | AC-02 | 그리드가 어긋난다, 확정 버튼이 잘못 켜진다, 셈이 틀린다 | unit `src/screens/schedule-admin/model/__tests__/` · `src/screens/admin-home/model/__tests__/` | `pnpm test` | 월요일 시작·빈칸·줄 수, 세 모습, 신청 수·빈 자리 수·「외 n개」 |
-| AC-01 | 근무자에게 남의 신청이 샌다, 한 달이 여러 질의가 된다 | integration `src/entities/schedule/dals/__tests__/` | `pnpm test:integration:run` | RLS대로 좁혀지고 한 질의로 온다 |
+| AC-01 | 근무자에게 남의 신청이 샌다, 한 달이 여러 질의가 된다 | integration `src/entities/schedule/api/__tests__/` | `pnpm test:integration:run` | RLS대로 좁혀지고 한 질의로 온다 |
 | AC-04·AC-05·AC-06·AC-07·AC-08 | 흐름이 끊긴다, 쓰기 뒤 달력이 안 바뀐다 | e2e `tests/e2e/schedule-admin.yaml` | `pnpm e2e` | 만들기 → 날 열기 → 날 닫기 → 마감일 당기기 → 확정 한 줄기 |
 | AC-05 | 부분 실패가 조용히 묻힌다 | e2e 위 spec | 위와 같다 | 실패한 날짜가 토스트에 서고 모드가 안 풀린다 |
 | AC-08 | 확정이 두 번 돈다 | integration 위 | `pnpm test:integration:run` | `already_confirmed`를 성공으로 처리한다 |

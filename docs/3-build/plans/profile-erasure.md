@@ -101,7 +101,7 @@ pg_cron 작업 하나(`erase_profiles`)와 Edge Function 하나(`erase-account`)
 | `supabase/migrations/<날짜>_profile_erasure.sql` — **날짜 자리는 구현이 정한다** | 확장 둘, `internal.erase_profiles`, cron 등록, `revoke` | AC-01·AC-02·AC-04·AC-05 |
 | `supabase/functions/erase-account/index.ts` | Admin API로 `auth.users` 지우기. 저장소의 첫 Edge Function이다 | AC-03 |
 | `supabase/config.toml` | `erase-account` 함수 항목과 호출자 검사 설정 | AC-03 |
-| `src/entities/profile/dals/__tests__/erase-profiles.integration.test.ts` | 1년 경계, 남는 것, 사진 객체가 사라지는 것, 알림 행이 남는 것, 멱등, 쏘는 조건, `internal` 노출 | AC-01·AC-02·AC-04·AC-05 |
+| `src/entities/profile/api/__tests__/erase-profiles.integration.test.ts` | 1년 경계, 남는 것, 사진 객체가 사라지는 것, 알림 행이 남는 것, 멱등, 쏘는 조건, `internal` 노출 | AC-01·AC-02·AC-04·AC-05 |
 | `tests/integration/postgres.ts` | 퇴사 시각을 과거로 미는 헬퍼 | AC-01 |
 
 ## 구현 순서
@@ -128,7 +128,7 @@ pg_cron 작업 하나(`erase_profiles`)와 Edge Function 하나(`erase-account`)
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 1년이 안 지난 사람이 비워진다 | integration `src/entities/profile/dals/__tests__/erase-profiles.integration.test.ts`(예정) | `pnpm test:integration:run`, 로컬 Supabase | `p_now`가 경계 하루 전이면 그 행이 그대로다 |
+| AC-01 | 1년이 안 지난 사람이 비워진다 | integration `src/entities/profile/api/__tests__/erase-profiles.integration.test.ts`(예정) | `pnpm test:integration:run`, 로컬 Supabase | `p_now`가 경계 하루 전이면 그 행이 그대로다 |
 | AC-01 | 1년이 지났는데 안 비워진다 | integration 위 | 위와 같다 | 하루 뒤면 `profile_private` 행이 없고 `photo_url`이 널이고 `erased_at`이 찍힌다 |
 | AC-01 | 남아야 할 것이 같이 사라진다 | integration 위 | 위와 같다 | `display_name`과 그 사람의 배정·인증·시급 행이 그대로다 |
 | AC-01 | `left_at`이 널인 사람이 걸린다 | integration 위 | 위와 같다 | 퇴사 안 한 행은 한 건도 안 바뀐다 |

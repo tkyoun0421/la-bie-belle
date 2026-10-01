@@ -12,8 +12,8 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
-import type { CancelDecision } from "@/entities/schedule/dals/decideCancelRequest";
-import type { PendingApproval } from "@/entities/schedule/dals/getPendingApprovals";
+import type { CancelDecision } from "@/entities/schedule/api/decideCancelRequest.api";
+import type { PendingApproval } from "@/entities/schedule/api/getPendingApprovals.api";
 import { useDecideCancelRequest } from "@/features/schedule/model/useDecideCancelRequest";
 import { usePendingApprovals } from "@/features/schedule/model/usePendingApprovals";
 import {

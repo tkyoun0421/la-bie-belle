@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { setNotificationsEnabled } from "@/entities/notification/dals/setNotificationsEnabled";
+import { setNotificationsEnabled } from "@/entities/notification/api/setNotificationsEnabled.api";
 
 /**
  * 알림 스위치 하나를 켜고 끈다. 정본은

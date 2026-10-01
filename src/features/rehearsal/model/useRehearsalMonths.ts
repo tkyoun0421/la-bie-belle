@@ -4,7 +4,7 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getMyRehearsals,
   type Rehearsal,
-} from "@/entities/rehearsal/dals/getMyRehearsals";
+} from "@/entities/rehearsal/api/getMyRehearsals.api";
 
 /**
  * 여러 달치 본인 리허설을 한 덩이로 읽는다. 급여 화면이 기간을 달과 안 맞게 자르기 때문이다 —

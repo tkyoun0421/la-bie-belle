@@ -15,7 +15,7 @@ import { MonthPickerSheet } from "@/shared/ui/MonthPickerSheet";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
-import type { Rehearsal } from "@/entities/rehearsal/dals/getMyRehearsals";
+import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
 import {
   dayTotal,
   monthTotal,

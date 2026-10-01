@@ -18,7 +18,7 @@
 // - 재직 여부는 이 함수의 입력에 없다 — 그달 배정이 있으면 무조건 byPerson에 선다
 //   (퇴사한 사람도 같다)
 
-import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
+import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
 import { POSITION_ORDER } from "@/entities/schedule/model/positions";
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
 import {

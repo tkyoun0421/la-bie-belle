@@ -71,20 +71,21 @@ sources:
 - 돌면서 나온 것 — **정본 충돌을 고쳤다.** `runtime.md`가 「도메인 파일이 각자의 키를 적는다」고 적어 ADR-015의 팩토리 결정과 부딪혔다. 그 줄을 팩토리로 고쳤다 — 조항이 선 뒤 슬라이스 import를 막는 규칙이 생겨 같은 상수가 복제됐고 그 복제가 위 결함의 바탕이다
 - 돌면서 나온 것 — **무효화 묶음은 키가 아니라 정책이라 이름을 갈랐다.** `staleTogether.scheduleWrite`·`rehearsalWrite`가 그 자리고, 어느 쓰기가 어느 키를 낡게 하느냐의 결정은 영역 design이 그대로 가진다
 
-### AC-04 — 통신이 `api/`로 모이고 `.api.ts`가 된다
+### AC-04 — 통신이 `api/`로 모이고 `.api.ts`가 된다 ✅
 
-- 전제: 데이터 접근이 `entities/*/dals/`와 `features/stats/api/` 둘로 갈려 있다
+- 전제: 데이터 접근이 `entities/*/dals/` 일곱 폴더에 있고 `features/stats/api/`에는 훅이 하나 앉아 있다
 - 행동
   - `entities/*/dals/` 74개를 `entities/*/api/`로 옮기면서 이름을 `[action].api.ts`로 바꾼다
-  - `features/stats/api/`도 접미사를 붙인다
-  - 짝 테스트도 같이 — `getMonthSchedule.api.test.ts`
+  - 짝 테스트도 같이 — `getMonthSchedule.api.test.ts`·`getMonthSchedule.api.integration.test.ts`
 - 관찰 결과: `dals` 폴더가 없고 `api/` 아래 모든 파일이 `.api.ts`다. 셋이 초록이다
-- 이동과 이름을 한 묶음에서 한다 — 같은 파일을 두 번 옮기면 rename 추적이 두 번 끊긴다
 - 손으로 판정할 하나: `avatarsBucket.ts`는 버킷 주소를 읽고 파일을 올려 둘을 다 하는데, 둘 다 통신이라 `api/`다
+- `features/stats/api/useStatsQueries.ts`는 **접미사를 안 받는다** — 통신이 아니라 쿼리 훅이고, AC-05가 `entities/stats/hooks/`로 내린다. 앞선 판이 이 자리에 접미사를 붙이라고 적었는데 그러면 훅에 `.api`가 달린다
+- 돌면서 나온 것 — **문서 링크 26건이 깨졌다.** 완료된 plan 스물셋이 dal 파일을 상대 경로로 걸고 있었다. 「과거 계획은 소급 변경하지 않는다」의 예외로 링크만 고쳤다 — 누른 사람이 404를 보고 `docLinks.test.ts`가 빨개진다
 
 ### AC-05 — 훅이 `hooks/`로 가고 층이 갈리고 접미사가 붙는다
 
 - 전제: 훅 58개가 `features/*/model/`에 순수 계산과 섞여 있고, 읽는 dal과 그 쿼리 훅이 두 층에 떨어져 있다
+- **쓰는 통신 49개가 여기서 두 번째로 움직인다.** 「각 파일이 한 번만 움직인다」의 예외고 `no-cross-slice-import`가 그렇게 가른다 — 쓰는 통신을 `features/<슬라이스>/api/`로 올리면 그것을 부르는 뮤테이션 훅이 같은 슬라이스에 있어야 하는데, 지금 훅은 다른 슬라이스의 `model/`에 있고 같은 층 슬라이스끼리 import는 규칙이 막는다. 통신과 그 훅이 같은 걸음에 가야 한다. 이름은 AC-04에서 한 번만 붙었고 이 걸음은 자리만 바꾼다
 - 행동
   - 쿼리 훅 17개를 `entities/<도메인>/hooks/`로 내리고 `use[Action]Query.ts`로 — **export 이름도 같이 바뀐다**
   - 뮤테이션 훅 37개를 `features/<use-case>/hooks/`로 올리고 `use[Action]Mutation.ts`로
@@ -94,6 +95,8 @@ sources:
 - 손으로 판정할 넷
   - `useSavePushToken` — 쿼리도 뮤테이션도 아니고 앱 진입에 주소를 보내는 효과다. 쓰기 쪽이라 `features/pushSwitch/hooks/useSavePushTokenMutation.ts`
   - `usePayrollMonths`·`useRehearsalMonths`·`useScheduleMonths` — 다른 쿼리를 조합해 달 목록을 낸다. 읽기 쪽이라 각 `entities/<도메인>/hooks/use[X]MonthsQuery.ts`
+  - `ensureProfile` — 쓰기인데 `entities/profile/api/`에 **남는다.** 부르는 쪽이 `features/auth/resolveEntryDestination.ts`고 그것은 AC-06에서 `entities/session`으로 내려간다 — `entities`가 `features`를 부르는 것은 층 방향을 거스른다. 「없으면 만든다」가 진입 판정의 일부라, 쓰기라는 성격보다 누가 부르느냐가 자리를 정한다
+  - `features/stats/api/useStatsQueries.ts` — 통신이 아니라 쿼리 훅 묶음이라 `entities/stats/hooks/`로 내린다
 - 같이 고치는 두 줄: `scripts/syncEdgeShared.mts`와 `eslint-rules/noNodeImportInEdgeShared.mjs`가 보는 경로
 
 ### AC-06 — 타입이 빠지고 `model`·`utils`가 갈리고 접미사가 붙는다
@@ -243,7 +246,7 @@ sources:
 1. **AC-01 — 파일 이름 camel.** ✅ 535개를 `git mv`했다
 2. **AC-02 — 폴더 이름 camel.** ✅ `screens/` 다섯을 `git mv`하고 폴더 검사를 세웠다
 3. **AC-03 — 캐시 키 팩토리.** ✅ 여섯과 dal 키 함수 여섯을 `shared/api/queryKeys.ts` 하나로. 키 하나를 정본 쪽으로 되돌렸다 — 관찰 045의 겹침
-4. **AC-04 — 통신을 `api/`로 + `.api.ts`**
+4. **AC-04 — 통신을 `api/`로 + `.api.ts`** ✅ 172개를 `git mv`했다
 5. **AC-05 — 훅을 `hooks/`로 + 층 가르기 + `Query`·`Mutation`**
 6. **AC-06 — 타입 빼기 + `model`/`utils` 가르기 + 나머지 접미사**
 7. **AC-07 — 슬라이스 쪼개기**

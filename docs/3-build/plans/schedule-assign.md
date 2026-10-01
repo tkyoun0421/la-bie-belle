@@ -85,8 +85,8 @@ sources:
 
 **dal과 model이 는다.**
 
-- 쓰기 dal 여덟 — `src/entities/schedule/dals/add-slot.ts`부터 `grant-position.ts`까지. `rpc()`로 부르고 실패를 `DomainError`·`TransportError`로 가른다([오류의 모양](../../2-design/system/data-access.md#오류의-모양))
-- 읽기는 새로 안 만든다. 날 상세가 쓰는 `['schedule', 'YYYY-MM']`과 `['availability', 'YYYY-MM']`은 [schedule-admin](schedule-admin.md#ac-01)의 dal이고, 픽커가 쓰는 명단은 `['members']`다 — account가 낸 `get-members.ts`에 `position_grants` 임베딩을 더한다. 그 파일의 실제 이름은 `src/entities/profile/dals/list-members.ts`(`listActiveMembers`)고, 임베딩 대신 자격은 새 읽기 `src/entities/schedule/dals/get-qualifications.ts`(`qualifications` 뷰 전체, 키 `['members', 'qualifications']`)가 낸다 — 자격이 `position_grants`만이 아니라서다. 읽기 하나가 더 늘었다. `get-month-schedule.ts`의 `assignments` 임베딩에 `id`·`slot_id`·`kind`가 더 온다 — 같은 포지션 자리가 여럿일 때 배정이 어느 카드에 앉는지 `slot_id`가 가른다
+- 쓰기 dal 여덟 — `src/entities/schedule/api/add-slot.ts`부터 `grant-position.ts`까지. `rpc()`로 부르고 실패를 `DomainError`·`TransportError`로 가른다([오류의 모양](../../2-design/system/data-access.md#오류의-모양))
+- 읽기는 새로 안 만든다. 날 상세가 쓰는 `['schedule', 'YYYY-MM']`과 `['availability', 'YYYY-MM']`은 [schedule-admin](schedule-admin.md#ac-01)의 dal이고, 픽커가 쓰는 명단은 `['members']`다 — account가 낸 `get-members.ts`에 `position_grants` 임베딩을 더한다. 그 파일의 실제 이름은 `src/entities/profile/api/list-members.ts`(`listActiveMembers`)고, 임베딩 대신 자격은 새 읽기 `src/entities/schedule/api/get-qualifications.ts`(`qualifications` 뷰 전체, 키 `['members', 'qualifications']`)가 낸다 — 자격이 `position_grants`만이 아니라서다. 읽기 하나가 더 늘었다. `get-month-schedule.ts`의 `assignments` 임베딩에 `id`·`slot_id`·`kind`가 더 온다 — 같은 포지션 자리가 여럿일 때 배정이 어느 카드에 앉는지 `slot_id`가 가른다
 - model(`src/screens/schedule-admin/model/`)에 붙는 계산
   - 포지션 아홉 줄로 자리를 가르기 — 겸임 자리는 `positions[0]`이 든 줄에만 선다. 나머지 포지션 줄에서는 자리 수가 그만큼 준다
   - 줄 머리의 셈 — 분자는 그 줄 자리 중 살아 있는 정규 배정이 있는 것, 분모는 살아 있는 자리 수. 교육 배정은 안 든다
@@ -199,10 +199,10 @@ sources:
 | --- | --- | --- |
 | `supabase/migrations/20260927091505_schedule_assign.sql` | 함수 여덟과 `qualifications` 뷰 | AC-01 |
 | `src/shared/api/error-codes.ts` · `database-types.ts` | `not_applied`·`not_qualified`·`already_assigned`·`slot_full`·`not_merged`·`stale`·`no_empty_slot`·`wrong_kind`와 다시 뽑은 생성 타입 | AC-01 |
-| `src/entities/schedule/dals/add-slot.ts` · `remove-slot.ts` · `merge-slots.ts` · `split-slot.ts` · `add-assignment.ts` · `remove-assignment.ts` · `force-change.ts` · `grant-position.ts` | 쓰기 여덟 | AC-02 |
-| `src/entities/schedule/dals/get-qualifications.ts` | 새 읽기 — `qualifications` 뷰, 키 `['members', 'qualifications']` | AC-02 |
-| `src/entities/schedule/dals/get-month-schedule.ts` | `assignments`에 `id`·`slot_id`·`kind`, `slots`를 `created_at` 순으로 | AC-02 |
-| `src/entities/schedule/dals/__tests__/` | 함수 여덟과 뷰의 integration | AC-10 |
+| `src/entities/schedule/api/add-slot.ts` · `remove-slot.ts` · `merge-slots.ts` · `split-slot.ts` · `add-assignment.ts` · `remove-assignment.ts` · `force-change.ts` · `grant-position.ts` | 쓰기 여덟 | AC-02 |
+| `src/entities/schedule/api/get-qualifications.ts` | 새 읽기 — `qualifications` 뷰, 키 `['members', 'qualifications']` | AC-02 |
+| `src/entities/schedule/api/get-month-schedule.ts` | `assignments`에 `id`·`slot_id`·`kind`, `slots`를 `created_at` 순으로 | AC-02 |
+| `src/entities/schedule/api/__tests__/` | 함수 여덟과 뷰의 integration | AC-10 |
 | `src/features/schedule/model/query-keys.ts` · `useAddSlot.ts` · `useRemoveSlot.ts` · `useMergeSlots.ts` · `useSplitSlot.ts` · `useAddAssignment.ts` · `useRemoveAssignment.ts` · `useForceChange.ts` · `useGrantPosition.ts` · `useQualifications.ts` · `__tests__/` | mutation 여덟과 읽기 하나, 무효화와 보내는 동안의 잠금 | AC-08 |
 | `src/screens/schedule-admin/model/position-rows.ts` · `person-picker-rows.ts` · `person-sheet.ts` · `confirm-gate.ts` · `merge-target.ts` · `discard-slot.ts` · `force-change-copy.ts` · `__tests__/` | 포지션 줄 가르기와 셈 / 픽커 넷 갈래 / 성별 기호·년생·자격 / 확정 갈림 / 겸임이 되는 조합인지 / 버릴 자리에 사람이 들었는지 / 확인 시트 문안 | AC-02 |
 | `src/screens/schedule-admin/ui/PositionRow.tsx` · `PersonPickerSheet.tsx` · `PersonSheet.tsx` · `QualificationSheet.tsx` · `SlotSheet.tsx` · `DiscardSlotSheet.tsx` · `ConfirmChangeSheet.tsx` · `DayDetail.tsx` · `ScheduleAdminScreen.tsx` | 포지션 줄·자리 카드·픽커·사람 시트·자격 시트·자리 시트·자리 버리기 시트·확인 시트, 그리고 임시 줄 제거 | AC-03~AC-07 |
@@ -234,7 +234,7 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 미신청자가 들어간다, 자격 없이 들어간다, 한 사람이 두 자리를 맡는다 | integration `src/entities/schedule/dals/__tests__/` | `pnpm test:integration:run` | `not_applied`·`not_qualified`·`already_assigned`·`slot_full` |
+| AC-01 | 미신청자가 들어간다, 자격 없이 들어간다, 한 사람이 두 자리를 맡는다 | integration `src/entities/schedule/api/__tests__/` | `pnpm test:integration:run` | `not_applied`·`not_qualified`·`already_assigned`·`slot_full` |
 | AC-01 | 겸임이 두 줄에 그려진다, 합치다 배정이 사라진다, 나누면 사람이 사라진다 | integration 위 | 위와 같다 | 받은 쪽 배열이 늘고 내준 쪽 빈 자리가 닫히고, 사람이 든 자리는 그대로고, 나누면 사람이 남는 쪽에 있다 |
 | AC-01 | 강제 변경이 반쪽 난다 | integration 위 | 위와 같다 | 새 사람 실패 시 기존 배정이 살아 있다 |
 | AC-01 | 확정 뒤 구조가 바뀐다 | integration 위 | 위와 같다 | 확정 시점 날은 `already_confirmed`, 새로 연 날은 통과 |

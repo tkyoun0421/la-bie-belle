@@ -23,7 +23,7 @@
 // mergeMonths가 flatMap으로 여러 달을 하나로 뭉갠다 — 추이 그래프는 달마다
 // 구분된 값이 필요해 그대로 못 쓴다(위 useWorkMonths·useAttendanceMonths와
 // 같은 이유). features/stats가 features/payroll을 부르면 lint 규칙 3에
-// 걸리므로 entities/payroll/dals/getPayrollMonth.ts의 getPayrollMonth·
+// 걸리므로 entities/payroll/api/getPayrollMonth.api.ts의 getPayrollMonth·
 // payrollMonthKey를 이 훅이 직접 부른다 — entities는 아래층이라 괜찮다.
 // 쿼리 키도 payrollMonthKey를 그대로 써서 usePayrollMonths와 캐시를
 // 나눈다.
@@ -34,15 +34,18 @@ import type { ReactNode } from "react";
 const getMonthScheduleMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/getMonthSchedule", () => ({
-  getMonthSchedule: getMonthScheduleMock,
-}));
+jest.unstable_mockModule(
+  "@/entities/schedule/api/getMonthSchedule.api",
+  () => ({
+    getMonthSchedule: getMonthScheduleMock,
+  }),
+);
 
 const getMonthAttendanceMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/attendance/dals/getMonthAttendance",
+  "@/entities/attendance/api/getMonthAttendance.api",
   () => ({
     getMonthAttendance: getMonthAttendanceMock,
   }),
@@ -53,7 +56,7 @@ const getFirstScheduleMonthMock =
   jest.fn<(...args: unknown[]) => Promise<string | null>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/dals/getFirstScheduleMonth",
+  "@/entities/schedule/api/getFirstScheduleMonth.api",
   () => ({
     getFirstScheduleMonth: getFirstScheduleMonthMock,
   }),
@@ -61,7 +64,7 @@ jest.unstable_mockModule(
 
 const getPayrollMonthMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/payroll/dals/getPayrollMonth", () => ({
+jest.unstable_mockModule("@/entities/payroll/api/getPayrollMonth.api", () => ({
   getPayrollMonth: getPayrollMonthMock,
 }));
 

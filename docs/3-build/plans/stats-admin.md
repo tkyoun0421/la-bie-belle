@@ -79,7 +79,7 @@ sources:
 
 **달 키 dal.**
 
-`src/entities/attendance/dals/get-month-attendance.ts`
+`src/entities/attendance/api/get-month-attendance.ts`
 
 - 키가 `['attendance', 'YYYY-MM']`이고 그달치 `check_ins`와 `excuse_status`를 받는다
 - 날 키(`get-day-attendance.ts`)와 같은 모양을 내서 [`attendance-data` AC-06](attendance-data.md#ac-06)의 순수 함수가 그대로 돈다. **상태 계산을 여기서 다시 짜지 않는다**
@@ -144,8 +144,8 @@ sources:
 | --- | --- | --- |
 | `src/entities/schedule/model/positions.ts` | 포지션 아홉과 그 순서의 정본. 근무표 두 화면이 들고 있던 두 벌이 여기로 올라온다 | 「착수 판정」 |
 | `src/screens/schedule-worker/model/day-sheet.ts`·`src/screens/schedule-admin/model/position-rows.ts` | `POSITION_ORDER`를 entities에서 받아 다시 내보낸다 — 부르던 이름이 그대로 살아 기존 테스트가 안 깨진다 | 「착수 판정」 |
-| `src/entities/attendance/dals/get-month-attendance.ts` | `['attendance', 'YYYY-MM']`. 그달에 연 날을 먼저 집고 `check_ins`·`excuse_status`를 표마다 한 번씩 읽어 [`get-day-attendance.ts`](../../../src/entities/attendance/dals/getDayAttendance.ts)와 같은 `{ checkIns, excuseStatuses }`를 낸다 | AC-04 |
-| `src/entities/schedule/dals/get-first-schedule-month.ts` | `['schedule', 'first-month']`. `schedules`의 가장 이른 `month` 한 줄 — 달 줄이 뒤로 갈 수 있는 바닥이다 | AC-04·「착수 판정」 |
+| `src/entities/attendance/api/get-month-attendance.ts` | `['attendance', 'YYYY-MM']`. 그달에 연 날을 먼저 집고 `check_ins`·`excuse_status`를 표마다 한 번씩 읽어 [`get-day-attendance.ts`](../../../src/entities/attendance/api/getDayAttendance.api.ts)와 같은 `{ checkIns, excuseStatuses }`를 낸다 | AC-04 |
+| `src/entities/schedule/api/get-first-schedule-month.ts` | `['schedule', 'first-month']`. `schedules`의 가장 이른 `month` 한 줄 — 달 줄이 뒤로 갈 수 있는 바닥이다 | AC-04·「착수 판정」 |
 | `src/entities/attendance/model/attendance-summary.ts` | `tallyMonthlyAttendance`가 `features/attendance`에서 여기로 내려온다 — 근태 화면과 통계가 같은 셈을 나눠 쓴다. `attendanceRate`는 뒤에 [`stats-worker`](stats-worker.md)가 같은 파일에 더했다 | AC-09 |
 | `src/features/attendance/model/attendance-summary.ts` | 내려간 `tallyMonthlyAttendance`가 빠지고 `summarizeAttendanceStatuses`만 남는다 | AC-09 |
 | `src/features/stats/model/work-totals.ts` | 사람별·포지션별 집계와 그 재료(`workInputsOf`·`dayMinutes`·`isLiveAssignment`·`hoursLabel`) | AC-01 |
@@ -163,7 +163,7 @@ sources:
 | `src/shared/ui/ListRow.tsx` | 값 톤에 `zero`(`fg.neutral-subtle`)가 붙는다 — 시간이 0인 포지션 줄이 그 색이다 | AC-07 |
 | `src/features/stats/model/__tests__/`·`src/features/stats/api/__tests__/` | 집계 넷과 질의의 unit | AC-01~AC-03·AC-09 |
 | `src/screens/admin-stats/model/__tests__/`·`src/entities/attendance/model/__tests__/attendance-summary.test.ts` | 화면 모델과 tally의 unit | AC-03·AC-09 |
-| `src/entities/attendance/dals/__tests__/get-month-attendance.integration.test.ts`·`src/entities/schedule/dals/__tests__/get-first-schedule-month.integration.test.ts` | 달 키 둘의 integration | AC-04 |
+| `src/entities/attendance/api/__tests__/get-month-attendance.integration.test.ts`·`src/entities/schedule/api/__tests__/get-first-schedule-month.integration.test.ts` | 달 키 둘의 integration | AC-04 |
 | `tests/integration/postgres.ts` | 시드 헬퍼 `seedJointSlot`·`seedExcuse` | AC-04 |
 | `tests/e2e/admin-stats.yaml` | 근무 탭 → 시트 → 근태 탭 → 달 이동 → 빈 상태 한 여정 | AC-06~AC-09 |
 | `scripts/e2e-seed-server.mts` | 시드 상태 `stats_admin_overview` — 관리자 하나와 근무자 넷, 지난 세 달 | AC-06~AC-09 |
@@ -187,7 +187,7 @@ sources:
 
 **확정 여부를 안 본다 — 배정이 있으면 센다.** [stats.md](../../2-design/system/screens/stats.md)의 상태표가 「확정된 근무표가 없다」로, [spec](../../2-design/spec/stats-admin.md)의 상태 격자가 「근무가 없으면」으로 갈려 있었다. **spec 쪽이다.** 관리자가 이번 달 배정을 짜면서 사람별 시간 균형을 보는 것이 이 화면의 실제 쓰임인데, 확정을 기다리면 가장 쓸모 있는 순간에 빈 화면이 된다. 급여도 확정을 안 기다린다([PAY-020](../../2-design/modules/payroll/README.md#pay-020)). `work-totals.ts`도 `trend.ts`도 `confirmed_at`을 입력으로 안 받는다.
 
-**뒤로 가는 바닥은 새 dal이 낸다** — `src/entities/schedule/dals/get-first-schedule-month.ts`, 키 `['schedule', 'first-month']`. `schedules`의 가장 이른 `month` 한 줄이다. 급여가 승인일로 대신한 것은([payroll.md](../../2-design/modules/payroll/screens/payroll.md) 「첫 달 앞」) 그 화면의 바닥이 사람마다 달라서고, 여기 바닥은 홀 하나라 질의 한 번이면 된다.
+**뒤로 가는 바닥은 새 dal이 낸다** — `src/entities/schedule/api/get-first-schedule-month.ts`, 키 `['schedule', 'first-month']`. `schedules`의 가장 이른 `month` 한 줄이다. 급여가 승인일로 대신한 것은([payroll.md](../../2-design/modules/payroll/screens/payroll.md) 「첫 달 앞」) 그 화면의 바닥이 사람마다 달라서고, 여기 바닥은 홀 하나라 질의 한 번이면 된다.
 
 **근태 월 집계의 입력을 만드는 자리는 `src/features/stats/model/attendance-inputs.ts`다.** 그달 배정·날 시각과 `checkIns`·`excuseStatuses`를 `(day_id, profile_id)`로 맞물려 `AttendanceStatusInput[]`을 낸다. 세는 것은 이미 있는 `tallyMonthlyAttendance`고 **다시 짜지 않는다**.
 
@@ -214,8 +214,8 @@ sources:
 | AC-02 | 시트 합계가 줄 값과 다르다 | unit `src/features/stats/model/__tests__/person-days.test.ts` | `pnpm test` | 회수와 시간이 구획 줄과 같다 |
 | AC-03 | 값 없는 달을 0으로 잇는다 | unit `src/features/stats/model/__tests__/trend.test.ts` | `pnpm test` | `null`이라 선이 끊긴다 |
 | AC-03 | 지난달을 골랐는데 구간이 안 밀린다 | unit 위 | `pnpm test` | 보는 달이 오른쪽 끝 |
-| AC-04 | 달 경계 밖이 섞인다 | integration `src/entities/attendance/dals/__tests__/get-month-attendance.integration.test.ts` | `pnpm test:integration:run` | 전달 마지막 날과 다음 달 첫날이 안 온다. **세션별 차이는 안 본다** — 근무·근태 읽기는 홀 전체 공개다(위 「착수 판정」) |
-| AC-04 | 뒤로 가는 바닥을 못 낸다 | integration `src/entities/schedule/dals/__tests__/get-first-schedule-month.integration.test.ts` | `pnpm test:integration:run` | 달이 여럿이면 가장 이른 것 |
+| AC-04 | 달 경계 밖이 섞인다 | integration `src/entities/attendance/api/__tests__/get-month-attendance.integration.test.ts` | `pnpm test:integration:run` | 전달 마지막 날과 다음 달 첫날이 안 온다. **세션별 차이는 안 본다** — 근무·근태 읽기는 홀 전체 공개다(위 「착수 판정」) |
+| AC-04 | 뒤로 가는 바닥을 못 낸다 | integration `src/entities/schedule/api/__tests__/get-first-schedule-month.integration.test.ts` | `pnpm test:integration:run` | 달이 여럿이면 가장 이른 것 |
 | AC-04 | 한 달을 날마다 읽는다 | integration 위 | 위와 같다 | 한 질의로 그달치 |
 | AC-05 | 0인데 1px 선이 남는다 | unit `row-bar` 계산(예정) | `pnpm test` | 폭이 0이면 안 그린다 |
 | AC-06 | 탭을 옮기면 달이 돌아간다 | e2e `tests/e2e/admin-stats.yaml` | `pnpm e2e` | 보는 달 그대로 |

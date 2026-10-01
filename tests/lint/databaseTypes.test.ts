@@ -174,17 +174,17 @@ describe("생성 타입을 안 물린 클라이언트를 쓰는 파일", () => {
   it("`@supabase/supabase-js`에서 `SupabaseClient`를 가져오는 파일을 잡는다", () => {
     const files = [
       {
-        file: "src/entities/profile/dals/ensureProfile.ts",
+        file: "src/entities/profile/api/ensureProfile.api.ts",
         source: `import type { SupabaseClient } from "@supabase/supabase-js";`,
       },
       {
-        file: "src/entities/profile/dals/getMyProfile.ts",
+        file: "src/entities/profile/api/getMyProfile.api.ts",
         source: `import type { DB } from "@/shared/api/database";`,
       },
     ];
 
     expect(bareClientFiles(files)).toEqual([
-      "src/entities/profile/dals/ensureProfile.ts",
+      "src/entities/profile/api/ensureProfile.api.ts",
     ]);
   });
 
@@ -239,10 +239,10 @@ describe("위반을 사람이 읽는 문장으로 옮긴다", () => {
   it("생성 타입을 안 물린 클라이언트는 별명을 가리킨다", () => {
     const message = describeDatabaseTypesViolation({
       type: "bare-client",
-      file: "src/entities/profile/dals/ensureProfile.ts",
+      file: "src/entities/profile/api/ensureProfile.api.ts",
     });
 
-    expect(message).toContain("src/entities/profile/dals/ensureProfile.ts");
+    expect(message).toContain("src/entities/profile/api/ensureProfile.api.ts");
     expect(message).toContain("DB");
   });
 });

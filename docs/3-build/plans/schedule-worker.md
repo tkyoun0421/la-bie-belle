@@ -211,9 +211,9 @@ sources:
 | --- | --- | --- |
 | `supabase/migrations/20260927091504_submit_availability.sql` | `submit_availability` | AC-01 |
 | `src/shared/api/error-codes.ts` · `database-types.ts` | `bad_dates`와 다시 뽑은 생성 타입 | AC-01 |
-| `src/entities/schedule/dals/get-month-schedule.ts` | 그 달 근무표 행과 연 날들을 한 질의로, `assignments`에 프로필 이름 임베딩 | AC-02 |
-| `src/entities/schedule/dals/get-my-availability.ts` · `submit-availability.ts` | 읽기 하나, 쓰기 하나 | AC-02 |
-| `src/entities/schedule/dals/__tests__/get-month-schedule.integration.test.ts` · `get-my-availability.integration.test.ts` · `submit-availability.integration.test.ts` | dal 셋의 integration | AC-11 |
+| `src/entities/schedule/api/get-month-schedule.ts` | 그 달 근무표 행과 연 날들을 한 질의로, `assignments`에 프로필 이름 임베딩 | AC-02 |
+| `src/entities/schedule/api/get-my-availability.ts` · `submit-availability.ts` | 읽기 하나, 쓰기 하나 | AC-02 |
+| `src/entities/schedule/api/__tests__/get-month-schedule.integration.test.ts` · `get-my-availability.integration.test.ts` · `submit-availability.integration.test.ts` | dal 셋의 integration | AC-11 |
 | `src/features/schedule/model/query-keys.ts` · `useMonthSchedule.ts` · `useMonthWindow.ts` · `useMyAvailability.ts` · `useSubmitAvailability.ts` · `__tests__/` | 캐시 키, query 셋과 mutation 하나, 보낸 뒤 `['availability']` 무효화 | AC-06 |
 | `src/screens/schedule-worker/model/month-state.ts` | 달의 네 모습 판정과 마감 줄 문구 | AC-02 |
 | `src/screens/schedule-worker/model/calendar-day-state.ts` | 달력 칸 상태와 「내 근무만」의 면 제거 | AC-02·AC-04·AC-05 |
@@ -252,7 +252,7 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 마감 뒤에 신청이 들어간다, 남의 신청을 낸다 | integration `src/entities/schedule/dals/__tests__/submit-availability.integration.test.ts` | `pnpm test:integration:run` | `window_closed`·`already_confirmed`·`bad_dates`, 자기 행만 |
+| AC-01 | 마감 뒤에 신청이 들어간다, 남의 신청을 낸다 | integration `src/entities/schedule/api/__tests__/submit-availability.integration.test.ts` | `pnpm test:integration:run` | `window_closed`·`already_confirmed`·`bad_dates`, 자기 행만 |
 | AC-01 | 덮어쓰기가 이전 행을 남긴다 | integration 위 | 위와 같다 | 이전 행이 사라지고 빈 배열이 전부 지운다 |
 | AC-02 | 달의 네 모습을 잘못 가른다, 인원을 잘못 센다 | unit `src/screens/schedule-worker/model/__tests__/` | `pnpm test` | 네 모습, 교육 포함 인원, 현황 줄 0 제외 |
 | AC-05 | 「내 근무만」이 닫힌 날과 안 갈린다 | unit 위 + e2e | 위와 같다 | 면은 빠지고 글자는 `fg.neutral-muted`, 그 날들이 눌린다 |

@@ -127,7 +127,7 @@ sources:
 | `src/screens/wages/ui/ResetWageDialog.tsx` | 되돌리기 확인 Dialog. 바뀔 값을 그 자리에서 말한다 | AC-03·AC-06 |
 | `src/app/admin/wages.tsx` | `NotBuiltYet`을 걷고 `/admin/wages`에 화면을 붙인다 | AC-01 |
 | `src/shared/ui/AmountInput.tsx` | 숫자와 「원」을 한 덩이로 오른쪽에 세운다. 쉼표와 상한은 안 세고 부르는 쪽의 순수 함수가 든다 | AC-04 |
-| `src/entities/payroll/dals/get-wage-rates.ts`·`__tests__/get-wage-rates.integration.test.ts` | 전원의 시급 이력과 기본 시급 현재값을 읽는다 — 달치 `get-payroll-month.ts`로는 못 그린다 | AC-05 |
+| `src/entities/payroll/api/get-wage-rates.ts`·`__tests__/get-wage-rates.integration.test.ts` | 전원의 시급 이력과 기본 시급 현재값을 읽는다 — 달치 `get-payroll-month.ts`로는 못 그린다 | AC-05 |
 | `src/features/payroll/model/useWageRates.ts`·`__tests__/useWageRates.test.ts` | 읽기 훅 하나. 목록과 시트 이력이 이 한 응답에서 갈린다 | AC-05 |
 | `src/features/payroll/model/useSetWage.ts`·`useSetDefaultWage.ts`·`useResetWageToDefault.ts`·`__tests__/` | 쓰기 훅 셋, 무효화 `['payroll']` | AC-05 |
 | `src/features/payroll/model/query-keys.ts` | `['payroll']`과 `['payroll', 'wages']` 두 키 | AC-05 |
@@ -161,7 +161,7 @@ sources:
 | AC-02 | 같이 바뀌는 인원이 틀린다 | unit `src/screens/wages/model/__tests__/follower-count.test.ts` | `pnpm test` | 가장 최근 행이 `follows_default`인 사람만 센다 |
 | AC-04 | 상한이 한 시트에만 걸린다 | unit `src/screens/wages/model/__tests__/wage-amount.test.ts` | `pnpm test` | 두 시트 다 100,000원에서 멈춘다 |
 | AC-04 | 저장 실패에 값이 날아간다 | unit 위 | `pnpm test` | 칸에 값이 남고 시트가 안 닫힌다 |
-| AC-05 | 목록 질의가 이력을 잘라 온다 | integration `src/entities/payroll/dals/__tests__/get-wage-rates.integration.test.ts` | `pnpm test:integration:run` | 한 사람의 `wage_rates`가 전부 오고 기본 시급은 가장 최근 행 하나다 |
+| AC-05 | 목록 질의가 이력을 잘라 온다 | integration `src/entities/payroll/api/__tests__/get-wage-rates.integration.test.ts` | `pnpm test:integration:run` | 한 사람의 `wage_rates`가 전부 오고 기본 시급은 가장 최근 행 하나다 |
 | AC-01 | 퇴사자가 목록에 선다 | e2e `tests/e2e/wages.yaml` | `pnpm e2e` | 퇴사한 사람이 빠진다 |
 | AC-03 | 기본을 쓰는 사람에게 되돌리기가 뜬다 | e2e 위 | 위와 같다 | 그 줄이 없다 |
 | AC-03 | 이력이 눌려 고쳐진다 | e2e 위 | 위와 같다 | 지난 줄에 화살표가 없고 안 눌린다 |

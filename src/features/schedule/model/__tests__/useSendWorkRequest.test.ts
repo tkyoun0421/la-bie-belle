@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const sendWorkRequestMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/sendWorkRequest", () => ({
+jest.unstable_mockModule("@/entities/schedule/api/sendWorkRequest.api", () => ({
   sendWorkRequest: sendWorkRequestMock,
 }));
 

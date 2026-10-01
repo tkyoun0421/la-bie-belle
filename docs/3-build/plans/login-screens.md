@@ -21,7 +21,7 @@
 - `src/shared/lib/create-supabase-browser-client.ts` — 브라우저용 Supabase 클라이언트 팩토리. 세션 기반 task에서 미뤄 온 절반이다
 - `src/shared/lib/handle-auth-callback.ts` — 콜백 분기(code 없음 / 교환 실패 / 성공)의 순수 로직. `route.ts`는 여기 위임만 한다
 - `src/screens/pending/model/notification-prompt.ts` — 알림 영역 세 모습(아직 안 켬 / 켠 뒤 / 아이폰 안내)의 전이 판정
-- `src/entities/profile/dals/` — 승인 시각을 읽는 함수 추가. DB 접근은 dals에 모은다(ADR-003)
+- `src/entities/profile/api/` — 승인 시각을 읽는 함수 추가. DB 접근은 dals에 모은다(ADR-003)
 
 ## 테스트 인프라 결정
 

@@ -9,7 +9,7 @@ import {
   rehearsalHours,
   type RehearsalRow,
 } from "@/entities/rehearsal/model/rehearsalHours";
-import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
+import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
 import {
   dayAmount,
   REGULAR_MINUTES,

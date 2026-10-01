@@ -165,7 +165,7 @@ sources:
 | `package.json` | 복사 스크립트 항목 | AC-09 |
 | `eslint-rules/<이름>.mjs` 둘·`eslint-rules/index.mjs`·`eslint.config.mjs`·`tests/lint/rules.ts`와 그 표 | 마운트 밖 import 막기, `node:` import 막기 | AC-10 |
 | `src/features/notification/model/__tests__/*.test.ts` | 메시지 만들기, 실패 가르기 | AC-06·AC-07 |
-| `src/entities/notification/dals/__tests__/push-dispatch.integration.test.ts` | 잡기 조건, 끈 사람, 주소 없는 사람, 재시도 상한, 결과 쓰기, 긁기, 트리거와 cron | AC-01~AC-04·AC-08 |
+| `src/entities/notification/api/__tests__/push-dispatch.integration.test.ts` | 잡기 조건, 끈 사람, 주소 없는 사람, 재시도 상한, 결과 쓰기, 긁기, 트리거와 cron | AC-01~AC-04·AC-08 |
 
 ## 구현 순서
 
@@ -193,7 +193,7 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-02 | 2분이 안 지난 행이 다시 잡힌다 | integration `src/entities/notification/dals/__tests__/push-dispatch.integration.test.ts`(예정) | `pnpm test:integration:run`, 로컬 Supabase | `claimed_at`이 1분 전이면 안 잡힌다 |
+| AC-02 | 2분이 안 지난 행이 다시 잡힌다 | integration `src/entities/notification/api/__tests__/push-dispatch.integration.test.ts`(예정) | `pnpm test:integration:run`, 로컬 Supabase | `claimed_at`이 1분 전이면 안 잡힌다 |
 | AC-02 | 2분이 지났는데 안 잡힌다 | integration 위 | 위와 같다 | 3분 전이면 잡히고 `push_attempts`가 1 오른다 |
 | AC-02 | 다섯 번을 태운 행이 또 잡힌다 | integration 위 | 위와 같다 | `push_attempts = 5`면 안 잡힌다 |
 | AC-02 | 끈 사람에게 푸시가 나간다 | integration 위 | 위와 같다 | `notifications_enabled`가 거짓이면 그 행이 안 잡힌다 |
