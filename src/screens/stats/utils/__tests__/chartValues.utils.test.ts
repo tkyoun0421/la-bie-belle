@@ -52,9 +52,9 @@
 
 import type { PayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
 import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
-import type { ScheduleAssignment } from "@/entities/schedule/api/getMonthSchedule.api";
-import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
-import type { WorkMonth } from "@/entities/schedule/hooks/useWorkMonthsQuery";
+import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
+import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
+import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
 import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   joinPayrollByMonth,

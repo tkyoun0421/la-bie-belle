@@ -13,7 +13,7 @@
  * 들고, 이 파일은 부르던 이름을 그대로 두려고 다시 내보낸다.
  */
 
-import { POSITION_ORDER } from "@/entities/schedule/model/schedule.type";
+import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 
 export { POSITION_ORDER };
 

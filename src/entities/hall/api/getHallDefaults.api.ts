@@ -1,4 +1,5 @@
 import type { DB } from "@/shared/api/database";
+import type { HallDefaults, HallSlot } from "@/entities/hall/api/hall.dto";
 
 /**
  * 홀의 자리·근무 시간 기본값이다. 날을 여는 순간 이 값이 그 날에 깔린다
@@ -14,17 +15,6 @@ import type { DB } from "@/shared/api/database";
  * `default_starts`·`default_ends`는 `time`이라 `"10:00:00"` 꼴로 온다 — 화면에 쓰는
  * `"10:00"`으로 자르는 것은 읽는 쪽 몫이다.
  */
-
-export type HallSlot = {
-  positions: string[];
-  count: number;
-};
-
-export type HallDefaults = {
-  default_slots: HallSlot[];
-  default_starts: string;
-  default_ends: string;
-};
 
 export async function getHallDefaults(client: DB): Promise<HallDefaults> {
   const { data, error } = await client

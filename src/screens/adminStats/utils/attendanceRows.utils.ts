@@ -2,7 +2,7 @@ import {
   tallyMonthlyAttendance,
   type MonthlyAttendanceTally,
 } from "@/entities/attendance/utils/attendanceSummary.utils";
-import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import {
   buildAttendanceInputs,
   type AttendanceInputCheckIn,

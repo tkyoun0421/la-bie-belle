@@ -48,8 +48,8 @@ sources:
 
 | 묶음 | 품는 슬라이스 | 이동할 것 | DTO·매퍼 | `services` | controller | 안쪽에서 쪼갤 것 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 공용 | `shared/*` · `entities/clock` · `src/app/` | 타입 12 · 상수 7 · SDK 5 · 환경값 2 · 시계 2 | — | — | 화면 12 | `_catalog` 624줄 · `DragAndDrop` export 다섯 · `kstDate` export 일곱 |
-| 근무표 | schedule · availability · hall · workRequest + features 일곱 + screens 셋 | 타입 15 · 상수 2 | DTO 4 · 매퍼 4 | 60 | 화면 10 | `DayDetail` 969줄에 훅 서른여덟 · `ScheduleAdminScreen` 736줄 |
+| 공용 ✅ | `shared/*` · `entities/clock` · `src/app/` | 타입 12 · 상수 7 · SDK 5 · 환경값 2 · 시계 2 | — | — | 화면 12 | `_catalog` 624줄 · `DragAndDrop` export 다섯 · `kstDate` export 여섯 |
+| 근무표 ✅ | schedule · availability · hall · workRequest + features 일곱 + screens 셋 | 타입 16 · 상수 2 | DTO 파일 4 · 매퍼 1 | 60 | 화면 10 | `DayDetail` 969줄에 훅 서른여덟 · `ScheduleAdminScreen` 736줄 |
 | 급여 | payroll + payrollCompute · wageAdmin · adjustment · holiday + screens 둘 | 타입 15 · 상수 7 | DTO 6 · 매퍼 1 | 16 | 화면 2 | `payrollDays.policy` 339줄 · `period.policy` export 아홉 |
 | 구성원 | member · profile + memberAdmin · profileEdit · qualificationGrant + screens 여섯 | 타입 8 · 상수 8 | DTO 5 | 20 | 화면 10 | `PendingScreen` 689줄 · `ProfileScreen` 506줄 · `MembersScreen` 446줄 |
 | 근태 | attendance · excuse + attendanceCheckin · excuse + approvals | 타입 8 · 상수 9 | DTO 3 · 매퍼 1 | 2 | 화면 2 | `ApprovalsScreen` 235줄 |
@@ -191,6 +191,8 @@ sources:
 - **접미사 붙이기(묶음 8가)와 타입 빼기(묶음 8나)를 두 PR로 가른다.** 앞의 것은 `git mv`와 지정자 치환이라 기계가 끝내고 rename 추적이 남는다. 뒤의 것은 선언을 파일 밖으로 꺼내 다른 파일에 붙이는 일이라 rename이 아니고 diff가 내용으로 보인다 — 한 PR에 섞으면 123개의 이름 변경 속에서 타입 이동을 읽을 수 없다
 - 돌면서 나온 것 — **판정과 꼴 바꾸기의 비율이 거의 반반이다.** 백스물아홉 중 판정 예순하나·꼴 바꾸기 쉰여섯이고, 그 가름이 `model`과 `utils` 두 폴더로 눈에 보이게 됐다. 접미사를 안 받는 여섯은 부작용이 있어 `policy`가 못 되고 통신도 아니다 — 공유 시트를 열고(`exportQrPaper`), 인증을 호출하고(`handleAuthCallback`·`signOut`·`resolveEntryDestination`), OS 권한을 묻고(`pushPermission`), 의존을 묶는다(`pushDeps`). **세그먼트 다섯에 「부작용을 내는 순수하지 않은 손」의 자리가 없다** — 지금은 `model`에 접미사 없이 산다
 - 돌면서 나온 것 — **`Row` 접미사가 정반대 둘을 가리키고 있었다.** 타입을 빼려고 `*Row` 서른아홉을 세어 보니 열여섯은 Supabase가 돌려주는 생 꼴이고(`entities/*/api/`) 스물셋은 「이 목록의 한 줄」이라는 뷰 꼴이다(`screens/*/utils`·`model`). `MemberRow`와 `PickerRow`가 같은 이름을 쓰는데 하나는 DB 계약이고 하나는 우리가 조립한 것이다. **DB 꼴이 화면까지 닿은 자리가 열이다** — `MembersScreen.tsx`가 `MemberRow`를 그대로 받아 열 이름이 뷰에 박혀 있다. 그래서 `[domain].dto.ts`가 서고, 한 접미사가 두 뜻을 갖던 것이 갈렸다
+- 돌면서 나온 것 — **DTO를 가르는 것과 꼴을 바꾸는 것이 다른 일이다.** 근무표에서 DTO 열하나를 떼어 보니 「`.api.ts`가 돌려주기 전에 매퍼를 불러 도메인 모양으로 바꾼다」가 이 묶음 안에서 안 선다 — DB 열 이름이 `api/` 밖 파일 쉰여덟에 닿고 `ScheduleDay` 하나가 묶음 넷에 걸린다. 자리 세우기만 여기서 하고 꼴 바꾸기를 [dto-to-domain-shape](dto-to-domain-shape.md)로 떼어, 그쪽은 도메인이 아니라 **필드**로 가른다. 매퍼는 질의가 이미 꼴을 바꾸던 자리 하나(`getMonthWindow`)에만 섰다
+- 돌면서 나온 것 — **훅의 반환 꼴과 도메인 모양의 경계가 이름으로 안 보인다.** `WorkMonth`는 접미사가 없고 밖에서 둘이 당겨 도메인 타입처럼 보이는데, 실은 `useWorkMonthsQuery`가 `ScheduleDay[]`를 달로 묶어 내는 꼴이다. `*Input`·`*Result`·`*Props`는 접미사로 걸러지지만 이런 것은 파일을 열어야 갈린다 — 근무표에서 타입 마흔넷을 접미사로 걸렀을 때 스물일곱이 「접미사 없음」으로 남았고 그 전부를 손으로 봤다
 - 돌면서 나온 것 — **boolean만 보면 판정의 절반을 놓친다.** 반환 타입으로 1차 분류해 보니 boolean을 내는 것이 스물넷인데, 상태 유니언을 내는 판정이 그만큼 더 있었다(`AttendanceStatus`·`ReachState`·`DayConfirmGate`·`RehearsalKind`…). 「참·거짓」이 아니라 「이것이 어떤 상태인가」가 기준이라 자동 분류가 안 되고 파일마다 손으로 봤다
 
 ### AC-07 — 슬라이스가 쪼개진다 ✅
@@ -227,6 +229,7 @@ sources:
 - 관찰 결과: `consts/` 밖에 `export const <대문자_스네이크>`가 없다. `.type.ts`를 열면 타입만 있다. 셋이 초록이다
 - `queryKeys`·`staleTogether`는 밖이다 — 통신의 약속이고 꼴이 camel이다
 - 도메인으로 쪼갠다 — 알림 열하나·근태 아홉·구성원 여덟·급여 일곱·공용 일곱이 큰 쪽이다
+- 돌면서 나온 것 — **`.tsx`의 `export const <대문자_스네이크>`는 밖이다.** 근무표에서 상수를 세어 보니 넷이 `.tsx`에 있었다 — 테스트 손잡이 둘(`SCHEDULE_HOLIDAY_SWITCH_TEST_ID`·`ADJUSTMENT_EXTRA_MINUTES_INPUT_TEST_ID`)과 드래그 접두 둘(`ROW_DRAG_PREFIX`·`SLOT_DRAG_PREFIX`)이다. 업무 값이 아니라 그 컴포넌트를 집는 식별자라 `ui`에 남는다 — ADR-015가 `*Props`를 `.tsx`에 남긴 것과 같은 축이다. AC-08의 `constsSegment.mjs`는 `.ts`만 본다
 - 돌면서 나온 것 — **가름이 테스트도 가른다.** `fontLoading.ts`의 짝 테스트가 자산 표 검사와 판정 둘 검사를 한 파일에 들고 있었다. 구현이 `consts`와 `utils`로 갈리면 테스트 하나가 두 대상을 보게 되고 「짝 테스트는 대상 옆에」가 깨진다 — `consts/__tests__/font.const.test.ts`와 `utils/__tests__/fontLoading.utils.test.ts`로 같이 갈랐다. 단언은 한 줄도 안 바뀐다
 
 ### AC-11 — `config`가 선다
@@ -264,7 +267,9 @@ sources:
   - `features/stats/hooks/useAttendanceMonths.ts`는 `services/useAttendanceMonthsQuery.ts`로 — 쿼리 둘을 조립하는 service고 접미사를 못 받고 있었다
   - `features/auth/hooks/wireAutoRefresh.ts`는 `lib/wireAutoRefresh.lib.ts`로 — 훅이 아니고 세션 자동 갱신을 켜는 부작용이다
 - 관찰 결과: `services/` 밖에 `useQuery`·`useMutation` 호출이 없다. `hooks/`에는 controller와 UI 훅만 남는다. 셋이 초록이다
-- 묶음별로 쪼갠다 — 근무표 60 · 구성원 20 · 급여 16 · 리허설 12 · 알림 10 · QR 4 · 근태 2다
+- 묶음별로 쪼갠다 — 근무표 60 ✅ · 구성원 20 · 급여 16 · 리허설 12 · 알림 10 · QR 4 · 근태 2다
+- 돌면서 나온 것 — **근무표의 `hooks/` 열하나가 통째로 비었다.** Query·Mutation 밖의 파일이 하나도 없어 폴더를 `git mv` 하나로 옮겼다. controller가 그 자리에 선 뒤 같은 이름 폴더에 역할 둘이 섞이지 않는다는 뜻이고, AC-12가 `hooks/`를 새로 만드는 자리가 된다
+- 돌면서 나온 것 — **주석의 「구현 대상」 경로 스물여섯이 또 뒤처졌다.** [관찰 050](../../observations/050-comment-paths-checked-by-nothing.md)이 든 자리고 이번에도 import 치환이 안 집었다. 옮긴 뒤 실재하지 않는 `src/` 경로를 전수로 뽑아 0으로 맞췄다 — 세그먼트를 옮기는 PR마다 이 걸음이 든다
 
 ### AC-15 — `stores`가 선다
 
@@ -542,3 +547,4 @@ PR 하나씩 나른다. **이동하는 묶음은 앞의 것이 merge되고 나�
 - **`widgets` 층 신설** — ADR-001이 「화면 조립 덩이가 실제로 반복되면 그때」로 미뤘고 아직 그 반복이 관찰되지 않았다
 - **문서 슬러그 이름 바꾸기** — ADR-005가 kebab으로 가지고 있고 코드 파일과 다른 축이다. `docs/`와 브랜치 이름은 그대로 kebab이다
 - **검증 라이브러리 들이기** — `[domain].schema.ts`에 자리를 비워두지만 zod를 넣는 것은 별도 결정이다
+- **DTO를 도메인 모양으로 바꾸기** — `.dto.ts`에 자리는 여기가 세우고, 매퍼로 열 이름을 옮기는 일은 [dto-to-domain-shape](dto-to-domain-shape.md)가 받는다. **도메인 축으로 못 가르기 때문이다** — DB 열 이름이 `api/` 밖 파일 쉰여덟에 닿고 `ScheduleDay` 하나가 묶음 넷(근무표·급여·통계·근태)에 걸려, 이동 PR 안에서 바꾸면 그 넷이 한 PR이 된다. 필드 축으로 가르면 열 이름 하나가 저장소 전체를 한 번에 지나고 묶음 경계를 안 본다

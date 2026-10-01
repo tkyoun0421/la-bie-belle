@@ -1,5 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
+import type { AvailabilityRow } from "@/entities/availability/api/availability.dto";
 
 /**
  * 그 달 근무 신청을 신청자 이름과 함께 읽는다. 달력 칸의 신청 수, 날 상세의 근무 신청 줄,
@@ -13,12 +14,6 @@ import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
  * `push_reachable`도 `profile_id`로 `profiles`를 가리켜 관계가 둘이다. FK 이름을 박아
  * 어느 쪽인지 못 박는다 — 배정의 이름 임베딩과 같은 손이다.
  */
-
-export type AvailabilityRow = {
-  profile_id: string;
-  work_date: string;
-  profiles: { display_name: string | null } | null;
-};
 
 const AVAILABILITY_COLUMNS = [
   "profile_id",

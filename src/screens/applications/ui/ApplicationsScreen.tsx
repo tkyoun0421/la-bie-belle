@@ -10,9 +10,9 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Tabs } from "@/shared/ui/Tabs";
 import { Text } from "@/shared/ui/Text";
-import { useMonthAvailabilitiesQuery } from "@/entities/availability/hooks/useMonthAvailabilitiesQuery";
-import { useMonthWindowQuery } from "@/entities/schedule/hooks/useMonthWindowQuery";
-import { useSetApplicationDeadlineMutation } from "@/features/availabilitySubmit/hooks/useSetApplicationDeadlineMutation";
+import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
+import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
+import { useSetApplicationDeadlineMutation } from "@/features/availabilitySubmit/services/useSetApplicationDeadlineMutation";
 import { DeadlineSheet } from "@/features/availabilitySubmit/ui/DeadlineSheet";
 import {
   applicationsDeadlineLine,

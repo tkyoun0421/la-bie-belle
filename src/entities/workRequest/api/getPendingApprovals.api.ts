@@ -1,4 +1,5 @@
 import type { DB } from "@/shared/api/database";
+import type { PendingApproval } from "@/entities/workRequest/api/workRequest.dto";
 
 /**
  * 아직 판정 안 된 근무 취소 요청들이다. `/admin/approvals`의 목록이고 관리자 홈의
@@ -15,19 +16,6 @@ import type { DB } from "@/shared/api/database";
  * 보내는 사람을 `cancel_requests_profile_id_fkey`로 집는 것은 이 표가 `profiles`를 두 번
  * 가리키기 때문이다 — 낸 사람과 판정한 사람이다.
  */
-
-export type PendingApproval = {
-  id: string;
-  assignment_id: string;
-  reason: string;
-  created_at: string;
-  assignments: {
-    day_id: string;
-    position: string;
-    days: { work_date: string; starts_at: string; ends_at: string };
-  };
-  profiles: { display_name: string | null; photo_url: string | null };
-};
 
 const APPROVAL_COLUMNS = [
   "id",

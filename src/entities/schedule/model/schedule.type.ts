@@ -1,26 +1,17 @@
+import { type POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
+
 /**
- * 홀의 포지션 아홉과 그 순서다. 정본은
- * `docs/2-design/modules/schedule/README.md`의 용어 표와 SCH-011이다.
- *
- * **화면 것이 아니라 업무 상수라 여기 산다.** 같은 배열이 근무표 두 화면에 두 벌로 있었고,
- * 관리자 통계가 셋째 벌을 세울 자리였다 — 슬라이스끼리는 서로를 못 부르니(lint 규칙 3) 공용
- * 자리가 entities다. `shared/utils/kstDate.ts`가 앞서 밟은 길이다.
- *
- * **겸임 자리는 앞 포지션이 대표다.** SQL의 `slots.positions[1]`, 배열의 `positions[0]`이
- * 그것이고 명단도 자리 셈도 통계도 그 하나로 센다 —
- * `docs/2-design/system/screens/stats.md`의 「근무 포지션 구획」이 그 자리다.
+ * 근무표 도메인의 모양이다. 포지션 이름은 상수가 바탕이라 `consts`에서 받는다 — 목록을
+ * 고치면 타입이 따라오고, 반대로는 안 된다.
  */
 
-export const POSITION_ORDER = [
-  "팀장",
-  "스캔",
-  "메인",
-  "드레스",
-  "축가",
-  "매니저",
-  "안내",
-  "드레스실",
-  "대기실",
-] as const;
-
 export type Position = (typeof POSITION_ORDER)[number];
+
+/**
+ * 그 달 근무표의 접수 창이다. 마감이 비면 아직 안 열린 달이고, 확정 시각이 비면 접수는
+ * 끝났어도 확정 전이다 — 화면이 그 둘을 다르게 말한다.
+ */
+export type MonthWindow = {
+  applicationDeadline: string | null;
+  confirmedAt: string | null;
+};

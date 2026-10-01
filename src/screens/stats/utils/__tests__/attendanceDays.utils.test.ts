@@ -27,7 +27,7 @@
 // checkedTimeLabel(checkedAt) — ISO 순간을 KST HH:mm로 읽는다.
 
 import type { AttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
-import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,

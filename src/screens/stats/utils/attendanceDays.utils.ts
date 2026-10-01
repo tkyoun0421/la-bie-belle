@@ -3,7 +3,7 @@ import {
   getAttendanceStatus,
   type AttendanceStatus,
 } from "@/entities/attendance/model/attendanceStatus.policy";
-import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import {
   buildAttendanceInputs,
   type AttendanceInputCheckIn,
