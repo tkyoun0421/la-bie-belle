@@ -485,11 +485,11 @@ code {
 }
 .sb-right { display: flex; align-items: center; gap: 5px; }
 
-/* 화면 좌우 여백 px-6, 아래 여백 pb-6 + safe-area (login.md 「여백과 모양」) */
+/* 화면 좌우 여백 px-5, 아래 여백 pb-6 + safe-area (login.md 「여백과 모양」) */
 /* 시안은 브라우저에서 보는 목업이라 아래 여백을 env(safe-area-inset-bottom)로 잡는다. 앱이 쓰는 것은 useSafeAreaInsets가 주는 bottom이다 — components.md의 BottomCTA와 탭 바 */
 .screen {
   flex: 1 1 auto; display: flex; flex-direction: column;
-  padding: 0 24px calc(24px + env(safe-area-inset-bottom));
+  padding: 0 20px calc(24px + env(safe-area-inset-bottom));
   overflow: hidden;
 }
 .screen.flush { padding-bottom: 0; }
@@ -555,7 +555,7 @@ code {
 /* ── 02 프로필 작성 ── */
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
-  padding: 4px 24px 12px; min-height: 44px;
+  padding: 4px 20px 12px; min-height: 44px;
 }
 .appbar .title { font-size: var(--t-lg); line-height: var(--lh-lg); font-weight: 600; letter-spacing: -.01em; }
 .appbar .sp { min-height: 0; }
@@ -643,7 +643,7 @@ code {
 /* 하단 고정 CTA — components.md 「BottomCTA」 */
 .ctabar {
   flex: 0 0 auto; border-top: 1px solid var(--stroke-neutral); background: var(--bg-neutral);
-  padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
+  padding: 8px 20px calc(20px + env(safe-area-inset-bottom));
 }
 .ctabar .subnote { margin-top: 8px; text-align: center; font-size: var(--t-xs); line-height: var(--lh-xs); color: var(--fg-neutral-subtle); }
 

@@ -166,7 +166,7 @@
 | 지도 위 버튼 여백 | 위 `top-4`, 좌우 `inset-x-4` |
 | 내 위치 점 | `size-5` `rounded-full`. 테두리 3px |
 | 시트 | 위쪽만 `rounded-xl` |
-| 시트 안쪽 여백 | `px-6` `pb-6` |
+| 시트 안쪽 여백 | `px-5` `pb-5` — [바텀시트 안쪽 여백](../../../design-system/components.md#dialog와-바텀시트)이다 |
 | 시트 손잡이 | `w-8` `h-1` `rounded-full` |
 | 시트 제목과 아래 줄 사이 | `mt-1` |
 | 시트 아래 줄과 버튼 사이 | `mt-4` |

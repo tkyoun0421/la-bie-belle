@@ -432,7 +432,7 @@ code {
 /* 앱바 — 제목만이 기본이고, 「퇴사한 뒤」에만 뒤로가 선다(components.md 「앱바」) */
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
-  padding: 4px 24px 12px; min-height: 44px; position: relative;
+  padding: 4px 20px 12px; min-height: 44px; position: relative;
 }
 .appbar .sp { flex: 1 1 auto; }
 .backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
@@ -452,8 +452,8 @@ code {
   width: 8px; height: 8px; border-radius: 999px;
   background: var(--bg-brand-solid); border: 2px solid var(--bg-neutral);
 }
-/* 화면 좌우 여백 px-6 = 24px */
-.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+/* 화면 좌우 여백 px-5 = 20px */
+.body { flex: 1 1 auto; padding: 0 20px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
 /* 기간 세그먼트 — components.md 「세그먼트」. stats.sian.html의 pill과 같은 조각이다 */

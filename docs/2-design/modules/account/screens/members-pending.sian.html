@@ -19,7 +19,8 @@
   · 시트 그림자. tokens.md 5절의 그림자는 shadow-card 하나뿐이라 시트용 값이 없다.
   · 더보기 팝오버의 면과 그림자. members-pending.md 「아직 안 정한 것」에 그대로 남아 있다.
   · 프로필 사진 자리. 저장소에 이미지를 안 넣어 뉴트럴 두 단계의 그러데이션으로 흉내 냈다.
-  · 성별·연락처·구글 계정의 예시 값. domain/account.md가 값 목록과 받는 꼴을 아직 안 정했다.
+  · 성별·연락처·구글 계정의 예시 값. 성별 값은 account/README.md:45가 「여」·「남」 둘 중 하나로, 연락처 꼴은
+    ACC-004가 010으로 시작하는 11자리로 이미 정했다 — 저장소 관례대로 가짜 값을 썼을 뿐이다.
   · 뷰어 크롬(--b-*)의 색. 목업 밖이라 애초에 토큰 대상이 아니다.
 -->
 <title>가입 대기 시안</title>
@@ -428,7 +429,7 @@ code {
 /* 앱바 — 뒤로, 제목, 오른쪽 더보기(members-pending.md 「짜임」) */
 .appbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
-  padding: 4px 24px 12px; min-height: 44px; position: relative;
+  padding: 4px 20px 12px; min-height: 44px; position: relative;
 }
 .appbar .sp { flex: 1 1 auto; }
 .backic { position: relative; flex: 0 0 auto; display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; color: var(--fg-neutral); cursor: pointer; }
@@ -443,8 +444,8 @@ code {
 /* 아래로 8px씩 다 채우면 앱바 더보기 바로 아래 뜨는 팝오버(top:40px)와 닿는다 —
    아래는 6px, 위는 10px로 나눠 44px을 채우면서 팝오버 자리를 비켜간다 */
 .moreic::after { content: ""; position: absolute; inset: -10px -8px -6px; }
-/* 화면 좌우 여백 px-6 = 24px */
-.body { flex: 1 1 auto; padding: 0 24px; overflow: hidden; display: flex; flex-direction: column; }
+/* 화면 좌우 여백 px-5 = 20px */
+.body { flex: 1 1 auto; padding: 0 20px; overflow: hidden; display: flex; flex-direction: column; }
 .spacer { flex: 1 1 auto; min-height: 8px; }
 
 /* 더보기 팝오버 — 문서가 모양을 안 적었다. 이 파일이 세운 자리다 */
@@ -471,7 +472,7 @@ code {
 .mrow .mname { font-size: var(--t-base); line-height: var(--lh-base); font-weight: 500; color: var(--fg-neutral); }
 .mrow .msub { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--fg-neutral-subtle); }
 .mrow .chev { margin-left: auto; flex: 0 0 auto; color: var(--fg-neutral-subtle); display: grid; place-items: center; }
-.mrow.pressed { background: var(--bg-neutral-weak-pressed); margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
+.mrow.pressed { background: var(--bg-neutral-weak-pressed); margin: 0 -20px; padding-left: 20px; padding-right: 20px; }
 /* 구분선은 사진 왼쪽 끝이 아니라 이름 왼쪽 끝(40 + 12 = 52px)부터 긋는다 */
 .mlist .rowwrap + .rowwrap .mrow { border-top: 1px solid var(--stroke-neutral); }
 /* 52px은 눈금 밖이지만 자유 여백이 아니다 — 사진 40px에 이름과의 gap-3(12px)을 더한 값이라 구분선이 이름 왼쪽 끝에서 시작한다 */
@@ -529,7 +530,7 @@ code {
 .rsheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
   background: var(--bg-neutral); border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
+  padding: 8px 20px calc(20px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--stroke-neutral);
   transform: translateY(102%); transition: transform var(--d-slow) ease-out;
 }
@@ -811,7 +812,7 @@ code {
               <span class="av big"></span>
               <div class="sh-name">이도윤</div>
               <div class="kvs">
-                <div class="kv"><span class="k">성별</span><span class="v">여성</span></div>
+                <div class="kv"><span class="k">성별</span><span class="v">여</span></div>
                 <div class="kv"><span class="k">생년월일</span><span class="v num">1992년 3월 4일(34세)</span></div>
                 <div class="kv"><span class="k">연락처</span><span class="v num">010-0000-0001</span></div>
                 <div class="kv"><span class="k">구글 계정</span><span class="v">taegwan.yoon@example.com</span></div>
@@ -828,7 +829,7 @@ code {
           <div class="cap-key">SHEET</div>
           <div class="cap-name">값 넷과 버튼 둘</div>
           <p class="cap-body"><strong>「거절」이 destructive가 아니다.</strong> 거절은 이번만이고 같은 사람이 다시 보낸다. 빨강은 차단 쪽 글자에만 쓴다. 「승인」만 primary고 「거절」은 secondary라 한 화면에 primary는 하나다. <strong>생년월일 옆에 나이를 같이 적는다</strong> — 관리자가 쓰는 것은 나이인데 저장하는 것은 생년월일이라 화면이 그 셈을 대신한다. 생년월일과 연락처에 <code>tabular-nums</code>가 걸린다.</p>
-          <p class="cap-body" style="margin-top:8px"><strong>성별·연락처·구글 계정의 값은 목업 더미다.</strong> domain/account.md가 성별 값 목록과 연락처 받는 꼴을 아직 안 정했다 — 「여성」과 「010-0000-0001」은 자리를 재려고 넣은 것이지 정해진 표기가 아니다.</p>
+          <p class="cap-body" style="margin-top:8px"><strong>성별·연락처·구글 계정의 값은 목업 더미다.</strong> 성별 값은 account/README.md:45가 「여」·「남」 둘 중 하나로, 연락처 꼴은 ACC-004가 010으로 시작하는 11자리로 이미 정했다 — 「여」와 「010-0000-0001」은 그 정본대로 자리를 재려고 넣은 가짜 값이다.</p>
           <p class="cap-body" style="margin-top:8px">시트는 아래에서 올라오고 <code>--duration-slow</code>(240ms) <code>ease-out</code>이다. <strong>승인을 누르면 확인을 한 번 더 묻지 않는다</strong> — 시트가 바로 닫히고 토스트가 뜬다.</p>
         </figcaption>
       </figure>
@@ -866,7 +867,7 @@ code {
               <span class="av big noimg">김</span>
               <div class="sh-name">김지우</div>
               <div class="kvs">
-                <div class="kv"><span class="k">성별</span><span class="v">여성</span></div>
+                <div class="kv"><span class="k">성별</span><span class="v">여</span></div>
                 <div class="kv"><span class="k">생년월일</span><span class="v num">1998년 11월 20일(27세)</span></div>
                 <div class="kv"><span class="k">연락처</span><span class="v num">010-0000-0002</span></div>
                 <div class="kv"><span class="k">구글 계정</span><span class="v">jiwoo.kim@example.com</span></div>
@@ -882,7 +883,7 @@ code {
         <figcaption>
           <div class="cap-key">SHEET / NO PHOTO</div>
           <div class="cap-name">값이 빈 자리는 사진 하나다</div>
-          <p class="cap-body">구글이 사진을 안 주는 계정이 있다. 그때는 <strong><code>bg.neutral-weak</code> 원에 이름 첫 글자</strong>가 서고 목록 줄에서도 같다. <strong>나머지 넷은 안 빈다</strong> — 프로필을 다 채워야 이 목록에 뜬다(domain/account.md 「가입이 끝나는 때」). 그래서 값 자리가 비는 목업은 이 하나뿐이다.</p>
+          <p class="cap-body">구글이 사진을 안 주는 계정이 있다. 그때는 <strong><code>bg.neutral-weak</code> 원에 이름 첫 글자</strong>가 서고 목록 줄에서도 같다. <strong>나머지 넷은 안 빈다</strong> — 프로필을 다 채워야 이 목록에 뜬다(account/README.md 「ACC-001」). 그래서 값 자리가 비는 목업은 이 하나뿐이다.</p>
         </figcaption>
       </figure>
 
@@ -922,7 +923,7 @@ code {
               <span class="av big"></span>
               <div class="sh-name">이도윤</div>
               <div class="kvs">
-                <div class="kv"><span class="k">성별</span><span class="v">여성</span></div>
+                <div class="kv"><span class="k">성별</span><span class="v">여</span></div>
                 <div class="kv"><span class="k">생년월일</span><span class="v num">1992년 3월 4일(34세)</span></div>
                 <div class="kv"><span class="k">연락처</span><span class="v num">010-0000-0001</span></div>
                 <div class="kv"><span class="k">구글 계정</span><span class="v">taegwan.yoon@example.com</span></div>
@@ -992,7 +993,7 @@ code {
 
               <div class="face" data-faceof="detail">
                 <div class="kvs">
-                  <div class="kv"><span class="k">성별</span><span class="v">여성</span></div>
+                  <div class="kv"><span class="k">성별</span><span class="v">여</span></div>
                   <div class="kv"><span class="k">생년월일</span><span class="v num">1992년 3월 4일(34세)</span></div>
                   <div class="kv"><span class="k">연락처</span><span class="v num">010-0000-0001</span></div>
                   <div class="kv"><span class="k">구글 계정</span><span class="v">taegwan.yoon@example.com</span></div>
