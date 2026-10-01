@@ -14,7 +14,9 @@ date: 2026-09-28
 
 원인은 픽스처가 쓰는 psql 호출 수다. `seedWorkRequest`가 `public.requests` 행을 넣고 `seedRequestCandidate`가 `public.request_candidates` 행을 넣는데, 둘이 **다른 `execSql` 호출**이라 그 사이 수백 ms 동안 요청에 살아 있는 갈래가 하나도 없다. `internal.expire_requests()`는 그 상태를 「아무도 안 남았다」로 읽고 요청을 닫는다 — 운영에서는 맞는 판정이다. pg_cron이 매 분 돌리니 틱이 그 틈에 떨어지면 테스트가 진다.
 
-CI에서는 아직 안 걸렸다. 걸릴 조건이 「틱과 두 호출 사이가 겹친다」라 기계가 빠를수록 덜 걸리고, 그래서 로컬에서 먼저 나왔다.
+**CI에서도 걸렸다.** 걸릴 조건이 「틱과 두 호출 사이가 겹친다」라 기계가 빠를수록 덜 걸리고, 그래서 로컬에서 먼저 나왔다.
+
+PR #488에서 **같은 커밋에 CI가 둘 돌아 하나는 통과하고 하나는 졌다** — 두 실행이 1초 안에 뜨고 1분 차로 끝났다(`synchronize`와 `edited` 둘이 받은 자리). 진 쪽은 `expireRequests.api.integration.test.ts:186`의 「안 지난 pending이 하나라도 남으면 안 닫힌다」고, `closed_at`에 실린 시각이 그 스위트가 도는 중의 분 경계였다. 같은 입력에 결과가 갈리는 것이 경합의 증거고, 사람이 재실행으로 넘기는 비용이 CI에서는 10분이다.
 
 ## 볼 자리
 
