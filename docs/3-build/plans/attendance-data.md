@@ -150,7 +150,7 @@ sources:
 - **입력이 전부 인자다.** `check_ins` 행·`excuse_status` **행 배열**·`days.work_date`·`days.starts_at`·`days.ends_at`·지금 시각. 함수 안에서 `Date.now()`를 안 부른다 — 테스트가 시각을 넣어 경계를 본다
 - `work_date`가 드는 것은 `starts_at`·`ends_at`이 `time`이라 날짜 없이는 시점이 안 되기 때문이다([시각 컬럼](../../2-design/system/runtime.md#시각-컬럼))
 - `excuse_status`가 배열인 것은 거절 뒤 다시 낸 날에 행이 여럿이라서다([ATT-013](../../2-design/modules/attendance/README.md#att-013)). 「승인된 사유가 없다」를 보려면 전부 봐야 하고, 「확인 중」은 살아 있는 행이 있는지로 난다. 최신을 가르는 기준은 `submitted_at` 내림차순이고 그 판단도 이 함수 안이다
-- **지각 유예 10분과 `checked_at` 한도 10분은 다른 상수다.** 앞은 업무 규칙([ATT-016](../../2-design/modules/attendance/README.md#att-016))이고 뒤는 기기 시계 오차를 누르는 폭이다([AC-03](#ac-03)). 숫자가 같아 헷갈리니 `constants.ts`에서 이름으로 가른다
+- **지각 유예 10분과 `checked_at` 한도 10분은 다른 상수다.** 앞은 업무 규칙([ATT-016](../../2-design/modules/attendance/README.md#att-016))이고 뒤는 기기 시계 오차를 누르는 폭이다([AC-03](#ac-03)). 숫자가 같아 헷갈리니 `attendance.type.ts`에서 이름으로 가른다
 - 「통신 지연」 판정도 여기다 — `received_at`과 `reported_at`이 5분 넘게 다르면 참이다
 - 현황 줄의 셈도 여기다 — 「11명 중 9명 출근 · 지각 1 · 아직 1」에서 **0인 항목을 뺀다**([schedule-worker.md](../../2-design/modules/schedule/screens/schedule-worker.md#인증-상태))
 - 근태 월 집계도 같은 함수를 돌려 센다([ATT-023](../../2-design/modules/attendance/README.md#att-023)) — **출근 인정은 출근과 따로 센다**([ATT-026](../../2-design/modules/attendance/README.md#att-026))
@@ -185,7 +185,7 @@ sources:
 
 ### AC-11
 
-**업무 상수 대조를 세운다.** [업무 상수](../../2-design/system/runtime.md#업무-상수)가 「TypeScript 한 곳이 정본이고 함수가 같은 숫자를 SQL 리터럴로 들고 `tests/lint/`의 대조 테스트가 맞춘다」고 정했는데 **그 대조 테스트가 저장소에 없고 `constants.ts`도 하나도 없다.** 지금까지 안 터진 것은 업무 상수가 SQL에 들어간 적이 없어서다.
+**업무 상수 대조를 세운다.** [업무 상수](../../2-design/system/runtime.md#업무-상수)가 「TypeScript 한 곳이 정본이고 함수가 같은 숫자를 SQL 리터럴로 들고 `tests/lint/`의 대조 테스트가 맞춘다」고 정했는데 **그 대조 테스트가 저장소에 없고 상수 파일도 하나도 없다.** 지금까지 안 터진 것은 업무 상수가 SQL에 들어간 적이 없어서다.
 
 이 task가 그 첫 자리다. 인증 창의 1시간과 18시, 사유 마감 48시간이 SQL 함수와 TS 상태 계산 **양쪽**에 산다 — 대조가 없으면 한쪽만 고쳐도 아무것도 안 빨갛다.
 
