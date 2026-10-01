@@ -11,7 +11,7 @@ sources:
 
 ## 입력 명세·기준
 
-**정본은 ADR-015다.** 층의 뜻, 세그먼트 여덟의 판정 기준, 슬라이스 쪼개는 기준, 이름 규약, 검사 열셋이 거기 산다. 이 계획은 그것을 몇 번에 나눠 어떤 순서로 옮기는지만 적는다.
+**정본은 ADR-015다.** 층의 뜻, 세그먼트 여덟의 판정 기준, 슬라이스 쪼개는 기준, 이름 규약, 검사 열일곱이 거기 산다. 이 계획은 그것을 몇 번에 나눠 어떤 순서로 옮기는지만 적는다.
 
 **저장소에서 확인한 것.**
 
@@ -46,20 +46,22 @@ sources:
 
 도메인의 경계는 `entities` 슬라이스의 소유권이다. 그 도메인을 읽는 `features`와 그리는 `screens`가 같은 묶음에 든다.
 
-| 묶음 | 품는 슬라이스 | 이동할 것 | DTO·매퍼 | 안쪽에서 쪼갤 것 |
-| --- | --- | --- | --- | --- |
-| 공용 | `shared/*` · `entities/clock` · `src/app/` | 타입 12 · 상수 7 · SDK 5 · 환경값 2 · 시계 2 | — | `_catalog` 624줄 · `DragAndDrop` export 다섯 · `kstDate` export 일곱 |
-| 근무표 | schedule · availability · hall · workRequest + features 일곱 + screens 셋 | 타입 15 · 상수 2 | DTO 4 · 매퍼 4 | `DayDetail` 969줄에 훅 서른여덟 · `ScheduleAdminScreen` 736줄 |
-| 급여 | payroll + payrollCompute · wageAdmin · adjustment · holiday + screens 둘 | 타입 15 · 상수 7 | DTO 6 · 매퍼 1 | `payrollDays.policy` 339줄 · `period.policy` export 아홉 |
-| 구성원 | member · profile + memberAdmin · profileEdit · qualificationGrant + screens 여섯 | 타입 8 · 상수 8 | DTO 5 | `PendingScreen` 689줄 · `ProfileScreen` 506줄 · `MembersScreen` 446줄 |
-| 근태 | attendance · excuse + attendanceCheckin · excuse + approvals | 타입 8 · 상수 9 | DTO 3 · 매퍼 1 | `ApprovalsScreen` 235줄 |
-| 알림 | notification + pushSwitch · notificationRead + notifications | 타입 2 · 상수 11 · SDK 1 · 환경값 1 · 시계 1 | DTO 2 · 매퍼 2 | Edge Function의 복사 경로가 여기 걸린다 |
-| 리허설 | rehearsal + rehearsalEdit + rehearsal | 타입 5 · 상수 2 | DTO 2 · 매퍼 2 | `RehearsalScreen` 427줄에 훅 열넷 |
-| 통계 | stats + stats · adminStats · adminHome | 타입 9 | — | `StatsScreen` 470줄 · `AdminStatsScreen` 414줄 · `workTotals.policy` export 다섯 |
-| 인증 | session + auth + retry | 타입 2 · 상수 1 · SDK 2 · 환경값 1 | — | `signOut`·`handleAuthCallback`이 `lib`을 받는다 |
-| QR | qr + qrAdmin + qr | 타입 1 · 상수 2 | — | `QrScreen` 204줄 |
+| 묶음 | 품는 슬라이스 | 이동할 것 | DTO·매퍼 | `services` | controller | 안쪽에서 쪼갤 것 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 공용 | `shared/*` · `entities/clock` · `src/app/` | 타입 12 · 상수 7 · SDK 5 · 환경값 2 · 시계 2 | — | — | 화면 12 | `_catalog` 624줄 · `DragAndDrop` export 다섯 · `kstDate` export 일곱 |
+| 근무표 | schedule · availability · hall · workRequest + features 일곱 + screens 셋 | 타입 15 · 상수 2 | DTO 4 · 매퍼 4 | 60 | 화면 10 | `DayDetail` 969줄에 훅 서른여덟 · `ScheduleAdminScreen` 736줄 |
+| 급여 | payroll + payrollCompute · wageAdmin · adjustment · holiday + screens 둘 | 타입 15 · 상수 7 | DTO 6 · 매퍼 1 | 16 | 화면 2 | `payrollDays.policy` 339줄 · `period.policy` export 아홉 |
+| 구성원 | member · profile + memberAdmin · profileEdit · qualificationGrant + screens 여섯 | 타입 8 · 상수 8 | DTO 5 | 20 | 화면 10 | `PendingScreen` 689줄 · `ProfileScreen` 506줄 · `MembersScreen` 446줄 |
+| 근태 | attendance · excuse + attendanceCheckin · excuse + approvals | 타입 8 · 상수 9 | DTO 3 · 매퍼 1 | 2 | 화면 2 | `ApprovalsScreen` 235줄 |
+| 알림 | notification + pushSwitch · notificationRead + notifications | 타입 2 · 상수 11 · SDK 1 · 환경값 1 · 시계 1 | DTO 2 · 매퍼 2 | 10 | 화면 1 | Edge Function의 복사 경로가 여기 걸린다 |
+| 리허설 | rehearsal + rehearsalEdit + rehearsal | 타입 5 · 상수 2 | DTO 2 · 매퍼 2 | 12 | 화면 1 | `RehearsalScreen` 427줄에 훅 열넷 |
+| 통계 | stats + stats · adminStats · adminHome | 타입 9 | — | 2 | 화면 4 | `StatsScreen` 470줄 · `AdminStatsScreen` 414줄 · `workTotals.policy` export 다섯 |
+| 인증 | session + auth + retry | 타입 2 · 상수 1 · SDK 2 · 환경값 1 | — | — | 화면 1 | `signOut`·`handleAuthCallback`이 `lib`을 받는다 |
+| QR | qr + qrAdmin + qr | 타입 1 · 상수 2 | — | 4 | 화면 1 | `QrScreen` 204줄 |
 
 **DTO 스물둘은 여섯 묶음에만 있다** — 공용·통계·인증·QR은 통신이 DB 행을 그대로 내는 자리가 없다. 매퍼 열은 `.returns<>`로 생 행을 내보내면서 꼴을 안 바꾸는 통신이고, 이미 조립하는 다섯(`getPayrollMonth` 같은)은 그 안에서 매퍼를 꺼내는 일만 남는다. `ExcuseStatusRow`는 근태와 급여 두 자리에 각자 선언돼 있어 **중복 축이기도 하다** — 뒤에 오는 급여가 접는다.
+
+**`services` 백스물넷이 가장 큰 한 덩이다.** 짝 테스트를 같이 옮긴 수고, 근무표 예순이 그중 절반이다. `stores` 둘은 공용이 가져간다. **controller는 화면 마흔넷**이고 그게 안쪽 겹 전부다.
 
 **공용이 맨 앞이다.** 이동할 것이 거기 쏠려 있고(SDK 다섯·환경값 둘·시계 둘이 전부 `shared/`와 `entities/clock`이다) 나머지 아홉이 전부 `shared/`를 당긴다 — 먼저 굳히지 않으면 뒤 아홉이 움직이는 바닥 위에서 일한다.
 
@@ -234,18 +236,42 @@ sources:
 - 관찰 결과: `config/` 밖에 `process.env`·`Constants` 읽기가 없다. 셋이 초록이다
 - 도메인으로 쪼갠다 — 공용 둘(`readSupabaseEnv`·`readAppUrl`)·알림 하나(`pushDeps`)·인증 하나(`authRedirect.utils`)다
 
-### AC-12 — `screens`에 `hooks`가 선다
+### AC-12 — controller가 선다
 
-- 전제: `.tsx` 마흔여섯이 상태·효과를 들고 호출이 **이백아흔둘**이다(`screens` 252 · `app` 22 · `shared` 17 · `features` 1). `DayDetail.tsx` 하나가 서른셋을 든다
+- 전제: `.tsx` 마흔넷이 상태·효과를 들고 호출이 **이백아흔둘**이다. 그중 스물여섯이 repository를 직접 당기고 아흔여섯이 service를 controller 없이 부른다. `ui`가 `hooks`를 당기는 자리는 **셋**뿐이다. `DayDetail.tsx` 하나가 서른셋을 든다
 - 행동
-  - 화면마다 `screens/<슬라이스>/hooks/use<화면>.ts`를 세워 `useState`·`useEffect`·`useMemo`·`useCallback`·`useReducer`와 핸들러를 옮긴다. `.tsx`는 그 훅이 돌려준 것을 구조분해해 그린다
-  - `shared/ui/DragAndDrop.tsx`의 열은 화면이 아니라 재사용 컴포넌트라 `shared/hooks/`로 간다 — 「`hooks/` 밖에서 `use*` export 금지」가 그 파일에서만 걸리던 자리다
+  - 화면마다 `screens/<슬라이스>/hooks/use<화면>.ts`를 세워 업무 상태와 효과와 핸들러를 옮긴다. `.tsx`는 그 훅이 돌려준 것을 구조분해해 그린다
+  - **통신도 같이 내려간다.** `.tsx`가 당기는 repository 스물여섯과 Supabase 클라이언트 스물다섯이 controller로 가고, 거기서 service 훅을 부른다. 이 축을 빼면 「`api/` 밖에서 클라이언트 import 금지」를 영구히 못 켠다
+  - **에러 코드 판정도 내려간다.** `error.code === "already_decided"` 꼴이 화면 파일 여섯에 열다섯 건 있다 — `model/<도메인>.policy.ts`가 받는다
+  - **UI를 담당하는 상태는 `.tsx`에 남는다.** 측정한 너비·포커스·시트 열림·팝오버 열림이 그것이고, 통신 중·실패·서버에서 온 값은 내려간다. 뒤 넷은 대개 React Query가 `isPending`·`isError`·`data`로 이미 준다
+  - `shared/ui/DragAndDrop.tsx`는 가른다 — Context와 그것을 읽는 훅 둘이 `shared/stores/drag.context.ts`로, Provider와 컴포넌트 둘은 `ui/`에 파일을 나눠 남는다. 삼백한 줄에 export 다섯을 든 자리다
+  - `shared/ui`에서 상태를 든 여섯은 **안 건드린다** — 측정한 너비(`DayBand`·`TrendChart`·`Segment`)·포커스(`Input`)·드래그 중(`DragAndDrop`)·사라지는 타이머(`FloatingToast`)고 업무 상태가 하나도 없다
   - `src/app/`의 스물둘은 라우트 파일이라 **얇게 남긴다** — `_layout.tsx`의 효과 다섯은 앱 수명이고 화면 상태가 아니다
   - 빼낸 훅마다 짝 테스트가 붙어 TDD를 탄다
-- 관찰 결과: `screens/*/ui/*.tsx`에 `useState`·`useEffect`·`useReducer`가 없다. 셋이 초록이다
+- 관찰 결과: `api`·`services`·`hooks`를 당기는 `.tsx`에 상태가 없다. `ui`가 `api`를 당기는 자리가 0이다. 셋이 초록이다
 - 보드의 `dumb-ui-widen`이 이 걸음이다 — 그 행이 든 「업무 상수와 판정과 가공 함수가 화면 파일에 남았다」는 AC-10과 이 묶음이 같이 걷는다
 - **도메인 열로 쪼개 병렬로 돈다.** 이 묶음만 병렬이 되는 까닭은 빼낸 훅을 그 화면의 `.tsx` 하나만 부르기 때문이다 — 밖에서 당기는 import가 없어 다른 묶음의 줄을 안 고친다
 - 큰 파일을 책임으로 쪼개는 일이 같이 간다. `DayDetail.tsx` 969줄과 `PendingScreen.tsx` 689줄은 훅을 빼도 여전히 여러 책임을 들고 있어 조각을 가른다
+
+### AC-14 — `services`가 선다
+
+- 전제: `hooks/` 예순다섯 중 **예순둘이 Query·Mutation**이다. 그 폴더가 사실상 `services`인데 이름이 그걸 안 말하고, AC-12가 controller를 같은 이름 폴더에 넣으면 역할 둘이 층으로만 갈린다
+- 행동
+  - `use[Action]Query.ts`·`use[Action]Mutation.ts`를 `<층>/<슬라이스>/services/`로 `git mv`한다. 짝 테스트를 같이 옮겨 **백스물넷**이다
+  - `features/stats/hooks/useAttendanceMonths.ts`는 `services/useAttendanceMonthsQuery.ts`로 — 쿼리 둘을 조립하는 service고 접미사를 못 받고 있었다
+  - `features/auth/hooks/wireAutoRefresh.ts`는 `lib/wireAutoRefresh.lib.ts`로 — 훅이 아니고 세션 자동 갱신을 켜는 부작용이다
+- 관찰 결과: `services/` 밖에 `useQuery`·`useMutation` 호출이 없다. `hooks/`에는 controller와 UI 훅만 남는다. 셋이 초록이다
+- 묶음별로 쪼갠다 — 근무표 60 · 구성원 20 · 급여 16 · 리허설 12 · 알림 10 · QR 4 · 근태 2다
+
+### AC-15 — `stores`가 선다
+
+- 전제: zustand store 둘의 자리가 갈려 있다 — `entities/clock/model/clock.store.ts`와 `shared/hooks/useTheme.ts`다. ADR-015가 「`use*`로 불리는 store는 부르는 이름이 이긴다」로 봉합하고 있었다
+- 행동
+  - 둘을 `<층>/stores/`로 옮긴다. `useTheme.ts`는 `shared/stores/theme.store.ts`가 되고 쓰는 쪽은 그대로 `useTheme()`이다
+  - `shared/ui/DragAndDrop.tsx`의 Context와 훅 둘이 `shared/stores/drag.context.ts`로 — AC-12와 같은 걸음이다
+  - 「`use*` export는 `hooks`·`services`·`stores`만」으로 규칙을 넓힌다
+- 관찰 결과: `stores/` 밖에 `create()`·`createContext` 호출이 없다. 셋이 초록이다
+- 파일 둘이라 공용 묶음이 같이 한다
 
 ### AC-13 — 중복 넷이 접힌다
 
@@ -258,25 +284,29 @@ sources:
 - 묶음 6가가 `monthStart` 사본 넷을 접은 것과 같은 일이다
 - 넷이 묶음을 가로지른다 — `canGoBack`·`canGoForward`는 급여와 공용, `dayMinutes`는 급여와 통계, `attendanceSummaryLine`은 근무표와 통계다. **뒤에 오는 쪽의 이동 PR이 접는다** — 둘 다 자리를 잡은 뒤에야 어느 쪽으로 접을지 보인다
 
-### AC-08 — 검사 열셋이 선다
+### AC-08 — 검사 열일곱이 선다
 
 **번호는 여덟인데 차례는 마지막이다.** AC-09~AC-13이 뒤에 생겨 문서 차례와 번호가 어긋났다 — 번호를 다시 매기면 merge된 PR 본문과 커밋 메시지가 가리키는 이름이 깨진다.
 
 - 전제: `house/dumb-ui`가 `.tsx`의 Supabase import·`fetch()`·쿼리 훅 호출만 잡는다. 세그먼트와 층의 뜻과 접미사를 지키는 검사가 없다
 - 행동: 규칙을 더하고 `tests/lint/`에 각각의 테스트를 쓴다. [execution.md의 「집행되는 규칙」](../../4-test/execution.md#집행되는-규칙) 표에 행을 더한다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다
   - `api/` 밖에서 Supabase 클라이언트 import 금지
-  - `hooks/` 밖에서 `use*` export 금지
-  - `entities/`에서 `useMutation` 금지 · `features/`에서 `useQuery` 금지
-  - `.policy.ts`에서 통신·`Date.now`·`Math.random` 금지
+  - `hooks`·`services`·`stores` 밖에서 `use*` export 금지
+  - `entities/`의 Mutation 금지 · `features/`의 Query는 `entities` 둘 이상을 읽을 때만 — 이름으로 주는 면제를 안 쓴다
+  - `.policy.ts`·`.reducer.ts`에서 통신·`Date.now`·`Math.random` 금지
   - 캐시 키 배열 리터럴 금지 — `queryKeys` 팩토리만 쓴다
   - `consts/` 밖에서 `export const <대문자_스네이크>` 금지 — `queryKeys`·`staleTogether`는 예외다(camel이고 통신의 약속이다)
   - `process.env`·`Constants`를 `config/` 밖에서 읽기 금지
   - `expo-*`·`react-native` SDK를 `lib/`·`ui/`·`hooks/` 밖에서 import 금지 — 타입만 import하는 것은 통과시킨다
-  - `.tsx`에서 `useState`·`useEffect`·`useReducer` 금지 — `className` 조립과 `isLoading` 분기는 통과시킨다
+  - `api`·`services`·`hooks`를 당기는 `.tsx`에서 상태 금지 — `className` 조립과 `isLoading` 분기는 통과시키고, 아무것도 안 당기고 상태만 든 `.tsx`도 통과시킨다
   - `.dto.ts`를 `api/` 밖에서 import 금지 — DTO는 통신의 계약이라 `api` 세그먼트를 안 떠난다
+  - `services/` 밖에서 `useQuery`·`useMutation` 금지
+  - `stores/` 밖에서 `create()`·`createContext` 금지
+  - `ui/`에서 `api/` import 금지
+  - `screens/*/ui`·`shared/ui`·`entities/*/ui`에서 `services/` import 금지 — `features/*/ui`만 자기 슬라이스의 service를 부른다
   - 접미사가 사는 세그먼트와 맞는지 — `fileNaming.ts`
   - 이름이 camelCase인지 · 폴더 이름이 camelCase인지 — `fileNaming.ts`가 AC-01·AC-02에서 이미 본다
-- 관찰 결과: 각 규칙이 위반 픽스처에서 걸리고 정상 픽스처를 통과시킨다. 저장소 전체가 열셋을 통과한다
+- 관찰 결과: 각 규칙이 위반 픽스처에서 걸리고 정상 픽스처를 통과시킨다. 저장소 전체가 열일곱을 통과한다
 - 마지막 줄은 AC-12가 끝나야 켤 수 있다 — 지금 켜면 `.tsx` 마흔여섯이 빨개진다
 
 ## 변경 파일
@@ -380,9 +410,12 @@ sources:
 | `eslint-rules/nativeSdkSegment.mjs` | 신설 — `lib/`·`ui/`·`hooks/` 밖에서 `expo-*`·`react-native` SDK import를 막는다 |
 | `eslint-rules/dumbUi.mjs` | `.tsx`의 `useState`·`useEffect`·`useReducer`를 막는 축을 더한다 — **AC-12가 끝나야 켠다** |
 | `eslint-rules/dtoSegment.mjs` | 신설 — `api/` 밖에서 `.dto.ts` import를 막는다 |
-| `eslint-rules/index.mjs` · `eslint.config.mjs` | 신설 규칙 여덞을 등록한다 |
-| `tests/lint/supabaseClientInApi.test.ts` 외 일곱 | 신설 — 규칙마다 위반·정상 픽스처 |
-| `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 아홉을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
+| `eslint-rules/servicesSegment.mjs` | 신설 — `services/` 밖의 `useQuery`·`useMutation`을 막는다 |
+| `eslint-rules/storesSegment.mjs` | 신설 — `stores/` 밖의 `create()`·`createContext`를 막는다 |
+| `eslint-rules/uiBoundary.mjs` | 신설 — `ui/`의 `api/` import와, `features/*/ui` 밖 `ui/`의 `services/` import를 막는다 |
+| `eslint-rules/index.mjs` · `eslint.config.mjs` | 신설 규칙 열하나를 등록한다 |
+| `tests/lint/supabaseClientInApi.test.ts` 외 열 | 신설 — 규칙마다 위반·정상 픽스처 |
+| `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 열둘을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
 | `scripts/syncEdgeShared.mts` | 복사 경로 넷 — 알림 셋이 `entities/notification/model/`과 `features/pushSwitch/model/`로, 공휴일 하나가 `features/holiday/model/`로 |
 | `eslint-rules/noNodeImportInEdgeShared.mjs` | 같은 경로 한 줄 |
 | `tests/lint/attendanceConstants.ts` | `src/entities/attendance/model/attendance.type.ts`를 문자열로 박아 뒀다 — AC-07이 슬라이스 이름을 `attendance`로 두므로 안 바뀌지만, 바꾸면 이 줄도 같이 간다 |
@@ -421,9 +454,9 @@ PR 하나씩 나른다. **이동하는 묶음은 앞의 것이 merge되고 나�
 6. **AC-06가 — `shared/` 재편 + 교차를 만드는 순수 함수 추출** ✅ 쉰아홉을 `git mv`하고 `monthStart` 사본 넷을 접었다. 교차가 0이 됐다
 7. **AC-07 — 슬라이스 쪼개기** ✅ 268개를 `git mv`했다. 교차 0이고 깨져 있던 엣지 import 셋을 고쳤다
 8. **AC-06나-1 — `model`/`utils` 가르기 + 접미사** ✅ 123개와 짝 테스트 120개를 `git mv`했다. 판정 예순하나·꼴 바꾸기 쉰여섯·타입 셋·검증 둘·store 하나
-9. **이동 열 — 도메인 열을 직렬로.** PR 하나가 그 도메인의 타입(AC-06나-2)·`lib`(AC-09)·`consts`(AC-10)·`config`(AC-11)·중복(AC-13)을 같이 옮긴다. 순서는 공용 → 근무표 → 급여 → 구성원 → 근태 → 알림 → 리허설 → 통계 → 인증 → QR이고, 앞의 것이 main에 든 뒤 다음을 딴다
-10. **안쪽 열 — 도메인 열을 병렬로.** AC-12다. PR 하나가 그 도메인 `.tsx`의 상태와 효과를 `screens/<슬라이스>/hooks/`로 빼고 큰 파일을 책임으로 쪼갠다. worktree를 열로 떼어 같이 돈다
-11. **AC-08 — 검사 열셋** `.tsx`의 `useState` 금지는 안쪽 열이 끝나야 켠다
+9. **이동 열 — 도메인 열을 직렬로.** PR 하나가 그 도메인의 타입과 DTO·매퍼(AC-06나-2)·`lib`(AC-09)·`consts`(AC-10)·`config`(AC-11)·`services`(AC-14)·`stores`(AC-15)·중복(AC-13)을 같이 옮긴다. 순서는 공용 → 근무표 → 급여 → 구성원 → 근태 → 알림 → 리허설 → 통계 → 인증 → QR이고, 앞의 것이 main에 든 뒤 다음을 딴다
+10. **안쪽 열 — 도메인 열을 병렬로.** AC-12다. PR 하나가 그 도메인 `.tsx`의 업무 상태와 효과와 통신을 `screens/<슬라이스>/hooks/`의 controller로 빼고, 에러 코드 판정을 `model`로 내리고, 큰 파일을 책임으로 쪼갠다. worktree를 열로 떼어 같이 돈다
+11. **AC-08 — 검사 열일곱** 상태 금지와 「`ui`에서 `api` import 금지」는 안쪽 열이 끝나야 켠다
 
 **AC-06을 갈라 AC-07을 그 사이에 끼운다.** 두 방향 다 한 번은 걸린다.
 
