@@ -25,23 +25,32 @@ TanStack Query는 키로 질의를 같다고 본다. 둘이 한 세션에서 돌
 
 호출부는 갈려 있다 — `screens/scheduleWorker` 하나와 `screens/scheduleAdmin`·`screens/applications` 둘이다. **관리자가 제 근무도 보는 사람이면** 두 화면을 30초(`staleTime`) 안에 오가며 밟는다.
 
+## 정본은 답을 들고 있었다
+
+[schedule/design.md](../2-design/modules/schedule/design.md#소유-데이터)의 키 목록에 그 가름이 적혀 있다.
+
+> `['availability', 'YYYY-MM']` — 본인 신청. 관리자의 신청 현황은 `['availability', 'YYYY-MM', 'all']`이다
+
+바로 아래 리허설 줄이 같은 말을 하고 **코드는 리허설만 그대로 지켰다** — `useMyRehearsals`가 맨 키를, `useAllRehearsals`가 `'all'`을 쓴다. 근무 신청은 둘 다 맨 키를 쓴다.
+
 ## 왜 안 드러났나
 
 `useMonthAvailabilities`의 주석이 키를 **일부러** 나눠 쓴다고 적는다.
 
 > 달력 칸의 신청 수, 날 상세의 근무 신청 줄, 모아보기 화면이 같은 `['availability', month]` 하나를 나눠 쓴다
 
-그 셋은 전부 `getMonthAvailabilities`를 부르니 맞는 설계다. 나중에 선 `useMyAvailability`가 **같은 도메인이라 같은 키라고 읽고** 다른 `queryFn`을 달았다. 두 파일이 각자 맞는 말을 적고 있어서 리뷰가 한쪽만 보면 안 보인다.
+그 셋은 전부 `getMonthAvailabilities`를 부르니 그 말 자체는 맞다. 나중에 선 `useMyAvailability`가 **같은 도메인이라 같은 키라고 읽고** 다른 `queryFn`을 달았다. 두 파일이 각자 맞는 말을 적고 있어서 리뷰가 한쪽만 보면 안 보인다.
 
-키 상수가 `[도메인]`까지만 들고 범위는 호출부가 스프레드로 붙이는 꼴이라, **어느 범위가 이미 쓰였는지 한자리에서 볼 수 없는 것**이 바탕이다.
+키 상수가 `[도메인]`까지만 들고 범위는 호출부가 스프레드로 붙이는 꼴이라, **어느 범위가 이미 쓰였는지 한자리에서 볼 수 없는 것**이 바탕이다. 정본의 키 목록과 코드를 맞추는 검사도 없다.
 
-## 제안
+## 고친 것
 
-**키와 `queryFn`을 한자리에서 짝지어 보이게 한다.** 캐시 키 팩토리(`fsd-read-write-layers` AC-03)가 그 자리다 — 범위마다 항목 하나면 같은 튜플을 두 번 쓰려는 것이 정의부에서 보인다.
+**키와 `queryFn`을 한자리에서 짝지어 보이게 했다.** 캐시 키 팩토리(`fsd-read-write-layers` AC-03)가 그 자리고, 범위마다 항목 하나라 같은 튜플을 두 번 쓰려는 것이 정의부에서 보인다.
 
-고치는 쪽은 둘이다.
+`useMonthAvailabilities`를 `['availability', month, 'all']`로 내렸다 — 정본이 정한 방향이다. 접두사가 겹쳐 `useSubmitAvailability`가 `['availability']` 하나를 무효화하는 동작도 그대로다.
 
-- **`['availability', month, 'mine']`로 가른다** — 접두사가 겹쳐 신청을 보내면 둘이 같이 낡는다. 지금 `useSubmitAvailability`가 `['availability']` 하나를 무효화하니 그 동작도 그대로다
-- **`useMyAvailability`를 없애고** 모아보기 행에서 내 날짜를 뽑는다 — RLS가 근무자에게 제 행만 주니 같은 질의로 답이 나온다. 질의가 하나 줄지만 관리자는 전원 행을 받아 거르는 일이 화면에 생긴다
+**처음에는 근무자 쪽에 `'mine'` 꼬리를 붙였다.** 겹침만 보고 고쳤더니 정본과 반대 방향이 됐고, 영향 문서를 세다가 design.md의 그 줄을 읽고 되돌렸다 — 리허설과 꼴이 어긋나는 것도 그때 보였다.
 
-**키 문자열을 바꾸는 쪽이라 AC-03의 「한 글자도 안 바꾼다」와 부딪힌다.** 그 조항은 옮기는 작업이 캐시 동작을 흔들지 말라는 뜻이고, 이건 지금 동작이 틀린 자리다 — 묶음 3에서 같이 고치고 그 PR이 근거를 든다.
+## 남는 위험
+
+**정본의 키 목록과 팩토리를 맞추는 검사가 없다.** 영역 design 넷이 키를 적고 팩토리가 그것을 코드로 든다 — 두 자리가 어긋나도 아무것도 안 깨진다. `tests/lint/`의 오류 코드 대조와 같은 꼴의 검사를 세울 수 있고, `fsd-read-write-layers` AC-08에 「캐시 키 배열 리터럴 금지」가 이미 있으니 그 옆자리다.

@@ -5,7 +5,8 @@
  *
  * **범위마다 항목 하나다.** 그래서 같은 튜플을 두 범위가 쓰려는 것이 정의부에서 보인다 —
  * 모양이 다른 질의 둘이 `['availability', month]`를 나눠 쓰다가 한쪽이 남의 데이터를 읽은
- * 일이 그 축이다([관찰 045](../../../docs/observations/045-two-queries-share-one-cache-key.md)).
+ * 일이 그 축이고, 가르는 꼴은 정본이 이미 들고 있었다
+ * ([관찰 045](../../../docs/observations/045-two-queries-share-one-cache-key.md)).
  *
  * **`shared/api`에 사는 까닭.** 쓰기 슬라이스가 성공한 뒤 낡게 할 키는 읽기 슬라이스의
  * 것인데 `house/no-cross-slice-import`가 같은 층 슬라이스끼리 import를 막는다. 한자리에
@@ -34,13 +35,13 @@ export const queryKeys = {
   },
   availability: {
     all: ["availability"],
-    /** 전원 신청을 신청자 이름과 함께. 좁히는 것은 RLS다. */
-    month: (month: string) => ["availability", month],
+    /** 내가 낸 날짜들. */
+    mine: (month: string) => ["availability", month],
     /**
-     * 내가 낸 날짜들. 전원 키와 모양이 달라 꼬리로 가른다 — 접두사가 겹쳐 신청을 보내면
-     * 둘이 같이 낡는다.
+     * 전원 신청을 신청자 이름과 함께. 내 것과 모양이 달라 꼬리로 가른다 — 접두사가 겹쳐
+     * 신청을 보내면 둘이 같이 낡는다. 리허설도 같은 꼴이다.
      */
-    mine: (month: string) => ["availability", month, "mine"],
+    everyone: (month: string) => ["availability", month, "all"],
   },
   attendance: {
     day: (workDate: string) => ["attendance", workDate],

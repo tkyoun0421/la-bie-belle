@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 // 구현 대상: src/features/schedule/model/useMonthAvailabilities.ts
 //
 // 그 달 전원의 근무 신청을 프로필 이름과 같이 읽는다. 달력 칸의 신청 수, 날 상세의 근무
-// 신청 줄, 모아보기 화면이 같은 키 `['availability', month]`를 쓴다
+// 신청 줄, 모아보기 화면이 같은 키 `['availability', month, 'all']`을 쓴다
 // (`docs/3-build/plans/schedule-admin.md` AC-01). 행 모양은
 // `get-month-availabilities.integration.test.ts`가 이미 확인한
 // `{ profile_id, work_date, profiles: { display_name } }`다.
@@ -58,7 +58,7 @@ beforeEach(() => {
   getMonthAvailabilitiesMock.mockReset();
 });
 
-describe("useMonthAvailabilities — getMonthAvailabilities를 그 달로 불러 ['availability', month]에 앉힌다", () => {
+describe("useMonthAvailabilities — getMonthAvailabilities를 그 달로 불러 ['availability', month, 'all']에 앉힌다", () => {
   it("client와 month를 그대로 넘겨 DAL을 부른다", async () => {
     getMonthAvailabilitiesMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
@@ -111,7 +111,12 @@ describe("useMonthAvailabilities — getMonthAvailabilities를 그 달로 불러
     await waitFor(() => expect(result.current.error).not.toBeNull());
   });
 
-  it("캐시 키는 ['availability', month]다", async () => {
+  /**
+   * 본인 신청을 읽는 `useMyAvailability`가 맨 키를 쥐고 이쪽이 꼬리를 받는다 — 어느 쪽이
+   * 받는지는 design.md의 키 목록이 정한다
+   * ([관찰 045](../../../../../docs/observations/045-two-queries-share-one-cache-key.md)).
+   */
+  it("캐시 키는 ['availability', month, 'all']이고 본인 키와 안 겹친다", async () => {
     getMonthAvailabilitiesMock.mockResolvedValue(ROWS);
     const { wrapper, queryClient } = createWrapper();
 
@@ -122,6 +127,9 @@ describe("useMonthAvailabilities — getMonthAvailabilities를 그 달로 불러
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(queryClient.getQueryData(["availability", MONTH])).toEqual(ROWS);
+    expect(queryClient.getQueryData(["availability", MONTH, "all"])).toEqual(
+      ROWS,
+    );
+    expect(queryClient.getQueryData(["availability", MONTH])).toBeUndefined();
   });
 });

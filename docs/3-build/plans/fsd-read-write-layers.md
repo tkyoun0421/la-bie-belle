@@ -65,9 +65,9 @@ sources:
   - dal의 키 함수 여섯(`dayAttendanceKey`·`monthAttendanceKey`·`myExcusesKey`·`qrCodeKey`·`payrollMonthKey`·`firstScheduleMonthKey`)을 빼고 팩토리 항목으로 옮긴다
   - 배열 리터럴로 키를 적은 자리를 전부 팩토리 호출로 바꾼다
   - 키 문자열을 [runtime.md](../../2-design/system/runtime.md#tanstack-query-규칙)의 꼴과 대조한다
-- 관찰 결과: 키 문자열이 하나만 바뀐다(아래). `pnpm test`가 초록이고 캐시 무효화 동작이 그대로다. 여섯 파일이 사라지고 하나가 선다
+- 관찰 결과: 키 문자열이 하나만 바뀌고 그것은 정본이 정한 꼴로 돌아간 것이다(아래). `pnpm test`가 초록이고 캐시 무효화 동작이 그대로다. 여섯 파일이 사라지고 하나가 선다
 - 왜 여기인가: 쓰기 슬라이스가 성공한 뒤 낡게 할 키는 읽기 슬라이스의 것이고, `no-cross-slice-import`가 그 import를 막는다. 이것이 안 서면 AC-07이 막힌다
-- 돌면서 나온 것 — **키 하나를 바꿨다.** `useMyAvailability`와 `useMonthAvailabilities`가 `['availability', month]`를 나눠 쓰는데 내놓는 모양이 달라, 한 세션에서 둘이 돌면 먼저 캐시에 든 쪽이 이긴다. 앞쪽을 `['availability', month, 'mine']`으로 내렸다 — 접두사가 겹쳐 무효화 동작은 그대로다([관찰 045](../../observations/045-two-queries-share-one-cache-key.md))
+- 돌면서 나온 것 — **키 하나를 정본 쪽으로 되돌렸다.** `useMyAvailability`와 `useMonthAvailabilities`가 `['availability', month]`를 나눠 쓰는데 내놓는 모양이 달라, 한 세션에서 둘이 돌면 먼저 캐시에 든 쪽이 이긴다. [schedule/design.md](../../2-design/modules/schedule/design.md#소유-데이터)가 「맨 키는 본인 신청, 관리자 현황은 `'all'`」을 이미 적어 뒀고 리허설은 그대로 지키는데 근무 신청만 어긋나 있었다 — 관리자 쪽을 `['availability', month, 'all']`로 내렸다. 접두사가 겹쳐 무효화 동작은 그대로다([관찰 045](../../observations/045-two-queries-share-one-cache-key.md))
 - 돌면서 나온 것 — **정본 충돌을 고쳤다.** `runtime.md`가 「도메인 파일이 각자의 키를 적는다」고 적어 ADR-015의 팩토리 결정과 부딪혔다. 그 줄을 팩토리로 고쳤다 — 조항이 선 뒤 슬라이스 import를 막는 규칙이 생겨 같은 상수가 복제됐고 그 복제가 위 결함의 바탕이다
 - 돌면서 나온 것 — **무효화 묶음은 키가 아니라 정책이라 이름을 갈랐다.** `staleTogether.scheduleWrite`·`rehearsalWrite`가 그 자리고, 어느 쓰기가 어느 키를 낡게 하느냐의 결정은 영역 design이 그대로 가진다
 
@@ -242,7 +242,7 @@ sources:
 
 1. **AC-01 — 파일 이름 camel.** ✅ 535개를 `git mv`했다
 2. **AC-02 — 폴더 이름 camel.** ✅ `screens/` 다섯을 `git mv`하고 폴더 검사를 세웠다
-3. **AC-03 — 캐시 키 팩토리.** ✅ 여섯과 dal 키 함수 여섯을 `shared/api/queryKeys.ts` 하나로. 키 하나만 바꿨다 — 관찰 045의 겹침
+3. **AC-03 — 캐시 키 팩토리.** ✅ 여섯과 dal 키 함수 여섯을 `shared/api/queryKeys.ts` 하나로. 키 하나를 정본 쪽으로 되돌렸다 — 관찰 045의 겹침
 4. **AC-04 — 통신을 `api/`로 + `.api.ts`**
 5. **AC-05 — 훅을 `hooks/`로 + 층 가르기 + `Query`·`Mutation`**
 6. **AC-06 — 타입 빼기 + `model`/`utils` 가르기 + 나머지 접미사**

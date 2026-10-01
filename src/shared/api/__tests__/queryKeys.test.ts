@@ -28,10 +28,7 @@ describe("도메인마다 접두사 하나", () => {
 describe("달을 받는 키", () => {
   it("접두사 뒤에 달을 붙인다", () => {
     expect(queryKeys.schedule.month(MONTH)).toEqual(["schedule", MONTH]);
-    expect(queryKeys.availability.month(MONTH)).toEqual([
-      "availability",
-      MONTH,
-    ]);
+    expect(queryKeys.availability.mine(MONTH)).toEqual(["availability", MONTH]);
     expect(queryKeys.request.month(MONTH)).toEqual(["requests", MONTH]);
     expect(queryKeys.rehearsal.mine(MONTH)).toEqual(["rehearsal", MONTH]);
     expect(queryKeys.excuse.month(MONTH)).toEqual(["excuses", MONTH]);
@@ -101,27 +98,34 @@ describe("범위가 꼬리로 붙는 키", () => {
 /**
  * 모양이 다른 질의 둘이 `['availability', month]`를 나눠 써서 한쪽이 남의 데이터를 읽었다
  * ([관찰 045](../../../../docs/observations/045-two-queries-share-one-cache-key.md)).
+ * 어느 쪽이 꼬리를 받는지는 [design.md](../../../../docs/2-design/modules/schedule/design.md#소유-데이터)가
+ * 정해 뒀다 — 본인 신청이 맨 키고 관리자의 현황이 `'all'`이다. 리허설도 같은 꼴이다.
  */
-describe("내 신청은 전원 신청과 키가 갈린다", () => {
-  it("꼬리로 가른다", () => {
-    expect(queryKeys.availability.mine(MONTH)).toEqual([
+describe("전원 신청은 본인 신청과 키가 갈린다", () => {
+  it("관리자 쪽이 꼬리를 받는다", () => {
+    expect(queryKeys.availability.everyone(MONTH)).toEqual([
       "availability",
       MONTH,
-      "mine",
+      "all",
+    ]);
+    expect(queryKeys.rehearsal.everyone(MONTH)).toEqual([
+      "rehearsal",
+      MONTH,
+      "all",
     ]);
   });
 
-  it("전원 키와 안 겹친다", () => {
-    expect(queryKeys.availability.mine(MONTH)).not.toEqual(
-      queryKeys.availability.month(MONTH),
+  it("본인 키와 안 겹친다", () => {
+    expect(queryKeys.availability.everyone(MONTH)).not.toEqual(
+      queryKeys.availability.mine(MONTH),
     );
   });
 
   /** 접두사가 겹쳐 신청을 보내면 둘이 같이 낡는다. */
-  it("전원 키가 내 키의 접두사다", () => {
-    const mine = queryKeys.availability.mine(MONTH);
+  it("본인 키가 전원 키의 접두사다", () => {
+    const everyone = queryKeys.availability.everyone(MONTH);
 
-    expect(mine.slice(0, 2)).toEqual(queryKeys.availability.month(MONTH));
+    expect(everyone.slice(0, 2)).toEqual(queryKeys.availability.mine(MONTH));
   });
 });
 
@@ -135,8 +139,8 @@ describe("같은 튜플을 두 범위가 안 쓴다", () => {
       queryKeys.schedule.openSlots(month),
       queryKeys.schedule.firstMonth(),
       queryKeys.availability.all,
-      queryKeys.availability.month(month),
       queryKeys.availability.mine(month),
+      queryKeys.availability.everyone(month),
       queryKeys.attendance.day("2026-09-20"),
       queryKeys.attendance.month(month),
       queryKeys.excuse.month(month),
