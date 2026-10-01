@@ -6,7 +6,9 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 근무표 이동 PR이다.** `entities` 넷(schedule·availability·hall·workRequest)과 `features` 일곱과 `screens` 셋이 품는 타입 열다섯·상수 둘을 옮기고, DTO 넷과 매퍼 넷을 세우고, `hooks/` 서른을 `services/`로 옮긴다(짝 테스트까지 예순 — 묶음 중 가장 큰 덩이다). 안쪽 겹(controller·큰 파일 쪼개기)은 이동 열이 다 끝난 뒤다.
+**다음 첫 수는 `fsd-read-write-layers`의 급여 이동 PR이다.** `payroll` + `payrollCompute`·`wageAdmin`·`adjustment`·`holiday` + `screens` 둘이 품는 타입 열다섯·상수 일곱을 옮기고, DTO 여섯과 매퍼 하나를 세우고, `hooks/` 여덞을 `services/`로 옮긴다(짝 테스트까지 열여섯). 중복 `canGoBack`·`canGoForward`와 `dayMinutes`가 이 묶음에 걸린다 — 공용이 이미 자리를 잡았으니 급여가 접는다. `ExcuseStatusRow`는 근태가 뒤라 그쪽이 접는다.
+
+**근무표 묶음이 끝났다.** `hooks/` 열하나가 통째로 `services/`로 갔고(서른 + 짝 서른), DB 열 이름을 드는 타입 열하나가 `.dto.ts` 넷으로 떨어지고, 도메인 타입 셋과 상수 둘이 제 세그먼트로 갔다. **DTO 꼴 바꾸기는 떼어냈다** — 열 이름이 `api/` 밖 파일 쉰여덟에 닿고 `ScheduleDay` 하나가 묶음 넷에 걸려 도메인 축으로 못 가른다. [dto-to-domain-shape](3-build/plans/dto-to-domain-shape.md)가 묶음 열이 끝난 뒤 필드 축으로 가른다.
 
 **공용 묶음이 끝났다(#493).** `shared/`와 `entities/clock`에 `consts`·`config`·`lib`·`stores`가 섰다 — 파일 일곱이 제 성격의 폴더로 가고, 한 파일에 타입과 상수와 판정과 저장을 같이 들고 있던 다섯(`api/errors`·`utils/theme`·`utils/fontLoading`·`utils/kstDate`·`clock.store`)이 갈렸다. `shared/hooks`가 비어 사라졌다. 돌면서 **재수출이 세그먼트 검사를 우회한다**는 것이 드러났다([관찰 051](observations/051-reexport-bypasses-segment-checks.md)) — `model` 둘이 `kstToday`를 재수출해 화면이 `model`을 거쳐 바깥을 읽고 있었고, `export { ... } from`은 import 축의 어느 검사도 안 본다. AC-08이 규칙을 세울 때 같이 물린다.
 
@@ -24,7 +26,7 @@
 
 **열지 않기로 한 셋 중 둘이 열렸다.** `mapper`는 `.dto.ts`와 함께 섰고, `ui` 가르기는 세그먼트가 아니라 **층이 갈랐다** — `shared/ui`(도메인을 모른다) · `entities/*/ui`(도메인 타입을 받는다, 지금 0) · `features/*/ui`(use case를 실행한다) · `screens/*/ui`(한 화면 전용) 넷이다. 남은 하나는 문안이고 `consts/<도메인>.const.ts`가 받기로 했다 — 지금 마흔한 자리에 흩어져 있다(`utils` 16 · `model` 12 · `ui` 10 · `api` 2 · `hooks` 1).
 
-**이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
+**이 task 밖의 코드 task를 띄우지 않는다** — 같은 파일을 연달아 옮겨 충돌이 손으로 못 풀 만큼 커진다. 이 task 안의 안쪽 겹은 예외다 — 화면 안쪽만 고쳐 밖에서 당기는 import가 없다.
 
 
 **묶음 여덟이 끝났다(#483~#489 그리고 8가).** 이름이 camelCase가 되고(535개, `Db`→`DB` 334회), 폴더도 camelCase가 되고, 캐시 키가 `src/shared/api/queryKeys.ts` 팩토리 하나로 모이고, 통신 74개가 `entities/*/api/`의 `[action].api.ts`가 되고, 훅 59개가 `hooks/`로 가며 읽기·쓰기로 층이 갈렸다. 그리고 `shared/lib`이 사라져 `api`·`hooks`·`utils`로 갈리고 층이 틀린 아홉이 `features/auth`·`entities/session`·`entities/clock`으로 갔다. 그리고 슬라이스가 **entities 14 · features 22**로 쪼개졌고, `model` 파일 123개가 성격 접미사를 받아 판정 예순하나는 `.policy.ts`로, 꼴 바꾸기 쉰여섯은 `utils/`의 `.utils.ts`로 갈렸다 — `no-cross-slice-import`가 0건이다. 지금 **`entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다.**
