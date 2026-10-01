@@ -6,7 +6,13 @@
 
 ## 다음 작업
 
-**다음 첫 수는 사람이 NCP에서 자격을 받아 오는 것이다.** 받을 것은 [배포 환경](5-deploy/environments.md#데이터와-외부-의존성)의 「지도 키」 줄이 든다 — 대표 계정을 먼저 지정하고, Application 하나에 Maps → Dynamic Map을 켜 안드로이드·iOS 식별자(둘 다 `com.labiebelle.app`)를 등록해 Client ID 한 쌍을 받고, Map Style Editor로 라이트·다크 스타일을 만들어 `customStyleId` 둘을 받는다. 그것이 오면 `attendance-checkin`이 풀리고 그 뒤로 `dashboard`·`attendance-excuse`·`notification-emit` 사슬이 선다. 기다리는 동안 `candidate`를 올려 잡으려면 `spell-number-shared`·`test-seed-transaction`·`internal-grants-public`·`unbounded-read-truncates`·`stats-density-salvage` 중에서 고른다.
+**다음 첫 수는 `fsd-read-write-layers`의 첫 묶음이다.** [ADR-015](2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)가 섰다 — 층의 뜻을 읽기와 쓰기로 가르고(`entities`가 queries·모델·제약, `features`가 mutations의 use case) 세그먼트를 여섯으로 고정했다. [ADR-001](2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md)의 「세그먼트」 절만 대체하고 나머지는 그대로 산다. **[plan](3-build/plans/fsd-read-write-layers.md)이 묶음 다섯을 PR 하나씩 나르고 첫 묶음은 캐시 키 모으기다** — 다섯 군데 `query-keys.ts`를 `shared/config`로 모은다. 쓰기 슬라이스가 낡게 할 키는 읽기 슬라이스 것이고 `no-cross-slice-import`가 그 import를 막아서, 이것이 안 서면 슬라이스 쪼개기가 막힌다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
+
+**이 가름이 싸게 되는 까닭은 섞인 파일이 없어서다.** dal 74개가 읽기 24·쓰기 49로, 훅 58개가 쿼리 17·뮤테이션 37로 갈리는데 **둘을 다 하는 파일이 하나도 없다.** `rpc`와 `from`도 49/25로 겹침이 없다. 손으로 판정할 것은 다섯뿐이고 plan이 각각 어디로 갈지 적었다. import는 802줄이 바뀌는데 1658개 중 1654개가 `@/` 절대 경로라 치환으로 끝난다.
+
+**그리고 `shared/lib` 서른셋 중 열하나는 층이 틀렸다.** 인증 흐름은 로그인이라는 use case에 매여 있어 `features/auth`로, 「누가 들어왔나」 판정은 읽기라 새로 서는 `entities/session`으로, 서버 시각 둘은 이미 있던 `entities/clock`으로 간다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거였다.
+
+**NCP 자격은 사람이 받아 와야 한다.** 받을 것은 [배포 환경](5-deploy/environments.md#데이터와-외부-의존성)의 「지도 키」 줄이 든다 — 대표 계정을 먼저 지정하고, Application 하나에 Maps → Dynamic Map을 켜 안드로이드·iOS 식별자(둘 다 `com.labiebelle.app`)를 등록해 Client ID 한 쌍을 받고, Map Style Editor로 라이트·다크 스타일을 만들어 `customStyleId` 둘을 받는다. 그것이 오면 `attendance-checkin`이 풀리고 그 뒤로 `dashboard`·`attendance-excuse`·`notification-emit` 사슬이 선다. 기다리는 동안 `candidate`를 올려 잡으려면 `spell-number-shared`·`test-seed-transaction`·`internal-grants-public`·`unbounded-read-truncates`·`stats-density-salvage` 중에서 고른다.
 
 **지도의 정본 전제를 웹에서 네이티브로 옮겼다.** [출근 인증](2-design/modules/attendance/screens/check-in.md#출근-인증-짜임)이 「웹에서 `submodules=gl`로 띄운다」고 적고 있었는데 [ADR-011](2-design/adr/ADR-011-expo-native-app.md) 뒤로 그 전제가 죽었다. `customStyleId`는 iOS·Android SDK 둘 다 받아 색 표는 그대로 유효하고, `nightModeEnabled`는 두 레퍼런스가 「지원 안 하는 유형에서는 변화가 없다」고만 적고 어느 유형이 듣는지를 열거하지 않아 안 쓴다. 카카오를 다시 재볼 필요도 없다 — 카카오 SDK의 `MapType`이 `NORMAL`·`SKYVIEW` 둘뿐이고 데브톡 답변이 다크 모드 미지원을 밝혔다. **문서에 든 사실마다 출처를 달았다** — 조사자가 돌려준 「iOS는 Basic·Navi·Terrain, 안드로이드는 Navi만」은 공식 레퍼런스 어디에도 없었다([관찰 043](observations/043-researcher-enumerated-what-the-source-does-not.md)).
 
