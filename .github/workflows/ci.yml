@@ -53,7 +53,7 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           git diff --name-only "${{ github.event.pull_request.base.sha }}...HEAD" \
-            | node --experimental-strip-types scripts/check-sources-impact.mts
+            | node --experimental-strip-types scripts/checkSourcesImpact.mts
       - uses: supabase/setup-cli@v1
         if: steps.scope.outputs.code == 'true'
         with:
