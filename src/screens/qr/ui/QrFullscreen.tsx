@@ -1,7 +1,7 @@
 import { useKeepAwake } from "expo-keep-awake";
 import { useWindowDimensions } from "react-native";
 import { QrStage } from "@/shared/ui/QrFace";
-import { fullscreenQrSize } from "@/screens/qr/model/fullscreen-qr-size";
+import { fullscreenQrSize } from "@/screens/qr/model/fullscreenQrSize";
 
 /**
  * 「크게 띄우기」다. 화면이 통째로 QR이 된다 — 종이가 떨어졌거나 새로 뽑은 직후에 관리자 폰을

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { updateMyContact } from "@/entities/profile/dals/update-my-contact";
-import { PROFILE_PRIVATE_KEY } from "@/features/profile/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { updateMyContact } from "@/entities/profile/dals/updateMyContact";
+import { PROFILE_PRIVATE_KEY } from "@/features/profile/model/queryKeys";
 
 /**
  * 연락처 저장이다. 낙관적으로 먼저 칠하지 않고 응답을 기다린다 — 고치는 자리가 시트 안이라
@@ -28,7 +28,7 @@ export type UpdateContactResult = {
   reset: () => void;
 };
 
-export function useUpdateContact(client: Db): UpdateContactResult {
+export function useUpdateContact(client: DB): UpdateContactResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

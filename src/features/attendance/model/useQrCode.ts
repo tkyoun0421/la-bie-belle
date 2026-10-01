@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   getQrCode,
   qrCodeKey,
   QR_CODE_STALE_TIME_MS,
   type HallQrCode,
-} from "@/entities/attendance/dals/get-qr-code";
+} from "@/entities/attendance/dals/getQrCode";
 
 /**
  * 관리자 QR 화면이 지금 코드를 읽는 자리다. 키와 `staleTime`은 DAL이 든 값을 그대로 쓴다 —
@@ -18,7 +18,7 @@ export type QrCodeResult = {
   isLoading: boolean;
 };
 
-export function useQrCode(client: Db): QrCodeResult {
+export function useQrCode(client: DB): QrCodeResult {
   const { data, error, isLoading } = useQuery({
     queryKey: qrCodeKey(),
     queryFn: () => getQrCode(client),

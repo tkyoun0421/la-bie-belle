@@ -1,4 +1,4 @@
-import { kstDateOf } from "@/shared/lib/kst-date";
+import { kstDateOf } from "@/shared/lib/kstDate";
 
 /**
  * 알림을 언제 받았는지를 적는 두 손이다. 정본은

@@ -3,12 +3,9 @@ import type { AppStateStatus } from "react-native";
 
 const savePushTokenMock = jest.fn<(...args: unknown[]) => Promise<void>>();
 
-jest.unstable_mockModule(
-  "@/entities/notification/dals/save-push-token",
-  () => ({
-    savePushToken: savePushTokenMock,
-  }),
-);
+jest.unstable_mockModule("@/entities/notification/dals/savePushToken", () => ({
+  savePushToken: savePushTokenMock,
+}));
 
 const { renderHook, act, waitFor } =
   await import("@testing-library/react-native");

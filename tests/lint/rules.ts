@@ -20,7 +20,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "eslint",
     ruleId: "no-restricted-imports",
     enforcedBy: null,
-    test: "tests/lint/relative-import.test.ts",
+    test: "tests/lint/relativeImport.test.ts",
   },
   {
     no: 2,
@@ -28,7 +28,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "eslint",
     ruleId: "no-restricted-imports",
     enforcedBy: null,
-    test: "tests/lint/fsd-layer-order.test.ts",
+    test: "tests/lint/fsdLayerOrder.test.ts",
   },
   {
     no: 3,
@@ -36,7 +36,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "house",
     ruleId: "house/no-cross-slice-import",
     enforcedBy: null,
-    test: "tests/lint/fsd-slice-boundary.test.ts",
+    test: "tests/lint/fsdSliceBoundary.test.ts",
   },
   {
     no: 4,
@@ -44,7 +44,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "house",
     ruleId: "house/no-arbitrary-class-values",
     enforcedBy: null,
-    test: "tests/lint/design-token-values.test.ts",
+    test: "tests/lint/designTokenValues.test.ts",
   },
   {
     no: 4,
@@ -52,7 +52,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "house",
     ruleId: "house/no-color-literals",
     enforcedBy: null,
-    test: "tests/lint/design-token-values.test.ts",
+    test: "tests/lint/designTokenValues.test.ts",
   },
   {
     no: 5,
@@ -60,7 +60,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "house",
     ruleId: "house/no-default-palette-class",
     enforcedBy: null,
-    test: "tests/lint/tailwind-default-palette.test.ts",
+    test: "tests/lint/tailwindDefaultPalette.test.ts",
   },
   {
     no: 9,
@@ -68,7 +68,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "house",
     ruleId: "house/dumb-ui",
     enforcedBy: null,
-    test: "tests/lint/tsx-dumb-ui.test.ts",
+    test: "tests/lint/tsxDumbUi.test.ts",
   },
   {
     no: 10,
@@ -76,7 +76,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "eslint",
     ruleId: "no-restricted-syntax",
     enforcedBy: null,
-    test: "tests/lint/no-focused-tests.test.ts",
+    test: "tests/lint/noFocusedTests.test.ts",
   },
   {
     no: 11,
@@ -84,7 +84,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "eslint",
     ruleId: "import/order",
     enforcedBy: null,
-    test: "tests/lint/import-order.test.ts",
+    test: "tests/lint/importOrder.test.ts",
   },
   {
     no: 12,
@@ -92,7 +92,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "prettier",
     ruleId: null,
     enforcedBy: "prettier.config.mjs",
-    test: "tests/lint/format-check.test.ts",
+    test: "tests/lint/formatCheck.test.ts",
   },
   {
     no: 13,
@@ -100,7 +100,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "eslint",
     ruleId: "no-console",
     enforcedBy: null,
-    test: "tests/lint/no-console.test.ts",
+    test: "tests/lint/noConsole.test.ts",
   },
   {
     no: 14,
@@ -108,7 +108,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "eslint",
     ruleId: "unused-imports/no-unused-imports",
     enforcedBy: null,
-    test: "tests/lint/unused-imports.test.ts",
+    test: "tests/lint/unusedImports.test.ts",
   },
   {
     no: 14,
@@ -116,7 +116,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "eslint",
     ruleId: "@typescript-eslint/consistent-type-imports",
     enforcedBy: null,
-    test: "tests/lint/unused-imports.test.ts",
+    test: "tests/lint/unusedImports.test.ts",
   },
   {
     no: 15,
@@ -140,7 +140,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "pre-commit",
     ruleId: null,
     enforcedBy: ".githooks/pre-commit",
-    test: "tests/lint/pre-commit.test.ts",
+    test: "tests/lint/preCommit.test.ts",
   },
   {
     no: 18,
@@ -156,7 +156,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "house",
     ruleId: "house/no-visual-utility-class",
     enforcedBy: null,
-    test: "eslint-rules/__tests__/no-visual-utility-class.test.ts",
+    test: "eslint-rules/__tests__/noVisualUtilityClass.test.ts",
   },
   {
     no: 20,
@@ -164,7 +164,7 @@ export const RULES: EnforcedRule[] = [
     mechanism: "house",
     ruleId: "house/no-edge-function-src-import",
     enforcedBy: null,
-    test: "eslint-rules/__tests__/no-edge-function-src-import.test.ts",
+    test: "eslint-rules/__tests__/noEdgeFunctionSrcImport.test.ts",
   },
   {
     no: 21,
@@ -172,6 +172,6 @@ export const RULES: EnforcedRule[] = [
     mechanism: "house",
     ruleId: "house/no-node-import-in-edge-shared",
     enforcedBy: null,
-    test: "eslint-rules/__tests__/no-node-import-in-edge-shared.test.ts",
+    test: "eslint-rules/__tests__/noNodeImportInEdgeShared.test.ts",
   },
 ];

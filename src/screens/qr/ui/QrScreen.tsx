@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import { readAppUrl } from "@/shared/lib/read-app-url";
+import { readAppUrl } from "@/shared/lib/readAppUrl";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
@@ -12,13 +12,13 @@ import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { QrCard } from "@/shared/ui/QrFace";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
-import { buildCheckInUrl } from "@/entities/attendance/model/check-in-url";
-import { exportQrPaper } from "@/features/attendance/model/export-qr-paper";
+import { buildCheckInUrl } from "@/entities/attendance/model/checkInUrl";
+import { exportQrPaper } from "@/features/attendance/model/exportQrPaper";
 import { useQrCode } from "@/features/attendance/model/useQrCode";
 import { useRotateQr } from "@/features/attendance/model/useRotateQr";
-import { buildQrPaperHtml } from "@/screens/qr/model/qr-paper";
-import { qrStartLine } from "@/screens/qr/model/qr-start-line";
-import { buildQrSvg } from "@/screens/qr/model/qr-svg";
+import { buildQrPaperHtml } from "@/screens/qr/model/qrPaper";
+import { qrStartLine } from "@/screens/qr/model/qrStartLine";
+import { buildQrSvg } from "@/screens/qr/model/qrSvg";
 import { QrFullscreen } from "@/screens/qr/ui/QrFullscreen";
 
 /**

@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 
 const setDayHoursMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/set-day-hours", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/setDayHours", () => ({
   setDayHours: setDayHoursMock,
 }));
 

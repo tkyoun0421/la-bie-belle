@@ -43,7 +43,7 @@
 # 파일의 「빼기」가 이미 증명한다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/schedule-admin.yaml 머리말, scripts/e2e-seed-server.mts,
+# tests/e2e/schedule-admin.yaml 머리말, scripts/e2eSeedServer.mts,
 # scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의
 # "/admin/schedule"(`?date=` 그대로)이다 — 이 파일은 달력을 거치지 않고 날 상세로 바로
 # 들어간다. 날 열기·달력·확정 자체는 schedule-admin.yaml 몫이라 여기서 다시 안 밟는다.

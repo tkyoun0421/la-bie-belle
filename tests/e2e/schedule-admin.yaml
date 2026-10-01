@@ -43,7 +43,7 @@
 # 「못 쓴 것」에 적는다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/schedule-worker.yaml 머리말, scripts/e2e-seed-server.mts,
+# tests/e2e/schedule-worker.yaml 머리말, scripts/e2eSeedServer.mts,
 # scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의
 # "/admin/schedule"(`?month=`·`?date=` 그대로) 행이다.
 #
@@ -207,7 +207,7 @@
 # `SchedulePayload`는 안 늘어난다 — `month`·`day`·`monthLabel`뿐이라
 # `schedule_assign_day`가 이미 쓰는 필드 그대로다. `STATES`·
 # `ADMIN_STATES`·`schedulePayloadOf`에 `"schedule_admin_request_slot"`을
-# `schedule_assign_day`와 같은 자리에 더한다. tests/e2e/scripts/seed-session.js는
+# `schedule_assign_day`와 같은 자리에 더한다. tests/e2e/scripts/seedSession.js는
 # 안 고쳐도 된다 — 이미 있는 `if (seeded.day)` 통로를 그대로 탄다.
 #
 # 이 절이 요청하는 새 testID는 없다. `schedule-slot-안내-1`은

@@ -22,11 +22,11 @@ ADR-001은 세그먼트를 「`types`, `components`, `hooks`, `actions`, `dals`,
 - 데이터 접근이 둘로 갈렸다 — `entities/*/dals/` 일흔넷과 `features/stats/api/` 하나가 같은 일을 한다
 - React 훅과 순수 계산이 한 폴더에 섞였다 — `features/*/model/`에 훅 쉰여덟과 순수 함수 서른넷이 나란히 있다
 - 슬라이스 하나가 여러 가지를 말한다 — `features/schedule`에 훅 서른이 들어 있어 「이 슬라이스는 무엇을 하나」에 답할 수 없다
-- 읽기와 쓰기가 층을 가로질러 흩어졌다 — `get-month-schedule.ts`는 `entities`에 있고 그것만 부르는 `useMonthSchedule.ts`는 `features`에 있어, 한 읽기를 고치려면 두 층을 왕복한다
+- 읽기와 쓰기가 층을 가로질러 흩어졌다 — `getMonthSchedule.ts`는 `entities`에 있고 그것만 부르는 `useMonthSchedule.ts`는 `features`에 있어, 한 읽기를 고치려면 두 층을 왕복한다
 
 세그먼트 이름을 고르는 일이 매번 판단이 되면 그 판단이 슬라이스마다 갈린다. 이름을 고정하고 판정 기준을 기계가 읽을 수 있게 적는다.
 
-**파일 이름도 성격을 안 말한다.** `profile/model/`에 `can-save-display-name.ts`·`format-birth-date.ts`·`sort-members.ts`가 나란히 있는데 첫째는 업무 판정이고 나머지 둘은 꼴 바꾸기다. 이름만 보고는 어느 것이 업무 규칙인지 몰라, 규칙을 고칠 때 폴더를 다 열어야 한다. 성격을 접미사로 달면 그 질문이 파일 목록에서 끝난다.
+**파일 이름도 성격을 안 말한다.** `profile/model/`에 `canSaveDisplayName.ts`·`formatBirthDate.ts`·`sortMembers.ts`가 나란히 있는데 첫째는 업무 판정이고 나머지 둘은 꼴 바꾸기다. 이름만 보고는 어느 것이 업무 규칙인지 몰라, 규칙을 고칠 때 폴더를 다 열어야 한다. 성격을 접미사로 달면 그 질문이 파일 목록에서 끝난다.
 
 ## 읽기와 쓰기
 
@@ -41,7 +41,7 @@ ADR-001은 세그먼트를 「`types`, `components`, `hooks`, `actions`, `dals`,
 | dal — `entities/*/dals/` | 24 | 49 | 0 | 1 |
 | 훅 — `features/*/model/use*.ts` | 17 | 37 | 0 | 4 |
 
-손으로 판정할 다섯은 이렇다 — `profile/dals/avatars-bucket.ts`는 버킷 주소를 읽고 파일을 올려 둘을 다 하고, 훅 넷(`useSavePushToken`·`usePayrollMonths`·`useRehearsalMonths`·`useScheduleMonths`)은 쿼리도 뮤테이션도 아니라 다른 훅을 조합하거나 효과만 낸다.
+손으로 판정할 다섯은 이렇다 — `profile/dals/avatarsBucket.ts`는 버킷 주소를 읽고 파일을 올려 둘을 다 하고, 훅 넷(`useSavePushToken`·`usePayrollMonths`·`useRehearsalMonths`·`useScheduleMonths`)은 쿼리도 뮤테이션도 아니라 다른 훅을 조합하거나 효과만 낸다.
 
 ## 세그먼트 다섯
 
@@ -67,13 +67,13 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 「RLS가 유일한 방어인 자리」 스물다섯 개가 한 줄로 나온다. 보안 스캔과 사람 리뷰가 볼 자리를 좁히는 데는 그 줄로 충분하고, 세그먼트를 하나 늘리는 값보다 이름이 적은 값이 크다. 통신은 통신이고 그 안의 갈래는 코드가 말한다.
 
-**캐시 키와 설정도 `api`다.** `query-keys`·`query-client`·`read-supabase-env`는 통신 계층의 약속이라 `shared/api`에 산다. 색·서체처럼 통신과 무관한 값은 `shared/utils`다.
+**캐시 키와 설정도 `api`다.** `queryKeys`·`queryClient`·`readSupabaseEnv`는 통신 계층의 약속이라 `shared/api`에 산다. 색·서체처럼 통신과 무관한 값은 `shared/utils`다.
 
 **전역 상태는 `model`이다.** zustand store가 그 자리다 — ADR-001이 「계산, 상태 규칙, 통신은 전부 `.ts`로」라 적을 때 상태 규칙을 계산 쪽에 세웠다. `use`로 시작하는 store 훅은 `hooks`다.
 
 ## 파일 이름
 
-**kebab-case를 버리고 camelCase로 간다.** `.ts`가 내놓는 것은 함수와 타입이고 코드에서 부르는 이름이 camelCase다 — `getMonthSchedule`을 `get-month-schedule.ts`에서 가져오면 import 줄에서 이름이 두 번 꼴을 바꾼다. 꼴을 하나로 맞추면 파일을 찾을 때 이름을 변환하지 않는다.
+**kebab-case를 버리고 camelCase로 간다.** `.ts`가 내놓는 것은 함수와 타입이고 코드에서 부르는 이름이 camelCase다 — `getMonthSchedule`을 `getMonthSchedule.ts`에서 가져오면 import 줄에서 이름이 두 번 꼴을 바꾼다. 꼴을 하나로 맞추면 파일을 찾을 때 이름을 변환하지 않는다.
 
 **케이스 충돌이 안 생기는 까닭은 확장자가 꼴을 가르기 때문이다.** ADR-001이 `.tsx`를 더미 UI로 못박아 PascalCase는 `.tsx`에만, camelCase는 `.ts`에만 산다 — `CheckIn.tsx`와 `checkIn.ts`는 소문자화해도 확장자가 달라 한 파일이 되지 않는다. 그 짝을 보는 검사는 보험으로 남긴다.
 
@@ -98,9 +98,19 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **훅 이름에 `Query`와 `Mutation`을 박는다.** 파일 이름과 export 이름이 같아야 코드에서 파일로 바로 건너가니 함수 이름도 같이 바뀐다 — `useMonthSchedule`이 `useMonthScheduleQuery`가 된다. 호출부가 그 이름만 보고 읽기인지 쓰기인지 알고, 층의 뜻(entities는 읽기·features는 쓰기)이 import 줄에서 보인다.
 
-**`ui`와 `screens`는 접미사가 없다.** `.tsx`가 곧 컴포넌트라 성격이 하나뿐이고, 이름은 PascalCase 그대로다. `src/app/`도 밖이다 — Expo Router가 파일 이름을 URL로 읽어 `check-in.tsx`가 `/check-in`이고 그 주소는 종이 QR에 실려 나간다.
+**폴더 이름도 camelCase다.** 슬라이스 폴더가 `workRequest`·`scheduleDay`고 세그먼트 폴더는 단어 하나라 영향이 없다. `screens/`의 슬라이스는 ADR-001이 「라우트 이름과 같게」로 정했는데 그 짝을 camel로 읽는다 — 라우트 `/admin-home`의 슬라이스가 `screens/adminHome`이다. 1:1이 유지되면서 저장소에 폴더 꼴이 하나만 산다.
 
-**Supabase 클라이언트 타입은 `DB`다.** 지금 이름이 `Db`인데 데이터베이스의 약자라 두 글자가 다 대문자여야 한다. 쓰는 자리가 백마흔아홉 파일이고 파일 이름에는 안 들어가 치환으로 끝난다.
+`src/app/`과 `eslint-rules/`는 밖이다. 전자는 파일 이름이 URL이고, 후자는 `eslint.config.mjs`가 그 이름으로 플러그인을 부르는 생태계 관례다.
+
+**타입은 `[domain].type.ts`에 모은다.** 지금 타입 선언 삼백예순 개가 파일 백아흔둘에 흩어져 있어 「이 도메인의 모양이 무엇인가」에 답하려면 그 파일을 다 열어야 한다. 쓰는 곳에만 있는 좁은 타입(함수 하나의 인자 꼴)은 그 파일에 남지만, **도메인의 모양을 말하는 타입은 밖으로 뺀다** — 그러면 그 파일 하나가 「이 도메인은 무엇인가」의 답이 된다.
+
+**캐시 키는 팩토리 객체 하나다.** 배열 리터럴을 손으로 쓰면 같은 키가 자리마다 조금씩 다르게 적힌다. `queryKeys.schedule.month(month)` 꼴로 함수를 타면 접두사가 한 곳에서 나오고, 쓰기가 낡게 할 범위도 `queryKeys.schedule.all`처럼 이름으로 고른다.
+
+**`ui`와 `screens`는 접미사가 없다.** `.tsx`가 곧 컴포넌트라 성격이 하나뿐이고, 이름은 PascalCase 그대로다. `src/app/`도 밖이다 — Expo Router가 파일 이름을 URL로 읽어 `checkIn.tsx`가 `/check-in`이고 그 주소는 종이 QR에 실려 나간다.
+
+**Supabase 클라이언트 타입은 `DB`다.** 데이터베이스의 약자라 두 글자가 다 대문자다. 약어가 이름 안에 올 때도 같다 — `words()`가 소문자 뒤의 대문자만 가르니 약어를 붙여 쓰면 camel 변환이 그 조각을 못 나눈다는 것은 알고 쓴다.
+
+**ESLint 규칙 이름은 kebab으로 둔다.** `house/dumb-ui`는 파일 이름이 아니라 그 생태계의 식별자고, 소스의 `eslint-disable` 주석이 그 이름을 그대로 쓴다. 규칙 파일(`eslint-rules/dumbUi.mjs`)은 camel이고 등록 키는 kebab이다.
 
 ## 슬라이스를 쪼개는 기준
 
@@ -112,7 +122,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 ## 집행
 
-검사 여섯을 세운다. 폴더와 이름이 뜻을 가지면 그 뜻을 기계가 지킨다 — 안 그러면 다음 task가 아무 데나 넣고 폴더는 한 달 안에 뜻을 잃는다.
+검사 여덟을 세운다. 폴더와 이름이 뜻을 가지면 그 뜻을 기계가 지킨다 — 안 그러면 다음 task가 아무 데나 넣고 폴더는 한 달 안에 뜻을 잃는다.
 
 | 규칙 | 막는 것 | 지키는 것 | 보는 것 |
 | --- | --- | --- | --- |
@@ -122,6 +132,8 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 | `.policy.ts`에서 통신·시계·난수 금지 | 판정이 바깥을 읽기 | policy가 순수하다는 것 | lint 규칙 |
 | 접미사가 사는 세그먼트와 맞는지 | `api/`의 `.policy.ts`처럼 어긋난 자리 | 접미사가 성격을 말한다는 것 | `tests/lint/fileNaming.ts` |
 | 이름이 camelCase인지 | kebab이 다시 들어오기 | 꼴 하나 | `tests/lint/fileNaming.ts` |
+| 폴더 이름이 camelCase인지 | 폴더만 kebab으로 남기 | 꼴 하나 | `tests/lint/fileNaming.ts` |
+| 캐시 키 배열 리터럴 금지 | 키를 손으로 쓰기 | 팩토리가 유일한 문이라는 것 | lint 규칙 |
 
 셋째 줄이 이 ADR의 핵심을 지킨다. 첫 줄은 [ADR-003](ADR-003-supabase-and-integration-tests.md)의 「클라이언트는 `dals`에서만」을 새 이름으로 옮긴 것이다 — 세그먼트가 `api`로 바뀌었으니 그 규칙도 `api`를 가리킨다.
 
@@ -129,7 +141,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 ## 함께 정한 것
 
-**캐시 키는 `shared/api/query-keys.ts` 한 자리다.** 쓰기 슬라이스가 성공한 뒤 낡게 할 키는 읽기 슬라이스의 것이고, `no-cross-slice-import`가 같은 층 슬라이스끼리 import를 막아 쓰기가 그 키에 닿을 수 없다. 키의 정본이 코드가 아니라 [runtime.md](../system/runtime.md)라고 이미 적혀 있고, 「어느 쓰기가 어느 읽기를 낡게 하나」는 슬라이스 하나가 아니라 앱 전체의 약속이다.
+**캐시 키는 `shared/api/queryKeys.ts` 한 자리의 팩토리다.** 쓰기 슬라이스가 성공한 뒤 낡게 할 키는 읽기 슬라이스의 것이고, `no-cross-slice-import`가 같은 층 슬라이스끼리 import를 막아 쓰기가 그 키에 닿을 수 없다. 키의 정본이 코드가 아니라 [runtime.md](../system/runtime.md)라고 이미 적혀 있고, 「어느 쓰기가 어느 읽기를 낡게 하나」는 슬라이스 하나가 아니라 앱 전체의 약속이다.
 
 **옮기는 일은 `git mv`로 한다.** TDD 훅은 Write와 Edit만 보고 Bash를 안 본다([ADR-001](ADR-001-fsd-layout-and-tdd-guard.md)이 그 구멍을 알고 남겼다). 테스트를 같이 옮기면 짝이 유지되고, 파일 내용을 한 줄도 안 고치는 커밋이 되어 되돌리기가 revert 한 번이다.
 

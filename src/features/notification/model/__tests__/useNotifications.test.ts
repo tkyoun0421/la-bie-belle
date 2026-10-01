@@ -5,7 +5,7 @@ const getNotificationsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/notification/dals/get-notifications",
+  "@/entities/notification/dals/getNotifications",
   () => ({
     getNotifications: getNotificationsMock,
   }),

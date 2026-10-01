@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/shared/api/database-types";
+import type { Database } from "@/shared/api/databaseTypes";
 
 export type { Database };
 
@@ -10,4 +10,4 @@ export type { Database };
  * 그래서 클라이언트를 받는 자리는 전부 이 이름을 쓴다 — 정본은
  * [`data-access.md` 「생성 타입」](../../../docs/2-design/system/data-access.md#생성-타입)이다.
  */
-export type Db = SupabaseClient<Database>;
+export type DB = SupabaseClient<Database>;

@@ -127,9 +127,9 @@ P1은 관련 구현 착수 전, P2는 다음 문서 정리 작업에서, P3는 �
 
 **제안.** 파일을 이동하지 않고 안내 문서의 실존 경로를 상대 링크로 바꾼다. 아키텍처 README에는 도메인 여섯 × 관심사 네 갈래의 링크 표를 둔다. 예를 들어 계정 행은 [domain](../2-design/modules/account/README.md) · [data-model](../2-design/modules/account/design.md) · [api](../2-design/modules/account/design.md) · [runtime](../2-design/modules/account/design.md) · [flows](../2-design/modules/account/design.md)로 이동한다. 표에는 규칙이나 구현 상태를 복제하지 않는다. 다른 README에 같은 표를 다시 만들지 않는다.
 
-**검사도 같이 수정해야 한다.** [doc-map.ts](../../tests/lint/doc-map.ts)는 「문서 지도」 불릿의 코드스팬에서 `docs/` 경로를 추출한다. 일반 링크로만 바꾸면 검사 대상이 사라져 잘못된 지도도 통과할 수 있다. 링크 목적지를 읽도록 검사와 짝 테스트를 같은 변경에 포함한다. [doc-links.ts](../../tests/lint/doc-links.ts)는 `docs/`와 루트 README만 검사하므로, 지도를 링크로 바꾸면 `CLAUDE.md`도 범위에 넣는다.
+**검사도 같이 수정해야 한다.** [doc-map.ts](../../tests/lint/docMap.ts)는 「문서 지도」 불릿의 코드스팬에서 `docs/` 경로를 추출한다. 일반 링크로만 바꾸면 검사 대상이 사라져 잘못된 지도도 통과할 수 있다. 링크 목적지를 읽도록 검사와 짝 테스트를 같은 변경에 포함한다. [doc-links.ts](../../tests/lint/docLinks.ts)는 `docs/`와 루트 README만 검사하므로, 지도를 링크로 바꾸면 `CLAUDE.md`도 범위에 넣는다.
 
-존재하지 않는 링크 검사와 지도에서 빠진 항목 검사는 다르다. 누락 검사 확대가 필요하면 우선 지도에 명시하기로 한 단계 폴더와 아키텍처 도메인 파일에 한정한다. 로그와 모든 plan까지 전역 목록에 올리도록 강제하지 않는다. 기존 [design-map.ts](../../tests/lint/design-map.ts)는 페이지 목록 누락을 이미 잡으므로 같은 검사를 다시 만들 필요가 없다.
+존재하지 않는 링크 검사와 지도에서 빠진 항목 검사는 다르다. 누락 검사 확대가 필요하면 우선 지도에 명시하기로 한 단계 폴더와 아키텍처 도메인 파일에 한정한다. 로그와 모든 plan까지 전역 목록에 올리도록 강제하지 않는다. 기존 [design-map.ts](../../tests/lint/designMap.ts)는 페이지 목록 누락을 이미 잡으므로 같은 검사를 다시 만들 필요가 없다.
 
 **수정 대상.** `CLAUDE.md`, `docs/1-plan/README.md`, `docs/2-design/README.md`, `docs/2-design/architecture/README.md`, `tests/lint/doc-map.ts`·짝 테스트, `tests/lint/doc-links.ts`·짝 테스트.
 

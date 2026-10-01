@@ -1,4 +1,4 @@
-import { spellWon } from "@/shared/lib/spell-number";
+import { spellWon } from "@/shared/lib/spellNumber";
 import { Dialog } from "@/shared/ui/Dialog";
 
 /**

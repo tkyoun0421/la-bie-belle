@@ -9,8 +9,8 @@ import {
 } from "lucide-react-native";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
-import { isCatalogVisible } from "@/shared/lib/catalog-visibility";
-import type { ShiftWindow } from "@/shared/lib/day-band";
+import { isCatalogVisible } from "@/shared/lib/catalogVisibility";
+import type { ShiftWindow } from "@/shared/lib/dayBand";
 import { AdminSwitch } from "@/shared/ui/AdminSwitch";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
@@ -53,7 +53,7 @@ import { TrendChart } from "@/shared/ui/TrendChart";
  *
  * **개발 빌드에만 선다.** Expo Router는 파일이 있으면 경로를 만들어서 프로덕션 번들에서
  * 라우트를 뺄 길이 없다 — 그래서 화면이 판정을 받아 `Redirect`를 그린다. 판정이
- * `src/shared/lib/catalog-visibility.ts`에 사는 것은 `__DEV__` 전역이 대역을 안 받아
+ * `src/shared/lib/catalogVisibility.ts`에 사는 것은 `__DEV__` 전역이 대역을 안 받아
  * 여기서는 확인할 수 없기 때문이다.
  *
  * 라이트와 다크는 기기 설정을 그대로 따른다 — `globals.css`가 이미 두 벌을 낸다.

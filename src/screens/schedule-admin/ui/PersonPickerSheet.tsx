@@ -5,8 +5,8 @@ import { Button } from "@/shared/ui/Button";
 import { Checkbox } from "@/shared/ui/Checkbox";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
-import type { PickerRow } from "@/screens/schedule-admin/model/person-picker-rows";
-import { genderSymbol } from "@/screens/schedule-admin/model/person-sheet";
+import type { PickerRow } from "@/screens/schedule-admin/model/personPickerRows";
+import { genderSymbol } from "@/screens/schedule-admin/model/personSheet";
 
 /**
  * 빈 자리나 「교육 붙이기」를 누르면 올라오는 사람 픽커다. 정본은

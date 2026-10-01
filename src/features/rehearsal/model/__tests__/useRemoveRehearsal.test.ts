@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const removeRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/rehearsal/dals/remove-rehearsal", () => ({
+jest.unstable_mockModule("@/entities/rehearsal/dals/removeRehearsal", () => ({
   removeRehearsal: removeRehearsalMock,
 }));
 

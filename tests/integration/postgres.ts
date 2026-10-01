@@ -499,7 +499,7 @@ export function seedJointSlot(
 
 /**
  * 사유 하나를 직접 꽂는다. `"approved"`면 출근 인정으로 잡힌다
- * (`entities/attendance/model/attendance-status.ts`의 `getAttendanceStatus`).
+ * (`entities/attendance/model/attendanceStatus.ts`의 `getAttendanceStatus`).
  *
  * `submit_excuse`·`decide_excuse` RPC로는 지난 날짜의 사유를 못 만든다 — `backdateDeadline`과
  * 같은 손이다.

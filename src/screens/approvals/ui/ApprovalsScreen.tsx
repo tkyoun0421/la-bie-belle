@@ -12,20 +12,20 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
-import type { CancelDecision } from "@/entities/schedule/dals/decide-cancel-request";
-import type { PendingApproval } from "@/entities/schedule/dals/get-pending-approvals";
+import type { CancelDecision } from "@/entities/schedule/dals/decideCancelRequest";
+import type { PendingApproval } from "@/entities/schedule/dals/getPendingApprovals";
 import { useDecideCancelRequest } from "@/features/schedule/model/useDecideCancelRequest";
 import { usePendingApprovals } from "@/features/schedule/model/usePendingApprovals";
 import {
   cancelApprovalConfirmBody,
   cancelApprovalDetail,
   cancelApprovalRowTitle,
-} from "@/screens/approvals/model/approval-detail";
+} from "@/screens/approvals/model/approvalDetail";
 import {
   removeApproval,
   sortApprovals,
   type ApprovalListRow,
-} from "@/screens/approvals/model/approvals-list";
+} from "@/screens/approvals/model/approvalsList";
 import {
   ApprovalDetailSheet,
   type ApprovalSheetFace,

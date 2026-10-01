@@ -59,7 +59,7 @@
 #   `MARK_LEAVE_CONFIRM_TEST_ID`가 같은 손을 쓴 전례다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/schedule-worker.yaml 머리말과 scripts/e2e-seed-server.mts를
+# tests/e2e/schedule-worker.yaml 머리말과 scripts/e2eSeedServer.mts를
 # 따른다. "admin" 상태는 이미 있다(스케줄이나 QR 전용 payload를 안 보낸다).
 # 딥링크는 navigation.md 「경로」의 "/admin/qr" 그대로다.
 #

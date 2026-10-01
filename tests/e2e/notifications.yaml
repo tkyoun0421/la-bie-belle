@@ -17,12 +17,12 @@
 # 화면·훅·시드를 잇는지만 본다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/schedule-worker.yaml 머리말, scripts/e2e-seed-server.mts,
-# tests/e2e/scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의
+# tests/e2e/schedule-worker.yaml 머리말, scripts/e2eSeedServer.mts,
+# tests/e2e/scripts/seedSession.js를 따른다. 딥링크는 navigation.md 「경로」의
 # "/notifications" 그대로다 — "(tabs)" 그룹은 URL에서 빠진다(다른 파일들과 같은 결).
 #
 # ================================================================
-# 시드 — implementer가 이 task에서 셋을 더한다. scripts/e2e-seed-server.mts 전용
+# 시드 — implementer가 이 task에서 셋을 더한다. scripts/e2eSeedServer.mts 전용
 # 영역이라 이 파일이 직접 만들 수 없는 부분은 그대로 이 시드 서버 쪽에 넣었다.
 # ================================================================
 #
@@ -60,9 +60,9 @@
 # ## 세 상태가 공통으로 겪는 제약 — output.notificationId를 못 쓴다
 #
 # 세 상태 모두 시드 서버가 만든 알림 행의 id를 응답에 안 싣는다.
-# tests/e2e/scripts/seed-session.js가 새 필드를 output으로 릴레이하는 자리인데
+# tests/e2e/scripts/seedSession.js가 새 필드를 output으로 릴레이하는 자리인데
 # 이 task가 쓸 수 있는 파일은 tests/e2e/notifications.yaml과
-# scripts/e2e-seed-server.mts 둘뿐이라 그 파일을 못 고친다 — 그래서 schedule-worker.yaml의
+# scripts/e2eSeedServer.mts 둘뿐이라 그 파일을 못 고친다 — 그래서 schedule-worker.yaml의
 # "schedule-day-${output.month}-01-selected" 같은 id 기반 testID를 이 파일은
 # 못 쓴다. notification_list가 알림을 정확히 한 건만 심는 것은 이 제약을
 # 피하려는 것이다 — 줄이 하나뿐이면 kind로 조립한 testID("이 task가 요청하는
@@ -86,7 +86,7 @@
 #   점(notifications.md 「알림 줄」 표의 왼쪽 자리, 8px 원). 위 제약대로 행 id를
 #   못 받아 kind로 이름을 조립한다 — notification_list 상태가 그 kind의 알림을
 #   한 건만 심으므로 이 파일이 쓰는 범위에서는 안 겹친다. 구현이 행 id 기반
-#   testID를 더 선호하면 tests/e2e/scripts/seed-session.js에 알림 id 릴레이를
+#   testID를 더 선호하면 tests/e2e/scripts/seedSession.js에 알림 id 릴레이를
 #   더하는 후속 변경이 필요하다(리턴 4번).
 #
 # 텍스트 셀렉터는 정규식이다. 이 파일이 쓰는 문안("가입이 승인됐어요",

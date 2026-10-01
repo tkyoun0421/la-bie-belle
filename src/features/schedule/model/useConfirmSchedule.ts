@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
-import { confirmSchedule } from "@/entities/schedule/dals/confirm-schedule";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/query-keys";
+import { confirmSchedule } from "@/entities/schedule/dals/confirmSchedule";
+import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 그 달 근무표를 확정한다. 되돌리는 문이 없다(SCH-014).
@@ -32,7 +32,7 @@ function isAlreadyConfirmed(error: unknown): boolean {
   return error instanceof DomainError && error.code === "already_confirmed";
 }
 
-export function useConfirmSchedule(client: Db): ConfirmScheduleResult {
+export function useConfirmSchedule(client: DB): ConfirmScheduleResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

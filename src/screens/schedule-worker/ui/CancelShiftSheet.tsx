@@ -4,7 +4,7 @@ import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
-import { isValidCancelReason } from "@/screens/schedule-worker/model/cancel-request-sheet";
+import { isValidCancelReason } from "@/screens/schedule-worker/model/cancelRequestSheet";
 
 /**
  * 내 근무를 못 나가게 됐다고 관리자에게 알리는 시트다. 정본은

@@ -1,6 +1,6 @@
 import { Check, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { Pressable, View } from "react-native";
-import { buildYearMonths, shiftYear } from "@/shared/lib/month-picker";
+import { buildYearMonths, shiftYear } from "@/shared/lib/monthPicker";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/Button";
 import { Icon } from "@/shared/ui/Icon";

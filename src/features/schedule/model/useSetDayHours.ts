@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { setDayHours } from "@/entities/schedule/dals/set-day-hours";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { setDayHours } from "@/entities/schedule/dals/setDayHours";
+import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 그 날의 근무 시간을 고친다. 끝이 시작보다 이르면 시트의 버튼이 먼저 막지만, 벽은
@@ -24,7 +24,7 @@ export type SetDayHoursResult = {
   reset: () => void;
 };
 
-export function useSetDayHours(client: Db): SetDayHoursResult {
+export function useSetDayHours(client: DB): SetDayHoursResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

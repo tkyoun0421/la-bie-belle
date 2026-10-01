@@ -1,0 +1,335 @@
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { format, resolveConfig } from "prettier";
+import {
+  bySection,
+  EMPTY_CELL,
+  PALETTE_HEADER,
+  readRows,
+  requireRows,
+  ROLE_HEADER,
+  SHADOW_HEADER,
+  SUBSECTION,
+  type Row,
+} from "./tokensMd.mts";
+
+type Declaration = { name: string; value: string };
+type Group = Declaration[];
+type Side = "light" | "dark";
+
+const ROOT = path.resolve(fileURLToPath(import.meta.url), "../..");
+const TOKENS_PATH = path.join(ROOT, "docs/2-design/design-system/tokens.md");
+const GLOBALS_PATH = path.join(ROOT, "src/app/globals.css");
+
+const TYPOGRAPHY_HEADER = [
+  "유틸",
+  "크기",
+  "행간",
+  "rem 크기",
+  "rem 행간",
+  "용도",
+];
+const LETTER_SPACING_HEADER = ["유틸", "자간"];
+const BREAKPOINT_HEADER = ["토큰", "값", "Tailwind 유틸"];
+const RADIUS_HEADER = ["유틸", "값", "쓰는 자리"];
+const DURATION_HEADER = ["변수", "값", "Tailwind 유틸", "쓰는 자리"];
+const CADENCE_HEADER = ["변수", "값", "쓰는 자리"];
+const VENDOR_HEADER = ["변수", "값", "자리", "Tailwind 유틸"];
+
+const FENCE_OPEN = "```css";
+const FENCE_CLOSE = "```";
+
+const SKELETON = { subsection: "8.1", nth: 0, label: "뼈대" };
+const THEME_RESET = {
+  subsection: "8.2",
+  nth: 0,
+  label: "Tailwind 기본값 초기화",
+};
+const THEME_INLINE_HEAD = {
+  subsection: "8.2",
+  nth: 1,
+  label: "@theme inline 머리",
+};
+
+const ROLE_LIGHT_COLUMN = 2;
+const ROLE_DARK_COLUMN = 3;
+const SHADOW_LIGHT_COLUMN = 1;
+const SHADOW_DARK_COLUMN = 2;
+const STATIC_RADIUS_UTILITIES = new Set(["rounded-none", "rounded-full"]);
+const ALIASED_PREFIX = /^--(?:palette|role|vendor)-/;
+
+function readFences(markdown: string): Map<string, string[]> {
+  const lines = markdown.split("\n");
+  const fences = new Map<string, string[]>();
+  let subsection = "";
+  let index = 0;
+
+  while (index < lines.length) {
+    const heading = SUBSECTION.exec(lines[index]);
+    if (heading) {
+      subsection = heading[1].split(/\s+/)[0];
+      index += 1;
+      continue;
+    }
+
+    if (lines[index].trim() !== FENCE_OPEN) {
+      index += 1;
+      continue;
+    }
+
+    const start = index + 1;
+    let end = start;
+    while (end < lines.length && lines[end].trim() !== FENCE_CLOSE) {
+      end += 1;
+    }
+
+    const collected = fences.get(subsection) ?? [];
+    collected.push(lines.slice(start, end).join("\n"));
+    fences.set(subsection, collected);
+    index = end + 1;
+  }
+
+  return fences;
+}
+
+function requireFence(
+  fences: Map<string, string[]>,
+  wanted: { subsection: string; nth: number; label: string },
+): string {
+  const found = fences.get(wanted.subsection)?.[wanted.nth];
+  if (found === undefined) {
+    throw new Error(
+      `${wanted.label} 코드펜스를 tokens.md ${wanted.subsection} 절의 ${wanted.nth + 1}번째 css 펜스에서 찾지 못했다.`,
+    );
+  }
+  return found;
+}
+
+function roleVariableOf(token: string): string {
+  return `--role-${token.split(".").join("-")}`;
+}
+
+function offPaletteVariableOf(token: string): string {
+  const [property, layer] = token.split(".");
+  return `--${layer}-${property}`;
+}
+
+function offPaletteValueOf(cell: string): string {
+  return cell.startsWith("#") || cell === "transparent"
+    ? cell
+    : `var(--palette-${cell})`;
+}
+
+function isOffPalette(row: Row): boolean {
+  return row.cells[1] === EMPTY_CELL;
+}
+
+function paletteGroups(markdown: string, side: Side): Group[] {
+  const column = side === "light" ? 2 : 4;
+  return bySection(requireRows(markdown, PALETTE_HEADER, "팔레트")).map(
+    (rows) =>
+      rows.map((row) => ({
+        name: `--palette-${row.section}-${row.cells[0]}`,
+        value: row.cells[column],
+      })),
+  );
+}
+
+function roleGroups(rows: Row[]): Group[] {
+  return bySection(rows).map((section) =>
+    section.map((row) => ({
+      name: roleVariableOf(row.cells[0]),
+      value: isOffPalette(row)
+        ? `var(${offPaletteVariableOf(row.cells[0])})`
+        : `var(--palette-${row.cells[1]})`,
+    })),
+  );
+}
+
+function offPaletteGroup(roleRows: Row[], side: Side): Group {
+  const column = side === "light" ? ROLE_LIGHT_COLUMN : ROLE_DARK_COLUMN;
+
+  return roleRows.filter(isOffPalette).map((row) => ({
+    name: offPaletteVariableOf(row.cells[0]),
+    value: offPaletteValueOf(row.cells[column]),
+  }));
+}
+
+function shadowGroup(rows: Row[], side: Side): Group {
+  const column = side === "light" ? SHADOW_LIGHT_COLUMN : SHADOW_DARK_COLUMN;
+
+  return rows.map((row) => ({
+    name: offPaletteVariableOf(row.cells[0]),
+    value: row.cells[column],
+  }));
+}
+
+function shadowThemeGroup(rows: Row[]): Group {
+  return rows.map((row) => {
+    const [property, layer] = row.cells[0].split(".");
+    return {
+      name: `--${property}-${layer}`,
+      value: `var(${offPaletteVariableOf(row.cells[0])})`,
+    };
+  });
+}
+
+function textStepOf(utility: string): string {
+  return utility.replace(/^text-/, "");
+}
+
+function typographyGroup(markdown: string): Group {
+  return requireRows(markdown, TYPOGRAPHY_HEADER, "타이포그래피").flatMap(
+    (row) => {
+      const step = textStepOf(row.cells[0]);
+      return [
+        { name: `--text-${step}`, value: `${row.cells[3]}rem` },
+        { name: `--text-${step}--line-height`, value: `${row.cells[4]}rem` },
+      ];
+    },
+  );
+}
+
+function letterSpacingGroup(markdown: string): Group {
+  return readRows(markdown, LETTER_SPACING_HEADER).map((row) => ({
+    name: `--text-${textStepOf(row.cells[0])}--letter-spacing`,
+    value: row.cells[1],
+  }));
+}
+
+function breakpointGroup(markdown: string): Group {
+  return readRows(markdown, BREAKPOINT_HEADER).map((row) => ({
+    name: `--breakpoint-${row.cells[0].split(".")[1]}`,
+    value: row.cells[1],
+  }));
+}
+
+function radiusGroup(markdown: string): Group {
+  return requireRows(markdown, RADIUS_HEADER, "라운딩")
+    .filter((row) => !STATIC_RADIUS_UTILITIES.has(row.cells[0]))
+    .map((row) => ({
+      name: `--radius-${row.cells[0].replace(/^rounded-/, "")}`,
+      value: row.cells[1],
+    }));
+}
+
+function variableGroup(rows: Row[]): Group {
+  return rows.map((row) => ({ name: row.cells[0], value: row.cells[1] }));
+}
+
+function aliasGroups(groups: Group[]): Group[] {
+  return groups.map((group) =>
+    group.map((declaration) => ({
+      name: declaration.name.replace(ALIASED_PREFIX, "--color-"),
+      value: `var(${declaration.name})`,
+    })),
+  );
+}
+
+function renderGroups(groups: Group[]): string {
+  return groups
+    .filter((group) => group.length > 0)
+    .map((group) =>
+      group.map(({ name, value }) => `${name}: ${value};`).join("\n"),
+    )
+    .join("\n\n");
+}
+
+function renderBlock(selector: string, body: string): string {
+  return `${selector} {\n${body}\n}`;
+}
+
+function themeName(side: Side): Declaration {
+  return { name: "color-scheme", value: side };
+}
+
+export async function generateGlobalsCss(markdown: string): Promise<string> {
+  const fences = readFences(markdown);
+  const roleRows = requireRows(markdown, ROLE_HEADER, "역할 토큰");
+
+  const shadowRows = readRows(markdown, SHADOW_HEADER);
+
+  const lightPalette = paletteGroups(markdown, "light");
+  const roles = roleGroups(roleRows);
+  const vendor = variableGroup(
+    requireRows(markdown, VENDOR_HEADER, "바깥이 정한 값"),
+  );
+
+  const light = renderGroups([
+    [themeName("light")],
+    ...lightPalette,
+    offPaletteGroup(roleRows, "light"),
+    shadowGroup(shadowRows, "light"),
+  ]);
+  const dark = renderGroups([
+    [themeName("dark")],
+    ...paletteGroups(markdown, "dark"),
+    offPaletteGroup(roleRows, "dark"),
+    shadowGroup(shadowRows, "dark"),
+  ]);
+
+  const settings = renderGroups([
+    ...roles,
+    variableGroup(requireRows(markdown, DURATION_HEADER, "모션")),
+    variableGroup(requireRows(markdown, CADENCE_HEADER, "되풀이 주기와 계단")),
+    vendor,
+  ]);
+
+  const theme = [
+    renderGroups([
+      typographyGroup(markdown),
+      letterSpacingGroup(markdown),
+      radiusGroup(markdown),
+    ]),
+    requireFence(fences, THEME_RESET),
+  ].join("\n\n");
+
+  const themeInline = [
+    requireFence(fences, THEME_INLINE_HEAD),
+    renderGroups([
+      breakpointGroup(markdown),
+      shadowThemeGroup(shadowRows),
+      ...aliasGroups([...lightPalette, ...roles, vendor]),
+    ]),
+  ].join("\n\n");
+
+  const assembled = [
+    requireFence(fences, SKELETON),
+    renderBlock(":root", light),
+    renderBlock(
+      "@media (prefers-color-scheme: dark)",
+      renderBlock(":root", dark),
+    ),
+    renderBlock(":root", settings),
+    renderBlock("@theme", theme),
+    renderBlock("@theme inline", themeInline),
+  ].join("\n\n");
+
+  const prettierConfig = await resolveConfig(GLOBALS_PATH);
+  return format(assembled, { ...prettierConfig, parser: "css" });
+}
+
+async function writeGlobalsCss(): Promise<void> {
+  const generated = await generateGlobalsCss(readFileSync(TOKENS_PATH, "utf8"));
+  const current = existsSync(GLOBALS_PATH)
+    ? readFileSync(GLOBALS_PATH, "utf8")
+    : "";
+  const where = path.relative(ROOT, GLOBALS_PATH);
+
+  if (current === generated) {
+    console.log(`${where} 는 그대로다. 바뀐 것이 없다.`);
+    return;
+  }
+
+  writeFileSync(GLOBALS_PATH, generated);
+  console.log(`${where} 를 다시 썼다. tokens.md와 어긋나 있었다.`);
+}
+
+const entry = process.argv[1];
+if (
+  entry !== undefined &&
+  path.resolve(entry) === fileURLToPath(import.meta.url)
+) {
+  await writeGlobalsCss();
+}

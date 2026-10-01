@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 
 const mergeSlotsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/merge-slots", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/mergeSlots", () => ({
   mergeSlots: mergeSlotsMock,
 }));
 

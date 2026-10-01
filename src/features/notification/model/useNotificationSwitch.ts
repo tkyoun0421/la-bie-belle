@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
-import type { Db } from "@/shared/api/database";
-import { setNotificationsEnabled } from "@/entities/notification/dals/set-notifications-enabled";
-import { MEMBERS_KEY } from "@/features/notification/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { setNotificationsEnabled } from "@/entities/notification/dals/setNotificationsEnabled";
+import { MEMBERS_KEY } from "@/features/notification/model/queryKeys";
 
 /**
  * 알림 스위치 하나를 켜고 끈다. 정본은
@@ -36,7 +36,7 @@ export type NotificationSwitch = {
 };
 
 export function useNotificationSwitch(
-  client: Db,
+  client: DB,
   currentEnabled: boolean,
   requestPermission: () => Promise<boolean>,
 ): NotificationSwitch {

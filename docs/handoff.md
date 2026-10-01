@@ -6,9 +6,11 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 첫 묶음이다.** [ADR-015](2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)가 섰다 — 층의 뜻을 읽기와 쓰기로 가르고(`entities`가 queries·모델·제약, `features`가 mutations의 use case) 세그먼트를 다섯(`ui`·`hooks`·`api`·`model`·`utils`)으로 고정하고 파일 이름을 camelCase에 성격 접미사로 정했다. [ADR-001](2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md)의 「세그먼트」 절만 대체하고 나머지는 그대로 산다. **[plan](3-build/plans/fsd-read-write-layers.md)이 묶음 일곱을 PR 하나씩 나르고 첫 묶음은 이름 바꾸기다** — `tests/lint/file-naming.ts`의 kebab 갈래를 camel로 고치고 535개(`src` 450·`tests` 59·`scripts` 13·`eslint-rules` 13)를 `git mv`하고 `Db` 타입을 `DB`로 바꾼다. 이름만 바꾸는 커밋과 import를 고치는 커밋을 가른다 — 섞이면 git이 rename 추적을 놓친다. 둘째 묶음이 캐시 키 모으기고, 다섯 군데 `queryKeys.ts`를 `shared/api`로 모은다. 쓰기 슬라이스가 낡게 할 키는 읽기 슬라이스 것이고 `no-cross-slice-import`가 그 import를 막아서, 이것이 안 서면 슬라이스 쪼개기가 막힌다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
+**다음 첫 수는 `fsd-read-write-layers`의 둘째 묶음이다 — 캐시 키 모으기.** 다섯 군데 `queryKeys.ts`를 `src/shared/api/queryKeys.ts` 하나로 모으고 import를 고친다. 키 문자열을 한 글자도 안 바꾸는 것이 완료 조건이고 기존 테스트가 그대로 초록이면 된다. 쓰기 슬라이스가 낡게 할 키는 읽기 슬라이스 것이고 `no-cross-slice-import`가 그 import를 막아서, 이것이 안 서면 슬라이스 쪼개기(묶음 5)가 막힌다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
 
-**`CLAUDE.md`의 파일 이름 단락은 아직 kebab이다.** 결정은 camel인데 `file-naming.ts`가 아직 kebab을 요구해서, 그 단락은 「교체되는 중이고 그때까지 새 `.ts`는 kebab으로」라는 줄만 달고 그대로 뒀다. 묶음 1이 검사와 파일과 그 단락을 한 커밋에서 같이 옮긴다. 세그먼트 단락은 다르다 — 거기 적혀 있던 「여섯」과 `db`·`config`는 어떤 시점에도 참이 아니라 지금 고쳤다.
+**묶음 1이 끝났다 — 이름이 camelCase다.** 535개를 `git mv`하고 참조 1062건과 문서 링크 14건과 규칙 표 27건을 고쳤다. `Db` 타입은 `DB`가 됐다(334회). 검사는 `tests/lint/fileNaming.ts`고 「저장소 실물에 위반이 없다」 단언이 그것을 지킨다. 돌면서 둘이 드러났다 — 일괄 치환이 **ESLint 규칙 ID**(`house/dumb-ui`)까지 먹어 kebab으로 되돌렸고(규칙 파일은 camel, 등록 키는 kebab), `fileNaming.test.ts`의 **픽스처가 정답으로 뒤집혀** `kebabWanted`를 `camelWanted`로 고쳤다. 그 파일 주석이 그 위험을 미리 적어둔 자리였다.
+
+**문서에서 규약 설명을 걷었다.** 파일 구조와 lint가 정본이 되니 `CLAUDE.md`와 `execution.md`는 꼴 한 줄과 검사 위치만 들고, 왜 그 꼴인지는 ADR-015가 가진다.
 
 **이 가름이 싸게 되는 까닭은 섞인 파일이 없어서다.** dal 74개가 읽기 24·쓰기 49로, 훅 58개가 쿼리 17·뮤테이션 37로 갈리는데 **둘을 다 하는 파일이 하나도 없다.** `rpc`와 `from`도 49/25로 겹침이 없다. 손으로 판정할 것은 다섯뿐이고 plan이 각각 어디로 갈지 적었다. import는 802줄이 바뀌는데 1658개 중 1654개가 `@/` 절대 경로라 치환으로 끝난다.
 
@@ -18,7 +20,7 @@
 
 **지도의 정본 전제를 웹에서 네이티브로 옮겼다.** [출근 인증](2-design/modules/attendance/screens/check-in.md#출근-인증-짜임)이 「웹에서 `submodules=gl`로 띄운다」고 적고 있었는데 [ADR-011](2-design/adr/ADR-011-expo-native-app.md) 뒤로 그 전제가 죽었다. `customStyleId`는 iOS·Android SDK 둘 다 받아 색 표는 그대로 유효하고, `nightModeEnabled`는 두 레퍼런스가 「지원 안 하는 유형에서는 변화가 없다」고만 적고 어느 유형이 듣는지를 열거하지 않아 안 쓴다. 카카오를 다시 재볼 필요도 없다 — 카카오 SDK의 `MapType`이 `NORMAL`·`SKYVIEW` 둘뿐이고 데브톡 답변이 다크 모드 미지원을 밝혔다. **문서에 든 사실마다 출처를 달았다** — 조사자가 돌려준 「iOS는 Basic·Navi·Terrain, 안드로이드는 Navi만」은 공식 레퍼런스 어디에도 없었다([관찰 043](observations/043-researcher-enumerated-what-the-source-does-not.md)).
 
-**`attendance-checkin`이 고칠 10분 한도의 성격이 갈렸다([관찰 042](observations/042-plan-set-a-number-the-canon-already-set.md)).** 보드 행이 이미 「마이그레이션의 10분 한도를 여기서 2시간으로 고친다」를 적어 그 일은 배정돼 있다. 다만 `attendance-data` plan은 10분을 **다른 축의 상수**로 적고 근거까지 달았는데(「지각 유예 10분과 `checked_at` 한도 10분은 다른 상수다」) 실제로는 **하나가 다른 하나를 무효로 만드는 관계다** — 지하에서 09:00에 눌러 11:00에 올라온 인증은 ATT-029로 받아들여지지만 `checked_at`이 11:00으로 눌려 지각이 된다. 2시간을 허용한 이유가 「한 타임 일하고 올라오는 것을 덮는다」인데 덮은 뒤 지각으로 적으면 덮지 않은 것과 같다. **plan은 한도를 2시간으로 올리고 그 밖을 `now()` 대체가 아니라 `too_late` 거부로 적는다**(미래 값만 `now()`로 누른다). `too_late`는 함수에도 `error-codes.ts`에도 아직 없다. 세 번째 모순 하나가 더 있다 — 반경 오류 코드가 코드·테스트·`error-codes.ts`에서 `bad_radius`인데 정본 셋(`design.md`·ATT-002·보드)은 `invalid_radius`다. `invalid_qr`과 꼴이 맞는 `invalid_radius` 쪽으로 모으는 것이 `hall-location`의 몫이다.
+**`attendance-checkin`이 고칠 10분 한도의 성격이 갈렸다([관찰 042](observations/042-plan-set-a-number-the-canon-already-set.md)).** 보드 행이 이미 「마이그레이션의 10분 한도를 여기서 2시간으로 고친다」를 적어 그 일은 배정돼 있다. 다만 `attendance-data` plan은 10분을 **다른 축의 상수**로 적고 근거까지 달았는데(「지각 유예 10분과 `checked_at` 한도 10분은 다른 상수다」) 실제로는 **하나가 다른 하나를 무효로 만드는 관계다** — 지하에서 09:00에 눌러 11:00에 올라온 인증은 ATT-029로 받아들여지지만 `checked_at`이 11:00으로 눌려 지각이 된다. 2시간을 허용한 이유가 「한 타임 일하고 올라오는 것을 덮는다」인데 덮은 뒤 지각으로 적으면 덮지 않은 것과 같다. **plan은 한도를 2시간으로 올리고 그 밖을 `now()` 대체가 아니라 `too_late` 거부로 적는다**(미래 값만 `now()`로 누른다). `too_late`는 함수에도 `errorCodes.ts`에도 아직 없다. 세 번째 모순 하나가 더 있다 — 반경 오류 코드가 코드·테스트·`errorCodes.ts`에서 `bad_radius`인데 정본 셋(`design.md`·ATT-002·보드)은 `invalid_radius`다. `invalid_qr`과 꼴이 맞는 `invalid_radius` 쪽으로 모으는 것이 `hall-location`의 몫이다.
 
 **키가 막는 자리는 AC 셋뿐이다.** spec의 AC 여덟을 지도 의존으로 갈라 보니 **AC-01·02·03만 지도 타일이 떠야 닫히고** AC-04(권한 거부)·05(QR 링크)·06(`invalid_qr`)·07(누른 시각 기록)·08(오프라인 큐·지수 백오프)은 키 없이 선다. 그중 AC-06·07·08은 integration과 unit이라 **개발 빌드 없이도 지금 돈다**. `attendance-checkin`을 통째로 막아둘 이유가 없다 — plan이 그 구분을 적고 키 의존 셋만 뒤로 미루면 사슬이 지금 풀린다.
 
@@ -34,17 +36,17 @@
 
 **관찰 둘이 더 열렸다.** [040](observations/040-sian-captions-cite-what-they-invent.md)은 actioned다 — 시안 캡션 셋이 문서를 근거로 들면서 그 문서에 없는 말을 적었다(제 값을 문서 탓으로 돌리거나, 이미 정해진 것을 「아직 안 정했다」고 적었다). [041](observations/041-mcp-instructions-read-as-injection.md)은 open이다 — subagent 넷 중 셋이 MCP 서버 지시문을 프롬프트 주입으로 보고 무시했다는 말을 리턴에 붙였다. 판단은 맞았지만 작성자마다 그 글을 재는 비용이 든다.
 
-**`notification-settings`가 `done`이다(#475 정본, #476 구현).** 권한 감싸기(`push-permission.ts`, 기기에 붙는 함수는 전부 주입), 갈래 판정(`reach-state.ts`)과 자리별 문장(`reach-message.ts`), 켜고 끄는 훅, 매 진입 주소 보내기, 「나」의 알림 줄과 승인 대기 켜기 자리, 관리자 세 자리의 갈래 표시가 섰다. **매 진입을 붙인 자리는 `src/app/(tabs)/_layout.tsx`다** — 세션이 있는 사람만 지나고 앱이 떠 있는 동안 안 내려간다.
+**`notification-settings`가 `done`이다(#475 정본, #476 구현).** 권한 감싸기(`pushPermission.ts`, 기기에 붙는 함수는 전부 주입), 갈래 판정(`reachState.ts`)과 자리별 문장(`reachMessage.ts`), 켜고 끄는 훅, 매 진입 주소 보내기, 「나」의 알림 줄과 승인 대기 켜기 자리, 관리자 세 자리의 갈래 표시가 섰다. **매 진입을 붙인 자리는 `src/app/(tabs)/_layout.tsx`다** — 세션이 있는 사람만 지나고 앱이 떠 있는 동안 안 내려간다.
 
 **총괄이 정본에 박은 판정이 여덟이다.** 「나」의 거부 안내를 승인 대기 화면과 같은 두 줄로 맞췄고, 확정 뒤 확인 자리는 갈래를 안 가르고 한 줄로 합친다(그 자리에서 할 일이 어느 갈래든 따로 연락 하나다). 갈래 표시는 재직자에게만 붙는다. 「매 진입」은 앱이 뜰 때와 포그라운드 복귀마다다. 승인 대기 뷰 값은 `"idle" | "enabled" | "denied"`고 `"unsupported"` 결과도 셋째 모습으로 간다. 의사를 읽기 전에는 스위치 대신 스켈레톤이다. 안드로이드 채널 이름은 「근무 알림」이다. AC-05·AC-07의 DB 자리는 이미 선 함수와 테스트가 덮어 재배정 안 했다.
 
 **남은 것은 기기가 있어야 닫힌다.** 권한 창을 거치는 AC-01·AC-03·AC-06과 `app.json`의 `extra.eas.projectId` 실값이다. 그 값이 없으면 `null`로 서서 「켰는데 기기가 없음」 갈래가 된다. `tests/e2e/notification-settings.yaml`이 여정을 들고 기다린다.
 
-**관찰 셋이 열렸다.** [037](observations/037-planner-reported-absent-what-was-there.md) — 계획자가 「정본에 없다」고 한 문구 둘이 실제로는 있었다(찾은 말이 정본의 말과 달랐다). [038](observations/038-fixture-user-misses-member-list.md) — `createApprovedUser`가 `submitted_at`을 안 채워 그 사람이 `listActiveMembers`에 안 잡힌다. [039](observations/039-e2e-only-assignment-blocks-the-hook.md) — **e2e로만 배정된 `.ts`를 TDD 훅이 못 통과시킨다.** 이번에 `push-permission.ts`가 그것에 막혀 구현이 두 라운드로 갈렸다.
+**관찰 셋이 열렸다.** [037](observations/037-planner-reported-absent-what-was-there.md) — 계획자가 「정본에 없다」고 한 문구 둘이 실제로는 있었다(찾은 말이 정본의 말과 달랐다). [038](observations/038-fixture-user-misses-member-list.md) — `createApprovedUser`가 `submitted_at`을 안 채워 그 사람이 `listActiveMembers`에 안 잡힌다. [039](observations/039-e2e-only-assignment-blocks-the-hook.md) — **e2e로만 배정된 `.ts`를 TDD 훅이 못 통과시킨다.** 이번에 `pushPermission.ts`가 그것에 막혀 구현이 두 라운드로 갈렸다.
 
 **`notification-push`가 `done`이다(#472).** 트리거와 cron `retry-push`(매분)가 같은 Edge Function `send-push`를 부르고, 잡기(`claim_notifications`)의 `returning`이 두 경로의 중복 발송을 막는다. **잡기는 한 문장이다** — `update ... returning`을 CTE로 두고 밖에서 `array_agg`로 주소를 묶는다(조인하면 주소가 둘인 사람의 행에 매치가 여럿 붙어 한쪽만 남는다). 껍데기 넷의 첫 줄이 전부 `auth.role() is distinct from 'service_role'`이고, 트리거의 쏘는 단계는 예외를 삼켜 사건 함수의 트랜잭션을 안 말린다.
 
-**`_shared` 복사 단계가 섰다(AC-09).** `pnpm edge:sync`가 `src/`를 `supabase/functions/_shared/`로 옮기며 import에 `.ts`를 붙인다. `import-holidays`도 그 복사본을 보게 고쳤다 — [관찰 035](observations/035-edge-function-reaches-outside-mount.md)가 연 자리를 닫았다. **재발은 lint 규칙 둘(20·21)이 막는다** — `supabase/functions/`의 마운트 밖 import와 복사되는 폴더의 `node:` import다. 다만 **규칙 21의 폴더 목록이 복사 대상과 정확히 같지는 않다** — `sync-edge-shared.mts`가 `src/entities/notification/model/types.ts`도 옮기는데 규칙은 `src/features/notification/model/`만 문다.
+**`_shared` 복사 단계가 섰다(AC-09).** `pnpm edge:sync`가 `src/`를 `supabase/functions/_shared/`로 옮기며 import에 `.ts`를 붙인다. `import-holidays`도 그 복사본을 보게 고쳤다 — [관찰 035](observations/035-edge-function-reaches-outside-mount.md)가 연 자리를 닫았다. **재발은 lint 규칙 둘(20·21)이 막는다** — `supabase/functions/`의 마운트 밖 import와 복사되는 폴더의 `node:` import다. 다만 **규칙 21의 폴더 목록이 복사 대상과 정확히 같지는 않다** — `syncEdgeShared.mts`가 `src/entities/notification/model/types.ts`도 옮기는데 규칙은 `src/features/notification/model/`만 문다.
 
 **edge-runtime은 여전히 안 뜬다.** `supabase start`가 `-x`로 빼서 `send-push`가 실제로 도는 것, 실기기 수신, 접수증 서비스의 답은 배포 뒤 손 확인이다.
 
@@ -82,11 +84,11 @@
 
 **vault로 로컬 시크릿을 심는 길이 섰다.** integration 테스트가 `beforeAll`/`afterAll`에서 `vault.create_secret`/삭제로 로컬 전용 가짜 값을 넣고 뺀다. `seed.sql`(전역 상태, `db reset`마다 돎)은 이 용도로 안 쓴다 — `payroll-holidays`가 같은 길을 그대로 탔고 `notification-push`도 부치는 접근 토큰을 이렇게 심는다.
 
-**금액 꼴은 `shared/lib/spell-number.ts` 하나로 모였고, 시간 길이 꼴은 아직 슬라이스 셋에 흩어져 있다.** `screens/payroll/model/summary.ts`의 `spellWorkedHours`(「0시간 30분」)와 `screens/schedule-admin/model/adjust-sheet-rows.ts`의 `spellHours`·`features/rehearsal/model/spell-total.ts`의 `spellMinutes`(「30분」)가 갈려 있다 — `writing.md`가 「30분」 쪽으로 판정했으니 `summary.ts`가 어긋난 쪽이다. `spell-number-shared` candidate가 받는다.
+**금액 꼴은 `shared/lib/spellNumber.ts` 하나로 모였고, 시간 길이 꼴은 아직 슬라이스 셋에 흩어져 있다.** `screens/payroll/model/summary.ts`의 `spellWorkedHours`(「0시간 30분」)와 `screens/schedule-admin/model/adjustSheetRows.ts`의 `spellHours`·`features/rehearsal/model/spellTotal.ts`의 `spellMinutes`(「30분」)가 갈려 있다 — `writing.md`가 「30분」 쪽으로 판정했으니 `summary.ts`가 어긋난 쪽이다. `spell-number-shared` candidate가 받는다.
 
 **`internal` 스키마의 실제 방어는 두 겹뿐이다.** PostgREST 라우팅과 스키마 USAGE다 — 문서가 요구하는 「함수 revoke」 한 겹은 저장소 전체에서 안 서 있다. `internal-grants-public` candidate가 고칠 길(`revoke execute on all functions in schema internal from public`)까지 적어 뒀다.
 
-**픽스처가 한 사실을 여러 psql 호출로 심는 자리가 cron과 경합한다(관찰 024, open).** `backlog.md`의 `test-seed-transaction`이 받는다. `add-assignment.integration.test.ts`가 전체 실행에서 한 번 이 경쟁으로 흔들렸다.
+**픽스처가 한 사실을 여러 psql 호출로 심는 자리가 cron과 경합한다(관찰 024, open).** `backlog.md`의 `test-seed-transaction`이 받는다. `addAssignment.integration.test.ts`가 전체 실행에서 한 번 이 경쟁으로 흔들렸다.
 
 **루프가 사람을 부르는 자리 넷은 그대로다.** 실기기 확인(카탈로그·화면·테마·끌기·서버 시각 복귀·e2e), NCP 대표 계정과 지도 키·`customStyleId`(`attendance-checkin` 착수 전), 3D 석 장(`no-schedule`·`all-clear`·`server-error`), 로컬 Supabase 구글 프로바이더. 여기에 Edge Function 배포 뒤 손 확인(`profile-erasure`의 AC-03)이 더해졌다.
 

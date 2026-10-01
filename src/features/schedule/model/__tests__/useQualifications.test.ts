@@ -12,7 +12,7 @@ import type { ReactNode } from "react";
 const getQualificationsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/get-qualifications", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/getQualifications", () => ({
   getQualifications: getQualificationsMock,
 }));
 

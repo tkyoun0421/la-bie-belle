@@ -7,8 +7,8 @@ import {
   agendaRowStatusLabel,
   spellWorkDate,
   type MyAssignment,
-} from "@/screens/schedule-worker/model/agenda-row";
-import type { RosterRow as RosterRowValue } from "@/screens/schedule-worker/model/day-sheet";
+} from "@/screens/schedule-worker/model/agendaRow";
+import type { RosterRow as RosterRowValue } from "@/screens/schedule-worker/model/daySheet";
 import { DayRoster } from "@/screens/schedule-worker/ui/DayRoster";
 
 /**

@@ -1,4 +1,4 @@
-import { ERROR_CODES } from "@/shared/api/error-codes";
+import { ERROR_CODES } from "@/shared/api/errorCodes";
 
 export type ErrorCode = (typeof ERROR_CODES)[number];
 

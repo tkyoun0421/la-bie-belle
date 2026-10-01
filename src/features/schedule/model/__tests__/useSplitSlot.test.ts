@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const splitSlotMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/split-slot", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/splitSlot", () => ({
   splitSlot: splitSlotMock,
 }));
 

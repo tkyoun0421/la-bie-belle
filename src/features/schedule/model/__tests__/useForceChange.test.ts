@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const forceChangeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/force-change", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/forceChange", () => ({
   forceChange: forceChangeMock,
 }));
 

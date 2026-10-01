@@ -5,7 +5,7 @@ const markNotificationsReadMock =
   jest.fn<(...args: unknown[]) => Promise<void>>();
 
 jest.unstable_mockModule(
-  "@/entities/notification/dals/mark-notifications-read",
+  "@/entities/notification/dals/markNotificationsRead",
   () => ({
     markNotificationsRead: markNotificationsReadMock,
   }),

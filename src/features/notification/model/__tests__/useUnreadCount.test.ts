@@ -5,7 +5,7 @@ const countUnreadNotificationsMock =
   jest.fn<(...args: unknown[]) => Promise<number>>();
 
 jest.unstable_mockModule(
-  "@/entities/notification/dals/count-unread-notifications",
+  "@/entities/notification/dals/countUnreadNotifications",
   () => ({
     countUnreadNotifications: countUnreadNotificationsMock,
   }),

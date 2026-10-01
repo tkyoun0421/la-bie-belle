@@ -7,8 +7,8 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
-import { nowWithOffset } from "@/shared/lib/server-clock";
-import { serverClockStore } from "@/shared/lib/server-clock-store";
+import { nowWithOffset } from "@/shared/lib/serverClock";
+import { serverClockStore } from "@/shared/lib/serverClockStore";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
@@ -29,8 +29,8 @@ import {
   groupNotificationsByDate,
   resolveNotificationsListState,
   unreadAdminNoticeIds,
-} from "@/screens/notifications/model/notification-rows";
-import { pressNotification } from "@/screens/notifications/model/press-notification";
+} from "@/screens/notifications/model/notificationRows";
+import { pressNotification } from "@/screens/notifications/model/pressNotification";
 
 /**
  * 받은 알림이 최근부터 다 서는 화면이다. 정본은

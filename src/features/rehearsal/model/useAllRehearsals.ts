@@ -1,13 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   getAllRehearsals,
   type RehearsalWithName,
-} from "@/entities/rehearsal/dals/get-all-rehearsals";
-import {
-  ALL_SCOPE,
-  REHEARSAL_KEY,
-} from "@/features/rehearsal/model/query-keys";
+} from "@/entities/rehearsal/dals/getAllRehearsals";
+import { ALL_SCOPE, REHEARSAL_KEY } from "@/features/rehearsal/model/queryKeys";
 
 /**
  * 관리자가 보는 그 달 전원 리허설이다 — 키는 `['rehearsal', 'YYYY-MM', 'all']`
@@ -23,7 +20,7 @@ export type AllRehearsalsResult = {
 };
 
 export function useAllRehearsals(
-  client: Db,
+  client: DB,
   month: string,
   enabled = true,
 ): AllRehearsalsResult {

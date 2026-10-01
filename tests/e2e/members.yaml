@@ -15,12 +15,12 @@
 # 고치고, 올리고, 퇴사시키고, 되돌린다. launchApp을 다시 하지 않는다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/pending.yaml 머리말, scripts/e2e-seed-server.mts를 따른다. 딥링크는
+# tests/e2e/pending.yaml 머리말, scripts/e2eSeedServer.mts를 따른다. 딥링크는
 # labiebelle://admin/members다 — src/app/admin/members/index.tsx가 그대로 URL
 # 세그먼트가 된다(admin은 그룹이 아니라 실제 폴더라 pending.yaml의 "/admin/…"과
 # 같은 결).
 #
-# **admin 시드는 자기 프로필을 안 보낸다**(scripts/e2e-seed-server.mts의
+# **admin 시드는 자기 프로필을 안 보낸다**(scripts/e2eSeedServer.mts의
 # createAdminUser는 submit_profile을 안 거친다). ACC-001 판정 예시대로 채워진
 # 프로필만 목록에 뜨므로, 로그인한 관리자 자신은 이 화면의 재직자 줄에 안
 # 뜬다 — 그래서 아래 어떤 단언도 세션 주인 자신을 찾지 않는다.
@@ -32,14 +32,14 @@
 #    재직자를 여럿 세울 수 없다 — 검색이 한 사람만 남기는지 확인하려면 최소
 #    둘이 필요하다. 계약: seed-session.js가 env의 NAME을 읽어
 #    `JSON.stringify({ state: STATE, name: NAME || undefined })`로 보내고,
-#    e2e-seed-server.mts는 state === "approved"일 때 그 값이 있으면
+#    e2eSeedServer.mts는 state === "approved"일 때 그 값이 있으면
 #    submitSeededProfile 호출의 display_name을 SEEDED_PROFILE.name 대신 그
 #    값으로 쓴다(성별·생년월일·연락처는 그대로 SEEDED_PROFILE 것을 써도 된다 —
 #    ACC-005가 같은 번호 둘을 막지 않는다). 아래 NAME 값은 이 파일이 고른
 #    값이라 그대로 문자로 단언한다 — 픽스처 기본값이 아니라서 output을 거칠
 #    이유가 없다.
 # 2. 상태 "left"가 이름 있는 퇴사자여야 한다(members-test-plan.md 8번). 지금
-#    e2e-seed-server.mts의 seededUser()는 state === "left"일 때
+#    e2eSeedServer.mts의 seededUser()는 state === "left"일 때
 #    `createLeftUser()`(tests/integration/postgres.ts, 프로필 없이 SQL로
 #    left_at만 얹는다)를 불러 profile을 null로 돌려준다. "approved"가 이미
 #    하듯 submit_profile → approve_member를 실제로 부른 뒤 관리자 토큰으로

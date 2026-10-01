@@ -5,9 +5,9 @@ import { Pencil } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { AppState, ScrollView, View } from "react-native";
 import { DomainError } from "@/shared/api/errors";
-import { getCurrentUser } from "@/shared/lib/get-current-user";
-import { queryClient } from "@/shared/lib/query-client";
-import { DEVICE_CLEANUP_NOT_WIRED_YET, signOut } from "@/shared/lib/sign-out";
+import { getCurrentUser } from "@/shared/lib/getCurrentUser";
+import { queryClient } from "@/shared/lib/queryClient";
+import { DEVICE_CLEANUP_NOT_WIRED_YET, signOut } from "@/shared/lib/signOut";
 import { supabase } from "@/shared/lib/supabase";
 import type { Theme } from "@/shared/lib/theme";
 import { useTheme } from "@/shared/lib/useTheme";
@@ -26,17 +26,17 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
-import { googlePhotoOf } from "@/features/auth/google-photo-of";
-import { getProfileNotificationRow } from "@/features/notification/model/profile-notification-row";
-import { PUSH_DEPS } from "@/features/notification/model/push-deps";
+import { googlePhotoOf } from "@/features/auth/googlePhotoOf";
+import { getProfileNotificationRow } from "@/features/notification/model/profileNotificationRow";
+import { PUSH_DEPS } from "@/features/notification/model/pushDeps";
 import {
   getPushPermission,
   requestPushPermission,
-} from "@/features/notification/model/push-permission";
+} from "@/features/notification/model/pushPermission";
 import {
   getReachState,
   type PushPermission,
-} from "@/features/notification/model/reach-state";
+} from "@/features/notification/model/reachState";
 import { useNotificationSwitch } from "@/features/notification/model/useNotificationSwitch";
 import { useSavePushToken } from "@/features/notification/model/useSavePushToken";
 import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
@@ -44,8 +44,8 @@ import { useMyProfile } from "@/features/profile/model/useMyProfile";
 import { useUpdateContact } from "@/features/profile/model/useUpdateContact";
 import { useUpdatePhoto } from "@/features/profile/model/useUpdatePhoto";
 import { useQualifications } from "@/features/schedule/model/useQualifications";
-import { hasRehearsalGrant } from "@/screens/profile/model/has-rehearsal-grant";
-import { shouldOfferGooglePhoto } from "@/screens/profile/model/should-offer-google-photo";
+import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant";
+import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto";
 import { ContactSheet } from "@/screens/profile/ui/ContactSheet";
 import { PhotoSheet } from "@/screens/profile/ui/PhotoSheet";
 import { THEME_LABEL, ThemeSheet } from "@/screens/profile/ui/ThemeSheet";
@@ -63,7 +63,7 @@ import { THEME_LABEL, ThemeSheet } from "@/screens/profile/ui/ThemeSheet";
  * **시트는 한 번에 하나다.** 연락처·사진·화면 셋이 같은 겹을 쓴다.
  *
  * **알림 자리는 권한이 정한다.** 거부된 기기에는 스위치 대신 안내 두 줄이 서고, 그 갈림은
- * [`profile-notification-row`](../../../features/notification/model/profile-notification-row.ts)가
+ * [`profile-notification-row`](../../../features/notification/model/profileNotificationRow.ts)가
  * 낸다. 이 기기에 주소가 섰는지는 「나」가 읽는 값이 아니라 권한이 허락일 때만 서는 것이라
  * 갈래를 물을 때 권한을 그 자리에 넣는다 — 켜진 스위치와 안 닿는 기기를 근무자에게 갈라
  * 말하지 않아서 둘이 같은 모습이다(profile.md 「알림」).

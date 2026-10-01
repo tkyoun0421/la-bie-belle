@@ -38,7 +38,7 @@
 # 총괄이 다르게 읽으면 이 절의 마지막 단언을 반대로 뒤집어야 한다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/schedule-admin.yaml 머리말, scripts/e2e-seed-server.mts,
+# tests/e2e/schedule-admin.yaml 머리말, scripts/e2eSeedServer.mts,
 # scripts/seed-session.js를 따른다. 라우트는 navigation.md 「경로」의
 # "/admin/approvals"다.
 #
@@ -46,7 +46,7 @@
 # `tests/integration/postgres.ts`의 `seedAssignment`·`seedCancelRequest`를
 # 그대로 쓴다 — `create_cancel_request` RPC는 이 task가 만드는 함수라 시드
 # 시점엔 아직 없다. 직결로 만든 취소 요청 행은 실제 함수가 만드는 모양과
-# 같다(미판정 상태 — `decided_at`이 비어 있다). `scripts/e2e-seed-server.mts`의
+# 같다(미판정 상태 — `decided_at`이 비어 있다). `scripts/e2eSeedServer.mts`의
 # `@tests/integration/postgres` import 목록에 `seedCancelRequest`를 더해야
 # 쓸 수 있다(`seedAssignment`는 이미 그 목록에 있다).
 #
@@ -103,7 +103,7 @@
 # `approvalConfirmBody?`·`approvalDayAppbar?`를 더한다(전부 optional — 다른
 # 상태는 안 채운다). `STATES`에 `"schedule_approvals_cancel_pending"`을,
 # `ADMIN_STATES`에도 같이 더한다. `schedulePayloadOf`에 갈래를
-# 하나 추가한다. `tests/e2e/scripts/seed-session.js`는 이 네 필드의 이스케이프
+# 하나 추가한다. `tests/e2e/scripts/seedSession.js`는 이 네 필드의 이스케이프
 # 통로를 이미 갖고 있다(이 task가 그 파일도 같이 고쳤다).
 #
 # **거절 시나리오도 같은 상태를 다시 부른다.** `withFreshMonth`가 매번 새

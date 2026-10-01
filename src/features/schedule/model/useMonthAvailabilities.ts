@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   getMonthAvailabilities,
   type AvailabilityRow,
-} from "@/entities/schedule/dals/get-month-availabilities";
-import { AVAILABILITY_KEY } from "@/features/schedule/model/query-keys";
+} from "@/entities/schedule/dals/getMonthAvailabilities";
+import { AVAILABILITY_KEY } from "@/features/schedule/model/queryKeys";
 
 /**
  * 그 달 근무 신청을 신청자 이름과 함께 읽는다. 달력 칸의 신청 수, 날 상세의 근무 신청 줄,
@@ -21,7 +21,7 @@ export type MonthAvailabilitiesResult = {
 };
 
 export function useMonthAvailabilities(
-  client: Db,
+  client: DB,
   month: string,
 ): MonthAvailabilitiesResult {
   const { data, error, isLoading } = useQuery({

@@ -11,7 +11,7 @@ import {
   WAGE_SAVE_FAILED_SUB,
   WAGE_SAVE_FAILED_TITLE,
   WAGE_TODAY_NOTE,
-} from "@/screens/wages/model/wage-amount";
+} from "@/screens/wages/model/wageAmount";
 
 /**
  * 기본 시급을 정하는 시트다. 정본은

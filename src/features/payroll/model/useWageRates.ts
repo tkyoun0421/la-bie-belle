@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   getWageRates,
   type WageRates,
-} from "@/entities/payroll/dals/get-wage-rates";
-import { WAGES_KEY } from "@/features/payroll/model/query-keys";
+} from "@/entities/payroll/dals/getWageRates";
+import { WAGES_KEY } from "@/features/payroll/model/queryKeys";
 
 /**
  * 시급 화면이 읽는 하나다. 목록도 사람 시트의 이력도 이 한 응답에서 갈려 나오므로 시트를
@@ -20,7 +20,7 @@ export type WageRatesResult = {
   isLoading: boolean;
 };
 
-export function useWageRates(client: Db): WageRatesResult {
+export function useWageRates(client: DB): WageRatesResult {
   const { data, error, isLoading } = useQuery({
     queryKey: WAGES_KEY,
     queryFn: () => getWageRates(client),

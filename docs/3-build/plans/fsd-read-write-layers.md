@@ -7,11 +7,11 @@ sources:
 
 # FSD 층 재편 — 구현 계획
 
-[ADR-015](../../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)를 코드에 전개한다. 파일 이름을 camelCase로 바꾸고, 층의 뜻을 읽기와 쓰기로 가르고, 세그먼트를 다섯으로 모으고, 뭉친 슬라이스를 쪼개고, 성격을 접미사로 단다.
+[ADR-015](../../2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)를 코드에 전개한다. 이름을 camelCase로 바꾸고, 캐시 키를 팩토리로 모으고, 세그먼트를 다섯으로 모으면서 성격 접미사를 같이 달고, 층의 뜻을 읽기와 쓰기로 가르고, 타입을 빼내고, 뭉친 슬라이스를 쪼갠다.
 
 ## 입력 명세·기준
 
-**정본은 ADR-015다.** 층의 뜻, 세그먼트 다섯의 판정 기준, 슬라이스 쪼개는 기준, 파일 이름 규약, 검사 여섯이 거기 산다. 이 계획은 그것을 몇 번에 나눠 어떤 순서로 옮기는지만 적는다.
+**정본은 ADR-015다.** 층의 뜻, 세그먼트 다섯의 판정 기준, 슬라이스 쪼개는 기준, 이름 규약, 검사 여덟이 거기 산다. 이 계획은 그것을 몇 번에 나눠 어떤 순서로 옮기는지만 적는다.
 
 **저장소에서 확인한 것.**
 
@@ -21,80 +21,95 @@ sources:
 - import 1658개 중 1654개가 `@/` 절대 경로다. 상대 경로는 4개
 - 바뀌는 import — `dals/` 273줄 · `features/*/model/` 331줄 · `shared/lib/` 198줄
 - 이름이 바뀌는 파일 535개 — `src` 450(`src/app/` 밖) · `tests` 59 · `scripts` 13 · `eslint-rules` 13
+- 이름이 바뀌는 폴더 5개 — `screens/`의 `admin-home`·`admin-stats`·`members-pending`·`schedule-admin`·`schedule-worker`. `eslint-rules`는 밖이다
+- 타입 선언 360개가 파일 192개에 산다
 - `Db` 타입을 쓰는 자리 149개 파일 319회. 파일 이름에는 안 들어간다
-- `query-keys.ts`가 다섯 군데에 산다 — `features/`의 `schedule`·`notification`·`rehearsal`·`profile`·`members`
-- 실제 경로를 박은 검사·스크립트 넷 — `scripts/sync-edge-shared.mts`, `eslint-rules/no-node-import-in-edge-shared.mjs`, `tests/lint/attendance-constants.ts`, `eslint-rules/no-visual-utility-class.mjs`
+- `queryKeys.ts`가 다섯 군데에 산다 — `features/`의 `schedule`·`notification`·`rehearsal`·`profile`·`members`
+- 실제 경로를 박은 검사·스크립트 넷 — `scripts/syncEdgeShared.mts`, `eslint-rules/noNodeImportInEdgeShared.mjs`, `tests/lint/attendanceConstants.ts`, `eslint-rules/noVisualUtilityClass.mjs`
 
 **Git 기준점**은 ADR-015가 merge된 커밋이다.
 
 ## 완료 조건
 
-### AC-01 — 파일 이름이 camelCase가 된다
+### AC-01 — 파일 이름이 camelCase가 된다 ✅
 
-- 전제: `tests/lint/file-naming.ts`가 kebab-case를 요구하고 535개 파일이 그 꼴이다
+- 전제: `tests/lint/fileNaming.ts`가 kebab-case를 요구하고 535개 파일이 그 꼴이다
 - 행동
-  - `file-naming.ts`의 `kebab` 갈래를 `camel`로 바꾼다 — `matchesStyle`은 `/^[a-z][a-zA-Z0-9]*$/`, `toStyle`은 조각을 camel로 합친다
+  - `fileNaming.ts`의 `kebab` 갈래를 `camel`로 바꾼다 — `matchesStyle`은 `/^[a-z][a-zA-Z0-9]*$/`, `toStyle`은 조각을 camel로 합친다
   - 그 검사가 내놓는 `suggestion`대로 `git mv`하고 import를 치환한다
   - `Db` 타입을 `DB`로 바꾼다
-  - 자기 이름이 바뀌는 파일 둘을 같이 옮긴다 — `tests/lint/file-naming.ts` → `fileNaming.ts`, `tests/lint/file-naming.test.ts` → `fileNaming.test.ts`
+  - 자기 이름이 바뀌는 파일 둘을 같이 옮긴다 — `tests/lint/fileNaming.ts` → `fileNaming.ts`, `tests/lint/fileNaming.test.ts` → `fileNaming.test.ts`
 - 관찰 결과: `pnpm test -- fileNaming`이 초록이고 하이픈 든 파일이 `src/app/` 밖에 없다. `pnpm lint`·`pnpm typecheck`·`pnpm test` 셋이 초록이다
 - `src/app/`은 안 건드린다 — Expo Router가 파일 이름을 URL로 읽고 `/check-in`은 종이 QR에 실려 나간다
 - 왜 먼저인가: 뒤 묶음이 파일을 만들고 옮긴다. 이름 규칙이 먼저 바뀌어야 그 파일들이 새 꼴로 선다
+- 돌면서 나온 것 — **ESLint 규칙 이름은 kebab으로 되돌렸다.** 일괄 치환이 `house/dumb-ui` 같은 규칙 ID까지 먹었는데 그것은 파일 이름이 아니라 생태계 식별자고 소스의 `eslint-disable` 주석이 그 이름을 쓴다. 규칙 파일은 camel, 등록 키는 kebab이다
+- 돌면서 나온 것 — **`fileNaming.test.ts`의 픽스처가 정답으로 뒤집혔다.** 그 파일 주석이 그 위험을 미리 적어뒀고(「일괄 치환이 이 파일을 지나가면 픽스처가 정답으로 바뀌어 단언이 조용히 무의미해진다」) 실제로 났다 — `kebabWanted`를 `camelWanted`로 뒤집었다
 
-### AC-02 — 캐시 키가 한 자리에 모인다
+### AC-02 — 폴더 이름이 camelCase가 된다
 
-- 전제: `queryKeys.ts`가 `features/` 아래 다섯 슬라이스에 흩어져 있다
-- 행동: 다섯을 `src/shared/api/queryKeys.ts` 하나로 모으고 import를 고친다
-- 관찰 결과: 키 문자열이 하나도 안 바뀐다. `pnpm test`가 초록이고 캐시 무효화 동작이 그대로다. 다섯 파일이 사라지고 하나가 선다
-- 왜 여기인가: 쓰기 슬라이스가 성공한 뒤 낡게 할 키는 읽기 슬라이스의 것이고, `no-cross-slice-import`가 그 import를 막는다. 이것이 안 서면 AC-05가 막힌다
-
-### AC-03 — 세그먼트가 다섯으로 모인다
-
-- 전제: 데이터 접근이 `dals`와 `api` 둘로 갈려 있고, 훅과 순수 계산이 `model` 한 폴더에 섞여 있다
-- 행동: `git mv`로 옮긴다
-  - `entities/*/dals/` → `entities/*/api/`
-  - `features/*/model/use*.ts` → `features/*/hooks/`
-  - `features/stats/api/` → 그대로(이미 맞다)
-  - `features/*/model/`과 `entities/*/model/`의 순수 함수를 판정하는 것과 꼴 바꾸는 것으로 갈라 `model`과 `utils`로
-  - `shared/lib/` → `api`·`hooks`·`utils` 셋으로
-- 관찰 결과: **파일 내용이 한 줄도 안 바뀐다.** import 경로 치환만 있다. `pnpm lint`·`pnpm typecheck`·`pnpm test` 셋이 초록이고 `dals` 폴더가 없다
-- 손으로 판정할 하나: `profile/dals/avatarsBucket.ts`는 버킷 주소를 읽고 파일을 올려 둘을 다 하는데, 둘 다 통신이라 `api/`다
-
-### AC-04 — 층이 읽기와 쓰기로 갈린다
-
-- 전제: 읽는 dal과 그 쿼리 훅이 두 층에 떨어져 있다
+- 전제: `screens/`의 슬라이스 폴더 다섯이 kebab이다
 - 행동
-  - 쿼리 훅 17개를 `features/*/hooks/` → `entities/<도메인>/hooks/`로 내린다
-  - 쓰는 dal 49개를 `entities/*/api/` → `features/<use-case>/api/`로 올린다
-  - 업무 판정인 순수 함수를 `features/*/model/` → `entities/<도메인>/model/`로 내린다
-  - `shared/lib`의 열을 `features/auth`·`entities/session`·`entities/clock` 셋으로 옮긴다
-- 관찰 결과: `entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다. 읽는 dal과 그 쿼리 훅이 같은 슬라이스에 있다
-- 손으로 판정할 넷
-  - `useSavePushToken` — 쿼리도 뮤테이션도 아니고 앱 진입에 주소를 보내는 효과다. 쓰기 쪽이므로 `features/push-switch/hooks/`
-  - `usePayrollMonths`·`useRehearsalMonths`·`useScheduleMonths` — 다른 쿼리를 조합해 달 목록을 낸다. 읽기 쪽이므로 각 `entities/<도메인>/hooks/`
-- 같이 고치는 두 줄: `scripts/syncEdgeShared.mts`와 `eslint-rules/noNodeImportInEdgeShared.mjs`가 보는 경로가 `features/notification/model/`에서 `entities/notification/model/`로 바뀐다. 복사 대상(`pushMessage`·`pushResult`)이 순수 계산이라 그쪽으로 간다
+  - `git mv`로 `admin-home`·`admin-stats`·`members-pending`·`schedule-admin`·`schedule-worker`를 camel로
+  - `fileNaming.ts`에 폴더 이름 검사를 더한다 — `src/app/`과 `eslint-rules/`는 밖이다
+  - `src/app/`의 라우트 파일이 그 폴더를 import하는 자리를 고친다
+- 관찰 결과: 하이픈 든 폴더가 `src/app/`과 `eslint-rules/` 밖에 없다. 셋이 초록이다
+- `screens/` 슬라이스가 라우트와 1:1인 것은 그대로다 — `/admin-home` 라우트의 슬라이스가 `screens/adminHome`이다
 
-### AC-05 — 슬라이스가 쪼개진다
+### AC-03 — 캐시 키가 팩토리 하나가 된다
+
+- 전제: `queryKeys.ts`가 `features/` 아래 다섯 슬라이스에 흩어져 있고, 쓰는 쪽이 배열 리터럴을 손으로 적는 자리가 있다
+- 행동
+  - 다섯을 `src/shared/api/queryKeys.ts` 하나로 모으고 **팩토리 객체**로 쓴다 — `queryKeys.schedule.all`과 `queryKeys.schedule.month(month)` 꼴
+  - 배열 리터럴로 키를 적은 자리를 전부 팩토리 호출로 바꾼다
+  - 키 문자열이 [runtime.md](../../2-design/system/runtime.md)의 표와 같은지 대조한다
+- 관찰 결과: 키 문자열이 하나도 안 바뀐다. `pnpm test`가 초록이고 캐시 무효화 동작이 그대로다. 다섯 파일이 사라지고 하나가 선다
+- 왜 여기인가: 쓰기 슬라이스가 성공한 뒤 낡게 할 키는 읽기 슬라이스의 것이고, `no-cross-slice-import`가 그 import를 막는다. 이것이 안 서면 AC-07이 막힌다
+
+### AC-04 — 통신이 `api/`로 모이고 `.api.ts`가 된다
+
+- 전제: 데이터 접근이 `entities/*/dals/`와 `features/stats/api/` 둘로 갈려 있다
+- 행동
+  - `entities/*/dals/` 74개를 `entities/*/api/`로 옮기면서 이름을 `[action].api.ts`로 바꾼다
+  - `features/stats/api/`도 접미사를 붙인다
+  - 짝 테스트도 같이 — `getMonthSchedule.api.test.ts`
+- 관찰 결과: `dals` 폴더가 없고 `api/` 아래 모든 파일이 `.api.ts`다. 셋이 초록이다
+- 이동과 이름을 한 묶음에서 한다 — 같은 파일을 두 번 옮기면 rename 추적이 두 번 끊긴다
+- 손으로 판정할 하나: `avatarsBucket.ts`는 버킷 주소를 읽고 파일을 올려 둘을 다 하는데, 둘 다 통신이라 `api/`다
+
+### AC-05 — 훅이 `hooks/`로 가고 층이 갈리고 접미사가 붙는다
+
+- 전제: 훅 58개가 `features/*/model/`에 순수 계산과 섞여 있고, 읽는 dal과 그 쿼리 훅이 두 층에 떨어져 있다
+- 행동
+  - 쿼리 훅 17개를 `entities/<도메인>/hooks/`로 내리고 `use[Action]Query.ts`로 — **export 이름도 같이 바뀐다**
+  - 뮤테이션 훅 37개를 `features/<use-case>/hooks/`로 올리고 `use[Action]Mutation.ts`로
+  - 쓰는 dal 49개를 `entities/*/api/` → `features/<use-case>/api/`로 올린다
+  - 호출부(`screens/`·`src/app/`)의 훅 이름을 다 고친다
+- 관찰 결과: `entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다. 읽는 dal과 그 쿼리 훅이 같은 슬라이스에 있다. 셋이 초록이다
+- 손으로 판정할 넷
+  - `useSavePushToken` — 쿼리도 뮤테이션도 아니고 앱 진입에 주소를 보내는 효과다. 쓰기 쪽이라 `features/pushSwitch/hooks/useSavePushTokenMutation.ts`
+  - `usePayrollMonths`·`useRehearsalMonths`·`useScheduleMonths` — 다른 쿼리를 조합해 달 목록을 낸다. 읽기 쪽이라 각 `entities/<도메인>/hooks/use[X]MonthsQuery.ts`
+- 같이 고치는 두 줄: `scripts/syncEdgeShared.mts`와 `eslint-rules/noNodeImportInEdgeShared.mjs`가 보는 경로
+
+### AC-06 — 타입이 빠지고 `model`·`utils`가 갈리고 접미사가 붙는다
+
+- 전제: 타입 선언 360개가 파일 192개에 흩어져 있고, 순수 함수가 판정과 꼴 바꾸기로 안 갈려 있다
+- 행동
+  - 도메인의 모양을 말하는 타입을 `[domain].type.ts`로 뺀다. 함수 하나의 인자 꼴처럼 좁은 타입은 그 파일에 남긴다
+  - 순수 함수를 판정(`model`)과 꼴 바꾸기(`utils`)로 갈라 옮기고 `[domain].policy.ts`·`[domain].utils.ts`로 모은다
+  - 바깥 값 검증을 `[domain].schema.ts`로 — `validateProfile`과 홀리데이 API 응답 파싱이 그 자리다
+  - zustand store를 `[domain].store.ts`로
+  - `shared/lib/` 29개를 `api`·`hooks`·`utils` 셋으로 가르고, 층이 틀린 열을 `features/auth`·`entities/session`·`entities/clock`으로 옮긴다
+- 관찰 결과: `utils/`의 함수가 참·거짓이나 허용·금지를 안 돌려준다. `[domain].type.ts`를 열면 그 도메인의 모양이 한 파일에서 읽힌다. 셋이 초록이다
+- 왜 여기인가: 접미사가 성격을 말하므로 성격을 정하는 이 묶음에서 같이 붙인다
+
+### AC-07 — 슬라이스가 쪼개진다
 
 - 전제: `features/schedule` 하나에 훅 서른이, `entities/schedule`에 dal 서른이 들어 있다
-- 행동: `entities` 7→16, `features` 9→20으로 쪼갠다. 쪼갠 뒤 이름은 ADR-015의 기준(entities는 도메인, features는 use case)으로 정하고 이 계획의 「변경 파일」 표가 든다
+- 행동: `entities` 7→16, `features` 9→20으로 쪼갠다. 슬라이스 폴더 이름은 camel이다
 - 관찰 결과: 슬라이스마다 「이 슬라이스는 무엇을 하나」에 한 문장으로 답할 수 있다. `no-cross-slice-import`가 한 건도 안 걸린다 — 걸리면 그 import가 위 층으로 올라가야 하는 조립이다
-- `screens/`는 안 건드린다
+- `screens/`는 안 쪼갠다
 
-### AC-06 — 성격이 접미사로 붙는다
-
-- 전제: 슬라이스와 세그먼트 배정이 끝났고 파일 이름이 성격을 안 말한다
-- 행동: ADR-015의 접미사 여덟 꼴로 이름을 바꾼다
-  - `model/`의 판정을 도메인마다 `[domain].policy.ts` 하나로 모은다 — `isLastAdmin`·`canSaveDisplayName`이 `profile.policy.ts`로
-  - 타입과 상수를 `[domain].type.ts`로, 바깥 값 검증을 `[domain].schema.ts`로
-  - zustand store를 `[domain].store.ts`로
-  - `utils/`를 `[domain].utils.ts`로
-  - `api/`를 `[action].api.ts`로
-  - 훅을 `use[Action]Query.ts`·`use[Action]Mutation.ts`로 — **export 이름도 같이 바뀐다**
-- 관찰 결과: `pnpm lint`·`pnpm typecheck`·`pnpm test` 셋이 초록이다. 접미사가 사는 세그먼트와 어긋난 파일이 없다
-- 왜 여기인가: 접미사가 성격을 말하므로 성격이 정해진 뒤여야 한다. `.policy.ts`인지 `.utils.ts`인지는 AC-03의 판정 결과이고, `Query`인지 `Mutation`인지는 AC-04의 결과다
-
-### AC-07 — 검사 여섯이 선다
+### AC-08 — 검사 여덟이 선다
 
 - 전제: `house/dumb-ui`가 `.tsx`의 Supabase import·`fetch()`·쿼리 훅 호출만 잡는다. 세그먼트와 층의 뜻과 접미사를 지키는 검사가 없다
 - 행동: 규칙을 더하고 `tests/lint/`에 각각의 테스트를 쓴다. [execution.md의 「집행되는 규칙」](../../4-test/execution.md#집행되는-규칙) 표에 행을 더한다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다
@@ -102,9 +117,10 @@ sources:
   - `hooks/` 밖에서 `use*` export 금지
   - `entities/`에서 `useMutation` 금지 · `features/`에서 `useQuery` 금지
   - `.policy.ts`에서 통신·`Date.now`·`Math.random` 금지
-  - 접미사가 사는 세그먼트와 맞는지 — `fileNaming.ts`가 본다
-  - 이름이 camelCase인지 — `fileNaming.ts`가 AC-01에서 이미 본다
-- 관찰 결과: 각 규칙이 위반 픽스처에서 걸리고 정상 픽스처를 통과시킨다. 저장소 전체가 여섯을 통과한다
+  - 캐시 키 배열 리터럴 금지 — `queryKeys` 팩토리만 쓴다
+  - 접미사가 사는 세그먼트와 맞는지 — `fileNaming.ts`
+  - 이름이 camelCase인지 · 폴더 이름이 camelCase인지 — `fileNaming.ts`가 AC-01·AC-02에서 이미 본다
+- 관찰 결과: 각 규칙이 위반 픽스처에서 걸리고 정상 픽스처를 통과시킨다. 저장소 전체가 여덟을 통과한다
 
 ## 변경 파일
 
@@ -183,7 +199,7 @@ sources:
 
 | 파일 | 바꿀 책임 |
 | --- | --- |
-| `tests/lint/fileNaming.ts` | `kebab` 갈래를 `camel`로 — AC-01. 접미사 검사를 더한다 — AC-07 |
+| `tests/lint/fileNaming.ts` | `kebab` 갈래를 `camel`로 — AC-01. 폴더 이름 검사 — AC-02. 접미사 검사 — AC-08 |
 | `eslint-rules/supabaseClientInApi.mjs` | 신설 — `api/` 밖에서 Supabase 클라이언트 import를 막는다 |
 | `eslint-rules/hooksSegment.mjs` | 신설 — `hooks/` 밖의 `use*` export를 막는다 |
 | `eslint-rules/readWriteLayers.mjs` | 신설 — `entities/`의 `useMutation`과 `features/`의 `useQuery`를 막는다 |
@@ -200,38 +216,43 @@ sources:
 
 | 문서 | 고칠 문장 | 같이 가는 묶음 |
 | --- | --- | --- |
-| `CLAUDE.md` 「코드 구조」 | 「부르는 이름이 없는 나머지는 kebab-case다」와 `file-naming.ts` 경로 | AC-01 |
+| `CLAUDE.md` 「코드 구조」 | 「부르는 이름이 없는 나머지는 kebab-case다」와 `fileNaming.ts` 경로 | AC-01 |
 | [execution.md](../../4-test/execution.md) 「집행되는 규칙」 | 파일 이름 규칙 행의 kebab 문장과 검사 파일 이름 | AC-01 |
 | [ADR-005](../../2-design/adr/ADR-005-sdlc-stage-folders-and-artifact-chain.md) | 문서 슬러그는 kebab 그대로다 — **안 고친다**, 코드 이름과 다른 축이다 | — |
-| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「레이어」 | 「`shared/lib`에 공용 유틸이 산다」 → `shared/utils` | AC-03 |
-| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「화면과 로직」 | `house/dumb-ui` 설명의 `@/shared/lib/` 경로 | AC-03 |
-| [ADR-003](../../2-design/adr/ADR-003-supabase-and-integration-tests.md) | 「`auth.*`는 `shared/lib`에 산다」 → `features/auth`와 `entities/session` | AC-04 |
-| [architecture.md](../../2-design/system/architecture.md) | 같은 예외 문장 | AC-04 |
-| [account/design.md](../../2-design/modules/account/design.md) | 「전부 `auth.*`라 `shared/lib`이다」 | AC-04 |
-| [spec/ui-kit.md](../../2-design/spec/ui-kit.md) | 「자리」와 AC의 순수 계산 경로 둘 | AC-03 |
-| [execution.md](../../4-test/execution.md) | 테스트 명령 예시의 `src/shared/lib/__tests__/` 경로 | AC-03 |
+| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「레이어」 | 「`shared/lib`에 공용 유틸이 산다」 → `shared/utils` | AC-06 |
+| [ADR-001](../../2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md) 「화면과 로직」 | `house/dumb-ui` 설명의 `@/shared/lib/` 경로 | AC-06 |
+| [ADR-003](../../2-design/adr/ADR-003-supabase-and-integration-tests.md) | 「`auth.*`는 `shared/lib`에 산다」 → `features/auth`와 `entities/session` | AC-06 |
+| [architecture.md](../../2-design/system/architecture.md) | 같은 예외 문장 | AC-06 |
+| [account/design.md](../../2-design/modules/account/design.md) | 「전부 `auth.*`라 `shared/lib`이다」 | AC-06 |
+| [spec/ui-kit.md](../../2-design/spec/ui-kit.md) | 「자리」와 AC의 순수 계산 경로 둘 | AC-06 |
+| [execution.md](../../4-test/execution.md) | 테스트 명령 예시의 `src/shared/lib/__tests__/` 경로 | AC-06 |
 
 **완료된 과거 plan은 안 건드린다.** [3-build 안내](../README.md#구현-계획)가 「완료된 과거 계획은 소급 변경하지 않는다」고 적는다 — `login-screens`·`rehearsal`·`stats-worker` 등 열 넘는 plan이 `shared/lib`과 kebab 경로를 들지만 그것은 당시 작업의 기록이다.
 
 ## 구현 순서
 
-묶음 일곱을 PR 하나씩 나른다. 앞 묶음이 merge되고 나서 다음을 뗀다 — 같은 파일을 연달아 옮기므로 겹치면 충돌이 손으로 풀 수 없게 커진다.
+묶음 여덟을 PR 하나씩 나른다. 앞 묶음이 merge되고 나서 다음을 뗀다 — 같은 파일을 연달아 옮기므로 겹치면 충돌이 손으로 풀 수 없게 커진다.
 
-1. **AC-01 — 이름 바꾸기.** 검사를 camel로 고치고 535개를 `git mv`한다. `Db`를 `DB`로. 자기 이름이 바뀌는 검사 파일 둘을 같이 옮긴다
-2. **AC-02 — 캐시 키 모으기.** 다섯 `queryKeys.ts`를 `shared/api/queryKeys.ts`로 모은다. 키 문자열을 한 글자도 안 바꾼다
-3. **AC-03 — 세그먼트 옮기기.** `git mv`와 import 치환만. 파일 내용 변경 0줄
-4. **AC-04 — 층 가르기.** 쿼리 훅 17개를 내리고 쓰는 dal 49개를 올린다. 손 판정 다섯을 위 표대로
-5. **AC-05 — 슬라이스 쪼개기.** 위 두 표대로 폴더를 만들고 옮긴다. `no-cross-slice-import`가 걸리는 자리는 위 층으로 올릴 조립이므로 그 자리를 목록으로 남긴다
-6. **AC-06 — 접미사 달기.** 판정을 `[domain].policy.ts`로 모으고 훅에 `Query`·`Mutation`을 박는다. 훅은 export 이름도 바뀌어 호출부가 같이 움직인다
-7. **AC-07 — 검사 세우기.** 실패 테스트를 먼저 쓰고 규칙을 만든다. 규칙이 서야 다음 task가 이 경계를 지킨다
+1. **AC-01 — 파일 이름 camel.** ✅ 535개를 `git mv`했다
+2. **AC-02 — 폴더 이름 camel.** `screens/` 다섯과 폴더 검사
+3. **AC-03 — 캐시 키 팩토리.** 다섯을 `shared/api/queryKeys.ts` 하나로. 키 문자열을 한 글자도 안 바꾼다
+4. **AC-04 — 통신을 `api/`로 + `.api.ts`**
+5. **AC-05 — 훅을 `hooks/`로 + 층 가르기 + `Query`·`Mutation`**
+6. **AC-06 — 타입 빼기 + `model`/`utils` 가르기 + 나머지 접미사**
+7. **AC-07 — 슬라이스 쪼개기**
+8. **AC-08 — 검사 여덟**
 
-**이동만 하는 묶음(1·3·4·5·6)에 새 테스트를 만들지 않는다.** [3-build 안내](../README.md#구현-계획)가 「문서만 고치는 작업은 관련 기존 문서 검사로 확인하며 형식만 베끼는 새 테스트를 만들지 않는다」고 적는데, 파일 이동도 같다 — 기존 테스트가 새 경로에서 그대로 초록인 것이 그 묶음의 완료 조건이다. 테스트를 쓰는 묶음은 7뿐이고, 묶음 1은 기존 `fileNaming.test.ts`의 단언이 kebab에서 camel로 바뀐다.
+**이동과 이름을 한 묶음에서 한다.** 앞선 판은 이동(묶음 3~5)과 접미사(묶음 6)를 갈랐는데, 그러면 같은 파일을 두 번 옮기고 rename 추적이 두 번 끊긴다. 지금은 각 파일이 한 번만 움직인다 — 그 자리의 성격이 정해지는 묶음에서 이름까지 받는다.
+
+**묶음마다 커밋을 둘로 가른다.** 이름·자리만 바꾸는 커밋과 참조를 고치는 커밋이다. 섞이면 git이 rename 추적을 놓쳐 `git log --follow`가 끊긴다.
+
+**이동만 하는 묶음(1·2·4·5·7)에 새 테스트를 만들지 않는다.** [3-build 안내](../README.md#구현-계획)가 「문서만 고치는 작업은 관련 기존 문서 검사로 확인하며 형식만 베끼는 새 테스트를 만들지 않는다」고 적는데, 파일 이동도 같다 — 기존 테스트가 새 경로에서 그대로 초록인 것이 그 묶음의 완료 조건이다. 테스트를 쓰는 묶음은 8뿐이고, 묶음 3과 6은 기존 테스트가 새 호출 꼴로 바뀐다.
 
 ## 리스크·전환·되돌리기
 
-**사용자 대면 동작이 하나도 안 바뀐다.** 묶음 1~6은 파일 자리와 이름과 import만 고치고 묶음 7은 검사만 더한다. 마이그레이션도 없다.
+**사용자 대면 동작이 하나도 안 바뀐다.** 묶음 1~7은 파일 자리와 이름과 import만 고치고 묶음 8은 검사만 더한다. 마이그레이션도 없다.
 
-**되돌리기 단위는 PR 하나다.** 묶음 1·3·4·5·6은 `git mv`와 치환뿐이라 revert 한 번으로 돌아간다. 묶음 2는 키 문자열을 안 바꿔 revert해도 캐시가 깨지지 않는다.
+**되돌리기 단위는 PR 하나다.** 묶음 1·2·4·5·6·7은 `git mv`와 치환뿐이라 revert 한 번으로 돌아간다. 묶음 3은 키 문자열을 안 바꿔 revert해도 캐시가 깨지지 않는다.
 
 **이름만 바꾸는 커밋과 import를 고치는 커밋을 가른다.** 한 커밋에 섞이면 git이 rename 추적을 놓쳐 `git log --follow`가 끊긴다. 묶음 1이 가장 크니 거기서 특히 지킨다.
 
@@ -241,7 +262,7 @@ sources:
 
 **가장 큰 위험은 묶음이 겹치는 것이다.** 다른 task가 같은 기간에 `src/`를 고치면 충돌이 수백 줄이 된다. 이 task가 도는 동안 다른 코드 task를 띄우지 않는다.
 
-**묶음 5에서 `no-cross-slice-import`가 걸릴 수 있다.** 쪼갠 슬라이스끼리 부르는 자리가 나오면 그것은 위 층(`screens`)이 조립할 일이다. 그 목록이 길면 쪼개는 단위가 틀린 것이므로 묶음 5를 멈추고 배정 표를 고친다.
+**묶음 7에서 `no-cross-slice-import`가 걸릴 수 있다.** 쪼갠 슬라이스끼리 부르는 자리가 나오면 그것은 위 층(`screens`)이 조립할 일이다. 그 목록이 길면 쪼개는 단위가 틀린 것이므로 묶음 7을 멈추고 배정 표를 고친다.
 
 ## 검증 방법
 
@@ -251,18 +272,20 @@ sources:
 | AC-01 | rename이 빠져 모듈을 못 찾는다 | 타입 검사 | `pnpm typecheck` | 초록 |
 | AC-01 | 하이픈이 남는다 | 손 확인 | `find src tests scripts eslint-rules -name '*-*' -name '*.ts*' \! -path 'src/app/*'` | 결과 없음 |
 | AC-01 | `Db`가 남는다 | 손 확인 | `grep -rn '\bDb\b' src tests scripts` | 결과 없음 |
-| AC-02 | 키 문자열이 바뀌어 캐시 무효화가 어긋난다 | 기존 unit·integration 전부 | `pnpm test` | 초록. `queryKeys.ts`가 하나만 남는다 |
-| AC-02 | 모은 파일이 `runtime.md`의 키 표와 어긋난다 | 손 확인 | — | `shared/api/queryKeys.ts`의 키가 [runtime.md](../../2-design/system/runtime.md)와 일치 |
-| AC-03 | `dals`가 남는다 | 손 확인 | `find src -type d -name dals` | 결과 없음 |
-| AC-03 | 업무 판정이 `utils`에 숨는다 | 손 확인 | — | `utils/`의 함수가 참·거짓이나 허용·금지를 안 돌려준다 |
-| AC-04 | `entities`에 뮤테이션이, `features`에 쿼리가 남는다 | 새 lint 규칙(묶음 7) | `pnpm lint` | 묶음 7이 선 뒤 0건 |
-| AC-04 | Edge Function 복사가 빠진 경로를 본다 | 기존 integration | `pnpm test:integration` | `import-holidays`·`send-push` 관련 초록 |
-| AC-05 | 쪼갠 슬라이스끼리 import가 생긴다 | 기존 lint 규칙 | `pnpm lint` | `no-cross-slice-import` 0건 |
-| AC-05 | 슬라이스 이름이 라우트와 어긋난다 | 손 확인 | — | `screens/`는 안 건드렸다 |
-| AC-06 | 훅 export 이름을 안 바꿔 파일과 어긋난다 | 기존 unit | `pnpm test -- fileNaming` | 초록 |
-| AC-06 | 접미사가 세그먼트와 어긋난다 | 새 검사(묶음 7) | `pnpm test -- fileNaming` | 묶음 7이 선 뒤 초록 |
-| AC-07 | 규칙이 정상 코드를 막는다 | unit | `tests/lint/supabaseClientInApi.test.ts` 외 셋 (신설) | 위반 픽스처에서 걸리고 정상에서 통과 |
-| AC-07 | 규칙 표가 실제 규칙과 어긋난다 | 기존 검사 | `pnpm test -- ruleCatalogue` | 초록 |
+| AC-02 | 하이픈 든 폴더가 남는다 | 손 확인 | `find src -type d -name '*-*' \! -path 'src/app/*'` | 결과 없음 |
+| AC-02 | 라우트가 슬라이스를 못 찾는다 | 타입 검사 | `pnpm typecheck` | 초록 |
+| AC-03 | 키 문자열이 바뀌어 캐시 무효화가 어긋난다 | 기존 unit·integration 전부 | `pnpm test` | 초록. `queryKeys.ts`가 하나만 남는다 |
+| AC-03 | 모은 파일이 `runtime.md`의 키 표와 어긋난다 | 손 확인 | — | `shared/api/queryKeys.ts`의 키가 [runtime.md](../../2-design/system/runtime.md)와 일치 |
+| AC-04 | `dals`가 남는다 | 손 확인 | `find src -type d -name dals` | 결과 없음 |
+| AC-05 | `entities`에 뮤테이션이, `features`에 쿼리가 남는다 | 새 lint 규칙(묶음 8) | `pnpm lint` | 묶음 8이 선 뒤 0건 |
+| AC-05 | 훅 export 이름을 안 바꿔 파일과 어긋난다 | 기존 unit | `pnpm test -- fileNaming` | 초록 |
+| AC-05 | Edge Function 복사가 빠진 경로를 본다 | 기존 integration | `pnpm test:integration` | `import-holidays`·`send-push` 관련 초록 |
+| AC-06 | 업무 판정이 `utils`에 숨는다 | 손 확인 | — | `utils/`의 함수가 참·거짓이나 허용·금지를 안 돌려준다 |
+| AC-06 | 접미사가 세그먼트와 어긋난다 | 새 검사(묶음 8) | `pnpm test -- fileNaming` | 묶음 8이 선 뒤 초록 |
+| AC-07 | 쪼갠 슬라이스끼리 import가 생긴다 | 기존 lint 규칙 | `pnpm lint` | `no-cross-slice-import` 0건 |
+| AC-07 | 슬라이스 이름이 라우트와 어긋난다 | 손 확인 | — | `screens/`는 안 건드렸다 |
+| AC-08 | 규칙이 정상 코드를 막는다 | unit | `tests/lint/supabaseClientInApi.test.ts` 외 셋 (신설) | 위반 픽스처에서 걸리고 정상에서 통과 |
+| AC-08 | 규칙 표가 실제 규칙과 어긋난다 | 기존 검사 | `pnpm test -- ruleCatalogue` | 초록 |
 
 **e2e는 안 돈다.** 기기 빌드가 없어 `pnpm e2e`가 실행 불가다([execution](../../4-test/execution.md)). 이 task는 사용자 대면 동작을 안 바꾸므로 e2e가 막는 자리도 없다.
 

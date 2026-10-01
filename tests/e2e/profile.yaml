@@ -9,13 +9,13 @@
 # 본다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/pending.yaml 머리말, scripts/e2e-seed-server.mts, seed-session.js를
+# tests/e2e/pending.yaml 머리말, scripts/e2eSeedServer.mts, seed-session.js를
 # 본다. 딥링크는 세션을 심은 뒤 "labiebelle://me"다 — 라우트가
 # src/app/(tabs)/me.tsx인데 그룹을 감싼 괄호 "(tabs)"는 URL 세그먼트가
 # 아니라서 빠진다(tests/e2e/home.yaml의 "/"와 같은 결).
 #
 # **시드 상태 "approved"가 지금은 profile을 null로 돌려준다**
-# (scripts/e2e-seed-server.mts의 createApprovedUser()). 이 화면은 관리자가
+# (scripts/e2eSeedServer.mts의 createApprovedUser()). 이 화면은 관리자가
 # 아닌 사람의 자기 프로필을 보는 자리라 이름·성별·생년월일·연락처가 반드시
 # 있어야 하는데, 지금 "approved"는 admin.yaml이 쓰던 「role만 본다」는 씬을
 # 위한 것이라 프로필이 없다. implementer가 "approved"에도 "rejected"·
@@ -44,7 +44,7 @@
 # 오른쪽에 지금 값을 문자로 보여준다(profile.md 「화면」). 그래서 재시작 뒤
 # 테마가 남았는지는 시트를 열지 않고 그 줄의 값 "어둡게"만 본다.
 #
-# admin 시드는 profile이 null이다(scripts/e2e-seed-server.mts). 이 화면은
+# admin 시드는 profile이 null이다(scripts/e2eSeedServer.mts). 이 화면은
 # design.md·profile.md에 따르면 관리자도 근무자로서 자기 프로필이 있어야
 # 하는데 지금 시드는 그걸 못 만든다 — 그래서 이 씬은 "관리자 모드" 줄 하나만
 # 보고, 이름·사진 같은 다섯 값은 다시 안 본다(리턴 4번에 한계를 적는다).

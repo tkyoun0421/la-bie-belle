@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const grantPositionMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/grant-position", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/grantPosition", () => ({
   grantPosition: grantPositionMock,
 }));
 

@@ -1,10 +1,10 @@
 import { useQueries } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   getMyRehearsals,
   type Rehearsal,
-} from "@/entities/rehearsal/dals/get-my-rehearsals";
-import { REHEARSAL_KEY } from "@/features/rehearsal/model/query-keys";
+} from "@/entities/rehearsal/dals/getMyRehearsals";
+import { REHEARSAL_KEY } from "@/features/rehearsal/model/queryKeys";
 
 /**
  * 여러 달치 본인 리허설을 한 덩이로 읽는다. 급여 화면이 기간을 달과 안 맞게 자르기 때문이다 —
@@ -24,7 +24,7 @@ export type RehearsalMonthsResult = {
 };
 
 export function useRehearsalMonths(
-  client: Db,
+  client: DB,
   months: readonly string[],
 ): RehearsalMonthsResult {
   return useQueries({

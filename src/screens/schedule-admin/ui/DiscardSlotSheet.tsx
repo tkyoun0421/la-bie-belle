@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
-import { discardSlotWarningLine } from "@/screens/schedule-admin/model/discard-slot";
+import { discardSlotWarningLine } from "@/screens/schedule-admin/model/discardSlot";
 
 /**
  * 사람이 든 자리를 버리기 전에 서는 확인이다. 정본은

@@ -2,8 +2,8 @@ import { useRouter } from "expo-router";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import { nowWithOffset } from "@/shared/lib/server-clock";
-import { serverClockStore } from "@/shared/lib/server-clock-store";
+import { nowWithOffset } from "@/shared/lib/serverClock";
+import { serverClockStore } from "@/shared/lib/serverClockStore";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Badge } from "@/shared/ui/Badge";
@@ -18,8 +18,8 @@ import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
-import type { AddAssignmentInput } from "@/entities/schedule/dals/add-assignment";
-import { liveAssignmentCount } from "@/entities/schedule/dals/get-month-schedule";
+import type { AddAssignmentInput } from "@/entities/schedule/dals/addAssignment";
+import { liveAssignmentCount } from "@/entities/schedule/dals/getMonthSchedule";
 import { useMembers } from "@/features/members/model/useMembers";
 import { usePayrollMonths } from "@/features/payroll/model/usePayrollMonths";
 import { useSetAdjustment } from "@/features/payroll/model/useSetAdjustment";
@@ -50,29 +50,29 @@ import { DeadlineSheet } from "@/features/schedule/ui/DeadlineSheet";
 import {
   adminCalendarDayState,
   confirmedVacancyCount,
-} from "@/screens/schedule-admin/model/admin-calendar-day-state";
+} from "@/screens/schedule-admin/model/adminCalendarDayState";
 import {
   confirmAffordance,
   confirmUnlockLine,
-} from "@/screens/schedule-admin/model/confirm-affordance";
-import { dayConfirmGate } from "@/screens/schedule-admin/model/confirm-gate";
-import { deadlineLine } from "@/screens/schedule-admin/model/deadline-line";
+} from "@/screens/schedule-admin/model/confirmAffordance";
+import { dayConfirmGate } from "@/screens/schedule-admin/model/confirmGate";
+import { deadlineLine } from "@/screens/schedule-admin/model/deadlineLine";
 import {
   confirmedLine,
   formatMonthName,
   formatMonthTitle,
   kstDateOf,
-} from "@/screens/schedule-admin/model/format-schedule-date";
-import { countOpenSlotsByDate } from "@/screens/schedule-admin/model/group-open-slots";
+} from "@/screens/schedule-admin/model/formatScheduleDate";
+import { countOpenSlotsByDate } from "@/screens/schedule-admin/model/groupOpenSlots";
 import {
   isMonthFullyPast,
   shiftMonth,
-} from "@/screens/schedule-admin/model/month-empty-state";
+} from "@/screens/schedule-admin/model/monthEmptyState";
 import {
   isSelectableForOpening,
   openDaysButtonLabel,
   openDaysFailureToast,
-} from "@/screens/schedule-admin/model/open-mode-selection";
+} from "@/screens/schedule-admin/model/openModeSelection";
 import { CloseDayWarningSheet } from "@/screens/schedule-admin/ui/CloseDayWarningSheet";
 import { ConfirmSheet } from "@/screens/schedule-admin/ui/ConfirmSheet";
 import { CreateScheduleSheet } from "@/screens/schedule-admin/ui/CreateScheduleSheet";

@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const addAssignmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/add-assignment", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/addAssignment", () => ({
   addAssignment: addAssignmentMock,
 }));
 

@@ -1,18 +1,18 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
-import { getMonthAttendance } from "@/entities/attendance/dals/get-month-attendance";
-import type { MonthAttendance } from "@/entities/attendance/dals/get-month-attendance";
+import type { DB } from "@/shared/api/database";
+import { getMonthAttendance } from "@/entities/attendance/dals/getMonthAttendance";
+import type { MonthAttendance } from "@/entities/attendance/dals/getMonthAttendance";
 import {
   getPayrollMonth,
   payrollMonthKey,
-} from "@/entities/payroll/dals/get-payroll-month";
-import type { PayrollMonth } from "@/entities/payroll/dals/get-payroll-month";
+} from "@/entities/payroll/dals/getPayrollMonth";
+import type { PayrollMonth } from "@/entities/payroll/dals/getPayrollMonth";
 import {
   firstScheduleMonthKey,
   getFirstScheduleMonth,
-} from "@/entities/schedule/dals/get-first-schedule-month";
-import { getMonthSchedule } from "@/entities/schedule/dals/get-month-schedule";
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
+} from "@/entities/schedule/dals/getFirstScheduleMonth";
+import { getMonthSchedule } from "@/entities/schedule/dals/getMonthSchedule";
+import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
 
 /**
  * 통계가 여는 열두 달 창이다. 근무 탭은 `['schedule', 'YYYY-MM']` 열둘, 근태 탭은 거기에
@@ -66,7 +66,7 @@ type QueryResult = {
 };
 
 export function useWorkMonths(
-  client: Db,
+  client: DB,
   months: readonly string[],
 ): MonthsResult<WorkMonth> {
   return useQueries({
@@ -83,7 +83,7 @@ export function useWorkMonths(
 }
 
 export function useAttendanceMonths(
-  client: Db,
+  client: DB,
   months: readonly string[],
 ): MonthsResult<AttendanceMonth> {
   return useQueries({
@@ -121,7 +121,7 @@ export function useAttendanceMonths(
  * (lint 규칙 3) — `entities`는 아래층이라 양쪽이 같은 자리를 부를 수 있다.
  */
 export function usePayrollMonthsByMonth(
-  client: Db,
+  client: DB,
   months: readonly string[],
 ): MonthsResult<PayrollByMonth> {
   return useQueries({
@@ -142,7 +142,7 @@ export function usePayrollMonthsByMonth(
  * 물고(`['schedule', 'first-month']`) 근무표를 만드는 판정이 `['schedule']`을 통째로 낡게
  * 해서 새 달이 생기면 저절로 따라온다.
  */
-export function useFirstScheduleMonth(client: Db) {
+export function useFirstScheduleMonth(client: DB) {
   return useQuery({
     queryKey: firstScheduleMonthKey(),
     queryFn: () => getFirstScheduleMonth(client),

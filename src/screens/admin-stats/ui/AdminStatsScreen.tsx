@@ -8,12 +8,12 @@ import {
   shiftMonth,
   spellDate,
   spellMonth,
-} from "@/shared/lib/kst-date";
-import { canGoBack, canGoForward } from "@/shared/lib/month-boundary";
-import { NO_VALUE } from "@/shared/lib/no-value";
-import { queryClient } from "@/shared/lib/query-client";
-import { nowWithOffset } from "@/shared/lib/server-clock";
-import { serverClockStore } from "@/shared/lib/server-clock-store";
+} from "@/shared/lib/kstDate";
+import { canGoBack, canGoForward } from "@/shared/lib/monthBoundary";
+import { NO_VALUE } from "@/shared/lib/noValue";
+import { queryClient } from "@/shared/lib/queryClient";
+import { nowWithOffset } from "@/shared/lib/serverClock";
+import { serverClockStore } from "@/shared/lib/serverClockStore";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
@@ -35,24 +35,24 @@ import {
   useFirstScheduleMonth,
   useWorkMonths,
 } from "@/features/stats/api/useStatsQueries";
-import { computePersonDays } from "@/features/stats/model/person-days";
+import { computePersonDays } from "@/features/stats/model/personDays";
 import { buildTrend, trendMonths } from "@/features/stats/model/trend";
 import {
   computeWorkTotals,
   hoursLabel,
   workInputsOf,
-} from "@/features/stats/model/work-totals";
+} from "@/features/stats/model/workTotals";
 import {
   attendanceRowValue,
   buildAttendanceTab,
   type AttendanceTab,
-} from "@/screens/admin-stats/model/attendance-rows";
+} from "@/screens/admin-stats/model/attendanceRows";
 import {
   attendanceValues,
   monthIn,
   percentLabel,
   workValues,
-} from "@/screens/admin-stats/model/chart-values";
+} from "@/screens/admin-stats/model/chartValues";
 import { WorkDaysSheet } from "@/screens/admin-stats/ui/WorkDaysSheet";
 
 /**

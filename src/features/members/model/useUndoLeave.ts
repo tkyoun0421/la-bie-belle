@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { undoLeave } from "@/entities/profile/dals/undo-leave";
-import { MEMBERS_KEY } from "@/features/members/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { undoLeave } from "@/entities/profile/dals/undoLeave";
+import { MEMBERS_KEY } from "@/features/members/model/queryKeys";
 
 /**
  * 퇴사 처리를 무른다. 시한이 없어 언제 눌러도 되고, 성공하면 그 줄이 퇴사 구획에서 재직자
@@ -25,7 +25,7 @@ export type UndoLeaveResult = {
   reset: () => void;
 };
 
-export function useUndoLeave(client: Db): UndoLeaveResult {
+export function useUndoLeave(client: DB): UndoLeaveResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

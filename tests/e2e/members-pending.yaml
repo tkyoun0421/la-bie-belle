@@ -7,9 +7,9 @@
 # — 여기서는 그 규칙이 실제로 화면·API·DB를 잇는지만 본다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/pending.yaml 머리말, scripts/e2e-seed-server.mts, 이 task 리턴을 본다.
+# tests/e2e/pending.yaml 머리말, scripts/e2eSeedServer.mts, 이 task 리턴을 본다.
 #
-# **시드 상태 "admin"이 아직 없다.** scripts/e2e-seed-server.mts의 STATES에
+# **시드 상태 "admin"이 아직 없다.** scripts/e2eSeedServer.mts의 STATES에
 # "admin"이 없다. implementer가 이 task에서 더한다 — 이미 있는
 # tests/integration/postgres.ts의 createAdminUser()를 그대로 불러 관리자 사용자를
 # 만들고 access_token·refresh_token을 돌려주면 된다. profile은 null이다(관리자는

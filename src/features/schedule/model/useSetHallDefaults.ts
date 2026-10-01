@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   setHallDefaults,
   type HallDefaultsInput,
-} from "@/entities/schedule/dals/set-hall-defaults";
-import { HALL_KEY } from "@/features/schedule/model/query-keys";
+} from "@/entities/schedule/dals/setHallDefaults";
+import { HALL_KEY } from "@/features/schedule/model/queryKeys";
 
 /**
  * 홀의 자리·근무 시간 기본값을 바꾼다.
@@ -24,7 +24,7 @@ export type SetHallDefaultsResult = {
   reset: () => void;
 };
 
-export function useSetHallDefaults(client: Db): SetHallDefaultsResult {
+export function useSetHallDefaults(client: DB): SetHallDefaultsResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

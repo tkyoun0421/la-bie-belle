@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { submitAvailability } from "@/entities/schedule/dals/submit-availability";
-import { AVAILABILITY_KEY } from "@/features/schedule/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { submitAvailability } from "@/entities/schedule/dals/submitAvailability";
+import { AVAILABILITY_KEY } from "@/features/schedule/model/queryKeys";
 
 /**
  * 그 달 근무 신청을 보낸다. 고른 날짜를 통째로 보내고 서버가 그 달 행을 덮어쓴다
@@ -29,7 +29,7 @@ export type SubmitAvailabilityResult = {
   reset: () => void;
 };
 
-export function useSubmitAvailability(client: Db): SubmitAvailabilityResult {
+export function useSubmitAvailability(client: DB): SubmitAvailabilityResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const getHallDefaultsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/get-hall-defaults", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/getHallDefaults", () => ({
   getHallDefaults: getHallDefaultsMock,
 }));
 

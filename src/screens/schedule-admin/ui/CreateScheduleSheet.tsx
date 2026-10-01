@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Text } from "@/shared/ui/Text";
-import { formatMonthName } from "@/screens/schedule-admin/model/format-schedule-date";
+import { formatMonthName } from "@/screens/schedule-admin/model/formatScheduleDate";
 
 /**
  * 달 근무표를 만드는 시트다. 정본은

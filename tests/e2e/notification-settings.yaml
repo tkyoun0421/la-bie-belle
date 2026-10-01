@@ -10,8 +10,8 @@
 # 배정했다 — 여기서는 그 규칙이 실제로 화면·훅·기기 권한을 잇는지만 본다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/pending.yaml·profile.yaml 머리말, scripts/e2e-seed-server.mts,
-# tests/e2e/scripts/seed-session.js를 그대로 따른다. 딥링크는
+# tests/e2e/pending.yaml·profile.yaml 머리말, scripts/e2eSeedServer.mts,
+# tests/e2e/scripts/seedSession.js를 그대로 따른다. 딥링크는
 # "labiebelle://__test/session?..." 뒤 "labiebelle://me"다(profile.yaml과 같은
 # 결) — "(tabs)" 그룹은 URL 세그먼트가 아니라서 빠진다.
 #
@@ -54,7 +54,7 @@
 # 「나」의 스위치 끄기 씬은 진입 직후 스위치가 "켜짐"이라고 가정한다.
 # `supabase/migrations/20260922091506_notifications.sql`의
 # `notifications_enabled boolean not null default true`가 근거고, 지금
-# `scripts/e2e-seed-server.mts`의 createApprovedUser 계열은 이 열을 따로 안
+# `scripts/e2eSeedServer.mts`의 createApprovedUser 계열은 이 열을 따로 안
 # 건드린다(grep 결과 없음) — 그러니 DB 기본값 그대로 참이다. implementer가
 # 이 STATE에 알림 관련 필드를 새로 채우면서 기본값을 거짓으로 바꾸면 이 씬의
 # 첫 tapOn이 "켜짐→끄기 확인 Dialog"가 아니라 "꺼짐→바로 켜짐"으로 어긋난다.

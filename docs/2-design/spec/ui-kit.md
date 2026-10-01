@@ -26,7 +26,7 @@ sources:
 - **토스페이스 SVG** — [illustration.md](../design-system/illustration.md#토스페이스-사용-규칙). 파일은 커밋하지 않고 스크립트로 받아 온다
 - **글자 배율 상한** — [typography.md](../design-system/foundation/typography.md#큰-숫자)의 `maxFontSizeMultiplier`를 글자 조각 한 곳에서 건다
 - **동작 줄이기** — [motion.md](../design-system/foundation/motion.md#접근성). shimmer와 이동 모션이 기기 설정을 한 곳에서 읽는다
-- **자리** — [ADR-001](../adr/ADR-001-fsd-layout-and-tdd-guard.md). 조각(`.tsx`)은 `src/shared/ui/`, 순수 계산(하루 띠 비율·미니 달력 줄·동작 줄이기 판정)은 `src/shared/lib/`의 `.ts`와 `__tests__/` 짝 테스트 — `src/shared/ui/`는 훅이 안 보는 자리라 계산을 거기 두면 짝 테스트가 강제되지 않는다. 토스페이스 파일 이름·URL 계산은 `tests/lint/tossface-fetch.ts`에 두고 `scripts/tossface-fetch.mts`가 가져다 쓴다(`font-subset` 관행)
+- **자리** — [ADR-001](../adr/ADR-001-fsd-layout-and-tdd-guard.md). 조각(`.tsx`)은 `src/shared/ui/`, 순수 계산(하루 띠 비율·미니 달력 줄·동작 줄이기 판정)은 `src/shared/lib/`의 `.ts`와 `__tests__/` 짝 테스트 — `src/shared/ui/`는 훅이 안 보는 자리라 계산을 거기 두면 짝 테스트가 강제되지 않는다. 토스페이스 파일 이름·URL 계산은 `tests/lint/tossfaceFetch.ts`에 두고 `scripts/tossfaceFetch.mts`가 가져다 쓴다(`font-subset` 관행)
 - **조각의 렌더 검증** — `@testing-library/react-native`를 devDependency로 들인다. 조각이 기본으로 넘기는 prop(글자 배율 상한·모션 값)을 렌더 결과로 확인하는 데만 쓴다
 
 ## 범위

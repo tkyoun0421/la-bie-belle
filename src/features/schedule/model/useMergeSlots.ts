@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { mergeSlots } from "@/entities/schedule/dals/merge-slots";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { mergeSlots } from "@/entities/schedule/dals/mergeSlots";
+import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 줄 머리를 다른 줄 머리에 겹쳐 겸임을 만든다. 자리 id가 아니라 포지션 이름 둘을 보내는
@@ -25,7 +25,7 @@ export type MergeSlotsResult = {
   reset: () => void;
 };
 
-export function useMergeSlots(client: Db): MergeSlotsResult {
+export function useMergeSlots(client: DB): MergeSlotsResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

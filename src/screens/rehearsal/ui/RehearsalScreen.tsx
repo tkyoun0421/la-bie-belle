@@ -2,13 +2,8 @@ import { useRouter } from "expo-router";
 import { ChevronDown } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { BackHandler, Pressable, ScrollView, View } from "react-native";
-import { getCurrentUser } from "@/shared/lib/get-current-user";
-import {
-  kstToday,
-  monthOf,
-  spellDate,
-  spellMonth,
-} from "@/shared/lib/kst-date";
+import { getCurrentUser } from "@/shared/lib/getCurrentUser";
+import { kstToday, monthOf, spellDate, spellMonth } from "@/shared/lib/kstDate";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
@@ -20,14 +15,14 @@ import { MonthPickerSheet } from "@/shared/ui/MonthPickerSheet";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
-import type { Rehearsal } from "@/entities/rehearsal/dals/get-my-rehearsals";
+import type { Rehearsal } from "@/entities/rehearsal/dals/getMyRehearsals";
 import {
   dayTotal,
   monthTotal,
-} from "@/entities/rehearsal/model/rehearsal-hours";
+} from "@/entities/rehearsal/model/rehearsalHours";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
-import { canAddOn } from "@/features/rehearsal/model/can-add-on";
-import { kindForDate } from "@/features/rehearsal/model/kind-for-date";
+import { canAddOn } from "@/features/rehearsal/model/canAddOn";
+import { kindForDate } from "@/features/rehearsal/model/kindForDate";
 import { useAddRehearsal } from "@/features/rehearsal/model/useAddRehearsal";
 import { useAllRehearsals } from "@/features/rehearsal/model/useAllRehearsals";
 import { useEditRehearsal } from "@/features/rehearsal/model/useEditRehearsal";
@@ -40,10 +35,10 @@ import {
   canSubmitForm,
   EMPTY_VALUES,
   type AddSheetState,
-} from "@/screens/rehearsal/model/add-sheet-state";
-import { daySheetRows } from "@/screens/rehearsal/model/day-sheet-rows";
-import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsal-day-cell";
-import { spellTotal } from "@/screens/rehearsal/model/spell-total";
+} from "@/screens/rehearsal/model/addSheetState";
+import { daySheetRows } from "@/screens/rehearsal/model/daySheetRows";
+import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell";
+import { spellTotal } from "@/screens/rehearsal/model/spellTotal";
 import { RehearsalDaySheet } from "@/screens/rehearsal/ui/RehearsalDaySheet";
 import { RehearsalFormSheet } from "@/screens/rehearsal/ui/RehearsalFormSheet";
 

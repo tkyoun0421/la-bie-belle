@@ -12,7 +12,7 @@ import type { ReactNode } from "react";
 
 const confirmScheduleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/confirm-schedule", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/confirmSchedule", () => ({
   confirmSchedule: confirmScheduleMock,
 }));
 

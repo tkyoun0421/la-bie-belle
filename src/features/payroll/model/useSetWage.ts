@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { setWage, type SetWageInput } from "@/entities/payroll/dals/set-wage";
-import { PAYROLL_KEY } from "@/features/payroll/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { setWage, type SetWageInput } from "@/entities/payroll/dals/setWage";
+import { PAYROLL_KEY } from "@/features/payroll/model/queryKeys";
 
 /**
  * 한 사람의 시급을 정한다. 응답을 기다린다 — 고치는 자리가 시트 안이라 실패를 그 자리에
@@ -24,7 +24,7 @@ export type SetWageResult = {
   reset: () => void;
 };
 
-export function useSetWage(client: Db): SetWageResult {
+export function useSetWage(client: DB): SetWageResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

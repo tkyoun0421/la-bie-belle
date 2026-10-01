@@ -10,14 +10,14 @@ import {
   FONT_SOURCES,
   shouldDismissSplash,
   shouldRenderApp,
-} from "@/shared/lib/font-loading";
-import { queryClient } from "@/shared/lib/query-client";
-import { serverClockStore } from "@/shared/lib/server-clock-store";
+} from "@/shared/lib/fontLoading";
+import { queryClient } from "@/shared/lib/queryClient";
+import { serverClockStore } from "@/shared/lib/serverClockStore";
 import { supabase } from "@/shared/lib/supabase";
 import { useTheme } from "@/shared/lib/useTheme";
-import { wireAutoRefresh } from "@/shared/lib/wire-auto-refresh";
-import { getServerNow } from "@/entities/clock/dals/get-server-now";
-import { decideEntry, type EntryDecision } from "@/features/auth/decide-entry";
+import { wireAutoRefresh } from "@/shared/lib/wireAutoRefresh";
+import { getServerNow } from "@/entities/clock/dals/getServerNow";
+import { decideEntry, type EntryDecision } from "@/features/auth/decideEntry";
 
 // 스플래시가 이미 내려간 뒤에 부르면 reject한다 — 그때는 막을 것도 없으니 삼킨다.
 SplashScreen.preventAutoHideAsync().catch(() => {});

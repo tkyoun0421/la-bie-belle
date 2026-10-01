@@ -1,12 +1,17 @@
-import dumbUi from "./dumb-ui.mjs";
-import noArbitraryClassValues from "./no-arbitrary-class-values.mjs";
-import noColorLiterals from "./no-color-literals.mjs";
-import noCrossSliceImport from "./no-cross-slice-import.mjs";
-import noDefaultPaletteClass from "./no-default-palette-class.mjs";
-import noEdgeFunctionSrcImport from "./no-edge-function-src-import.mjs";
-import noNodeImportInEdgeShared from "./no-node-import-in-edge-shared.mjs";
-import noVisualUtilityClass from "./no-visual-utility-class.mjs";
+import dumbUi from "./dumbUi.mjs";
+import noArbitraryClassValues from "./noArbitraryClassValues.mjs";
+import noColorLiterals from "./noColorLiterals.mjs";
+import noCrossSliceImport from "./noCrossSliceImport.mjs";
+import noDefaultPaletteClass from "./noDefaultPaletteClass.mjs";
+import noEdgeFunctionSrcImport from "./noEdgeFunctionSrcImport.mjs";
+import noNodeImportInEdgeShared from "./noNodeImportInEdgeShared.mjs";
+import noVisualUtilityClass from "./noVisualUtilityClass.mjs";
 
+/**
+ * 규칙 이름은 kebab으로 둔다. ESLint 생태계가 그 꼴이고 소스의
+ * `eslint-disable house/dumb-ui` 주석이 그 이름을 그대로 쓴다 —
+ * 파일 이름을 camel로 옮긴 ADR-015는 규칙 이름까지는 안 건드렸다.
+ */
 const house = {
   meta: { name: "eslint-plugin-house" },
   rules: {

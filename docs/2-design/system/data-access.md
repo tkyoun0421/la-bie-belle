@@ -50,11 +50,11 @@
 
 - 적용 범위: 클라이언트를 받는 모든 자리와 그것이 가리키는 표·뷰·함수
 - 기본 계약:
-  - **타입은 표에서 뽑는다.** `pnpm types`가 `supabase gen types typescript --local`을 감싸 `src/shared/api/database-types.ts`를 만든다. 스키마는 `public`과 `internal` 둘이다 — 시각 경계가 든 함수의 알맹이가 `internal`에 있고 integration 테스트가 그것을 직접 부른다. CLI는 세미콜론 없이 내놓아서 뽑은 뒤 prettier를 한 번 더 먹인다
+  - **타입은 표에서 뽑는다.** `pnpm types`가 `supabase gen types typescript --local`을 감싸 `src/shared/api/databaseTypes.ts`를 만든다. 스키마는 `public`과 `internal` 둘이다 — 시각 경계가 든 함수의 알맹이가 `internal`에 있고 integration 테스트가 그것을 직접 부른다. CLI는 세미콜론 없이 내놓아서 뽑은 뒤 prettier를 한 번 더 먹인다
   - 파일을 저장소에 넣고 CI가 마이그레이션 뒤 다시 뽑아 diff가 0인지 본다 — 표를 바꾸고 타입을 안 뽑으면 빨간불이다. CLI 버전이 다르면 포맷이 달라 헛빨간불이 나니 CI는 로컬과 같은 버전을 박는다
   - **클라이언트를 받는 자리는 `Db`를 쓴다.** 생성 타입을 안 물린 `SupabaseClient`는 스키마가 `any`라 `from("없는표")`도 검사를 통과한다. 별명을 내놓는 파일 하나만 그 이름을 직접 쓰고, 나머지가 그걸 어기면 `pnpm test`가 문다
   - **함수 인자의 nullable은 생성기가 못 적는다.** `pg_proc`에 그 정보가 없어서 NULL을 받는 인자도 non-null로 나온다. 안 보내도 되는 인자는 SQL에 `default null`을 적어라 — 그러면 생성 타입이 선택 인자로 내고 호출자가 그 키를 빼고 부른다. 기본값은 뒤쪽 인자에만 붙일 수 있으니 가운데 인자가 NULL을 받아야 하면 그 자리는 캐스트밖에 없다 — 캐스트를 적기 전에 그 호출이 값을 채워 불러도 되는지부터 본다
-- 구현 참조: [`scripts/generate-database-types.mts`](../../../scripts/generate-database-types.mts)가 뽑고, [`tests/lint/database-types.ts`](../../../tests/lint/database-types.ts)가 이름 대조와 맨 클라이언트를 보고, `Db`는 [`src/shared/api/database.ts`](../../../src/shared/api/database.ts)에 있다. CI 단계는 [`ci.yml`](../../../.github/workflows/ci.yml)의 「생성 타입이 마이그레이션과 같은지 본다」다
+- 구현 참조: [`scripts/generateDatabaseTypes.mts`](../../../scripts/generateDatabaseTypes.mts)가 뽑고, [`tests/lint/databaseTypes.ts`](../../../tests/lint/databaseTypes.ts)가 이름 대조와 맨 클라이언트를 보고, `Db`는 [`src/shared/api/database.ts`](../../../src/shared/api/database.ts)에 있다. CI 단계는 [`ci.yml`](../../../.github/workflows/ci.yml)의 「생성 타입이 마이그레이션과 같은지 본다」다
 
 ## 읽기·쓰기 경계
 
@@ -111,7 +111,7 @@
 
 - 적용 범위: 모든 표의 읽기 정책
 - 기본 계약: **기본은 「승인된 사람 전원 읽기」다.** `is_approved()`·`is_admin()` 두 SQL 함수를 모든 정책이 공유한다. 둘은 `security definer`·`stable`·`search_path = ''`다. 둘 다 `left_at`·`blocked_at`이 비어 있어야 참이다 — 퇴사하거나 차단된 관리자의 세션이 관리자 함수를 못 부른다. 좁히는 표는 이렇다. 안 적은 표는 기본값이다. 행은 각 영역 design의 소유 데이터에 있다. 정책을 고치는 PR은 그 정책의 integration 테스트를 같이 낸다(ADR-003)
-- 이유: 날·자리·배정·요청·인증 상태처럼 전원이 보는 표가 다수라 기본값과 맞는다. **막는 것은 화면이 아니라 데이터다** — 시급·급여·개인정보·QR 값은 RLS가 행 단위로 막을 수 있게 표를 가른다. `profiles` 정책이 `profiles`를 읽는 함수를 부르면 재귀에 걸린다. 왜 좁히는지는 각 도메인 파일에 있다. 새 표에 좁히기를 까먹으면 새는 쪽으로 틀린다. **RLS를 안 켠 표는 `tests/lint/table-rls.ts`가 잡는다** — 표마다 손으로 쓴 정책 테스트는 정의상 「새 표를 까먹는 것」을 못 잡는다. 그 표를 아무도 안 건드리니 아무것도 안 빨갛다
+- 이유: 날·자리·배정·요청·인증 상태처럼 전원이 보는 표가 다수라 기본값과 맞는다. **막는 것은 화면이 아니라 데이터다** — 시급·급여·개인정보·QR 값은 RLS가 행 단위로 막을 수 있게 표를 가른다. `profiles` 정책이 `profiles`를 읽는 함수를 부르면 재귀에 걸린다. 왜 좁히는지는 각 도메인 파일에 있다. 새 표에 좁히기를 까먹으면 새는 쪽으로 틀린다. **RLS를 안 켠 표는 `tests/lint/tableRls.ts`가 잡는다** — 표마다 손으로 쓴 정책 테스트는 정의상 「새 표를 까먹는 것」을 못 잡는다. 그 표를 아무도 안 건드리니 아무것도 안 빨갛다
 - 예외: 승인 전은 자기 `profiles`·`profile_private` 행만 읽는다(ADR-003). 퇴사자는 자기 행만이다 — 자기 배정·인증·시급과 그 배정이 든 `days`. 남의 지난 기록도 안 연다([account/README.md](../modules/account/README.md#acc-011))
 
 ### 서비스 키 자리
@@ -133,7 +133,7 @@
 
 - 적용 범위: 쓰기 함수의 실패와 `dals`가 화면에 주는 오류
 - 기본 계약: **함수는 실패를 예외로 던지고, 메시지가 고정 코드다.** `raise exception using message = 'slot_full'`. `dals`가 예외를 둘로 가른다
-  - `DomainError` — 메시지가 코드 목록에 있는 것. 코드 목록은 `src/shared/api/error-codes.ts`가 정본이고 대조 테스트가 마이그레이션의 `raise` 문자열과 맞춘다. 그 파일이 내는 이름은 `ERROR_CODES` 하나고 문자열 리터럴 배열이다 — 영역마다 코드를 더하는 task가 여럿이라 이름이 갈리면 대조가 한쪽만 읽는다
+  - `DomainError` — 메시지가 코드 목록에 있는 것. 코드 목록은 `src/shared/api/errorCodes.ts`가 정본이고 대조 테스트가 마이그레이션의 `raise` 문자열과 맞춘다. 그 파일이 내는 이름은 `ERROR_CODES` 하나고 문자열 리터럴 배열이다 — 영역마다 코드를 더하는 task가 여럿이라 이름이 갈리면 대조가 한쪽만 읽는다
   - `TransportError` — 그 밖의 전부. 통신 실패, 타임아웃, 모르는 코드
 - 이유: 예외라 트랜잭션이 저절로 되돌아간다. **오류에 데이터를 싣지 않는다** — 코드 하나면 화면이 새로 읽는다. 목록이 필요한 자리(퇴사의 남은 배정)는 버튼을 누르기 전에 화면이 읽어둔다. **`stale`은 닫혔거나 없는 행이다** — 배정·자리·요청이 바뀌면 옛 행이 닫히고 새 행이 선다([`schedule/design.md`](../modules/schedule/design.md#배정)). 확정 전에는 행이 지워진다. 화면이 들고 있던 id가 그 둘 중 하나면 함수가 `stale`을 던진다. 버전 열 없이 「상태가 바뀜」을 잡는다
 - 예외: **읽기 오류는 전부 `TransportError`다.** RLS는 읽기를 거부하지 않고 빈 결과를 준다. 실을 것이 셋째로 생기면 `using detail`을 연다

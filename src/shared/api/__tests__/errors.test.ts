@@ -1,4 +1,4 @@
-import { ERROR_CODES } from "@/shared/api/error-codes";
+import { ERROR_CODES } from "@/shared/api/errorCodes";
 import { DomainError, TransportError, toApiError } from "@/shared/api/errors";
 
 describe("toApiError — 오류 메시지가 코드 목록에 있으면 DomainError, 그 밖은 전부 TransportError다", () => {

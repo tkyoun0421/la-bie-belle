@@ -48,7 +48,7 @@ sources:
 - 전제: 프로필 작성 화면
 - 행동: 규칙 밖의 값을 넣고 보낸다 — 공백 이름, `010`으로 시작하지 않거나 열한 자리가 아닌 연락처, 실존하지 않는 여덟 자리 생년월일
 - 관찰 결과: 보내지지 않고 그 칸 아래 줄로 규칙을 안내한다. 서버까지 갔을 때는 `invalid_name`·`invalid_phone`·`invalid_gender`가 같은 자리에 뜬다 — 생년월일은 날짜 고르기가 실존 날짜만 내놓아 서버 코드가 없다
-- 검증 층: unit — 값의 꼴을 보는 순수 함수다. 서버 쪽 거절은 integration — `submit_profile`이 `invalid_phone`만 던지고 있어 `invalid_name`(공백 이름)·`invalid_gender`(`female`·`male` 밖)를 이 task의 마이그레이션이 더하고 `error-codes.ts`에 올린다
+- 검증 층: unit — 값의 꼴을 보는 순수 함수다. 서버 쪽 거절은 integration — `submit_profile`이 `invalid_phone`만 던지고 있어 `invalid_name`(공백 이름)·`invalid_gender`(`female`·`male` 밖)를 이 task의 마이그레이션이 더하고 `errorCodes.ts`에 올린다
 - 근거: [ACC-002](../modules/account/README.md#acc-002), [오류의 모양](../system/data-access.md#오류의-모양)
 
 ### AC-03
@@ -88,7 +88,7 @@ sources:
 - 전제: 게이트가 읽을 프로필을 못 받았다(통신 실패)
 - 행동: 앱을 연다
 - 관찰 결과: `/retry`가 서고 다시 읽기를 누르면 판정을 다시 돈다. 어느 화면으로도 잘못 들어가지 않는다
-- 검증 층: unit — 판정 함수(`decide-entry.ts`)에 실패한 읽기를 주면 되고, 기기가 필요 없다
+- 검증 층: unit — 판정 함수(`decideEntry.ts`)에 실패한 읽기를 주면 되고, 기기가 필요 없다
 - 근거: [navigation.md 「앱을 열면」](../system/navigation.md#앱을-열면)
 
 ## 상태 격자

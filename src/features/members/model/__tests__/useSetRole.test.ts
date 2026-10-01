@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 
 const setRoleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/dals/set-role", () => ({
+jest.unstable_mockModule("@/entities/profile/dals/setRole", () => ({
   setRole: setRoleMock,
 }));
 

@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   uploadAvatar,
   type UploadAvatarInput,
-} from "@/entities/profile/dals/avatars-bucket";
-import { updateMyPhoto } from "@/entities/profile/dals/update-my-photo";
-import { PROFILE_KEY } from "@/features/profile/model/query-keys";
+} from "@/entities/profile/dals/avatarsBucket";
+import { updateMyPhoto } from "@/entities/profile/dals/updateMyPhoto";
+import { PROFILE_KEY } from "@/features/profile/model/queryKeys";
 
 /**
  * 사진 바꾸기다. 들어오는 길이 둘이고 나가는 자리는 하나다 — 기기에서 고른 사진은 버킷에
@@ -36,7 +36,7 @@ export type UpdatePhotoResult = {
   reset: () => void;
 };
 
-export function useUpdatePhoto(client: Db): UpdatePhotoResult {
+export function useUpdatePhoto(client: DB): UpdatePhotoResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

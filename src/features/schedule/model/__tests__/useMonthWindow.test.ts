@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 const getMonthWindowMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/get-month-schedule", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/getMonthSchedule", () => ({
   getMonthWindow: getMonthWindowMock,
 }));
 

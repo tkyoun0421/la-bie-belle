@@ -11,12 +11,12 @@ import { Draggable, DropTarget } from "@/shared/ui/DragAndDrop";
 import { Icon } from "@/shared/ui/Icon";
 import { SlotCard } from "@/shared/ui/SlotCard";
 import { Text } from "@/shared/ui/Text";
-import type { ScheduleAssignment } from "@/entities/schedule/dals/get-month-schedule";
+import type { ScheduleAssignment } from "@/entities/schedule/dals/getMonthSchedule";
 import {
   assignmentForSlot,
   slotFillCount,
   type PositionSlot,
-} from "@/screens/schedule-admin/model/position-rows";
+} from "@/screens/schedule-admin/model/positionRows";
 
 /**
  * 포지션 한 줄이다 — 줄 머리와 그 아래 자리 카드들

@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
-import { markNotificationsRead } from "@/entities/notification/dals/mark-notifications-read";
+import type { DB } from "@/shared/api/database";
+import { markNotificationsRead } from "@/entities/notification/dals/markNotificationsRead";
 import {
   NOTIFICATIONS_KEY,
   NOTIFICATIONS_UNREAD_KEY,
-} from "@/features/notification/model/query-keys";
+} from "@/features/notification/model/queryKeys";
 
 /**
  * 누른 알림에 읽음을 찍는다. 정본은
@@ -15,10 +15,10 @@ import {
  *
  * **실패를 안 삼킨다.** ✕·CTA·답으로 찍는 자리는 되돌려야 하고 그 판단은 부르는 쪽 몫이다 —
  * 목록에서 줄을 눌러 이미 다른 화면에 선 사람에게만 실패가 조용하고, 그 삼킴은
- * `screens/notifications/model/press-notification.ts`가 한다.
+ * `screens/notifications/model/pressNotification.ts`가 한다.
  */
 
-export function useMarkNotificationsRead(client: Db) {
+export function useMarkNotificationsRead(client: DB) {
   const queryClient = useQueryClient();
 
   return useMutation({

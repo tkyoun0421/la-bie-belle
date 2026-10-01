@@ -17,10 +17,10 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
-import type { MemberRow } from "@/entities/profile/dals/list-members";
-import { isLastAdmin } from "@/entities/profile/model/is-last-admin";
-import { searchMembers } from "@/entities/profile/model/search-members";
-import { isLeftOverAYear } from "@/entities/profile/model/sort-members";
+import type { MemberRow } from "@/entities/profile/dals/listMembers";
+import { isLastAdmin } from "@/entities/profile/model/isLastAdmin";
+import { searchMembers } from "@/entities/profile/model/searchMembers";
+import { isLeftOverAYear } from "@/entities/profile/model/sortMembers";
 import { useMarkLeave } from "@/features/members/model/useMarkLeave";
 import { useMembers } from "@/features/members/model/useMembers";
 import { useSetDisplayName } from "@/features/members/model/useSetDisplayName";
@@ -29,11 +29,11 @@ import { useUndoLeave } from "@/features/members/model/useUndoLeave";
 import {
   getMemberListSuffix,
   getMemberSheetLine,
-} from "@/features/notification/model/reach-message";
+} from "@/features/notification/model/reachMessage";
 import {
   PERMISSION_OF_OTHERS,
   getReachState,
-} from "@/features/notification/model/reach-state";
+} from "@/features/notification/model/reachState";
 import {
   MemberDialog,
   type MemberDialogKind,

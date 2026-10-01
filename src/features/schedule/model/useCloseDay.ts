@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { closeDay } from "@/entities/schedule/dals/close-day";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { closeDay } from "@/entities/schedule/dals/closeDay";
+import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 날 하나를 닫는다. 배정이 있으면 화면이 먼저 경고 시트로 확인받고 이 훅은 그 뒤에 불린다
@@ -22,7 +22,7 @@ export type CloseDayResult = {
   reset: () => void;
 };
 
-export function useCloseDay(client: Db): CloseDayResult {
+export function useCloseDay(client: DB): CloseDayResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { qrCodeKey } from "@/entities/attendance/dals/get-qr-code";
-import { rotateQr } from "@/entities/attendance/dals/rotate-qr";
+import type { DB } from "@/shared/api/database";
+import { qrCodeKey } from "@/entities/attendance/dals/getQrCode";
+import { rotateQr } from "@/entities/attendance/dals/rotateQr";
 
 /**
  * 관리자가 「새로 뽑기」를 눌렀을 때다. 옛 코드는 그 자리에서 죽는다
@@ -23,7 +23,7 @@ export type RotateQrResult = {
   reset: () => void;
 };
 
-export function useRotateQr(client: Db): RotateQrResult {
+export function useRotateQr(client: DB): RotateQrResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

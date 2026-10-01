@@ -13,7 +13,7 @@ import { cn } from "@/shared/lib/utils";
  * 조각이 든다(lint 규칙 19).
  *
  * **그림은 벡터 하나다.** 화면과 인쇄용 종이가 같은 SVG 문자열을 받는다
- * (`src/screens/qr/model/qr-svg.ts`).
+ * (`src/screens/qr/model/qrSvg.ts`).
  *
  * `svg`가 `null`이면 면만 서고 그림 자리가 빈다 — 값이 오기 전의 모습이고 별도 문안이 없다
  * (`docs/2-design/spec/attendance-qr.md` 상태 격자의 「로딩」).

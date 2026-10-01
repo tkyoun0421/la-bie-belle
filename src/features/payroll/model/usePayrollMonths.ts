@@ -1,10 +1,10 @@
 import { useQueries } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   getPayrollMonth,
   payrollMonthKey,
   type PayrollMonth,
-} from "@/entities/payroll/dals/get-payroll-month";
+} from "@/entities/payroll/dals/getPayrollMonth";
 
 /**
  * 여러 달치 급여 재료를 한 덩이로 읽는다. 기간이 달과 안 맞을 때가 있어서다 — 달을 걸친 주는
@@ -35,7 +35,7 @@ function mergeMonths(months: readonly PayrollMonth[]): PayrollMonth {
 }
 
 export function usePayrollMonths(
-  client: Db,
+  client: DB,
   months: readonly string[],
 ): PayrollMonthsResult {
   return useQueries({

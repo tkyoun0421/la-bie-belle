@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   getSlotRequests,
   type SlotRequest,
-} from "@/entities/schedule/dals/get-slot-requests";
-import { REQUESTS_KEY } from "@/features/schedule/model/query-keys";
+} from "@/entities/schedule/dals/getSlotRequests";
+import { REQUESTS_KEY } from "@/features/schedule/model/queryKeys";
 
 /**
  * 그 달 살아 있는 근무 요청이다. 관리자 화면은 자리 카드의 배지와 픽커의 요청 상태를,
@@ -20,7 +20,7 @@ export type SlotRequestsResult = {
   isLoading: boolean;
 };
 
-export function useSlotRequests(client: Db, month: string): SlotRequestsResult {
+export function useSlotRequests(client: DB, month: string): SlotRequestsResult {
   const { data, error, isLoading } = useQuery({
     queryKey: [...REQUESTS_KEY, month],
     queryFn: () => getSlotRequests(client, month),
