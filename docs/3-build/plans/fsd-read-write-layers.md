@@ -67,7 +67,7 @@ sources:
   - 쿼리 훅 17개를 `features/*/hooks/` → `entities/<도메인>/hooks/`로 내린다
   - 쓰는 dal 49개를 `entities/*/api/` → `features/<use-case>/api/`로 올린다
   - 업무 판정인 순수 함수를 `features/*/model/` → `entities/<도메인>/model/`로 내린다
-  - `shared/lib`의 열하나를 `features/auth`·`entities/session`·`entities/clock` 셋으로 옮긴다
+  - `shared/lib`의 열을 `features/auth`·`entities/session`·`entities/clock` 셋으로 옮긴다
 - 관찰 결과: `entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다. 읽는 dal과 그 쿼리 훅이 같은 슬라이스에 있다
 - 손으로 판정할 넷
   - `useSavePushToken` — 쿼리도 뮤테이션도 아니고 앱 진입에 주소를 보내는 효과다. 쓰기 쪽이므로 `features/push-switch/hooks/`
@@ -158,6 +158,8 @@ sources:
 
 ### shared 재편
 
+**이 표는 `shared/` 전체다** — `shared/lib`의 스물아홉뿐 아니라 이미 `shared/api`에 사는 `database`·`errors` 같은 것도 든다. 떠나는 열을 뺀 열아홉이 `shared/lib`에서 온다.
+
 | 세그먼트 | 담는 것 |
 | --- | --- |
 | `api` | `database` `database-types` `errors` `error-codes` `supabase` `create-supabase-client` **`query-keys`(다섯에서 모음)** `query-client` `read-supabase-env` `read-app-url` |
@@ -167,7 +169,7 @@ sources:
 
 `shared/`에 `model`이 안 선다 — 도메인이 없어 담을 것이 없다. `theme`가 `utils`인 까닭은 색과 서체가 통신과 무관한 값이기 때문이고, env를 읽는 둘은 통신 설정이라 `api`다.
 
-**`shared`를 떠나는 열하나.** 인증 흐름은 로그인이라는 use case에 매여 있어 「어느 기능에도 매이지 않은 것」이 아니고, 서버 시각은 `entities/clock`이 이미 있는데 거기 안 들어가 있었다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거다.
+**`shared/lib`를 떠나는 열.** 인증 흐름은 로그인이라는 use case에 매여 있어 「어느 기능에도 매이지 않은 것」이 아니고, 서버 시각은 `entities/clock`이 이미 있는데 거기 안 들어가 있었다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거다.
 
 | 가는 곳 | 파일 | 왜 |
 | --- | --- | --- |

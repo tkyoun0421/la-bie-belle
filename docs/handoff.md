@@ -12,7 +12,7 @@
 
 **이 가름이 싸게 되는 까닭은 섞인 파일이 없어서다.** dal 74개가 읽기 24·쓰기 49로, 훅 58개가 쿼리 17·뮤테이션 37로 갈리는데 **둘을 다 하는 파일이 하나도 없다.** `rpc`와 `from`도 49/25로 겹침이 없다. 손으로 판정할 것은 다섯뿐이고 plan이 각각 어디로 갈지 적었다. import는 802줄이 바뀌는데 1658개 중 1654개가 `@/` 절대 경로라 치환으로 끝난다.
 
-**그리고 `shared/lib` 서른셋 중 열하나는 층이 틀렸다.** 인증 흐름은 로그인이라는 use case에 매여 있어 `features/auth`로, 「누가 들어왔나」 판정은 읽기라 새로 서는 `entities/session`으로, 서버 시각 둘은 이미 있던 `entities/clock`으로 간다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거였다.
+**그리고 `shared/lib` 스물아홉 중 열은 층이 틀렸다.** 인증 흐름은 로그인이라는 use case에 매여 있어 `features/auth`로, 「누가 들어왔나」 판정은 읽기라 새로 서는 `entities/session`으로, 서버 시각 둘은 이미 있던 `entities/clock`으로 간다 — 그 슬라이스에 파일이 하나뿐인 것이 그 증거였다.
 
 **NCP 자격은 사람이 받아 와야 한다.** 받을 것은 [배포 환경](5-deploy/environments.md#데이터와-외부-의존성)의 「지도 키」 줄이 든다 — 대표 계정을 먼저 지정하고, Application 하나에 Maps → Dynamic Map을 켜 안드로이드·iOS 식별자(둘 다 `com.labiebelle.app`)를 등록해 Client ID 한 쌍을 받고, Map Style Editor로 라이트·다크 스타일을 만들어 `customStyleId` 둘을 받는다. 그것이 오면 `attendance-checkin`이 풀리고 그 뒤로 `dashboard`·`attendance-excuse`·`notification-emit` 사슬이 선다. 기다리는 동안 `candidate`를 올려 잡으려면 `spell-number-shared`·`test-seed-transaction`·`internal-grants-public`·`unbounded-read-truncates`·`stats-density-salvage` 중에서 고른다.
 
