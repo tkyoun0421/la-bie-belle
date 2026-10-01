@@ -1,17 +1,18 @@
 /**
- * 코드 파일 이름이 규약대로인지 본다 — 컴포넌트는 PascalCase, 훅은 camelCase,
- * 나머지는 kebab-case다.
+ * 코드 파일 이름이 규약대로인지 본다 — 컴포넌트는 PascalCase, 나머지 `.ts`는 camelCase고
+ * 훅은 그 훅 이름과 같다.
  *
- * **무엇이 들었는지가 갈래를 정한다.** [ADR-001](../../docs/2-design/adr/ADR-001-code-structure-and-tdd.md)이
+ * **무엇이 들었는지가 갈래를 정한다.** [ADR-001](../../docs/2-design/adr/ADR-001-fsd-layout-and-tdd-guard.md)이
  * `.tsx`를 더미 UI로 못박아서 이 저장소에서 `.tsx`는 곧 컴포넌트고, 컴포넌트는 JSX 안에서
  * `<NotBuiltYet />`으로 불린다. 훅은 `useSomething()`으로 불린다. 둘 다 부르는 이름이 있고
- * 파일 이름이 그것과 같아야 코드에서 파일로 바로 건너간다. 부르는 이름이 없는 파일만
- * kebab-case다.
+ * 파일 이름이 그것과 같아야 코드에서 파일로 바로 건너간다. 부르는 이름이 없는 파일도
+ * camelCase인데, `.ts`가 내놓는 함수와 타입이 그 꼴이라 import 줄에서 이름이 꼴을 안 바꾼다
+ * ([ADR-015](../../docs/2-design/adr/ADR-015-read-write-layers-and-fixed-segments.md)).
  *
  * **케이스가 다른 두 파일이 겹치는 것도 같이 본다.** macOS와 윈도우는 대소문자를 안 구별해서
  * `Foo.ts`와 `foo.ts`가 OS에는 한 파일, git에는 두 파일이다 — 체크아웃이 인덱스와 어긋난다.
- * kebab으로 통일하면 그 차원이 아예 없어지는데 컴포넌트를 PascalCase로 두면 다시 들어온다.
- * 그 위험을 이 검사가 대신 막는다.
+ * 확장자가 꼴을 가르는 덕에 그 짝이 구조적으로 안 생기지만(PascalCase는 `.tsx`에만, camelCase는
+ * `.ts`에만 산다) 보험으로 남긴다.
  *
  * **`src/app/`은 밖이다.** Expo Router가 파일 이름을 URL로 읽는다 — `check-in.tsx`가
  * `/check-in`이고 그 주소는 종이 QR에 실려 나간다([navigation.md](../../docs/2-design/system/navigation.md#딥링크)).
@@ -45,7 +46,7 @@ const NO_HOOK_DETECTION = ["tests/"];
 
 const EXTENSIONS = [".ts", ".tsx", ".mts", ".mjs", ".js"];
 
-export type NameStyle = "kebab" | "pascal" | "hook";
+export type NameStyle = "camel" | "pascal" | "hook";
 
 const HOOK_EXPORT =
   /^\s*export\s+(?:async\s+)?(?:function|const)\s+(use[A-Z]\w*)/m;
@@ -64,7 +65,7 @@ export function styleFor(file: string, source: string): NameStyle {
 
   const detect = !NO_HOOK_DETECTION.some((prefix) => file.startsWith(prefix));
 
-  return detect && HOOK_EXPORT.test(source) ? "hook" : "kebab";
+  return detect && HOOK_EXPORT.test(source) ? "hook" : "camel";
 }
 
 export function matchesStyle(stem: string, style: NameStyle): boolean {
@@ -76,7 +77,7 @@ export function matchesStyle(stem: string, style: NameStyle): boolean {
     return /^use[A-Z][a-zA-Z0-9]*$/.test(stem);
   }
 
-  return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(stem);
+  return /^[a-z][a-zA-Z0-9]*$/.test(stem);
 }
 
 function words(stem: string): string[] {
@@ -89,13 +90,7 @@ function words(stem: string): string[] {
 
 /** 어긋난 이름을 규약에 맞춘 꼴로 옮긴다. */
 export function toStyle(stem: string, style: NameStyle): string {
-  const parts = words(stem);
-
-  if (style === "kebab") {
-    return parts.join("-");
-  }
-
-  const pascal = parts
+  const pascal = words(stem)
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join("");
 
@@ -103,7 +98,11 @@ export function toStyle(stem: string, style: NameStyle): string {
     return pascal;
   }
 
-  return pascal.startsWith("Use") ? `use${pascal.slice(3)}` : `use${pascal}`;
+  if (style === "hook") {
+    return pascal.startsWith("Use") ? `use${pascal.slice(3)}` : `use${pascal}`;
+  }
+
+  return pascal[0].toLowerCase() + pascal.slice(1);
 }
 
 export type FileNamingViolation =
@@ -126,7 +125,7 @@ const PAIR_DIRECTORY = "__tests__";
 /**
  * 짝 테스트의 갈래는 자기 내용이 아니라 재는 대상의 갈래다. `useMyProfile.ts`의 짝은
  * `useMyProfile.test.ts`여야 하는데(`.claude/hooks/tdd-guard-unit.py`가 그 이름으로 짝을
- * 찾는다) 테스트 파일 자체는 훅을 안 내놓아 내용으로 보면 kebab으로 읽힌다 — 두 규칙이
+ * 찾는다) 테스트 파일 자체는 훅을 안 내놓아 내용으로 보면 camel로 읽힌다 — 두 규칙이
  * 서로 다른 이름을 요구하게 된다. 대상을 찾아 그쪽 갈래를 물린다.
  */
 function subjectOf(file: string, files: CodeFile[]): CodeFile | undefined {
@@ -151,7 +150,7 @@ function subjectOf(file: string, files: CodeFile[]): CodeFile | undefined {
 
 /**
  * 대상이 아직 없는 `__tests__/useX.test.ts`. TDD라 테스트가 훅보다 먼저 서는데, 그 사이
- * 이 검사가 kebab을 요구하면 writer는 kebab으로 짓고 implementer는 훅을 만들면서 다시
+ * 이 검사가 camel을 요구하면 writer는 camel로 짓고 implementer는 훅을 만들면서 다시
  * 이름을 바꿔야 했다 — 세 task에서 같은 마찰이 났다. `use` 뒤에 대문자가 오는 줄기는
  * 훅 짝으로 읽고, 실제 훅이 서면 그때 `subjectOf`가 대상의 갈래를 물린다.
  */
@@ -214,7 +213,7 @@ export function fileNamingViolations(files: CodeFile[]): FileNamingViolation[] {
 }
 
 const REASONS: Record<NameStyle, string> = {
-  kebab: "이름이 kebab-case가 아니다",
+  camel: "이름이 camelCase가 아니다",
   pascal: "`.tsx`라 컴포넌트고 그 이름은 PascalCase다",
   hook: "훅을 내놓으니 이름이 그 훅 이름과 같아야 한다",
 };
