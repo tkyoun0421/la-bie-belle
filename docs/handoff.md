@@ -6,11 +6,21 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 아홉째 묶음이다 — 타입 빼내기(AC-06나-2).** `<슬라이스>.type.ts`로 예순다섯이 간다. 범위는 `entities`와 `features`뿐이다 — `screens/` 슬라이스는 라우트 이름이라 도메인이 아니고 그 타입은 같은 슬라이스의 `.tsx` 하나가 받는 뷰 줄 꼴이며, `shared/`는 도메인이 없어 그 파일이 안 선다. 통신 하나의 인자 꼴(`SetWageInput` 여덞)은 ADR이 「함수 하나의 인자 꼴은 그 파일에 남는다」를 명시해 안 뺀다. `git mv`가 아니라 선언을 꺼내 붙이는 일이라 rename 추적이 없다.
+**다음 첫 수는 `fsd-read-write-layers`의 공용 이동 PR이다.** `shared/*`와 `entities/clock`과 `src/app/`의 타입 열둘·상수 일곱·SDK 다섯·환경값 둘·시계 둘을 옮기고 `stores` 둘을 세운다. 공용이 맨 앞인 까닭은 이동할 것이 거기 쏠려 있고 나머지 아홉 묶음이 전부 `shared/`를 당기기 때문이다.
 
-**세그먼트가 다섯에서 여덟로 열렸다.** `consts`(정해진 값)·`config`(환경이 주는 값)·`lib`(부작용을 내는 손)이 더해지고 `hooks`가 모든 층에 선다 — `screens`도 그렇다. 그래서 남은 묶음이 넷 늘었다: AC-09(`lib`) · AC-10(`consts`, 파일 스물여섯 중 스물이 함수와 동거) · AC-11(`config`, 넷) · AC-12(`screens`의 `hooks`, `.tsx` 마흔여섯에 호출 이백아흔둘) · AC-13(중복 넷) · AC-08(검사 열둘). **AC-12가 보드의 `dumb-ui-widen`이다** — 그 행이 이 묶음으로 들어왔다. 가장 커서 화면 단위로 PR을 쪼갠다.
+**계층 셋과 역할 넷이 박혔다.** presentation(`ui`) · logic(`hooks`·`services`·`stores`·`model`·`utils`·`consts`·`config`·`lib`) · db(`api`)가 계층이고, presentation · controller · service · repository가 역할이다. 재 보니 **repository와 service는 이미 섰고 controller만 없었다** — 통신 백일흔둘이 전부 저장소에 한 번만 닿고, `hooks/` 예순다섯 중 예순둘이 Query·Mutation이다. `ui`가 `hooks`를 당기는 자리가 **셋**뿐인 것이 controller가 없다는 증거다.
 
-**열지 않기로 한 것 셋도 적어 둔다** — `ui`를 바탕 조각·조립물로 가르기(`shared/ui` 51개가 평평하다), `mapper`로 DB 행 누출 끊기(`api`가 선언한 `*Row` 열다섯 중 일곱이 화면까지 닿는다), 문안을 한 자리로(`.tsx` 안 한국어 508개/76파일). 셋 다 실물이 있는 마찰이고 여덞을 선 뒤에 다시 잰다.
+**세그먼트가 여덞에서 열로 열렸다.** `services`(Query·Mutation)와 `stores`(zustand·Context)가 더해졌다. 접미사는 열다섯(`.dto.ts`·`.mapper.ts`·`.reducer.ts`·`.context.ts`가 더해졌다), 검사는 열일곱이다.
+
+**남은 PR의 가름은 도메인 축이다.** 묶음 열(공용·근무표·급여·구성원·근태·알림·리허설·통계·인증·QR)이고 겹이 둘이다 — **이동 겹**(타입·DTO·매퍼·`lib`·`consts`·`config`·`services`·`stores`·중복)은 import 경로를 바꿔 **직렬**이고, **안쪽 겹**(controller 세우기, 큰 파일 쪼개기)은 그 화면 안에서만 보여 **병렬**이다. 도메인이 다른 도메인을 당기는 자리가 백쉰둘이라 이동 PR 둘이 같이 떠 있으면 서로의 치환을 밟는다. 이동 순서는 공용 → 근무표 → 급여 → 구성원 → 근태 → 알림 → 리허설 → 통계 → 인증 → QR이고, 안쪽 겹은 그 뒤 worktree 열을 떼어 같이 돈다.
+
+**분량**: `services` 이동 124(짝 테스트 포함, 근무표 60) · controller 화면 44 · DTO 22 · 매퍼 10 · 타입 65 · 상수 26파일 · 에러 판정 15건.
+
+**경계가 지금 깨진 자리**: `ui` → `api` 26 · `ui` → 클라이언트 25 · `ui` → `services` 96 · `ui` → `model` 함수 91 · `model` → `api` 6 · `api` → `model` 2 · `utils` → `api` 6.
+
+**`.tsx`의 `useState`는 UI를 담당하는 로직일 때만 남는다.** 측정한 너비·포커스·시트 열림은 되고, 통신 중·실패·서버에서 온 값은 controller로 내려간다 — 뒤 넷은 대개 React Query가 이미 준다. `shared/ui`에서 상태를 든 여섯은 전부 앞쪽이라 안 건드린다.
+
+**열지 않기로 한 셋 중 둘이 열렸다.** `mapper`는 `.dto.ts`와 함께 섰고, `ui` 가르기는 세그먼트가 아니라 **층이 갈랐다** — `shared/ui`(도메인을 모른다) · `entities/*/ui`(도메인 타입을 받는다, 지금 0) · `features/*/ui`(use case를 실행한다) · `screens/*/ui`(한 화면 전용) 넷이다. 남은 하나는 문안이고 `consts/<도메인>.const.ts`가 받기로 했다 — 지금 마흔한 자리에 흩어져 있다(`utils` 16 · `model` 12 · `ui` 10 · `api` 2 · `hooks` 1).
 
 **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
 
