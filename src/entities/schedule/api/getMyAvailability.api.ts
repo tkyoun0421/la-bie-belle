@@ -1,4 +1,5 @@
 import type { DB } from "@/shared/api/database";
+import { nextMonthStart } from "@/shared/utils/monthRange";
 
 /**
  * 내가 그 달에 낸 근무 신청 날짜들이다. 신청은 날짜에 딸리고 `days`가 아니라서
@@ -25,16 +26,4 @@ export async function getMyAvailability(
   }
 
   return (data ?? []).map((row) => row.work_date);
-}
-
-/** `"2026-12"`의 다음은 `"2027-01-01"`이다. */
-function nextMonthStart(month: string): string {
-  const [year, index] = month.split("-").map(Number);
-  const rolls = index === 12;
-
-  return [
-    String(rolls ? year + 1 : year).padStart(4, "0"),
-    String(rolls ? 1 : index + 1).padStart(2, "0"),
-    "01",
-  ].join("-");
 }

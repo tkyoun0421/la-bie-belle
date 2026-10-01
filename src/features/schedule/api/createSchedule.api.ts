@@ -1,6 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-import { monthStart } from "@/entities/schedule/api/getMonthSchedule.api";
+import { monthStart } from "@/shared/utils/monthRange";
 
 /**
  * 그 달 근무표를 만들고 스케줄 신청 마감일을 같이 정한다. 마감일 없이 만드는 길이 없어
