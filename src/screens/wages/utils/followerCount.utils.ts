@@ -1,7 +1,7 @@
+import { type MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
 import {
   latestWageRate,
   wageRatesOf,
-  type WageRateRow,
 } from "@/screens/wages/model/wageRows.policy";
 
 /**
@@ -16,11 +16,9 @@ import {
  * 세는 대상은 화면이 세운 사람들이다. 퇴사한 사람은 목록에 없어 여기도 안 든다(PAY-020).
  */
 
-export type { WageRateRow };
-
 export function countFollowers(
   profileIds: readonly string[],
-  wageRates: readonly WageRateRow[],
+  wageRates: readonly MemberWageRateRow[],
 ): number {
   return profileIds.filter(
     (profileId) =>

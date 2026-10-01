@@ -24,11 +24,14 @@ export type ForwardBound = {
   leftAt: string | null;
 };
 
-export function canGoBack(period: Period, approvedAt: string): boolean {
+export function canGoToPreviousPeriod(
+  period: Period,
+  approvedAt: string,
+): boolean {
   return periodAnchor(period) > anchorOfDate(approvedAt, period.unit);
 }
 
-export function canGoForward(
+export function canGoToNextPeriod(
   period: Period,
   { today, leftAt }: ForwardBound,
 ): boolean {

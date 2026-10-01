@@ -50,7 +50,7 @@ sources:
 | --- | --- | --- | --- | --- | --- | --- |
 | 공용 ✅ | `shared/*` · `entities/clock` · `src/app/` | 타입 12 · 상수 7 · SDK 5 · 환경값 2 · 시계 2 | — | — | 화면 12 | `_catalog` 624줄 · `DragAndDrop` export 다섯 · `kstDate` export 여섯 |
 | 근무표 ✅ | schedule · availability · hall · workRequest + features 일곱 + screens 셋 | 타입 16 · 상수 2 | DTO 파일 4 · 매퍼 1 | 60 | 화면 10 | `DayDetail` 969줄에 훅 서른여덟 · `ScheduleAdminScreen` 736줄 |
-| 급여 | payroll + payrollCompute · wageAdmin · adjustment · holiday + screens 둘 | 타입 15 · 상수 7 | DTO 6 · 매퍼 1 | 16 | 화면 2 | `payrollDays.policy` 339줄 · `period.policy` export 아홉 |
+| 급여 ✅ | payroll + payrollCompute · wageAdmin · adjustment · holiday + screens 둘 | 타입 8 · 상수 7 | DTO 파일 1 · 매퍼 0 | 16 | 화면 2 | `payrollDays.policy` 339줄 · `period.policy` export 아홉 |
 | 구성원 | member · profile + memberAdmin · profileEdit · qualificationGrant + screens 여섯 | 타입 8 · 상수 8 | DTO 5 | 20 | 화면 10 | `PendingScreen` 689줄 · `ProfileScreen` 506줄 · `MembersScreen` 446줄 |
 | 근태 | attendance · excuse + attendanceCheckin · excuse + approvals | 타입 8 · 상수 9 | DTO 3 · 매퍼 1 | 2 | 화면 2 | `ApprovalsScreen` 235줄 |
 | 알림 | notification + pushSwitch · notificationRead + notifications | 타입 2 · 상수 11 · SDK 1 · 환경값 1 · 시계 1 | DTO 2 · 매퍼 2 | 10 | 화면 1 | Edge Function의 복사 경로가 여기 걸린다 |
@@ -59,7 +59,7 @@ sources:
 | 인증 | session + auth + retry | 타입 2 · 상수 1 · SDK 2 · 환경값 1 | — | — | 화면 1 | `signOut`·`handleAuthCallback`이 `lib`을 받는다 |
 | QR | qr + qrAdmin + qr | 타입 1 · 상수 2 | — | 4 | 화면 1 | `QrScreen` 204줄 |
 
-**DTO 스물둘은 여섯 묶음에만 있다** — 공용·통계·인증·QR은 통신이 DB 행을 그대로 내는 자리가 없다. 매퍼 열은 `.returns<>`로 생 행을 내보내면서 꼴을 안 바꾸는 통신이고, 이미 조립하는 다섯(`getPayrollMonth` 같은)은 그 안에서 매퍼를 꺼내는 일만 남는다. `ExcuseStatusRow`는 근태와 급여 두 자리에 각자 선언돼 있어 **중복 축이기도 하다** — 뒤에 오는 급여가 접는다.
+**DTO 스물둘은 여섯 묶음에만 있다** — 공용·통계·인증·QR은 통신이 DB 행을 그대로 내는 자리가 없다. 매퍼 열은 `.returns<>`로 생 행을 내보내면서 꼴을 안 바꾸는 통신이고, 이미 조립하는 다섯(`getPayrollMonth` 같은)은 그 안에서 매퍼를 꺼내는 일만 남는다. `ExcuseStatusRow`는 근태와 급여 두 자리에 각자 선언돼 있는데 **접지 않는다** — `entities`끼리 import가 `no-cross-slice-import`에 걸리고 올릴 자리도 없다(AC-13의 판정).
 
 **`services` 백스물넷이 가장 큰 한 덩이다.** 짝 테스트를 같이 옮긴 수고, 근무표 예순이 그중 절반이다. `stores` 둘은 공용이 가져간다. **controller는 화면 마흔넷**이고 그게 안쪽 겹 전부다.
 
@@ -267,7 +267,7 @@ sources:
   - `features/stats/hooks/useAttendanceMonths.ts`는 `services/useAttendanceMonthsQuery.ts`로 — 쿼리 둘을 조립하는 service고 접미사를 못 받고 있었다
   - `features/auth/hooks/wireAutoRefresh.ts`는 `lib/wireAutoRefresh.lib.ts`로 — 훅이 아니고 세션 자동 갱신을 켜는 부작용이다
 - 관찰 결과: `services/` 밖에 `useQuery`·`useMutation` 호출이 없다. `hooks/`에는 controller와 UI 훅만 남는다. 셋이 초록이다
-- 묶음별로 쪼갠다 — 근무표 60 ✅ · 구성원 20 · 급여 16 · 리허설 12 · 알림 10 · QR 4 · 근태 2다
+- 묶음별로 쪼갠다 — 근무표 60 ✅ · 구성원 20 · 급여 16 ✅ · 리허설 12 · 알림 10 · QR 4 · 근태 2다
 - 돌면서 나온 것 — **근무표의 `hooks/` 열하나가 통째로 비었다.** Query·Mutation 밖의 파일이 하나도 없어 폴더를 `git mv` 하나로 옮겼다. controller가 그 자리에 선 뒤 같은 이름 폴더에 역할 둘이 섞이지 않는다는 뜻이고, AC-12가 `hooks/`를 새로 만드는 자리가 된다
 - 돌면서 나온 것 — **주석의 「구현 대상」 경로 스물여섯이 또 뒤처졌다.** [관찰 050](../../observations/050-comment-paths-checked-by-nothing.md)이 든 자리고 이번에도 import 치환이 안 집었다. 옮긴 뒤 실재하지 않는 `src/` 경로를 전수로 뽑아 0으로 맞췄다 — 세그먼트를 옮기는 PR마다 이 걸음이 든다
 
@@ -293,6 +293,9 @@ sources:
 - 관찰 결과: 같은 이름의 export 함수가 두 자리에 없다. 셋이 초록이다
 - 묶음 6가가 `monthStart` 사본 넷을 접은 것과 같은 일이다
 - 넷이 묶음을 가로지른다 — `canGoBack`·`canGoForward`는 급여와 공용, `dayMinutes`는 급여와 통계, `attendanceSummaryLine`은 근무표와 통계다. **뒤에 오는 쪽의 이동 PR이 접는다** — 둘 다 자리를 잡은 뒤에야 어느 쪽으로 접을지 보인다
+- 돌면서 나온 것 — **`canGoBack`·`canGoForward`는 몸이 달라 이름을 갈랐다.** 달을 견주는 쪽은 첫 근무표 달과 이번 달을 보고, 기간을 견주는 쪽은 `Period`를 받아 승인일과 퇴사일을 본다 — 같은 질문의 두 답이 아니라 다른 질문이다. 축을 이름에 넣어 `canGoToPreviousMonth`·`canGoToNextMonth`와 `canGoToPreviousPeriod`·`canGoToNextPeriod`가 됐다
+- 돌면서 나온 것 — **plan이 안 든 중복이 급여 안에 또 있었다.** `WageRateRow`(`getPayrollMonth`)와 `MemberWageRateRow`(`getWageRates`)가 몸이 같다. 같은 슬라이스라 바로 접었고 뒤의 이름을 남겼다 — `DefaultWageRateRow`와 짝이 서서 「구성원 것」과 「기본값」이 이름으로 갈린다. **중복을 찾는 축이 함수 이름뿐이었던 것이 까닭이다** — 같은 이름 export 함수는 세어 뒀는데 타입은 안 셌다
+- 돌면서 나온 것 — **`ExcuseStatusRow`는 몸이 같아도 못 접는다.** `entities/attendance`와 `entities/payroll`에 각자 있고 다섯 열이 글자까지 같은데, 접으려면 `entities`끼리 import가 생겨 `no-cross-slice-import`에 걸린다. 올릴 자리도 없다 — `shared`에 두면 「`shared`는 도메인을 모른다」가 깨지고, `features`는 통신 계약을 소유할 층이 아니다. **사본 둘이 그 규칙의 값이다**
 
 ### AC-08 — 검사 열일곱이 선다
 

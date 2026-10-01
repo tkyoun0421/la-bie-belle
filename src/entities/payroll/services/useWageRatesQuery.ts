@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getWageRates,
-  type WageRates,
-} from "@/entities/payroll/api/getWageRates.api";
+import { getWageRates } from "@/entities/payroll/api/getWageRates.api";
+import { type WageRates } from "@/entities/payroll/api/payroll.dto";
 
 /**
  * 시급 화면이 읽는 하나다. 목록도 사람 시트의 이력도 이 한 응답에서 갈려 나오므로 시트를

@@ -20,15 +20,15 @@ import { kstDateOf } from "@/shared/utils/kstDate";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
-import { usePayrollMonthsQuery } from "@/entities/payroll/hooks/usePayrollMonthsQuery";
+import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
 import { useScheduleMonthsQuery } from "@/entities/schedule/services/useScheduleMonthsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { payrollViewDays } from "@/features/payrollCompute/model/payrollDays.policy";
 import {
-  canGoBack,
-  canGoForward,
+  canGoToPreviousPeriod,
+  canGoToNextPeriod,
 } from "@/screens/payroll/model/boundary.policy";
 import {
   isInPeriod,
@@ -209,7 +209,8 @@ export function PayrollScreen() {
           />
 
           <View className="mt-5 flex-row items-center justify-center gap-2 py-2">
-            {approvedDate !== null && canGoBack(period, approvedDate) ? (
+            {approvedDate !== null &&
+            canGoToPreviousPeriod(period, approvedDate) ? (
               <Button
                 variant="ghost"
                 size="compact"
@@ -227,7 +228,7 @@ export function PayrollScreen() {
               {periodLabel(period)}
             </Text>
 
-            {canGoForward(period, { today, leftAt: leftDate }) ? (
+            {canGoToNextPeriod(period, { today, leftAt: leftDate }) ? (
               <Button
                 variant="ghost"
                 size="compact"

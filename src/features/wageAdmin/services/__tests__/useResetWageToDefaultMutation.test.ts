@@ -18,7 +18,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
 const { useResetWageToDefaultMutation } =
-  await import("@/features/wageAdmin/hooks/useResetWageToDefaultMutation");
+  await import("@/features/wageAdmin/services/useResetWageToDefaultMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

@@ -1,4 +1,4 @@
-import type { MemberWageRateRow } from "@/entities/payroll/api/getWageRates.api";
+import type { MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
 
 /**
  * 시급 목록의 줄을 세운다. 받은 사람 순서를 그대로 둔다 — 이름 가나다순은 목록을 읽는
@@ -15,8 +15,6 @@ import type { MemberWageRateRow } from "@/entities/payroll/api/getWageRates.api"
  * 내면 정해진 값처럼 읽힌다.
  */
 
-export type WageRateRow = MemberWageRateRow;
-
 export type WageRowMember = {
   profileId: string;
   displayName: string;
@@ -28,9 +26,9 @@ export type WageRow = WageRowMember & {
 };
 
 export function latestWageRate(
-  rows: readonly WageRateRow[],
-): WageRateRow | null {
-  return rows.reduce<WageRateRow | null>(
+  rows: readonly MemberWageRateRow[],
+): MemberWageRateRow | null {
+  return rows.reduce<MemberWageRateRow | null>(
     (kept, row) =>
       kept === null || row.effective_date > kept.effective_date ? row : kept,
     null,
@@ -38,15 +36,15 @@ export function latestWageRate(
 }
 
 export function wageRatesOf(
-  rows: readonly WageRateRow[],
+  rows: readonly MemberWageRateRow[],
   profileId: string,
-): WageRateRow[] {
+): MemberWageRateRow[] {
   return rows.filter((row) => row.profile_id === profileId);
 }
 
 export function buildWageRows(
   members: readonly WageRowMember[],
-  wageRates: readonly WageRateRow[],
+  wageRates: readonly MemberWageRateRow[],
 ): WageRow[] {
   return members.map((member) => ({
     ...member,

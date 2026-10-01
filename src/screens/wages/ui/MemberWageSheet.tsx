@@ -4,18 +4,20 @@ import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
 import { spellWon } from "@/shared/utils/spellNumber";
+import type { MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
+import {
+  WAGE_CAP_HINT,
+  WAGE_SAVE_FAILED_SUB,
+  WAGE_SAVE_FAILED_TITLE,
+  WAGE_TODAY_NOTE,
+} from "@/screens/wages/consts/wages.const";
 import { canResetToDefault } from "@/screens/wages/model/canResetToDefault.policy";
 import {
   atWageCap,
   canSaveWage,
   formatAmountDisplay,
   nextAmountDigits,
-  WAGE_CAP_HINT,
-  WAGE_SAVE_FAILED_SUB,
-  WAGE_SAVE_FAILED_TITLE,
-  WAGE_TODAY_NOTE,
 } from "@/screens/wages/model/wageAmount.policy";
-import type { WageRateRow } from "@/screens/wages/model/wageRows.policy";
 import { WAGE_AMOUNT_INPUT_TEST_ID } from "@/screens/wages/ui/DefaultWageSheet";
 import {
   buildWageHistory,
@@ -41,7 +43,7 @@ const HISTORY_TITLE = "이력";
 export type MemberWageSheetProps = {
   name: string;
   photoUrl: string | null;
-  rates: readonly WageRateRow[];
+  rates: readonly MemberWageRateRow[];
   currentAmount: number | null;
   hasDefaultWage: boolean;
   digits: string;

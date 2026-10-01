@@ -2,10 +2,8 @@ import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { combineMonths, type MonthsResult } from "@/shared/api/monthsQuery";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getPayrollMonth,
-  type PayrollMonth,
-} from "@/entities/payroll/api/getPayrollMonth.api";
+import { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import { type PayrollMonth } from "@/entities/payroll/api/payroll.dto";
 
 /**
  * 급여 탭 그래프가 읽는 달치 창이다. `usePayrollMonthsQuery`가 이미 달치를 읽지만 그쪽은

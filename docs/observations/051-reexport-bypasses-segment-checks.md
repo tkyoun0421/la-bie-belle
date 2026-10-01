@@ -29,6 +29,12 @@ export { kstDateOf, kstToday, spellDate } from "@/shared/utils/kstDate";
 
 재수출 둘에서 `kstToday`를 떼고 화면 둘이 `@/shared/lib/kstToday.lib`에서 직접 당기게 했다. 손으로 찾았다 — 옮길 파일의 당김을 세다가 걸렸고, 안 옮겼으면 안 봤다.
 
+## 뒤에 더 나왔다
+
+급여 묶음에서 같은 꼴을 둘 더 걷었다. `screens/wages`의 `canResetToDefault.policy.ts`와 `followerCount.utils.ts`가 `export type { WageRateRow };`로 **DTO를 재수출**하고 있었고, 그 별칭을 테스트 둘이 당겼다. 화면 쪽에서 보면 `model`에서 받은 타입인데 실물은 DB 열 이름이다 — 「`.dto.ts`를 `api/` 밖에서 import 금지」가 서도 이 길은 안 막힌다. 떼어내고 테스트가 `.dto.ts`에서 직접 받게 했다.
+
+**남은 재수출은 일곱이고 전부 순수 중계다.** `POSITION_ORDER`·`Position`·`kstDateOf`·`lastDateOfMonth`·`shiftMonth`·`spellMonth`·`spellDate`를 `screens`의 `model`·`utils` 여섯이 중계한다. 부작용도 DB 열 이름도 아니라 해롭지 않지만, 아래 「`model`·`utils`·`consts`는 재수출 금지」를 그대로 켜면 이 일곱도 걷어야 한다 — 켤 때 그 수가 비용이다.
+
 ## 기계가 대신할 수 있나
 
 할 수 있다. 세그먼트 규칙마다 import 축 옆에 `ExportNamedDeclaration`에 `source`가 있는 꼴을 같은 판정에 물리면 된다 — ESLint가 그 노드를 그대로 준다.

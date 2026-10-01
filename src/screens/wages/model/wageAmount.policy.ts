@@ -1,3 +1,4 @@
+import { WAGE_MAX } from "@/screens/wages/consts/wages.const";
 /**
  * 두 시트가 같이 쓰는 금액 규칙이다. 상한도 하한도 저장 가능 여부도 한 조각이 든다 —
  * 시트마다 따로 두면 한쪽만 고쳐지고, 두 시트가 같은 칸에 같은 값을 받는다
@@ -13,19 +14,6 @@
  * 값은 자릿수 문자열로 든다. 화면이 보여주는 것은 쉼표가 박힌 꼴이지만 판정과 저장은 숫자
  * 그대로라, 둘을 갈라야 「치는 동안 쉼표가 따라 들어간다」가 값의 의미를 안 흔든다.
  */
-
-export const WAGE_MAX = 100000;
-
-/** 「두 시트 다」라고 적힌 문안 셋이 이 조각의 것이다(plan payroll-wages AC-04). */
-export const WAGE_CAP_HINT = "여기까지만 쓸 수 있어요";
-
-export const WAGE_SAVE_FAILED_TITLE = "시급을 저장하지 못했어요";
-
-export const WAGE_SAVE_FAILED_SUB =
-  "넣은 값은 그대로 있어요 · 다시 저장해볼게요";
-
-/** 적용은 언제나 오늘부터고 날짜 고르개가 없다(PAY-008) — 두 시트가 같은 한 줄을 쓴다. */
-export const WAGE_TODAY_NOTE = "오늘부터 적용돼요";
 
 const NOT_DIGIT = /\D/g;
 

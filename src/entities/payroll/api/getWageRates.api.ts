@@ -1,4 +1,9 @@
 import type { DB } from "@/shared/api/database";
+import type {
+  DefaultWageRateRow,
+  MemberWageRateRow,
+  WageRates,
+} from "@/entities/payroll/api/payroll.dto";
 
 /**
  * 시급 화면이 한 번에 읽는 둘이다 — 전원의 `wage_rates` 이력 전부와 지금 서 있는 기본 시급.
@@ -14,23 +19,6 @@ import type { DB } from "@/shared/api/database";
  * **관리자인지를 코드가 안 나눈다.** RLS가 `wage_rates`를 「본인 행과 관리자 전원」으로,
  * `default_wage_rates`를 관리자로 이미 갈랐다.
  */
-
-export type MemberWageRateRow = {
-  profile_id: string;
-  effective_date: string;
-  amount: number;
-  follows_default: boolean;
-};
-
-export type DefaultWageRateRow = {
-  effective_date: string;
-  amount: number;
-};
-
-export type WageRates = {
-  wageRates: MemberWageRateRow[];
-  defaultWageRate: DefaultWageRateRow | null;
-};
 
 const MEMBER_WAGE_COLUMNS = [
   "profile_id",

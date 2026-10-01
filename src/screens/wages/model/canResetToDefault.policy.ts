@@ -1,7 +1,5 @@
-import {
-  latestWageRate,
-  type WageRateRow,
-} from "@/screens/wages/model/wageRows.policy";
+import { type MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
+import { latestWageRate } from "@/screens/wages/model/wageRows.policy";
 
 /**
  * 사람 시트에 「기본 시급으로 되돌리기」 줄을 그릴지다. 받는 것은 그 사람의 행만이다.
@@ -13,10 +11,8 @@ import {
  * 함수가 `no_default_wage`로 거절한다 — 화면이 먼저 안 그린다.
  */
 
-export type { WageRateRow };
-
 export function canResetToDefault(
-  wageRates: readonly WageRateRow[],
+  wageRates: readonly MemberWageRateRow[],
   hasDefaultWage: boolean,
 ): boolean {
   return hasDefaultWage && latestWageRate(wageRates)?.follows_default === false;

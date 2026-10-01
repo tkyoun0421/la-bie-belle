@@ -1,6 +1,6 @@
+import { type MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
 import {
   buildWageRows,
-  type WageRateRow,
   type WageRowMember,
 } from "@/screens/wages/model/wageRows.policy";
 
@@ -12,7 +12,7 @@ const MEMBERS: WageRowMember[] = [
 
 describe("buildWageRows — 이미 이름순인 입력의 순서를 안 흩는다", () => {
   it("개별로 정한 사람이 중간에 있어도 이름순 그대로 나온다", () => {
-    const wageRates: WageRateRow[] = [
+    const wageRates: MemberWageRateRow[] = [
       {
         profile_id: "profile-1",
         effective_date: "2026-01-01",
@@ -54,7 +54,7 @@ describe("buildWageRows — 시급 이력이 빈 사람은 금액 자리가 null
 
 describe("buildWageRows — 가장 최근 wage_rates 행의 금액을 쓴다", () => {
   it("이력이 여러 줄이면 effective_date가 가장 늦은 행의 금액을 쓴다", () => {
-    const wageRates: WageRateRow[] = [
+    const wageRates: MemberWageRateRow[] = [
       {
         profile_id: "profile-2",
         effective_date: "2026-03-01",

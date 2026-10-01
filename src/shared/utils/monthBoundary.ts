@@ -17,10 +17,13 @@ import { monthOf } from "@/shared/utils/kstDate";
  * (lint 규칙 3) — 그래서 shared에 산다.
  */
 
-export function canGoBack(month: string, firstScheduleMonth: string): boolean {
+export function canGoToPreviousMonth(
+  month: string,
+  firstScheduleMonth: string,
+): boolean {
   return month > monthOf(firstScheduleMonth);
 }
 
-export function canGoForward(month: string, today: string): boolean {
+export function canGoToNextMonth(month: string, today: string): boolean {
   return month < monthOf(today);
 }

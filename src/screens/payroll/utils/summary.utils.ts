@@ -1,10 +1,10 @@
-import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { spellWon } from "@/shared/utils/spellNumber";
 import {
   getAttendanceStatus,
   type AttendanceStatusInput,
 } from "@/entities/attendance/model/attendanceStatus.policy";
 import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays.policy";
+import { NO_AMOUNT } from "@/screens/payroll/consts/payroll.const";
 
 /**
  * 금액 한 줄과 누적 두 줄이다(`docs/2-design/modules/payroll/screens/payroll.md`의 「금액」·
@@ -25,9 +25,6 @@ import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays
  * 배정된 시간대로 세어 근무 회수에 이미 들어 있다. 시급이 아직 없는 날은 금액에서는 빠지고
  * 회수·시간에는 든다 — 나온 날은 나온 날이다.
  */
-
-/** 금액 자리가 비는 꼴이다. 내역 줄의 결근·시급 미정도 같은 글자를 쓴다. */
-export const NO_AMOUNT = NO_VALUE;
 
 const MINUTES_PER_HOUR = 60;
 
