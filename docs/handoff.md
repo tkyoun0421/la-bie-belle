@@ -6,7 +6,9 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 공용 이동 PR이다.** `shared/*`와 `entities/clock`과 `src/app/`의 타입 열둘·상수 일곱·SDK 다섯·환경값 둘·시계 둘을 옮기고 `stores` 둘을 세운다. 공용이 맨 앞인 까닭은 이동할 것이 거기 쏠려 있고 나머지 아홉 묶음이 전부 `shared/`를 당기기 때문이다.
+**다음 첫 수는 `fsd-read-write-layers`의 근무표 이동 PR이다.** `entities` 넷(schedule·availability·hall·workRequest)과 `features` 일곱과 `screens` 셋이 품는 타입 열다섯·상수 둘을 옮기고, DTO 넷과 매퍼 넷을 세우고, `hooks/` 서른을 `services/`로 옮긴다(짝 테스트까지 예순 — 묶음 중 가장 큰 덩이다). 안쪽 겹(controller·큰 파일 쪼개기)은 이동 열이 다 끝난 뒤다.
+
+**공용 묶음이 끝났다(#493).** `shared/`와 `entities/clock`에 `consts`·`config`·`lib`·`stores`가 섰다 — 파일 일곱이 제 성격의 폴더로 가고, 한 파일에 타입과 상수와 판정과 저장을 같이 들고 있던 다섯(`api/errors`·`utils/theme`·`utils/fontLoading`·`utils/kstDate`·`clock.store`)이 갈렸다. `shared/hooks`가 비어 사라졌다. 돌면서 **재수출이 세그먼트 검사를 우회한다**는 것이 드러났다([관찰 051](observations/051-reexport-bypasses-segment-checks.md)) — `model` 둘이 `kstToday`를 재수출해 화면이 `model`을 거쳐 바깥을 읽고 있었고, `export { ... } from`은 import 축의 어느 검사도 안 본다. AC-08이 규칙을 세울 때 같이 물린다.
 
 **계층 셋과 역할 넷이 박혔다.** presentation(`ui`) · logic(`hooks`·`services`·`stores`·`model`·`utils`·`consts`·`config`·`lib`) · db(`api`)가 계층이고, presentation · controller · service · repository가 역할이다. 재 보니 **repository와 service는 이미 섰고 controller만 없었다** — 통신 백일흔둘이 전부 저장소에 한 번만 닿고, `hooks/` 예순다섯 중 예순둘이 Query·Mutation이다. `ui`가 `hooks`를 당기는 자리가 **셋**뿐인 것이 controller가 없다는 증거다.
 
