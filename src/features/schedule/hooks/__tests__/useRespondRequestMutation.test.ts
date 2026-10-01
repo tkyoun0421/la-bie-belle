@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useRespondRequest.ts
+// 구현 대상: src/features/schedule/hooks/useRespondRequestMutation.ts
 //
 // 근무자가 근무 요청에 답한다(`respondRequest.ts`의
 // `respondRequest(client, requestId, answer)` — answer는 'accept'·'decline'). 성공하면
@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const respondRequestMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/respondRequest.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/respondRequest.api", () => ({
   respondRequest: respondRequestMock,
 }));
 
@@ -20,8 +20,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useRespondRequest } =
-  await import("@/features/schedule/model/useRespondRequest");
+const { useRespondRequestMutation } =
+  await import("@/features/schedule/hooks/useRespondRequestMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -50,14 +50,17 @@ beforeEach(() => {
   respondRequestMock.mockReset();
 });
 
-describe("useRespondRequest — respond_request를 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useRespondRequestMutation — respond_request를 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("requestId와 answer를 그대로 DAL에 넘긴다", async () => {
     respondRequestMock.mockResolvedValue("assignment-1");
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRespondRequest(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRespondRequestMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ requestId: REQUEST_ID, answer: "accept" });
@@ -76,9 +79,12 @@ describe("useRespondRequest — respond_request를 부르고 schedule·payroll·
     respondRequestMock.mockResolvedValue(null);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRespondRequest(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRespondRequestMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ requestId: REQUEST_ID, answer: "decline" });
@@ -98,9 +104,12 @@ describe("useRespondRequest — respond_request를 부르고 schedule·payroll·
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useRespondRequest(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRespondRequestMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ requestId: REQUEST_ID, answer: "accept" });
@@ -123,9 +132,12 @@ describe("useRespondRequest — respond_request를 부르고 schedule·payroll·
     respondRequestMock.mockRejectedValue(new DomainError("slot_full"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRespondRequest(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRespondRequestMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ requestId: REQUEST_ID, answer: "accept" });
@@ -148,9 +160,12 @@ describe("useRespondRequest — respond_request를 부르고 schedule·payroll·
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRespondRequest(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRespondRequestMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ requestId: REQUEST_ID, answer: "accept" });

@@ -13,13 +13,13 @@
 // getMonthSchedule 열둘에 getMonthAttendance(['attendance', 'YYYY-MM']) 열둘이
 // 더 붙는다 — 그달 배정·날 시각이 attendanceInputs.ts의 재료라서다.
 //
-// **결과가 달별로 구분돼 돌아온다.** useScheduleMonths·usePayrollMonths는
+// **결과가 달별로 구분돼 돌아온다.** useScheduleMonthsQuery·usePayrollMonths는
 // flatMap으로 여러 달의 행을 하나의 배열로 뭉갠다. 이 훅은 그러면 안 된다 —
 // 추이 그래프가 「몇 월이 비었나」를 알아야 해서, data는 달 수만큼의 길이고
 // 항목마다 그 달의 month가 붙는다.
 //
 // usePayrollMonthsByMonth(client, months) — 급여 탭 그래프가 쓰는 달치
-// 창이다. features/payroll/model/usePayrollMonths.ts가 이미 달치를 읽지만
+// 창이다. features/payroll/model/usePayrollMonthsQuery.ts가 이미 달치를 읽지만
 // mergeMonths가 flatMap으로 여러 달을 하나로 뭉갠다 — 추이 그래프는 달마다
 // 구분된 값이 필요해 그대로 못 쓴다(위 useWorkMonths·useAttendanceMonths와
 // 같은 이유). features/stats가 features/payroll을 부르면 lint 규칙 3에

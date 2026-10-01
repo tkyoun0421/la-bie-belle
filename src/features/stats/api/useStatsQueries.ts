@@ -17,7 +17,7 @@ import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
  * 오고, 그쪽 무효화가 이 화면에도 그대로 걸린다(`docs/2-design/system/runtime.md`의 「읽기
  * 범위」).
  *
- * **달을 뭉개지 않는다.** `useScheduleMonths`·`usePayrollMonths`는 여러 달의 행을 한 배열로
+ * **달을 뭉개지 않는다.** `useScheduleMonthsQuery`·`usePayrollMonthsQuery`는 여러 달의 행을 한 배열로
  * 이어 붙이는데, 추이 그래프는 「몇 월이 비었나」를 알아야 해서 달마다 한 칸으로 온다 —
  * 값이 없는 달과 0인 달이 여기서 갈린다.
  *
@@ -105,11 +105,11 @@ export function useAttendanceMonths(
 }
 
 /**
- * 급여 탭 그래프가 읽는 달치 창이다. `features/payroll`의 `usePayrollMonths`가 이미 달치를
+ * 급여 탭 그래프가 읽는 달치 창이다. `features/payroll`의 `usePayrollMonthsQuery`가 이미 달치를
  * 읽지만 그쪽은 여러 달을 한 배열로 이어 붙여서 「몇 월이 비었나」가 사라진다 — 위 둘과 같은
  * 이유로 달마다 한 칸이다.
  *
- * **키가 `usePayrollMonths`의 것과 같다.** `queryKeys.payroll.month`를 그대로 불러서 급여 화면이 읽어둔
+ * **키가 `usePayrollMonthsQuery`의 것과 같다.** `queryKeys.payroll.month`를 그대로 불러서 급여 화면이 읽어둔
  * 달은 캐시에서 오고, 조정이나 시급을 고쳐 `['payroll']`이 낡으면 이 화면도 같이 따라간다.
  *
  * DAL을 슬라이스가 직접 부르는 것은 `features/stats`가 `features/payroll`을 못 불러서다

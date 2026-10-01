@@ -118,7 +118,7 @@ sources:
 | `src/features/notification/model/destination.ts` | 종류마다의 목적지 | AC-05 |
 | `src/features/notification/model/useNotifications.ts` | `useInfiniteQuery`와 `maxPages` 3 | AC-03 |
 | `src/features/notification/model/useUnreadCount.ts` | 종의 점이 보는 수 | AC-03·AC-06 |
-| `src/features/notification/model/useMarkNotificationsRead.ts` | [`notification-data`](notification-data.md)가 낸 [`mark-notifications-read.ts`](../../../src/entities/notification/api/markNotificationsRead.api.ts) 호출과 무효화 둘 | AC-05 |
+| `src/features/notification/model/useMarkNotificationsRead.ts` | [`notification-data`](notification-data.md)가 낸 [`mark-notifications-read.ts`](../../../src/features/notification/api/markNotificationsRead.api.ts) 호출과 무효화 둘 | AC-05 |
 | `src/screens/notifications/model/notification-rows.ts` | 날짜 머리로 끊은 줄 목록, 일곱 상태, 안 읽은 관리자 공지 id 거르기 | AC-04·AC-05 |
 | `src/screens/notifications/model/press-notification.ts` | 줄을 누를 때 — 이동이 먼저고 읽음이 뒤따른다 | AC-05 |
 | `src/screens/notifications/ui/NotificationsScreen.tsx` | 화면 조립 | AC-04 |

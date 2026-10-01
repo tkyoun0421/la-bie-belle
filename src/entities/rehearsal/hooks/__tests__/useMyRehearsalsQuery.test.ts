@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/rehearsal/model/useMyRehearsals.ts
+// 구현 대상: src/entities/rehearsal/hooks/useMyRehearsalsQuery.ts
 //
 // 본인 리허설이다(design.md 「소유 데이터」) — 키는 ['rehearsal', 'YYYY-MM']. RLS가 이미
 // 본인 행으로 좁혀 별도 조건이 없다.
@@ -19,8 +19,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useMyRehearsals } =
-  await import("@/features/rehearsal/model/useMyRehearsals");
+const { useMyRehearsalsQuery } =
+  await import("@/entities/rehearsal/hooks/useMyRehearsalsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -56,14 +56,17 @@ beforeEach(() => {
   getMyRehearsalsMock.mockReset();
 });
 
-describe("useMyRehearsals — getMyRehearsals를 불러 ['rehearsal', month]에 앉힌다", () => {
+describe("useMyRehearsalsQuery — getMyRehearsals를 불러 ['rehearsal', month]에 앉힌다", () => {
   it("client와 month를 그대로 넘겨 DAL을 부른다", async () => {
     getMyRehearsalsMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMyRehearsals(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMyRehearsalsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -74,9 +77,12 @@ describe("useMyRehearsals — getMyRehearsals를 불러 ['rehearsal', month]에 
     getMyRehearsalsMock.mockReturnValue(new Promise(() => {}));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMyRehearsals(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMyRehearsalsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     expect(result.current.isLoading).toBe(true);
   });
@@ -85,9 +91,12 @@ describe("useMyRehearsals — getMyRehearsals를 불러 ['rehearsal', month]에 
     getMyRehearsalsMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMyRehearsals(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMyRehearsalsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -98,9 +107,12 @@ describe("useMyRehearsals — getMyRehearsals를 불러 ['rehearsal', month]에 
     getMyRehearsalsMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMyRehearsals(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMyRehearsalsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.error).not.toBeNull());
   });
@@ -109,9 +121,12 @@ describe("useMyRehearsals — getMyRehearsals를 불러 ['rehearsal', month]에 
     getMyRehearsalsMock.mockResolvedValue(ROWS);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useMyRehearsals(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMyRehearsalsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

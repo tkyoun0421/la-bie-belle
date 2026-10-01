@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/attendance/model/useQrCode.ts
+// 구현 대상: src/entities/attendance/hooks/useQrCodeQuery.ts
 //
 // 관리자 QR 화면이 현재 코드를 읽는 훅이다. 캐시 키·staleTime은
 // `@/entities/attendance/api/getQrCode.api`가 정한 상수를 그대로 쓴다
@@ -19,7 +19,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useQrCode } = await import("@/features/attendance/model/useQrCode");
+const { useQrCodeQuery } =
+  await import("@/entities/attendance/hooks/useQrCodeQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -45,12 +46,14 @@ beforeEach(() => {
   getQrCodeMock.mockReset();
 });
 
-describe("useQrCode — getQrCode를 불러 ['hall','qr']에 앉힌다", () => {
+describe("useQrCodeQuery — getQrCode를 불러 ['hall','qr']에 앉힌다", () => {
   it("client를 그대로 넘겨 DAL을 부른다", async () => {
     getQrCodeMock.mockResolvedValue(QR_DATA);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrCode(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrCodeQuery(FAKE_CLIENT), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -61,7 +64,9 @@ describe("useQrCode — getQrCode를 불러 ['hall','qr']에 앉힌다", () => {
     getQrCodeMock.mockReturnValue(new Promise(() => {}));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrCode(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrCodeQuery(FAKE_CLIENT), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(true);
   });
@@ -70,7 +75,9 @@ describe("useQrCode — getQrCode를 불러 ['hall','qr']에 앉힌다", () => {
     getQrCodeMock.mockResolvedValue(QR_DATA);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrCode(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrCodeQuery(FAKE_CLIENT), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -81,7 +88,9 @@ describe("useQrCode — getQrCode를 불러 ['hall','qr']에 앉힌다", () => {
     getQrCodeMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQrCode(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrCodeQuery(FAKE_CLIENT), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.error).not.toBeNull());
   });
@@ -90,7 +99,9 @@ describe("useQrCode — getQrCode를 불러 ['hall','qr']에 앉힌다", () => {
     getQrCodeMock.mockResolvedValue(QR_DATA);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useQrCode(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrCodeQuery(FAKE_CLIENT), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -101,7 +112,9 @@ describe("useQrCode — getQrCode를 불러 ['hall','qr']에 앉힌다", () => {
     getQrCodeMock.mockResolvedValue(QR_DATA);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useQrCode(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useQrCodeQuery(FAKE_CLIENT), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

@@ -19,12 +19,12 @@ import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
-import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
+import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
+import { usePayrollMonthsQuery } from "@/entities/payroll/hooks/usePayrollMonthsQuery";
+import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
+import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
+import { useScheduleMonthsQuery } from "@/entities/schedule/hooks/useScheduleMonthsQuery";
 import { payrollViewDays } from "@/features/payroll/model/payrollDays";
-import { usePayrollMonths } from "@/features/payroll/model/usePayrollMonths";
-import { useMyProfile } from "@/features/profile/model/useMyProfile";
-import { useRehearsalMonths } from "@/features/rehearsal/model/useRehearsalMonths";
-import { useScheduleMonths } from "@/features/schedule/model/useScheduleMonths";
 import { canGoBack, canGoForward } from "@/screens/payroll/model/boundary";
 import { payrollHistoryRows } from "@/screens/payroll/model/historyRows";
 import {
@@ -86,14 +86,14 @@ function ArrowSlot() {
 export function PayrollScreen() {
   const router = useRouter();
   const pathname = usePathname();
-  const unreadCount = useUnreadCount(supabase);
+  const unreadCount = useUnreadCountQuery(supabase);
   const today = kstToday();
 
   const [me, setMe] = useState<string | null>(null);
   const [unit, setUnit] = useState<PeriodUnit>("month");
   const [anchorDate, setAnchorDate] = useState(today);
 
-  const { data: profile, isLoading: profileLoading } = useMyProfile(
+  const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
     supabase,
     me,
   );
@@ -106,9 +106,9 @@ export function PayrollScreen() {
   const period = useMemo(() => periodOf(anchorDate, unit), [anchorDate, unit]);
   const months = useMemo(() => periodMonthKeys(period), [period]);
 
-  const payroll = usePayrollMonths(supabase, months);
-  const schedule = useScheduleMonths(supabase, months);
-  const rehearsal = useRehearsalMonths(supabase, months);
+  const payroll = usePayrollMonthsQuery(supabase, months);
+  const schedule = useScheduleMonthsQuery(supabase, months);
+  const rehearsal = useRehearsalMonthsQuery(supabase, months);
 
   const profileId = profile?.id ?? null;
 

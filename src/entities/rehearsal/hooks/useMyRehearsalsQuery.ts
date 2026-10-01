@@ -21,7 +21,7 @@ export type MyRehearsalsResult = {
   refetch: () => void;
 };
 
-export function useMyRehearsals(
+export function useMyRehearsalsQuery(
   client: DB,
   month: string,
   enabled = true,

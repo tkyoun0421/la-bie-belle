@@ -5,7 +5,7 @@ const resetWageToDefaultMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/payroll/api/resetWageToDefault.api",
+  "@/features/payroll/api/resetWageToDefault.api",
   () => ({
     resetWageToDefault: resetWageToDefaultMock,
   }),
@@ -17,8 +17,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useResetWageToDefault } =
-  await import("@/features/payroll/model/useResetWageToDefault");
+const { useResetWageToDefaultMutation } =
+  await import("@/features/payroll/hooks/useResetWageToDefaultMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -45,15 +45,18 @@ beforeEach(() => {
   resetWageToDefaultMock.mockReset();
 });
 
-describe("useResetWageToDefault — 성공하면 DAL을 그 인자로 부르고 ['payroll']을 무효화한다", () => {
+describe("useResetWageToDefaultMutation — 성공하면 DAL을 그 인자로 부르고 ['payroll']을 무효화한다", () => {
   it("mutate로 넣은 profileId 그대로 DAL을 부른다", async () => {
     resetWageToDefaultMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useResetWageToDefault(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useResetWageToDefaultMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate("profile-1");
@@ -71,16 +74,19 @@ describe("useResetWageToDefault — 성공하면 DAL을 그 인자로 부르고 
   });
 });
 
-describe("useResetWageToDefault — DomainError('no_default_wage')를 삼키지 않고 error에 그대로 싣는다", () => {
+describe("useResetWageToDefaultMutation — DomainError('no_default_wage')를 삼키지 않고 error에 그대로 싣는다", () => {
   it("기본 시급이 아직 없을 때의 거절이 그대로 error가 된다", async () => {
     resetWageToDefaultMock.mockRejectedValue(
       new DomainError("no_default_wage"),
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useResetWageToDefault(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useResetWageToDefaultMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate("profile-1");

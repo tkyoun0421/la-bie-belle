@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { grantPosition } from "@/entities/schedule/api/grantPosition.api";
+import { grantPosition } from "@/features/schedule/api/grantPosition.api";
 
 /**
  * 자격 없는 사람 시트의 「자격도 주기」다. 이 훅만 `['members']`를 무효화한다
@@ -28,7 +28,7 @@ export type GrantPositionResult = {
   reset: () => void;
 };
 
-export function useGrantPosition(client: DB): GrantPositionResult {
+export function useGrantPositionMutation(client: DB): GrantPositionResult {
   const queryClient = useQueryClient();
 
   const { mutate, mutateAsync, isPending, isSuccess, isError, error, reset } =

@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 
 const setRoleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/api/setRole.api", () => ({
+jest.unstable_mockModule("@/features/members/api/setRole.api", () => ({
   setRole: setRoleMock,
 }));
 
@@ -17,7 +17,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useSetRole } = await import("@/features/members/model/useSetRole");
+const { useSetRoleMutation } =
+  await import("@/features/members/hooks/useSetRoleMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -44,13 +45,15 @@ beforeEach(() => {
   setRoleMock.mockReset();
 });
 
-describe("useSetRole — 역할을 바꾸고 members를 무효화한다", () => {
+describe("useSetRoleMutation — 역할을 바꾸고 members를 무효화한다", () => {
   it("성공하면 DAL을 그 인자로 부르고 ['members']를 무효화한다", async () => {
     setRoleMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useSetRole(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useSetRoleMutation(FAKE_CLIENT), {
+      wrapper,
+    });
 
     act(() => {
       result.current.mutate({ profileId: "profile-1", role: "admin" });
@@ -68,7 +71,9 @@ describe("useSetRole — 역할을 바꾸고 members를 무효화한다", () => 
     setRoleMock.mockRejectedValue(new DomainError("last_admin"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSetRole(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useSetRoleMutation(FAKE_CLIENT), {
+      wrapper,
+    });
 
     act(() => {
       result.current.mutate({ profileId: "profile-1", role: "worker" });
@@ -92,7 +97,9 @@ describe("useSetRole — 역할을 바꾸고 members를 무효화한다", () => 
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSetRole(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useSetRoleMutation(FAKE_CLIENT), {
+      wrapper,
+    });
 
     act(() => {
       result.current.mutate({ profileId: "profile-1", role: "admin" });

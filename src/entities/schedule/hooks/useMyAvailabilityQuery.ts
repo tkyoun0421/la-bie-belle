@@ -11,7 +11,7 @@ import { getMyAvailability } from "@/entities/schedule/api/getMyAvailability.api
  * 아직 낸 신청이 없으면 빈 배열이다. `undefined`와 갈려서 화면이 「아직 안 읽음」과 「0개를
  * 냈음」을 구별한다.
  *
- * **키가 `['availability', month]`다.** 전원 신청을 읽는 `useMonthAvailabilities`는 꼬리가
+ * **키가 `['availability', month]`다.** 전원 신청을 읽는 `useMonthAvailabilitiesQuery`는 꼬리가
  * `'all'`인 제 키를 쓴다 — 그쪽은 행 객체를 내고 이쪽은 날짜 문자열을 내므로 키가 같으면
  * 먼저 캐시에 든 쪽이 이겨서 한쪽이 남의 모양을 읽는다
  * ([관찰 045](../../../../docs/observations/045-two-queries-share-one-cache-key.md)).
@@ -25,7 +25,7 @@ export type MyAvailabilityResult = {
   isLoading: boolean;
 };
 
-export function useMyAvailability(
+export function useMyAvailabilityQuery(
   client: DB,
   month: string,
 ): MyAvailabilityResult {

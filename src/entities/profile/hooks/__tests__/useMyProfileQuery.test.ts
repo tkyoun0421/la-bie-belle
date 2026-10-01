@@ -22,7 +22,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useMyProfile } = await import("@/features/profile/model/useMyProfile");
+const { useMyProfileQuery } =
+  await import("@/entities/profile/hooks/useMyProfileQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -66,15 +67,18 @@ beforeEach(() => {
   getProfilePrivateMock.mockReset();
 });
 
-describe("useMyProfile — profile과 profile_private을 합쳐 하나로 낸다", () => {
+describe("useMyProfileQuery — profile과 profile_private을 합쳐 하나로 낸다", () => {
   it("아직 응답이 없으면 isLoading이 참이다", () => {
     getMyProfileMock.mockReturnValue(new Promise(() => {}));
     getProfilePrivateMock.mockReturnValue(new Promise(() => {}));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMyProfile(FAKE_CLIENT, "user-1"), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMyProfileQuery(FAKE_CLIENT, "user-1"),
+      {
+        wrapper,
+      },
+    );
 
     expect(result.current.isLoading).toBe(true);
   });
@@ -84,9 +88,12 @@ describe("useMyProfile — profile과 profile_private을 합쳐 하나로 낸다
     getProfilePrivateMock.mockResolvedValue(PRIVATE_ROW);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMyProfile(FAKE_CLIENT, "user-1"), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMyProfileQuery(FAKE_CLIENT, "user-1"),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -104,9 +111,12 @@ describe("useMyProfile — profile과 profile_private을 합쳐 하나로 낸다
     getProfilePrivateMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMyProfile(FAKE_CLIENT, "user-1"), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMyProfileQuery(FAKE_CLIENT, "user-1"),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.error).not.toBeNull());
   });

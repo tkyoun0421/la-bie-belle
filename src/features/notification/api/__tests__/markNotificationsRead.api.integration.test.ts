@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { DomainError } from "@/shared/api/errors";
-import { markNotificationsRead } from "@/entities/notification/api/markNotificationsRead.api";
+import { markNotificationsRead } from "@/features/notification/api/markNotificationsRead.api";
 import {
   createApprovedUser,
   createBlockedUser,

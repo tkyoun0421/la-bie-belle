@@ -25,7 +25,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useMembers } = await import("@/features/members/model/useMembers");
+const { useMembersQuery } =
+  await import("@/entities/profile/hooks/useMembersQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -63,14 +64,14 @@ beforeEach(() => {
   listBlockedMembersMock.mockReset();
 });
 
-describe("useMembers — kind이 가리키는 DAL 하나만 불러 ['members', kind]에 앉힌다", () => {
+describe("useMembersQuery — kind이 가리키는 DAL 하나만 불러 ['members', kind]에 앉힌다", () => {
   it.each(ALL_KINDS)(
     "kind이 %s면 그 DAL만 부르고 나머지 셋은 안 부른다",
     async (kind) => {
       MOCK_OF[kind].mockResolvedValue([ROW]);
       const { wrapper } = createWrapper();
 
-      const { result } = renderHook(() => useMembers(FAKE_CLIENT, kind), {
+      const { result } = renderHook(() => useMembersQuery(FAKE_CLIENT, kind), {
         wrapper,
       });
 
@@ -88,9 +89,12 @@ describe("useMembers — kind이 가리키는 DAL 하나만 불러 ['members', k
     listActiveMembersMock.mockReturnValue(new Promise(() => {}));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMembers(FAKE_CLIENT, "active"), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMembersQuery(FAKE_CLIENT, "active"),
+      {
+        wrapper,
+      },
+    );
 
     expect(result.current.isLoading).toBe(true);
   });
@@ -99,9 +103,12 @@ describe("useMembers — kind이 가리키는 DAL 하나만 불러 ['members', k
     listActiveMembersMock.mockResolvedValue([ROW]);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMembers(FAKE_CLIENT, "active"), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMembersQuery(FAKE_CLIENT, "active"),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -112,9 +119,12 @@ describe("useMembers — kind이 가리키는 DAL 하나만 불러 ['members', k
     listActiveMembersMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMembers(FAKE_CLIENT, "active"), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMembersQuery(FAKE_CLIENT, "active"),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.error).not.toBeNull());
   });
@@ -123,7 +133,7 @@ describe("useMembers — kind이 가리키는 DAL 하나만 불러 ['members', k
     listLeftMembersMock.mockResolvedValue([ROW]);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useMembers(FAKE_CLIENT, "left"), {
+    const { result } = renderHook(() => useMembersQuery(FAKE_CLIENT, "left"), {
       wrapper,
     });
 

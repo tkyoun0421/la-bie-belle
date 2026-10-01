@@ -17,8 +17,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useNotifications } =
-  await import("@/features/notification/model/useNotifications");
+const { useNotificationsQuery } =
+  await import("@/entities/notification/hooks/useNotificationsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -57,12 +57,12 @@ beforeEach(() => {
   getNotificationsMock.mockReset();
 });
 
-describe("useNotifications — 캐시 키가 ['notifications']다", () => {
+describe("useNotificationsQuery — 캐시 키가 ['notifications']다", () => {
   it("성공하면 그 키에 값이 앉는다", async () => {
     getNotificationsMock.mockResolvedValue(rowsOfLength(1, 0));
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useNotifications(FAKE_CLIENT), {
+    const { result } = renderHook(() => useNotificationsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -72,12 +72,12 @@ describe("useNotifications — 캐시 키가 ['notifications']다", () => {
   });
 });
 
-describe("useNotifications — 처음 열면 client를 실어 DAL을 한 번 부른다", () => {
+describe("useNotificationsQuery — 처음 열면 client를 실어 DAL을 한 번 부른다", () => {
   it("getNotifications가 정확히 한 번 불린다", async () => {
     getNotificationsMock.mockResolvedValue(rowsOfLength(50, 0));
     const { wrapper } = createWrapper();
 
-    renderHook(() => useNotifications(FAKE_CLIENT), { wrapper });
+    renderHook(() => useNotificationsQuery(FAKE_CLIENT), { wrapper });
 
     await waitFor(() => expect(getNotificationsMock).toHaveBeenCalledTimes(1));
 
@@ -85,12 +85,12 @@ describe("useNotifications — 처음 열면 client를 실어 DAL을 한 번 부
   });
 });
 
-describe("useNotifications — 다음 쪽을 부르면 페이지 인자가 하나 올라간다", () => {
+describe("useNotificationsQuery — 다음 쪽을 부르면 페이지 인자가 하나 올라간다", () => {
   it("fetchNextPage 뒤 두 번째 호출의 pageParam이 첫 번째와 다르다", async () => {
     getNotificationsMock.mockResolvedValue(rowsOfLength(50, 0));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotifications(FAKE_CLIENT), {
+    const { result } = renderHook(() => useNotificationsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -109,12 +109,12 @@ describe("useNotifications — 다음 쪽을 부르면 페이지 인자가 하�
   });
 });
 
-describe("useNotifications — 쉰 건 가득 찬 쪽이면 다음 쪽이 있다", () => {
+describe("useNotificationsQuery — 쉰 건 가득 찬 쪽이면 다음 쪽이 있다", () => {
   it("hasNextPage가 true다", async () => {
     getNotificationsMock.mockResolvedValue(rowsOfLength(50, 0));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotifications(FAKE_CLIENT), {
+    const { result } = renderHook(() => useNotificationsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -124,12 +124,12 @@ describe("useNotifications — 쉰 건 가득 찬 쪽이면 다음 쪽이 있다
   });
 });
 
-describe("useNotifications — 쪽이 50건보다 적으면 끝이다", () => {
+describe("useNotificationsQuery — 쪽이 50건보다 적으면 끝이다", () => {
   it("hasNextPage가 false다", async () => {
     getNotificationsMock.mockResolvedValue(rowsOfLength(10, 0));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotifications(FAKE_CLIENT), {
+    const { result } = renderHook(() => useNotificationsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -139,7 +139,7 @@ describe("useNotifications — 쪽이 50건보다 적으면 끝이다", () => {
   });
 });
 
-describe("useNotifications — maxPages가 3이라 네 번째 쪽을 읽으면 쥔 쪽 수가 3을 안 넘는다", () => {
+describe("useNotificationsQuery — maxPages가 3이라 네 번째 쪽을 읽으면 쥔 쪽 수가 3을 안 넘는다", () => {
   it("fetchNextPage를 세 번 부르면 data.pages 길이가 3을 넘지 않는다", async () => {
     let call = 0;
     getNotificationsMock.mockImplementation(async () => {
@@ -150,7 +150,7 @@ describe("useNotifications — maxPages가 3이라 네 번째 쪽을 읽으면 �
     });
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useNotifications(FAKE_CLIENT), {
+    const { result } = renderHook(() => useNotificationsQuery(FAKE_CLIENT), {
       wrapper,
     });
 

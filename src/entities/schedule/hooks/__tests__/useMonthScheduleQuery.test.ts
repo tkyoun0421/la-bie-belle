@@ -15,8 +15,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useMonthSchedule } =
-  await import("@/features/schedule/model/useMonthSchedule");
+const { useMonthScheduleQuery } =
+  await import("@/entities/schedule/hooks/useMonthScheduleQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -68,14 +68,17 @@ beforeEach(() => {
   getMonthScheduleMock.mockReset();
 });
 
-describe("useMonthSchedule — getMonthSchedule를 그 달로 불러 ['schedule', month]에 앉힌다", () => {
+describe("useMonthScheduleQuery — getMonthSchedule를 그 달로 불러 ['schedule', month]에 앉힌다", () => {
   it("client와 month를 그대로 넘겨 DAL을 부른다", async () => {
     getMonthScheduleMock.mockResolvedValue(MONTH_ROW);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMonthSchedule(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMonthScheduleQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -86,9 +89,12 @@ describe("useMonthSchedule — getMonthSchedule를 그 달로 불러 ['schedule'
     getMonthScheduleMock.mockReturnValue(new Promise(() => {}));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMonthSchedule(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMonthScheduleQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     expect(result.current.isLoading).toBe(true);
   });
@@ -97,9 +103,12 @@ describe("useMonthSchedule — getMonthSchedule를 그 달로 불러 ['schedule'
     getMonthScheduleMock.mockResolvedValue(MONTH_ROW);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMonthSchedule(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMonthScheduleQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -110,9 +119,12 @@ describe("useMonthSchedule — getMonthSchedule를 그 달로 불러 ['schedule'
     getMonthScheduleMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMonthSchedule(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMonthScheduleQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.error).not.toBeNull());
   });
@@ -121,9 +133,12 @@ describe("useMonthSchedule — getMonthSchedule를 그 달로 불러 ['schedule'
     getMonthScheduleMock.mockResolvedValue(MONTH_ROW);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useMonthSchedule(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useMonthScheduleQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -135,7 +150,8 @@ describe("useMonthSchedule — getMonthSchedule를 그 달로 불러 ['schedule'
     const { wrapper, queryClient } = createWrapper();
 
     const { rerender } = renderHook(
-      ({ month }: { month: string }) => useMonthSchedule(FAKE_CLIENT, month),
+      ({ month }: { month: string }) =>
+        useMonthScheduleQuery(FAKE_CLIENT, month),
       { wrapper, initialProps: { month: MONTH } },
     );
 

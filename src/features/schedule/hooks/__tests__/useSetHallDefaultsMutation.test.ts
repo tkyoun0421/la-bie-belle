@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useSetHallDefaults.ts
+// 구현 대상: src/features/schedule/hooks/useSetHallDefaultsMutation.ts
 //
 // 홀의 자리·근무 시간 기본값을 바꾼다. 연 날은 안 바뀌므로 캐시 갱신은
 // `['hall']`뿐이다 — `['schedule']`은 안 건드린다
@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 
 const setHallDefaultsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/setHallDefaults.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/setHallDefaults.api", () => ({
   setHallDefaults: setHallDefaultsMock,
 }));
 
@@ -19,8 +19,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useSetHallDefaults } =
-  await import("@/features/schedule/model/useSetHallDefaults");
+const { useSetHallDefaultsMutation } =
+  await import("@/features/schedule/hooks/useSetHallDefaultsMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -49,15 +49,18 @@ beforeEach(() => {
   setHallDefaultsMock.mockReset();
 });
 
-describe("useSetHallDefaults — set_hall_defaults를 부르고 hall만 무효화한다", () => {
+describe("useSetHallDefaultsMutation — set_hall_defaults를 부르고 hall만 무효화한다", () => {
   it("성공하면 DAL을 (client, { slots, starts, ends })로 부르고 ['hall']을 무효화한다", async () => {
     setHallDefaultsMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useSetHallDefaults(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSetHallDefaultsMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ slots: SLOTS, starts: "10:00", ends: "19:00" });
@@ -80,9 +83,12 @@ describe("useSetHallDefaults — set_hall_defaults를 부르고 hall만 무효�
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useSetHallDefaults(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSetHallDefaultsMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ slots: SLOTS, starts: "10:00", ends: "19:00" });
@@ -99,9 +105,12 @@ describe("useSetHallDefaults — set_hall_defaults를 부르고 hall만 무효�
     setHallDefaultsMock.mockRejectedValue(new DomainError("bad_hours"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSetHallDefaults(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSetHallDefaultsMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ slots: SLOTS, starts: "22:00", ends: "10:00" });
@@ -125,9 +134,12 @@ describe("useSetHallDefaults — set_hall_defaults를 부르고 hall만 무효�
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSetHallDefaults(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSetHallDefaultsMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ slots: SLOTS, starts: "10:00", ends: "19:00" });

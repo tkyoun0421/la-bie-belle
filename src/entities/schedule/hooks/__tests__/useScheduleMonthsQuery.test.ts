@@ -1,6 +1,6 @@
-// 구현 대상: src/features/schedule/model/useScheduleMonths.ts
+// 구현 대상: src/entities/schedule/hooks/useScheduleMonthsQuery.ts
 //
-// useScheduleMonths(client, months) — 여러 달 근무표 키를 결합해 읽는 훅이다
+// useScheduleMonthsQuery(client, months) — 여러 달 근무표 키를 결합해 읽는 훅이다
 // (payroll-view AC-06 「연은 열두 키를 읽어 더한다」와 같은 다개월 계약을 근무표에도
 // 적용한다). 요청한 달 수만큼 getMonthSchedule를 부르고, 하나라도 pending이면
 // 로딩이고, 하나라도 error면 그 error가 표면에 뜨고, 전부 오면 달치 날들을 하나로
@@ -23,8 +23,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useScheduleMonths } =
-  await import("@/features/schedule/model/useScheduleMonths");
+const { useScheduleMonthsQuery } =
+  await import("@/entities/schedule/hooks/useScheduleMonthsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -61,7 +61,7 @@ beforeEach(() => {
   getMonthScheduleMock.mockReset();
 });
 
-describe("useScheduleMonths — 요청한 달 수만큼 쿼리가 열린다", () => {
+describe("useScheduleMonthsQuery — 요청한 달 수만큼 쿼리가 열린다", () => {
   it("연이면 열두 달을 각각 한 번씩 읽는다", async () => {
     getMonthScheduleMock.mockImplementation(async (_client, month) => [
       dayFor(month as string),
@@ -73,7 +73,7 @@ describe("useScheduleMonths — 요청한 달 수만큼 쿼리가 열린다", ()
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useScheduleMonths(FAKE_CLIENT, months),
+      () => useScheduleMonthsQuery(FAKE_CLIENT, months),
       { wrapper },
     );
 
@@ -85,7 +85,7 @@ describe("useScheduleMonths — 요청한 달 수만큼 쿼리가 열린다", ()
   });
 });
 
-describe("useScheduleMonths — 하나라도 pending이면 로딩이다", () => {
+describe("useScheduleMonthsQuery — 하나라도 pending이면 로딩이다", () => {
   it("한 달은 응답하고 한 달은 안 끝나면 isLoading이 true다", async () => {
     getMonthScheduleMock.mockImplementation(async (_client, month) => {
       if (month === "2026-09") {
@@ -96,7 +96,7 @@ describe("useScheduleMonths — 하나라도 pending이면 로딩이다", () => 
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useScheduleMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      () => useScheduleMonthsQuery(FAKE_CLIENT, ["2026-09", "2026-10"]),
       { wrapper },
     );
 
@@ -106,7 +106,7 @@ describe("useScheduleMonths — 하나라도 pending이면 로딩이다", () => 
   });
 });
 
-describe("useScheduleMonths — 하나라도 error면 그 error가 표면에 뜬다", () => {
+describe("useScheduleMonthsQuery — 하나라도 error면 그 error가 표면에 뜬다", () => {
   it("한 달이 실패하면 error에 그 이유가 담긴다", async () => {
     const failure = new Error("month read failed");
     getMonthScheduleMock.mockImplementation(async (_client, month) => {
@@ -118,7 +118,7 @@ describe("useScheduleMonths — 하나라도 error면 그 error가 표면에 뜬
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useScheduleMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      () => useScheduleMonthsQuery(FAKE_CLIENT, ["2026-09", "2026-10"]),
       { wrapper },
     );
 
@@ -128,7 +128,7 @@ describe("useScheduleMonths — 하나라도 error면 그 error가 표면에 뜬
   });
 });
 
-describe("useScheduleMonths — 전부 오면 달치가 합쳐져 나온다", () => {
+describe("useScheduleMonthsQuery — 전부 오면 달치가 합쳐져 나온다", () => {
   it("두 달의 날들이 하나의 배열로 이어진다", async () => {
     getMonthScheduleMock.mockImplementation(async (_client, month) => [
       dayFor(month as string),
@@ -136,7 +136,7 @@ describe("useScheduleMonths — 전부 오면 달치가 합쳐져 나온다", ()
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useScheduleMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      () => useScheduleMonthsQuery(FAKE_CLIENT, ["2026-09", "2026-10"]),
       { wrapper },
     );
 

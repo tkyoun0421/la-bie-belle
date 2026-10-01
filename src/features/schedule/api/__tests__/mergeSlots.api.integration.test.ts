@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { mergeSlots } from "@/entities/schedule/api/mergeSlots.api";
+import { mergeSlots } from "@/features/schedule/api/mergeSlots.api";
 import {
   createAdminUser,
   createApprovedUser,

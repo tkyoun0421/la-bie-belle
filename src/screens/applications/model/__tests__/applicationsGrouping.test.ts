@@ -2,7 +2,7 @@
 //
 // 근무 신청 모아보기의 날짜순·사람순 재구성이다(schedule-admin.md 「근무 신청 모아보기
 // 짜임」) — 날짜순은 날짜 머리 아래 이름, 사람순은 이름 아래 날짜들. 입력은
-// `useMonthAvailabilities`가 내는 `{ profile_id, work_date, profiles: { display_name } }`
+// `useMonthAvailabilitiesQuery`가 내는 `{ profile_id, work_date, profiles: { display_name } }`
 // 행이다.
 
 import {

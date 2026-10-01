@@ -26,7 +26,12 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
+import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
+import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
+import { useQualificationsQuery } from "@/entities/schedule/hooks/useQualificationsQuery";
 import { googlePhotoOf } from "@/features/auth/googlePhotoOf";
+import { useNotificationSwitchMutation } from "@/features/notification/hooks/useNotificationSwitchMutation";
+import { useSavePushTokenMutation } from "@/features/notification/hooks/useSavePushTokenMutation";
 import { getProfileNotificationRow } from "@/features/notification/model/profileNotificationRow";
 import { PUSH_DEPS } from "@/features/notification/model/pushDeps";
 import {
@@ -37,13 +42,8 @@ import {
   getReachState,
   type PushPermission,
 } from "@/features/notification/model/reachState";
-import { useNotificationSwitch } from "@/features/notification/model/useNotificationSwitch";
-import { useSavePushToken } from "@/features/notification/model/useSavePushToken";
-import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
-import { useMyProfile } from "@/features/profile/model/useMyProfile";
-import { useUpdateContact } from "@/features/profile/model/useUpdateContact";
-import { useUpdatePhoto } from "@/features/profile/model/useUpdatePhoto";
-import { useQualifications } from "@/features/schedule/model/useQualifications";
+import { useUpdateContactMutation } from "@/features/profile/hooks/useUpdateContactMutation";
+import { useUpdatePhotoMutation } from "@/features/profile/hooks/useUpdatePhotoMutation";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant";
 import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto";
 import { ContactSheet } from "@/screens/profile/ui/ContactSheet";
@@ -115,7 +115,7 @@ function hyphenate(digits: string): string {
 export function ProfileScreen() {
   const router = useRouter();
   const pathname = usePathname();
-  const unreadCount = useUnreadCount(supabase);
+  const unreadCount = useUnreadCountQuery(supabase);
 
   const [me, setMe] = useState<Me | null>(null);
   const [sheet, setSheet] = useState<SheetName>(null);
@@ -126,13 +126,13 @@ export function ProfileScreen() {
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [turningOff, setTurningOff] = useState(false);
 
-  useSavePushToken(supabase, pushToken, AppState);
+  useSavePushTokenMutation(supabase, pushToken, AppState);
 
   const theme = useTheme((at) => at.theme);
   const chooseTheme = useTheme((at) => at.choose);
 
-  const { data, isLoading } = useMyProfile(supabase, me?.id ?? null);
-  const { data: grants } = useQualifications(supabase);
+  const { data, isLoading } = useMyProfileQuery(supabase, me?.id ?? null);
+  const { data: grants } = useQualificationsQuery(supabase);
 
   const {
     mutate: saveContact,
@@ -141,7 +141,7 @@ export function ProfileScreen() {
     error: contactError,
     isSuccess: contactSaved,
     reset: resetContact,
-  } = useUpdateContact(supabase);
+  } = useUpdateContactMutation(supabase);
 
   const {
     mutate: savePhoto,
@@ -149,7 +149,7 @@ export function ProfileScreen() {
     isError: photoFailed,
     isSuccess: photoSaved,
     reset: resetPhoto,
-  } = useUpdatePhoto(supabase);
+  } = useUpdatePhotoMutation(supabase);
 
   const askPushPermission = useCallback(async () => {
     const asked = await requestPushPermission(PUSH_DEPS);
@@ -163,7 +163,7 @@ export function ProfileScreen() {
     return asked.permission === "granted";
   }, []);
 
-  const notification = useNotificationSwitch(
+  const notification = useNotificationSwitchMutation(
     supabase,
     data?.notifications_enabled ?? false,
     askPushPermission,

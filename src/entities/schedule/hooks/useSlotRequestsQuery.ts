@@ -20,7 +20,10 @@ export type SlotRequestsResult = {
   isLoading: boolean;
 };
 
-export function useSlotRequests(client: DB, month: string): SlotRequestsResult {
+export function useSlotRequestsQuery(
+  client: DB,
+  month: string,
+): SlotRequestsResult {
   const { data, error, isLoading } = useQuery({
     queryKey: queryKeys.request.month(month),
     queryFn: () => getSlotRequests(client, month),

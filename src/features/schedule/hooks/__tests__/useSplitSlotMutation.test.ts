@@ -1,14 +1,14 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useSplitSlot.ts
+// 구현 대상: src/features/schedule/hooks/useSplitSlotMutation.ts
 //
 // 겸임 자리를 나눈다. `splitSlot(client, slotId)`를 부르고 배정된 사람은 받은 쪽에 그대로
 // 남는다(design.md 「날과 자리」). 캐시 갱신은 `['schedule']` `['payroll']` `['requests']`다.
 
 const splitSlotMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/splitSlot.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/splitSlot.api", () => ({
   splitSlot: splitSlotMock,
 }));
 
@@ -18,7 +18,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useSplitSlot } = await import("@/features/schedule/model/useSplitSlot");
+const { useSplitSlotMutation } =
+  await import("@/features/schedule/hooks/useSplitSlotMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -47,13 +48,13 @@ beforeEach(() => {
   splitSlotMock.mockReset();
 });
 
-describe("useSplitSlot — split_slot을 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useSplitSlotMutation — split_slot을 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("성공하면 DAL을 (client, slotId)로 부르고 세 키를 무효화한다", async () => {
     splitSlotMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useSplitSlot(FAKE_CLIENT), {
+    const { result } = renderHook(() => useSplitSlotMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -79,7 +80,7 @@ describe("useSplitSlot — split_slot을 부르고 schedule·payroll·requests�
     splitSlotMock.mockRejectedValue(new DomainError("not_merged"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSplitSlot(FAKE_CLIENT), {
+    const { result } = renderHook(() => useSplitSlotMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -105,7 +106,7 @@ describe("useSplitSlot — split_slot을 부르고 schedule·payroll·requests�
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSplitSlot(FAKE_CLIENT), {
+    const { result } = renderHook(() => useSplitSlotMutation(FAKE_CLIENT), {
       wrapper,
     });
 

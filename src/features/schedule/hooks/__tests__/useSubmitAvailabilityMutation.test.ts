@@ -5,7 +5,7 @@ const submitAvailabilityMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/api/submitAvailability.api",
+  "@/features/schedule/api/submitAvailability.api",
   () => ({
     submitAvailability: submitAvailabilityMock,
   }),
@@ -17,8 +17,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useSubmitAvailability } =
-  await import("@/features/schedule/model/useSubmitAvailability");
+const { useSubmitAvailabilityMutation } =
+  await import("@/features/schedule/hooks/useSubmitAvailabilityMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -47,15 +47,18 @@ beforeEach(() => {
   submitAvailabilityMock.mockReset();
 });
 
-describe("useSubmitAvailability — 그 달 신청을 보내고 availability를 무효화한다", () => {
+describe("useSubmitAvailabilityMutation — 그 달 신청을 보내고 availability를 무효화한다", () => {
   it("성공하면 DAL을 그 인자로 부르고 ['availability']를 무효화한다", async () => {
     submitAvailabilityMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useSubmitAvailability(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSubmitAvailabilityMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ month: MONTH, dates: ["2026-10-10"] });
@@ -75,9 +78,12 @@ describe("useSubmitAvailability — 그 달 신청을 보내고 availability를 
     submitAvailabilityMock.mockResolvedValue(undefined);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSubmitAvailability(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSubmitAvailabilityMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ month: MONTH, dates: [] });
@@ -92,9 +98,12 @@ describe("useSubmitAvailability — 그 달 신청을 보내고 availability를 
     submitAvailabilityMock.mockRejectedValue(new DomainError("window_closed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSubmitAvailability(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSubmitAvailabilityMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ month: MONTH, dates: ["2026-10-10"] });
@@ -118,9 +127,12 @@ describe("useSubmitAvailability — 그 달 신청을 보내고 availability를 
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSubmitAvailability(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSubmitAvailabilityMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ month: MONTH, dates: ["2026-10-10"] });

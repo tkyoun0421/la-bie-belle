@@ -19,7 +19,7 @@ export type AllRehearsalsResult = {
   refetch: () => void;
 };
 
-export function useAllRehearsals(
+export function useAllRehearsalsQuery(
   client: DB,
   month: string,
   enabled = true,

@@ -34,7 +34,7 @@ export type MyProfileResult = {
   isLoading: boolean;
 };
 
-export function useMyProfile(
+export function useMyProfileQuery(
   client: DB,
   userId: string | null,
 ): MyProfileResult {

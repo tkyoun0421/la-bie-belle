@@ -104,7 +104,7 @@ export function myAttendanceValues(
 /**
  * 그달 내 급여 합이다. 관리자 통계에 금액 축이 없어 견줄 짝이 없는 값이다.
  *
- * **리허설이 달마다 안 갈린다.** 화면이 `useRehearsalMonths`가 뭉쳐 준 열두 달치를 통째로
+ * **리허설이 달마다 안 갈린다.** 화면이 `useRehearsalMonthsQuery`가 뭉쳐 준 열두 달치를 통째로
  * 넘기고(`PayrollScreen.tsx`가 앞서 밟은 길), `payrollViewDays`가 `work_date`로 날에 도로
  * 맞춘다 — 리허설도 급여에 든다(PAY-028). 그래서 8월 달을 셀 때도 9월 리허설이 결과에 끼어들 수
  * 있어 그 달 날짜로 한 번 더 거른다.

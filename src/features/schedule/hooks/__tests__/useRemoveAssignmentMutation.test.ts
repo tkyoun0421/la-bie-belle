@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useRemoveAssignment.ts
+// 구현 대상: src/features/schedule/hooks/useRemoveAssignmentMutation.ts
 //
 // 「자리 비우기」 · 강제 변경의 「사람 빼기」다. `removeAssignment(client, assignmentId)`를
 // 부른다 — 확정 전이면 행이 지워지고 확정 뒤면 `ended_at`이 찍히는 갈림은 함수 안에서
@@ -12,7 +12,7 @@ const removeAssignmentMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/api/removeAssignment.api",
+  "@/features/schedule/api/removeAssignment.api",
   () => ({
     removeAssignment: removeAssignmentMock,
   }),
@@ -24,8 +24,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useRemoveAssignment } =
-  await import("@/features/schedule/model/useRemoveAssignment");
+const { useRemoveAssignmentMutation } =
+  await import("@/features/schedule/hooks/useRemoveAssignmentMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -54,15 +54,18 @@ beforeEach(() => {
   removeAssignmentMock.mockReset();
 });
 
-describe("useRemoveAssignment — remove_assignment을 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useRemoveAssignmentMutation — remove_assignment을 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("성공하면 DAL을 (client, assignmentId)로 부르고 세 키를 무효화한다", async () => {
     removeAssignmentMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useRemoveAssignment(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRemoveAssignmentMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ assignmentId: ASSIGNMENT_ID });
@@ -89,9 +92,12 @@ describe("useRemoveAssignment — remove_assignment을 부르고 schedule·payro
     removeAssignmentMock.mockRejectedValue(new DomainError("stale"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRemoveAssignment(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRemoveAssignmentMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ assignmentId: ASSIGNMENT_ID });
@@ -115,9 +121,12 @@ describe("useRemoveAssignment — remove_assignment을 부르고 schedule·payro
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRemoveAssignment(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRemoveAssignmentMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ assignmentId: ASSIGNMENT_ID });

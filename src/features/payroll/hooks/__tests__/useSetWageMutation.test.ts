@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 const setWageMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/payroll/api/setWage.api", () => ({
+jest.unstable_mockModule("@/features/payroll/api/setWage.api", () => ({
   setWage: setWageMock,
 }));
 
@@ -13,7 +13,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useSetWage } = await import("@/features/payroll/model/useSetWage");
+const { useSetWageMutation } =
+  await import("@/features/payroll/hooks/useSetWageMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -40,13 +41,15 @@ beforeEach(() => {
   setWageMock.mockReset();
 });
 
-describe("useSetWage — 성공하면 DAL을 그 인자로 부르고 ['payroll']을 무효화한다", () => {
+describe("useSetWageMutation — 성공하면 DAL을 그 인자로 부르고 ['payroll']을 무효화한다", () => {
   it("mutate로 넣은 profileId·amount 그대로 DAL을 부른다", async () => {
     setWageMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useSetWage(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useSetWageMutation(FAKE_CLIENT), {
+      wrapper,
+    });
 
     act(() => {
       result.current.mutate({ profileId: "profile-1", amount: 12000 });
@@ -64,12 +67,14 @@ describe("useSetWage — 성공하면 DAL을 그 인자로 부르고 ['payroll']
   });
 });
 
-describe("useSetWage — DomainError를 삼키지 않고 error에 그대로 싣는다", () => {
+describe("useSetWageMutation — DomainError를 삼키지 않고 error에 그대로 싣는다", () => {
   it("bad_amount 거절이 그대로 error가 된다", async () => {
     setWageMock.mockRejectedValue(new DomainError("bad_amount"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSetWage(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useSetWageMutation(FAKE_CLIENT), {
+      wrapper,
+    });
 
     act(() => {
       result.current.mutate({ profileId: "profile-1", amount: 200000 });

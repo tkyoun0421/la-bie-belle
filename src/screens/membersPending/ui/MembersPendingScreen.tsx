@@ -18,16 +18,16 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
-import { approveMember } from "@/entities/profile/api/approveMember.api";
-import { blockMember } from "@/entities/profile/api/blockMember.api";
 import type { MemberListRow } from "@/entities/profile/api/listMembers.api";
 import {
   getProfilePrivate,
   type ProfilePrivateRow,
 } from "@/entities/profile/api/profilePrivate.api";
-import { rejectMember } from "@/entities/profile/api/rejectMember.api";
+import { useMembersQuery } from "@/entities/profile/hooks/useMembersQuery";
 import { formatElapsedDays } from "@/entities/profile/model/formatElapsedDays";
-import { useMembers } from "@/features/members/model/useMembers";
+import { approveMember } from "@/features/members/api/approveMember.api";
+import { blockMember } from "@/features/members/api/blockMember.api";
+import { rejectMember } from "@/features/members/api/rejectMember.api";
 import {
   MemberDetailSheet,
   type MemberDecision,
@@ -78,7 +78,7 @@ function sentLine(submittedAt: string | null, now: string): string {
 export function MembersPendingScreen() {
   const router = useRouter();
 
-  const { data: rows } = useMembers(supabase, "pending");
+  const { data: rows } = useMembersQuery(supabase, "pending");
   const [menuOpen, setMenuOpen] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
   const [face, setFace] = useState<SheetFace>("detail");

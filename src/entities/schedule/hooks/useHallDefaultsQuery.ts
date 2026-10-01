@@ -19,7 +19,7 @@ export type HallDefaultsResult = {
   isLoading: boolean;
 };
 
-export function useHallDefaults(client: DB): HallDefaultsResult {
+export function useHallDefaultsQuery(client: DB): HallDefaultsResult {
   const { data, error, isLoading } = useQuery({
     queryKey: queryKeys.hall.all,
     queryFn: () => getHallDefaults(client),

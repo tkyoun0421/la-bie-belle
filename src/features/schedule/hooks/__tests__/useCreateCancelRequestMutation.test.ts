@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useCreateCancelRequest.ts
+// 구현 대상: src/features/schedule/hooks/useCreateCancelRequestMutation.ts
 //
 // 근무자가 근무 취소를 요청한다(`createCancelRequest.ts`의
 // `createCancelRequest(client, assignmentId, reason)`). 성공하면
@@ -12,7 +12,7 @@ const createCancelRequestMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/api/createCancelRequest.api",
+  "@/features/schedule/api/createCancelRequest.api",
   () => ({
     createCancelRequest: createCancelRequestMock,
   }),
@@ -24,8 +24,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useCreateCancelRequest } =
-  await import("@/features/schedule/model/useCreateCancelRequest");
+const { useCreateCancelRequestMutation } =
+  await import("@/features/schedule/hooks/useCreateCancelRequestMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -55,14 +55,17 @@ beforeEach(() => {
   createCancelRequestMock.mockReset();
 });
 
-describe("useCreateCancelRequest — create_cancel_request를 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useCreateCancelRequestMutation — create_cancel_request를 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("assignmentId와 reason을 그대로 DAL에 넘긴다", async () => {
     createCancelRequestMock.mockResolvedValue("cancel-request-1");
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useCreateCancelRequest(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useCreateCancelRequestMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ assignmentId: ASSIGNMENT_ID, reason: REASON });
@@ -82,9 +85,12 @@ describe("useCreateCancelRequest — create_cancel_request를 부르고 schedule
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useCreateCancelRequest(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useCreateCancelRequestMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ assignmentId: ASSIGNMENT_ID, reason: REASON });
@@ -107,9 +113,12 @@ describe("useCreateCancelRequest — create_cancel_request를 부르고 schedule
     createCancelRequestMock.mockRejectedValue(new DomainError("window_closed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useCreateCancelRequest(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useCreateCancelRequestMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ assignmentId: ASSIGNMENT_ID, reason: REASON });

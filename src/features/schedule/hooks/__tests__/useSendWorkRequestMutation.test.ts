@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useSendWorkRequest.ts
+// 구현 대상: src/features/schedule/hooks/useSendWorkRequestMutation.ts
 //
 // 관리자가 픽커의 미신청 줄에서 고른 사람들에게 근무 요청을 보낸다
 // (`sendWorkRequest.ts`의 `sendWorkRequest(client, slotId, profileIds)`). 성공하면
@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const sendWorkRequestMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/sendWorkRequest.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/sendWorkRequest.api", () => ({
   sendWorkRequest: sendWorkRequestMock,
 }));
 
@@ -20,8 +20,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useSendWorkRequest } =
-  await import("@/features/schedule/model/useSendWorkRequest");
+const { useSendWorkRequestMutation } =
+  await import("@/features/schedule/hooks/useSendWorkRequestMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -51,14 +51,17 @@ beforeEach(() => {
   sendWorkRequestMock.mockReset();
 });
 
-describe("useSendWorkRequest — send_work_request를 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useSendWorkRequestMutation — send_work_request를 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("slotId와 profileIds를 그대로 DAL에 넘긴다", async () => {
     sendWorkRequestMock.mockResolvedValue("request-1");
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSendWorkRequest(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSendWorkRequestMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ slotId: SLOT_ID, profileIds: PROFILE_IDS });
@@ -78,9 +81,12 @@ describe("useSendWorkRequest — send_work_request를 부르고 schedule·payrol
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useSendWorkRequest(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSendWorkRequestMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ slotId: SLOT_ID, profileIds: PROFILE_IDS });
@@ -103,9 +109,12 @@ describe("useSendWorkRequest — send_work_request를 부르고 schedule·payrol
     sendWorkRequestMock.mockRejectedValue(new DomainError("slot_full"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSendWorkRequest(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSendWorkRequestMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ slotId: SLOT_ID, profileIds: PROFILE_IDS });

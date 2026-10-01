@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useRemoveSlot.ts
+// 구현 대상: src/features/schedule/hooks/useRemoveSlotMutation.ts
 //
 // 잠금이 풀린 포지션에서 자리를 버리는 손짓의 서버 쪽이다. `removeSlot(client, slotId)`를
 // 부르고 자리 늘리기·줄이기·겸임 셋과 같은 캐시 갱신 — `['schedule']` `['payroll']`
@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const removeSlotMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/removeSlot.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/removeSlot.api", () => ({
   removeSlot: removeSlotMock,
 }));
 
@@ -20,8 +20,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useRemoveSlot } =
-  await import("@/features/schedule/model/useRemoveSlot");
+const { useRemoveSlotMutation } =
+  await import("@/features/schedule/hooks/useRemoveSlotMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -50,13 +50,13 @@ beforeEach(() => {
   removeSlotMock.mockReset();
 });
 
-describe("useRemoveSlot — remove_slot을 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useRemoveSlotMutation — remove_slot을 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("성공하면 DAL을 (client, slotId)로 부르고 세 키를 무효화한다", async () => {
     removeSlotMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useRemoveSlot(FAKE_CLIENT), {
+    const { result } = renderHook(() => useRemoveSlotMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -82,7 +82,7 @@ describe("useRemoveSlot — remove_slot을 부르고 schedule·payroll·requests
     removeSlotMock.mockRejectedValue(new DomainError("already_confirmed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRemoveSlot(FAKE_CLIENT), {
+    const { result } = renderHook(() => useRemoveSlotMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -108,7 +108,7 @@ describe("useRemoveSlot — remove_slot을 부르고 schedule·payroll·requests
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRemoveSlot(FAKE_CLIENT), {
+    const { result } = renderHook(() => useRemoveSlotMutation(FAKE_CLIENT), {
       wrapper,
     });
 

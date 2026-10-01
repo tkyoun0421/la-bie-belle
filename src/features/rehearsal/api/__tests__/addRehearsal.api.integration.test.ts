@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { addRehearsal } from "@/entities/rehearsal/api/addRehearsal.api";
+import { addRehearsal } from "@/features/rehearsal/api/addRehearsal.api";
 import {
   createAdminUser,
   createApprovedUser,

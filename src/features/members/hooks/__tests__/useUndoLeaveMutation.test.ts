@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 
 const undoLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/api/undoLeave.api", () => ({
+jest.unstable_mockModule("@/features/members/api/undoLeave.api", () => ({
   undoLeave: undoLeaveMock,
 }));
 
@@ -17,7 +17,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useUndoLeave } = await import("@/features/members/model/useUndoLeave");
+const { useUndoLeaveMutation } =
+  await import("@/features/members/hooks/useUndoLeaveMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -44,13 +45,13 @@ beforeEach(() => {
   undoLeaveMock.mockReset();
 });
 
-describe("useUndoLeave — 퇴사를 되돌리고 members를 무효화한다", () => {
+describe("useUndoLeaveMutation — 퇴사를 되돌리고 members를 무효화한다", () => {
   it("성공하면 DAL을 그 인자로 부르고 ['members']를 무효화한다", async () => {
     undoLeaveMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useUndoLeave(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUndoLeaveMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -70,7 +71,7 @@ describe("useUndoLeave — 퇴사를 되돌리고 members를 무효화한다", (
     undoLeaveMock.mockRejectedValue(new DomainError("already_decided"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useUndoLeave(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUndoLeaveMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -96,7 +97,7 @@ describe("useUndoLeave — 퇴사를 되돌리고 members를 무효화한다", (
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useUndoLeave(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUndoLeaveMutation(FAKE_CLIENT), {
       wrapper,
     });
 

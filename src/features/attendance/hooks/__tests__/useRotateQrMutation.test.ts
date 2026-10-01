@@ -1,14 +1,14 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/attendance/model/useRotateQr.ts
+// 구현 대상: src/features/attendance/hooks/useRotateQrMutation.ts
 //
 // 관리자가 「새로 뽑기」를 누르면 rotate_qr을 부르고 성공 시 ['hall','qr']을
 // 무효화한다(design.md 「QR 바꾸기」, spec `docs/2-design/spec/attendance-qr.md`).
 
 const rotateQrMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/attendance/api/rotateQr.api", () => ({
+jest.unstable_mockModule("@/features/attendance/api/rotateQr.api", () => ({
   rotateQr: rotateQrMock,
 }));
 
@@ -18,7 +18,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useRotateQr } = await import("@/features/attendance/model/useRotateQr");
+const { useRotateQrMutation } =
+  await import("@/features/attendance/hooks/useRotateQrMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -45,12 +46,12 @@ beforeEach(() => {
   rotateQrMock.mockReset();
 });
 
-describe("useRotateQr — rotate_qr을 부르고 hall/qr만 무효화한다", () => {
+describe("useRotateQrMutation — rotate_qr을 부르고 hall/qr만 무효화한다", () => {
   it("client를 그대로 넘겨 DAL을 부른다", async () => {
     rotateQrMock.mockResolvedValue(undefined);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRotateQr(FAKE_CLIENT), {
+    const { result } = renderHook(() => useRotateQrMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -68,7 +69,7 @@ describe("useRotateQr — rotate_qr을 부르고 hall/qr만 무효화한다", ()
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useRotateQr(FAKE_CLIENT), {
+    const { result } = renderHook(() => useRotateQrMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -87,7 +88,7 @@ describe("useRotateQr — rotate_qr을 부르고 hall/qr만 무효화한다", ()
     rotateQrMock.mockRejectedValue(new DomainError("not_allowed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRotateQr(FAKE_CLIENT), {
+    const { result } = renderHook(() => useRotateQrMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -113,7 +114,7 @@ describe("useRotateQr — rotate_qr을 부르고 hall/qr만 무효화한다", ()
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRotateQr(FAKE_CLIENT), {
+    const { result } = renderHook(() => useRotateQrMutation(FAKE_CLIENT), {
       wrapper,
     });
 

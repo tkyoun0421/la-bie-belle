@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useGrantPosition.ts
+// 구현 대상: src/features/schedule/hooks/useGrantPositionMutation.ts
 //
 // 자격 없는 사람 시트의 「자격도 주기」다. `grantPosition(client, profileId, position)`을
 // 부른다. 이 훅만 `['schedule']`이 아니라 `['members']`를 무효화한다(design.md 「자격
@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const grantPositionMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/grantPosition.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/grantPosition.api", () => ({
   grantPosition: grantPositionMock,
 }));
 
@@ -20,8 +20,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useGrantPosition } =
-  await import("@/features/schedule/model/useGrantPosition");
+const { useGrantPositionMutation } =
+  await import("@/features/schedule/hooks/useGrantPositionMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -51,13 +51,13 @@ beforeEach(() => {
   grantPositionMock.mockReset();
 });
 
-describe("useGrantPosition — grant_position을 부르고 members를 무효화한다", () => {
+describe("useGrantPositionMutation — grant_position을 부르고 members를 무효화한다", () => {
   it("성공하면 DAL을 (client, profileId, position)으로 부르고 members를 무효화한다", async () => {
     grantPositionMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useGrantPosition(FAKE_CLIENT), {
+    const { result } = renderHook(() => useGrantPositionMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -82,7 +82,7 @@ describe("useGrantPosition — grant_position을 부르고 members를 무효화�
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useGrantPosition(FAKE_CLIENT), {
+    const { result } = renderHook(() => useGrantPositionMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -105,7 +105,7 @@ describe("useGrantPosition — grant_position을 부르고 members를 무효화�
     grantPositionMock.mockRejectedValue(new DomainError("not_allowed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useGrantPosition(FAKE_CLIENT), {
+    const { result } = renderHook(() => useGrantPositionMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -131,7 +131,7 @@ describe("useGrantPosition — grant_position을 부르고 members를 무효화�
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useGrantPosition(FAKE_CLIENT), {
+    const { result } = renderHook(() => useGrantPositionMutation(FAKE_CLIENT), {
       wrapper,
     });
 

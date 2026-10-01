@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { markLeave } from "@/entities/profile/api/markLeave.api";
+import { markLeave } from "@/features/members/api/markLeave.api";
 
 /**
  * 그만둔 사람을 퇴사로 옮긴다. 성공하면 그 줄이 재직자 목록에서 빠지고 퇴사 구획에 서는데,
@@ -25,7 +25,7 @@ export type MarkLeaveResult = {
   reset: () => void;
 };
 
-export function useMarkLeave(client: DB): MarkLeaveResult {
+export function useMarkLeaveMutation(client: DB): MarkLeaveResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

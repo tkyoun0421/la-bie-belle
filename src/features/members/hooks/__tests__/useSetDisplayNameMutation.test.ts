@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 
 const setDisplayNameMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/api/setDisplayName.api", () => ({
+jest.unstable_mockModule("@/features/members/api/setDisplayName.api", () => ({
   setDisplayName: setDisplayNameMock,
 }));
 
@@ -17,8 +17,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useSetDisplayName } =
-  await import("@/features/members/model/useSetDisplayName");
+const { useSetDisplayNameMutation } =
+  await import("@/features/members/hooks/useSetDisplayNameMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -45,15 +45,18 @@ beforeEach(() => {
   setDisplayNameMock.mockReset();
 });
 
-describe("useSetDisplayName — 이름을 바꾸고 profile·members·schedule을 무효화한다", () => {
+describe("useSetDisplayNameMutation — 이름을 바꾸고 profile·members·schedule을 무효화한다", () => {
   it("성공하면 DAL을 그 인자로 부르고 세 키를 무효화한다", async () => {
     setDisplayNameMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useSetDisplayName(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSetDisplayNameMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ profileId: "profile-1", name: "박서영" });
@@ -81,9 +84,12 @@ describe("useSetDisplayName — 이름을 바꾸고 profile·members·schedule�
     setDisplayNameMock.mockRejectedValue(new DomainError("invalid_name"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSetDisplayName(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSetDisplayNameMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ profileId: "profile-1", name: "" });
@@ -107,9 +113,12 @@ describe("useSetDisplayName — 이름을 바꾸고 profile·members·schedule�
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSetDisplayName(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSetDisplayNameMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ profileId: "profile-1", name: "박서영" });

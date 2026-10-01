@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { markNotificationsRead } from "@/entities/notification/api/markNotificationsRead.api";
+import { markNotificationsRead } from "@/features/notification/api/markNotificationsRead.api";
 
 /**
  * 누른 알림에 읽음을 찍는다. 정본은
@@ -15,7 +15,7 @@ import { markNotificationsRead } from "@/entities/notification/api/markNotificat
  * `screens/notifications/model/pressNotification.ts`가 한다.
  */
 
-export function useMarkNotificationsRead(client: DB) {
+export function useMarkNotificationsReadMutation(client: DB) {
   const queryClient = useQueryClient();
 
   return useMutation({

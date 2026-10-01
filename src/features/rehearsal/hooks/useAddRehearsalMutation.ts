@@ -5,7 +5,7 @@ import { staleTogether } from "@/shared/api/queryKeys";
 import {
   addRehearsal,
   type AddRehearsalInput,
-} from "@/entities/rehearsal/api/addRehearsal.api";
+} from "@/features/rehearsal/api/addRehearsal.api";
 
 /**
  * 리허설 넣기다. 성공하면 `['rehearsal']`과 `['payroll']`이 낡는다 —
@@ -25,7 +25,7 @@ export type AddRehearsalResult = {
   reset: () => void;
 };
 
-export function useAddRehearsal(client: DB): AddRehearsalResult {
+export function useAddRehearsalMutation(client: DB): AddRehearsalResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

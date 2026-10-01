@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useSetApplicationDeadline.ts
+// 구현 대상: src/features/schedule/hooks/useSetApplicationDeadlineMutation.ts
 //
 // 마감일을 바꾼다. 근무 신청 모아보기의 「마감일 바꾸기」와 확정 잠김의 「마감일 당기기」가
 // 같은 훅을 쓴다(`schedule-admin.md`의 「근무 신청 모아보기 짜임」). 캐시 갱신은
@@ -12,7 +12,7 @@ const setApplicationDeadlineMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/api/setApplicationDeadline.api",
+  "@/features/schedule/api/setApplicationDeadline.api",
   () => ({
     setApplicationDeadline: setApplicationDeadlineMock,
   }),
@@ -24,8 +24,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useSetApplicationDeadline } =
-  await import("@/features/schedule/model/useSetApplicationDeadline");
+const { useSetApplicationDeadlineMutation } =
+  await import("@/features/schedule/hooks/useSetApplicationDeadlineMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -56,14 +56,14 @@ beforeEach(() => {
   setApplicationDeadlineMock.mockReset();
 });
 
-describe("useSetApplicationDeadline — set_application_deadline을 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useSetApplicationDeadlineMutation — set_application_deadline을 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("성공하면 DAL을 (client, month, deadline)로 부르고 세 키를 무효화한다", async () => {
     setApplicationDeadlineMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
     const { result } = renderHook(
-      () => useSetApplicationDeadline(FAKE_CLIENT),
+      () => useSetApplicationDeadlineMutation(FAKE_CLIENT),
       { wrapper },
     );
 
@@ -96,7 +96,7 @@ describe("useSetApplicationDeadline — set_application_deadline을 부르고 sc
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useSetApplicationDeadline(FAKE_CLIENT),
+      () => useSetApplicationDeadlineMutation(FAKE_CLIENT),
       { wrapper },
     );
 
@@ -123,7 +123,7 @@ describe("useSetApplicationDeadline — set_application_deadline을 부르고 sc
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useSetApplicationDeadline(FAKE_CLIENT),
+      () => useSetApplicationDeadlineMutation(FAKE_CLIENT),
       { wrapper },
     );
 

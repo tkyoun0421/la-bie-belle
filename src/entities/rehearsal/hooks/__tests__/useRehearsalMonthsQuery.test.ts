@@ -1,6 +1,6 @@
-// 구현 대상: src/features/rehearsal/model/useRehearsalMonths.ts
+// 구현 대상: src/entities/rehearsal/hooks/useRehearsalMonthsQuery.ts
 //
-// useRehearsalMonths(client, months) — 여러 달 본인 리허설 키를 결합해 읽는 훅이다
+// useRehearsalMonthsQuery(client, months) — 여러 달 본인 리허설 키를 결합해 읽는 훅이다
 // (payroll-view AC-06 「연은 열두 키를 읽어 더한다」와 같은 다개월 계약을 리허설에도
 // 적용한다). 요청한 달 수만큼 getMyRehearsals를 부르고, 하나라도 pending이면
 // 로딩이고, 하나라도 error면 그 error가 표면에 뜨고, 전부 오면 달치 리허설을 하나로
@@ -22,8 +22,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useRehearsalMonths } =
-  await import("@/features/rehearsal/model/useRehearsalMonths");
+const { useRehearsalMonthsQuery } =
+  await import("@/entities/rehearsal/hooks/useRehearsalMonthsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -58,7 +58,7 @@ beforeEach(() => {
   getMyRehearsalsMock.mockReset();
 });
 
-describe("useRehearsalMonths — 요청한 달 수만큼 쿼리가 열린다", () => {
+describe("useRehearsalMonthsQuery — 요청한 달 수만큼 쿼리가 열린다", () => {
   it("연이면 열두 달을 각각 한 번씩 읽는다", async () => {
     getMyRehearsalsMock.mockImplementation(async (_client, month) => [
       rowFor(month as string),
@@ -70,7 +70,7 @@ describe("useRehearsalMonths — 요청한 달 수만큼 쿼리가 열린다", (
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useRehearsalMonths(FAKE_CLIENT, months),
+      () => useRehearsalMonthsQuery(FAKE_CLIENT, months),
       { wrapper },
     );
 
@@ -82,7 +82,7 @@ describe("useRehearsalMonths — 요청한 달 수만큼 쿼리가 열린다", (
   });
 });
 
-describe("useRehearsalMonths — 하나라도 pending이면 로딩이다", () => {
+describe("useRehearsalMonthsQuery — 하나라도 pending이면 로딩이다", () => {
   it("한 달은 응답하고 한 달은 안 끝나면 isLoading이 true다", async () => {
     getMyRehearsalsMock.mockImplementation(async (_client, month) => {
       if (month === "2026-09") {
@@ -93,7 +93,7 @@ describe("useRehearsalMonths — 하나라도 pending이면 로딩이다", () =>
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useRehearsalMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      () => useRehearsalMonthsQuery(FAKE_CLIENT, ["2026-09", "2026-10"]),
       { wrapper },
     );
 
@@ -103,7 +103,7 @@ describe("useRehearsalMonths — 하나라도 pending이면 로딩이다", () =>
   });
 });
 
-describe("useRehearsalMonths — 하나라도 error면 그 error가 표면에 뜬다", () => {
+describe("useRehearsalMonthsQuery — 하나라도 error면 그 error가 표면에 뜬다", () => {
   it("한 달이 실패하면 error에 그 이유가 담긴다", async () => {
     const failure = new Error("month read failed");
     getMyRehearsalsMock.mockImplementation(async (_client, month) => {
@@ -115,7 +115,7 @@ describe("useRehearsalMonths — 하나라도 error면 그 error가 표면에 �
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useRehearsalMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      () => useRehearsalMonthsQuery(FAKE_CLIENT, ["2026-09", "2026-10"]),
       { wrapper },
     );
 
@@ -125,7 +125,7 @@ describe("useRehearsalMonths — 하나라도 error면 그 error가 표면에 �
   });
 });
 
-describe("useRehearsalMonths — 전부 오면 달치가 합쳐져 나온다", () => {
+describe("useRehearsalMonthsQuery — 전부 오면 달치가 합쳐져 나온다", () => {
   it("두 달의 리허설이 하나의 배열로 이어진다", async () => {
     getMyRehearsalsMock.mockImplementation(async (_client, month) => [
       rowFor(month as string),
@@ -133,7 +133,7 @@ describe("useRehearsalMonths — 전부 오면 달치가 합쳐져 나온다", (
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useRehearsalMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      () => useRehearsalMonthsQuery(FAKE_CLIENT, ["2026-09", "2026-10"]),
       { wrapper },
     );
 

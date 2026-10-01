@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
-import { setApplicationDeadline } from "@/entities/schedule/api/setApplicationDeadline.api";
+import { setApplicationDeadline } from "@/features/schedule/api/setApplicationDeadline.api";
 import {
   createAdminUser,
   kstDate,

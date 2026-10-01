@@ -10,7 +10,7 @@ import {
  * 여러 달치 본인 리허설을 한 덩이로 읽는다. 급여 화면이 기간을 달과 안 맞게 자르기 때문이다 —
  * 달을 걸친 주는 키가 둘이고 「연」은 열둘이다(plan payroll-view AC-06).
  *
- * 키는 [`useMyRehearsals`](useMyRehearsals.ts)가 쓰는 것과 같은 `['rehearsal', month]`다 —
+ * 키는 [`useMyRehearsalsQuery`](useMyRehearsalsQuery.ts)가 쓰는 것과 같은 `['rehearsal', month]`다 —
  * 근무표 화면과 급여 화면이 같은 달을 두 번 안 읽는다.
  *
  * **하나라도 안 오면 로딩이다.** 리허설이 빠진 채 더하면 금액이 진짜보다 적게 서는데, 그것이
@@ -23,7 +23,7 @@ export type RehearsalMonthsResult = {
   error: Error | null;
 };
 
-export function useRehearsalMonths(
+export function useRehearsalMonthsQuery(
   client: DB,
   months: readonly string[],
 ): RehearsalMonthsResult {

@@ -10,9 +10,9 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Tabs } from "@/shared/ui/Tabs";
 import { Text } from "@/shared/ui/Text";
-import { useMonthAvailabilities } from "@/features/schedule/model/useMonthAvailabilities";
-import { useMonthWindow } from "@/features/schedule/model/useMonthWindow";
-import { useSetApplicationDeadline } from "@/features/schedule/model/useSetApplicationDeadline";
+import { useMonthAvailabilitiesQuery } from "@/entities/schedule/hooks/useMonthAvailabilitiesQuery";
+import { useMonthWindowQuery } from "@/entities/schedule/hooks/useMonthWindowQuery";
+import { useSetApplicationDeadlineMutation } from "@/features/schedule/hooks/useSetApplicationDeadlineMutation";
 import { DeadlineSheet } from "@/features/schedule/ui/DeadlineSheet";
 import {
   applicationsDeadlineLine,
@@ -64,8 +64,11 @@ export function ApplicationsScreen({
   const [tab, setTab] = useState("date");
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const { data: schedule } = useMonthWindow(supabase, month);
-  const { data: rows, isLoading } = useMonthAvailabilities(supabase, month);
+  const { data: schedule } = useMonthWindowQuery(supabase, month);
+  const { data: rows, isLoading } = useMonthAvailabilitiesQuery(
+    supabase,
+    month,
+  );
 
   const {
     mutate: saveDeadline,
@@ -73,7 +76,7 @@ export function ApplicationsScreen({
     isSuccess: savedDeadline,
     isError: saveFailed,
     reset: resetSave,
-  } = useSetApplicationDeadline(supabase);
+  } = useSetApplicationDeadlineMutation(supabase);
 
   const closeSheet = useCallback(() => setSheetOpen(false), []);
 

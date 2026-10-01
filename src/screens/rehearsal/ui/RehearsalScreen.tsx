@@ -15,20 +15,20 @@ import { MonthPickerSheet } from "@/shared/ui/MonthPickerSheet";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
+import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
+import { useAllRehearsalsQuery } from "@/entities/rehearsal/hooks/useAllRehearsalsQuery";
+import { useMyRehearsalsQuery } from "@/entities/rehearsal/hooks/useMyRehearsalsQuery";
 import {
   dayTotal,
   monthTotal,
 } from "@/entities/rehearsal/model/rehearsalHours";
-import { useMyProfile } from "@/features/profile/model/useMyProfile";
+import { useMonthScheduleQuery } from "@/entities/schedule/hooks/useMonthScheduleQuery";
+import { useAddRehearsalMutation } from "@/features/rehearsal/hooks/useAddRehearsalMutation";
+import { useEditRehearsalMutation } from "@/features/rehearsal/hooks/useEditRehearsalMutation";
+import { useRemoveRehearsalMutation } from "@/features/rehearsal/hooks/useRemoveRehearsalMutation";
 import { canAddOn } from "@/features/rehearsal/model/canAddOn";
 import { kindForDate } from "@/features/rehearsal/model/kindForDate";
-import { useAddRehearsal } from "@/features/rehearsal/model/useAddRehearsal";
-import { useAllRehearsals } from "@/features/rehearsal/model/useAllRehearsals";
-import { useEditRehearsal } from "@/features/rehearsal/model/useEditRehearsal";
-import { useMyRehearsals } from "@/features/rehearsal/model/useMyRehearsals";
-import { useRemoveRehearsal } from "@/features/rehearsal/model/useRemoveRehearsal";
-import { useMonthSchedule } from "@/features/schedule/model/useMonthSchedule";
 import {
   addSheetActionFor,
   addSheetReducer,
@@ -106,14 +106,14 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
   const [removing, setRemoving] = useState(false);
   const [sheet, dispatch] = useReducer(addSheetReducer, INITIAL_FORM);
 
-  const { data: profile } = useMyProfile(supabase, userId);
+  const { data: profile } = useMyProfileQuery(supabase, userId);
 
   const isAdmin = profile?.role === "admin";
   const myProfileId = profile?.id ?? null;
 
-  const mine = useMyRehearsals(supabase, month, !isAdmin);
-  const all = useAllRehearsals(supabase, month, isAdmin);
-  const { data: days } = useMonthSchedule(supabase, month);
+  const mine = useMyRehearsalsQuery(supabase, month, !isAdmin);
+  const all = useAllRehearsalsQuery(supabase, month, isAdmin);
+  const { data: days } = useMonthScheduleQuery(supabase, month);
 
   const {
     mutate: add,
@@ -122,7 +122,7 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
     isError: addFailed,
     error: addError,
     reset: resetAdd,
-  } = useAddRehearsal(supabase);
+  } = useAddRehearsalMutation(supabase);
 
   const {
     mutate: save,
@@ -131,13 +131,13 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
     isError: editFailed,
     error: editError,
     reset: resetEdit,
-  } = useEditRehearsal(supabase);
+  } = useEditRehearsalMutation(supabase);
 
   const {
     mutate: remove,
     isSuccess: deleted,
     reset: resetRemove,
-  } = useRemoveRehearsal(supabase);
+  } = useRemoveRehearsalMutation(supabase);
 
   useEffect(() => {
     void getCurrentUser(supabase).then((user) => setUserId(user?.id ?? null));

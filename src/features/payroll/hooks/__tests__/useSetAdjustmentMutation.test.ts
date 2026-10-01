@@ -1,4 +1,4 @@
-// 구현 대상: src/features/payroll/model/useSetAdjustment.ts
+// 구현 대상: src/features/payroll/hooks/useSetAdjustmentMutation.ts
 //
 // `set_adjustment`를 부르는 mutation이다(payroll-adjust plan AC-05). 성공하면
 // `['payroll']`을 무효화한다. `p_reason`은 화면이 고른 갈래 이름이고 셋 중 하나다 —
@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const setAdjustmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/payroll/api/setAdjustment.api", () => ({
+jest.unstable_mockModule("@/features/payroll/api/setAdjustment.api", () => ({
   setAdjustment: setAdjustmentMock,
 }));
 
@@ -20,8 +20,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useSetAdjustment } =
-  await import("@/features/payroll/model/useSetAdjustment");
+const { useSetAdjustmentMutation } =
+  await import("@/features/payroll/hooks/useSetAdjustmentMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -48,13 +48,13 @@ beforeEach(() => {
   setAdjustmentMock.mockReset();
 });
 
-describe("useSetAdjustment — 성공하면 DAL을 그 인자로 부르고 ['payroll']을 무효화한다", () => {
+describe("useSetAdjustmentMutation — 성공하면 DAL을 그 인자로 부르고 ['payroll']을 무효화한다", () => {
   it("결근을 고르면 reason이 「결근」 그대로 DAL에 실린다", async () => {
     setAdjustmentMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useSetAdjustment(FAKE_CLIENT), {
+    const { result } = renderHook(() => useSetAdjustmentMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -84,7 +84,7 @@ describe("useSetAdjustment — 성공하면 DAL을 그 인자로 부르고 ['pay
     setAdjustmentMock.mockResolvedValue(undefined);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSetAdjustment(FAKE_CLIENT), {
+    const { result } = renderHook(() => useSetAdjustmentMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -109,7 +109,7 @@ describe("useSetAdjustment — 성공하면 DAL을 그 인자로 부르고 ['pay
     setAdjustmentMock.mockResolvedValue(undefined);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSetAdjustment(FAKE_CLIENT), {
+    const { result } = renderHook(() => useSetAdjustmentMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -131,12 +131,12 @@ describe("useSetAdjustment — 성공하면 DAL을 그 인자로 부르고 ['pay
   });
 });
 
-describe("useSetAdjustment — DomainError를 삼키지 않고 error에 그대로 싣는다", () => {
+describe("useSetAdjustmentMutation — DomainError를 삼키지 않고 error에 그대로 싣는다", () => {
   it("not_allowed 거절이 그대로 error가 된다", async () => {
     setAdjustmentMock.mockRejectedValue(new DomainError("not_allowed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSetAdjustment(FAKE_CLIENT), {
+    const { result } = renderHook(() => useSetAdjustmentMutation(FAKE_CLIENT), {
       wrapper,
     });
 

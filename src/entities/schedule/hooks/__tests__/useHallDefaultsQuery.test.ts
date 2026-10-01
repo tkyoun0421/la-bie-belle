@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useHallDefaults.ts
+// 구현 대상: src/entities/schedule/hooks/useHallDefaultsQuery.ts
 //
 // 홀의 자리·근무 시간 기본값을 읽는다. 관리자 홈의 기본값 줄과 기본값 시트가 이 값을
 // 쓴다. `set_hall_defaults`가 무효화하는 키가 `['hall']`이므로(design.md 「홀
@@ -18,8 +18,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useHallDefaults } =
-  await import("@/features/schedule/model/useHallDefaults");
+const { useHallDefaultsQuery } =
+  await import("@/entities/schedule/hooks/useHallDefaultsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -49,12 +49,12 @@ beforeEach(() => {
   getHallDefaultsMock.mockReset();
 });
 
-describe("useHallDefaults — getHallDefaults를 불러 ['hall']에 앉힌다", () => {
+describe("useHallDefaultsQuery — getHallDefaults를 불러 ['hall']에 앉힌다", () => {
   it("client를 그대로 넘겨 DAL을 부른다", async () => {
     getHallDefaultsMock.mockResolvedValue(HALL_DEFAULTS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useHallDefaults(FAKE_CLIENT), {
+    const { result } = renderHook(() => useHallDefaultsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -67,7 +67,7 @@ describe("useHallDefaults — getHallDefaults를 불러 ['hall']에 앉힌다", 
     getHallDefaultsMock.mockReturnValue(new Promise(() => {}));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useHallDefaults(FAKE_CLIENT), {
+    const { result } = renderHook(() => useHallDefaultsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -78,7 +78,7 @@ describe("useHallDefaults — getHallDefaults를 불러 ['hall']에 앉힌다", 
     getHallDefaultsMock.mockResolvedValue(HALL_DEFAULTS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useHallDefaults(FAKE_CLIENT), {
+    const { result } = renderHook(() => useHallDefaultsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -91,7 +91,7 @@ describe("useHallDefaults — getHallDefaults를 불러 ['hall']에 앉힌다", 
     getHallDefaultsMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useHallDefaults(FAKE_CLIENT), {
+    const { result } = renderHook(() => useHallDefaultsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -102,7 +102,7 @@ describe("useHallDefaults — getHallDefaults를 불러 ['hall']에 앉힌다", 
     getHallDefaultsMock.mockResolvedValue(HALL_DEFAULTS);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useHallDefaults(FAKE_CLIENT), {
+    const { result } = renderHook(() => useHallDefaultsQuery(FAKE_CLIENT), {
       wrapper,
     });
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { AppStateStatus } from "react-native";
 import type { DB } from "@/shared/api/database";
-import { savePushToken } from "@/entities/notification/api/savePushToken.api";
+import { savePushToken } from "@/features/notification/api/savePushToken.api";
 import { isForegroundEntry } from "@/features/notification/model/appEntry";
 
 /**
@@ -36,7 +36,7 @@ type AppStateSource = {
 /** 마운트가 첫 진입이라 앞선 상태를 `active`로 둔다 — 그 한 번은 아래 효과가 이미 보낸다. */
 const MOUNTED_AS_ACTIVE: AppStateStatus = "active";
 
-export function useSavePushToken(
+export function useSavePushTokenMutation(
   client: DB,
   token: string | null,
   appState: AppStateSource,

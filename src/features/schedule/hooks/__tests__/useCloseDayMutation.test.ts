@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useCloseDay.ts
+// 구현 대상: src/features/schedule/hooks/useCloseDayMutation.ts
 //
 // 날 하나를 닫는다. 배정이 있으면 화면이 먼저 경고 시트로 확인받고 이 훅은 그 뒤에
 // `close_day`만 부른다(`schedule-admin.md`의 「날 닫기 경고」). 캐시 갱신은
@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 
 const closeDayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/closeDay.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/closeDay.api", () => ({
   closeDay: closeDayMock,
 }));
 
@@ -19,7 +19,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useCloseDay } = await import("@/features/schedule/model/useCloseDay");
+const { useCloseDayMutation } =
+  await import("@/features/schedule/hooks/useCloseDayMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -48,13 +49,15 @@ beforeEach(() => {
   closeDayMock.mockReset();
 });
 
-describe("useCloseDay — close_day를 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useCloseDayMutation — close_day를 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("성공하면 DAL을 (client, workDate)로 부르고 세 키를 무효화한다", async () => {
     closeDayMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useCloseDay(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useCloseDayMutation(FAKE_CLIENT), {
+      wrapper,
+    });
 
     act(() => {
       result.current.mutate({ workDate: WORK_DATE });
@@ -78,7 +81,9 @@ describe("useCloseDay — close_day를 부르고 schedule·payroll·requests를 
     closeDayMock.mockRejectedValue(new DomainError("not_open"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useCloseDay(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useCloseDayMutation(FAKE_CLIENT), {
+      wrapper,
+    });
 
     act(() => {
       result.current.mutate({ workDate: WORK_DATE });
@@ -102,7 +107,9 @@ describe("useCloseDay — close_day를 부르고 schedule·payroll·requests를 
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useCloseDay(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useCloseDayMutation(FAKE_CLIENT), {
+      wrapper,
+    });
 
     act(() => {
       result.current.mutate({ workDate: WORK_DATE });

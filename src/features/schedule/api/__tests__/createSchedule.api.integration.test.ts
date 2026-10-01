@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { createSchedule } from "@/entities/schedule/api/createSchedule.api";
+import { createSchedule } from "@/features/schedule/api/createSchedule.api";
 import {
   createAdminUser,
   kstDate,

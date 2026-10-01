@@ -20,7 +20,7 @@ export type OpenSlotsResult = {
   isLoading: boolean;
 };
 
-export function useOpenSlots(client: DB, month: string): OpenSlotsResult {
+export function useOpenSlotsQuery(client: DB, month: string): OpenSlotsResult {
   const { data, error, isLoading } = useQuery({
     queryKey: queryKeys.schedule.openSlots(month),
     queryFn: () => getOpenSlots(client, month),

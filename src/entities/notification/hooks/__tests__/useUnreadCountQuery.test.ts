@@ -16,8 +16,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useUnreadCount } =
-  await import("@/features/notification/model/useUnreadCount");
+const { useUnreadCountQuery } =
+  await import("@/entities/notification/hooks/useUnreadCountQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -41,12 +41,12 @@ beforeEach(() => {
   countUnreadNotificationsMock.mockReset();
 });
 
-describe("useUnreadCount — 캐시 키가 ['notifications', 'unread']다", () => {
+describe("useUnreadCountQuery — 캐시 키가 ['notifications', 'unread']다", () => {
   it("성공하면 그 키에 값이 앉는다", async () => {
     countUnreadNotificationsMock.mockResolvedValue(0);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useUnreadCount(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUnreadCountQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -56,12 +56,12 @@ describe("useUnreadCount — 캐시 키가 ['notifications', 'unread']다", () =
   });
 });
 
-describe("useUnreadCount — 안 읽은 것이 없으면 0이라 점이 없다", () => {
+describe("useUnreadCountQuery — 안 읽은 것이 없으면 0이라 점이 없다", () => {
   it("data가 0이다", async () => {
     countUnreadNotificationsMock.mockResolvedValue(0);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useUnreadCount(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUnreadCountQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -71,12 +71,12 @@ describe("useUnreadCount — 안 읽은 것이 없으면 0이라 점이 없다",
   });
 });
 
-describe("useUnreadCount — 안 읽은 것이 하나 이상이면 점이 선다", () => {
+describe("useUnreadCountQuery — 안 읽은 것이 하나 이상이면 점이 선다", () => {
   it("data가 1이면 그대로 1이다", async () => {
     countUnreadNotificationsMock.mockResolvedValue(1);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useUnreadCount(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUnreadCountQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -89,7 +89,7 @@ describe("useUnreadCount — 안 읽은 것이 하나 이상이면 점이 선다
     countUnreadNotificationsMock.mockResolvedValue(12);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useUnreadCount(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUnreadCountQuery(FAKE_CLIENT), {
       wrapper,
     });
 

@@ -49,7 +49,7 @@ export type MembersResult<Row> = {
   isLoading: boolean;
 };
 
-export function useMembers<Kind extends MemberKind>(
+export function useMembersQuery<Kind extends MemberKind>(
   client: DB,
   kind: Kind,
 ): MembersResult<RowOf[Kind]> {

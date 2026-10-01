@@ -11,7 +11,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useWageRates } = await import("@/features/payroll/model/useWageRates");
+const { useWageRatesQuery } =
+  await import("@/entities/payroll/hooks/useWageRatesQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -47,12 +48,12 @@ beforeEach(() => {
   getWageRatesMock.mockReset();
 });
 
-describe("useWageRates — getWageRates를 그대로 낸다", () => {
+describe("useWageRatesQuery — getWageRates를 그대로 낸다", () => {
   it("응답하면 DAL의 반환값을 그대로 data에 낸다", async () => {
     getWageRatesMock.mockResolvedValue(WAGE_RATES);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useWageRates(FAKE_CLIENT), {
+    const { result } = renderHook(() => useWageRatesQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -62,12 +63,12 @@ describe("useWageRates — getWageRates를 그대로 낸다", () => {
   });
 });
 
-describe("useWageRates — 캐시 키는 ['payroll', 'wages']다", () => {
+describe("useWageRatesQuery — 캐시 키는 ['payroll', 'wages']다", () => {
   it("쿼리 데이터가 그 리터럴 키에 앉는다", async () => {
     getWageRatesMock.mockResolvedValue(WAGE_RATES);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useWageRates(FAKE_CLIENT), {
+    const { result } = renderHook(() => useWageRatesQuery(FAKE_CLIENT), {
       wrapper,
     });
 

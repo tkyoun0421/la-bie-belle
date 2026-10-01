@@ -1,4 +1,4 @@
-// 구현 대상: src/features/payroll/model/useSetHoliday.ts
+// 구현 대상: src/features/payroll/hooks/useSetHolidayMutation.ts
 //
 // `set_holiday`를 부르는 mutation이다(payroll-adjust plan AC-05). 성공하면
 // `['payroll']`을 무효화한다. 거절은 삼키지 않고 그대로 error에 싣는다.
@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const setHolidayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/payroll/api/setHoliday.api", () => ({
+jest.unstable_mockModule("@/features/payroll/api/setHoliday.api", () => ({
   setHoliday: setHolidayMock,
 }));
 
@@ -18,8 +18,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useSetHoliday } =
-  await import("@/features/payroll/model/useSetHoliday");
+const { useSetHolidayMutation } =
+  await import("@/features/payroll/hooks/useSetHolidayMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -46,13 +46,13 @@ beforeEach(() => {
   setHolidayMock.mockReset();
 });
 
-describe("useSetHoliday — 성공하면 DAL을 그 인자로 부르고 ['payroll']을 무효화한다", () => {
+describe("useSetHolidayMutation — 성공하면 DAL을 그 인자로 부르고 ['payroll']을 무효화한다", () => {
   it("mutate로 넣은 date·on 그대로 DAL을 부른다", async () => {
     setHolidayMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useSetHoliday(FAKE_CLIENT), {
+    const { result } = renderHook(() => useSetHolidayMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -72,12 +72,12 @@ describe("useSetHoliday — 성공하면 DAL을 그 인자로 부르고 ['payrol
   });
 });
 
-describe("useSetHoliday — DomainError를 삼키지 않고 error에 그대로 싣는다", () => {
+describe("useSetHolidayMutation — DomainError를 삼키지 않고 error에 그대로 싣는다", () => {
   it("거절이 그대로 error가 된다", async () => {
     setHolidayMock.mockRejectedValue(new DomainError("not_allowed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSetHoliday(FAKE_CLIENT), {
+    const { result } = renderHook(() => useSetHolidayMutation(FAKE_CLIENT), {
       wrapper,
     });
 

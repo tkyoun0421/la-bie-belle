@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useCreateSchedule.ts
+// 구현 대상: src/features/schedule/hooks/useCreateScheduleMutation.ts
 //
 // 달 근무표를 만든다(`docs/2-design/modules/schedule/design.md`의 「근무표 만들기와
 // 마감일」). 성공하면 그 캐시 갱신 행대로 `['schedule']` `['payroll']` `['requests']`
@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const createScheduleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/createSchedule.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/createSchedule.api", () => ({
   createSchedule: createScheduleMock,
 }));
 
@@ -20,8 +20,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useCreateSchedule } =
-  await import("@/features/schedule/model/useCreateSchedule");
+const { useCreateScheduleMutation } =
+  await import("@/features/schedule/hooks/useCreateScheduleMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -52,15 +52,18 @@ beforeEach(() => {
   createScheduleMock.mockReset();
 });
 
-describe("useCreateSchedule — create_schedule을 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useCreateScheduleMutation — create_schedule을 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("성공하면 DAL을 (client, month, deadline)로 부르고 세 키를 무효화한다", async () => {
     createScheduleMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useCreateSchedule(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useCreateScheduleMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ month: MONTH, deadline: DEADLINE });
@@ -88,9 +91,12 @@ describe("useCreateSchedule — create_schedule을 부르고 schedule·payroll·
     createScheduleMock.mockRejectedValue(new DomainError("already_exists"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useCreateSchedule(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useCreateScheduleMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ month: MONTH, deadline: DEADLINE });
@@ -114,9 +120,12 @@ describe("useCreateSchedule — create_schedule을 부르고 schedule·payroll·
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useCreateSchedule(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useCreateScheduleMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ month: MONTH, deadline: DEADLINE });

@@ -11,7 +11,7 @@ import { countUnreadNotifications } from "@/entities/notification/api/countUnrea
  * 대시보드의 「안 본 알림 n」이 쓴다.
  */
 
-export function useUnreadCount(client: DB) {
+export function useUnreadCountQuery(client: DB) {
   return useQuery({
     queryKey: queryKeys.notification.unread(),
     queryFn: () => countUnreadNotifications(client),

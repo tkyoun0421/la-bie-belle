@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const updateMyContactMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/api/updateMyContact.api", () => ({
+jest.unstable_mockModule("@/features/profile/api/updateMyContact.api", () => ({
   updateMyContact: updateMyContactMock,
 }));
 
@@ -18,8 +18,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useUpdateContact } =
-  await import("@/features/profile/model/useUpdateContact");
+const { useUpdateContactMutation } =
+  await import("@/features/profile/hooks/useUpdateContactMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -46,13 +46,13 @@ beforeEach(() => {
   updateMyContactMock.mockReset();
 });
 
-describe("useUpdateContact — 응답을 기다리고 성공하면 private을 무효화한다", () => {
+describe("useUpdateContactMutation — 응답을 기다리고 성공하면 private을 무효화한다", () => {
   it("성공하면 DAL을 그 인자로 부르고 ['profile','private']을 무효화한다", async () => {
     updateMyContactMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useUpdateContact(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUpdateContactMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -79,7 +79,7 @@ describe("useUpdateContact — 응답을 기다리고 성공하면 private을 �
     updateMyContactMock.mockRejectedValue(new DomainError("invalid_phone"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useUpdateContact(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUpdateContactMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -108,7 +108,7 @@ describe("useUpdateContact — 응답을 기다리고 성공하면 private을 �
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useUpdateContact(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUpdateContactMutation(FAKE_CLIENT), {
       wrapper,
     });
 

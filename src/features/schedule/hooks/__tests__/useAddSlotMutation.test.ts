@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useAddSlot.ts
+// 구현 대상: src/features/schedule/hooks/useAddSlotMutation.ts
 //
 // 잠금이 풀린 포지션의 「자리 추가」다. `addSlot(client, dayId, position)`을 부르고
 // 자리 늘리기·줄이기·겸임 셋과 같은 캐시 갱신 — `['schedule']` `['payroll']` `['requests']`다
@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 
 const addSlotMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/addSlot.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/addSlot.api", () => ({
   addSlot: addSlotMock,
 }));
 
@@ -19,7 +19,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useAddSlot } = await import("@/features/schedule/model/useAddSlot");
+const { useAddSlotMutation } =
+  await import("@/features/schedule/hooks/useAddSlotMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -49,13 +50,15 @@ beforeEach(() => {
   addSlotMock.mockReset();
 });
 
-describe("useAddSlot — add_slot을 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useAddSlotMutation — add_slot을 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("성공하면 DAL을 (client, dayId, position)으로 부르고 세 키를 무효화한다", async () => {
     addSlotMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useAddSlot(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useAddSlotMutation(FAKE_CLIENT), {
+      wrapper,
+    });
 
     act(() => {
       result.current.mutate({ dayId: DAY_ID, position: POSITION });
@@ -79,7 +82,9 @@ describe("useAddSlot — add_slot을 부르고 schedule·payroll·requests를 �
     addSlotMock.mockRejectedValue(new DomainError("already_confirmed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAddSlot(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useAddSlotMutation(FAKE_CLIENT), {
+      wrapper,
+    });
 
     act(() => {
       result.current.mutate({ dayId: DAY_ID, position: POSITION });
@@ -103,7 +108,9 @@ describe("useAddSlot — add_slot을 부르고 schedule·payroll·requests를 �
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAddSlot(FAKE_CLIENT), { wrapper });
+    const { result } = renderHook(() => useAddSlotMutation(FAKE_CLIENT), {
+      wrapper,
+    });
 
     act(() => {
       result.current.mutate({ dayId: DAY_ID, position: POSITION });

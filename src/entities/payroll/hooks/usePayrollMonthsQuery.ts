@@ -34,7 +34,7 @@ function mergeMonths(months: readonly PayrollMonth[]): PayrollMonth {
   };
 }
 
-export function usePayrollMonths(
+export function usePayrollMonthsQuery(
   client: DB,
   months: readonly string[],
 ): PayrollMonthsResult {

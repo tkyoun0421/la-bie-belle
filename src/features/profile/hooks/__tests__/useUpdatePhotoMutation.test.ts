@@ -8,12 +8,12 @@ import type { ReactNode } from "react";
 const uploadAvatarMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const updateMyPhotoMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/api/avatarsBucket.api", () => ({
+jest.unstable_mockModule("@/features/profile/api/avatarsBucket.api", () => ({
   uploadAvatar: uploadAvatarMock,
   AVATARS_BUCKET: "avatars",
 }));
 
-jest.unstable_mockModule("@/entities/profile/api/updateMyPhoto.api", () => ({
+jest.unstable_mockModule("@/features/profile/api/updateMyPhoto.api", () => ({
   updateMyPhoto: updateMyPhotoMock,
 }));
 
@@ -22,8 +22,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useUpdatePhoto } =
-  await import("@/features/profile/model/useUpdatePhoto");
+const { useUpdatePhotoMutation } =
+  await import("@/features/profile/hooks/useUpdatePhotoMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -58,7 +58,7 @@ beforeEach(() => {
   updateMyPhotoMock.mockReset();
 });
 
-describe("useUpdatePhoto — uploadAvatar가 끝난 뒤에 updateMyPhoto를 부른다", () => {
+describe("useUpdatePhotoMutation — uploadAvatar가 끝난 뒤에 updateMyPhoto를 부른다", () => {
   it("업로드로 받은 주소를 그대로 updateMyPhoto에 넘기고, 업로드가 먼저 끝난다", async () => {
     const order: string[] = [];
     uploadAvatarMock.mockImplementation(async () => {
@@ -70,7 +70,7 @@ describe("useUpdatePhoto — uploadAvatar가 끝난 뒤에 updateMyPhoto를 부�
     });
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useUpdatePhoto(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUpdatePhotoMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -91,7 +91,7 @@ describe("useUpdatePhoto — uploadAvatar가 끝난 뒤에 updateMyPhoto를 부�
     uploadAvatarMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useUpdatePhoto(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUpdatePhotoMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -110,7 +110,7 @@ describe("useUpdatePhoto — uploadAvatar가 끝난 뒤에 updateMyPhoto를 부�
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useUpdatePhoto(FAKE_CLIENT), {
+    const { result } = renderHook(() => useUpdatePhotoMutation(FAKE_CLIENT), {
       wrapper,
     });
 

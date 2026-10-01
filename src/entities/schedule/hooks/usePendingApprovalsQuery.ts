@@ -19,7 +19,7 @@ export type PendingApprovalsResult = {
   isLoading: boolean;
 };
 
-export function usePendingApprovals(client: DB): PendingApprovalsResult {
+export function usePendingApprovalsQuery(client: DB): PendingApprovalsResult {
   const { data, error, isLoading } = useQuery({
     queryKey: queryKeys.request.approvals(),
     queryFn: () => getPendingApprovals(client),

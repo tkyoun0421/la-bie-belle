@@ -24,7 +24,10 @@ export type MonthWindowResult = {
   isLoading: boolean;
 };
 
-export function useMonthWindow(client: DB, month: string): MonthWindowResult {
+export function useMonthWindowQuery(
+  client: DB,
+  month: string,
+): MonthWindowResult {
   const { data, error, isLoading } = useQuery({
     queryKey: queryKeys.schedule.monthWindow(month),
     queryFn: () => getMonthWindow(client, month),

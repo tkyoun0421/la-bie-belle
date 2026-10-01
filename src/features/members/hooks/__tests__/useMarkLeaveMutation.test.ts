@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const markLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/api/markLeave.api", () => ({
+jest.unstable_mockModule("@/features/members/api/markLeave.api", () => ({
   markLeave: markLeaveMock,
 }));
 
@@ -18,7 +18,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useMarkLeave } = await import("@/features/members/model/useMarkLeave");
+const { useMarkLeaveMutation } =
+  await import("@/features/members/hooks/useMarkLeaveMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -45,13 +46,13 @@ beforeEach(() => {
   markLeaveMock.mockReset();
 });
 
-describe("useMarkLeave — 퇴사 처리하고 members를 무효화한다", () => {
+describe("useMarkLeaveMutation — 퇴사 처리하고 members를 무효화한다", () => {
   it("성공하면 DAL을 그 인자로 부르고 ['members']를 무효화한다", async () => {
     markLeaveMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useMarkLeave(FAKE_CLIENT), {
+    const { result } = renderHook(() => useMarkLeaveMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -71,7 +72,7 @@ describe("useMarkLeave — 퇴사 처리하고 members를 무효화한다", () =
     markLeaveMock.mockRejectedValue(new DomainError("has_future_assignments"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMarkLeave(FAKE_CLIENT), {
+    const { result } = renderHook(() => useMarkLeaveMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -97,7 +98,7 @@ describe("useMarkLeave — 퇴사 처리하고 members를 무효화한다", () =
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMarkLeave(FAKE_CLIENT), {
+    const { result } = renderHook(() => useMarkLeaveMutation(FAKE_CLIENT), {
       wrapper,
     });
 

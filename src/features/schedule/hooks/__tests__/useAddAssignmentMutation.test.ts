@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useAddAssignment.ts
+// 구현 대상: src/features/schedule/hooks/useAddAssignmentMutation.ts
 //
 // 배정 추가 — 정규와 교육 둘 다 이 훅 하나로 간다. `addAssignment(client, { profileId, kind,
 // slotId?, dayId?, position?, skipQualification? })`(design.md 「배정과 강제 변경」)의 인자
@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const addAssignmentMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/addAssignment.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/addAssignment.api", () => ({
   addAssignment: addAssignmentMock,
 }));
 
@@ -20,8 +20,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useAddAssignment } =
-  await import("@/features/schedule/model/useAddAssignment");
+const { useAddAssignmentMutation } =
+  await import("@/features/schedule/hooks/useAddAssignmentMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -52,13 +52,13 @@ beforeEach(() => {
   addAssignmentMock.mockReset();
 });
 
-describe("useAddAssignment — add_assignment을 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useAddAssignmentMutation — add_assignment을 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("정규 배정 입력(slotId)을 그대로 DAL에 넘긴다", async () => {
     addAssignmentMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useAddAssignment(FAKE_CLIENT), {
+    const { result } = renderHook(() => useAddAssignmentMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -92,7 +92,7 @@ describe("useAddAssignment — add_assignment을 부르고 schedule·payroll·re
     addAssignmentMock.mockResolvedValue(undefined);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAddAssignment(FAKE_CLIENT), {
+    const { result } = renderHook(() => useAddAssignmentMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -119,7 +119,7 @@ describe("useAddAssignment — add_assignment을 부르고 schedule·payroll·re
     addAssignmentMock.mockResolvedValue(undefined);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAddAssignment(FAKE_CLIENT), {
+    const { result } = renderHook(() => useAddAssignmentMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -144,7 +144,7 @@ describe("useAddAssignment — add_assignment을 부르고 schedule·payroll·re
     addAssignmentMock.mockRejectedValue(new DomainError("not_applied"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAddAssignment(FAKE_CLIENT), {
+    const { result } = renderHook(() => useAddAssignmentMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -174,7 +174,7 @@ describe("useAddAssignment — add_assignment을 부르고 schedule·payroll·re
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAddAssignment(FAKE_CLIENT), {
+    const { result } = renderHook(() => useAddAssignmentMutation(FAKE_CLIENT), {
       wrapper,
     });
 

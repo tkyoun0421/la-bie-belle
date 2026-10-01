@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
-import { confirmSchedule } from "@/entities/schedule/api/confirmSchedule.api";
+import { confirmSchedule } from "@/features/schedule/api/confirmSchedule.api";
 import {
   backdateDeadline,
   createAdminUser,

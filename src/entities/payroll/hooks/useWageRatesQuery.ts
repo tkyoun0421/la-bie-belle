@@ -20,7 +20,7 @@ export type WageRatesResult = {
   isLoading: boolean;
 };
 
-export function useWageRates(client: DB): WageRatesResult {
+export function useWageRatesQuery(client: DB): WageRatesResult {
   const { data, error, isLoading } = useQuery({
     queryKey: queryKeys.payroll.wages(),
     queryFn: () => getWageRates(client),

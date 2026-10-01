@@ -1,14 +1,14 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/rehearsal/model/useEditRehearsal.ts
+// 구현 대상: src/features/rehearsal/hooks/useEditRehearsalMutation.ts
 //
 // 리허설 고치기다(design.md 「리허설 넣기·고치기·지우기」) — 성공하면 ['rehearsal']과
 // ['payroll']을 무효화한다. **['schedule']은 안 건드린다.**
 
 const editRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/rehearsal/api/editRehearsal.api", () => ({
+jest.unstable_mockModule("@/features/rehearsal/api/editRehearsal.api", () => ({
   editRehearsal: editRehearsalMock,
 }));
 
@@ -18,8 +18,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useEditRehearsal } =
-  await import("@/features/rehearsal/model/useEditRehearsal");
+const { useEditRehearsalMutation } =
+  await import("@/features/rehearsal/hooks/useEditRehearsalMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -48,12 +48,12 @@ beforeEach(() => {
   editRehearsalMock.mockReset();
 });
 
-describe("useEditRehearsal — edit_rehearsal을 부르고 rehearsal·payroll을 무효화한다", () => {
+describe("useEditRehearsalMutation — edit_rehearsal을 부르고 rehearsal·payroll을 무효화한다", () => {
   it("입력을 그대로 DAL에 넘긴다", async () => {
     editRehearsalMock.mockResolvedValue(undefined);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useEditRehearsal(FAKE_CLIENT), {
+    const { result } = renderHook(() => useEditRehearsalMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -71,7 +71,7 @@ describe("useEditRehearsal — edit_rehearsal을 부르고 rehearsal·payroll을
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useEditRehearsal(FAKE_CLIENT), {
+    const { result } = renderHook(() => useEditRehearsalMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -96,7 +96,7 @@ describe("useEditRehearsal — edit_rehearsal을 부르고 rehearsal·payroll을
     editRehearsalMock.mockRejectedValue(new DomainError("not_allowed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useEditRehearsal(FAKE_CLIENT), {
+    const { result } = renderHook(() => useEditRehearsalMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -122,7 +122,7 @@ describe("useEditRehearsal — edit_rehearsal을 부르고 rehearsal·payroll을
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useEditRehearsal(FAKE_CLIENT), {
+    const { result } = renderHook(() => useEditRehearsalMutation(FAKE_CLIENT), {
       wrapper,
     });
 

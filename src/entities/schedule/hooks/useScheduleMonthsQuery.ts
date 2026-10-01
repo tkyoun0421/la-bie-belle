@@ -10,7 +10,7 @@ import {
  * 여러 달치 근무 날들을 한 덩이로 읽는다. 급여 화면이 기간을 달과 안 맞게 자르기 때문이다 —
  * 달을 걸친 주는 키가 둘이고 「연」은 열둘이다(plan payroll-view AC-06).
  *
- * 키는 [`useMonthSchedule`](useMonthSchedule.ts)이 쓰는 것과 같은 `['schedule', month]`다.
+ * 키는 [`useMonthScheduleQuery`](useMonthScheduleQuery.ts)이 쓰는 것과 같은 `['schedule', month]`다.
  * 달치 키를 그대로 두면 근무표 화면이 이미 읽어둔 달을 급여 화면이 다시 안 읽고, 주에서 월로
  * 기간을 바꿔도 겹치는 달은 캐시가 그대로 낸다.
  *
@@ -24,7 +24,7 @@ export type ScheduleMonthsResult = {
   error: Error | null;
 };
 
-export function useScheduleMonths(
+export function useScheduleMonthsQuery(
   client: DB,
   months: readonly string[],
 ): ScheduleMonthsResult {

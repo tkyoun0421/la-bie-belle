@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useSlotRequests.ts
+// 구현 대상: src/entities/schedule/hooks/useSlotRequestsQuery.ts
 //
 // 그 달 살아 있는 근무 요청을 읽는다(`getSlotRequests.ts`의
 // `getSlotRequests(client, month)`). 캐시 키는 plan schedule-requests.md 「총괄이 정한
@@ -18,8 +18,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useSlotRequests } =
-  await import("@/features/schedule/model/useSlotRequests");
+const { useSlotRequestsQuery } =
+  await import("@/entities/schedule/hooks/useSlotRequestsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -60,14 +60,17 @@ beforeEach(() => {
   getSlotRequestsMock.mockReset();
 });
 
-describe("useSlotRequests — getSlotRequests를 그 달로 불러 ['requests', month]에 앉힌다", () => {
+describe("useSlotRequestsQuery — getSlotRequests를 그 달로 불러 ['requests', month]에 앉힌다", () => {
   it("client와 month를 그대로 넘겨 DAL을 부른다", async () => {
     getSlotRequestsMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSlotRequests(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSlotRequestsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -78,9 +81,12 @@ describe("useSlotRequests — getSlotRequests를 그 달로 불러 ['requests', 
     getSlotRequestsMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSlotRequests(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSlotRequestsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -91,9 +97,12 @@ describe("useSlotRequests — getSlotRequests를 그 달로 불러 ['requests', 
     getSlotRequestsMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useSlotRequests(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSlotRequestsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.error).not.toBeNull());
   });
@@ -102,9 +111,12 @@ describe("useSlotRequests — getSlotRequests를 그 달로 불러 ['requests', 
     getSlotRequestsMock.mockResolvedValue(ROWS);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useSlotRequests(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useSlotRequestsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

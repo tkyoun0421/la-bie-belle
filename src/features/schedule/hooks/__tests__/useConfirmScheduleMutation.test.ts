@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useConfirmSchedule.ts
+// 구현 대상: src/features/schedule/hooks/useConfirmScheduleMutation.ts
 //
 // 달을 확정한다. `already_confirmed`는 관리자 둘이 같은 달을 확정했거나 재시도가 두 번
 // 닿은 것이라 결과가 같으므로 이 훅이 성공으로 처리한다
@@ -12,7 +12,7 @@ import type { ReactNode } from "react";
 
 const confirmScheduleMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/confirmSchedule.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/confirmSchedule.api", () => ({
   confirmSchedule: confirmScheduleMock,
 }));
 
@@ -22,8 +22,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useConfirmSchedule } =
-  await import("@/features/schedule/model/useConfirmSchedule");
+const { useConfirmScheduleMutation } =
+  await import("@/features/schedule/hooks/useConfirmScheduleMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -52,15 +52,18 @@ beforeEach(() => {
   confirmScheduleMock.mockReset();
 });
 
-describe("useConfirmSchedule — confirm_schedule을 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useConfirmScheduleMutation — confirm_schedule을 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("성공하면 DAL을 (client, month)로 부르고 세 키를 무효화한다", async () => {
     confirmScheduleMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useConfirmSchedule(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useConfirmScheduleMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ month: MONTH });
@@ -84,9 +87,12 @@ describe("useConfirmSchedule — confirm_schedule을 부르고 schedule·payroll
     confirmScheduleMock.mockRejectedValue(new DomainError("too_early"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useConfirmSchedule(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useConfirmScheduleMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ month: MONTH });
@@ -104,9 +110,12 @@ describe("useConfirmSchedule — confirm_schedule을 부르고 schedule·payroll
     confirmScheduleMock.mockRejectedValue(new DomainError("already_confirmed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useConfirmSchedule(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useConfirmScheduleMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ month: MONTH });
@@ -127,9 +136,12 @@ describe("useConfirmSchedule — confirm_schedule을 부르고 schedule·payroll
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useConfirmSchedule(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useConfirmScheduleMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate({ month: MONTH });

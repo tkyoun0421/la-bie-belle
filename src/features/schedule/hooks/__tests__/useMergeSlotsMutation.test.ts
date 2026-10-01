@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useMergeSlots.ts
+// 구현 대상: src/features/schedule/hooks/useMergeSlotsMutation.ts
 //
 // 줄 머리를 다른 줄 머리에 겹쳐 겸임을 만든다. `mergeSlots(client, dayId, from, to)`는
 // 자리 id가 아니라 포지션 이름 둘을 받는다 — 화면이 집는 것이 줄 머리라서다
@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 
 const mergeSlotsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/mergeSlots.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/mergeSlots.api", () => ({
   mergeSlots: mergeSlotsMock,
 }));
 
@@ -19,8 +19,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useMergeSlots } =
-  await import("@/features/schedule/model/useMergeSlots");
+const { useMergeSlotsMutation } =
+  await import("@/features/schedule/hooks/useMergeSlotsMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -51,13 +51,13 @@ beforeEach(() => {
   mergeSlotsMock.mockReset();
 });
 
-describe("useMergeSlots — merge_slots를 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useMergeSlotsMutation — merge_slots를 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("성공하면 DAL을 (client, dayId, from, to)로 부르고 세 키를 무효화한다", async () => {
     mergeSlotsMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useMergeSlots(FAKE_CLIENT), {
+    const { result } = renderHook(() => useMergeSlotsMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -83,7 +83,7 @@ describe("useMergeSlots — merge_slots를 부르고 schedule·payroll·requests
     mergeSlotsMock.mockRejectedValue(new DomainError("no_empty_slot"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMergeSlots(FAKE_CLIENT), {
+    const { result } = renderHook(() => useMergeSlotsMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -109,7 +109,7 @@ describe("useMergeSlots — merge_slots를 부르고 schedule·payroll·requests
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useMergeSlots(FAKE_CLIENT), {
+    const { result } = renderHook(() => useMergeSlotsMutation(FAKE_CLIENT), {
       wrapper,
     });
 

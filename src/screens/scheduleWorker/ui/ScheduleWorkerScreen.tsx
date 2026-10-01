@@ -26,18 +26,18 @@ import { Segment } from "@/shared/ui/Segment";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
+import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
+import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
 import type { SlotRequest } from "@/entities/schedule/api/getSlotRequests.api";
-import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
-import { useMyProfile } from "@/features/profile/model/useMyProfile";
-import { useCreateCancelRequest } from "@/features/schedule/model/useCreateCancelRequest";
-import { useMonthSchedule } from "@/features/schedule/model/useMonthSchedule";
-import { useMonthWindow } from "@/features/schedule/model/useMonthWindow";
-import { useMyAvailability } from "@/features/schedule/model/useMyAvailability";
-import { usePendingApprovals } from "@/features/schedule/model/usePendingApprovals";
-import { useRespondRequest } from "@/features/schedule/model/useRespondRequest";
-import { useSlotRequests } from "@/features/schedule/model/useSlotRequests";
-import { useSubmitAvailability } from "@/features/schedule/model/useSubmitAvailability";
+import { useMonthScheduleQuery } from "@/entities/schedule/hooks/useMonthScheduleQuery";
+import { useMonthWindowQuery } from "@/entities/schedule/hooks/useMonthWindowQuery";
+import { useMyAvailabilityQuery } from "@/entities/schedule/hooks/useMyAvailabilityQuery";
+import { usePendingApprovalsQuery } from "@/entities/schedule/hooks/usePendingApprovalsQuery";
+import { useSlotRequestsQuery } from "@/entities/schedule/hooks/useSlotRequestsQuery";
+import { useCreateCancelRequestMutation } from "@/features/schedule/hooks/useCreateCancelRequestMutation";
+import { useRespondRequestMutation } from "@/features/schedule/hooks/useRespondRequestMutation";
+import { useSubmitAvailabilityMutation } from "@/features/schedule/hooks/useSubmitAvailabilityMutation";
 import {
   myAssignmentOf,
   spellWorkDate,
@@ -133,7 +133,7 @@ export function ScheduleWorkerScreen({
 }: ScheduleWorkerScreenProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const unreadCount = useUnreadCount(supabase);
+  const unreadCount = useUnreadCountQuery(supabase);
   const today = kstToday();
 
   const [me, setMe] = useState<string | null>(null);
@@ -150,12 +150,12 @@ export function ScheduleWorkerScreen({
   const [claimed, setClaimed] = useState<string | null>(null);
   const [answering, setAnswering] = useState<SlotRequest | null>(null);
 
-  const { data: profile } = useMyProfile(supabase, me);
-  const { data: monthWindow } = useMonthWindow(supabase, month);
-  const { data: days } = useMonthSchedule(supabase, month);
-  const { data: myDates } = useMyAvailability(supabase, month);
-  const { data: slotRequests } = useSlotRequests(supabase, month);
-  const { data: myCancelRequests } = usePendingApprovals(supabase);
+  const { data: profile } = useMyProfileQuery(supabase, me);
+  const { data: monthWindow } = useMonthWindowQuery(supabase, month);
+  const { data: days } = useMonthScheduleQuery(supabase, month);
+  const { data: myDates } = useMyAvailabilityQuery(supabase, month);
+  const { data: slotRequests } = useSlotRequestsQuery(supabase, month);
+  const { data: myCancelRequests } = usePendingApprovalsQuery(supabase);
   const clockOffset = serverClockStore((at) => at.offset);
 
   const {
@@ -164,7 +164,7 @@ export function ScheduleWorkerScreen({
     isSuccess: sent,
     isError: sendFailed,
     reset: resetSend,
-  } = useSubmitAvailability(supabase);
+  } = useSubmitAvailabilityMutation(supabase);
 
   const {
     mutate: answer,
@@ -173,7 +173,7 @@ export function ScheduleWorkerScreen({
     isError: answerFailed,
     error: answerError,
     reset: resetAnswer,
-  } = useRespondRequest(supabase);
+  } = useRespondRequestMutation(supabase);
 
   const {
     mutate: askCancel,
@@ -181,7 +181,7 @@ export function ScheduleWorkerScreen({
     isSuccess: cancelAsked,
     isError: cancelFailed,
     reset: resetCancel,
-  } = useCreateCancelRequest(supabase);
+  } = useCreateCancelRequestMutation(supabase);
 
   const myProfileId = profile?.id ?? null;
 

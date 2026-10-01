@@ -4,8 +4,8 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   uploadAvatar,
   type UploadAvatarInput,
-} from "@/entities/profile/api/avatarsBucket.api";
-import { updateMyPhoto } from "@/entities/profile/api/updateMyPhoto.api";
+} from "@/features/profile/api/avatarsBucket.api";
+import { updateMyPhoto } from "@/features/profile/api/updateMyPhoto.api";
 
 /**
  * 사진 바꾸기다. 들어오는 길이 둘이고 나가는 자리는 하나다 — 기기에서 고른 사진은 버킷에
@@ -36,7 +36,7 @@ export type UpdatePhotoResult = {
   reset: () => void;
 };
 
-export function useUpdatePhoto(client: DB): UpdatePhotoResult {
+export function useUpdatePhotoMutation(client: DB): UpdatePhotoResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

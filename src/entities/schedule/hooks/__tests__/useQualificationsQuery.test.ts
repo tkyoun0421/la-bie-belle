@@ -1,11 +1,11 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useQualifications.ts
+// 구현 대상: src/entities/schedule/hooks/useQualificationsQuery.ts
 //
 // `qualifications` 뷰 전체를 읽는다 — `position_grants ∪ 살아 있는 교육 배정`을
 // `(profile_id, position)`으로 낸 것이다(design.md 「자격」). `add_assignment`도 픽커도 이
-// 뷰를 보므로 TS와 SQL에 같은 규칙이 두 벌 서지 않는다. 픽커의 명단은 `useMembers(client,
+// 뷰를 보므로 TS와 SQL에 같은 규칙이 두 벌 서지 않는다. 픽커의 명단은 `useMembersQuery(client,
 // 'active')`가 따로 읽고 이 훅은 자격만 합쳐 쓴다. 캐시 키는 `['members', 'qualifications']`
 // 다 — `grant_position` 성공의 `['members']` 무효화가 접두사로 덮는다.
 
@@ -23,8 +23,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useQualifications } =
-  await import("@/features/schedule/model/useQualifications");
+const { useQualificationsQuery } =
+  await import("@/entities/schedule/hooks/useQualificationsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -53,12 +53,12 @@ beforeEach(() => {
   getQualificationsMock.mockReset();
 });
 
-describe("useQualifications — getQualifications를 불러 ['members', 'qualifications']에 앉힌다", () => {
+describe("useQualificationsQuery — getQualifications를 불러 ['members', 'qualifications']에 앉힌다", () => {
   it("client를 그대로 넘겨 DAL을 부른다", async () => {
     getQualificationsMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQualifications(FAKE_CLIENT), {
+    const { result } = renderHook(() => useQualificationsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -71,7 +71,7 @@ describe("useQualifications — getQualifications를 불러 ['members', 'qualifi
     getQualificationsMock.mockReturnValue(new Promise(() => {}));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQualifications(FAKE_CLIENT), {
+    const { result } = renderHook(() => useQualificationsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -82,7 +82,7 @@ describe("useQualifications — getQualifications를 불러 ['members', 'qualifi
     getQualificationsMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQualifications(FAKE_CLIENT), {
+    const { result } = renderHook(() => useQualificationsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -95,7 +95,7 @@ describe("useQualifications — getQualifications를 불러 ['members', 'qualifi
     getQualificationsMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useQualifications(FAKE_CLIENT), {
+    const { result } = renderHook(() => useQualificationsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -106,7 +106,7 @@ describe("useQualifications — getQualifications를 불러 ['members', 'qualifi
     getQualificationsMock.mockResolvedValue(ROWS);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useQualifications(FAKE_CLIENT), {
+    const { result } = renderHook(() => useQualificationsQuery(FAKE_CLIENT), {
       wrapper,
     });
 

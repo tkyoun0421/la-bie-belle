@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useForceChange.ts
+// 구현 대상: src/features/schedule/hooks/useForceChangeMutation.ts
 //
 // 확정 뒤 「사람 바꾸기」다. `forceChange(client, assignmentId, profileId)`가 한
 // 트랜잭션으로 옛 배정을 닫고 새 배정을 연다(design.md 「배정과 강제 변경」 — 「한
@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const forceChangeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/api/forceChange.api", () => ({
+jest.unstable_mockModule("@/features/schedule/api/forceChange.api", () => ({
   forceChange: forceChangeMock,
 }));
 
@@ -20,8 +20,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useForceChange } =
-  await import("@/features/schedule/model/useForceChange");
+const { useForceChangeMutation } =
+  await import("@/features/schedule/hooks/useForceChangeMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -51,13 +51,13 @@ beforeEach(() => {
   forceChangeMock.mockReset();
 });
 
-describe("useForceChange — force_change를 부르고 schedule·payroll·requests를 무효화한다", () => {
+describe("useForceChangeMutation — force_change를 부르고 schedule·payroll·requests를 무효화한다", () => {
   it("성공하면 DAL을 (client, assignmentId, profileId)로 부르고 세 키를 무효화한다", async () => {
     forceChangeMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useForceChange(FAKE_CLIENT), {
+    const { result } = renderHook(() => useForceChangeMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -90,7 +90,7 @@ describe("useForceChange — force_change를 부르고 schedule·payroll·reques
     forceChangeMock.mockRejectedValue(new DomainError("not_applied"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useForceChange(FAKE_CLIENT), {
+    const { result } = renderHook(() => useForceChangeMutation(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -119,7 +119,7 @@ describe("useForceChange — force_change를 부르고 schedule·payroll·reques
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useForceChange(FAKE_CLIENT), {
+    const { result } = renderHook(() => useForceChangeMutation(FAKE_CLIENT), {
       wrapper,
     });
 

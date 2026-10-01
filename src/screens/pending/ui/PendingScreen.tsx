@@ -27,15 +27,15 @@ import { PushNotice } from "@/shared/ui/PushNotice";
 import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { Text } from "@/shared/ui/Text";
-import { uploadAvatar } from "@/entities/profile/api/avatarsBucket.api";
 import { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
 import { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
-import { submitProfile } from "@/entities/profile/api/submitProfile.api";
-import { updateMyPhoto } from "@/entities/profile/api/updateMyPhoto.api";
 import { googlePhotoOf } from "@/features/auth/googlePhotoOf";
+import { useSavePushTokenMutation } from "@/features/notification/hooks/useSavePushTokenMutation";
 import { PUSH_DEPS } from "@/features/notification/model/pushDeps";
 import { requestPushPermission } from "@/features/notification/model/pushPermission";
-import { useSavePushToken } from "@/features/notification/model/useSavePushToken";
+import { uploadAvatar } from "@/features/profile/api/avatarsBucket.api";
+import { submitProfile } from "@/features/profile/api/submitProfile.api";
+import { updateMyPhoto } from "@/features/profile/api/updateMyPhoto.api";
 import {
   isProfileGender,
   validateProfileForm,
@@ -172,7 +172,7 @@ export function PendingScreen() {
   );
   const [pushToken, setPushToken] = useState<string | null>(null);
 
-  useSavePushToken(supabase, pushToken, AppState);
+  useSavePushTokenMutation(supabase, pushToken, AppState);
 
   useEffect(() => {
     let abandoned = false;

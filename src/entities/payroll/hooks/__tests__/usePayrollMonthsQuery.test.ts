@@ -1,6 +1,6 @@
-// 구현 대상: src/features/payroll/model/usePayrollMonths.ts
+// 구현 대상: src/entities/payroll/hooks/usePayrollMonthsQuery.ts
 //
-// usePayrollMonths(client, months) — 여러 달 키를 결합해 읽는 훅이다(plan
+// usePayrollMonthsQuery(client, months) — 여러 달 키를 결합해 읽는 훅이다(plan
 // payroll-view AC-06 「기간이 달을 걸치면 키를 둘 읽어 합친다」·「연은 열두 키를
 // 읽어 더한다」). 요청한 달 수만큼 getPayrollMonth를 부르고, 하나라도 pending이면
 // 로딩이고, 하나라도 error면 그 error가 표면에 뜨고, 전부 오면 달치를 합쳐 낸다.
@@ -18,8 +18,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { usePayrollMonths } =
-  await import("@/features/payroll/model/usePayrollMonths");
+const { usePayrollMonthsQuery } =
+  await import("@/entities/payroll/hooks/usePayrollMonthsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -81,7 +81,7 @@ beforeEach(() => {
   getPayrollMonthMock.mockReset();
 });
 
-describe("usePayrollMonths — 요청한 달 수만큼 쿼리가 열린다", () => {
+describe("usePayrollMonthsQuery — 요청한 달 수만큼 쿼리가 열린다", () => {
   it("연이면 열두 달을 각각 한 번씩 읽는다", async () => {
     getPayrollMonthMock.mockImplementation(async (_client, month) =>
       monthPayload(month as string),
@@ -92,9 +92,12 @@ describe("usePayrollMonths — 요청한 달 수만큼 쿼리가 열린다", () 
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => usePayrollMonths(FAKE_CLIENT, months), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => usePayrollMonthsQuery(FAKE_CLIENT, months),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -104,7 +107,7 @@ describe("usePayrollMonths — 요청한 달 수만큼 쿼리가 열린다", () 
   });
 });
 
-describe("usePayrollMonths — 하나라도 pending이면 로딩이다", () => {
+describe("usePayrollMonthsQuery — 하나라도 pending이면 로딩이다", () => {
   it("한 달은 응답하고 한 달은 안 끝나면 isLoading이 true다", async () => {
     getPayrollMonthMock.mockImplementation(async (_client, month) => {
       if (month === "2026-09") {
@@ -115,7 +118,7 @@ describe("usePayrollMonths — 하나라도 pending이면 로딩이다", () => {
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => usePayrollMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      () => usePayrollMonthsQuery(FAKE_CLIENT, ["2026-09", "2026-10"]),
       { wrapper },
     );
 
@@ -125,7 +128,7 @@ describe("usePayrollMonths — 하나라도 pending이면 로딩이다", () => {
   });
 });
 
-describe("usePayrollMonths — 하나라도 error면 그 error가 표면에 뜬다", () => {
+describe("usePayrollMonthsQuery — 하나라도 error면 그 error가 표면에 뜬다", () => {
   it("한 달이 실패하면 error에 그 이유가 담긴다", async () => {
     const failure = new Error("month read failed");
     getPayrollMonthMock.mockImplementation(async (_client, month) => {
@@ -137,7 +140,7 @@ describe("usePayrollMonths — 하나라도 error면 그 error가 표면에 뜬�
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => usePayrollMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      () => usePayrollMonthsQuery(FAKE_CLIENT, ["2026-09", "2026-10"]),
       { wrapper },
     );
 
@@ -147,7 +150,7 @@ describe("usePayrollMonths — 하나라도 error면 그 error가 표면에 뜬�
   });
 });
 
-describe("usePayrollMonths — 전부 오면 달치가 합쳐져 나온다", () => {
+describe("usePayrollMonthsQuery — 전부 오면 달치가 합쳐져 나온다", () => {
   it("두 달의 wageRates·adjustments·excuseStatus가 하나로 이어진다", async () => {
     getPayrollMonthMock.mockImplementation(async (_client, month) =>
       monthPayload(month as string),
@@ -155,7 +158,7 @@ describe("usePayrollMonths — 전부 오면 달치가 합쳐져 나온다", () 
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => usePayrollMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      () => usePayrollMonthsQuery(FAKE_CLIENT, ["2026-09", "2026-10"]),
       { wrapper },
     );
 
@@ -174,7 +177,7 @@ describe("usePayrollMonths — 전부 오면 달치가 합쳐져 나온다", () 
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => usePayrollMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      () => usePayrollMonthsQuery(FAKE_CLIENT, ["2026-09", "2026-10"]),
       { wrapper },
     );
 
@@ -198,7 +201,7 @@ describe("usePayrollMonths — 전부 오면 달치가 합쳐져 나온다", () 
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => usePayrollMonths(FAKE_CLIENT, ["2026-09", "2026-10"]),
+      () => usePayrollMonthsQuery(FAKE_CLIENT, ["2026-09", "2026-10"]),
       { wrapper },
     );
 

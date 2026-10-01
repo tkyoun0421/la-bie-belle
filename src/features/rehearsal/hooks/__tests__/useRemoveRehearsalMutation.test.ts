@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/rehearsal/model/useRemoveRehearsal.ts
+// 구현 대상: src/features/rehearsal/hooks/useRemoveRehearsalMutation.ts
 //
 // 리허설 지우기다(design.md 「리허설 넣기·고치기·지우기」) — 성공하면 ['rehearsal']과
 // ['payroll']을 무효화한다. **['schedule']은 안 건드린다.**
@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 const removeRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/rehearsal/api/removeRehearsal.api",
+  "@/features/rehearsal/api/removeRehearsal.api",
   () => ({
     removeRehearsal: removeRehearsalMock,
   }),
@@ -21,8 +21,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/api/errors");
-const { useRemoveRehearsal } =
-  await import("@/features/rehearsal/model/useRemoveRehearsal");
+const { useRemoveRehearsalMutation } =
+  await import("@/features/rehearsal/hooks/useRemoveRehearsalMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -50,14 +50,17 @@ beforeEach(() => {
   removeRehearsalMock.mockReset();
 });
 
-describe("useRemoveRehearsal — remove_rehearsal을 부르고 rehearsal·payroll을 무효화한다", () => {
+describe("useRemoveRehearsalMutation — remove_rehearsal을 부르고 rehearsal·payroll을 무효화한다", () => {
   it("id를 그대로 DAL에 넘긴다", async () => {
     removeRehearsalMock.mockResolvedValue(undefined);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRemoveRehearsal(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRemoveRehearsalMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate(ID);
@@ -73,9 +76,12 @@ describe("useRemoveRehearsal — remove_rehearsal을 부르고 rehearsal·payrol
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useRemoveRehearsal(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRemoveRehearsalMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate(ID);
@@ -98,9 +104,12 @@ describe("useRemoveRehearsal — remove_rehearsal을 부르고 rehearsal·payrol
     removeRehearsalMock.mockRejectedValue(new DomainError("not_allowed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRemoveRehearsal(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRemoveRehearsalMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate(ID);
@@ -124,9 +133,12 @@ describe("useRemoveRehearsal — remove_rehearsal을 부르고 rehearsal·payrol
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useRemoveRehearsal(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRemoveRehearsalMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
       result.current.mutate(ID);

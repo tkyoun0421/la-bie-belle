@@ -5,7 +5,7 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   setHallDefaults,
   type HallDefaultsInput,
-} from "@/entities/schedule/api/setHallDefaults.api";
+} from "@/features/schedule/api/setHallDefaults.api";
 
 /**
  * 홀의 자리·근무 시간 기본값을 바꾼다.
@@ -24,7 +24,7 @@ export type SetHallDefaultsResult = {
   reset: () => void;
 };
 
-export function useSetHallDefaults(client: DB): SetHallDefaultsResult {
+export function useSetHallDefaultsMutation(client: DB): SetHallDefaultsResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

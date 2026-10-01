@@ -28,8 +28,8 @@ import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
-import { useMyProfile } from "@/features/profile/model/useMyProfile";
-import { useRehearsalMonths } from "@/features/rehearsal/model/useRehearsalMonths";
+import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
+import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
 import {
   useAttendanceMonths,
   useFirstScheduleMonth,
@@ -128,7 +128,7 @@ export function StatsScreen() {
   const [tab, setTab] = useState(ATTENDANCE);
   const [month, setMonth] = useState(() => monthOf(today));
 
-  const { data: profile, isLoading: profileLoading } = useMyProfile(
+  const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
     supabase,
     me,
   );
@@ -151,7 +151,7 @@ export function StatsScreen() {
     supabase,
     tab === PAYROLL ? months : NO_MONTHS,
   );
-  const rehearsal = useRehearsalMonths(
+  const rehearsal = useRehearsalMonthsQuery(
     supabase,
     tab === PAYROLL ? months : NO_MONTHS,
   );

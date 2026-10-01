@@ -2,8 +2,8 @@ import { Redirect, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { getCurrentUser } from "@/shared/lib/getCurrentUser";
 import { supabase } from "@/shared/lib/supabase";
-import { useMyProfile } from "@/features/profile/model/useMyProfile";
-import { useQualifications } from "@/features/schedule/model/useQualifications";
+import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
+import { useQualificationsQuery } from "@/entities/schedule/hooks/useQualificationsQuery";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant";
 import { resolveRehearsalGuard } from "@/screens/rehearsal/model/rehearsalGuard";
 import { RehearsalScreen } from "@/screens/rehearsal/ui/RehearsalScreen";
@@ -30,12 +30,12 @@ export default function Screen() {
   const [userId, setUserId] = useState<string | null>(null);
   const [asked, setAsked] = useState(false);
 
-  const { data: profile, isLoading: profileLoading } = useMyProfile(
+  const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
     supabase,
     userId,
   );
   const { data: grants, isLoading: grantsLoading } =
-    useQualifications(supabase);
+    useQualificationsQuery(supabase);
 
   useEffect(() => {
     void getCurrentUser(supabase)

@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/rehearsal/model/useAllRehearsals.ts
+// 구현 대상: src/entities/rehearsal/hooks/useAllRehearsalsQuery.ts
 //
 // 관리자가 보는 전원의 리허설이다(design.md 「소유 데이터」) — 키는
 // ['rehearsal', 'YYYY-MM', 'all']. 관리자만 부르고 profiles(display_name)를 임베딩한
@@ -21,8 +21,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useAllRehearsals } =
-  await import("@/features/rehearsal/model/useAllRehearsals");
+const { useAllRehearsalsQuery } =
+  await import("@/entities/rehearsal/hooks/useAllRehearsalsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -59,14 +59,17 @@ beforeEach(() => {
   getAllRehearsalsMock.mockReset();
 });
 
-describe("useAllRehearsals — getAllRehearsals를 불러 ['rehearsal', month, 'all']에 앉힌다", () => {
+describe("useAllRehearsalsQuery — getAllRehearsals를 불러 ['rehearsal', month, 'all']에 앉힌다", () => {
   it("client와 month를 그대로 넘겨 DAL을 부른다", async () => {
     getAllRehearsalsMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAllRehearsals(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useAllRehearsalsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -77,9 +80,12 @@ describe("useAllRehearsals — getAllRehearsals를 불러 ['rehearsal', month, '
     getAllRehearsalsMock.mockReturnValue(new Promise(() => {}));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAllRehearsals(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useAllRehearsalsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     expect(result.current.isLoading).toBe(true);
   });
@@ -88,9 +94,12 @@ describe("useAllRehearsals — getAllRehearsals를 불러 ['rehearsal', month, '
     getAllRehearsalsMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAllRehearsals(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useAllRehearsalsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -101,9 +110,12 @@ describe("useAllRehearsals — getAllRehearsals를 불러 ['rehearsal', month, '
     getAllRehearsalsMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useAllRehearsals(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useAllRehearsalsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.error).not.toBeNull());
   });
@@ -112,9 +124,12 @@ describe("useAllRehearsals — getAllRehearsals를 불러 ['rehearsal', month, '
     getAllRehearsalsMock.mockResolvedValue(ROWS);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => useAllRehearsals(FAKE_CLIENT, MONTH), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useAllRehearsalsQuery(FAKE_CLIENT, MONTH),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/useMonthAvailabilities.ts
+// 구현 대상: src/entities/schedule/hooks/useMonthAvailabilitiesQuery.ts
 //
 // 그 달 전원의 근무 신청을 프로필 이름과 같이 읽는다. 달력 칸의 신청 수, 날 상세의 근무
 // 신청 줄, 모아보기 화면이 같은 키 `['availability', month, 'all']`을 쓴다
@@ -23,8 +23,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useMonthAvailabilities } =
-  await import("@/features/schedule/model/useMonthAvailabilities");
+const { useMonthAvailabilitiesQuery } =
+  await import("@/entities/schedule/hooks/useMonthAvailabilitiesQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -58,13 +58,13 @@ beforeEach(() => {
   getMonthAvailabilitiesMock.mockReset();
 });
 
-describe("useMonthAvailabilities — getMonthAvailabilities를 그 달로 불러 ['availability', month, 'all']에 앉힌다", () => {
+describe("useMonthAvailabilitiesQuery — getMonthAvailabilities를 그 달로 불러 ['availability', month, 'all']에 앉힌다", () => {
   it("client와 month를 그대로 넘겨 DAL을 부른다", async () => {
     getMonthAvailabilitiesMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useMonthAvailabilities(FAKE_CLIENT, MONTH),
+      () => useMonthAvailabilitiesQuery(FAKE_CLIENT, MONTH),
       { wrapper },
     );
 
@@ -78,7 +78,7 @@ describe("useMonthAvailabilities — getMonthAvailabilities를 그 달로 불러
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useMonthAvailabilities(FAKE_CLIENT, MONTH),
+      () => useMonthAvailabilitiesQuery(FAKE_CLIENT, MONTH),
       { wrapper },
     );
 
@@ -90,7 +90,7 @@ describe("useMonthAvailabilities — getMonthAvailabilities를 그 달로 불러
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useMonthAvailabilities(FAKE_CLIENT, MONTH),
+      () => useMonthAvailabilitiesQuery(FAKE_CLIENT, MONTH),
       { wrapper },
     );
 
@@ -104,7 +104,7 @@ describe("useMonthAvailabilities — getMonthAvailabilities를 그 달로 불러
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useMonthAvailabilities(FAKE_CLIENT, MONTH),
+      () => useMonthAvailabilitiesQuery(FAKE_CLIENT, MONTH),
       { wrapper },
     );
 
@@ -112,7 +112,7 @@ describe("useMonthAvailabilities — getMonthAvailabilities를 그 달로 불러
   });
 
   /**
-   * 본인 신청을 읽는 `useMyAvailability`가 맨 키를 쥐고 이쪽이 꼬리를 받는다 — 어느 쪽이
+   * 본인 신청을 읽는 `useMyAvailabilityQuery`가 맨 키를 쥐고 이쪽이 꼬리를 받는다 — 어느 쪽이
    * 받는지는 design.md의 키 목록이 정한다
    * ([관찰 045](../../../../../docs/observations/045-two-queries-share-one-cache-key.md)).
    */
@@ -121,7 +121,7 @@ describe("useMonthAvailabilities — getMonthAvailabilities를 그 달로 불러
     const { wrapper, queryClient } = createWrapper();
 
     const { result } = renderHook(
-      () => useMonthAvailabilities(FAKE_CLIENT, MONTH),
+      () => useMonthAvailabilitiesQuery(FAKE_CLIENT, MONTH),
       { wrapper },
     );
 

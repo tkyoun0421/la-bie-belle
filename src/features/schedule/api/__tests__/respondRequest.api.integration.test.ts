@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { DomainError } from "@/shared/api/errors";
-import { respondRequest } from "@/entities/schedule/api/respondRequest.api";
+import { respondRequest } from "@/features/schedule/api/respondRequest.api";
 import {
   createAdminUser,
   createApprovedUser,

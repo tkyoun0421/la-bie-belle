@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { setNotificationsEnabled } from "@/entities/notification/api/setNotificationsEnabled.api";
+import { setNotificationsEnabled } from "@/features/notification/api/setNotificationsEnabled.api";
 
 /**
  * 알림 스위치 하나를 켜고 끈다. 정본은
@@ -35,7 +35,7 @@ export type NotificationSwitch = {
   turnOff: () => void;
 };
 
-export function useNotificationSwitch(
+export function useNotificationSwitchMutation(
   client: DB,
   currentEnabled: boolean,
   requestPermission: () => Promise<boolean>,

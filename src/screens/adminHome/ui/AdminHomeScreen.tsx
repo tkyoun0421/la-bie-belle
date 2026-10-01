@@ -14,15 +14,15 @@ import { RatioBand } from "@/shared/ui/RatioBand";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
+import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
+import { useMembersQuery } from "@/entities/profile/hooks/useMembersQuery";
 import { liveAssignmentCount } from "@/entities/schedule/api/getMonthSchedule.api";
-import { useMembers } from "@/features/members/model/useMembers";
-import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
-import { useHallDefaults } from "@/features/schedule/model/useHallDefaults";
-import { useMonthSchedule } from "@/features/schedule/model/useMonthSchedule";
-import { useMonthWindow } from "@/features/schedule/model/useMonthWindow";
-import { useOpenSlots } from "@/features/schedule/model/useOpenSlots";
-import { usePendingApprovals } from "@/features/schedule/model/usePendingApprovals";
-import { useSetHallDefaults } from "@/features/schedule/model/useSetHallDefaults";
+import { useHallDefaultsQuery } from "@/entities/schedule/hooks/useHallDefaultsQuery";
+import { useMonthScheduleQuery } from "@/entities/schedule/hooks/useMonthScheduleQuery";
+import { useMonthWindowQuery } from "@/entities/schedule/hooks/useMonthWindowQuery";
+import { useOpenSlotsQuery } from "@/entities/schedule/hooks/useOpenSlotsQuery";
+import { usePendingApprovalsQuery } from "@/entities/schedule/hooks/usePendingApprovalsQuery";
+import { useSetHallDefaultsMutation } from "@/features/schedule/hooks/useSetHallDefaultsMutation";
 import { approvalsLine } from "@/screens/adminHome/model/approvalsLine";
 import { homeTileSummary } from "@/screens/adminHome/model/homeTileSummary";
 import { miniViewLoads } from "@/screens/adminHome/model/miniViewDensity";
@@ -65,27 +65,27 @@ import { HallDefaultsSheet } from "@/screens/adminHome/ui/HallDefaultsSheet";
 export function AdminHomeScreen() {
   const router = useRouter();
   const pathname = usePathname();
-  const unreadCount = useUnreadCount(supabase);
+  const unreadCount = useUnreadCountQuery(supabase);
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const today = kstToday();
   const month = today.slice(0, 7);
 
-  const { data: schedule } = useMonthWindow(supabase, month);
-  const { data: days } = useMonthSchedule(supabase, month);
-  const { data: openSlots } = useOpenSlots(supabase, month);
-  const { data: defaults } = useHallDefaults(supabase);
-  const { data: pending } = useMembers(supabase, "pending");
-  const { data: approvals } = usePendingApprovals(supabase);
+  const { data: schedule } = useMonthWindowQuery(supabase, month);
+  const { data: days } = useMonthScheduleQuery(supabase, month);
+  const { data: openSlots } = useOpenSlotsQuery(supabase, month);
+  const { data: defaults } = useHallDefaultsQuery(supabase);
+  const { data: pending } = useMembersQuery(supabase, "pending");
+  const { data: approvals } = usePendingApprovalsQuery(supabase);
 
   const tiled = tileMonth({
     todayMonth: month,
     todayMonthConfirmed: schedule?.confirmedAt != null,
   });
 
-  const { data: tileSchedule } = useMonthWindow(supabase, tiled);
-  const { data: tileDays } = useMonthSchedule(supabase, tiled);
-  const { data: tileSlots } = useOpenSlots(supabase, tiled);
+  const { data: tileSchedule } = useMonthWindowQuery(supabase, tiled);
+  const { data: tileDays } = useMonthScheduleQuery(supabase, tiled);
+  const { data: tileSlots } = useOpenSlotsQuery(supabase, tiled);
 
   const {
     mutate: saveDefaults,
@@ -93,7 +93,7 @@ export function AdminHomeScreen() {
     isSuccess: savedDefaults,
     isError: saveFailed,
     reset: resetSave,
-  } = useSetHallDefaults(supabase);
+  } = useSetHallDefaultsMutation(supabase);
 
   useEffect(() => {
     if (savedDefaults) {

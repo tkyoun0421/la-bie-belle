@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import { setApplicationDeadline } from "@/entities/schedule/api/setApplicationDeadline.api";
+import { setApplicationDeadline } from "@/features/schedule/api/setApplicationDeadline.api";
 
 /**
  * 스케줄 신청 마감일을 옮긴다. 모아보기의 「마감일 바꾸기」와 확정 잠김의 「마감일 당기기」가
@@ -24,7 +24,7 @@ export type SetApplicationDeadlineResult = {
   reset: () => void;
 };
 
-export function useSetApplicationDeadline(
+export function useSetApplicationDeadlineMutation(
   client: DB,
 ): SetApplicationDeadlineResult {
   const queryClient = useQueryClient();

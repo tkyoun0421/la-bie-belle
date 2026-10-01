@@ -7,7 +7,7 @@ const requestNotificationPermissionMock =
   jest.fn<(...args: unknown[]) => Promise<boolean>>();
 
 jest.unstable_mockModule(
-  "@/entities/notification/api/setNotificationsEnabled.api",
+  "@/features/notification/api/setNotificationsEnabled.api",
   () => ({
     setNotificationsEnabled: setNotificationsEnabledMock,
   }),
@@ -18,8 +18,8 @@ const { renderHook, waitFor, act } =
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useNotificationSwitch } =
-  await import("@/features/notification/model/useNotificationSwitch");
+const { useNotificationSwitchMutation } =
+  await import("@/features/notification/hooks/useNotificationSwitchMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -58,7 +58,7 @@ beforeEach(() => {
   requestNotificationPermissionMock.mockReset();
 });
 
-describe("useNotificationSwitch — 켜기는 의사를 먼저 저장한 뒤에 권한을 묻는다", () => {
+describe("useNotificationSwitchMutation — 켜기는 의사를 먼저 저장한 뒤에 권한을 묻는다", () => {
   it("의사 저장이 끝나기 전에는 권한을 묻지 않는다", async () => {
     const deferred = createDeferred<void>();
     setNotificationsEnabledMock.mockReturnValue(deferred.promise);
@@ -67,7 +67,7 @@ describe("useNotificationSwitch — 켜기는 의사를 먼저 저장한 뒤에 
 
     const { result } = renderHook(
       () =>
-        useNotificationSwitch(
+        useNotificationSwitchMutation(
           FAKE_CLIENT,
           false,
           requestNotificationPermissionMock,
@@ -95,7 +95,7 @@ describe("useNotificationSwitch — 켜기는 의사를 먼저 저장한 뒤에 
   });
 });
 
-describe("useNotificationSwitch — 권한을 거부해도 의사는 참인 채로 끝난다", () => {
+describe("useNotificationSwitchMutation — 권한을 거부해도 의사는 참인 채로 끝난다", () => {
   it("권한 요청이 거부로 끝나도 스위치는 켜진 채로 남는다", async () => {
     setNotificationsEnabledMock.mockResolvedValue(undefined);
     requestNotificationPermissionMock.mockResolvedValue(false);
@@ -103,7 +103,7 @@ describe("useNotificationSwitch — 권한을 거부해도 의사는 참인 채�
 
     const { result } = renderHook(
       () =>
-        useNotificationSwitch(
+        useNotificationSwitchMutation(
           FAKE_CLIENT,
           false,
           requestNotificationPermissionMock,
@@ -122,14 +122,14 @@ describe("useNotificationSwitch — 권한을 거부해도 의사는 참인 채�
   });
 });
 
-describe("useNotificationSwitch — 끄기는 set_notifications_enabled(false) 하나뿐이고 권한을 안 묻는다", () => {
+describe("useNotificationSwitchMutation — 끄기는 set_notifications_enabled(false) 하나뿐이고 권한을 안 묻는다", () => {
   it("끄면 의사 저장 함수만 거짓으로 불리고 권한 요청은 안 일어난다", async () => {
     setNotificationsEnabledMock.mockResolvedValue(undefined);
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
       () =>
-        useNotificationSwitch(
+        useNotificationSwitchMutation(
           FAKE_CLIENT,
           true,
           requestNotificationPermissionMock,
@@ -151,7 +151,7 @@ describe("useNotificationSwitch — 끄기는 set_notifications_enabled(false) �
   });
 });
 
-describe("useNotificationSwitch — 끄기가 실패하면 스위치가 켜진 자리로 되돌아간다", () => {
+describe("useNotificationSwitchMutation — 끄기가 실패하면 스위치가 켜진 자리로 되돌아간다", () => {
   it("끄기 요청이 실패하면 enabled가 다시 참이 된다", async () => {
     setNotificationsEnabledMock.mockRejectedValue(
       new Error("네트워크가 끊겼다"),
@@ -160,7 +160,7 @@ describe("useNotificationSwitch — 끄기가 실패하면 스위치가 켜진 �
 
     const { result } = renderHook(
       () =>
-        useNotificationSwitch(
+        useNotificationSwitchMutation(
           FAKE_CLIENT,
           true,
           requestNotificationPermissionMock,
@@ -178,7 +178,7 @@ describe("useNotificationSwitch — 끄기가 실패하면 스위치가 켜진 �
   });
 });
 
-describe("useNotificationSwitch — 끄기가 성공하면 ['members']를 무효화한다", () => {
+describe("useNotificationSwitchMutation — 끄기가 성공하면 ['members']를 무효화한다", () => {
   it("관리자 직원 목록의 갈래가 갈리도록 members 캐시가 무효화된다", async () => {
     setNotificationsEnabledMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
@@ -186,7 +186,7 @@ describe("useNotificationSwitch — 끄기가 성공하면 ['members']를 무효
 
     const { result } = renderHook(
       () =>
-        useNotificationSwitch(
+        useNotificationSwitchMutation(
           FAKE_CLIENT,
           true,
           requestNotificationPermissionMock,

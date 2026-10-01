@@ -19,7 +19,7 @@ import {
  * 쪽을 다시 읽는다.
  */
 
-export function useNotifications(client: DB) {
+export function useNotificationsQuery(client: DB) {
   return useInfiniteQuery({
     queryKey: queryKeys.notification.all,
     queryFn: ({ pageParam }) => getNotifications(client, pageParam),

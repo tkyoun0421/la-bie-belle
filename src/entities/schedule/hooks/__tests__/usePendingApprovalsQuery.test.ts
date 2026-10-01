@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/schedule/model/usePendingApprovals.ts
+// 구현 대상: src/entities/schedule/hooks/usePendingApprovalsQuery.ts
 //
 // 미판정 근무 취소 요청을 읽는다(`getPendingApprovals.ts`의
 // `getPendingApprovals(client)`). 캐시 키는 plan schedule-requests.md 「총괄이 정한
@@ -22,8 +22,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { usePendingApprovals } =
-  await import("@/features/schedule/model/usePendingApprovals");
+const { usePendingApprovalsQuery } =
+  await import("@/entities/schedule/hooks/usePendingApprovalsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -60,12 +60,12 @@ beforeEach(() => {
   getPendingApprovalsMock.mockReset();
 });
 
-describe("usePendingApprovals — getPendingApprovals를 불러 ['requests', 'approvals']에 앉힌다", () => {
+describe("usePendingApprovalsQuery — getPendingApprovals를 불러 ['requests', 'approvals']에 앉힌다", () => {
   it("client를 그대로 넘겨 DAL을 부른다", async () => {
     getPendingApprovalsMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => usePendingApprovals(FAKE_CLIENT), {
+    const { result } = renderHook(() => usePendingApprovalsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -78,7 +78,7 @@ describe("usePendingApprovals — getPendingApprovals를 불러 ['requests', 'ap
     getPendingApprovalsMock.mockResolvedValue(ROWS);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => usePendingApprovals(FAKE_CLIENT), {
+    const { result } = renderHook(() => usePendingApprovalsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -91,7 +91,7 @@ describe("usePendingApprovals — getPendingApprovals를 불러 ['requests', 'ap
     getPendingApprovalsMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => usePendingApprovals(FAKE_CLIENT), {
+    const { result } = renderHook(() => usePendingApprovalsQuery(FAKE_CLIENT), {
       wrapper,
     });
 
@@ -102,7 +102,7 @@ describe("usePendingApprovals — getPendingApprovals를 불러 ['requests', 'ap
     getPendingApprovalsMock.mockResolvedValue(ROWS);
     const { wrapper, queryClient } = createWrapper();
 
-    const { result } = renderHook(() => usePendingApprovals(FAKE_CLIENT), {
+    const { result } = renderHook(() => usePendingApprovalsQuery(FAKE_CLIENT), {
       wrapper,
     });
 

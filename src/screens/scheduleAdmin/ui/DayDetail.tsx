@@ -10,7 +10,6 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
-import type { AddAssignmentInput } from "@/entities/schedule/api/addAssignment.api";
 import type {
   ScheduleAssignment,
   ScheduleSlot,
@@ -22,6 +21,7 @@ import {
   REACHABLE,
   getReachState,
 } from "@/features/notification/model/reachState";
+import type { AddAssignmentInput } from "@/features/schedule/api/addAssignment.api";
 import {
   absenceMinutes,
   assignedMinutes,
