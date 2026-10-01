@@ -1,4 +1,4 @@
-import type { PushPermission } from "@/entities/notification/model/reachState";
+import type { PushPermission } from "@/entities/notification/model/reachState.policy";
 
 /**
  * 기기에 권한을 읽고 묻는 자리다. 정본은

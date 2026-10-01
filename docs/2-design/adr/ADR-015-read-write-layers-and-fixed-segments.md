@@ -89,9 +89,9 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 | --- | --- | --- |
 | `[domain].type.ts` | `model` | 타입과 상수. 런타임에 아무것도 안 한다 |
 | `[domain].schema.ts` | `model` | 바깥에서 들어온 값의 꼴 검증. API 응답·딥링크 파라미터·QR 문자열 |
-| `[domain].policy.ts` | `model` | 업무 판정. 순수 함수여야 하고 사이드 이펙트가 없다 |
+| `<이름>.policy.ts` | `model` | 업무 판정. 순수 함수여야 하고 사이드 이펙트가 없다 |
 | `[domain].store.ts` | `model` | zustand store |
-| `[domain].utils.ts` | `utils` | 그 도메인의 순수 도구 |
+| `<이름>.utils.ts` | `utils` | 그 도메인의 순수 도구 |
 | `[action].api.ts` | `api` | 통신 하나 |
 | `use[Action]Query.ts` | `hooks` | 읽기 훅 |
 | `use[Action]Mutation.ts` | `hooks` | 쓰기 훅 |
@@ -110,11 +110,11 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 `src/app/`과 `eslint-rules/`는 밖이다. 전자는 파일 이름이 URL이고, 후자는 `eslint.config.mjs`가 그 이름으로 플러그인을 부르는 생태계 관례다.
 
-**타입은 `[domain].type.ts`에 모은다.** 지금 타입 선언 삼백예순 개가 파일 백아흔둘에 흩어져 있어 「이 도메인의 모양이 무엇인가」에 답하려면 그 파일을 다 열어야 한다. 쓰는 곳에만 있는 좁은 타입(함수 하나의 인자 꼴)은 그 파일에 남지만, **도메인의 모양을 말하는 타입은 밖으로 뺀다** — 그러면 그 파일 하나가 「이 도메인은 무엇인가」의 답이 된다.
+**타입은 `[domain].type.ts`에 모은다.** 지금 타입 선언 사백아흔둘이 파일 이백여든넷에 흩어져 있어 「이 도메인의 모양이 무엇인가」에 답하려면 그 파일을 다 열어야 한다. 쓰는 곳에만 있는 좁은 타입(함수 하나의 인자 꼴)은 그 파일에 남지만, **도메인의 모양을 말하는 타입은 밖으로 뺀다** — 그러면 그 파일 하나가 「이 도메인은 무엇인가」의 답이 된다.
 
 **캐시 키는 팩토리 객체 하나다.** 배열 리터럴을 손으로 쓰면 같은 키가 자리마다 조금씩 다르게 적힌다. `queryKeys.schedule.month(month)` 꼴로 함수를 타면 접두사가 한 곳에서 나오고, 쓰기가 낡게 할 범위도 `queryKeys.schedule.all`처럼 이름으로 고른다.
 
-**`ui`와 `screens`는 접미사가 없다.** `.tsx`가 곧 컴포넌트라 성격이 하나뿐이고, 이름은 PascalCase 그대로다. `src/app/`도 밖이다 — Expo Router가 파일 이름을 URL로 읽어 `checkIn.tsx`가 `/check-in`이고 그 주소는 종이 QR에 실려 나간다.
+**`.tsx`는 접미사가 없다.** `.tsx`가 곧 컴포넌트라 성격이 하나뿐이고, 이름은 PascalCase 그대로다 — `ui/` 세그먼트가 전부 그것이다. `screens/`의 `model/`과 `utils/`는 안쪽이다: 그 층도 `.ts`에 판정과 타입이 섞여 산다. `src/app/`도 밖이다 — Expo Router가 파일 이름을 URL로 읽어 `checkIn.tsx`가 `/check-in`이고 그 주소는 종이 QR에 실려 나간다.
 
 **Supabase 클라이언트 타입은 `DB`다.** 데이터베이스의 약자라 두 글자가 다 대문자다. 약어가 이름 안에 올 때도 같다 — `words()`가 소문자 뒤의 대문자만 가르니 약어를 붙여 쓰면 camel 변환이 그 조각을 못 나눈다는 것은 알고 쓴다.
 

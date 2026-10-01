@@ -7,7 +7,7 @@ import {
 import {
   resolveAuthDestination,
   type AuthDestination,
-} from "@/entities/session/model/resolveAuthDestination";
+} from "@/entities/session/model/resolveAuthDestination.policy";
 
 type EntryDeps = {
   client: DB;

@@ -4,8 +4,8 @@ import { supabase } from "@/shared/api/supabase";
 import { useQualificationsQuery } from "@/entities/member/hooks/useQualificationsQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant";
-import { resolveRehearsalGuard } from "@/screens/rehearsal/model/rehearsalGuard";
+import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
+import { resolveRehearsalGuard } from "@/screens/rehearsal/model/rehearsalGuard.policy";
 import { RehearsalScreen } from "@/screens/rehearsal/ui/RehearsalScreen";
 
 /**

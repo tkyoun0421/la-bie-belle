@@ -11,12 +11,12 @@ import { Illustration } from "@/shared/ui/Illustration";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { decideEntry } from "@/features/auth/model/decideEntry";
+import { decideEntry } from "@/features/auth/model/decideEntry.policy";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/model/signOut";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf";
+import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 
 /**
  * 로그인은 됐는데 앱이 뜨면서 프로필을 못 읽었을 때 서는 한 장이다. 어느 경로에서 실패했든

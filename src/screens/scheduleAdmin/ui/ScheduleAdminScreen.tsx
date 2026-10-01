@@ -17,8 +17,8 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/hooks/useMonthAvailabilitiesQuery";
-import { nowWithOffset } from "@/entities/clock/model/serverClock";
-import { serverClockStore } from "@/entities/clock/model/serverClockStore";
+import { serverClockStore } from "@/entities/clock/model/clock.store";
+import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { useMembersQuery } from "@/entities/member/hooks/useMembersQuery";
 import { useQualificationsQuery } from "@/entities/member/hooks/useQualificationsQuery";
 import { usePayrollMonthsQuery } from "@/entities/payroll/hooks/usePayrollMonthsQuery";
@@ -50,34 +50,34 @@ import { useSendWorkRequestMutation } from "@/features/workRequest/hooks/useSend
 import {
   adminCalendarDayState,
   confirmedVacancyCount,
-} from "@/screens/scheduleAdmin/model/adminCalendarDayState";
+} from "@/screens/scheduleAdmin/model/adminCalendarDayState.policy";
 import {
   confirmAffordance,
   confirmUnlockLine,
-} from "@/screens/scheduleAdmin/model/confirmAffordance";
-import { dayConfirmGate } from "@/screens/scheduleAdmin/model/confirmGate";
-import { deadlineLine } from "@/screens/scheduleAdmin/model/deadlineLine";
-import {
-  confirmedLine,
-  formatMonthName,
-  formatMonthTitle,
-  kstDateOf,
-} from "@/screens/scheduleAdmin/model/formatScheduleDate";
-import { countOpenSlotsByDate } from "@/screens/scheduleAdmin/model/groupOpenSlots";
+} from "@/screens/scheduleAdmin/model/confirmAffordance.policy";
+import { dayConfirmGate } from "@/screens/scheduleAdmin/model/confirmGate.policy";
 import {
   isMonthFullyPast,
   shiftMonth,
-} from "@/screens/scheduleAdmin/model/monthEmptyState";
+} from "@/screens/scheduleAdmin/model/monthEmptyState.policy";
 import {
   isSelectableForOpening,
   openDaysButtonLabel,
   openDaysFailureToast,
-} from "@/screens/scheduleAdmin/model/openModeSelection";
+} from "@/screens/scheduleAdmin/model/openModeSelection.policy";
 import { CloseDayWarningSheet } from "@/screens/scheduleAdmin/ui/CloseDayWarningSheet";
 import { ConfirmSheet } from "@/screens/scheduleAdmin/ui/ConfirmSheet";
 import { CreateScheduleSheet } from "@/screens/scheduleAdmin/ui/CreateScheduleSheet";
 import { DayDetail } from "@/screens/scheduleAdmin/ui/DayDetail";
 import { DayHoursSheet } from "@/screens/scheduleAdmin/ui/DayHoursSheet";
+import { deadlineLine } from "@/screens/scheduleAdmin/utils/deadlineLine.utils";
+import {
+  confirmedLine,
+  formatMonthName,
+  formatMonthTitle,
+  kstDateOf,
+} from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
+import { countOpenSlotsByDate } from "@/screens/scheduleAdmin/utils/groupOpenSlots.utils";
 
 /**
  * 관리자가 근무표를 짜는 화면이다. 정본은

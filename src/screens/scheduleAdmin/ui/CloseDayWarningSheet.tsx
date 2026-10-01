@@ -1,8 +1,8 @@
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
-import { closeDayWarningLine } from "@/screens/scheduleAdmin/model/dayDetailRows";
-import { formatBareDate } from "@/screens/scheduleAdmin/model/formatScheduleDate";
+import { closeDayWarningLine } from "@/screens/scheduleAdmin/utils/dayDetailRows.utils";
+import { formatBareDate } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
 
 /**
  * 배정이 든 날을 닫기 전에 서는 확인이다. 정본은

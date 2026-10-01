@@ -19,17 +19,17 @@ import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
 import type { MemberRow } from "@/entities/member/api/listMembers.api";
 import { useMembersQuery } from "@/entities/member/hooks/useMembersQuery";
-import { isLastAdmin } from "@/entities/member/model/isLastAdmin";
-import { searchMembers } from "@/entities/member/model/searchMembers";
-import { isLeftOverAYear } from "@/entities/member/model/sortMembers";
-import {
-  getMemberListSuffix,
-  getMemberSheetLine,
-} from "@/entities/notification/model/reachMessage";
+import { isLastAdmin } from "@/entities/member/model/isLastAdmin.policy";
+import { isLeftOverAYear } from "@/entities/member/model/sortMembers.policy";
+import { searchMembers } from "@/entities/member/utils/searchMembers.utils";
 import {
   PERMISSION_OF_OTHERS,
   getReachState,
-} from "@/entities/notification/model/reachState";
+} from "@/entities/notification/model/reachState.policy";
+import {
+  getMemberListSuffix,
+  getMemberSheetLine,
+} from "@/entities/notification/utils/reachMessage.utils";
 import { useMarkLeaveMutation } from "@/features/memberAdmin/hooks/useMarkLeaveMutation";
 import { useSetDisplayNameMutation } from "@/features/memberAdmin/hooks/useSetDisplayNameMutation";
 import { useSetRoleMutation } from "@/features/memberAdmin/hooks/useSetRoleMutation";

@@ -3,7 +3,7 @@ import { Button } from "@/shared/ui/Button";
 import { Divider } from "@/shared/ui/Divider";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
-import type { DaySheetContent } from "@/screens/rehearsal/model/daySheetRows";
+import type { DaySheetContent } from "@/screens/rehearsal/utils/daySheetRows.utils";
 
 /**
  * 고른 날 하나의 리허설이다. 정본은

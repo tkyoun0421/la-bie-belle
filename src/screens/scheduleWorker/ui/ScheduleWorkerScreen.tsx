@@ -24,8 +24,8 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { useMyAvailabilityQuery } from "@/entities/availability/hooks/useMyAvailabilityQuery";
-import { nowWithOffset } from "@/entities/clock/model/serverClock";
-import { serverClockStore } from "@/entities/clock/model/serverClockStore";
+import { serverClockStore } from "@/entities/clock/model/clock.store";
+import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
@@ -38,28 +38,23 @@ import { useSlotRequestsQuery } from "@/entities/workRequest/hooks/useSlotReques
 import { useSubmitAvailabilityMutation } from "@/features/availabilitySubmit/hooks/useSubmitAvailabilityMutation";
 import { useCreateCancelRequestMutation } from "@/features/workRequest/hooks/useCreateCancelRequestMutation";
 import { useRespondRequestMutation } from "@/features/workRequest/hooks/useRespondRequestMutation";
-import {
-  myAssignmentOf,
-  spellWorkDate,
-} from "@/screens/scheduleWorker/model/agendaRow";
-import { calendarDayState } from "@/screens/scheduleWorker/model/calendarDayState";
-import { cancelRequestBadge } from "@/screens/scheduleWorker/model/cancelRequestSheet";
+import { calendarDayState } from "@/screens/scheduleWorker/model/calendarDayState.policy";
+import { cancelRequestBadge } from "@/screens/scheduleWorker/model/cancelRequestSheet.policy";
 import {
   canShowShiftActions,
   daySheetSubtitle,
   rosterHeadcount,
   rosterOfDay,
-} from "@/screens/scheduleWorker/model/daySheet";
-import { hasIncomingRequest } from "@/screens/scheduleWorker/model/incomingRequest";
+} from "@/screens/scheduleWorker/model/daySheet.policy";
+import { hasIncomingRequest } from "@/screens/scheduleWorker/model/incomingRequest.policy";
 import {
   kstToday,
   monthState,
   shiftMonth,
   spellDeadline,
   spellMonth,
-} from "@/screens/scheduleWorker/model/monthState";
-import { requestSheetState } from "@/screens/scheduleWorker/model/requestSheet";
-import { toggleSelectedDate } from "@/screens/scheduleWorker/model/submissionSelection";
+} from "@/screens/scheduleWorker/model/monthState.policy";
+import { requestSheetState } from "@/screens/scheduleWorker/model/requestSheet.policy";
 import { CancelShiftSheet } from "@/screens/scheduleWorker/ui/CancelShiftSheet";
 import { DaySheet } from "@/screens/scheduleWorker/ui/DaySheet";
 import { RequestSheet } from "@/screens/scheduleWorker/ui/RequestSheet";
@@ -67,6 +62,11 @@ import {
   ScheduleAgenda,
   type AgendaEntry,
 } from "@/screens/scheduleWorker/ui/ScheduleAgenda";
+import {
+  myAssignmentOf,
+  spellWorkDate,
+} from "@/screens/scheduleWorker/utils/agendaRow.utils";
+import { toggleSelectedDate } from "@/screens/scheduleWorker/utils/submissionSelection.utils";
 
 /**
  * 근무자가 보는 근무표다. 정본은

@@ -6,13 +6,13 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { QuoteBlock } from "@/shared/ui/QuoteBlock";
 import { Text } from "@/shared/ui/Text";
-import type { CancelApprovalDetail } from "@/screens/approvals/model/approvalDetail";
 import {
   CANCEL_REJECT_REASONS,
   CUSTOM_REJECT_REASON,
   isRejectReasonValid,
   rejectReasonText,
-} from "@/screens/approvals/model/rejectReason";
+} from "@/screens/approvals/model/rejectReason.policy";
+import type { CancelApprovalDetail } from "@/screens/approvals/utils/approvalDetail.utils";
 
 /**
  * 판정을 기다리는 한 건을 여는 시트다. 정본은

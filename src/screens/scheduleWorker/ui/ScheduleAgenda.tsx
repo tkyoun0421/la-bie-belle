@@ -3,13 +3,13 @@ import { AccordionRow } from "@/shared/ui/Accordion";
 import { Button } from "@/shared/ui/Button";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { Text } from "@/shared/ui/Text";
+import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet.policy";
+import { DayRoster } from "@/screens/scheduleWorker/ui/DayRoster";
 import {
   agendaRowStatusLabel,
   spellWorkDate,
   type MyAssignment,
-} from "@/screens/scheduleWorker/model/agendaRow";
-import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet";
-import { DayRoster } from "@/screens/scheduleWorker/ui/DayRoster";
+} from "@/screens/scheduleWorker/utils/agendaRow.utils";
 
 /**
  * 포지션 순 보기다. 열린 날이 날짜순 아코디언으로 서고 기본은 전부 접힘이다

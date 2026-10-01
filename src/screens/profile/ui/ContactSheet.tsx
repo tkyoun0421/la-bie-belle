@@ -3,8 +3,8 @@ import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Text } from "@/shared/ui/Text";
-import { isValidPhone } from "@/entities/profile/model/validateProfile";
-import { canSaveContact } from "@/screens/profile/model/canSaveContact";
+import { isValidPhone } from "@/entities/profile/model/profile.schema";
+import { canSaveContact } from "@/screens/profile/model/canSaveContact.policy";
 
 /**
  * 연락처를 고치는 시트다. 정본은

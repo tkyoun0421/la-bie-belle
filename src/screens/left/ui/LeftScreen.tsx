@@ -15,7 +15,7 @@ import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/model/signOut";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf";
+import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 
 /**
  * 퇴사한 사람이 앱을 열면 대시보드 대신 서는 자리다. 볼 수 있는 것은 지난 급여와 자기 근무

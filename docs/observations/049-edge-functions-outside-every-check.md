@@ -1,8 +1,8 @@
 ---
-status: open
+status: closed
 target: supabase/functions/
 date: 2026-10-02
-resolved:
+resolved: 묶음 8가
 ---
 
 # 이름 규칙을 바꾼 묶음이 Edge Function import를 깨뜨리고 다섯 묶음을 지나갔다
@@ -38,11 +38,19 @@ supabase/functions/import-holidays/index.ts:18  ../_shared/payroll/holiday-api-r
 
 세 import를 복사본의 실제 이름으로 고치고, 복사 경로를 새 슬라이스에 맞췄다(`entities/notification/model` → `notification`, `features/holiday/model` → `holiday`). `COPIED_TO_DENO`에 공휴일 폴더를 더했다.
 
-## 볼 자리
+## 닫은 방법
 
-**지정자가 복사본에 실제로 있는지 보는 검사가 없다.** `syncEdgeShared.mts`는 복사하는 쪽만 보고 부르는 쪽을 안 본다 — 복사가 끝난 뒤 `supabase/functions/*/index.ts`의 `../_shared/...` 지정자를 하나씩 열어 파일이 있는지 보면 된다. 스크립트가 이미 그 자리에 서 있고 두 목록을 다 들고 있어, 던지는 줄 하나면 다음 이름 변경이 조용히 지나가지 않는다.
+**부르는 쪽을 보는 줄이 `scripts/syncEdgeShared.mts`에 섰다.** 복사가 끝난 뒤 `supabase/functions/*/index.ts`의 `../_shared/...` 지정자를 하나씩 열어 복사본에 그 파일이 있는지 보고, 없으면 던진다. 일부러 이름을 어긋나게 해 보고 던지는 것을 확인했다.
 
-같은 축으로 `COPIED_TO_DENO`와 `FOLDERS`가 손으로 맞춰야 하는 두 목록이다. 하나를 다른 하나에서 읽게 하면 어긋날 자리가 사라진다.
+```
+Error: 복사본에 없는 파일을 부른다:
+  supabase/functions/send-push/index.ts → ../_shared/notification/pushResult.ts
+ENTRIES 를 고쳤으면 함수의 import 지정자도 같이 고쳐라.
+```
+
+**검사가 두 번째 이름 변경에서 바로 값을 냈다.** 묶음 8가가 같은 셋의 이름을 또 바꿨는데(`pushMessage.utils.ts`·`pushResult.policy.ts`·`holiday.schema.ts`), 이번에는 복사하는 쪽이 옛 이름을 들고 있어 CI의 `pnpm edge:sync` 단계가 `ENOENT`로 멈췄다 — 복사하는 쪽이 틀리면 원래도 울었던 자리다. 새 검사가 막는 것은 **복사는 되는데 부르는 쪽이 어긋난** 경우고, 묶음 1이 그 꼴이었다.
+
+`COPIED_TO_DENO`와 `FOLDERS`를 하나에서 읽게 하는 일은 안 했다 — 손으로 맞출 목록이 둘인 것은 그대로다. `pushMessage`가 `utils/`로 가면서 양쪽에 줄을 더해야 했고 둘 다 더했다.
 
 ## 원칙
 

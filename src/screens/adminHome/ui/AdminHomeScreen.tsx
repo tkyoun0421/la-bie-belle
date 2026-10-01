@@ -23,23 +23,23 @@ import { useMonthWindowQuery } from "@/entities/schedule/hooks/useMonthWindowQue
 import { useOpenSlotsQuery } from "@/entities/schedule/hooks/useOpenSlotsQuery";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/hooks/usePendingApprovalsQuery";
 import { useSetHallDefaultsMutation } from "@/features/hallDefaults/hooks/useSetHallDefaultsMutation";
-import { approvalsLine } from "@/screens/adminHome/model/approvalsLine";
-import { homeTileSummary } from "@/screens/adminHome/model/homeTileSummary";
-import { miniViewLoads } from "@/screens/adminHome/model/miniViewDensity";
-import { tileMonth } from "@/screens/adminHome/model/tileMonth";
+import { homeTileSummary } from "@/screens/adminHome/model/homeTileSummary.policy";
+import { miniViewLoads } from "@/screens/adminHome/model/miniViewDensity.policy";
+import { tileMonth } from "@/screens/adminHome/model/tileMonth.policy";
 import {
   kstToday,
   spellDate,
   todayBandShares,
   todayStatus,
-} from "@/screens/adminHome/model/todayStatus";
+} from "@/screens/adminHome/model/todayStatus.policy";
 import {
   vacancyCardTitle,
   vacancyCards,
   vacancyDaysLeftLine,
   vacancyDaysOf,
-} from "@/screens/adminHome/model/vacancyCards";
+} from "@/screens/adminHome/model/vacancyCards.policy";
 import { HallDefaultsSheet } from "@/screens/adminHome/ui/HallDefaultsSheet";
+import { approvalsLine } from "@/screens/adminHome/utils/approvalsLine.utils";
 
 /**
  * 관리자가 관리자 모드에서 처음 보는 허브다. 정본은

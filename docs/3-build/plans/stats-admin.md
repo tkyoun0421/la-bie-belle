@@ -67,7 +67,7 @@ sources:
 
 **열두 달 추이.**
 
-`src/features/stats/model/trend.ts`와 `src/features/stats/api/useStatsQueries.ts`
+`src/features/stats/utils/trend.utils.ts`와 `src/features/stats/api/useStatsQueries.ts`
 
 - 보는 달에서 열한 달을 거슬러 올라간 열두 달이고 보는 달이 오른쪽 끝이다
 - **달마다 키를 읽어 더한다**([읽기 범위](../../2-design/system/runtime.md#읽기-범위)). 근무 탭은 `['schedule', 'YYYY-MM']` 열둘, 근태 탭은 거기에 `['attendance', 'YYYY-MM']` 열둘이다 — `useQueries`로 나란히 읽는다
@@ -142,7 +142,7 @@ sources:
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `src/entities/schedule/model/positions.ts` | 포지션 아홉과 그 순서의 정본. 근무표 두 화면이 들고 있던 두 벌이 여기로 올라온다 | 「착수 판정」 |
+| `src/entities/schedule/model/schedule.type.ts` | 포지션 아홉과 그 순서의 정본. 근무표 두 화면이 들고 있던 두 벌이 여기로 올라온다 | 「착수 판정」 |
 | `src/screens/schedule-worker/model/day-sheet.ts`·`src/screens/schedule-admin/model/position-rows.ts` | `POSITION_ORDER`를 entities에서 받아 다시 내보낸다 — 부르던 이름이 그대로 살아 기존 테스트가 안 깨진다 | 「착수 판정」 |
 | `src/entities/attendance/api/get-month-attendance.ts` | `['attendance', 'YYYY-MM']`. 그달에 연 날을 먼저 집고 `check_ins`·`excuse_status`를 표마다 한 번씩 읽어 [`get-day-attendance.ts`](../../../src/entities/attendance/api/getDayAttendance.api.ts)와 같은 `{ checkIns, excuseStatuses }`를 낸다 | AC-04 |
 | `src/entities/schedule/api/get-first-schedule-month.ts` | `['schedule', 'first-month']`. `schedules`의 가장 이른 `month` 한 줄 — 달 줄이 뒤로 갈 수 있는 바닥이다 | AC-04·「착수 판정」 |
@@ -150,7 +150,7 @@ sources:
 | `src/features/attendance/model/attendance-summary.ts` | 내려간 `tallyMonthlyAttendance`가 빠지고 `summarizeAttendanceStatuses`만 남는다 | AC-09 |
 | `src/features/stats/model/work-totals.ts` | 사람별·포지션별 집계와 그 재료(`workInputsOf`·`dayMinutes`·`isLiveAssignment`·`hoursLabel`) | AC-01 |
 | `src/features/stats/model/person-days.ts` | 한 사람의 날짜별 근무 줄과 합계. 교육 배정은 「안내 교육」 꼴 라벨이 붙는다 | AC-02 |
-| `src/features/stats/model/trend.ts` | 보는 달을 오른쪽 끝으로 한 열두 달 창과 값 없는 달의 `null` | AC-03 |
+| `src/features/stats/utils/trend.utils.ts` | 보는 달을 오른쪽 끝으로 한 열두 달 창과 값 없는 달의 `null` | AC-03 |
 | `src/features/stats/model/attendance-inputs.ts` | 그달 배정·날 시각과 인증·사유를 `(day_id, profile_id)`로 맞물려 상태 함수가 그대로 먹을 입력을 낸다 | AC-09·「착수 판정」 |
 | `src/features/stats/api/useStatsQueries.ts` | 달마다의 `useQueries`와 캐시 키. 훅을 내놓는 `.ts`는 훅 이름을 써야 해서 `queries.ts`로 못 선다(`tests/lint/file-naming.ts`) | AC-03 |
 | `src/screens/admin-stats/model/attendance-rows.ts` | 근태 탭 사람별 목록과 그달 tally 조립. 0인 몫은 값 자리를 비운다 | AC-09 |
@@ -183,7 +183,7 @@ sources:
 
 `test-planner`가 막힌 자리 다섯을 올렸다. 정본이 여기서 닫는다.
 
-**포지션 아홉의 정본을 `src/entities/schedule/model/positions.ts`로 올린다.** 지금 `POSITION_ORDER`가 `screens/schedule-worker/model/day-sheet.ts`와 `screens/schedule-admin/model/position-rows.ts`에 같은 값으로 두 벌 있고, lint 규칙 3이 슬라이스 사이를 막아 이 task가 셋째 사본을 세울 자리였다. 포지션 목록은 화면 것이 아니라 업무 상수다([schedule/README.md](../../2-design/modules/schedule/README.md)의 용어 표가 정본이다) — 이 task가 올리고 기존 둘이 그것을 부른다. `kst-date.ts`가 앞서 밟은 길이다.
+**포지션 아홉의 정본을 `src/entities/schedule/model/schedule.type.ts`로 올린다.** 지금 `POSITION_ORDER`가 `screens/schedule-worker/model/day-sheet.ts`와 `screens/schedule-admin/model/position-rows.ts`에 같은 값으로 두 벌 있고, lint 규칙 3이 슬라이스 사이를 막아 이 task가 셋째 사본을 세울 자리였다. 포지션 목록은 화면 것이 아니라 업무 상수다([schedule/README.md](../../2-design/modules/schedule/README.md)의 용어 표가 정본이다) — 이 task가 올리고 기존 둘이 그것을 부른다. `kst-date.ts`가 앞서 밟은 길이다.
 
 **확정 여부를 안 본다 — 배정이 있으면 센다.** [stats.md](../../2-design/system/screens/stats.md)의 상태표가 「확정된 근무표가 없다」로, [spec](../../2-design/spec/stats-admin.md)의 상태 격자가 「근무가 없으면」으로 갈려 있었다. **spec 쪽이다.** 관리자가 이번 달 배정을 짜면서 사람별 시간 균형을 보는 것이 이 화면의 실제 쓰임인데, 확정을 기다리면 가장 쓸모 있는 순간에 빈 화면이 된다. 급여도 확정을 안 기다린다([PAY-020](../../2-design/modules/payroll/README.md#pay-020)). `work-totals.ts`도 `trend.ts`도 `confirmed_at`을 입력으로 안 받는다.
 

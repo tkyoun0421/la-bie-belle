@@ -4,7 +4,7 @@ import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
 import { spellWon } from "@/shared/utils/spellNumber";
-import { canResetToDefault } from "@/screens/wages/model/canResetToDefault";
+import { canResetToDefault } from "@/screens/wages/model/canResetToDefault.policy";
 import {
   atWageCap,
   canSaveWage,
@@ -14,13 +14,13 @@ import {
   WAGE_SAVE_FAILED_SUB,
   WAGE_SAVE_FAILED_TITLE,
   WAGE_TODAY_NOTE,
-} from "@/screens/wages/model/wageAmount";
+} from "@/screens/wages/model/wageAmount.policy";
+import type { WageRateRow } from "@/screens/wages/model/wageRows.policy";
+import { WAGE_AMOUNT_INPUT_TEST_ID } from "@/screens/wages/ui/DefaultWageSheet";
 import {
   buildWageHistory,
   spellWageDate,
-} from "@/screens/wages/model/wageHistory";
-import type { WageRateRow } from "@/screens/wages/model/wageRows";
-import { WAGE_AMOUNT_INPUT_TEST_ID } from "@/screens/wages/ui/DefaultWageSheet";
+} from "@/screens/wages/utils/wageHistory.utils";
 
 /**
  * 한 사람의 시급을 정하는 시트다. 정본은

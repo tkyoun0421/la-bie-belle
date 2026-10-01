@@ -123,11 +123,11 @@ sources:
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `src/screens/payroll/model/period.ts` | 기간을 단위와 날짜로 들고 라벨·앞뒤 이동·읽을 달 키를 낸다 | AC-01·AC-06 |
-| `src/screens/payroll/model/summary.ts` | 금액 한 줄과 누적 두 줄. 셀 것이 없는 기간이 `–`고 합이 0인 기간이 `0원`이다. 금액을 글자로 옮기는 손은 뒤에 `src/shared/lib/spell-number.ts`로 올라갔다 | AC-02 |
+| `src/screens/payroll/model/period.policy.ts` | 기간을 단위와 날짜로 들고 라벨·앞뒤 이동·읽을 달 키를 낸다 | AC-01·AC-06 |
+| `src/screens/payroll/utils/summary.utils.ts` | 금액 한 줄과 누적 두 줄. 셀 것이 없는 기간이 `–`고 합이 0인 기간이 `0원`이다. 금액을 글자로 옮기는 손은 뒤에 `src/shared/lib/spell-number.ts`로 올라갔다 | AC-02 |
 | `src/screens/payroll/model/history-rows.ts` | 내역 줄의 제목·보조 정보·금액. 연장·교육·결근·시급 미정 문구가 여기 있다 | AC-03 |
 | `src/screens/payroll/model/year-rows.ts` | 날을 달로 접고 맨 아래에 안 눌리는 합계 줄을 붙인다 | AC-04 |
-| `src/screens/payroll/model/boundary.ts` | 기간 화살표가 서는지 — 바닥은 승인된 달, 천장은 오늘이고 퇴사자는 퇴사한 달이다 | AC-05 |
+| `src/screens/payroll/model/boundary.policy.ts` | 기간 화살표가 서는지 — 바닥은 승인된 달, 천장은 오늘이고 퇴사자는 퇴사한 달이다 | AC-05 |
 | `src/screens/payroll/model/__tests__/` | 위 다섯의 unit | AC-01~AC-05 |
 | `src/screens/payroll/ui/PayrollScreen.tsx` | 세그먼트·기간 줄·금액·예상치 안내·누적·내역 목록을 배치한다 | AC-01~AC-05·AC-07 |
 | `src/app/(tabs)/payroll.tsx` | `NotBuiltYet`을 걷고 `/payroll`에 화면을 붙인다 | AC-01 |

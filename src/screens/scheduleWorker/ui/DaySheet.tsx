@@ -1,7 +1,7 @@
 import { ScrollView, View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
-import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet";
+import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet.policy";
 import { DayRoster } from "@/screens/scheduleWorker/ui/DayRoster";
 
 /**

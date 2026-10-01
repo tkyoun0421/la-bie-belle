@@ -26,18 +26,18 @@ import { Text } from "@/shared/ui/Text";
 import type { Theme } from "@/shared/utils/theme";
 import { useQualificationsQuery } from "@/entities/member/hooks/useQualificationsQuery";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
-import { getProfileNotificationRow } from "@/entities/notification/model/profileNotificationRow";
+import { getProfileNotificationRow } from "@/entities/notification/model/profileNotificationRow.policy";
 import {
   getReachState,
   type PushPermission,
-} from "@/entities/notification/model/reachState";
+} from "@/entities/notification/model/reachState.policy";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/model/signOut";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf";
+import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 import { useUpdateContactMutation } from "@/features/profileEdit/hooks/useUpdateContactMutation";
 import { useUpdatePhotoMutation } from "@/features/profileEdit/hooks/useUpdatePhotoMutation";
 import { useNotificationSwitchMutation } from "@/features/pushSwitch/hooks/useNotificationSwitchMutation";
@@ -47,8 +47,8 @@ import {
   getPushPermission,
   requestPushPermission,
 } from "@/features/pushSwitch/model/pushPermission";
-import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant";
-import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto";
+import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
+import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto.policy";
 import { ContactSheet } from "@/screens/profile/ui/ContactSheet";
 import { PhotoSheet } from "@/screens/profile/ui/PhotoSheet";
 import { THEME_LABEL, ThemeSheet } from "@/screens/profile/ui/ThemeSheet";

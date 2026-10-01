@@ -31,13 +31,13 @@ import {
   isProfileGender,
   validateProfileForm,
   type ProfileGender,
-} from "@/entities/profile/model/validateProfile";
+} from "@/entities/profile/model/profile.schema";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/model/signOut";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf";
+import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 import { uploadAvatar } from "@/features/profileEdit/api/avatarsBucket.api";
 import { submitProfile } from "@/features/profileEdit/api/submitProfile.api";
 import { updateMyPhoto } from "@/features/profileEdit/api/updateMyPhoto.api";
@@ -49,11 +49,11 @@ import {
   PROMPT_OUTCOME_OF,
   transitionNotificationPromptView,
   type NotificationPromptView,
-} from "@/screens/pending/model/notificationPrompt";
+} from "@/screens/pending/model/notificationPrompt.policy";
 import {
   getNotificationPromptCopy,
   NOTIFICATION_PROMPT_BUTTON,
-} from "@/screens/pending/model/notificationPromptCopy";
+} from "@/screens/pending/utils/notificationPromptCopy.utils";
 
 /**
  * 로그인한 사람이 프로필을 적어 가입을 끝내는 자리다. 한 경로가 장면 넷을 든다 — 프로필

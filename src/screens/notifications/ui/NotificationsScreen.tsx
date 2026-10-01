@@ -14,23 +14,23 @@ import { NotificationRow } from "@/shared/ui/NotificationRow";
 import { Screen } from "@/shared/ui/Screen";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
-import { nowWithOffset } from "@/entities/clock/model/serverClock";
-import { serverClockStore } from "@/entities/clock/model/serverClockStore";
+import { serverClockStore } from "@/entities/clock/model/clock.store";
+import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { useNotificationsQuery } from "@/entities/notification/hooks/useNotificationsQuery";
-import { toNotificationDestination } from "@/entities/notification/model/destination";
-import { toNotificationTitle } from "@/entities/notification/model/title";
-import type { NotificationRow as Notification } from "@/entities/notification/model/types";
+import { toNotificationDestination } from "@/entities/notification/model/destination.policy";
+import type { NotificationRow as Notification } from "@/entities/notification/model/notification.type";
+import { toNotificationTitle } from "@/entities/notification/utils/title.utils";
 import {
   toNotificationDateHeader,
   toNotificationReceivedTime,
-} from "@/entities/notification/model/when";
+} from "@/entities/notification/utils/when.utils";
 import { useMarkNotificationsReadMutation } from "@/features/notificationRead/hooks/useMarkNotificationsReadMutation";
 import {
   groupNotificationsByDate,
   resolveNotificationsListState,
   unreadAdminNoticeIds,
-} from "@/screens/notifications/model/notificationRows";
-import { pressNotification } from "@/screens/notifications/model/pressNotification";
+} from "@/screens/notifications/model/notificationRows.policy";
+import { pressNotification } from "@/screens/notifications/model/pressNotification.policy";
 
 /**
  * 받은 알림이 최근부터 다 서는 화면이다. 정본은

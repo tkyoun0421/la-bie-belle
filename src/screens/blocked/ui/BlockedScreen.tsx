@@ -15,7 +15,7 @@ import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/model/signOut";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf";
+import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 
 /**
  * 차단된 사람이 앱을 열면 서는 자리다. 구글 로그인은 되지만 아무 행도 안 온다([ACC-007]).

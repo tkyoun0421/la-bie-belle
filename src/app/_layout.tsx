@@ -15,12 +15,12 @@ import {
   shouldRenderApp,
 } from "@/shared/utils/fontLoading";
 import { getServerNow } from "@/entities/clock/api/getServerNow.api";
-import { serverClockStore } from "@/entities/clock/model/serverClockStore";
+import { serverClockStore } from "@/entities/clock/model/clock.store";
 import { wireAutoRefresh } from "@/features/auth/hooks/wireAutoRefresh";
 import {
   decideEntry,
   type EntryDecision,
-} from "@/features/auth/model/decideEntry";
+} from "@/features/auth/model/decideEntry.policy";
 
 // 스플래시가 이미 내려간 뒤에 부르면 reject한다 — 그때는 막을 것도 없으니 삼킨다.
 SplashScreen.preventAutoHideAsync().catch(() => {});

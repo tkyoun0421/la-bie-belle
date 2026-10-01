@@ -10,7 +10,7 @@ import {
   genderSymbol,
   restrictedQualifications,
   type Gender,
-} from "@/screens/scheduleAdmin/model/personSheet";
+} from "@/screens/scheduleAdmin/utils/personSheet.utils";
 
 /**
  * 픽커 줄을 길게 누르면 그 위에 겹쳐 올라오는 시트다. 정본은

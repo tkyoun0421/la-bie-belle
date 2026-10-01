@@ -129,16 +129,19 @@ sources:
 - 돌면서 나온 것 — **jest 갈래 둘이 ESM 판정 캐시를 나눠 써 스위트 하나가 뜨지 못했다.** `jest-resolve`가 그 판정을 경로만으로 캐시해서, 한 워커가 `logic`과 `components`를 번갈아 받으면 먼저 본 갈래의 답이 다음 갈래에도 적용된다. `cn.ts`처럼 양쪽이 다 쓰는 파일이 그 자리고 묶음 5가 흔들림으로 한 번 봤다. `pnpm test`가 `jest`를 두 번 돌리게 고쳤다([관찰 048](../../observations/048-jest-projects-share-esm-cache.md))
 - 돌면서 나온 것 — **쪼갠 뒤 교차가 0이 되는 것을 확인했다.** 배정 표를 파일마다 대보는 스크립트로 세 교차 0·역방향 0이다. 교차를 만들던 둘은 `monthStart` 사본이었고 이 묶음이 걷었다
 
-#### AC-06나 — 타입·검증·상태·판정이 접미사를 받는다
+#### AC-06나 — 타입·검증·상태·판정이 접미사를 받는다 (접미사 ✅ · 타입 빼기 남음)
 
 - 전제: 타입 선언 492개가 파일 186개에 흩어져 있고, `model` 파일 119개 중 88개가 함수와 타입을 같이 든다
 - 행동
   - 도메인의 모양을 말하는 타입을 `[domain].type.ts`로 뺀다. 함수 하나의 인자 꼴이나 훅의 반환 꼴처럼 좁은 타입은 그 파일에 남긴다
-  - 순수 함수를 판정(`model`)과 꼴 바꾸기(`utils`)로 갈라 옮기고 `[domain].policy.ts`·`[domain].utils.ts`로 모은다
+  - 순수 함수를 판정(`model`)과 꼴 바꾸기(`utils`)로 갈라 옮기고 각자 이름에 `.policy.ts`·`.utils.ts`를 붙인다. **모으는 것은 타입뿐이다** — 판정을 슬라이스 이름으로 모으면 `screens/scheduleAdmin`의 `model/` 23개가 1292줄짜리 한 파일이 되고 짝 테스트 125개가 29개로 합쳐진다. ADR-015가 「한 파일을 열면 그 도메인이 읽힌다」를 논증한 자리도 `.type.ts`뿐이다
   - 바깥 값 검증을 `[domain].schema.ts`로 — `validateProfile`과 홀리데이 API 응답 파싱이 그 자리다
   - zustand store를 `[domain].store.ts`로
 - 관찰 결과: `entities/`·`features/`의 `utils/`에 업무 판정이 없다 — 참·거짓이나 허용·금지를 돌려주는 함수가 `model/`에 산다. `shared/utils/`는 밖이다: 글꼴이 떴나·개발 문이 열렸나 같은 판정은 업무 규칙이 아니고 담을 도메인이 없어 `shared/`에 `model`이 안 선다. `[domain].type.ts`를 열면 그 도메인의 모양이 한 파일에서 읽힌다. 셋이 초록이다
 - 왜 여기인가: 접미사가 성격을 말하므로 성격을 정하는 이 묶음에서 같이 붙인다. AC-07 뒤인 까닭은 `[domain]`이 슬라이스 이름이기 때문이다 — 쪼개기 전에 모으면 도메인 여섯이 한 파일로 합쳐지고 AC-07이 그것을 다시 가른다
+- **접미사 붙이기(묶음 8가)와 타입 빼기(묶음 8나)를 두 PR로 가른다.** 앞의 것은 `git mv`와 지정자 치환이라 기계가 끝내고 rename 추적이 남는다. 뒤의 것은 선언을 파일 밖으로 꺼내 다른 파일에 붙이는 일이라 rename이 아니고 diff가 내용으로 보인다 — 한 PR에 섞으면 123개의 이름 변경 속에서 타입 이동을 읽을 수 없다
+- 돌면서 나온 것 — **판정과 꼴 바꾸기의 비율이 거의 반반이다.** 백스물아홉 중 판정 예순하나·꼴 바꾸기 쉰여섯이고, 그 가름이 `model`과 `utils` 두 폴더로 눈에 보이게 됐다. 접미사를 안 받는 여섯은 부작용이 있어 `policy`가 못 되고 통신도 아니다 — 공유 시트를 열고(`exportQrPaper`), 인증을 호출하고(`handleAuthCallback`·`signOut`·`resolveEntryDestination`), OS 권한을 묻고(`pushPermission`), 의존을 묶는다(`pushDeps`). **세그먼트 다섯에 「부작용을 내는 순수하지 않은 손」의 자리가 없다** — 지금은 `model`에 접미사 없이 산다
+- 돌면서 나온 것 — **boolean만 보면 판정의 절반을 놓친다.** 반환 타입으로 1차 분류해 보니 boolean을 내는 것이 스물넷인데, 상태 유니언을 내는 판정이 그만큼 더 있었다(`AttendanceStatus`·`ReachState`·`DayConfirmGate`·`RehearsalKind`…). 「참·거짓」이 아니라 「이것이 어떤 상태인가」가 기준이라 자동 분류가 안 되고 파일마다 손으로 봤다
 
 ### AC-07 — 슬라이스가 쪼개진다 ✅
 
@@ -265,7 +268,7 @@ sources:
 | `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 넷을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
 | `scripts/syncEdgeShared.mts` | 복사 경로 넷 — 알림 셋이 `entities/notification/model/`과 `features/pushSwitch/model/`로, 공휴일 하나가 `features/holiday/model/`로 |
 | `eslint-rules/noNodeImportInEdgeShared.mjs` | 같은 경로 한 줄 |
-| `tests/lint/attendanceConstants.ts` | `src/entities/attendance/model/constants.ts`를 문자열로 박아 뒀다 — AC-07이 슬라이스 이름을 `attendance`로 두므로 안 바뀌지만, 바꾸면 이 줄도 같이 간다 |
+| `tests/lint/attendanceConstants.ts` | `src/entities/attendance/model/attendance.type.ts`를 문자열로 박아 뒀다 — AC-07이 슬라이스 이름을 `attendance`로 두므로 안 바뀌지만, 바꾸면 이 줄도 같이 간다 |
 
 ### 경로·이름을 적은 활성 정본
 
@@ -300,8 +303,9 @@ sources:
 5. **AC-05 — 훅을 `hooks/`로 + 층 가르기 + `Query`·`Mutation`** ✅ 205개를 `git mv`하고 `useStatsQueries`를 넷으로 갈랐다 — 관찰 046
 6. **AC-06가 — `shared/` 재편 + 교차를 만드는 순수 함수 추출** ✅ 쉰아홉을 `git mv`하고 `monthStart` 사본 넷을 접었다. 교차가 0이 됐다
 7. **AC-07 — 슬라이스 쪼개기** ✅ 268개를 `git mv`했다. 교차 0이고 깨져 있던 엣지 import 셋을 고쳤다
-8. **AC-06나 — 타입 빼기 + `model`/`utils` 가르기 + 나머지 접미사**
-9. **AC-08 — 검사 여덟**
+8. **AC-06나-1 — `model`/`utils` 가르기 + 접미사** ✅ 123개와 짝 테스트 120개를 `git mv`했다. 판정 예순하나·꼴 바꾸기 쉰여섯·타입 셋·검증 둘·store 하나
+9. **AC-06나-2 — 타입 빼기** `<슬라이스>.type.ts`로
+10. **AC-08 — 검사 여덟**
 
 **AC-06을 갈라 AC-07을 그 사이에 끼운다.** 두 방향 다 한 번은 걸린다.
 

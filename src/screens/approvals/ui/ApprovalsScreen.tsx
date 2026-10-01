@@ -17,19 +17,19 @@ import { usePendingApprovalsQuery } from "@/entities/workRequest/hooks/usePendin
 import type { CancelDecision } from "@/features/workRequest/api/decideCancelRequest.api";
 import { useDecideCancelRequestMutation } from "@/features/workRequest/hooks/useDecideCancelRequestMutation";
 import {
+  ApprovalDetailSheet,
+  type ApprovalSheetFace,
+} from "@/screens/approvals/ui/ApprovalDetailSheet";
+import {
   cancelApprovalConfirmBody,
   cancelApprovalDetail,
   cancelApprovalRowTitle,
-} from "@/screens/approvals/model/approvalDetail";
+} from "@/screens/approvals/utils/approvalDetail.utils";
 import {
   removeApproval,
   sortApprovals,
   type ApprovalListRow,
-} from "@/screens/approvals/model/approvalsList";
-import {
-  ApprovalDetailSheet,
-  type ApprovalSheetFace,
-} from "@/screens/approvals/ui/ApprovalDetailSheet";
+} from "@/screens/approvals/utils/approvalsList.utils";
 
 /**
  * 관리자가 근무자에게서 온 요청에 답하는 화면이다. 정본은

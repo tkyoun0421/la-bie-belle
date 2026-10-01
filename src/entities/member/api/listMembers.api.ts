@@ -1,13 +1,13 @@
 import type { DB } from "@/shared/api/database";
 import {
+  sortActiveMembers,
+  sortLeftMembers,
+} from "@/entities/member/model/sortMembers.policy";
+import {
   filterBlockedMembers,
   filterPendingMembers,
   type MemberProfileRow,
-} from "@/entities/member/model/filterMembers";
-import {
-  sortActiveMembers,
-  sortLeftMembers,
-} from "@/entities/member/model/sortMembers";
+} from "@/entities/member/utils/filterMembers.utils";
 
 /**
  * 관리자가 사람 목록 넷을 읽는 자리다 — 재직·퇴사·가입 대기·차단. 새 읽기 채널을 안 만든다 —

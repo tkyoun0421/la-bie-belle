@@ -16,7 +16,7 @@ import {
   assignmentForSlot,
   slotFillCount,
   type PositionSlot,
-} from "@/screens/scheduleAdmin/model/positionRows";
+} from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
 /**
  * 포지션 한 줄이다 — 줄 머리와 그 아래 자리 카드들

@@ -20,7 +20,7 @@ import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
 import type { MemberListRow } from "@/entities/member/api/listMembers.api";
 import { useMembersQuery } from "@/entities/member/hooks/useMembersQuery";
-import { formatElapsedDays } from "@/entities/member/model/formatElapsedDays";
+import { formatElapsedDays } from "@/entities/member/utils/formatElapsedDays.utils";
 import {
   getProfilePrivate,
   type ProfilePrivateRow,

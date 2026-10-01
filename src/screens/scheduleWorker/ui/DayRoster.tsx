@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { RosterRow } from "@/shared/ui/RosterRow";
-import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet";
+import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet.policy";
 
 /**
  * 명단 한 벌이다. 날 시트와 포지션 순 펼침이 같은 구성을 쓴다

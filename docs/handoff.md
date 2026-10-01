@@ -6,11 +6,12 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 여덟째 묶음이다 — 타입 빼내기와 `model`·`utils` 가르기(AC-06나).** 타입 선언 492개가 파일 186개에 흩어져 있고 `model` 파일 119개 중 88개가 함수와 타입을 같이 든다. 도메인의 모양을 말하는 타입을 `[domain].type.ts`로 빼고(훅의 반환 꼴처럼 좁은 것은 그 파일에 남는다), 순수 함수를 판정(`[domain].policy.ts`)과 꼴 바꾸기(`[domain].utils.ts`)로 갈라 옮기고, 바깥 값 검증을 `[domain].schema.ts`로, zustand store를 `[domain].store.ts`로 모은다. `[domain]`은 **쪼개진 뒤의 슬라이스 이름**이다 — 그래서 이 묶음이 AC-07 뒤다. **같이 고칠 두 줄이 있다** — `runtime.md`가 「상수는 `src/entities/<도메인>/model/constants.ts`에 산다」고 적어 ADR-015의 `[domain].type.ts`(「타입과 상수」)와 어긋나고, `tests/lint/attendanceConstants.ts`가 그 경로를 글자로 박고 있다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
+**다음 첫 수는 `fsd-read-write-layers`의 아홉째 묶음이다 — 타입 빼내기(AC-06나-2).** `<슬라이스>.type.ts`로 뺄 것은 **도메인의 모양을 말하는 타입**이고, 함수 하나의 인자 꼴이나 훅의 반환 꼴은 그 파일에 남는다. 측정해 두었다 — 선언 483개 중 **다른 파일이 import하는 것이 125개**고 나머지 358개는 제 파일에서만 쓰인다. import된다는 것이 곧 도메인 모양은 아니다: `AddRehearsalInput`·`SetWageInput`처럼 통신 하나의 인자 꼴은 짝 훅이 당겨 쓸 뿐이라 남고, `.tsx`가 내놓는 prop·상태 유니언(`ToastKind`·`MemberSheetFace`)도 `ui`에 접미사가 없어 그 자리에 남는다. **`shared/`는 밖이다** — 도메인이 없어 `<슬라이스>.type.ts`가 안 선다(`DB`·`Theme`·`MonthsResult`). 이 묶음은 `git mv`가 아니라 선언을 파일 밖으로 꺼내는 일이라 diff가 내용으로 보인다 — 그래서 접미사 묶음과 PR을 갈랐다. **이 task가 도는 동안 다른 코드 task를 띄우지 않는다.**
 
-**묶음 일곱이 끝났다(#483·#484·#485·#486·#487·#488 그리고 7).** 이름이 camelCase가 되고(535개, `Db`→`DB` 334회), 폴더도 camelCase가 되고, 캐시 키가 `src/shared/api/queryKeys.ts` 팩토리 하나로 모이고, 통신 74개가 `entities/*/api/`의 `[action].api.ts`가 되고, 훅 59개가 `hooks/`로 가며 읽기·쓰기로 층이 갈렸다. 그리고 `shared/lib`이 사라져 `api`·`hooks`·`utils`로 갈리고 층이 틀린 아홉이 `features/auth`·`entities/session`·`entities/clock`으로 갔다. 그리고 슬라이스가 **entities 14 · features 22**로 쪼개졌다 — `no-cross-slice-import`가 0건이다. 지금 **`entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다.**
 
-**묶음마다 커밋이 성격으로 갈려 있다** — 자리와 이름만 바꾸는 커밋은 내용 0줄이고 참조 수정이 그 뒤에 온다. `git log --follow`가 이동을 따라가게 하는 값이고, 리뷰도 생각이 든 커밋만 읽으면 된다. 남은 묶음 셋도 같은 꼴로 간다.
+**묶음 여덟이 끝났다(#483~#489 그리고 8가).** 이름이 camelCase가 되고(535개, `Db`→`DB` 334회), 폴더도 camelCase가 되고, 캐시 키가 `src/shared/api/queryKeys.ts` 팩토리 하나로 모이고, 통신 74개가 `entities/*/api/`의 `[action].api.ts`가 되고, 훅 59개가 `hooks/`로 가며 읽기·쓰기로 층이 갈렸다. 그리고 `shared/lib`이 사라져 `api`·`hooks`·`utils`로 갈리고 층이 틀린 아홉이 `features/auth`·`entities/session`·`entities/clock`으로 갔다. 그리고 슬라이스가 **entities 14 · features 22**로 쪼개졌고, `model` 파일 123개가 성격 접미사를 받아 판정 예순하나는 `.policy.ts`로, 꼴 바꾸기 쉰여섯은 `utils/`의 `.utils.ts`로 갈렸다 — `no-cross-slice-import`가 0건이다. 지금 **`entities/`에 `useMutation`이 없고 `features/`에 `useQuery`가 없다.**
+
+**묶음마다 커밋이 성격으로 갈려 있다** — 자리와 이름만 바꾸는 커밋은 내용 0줄이고 참조 수정이 그 뒤에 온다. `git log --follow`가 이동을 따라가게 하는 값이고, 리뷰도 생각이 든 커밋만 읽으면 된다. 남은 묶음 둘도 같은 꼴로 간다.
 
 **일괄 치환에서 세 번 밟은 자리가 있다.** `tests/lint/fileNaming.test.ts`의 픽스처가 어긋난 이름을 리터럴로 들고 있어 치환이 지나가면 **정답으로 뒤집힌다** — 묶음 1·3에서 두 번 났고 묶음 5는 `tests/lint/`를 치환 범위 밖에 두어 막았다. ESLint 규칙 ID(`house/dumb-ui`)도 파일 이름이 아니라 생태계 식별자라 kebab으로 되돌렸다.
 
@@ -54,7 +55,7 @@
 
 **`notification-push`가 `done`이다(#472).** 트리거와 cron `retry-push`(매분)가 같은 Edge Function `send-push`를 부르고, 잡기(`claim_notifications`)의 `returning`이 두 경로의 중복 발송을 막는다. **잡기는 한 문장이다** — `update ... returning`을 CTE로 두고 밖에서 `array_agg`로 주소를 묶는다(조인하면 주소가 둘인 사람의 행에 매치가 여럿 붙어 한쪽만 남는다). 껍데기 넷의 첫 줄이 전부 `auth.role() is distinct from 'service_role'`이고, 트리거의 쏘는 단계는 예외를 삼켜 사건 함수의 트랜잭션을 안 말린다.
 
-**`_shared` 복사 단계가 섰다(AC-09).** `pnpm edge:sync`가 `src/`를 `supabase/functions/_shared/`로 옮기며 import에 `.ts`를 붙인다. `import-holidays`도 그 복사본을 보게 고쳤다 — [관찰 035](observations/035-edge-function-reaches-outside-mount.md)가 연 자리를 닫았다. **재발은 lint 규칙 둘(20·21)이 막는다** — `supabase/functions/`의 마운트 밖 import와 복사되는 폴더의 `node:` import다. 다만 **규칙 21의 폴더 목록이 복사 대상과 정확히 같지는 않다** — `syncEdgeShared.mts`가 `src/entities/notification/model/types.ts`도 옮기는데 규칙은 `src/features/notification/model/`만 문다.
+**`_shared` 복사 단계가 섰다(AC-09).** `pnpm edge:sync`가 `src/`를 `supabase/functions/_shared/`로 옮기며 import에 `.ts`를 붙인다. `import-holidays`도 그 복사본을 보게 고쳤다 — [관찰 035](observations/035-edge-function-reaches-outside-mount.md)가 연 자리를 닫았다. **재발은 lint 규칙 둘(20·21)이 막는다** — `supabase/functions/`의 마운트 밖 import와 복사되는 폴더의 `node:` import다. 다만 **규칙 21의 폴더 목록이 복사 대상과 정확히 같지는 않다** — `syncEdgeShared.mts`가 `src/entities/notification/model/notification.type.ts`도 옮기는데 규칙은 `src/features/notification/model/`만 문다.
 
 **edge-runtime은 여전히 안 뜬다.** `supabase start`가 `-x`로 빼서 `send-push`가 실제로 도는 것, 실기기 수신, 접수증 서비스의 답은 배포 뒤 손 확인이다.
 
@@ -92,7 +93,7 @@
 
 **vault로 로컬 시크릿을 심는 길이 섰다.** integration 테스트가 `beforeAll`/`afterAll`에서 `vault.create_secret`/삭제로 로컬 전용 가짜 값을 넣고 뺀다. `seed.sql`(전역 상태, `db reset`마다 돎)은 이 용도로 안 쓴다 — `payroll-holidays`가 같은 길을 그대로 탔고 `notification-push`도 부치는 접근 토큰을 이렇게 심는다.
 
-**금액 꼴은 `shared/lib/spellNumber.ts` 하나로 모였고, 시간 길이 꼴은 아직 슬라이스 셋에 흩어져 있다.** `screens/payroll/model/summary.ts`의 `spellWorkedHours`(「0시간 30분」)와 `screens/schedule-admin/model/adjustSheetRows.ts`의 `spellHours`·`features/rehearsal/model/spellTotal.ts`의 `spellMinutes`(「30분」)가 갈려 있다 — `writing.md`가 「30분」 쪽으로 판정했으니 `summary.ts`가 어긋난 쪽이다. `spell-number-shared` candidate가 받는다.
+**금액 꼴은 `shared/lib/spellNumber.ts` 하나로 모였고, 시간 길이 꼴은 아직 슬라이스 셋에 흩어져 있다.** `screens/payroll/utils/summary.utils.ts`의 `spellWorkedHours`(「0시간 30분」)와 `screens/schedule-admin/model/adjustSheetRows.ts`의 `spellHours`·`features/rehearsal/model/spellTotal.ts`의 `spellMinutes`(「30분」)가 갈려 있다 — `writing.md`가 「30분」 쪽으로 판정했으니 `summary.ts`가 어긋난 쪽이다. `spell-number-shared` candidate가 받는다.
 
 **`internal` 스키마의 실제 방어는 두 겹뿐이다.** PostgREST 라우팅과 스키마 USAGE다 — 문서가 요구하는 「함수 revoke」 한 겹은 저장소 전체에서 안 서 있다. `internal-grants-public` candidate가 고칠 길(`revoke execute on all functions in schema internal from public`)까지 적어 뒀다.
 
