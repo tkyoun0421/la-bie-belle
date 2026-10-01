@@ -13,6 +13,7 @@ import path from "node:path";
 
 const COPIED_TO_DENO = [
   "src/entities/notification/model/",
+  "src/entities/notification/utils/",
   "src/features/holiday/model/",
 ];
 

@@ -21,7 +21,14 @@
  * import는 `house/no-edge-function-src-import`가 글자로 막는다.
  */
 
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -30,14 +37,15 @@ const SHARED = path.join(ROOT, "supabase/functions/_shared");
 
 /** Edge Function이 `_shared`에서 직접 가져오는 파일들이다. */
 const ENTRIES = [
-  "src/entities/notification/model/pushMessage.ts",
-  "src/entities/notification/model/pushResult.ts",
-  "src/features/holiday/model/holidayApiResponse.ts",
+  "src/entities/notification/utils/pushMessage.utils.ts",
+  "src/entities/notification/model/pushResult.policy.ts",
+  "src/features/holiday/model/holiday.schema.ts",
 ];
 
 /** `src/`의 어느 자리가 복사본의 어느 자리로 가는지다. */
 const FOLDERS = [
   { from: "src/entities/notification/model", to: "notification" },
+  { from: "src/entities/notification/utils", to: "notification" },
   { from: "src/features/holiday/model", to: "holiday" },
 ];
 
@@ -109,10 +117,55 @@ function copy(source: string): void {
   writeFileSync(absolute, rewritten, "utf8");
 }
 
+/**
+ * 함수가 부르는 `../_shared/...`가 복사본에 실제로 있는지 본다.
+ *
+ * 복사하는 쪽만 맞춰 두면 부르는 쪽이 조용히 어긋난다 — `src/`의 이름을 바꿀 때 `ENTRIES`는
+ * 따라가고 함수의 지정자는 안 따라간 적이 있다([관찰 049](../docs/observations/049-edge-functions-outside-every-check.md)).
+ * `supabase/functions/`는 `typecheck`의 `exclude`에 들고 CI가 `edge-runtime`을 안 띄우고
+ * `_shared`는 생성물이라 diff에도 안 떠, 그 어긋남을 볼 자리가 배포뿐이었다.
+ */
+function checkFunctionImports(): void {
+  const missing: string[] = [];
+  const functions = path.join(ROOT, "supabase/functions");
+
+  for (const name of readdirSync(functions, { withFileTypes: true })) {
+    if (!name.isDirectory() || name.name === "_shared") {
+      continue;
+    }
+
+    const entry = path.join(functions, name.name, "index.ts");
+    const source = readFileSync(entry, "utf8");
+
+    for (const [, , , specifier] of source.matchAll(SPECIFIER)) {
+      if (!specifier.includes("_shared/")) {
+        continue;
+      }
+
+      const wanted = specifier.slice(
+        specifier.indexOf("_shared/") + "_shared/".length,
+      );
+
+      if (!existsSync(path.join(SHARED, wanted))) {
+        missing.push(`supabase/functions/${name.name}/index.ts → ${specifier}`);
+      }
+    }
+  }
+
+  if (missing.length > 0) {
+    throw new Error(
+      `복사본에 없는 파일을 부른다:\n  ${missing.join("\n  ")}\n` +
+        "ENTRIES 를 고쳤으면 함수의 import 지정자도 같이 고쳐라.",
+    );
+  }
+}
+
 rmSync(SHARED, { recursive: true, force: true });
 
 for (const entry of ENTRIES) {
   copy(entry);
 }
+
+checkFunctionImports();
 
 console.log(`_shared: ${copied.size}개 파일을 복사했다`);
