@@ -1,5 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
+import type { RequestAnswer } from "@/entities/workRequest/model/workRequest.type";
 
 /**
  * 받은 근무 요청에 답한다. 수락이면 새 배정 id를, 거절이면 `null`을 낸다 — 수락은 곧
@@ -12,8 +13,6 @@ import { toApiError } from "@/shared/api/errors";
  * 하나가 아니다) · `request_closed`(닫혔거나 만료됐다) · `not_qualified` ·
  * `already_assigned`다.
  */
-
-export type RequestAnswer = "accept" | "decline";
 
 export async function respondRequest(
   client: DB,

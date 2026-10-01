@@ -55,3 +55,12 @@ export type OpenSlot = {
   work_date: string;
   positions: string[];
 };
+
+/**
+ * 그 달 근무표 행이다. 이 꼴만 매퍼를 지나 도메인 모양이 된다 — 나머지 넷은 아직 생 꼴로
+ * 화면까지 간다.
+ */
+export type MonthWindowRow = {
+  application_deadline: string | null;
+  confirmed_at: string | null;
+};

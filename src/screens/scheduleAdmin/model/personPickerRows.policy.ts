@@ -1,3 +1,4 @@
+import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 /**
  * 사람 픽커의 「전체 보기」가 사람마다 매기는 상태다. 정본은
  * `docs/2-design/modules/schedule/screens/scheduleAdmin.md`의 「사람 픽커」 표와 「근무 요청
@@ -67,15 +68,6 @@ export type PickerRow = {
   message: string | null;
   checkbox: boolean;
 };
-
-/** 나머지 넷 — 축가·안내·매니저·대기실 — 은 누구나 들어간다(SCH-013). */
-export const RESTRICTED_POSITIONS = [
-  "팀장",
-  "스캔",
-  "메인",
-  "드레스",
-  "드레스실",
-] as const;
 
 const REQUEST_MESSAGES: Record<string, string> = {
   requested_pending: "요청 대기 중",

@@ -2,10 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import {
-  decideCancelRequest,
-  type CancelDecision,
-} from "@/features/workRequest/api/decideCancelRequest.api";
+import { type CancelDecision } from "@/entities/workRequest/model/workRequest.type";
+import { decideCancelRequest } from "@/features/workRequest/api/decideCancelRequest.api";
 
 /**
  * 관리자가 근무 취소 요청을 승인하거나 거절한다. 승인이면 자리가 비므로 근무표와 급여가

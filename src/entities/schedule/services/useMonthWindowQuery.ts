@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getMonthWindow,
-  type MonthWindow,
-} from "@/entities/schedule/api/getMonthSchedule.api";
+import { getMonthWindow } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { MonthWindow } from "@/entities/schedule/model/schedule.type";
 
 /**
  * 그 달 접수 창이다 — 마감일과 확정 시각. 근무표가 아직 없으면 `null`이 와서 화면이 「안 만든

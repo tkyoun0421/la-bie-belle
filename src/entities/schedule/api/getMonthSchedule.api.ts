@@ -1,6 +1,11 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
-import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
+import type {
+  MonthWindowRow,
+  ScheduleDay,
+} from "@/entities/schedule/api/schedule.dto";
+import type { MonthWindow } from "@/entities/schedule/model/schedule.type";
+import { toMonthWindow } from "@/entities/schedule/utils/monthWindow.mapper";
 
 /**
  * 그 달 근무표를 읽는 두 손이다 — 연 날들과, 그 달 근무표 자체의 상태.
@@ -30,11 +35,6 @@ import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
  * 날짜로 받든 같은 달을 가리키게 `monthStart`가 맞춰준다 — 근무표를 만들고 여는 손들이
  * 달을 날짜로 들고 다닌다.
  */
-
-export type MonthWindow = {
-  applicationDeadline: string | null;
-  confirmedAt: string | null;
-};
 
 const DAY_COLUMNS = [
   "id",
@@ -76,23 +76,13 @@ export async function getMonthWindow(
     .from("schedules")
     .select("application_deadline, confirmed_at")
     .eq("month", monthStart(month))
-    .maybeSingle<{
-      application_deadline: string | null;
-      confirmed_at: string | null;
-    }>();
+    .maybeSingle<MonthWindowRow>();
 
   if (error) {
     throw error;
   }
 
-  if (data === null) {
-    return null;
-  }
-
-  return {
-    applicationDeadline: data.application_deadline,
-    confirmedAt: data.confirmed_at,
-  };
+  return data === null ? null : toMonthWindow(data);
 }
 
 /**

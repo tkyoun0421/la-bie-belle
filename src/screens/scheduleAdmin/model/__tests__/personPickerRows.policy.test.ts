@@ -10,8 +10,8 @@
 // `serverNowMs`를 견줘 화면이 파생한다. 체크박스는 대기 중에만 없다 — 이미 나간 요청이라
 // 다시 고를 것이 없다.
 
+import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import {
-  RESTRICTED_POSITIONS,
   classifyPickerRows,
   type PersonPickerRowsInput,
 } from "@/screens/scheduleAdmin/model/personPickerRows.policy";

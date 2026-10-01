@@ -1,5 +1,5 @@
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
-import { POSITION_ORDER } from "@/entities/schedule/model/schedule.type";
+import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 
 /**
  * 그달 근무를 사람과 포지션 두 축으로 가른다. 정본은

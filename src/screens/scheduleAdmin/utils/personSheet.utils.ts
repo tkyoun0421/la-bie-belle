@@ -1,4 +1,4 @@
-import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/model/personPickerRows.policy";
+import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 
 /**
  * 사람 시트의 표기다. 정본은

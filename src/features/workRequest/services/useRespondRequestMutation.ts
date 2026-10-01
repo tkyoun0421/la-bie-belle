@@ -2,10 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import {
-  respondRequest,
-  type RequestAnswer,
-} from "@/features/workRequest/api/respondRequest.api";
+import { type RequestAnswer } from "@/entities/workRequest/model/workRequest.type";
+import { respondRequest } from "@/features/workRequest/api/respondRequest.api";
 
 /**
  * 근무자가 받은 요청에 답한다. 수락이 곧 배정이라 근무표와 급여와 요청이 같이 낡는다.

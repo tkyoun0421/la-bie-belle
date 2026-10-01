@@ -19,7 +19,7 @@
 //   (퇴사한 사람도 같다)
 
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
-import { POSITION_ORDER } from "@/entities/schedule/model/schedule.type";
+import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
 import {
   computeWorkTotals,
