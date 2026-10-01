@@ -5,9 +5,9 @@ import {
   type ExcuseDecision,
   type ExcuseStatusRecord,
 } from "@/entities/attendance/model/attendanceStatus.policy";
+import { REGULAR_MINUTES } from "@/entities/payroll/consts/payroll.const";
 import {
   dayAmount,
-  REGULAR_MINUTES,
   type DayAmount,
   type DayKind,
 } from "@/entities/payroll/model/dayAmount.policy";

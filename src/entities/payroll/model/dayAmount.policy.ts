@@ -1,3 +1,4 @@
+import { REGULAR_MINUTES } from "@/entities/payroll/consts/payroll.const";
 /**
  * 하루치 금액이다. **540분까지 1배, 넘는 몫이 1.5배**다
  * (`docs/2-design/modules/payroll/README.md`의 PAY-005·PAY-028) — 기준을 배정·조정·리허설을
@@ -19,9 +20,6 @@ export type DayAmount = {
   amount: number;
   kind: DayKind;
 };
-
-/** 1배로 세는 몫의 상한이다. 넘는 몫이 연장이고, 화면이 그 초과분을 줄에 적는다. */
-export const REGULAR_MINUTES = 540;
 
 const SCALE = 120;
 

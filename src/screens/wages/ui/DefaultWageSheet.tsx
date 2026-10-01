@@ -3,14 +3,16 @@ import { AmountInput } from "@/shared/ui/AmountInput";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
 import {
-  atWageCap,
-  canSaveWage,
-  formatAmountDisplay,
-  nextAmountDigits,
   WAGE_CAP_HINT,
   WAGE_SAVE_FAILED_SUB,
   WAGE_SAVE_FAILED_TITLE,
   WAGE_TODAY_NOTE,
+} from "@/screens/wages/consts/wages.const";
+import {
+  atWageCap,
+  canSaveWage,
+  formatAmountDisplay,
+  nextAmountDigits,
 } from "@/screens/wages/model/wageAmount.policy";
 
 /**

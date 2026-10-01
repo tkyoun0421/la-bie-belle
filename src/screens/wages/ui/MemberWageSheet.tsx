@@ -5,16 +5,18 @@ import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
 import { spellWon } from "@/shared/utils/spellNumber";
 import type { MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
+import {
+  WAGE_CAP_HINT,
+  WAGE_SAVE_FAILED_SUB,
+  WAGE_SAVE_FAILED_TITLE,
+  WAGE_TODAY_NOTE,
+} from "@/screens/wages/consts/wages.const";
 import { canResetToDefault } from "@/screens/wages/model/canResetToDefault.policy";
 import {
   atWageCap,
   canSaveWage,
   formatAmountDisplay,
   nextAmountDigits,
-  WAGE_CAP_HINT,
-  WAGE_SAVE_FAILED_SUB,
-  WAGE_SAVE_FAILED_TITLE,
-  WAGE_TODAY_NOTE,
 } from "@/screens/wages/model/wageAmount.policy";
 import { WAGE_AMOUNT_INPUT_TEST_ID } from "@/screens/wages/ui/DefaultWageSheet";
 import {
