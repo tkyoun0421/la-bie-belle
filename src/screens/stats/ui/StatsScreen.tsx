@@ -19,7 +19,10 @@ import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
 import { monthOf, shiftMonth, spellMonth } from "@/shared/utils/kstDate";
-import { canGoBack, canGoForward } from "@/shared/utils/monthBoundary";
+import {
+  canGoToPreviousMonth,
+  canGoToNextMonth,
+} from "@/shared/utils/monthBoundary";
 import { spellWon } from "@/shared/utils/spellNumber";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
@@ -276,7 +279,8 @@ export function StatsScreen() {
       <ScrollView>
         <View className="px-5 pb-8">
           <View className="mt-2 flex-row items-center justify-center gap-2 py-2">
-            {firstMonth.data != null && canGoBack(month, firstMonth.data) ? (
+            {firstMonth.data != null &&
+            canGoToPreviousMonth(month, firstMonth.data) ? (
               <Button
                 variant="ghost"
                 size="compact"
@@ -294,7 +298,7 @@ export function StatsScreen() {
               {spellMonth(month)}
             </Text>
 
-            {canGoForward(month, today) ? (
+            {canGoToNextMonth(month, today) ? (
               <Button
                 variant="ghost"
                 size="compact"

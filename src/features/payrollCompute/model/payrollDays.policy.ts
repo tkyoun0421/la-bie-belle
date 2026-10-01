@@ -9,8 +9,8 @@ import { REGULAR_MINUTES } from "@/entities/payroll/consts/payroll.const";
 import {
   dayAmount,
   type DayAmount,
-  type DayKind,
 } from "@/entities/payroll/model/dayAmount.policy";
+import type { DayKind } from "@/entities/payroll/model/payroll.type";
 import { wageAt, type WageRate } from "@/entities/payroll/model/wageAt.policy";
 import {
   rehearsalHours,

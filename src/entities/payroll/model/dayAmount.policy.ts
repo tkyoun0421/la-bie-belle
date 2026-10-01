@@ -1,4 +1,5 @@
 import { REGULAR_MINUTES } from "@/entities/payroll/consts/payroll.const";
+import type { DayKind } from "@/entities/payroll/model/payroll.type";
 /**
  * 하루치 금액이다. **540분까지 1배, 넘는 몫이 1.5배**다
  * (`docs/2-design/modules/payroll/README.md`의 PAY-005·PAY-028) — 기준을 배정·조정·리허설을
@@ -12,8 +13,6 @@ import { REGULAR_MINUTES } from "@/entities/payroll/consts/payroll.const";
  * 분모 120은 「분을 시간으로(60) × 1.5배를 정수로(2)」다. 시급이 60으로 안 나눠떨어져도
  * 반올림을 한 번만 하려고 마지막에 한 번 나눈다.
  */
-
-export type DayKind = "normal" | "overtime" | "absent";
 
 export type DayAmount = {
   minutes: number;
