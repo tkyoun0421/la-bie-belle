@@ -29,6 +29,46 @@ sources:
 
 **Git 기준점**은 ADR-015가 merge된 커밋이다.
 
+## 남은 묶음을 도메인으로 가른다
+
+**완료 조건은 세그먼트 축으로 적고 PR은 도메인 축으로 가른다.** 「`consts/` 밖에 업무 상수가 없다」는 저장소 전체를 한 번에 보는 단언이라 세그먼트로 적어야 검증되고, 그걸 세우는 일은 근태의 상수 일곱과 알림의 넷이 서로 모르는 작업이라 도메인으로 갈라야 PR이 작다.
+
+### 겹이 둘이고 병렬 가능성이 다르다
+
+| 겹 | 하는 일 | 밖에서 보이나 | 병렬 |
+| --- | --- | --- | --- |
+| 이동 | 타입 빼기 · `lib`·`consts`·`config` 가르기 · 중복 접기 | import 경로가 바뀐다 | 못 한다 |
+| 안쪽 | `screens/<슬라이스>/hooks/`로 상태와 효과 빼기 · 큰 파일을 책임으로 쪼개기 | 그 화면 안에서만 | 된다 |
+
+**이동 PR은 저장소 전체의 import 줄을 고친다.** 도메인이 다른 도메인을 당기는 자리가 백쉰둘이다 — 통계가 근무표를 스물하나, 구성원이 알림을 열넷, 구성원이 인증을 열둘이다. 근무표가 타입을 옮기면 통계의 스물한 줄이 같이 바뀌고, 두 PR이 같이 떠 있으면 서로의 치환을 밟는다. 그래서 이동은 **직렬**이고 안쪽은 **병렬**이다.
+
+### 묶음 열
+
+도메인의 경계는 `entities` 슬라이스의 소유권이다. 그 도메인을 읽는 `features`와 그리는 `screens`가 같은 묶음에 든다.
+
+| 묶음 | 품는 슬라이스 | 이동할 것 | 안쪽에서 쪼갤 것 |
+| --- | --- | --- | --- |
+| 공용 | `shared/*` · `entities/clock` · `src/app/` | 타입 18 · 상수 7 · SDK 5 · 환경값 2 · 시계 2 | `databaseTypes` 1609줄 · `_catalog` 624줄 · `DragAndDrop` export 다섯 · `kstDate` export 일곱 |
+| 근무표 | schedule · availability · hall · workRequest + features 일곱 + screens 셋 | 타입 15 · 상수 2 | `DayDetail` 969줄에 훅 서른여덟 · `ScheduleAdminScreen` 736줄 |
+| 급여 | payroll + payrollCompute · wageAdmin · adjustment · holiday + screens 둘 | 타입 15 · 상수 7 | `payrollDays.policy` 339줄 · `period.policy` export 아홉 |
+| 구성원 | member · profile + memberAdmin · profileEdit · qualificationGrant + screens 여섯 | 타입 8 · 상수 8 | `PendingScreen` 689줄 · `ProfileScreen` 506줄 · `MembersScreen` 446줄 |
+| 근태 | attendance · excuse + attendanceCheckin · excuse + approvals | 타입 8 · 상수 9 | `ApprovalsScreen` 235줄 |
+| 알림 | notification + pushSwitch · notificationRead + notifications | 타입 2 · 상수 11 · SDK 1 · 환경값 1 · 시계 1 | Edge Function의 복사 경로가 여기 걸린다 |
+| 리허설 | rehearsal + rehearsalEdit + rehearsal | 타입 5 · 상수 2 | `RehearsalScreen` 427줄에 훅 열넷 |
+| 통계 | stats + stats · adminStats · adminHome | 타입 9 | `StatsScreen` 470줄 · `AdminStatsScreen` 414줄 · `workTotals.policy` export 다섯 |
+| 인증 | session + auth + retry | 타입 2 · 상수 1 · SDK 2 · 환경값 1 | `signOut`·`handleAuthCallback`이 `lib`을 받는다 |
+| QR | qr + qrAdmin + qr | 타입 1 · 상수 2 | `QrScreen` 204줄 |
+
+**공용이 맨 앞이다.** 이동할 것이 거기 쏠려 있고(SDK 다섯·환경값 둘·시계 둘이 전부 `shared/`와 `entities/clock`이다) 나머지 아홉이 전부 `shared/`를 당긴다 — 먼저 굳히지 않으면 뒤 아홉이 움직이는 바닥 위에서 일한다.
+
+**`features/notificationRead` 넷이 주인 없이 떠 있었다.** 묶음을 그려 보니 어느 `entities`도 안 당기고 아무 묶음에도 안 들었다 — 알림에 붙인다.
+
+### 이동 PR 하나가 완료 조건 넷을 조금씩 전진시킨다
+
+도메인 하나의 이동 PR은 그 도메인의 타입(AC-06나-2)과 `lib`(AC-09)과 `consts`(AC-10)과 `config`(AC-11)와 중복(AC-13)을 **한꺼번에** 옮긴다. 세그먼트마다 저장소를 열 번 도는 것보다 도메인마다 한 번 도는 것이 같은 파일을 덜 밟는다 — `pushDeps`는 부작용과 환경값과 상수를 한 파일에 들어, 세그먼트로 쪼개면 세 PR이 같은 파일을 연달아 가른다.
+
+그래서 **완료 조건 넷은 마지막 이동 PR이 끝날 때 같이 초록이 된다.** PR마다 그 도메인 몫이 어디까지 갔는지를 본문에 적는다.
+
 ## 완료 조건
 
 ### AC-01 — 파일 이름이 camelCase가 된다 ✅
@@ -162,7 +202,8 @@ sources:
   - 묶음 8가에서 **접미사를 못 받은 여섯**이 여기서 집을 얻는다 — `exportQrPaper`·`handleAuthCallback`·`signOut`·`resolveEntryDestination`·`pushPermission`·`pushDeps`
   - 시계를 읽는 셋은 **가른다.** `serverClock.policy.ts`는 시각을 인자로 받아 순수하므로 그대로 두고, `kstDate.ts`의 `kstToday()`처럼 제가 `new Date()`를 부르는 함수만 `lib`으로 뺀다
 - 관찰 결과: `entities`·`features`·`screens`의 `model/`과 `utils/`에 `expo-*`·`react-native` import가 없다. `.policy.ts`에 `Date.now`·`Math.random`이 없다. 셋이 초록이다
-- 왜 여기인가: `consts`·`config`가 가를 파일 중 일부가 이 묶음에서 먼저 움직인다 — `pushDeps`는 부작용과 환경값을 같이 들어 `lib`으로 간 뒤 그 안에서 환경 읽기가 `config`로 갈린다
+- 도메인으로 쪼갠다 — 공용 다섯·알림 하나·인증 둘이고 나머지 일곱 묶음에는 SDK를 당기는 `.ts`가 없다
+- `pushDeps`는 부작용과 환경값을 한 파일에 들어 `lib`으로 간 뒤 그 안에서 환경 읽기가 `config`로 갈린다. 같은 묶음(알림)의 같은 PR이 둘을 같이 한다
 
 ### AC-10 — `consts`가 선다
 
@@ -173,6 +214,7 @@ sources:
   - 열거 목록이 타입의 바탕인 자리는 `consts`에 두고 `model`이 import한다(`ERROR_CODES` → `ErrorCode`)
 - 관찰 결과: `consts/` 밖에 `export const <대문자_스네이크>`가 없다. `.type.ts`를 열면 타입만 있다. 셋이 초록이다
 - `queryKeys`·`staleTogether`는 밖이다 — 통신의 약속이고 꼴이 camel이다
+- 도메인으로 쪼갠다 — 알림 열하나·근태 아홉·구성원 여덟·급여 일곱·공용 일곱이 큰 쪽이다
 
 ### AC-11 — `config`가 선다
 
@@ -182,6 +224,7 @@ sources:
   - `pushDeps`와 `authRedirect`에서 환경 읽기만 `<도메인>.config.ts`로 가른다
   - `__DEV__`를 인자로 받는 둘(`isDevDoorOpen`·`isCatalogVisible`)은 **안 건드린다** — 받아서 판정하는 꼴이라 이미 순수하다
 - 관찰 결과: `config/` 밖에 `process.env`·`Constants` 읽기가 없다. 셋이 초록이다
+- 도메인으로 쪼갠다 — 공용 둘(`readSupabaseEnv`·`readAppUrl`)·알림 하나(`pushDeps`)·인증 하나(`authRedirect.utils`)다
 
 ### AC-12 — `screens`에 `hooks`가 선다
 
@@ -193,7 +236,8 @@ sources:
   - 빼낸 훅마다 짝 테스트가 붙어 TDD를 탄다
 - 관찰 결과: `screens/*/ui/*.tsx`에 `useState`·`useEffect`·`useReducer`가 없다. 셋이 초록이다
 - 보드의 `dumb-ui-widen`이 이 걸음이다 — 그 행이 든 「업무 상수와 판정과 가공 함수가 화면 파일에 남았다」는 AC-10과 이 묶음이 같이 걷는다
-- 가장 큰 묶음이다. 화면 단위로 쪼개 PR을 여럿 낸다
+- **도메인 열로 쪼개 병렬로 돈다.** 이 묶음만 병렬이 되는 까닭은 빼낸 훅을 그 화면의 `.tsx` 하나만 부르기 때문이다 — 밖에서 당기는 import가 없어 다른 묶음의 줄을 안 고친다
+- 큰 파일을 책임으로 쪼개는 일이 같이 간다. `DayDetail.tsx` 969줄과 `PendingScreen.tsx` 689줄은 훅을 빼도 여전히 여러 책임을 들고 있어 조각을 가른다
 
 ### AC-13 — 중복 넷이 접힌다
 
@@ -204,6 +248,7 @@ sources:
 - 행동: 몸이 같은 것은 하나로 접고, 다른 것은 **이름을 갈라** 무엇이 다른지 이름이 말하게 한다
 - 관찰 결과: 같은 이름의 export 함수가 두 자리에 없다. 셋이 초록이다
 - 묶음 6가가 `monthStart` 사본 넷을 접은 것과 같은 일이다
+- 넷이 묶음을 가로지른다 — `canGoBack`·`canGoForward`는 급여와 공용, `dayMinutes`는 급여와 통계, `attendanceSummaryLine`은 근무표와 통계다. **뒤에 오는 쪽의 이동 PR이 접는다** — 둘 다 자리를 잡은 뒤에야 어느 쪽으로 접을지 보인다
 
 ### AC-08 — 검사 열둘이 선다
 
@@ -356,7 +401,7 @@ sources:
 
 ## 구현 순서
 
-묶음 아홉을 PR 하나씩 나른다. 앞 묶음이 merge되고 나서 다음을 뗀다 — 같은 파일을 연달아 옮기므로 겹치면 충돌이 손으로 풀 수 없게 커진다.
+PR 하나씩 나른다. **이동하는 묶음은 앞의 것이 merge되고 나서 다음을 뗀다** — 같은 파일을 연달아 옮기므로 겹치면 충돌이 손으로 풀 수 없게 커진다. 안쪽 묶음은 그 제약이 없어 같이 돈다 — [「남은 묶음을 도메인으로 가른다」](#남은-묶음을-도메인으로-가른다)가 그 가름을 든다.
 
 1. **AC-01 — 파일 이름 camel.** ✅ 535개를 `git mv`했다
 2. **AC-02 — 폴더 이름 camel.** ✅ `screens/` 다섯을 `git mv`하고 폴더 검사를 세웠다
@@ -366,13 +411,9 @@ sources:
 6. **AC-06가 — `shared/` 재편 + 교차를 만드는 순수 함수 추출** ✅ 쉰아홉을 `git mv`하고 `monthStart` 사본 넷을 접었다. 교차가 0이 됐다
 7. **AC-07 — 슬라이스 쪼개기** ✅ 268개를 `git mv`했다. 교차 0이고 깨져 있던 엣지 import 셋을 고쳤다
 8. **AC-06나-1 — `model`/`utils` 가르기 + 접미사** ✅ 123개와 짝 테스트 120개를 `git mv`했다. 판정 예순하나·꼴 바꾸기 쉰여섯·타입 셋·검증 둘·store 하나
-9. **AC-06나-2 — 타입 빼기** `<슬라이스>.type.ts`로 예순다섯
-10. **AC-09 — `lib` 세우기** 부작용을 내는 손을 `model`·`utils`에서 걷는다
-11. **AC-10 — `consts` 세우기** 정해진 값을 판정 파일에서 걷는다
-12. **AC-11 — `config` 세우기** 환경이 주는 값이 들어오는 문을 하나로
-13. **AC-12 — `screens`의 `hooks`** `.tsx`에서 상태와 효과를 걷는다. 보드의 `dumb-ui-widen`이 이 걸음이다
-14. **AC-13 — 중복 넷 접기** 같은 이름의 함수가 두 자리에 산다
-15. **AC-08 — 검사 열둘**
+9. **이동 열 — 도메인 열을 직렬로.** PR 하나가 그 도메인의 타입(AC-06나-2)·`lib`(AC-09)·`consts`(AC-10)·`config`(AC-11)·중복(AC-13)을 같이 옮긴다. 순서는 공용 → 근무표 → 급여 → 구성원 → 근태 → 알림 → 리허설 → 통계 → 인증 → QR이고, 앞의 것이 main에 든 뒤 다음을 딴다
+10. **안쪽 열 — 도메인 열을 병렬로.** AC-12다. PR 하나가 그 도메인 `.tsx`의 상태와 효과를 `screens/<슬라이스>/hooks/`로 빼고 큰 파일을 책임으로 쪼갠다. worktree를 열로 떼어 같이 돈다
+11. **AC-08 — 검사 열둘** 열둘째 줄(`.tsx`의 `useState` 금지)은 안쪽 열이 끝나야 켠다
 
 **AC-06을 갈라 AC-07을 그 사이에 끼운다.** 두 방향 다 한 번은 걸린다.
 
