@@ -45,9 +45,11 @@
 2. 지도 위 버튼 둘 — 왼쪽 위에 닫기, 오른쪽 위에 내 위치로
 3. 아래 시트 — 제목, 아래 줄, 버튼
 
-**네이버 지도를 쓴다.** 갈림길은 다크 타일이었다. 카카오맵 웹 API에는 그것이 없다 — 지도 타입이 `ROADMAP`·`SKYVIEW`·`HYBRID`와 오버레이 여섯뿐이고 색을 바꾸는 길 자체가 없다. 네이버는 웹에서 `submodules=gl`로 벡터 지도를 띄우고 NCP 콘솔의 Map Style Editor에서 만든 스타일을 `customStyleId`로 걸면 라이트·다크 프리셋과 요소별 색 편집을 준다. 아래 색 표가 그 편집으로 들어간다.
+**네이버 지도를 쓴다.** 갈림길은 다크 타일이었다. 카카오맵 SDK에는 그것이 없다 — 안드로이드 `MapType`이 `NORMAL`과 `SKYVIEW` 둘뿐이고 그 밖의 지도는 문의가 필요하다고 적혀 있으며, 카카오가 데브톡 답변에서 SDK의 다크 모드를 지원하지 않는다고 밝혔다(출처는 [지도 구성하기](https://apis.map.kakao.com/android_v2/docs/getting-started/maptype_overlay/)와 [데브톡 문의](https://devtalk.kakao.com/t/sdk-v2-mapstyle/151789)). 네이버는 iOS·Android SDK 둘 다 NCP 콘솔의 Map Style Editor에서 만든 스타일을 `customStyleId`로 받아 라이트·다크 프리셋과 요소별 색 편집을 준다 — 출처는 [NMFMapView](https://navermaps.github.io/ios-map-sdk/reference/Classes/NMFMapView.html)와 [NaverMapOptions](https://navermaps.github.io/android-map-sdk/reference/com/naver/maps/map/NaverMapOptions.html)다. 아래 색 표가 그 편집으로 들어간다.
 
-`nightModeEnabled`는 iOS·Android SDK 것이라 웹에는 없다. 웹은 커스텀 스타일 하나로 간다.
+`nightModeEnabled`는 SDK에 있지만 안 쓴다. 두 플랫폼 레퍼런스가 똑같이 「지도 유형이 야간 모드를 지원하지 않으면 활성화하더라도 아무 변화가 일어나지 않습니다」라고만 적고 **어느 유형이 듣는지는 열거하지 않는다**. 켜도 안 바뀌는 자리가 어디인지 모르는 설정으로 다크를 세울 수 없어 커스텀 스타일 하나로 간다.
+
+**이 화면은 Expo Go로 못 뜬다.** 지도가 네이티브 모듈이라 개발 빌드가 서야 한다 — 래퍼와 빌드 설정은 이 task의 plan이 가진다.
 
 **홀 좌표와 반경은 DB에서 온다.** 저장소가 PUBLIC이라 코드에 안 박는다 — [attendance/README.md](../README.md#att-003)가 설정 행 하나로 정했다. 이 화면은 그 값을 받아 지도 중심과 홀 마커와 거리 판정에 쓴다. 값이 오기 전에는 지도를 안 그린다.
 
