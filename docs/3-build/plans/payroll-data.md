@@ -159,7 +159,7 @@ sources:
 | `supabase/migrations/<날짜>_approve_wage_row.sql` | 승인 함수에 첫 시급 행 | AC-03 |
 | `src/shared/api/error-codes.ts` | `bad_amount`·`no_default_wage` | AC-08 |
 | `src/features/payroll/model/*.ts`·`__tests__/` | 금액 계산·9시간 기준·기간 합계 | AC-06 |
-| `src/entities/payroll/dals/*.ts`·`__tests__/` | 읽기 하나, 쓰기 다섯 | AC-07 |
+| `src/entities/payroll/api/*.ts`·`__tests__/` | 읽기 하나, 쓰기 다섯 | AC-07 |
 | `src/entities/attendance/model/attendance-status.ts`·`__tests__/`(이동) | `features/attendance/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
 | `src/entities/rehearsal/model/rehearsal-hours.ts`·`__tests__/`(이동) | `features/rehearsal/model/`에서 내린다 — 층만 바뀐다 | AC-06 |
 | `tests/integration/postgres.ts` | 급여 시드 헬퍼 | 검증 표 |
@@ -188,8 +188,8 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-02 | 남의 시급이 보인다 | integration `src/entities/payroll/dals/__tests__/payroll-rls.integration.test.ts` | `pnpm test:integration:run` | `wage_rates`는 본인·관리자만, `default_wage_rates`는 관리자만 |
-| AC-03 | 같은 날 두 번 바꿔 이력이 둘 선다 | integration `src/entities/payroll/dals/__tests__/payroll-functions.integration.test.ts` | 위와 같다 | 행이 하나, 값이 나중 것 |
+| AC-02 | 남의 시급이 보인다 | integration `src/entities/payroll/api/__tests__/payroll-rls.integration.test.ts` | `pnpm test:integration:run` | `wage_rates`는 본인·관리자만, `default_wage_rates`는 관리자만 |
+| AC-03 | 같은 날 두 번 바꿔 이력이 둘 선다 | integration `src/entities/payroll/api/__tests__/payroll-functions.integration.test.ts` | 위와 같다 | 행이 하나, 값이 나중 것 |
 | AC-03 | 기본을 바꿔도 따르는 사람이 안 바뀐다 | integration 위 | 위와 같다 | 따르는 전원에게 같은 날 행, 개별로 정한 사람은 그대로 |
 | AC-03 | 0을 하나 더 친다 | integration 위 | 위와 같다 | 1,200,000원이면 `bad_amount` |
 | AC-03 | 기본 시급보다 먼저 승인된 사람이 계산 밖에 남는다 | integration 위 | 위와 같다 | 기본값 없이 승인하면 행이 없다가, 기본 시급이 처음 서는 순간 그 사람에게도 오늘 행이 선다 |

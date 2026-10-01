@@ -4,7 +4,7 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getMonthSchedule,
   type ScheduleDay,
-} from "@/entities/schedule/dals/getMonthSchedule";
+} from "@/entities/schedule/api/getMonthSchedule.api";
 
 /**
  * 근무표 한 달의 연 날들이다. 달을 넘기면 키가 갈려 앞 달이 캐시에 남고, 되돌아오면 다시 안

@@ -137,7 +137,7 @@ describe("프로필 접근 권한", () => {
 
     const errors = await errorsOf(
       code,
-      "src/entities/profile/dals/__tests__/profile.integration.test.ts",
+      "src/entities/profile/api/__tests__/profile.integration.test.ts",
     );
 
     expect(errors).toEqual([]);

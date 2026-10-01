@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { markLeave } from "@/entities/profile/dals/markLeave";
+import { markLeave } from "@/entities/profile/api/markLeave.api";
 import {
   createAdminUser,
   createApprovedUser,

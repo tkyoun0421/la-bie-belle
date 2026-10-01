@@ -1,4 +1,4 @@
-import { getWageRates } from "@/entities/payroll/dals/getWageRates";
+import { getWageRates } from "@/entities/payroll/api/getWageRates.api";
 import {
   createAdminUser,
   createApprovedUser,

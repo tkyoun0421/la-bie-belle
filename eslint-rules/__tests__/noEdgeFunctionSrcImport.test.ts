@@ -25,7 +25,7 @@ describe("house/no-edge-function-src-import — 마운트 밖 src import를 글�
 
   it("../_shared/... import는 안 걸린다", async () => {
     const violations = await violationsOf(
-      importCode("../_shared/notification/push-message.ts"),
+      importCode("../_shared/notification/pushMessage.ts"),
       "supabase/functions/send-push/index.ts",
     );
 

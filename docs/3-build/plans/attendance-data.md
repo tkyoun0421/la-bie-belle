@@ -159,7 +159,7 @@ sources:
 
 ### AC-07
 
-**dal.** `src/entities/attendance/dals/`.
+**dal.** `src/entities/attendance/api/`.
 
 - 읽기 — `get-day-attendance.ts`(`['attendance', 'YYYY-MM-DD']`, 그날 `check_ins`와 `excuse_status`), `get-my-excuses.ts`(`['excuses', 'YYYY-MM']`, 본인 사유 목록), `get-qr-code.ts`(`['hall', 'qr']`, **`staleTime`이 0이고 영속하지 않는다** — 관리자가 돌리면 옛 값이 `invalid_qr`이다)
 - 쓰기 — `check-in.ts`·`submit-excuse.ts`·`decide-excuse.ts`·`rotate-qr.ts`·`set-hall-location.ts`
@@ -204,7 +204,7 @@ sources:
 | `src/entities/attendance/model/constants.ts` | 업무 상수 | AC-06·AC-11 |
 | `tests/lint/` | 업무 상수 대조 | AC-11 |
 | `src/features/attendance/model/*.ts`·`__tests__/` | 상태 여섯·통신 지연·현황 셈·월 집계 | AC-06 |
-| `src/entities/attendance/dals/*.ts`·`__tests__/` | 읽기 셋, 쓰기 다섯, `check_in` 재시도 | AC-07 |
+| `src/entities/attendance/api/*.ts`·`__tests__/` | 읽기 셋, 쓰기 다섯, `check_in` 재시도 | AC-07 |
 | `tests/integration/postgres.ts` | 인증 시드 헬퍼 | AC-09 |
 
 ## 구현 순서

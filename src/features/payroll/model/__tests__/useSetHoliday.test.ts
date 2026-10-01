@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const setHolidayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/payroll/dals/setHoliday", () => ({
+jest.unstable_mockModule("@/entities/payroll/api/setHoliday.api", () => ({
   setHoliday: setHolidayMock,
 }));
 

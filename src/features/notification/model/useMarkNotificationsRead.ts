@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { markNotificationsRead } from "@/entities/notification/dals/markNotificationsRead";
+import { markNotificationsRead } from "@/entities/notification/api/markNotificationsRead.api";
 
 /**
  * 누른 알림에 읽음을 찍는다. 정본은

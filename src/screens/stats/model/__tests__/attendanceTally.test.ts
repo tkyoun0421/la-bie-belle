@@ -18,7 +18,7 @@
 import type {
   ScheduleAssignment,
   ScheduleDay,
-} from "@/entities/schedule/dals/getMonthSchedule";
+} from "@/entities/schedule/api/getMonthSchedule.api";
 import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,

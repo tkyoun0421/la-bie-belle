@@ -4,7 +4,7 @@ import { queryKeys } from "@/shared/api/queryKeys";
 import {
   getQualifications,
   type Qualification,
-} from "@/entities/schedule/dals/getQualifications";
+} from "@/entities/schedule/api/getQualifications.api";
 
 /**
  * 자격 전체다. 판정은 `qualifications` 뷰가 끝냈고 화면은 픽커 목록과 합쳐 쓰기만 한다

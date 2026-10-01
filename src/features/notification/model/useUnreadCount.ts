@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { countUnreadNotifications } from "@/entities/notification/dals/countUnreadNotifications";
+import { countUnreadNotifications } from "@/entities/notification/api/countUnreadNotifications.api";
 
 /**
  * 안 읽은 알림의 수다. 종 아이콘의 점이 이것을 보고, 목록과 키를 나눠 갖는 것은 50건 창

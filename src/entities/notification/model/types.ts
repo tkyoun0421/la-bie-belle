@@ -58,7 +58,7 @@ export type NotificationRow = {
 };
 
 /**
- * 한 쪽에 담는 수다. 읽는 손(`dals/getNotifications.ts`의 `range()`)과 다음 쪽이 있는지를
+ * 한 쪽에 담는 수다. 읽는 손(`api/getNotifications.api.ts`의 `range()`)과 다음 쪽이 있는지를
  * 세는 손(`features/notification/model/useNotifications.ts`)이 같은 수를 봐야 해서, 둘 다
  * 아는 아래층에 둔다 — 쪽이 이 수보다 적게 오면 그것이 마지막 쪽이다.
  */

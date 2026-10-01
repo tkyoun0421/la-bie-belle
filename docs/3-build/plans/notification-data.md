@@ -136,7 +136,7 @@ sources:
 | --- | --- | --- |
 | `supabase/migrations/<날짜>_notifications.sql` | 표 둘, 뷰, RLS, 인덱스, `profiles.notifications_enabled` 열 | AC-01~AC-03·AC-06 |
 | `supabase/migrations/<날짜>_notification_functions.sql` | 함수 넷과 그 호출자 검사 | AC-04~AC-07 |
-| `src/entities/notification/dals/` | 함수 넷의 `supabase.rpc()` 래퍼. 파일 하나에 함수 하나 | AC-04~AC-06 |
+| `src/entities/notification/api/` | 함수 넷의 `supabase.rpc()` 래퍼. 파일 하나에 함수 하나 | AC-04~AC-06 |
 | `src/entities/notification/model/types.ts` | `kind`와 `payload`의 타입 | AC-01 |
 
 `src/shared/api/error-codes.ts`는 안 건드린다 — AC-07이 코드를 안 더한다.
@@ -162,13 +162,13 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 남의 알림이 읽힌다 | integration `src/entities/notification/dals/__tests__/notification-rls.integration.test.ts`(예정) | `pnpm test:integration:run` | 다른 사람 행이 0건 |
+| AC-01 | 남의 알림이 읽힌다 | integration `src/entities/notification/api/__tests__/notification-rls.integration.test.ts`(예정) | `pnpm test:integration:run` | 다른 사람 행이 0건 |
 | AC-02 | 남의 기기 주소가 읽힌다 | integration 위 | 위와 같다 | 다른 사람 행이 0건 |
 | AC-02 | 같은 기기가 두 행이 된다 | integration 위 | 위와 같다 | 같은 `token`으로 두 번 저장해도 행이 1 |
 | AC-03 | 관리자 아닌 사람이 뷰를 읽는다 | integration 위 | 위와 같다 | 예외가 아니라 0건 |
 | AC-03 | 기기 없는 사람이 뷰에서 사라진다 | integration 위 | 위와 같다 | 주소가 없어도 행이 서고 `has_device`가 거짓 |
 | AC-03 | 뷰가 주소를 낸다 | integration 위 | 위와 같다 | 컬럼이 `profile_id`·`has_device` 둘뿐이다 |
-| AC-04 | 남의 알림에 읽음이 찍힌다 | integration `src/entities/notification/dals/__tests__/notification-functions.integration.test.ts`(예정) | 위와 같다 | `read_at`이 그대로 널 |
+| AC-04 | 남의 알림에 읽음이 찍힌다 | integration `src/entities/notification/api/__tests__/notification-functions.integration.test.ts`(예정) | 위와 같다 | `read_at`이 그대로 널 |
 | AC-04 | 두 번 읽으면 시각이 덮인다 | integration 위 | 위와 같다 | 첫 시각이 남는다 |
 | AC-05 | 기기를 물려받아도 앞 사람에게 묶인다 | integration 위 | 위와 같다 | 같은 `token`을 B가 저장한 뒤 행의 `profile_id`가 B |
 | AC-05 | 남의 주소가 지워진다 | integration 위 | 위와 같다 | 남의 `token`으로 불러도 행이 남는다 |

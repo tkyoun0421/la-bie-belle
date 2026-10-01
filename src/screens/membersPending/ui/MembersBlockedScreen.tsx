@@ -16,7 +16,7 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
-import { unblockMember } from "@/entities/profile/dals/unblockMember";
+import { unblockMember } from "@/entities/profile/api/unblockMember.api";
 import { formatElapsedDays } from "@/entities/profile/model/formatElapsedDays";
 import { useMembers } from "@/features/members/model/useMembers";
 

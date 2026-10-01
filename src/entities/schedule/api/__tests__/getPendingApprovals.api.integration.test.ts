@@ -1,4 +1,4 @@
-import { getPendingApprovals } from "@/entities/schedule/dals/getPendingApprovals";
+import { getPendingApprovals } from "@/entities/schedule/api/getPendingApprovals.api";
 import {
   createAdminUser,
   createApprovedUser,

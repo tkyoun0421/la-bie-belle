@@ -1,4 +1,4 @@
-import { getMyProfile } from "@/entities/profile/dals/getMyProfile";
+import { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
 import {
   createSignedInUser,
   createSignedInUserWithoutProfile,

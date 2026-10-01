@@ -2,7 +2,7 @@ import type { DB } from "@/shared/api/database";
 import {
   monthStart,
   nextMonthStart,
-} from "@/entities/schedule/dals/getMonthSchedule";
+} from "@/entities/schedule/api/getMonthSchedule.api";
 
 /**
  * 그 달 빈 자리다. 「살아 있는 자리 중 살아 있는 정규 배정이 없는 것」을 TS가 다시 세지

@@ -1,6 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-import { monthStart } from "@/entities/schedule/dals/getMonthSchedule";
+import { monthStart } from "@/entities/schedule/api/getMonthSchedule.api";
 
 /**
  * 그 달 근무표를 확정한다. 되돌리는 문이 없고 빈 자리가 있어도 막지 않는다(SCH-014).

@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const getSlotRequestsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/getSlotRequests", () => ({
+jest.unstable_mockModule("@/entities/schedule/api/getSlotRequests.api", () => ({
   getSlotRequests: getSlotRequestsMock,
 }));
 

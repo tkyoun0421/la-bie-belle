@@ -16,7 +16,7 @@ import { serverClockStore } from "@/shared/lib/serverClockStore";
 import { supabase } from "@/shared/lib/supabase";
 import { useTheme } from "@/shared/lib/useTheme";
 import { wireAutoRefresh } from "@/shared/lib/wireAutoRefresh";
-import { getServerNow } from "@/entities/clock/dals/getServerNow";
+import { getServerNow } from "@/entities/clock/api/getServerNow.api";
 import { decideEntry, type EntryDecision } from "@/features/auth/decideEntry";
 
 // 스플래시가 이미 내려간 뒤에 부르면 reject한다 — 그때는 막을 것도 없으니 삼킨다.

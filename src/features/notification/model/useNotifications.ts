@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { getNotifications } from "@/entities/notification/dals/getNotifications";
+import { getNotifications } from "@/entities/notification/api/getNotifications.api";
 import {
   NOTIFICATION_MAX_PAGES,
   NOTIFICATION_PAGE_SIZE,

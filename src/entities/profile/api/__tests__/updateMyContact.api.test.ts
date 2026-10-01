@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { DB } from "@/shared/api/database";
 import { DomainError, TransportError } from "@/shared/api/errors";
-import { updateMyContact } from "@/entities/profile/dals/updateMyContact";
+import { updateMyContact } from "@/entities/profile/api/updateMyContact.api";
 
 // `profile_private.phone`은 함수가 아니라 본인 행 직접 갱신이다 — check 제약이 마지막 문이라
 // 이 DAL이 PostgREST의 23514를 제약 이름으로 갈라 DomainError('invalid_phone')으로 바꾼다.

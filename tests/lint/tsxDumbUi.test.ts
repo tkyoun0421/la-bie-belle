@@ -108,7 +108,7 @@ describe("규칙9 — .tsx는 더미 UI", () => {
 
     const violations = await violationsOf(
       code,
-      "src/entities/profile/dals/fixture.ts",
+      "src/entities/profile/api/fixture.api.ts",
     );
 
     expect(violations.map((violation) => violation.ruleId)).not.toContain(
@@ -121,7 +121,7 @@ describe("규칙9 — .tsx는 더미 UI", () => {
 
     const violations = await violationsOf(
       code,
-      "src/entities/profile/dals/fixture.ts",
+      "src/entities/profile/api/fixture.api.ts",
     );
 
     expect(violations.map((violation) => violation.ruleId)).not.toContain(
@@ -134,7 +134,7 @@ describe("규칙9 — .tsx는 더미 UI", () => {
 
     const violations = await violationsOf(
       code,
-      "src/entities/profile/dals/fixture.ts",
+      "src/entities/profile/api/fixture.api.ts",
     );
 
     expect(violations.map((violation) => violation.ruleId)).not.toContain(

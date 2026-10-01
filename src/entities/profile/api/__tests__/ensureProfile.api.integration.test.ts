@@ -1,4 +1,4 @@
-import { ensureProfile } from "@/entities/profile/dals/ensureProfile";
+import { ensureProfile } from "@/entities/profile/api/ensureProfile.api";
 import { createSignedInUserWithoutProfile } from "@tests/integration/supabase";
 
 describe("ensure_profile", () => {

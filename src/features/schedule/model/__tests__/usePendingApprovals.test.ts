@@ -12,7 +12,7 @@ const getPendingApprovalsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/dals/getPendingApprovals",
+  "@/entities/schedule/api/getPendingApprovals.api",
   () => ({
     getPendingApprovals: getPendingApprovalsMock,
   }),

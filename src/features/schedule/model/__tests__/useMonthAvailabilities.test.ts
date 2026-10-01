@@ -13,7 +13,7 @@ const getMonthAvailabilitiesMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/dals/getMonthAvailabilities",
+  "@/entities/schedule/api/getMonthAvailabilities.api",
   () => ({
     getMonthAvailabilities: getMonthAvailabilitiesMock,
   }),

@@ -111,7 +111,7 @@ export function parseHolidayApiResponse(body: unknown): { holiday_date: string; 
 | `supabase/functions/import-holidays/index.ts` | 열두 달 호출, 파싱 함수 부르기, 껍데기에 넘기기, 호출자 검사 |
 | `src/features/payroll/model/holiday-api-response.ts` | `toIsoDate`·`parseHolidayApiResponse` |
 | `src/features/payroll/model/__tests__/holiday-api-response.test.ts` | 그 짝 |
-| `src/entities/payroll/dals/__tests__/fetch-holidays.integration.test.ts` | cron 조건과 등록 |
+| `src/entities/payroll/api/__tests__/fetch-holidays.integration.test.ts` | cron 조건과 등록 |
 | `supabase/config.toml` | `[functions.import-holidays]` |
 | `.env.example` | secret 이름만 |
 
@@ -140,7 +140,7 @@ export function parseHolidayApiResponse(body: unknown): { holiday_date: string; 
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 다음 해가 찼는데도 날마다 밖을 부른다 | integration `src/entities/payroll/dals/__tests__/fetch-holidays.integration.test.ts`(예정) | `pnpm test:integration:run`, 로컬 Supabase | 다음 해 `api` 행이 있으면 `net._http_response`의 최대 id가 안 는다 |
+| AC-01 | 다음 해가 찼는데도 날마다 밖을 부른다 | integration `src/entities/payroll/api/__tests__/fetch-holidays.integration.test.ts`(예정) | `pnpm test:integration:run`, 로컬 Supabase | 다음 해 `api` 행이 있으면 `net._http_response`의 최대 id가 안 는다 |
 | AC-01 | 비었는데 안 쏜다 | integration 위 | 위와 같다 | 다음 해가 비면 그 id가 하나 는다 |
 | AC-01 | 올해 행을 보고 다음 해를 안 본다 | integration 위 | 위와 같다 | 올해에 `api` 행이 있어도 다음 해가 비면 여전히 호출 1 |
 | AC-01 | vault가 비어 cron 작업이 날마다 실패로 남는다 | integration 위 | 위와 같다 | 항목이 없어도 함수가 예외 없이 끝난다 |
@@ -150,7 +150,7 @@ export function parseHolidayApiResponse(body: unknown): { holiday_date: string; 
 | AC-02 | 빈 결과가 예외로 튄다 | unit 위 | `pnpm test` | `items`가 빈 문자열이면 빈 배열 |
 | AC-02 | 공휴일이 아닌 날이 급여 계산에 든다 | unit 위 | `pnpm test` | `isHoliday`가 `"N"`인 항목이 빠진다 |
 | AC-02 | 정상 응답을 옮기다 값이 어긋난다 | unit 위 | `pnpm test` | `{ holiday_date, name }[]`로 정확히 옮겨진다 |
-| AC-02 | 껍데기를 아무나 불러 그 해 공휴일을 갈아엎는다 | integration `src/entities/payroll/dals/__tests__/fetch-holidays.integration.test.ts` | `pnpm test:integration:run` | 로그인한 클라이언트의 `rpc("import_holidays")`가 거절된다 |
+| AC-02 | 껍데기를 아무나 불러 그 해 공휴일을 갈아엎는다 | integration `src/entities/payroll/api/__tests__/fetch-holidays.integration.test.ts` | `pnpm test:integration:run` | 로그인한 클라이언트의 `rpc("import_holidays")`가 거절된다 |
 | AC-03 | 키가 커밋에 든다 | 수동 — `pr-diff`가 diff 전문을 본다 | — | API 키와 서비스 키 문자열이 어느 파일에도 없다 |
 | AC-01 | 첫 실행이 안 돈다 | 수동 — 배포 뒤 다음 해 행을 본다 | 운영 | 새벽 한 번 뒤 그 해 `api` 행이 선다 |
 

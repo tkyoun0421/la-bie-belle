@@ -17,7 +17,7 @@ sources:
 
 배포한 적이 없어 기존 마이그레이션 파일을 고친다. 새 파일로 `alter table`을 쌓으면 PK를 갈아 끼우는 줄이 길어지고, 최종 모습을 보려면 파일 둘을 겹쳐 읽어야 한다. 로컬과 CI는 `supabase db reset`으로 처음부터 만든다.
 
-확인한 코드와 Git 기준점은 셋이다 — `supabase/migrations/20260825162027_profiles.sql`이 `e4ecf84`, `tests/integration/postgres.ts`와 `src/entities/profile/dals/get-approved-at.ts`가 `9467c13`이다.
+확인한 코드와 Git 기준점은 셋이다 — `supabase/migrations/20260825162027_profiles.sql`이 `e4ecf84`, `tests/integration/postgres.ts`와 `src/entities/profile/api/get-approved-at.ts`가 `9467c13`이다.
 
 ## 완료 조건
 
@@ -73,16 +73,16 @@ sources:
 
 **바꿀 코드.**
 
-- `src/entities/profile/dals/get-approved-at.ts`가 `eq("id", userId)`를 `eq("user_id", userId)`로 바꾼다. 승인 판정을 클라이언트로 옮기는 일은 이 task가 아니다 — [backlog.md](../../backlog.md)의 `auth-entry` 행이다
+- `src/entities/profile/api/get-approved-at.ts`가 `eq("id", userId)`를 `eq("user_id", userId)`로 바꾼다. 승인 판정을 클라이언트로 옮기는 일은 이 task가 아니다 — [backlog.md](../../backlog.md)의 `auth-entry` 행이다
 - `tests/integration/postgres.ts`의 `approveProfile`이 `where user_id = ...`로 찾는다. `createApprovedUser`가 그 뒤로도 승인된 사용자를 돌려준다
 - `tests/integration/supabase.ts`의 `createSignedInUser`가 가입 뒤 `ensure_profile()`을 부른다. 트리거가 빠지면 가입만으로는 프로필 행이 없고, 지금 테스트 셋은 행이 있다는 전제 위에 서 있다 — 프로필 행을 만드는 자리도 헬퍼 하나로 남는다
-- `src/entities/profile/dals/__tests__/get-approved-at.integration.test.ts`의 세 단언은 그대로다. 헬퍼가 `ensure_profile()`을 부른 뒤라 전제가 그대로 선다
+- `src/entities/profile/api/__tests__/get-approved-at.integration.test.ts`의 세 단언은 그대로다. 헬퍼가 `ensure_profile()`을 부른 뒤라 전제가 그대로 선다
 
 ### AC-07
 
 **integration 테스트.**
 
-기존 `src/entities/profile/dals/__tests__/profile.integration.test.ts`의 「남의 프로필은 한 행도 읽지 못한다」는 전제가 뒤집혔다 — 승인된 사람은 남의 프로필을 읽는다. 그 파일을 새 규칙으로 다시 쓰고, 함수마다 파일을 가른다. 아래가 한 줄씩 테스트다.
+기존 `src/entities/profile/api/__tests__/profile.integration.test.ts`의 「남의 프로필은 한 행도 읽지 못한다」는 전제가 뒤집혔다 — 승인된 사람은 남의 프로필을 읽는다. 그 파일을 새 규칙으로 다시 쓰고, 함수마다 파일을 가른다. 아래가 한 줄씩 테스트다.
 
 - 읽기 — 승인 전에도 본인은 자기 프로필을 읽는다 / 승인 전에는 남의 프로필을 한 행도 못 읽는다 / 승인되면 남의 프로필도 읽는다 / 차단되면 남의 프로필을 다시 못 읽는다 / 로그아웃 상태로는 한 행도 못 읽는다
 - `profiles` 직접 쓰기 — 본인이 자기 `display_name`을 직접 못 고친다 / 자기 `approved_at`을 못 찍는다 / 자기 행을 못 지운다 / 남의 `photo_url`을 못 고친다
@@ -111,9 +111,9 @@ sources:
 | `supabase/migrations/20260825162027_profiles.sql` | 표 둘과 제약, 판정 함수 둘, RLS와 grant, 근무자 함수 셋, 관리자 함수 둘 | AC-01·AC-02·AC-03·AC-04·AC-05 |
 | `tests/integration/postgres.ts` | `approveProfile`이 `user_id`로 찾기, 관리자·차단 사용자 헬퍼 | AC-06·AC-07 |
 | `tests/integration/supabase.ts` | `createSignedInUser`가 가입 뒤 `ensure_profile()`을 부른다 | AC-06 |
-| `src/entities/profile/dals/get-approved-at.ts` | 읽는 열을 `user_id`로 | AC-06 |
-| `src/entities/profile/dals/__tests__/get-approved-at.integration.test.ts` | 단언은 그대로. 헬퍼 전제만 바뀐다 | AC-06 |
-| `src/entities/profile/dals/__tests__/profile.integration.test.ts`와 함수별 새 테스트 파일 | 새 RLS 규칙으로 다시 쓰기. 파일은 함수마다 가른다 | AC-07 |
+| `src/entities/profile/api/get-approved-at.ts` | 읽는 열을 `user_id`로 | AC-06 |
+| `src/entities/profile/api/__tests__/get-approved-at.integration.test.ts` | 단언은 그대로. 헬퍼 전제만 바뀐다 | AC-06 |
+| `src/entities/profile/api/__tests__/profile.integration.test.ts`와 함수별 새 테스트 파일 | 새 RLS 규칙으로 다시 쓰기. 파일은 함수마다 가른다 | AC-07 |
 
 ## 구현 순서
 
@@ -141,7 +141,7 @@ sources:
 | AC-03 | integration — 읽기·`profiles` 직접 쓰기·`profile_private` 테스트 파일(예정) | `pnpm test:integration:run`, 로컬 Supabase | 초록 |
 | AC-04 | integration — `ensure_profile`·`submit_profile`·`update_my_photo` 테스트 파일(예정) | `pnpm test:integration:run`, 로컬 Supabase | 초록 |
 | AC-05 | integration — `approve_member`·`reject_member` 테스트 파일(예정) | `pnpm test:integration:run`, 로컬 Supabase | 초록 |
-| AC-06 | integration — `src/entities/profile/dals/__tests__/get-approved-at.integration.test.ts` | `pnpm test:integration:run`, 로컬 Supabase | 초록 |
+| AC-06 | integration — `src/entities/profile/api/__tests__/get-approved-at.integration.test.ts` | `pnpm test:integration:run`, 로컬 Supabase | 초록 |
 | AC-07 | 위 파일들과 `tests/integration/postgres.ts`의 헬퍼 | `pnpm test:integration:run`, 로컬 Supabase | 목록 한 줄마다 테스트 하나 |
 | AC-08 | 저장소 전체 검사와 e2e | `pnpm lint` · `pnpm typecheck` · `pnpm test`, `pnpm build` 뒤 `pnpm e2e` | 초록. e2e 파일 변경이 0이다 |
 

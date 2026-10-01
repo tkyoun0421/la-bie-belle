@@ -5,7 +5,7 @@ import { staleTogether } from "@/shared/api/queryKeys";
 import {
   decideCancelRequest,
   type CancelDecision,
-} from "@/entities/schedule/dals/decideCancelRequest";
+} from "@/entities/schedule/api/decideCancelRequest.api";
 
 /**
  * 관리자가 근무 취소 요청을 승인하거나 거절한다. 승인이면 자리가 비므로 근무표와 급여가

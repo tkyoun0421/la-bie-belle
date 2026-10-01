@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { getMonthAttendance } from "@/entities/attendance/dals/getMonthAttendance";
+import { getMonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
 import {
   createAdminUser,
   createApprovedUser,

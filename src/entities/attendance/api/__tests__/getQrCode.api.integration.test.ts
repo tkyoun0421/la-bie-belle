@@ -1,5 +1,5 @@
 import { queryKeys } from "@/shared/api/queryKeys";
-import { getQrCode } from "@/entities/attendance/dals/getQrCode";
+import { getQrCode } from "@/entities/attendance/api/getQrCode.api";
 import {
   createAdminUser,
   createApprovedUser,

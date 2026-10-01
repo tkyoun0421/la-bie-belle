@@ -12,7 +12,7 @@ const setApplicationDeadlineMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/dals/setApplicationDeadline",
+  "@/entities/schedule/api/setApplicationDeadline.api",
   () => ({
     setApplicationDeadline: setApplicationDeadlineMock,
   }),

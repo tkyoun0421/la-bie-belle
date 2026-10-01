@@ -101,7 +101,7 @@ function flatten<Row extends EmbeddedMemberRow>(
  * `max_rows`(`supabase/config.toml`)에서 자른다 — 조건 없이 읽으면 그 선을 넘은 사람이
  * 조용히 「기기 없음」으로 읽힌다. 재직자 목록은 이미 손에 있으니 그 id만 실어 보낸다.
  *
- * 같은 뷰를 [`notification`의 dal](../../notification/dals/getPushReachable.ts)도 읽는다 —
+ * 같은 뷰를 [`notification`의 dal](../../notification/api/getPushReachable.api.ts)도 읽는다 —
  * 슬라이스끼리는 서로를 못 부르고(규칙 3) 목록이 갈래를 같이 내야 해서 읽는 손이 둘이다.
  * 뷰가 내는 열 둘이 정본이고 두 손은 그것을 각자 제 모양으로 받는다.
  */

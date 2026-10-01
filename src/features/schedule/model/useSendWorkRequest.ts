@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import { sendWorkRequest } from "@/entities/schedule/dals/sendWorkRequest";
+import { sendWorkRequest } from "@/entities/schedule/api/sendWorkRequest.api";
 
 /**
  * 관리자가 고른 사람들에게 빈 자리의 근무를 물어본다. 보낸 뒤 자리 카드에 배지가 서고

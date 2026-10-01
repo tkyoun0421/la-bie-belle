@@ -7,7 +7,7 @@ const requestNotificationPermissionMock =
   jest.fn<(...args: unknown[]) => Promise<boolean>>();
 
 jest.unstable_mockModule(
-  "@/entities/notification/dals/setNotificationsEnabled",
+  "@/entities/notification/api/setNotificationsEnabled.api",
   () => ({
     setNotificationsEnabled: setNotificationsEnabledMock,
   }),

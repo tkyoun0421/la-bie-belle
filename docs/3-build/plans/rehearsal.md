@@ -167,7 +167,7 @@ sources:
 | `src/features/rehearsal/model/kind-for-date.ts`·`can-add-on.ts`·`__tests__/` | 갈래 판정과 넣기 가능 | AC-04 |
 | `src/features/rehearsal/model/query-keys.ts` | `['rehearsal']`과 무효화가 같이 건드리는 `['payroll']` | AC-05 |
 | `src/features/rehearsal/model/useMyRehearsals.ts`·`useAllRehearsals.ts`·`useAddRehearsal.ts`·`useEditRehearsal.ts`·`useRemoveRehearsal.ts`·`__tests__/` | 읽기 훅 둘, 쓰기 훅 셋, 무효화 | AC-05 |
-| `src/entities/rehearsal/dals/get-my-rehearsals.ts`·`get-all-rehearsals.ts`·`add-rehearsal.ts`·`edit-rehearsal.ts`·`remove-rehearsal.ts`·`__tests__/` | 읽기 둘, 쓰기 셋, 오류 가르기 | AC-05 |
+| `src/entities/rehearsal/api/get-my-rehearsals.ts`·`get-all-rehearsals.ts`·`add-rehearsal.ts`·`edit-rehearsal.ts`·`remove-rehearsal.ts`·`__tests__/` | 읽기 둘, 쓰기 셋, 오류 가르기 | AC-05 |
 | `src/screens/rehearsal/model/rehearsal-day-cell.ts`·`spell-total.ts`·`day-sheet-rows.ts`·`add-sheet-state.ts`·`rehearsal-guard.ts`·`__tests__/` | 달력 칸 문구·합계 문구·날 시트 줄·시트 상태와 거절 받기·문 판정 | AC-06~AC-08 |
 | `src/screens/rehearsal/ui/RehearsalScreen.tsx`·`RehearsalDaySheet.tsx`·`RehearsalFormSheet.tsx` | 달력·날 시트·넣는 시트와 고치는 시트·지우기 Dialog | AC-06·AC-07 |
 | `src/app/me/rehearsals.tsx` | `NotBuiltYet`을 걷고 `/me/rehearsals`에 화면을 붙인다 | AC-08 |
@@ -199,10 +199,10 @@ sources:
 
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
-| AC-01 | 두 갈래가 한 행에 섞인다 | integration `src/entities/rehearsal/dals/__tests__/rehearsal-functions.integration.test.ts` | `pnpm test:integration:run` | 시각과 건수를 같이 보내면 함수가 `wrong_kind`로 막는다 |
+| AC-01 | 두 갈래가 한 행에 섞인다 | integration `src/entities/rehearsal/api/__tests__/rehearsal-functions.integration.test.ts` | `pnpm test:integration:run` | 시각과 건수를 같이 보내면 함수가 `wrong_kind`로 막는다 |
 | AC-01 | 건수 갈래가 하루에 둘 선다 | integration 위 | 위와 같다 | 그날 건수 행이 이미 있으면 `already_exists`, 시각 갈래는 여럿 선다 |
-| AC-02 | 남의 리허설이 보인다 | integration `src/entities/rehearsal/dals/__tests__/rehearsal-rls.integration.test.ts` | 위와 같다 | 다른 근무자에게 0행, 관리자에게 전원 |
-| AC-02 | 자격 없이 넣는다 | integration `src/entities/rehearsal/dals/__tests__/rehearsal-functions.integration.test.ts` | 위와 같다 | `not_qualified` |
+| AC-02 | 남의 리허설이 보인다 | integration `src/entities/rehearsal/api/__tests__/rehearsal-rls.integration.test.ts` | 위와 같다 | 다른 근무자에게 0행, 관리자에게 전원 |
+| AC-02 | 자격 없이 넣는다 | integration `src/entities/rehearsal/api/__tests__/rehearsal-functions.integration.test.ts` | 위와 같다 | `not_qualified` |
 | AC-03 | 화면이 보낸 갈래를 믿는다 | integration 위 | 위와 같다 | 배정 있는 날에 시각을 보내면 `wrong_kind` |
 | AC-03 | 시각이 겹친다 | integration 위 | 위와 같다 | `overlaps`. 배정 시간과는 안 견준다 |
 | AC-03 | 고치기가 갈래를 바꾼다 | integration 위 | 위와 같다 | 시각 행에 건수를 보내면 `wrong_kind` |

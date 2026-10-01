@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 import type { DB } from "@/shared/api/database";
-import type { MyProfileRow } from "@/entities/profile/dals/getMyProfile";
+import type { MyProfileRow } from "@/entities/profile/api/getMyProfile.api";
 import { resolveEntryDestination } from "@/features/auth/resolveEntryDestination";
 
 const fakeClient = {} as DB;

@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const editRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/rehearsal/dals/editRehearsal", () => ({
+jest.unstable_mockModule("@/entities/rehearsal/api/editRehearsal.api", () => ({
   editRehearsal: editRehearsalMock,
 }));
 

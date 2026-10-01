@@ -8,7 +8,7 @@ describe("규칙1 — 상대 경로 import 금지", () => {
 
     const violations = await violationsOf(
       code,
-      "src/entities/profile/dals/__tests__/profile.integration.test.ts",
+      "src/entities/profile/api/__tests__/profile.integration.test.ts",
     );
 
     expect(violations.map((violation) => violation.ruleId)).not.toContain(
@@ -21,7 +21,7 @@ describe("규칙1 — 상대 경로 import 금지", () => {
 
     const violations = await violationsOf(
       code,
-      "src/entities/profile/dals/__tests__/profile.integration.test.ts",
+      "src/entities/profile/api/__tests__/profile.integration.test.ts",
     );
 
     expect(violations.map((violation) => violation.ruleId)).toContain(

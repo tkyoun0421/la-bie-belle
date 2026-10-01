@@ -1,6 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-import { monthStart } from "@/entities/schedule/dals/getMonthSchedule";
+import { monthStart } from "@/entities/schedule/api/getMonthSchedule.api";
 
 /**
  * 그 달 스케줄 신청 마감일을 옮긴다(SCH-007). 미루기도 당기기도 같은 함수고, 바뀌면

@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 
 const closeDayMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/closeDay", () => ({
+jest.unstable_mockModule("@/entities/schedule/api/closeDay.api", () => ({
   closeDay: closeDayMock,
 }));
 

@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { DomainError } from "@/shared/api/errors";
-import { createCancelRequest } from "@/entities/schedule/dals/createCancelRequest";
+import { createCancelRequest } from "@/entities/schedule/api/createCancelRequest.api";
 import {
   createAdminUser,
   createApprovedUser,

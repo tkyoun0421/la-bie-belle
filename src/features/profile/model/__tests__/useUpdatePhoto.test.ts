@@ -8,12 +8,12 @@ import type { ReactNode } from "react";
 const uploadAvatarMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const updateMyPhotoMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/dals/avatarsBucket", () => ({
+jest.unstable_mockModule("@/entities/profile/api/avatarsBucket.api", () => ({
   uploadAvatar: uploadAvatarMock,
   AVATARS_BUCKET: "avatars",
 }));
 
-jest.unstable_mockModule("@/entities/profile/dals/updateMyPhoto", () => ({
+jest.unstable_mockModule("@/entities/profile/api/updateMyPhoto.api", () => ({
   updateMyPhoto: updateMyPhotoMock,
 }));
 

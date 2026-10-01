@@ -11,9 +11,12 @@ import type { ReactNode } from "react";
 const removeAssignmentMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/removeAssignment", () => ({
-  removeAssignment: removeAssignmentMock,
-}));
+jest.unstable_mockModule(
+  "@/entities/schedule/api/removeAssignment.api",
+  () => ({
+    removeAssignment: removeAssignmentMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");

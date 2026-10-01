@@ -23,7 +23,7 @@
 // 없다.
 //
 // 재료는 usePayrollMonthsByMonth(features/stats/api/useStatsQueries.ts,
-// 아직 없다)가 달마다 내는 원재료(entities/payroll/dals/getPayrollMonth.ts의
+// 아직 없다)가 달마다 내는 원재료(entities/payroll/api/getPayrollMonth.api.ts의
 // PayrollMonth — 시급 이력·조정·사유 상태·공휴일)와, useWorkMonths가 이미
 // 내는 그 달 ScheduleDay 목록이다. 금액 자체는 features/payroll/model/
 // payrollDays.ts의 payrollViewDays를 그대로 불러 날마다 낸 amount를
@@ -50,10 +50,10 @@
 // 달이 있다 — getMyRehearsals.ts의 SCH-022, "근무표가 없는 달에도 행이
 // 선다"). 둘 다 아니면 Map에서 빠진다.
 
-import type { PayrollMonth } from "@/entities/payroll/dals/getPayrollMonth";
-import type { Rehearsal } from "@/entities/rehearsal/dals/getMyRehearsals";
-import type { ScheduleAssignment } from "@/entities/schedule/dals/getMonthSchedule";
-import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
+import type { PayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
+import type { ScheduleAssignment } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
 import type {
   AttendanceMonth,
   WorkMonth,

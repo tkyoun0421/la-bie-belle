@@ -119,7 +119,7 @@ sources:
 | `src/screens/schedule-admin/ui/AdjustSheet.tsx`·`AdjustChoiceSheet.tsx` | 시트 둘. 둘째 이름이 `PersonSheet`가 아닌 것은 사람 픽커가 그 이름을 이미 써서다 | AC-03·AC-04·AC-06 |
 | `src/screens/schedule-admin/ui/ScheduleAdminScreen.tsx` | 날 상세에 `['payroll', 'YYYY-MM']`과 `['rehearsal', 'YYYY-MM', 'all']` 두 키를 붙여 내린다 | AC-05 |
 | `src/features/payroll/model/useSetAdjustment.ts`·`useSetHoliday.ts`·`__tests__/` | mutation과 `['payroll']` 무효화 | AC-05 |
-| `src/entities/payroll/dals/get-payroll-month.ts`·`__tests__/get-payroll-month.integration.test.ts` | `holidays`를 그달치로 같이 싣는다 | AC-01 |
+| `src/entities/payroll/api/get-payroll-month.ts`·`__tests__/get-payroll-month.integration.test.ts` | `holidays`를 그달치로 같이 싣는다 | AC-01 |
 | `src/features/payroll/model/usePayrollMonths.ts`·`__tests__/usePayrollMonths.test.ts` | 합치는 덩이에 `holidays`를 더한다 — 날 상세가 `['payroll', 'YYYY-MM']`을 읽는다 | AC-01·AC-05 |
 | `src/features/payroll/model/day-minutes.ts` | 조정 마지막 행 고르기를 `adjustedMinutes`로 내보내 조정 시트와 셈을 나눠 쓴다 | AC-03 |
 | `src/features/schedule/model/useMonthSchedule.ts` | `refetch`를 낸다 — 배정이 사라진 거절에 목록을 다시 읽는다 | AC-05 |
@@ -150,7 +150,7 @@ sources:
 | 완료 조건·규칙 참조 | 깨질 수 있는 것 | 테스트 층·위치 또는 수동 시나리오 | 명령·환경 | 확인할 결과 |
 | --- | --- | --- | --- | --- |
 | AC-01 | 받아온 공휴일인 날에 스위치가 눌린다 | unit `src/screens/schedule-admin/model/__tests__/holiday-switch.test.ts` | `pnpm test` | 켜진 채 잠기고 문구가 바뀐다 |
-| AC-01 | 그달치 `holidays`가 응답에 안 실린다 | integration `src/entities/payroll/dals/__tests__/get-payroll-month.integration.test.ts` | `pnpm test:integration:run` | 그달 공휴일 행이 오고 이웃 달 행은 안 온다 |
+| AC-01 | 그달치 `holidays`가 응답에 안 실린다 | integration `src/entities/payroll/api/__tests__/get-payroll-month.integration.test.ts` | `pnpm test:integration:run` | 그달 공휴일 행이 오고 이웃 달 행은 안 온다 |
 | AC-02 | 조정 0명에 「0명 조정됨」이 선다 | unit `src/screens/schedule-admin/model/__tests__/adjustment-count.test.ts` | `pnpm test` | 오른쪽이 빈다 |
 | AC-03 | 최종 시간에 리허설이 안 든다 | unit `src/screens/schedule-admin/model/__tests__/adjust-sheet-rows.test.ts` | `pnpm test` | 배정 9시간 + 리허설 2건이 11시간 |
 | AC-03 | 리허설만 있는 사람이 목록에 선다 | unit 위 | `pnpm test` | 배정이 있는 사람만 선다 |

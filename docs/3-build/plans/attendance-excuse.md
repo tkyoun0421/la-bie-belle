@@ -138,8 +138,8 @@ sources:
 | --- | --- | --- |
 | `src/features/attendance/model/excuse-sheet.ts` | 상태 아홉의 갈림과 결과 모션 시각 | AC-01·AC-03 |
 | `src/features/attendance/model/excuse-input.ts` | 사람이 보는 글자로 세는 길이, 다섯 자 잠금, 170자·200자 경계와 도움말 | AC-02 |
-| `src/features/attendance/model/useSubmitExcuse.ts` | [`submit-excuse.ts`](../../../src/entities/attendance/dals/submitExcuse.ts) 호출과 무효화 | AC-03 |
-| `src/features/attendance/model/useDecideExcuse.ts` | [`decide-excuse.ts`](../../../src/entities/attendance/dals/decideExcuse.ts) 호출과 무효화 | AC-06 |
+| `src/features/attendance/model/useSubmitExcuse.ts` | [`submit-excuse.ts`](../../../src/entities/attendance/api/submitExcuse.api.ts) 호출과 무효화 | AC-03 |
+| `src/features/attendance/model/useDecideExcuse.ts` | [`decide-excuse.ts`](../../../src/entities/attendance/api/decideExcuse.api.ts) 호출과 무효화 | AC-06 |
 | `src/features/attendance/ui/ExcuseSheet.tsx` | 시트 조립 — 덮개가 안 닫고, 닿는 면과 아래 여백이 `useSafeAreaInsets`를 탄다 | AC-01~AC-05 |
 | `src/screens/dashboard/model/excuse-entry.ts`·`src/screens/dashboard/ui/DashboardScreen.tsx` | 못 찍음 블록과 반려 블록에서 시트를 연다. 블록 자체는 [`dashboard`](../../backlog.md)가 세운다 | AC-04 |
 | `src/screens/approvals/model/approvals-list.ts` | `ApprovalKind`에 사유가 붙고 「근무 취소가 위」라는 둘째 기준이 선다 | AC-06 |
@@ -184,7 +184,7 @@ sources:
 | AC-03 | 실패인데 글이 날아간다 | e2e 위 | `pnpm e2e` | 칸에 쓴 글이 남아 있다 |
 | AC-04 | 거절된 글이 새 시트에 채워진다 | e2e 위 | `pnpm e2e` | 빈 시트가 열린다 |
 | AC-06 | 이유 없이 반려된다 | e2e 위 | `pnpm e2e` | 이유가 비면 못 보낸다 |
-| AC-06 | 근무자가 남의 사유 글을 본다 | integration `src/entities/attendance/dals/__tests__/attendance-rls.integration.test.ts` | `pnpm test:integration:run` | [`attendance-data`](attendance-data.md#ac-02)가 이미 막았다 |
+| AC-06 | 근무자가 남의 사유 글을 본다 | integration `src/entities/attendance/api/__tests__/attendance-rls.integration.test.ts` | `pnpm test:integration:run` | [`attendance-data`](attendance-data.md#ac-02)가 이미 막았다 |
 | AC-07 | 현황 줄에 0이 남는다 | unit `src/screens/schedule-worker/model/__tests__/attendance-column.test.ts` | `pnpm test` | 0인 항목이 빠진다 |
 
 - 배정하지 않은 것: 실기기에서 키보드가 올라올 때 칸과 버튼이 둘 다 보이는지 — 시뮬레이터의 키보드 높이가 실기기와 다르다

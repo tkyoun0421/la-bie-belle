@@ -14,7 +14,7 @@ import { RatioBand } from "@/shared/ui/RatioBand";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
-import { liveAssignmentCount } from "@/entities/schedule/dals/getMonthSchedule";
+import { liveAssignmentCount } from "@/entities/schedule/api/getMonthSchedule.api";
 import { useMembers } from "@/features/members/model/useMembers";
 import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
 import { useHallDefaults } from "@/features/schedule/model/useHallDefaults";

@@ -3,11 +3,11 @@ import {
   resolveAuthDestination,
   type AuthDestination,
 } from "@/shared/lib/resolveAuthDestination";
-import { ensureProfile as ensureProfileDal } from "@/entities/profile/dals/ensureProfile";
+import { ensureProfile as ensureProfileDal } from "@/entities/profile/api/ensureProfile.api";
 import {
   getMyProfile as getMyProfileDal,
   type MyProfileRow,
-} from "@/entities/profile/dals/getMyProfile";
+} from "@/entities/profile/api/getMyProfile.api";
 
 type EntryDeps = {
   client: DB;

@@ -11,7 +11,7 @@
 //   기본 값이라서다. absent·excused의 0-처리는 이 task가 배정받은 범위 밖이라
 //   여기서 단언하지 않는다(아래 「못 쓴 것」 참고)
 
-import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
+import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
 import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,

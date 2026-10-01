@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import { createSchedule } from "@/entities/schedule/dals/createSchedule";
+import { createSchedule } from "@/entities/schedule/api/createSchedule.api";
 
 /**
  * 그 달 근무표를 만든다. 마감일을 같이 정하는 한 동작이라 입력도 한 묶음이다

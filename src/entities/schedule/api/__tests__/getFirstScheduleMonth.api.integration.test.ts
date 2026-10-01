@@ -1,5 +1,5 @@
 import { queryKeys } from "@/shared/api/queryKeys";
-import { getFirstScheduleMonth } from "@/entities/schedule/dals/getFirstScheduleMonth";
+import { getFirstScheduleMonth } from "@/entities/schedule/api/getFirstScheduleMonth.api";
 import {
   createAdminUser,
   execSql,

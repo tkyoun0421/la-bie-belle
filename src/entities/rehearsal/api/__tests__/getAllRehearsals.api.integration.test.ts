@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { getAllRehearsals } from "@/entities/rehearsal/dals/getAllRehearsals";
+import { getAllRehearsals } from "@/entities/rehearsal/api/getAllRehearsals.api";
 import {
   createAdminUser,
   createApprovedUser,

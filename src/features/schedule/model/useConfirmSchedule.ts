@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
 import { staleTogether } from "@/shared/api/queryKeys";
-import { confirmSchedule } from "@/entities/schedule/dals/confirmSchedule";
+import { confirmSchedule } from "@/entities/schedule/api/confirmSchedule.api";
 
 /**
  * 그 달 근무표를 확정한다. 되돌리는 문이 없다(SCH-014).

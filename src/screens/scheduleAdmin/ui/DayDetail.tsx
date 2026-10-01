@@ -10,13 +10,13 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
-import type { AddAssignmentInput } from "@/entities/schedule/dals/addAssignment";
+import type { AddAssignmentInput } from "@/entities/schedule/api/addAssignment.api";
 import type {
   ScheduleAssignment,
   ScheduleSlot,
-} from "@/entities/schedule/dals/getMonthSchedule";
-import type { Qualification } from "@/entities/schedule/dals/getQualifications";
-import type { SlotRequest } from "@/entities/schedule/dals/getSlotRequests";
+} from "@/entities/schedule/api/getMonthSchedule.api";
+import type { Qualification } from "@/entities/schedule/api/getQualifications.api";
+import type { SlotRequest } from "@/entities/schedule/api/getSlotRequests.api";
 import {
   PERMISSION_OF_OTHERS,
   REACHABLE,

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 const setDefaultWageMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/payroll/dals/setDefaultWage", () => ({
+jest.unstable_mockModule("@/entities/payroll/api/setDefaultWage.api", () => ({
   setDefaultWage: setDefaultWageMock,
 }));
 

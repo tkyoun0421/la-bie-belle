@@ -8,9 +8,12 @@ import type { ReactNode } from "react";
 
 const removeRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/rehearsal/dals/removeRehearsal", () => ({
-  removeRehearsal: removeRehearsalMock,
-}));
+jest.unstable_mockModule(
+  "@/entities/rehearsal/api/removeRehearsal.api",
+  () => ({
+    removeRehearsal: removeRehearsalMock,
+  }),
+);
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");

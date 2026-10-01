@@ -2,7 +2,7 @@ import type { DB } from "@/shared/api/database";
 import type {
   CheckInRow,
   ExcuseStatusRow,
-} from "@/entities/attendance/dals/getDayAttendance";
+} from "@/entities/attendance/api/getDayAttendance.api";
 
 /**
  * 그달치 인증과 사유다. 키가 `['attendance', 'YYYY-MM']`이고 날 키

@@ -138,7 +138,7 @@ sources:
 | `src/shared/ui/Segment.tsx` | 주·월·연 세그먼트 — 이미 있고 고른 면이 미끄러지는 모션만 는다. `schedule-worker`가 같이 쓰니 그 화면도 회귀로 본다 | AC-01 |
 | `src/features/payroll/model/payroll-days.ts`·`__tests__/payroll-days.test.ts` | 시급 없는 날을 버리지 말고 `'wage-pending'`으로 낸다 — [payroll-data AC-06](payroll-data.md#ac-06)의 계약을 넓힌다. `payrollViewDays`가 세 키의 행을 접어 화면이 물을 사실까지 같이 낸다 | AC-04 |
 | `src/features/payroll/model/day-amount.ts` | `REGULAR_MINUTES`를 내보내 내역 줄이 연장 초과분을 적는다 | AC-03 |
-| `src/entities/schedule/dals/get-month-schedule.ts` | 근태 판정이 읽는 인증의 신고·접수 시각을 같이 싣는다 | AC-02 |
+| `src/entities/schedule/api/get-month-schedule.ts` | 근태 판정이 읽는 인증의 신고·접수 시각을 같이 싣는다 | AC-02 |
 | `tests/e2e/payroll.yaml` | 주·월·연 한 바퀴, 연에서 달로 들어가기, 퇴사자 진입 | 검증 표 |
 | `scripts/e2e-seed-server.mts`·`tests/integration/postgres.ts` | 지난 달 근무표를 SQL로 꽂고 승인과 첫 시급 행을 근무보다 앞 달로 물린다 | 검증 표 |
 

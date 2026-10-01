@@ -110,15 +110,15 @@ sources:
 
 | 파일·영역 | 바꿀 책임 | 참조 완료 조건·규칙 |
 | --- | --- | --- |
-| `src/entities/notification/dals/get-notifications.ts` | `range()`로 50건씩 읽는 페이지 질의와 키 `['notifications']` | AC-03 |
-| `src/entities/notification/dals/count-unread-notifications.ts` | 안 읽은 수와 키 `['notifications', 'unread']` | AC-03·AC-06 |
+| `src/entities/notification/api/get-notifications.ts` | `range()`로 50건씩 읽는 페이지 질의와 키 `['notifications']` | AC-03 |
+| `src/entities/notification/api/count-unread-notifications.ts` | 안 읽은 수와 키 `['notifications', 'unread']` | AC-03·AC-06 |
 | `src/entities/notification/model/types.ts` | `kind`가 지금 `string`이다 — [kind와 payload](../../2-design/modules/notification/design.md#kind와-payload) 표의 스물셋을 유니온으로 좁혀야 문장 함수가 빠짐을 컴파일에서 잡는다 | AC-01 |
 | `src/features/notification/model/title.ts` | 1차 열여덟의 문장, 2차 다섯은 널 | AC-01 |
 | `src/features/notification/model/when.ts` | 날짜 머리와 받은 시각 | AC-02 |
 | `src/features/notification/model/destination.ts` | 종류마다의 목적지 | AC-05 |
 | `src/features/notification/model/useNotifications.ts` | `useInfiniteQuery`와 `maxPages` 3 | AC-03 |
 | `src/features/notification/model/useUnreadCount.ts` | 종의 점이 보는 수 | AC-03·AC-06 |
-| `src/features/notification/model/useMarkNotificationsRead.ts` | [`notification-data`](notification-data.md)가 낸 [`mark-notifications-read.ts`](../../../src/entities/notification/dals/markNotificationsRead.ts) 호출과 무효화 둘 | AC-05 |
+| `src/features/notification/model/useMarkNotificationsRead.ts` | [`notification-data`](notification-data.md)가 낸 [`mark-notifications-read.ts`](../../../src/entities/notification/api/markNotificationsRead.api.ts) 호출과 무효화 둘 | AC-05 |
 | `src/screens/notifications/model/notification-rows.ts` | 날짜 머리로 끊은 줄 목록, 일곱 상태, 안 읽은 관리자 공지 id 거르기 | AC-04·AC-05 |
 | `src/screens/notifications/model/press-notification.ts` | 줄을 누를 때 — 이동이 먼저고 읽음이 뒤따른다 | AC-05 |
 | `src/screens/notifications/ui/NotificationsScreen.tsx` | 화면 조립 | AC-04 |
@@ -127,8 +127,8 @@ sources:
 | `src/shared/ui/AppBar.tsx` | **이미 `right`를 받는다.** 고칠 것이 없고 종을 그 자리에 넣는 것이 이 task 몫이다 | AC-06 |
 | `src/screens/schedule-worker/ui/ScheduleWorkerScreen.tsx`·`src/screens/payroll/ui/PayrollScreen.tsx`·`src/screens/profile/ui/ProfileScreen.tsx`·`src/screens/admin-home/ui/AdminHomeScreen.tsx` | 앱바 오른쪽에 종을 세운다. 대시보드 앱바는 [`dashboard`](../../backlog.md)가 세우고 그 task가 같이 단다 | AC-06 |
 | `src/features/notification/model/__tests__/`·`src/screens/notifications/model/__tests__/` | 문장·시각·목적지·줄 목록의 unit | AC-01·AC-02·AC-04·AC-05 |
-| `src/entities/notification/dals/__tests__/get-notifications.integration.test.ts` | 페이지와 남의 알림 | AC-03 |
-| `src/entities/notification/dals/__tests__/count-unread-notifications.integration.test.ts` | 안 읽은 수가 50건 창에 안 갇히는 것 | AC-03·AC-06 |
+| `src/entities/notification/api/__tests__/get-notifications.integration.test.ts` | 페이지와 남의 알림 | AC-03 |
+| `src/entities/notification/api/__tests__/count-unread-notifications.integration.test.ts` | 안 읽은 수가 50건 창에 안 갇히는 것 | AC-03·AC-06 |
 | `tests/e2e/notifications.yaml` | 줄을 눌러 목적지로 가고 점이 사라지는 한 여정 | AC-04~AC-06 |
 | `scripts/e2e-seed-server.mts` | 알림 50건을 넘기는 시드 상태 | AC-03·AC-04 |
 
@@ -161,7 +161,7 @@ sources:
 | AC-01 | 푸시와 목록이 다르게 말한다 | unit 위 | `pnpm test` | 같은 함수를 쓴다 |
 | AC-02 | 해를 넘기면 날짜 머리가 틀린다 | unit `src/features/notification/model/__tests__/when.test.ts`(예정) | `pnpm test` | 「2025년 12월 31일(수)」 |
 | AC-02 | 한 시간 안인데 「1시간 전」이라 한다 | unit 위 | `pnpm test` | 「12분 전」 |
-| AC-03 | 남의 알림이 섞인다 | integration `src/entities/notification/dals/__tests__/get-notifications.integration.test.ts`(예정) | `pnpm test:integration:run` | 본인 것만 |
+| AC-03 | 남의 알림이 섞인다 | integration `src/entities/notification/api/__tests__/get-notifications.integration.test.ts`(예정) | `pnpm test:integration:run` | 본인 것만 |
 | AC-03 | 51번째가 안 온다 | integration 위 | 위와 같다 | 둘째 쪽이 온다 |
 | AC-05 | 목적지가 표와 다르다 | unit `src/features/notification/model/__tests__/destination.test.ts`(예정) | `pnpm test` | 종류마다 표의 경로 |
 | AC-05 | 관리자 공지가 눌린다 | e2e `tests/e2e/notifications.yaml`(예정) | `pnpm e2e` | 안 눌리고 화살표가 없다 |

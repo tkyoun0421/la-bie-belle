@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { DB } from "@/shared/api/database";
 import { staleTogether } from "@/shared/api/queryKeys";
-import { closeDay } from "@/entities/schedule/dals/closeDay";
+import { closeDay } from "@/entities/schedule/api/closeDay.api";
 
 /**
  * 날 하나를 닫는다. 배정이 있으면 화면이 먼저 경고 시트로 확인받고 이 훅은 그 뒤에 불린다

@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
-import { setAdjustment } from "@/entities/payroll/dals/setAdjustment";
+import { setAdjustment } from "@/entities/payroll/api/setAdjustment.api";
 import {
   createAdminUser,
   createApprovedUser,

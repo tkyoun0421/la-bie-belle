@@ -5,7 +5,7 @@ import { staleTogether } from "@/shared/api/queryKeys";
 import {
   addRehearsal,
   type AddRehearsalInput,
-} from "@/entities/rehearsal/dals/addRehearsal";
+} from "@/entities/rehearsal/api/addRehearsal.api";
 
 /**
  * 리허설 넣기다. 성공하면 `['rehearsal']`과 `['payroll']`이 낡는다 —

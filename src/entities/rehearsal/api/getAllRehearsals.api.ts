@@ -3,7 +3,7 @@ import {
   monthRange,
   REHEARSAL_COLUMNS,
   type Rehearsal,
-} from "@/entities/rehearsal/dals/getMyRehearsals";
+} from "@/entities/rehearsal/api/getMyRehearsals.api";
 
 /**
  * 관리자가 보는 그 달 전원 리허설이다. **이름을 임베딩한다** — 날 시트가 줄마다 이름을

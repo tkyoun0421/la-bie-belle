@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 
 const undoLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/dals/undoLeave", () => ({
+jest.unstable_mockModule("@/entities/profile/api/undoLeave.api", () => ({
   undoLeave: undoLeaveMock,
 }));
 

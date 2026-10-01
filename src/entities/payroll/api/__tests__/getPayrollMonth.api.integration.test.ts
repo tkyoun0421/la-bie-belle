@@ -4,7 +4,7 @@ import {
   getPayrollMonth,
   type HolidayRow,
   type PayrollMonth,
-} from "@/entities/payroll/dals/getPayrollMonth";
+} from "@/entities/payroll/api/getPayrollMonth.api";
 import {
   createAdminUser,
   createApprovedUser,
