@@ -1,5 +1,5 @@
 import type { Database } from "@/shared/api/database";
-import { DomainError } from "@/shared/api/errors";
+import { DomainError } from "@/shared/model/error.type";
 import { submitExcuse } from "@/features/excuse/api/submitExcuse.api";
 import {
   createAdminUser,

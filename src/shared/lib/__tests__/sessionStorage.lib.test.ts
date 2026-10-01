@@ -40,7 +40,7 @@ jest
     fillSequential as unknown as typeof globalThis.crypto.getRandomValues,
   );
 
-const { sessionStorage } = await import("@/shared/api/sessionStorage");
+const { sessionStorage } = await import("@/shared/lib/sessionStorage.lib");
 
 function buildRealisticSessionJson(): string {
   const header = Buffer.from(

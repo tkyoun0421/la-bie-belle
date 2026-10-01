@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/api/errors";
+import { DomainError } from "@/shared/model/error.type";
 import { undoLeave } from "@/features/memberAdmin/api/undoLeave.api";
 import {
   createAdminUser,

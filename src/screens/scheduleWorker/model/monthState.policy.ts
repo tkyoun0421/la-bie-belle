@@ -49,7 +49,7 @@ const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
  * 오늘과 달 이동과 앱바 제목은 `@/shared/utils/kstDate`가 소유한다. 같은 손이 슬라이스 넷에
  * 각자 서 있던 것을 거기로 모았고, 부르는 쪽이 안 바뀌게 이름만 여기서 이어 낸다.
  */
-export { kstToday, shiftMonth, spellMonth } from "@/shared/utils/kstDate";
+export { shiftMonth, spellMonth } from "@/shared/utils/kstDate";
 
 /**
  * 달력 위 마감 줄이다. 문안 표의 세 행 그대로다 — 마감 전이면 남은 날을, 마감 당일이면

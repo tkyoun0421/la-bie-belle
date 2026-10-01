@@ -1,4 +1,4 @@
-import { NO_VALUE } from "@/shared/utils/noValue";
+import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { spellWon } from "@/shared/utils/spellNumber";
 import {
   getAttendanceStatus,

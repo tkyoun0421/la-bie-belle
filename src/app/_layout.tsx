@@ -8,14 +8,14 @@ import { AppState } from "react-native";
 import "@/app/globals.css";
 import { queryClient } from "@/shared/api/queryClient";
 import { supabase } from "@/shared/api/supabase";
-import { useTheme } from "@/shared/hooks/useTheme";
+import { FONT_SOURCES } from "@/shared/consts/font.const";
+import { useTheme } from "@/shared/stores/theme.store";
 import {
-  FONT_SOURCES,
   shouldDismissSplash,
   shouldRenderApp,
-} from "@/shared/utils/fontLoading";
+} from "@/shared/utils/fontLoading.utils";
 import { getServerNow } from "@/entities/clock/api/getServerNow.api";
-import { serverClockStore } from "@/entities/clock/model/clock.store";
+import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { wireAutoRefresh } from "@/features/auth/hooks/wireAutoRefresh";
 import {
   decideEntry,

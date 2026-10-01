@@ -123,7 +123,7 @@ describe("저장소 전체 대조 — 임시 디렉터리", () => {
     );
     write(
       root,
-      "src/shared/api/errorCodes.ts",
+      "src/shared/consts/error.const.ts",
       'export const ERROR_CODES = ["already_exists", "deadline_past"] as const;\n',
     );
 
@@ -139,7 +139,7 @@ describe("저장소 전체 대조 — 임시 디렉터리", () => {
     );
     write(
       root,
-      "src/shared/api/errorCodes.ts",
+      "src/shared/consts/error.const.ts",
       "export const ERROR_CODES = [] as const;\n",
     );
 
@@ -153,7 +153,7 @@ describe("저장소 전체 대조 — 임시 디렉터리", () => {
     write(root, "supabase/migrations/20260101000000_a.sql", "select 1;\n");
     write(
       root,
-      "src/shared/api/errorCodes.ts",
+      "src/shared/consts/error.const.ts",
       'export const ERROR_CODES = ["too_early"] as const;\n',
     );
 

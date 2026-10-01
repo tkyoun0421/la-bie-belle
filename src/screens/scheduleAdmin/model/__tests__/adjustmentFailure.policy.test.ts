@@ -6,7 +6,7 @@
 // 값을 남기는 것은 화면이 입력을 안 지우는 것이라 이 판정 밖이고, 여기서는 다시 읽을지와
 // 보여줄 문구만 낸다.
 
-import { DomainError, TransportError } from "@/shared/api/errors";
+import { DomainError, TransportError } from "@/shared/model/error.type";
 import { adjustmentFailureAction } from "@/screens/scheduleAdmin/model/adjustmentFailure.policy";
 
 describe("adjustmentFailureAction — not_allowed는 시트를 다시 읽는다", () => {

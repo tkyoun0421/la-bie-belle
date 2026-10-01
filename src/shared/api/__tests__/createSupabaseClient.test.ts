@@ -39,7 +39,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => ({
   createClient: createClientMock,
 }));
 
-const { sessionStorage } = await import("@/shared/api/sessionStorage");
+const { sessionStorage } = await import("@/shared/lib/sessionStorage.lib");
 const { createSupabaseClient } =
   await import("@/shared/api/createSupabaseClient");
 

@@ -1,7 +1,7 @@
 import { View } from "react-native";
+import type { Theme } from "@/shared/model/theme.type";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
-import type { Theme } from "@/shared/utils/theme";
 
 /**
  * 화면을 고르는 시트다. 정본은

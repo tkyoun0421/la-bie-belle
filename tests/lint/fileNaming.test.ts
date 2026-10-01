@@ -72,6 +72,24 @@ describe("무엇이 들었는지가 갈래를 정한다", () => {
       "camel",
     );
   });
+
+  /**
+   * zustand의 `create`가 돌려주는 것은 훅이라 store 파일은 「훅 파일은 그 훅 이름」과
+   * 부딪힌다. ADR-015가 `stores/` 폴더에 성격을 맡겨 그 자리에서는 접미사가 이긴다 —
+   * `theme.store.ts`가 `useTheme`을 내놓아도 이름을 안 바꾼다.
+   */
+  it("`stores/`의 `.store.ts`는 훅을 내놓아도 접미사가 이름이다", () => {
+    expect(styleFor("src/shared/stores/theme.store.ts", HOOK_SOURCE)).toBe(
+      "camel",
+    );
+  });
+
+  /** 같은 폴더의 다른 파일은 면제 밖이다 — 훅을 내놓으면 훅 이름을 받는다. */
+  it("`stores/`의 `.store.ts`가 아닌 파일은 훅 판정을 받는다", () => {
+    expect(styleFor("src/shared/stores/themeGate.ts", HOOK_SOURCE)).toBe(
+      "hook",
+    );
+  });
 });
 
 describe("갈래별 이름 판정", () => {

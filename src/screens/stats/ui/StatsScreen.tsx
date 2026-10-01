@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { queryClient } from "@/shared/api/queryClient";
 import { supabase } from "@/shared/api/supabase";
+import { NO_VALUE } from "@/shared/consts/noValue.const";
+import { kstToday } from "@/shared/lib/kstToday.lib";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
 import { EmptyState } from "@/shared/ui/EmptyState";
@@ -16,17 +18,11 @@ import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
-import {
-  kstToday,
-  monthOf,
-  shiftMonth,
-  spellMonth,
-} from "@/shared/utils/kstDate";
+import { monthOf, shiftMonth, spellMonth } from "@/shared/utils/kstDate";
 import { canGoBack, canGoForward } from "@/shared/utils/monthBoundary";
-import { NO_VALUE } from "@/shared/utils/noValue";
 import { spellWon } from "@/shared/utils/spellNumber";
-import { serverClockStore } from "@/entities/clock/model/clock.store";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
+import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/hooks/usePayrollMonthsByMonthQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";

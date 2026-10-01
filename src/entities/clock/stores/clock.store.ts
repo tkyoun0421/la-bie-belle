@@ -1,5 +1,8 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
+import {
+  readStoredOffset,
+  writeStoredOffset,
+} from "@/entities/clock/lib/clockStorage.lib";
 import { serverOffset } from "@/entities/clock/model/serverClock.policy";
 
 /**
@@ -14,12 +17,9 @@ import { serverOffset } from "@/entities/clock/model/serverClock.policy";
  * **스플래시를 안 막는다.** 시각은 보여주기용이라 판정은 함수의 `now()`가 한다 — 이 값을
  * 기다리다 앱이 못 뜨는 쪽이 더 나쁘다.
  *
- * 이름이 `use`로 안 시작하는 것은 파일 이름을 훅 규약(`useServerClock.ts`)으로 끌지 않으려는
- * 것이다. 오프셋을 읽는 손은 훅이 아니라 상태 하나라 kebab 이름이 맞고, 실제 서버 상태를
- * 읽는 훅은 `features/`에 따로 세우지 않았다(plan 「총괄이 정한 것」 2).
+ * 이름이 `use`로 안 시작하는 것은 오프셋을 읽는 손이 훅이 아니라 상태 하나이기 때문이다.
+ * 디스크에 닿는 손은 `lib/clockStorage.lib.ts`고 여기는 상태만 든다.
  */
-
-export const SERVER_CLOCK_STORAGE_KEY = "server-clock-offset";
 
 type ServerClockStore = {
   offset: number;
@@ -33,14 +33,6 @@ function parseOffset(raw: string | null): number {
   return raw === null || Number.isNaN(parsed) ? 0 : parsed;
 }
 
-async function readStoredOffset(): Promise<string | null> {
-  try {
-    return await AsyncStorage.getItem(SERVER_CLOCK_STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
 export const serverClockStore = create<ServerClockStore>((set) => ({
   offset: 0,
 
@@ -52,8 +44,6 @@ export const serverClockStore = create<ServerClockStore>((set) => ({
     const offset = serverOffset(serverNowIso, deviceNowMs);
 
     set({ offset });
-    void AsyncStorage.setItem(SERVER_CLOCK_STORAGE_KEY, String(offset)).catch(
-      () => {},
-    );
+    writeStoredOffset(offset);
   },
 }));

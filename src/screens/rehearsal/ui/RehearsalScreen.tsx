@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { BackHandler, Pressable, ScrollView, View } from "react-native";
 import { supabase } from "@/shared/api/supabase";
+import { kstToday } from "@/shared/lib/kstToday.lib";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
 import { Card } from "@/shared/ui/Card";
@@ -13,12 +14,7 @@ import { MonthPickerSheet } from "@/shared/ui/MonthPickerSheet";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
-import {
-  kstToday,
-  monthOf,
-  spellDate,
-  spellMonth,
-} from "@/shared/utils/kstDate";
+import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
 import { useAllRehearsalsQuery } from "@/entities/rehearsal/hooks/useAllRehearsalsQuery";

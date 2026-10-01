@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/api/errors";
+import { DomainError } from "@/shared/model/error.type";
 import { forceChange } from "@/features/scheduleConfirm/api/forceChange.api";
 import {
   backdateDeadline,

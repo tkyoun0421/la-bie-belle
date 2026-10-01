@@ -1,5 +1,6 @@
 import type { DB } from "@/shared/api/database";
-import { DomainError, toApiError, TransportError } from "@/shared/api/errors";
+import { toApiError } from "@/shared/api/errors";
+import { DomainError, TransportError } from "@/shared/model/error.type";
 
 /**
  * 자기 연락처를 바꾼다. 함수가 아니라 `profile_private` 본인 행 직접 갱신이고, 표 직접

@@ -1,4 +1,4 @@
-import { DomainError } from "@/shared/api/errors";
+import { DomainError } from "@/shared/model/error.type";
 import { setHoliday } from "@/features/holiday/api/setHoliday.api";
 import {
   createAdminUser,

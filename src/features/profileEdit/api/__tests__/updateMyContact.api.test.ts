@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 import type { DB } from "@/shared/api/database";
-import { DomainError, TransportError } from "@/shared/api/errors";
+import { DomainError, TransportError } from "@/shared/model/error.type";
 import { updateMyContact } from "@/features/profileEdit/api/updateMyContact.api";
 
 // `profile_private.phone`은 함수가 아니라 본인 행 직접 갱신이다 — check 제약이 마지막 문이라

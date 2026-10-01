@@ -7,8 +7,9 @@ import {
 } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BackHandler, ScrollView, View } from "react-native";
-import { DomainError } from "@/shared/api/errors";
 import { supabase } from "@/shared/api/supabase";
+import { kstToday } from "@/shared/lib/kstToday.lib";
+import { DomainError } from "@/shared/model/error.type";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";
 import { BottomCTA } from "@/shared/ui/BottomCTA";
@@ -24,8 +25,8 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { useMyAvailabilityQuery } from "@/entities/availability/hooks/useMyAvailabilityQuery";
-import { serverClockStore } from "@/entities/clock/model/clock.store";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
+import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
@@ -48,7 +49,6 @@ import {
 } from "@/screens/scheduleWorker/model/daySheet.policy";
 import { hasIncomingRequest } from "@/screens/scheduleWorker/model/incomingRequest.policy";
 import {
-  kstToday,
   monthState,
   shiftMonth,
   spellDeadline,

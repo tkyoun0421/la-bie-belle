@@ -7,7 +7,7 @@ import { cn } from "@/shared/utils/cn";
  *
  * shimmer는 덩이 위로 옅은 빛 한 줄이 지나가는 것이고, 「동작 줄이기」가 켜져 있으면 서지
  * 않고 덩이만 남는다(`docs/2-design/design-system/foundation/motion.md` 「접근성」).
- * 판정은 `src/shared/utils/reduceMotion.ts`가 읽어 넘긴다 — 조각은 받은 값을 그리기만 한다.
+ * 판정은 `src/shared/lib/reduceMotion.lib.ts`가 읽어 넘긴다 — 조각은 받은 값을 그리기만 한다.
  */
 
 export type SkeletonProps = ViewProps & {
