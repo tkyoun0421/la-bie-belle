@@ -10,7 +10,7 @@ import {
   type MergeTargetAssignment,
   type MergeTargetInput,
   type MergeTargetSlot,
-} from "@/screens/scheduleAdmin/model/mergeTarget";
+} from "@/screens/scheduleAdmin/model/mergeTarget.policy";
 
 function slot(
   id: string,

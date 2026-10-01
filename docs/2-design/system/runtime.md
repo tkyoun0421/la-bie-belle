@@ -102,7 +102,7 @@
 ### 업무 상수
 
 - 적용 범위: 인증 창(1시간 전~18시)·지각 10분·사유 48시간·요청 만료 48시간·교대 수락 12시간·연장 9시간 1.5배
-- 기본 계약: **TypeScript 한 곳이 정본이다.** 상수는 `src/entities/<도메인>/model/constants.ts`에 산다. 함수가 같은 숫자를 SQL 리터럴로 들고, `tests/lint/`의 대조 테스트가 마이그레이션의 `interval` 문자열과 TS 상수를 맞춘다
+- 기본 계약: **TypeScript 한 곳이 정본이다.** 상수는 `src/entities/<도메인>/model/<도메인>.type.ts`에 산다 — [ADR-015](../adr/ADR-015-read-write-layers-and-fixed-segments.md#파일-이름)의 그 접미사가 「타입과 상수」를 담는다. 함수가 같은 숫자를 SQL 리터럴로 들고, `tests/lint/`의 대조 테스트가 마이그레이션의 `interval` 문자열과 TS 상수를 맞춘다
 
 ## 경쟁·재시도
 

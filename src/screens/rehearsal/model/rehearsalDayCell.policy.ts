@@ -1,4 +1,4 @@
-import { spellMinutes } from "@/screens/rehearsal/model/spellTotal";
+import { spellMinutes } from "@/screens/rehearsal/utils/spellTotal.utils";
 
 /**
  * 달력 칸의 바닥 단이다(`docs/2-design/modules/schedule/screens/rehearsal.md`의 「달력 칸」).

@@ -1,4 +1,4 @@
-import { validateProfileForm } from "@/entities/profile/model/validateProfile";
+import { validateProfileForm } from "@/entities/profile/model/profile.schema";
 
 describe("validateProfileForm — 프로필 다섯 칸 중 값의 꼴이 있는 넷을 본다", () => {
   describe("이름은 공백만으로 안 된다 (ACC-002)", () => {

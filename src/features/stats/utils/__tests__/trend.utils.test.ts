@@ -8,7 +8,7 @@
 // value가 null(앱을 쓰기 전 달 — 선이 끊긴다), 키가 있고 값이 0이면 value가
 // 0이다(0인 달과 없는 달이 다르다).
 
-import { buildTrend, trendMonths } from "@/features/stats/model/trend";
+import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
 
 describe("trendMonths — 보는 달이 오른쪽 끝인 열두 달이다", () => {
   it("2026년 10월을 보면 2025년 11월부터 2026년 10월까지 열두 달이다", () => {

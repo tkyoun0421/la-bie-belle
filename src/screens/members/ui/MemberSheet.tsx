@@ -9,8 +9,8 @@ import { Input } from "@/shared/ui/Input";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { Text } from "@/shared/ui/Text";
 import type { MemberRow } from "@/entities/member/api/listMembers.api";
-import { canSaveDisplayName } from "@/entities/profile/model/canSaveDisplayName";
-import { formatBirthDate } from "@/entities/profile/model/formatBirthDate";
+import { canSaveDisplayName } from "@/entities/profile/model/canSaveDisplayName.policy";
+import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
 
 /**
  * 한 사람을 여는 시트다. 재직자와 퇴사한 사람이 같은 틀을 쓰고 다른 것이 셋이다 — 퇴사한

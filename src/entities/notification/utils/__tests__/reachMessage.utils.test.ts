@@ -1,5 +1,5 @@
 const { getMemberListSuffix, getMemberSheetLine } =
-  await import("@/entities/notification/model/reachMessage");
+  await import("@/entities/notification/utils/reachMessage.utils");
 
 describe("getMemberListSuffix — 직원 목록 줄의 알림 표시 문안", () => {
   it("스스로 끈 재직자는 '· 알림 꺼둠'이다", () => {

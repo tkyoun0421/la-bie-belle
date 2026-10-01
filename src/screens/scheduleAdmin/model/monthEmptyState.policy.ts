@@ -1,5 +1,5 @@
 import { lastDateOfMonth, shiftMonth } from "@/shared/utils/kstDate";
-import { kstDateOf } from "@/screens/scheduleAdmin/model/formatScheduleDate";
+import { kstDateOf } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
 
 /**
  * 「전부 지난 달」 판정이다 — 그 달의 마지막 날이 오늘(KST) 이전이면 만들기 버튼이 없고

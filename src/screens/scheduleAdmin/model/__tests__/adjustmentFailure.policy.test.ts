@@ -7,7 +7,7 @@
 // 보여줄 문구만 낸다.
 
 import { DomainError, TransportError } from "@/shared/api/errors";
-import { adjustmentFailureAction } from "@/screens/scheduleAdmin/model/adjustmentFailure";
+import { adjustmentFailureAction } from "@/screens/scheduleAdmin/model/adjustmentFailure.policy";
 
 describe("adjustmentFailureAction — not_allowed는 시트를 다시 읽는다", () => {
   it("refetch가 true고 띄울 문구가 없다", () => {

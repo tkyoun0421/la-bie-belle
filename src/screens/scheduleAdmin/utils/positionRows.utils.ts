@@ -18,7 +18,7 @@
 import {
   POSITION_ORDER,
   type Position,
-} from "@/entities/schedule/model/positions";
+} from "@/entities/schedule/model/schedule.type";
 
 export { POSITION_ORDER, type Position };
 

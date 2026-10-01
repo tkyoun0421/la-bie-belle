@@ -2,7 +2,7 @@ import {
   latestWageRate,
   wageRatesOf,
   type WageRateRow,
-} from "@/screens/wages/model/wageRows";
+} from "@/screens/wages/model/wageRows.policy";
 
 /**
  * 기본 시급을 따르는 사람이 몇인지다. 기본 시급 줄 아래와 기본 시급 시트가 같은 수를

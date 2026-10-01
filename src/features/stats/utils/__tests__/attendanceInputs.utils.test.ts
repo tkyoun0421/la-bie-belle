@@ -17,8 +17,8 @@
 //   같은 사람의 다른 날 기록이 섞이지 않는다
 // - 출근(present)과 출근 인정(excused)을 합치지 않는다(ATT-023)
 
-import { tallyMonthlyAttendance } from "@/entities/attendance/model/attendanceSummary";
-import { buildAttendanceInputs } from "@/features/stats/model/attendanceInputs";
+import { tallyMonthlyAttendance } from "@/entities/attendance/utils/attendanceSummary.utils";
+import { buildAttendanceInputs } from "@/features/stats/utils/attendanceInputs.utils";
 
 const DAYS = [
   {

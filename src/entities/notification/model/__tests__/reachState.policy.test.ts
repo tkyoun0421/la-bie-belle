@@ -1,5 +1,5 @@
 const { getReachState } =
-  await import("@/entities/notification/model/reachState");
+  await import("@/entities/notification/model/reachState.policy");
 
 describe("getReachState — 값을 다 못 읽은 동안은 로딩이라 네 갈래 중 무엇도 아니다", () => {
   it("의사를 아직 못 읽었으면 로딩이다", () => {

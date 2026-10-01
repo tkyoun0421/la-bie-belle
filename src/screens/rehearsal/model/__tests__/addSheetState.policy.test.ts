@@ -8,7 +8,7 @@
 import {
   addSheetReducer,
   type AddSheetState,
-} from "@/screens/rehearsal/model/addSheetState";
+} from "@/screens/rehearsal/model/addSheetState.policy";
 
 const BASE_STATE: AddSheetState = {
   formKind: "time",

@@ -10,7 +10,7 @@
 import {
   payrollDays,
   payrollViewDays,
-} from "@/features/payrollCompute/model/payrollDays";
+} from "@/features/payrollCompute/model/payrollDays.policy";
 
 const RATES = [{ effective_date: "2026-08-01", amount: 12000 }];
 

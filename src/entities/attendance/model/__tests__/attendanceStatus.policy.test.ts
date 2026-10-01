@@ -2,7 +2,7 @@ import {
   getAttendanceStatus,
   type AttendanceStatusInput,
   type ExcuseStatusRecord,
-} from "@/entities/attendance/model/attendanceStatus";
+} from "@/entities/attendance/model/attendanceStatus.policy";
 
 /**
  * 기준 근무일 — 2026-09-10(KST), 10:00 시작·19:00 끝.

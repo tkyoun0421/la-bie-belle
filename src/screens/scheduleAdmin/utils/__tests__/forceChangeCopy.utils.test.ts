@@ -5,7 +5,7 @@
 // 알림을 못 받아요 · 따로 연락해주세요」로 바뀐다(NTF-034). 바꾸기에서 한쪽만 못 받으면
 // 그 사람 이름만 적고 받는 쪽은 안 적는다.
 
-import { forceChangeCopy } from "@/screens/scheduleAdmin/model/forceChangeCopy";
+import { forceChangeCopy } from "@/screens/scheduleAdmin/utils/forceChangeCopy.utils";
 
 describe("forceChangeCopy — 배정 추가 확인", () => {
   it("알림을 받을 때", () => {

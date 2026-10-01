@@ -8,7 +8,7 @@
 import {
   isSelectableForOpening,
   openDaysButtonLabel,
-} from "@/screens/scheduleAdmin/model/openModeSelection";
+} from "@/screens/scheduleAdmin/model/openModeSelection.policy";
 
 describe("isSelectableForOpening — 이미 연 날은 지난 날짜 여부와 무관하게 못 고른다", () => {
   it("오늘이거나 미래 날짜여도 열려 있으면 false다", () => {

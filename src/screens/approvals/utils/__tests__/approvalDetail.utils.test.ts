@@ -7,7 +7,7 @@
 // (schedule-admin.md의 `formatScheduleDate.ts`와 같은 결이다 — 슬라이스끼리 못 불러
 // 이 슬라이스가 다시 짠다, lint 규칙 3).
 
-import { cancelApprovalDetail } from "@/screens/approvals/model/approvalDetail";
+import { cancelApprovalDetail } from "@/screens/approvals/utils/approvalDetail.utils";
 
 const INPUT = {
   displayName: "이준호",

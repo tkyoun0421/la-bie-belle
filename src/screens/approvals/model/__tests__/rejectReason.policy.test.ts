@@ -4,7 +4,7 @@
 // 「거절 보내기」가 비활성이고, 「직접 쓰기」를 고르면 1~100자만 유효하다 — 근무자가
 // 쓰는 취소 사유와 같은 상한이다.
 
-import { isRejectReasonValid } from "@/screens/approvals/model/rejectReason";
+import { isRejectReasonValid } from "@/screens/approvals/model/rejectReason.policy";
 
 describe("isRejectReasonValid — 이유를 아무것도 안 고르면 무효다", () => {
   it("null이면 무효다", () => {

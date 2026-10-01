@@ -23,12 +23,12 @@ import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
 import { useAllRehearsalsQuery } from "@/entities/rehearsal/hooks/useAllRehearsalsQuery";
 import { useMyRehearsalsQuery } from "@/entities/rehearsal/hooks/useMyRehearsalsQuery";
-import { canAddOn } from "@/entities/rehearsal/model/canAddOn";
-import { kindForDate } from "@/entities/rehearsal/model/kindForDate";
+import { canAddOn } from "@/entities/rehearsal/model/canAddOn.policy";
+import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
 import {
   dayTotal,
   monthTotal,
-} from "@/entities/rehearsal/model/rehearsalHours";
+} from "@/entities/rehearsal/utils/rehearsalHours.utils";
 import { useMonthScheduleQuery } from "@/entities/schedule/hooks/useMonthScheduleQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { useAddRehearsalMutation } from "@/features/rehearsalEdit/hooks/useAddRehearsalMutation";
@@ -40,12 +40,12 @@ import {
   canSubmitForm,
   EMPTY_VALUES,
   type AddSheetState,
-} from "@/screens/rehearsal/model/addSheetState";
-import { daySheetRows } from "@/screens/rehearsal/model/daySheetRows";
-import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell";
-import { spellTotal } from "@/screens/rehearsal/model/spellTotal";
+} from "@/screens/rehearsal/model/addSheetState.policy";
+import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell.policy";
 import { RehearsalDaySheet } from "@/screens/rehearsal/ui/RehearsalDaySheet";
 import { RehearsalFormSheet } from "@/screens/rehearsal/ui/RehearsalFormSheet";
+import { daySheetRows } from "@/screens/rehearsal/utils/daySheetRows.utils";
+import { spellTotal } from "@/screens/rehearsal/utils/spellTotal.utils";
 
 /**
  * 자격이 있는 사람이 자기 리허설을 넣고 고치고 지우는 화면이다. 정본은

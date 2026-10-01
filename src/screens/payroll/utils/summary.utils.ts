@@ -3,8 +3,8 @@ import { spellWon } from "@/shared/utils/spellNumber";
 import {
   getAttendanceStatus,
   type AttendanceStatusInput,
-} from "@/entities/attendance/model/attendanceStatus";
-import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays";
+} from "@/entities/attendance/model/attendanceStatus.policy";
+import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays.policy";
 
 /**
  * 금액 한 줄과 누적 두 줄이다(`docs/2-design/modules/payroll/screens/payroll.md`의 「금액」·

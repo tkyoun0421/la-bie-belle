@@ -8,7 +8,7 @@
 import {
   confirmedLine,
   formatScheduleDate,
-} from "@/screens/scheduleAdmin/model/formatScheduleDate";
+} from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
 
 describe("formatScheduleDate — 「N월 N일(요일)」 꼴이다", () => {
   it("2026-10-10은 「10월 10일(토)」다", () => {

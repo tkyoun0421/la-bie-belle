@@ -6,7 +6,10 @@
 // 줄로 접히고 최근이 위다(12월이 맨 위, 1월이 맨 아래). 맨 아래에 합계 줄이
 // 하나 더 붙고 값은 열두 달 합과 같다. 주·월 단위에는 이 함수 자체를 안 부른다.
 
-import { monthRowsOfDays, yearRows } from "@/screens/payroll/model/yearRows";
+import {
+  monthRowsOfDays,
+  yearRows,
+} from "@/screens/payroll/utils/yearRows.utils";
 
 describe("yearRows — 최근이 위다(12월이 맨 위, 1월이 맨 아래)", () => {
   it("입력 순서와 무관하게 달을 내림차순으로 접는다", () => {

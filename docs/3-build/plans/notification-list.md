@@ -40,7 +40,7 @@ sources:
 
 **문장을 조립하는 순수 함수.**
 
-`src/entities/notification/model/title.ts`
+`src/entities/notification/utils/title.utils.ts`
 
 - 알림 행 하나를 받아 `{ title, sub }`을 낸다. `sub`는 없을 수 있다
 - **1차 열여덟만 문장을 낸다.** 근거는 [알림 제목](../../2-design/modules/notification/screens/notifications.md#알림-제목) 표고 **문자열이 그 표와 글자 하나까지 같아야 한다**. 2차 다섯(교대 넷과 관리자 공지)은 널을 낸다 — 유니온에는 있어 switch가 빠짐을 컴파일에서 잡되 문장은 2차 task가 채운다([kind와 payload](../../2-design/modules/notification/design.md#kind와-payload))
@@ -53,7 +53,7 @@ sources:
 
 **받은 시각과 날짜 머리.**
 
-`src/entities/notification/model/when.ts`
+`src/entities/notification/utils/when.utils.ts`
 
 - 날짜 머리 셋 — 「오늘」·「어제」·「9월 11일(목)」. **해가 다르면 「2025년 12월 31일(수)」**
 - 받은 시각 셋 — 오늘이면 「2시간 전」(한 시간 안이면 「방금」·「12분 전」), 어제면 「어제 21:00」, 그 앞이면 「9월 11일」
@@ -112,10 +112,10 @@ sources:
 | --- | --- | --- |
 | `src/entities/notification/api/get-notifications.ts` | `range()`로 50건씩 읽는 페이지 질의와 키 `['notifications']` | AC-03 |
 | `src/entities/notification/api/count-unread-notifications.ts` | 안 읽은 수와 키 `['notifications', 'unread']` | AC-03·AC-06 |
-| `src/entities/notification/model/types.ts` | `kind`가 지금 `string`이다 — [kind와 payload](../../2-design/modules/notification/design.md#kind와-payload) 표의 스물셋을 유니온으로 좁혀야 문장 함수가 빠짐을 컴파일에서 잡는다 | AC-01 |
-| `src/entities/notification/model/title.ts` | 1차 열여덟의 문장, 2차 다섯은 널 | AC-01 |
-| `src/entities/notification/model/when.ts` | 날짜 머리와 받은 시각 | AC-02 |
-| `src/entities/notification/model/destination.ts` | 종류마다의 목적지 | AC-05 |
+| `src/entities/notification/model/notification.type.ts` | `kind`가 지금 `string`이다 — [kind와 payload](../../2-design/modules/notification/design.md#kind와-payload) 표의 스물셋을 유니온으로 좁혀야 문장 함수가 빠짐을 컴파일에서 잡는다 | AC-01 |
+| `src/entities/notification/utils/title.utils.ts` | 1차 열여덟의 문장, 2차 다섯은 널 | AC-01 |
+| `src/entities/notification/utils/when.utils.ts` | 날짜 머리와 받은 시각 | AC-02 |
+| `src/entities/notification/model/destination.policy.ts` | 종류마다의 목적지 | AC-05 |
 | `src/features/notification/model/useNotifications.ts` | `useInfiniteQuery`와 `maxPages` 3 | AC-03 |
 | `src/features/notification/model/useUnreadCount.ts` | 종의 점이 보는 수 | AC-03·AC-06 |
 | `src/features/notification/model/useMarkNotificationsRead.ts` | [`notification-data`](notification-data.md)가 낸 [`mark-notifications-read.ts`](../../../src/features/notificationRead/api/markNotificationsRead.api.ts) 호출과 무효화 둘 | AC-05 |

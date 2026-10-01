@@ -54,7 +54,7 @@
 
 **`notification-push`가 `done`이다(#472).** 트리거와 cron `retry-push`(매분)가 같은 Edge Function `send-push`를 부르고, 잡기(`claim_notifications`)의 `returning`이 두 경로의 중복 발송을 막는다. **잡기는 한 문장이다** — `update ... returning`을 CTE로 두고 밖에서 `array_agg`로 주소를 묶는다(조인하면 주소가 둘인 사람의 행에 매치가 여럿 붙어 한쪽만 남는다). 껍데기 넷의 첫 줄이 전부 `auth.role() is distinct from 'service_role'`이고, 트리거의 쏘는 단계는 예외를 삼켜 사건 함수의 트랜잭션을 안 말린다.
 
-**`_shared` 복사 단계가 섰다(AC-09).** `pnpm edge:sync`가 `src/`를 `supabase/functions/_shared/`로 옮기며 import에 `.ts`를 붙인다. `import-holidays`도 그 복사본을 보게 고쳤다 — [관찰 035](observations/035-edge-function-reaches-outside-mount.md)가 연 자리를 닫았다. **재발은 lint 규칙 둘(20·21)이 막는다** — `supabase/functions/`의 마운트 밖 import와 복사되는 폴더의 `node:` import다. 다만 **규칙 21의 폴더 목록이 복사 대상과 정확히 같지는 않다** — `syncEdgeShared.mts`가 `src/entities/notification/model/types.ts`도 옮기는데 규칙은 `src/features/notification/model/`만 문다.
+**`_shared` 복사 단계가 섰다(AC-09).** `pnpm edge:sync`가 `src/`를 `supabase/functions/_shared/`로 옮기며 import에 `.ts`를 붙인다. `import-holidays`도 그 복사본을 보게 고쳤다 — [관찰 035](observations/035-edge-function-reaches-outside-mount.md)가 연 자리를 닫았다. **재발은 lint 규칙 둘(20·21)이 막는다** — `supabase/functions/`의 마운트 밖 import와 복사되는 폴더의 `node:` import다. 다만 **규칙 21의 폴더 목록이 복사 대상과 정확히 같지는 않다** — `syncEdgeShared.mts`가 `src/entities/notification/model/notification.type.ts`도 옮기는데 규칙은 `src/features/notification/model/`만 문다.
 
 **edge-runtime은 여전히 안 뜬다.** `supabase start`가 `-x`로 빼서 `send-push`가 실제로 도는 것, 실기기 수신, 접수증 서비스의 답은 배포 뒤 손 확인이다.
 
@@ -92,7 +92,7 @@
 
 **vault로 로컬 시크릿을 심는 길이 섰다.** integration 테스트가 `beforeAll`/`afterAll`에서 `vault.create_secret`/삭제로 로컬 전용 가짜 값을 넣고 뺀다. `seed.sql`(전역 상태, `db reset`마다 돎)은 이 용도로 안 쓴다 — `payroll-holidays`가 같은 길을 그대로 탔고 `notification-push`도 부치는 접근 토큰을 이렇게 심는다.
 
-**금액 꼴은 `shared/lib/spellNumber.ts` 하나로 모였고, 시간 길이 꼴은 아직 슬라이스 셋에 흩어져 있다.** `screens/payroll/model/summary.ts`의 `spellWorkedHours`(「0시간 30분」)와 `screens/schedule-admin/model/adjustSheetRows.ts`의 `spellHours`·`features/rehearsal/model/spellTotal.ts`의 `spellMinutes`(「30분」)가 갈려 있다 — `writing.md`가 「30분」 쪽으로 판정했으니 `summary.ts`가 어긋난 쪽이다. `spell-number-shared` candidate가 받는다.
+**금액 꼴은 `shared/lib/spellNumber.ts` 하나로 모였고, 시간 길이 꼴은 아직 슬라이스 셋에 흩어져 있다.** `screens/payroll/utils/summary.utils.ts`의 `spellWorkedHours`(「0시간 30분」)와 `screens/schedule-admin/model/adjustSheetRows.ts`의 `spellHours`·`features/rehearsal/model/spellTotal.ts`의 `spellMinutes`(「30분」)가 갈려 있다 — `writing.md`가 「30분」 쪽으로 판정했으니 `summary.ts`가 어긋난 쪽이다. `spell-number-shared` candidate가 받는다.
 
 **`internal` 스키마의 실제 방어는 두 겹뿐이다.** PostgREST 라우팅과 스키마 USAGE다 — 문서가 요구하는 「함수 revoke」 한 겹은 저장소 전체에서 안 서 있다. `internal-grants-public` candidate가 고칠 길(`revoke execute on all functions in schema internal from public`)까지 적어 뒀다.
 

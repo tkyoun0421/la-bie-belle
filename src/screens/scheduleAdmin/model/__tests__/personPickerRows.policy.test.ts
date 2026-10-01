@@ -14,7 +14,7 @@ import {
   RESTRICTED_POSITIONS,
   classifyPickerRows,
   type PersonPickerRowsInput,
-} from "@/screens/scheduleAdmin/model/personPickerRows";
+} from "@/screens/scheduleAdmin/model/personPickerRows.policy";
 
 const MEMBERS = [
   { profileId: "profile-1", displayName: "박서연" },

@@ -15,12 +15,12 @@
 import {
   getAttendanceStatus,
   type AttendanceStatusInput,
-} from "@/entities/attendance/model/attendanceStatus";
+} from "@/entities/attendance/model/attendanceStatus.policy";
 import {
   attendanceRate,
   tallyMonthlyAttendance,
   type MonthlyAttendanceTally,
-} from "@/entities/attendance/model/attendanceSummary";
+} from "@/entities/attendance/utils/attendanceSummary.utils";
 
 function buildDay(
   overrides: Partial<AttendanceStatusInput> = {},

@@ -20,12 +20,15 @@ import { useWageRatesQuery } from "@/entities/payroll/hooks/useWageRatesQuery";
 import { useResetWageToDefaultMutation } from "@/features/wageAdmin/hooks/useResetWageToDefaultMutation";
 import { useSetDefaultWageMutation } from "@/features/wageAdmin/hooks/useSetDefaultWageMutation";
 import { useSetWageMutation } from "@/features/wageAdmin/hooks/useSetWageMutation";
-import { countFollowers } from "@/screens/wages/model/followerCount";
-import { prefillWageAmount } from "@/screens/wages/model/wageHistory";
-import { buildWageRows, wageRatesOf } from "@/screens/wages/model/wageRows";
+import {
+  buildWageRows,
+  wageRatesOf,
+} from "@/screens/wages/model/wageRows.policy";
 import { DefaultWageSheet } from "@/screens/wages/ui/DefaultWageSheet";
 import { MemberWageSheet } from "@/screens/wages/ui/MemberWageSheet";
 import { ResetWageDialog } from "@/screens/wages/ui/ResetWageDialog";
+import { countFollowers } from "@/screens/wages/utils/followerCount.utils";
+import { prefillWageAmount } from "@/screens/wages/utils/wageHistory.utils";
 
 /**
  * 관리자가 기본 시급과 사람별 시급을 정하는 화면이다. 정본은

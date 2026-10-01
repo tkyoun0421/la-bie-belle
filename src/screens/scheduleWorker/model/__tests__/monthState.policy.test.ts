@@ -1,4 +1,4 @@
-import { monthState } from "@/screens/scheduleWorker/model/monthState";
+import { monthState } from "@/screens/scheduleWorker/model/monthState.policy";
 
 describe("monthState — 근무표가 없으면 안 만든 달이다", () => {
   it("schedule이 null이면 not_created다", () => {

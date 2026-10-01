@@ -2,7 +2,7 @@ import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { armProfileReadFailure, isDevDoorOpen } from "@/shared/utils/devDoor";
-import { decideEntry } from "@/features/auth/model/decideEntry";
+import { decideEntry } from "@/features/auth/model/decideEntry.policy";
 
 /**
  * e2e가 세션을 심는 문이다. 화면이 아니라 문 하나라 그리는 것이 없다.

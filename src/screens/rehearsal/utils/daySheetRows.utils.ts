@@ -2,8 +2,8 @@ import {
   dayTotal,
   rehearsalHours,
   type RehearsalRow,
-} from "@/entities/rehearsal/model/rehearsalHours";
-import { spellMinutes } from "@/screens/rehearsal/model/spellTotal";
+} from "@/entities/rehearsal/utils/rehearsalHours.utils";
+import { spellMinutes } from "@/screens/rehearsal/utils/spellTotal.utils";
 
 /**
  * 날 시트의 줄 문구다(`docs/2-design/modules/schedule/screens/rehearsal.md`의 「날 시트

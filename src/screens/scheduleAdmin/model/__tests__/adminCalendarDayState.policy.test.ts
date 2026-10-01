@@ -13,7 +13,7 @@
 import {
   adminCalendarDayState,
   confirmedVacancyCount,
-} from "@/screens/scheduleAdmin/model/adminCalendarDayState";
+} from "@/screens/scheduleAdmin/model/adminCalendarDayState.policy";
 
 describe("adminCalendarDayState — 안 연 날은 열기 모드 선택 여부와 무관하게 closed다", () => {
   it("안 열렸고 안 골랐으면 closed다", () => {

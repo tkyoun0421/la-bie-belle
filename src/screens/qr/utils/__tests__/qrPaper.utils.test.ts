@@ -2,7 +2,7 @@ import {
   QR_PAPER,
   qrPaperLayout,
   buildQrPaperHtml,
-} from "@/screens/qr/model/qrPaper";
+} from "@/screens/qr/utils/qrPaper.utils";
 
 const FAKE_QR_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg"><path d="fake-qr-marker-9f3a"/></svg>';

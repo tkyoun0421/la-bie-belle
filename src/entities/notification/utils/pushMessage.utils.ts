@@ -1,5 +1,5 @@
-import { toNotificationDestination } from "@/entities/notification/model/destination";
-import { toNotificationTitle } from "@/entities/notification/model/title";
+import { toNotificationDestination } from "@/entities/notification/model/destination.policy";
+import { toNotificationTitle } from "@/entities/notification/utils/title.utils";
 
 /**
  * 잡힌 알림 행을 기기에 부칠 메시지로 바꾸는 자리다. 정본은

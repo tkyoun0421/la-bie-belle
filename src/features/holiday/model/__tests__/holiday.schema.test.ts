@@ -8,7 +8,7 @@
 import {
   parseHolidayApiResponse,
   toIsoDate,
-} from "@/features/holiday/model/holidayApiResponse";
+} from "@/features/holiday/model/holiday.schema";
 
 describe("toIsoDate — 8자리 숫자 날짜를 YYYY-MM-DD로 옮긴다", () => {
   it("20261003이 2026-10-03이 된다", () => {

@@ -10,7 +10,7 @@ import {
   monthTotal,
   rehearsalHours,
   type RehearsalRow,
-} from "@/entities/rehearsal/model/rehearsalHours";
+} from "@/entities/rehearsal/utils/rehearsalHours.utils";
 
 const TIME_ROW: RehearsalRow = {
   starts_at: "14:00",

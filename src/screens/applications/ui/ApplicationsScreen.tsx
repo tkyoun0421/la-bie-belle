@@ -21,7 +21,7 @@ import {
   groupApplicationsByDate,
   groupApplicationsByPerson,
   spellApplicationDate,
-} from "@/screens/applications/model/applicationsGrouping";
+} from "@/screens/applications/utils/applicationsGrouping.utils";
 
 /**
  * 그 달 근무 신청을 두 방향으로 보는 화면이다. 정본은

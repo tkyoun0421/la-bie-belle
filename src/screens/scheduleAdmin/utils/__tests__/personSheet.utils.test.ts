@@ -10,7 +10,7 @@ import {
   genderLabel,
   birthYearShort,
   restrictedQualifications,
-} from "@/screens/scheduleAdmin/model/personSheet";
+} from "@/screens/scheduleAdmin/utils/personSheet.utils";
 
 describe("genderSymbol — female은 Venus, male은 Mars다", () => {
   it("female이면 Venus다", () => {

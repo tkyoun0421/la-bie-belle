@@ -5,7 +5,7 @@
 // 문서가 정확한 단계 수를 안 못 박아서, 이 테스트는 0(가장 옅음)~1(가장 진함) 정규화
 // 값을 계약으로 삼는다 — 실제 토큰 매핑은 구현이 정한다.
 
-import { miniViewDensity } from "@/screens/adminHome/model/miniViewDensity";
+import { miniViewDensity } from "@/screens/adminHome/model/miniViewDensity.policy";
 
 describe("miniViewDensity — 안 연 날은 빈칸이다", () => {
   it("isOpen이 false면 null이다", () => {

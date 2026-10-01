@@ -2,13 +2,13 @@ import { spellDate } from "@/shared/utils/kstDate";
 import {
   getAttendanceStatus,
   type AttendanceStatus,
-} from "@/entities/attendance/model/attendanceStatus";
+} from "@/entities/attendance/model/attendanceStatus.policy";
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
 import {
   buildAttendanceInputs,
   type AttendanceInputCheckIn,
   type AttendanceInputExcuseStatus,
-} from "@/features/stats/model/attendanceInputs";
+} from "@/features/stats/utils/attendanceInputs.utils";
 
 /**
  * 근태 탭 날짜 목록이다. 정본은 `docs/2-design/system/screens/stats.md`의 「내 근태 날짜

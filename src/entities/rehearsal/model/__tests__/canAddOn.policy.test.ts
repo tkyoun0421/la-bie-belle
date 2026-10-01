@@ -4,7 +4,7 @@
 // 줄이 이미 있으면 하루 한 줄로 묶여 있어서 더 못 넣는다. 시각 갈래는 구간이 안 겹치기만
 // 하면 여러 줄을 넣을 수 있어 제한이 없다.
 
-import { canAddOn } from "@/entities/rehearsal/model/canAddOn";
+import { canAddOn } from "@/entities/rehearsal/model/canAddOn.policy";
 
 describe("canAddOn — 건수 갈래에 줄이 있으면 못 넣는다", () => {
   it("건수 갈래인데 줄이 없으면 넣을 수 있다", () => {

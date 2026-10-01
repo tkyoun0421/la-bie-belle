@@ -9,7 +9,7 @@ import {
   discardSlotJudgement,
   discardSlotWarningLine,
   type DiscardSlotAssignment,
-} from "@/screens/scheduleAdmin/model/discardSlot";
+} from "@/screens/scheduleAdmin/model/discardSlot.policy";
 
 function live(): DiscardSlotAssignment {
   return { ended_at: null };

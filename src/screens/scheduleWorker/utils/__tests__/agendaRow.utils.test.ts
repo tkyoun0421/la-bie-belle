@@ -2,7 +2,7 @@ import {
   agendaRowStatusLabel,
   filterAgendaDays,
   type AgendaDay,
-} from "@/screens/scheduleWorker/model/agendaRow";
+} from "@/screens/scheduleWorker/utils/agendaRow.utils";
 
 describe("agendaRowStatusLabel — 아코디언 날짜 줄 오른쪽의 내 상태 문구", () => {
   it("내 근무가 없으면 근무 없음이다", () => {

@@ -8,7 +8,7 @@
 //
 // 시나리오는 schedule-admin.md 예시와 같다 — 마감일 2026-10-02(금).
 
-import { confirmAffordance } from "@/screens/scheduleAdmin/model/confirmAffordance";
+import { confirmAffordance } from "@/screens/scheduleAdmin/model/confirmAffordance.policy";
 
 const DEADLINE = "2026-10-02";
 

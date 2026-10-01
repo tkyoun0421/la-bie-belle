@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 
 const { pressNotification } =
-  await import("@/screens/notifications/model/pressNotification");
+  await import("@/screens/notifications/model/pressNotification.policy");
 
 const DESTINATION = "/schedule?date=2025-09-13";
 const IDS = ["notif-1"];

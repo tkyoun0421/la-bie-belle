@@ -13,13 +13,13 @@ import { QrCard } from "@/shared/ui/QrFace";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
 import { useQrCodeQuery } from "@/entities/qr/hooks/useQrCodeQuery";
-import { buildCheckInUrl } from "@/entities/qr/model/checkInUrl";
 import { exportQrPaper } from "@/entities/qr/model/exportQrPaper";
+import { buildCheckInUrl } from "@/entities/qr/utils/checkInUrl.utils";
 import { useRotateQrMutation } from "@/features/qrAdmin/hooks/useRotateQrMutation";
-import { buildQrPaperHtml } from "@/screens/qr/model/qrPaper";
-import { qrStartLine } from "@/screens/qr/model/qrStartLine";
-import { buildQrSvg } from "@/screens/qr/model/qrSvg";
 import { QrFullscreen } from "@/screens/qr/ui/QrFullscreen";
+import { buildQrPaperHtml } from "@/screens/qr/utils/qrPaper.utils";
+import { qrStartLine } from "@/screens/qr/utils/qrStartLine.utils";
+import { buildQrSvg } from "@/screens/qr/utils/qrSvg.utils";
 
 /**
  * 관리자가 현장 QR을 보고 인쇄하고 새로 뽑는 자리다. 정본은

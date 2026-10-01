@@ -1,7 +1,7 @@
 import type {
   MonthlyAttendanceTally,
   TalliedStatus,
-} from "@/entities/attendance/model/attendanceSummary";
+} from "@/entities/attendance/utils/attendanceSummary.utils";
 
 /**
  * 근태 탭 비율 띠의 몫 넷이다(`docs/2-design/system/screens/stats.md`의 「근태 현황 줄」).

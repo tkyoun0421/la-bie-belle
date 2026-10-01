@@ -4,7 +4,7 @@
 // stats-worker AC-01, spec AC-04). 「1,296,000원」이 그래프에서는 「130만」이
 // 된다 — 만 단위로 반올림해 줄인다(stats.md 「그래프 값 — 급여」).
 
-import { tenThousandWonLabel } from "@/screens/stats/model/moneyLabel";
+import { tenThousandWonLabel } from "@/screens/stats/utils/moneyLabel.utils";
 
 describe("tenThousandWonLabel — 그래프 값은 만 단위로 줄여 적는다(stats.md 「내 급여」)", () => {
   it("1,296,000원은 정확히 129.6만이라 반올림해 '130만'이다", () => {

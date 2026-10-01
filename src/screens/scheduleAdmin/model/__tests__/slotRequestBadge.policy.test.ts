@@ -4,7 +4,7 @@
 // 문안」의 「요청 2건 대기 중」). 살아 있는 요청의 pending 후보 수를 센다 — 닫힌
 // 요청(`closed_at`이 있다)은 [AC-03]이 이미 지웠으니 배지가 없다.
 
-import { slotRequestBadge } from "@/screens/scheduleAdmin/model/slotRequestBadge";
+import { slotRequestBadge } from "@/screens/scheduleAdmin/model/slotRequestBadge.policy";
 
 describe("slotRequestBadge — pending 후보 수를 「요청 n건 대기 중」으로 말한다", () => {
   it("살아 있는 요청에 pending 후보가 둘이면 「요청 2건 대기 중」이다", () => {

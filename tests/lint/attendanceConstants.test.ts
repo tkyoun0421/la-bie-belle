@@ -74,7 +74,7 @@ describe("마이그레이션의 하루 중 시각 리터럴을 자정 기준 분
   });
 });
 
-describe("constants.ts의 export된 숫자 값을 읽는다", () => {
+describe("attendance.type.ts의 export된 숫자 값을 읽는다", () => {
   it("export const 이름 = 숫자 꼴에서 값을 뽑는다", () => {
     const source = "export const EXCUSE_DEADLINE_HOURS = 48;\n";
 
@@ -98,7 +98,7 @@ describe("constants.ts의 export된 숫자 값을 읽는다", () => {
 });
 
 describe("업무 상수 양방향 대조 — 두 곳에 사는 것만, 값으로만 본다", () => {
-  it("constants.ts 자체가 없으면 셋 다 missing-from-constants다", () => {
+  it("attendance.type.ts 자체가 없으면 셋 다 missing-from-constants다", () => {
     const violations = sharedConstantViolations(null, []);
 
     expect(violations).toEqual([
@@ -196,11 +196,11 @@ describe("업무 상수 양방향 대조 — 두 곳에 사는 것만, 값으로
 });
 
 describe("저장소 전체 대조 — 임시 디렉터리", () => {
-  it("constants.ts와 마이그레이션이 자연스러운 표기로 맞으면 위반이 없다", () => {
+  it("attendance.type.ts와 마이그레이션이 자연스러운 표기로 맞으면 위반이 없다", () => {
     const root = tempRoot();
     write(
       root,
-      "src/entities/attendance/model/constants.ts",
+      "src/entities/attendance/model/attendance.type.ts",
       [
         "export const CHECK_IN_WINDOW_LEAD_MINUTES = 60;",
         "export const CHECK_IN_WINDOW_CLOSE_HOUR_KST = 18;",
@@ -220,7 +220,7 @@ describe("저장소 전체 대조 — 임시 디렉터리", () => {
     expect(repositorySharedConstantViolations(root)).toEqual([]);
   });
 
-  it("constants.ts가 없으면 셋 다 missing-from-constants다", () => {
+  it("attendance.type.ts가 없으면 셋 다 missing-from-constants다", () => {
     const root = tempRoot();
     write(
       root,
@@ -245,7 +245,7 @@ describe("저장소 전체 대조 — 임시 디렉터리", () => {
     const root = tempRoot();
     write(
       root,
-      "src/entities/attendance/model/constants.ts",
+      "src/entities/attendance/model/attendance.type.ts",
       "export const EXCUSE_DEADLINE_HOURS = 48;",
     );
     write(root, "supabase/migrations/20260101000000_a.sql", "select 1;\n");
@@ -264,7 +264,7 @@ describe("저장소 전체 대조 — 임시 디렉터리", () => {
 });
 
 describe("업무 상수 대조 — 실제 저장소 회귀", () => {
-  it("현재 저장소의 constants.ts와 마이그레이션이 서로 맞는다 (회귀)", () => {
+  it("현재 저장소의 attendance.type.ts와 마이그레이션이 서로 맞는다 (회귀)", () => {
     expect(repositorySharedConstantViolations(process.cwd())).toEqual([]);
   });
 });

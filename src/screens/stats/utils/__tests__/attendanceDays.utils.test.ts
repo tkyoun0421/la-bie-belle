@@ -26,18 +26,18 @@
 //
 // checkedTimeLabel(checkedAt) — ISO 순간을 KST HH:mm로 읽는다.
 
-import type { AttendanceStatus } from "@/entities/attendance/model/attendanceStatus";
+import type { AttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
 import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,
-} from "@/features/stats/model/attendanceInputs";
+} from "@/features/stats/utils/attendanceInputs.utils";
 import {
   buildMyAttendanceDays,
   checkedTimeLabel,
   myAttendanceRow,
   type MyAttendanceDay,
-} from "@/screens/stats/model/attendanceDays";
+} from "@/screens/stats/utils/attendanceDays.utils";
 
 const ME = "p1";
 

@@ -1,14 +1,14 @@
 import {
   dayTotal,
   type RehearsalRow,
-} from "@/entities/rehearsal/model/rehearsalHours";
+} from "@/entities/rehearsal/utils/rehearsalHours.utils";
 import {
   adjustedMinutes,
   dayMinutes,
   type AdjustmentRow,
   type WorkDayHours,
-} from "@/features/payrollCompute/model/dayMinutes";
-import { assignedMinutes } from "@/screens/scheduleAdmin/model/absenceMinutes";
+} from "@/features/payrollCompute/model/dayMinutes.policy";
+import { assignedMinutes } from "@/screens/scheduleAdmin/utils/absenceMinutes.utils";
 
 /**
  * 근무 조정 시트의 사람 줄들이다. 정본은

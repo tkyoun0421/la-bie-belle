@@ -8,7 +8,7 @@ import {
   countOpenSlotsByDate,
   summarizeOpenSlots,
   type OpenSlotRow,
-} from "@/screens/scheduleAdmin/model/groupOpenSlots";
+} from "@/screens/scheduleAdmin/utils/groupOpenSlots.utils";
 
 function row(workDate: string, positions: string[] = ["스캔"]): OpenSlotRow {
   return {

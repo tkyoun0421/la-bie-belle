@@ -7,7 +7,7 @@ import { Icon } from "@/shared/ui/Icon";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { Text } from "@/shared/ui/Text";
 import type { ProfilePrivateRow } from "@/entities/profile/api/profilePrivate.api";
-import { formatBirthDate } from "@/entities/profile/model/formatBirthDate";
+import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
 
 /**
  * 대기 중인 한 사람을 여는 시트다. 관리자가 사람을 알아보는 재료 넷과 보낸 시각을 세우고

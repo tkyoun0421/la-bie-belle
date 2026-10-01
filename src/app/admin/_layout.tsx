@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { resolveAdminGuard } from "@/entities/session/model/resolveAdminGuard";
+import { resolveAdminGuard } from "@/entities/session/model/resolveAdminGuard.policy";
 
 /**
  * 관리자 층의 문지기다. `/admin` 아래는 전부 이 껍데기를 지난다 —

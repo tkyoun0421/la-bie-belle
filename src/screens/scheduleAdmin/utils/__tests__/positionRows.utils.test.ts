@@ -14,7 +14,7 @@ import {
   assignmentForSlot,
   type PositionAssignment,
   type PositionSlot,
-} from "@/screens/scheduleAdmin/model/positionRows";
+} from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
 function slot(
   id: string,

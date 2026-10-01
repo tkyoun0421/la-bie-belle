@@ -15,7 +15,7 @@ import {
   PERMISSION_OF_OTHERS,
   REACHABLE,
   getReachState,
-} from "@/entities/notification/model/reachState";
+} from "@/entities/notification/model/reachState.policy";
 import type {
   ScheduleAssignment,
   ScheduleSlot,
@@ -23,46 +23,23 @@ import type {
 import type { SlotRequest } from "@/entities/workRequest/api/getSlotRequests.api";
 import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import {
-  absenceMinutes,
-  assignedMinutes,
-} from "@/screens/scheduleAdmin/model/absenceMinutes";
-import {
   showRevertOption,
   type AdjustChoiceRow,
-} from "@/screens/scheduleAdmin/model/adjustChoiceState";
-import {
-  adjustSheetHead,
-  adjustSheetRows,
-  type AdjustSheetAdjustment,
-  type AdjustSheetRehearsal,
-} from "@/screens/scheduleAdmin/model/adjustSheetRows";
-import { adjustmentCountLine } from "@/screens/scheduleAdmin/model/adjustmentCount";
-import { adjustmentFailureAction } from "@/screens/scheduleAdmin/model/adjustmentFailure";
+} from "@/screens/scheduleAdmin/model/adjustChoiceState.policy";
+import { adjustmentFailureAction } from "@/screens/scheduleAdmin/model/adjustmentFailure.policy";
 import {
   allowsStructureChange,
   type DayConfirmGate,
-} from "@/screens/scheduleAdmin/model/confirmGate";
-import {
-  dayApplicationsLine,
-  dayDetailRows,
-} from "@/screens/scheduleAdmin/model/dayDetailRows";
-import { dayHoursLine } from "@/screens/scheduleAdmin/model/dayHoursForm";
-import { discardSlotJudgement } from "@/screens/scheduleAdmin/model/discardSlot";
-import type { ForceChangeCopyInput } from "@/screens/scheduleAdmin/model/forceChangeCopy";
-import { formatScheduleDate } from "@/screens/scheduleAdmin/model/formatScheduleDate";
+} from "@/screens/scheduleAdmin/model/confirmGate.policy";
+import { dayHoursLine } from "@/screens/scheduleAdmin/model/dayHoursForm.policy";
+import { discardSlotJudgement } from "@/screens/scheduleAdmin/model/discardSlot.policy";
 import {
   holidaySwitchState,
   type HolidayRow,
-} from "@/screens/scheduleAdmin/model/holidaySwitch";
-import { mergeTargetValidity } from "@/screens/scheduleAdmin/model/mergeTarget";
-import { classifyPickerRows } from "@/screens/scheduleAdmin/model/personPickerRows";
-import {
-  POSITION_ORDER,
-  assignmentForSlot,
-  groupSlotsByPosition,
-  slotFillCount,
-} from "@/screens/scheduleAdmin/model/positionRows";
-import { slotRequestBadge } from "@/screens/scheduleAdmin/model/slotRequestBadge";
+} from "@/screens/scheduleAdmin/model/holidaySwitch.policy";
+import { mergeTargetValidity } from "@/screens/scheduleAdmin/model/mergeTarget.policy";
+import { classifyPickerRows } from "@/screens/scheduleAdmin/model/personPickerRows.policy";
+import { slotRequestBadge } from "@/screens/scheduleAdmin/model/slotRequestBadge.policy";
 import { AdjustChoiceSheet } from "@/screens/scheduleAdmin/ui/AdjustChoiceSheet";
 import { AdjustSheet } from "@/screens/scheduleAdmin/ui/AdjustSheet";
 import { ConfirmChangeSheet } from "@/screens/scheduleAdmin/ui/ConfirmChangeSheet";
@@ -79,6 +56,29 @@ import {
 } from "@/screens/scheduleAdmin/ui/PositionRow";
 import { QualificationSheet } from "@/screens/scheduleAdmin/ui/QualificationSheet";
 import { SlotSheet } from "@/screens/scheduleAdmin/ui/SlotSheet";
+import {
+  absenceMinutes,
+  assignedMinutes,
+} from "@/screens/scheduleAdmin/utils/absenceMinutes.utils";
+import {
+  adjustSheetHead,
+  adjustSheetRows,
+  type AdjustSheetAdjustment,
+  type AdjustSheetRehearsal,
+} from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
+import { adjustmentCountLine } from "@/screens/scheduleAdmin/utils/adjustmentCount.utils";
+import {
+  dayApplicationsLine,
+  dayDetailRows,
+} from "@/screens/scheduleAdmin/utils/dayDetailRows.utils";
+import type { ForceChangeCopyInput } from "@/screens/scheduleAdmin/utils/forceChangeCopy.utils";
+import { formatScheduleDate } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
+import {
+  POSITION_ORDER,
+  assignmentForSlot,
+  groupSlotsByPosition,
+  slotFillCount,
+} from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
 /**
  * 열린 날 하나의 상세다. 정본은

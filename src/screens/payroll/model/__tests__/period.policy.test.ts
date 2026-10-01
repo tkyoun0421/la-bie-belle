@@ -18,7 +18,7 @@ import {
   periodStartDate,
   periodUnitOf,
   shiftPeriod,
-} from "@/screens/payroll/model/period";
+} from "@/screens/payroll/model/period.policy";
 
 describe("periodLabel — 주가 한 달 안에 있으면 날짜만 쓴다", () => {
   it("2026-10-05(월)~10-11(일)은 '10월 5일~11일'이다", () => {

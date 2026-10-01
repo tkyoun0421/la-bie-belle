@@ -8,7 +8,7 @@
 import {
   holidaySwitchState,
   type HolidayRow,
-} from "@/screens/scheduleAdmin/model/holidaySwitch";
+} from "@/screens/scheduleAdmin/model/holidaySwitch.policy";
 
 const CAN_TOGGLE_LINE = "급여를 셀 때 공휴일로 봐요";
 

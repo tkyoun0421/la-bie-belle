@@ -3,7 +3,7 @@ import {
   isLiveAssignment,
   type WorkAssignment,
   type WorkDay,
-} from "@/features/stats/model/workTotals";
+} from "@/features/stats/model/workTotals.policy";
 
 /**
  * 근무 내역 시트가 답하는 것 하나 — 「이 시간이 어느 날들에서 나왔나」다. 정본은

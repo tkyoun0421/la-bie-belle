@@ -1,4 +1,4 @@
-import { canSaveContact } from "@/screens/profile/model/canSaveContact";
+import { canSaveContact } from "@/screens/profile/model/canSaveContact.policy";
 
 // 연락처 시트의 「저장」이 켜지는 조건. 형식 규칙은 `validateProfileForm`(ACC-004)을 그대로
 // 쓴다 — 정본은 `docs/2-design/spec/profile-screen.md`의 AC-03이다.

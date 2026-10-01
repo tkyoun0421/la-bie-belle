@@ -28,30 +28,30 @@ import {
 } from "@/shared/utils/kstDate";
 import { canGoBack, canGoForward } from "@/shared/utils/monthBoundary";
 import { NO_VALUE } from "@/shared/utils/noValue";
-import { nowWithOffset } from "@/entities/clock/model/serverClock";
-import { serverClockStore } from "@/entities/clock/model/serverClockStore";
+import { serverClockStore } from "@/entities/clock/model/clock.store";
+import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/hooks/useFirstScheduleMonthQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/hooks/useWorkMonthsQuery";
 import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";
-import { computePersonDays } from "@/features/stats/model/personDays";
-import { buildTrend, trendMonths } from "@/features/stats/model/trend";
 import {
   computeWorkTotals,
   hoursLabel,
   workInputsOf,
-} from "@/features/stats/model/workTotals";
+} from "@/features/stats/model/workTotals.policy";
+import { computePersonDays } from "@/features/stats/utils/personDays.utils";
+import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
+import { WorkDaysSheet } from "@/screens/adminStats/ui/WorkDaysSheet";
 import {
   attendanceRowValue,
   buildAttendanceTab,
   type AttendanceTab,
-} from "@/screens/adminStats/model/attendanceRows";
+} from "@/screens/adminStats/utils/attendanceRows.utils";
 import {
   attendanceValues,
   monthIn,
   percentLabel,
   workValues,
-} from "@/screens/adminStats/model/chartValues";
-import { WorkDaysSheet } from "@/screens/adminStats/ui/WorkDaysSheet";
+} from "@/screens/adminStats/utils/chartValues.utils";
 
 /**
  * 관리자가 한 달을 숫자로 보는 화면이다. 정본은

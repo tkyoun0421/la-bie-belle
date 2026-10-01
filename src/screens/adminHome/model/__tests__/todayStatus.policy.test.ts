@@ -3,7 +3,7 @@
 // 오늘 현황 자리다(admin-home.md 「오늘 현황」) — 근무가 없는 날은 자리가 통째로 없고,
 // 확정 전에는 값이 「–」다. 확정 뒤라야 배정 인원·출근 수·안 찍음·띠 비율을 낸다.
 
-import { todayStatus } from "@/screens/adminHome/model/todayStatus";
+import { todayStatus } from "@/screens/adminHome/model/todayStatus.policy";
 
 describe("todayStatus — 그날 배정이 없으면 자리가 통째로 없다", () => {
   it("assignedCount가 0이면 kind가 none이다", () => {

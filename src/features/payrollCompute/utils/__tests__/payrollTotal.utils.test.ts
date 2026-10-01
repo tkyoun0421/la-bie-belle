@@ -8,7 +8,7 @@
 import {
   monthTotal,
   weekTotals,
-} from "@/features/payrollCompute/model/payrollTotal";
+} from "@/features/payrollCompute/utils/payrollTotal.utils";
 
 function payrollDay(date: string, amount: number, minutes = 480) {
   return { date, minutes, amount, kind: "normal" as const };

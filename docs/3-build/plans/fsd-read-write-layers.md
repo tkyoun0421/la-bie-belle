@@ -134,7 +134,7 @@ sources:
 - 전제: 타입 선언 492개가 파일 186개에 흩어져 있고, `model` 파일 119개 중 88개가 함수와 타입을 같이 든다
 - 행동
   - 도메인의 모양을 말하는 타입을 `[domain].type.ts`로 뺀다. 함수 하나의 인자 꼴이나 훅의 반환 꼴처럼 좁은 타입은 그 파일에 남긴다
-  - 순수 함수를 판정(`model`)과 꼴 바꾸기(`utils`)로 갈라 옮기고 `[domain].policy.ts`·`[domain].utils.ts`로 모은다
+  - 순수 함수를 판정(`model`)과 꼴 바꾸기(`utils`)로 갈라 옮기고 각자 이름에 `.policy.ts`·`.utils.ts`를 붙인다. **모으는 것은 타입뿐이다** — 판정을 슬라이스 이름으로 모으면 `screens/scheduleAdmin`의 `model/` 23개가 1292줄짜리 한 파일이 되고 짝 테스트 125개가 29개로 합쳐진다. ADR-015가 「한 파일을 열면 그 도메인이 읽힌다」를 논증한 자리도 `.type.ts`뿐이다
   - 바깥 값 검증을 `[domain].schema.ts`로 — `validateProfile`과 홀리데이 API 응답 파싱이 그 자리다
   - zustand store를 `[domain].store.ts`로
 - 관찰 결과: `entities/`·`features/`의 `utils/`에 업무 판정이 없다 — 참·거짓이나 허용·금지를 돌려주는 함수가 `model/`에 산다. `shared/utils/`는 밖이다: 글꼴이 떴나·개발 문이 열렸나 같은 판정은 업무 규칙이 아니고 담을 도메인이 없어 `shared/`에 `model`이 안 선다. `[domain].type.ts`를 열면 그 도메인의 모양이 한 파일에서 읽힌다. 셋이 초록이다
@@ -265,7 +265,7 @@ sources:
 | `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 넷을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
 | `scripts/syncEdgeShared.mts` | 복사 경로 넷 — 알림 셋이 `entities/notification/model/`과 `features/pushSwitch/model/`로, 공휴일 하나가 `features/holiday/model/`로 |
 | `eslint-rules/noNodeImportInEdgeShared.mjs` | 같은 경로 한 줄 |
-| `tests/lint/attendanceConstants.ts` | `src/entities/attendance/model/constants.ts`를 문자열로 박아 뒀다 — AC-07이 슬라이스 이름을 `attendance`로 두므로 안 바뀌지만, 바꾸면 이 줄도 같이 간다 |
+| `tests/lint/attendanceConstants.ts` | `src/entities/attendance/model/attendance.type.ts`를 문자열로 박아 뒀다 — AC-07이 슬라이스 이름을 `attendance`로 두므로 안 바뀌지만, 바꾸면 이 줄도 같이 간다 |
 
 ### 경로·이름을 적은 활성 정본
 

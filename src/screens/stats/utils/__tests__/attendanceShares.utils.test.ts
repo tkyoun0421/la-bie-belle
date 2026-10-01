@@ -6,8 +6,8 @@
 // RatioBand shares)과 같은 순서·라벨이다. 몫이 0이어도 자리를 빼지 않는다 —
 // 0을 감추는 것은 RatioBand·범례가 그릴 때 할 일이지 이 셈의 몫이 아니다.
 
-import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendanceSummary";
-import { attendanceRatioShares } from "@/screens/stats/model/attendanceShares";
+import type { MonthlyAttendanceTally } from "@/entities/attendance/utils/attendanceSummary.utils";
+import { attendanceRatioShares } from "@/screens/stats/utils/attendanceShares.utils";
 
 const TALLY: MonthlyAttendanceTally = {
   present: 41,

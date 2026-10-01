@@ -8,7 +8,7 @@
 import {
   cancelRequestBadge,
   isValidCancelReason,
-} from "@/screens/scheduleWorker/model/cancelRequestSheet";
+} from "@/screens/scheduleWorker/model/cancelRequestSheet.policy";
 
 describe("isValidCancelReason — 1자 이상 100자 이하만 유효하다", () => {
   it("빈 문자열은 무효다", () => {

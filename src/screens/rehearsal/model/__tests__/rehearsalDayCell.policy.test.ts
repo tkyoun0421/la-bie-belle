@@ -4,7 +4,7 @@
 // 배경이 bg.neutral-weak로 깔리며 「2시간」이 선다. 바닥 단이 건수가 아니라 시간인 것이
 // 이 화면이 근무표 달력과 가장 다른 자리다.
 
-import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell";
+import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell.policy";
 
 describe("rehearsalDayCell — 시간이 0분이면 빈 칸이다", () => {
   it("0분이면 상태가 empty고 라벨이 빈 문자열이다", () => {

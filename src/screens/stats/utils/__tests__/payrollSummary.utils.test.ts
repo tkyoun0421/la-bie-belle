@@ -13,7 +13,7 @@
 // days는 { minutes, kind }만 쓴다. kind는 payrollDays.ts의 PayrollDayKind —
 // 'normal' | 'overtime' | 'absent' | 'wage-pending' 넷이다.
 
-import { myPayrollSubtitle } from "@/screens/stats/model/payrollSummary";
+import { myPayrollSubtitle } from "@/screens/stats/utils/payrollSummary.utils";
 
 function day(
   minutes: number,

@@ -2,7 +2,7 @@ import type {
   AttendanceStatusInput,
   ExcuseDecision,
   ExcuseStatusRecord,
-} from "@/entities/attendance/model/attendanceStatus";
+} from "@/entities/attendance/model/attendanceStatus.policy";
 
 /**
  * 근태 월 집계의 재료를 맞물린다. 그달 배정·날 시각과 인증·사유를 `(day_id, profile_id)`로

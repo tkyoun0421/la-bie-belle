@@ -1,5 +1,5 @@
 const { toNotificationTitle } =
-  await import("@/entities/notification/model/title");
+  await import("@/entities/notification/utils/title.utils");
 
 type RawNotificationRow = {
   id: string;

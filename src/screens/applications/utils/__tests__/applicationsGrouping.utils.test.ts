@@ -8,7 +8,7 @@
 import {
   groupApplicationsByDate,
   groupApplicationsByPerson,
-} from "@/screens/applications/model/applicationsGrouping";
+} from "@/screens/applications/utils/applicationsGrouping.utils";
 
 const ROWS = [
   {

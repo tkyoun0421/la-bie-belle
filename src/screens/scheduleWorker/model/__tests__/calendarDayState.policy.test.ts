@@ -1,4 +1,4 @@
-import { calendarDayState } from "@/screens/scheduleWorker/model/calendarDayState";
+import { calendarDayState } from "@/screens/scheduleWorker/model/calendarDayState.policy";
 
 describe("calendarDayState — 안 연 날은 내 근무만 여부와 무관하게 closed다", () => {
   it("안 연 날은 내 근무만을 꺼도 closed다", () => {

@@ -101,11 +101,11 @@ sources:
 | `src/screens/stats/model/chart-values.ts` | 열두 달을 탭 셋의 그래프 값으로 옮기고 급여를 달에 맞물린다. `features/payroll`을 부르는 자리가 여기다 | AC-01~AC-04 |
 | `src/screens/stats/ui/StatsScreen.tsx` | 화면 조립, 탭 셋, 빈 상태 | AC-02~AC-05 |
 | `src/app/stats.tsx` | 라우트. `NotBuiltYet`에서 `StatsScreen`으로 바뀐다 | AC-05 |
-| `src/shared/lib/spell-number.ts` | 금액 꼴 `spellWon`이 `screens/wages/model/wage-amount.ts`와 `screens/payroll/model/summary.ts`의 두 벌에서 여기로 모인다 | AC-04 |
+| `src/shared/lib/spell-number.ts` | 금액 꼴 `spellWon`이 `screens/wages/model/wage-amount.ts`와 `screens/payroll/utils/summary.utils.ts`의 두 벌에서 여기로 모인다 | AC-04 |
 | `src/shared/lib/no-value.ts` | `NO_VALUE`(`–`)가 `screens/admin-stats/model/chart-values.ts`에서 올라온다 | AC-05 |
 | `src/shared/lib/month-boundary.ts` | 달 줄 경계가 `screens/admin-stats/model/`에서 올라온다 — 두 통계가 같은 경계를 쓴다 | AC-05 |
 | `src/screens/admin-stats/model/chart-values.ts`·`src/screens/admin-stats/ui/AdminStatsScreen.tsx` | 올라간 셋을 새 자리에서 부른다 | AC-01 |
-| `src/screens/payroll/model/summary.ts`·`history-rows.ts`·`year-rows.ts` | `spellAmount`를 버리고 `spellWon`을 부른다. `NO_AMOUNT`가 `NO_VALUE`를 가리킨다 | AC-04 |
+| `src/screens/payroll/utils/summary.utils.ts`·`history-rows.ts`·`year-rows.ts` | `spellAmount`를 버리고 `spellWon`을 부른다. `NO_AMOUNT`가 `NO_VALUE`를 가리킨다 | AC-04 |
 | `src/screens/wages/model/wage-amount.ts`·`src/screens/wages/ui/WagesScreen.tsx`·`MemberWageSheet.tsx`·`ResetWageDialog.tsx` | 같은 자리 — 제 슬라이스의 `spellWon`을 버리고 shared 것을 부른다 | AC-04 |
 | `src/features/payroll/model/payroll-days.ts` | 교육 배정의 `kind`가 `'education'`이 아니라 표가 드는 `'training'`이다 | AC-03 |
 | `src/features/stats/model/__tests__/my-totals.test.ts`·`src/features/stats/api/__tests__/useStatsQueries.test.ts` | 좁힌 집계와 급여 질의의 unit | AC-01 |

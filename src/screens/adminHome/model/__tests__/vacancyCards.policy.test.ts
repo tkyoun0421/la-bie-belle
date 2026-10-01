@@ -7,7 +7,7 @@
 import {
   vacancyCards,
   vacancyDaysLeftLine,
-} from "@/screens/adminHome/model/vacancyCards";
+} from "@/screens/adminHome/model/vacancyCards.policy";
 
 const TODAY = "2026-10-08T00:00:00Z";
 

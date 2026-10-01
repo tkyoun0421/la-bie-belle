@@ -9,7 +9,7 @@
 import type {
   WorkAssignment,
   WorkDay,
-} from "@/features/stats/model/workTotals";
+} from "@/features/stats/model/workTotals.policy";
 
 export const DAYS: WorkDay[] = [
   {

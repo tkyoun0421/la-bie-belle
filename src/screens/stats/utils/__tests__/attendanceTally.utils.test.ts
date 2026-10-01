@@ -22,8 +22,8 @@ import type {
 import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,
-} from "@/features/stats/model/attendanceInputs";
-import { myAttendanceTally } from "@/screens/stats/model/attendanceTally";
+} from "@/features/stats/utils/attendanceInputs.utils";
+import { myAttendanceTally } from "@/screens/stats/utils/attendanceTally.utils";
 
 const ME = "profile-me";
 

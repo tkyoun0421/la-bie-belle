@@ -1,8 +1,8 @@
 import {
   PUSH_DENIED_SUBLINE,
   PUSH_DENIED_TITLE,
-} from "@/entities/notification/model/profileNotificationRow";
-import type { NotificationPromptView } from "@/screens/pending/model/notificationPrompt";
+} from "@/entities/notification/model/profileNotificationRow.policy";
+import type { NotificationPromptView } from "@/screens/pending/model/notificationPrompt.policy";
 
 /**
  * 승인 대기 화면 알림 영역의 문안이다. 정본은

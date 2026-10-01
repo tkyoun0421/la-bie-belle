@@ -1,9 +1,9 @@
-import type { AttendanceStatusInput } from "@/entities/attendance/model/attendanceStatus";
-import type { AttendanceSummary } from "@/entities/attendance/model/summarizeAttendanceStatuses";
+import type { AttendanceStatusInput } from "@/entities/attendance/model/attendanceStatus.policy";
+import type { AttendanceSummary } from "@/entities/attendance/utils/summarizeAttendanceStatuses.utils";
 import {
   attendanceSummaryLine,
   isAttendanceColumnVisible,
-} from "@/screens/scheduleWorker/model/attendanceColumn";
+} from "@/screens/scheduleWorker/model/attendanceColumn.policy";
 
 const BASE_INPUT: AttendanceStatusInput = {
   workDate: "2026-10-10",

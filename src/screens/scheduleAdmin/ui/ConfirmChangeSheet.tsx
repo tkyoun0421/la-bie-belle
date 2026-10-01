@@ -4,7 +4,7 @@ import { Text } from "@/shared/ui/Text";
 import {
   forceChangeCopy,
   type ForceChangeCopyInput,
-} from "@/screens/scheduleAdmin/model/forceChangeCopy";
+} from "@/screens/scheduleAdmin/utils/forceChangeCopy.utils";
 
 /**
  * 확정 뒤 모든 변경 앞에 서는 확인이다. 정본은

@@ -1,4 +1,4 @@
-import { formatScheduleDate } from "@/screens/scheduleAdmin/model/formatScheduleDate";
+import { formatScheduleDate } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
 
 /**
  * `open_slots` 뷰가 낸 빈 자리 행을 화면이 쓸 모양으로 묶는다. 판정 자체는 뷰가 이미

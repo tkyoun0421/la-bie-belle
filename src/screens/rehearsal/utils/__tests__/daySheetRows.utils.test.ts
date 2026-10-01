@@ -5,7 +5,7 @@
 // 「박서연 · 리허설 2건 · 2시간」이다. 합계 줄은 줄이 둘 이상일 때만 선다. 빈 날 문구는
 // 본인용과 관리자용 둘이 갈린다.
 
-import { daySheetRows } from "@/screens/rehearsal/model/daySheetRows";
+import { daySheetRows } from "@/screens/rehearsal/utils/daySheetRows.utils";
 
 const TIME_ROW = {
   id: "row-1",

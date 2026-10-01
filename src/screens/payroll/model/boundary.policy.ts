@@ -2,7 +2,7 @@ import {
   anchorOfDate,
   periodAnchor,
   type Period,
-} from "@/screens/payroll/model/period";
+} from "@/screens/payroll/model/period.policy";
 
 /**
  * 기간 화살표가 서는지다. 못 가는 화살표는 흐리게 그리지 않고 아예 안 그린다

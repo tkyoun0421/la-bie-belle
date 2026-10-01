@@ -1,7 +1,7 @@
 import type {
   NotificationKind,
   NotificationPayload,
-} from "@/entities/notification/model/types";
+} from "@/entities/notification/model/notification.type";
 
 /**
  * 알림 한 줄이 무엇이라고 말하는지다. 정본은

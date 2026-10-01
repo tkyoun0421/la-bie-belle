@@ -5,7 +5,7 @@
 // schedule-requests.md 「총괄이 정한 것」 7). 사유 건수는 attendance가 같은 훅에
 // 더한다. 0건이어도 「0건」으로 선다 — 가입 대기 줄과 같은 규칙이다.
 
-import { approvalsLine } from "@/screens/adminHome/model/approvalsLine";
+import { approvalsLine } from "@/screens/adminHome/utils/approvalsLine.utils";
 
 describe("approvalsLine — 대기 건수를 「승인할 일 · n건」으로 말한다", () => {
   it("3건이면 「승인할 일 · 3건」이다", () => {

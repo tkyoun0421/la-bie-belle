@@ -1,14 +1,14 @@
 import {
   tallyMonthlyAttendance,
   type MonthlyAttendanceTally,
-} from "@/entities/attendance/model/attendanceSummary";
+} from "@/entities/attendance/utils/attendanceSummary.utils";
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
 import {
   buildAttendanceInputs,
   type AttendanceInputCheckIn,
   type AttendanceInputDay,
   type AttendanceInputExcuseStatus,
-} from "@/features/stats/model/attendanceInputs";
+} from "@/features/stats/utils/attendanceInputs.utils";
 
 /**
  * 그달 내 근태를 넷으로 센다. 화면이 보는 달 하나를 넘기고 추이 그래프가 열두 달을 한 달씩

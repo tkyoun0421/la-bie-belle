@@ -5,7 +5,7 @@
 // 어디까지 왔나」라, 확정된 달을 계속 말하면 월말에 다음 달을 만들러 가는 길이 안 보인다.
 // 오늘 현황과 미니뷰는 이 값을 안 쓴다 — 둘은 늘 오늘이 든 달이다.
 
-import { tileMonth } from "@/screens/adminHome/model/tileMonth";
+import { tileMonth } from "@/screens/adminHome/model/tileMonth.policy";
 
 describe("tileMonth — 오늘이 든 달이 확정되지 않았으면 그 달이다", () => {
   it("9월이 아직 없으면 9월이다", () => {

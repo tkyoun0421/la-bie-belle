@@ -19,7 +19,7 @@
 //   (퇴사한 사람도 같다)
 
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
-import { POSITION_ORDER } from "@/entities/schedule/model/positions";
+import { POSITION_ORDER } from "@/entities/schedule/model/schedule.type";
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
 import {
   computeWorkTotals,
@@ -29,7 +29,7 @@ import {
   workInputsOf,
   type WorkAssignment,
   type WorkDay,
-} from "@/features/stats/model/workTotals";
+} from "@/features/stats/model/workTotals.policy";
 
 describe("computeWorkTotals — 사람별 합·포지션별 합·전체 합이 같다", () => {
   it("byPerson 시간 합과 byPosition 시간 합이 totalMinutes와 같다", () => {

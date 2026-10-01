@@ -40,7 +40,7 @@
 
 ### kind와 payload
 
-**`kind` 문자열과 `payload` 열쇠가 계약이다.** 낳는 쪽(`notification-emit`·cron)과 읽는 쪽(문장·목적지 함수)이 다른 task라, 한쪽이 `work_date`로 넣고 다른 쪽이 `date`로 읽으면 화면이 조용히 빈칸을 그린다. DB는 `kind`에 제약을 안 걸고([알림 행](#알림-행)) 막는 자리가 `src/entities/notification/model/types.ts`의 유니온이라, 그 유니온이 이 표를 옮긴다.
+**`kind` 문자열과 `payload` 열쇠가 계약이다.** 낳는 쪽(`notification-emit`·cron)과 읽는 쪽(문장·목적지 함수)이 다른 task라, 한쪽이 `work_date`로 넣고 다른 쪽이 `date`로 읽으면 화면이 조용히 빈칸을 그린다. DB는 `kind`에 제약을 안 걸고([알림 행](#알림-행)) 막는 자리가 `src/entities/notification/model/notification.type.ts`의 유니온이라, 그 유니온이 이 표를 옮긴다.
 
 날짜는 `2026-09-13` 꼴의 한국 달력일, 달은 `2026-10` 꼴, 시각은 ISO 문자열이다. 문장은 [알림 제목](screens/notifications.md#알림-제목), 목적지는 [UI 연결](#ui-연결)이 정본이고 여기는 열쇠 이름만 든다.
 

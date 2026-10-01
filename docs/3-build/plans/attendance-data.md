@@ -189,7 +189,7 @@ sources:
 
 이 task가 그 첫 자리다. 인증 창의 1시간과 18시, 사유 마감 48시간이 SQL 함수와 TS 상태 계산 **양쪽**에 산다 — 대조가 없으면 한쪽만 고쳐도 아무것도 안 빨갛다.
 
-- `src/entities/attendance/model/constants.ts`가 정본이다. 지각 유예와 `checked_at` 한도는 숫자가 같고 뜻이 달라 이름으로 가른다([AC-06](#ac-06))
+- `src/entities/attendance/model/attendance.type.ts`가 정본이다. 지각 유예와 `checked_at` 한도는 숫자가 같고 뜻이 달라 이름으로 가른다([AC-06](#ac-06))
 - `tests/lint/`에 대조를 세운다. 마이그레이션의 `interval`·시각 리터럴과 TS 상수를 맞춘다. `error-codes` 대조와 같은 꼴이고 **양방향**이다
 - SQL에만 사는 상수(`checked_at` 한도)와 TS에만 사는 상수(지각 유예)는 대조 대상이 아니다. 두 곳에 사는 것만 본다 — 대조가 한쪽에만 있는 값을 빨갛게 만들면 쓸 수 없다
 
@@ -201,7 +201,7 @@ sources:
 | `supabase/migrations/<날짜>_attendance_functions.sql` | 함수 다섯. 시각 경계는 `internal`이 `p_now`를 받고 `public`이 껍데기다 | AC-03~AC-05 |
 | `src/shared/api/error-codes.ts` | 코드 여덟 | AC-08 |
 | `src/shared/api/errors.ts` | `DomainError`·`TransportError` | AC-07 |
-| `src/entities/attendance/model/constants.ts` | 업무 상수 | AC-06·AC-11 |
+| `src/entities/attendance/model/attendance.type.ts` | 업무 상수 | AC-06·AC-11 |
 | `tests/lint/` | 업무 상수 대조 | AC-11 |
 | `src/features/attendance/model/*.ts`·`__tests__/` | 상태 여섯·통신 지연·현황 셈·월 집계 | AC-06 |
 | `src/entities/attendance/api/*.ts`·`__tests__/` | 읽기 셋, 쓰기 다섯, `check_in` 재시도 | AC-07 |

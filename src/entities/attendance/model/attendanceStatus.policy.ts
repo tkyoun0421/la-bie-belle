@@ -2,7 +2,7 @@ import {
   CHECK_IN_WINDOW_LEAD_MINUTES,
   EXCUSE_DEADLINE_HOURS,
   LATE_THRESHOLD_MINUTES,
-} from "@/entities/attendance/model/constants";
+} from "@/entities/attendance/model/attendance.type";
 
 export type AttendanceStatus =
   "unmarked" | "present" | "late" | "pending" | "excused" | "absent";

@@ -1,4 +1,4 @@
-import { formatBirthDate } from "@/entities/profile/model/formatBirthDate";
+import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
 
 // 가입 대기 상세 시트의 생년월일 값. "1992년 3월 4일(34세)"처럼 만 나이를 같이 적는다
 // — [members-pending.md 「생년월일 옆에 나이를 같이 적는다」]. 2월 29일생은 평년에

@@ -1,5 +1,5 @@
 import { shiftMonth, spellMonth } from "@/shared/utils/kstDate";
-import { weekStartOf } from "@/features/payrollCompute/model/payrollTotal";
+import { weekStartOf } from "@/features/payrollCompute/utils/payrollTotal.utils";
 
 /**
  * 급여 조회가 보고 있는 기간이다. 세그먼트가 단위를 고르고 화살표가 그 단위 안에서 앞뒤로

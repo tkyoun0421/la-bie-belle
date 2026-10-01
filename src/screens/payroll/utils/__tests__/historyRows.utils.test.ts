@@ -10,7 +10,7 @@
 // '연장 1시간'·'연장 1시간 30분'·'연장 30분'으로 적는다. 교육 배정은 포지션
 // 뒤에 '교육'이 붙는다('메인 교육 · 10:00–19:00').
 
-import { payrollHistoryRows } from "@/screens/payroll/model/historyRows";
+import { payrollHistoryRows } from "@/screens/payroll/utils/historyRows.utils";
 
 function normalDay(overrides: Record<string, unknown> = {}) {
   return {

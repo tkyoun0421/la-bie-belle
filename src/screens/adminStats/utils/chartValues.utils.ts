@@ -1,12 +1,12 @@
 import { NO_VALUE } from "@/shared/utils/noValue";
-import { attendanceRate } from "@/entities/attendance/model/attendanceSummary";
+import { attendanceRate } from "@/entities/attendance/utils/attendanceSummary.utils";
 import type { WorkMonth } from "@/entities/schedule/hooks/useWorkMonthsQuery";
 import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   computeWorkTotals,
   workInputsOf,
-} from "@/features/stats/model/workTotals";
-import type { AttendanceTab } from "@/screens/adminStats/model/attendanceRows";
+} from "@/features/stats/model/workTotals.policy";
+import type { AttendanceTab } from "@/screens/adminStats/utils/attendanceRows.utils";
 
 /**
  * 통계 화면이 읽어 온 열두 달을 추이 그래프가 먹는 값으로 옮긴다. 정본은

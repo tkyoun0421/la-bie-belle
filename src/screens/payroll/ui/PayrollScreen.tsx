@@ -16,17 +16,19 @@ import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { kstDateOf, kstToday } from "@/shared/utils/kstDate";
-import { nowWithOffset } from "@/entities/clock/model/serverClock";
-import { serverClockStore } from "@/entities/clock/model/serverClockStore";
+import { serverClockStore } from "@/entities/clock/model/clock.store";
+import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
 import { usePayrollMonthsQuery } from "@/entities/payroll/hooks/usePayrollMonthsQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
 import { useScheduleMonthsQuery } from "@/entities/schedule/hooks/useScheduleMonthsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { payrollViewDays } from "@/features/payrollCompute/model/payrollDays";
-import { canGoBack, canGoForward } from "@/screens/payroll/model/boundary";
-import { payrollHistoryRows } from "@/screens/payroll/model/historyRows";
+import { payrollViewDays } from "@/features/payrollCompute/model/payrollDays.policy";
+import {
+  canGoBack,
+  canGoForward,
+} from "@/screens/payroll/model/boundary.policy";
 import {
   isInPeriod,
   periodLabel,
@@ -36,12 +38,16 @@ import {
   periodUnitOf,
   shiftPeriod,
   type PeriodUnit,
-} from "@/screens/payroll/model/period";
+} from "@/screens/payroll/model/period.policy";
+import { payrollHistoryRows } from "@/screens/payroll/utils/historyRows.utils";
 import {
   summarizeAccrual,
   summarizeAmount,
-} from "@/screens/payroll/model/summary";
-import { monthRowsOfDays, yearRows } from "@/screens/payroll/model/yearRows";
+} from "@/screens/payroll/utils/summary.utils";
+import {
+  monthRowsOfDays,
+  yearRows,
+} from "@/screens/payroll/utils/yearRows.utils";
 
 /**
  * 근무자가 자기 급여를 미리 보는 화면이다. 정본은

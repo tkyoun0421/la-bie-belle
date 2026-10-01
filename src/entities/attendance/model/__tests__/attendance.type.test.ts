@@ -1,7 +1,7 @@
 import {
   CHECKED_AT_DEVICE_TOLERANCE_MINUTES,
   LATE_THRESHOLD_MINUTES,
-} from "@/entities/attendance/model/constants";
+} from "@/entities/attendance/model/attendance.type";
 
 describe("attendance 업무 상수 — 지각 유예와 checked_at 기기 오차 한도는 이름이 다른 상수다", () => {
   it("지각 유예는 10분이다(ATT-016)", () => {

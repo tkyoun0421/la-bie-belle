@@ -11,7 +11,10 @@
 // today(kstToday())가 든 기간 다음으로 못 간다. leftAt(퇴사한 달)이 있으면
 // 그 달이 바닥이 아니라 천장이 된다 — 퇴사한 달에서 앞으로가 사라진다.
 
-import { canGoBack, canGoForward } from "@/screens/payroll/model/boundary";
+import {
+  canGoBack,
+  canGoForward,
+} from "@/screens/payroll/model/boundary.policy";
 
 describe("canGoBack — 승인된 달과 같은 기간이면 뒤로 화살표가 사라진다", () => {
   it("승인일 2026-08-15가 든 달은 false다", () => {

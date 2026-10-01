@@ -7,7 +7,7 @@
 import {
   adjustmentCountLine,
   type AdjustmentCountRow,
-} from "@/screens/scheduleAdmin/model/adjustmentCount";
+} from "@/screens/scheduleAdmin/utils/adjustmentCount.utils";
 
 describe("adjustmentCountLine — 조정한 사람이 없으면 빈 문자열이다", () => {
   it("행이 0개면 빈 문자열이다", () => {

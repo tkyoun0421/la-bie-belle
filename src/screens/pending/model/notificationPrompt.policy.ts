@@ -1,4 +1,4 @@
-import type { PushPermission } from "@/entities/notification/model/reachState";
+import type { PushPermission } from "@/entities/notification/model/reachState.policy";
 
 /**
  * 승인 대기 화면 알림 영역의 모습 셋이다. 정본은

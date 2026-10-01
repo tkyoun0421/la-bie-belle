@@ -6,7 +6,7 @@
 // 본다 — design.md 「요청」의 "만료됨은 저장하지 않는다"와 runtime.md 「서버 시각」의
 // 로컬 판정이 같은 결이다.
 
-import { requestSheetState } from "@/screens/scheduleWorker/model/requestSheet";
+import { requestSheetState } from "@/screens/scheduleWorker/model/requestSheet.policy";
 
 const EXPIRES_AT = "2026-10-12T00:00:00Z";
 

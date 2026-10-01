@@ -11,7 +11,7 @@ import {
   nowWithOffset,
   remainingMs,
   serverOffset,
-} from "@/entities/clock/model/serverClock";
+} from "@/entities/clock/model/serverClock.policy";
 
 describe("serverOffset — 서버 시각과 기기 시각의 차이를 잰다", () => {
   it("서버가 기기보다 앞서 있으면 양수를 낸다", () => {

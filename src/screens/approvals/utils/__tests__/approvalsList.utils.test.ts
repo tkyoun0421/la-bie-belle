@@ -8,7 +8,7 @@ import {
   removeApproval,
   sortApprovals,
   type ApprovalListRow,
-} from "@/screens/approvals/model/approvalsList";
+} from "@/screens/approvals/utils/approvalsList.utils";
 
 const ROWS: ApprovalListRow[] = [
   { id: "cancel-3", kind: "cancel", workDate: "2026-10-20" },

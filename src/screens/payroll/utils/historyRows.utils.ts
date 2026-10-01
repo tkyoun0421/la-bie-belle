@@ -1,7 +1,7 @@
 import { spellDate } from "@/shared/utils/kstDate";
 import { spellWon } from "@/shared/utils/spellNumber";
-import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays";
-import { NO_AMOUNT } from "@/screens/payroll/model/summary";
+import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays.policy";
+import { NO_AMOUNT } from "@/screens/payroll/utils/summary.utils";
 
 /**
  * 내역 목록의 줄이다(`docs/2-design/modules/payroll/screens/payroll.md`의 「내역 목록」).

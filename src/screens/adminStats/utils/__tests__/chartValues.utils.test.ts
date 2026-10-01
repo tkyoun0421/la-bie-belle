@@ -20,13 +20,13 @@
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
 import type { WorkMonth } from "@/entities/schedule/hooks/useWorkMonthsQuery";
 import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
-import type { AttendanceTab } from "@/screens/adminStats/model/attendanceRows";
+import type { AttendanceTab } from "@/screens/adminStats/utils/attendanceRows.utils";
 import {
   attendanceValues,
   monthIn,
   percentLabel,
   workValues,
-} from "@/screens/adminStats/model/chartValues";
+} from "@/screens/adminStats/utils/chartValues.utils";
 
 function workedDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
   return {

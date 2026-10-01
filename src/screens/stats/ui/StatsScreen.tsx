@@ -25,8 +25,8 @@ import {
 import { canGoBack, canGoForward } from "@/shared/utils/monthBoundary";
 import { NO_VALUE } from "@/shared/utils/noValue";
 import { spellWon } from "@/shared/utils/spellNumber";
-import { nowWithOffset } from "@/entities/clock/model/serverClock";
-import { serverClockStore } from "@/entities/clock/model/serverClockStore";
+import { serverClockStore } from "@/entities/clock/model/clock.store";
+import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/hooks/usePayrollMonthsByMonthQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
@@ -35,27 +35,30 @@ import { useWorkMonthsQuery } from "@/entities/schedule/hooks/useWorkMonthsQuery
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";
 import {
+  hoursLabel,
+  workInputsOf,
+} from "@/features/stats/model/workTotals.policy";
+import {
   computeMyWorkTotals,
   type MyWorkTotals,
-} from "@/features/stats/model/myTotals";
-import { buildTrend, trendMonths } from "@/features/stats/model/trend";
-import { hoursLabel, workInputsOf } from "@/features/stats/model/workTotals";
+} from "@/features/stats/utils/myTotals.utils";
+import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
 import {
   buildMyAttendanceDays,
   myAttendanceRow,
-} from "@/screens/stats/model/attendanceDays";
-import { attendanceRatioShares } from "@/screens/stats/model/attendanceShares";
-import { attendanceSummaryLine } from "@/screens/stats/model/attendanceSummaryLine";
-import { myAttendanceTally } from "@/screens/stats/model/attendanceTally";
+} from "@/screens/stats/utils/attendanceDays.utils";
+import { attendanceRatioShares } from "@/screens/stats/utils/attendanceShares.utils";
+import { attendanceSummaryLine } from "@/screens/stats/utils/attendanceSummaryLine.utils";
+import { myAttendanceTally } from "@/screens/stats/utils/attendanceTally.utils";
 import {
   joinPayrollByMonth,
   myAttendanceValues,
   myPayrollDaysOfMonth,
   myPayrollValues,
   myWorkValues,
-} from "@/screens/stats/model/chartValues";
-import { tenThousandWonLabel } from "@/screens/stats/model/moneyLabel";
-import { myPayrollSubtitle } from "@/screens/stats/model/payrollSummary";
+} from "@/screens/stats/utils/chartValues.utils";
+import { tenThousandWonLabel } from "@/screens/stats/utils/moneyLabel.utils";
+import { myPayrollSubtitle } from "@/screens/stats/utils/payrollSummary.utils";
 
 /**
  * 근무자가 자기 한 달을 숫자로 보는 화면이다. 정본은

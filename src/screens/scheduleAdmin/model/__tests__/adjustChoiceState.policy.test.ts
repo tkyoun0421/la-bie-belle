@@ -5,7 +5,7 @@
 // 보여주는 축이 다르다: 「N명 조정됨」은 마지막 행의 분을 보지만 이 노출 여부는 행의
 // 유무만 본다(schedule-admin.md 「근무 조정」).
 
-import { showRevertOption } from "@/screens/scheduleAdmin/model/adjustChoiceState";
+import { showRevertOption } from "@/screens/scheduleAdmin/model/adjustChoiceState.policy";
 
 describe("showRevertOption — 조정 행이 없으면 원래대로가 안 선다", () => {
   it("빈 배열이면 false다", () => {

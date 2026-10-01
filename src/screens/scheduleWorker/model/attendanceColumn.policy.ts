@@ -2,8 +2,8 @@ import {
   checkInWindowOpensAt,
   type AttendanceStatus,
   type AttendanceStatusInput,
-} from "@/entities/attendance/model/attendanceStatus";
-import type { AttendanceSummary } from "@/entities/attendance/model/summarizeAttendanceStatuses";
+} from "@/entities/attendance/model/attendanceStatus.policy";
+import type { AttendanceSummary } from "@/entities/attendance/utils/summarizeAttendanceStatuses.utils";
 
 /**
  * 날 시트 명단의 오른쪽 끝 열과 그 위 현황 줄이다

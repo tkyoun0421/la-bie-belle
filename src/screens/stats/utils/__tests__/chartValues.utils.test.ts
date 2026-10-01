@@ -62,7 +62,7 @@ import {
   myPayrollDaysOfMonth,
   myPayrollValues,
   myWorkValues,
-} from "@/screens/stats/model/chartValues";
+} from "@/screens/stats/utils/chartValues.utils";
 
 const PROFILE_ID = "profile-1";
 

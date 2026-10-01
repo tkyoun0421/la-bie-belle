@@ -17,8 +17,8 @@
 // 구획 중 하나가 틀렸다는 뜻이고 그것을 눈으로 확인하는 것이 이 시트의 쓸모다.
 
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
-import { computePersonDays } from "@/features/stats/model/personDays";
-import { computeWorkTotals } from "@/features/stats/model/workTotals";
+import { computeWorkTotals } from "@/features/stats/model/workTotals.policy";
+import { computePersonDays } from "@/features/stats/utils/personDays.utils";
 
 describe("computePersonDays — 한 사람의 날짜별 근무가 날짜순으로 선다", () => {
   it("김지우(p1)는 9월 1일 메인, 9월 3일 안내(교육) 순으로 두 줄이다", () => {

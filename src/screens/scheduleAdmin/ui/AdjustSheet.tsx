@@ -5,7 +5,7 @@ import {
   adjustRowLabel,
   spellHours,
   type AdjustSheetRow,
-} from "@/screens/scheduleAdmin/model/adjustSheetRows";
+} from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
 
 /**
  * 근무 조정 줄을 누르면 서는 시트다. 정본은

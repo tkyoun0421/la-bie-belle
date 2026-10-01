@@ -9,7 +9,7 @@
 import {
   dayConfirmGate,
   allowsStructureChange,
-} from "@/screens/scheduleAdmin/model/confirmGate";
+} from "@/screens/scheduleAdmin/model/confirmGate.policy";
 
 const CONFIRMED_AT = "2026-10-03T00:00:00Z";
 
