@@ -2,12 +2,10 @@ import { attendanceRate } from "@/entities/attendance/model/attendanceSummary";
 import type { PayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
 import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
 import type { ScheduleDay } from "@/entities/schedule/api/getMonthSchedule.api";
+import type { WorkMonth } from "@/entities/schedule/hooks/useWorkMonthsQuery";
 import { payrollViewDays } from "@/features/payroll/model/payrollDays";
 import type { PayrollViewDay } from "@/features/payroll/model/payrollDays";
-import type {
-  AttendanceMonth,
-  WorkMonth,
-} from "@/features/stats/api/useStatsQueries";
+import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
 import { computeMyWorkTotals } from "@/features/stats/model/myTotals";
 import { workInputsOf } from "@/features/stats/model/workTotals";
 import { myAttendanceTally } from "@/screens/stats/model/attendanceTally";

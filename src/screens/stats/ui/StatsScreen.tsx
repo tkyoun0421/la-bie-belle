@@ -28,14 +28,12 @@ import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
+import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/hooks/usePayrollMonthsByMonthQuery";
 import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
-import {
-  useAttendanceMonths,
-  useFirstScheduleMonth,
-  usePayrollMonthsByMonth,
-  useWorkMonths,
-} from "@/features/stats/api/useStatsQueries";
+import { useFirstScheduleMonthQuery } from "@/entities/schedule/hooks/useFirstScheduleMonthQuery";
+import { useWorkMonthsQuery } from "@/entities/schedule/hooks/useWorkMonthsQuery";
+import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   computeMyWorkTotals,
   type MyWorkTotals,
@@ -142,12 +140,15 @@ export function StatsScreen() {
   const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
   const profileId = profile?.id ?? null;
 
-  const work = useWorkMonths(supabase, tab === ATTENDANCE ? NO_MONTHS : months);
+  const work = useWorkMonthsQuery(
+    supabase,
+    tab === ATTENDANCE ? NO_MONTHS : months,
+  );
   const attendance = useAttendanceMonths(
     supabase,
     tab === ATTENDANCE ? months : NO_MONTHS,
   );
-  const payroll = usePayrollMonthsByMonth(
+  const payroll = usePayrollMonthsByMonthQuery(
     supabase,
     tab === PAYROLL ? months : NO_MONTHS,
   );
@@ -155,7 +156,7 @@ export function StatsScreen() {
     supabase,
     tab === PAYROLL ? months : NO_MONTHS,
   );
-  const firstMonth = useFirstScheduleMonth(supabase);
+  const firstMonth = useFirstScheduleMonthQuery(supabase);
 
   const sources: readonly { isLoading: boolean; error: Error | null }[] =
     tab === ATTENDANCE
