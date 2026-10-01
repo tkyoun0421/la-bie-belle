@@ -6,7 +6,9 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 급여 이동 PR이다.** `payroll` + `payrollCompute`·`wageAdmin`·`adjustment`·`holiday` + `screens` 둘이 품는 타입 열다섯·상수 일곱을 옮기고, DTO 여섯과 매퍼 하나를 세우고, `hooks/` 여덞을 `services/`로 옮긴다(짝 테스트까지 열여섯). 중복 `canGoBack`·`canGoForward`와 `dayMinutes`가 이 묶음에 걸린다 — 공용이 이미 자리를 잡았으니 급여가 접는다. `ExcuseStatusRow`는 근태가 뒤라 그쪽이 접는다.
+**다음 첫 수는 `fsd-read-write-layers`의 구성원 이동 PR이다.** `member`·`profile` + `memberAdmin`·`profileEdit`·`qualificationGrant` + `screens` 여섯이 품는 타입 여덞·상수 여덞을 옮기고, DTO 다섯을 세우고, `hooks/`를 `services/`로 옮긴다(짝 테스트까지 스물). 근무표가 남긴 `Gender`·`GenderSymbol`이 이 묶음 것이다 — `screens/scheduleAdmin/utils/personSheet.utils.ts`가 선언하고 있고 주인은 `entities/member`다.
+
+**급여 묶음이 끝났다.** `hooks/` 넷이 `services/`로(여덞 + 짝 여덞), DTO 일곱이 `payroll.dto.ts` 하나로, 상수 일곱이 `consts/` 셋으로, `DayKind`가 `payroll.type.ts`로 갔다. 중복 셋을 만났다 — `WageRateRow`/`MemberWageRateRow`는 **plan이 안 든 것**이고 몸이 같아 접었다. `canGoBack`·`canGoForward`는 몸이 달라 축을 이름에 넣어 갈랐다(`canGoToPreviousMonth` / `canGoToPreviousPeriod`). `ExcuseStatusRow`는 몸이 글자까지 같은데 **못 접는다** — `entities`끼리 import가 `no-cross-slice-import`에 걸리고 올릴 자리도 없다. 남은 중복 둘(`dayMinutes`·`attendanceSummaryLine`)은 통계가 뒤라 그 묶음 몫이다.
 
 **근무표 묶음이 끝났다.** `hooks/` 열하나가 통째로 `services/`로 갔고(서른 + 짝 서른), DB 열 이름을 드는 타입 열하나가 `.dto.ts` 넷으로 떨어지고, 도메인 타입 셋과 상수 둘이 제 세그먼트로 갔다. **DTO 꼴 바꾸기는 떼어냈다** — 열 이름이 `api/` 밖 파일 쉰여덟에 닿고 `ScheduleDay` 하나가 묶음 넷에 걸려 도메인 축으로 못 가른다. [dto-to-domain-shape](3-build/plans/dto-to-domain-shape.md)가 묶음 열이 끝난 뒤 필드 축으로 가른다.
 
