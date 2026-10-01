@@ -1,4 +1,4 @@
-import { routeTypesViolations } from "@tests/lint/route-types";
+import { routeTypesViolations } from "@tests/lint/routeTypes";
 
 const GENERATED = `/* eslint-disable */
 import * as Router from 'expo-router';

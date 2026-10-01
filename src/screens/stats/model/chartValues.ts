@@ -1,16 +1,16 @@
-import { attendanceRate } from "@/entities/attendance/model/attendance-summary";
-import type { PayrollMonth } from "@/entities/payroll/dals/get-payroll-month";
-import type { Rehearsal } from "@/entities/rehearsal/dals/get-my-rehearsals";
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
-import { payrollViewDays } from "@/features/payroll/model/payroll-days";
-import type { PayrollViewDay } from "@/features/payroll/model/payroll-days";
+import { attendanceRate } from "@/entities/attendance/model/attendanceSummary";
+import type { PayrollMonth } from "@/entities/payroll/dals/getPayrollMonth";
+import type { Rehearsal } from "@/entities/rehearsal/dals/getMyRehearsals";
+import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
+import { payrollViewDays } from "@/features/payroll/model/payrollDays";
+import type { PayrollViewDay } from "@/features/payroll/model/payrollDays";
 import type {
   AttendanceMonth,
   WorkMonth,
 } from "@/features/stats/api/useStatsQueries";
-import { computeMyWorkTotals } from "@/features/stats/model/my-totals";
-import { workInputsOf } from "@/features/stats/model/work-totals";
-import { myAttendanceTally } from "@/screens/stats/model/attendance-tally";
+import { computeMyWorkTotals } from "@/features/stats/model/myTotals";
+import { workInputsOf } from "@/features/stats/model/workTotals";
+import { myAttendanceTally } from "@/screens/stats/model/attendanceTally";
 
 /**
  * 근무자 통계가 읽어 온 열두 달을 추이 그래프가 먹는 값으로 옮긴다. 탭이 셋이라 값도 셋이다 —

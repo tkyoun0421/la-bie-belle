@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 /**
  * 그 달 근무표를 읽는 두 손이다 — 연 날들과, 그 달 근무표 자체의 상태.
@@ -85,7 +85,7 @@ const DAY_COLUMNS = [
 ].join(", ");
 
 export async function getMonthSchedule(
-  client: Db,
+  client: DB,
   month: string,
 ): Promise<ScheduleDay[]> {
   const { data, error } = await client
@@ -106,7 +106,7 @@ export async function getMonthSchedule(
 
 /** 그 달 근무표가 없으면 `null`이다 — 접수가 아직 안 열린 달이다. */
 export async function getMonthWindow(
-  client: Db,
+  client: DB,
   month: string,
 ): Promise<MonthWindow | null> {
   const { data, error } = await client

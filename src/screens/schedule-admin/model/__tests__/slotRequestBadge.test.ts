@@ -1,10 +1,10 @@
-// 구현 대상: src/screens/schedule-admin/model/slot-request-badge.ts
+// 구현 대상: src/screens/schedule-admin/model/slotRequestBadge.ts
 //
 // 날 상세 자리 카드의 요청 대기 배지다(schedule-admin.md 「포지션과 자리」·「날 상세
 // 문안」의 「요청 2건 대기 중」). 살아 있는 요청의 pending 후보 수를 센다 — 닫힌
 // 요청(`closed_at`이 있다)은 [AC-03]이 이미 지웠으니 배지가 없다.
 
-import { slotRequestBadge } from "@/screens/schedule-admin/model/slot-request-badge";
+import { slotRequestBadge } from "@/screens/schedule-admin/model/slotRequestBadge";
 
 describe("slotRequestBadge — pending 후보 수를 「요청 n건 대기 중」으로 말한다", () => {
   it("살아 있는 요청에 pending 후보가 둘이면 「요청 2건 대기 중」이다", () => {

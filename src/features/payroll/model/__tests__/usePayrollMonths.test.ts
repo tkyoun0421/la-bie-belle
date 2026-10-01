@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const getPayrollMonthMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/payroll/dals/get-payroll-month", () => ({
+jest.unstable_mockModule("@/entities/payroll/dals/getPayrollMonth", () => ({
   getPayrollMonth: getPayrollMonthMock,
   payrollMonthKey: (month: string) => ["payroll", month],
 }));

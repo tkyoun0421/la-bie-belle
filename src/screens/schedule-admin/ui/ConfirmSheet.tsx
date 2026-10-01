@@ -5,12 +5,12 @@ import { Button } from "@/shared/ui/Button";
 import { Icon } from "@/shared/ui/Icon";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
-import { formatMonthName } from "@/screens/schedule-admin/model/format-schedule-date";
+import { formatMonthName } from "@/screens/schedule-admin/model/formatScheduleDate";
 import {
   openSlotLine,
   summarizeOpenSlots,
   type OpenSlotRow,
-} from "@/screens/schedule-admin/model/group-open-slots";
+} from "@/screens/schedule-admin/model/groupOpenSlots";
 
 /**
  * 확정 시트다. 정본은

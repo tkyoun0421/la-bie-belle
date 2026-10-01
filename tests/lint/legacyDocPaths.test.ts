@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { legacyPathViolations } from "@tests/lint/legacy-doc-paths";
+import { legacyPathViolations } from "@tests/lint/legacyDocPaths";
 
 const ADR_004_RELATIVE = "docs/2-design/adr/ADR-004-domain-rules-home.md";
 const SDLC_GATE_RELATIVE = "docs/3-build/plans/sdlc-gate.md";
@@ -48,7 +48,7 @@ const RISK_14_CASES: [string, string][] = [
     `스킬 문서가 \`${OLD_ADR}\`를 가리킨다.`,
   ],
   ["src/entities/cart/model/price.ts", `// ${OLD_SPEC}cart-price.md 참고`],
-  ["scripts/generate-globals-css.mts", `// ${OLD_DESIGN_SYSTEM}tokens.md 참고`],
+  ["scripts/generateGlobalsCss.mts", `// ${OLD_DESIGN_SYSTEM}tokens.md 참고`],
 ];
 
 function tempRoot() {

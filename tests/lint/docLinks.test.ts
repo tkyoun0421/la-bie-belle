@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { docLinkViolations } from "@tests/lint/doc-links";
+import { docLinkViolations } from "@tests/lint/docLinks";
 
 function tempRoot(): string {
   return mkdtempSync(join(tmpdir(), "doc-links-"));

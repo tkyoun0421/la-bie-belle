@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { errorsOf, violationsOf } from "@tests/lint/rule-check";
+import { errorsOf, violationsOf } from "@tests/lint/ruleCheck";
 
 const NO_ARBITRARY_CLASS_VALUES = "house/no-arbitrary-class-values";
 const NO_COLOR_LITERALS = "house/no-color-literals";

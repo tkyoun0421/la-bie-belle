@@ -1,4 +1,4 @@
-import { searchMembers } from "@/entities/profile/model/search-members";
+import { searchMembers } from "@/entities/profile/model/searchMembers";
 
 // 직원 화면의 검색이다(`docs/2-design/modules/account/screens/members.md`의 「검색」).
 // 재직자와 퇴사 구획을 같은 글자로 동시에 거르고, 퇴사 구획은 1년이 지나 접힌 줄도 이름이

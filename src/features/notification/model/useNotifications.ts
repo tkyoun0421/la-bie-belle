@@ -1,11 +1,11 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
-import { getNotifications } from "@/entities/notification/dals/get-notifications";
+import type { DB } from "@/shared/api/database";
+import { getNotifications } from "@/entities/notification/dals/getNotifications";
 import { NOTIFICATION_PAGE_SIZE } from "@/entities/notification/model/types";
 import {
   NOTIFICATIONS_KEY,
   NOTIFICATIONS_MAX_PAGES,
-} from "@/features/notification/model/query-keys";
+} from "@/features/notification/model/queryKeys";
 
 /**
  * 받은 알림을 쪽으로 읽는다. 키는 `['notifications']`고 한 쪽이
@@ -19,7 +19,7 @@ import {
  * 쪽을 다시 읽는다.
  */
 
-export function useNotifications(client: Db) {
+export function useNotifications(client: DB) {
   return useInfiniteQuery({
     queryKey: NOTIFICATIONS_KEY,
     queryFn: ({ pageParam }) => getNotifications(client, pageParam),

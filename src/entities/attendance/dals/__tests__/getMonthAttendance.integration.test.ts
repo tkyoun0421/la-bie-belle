@@ -2,7 +2,7 @@ import type { Database } from "@/shared/api/database";
 import {
   getMonthAttendance,
   monthAttendanceKey,
-} from "@/entities/attendance/dals/get-month-attendance";
+} from "@/entities/attendance/dals/getMonthAttendance";
 import {
   createAdminUser,
   createApprovedUser,

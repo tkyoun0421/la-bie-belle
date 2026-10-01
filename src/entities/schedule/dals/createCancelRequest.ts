@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -15,7 +15,7 @@ import { toApiError } from "@/shared/api/errors";
  */
 
 export async function createCancelRequest(
-  client: Db,
+  client: DB,
   assignmentId: string,
   reason: string,
 ): Promise<string> {

@@ -11,7 +11,7 @@ import { Text } from "@/shared/ui/Text";
  * 종류는 성공과 안내 둘뿐이다. 경고와 오류는 사람이 조치할 것이 있는 자리라 사라지는 것에
  * 싣지 않는다.
  *
- * `distance`는 뜰 때 밀려 올라오는 거리고 `src/shared/lib/reduce-motion.ts`가 정한다 —
+ * `distance`는 뜰 때 밀려 올라오는 거리고 `src/shared/lib/reduceMotion.ts`가 정한다 —
  * 「동작 줄이기」가 켜져 있으면 0이 와서 자리에서 밝기만 바뀐다.
  */
 

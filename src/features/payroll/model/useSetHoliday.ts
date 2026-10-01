@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   setHoliday,
   type SetHolidayInput,
-} from "@/entities/payroll/dals/set-holiday";
-import { PAYROLL_KEY } from "@/features/payroll/model/query-keys";
+} from "@/entities/payroll/dals/setHoliday";
+import { PAYROLL_KEY } from "@/features/payroll/model/queryKeys";
 
 /**
  * 임시공휴일을 켜고 끈다. 값이 급여 쪽 표로 가므로 무효화도 `['payroll']`이다
@@ -26,7 +26,7 @@ export type SetHolidayResult = {
   reset: () => void;
 };
 
-export function useSetHoliday(client: Db): SetHolidayResult {
+export function useSetHoliday(client: DB): SetHolidayResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

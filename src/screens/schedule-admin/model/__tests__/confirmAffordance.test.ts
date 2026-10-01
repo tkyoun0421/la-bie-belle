@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/schedule-admin/model/confirm-affordance.ts
+// 구현 대상: src/screens/schedule-admin/model/confirmAffordance.ts
 //
 // 확정 버튼의 세 모습(schedule-admin.md 「세 모습」) — 잠김·열림·끝남. 마감일 경계는
 // 자정이다: 마감 당일까지는 잠김이고 다음 날 KST 0시부터 열린다(같은 문서 「마감일 경계는
@@ -8,7 +8,7 @@
 //
 // 시나리오는 schedule-admin.md 예시와 같다 — 마감일 2026-10-02(금).
 
-import { confirmAffordance } from "@/screens/schedule-admin/model/confirm-affordance";
+import { confirmAffordance } from "@/screens/schedule-admin/model/confirmAffordance";
 
 const DEADLINE = "2026-10-02";
 

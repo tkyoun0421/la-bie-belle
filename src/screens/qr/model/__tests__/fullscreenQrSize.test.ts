@@ -1,4 +1,4 @@
-import { fullscreenQrSize } from "@/screens/qr/model/fullscreen-qr-size";
+import { fullscreenQrSize } from "@/screens/qr/model/fullscreenQrSize";
 
 describe("fullscreenQrSize — 화면 폭에서 좌우 96px을 뺀 크기다", () => {
   it("390이면 294다", () => {

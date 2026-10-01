@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/schedule-admin/model/adjustment-failure.ts
+// 구현 대상: src/screens/schedule-admin/model/adjustmentFailure.ts
 //
 // `set_adjustment`·`set_holiday`가 실패했을 때 시트가 할 일이다(payroll-adjust 상태 격자
 // 「실패」). `not_allowed`는 그날 배정이 사라진 것이라 시트를 다시 읽는다. 그 밖은
@@ -7,7 +7,7 @@
 // 보여줄 문구만 낸다.
 
 import { DomainError, TransportError } from "@/shared/api/errors";
-import { adjustmentFailureAction } from "@/screens/schedule-admin/model/adjustment-failure";
+import { adjustmentFailureAction } from "@/screens/schedule-admin/model/adjustmentFailure";
 
 describe("adjustmentFailureAction — not_allowed는 시트를 다시 읽는다", () => {
   it("refetch가 true고 띄울 문구가 없다", () => {

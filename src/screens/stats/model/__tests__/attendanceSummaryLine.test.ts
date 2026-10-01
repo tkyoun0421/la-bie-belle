@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/stats/model/attendance-summary-line.ts (아직 없다)
+// 구현 대상: src/screens/stats/model/attendanceSummaryLine.ts (아직 없다)
 //
 // attendanceSummaryLine(tally) — 근태 현황 줄이다(stats.md 「근태 현황
 // 줄」·「통계 문안」의 「출근 41 · 지각 4 · 출근 인정 2 · 결근 1」). 관리자
@@ -14,8 +14,8 @@
 // 넷을 항상 다 적는다. 사람별 목록 줄의 "지각이 0이면 그 자리가 비어
 // 있다"는 것과도 다른 자리다.
 
-import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendance-summary";
-import { attendanceSummaryLine } from "@/screens/stats/model/attendance-summary-line";
+import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendanceSummary";
+import { attendanceSummaryLine } from "@/screens/stats/model/attendanceSummaryLine";
 
 describe("attendanceSummaryLine — 출근·지각·출근 인정·결근 순서로 한 줄을 낸다", () => {
   it("넷이 모두 값이 있으면 '출근 41 · 지각 4 · 출근 인정 2 · 결근 1'이다", () => {

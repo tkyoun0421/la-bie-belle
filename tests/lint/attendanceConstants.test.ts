@@ -7,7 +7,7 @@ import {
   migrationTimeOfDayMinutes,
   repositorySharedConstantViolations,
   sharedConstantViolations,
-} from "@tests/lint/attendance-constants";
+} from "@tests/lint/attendanceConstants";
 
 function tempRoot(): string {
   return mkdtempSync(join(tmpdir(), "attendance-constants-"));

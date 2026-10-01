@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { openDay } from "@/entities/schedule/dals/open-day";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { openDay } from "@/entities/schedule/dals/openDay";
+import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 날 하나를 연다. 함수가 날 하나를 받는 모양이라
@@ -24,7 +24,7 @@ export type OpenDayResult = {
   reset: () => void;
 };
 
-export function useOpenDay(client: Db): OpenDayResult {
+export function useOpenDay(client: DB): OpenDayResult {
   const queryClient = useQueryClient();
 
   const { mutate, mutateAsync, isPending, isSuccess, isError, error, reset } =

@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -6,7 +6,7 @@ import { toApiError } from "@/shared/api/errors";
  * 공개 주소를 프로필에 앉히는 자리다 — 관리자도 남의 것은 못 바꾼다.
  */
 export async function updateMyPhoto(
-  client: Db,
+  client: DB,
   photoUrl: string,
 ): Promise<void> {
   const { error } = await client.rpc("update_my_photo", {

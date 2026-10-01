@@ -2,7 +2,7 @@ import {
   armProfileReadFailure,
   isDevDoorOpen,
   takeProfileReadFailure,
-} from "@/shared/lib/dev-door";
+} from "@/shared/lib/devDoor";
 
 describe("isDevDoorOpen — 테스트 문은 개발 빌드에만 선다", () => {
   it("개발 빌드에서는 열린다", () => {

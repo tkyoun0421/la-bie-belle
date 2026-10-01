@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -10,7 +10,7 @@ import { toApiError } from "@/shared/api/errors";
  * 코드이기도 하다.
  */
 export async function blockMember(
-  client: Db,
+  client: DB,
   profileId: string,
 ): Promise<void> {
   const { error } = await client.rpc("block_member", { profile_id: profileId });

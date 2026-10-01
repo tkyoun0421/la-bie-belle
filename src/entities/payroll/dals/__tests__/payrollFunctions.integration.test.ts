@@ -33,7 +33,7 @@ type SingleResult<T> = { data: T | null; error: { message: string } | null };
 /**
  * 아직 생성 타입에 없는 표를 읽는 최소한의 체이닝 타입이다 — `wage_rates`·
  * `default_wage_rates`·`adjustments`·`holidays`는 이 task가 아직 마이그레이션을 안 낸
- * 표라 `Db`가 모른다. 실제 supabase-js 빌더처럼 체이닝도 되고 그대로 await도 된다.
+ * 표라 `DB`가 모른다. 실제 supabase-js 빌더처럼 체이닝도 되고 그대로 await도 된다.
  */
 type Query<T> = Promise<QueryResult<T>> & {
   eq: (column: string, value: string) => Query<T>;

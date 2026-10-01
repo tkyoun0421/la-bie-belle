@@ -39,9 +39,9 @@ jest.unstable_mockModule("@supabase/supabase-js", () => ({
   createClient: createClientMock,
 }));
 
-const { sessionStorage } = await import("@/shared/lib/session-storage");
+const { sessionStorage } = await import("@/shared/lib/sessionStorage");
 const { createSupabaseClient } =
-  await import("@/shared/lib/create-supabase-client");
+  await import("@/shared/lib/createSupabaseClient");
 
 describe("createSupabaseClient — 세션 관련 auth 설정 다섯을 고정해 createClient에 넘긴다", () => {
   beforeEach(() => {

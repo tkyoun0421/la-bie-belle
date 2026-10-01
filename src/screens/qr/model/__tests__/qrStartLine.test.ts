@@ -1,4 +1,4 @@
-import { qrStartLine } from "@/screens/qr/model/qr-start-line";
+import { qrStartLine } from "@/screens/qr/model/qrStartLine";
 
 describe("qrStartLine — 지금 코드를 쓰기 시작한 날을 KST로 알린다", () => {
   it("KST로 같은 날이면 그 날짜로 적는다", () => {

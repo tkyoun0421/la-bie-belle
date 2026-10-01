@@ -1,9 +1,9 @@
-import { type BacklogRow } from "@tests/lint/backlog-ids";
+import { type BacklogRow } from "@tests/lint/backlogIds";
 import {
   backlogSlugViolations,
   slugChainViolations,
   sourcesSlugViolations,
-} from "@tests/lint/slug-chain";
+} from "@tests/lint/slugChain";
 
 function backlogRow(
   id: string,

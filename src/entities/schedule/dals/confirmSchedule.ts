@@ -1,6 +1,6 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-import { monthStart } from "@/entities/schedule/dals/get-month-schedule";
+import { monthStart } from "@/entities/schedule/dals/getMonthSchedule";
 
 /**
  * 그 달 근무표를 확정한다. 되돌리는 문이 없고 빈 자리가 있어도 막지 않는다(SCH-014).
@@ -13,7 +13,7 @@ import { monthStart } from "@/entities/schedule/dals/get-month-schedule";
  * (`docs/2-design/system/data-access.md`의 「오류의 모양」) 화면 쪽 훅이 가른다.
  */
 export async function confirmSchedule(
-  client: Db,
+  client: DB,
   month: string,
 ): Promise<void> {
   const { error } = await client.rpc("confirm_schedule", {

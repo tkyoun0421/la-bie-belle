@@ -1,5 +1,5 @@
 import { DomainError, TransportError } from "@/shared/api/errors";
-import { updateMyContact } from "@/entities/profile/dals/update-my-contact";
+import { updateMyContact } from "@/entities/profile/dals/updateMyContact";
 import { createSubmittedUser } from "@tests/integration/postgres";
 
 describe("updateMyContact", () => {

@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { setDisplayName } from "@/entities/profile/dals/set-display-name";
+import { setDisplayName } from "@/entities/profile/dals/setDisplayName";
 import {
   createAdminUser,
   createApprovedUser,

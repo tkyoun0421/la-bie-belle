@@ -2,7 +2,7 @@ import {
   dayBandCheckInMarkRatio,
   dayBandFillRatio,
   type ShiftWindow,
-} from "@/shared/lib/day-band";
+} from "@/shared/lib/dayBand";
 
 const SHIFT: ShiftWindow = {
   start: new Date("2026-09-12T10:00:00+09:00"),

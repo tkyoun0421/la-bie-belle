@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/applications/model/applications-grouping.ts
+// 구현 대상: src/screens/applications/model/applicationsGrouping.ts
 //
 // 근무 신청 모아보기의 날짜순·사람순 재구성이다(schedule-admin.md 「근무 신청 모아보기
 // 짜임」) — 날짜순은 날짜 머리 아래 이름, 사람순은 이름 아래 날짜들. 입력은
@@ -8,7 +8,7 @@
 import {
   groupApplicationsByDate,
   groupApplicationsByPerson,
-} from "@/screens/applications/model/applications-grouping";
+} from "@/screens/applications/model/applicationsGrouping";
 
 const ROWS = [
   {

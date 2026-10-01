@@ -1,9 +1,9 @@
-// 구현 대상: src/screens/stats/model/attendance-days.ts (아직 없다)
+// 구현 대상: src/screens/stats/model/attendanceDays.ts (아직 없다)
 //
 // buildMyAttendanceDays(profileId, days, checkIns, excuseStatuses, now) — 근태
 // 탭 날짜 목록의 재료다(plan stats-worker AC-01, spec AC-02). 판정은
 // entities/attendance의 getAttendanceStatus 하나고 여기서 다시 안 짠다 —
-// features/stats/model/attendance-inputs.ts의 buildAttendanceInputs로 재료를
+// features/stats/model/attendanceInputs.ts의 buildAttendanceInputs로 재료를
 // 맞물린 뒤 그 상태 함수에 그대로 넣는다(admin의 attendance-rows.ts
 // buildAttendanceTab과 같은 전례다).
 //
@@ -26,18 +26,18 @@
 //
 // checkedTimeLabel(checkedAt) — ISO 순간을 KST HH:mm로 읽는다.
 
-import type { AttendanceStatus } from "@/entities/attendance/model/attendance-status";
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
+import type { AttendanceStatus } from "@/entities/attendance/model/attendanceStatus";
+import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
 import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,
-} from "@/features/stats/model/attendance-inputs";
+} from "@/features/stats/model/attendanceInputs";
 import {
   buildMyAttendanceDays,
   checkedTimeLabel,
   myAttendanceRow,
   type MyAttendanceDay,
-} from "@/screens/stats/model/attendance-days";
+} from "@/screens/stats/model/attendanceDays";
 
 const ME = "p1";
 
@@ -84,7 +84,7 @@ function assignment(
 }
 
 // 출근·지각·결근·인정·확인 중·안 찍음 여섯을 하루씩 만든다. now를 하나로
-// 고정해도(entities/attendance/model/__tests__/attendance-summary.test.ts와
+// 고정해도(entities/attendance/model/__tests__/attendanceSummary.test.ts와
 // 같은 시각 조합) 각 날의 사실만으로 상태가 갈린다.
 const DAYS: ScheduleDay[] = [
   // 9/14 — 확인 중(사유 제출, 미결)

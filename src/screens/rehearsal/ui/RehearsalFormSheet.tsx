@@ -7,7 +7,7 @@ import {
   canSubmitForm,
   type AddSheetState,
   type AddSheetValues,
-} from "@/screens/rehearsal/model/add-sheet-state";
+} from "@/screens/rehearsal/model/addSheetState";
 
 /**
  * 리허설을 넣고 고치는 시트다. 정본은

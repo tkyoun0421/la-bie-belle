@@ -1,6 +1,6 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-import type { HallSlot } from "@/entities/schedule/dals/get-hall-defaults";
+import type { HallSlot } from "@/entities/schedule/dals/getHallDefaults";
 
 /**
  * 홀의 자리·근무 시간 기본값을 바꾼다. 다음에 여는 날부터 이 값이 깔리고 **이미 연 날은
@@ -23,7 +23,7 @@ export type HallDefaultsInput = {
 };
 
 export async function setHallDefaults(
-  client: Db,
+  client: DB,
   { slots, starts, ends }: HallDefaultsInput,
 ): Promise<void> {
   const { error } = await client.rpc("set_hall_defaults", {

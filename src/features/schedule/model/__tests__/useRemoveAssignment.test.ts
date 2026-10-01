@@ -11,7 +11,7 @@ import type { ReactNode } from "react";
 const removeAssignmentMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/remove-assignment", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/removeAssignment", () => ({
   removeAssignment: removeAssignmentMock,
 }));
 

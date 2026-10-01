@@ -1,8 +1,8 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 export async function setNotificationsEnabled(
-  client: Db,
+  client: DB,
   on: boolean,
 ): Promise<void> {
   const { error } = await client.rpc("set_notifications_enabled", {

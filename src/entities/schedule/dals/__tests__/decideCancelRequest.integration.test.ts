@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { decideCancelRequest } from "@/entities/schedule/dals/decide-cancel-request";
+import { decideCancelRequest } from "@/entities/schedule/dals/decideCancelRequest";
 import {
   createAdminUser,
   createApprovedUser,

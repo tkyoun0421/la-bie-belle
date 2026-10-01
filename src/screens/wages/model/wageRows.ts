@@ -1,4 +1,4 @@
-import type { MemberWageRateRow } from "@/entities/payroll/dals/get-wage-rates";
+import type { MemberWageRateRow } from "@/entities/payroll/dals/getWageRates";
 
 /**
  * 시급 목록의 줄을 세운다. 받은 사람 순서를 그대로 둔다 — 이름 가나다순은 목록을 읽는

@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -13,7 +13,7 @@ import { toApiError } from "@/shared/api/errors";
  * 날짜가 섞이면 `bad_dates`다.
  */
 export async function submitAvailability(
-  client: Db,
+  client: DB,
   month: string,
   dates: string[],
 ): Promise<void> {

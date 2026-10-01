@@ -7,7 +7,7 @@ import path from "node:path";
  * 그 자리다.
  *
  * 무는 자리를 규칙이 들고 있다. `eslint.config.mjs`는 넓게 켜고 어느 폴더가 복사되는지는
- * 여기 아래 목록이 안다 — 복사 대상이 늘면 이 목록과 `scripts/sync-edge-shared.mts`가 같이
+ * 여기 아래 목록이 안다 — 복사 대상이 늘면 이 목록과 `scripts/syncEdgeShared.mts`가 같이
  * 는다.
  */
 

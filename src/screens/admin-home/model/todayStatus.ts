@@ -9,11 +9,11 @@
  * **지각을 따로 안 가른다.** 이 줄이 답하는 것은 「다 왔나」 하나고, 누가 늦었는지는 날
  * 상세의 명단이 말한다.
  *
- * 「오늘」을 KST로 옮기는 손은 `@/shared/lib/kst-date`가 소유한다 — 슬라이스 넷에 같은 손이
+ * 「오늘」을 KST로 옮기는 손은 `@/shared/lib/kstDate`가 소유한다 — 슬라이스 넷에 같은 손이
  * 각자 서 있던 것을 거기로 모았고, 이 슬라이스가 부르는 이름은 그대로 두고 이어 낸다.
  */
 
-export { kstDateOf, kstToday, spellDate } from "@/shared/lib/kst-date";
+export { kstDateOf, kstToday, spellDate } from "@/shared/lib/kstDate";
 
 export type TodayStatus =
   | { kind: "none" }

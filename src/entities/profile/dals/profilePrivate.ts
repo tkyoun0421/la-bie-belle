@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 /**
  * 개인정보가 사는 표는 프로필 표와 갈려 있다 —
@@ -17,7 +17,7 @@ export type ProfilePrivateRow = {
 };
 
 export async function getProfilePrivate(
-  client: Db,
+  client: DB,
   profileId: string,
 ): Promise<ProfilePrivateRow | null> {
   const { data, error } = await client

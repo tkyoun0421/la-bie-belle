@@ -1,5 +1,5 @@
-import { NO_VALUE } from "@/shared/lib/no-value";
-import { attendanceRate } from "@/entities/attendance/model/attendance-summary";
+import { NO_VALUE } from "@/shared/lib/noValue";
+import { attendanceRate } from "@/entities/attendance/model/attendanceSummary";
 import type {
   AttendanceMonth,
   WorkMonth,
@@ -7,8 +7,8 @@ import type {
 import {
   computeWorkTotals,
   workInputsOf,
-} from "@/features/stats/model/work-totals";
-import type { AttendanceTab } from "@/screens/admin-stats/model/attendance-rows";
+} from "@/features/stats/model/workTotals";
+import type { AttendanceTab } from "@/screens/admin-stats/model/attendanceRows";
 
 /**
  * 통계 화면이 읽어 온 열두 달을 추이 그래프가 먹는 값으로 옮긴다. 정본은

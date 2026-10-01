@@ -1,4 +1,4 @@
-// 구현 대상: src/features/payroll/model/holiday-api-response.ts
+// 구현 대상: src/features/payroll/model/holidayApiResponse.ts
 //
 // 공공 API(한국천문연구원 특일 정보)의 응답을 { holiday_date, name }[]로 옮기는 순수
 // 함수 둘이다(payroll-holidays plan AC-02 「공공 API의 모양」). `import-holidays` Edge
@@ -8,7 +8,7 @@
 import {
   parseHolidayApiResponse,
   toIsoDate,
-} from "@/features/payroll/model/holiday-api-response";
+} from "@/features/payroll/model/holidayApiResponse";
 
 describe("toIsoDate — 8자리 숫자 날짜를 YYYY-MM-DD로 옮긴다", () => {
   it("20261003이 2026-10-03이 된다", () => {

@@ -1,6 +1,6 @@
-// 구현 대상: src/screens/stats/model/chart-values.ts (아직 없다)
+// 구현 대상: src/screens/stats/model/chartValues.ts (아직 없다)
 //
-// 관리자 쪽 src/screens/admin-stats/model/chart-values.ts의 workValues·
+// 관리자 쪽 src/screens/admin-stats/model/chartValues.ts의 workValues·
 // attendanceValues에 해당하는 것이 근무자에게 없다(stats.md 「추이 그래프」
 // 표). 근무자는 탭이 셋이라 값도 셋이다 — 근태는 내 출근율, 포지션은 내
 // 근무 시간 합, 급여는 내 급여 합이다.
@@ -12,9 +12,9 @@
 // 여기서 다시 짜지 않는다.
 //
 // myAttendanceValues(loaded, profileId, now) — 근태 탭 그래프의 달별 내
-// 출근율이다. 판정은 screens/stats/model/attendance-days.ts의
+// 출근율이다. 판정은 screens/stats/model/attendanceDays.ts의
 // buildMyAttendanceDays가 이미 낸 상태 목록을 세고,
-// entities/attendance/model/attendance-summary.ts의 attendanceRate로
+// entities/attendance/model/attendanceSummary.ts의 attendanceRate로
 // 퍼센트를 낸다 — 넷이 다 0인 달(내 배정이 그 달에 없는 달)은 Map에서
 // 빠진다.
 //
@@ -23,7 +23,7 @@
 // 없다.
 //
 // 재료는 usePayrollMonthsByMonth(features/stats/api/useStatsQueries.ts,
-// 아직 없다)가 달마다 내는 원재료(entities/payroll/dals/get-payroll-month.ts의
+// 아직 없다)가 달마다 내는 원재료(entities/payroll/dals/getPayrollMonth.ts의
 // PayrollMonth — 시급 이력·조정·사유 상태·공휴일)와, useWorkMonths가 이미
 // 내는 그 달 ScheduleDay 목록이다. 금액 자체는 features/payroll/model/
 // payroll-days.ts의 payrollViewDays를 그대로 불러 날마다 낸 amount를
@@ -50,10 +50,10 @@
 // 달이 있다 — get-my-rehearsals.ts의 SCH-022, "근무표가 없는 달에도 행이
 // 선다"). 둘 다 아니면 Map에서 빠진다.
 
-import type { PayrollMonth } from "@/entities/payroll/dals/get-payroll-month";
-import type { Rehearsal } from "@/entities/rehearsal/dals/get-my-rehearsals";
-import type { ScheduleAssignment } from "@/entities/schedule/dals/get-month-schedule";
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
+import type { PayrollMonth } from "@/entities/payroll/dals/getPayrollMonth";
+import type { Rehearsal } from "@/entities/rehearsal/dals/getMyRehearsals";
+import type { ScheduleAssignment } from "@/entities/schedule/dals/getMonthSchedule";
+import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
 import type {
   AttendanceMonth,
   WorkMonth,
@@ -64,7 +64,7 @@ import {
   myPayrollDaysOfMonth,
   myPayrollValues,
   myWorkValues,
-} from "@/screens/stats/model/chart-values";
+} from "@/screens/stats/model/chartValues";
 
 const PROFILE_ID = "profile-1";
 
@@ -182,7 +182,7 @@ describe("myAttendanceValues — 출근율은 entities/attendance의 attendanceR
 
     // buildMyAttendanceDays가 상태 판정에 쓰는 체크인은 scheduleDay.check_ins가
     // 아니라 여기(attendance.checkIns)다 — day_id로 배정을 맞춘다
-    // (features/stats/model/attendance-inputs.ts의 buildAttendanceInputs).
+    // (features/stats/model/attendanceInputs.ts의 buildAttendanceInputs).
     const loaded: AttendanceMonth[] = [
       {
         month: "2026-08",

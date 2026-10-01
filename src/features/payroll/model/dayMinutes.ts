@@ -1,7 +1,7 @@
 import {
   rehearsalHours,
   type RehearsalRow,
-} from "@/entities/rehearsal/model/rehearsal-hours";
+} from "@/entities/rehearsal/model/rehearsalHours";
 
 /**
  * 그날 총 분이다 — **배정 시간 + 조정 분 + 리허설 시간**을 하나로 더한다

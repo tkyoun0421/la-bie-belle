@@ -1,4 +1,4 @@
-import { getSlotRequests } from "@/entities/schedule/dals/get-slot-requests";
+import { getSlotRequests } from "@/entities/schedule/dals/getSlotRequests";
 import {
   createAdminUser,
   createApprovedUser,

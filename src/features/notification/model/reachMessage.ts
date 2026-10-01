@@ -1,4 +1,4 @@
-import type { ReachState } from "@/features/notification/model/reach-state";
+import type { ReachState } from "@/features/notification/model/reachState";
 
 /**
  * 갈래를 받아 그 자리의 문장을 고른다. 판정은 [`reach-state`](reach-state.ts) 하나가 내고
@@ -8,7 +8,7 @@ import type { ReachState } from "@/features/notification/model/reach-state";
  * 안 연결된 사람을 갈라 적는다 — 관리자가 할 말이 다르다
  * (`docs/2-design/modules/account/screens/members.md`의 「목록 문안」·「사람 시트 문안」).
  * 확정 뒤 배정을 바꾸는 확인 자리는 한 줄로 합쳐 말하는데 그 문장은 여기 없다 —
- * [`force-change-copy`](../../../screens/schedule-admin/model/force-change-copy.ts)가
+ * [`force-change-copy`](../../../screens/schedule-admin/model/forceChangeCopy.ts)가
  * 제 표 안에서 들고 「두 사람」으로 묶는 경우까지 맡는다. 그 자리는 갈래가 아니라 「닿나」
  * 하나만 받으면 되고, 받는 불린은 이 파일과 같은 판정에서 나온다.
  *

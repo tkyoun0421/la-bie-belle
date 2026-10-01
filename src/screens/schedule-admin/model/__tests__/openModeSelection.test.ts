@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/schedule-admin/model/open-mode-selection.ts
+// 구현 대상: src/screens/schedule-admin/model/openModeSelection.ts
 //
 // 날 열기 모드에서 고를 수 있는 칸 — 안 연 날이면서 오늘 이후(plan AC-02). SCH-002가
 // 「열 수 있는 날 — 오늘부터의 날짜 — 이 하루라도 남았으면」이라고 정해 오늘 당일도
@@ -8,7 +8,7 @@
 import {
   isSelectableForOpening,
   openDaysButtonLabel,
-} from "@/screens/schedule-admin/model/open-mode-selection";
+} from "@/screens/schedule-admin/model/openModeSelection";
 
 describe("isSelectableForOpening — 이미 연 날은 지난 날짜 여부와 무관하게 못 고른다", () => {
   it("오늘이거나 미래 날짜여도 열려 있으면 false다", () => {

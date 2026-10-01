@@ -1,4 +1,4 @@
-import type { RehearsalTotal } from "@/entities/rehearsal/model/rehearsal-hours";
+import type { RehearsalTotal } from "@/entities/rehearsal/model/rehearsalHours";
 
 /**
  * 달 줄 오른쪽의 합계다 — 「3건 · 5시간」

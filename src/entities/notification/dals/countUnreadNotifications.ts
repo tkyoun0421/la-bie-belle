@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 /**
  * 안 읽은 알림이 몇 건인지다. 종 아이콘의 점이 이 수를 본다.
@@ -13,7 +13,7 @@ import type { Db } from "@/shared/api/database";
  * 조건이 `read_at`뿐인 것은 RLS가 이미 본인 행으로 좁혀서다.
  */
 
-export async function countUnreadNotifications(client: Db): Promise<number> {
+export async function countUnreadNotifications(client: DB): Promise<number> {
   const { count, error } = await client
     .from("notifications")
     .select("id", { count: "exact", head: true })

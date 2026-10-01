@@ -2,7 +2,7 @@ import {
   type ImpactDoc,
   checkImpactSection,
   findImpacted,
-} from "@tests/lint/sources-impact";
+} from "@tests/lint/sourcesImpact";
 
 const TRACKED_SPEC: ImpactDoc = {
   file: "docs/2-design/spec/alpha.md",

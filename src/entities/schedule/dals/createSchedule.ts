@@ -1,6 +1,6 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-import { monthStart } from "@/entities/schedule/dals/get-month-schedule";
+import { monthStart } from "@/entities/schedule/dals/getMonthSchedule";
 
 /**
  * 그 달 근무표를 만들고 스케줄 신청 마감일을 같이 정한다. 마감일 없이 만드는 길이 없어
@@ -13,7 +13,7 @@ import { monthStart } from "@/entities/schedule/dals/get-month-schedule";
  * 그 달이 전부 지났으면 `month_over`, 관리자가 아니면 `not_allowed`다.
  */
 export async function createSchedule(
-  client: Db,
+  client: DB,
   month: string,
   deadline: string,
 ): Promise<void> {

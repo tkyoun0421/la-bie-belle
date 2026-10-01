@@ -1,10 +1,10 @@
-// 구현 대상: src/features/payroll/model/wage-at.ts
+// 구현 대상: src/features/payroll/model/wageAt.ts
 //
 // wageAt(rates, date) — effective_date <= date인 행 중 가장 늦은 행의 amount를 낸다
 // (plan AC-06, PAY-008·PAY-011). 첫 행보다 이른 날은 null이다 — 승인 전 날짜라 계산에서
 // 뺀다.
 
-import { wageAt } from "@/features/payroll/model/wage-at";
+import { wageAt } from "@/features/payroll/model/wageAt";
 
 describe("wageAt — effective_date == date는 그 행을 쓴다(경계 동일)", () => {
   it("조회 날짜와 effective_date가 같은 행이 적용된다", () => {

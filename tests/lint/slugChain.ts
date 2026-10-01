@@ -3,12 +3,8 @@ import {
   type BacklogRow,
   backlogRows,
   repositoryBacklog,
-} from "@tests/lint/backlog-ids";
-import {
-  type SourceDoc,
-  sourceDocs,
-  sourceTarget,
-} from "@tests/lint/spec-docs";
+} from "@tests/lint/backlogIds";
+import { type SourceDoc, sourceDocs, sourceTarget } from "@tests/lint/specDocs";
 
 export type SlugChainViolation = {
   file: string;

@@ -3,7 +3,7 @@ import {
   buildRoster,
   canShowShiftActions,
   rosterHeadcount,
-} from "@/screens/schedule-worker/model/day-sheet";
+} from "@/screens/schedule-worker/model/daySheet";
 
 describe("POSITION_ORDER — 명단이 서는 포지션 정본 순서", () => {
   it("schedule/README.md의 아홉 포지션 순서 그대로다", () => {

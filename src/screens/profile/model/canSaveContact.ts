@@ -1,4 +1,4 @@
-import { isValidPhone } from "@/features/profile/model/validate-profile";
+import { isValidPhone } from "@/features/profile/model/validateProfile";
 
 /**
  * 연락처 시트의 「저장」이 켜지는 조건이다. 꼴이 맞고 지금 번호와 달라야 켜진다

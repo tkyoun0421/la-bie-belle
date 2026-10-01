@@ -1,4 +1,4 @@
-import { errorsOf, fixedCode, violationsOf } from "@tests/lint/rule-check";
+import { errorsOf, fixedCode, violationsOf } from "@tests/lint/ruleCheck";
 
 const NO_UNUSED_IMPORTS = "unused-imports/no-unused-imports";
 const NO_UNUSED_VARS = "unused-imports/no-unused-vars";

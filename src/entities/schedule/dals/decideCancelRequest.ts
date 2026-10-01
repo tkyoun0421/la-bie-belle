@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -17,7 +17,7 @@ import { toApiError } from "@/shared/api/errors";
 export type CancelDecision = "approved" | "rejected";
 
 export async function decideCancelRequest(
-  client: Db,
+  client: DB,
   cancelRequestId: string,
   decision: CancelDecision,
   reason?: string,

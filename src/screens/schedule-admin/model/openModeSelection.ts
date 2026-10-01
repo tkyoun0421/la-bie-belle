@@ -1,7 +1,7 @@
 import {
   formatBareDate,
   kstDateOf,
-} from "@/screens/schedule-admin/model/format-schedule-date";
+} from "@/screens/schedule-admin/model/formatScheduleDate";
 
 /**
  * 날 열기 모드의 셈이다. 정본은

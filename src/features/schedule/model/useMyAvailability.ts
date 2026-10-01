@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
-import { getMyAvailability } from "@/entities/schedule/dals/get-my-availability";
-import { AVAILABILITY_KEY } from "@/features/schedule/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { getMyAvailability } from "@/entities/schedule/dals/getMyAvailability";
+import { AVAILABILITY_KEY } from "@/features/schedule/model/queryKeys";
 
 /**
  * 내가 그 달에 낸 근무 신청 날짜들이다. 제출 모드로 다시 들어오면 이 값이 달력의 체크를
@@ -19,7 +19,7 @@ export type MyAvailabilityResult = {
 };
 
 export function useMyAvailability(
-  client: Db,
+  client: DB,
   month: string,
 ): MyAvailabilityResult {
   const { data, error, isLoading } = useQuery({

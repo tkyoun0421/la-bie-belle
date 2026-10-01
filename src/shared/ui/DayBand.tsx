@@ -5,7 +5,7 @@ import {
   dayBandCheckInMarkRatio,
   dayBandFillRatio,
   type ShiftWindow,
-} from "@/shared/lib/day-band";
+} from "@/shared/lib/dayBand";
 import { Rect } from "@/shared/ui/SvgPaint";
 import { Text } from "@/shared/ui/Text";
 
@@ -15,7 +15,7 @@ import { Text } from "@/shared/ui/Text";
  * `docs/2-design/system/screens/dashboard.md`의 「하루 띠」다.
  *
  * **축이 근무다. 하루가 아니다.** 왼쪽 끝이 출근 시각이고 오른쪽 끝이 퇴근 시각이라 4시간
- * 근무와 9시간 근무가 화면에서 같은 폭으로 선다. 비율은 `@/shared/lib/day-band`가 내고 이
+ * 근무와 9시간 근무가 화면에서 같은 폭으로 선다. 비율은 `@/shared/lib/dayBand`가 내고 이
  * 조각은 받은 수를 폭으로 옮기기만 한다.
  *
  * **글자는 네 귀퉁이에 붙고 트랙 안에는 아무것도 안 들어간다.** 안에 넣으면 채움이 짧을 때

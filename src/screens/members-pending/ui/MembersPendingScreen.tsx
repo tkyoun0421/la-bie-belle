@@ -3,7 +3,7 @@ import { EllipsisVertical } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { DomainError } from "@/shared/api/errors";
-import { queryClient } from "@/shared/lib/query-client";
+import { queryClient } from "@/shared/lib/queryClient";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
@@ -17,16 +17,16 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
-import { approveMember } from "@/entities/profile/dals/approve-member";
-import { blockMember } from "@/entities/profile/dals/block-member";
-import type { MemberListRow } from "@/entities/profile/dals/list-members";
+import { approveMember } from "@/entities/profile/dals/approveMember";
+import { blockMember } from "@/entities/profile/dals/blockMember";
+import type { MemberListRow } from "@/entities/profile/dals/listMembers";
 import {
   getProfilePrivate,
   type ProfilePrivateRow,
-} from "@/entities/profile/dals/profile-private";
-import { rejectMember } from "@/entities/profile/dals/reject-member";
-import { formatElapsedDays } from "@/entities/profile/model/format-elapsed-days";
-import { MEMBERS_KEY } from "@/features/members/model/query-keys";
+} from "@/entities/profile/dals/profilePrivate";
+import { rejectMember } from "@/entities/profile/dals/rejectMember";
+import { formatElapsedDays } from "@/entities/profile/model/formatElapsedDays";
+import { MEMBERS_KEY } from "@/features/members/model/queryKeys";
 import { useMembers } from "@/features/members/model/useMembers";
 import {
   MemberDetailSheet,

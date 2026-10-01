@@ -4,7 +4,7 @@ import {
   codepointToFilename,
   TOSSFACE_COMMIT_HASH,
   tossfaceSourceUrl,
-} from "@tests/lint/tossface-fetch";
+} from "@tests/lint/tossfaceFetch";
 
 const ROOT = process.cwd();
 

@@ -1,11 +1,11 @@
-// 구현 대상: eslint-rules/no-edge-function-src-import.mjs (notification-push plan AC-10)
+// 구현 대상: eslint-rules/noEdgeFunctionSrcImport.mjs (notification-push plan AC-10)
 //
 // Deno는 `supabase/functions` 밖을 못 읽는다(notification/design.md 「푸시 보내기」 끝).
 // `import-holidays`(#464)가 `../../../src/...`를 직접 가리켜 이미 한 번 경계를 넘었다
 // (관찰 035). edge-runtime을 안 띄우는 로컬·CI는 이 import를 걸러내지 못하니 글자로
 // 막는 규칙이 필요하다 — 규칙 이름은 house/no-edge-function-src-import로 정했다.
 
-import { violationsOf } from "@tests/lint/rule-check";
+import { violationsOf } from "@tests/lint/ruleCheck";
 
 const RULE_ID = "house/no-edge-function-src-import";
 
@@ -16,7 +16,7 @@ function importCode(specifier: string) {
 describe("house/no-edge-function-src-import — 마운트 밖 src import를 글자로 막는다", () => {
   it("supabase/functions/ 아래에서 ../../../src/... import가 걸린다", async () => {
     const violations = await violationsOf(
-      importCode("../../../src/features/notification/model/push-message"),
+      importCode("../../../src/features/notification/model/pushMessage"),
       "supabase/functions/send-push/index.ts",
     );
 
@@ -51,7 +51,7 @@ describe("house/no-edge-function-src-import — 마운트 밖 src import를 글�
 
   it("규칙 메시지가 고치는 길(_shared 복사본)을 가리킨다", async () => {
     const violations = await violationsOf(
-      importCode("../../../src/features/notification/model/push-message"),
+      importCode("../../../src/features/notification/model/pushMessage"),
       "supabase/functions/send-push/index.ts",
     );
     const target = violations.find((violation) => violation.ruleId === RULE_ID);
@@ -61,7 +61,7 @@ describe("house/no-edge-function-src-import — 마운트 밖 src import를 글�
 
   it("supabase/functions/ 밖의 파일에는 이 규칙이 안 걸린다", async () => {
     const violations = await violationsOf(
-      importCode("../../../src/features/notification/model/push-message"),
+      importCode("../../../src/features/notification/model/pushMessage"),
       "scripts/unrelated-script.ts",
     );
 

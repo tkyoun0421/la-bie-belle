@@ -14,7 +14,7 @@ import {
   styleFor,
   styleViolations,
   toStyle,
-} from "@tests/lint/file-naming";
+} from "@tests/lint/fileNaming";
 
 const HOOK_SOURCE = `import { useState } from "react";
 
@@ -31,8 +31,8 @@ const PLAIN_SOURCE = `export const MINUTES = 5;\n`;
  * 그래서 픽스처를 한자리에 모아 둔다.
  */
 const BAD = {
-  kebabWanted: "src/shared/api/databaseTypes.ts",
-  kebabWantedTest: "tests/lint/databaseTypes.test.ts",
+  camelWanted: "src/shared/api/database-types.ts",
+  camelWantedTest: "tests/lint/database-types.test.ts",
   pascalWanted: "src/shared/ui/not-built-yet.tsx",
   hookWanted: "src/features/auth/use-auth-gate.ts",
 };
@@ -60,29 +60,28 @@ describe("무엇이 들었는지가 갈래를 정한다", () => {
     );
   });
 
-  it("그 밖은 kebab이다", () => {
+  it("그 밖은 camel이다", () => {
     expect(
       styleFor("src/entities/attendance/model/constants.ts", PLAIN_SOURCE),
-    ).toBe("kebab");
+    ).toBe("camel");
   });
 
   /** `tests/`의 픽스처가 잡히려고 훅 코드를 글자로 들고 있다. */
   it("`tests/` 안에서는 훅 판정을 안 한다", () => {
-    expect(styleFor("tests/lint/unused-imports.test.ts", HOOK_SOURCE)).toBe(
-      "kebab",
+    expect(styleFor("tests/lint/unusedImports.test.ts", HOOK_SOURCE)).toBe(
+      "camel",
     );
   });
 });
 
 describe("갈래별 이름 판정", () => {
-  it("kebab은 소문자와 하이픈만 받는다", () => {
-    expect(matchesStyle("check-in", "kebab")).toBe(true);
-    expect(matchesStyle("constants", "kebab")).toBe(true);
-    expect(matchesStyle("adr005", "kebab")).toBe(true);
-    expect(matchesStyle("checkIn", "kebab")).toBe(false);
-    expect(matchesStyle("check_in", "kebab")).toBe(false);
-    expect(matchesStyle("CheckIn", "kebab")).toBe(false);
-    expect(matchesStyle("check--in", "kebab")).toBe(false);
+  it("camel은 소문자로 시작해 붙여 쓴다", () => {
+    expect(matchesStyle("checkIn", "camel")).toBe(true);
+    expect(matchesStyle("constants", "camel")).toBe(true);
+    expect(matchesStyle("adr005", "camel")).toBe(true);
+    expect(matchesStyle("check-in", "camel")).toBe(false);
+    expect(matchesStyle("check_in", "camel")).toBe(false);
+    expect(matchesStyle("CheckIn", "camel")).toBe(false);
   });
 
   it("컴포넌트는 대문자로 시작해 붙여 쓴다", () => {
@@ -100,11 +99,11 @@ describe("갈래별 이름 판정", () => {
 });
 
 describe("고칠 이름을 낸다", () => {
-  it("kebab으로 접는다", () => {
-    expect(toStyle("databaseTypes", "kebab")).toBe("database-types");
-    expect(toStyle("NotBuiltYet", "kebab")).toBe("not-built-yet");
-    expect(toStyle("check_in", "kebab")).toBe("check-in");
-    expect(toStyle("check-in", "kebab")).toBe("check-in");
+  it("camel로 접는다", () => {
+    expect(toStyle("database-types", "camel")).toBe("databaseTypes");
+    expect(toStyle("NotBuiltYet", "camel")).toBe("notBuiltYet");
+    expect(toStyle("check_in", "camel")).toBe("checkIn");
+    expect(toStyle("checkIn", "camel")).toBe("checkIn");
   });
 
   it("PascalCase로 접는다", () => {
@@ -122,34 +121,34 @@ describe("이름이 어긋난 파일", () => {
   it("코드 확장자만 본다", () => {
     expect(
       styleViolations([
-        { file: BAD.kebabWanted, source: PLAIN_SOURCE },
+        { file: BAD.camelWanted, source: PLAIN_SOURCE },
         { file: "src/app/globals.css", source: "" },
         { file: "docs/2-design/system/data-access.md", source: "" },
       ]),
     ).toEqual([
       {
         type: "style",
-        file: BAD.kebabWanted,
-        style: "kebab",
-        suggestion: "src/shared/api/database-types.ts",
+        file: BAD.camelWanted,
+        style: "camel",
+        suggestion: "src/shared/api/databaseTypes.ts",
       },
     ]);
   });
 
   it("겹친 확장자를 그대로 붙여 낸다", () => {
     expect(
-      styleViolations([{ file: BAD.kebabWantedTest, source: PLAIN_SOURCE }]),
+      styleViolations([{ file: BAD.camelWantedTest, source: PLAIN_SOURCE }]),
     ).toEqual([
       {
         type: "style",
-        file: BAD.kebabWantedTest,
-        style: "kebab",
-        suggestion: "tests/lint/database-types.test.ts",
+        file: BAD.camelWantedTest,
+        style: "camel",
+        suggestion: "tests/lint/databaseTypes.test.ts",
       },
     ]);
   });
 
-  it("컴포넌트가 kebab이면 잡는다", () => {
+  it("컴포넌트가 camel이면 잡는다", () => {
     expect(styleViolations([{ file: BAD.pascalWanted, source: "" }])).toEqual([
       {
         type: "style",
@@ -187,7 +186,7 @@ describe("이름이 어긋난 파일", () => {
   it("규약에 맞으면 빈 목록이다", () => {
     expect(
       styleViolations([
-        { file: "src/shared/api/database-types.ts", source: PLAIN_SOURCE },
+        { file: "src/shared/api/databaseTypes.ts", source: PLAIN_SOURCE },
         { file: "src/shared/ui/NotBuiltYet.tsx", source: "" },
         { file: "src/features/auth/useAuthGate.ts", source: HOOK_SOURCE },
       ]),
@@ -219,7 +218,7 @@ export function useMyProfile() {
   });
 
   it("대상이 아직 없어도 use로 시작하는 camelCase 짝 테스트는 훅 짝으로 읽는다", () => {
-    // TDD라 테스트가 훅보다 먼저 선다 — 그 사이에 kebab을 요구하면 훅이 서는 순간 다시
+    // TDD라 테스트가 훅보다 먼저 선다 — 그 사이에 camel을 요구하면 훅이 서는 순간 다시
     // 이름을 바꿔야 한다. 세 task에서 같은 마찰이 났다.
     expect(
       styleViolations([
@@ -231,7 +230,7 @@ export function useMyProfile() {
     ).toEqual([]);
   });
 
-  it("대상이 없는 kebab 짝 테스트는 그대로 kebab이다", () => {
+  it("대상이 없고 use로도 시작하지 않는 짝 테스트는 camel을 요구한다", () => {
     expect(
       styleViolations([
         {
@@ -239,10 +238,17 @@ export function useMyProfile() {
           source: PLAIN_SOURCE,
         },
       ]),
-    ).toEqual([]);
+    ).toEqual([
+      {
+        type: "style",
+        file: "src/features/profile/model/__tests__/my-profile.test.ts",
+        style: "camel",
+        suggestion: "src/features/profile/model/__tests__/myProfile.test.ts",
+      },
+    ]);
   });
 
-  it("kebab 대상의 kebab 짝은 위반이 아니다", () => {
+  it("camel 대상의 camel 짝은 위반이 아니다", () => {
     expect(
       styleViolations([
         {
@@ -259,7 +265,7 @@ export function useMyProfile() {
 });
 
 describe("점으로 시작하는 디렉터리는 훑지 않는다", () => {
-  const tmpRoot = path.join(process.cwd(), "tests/lint/.tmp-file-naming-walk");
+  const tmpRoot = path.join(process.cwd(), "tests/lint/.tmp-fileNaming-walk");
 
   beforeAll(() => {
     for (const scope of SCOPES) {
@@ -320,14 +326,14 @@ describe("위반을 사람이 읽는 문장으로 옮긴다", () => {
   it("옮길 이름을 같이 든다", () => {
     const message = describeFileNamingViolation({
       type: "style",
-      file: BAD.kebabWanted,
-      style: "kebab",
-      suggestion: "src/shared/api/database-types.ts",
+      file: BAD.camelWanted,
+      style: "camel",
+      suggestion: "src/shared/api/databaseTypes.ts",
     });
 
-    expect(message).toContain(BAD.kebabWanted);
-    expect(message).toContain("src/shared/api/database-types.ts");
-    expect(message).toContain("kebab-case");
+    expect(message).toContain(BAD.camelWanted);
+    expect(message).toContain("src/shared/api/databaseTypes.ts");
+    expect(message).toContain("camelCase");
   });
 
   it("케이스 충돌은 왜 깨지는지 든다", () => {

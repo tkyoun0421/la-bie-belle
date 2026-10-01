@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -12,7 +12,7 @@ import { toApiError } from "@/shared/api/errors";
  * 다른 관리자가 그 자리를 채웠을 때만 온다.
  */
 export async function mergeSlots(
-  client: Db,
+  client: DB,
   dayId: string,
   from: string,
   to: string,

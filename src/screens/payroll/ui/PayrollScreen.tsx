@@ -2,11 +2,11 @@ import { usePathname, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { getCurrentUser } from "@/shared/lib/get-current-user";
-import { kstDateOf, kstToday } from "@/shared/lib/kst-date";
-import { queryClient } from "@/shared/lib/query-client";
-import { nowWithOffset } from "@/shared/lib/server-clock";
-import { serverClockStore } from "@/shared/lib/server-clock-store";
+import { getCurrentUser } from "@/shared/lib/getCurrentUser";
+import { kstDateOf, kstToday } from "@/shared/lib/kstDate";
+import { queryClient } from "@/shared/lib/queryClient";
+import { nowWithOffset } from "@/shared/lib/serverClock";
+import { serverClockStore } from "@/shared/lib/serverClockStore";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";
@@ -19,16 +19,16 @@ import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
-import { payrollViewDays } from "@/features/payroll/model/payroll-days";
-import { PAYROLL_KEY } from "@/features/payroll/model/query-keys";
+import { payrollViewDays } from "@/features/payroll/model/payrollDays";
+import { PAYROLL_KEY } from "@/features/payroll/model/queryKeys";
 import { usePayrollMonths } from "@/features/payroll/model/usePayrollMonths";
 import { useMyProfile } from "@/features/profile/model/useMyProfile";
-import { REHEARSAL_KEY } from "@/features/rehearsal/model/query-keys";
+import { REHEARSAL_KEY } from "@/features/rehearsal/model/queryKeys";
 import { useRehearsalMonths } from "@/features/rehearsal/model/useRehearsalMonths";
-import { SCHEDULE_KEY } from "@/features/schedule/model/query-keys";
+import { SCHEDULE_KEY } from "@/features/schedule/model/queryKeys";
 import { useScheduleMonths } from "@/features/schedule/model/useScheduleMonths";
 import { canGoBack, canGoForward } from "@/screens/payroll/model/boundary";
-import { payrollHistoryRows } from "@/screens/payroll/model/history-rows";
+import { payrollHistoryRows } from "@/screens/payroll/model/historyRows";
 import {
   isInPeriod,
   periodLabel,
@@ -43,7 +43,7 @@ import {
   summarizeAccrual,
   summarizeAmount,
 } from "@/screens/payroll/model/summary";
-import { monthRowsOfDays, yearRows } from "@/screens/payroll/model/year-rows";
+import { monthRowsOfDays, yearRows } from "@/screens/payroll/model/yearRows";
 
 /**
  * 근무자가 자기 급여를 미리 보는 화면이다. 정본은

@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import type { AppStateStatus } from "react-native";
-import type { Db } from "@/shared/api/database";
-import { savePushToken } from "@/entities/notification/dals/save-push-token";
-import { isForegroundEntry } from "@/features/notification/model/app-entry";
+import type { DB } from "@/shared/api/database";
+import { savePushToken } from "@/entities/notification/dals/savePushToken";
+import { isForegroundEntry } from "@/features/notification/model/appEntry";
 
 /**
  * 매 진입에 이 기기의 주소를 보낸다. 정본은
@@ -22,7 +22,7 @@ import { isForegroundEntry } from "@/features/notification/model/app-entry";
  * **같은 주소를 다시 보내도 행이 안 는다.** 겹침과 사람 사이를 옮기는 일과 끈 사람을 막는
  * 일은 전부 `save_push_token` 안에 있다 — 이 훅은 부르기만 한다(AC-05).
  *
- * `AppState`를 주입받는 것은 [`wire-auto-refresh`](../../../shared/lib/wire-auto-refresh.ts)와
+ * `AppState`를 주입받는 것은 [`wire-auto-refresh`](../../../shared/lib/wireAutoRefresh.ts)와
  * 같은 이유다 — 러너가 `react-native`를 실물로 묶어 대역이 안 선다.
  */
 
@@ -37,7 +37,7 @@ type AppStateSource = {
 const MOUNTED_AS_ACTIVE: AppStateStatus = "active";
 
 export function useSavePushToken(
-  client: Db,
+  client: DB,
   token: string | null,
   appState: AppStateSource,
 ): void {

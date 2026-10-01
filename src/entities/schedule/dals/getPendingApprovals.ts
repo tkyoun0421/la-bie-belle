@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 /**
  * 아직 판정 안 된 근무 취소 요청들이다. `/admin/approvals`의 목록이고 관리자 홈의
@@ -39,7 +39,7 @@ const APPROVAL_COLUMNS = [
 ].join(", ");
 
 export async function getPendingApprovals(
-  client: Db,
+  client: DB,
 ): Promise<PendingApproval[]> {
   const { data, error } = await client
     .from("cancel_requests")

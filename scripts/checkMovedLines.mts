@@ -1,6 +1,6 @@
 // 문서 이동 PR에서 옛 파일의 문장이 새 파일 어딘가에 그대로 있는지 센다.
 //
-//   node --experimental-strip-types scripts/check-moved-lines.mts <base-ref> <옛 파일>... -- <새 파일>...
+//   node --experimental-strip-types scripts/checkMovedLines.mts <base-ref> <옛 파일>... -- <새 파일>...
 //
 // 옛 파일은 <base-ref>(보통 origin/main)에서 읽고 새 파일은 작업 트리에서 읽는다.
 // 제목·표 구분선·빈 줄·목차 줄은 세지 않는다. 링크의 목적지 경로는 비교에서 뺀다 —
@@ -13,7 +13,7 @@ const args = process.argv.slice(2);
 const sep = args.indexOf("--");
 if (sep < 1 || sep === args.length - 1) {
   console.error(
-    "사용법: check-moved-lines.mts <base-ref> <옛 파일>... -- <새 파일>...",
+    "사용법: checkMovedLines.mts <base-ref> <옛 파일>... -- <새 파일>...",
   );
   process.exit(2);
 }

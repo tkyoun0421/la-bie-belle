@@ -11,10 +11,10 @@
  * (`docs/2-design/system/runtime.md`의 「TanStack Query 규칙」).
  */
 
-import { kstDateOf, spellDate, spellMonth } from "@/shared/lib/kst-date";
+import { kstDateOf, spellDate, spellMonth } from "@/shared/lib/kstDate";
 
 /**
- * 날짜 손 셋의 소유자는 `@/shared/lib/kst-date`다. 같은 계산이 슬라이스 넷에 각자 서 있던
+ * 날짜 손 셋의 소유자는 `@/shared/lib/kstDate`다. 같은 계산이 슬라이스 넷에 각자 서 있던
  * 것을 거기로 모았고, 이 슬라이스가 부르는 이름은 그대로 두고 위임만 한다.
  */
 export { kstDateOf };
@@ -38,7 +38,7 @@ export function formatMonthName(month: string): string {
 
 /**
  * 앱바 제목이다 — `"2026년 10월"`. 연도가 붙는 것은 화살표로 해를 넘나드는 화면이라서고,
- * 근무자 달력의 앱바와 같은 꼴이다. 두 벌이던 그 계산은 `@/shared/lib/kst-date`로 합쳤다.
+ * 근무자 달력의 앱바와 같은 꼴이다. 두 벌이던 그 계산은 `@/shared/lib/kstDate`로 합쳤다.
  */
 export function formatMonthTitle(month: string): string {
   return spellMonth(month);

@@ -1,4 +1,4 @@
-import { classStringVisitor, utilityOf } from "./class-strings.mjs";
+import { classStringVisitor, utilityOf } from "./classStrings.mjs";
 
 /**
  * 화면 파일이 색·글자·모양을 직접 적는 것을 막는다. 근거는 `docs/2-design/spec/ui-kit.md`의

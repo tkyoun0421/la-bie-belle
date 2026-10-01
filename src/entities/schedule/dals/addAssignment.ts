@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -26,7 +26,7 @@ export type AddAssignmentInput = {
 };
 
 export async function addAssignment(
-  client: Db,
+  client: DB,
   input: AddAssignmentInput,
 ): Promise<string> {
   const { data, error } = await client.rpc("add_assignment", {

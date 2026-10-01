@@ -3,7 +3,7 @@
  *
  * 원본 넷은 한 장이 2.3MB고 넷이면 9.4MB가 설치 크기에 그대로 실린다. 남길 글자의 정본은
  * `docs/2-design/design-system/foundation/typography.md`의 「서브셋」 절이고, 실제 집합은
- * `tests/lint/font-subset.ts`가 계산한다 — 그 파일을 테스트가 같이 물어서 집합이 바뀌면
+ * `tests/lint/fontSubset.ts`가 계산한다 — 그 파일을 테스트가 같이 물어서 집합이 바뀌면
  * 서체도 다시 만들어야 하는 것이 검사에 걸린다.
  *
  * 전제: `pyftsubset`(fonttools)이 PATH에 있어야 한다. 없으면 어떻게 깔지 알려주고 멈춘다.
@@ -26,7 +26,7 @@ import {
   SUBSET_DIR,
   SUBSET_FONTS,
   unicodesFile,
-} from "../tests/lint/font-subset.ts";
+} from "../tests/lint/fontSubset.ts";
 
 const ROOT = path.resolve(fileURLToPath(import.meta.url), "../..");
 const ORIGIN_DIR = path.join(ROOT, "assets/fonts");

@@ -1,4 +1,4 @@
-import { formatElapsedDays } from "@/entities/profile/model/format-elapsed-days";
+import { formatElapsedDays } from "@/entities/profile/model/formatElapsedDays";
 
 // 가입 대기·차단 목록의 "보낸 지 얼마나" 줄. KST(UTC+9) 달력일로 오늘·어제·N일 전을 가른다.
 // [members-pending.md 「목록 문안」]이 정본이다.

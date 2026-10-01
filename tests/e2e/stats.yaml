@@ -41,7 +41,7 @@
 # ================================================================
 #
 # 오프셋 -6을 쓴다. -1·-2는 payroll_view류가, -3·-4·-5는 stats_admin_overview가, 0은
-# rehearsal_qualified가 이미 쓴다(scripts/e2e-seed-server.mts 머리말 주석) — -6은 그
+# rehearsal_qualified가 이미 쓴다(scripts/e2eSeedServer.mts 머리말 주석) — -6은 그
 # 넷과 안 겹치는 가장 가까운 달이다. 필요한 헬퍼(seedPastSchedule·seedPastDay·
 # seedAssignment·seedSlotOfPosition·seedCheckIn·seedExcuse·seedWageHistory·dayIdOf)는
 # stats-admin·payroll-view 두 task가 이미 tests/integration/postgres.ts에 다 심어
@@ -136,7 +136,7 @@
 # }
 # ```
 #
-# `tests/e2e/scripts/seed-session.js`에 위 다섯 필드를 escapeForTextSelector로 감싸
+# `tests/e2e/scripts/seedSession.js`에 위 다섯 필드를 escapeForTextSelector로 감싸
 # 내보내는 블록을 더한다 — stats_admin_overview 전용 셋을 더한 것과 같은 손이다.
 #
 # ## 손계산 표 — statsWorkerMonth(오프셋 -6)

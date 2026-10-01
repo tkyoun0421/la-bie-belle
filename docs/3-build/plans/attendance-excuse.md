@@ -138,8 +138,8 @@ sources:
 | --- | --- | --- |
 | `src/features/attendance/model/excuse-sheet.ts` | 상태 아홉의 갈림과 결과 모션 시각 | AC-01·AC-03 |
 | `src/features/attendance/model/excuse-input.ts` | 사람이 보는 글자로 세는 길이, 다섯 자 잠금, 170자·200자 경계와 도움말 | AC-02 |
-| `src/features/attendance/model/useSubmitExcuse.ts` | [`submit-excuse.ts`](../../../src/entities/attendance/dals/submit-excuse.ts) 호출과 무효화 | AC-03 |
-| `src/features/attendance/model/useDecideExcuse.ts` | [`decide-excuse.ts`](../../../src/entities/attendance/dals/decide-excuse.ts) 호출과 무효화 | AC-06 |
+| `src/features/attendance/model/useSubmitExcuse.ts` | [`submit-excuse.ts`](../../../src/entities/attendance/dals/submitExcuse.ts) 호출과 무효화 | AC-03 |
+| `src/features/attendance/model/useDecideExcuse.ts` | [`decide-excuse.ts`](../../../src/entities/attendance/dals/decideExcuse.ts) 호출과 무효화 | AC-06 |
 | `src/features/attendance/ui/ExcuseSheet.tsx` | 시트 조립 — 덮개가 안 닫고, 닿는 면과 아래 여백이 `useSafeAreaInsets`를 탄다 | AC-01~AC-05 |
 | `src/screens/dashboard/model/excuse-entry.ts`·`src/screens/dashboard/ui/DashboardScreen.tsx` | 못 찍음 블록과 반려 블록에서 시트를 연다. 블록 자체는 [`dashboard`](../../backlog.md)가 세운다 | AC-04 |
 | `src/screens/approvals/model/approvals-list.ts` | `ApprovalKind`에 사유가 붙고 「근무 취소가 위」라는 둘째 기준이 선다 | AC-06 |

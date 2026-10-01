@@ -1,11 +1,11 @@
-// 구현 대상: src/features/payroll/model/payroll-total.ts
+// 구현 대상: src/features/payroll/model/payrollTotal.ts
 //
 // weekTotals(days) — 주는 월요일에 시작해 일요일에 끝난다(PAY-021). 달을 걸친 주도
 // 주 하나로 묶는다.
 // monthTotal(days, month) — 월은 달력 달이다(PAY-022). 달을 걸친 주는 날짜로 갈라 각
 // 달의 합계에 따로 든다 — 8월 31일이 월요일이면 그 하루만 8월, 9월 1일부터 엿새는 9월.
 
-import { monthTotal, weekTotals } from "@/features/payroll/model/payroll-total";
+import { monthTotal, weekTotals } from "@/features/payroll/model/payrollTotal";
 
 function payrollDay(date: string, amount: number, minutes = 480) {
   return { date, minutes, amount, kind: "normal" as const };

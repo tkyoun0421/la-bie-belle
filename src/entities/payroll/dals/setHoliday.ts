@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -15,7 +15,7 @@ export type SetHolidayInput = {
 };
 
 export async function setHoliday(
-  client: Db,
+  client: DB,
   input: SetHolidayInput,
 ): Promise<void> {
   const { error } = await client.rpc("set_holiday", {

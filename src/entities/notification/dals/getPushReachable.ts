@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -32,7 +32,7 @@ type ViewRow = {
 const PAGE_SIZE = 500;
 
 export async function getPushReachable(
-  client: Db,
+  client: DB,
 ): Promise<PushReachableRow[]> {
   const rows: PushReachableRow[] = [];
 

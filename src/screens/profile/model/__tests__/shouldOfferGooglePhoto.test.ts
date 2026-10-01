@@ -1,4 +1,4 @@
-import { shouldOfferGooglePhoto } from "@/screens/profile/model/should-offer-google-photo";
+import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto";
 
 // 사진 시트의 「구글 사진으로」 줄. 정본은
 // `docs/2-design/modules/account/screens/profile.md`의 「사진 고치기」 —

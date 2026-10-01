@@ -1,4 +1,4 @@
-import { violationsOf } from "@tests/lint/rule-check";
+import { violationsOf } from "@tests/lint/ruleCheck";
 
 const NO_CROSS_SLICE_IMPORT = "house/no-cross-slice-import";
 

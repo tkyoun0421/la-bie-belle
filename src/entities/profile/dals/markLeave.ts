@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -8,7 +8,7 @@ import { toApiError } from "@/shared/api/errors";
  * 앞으로 배정된 근무가 남았으면 `has_future_assignments`다 — 서버는 막기만 하고 자리를 빼지
  * 않는다. 마지막 관리자면 `last_admin`이고, 이미 퇴사한 사람이면 `already_decided`다.
  */
-export async function markLeave(client: Db, profileId: string): Promise<void> {
+export async function markLeave(client: DB, profileId: string): Promise<void> {
   const { error } = await client.rpc("mark_leave", { profile_id: profileId });
 
   if (error) {

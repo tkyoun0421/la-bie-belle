@@ -1,7 +1,7 @@
 // 구현 대상: src/features/stats/api/useStatsQueries.ts
 //
 // plan stats-admin의 「변경 파일」 표는 이 자리를 `queries.ts`로 적었지만 그 이름은
-// tests/lint/file-naming.ts가 막는다 — 훅을 내놓는 .ts는 이름이 `use`로 시작해야 한다
+// tests/lint/fileNaming.ts가 막는다 — 훅을 내놓는 .ts는 이름이 `use`로 시작해야 한다
 // (CLAUDE.md 「파일 이름은 부르는 이름을 따른다」). 파일과 짝 테스트를 같이 옮기고 아래
 // import 경로 한 줄만 바꿨다. 단언은 그대로다.
 //
@@ -23,7 +23,7 @@
 // mergeMonths가 flatMap으로 여러 달을 하나로 뭉갠다 — 추이 그래프는 달마다
 // 구분된 값이 필요해 그대로 못 쓴다(위 useWorkMonths·useAttendanceMonths와
 // 같은 이유). features/stats가 features/payroll을 부르면 lint 규칙 3에
-// 걸리므로 entities/payroll/dals/get-payroll-month.ts의 getPayrollMonth·
+// 걸리므로 entities/payroll/dals/getPayrollMonth.ts의 getPayrollMonth·
 // payrollMonthKey를 이 훅이 직접 부른다 — entities는 아래층이라 괜찮다.
 // 쿼리 키도 payrollMonthKey를 그대로 써서 usePayrollMonths와 캐시를
 // 나눈다.
@@ -34,7 +34,7 @@ import type { ReactNode } from "react";
 const getMonthScheduleMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/get-month-schedule", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/getMonthSchedule", () => ({
   getMonthSchedule: getMonthScheduleMock,
 }));
 
@@ -42,7 +42,7 @@ const getMonthAttendanceMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/entities/attendance/dals/get-month-attendance",
+  "@/entities/attendance/dals/getMonthAttendance",
   () => ({
     getMonthAttendance: getMonthAttendanceMock,
   }),
@@ -53,7 +53,7 @@ const getFirstScheduleMonthMock =
   jest.fn<(...args: unknown[]) => Promise<string | null>>();
 
 jest.unstable_mockModule(
-  "@/entities/schedule/dals/get-first-schedule-month",
+  "@/entities/schedule/dals/getFirstScheduleMonth",
   () => ({
     getFirstScheduleMonth: getFirstScheduleMonthMock,
     firstScheduleMonthKey: () => ["schedule", "first-month"],
@@ -62,7 +62,7 @@ jest.unstable_mockModule(
 
 const getPayrollMonthMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/payroll/dals/get-payroll-month", () => ({
+jest.unstable_mockModule("@/entities/payroll/dals/getPayrollMonth", () => ({
   getPayrollMonth: getPayrollMonthMock,
   payrollMonthKey: (month: string) => ["payroll", month],
 }));

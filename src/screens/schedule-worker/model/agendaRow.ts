@@ -7,7 +7,7 @@
  * 하나가 보기마다 다르게 거른다.
  */
 
-import { spellDate } from "@/shared/lib/kst-date";
+import { spellDate } from "@/shared/lib/kstDate";
 
 export type MyAssignment = {
   kind: "regular" | "training";
@@ -72,7 +72,7 @@ export function filterAgendaDays(
 
 /**
  * 「10월 10일(토)」다. 날짜 줄과 날 시트 제목이 같은 꼴을 쓴다. 계산은
- * `@/shared/lib/kst-date`가 소유한다 — 슬라이스 넷에 같은 손이 각자 서 있던 것을 거기로
+ * `@/shared/lib/kstDate`가 소유한다 — 슬라이스 넷에 같은 손이 각자 서 있던 것을 거기로
  * 모았다.
  */
 export function spellWorkDate(workDate: string): string {

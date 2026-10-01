@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { removeAssignment } from "@/entities/schedule/dals/remove-assignment";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { removeAssignment } from "@/entities/schedule/dals/removeAssignment";
+import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 「자리 비우기」와 강제 변경의 「사람 빼기」다. 확정 전이면 행이 지워지고 확정 뒤면
@@ -23,7 +23,7 @@ export type RemoveAssignmentResult = {
   reset: () => void;
 };
 
-export function useRemoveAssignment(client: Db): RemoveAssignmentResult {
+export function useRemoveAssignment(client: DB): RemoveAssignmentResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

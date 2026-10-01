@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const updateMyContactMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/dals/update-my-contact", () => ({
+jest.unstable_mockModule("@/entities/profile/dals/updateMyContact", () => ({
   updateMyContact: updateMyContactMock,
 }));
 

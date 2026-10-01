@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   getHallDefaults,
   type HallDefaults,
-} from "@/entities/schedule/dals/get-hall-defaults";
-import { HALL_KEY } from "@/features/schedule/model/query-keys";
+} from "@/entities/schedule/dals/getHallDefaults";
+import { HALL_KEY } from "@/features/schedule/model/queryKeys";
 
 /**
  * 홀의 자리·근무 시간 기본값이다. 관리자 홈의 기본값 줄과 기본값 시트가 같은 값을 본다.
@@ -19,7 +19,7 @@ export type HallDefaultsResult = {
   isLoading: boolean;
 };
 
-export function useHallDefaults(client: Db): HallDefaultsResult {
+export function useHallDefaults(client: DB): HallDefaultsResult {
   const { data, error, isLoading } = useQuery({
     queryKey: HALL_KEY,
     queryFn: () => getHallDefaults(client),

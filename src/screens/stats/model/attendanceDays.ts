@@ -1,14 +1,14 @@
-import { spellDate } from "@/shared/lib/kst-date";
+import { spellDate } from "@/shared/lib/kstDate";
 import {
   getAttendanceStatus,
   type AttendanceStatus,
-} from "@/entities/attendance/model/attendance-status";
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
+} from "@/entities/attendance/model/attendanceStatus";
+import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
 import {
   buildAttendanceInputs,
   type AttendanceInputCheckIn,
   type AttendanceInputExcuseStatus,
-} from "@/features/stats/model/attendance-inputs";
+} from "@/features/stats/model/attendanceInputs";
 
 /**
  * 근태 탭 날짜 목록이다. 정본은 `docs/2-design/system/screens/stats.md`의 「내 근태 날짜

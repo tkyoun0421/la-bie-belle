@@ -15,9 +15,9 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
-export const TYPES_FILE = "src/shared/api/database-types.ts";
+export const TYPES_FILE = "src/shared/api/databaseTypes.ts";
 
-/** `Db` 별명을 내놓는 파일. 맨 `SupabaseClient`를 쓰는 예외는 여기 하나다. */
+/** `DB` 별명을 내놓는 파일. 맨 `SupabaseClient`를 쓰는 예외는 여기 하나다. */
 export const ALIAS_FILE = "src/shared/api/database.ts";
 
 const MIGRATIONS_DIR = "supabase/migrations";
@@ -170,7 +170,7 @@ export function describeDatabaseTypesViolation(
     return `마이그레이션이 만든 ${kind} ${schema}.${name}이 ${TYPES_FILE}에 없다. \`pnpm types\`를 돌려라.`;
   }
 
-  return `${violation.file}이 \`SupabaseClient\`를 직접 가져온다. 스키마가 \`any\`라 표 이름이 검사를 안 받는다 — \`${ALIAS_FILE}\`의 \`Db\`를 써라.`;
+  return `${violation.file}이 \`SupabaseClient\`를 직접 가져온다. 스키마가 \`any\`라 표 이름이 검사를 안 받는다 — \`${ALIAS_FILE}\`의 \`DB\`를 써라.`;
 }
 
 /** 마이그레이션 전부를 파일 이름 순으로 이어 붙인 SQL. */

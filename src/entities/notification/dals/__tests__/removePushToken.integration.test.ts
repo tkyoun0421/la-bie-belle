@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { DomainError } from "@/shared/api/errors";
-import { removePushToken } from "@/entities/notification/dals/remove-push-token";
-import { savePushToken } from "@/entities/notification/dals/save-push-token";
+import { removePushToken } from "@/entities/notification/dals/removePushToken";
+import { savePushToken } from "@/entities/notification/dals/savePushToken";
 import {
   createApprovedUser,
   createBlockedUser,

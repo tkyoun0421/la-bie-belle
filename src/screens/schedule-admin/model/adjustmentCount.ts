@@ -1,4 +1,4 @@
-import { adjustedMinutes } from "@/features/payroll/model/day-minutes";
+import { adjustedMinutes } from "@/features/payroll/model/dayMinutes";
 
 /**
  * 날 상세 근무 조정 줄 오른쪽의 셈이다. 정본은

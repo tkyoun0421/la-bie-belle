@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const markLeaveMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/profile/dals/mark-leave", () => ({
+jest.unstable_mockModule("@/entities/profile/dals/markLeave", () => ({
   markLeave: markLeaveMock,
 }));
 

@@ -2,7 +2,7 @@ import type { Database } from "@/shared/api/database";
 import {
   getMyExcuses,
   myExcusesKey,
-} from "@/entities/attendance/dals/get-my-excuses";
+} from "@/entities/attendance/dals/getMyExcuses";
 import {
   createAdminUser,
   createApprovedUser,

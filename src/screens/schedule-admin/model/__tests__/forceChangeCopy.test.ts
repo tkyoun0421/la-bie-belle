@@ -1,11 +1,11 @@
-// 구현 대상: src/screens/schedule-admin/model/force-change-copy.ts
+// 구현 대상: src/screens/schedule-admin/model/forceChangeCopy.ts
 //
 // 확정 뒤 확인 시트 문안 넷이다 — 배정 추가·교육 붙이기·바꾸기·빼기(schedule-admin.md
 // 「확정 뒤 문안」 표 그대로). 알림을 못 받는 사람이면 「…에게 알림이 가요」 대신 「…은
 // 알림을 못 받아요 · 따로 연락해주세요」로 바뀐다(NTF-034). 바꾸기에서 한쪽만 못 받으면
 // 그 사람 이름만 적고 받는 쪽은 안 적는다.
 
-import { forceChangeCopy } from "@/screens/schedule-admin/model/force-change-copy";
+import { forceChangeCopy } from "@/screens/schedule-admin/model/forceChangeCopy";
 
 describe("forceChangeCopy — 배정 추가 확인", () => {
   it("알림을 받을 때", () => {

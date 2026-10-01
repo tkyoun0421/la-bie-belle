@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/schedule-admin/model/holiday-switch.ts
+// 구현 대상: src/screens/schedule-admin/model/holidaySwitch.ts
 //
 // 임시공휴일 스위치의 켜짐·잠김과 아래 줄 문구다(payroll-adjust AC-01). 판정은 그 날짜의
 // `holidays` 행에 `source = 'api'`가 있는가 하나고, 같은 날짜에 `manual`이 같이 있어도
@@ -8,7 +8,7 @@
 import {
   holidaySwitchState,
   type HolidayRow,
-} from "@/screens/schedule-admin/model/holiday-switch";
+} from "@/screens/schedule-admin/model/holidaySwitch";
 
 const CAN_TOGGLE_LINE = "급여를 셀 때 공휴일로 봐요";
 

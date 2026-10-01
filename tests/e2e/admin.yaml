@@ -1,6 +1,6 @@
 # src/app/admin/_layout.tsx의 짝이다 — 관리자가 아닌 사람이 관리자 층을 열면
 # "/"로 튕기는지를 본다. 판정 자체(resolveAdminGuard)는 unit이 이미 순수
-# 함수로 본다(src/shared/lib/__tests__/resolve-admin-guard.test.ts) — 여기서는
+# 함수로 본다(src/shared/lib/__tests__/resolveAdminGuard.test.ts) — 여기서는
 # 그 판정이 실제 라우트 가드로 이어지는지만 확인한다.
 #
 # `/admin` 아래는 모두 같은 _layout.tsx가 지킨다. 대표로 하나만 연다
@@ -8,9 +8,9 @@
 # 같은 가드를 또 보는 것이라 배정에 없다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/pending.yaml 머리말과 scripts/e2e-seed-server.mts를 본다.
+# tests/e2e/pending.yaml 머리말과 scripts/e2eSeedServer.mts를 본다.
 #
-# **시드 상태 "approved"가 아직 없다.** scripts/e2e-seed-server.mts의 STATES에
+# **시드 상태 "approved"가 아직 없다.** scripts/e2eSeedServer.mts의 STATES에
 # "approved"가 없다 — "submitted"나 "fresh"는 승인 전이라 이 화면 자체에
 # 못 들어가는 사람이고, 여기서 보려는 것은 「승인은 됐지만 관리자는 아닌
 # 사람이 관리자 층에서 튕기는지」다. implementer가 STATES에 "approved"를

@@ -3,7 +3,7 @@ import {
   type PositionTotal,
   type WorkAssignment,
   type WorkDay,
-} from "@/features/stats/model/work-totals";
+} from "@/features/stats/model/workTotals";
 
 /**
  * 그달 근무를 내 것으로 좁혀 센다. 정본은

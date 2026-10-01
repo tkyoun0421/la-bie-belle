@@ -1,5 +1,5 @@
-import type { Db } from "@/shared/api/database";
-import { takeProfileReadFailure } from "@/shared/lib/dev-door";
+import type { DB } from "@/shared/api/database";
+import { takeProfileReadFailure } from "@/shared/lib/devDoor";
 
 export type MyProfileRow = {
   id: string;
@@ -35,7 +35,7 @@ const COLUMNS = [
  * 프로덕션에 없어서 배포된 앱에서는 이 줄이 늘 지나간다.
  */
 export async function getMyProfile(
-  client: Db,
+  client: DB,
   userId: string,
 ): Promise<MyProfileRow | null> {
   if (takeProfileReadFailure()) {

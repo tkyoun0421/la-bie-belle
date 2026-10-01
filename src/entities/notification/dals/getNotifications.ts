@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   NOTIFICATION_PAGE_SIZE,
   type NotificationRow,
@@ -22,7 +22,7 @@ export const NOTIFICATION_COLUMNS =
   "id, profile_id, kind, payload, subject_id, created_at, read_at, claimed_at, push_attempts, pushed_at";
 
 export async function getNotifications(
-  client: Db,
+  client: DB,
   page: number,
 ): Promise<NotificationRow[]> {
   const first = page * NOTIFICATION_PAGE_SIZE;

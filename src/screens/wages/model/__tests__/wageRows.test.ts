@@ -2,7 +2,7 @@ import {
   buildWageRows,
   type WageRateRow,
   type WageRowMember,
-} from "@/screens/wages/model/wage-rows";
+} from "@/screens/wages/model/wageRows";
 
 const MEMBERS: WageRowMember[] = [
   { profileId: "profile-1", displayName: "김도윤" },

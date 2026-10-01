@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { docMapViolations } from "@tests/lint/doc-map";
+import { docMapViolations } from "@tests/lint/docMap";
 
 const FAKE_MISSING_PATH = "docs/9-nowhere/ghost.md";
 

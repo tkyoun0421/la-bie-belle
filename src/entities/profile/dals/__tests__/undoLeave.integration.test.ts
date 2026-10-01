@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { undoLeave } from "@/entities/profile/dals/undo-leave";
+import { undoLeave } from "@/entities/profile/dals/undoLeave";
 import {
   createAdminUser,
   createApprovedUser,

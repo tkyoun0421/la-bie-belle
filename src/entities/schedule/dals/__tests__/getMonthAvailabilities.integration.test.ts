@@ -1,4 +1,4 @@
-import { getMonthAvailabilities } from "@/entities/schedule/dals/get-month-availabilities";
+import { getMonthAvailabilities } from "@/entities/schedule/dals/getMonthAvailabilities";
 import {
   createAdminUser,
   createApprovedUser,

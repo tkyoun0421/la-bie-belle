@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/approvals/model/approvals-list.ts
+// 구현 대상: src/screens/approvals/model/approvalsList.ts
 //
 // 승인할 일 목록의 정렬과 처리한 줄 제거다(approvals.md 「목록 짜임」). 이 task가 내는
 // 줄은 근무 취소뿐이다 — 사유 줄은 attendance가 뒤에 잇는다(plan schedule-requests.md
@@ -8,7 +8,7 @@ import {
   removeApproval,
   sortApprovals,
   type ApprovalListRow,
-} from "@/screens/approvals/model/approvals-list";
+} from "@/screens/approvals/model/approvalsList";
 
 const ROWS: ApprovalListRow[] = [
   { id: "cancel-3", kind: "cancel", workDate: "2026-10-20" },

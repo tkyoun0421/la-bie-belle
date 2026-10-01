@@ -1,4 +1,4 @@
-// 구현 대상: src/features/payroll/model/payroll-days.ts
+// 구현 대상: src/features/payroll/model/payrollDays.ts
 //
 // payrollDays(input) — assignments·days·adjustments·rehearsals의 날짜 합집합을 훑어
 // 날마다 dayMinutes·wageAt·dayAmount를 부르고, 결근이면(entities/attendance의
@@ -10,7 +10,7 @@
 import {
   payrollDays,
   payrollViewDays,
-} from "@/features/payroll/model/payroll-days";
+} from "@/features/payroll/model/payrollDays";
 
 const RATES = [{ effective_date: "2026-08-01", amount: 12000 }];
 

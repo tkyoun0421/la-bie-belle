@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { blockMember } from "@/entities/profile/dals/block-member";
+import { blockMember } from "@/entities/profile/dals/blockMember";
 import {
   createAdminUser,
   createApprovedUser,

@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
-import { submitAvailability } from "@/entities/schedule/dals/submit-availability";
+import { submitAvailability } from "@/entities/schedule/dals/submitAvailability";
 import {
   backdateDeadline,
   createAdminUser,

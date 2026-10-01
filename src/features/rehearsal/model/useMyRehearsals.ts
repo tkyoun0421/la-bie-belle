@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   getMyRehearsals,
   type Rehearsal,
-} from "@/entities/rehearsal/dals/get-my-rehearsals";
-import { REHEARSAL_KEY } from "@/features/rehearsal/model/query-keys";
+} from "@/entities/rehearsal/dals/getMyRehearsals";
+import { REHEARSAL_KEY } from "@/features/rehearsal/model/queryKeys";
 
 /**
  * 그 달 본인 리허설이다 — 키는 `['rehearsal', 'YYYY-MM']`
@@ -22,7 +22,7 @@ export type MyRehearsalsResult = {
 };
 
 export function useMyRehearsals(
-  client: Db,
+  client: DB,
   month: string,
   enabled = true,
 ): MyRehearsalsResult {

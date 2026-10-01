@@ -1,8 +1,8 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import type {
   CheckInRow,
   ExcuseStatusRow,
-} from "@/entities/attendance/dals/get-day-attendance";
+} from "@/entities/attendance/dals/getDayAttendance";
 
 /**
  * 그달치 인증과 사유다. 키가 `['attendance', 'YYYY-MM']`이고 날 키
@@ -47,7 +47,7 @@ export function monthAttendanceKey(month: string): string[] {
 }
 
 export async function getMonthAttendance(
-  client: Db,
+  client: DB,
   month: string,
 ): Promise<MonthAttendance> {
   const { data: days, error: daysError } = await client

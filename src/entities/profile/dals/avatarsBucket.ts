@@ -1,5 +1,5 @@
 import "react-native-get-random-values";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -37,7 +37,7 @@ export type UploadAvatarInput = {
 };
 
 export async function uploadAvatar(
-  client: Db,
+  client: DB,
   { userId, uri, contentType, extension }: UploadAvatarInput,
 ): Promise<string> {
   const bytes = await (await fetch(uri)).arrayBuffer();

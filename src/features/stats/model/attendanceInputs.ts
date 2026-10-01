@@ -2,14 +2,14 @@ import type {
   AttendanceStatusInput,
   ExcuseDecision,
   ExcuseStatusRecord,
-} from "@/entities/attendance/model/attendance-status";
+} from "@/entities/attendance/model/attendanceStatus";
 
 /**
  * 근태 월 집계의 재료를 맞물린다. 그달 배정·날 시각과 인증·사유를 `(day_id, profile_id)`로
  * 짝지어 상태 함수가 그대로 먹을 입력을 낸다(plan stats-admin 「착수 판정」).
  *
  * **세는 것은 여기가 아니다.** 상태 여섯을 내는 것도 넷으로 세는 것도
- * `entities/attendance/model/attendance-summary.ts`의 `tallyMonthlyAttendance`가 이미 하고,
+ * `entities/attendance/model/attendanceSummary.ts`의 `tallyMonthlyAttendance`가 이미 하고,
  * 여기서 다시 짜면 명단·대시보드와 다른 숫자를 말하게 된다.
  *
  * **산 배정만 한 몫이다.** `ended_at`이 찬 배정은 그날 그 사람이 없던 것이라 인증 행이 남아

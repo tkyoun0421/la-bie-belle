@@ -7,7 +7,7 @@ import {
   parseComboCell,
   parseDroppedComboCell,
   resolveTokenHex,
-} from "@tests/lint/contrast-check";
+} from "@tests/lint/contrastCheck";
 
 const TOKENS_MARKDOWN = readFileSync(
   path.join(process.cwd(), "docs/2-design/design-system/tokens.md"),

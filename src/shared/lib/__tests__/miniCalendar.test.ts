@@ -1,7 +1,7 @@
 import {
   miniCalendarGrid,
   miniCalendarWeekCount,
-} from "@/shared/lib/mini-calendar";
+} from "@/shared/lib/miniCalendar";
 
 describe("miniCalendarWeekCount — 달마다 다섯 줄이나 여섯 줄이다 (AC-05, 경계)", () => {
   it("2026년 9월은 다섯 줄이다", () => {

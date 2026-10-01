@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 export type DecideExcuseParams = {
@@ -8,7 +8,7 @@ export type DecideExcuseParams = {
 };
 
 export async function decideExcuse(
-  client: Db,
+  client: DB,
   params: DecideExcuseParams,
 ): Promise<void> {
   const { error } = await client.rpc("decide_excuse", {

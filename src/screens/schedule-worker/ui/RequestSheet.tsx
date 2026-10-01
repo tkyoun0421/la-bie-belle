@@ -2,7 +2,7 @@ import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
-import type { RequestSheetState } from "@/screens/schedule-worker/model/request-sheet";
+import type { RequestSheetState } from "@/screens/schedule-worker/model/requestSheet";
 
 /**
  * 관리자가 보낸 근무 요청에 답하는 시트다. 정본은

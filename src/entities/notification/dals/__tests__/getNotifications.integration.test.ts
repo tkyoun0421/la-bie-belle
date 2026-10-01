@@ -4,11 +4,11 @@ import {
   type ApprovedUser,
 } from "@tests/integration/postgres";
 
-// 구현 대상: src/entities/notification/dals/get-notifications.ts
+// 구현 대상: src/entities/notification/dals/getNotifications.ts
 // AC-03(docs/3-build/plans/notification-list.md) — range()로 50건씩, ['notifications'] 키.
 
 const { getNotifications } =
-  await import("@/entities/notification/dals/get-notifications");
+  await import("@/entities/notification/dals/getNotifications");
 
 type NotificationRow = { id: string };
 

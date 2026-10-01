@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 /**
  * 홀의 QR 값과 그 값이 선 시각이다. 둘이 한 행에서 같이 나오는 것은 화면이 둘을 같이 쓰기
@@ -24,7 +24,7 @@ export function qrCodeKey(): string[] {
   return ["hall", "qr"];
 }
 
-export async function getQrCode(client: Db): Promise<HallQrCode | null> {
+export async function getQrCode(client: DB): Promise<HallQrCode | null> {
   const { data, error } = await client
     .from("hall_secrets")
     .select("qr_code, rotated_at")

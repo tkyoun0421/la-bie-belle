@@ -1,4 +1,4 @@
-import { isCatalogVisible } from "@/shared/lib/catalog-visibility";
+import { isCatalogVisible } from "@/shared/lib/catalogVisibility";
 
 describe("isCatalogVisible — /_catalog는 개발 빌드에서만 선다 (AC-02)", () => {
   it("__DEV__가 참이면 카탈로그를 노출한다", () => {

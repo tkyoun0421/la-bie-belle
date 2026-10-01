@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { DomainError, toApiError, TransportError } from "@/shared/api/errors";
 
 /**
@@ -35,7 +35,7 @@ function isPhoneFormatViolation(error: unknown): boolean {
 }
 
 export async function updateMyContact(
-  client: Db,
+  client: DB,
   profileId: string,
   phone: string,
 ): Promise<void> {

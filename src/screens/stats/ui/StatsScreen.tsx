@@ -2,19 +2,19 @@ import { useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { getCurrentUser } from "@/shared/lib/get-current-user";
+import { getCurrentUser } from "@/shared/lib/getCurrentUser";
 import {
   kstToday,
   monthOf,
   shiftMonth,
   spellMonth,
-} from "@/shared/lib/kst-date";
-import { canGoBack, canGoForward } from "@/shared/lib/month-boundary";
-import { NO_VALUE } from "@/shared/lib/no-value";
-import { queryClient } from "@/shared/lib/query-client";
-import { nowWithOffset } from "@/shared/lib/server-clock";
-import { serverClockStore } from "@/shared/lib/server-clock-store";
-import { spellWon } from "@/shared/lib/spell-number";
+} from "@/shared/lib/kstDate";
+import { canGoBack, canGoForward } from "@/shared/lib/monthBoundary";
+import { NO_VALUE } from "@/shared/lib/noValue";
+import { queryClient } from "@/shared/lib/queryClient";
+import { nowWithOffset } from "@/shared/lib/serverClock";
+import { serverClockStore } from "@/shared/lib/serverClockStore";
+import { spellWon } from "@/shared/lib/spellNumber";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
@@ -39,25 +39,25 @@ import {
 import {
   computeMyWorkTotals,
   type MyWorkTotals,
-} from "@/features/stats/model/my-totals";
+} from "@/features/stats/model/myTotals";
 import { buildTrend, trendMonths } from "@/features/stats/model/trend";
-import { hoursLabel, workInputsOf } from "@/features/stats/model/work-totals";
+import { hoursLabel, workInputsOf } from "@/features/stats/model/workTotals";
 import {
   buildMyAttendanceDays,
   myAttendanceRow,
-} from "@/screens/stats/model/attendance-days";
-import { attendanceRatioShares } from "@/screens/stats/model/attendance-shares";
-import { attendanceSummaryLine } from "@/screens/stats/model/attendance-summary-line";
-import { myAttendanceTally } from "@/screens/stats/model/attendance-tally";
+} from "@/screens/stats/model/attendanceDays";
+import { attendanceRatioShares } from "@/screens/stats/model/attendanceShares";
+import { attendanceSummaryLine } from "@/screens/stats/model/attendanceSummaryLine";
+import { myAttendanceTally } from "@/screens/stats/model/attendanceTally";
 import {
   joinPayrollByMonth,
   myAttendanceValues,
   myPayrollDaysOfMonth,
   myPayrollValues,
   myWorkValues,
-} from "@/screens/stats/model/chart-values";
-import { tenThousandWonLabel } from "@/screens/stats/model/money-label";
-import { myPayrollSubtitle } from "@/screens/stats/model/payroll-summary";
+} from "@/screens/stats/model/chartValues";
+import { tenThousandWonLabel } from "@/screens/stats/model/moneyLabel";
+import { myPayrollSubtitle } from "@/screens/stats/model/payrollSummary";
 
 /**
  * 근무자가 자기 한 달을 숫자로 보는 화면이다. 정본은

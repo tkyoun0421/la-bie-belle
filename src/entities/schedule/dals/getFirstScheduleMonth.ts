@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 /**
  * 근무표가 처음 선 달이다. 관리자 통계의 달 줄이 뒤로 갈 수 있는 바닥이고
@@ -19,7 +19,7 @@ export function firstScheduleMonthKey(): string[] {
 }
 
 export async function getFirstScheduleMonth(
-  client: Db,
+  client: DB,
 ): Promise<string | null> {
   const { data, error } = await client
     .from("schedules")

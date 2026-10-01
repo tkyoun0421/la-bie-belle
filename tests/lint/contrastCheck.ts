@@ -3,7 +3,7 @@ import {
   PALETTE_HEADER,
   requireRows,
   ROLE_HEADER,
-} from "@scripts/tokens-md.mts";
+} from "@scripts/tokensMd.mts";
 
 export type Theme = "light" | "dark";
 export type Combo = { left: string; right: string };

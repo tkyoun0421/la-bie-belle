@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/schedule-worker/model/request-sheet.ts
+// 구현 대상: src/screens/schedule-worker/model/requestSheet.ts
 //
 // 근무 요청 시트가 정상인지 끝났는지를 가른다(schedule-worker.md 「근무 요청 시트」의
 // 「끝난 요청」 상태). 서버가 닫았으면(`closed_at`) 물론이고, cron이 아직 안 돈
@@ -6,7 +6,7 @@
 // 본다 — design.md 「요청」의 "만료됨은 저장하지 않는다"와 runtime.md 「서버 시각」의
 // 로컬 판정이 같은 결이다.
 
-import { requestSheetState } from "@/screens/schedule-worker/model/request-sheet";
+import { requestSheetState } from "@/screens/schedule-worker/model/requestSheet";
 
 const EXPIRES_AT = "2026-10-12T00:00:00Z";
 

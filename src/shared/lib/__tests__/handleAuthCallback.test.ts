@@ -1,12 +1,12 @@
-import type { Db } from "@/shared/api/database";
-import { handleAuthCallback } from "@/shared/lib/handle-auth-callback";
+import type { DB } from "@/shared/api/database";
+import { handleAuthCallback } from "@/shared/lib/handleAuthCallback";
 
-function fakeClient(exchangeResult: { error: { message: string } | null }): Db {
+function fakeClient(exchangeResult: { error: { message: string } | null }): DB {
   return {
     auth: {
       exchangeCodeForSession: async () => exchangeResult,
     },
-  } as unknown as Db;
+  } as unknown as DB;
 }
 
 describe("handleAuthCallback — code 유무와 교환 결과만 알리고 목적지는 판정하지 않는다", () => {

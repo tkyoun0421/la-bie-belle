@@ -4,12 +4,9 @@ import type { ReactNode } from "react";
 const submitAvailabilityMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule(
-  "@/entities/schedule/dals/submit-availability",
-  () => ({
-    submitAvailability: submitAvailabilityMock,
-  }),
-);
+jest.unstable_mockModule("@/entities/schedule/dals/submitAvailability", () => ({
+  submitAvailability: submitAvailabilityMock,
+}));
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");

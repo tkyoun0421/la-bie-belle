@@ -2,7 +2,7 @@ import {
   canSaveWage,
   formatAmountDisplay,
   nextAmountDigits,
-} from "@/screens/wages/model/wage-amount";
+} from "@/screens/wages/model/wageAmount";
 
 describe("nextAmountDigits — 상한 100,000원을 넘는 타이핑은 안 들어간다", () => {
   it("100,000원까지의 입력은 그대로 받는다", () => {

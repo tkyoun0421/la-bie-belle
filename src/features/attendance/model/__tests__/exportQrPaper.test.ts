@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { exportQrPaper } from "@/features/attendance/model/export-qr-paper";
+import { exportQrPaper } from "@/features/attendance/model/exportQrPaper";
 
 const HTML = "<html>fake</html>";
 

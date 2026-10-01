@@ -1,13 +1,13 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   filterBlockedMembers,
   filterPendingMembers,
   type MemberProfileRow,
-} from "@/entities/profile/model/filter-members";
+} from "@/entities/profile/model/filterMembers";
 import {
   sortActiveMembers,
   sortLeftMembers,
-} from "@/entities/profile/model/sort-members";
+} from "@/entities/profile/model/sortMembers";
 
 /**
  * 관리자가 사람 목록 넷을 읽는 자리다 — 재직·퇴사·가입 대기·차단. 새 읽기 채널을 안 만든다 —
@@ -106,7 +106,7 @@ function flatten<Row extends EmbeddedMemberRow>(
  * 뷰가 내는 열 둘이 정본이고 두 손은 그것을 각자 제 모양으로 받는다.
  */
 async function readDevices(
-  client: Db,
+  client: DB,
   profileIds: readonly string[],
 ): Promise<Map<string, boolean>> {
   if (profileIds.length === 0) {
@@ -132,7 +132,7 @@ async function readDevices(
   );
 }
 
-export async function listPendingMembers(client: Db): Promise<MemberListRow[]> {
+export async function listPendingMembers(client: DB): Promise<MemberListRow[]> {
   const { data, error } = await client
     .from("profiles")
     .select(COLUMNS)
@@ -150,7 +150,7 @@ export async function listPendingMembers(client: Db): Promise<MemberListRow[]> {
   return filterPendingMembers(data ?? []);
 }
 
-export async function listBlockedMembers(client: Db): Promise<MemberListRow[]> {
+export async function listBlockedMembers(client: DB): Promise<MemberListRow[]> {
   const { data, error } = await client
     .from("profiles")
     .select(COLUMNS)
@@ -173,7 +173,7 @@ export async function listBlockedMembers(client: Db): Promise<MemberListRow[]> {
  * 지난 사람은 다 보낸 사람이라, 이 조건에 걸리는 것은 손으로 넣은 첫 관리자뿐이다.
  */
 export async function listActiveMembers(
-  client: Db,
+  client: DB,
 ): Promise<ActiveMemberRow[]> {
   const { data, error } = await client
     .from("profiles")
@@ -207,7 +207,7 @@ export async function listActiveMembers(
  * 그만둔 사람이다. 1년이 지나 비워진 사람도 이름과 퇴사한 날이 남아 여기 선다 — 시트가
  * 서는 것은 지난 근무표의 이름이 누구였는지 확인하는 자리라서다.
  */
-export async function listLeftMembers(client: Db): Promise<MemberRow[]> {
+export async function listLeftMembers(client: DB): Promise<MemberRow[]> {
   const { data, error } = await client
     .from("profiles")
     .select(MEMBER_COLUMNS)

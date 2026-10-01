@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { DomainError } from "@/shared/api/errors";
-import { queryClient } from "@/shared/lib/query-client";
+import { queryClient } from "@/shared/lib/queryClient";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
@@ -15,9 +15,9 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
-import { unblockMember } from "@/entities/profile/dals/unblock-member";
-import { formatElapsedDays } from "@/entities/profile/model/format-elapsed-days";
-import { MEMBERS_KEY } from "@/features/members/model/query-keys";
+import { unblockMember } from "@/entities/profile/dals/unblockMember";
+import { formatElapsedDays } from "@/entities/profile/model/formatElapsedDays";
+import { MEMBERS_KEY } from "@/features/members/model/queryKeys";
 import { useMembers } from "@/features/members/model/useMembers";
 
 /**

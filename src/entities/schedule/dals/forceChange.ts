@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -13,7 +13,7 @@ import { toApiError } from "@/shared/api/errors";
  * 낸 값은 새 배정의 id다.
  */
 export async function forceChange(
-  client: Db,
+  client: DB,
   assignmentId: string,
   profileId: string,
 ): Promise<string> {

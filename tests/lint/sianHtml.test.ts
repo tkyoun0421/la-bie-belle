@@ -1,4 +1,4 @@
-import { sianHtmlViolations, sianHtmlFiles } from "@tests/lint/sian-html";
+import { sianHtmlViolations, sianHtmlFiles } from "@tests/lint/sianHtml";
 
 describe("시안 HTML 구조 검사", () => {
   it("저장소의 시안 파일이 전부 태그 균형을 지킨다 (회귀)", () => {

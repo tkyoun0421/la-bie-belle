@@ -1,5 +1,5 @@
 const { getProfileNotificationRow } =
-  await import("@/features/notification/model/profile-notification-row");
+  await import("@/features/notification/model/profileNotificationRow");
 
 describe("getProfileNotificationRow — 읽는 중에는 스위치가 잠긴 채 움직이지 않는다", () => {
   it("로딩 갈래면 잠긴 스위치를 낸다", () => {

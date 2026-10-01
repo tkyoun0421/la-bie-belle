@@ -10,9 +10,9 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getCurrentUser } from "@/shared/lib/get-current-user";
-import { queryClient } from "@/shared/lib/query-client";
-import { DEVICE_CLEANUP_NOT_WIRED_YET, signOut } from "@/shared/lib/sign-out";
+import { getCurrentUser } from "@/shared/lib/getCurrentUser";
+import { queryClient } from "@/shared/lib/queryClient";
+import { DEVICE_CLEANUP_NOT_WIRED_YET, signOut } from "@/shared/lib/signOut";
 import { supabase } from "@/shared/lib/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
@@ -27,30 +27,30 @@ import { PushNotice } from "@/shared/ui/PushNotice";
 import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { Text } from "@/shared/ui/Text";
-import { uploadAvatar } from "@/entities/profile/dals/avatars-bucket";
-import { getMyProfile } from "@/entities/profile/dals/get-my-profile";
-import { getProfilePrivate } from "@/entities/profile/dals/profile-private";
-import { submitProfile } from "@/entities/profile/dals/submit-profile";
-import { updateMyPhoto } from "@/entities/profile/dals/update-my-photo";
-import { googlePhotoOf } from "@/features/auth/google-photo-of";
-import { PUSH_DEPS } from "@/features/notification/model/push-deps";
-import { requestPushPermission } from "@/features/notification/model/push-permission";
+import { uploadAvatar } from "@/entities/profile/dals/avatarsBucket";
+import { getMyProfile } from "@/entities/profile/dals/getMyProfile";
+import { getProfilePrivate } from "@/entities/profile/dals/profilePrivate";
+import { submitProfile } from "@/entities/profile/dals/submitProfile";
+import { updateMyPhoto } from "@/entities/profile/dals/updateMyPhoto";
+import { googlePhotoOf } from "@/features/auth/googlePhotoOf";
+import { PUSH_DEPS } from "@/features/notification/model/pushDeps";
+import { requestPushPermission } from "@/features/notification/model/pushPermission";
 import { useSavePushToken } from "@/features/notification/model/useSavePushToken";
 import {
   isProfileGender,
   validateProfileForm,
   type ProfileGender,
-} from "@/features/profile/model/validate-profile";
+} from "@/features/profile/model/validateProfile";
 import {
   INITIAL_NOTIFICATION_PROMPT_VIEW,
   PROMPT_OUTCOME_OF,
   transitionNotificationPromptView,
   type NotificationPromptView,
-} from "@/screens/pending/model/notification-prompt";
+} from "@/screens/pending/model/notificationPrompt";
 import {
   getNotificationPromptCopy,
   NOTIFICATION_PROMPT_BUTTON,
-} from "@/screens/pending/model/notification-prompt-copy";
+} from "@/screens/pending/model/notificationPromptCopy";
 
 /**
  * 로그인한 사람이 프로필을 적어 가입을 끝내는 자리다. 한 경로가 장면 넷을 든다 — 프로필

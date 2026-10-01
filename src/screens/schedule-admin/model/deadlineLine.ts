@@ -2,7 +2,7 @@ import {
   formatBareDate,
   formatScheduleDate,
   kstDateOf,
-} from "@/screens/schedule-admin/model/format-schedule-date";
+} from "@/screens/schedule-admin/model/formatScheduleDate";
 
 /**
  * 월 달력 머리의 마감 줄이다. 문안 표

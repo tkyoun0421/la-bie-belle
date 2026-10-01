@@ -1,4 +1,4 @@
-import { getServerNow } from "@/entities/clock/dals/get-server-now";
+import { getServerNow } from "@/entities/clock/dals/getServerNow";
 import { queryColumn } from "@tests/integration/postgres";
 import { createSignedInUser } from "@tests/integration/supabase";
 

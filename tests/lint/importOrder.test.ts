@@ -1,4 +1,4 @@
-import { errorsOf, fixedCode, violationsOf } from "@tests/lint/rule-check";
+import { errorsOf, fixedCode, violationsOf } from "@tests/lint/ruleCheck";
 
 const IMPORT_ORDER = "import/order";
 

@@ -1,4 +1,4 @@
-import { kstDateOf } from "@/screens/schedule-admin/model/format-schedule-date";
+import { kstDateOf } from "@/screens/schedule-admin/model/formatScheduleDate";
 
 /**
  * 확정 버튼의 세 모습이다 — 잠김·열림·끝남

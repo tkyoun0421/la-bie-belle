@@ -23,7 +23,7 @@
 // 같이 돌려준다 — 계약은 `tests/e2e/schedule-worker.yaml`과 `tests/e2e/schedule-admin.yaml`과
 // `tests/e2e/schedule-assign.yaml`과 `tests/e2e/applications.yaml` 머리말이다. 알림 목록
 // 셋의 계약은 `tests/e2e/notifications.yaml` 머리말이다.
-// 부르는 쪽은 `tests/e2e/scripts/seed-session.js`고, 받은 토큰을 개발 빌드의 테스트 문
+// 부르는 쪽은 `tests/e2e/scripts/seedSession.js`고, 받은 토큰을 개발 빌드의 테스트 문
 // (`src/app/__test/session.tsx`)에 딥링크로 싣는다. 정본은 `docs/4-test/execution.md`의
 // 「`pnpm e2e`」 절이다.
 //
@@ -34,13 +34,13 @@
 // 이 서버는 사용자를 만들고 관리자 권한을 올리는 일을 하므로 겨눈 곳이 어디인지가 전부다.
 
 import { createServer, type IncomingMessage, type Server } from "node:http";
-import { formatBareDate } from "@/screens/schedule-admin/model/format-schedule-date";
-import { spellWorkDate } from "@/screens/schedule-worker/model/agenda-row";
+import { formatBareDate } from "@/screens/schedule-admin/model/formatScheduleDate";
+import { spellWorkDate } from "@/screens/schedule-worker/model/agendaRow";
 import {
   kstToday,
   spellDeadline,
   spellMonth,
-} from "@/screens/schedule-worker/model/month-state";
+} from "@/screens/schedule-worker/model/monthState";
 import {
   approveProfile,
   backdateDeadline,
@@ -1519,7 +1519,7 @@ const NOTIFICATION_LIST_MANY_COUNT = 55;
  * `seedNotifications`(payload를 늘 `{}`로 고정한다)로도 화면이 낼 문장과 어긋나지 않게
  * 심을 수 있다. 다른 1차 종류는 `work_date` 같은 열쇠가 필요해 이 헬퍼로는 못 심는다.
  *
- * **행 id를 안 돌려준다.** `tests/e2e/scripts/seed-session.js`가 새 필드를 output으로
+ * **행 id를 안 돌려준다.** `tests/e2e/scripts/seedSession.js`가 새 필드를 output으로
  * 릴레이하는 자리인데 이 task가 쓸 수 있는 파일은 `tests/e2e/notifications.yaml`과 이
  * 파일 둘뿐이라 그 파일을 못 고친다. 그래서 이 상태는 알림을 한 건만 심어 행이 하나뿐이게
  * 만들고, 줄의 안 읽음 점은 `notifications.yaml`이 id가 아니라 `kind`로 조립한 testID로

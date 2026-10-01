@@ -1,7 +1,7 @@
 import {
   firstScheduleMonthKey,
   getFirstScheduleMonth,
-} from "@/entities/schedule/dals/get-first-schedule-month";
+} from "@/entities/schedule/dals/getFirstScheduleMonth";
 import {
   createAdminUser,
   execSql,

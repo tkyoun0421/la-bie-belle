@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { addSlot } from "@/entities/schedule/dals/add-slot";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { addSlot } from "@/entities/schedule/dals/addSlot";
+import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 잠금이 풀린 포지션의 「자리 추가」다. 자리가 생기고 없어지는 일이 급여와 요청의 입력이라
@@ -24,7 +24,7 @@ export type AddSlotResult = {
   reset: () => void;
 };
 
-export function useAddSlot(client: Db): AddSlotResult {
+export function useAddSlot(client: DB): AddSlotResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

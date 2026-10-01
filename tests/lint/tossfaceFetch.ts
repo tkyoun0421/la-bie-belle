@@ -6,7 +6,7 @@
  * `pnpm tossface:fetch`가 매번 같은 스무 장을 집어 와야 하고, 그 「같은」을 고정 커밋 해시와
  * 아래 표가 잡는다.
  *
- * 계산이 스크립트가 아니라 여기 사는 것은 `tests/lint/font-subset.ts`와 같은 꼴이다 —
+ * 계산이 스크립트가 아니라 여기 사는 것은 `tests/lint/fontSubset.ts`와 같은 꼴이다 —
  * `scripts/*.mts`는 짝 테스트를 안 무는 자리라 판정을 거기 두면 검사가 안 걸린다.
  */
 

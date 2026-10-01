@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { setNotificationsEnabled } from "@/entities/notification/dals/set-notifications-enabled";
+import { setNotificationsEnabled } from "@/entities/notification/dals/setNotificationsEnabled";
 import {
   createApprovedUser,
   createLeftUser,

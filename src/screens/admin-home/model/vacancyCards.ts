@@ -1,4 +1,4 @@
-import { kstDateOf, spellDate } from "@/screens/admin-home/model/today-status";
+import { kstDateOf, spellDate } from "@/screens/admin-home/model/todayStatus";
 
 /**
  * 관리자 홈의 빈 자리 카드다 — 예식이 사흘 안인데 자리가 비어 있는 날마다 한 장이고 없으면

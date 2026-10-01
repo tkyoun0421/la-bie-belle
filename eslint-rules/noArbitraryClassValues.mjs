@@ -2,7 +2,7 @@ import {
   arbitraryValuesOf,
   classStringVisitor,
   segmentsOf,
-} from "./class-strings.mjs";
+} from "./classStrings.mjs";
 
 const CUSTOM_PROPERTY = /--[A-Za-z0-9_-]+/g;
 const COLOR_LITERAL =

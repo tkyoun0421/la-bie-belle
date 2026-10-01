@@ -8,7 +8,7 @@ import {
   SUBSET_DIR,
   SUBSET_FONTS,
   unicodesFile,
-} from "@tests/lint/font-subset";
+} from "@tests/lint/fontSubset";
 
 const ROOT = process.cwd();
 

@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 /**
  * 시급 화면이 한 번에 읽는 둘이다 — 전원의 `wage_rates` 이력 전부와 지금 서 있는 기본 시급.
@@ -41,7 +41,7 @@ const MEMBER_WAGE_COLUMNS = [
 
 const DEFAULT_WAGE_COLUMNS = ["effective_date", "amount"].join(", ");
 
-export async function getWageRates(client: Db): Promise<WageRates> {
+export async function getWageRates(client: DB): Promise<WageRates> {
   const [wageRates, defaultWageRate] = await Promise.all([
     client
       .from("wage_rates")

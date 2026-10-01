@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
-import { setDayHours } from "@/entities/schedule/dals/set-day-hours";
+import { setDayHours } from "@/entities/schedule/dals/setDayHours";
 import {
   createAdminUser,
   kstDate,

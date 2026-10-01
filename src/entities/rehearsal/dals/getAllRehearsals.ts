@@ -1,9 +1,9 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   monthRange,
   REHEARSAL_COLUMNS,
   type Rehearsal,
-} from "@/entities/rehearsal/dals/get-my-rehearsals";
+} from "@/entities/rehearsal/dals/getMyRehearsals";
 
 /**
  * 관리자가 보는 그 달 전원 리허설이다. **이름을 임베딩한다** — 날 시트가 줄마다 이름을
@@ -19,7 +19,7 @@ export type RehearsalWithName = Rehearsal & {
 };
 
 export async function getAllRehearsals(
-  client: Db,
+  client: DB,
   month: string,
 ): Promise<RehearsalWithName[]> {
   const { from, to } = monthRange(month);

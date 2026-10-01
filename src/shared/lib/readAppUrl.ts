@@ -1,6 +1,6 @@
 /**
  * 앱이 사는 주소다. 종이의 QR이 담는 링크의 앞부분이고
- * (`src/entities/attendance/model/check-in-url.ts`), 실제 도메인은 첫 출시 준비가 채운다
+ * (`src/entities/attendance/model/checkInUrl.ts`), 실제 도메인은 첫 출시 준비가 채운다
  * (`docs/5-deploy/environments.md`의 Q-03).
  *
  * **비면 던진다.** `read-supabase-env.ts`와 같은 틀이다 — `EXPO_PUBLIC_*`은 빌드 시점에

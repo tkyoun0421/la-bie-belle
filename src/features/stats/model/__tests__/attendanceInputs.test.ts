@@ -1,9 +1,9 @@
-// 구현 대상: src/features/stats/model/attendance-inputs.ts
+// 구현 대상: src/features/stats/model/attendanceInputs.ts
 //
 // buildAttendanceInputs(days, checkIns, excuseStatuses, now) — 그달 배정·날
 // 시각과 checkIns·excuseStatuses를 (day_id, profile_id)로 맞물려
 // AttendanceStatusInput[]을 낸다(착수 판정 「근태 월 집계의 입력을 만드는 자리」).
-// 세는 것은 tallyMonthlyAttendance(entities/attendance/model/attendance-summary)
+// 세는 것은 tallyMonthlyAttendance(entities/attendance/model/attendanceSummary)
 // 고 여기서 다시 짜지 않는다 — 이 파일은 입력을 만드는 것만 검증한다.
 //
 // AttendanceInputDay = { id, work_date, starts_at, ends_at,
@@ -17,8 +17,8 @@
 //   같은 사람의 다른 날 기록이 섞이지 않는다
 // - 출근(present)과 출근 인정(excused)을 합치지 않는다(ATT-023)
 
-import { tallyMonthlyAttendance } from "@/entities/attendance/model/attendance-summary";
-import { buildAttendanceInputs } from "@/features/stats/model/attendance-inputs";
+import { tallyMonthlyAttendance } from "@/entities/attendance/model/attendanceSummary";
+import { buildAttendanceInputs } from "@/features/stats/model/attendanceInputs";
 
 const DAYS = [
   {

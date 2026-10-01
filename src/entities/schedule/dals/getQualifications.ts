@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 /**
  * 자격 전체다. 「자격 부여 ∪ 살아 있는 교육 배정」을 TS가 다시 합치지 않는다 — 판정은
@@ -26,7 +26,7 @@ function isFilled(row: QualificationRow): boolean {
   return row.profile_id !== null && row.position !== null;
 }
 
-export async function getQualifications(client: Db): Promise<Qualification[]> {
+export async function getQualifications(client: DB): Promise<Qualification[]> {
   const { data, error } = await client
     .from("qualifications")
     .select("profile_id, position");

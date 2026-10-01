@@ -1,14 +1,14 @@
-// 구현 대상: src/screens/stats/model/attendance-tally.ts (아직 없다)
+// 구현 대상: src/screens/stats/model/attendanceTally.ts (아직 없다)
 //
 // myAttendanceTally(days, checkIns, excuseStatuses, profileId, now) — 내 근태
 // tally를 한 자리로 접는다. StatsScreen.tsx의 myDaysOf(그달 날을 내 배정만
-// 남기는 손)와 screens/stats/model/chart-values.ts 안에 비공개로 사는 같은
+// 남기는 손)와 screens/stats/model/chartValues.ts 안에 비공개로 사는 같은
 // 손이 buildAttendanceInputs·tallyMonthlyAttendance 호출과 한 덩이로 묶이는
 // 자리다 — 둘 다 이 함수를 부르는 모양이어야 한다.
 //
 // - 좁히기: 그달 날들을 profileId가 든 배정만 남기고 좁힌다. profileId가
 //   null이면(프로필을 아직 못 읽은 순간) 좁힌 날이 빈 배열이라 넷 다 0이다.
-// - 좁힌 뒤에는 features/stats/model/attendance-inputs.ts의
+// - 좁힌 뒤에는 features/stats/model/attendanceInputs.ts의
 //   buildAttendanceInputs로 재료를 맞물리고 entities/attendance/model/
 //   attendance-summary.ts의 tallyMonthlyAttendance로 센다 — 판정도 셈도
 //   여기서 다시 안 짠다.
@@ -18,12 +18,12 @@
 import type {
   ScheduleAssignment,
   ScheduleDay,
-} from "@/entities/schedule/dals/get-month-schedule";
+} from "@/entities/schedule/dals/getMonthSchedule";
 import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,
-} from "@/features/stats/model/attendance-inputs";
-import { myAttendanceTally } from "@/screens/stats/model/attendance-tally";
+} from "@/features/stats/model/attendanceInputs";
+import { myAttendanceTally } from "@/screens/stats/model/attendanceTally";
 
 const ME = "profile-me";
 

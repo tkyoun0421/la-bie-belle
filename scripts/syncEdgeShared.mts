@@ -1,7 +1,7 @@
 /**
  * Edge Function이 쓰는 `src/`의 순수 함수를 `supabase/functions/_shared/`로 복사한다.
  *
- *   node --experimental-strip-types scripts/sync-edge-shared.mts
+ *   node --experimental-strip-types scripts/syncEdgeShared.mts
  *
  * edge-runtime 컨테이너에는 `supabase/functions` 한 폴더만 마운트된다. `deno.json`이
  * `../../src/`를 맵핑해도 그 경로가 컨테이너 안에 없어 `Module not found`다 — 심볼릭 링크도
@@ -30,9 +30,9 @@ const SHARED = path.join(ROOT, "supabase/functions/_shared");
 
 /** Edge Function이 `_shared`에서 직접 가져오는 파일들이다. */
 const ENTRIES = [
-  "src/features/notification/model/push-message.ts",
-  "src/features/notification/model/push-result.ts",
-  "src/features/payroll/model/holiday-api-response.ts",
+  "src/features/notification/model/pushMessage.ts",
+  "src/features/notification/model/pushResult.ts",
+  "src/features/payroll/model/holidayApiResponse.ts",
 ];
 
 /** `src/`의 어느 자리가 복사본의 어느 자리로 가는지다. */
@@ -50,7 +50,7 @@ function targetOf(source: string): string {
 
   if (folder === undefined) {
     throw new Error(
-      `${source} 를 옮길 자리가 없다. scripts/sync-edge-shared.mts 의 FOLDERS 에 그 폴더를 더해라.`,
+      `${source} 를 옮길 자리가 없다. scripts/syncEdgeShared.mts 의 FOLDERS 에 그 폴더를 더해라.`,
     );
   }
 

@@ -5,7 +5,7 @@ import {
   designMapViolations,
   designMaps,
   screenDirs,
-} from "@tests/lint/design-map";
+} from "@tests/lint/designMap";
 
 function tempScreensDir(): string {
   const dir = mkdtempSync(join(tmpdir(), "design-map-"));

@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -9,7 +9,7 @@ import { toApiError } from "@/shared/api/errors";
  * 거절 하나 — 관리자가 아니면 `not_allowed`다.
  */
 export async function grantPosition(
-  client: Db,
+  client: DB,
   profileId: string,
   position: string,
 ): Promise<void> {

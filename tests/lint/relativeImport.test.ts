@@ -1,4 +1,4 @@
-import { violationsOf } from "@tests/lint/rule-check";
+import { violationsOf } from "@tests/lint/ruleCheck";
 
 const NO_RESTRICTED_IMPORTS = "no-restricted-imports";
 

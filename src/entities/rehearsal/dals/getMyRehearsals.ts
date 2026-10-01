@@ -1,5 +1,5 @@
-import type { Db } from "@/shared/api/database";
-import { lastDateOfMonth, monthOf } from "@/shared/lib/kst-date";
+import type { DB } from "@/shared/api/database";
+import { lastDateOfMonth, monthOf } from "@/shared/lib/kstDate";
 
 /**
  * 그 달 본인 리허설이다. **조건이 날짜 범위뿐이다** — RLS가 이미 본인 행으로 좁혀
@@ -30,7 +30,7 @@ export function monthRange(month: string): { from: string; to: string } {
 }
 
 export async function getMyRehearsals(
-  client: Db,
+  client: DB,
   month: string,
 ): Promise<Rehearsal[]> {
   const { from, to } = monthRange(month);

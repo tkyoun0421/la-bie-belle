@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 /**
  * 내가 그 달에 낸 근무 신청 날짜들이다. 신청은 날짜에 딸리고 `days`가 아니라서
@@ -9,7 +9,7 @@ import type { Db } from "@/shared/api/database";
  * 통과시키므로 근무자 세션에서는 이 질의가 이미 자기 행만 본다.
  */
 export async function getMyAvailability(
-  client: Db,
+  client: DB,
   month: string,
 ): Promise<string[]> {
   const { data, error } = await client

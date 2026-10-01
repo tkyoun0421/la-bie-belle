@@ -1,7 +1,7 @@
-// 구현 대상: src/entities/attendance/model/attendance-summary.ts (아직 없다)
+// 구현 대상: src/entities/attendance/model/attendanceSummary.ts (아직 없다)
 //
-// tallyMonthlyAttendance는 지금 features/attendance/model/attendance-summary.ts에
-// 산다. features/stats/model/__tests__/attendance-inputs.test.ts가 이것을 부르려고
+// tallyMonthlyAttendance는 지금 features/attendance/model/attendanceSummary.ts에
+// 산다. features/stats/model/__tests__/attendanceInputs.test.ts가 이것을 부르려고
 // house/no-cross-slice-import 억제 주석을 달고 features/stats에서 features/attendance를
 // 직접 불렀다(같은 층 다른 슬라이스, lint 규칙 3 위반).
 //
@@ -9,18 +9,18 @@
 // 이 함수를 entities/attendance/model/로 내린다 — 결근 판정이 이미 이 자리
 // (attendance-status.ts)의 규칙이고, features/stats·screens/admin-stats 양쪽 다
 // entities는 슬라이스 제한 없이 부를 수 있다. 옮기는 것은 자리뿐이고 함수와
-// 단언은 features/attendance/model/__tests__/attendance-summary.test.ts의
+// 단언은 features/attendance/model/__tests__/attendanceSummary.test.ts의
 // tallyMonthlyAttendance 몫과 같다.
 
 import {
   getAttendanceStatus,
   type AttendanceStatusInput,
-} from "@/entities/attendance/model/attendance-status";
+} from "@/entities/attendance/model/attendanceStatus";
 import {
   attendanceRate,
   tallyMonthlyAttendance,
   type MonthlyAttendanceTally,
-} from "@/entities/attendance/model/attendance-summary";
+} from "@/entities/attendance/model/attendanceSummary";
 
 function buildDay(
   overrides: Partial<AttendanceStatusInput> = {},

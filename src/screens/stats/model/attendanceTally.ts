@@ -1,14 +1,14 @@
 import {
   tallyMonthlyAttendance,
   type MonthlyAttendanceTally,
-} from "@/entities/attendance/model/attendance-summary";
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
+} from "@/entities/attendance/model/attendanceSummary";
+import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
 import {
   buildAttendanceInputs,
   type AttendanceInputCheckIn,
   type AttendanceInputDay,
   type AttendanceInputExcuseStatus,
-} from "@/features/stats/model/attendance-inputs";
+} from "@/features/stats/model/attendanceInputs";
 
 /**
  * 그달 내 근태를 넷으로 센다. 화면이 보는 달 하나를 넘기고 추이 그래프가 열두 달을 한 달씩
@@ -22,8 +22,8 @@ import {
  * 빈 배열이 그대로 0으로 나온다.
  *
  * **판정도 셈도 여기서 다시 안 짠다.** 재료를 맞물리는 것은
- * `features/stats/model/attendance-inputs.ts`, 세는 것은
- * `entities/attendance/model/attendance-summary.ts`다 — 확인 중과 안 찍음이 넷 중 어디에도
+ * `features/stats/model/attendanceInputs.ts`, 세는 것은
+ * `entities/attendance/model/attendanceSummary.ts`다 — 확인 중과 안 찍음이 넷 중 어디에도
  * 안 드는 것도 그 계약 그대로다.
  */
 export function myAttendanceTally(

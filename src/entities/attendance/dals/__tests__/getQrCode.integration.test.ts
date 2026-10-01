@@ -1,4 +1,4 @@
-import { getQrCode, qrCodeKey } from "@/entities/attendance/dals/get-qr-code";
+import { getQrCode, qrCodeKey } from "@/entities/attendance/dals/getQrCode";
 import {
   createAdminUser,
   createApprovedUser,

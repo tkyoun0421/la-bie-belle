@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { setDisplayName } from "@/entities/profile/dals/set-display-name";
+import type { DB } from "@/shared/api/database";
+import { setDisplayName } from "@/entities/profile/dals/setDisplayName";
 import {
   MEMBERS_KEY,
   PROFILE_KEY,
   SCHEDULE_KEY,
-} from "@/features/members/model/query-keys";
+} from "@/features/members/model/queryKeys";
 
 /**
  * 관리자가 직원 이름을 고친다. 응답을 기다린다 — 고치는 자리가 시트 안이라 실패를 그 자리에
@@ -34,7 +34,7 @@ export type SetDisplayNameResult = {
   reset: () => void;
 };
 
-export function useSetDisplayName(client: Db): SetDisplayNameResult {
+export function useSetDisplayName(client: DB): SetDisplayNameResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

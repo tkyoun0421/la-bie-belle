@@ -1,5 +1,5 @@
 import type { Database } from "@/shared/api/database";
-import { getOpenSlots } from "@/entities/schedule/dals/get-open-slots";
+import { getOpenSlots } from "@/entities/schedule/dals/getOpenSlots";
 import {
   createAdminUser,
   createApprovedUser,

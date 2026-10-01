@@ -4,12 +4,9 @@ import type { ReactNode } from "react";
 const resetWageToDefaultMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule(
-  "@/entities/payroll/dals/reset-wage-to-default",
-  () => ({
-    resetWageToDefault: resetWageToDefaultMock,
-  }),
-);
+jest.unstable_mockModule("@/entities/payroll/dals/resetWageToDefault", () => ({
+  resetWageToDefault: resetWageToDefaultMock,
+}));
 
 const { renderHook, waitFor, act } =
   await import("@testing-library/react-native");

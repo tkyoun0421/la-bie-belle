@@ -1,10 +1,10 @@
 import { View } from "react-native";
-import { spellWon } from "@/shared/lib/spell-number";
+import { spellWon } from "@/shared/lib/spellNumber";
 import { AmountInput } from "@/shared/ui/AmountInput";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
-import { canResetToDefault } from "@/screens/wages/model/can-reset-to-default";
+import { canResetToDefault } from "@/screens/wages/model/canResetToDefault";
 import {
   atWageCap,
   canSaveWage,
@@ -14,12 +14,12 @@ import {
   WAGE_SAVE_FAILED_SUB,
   WAGE_SAVE_FAILED_TITLE,
   WAGE_TODAY_NOTE,
-} from "@/screens/wages/model/wage-amount";
+} from "@/screens/wages/model/wageAmount";
 import {
   buildWageHistory,
   spellWageDate,
-} from "@/screens/wages/model/wage-history";
-import type { WageRateRow } from "@/screens/wages/model/wage-rows";
+} from "@/screens/wages/model/wageHistory";
+import type { WageRateRow } from "@/screens/wages/model/wageRows";
 import { WAGE_AMOUNT_INPUT_TEST_ID } from "@/screens/wages/ui/DefaultWageSheet";
 
 /**

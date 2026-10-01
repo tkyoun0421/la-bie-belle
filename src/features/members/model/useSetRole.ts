@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { setRole } from "@/entities/profile/dals/set-role";
-import { MEMBERS_KEY } from "@/features/members/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { setRole } from "@/entities/profile/dals/setRole";
+import { MEMBERS_KEY } from "@/features/members/model/queryKeys";
 
 /**
  * 관리자로 올리고 내린다. 남에게 닿는 판정이라 응답을 기다린다
@@ -26,7 +26,7 @@ export type SetRoleResult = {
   reset: () => void;
 };
 
-export function useSetRole(client: Db): SetRoleResult {
+export function useSetRole(client: DB): SetRoleResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

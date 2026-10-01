@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
-import { openDay } from "@/entities/schedule/dals/open-day";
+import { openDay } from "@/entities/schedule/dals/openDay";
 import {
   createAdminUser,
   kstDate,

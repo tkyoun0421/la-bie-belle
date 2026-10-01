@@ -1,7 +1,7 @@
-// 구현 대상: src/screens/admin-stats/model/chart-values.ts (아직 없다)
+// 구현 대상: src/screens/admin-stats/model/chartValues.ts (아직 없다)
 //
 // AdminStatsScreen.tsx(418·429·444·458·469행)에 살던 계산 함수 다섯을 이 파일로
-// 내린다(ADR-001, eslint-rules/dumb-ui.mjs는 통신 축만 봐서 못 걸렀다). 함수와
+// 내린다(ADR-001, eslint-rules/dumbUi.mjs는 통신 축만 봐서 못 걸렀다). 함수와
 // 단언은 그대로고 자리만 옮긴다.
 //
 // monthIn(loaded, month) — 열두 달 배열에서 그 달의 로드 결과 하나를 집는다.
@@ -17,18 +17,18 @@
 // MonthlyAttendanceTally다) — attendanceValues와 percentLabel은 그 함수를 안에서
 // 불러 쓴다.
 
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
+import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
 import type {
   AttendanceMonth,
   WorkMonth,
 } from "@/features/stats/api/useStatsQueries";
-import type { AttendanceTab } from "@/screens/admin-stats/model/attendance-rows";
+import type { AttendanceTab } from "@/screens/admin-stats/model/attendanceRows";
 import {
   attendanceValues,
   monthIn,
   percentLabel,
   workValues,
-} from "@/screens/admin-stats/model/chart-values";
+} from "@/screens/admin-stats/model/chartValues";
 
 function workedDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
   return {
@@ -143,9 +143,9 @@ describe("attendanceValues — 출근율을 못 구하는 달은 그래프에서
   });
 });
 
-// attendanceRate는 src/entities/attendance/model/attendance-summary.ts로 내려갔다
+// attendanceRate는 src/entities/attendance/model/attendanceSummary.ts로 내려갔다
 // (plan stats-worker AC-01). 그 자리의 단언은
-// entities/attendance/model/__tests__/attendance-summary.test.ts가 든다 — 인자도
+// entities/attendance/model/__tests__/attendanceSummary.test.ts가 든다 — 인자도
 // AttendanceTab이 아니라 MonthlyAttendanceTally 하나로 바뀌었다.
 
 describe("percentLabel — 값이 없는 달은 백분율 대신 빈 표시가 선다", () => {

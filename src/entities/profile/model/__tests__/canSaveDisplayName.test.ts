@@ -1,4 +1,4 @@
-import { canSaveDisplayName } from "@/entities/profile/model/can-save-display-name";
+import { canSaveDisplayName } from "@/entities/profile/model/canSaveDisplayName";
 
 // 이름 고치기 시트의 「저장」 버튼 활성 여부다(`docs/2-design/modules/account/screens/
 // members.md`의 「이름 고치기」). 빈 칸이거나 지금 이름 그대로면 저장이 안 눌린다. 같은

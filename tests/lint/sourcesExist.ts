@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { anchorsOf } from "@tests/lint/doc-links";
-import { frontmatterSources, sourceDocFiles } from "@tests/lint/spec-docs";
+import { anchorsOf } from "@tests/lint/docLinks";
+import { frontmatterSources, sourceDocFiles } from "@tests/lint/specDocs";
 
 export type SourcesViolation = {
   file: string;

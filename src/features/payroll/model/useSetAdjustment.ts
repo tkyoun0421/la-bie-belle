@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   setAdjustment,
   type SetAdjustmentInput,
-} from "@/entities/payroll/dals/set-adjustment";
-import { PAYROLL_KEY } from "@/features/payroll/model/query-keys";
+} from "@/entities/payroll/dals/setAdjustment";
+import { PAYROLL_KEY } from "@/features/payroll/model/queryKeys";
 
 /**
  * 그날 그 사람의 근무 시간을 조정한다. 응답을 기다린다 — 고치는 자리가 시트 안이고 그날 배정이
@@ -30,7 +30,7 @@ export type SetAdjustmentResult = {
   reset: () => void;
 };
 
-export function useSetAdjustment(client: Db): SetAdjustmentResult {
+export function useSetAdjustment(client: DB): SetAdjustmentResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

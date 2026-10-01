@@ -1,4 +1,4 @@
-import type { ReachState } from "@/features/notification/model/reach-state";
+import type { ReachState } from "@/features/notification/model/reachState";
 
 /**
  * 「나」 화면의 알림 자리에 스위치를 세울지 안내를 세울지를 정한다. 정본은

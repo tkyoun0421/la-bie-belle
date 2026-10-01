@@ -1,7 +1,7 @@
 import {
   canResetToDefault,
   type WageRateRow,
-} from "@/screens/wages/model/can-reset-to-default";
+} from "@/screens/wages/model/canResetToDefault";
 
 describe("canResetToDefault — 개별로 정했고 기본 시급이 있으면 보인다", () => {
   it("최근 행이 follows_default=false고 기본 시급이 있으면 true다", () => {

@@ -1,4 +1,4 @@
-import { errorsOf, violationsOf } from "@tests/lint/rule-check";
+import { errorsOf, violationsOf } from "@tests/lint/ruleCheck";
 
 const NO_CONSOLE = "no-console";
 

@@ -2,7 +2,7 @@ import {
   getAttendanceStatus,
   type AttendanceStatus,
   type AttendanceStatusInput,
-} from "@/entities/attendance/model/attendance-status";
+} from "@/entities/attendance/model/attendanceStatus";
 
 /**
  * 한 달치 근태를 네 갈래로 센다. 판정은 [`attendance-status.ts`](attendance-status.ts)의

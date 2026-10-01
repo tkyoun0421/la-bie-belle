@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 /**
  * 그 달 급여의 재료 넷이다 — 시급 이력, 조정, 사유 상태, 공휴일. 배정과 날은 `['schedule']`이고
@@ -102,7 +102,7 @@ function nextMonthStart(month: string): string {
   ].join("-");
 }
 
-async function monthDayIds(client: Db, month: string): Promise<string[]> {
+async function monthDayIds(client: DB, month: string): Promise<string[]> {
   const { data, error } = await client
     .from("days")
     .select("id")
@@ -118,7 +118,7 @@ async function monthDayIds(client: Db, month: string): Promise<string[]> {
 }
 
 export async function getPayrollMonth(
-  client: Db,
+  client: DB,
   month: string,
 ): Promise<PayrollMonth> {
   const dayIds = await monthDayIds(client, month);

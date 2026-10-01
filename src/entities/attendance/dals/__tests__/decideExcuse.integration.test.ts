@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
-import { decideExcuse } from "@/entities/attendance/dals/decide-excuse";
+import { decideExcuse } from "@/entities/attendance/dals/decideExcuse";
 import {
   createAdminUser,
   createApprovedUser,

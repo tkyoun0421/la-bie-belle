@@ -1,9 +1,9 @@
-// 구현 대상: src/screens/schedule-admin/model/day-hours-form.ts
+// 구현 대상: src/screens/schedule-admin/model/dayHoursForm.ts
 //
 // 근무 시간 시트의 저장 버튼 활성 판정이다. 끝이 시작보다 이르면 화면이 먼저 막고
 // 서버까지 가면 `bad_hours`다(plan AC-05, schedule-admin.md AC-05).
 
-import { isDayHoursSaveEnabled } from "@/screens/schedule-admin/model/day-hours-form";
+import { isDayHoursSaveEnabled } from "@/screens/schedule-admin/model/dayHoursForm";
 
 describe("isDayHoursSaveEnabled — 끝이 시작보다 늦으면 저장할 수 있다", () => {
   it("10:00~19:00이면 true다", () => {

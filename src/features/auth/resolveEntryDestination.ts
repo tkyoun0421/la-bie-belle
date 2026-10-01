@@ -1,18 +1,18 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   resolveAuthDestination,
   type AuthDestination,
-} from "@/shared/lib/resolve-auth-destination";
-import { ensureProfile as ensureProfileDal } from "@/entities/profile/dals/ensure-profile";
+} from "@/shared/lib/resolveAuthDestination";
+import { ensureProfile as ensureProfileDal } from "@/entities/profile/dals/ensureProfile";
 import {
   getMyProfile as getMyProfileDal,
   type MyProfileRow,
-} from "@/entities/profile/dals/get-my-profile";
+} from "@/entities/profile/dals/getMyProfile";
 
 type EntryDeps = {
-  client: Db;
-  ensureProfile?: (client: Db) => Promise<void>;
-  getMyProfile?: (client: Db, userId: string) => Promise<MyProfileRow | null>;
+  client: DB;
+  ensureProfile?: (client: DB) => Promise<void>;
+  getMyProfile?: (client: DB, userId: string) => Promise<MyProfileRow | null>;
 };
 
 /**

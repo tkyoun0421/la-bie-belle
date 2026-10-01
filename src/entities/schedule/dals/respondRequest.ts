@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -16,7 +16,7 @@ import { toApiError } from "@/shared/api/errors";
 export type RequestAnswer = "accept" | "decline";
 
 export async function respondRequest(
-  client: Db,
+  client: DB,
   requestId: string,
   answer: RequestAnswer,
 ): Promise<string | null> {

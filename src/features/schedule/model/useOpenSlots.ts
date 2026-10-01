@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   getOpenSlots,
   type OpenSlot,
-} from "@/entities/schedule/dals/get-open-slots";
+} from "@/entities/schedule/dals/getOpenSlots";
 import {
   OPEN_SLOTS_SCOPE,
   SCHEDULE_KEY,
-} from "@/features/schedule/model/query-keys";
+} from "@/features/schedule/model/queryKeys";
 
 /**
  * 그 달 빈 자리다. 판정은 `open_slots` 뷰가 끝냈고 화면은 날짜별로 묶어 세기만 한다
@@ -23,7 +23,7 @@ export type OpenSlotsResult = {
   isLoading: boolean;
 };
 
-export function useOpenSlots(client: Db, month: string): OpenSlotsResult {
+export function useOpenSlots(client: DB, month: string): OpenSlotsResult {
   const { data, error, isLoading } = useQuery({
     queryKey: [...SCHEDULE_KEY, month, OPEN_SLOTS_SCOPE],
     queryFn: () => getOpenSlots(client, month),

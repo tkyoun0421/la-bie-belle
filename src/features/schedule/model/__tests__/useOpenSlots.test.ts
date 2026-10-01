@@ -11,7 +11,7 @@ import type { ReactNode } from "react";
 
 const getOpenSlotsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/get-open-slots", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/getOpenSlots", () => ({
   getOpenSlots: getOpenSlotsMock,
 }));
 

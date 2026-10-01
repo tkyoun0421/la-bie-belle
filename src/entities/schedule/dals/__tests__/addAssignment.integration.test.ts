@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { addAssignment } from "@/entities/schedule/dals/add-assignment";
+import { addAssignment } from "@/entities/schedule/dals/addAssignment";
 import {
   createAdminUser,
   createApprovedUser,

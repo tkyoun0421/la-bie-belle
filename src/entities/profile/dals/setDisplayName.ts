@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -9,7 +9,7 @@ import { toApiError } from "@/shared/api/errors";
  * 뜨는 이름까지 따라간다. 공백만 남는 이름은 `invalid_name`이다.
  */
 export async function setDisplayName(
-  client: Db,
+  client: DB,
   profileId: string,
   name: string,
 ): Promise<void> {

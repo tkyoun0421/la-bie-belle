@@ -2,17 +2,17 @@
 // 절을 남겼는지 본다.
 //
 //   git diff --name-only <base>...HEAD \
-//     | node --experimental-strip-types scripts/check-sources-impact.mts
+//     | node --experimental-strip-types scripts/checkSourcesImpact.mts
 //
 // 바뀐 파일 목록은 표준 입력에서 한 줄에 하나씩, PR 본문은 `PR_BODY` 환경 변수에서
-// 읽는다. 판정 규칙은 `tests/lint/sources-impact.ts`가 소유하고 여기는 입출력이다.
+// 읽는다. 판정 규칙은 `tests/lint/sourcesImpact.ts`가 소유하고 여기는 입출력이다.
 
 import { readFileSync } from "node:fs";
 import {
   checkImpactSection,
   findImpacted,
-} from "../tests/lint/sources-impact.ts";
-import { sourceDocs } from "../tests/lint/spec-docs.ts";
+} from "../tests/lint/sourcesImpact.ts";
+import { sourceDocs } from "../tests/lint/specDocs.ts";
 
 function changedFiles(): string[] {
   let input: string;

@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/stats/model/attendance-shares.ts (아직 없다)
+// 구현 대상: src/screens/stats/model/attendanceShares.ts (아직 없다)
 //
 // attendanceRatioShares(tally) — 근태 탭 비율 띠의 몫 넷이다(plan stats-worker
 // AC-01, spec AC-02). 순서는 출근→인정→지각→결근이고(stats.md 「근태 현황
@@ -6,8 +6,8 @@
 // RatioBand shares)과 같은 순서·라벨이다. 몫이 0이어도 자리를 빼지 않는다 —
 // 0을 감추는 것은 RatioBand·범례가 그릴 때 할 일이지 이 셈의 몫이 아니다.
 
-import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendance-summary";
-import { attendanceRatioShares } from "@/screens/stats/model/attendance-shares";
+import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendanceSummary";
+import { attendanceRatioShares } from "@/screens/stats/model/attendanceShares";
 
 const TALLY: MonthlyAttendanceTally = {
   present: 41,

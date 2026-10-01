@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/schedule-admin/model/format-schedule-date.ts
+// 구현 대상: src/screens/schedule-admin/model/formatScheduleDate.ts
 //
 // 날짜 표기(schedule-admin.md 「표기」) — 「10월 10일(토)」와 확정 줄 「10월 3일에
 // 확정했어요 · 14명에게 알림을 보냈어요」(같은 문서 「확정 뒤 짜임」). `work_date`는
@@ -8,7 +8,7 @@
 import {
   confirmedLine,
   formatScheduleDate,
-} from "@/screens/schedule-admin/model/format-schedule-date";
+} from "@/screens/schedule-admin/model/formatScheduleDate";
 
 describe("formatScheduleDate — 「N월 N일(요일)」 꼴이다", () => {
   it("2026-10-10은 「10월 10일(토)」다", () => {

@@ -18,7 +18,7 @@ import { fileURLToPath } from "node:url";
 import {
   describeRouteTypesViolation,
   routeTypesViolations,
-} from "../tests/lint/route-types.ts";
+} from "../tests/lint/routeTypes.ts";
 
 const ROOT = path.resolve(fileURLToPath(import.meta.url), "../..");
 const DECLARATION_PATH = path.join(ROOT, ".expo/types/router.d.ts");

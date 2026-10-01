@@ -1,7 +1,7 @@
 import {
   latestWageRate,
   type WageRateRow,
-} from "@/screens/wages/model/wage-rows";
+} from "@/screens/wages/model/wageRows";
 
 /**
  * 사람 시트에 「기본 시급으로 되돌리기」 줄을 그릴지다. 받는 것은 그 사람의 행만이다.

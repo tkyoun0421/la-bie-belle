@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 /**
  * 홀의 자리·근무 시간 기본값이다. 날을 여는 순간 이 값이 그 날에 깔린다
@@ -26,7 +26,7 @@ export type HallDefaults = {
   default_ends: string;
 };
 
-export async function getHallDefaults(client: Db): Promise<HallDefaults> {
+export async function getHallDefaults(client: DB): Promise<HallDefaults> {
   const { data, error } = await client
     .from("halls")
     .select("default_slots, default_starts, default_ends")

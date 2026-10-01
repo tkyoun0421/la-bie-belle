@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -10,7 +10,7 @@ import { toApiError } from "@/shared/api/errors";
  * 않고 그 자리만 다시 읽는 신호다.
  */
 export async function removeAssignment(
-  client: Db,
+  client: DB,
   assignmentId: string,
 ): Promise<void> {
   const { error } = await client.rpc("remove_assignment", {

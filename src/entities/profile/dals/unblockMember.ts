@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -9,7 +9,7 @@ import { toApiError } from "@/shared/api/errors";
  * 차단된 사람이 아니면 `already_decided`다.
  */
 export async function unblockMember(
-  client: Db,
+  client: DB,
   profileId: string,
 ): Promise<void> {
   const { error } = await client.rpc("unblock_member", {

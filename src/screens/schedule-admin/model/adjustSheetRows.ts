@@ -1,14 +1,14 @@
 import {
   dayTotal,
   type RehearsalRow,
-} from "@/entities/rehearsal/model/rehearsal-hours";
+} from "@/entities/rehearsal/model/rehearsalHours";
 import {
   adjustedMinutes,
   dayMinutes,
   type AdjustmentRow,
   type WorkDayHours,
-} from "@/features/payroll/model/day-minutes";
-import { assignedMinutes } from "@/screens/schedule-admin/model/absence-minutes";
+} from "@/features/payroll/model/dayMinutes";
+import { assignedMinutes } from "@/screens/schedule-admin/model/absenceMinutes";
 
 /**
  * 근무 조정 시트의 사람 줄들이다. 정본은
@@ -18,7 +18,7 @@ import { assignedMinutes } from "@/screens/schedule-admin/model/absence-minutes"
  * 배정이 없는 사람은 이 목록에 없다 — 그 사람을 보는 자리는 리허설 화면이다.
  *
  * **줄마다 그날 최종 시간이 선다.** 배정 시간 + 조정 + 리허설이고, 셈은 급여가 쓰는
- * [`dayMinutes`](../../../features/payroll/model/day-minutes.ts) 그대로다 — 여기서 다시 짜면
+ * [`dayMinutes`](../../../features/payroll/model/dayMinutes.ts) 그대로다 — 여기서 다시 짜면
  * 급여 화면과 이 시트가 다른 시간을 말한다(PAY-028).
  *
  * **앞머리는 마지막 조정 행의 부호가 정한다.** 되돌린 사람(마지막 행이 0분)에게는 안 붙는다.

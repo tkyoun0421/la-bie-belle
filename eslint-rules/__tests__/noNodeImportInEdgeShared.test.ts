@@ -1,15 +1,15 @@
-// 구현 대상: eslint-rules/no-node-import-in-edge-shared.mjs (notification-push plan AC-10)
+// 구현 대상: eslint-rules/noNodeImportInEdgeShared.mjs (notification-push plan AC-10)
 //
 // `src/features/notification/model/`은 CI가 `supabase/functions/_shared/`로 복사해
 // Deno로 돌리는 폴더다(notification/design.md 「푸시 보내기」). 그 안에서 Node 전용
 // API를 부르면 복사본이 런타임에서 깨진다 — 정본은 「lint가 막는다」고 이미 적는데
 // 그 규칙이 저장소에 없었다.
 
-import { violationsOf } from "@tests/lint/rule-check";
+import { violationsOf } from "@tests/lint/ruleCheck";
 
 const RULE_ID = "house/no-node-import-in-edge-shared";
 
-const SHARED_FILE = "src/features/notification/model/push-message.ts";
+const SHARED_FILE = "src/features/notification/model/pushMessage.ts";
 
 function importCode(specifier: string) {
   return `import { thing } from "${specifier}";\n\nexport function run() {\n  return thing;\n}\n`;
@@ -38,7 +38,7 @@ describe("house/no-node-import-in-edge-shared — Deno로 복사되는 폴더의
   it("복사되지 않는 폴더의 node: import는 안 걸린다", async () => {
     const violations = await violationsOf(
       importCode("node:crypto"),
-      "src/shared/lib/spell-number.ts",
+      "src/shared/lib/spellNumber.ts",
     );
 
     expect(violations.map((violation) => violation.ruleId)).not.toContain(

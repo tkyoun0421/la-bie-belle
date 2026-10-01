@@ -1,8 +1,8 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 export async function removePushToken(
-  client: Db,
+  client: DB,
   token: string,
 ): Promise<void> {
   const { error } = await client.rpc("remove_push_token", {

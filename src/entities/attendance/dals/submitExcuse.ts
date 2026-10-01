@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 export type SubmitExcuseParams = {
@@ -7,7 +7,7 @@ export type SubmitExcuseParams = {
 };
 
 export async function submitExcuse(
-  client: Db,
+  client: DB,
   params: SubmitExcuseParams,
 ): Promise<void> {
   const { error } = await client.rpc("submit_excuse", {

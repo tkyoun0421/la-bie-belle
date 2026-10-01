@@ -5,7 +5,7 @@ import {
   backlogRows,
   backlogViolations,
   repositoryBacklog,
-} from "@tests/lint/backlog-ids";
+} from "@tests/lint/backlogIds";
 
 const COLUMNS = [
   "작업 ID",

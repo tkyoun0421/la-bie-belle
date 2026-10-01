@@ -1,5 +1,5 @@
 // 여러 플로우(pending·left·blocked·retry·session·schedule-worker)가 나눠 쓰는 준비
-// 절차다. runScript로 이 파일을 부르면 로컬 시드 서버(scripts/e2e-seed-server.mts,
+// 절차다. runScript로 이 파일을 부르면 로컬 시드 서버(scripts/e2eSeedServer.mts,
 // 127.0.0.1:8765)에 사용자 상태를 만들어 달라고 요청하고, 돌아온 세션 토큰을
 // output에 실어 그 다음 스텝의 `openLink`가 쓰게 한다.
 //
@@ -23,7 +23,7 @@
 // 보내는 상태에서 그 사람의 이름을 고른다 — 한 화면에 승인된 사람을 여럿 세우는
 // members.yaml이 쓴다. 안 주면 시드 서버의 기본 이름이다. MONTH·DAY도 선택이고
 // schedule_admin_race_open만 쓴다 — 이미 로그인된 세션 밖에서 먼저 열 날짜다.
-// 계약과 상태별 응답 값은 scripts/e2e-seed-server.mts가 정본이다.
+// 계약과 상태별 응답 값은 scripts/e2eSeedServer.mts가 정본이다.
 //
 // NAME·MONTH·DAY가 env에 없으면 그 이름의 전역 자체가 없다 — 그래서 typeof로 먼저
 // 묻는다. 바로 읽으면 그것을 안 주는 플로우(pending·left·blocked·retry·session·

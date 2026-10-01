@@ -1,17 +1,17 @@
 import { skipToken, useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   getMyProfile,
   type MyProfileRow,
-} from "@/entities/profile/dals/get-my-profile";
+} from "@/entities/profile/dals/getMyProfile";
 import {
   getProfilePrivate,
   type ProfilePrivateRow,
-} from "@/entities/profile/dals/profile-private";
+} from "@/entities/profile/dals/profilePrivate";
 import {
   PROFILE_KEY,
   PROFILE_PRIVATE_KEY,
-} from "@/features/profile/model/query-keys";
+} from "@/features/profile/model/queryKeys";
 
 /**
  * 「나」 화면이 보는 다섯은 표 둘에 나뉘어 산다 — 이름과 사진과 역할은 `profiles`,
@@ -38,7 +38,7 @@ export type MyProfileResult = {
 };
 
 export function useMyProfile(
-  client: Db,
+  client: DB,
   userId: string | null,
 ): MyProfileResult {
   const profile = useQuery({

@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { DomainError, TransportError } from "@/shared/api/errors";
-import { updateMyContact } from "@/entities/profile/dals/update-my-contact";
+import { updateMyContact } from "@/entities/profile/dals/updateMyContact";
 
 // `profile_private.phone`은 함수가 아니라 본인 행 직접 갱신이다 — check 제약이 마지막 문이라
 // 이 DAL이 PostgREST의 23514를 제약 이름으로 갈라 DomainError('invalid_phone')으로 바꾼다.
@@ -9,12 +9,12 @@ import { updateMyContact } from "@/entities/profile/dals/update-my-contact";
 
 type FakeError = { code?: string; message: string } | null;
 
-function buildClient(error: FakeError): Db {
+function buildClient(error: FakeError): DB {
   const eq = jest.fn(async () => ({ error }));
   const update = jest.fn(() => ({ eq }));
   const from = jest.fn(() => ({ update }));
 
-  return { from } as unknown as Db;
+  return { from } as unknown as DB;
 }
 
 const CHECK_VIOLATION_ERROR = {

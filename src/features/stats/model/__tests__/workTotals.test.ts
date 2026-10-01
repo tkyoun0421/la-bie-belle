@@ -1,4 +1,4 @@
-// 구현 대상: src/features/stats/model/work-totals.ts
+// 구현 대상: src/features/stats/model/workTotals.ts
 //
 // computeWorkTotals(assignments, days) — 그달의 배정 목록과 날 목록을 받아
 // { totalMinutes, totalCount, byPerson, byPosition }을 낸다
@@ -18,7 +18,7 @@
 // - 재직 여부는 이 함수의 입력에 없다 — 그달 배정이 있으면 무조건 byPerson에 선다
 //   (퇴사한 사람도 같다)
 
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
+import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
 import { POSITION_ORDER } from "@/entities/schedule/model/positions";
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
 import {
@@ -29,7 +29,7 @@ import {
   workInputsOf,
   type WorkAssignment,
   type WorkDay,
-} from "@/features/stats/model/work-totals";
+} from "@/features/stats/model/workTotals";
 
 describe("computeWorkTotals — 사람별 합·포지션별 합·전체 합이 같다", () => {
   it("byPerson 시간 합과 byPosition 시간 합이 totalMinutes와 같다", () => {

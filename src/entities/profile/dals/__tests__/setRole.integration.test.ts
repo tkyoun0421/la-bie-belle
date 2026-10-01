@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { setRole } from "@/entities/profile/dals/set-role";
+import { setRole } from "@/entities/profile/dals/setRole";
 import {
   createAdminUser,
   createApprovedUser,

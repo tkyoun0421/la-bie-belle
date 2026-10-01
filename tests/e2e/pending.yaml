@@ -2,8 +2,8 @@
 # 재진입. 화면이 하나라 플로우도 하나고, 장면마다 앱을 다시 깨끗이 켠다.
 #
 # 세션은 개발 빌드의 테스트 문(src/app/__test/session.tsx — 아직 없다)과 시드
-# 서버(scripts/e2e-seed-server.mts, 127.0.0.1:8765 — 아직 없다)로 심는다.
-# runScript(tests/e2e/scripts/seed-session.js)가 시드 서버를 부르고 받은 토큰을
+# 서버(scripts/e2eSeedServer.mts, 127.0.0.1:8765 — 아직 없다)로 심는다.
+# runScript(tests/e2e/scripts/seedSession.js)가 시드 서버를 부르고 받은 토큰을
 # openLink에 싣는다. 계약 표는 이 task 리턴에 있다.
 #
 # 문안은 docs/2-design/modules/account/screens/login.md의 문안 표 글자 그대로다.

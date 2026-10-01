@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { forceChange } from "@/entities/schedule/dals/force-change";
+import { forceChange } from "@/entities/schedule/dals/forceChange";
 import {
   backdateDeadline,
   createAdminUser,

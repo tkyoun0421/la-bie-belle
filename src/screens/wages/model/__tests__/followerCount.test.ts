@@ -1,7 +1,7 @@
 import {
   countFollowers,
   type WageRateRow,
-} from "@/screens/wages/model/follower-count";
+} from "@/screens/wages/model/followerCount";
 
 const PROFILE_IDS = ["profile-1", "profile-2", "profile-3"];
 

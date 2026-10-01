@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { Database } from "@/shared/api/database";
-import { getMonthSchedule } from "@/entities/schedule/dals/get-month-schedule";
+import { getMonthSchedule } from "@/entities/schedule/dals/getMonthSchedule";
 import {
   createAdminUser,
   createApprovedUser,

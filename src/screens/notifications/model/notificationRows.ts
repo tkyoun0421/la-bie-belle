@@ -1,4 +1,4 @@
-import { kstDateOf } from "@/shared/lib/kst-date";
+import { kstDateOf } from "@/shared/lib/kstDate";
 import { ADMIN_NOTICE } from "@/entities/notification/model/types";
 
 /**

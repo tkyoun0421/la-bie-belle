@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 const respondRequestMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/schedule/dals/respond-request", () => ({
+jest.unstable_mockModule("@/entities/schedule/dals/respondRequest", () => ({
   respondRequest: respondRequestMock,
 }));
 

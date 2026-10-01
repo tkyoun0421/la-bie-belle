@@ -1,4 +1,4 @@
-import type { PayrollDay } from "@/features/payroll/model/payroll-days";
+import type { PayrollDay } from "@/features/payroll/model/payrollDays";
 
 /**
  * 날짜별 금액을 주와 달로 묶는다. **주는 월요일에 시작해 일요일에 끝나고**

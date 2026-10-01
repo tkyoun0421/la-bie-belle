@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 const getWageRatesMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
-jest.unstable_mockModule("@/entities/payroll/dals/get-wage-rates", () => ({
+jest.unstable_mockModule("@/entities/payroll/dals/getWageRates", () => ({
   getWageRates: getWageRatesMock,
 }));
 

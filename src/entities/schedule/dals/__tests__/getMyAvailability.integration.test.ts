@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { getMyAvailability } from "@/entities/schedule/dals/get-my-availability";
+import { getMyAvailability } from "@/entities/schedule/dals/getMyAvailability";
 import {
   createApprovedUser,
   execSql,

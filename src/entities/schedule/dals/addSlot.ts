@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -9,7 +9,7 @@ import { toApiError } from "@/shared/api/errors";
  * 확정 뒤에 새로 연 날은 통과한다.
  */
 export async function addSlot(
-  client: Db,
+  client: DB,
   dayId: string,
   position: string,
 ): Promise<void> {

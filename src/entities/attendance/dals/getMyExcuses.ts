@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 export type ExcuseRow = {
   id: string;
@@ -36,7 +36,7 @@ function nextMonthFirstDay(month: string): string {
 }
 
 export async function getMyExcuses(
-  client: Db,
+  client: DB,
   month: string,
 ): Promise<ExcuseRow[]> {
   const { data: days, error: daysError } = await client

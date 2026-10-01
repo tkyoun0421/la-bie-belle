@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { sendWorkRequest } from "@/entities/schedule/dals/send-work-request";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { sendWorkRequest } from "@/entities/schedule/dals/sendWorkRequest";
+import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 관리자가 고른 사람들에게 빈 자리의 근무를 물어본다. 보낸 뒤 자리 카드에 배지가 서고
@@ -23,7 +23,7 @@ export type SendWorkRequestResult = {
   reset: () => void;
 };
 
-export function useSendWorkRequest(client: Db): SendWorkRequestResult {
+export function useSendWorkRequest(client: DB): SendWorkRequestResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

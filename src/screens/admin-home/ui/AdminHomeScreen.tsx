@@ -14,7 +14,7 @@ import { RatioBand } from "@/shared/ui/RatioBand";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
-import { liveAssignmentCount } from "@/entities/schedule/dals/get-month-schedule";
+import { liveAssignmentCount } from "@/entities/schedule/dals/getMonthSchedule";
 import { useMembers } from "@/features/members/model/useMembers";
 import { useUnreadCount } from "@/features/notification/model/useUnreadCount";
 import { useHallDefaults } from "@/features/schedule/model/useHallDefaults";
@@ -23,22 +23,22 @@ import { useMonthWindow } from "@/features/schedule/model/useMonthWindow";
 import { useOpenSlots } from "@/features/schedule/model/useOpenSlots";
 import { usePendingApprovals } from "@/features/schedule/model/usePendingApprovals";
 import { useSetHallDefaults } from "@/features/schedule/model/useSetHallDefaults";
-import { approvalsLine } from "@/screens/admin-home/model/approvals-line";
-import { homeTileSummary } from "@/screens/admin-home/model/home-tile-summary";
-import { miniViewLoads } from "@/screens/admin-home/model/mini-view-density";
-import { tileMonth } from "@/screens/admin-home/model/tile-month";
+import { approvalsLine } from "@/screens/admin-home/model/approvalsLine";
+import { homeTileSummary } from "@/screens/admin-home/model/homeTileSummary";
+import { miniViewLoads } from "@/screens/admin-home/model/miniViewDensity";
+import { tileMonth } from "@/screens/admin-home/model/tileMonth";
 import {
   kstToday,
   spellDate,
   todayBandShares,
   todayStatus,
-} from "@/screens/admin-home/model/today-status";
+} from "@/screens/admin-home/model/todayStatus";
 import {
   vacancyCardTitle,
   vacancyCards,
   vacancyDaysLeftLine,
   vacancyDaysOf,
-} from "@/screens/admin-home/model/vacancy-cards";
+} from "@/screens/admin-home/model/vacancyCards";
 import { HallDefaultsSheet } from "@/screens/admin-home/ui/HallDefaultsSheet";
 
 /**

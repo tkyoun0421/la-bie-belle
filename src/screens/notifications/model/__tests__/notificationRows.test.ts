@@ -2,7 +2,7 @@ const {
   groupNotificationsByDate,
   resolveNotificationsListState,
   unreadAdminNoticeIds,
-} = await import("@/screens/notifications/model/notification-rows");
+} = await import("@/screens/notifications/model/notificationRows");
 
 type RawNotificationRow = {
   id: string;

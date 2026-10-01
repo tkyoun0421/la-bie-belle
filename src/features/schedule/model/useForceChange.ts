@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { forceChange } from "@/entities/schedule/dals/force-change";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { forceChange } from "@/entities/schedule/dals/forceChange";
+import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 확정 뒤 「사람 바꾸기」다. 옛 배정을 닫고 새 배정을 여는 한 트랜잭션이 함수 안에서
@@ -24,7 +24,7 @@ export type ForceChangeResult = {
   reset: () => void;
 };
 
-export function useForceChange(client: Db): ForceChangeResult {
+export function useForceChange(client: DB): ForceChangeResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

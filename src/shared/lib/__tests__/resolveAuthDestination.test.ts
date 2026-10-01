@@ -1,7 +1,7 @@
 import {
   resolveAuthDestination,
   resolveGateMove,
-} from "@/shared/lib/resolve-auth-destination";
+} from "@/shared/lib/resolveAuthDestination";
 
 const emptyProfile = { approvedAt: null, blockedAt: null, leftAt: null };
 

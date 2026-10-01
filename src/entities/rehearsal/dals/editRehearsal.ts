@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -17,7 +17,7 @@ export type EditRehearsalInput = {
 };
 
 export async function editRehearsal(
-  client: Db,
+  client: DB,
   input: EditRehearsalInput,
 ): Promise<void> {
   const { error } = await client.rpc("edit_rehearsal", {

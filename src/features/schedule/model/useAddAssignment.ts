@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   addAssignment,
   type AddAssignmentInput,
-} from "@/entities/schedule/dals/add-assignment";
-import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/query-keys";
+} from "@/entities/schedule/dals/addAssignment";
+import { SCHEDULE_WRITE_KEYS } from "@/features/schedule/model/queryKeys";
 
 /**
  * 배정 추가 — 정규와 교육이 이 훅 하나로 간다. 갈래는 화면이 이미 정해 보낸다(빈 자리를
@@ -23,7 +23,7 @@ export type AddAssignmentResult = {
   reset: () => void;
 };
 
-export function useAddAssignment(client: Db): AddAssignmentResult {
+export function useAddAssignment(client: DB): AddAssignmentResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

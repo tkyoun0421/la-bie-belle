@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -7,7 +7,7 @@ import { toApiError } from "@/shared/api/errors";
  *
  * 남의 행이면 `not_allowed`다 — 관리자도 못 지운다.
  */
-export async function removeRehearsal(client: Db, id: string): Promise<void> {
+export async function removeRehearsal(client: DB, id: string): Promise<void> {
   const { error } = await client.rpc("remove_rehearsal", { p_id: id });
 
   if (error) {

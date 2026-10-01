@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { DomainError } from "@/shared/api/errors";
-import { respondRequest } from "@/entities/schedule/dals/respond-request";
+import { respondRequest } from "@/entities/schedule/dals/respondRequest";
 import {
   createAdminUser,
   createApprovedUser,

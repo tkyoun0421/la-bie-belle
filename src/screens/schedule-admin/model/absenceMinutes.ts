@@ -1,7 +1,7 @@
 import {
   dayMinutes,
   type WorkDayHours,
-} from "@/features/payroll/model/day-minutes";
+} from "@/features/payroll/model/dayMinutes";
 
 /**
  * 결근을 고른 순간 화면이 넣는 분이다 — 그날 배정 시간만큼의 음수다
@@ -9,7 +9,7 @@ import {
  * 「결근」이라는 값을 만드는 자리가 여기 하나다.
  *
  * **시:분 파싱을 새로 안 짠다.** 배정 시간을 내는 것은 급여 계산이 이미 하는 일이라
- * [`dayMinutes`](../../../features/payroll/model/day-minutes.ts)를 그대로 부른다 — 여기서 다시
+ * [`dayMinutes`](../../../features/payroll/model/dayMinutes.ts)를 그대로 부른다 — 여기서 다시
  * 짜면 급여 화면과 이 시트가 다른 시간을 말한다.
  *
  * **고른 순간의 값이다.** 뒤에 근무 시간을 고쳐도 이미 선 조정 행은 안 따라간다.

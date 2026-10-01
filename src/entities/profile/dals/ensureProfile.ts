@@ -1,6 +1,6 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
-export async function ensureProfile(client: Db): Promise<void> {
+export async function ensureProfile(client: DB): Promise<void> {
   const { error } = await client.rpc("ensure_profile");
 
   if (error) {

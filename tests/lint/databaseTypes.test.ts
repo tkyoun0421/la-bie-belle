@@ -7,7 +7,7 @@ import {
   missingObjects,
   repositoryDatabaseTypesViolations,
   TYPES_FILE,
-} from "@tests/lint/database-types";
+} from "@tests/lint/databaseTypes";
 
 describe("마이그레이션에서 표·뷰·함수 이름을 뽑는다", () => {
   it("스키마와 갈래를 붙여 낸다", () => {
@@ -179,7 +179,7 @@ describe("생성 타입을 안 물린 클라이언트를 쓰는 파일", () => {
       },
       {
         file: "src/entities/profile/dals/getMyProfile.ts",
-        source: `import type { Db } from "@/shared/api/database";`,
+        source: `import type { DB } from "@/shared/api/database";`,
       },
     ];
 
@@ -243,7 +243,7 @@ describe("위반을 사람이 읽는 문장으로 옮긴다", () => {
     });
 
     expect(message).toContain("src/entities/profile/dals/ensureProfile.ts");
-    expect(message).toContain("Db");
+    expect(message).toContain("DB");
   });
 });
 
@@ -259,7 +259,7 @@ describe("저장소 실물 — 마이그레이션과 생성 타입이 맞고 맨
   });
 
   it("생성 타입 파일과 별명 파일의 자리가 정해져 있다", () => {
-    expect(TYPES_FILE).toBe("src/shared/api/database-types.ts");
+    expect(TYPES_FILE).toBe("src/shared/api/databaseTypes.ts");
     expect(ALIAS_FILE).toBe("src/shared/api/database.ts");
   });
 });

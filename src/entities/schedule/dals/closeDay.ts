@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -8,7 +8,7 @@ import { toApiError } from "@/shared/api/errors";
  * 거절 셋 — 안 연 날이면 `not_open`, 그 달이 확정됐으면 `already_confirmed`,
  * 관리자가 아니면 `not_allowed`다.
  */
-export async function closeDay(client: Db, workDate: string): Promise<void> {
+export async function closeDay(client: DB, workDate: string): Promise<void> {
   const { error } = await client.rpc("close_day", { p_work_date: workDate });
 
   if (error) {

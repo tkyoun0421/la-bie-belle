@@ -27,9 +27,9 @@
 ### `pnpm routes:types`
 
 - 전제: `pnpm install --frozen-lockfile`이 끝나 있다.
-- 실행: `pnpm routes:types` — `scripts/generate-route-types.mts`가 `expo customize tsconfig.json`을 부르고 그것이 낸 `.expo/types/router.d.ts`를 다시 읽어 판정한다. `pnpm typecheck`가 앞에 이것을 세워서 따로 부를 일은 드물다.
+- 실행: `pnpm routes:types` — `scripts/generateRouteTypes.mts`가 `expo customize tsconfig.json`을 부르고 그것이 낸 `.expo/types/router.d.ts`를 다시 읽어 판정한다. `pnpm typecheck`가 앞에 이것을 세워서 따로 부를 일은 드물다.
 - 정상 결과: `.expo/types/router.d.ts가 섰다`가 찍히고 종료 코드 0. `tsconfig.json`은 이미 `.expo/types/**/*.ts`를 `include`해서 안 바뀐다 — 여러 번 돌려도 같다.
-- 실패할 때: 파일이 안 생겼거나 `ExpoRouter.__routes`가 반쯤 섰으면 어느 자리가 빈지 찍고 종료 코드 1이다. 판정하는 규칙 넷은 [`tests/lint/route-types.ts`](../../tests/lint/route-types.ts)에 있고 그 테스트가 `pnpm test`에서 돈다.
+- 실패할 때: 파일이 안 생겼거나 `ExpoRouter.__routes`가 반쯤 섰으면 어느 자리가 빈지 찍고 종료 코드 1이다. 판정하는 규칙 넷은 [`tests/lint/routeTypes.ts`](../../tests/lint/routeTypes.ts)에 있고 그 테스트가 `pnpm test`에서 돈다.
 - 근거 위치: PR의 `ci` 워크플로 `pnpm typecheck` 단계 — 같은 단계에서 먼저 돈다.
 
 **왜 생성이 검사 앞에 서나.** `.expo/`는 `.gitignore` 안이라 CI에 라우트 타입이 없다. 없으면 `expo-router`의 `Href`가 `string | HrefObject`로 떨어져 **`router.replace("/없는경로")`가 `tsc`를 통과한다** — 타입 안전이 로컬에서만 켜져 있고 CI에서는 조용히 꺼진 상태다. 종료 코드로는 두 상태가 구별되지 않아서 스크립트가 생성물을 직접 읽어 판정한다.
@@ -73,9 +73,9 @@
 ### `pnpm types`
 
 - 전제: 로컬 Supabase가 떠 있고 마이그레이션이 올라가 있다. 방금 표를 바꿨으면 `supabase db reset`이 먼저다 — `supabase migration up`은 이미 올린 파일을 다시 안 돌린다.
-- 실행: `pnpm types` — `scripts/generate-database-types.mts`가 `supabase gen types typescript --local --schema public --schema internal`을 부르고, 뽑은 것에 prettier를 먹여 `src/shared/api/database-types.ts`에 쓴 뒤 다시 읽어 판정한다.
-- 정상 결과: `src/shared/api/database-types.ts가 섰다`가 찍히고 종료 코드 0. 표가 안 바뀌었으면 작업 트리도 안 바뀐다.
-- 실패할 때: 스택이 안 떠 있으면 `supabase status`를 가리키고 멈춘다. 뽑기가 절반만 되면 어느 표·뷰·함수가 빠졌는지 찍는다 — 그 판정은 [`tests/lint/database-types.ts`](../../tests/lint/database-types.ts)에 있고 `pnpm test`에서도 돈다.
+- 실행: `pnpm types` — `scripts/generateDatabaseTypes.mts`가 `supabase gen types typescript --local --schema public --schema internal`을 부르고, 뽑은 것에 prettier를 먹여 `src/shared/api/databaseTypes.ts`에 쓴 뒤 다시 읽어 판정한다.
+- 정상 결과: `src/shared/api/databaseTypes.ts가 섰다`가 찍히고 종료 코드 0. 표가 안 바뀌었으면 작업 트리도 안 바뀐다.
+- 실패할 때: 스택이 안 떠 있으면 `supabase status`를 가리키고 멈춘다. 뽑기가 절반만 되면 어느 표·뷰·함수가 빠졌는지 찍는다 — 그 판정은 [`tests/lint/databaseTypes.ts`](../../tests/lint/databaseTypes.ts)에 있고 `pnpm test`에서도 돈다.
 - 근거 위치: PR의 `ci` 워크플로 「생성 타입이 마이그레이션과 같은지 본다」 단계.
 
 **왜 `typecheck`에 안 끼우나.** 이 명령은 Docker와 로컬 스택이 필요하다. `pnpm typecheck`는 그것 없이 돌아야 해서 CI에서도 DB를 띄운 뒤에 따로 선다 — 마이그레이션을 올리는 `pnpm test:integration:run` 다음이다.
@@ -116,14 +116,14 @@
 
 **지금 플로우는 하나다.** `login.yaml`이 세션 없는 차가운 시작이 로그인 화면에 서는지 본다. **아직 한 번도 돌리지 않았다** — 올릴 앱이 없다. 나머지 라우트는 플로우가 없어서 고치려 들면 훅이 막는다. 그것이 이 자리가 서기 전까지 안 물던 게이트다.
 
-**세션은 개발 빌드의 테스트 문으로 심는다.** Maestro는 앱 내부를 안 봐서 코드로 세션을 넣을 수 없으니 앱이 문을 하나 낸다 — `src/app/__test/session.tsx`가 `labiebelle://__test/session?access_token=…&refresh_token=…`을 받아 `supabase.auth.setSession`을 부르고 게이트로 넘긴다. `_catalog`와 같은 꼴로 `__DEV__`가 아니면 `/`로 돌려보내 프로덕션에는 문이 없다. 토큰과 DB 상태는 **시드 서버**가 만든다 — `scripts/e2e-seed-server.mts`가 `tests/integration/postgres.ts`의 헬퍼(거절·퇴사·차단 사용자 만들기 등)를 로컬 HTTP(`127.0.0.1:8765`)로 내놓고, 테스트 사용자를 이메일·비밀번호로 만들어 `signInWithPassword`로 받은 토큰을 돌려준다. 플로우는 `runScript`로 그 서버를 부르고 받은 토큰을 `openLink`에 넣는다. 서버는 `pnpm e2e`가 띄우고 끝나면 내린다 — 로컬 Supabase가 떠 있어야 하고 프로덕션 키는 절대 받지 않는다(URL이 `127.0.0.1`이 아니면 서버가 죽는다). 이 문을 처음 세우는 task가 `profile-form`이다 — 로그인 뒤 화면에 처음 닿는 task라서다.
+**세션은 개발 빌드의 테스트 문으로 심는다.** Maestro는 앱 내부를 안 봐서 코드로 세션을 넣을 수 없으니 앱이 문을 하나 낸다 — `src/app/__test/session.tsx`가 `labiebelle://__test/session?access_token=…&refresh_token=…`을 받아 `supabase.auth.setSession`을 부르고 게이트로 넘긴다. `_catalog`와 같은 꼴로 `__DEV__`가 아니면 `/`로 돌려보내 프로덕션에는 문이 없다. 토큰과 DB 상태는 **시드 서버**가 만든다 — `scripts/e2eSeedServer.mts`가 `tests/integration/postgres.ts`의 헬퍼(거절·퇴사·차단 사용자 만들기 등)를 로컬 HTTP(`127.0.0.1:8765`)로 내놓고, 테스트 사용자를 이메일·비밀번호로 만들어 `signInWithPassword`로 받은 토큰을 돌려준다. 플로우는 `runScript`로 그 서버를 부르고 받은 토큰을 `openLink`에 넣는다. 서버는 `pnpm e2e`가 띄우고 끝나면 내린다 — 로컬 Supabase가 떠 있어야 하고 프로덕션 키는 절대 받지 않는다(URL이 `127.0.0.1`이 아니면 서버가 죽는다). 이 문을 처음 세우는 task가 `profile-form`이다 — 로그인 뒤 화면에 처음 닿는 task라서다.
 
 ### 파일을 골라 실행
 
 작성 중에는 바꾼 파일부터 실행한다. 아래는 현재 존재하는 테스트 경로다. `pnpm test`는 unit만 집고 integration은 실행하지 않는다.
 
 ```sh
-pnpm test src/shared/lib/__tests__/resolve-auth-destination.test.ts
+pnpm test src/shared/lib/__tests__/resolveAuthDestination.test.ts
 ```
 
 integration은 준비와 러너 호출을 나눈다. integration 스크립트는 여러 명령을 연결하므로 파일 인자 전달에 기대지 않는다.
@@ -131,7 +131,7 @@ integration은 준비와 러너 호출을 나눈다. integration 스크립트는
 ```sh
 supabase start
 supabase migration up
-pnpm exec jest --config jest.integration.config.js src/entities/profile/dals/__tests__/ensure-profile.integration.test.ts
+pnpm exec jest --config jest.integration.config.js src/entities/profile/dals/__tests__/ensureProfile.integration.test.ts
 ```
 
 ## CI와 결과 위치
@@ -156,7 +156,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 `.claude/hooks/`의 편집 훅 셋과 `.githooks/`의 pre-commit이 각각 작동한다. 근거는 ADR-001과 ADR-005다.
 
 - **`spec-gate.py`** — `feat/<슬러그>` 브랜치에서 `src/`를 고치려면 `docs/2-design/spec/<슬러그>.md`가 `status: approved`여야 한다. `feat/`가 아닌 브랜치(문서·리팩터링·수리)는 게이트 밖이다.
-- **`tdd-guard-unit.py`** — `src/`·`tests/lint/`의 실행 코드를 export하는 `.ts`에 짝 테스트를 요구한다. `src/`는 같은 레벨 `__tests__/<이름>.test.ts` 또는 `<이름>.integration.test.ts`, `tests/lint/`는 형제 테스트를 찾는다. `src/app/`·`src/shared/ui/`, 타입 선언·테스트 파일은 예외다. `tests/lint/rule-check.ts`를 고치려면 먼저 짝 테스트가 필요하다. `src/app/`의 예외는 위임만 남는 구조를 전제로 한다.
+- **`tdd-guard-unit.py`** — `src/`·`tests/lint/`의 실행 코드를 export하는 `.ts`에 짝 테스트를 요구한다. `src/`는 같은 레벨 `__tests__/<이름>.test.ts` 또는 `<이름>.integration.test.ts`, `tests/lint/`는 형제 테스트를 찾는다. `src/app/`·`src/shared/ui/`, 타입 선언·테스트 파일은 예외다. `tests/lint/ruleCheck.ts`를 고치려면 먼저 짝 테스트가 필요하다. `src/app/`의 예외는 위임만 남는 구조를 전제로 한다.
 - **`tdd-guard-e2e.py`** — 화면을 고치려면 `tests/e2e/<이름>.yaml`이 있어야 한다. 이름을 뽑는 규칙은 [`pnpm e2e`](#pnpm-e2e)에 있다. `.tsx`만 화면으로 본다 — `src/screens/` 아래 순수 `.ts`는 밖이다.
 - **pre-commit(`.githooks/`)** — 시크릿 패턴을 막고 staged 파일의 포맷을 고쳐 다시 올린다. 일부만 staged된 파일이 포맷에 어긋나면 고치지 않고 막는다 — 그때는 `pnpm format` 뒤 직접 `git add` 한다.
 
@@ -164,32 +164,32 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 
 ## 집행되는 규칙
 
-기계가 무는 규칙의 정본이다. `tests/lint/rule-catalogue.test.ts`가 이 표를 읽어 `tests/lint/rules.ts`의 목록과 대조하고, 켜져 있다고 적힌 규칙이 실제로 켜져 있는지·짝 테스트 파일이 있는지까지 본다 — 표에 한 줄을 더하고 설정을 안 고치면 `pnpm test`가 막는다.
+기계가 무는 규칙의 정본이다. `tests/lint/ruleCatalogue.test.ts`가 이 표를 읽어 `tests/lint/rules.ts`의 목록과 대조하고, 켜져 있다고 적힌 규칙이 실제로 켜져 있는지·짝 테스트 파일이 있는지까지 본다 — 표에 한 줄을 더하고 설정을 안 고치면 `pnpm test`가 막는다.
 
 **번호 6·7·8은 영영 안 쓴다.** 무엇이었는지 끝내 못 찾은 자리고, 그 번호를 새 규칙에 재활용하면 옛 기록이 다른 규칙을 가리키게 된다. 새 규칙은 마지막 번호 다음을 받는다.
 
 | 번호 | 규칙 | 집행 | 집행하는 것 | 짝 테스트 |
 | --- | --- | --- | --- | --- |
-| 1 | 상대 경로 import 금지 | eslint | `no-restricted-imports` | `tests/lint/relative-import.test.ts` |
-| 2 | FSD 역방향 import | eslint | `no-restricted-imports` | `tests/lint/fsd-layer-order.test.ts` |
-| 3 | 같은 층 다른 슬라이스 import | house | `house/no-cross-slice-import` | `tests/lint/fsd-slice-boundary.test.ts` |
-| 4 | 하드코딩한 색과 크기 | house | `house/no-arbitrary-class-values` | `tests/lint/design-token-values.test.ts` |
-| 4 | 하드코딩한 색과 크기 | house | `house/no-color-literals` | `tests/lint/design-token-values.test.ts` |
-| 5 | Tailwind 기본 팔레트 유틸리티 | house | `house/no-default-palette-class` | `tests/lint/tailwind-default-palette.test.ts` |
-| 9 | .tsx는 더미 UI | house | `house/dumb-ui` | `tests/lint/tsx-dumb-ui.test.ts` |
-| 10 | 집중 실행 표시 | eslint | `no-restricted-syntax` | `tests/lint/no-focused-tests.test.ts` |
-| 11 | import 순서 | eslint | `import/order` | `tests/lint/import-order.test.ts` |
-| 12 | Tailwind 클래스 순서 | prettier | `prettier.config.mjs` | `tests/lint/format-check.test.ts` |
-| 13 | console | eslint | `no-console` | `tests/lint/no-console.test.ts` |
-| 14 | 미사용 import와 import type | eslint | `unused-imports/no-unused-imports` | `tests/lint/unused-imports.test.ts` |
-| 14 | 미사용 import와 import type | eslint | `@typescript-eslint/consistent-type-imports` | `tests/lint/unused-imports.test.ts` |
+| 1 | 상대 경로 import 금지 | eslint | `no-restricted-imports` | `tests/lint/relativeImport.test.ts` |
+| 2 | FSD 역방향 import | eslint | `no-restricted-imports` | `tests/lint/fsdLayerOrder.test.ts` |
+| 3 | 같은 층 다른 슬라이스 import | house | `house/no-cross-slice-import` | `tests/lint/fsdSliceBoundary.test.ts` |
+| 4 | 하드코딩한 색과 크기 | house | `house/no-arbitrary-class-values` | `tests/lint/designTokenValues.test.ts` |
+| 4 | 하드코딩한 색과 크기 | house | `house/no-color-literals` | `tests/lint/designTokenValues.test.ts` |
+| 5 | Tailwind 기본 팔레트 유틸리티 | house | `house/no-default-palette-class` | `tests/lint/tailwindDefaultPalette.test.ts` |
+| 9 | .tsx는 더미 UI | house | `house/dumb-ui` | `tests/lint/tsxDumbUi.test.ts` |
+| 10 | 집중 실행 표시 | eslint | `no-restricted-syntax` | `tests/lint/noFocusedTests.test.ts` |
+| 11 | import 순서 | eslint | `import/order` | `tests/lint/importOrder.test.ts` |
+| 12 | Tailwind 클래스 순서 | prettier | `prettier.config.mjs` | `tests/lint/formatCheck.test.ts` |
+| 13 | console | eslint | `no-console` | `tests/lint/noConsole.test.ts` |
+| 14 | 미사용 import와 import type | eslint | `unused-imports/no-unused-imports` | `tests/lint/unusedImports.test.ts` |
+| 14 | 미사용 import와 import type | eslint | `@typescript-eslint/consistent-type-imports` | `tests/lint/unusedImports.test.ts` |
 | 15 | 내보내는 함수마다 그것을 부르는 짝 테스트가 먼저 있어야 한다 | hook | `.claude/hooks/tdd-guard-unit.py` | `.claude/hooks/__tests__/tdd-guard.test.ts` |
 | 16 | 화면과 라우트를 쓰기 전에 e2e 플로우가 있어야 한다 | hook | `.claude/hooks/tdd-guard-e2e.py` | `.claude/hooks/__tests__/tdd-guard.test.ts` |
-| 17 | 시크릿과 .env는 커밋할 수 없다 | pre-commit | `.githooks/pre-commit` | `tests/lint/pre-commit.test.ts` |
+| 17 | 시크릿과 .env는 커밋할 수 없다 | pre-commit | `.githooks/pre-commit` | `tests/lint/preCommit.test.ts` |
 | 18 | 승인된 spec 없이 feat 브랜치에서 src/를 고칠 수 없다 | hook | `.claude/hooks/spec-gate.py` | `.claude/hooks/__tests__/spec-gate.test.ts` |
-| 19 | 화면 파일의 시각 유틸리티 | house | `house/no-visual-utility-class` | `eslint-rules/__tests__/no-visual-utility-class.test.ts` |
-| 20 | Edge Function의 마운트 밖 import | house | `house/no-edge-function-src-import` | `eslint-rules/__tests__/no-edge-function-src-import.test.ts` |
-| 21 | Deno로 복사되는 폴더의 node: import | house | `house/no-node-import-in-edge-shared` | `eslint-rules/__tests__/no-node-import-in-edge-shared.test.ts` |
+| 19 | 화면 파일의 시각 유틸리티 | house | `house/no-visual-utility-class` | `eslint-rules/__tests__/noVisualUtilityClass.test.ts` |
+| 20 | Edge Function의 마운트 밖 import | house | `house/no-edge-function-src-import` | `eslint-rules/__tests__/noEdgeFunctionSrcImport.test.ts` |
+| 21 | Deno로 복사되는 폴더의 node: import | house | `house/no-node-import-in-edge-shared` | `eslint-rules/__tests__/noNodeImportInEdgeShared.test.ts` |
 
 **집행 갈래는 다섯이다.** `eslint`는 기성 규칙, `house`는 [`eslint-rules/`](../../eslint-rules/)의 직접 만든 규칙, `prettier`는 포맷터가 겸하는 것, `hook`은 [`.claude/hooks/`](#훅)의 편집 훅, `pre-commit`은 커밋 앞이다. 앞 셋은 `pnpm lint`나 `pnpm format:check`가 돌리고 뒤 둘은 파일을 쓰는 순간과 커밋하는 순간에 선다.
 
@@ -213,7 +213,7 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 - `file-naming.ts` — 코드 파일 이름이 규약대로인지. 컴포넌트(`.tsx`)는 PascalCase, 훅은 그 훅 이름과 같은 camelCase, 나머지는 kebab-case다 — 판정은 이름 꼴이 아니라 파일이 무엇을 담았는지로 한다. 케이스만 다른 두 파일도 같이 막는다(macOS·윈도우가 대소문자를 안 구별해 git과 어긋난다). `src/app/`은 밖이다 — 거기 파일 이름은 URL이다. 규약의 정본은 [CLAUDE.md](../../CLAUDE.md)의 「코드 구조」다
 - `database-types.ts` — 마이그레이션이 만든 표·뷰·함수가 생성 타입에 다 들었는지, 그리고 생성 타입을 안 물린 `SupabaseClient`를 직접 가져오는 파일이 남았는지. DB 없이 이름만 대조한다 — 실제로 다시 뽑아 diff를 보는 것은 CI가 한다. `pnpm types`가 판정 부분을 가져다 쓴다
 - `font-subset.ts` — 서브셋을 거친 서체 넷이 화면이 찍는 2,527자를 다 들었는지. `.ttf`의 `cmap`을 직접 읽는다 — 글자가 빠지면 그 자리가 시스템 서체로 떨어지고 앱은 안 죽어서 다른 검사가 못 잡는다. 집합의 정본이 이 파일이고 `pnpm fonts:subset`이 가져다 쓴다
-- `sources-impact.ts` — 추적 중인 문서의 입력 변경에 대한 영향 확인 판정. 추적 여부는 `spec-docs.ts`가 계산한다 — spec은 `status: approved`, plan은 제목 바로 뒤 완료 머리글(`> 완료된 작업의 당시 계획이다`)이 없으면 추적 대상이다. PR에서는 `scripts/check-sources-impact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사. **판정은 파일 단위다** — `sources`가 앵커까지 적지만 그것으로 좁히지 않는다. 정본은 절끼리 엮여 있어 한 절이 바뀌면 이웃 절의 뜻도 움직이고, 좁히면 새는 쪽으로 틀린다. 시끄러운 쪽이 맞다
+- `sources-impact.ts` — 추적 중인 문서의 입력 변경에 대한 영향 확인 판정. 추적 여부는 `spec-docs.ts`가 계산한다 — spec은 `status: approved`, plan은 제목 바로 뒤 완료 머리글(`> 완료된 작업의 당시 계획이다`)이 없으면 추적 대상이다. PR에서는 `scripts/checkSourcesImpact.mts`가 변경 파일 목록과 PR 본문을 받아 실제 영향을 검사. **판정은 파일 단위다** — `sources`가 앵커까지 적지만 그것으로 좁히지 않는다. 정본은 절끼리 엮여 있어 한 절이 바뀌면 이웃 절의 뜻도 움직이고, 좁히면 새는 쪽으로 틀린다. 시끄러운 쪽이 맞다
 
 링크·지도 검사는 내용의 의미나 완료 조건 충족을 대신하지 않는다. 제목·경로를 옮기면 참조도 함께 갱신하고 과거 완료 기록의 본문은 보존한다.
 
@@ -231,7 +231,7 @@ integration이 스키마·함수를 찾지 못하면 마이그레이션의 적�
 - `pnpm test:integration:run`도 기본 5초에서 흔들린다 — 매번 다른 스위트가 `beforeAll`에서 `Exceeded timeout of 5000 ms for a hook`으로 죽고 단독으로 돌리면 통과한다. 로컬 Docker가 느린 날은 `--testTimeout=60000`을 준다.
 - **`react-native`는 대역이 안 먹는다.** `jest.config.js`가 그 이름을 절대경로로 리매핑해서, 테스트 파일이 직접 import할 때는 대역이 서지만 `src/`의 다른 파일이 안에서 `import { AppState } from "react-native"`를 하면 진짜 모듈이 온다(`addEventListener is not a function`). `AppState`·`Linking`처럼 그 네임스페이스에 닿는 것은 대역하지 말고 함수 인자로 주입해라 — 기본값에 실물을 두면 부르는 쪽은 그대로다.
 - **`jest` 객체는 전역이 아니다.** `describe`·`it`·`expect`만 전역이고 `jest.fn()`이나 `jest.unstable_mockModule`을 쓰려면 `@jest/globals`에서 가져와야 한다.
-- 테스트를 ESM으로 돌려서 `NODE_OPTIONS=--experimental-vm-modules`가 스크립트에 박혀 있다. `scripts/generate-globals-css.mts`의 최상위 `await`과 `import.meta.url` 때문이고, 그 둘은 `pnpm tokens:css`가 그 파일을 직접 실행할 때 필요한 것이라 러너에 맞춰 걷지 않는다. 같은 이유로 `jest.mock()`이 안 먹는다 — 대역이 필요하면 `jest.unstable_mockModule`과 동적 import다.
+- 테스트를 ESM으로 돌려서 `NODE_OPTIONS=--experimental-vm-modules`가 스크립트에 박혀 있다. `scripts/generateGlobalsCss.mts`의 최상위 `await`과 `import.meta.url` 때문이고, 그 둘은 `pnpm tokens:css`가 그 파일을 직접 실행할 때 필요한 것이라 러너에 맞춰 걷지 않는다. 같은 이유로 `jest.mock()`이 안 먹는다 — 대역이 필요하면 `jest.unstable_mockModule`과 동적 import다.
 - `babel.config.js`가 없어서 `jest.config.js`가 babel preset을 직접 물고 있다. 그 파일이 생기면 `.mts`를 TypeScript로 보게 하는 override와 `transformImportMeta: false`가 같이 따라가야 한다.
 - type-aware lint(`no-floating-promises` 등)는 속도 때문에 안 켜져 있다. await 빠진 Supabase 호출은 lint가 못 잡는다.
 - 디자인 값 lint 규칙은 `src/**/__tests__/**`를 예외로 둔다 — 대조 테스트가 픽스처로 oklch 리터럴을 쥔다.

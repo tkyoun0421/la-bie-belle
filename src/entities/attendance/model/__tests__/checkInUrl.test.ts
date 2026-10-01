@@ -1,4 +1,4 @@
-import { buildCheckInUrl } from "@/entities/attendance/model/check-in-url";
+import { buildCheckInUrl } from "@/entities/attendance/model/checkInUrl";
 
 describe("buildCheckInUrl — 앱 주소와 코드를 합쳐 출근 인증 링크를 만든다", () => {
   it("appUrl과 code를 이어 /check-in?c=<code> 꼴을 만든다", () => {

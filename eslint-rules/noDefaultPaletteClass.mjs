@@ -1,4 +1,4 @@
-import { classStringVisitor, utilityOf } from "./class-strings.mjs";
+import { classStringVisitor, utilityOf } from "./classStrings.mjs";
 
 const DEFAULT_PALETTES = [
   "red",

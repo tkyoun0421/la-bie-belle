@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -9,7 +9,7 @@ import { toApiError } from "@/shared/api/errors";
  * 빠지고, 그 셈은 누르는 시점에 서버가 다시 한다.
  */
 export async function setRole(
-  client: Db,
+  client: DB,
   profileId: string,
   role: string,
 ): Promise<void> {

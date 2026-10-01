@@ -1,4 +1,4 @@
-import { googlePhotoOf } from "@/features/auth/google-photo-of";
+import { googlePhotoOf } from "@/features/auth/googlePhotoOf";
 
 describe("googlePhotoOf — 구글 로그인 메타데이터에서 사진 주소를 고른다", () => {
   it("avatar_url이 있으면 그 값을 사진으로 쓴다", () => {

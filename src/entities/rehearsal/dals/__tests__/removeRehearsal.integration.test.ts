@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { DomainError } from "@/shared/api/errors";
-import { removeRehearsal } from "@/entities/rehearsal/dals/remove-rehearsal";
+import { removeRehearsal } from "@/entities/rehearsal/dals/removeRehearsal";
 import {
   createAdminUser,
   createApprovedUser,

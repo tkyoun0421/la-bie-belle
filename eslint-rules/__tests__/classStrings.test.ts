@@ -3,7 +3,7 @@ import {
   classStringVisitor,
   segmentsOf,
   utilityOf,
-} from "../class-strings.mjs";
+} from "../classStrings.mjs";
 
 type CollectedToken = { token: string; nodeType: string };
 

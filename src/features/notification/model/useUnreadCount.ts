@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Db } from "@/shared/api/database";
-import { countUnreadNotifications } from "@/entities/notification/dals/count-unread-notifications";
-import { NOTIFICATIONS_UNREAD_KEY } from "@/features/notification/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { countUnreadNotifications } from "@/entities/notification/dals/countUnreadNotifications";
+import { NOTIFICATIONS_UNREAD_KEY } from "@/features/notification/model/queryKeys";
 
 /**
  * 안 읽은 알림의 수다. 종 아이콘의 점이 이것을 보고, 목록과 키를 나눠 갖는 것은 50건 창
@@ -11,7 +11,7 @@ import { NOTIFICATIONS_UNREAD_KEY } from "@/features/notification/model/query-ke
  * 대시보드의 「안 본 알림 n」이 쓴다.
  */
 
-export function useUnreadCount(client: Db) {
+export function useUnreadCount(client: DB) {
   return useQuery({
     queryKey: NOTIFICATIONS_UNREAD_KEY,
     queryFn: () => countUnreadNotifications(client),

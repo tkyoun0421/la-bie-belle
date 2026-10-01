@@ -38,7 +38,7 @@
 # 브랜드로 안 칠한다」).
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/schedule-worker.yaml 머리말, scripts/e2e-seed-server.mts,
+# tests/e2e/schedule-worker.yaml 머리말, scripts/e2eSeedServer.mts,
 # scripts/seed-session.js를 따른다. 딥링크는 navigation.md 「경로」의 "/payroll" 그대로다
 # — "(tabs)" 그룹은 URL에서 빠져 "labiebelle://payroll"이다. **"/payroll"에는 "?month="
 # 같은 딥링크 인자가 없다**(navigation.md 「경로」 표의 그 행에 적혀 있지 않다) — 그래서
@@ -139,7 +139,7 @@
 # // seedDayEndedHoursAgo와 같은 손 — 과거 날짜를 거절하는 open_day/create_schedule을
 # // 피해 직접 꽂는다. 아래 셋(upsertPastSchedule·insertPastDay·insertSlotForPosition)은
 # // 전부 tests/integration/postgres.ts에 더하고 export한다 — randomUUID·execSql이 이미
-# // 그 파일에 있어 e2e-seed-server.mts의 기존 import 줄에 이름만 보태면 된다.
+# // 그 파일에 있어 e2eSeedServer.mts의 기존 import 줄에 이름만 보태면 된다.
 # function upsertPastSchedule(month: string, createdBy: string): void {
 #   execSql(
 #     "insert into public.schedules (month, created_by) values (:'month', :'created_by')\n" +

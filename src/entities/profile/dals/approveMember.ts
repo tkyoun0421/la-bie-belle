@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -9,7 +9,7 @@ import { toApiError } from "@/shared/api/errors";
  * `already_decided`다.
  */
 export async function approveMember(
-  client: Db,
+  client: DB,
   profileId: string,
 ): Promise<void> {
   const { error } = await client.rpc("approve_member", {

@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/schedule-admin/model/discard-slot.ts
+// 구현 대상: src/screens/schedule-admin/model/discardSlot.ts
 //
 // 자리를 버리는 손짓의 데이터 판정이다(schedule-admin.md 「잠금과 구조 변경」 — 「빈
 // 자리는 놓는 순간 사라지고, 사람이 든 자리는 시트가 확인한다」). 살아 있는 정규 배정이
@@ -9,7 +9,7 @@ import {
   discardSlotJudgement,
   discardSlotWarningLine,
   type DiscardSlotAssignment,
-} from "@/screens/schedule-admin/model/discard-slot";
+} from "@/screens/schedule-admin/model/discardSlot";
 
 function live(): DiscardSlotAssignment {
   return { ended_at: null };

@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -9,7 +9,7 @@ import { toApiError } from "@/shared/api/errors";
  * 거절 셋 — `not_allowed`, 포지션이 하나뿐이면 `not_merged`, 확정 시점에 있던 날이면
  * `already_confirmed`다.
  */
-export async function splitSlot(client: Db, slotId: string): Promise<void> {
+export async function splitSlot(client: DB, slotId: string): Promise<void> {
   const { error } = await client.rpc("split_slot", { p_slot_id: slotId });
 
   if (error) {

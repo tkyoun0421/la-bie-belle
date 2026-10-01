@@ -12,7 +12,7 @@ import {
   SHADOW_HEADER,
   SUBSECTION,
   type Row,
-} from "./tokens-md.mts";
+} from "./tokensMd.mts";
 
 type Declaration = { name: string; value: string };
 type Group = Declaration[];

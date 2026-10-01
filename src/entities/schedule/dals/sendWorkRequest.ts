@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -14,7 +14,7 @@ import { toApiError } from "@/shared/api/errors";
  */
 
 export async function sendWorkRequest(
-  client: Db,
+  client: DB,
   slotId: string,
   profileIds: readonly string[],
 ): Promise<string> {

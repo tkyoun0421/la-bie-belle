@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { generateGlobalsCss } from "@scripts/generate-globals-css.mts";
+import { generateGlobalsCss } from "@scripts/generateGlobalsCss.mts";
 import { format } from "prettier";
 
 const SKELETON_FENCE = `@import "tailwindcss/theme.css" layer(theme);

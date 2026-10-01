@@ -1,4 +1,4 @@
-import { violationsOf } from "@tests/lint/rule-check";
+import { violationsOf } from "@tests/lint/ruleCheck";
 
 const NO_VISUAL_UTILITY_CLASS = "house/no-visual-utility-class";
 const EXEMPT_MESSAGE = "색·글자·모양은 `src/shared/ui`의 조각이 든다";

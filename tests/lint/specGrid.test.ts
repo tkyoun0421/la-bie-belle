@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import {
   repositorySpecGridDocs,
   specGridViolations,
-} from "@tests/lint/spec-grid";
+} from "@tests/lint/specGrid";
 
 function tempRoot(): string {
   return mkdtempSync(join(tmpdir(), "spec-grid-"));

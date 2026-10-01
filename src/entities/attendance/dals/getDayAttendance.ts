@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 
 export type CheckInRow = {
   id: string;
@@ -48,7 +48,7 @@ export function dayAttendanceKey(workDate: string): string[] {
 }
 
 export async function getDayAttendance(
-  client: Db,
+  client: DB,
   workDate: string,
 ): Promise<DayAttendance> {
   const { data: day, error: dayError } = await client

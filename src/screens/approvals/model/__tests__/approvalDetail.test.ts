@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/approvals/model/approval-detail.ts
+// 구현 대상: src/screens/approvals/model/approvalDetail.ts
 //
 // 근무 취소 상세 시트의 문안이다. 정본은 approvals.md 「상세 시트 문안」 표 그대로다 —
 // 제목이 사람 이름·근무 날·요일·포지션, 부제가 그날 근무 시간, 보낸 시각 줄, 사유는
@@ -7,7 +7,7 @@
 // (schedule-admin.md의 `format-schedule-date.ts`와 같은 결이다 — 슬라이스끼리 못 불러
 // 이 슬라이스가 다시 짠다, lint 규칙 3).
 
-import { cancelApprovalDetail } from "@/screens/approvals/model/approval-detail";
+import { cancelApprovalDetail } from "@/screens/approvals/model/approvalDetail";
 
 const INPUT = {
   displayName: "이준호",

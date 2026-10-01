@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/schedule-admin/model/person-sheet.ts
+// 구현 대상: src/screens/schedule-admin/model/personSheet.ts
 //
 // 사람 시트가 쓰는 표기다(schedule-admin.md 「사람 시트」·「사람 픽커 문안」). 성별 기호는
 // lucide의 Venus·Mars로 색이 아니라 모양으로 가른다(ACC-002). 년생은 `birth_date`의 연도
@@ -10,7 +10,7 @@ import {
   genderLabel,
   birthYearShort,
   restrictedQualifications,
-} from "@/screens/schedule-admin/model/person-sheet";
+} from "@/screens/schedule-admin/model/personSheet";
 
 describe("genderSymbol — female은 Venus, male은 Mars다", () => {
   it("female이면 Venus다", () => {

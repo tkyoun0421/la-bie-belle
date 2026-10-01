@@ -1,8 +1,8 @@
 import {
   PUSH_DENIED_SUBLINE,
   PUSH_DENIED_TITLE,
-} from "@/features/notification/model/profile-notification-row";
-import type { NotificationPromptView } from "@/screens/pending/model/notification-prompt";
+} from "@/features/notification/model/profileNotificationRow";
+import type { NotificationPromptView } from "@/screens/pending/model/notificationPrompt";
 
 /**
  * 승인 대기 화면 알림 영역의 문안이다. 정본은
@@ -17,7 +17,7 @@ import type { NotificationPromptView } from "@/screens/pending/model/notificatio
  * ([NTF-027](../../../../docs/2-design/modules/notification/README.md#ntf-027)).
  *
  * **거부한 뒤 문장을 여기서 짓지 않는다.** 「나」 화면의 알림 안내와 같은 문장이라
- * [`profile-notification-row`](../../../features/notification/model/profile-notification-row.ts)가
+ * [`profile-notification-row`](../../../features/notification/model/profileNotificationRow.ts)가
  * 들고 있는 것을 가져다 쓴다 — 두 벌로 두면 한쪽만 고쳐진다.
  */
 

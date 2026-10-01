@@ -1,4 +1,4 @@
-import { motionDistance } from "@/shared/lib/reduce-motion";
+import { motionDistance } from "@/shared/lib/reduceMotion";
 
 describe("motionDistance — 동작 줄이기 판정 (AC-06)", () => {
   it("켜짐이면 이동 거리가 0이다", async () => {

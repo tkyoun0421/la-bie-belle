@@ -1,4 +1,4 @@
-// 구현 대상: src/shared/lib/spell-number.ts (아직 없다)
+// 구현 대상: src/shared/lib/spellNumber.ts (아직 없다)
 //
 // spellWon(amount) — 금액을 세 자리마다 쉼표로 끊고 「원」을 붙인다. 지금
 // screens/payroll/model/summary.ts의 spellAmount와 screens/wages/model/
@@ -12,7 +12,7 @@
 // 붙인 것)이 같은 입력에 같은 문자열을 낸다 — 쉼표 위치도 「원」 접미사도
 // 어긋나지 않는다. 계약 불일치는 없었다.
 
-import { spellWon } from "@/shared/lib/spell-number";
+import { spellWon } from "@/shared/lib/spellNumber";
 
 describe("spellWon — 세 자리마다 쉼표를 찍고 「원」을 붙인다", () => {
   it("108000은 '108,000원'이다", () => {

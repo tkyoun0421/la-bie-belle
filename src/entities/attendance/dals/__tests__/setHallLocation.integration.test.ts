@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { setHallLocation } from "@/entities/attendance/dals/set-hall-location";
+import { setHallLocation } from "@/entities/attendance/dals/setHallLocation";
 import {
   createAdminUser,
   createApprovedUser,

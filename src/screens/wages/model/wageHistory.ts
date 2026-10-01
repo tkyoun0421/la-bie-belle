@@ -1,4 +1,4 @@
-import { wageAt } from "@/features/payroll/model/wage-at";
+import { wageAt } from "@/features/payroll/model/wageAt";
 
 /**
  * 사람 시트 안의 이력이다. 최근이 위고 눌리지 않는다 — 지난 급여가 흔들리면 안 돼서 고치는

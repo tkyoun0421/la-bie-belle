@@ -1,4 +1,4 @@
-import { isCommunicationDelayed } from "@/features/attendance/model/communication-delay";
+import { isCommunicationDelayed } from "@/features/attendance/model/communicationDelay";
 
 describe("isCommunicationDelayed — 누른 시각과 닿은 시각이 5분 넘게 다르면 참이다(ATT-017)", () => {
   it("차이가 없으면 지연이 아니다", () => {

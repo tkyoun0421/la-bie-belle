@@ -7,8 +7,8 @@ import { Text } from "@/shared/ui/Text";
 import {
   extraMinutes,
   nextMinuteDigits,
-} from "@/screens/schedule-admin/model/adjust-choice-state";
-import { spellHours } from "@/screens/schedule-admin/model/adjust-sheet-rows";
+} from "@/screens/schedule-admin/model/adjustChoiceState";
+import { spellHours } from "@/screens/schedule-admin/model/adjustSheetRows";
 
 /**
  * 조정 시트의 사람 줄을 누르면 그 위에 한 겹 더 서는 시트다. 정본은

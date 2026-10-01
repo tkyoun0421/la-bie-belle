@@ -1,9 +1,9 @@
 import { jest } from "@jest/globals";
-import type { Db } from "@/shared/api/database";
-import type { MyProfileRow } from "@/entities/profile/dals/get-my-profile";
-import { resolveEntryDestination } from "@/features/auth/resolve-entry-destination";
+import type { DB } from "@/shared/api/database";
+import type { MyProfileRow } from "@/entities/profile/dals/getMyProfile";
+import { resolveEntryDestination } from "@/features/auth/resolveEntryDestination";
 
-const fakeClient = {} as Db;
+const fakeClient = {} as DB;
 
 function buildRow(overrides: Partial<MyProfileRow> = {}): MyProfileRow {
   return {

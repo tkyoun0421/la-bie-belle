@@ -1,4 +1,4 @@
-// 구현 대상: src/shared/lib/month-boundary.ts (아직 없다)
+// 구현 대상: src/shared/lib/monthBoundary.ts (아직 없다)
 //
 // canGoBack(month, firstScheduleMonth) — 뒤로 가는 화살표가 서는지다. 바닥은
 // 첫 근무표가 있는 달이다(plan stats-admin 「착수 판정」 — get-first-schedule-month
@@ -19,7 +19,7 @@
 // 사본이 둘로 늘던 자리를 shared/lib로 올려 하나로 묶는다. 계약은 관리자
 // 쪽 짝 테스트와 같다 — 단언을 그대로 옮긴다.
 
-import { canGoBack, canGoForward } from "@/shared/lib/month-boundary";
+import { canGoBack, canGoForward } from "@/shared/lib/monthBoundary";
 
 describe("canGoBack — 첫 근무표가 있는 달과 같으면 뒤로 화살표가 사라진다", () => {
   it("첫 근무표 달 2025-11-01이 든 2025-11은 false다", () => {

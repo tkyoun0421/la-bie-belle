@@ -1,4 +1,4 @@
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
+import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
 import { POSITION_ORDER } from "@/entities/schedule/model/positions";
 
 /**

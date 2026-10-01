@@ -12,7 +12,7 @@
 # 여기서는 그 결과가 실제 라우트·훅·API로 이어지는지만 본다.
 #
 # 세션은 개발 빌드의 테스트 문과 시드 서버로 심는다 — 계약은
-# tests/e2e/schedule-worker.yaml 머리말과 scripts/e2e-seed-server.mts를
+# tests/e2e/schedule-worker.yaml 머리말과 scripts/e2eSeedServer.mts를
 # 따른다. 딥링크는 navigation.md 「경로」의 "/admin/applications"(`?month=`)
 # 그대로다.
 #

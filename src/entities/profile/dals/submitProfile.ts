@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -17,7 +17,7 @@ export type SubmitProfileInput = {
 };
 
 export async function submitProfile(
-  client: Db,
+  client: DB,
   { displayName, phone, birthDate, gender }: SubmitProfileInput,
 ): Promise<void> {
   const { error } = await client.rpc("submit_profile", {

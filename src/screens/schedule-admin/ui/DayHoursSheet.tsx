@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Text } from "@/shared/ui/Text";
-import { isDayHoursSaveEnabled } from "@/screens/schedule-admin/model/day-hours-form";
+import { isDayHoursSaveEnabled } from "@/screens/schedule-admin/model/dayHoursForm";
 
 /**
  * 그날 근무 시간을 고치는 시트다. 정본은

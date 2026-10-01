@@ -1,4 +1,4 @@
-// 구현 대상: src/shared/lib/server-clock.ts
+// 구현 대상: src/shared/lib/serverClock.ts
 //
 // 서버 시각 오프셋과 만료 판정의 순수 계산이다(runtime.md 「서버 시각」, plan
 // schedule-requests.md 「총괄이 정한 것」 2·3). `serverOffset`이 앱이 뜰 때 한 번 잰
@@ -11,7 +11,7 @@ import {
   nowWithOffset,
   remainingMs,
   serverOffset,
-} from "@/shared/lib/server-clock";
+} from "@/shared/lib/serverClock";
 
 describe("serverOffset — 서버 시각과 기기 시각의 차이를 잰다", () => {
   it("서버가 기기보다 앞서 있으면 양수를 낸다", () => {

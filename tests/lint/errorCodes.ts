@@ -7,7 +7,7 @@ export type ErrorCodeViolation = {
 };
 
 const MIGRATIONS_DIR = "supabase/migrations";
-const CODE_LIST_FILE = "src/shared/api/error-codes.ts";
+const CODE_LIST_FILE = "src/shared/api/errorCodes.ts";
 
 /** `data-access.md#오류의-모양`의 꼴 — `raise exception using message = '<코드>'`. */
 const RAISE_MESSAGE = /raise\s+exception\s+using\s+message\s*=\s*'([^']+)'/gi;

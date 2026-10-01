@@ -1,13 +1,13 @@
 import {
   tallyMonthlyAttendance,
   type MonthlyAttendanceTally,
-} from "@/entities/attendance/model/attendance-summary";
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
+} from "@/entities/attendance/model/attendanceSummary";
+import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
 import {
   buildAttendanceInputs,
   type AttendanceInputCheckIn,
   type AttendanceInputExcuseStatus,
-} from "@/features/stats/model/attendance-inputs";
+} from "@/features/stats/model/attendanceInputs";
 
 /**
  * 근태 탭 사람별 목록이다. 정본은 `docs/2-design/system/screens/stats.md`의 「근태 사람별

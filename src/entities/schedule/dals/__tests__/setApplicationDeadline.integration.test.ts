@@ -1,6 +1,6 @@
 import type { Database } from "@/shared/api/database";
 import { DomainError } from "@/shared/api/errors";
-import { setApplicationDeadline } from "@/entities/schedule/dals/set-application-deadline";
+import { setApplicationDeadline } from "@/entities/schedule/dals/setApplicationDeadline";
 import {
   createAdminUser,
   kstDate,

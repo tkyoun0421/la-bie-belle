@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { setDefaultWage } from "@/entities/payroll/dals/set-default-wage";
+import { setDefaultWage } from "@/entities/payroll/dals/setDefaultWage";
 import {
   createAdminUser,
   createApprovedUser,

@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
-import { serverOffset } from "@/shared/lib/server-clock";
+import { serverOffset } from "@/shared/lib/serverClock";
 
 /**
  * 서버 시각과 기기 시각의 차이가 사는 자리 하나다. 재는 곳은 껍데기(`src/app/_layout.tsx`)고

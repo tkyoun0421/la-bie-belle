@@ -1,4 +1,4 @@
-import { getQualifications } from "@/entities/schedule/dals/get-qualifications";
+import { getQualifications } from "@/entities/schedule/dals/getQualifications";
 import {
   createAdminUser,
   createApprovedUser,

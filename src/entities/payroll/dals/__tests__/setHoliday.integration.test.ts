@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/api/errors";
-import { setHoliday } from "@/entities/payroll/dals/set-holiday";
+import { setHoliday } from "@/entities/payroll/dals/setHoliday";
 import {
   createAdminUser,
   createApprovedUser,

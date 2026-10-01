@@ -1,4 +1,4 @@
-// 구현 대상: src/features/stats/model/my-totals.ts (아직 없다)
+// 구현 대상: src/features/stats/model/myTotals.ts (아직 없다)
 //
 // computeMyWorkTotals(assignments, days, profileId) — work-totals.ts의
 // computeWorkTotals를 그대로 불러 입력을 그 사람 배정으로 좁힌다(plan
@@ -11,8 +11,8 @@
 // 아예 빠진다(stats.md 「내 포지션」, 관리자 쪽이 아홉을 다 세우는 것과 반대).
 
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
-import { computeMyWorkTotals } from "@/features/stats/model/my-totals";
-import { computeWorkTotals } from "@/features/stats/model/work-totals";
+import { computeMyWorkTotals } from "@/features/stats/model/myTotals";
+import { computeWorkTotals } from "@/features/stats/model/workTotals";
 
 describe("computeMyWorkTotals — work-totals.ts를 다시 안 짜고 그대로 불러 내 배정으로 좁힌다", () => {
   it("김지우(p1)의 총 시간·건수가 관리자 byPerson의 값과 같다", () => {

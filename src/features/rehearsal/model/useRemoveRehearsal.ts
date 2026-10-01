@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { Db } from "@/shared/api/database";
-import { removeRehearsal } from "@/entities/rehearsal/dals/remove-rehearsal";
-import { REHEARSAL_WRITE_KEYS } from "@/features/rehearsal/model/query-keys";
+import type { DB } from "@/shared/api/database";
+import { removeRehearsal } from "@/entities/rehearsal/dals/removeRehearsal";
+import { REHEARSAL_WRITE_KEYS } from "@/features/rehearsal/model/queryKeys";
 
 /**
  * 리허설 지우기다. 넣기·고치기와 같은 둘을 낡게 한다 — `['rehearsal']`과 `['payroll']`이고
@@ -18,7 +18,7 @@ export type RemoveRehearsalResult = {
   reset: () => void;
 };
 
-export function useRemoveRehearsal(client: Db): RemoveRehearsalResult {
+export function useRemoveRehearsal(client: DB): RemoveRehearsalResult {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess, isError, error, reset } = useMutation({

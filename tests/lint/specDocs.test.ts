@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { sourceDocs } from "@tests/lint/spec-docs";
+import { sourceDocs } from "@tests/lint/specDocs";
 
 const COMPLETION_SENTENCE = "완료된 작업의 당시 계획이다";
 

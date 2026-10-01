@@ -1,12 +1,12 @@
 import {
   allSourcesViolations,
   sourcesViolations,
-} from "@tests/lint/sources-exist";
+} from "@tests/lint/sourcesExist";
 import {
   frontmatterSources,
   frontmatterStatus,
   sourceDocFiles,
-} from "@tests/lint/spec-docs";
+} from "@tests/lint/specDocs";
 
 const SPEC = "docs/2-design/spec/fixture.md";
 

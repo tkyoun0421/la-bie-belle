@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
 
 /**
@@ -22,7 +22,7 @@ export type SetAdjustmentInput = {
 };
 
 export async function setAdjustment(
-  client: Db,
+  client: DB,
   input: SetAdjustmentInput,
 ): Promise<void> {
   const { error } = await client.rpc("set_adjustment", {

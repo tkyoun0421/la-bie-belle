@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import {
   repositoryTableRlsViolations,
   tableRlsViolations,
-} from "@tests/lint/table-rls";
+} from "@tests/lint/tableRls";
 
 function tempRoot(): string {
   return mkdtempSync(join(tmpdir(), "table-rls-"));

@@ -2,7 +2,7 @@ import {
   buildWageHistory,
   prefillWageAmount,
   type WageHistoryRow,
-} from "@/screens/wages/model/wage-history";
+} from "@/screens/wages/model/wageHistory";
 
 describe("buildWageHistory — 0줄이면 안 그린다", () => {
   it("이력이 없으면 rows가 비고 hasMore도 false다", () => {

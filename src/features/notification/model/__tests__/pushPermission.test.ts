@@ -12,7 +12,7 @@ function createDeferred<T>() {
 }
 
 const { mapPermissionStatus, getPushPermission, requestPushPermission } =
-  await import("@/features/notification/model/push-permission");
+  await import("@/features/notification/model/pushPermission");
 
 describe("mapPermissionStatus — 기기 응답을 권한 상태 셋으로 옮긴다", () => {
   it("granted 응답은 granted다", () => {

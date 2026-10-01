@@ -1,4 +1,4 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import { DomainError, toApiError } from "@/shared/api/errors";
 
 export type CheckInMethod = "location" | "qr";
@@ -13,7 +13,7 @@ export type CheckInParams = {
 };
 
 export type CheckInDeps = {
-  client: Db;
+  client: DB;
   wait?: (ms: number) => Promise<void>;
 };
 

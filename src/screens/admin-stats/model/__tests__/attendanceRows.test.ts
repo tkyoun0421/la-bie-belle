@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/admin-stats/model/attendance-rows.ts
+// 구현 대상: src/screens/admin-stats/model/attendanceRows.ts
 //
 // buildAttendanceRows(people) — 근태 탭 사람별 목록을 조립한다(plan·spec
 // stats-admin AC-09, stats.md「근태 사람별 목록」). AttendanceRowInput은
@@ -11,17 +11,17 @@
 //   기본 값이라서다. absent·excused의 0-처리는 이 task가 배정받은 범위 밖이라
 //   여기서 단언하지 않는다(아래 「못 쓴 것」 참고)
 
-import type { ScheduleDay } from "@/entities/schedule/dals/get-month-schedule";
+import type { ScheduleDay } from "@/entities/schedule/dals/getMonthSchedule";
 import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,
-} from "@/features/stats/model/attendance-inputs";
+} from "@/features/stats/model/attendanceInputs";
 import {
   attendanceRowValue,
   buildAttendanceRows,
   buildAttendanceTab,
   type AttendanceRow,
-} from "@/screens/admin-stats/model/attendance-rows";
+} from "@/screens/admin-stats/model/attendanceRows";
 
 describe("buildAttendanceRows — 이름 가나다순이다(근무 탭과 반대)", () => {
   it("입력 순서와 무관하게 김지우·박서연·최윤아 순으로 선다", () => {

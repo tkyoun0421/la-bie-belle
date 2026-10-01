@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { getMyRehearsals } from "@/entities/rehearsal/dals/get-my-rehearsals";
+import { getMyRehearsals } from "@/entities/rehearsal/dals/getMyRehearsals";
 import {
   createApprovedUser,
   execSql,

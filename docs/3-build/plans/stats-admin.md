@@ -144,7 +144,7 @@ sources:
 | --- | --- | --- |
 | `src/entities/schedule/model/positions.ts` | 포지션 아홉과 그 순서의 정본. 근무표 두 화면이 들고 있던 두 벌이 여기로 올라온다 | 「착수 판정」 |
 | `src/screens/schedule-worker/model/day-sheet.ts`·`src/screens/schedule-admin/model/position-rows.ts` | `POSITION_ORDER`를 entities에서 받아 다시 내보낸다 — 부르던 이름이 그대로 살아 기존 테스트가 안 깨진다 | 「착수 판정」 |
-| `src/entities/attendance/dals/get-month-attendance.ts` | `['attendance', 'YYYY-MM']`. 그달에 연 날을 먼저 집고 `check_ins`·`excuse_status`를 표마다 한 번씩 읽어 [`get-day-attendance.ts`](../../../src/entities/attendance/dals/get-day-attendance.ts)와 같은 `{ checkIns, excuseStatuses }`를 낸다 | AC-04 |
+| `src/entities/attendance/dals/get-month-attendance.ts` | `['attendance', 'YYYY-MM']`. 그달에 연 날을 먼저 집고 `check_ins`·`excuse_status`를 표마다 한 번씩 읽어 [`get-day-attendance.ts`](../../../src/entities/attendance/dals/getDayAttendance.ts)와 같은 `{ checkIns, excuseStatuses }`를 낸다 | AC-04 |
 | `src/entities/schedule/dals/get-first-schedule-month.ts` | `['schedule', 'first-month']`. `schedules`의 가장 이른 `month` 한 줄 — 달 줄이 뒤로 갈 수 있는 바닥이다 | AC-04·「착수 판정」 |
 | `src/entities/attendance/model/attendance-summary.ts` | `tallyMonthlyAttendance`가 `features/attendance`에서 여기로 내려온다 — 근태 화면과 통계가 같은 셈을 나눠 쓴다. `attendanceRate`는 뒤에 [`stats-worker`](stats-worker.md)가 같은 파일에 더했다 | AC-09 |
 | `src/features/attendance/model/attendance-summary.ts` | 내려간 `tallyMonthlyAttendance`가 빠지고 `summarizeAttendanceStatuses`만 남는다 | AC-09 |

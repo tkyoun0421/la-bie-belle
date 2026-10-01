@@ -1,4 +1,4 @@
-import type { AttendanceStatus } from "@/entities/attendance/model/attendance-status";
+import type { AttendanceStatus } from "@/entities/attendance/model/attendanceStatus";
 
 export type AttendanceSummary = Partial<Record<AttendanceStatus, number>>;
 

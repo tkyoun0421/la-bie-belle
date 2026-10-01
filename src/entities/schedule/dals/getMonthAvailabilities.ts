@@ -1,8 +1,8 @@
-import type { Db } from "@/shared/api/database";
+import type { DB } from "@/shared/api/database";
 import {
   monthStart,
   nextMonthStart,
-} from "@/entities/schedule/dals/get-month-schedule";
+} from "@/entities/schedule/dals/getMonthSchedule";
 
 /**
  * 그 달 근무 신청을 신청자 이름과 함께 읽는다. 달력 칸의 신청 수, 날 상세의 근무 신청 줄,
@@ -30,7 +30,7 @@ const AVAILABILITY_COLUMNS = [
 ].join(", ");
 
 export async function getMonthAvailabilities(
-  client: Db,
+  client: DB,
   month: string,
 ): Promise<AvailabilityRow[]> {
   const { data, error } = await client
