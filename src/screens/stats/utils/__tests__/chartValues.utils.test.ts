@@ -50,7 +50,7 @@
 // 달이 있다 — getMyRehearsals.ts의 SCH-022, "근무표가 없는 달에도 행이
 // 선다"). 둘 다 아니면 Map에서 빠진다.
 
-import type { PayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import type { PayrollMonth } from "@/entities/payroll/api/payroll.dto";
 import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
 import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";

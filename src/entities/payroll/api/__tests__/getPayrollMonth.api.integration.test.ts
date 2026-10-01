@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
 import type { Database } from "@/shared/api/database";
+import { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
 import {
-  getPayrollMonth,
   type HolidayRow,
   type PayrollMonth,
-} from "@/entities/payroll/api/getPayrollMonth.api";
+} from "@/entities/payroll/api/payroll.dto";
 import {
   createAdminUser,
   createApprovedUser,

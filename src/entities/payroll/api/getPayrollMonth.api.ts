@@ -1,5 +1,12 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
+import type {
+  AdjustmentRow,
+  ExcuseStatusRow,
+  HolidayRow,
+  MemberWageRateRow,
+  PayrollMonth,
+} from "@/entities/payroll/api/payroll.dto";
 
 /**
  * 그 달 급여의 재료 넷이다 — 시급 이력, 조정, 사유 상태, 공휴일. 배정과 날은 `['schedule']`이고
@@ -20,42 +27,6 @@ import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
  * 같은 날짜에 `api` 행과 `manual` 행이 같이 설 수 있어 둘을 합치지 않고 그대로 준다 — 잠금
  * 판정이 `api`의 유무만 본다(`docs/2-design/modules/payroll/design.md`의 「공휴일」).
  */
-
-export type WageRateRow = {
-  profile_id: string;
-  effective_date: string;
-  amount: number;
-  follows_default: boolean;
-};
-
-export type AdjustmentRow = {
-  id: string;
-  day_id: string;
-  profile_id: string;
-  minutes: number;
-  adjusted_at: string;
-};
-
-export type ExcuseStatusRow = {
-  day_id: string;
-  profile_id: string;
-  submitted_at: string;
-  decided_at: string | null;
-  decision: string | null;
-};
-
-export type HolidayRow = {
-  holiday_date: string;
-  source: string;
-  name: string | null;
-};
-
-export type PayrollMonth = {
-  wageRates: WageRateRow[];
-  adjustments: AdjustmentRow[];
-  excuseStatus: ExcuseStatusRow[];
-  holidays: HolidayRow[];
-};
 
 const WAGE_RATE_COLUMNS = [
   "profile_id",
@@ -108,7 +79,7 @@ export async function getPayrollMonth(
       .from("wage_rates")
       .select(WAGE_RATE_COLUMNS)
       .lt("effective_date", nextMonthStart(month))
-      .returns<WageRateRow[]>(),
+      .returns<MemberWageRateRow[]>(),
     client
       .from("adjustments")
       .select(ADJUSTMENT_COLUMNS)

@@ -1,10 +1,8 @@
 import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getPayrollMonth,
-  type PayrollMonth,
-} from "@/entities/payroll/api/getPayrollMonth.api";
+import { getPayrollMonth } from "@/entities/payroll/api/getPayrollMonth.api";
+import { type PayrollMonth } from "@/entities/payroll/api/payroll.dto";
 
 /**
  * 여러 달치 급여 재료를 한 덩이로 읽는다. 기간이 달과 안 맞을 때가 있어서다 — 달을 걸친 주는
