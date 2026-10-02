@@ -32,6 +32,7 @@ import {
   validateProfileForm,
   type ProfileGender,
 } from "@/entities/profile/model/profile.schema";
+import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
@@ -99,11 +100,6 @@ const PHOTO_EDGE = 512;
 const PHOTO_QUALITY = 0.8;
 
 const SCREEN_BOTTOM_PADDING = 24;
-
-const GENDER_LABEL: Record<ProfileGender, string> = {
-  female: "여성",
-  male: "남성",
-};
 
 function digitsOnly(value: string, limit: number): string {
   return value.replace(/\D/g, "").slice(0, limit);
@@ -507,7 +503,7 @@ export function PendingScreen() {
                 className="mt-3"
               >
                 <Text size="lg" weight="medium">
-                  {GENDER_LABEL[values.gender]}
+                  {spellGender(values.gender)}
                 </Text>
               </Pressable>
             ) : null}

@@ -11,6 +11,7 @@ import { Text } from "@/shared/ui/Text";
 import type { MemberRow } from "@/entities/member/api/member.dto";
 import { canSaveDisplayName } from "@/entities/profile/model/canSaveDisplayName.policy";
 import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
+import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 
 /**
  * 한 사람을 여는 시트다. 재직자와 퇴사한 사람이 같은 틀을 쓰고 다른 것이 셋이다 — 퇴사한
@@ -39,11 +40,6 @@ const MORE_HIT_SLOP = 8;
 const PHONE_ICON_SIZE = 18;
 
 const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
-
-const GENDER_LABEL: Record<string, string> = {
-  female: "여성",
-  male: "남성",
-};
 
 export const MORE_TEST_ID = "members-sheet-more";
 
@@ -207,10 +203,7 @@ export function MemberSheet({
                 : undefined
             }
           />
-          <ValueRow
-            label="성별"
-            value={GENDER_LABEL[member.gender ?? ""] ?? ""}
-          />
+          <ValueRow label="성별" value={spellGender(member.gender)} />
           <ValueRow
             label="생년월일"
             numeric

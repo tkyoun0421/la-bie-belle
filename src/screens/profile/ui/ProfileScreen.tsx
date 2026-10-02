@@ -32,6 +32,7 @@ import {
   type PushPermission,
 } from "@/entities/notification/model/reachState.policy";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
+import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
@@ -87,11 +88,6 @@ const PHOTO_EDGE = 512;
 const PHOTO_QUALITY = 0.8;
 
 const SKELETON_ROWS = [0, 1, 2];
-
-const GENDER_LABEL: Record<string, string> = {
-  female: "여성",
-  male: "남성",
-};
 
 const CONTACT_SAVED = "연락처를 바꿨어요";
 
@@ -349,7 +345,7 @@ export function ProfileScreen() {
                 <ListRow
                   testID="profile-gender-row"
                   title="성별"
-                  value={GENDER_LABEL[data?.gender ?? ""] ?? ""}
+                  value={spellGender(data?.gender ?? null)}
                 />
                 <ListRow
                   testID="profile-birthdate-row"
