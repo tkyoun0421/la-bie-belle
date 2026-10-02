@@ -18,12 +18,16 @@ export type ExcuseStatusRow = {
   decision: string | null;
 };
 
-export type DayAttendance = {
+/**
+ * 날 키와 달 키가 같은 모양을 낸다 — 상태 여섯을 내는 순수 함수가 두 키 위에서 그대로
+ * 돈다. 꼴이 갈리면 그 함수가 두 벌 서야 한다.
+ */
+export type AttendanceRows = {
   checkIns: CheckInRow[];
   excuseStatuses: ExcuseStatusRow[];
 };
 
-const CHECK_IN_COLUMNS = [
+export const CHECK_IN_COLUMNS = [
   "id",
   "day_id",
   "profile_id",
@@ -33,7 +37,7 @@ const CHECK_IN_COLUMNS = [
   "method",
 ].join(", ");
 
-const EXCUSE_STATUS_COLUMNS = [
+export const EXCUSE_STATUS_COLUMNS = [
   "day_id",
   "profile_id",
   "submitted_at",
@@ -41,12 +45,12 @@ const EXCUSE_STATUS_COLUMNS = [
   "decision",
 ].join(", ");
 
-const EMPTY: DayAttendance = { checkIns: [], excuseStatuses: [] };
+const EMPTY: AttendanceRows = { checkIns: [], excuseStatuses: [] };
 
 export async function getDayAttendance(
   client: DB,
   workDate: string,
-): Promise<DayAttendance> {
+): Promise<AttendanceRows> {
   const { data: day, error: dayError } = await client
     .from("days")
     .select("id")

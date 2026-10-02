@@ -1,14 +1,17 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
-import type {
-  CheckInRow,
-  ExcuseStatusRow,
+import {
+  CHECK_IN_COLUMNS,
+  EXCUSE_STATUS_COLUMNS,
+  type AttendanceRows,
+  type CheckInRow,
+  type ExcuseStatusRow,
 } from "@/entities/attendance/api/getDayAttendance.api";
 
 /**
  * 그달치 인증과 사유다. 키가 `['attendance', 'YYYY-MM']`이고 날 키
- * ([`getDayAttendance.ts`](getDayAttendance.ts))와 같은 모양을 낸다 — 상태 여섯을 내는
- * 순수 함수가 두 키 위에서 그대로 돈다. **상태 계산을 여기서 다시 짜지 않는다.**
+ * ([`getDayAttendance.api.ts`](getDayAttendance.api.ts))와 같은 모양을 낸다 — 꼴도 질의할
+ * 열 목록도 그쪽이 정본이다. **상태 계산을 여기서 다시 짜지 않는다.**
  *
  * **한 달을 날마다 읽지 않는다.** 서른 명 규모에서 한 달이면 수백 행이라 그것을 서른 번에
  * 나눠 묻는 것이 더 비싸다(`docs/2-design/system/runtime.md`의 「읽기 범위」). 그달에 연 날을
@@ -18,35 +21,12 @@ import type {
  * `getMonthSchedule.ts`에도 있다.
  */
 
-export type MonthAttendance = {
-  checkIns: CheckInRow[];
-  excuseStatuses: ExcuseStatusRow[];
-};
-
-const CHECK_IN_COLUMNS = [
-  "id",
-  "day_id",
-  "profile_id",
-  "checked_at",
-  "reported_at",
-  "received_at",
-  "method",
-].join(", ");
-
-const EXCUSE_STATUS_COLUMNS = [
-  "day_id",
-  "profile_id",
-  "submitted_at",
-  "decided_at",
-  "decision",
-].join(", ");
-
-const EMPTY: MonthAttendance = { checkIns: [], excuseStatuses: [] };
+const EMPTY: AttendanceRows = { checkIns: [], excuseStatuses: [] };
 
 export async function getMonthAttendance(
   client: DB,
   month: string,
-): Promise<MonthAttendance> {
+): Promise<AttendanceRows> {
   const { data: days, error: daysError } = await client
     .from("days")
     .select("id")
