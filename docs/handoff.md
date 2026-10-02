@@ -6,7 +6,15 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 인증 이동 PR이다.** `entities/session` + `features/auth` + `screens/retry`가 품는 타입 둘과 상수 하나를 옮기고, SDK 둘과 환경값 하나를 `lib`·`config`로 가른다. `features/auth/hooks/wireAutoRefresh.ts`는 **훅이 아니라 세션 자동 갱신을 켜는 부작용이라** `lib/wireAutoRefresh.lib.ts`로 간다 — 남은 `hooks/` 폴더 셋 중 하나고 나머지 둘(`entities/qr`·`features/qrAdmin`)이 QR 묶음의 `services` 넷이다. `signOut`·`handleAuthCallback`이 `lib`을 받는 자리도 여기다. 그 뒤는 QR 하나만 남는다.
+**다음 첫 수는 `fsd-read-write-layers`의 QR 이동 PR이다 — 묶음 열의 마지막이다.** `entities/qr` + `features/qrAdmin` + `screens/qr`이 품는 타입 하나와 상수 둘을 옮기고, 남은 `hooks/` 폴더 둘이 통째로 `services/`로 간다(넷). `screens/qr/utils/qrStartLine.utils.ts`의 `KST_DATE`를 `shared/utils/kstDate.ts`의 `kstDateOf`에 접는 것도 여기다. 그 뒤가 **안쪽 열**이고 거기서 처음 병렬이 된다 — AC-12의 controller 마흔넷을 worktree로 가른다.
+
+**인증 묶음이 끝났다.** 타입 둘이 `.type.ts` 둘로(`session.type.ts`에 `AuthDestination`, `auth.type.ts`에 `EntryDecision`), 앱 스킴 하나가 `consts/`로, 실행 환경 읽기가 `config/auth.config.ts`로 갔고 **함수 다섯이 `features/auth/lib/`에 모였다**. `features/auth`의 `hooks/`와 `model/`의 함수가 다 떠나 **`model/`에 타입 파일 하나만 남은 첫 슬라이스가 됐다** — 역할로 가르면 이 슬라이스는 세션을 만들고 끊는 손이라 판정이 없는 것이 맞는 모습이고, 순수한 판정은 아래층 `entities/session`이 쥔다.
+
+**접미사 패스가 놓친 자리가 두 묶음 연달아 나왔다.** 리허설의 reducer에 이어 인증의 `decideEntry.policy.ts`다 — 세션을 읽으러 통신을 부르는데 이름이 `.policy.ts`였고, `api/`를 당기는 `.policy.ts` 다섯 중 **값을 당겨 부르는 것은 이 하나뿐**이라 AC-08의 「`.policy.ts`에서 통신 금지」가 켜지면 이 파일 하나가 그 검사를 막는다. `fileNaming.ts`는 접미사와 세그먼트만 대조하고 파일 안을 안 봐 검사로는 못 세운다.
+
+**`config/`의 `expo-constants` 면제가 규칙이 됐다.** 알림의 `pushSwitch.config.ts`에 이어 인증의 `auth.config.ts`가 둘째 자리다 — 둘 다 `app.json`과 실행 중인 껍데기가 아는 값이라 `process.env`로는 길이 없다. 한 자리였으면 그 파일만 빼면 됐는데 둘이 되면서 AC-08의 `nativeSdkSegment`가 면제 목록을 들어야 한다.
+
+**없는 파일을 가리키던 주석 경로 셋을 고쳤다.** `tests/e2e/admin.yaml`과 `docs/4-test/execution.md`가 묶음 8가 이전의 짝 테스트 이름을, `integration-test-writer` 정의문이 AC-05가 없앤 `dals/`를 가리켰다 — import도 링크도 아니라 검사 셋 전부의 밖이다.
 
 **묶음 열이 끝난 뒤 한 task가 필요해졌다.** 단위와 꼴을 내는 도구의 사본이 층층이다 — 요일 표 여섯·KST 날짜 꼴 셋·`?from=` 프로토콜 여덞 자리고, 초를 떼는 `slice(0, 5)`가 열둘인데 이름을 받은 것은 둘뿐이다. **단위 환산은 상수가 아홉이고 그 위에 올라탄 손이 둘이다** — 시·분 글자를 분으로 바꾸는 것 셋, 분을 「3시간 20분」으로 적는 것 다섯이다. 상수를 세는 것으로는 안 보여서, 그 task가 받을 것은 상수 아홉이 아니라 손 둘이다. **배정 갈래 둘(`"regular"`·`"training"`)도 여기로 왔다** — `ASSIGNMENT_KINDS`를 `entities/schedule/consts`에 세우고 타입을 거기서 끌어내는 걸음이라 유니언 자리까지 같이 움직인다. 묶음 하나가 접을 크기가 아니라 plan AC-13에 적어 뒀다.
 

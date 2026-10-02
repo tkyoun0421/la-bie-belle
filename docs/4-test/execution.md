@@ -127,7 +127,7 @@
 작성 중에는 바꾼 파일부터 실행한다. 아래는 현재 존재하는 테스트 경로다. `pnpm test`는 unit만 집고 integration은 실행하지 않는다.
 
 ```sh
-pnpm test src/entities/session/model/__tests__/resolveAuthDestination.test.ts
+pnpm test src/entities/session/model/__tests__/resolveAuthDestination.policy.test.ts
 ```
 
 integration은 준비와 러너 호출을 나눈다. integration 스크립트는 여러 명령을 연결하므로 파일 인자 전달에 기대지 않는다.
