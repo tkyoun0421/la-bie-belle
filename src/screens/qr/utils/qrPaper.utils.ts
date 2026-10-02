@@ -1,15 +1,20 @@
-/* eslint-disable house/no-color-literals -- 종이에는 테마가 없다. 자르는 선 색은 역할 토큰이
-   아니라 팔레트 `neutral-300`의 라이트 값을 박은 것이고, 근거는
-   docs/2-design/modules/attendance/screens/qr.md 의 「내보내기」표다. */
+import {
+  CUT_LINE_COLOR,
+  GUIDE_SIZE_MM,
+  PAPER_GUIDE,
+  PAPER_TITLE,
+  QR_GAP_MM,
+  QR_PAPER,
+  TITLE_SIZE_MM,
+} from "@/screens/qr/consts/qr.const";
 
 /**
  * 벽에 붙일 A4 한 장이다. 정본은
  * `docs/2-design/modules/attendance/screens/qr.md`의 「내보내기」표고 완료 조건은
  * `docs/2-design/spec/attendance-qr.md`의 AC-03이다.
  *
- * **값이 전부 밀리미터다.** 인쇄된 종이에서 재는 단위라 그렇다. 픽셀 크기를 정해 그림을 굽는
- * 것이 아니라 A4를 그대로 만든다 — 화면에 그린 것을 구우면 크기가 기기 화면에 묶여 인쇄
- * 품질이 관리자 폰마다 달라진다.
+ * **값은 `consts`가 들고 여기는 짜기만 한다.** 밀리미터로 적는 까닭과 자르는 선 색의 근거가
+ * 그 파일에 있다.
  *
  * **자르는 선이 그림 안에 있다.** 가장자리에서 15밀리미터를 들이는 것은 프린터가 삼키는
  * 여백을 넘기기 위해서고, 3밀리미터로 두면 선 자체가 인쇄에서 잘린다.
@@ -17,26 +22,6 @@
  * **코드 문자열이 글자로 안 선다.** 종이에 서는 글은 제목과 안내 한 줄뿐이고 코드는
  * `qrSvg`의 경로 안에만 있다.
  */
-
-const CUT_LINE_COLOR = "#CACCCF";
-
-const TITLE = "출근 인증";
-
-const GUIDE = "스마트폰 카메라로 찍어 출근을 인증하세요";
-
-const TITLE_SIZE_MM = 12;
-
-const GUIDE_SIZE_MM = 6;
-
-const QR_GAP_MM = 14;
-
-export const QR_PAPER = {
-  pageWidthMm: 210,
-  pageHeightMm: 297,
-  cutInsetMm: 15,
-  cutStrokeMm: 0.25,
-  qrRatio: 0.6,
-};
 
 export type QrPaperLayout = {
   innerWidthMm: number;
@@ -93,9 +78,9 @@ body {
 </head>
 <body>
 <div class="cut">
-<div class="title">${TITLE}</div>
+<div class="title">${PAPER_TITLE}</div>
 <div class="qr">${qrSvg}</div>
-<div class="guide">${GUIDE}</div>
+<div class="guide">${PAPER_GUIDE}</div>
 </div>
 </body>
 </html>

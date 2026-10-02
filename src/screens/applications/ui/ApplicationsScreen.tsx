@@ -10,6 +10,7 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Tabs } from "@/shared/ui/Tabs";
 import { Text } from "@/shared/ui/Text";
+import { kstDateOf } from "@/shared/utils/kstDate";
 import { useMonthAvailabilitiesQuery } from "@/entities/availability/services/useMonthAvailabilitiesQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { useSetApplicationDeadlineMutation } from "@/features/availabilitySubmit/services/useSetApplicationDeadlineMutation";
@@ -32,7 +33,7 @@ import {
  * 이번 달 며칠을 일할 수 있나」를 본다 — 서버에 두 번 묻지 않는다.
  *
  * **마감일 시트가 여기와 달력 두 자리에서 열린다.** 당길 일이 생기는 문이 둘이라 시트는
- * 슬라이스 밖(`@/features/schedule/ui`)에 산다.
+ * 슬라이스 밖(`@/features/availabilitySubmit/ui`)에 산다.
  */
 
 const TABS = [
@@ -41,13 +42,6 @@ const TABS = [
 ];
 
 const SKELETON_ROWS = [0, 1, 2];
-
-const KST_MONTH = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Asia/Seoul",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
 
 export type ApplicationsScreenProps = {
   month?: string;
@@ -58,7 +52,7 @@ export function ApplicationsScreen({
 }: ApplicationsScreenProps) {
   const router = useRouter();
   const now = new Date().toISOString();
-  const today = KST_MONTH.format(new Date(now));
+  const today = kstDateOf(now);
 
   const [month, setMonth] = useState(monthParam ?? today.slice(0, 7));
   const [tab, setTab] = useState("date");
