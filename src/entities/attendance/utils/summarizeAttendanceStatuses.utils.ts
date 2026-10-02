@@ -1,6 +1,7 @@
-import type { AttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
-
-export type AttendanceSummary = Partial<Record<AttendanceStatus, number>>;
+import type {
+  AttendanceStatus,
+  AttendanceSummary,
+} from "@/entities/attendance/model/attendance.type";
 
 export function summarizeAttendanceStatuses(
   statuses: (AttendanceStatus | null)[],

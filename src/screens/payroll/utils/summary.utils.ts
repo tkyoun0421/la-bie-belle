@@ -1,8 +1,6 @@
 import { spellWon } from "@/shared/utils/spellNumber";
-import {
-  getAttendanceStatus,
-  type AttendanceStatusInput,
-} from "@/entities/attendance/model/attendanceStatus.policy";
+import type { AttendanceStatusInput } from "@/entities/attendance/model/attendance.type";
+import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays.policy";
 import { NO_AMOUNT } from "@/screens/payroll/consts/payroll.const";
 

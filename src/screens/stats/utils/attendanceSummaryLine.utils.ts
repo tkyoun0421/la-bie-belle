@@ -1,4 +1,4 @@
-import type { MonthlyAttendanceTally } from "@/entities/attendance/utils/attendanceSummary.utils";
+import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendance.type";
 
 /**
  * 근태 탭 현황 줄이다 — 「출근 41 · 지각 4 · 출근 인정 2 · 결근 1」

@@ -1,10 +1,10 @@
-import {
-  getAttendanceStatus,
-  type AttendanceStatusInput,
-  type CheckInRecord,
-  type ExcuseDecision,
-  type ExcuseStatusRecord,
-} from "@/entities/attendance/model/attendanceStatus.policy";
+import type {
+  AttendanceStatusInput,
+  CheckInRecord,
+  ExcuseDecision,
+  ExcuseStatusRecord,
+} from "@/entities/attendance/model/attendance.type";
+import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 import { REGULAR_MINUTES } from "@/entities/payroll/consts/payroll.const";
 import {
   dayAmount,

@@ -1,5 +1,5 @@
-import type { AttendanceStatusInput } from "@/entities/attendance/model/attendanceStatus.policy";
-import type { AttendanceSummary } from "@/entities/attendance/utils/summarizeAttendanceStatuses.utils";
+import type { AttendanceStatusInput } from "@/entities/attendance/model/attendance.type";
+import type { AttendanceSummary } from "@/entities/attendance/model/attendance.type";
 import {
   attendanceSummaryLine,
   isAttendanceColumnVisible,

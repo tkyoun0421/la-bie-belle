@@ -1,9 +1,11 @@
 import { TALLIED_STATUSES } from "@/entities/attendance/consts/attendance.const";
-import {
-  getAttendanceStatus,
-  type AttendanceStatus,
-  type AttendanceStatusInput,
-} from "@/entities/attendance/model/attendanceStatus.policy";
+import type {
+  AttendanceStatus,
+  AttendanceStatusInput,
+  MonthlyAttendanceTally,
+  TalliedStatus,
+} from "@/entities/attendance/model/attendance.type";
+import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 
 /**
  * 한 달치 근태를 네 갈래로 센다. 판정은 [`attendanceStatus.ts`](attendanceStatus.ts)의
@@ -23,10 +25,6 @@ import {
  */
 
 const PERCENT = 100;
-
-export type TalliedStatus = (typeof TALLIED_STATUSES)[number];
-
-export type MonthlyAttendanceTally = Record<TalliedStatus, number>;
 
 function isTallied(status: AttendanceStatus | null): status is TalliedStatus {
   return (TALLIED_STATUSES as readonly (AttendanceStatus | null)[]).includes(

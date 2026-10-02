@@ -3,32 +3,11 @@ import {
   EXCUSE_DEADLINE_HOURS,
   LATE_THRESHOLD_MINUTES,
 } from "@/entities/attendance/consts/attendance.const";
-
-export type AttendanceStatus =
-  "unmarked" | "present" | "late" | "pending" | "excused" | "absent";
-
-export type CheckInRecord = {
-  checkedAt: string;
-  reportedAt: string;
-  receivedAt: string;
-};
-
-export type ExcuseDecision = "approved" | "rejected";
-
-export type ExcuseStatusRecord = {
-  submittedAt: string;
-  decidedAt: string | null;
-  decision: ExcuseDecision | null;
-};
-
-export type AttendanceStatusInput = {
-  workDate: string;
-  startsAt: string;
-  endsAt: string;
-  checkIn: CheckInRecord | null;
-  excuses: ExcuseStatusRecord[];
-  now: string;
-};
+import type {
+  AttendanceStatus,
+  AttendanceStatusInput,
+  ExcuseStatusRecord,
+} from "@/entities/attendance/model/attendance.type";
 
 const MINUTE_MS = 60 * 1000;
 const HOUR_MS = 60 * MINUTE_MS;

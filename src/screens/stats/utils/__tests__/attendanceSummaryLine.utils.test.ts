@@ -14,7 +14,7 @@
 // 넷을 항상 다 적는다. 사람별 목록 줄의 "지각이 0이면 그 자리가 비어
 // 있다"는 것과도 다른 자리다.
 
-import type { MonthlyAttendanceTally } from "@/entities/attendance/utils/attendanceSummary.utils";
+import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendance.type";
 import { attendanceSummaryLine } from "@/screens/stats/utils/attendanceSummaryLine.utils";
 
 describe("attendanceSummaryLine — 출근·지각·출근 인정·결근 순서로 한 줄을 낸다", () => {
