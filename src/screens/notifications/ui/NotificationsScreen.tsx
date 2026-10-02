@@ -16,8 +16,8 @@ import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
+import type { NotificationRow as Notification } from "@/entities/notification/api/notification.dto";
 import { toNotificationDestination } from "@/entities/notification/model/destination.policy";
-import type { NotificationRow as Notification } from "@/entities/notification/model/notification.type";
 import { useNotificationsQuery } from "@/entities/notification/services/useNotificationsQuery";
 import { toNotificationTitle } from "@/entities/notification/utils/title.utils";
 import {

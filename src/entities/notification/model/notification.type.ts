@@ -1,7 +1,9 @@
 /**
- * 알림 한 행의 모양과 종류다. 정본은
+ * 알림의 종류와 그 짐이다. 정본은
  * `docs/2-design/modules/notification/design.md`의 「kind와 payload」 표고, 그 표를 옮긴
- * 자리가 이 파일의 유니온이다.
+ * 자리가 이 파일의 유니온이다. 통신에서 오는 행 꼴은
+ * [`api/notification.dto.ts`](../api/notification.dto.ts)가 들고 그 꼴의 `kind`가 이 유니온을
+ * 건다.
  *
  * **DB가 `kind`를 안 막는다.** 열이 그냥 `text`라(같은 문서의 「알림 행」) 낳는 쪽과 읽는
  * 쪽이 어긋나도 데이터베이스는 통과시킨다. 막는 자리가 여기고, 문장·목적지 함수가
@@ -43,19 +45,6 @@ export const NOTIFICATION_KINDS = [
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
 export type NotificationPayload = Record<string, unknown>;
-
-export type NotificationRow = {
-  id: string;
-  profile_id: string;
-  kind: NotificationKind;
-  payload: NotificationPayload;
-  subject_id: string | null;
-  created_at: string;
-  read_at: string | null;
-  claimed_at: string | null;
-  push_attempts: number;
-  pushed_at: string | null;
-};
 
 /**
  * 한 쪽에 담는 수다. 읽는 손(`api/getNotifications.api.ts`의 `range()`)과 다음 쪽이 있는지를
