@@ -8,7 +8,7 @@ import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
+import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
 import { useScheduleMonthsQuery } from "@/entities/schedule/services/useScheduleMonthsQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
@@ -102,7 +102,7 @@ export function usePayrollScreen(client: DB): PayrollScreenController {
   const [anchorDate, setAnchorDate] = useState(today);
 
   const { data: me } = useSessionUserQuery(client);
-  const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
+  const { data: profile, isLoading: profileLoading } = useMyProfileRowQuery(
     client,
     me?.id ?? null,
   );

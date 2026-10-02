@@ -13,7 +13,7 @@ import { spellWon } from "@/shared/utils/spellNumber";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
+import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
@@ -139,7 +139,7 @@ export function useStatsScreen(client: DB): StatsScreenController {
   const [month, setMonth] = useState(() => monthOf(today));
 
   const { data: me } = useSessionUserQuery(client);
-  const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
+  const { data: profile, isLoading: profileLoading } = useMyProfileRowQuery(
     client,
     me?.id ?? null,
   );

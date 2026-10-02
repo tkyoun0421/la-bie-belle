@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import type { DB } from "@/shared/api/database";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
+import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
 import { canAddOn } from "@/entities/rehearsal/model/canAddOn.policy";
 import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
@@ -106,7 +106,7 @@ export function useRehearsalScreen(
   const [sheet, dispatch] = useReducer(addSheetReducer, INITIAL_SHEET);
 
   const { data: me } = useSessionUserQuery(client);
-  const { data: profile } = useMyProfileQuery(client, me?.id ?? null);
+  const { data: profile } = useMyProfileRowQuery(client, me?.id ?? null);
 
   const role = profile?.role;
   const isAdmin = role === "admin";

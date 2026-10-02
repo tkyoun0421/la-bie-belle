@@ -1,7 +1,7 @@
 import { Redirect, useLocalSearchParams } from "expo-router";
 import { supabase } from "@/shared/api/supabase";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
+import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
 import { resolveRehearsalGuard } from "@/screens/rehearsal/model/rehearsalGuard.policy";
@@ -29,7 +29,7 @@ export default function Screen() {
   const { data: user, isLoading: asking } = useSessionUserQuery(supabase);
   const userId = user?.id ?? null;
 
-  const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
+  const { data: profile, isLoading: profileLoading } = useMyProfileRowQuery(
     supabase,
     userId,
   );

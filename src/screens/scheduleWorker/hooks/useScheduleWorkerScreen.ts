@@ -6,7 +6,7 @@ import { useMyAvailabilityQuery } from "@/entities/availability/services/useMyAv
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
+import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
@@ -194,7 +194,10 @@ export function useScheduleWorkerScreen(
   const serverNowMs = nowWithOffset(Date.now(), clockOffset);
 
   const { data: sessionUser } = useSessionUserQuery(client);
-  const { data: profile } = useMyProfileQuery(client, sessionUser?.id ?? null);
+  const { data: profile } = useMyProfileRowQuery(
+    client,
+    sessionUser?.id ?? null,
+  );
   const unreadCount = useUnreadCountQuery(client);
   const { data: monthWindow } = useMonthWindowQuery(client, month);
   const { data: days } = useMonthScheduleQuery(client, month);
