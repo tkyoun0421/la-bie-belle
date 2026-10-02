@@ -9,6 +9,14 @@ import { Text } from "@/shared/ui/Text";
 import type { ProfilePrivateRow } from "@/entities/profile/api/profile.dto";
 import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
+import {
+  CONFIRM_COPY,
+  MORE_HIT_SLOP,
+  MORE_ICON_SIZE,
+  SHEET_AVATAR_SIZE,
+  SHEET_COPY,
+} from "@/screens/membersPending/consts/membersPending.const";
+import type { SheetFace } from "@/screens/membersPending/model/membersPending.type";
 
 /**
  * 대기 중인 한 사람을 여는 시트다. 관리자가 사람을 알아보는 재료 넷과 보낸 시각을 세우고
@@ -18,51 +26,14 @@ import { spellGender } from "@/entities/profile/utils/spellGender.utils";
  * **얼굴이 셋인데 시트는 하나다.** 거절과 차단은 새 시트를 쌓지 않고 이 시트의 값 넷 자리를
  * 물음으로 바꾼다. 사진과 이름은 그 자리에 남는다 — 묻는 대상이 같은 사람이라 화면이 바뀔
  * 이유가 없다. 물음이 선 동안 더보기는 감춘다.
+ *
+ * 더보기 열림만 여기 남는다 — 사람이 열고 사람이 닫는 자리다.
  */
-
-const AVATAR_SIZE = 64;
-
-const MORE_ICON_SIZE = 20;
-
-const MORE_HIT_SLOP = 8;
-
-const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
-
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-
-/** 「9월 9일(수) 21:04에 보냈어요」 — 목록과 달리 시트는 언제인지를 그대로 말한다. */
-function formatSentAt(submittedAt: string): string {
-  const kst = new Date(Date.parse(submittedAt) + KST_OFFSET_MS);
-  const hour = String(kst.getUTCHours()).padStart(2, "0");
-  const minute = String(kst.getUTCMinutes()).padStart(2, "0");
-
-  return `${kst.getUTCMonth() + 1}월 ${kst.getUTCDate()}일(${WEEKDAYS[kst.getUTCDay()]}) ${hour}:${minute}에 보냈어요`;
-}
-
-export type MemberDecision = "reject" | "block";
-
-export type SheetFace = "detail" | MemberDecision;
-
-const CONFIRM_COPY: Record<
-  MemberDecision,
-  { question: (name: string) => string; note: string; action: string }
-> = {
-  reject: {
-    question: (name) => `${name} 님을 안 받을까요`,
-    note: "다시 보내면 목록에 또 떠요",
-    action: "거절",
-  },
-  block: {
-    question: (name) => `${name} 님을 차단할까요`,
-    note: "이 구글 계정으로는 다시 못 들어와요",
-    action: "차단",
-  },
-};
 
 export type MemberDetailSheetProps = {
   name: string;
   photoUrl: string | null;
-  submittedAt: string | null;
+  sentAt: string;
   values: ProfilePrivateRow | null;
   today: string;
   face: SheetFace;
@@ -70,7 +41,7 @@ export type MemberDetailSheetProps = {
   failed: boolean;
   onFace: (face: SheetFace) => void;
   onApprove: () => void;
-  onConfirm: (decision: MemberDecision) => void;
+  onConfirm: () => void;
 };
 
 type ValueRowProps = {
@@ -95,7 +66,7 @@ function ValueRow({ label, value, numeric = false }: ValueRowProps) {
 export function MemberDetailSheet({
   name,
   photoUrl,
-  submittedAt,
+  sentAt,
   values,
   today,
   face,
@@ -106,16 +77,16 @@ export function MemberDetailSheet({
   onConfirm,
 }: MemberDetailSheetProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const confirming = face !== "detail";
+  const asking = face === "detail" ? null : CONFIRM_COPY[face];
 
   return (
     <>
       <View className="min-h-7 flex-row items-center justify-end">
-        {confirming ? null : (
+        {asking ? null : (
           <View className="relative">
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="더보기"
+              accessibilityLabel={SHEET_COPY.more}
               hitSlop={MORE_HIT_SLOP}
               onPress={() => setMenuOpen((open) => !open)}
             >
@@ -123,7 +94,7 @@ export function MemberDetailSheet({
             </Pressable>
             <MorePopover open={menuOpen}>
               <MorePopoverItem
-                label="차단하기"
+                label={SHEET_COPY.blockMenu}
                 irreversible
                 onPress={() => {
                   setMenuOpen(false);
@@ -135,29 +106,29 @@ export function MemberDetailSheet({
         )}
       </View>
 
-      <Avatar name={name} photoUrl={photoUrl} size={AVATAR_SIZE} />
+      <Avatar name={name} photoUrl={photoUrl} size={SHEET_AVATAR_SIZE} />
       <Text size="xl" weight="semibold" className="mt-4">
         {name}
       </Text>
 
-      {confirming ? (
+      {asking ? (
         <>
           <Text size="base" weight="medium" className="mt-6">
-            {CONFIRM_COPY[face].question(name)}
+            {`${name}${asking.questionSuffix}`}
           </Text>
           <Text size="sm" tone="muted" className="mt-1">
-            {CONFIRM_COPY[face].note}
+            {asking.note}
           </Text>
         </>
       ) : (
         <>
           <View className="mt-6">
             <ValueRow
-              label="성별"
+              label={SHEET_COPY.genderLabel}
               value={values === null ? "" : spellGender(values.gender)}
             />
             <ValueRow
-              label="생년월일"
+              label={SHEET_COPY.birthLabel}
               numeric
               value={
                 values?.birth_date
@@ -165,38 +136,45 @@ export function MemberDetailSheet({
                   : ""
               }
             />
-            <ValueRow label="연락처" numeric value={values?.phone ?? ""} />
-            <ValueRow label="구글 계정" value={values?.email ?? ""} />
+            <ValueRow
+              label={SHEET_COPY.phoneLabel}
+              numeric
+              value={values?.phone ?? ""}
+            />
+            <ValueRow
+              label={SHEET_COPY.emailLabel}
+              value={values?.email ?? ""}
+            />
           </View>
           <Text size="xs" tone="subtle" numeric className="mt-3">
-            {submittedAt ? formatSentAt(submittedAt) : ""}
+            {sentAt}
           </Text>
         </>
       )}
 
       {failed ? (
         <Text size="xs" tone="critical" className="mt-3">
-          보내지 못했어요. 다시 시도해주세요
+          {SHEET_COPY.sendFailed}
         </Text>
       ) : null}
 
       <View className="mt-6 flex-row gap-3">
-        {confirming ? (
+        {asking ? (
           <>
             <Button
               variant="secondary"
               className="flex-1"
               onPress={() => onFace("detail")}
             >
-              닫기
+              {SHEET_COPY.close}
             </Button>
             <Button
               variant={face === "block" ? "destructive" : "secondary"}
               className="flex-1"
               loading={sending}
-              onPress={() => onConfirm(face)}
+              onPress={onConfirm}
             >
-              {CONFIRM_COPY[face].action}
+              {asking.action}
             </Button>
           </>
         ) : (
@@ -206,7 +184,7 @@ export function MemberDetailSheet({
               className="flex-1"
               onPress={() => onFace("reject")}
             >
-              거절
+              {SHEET_COPY.reject}
             </Button>
             <Button
               variant="primary"
@@ -214,7 +192,7 @@ export function MemberDetailSheet({
               loading={sending}
               onPress={onApprove}
             >
-              승인
+              {SHEET_COPY.approve}
             </Button>
           </>
         )}

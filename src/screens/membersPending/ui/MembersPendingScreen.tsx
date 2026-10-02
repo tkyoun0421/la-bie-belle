@@ -1,11 +1,8 @@
 import { useRouter } from "expo-router";
 import { EllipsisVertical } from "lucide-react-native";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import { queryClient } from "@/shared/api/queryClient";
-import { queryKeys } from "@/shared/api/queryKeys";
 import { supabase } from "@/shared/api/supabase";
-import { DomainError } from "@/shared/model/error.type";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Card } from "@/shared/ui/Card";
@@ -17,20 +14,13 @@ import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
-import type { ToastKind } from "@/shared/ui/Toast";
-import type { MemberListRow } from "@/entities/member/api/member.dto";
-import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
-import { formatElapsedDays } from "@/entities/member/utils/formatElapsedDays.utils";
-import type { ProfilePrivateRow } from "@/entities/profile/api/profile.dto";
-import { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
-import { approveMember } from "@/features/memberAdmin/api/approveMember.api";
-import { blockMember } from "@/features/memberAdmin/api/blockMember.api";
-import { rejectMember } from "@/features/memberAdmin/api/rejectMember.api";
 import {
-  MemberDetailSheet,
-  type MemberDecision,
-  type SheetFace,
-} from "@/screens/membersPending/ui/MemberDetailSheet";
+  MORE_HIT_SLOP,
+  MORE_ICON_SIZE,
+  PENDING_COPY,
+} from "@/screens/membersPending/consts/membersPending.const";
+import { useMembersPendingScreen } from "@/screens/membersPending/hooks/useMembersPendingScreen";
+import { MemberDetailSheet } from "@/screens/membersPending/ui/MemberDetailSheet";
 
 /**
  * 관리자가 가입 신청을 받거나 돌려보내는 화면이다. 앱 전체의 첫 문이다 — 승인이 없으면
@@ -39,133 +29,26 @@ import {
  * `docs/2-design/spec/members-pending.md`다.
  *
  * **줄에서 바로 판정하지 않는다.** 누르면 시트가 올라오고 거기서 정한다. 줄에서 승인하면
- * 성별과 생년월일과 연락처를 못 보고 누르게 되는데 그 셋이 관리자가 사람을 알아보는
- * 재료다.
+ * 성별과 생년월일과 연락처를 못 보고 누르게 되는데 그 셋이 관리자가 사람을 알아보는 재료다.
  *
- * **늦게 누른 쪽은 `already_decided`를 받는다.** 그때는 시트를 닫고 안내 토스트를 띄운 뒤
- * 목록을 다시 읽는다 — 이미 처리된 사람의 줄이 남아 있을 이유가 없다. 통신이 끊긴
- * 것이면 시트를 연 채로 둔다. 사람이 다시 누를 자리가 거기다.
+ * 판정과 시트 열림은 `useMembersPendingScreen`이 든다. 여기 남은 `useState`는 앱바 더보기
+ * 하나다 — 사람이 열고 사람이 닫는 자리라 통신을 안 탄다.
  */
 
+/**
+ * **같은 표가 저장소 열세 자리에 있다.** 묶음 여럿에 걸려 한 열이 못 접고 AC-13이 받는다.
+ */
 const SKELETON_ROWS = [0, 1, 2];
-
-const MORE_ICON_SIZE = 20;
-
-const MORE_HIT_SLOP = 8;
-
-type ToastMessage = { kind: ToastKind; message: string };
-
-const ALREADY_DECIDED: ToastMessage = {
-  kind: "info",
-  message: "이미 처리된 사람이에요",
-};
-
-/** 「오늘 보냈어요」·「3일 전에 보냈어요」 — 날 수가 값인 자리에만 조사가 붙는다. */
-function sentLine(submittedAt: string | null, now: string): string {
-  if (submittedAt === null) {
-    return "";
-  }
-
-  const elapsed = formatElapsedDays(submittedAt, now);
-
-  return elapsed.endsWith("전")
-    ? `${elapsed}에 보냈어요`
-    : `${elapsed} 보냈어요`;
-}
 
 export function MembersPendingScreen() {
   const router = useRouter();
-
-  const { data: rows } = useMembersQuery(supabase, "pending");
+  const screen = useMembersPendingScreen(supabase);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [face, setFace] = useState<SheetFace>("detail");
-  const [values, setValues] = useState<ProfilePrivateRow | null>(null);
-  const [sending, setSending] = useState(false);
-  const [failed, setFailed] = useState(false);
-  const [toast, setToast] = useState<ToastMessage | null>(null);
-
-  const now = new Date().toISOString();
-
-  const hideToast = useCallback(() => setToast(null), []);
-
-  const closeSheet = useCallback(() => {
-    setOpenId(null);
-    setFace("detail");
-    setValues(null);
-    setFailed(false);
-  }, []);
-
-  const openSheet = useCallback((row: MemberListRow) => {
-    setMenuOpen(false);
-    setOpenId(row.id);
-    setFace("detail");
-    setValues(null);
-    setFailed(false);
-
-    void getProfilePrivate(supabase, row.id)
-      .then(setValues)
-      .catch(() => setValues(null));
-  }, []);
-
-  const decide = useCallback(
-    async (
-      profileId: string,
-      send: (profileId: string) => Promise<void>,
-      done: string,
-    ) => {
-      setSending(true);
-      setFailed(false);
-
-      try {
-        await send(profileId);
-        closeSheet();
-        setToast({ kind: "success", message: done });
-      } catch (error) {
-        if (error instanceof DomainError && error.code === "already_decided") {
-          closeSheet();
-          setToast(ALREADY_DECIDED);
-        } else {
-          setFailed(true);
-          return;
-        }
-      } finally {
-        setSending(false);
-      }
-
-      await queryClient.invalidateQueries({ queryKey: queryKeys.member.all });
-    },
-    [closeSheet],
-  );
-
-  const open = rows?.find((row) => row.id === openId) ?? null;
-  const openName = open?.display_name ?? "";
-
-  const confirm = (decision: MemberDecision) => {
-    if (!open) {
-      return;
-    }
-
-    if (decision === "reject") {
-      void decide(
-        open.id,
-        (id) => rejectMember(supabase, id),
-        `${openName} 님을 안 받았어요`,
-      );
-      return;
-    }
-
-    void decide(
-      open.id,
-      (id) => blockMember(supabase, id),
-      `${openName} 님을 차단했어요`,
-    );
-  };
 
   return (
     <Screen>
       <AppBar
-        title="가입 대기"
+        title={PENDING_COPY.appBarTitle}
         onBack={() =>
           router.canGoBack() ? router.back() : router.replace("/admin")
         }
@@ -173,7 +56,7 @@ export function MembersPendingScreen() {
           <View className="relative">
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="더보기"
+              accessibilityLabel={PENDING_COPY.more}
               hitSlop={MORE_HIT_SLOP}
               onPress={() => setMenuOpen((opened) => !opened)}
             >
@@ -181,7 +64,7 @@ export function MembersPendingScreen() {
             </Pressable>
             <MorePopover open={menuOpen}>
               <MorePopoverItem
-                label="차단한 사람"
+                label={PENDING_COPY.blockedMenu}
                 onPress={() => {
                   setMenuOpen(false);
                   router.push("/admin/members/blocked");
@@ -194,32 +77,30 @@ export function MembersPendingScreen() {
 
       <ScrollView>
         <View className="px-5 pb-5">
-          {rows === undefined ? (
+          {screen.listState === "loading" ? (
             <Card>
               {SKELETON_ROWS.map((at) => (
                 <SkeletonLine key={at} className="my-4 w-2/3" />
               ))}
             </Card>
-          ) : rows.length === 0 ? (
+          ) : screen.listState === "empty" ? (
             <Text size="sm" tone="subtle" className="py-4">
-              기다리는 사람이 없어요
+              {PENDING_COPY.empty}
             </Text>
           ) : (
             <Card className="py-0">
-              {rows.map((row, at) => (
+              {screen.rows.map((row, at) => (
                 <ListRow
                   key={row.id}
-                  title={row.display_name ?? ""}
-                  detail={sentLine(row.submitted_at, now)}
-                  left={
-                    <Avatar
-                      name={row.display_name ?? ""}
-                      photoUrl={row.photo_url}
-                    />
-                  }
+                  title={row.name}
+                  detail={row.detail}
+                  left={<Avatar name={row.name} photoUrl={row.photoUrl} />}
                   chevron
                   divider={at > 0}
-                  onPress={() => openSheet(row)}
+                  onPress={() => {
+                    setMenuOpen(false);
+                    row.press();
+                  }}
                 />
               ))}
             </Card>
@@ -227,35 +108,29 @@ export function MembersPendingScreen() {
         </View>
       </ScrollView>
 
-      {open ? (
-        <SheetLayer onDismiss={closeSheet}>
+      {screen.sheet ? (
+        <SheetLayer onDismiss={screen.closeSheet}>
           <MemberDetailSheet
-            name={openName}
-            photoUrl={open.photo_url}
-            submittedAt={open.submitted_at}
-            values={values}
-            today={now}
-            face={face}
-            sending={sending}
-            failed={failed}
-            onFace={setFace}
-            onApprove={() =>
-              void decide(
-                open.id,
-                (id) => approveMember(supabase, id),
-                `${openName} 님을 승인했어요`,
-              )
-            }
-            onConfirm={confirm}
+            name={screen.sheet.name}
+            photoUrl={screen.sheet.photoUrl}
+            sentAt={screen.sheet.sentAt}
+            values={screen.sheet.values}
+            today={screen.today}
+            face={screen.face}
+            sending={screen.sending}
+            failed={screen.failed}
+            onFace={screen.showFace}
+            onApprove={screen.approve}
+            onConfirm={screen.confirm}
           />
         </SheetLayer>
       ) : null}
 
-      {toast ? (
+      {screen.toast ? (
         <FloatingToast
-          kind={toast.kind}
-          message={toast.message}
-          onDone={hideToast}
+          kind={screen.toast.kind}
+          message={screen.toast.message}
+          onDone={screen.dismissToast}
         />
       ) : null}
     </Screen>

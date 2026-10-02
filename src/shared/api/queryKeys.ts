@@ -83,6 +83,12 @@ export const queryKeys = {
      * 까지 다시 읽을 것이 없다.
      */
     private: () => ["profile", "private"],
+    /**
+     * 관리자가 남의 개인정보 행을 읽는 자리다 — 가입 대기 상세 시트다. 내 것과 접두사를
+     * 같이 쓰되 꼬리에 사람이 붙는다: 묻는 것이 「내 연락처」가 아니라 「이 사람 연락처」라
+     * 사람마다 캐시가 갈려야 한다.
+     */
+    privateOf: (profileId: string) => ["profile", "private", profileId],
   },
   notification: {
     all: ["notifications"],
