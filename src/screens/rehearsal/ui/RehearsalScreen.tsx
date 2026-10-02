@@ -30,6 +30,7 @@ import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { useAddRehearsalMutation } from "@/features/rehearsalEdit/services/useAddRehearsalMutation";
 import { useEditRehearsalMutation } from "@/features/rehearsalEdit/services/useEditRehearsalMutation";
 import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
+import { CLOCK_LENGTH } from "@/screens/rehearsal/consts/rehearsal.const";
 import {
   addSheetActionFor,
   addSheetReducer,
@@ -74,8 +75,6 @@ const MONTH_CHEVRON_SIZE = 14;
 const LEGEND = "칸 아래 숫자는 그날 리허설 시간이에요";
 
 const READ_FAILED = "리허설을 불러오지 못했어요";
-
-const CLOCK_LENGTH = "14:00".length;
 
 const INITIAL_FORM: AddSheetState = {
   formKind: "time",

@@ -1,3 +1,4 @@
+import { MINUTES_PER_COUNT } from "@/entities/rehearsal/consts/rehearsal.const";
 import type { RehearsalTotal } from "@/entities/rehearsal/model/rehearsal.type";
 
 /**
@@ -7,13 +8,12 @@ import type { RehearsalTotal } from "@/entities/rehearsal/model/rehearsal.type";
  * (`docs/2-design/modules/payroll/README.md`의 PAY-028) 화면도 시간을 최종 단위로 삼는다.
  *
  * **표에 시간 열이 없다.** 건수에서 시간을 내는 것은 저장이 아니라 계산이라 여기 하나에만
- * 산다 — 달력 칸도 달 줄 합계도 날 시트도 같은 함수를 부른다.
+ * 산다 — 달력 칸도 달 줄 합계도 날 시트도 같은 함수를 부른다. 1건이 몇 분인지는 `consts`가
+ * 든다.
  *
  * 합계의 「건수」는 행마다 하나가 아니다. 건수 갈래 줄은 제 `count`만큼, 시각 갈래 줄은 한
  * 건으로 센다 — 「3건 · 5시간」의 3이 줄 수가 아니라 리허설 횟수다.
  */
-
-const MINUTES_PER_COUNT = 60;
 
 const MINUTES_PER_HOUR = 60;
 
