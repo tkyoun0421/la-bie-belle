@@ -17,7 +17,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 
 ## 어디에 쓰나
 
-대상 파일과 같은 레벨의 `__tests__`에 두고 이름에 `.integration`을 넣는다. `src/entities/schedule/dals/assignment.ts`면 `src/entities/schedule/dals/__tests__/assignment.integration.test.ts`다. 훅이 이 경로를 짝으로 인정한다.
+대상 파일과 같은 레벨의 `__tests__`에 두고 이름에 `.integration`을 넣는다. `src/entities/hall/api/getHallDefaults.api.ts`면 `src/entities/hall/api/__tests__/getHallDefaults.api.integration.test.ts`다. 훅이 이 경로를 짝으로 인정한다.
 
 러너는 Jest이고 `pnpm test:integration`으로 돈다. `pnpm test`는 unit만 집으므로 여기 쓴 테스트는 거기 안 뜬다. `describe`·`it`·`expect`는 전역이라 import하지 않는다.
 
