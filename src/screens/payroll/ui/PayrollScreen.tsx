@@ -22,7 +22,7 @@ import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
+import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
 import { useScheduleMonthsQuery } from "@/entities/schedule/services/useScheduleMonthsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { payrollViewDays } from "@/features/payrollCompute/model/payrollDays.policy";

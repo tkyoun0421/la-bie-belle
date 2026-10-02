@@ -23,7 +23,7 @@ import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
-import { useAllRehearsalsQuery } from "@/entities/rehearsal/hooks/useAllRehearsalsQuery";
+import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
 import { liveAssignmentCount } from "@/entities/schedule/api/getMonthSchedule.api";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";

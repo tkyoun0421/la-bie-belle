@@ -17,19 +17,19 @@ import { Text } from "@/shared/ui/Text";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
-import { useAllRehearsalsQuery } from "@/entities/rehearsal/hooks/useAllRehearsalsQuery";
-import { useMyRehearsalsQuery } from "@/entities/rehearsal/hooks/useMyRehearsalsQuery";
 import { canAddOn } from "@/entities/rehearsal/model/canAddOn.policy";
 import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
+import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
+import { useMyRehearsalsQuery } from "@/entities/rehearsal/services/useMyRehearsalsQuery";
 import {
   dayTotal,
   monthTotal,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { useAddRehearsalMutation } from "@/features/rehearsalEdit/hooks/useAddRehearsalMutation";
-import { useEditRehearsalMutation } from "@/features/rehearsalEdit/hooks/useEditRehearsalMutation";
-import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/hooks/useRemoveRehearsalMutation";
+import { useAddRehearsalMutation } from "@/features/rehearsalEdit/services/useAddRehearsalMutation";
+import { useEditRehearsalMutation } from "@/features/rehearsalEdit/services/useEditRehearsalMutation";
+import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
 import {
   addSheetActionFor,
   addSheetReducer,

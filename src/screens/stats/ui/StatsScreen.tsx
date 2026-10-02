@@ -28,7 +28,7 @@ import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
+import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";

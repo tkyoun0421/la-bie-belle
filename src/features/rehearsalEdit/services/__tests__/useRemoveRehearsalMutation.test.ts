@@ -1,17 +1,17 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/rehearsalEdit/hooks/useEditRehearsalMutation.ts
+// 구현 대상: src/features/rehearsalEdit/services/useRemoveRehearsalMutation.ts
 //
-// 리허설 고치기다(design.md 「리허설 넣기·고치기·지우기」) — 성공하면 ['rehearsal']과
+// 리허설 지우기다(design.md 「리허설 넣기·고치기·지우기」) — 성공하면 ['rehearsal']과
 // ['payroll']을 무효화한다. **['schedule']은 안 건드린다.**
 
-const editRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+const removeRehearsalMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule(
-  "@/features/rehearsalEdit/api/editRehearsal.api",
+  "@/features/rehearsalEdit/api/removeRehearsal.api",
   () => ({
-    editRehearsal: editRehearsalMock,
+    removeRehearsal: removeRehearsalMock,
   }),
 );
 
@@ -21,8 +21,8 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
-const { useEditRehearsalMutation } =
-  await import("@/features/rehearsalEdit/hooks/useEditRehearsalMutation");
+const { useRemoveRehearsalMutation } =
+  await import("@/features/rehearsalEdit/services/useRemoveRehearsalMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -44,42 +44,47 @@ function createWrapper() {
 }
 
 const FAKE_CLIENT = {} as never;
-
-const EDIT_INPUT = { id: "row-1", startsAt: "14:00", endsAt: "17:00" };
+const ID = "row-1";
 
 beforeEach(() => {
-  editRehearsalMock.mockReset();
+  removeRehearsalMock.mockReset();
 });
 
-describe("useEditRehearsalMutation — edit_rehearsal을 부르고 rehearsal·payroll을 무효화한다", () => {
-  it("입력을 그대로 DAL에 넘긴다", async () => {
-    editRehearsalMock.mockResolvedValue(undefined);
+describe("useRemoveRehearsalMutation — remove_rehearsal을 부르고 rehearsal·payroll을 무효화한다", () => {
+  it("id를 그대로 DAL에 넘긴다", async () => {
+    removeRehearsalMock.mockResolvedValue(undefined);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useEditRehearsalMutation(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRemoveRehearsalMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
-      result.current.mutate(EDIT_INPUT);
+      result.current.mutate(ID);
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(editRehearsalMock).toHaveBeenCalledWith(FAKE_CLIENT, EDIT_INPUT);
+    expect(removeRehearsalMock).toHaveBeenCalledWith(FAKE_CLIENT, ID);
   });
 
   it("성공하면 ['rehearsal']과 ['payroll']을 무효화하고 ['schedule']은 안 건드린다", async () => {
-    editRehearsalMock.mockResolvedValue(undefined);
+    removeRehearsalMock.mockResolvedValue(undefined);
     const { wrapper, queryClient } = createWrapper();
     const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-    const { result } = renderHook(() => useEditRehearsalMutation(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRemoveRehearsalMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
-      result.current.mutate(EDIT_INPUT);
+      result.current.mutate(ID);
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -96,15 +101,18 @@ describe("useEditRehearsalMutation — edit_rehearsal을 부르고 rehearsal·pa
   });
 
   it("남의 행이면 DomainError('not_allowed')를 그대로 error에 낸다", async () => {
-    editRehearsalMock.mockRejectedValue(new DomainError("not_allowed"));
+    removeRehearsalMock.mockRejectedValue(new DomainError("not_allowed"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useEditRehearsalMutation(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRemoveRehearsalMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
-      result.current.mutate(EDIT_INPUT);
+      result.current.mutate(ID);
     });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
@@ -117,7 +125,7 @@ describe("useEditRehearsalMutation — edit_rehearsal을 부르고 rehearsal·pa
 
   it("isPending인 동안 다시 mutate를 불러도 DAL을 다시 부르지 않는다", async () => {
     let resolveFirst: (() => void) | undefined;
-    editRehearsalMock.mockImplementation(
+    removeRehearsalMock.mockImplementation(
       () =>
         new Promise<void>((resolve) => {
           resolveFirst = resolve;
@@ -125,21 +133,24 @@ describe("useEditRehearsalMutation — edit_rehearsal을 부르고 rehearsal·pa
     );
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useEditRehearsalMutation(FAKE_CLIENT), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useRemoveRehearsalMutation(FAKE_CLIENT),
+      {
+        wrapper,
+      },
+    );
 
     act(() => {
-      result.current.mutate(EDIT_INPUT);
+      result.current.mutate(ID);
     });
 
     await waitFor(() => expect(result.current.isPending).toBe(true));
 
     act(() => {
-      result.current.mutate({ id: "row-2", count: 3 });
+      result.current.mutate("row-2");
     });
 
-    expect(editRehearsalMock).toHaveBeenCalledTimes(1);
+    expect(removeRehearsalMock).toHaveBeenCalledTimes(1);
 
     act(() => {
       resolveFirst?.();
