@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
@@ -7,14 +6,12 @@ import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { QuoteBlock } from "@/shared/ui/QuoteBlock";
 import { Text } from "@/shared/ui/Text";
 import {
+  APPROVALS_COPY,
   CANCEL_REJECT_REASONS,
   CUSTOM_REJECT_MAX_LENGTH,
   CUSTOM_REJECT_REASON,
 } from "@/screens/approvals/consts/approvals.const";
-import {
-  isRejectReasonValid,
-  rejectReasonText,
-} from "@/screens/approvals/model/rejectReason.policy";
+import type { ApprovalSheetFace } from "@/screens/approvals/model/approvals.type";
 import type { CancelApprovalDetail } from "@/screens/approvals/utils/approvalDetail.utils";
 
 /**
@@ -29,19 +26,27 @@ import type { CancelApprovalDetail } from "@/screens/approvals/utils/approvalDet
  *
  * **실패해도 안 닫힌다.** 쓴 글이 그대로 남고 오른쪽 버튼만 「다시 보내기」가 된다.
  *
+ * **고른 이유를 이 조각이 안 든다.** 고른 문장이 그대로 근무자에게 가고 실패하면 남아야
+ * 하는 값이라 controller가 들고 내려준다
+ * ([`useApprovalsScreen`](../hooks/useApprovalsScreen.ts)).
+ *
  * 승인은 여기서 안 보낸다. 근무 취소의 승인은 확인 Dialog가 한 번 더 묻고 그 안에서 보낸다.
  */
-
-export type ApprovalSheetFace = "detail" | "reject";
 
 export type ApprovalDetailSheetProps = {
   detail: CancelApprovalDetail;
   face: ApprovalSheetFace;
   sending: boolean;
   failed: boolean;
+  chosen: string | null;
+  written: string;
+  canSend: boolean;
+  sendLabel: string;
   onFace: (face: ApprovalSheetFace) => void;
   onApprove: () => void;
-  onReject: (reason: string) => void;
+  onChoose: (value: string) => void;
+  onWrite: (text: string) => void;
+  onReject: () => void;
 };
 
 export function ApprovalDetailSheet({
@@ -49,13 +54,16 @@ export function ApprovalDetailSheet({
   face,
   sending,
   failed,
+  chosen,
+  written,
+  canSend,
+  sendLabel,
   onFace,
   onApprove,
+  onChoose,
+  onWrite,
   onReject,
 }: ApprovalDetailSheetProps) {
-  const [chosen, setChosen] = useState<string | null>(null);
-  const [written, setWritten] = useState("");
-
   if (face === "detail") {
     return (
       <>
@@ -79,22 +87,20 @@ export function ApprovalDetailSheet({
             className="flex-1"
             onPress={() => onFace("reject")}
           >
-            거절
+            {APPROVALS_COPY.reject}
           </Button>
           <Button variant="primary" className="flex-1" onPress={onApprove}>
-            승인
+            {APPROVALS_COPY.approve}
           </Button>
         </View>
       </>
     );
   }
 
-  const valid = isRejectReasonValid(chosen, written);
-
   return (
     <>
       <Text size="lg" weight="semibold">
-        거절하는 이유
+        {APPROVALS_COPY.rejectTitle}
       </Text>
 
       <View className="mt-4">
@@ -105,30 +111,30 @@ export function ApprovalDetailSheet({
             selected={chosen === reason.value}
             divider={at > 0}
             className="py-3"
-            onPress={() => setChosen(reason.value)}
+            onPress={() => onChoose(reason.value)}
           />
         ))}
       </View>
 
       {chosen === CUSTOM_REJECT_REASON ? (
         <Input
-          label="이유"
-          placeholder="근무자에게 보낼 말을 적어 주세요"
+          label={APPROVALS_COPY.reasonLabel}
+          placeholder={APPROVALS_COPY.reasonPlaceholder}
           value={written}
           maxLength={CUSTOM_REJECT_MAX_LENGTH}
           multiline
           className="mt-3"
-          onChangeText={setWritten}
+          onChangeText={onWrite}
         />
       ) : null}
 
       <Text size="xs" tone="subtle" className="mt-3">
-        고른 문장이 근무자에게 그대로 가요
+        {APPROVALS_COPY.reasonHint}
       </Text>
 
       {failed ? (
         <NoticeBlock kind="error" className="mt-4 p-4">
-          보내지 못했어요. 다시 시도해주세요
+          {APPROVALS_COPY.sendFailed}
         </NoticeBlock>
       ) : null}
 
@@ -139,15 +145,15 @@ export function ApprovalDetailSheet({
           disabled={sending}
           onPress={() => onFace("detail")}
         >
-          뒤로
+          {APPROVALS_COPY.back}
         </Button>
         <Button
           variant="primary"
           className="flex-1"
-          disabled={!valid || sending}
-          onPress={() => onReject(rejectReasonText(chosen, written))}
+          disabled={!canSend || sending}
+          onPress={onReject}
         >
-          {sending ? "보내는 중" : failed ? "다시 보내기" : "거절 보내기"}
+          {sendLabel}
         </Button>
       </View>
     </>

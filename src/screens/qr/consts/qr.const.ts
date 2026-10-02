@@ -36,3 +36,27 @@ export const QR_GAP_MM = 14;
  * 「크게 띄우기」의 QR이 화면 폭에서 비우는 좌우 여백 합이다 — 한쪽에 48px씩이다.
  */
 export const FULLSCREEN_QR_MARGIN = 96;
+
+/**
+ * 화면에 뜨는 글자다. 정본은
+ * `docs/2-design/modules/attendance/screens/qr.md`의 문안 표다.
+ *
+ * **`sendFailed`는 저장소를 가로지르는 사본 여섯 중 하나다** — 통신이 끊겼을 때의 기본
+ * 문장이고 정본은 `docs/2-design/system/data-access.md`의 「오류의 모양」이다. 여기 한 벌을
+ * 두는 것은 묶음 하나가 그 여섯을 못 접기 때문이고, 접는 자리는 사본 묶음 task가 정한다.
+ */
+export const QR_SCREEN_COPY = {
+  appBarTitle: "QR",
+  exportPaper: "내보내기",
+  fullscreen: "크게 띄우기",
+  rotate: "새로 뽑기",
+  rotateTitle: "QR을 새로 뽑을까요?",
+  rotateBody: "지금 QR이 바로 끝나요. 홀에 붙여둔 종이도 갈아야 해요",
+  rotateDone: "QR을 새로 뽑았어요",
+  paperFailed: "종이를 못 만들었어요. 다시 눌러주세요",
+  sendFailed: "보내지 못했어요. 다시 시도해주세요",
+  close: "닫기",
+};
+
+/** e2e가 화면 뒤에 깔린 같은 글자의 버튼과 가르는 손이다 — `tests/e2e/qr.yaml`. */
+export const ROTATE_CONFIRM_TEST_ID = "qr-rotate-confirm-button";

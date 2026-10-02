@@ -300,6 +300,12 @@ sources:
 - 돌면서 나온 것 — **열 전부가 쓰는 도구 둘이 먼저 서야 했다.** `getCurrentUser(supabase)`를 `useEffect`로 부르는 자리가 **열두 군데**고 받는 꼴이 셋으로 갈려 있었다(`id`만 · `email`과 사진 · 둘 다). 로그아웃 블록은 화면 다섯에 **글자까지 같았다.** 열마다 controller를 세워도 둘은 안 접힌다 — 접는 자리가 `services`다. `entities/session/services/useSessionUserQuery.ts`와 `features/auth/services/useSignOutMutation.ts`가 본보기 PR에서 섰고, 게이트 셋이 그 둘로 `useState` 여섯과 `useEffect` 셋을 버렸다. 남은 자리는 세션 읽기 아홉(`src/app/` 셋·화면 다섯, `PendingScreen`이 둘)과 로그아웃 둘(`profile`·`pending`)이다
 - **묶음을 가로지르는 사본은 열이 안 건드린다.** `SKELETON_ROWS`(열셋)·`SAVE_FAILED`(여섯)·`ESTIMATE_NOTE`(둘)고, 열마다 제 `consts/`로 보내면 `.tsx`의 사본이 `consts/`의 사본이 될 뿐이다 — AC-13의 사본 묶음 task가 받는다. 열 안에서만 사는 사본은 그 열이 접는다
 - 돌면서 나온 것 — **`services/`는 보낼 데를 못 든다.** `useSignOutMutation`이 끝난 뒤 갈 자리를 인자(`onDone`)로 받는 까닭은 지금 다섯이 다 `/login`이어도 그것이 이동이고 AC-08의 「`expo-*`는 `lib`·`ui`·`hooks`에만」이 `services/`에서 `expo-router`를 막기 때문이다. controller가 서는 열에서는 controller가 그 인자를 쥐고, 안 서는 열에서는 `.tsx`가 쥔다
+- 돌면서 나온 것 — **「시트 열림」은 `.tsx`에 남는 예가 아니다.** 행동의 넷째 줄이 측정한 너비·포커스와 같이 적어 뒀는데, 열림이 **통신 결과에 매여 있으면** 그것은 화면 것이 아니다 — QR의 「새로 뽑기」 확인창은 보낸 것이 성공하면 저절로 닫히고, 리허설의 폼 시트와 지우기 확인창도 그렇다. 사람이 열고 사람이 닫는 것만 남는다(QR의 「크게 띄우기」, 리허설의 달 고르기)
+- 돌면서 나온 것 — **측정은 화면이 하고 판정은 controller가 한다.** 알림의 끝 다다름이다. 스크롤 이벤트를 「가까운가」로 바꾸는 `nearBottom`은 `utils`에 서고 controller는 `loadNextWhenNear(near: boolean)`만 받는다 — 네이티브 이벤트 꼴을 controller가 알면 그 자리가 조각 없이 테스트에 안 선다
+- 돌면서 나온 것 — **조각이 들고 있던 상태도 controller로 올라온다.** 승인 대기의 거절 이유 고르기가 상세 시트 조각의 `useState` 둘이었다 — 고른 문장이 그대로 근무자에게 가고 보내는 동안 잠기고 실패하면 남아야 해서 통신에 매여 있다. 조각은 제 controller를 못 가지니 화면의 controller가 들고 prop으로 내린다. 그러면서 얼굴을 가리키는 타입(`ApprovalSheetFace`)이 `ui`에서 `model`로 내려갔다 — 어느 얼굴인지를 controller가 들어서다
+- 돌면서 나온 것 — **`.tsx`에 `useMemo`는 된다.** 보낼 데를 controller에 넘기는 어댑터를 묶는 자리고(알림·근태), AC-08의 `dumbUi`가 막는 것은 `useState`·`useEffect`·`useReducer` 셋이다
+- 돌면서 나온 것 — **기기 뒤로를 가로채는 `useEffect`가 화면 둘에 글자까지 같다.** 리허설과 근무표고 `shared/hooks/useHardwareBack.ts`를 세웠다 — `BackHandler`를 인자로 받는 꼴이 `wireAutoRefresh`와 같다(러너가 `react-native`를 절대경로로 리매핑해 파일 안의 import는 늘 실물을 문다). controller는 닫는 손 하나(`closeTop`)만 내고 `.tsx`가 그것을 잇는다. **리허설 열이 쓰고 근무표 쪽은 아직 `BackHandler`를 직접 부른다** — 사본이 걷히는 것은 근무표 열이 그 줄을 받을 때다
+- 돌면서 나온 것 — **`enabled`로 가르는 질의 둘이 역할을 알기 전에 한쪽을 켜고 있었다.** 리허설이다. `profile?.role === "admin"`은 프로필이 오기 전에도 거짓이라 관리자에게도 「내 것 읽기」가 한 번 먼저 나갔다. 가름을 「역할을 알았나」로 한 겹 더 쪼갰다 — 같은 꼴이 역할로 갈리는 화면마다 선다
 
 ### AC-14 — `services`가 선다 ✅
 
@@ -554,7 +560,7 @@ PR 하나씩 나른다. **이동하는 묶음은 앞의 것이 merge되고 나�
 8. **AC-06나-1 — `model`/`utils` 가르기 + 접미사** ✅ 123개와 짝 테스트 120개를 `git mv`했다. 판정 예순하나·꼴 바꾸기 쉰여섯·타입 셋·검증 둘·store 하나
 9. **이동 열 — 도메인 열을 직렬로.** ✅ 열 묶음이 끝났다 — PR 하나가 그 도메인의 타입과 DTO·매퍼(AC-06나-2)·`lib`(AC-09)·`consts`(AC-10)·`config`(AC-11)·`services`(AC-14)·`stores`(AC-15)·중복(AC-13)을 같이 옮겼다. 순서는 공용 → 근무표 → 급여 → 구성원 → 근태 → 알림 → 리허설 → 통계 → 인증 → QR이었고, 앞의 것이 main에 든 뒤 다음을 뗐다. AC-09·AC-10·AC-11·AC-14·AC-15가 여기서 찼고 AC-06나-2는 타입을 다 뺐지만 꼴 바꾸기가 [dto-to-domain-shape](dto-to-domain-shape.md)로 떨어졌다
 10. **본보기 열 — 게이트 셋.** ✅ AC-12의 꼴을 못 박았다. `useSessionUserQuery`와 `useSignOutMutation`이 서고 blocked·left·retry가 그 위로 올라갔다 — `useState` 여섯과 `useEffect` 셋이 사라지고 controller는 `retry` 하나만 섰다
-11. **안쪽 열 — 도메인 열 아홉.** AC-12다. PR 하나가 그 도메인 `.tsx`의 업무 상태와 효과와 통신을 `screens/<슬라이스>/hooks/`의 controller로 빼고, 에러 코드 판정을 `model`로 내리고, 큰 파일을 책임으로 쪼갠다. 열마다 본보기 PR을 받아 돌고 **차례로 나른다** — 겹은 병렬이 되는데 브랜치가 안 된다([관찰 056](../../observations/056-spec-gate-ties-parallel-columns-to-one-branch.md))
+11. **안쪽 열 — 도메인 열 아홉.** AC-12다. PR 하나가 그 도메인 `.tsx`의 업무 상태와 효과와 통신을 `screens/<슬라이스>/hooks/`의 controller로 빼고, 에러 코드 판정을 `model`로 내리고, 큰 파일을 책임으로 쪼갠다. 열마다 본보기 PR을 받아 돌고 **차례로 나른다** — 겹은 병렬이 되는데 브랜치가 안 된다([관찰 056](../../observations/056-spec-gate-ties-parallel-columns-to-one-branch.md)). QR·알림·리허설·근태가 끝났고 공용·근무표·급여·구성원·통계가 남았다
 12. **AC-08 — 검사 열일곱** 상태 금지와 「`ui`에서 `api` import 금지」는 안쪽 열이 끝나야 켠다
 
 **AC-06을 갈라 AC-07을 그 사이에 끼운다.** 두 방향 다 한 번은 걸린다.

@@ -1,10 +1,7 @@
-import * as Print from "expo-print";
 import { useRouter } from "expo-router";
-import * as Sharing from "expo-sharing";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import { supabase } from "@/shared/api/supabase";
-import { readAppUrl } from "@/shared/config/app.config";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
 import { Dialog } from "@/shared/ui/Dialog";
@@ -12,14 +9,13 @@ import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { QrCard } from "@/shared/ui/QrFace";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
-import { exportQrPaper } from "@/entities/qr/lib/exportQrPaper.lib";
-import { useQrCodeQuery } from "@/entities/qr/services/useQrCodeQuery";
-import { buildCheckInUrl } from "@/entities/qr/utils/checkInUrl.utils";
-import { useRotateQrMutation } from "@/features/qrAdmin/services/useRotateQrMutation";
+import {
+  QR_SCREEN_COPY,
+  ROTATE_CONFIRM_TEST_ID,
+} from "@/screens/qr/consts/qr.const";
+import { useQrScreen } from "@/screens/qr/hooks/useQrScreen";
 import { QrFullscreen } from "@/screens/qr/ui/QrFullscreen";
-import { buildQrPaperHtml } from "@/screens/qr/utils/qrPaper.utils";
 import { qrStartLine } from "@/screens/qr/utils/qrStartLine.utils";
-import { buildQrSvg } from "@/screens/qr/utils/qrSvg.utils";
 
 /**
  * 관리자가 현장 QR을 보고 인쇄하고 새로 뽑는 자리다. 정본은
@@ -31,7 +27,7 @@ import { buildQrSvg } from "@/screens/qr/utils/qrSvg.utils";
  * **값을 글자로 안 보여준다.** 화면에도 인쇄용 종이에도 코드 문자열이 안 뜬다 — 눈에 보이면
  * 복사해 옮길 수 있고, 그 순간 홀에 서 있지 않아도 찍히는 길이 열린다
  * ([ATT-027](../../../../docs/2-design/modules/attendance/README.md#att-027)). 코드가 닿는
- * 자리는 주소를 조립하는 `buildCheckInUrl`과 그 주소를 굽는 `buildQrSvg`뿐이다.
+ * 자리는 controller 안의 `buildCheckInUrl`과 그 주소를 굽는 `buildQrSvg`뿐이다.
  *
  * **그림 하나가 두 자리를 채운다.** 화면의 카드와 인쇄용 종이가 같은 SVG 문자열을 쓴다 —
  * 종이만 따로 구우면 화면에 선 것과 다른 코드가 벽에 붙을 수 있다.
@@ -39,109 +35,27 @@ import { buildQrSvg } from "@/screens/qr/utils/qrSvg.utils";
  * **버튼 셋을 세로로 쌓고 「새로 뽑기」만 위 간격이 넓다.** 앞의 둘은 지금 코드를 쓰는 길이고
  * 이것만 코드를 바꾼다 — 간격이 그 갈림을 말한다.
  *
+ * **남은 `useState`가 하나다.** 「크게 띄우기」는 사람이 열고 사람이 닫아 이 화면이 혼자 아는
+ * 값이다. 「새로 뽑을까요?」는 닫히는 때가 통신 결과에 매여 있어 controller가 든다.
+ *
  * **홀 위치 절은 아직 없다.** `qr.md`가 버튼 셋 아래에 두는 절이고 `hall-location`이 세운다.
  */
-
-const APPBAR_TITLE = "QR";
-
-const EXPORT_LABEL = "내보내기";
-
-const FULLSCREEN_LABEL = "크게 띄우기";
-
-const ROTATE_LABEL = "새로 뽑기";
-
-const ROTATE_TITLE = "QR을 새로 뽑을까요?";
-
-const ROTATE_BODY = "지금 QR이 바로 끝나요. 홀에 붙여둔 종이도 갈아야 해요";
-
-const ROTATE_DONE = "QR을 새로 뽑았어요";
-
-const PAPER_FAILED = "종이를 못 만들었어요. 다시 눌러주세요";
-
-/** 통신이 끊겼을 때의 기본 문장이다 — `docs/2-design/system/data-access.md`의 「오류의 모양」. */
-const SEND_FAILED = "보내지 못했어요. 다시 시도해주세요";
-
-/** e2e가 화면 뒤에 깔린 같은 글자의 버튼과 가르는 손이다 — `tests/e2e/qr.yaml`. */
-const ROTATE_CONFIRM_TEST_ID = "qr-rotate-confirm-button";
-
 export function QrScreen() {
   const router = useRouter();
-
-  const [svg, setSvg] = useState<string | null>(null);
   const [fullscreen, setFullscreen] = useState(false);
-  const [asking, setAsking] = useState(false);
-  const [exporting, setExporting] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
-
-  const { data: qr } = useQrCodeQuery(supabase);
   const {
-    mutate: rotate,
-    isSuccess: rotated,
-    isError: rotateFailed,
-    reset: resetRotate,
-  } = useRotateQrMutation(supabase);
-
-  const code = qr?.qrCode ?? null;
-
-  useEffect(() => {
-    if (code === null) {
-      setSvg(null);
-
-      return;
-    }
-
-    let live = true;
-
-    buildQrSvg(buildCheckInUrl(readAppUrl(), code)).then(
-      (made) => {
-        if (live) {
-          setSvg(made);
-        }
-      },
-      () => {
-        if (live) {
-          setSvg(null);
-        }
-      },
-    );
-
-    return () => {
-      live = false;
-    };
-  }, [code]);
-
-  useEffect(() => {
-    if (rotated) {
-      setAsking(false);
-      setToast(ROTATE_DONE);
-      resetRotate();
-    }
-  }, [rotated, resetRotate]);
-
-  const exportPaper = () => {
-    if (svg === null || exporting) {
-      return;
-    }
-
-    setExporting(true);
-
-    exportQrPaper({
-      html: buildQrPaperHtml({ qrSvg: svg }),
-      printToFile: Print.printToFileAsync,
-      share: Sharing.shareAsync,
-    }).then(
-      () => setExporting(false),
-      () => {
-        setExporting(false);
-        setToast(PAPER_FAILED);
-      },
-    );
-  };
-
-  const closeAsking = () => {
-    setAsking(false);
-    resetRotate();
-  };
+    qr,
+    svg,
+    exporting,
+    asking,
+    rotateFailed,
+    toast,
+    exportPaper,
+    askRotate,
+    cancelRotate,
+    rotate,
+    dismissToast,
+  } = useQrScreen(supabase);
 
   if (fullscreen) {
     return <QrFullscreen svg={svg} onClose={() => setFullscreen(false)} />;
@@ -149,7 +63,7 @@ export function QrScreen() {
 
   return (
     <Screen>
-      <AppBar title={APPBAR_TITLE} onBack={() => router.back()} />
+      <AppBar title={QR_SCREEN_COPY.appBarTitle} onBack={() => router.back()} />
 
       <View className="px-5">
         <View className="mt-8">
@@ -169,34 +83,34 @@ export function QrScreen() {
             disabled={svg === null}
             onPress={exportPaper}
           >
-            {EXPORT_LABEL}
+            {QR_SCREEN_COPY.exportPaper}
           </Button>
           <Button variant="secondary" onPress={() => setFullscreen(true)}>
-            {FULLSCREEN_LABEL}
+            {QR_SCREEN_COPY.fullscreen}
           </Button>
         </View>
 
         <View className="mt-6">
-          <Button variant="outline" onPress={() => setAsking(true)}>
-            {ROTATE_LABEL}
+          <Button variant="outline" onPress={askRotate}>
+            {QR_SCREEN_COPY.rotate}
           </Button>
         </View>
       </View>
 
       <Dialog
         visible={asking}
-        title={ROTATE_TITLE}
-        notice={rotateFailed ? SEND_FAILED : undefined}
-        onClose={closeAsking}
-        confirmLabel={ROTATE_LABEL}
+        title={QR_SCREEN_COPY.rotateTitle}
+        notice={rotateFailed ? QR_SCREEN_COPY.sendFailed : undefined}
+        onClose={cancelRotate}
+        confirmLabel={QR_SCREEN_COPY.rotate}
         confirmTestID={ROTATE_CONFIRM_TEST_ID}
         onConfirm={rotate}
       >
-        {ROTATE_BODY}
+        {QR_SCREEN_COPY.rotateBody}
       </Dialog>
 
       {toast === null ? null : (
-        <FloatingToast message={toast} onDone={() => setToast(null)} />
+        <FloatingToast message={toast} onDone={dismissToast} />
       )}
     </Screen>
   );
