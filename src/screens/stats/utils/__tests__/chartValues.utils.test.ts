@@ -55,7 +55,7 @@ import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
 import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
-import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
+import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
 import {
   joinPayrollByMonth,
   myAttendanceValues,

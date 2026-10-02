@@ -1,6 +1,6 @@
-// 구현 대상: src/features/stats/hooks/useAttendanceMonths.ts
+// 구현 대상: src/features/stats/services/useAttendanceMonthsQuery.ts
 //
-// useAttendanceMonths(client, months) — 근태 탭의 열두 달 창이다. 달마다 배정과 체크인
+// useAttendanceMonthsQuery(client, months) — 근태 탭의 열두 달 창이다. 달마다 배정과 체크인
 // 둘이 필요한데(attendanceInputs.ts의 재료) 그 둘은 entities의 다른 슬라이스다. 그래서
 // 이 훅은 제 질의를 안 열고 `useWorkMonthsQuery`와 `useMonthsAttendanceQuery` 둘을 불러
 // 달마다 맞춘다 — `useQuery`가 없어야 「features에서 useQuery 금지」가 선다
@@ -38,8 +38,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useAttendanceMonths } =
-  await import("@/features/stats/hooks/useAttendanceMonths");
+const { useAttendanceMonthsQuery } =
+  await import("@/features/stats/services/useAttendanceMonthsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -79,7 +79,7 @@ beforeEach(() => {
   getMonthAttendanceMock.mockReset();
 });
 
-describe("useAttendanceMonths — 근태 탭은 schedule 열둘과 attendance 열둘, 스물넷을 부른다", () => {
+describe("useAttendanceMonthsQuery — 근태 탭은 schedule 열둘과 attendance 열둘, 스물넷을 부른다", () => {
   it("열두 달이면 getMonthSchedule 12번, getMonthAttendance 12번이다", async () => {
     getMonthScheduleMock.mockImplementation(async () => daysFor(1));
     getMonthAttendanceMock.mockImplementation(async () => ({
@@ -89,7 +89,7 @@ describe("useAttendanceMonths — 근태 탭은 schedule 열둘과 attendance �
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useAttendanceMonths(FAKE_CLIENT, TWELVE_MONTHS),
+      () => useAttendanceMonthsQuery(FAKE_CLIENT, TWELVE_MONTHS),
       { wrapper },
     );
 
@@ -104,7 +104,7 @@ describe("useAttendanceMonths — 근태 탭은 schedule 열둘과 attendance �
   });
 });
 
-describe("useAttendanceMonths — 결과가 달마다 구분돼 돌아온다", () => {
+describe("useAttendanceMonthsQuery — 결과가 달마다 구분돼 돌아온다", () => {
   it("달마다 attendance 값이 따로 붙고 서로 안 섞인다", async () => {
     getMonthScheduleMock.mockImplementation(async () => daysFor(1));
     getMonthAttendanceMock.mockImplementation(async (_client, month) => ({
@@ -114,7 +114,7 @@ describe("useAttendanceMonths — 결과가 달마다 구분돼 돌아온다", (
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useAttendanceMonths(FAKE_CLIENT, ["2026-08", "2026-09"]),
+      () => useAttendanceMonthsQuery(FAKE_CLIENT, ["2026-08", "2026-09"]),
       { wrapper },
     );
 
@@ -129,7 +129,7 @@ describe("useAttendanceMonths — 결과가 달마다 구분돼 돌아온다", (
   });
 });
 
-describe("useAttendanceMonths — 한쪽만 와 있으면 로딩이다", () => {
+describe("useAttendanceMonthsQuery — 한쪽만 와 있으면 로딩이다", () => {
   it("근태만 오고 근무가 안 오면 data가 undefined다", async () => {
     getMonthScheduleMock.mockImplementation(() => new Promise(() => {}));
     getMonthAttendanceMock.mockImplementation(async () => ({
@@ -139,7 +139,7 @@ describe("useAttendanceMonths — 한쪽만 와 있으면 로딩이다", () => {
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useAttendanceMonths(FAKE_CLIENT, ["2026-08"]),
+      () => useAttendanceMonthsQuery(FAKE_CLIENT, ["2026-08"]),
       { wrapper },
     );
 
@@ -152,14 +152,14 @@ describe("useAttendanceMonths — 한쪽만 와 있으면 로딩이다", () => {
   });
 });
 
-describe("useAttendanceMonths — 어느 쪽 오류든 올려 보낸다", () => {
+describe("useAttendanceMonthsQuery — 어느 쪽 오류든 올려 보낸다", () => {
   it("근태 쪽이 실패하면 error가 그 오류다", async () => {
     getMonthScheduleMock.mockImplementation(async () => daysFor(1));
     getMonthAttendanceMock.mockRejectedValue(new Error("근태가 안 왔다"));
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
-      () => useAttendanceMonths(FAKE_CLIENT, ["2026-08"]),
+      () => useAttendanceMonthsQuery(FAKE_CLIENT, ["2026-08"]),
       { wrapper },
     );
 

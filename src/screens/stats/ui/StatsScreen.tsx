@@ -32,11 +32,11 @@ import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehear
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   hoursLabel,
   workInputsOf,
 } from "@/features/stats/model/workTotals.policy";
+import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
 import {
   computeMyWorkTotals,
   type MyWorkTotals,
@@ -146,7 +146,7 @@ export function StatsScreen() {
     supabase,
     tab === ATTENDANCE ? NO_MONTHS : months,
   );
-  const attendance = useAttendanceMonths(
+  const attendance = useAttendanceMonthsQuery(
     supabase,
     tab === ATTENDANCE ? months : NO_MONTHS,
   );

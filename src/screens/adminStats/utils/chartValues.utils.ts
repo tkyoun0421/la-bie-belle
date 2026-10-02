@@ -1,11 +1,11 @@
 import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { attendanceRate } from "@/entities/attendance/utils/attendanceSummary.utils";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
-import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   computeWorkTotals,
   workInputsOf,
 } from "@/features/stats/model/workTotals.policy";
+import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
 import type { AttendanceTab } from "@/screens/adminStats/utils/attendanceRows.utils";
 
 /**

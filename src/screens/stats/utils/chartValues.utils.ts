@@ -5,8 +5,8 @@ import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
 import { payrollViewDays } from "@/features/payrollCompute/model/payrollDays.policy";
 import type { PayrollViewDay } from "@/features/payrollCompute/model/payrollDays.policy";
-import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
 import { workInputsOf } from "@/features/stats/model/workTotals.policy";
+import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
 import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
 import { myAttendanceTally } from "@/screens/stats/utils/attendanceTally.utils";
 

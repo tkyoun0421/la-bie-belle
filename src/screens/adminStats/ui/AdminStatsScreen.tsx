@@ -35,12 +35,12 @@ import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
-import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   computeWorkTotals,
   hoursLabel,
   workInputsOf,
 } from "@/features/stats/model/workTotals.policy";
+import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
 import { computePersonDays } from "@/features/stats/utils/personDays.utils";
 import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
 import { WorkDaysSheet } from "@/screens/adminStats/ui/WorkDaysSheet";
@@ -116,7 +116,7 @@ export function AdminStatsScreen() {
   const months = useMemo(() => trendMonths(month), [month]);
 
   const work = useWorkMonthsQuery(supabase, tab === WORK ? months : NO_MONTHS);
-  const attendance = useAttendanceMonths(
+  const attendance = useAttendanceMonthsQuery(
     supabase,
     tab === ATTENDANCE ? months : NO_MONTHS,
   );
