@@ -17,10 +17,10 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
-import type { MemberRow } from "@/entities/member/api/listMembers.api";
-import { useMembersQuery } from "@/entities/member/hooks/useMembersQuery";
+import type { MemberRow } from "@/entities/member/api/member.dto";
 import { isLastAdmin } from "@/entities/member/model/isLastAdmin.policy";
 import { isLeftOverAYear } from "@/entities/member/model/sortMembers.policy";
+import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { searchMembers } from "@/entities/member/utils/searchMembers.utils";
 import {
   PERMISSION_OF_OTHERS,
@@ -30,10 +30,10 @@ import {
   getMemberListSuffix,
   getMemberSheetLine,
 } from "@/entities/notification/utils/reachMessage.utils";
-import { useMarkLeaveMutation } from "@/features/memberAdmin/hooks/useMarkLeaveMutation";
-import { useSetDisplayNameMutation } from "@/features/memberAdmin/hooks/useSetDisplayNameMutation";
-import { useSetRoleMutation } from "@/features/memberAdmin/hooks/useSetRoleMutation";
-import { useUndoLeaveMutation } from "@/features/memberAdmin/hooks/useUndoLeaveMutation";
+import { useMarkLeaveMutation } from "@/features/memberAdmin/services/useMarkLeaveMutation";
+import { useSetDisplayNameMutation } from "@/features/memberAdmin/services/useSetDisplayNameMutation";
+import { useSetRoleMutation } from "@/features/memberAdmin/services/useSetRoleMutation";
+import { useUndoLeaveMutation } from "@/features/memberAdmin/services/useUndoLeaveMutation";
 import {
   MemberDialog,
   type MemberDialogKind,

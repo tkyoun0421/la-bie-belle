@@ -1,9 +1,16 @@
+import {
+  BIRTH_DATE_GUIDE,
+  GENDER_GUIDE,
+  NAME_GUIDE,
+  PHONE_GUIDE,
+} from "@/entities/profile/consts/profile.const";
+
 /**
  * 프로필 다섯 칸 중 값의 꼴이 있는 넷을 본다. 사진은 고른 것이 곧 답이라 꼴이 없다.
  *
- * 규칙의 정본은 `docs/2-design/modules/account/README.md`의 ACC-002와 ACC-004고, 사람에게
- * 보이는 문구는 `docs/2-design/modules/account/screens/login.md`의 「프로필 작성 문안」이다.
- * 문구를 여기 두는 것은 같은 규칙을 화면과 함수가 따로 적지 않게 하려는 것이다.
+ * 규칙의 정본은 `docs/2-design/modules/account/README.md`의 ACC-002와 ACC-004고, 틀렸을 때
+ * 서는 문구는 [`consts`](../consts/profile.const.ts)가 든다 — 화면과 이 함수가 같은 문장을
+ * 따로 적지 않게 한 자리다.
  *
  * 생년월일은 여덟 자리라는 것만으로는 부족하고 실존해야 한다 — `20260229`는 2026년에 없는
  * 날이다. `Date`에 넣었다 꺼내 같은 값이 나오는지로 본다. 연도를 `setUTCFullYear`로 넣는 것은
@@ -25,14 +32,6 @@ export type ProfileFormErrors = {
   birthDate?: string;
   gender?: string;
 };
-
-export const NAME_GUIDE = "이름을 적어 주세요";
-
-export const PHONE_GUIDE = "010으로 시작하는 11자리예요";
-
-export const BIRTH_DATE_GUIDE = "숫자 8자리로 적어 주세요";
-
-export const GENDER_GUIDE = "여 또는 남을 골라 주세요";
 
 const PHONE_DIGITS = /^010\d{8}$/;
 

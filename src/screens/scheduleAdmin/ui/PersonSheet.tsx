@@ -4,12 +4,12 @@ import { Avatar } from "@/shared/ui/Avatar";
 import { Divider } from "@/shared/ui/Divider";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
+import { isProfileGender } from "@/entities/profile/model/profile.schema";
 import {
   birthYearShort,
   genderLabel,
   genderSymbol,
   restrictedQualifications,
-  type Gender,
 } from "@/screens/scheduleAdmin/utils/personSheet.utils";
 
 /**
@@ -38,8 +38,7 @@ export function PersonSheet({
   birthDate,
   qualifications,
 }: PersonSheetProps) {
-  const known =
-    gender === "female" || gender === "male" ? (gender as Gender) : null;
+  const known = isProfileGender(gender) ? gender : null;
   const facts = [
     known === null ? null : genderLabel(known),
     birthDate === null ? null : birthYearShort(birthDate),

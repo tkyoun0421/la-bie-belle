@@ -6,8 +6,9 @@ import { Button } from "@/shared/ui/Button";
 import { Icon } from "@/shared/ui/Icon";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { Text } from "@/shared/ui/Text";
-import type { ProfilePrivateRow } from "@/entities/profile/api/profilePrivate.api";
+import type { ProfilePrivateRow } from "@/entities/profile/api/profile.dto";
 import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
+import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 
 /**
  * 대기 중인 한 사람을 여는 시트다. 관리자가 사람을 알아보는 재료 넷과 보낸 시각을 세우고
@@ -28,11 +29,6 @@ const MORE_HIT_SLOP = 8;
 const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-
-const GENDER_LABEL: Record<string, string> = {
-  female: "여성",
-  male: "남성",
-};
 
 /** 「9월 9일(수) 21:04에 보냈어요」 — 목록과 달리 시트는 언제인지를 그대로 말한다. */
 function formatSentAt(submittedAt: string): string {
@@ -158,7 +154,7 @@ export function MemberDetailSheet({
           <View className="mt-6">
             <ValueRow
               label="성별"
-              value={values ? (GENDER_LABEL[values.gender ?? ""] ?? "") : ""}
+              value={values === null ? "" : spellGender(values.gender)}
             />
             <ValueRow
               label="생년월일"

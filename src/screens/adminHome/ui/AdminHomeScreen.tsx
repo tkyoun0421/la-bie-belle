@@ -16,7 +16,7 @@ import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
 import { useHallDefaultsQuery } from "@/entities/hall/services/useHallDefaultsQuery";
-import { useMembersQuery } from "@/entities/member/hooks/useMembersQuery";
+import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
 import { liveAssignmentCount } from "@/entities/schedule/api/getMonthSchedule.api";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";

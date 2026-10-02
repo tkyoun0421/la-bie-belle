@@ -1,4 +1,5 @@
 import type { DB } from "@/shared/api/database";
+import type { Qualification } from "@/entities/member/api/member.dto";
 
 /**
  * 자격 전체다. 「자격 부여 ∪ 살아 있는 교육 배정」을 TS가 다시 합치지 않는다 — 판정은
@@ -11,11 +12,6 @@ import type { DB } from "@/shared/api/database";
  * 뷰의 열이 nullable로 생성되는 것은 뷰라서지 값이 빈다는 뜻이 아니다 — 부르는 쪽이 둘 다
  * 쥐게 여기서 좁혀 낸다.
  */
-
-export type Qualification = {
-  profile_id: string;
-  position: string;
-};
 
 type QualificationRow = {
   profile_id: string | null;

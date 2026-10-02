@@ -1,8 +1,8 @@
 import { Redirect, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
-import { useQualificationsQuery } from "@/entities/member/hooks/useQualificationsQuery";
-import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
+import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
+import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
 import { resolveRehearsalGuard } from "@/screens/rehearsal/model/rehearsalGuard.policy";

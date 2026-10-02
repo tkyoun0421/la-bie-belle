@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/features/qualificationGrant/hooks/useGrantPositionMutation.ts
+// 구현 대상: src/features/qualificationGrant/services/useGrantPositionMutation.ts
 //
 // 자격 없는 사람 시트의 「자격도 주기」다. `grantPosition(client, profileId, position)`을
 // 부른다. 이 훅만 `['schedule']`이 아니라 `['members']`를 무효화한다(design.md 「자격
@@ -24,7 +24,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
 const { useGrantPositionMutation } =
-  await import("@/features/qualificationGrant/hooks/useGrantPositionMutation");
+  await import("@/features/qualificationGrant/services/useGrantPositionMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

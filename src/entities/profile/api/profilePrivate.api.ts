@@ -1,4 +1,5 @@
 import type { DB } from "@/shared/api/database";
+import type { ProfilePrivateRow } from "@/entities/profile/api/profile.dto";
 
 /**
  * 개인정보가 사는 표는 프로필 표와 갈려 있다 —
@@ -9,13 +10,6 @@ import type { DB } from "@/shared/api/database";
  * 제 행을 읽고, 가입 대기 상세 시트가 관리자로서 신청자의 행을 읽는다. 행이 없으면 한 번도
  * 안 보낸 사람이다.
  */
-export type ProfilePrivateRow = {
-  email: string | null;
-  phone: string | null;
-  birth_date: string | null;
-  gender: string | null;
-};
-
 export async function getProfilePrivate(
   client: DB,
   profileId: string,

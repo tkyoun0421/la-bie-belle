@@ -6,7 +6,9 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 구성원 이동 PR이다.** `member`·`profile` + `memberAdmin`·`profileEdit`·`qualificationGrant` + `screens` 여섯이 품는 타입 여덞·상수 여덞을 옮기고, DTO 다섯을 세우고, `hooks/`를 `services/`로 옮긴다(짝 테스트까지 스물). 근무표가 남긴 `Gender`·`GenderSymbol`이 이 묶음 것이다 — `screens/scheduleAdmin/utils/personSheet.utils.ts`가 선언하고 있고 주인은 `entities/member`다.
+**다음 첫 수는 `fsd-read-write-layers`의 근태 이동 PR이다.** `attendance`·`excuse` + `attendanceCheckin`·`excuse` + `approvals`가 품는 타입 여덞·상수 아홉을 옮기고, DTO 셋과 매퍼 하나를 세우고, `hooks/`를 `services/`로 옮긴다(짝 테스트까지 둘). **낡은 정본 둘을 이 묶음이 고친다** — `docs/2-design/system/runtime.md`의 「업무 상수」 절과 `tests/lint/attendanceConstants.ts`가 근태 상수의 옛 자리를 가리킨다.
+
+**구성원 묶음이 끝났다.** `hooks/` 다섯이 통째로 `services/`로(열 + 짝 열), DTO 일곱이 `member.dto.ts`·`profile.dto.ts`로, 상수와 문안 열여섯이 `consts/` 넷으로 갔다. **같은 값이 다섯 벌 선 자리를 만났다** — 성별이다. 타입 둘(`ProfileGender`·`Gender`)과 좁히는 판정 둘은 접었고, 이름표 네 벌은 `entities/profile/consts/`로 모아 `spellGender`를 세웠다. 다섯째 벌(`genderLabel()`의 「여」·「남」)은 **문안 정본이 없어 안 접었다**([관찰 053](observations/053-gender-label-copy-has-no-canon.md)) — 사람 시트가 읽는 자리인데 입력 칸 문안을 쓰고, 그 자리의 문안을 든 문서가 없다. **결정이 필요하다: 사람 시트의 성별이 「여」인가 「여성」인가.** 그리고 `MemberProfileRow`가 `utils`에 사는 DTO였다 — 함수가 보는 열은 넷인데 타입이 여섯을 들어 실물은 목록 DTO 셋의 뼈대였고, `.dto.ts`로 올리고 그 자리에 함수 계약 넷만 남겼다.
 
 **급여 묶음이 끝났다.** `hooks/` 넷이 `services/`로(여덞 + 짝 여덞), DTO 일곱이 `payroll.dto.ts` 하나로, 상수 일곱이 `consts/` 셋으로, `DayKind`가 `payroll.type.ts`로 갔다. 중복 셋을 만났다 — `WageRateRow`/`MemberWageRateRow`는 **plan이 안 든 것**이고 몸이 같아 접었다. `canGoBack`·`canGoForward`는 몸이 달라 축을 이름에 넣어 갈랐다(`canGoToPreviousMonth` / `canGoToPreviousPeriod`). `ExcuseStatusRow`는 몸이 글자까지 같은데 **못 접는다** — `entities`끼리 import가 `no-cross-slice-import`에 걸리고 올릴 자리도 없다. 남은 중복 둘(`dayMinutes`·`attendanceSummaryLine`)은 통계가 뒤라 그 묶음 몫이다.
 

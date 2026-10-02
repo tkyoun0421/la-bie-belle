@@ -1,3 +1,4 @@
+import type { ProfileGender } from "@/entities/profile/model/profile.schema";
 import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 
 /**
@@ -12,17 +13,15 @@ import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/consts/scheduleAdm
  * 안 따진다(`docs/2-design/design-system/writing.md`의 「숫자와 단위」).
  */
 
-export type Gender = "female" | "male";
-
 export type GenderSymbol = "Venus" | "Mars";
 
 const BIRTH_YEAR_DIGITS = 2;
 
-export function genderSymbol(gender: Gender): GenderSymbol {
+export function genderSymbol(gender: ProfileGender): GenderSymbol {
   return gender === "female" ? "Venus" : "Mars";
 }
 
-export function genderLabel(gender: Gender): string {
+export function genderLabel(gender: ProfileGender): string {
   return gender === "female" ? "여" : "남";
 }
 

@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/member/hooks/useQualificationsQuery.ts
+// 구현 대상: src/entities/member/services/useQualificationsQuery.ts
 //
 // `qualifications` 뷰 전체를 읽는다 — `position_grants ∪ 살아 있는 교육 배정`을
 // `(profile_id, position)`으로 낸 것이다(design.md 「자격」). `add_assignment`도 픽커도 이
@@ -21,7 +21,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useQualificationsQuery } =
-  await import("@/entities/member/hooks/useQualificationsQuery");
+  await import("@/entities/member/services/useQualificationsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

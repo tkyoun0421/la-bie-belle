@@ -12,9 +12,8 @@
  * 세우면 그 둘의 순서가 갈린다.
  */
 
-export type MemberProfileRow = {
-  id: string;
-  display_name: string | null;
+/** 이 두 함수가 보는 열 넷이다 — 목록 꼴 전체가 아니라 가르는 조건이 읽는 자리만 든다. */
+export type MemberFilterRow = {
   submitted_at: string | null;
   approved_at: string | null;
   rejected_at: string | null;
@@ -26,7 +25,7 @@ function instantOf(timestamp: string | null): number {
 }
 
 /** 오래 기다린 사람이 위다 — 새로 온 사람을 위에 두면 오래 기다린 사람이 계속 밀린다. */
-export function filterPendingMembers<Row extends MemberProfileRow>(
+export function filterPendingMembers<Row extends MemberFilterRow>(
   rows: readonly Row[],
 ): Row[] {
   return rows
@@ -44,7 +43,7 @@ export function filterPendingMembers<Row extends MemberProfileRow>(
 }
 
 /** 차단은 최근 것이 위다 — 방금 차단한 사람을 다시 찾는 것이 흔한 길이다. */
-export function filterBlockedMembers<Row extends MemberProfileRow>(
+export function filterBlockedMembers<Row extends MemberFilterRow>(
   rows: readonly Row[],
 ): Row[] {
   return rows

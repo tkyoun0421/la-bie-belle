@@ -1,14 +1,21 @@
 import {
   filterBlockedMembers,
   filterPendingMembers,
-  type MemberProfileRow,
+  type MemberFilterRow,
 } from "@/entities/member/utils/filterMembers.utils";
 
 // 가입 대기·차단 목록을 가르는 순수 함수. 서버가 이미 정렬해서 내려줘도 클라이언트가
 // 다시 거르고 정렬하는 함수 한 벌을 정본으로 둔다 — [account/design.md 「가입 승인·거절·
 // 차단·해제」]가 조건을 든다.
 
-function buildRow(overrides: Partial<MemberProfileRow> = {}): MemberProfileRow {
+// 함수가 보는 열 넷에 안 보는 둘을 얹어 쓴다 — 더 든 행을 그대로 받아 그대로 돌려주는 것이
+// 제네릭 제약의 요점이고, 단언이 `id`로 순서를 견주는 것이 그 증거다.
+type TestRow = MemberFilterRow & {
+  id: string;
+  display_name: string | null;
+};
+
+function buildRow(overrides: Partial<TestRow> = {}): TestRow {
   return {
     id: "row-1",
     display_name: "박서연",

@@ -1,9 +1,7 @@
 import type { DB } from "@/shared/api/database";
 import { ensureProfile as ensureProfileDal } from "@/entities/profile/api/ensureProfile.api";
-import {
-  getMyProfile as getMyProfileDal,
-  type MyProfileRow,
-} from "@/entities/profile/api/getMyProfile.api";
+import { getMyProfile as getMyProfileDal } from "@/entities/profile/api/getMyProfile.api";
+import type { MyProfileRow } from "@/entities/profile/api/profile.dto";
 import {
   resolveAuthDestination,
   type AuthDestination,

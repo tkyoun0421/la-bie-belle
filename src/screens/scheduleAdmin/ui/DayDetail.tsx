@@ -10,7 +10,7 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
-import type { Qualification } from "@/entities/member/api/getQualifications.api";
+import type { Qualification } from "@/entities/member/api/member.dto";
 import {
   PERMISSION_OF_OTHERS,
   REACHABLE,

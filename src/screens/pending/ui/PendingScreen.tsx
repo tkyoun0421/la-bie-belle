@@ -32,6 +32,7 @@ import {
   validateProfileForm,
   type ProfileGender,
 } from "@/entities/profile/model/profile.schema";
+import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
@@ -46,14 +47,14 @@ import { PUSH_DEPS } from "@/features/pushSwitch/model/pushDeps";
 import { requestPushPermission } from "@/features/pushSwitch/model/pushPermission";
 import {
   INITIAL_NOTIFICATION_PROMPT_VIEW,
+  NOTIFICATION_PROMPT_BUTTON,
   PROMPT_OUTCOME_OF,
+} from "@/screens/pending/consts/pending.const";
+import {
   transitionNotificationPromptView,
   type NotificationPromptView,
 } from "@/screens/pending/model/notificationPrompt.policy";
-import {
-  getNotificationPromptCopy,
-  NOTIFICATION_PROMPT_BUTTON,
-} from "@/screens/pending/utils/notificationPromptCopy.utils";
+import { getNotificationPromptCopy } from "@/screens/pending/utils/notificationPromptCopy.utils";
 
 /**
  * 로그인한 사람이 프로필을 적어 가입을 끝내는 자리다. 한 경로가 장면 넷을 든다 — 프로필
@@ -99,11 +100,6 @@ const PHOTO_EDGE = 512;
 const PHOTO_QUALITY = 0.8;
 
 const SCREEN_BOTTOM_PADDING = 24;
-
-const GENDER_LABEL: Record<ProfileGender, string> = {
-  female: "여성",
-  male: "남성",
-};
 
 function digitsOnly(value: string, limit: number): string {
   return value.replace(/\D/g, "").slice(0, limit);
@@ -507,7 +503,7 @@ export function PendingScreen() {
                 className="mt-3"
               >
                 <Text size="lg" weight="medium">
-                  {GENDER_LABEL[values.gender]}
+                  {spellGender(values.gender)}
                 </Text>
               </Pressable>
             ) : null}

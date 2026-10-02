@@ -18,13 +18,11 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
-import type { MemberListRow } from "@/entities/member/api/listMembers.api";
-import { useMembersQuery } from "@/entities/member/hooks/useMembersQuery";
+import type { MemberListRow } from "@/entities/member/api/member.dto";
+import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { formatElapsedDays } from "@/entities/member/utils/formatElapsedDays.utils";
-import {
-  getProfilePrivate,
-  type ProfilePrivateRow,
-} from "@/entities/profile/api/profilePrivate.api";
+import type { ProfilePrivateRow } from "@/entities/profile/api/profile.dto";
+import { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
 import { approveMember } from "@/features/memberAdmin/api/approveMember.api";
 import { blockMember } from "@/features/memberAdmin/api/blockMember.api";
 import { rejectMember } from "@/features/memberAdmin/api/rejectMember.api";

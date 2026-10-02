@@ -19,7 +19,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
 const { useMarkLeaveMutation } =
-  await import("@/features/memberAdmin/hooks/useMarkLeaveMutation");
+  await import("@/features/memberAdmin/services/useMarkLeaveMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

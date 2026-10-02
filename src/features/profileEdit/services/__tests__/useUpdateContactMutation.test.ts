@@ -22,7 +22,7 @@ const { QueryClient, QueryClientProvider } =
 const React = await import("react");
 const { DomainError } = await import("@/shared/model/error.type");
 const { useUpdateContactMutation } =
-  await import("@/features/profileEdit/hooks/useUpdateContactMutation");
+  await import("@/features/profileEdit/services/useUpdateContactMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

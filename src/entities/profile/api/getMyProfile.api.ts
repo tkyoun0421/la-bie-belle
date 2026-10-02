@@ -1,18 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { takeProfileReadFailure } from "@/shared/utils/devDoor";
-
-export type MyProfileRow = {
-  id: string;
-  display_name: string | null;
-  photo_url: string | null;
-  role: string;
-  submitted_at: string | null;
-  approved_at: string | null;
-  rejected_at: string | null;
-  blocked_at: string | null;
-  left_at: string | null;
-  notifications_enabled: boolean;
-};
+import type { MyProfileRow } from "@/entities/profile/api/profile.dto";
 
 const COLUMNS = [
   "id",

@@ -24,22 +24,23 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
-import { useQualificationsQuery } from "@/entities/member/hooks/useQualificationsQuery";
+import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
 import { getProfileNotificationRow } from "@/entities/notification/model/profileNotificationRow.policy";
 import {
   getReachState,
   type PushPermission,
 } from "@/entities/notification/model/reachState.policy";
-import { useMyProfileQuery } from "@/entities/profile/hooks/useMyProfileQuery";
+import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
+import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/model/signOut";
 import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
-import { useUpdateContactMutation } from "@/features/profileEdit/hooks/useUpdateContactMutation";
-import { useUpdatePhotoMutation } from "@/features/profileEdit/hooks/useUpdatePhotoMutation";
+import { useUpdateContactMutation } from "@/features/profileEdit/services/useUpdateContactMutation";
+import { useUpdatePhotoMutation } from "@/features/profileEdit/services/useUpdatePhotoMutation";
 import { useNotificationSwitchMutation } from "@/features/pushSwitch/hooks/useNotificationSwitchMutation";
 import { useSavePushTokenMutation } from "@/features/pushSwitch/hooks/useSavePushTokenMutation";
 import { PUSH_DEPS } from "@/features/pushSwitch/model/pushDeps";
@@ -47,11 +48,12 @@ import {
   getPushPermission,
   requestPushPermission,
 } from "@/features/pushSwitch/model/pushPermission";
+import { THEME_LABEL } from "@/screens/profile/consts/profile.const";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
 import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto.policy";
 import { ContactSheet } from "@/screens/profile/ui/ContactSheet";
 import { PhotoSheet } from "@/screens/profile/ui/PhotoSheet";
-import { THEME_LABEL, ThemeSheet } from "@/screens/profile/ui/ThemeSheet";
+import { ThemeSheet } from "@/screens/profile/ui/ThemeSheet";
 
 /**
  * 근무자가 자기 것을 보고 고칠 수 있는 둘만 고치는 화면이다. 정본은
@@ -86,11 +88,6 @@ const PHOTO_EDGE = 512;
 const PHOTO_QUALITY = 0.8;
 
 const SKELETON_ROWS = [0, 1, 2];
-
-const GENDER_LABEL: Record<string, string> = {
-  female: "여성",
-  male: "남성",
-};
 
 const CONTACT_SAVED = "연락처를 바꿨어요";
 
@@ -348,7 +345,7 @@ export function ProfileScreen() {
                 <ListRow
                   testID="profile-gender-row"
                   title="성별"
-                  value={GENDER_LABEL[data?.gender ?? ""] ?? ""}
+                  value={spellGender(data?.gender ?? null)}
                 />
                 <ListRow
                   testID="profile-birthdate-row"

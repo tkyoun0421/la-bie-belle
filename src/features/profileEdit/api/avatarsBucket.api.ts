@@ -1,6 +1,7 @@
 import "react-native-get-random-values";
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
+import { AVATARS_BUCKET } from "@/features/profileEdit/consts/profileEdit.const";
 
 /**
  * 본인이 올린 사진이 사는 자리다. 정본은
@@ -15,8 +16,6 @@ import { toApiError } from "@/shared/api/errors";
  * 파일을 얹는 길로는 빈 파일이 올라간다. 줄이는 것은 기기 쪽 일이라 화면이 하고, 여기는 이미
  * 줄어든 파일의 주소를 받는다 — 버킷의 1MB 상한이 그 전제의 뒷문이다.
  */
-
-export const AVATARS_BUCKET = "avatars";
 
 const NAME_BYTES = 16;
 
