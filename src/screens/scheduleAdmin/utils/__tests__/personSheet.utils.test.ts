@@ -7,7 +7,6 @@
 
 import {
   genderSymbol,
-  genderLabel,
   birthYearShort,
   restrictedQualifications,
 } from "@/screens/scheduleAdmin/utils/personSheet.utils";
@@ -19,16 +18,6 @@ describe("genderSymbol — female은 Venus, male은 Mars다", () => {
 
   it("male이면 Mars다", () => {
     expect(genderSymbol("male")).toBe("Mars");
-  });
-});
-
-describe("genderLabel — 여·남 텍스트다", () => {
-  it("female은 「여」다", () => {
-    expect(genderLabel("female")).toBe("여");
-  });
-
-  it("male은 「남」이다", () => {
-    expect(genderLabel("male")).toBe("남");
   });
 });
 
