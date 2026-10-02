@@ -12,7 +12,7 @@ import { FloatingToast } from "@/shared/ui/FloatingToast";
 import { QrCard } from "@/shared/ui/QrFace";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
-import { exportQrPaper } from "@/entities/qr/model/exportQrPaper";
+import { exportQrPaper } from "@/entities/qr/lib/exportQrPaper.lib";
 import { useQrCodeQuery } from "@/entities/qr/services/useQrCodeQuery";
 import { buildCheckInUrl } from "@/entities/qr/utils/checkInUrl.utils";
 import { useRotateQrMutation } from "@/features/qrAdmin/services/useRotateQrMutation";
