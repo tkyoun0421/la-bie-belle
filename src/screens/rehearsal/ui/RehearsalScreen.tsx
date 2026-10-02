@@ -1,9 +1,9 @@
 import { useRouter } from "expo-router";
 import { ChevronDown } from "lucide-react-native";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
-import { BackHandler, Pressable, ScrollView, View } from "react-native";
+import { useState } from "react";
+import { Pressable, ScrollView, View } from "react-native";
 import { supabase } from "@/shared/api/supabase";
-import { kstToday } from "@/shared/lib/kstToday.lib";
+import { useHardwareBack } from "@/shared/hooks/useHardwareBack";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
 import { Card } from "@/shared/ui/Card";
@@ -14,35 +14,15 @@ import { MonthPickerSheet } from "@/shared/ui/MonthPickerSheet";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
-import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
-import { canAddOn } from "@/entities/rehearsal/model/canAddOn.policy";
-import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
-import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
-import { useMyRehearsalsQuery } from "@/entities/rehearsal/services/useMyRehearsalsQuery";
 import {
-  dayTotal,
-  monthTotal,
-} from "@/entities/rehearsal/utils/rehearsalHours.utils";
-import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
-import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { useAddRehearsalMutation } from "@/features/rehearsalEdit/services/useAddRehearsalMutation";
-import { useEditRehearsalMutation } from "@/features/rehearsalEdit/services/useEditRehearsalMutation";
-import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
-import { CLOCK_LENGTH } from "@/screens/rehearsal/consts/rehearsal.const";
-import {
-  addSheetActionFor,
-  addSheetReducer,
-  canSubmitForm,
-  EMPTY_VALUES,
-  type AddSheetState,
-} from "@/screens/rehearsal/model/addSheetState.reducer";
-import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell.policy";
+  MONTH_CHEVRON_SIZE,
+  MONTH_TEST_ID,
+  REHEARSAL_COPY,
+  REMOVE_CONFIRM_TEST_ID,
+} from "@/screens/rehearsal/consts/rehearsal.const";
+import { useRehearsalScreen } from "@/screens/rehearsal/hooks/useRehearsalScreen";
 import { RehearsalDaySheet } from "@/screens/rehearsal/ui/RehearsalDaySheet";
 import { RehearsalFormSheet } from "@/screens/rehearsal/ui/RehearsalFormSheet";
-import { daySheetRows } from "@/screens/rehearsal/utils/daySheetRows.utils";
-import { spellTotal } from "@/screens/rehearsal/utils/spellTotal.utils";
 
 /**
  * 자격이 있는 사람이 자기 리허설을 넣고 고치고 지우는 화면이다. 정본은
@@ -66,29 +46,13 @@ import { spellTotal } from "@/screens/rehearsal/utils/spellTotal.utils";
  * **읽는 중에는 바닥 단과 합계만 빈다.** 스켈레톤을 안 깐다 — 달력 뼈대는 날짜만으로 이미
  * 서 있고 넣는 일은 읽기가 끝나기를 안 기다린다.
  *
+ * **남은 `useState`는 달 고르기 하나다.** 사람이 열고 사람이 닫고 서버가 모르는 값이라
+ * 화면 것이다 — 업무 상태와 통신은
+ * [`useRehearsalScreen`](../hooks/useRehearsalScreen.ts)이 든다.
+ *
  * 문을 지키는 것은 이 화면이 아니라 라우트다(`src/app/me/rehearsals.tsx`) — 자격 판정에
  * 「나」 슬라이스의 손이 필요해 조립이 위 층에서 일어난다.
  */
-
-const MONTH_CHEVRON_SIZE = 14;
-
-const LEGEND = "칸 아래 숫자는 그날 리허설 시간이에요";
-
-const READ_FAILED = "리허설을 불러오지 못했어요";
-
-const INITIAL_FORM: AddSheetState = {
-  formKind: "time",
-  values: EMPTY_VALUES,
-  notice: null,
-};
-
-type OpenForm = { mode: "add" } | { mode: "edit"; id: string };
-
-/**
- * 본인 것과 전원 것이 한 자리에 선다. 이름은 관리자가 읽을 때만 실려 오므로 선택이다 —
- * 줄 문구를 만드는 `daySheetRows`가 그 자리를 안다.
- */
-type Row = Rehearsal & { profiles?: { display_name: string | null } | null };
 
 export type RehearsalScreenProps = {
   month?: string;
@@ -96,217 +60,30 @@ export type RehearsalScreenProps = {
 
 export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
   const router = useRouter();
-  const today = kstToday();
+  const screen = useRehearsalScreen(supabase, monthParam);
 
-  const [userId, setUserId] = useState<string | null>(null);
-  const [month, setMonth] = useState(monthOf(monthParam ?? today));
   const [pickerYear, setPickerYear] = useState<number | null>(null);
-  const [openDate, setOpenDate] = useState<string | null>(null);
-  const [form, setForm] = useState<OpenForm | null>(null);
-  const [removing, setRemoving] = useState(false);
-  const [sheet, dispatch] = useReducer(addSheetReducer, INITIAL_FORM);
 
-  const { data: profile } = useMyProfileQuery(supabase, userId);
-
-  const isAdmin = profile?.role === "admin";
-  const myProfileId = profile?.id ?? null;
-
-  const mine = useMyRehearsalsQuery(supabase, month, !isAdmin);
-  const all = useAllRehearsalsQuery(supabase, month, isAdmin);
-  const { data: days } = useMonthScheduleQuery(supabase, month);
-
-  const {
-    mutate: add,
-    isPending: adding,
-    isSuccess: added,
-    isError: addFailed,
-    error: addError,
-    reset: resetAdd,
-  } = useAddRehearsalMutation(supabase);
-
-  const {
-    mutate: save,
-    isPending: savingEdit,
-    isSuccess: saved,
-    isError: editFailed,
-    error: editError,
-    reset: resetEdit,
-  } = useEditRehearsalMutation(supabase);
-
-  const {
-    mutate: remove,
-    isSuccess: deleted,
-    reset: resetRemove,
-  } = useRemoveRehearsalMutation(supabase);
-
-  useEffect(() => {
-    void getCurrentUser(supabase).then((user) => setUserId(user?.id ?? null));
-  }, []);
-
-  useEffect(() => {
-    if (monthParam !== undefined) {
-      setMonth(monthOf(monthParam));
-    }
-  }, [monthParam]);
-
-  const closeForm = useCallback(() => {
-    setForm(null);
-    resetAdd();
-    resetEdit();
-  }, [resetAdd, resetEdit]);
-
-  useEffect(() => {
-    if (added || saved) {
-      closeForm();
-    }
-  }, [added, saved, closeForm]);
-
-  useEffect(() => {
-    if (!deleted) {
-      return;
-    }
-
-    setRemoving(false);
-    closeForm();
-    resetRemove();
-  }, [deleted, closeForm, resetRemove]);
-
-  useEffect(() => {
-    if (!addFailed) {
-      return;
-    }
-
-    dispatch(addSheetActionFor(addError, sheet.formKind));
-    resetAdd();
-  }, [addFailed, addError, sheet.formKind, resetAdd]);
-
-  useEffect(() => {
-    if (!editFailed) {
-      return;
-    }
-
-    dispatch(addSheetActionFor(editError, sheet.formKind));
-    resetEdit();
-  }, [editFailed, editError, sheet.formKind, resetEdit]);
-
-  useEffect(() => {
-    if (openDate === null && form === null) {
-      return;
-    }
-
-    const subscription = BackHandler.addEventListener(
-      "hardwareBackPress",
-      () => {
-        if (form !== null) {
-          closeForm();
-        } else {
-          setOpenDate(null);
-        }
-
-        return true;
-      },
-    );
-
-    return () => subscription.remove();
-  }, [openDate, form, closeForm]);
-
-  const rows: Row[] = useMemo(
-    () => (isAdmin ? (all.data ?? []) : (mine.data ?? [])),
-    [isAdmin, all.data, mine.data],
-  );
-
-  const rowsOf = useMemo(() => {
-    const byDate = new Map<string, Row[]>();
-
-    for (const row of rows) {
-      byDate.set(row.work_date, [...(byDate.get(row.work_date) ?? []), row]);
-    }
-
-    return byDate;
-  }, [rows]);
-
-  const myAssignments = useMemo(
-    () =>
-      (days ?? []).flatMap((day) =>
-        day.assignments
-          .filter((assignment) => assignment.profile_id === myProfileId)
-          .map((assignment) => ({
-            work_date: day.work_date,
-            kind: assignment.kind,
-            ended_at: assignment.ended_at,
-          })),
-      ),
-    [days, myProfileId],
-  );
-
-  const failed = (isAdmin ? all.error : mine.error) !== null;
-  const openRows = openDate === null ? [] : (rowsOf.get(openDate) ?? []);
-  const openKind =
-    openDate === null ? "time" : kindForDate(openDate, myAssignments);
-  const editing =
-    form?.mode === "edit"
-      ? (openRows.find((row) => row.id === form.id) ?? null)
-      : null;
-
-  const openAdd = () => {
-    setForm({ mode: "add" });
-    dispatch({ type: "open", kind: openKind });
-  };
-
-  const openEdit = (id: string) => {
-    const row = openRows.find((candidate) => candidate.id === id);
-
-    if (row === undefined) {
-      return;
-    }
-
-    setForm({ mode: "edit", id });
-    dispatch({
-      type: "open",
-      kind: row.count === null ? "time" : "count",
-      values: {
-        startsAt: row.starts_at?.slice(0, CLOCK_LENGTH) ?? "",
-        endsAt: row.ends_at?.slice(0, CLOCK_LENGTH) ?? "",
-        count: row.count === null ? "" : String(row.count),
-      },
-    });
-  };
-
-  const submit = () => {
-    if (!canSubmitForm(sheet)) {
-      return;
-    }
-
-    const written =
-      sheet.formKind === "count"
-        ? { count: Number(sheet.values.count) }
-        : { startsAt: sheet.values.startsAt, endsAt: sheet.values.endsAt };
-
-    if (form?.mode === "edit") {
-      save({ id: form.id, ...written });
-      return;
-    }
-
-    if (openDate !== null) {
-      add({ workDate: openDate, ...written });
-    }
-  };
+  useHardwareBack(screen.closeTop);
 
   return (
     <Screen>
-      <AppBar title="리허설" onBack={() => router.replace("/me")} />
+      <AppBar
+        title={REHEARSAL_COPY.appBarTitle}
+        onBack={() => router.replace("/me")}
+      />
 
       <ScrollView>
         <View className="gap-3 px-5 pb-5">
           <View className="h-12 flex-row items-center justify-between gap-3">
             <Pressable
               accessibilityRole="button"
-              testID="rehearsal-month"
-              onPress={() => setPickerYear(Number(month.slice(0, 4)))}
+              testID={MONTH_TEST_ID}
+              onPress={() => setPickerYear(screen.monthYear)}
               className="flex-row items-center gap-1"
             >
               <Text size="base" weight="medium">
-                {spellMonth(month)}
+                {screen.monthLabel}
               </Text>
               <Icon
                 icon={ChevronDown}
@@ -315,76 +92,61 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
               />
             </Pressable>
             <Text size="xs" tone="subtle" numeric>
-              {spellTotal(monthTotal(rows))}
+              {screen.totalLabel}
             </Text>
           </View>
 
           <Card>
             <MonthCalendar
-              month={month}
-              stateOf={(date) =>
-                rehearsalDayCell(dayTotal(rowsOf.get(date) ?? []).minutes)
-                  .state === "has"
-                  ? "admin-open"
-                  : "plain"
-              }
-              isToday={(date) => date === today}
+              month={screen.month}
+              stateOf={screen.cellStateOf}
+              isToday={screen.isToday}
               canPress={() => true}
-              onPressDay={setOpenDate}
-              noteOf={(date) => {
-                const cell = rehearsalDayCell(
-                  dayTotal(rowsOf.get(date) ?? []).minutes,
-                );
-
-                return cell.state === "has" ? cell.label : null;
-              }}
+              onPressDay={screen.openDay}
+              noteOf={screen.noteOf}
             />
           </Card>
 
           <Text size="xs" tone="subtle">
-            {LEGEND}
+            {REHEARSAL_COPY.legend}
           </Text>
 
-          {failed ? (
+          {screen.failed ? (
             <View className="flex-row items-center gap-2">
               <Text size="xs" tone="subtle">
-                {READ_FAILED}
+                {REHEARSAL_COPY.readFailed}
               </Text>
-              <Button
-                variant="ghost"
-                size="compact"
-                onPress={() => (isAdmin ? all.refetch() : mine.refetch())}
-              >
-                다시 시도
+              <Button variant="ghost" size="compact" onPress={screen.retry}>
+                {REHEARSAL_COPY.retry}
               </Button>
             </View>
           ) : null}
         </View>
       </ScrollView>
 
-      {openDate === null ? null : (
-        <SheetLayer onDismiss={() => setOpenDate(null)}>
+      {screen.openDate === null ? null : (
+        <SheetLayer onDismiss={screen.closeDay}>
           <RehearsalDaySheet
-            title={spellDate(openDate)}
-            content={daySheetRows(openRows, isAdmin)}
-            canAdd={!isAdmin && canAddOn(openKind, openRows)}
-            onPressRow={isAdmin ? undefined : openEdit}
-            onAdd={openAdd}
+            title={screen.openDateLabel}
+            content={screen.dayContent}
+            canAdd={screen.canAdd}
+            onPressRow={screen.openEdit}
+            onAdd={screen.openAdd}
           />
         </SheetLayer>
       )}
 
-      {form === null || openDate === null ? null : (
-        <SheetLayer onDismiss={closeForm}>
+      {screen.form === null ? null : (
+        <SheetLayer onDismiss={screen.closeForm}>
           <RehearsalFormSheet
-            mode={form.mode}
-            dateLabel={spellDate(openDate)}
-            state={sheet}
-            saving={adding || savingEdit}
-            onChange={(values) => dispatch({ type: "change", values })}
-            onSubmit={submit}
-            onClose={closeForm}
-            onRemove={editing === null ? undefined : () => setRemoving(true)}
+            mode={screen.form.mode}
+            dateLabel={screen.openDateLabel}
+            state={screen.sheet}
+            saving={screen.saving}
+            onChange={screen.change}
+            onSubmit={screen.submit}
+            onClose={screen.closeForm}
+            onRemove={screen.askRemove}
           />
         </SheetLayer>
       )}
@@ -392,12 +154,10 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
       {pickerYear === null ? null : (
         <MonthPickerSheet
           year={pickerYear}
-          selectedMonth={month}
+          selectedMonth={screen.month}
           onPick={(picked) => {
-            setMonth(picked);
+            screen.pickMonth(picked);
             setPickerYear(null);
-            setOpenDate(null);
-            setForm(null);
           }}
           onYearChange={setPickerYear}
           onDismiss={() => setPickerYear(null)}
@@ -405,16 +165,16 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
       )}
 
       <Dialog
-        visible={removing && editing !== null}
-        title="이 리허설을 지울까요?"
-        closeLabel="그만두기"
-        confirmLabel="지우기"
-        confirmTestID="rehearsal-remove-confirm-button"
+        visible={screen.removing}
+        title={REHEARSAL_COPY.removeTitle}
+        closeLabel={REHEARSAL_COPY.removeCancel}
+        confirmLabel={REHEARSAL_COPY.removeConfirm}
+        confirmTestID={REMOVE_CONFIRM_TEST_ID}
         destructive
-        onClose={() => setRemoving(false)}
-        onConfirm={() => (editing === null ? undefined : remove(editing.id))}
+        onClose={screen.cancelRemove}
+        onConfirm={screen.confirmRemove}
       >
-        급여에서도 빠져요
+        {REHEARSAL_COPY.removeBody}
       </Dialog>
     </Screen>
   );
