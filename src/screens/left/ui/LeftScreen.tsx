@@ -11,11 +11,11 @@ import { Illustration } from "@/shared/ui/Illustration";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import { googlePhotoOf } from "@/entities/session/utils/googlePhotoOf.utils";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/lib/signOut.lib";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 
 /**
  * 퇴사한 사람이 앱을 열면 대시보드 대신 서는 자리다. 볼 수 있는 것은 지난 급여와 자기 근무

@@ -11,11 +11,11 @@ import { Illustration } from "@/shared/ui/Illustration";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import { googlePhotoOf } from "@/entities/session/utils/googlePhotoOf.utils";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/lib/signOut.lib";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 
 /**
  * 차단된 사람이 앱을 열면 서는 자리다. 구글 로그인은 되지만 아무 행도 안 온다([ACC-007]).
