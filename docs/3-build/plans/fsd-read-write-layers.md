@@ -295,6 +295,10 @@ sources:
 - 보드의 `dumb-ui-widen`이 이 걸음이다 — 그 행이 든 「업무 상수와 판정과 가공 함수가 화면 파일에 남았다」는 AC-10과 이 묶음이 같이 걷는다
 - **도메인 열로 쪼개 병렬로 돈다.** 이 묶음만 병렬이 되는 까닭은 빼낸 훅을 그 화면의 `.tsx` 하나만 부르기 때문이다 — 밖에서 당기는 import가 없어 다른 묶음의 줄을 안 고친다
 - 큰 파일을 책임으로 쪼개는 일이 같이 간다. `DayDetail.tsx` 969줄과 `PendingScreen.tsx` 689줄은 훅을 빼도 여전히 여러 책임을 들고 있어 조각을 가른다
+- **본보기 열을 먼저 직렬로 세운다 — 게이트 셋이다.** 아홉 열을 동시에 띄우면 controller가 아홉 가지 모양으로 선다. 작은 열 하나(blocked·left·retry)가 먼저 꼴을 못 박고, 나머지 여덞 열이 그 PR을 받아 돈다
+- 돌면서 나온 것 — **controller가 서는 조건은 「화면이 제 업무 상태를 드나」다.** 게이트 셋에서 `retry`만 controller를 받았다 — 재시도가 도는 중인지가 그 화면 것이다. `blocked`·`left`는 service 둘로 상태가 다 접혀 남는 것이 「끝난 뒤 어디로 가는지」뿐이고 그것은 이동이라 `.tsx`가 가진다. **controller를 화면마다 하나씩 기계적으로 세우면 빈 훅이 선다** — AC-12의 행동 첫 줄(「화면마다 `use<화면>.ts`를 세워」)을 이 조건이 좁힌다
+- 돌면서 나온 것 — **열 전부가 쓰는 도구 둘이 먼저 서야 했다.** `getCurrentUser(supabase)`를 `useEffect`로 부르는 자리가 **열두 군데**고 받는 꼴이 셋으로 갈려 있었다(`id`만 · `email`과 사진 · 둘 다). 로그아웃 블록은 화면 다섯에 **글자까지 같았다.** 열마다 controller를 세워도 둘은 안 접힌다 — 접는 자리가 `services`다. `entities/session/services/useSessionUserQuery.ts`와 `features/auth/services/useSignOutMutation.ts`가 본보기 PR에서 섰고, 게이트 셋이 그 둘로 `useState` 여섯과 `useEffect` 셋을 버렸다. 남은 자리는 세션 읽기 아홉(`src/app/` 셋·화면 다섯, `PendingScreen`이 둘)과 로그아웃 둘(`profile`·`pending`)이다
+- 돌면서 나온 것 — **`services/`는 보낼 데를 못 든다.** `useSignOutMutation`이 끝난 뒤 갈 자리를 인자(`onDone`)로 받는 까닭은 지금 다섯이 다 `/login`이어도 그것이 이동이고 AC-08의 「`expo-*`는 `lib`·`ui`·`hooks`에만」이 `services/`에서 `expo-router`를 막기 때문이다. controller가 서는 열에서는 controller가 그 인자를 쥐고, 안 서는 열에서는 `.tsx`가 쥔다
 
 ### AC-14 — `services`가 선다 ✅
 
@@ -543,8 +547,9 @@ PR 하나씩 나른다. **이동하는 묶음은 앞의 것이 merge되고 나�
 7. **AC-07 — 슬라이스 쪼개기** ✅ 268개를 `git mv`했다. 교차 0이고 깨져 있던 엣지 import 셋을 고쳤다
 8. **AC-06나-1 — `model`/`utils` 가르기 + 접미사** ✅ 123개와 짝 테스트 120개를 `git mv`했다. 판정 예순하나·꼴 바꾸기 쉰여섯·타입 셋·검증 둘·store 하나
 9. **이동 열 — 도메인 열을 직렬로.** ✅ 열 묶음이 끝났다 — PR 하나가 그 도메인의 타입과 DTO·매퍼(AC-06나-2)·`lib`(AC-09)·`consts`(AC-10)·`config`(AC-11)·`services`(AC-14)·`stores`(AC-15)·중복(AC-13)을 같이 옮겼다. 순서는 공용 → 근무표 → 급여 → 구성원 → 근태 → 알림 → 리허설 → 통계 → 인증 → QR이었고, 앞의 것이 main에 든 뒤 다음을 뗐다. AC-09·AC-10·AC-11·AC-14·AC-15가 여기서 찼고 AC-06나-2는 타입을 다 뺐지만 꼴 바꾸기가 [dto-to-domain-shape](dto-to-domain-shape.md)로 떨어졌다
-10. **안쪽 열 — 도메인 열을 병렬로.** AC-12다. PR 하나가 그 도메인 `.tsx`의 업무 상태와 효과와 통신을 `screens/<슬라이스>/hooks/`의 controller로 빼고, 에러 코드 판정을 `model`로 내리고, 큰 파일을 책임으로 쪼갠다. worktree를 열로 떼어 같이 돈다
-11. **AC-08 — 검사 열일곱** 상태 금지와 「`ui`에서 `api` import 금지」는 안쪽 열이 끝나야 켠다
+10. **본보기 열 — 게이트 셋.** ✅ AC-12의 꼴을 못 박았다. `useSessionUserQuery`와 `useSignOutMutation`이 서고 blocked·left·retry가 그 위로 올라갔다 — `useState` 여섯과 `useEffect` 셋이 사라지고 controller는 `retry` 하나만 섰다
+11. **안쪽 열 — 도메인 열을 병렬로.** AC-12다. PR 하나가 그 도메인 `.tsx`의 업무 상태와 효과와 통신을 `screens/<슬라이스>/hooks/`의 controller로 빼고, 에러 코드 판정을 `model`로 내리고, 큰 파일을 책임으로 쪼갠다. 열마다 본보기 PR을 받아 돌고, worktree를 떼어 같이 돈다
+12. **AC-08 — 검사 열일곱** 상태 금지와 「`ui`에서 `api` import 금지」는 안쪽 열이 끝나야 켠다
 
 **AC-06을 갈라 AC-07을 그 사이에 끼운다.** 두 방향 다 한 번은 걸린다.
 
