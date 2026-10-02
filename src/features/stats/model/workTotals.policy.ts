@@ -1,5 +1,13 @@
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
+import type {
+  PersonTotal,
+  PositionTotal,
+  WorkAssignment,
+  WorkDay,
+  WorkInputs,
+  WorkTotals,
+} from "@/features/stats/model/stats.type";
 
 /**
  * 그달 근무를 사람과 포지션 두 축으로 가른다. 정본은
@@ -24,51 +32,9 @@ import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
  * **재직 여부도 안 본다.** 그달에 일했으면 퇴사한 사람도 선다 — 근무 시간은 그달의 사실이다.
  */
 
-export type WorkAssignment = {
-  id: string;
-  day_id: string;
-  profile_id: string;
-  display_name: string;
-  position: string;
-  kind: string;
-  ended_at: string | null;
-};
-
-export type WorkDay = {
-  id: string;
-  work_date: string;
-  starts_at: string;
-  ends_at: string;
-};
-
-export type PersonTotal = {
-  profileId: string;
-  displayName: string;
-  minutes: number;
-  count: number;
-};
-
-export type PositionTotal = {
-  position: string;
-  minutes: number;
-  count: number;
-};
-
-export type WorkTotals = {
-  totalMinutes: number;
-  totalCount: number;
-  byPerson: PersonTotal[];
-  byPosition: PositionTotal[];
-};
-
 const MINUTES_PER_HOUR = 60;
 
 const KOREAN = "ko";
-
-export type WorkInputs = {
-  assignments: WorkAssignment[];
-  days: WorkDay[];
-};
 
 /**
  * 읽어 온 달을 이 모듈이 세는 모양으로 옮긴다. 배정 행이 이름을 임베딩해 오므로
@@ -114,8 +80,14 @@ export function isLiveAssignment(assignment: WorkAssignment): boolean {
   return assignment.ended_at === null;
 }
 
-/** `"10:00:00"`과 `"18:00:00"`이면 480이다. */
-export function dayMinutes(day: WorkDay): number {
+/**
+ * 그날 근무 시간대의 길이다 — `"10:00:00"`과 `"18:00:00"`이면 480이다.
+ *
+ * **급여가 세는 분과 다른 질문이다.** 여기는 그날의 창이 몇 분인가라서 그날 선 사람이면 누구나
+ * 같은 값이고, `features/payrollCompute`의 `paidMinutes`는 그 사람 하나의 조정과 리허설까지
+ * 더한 값이다. 둘이 `dayMinutes` 한 이름을 쓰고 있어 이름에 축을 넣었다.
+ */
+export function shiftMinutes(day: WorkDay): number {
   return minutesOfTime(day.ends_at) - minutesOfTime(day.starts_at);
 }
 
@@ -123,7 +95,7 @@ export function computeWorkTotals(
   assignments: readonly WorkAssignment[],
   days: readonly WorkDay[],
 ): WorkTotals {
-  const minutesByDay = new Map(days.map((day) => [day.id, dayMinutes(day)]));
+  const minutesByDay = new Map(days.map((day) => [day.id, shiftMinutes(day)]));
   const people = new Map<string, PersonTotal>();
   const positions = new Map<string, PositionTotal>();
 

@@ -2,7 +2,7 @@
 //
 // 결근을 고른 순간 화면이 계산해 넣는 음수다 — 그날 배정 시간만큼이다
 // (payroll-adjust plan 「결근 음수는 고른 순간의 배정 시간이다」). 시:분 파싱을 새로
-// 짜지 않고 `@/features/payroll/model/dayMinutes`의 `dayMinutes`를 재사용해야
+// 짜지 않고 `@/features/payrollCompute/model/paidMinutes.policy`의 `paidMinutes`를 재사용해야
 // 두 화면(급여 화면과 이 시트)이 같은 시간을 말한다.
 
 import { absenceMinutes } from "@/screens/scheduleAdmin/utils/absenceMinutes.utils";

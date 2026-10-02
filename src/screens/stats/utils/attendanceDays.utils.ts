@@ -1,4 +1,4 @@
-import { spellDate } from "@/shared/utils/kstDate";
+import { kstClockOf, spellDate } from "@/shared/utils/kstDate";
 import type { AttendanceStatus } from "@/entities/attendance/model/attendance.type";
 import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
@@ -7,6 +7,7 @@ import {
   type AttendanceInputCheckIn,
   type AttendanceInputExcuseStatus,
 } from "@/features/stats/utils/attendanceInputs.utils";
+import { STATUS_LABELS } from "@/screens/stats/consts/stats.const";
 
 /**
  * 근태 탭 날짜 목록이다. 정본은 `docs/2-design/system/screens/stats.md`의 「내 근태 날짜
@@ -28,22 +29,6 @@ import {
  */
 
 const TRAINING_KIND = "training";
-
-const STATUS_LABELS: Record<AttendanceStatus, string> = {
-  present: "출근",
-  late: "지각",
-  unmarked: "안 찍음",
-  pending: "확인 중",
-  excused: "인정",
-  absent: "결근",
-};
-
-const KST_TIME = new Intl.DateTimeFormat("en-GB", {
-  timeZone: "Asia/Seoul",
-  hourCycle: "h23",
-  hour: "2-digit",
-  minute: "2-digit",
-});
 
 export type MyAttendanceDay = {
   workDate: string;
@@ -125,7 +110,7 @@ export function myAttendanceRow(day: MyAttendanceDay): MyAttendanceRow {
   };
 }
 
-/** 찍은 순간을 홀의 시계로 읽는다 — UTC로 읽으면 밤 9시 뒤가 하루 전 시각으로 선다. */
+/** 찍은 순간을 홀의 시계로 읽는다 — 꼴은 `shared/utils/kstDate.ts`가 든다. */
 export function checkedTimeLabel(checkedAt: string): string {
-  return KST_TIME.format(new Date(checkedAt));
+  return kstClockOf(checkedAt);
 }

@@ -1,4 +1,7 @@
-import type { TALLIED_STATUSES } from "@/entities/attendance/consts/attendance.const";
+import type {
+  EXCUSE_DECISIONS,
+  TALLIED_STATUSES,
+} from "@/entities/attendance/consts/attendance.const";
 
 /**
  * 근태의 모양이다. 상태 여섯과 그것을 내는 데 필요한 재료, 그리고 달치로 센 결과다.
@@ -17,7 +20,7 @@ export type CheckInRecord = {
   receivedAt: string;
 };
 
-export type ExcuseDecision = "approved" | "rejected";
+export type ExcuseDecision = (typeof EXCUSE_DECISIONS)[number];
 
 export type ExcuseStatusRecord = {
   submittedAt: string;

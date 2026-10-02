@@ -55,7 +55,7 @@ import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
 import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
-import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
+import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
 import {
   joinPayrollByMonth,
   myAttendanceValues,
@@ -428,7 +428,7 @@ describe("myPayrollValues — 리허설이 붙은 날은 그 몫만큼 그달 �
 // 뭉쳐 오기 때문이다(myPayrollValues 위 설명의 PAY-028과 같은 이유). `myPayrollValues`가
 // 이미 열두 달치로 접어 둔 것과 같은 모양이라 여기서도 같은 함수를 부르는 꼴로 접는다.
 
-describe("joinPayrollByMonth — work.data와 payroll.data를 달로 묶어 PayrollByMonth[]를 만든다", () => {
+describe("joinPayrollByMonth — work.data와 payroll.data를 달로 묶어 PayrollMonthWithDays[]를 만든다", () => {
   it("근무표와 급여 재료가 둘 다 있는 달은 days와 payroll이 한 행으로 묶인다", () => {
     const day = scheduleDay({ work_date: "2026-08-10" });
     const work: WorkMonth[] = [{ month: "2026-08", days: [day] }];

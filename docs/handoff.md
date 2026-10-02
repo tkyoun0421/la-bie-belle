@@ -6,9 +6,17 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 통계 이동 PR이다.** `features/stats` + `screens/stats`·`adminStats`·`adminHome`이 품는 타입 아홉을 옮기고 `hooks/` 둘을 `services/`로 옮긴다. **남은 중복 둘을 이 묶음이 접는다** — `dayMinutes`(급여와 통계)와 `attendanceSummaryLine`(근무표와 통계)이고 양쪽이 자리를 잡은 뒤라 이제 어느 쪽으로 접을지 보인다. `features/stats/hooks/useAttendanceMonths.ts`는 `services/useAttendanceMonthsQuery.ts`로 — 쿼리 둘을 조립하는 service인데 접미사를 못 받고 있다. `StatsScreen` 470줄·`AdminStatsScreen` 414줄·`workTotals.policy` export 다섯은 AC-12 몫이다. 그 뒤 순서는 인증 → QR이다.
+**다음 첫 수는 `fsd-read-write-layers`의 인증 이동 PR이다.** `entities/session` + `features/auth` + `screens/retry`가 품는 타입 둘과 상수 하나를 옮기고, SDK 둘과 환경값 하나를 `lib`·`config`로 가른다. `features/auth/hooks/wireAutoRefresh.ts`는 **훅이 아니라 세션 자동 갱신을 켜는 부작용이라** `lib/wireAutoRefresh.lib.ts`로 간다 — 남은 `hooks/` 폴더 셋 중 하나고 나머지 둘(`entities/qr`·`features/qrAdmin`)이 QR 묶음의 `services` 넷이다. `signOut`·`handleAuthCallback`이 `lib`을 받는 자리도 여기다. 그 뒤는 QR 하나만 남는다.
 
-**묶음 열이 끝난 뒤 한 task가 필요해졌다.** 단위와 꼴을 내는 도구의 사본이 층층이다 — 요일 표 여섯·`MINUTES_PER_HOUR` 여섯·KST 날짜 꼴 셋·KST 시·분 꼴 넷이고, `?from=` 프로토콜이 여덞 자리에 글자로 흩어져 있다. 묶음 하나가 접을 크기가 아니라 plan AC-13에 적어 뒀다.
+**묶음 열이 끝난 뒤 한 task가 필요해졌다.** 단위와 꼴을 내는 도구의 사본이 층층이다 — 요일 표 여섯·KST 날짜 꼴 셋·`?from=` 프로토콜 여덞 자리고, 초를 떼는 `slice(0, 5)`가 열둘인데 이름을 받은 것은 둘뿐이다. **단위 환산은 상수가 아홉이고 그 위에 올라탄 손이 둘이다** — 시·분 글자를 분으로 바꾸는 것 셋, 분을 「3시간 20분」으로 적는 것 다섯이다. 상수를 세는 것으로는 안 보여서, 그 task가 받을 것은 상수 아홉이 아니라 손 둘이다. **배정 갈래 둘(`"regular"`·`"training"`)도 여기로 왔다** — `ASSIGNMENT_KINDS`를 `entities/schedule/consts`에 세우고 타입을 거기서 끌어내는 걸음이라 유니언 자리까지 같이 움직인다. 묶음 하나가 접을 크기가 아니라 plan AC-13에 적어 뒀다.
+
+**통계 묶음이 끝났다.** 타입 아홉이 `.type.ts` 둘로(`features/stats`에 일곱 — **`features/`의 첫 `.type.ts`다** — `screens/adminStats`에 둘), 상수 여섯이 `consts/` 셋으로, 달 맞추는 훅 하나가 `services/useAttendanceMonthsQuery.ts`로 갔다. **중복을 여섯 접거나 갈랐다** — plan이 든 둘은 몸이 달라 이름을 갈랐고(`shiftMinutes`/`paidMinutes`, `dayAttendanceLine`/`monthAttendanceLine`) plan이 안 든 넷은 몸이 같아 접었다(`monthIn`·KST 시·분 꼴·사람으로 좁히는 손·`PayrollByMonth`).
+
+**타입을 옮기는 축에 한 겹이 붙었다.** 「밖에서 당기나」만 보면 `WorkTotals`는 남고 그 안의 `PositionTotal`만 가서, 판정 파일이 제 반환 타입의 부품을 도로 import한다. **옮기는 꼴이 담고 있는 꼴은 같이 간다**가 그 겹이다.
+
+**규칙이 언제 우는지를 소스로 안 보고 넓게 읽은 것이 드러났다.** 리허설 묶음이 「`"regular"` 일곱 자리는 접을 길이 없다」고 적었는데, `no-cross-slice-import`는 **같은 층**일 때만 울린다 — 막히는 것은 `entities/rehearsal` 하나뿐이고 `screens`·`features`의 여섯은 `entities/schedule/consts`를 그대로 당길 수 있다. plan AC-13의 그 줄을 고쳤다.
+
+**`.tsx`의 문안을 AC-12로 넘기는 것을 면제로 적었다.** 통계가 열아홉이고 리허설 넷에 이어서다 — `READ_FAILED`가 화면 다섯에 같은 글자라 controller가 서야 누가 들어야 하는지 보인다. AC-10의 면제가 넷에서 다섯이 됐다.
 
 **리허설 묶음이 끝났다.** `hooks/` 여섯이 두 슬라이스에서 통째로 `services/`로(열둘), 통신 꼴 둘이 `rehearsal.dto.ts`로, 도메인 타입 둘이 `rehearsal.type.ts`로, 상수 여섯이 `consts/` 둘로 갔다. **접미사 패스가 reducer 하나를 놓친 것이 드러났다** — `addSheetState.policy.ts`가 전이 함수와 action 유니언을 들고 화면이 그것을 `useReducer`에 거는데, ADR-015가 그 파일을 「조건이 차면 `.reducer.ts`로 간다」로 이미 적어 뒀고 조건이 이미 차 있었다. `fileNaming.ts`는 접미사와 세그먼트만 대조하고 파일 안을 안 봐서 검사로는 못 세운다. **같은 값 60이 한 파일에서 두 뜻으로 섰다** — 1건이 1시간인 업무 규칙과 한 시간이 60분인 단위다. 앞의 것만 `consts`로 보냈고 가름은 「바뀔 수 있나」다.
 
@@ -133,7 +141,9 @@
 
 **vault로 로컬 시크릿을 심는 길이 섰다.** integration 테스트가 `beforeAll`/`afterAll`에서 `vault.create_secret`/삭제로 로컬 전용 가짜 값을 넣고 뺀다. `seed.sql`(전역 상태, `db reset`마다 돎)은 이 용도로 안 쓴다 — `payroll-holidays`가 같은 길을 그대로 탔고 `notification-push`도 부치는 접근 토큰을 이렇게 심는다.
 
-**금액 꼴은 `shared/lib/spellNumber.ts` 하나로 모였고, 시간 길이 꼴은 아직 슬라이스 셋에 흩어져 있다.** `screens/payroll/utils/summary.utils.ts`의 `spellWorkedHours`(「0시간 30분」)와 `screens/schedule-admin/model/adjustSheetRows.ts`의 `spellHours`·`features/rehearsal/model/spellTotal.ts`의 `spellMinutes`(「30분」)가 갈려 있다 — `writing.md`가 「30분」 쪽으로 판정했으니 `summary.ts`가 어긋난 쪽이다. `spell-number-shared` candidate가 받는다.
+**금액 꼴은 `shared/utils/spellNumber.ts` 하나로 모였고, 시간 길이 꼴은 다섯 자리에 흩어져 있다.** `screens/payroll/utils/summary.utils.ts`와 `historyRows.utils.ts`, `screens/scheduleAdmin/utils/adjustSheetRows.utils.ts`, `screens/rehearsal/utils/spellTotal.utils.ts`, `screens/stats/utils/payrollSummary.utils.ts`가 같은 `floor`와 `%`를 각자 들고, 앞의 것만 「0시간 30분」으로 0을 적는다 — `writing.md`가 「30분」 쪽으로 판정했으니 `summary.utils.ts`가 어긋난 쪽이다. `spell-number-shared` candidate가 받고, plan AC-13의 사본 묶음과 같은 손이다.
+
+**e2e TDD 훅이 꺼져 있던 것을 통계 묶음이 고쳤다.** AC-02가 슬라이스 폴더를 camelCase로 바꾼 뒤 훅이 `tests/e2e/adminStats.yaml`을 찾는데 파일은 `admin-stats.yaml`이라, camel로 이름이 바뀐 화면 다섯이 Edit·Write로 영영 못 열렸다. 그 사이의 `.tsx` 수정이 Bash의 `perl -pi`로 지나가서 막힌 줄 몰랐다 — **훅이 Edit·Write만 보고 Bash를 안 본다.** 관찰 054고 그 구멍은 열려 있다.
 
 **`internal` 스키마의 실제 방어는 두 겹뿐이다.** PostgREST 라우팅과 스키마 USAGE다 — 문서가 요구하는 「함수 revoke」 한 겹은 저장소 전체에서 안 서 있다. `internal-grants-public` candidate가 고칠 길(`revoke execute on all functions in schema internal from public`)까지 적어 뒀다.
 

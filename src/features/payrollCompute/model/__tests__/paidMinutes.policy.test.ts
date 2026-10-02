@@ -1,17 +1,17 @@
-// 구현 대상: src/features/payrollCompute/model/dayMinutes.policy.ts
+// 구현 대상: src/features/payrollCompute/model/paidMinutes.policy.ts
 //
-// dayMinutes({ assignments, day, adjustments, rehearsals }) — 그날 총 분을 낸다
+// paidMinutes({ assignments, day, adjustments, rehearsals }) — 그날 총 분을 낸다
 // (plan AC-06). 배정 시간은 day.starts_at~ends_at 그대로고 휴게를 안 뺀다(PAY-004).
 // 조정은 이력 중 adjusted_at이 가장 늦은 행의 분만 쓴다. 리허설은 시각 갈래·건수 갈래를
 // 모두 더한다(PAY-028, rehearsalHours가 두 갈래를 하나의 분으로 낸다).
 
-import { dayMinutes } from "@/features/payrollCompute/model/dayMinutes.policy";
+import { paidMinutes } from "@/features/payrollCompute/model/paidMinutes.policy";
 
 const NINE_HOUR_DAY = { starts_at: "10:00:00", ends_at: "19:00:00" };
 
-describe("dayMinutes — 배정 시간은 day.starts_at~ends_at 그대로다(PAY-004)", () => {
+describe("paidMinutes — 배정 시간은 day.starts_at~ends_at 그대로다(PAY-004)", () => {
   it("휴게시간을 따로 빼지 않은 날 시간이 그대로 더해진다", () => {
-    const minutes = dayMinutes({
+    const minutes = paidMinutes({
       assignments: [{ id: "a1" }],
       day: NINE_HOUR_DAY,
       adjustments: [],
@@ -22,9 +22,9 @@ describe("dayMinutes — 배정 시간은 day.starts_at~ends_at 그대로다(PAY
   });
 });
 
-describe("dayMinutes — 조정이 여럿이면 adjusted_at이 가장 늦은 행만 쓴다", () => {
+describe("paidMinutes — 조정이 여럿이면 adjusted_at이 가장 늦은 행만 쓴다", () => {
   it("배열 순서가 아니라 adjusted_at 최신 행의 분을 쓴다", () => {
-    const minutes = dayMinutes({
+    const minutes = paidMinutes({
       assignments: [{ id: "a1" }],
       day: NINE_HOUR_DAY,
       adjustments: [
@@ -39,9 +39,9 @@ describe("dayMinutes — 조정이 여럿이면 adjusted_at이 가장 늦은 행
   });
 });
 
-describe("dayMinutes — 리허설은 시각 갈래와 건수 갈래를 모두 더한다(PAY-028)", () => {
+describe("paidMinutes — 리허설은 시각 갈래와 건수 갈래를 모두 더한다(PAY-028)", () => {
   it("시각으로 넣은 리허설과 건수로 넣은 리허설이 같이 있으면 둘 다 더한다", () => {
-    const minutes = dayMinutes({
+    const minutes = paidMinutes({
       assignments: [{ id: "a1" }],
       day: NINE_HOUR_DAY,
       adjustments: [],
@@ -55,9 +55,9 @@ describe("dayMinutes — 리허설은 시각 갈래와 건수 갈래를 모두 �
   });
 });
 
-describe("dayMinutes — 배정·조정·리허설이 셋 다 없으면 0분이다", () => {
+describe("paidMinutes — 배정·조정·리허설이 셋 다 없으면 0분이다", () => {
   it("아무것도 없는 날은 0분이다", () => {
-    const minutes = dayMinutes({
+    const minutes = paidMinutes({
       assignments: [],
       day: null,
       adjustments: [],

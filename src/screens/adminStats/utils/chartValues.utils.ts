@@ -1,12 +1,12 @@
 import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { attendanceRate } from "@/entities/attendance/utils/attendanceSummary.utils";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
-import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
 import {
   computeWorkTotals,
   workInputsOf,
 } from "@/features/stats/model/workTotals.policy";
-import type { AttendanceTab } from "@/screens/adminStats/utils/attendanceRows.utils";
+import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
+import type { AttendanceTab } from "@/screens/adminStats/model/adminStats.type";
 
 /**
  * 통계 화면이 읽어 온 열두 달을 추이 그래프가 먹는 값으로 옮긴다. 정본은
@@ -18,13 +18,6 @@ import type { AttendanceTab } from "@/screens/adminStats/utils/attendanceRows.ut
  * **출근율 공식은 `entities/attendance`가 든다.** 근무자 통계가 같은 공식을 쓰는데 다른
  * 슬라이스라 여기 두면 못 부른다(plan stats-worker AC-01).
  */
-
-export function monthIn<Loaded extends { month: string }>(
-  loaded: Loaded[] | undefined,
-  month: string,
-): Loaded | undefined {
-  return loaded?.find((one) => one.month === month);
-}
 
 export function workValues(
   loaded: WorkMonth[] | undefined,

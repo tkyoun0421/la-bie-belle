@@ -1,3 +1,4 @@
+import { EXCUSE_DECISIONS } from "@/entities/attendance/consts/attendance.const";
 import type {
   AttendanceStatusInput,
   ExcuseDecision,
@@ -47,8 +48,6 @@ export type AttendanceInputExcuseStatus = {
   decided_at: string | null;
   decision: string | null;
 };
-
-const DECISIONS: readonly string[] = ["approved", "rejected"];
 
 export function buildAttendanceInputs(
   days: readonly AttendanceInputDay[],
@@ -102,13 +101,42 @@ export function buildAttendanceInputs(
   );
 }
 
+/**
+ * 그달 날들을 그 사람 배정만 남기고 좁힌다 — 안 좁히면 같은 날 같이 선 사람의 결근까지 그
+ * 사람 숫자에 든다.
+ *
+ * **날은 안 걸러진다.** 내 배정이 없는 날도 빈 목록으로 남아 `buildAttendanceInputs`가 그
+ * 날에서 입력을 안 낸다 — 날을 빼는 것과 결과가 같고, 빼면 부르는 쪽이 날 수를 세는 자리에서
+ * 갈린다.
+ *
+ * **`profileId`가 없으면 아무 날도 없다.** 좁힐 기준이 없는 순간이라 빈 배열이 그대로 0으로
+ * 나온다 — 프로필이 오기 전에도 화면이 그려진다.
+ *
+ * 쓰는 쪽이 `screens` 슬라이스 둘(관리자 통계의 사람별 목록, 근무자 통계의 달 집계)이라 자리가
+ * 위층인 여기다 — 슬라이스끼리는 서로를 못 부른다(lint 규칙 3).
+ */
+export function daysOfPerson(
+  days: readonly AttendanceInputDay[],
+  profileId: string | null,
+): AttendanceInputDay[] {
+  return profileId === null
+    ? []
+    : days.map((day) => ({
+        ...day,
+        assignments: day.assignments.filter(
+          (assignment) => assignment.profile_id === profileId,
+        ),
+      }));
+}
+
 /** 인증과 사유를 배정에 맞물리는 열쇠다. 만드는 자리가 하나라 양쪽이 어긋날 길이 없다. */
 function pairKey(dayId: string, profileId: string): string {
   return `${dayId} ${profileId}`;
 }
 
 function decisionOf(decision: string | null): ExcuseDecision | null {
-  return decision !== null && DECISIONS.includes(decision)
+  return decision !== null &&
+    (EXCUSE_DECISIONS as readonly string[]).includes(decision)
     ? (decision as ExcuseDecision)
     : null;
 }

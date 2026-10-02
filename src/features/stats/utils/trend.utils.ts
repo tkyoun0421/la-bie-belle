@@ -1,4 +1,5 @@
 import { shiftMonth } from "@/shared/utils/kstDate";
+import { TREND_MONTHS } from "@/features/stats/consts/stats.const";
 
 /**
  * 추이 그래프가 찍는 열두 달이다. 정본은 `docs/2-design/system/screens/stats.md`의 「추이
@@ -13,8 +14,6 @@ import { shiftMonth } from "@/shared/utils/kstDate";
  * **값이 없는 달과 0인 달이 다르다.** 앱을 쓰기 전 달은 `null`이라 선이 거기서 끊기고, 세어
  * 봤더니 0인 달은 0으로 바닥에 선다. 0으로 이으면 그 달에 일을 안 한 것처럼 읽힌다.
  */
-
-const TREND_MONTHS = 12;
 
 export type TrendPoint = {
   month: string;

@@ -21,9 +21,29 @@ const KST_DATE = new Intl.DateTimeFormat("en-CA", {
   day: "2-digit",
 });
 
+const KST_CLOCK = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Asia/Seoul",
+  hourCycle: "h23",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
 /** 그 순간이 KST로 며칠인지다 — `"2026-10-03"`. */
 export function kstDateOf(instant: string | Date): string {
   return KST_DATE.format(instant instanceof Date ? instant : new Date(instant));
+}
+
+/**
+ * 그 순간을 홀의 시계로 읽는다 — `"14:30"`. UTC로 읽으면 밤 9시 뒤가 하루 전 시각으로 선다.
+ *
+ * **`entities/notification`에 같은 꼴이 한 벌 더 있다.** 그 파일은 Edge Function이 import를
+ * 따라가 복사하는 자리라 여기를 당기면 `shared/utils/` 전체가 Deno의 제약(`node:` import
+ * 금지)을 받고 복사 경로에 공용 폴더가 든다 — 사본 하나가 그 경계의 값이다.
+ */
+export function kstClockOf(instant: string | Date): string {
+  return KST_CLOCK.format(
+    instant instanceof Date ? instant : new Date(instant),
+  );
 }
 
 /** 날짜에서 그 달을 뗀다 — `"2026-10-10"`은 `"2026-10"`이다. */

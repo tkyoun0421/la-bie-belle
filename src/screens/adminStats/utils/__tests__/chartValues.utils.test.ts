@@ -4,7 +4,8 @@
 // 내린다(ADR-001, eslint-rules/dumbUi.mjs는 통신 축만 봐서 못 걸렀다). 함수와
 // 단언은 그대로고 자리만 옮긴다.
 //
-// monthIn(loaded, month) — 열두 달 배열에서 그 달의 로드 결과 하나를 집는다.
+// monthIn은 shared/utils/monthIn.ts로 올라갔다 — 같은 손이 근무자 통계에 생
+// `.find`로 세 자리 있었고 슬라이스끼리는 서로를 못 부른다. 단언 셋도 같이 갔다.
 // workValues(loaded) — 근무 탭 추이 그래프의 달별 총 근무 분이다. 날이 하나도
 // 안 열린 달은 Map에서 빠진다(0으로 이으면 「안 일한 달」로 읽힌다).
 // attendanceValues(loaded, tabs) — 근태 탭 추이 그래프의 달별 출근율이다.
@@ -19,11 +20,10 @@
 
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
-import type { AttendanceMonth } from "@/features/stats/hooks/useAttendanceMonths";
-import type { AttendanceTab } from "@/screens/adminStats/utils/attendanceRows.utils";
+import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
+import type { AttendanceTab } from "@/screens/adminStats/model/adminStats.type";
 import {
   attendanceValues,
-  monthIn,
   percentLabel,
   workValues,
 } from "@/screens/adminStats/utils/chartValues.utils";
@@ -51,27 +51,6 @@ function workedDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
     ...overrides,
   };
 }
-
-describe("monthIn — 열두 달 배열에서 그 달의 로드 결과 하나를 집는다", () => {
-  it("month가 일치하는 항목을 낸다", () => {
-    const loaded = [
-      { month: "2026-08", value: 1 },
-      { month: "2026-09", value: 2 },
-    ];
-
-    expect(monthIn(loaded, "2026-09")).toEqual({ month: "2026-09", value: 2 });
-  });
-
-  it("일치하는 달이 없으면 undefined다", () => {
-    const loaded = [{ month: "2026-08", value: 1 }];
-
-    expect(monthIn(loaded, "2026-09")).toBeUndefined();
-  });
-
-  it("loaded 자체가 undefined면 undefined다 — 아직 안 읽힌 달과 같은 값이다", () => {
-    expect(monthIn(undefined, "2026-09")).toBeUndefined();
-  });
-});
 
 describe("workValues — 날이 하나도 안 열린 달은 값이 없다(0으로 이으면 안 일한 달로 읽힌다)", () => {
   it("근무일이 있는 달만 Map에 오르고 빈 달은 키 자체가 없다", () => {

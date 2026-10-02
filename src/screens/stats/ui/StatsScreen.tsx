@@ -23,6 +23,7 @@ import {
   canGoToPreviousMonth,
   canGoToNextMonth,
 } from "@/shared/utils/monthBoundary";
+import { monthIn } from "@/shared/utils/monthIn";
 import { spellWon } from "@/shared/utils/spellNumber";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
@@ -32,22 +33,20 @@ import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehear
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { useAttendanceMonths } from "@/features/stats/hooks/useAttendanceMonths";
+import type { MyWorkTotals } from "@/features/stats/model/stats.type";
 import {
   hoursLabel,
   workInputsOf,
 } from "@/features/stats/model/workTotals.policy";
-import {
-  computeMyWorkTotals,
-  type MyWorkTotals,
-} from "@/features/stats/utils/myTotals.utils";
+import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
+import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
 import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
+import { MONTH_LENGTH } from "@/screens/stats/consts/stats.const";
 import {
   buildMyAttendanceDays,
   myAttendanceRow,
 } from "@/screens/stats/utils/attendanceDays.utils";
 import { attendanceRatioShares } from "@/screens/stats/utils/attendanceShares.utils";
-import { attendanceSummaryLine } from "@/screens/stats/utils/attendanceSummaryLine.utils";
 import { myAttendanceTally } from "@/screens/stats/utils/attendanceTally.utils";
 import {
   joinPayrollByMonth,
@@ -57,6 +56,7 @@ import {
   myWorkValues,
 } from "@/screens/stats/utils/chartValues.utils";
 import { tenThousandWonLabel } from "@/screens/stats/utils/moneyLabel.utils";
+import { monthAttendanceLine } from "@/screens/stats/utils/monthAttendanceLine.utils";
 import { myPayrollSubtitle } from "@/screens/stats/utils/payrollSummary.utils";
 
 /**
@@ -104,8 +104,6 @@ const READ_FAILED = "통계를 불러오지 못했어요";
 
 const SKELETON_ROWS = [0, 1, 2];
 
-const MONTH_LENGTH = 7;
-
 /** 탭에 없는 쪽은 열두 달을 안 읽는다. 배열을 그때그때 만들면 질의가 매 렌더 새로 선다. */
 const NO_MONTHS: string[] = [];
 
@@ -146,7 +144,7 @@ export function StatsScreen() {
     supabase,
     tab === ATTENDANCE ? NO_MONTHS : months,
   );
-  const attendance = useAttendanceMonths(
+  const attendance = useAttendanceMonthsQuery(
     supabase,
     tab === ATTENDANCE ? months : NO_MONTHS,
   );
@@ -170,8 +168,8 @@ export function StatsScreen() {
   const loading = profileLoading || sources.some((one) => one.isLoading);
   const failed = sources.some((one) => one.error !== null);
 
-  const shownAttendance = attendance.data?.find((one) => one.month === month);
-  const shownWork = work.data?.find((one) => one.month === month);
+  const shownAttendance = monthIn(attendance.data, month);
+  const shownWork = monthIn(work.data, month);
 
   const tally = useMemo(
     () =>
@@ -377,7 +375,7 @@ export function StatsScreen() {
           ) : tab === ATTENDANCE ? (
             <View>
               <Text size="sm" tone="muted" numeric className="mt-6">
-                {attendanceSummaryLine(tally)}
+                {monthAttendanceLine(tally)}
               </Text>
 
               <View className="mt-3">

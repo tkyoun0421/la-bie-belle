@@ -6,7 +6,7 @@
 //
 // **근무 쪽과 갈려 있다.** 앞선 판은 근무 열둘과 근태 열둘을 한 useQueries에 스물넷으로
 // 담았는데, 그러면 이 훅이 entities의 두 슬라이스를 함께 불러 `no-cross-slice-import`에
-// 걸린다. 달마다 둘을 맞추는 일은 `features/stats/hooks/useAttendanceMonths.ts`가 한다
+// 걸린다. 달마다 둘을 맞추는 일은 `features/stats/services/useAttendanceMonthsQuery.ts`가 한다
 // (fsd-read-write-layers AC-05).
 
 import { jest } from "@jest/globals";

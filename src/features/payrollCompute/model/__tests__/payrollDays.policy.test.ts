@@ -1,7 +1,7 @@
 // 구현 대상: src/features/payrollCompute/model/payrollDays.policy.ts
 //
 // payrollDays(input) — assignments·days·adjustments·rehearsals의 날짜 합집합을 훑어
-// 날마다 dayMinutes·wageAt·dayAmount를 부르고, 결근이면(entities/attendance의
+// 날마다 paidMinutes·wageAt·dayAmount를 부르고, 결근이면(entities/attendance의
 // getAttendanceStatus가 'absent'를 내면) 0원·kind='absent'로 낸다(plan AC-06,
 // PAY-002·PAY-003·PAY-007·PAY-020·PAY-028). wageAt이 null인 날은 결과에서 뺀다.
 //

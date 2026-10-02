@@ -3,9 +3,14 @@ import { tallyMonthlyAttendance } from "@/entities/attendance/utils/attendanceSu
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import {
   buildAttendanceInputs,
+  daysOfPerson,
   type AttendanceInputCheckIn,
   type AttendanceInputExcuseStatus,
 } from "@/features/stats/utils/attendanceInputs.utils";
+import type {
+  AttendanceRow,
+  AttendanceTab,
+} from "@/screens/adminStats/model/adminStats.type";
 
 /**
  * 근태 탭 사람별 목록이다. 정본은 `docs/2-design/system/screens/stats.md`의 「근태 사람별
@@ -31,15 +36,6 @@ export type AttendanceRowInput = {
   excused: number;
 };
 
-export type AttendanceRow = {
-  profileId: string;
-  displayName: string;
-  present: number;
-  late: number | null;
-  absent: number | null;
-  excused: number | null;
-};
-
 export function buildAttendanceRows(
   people: readonly AttendanceRowInput[],
 ): AttendanceRow[] {
@@ -60,11 +56,6 @@ export function buildAttendanceRows(
 function orNothing(count: number): number | null {
   return count === 0 ? null : count;
 }
-
-export type AttendanceTab = {
-  tally: MonthlyAttendanceTally;
-  rows: AttendanceRow[];
-};
 
 /**
  * 그달 근태 탭이 쓰는 값 둘이다 — 현황 줄이 읽는 넷과 사람별 목록이다.
@@ -121,18 +112,6 @@ export function attendanceRowValue(row: AttendanceRow): string {
   ]
     .filter((part): part is string => part !== null)
     .join(" · ");
-}
-
-function daysOfPerson(days: readonly ScheduleDay[], profileId: string) {
-  return days.map((day) => ({
-    id: day.id,
-    work_date: day.work_date,
-    starts_at: day.starts_at,
-    ends_at: day.ends_at,
-    assignments: day.assignments.filter(
-      (assignment) => assignment.profile_id === profileId,
-    ),
-  }));
 }
 
 function sumTallies(rows: readonly AttendanceRow[]): MonthlyAttendanceTally {

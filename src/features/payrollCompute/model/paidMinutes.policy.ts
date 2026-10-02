@@ -4,9 +4,13 @@ import {
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
 
 /**
- * 그날 총 분이다 — **배정 시간 + 조정 분 + 리허설 시간**을 하나로 더한다
+ * 그 사람 그날 급여로 세는 분이다 — **배정 시간 + 조정 분 + 리허설 시간**을 하나로 더한다
  * (`docs/2-design/modules/payroll/README.md`의 PAY-028). 셋을 따로 세면 배정 9시간과
  * 리허설 2건이 둘 다 9시간 미만이라 가산이 아예 안 난다.
+ *
+ * **그날 근무 시간대의 길이와 다른 질문이다.** 창의 길이는 그날 선 사람이면 누구나 같고
+ * (`features/stats`의 `shiftMinutes`) 여기는 사람마다 다르다. 둘이 `dayMinutes` 한 이름을
+ * 쓰고 있어 이름에 축을 넣었다.
  *
  * **배정 시간은 `starts_at`~`ends_at` 그대로다.** 휴게를 안 뺀다(PAY-004).
  *
@@ -30,7 +34,7 @@ export type AdjustmentRow = {
 /** 줄의 내용은 안 쓴다 — 그날 살아 있는 배정이 하나라도 있는지만 본다. */
 export type LiveAssignments = readonly unknown[];
 
-export type DayMinutesInput = {
+export type PaidMinutesInput = {
   assignments: LiveAssignments;
   day: WorkDayHours | null;
   adjustments: readonly AdjustmentRow[];
@@ -45,7 +49,7 @@ function minutesOfClock(clock: string): number {
   return hour * MINUTES_PER_HOUR + minute;
 }
 
-function assignedMinutes(input: DayMinutesInput): number {
+function assignedMinutes(input: PaidMinutesInput): number {
   if (input.assignments.length === 0 || input.day === null) {
     return 0;
   }
@@ -70,7 +74,7 @@ function rehearsedMinutes(rows: readonly RehearsalRow[]): number {
   return rows.reduce((sum, row) => sum + rehearsalHours(row), 0);
 }
 
-export function dayMinutes(input: DayMinutesInput): number {
+export function paidMinutes(input: PaidMinutesInput): number {
   const total =
     assignedMinutes(input) +
     adjustedMinutes(input.adjustments) +

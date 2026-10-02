@@ -55,7 +55,7 @@ sources:
 | 근태 ✅ | attendance · excuse + attendanceCheckin · excuse + approvals | 타입 10 · 상수 9 | DTO 파일 2 · 매퍼 0 | 2 | 화면 2 | `ApprovalsScreen` 235줄 |
 | 알림 ✅ | notification + pushSwitch · notificationRead + notifications | 상수 16 · SDK 1 · 환경값 1 | DTO 파일 1 · 매퍼 0 | 10 | 화면 1 | Edge Function의 복사 경로가 `consts/`까지 늘었다 |
 | 리허설 ✅ | rehearsal + rehearsalEdit + rehearsal | 타입 2 · 상수 6 · 접미사 1 | DTO 파일 1 · 매퍼 0 | 12 | 화면 1 | `RehearsalScreen` 422줄에 훅 열넷 |
-| 통계 | stats + stats · adminStats · adminHome | 타입 9 | — | 2 | 화면 4 | `StatsScreen` 470줄 · `AdminStatsScreen` 414줄 · `workTotals.policy` export 다섯 |
+| 통계 ✅ | stats + stats · adminStats · adminHome | 타입 9 · 상수 6 · 중복 6 | — | 2 | 화면 4 | `StatsScreen` 470줄 · `AdminStatsScreen` 414줄 · `workTotals.policy` export 다섯 |
 | 인증 | session + auth + retry | 타입 2 · 상수 1 · SDK 2 · 환경값 1 | — | — | 화면 1 | `signOut`·`handleAuthCallback`이 `lib`을 받는다 |
 | QR | qr + qrAdmin + qr | 타입 1 · 상수 2 | — | 4 | 화면 1 | `QrScreen` 204줄 |
 
@@ -201,6 +201,9 @@ sources:
 - 돌면서 나온 것 — **알림에 매퍼가 설 자리가 없었다.** 묶음 표가 둘을 뒀는데 읽는 손 둘이 꼴을 안 바꾸고 받은 행을 그대로 내고, 화면이 그 행을 그대로 그린다 — 근태에서 매퍼 하나가 0이 된 것과 같다. DB 열 이름이 화면까지 닿는 그 자리는 [dto-to-domain-shape](dto-to-domain-shape.md)가 받는다
 - 돌면서 나온 것 — **매퍼가 선 자리는 근무표의 하나뿐이다.** 그 뒤 다섯 묶음(급여·구성원·근태·알림·리허설)이 전부 0이고 묶음 표가 셋에 둘씩 뒀던 것이 다 0이 됐다. 읽는 손이 받은 행을 그대로 내고 화면이 그 행을 그대로 그리는 것이 저장소의 지금 모습이라는 뜻이고, 그 자리를 [dto-to-domain-shape](dto-to-domain-shape.md)가 필드 축으로 받는다
 - 돌면서 나온 것 — **접미사 패스가 reducer를 못 봤다.** `screens/rehearsal/model/addSheetState.policy.ts`가 전이 함수와 action 유니언을 들고 `RehearsalScreen.tsx`가 그것을 `useReducer`에 거는데 이름이 `.policy.ts`였다. ADR-015가 그 파일을 「성격이 `.policy.ts` 이름으로 사는 자리」로 이미 들고 「`useReducer`를 쓰게 되면 `.reducer.ts`로 간다」를 적어 둬, 조건이 이미 찬 것을 묶음 8가가 안 봤다. **`fileNaming.ts`는 접미사와 세그먼트만 대조하고 파일 안을 안 본다** — 이 가름은 검사로 못 세운다. 같이 들린 `adjustChoiceState.policy.ts`는 `useReducer`를 안 타 그대로다
+- 돌면서 나온 것 — **「밖에서 당기나」만 보면 꼴 하나가 제 부품에서 떨어진다.** 통계의 `WorkTotals`는 밖에서 안 당기고 그 안의 `PositionTotal`은 당긴다 — 축을 글자 그대로 쓰면 담는 것만 `.type.ts`로 가고 담는 꼴은 판정 파일에 남아, 판정 파일이 제 반환 타입의 부품을 도로 import한다. **축에 한 겹이 더 붙는다 — 옮기는 꼴이 담고 있는 꼴은 같이 간다.** 그래서 통계의 일곱이 한 덩이로 갔고(`WorkAssignment`·`WorkDay`·`WorkInputs`·`PersonTotal`·`PositionTotal`·`WorkTotals`·`MyWorkTotals`), `PersonDays`·`TrendPoint`처럼 밖에서도 안 당기고 남이 담지도 않는 셋은 제 함수 옆에 남았다
+- 돌면서 나온 것 — **`features/`에 첫 `.type.ts`가 섰다.** 앞선 여섯 묶음의 `.type.ts`는 전부 `entities/`와 `shared/`와 `screens/approvals` 하나였다. `features/stats`는 쓰기가 없어 제 질의도 DTO도 없는데 **세기 위해 추린 꼴을 소유한다** — `workInputsOf`가 `ScheduleDay`를 눕혀 만드는 것이라 열 이름이 snake인데 통신 꼴이 아니다. 「DTO는 DB가 정하고 `type`은 우리가 정한다」로 가르면 이쪽이고, 열 이름을 도메인 이름으로 바꾸는 일은 [dto-to-domain-shape](dto-to-domain-shape.md)가 받는다
+- 돌면서 나온 것 — **같은 이름 타입 둘이 또 나왔고 이번엔 층을 가로질렀다.** `PayrollByMonth`가 `entities/payroll/services/`와 `screens/stats/utils/`에 각자 있고 뒤의 것이 앞의 것에 `days`를 얹은 꼴이다. 급여의 `WageRateRow`/`MemberWageRateRow`는 같은 슬라이스였고 이것은 층이 달라 **import 그물로도 안 걸렸다** — 쓰는 쪽이 서로를 안 당기니 한 파일에서 둘을 같이 볼 일이 없다. 이름에 차이를 넣어 `PayrollMonthWithDays`로 갈랐다
 - 돌면서 나온 것 — **boolean만 보면 판정의 절반을 놓친다.** 반환 타입으로 1차 분류해 보니 boolean을 내는 것이 스물넷인데, 상태 유니언을 내는 판정이 그만큼 더 있었다(`AttendanceStatus`·`ReachState`·`DayConfirmGate`·`RehearsalKind`…). 「참·거짓」이 아니라 「이것이 어떤 상태인가」가 기준이라 자동 분류가 안 되고 파일마다 손으로 봤다
 
 ### AC-07 — 슬라이스가 쪼개진다 ✅
@@ -236,16 +239,18 @@ sources:
   - `<도메인>.const.ts`로 모아 `<층>/<슬라이스>/consts/`에 둔다. `[domain]`은 슬라이스 이름이라 슬라이스마다 한 파일이다
   - `<도메인>.type.ts`에 든 상수가 나간다 — 근태 일곱, 알림 넷, 근무표 하나
   - 열거 목록이 타입의 바탕인 자리는 `consts`에 두고 `model`이 import한다(`ERROR_CODES` → `ErrorCode`)
-- 관찰 결과: `consts/` 밖에 `export const <대문자_스네이크>`가 **면제 넷 말고는** 없다 — `api/`의 질의할 열 목록, `lib/`의 SDK 손 묶음, `__tests__/`의 픽스처, AC-12가 받을 초기값 표다. `.type.ts`를 열면 타입만 있다. 셋이 초록이다
+- 관찰 결과: `consts/` 밖에 `export const <대문자_스네이크>`가 **면제 다섯 말고는** 없다 — `api/`의 질의할 열 목록, `lib/`의 SDK 손 묶음, `__tests__/`의 픽스처, AC-12가 받을 초기값 표, `.tsx`의 문안이다. `.type.ts`를 열면 타입만 있다. 셋이 초록이다
 - `queryKeys`·`staleTogether`는 밖이다 — 통신의 약속이고 꼴이 camel이다
 - 도메인으로 쪼갠다 — 알림 열하나·근태 아홉·구성원 여덟·급여 일곱·공용 일곱이 큰 쪽이다
 - 돌면서 나온 것 — **`.tsx`의 `export const <대문자_스네이크>`는 밖이다.** 근무표에서 상수를 세어 보니 넷이 `.tsx`에 있었다 — 테스트 손잡이 둘(`SCHEDULE_HOLIDAY_SWITCH_TEST_ID`·`ADJUSTMENT_EXTRA_MINUTES_INPUT_TEST_ID`)과 드래그 접두 둘(`ROW_DRAG_PREFIX`·`SLOT_DRAG_PREFIX`)이다. 업무 값이 아니라 그 컴포넌트를 집는 식별자라 `ui`에 남는다 — ADR-015가 `*Props`를 `.tsx`에 남긴 것과 같은 축이다. AC-08의 `constsSegment.mjs`는 `.ts`만 본다
 - 돌면서 나온 것 — **로컬 상수가 그물 밖이라 한 파일의 문안이 반으로 갈릴 뻔했다.** 축이 `export const <대문자_스네이크>`인데, 구성원의 알림 영역 문안 표(`COPY` 아홉)와 테마 선택지(`CHOICES`)는 export를 안 해서 옆의 상수와 같은 묶음인데 그물에 안 걸렸다. 반만 옮기면 문안을 고칠 때 두 자리를 봐야 해서 같이 보냈다 — **축은 export 여부가 아니라 「무엇인가」다.** `GENDER_LABEL` 네 벌도 같은 자리에서 걸렸다(AC-13)
 - 돌면서 나온 것 — **문안 표가 `consts`로 가면 그 표의 타입이 `model`로 가야 한다.** 알림 영역의 `NotificationPromptCopy`가 `utils`에 있어, 표가 `consts`로 가면 `consts`가 그 타입을 당기고 `utils`가 다시 표를 당겨 맞물린다. 모습 셋의 타입이 이미 `model`에 있어 그 자리가 제자리였다
 - 돌면서 나온 것 — **같은 값 60이 한 파일에서 두 뜻으로 섰다.** 리허설의 `rehearsalHours.utils.ts`가 `MINUTES_PER_COUNT`(1건이 1시간 — SCH-023이 정한 업무 규칙)와 `MINUTES_PER_HOUR`(한 시간이 60분 — 안 바뀌는 단위)를 나란히 들고 값이 둘 다 60이었다. 어느 것이 업무 규칙인지 이름만 보고 안 갈려, 앞의 것만 `consts`로 보냈다. **가름은 「바뀔 수 있나」다**
-- 돌면서 나온 것 — **관찰 결과 문장이 코드와 안 맞는다.** 「`consts/` 밖에 `export const <대문자_스네이크>`가 없다」가 지금 저장소에서 거짓이고 그것이 의도다 — 질의할 열 목록 넷(`*_COLUMNS`)은 꼴이 아니라 질의의 일부라 `api/`에 남고, `PUSH_DEPS`는 SDK 손을 묶은 것이라 `lib/`에 산다. 테스트 픽스처와 빈 값 표도 밖이다. **AC-08의 `constsSegment.mjs`가 면제 넷을 가져야 켜진다** — `api/`의 열 목록, `lib/`의 손 묶음, `__tests__/`, 그리고 AC-12가 받을 초기값 표다
+- 돌면서 나온 것 — **관찰 결과 문장이 코드와 안 맞는다.** 「`consts/` 밖에 `export const <대문자_스네이크>`가 없다」가 지금 저장소에서 거짓이고 그것이 의도다 — 질의할 열 목록 넷(`*_COLUMNS`)은 꼴이 아니라 질의의 일부라 `api/`에 남고, `PUSH_DEPS`는 SDK 손을 묶은 것이라 `lib/`에 산다. 테스트 픽스처와 빈 값 표도 밖이다. **AC-08의 `constsSegment.mjs`가 면제 다섯을 가져야 켜진다** — `api/`의 열 목록, `lib/`의 손 묶음, `__tests__/`, AC-12가 받을 초기값 표, 그리고 `.tsx`의 문안이다
 - 돌면서 나온 것 — **상수를 모으니 Deno 복사 경로가 늘었다.** 알림의 종류 목록과 한 번에 부치는 수가 Edge Function이 부르는 파일 둘에서 쓰여, `consts/`가 `supabase/functions/_shared/`로 복사되는 셋째 폴더가 됐다. 복사 스크립트의 `FOLDERS`와 `noNodeImportInEdgeShared`의 폴더 목록이 같이 늘었다 — **「슬라이스마다 상수 한 파일」과 「함수가 부르는 것만 옮긴다」가 부딪히는 자리다.** 한 파일이라 Deno가 안 쓰는 타입의 집(`reachState.policy.ts`)까지 복사본에 실렸다. 순수해서 Deno에 서는 데 문제는 없다
 - 돌면서 나온 것 — **상수가 사는 자리를 가리키던 정본 셋이 같이 낡았다.** 근태의 `attendance.type.ts`는 **타입이 하나도 없고 상수 일곱뿐**이었는데, `system/runtime.md`의 「업무 상수」가 그 자리를 「ADR-015의 그 접미사가 「타입과 상수」를 담는다」로 적고 있었다 — ADR의 옛 판본을 인용하는 꼴이다. `tests/lint/attendanceConstants.ts`는 그 경로를 문자열로 들어 파일이 옮겨지면 셋 다 `missing-from-constants`로 터지고, 짝 테스트의 픽스처도 같은 경로를 임시 디렉터리에 쓴다. plan 둘(`attendance-data`·`payroll-data`)도 그 경로를 「정본이다」로 적었다. **상수를 옮기는 묶음은 그 상수의 자리를 가리키는 문서와 검사를 같이 센다** — 묶음 표의 「이동할 것」 칸이 그것까지 세지 않는다
+- 돌면서 나온 것 — **유니언을 글자로 다시 적은 자리가 상수 하나를 세워 접혔다.** 통계가 읽어 온 사유 행의 `decision`은 열이 `text`라 그냥 글자고, 그것을 `ExcuseDecision`으로 좁히려고 `["approved", "rejected"]`를 다시 적고 있었다. `entities/attendance/consts/`에 `EXCUSE_DECISIONS`를 세우고 `ExcuseDecision`을 거기서 끌어내 **낳는 쪽과 좁히는 쪽이 한 목록을 본다** — 같은 폴더의 `TALLIED_STATUSES`/`TalliedStatus`가 이미 그 꼴이고, 「열거 목록이 타입의 바탕인 자리」가 세 묶음 뒤에 또 나왔다
+- 돌면서 나온 것 — **`.tsx`의 문안을 AC-12로 넘긴다.** 리허설 넷에 이어 통계가 열아홉(`StatsScreen` 열·`AdminStatsScreen` 여덞·`HallDefaultsSheet` 하나)이고 전부 export를 안 한 로컬 `const`다. 구성원 묶음이 로컬 문안 표를 「축은 export 여부가 아니라 「무엇인가」다」로 옮긴 것과 갈리는 자리인데, **그쪽은 `.ts`였고 이것은 `.tsx`다.** controller가 서면 그 문안을 누가 들어야 하는지가 보이고(`READ_FAILED`는 화면 다섯에 같은 글자다) 지금 옮기면 AC-12가 같은 파일을 다시 가른다. 그래서 AC-10의 면제 넷에 **`.tsx`의 문안**이 다섯째로 붙는다 — AC-08의 `constsSegment.mjs`가 `.ts`만 보는 것이 그 집행이다
 - 돌면서 나온 것 — **가름이 테스트도 가른다.** `fontLoading.ts`의 짝 테스트가 자산 표 검사와 판정 둘 검사를 한 파일에 들고 있었다. 구현이 `consts`와 `utils`로 갈리면 테스트 하나가 두 대상을 보게 되고 「짝 테스트는 대상 옆에」가 깨진다 — `consts/__tests__/font.const.test.ts`와 `utils/__tests__/fontLoading.utils.test.ts`로 같이 갈랐다. 단언은 한 줄도 안 바뀐다
 
 ### AC-11 — `config`가 선다
@@ -272,6 +277,7 @@ sources:
   - `shared/ui`에서 상태를 든 여섯은 **안 건드린다** — 측정한 너비(`DayBand`·`TrendChart`·`Segment`)·포커스(`Input`)·드래그 중(`DragAndDrop`)·사라지는 타이머(`FloatingToast`)고 업무 상태가 하나도 없다
   - `src/app/`의 스물둘은 라우트 파일이라 **얇게 남긴다** — `_layout.tsx`의 효과 다섯은 앱 수명이고 화면 상태가 아니다
   - **문안 표도 같이 내려간다.** `.tsx`에 로컬 `const`로 사는 문안·초기값 표가 여덞이다 — 확인창 여섯 벌(`MemberDialog`의 `COPY`), 거절·차단 확인(`MemberDetailSheet`의 `CONFIRM_COPY`), 「이미 정해졌어요」 셋(`ALREADY_DECIDED`), 빈 값 넷(`INITIAL_FORM`·`EMPTY_TALLY`·`EMPTY_VALUES`). export를 안 해서 AC-10의 그물 밖이었고 `consts/`가 받는다. 구성원 묶음에서 `GENDER_LABEL` 네 벌이 이 꼴로 걸렸다(AC-13)
+  - **시계를 읽는 손도 내려간다.** 화면 여섯이 `nowWithOffset(Date.now(), clockOffset)`로 서버 시계를 쓰는데 `AdminHomeScreen.tsx`만 `new Date()`를 두 자리에서 그대로 읽는다 — 빈 자리 카드의 「사흘 안」 판정과 미니 달력의 오늘 표시다. **기기 시계가 하루 밀린 기기에서 서는 카드가 서버가 셀 것과 다르다.** 그 화면의 controller가 서면 조립이 한 자리로 모이고, 여섯이 같은 줄을 각자 적고 있는 것도 같이 접힌다(자리는 `entities/clock/model/serverClock.policy.ts`)
   - 빼낸 훅마다 짝 테스트가 붙어 TDD를 탄다
 - 관찰 결과: `api`·`services`·`hooks`를 당기는 `.tsx`에 상태가 없다. `ui`가 `api`를 당기는 자리가 0이다. 셋이 초록이다
 - 보드의 `dumb-ui-widen`이 이 걸음이다 — 그 행이 든 「업무 상수와 판정과 가공 함수가 화면 파일에 남았다」는 AC-10과 이 묶음이 같이 걷는다
@@ -282,11 +288,13 @@ sources:
 
 - 전제: `hooks/` 예순다섯 중 **예순둘이 Query·Mutation**이다. 그 폴더가 사실상 `services`인데 이름이 그걸 안 말하고, AC-12가 controller를 같은 이름 폴더에 넣으면 역할 둘이 층으로만 갈린다
 - 행동
-  - `use[Action]Query.ts`·`use[Action]Mutation.ts`를 `<층>/<슬라이스>/services/`로 `git mv`한다. 짝 테스트를 같이 옮겨 **백스물넷**이다
+  - `use[Action]Query.ts`·`use[Action]Mutation.ts`를 `<층>/<슬라이스>/services/`로 `git mv`한다. 짝 테스트를 같이 옮겨 **백스물여섯**이다
   - `features/stats/hooks/useAttendanceMonths.ts`는 `services/useAttendanceMonthsQuery.ts`로 — 쿼리 둘을 조립하는 service고 접미사를 못 받고 있었다
   - `features/auth/hooks/wireAutoRefresh.ts`는 `lib/wireAutoRefresh.lib.ts`로 — 훅이 아니고 세션 자동 갱신을 켜는 부작용이다
 - 관찰 결과: `services/` 밖에 `useQuery`·`useMutation` 호출이 없다. `hooks/`에는 controller와 UI 훅만 남는다. 셋이 초록이다
-- 묶음별로 쪼갠다 — 근무표 60 ✅ · 구성원 20 ✅ · 급여 16 ✅ · 리허설 12 · 알림 10 · QR 4 · 근태 2 ✅다
+- 묶음별로 쪼갠다 — 근무표 60 ✅ · 구성원 20 ✅ · 급여 16 ✅ · 리허설 12 ✅ · 알림 10 ✅ · QR 4 · 근태 2 ✅ · 통계 2 ✅로 **백스물여섯**이다
+- 돌면서 나온 것 — **위 수가 백스물넷이었다.** 묶음 표가 통계에 `services` 둘을 뒀는데 이 줄의 묶음 목록이 통계를 안 들어, 묶음 일곱의 합이 전체 수로 적혀 있었다. 옮긴 파일을 세어 맞췄다(지금 `services/` 아래 `.ts`가 122, 남은 QR 넷을 더해 126이다). **묶음 표와 AC의 수를 대보는 검사가 없다** — 둘이 같은 수를 따로 적는다
+- 돌면서 나온 것 — **일곱째 묶음에서 그 연속이 끊겼다.** 통계의 `features/stats/hooks/`에 있던 하나는 `useQuery`를 안 가진 조립 훅이고, 그 폴더에 다른 파일이 없어 폴더는 똑같이 통째로 비었다. 「`hooks/`가 사실상 `services`였다」는 전제가 **Query·Mutation이 아닌 파일로도 참이었다는 뜻이다** — 통신을 아느냐가 가름인데 이 파일은 제 질의 없이 아래층 둘을 묶어 통신 꼴을 그대로 올려 보낸다
 - 돌면서 나온 것 — **여섯 묶음 연속이다.** 리허설의 여섯(entities 셋·rehearsalEdit 셋)도 Query·Mutation 밖의 파일이 없었다. `useRehearsalMonthsQuery`는 `useQueries`로 달 여럿을 한 덩이로 읽어 접미사와 꼴이 둘 다 service다 — `features/stats`의 `useAttendanceMonths`가 접미사를 못 받고 있던 것과 달리 여기는 이미 맞았다
 - 돌면서 나온 것 — **다섯 묶음 연속이다.** 알림의 다섯(entities 둘·pushSwitch 둘·notificationRead 하나)도 Query·Mutation 밖의 파일이 없어 슬라이스 셋의 `hooks/`가 통째로 갔다. 근무표 열하나·급여 넷·구성원 다섯·근태 하나에 이어서다
 - 돌면서 나온 것 — **`hooks/`가 네 묶음 연속으로 통째로 비었다.** 근무표 열하나·급여 넷·구성원 다섯·근태 하나고 Query·Mutation 밖의 파일이 하나도 없었다. 「`hooks/`가 사실상 `services`였다」는 전제가 네 묶음에서 그대로 확인됐다는 뜻이고, AC-12가 `hooks/`를 새로 만드는 자리가 된다
@@ -310,8 +318,8 @@ sources:
 
 - 전제: 같은 이름의 export 함수가 두 자리에 산다
   - `canGoBack`·`canGoForward` — `screens/payroll/model/boundary.policy.ts`와 `shared/utils/monthBoundary.ts`
-  - `dayMinutes` — `features/payrollCompute/model/dayMinutes.policy.ts`와 `features/stats/model/workTotals.policy.ts`
-  - `attendanceSummaryLine` — `screens/scheduleWorker/model/attendanceColumn.policy.ts`와 `screens/stats/utils/attendanceSummaryLine.utils.ts`
+  - `dayMinutes` — `features/payrollCompute/model/dayMinutes.policy.ts`와 `features/stats/model/workTotals.policy.ts` ✅
+  - `attendanceSummaryLine` — `screens/scheduleWorker/model/attendanceColumn.policy.ts`와 `screens/stats/utils/attendanceSummaryLine.utils.ts` ✅
 - 행동: 몸이 같은 것은 하나로 접고, 다른 것은 **이름을 갈라** 무엇이 다른지 이름이 말하게 한다
 - 관찰 결과: 같은 이름의 export 함수가 두 자리에 없다. 셋이 초록이다
 - 묶음 6가가 `monthStart` 사본 넷을 접은 것과 같은 일이다
@@ -327,7 +335,13 @@ sources:
 - 돌면서 나온 것 — **`?from=` 프로토콜이 여덟 자리에 글자로 흩어져 있다.** 보내는 쪽이 여섯(종 아이콘 넷이 `` `?from=${pathname}` ``, 승인할 일이 `&from=approvals`, 알림 목록이 `"from=notifications"`)이고 받는 쪽이 둘(`ScheduleAdminScreen`의 로컬 상수 둘)이다. 한쪽만 고치면 뒤로가 조용히 엉뚱한 데로 간다. **값의 어휘가 두 벌인 것이 한꺼번에 못 접는 까닭이다** — 알림 목록으로 갈 때는 온 화면의 경로를 싣고 날 상세로 갈 때는 온 곳의 이름을 싣는다(`navigation.md`의 「뒤로」가 그렇게 갈라 적는다). 이번에는 이름 어휘의 알림 쪽 송·수신 짝만 `shared/consts/navigation.const.ts`로 접었고, 경로 어휘 넷과 `approvals` 하나는 그 둘을 한 꼴로 볼지가 설계 판단이라 남는다
 - 돌면서 나온 것 — **리허설 안에 `CLOCK_LENGTH`가 세 벌이었고 꼴이 셋 다 달랐다.** 판정 파일의 `"14:00".length`, util의 `5`, 화면의 `"14:00".length`다. 같은 값이 세 꼴로 적히면 grep으로도 안 모인다 — 묶음의 `consts` 하나로 접었다. `getMyRehearsals`의 달 첫날 짓기도 `shared/utils/monthRange.ts`의 `monthStart`와 같은 계산이었다(`monthOf(month)`가 `month.slice(0, 7)`이다)
 - 돌면서 나온 것 — **초를 떼는 손이 저장소에 열둘이고 상수는 둘뿐이다.** `"14:00:00"`을 `"14:00"`으로 자르는 `slice(0, 5)`가 슬라이스 여섯에 생 리터럴로 있고(`payrollCompute`·`scheduleAdmin` 넷·`scheduleWorker` 둘·`adminHome` 셋) 이름을 받은 것은 리허설과 `adjustSheetRows`의 `CLOCK_LENGTH` 둘이다. **꼴을 내는 함수 하나가 서야 하는 자리고** 단위·요일·시각 사본과 같은 묶음이다
+- 돌면서 나온 것 — **단위 환산 사본이 여섯이 아니라 아홉이다.** `MINUTES_PER_HOUR = 60`이 파일 아홉에 각자 서 있고, 그 위에 올라탄 손도 둘로 갈린다 — 시·분 글자를 분으로 바꾸는 `hour * 60 + minute`가 셋(`rehearsalHours`·`paidMinutes`·`workTotals`), 분을 「3시간 20분」으로 적는 `floor`와 `%`가 다섯(`historyRows`·`summary`·`spellTotal`·`adjustSheetRows`·`payrollSummary`)이다. **상수를 세는 것으로는 안 보인다** — 같은 상수 위에 같은 함수가 몇 벌 섰는지를 따로 세야 하고, 사본 묶음 task가 받을 것은 상수 아홉이 아니라 **손 둘**이다
+- 돌면서 나온 것 — **같은 값 `"ko"`가 셋이고 단위와 같은 갈래다.** `localeCompare`에 넘기는 언어 태그고 우리가 정한 값도 바뀔 값도 아니라 `consts`가 아니다 — `MINUTES_PER_HOUR`와 같은 자리다. 사본 묶음 task가 받는다
 - 돌면서 나온 것 — **배정 갈래 `"regular"`가 일곱 자리에 글자로 있고 접을 길이 없다.** 상수를 받은 것은 `DayDetail.tsx`의 `REGULAR_KIND` 하나뿐이고 나머지 여섯은 생 리터럴이다. 리허설의 `kindForDate.policy.ts`도 그중 하나인데, 접으려면 `entities/rehearsal`이 `entities/schedule`의 `consts`를 당겨 `no-cross-slice-import`에 걸린다 — `ExcuseStatusRow`와 같은 벽이다. `shared`에 두면 「`shared`는 도메인을 모른다」가 깨진다. **사본 일곱이 그 규칙의 값이다**
+- 돌면서 나온 것 — **위 판정이 일곱 중 여섯을 잘못 묶었다.** `no-cross-slice-import`는 **같은 층**일 때만 울린다(`eslint-rules/noCrossSliceImport.mjs`가 `there[1] !== layer`면 그냥 돌아간다). 막히는 것은 `entities/rehearsal` 하나뿐이고 `screens/scheduleAdmin`·`screens/scheduleWorker`의 여섯과 `features/payrollCompute`는 `entities/schedule/consts`를 그대로 당길 수 있다. 통계에서 `"training"`을 세다 드러났다 — 그쪽은 파일 열에 리터럴 열넷과 로컬 상수 셋(`TRAINING_KIND` 둘·`EDUCATION_KIND` 둘)이고 같은 꼴이다. **규칙이 언제 우는지를 소스로 안 보고 「같은 층이 아니라 서로 못 부른다」로 넓게 읽었다.** 둘(`"regular"`·`"training"`)을 아래 사본 묶음에 합쳐 넘긴다 — 유니언을 쓰는 자리가 섞여 있어 `ASSIGNMENT_KINDS`를 `entities/schedule/consts`에 세우고 `AssignmentKind`를 거기서 끌어내는 걸음이 된다
+- 돌면서 나온 것 — **통계가 접은 것이 여섯이고 그중 둘만 plan이 들었다.** plan의 둘(`dayMinutes`·`attendanceSummaryLine`)은 몸이 달라 **이름을 갈랐다** — 「그날 근무 시간대의 길이」와 「그 사람 그날 급여로 세는 분」이 `shiftMinutes`·`paidMinutes`가 되고, 「그날 명단 현황 줄」과 「그달 집계 줄」이 `dayAttendanceLine`·`monthAttendanceLine`이 됐다. plan이 안 든 넷은 몸이 같아 접었다 — 달 하나를 집는 손(`monthIn`, 함수 하나와 생 `.find` 셋), KST 시·분 꼴(`screens/stats`와 `screens/approvals`), 사람으로 좁히는 손(`daysOfPerson`과 `myDaysOf`), 그리고 **같은 이름이 꼴 둘을 가리킨 `PayrollByMonth`**(`entities/payroll`의 `{month, payroll}`과 `screens/stats`의 거기에 `days`를 얹은 것)다
+- 돌면서 나온 것 — **접다가 사본을 새로 하나 만들었다.** 좁히는 손을 위층으로 올리면서 「읽어 온 날에서 열 다섯만 남기는」 조각을 양쪽에 똑같이 남겼다. `ScheduleDay`가 그 다섯을 다 들어 구조로 그냥 들어가므로 조각이 아예 필요 없었다 — 걷었다. **사본을 접는 걸음이 사본을 낳는다**는 것이고, 접은 뒤 같은 축으로 한 번 더 세야 보인다
+- 돌면서 나온 것 — **`shared/utils/kstDate.ts`가 KST 시·분 꼴의 둘째 집이 됐다.** 알림 묶음이 그 꼴을 `entities/notification/utils/kstClock.utils.ts`에 세운 것은 그 파일이 Edge Function의 복사 경로라 공용을 못 당겨서였다. 통계와 승인 쪽 사본 둘은 Edge 밖이라 공용으로 접었고, **같은 꼴이 두 집에 산다** — 저장소의 `Intl.DateTimeFormat`이 일곱에서 다섯으로 줄고 그중 둘이 정본이다. 남은 둘은 QR(`kstStartLine`, QR 묶음 몫)과 근무 신청(`.tsx`의 달 꼴, AC-12 몫)이다
 - 돌면서 나온 것 — **재수출이 또 나왔다.** `screens/scheduleAdmin/model/monthEmptyState.policy.ts`가 `lastDateOfMonth`와 `shiftMonth`를 그대로 내보내, 그것을 쓰는 쪽이 `model`을 거쳐 공용 util을 당긴다. 공용 묶음이 잡은 [관찰 051](../../observations/051-reexport-bypasses-segment-checks.md)과 같은 꼴이고 SDK·시계가 아니라 축이 안 깨졌을 뿐이다 — AC-08이 재수출 규칙을 세울 때 이 자리도 걸린다
 - 돌면서 나온 것 — **`ExcuseStatusRow`는 몸이 같아도 못 접는다.** `entities/attendance`와 `entities/payroll`에 각자 있고 다섯 열이 글자까지 같은데, 접으려면 `entities`끼리 import가 생겨 `no-cross-slice-import`에 걸린다. 올릴 자리도 없다 — `shared`에 두면 「`shared`는 도메인을 모른다」가 깨지고, `features`는 통신 계약을 소유할 층이 아니다. **사본 둘이 그 규칙의 값이다**
 

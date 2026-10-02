@@ -24,7 +24,7 @@ export type AttendanceMonth = {
   attendance: AttendanceRows;
 };
 
-export function useAttendanceMonths(
+export function useAttendanceMonthsQuery(
   client: DB,
   months: readonly string[],
 ): MonthsResult<AttendanceMonth> {

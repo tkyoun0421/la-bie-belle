@@ -1,9 +1,9 @@
-import {
-  computeWorkTotals,
-  type PositionTotal,
-  type WorkAssignment,
-  type WorkDay,
-} from "@/features/stats/model/workTotals.policy";
+import type {
+  MyWorkTotals,
+  WorkAssignment,
+  WorkDay,
+} from "@/features/stats/model/stats.type";
+import { computeWorkTotals } from "@/features/stats/model/workTotals.policy";
 
 /**
  * 그달 근무를 내 것으로 좁혀 센다. 정본은
@@ -19,12 +19,6 @@ import {
  *
  * **사람 축이 없다.** 볼 사람이 자기 하나라 `byPerson`을 안 낸다.
  */
-
-export type MyWorkTotals = {
-  totalMinutes: number;
-  totalCount: number;
-  byPosition: PositionTotal[];
-};
 
 export function computeMyWorkTotals(
   assignments: readonly WorkAssignment[],
