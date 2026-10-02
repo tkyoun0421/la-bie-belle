@@ -46,14 +46,14 @@ import { PUSH_DEPS } from "@/features/pushSwitch/model/pushDeps";
 import { requestPushPermission } from "@/features/pushSwitch/model/pushPermission";
 import {
   INITIAL_NOTIFICATION_PROMPT_VIEW,
+  NOTIFICATION_PROMPT_BUTTON,
   PROMPT_OUTCOME_OF,
+} from "@/screens/pending/consts/pending.const";
+import {
   transitionNotificationPromptView,
   type NotificationPromptView,
 } from "@/screens/pending/model/notificationPrompt.policy";
-import {
-  getNotificationPromptCopy,
-  NOTIFICATION_PROMPT_BUTTON,
-} from "@/screens/pending/utils/notificationPromptCopy.utils";
+import { getNotificationPromptCopy } from "@/screens/pending/utils/notificationPromptCopy.utils";
 
 /**
  * 로그인한 사람이 프로필을 적어 가입을 끝내는 자리다. 한 경로가 장면 넷을 든다 — 프로필

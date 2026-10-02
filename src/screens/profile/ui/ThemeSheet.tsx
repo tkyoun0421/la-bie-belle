@@ -2,6 +2,10 @@ import { View } from "react-native";
 import type { Theme } from "@/shared/model/theme.type";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
+import {
+  THEME_CHOICES,
+  THEME_LABEL,
+} from "@/screens/profile/consts/profile.const";
 
 /**
  * 화면을 고르는 시트다. 정본은
@@ -11,14 +15,6 @@ import { Text } from "@/shared/ui/Text";
  * 말할 것이 없고 되돌리는 길은 같은 줄이다. 지금 값인 줄 오른쪽에 체크가 선다
  * (`docs/2-design/design-system/components.md`의 「하나 고르는 목록」).
  */
-
-export const THEME_LABEL: Record<Theme, string> = {
-  system: "기기 설정대로",
-  light: "밝게",
-  dark: "어둡게",
-};
-
-const CHOICES: readonly Theme[] = ["system", "light", "dark"];
 
 export type ThemeSheetProps = {
   theme: Theme;
@@ -33,7 +29,7 @@ export function ThemeSheet({ theme, onChoose }: ThemeSheetProps) {
       </Text>
 
       <View className="mt-2">
-        {CHOICES.map((choice, at) => (
+        {THEME_CHOICES.map((choice, at) => (
           <ListRow
             key={choice}
             title={THEME_LABEL[choice]}

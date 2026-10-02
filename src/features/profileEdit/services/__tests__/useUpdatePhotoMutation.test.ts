@@ -12,7 +12,6 @@ jest.unstable_mockModule(
   "@/features/profileEdit/api/avatarsBucket.api",
   () => ({
     uploadAvatar: uploadAvatarMock,
-    AVATARS_BUCKET: "avatars",
   }),
 );
 

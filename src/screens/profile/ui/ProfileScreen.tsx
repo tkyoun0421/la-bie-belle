@@ -47,11 +47,12 @@ import {
   getPushPermission,
   requestPushPermission,
 } from "@/features/pushSwitch/model/pushPermission";
+import { THEME_LABEL } from "@/screens/profile/consts/profile.const";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
 import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto.policy";
 import { ContactSheet } from "@/screens/profile/ui/ContactSheet";
 import { PhotoSheet } from "@/screens/profile/ui/PhotoSheet";
-import { THEME_LABEL, ThemeSheet } from "@/screens/profile/ui/ThemeSheet";
+import { ThemeSheet } from "@/screens/profile/ui/ThemeSheet";
 
 /**
  * 근무자가 자기 것을 보고 고칠 수 있는 둘만 고치는 화면이다. 정본은

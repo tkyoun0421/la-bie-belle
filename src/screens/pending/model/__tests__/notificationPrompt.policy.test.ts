@@ -1,7 +1,5 @@
-import {
-  INITIAL_NOTIFICATION_PROMPT_VIEW,
-  transitionNotificationPromptView,
-} from "@/screens/pending/model/notificationPrompt.policy";
+import { INITIAL_NOTIFICATION_PROMPT_VIEW } from "@/screens/pending/consts/pending.const";
+import { transitionNotificationPromptView } from "@/screens/pending/model/notificationPrompt.policy";
 
 describe("알림 영역 — 들어왔을 때 기본 모습은 아직 안 켬이다", () => {
   it("초기 모습은 기기 상태를 묻지 않고 아직 안 켬으로 시작한다", () => {
