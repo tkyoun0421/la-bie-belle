@@ -11,3 +11,17 @@
  */
 export type AuthDestination =
   "/login" | "/pending" | "/blocked" | "/left" | "/";
+
+/**
+ * 지금 들어와 있는 사람이다. 프로필 행이 아니라 **세션이 든 사람**이라 이름도 승인 상태도
+ * 안 든다 — 그것은 `entities/profile`의 몫이다.
+ *
+ * **이메일이 없으면 빈 글자고 사진이 없으면 널이다.** 아바타가 이메일 글자로 머리글자를
+ * 짓는데 널을 받으면 그 조립이 화면마다 갈리고, 사진은 「없음」이 뜻이 있는 갈래라 꼴이
+ * 다르다.
+ */
+export type SessionUser = {
+  id: string;
+  email: string;
+  googlePhotoUrl: string | null;
+};

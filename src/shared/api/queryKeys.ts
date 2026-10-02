@@ -67,6 +67,14 @@ export const queryKeys = {
     /** 자격은 사람의 속성이라 근무표가 아니라 명단 아래 산다. */
     qualifications: () => ["members", "qualifications"],
   },
+  session: {
+    all: ["session"],
+    /**
+     * 지금 들어와 있는 사람. 프로필 행이 아니라 **세션이 든 사람**이라 `['profile']`과 다른
+     * 도메인이다 — 이름을 바꿔도 이 값은 그대로고, 로그아웃하면 이쪽만 사라진다.
+     */
+    user: () => ["session", "user"],
+  },
   profile: {
     all: ["profile"],
     /**
