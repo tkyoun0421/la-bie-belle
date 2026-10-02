@@ -14,3 +14,11 @@ export type ApprovalListRow = {
   kind: ApprovalKind;
   workDate: string;
 };
+
+/**
+ * 상세 시트의 얼굴이다 — 시트는 하나고 안쪽만 바뀐다
+ * (같은 문서의 「상세 시트 짜임」과 「거절 짜임」).
+ *
+ * 시트 조각이 아니라 여기 사는 것은 어느 얼굴인지를 controller가 들기 때문이다.
+ */
+export type ApprovalSheetFace = "detail" | "reject";
