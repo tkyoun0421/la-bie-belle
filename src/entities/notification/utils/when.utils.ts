@@ -1,4 +1,5 @@
-import { kstDateOf } from "@/shared/utils/kstDate";
+import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
+import { spellKstClock } from "@/entities/notification/utils/kstClock.utils";
 
 /**
  * 알림을 언제 받았는지를 적는 두 손이다. 정본은
@@ -16,28 +17,15 @@ import { kstDateOf } from "@/shared/utils/kstDate";
  * (`docs/2-design/system/runtime.md`의 시각 규약과 같은 방향이다).
  */
 
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-
 const MINUTE_MS = 60_000;
 
 const MINUTES_PER_HOUR = 60;
-
-const KST_CLOCK = new Intl.DateTimeFormat("en-GB", {
-  timeZone: "Asia/Seoul",
-  hourCycle: "h23",
-  hour: "2-digit",
-  minute: "2-digit",
-});
 
 function dayBefore(date: string): string {
   const moved = new Date(`${date}T00:00:00Z`);
   moved.setUTCDate(moved.getUTCDate() - 1);
 
   return moved.toISOString().slice(0, 10);
-}
-
-function weekdayOf(date: string): string {
-  return WEEKDAYS[new Date(`${date}T00:00:00Z`).getUTCDay()];
 }
 
 type Distance = "today" | "yesterday" | "earlier";
@@ -68,11 +56,10 @@ export function toNotificationDateHeader(
   }
 
   const day = kstDateOf(receivedAt);
-  const spelled = `${Number(day.slice(5, 7))}월 ${Number(day.slice(8, 10))}일(${weekdayOf(day)})`;
 
   return day.slice(0, 4) === kstDateOf(now).slice(0, 4)
-    ? spelled
-    : `${Number(day.slice(0, 4))}년 ${spelled}`;
+    ? spellDate(day)
+    : `${Number(day.slice(0, 4))}년 ${spellDate(day)}`;
 }
 
 export function toNotificationReceivedTime(
@@ -82,7 +69,7 @@ export function toNotificationReceivedTime(
   const distance = distanceOf(receivedAt, now);
 
   if (distance === "yesterday") {
-    return `어제 ${KST_CLOCK.format(new Date(receivedAt))}`;
+    return `어제 ${spellKstClock(receivedAt)}`;
   }
 
   if (distance === "earlier") {

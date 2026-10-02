@@ -1,3 +1,5 @@
+import { ORIGIN_NOTIFICATIONS } from "@/shared/consts/navigation.const";
+
 /**
  * 알림 목록에서 줄을 눌렀을 때다. 정본은
  * `docs/2-design/modules/notification/design.md`의 「읽음 찍기」와
@@ -15,7 +17,7 @@
  * 자리가 없다 — 거기서는 기기 뒤로가 알림 목록으로 돌려보낸다.
  */
 
-const ORIGIN = "from=notifications";
+const ORIGIN = `from=${ORIGIN_NOTIFICATIONS}`;
 
 const BACK_BEARING_PREFIXES = ["/admin/schedule", "/admin/approvals"];
 

@@ -3,6 +3,7 @@ import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { supabase } from "@/shared/api/supabase";
+import { ORIGIN_NOTIFICATIONS } from "@/shared/consts/navigation.const";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Badge } from "@/shared/ui/Badge";
 import { BottomCTA } from "@/shared/ui/BottomCTA";
@@ -134,8 +135,6 @@ const EMPTY_ICON_SIZE = 44;
 const SKELETON_ROWS = [0, 1, 2];
 
 const APPROVALS_ORIGIN = "approvals";
-
-const NOTIFICATIONS_ORIGIN = "notifications";
 
 const CANCELED_TOAST = "근무를 취소했어요";
 
@@ -379,7 +378,7 @@ export function ScheduleAdminScreen({
               return;
             }
 
-            if (from === NOTIFICATIONS_ORIGIN) {
+            if (from === ORIGIN_NOTIFICATIONS) {
               router.replace("/notifications");
               return;
             }

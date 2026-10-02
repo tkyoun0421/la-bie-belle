@@ -2,6 +2,7 @@ import type {
   NotificationKind,
   NotificationPayload,
 } from "@/entities/notification/model/notification.type";
+import { spellKstClock } from "@/entities/notification/utils/kstClock.utils";
 
 /**
  * 알림 한 줄이 무엇이라고 말하는지다. 정본은
@@ -56,14 +57,6 @@ function spellDay(date: string): string {
   return `${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일`;
 }
 
-/** `"2025-09-13T09:00:00+09:00"`은 「09:00」이다. 시각은 24시간제다(writing.md). */
-const KST_CLOCK = new Intl.DateTimeFormat("en-GB", {
-  timeZone: "Asia/Seoul",
-  hourCycle: "h23",
-  hour: "2-digit",
-  minute: "2-digit",
-});
-
 function only(title: string): NotificationTitle {
   return { title, sub: null };
 }
@@ -92,7 +85,7 @@ const COMPOSE_OF: Record<NotificationKind, Compose | null> = {
 
   shift_reminder: (payload) => ({
     title: "내일 근무가 있어요",
-    sub: `${KST_CLOCK.format(new Date(text(payload, "start_at")))} · ${text(payload, "position")}`,
+    sub: `${spellKstClock(text(payload, "start_at"))} · ${text(payload, "position")}`,
   }),
 
   weekend_reminder: (payload) => ({
