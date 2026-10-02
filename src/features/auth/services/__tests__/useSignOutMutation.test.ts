@@ -133,6 +133,26 @@ describe("useSignOutMutation — 로그아웃 순서에 손을 꽂아 한 번에
     await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
   });
 
+  it("도는 중에 캐시를 비워도 onDone이 불린다 — clear가 제 mutation을 지운다", async () => {
+    const { wrapper, queryClient } = createWrapper();
+    const { client } = fakeClient();
+    const onDone = jest.fn();
+    signOutMock.mockImplementation(async (...args: unknown[]) => {
+      const deps = args[0] as { clearQueryClient: () => void };
+      deps.clearQueryClient();
+    });
+
+    const { result } = renderHook(() => useSignOutMutation(client), {
+      wrapper,
+    });
+
+    act(() => result.current.signOut(onDone));
+
+    await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
+
+    expect(queryClient.getMutationCache().getAll()).toHaveLength(0);
+  });
+
   it("보내는 동안은 다시 안 보낸다 — 두 번 눌러도 한 번이다", async () => {
     const { wrapper } = createWrapper();
     const { client } = fakeClient();
