@@ -234,7 +234,7 @@ sources:
   - `<도메인>.const.ts`로 모아 `<층>/<슬라이스>/consts/`에 둔다. `[domain]`은 슬라이스 이름이라 슬라이스마다 한 파일이다
   - `<도메인>.type.ts`에 든 상수가 나간다 — 근태 일곱, 알림 넷, 근무표 하나
   - 열거 목록이 타입의 바탕인 자리는 `consts`에 두고 `model`이 import한다(`ERROR_CODES` → `ErrorCode`)
-- 관찰 결과: `consts/` 밖에 `export const <대문자_스네이크>`가 없다. `.type.ts`를 열면 타입만 있다. 셋이 초록이다
+- 관찰 결과: `consts/` 밖에 `export const <대문자_스네이크>`가 **면제 넷 말고는** 없다 — `api/`의 질의할 열 목록, `lib/`의 SDK 손 묶음, `__tests__/`의 픽스처, AC-12가 받을 초기값 표다. `.type.ts`를 열면 타입만 있다. 셋이 초록이다
 - `queryKeys`·`staleTogether`는 밖이다 — 통신의 약속이고 꼴이 camel이다
 - 도메인으로 쪼갠다 — 알림 열하나·근태 아홉·구성원 여덟·급여 일곱·공용 일곱이 큰 쪽이다
 - 돌면서 나온 것 — **`.tsx`의 `export const <대문자_스네이크>`는 밖이다.** 근무표에서 상수를 세어 보니 넷이 `.tsx`에 있었다 — 테스트 손잡이 둘(`SCHEDULE_HOLIDAY_SWITCH_TEST_ID`·`ADJUSTMENT_EXTRA_MINUTES_INPUT_TEST_ID`)과 드래그 접두 둘(`ROW_DRAG_PREFIX`·`SLOT_DRAG_PREFIX`)이다. 업무 값이 아니라 그 컴포넌트를 집는 식별자라 `ui`에 남는다 — ADR-015가 `*Props`를 `.tsx`에 남긴 것과 같은 축이다. AC-08의 `constsSegment.mjs`는 `.ts`만 본다
