@@ -108,21 +108,6 @@ function callExpireRequests(): void {
   execSql("select internal.expire_requests();\n");
 }
 
-/**
- * 씨 뿌리는 중에 pg_cron이 끼어든 것을 되돌린다.
- *
- * `internal.expire_requests()`는 **매 분 cron으로도 돈다**(`20260927091506_schedule_requests.sql`).
- * 요청 행이 선 뒤 후보가 다 들어가기 전에 그 분이 오면 「안 지난 pending이 없다」가 참이라
- * 요청이 닫히고, 이 테스트가 재 보려는 조건 자체가 깨진다. 후보를 다 넣고 한 번 되돌려야
- * 호출 결과만 보게 된다 — 실제로 닫히는 갈래를 보는 테스트들은 `not.toBeNull()`이라
- * 이 끼어듦에 안 흔들린다.
- */
-function reopenRequest(requestId: string): void {
-  execSql("update public.requests set closed_at = null where id = :'id';\n", {
-    id: requestId,
-  });
-}
-
 async function requestClosedAt(
   admin: AdminUser,
   requestId: string,
@@ -195,7 +180,6 @@ describe("internal.expire_requests — 매 분 도는 만료 배치", () => {
       "pending",
       futureIso(1),
     );
-    reopenRequest(requestId);
 
     callExpireRequests();
 
