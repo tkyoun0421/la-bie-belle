@@ -1,3 +1,4 @@
+import { TALLIED_STATUSES } from "@/entities/attendance/consts/attendance.const";
 import {
   getAttendanceStatus,
   type AttendanceStatus,
@@ -20,8 +21,6 @@ import {
  * **출근율도 여기 산다.** 관리자 통계와 근무자 통계가 같은 공식을 쓰는데 둘이 다른
  * 슬라이스라 서로를 못 부른다(lint 규칙 3) — 세는 함수 옆이 그 공식의 자리다.
  */
-
-const TALLIED_STATUSES = ["present", "late", "absent", "excused"] as const;
 
 const PERCENT = 100;
 

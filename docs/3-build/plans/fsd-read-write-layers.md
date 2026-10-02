@@ -453,7 +453,7 @@ sources:
 | `docs/4-test/execution.md` | 「집행되는 규칙」 표에 행 열둘을 더하고 파일 이름 규칙 행의 문장을 camel과 접미사로 고친다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다 |
 | `scripts/syncEdgeShared.mts` | 복사 경로 넷 — 알림 셋이 `entities/notification/model/`과 `features/pushSwitch/model/`로, 공휴일 하나가 `features/holiday/model/`로 |
 | `eslint-rules/noNodeImportInEdgeShared.mjs` | 같은 경로 한 줄 |
-| `tests/lint/attendanceConstants.ts` | `src/entities/attendance/model/attendance.type.ts`를 문자열로 박아 뒀다 — AC-07이 슬라이스 이름을 `attendance`로 두므로 안 바뀌지만, 바꾸면 이 줄도 같이 간다 |
+| `tests/lint/attendanceConstants.ts` | 상수 파일 경로를 문자열로 박아 뒀다 — AC-10이 그 파일을 `consts/attendance.const.ts`로 옮겨 이 줄과 짝 테스트의 픽스처 경로가 같이 갔다 |
 
 ### 경로·이름을 적은 활성 정본
 

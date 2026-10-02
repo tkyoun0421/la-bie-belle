@@ -1,4 +1,4 @@
-import { COMMUNICATION_DELAY_MINUTES } from "@/entities/attendance/model/attendance.type";
+import { COMMUNICATION_DELAY_MINUTES } from "@/entities/attendance/consts/attendance.const";
 
 export type CommunicationTimes = {
   reportedAt: string;
