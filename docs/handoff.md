@@ -6,7 +6,15 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 QR 이동 PR이다 — 묶음 열의 마지막이다.** `entities/qr` + `features/qrAdmin` + `screens/qr`이 품는 타입 하나와 상수 둘을 옮기고, 남은 `hooks/` 폴더 둘이 통째로 `services/`로 간다(넷). `screens/qr/utils/qrStartLine.utils.ts`의 `KST_DATE`를 `shared/utils/kstDate.ts`의 `kstDateOf`에 접는 것도 여기다. 그 뒤가 **안쪽 열**이고 거기서 처음 병렬이 된다 — AC-12의 controller 마흔넷을 worktree로 가른다.
+**다음 첫 수는 `fsd-read-write-layers`의 안쪽 열이다 — AC-12고 **처음 병렬이 된다**.** 화면 마흔넷의 `.tsx`에서 업무 상태와 효과와 통신을 `screens/<슬라이스>/hooks/use<화면>.ts`로 빼고, 에러 코드 판정 열다섯을 `model`로 내리고, `.tsx`의 로컬 문안 표를 `consts`로 보내고, 큰 파일을 책임으로 쪼갠다(`DayDetail` 969줄 · `PendingScreen` 689줄 · `StatsScreen` 470줄 · `AdminStatsScreen` 417줄). **지금 저장소에 `hooks/` 폴더가 하나도 없다** — 예순다섯 개가 다 `services/`로 떠나, AC-12가 그 이름을 빈 자리에서 새로 세운다. 도메인 열로 쪼개 worktree로 같이 돈다 — 빼낸 훅을 그 화면의 `.tsx` 하나만 부르니 묶음끼리 남의 줄을 안 고친다. 그 안에 든 과제 둘을 잊지 않는다: `AdminHomeScreen.tsx`가 `new Date()`를 두 자리에서 그대로 읽는 것(나머지 여섯 화면은 서버 시계를 쓴다)과 근태 쓰기 셋(`checkIn`·`submitExcuse`·`decideExcuse`)에 Mutation이 없어 `.tsx`가 저장소를 직접 부르는 것이다.
+
+**이동 열 열 묶음이 다 끝났다.** 공용 → 근무표 → 급여 → 구성원 → 근태 → 알림 → 리허설 → 통계 → 인증 → QR 순서로 직렬로 돌았고, **AC-09·AC-10·AC-11·AC-14·AC-15와 AC-06나의 타입 빼기가 다 찼다.** 재 보니 `services/` 아래 `.ts`가 126(구현 63·짝 63)이고 `services/` 밖에 `useQuery`·`useMutation` 호출이 0, `config/` 밖에 `process.env`·`Constants` 읽기가 0, `.policy.ts`에 시계·난수가 0이다.
+
+**QR 묶음이 끝났다.** `hooks/` 둘이 통째로 `services/`로(넷), `HallQrCode`가 `qr.type.ts`로, 상수 아홉이 `consts/` 둘로, `exportQrPaper`가 `lib`으로 갔다 — AC-09의 여섯이 여기서 찼다. **`api/`가 선언한 타입이 꼭 DTO는 아니다** — `HallQrCode`는 `api`에 살았지만 필드가 camel이라(`getQrCode`가 `qr_code`를 옮겨 낸다) 이 묶음에 `.dto.ts`가 하나도 없다.
+
+**AC-10의 면제 다섯을 다 돌고 재 보니 둘이 글과 달랐다.** `lib/`의 「손 묶음」이 하나가 아니라 둘이고(`PUSH_DEPS`에 `DEVICE_CLEANUP_NOT_WIRED_YET`이 붙었다), **`.tsx`가 내보내는 아홉에 문안이 하나도 없다** — e2e 손잡이 여섯과 드래그 접두 둘과 글자 배수 하나고 문안은 전부 로컬 `const`다. 면제를 글자대로 적으면 「`.tsx`의 문안」이 아니라 「`.tsx`가 내보내는 식별자」와 「`.tsx`의 로컬 문안」 둘이다. AC-08이 규칙을 쓸 때 이 글을 고친다.
+
+**주석 안의 경로·지정자는 두 벌로 쓸어야 한다.** 인증 묶음이 `src/...` 꼴을 전수로 봐 셋을 고쳤는데, QR 묶음에서 `@/...` 꼴로 다시 쓸자 세 개가 더 나왔다 — 같은 관찰(050)의 그물 밖이 두 가지 꼴이었다.
 
 **인증 묶음이 끝났다.** 타입 둘이 `.type.ts` 둘로(`session.type.ts`에 `AuthDestination`, `auth.type.ts`에 `EntryDecision`), 앱 스킴 하나가 `consts/`로, 실행 환경 읽기가 `config/auth.config.ts`로 갔고 **함수 다섯이 `features/auth/lib/`에 모였다**. `features/auth`의 `hooks/`와 `model/`의 함수가 다 떠나 **`model/`에 타입 파일 하나만 남은 첫 슬라이스가 됐다** — 역할로 가르면 이 슬라이스는 세션을 만들고 끊는 손이라 판정이 없는 것이 맞는 모습이고, 순수한 판정은 아래층 `entities/session`이 쥔다.
 
