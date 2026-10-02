@@ -1,10 +1,9 @@
 import type { User } from "@supabase/supabase-js";
 import type { DB } from "@/shared/api/database";
 import { getCurrentUser as readSessionUser } from "@/entities/session/api/getCurrentUser.api";
-import type { AuthDestination } from "@/entities/session/model/resolveAuthDestination.policy";
+import type { AuthDestination } from "@/entities/session/model/session.type";
 import { resolveEntryDestination as resolveDestinationFromProfile } from "@/features/auth/lib/resolveEntryDestination.lib";
-
-export type EntryDecision = AuthDestination | "/retry";
+import type { EntryDecision } from "@/features/auth/model/auth.type";
 
 type DecideEntryDeps = {
   client: DB;

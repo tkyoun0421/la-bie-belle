@@ -1,5 +1,4 @@
-export type AuthDestination =
-  "/login" | "/pending" | "/blocked" | "/left" | "/";
+import type { AuthDestination } from "@/entities/session/model/session.type";
 
 export type ProfileStanding = {
   approvedAt: string | null;

@@ -2,10 +2,8 @@ import type { DB } from "@/shared/api/database";
 import { ensureProfile as ensureProfileDal } from "@/entities/profile/api/ensureProfile.api";
 import { getMyProfile as getMyProfileDal } from "@/entities/profile/api/getMyProfile.api";
 import type { MyProfileRow } from "@/entities/profile/api/profile.dto";
-import {
-  resolveAuthDestination,
-  type AuthDestination,
-} from "@/entities/session/model/resolveAuthDestination.policy";
+import { resolveAuthDestination } from "@/entities/session/model/resolveAuthDestination.policy";
+import type { AuthDestination } from "@/entities/session/model/session.type";
 
 type EntryDeps = {
   client: DB;

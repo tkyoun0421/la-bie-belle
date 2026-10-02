@@ -1,6 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 import type { DB } from "@/shared/api/database";
-import type { AuthDestination } from "@/entities/session/model/resolveAuthDestination.policy";
+import type { AuthDestination } from "@/entities/session/model/session.type";
 import { decideEntry } from "@/features/auth/lib/decideEntry.lib";
 
 const fakeClient = {} as DB;
