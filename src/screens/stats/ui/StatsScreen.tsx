@@ -23,6 +23,7 @@ import {
   canGoToPreviousMonth,
   canGoToNextMonth,
 } from "@/shared/utils/monthBoundary";
+import { monthIn } from "@/shared/utils/monthIn";
 import { spellWon } from "@/shared/utils/spellNumber";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
@@ -46,7 +47,6 @@ import {
   myAttendanceRow,
 } from "@/screens/stats/utils/attendanceDays.utils";
 import { attendanceRatioShares } from "@/screens/stats/utils/attendanceShares.utils";
-import { attendanceSummaryLine } from "@/screens/stats/utils/attendanceSummaryLine.utils";
 import { myAttendanceTally } from "@/screens/stats/utils/attendanceTally.utils";
 import {
   joinPayrollByMonth,
@@ -56,6 +56,7 @@ import {
   myWorkValues,
 } from "@/screens/stats/utils/chartValues.utils";
 import { tenThousandWonLabel } from "@/screens/stats/utils/moneyLabel.utils";
+import { monthAttendanceLine } from "@/screens/stats/utils/monthAttendanceLine.utils";
 import { myPayrollSubtitle } from "@/screens/stats/utils/payrollSummary.utils";
 
 /**
@@ -167,8 +168,8 @@ export function StatsScreen() {
   const loading = profileLoading || sources.some((one) => one.isLoading);
   const failed = sources.some((one) => one.error !== null);
 
-  const shownAttendance = attendance.data?.find((one) => one.month === month);
-  const shownWork = work.data?.find((one) => one.month === month);
+  const shownAttendance = monthIn(attendance.data, month);
+  const shownWork = monthIn(work.data, month);
 
   const tally = useMemo(
     () =>
@@ -374,7 +375,7 @@ export function StatsScreen() {
           ) : tab === ATTENDANCE ? (
             <View>
               <Text size="sm" tone="muted" numeric className="mt-6">
-                {attendanceSummaryLine(tally)}
+                {monthAttendanceLine(tally)}
               </Text>
 
               <View className="mt-3">

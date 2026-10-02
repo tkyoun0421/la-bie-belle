@@ -19,13 +19,6 @@ import type { AttendanceTab } from "@/screens/adminStats/model/adminStats.type";
  * 슬라이스라 여기 두면 못 부른다(plan stats-worker AC-01).
  */
 
-export function monthIn<Loaded extends { month: string }>(
-  loaded: Loaded[] | undefined,
-  month: string,
-): Loaded | undefined {
-  return loaded?.find((one) => one.month === month);
-}
-
 export function workValues(
   loaded: WorkMonth[] | undefined,
 ): Map<string, number> {

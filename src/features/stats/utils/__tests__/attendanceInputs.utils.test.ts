@@ -18,7 +18,10 @@
 // - 출근(present)과 출근 인정(excused)을 합치지 않는다(ATT-023)
 
 import { tallyMonthlyAttendance } from "@/entities/attendance/utils/attendanceSummary.utils";
-import { buildAttendanceInputs } from "@/features/stats/utils/attendanceInputs.utils";
+import {
+  buildAttendanceInputs,
+  daysOfPerson,
+} from "@/features/stats/utils/attendanceInputs.utils";
 
 const DAYS = [
   {
@@ -134,5 +137,30 @@ describe("buildAttendanceInputs — day_id와 profile_id가 둘 다 맞아야 �
     );
 
     expect(hasP3CheckIn).toBe(false);
+  });
+});
+
+// daysOfPerson(days, profileId) — 그달 날들을 그 사람 배정만 남기고 좁힌다. 같은 손이
+// screens/adminStats와 screens/stats에 로컬 함수로 각자 서 있었다(`daysOfPerson`·
+// `myDaysOf`). 안 좁히면 같은 날 같이 선 사람의 결근까지 그 사람 숫자에 든다.
+describe("daysOfPerson — 그 사람 배정만 남긴다", () => {
+  it("남의 배정은 그 날의 배정 목록에서 빠진다", () => {
+    const mine = daysOfPerson(DAYS, "p1");
+
+    expect(
+      mine.flatMap((day) =>
+        day.assignments.map((assignment) => assignment.profile_id),
+      ),
+    ).toEqual(["p1"]);
+  });
+
+  it("날은 안 걸러진다 — 내 배정이 없는 날도 빈 목록으로 남는다", () => {
+    const mine = daysOfPerson(DAYS, "p3");
+
+    expect(mine).toHaveLength(DAYS.length);
+  });
+
+  it("profileId가 아직 없으면 날이 하나도 없다 — 좁힐 기준이 없는 순간이다", () => {
+    expect(daysOfPerson(DAYS, null)).toEqual([]);
   });
 });

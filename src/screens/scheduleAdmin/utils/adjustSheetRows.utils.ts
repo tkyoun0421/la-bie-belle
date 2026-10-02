@@ -4,10 +4,10 @@ import {
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
 import {
   adjustedMinutes,
-  dayMinutes,
+  paidMinutes,
   type AdjustmentRow,
   type WorkDayHours,
-} from "@/features/payrollCompute/model/dayMinutes.policy";
+} from "@/features/payrollCompute/model/paidMinutes.policy";
 import { assignedMinutes } from "@/screens/scheduleAdmin/utils/absenceMinutes.utils";
 
 /**
@@ -18,7 +18,7 @@ import { assignedMinutes } from "@/screens/scheduleAdmin/utils/absenceMinutes.ut
  * 배정이 없는 사람은 이 목록에 없다 — 그 사람을 보는 자리는 리허설 화면이다.
  *
  * **줄마다 그날 최종 시간이 선다.** 배정 시간 + 조정 + 리허설이고, 셈은 급여가 쓰는
- * [`dayMinutes`](../../../features/payroll/model/dayMinutes.ts) 그대로다 — 여기서 다시 짜면
+ * [`paidMinutes`](../../../features/payrollCompute/model/paidMinutes.policy.ts) 그대로다 — 여기서 다시 짜면
  * 급여 화면과 이 시트가 다른 시간을 말한다(PAY-028).
  *
  * **앞머리는 마지막 조정 행의 부호가 정한다.** 되돌린 사람(마지막 행이 0분)에게는 안 붙는다.
@@ -138,7 +138,7 @@ export function adjustSheetRows(input: AdjustSheetInput): AdjustSheetRow[] {
       return {
         profile_id: assignment.profile_id,
         name: assignment.name,
-        finalMinutes: dayMinutes({
+        finalMinutes: paidMinutes({
           assignments: [assignment],
           day: input.day,
           adjustments,

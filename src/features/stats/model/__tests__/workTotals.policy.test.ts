@@ -27,7 +27,7 @@ import type {
 } from "@/features/stats/model/stats.type";
 import {
   computeWorkTotals,
-  dayMinutes,
+  shiftMinutes,
   hoursLabel,
   isLiveAssignment,
   workInputsOf,
@@ -304,14 +304,14 @@ const BASE_DAY: WorkDay = {
   ends_at: "18:00:00",
 };
 
-describe("dayMinutes — 그날 근무 시간은 마감에서 시작을 뺀 값이라 사람마다 다시 안 잰다", () => {
+describe("shiftMinutes — 그날 근무 시간은 마감에서 시작을 뺀 값이라 사람마다 다시 안 잰다", () => {
   it("10:00:00~18:00:00은 480분이다", () => {
-    expect(dayMinutes(BASE_DAY)).toBe(480);
+    expect(shiftMinutes(BASE_DAY)).toBe(480);
   });
 
   it("09:00:00~17:30:00처럼 30분 꼬리가 있으면 510분으로 그 꼬리가 그대로 남는다", () => {
     expect(
-      dayMinutes({ ...BASE_DAY, starts_at: "09:00:00", ends_at: "17:30:00" }),
+      shiftMinutes({ ...BASE_DAY, starts_at: "09:00:00", ends_at: "17:30:00" }),
     ).toBe(510);
   });
 });

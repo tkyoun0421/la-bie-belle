@@ -31,6 +31,7 @@ import {
   canGoToPreviousMonth,
   canGoToNextMonth,
 } from "@/shared/utils/monthBoundary";
+import { monthIn } from "@/shared/utils/monthIn";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
@@ -51,7 +52,6 @@ import {
 } from "@/screens/adminStats/utils/attendanceRows.utils";
 import {
   attendanceValues,
-  monthIn,
   percentLabel,
   workValues,
 } from "@/screens/adminStats/utils/chartValues.utils";

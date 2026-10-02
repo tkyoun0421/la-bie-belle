@@ -17,7 +17,7 @@ import {
   type RehearsalRow,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
-import { dayMinutes } from "@/features/payrollCompute/model/dayMinutes.policy";
+import { paidMinutes } from "@/features/payrollCompute/model/paidMinutes.policy";
 
 /**
  * 한 사람의 그 기간 급여를 날짜마다 낸다. 이 모듈이 급여 계산의 유일한 입구고, 아래 넷은
@@ -162,7 +162,7 @@ function payrollDate(
     return { date, ...ABSENT };
   }
 
-  const minutes = dayMinutes({
+  const minutes = paidMinutes({
     assignments,
     day,
     adjustments:

@@ -1,4 +1,4 @@
-import { spellDate } from "@/shared/utils/kstDate";
+import { kstClockOf, spellDate } from "@/shared/utils/kstDate";
 import type { AttendanceStatus } from "@/entities/attendance/model/attendance.type";
 import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
@@ -29,13 +29,6 @@ import { STATUS_LABELS } from "@/screens/stats/consts/stats.const";
  */
 
 const TRAINING_KIND = "training";
-
-const KST_TIME = new Intl.DateTimeFormat("en-GB", {
-  timeZone: "Asia/Seoul",
-  hourCycle: "h23",
-  hour: "2-digit",
-  minute: "2-digit",
-});
 
 export type MyAttendanceDay = {
   workDate: string;
@@ -117,7 +110,7 @@ export function myAttendanceRow(day: MyAttendanceDay): MyAttendanceRow {
   };
 }
 
-/** 찍은 순간을 홀의 시계로 읽는다 — UTC로 읽으면 밤 9시 뒤가 하루 전 시각으로 선다. */
+/** 찍은 순간을 홀의 시계로 읽는다 — 꼴은 `shared/utils/kstDate.ts`가 든다. */
 export function checkedTimeLabel(checkedAt: string): string {
-  return KST_TIME.format(new Date(checkedAt));
+  return kstClockOf(checkedAt);
 }

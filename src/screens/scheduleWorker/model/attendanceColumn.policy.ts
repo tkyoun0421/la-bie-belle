@@ -35,7 +35,7 @@ const REST_LABELS: [AttendanceStatus, string][] = [
   ["absent", "결근"],
 ];
 
-export function attendanceSummaryLine(
+export function dayAttendanceLine(
   summary: AttendanceSummary,
   total: number,
 ): string {

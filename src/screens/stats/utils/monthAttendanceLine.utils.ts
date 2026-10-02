@@ -12,7 +12,7 @@ import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attenda
  * 갈린다. 거기는 줄이 세로로 쌓여 0이 실제 지각을 가리는 자리다.
  */
 
-export function attendanceSummaryLine(tally: MonthlyAttendanceTally): string {
+export function monthAttendanceLine(tally: MonthlyAttendanceTally): string {
   return [
     `출근 ${tally.present}`,
     `지각 ${tally.late}`,

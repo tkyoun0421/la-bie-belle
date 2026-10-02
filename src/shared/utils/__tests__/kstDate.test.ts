@@ -7,6 +7,7 @@
 // confirmedLine 테스트가 쓰는 것과 같은 경계다.
 
 import {
+  kstClockOf,
   kstDateOf,
   lastDateOfMonth,
   monthOf,
@@ -72,5 +73,21 @@ describe("lastDateOfMonth — 그 달의 마지막 날이다", () => {
 describe("spellDate — 요일 한 글자를 붙인다", () => {
   it("2026-10-10은 「10월 10일(토)」다", () => {
     expect(spellDate("2026-10-10")).toBe("10월 10일(토)");
+  });
+});
+
+// 같은 꼴이 screens/stats와 screens/approvals에 각자 서 있었다 — 시각만 읽는 자리라
+// 날짜와 갈려 있었고, 한쪽만 고치면 같은 순간이 화면마다 다른 시각으로 선다.
+describe("kstClockOf — 그 순간을 홀의 시계로 읽는다", () => {
+  it("UTC 05:30은 KST 14:30이다", () => {
+    expect(kstClockOf("2026-10-02T05:30:00Z")).toBe("14:30");
+  });
+
+  it("자정을 넘는 시각도 24시가 아니라 00시다", () => {
+    expect(kstClockOf("2026-10-02T15:00:00Z")).toBe("00:00");
+  });
+
+  it("Date를 그대로 받는다", () => {
+    expect(kstClockOf(new Date("2026-10-02T05:30:00Z"))).toBe("14:30");
   });
 });

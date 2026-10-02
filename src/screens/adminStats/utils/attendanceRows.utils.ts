@@ -3,6 +3,7 @@ import { tallyMonthlyAttendance } from "@/entities/attendance/utils/attendanceSu
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import {
   buildAttendanceInputs,
+  daysOfPerson,
   type AttendanceInputCheckIn,
   type AttendanceInputExcuseStatus,
 } from "@/features/stats/utils/attendanceInputs.utils";
@@ -111,18 +112,6 @@ export function attendanceRowValue(row: AttendanceRow): string {
   ]
     .filter((part): part is string => part !== null)
     .join(" · ");
-}
-
-function daysOfPerson(days: readonly ScheduleDay[], profileId: string) {
-  return days.map((day) => ({
-    id: day.id,
-    work_date: day.work_date,
-    starts_at: day.starts_at,
-    ends_at: day.ends_at,
-    assignments: day.assignments.filter(
-      (assignment) => assignment.profile_id === profileId,
-    ),
-  }));
 }
 
 function sumTallies(rows: readonly AttendanceRow[]): MonthlyAttendanceTally {

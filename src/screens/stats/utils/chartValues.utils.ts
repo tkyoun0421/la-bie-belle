@@ -1,3 +1,4 @@
+import { monthIn } from "@/shared/utils/monthIn";
 import { attendanceRate } from "@/entities/attendance/utils/attendanceSummary.utils";
 import type { PayrollMonth } from "@/entities/payroll/api/payroll.dto";
 import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
@@ -24,7 +25,14 @@ import { myAttendanceTally } from "@/screens/stats/utils/attendanceTally.utils";
  * 여기가 하는 일은 달마다 그 함수를 한 번씩 돌려 값을 모으는 것뿐이다(plan stats-worker AC-01).
  */
 
-export type PayrollByMonth = {
+/**
+ * 급여 재료 한 달에 그달 근무표 날을 같이 든 꼴이다.
+ *
+ * **`entities/payroll`의 `PayrollByMonth`와 이름이 같았다.** 그쪽은 쿼리가 내는 `{month,
+ * payroll}` 둘이고 여기는 거기에 `days`를 얹은 것이다 — 한 이름이 꼴 둘을 가리켜 이름에 그
+ * 차이를 넣었다.
+ */
+export type PayrollMonthWithDays = {
   month: string;
   days: readonly ScheduleDay[];
   payroll: PayrollMonth;
@@ -43,7 +51,7 @@ export type PayrollByMonth = {
 export function joinPayrollByMonth(
   work: readonly WorkMonth[] | undefined,
   payroll: readonly { month: string; payroll: PayrollMonth }[] | undefined,
-): PayrollByMonth[] | undefined {
+): PayrollMonthWithDays[] | undefined {
   if (work === undefined || payroll === undefined) {
     return undefined;
   }
@@ -110,7 +118,7 @@ export function myAttendanceValues(
  * 있는 달이다 — 리허설은 근무표가 없는 달에도 행이 선다(SCH-022).
  */
 export function myPayrollValues(
-  loaded: readonly PayrollByMonth[] | undefined,
+  loaded: readonly PayrollMonthWithDays[] | undefined,
   profileId: string,
   now: string,
   rehearsals: readonly Rehearsal[],
@@ -147,13 +155,13 @@ export function myPayrollValues(
  * `profileId`가 아직 없거나 그 달 행이 없으면 빈 배열이다 — 프로필이 오기 전에도 화면이 그려진다.
  */
 export function myPayrollDaysOfMonth(
-  loaded: readonly PayrollByMonth[] | undefined,
+  loaded: readonly PayrollMonthWithDays[] | undefined,
   month: string,
   profileId: string | null,
   now: string,
   rehearsals: readonly Rehearsal[],
 ): PayrollViewDay[] {
-  const one = loaded?.find((row) => row.month === month);
+  const one = monthIn(loaded, month);
 
   if (one === undefined || profileId === null) {
     return [];

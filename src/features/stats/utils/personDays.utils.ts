@@ -3,7 +3,7 @@ import type {
   WorkDay,
 } from "@/features/stats/model/stats.type";
 import {
-  dayMinutes,
+  shiftMinutes,
   isLiveAssignment,
 } from "@/features/stats/model/workTotals.policy";
 
@@ -62,7 +62,7 @@ export function computePersonDays(
               workDate: day.work_date,
               position: assignment.position,
               label: rowLabel(assignment),
-              minutes: dayMinutes(day),
+              minutes: shiftMinutes(day),
             },
           ];
     })

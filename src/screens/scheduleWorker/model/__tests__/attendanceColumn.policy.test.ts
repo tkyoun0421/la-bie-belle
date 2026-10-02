@@ -1,7 +1,7 @@
 import type { AttendanceStatusInput } from "@/entities/attendance/model/attendance.type";
 import type { AttendanceSummary } from "@/entities/attendance/model/attendance.type";
 import {
-  attendanceSummaryLine,
+  dayAttendanceLine,
   isAttendanceColumnVisible,
 } from "@/screens/scheduleWorker/model/attendanceColumn.policy";
 
@@ -34,11 +34,11 @@ describe("isAttendanceColumnVisible — 인증 창이 열리기 전에는 상태
   });
 });
 
-describe("attendanceSummaryLine — 출근 수가 앞에 서고 0인 항목은 뺀다", () => {
+describe("dayAttendanceLine — 출근 수가 앞에 서고 0인 항목은 뺀다", () => {
   it("문서 예시 그대로 조립한다", () => {
     const summary: AttendanceSummary = { present: 9, late: 1, unmarked: 1 };
 
-    const line = attendanceSummaryLine(summary, 11);
+    const line = dayAttendanceLine(summary, 11);
 
     expect(line).toBe("11명 중 9명 출근 · 지각 1 · 아직 1");
   });
@@ -46,7 +46,7 @@ describe("attendanceSummaryLine — 출근 수가 앞에 서고 0인 항목은 �
   it("0인 항목은 문구에서 빠진다", () => {
     const summary: AttendanceSummary = { present: 10, absent: 1 };
 
-    const line = attendanceSummaryLine(summary, 11);
+    const line = dayAttendanceLine(summary, 11);
 
     expect(line).toBe("11명 중 10명 출근 · 결근 1");
   });
@@ -54,7 +54,7 @@ describe("attendanceSummaryLine — 출근 수가 앞에 서고 0인 항목은 �
   it("전원이 제때 찍었으면 전원 출근 한 마디다", () => {
     const summary: AttendanceSummary = { present: 11 };
 
-    const line = attendanceSummaryLine(summary, 11);
+    const line = dayAttendanceLine(summary, 11);
 
     expect(line).toBe("11명 전원 출근");
   });
@@ -68,7 +68,7 @@ describe("attendanceSummaryLine — 출근 수가 앞에 서고 0인 항목은 �
       pending: 1,
     };
 
-    const line = attendanceSummaryLine(summary, 11);
+    const line = dayAttendanceLine(summary, 11);
 
     expect(line).toBe(
       "11명 중 7명 출근 · 지각 1 · 확인 중 1 · 출근 인정 1 · 결근 1",
