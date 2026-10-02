@@ -304,7 +304,7 @@ sources:
 - 돌면서 나온 것 — **측정은 화면이 하고 판정은 controller가 한다.** 알림의 끝 다다름이다. 스크롤 이벤트를 「가까운가」로 바꾸는 `nearBottom`은 `utils`에 서고 controller는 `loadNextWhenNear(near: boolean)`만 받는다 — 네이티브 이벤트 꼴을 controller가 알면 그 자리가 조각 없이 테스트에 안 선다
 - 돌면서 나온 것 — **조각이 들고 있던 상태도 controller로 올라온다.** 승인 대기의 거절 이유 고르기가 상세 시트 조각의 `useState` 둘이었다 — 고른 문장이 그대로 근무자에게 가고 보내는 동안 잠기고 실패하면 남아야 해서 통신에 매여 있다. 조각은 제 controller를 못 가지니 화면의 controller가 들고 prop으로 내린다. 그러면서 얼굴을 가리키는 타입(`ApprovalSheetFace`)이 `ui`에서 `model`로 내려갔다 — 어느 얼굴인지를 controller가 들어서다
 - 돌면서 나온 것 — **`.tsx`에 `useMemo`는 된다.** 보낼 데를 controller에 넘기는 어댑터를 묶는 자리고(알림·근태), AC-08의 `dumbUi`가 막는 것은 `useState`·`useEffect`·`useReducer` 셋이다
-- 돌면서 나온 것 — **기기 뒤로를 가로채는 `useEffect`가 화면 둘에 글자까지 같다.** 리허설과 근무표고 `shared/hooks/useHardwareBack.ts`로 접었다 — `BackHandler`를 인자로 받는 꼴이 `wireAutoRefresh`와 같다(러너가 `react-native`를 절대경로로 리매핑해 파일 안의 import는 늘 실물을 문다). controller는 닫는 손 하나(`closeTop`)만 내고 `.tsx`가 그것을 잇는다
+- 돌면서 나온 것 — **기기 뒤로를 가로채는 `useEffect`가 화면 둘에 글자까지 같다.** 리허설과 근무표고 `shared/hooks/useHardwareBack.ts`를 세웠다 — `BackHandler`를 인자로 받는 꼴이 `wireAutoRefresh`와 같다(러너가 `react-native`를 절대경로로 리매핑해 파일 안의 import는 늘 실물을 문다). controller는 닫는 손 하나(`closeTop`)만 내고 `.tsx`가 그것을 잇는다. **리허설 열이 쓰고 근무표 쪽은 아직 `BackHandler`를 직접 부른다** — 사본이 걷히는 것은 근무표 열이 그 줄을 받을 때다
 - 돌면서 나온 것 — **`enabled`로 가르는 질의 둘이 역할을 알기 전에 한쪽을 켜고 있었다.** 리허설이다. `profile?.role === "admin"`은 프로필이 오기 전에도 거짓이라 관리자에게도 「내 것 읽기」가 한 번 먼저 나갔다. 가름을 「역할을 알았나」로 한 겹 더 쪼갰다 — 같은 꼴이 역할로 갈리는 화면마다 선다
 
 ### AC-14 — `services`가 선다 ✅
