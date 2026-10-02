@@ -576,7 +576,7 @@ describe("useScheduleWorkerScreen — 취소 사유가 여기 산다", () => {
    * 정본(schedule-worker.md의 「보낸 뒤」)은 겹째로 닫힌다고 적어 두었는데 둘이 어긋난
    * 채로 들어와 있었다 — 이 묶음은 꼴만 옮기므로 보이는 것을 그대로 지킨다.
    */
-  it("취소 요청이 그 배정 id와 다듬은 사유로 가고 보낸 뒤 명단으로 돌아온다", async () => {
+  it("취소 요청이 그 배정 id와 다듬은 사유로 가고 보낸 뒤 시트가 닫힌다", async () => {
     const { result } = await mounted();
 
     act(() => result.current.pressDay?.("2026-10-17"));
@@ -592,7 +592,7 @@ describe("useScheduleWorkerScreen — 취소 사유가 여기 산다", () => {
       ),
     );
 
-    await waitFor(() => expect(result.current.sheet?.kind).toBe("roster"));
+    await waitFor(() => expect(result.current.sheet).toBeNull());
   });
 
   it("보낸 뒤 다시 취소를 열면 적었던 글이 안 남는다", async () => {
@@ -603,9 +603,9 @@ describe("useScheduleWorkerScreen — 취소 사유가 여기 산다", () => {
     act(() => result.current.writeReason("몸이 아파요"));
     act(() => result.current.sendCancel());
 
-    await waitFor(() => expect(result.current.sheet?.kind).toBe("roster"));
+    await waitFor(() => expect(result.current.sheet).toBeNull());
 
-    act(() => result.current.askCancel());
+    act(() => result.current.askCancelOn("2026-10-17"));
 
     if (result.current.sheet?.kind !== "cancel") {
       throw new Error("취소 시트가 아니다");

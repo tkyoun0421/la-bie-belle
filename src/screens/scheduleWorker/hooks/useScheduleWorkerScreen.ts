@@ -287,16 +287,6 @@ export function useScheduleWorkerScreen(
     resetAnswer();
   }, [failedAnswer, answering, resetAnswer]);
 
-  useEffect(() => {
-    if (!cancelAsked) {
-      return;
-    }
-
-    setCancelling(false);
-    setReason("");
-    resetCancel();
-  }, [cancelAsked, resetCancel]);
-
   const dayOf = useMemo(() => {
     const byDate = new Map<string, ScheduleDay>();
 
@@ -383,6 +373,17 @@ export function useScheduleWorkerScreen(
     resetAnswer();
     resetCancel();
   }, [resetAnswer, resetCancel]);
+
+  /**
+   * 취소 요청이 갔으면 겹째로 닫는다 — 명단 얼굴로 돌아오지 않는다. 보낸 뒤 그 배정에
+   * 남는 것은 「취소 요청 중」 배지뿐이고 다음 진입에서 최신 상태를 그린다
+   * (schedule-worker.md의 「보낸 뒤」).
+   */
+  useEffect(() => {
+    if (cancelAsked) {
+      closeSheet();
+    }
+  }, [cancelAsked, closeSheet]);
 
   const closeTop = useMemo(() => {
     if (openDate === null) {
