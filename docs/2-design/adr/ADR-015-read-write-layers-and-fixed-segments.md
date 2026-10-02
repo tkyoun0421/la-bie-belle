@@ -174,7 +174,7 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **`type`과 `schema`가 둘인 까닭은 사는 시간이 달라서다.** 타입은 컴파일 때 사라지고, 바깥에서 들어온 값은 런타임에 꼴을 확인해야 한다. 지금 `validateProfile`과 홀리데이 API 응답 파싱이 그 일을 손으로 하는데 둘이 다른 자리에 있다. 검증 라이브러리를 들이든 손으로 쓰든 자리는 `schema`다.
 
-**`reducer`는 `policy`의 이웃이다.** 둘 다 순수한데 묻는 것이 다르다 — `policy`는 「이것이 허용인가」에 답하고 `reducer`는 「다음 상태가 무엇인가」에 답한다. 지금 그 성격이 `.policy.ts` 이름으로 사는 자리가 있다(`screens/rehearsal/model/addSheetState.policy.ts`·`screens/scheduleAdmin/model/adjustChoiceState.policy.ts`). `useReducer`를 쓰게 되면 전이 함수와 action 유니언이 `.reducer.ts`로 가고 훅 호출은 controller나 `.tsx`에 남는다.
+**`reducer`는 `policy`의 이웃이다.** 둘 다 순수한데 묻는 것이 다르다 — `policy`는 「이것이 허용인가」에 답하고 `reducer`는 「다음 상태가 무엇인가」에 답한다. **가름은 `useReducer`를 타느냐다.** `screens/rehearsal/model/addSheetState.reducer.ts`가 그 꼴이고 `RehearsalScreen.tsx`가 그것을 `useReducer`에 건다 — 전이 함수와 action 유니언이 `.reducer.ts`에 살고 훅 호출은 controller나 `.tsx`에 남는다. `screens/scheduleAdmin/model/adjustChoiceState.policy.ts`는 상태 꼴과 전이를 들어도 `useReducer`를 안 타고 화면 둘이 함수로 부르므로 `.policy.ts`다.
 
 **Context는 `stores`다.** 하위트리에 상태를 나눠 주는 도구고 zustand와 역할이 같다. Context 객체와 그것을 읽는 훅이 `<도메인>.context.ts`에 살고 Provider 컴포넌트는 `.tsx`라 `ui/`에 남는다 — 지금 `shared/ui/DragAndDrop.tsx` 하나가 Context와 Provider와 훅 둘과 컴포넌트 둘을 삼백한 줄에 들고 export 다섯을 낸다.
 

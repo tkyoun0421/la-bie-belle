@@ -37,7 +37,7 @@ import {
   canSubmitForm,
   EMPTY_VALUES,
   type AddSheetState,
-} from "@/screens/rehearsal/model/addSheetState.policy";
+} from "@/screens/rehearsal/model/addSheetState.reducer";
 import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell.policy";
 import { RehearsalDaySheet } from "@/screens/rehearsal/ui/RehearsalDaySheet";
 import { RehearsalFormSheet } from "@/screens/rehearsal/ui/RehearsalFormSheet";

@@ -1,4 +1,4 @@
-// 구현 대상: src/screens/rehearsal/model/addSheetState.policy.ts
+// 구현 대상: src/screens/rehearsal/model/addSheetState.reducer.ts
 //
 // 넣는 시트의 리듀서다(rehearsal.md 「넣는 중」·「문안」) — wrong_kind가 오면 갈래를
 // 전환하고 알림 「이 날의 근무가 바뀌었어요 · 다시 넣어주세요」를 세우되 넣던 값은 그대로
@@ -8,7 +8,7 @@
 import {
   addSheetReducer,
   type AddSheetState,
-} from "@/screens/rehearsal/model/addSheetState.policy";
+} from "@/screens/rehearsal/model/addSheetState.reducer";
 
 const BASE_STATE: AddSheetState = {
   formKind: "time",

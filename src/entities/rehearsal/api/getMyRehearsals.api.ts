@@ -1,5 +1,6 @@
 import type { DB } from "@/shared/api/database";
-import { lastDateOfMonth, monthOf } from "@/shared/utils/kstDate";
+import { lastDateOfMonth } from "@/shared/utils/kstDate";
+import { monthStart } from "@/shared/utils/monthRange";
 import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
 
 /**
@@ -15,9 +16,13 @@ import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
 export const REHEARSAL_COLUMNS =
   "id, profile_id, work_date, starts_at, ends_at, count";
 
-/** `"2026-10"`도 `"2026-10-10"`도 같은 달의 첫날과 마지막 날로 읽는다. */
+/**
+ * `"2026-10"`도 `"2026-10-10"`도 같은 달의 첫날과 마지막 날로 읽는다. 공용 창과 끝이 다르다 —
+ * 그쪽은 다음 달 1일을 `lt`로 걸고 이 질의는 그 달 마지막 날을 `lte`로 건다. 리허설은
+ * `work_date`가 날짜라 끝을 포함해야 그달 마지막 날 행이 든다.
+ */
 export function monthRange(month: string): { from: string; to: string } {
-  return { from: `${monthOf(month)}-01`, to: lastDateOfMonth(month) };
+  return { from: monthStart(month), to: lastDateOfMonth(month) };
 }
 
 export async function getMyRehearsals(
