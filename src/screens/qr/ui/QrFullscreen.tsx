@@ -1,6 +1,7 @@
 import { useKeepAwake } from "expo-keep-awake";
 import { useWindowDimensions } from "react-native";
 import { QrStage } from "@/shared/ui/QrFace";
+import { QR_SCREEN_COPY } from "@/screens/qr/consts/qr.const";
 import { fullscreenQrSize } from "@/screens/qr/utils/fullscreenQrSize.utils";
 
 /**
@@ -13,8 +14,6 @@ import { fullscreenQrSize } from "@/screens/qr/utils/fullscreenQrSize.utils";
  *
  * **밝기를 앱이 안 올린다.** 읽기에는 낫지만 사람이 정한 설정을 앱이 말없이 덮는 자리가 된다.
  */
-
-const CLOSE_LABEL = "닫기";
 
 export type QrFullscreenProps = {
   svg: string | null;
@@ -30,7 +29,7 @@ export function QrFullscreen({ svg, onClose }: QrFullscreenProps) {
     <QrStage
       svg={svg}
       size={fullscreenQrSize(width)}
-      closeLabel={CLOSE_LABEL}
+      closeLabel={QR_SCREEN_COPY.close}
       onClose={onClose}
     />
   );
