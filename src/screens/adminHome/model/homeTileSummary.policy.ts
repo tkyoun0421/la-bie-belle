@@ -20,7 +20,14 @@ export type HomeTileSummaryInput =
     }
   | { state: "confirmed"; month: string; vacancyCount: number };
 
-function monthName(month: string): string {
+/**
+ * `"2026-10"`을 「10월」로 적는다.
+ *
+ * **미니뷰 위의 달 글도 이것이다.** 그 자리가 말하는 달과 타일이 말하는 달이 다를 수 있어도
+ * 적는 꼴은 하나다. 같은 꼴을 `payroll`·`scheduleAdmin`도 저마다 적고 있어 접는 것은
+ * AC-13이 받는다.
+ */
+export function monthName(month: string): string {
   return `${Number(month.slice(5, 7))}월`;
 }
 

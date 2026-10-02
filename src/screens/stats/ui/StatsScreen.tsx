@@ -1,11 +1,8 @@
 import { useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
-import { useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { queryClient } from "@/shared/api/queryClient";
 import { supabase } from "@/shared/api/supabase";
 import { NO_VALUE } from "@/shared/consts/noValue.const";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
 import { EmptyState } from "@/shared/ui/EmptyState";
@@ -18,46 +15,8 @@ import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
-import { monthOf, shiftMonth, spellMonth } from "@/shared/utils/kstDate";
-import {
-  canGoToPreviousMonth,
-  canGoToNextMonth,
-} from "@/shared/utils/monthBoundary";
-import { monthIn } from "@/shared/utils/monthIn";
-import { spellWon } from "@/shared/utils/spellNumber";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
-import { usePayrollMonthsByMonthQuery } from "@/entities/payroll/services/usePayrollMonthsByMonthQuery";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
-import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
-import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
-import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import type { MyWorkTotals } from "@/features/stats/model/stats.type";
-import {
-  hoursLabel,
-  workInputsOf,
-} from "@/features/stats/model/workTotals.policy";
-import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
-import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
-import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
-import { MONTH_LENGTH } from "@/screens/stats/consts/stats.const";
-import {
-  buildMyAttendanceDays,
-  myAttendanceRow,
-} from "@/screens/stats/utils/attendanceDays.utils";
-import { attendanceRatioShares } from "@/screens/stats/utils/attendanceShares.utils";
-import { myAttendanceTally } from "@/screens/stats/utils/attendanceTally.utils";
-import {
-  joinPayrollByMonth,
-  myAttendanceValues,
-  myPayrollDaysOfMonth,
-  myPayrollValues,
-  myWorkValues,
-} from "@/screens/stats/utils/chartValues.utils";
-import { tenThousandWonLabel } from "@/screens/stats/utils/moneyLabel.utils";
-import { monthAttendanceLine } from "@/screens/stats/utils/monthAttendanceLine.utils";
-import { myPayrollSubtitle } from "@/screens/stats/utils/payrollSummary.utils";
+import { STATS_COPY, TAB_OPTIONS } from "@/screens/stats/consts/stats.const";
+import { useStatsScreen } from "@/screens/stats/hooks/useStatsScreen";
 
 /**
  * 근무자가 자기 한 달을 숫자로 보는 화면이다. 정본은
@@ -73,45 +32,13 @@ import { myPayrollSubtitle } from "@/screens/stats/utils/payrollSummary.utils";
  * **달 줄이 세그먼트 위다.** 탭을 오가도 보는 달이 그대로고, 앱바·달 줄·세그먼트·추이 그래프
  * 넷까지가 관리자 화면과 같은 자리다.
  *
- * **새 키를 안 연다.** 열두 달을 `['schedule', 'YYYY-MM']`·`['attendance', 'YYYY-MM']`·
- * `['payroll', 'YYYY-MM']`·`['rehearsal', 'YYYY-MM']`로 읽어서 근무표·급여 화면이 이미 읽어둔
- * 달은 캐시에서 온다.
+ * **무엇을 읽을지는 탭이 가른다.** 그 가름과 열두 달의 조립은
+ * [`useStatsScreen`](../hooks/useStatsScreen.ts)이 들고 이 파일은 받은 글자를 쌓는다.
  *
  * **다시 들어오면 이번 달이다.** 보던 달도 보던 탭도 기억하지 않는다.
  */
 
-const ATTENDANCE = "attendance";
-
-const POSITION = "position";
-
-const PAYROLL = "payroll";
-
-const TAB_OPTIONS = [
-  { value: ATTENDANCE, label: "근태" },
-  { value: POSITION, label: "포지션" },
-  { value: PAYROLL, label: "급여" },
-];
-
-const EMPTY_TITLE = "이 달은 근무가 없어요";
-
-const EMPTY_DESCRIPTION = "근무가 잡히면 여기 숫자가 서요";
-
-const ESTIMATE_NOTE = "예상치예요. 실제 지급액과 다를 수 있어요";
-
-const HISTORY_ROW = "내역 보기";
-
-const READ_FAILED = "통계를 불러오지 못했어요";
-
 const SKELETON_ROWS = [0, 1, 2];
-
-/** 탭에 없는 쪽은 열두 달을 안 읽는다. 배열을 그때그때 만들면 질의가 매 렌더 새로 선다. */
-const NO_MONTHS: string[] = [];
-
-/**
- * 무효화 키를 여기 다시 적은 것은 슬라이스끼리 서로를 못 불러서다(lint 규칙 3) — 정본은 코드가
- * 아니라 `docs/2-design/system/runtime.md`의 「TanStack Query 규칙」이다.
- */
-const RETRY_KEYS = [["schedule"], ["attendance"], ["payroll"], ["rehearsal"]];
 
 /** 못 가는 화살표는 안 그린다. 달 글이 가운데에 그대로 서게 자리만 남긴다. */
 function ArrowSlot() {
@@ -120,171 +47,22 @@ function ArrowSlot() {
 
 export function StatsScreen() {
   const router = useRouter();
-  const today = kstToday();
-
-  const [me, setMe] = useState<string | null>(null);
-  const [tab, setTab] = useState(ATTENDANCE);
-  const [month, setMonth] = useState(() => monthOf(today));
-
-  const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
-    supabase,
-    me,
-  );
-  const clockOffset = serverClockStore((at) => at.offset);
-
-  useEffect(() => {
-    void getCurrentUser(supabase).then((user) => setMe(user?.id ?? null));
-  }, []);
-
-  const months = useMemo(() => trendMonths(month), [month]);
-  const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
-  const profileId = profile?.id ?? null;
-
-  const work = useWorkMonthsQuery(
-    supabase,
-    tab === ATTENDANCE ? NO_MONTHS : months,
-  );
-  const attendance = useAttendanceMonthsQuery(
-    supabase,
-    tab === ATTENDANCE ? months : NO_MONTHS,
-  );
-  const payroll = usePayrollMonthsByMonthQuery(
-    supabase,
-    tab === PAYROLL ? months : NO_MONTHS,
-  );
-  const rehearsal = useRehearsalMonthsQuery(
-    supabase,
-    tab === PAYROLL ? months : NO_MONTHS,
-  );
-  const firstMonth = useFirstScheduleMonthQuery(supabase);
-
-  const sources: readonly { isLoading: boolean; error: Error | null }[] =
-    tab === ATTENDANCE
-      ? [attendance]
-      : tab === POSITION
-        ? [work]
-        : [work, payroll, rehearsal];
-
-  const loading = profileLoading || sources.some((one) => one.isLoading);
-  const failed = sources.some((one) => one.error !== null);
-
-  const shownAttendance = monthIn(attendance.data, month);
-  const shownWork = monthIn(work.data, month);
-
-  const tally = useMemo(
-    () =>
-      myAttendanceTally(
-        shownAttendance?.days ?? [],
-        shownAttendance?.attendance.checkIns ?? [],
-        shownAttendance?.attendance.excuseStatuses ?? [],
-        profileId,
-        now,
-      ),
-    [shownAttendance, profileId, now],
-  );
-
-  const attendanceDays = useMemo(
-    () =>
-      profileId === null || shownAttendance === undefined
-        ? []
-        : buildMyAttendanceDays(
-            profileId,
-            shownAttendance.days,
-            shownAttendance.attendance.checkIns,
-            shownAttendance.attendance.excuseStatuses,
-            now,
-          ),
-    [profileId, shownAttendance, now],
-  );
-
-  const totals = useMemo<MyWorkTotals>(() => {
-    if (profileId === null) {
-      return { totalMinutes: 0, totalCount: 0, byPosition: [] };
-    }
-
-    const inputs = workInputsOf(shownWork?.days ?? []);
-
-    return computeMyWorkTotals(inputs.assignments, inputs.days, profileId);
-  }, [shownWork, profileId]);
-
-  const payrollLoaded = useMemo(
-    () => joinPayrollByMonth(work.data, payroll.data),
-    [work.data, payroll.data],
-  );
-
-  const payrollDays = useMemo(
-    () =>
-      myPayrollDaysOfMonth(
-        payrollLoaded,
-        month,
-        profileId,
-        now,
-        rehearsal.data ?? [],
-      ),
-    [payrollLoaded, month, profileId, rehearsal.data, now],
-  );
-
-  const values = useMemo(() => {
-    if (profileId === null) {
-      return new Map<string, number>();
-    }
-
-    return tab === ATTENDANCE
-      ? myAttendanceValues(attendance.data, profileId, now)
-      : tab === POSITION
-        ? myWorkValues(work.data, profileId)
-        : myPayrollValues(payrollLoaded, profileId, now, rehearsal.data ?? []);
-  }, [
-    tab,
-    profileId,
-    attendance.data,
-    work.data,
-    payrollLoaded,
-    rehearsal.data,
-    now,
-  ]);
-
-  const points = useMemo(
-    () =>
-      buildTrend(months, values).map((point) => ({
-        month: Number(point.month.slice(5, MONTH_LENGTH)),
-        value: point.value,
-      })),
-    [months, values],
-  );
-
-  const empty =
-    tab === ATTENDANCE
-      ? attendanceDays.length === 0
-      : tab === POSITION
-        ? totals.totalCount === 0
-        : payrollDays.length === 0;
-
-  const payrollTotal = values.get(month) ?? 0;
-
-  const goMonth = (step: number) => setMonth(shiftMonth(month, step));
-
-  const retry = () => {
-    for (const key of RETRY_KEYS) {
-      void queryClient.invalidateQueries({ queryKey: key });
-    }
-  };
+  const screen = useStatsScreen(supabase);
 
   return (
     <Screen floor="plain">
-      <AppBar title="통계" onBack={() => router.back()} />
+      <AppBar title={STATS_COPY.appBarTitle} onBack={() => router.back()} />
 
       <ScrollView>
         <View className="px-5 pb-8">
           <View className="mt-2 flex-row items-center justify-center gap-2 py-2">
-            {firstMonth.data != null &&
-            canGoToPreviousMonth(month, firstMonth.data) ? (
+            {screen.canGoPrev ? (
               <Button
                 variant="ghost"
                 size="compact"
                 square
                 testID="stats-month-prev"
-                onPress={() => goMonth(-1)}
+                onPress={screen.goPrev}
               >
                 <Icon icon={ChevronLeft} tone="subtle" />
               </Button>
@@ -293,16 +71,16 @@ export function StatsScreen() {
             )}
 
             <Text size="base" weight="medium" numeric>
-              {spellMonth(month)}
+              {screen.monthLabel}
             </Text>
 
-            {canGoToNextMonth(month, today) ? (
+            {screen.canGoNext ? (
               <Button
                 variant="ghost"
                 size="compact"
                 square
                 testID="stats-month-next"
-                onPress={() => goMonth(1)}
+                onPress={screen.goNext}
               >
                 <Icon icon={ChevronRight} tone="subtle" />
               </Button>
@@ -315,44 +93,36 @@ export function StatsScreen() {
             className="mt-3"
             testID="stats-segment"
             options={TAB_OPTIONS}
-            value={tab}
-            onChange={setTab}
+            value={screen.tab}
+            onChange={screen.chooseTab}
           />
 
           <View className="mt-6">
             <TrendChart
               testID="stats-trend-chart"
-              points={points}
-              selectedMonth={Number(month.slice(5, MONTH_LENGTH))}
-              valueLabel={
-                loading || failed || empty
-                  ? undefined
-                  : tab === ATTENDANCE
-                    ? `${values.get(month) ?? 0}%`
-                    : tab === POSITION
-                      ? hoursLabel(totals.totalMinutes)
-                      : tenThousandWonLabel(payrollTotal)
-              }
+              points={screen.points}
+              selectedMonth={screen.selectedMonth}
+              valueLabel={screen.trendValueLabel}
             />
           </View>
 
-          {loading ? (
+          {screen.listState === "loading" ? (
             <View className="mt-6 gap-4">
               <SkeletonLine className="h-9 w-2/3" />
               {SKELETON_ROWS.map((at) => (
                 <SkeletonLine key={at} className="w-2/3" />
               ))}
             </View>
-          ) : failed ? (
+          ) : screen.listState === "failed" ? (
             <View className="mt-6 flex-row items-center gap-2">
               <Text size="xs" tone="subtle">
-                {READ_FAILED}
+                {STATS_COPY.readFailed}
               </Text>
-              <Button variant="ghost" size="compact" onPress={retry}>
-                다시 시도
+              <Button variant="ghost" size="compact" onPress={screen.retry}>
+                {STATS_COPY.retry}
               </Button>
             </View>
-          ) : empty ? (
+          ) : screen.listState === "empty" ? (
             <View>
               <Text
                 size="3xl"
@@ -367,41 +137,37 @@ export function StatsScreen() {
               <View className="mt-8">
                 <EmptyState
                   scene="no-shifts"
-                  title={EMPTY_TITLE}
-                  description={EMPTY_DESCRIPTION}
+                  title={STATS_COPY.emptyTitle}
+                  description={STATS_COPY.emptyBody}
                 />
               </View>
             </View>
-          ) : tab === ATTENDANCE ? (
+          ) : screen.listState === "attendance" ? (
             <View>
               <Text size="sm" tone="muted" numeric className="mt-6">
-                {monthAttendanceLine(tally)}
+                {screen.attendanceLine}
               </Text>
 
               <View className="mt-3">
                 <RatioBand
                   testID="stats-attendance-legend"
-                  shares={attendanceRatioShares(tally)}
+                  shares={screen.shares}
                 />
               </View>
 
               <View className="mt-8">
-                {attendanceDays.map((day, at) => {
-                  const row = myAttendanceRow(day);
-
-                  return (
-                    <ListRow
-                      key={day.workDate}
-                      divider={at > 0}
-                      title={row.title}
-                      detail={row.subtitle}
-                      value={row.value}
-                    />
-                  );
-                })}
+                {screen.attendanceRows.map((row, at) => (
+                  <ListRow
+                    key={row.key}
+                    divider={at > 0}
+                    title={row.title}
+                    detail={row.detail}
+                    value={row.value}
+                  />
+                ))}
               </View>
             </View>
-          ) : tab === POSITION ? (
+          ) : screen.listState === "position" ? (
             <View>
               <Text
                 size="3xl"
@@ -410,20 +176,20 @@ export function StatsScreen() {
                 numeric
                 className="mt-6"
               >
-                {hoursLabel(totals.totalMinutes)}
+                {screen.totalLabel}
               </Text>
 
               <View className="mt-8">
                 <RowBars
                   testID="stats-positions"
-                  items={totals.byPosition.map((row) => ({
-                    key: row.position,
-                    value: row.minutes,
+                  items={screen.positionRows.map((row) => ({
+                    key: row.key,
+                    value: row.weight,
                     row: (
                       <ListRow
-                        title={row.position}
-                        detail={`${row.count}건`}
-                        value={hoursLabel(row.minutes)}
+                        title={row.title}
+                        detail={row.detail}
+                        value={row.value}
                       />
                     ),
                   }))}
@@ -439,21 +205,21 @@ export function StatsScreen() {
                 numeric
                 className="mt-6"
               >
-                {spellWon(payrollTotal)}
+                {screen.amountLabel}
               </Text>
 
               <Text size="sm" tone="subtle" className="mt-1">
-                {ESTIMATE_NOTE}
+                {screen.estimateNote}
               </Text>
 
               <Text size="sm" tone="muted" numeric className="mt-3">
-                {myPayrollSubtitle(payrollDays)}
+                {screen.payrollSubtitle}
               </Text>
 
               <View className="mt-8">
                 <ListRow
                   testID="stats-payroll-history"
-                  title={HISTORY_ROW}
+                  title={STATS_COPY.historyRow}
                   chevron
                   onPress={() => router.push("/payroll")}
                 />
