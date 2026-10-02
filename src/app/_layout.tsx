@@ -16,7 +16,7 @@ import {
 } from "@/shared/utils/fontLoading.utils";
 import { getServerNow } from "@/entities/clock/api/getServerNow.api";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
-import { wireAutoRefresh } from "@/features/auth/hooks/wireAutoRefresh";
+import { wireAutoRefresh } from "@/features/auth/lib/wireAutoRefresh.lib";
 import {
   decideEntry,
   type EntryDecision,
