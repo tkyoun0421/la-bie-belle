@@ -32,7 +32,7 @@ import {
  * 이번 달 며칠을 일할 수 있나」를 본다 — 서버에 두 번 묻지 않는다.
  *
  * **마감일 시트가 여기와 달력 두 자리에서 열린다.** 당길 일이 생기는 문이 둘이라 시트는
- * 슬라이스 밖(`@/features/schedule/ui`)에 산다.
+ * 슬라이스 밖(`@/features/availabilitySubmit/ui`)에 산다.
  */
 
 const TABS = [

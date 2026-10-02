@@ -1,10 +1,10 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/qr/hooks/useQrCodeQuery.ts
+// 구현 대상: src/entities/qr/services/useQrCodeQuery.ts
 //
 // 관리자 QR 화면이 현재 코드를 읽는 훅이다. 캐시 키·staleTime은
-// `@/entities/attendance/api/getQrCode.api`가 정한 상수를 그대로 쓴다
+// `@/entities/qr/api/getQrCode.api`가 정한 상수를 그대로 쓴다
 // (design.md 「QR」, spec `docs/2-design/spec/attendance-qr.md`).
 
 const getQrCodeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
@@ -19,7 +19,8 @@ const { renderHook, waitFor } = await import("@testing-library/react-native");
 const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
-const { useQrCodeQuery } = await import("@/entities/qr/hooks/useQrCodeQuery");
+const { useQrCodeQuery } =
+  await import("@/entities/qr/services/useQrCodeQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

@@ -38,7 +38,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 ```ts
 const { toIsoDate } = await import(
   // @ts-expect-error 대상 모듈이 아직 없다
-  "@/features/payroll/model/holiday-api-response"
+  "@/features/holiday/model/holiday.schema"
 );
 ```
 
