@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useRouter, type Href } from "expo-router";
+import { useMemo } from "react";
 import { ScrollView, View } from "react-native";
 import { supabase } from "@/shared/api/supabase";
 import { AppBar } from "@/shared/ui/AppBar";
@@ -12,24 +12,9 @@ import { ListRow } from "@/shared/ui/ListRow";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
-import type { PendingApproval } from "@/entities/workRequest/api/workRequest.dto";
-import type { CancelDecision } from "@/entities/workRequest/model/workRequest.type";
-import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
-import { useDecideCancelRequestMutation } from "@/features/workRequest/services/useDecideCancelRequestMutation";
-import type { ApprovalListRow } from "@/screens/approvals/model/approvals.type";
-import {
-  ApprovalDetailSheet,
-  type ApprovalSheetFace,
-} from "@/screens/approvals/ui/ApprovalDetailSheet";
-import {
-  cancelApprovalConfirmBody,
-  cancelApprovalDetail,
-  cancelApprovalRowTitle,
-} from "@/screens/approvals/utils/approvalDetail.utils";
-import {
-  removeApproval,
-  sortApprovals,
-} from "@/screens/approvals/utils/approvalsList.utils";
+import { APPROVALS_COPY } from "@/screens/approvals/consts/approvals.const";
+import { useApprovalsScreen } from "@/screens/approvals/hooks/useApprovalsScreen";
+import { ApprovalDetailSheet } from "@/screens/approvals/ui/ApprovalDetailSheet";
 
 /**
  * 관리자가 근무자에게서 온 요청에 답하는 화면이다. 정본은
@@ -49,134 +34,64 @@ import {
  *
  * **지금 서는 줄은 근무 취소뿐이다.** 사유 줄은 `attendance-excuse`가 같은 목록에 잇는다
  * (plan 「범위 밖」).
+ *
+ * **`useState`가 하나도 없다.** 목록과 시트와 확인창의 상태가 전부 통신에 매여 있어
+ * [`useApprovalsScreen`](../hooks/useApprovalsScreen.ts)이 든다.
  */
 
 const SKELETON_ROWS = [0, 1, 2];
 
-type CancelRow = ApprovalListRow & { source: PendingApproval };
-
-type SentDecision = { row: CancelRow; decision: CancelDecision };
-
-function rowsOf(approvals: PendingApproval[]): CancelRow[] {
-  return sortApprovals(
-    approvals.map((one) => ({
-      id: one.id,
-      kind: "cancel" as const,
-      workDate: one.assignments.days.work_date,
-      source: one,
-    })),
-  );
-}
-
-function detailOf(row: CancelRow) {
-  return cancelApprovalDetail({
-    displayName: row.source.profiles?.display_name ?? "",
-    workDate: row.workDate,
-    position: row.source.assignments.position,
-    startsAt: row.source.assignments.days.starts_at,
-    endsAt: row.source.assignments.days.ends_at,
-    sentAt: row.source.created_at,
-    reason: row.source.reason,
-  });
-}
-
-function namesOf(row: CancelRow) {
-  return {
-    displayName: row.source.profiles?.display_name ?? "",
-    workDate: row.workDate,
-    position: row.source.assignments.position,
-  };
-}
-
 export function ApprovalsScreen() {
   const router = useRouter();
 
-  const { data: approvals } = usePendingApprovalsQuery(supabase);
-  const { mutate, isPending, isSuccess, isError, reset } =
-    useDecideCancelRequestMutation(supabase);
+  const bearings = useMemo(
+    () => ({
+      canGoBack: () => router.canGoBack(),
+      back: () => router.back(),
+      replace: (destination: string) => router.replace(destination as Href),
+    }),
+    [router],
+  );
 
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [face, setFace] = useState<ApprovalSheetFace>("detail");
-  const [confirming, setConfirming] = useState(false);
-  const [sent, setSent] = useState<SentDecision | null>(null);
-  const [answered, setAnswered] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
-
-  const hideToast = useCallback(() => setToast(null), []);
-
-  const closeSheet = useCallback(() => {
-    setOpenId(null);
-    setFace("detail");
-    setConfirming(false);
-    reset();
-  }, [reset]);
-
-  useEffect(() => {
-    if (!isSuccess || sent === null) {
-      return;
-    }
-
-    setAnswered(sent.row.id);
-    setOpenId(null);
-    setFace("detail");
-    setConfirming(false);
-    setSent(null);
-    reset();
-
-    if (sent.decision === "approved") {
-      router.replace(
-        `/admin/schedule?date=${sent.row.workDate}&from=approvals`,
-      );
-      return;
-    }
-
-    setToast("거절했어요");
-  }, [isSuccess, sent, reset, router]);
-
-  const rows = rowsOf(approvals ?? []);
-  const visible = answered === null ? rows : removeApproval(rows, answered);
-  const open = visible.find((row) => row.id === openId) ?? null;
+  const screen = useApprovalsScreen(supabase, bearings);
 
   return (
     <Screen>
-      <AppBar
-        title="승인할 일"
-        onBack={() =>
-          router.canGoBack() ? router.back() : router.replace("/admin")
-        }
-      />
+      <AppBar title={APPROVALS_COPY.appBarTitle} onBack={screen.goBack} />
 
       <ScrollView>
         <View className="px-5 pb-5">
-          {approvals === undefined ? (
+          {screen.listState === "loading" ? (
             <Card>
               {SKELETON_ROWS.map((at) => (
                 <SkeletonLine key={at} className="my-4 w-2/3" />
               ))}
             </Card>
-          ) : visible.length === 0 ? (
+          ) : screen.listState === "empty" ? (
             <Card>
               <EmptyState
                 scene="all-clear"
-                title="승인할 일이 없어요"
-                description="사유나 근무 취소가 오면 여기 서요"
+                title={APPROVALS_COPY.emptyTitle}
+                description={APPROVALS_COPY.emptyBody}
               />
             </Card>
           ) : (
             <Card className="py-0">
-              {visible.map((row, at) => (
+              {screen.rows.map((row, at) => (
                 <ListRow
                   key={row.id}
-                  title={cancelApprovalRowTitle(namesOf(row))}
-                  detail={row.source.reason}
-                  left={<Badge variant="neutral" size="sm" label="근무 취소" />}
+                  title={row.title}
+                  detail={row.detail}
+                  left={
+                    <Badge
+                      variant="neutral"
+                      size="sm"
+                      label={APPROVALS_COPY.cancelBadge}
+                    />
+                  }
                   chevron
                   divider={at > 0}
-                  onPress={() => {
-                    setOpenId(row.id);
-                    setFace("detail");
-                    reset();
-                  }}
+                  onPress={row.press}
                 />
               ))}
             </Card>
@@ -184,50 +99,45 @@ export function ApprovalsScreen() {
         </View>
       </ScrollView>
 
-      {open ? (
-        <SheetLayer onDismiss={closeSheet}>
+      {screen.detail === null ? null : (
+        <SheetLayer onDismiss={screen.closeSheet}>
           <ApprovalDetailSheet
-            detail={detailOf(open)}
-            face={face}
-            sending={isPending}
-            failed={isError}
-            onFace={setFace}
-            onApprove={() => setConfirming(true)}
-            onReject={(reason) => {
-              setSent({ row: open, decision: "rejected" });
-              mutate({
-                cancelRequestId: open.id,
-                decision: "rejected",
-                reason,
-              });
-            }}
+            detail={screen.detail}
+            face={screen.face}
+            sending={screen.sending}
+            failed={screen.failed}
+            chosen={screen.chosen}
+            written={screen.written}
+            canSend={screen.canSend}
+            sendLabel={screen.sendLabel}
+            onFace={screen.showFace}
+            onApprove={screen.askApprove}
+            onChoose={screen.choose}
+            onWrite={screen.write}
+            onReject={screen.reject}
           />
         </SheetLayer>
-      ) : null}
+      )}
 
-      {open ? (
-        <Dialog
-          visible={confirming}
-          title="근무를 취소할까요?"
-          notice={isError ? "보내지 못했어요. 다시 시도해주세요" : undefined}
-          closeLabel="뒤로"
-          confirmLabel={isError ? "다시 시도" : "취소 승인"}
-          destructive
-          onClose={() => {
-            setConfirming(false);
-            reset();
-          }}
-          onConfirm={() => {
-            setSent({ row: open, decision: "approved" });
-            mutate({ cancelRequestId: open.id, decision: "approved" });
-          }}
-        >
-          {cancelApprovalConfirmBody(namesOf(open))}
-        </Dialog>
-      ) : null}
+      <Dialog
+        visible={screen.confirming}
+        title={APPROVALS_COPY.confirmTitle}
+        notice={screen.confirmNotice}
+        closeLabel={APPROVALS_COPY.confirmBack}
+        confirmLabel={screen.confirmLabel}
+        destructive
+        onClose={screen.cancelApprove}
+        onConfirm={screen.approve}
+      >
+        {screen.confirmBody}
+      </Dialog>
 
-      {toast ? (
-        <FloatingToast kind="success" message={toast} onDone={hideToast} />
+      {screen.toast ? (
+        <FloatingToast
+          kind="success"
+          message={screen.toast}
+          onDone={screen.dismissToast}
+        />
       ) : null}
     </Screen>
   );
