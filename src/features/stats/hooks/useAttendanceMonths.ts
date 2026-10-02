@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import type { DB } from "@/shared/api/database";
 import type { MonthsResult } from "@/shared/api/monthsQuery";
-import type { AttendanceRows } from "@/entities/attendance/api/getDayAttendance.api";
+import type { AttendanceRows } from "@/entities/attendance/api/attendance.dto";
 import { useMonthsAttendanceQuery } from "@/entities/attendance/services/useMonthsAttendanceQuery";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";

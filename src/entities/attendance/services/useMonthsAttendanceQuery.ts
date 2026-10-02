@@ -2,7 +2,7 @@ import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { combineMonths, type MonthsResult } from "@/shared/api/monthsQuery";
 import { queryKeys } from "@/shared/api/queryKeys";
-import type { AttendanceRows } from "@/entities/attendance/api/getDayAttendance.api";
+import type { AttendanceRows } from "@/entities/attendance/api/attendance.dto";
 import { getMonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
 
 /**
