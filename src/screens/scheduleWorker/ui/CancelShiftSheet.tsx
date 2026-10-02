@@ -1,41 +1,42 @@
-import { useState } from "react";
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
-import { isValidCancelReason } from "@/screens/scheduleWorker/model/cancelRequestSheet.policy";
+import { CANCEL_REASON_MAX_LENGTH } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
 
 /**
  * 내 근무를 못 나가게 됐다고 관리자에게 알리는 시트다. 정본은
- * `docs/2-design/modules/schedule/screens/scheduleWorker.md`의 「근무 취소 시트 짜임」이다.
+ * `docs/2-design/modules/schedule/screens/schedule-worker.md`의 「근무 취소 시트 짜임」이다.
  *
  * **보내는 것은 취소가 아니라 취소 요청이다.** 관리자가 승인해야 자리가 비고 그때까지는
  * 예정대로 근무라, 부제와 버튼 둘이 그 사실을 말한다(SCH-018).
  *
- * **사유가 필수다.** 관리자가 판정하는 근거가 그 글 하나고, 그 글이 승인할 일 화면에 그대로
- * 선다. 상한 100자는 `create_cancel_request`와 같은 수다.
- *
- * **실패해도 쓴 글이 남는다.** 시트가 열린 채 오류 블록이 버튼 위에 선다.
+ * **사유를 여기가 안 든다.** 적은 글이 그대로 관리자에게 가고 보내는 동안 잠기고 실패하면
+ * 남아야 해서 통신에 매여 있다 — 조각은 제 controller를 못 가지니 화면의 controller가
+ * 들고 내려보낸다([`useScheduleWorkerScreen`](../hooks/useScheduleWorkerScreen.ts)).
+ * 보낼 수 있는지도 그쪽 판정이고 여기는 그 답을 버튼에 걸기만 한다.
  */
-
-const REASON_MAX_LENGTH = 100;
 
 export type CancelShiftSheetProps = {
   title: string;
+  reason: string;
+  canSend: boolean;
   sending: boolean;
   failed: boolean;
-  onSend: (reason: string) => void;
+  onChangeReason: (typed: string) => void;
+  onSend: () => void;
 };
 
 export function CancelShiftSheet({
   title,
+  reason,
+  canSend,
   sending,
   failed,
+  onChangeReason,
   onSend,
 }: CancelShiftSheetProps) {
-  const [reason, setReason] = useState("");
-
   return (
     <View className="gap-3">
       <View className="gap-1">
@@ -50,9 +51,9 @@ export function CancelShiftSheet({
       <Input
         testID="schedule-cancel-reason-input"
         value={reason}
-        maxLength={REASON_MAX_LENGTH}
+        maxLength={CANCEL_REASON_MAX_LENGTH}
         multiline
-        onChangeText={setReason}
+        onChangeText={onChangeReason}
       />
 
       {failed ? (
@@ -64,8 +65,8 @@ export function CancelShiftSheet({
       <Button
         variant="primary"
         loading={sending}
-        disabled={!isValidCancelReason(reason)}
-        onPress={() => onSend(reason.trim())}
+        disabled={!canSend}
+        onPress={onSend}
       >
         취소 요청 보내기
       </Button>

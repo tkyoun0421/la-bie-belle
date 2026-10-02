@@ -1,6 +1,7 @@
 import { ScrollView, View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
+import { ROSTER_MAX_HEIGHT } from "@/screens/scheduleWorker/consts/scheduleWorker.const";
 import type { RosterRow as RosterRowValue } from "@/screens/scheduleWorker/model/daySheet.policy";
 import { DayRoster } from "@/screens/scheduleWorker/ui/DayRoster";
 
@@ -16,8 +17,6 @@ import { DayRoster } from "@/screens/scheduleWorker/ui/DayRoster";
  * 거는 길을 안 두면서도, 버튼이 통째로 없어지면 왜 없어졌는지가 화면에 안 남는다 —
  * 옆의 「취소 요청 중」 배지가 그 이유다(schedule-worker.md의 「보낸 뒤」).
  */
-
-const ROSTER_MAX_HEIGHT = 360;
 
 export type DaySheetProps = {
   title: string;
