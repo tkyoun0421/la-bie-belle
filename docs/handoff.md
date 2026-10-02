@@ -12,7 +12,7 @@
 
 **알림 묶음이 끝났다.** `hooks/` 다섯이 슬라이스 셋에서 통째로 `services/`로(열 + 짝), 통신 꼴 둘이 `notification.dto.ts`로, 상수 열여섯이 `consts/` 넷으로 갔다. `pushDeps`가 셋으로 갈렸다 — 손은 `lib/pushDeps.lib.ts`, 앱 설정 읽기는 `config/pushSwitch.config.ts`, 기기 설정 화면에 뜨는 채널 이름은 `consts/`다. `pushPermission`은 통째로 `lib`이다(주입받아 순수한데도 하는 일이 OS에 묻는 것이라 AC-09의 판정을 지켰다).
 
-**상수를 모으니 Deno 복사 경로가 늘었다.** 알림의 종류 목록과 한 번에 부치는 수를 Edge Function이 부르는 파일 둘이 써서 `consts/`가 `_shared/`로 복사되는 셋째 폴더가 됐다 — 「슬라이스마다 상수 한 파일」과 「함수가 부르는 것만 옮긴다」가 부딪히는 자리다. 같은 경계가 사본 접기도 막았다: 시·분 꼴을 `shared/utils/`로 올리면 공용 폴더 전체가 `node:` 금지를 받아 슬라이스 안에 섰다. **관찰 049가 요구한 「지정자가 복사본에 실제로 있나」 검사는 이미 서 있었다** — 근무표 묶음이 세웠고 handoff가 그 줄을 안 지웠다.
+**상수를 모으니 Deno 복사 경로가 늘었다.** 알림의 종류 목록과 한 번에 부치는 수를 Edge Function이 부르는 파일 둘이 써서 `consts/`가 `_shared/`로 복사되는 셋째 폴더가 됐다 — 「슬라이스마다 상수 한 파일」과 「함수가 부르는 것만 옮긴다」가 부딪히는 자리다. 같은 경계가 사본 접기도 막았다: 시·분 꼴을 `shared/utils/`로 올리면 공용 폴더 전체가 `node:` 금지를 받아 슬라이스 안에 섰다. **관찰 049가 요구한 「지정자가 복사본에 실제로 있나」 검사는 이미 서 있었다** — 근무표 묶음이 `syncEdgeShared.mts`에 세웠는데 그 뒤로도 「남았다」로 적혀 있었다. 이번에 그 줄을 지웠다.
 
 **승인된 축 둘이 한 파일에서 부딪힌다.** EAS 프로젝트 id는 `app.json`에 살아 `expo-constants`로만 읽히는데, AC-11은 `Constants` 읽기를 `config/`로 몰고 AC-08의 `nativeSdkSegment`는 `expo-*`를 `lib`·`ui`·`hooks`에만 둔다. **`config/`의 `expo-constants`를 면제해야 규칙 둘이 같이 선다.** 같은 자리에서 AC-10의 관찰 결과 문장도 코드와 안 맞는 것이 드러났다 — 「`consts/` 밖에 `export const <대문자_스네이크>`가 없다」가 거짓이고 그것이 의도다(질의 열 목록은 `api/`, SDK 손 묶음은 `lib/`). `constsSegment.mjs`가 면제 넷을 가져야 켜진다.
 

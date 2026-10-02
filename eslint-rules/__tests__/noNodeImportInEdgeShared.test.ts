@@ -27,6 +27,15 @@ describe("house/no-node-import-in-edge-shared — Deno로 복사되는 폴더의
     },
   );
 
+  it("상수 폴더도 복사 대상이라 걸린다", async () => {
+    const violations = await violationsOf(
+      importCode("node:crypto"),
+      "src/entities/notification/consts/notification.const.ts",
+    );
+
+    expect(violations.map((violation) => violation.ruleId)).toContain(RULE_ID);
+  });
+
   it("같은 폴더의 상대 import는 안 걸린다", async () => {
     const violations = await violationsOf(importCode("./title"), SHARED_FILE);
 
