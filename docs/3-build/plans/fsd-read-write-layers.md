@@ -293,8 +293,13 @@ sources:
   - 빼낸 훅마다 짝 테스트가 붙어 TDD를 탄다
 - 관찰 결과: `api`·`services`·`hooks`를 당기는 `.tsx`에 상태가 없다. `ui`가 `api`를 당기는 자리가 0이다. 셋이 초록이다
 - 보드의 `dumb-ui-widen`이 이 걸음이다 — 그 행이 든 「업무 상수와 판정과 가공 함수가 화면 파일에 남았다」는 AC-10과 이 묶음이 같이 걷는다
-- **도메인 열로 쪼개 병렬로 돈다.** 이 묶음만 병렬이 되는 까닭은 빼낸 훅을 그 화면의 `.tsx` 하나만 부르기 때문이다 — 밖에서 당기는 import가 없어 다른 묶음의 줄을 안 고친다
+- **도메인 열로 쪼갠다.** 이 묶음이 병렬이 **될 수 있는** 까닭은 빼낸 훅을 그 화면의 `.tsx` 하나만 부르기 때문이다 — 밖에서 당기는 import가 없어 다른 묶음의 줄을 안 고친다. 다만 **실제로는 직렬로 돈다** — worktree를 열로 떼면 브랜치가 아홉이 되고 `spec-gate.py`가 브랜치 슬러그와 같은 이름의 plan을 찾아 여덞이 막힌다([관찰 056](../../observations/056-spec-gate-ties-parallel-columns-to-one-branch.md)). 열마다 plan을 쪼개면 「저장소 전체에 업무 상태가 없다」는 단언이 어느 문서에도 안 서서, 한 브랜치에서 차례로 내보낸다
 - 큰 파일을 책임으로 쪼개는 일이 같이 간다. `DayDetail.tsx` 969줄과 `PendingScreen.tsx` 689줄은 훅을 빼도 여전히 여러 책임을 들고 있어 조각을 가른다
+- **본보기 열을 먼저 직렬로 세운다 — 게이트 셋이다.** 아홉 열을 동시에 띄우면 controller가 아홉 가지 모양으로 선다. 작은 열 하나(blocked·left·retry)가 먼저 꼴을 못 박고, 나머지 여덞 열이 그 PR을 받아 돈다
+- 돌면서 나온 것 — **controller가 서는 조건은 「화면이 제 업무 상태를 드나」다.** 게이트 셋에서 `retry`만 controller를 받았다 — 재시도가 도는 중인지가 그 화면 것이다. `blocked`·`left`는 service 둘로 상태가 다 접혀 남는 것이 「끝난 뒤 어디로 가는지」뿐이고 그것은 이동이라 `.tsx`가 가진다. **controller를 화면마다 하나씩 기계적으로 세우면 빈 훅이 선다** — AC-12의 행동 첫 줄(「화면마다 `use<화면>.ts`를 세워」)을 이 조건이 좁힌다
+- 돌면서 나온 것 — **열 전부가 쓰는 도구 둘이 먼저 서야 했다.** `getCurrentUser(supabase)`를 `useEffect`로 부르는 자리가 **열두 군데**고 받는 꼴이 셋으로 갈려 있었다(`id`만 · `email`과 사진 · 둘 다). 로그아웃 블록은 화면 다섯에 **글자까지 같았다.** 열마다 controller를 세워도 둘은 안 접힌다 — 접는 자리가 `services`다. `entities/session/services/useSessionUserQuery.ts`와 `features/auth/services/useSignOutMutation.ts`가 본보기 PR에서 섰고, 게이트 셋이 그 둘로 `useState` 여섯과 `useEffect` 셋을 버렸다. 남은 자리는 세션 읽기 아홉(`src/app/` 셋·화면 다섯, `PendingScreen`이 둘)과 로그아웃 둘(`profile`·`pending`)이다
+- **묶음을 가로지르는 사본은 열이 안 건드린다.** `SKELETON_ROWS`(열셋)·`SAVE_FAILED`(여섯)·`ESTIMATE_NOTE`(둘)고, 열마다 제 `consts/`로 보내면 `.tsx`의 사본이 `consts/`의 사본이 될 뿐이다 — AC-13의 사본 묶음 task가 받는다. 열 안에서만 사는 사본은 그 열이 접는다
+- 돌면서 나온 것 — **`services/`는 보낼 데를 못 든다.** `useSignOutMutation`이 끝난 뒤 갈 자리를 인자(`onDone`)로 받는 까닭은 지금 다섯이 다 `/login`이어도 그것이 이동이고 AC-08의 「`expo-*`는 `lib`·`ui`·`hooks`에만」이 `services/`에서 `expo-router`를 막기 때문이다. controller가 서는 열에서는 controller가 그 인자를 쥐고, 안 서는 열에서는 `.tsx`가 쥔다
 
 ### AC-14 — `services`가 선다 ✅
 
@@ -356,6 +361,11 @@ sources:
 - 돌면서 나온 것 — **접다가 사본을 새로 하나 만들었다.** 좁히는 손을 위층으로 올리면서 「읽어 온 날에서 열 다섯만 남기는」 조각을 양쪽에 똑같이 남겼다. `ScheduleDay`가 그 다섯을 다 들어 구조로 그냥 들어가므로 조각이 아예 필요 없었다 — 걷었다. **사본을 접는 걸음이 사본을 낳는다**는 것이고, 접은 뒤 같은 축으로 한 번 더 세야 보인다
 - 돌면서 나온 것 — **`shared/utils/kstDate.ts`가 KST 시·분 꼴의 둘째 집이 됐다.** 알림 묶음이 그 꼴을 `entities/notification/utils/kstClock.utils.ts`에 세운 것은 그 파일이 Edge Function의 복사 경로라 공용을 못 당겨서였다. 통계와 승인 쪽 사본 둘은 Edge 밖이라 공용으로 접었고, **같은 꼴이 두 집에 산다** — 저장소의 `Intl.DateTimeFormat`이 일곱에서 다섯으로 줄고 그중 둘이 정본이다. 남은 둘은 QR(`kstStartLine`, QR 묶음 몫)과 근무 신청(`.tsx`의 달 꼴, AC-12 몫)이다
 - 돌면서 나온 것 — **재수출이 또 나왔다.** `screens/scheduleAdmin/model/monthEmptyState.policy.ts`가 `lastDateOfMonth`와 `shiftMonth`를 그대로 내보내, 그것을 쓰는 쪽이 `model`을 거쳐 공용 util을 당긴다. 공용 묶음이 잡은 [관찰 051](../../observations/051-reexport-bypasses-segment-checks.md)과 같은 꼴이고 SDK·시계가 아니라 축이 안 깨졌을 뿐이다 — AC-08이 재수출 규칙을 세울 때 이 자리도 걸린다
+- 돌면서 나온 것 — **`.tsx`의 로컬 상수를 세니 묶음을 가로지르는 사본이 셋이다.** AC-12의 안쪽 열을 띄우기 전에 센 값이고, 열마다 제 `consts/`로 보내면 `.tsx`의 사본이 `consts/`의 사본으로 옮겨 앉기만 한다
+  - `SKELETON_ROWS = [0, 1, 2]`가 **열하나**고 쓰는 꼴이 글자까지 같다(`SKELETON_ROWS.map((at) => …)`). 거기에 둘(`[0, 1]`·`[0, 1, 2, 3, 4]`)이 더 붙어 열셋이다 — **사본인 것은 값이 아니라 꼴이다.** 값(몇 줄)은 화면이 정하고 꼴은 `shared/ui`의 일이라, 접는 자리가 `consts`가 아닐 수 있다
+  - `SAVE_FAILED = "보내지 못했어요. 다시 시도해주세요"`가 **여섯**이다 — 근무표 둘·통계 하나·구성원 하나·근무표의 `features` 하나, 그리고 QR이 같은 글자를 `SEND_FAILED`로 든다. 묶음 다섯에 걸려 한 열이 못 접는다
+  - `ESTIMATE_NOTE = "예상치예요. 실제 지급액과 다를 수 있어요"`가 급여와 통계 둘이다
+  - 열 안에서만 사는 사본은 그 열이 접는다 — `ALREADY_DECIDED` 셋·`MORE_ICON_SIZE`·`MORE_HIT_SLOP`·`PHOTO_EDGE`·`PHOTO_QUALITY`(구성원), `GENDER_ICON_SIZE` 둘(근무표), `NO_FOLLOWER` 둘(급여)이다. `KST_OFFSET_MS` 둘과 `WEEKDAYS` 하나는 공용 함수가 이미 있어 그쪽으로 위임한다
 - 돌면서 나온 것 — **`ExcuseStatusRow`는 몸이 같아도 못 접는다.** `entities/attendance`와 `entities/payroll`에 각자 있고 다섯 열이 글자까지 같은데, 접으려면 `entities`끼리 import가 생겨 `no-cross-slice-import`에 걸린다. 올릴 자리도 없다 — `shared`에 두면 「`shared`는 도메인을 모른다」가 깨지고, `features`는 통신 계약을 소유할 층이 아니다. **사본 둘이 그 규칙의 값이다**
 
 ### AC-08 — 검사 열일곱이 선다
@@ -543,8 +553,9 @@ PR 하나씩 나른다. **이동하는 묶음은 앞의 것이 merge되고 나�
 7. **AC-07 — 슬라이스 쪼개기** ✅ 268개를 `git mv`했다. 교차 0이고 깨져 있던 엣지 import 셋을 고쳤다
 8. **AC-06나-1 — `model`/`utils` 가르기 + 접미사** ✅ 123개와 짝 테스트 120개를 `git mv`했다. 판정 예순하나·꼴 바꾸기 쉰여섯·타입 셋·검증 둘·store 하나
 9. **이동 열 — 도메인 열을 직렬로.** ✅ 열 묶음이 끝났다 — PR 하나가 그 도메인의 타입과 DTO·매퍼(AC-06나-2)·`lib`(AC-09)·`consts`(AC-10)·`config`(AC-11)·`services`(AC-14)·`stores`(AC-15)·중복(AC-13)을 같이 옮겼다. 순서는 공용 → 근무표 → 급여 → 구성원 → 근태 → 알림 → 리허설 → 통계 → 인증 → QR이었고, 앞의 것이 main에 든 뒤 다음을 뗐다. AC-09·AC-10·AC-11·AC-14·AC-15가 여기서 찼고 AC-06나-2는 타입을 다 뺐지만 꼴 바꾸기가 [dto-to-domain-shape](dto-to-domain-shape.md)로 떨어졌다
-10. **안쪽 열 — 도메인 열을 병렬로.** AC-12다. PR 하나가 그 도메인 `.tsx`의 업무 상태와 효과와 통신을 `screens/<슬라이스>/hooks/`의 controller로 빼고, 에러 코드 판정을 `model`로 내리고, 큰 파일을 책임으로 쪼갠다. worktree를 열로 떼어 같이 돈다
-11. **AC-08 — 검사 열일곱** 상태 금지와 「`ui`에서 `api` import 금지」는 안쪽 열이 끝나야 켠다
+10. **본보기 열 — 게이트 셋.** ✅ AC-12의 꼴을 못 박았다. `useSessionUserQuery`와 `useSignOutMutation`이 서고 blocked·left·retry가 그 위로 올라갔다 — `useState` 여섯과 `useEffect` 셋이 사라지고 controller는 `retry` 하나만 섰다
+11. **안쪽 열 — 도메인 열 아홉.** AC-12다. PR 하나가 그 도메인 `.tsx`의 업무 상태와 효과와 통신을 `screens/<슬라이스>/hooks/`의 controller로 빼고, 에러 코드 판정을 `model`로 내리고, 큰 파일을 책임으로 쪼갠다. 열마다 본보기 PR을 받아 돌고 **차례로 나른다** — 겹은 병렬이 되는데 브랜치가 안 된다([관찰 056](../../observations/056-spec-gate-ties-parallel-columns-to-one-branch.md))
+12. **AC-08 — 검사 열일곱** 상태 금지와 「`ui`에서 `api` import 금지」는 안쪽 열이 끝나야 켠다
 
 **AC-06을 갈라 AC-07을 그 사이에 끼운다.** 두 방향 다 한 번은 걸린다.
 

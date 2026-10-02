@@ -1,8 +1,6 @@
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { queryClient } from "@/shared/api/queryClient";
 import { supabase } from "@/shared/api/supabase";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
@@ -10,13 +8,13 @@ import { Divider } from "@/shared/ui/Divider";
 import { Illustration } from "@/shared/ui/Illustration";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
-import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { decideEntry } from "@/features/auth/lib/decideEntry.lib";
+import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
 import {
-  DEVICE_CLEANUP_NOT_WIRED_YET,
-  signOut,
-} from "@/features/auth/lib/signOut.lib";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
+  RETRY_COPY,
+  SCREEN_BOTTOM_PADDING,
+} from "@/screens/retry/consts/retry.const";
+import { useRetryScreen } from "@/screens/retry/hooks/useRetryScreen";
 
 /**
  * 로그인은 됐는데 앱이 뜨면서 프로필을 못 읽었을 때 서는 한 장이다. 어느 경로에서 실패했든
@@ -26,56 +24,17 @@ import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
  * 말한다. 「다시 시도」는 판정을 통째로 다시 돌린다 — 성공하면 원래 가려던 자리가 그대로
  * 뜨고, 실패하면 이 화면이 그대로다. 몇 번째 실패인지 세지 않고 문구도 안 바꾼다.
  *
+ * **controller가 하나 선다.** 게이트 셋 가운데 이 화면만 제 업무 상태를 든다 — 재시도가
+ * 도는 중인지다. 세션의 사람과 로그아웃은 service 둘이 가지고 여기서 바로 부른다.
+ *
  * 정본은 `docs/2-design/modules/account/screens/login.md`의 「읽기 실패 짜임」이다.
  */
-
-const SCREEN_BOTTOM_PADDING = 24;
-
 export function RetryScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const [email, setEmail] = useState("");
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [retrying, setRetrying] = useState(false);
-
-  useEffect(() => {
-    let abandoned = false;
-
-    void getCurrentUser(supabase).then((user) => {
-      if (abandoned || !user) {
-        return;
-      }
-
-      setEmail(user.email ?? "");
-      setPhotoUrl(googlePhotoOf(user.user_metadata));
-    });
-
-    return () => {
-      abandoned = true;
-    };
-  }, []);
-
-  const onRetry = useCallback(async () => {
-    setRetrying(true);
-
-    const destination = await decideEntry({ client: supabase });
-
-    setRetrying(false);
-
-    if (destination !== "/retry") {
-      router.replace(destination);
-    }
-  }, [router]);
-
-  const onSignOut = useCallback(() => {
-    void signOut({
-      ...DEVICE_CLEANUP_NOT_WIRED_YET,
-      signOut: async () => {
-        await supabase.auth.signOut();
-      },
-      clearQueryClient: () => queryClient.clear(),
-    }).then(() => router.replace("/login"));
-  }, [router]);
+  const { data: me } = useSessionUserQuery(supabase);
+  const { signOut, isPending } = useSignOutMutation(supabase);
+  const { retry, retrying } = useRetryScreen(supabase, router);
 
   return (
     <Screen
@@ -86,31 +45,40 @@ export function RetryScreen() {
       <View className="flex-1 items-center justify-center">
         <Illustration scene="server-error" />
         <Text size="xl" weight="semibold" className="text-center">
-          불러오지 못했어요
+          {RETRY_COPY.title}
         </Text>
         <Text size="sm" tone="muted" className="mt-2 text-center">
-          연결을 확인하고 다시 시도해 주세요
+          {RETRY_COPY.body}
         </Text>
         <Button
           variant="primary"
           className="mt-8 self-stretch"
           loading={retrying}
-          onPress={() => void onRetry()}
+          onPress={retry}
         >
-          다시 시도
+          {RETRY_COPY.retry}
         </Button>
       </View>
 
       <View>
         <Divider className="my-5" />
         <View className="flex-row items-center justify-center gap-3">
-          <Avatar name={email} photoUrl={photoUrl} size={24} />
+          <Avatar
+            name={me?.email ?? ""}
+            photoUrl={me?.googlePhotoUrl ?? null}
+            size={24}
+          />
           <Text size="sm" tone="subtle">
-            {email}
+            {me?.email ?? ""}
           </Text>
         </View>
-        <Button variant="ghost" className="mt-4" onPress={onSignOut}>
-          로그아웃
+        <Button
+          variant="ghost"
+          className="mt-4"
+          loading={isPending}
+          onPress={() => signOut(() => router.replace("/login"))}
+        >
+          {RETRY_COPY.signOut}
         </Button>
       </View>
     </Screen>

@@ -34,11 +34,11 @@ import {
 } from "@/entities/profile/model/profile.schema";
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import { googlePhotoOf } from "@/entities/session/utils/googlePhotoOf.utils";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/lib/signOut.lib";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 import { uploadAvatar } from "@/features/profileEdit/api/avatarsBucket.api";
 import { submitProfile } from "@/features/profileEdit/api/submitProfile.api";
 import { updateMyPhoto } from "@/features/profileEdit/api/updateMyPhoto.api";

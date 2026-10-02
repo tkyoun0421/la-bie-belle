@@ -1,8 +1,6 @@
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { queryClient } from "@/shared/api/queryClient";
 import { supabase } from "@/shared/api/supabase";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
@@ -10,12 +8,12 @@ import { Divider } from "@/shared/ui/Divider";
 import { Illustration } from "@/shared/ui/Illustration";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
-import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
 import {
-  DEVICE_CLEANUP_NOT_WIRED_YET,
-  signOut,
-} from "@/features/auth/lib/signOut.lib";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
+  LEFT_COPY,
+  SCREEN_BOTTOM_PADDING,
+} from "@/screens/left/consts/left.const";
 
 /**
  * 퇴사한 사람이 앱을 열면 대시보드 대신 서는 자리다. 볼 수 있는 것은 지난 급여와 자기 근무
@@ -25,43 +23,17 @@ import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
  * 기다림이 없다. 퇴사 날짜도 안 적는다 — 그만둔 날은 본인이 알고, 화면에 박으면 이 자리가
  * 통보처럼 읽힌다.
  *
+ * **controller가 없다.** 이 화면이 드는 업무 상태가 하나도 없다 — 세션의 사람은
+ * `useSessionUserQuery`가, 로그아웃은 `useSignOutMutation`이 가진다. 남은 둘은 어디로
+ * 가는지고 그것은 이동이라 여기 산다.
+ *
  * 정본은 `docs/2-design/modules/account/screens/login.md`의 「퇴사한 뒤 짜임」이다.
  */
-
-const SCREEN_BOTTOM_PADDING = 24;
-
 export function LeftScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const [email, setEmail] = useState("");
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let abandoned = false;
-
-    void getCurrentUser(supabase).then((user) => {
-      if (abandoned || !user) {
-        return;
-      }
-
-      setEmail(user.email ?? "");
-      setPhotoUrl(googlePhotoOf(user.user_metadata));
-    });
-
-    return () => {
-      abandoned = true;
-    };
-  }, []);
-
-  const onSignOut = useCallback(() => {
-    void signOut({
-      ...DEVICE_CLEANUP_NOT_WIRED_YET,
-      signOut: async () => {
-        await supabase.auth.signOut();
-      },
-      clearQueryClient: () => queryClient.clear(),
-    }).then(() => router.replace("/login"));
-  }, [router]);
+  const { data: me } = useSessionUserQuery(supabase);
+  const { signOut, isPending } = useSignOutMutation(supabase);
 
   return (
     <Screen
@@ -72,30 +44,39 @@ export function LeftScreen() {
       <View className="flex-1 items-center justify-center">
         <Illustration scene="farewell" />
         <Text size="xl" weight="semibold" className="text-center">
-          근무를 마치셨어요
+          {LEFT_COPY.title}
         </Text>
         <Text size="sm" tone="muted" className="mt-2 text-center">
-          지난 급여는 계속 볼 수 있어요
+          {LEFT_COPY.body}
         </Text>
         <Button
           variant="primary"
           className="mt-8 self-stretch"
           onPress={() => router.push("/payroll")}
         >
-          급여 보기
+          {LEFT_COPY.payroll}
         </Button>
       </View>
 
       <View>
         <Divider className="my-5" />
         <View className="flex-row items-center justify-center gap-3">
-          <Avatar name={email} photoUrl={photoUrl} size={24} />
+          <Avatar
+            name={me?.email ?? ""}
+            photoUrl={me?.googlePhotoUrl ?? null}
+            size={24}
+          />
           <Text size="sm" tone="subtle">
-            {email}
+            {me?.email ?? ""}
           </Text>
         </View>
-        <Button variant="ghost" className="mt-4" onPress={onSignOut}>
-          로그아웃
+        <Button
+          variant="ghost"
+          className="mt-4"
+          loading={isPending}
+          onPress={() => signOut(() => router.replace("/login"))}
+        >
+          {LEFT_COPY.signOut}
         </Button>
       </View>
     </Screen>

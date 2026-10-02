@@ -1,8 +1,6 @@
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { queryClient } from "@/shared/api/queryClient";
 import { supabase } from "@/shared/api/supabase";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
@@ -10,12 +8,12 @@ import { Divider } from "@/shared/ui/Divider";
 import { Illustration } from "@/shared/ui/Illustration";
 import { Screen } from "@/shared/ui/Screen";
 import { Text } from "@/shared/ui/Text";
-import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
+import { useSignOutMutation } from "@/features/auth/services/useSignOutMutation";
 import {
-  DEVICE_CLEANUP_NOT_WIRED_YET,
-  signOut,
-} from "@/features/auth/lib/signOut.lib";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
+  BLOCKED_COPY,
+  SCREEN_BOTTOM_PADDING,
+} from "@/screens/blocked/consts/blocked.const";
 
 /**
  * 차단된 사람이 앱을 열면 서는 자리다. 구글 로그인은 되지만 아무 행도 안 온다([ACC-007]).
@@ -26,43 +24,17 @@ import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
  * 구글 계정이 막힌 것인지만 보여준다 — 다른 계정으로 잘못 들어온 사람이 그것을 보고
  * 로그아웃한다.
  *
+ * **controller가 없다.** 이 화면이 드는 업무 상태가 하나도 없다 — 세션의 사람은
+ * `useSessionUserQuery`가, 로그아웃은 `useSignOutMutation`이 가진다. 남은 것은 끝난 뒤
+ * 어디로 가는지 하나고 그것은 이동이라 여기 산다.
+ *
  * 정본은 `docs/2-design/modules/account/screens/login.md`의 「차단된 뒤 짜임」이다.
  */
-
-const SCREEN_BOTTOM_PADDING = 24;
-
 export function BlockedScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const [email, setEmail] = useState("");
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let abandoned = false;
-
-    void getCurrentUser(supabase).then((user) => {
-      if (abandoned || !user) {
-        return;
-      }
-
-      setEmail(user.email ?? "");
-      setPhotoUrl(googlePhotoOf(user.user_metadata));
-    });
-
-    return () => {
-      abandoned = true;
-    };
-  }, []);
-
-  const onSignOut = useCallback(() => {
-    void signOut({
-      ...DEVICE_CLEANUP_NOT_WIRED_YET,
-      signOut: async () => {
-        await supabase.auth.signOut();
-      },
-      clearQueryClient: () => queryClient.clear(),
-    }).then(() => router.replace("/login"));
-  }, [router]);
+  const { data: me } = useSessionUserQuery(supabase);
+  const { signOut, isPending } = useSignOutMutation(supabase);
 
   return (
     <Screen
@@ -73,23 +45,32 @@ export function BlockedScreen() {
       <View className="flex-1 items-center justify-center">
         <Illustration scene="blocked" />
         <Text size="xl" weight="semibold" className="text-center">
-          이 계정은 지금 이용할 수 없어요
+          {BLOCKED_COPY.title}
         </Text>
         <Text size="sm" tone="muted" className="mt-2 text-center">
-          궁금한 점은 관리자에게 물어보세요
+          {BLOCKED_COPY.body}
         </Text>
       </View>
 
       <View>
         <Divider className="my-5" />
         <View className="flex-row items-center justify-center gap-3">
-          <Avatar name={email} photoUrl={photoUrl} size={24} />
+          <Avatar
+            name={me?.email ?? ""}
+            photoUrl={me?.googlePhotoUrl ?? null}
+            size={24}
+          />
           <Text size="sm" tone="subtle">
-            {email}
+            {me?.email ?? ""}
           </Text>
         </View>
-        <Button variant="ghost" className="mt-4" onPress={onSignOut}>
-          로그아웃
+        <Button
+          variant="ghost"
+          className="mt-4"
+          loading={isPending}
+          onPress={() => signOut(() => router.replace("/login"))}
+        >
+          {BLOCKED_COPY.signOut}
         </Button>
       </View>
     </Screen>

@@ -34,11 +34,11 @@ import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadC
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import { googlePhotoOf } from "@/entities/session/utils/googlePhotoOf.utils";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
 } from "@/features/auth/lib/signOut.lib";
-import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 import { useUpdateContactMutation } from "@/features/profileEdit/services/useUpdateContactMutation";
 import { useUpdatePhotoMutation } from "@/features/profileEdit/services/useUpdatePhotoMutation";
 import { PUSH_DEPS } from "@/features/pushSwitch/lib/pushDeps.lib";

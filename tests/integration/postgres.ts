@@ -551,8 +551,29 @@ export function seedWorkRequest(
 }
 
 /**
+ * 안 지난 pending 후보가 하나라도 있으면 그 요청은 닫힌 것이 아니다 — `expire_requests()`가
+ * 그 조건으로만 닫는다. 씨를 뿌리는 사이 매 분 도는 cron이 그 사실을 깨므로, 후보를 넣은
+ * 자리에서 그 불변을 되돌린다([관찰 055](../../docs/observations/055-cron-closes-the-row-the-test-is-seeding.md)).
+ */
+function reopenRequest(requestId: string): void {
+  execSql("update public.requests set closed_at = null where id = :'id';\n", {
+    id: requestId,
+  });
+}
+
+function stillLive(expiresAt: string | null): boolean {
+  return expiresAt === null || Date.parse(expiresAt) > Date.now();
+}
+
+/**
  * `requests`의 갈래 하나다 — `request_candidates`. `seedWorkRequest`가 만든 요청에 후보를
  * 더할 때 쓴다. `pending`이 아니면 `responded_at`도 같이 찍는다.
+ *
+ * **안 지난 pending을 넣으면 요청을 되돌린다.** 요청 행이 선 뒤 후보가 들어가기까지 그
+ * 요청에는 안 지난 pending이 하나도 없고, 그 사이 cron이 돌면 닫아 버린다 — 사용자를 만드는
+ * `await` 하나가 그 창을 초 단위로 벌린다. 되돌리는 자리를 여기 둔 것은 **부르는 쪽이 순서를
+ * 신경 쓰지 않아도 되게** 하려는 것이다. 지난 후보를 넣을 때는 안 되돌린다 — 그때는 닫히는
+ * 것이 맞는 모습이다.
  */
 export function seedRequestCandidate(
   requestId: string,
@@ -577,6 +598,11 @@ export function seedRequestCandidate(
     `insert into public.request_candidates (id, request_id, profile_id, status, responded_at, expires_at) values (:'id', :'request_id', :'profile_id', :'status', ${respondedSql}, ${expiresSql});\n`,
     vars,
   );
+
+  if (status === "pending" && stillLive(expiresAt)) {
+    reopenRequest(requestId);
+  }
+
   return id;
 }
 

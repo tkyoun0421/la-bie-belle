@@ -18,6 +18,7 @@ describe("도메인마다 접두사 하나", () => {
     expect(queryKeys.request.all).toEqual(["requests"]);
     expect(queryKeys.hall.all).toEqual(["hall"]);
     expect(queryKeys.member.all).toEqual(["members"]);
+    expect(queryKeys.session.all).toEqual(["session"]);
     expect(queryKeys.profile.all).toEqual(["profile"]);
     expect(queryKeys.notification.all).toEqual(["notifications"]);
     expect(queryKeys.payroll.all).toEqual(["payroll"]);
@@ -81,6 +82,7 @@ describe("범위가 꼬리로 붙는 키", () => {
       "members",
       "qualifications",
     ]);
+    expect(queryKeys.session.user()).toEqual(["session", "user"]);
     expect(queryKeys.profile.private()).toEqual(["profile", "private"]);
     expect(queryKeys.notification.unread()).toEqual([
       "notifications",
