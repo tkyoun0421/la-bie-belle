@@ -1,11 +1,7 @@
 import { usePathname, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
-import { useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { queryClient } from "@/shared/api/queryClient";
-import { queryKeys } from "@/shared/api/queryKeys";
 import { supabase } from "@/shared/api/supabase";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";
 import { Button } from "@/shared/ui/Button";
@@ -16,72 +12,31 @@ import { Screen } from "@/shared/ui/Screen";
 import { Segment } from "@/shared/ui/Segment";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
-import { kstDateOf } from "@/shared/utils/kstDate";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
-import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
-import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehearsalMonthsQuery";
-import { useScheduleMonthsQuery } from "@/entities/schedule/services/useScheduleMonthsQuery";
-import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { payrollViewDays } from "@/features/payrollCompute/model/payrollDays.policy";
 import {
-  canGoToPreviousPeriod,
-  canGoToNextPeriod,
-} from "@/screens/payroll/model/boundary.policy";
-import {
-  isInPeriod,
-  periodLabel,
-  periodMonthKeys,
-  periodOf,
-  periodStartDate,
-  periodUnitOf,
-  shiftPeriod,
-  type PeriodUnit,
-} from "@/screens/payroll/model/period.policy";
-import { payrollHistoryRows } from "@/screens/payroll/utils/historyRows.utils";
-import {
-  summarizeAccrual,
-  summarizeAmount,
-} from "@/screens/payroll/utils/summary.utils";
-import {
-  monthRowsOfDays,
-  yearRows,
-} from "@/screens/payroll/utils/yearRows.utils";
+  NEXT_PERIOD_TEST_ID,
+  PAYROLL_COPY,
+  PREV_PERIOD_TEST_ID,
+  SEGMENT_TEST_ID,
+  UNIT_OPTIONS,
+} from "@/screens/payroll/consts/payroll.const";
+import { usePayrollScreen } from "@/screens/payroll/hooks/usePayrollScreen";
 
 /**
  * 근무자가 자기 급여를 미리 보는 화면이다. 정본은
  * `docs/2-design/modules/payroll/screens/payroll.md`고 완료 조건은
  * `docs/2-design/spec/payroll-view.md`다.
  *
- * **금액을 여기서 안 낸다.** 세 키(`['payroll']`·`['schedule']`·`['rehearsal']`)가 낸 행을
- * `payrollViewDays`에 통째로 넘기고, 이 파일이 받는 것은 날 목록 하나다. 그 목록을 기간으로
- * 잘라 문구로 바꾸는 것도 `screens/payroll/model`의 함수들이 한다.
- *
- * **기간이 날짜 하나와 단위 둘로 산다.** 세그먼트가 단위를 고르고 화살표가 그 단위 안에서
- * 날짜를 옮긴다 — 둘을 한 상태로 합치면 「주」로 갔다 「월」로 돌아올 때 보던 달을 잃는다.
+ * **금액도 기간도 여기서 안 낸다.** 질의 다섯과 조립과 기간 옮기기가
+ * [`usePayrollScreen`](../hooks/usePayrollScreen.ts)에 산다 — 이 파일이 받는 것은 그릴 문구와
+ * 줄 목록이다.
  *
  * **퇴사한 사람도 이 화면을 본다**([ACC-011](../../../../docs/2-design/modules/account/README.md#acc-011)).
  * 탭 바를 지우는 것은 탭 껍데기의 일이라 `src/app/(tabs)/_layout.tsx`가 맡고, 여기는 앱바의
- * 뒤로와 종 아이콘만 그 사람에 맞춰 바꾼다 — 퇴사한 뒤로는 알림이 안 온다.
+ * 뒤로와 종 아이콘만 그 사람에 맞춰 바꾼다 — 퇴사한 뒤로는 알림이 안 온다. **그 둘이 이동이라
+ * `.tsx`에 남는다** — controller가 내는 것은 「퇴사했나」와 「안 읽은 것이 있나」다.
+ *
+ * **`useState`가 하나도 없다.** 고른 단위와 보던 날짜가 읽는 달을 바꿔 통신을 움직인다.
  */
-
-const ESTIMATE_NOTE = "예상치예요. 실제 지급액과 다를 수 있어요";
-
-const READ_FAILED = "급여를 불러오지 못했어요";
-
-const EMPTY_TITLE = "아직 근무가 없어요";
-
-const EMPTY_DESCRIPTION = "근무한 날이 생기면 여기 서요";
-
-const TOTAL_TITLE = "합계";
-
-const UNIT_OPTIONS = [
-  { value: "week", label: "주" },
-  { value: "month", label: "월" },
-  { value: "year", label: "연" },
-];
 
 const SKELETON_ROWS = [0, 1, 2];
 
@@ -93,105 +48,18 @@ function ArrowSlot() {
 export function PayrollScreen() {
   const router = useRouter();
   const pathname = usePathname();
-  const unreadCount = useUnreadCountQuery(supabase);
-  const today = kstToday();
-
-  const [me, setMe] = useState<string | null>(null);
-  const [unit, setUnit] = useState<PeriodUnit>("month");
-  const [anchorDate, setAnchorDate] = useState(today);
-
-  const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
-    supabase,
-    me,
-  );
-  const clockOffset = serverClockStore((at) => at.offset);
-
-  useEffect(() => {
-    void getCurrentUser(supabase).then((user) => setMe(user?.id ?? null));
-  }, []);
-
-  const period = useMemo(() => periodOf(anchorDate, unit), [anchorDate, unit]);
-  const months = useMemo(() => periodMonthKeys(period), [period]);
-
-  const payroll = usePayrollMonthsQuery(supabase, months);
-  const schedule = useScheduleMonthsQuery(supabase, months);
-  const rehearsal = useRehearsalMonthsQuery(supabase, months);
-
-  const profileId = profile?.id ?? null;
-
-  const days = useMemo(() => {
-    if (
-      profileId === null ||
-      payroll.data === undefined ||
-      schedule.data === undefined ||
-      rehearsal.data === undefined
-    ) {
-      return [];
-    }
-
-    return payrollViewDays({
-      profileId,
-      days: schedule.data,
-      rates: payroll.data.wageRates,
-      adjustments: payroll.data.adjustments,
-      excuses: payroll.data.excuseStatus,
-      rehearsals: rehearsal.data,
-      now: new Date(nowWithOffset(Date.now(), clockOffset)).toISOString(),
-    });
-  }, [profileId, payroll.data, schedule.data, rehearsal.data, clockOffset]);
-
-  const shown = useMemo(
-    () => days.filter((day) => isInPeriod(period, day.date)),
-    [days, period],
-  );
-
-  const loading =
-    profileLoading ||
-    payroll.isLoading ||
-    schedule.isLoading ||
-    rehearsal.isLoading;
-  const failed =
-    payroll.error !== null ||
-    schedule.error !== null ||
-    rehearsal.error !== null;
-
-  const accrual = summarizeAccrual(shown);
-  const historyRows = payrollHistoryRows(shown);
-  const monthRows = yearRows(monthRowsOfDays(shown));
-
-  const approvedDate =
-    profile?.approved_at == null ? null : kstDateOf(profile.approved_at);
-  const leftDate = profile?.left_at == null ? null : kstDateOf(profile.left_at);
-  const hasLeft = leftDate !== null;
-
-  const goPeriod = (step: number) =>
-    setAnchorDate(periodStartDate(shiftPeriod(period, step)));
-
-  const goMonthOf = (month: string) => {
-    setUnit("month");
-    setAnchorDate(`${month}-01`);
-  };
-
-  const retry = () => {
-    for (const key of [
-      queryKeys.payroll.all,
-      queryKeys.schedule.all,
-      queryKeys.rehearsal.all,
-    ]) {
-      void queryClient.invalidateQueries({ queryKey: key });
-    }
-  };
+  const screen = usePayrollScreen(supabase);
 
   return (
     <Screen floor="plain">
       <AppBar
-        title="급여"
-        onBack={hasLeft ? () => router.replace("/left") : undefined}
+        title={PAYROLL_COPY.appBarTitle}
+        onBack={screen.hasLeft ? () => router.replace("/left") : undefined}
         right={
-          hasLeft ? undefined : (
+          screen.hasLeft ? undefined : (
             <BellIcon
               testID="bell-icon"
-              unread={(unreadCount.data ?? 0) > 0}
+              unread={screen.unread}
               onPress={() => router.push(`/notifications?from=${pathname}`)}
             />
           )
@@ -202,21 +70,20 @@ export function PayrollScreen() {
         <View className="px-5 pb-4">
           <Segment
             className="mt-2"
-            testID="payroll-segment"
+            testID={SEGMENT_TEST_ID}
             options={UNIT_OPTIONS}
-            value={unit}
-            onChange={(value) => setUnit(periodUnitOf(value))}
+            value={screen.unit}
+            onChange={screen.chooseUnit}
           />
 
           <View className="mt-5 flex-row items-center justify-center gap-2 py-2">
-            {approvedDate !== null &&
-            canGoToPreviousPeriod(period, approvedDate) ? (
+            {screen.canGoPrev ? (
               <Button
                 variant="ghost"
                 size="compact"
                 square
-                testID="payroll-period-prev"
-                onPress={() => goPeriod(-1)}
+                testID={PREV_PERIOD_TEST_ID}
+                onPress={screen.goPrev}
               >
                 <Icon icon={ChevronLeft} tone="subtle" />
               </Button>
@@ -225,16 +92,16 @@ export function PayrollScreen() {
             )}
 
             <Text size="base" weight="medium" numeric>
-              {periodLabel(period)}
+              {screen.periodLabel}
             </Text>
 
-            {canGoToNextPeriod(period, { today, leftAt: leftDate }) ? (
+            {screen.canGoNext ? (
               <Button
                 variant="ghost"
                 size="compact"
                 square
-                testID="payroll-period-next"
-                onPress={() => goPeriod(1)}
+                testID={NEXT_PERIOD_TEST_ID}
+                onPress={screen.goNext}
               >
                 <Icon icon={ChevronRight} tone="subtle" />
               </Button>
@@ -243,7 +110,7 @@ export function PayrollScreen() {
             )}
           </View>
 
-          {loading ? (
+          {screen.loading ? (
             <SkeletonLine className="mt-4 h-9 w-2/3" />
           ) : (
             <Text
@@ -253,32 +120,32 @@ export function PayrollScreen() {
               numeric
               className="mt-4"
             >
-              {summarizeAmount(shown)}
+              {screen.amountLabel}
             </Text>
           )}
 
           <Text size="sm" tone="subtle" className="mt-1">
-            {ESTIMATE_NOTE}
+            {PAYROLL_COPY.estimateNote}
           </Text>
 
-          {loading ? null : (
+          {screen.loading ? null : (
             <View className="mt-6 gap-2">
               <View className="flex-row items-baseline justify-between">
                 <Text size="sm" tone="muted">
-                  근무
+                  {PAYROLL_COPY.workLabel}
                 </Text>
                 <Text size="sm" weight="medium" numeric>
-                  {accrual.work}
+                  {screen.accrual.work}
                 </Text>
               </View>
 
-              {accrual.late === null ? null : (
+              {screen.accrual.late === null ? null : (
                 <View className="flex-row items-baseline justify-between">
                   <Text size="sm" tone="muted">
-                    지각
+                    {PAYROLL_COPY.lateLabel}
                   </Text>
                   <Text size="sm" weight="medium" numeric>
-                    {accrual.late}
+                    {screen.accrual.late}
                   </Text>
                 </View>
               )}
@@ -286,48 +153,48 @@ export function PayrollScreen() {
           )}
 
           <View className="mt-8">
-            {loading ? (
+            {screen.listState === "loading" ? (
               <View className="gap-4">
                 {SKELETON_ROWS.map((at) => (
                   <SkeletonLine key={at} className="w-2/3" />
                 ))}
               </View>
-            ) : failed ? (
+            ) : screen.listState === "failed" ? (
               <View className="flex-row items-center gap-2">
                 <Text size="xs" tone="subtle">
-                  {READ_FAILED}
+                  {PAYROLL_COPY.readFailed}
                 </Text>
-                <Button variant="ghost" size="compact" onPress={retry}>
-                  다시 시도
+                <Button variant="ghost" size="compact" onPress={screen.retry}>
+                  {PAYROLL_COPY.retry}
                 </Button>
               </View>
-            ) : shown.length === 0 ? (
+            ) : screen.listState === "empty" ? (
               <EmptyState
                 scene="no-shifts"
-                title={EMPTY_TITLE}
-                description={EMPTY_DESCRIPTION}
+                title={PAYROLL_COPY.emptyTitle}
+                description={PAYROLL_COPY.emptyBody}
               />
-            ) : unit === "year" ? (
-              monthRows.map((row, at) =>
+            ) : screen.listState === "months" ? (
+              screen.monthRows.map((row, at) =>
                 row.type === "month" ? (
                   <ListRow
                     key={row.month}
                     divider={at > 0}
                     title={row.title}
                     value={row.amountLabel}
-                    onPress={() => goMonthOf(row.month)}
+                    onPress={() => screen.openMonth(row.month)}
                   />
                 ) : (
                   <ListRow
                     key="total"
                     divider={at > 0}
-                    title={TOTAL_TITLE}
+                    title={PAYROLL_COPY.totalTitle}
                     value={row.amountLabel}
                   />
                 ),
               )
             ) : (
-              historyRows.map((row, at) => (
+              screen.historyRows.map((row, at) => (
                 <ListRow
                   key={row.date}
                   divider={at > 0}

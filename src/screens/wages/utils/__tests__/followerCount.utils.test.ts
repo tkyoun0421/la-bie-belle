@@ -1,5 +1,10 @@
 import type { MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
-import { countFollowers } from "@/screens/wages/utils/followerCount.utils";
+import { WAGES_COPY } from "@/screens/wages/consts/wages.const";
+import {
+  countFollowers,
+  spellBaseWageNote,
+  spellFollowerChangeLine,
+} from "@/screens/wages/utils/followerCount.utils";
 
 const PROFILE_IDS = ["profile-1", "profile-2", "profile-3"];
 
@@ -69,5 +74,41 @@ describe("countFollowers — 이력이 여러 줄이면 가장 최근 값만 본
     ];
 
     expect(countFollowers(PROFILE_IDS, wageRates)).toBe(2);
+  });
+});
+
+describe("spellBaseWageNote — 기본이 섰는지로 시제가 갈린다", () => {
+  it("기본이 서 있고 쓰는 사람이 있으면 지금 몇인지를 말한다", () => {
+    expect(
+      spellBaseWageNote({ hasDefaultWage: true, followerCount: 3 }),
+    ).toContain("3");
+  });
+
+  it("기본이 서 있고 쓰는 사람이 없으면 수를 안 적는다", () => {
+    expect(spellBaseWageNote({ hasDefaultWage: true, followerCount: 0 })).toBe(
+      WAGES_COPY.noFollower,
+    );
+  });
+
+  it("기본이 없으면 정하면 몇에게 붙을지를 말한다", () => {
+    expect(
+      spellBaseWageNote({ hasDefaultWage: false, followerCount: 2 }),
+    ).toContain("2");
+  });
+
+  it("기본도 없고 따를 사람도 없으면 수를 안 적는다", () => {
+    expect(spellBaseWageNote({ hasDefaultWage: false, followerCount: 0 })).toBe(
+      WAGES_COPY.willFollowNone,
+    );
+  });
+});
+
+describe("spellFollowerChangeLine — 저장하면 몇이 같이 바뀌는지", () => {
+  it("따르는 사람이 있으면 그 수를 적는다", () => {
+    expect(spellFollowerChangeLine(4)).toContain("4");
+  });
+
+  it("없으면 기본 시급 줄과 같은 글자를 쓴다", () => {
+    expect(spellFollowerChangeLine(0)).toBe(WAGES_COPY.noFollower);
   });
 });

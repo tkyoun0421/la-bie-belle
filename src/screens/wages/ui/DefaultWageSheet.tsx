@@ -3,17 +3,12 @@ import { AmountInput } from "@/shared/ui/AmountInput";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
 import {
-  WAGE_CAP_HINT,
+  WAGE_AMOUNT_INPUT_TEST_ID,
   WAGE_SAVE_FAILED_SUB,
   WAGE_SAVE_FAILED_TITLE,
   WAGE_TODAY_NOTE,
+  WAGES_COPY,
 } from "@/screens/wages/consts/wages.const";
-import {
-  atWageCap,
-  canSaveWage,
-  formatAmountDisplay,
-  nextAmountDigits,
-} from "@/screens/wages/model/wageAmount.policy";
 
 /**
  * 기본 시급을 정하는 시트다. 정본은
@@ -29,48 +24,41 @@ import {
  * 것이 방금 넣은 값이 날아갔는지라 그것을 먼저 말한다.
  */
 
-export const WAGE_AMOUNT_INPUT_TEST_ID = "wage-amount-input";
-
-const NO_FOLLOWER = "아직 이 값을 쓰는 사람이 없어요";
-
 export type DefaultWageSheetProps = {
-  currentAmount: number | null;
-  followerCount: number;
-  digits: string;
+  followerLine: string;
+  amountText: string;
+  capHint: string | undefined;
+  canSave: boolean;
   sending: boolean;
   failed: boolean;
-  onDigits: (digits: string) => void;
+  onDigits: (typed: string) => void;
   onClose: () => void;
   onSave: () => void;
 };
 
 export function DefaultWageSheet({
-  currentAmount,
-  followerCount,
-  digits,
+  followerLine,
+  amountText,
+  capHint,
+  canSave,
   sending,
   failed,
   onDigits,
   onClose,
   onSave,
 }: DefaultWageSheetProps) {
-  const followerLine =
-    followerCount === 0
-      ? NO_FOLLOWER
-      : `${followerCount}명의 시급이 같이 바뀌어요`;
-
   return (
     <>
       <Text size="lg" weight="semibold">
-        {failed ? WAGE_SAVE_FAILED_TITLE : "기본 시급"}
+        {failed ? WAGE_SAVE_FAILED_TITLE : WAGES_COPY.baseTitle}
       </Text>
 
       <AmountInput
         className="mt-5"
         testID={WAGE_AMOUNT_INPUT_TEST_ID}
-        value={formatAmountDisplay(digits)}
-        hint={atWageCap(digits) ? WAGE_CAP_HINT : undefined}
-        onChangeText={(text) => onDigits(nextAmountDigits(digits, text))}
+        value={amountText}
+        hint={capHint}
+        onChangeText={onDigits}
       />
 
       {failed ? (
@@ -96,16 +84,16 @@ export function DefaultWageSheet({
 
       <View className="mt-6 flex-row gap-3">
         <Button variant="secondary" className="flex-1" onPress={onClose}>
-          닫기
+          {WAGES_COPY.close}
         </Button>
         <Button
           variant="primary"
           className="flex-1"
           loading={sending}
-          disabled={!canSaveWage(digits, currentAmount)}
+          disabled={!canSave}
           onPress={onSave}
         >
-          저장
+          {WAGES_COPY.save}
         </Button>
       </View>
     </>
