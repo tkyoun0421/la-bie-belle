@@ -21,10 +21,6 @@ export function genderSymbol(gender: ProfileGender): GenderSymbol {
   return gender === "female" ? "Venus" : "Mars";
 }
 
-export function genderLabel(gender: ProfileGender): string {
-  return gender === "female" ? "여" : "남";
-}
-
 export function birthYearShort(birthDate: string): string {
   return `${birthDate.slice(4 - BIRTH_YEAR_DIGITS, 4)}년생`;
 }

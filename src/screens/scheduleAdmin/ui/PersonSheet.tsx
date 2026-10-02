@@ -5,9 +5,9 @@ import { Divider } from "@/shared/ui/Divider";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
 import { isProfileGender } from "@/entities/profile/model/profile.schema";
+import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import {
   birthYearShort,
-  genderLabel,
   genderSymbol,
   restrictedQualifications,
 } from "@/screens/scheduleAdmin/utils/personSheet.utils";
@@ -40,7 +40,7 @@ export function PersonSheet({
 }: PersonSheetProps) {
   const known = isProfileGender(gender) ? gender : null;
   const facts = [
-    known === null ? null : genderLabel(known),
+    known === null ? null : spellGender(known),
     birthDate === null ? null : birthYearShort(birthDate),
   ].filter((fact) => fact !== null);
   const earned = restrictedQualifications(qualifications);
