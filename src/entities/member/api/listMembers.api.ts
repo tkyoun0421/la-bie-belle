@@ -1,4 +1,9 @@
 import type { DB } from "@/shared/api/database";
+import type {
+  ActiveMemberRow,
+  MemberListRow,
+  MemberRow,
+} from "@/entities/member/api/member.dto";
 import {
   sortActiveMembers,
   sortLeftMembers,
@@ -6,7 +11,6 @@ import {
 import {
   filterBlockedMembers,
   filterPendingMembers,
-  type MemberProfileRow,
 } from "@/entities/member/utils/filterMembers.utils";
 
 /**
@@ -27,25 +31,6 @@ import {
  * 뷰가 따로 선다([notification/design.md](../../../../docs/2-design/modules/notification/design.md#알림을-받나)).
  * **퇴사 구획에는 안 붙는다** — 보낼 알림이 없어 갈래가 붙어도 관리자가 할 일이 없다.
  */
-
-export type MemberListRow = MemberProfileRow & {
-  photo_url: string | null;
-};
-
-export type MemberRow = MemberListRow & {
-  role: string;
-  left_at: string | null;
-  erased_at: string | null;
-  phone: string | null;
-  birth_date: string | null;
-  gender: string | null;
-};
-
-/** 재직자 줄에만 붙는 알림 갈래 둘이다 — 받겠다는 의사와 기기가 닿는지. */
-export type ActiveMemberRow = MemberRow & {
-  notifications_enabled: boolean;
-  has_device: boolean;
-};
 
 const COLUMNS = [
   "id",

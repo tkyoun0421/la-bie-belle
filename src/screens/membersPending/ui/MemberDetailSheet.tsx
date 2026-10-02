@@ -6,7 +6,7 @@ import { Button } from "@/shared/ui/Button";
 import { Icon } from "@/shared/ui/Icon";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { Text } from "@/shared/ui/Text";
-import type { ProfilePrivateRow } from "@/entities/profile/api/profilePrivate.api";
+import type { ProfilePrivateRow } from "@/entities/profile/api/profile.dto";
 import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
 
 /**

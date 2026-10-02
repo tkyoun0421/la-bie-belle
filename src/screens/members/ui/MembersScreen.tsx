@@ -17,7 +17,7 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import type { ToastKind } from "@/shared/ui/Toast";
-import type { MemberRow } from "@/entities/member/api/listMembers.api";
+import type { MemberRow } from "@/entities/member/api/member.dto";
 import { isLastAdmin } from "@/entities/member/model/isLastAdmin.policy";
 import { isLeftOverAYear } from "@/entities/member/model/sortMembers.policy";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";

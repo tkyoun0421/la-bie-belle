@@ -1,14 +1,9 @@
 import { skipToken, useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getMyProfile,
-  type MyProfileRow,
-} from "@/entities/profile/api/getMyProfile.api";
-import {
-  getProfilePrivate,
-  type ProfilePrivateRow,
-} from "@/entities/profile/api/profilePrivate.api";
+import { getMyProfile } from "@/entities/profile/api/getMyProfile.api";
+import type { MyProfile } from "@/entities/profile/api/profile.dto";
+import { getProfilePrivate } from "@/entities/profile/api/profilePrivate.api";
 
 /**
  * 「나」 화면이 보는 다섯은 표 둘에 나뉘어 산다 — 이름과 사진과 역할은 `profiles`,
@@ -25,8 +20,6 @@ import {
  * `userId`가 아직 `null`이면 읽지 않고 기다린다. 누구인지 묻는 것도 비동기라, 빈 값으로
  * 한 번 읽으면 아무도 아닌 행이 `['profile']` 자리에 앉아 진짜 프로필을 덮는다.
  */
-
-export type MyProfile = MyProfileRow & ProfilePrivateRow;
 
 export type MyProfileResult = {
   data: MyProfile | undefined;

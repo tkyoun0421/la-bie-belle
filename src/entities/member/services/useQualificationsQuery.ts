@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getQualifications,
-  type Qualification,
-} from "@/entities/member/api/getQualifications.api";
+import { getQualifications } from "@/entities/member/api/getQualifications.api";
+import type { Qualification } from "@/entities/member/api/member.dto";
 
 /**
  * 자격 전체다. 판정은 `qualifications` 뷰가 끝냈고 화면은 픽커 목록과 합쳐 쓰기만 한다
