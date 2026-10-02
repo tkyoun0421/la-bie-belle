@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 
 // 구현 대상: src/entities/qr/services/useQrCodeQuery.ts
 //
-// 관리자 QR 화면이 현재 코드를 읽는 훅이다. 캐시 키·staleTime은
-// `@/entities/qr/api/getQrCode.api`가 정한 상수를 그대로 쓴다
+// 관리자 QR 화면이 현재 코드를 읽는 훅이다. 캐시 키는 `queryKeys` 팩토리가, staleTime은
+// `@/entities/qr/consts/qr.const`가 정한 값을 그대로 쓴다
 // (design.md 「QR」, spec `docs/2-design/spec/attendance-qr.md`).
 
 const getQrCodeMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
@@ -12,6 +12,9 @@ const FAKE_STALE_TIME = 12345;
 
 jest.unstable_mockModule("@/entities/qr/api/getQrCode.api", () => ({
   getQrCode: getQrCodeMock,
+}));
+
+jest.unstable_mockModule("@/entities/qr/consts/qr.const", () => ({
   QR_CODE_STALE_TIME_MS: FAKE_STALE_TIME,
 }));
 
@@ -108,7 +111,7 @@ describe("useQrCodeQuery — getQrCode를 불러 ['hall','qr']에 앉힌다", ()
     expect(queryClient.getQueryData(["hall", "qr"])).toEqual(QR_DATA);
   });
 
-  it("staleTime은 DAL의 QR_CODE_STALE_TIME_MS를 그대로 쓴다", async () => {
+  it("staleTime은 consts의 QR_CODE_STALE_TIME_MS를 그대로 쓴다", async () => {
     getQrCodeMock.mockResolvedValue(QR_DATA);
     const { wrapper, queryClient } = createWrapper();
 

@@ -1,3 +1,5 @@
+import { CHECK_IN_PATH } from "@/entities/qr/consts/qr.const";
+
 /**
  * 종이의 QR이 담는 주소다. 정본은
  * `docs/2-design/modules/attendance/design.md`의 「QR」다 — 코드 문자열을 그대로 굽지 않고
@@ -8,8 +10,6 @@
  * 올 수도 `https://a.example/`로 올 수도 있고, 접지 않으면 주소에 `//`가 생겨 도메인 증명
  * 파일이 그 경로를 안 받는다.
  */
-
-const CHECK_IN_PATH = "/check-in";
 
 export function buildCheckInUrl(appUrl: string, code: string): string {
   const origin = appUrl.replace(/\/+$/, "");

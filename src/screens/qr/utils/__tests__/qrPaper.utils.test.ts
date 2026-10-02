@@ -1,5 +1,4 @@
 import {
-  QR_PAPER,
   qrPaperLayout,
   buildQrPaperHtml,
 } from "@/screens/qr/utils/qrPaper.utils";
@@ -66,17 +65,5 @@ describe("buildQrPaperHtml — 인쇄용 종이 HTML을 만든다", () => {
     const withoutSvg = html.replace(FAKE_QR_SVG, "");
 
     expect(withoutSvg).not.toContain("fake-qr-marker-9f3a");
-  });
-});
-
-describe("QR_PAPER — 인쇄용 종이 상수", () => {
-  it("정한 값 그대로다", () => {
-    expect(QR_PAPER).toEqual({
-      pageWidthMm: 210,
-      pageHeightMm: 297,
-      cutInsetMm: 15,
-      cutStrokeMm: 0.25,
-      qrRatio: 0.6,
-    });
   });
 });
