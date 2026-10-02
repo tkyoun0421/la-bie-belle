@@ -16,11 +16,11 @@ import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,
 } from "@/features/stats/utils/attendanceInputs.utils";
+import type { AttendanceRow } from "@/screens/adminStats/model/adminStats.type";
 import {
   attendanceRowValue,
   buildAttendanceRows,
   buildAttendanceTab,
-  type AttendanceRow,
 } from "@/screens/adminStats/utils/attendanceRows.utils";
 
 describe("buildAttendanceRows — 이름 가나다순이다(근무 탭과 반대)", () => {

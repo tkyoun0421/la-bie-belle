@@ -32,15 +32,13 @@ import { useRehearsalMonthsQuery } from "@/entities/rehearsal/services/useRehear
 import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
 import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import type { MyWorkTotals } from "@/features/stats/model/stats.type";
 import {
   hoursLabel,
   workInputsOf,
 } from "@/features/stats/model/workTotals.policy";
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
-import {
-  computeMyWorkTotals,
-  type MyWorkTotals,
-} from "@/features/stats/utils/myTotals.utils";
+import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
 import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
 import {
   buildMyAttendanceDays,

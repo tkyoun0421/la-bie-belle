@@ -6,7 +6,7 @@ import {
   workInputsOf,
 } from "@/features/stats/model/workTotals.policy";
 import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
-import type { AttendanceTab } from "@/screens/adminStats/utils/attendanceRows.utils";
+import type { AttendanceTab } from "@/screens/adminStats/model/adminStats.type";
 
 /**
  * 통계 화면이 읽어 온 열두 달을 추이 그래프가 먹는 값으로 옮긴다. 정본은

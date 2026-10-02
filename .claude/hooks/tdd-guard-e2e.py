@@ -15,6 +15,23 @@ FLOW_SUFFIX = ".yaml"
 # 라우트가 세우는 슬라이스다 — `@/screens/<이름>/...`.
 SCREEN_IMPORT = re.compile(r"""["']@/screens/([^/"']+)/""")
 
+# camel 낱말의 경계다 — `adminStats`의 `S` 앞이다.
+CAMEL_HUMP = re.compile(r"(?<=[a-z0-9])([A-Z])")
+
+
+def kebab(name):
+    """슬라이스 이름을 플로우 파일 이름으로 옮긴다.
+
+    **두 꼴이 갈려 있다** — 슬라이스 폴더는 camelCase고(ADR-015) 플로우 파일 이름은
+    kebab이다(ADR-005). 글자를 그대로 맞대면 camel로 이름이 바뀐 슬라이스가 짝을 영영 못
+    찾아, 플로우가 있는데도 막힌다. 플로우가 없는 쪽은 그대로 막힌다 — 이름을 옮기는 것이
+    게이트를 느슨하게 하지 않는다.
+
+    **낱말 경계만 건드린다.** 이름 전체를 소문자로 눕히면 슬라이스 폴더를 안 끼고 바로 선
+    화면(`src/screens/Cart.tsx`)의 짝 이름까지 바뀐다 — 그 자리는 파일명이 그대로 이름이다.
+    """
+    return CAMEL_HUMP.sub(lambda hump: f"-{hump.group(1).lower()}", name)
+
 
 def route_slice(text):
     """라우트가 부르는 슬라이스 이름. 화면을 아직 안 붙인 라우트는 `None`이다."""
@@ -58,7 +75,7 @@ def verdict(path, read):
         if not name:
             return None
 
-    expected = f"{E2E_ROOT}/{name}{FLOW_SUFFIX}"
+    expected = f"{E2E_ROOT}/{kebab(name)}{FLOW_SUFFIX}"
     if exists(expected):
         return None
 

@@ -20,7 +20,7 @@
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
 import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
-import type { AttendanceTab } from "@/screens/adminStats/utils/attendanceRows.utils";
+import type { AttendanceTab } from "@/screens/adminStats/model/adminStats.type";
 import {
   attendanceValues,
   monthIn,

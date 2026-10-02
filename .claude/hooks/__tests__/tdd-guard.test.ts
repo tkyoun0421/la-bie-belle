@@ -64,6 +64,7 @@ beforeAll(() => {
   write("src/shared/utils/__tests__/cn.test.ts", "");
   write("src/screens/orders/__tests__/placeholder", "");
   write("tests/e2e/orders.yaml", "");
+  write("tests/e2e/admin-wages.yaml", "");
   write(
     "src/entities/payroll/dals/__tests__/payroll.integration.test.ts",
     "fetchPayroll();",
@@ -328,6 +329,39 @@ describe("e2e 훅", () => {
     expect(
       run("tdd-guard-e2e.py", "src/screens/orders/ui/OrdersScreen.tsx", ""),
     ).toBe(allowed);
+  });
+
+  /**
+   * 슬라이스 폴더는 camelCase고(ADR-015) 플로우 파일 이름은 kebab이다(ADR-005) — 글자를
+   * 그대로 맞대면 camel로 이름이 바뀐 슬라이스 다섯이 영영 못 찾아, 플로우가 있는데도 막힌다.
+   */
+  it("camel 슬라이스가 kebab 플로우를 찾는다", () => {
+    expect(
+      run(
+        "tdd-guard-e2e.py",
+        "src/screens/adminWages/ui/AdminWagesScreen.tsx",
+        "",
+      ),
+    ).toBe(allowed);
+    expect(
+      run(
+        "tdd-guard-e2e.py",
+        "src/app/admin/wages.tsx",
+        'import { AdminWagesScreen } from "@/screens/adminWages/ui/AdminWagesScreen";',
+      ),
+    ).toBe(allowed);
+  });
+
+  /** 플로우가 없으면 camel 슬라이스도 그대로 막힌다 — kebab으로 읽는 것이 구멍이 아니다. */
+  it("kebab으로 읽어도 플로우가 없으면 막는다", () => {
+    const result = spawn(
+      "tdd-guard-e2e.py",
+      "src/screens/adminCart/ui/AdminCartScreen.tsx",
+      "",
+    );
+
+    expect(result.status).toBe(blocked);
+    expect(result.stderr).toContain("tests/e2e/admin-cart.yaml");
   });
 
   /** 러너가 Maestro라 플로우는 YAML이다 — `.spec.ts`를 찾으면 영영 못 찾는다. */

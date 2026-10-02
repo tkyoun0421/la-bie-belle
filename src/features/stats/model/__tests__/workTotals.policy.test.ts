@@ -21,14 +21,16 @@
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
+import type {
+  WorkAssignment,
+  WorkDay,
+} from "@/features/stats/model/stats.type";
 import {
   computeWorkTotals,
   dayMinutes,
   hoursLabel,
   isLiveAssignment,
   workInputsOf,
-  type WorkAssignment,
-  type WorkDay,
 } from "@/features/stats/model/workTotals.policy";
 
 describe("computeWorkTotals — 사람별 합·포지션별 합·전체 합이 같다", () => {

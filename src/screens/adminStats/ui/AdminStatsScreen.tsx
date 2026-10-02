@@ -43,11 +43,11 @@ import {
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
 import { computePersonDays } from "@/features/stats/utils/personDays.utils";
 import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
+import type { AttendanceTab } from "@/screens/adminStats/model/adminStats.type";
 import { WorkDaysSheet } from "@/screens/adminStats/ui/WorkDaysSheet";
 import {
   attendanceRowValue,
   buildAttendanceTab,
-  type AttendanceTab,
 } from "@/screens/adminStats/utils/attendanceRows.utils";
 import {
   attendanceValues,

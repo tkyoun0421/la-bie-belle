@@ -1,5 +1,13 @@
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
+import type {
+  PersonTotal,
+  PositionTotal,
+  WorkAssignment,
+  WorkDay,
+  WorkInputs,
+  WorkTotals,
+} from "@/features/stats/model/stats.type";
 
 /**
  * 그달 근무를 사람과 포지션 두 축으로 가른다. 정본은
@@ -24,51 +32,9 @@ import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
  * **재직 여부도 안 본다.** 그달에 일했으면 퇴사한 사람도 선다 — 근무 시간은 그달의 사실이다.
  */
 
-export type WorkAssignment = {
-  id: string;
-  day_id: string;
-  profile_id: string;
-  display_name: string;
-  position: string;
-  kind: string;
-  ended_at: string | null;
-};
-
-export type WorkDay = {
-  id: string;
-  work_date: string;
-  starts_at: string;
-  ends_at: string;
-};
-
-export type PersonTotal = {
-  profileId: string;
-  displayName: string;
-  minutes: number;
-  count: number;
-};
-
-export type PositionTotal = {
-  position: string;
-  minutes: number;
-  count: number;
-};
-
-export type WorkTotals = {
-  totalMinutes: number;
-  totalCount: number;
-  byPerson: PersonTotal[];
-  byPosition: PositionTotal[];
-};
-
 const MINUTES_PER_HOUR = 60;
 
 const KOREAN = "ko";
-
-export type WorkInputs = {
-  assignments: WorkAssignment[];
-  days: WorkDay[];
-};
 
 /**
  * 읽어 온 달을 이 모듈이 세는 모양으로 옮긴다. 배정 행이 이름을 임베딩해 오므로
