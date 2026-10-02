@@ -2,10 +2,8 @@ import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { combineMonths, type MonthsResult } from "@/shared/api/monthsQuery";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getMonthAttendance,
-  type MonthAttendance,
-} from "@/entities/attendance/api/getMonthAttendance.api";
+import type { AttendanceRows } from "@/entities/attendance/api/attendance.dto";
+import { getMonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
 
 /**
  * 통계 근태 탭이 여는 열두 달 창의 근태 쪽이다. 달마다 `['attendance', 'YYYY-MM']` 하나를
@@ -18,7 +16,7 @@ import {
 
 export type AttendanceByMonth = {
   month: string;
-  attendance: MonthAttendance;
+  attendance: AttendanceRows;
 };
 
 export function useMonthsAttendanceQuery(
@@ -36,7 +34,7 @@ export function useMonthsAttendanceQuery(
         attendance: (results[at].data ?? {
           checkIns: [],
           excuseStatuses: [],
-        }) as MonthAttendance,
+        }) as AttendanceRows,
       })),
   });
 }

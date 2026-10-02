@@ -1,15 +1,6 @@
 import type { DB } from "@/shared/api/database";
-
-export type ExcuseRow = {
-  id: string;
-  day_id: string;
-  profile_id: string;
-  body: string;
-  submitted_at: string;
-  decided_at: string | null;
-  decision: string | null;
-  decision_reason: string | null;
-};
+import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
+import type { ExcuseRow } from "@/entities/excuse/api/excuse.dto";
 
 const COLUMNS = [
   "id",
@@ -22,15 +13,6 @@ const COLUMNS = [
   "decision_reason",
 ].join(", ");
 
-function nextMonthFirstDay(month: string): string {
-  const [year, monthOfYear] = month.split("-").map(Number);
-  const rolls = monthOfYear === 12;
-  const nextYear = rolls ? year + 1 : year;
-  const nextMonth = rolls ? 1 : monthOfYear + 1;
-
-  return `${String(nextYear).padStart(4, "0")}-${String(nextMonth).padStart(2, "0")}-01`;
-}
-
 export async function getMyExcuses(
   client: DB,
   month: string,
@@ -38,8 +20,8 @@ export async function getMyExcuses(
   const { data: days, error: daysError } = await client
     .from("days")
     .select("id")
-    .gte("work_date", `${month}-01`)
-    .lt("work_date", nextMonthFirstDay(month));
+    .gte("work_date", monthStart(month))
+    .lt("work_date", nextMonthStart(month));
 
   if (daysError) {
     throw daysError;

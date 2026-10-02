@@ -1,4 +1,4 @@
-import type { AttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
+import type { AttendanceStatus } from "@/entities/attendance/model/attendance.type";
 import { summarizeAttendanceStatuses } from "@/entities/attendance/utils/summarizeAttendanceStatuses.utils";
 
 describe("summarizeAttendanceStatuses — 현황 줄은 0인 항목을 뺀다", () => {

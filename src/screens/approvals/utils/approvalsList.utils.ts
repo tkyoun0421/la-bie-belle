@@ -1,3 +1,5 @@
+import type { ApprovalListRow } from "@/screens/approvals/model/approvals.type";
+
 /**
  * 「승인할 일」 목록의 순서와 처리한 줄 빼기다. 정본은
  * `docs/2-design/system/screens/approvals.md`의 「목록 짜임」이다.
@@ -11,14 +13,6 @@
  * 지금 서는 줄은 근무 취소뿐이다. 사유 줄은 `attendance-excuse`가 같은 목록에 잇고 그때
  * 「근무 취소가 위」라는 두 번째 기준이 붙는다.
  */
-
-export type ApprovalKind = "cancel";
-
-export type ApprovalListRow = {
-  id: string;
-  kind: ApprovalKind;
-  workDate: string;
-};
 
 export function sortApprovals<Row extends ApprovalListRow>(
   rows: readonly Row[],

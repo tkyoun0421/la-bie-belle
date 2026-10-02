@@ -12,14 +12,12 @@
 // 단언은 features/attendance/model/__tests__/attendanceSummary.test.ts의
 // tallyMonthlyAttendance 몫과 같다.
 
-import {
-  getAttendanceStatus,
-  type AttendanceStatusInput,
-} from "@/entities/attendance/model/attendanceStatus.policy";
+import type { AttendanceStatusInput } from "@/entities/attendance/model/attendance.type";
+import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendance.type";
+import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 import {
   attendanceRate,
   tallyMonthlyAttendance,
-  type MonthlyAttendanceTally,
 } from "@/entities/attendance/utils/attendanceSummary.utils";
 
 function buildDay(

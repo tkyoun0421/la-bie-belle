@@ -8,7 +8,10 @@ import { QuoteBlock } from "@/shared/ui/QuoteBlock";
 import { Text } from "@/shared/ui/Text";
 import {
   CANCEL_REJECT_REASONS,
+  CUSTOM_REJECT_MAX_LENGTH,
   CUSTOM_REJECT_REASON,
+} from "@/screens/approvals/consts/approvals.const";
+import {
   isRejectReasonValid,
   rejectReasonText,
 } from "@/screens/approvals/model/rejectReason.policy";
@@ -28,8 +31,6 @@ import type { CancelApprovalDetail } from "@/screens/approvals/utils/approvalDet
  *
  * 승인은 여기서 안 보낸다. 근무 취소의 승인은 확인 Dialog가 한 번 더 묻고 그 안에서 보낸다.
  */
-
-const CUSTOM_MAX_LENGTH = 100;
 
 export type ApprovalSheetFace = "detail" | "reject";
 
@@ -114,7 +115,7 @@ export function ApprovalDetailSheet({
           label="이유"
           placeholder="근무자에게 보낼 말을 적어 주세요"
           value={written}
-          maxLength={CUSTOM_MAX_LENGTH}
+          maxLength={CUSTOM_REJECT_MAX_LENGTH}
           multiline
           className="mt-3"
           onChangeText={setWritten}

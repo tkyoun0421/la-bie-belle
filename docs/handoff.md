@@ -6,7 +6,9 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 근태 이동 PR이다.** `attendance`·`excuse` + `attendanceCheckin`·`excuse` + `approvals`가 품는 타입 여덞·상수 아홉을 옮기고, DTO 셋과 매퍼 하나를 세우고, `hooks/`를 `services/`로 옮긴다(짝 테스트까지 둘). **낡은 정본 둘을 이 묶음이 고친다** — `docs/2-design/system/runtime.md`의 「업무 상수」 절과 `tests/lint/attendanceConstants.ts`가 근태 상수의 옛 자리를 가리킨다.
+**다음 첫 수는 `fsd-read-write-layers`의 알림 이동 PR이다.** `notification` + `pushSwitch`·`notificationRead` + `notifications`가 품는 타입 둘·상수 열하나·SDK 하나·환경값 하나·시계 하나를 옮기고, DTO 둘과 매퍼 둘을 세우고, `hooks/`를 `services/`로 옮긴다(짝 테스트까지 열). **Edge Function의 복사 경로가 이 묶음에 걸린다** — [관찰 049](observations/049-edge-functions-outside-every-check.md)가 든 자리고, `supabase/functions/`가 검사 셋 전부의 밖이라 지정자가 복사본에 실제로 있는지 보는 줄을 `syncEdgeShared.mts`에 세우는 것이 남았다. `pushDeps`는 부작용과 환경값을 한 파일에 들어 `lib`으로 간 뒤 그 안에서 환경 읽기가 `config`로 갈린다.
+
+**근태 묶음이 끝났다.** `hooks/` 하나가 `services/`로, DTO 넷이 `attendance.dto.ts`·`excuse.dto.ts`로, 상수 아홉이 `consts/` 둘로, 타입 열이 `.type.ts` 둘로 갔다. **낡은 정본 셋을 고쳤다** — `attendance.type.ts`에 **타입이 하나도 없고 상수 일곱뿐**이었는데, `runtime.md`의 「업무 상수」가 그 자리를 「ADR-015의 그 접미사가 「타입과 상수」를 담는다」로 적어 ADR의 옛 판본을 인용하고 있었고, `tests/lint/attendanceConstants.ts`와 그 짝 테스트 픽스처가 그 경로를 문자열로 들고 있었다. **중복 넷이 더 나왔다** — `DayAttendance`/`MonthAttendance`(몸이 글자까지 같아 `AttendanceRows`로 접었다), 질의 열 목록 둘의 사본, `nextMonthFirstDay`(`nextMonthStart`의 **다섯째** 사본), `CUSTOM_MAX_LENGTH`(판정 파일과 `.tsx`에 각자). **쓰기 셋에 Mutation이 없다** — `checkIn`·`submitExcuse`·`decideExcuse`가 `api/`에만 있고 `.tsx`가 저장소를 직접 부른다. AC-12 몫이다.
 
 **구성원 묶음이 끝났다.** `hooks/` 다섯이 통째로 `services/`로(열 + 짝 열), DTO 일곱이 `member.dto.ts`·`profile.dto.ts`로, 상수와 문안 열여섯이 `consts/` 넷으로 갔다. **같은 값이 다섯 벌 선 자리를 만났다** — 성별이다. 타입 둘(`ProfileGender`·`Gender`)과 좁히는 판정 둘과 이름표 네 벌을 접어 `spellGender` 하나로 모았다. 그리고 `MemberProfileRow`가 `utils`에 사는 DTO였다 — 함수가 보는 열은 넷인데 타입이 여섯을 들어 실물은 목록 DTO 셋의 뼈대였고, `.dto.ts`로 올리고 그 자리에 함수 계약 넷만 남겼다.
 

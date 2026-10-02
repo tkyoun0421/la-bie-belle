@@ -16,6 +16,7 @@ import type { PendingApproval } from "@/entities/workRequest/api/workRequest.dto
 import type { CancelDecision } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
 import { useDecideCancelRequestMutation } from "@/features/workRequest/services/useDecideCancelRequestMutation";
+import type { ApprovalListRow } from "@/screens/approvals/model/approvals.type";
 import {
   ApprovalDetailSheet,
   type ApprovalSheetFace,
@@ -28,7 +29,6 @@ import {
 import {
   removeApproval,
   sortApprovals,
-  type ApprovalListRow,
 } from "@/screens/approvals/utils/approvalsList.utils";
 
 /**

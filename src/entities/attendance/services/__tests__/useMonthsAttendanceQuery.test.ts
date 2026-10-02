@@ -1,4 +1,4 @@
-// 구현 대상: src/entities/attendance/hooks/useMonthsAttendanceQuery.ts
+// 구현 대상: src/entities/attendance/services/useMonthsAttendanceQuery.ts
 //
 // useMonthsAttendanceQuery(client, months) — 통계 근태 탭이 여는 열두 달 창의 근태 쪽이다.
 // 달마다 getMonthAttendance를 부르고 `queryKeys.attendance.month`를 그대로 쓴다 — 근태
@@ -28,7 +28,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useMonthsAttendanceQuery } =
-  await import("@/entities/attendance/hooks/useMonthsAttendanceQuery");
+  await import("@/entities/attendance/services/useMonthsAttendanceQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

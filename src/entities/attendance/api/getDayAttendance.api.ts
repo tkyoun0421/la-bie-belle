@@ -1,29 +1,11 @@
 import type { DB } from "@/shared/api/database";
+import type {
+  AttendanceRows,
+  CheckInRow,
+  ExcuseStatusRow,
+} from "@/entities/attendance/api/attendance.dto";
 
-export type CheckInRow = {
-  id: string;
-  day_id: string;
-  profile_id: string;
-  checked_at: string;
-  reported_at: string;
-  received_at: string;
-  method: string;
-};
-
-export type ExcuseStatusRow = {
-  day_id: string;
-  profile_id: string;
-  submitted_at: string;
-  decided_at: string | null;
-  decision: string | null;
-};
-
-export type DayAttendance = {
-  checkIns: CheckInRow[];
-  excuseStatuses: ExcuseStatusRow[];
-};
-
-const CHECK_IN_COLUMNS = [
+export const CHECK_IN_COLUMNS = [
   "id",
   "day_id",
   "profile_id",
@@ -33,7 +15,7 @@ const CHECK_IN_COLUMNS = [
   "method",
 ].join(", ");
 
-const EXCUSE_STATUS_COLUMNS = [
+export const EXCUSE_STATUS_COLUMNS = [
   "day_id",
   "profile_id",
   "submitted_at",
@@ -41,12 +23,12 @@ const EXCUSE_STATUS_COLUMNS = [
   "decision",
 ].join(", ");
 
-const EMPTY: DayAttendance = { checkIns: [], excuseStatuses: [] };
+const EMPTY: AttendanceRows = { checkIns: [], excuseStatuses: [] };
 
 export async function getDayAttendance(
   client: DB,
   workDate: string,
-): Promise<DayAttendance> {
+): Promise<AttendanceRows> {
   const { data: day, error: dayError } = await client
     .from("days")
     .select("id")

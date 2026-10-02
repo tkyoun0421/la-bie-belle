@@ -1,8 +1,11 @@
-import {
-  getAttendanceStatus,
-  type AttendanceStatus,
-  type AttendanceStatusInput,
-} from "@/entities/attendance/model/attendanceStatus.policy";
+import { TALLIED_STATUSES } from "@/entities/attendance/consts/attendance.const";
+import type {
+  AttendanceStatus,
+  AttendanceStatusInput,
+  MonthlyAttendanceTally,
+  TalliedStatus,
+} from "@/entities/attendance/model/attendance.type";
+import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 
 /**
  * 한 달치 근태를 네 갈래로 센다. 판정은 [`attendanceStatus.ts`](attendanceStatus.ts)의
@@ -21,13 +24,7 @@ import {
  * 슬라이스라 서로를 못 부른다(lint 규칙 3) — 세는 함수 옆이 그 공식의 자리다.
  */
 
-const TALLIED_STATUSES = ["present", "late", "absent", "excused"] as const;
-
 const PERCENT = 100;
-
-export type TalliedStatus = (typeof TALLIED_STATUSES)[number];
-
-export type MonthlyAttendanceTally = Record<TalliedStatus, number>;
 
 function isTallied(status: AttendanceStatus | null): status is TalliedStatus {
   return (TALLIED_STATUSES as readonly (AttendanceStatus | null)[]).includes(

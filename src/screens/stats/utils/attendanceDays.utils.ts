@@ -1,8 +1,6 @@
 import { spellDate } from "@/shared/utils/kstDate";
-import {
-  getAttendanceStatus,
-  type AttendanceStatus,
-} from "@/entities/attendance/model/attendanceStatus.policy";
+import type { AttendanceStatus } from "@/entities/attendance/model/attendance.type";
+import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import {
   buildAttendanceInputs,

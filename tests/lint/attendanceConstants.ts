@@ -39,7 +39,7 @@ export const SHARED_CONSTANTS: SharedConstant[] = [
 ];
 
 const MIGRATIONS_DIR = "supabase/migrations";
-const CONSTANTS_FILE = "src/entities/attendance/model/attendance.type.ts";
+const CONSTANTS_FILE = "src/entities/attendance/consts/attendance.const.ts";
 
 const DURATION_UNIT_TO_MINUTES: Record<string, number> = {
   minute: 1,
