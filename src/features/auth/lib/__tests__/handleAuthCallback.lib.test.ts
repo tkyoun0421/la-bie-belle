@@ -1,5 +1,5 @@
 import type { DB } from "@/shared/api/database";
-import { handleAuthCallback } from "@/features/auth/model/handleAuthCallback";
+import { handleAuthCallback } from "@/features/auth/lib/handleAuthCallback.lib";
 
 function fakeClient(exchangeResult: { error: { message: string } | null }): DB {
   return {

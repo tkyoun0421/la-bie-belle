@@ -1,4 +1,4 @@
-import { signOut } from "@/features/auth/model/signOut";
+import { signOut } from "@/features/auth/lib/signOut.lib";
 
 describe("signOut — 로그아웃 뒤 기기 정리 순서를 지킨다", () => {
   it("remove_push_token → auth.signOut → queryClient.clear → 영속본 삭제 순서로 부른다", async () => {

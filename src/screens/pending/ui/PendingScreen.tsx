@@ -37,7 +37,7 @@ import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
 import {
   DEVICE_CLEANUP_NOT_WIRED_YET,
   signOut,
-} from "@/features/auth/model/signOut";
+} from "@/features/auth/lib/signOut.lib";
 import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 import { uploadAvatar } from "@/features/profileEdit/api/avatarsBucket.api";
 import { submitProfile } from "@/features/profileEdit/api/submitProfile.api";
