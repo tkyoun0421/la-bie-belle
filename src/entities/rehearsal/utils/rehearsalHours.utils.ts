@@ -1,3 +1,5 @@
+import type { RehearsalTotal } from "@/entities/rehearsal/model/rehearsal.type";
+
 /**
  * 리허설을 시간으로 환산한다. **1건이 1시간이다**
  * (`docs/2-design/modules/schedule/README.md`의 SCH-023) — 건수로 넣은 것과 시각으로 넣은
@@ -19,11 +21,6 @@ export type RehearsalRow = {
   starts_at: string | null;
   ends_at: string | null;
   count: number | null;
-};
-
-export type RehearsalTotal = {
-  count: number;
-  minutes: number;
 };
 
 /** `"14:00"`도 `"14:00:00"`도 같은 분이다 — DB는 초까지 싣고 화면은 안 싣는다. */

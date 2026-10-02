@@ -1,3 +1,5 @@
+import type { RehearsalKind } from "@/entities/rehearsal/model/rehearsal.type";
+
 /**
  * 그날 리허설을 무엇으로 받을지다 — 살아 있는 정규 배정이 있으면 건수 갈래, 없으면 시각
  * 갈래다(`docs/2-design/modules/schedule/design.md`의 「리허설」). 교육 배정은 안 센다.
@@ -7,8 +9,6 @@
  * 사이에 관리자가 배정을 넣거나 뺐을 때고, 그때는 저장이 `wrong_kind`로 받아 시트가 칸을
  * 바꿔 다시 묻는다 — 두 벌이 선 것을 막는 대신 어긋나도 사람이 안 막히게 한 것이다.
  */
-
-export type RehearsalKind = "count" | "time";
 
 export type KindAssignment = {
   work_date: string;
