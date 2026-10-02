@@ -17,7 +17,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useMarkNotificationsReadMutation } =
-  await import("@/features/notificationRead/hooks/useMarkNotificationsReadMutation");
+  await import("@/features/notificationRead/services/useMarkNotificationsReadMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

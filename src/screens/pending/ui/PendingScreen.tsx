@@ -42,9 +42,9 @@ import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 import { uploadAvatar } from "@/features/profileEdit/api/avatarsBucket.api";
 import { submitProfile } from "@/features/profileEdit/api/submitProfile.api";
 import { updateMyPhoto } from "@/features/profileEdit/api/updateMyPhoto.api";
-import { useSavePushTokenMutation } from "@/features/pushSwitch/hooks/useSavePushTokenMutation";
 import { PUSH_DEPS } from "@/features/pushSwitch/model/pushDeps";
 import { requestPushPermission } from "@/features/pushSwitch/model/pushPermission";
+import { useSavePushTokenMutation } from "@/features/pushSwitch/services/useSavePushTokenMutation";
 import {
   INITIAL_NOTIFICATION_PROMPT_VIEW,
   NOTIFICATION_PROMPT_BUTTON,

@@ -19,7 +19,7 @@ import { Text } from "@/shared/ui/Text";
 import { kstDateOf } from "@/shared/utils/kstDate";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
-import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
+import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import { useRehearsalMonthsQuery } from "@/entities/rehearsal/hooks/useRehearsalMonthsQuery";
