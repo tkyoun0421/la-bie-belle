@@ -1,9 +1,8 @@
 import { Redirect, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
 import { supabase } from "@/shared/api/supabase";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
 import { resolveRehearsalGuard } from "@/screens/rehearsal/model/rehearsalGuard.policy";
 import { RehearsalScreen } from "@/screens/rehearsal/ui/RehearsalScreen";
@@ -27,8 +26,8 @@ type RehearsalParams = {
 
 export default function Screen() {
   const { month } = useLocalSearchParams<RehearsalParams>();
-  const [userId, setUserId] = useState<string | null>(null);
-  const [asked, setAsked] = useState(false);
+  const { data: user, isLoading: asking } = useSessionUserQuery(supabase);
+  const userId = user?.id ?? null;
 
   const { data: profile, isLoading: profileLoading } = useMyProfileQuery(
     supabase,
@@ -37,18 +36,12 @@ export default function Screen() {
   const { data: grants, isLoading: grantsLoading } =
     useQualificationsQuery(supabase);
 
-  useEffect(() => {
-    void getCurrentUser(supabase)
-      .then((user) => setUserId(user?.id ?? null))
-      .finally(() => setAsked(true));
-  }, []);
-
   const standing = resolveRehearsalGuard({
     isAdmin: profile?.role === "admin",
     hasGrant: hasRehearsalGrant(grants ?? [], profile?.id ?? null),
     // 로그인 자체가 없으면 기다릴 것이 없다 — 프로필을 모르는 것과 관리자가 아닌 것을
     // 같게 본다(`resolveAdminGuard`와 같은 결이다).
-    isLoading: !asked || (userId !== null && (profileLoading || grantsLoading)),
+    isLoading: asking || (userId !== null && (profileLoading || grantsLoading)),
   });
 
   if (standing === "wait") {

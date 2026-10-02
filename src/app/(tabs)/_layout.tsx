@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AppState } from "react-native";
 import { supabase } from "@/shared/api/supabase";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
+import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
 import { PUSH_DEPS } from "@/features/pushSwitch/lib/pushDeps.lib";
 import {
   getPushPermission,
@@ -32,15 +32,11 @@ import { useSavePushTokenMutation } from "@/features/pushSwitch/services/useSave
  * ([NTF-017](../../../../docs/2-design/modules/notification/README.md#ntf-017)).
  */
 export default function TabsLayout() {
-  const [userId, setUserId] = useState<string | null>(null);
   const [pushToken, setPushToken] = useState<string | null>(null);
-  const { data: profile } = useMyProfileQuery(supabase, userId);
+  const { data: user } = useSessionUserQuery(supabase);
+  const { data: profile } = useMyProfileQuery(supabase, user?.id ?? null);
 
   useSavePushTokenMutation(supabase, pushToken, AppState);
-
-  useEffect(() => {
-    void getCurrentUser(supabase).then((user) => setUserId(user?.id ?? null));
-  }, []);
 
   useEffect(() => {
     void getPushPermission(PUSH_DEPS.getPermissionsAsync)
