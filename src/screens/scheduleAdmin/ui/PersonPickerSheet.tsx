@@ -5,7 +5,7 @@ import { Button } from "@/shared/ui/Button";
 import { Checkbox } from "@/shared/ui/Checkbox";
 import { Icon } from "@/shared/ui/Icon";
 import { Text } from "@/shared/ui/Text";
-import type { PickerRow } from "@/screens/scheduleAdmin/model/personPickerRows.policy";
+import type { PickerEntry } from "@/screens/scheduleAdmin/model/dayDetail.type";
 import { genderSymbol } from "@/screens/scheduleAdmin/utils/personSheet.utils";
 
 /**
@@ -31,11 +31,6 @@ import { genderSymbol } from "@/screens/scheduleAdmin/utils/personSheet.utils";
 const GENDER_ICON_SIZE = 16;
 
 const SHEET_HEIGHT_RATIO = 0.7;
-
-export type PickerEntry = PickerRow & {
-  photoUrl: string | null;
-  gender: string | null;
-};
 
 export type PersonPickerSheetProps = {
   title: string;

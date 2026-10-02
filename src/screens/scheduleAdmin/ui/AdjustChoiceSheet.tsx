@@ -1,13 +1,8 @@
-import { useState } from "react";
 import { View } from "react-native";
 import { AmountInput } from "@/shared/ui/AmountInput";
 import { Button } from "@/shared/ui/Button";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
-import {
-  extraMinutes,
-  nextMinuteDigits,
-} from "@/screens/scheduleAdmin/model/adjustChoiceState.policy";
 import { spellHours } from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
 
 /**
@@ -35,11 +30,16 @@ export type AdjustChoiceSheetProps = {
   name: string;
   assignedMinutes: number;
   canRevert: boolean;
+  extending: boolean;
+  digits: string;
+  canSend: boolean;
   sending: boolean;
   failureMessage: string | null;
   onAbsent: () => void;
   onRevert: () => void;
-  onExtend: (minutes: number) => void;
+  onStartExtending: () => void;
+  onWriteDigits: (text: string) => void;
+  onExtend: () => void;
   onClose: () => void;
 };
 
@@ -47,18 +47,18 @@ export function AdjustChoiceSheet({
   name,
   assignedMinutes,
   canRevert,
+  extending,
+  digits,
+  canSend,
   sending,
   failureMessage,
   onAbsent,
   onRevert,
+  onStartExtending,
+  onWriteDigits,
   onExtend,
   onClose,
 }: AdjustChoiceSheetProps) {
-  const [extending, setExtending] = useState(false);
-  const [digits, setDigits] = useState("");
-
-  const minutes = extraMinutes(digits);
-
   return (
     <View>
       <Text size="lg" weight="semibold">
@@ -67,7 +67,7 @@ export function AdjustChoiceSheet({
 
       <View className="mt-2">
         <ListRow title="결근이에요" onPress={onAbsent} />
-        <ListRow title="연장이에요" onPress={() => setExtending(true)} />
+        <ListRow title="연장이에요" onPress={onStartExtending} />
         {canRevert ? <ListRow title="원래대로" onPress={onRevert} /> : null}
       </View>
 
@@ -81,7 +81,7 @@ export function AdjustChoiceSheet({
             unit="분"
             value={digits}
             hint={`배정 ${spellHours(assignedMinutes)}에 더해져요`}
-            onChangeText={(text) => setDigits(nextMinuteDigits(text))}
+            onChangeText={onWriteDigits}
           />
         </View>
       ) : null}
@@ -101,12 +101,8 @@ export function AdjustChoiceSheet({
             variant="primary"
             className="flex-1"
             loading={sending}
-            disabled={minutes === null}
-            onPress={() => {
-              if (minutes !== null) {
-                onExtend(minutes);
-              }
-            }}
+            disabled={!canSend}
+            onPress={onExtend}
           >
             바꾸기
           </Button>

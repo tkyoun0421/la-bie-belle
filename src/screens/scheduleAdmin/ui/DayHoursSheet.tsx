@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Text } from "@/shared/ui/Text";
-import { isDayHoursSaveEnabled } from "@/screens/scheduleAdmin/model/dayHoursForm.policy";
 
 /**
  * 그날 근무 시간을 고치는 시트다. 정본은
@@ -19,23 +17,26 @@ const SAVE_FAILED = "보내지 못했어요. 다시 시도해주세요";
 export type DayHoursSheetProps = {
   starts: string;
   ends: string;
+  canSave: boolean;
   saving: boolean;
   failed: boolean;
+  onWriteStarts: (typed: string) => void;
+  onWriteEnds: (typed: string) => void;
   onClose: () => void;
-  onSave: (input: { starts: string; ends: string }) => void;
+  onSave: () => void;
 };
 
 export function DayHoursSheet({
   starts,
   ends,
+  canSave,
   saving,
   failed,
+  onWriteStarts,
+  onWriteEnds,
   onClose,
   onSave,
 }: DayHoursSheetProps) {
-  const [draftStarts, setDraftStarts] = useState(starts);
-  const [draftEnds, setDraftEnds] = useState(ends);
-
   return (
     <>
       <Text size="lg" weight="bold">
@@ -48,16 +49,16 @@ export function DayHoursSheet({
           label="출근"
           testID="day-hours-start-input"
           placeholder="10:00"
-          value={draftStarts}
-          onChangeText={setDraftStarts}
+          value={starts}
+          onChangeText={onWriteStarts}
         />
         <Input
           className="flex-1"
           label="퇴근"
           testID="day-hours-end-input"
           placeholder="19:00"
-          value={draftEnds}
-          onChangeText={setDraftEnds}
+          value={ends}
+          onChangeText={onWriteEnds}
         />
       </View>
 
@@ -79,10 +80,8 @@ export function DayHoursSheet({
           variant="primary"
           className="flex-1"
           loading={saving}
-          disabled={
-            !isDayHoursSaveEnabled({ starts: draftStarts, ends: draftEnds })
-          }
-          onPress={() => onSave({ starts: draftStarts, ends: draftEnds })}
+          disabled={!canSave}
+          onPress={onSave}
         >
           바꾸기
         </Button>

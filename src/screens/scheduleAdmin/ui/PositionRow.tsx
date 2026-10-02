@@ -13,6 +13,10 @@ import { SlotCard } from "@/shared/ui/SlotCard";
 import { Text } from "@/shared/ui/Text";
 import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
 import {
+  positionDragId,
+  slotDragId,
+} from "@/screens/scheduleAdmin/utils/dragId.utils";
+import {
   assignmentForSlot,
   slotFillCount,
   type PositionSlot,
@@ -38,10 +42,6 @@ import {
 const LOCK_ICON_SIZE = 18;
 
 const HANDLE_ICON_SIZE = 18;
-
-export const ROW_DRAG_PREFIX = "position:";
-
-export const SLOT_DRAG_PREFIX = "slot:";
 
 export type PositionRowProps = {
   position: string;
@@ -124,8 +124,8 @@ export function PositionRow({
 
   return (
     <View className="mt-5">
-      <DropTarget id={`${ROW_DRAG_PREFIX}${position}`}>
-        <Draggable id={`${ROW_DRAG_PREFIX}${position}`} disabled={!unlocked}>
+      <DropTarget id={positionDragId(position)}>
+        <Draggable id={positionDragId(position)} disabled={!unlocked}>
           {head}
         </Draggable>
       </DropTarget>
@@ -173,7 +173,7 @@ export function PositionRow({
           );
 
           return unlocked ? (
-            <Draggable key={slot.id} id={`${SLOT_DRAG_PREFIX}${slot.id}`}>
+            <Draggable key={slot.id} id={slotDragId(slot.id)}>
               {card}
             </Draggable>
           ) : (

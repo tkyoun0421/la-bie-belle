@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
@@ -13,7 +12,8 @@ import { formatMonthName } from "@/screens/scheduleAdmin/utils/formatScheduleDat
  * 가른다. 만드는 순간 접수가 열리고 전원에게 알림이 나가므로 안내 줄이 누르기 전에 그것을
  * 말한다.
  *
- * 만들기가 실패하면 시트를 안 닫는다 — 적은 날짜가 사라지면 다시 적어야 한다.
+ * 만들기가 실패하면 시트를 안 닫는다 — 적은 날짜가 사라지면 다시 적어야 한다. 그 날짜를
+ * 화면의 controller가 드는 까닭이 그것이다 — 보낼 값이고 보내기가 넘어져도 남아야 한다.
  */
 
 const SAVE_FAILED = "보내지 못했어요. 다시 시도해주세요";
@@ -21,22 +21,26 @@ const SAVE_FAILED = "보내지 못했어요. 다시 시도해주세요";
 export type CreateScheduleSheetProps = {
   month: string;
   today: string;
+  deadline: string;
+  canSave: boolean;
   saving: boolean;
   failed: boolean;
+  onWriteDeadline: (typed: string) => void;
   onClose: () => void;
-  onCreate: (deadline: string) => void;
+  onCreate: () => void;
 };
 
 export function CreateScheduleSheet({
   month,
   today,
+  deadline,
+  canSave,
   saving,
   failed,
+  onWriteDeadline,
   onClose,
   onCreate,
 }: CreateScheduleSheetProps) {
-  const [deadline, setDeadline] = useState("");
-
   const monthName = formatMonthName(month);
 
   return (
@@ -52,7 +56,7 @@ export function CreateScheduleSheet({
         placeholder={today}
         autoCapitalize="none"
         value={deadline}
-        onChangeText={setDeadline}
+        onChangeText={onWriteDeadline}
       />
 
       <Text size="sm" tone="subtle" className="mt-2">
@@ -77,8 +81,8 @@ export function CreateScheduleSheet({
           variant="primary"
           className="flex-1"
           loading={saving}
-          disabled={deadline < today}
-          onPress={() => onCreate(deadline)}
+          disabled={!canSave}
+          onPress={onCreate}
         >
           만들기
         </Button>
