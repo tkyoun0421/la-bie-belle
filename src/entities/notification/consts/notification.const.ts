@@ -88,3 +88,25 @@ export const PUSH_MESSAGES_PER_REQUEST = 100;
 export const PUSH_DENIED_TITLE = "알림이 꺼져 있어요";
 
 export const PUSH_DENIED_SUBLINE = "기기 설정에서 알림을 켜면 받을 수 있어요";
+
+/**
+ * 알림이 안 닿는 갈래 둘이다 — 스스로 끈 것과 기기가 안 연결된 것이고, 관리자가 할 말이
+ * 갈린다. 닿는 사람에게 따로 한 마디를 안 붙이는 것은 그것이 기본이라서다 — 전원에게 붙는
+ * 표시는 아무것도 안 가른다.
+ */
+export const UNREACHABLE_STATES: ReadonlySet<ReachState> = new Set<ReachState>([
+  "off",
+  "no-device",
+]);
+
+/** 직원 목록 줄의 연락처 뒤에 붙는 한 마디다. */
+export const REACH_LIST_SUFFIX: Partial<Record<ReachState, string>> = {
+  off: "· 알림 꺼둠",
+  "no-device": "· 기기 안 연결",
+};
+
+/** 사람 시트의 알림 줄이다. */
+export const REACH_SHEET_LINE: Partial<Record<ReachState, string>> = {
+  off: "알림을 꺼두었어요",
+  "no-device": "기기에서 알림을 꺼서 안 가요",
+};

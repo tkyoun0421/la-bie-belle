@@ -1,4 +1,5 @@
 import { ORIGIN_NOTIFICATIONS } from "@/shared/consts/navigation.const";
+import { BACK_BEARING_PREFIXES } from "@/screens/notifications/consts/notifications.const";
 
 /**
  * 알림 목록에서 줄을 눌렀을 때다. 정본은
@@ -12,14 +13,10 @@ import { ORIGIN_NOTIFICATIONS } from "@/shared/consts/navigation.const";
  * **읽음 실패는 조용하다.** 이동이 먼저라 그 사람은 이미 다른 화면에 있다 — 앞 화면의
  * 되돌림을 보여줄 방법이 없어 토스트도 되돌림도 없고 다음 읽기가 맞춘다.
  *
- * **출처는 앱바 뒤로가 있는 화면에만 싣는다.** 관리자 층의 날 상세와 승인할 일이 그 자리고,
- * 탭 화면은 앱바 뒤로가 없어(`docs/2-design/system/navigation.md`의 「뒤로」) 실어도 받을
- * 자리가 없다 — 거기서는 기기 뒤로가 알림 목록으로 돌려보낸다.
+ * **출처는 앱바 뒤로가 있는 화면에만 싣는다.** 그 화면의 목록은 `consts`가 든다.
  */
 
 const ORIGIN = `from=${ORIGIN_NOTIFICATIONS}`;
-
-const BACK_BEARING_PREFIXES = ["/admin/schedule", "/admin/approvals"];
 
 function withOrigin(destination: string): string {
   const bearsBack = BACK_BEARING_PREFIXES.some((prefix) =>
