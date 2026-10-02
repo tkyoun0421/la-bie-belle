@@ -1,11 +1,8 @@
 import { useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
-import { useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { queryClient } from "@/shared/api/queryClient";
 import { supabase } from "@/shared/api/supabase";
 import { NO_VALUE } from "@/shared/consts/noValue.const";
-import { kstToday } from "@/shared/lib/kstToday.lib";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
@@ -22,39 +19,12 @@ import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
 import { TrendChart } from "@/shared/ui/TrendChart";
 import {
-  monthOf,
-  shiftMonth,
-  spellDate,
-  spellMonth,
-} from "@/shared/utils/kstDate";
-import {
-  canGoToPreviousMonth,
-  canGoToNextMonth,
-} from "@/shared/utils/monthBoundary";
-import { monthIn } from "@/shared/utils/monthIn";
-import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
-import { serverClockStore } from "@/entities/clock/stores/clock.store";
-import { useFirstScheduleMonthQuery } from "@/entities/schedule/services/useFirstScheduleMonthQuery";
-import { useWorkMonthsQuery } from "@/entities/schedule/services/useWorkMonthsQuery";
-import {
-  computeWorkTotals,
-  hoursLabel,
-  workInputsOf,
-} from "@/features/stats/model/workTotals.policy";
-import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
-import { computePersonDays } from "@/features/stats/utils/personDays.utils";
-import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
-import type { AttendanceTab } from "@/screens/adminStats/model/adminStats.type";
+  ADMIN_STATS_COPY,
+  AVATAR_SIZE,
+  TAB_OPTIONS,
+} from "@/screens/adminStats/consts/adminStats.const";
+import { useAdminStatsScreen } from "@/screens/adminStats/hooks/useAdminStatsScreen";
 import { WorkDaysSheet } from "@/screens/adminStats/ui/WorkDaysSheet";
-import {
-  attendanceRowValue,
-  buildAttendanceTab,
-} from "@/screens/adminStats/utils/attendanceRows.utils";
-import {
-  attendanceValues,
-  percentLabel,
-  workValues,
-} from "@/screens/adminStats/utils/chartValues.utils";
 
 /**
  * 관리자가 한 달을 숫자로 보는 화면이다. 정본은
@@ -66,38 +36,13 @@ import {
  * **달 줄이 세그먼트 위다.** 탭을 오가도 보는 달이 그대로고, 앱바·달 줄·세그먼트·추이
  * 그래프까지가 두 탭에서 같은 자리다.
  *
- * **새 키를 안 연다.** 열두 달을 `['schedule', 'YYYY-MM']`과 `['attendance', 'YYYY-MM']`로
- * 읽어서 근무표·급여 화면이 이미 읽어둔 달은 캐시에서 온다.
+ * **무엇을 읽을지는 탭이 가른다.** 그 가름과 열두 달의 조립과 사람 시트의 글월은
+ * [`useAdminStatsScreen`](../hooks/useAdminStatsScreen.ts)이 들고 이 파일은 쌓기만 한다.
  *
  * **다시 들어오면 이번 달이다.** 보던 달도 보던 탭도 기억하지 않는다.
  */
 
-const WORK = "work";
-
-const ATTENDANCE = "attendance";
-
-const TAB_OPTIONS = [
-  { value: WORK, label: "근무" },
-  { value: ATTENDANCE, label: "근태" },
-];
-
-const EMPTY_TITLE = "이 달은 아직 근무표가 없어요";
-
-const EMPTY_DESCRIPTION = "근무를 넣으면 여기 숫자가 서요";
-
-const READ_FAILED = "통계를 불러오지 못했어요";
-
-const AVATAR_SIZE = 40;
-
 const SKELETON_ROWS = [0, 1, 2];
-
-/** 탭에 없는 쪽은 열두 달을 안 읽는다. 배열을 그때그때 만들면 질의가 매 렌더 새로 선다. */
-const NO_MONTHS: string[] = [];
-
-const EMPTY_TALLY: AttendanceTab = {
-  tally: { present: 0, late: 0, absent: 0, excused: 0 },
-  rows: [],
-};
 
 /** 못 가는 화살표는 안 그린다. 달 글이 가운데에 그대로 서게 자리만 남긴다. */
 function ArrowSlot() {
@@ -106,100 +51,25 @@ function ArrowSlot() {
 
 export function AdminStatsScreen() {
   const router = useRouter();
-  const today = kstToday();
-
-  const [tab, setTab] = useState(WORK);
-  const [month, setMonth] = useState(() => monthOf(today));
-  const [openPerson, setOpenPerson] = useState<string | null>(null);
-
-  const clockOffset = serverClockStore((at) => at.offset);
-  const months = useMemo(() => trendMonths(month), [month]);
-
-  const work = useWorkMonthsQuery(supabase, tab === WORK ? months : NO_MONTHS);
-  const attendance = useAttendanceMonthsQuery(
-    supabase,
-    tab === ATTENDANCE ? months : NO_MONTHS,
-  );
-  const firstMonth = useFirstScheduleMonthQuery(supabase);
-
-  const workInputs = useMemo(
-    () => workInputsOf(monthIn(work.data, month)?.days ?? []),
-    [work.data, month],
-  );
-  const totals = useMemo(
-    () => computeWorkTotals(workInputs.assignments, workInputs.days),
-    [workInputs],
-  );
-
-  const attendanceByMonth = useMemo(() => {
-    const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
-
-    return new Map(
-      (attendance.data ?? []).map((one) => [
-        one.month,
-        buildAttendanceTab(
-          one.days,
-          one.attendance.checkIns,
-          one.attendance.excuseStatuses,
-          now,
-        ),
-      ]),
-    );
-  }, [attendance.data, clockOffset]);
-
-  const attendanceTab = attendanceByMonth.get(month) ?? EMPTY_TALLY;
-
-  const points = useMemo(
-    () =>
-      buildTrend(
-        months,
-        tab === WORK
-          ? workValues(work.data)
-          : attendanceValues(attendance.data, attendanceByMonth),
-      ).map((point) => ({
-        month: Number(point.month.slice(5, 7)),
-        value: point.value,
-      })),
-    [months, tab, work.data, attendance.data, attendanceByMonth],
-  );
-
-  const active = tab === WORK ? work : attendance;
-  const loading = active.isLoading;
-  const failed = active.error !== null;
-  const empty =
-    tab === WORK ? totals.totalCount === 0 : attendanceTab.rows.length === 0;
-
-  const person = openPerson;
-  const personDays =
-    person === null
-      ? null
-      : computePersonDays(person, workInputs.assignments, workInputs.days);
-  const personName =
-    totals.byPerson.find((row) => row.profileId === person)?.displayName ?? "";
-
-  const goMonth = (step: number) => setMonth(shiftMonth(month, step));
-
-  const retry = () => {
-    for (const key of [["schedule"], ["attendance"]]) {
-      void queryClient.invalidateQueries({ queryKey: key });
-    }
-  };
+  const screen = useAdminStatsScreen(supabase);
 
   return (
     <Screen floor="plain">
-      <AppBar title="통계" onBack={() => router.back()} />
+      <AppBar
+        title={ADMIN_STATS_COPY.appBarTitle}
+        onBack={() => router.back()}
+      />
 
       <ScrollView>
         <View className="px-5 pb-8">
           <View className="mt-2 flex-row items-center justify-center gap-2 py-2">
-            {firstMonth.data != null &&
-            canGoToPreviousMonth(month, firstMonth.data) ? (
+            {screen.canGoPrev ? (
               <Button
                 variant="ghost"
                 size="compact"
                 square
                 testID="stats-month-prev"
-                onPress={() => goMonth(-1)}
+                onPress={screen.goPrev}
               >
                 <Icon icon={ChevronLeft} tone="subtle" />
               </Button>
@@ -208,16 +78,16 @@ export function AdminStatsScreen() {
             )}
 
             <Text size="base" weight="medium" numeric>
-              {spellMonth(month)}
+              {screen.monthLabel}
             </Text>
 
-            {canGoToNextMonth(month, today) ? (
+            {screen.canGoNext ? (
               <Button
                 variant="ghost"
                 size="compact"
                 square
                 testID="stats-month-next"
-                onPress={() => goMonth(1)}
+                onPress={screen.goNext}
               >
                 <Icon icon={ChevronRight} tone="subtle" />
               </Button>
@@ -230,153 +100,122 @@ export function AdminStatsScreen() {
             className="mt-3"
             testID="stats-segment"
             options={TAB_OPTIONS}
-            value={tab}
-            onChange={setTab}
+            value={screen.tab}
+            onChange={screen.chooseTab}
           />
 
           <View className="mt-6">
             <TrendChart
               testID="stats-trend-chart"
-              points={points}
-              selectedMonth={Number(month.slice(5, 7))}
-              valueLabel={
-                loading || failed || empty
-                  ? undefined
-                  : tab === WORK
-                    ? hoursLabel(totals.totalMinutes)
-                    : percentLabel(attendanceTab)
-              }
+              points={screen.points}
+              selectedMonth={screen.selectedMonth}
+              valueLabel={screen.trendValueLabel}
             />
           </View>
 
-          {loading ? (
+          {screen.listState === "loading" ? (
             <View className="mt-6 gap-4">
               <SkeletonLine className="h-9 w-2/3" />
               {SKELETON_ROWS.map((at) => (
                 <SkeletonLine key={at} className="w-2/3" />
               ))}
             </View>
-          ) : failed ? (
+          ) : screen.listState === "failed" ? (
             <View className="mt-6 flex-row items-center gap-2">
               <Text size="xs" tone="subtle">
-                {READ_FAILED}
+                {ADMIN_STATS_COPY.readFailed}
               </Text>
-              <Button variant="ghost" size="compact" onPress={retry}>
-                다시 시도
+              <Button variant="ghost" size="compact" onPress={screen.retry}>
+                {ADMIN_STATS_COPY.retry}
               </Button>
             </View>
-          ) : tab === WORK ? (
+          ) : screen.listState === "empty" ? (
+            <View>
+              {screen.tab === "work" ? (
+                <Text size="3xl" weight="bold" numeric className="mt-6">
+                  {NO_VALUE}
+                </Text>
+              ) : null}
+
+              <View className="mt-8">
+                <EmptyState
+                  scene="no-schedule"
+                  title={ADMIN_STATS_COPY.emptyTitle}
+                  description={ADMIN_STATS_COPY.emptyBody}
+                />
+              </View>
+            </View>
+          ) : screen.listState === "work" ? (
             <View>
               <Text size="3xl" weight="bold" numeric className="mt-6">
-                {empty ? NO_VALUE : hoursLabel(totals.totalMinutes)}
+                {screen.totalLabel}
               </Text>
 
-              {empty ? (
-                <View className="mt-8">
-                  <EmptyState
-                    scene="no-schedule"
-                    title={EMPTY_TITLE}
-                    description={EMPTY_DESCRIPTION}
-                  />
-                </View>
-              ) : (
-                <View>
-                  <Text size="sm" tone="muted" numeric className="mt-3">
-                    {`근무 ${totals.totalCount}건`}
-                  </Text>
+              <Text size="sm" tone="muted" numeric className="mt-3">
+                {screen.countLine}
+              </Text>
 
-                  <SectionHeader label="사람별" />
-                  <RowBars
-                    testID="stats-people"
-                    items={totals.byPerson.map((row) => ({
-                      key: row.profileId,
-                      value: row.minutes,
-                      row: (
-                        <ListRow
-                          testID={`stats-person-${row.profileId}`}
-                          left={
-                            <Avatar name={row.displayName} size={AVATAR_SIZE} />
-                          }
-                          title={row.displayName}
-                          detail={`${row.count}회`}
-                          value={hoursLabel(row.minutes)}
-                          valueTone="answer"
-                          chevron
-                          onPress={() => setOpenPerson(row.profileId)}
-                        />
-                      ),
-                    }))}
-                  />
+              <SectionHeader label={ADMIN_STATS_COPY.peopleSection} />
+              <RowBars
+                testID="stats-people"
+                items={screen.peopleRows.map((row) => ({
+                  key: row.key,
+                  value: row.weight,
+                  row: (
+                    <ListRow
+                      testID={`stats-person-${row.profileId}`}
+                      left={
+                        <Avatar name={row.displayName} size={AVATAR_SIZE} />
+                      }
+                      title={row.displayName}
+                      detail={row.detail}
+                      value={row.value}
+                      valueTone="answer"
+                      chevron
+                      onPress={row.press}
+                    />
+                  ),
+                }))}
+              />
 
-                  <SectionHeader label="포지션" />
-                  <RowBars
-                    testID="stats-positions"
-                    items={totals.byPosition.map((row) => ({
-                      key: row.position,
-                      value: row.minutes,
-                      row: (
-                        <ListRow
-                          title={row.position}
-                          detail={`${row.count}건`}
-                          value={hoursLabel(row.minutes)}
-                          valueTone={row.minutes === 0 ? "zero" : "answer"}
-                        />
-                      ),
-                    }))}
-                  />
-                </View>
-              )}
-            </View>
-          ) : empty ? (
-            <View className="mt-8">
-              <EmptyState
-                scene="no-schedule"
-                title={EMPTY_TITLE}
-                description={EMPTY_DESCRIPTION}
+              <SectionHeader label={ADMIN_STATS_COPY.positionSection} />
+              <RowBars
+                testID="stats-positions"
+                items={screen.positionRows.map((row) => ({
+                  key: row.key,
+                  value: row.weight,
+                  row: (
+                    <ListRow
+                      title={row.title}
+                      detail={row.detail}
+                      value={row.value}
+                      valueTone={row.isZero ? "zero" : "answer"}
+                    />
+                  ),
+                }))}
               />
             </View>
           ) : (
             <View>
               <Text size="sm" tone="muted" numeric className="mt-6">
-                {`출근 ${attendanceTab.tally.present} · 지각 ${attendanceTab.tally.late} · 출근 인정 ${attendanceTab.tally.excused} · 결근 ${attendanceTab.tally.absent}`}
+                {screen.attendanceLine}
               </Text>
 
               <View className="mt-3">
                 <RatioBand
                   testID="stats-attendance-legend"
-                  shares={[
-                    {
-                      key: "present",
-                      label: "출근",
-                      value: attendanceTab.tally.present,
-                    },
-                    {
-                      key: "excused",
-                      label: "인정",
-                      value: attendanceTab.tally.excused,
-                    },
-                    {
-                      key: "late",
-                      label: "지각",
-                      value: attendanceTab.tally.late,
-                    },
-                    {
-                      key: "absent",
-                      label: "결근",
-                      value: attendanceTab.tally.absent,
-                    },
-                  ]}
+                  shares={screen.shares}
                 />
               </View>
 
               <View className="mt-8">
-                {attendanceTab.rows.map((row, at) => (
+                {screen.attendanceRows.map((row, at) => (
                   <ListRow
-                    key={row.profileId}
+                    key={row.key}
                     divider={at > 0}
                     left={<Avatar name={row.displayName} size={AVATAR_SIZE} />}
                     title={row.displayName}
-                    value={attendanceRowValue(row)}
+                    value={row.value}
                   />
                 ))}
               </View>
@@ -385,16 +224,12 @@ export function AdminStatsScreen() {
         </View>
       </ScrollView>
 
-      {personDays === null ? null : (
-        <SheetLayer onDismiss={() => setOpenPerson(null)}>
+      {screen.sheet === null ? null : (
+        <SheetLayer onDismiss={screen.closeSheet}>
           <WorkDaysSheet
-            name={personName}
-            rows={personDays.days.map((row) => ({
-              key: `${row.workDate}-${row.position}`,
-              title: `${spellDate(row.workDate)} · ${row.label}`,
-              value: hoursLabel(row.minutes),
-            }))}
-            total={`합계 · ${personDays.totalCount}회 · ${hoursLabel(personDays.totalMinutes)}`}
+            name={screen.sheet.name}
+            rows={screen.sheet.rows}
+            total={screen.sheet.total}
           />
         </SheetLayer>
       )}

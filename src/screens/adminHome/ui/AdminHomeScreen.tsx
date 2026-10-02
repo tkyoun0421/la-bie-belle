@@ -1,8 +1,7 @@
 import { usePathname, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { supabase } from "@/shared/api/supabase";
-import { kstToday } from "@/shared/lib/kstToday.lib";
+import { NO_VALUE } from "@/shared/consts/noValue.const";
 import { AdminSwitch } from "@/shared/ui/AdminSwitch";
 import { AppBar } from "@/shared/ui/AppBar";
 import { BellIcon } from "@/shared/ui/BellIcon";
@@ -15,31 +14,9 @@ import { RatioBand } from "@/shared/ui/RatioBand";
 import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
-import { useHallDefaultsQuery } from "@/entities/hall/services/useHallDefaultsQuery";
-import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
-import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
-import { liveAssignmentCount } from "@/entities/schedule/api/getMonthSchedule.api";
-import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
-import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
-import { useOpenSlotsQuery } from "@/entities/schedule/services/useOpenSlotsQuery";
-import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
-import { useSetHallDefaultsMutation } from "@/features/hallDefaults/services/useSetHallDefaultsMutation";
-import { homeTileSummary } from "@/screens/adminHome/model/homeTileSummary.policy";
-import { miniViewLoads } from "@/screens/adminHome/model/miniViewDensity.policy";
-import { tileMonth } from "@/screens/adminHome/model/tileMonth.policy";
-import {
-  spellDate,
-  todayBandShares,
-  todayStatus,
-} from "@/screens/adminHome/model/todayStatus.policy";
-import {
-  vacancyCardTitle,
-  vacancyCards,
-  vacancyDaysLeftLine,
-  vacancyDaysOf,
-} from "@/screens/adminHome/model/vacancyCards.policy";
+import { ADMIN_HOME_COPY } from "@/screens/adminHome/consts/adminHome.const";
+import { useAdminHomeScreen } from "@/screens/adminHome/hooks/useAdminHomeScreen";
 import { HallDefaultsSheet } from "@/screens/adminHome/ui/HallDefaultsSheet";
-import { approvalsLine } from "@/screens/adminHome/utils/approvalsLine.utils";
 
 /**
  * 관리자가 관리자 모드에서 처음 보는 허브다. 정본은
@@ -52,100 +29,18 @@ import { approvalsLine } from "@/screens/adminHome/utils/approvalsLine.utils";
  * **자리가 빠지면 위 간격을 이어받는다.** 오늘 배정이 없으면 오늘 현황이 통째로 없고, 빈
  * 자리가 없으면 그 자리도 없다 — 0으로 서지 않는다.
  *
- * **타일만 다른 달을 말할 수 있다.** 오늘이 든 달이 확정됐으면 타일은 다음 달로 넘어가고
- * ([tileMonth.ts](../model/tileMonth.ts)) 눌렀을 때 그 달이 열린다. 오늘 현황·빈 자리
- * 카드·미니뷰는 늘 오늘이 든 달이다 — 셋은 지금 벌어지는 일을 보는 자리다.
+ * **타일만 다른 달을 말할 수 있다.** 어느 달이 서는지와 그 달을 어떻게 읽는지는
+ * [`useAdminHomeScreen`](../hooks/useAdminHomeScreen.ts)이 가른다 — 이 파일이 받는 것은
+ * 「타일이 말하는 달」 하나다.
  *
- * **승인할 일 줄이 건수를 문장 안에 담는다.** 「승인할 일 · 3건」이 한 글월이라 가입 대기처럼
- * 오른쪽 값으로 안 가른다 — 세는 것이 사람이 아니라 건이라서 숫자만 떼면 무엇의 3인지가
- * 안 남는다(`admin-home.md`의 「관리자 홈 문안」). 지금 세는 것은 근무 취소 대기뿐이고 사유
- * 건수는 `attendance-excuse`가 같은 훅에 더한다.
+ * **보낼 데만 여기 산다.** 종과 모드 바꾸기와 줄마다의 이동이 `expo-router`를 쥐고, 그릴
+ * 값은 전부 controller가 이미 글자로 만들어 온다.
  */
 
 export function AdminHomeScreen() {
   const router = useRouter();
   const pathname = usePathname();
-  const unreadCount = useUnreadCountQuery(supabase);
-  const [sheetOpen, setSheetOpen] = useState(false);
-
-  const today = kstToday();
-  const month = today.slice(0, 7);
-
-  const { data: schedule } = useMonthWindowQuery(supabase, month);
-  const { data: days } = useMonthScheduleQuery(supabase, month);
-  const { data: openSlots } = useOpenSlotsQuery(supabase, month);
-  const { data: defaults } = useHallDefaultsQuery(supabase);
-  const { data: pending } = useMembersQuery(supabase, "pending");
-  const { data: approvals } = usePendingApprovalsQuery(supabase);
-
-  const tiled = tileMonth({
-    todayMonth: month,
-    todayMonthConfirmed: schedule?.confirmedAt != null,
-  });
-
-  const { data: tileSchedule } = useMonthWindowQuery(supabase, tiled);
-  const { data: tileDays } = useMonthScheduleQuery(supabase, tiled);
-  const { data: tileSlots } = useOpenSlotsQuery(supabase, tiled);
-
-  const {
-    mutate: saveDefaults,
-    isPending: savingDefaults,
-    isSuccess: savedDefaults,
-    isError: saveFailed,
-    reset: resetSave,
-  } = useSetHallDefaultsMutation(supabase);
-
-  useEffect(() => {
-    if (savedDefaults) {
-      setSheetOpen(false);
-      resetSave();
-    }
-  }, [savedDefaults, resetSave]);
-
-  const openDays = days ?? [];
-  const vacancies = openSlots ?? [];
-  const confirmed = schedule?.confirmedAt != null;
-
-  const tileVacancies = tileSlots ?? [];
-
-  const summary = homeTileSummary(
-    tileSchedule == null
-      ? { state: "not_created", month: tiled }
-      : tileSchedule.confirmedAt != null
-        ? {
-            state: "confirmed",
-            month: tiled,
-            vacancyCount: tileVacancies.length,
-          }
-        : {
-            state: "in_progress",
-            month: tiled,
-            openDays: (tileDays ?? []).length,
-            vacancyCount: tileVacancies.length,
-          },
-  );
-
-  const todayDay = openDays.find((day) => day.work_date === today) ?? null;
-
-  const status = todayStatus({
-    isConfirmed: confirmed,
-    assignedCount: todayDay === null ? 0 : liveAssignmentCount(todayDay),
-    checkedInCount: todayDay?.check_ins.length ?? 0,
-  });
-
-  const cards = confirmed
-    ? vacancyCards({
-        days: vacancyDaysOf(vacancies),
-        now: new Date().toISOString(),
-      })
-    : [];
-
-  const loads = miniViewLoads(
-    openDays.map((day) => ({
-      workDate: day.work_date,
-      assignedCount: liveAssignmentCount(day),
-    })),
-  );
+  const screen = useAdminHomeScreen(supabase);
 
   const goMonth = (asked: string) =>
     router.push(`/admin/schedule?month=${asked}`);
@@ -156,12 +51,12 @@ export function AdminHomeScreen() {
     <Screen>
       <AppBar
         kind="hub"
-        title="관리자"
+        title={ADMIN_HOME_COPY.appBarTitle}
         right={
           <View className="flex-row items-center gap-1">
             <BellIcon
               testID="bell-icon"
-              unread={(unreadCount.data ?? 0) > 0}
+              unread={screen.unread}
               onPress={() => router.push(`/notifications?from=${pathname}`)}
             />
             <AdminSwitch
@@ -174,40 +69,35 @@ export function AdminHomeScreen() {
 
       <ScrollView>
         <View className="px-5 pb-8">
-          {status.kind === "none" ? null : (
+          {screen.status.kind === "none" ? null : (
             <Pressable
               testID="admin-home-today-status"
               accessibilityRole="button"
               className="mt-2 py-1"
-              onPress={() => goDay(today)}
+              onPress={() => goDay(screen.today)}
             >
               <Text size="sm" tone="subtle">
-                {spellDate(today)}
+                {screen.todayLabel}
               </Text>
 
-              {status.kind === "unconfirmed" ? (
+              {screen.status.kind === "unconfirmed" ? (
                 <Text size="xl" weight="bold" numeric className="mt-1">
-                  –
+                  {NO_VALUE}
                 </Text>
               ) : (
                 <>
                   <Text size="xl" weight="bold" numeric className="mt-1">
-                    {`${status.assignedCount}명`}
+                    {`${screen.status.assignedCount}${ADMIN_HOME_COPY.assignedSuffix}`}
                   </Text>
 
-                  {status.notCheckedInCount === 0 ? (
+                  {screen.status.notCheckedInCount === 0 ? (
                     <Text size="sm" tone="muted" className="mt-1">
-                      전원 출근했어요
+                      {ADMIN_HOME_COPY.allCheckedIn}
                     </Text>
                   ) : null}
 
                   <View className="mt-3">
-                    <RatioBand
-                      shares={todayBandShares(
-                        status.checkedInCount,
-                        status.notCheckedInCount,
-                      )}
-                    />
+                    <RatioBand shares={screen.bandShares} />
                   </View>
                 </>
               )}
@@ -217,17 +107,17 @@ export function AdminHomeScreen() {
           <Pressable
             accessibilityRole="button"
             className="mt-6"
-            onPress={() => goMonth(tiled)}
+            onPress={() => goMonth(screen.tileMonth)}
           >
             <Card>
-              <CardHeader title="근무표 관리" />
+              <CardHeader title={ADMIN_HOME_COPY.scheduleTile} />
               <Text size="sm" tone="muted" numeric className="mt-1">
-                {summary}
+                {screen.summary}
               </Text>
             </Card>
           </Pressable>
 
-          {cards.map((card, at) => (
+          {screen.cards.map((card, at) => (
             <Pressable
               key={card.workDate}
               accessibilityRole="button"
@@ -236,11 +126,11 @@ export function AdminHomeScreen() {
             >
               <NoticeBlock kind="warning">
                 <Text size="sm" weight="medium">
-                  {vacancyCardTitle(card)}
+                  {card.title}
                 </Text>
                 {"\n"}
                 <Text size="sm" tone="muted">
-                  {vacancyDaysLeftLine(card.daysLeft)}
+                  {card.daysLeftLine}
                 </Text>
               </NoticeBlock>
             </Pressable>
@@ -249,17 +139,17 @@ export function AdminHomeScreen() {
           <Pressable
             accessibilityRole="button"
             className="mt-6"
-            onPress={() => goMonth(month)}
+            onPress={() => goMonth(screen.month)}
           >
             <Text size="sm" tone="subtle">
-              {`${Number(month.slice(5))}월`}
+              {screen.monthLabel}
             </Text>
             <View className="mt-2">
               <MiniCalendar
-                year={Number(month.slice(0, 4))}
-                month={Number(month.slice(5))}
-                today={new Date()}
-                days={loads}
+                year={screen.miniYear}
+                month={screen.miniMonth}
+                today={screen.miniToday}
+                days={screen.loads}
               />
             </View>
           </Pressable>
@@ -267,47 +157,55 @@ export function AdminHomeScreen() {
           <Divider className="mt-6" />
 
           <ListRow
-            title="근무 시간 기본값"
-            value={
-              defaults === undefined
-                ? undefined
-                : `${defaults.default_starts.slice(0, 5)}–${defaults.default_ends.slice(0, 5)}`
-            }
-            onPress={() => setSheetOpen(true)}
+            title={ADMIN_HOME_COPY.defaultsRow}
+            value={screen.defaultsValue}
+            onPress={screen.openSheet}
           />
           <ListRow
-            title={approvalsLine(approvals?.length ?? 0)}
+            title={screen.approvalsTitle}
             onPress={() => router.push("/admin/approvals")}
           />
           <ListRow
-            title="가입 대기"
-            value={pending === undefined ? undefined : `${pending.length}명`}
+            title={ADMIN_HOME_COPY.pendingRow}
+            value={screen.pendingValue}
             onPress={() => router.push("/admin/members/pending")}
           />
 
           <Divider />
 
-          <ListRow title="직원" onPress={() => router.push("/admin/members")} />
-          <ListRow title="시급" onPress={() => router.push("/admin/wages")} />
-          <ListRow title="QR" onPress={() => router.push("/admin/qr")} />
-          <ListRow title="통계" onPress={() => router.push("/admin/stats")} />
+          <ListRow
+            title={ADMIN_HOME_COPY.membersRow}
+            onPress={() => router.push("/admin/members")}
+          />
+          <ListRow
+            title={ADMIN_HOME_COPY.wagesRow}
+            onPress={() => router.push("/admin/wages")}
+          />
+          <ListRow
+            title={ADMIN_HOME_COPY.qrRow}
+            onPress={() => router.push("/admin/qr")}
+          />
+          <ListRow
+            title={ADMIN_HOME_COPY.statsRow}
+            onPress={() => router.push("/admin/stats")}
+          />
         </View>
       </ScrollView>
 
-      {sheetOpen && defaults !== undefined ? (
-        <SheetLayer onDismiss={() => setSheetOpen(false)}>
+      {screen.sheet === null ? null : (
+        <SheetLayer onDismiss={screen.closeSheet}>
           <HallDefaultsSheet
-            starts={defaults.default_starts.slice(0, 5)}
-            ends={defaults.default_ends.slice(0, 5)}
-            saving={savingDefaults}
-            failed={saveFailed}
-            onClose={() => setSheetOpen(false)}
-            onSave={({ starts, ends }) =>
-              saveDefaults({ slots: defaults.default_slots, starts, ends })
-            }
+            starts={screen.sheet.starts}
+            ends={screen.sheet.ends}
+            saving={screen.saving}
+            failed={screen.saveFailed}
+            onStarts={screen.writeStarts}
+            onEnds={screen.writeEnds}
+            onClose={screen.closeSheet}
+            onSave={screen.saveDefaults}
           />
         </SheetLayer>
-      ) : null}
+      )}
     </Screen>
   );
 }

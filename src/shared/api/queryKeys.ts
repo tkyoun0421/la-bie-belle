@@ -44,6 +44,7 @@ export const queryKeys = {
     everyone: (month: string) => ["availability", month, "all"],
   },
   attendance: {
+    all: ["attendance"],
     day: (workDate: string) => ["attendance", workDate],
     month: (month: string) => ["attendance", monthOf(month)],
   },

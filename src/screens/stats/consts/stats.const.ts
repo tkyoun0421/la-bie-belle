@@ -43,3 +43,35 @@ export const MONTH_LENGTH = 7;
 
 /** 급여 보조 줄이 세지 않는 날이다 — 결근한 날은 금액도 건수도 0이다. */
 export const ABSENT: PayrollDayKind = "absent";
+
+/**
+ * 근무자 통계의 탭 셋이다.
+ *
+ * **급여가 여기만 있다.** 관리자 통계에는 그 탭이 없다 — 자기 급여를 보는 것은 홀 전체
+ * 인건비를 보는 것과 다른 자리다.
+ */
+export const STATS_TABS = ["attendance", "position", "payroll"] as const;
+
+export const TAB_OPTIONS: readonly { value: string; label: string }[] = [
+  { value: "attendance", label: "근태" },
+  { value: "position", label: "포지션" },
+  { value: "payroll", label: "급여" },
+];
+
+/** 근무자 통계의 문안이다. 정본은 같은 문서의 「통계 문안」이다. */
+export const STATS_COPY = {
+  appBarTitle: "통계",
+  emptyTitle: "이 달은 근무가 없어요",
+  emptyBody: "근무가 잡히면 여기 숫자가 서요",
+  historyRow: "내역 보기",
+  readFailed: "통계를 불러오지 못했어요",
+  retry: "다시 시도",
+  /**
+   * 예상치 안내다.
+   *
+   * **같은 말이 급여 화면에도 있다.** 두 슬라이스가 서로를 못 불러서(lint 규칙 3) 각자
+   * 들고 있고, 접는 것은 AC-13이 받는다.
+   */
+  estimateNote: "예상치예요. 실제 지급액과 다를 수 있어요",
+  countSuffix: "건",
+} as const;

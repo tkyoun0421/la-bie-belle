@@ -3,26 +3,14 @@ import { AmountInput } from "@/shared/ui/AmountInput";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Button } from "@/shared/ui/Button";
 import { Text } from "@/shared/ui/Text";
-import { spellWon } from "@/shared/utils/spellNumber";
-import type { MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
 import {
-  WAGE_CAP_HINT,
+  WAGE_AMOUNT_INPUT_TEST_ID,
   WAGE_SAVE_FAILED_SUB,
   WAGE_SAVE_FAILED_TITLE,
   WAGE_TODAY_NOTE,
+  WAGES_COPY,
 } from "@/screens/wages/consts/wages.const";
-import { canResetToDefault } from "@/screens/wages/model/canResetToDefault.policy";
-import {
-  atWageCap,
-  canSaveWage,
-  formatAmountDisplay,
-  nextAmountDigits,
-} from "@/screens/wages/model/wageAmount.policy";
-import { WAGE_AMOUNT_INPUT_TEST_ID } from "@/screens/wages/ui/DefaultWageSheet";
-import {
-  buildWageHistory,
-  spellWageDate,
-} from "@/screens/wages/utils/wageHistory.utils";
+import type { WagesHistoryRow } from "@/screens/wages/hooks/useWagesScreen";
 
 /**
  * 한 사람의 시급을 정하는 시트다. 정본은
@@ -36,21 +24,23 @@ import {
  *
  * **이력 줄은 안 눌린다.** 화살표도 더보기도 없다 — 그 시점으로 되돌리는 문을 두면
  * 「지난 급여는 흔들리지 않는다」가 깨진다(PAY-010).
+ *
+ * **이력을 몇 줄 그릴지도 controller가 안다.** 「더 보기」가 늘리는 것이 조각의 모습이 아니라
+ * 받는 줄 수라서다 — 이 파일이 받는 것은 이미 글자가 된 줄들이다.
  */
-
-const HISTORY_TITLE = "이력";
 
 export type MemberWageSheetProps = {
   name: string;
   photoUrl: string | null;
-  rates: readonly MemberWageRateRow[];
-  currentAmount: number | null;
-  hasDefaultWage: boolean;
-  digits: string;
-  expanded: boolean;
+  historyRows: readonly WagesHistoryRow[];
+  historyHasMore: boolean;
+  amountText: string;
+  capHint: string | undefined;
+  canSave: boolean;
+  canReset: boolean;
   sending: boolean;
   failed: boolean;
-  onDigits: (digits: string) => void;
+  onDigits: (typed: string) => void;
   onExpand: () => void;
   onReset: () => void;
   onClose: () => void;
@@ -60,11 +50,12 @@ export type MemberWageSheetProps = {
 export function MemberWageSheet({
   name,
   photoUrl,
-  rates,
-  currentAmount,
-  hasDefaultWage,
-  digits,
-  expanded,
+  historyRows,
+  historyHasMore,
+  amountText,
+  capHint,
+  canSave,
+  canReset,
   sending,
   failed,
   onDigits,
@@ -73,8 +64,6 @@ export function MemberWageSheet({
   onClose,
   onSave,
 }: MemberWageSheetProps) {
-  const history = buildWageHistory(rates, expanded);
-
   return (
     <>
       {failed ? (
@@ -93,9 +82,9 @@ export function MemberWageSheet({
       <AmountInput
         className="mt-5"
         testID={WAGE_AMOUNT_INPUT_TEST_ID}
-        value={formatAmountDisplay(digits)}
-        hint={atWageCap(digits) ? WAGE_CAP_HINT : undefined}
-        onChangeText={(text) => onDigits(nextAmountDigits(digits, text))}
+        value={amountText}
+        hint={capHint}
+        onChangeText={onDigits}
       />
 
       {failed ? (
@@ -108,38 +97,38 @@ export function MemberWageSheet({
         </Text>
       )}
 
-      {canResetToDefault(rates, hasDefaultWage) ? (
+      {canReset ? (
         <Button
           variant="ghost"
           size="sm"
           className="mt-4 self-start px-0"
           onPress={onReset}
         >
-          기본 시급으로 되돌리기
+          {WAGES_COPY.resetRow}
         </Button>
       ) : null}
 
-      {history.rows.length > 0 ? (
+      {historyRows.length > 0 ? (
         <>
           <Text size="base" weight="medium" className="mt-6">
-            {HISTORY_TITLE}
+            {WAGES_COPY.historyTitle}
           </Text>
-          {history.rows.map((row) => (
+          {historyRows.map((row) => (
             <View
-              key={row.effective_date}
+              key={row.key}
               className="flex-row items-baseline justify-between gap-3 py-3"
             >
               <Text size="sm" tone="muted" numeric>
-                {spellWageDate(row.effective_date)}
+                {row.dateLabel}
               </Text>
               <Text size="sm" numeric>
-                {spellWon(row.amount)}
+                {row.amountLabel}
               </Text>
             </View>
           ))}
-          {history.hasMore ? (
+          {historyHasMore ? (
             <Button variant="ghost" size="sm" onPress={onExpand}>
-              더 보기
+              {WAGES_COPY.more}
             </Button>
           ) : null}
         </>
@@ -147,16 +136,16 @@ export function MemberWageSheet({
 
       <View className="mt-6 flex-row gap-3">
         <Button variant="secondary" className="flex-1" onPress={onClose}>
-          닫기
+          {WAGES_COPY.close}
         </Button>
         <Button
           variant="primary"
           className="flex-1"
           loading={sending}
-          disabled={!canSaveWage(digits, currentAmount)}
+          disabled={!canSave}
           onPress={onSave}
         >
-          저장
+          {WAGES_COPY.save}
         </Button>
       </View>
     </>

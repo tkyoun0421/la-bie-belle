@@ -1,5 +1,5 @@
 import { Dialog } from "@/shared/ui/Dialog";
-import { spellWon } from "@/shared/utils/spellNumber";
+import { WAGES_COPY } from "@/screens/wages/consts/wages.const";
 
 /**
  * 기본으로 되돌리기 전에 한 번 묻는 자리다. 지금 값이 기본보다 높으면 누르는 순간
@@ -9,20 +9,21 @@ import { spellWon } from "@/shared/utils/spellNumber";
  * 브랜드 밖으로 끌 이유가 없다.
  *
  * `notice`는 함수가 `no_default_wage`로 거절했을 때다. 화면이 기본 시급이 없는 동안
- * 되돌리기 줄을 안 그려서 평소엔 안 보이는 방어선이다.
+ * 되돌리기 줄을 안 그려서 평소엔 안 보이는 방어선이고, 그 판정은
+ * [`model/wageError.policy.ts`](../model/wageError.policy.ts)가 한다.
  */
 
 export type ResetWageDialogProps = {
   visible: boolean;
-  defaultAmount: number | null;
-  notice?: string;
+  body: string | undefined;
+  notice: string | undefined;
   onClose: () => void;
   onConfirm: () => void;
 };
 
 export function ResetWageDialog({
   visible,
-  defaultAmount,
+  body,
   notice,
   onClose,
   onConfirm,
@@ -30,16 +31,14 @@ export function ResetWageDialog({
   return (
     <Dialog
       visible={visible}
-      title="기본 시급으로 되돌릴까요?"
+      title={WAGES_COPY.resetTitle}
       notice={notice}
-      closeLabel="닫기"
+      closeLabel={WAGES_COPY.close}
       onClose={onClose}
-      confirmLabel="되돌리기"
+      confirmLabel={WAGES_COPY.resetConfirm}
       onConfirm={onConfirm}
     >
-      {defaultAmount === null
-        ? undefined
-        : `오늘부터 ${spellWon(defaultAmount)}이 적용돼요`}
+      {body}
     </Dialog>
   );
 }

@@ -1,9 +1,6 @@
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { supabase } from "@/shared/api/supabase";
-import { kstToday } from "@/shared/lib/kstToday.lib";
-import { DomainError } from "@/shared/model/error.type";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { Divider } from "@/shared/ui/Divider";
@@ -14,21 +11,11 @@ import { Screen } from "@/shared/ui/Screen";
 import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Text } from "@/shared/ui/Text";
-import { spellWon } from "@/shared/utils/spellNumber";
-import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
-import { useWageRatesQuery } from "@/entities/payroll/services/useWageRatesQuery";
-import { useResetWageToDefaultMutation } from "@/features/wageAdmin/services/useResetWageToDefaultMutation";
-import { useSetDefaultWageMutation } from "@/features/wageAdmin/services/useSetDefaultWageMutation";
-import { useSetWageMutation } from "@/features/wageAdmin/services/useSetWageMutation";
-import {
-  buildWageRows,
-  wageRatesOf,
-} from "@/screens/wages/model/wageRows.policy";
+import { WAGES_COPY } from "@/screens/wages/consts/wages.const";
+import { useWagesScreen } from "@/screens/wages/hooks/useWagesScreen";
 import { DefaultWageSheet } from "@/screens/wages/ui/DefaultWageSheet";
 import { MemberWageSheet } from "@/screens/wages/ui/MemberWageSheet";
 import { ResetWageDialog } from "@/screens/wages/ui/ResetWageDialog";
-import { countFollowers } from "@/screens/wages/utils/followerCount.utils";
-import { prefillWageAmount } from "@/screens/wages/utils/wageHistory.utils";
 
 /**
  * 관리자가 기본 시급과 사람별 시급을 정하는 화면이다. 정본은
@@ -47,162 +34,21 @@ import { prefillWageAmount } from "@/screens/wages/utils/wageHistory.utils";
  *
  * **날짜를 다루는 조각이 하나도 없다.** 적용은 언제나 오늘부터고 미리 넣어두는 길도
  * 소급하는 길도 없다(PAY-008·PAY-009).
+ *
+ * **`useState`가 하나도 없다.** 금액 칸과 시트 둘과 확인창이 전부 통신에 매여 있어
+ * [`useWagesScreen`](../hooks/useWagesScreen.ts)이 든다.
  */
 
 const SKELETON_ROWS = [0, 1, 2];
 
-const NO_WAGE = "—";
-
-const NO_FOLLOWER = "아직 이 값을 쓰는 사람이 없어요";
-
-const NO_DEFAULT_WAGE_NOTICE = "기본 시급을 아직 안 정했어요";
-
-type SheetTarget = { kind: "default" } | { kind: "member"; profileId: string };
-
-function digitsOf(amount: number | null): string {
-  return amount === null ? "" : String(amount);
-}
-
-function codeOf(error: Error | null): string | null {
-  return error instanceof DomainError ? error.code : null;
-}
-
 export function WagesScreen() {
   const router = useRouter();
-
-  const [sheet, setSheet] = useState<SheetTarget | null>(null);
-  const [digits, setDigits] = useState("");
-  const [expanded, setExpanded] = useState(false);
-  const [asking, setAsking] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
-
-  const { data: members } = useMembersQuery(supabase, "active");
-  const { data: wages } = useWageRatesQuery(supabase);
-
-  const {
-    mutate: saveWage,
-    isPending: savingWage,
-    isSuccess: wageSaved,
-    error: wageError,
-    reset: resetWageSave,
-  } = useSetWageMutation(supabase);
-
-  const {
-    mutate: saveDefaultWage,
-    isPending: savingDefaultWage,
-    isSuccess: defaultWageSaved,
-    error: defaultWageError,
-    reset: resetDefaultWageSave,
-  } = useSetDefaultWageMutation(supabase);
-
-  const {
-    mutate: sendReset,
-    isSuccess: resetDone,
-    error: resetError,
-    reset: resetResetSend,
-  } = useResetWageToDefaultMutation(supabase);
-
-  const close = useCallback(() => {
-    setSheet(null);
-    setDigits("");
-    setExpanded(false);
-    setAsking(false);
-    resetWageSave();
-    resetDefaultWageSave();
-    resetResetSend();
-  }, [resetWageSave, resetDefaultWageSave, resetResetSend]);
-
-  const hideToast = useCallback(() => setToast(null), []);
-
-  useEffect(() => {
-    if (!wageSaved) {
-      return;
-    }
-
-    setToast("시급을 바꿨어요");
-    close();
-  }, [wageSaved, close]);
-
-  useEffect(() => {
-    if (!defaultWageSaved) {
-      return;
-    }
-
-    setToast("기본 시급을 바꿨어요");
-    close();
-  }, [defaultWageSaved, close]);
-
-  useEffect(() => {
-    if (!resetDone) {
-      return;
-    }
-
-    setToast("기본 시급으로 되돌렸어요");
-    close();
-  }, [resetDone, close]);
-
-  const wageRates = wages?.wageRates ?? [];
-  const defaultWage = wages?.defaultWageRate?.amount ?? null;
-  const hasDefaultWage = defaultWage !== null;
-
-  const rows = buildWageRows(
-    (members ?? []).map((member) => ({
-      profileId: member.id,
-      displayName: member.display_name ?? "",
-      photoUrl: member.photo_url,
-    })),
-    wageRates,
-  );
-
-  const followerCount = countFollowers(
-    rows.map((row) => row.profileId),
-    wageRates,
-  );
-
-  const openMember =
-    sheet?.kind === "member"
-      ? (rows.find((row) => row.profileId === sheet.profileId) ?? null)
-      : null;
-
-  const memberRates =
-    openMember === null ? [] : wageRatesOf(wageRates, openMember.profileId);
-
-  const memberWage = prefillWageAmount(memberRates, kstToday());
-
-  const openDefaultSheet = () => {
-    setSheet({ kind: "default" });
-    setDigits(digitsOf(defaultWage));
-    setExpanded(false);
-    setAsking(false);
-  };
-
-  const openMemberSheet = (profileId: string) => {
-    setSheet({ kind: "member", profileId });
-    setDigits(
-      digitsOf(
-        prefillWageAmount(wageRatesOf(wageRates, profileId), kstToday()),
-      ),
-    );
-    setExpanded(false);
-    setAsking(false);
-  };
-
-  const loading = members === undefined || wages === undefined;
-
-  const baseValue = hasDefaultWage ? spellWon(defaultWage) : "아직 안 정했어요";
-
-  const baseNote = hasDefaultWage
-    ? followerCount === 0
-      ? NO_FOLLOWER
-      : `${followerCount}명이 이 값을 써요`
-    : followerCount === 0
-      ? "정하면 새로 승인되는 사람부터 붙어요"
-      : `정하면 ${followerCount}명에게 함께 붙어요`;
+  const screen = useWagesScreen(supabase);
 
   return (
     <Screen floor="plain">
       <AppBar
-        title="시급"
+        title={WAGES_COPY.appBarTitle}
         onBack={() =>
           router.canGoBack() ? router.back() : router.replace("/admin")
         }
@@ -212,103 +58,93 @@ export function WagesScreen() {
         <View className="px-5 pb-5">
           <View>
             <ListRow
-              title="기본 시급"
-              value={baseValue}
+              title={WAGES_COPY.baseTitle}
+              value={screen.baseValue}
               chevron
-              onPress={openDefaultSheet}
+              onPress={screen.openBase}
             />
             <Text size="xs" tone="subtle" numeric className="mt-1">
-              {baseNote}
+              {screen.baseNote}
             </Text>
           </View>
 
           <Divider className="my-2" />
 
-          {loading ? (
+          {screen.listState === "loading" ? (
             SKELETON_ROWS.map((at) => (
               <SkeletonLine key={at} className="my-4 w-2/3" />
             ))
-          ) : rows.length === 0 ? (
+          ) : screen.listState === "empty" ? (
             <EmptyState
               scene="no-members"
-              title="아직 승인된 사람이 없어요"
-              description="가입을 승인하면 여기 서요"
+              title={WAGES_COPY.emptyTitle}
+              description={WAGES_COPY.emptyBody}
             />
           ) : (
-            rows.map((row, at) => (
+            screen.rows.map((row, at) => (
               <ListRow
                 key={row.profileId}
                 title={row.displayName}
-                value={row.amount === null ? NO_WAGE : spellWon(row.amount)}
+                value={row.valueLabel}
                 left={<Avatar name={row.displayName} photoUrl={row.photoUrl} />}
                 chevron
                 divider={at > 0}
-                onPress={() => openMemberSheet(row.profileId)}
+                onPress={row.press}
               />
             ))
           )}
         </View>
       </ScrollView>
 
-      {sheet?.kind === "default" ? (
-        <SheetLayer onDismiss={close}>
+      {screen.sheet === "default" ? (
+        <SheetLayer onDismiss={screen.close}>
           <DefaultWageSheet
-            currentAmount={defaultWage}
-            followerCount={followerCount}
-            digits={digits}
-            sending={savingDefaultWage}
-            failed={defaultWageError !== null}
-            onDigits={setDigits}
-            onClose={close}
-            onSave={() => saveDefaultWage(Number(digits))}
+            followerLine={screen.followerLine}
+            amountText={screen.amountText}
+            capHint={screen.capHint}
+            canSave={screen.canSave}
+            sending={screen.sending}
+            failed={screen.failed}
+            onDigits={screen.write}
+            onClose={screen.close}
+            onSave={screen.save}
           />
         </SheetLayer>
       ) : null}
 
-      {openMember ? (
-        <SheetLayer onDismiss={close}>
+      {screen.member === null ? null : (
+        <SheetLayer onDismiss={screen.close}>
           <MemberWageSheet
-            name={openMember.displayName}
-            photoUrl={openMember.photoUrl ?? null}
-            rates={memberRates}
-            currentAmount={memberWage}
-            hasDefaultWage={hasDefaultWage}
-            digits={digits}
-            expanded={expanded}
-            sending={savingWage}
-            failed={wageError !== null}
-            onDigits={setDigits}
-            onExpand={() => setExpanded(true)}
-            onReset={() => setAsking(true)}
-            onClose={close}
-            onSave={() =>
-              saveWage({
-                profileId: openMember.profileId,
-                amount: Number(digits),
-              })
-            }
+            name={screen.member.displayName}
+            photoUrl={screen.member.photoUrl}
+            historyRows={screen.historyRows}
+            historyHasMore={screen.historyHasMore}
+            amountText={screen.amountText}
+            capHint={screen.capHint}
+            canSave={screen.canSave}
+            canReset={screen.canReset}
+            sending={screen.sending}
+            failed={screen.failed}
+            onDigits={screen.write}
+            onExpand={screen.expandHistory}
+            onReset={screen.askReset}
+            onClose={screen.close}
+            onSave={screen.save}
           />
         </SheetLayer>
-      ) : null}
+      )}
 
       <ResetWageDialog
-        visible={asking}
-        defaultAmount={defaultWage}
-        notice={
-          codeOf(resetError) === "no_default_wage"
-            ? NO_DEFAULT_WAGE_NOTICE
-            : undefined
-        }
-        onClose={() => {
-          setAsking(false);
-          resetResetSend();
-        }}
-        onConfirm={() =>
-          openMember === null ? undefined : sendReset(openMember.profileId)
-        }
+        visible={screen.asking}
+        body={screen.resetBody}
+        notice={screen.resetNotice}
+        onClose={screen.cancelReset}
+        onConfirm={screen.confirmReset}
       />
 
-      {toast ? <FloatingToast message={toast} onDone={hideToast} /> : null}
+      {screen.toast ? (
+        <FloatingToast message={screen.toast} onDone={screen.dismissToast} />
+      ) : null}
     </Screen>
   );
 }

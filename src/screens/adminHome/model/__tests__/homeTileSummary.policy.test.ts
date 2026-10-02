@@ -3,7 +3,20 @@
 // 근무표 관리 타일 안 요약 줄이다. 문안 표(admin-home.md 「관리자 홈 문안」) 그대로다 —
 // 아직 없음 / 만드는 중(열린 날 수·빈 자리 수) / 확정 뒤(빈 자리 수).
 
-import { homeTileSummary } from "@/screens/adminHome/model/homeTileSummary.policy";
+import {
+  homeTileSummary,
+  monthName,
+} from "@/screens/adminHome/model/homeTileSummary.policy";
+
+describe("monthName — 달을 「10월」로 적는다", () => {
+  it("해가 앞에 붙지 않는다", () => {
+    expect(monthName("2026-10")).toBe("10월");
+  });
+
+  it("앞 0을 떼고 적는다", () => {
+    expect(monthName("2027-01")).toBe("1월");
+  });
+});
 
 describe("homeTileSummary — 근무표가 없으면 아직 없다는 문장이다", () => {
   it("10월이면 「10월 근무표가 아직 없어요」다", () => {

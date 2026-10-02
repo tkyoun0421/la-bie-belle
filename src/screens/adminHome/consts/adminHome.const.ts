@@ -1,6 +1,6 @@
 /**
- * 관리자 홈이 쓰는 업무 상수다. 정본은
- * `docs/2-design/system/screens/adminHome.md`의 「빈 자리 카드」다.
+ * 관리자 홈이 쓰는 업무 상수와 문안이다. 정본은
+ * `docs/2-design/system/screens/adminHome.md`의 「빈 자리 카드」와 「관리자 홈 문안」이다.
  */
 
 /**
@@ -11,3 +11,23 @@
  * 수를 각자 들고, 재촉을 며칠 전부터 할지가 바뀌면 둘을 같이 고친다.
  */
 export const WITHIN_DAYS = 3;
+
+/**
+ * 관리자 홈의 문안이다. 정본은 같은 문서의 「관리자 홈 문안」이다.
+ *
+ * **승인할 일 줄만 여기 없다.** 그 줄은 건수를 문장 안에 담아서
+ * [`approvalsLine`](../utils/approvalsLine.utils.ts)이 글월째 만든다.
+ */
+export const ADMIN_HOME_COPY = {
+  appBarTitle: "관리자",
+  allCheckedIn: "전원 출근했어요",
+  scheduleTile: "근무표 관리",
+  defaultsRow: "근무 시간 기본값",
+  pendingRow: "가입 대기",
+  membersRow: "직원",
+  wagesRow: "시급",
+  qrRow: "QR",
+  statsRow: "통계",
+  peopleSuffix: "명",
+  assignedSuffix: "명",
+} as const;
