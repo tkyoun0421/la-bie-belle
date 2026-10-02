@@ -62,3 +62,71 @@ export const NOTIFICATION_PROMPT_COPY: Record<
     hasButton: false,
   },
 };
+
+/**
+ * 장면 넷의 문안과 정해진 값이다. 정본은
+ * `docs/2-design/modules/account/screens/login.md`다.
+ */
+export const PENDING_FORM_COPY = {
+  appBarTitle: "프로필",
+  signOut: "로그아웃",
+  writing: "자신의 프로필을 작성해 주세요",
+  reviewing: "아래 정보가 맞나요? 틀린 부분을 누르면 다시 적을 수 있어요",
+  greetingSuffix: "님, 반가워요",
+  useDefaultPhoto: "기본 사진 쓰기",
+  photoFailed: "사진을 올리지 못했어요. 다시 골라 주세요",
+  nameLabel: "이름",
+  namePlaceholder: "근무표에 뜰 이름",
+  genderLabel: "성별",
+  birthDateLabel: "생년월일",
+  birthDatePlaceholder: "19930421",
+  phoneLabel: "연락처",
+  phonePlaceholder: "010-0000-0000",
+  lockedNote: "이름과 성별과 생년월일은 보내고 나면 못 고쳐요",
+  submitHint: "빈 칸을 다 채우면 보낼 수 있어요",
+  /**
+   * **같은 글자가 저장소 여섯 자리에 있다.** 묶음 다섯에 걸려 한 열이 못 접고 AC-13이
+   * 받는다.
+   */
+  submitFailed: "보내지 못했어요. 다시 시도해주세요",
+  submit: "보내기",
+} as const;
+
+/** 성별 칸의 선택지다 — 순서가 화면에 서는 순서다. */
+export const GENDER_OPTIONS = [
+  { value: "female", label: "여" },
+  { value: "male", label: "남" },
+] as const;
+
+/** 기다리는 중과 거절된 뒤의 문안이다. */
+export const PENDING_WAIT_COPY = {
+  waitingBadge: "승인 기다리는 중",
+  waitingTitle: "관리자가 확인 중이에요",
+  rejectedBadge: "아직 연결 전",
+  rejectedTitle: "이번엔 연결이 안 됐어요",
+  rejectedSubline: "프로필을 고쳐서 다시 보낼 수 있어요",
+  retry: "다시 보내기",
+} as const;
+
+/** 기다리는 동안 번갈아 서는 줄이다 — 앱이 무엇을 해 주는지를 말한다. */
+export const ROTATING_LINES = [
+  "이번 달 근무표를 한눈에 봐요",
+  "출근은 현장에서 찍어요",
+  "일한 시간과 급여를 같이 봐요",
+] as const;
+
+export const ROTATE_INTERVAL_MS = 4000;
+
+/** 축하가 머무는 시간이다 — 지나면 저절로 승인 대기로 넘어간다. */
+export const CELEBRATION_STAY_MS = 1200;
+
+export const PENDING_AVATAR_SIZE = 64;
+
+export const EMAIL_AVATAR_SIZE = 24;
+
+export const SCREEN_BOTTOM_PADDING = 24;
+
+/** 칸이 받는 자릿수다 — 둘 다 하이픈 없는 숫자다. */
+export const BIRTH_DATE_LENGTH = 8;
+
+export const PENDING_PHONE_LENGTH = 11;
