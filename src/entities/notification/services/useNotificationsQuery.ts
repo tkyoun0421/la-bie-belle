@@ -5,7 +5,7 @@ import { getNotifications } from "@/entities/notification/api/getNotifications.a
 import {
   NOTIFICATION_MAX_PAGES,
   NOTIFICATION_PAGE_SIZE,
-} from "@/entities/notification/model/notification.type";
+} from "@/entities/notification/consts/notification.const";
 
 /**
  * 받은 알림을 쪽으로 읽는다. 키는 `['notifications']`고 한 쪽이

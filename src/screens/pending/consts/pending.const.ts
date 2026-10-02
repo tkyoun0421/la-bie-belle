@@ -1,7 +1,7 @@
 import {
   PUSH_DENIED_SUBLINE,
   PUSH_DENIED_TITLE,
-} from "@/entities/notification/model/profileNotificationRow.policy";
+} from "@/entities/notification/consts/notification.const";
 import type { PushPermission } from "@/entities/notification/model/reachState.policy";
 import type {
   NotificationPromptCopy,

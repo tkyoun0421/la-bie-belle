@@ -26,16 +26,6 @@ export type ReachInput = {
   permission: PushPermission | null;
 };
 
-/**
- * 관리자 화면이 남의 갈래를 볼 때 쓰는 권한 값이다. 기기 권한은 그 사람의 기기에만 있는
- * 값이라 `push_reachable`에도 안 오고 올 길도 없다 — 거부 갈래는 그 사람의 「나」 화면에서만
- * 선다. 남을 볼 때 판정에 드는 축은 의사와 기기 둘뿐이라는 뜻이다.
- */
-export const PERMISSION_OF_OTHERS: PushPermission = "granted";
-
-/** 닿는 갈래다. 화면이 「알림이 간다」를 물을 때 견주는 값이라 이름을 밖에 둔다. */
-export const REACHABLE: ReachState = "reachable";
-
 export function getReachState({
   notificationsEnabled,
   hasDevice,

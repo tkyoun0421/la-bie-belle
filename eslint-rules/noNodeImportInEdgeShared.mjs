@@ -1,7 +1,7 @@
 import path from "node:path";
 
 /**
- * `src/entities/notification/model/`과 `src/features/holiday/model/`은 `pnpm edge:sync`가
+ * `src/entities/notification/`의 세그먼트 셋과 `src/features/holiday/model/`은 `pnpm edge:sync`가
  * `supabase/functions/_shared/`로 복사해 Deno로 돌리는 폴더다(notification/design.md 「푸시 보내기」). Node 전용 API를
  * 부르면 앱에서는 멀쩡하고 복사본만 런타임에서 깨진다 — 정본이 「lint가 막는다」고 적어둔
  * 그 자리다.
@@ -12,6 +12,7 @@ import path from "node:path";
  */
 
 const COPIED_TO_DENO = [
+  "src/entities/notification/consts/",
   "src/entities/notification/model/",
   "src/entities/notification/utils/",
   "src/features/holiday/model/",

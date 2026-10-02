@@ -14,8 +14,8 @@ import type { Qualification } from "@/entities/member/api/member.dto";
 import {
   PERMISSION_OF_OTHERS,
   REACHABLE,
-  getReachState,
-} from "@/entities/notification/model/reachState.policy";
+} from "@/entities/notification/consts/notification.const";
+import { getReachState } from "@/entities/notification/model/reachState.policy";
 import type {
   ScheduleAssignment,
   ScheduleSlot,

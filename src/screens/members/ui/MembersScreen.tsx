@@ -22,10 +22,8 @@ import { isLastAdmin } from "@/entities/member/model/isLastAdmin.policy";
 import { isLeftOverAYear } from "@/entities/member/model/sortMembers.policy";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { searchMembers } from "@/entities/member/utils/searchMembers.utils";
-import {
-  PERMISSION_OF_OTHERS,
-  getReachState,
-} from "@/entities/notification/model/reachState.policy";
+import { PERMISSION_OF_OTHERS } from "@/entities/notification/consts/notification.const";
+import { getReachState } from "@/entities/notification/model/reachState.policy";
 import {
   getMemberListSuffix,
   getMemberSheetLine,

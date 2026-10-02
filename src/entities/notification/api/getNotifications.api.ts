@@ -1,6 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import type { NotificationRow } from "@/entities/notification/api/notification.dto";
-import { NOTIFICATION_PAGE_SIZE } from "@/entities/notification/model/notification.type";
+import { NOTIFICATION_PAGE_SIZE } from "@/entities/notification/consts/notification.const";
 
 /**
  * 받은 알림 한 쪽이다. 최근부터 내려오고 `(profile_id, created_at desc)` 인덱스를 탄다.

@@ -1,3 +1,7 @@
+import {
+  PUSH_DENIED_SUBLINE,
+  PUSH_DENIED_TITLE,
+} from "@/entities/notification/consts/notification.const";
 import type { ReachState } from "@/entities/notification/model/reachState.policy";
 
 /**
@@ -16,14 +20,8 @@ import type { ReachState } from "@/entities/notification/model/reachState.policy
  * **읽는 동안은 잠긴다.** 다 읽기 전에 꺼진 모양으로 그리면 켜 둔 사람에게 「내가 언제
  * 껐지」를 묻게 한다(spec 상태 격자의 「로딩」).
  *
- * 거부 문장 둘을 이 자리가 들고 있는 것은 승인 대기 화면이 같은 문장을 쓰기 때문이다 —
- * 거기서 거부한 사람이 여기로 온다
- * ([NTF-028](../../../../docs/2-design/modules/notification/README.md#ntf-028)).
+ * 거부 문장 둘은 `consts`가 든다 — 승인 대기 화면이 같은 문장을 쓴다.
  */
-
-export const PUSH_DENIED_TITLE = "알림이 꺼져 있어요";
-
-export const PUSH_DENIED_SUBLINE = "기기 설정에서 알림을 켜면 받을 수 있어요";
 
 /**
  * 안 쓰는 열쇠를 `undefined`로 박아 둔다 — 갈래를 안 좁히고도 읽을 수 있어야 두 자리가 같은
