@@ -316,6 +316,8 @@ sources:
 - 돌면서 나온 것 — **`.tsx`에 남는 표가 하나 더 있다.** 근무표 근무자의 `VIEW_OPTIONS`가 값과 아이콘과 읽어 주는 말을 한 줄로 묶은 표인데 아이콘이 `lucide-react-native`의 컴포넌트라 `.ts`인 `consts/`가 못 든다. 저장소의 `.const.ts` 서른넷 중 lucide를 당기는 파일이 없고, 반만 옮기면 보기를 하나 더 다는 날 두 자리를 봐야 한다 — `MemberDialog`의 `COPY`가 `ui`에 남은 것과 같은 축이다
 - 돌면서 나온 것 — **드래그 접두사가 `ui`를 떠났다.** AC-10의 관찰이 `ROW_DRAG_PREFIX`·`SLOT_DRAG_PREFIX`를 「컴포넌트를 집는 식별자라 `ui`에 남는다」로 뒀는데, controller가 「받아도 되는 끌기인가」를 판정하게 되면서 같은 접두사를 `ui`와 controller 둘이 알아야 해졌다. `utils/dragId.utils.ts`가 꼴을 들고 되읽기가 갈래까지 같이 답한다 — **축이 바뀐 것이 아니라 그 값을 읽는 쪽이 둘이 된 것이다**
 - 돌면서 나온 것 — **정본과 코드가 어긋난 자리가 controller를 세우면서 드러났다.** 근무표 근무자의 취소 요청이 성공하면 `schedule-worker.md`의 「보낸 뒤」는 「시트가 닫히고 그 배정에 「요청 중」이 남는다」인데, 코드는 취소 얼굴만 접어 같은 겹이 명단으로 돌아왔다. 결과가 알림으로 오고 다음 진입에서 최신을 그리는 자리라 문서 쪽이 맞고 코드를 고쳤다 — e2e가 보낸 뒤 배지만 보므로 어느 쪽이어도 초록이었다
+- 돌면서 나온 것 — **클라이언트를 controller가 받는 것과 당기는 것이 다르다.** 행동의 둘째 줄이 「`.tsx`가 당기는 Supabase 클라이언트 스물다섯이 controller로 가고」인데, 열 아홉이 다 돈 뒤에도 그 스물다섯이 그대로였다 — controller가 `client: DB`를 인자로 받고 **`.tsx`가 실물을 넘기는** 꼴로 섰기 때문이다. 주입은 테스트에 가짜를 넣으려고 고른 길이지만 그 값을 **쥐는 자리**가 `.tsx`면 화면이 통신의 손잡이를 든 채 남고, 같은 줄이 적은 「이 축을 빼면 「`api/` 밖에서 클라이언트 import 금지」를 영구히 못 켠다」가 그대로 현실이 된다. **controller가 `supabase`를 직접 import하고 서명에서 그 인자를 뺀다** — 짝 테스트는 인자 대신 `jest.mock("@/shared/api/supabase")`로 같은 가짜를 넣어 단언을 안 고치고 통과한다. service 훅의 서명은 안 건드린다: `client`를 받는 것은 그대로고 실물을 당기는 자리만 하나로 모인다
+- 돌면서 나온 것 — **클라이언트를 가두는 값이 「빈 훅이 선다」보다 크다.** 게이트 둘(`blocked`·`left`)은 「화면이 제 업무 상태를 드나」로 보면 controller가 없는 것이 맞았는데, `.tsx`가 service에 클라이언트를 넘기려면 그것을 쥐어야 해서 그 판정이 뒤집혔다. 얇은 controller 둘이 서서 **클라이언트를 가두는 일만** 한다 — 보낼 데는 여전히 `.tsx`가 쥔다
 - 돌면서 나온 것 — **controller를 빼도 안 작아지는 파일이 있다.** `useDayDetail.ts`가 구백서른여섯 줄인데 상태 열셋이 한 겹에 사는 것이 그 화면의 사실이라 쪼갤 수 없고, 커진 까닭은 돌려주는 꼴 아홉과 문안 조립과 판정이 같은 파일에 있어서다. **둘째 controller를 세우지 않는다** — 「조각은 제 controller를 못 가진다」가 이 AC의 판정이고, 대신 타입은 `model`로 판정은 `*.policy.ts`로 조립은 `utils`로 내린다
 
 ### AC-14 — `services`가 선다 ✅
@@ -391,7 +393,7 @@ sources:
 
 - 전제: `house/dumb-ui`가 `.tsx`의 Supabase import·`fetch()`·쿼리 훅 호출만 잡는다. 세그먼트와 층의 뜻과 접미사를 지키는 검사가 없다
 - 행동: 규칙을 더하고 `tests/lint/`에 각각의 테스트를 쓴다. [execution.md의 「집행되는 규칙」](../../4-test/execution.md#집행되는-규칙) 표에 행을 더한다 — `tests/lint/ruleCatalogue.test.ts`가 그 표를 정본으로 읽는다
-  - `api/` 밖에서 Supabase 클라이언트 import 금지
+  - `api/` 밖에서 Supabase 클라이언트 import 금지 — **축이 둘이다.** `@supabase/*` 패키지를 당기는 것과 `shared/api/supabase`의 실물을 당기는 것이고, 뒤의 것은 `.tsx`를 겨눈다(`src/app/`은 밖이다 — 라우트 파일이라 얇게 남는다). 실물을 쥐는 자리가 controller 하나여야 그 규칙이 선다
   - `hooks`·`services`·`stores` 밖에서 `use*` export 금지
   - `entities/`의 Mutation 금지 · `features/`의 Query는 `entities` 둘 이상을 읽을 때만 — 이름으로 주는 면제를 안 쓴다
   - `.policy.ts`·`.reducer.ts`에서 통신·`Date.now`·`Math.random` 금지
