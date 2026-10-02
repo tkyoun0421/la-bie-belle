@@ -7,6 +7,7 @@ import {
   type AttendanceInputCheckIn,
   type AttendanceInputExcuseStatus,
 } from "@/features/stats/utils/attendanceInputs.utils";
+import { STATUS_LABELS } from "@/screens/stats/consts/stats.const";
 
 /**
  * 근태 탭 날짜 목록이다. 정본은 `docs/2-design/system/screens/stats.md`의 「내 근태 날짜
@@ -28,15 +29,6 @@ import {
  */
 
 const TRAINING_KIND = "training";
-
-const STATUS_LABELS: Record<AttendanceStatus, string> = {
-  present: "출근",
-  late: "지각",
-  unmarked: "안 찍음",
-  pending: "확인 중",
-  excused: "인정",
-  absent: "결근",
-};
 
 const KST_TIME = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Asia/Seoul",

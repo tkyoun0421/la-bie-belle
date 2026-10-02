@@ -1,3 +1,4 @@
+import { EXCUSE_DECISIONS } from "@/entities/attendance/consts/attendance.const";
 import type {
   AttendanceStatusInput,
   ExcuseDecision,
@@ -47,8 +48,6 @@ export type AttendanceInputExcuseStatus = {
   decided_at: string | null;
   decision: string | null;
 };
-
-const DECISIONS: readonly string[] = ["approved", "rejected"];
 
 export function buildAttendanceInputs(
   days: readonly AttendanceInputDay[],
@@ -108,7 +107,8 @@ function pairKey(dayId: string, profileId: string): string {
 }
 
 function decisionOf(decision: string | null): ExcuseDecision | null {
-  return decision !== null && DECISIONS.includes(decision)
+  return decision !== null &&
+    (EXCUSE_DECISIONS as readonly string[]).includes(decision)
     ? (decision as ExcuseDecision)
     : null;
 }

@@ -1,4 +1,5 @@
 import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays.policy";
+import { ABSENT } from "@/screens/stats/consts/stats.const";
 
 /**
  * 급여 탭 보조 줄이다 — 「근무 12건 · 108시간」
@@ -14,8 +15,6 @@ import type { PayrollDayKind } from "@/features/payrollCompute/model/payrollDays
  */
 
 const MINUTES_PER_HOUR = 60;
-
-const ABSENT: PayrollDayKind = "absent";
 
 export type MyPayrollDay = {
   minutes: number;

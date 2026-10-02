@@ -1,3 +1,4 @@
+import { WITHIN_DAYS } from "@/screens/adminHome/consts/adminHome.const";
 import {
   kstDateOf,
   spellDate,
@@ -16,8 +17,6 @@ import {
  */
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-
-const WITHIN_DAYS = 3;
 
 export type VacancyDay = {
   workDate: string;

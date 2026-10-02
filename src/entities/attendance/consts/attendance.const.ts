@@ -32,3 +32,12 @@ export const TALLIED_STATUSES = [
   "absent",
   "excused",
 ] as const;
+
+/**
+ * 관리자가 사유에 내리는 답 둘이다. 이 목록이 `ExcuseDecision`의 바탕이다.
+ *
+ * **런타임에 좁히는 자리가 있어 목록이 든다.** 통계가 읽어 온 행의 `decision`은 그냥 글자라
+ * (열이 `text`다) 둘 중 하나인지를 세어 봐야 한다 — 유니언만 두면 그 셈이 글자를 다시
+ * 적는다.
+ */
+export const EXCUSE_DECISIONS = ["approved", "rejected"] as const;

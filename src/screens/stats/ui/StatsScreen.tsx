@@ -40,6 +40,7 @@ import {
 import { useAttendanceMonthsQuery } from "@/features/stats/services/useAttendanceMonthsQuery";
 import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
 import { buildTrend, trendMonths } from "@/features/stats/utils/trend.utils";
+import { MONTH_LENGTH } from "@/screens/stats/consts/stats.const";
 import {
   buildMyAttendanceDays,
   myAttendanceRow,
@@ -101,8 +102,6 @@ const HISTORY_ROW = "내역 보기";
 const READ_FAILED = "통계를 불러오지 못했어요";
 
 const SKELETON_ROWS = [0, 1, 2];
-
-const MONTH_LENGTH = 7;
 
 /** 탭에 없는 쪽은 열두 달을 안 읽는다. 배열을 그때그때 만들면 질의가 매 렌더 새로 선다. */
 const NO_MONTHS: string[] = [];

@@ -8,6 +8,7 @@ import type { PayrollViewDay } from "@/features/payrollCompute/model/payrollDays
 import { workInputsOf } from "@/features/stats/model/workTotals.policy";
 import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
 import { computeMyWorkTotals } from "@/features/stats/utils/myTotals.utils";
+import { MONTH_LENGTH } from "@/screens/stats/consts/stats.const";
 import { myAttendanceTally } from "@/screens/stats/utils/attendanceTally.utils";
 
 /**
@@ -28,8 +29,6 @@ export type PayrollByMonth = {
   days: readonly ScheduleDay[];
   payroll: PayrollMonth;
 };
-
-const MONTH_LENGTH = 7;
 
 /**
  * 근무표 열두 달과 급여 재료 열두 달을 달로 묶어 급여 축이 먹는 한 벌로 만든다.
