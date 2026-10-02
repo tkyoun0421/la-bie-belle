@@ -6,7 +6,15 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 알림 이동 PR이다.** `notification` + `pushSwitch`·`notificationRead` + `notifications`가 품는 타입 둘·상수 열하나·SDK 하나·환경값 하나·시계 하나를 옮기고, DTO 둘과 매퍼 둘을 세우고, `hooks/`를 `services/`로 옮긴다(짝 테스트까지 열). **Edge Function의 복사 경로가 이 묶음에 걸린다** — [관찰 049](observations/049-edge-functions-outside-every-check.md)가 든 자리고, `supabase/functions/`가 검사 셋 전부의 밖이라 지정자가 복사본에 실제로 있는지 보는 줄을 `syncEdgeShared.mts`에 세우는 것이 남았다. `pushDeps`는 부작용과 환경값을 한 파일에 들어 `lib`으로 간 뒤 그 안에서 환경 읽기가 `config`로 갈린다.
+**다음 첫 수는 `fsd-read-write-layers`의 리허설 이동 PR이다.** `rehearsal` + `rehearsalEdit` + `rehearsal` 화면이 품는 타입 다섯·상수 둘을 옮기고, DTO 둘과 매퍼 둘을 세우고, `hooks/` 열둘을 `services/`로 옮긴다. 매퍼 둘은 앞선 묶음 셋에서 전부 0이 됐으니 실물을 보고 센다. `RehearsalScreen`은 427줄에 훅 열넷이라 AC-12 몫으로 남는다. 그 뒤 순서는 통계 → 인증 → QR이고, **통계가 남은 중복 둘(`dayMinutes`·`attendanceSummaryLine`)을 접는다.**
+
+**묶음 열이 끝난 뒤 한 task가 필요해졌다.** 단위와 꼴을 내는 도구의 사본이 층층이다 — 요일 표 여섯·`MINUTES_PER_HOUR` 여섯·KST 날짜 꼴 셋·KST 시·분 꼴 넷이고, `?from=` 프로토콜이 여덞 자리에 글자로 흩어져 있다. 묶음 하나가 접을 크기가 아니라 plan AC-13에 적어 뒀다.
+
+**알림 묶음이 끝났다.** `hooks/` 다섯이 슬라이스 셋에서 통째로 `services/`로(열 + 짝), 통신 꼴 둘이 `notification.dto.ts`로, 상수 열여섯이 `consts/` 넷으로 갔다. `pushDeps`가 셋으로 갈렸다 — 손은 `lib/pushDeps.lib.ts`, 앱 설정 읽기는 `config/pushSwitch.config.ts`, 기기 설정 화면에 뜨는 채널 이름은 `consts/`다. `pushPermission`은 통째로 `lib`이다(주입받아 순수한데도 하는 일이 OS에 묻는 것이라 AC-09의 판정을 지켰다).
+
+**상수를 모으니 Deno 복사 경로가 늘었다.** 알림의 종류 목록과 한 번에 부치는 수를 Edge Function이 부르는 파일 둘이 써서 `consts/`가 `_shared/`로 복사되는 셋째 폴더가 됐다 — 「슬라이스마다 상수 한 파일」과 「함수가 부르는 것만 옮긴다」가 부딪히는 자리다. 같은 경계가 사본 접기도 막았다: 시·분 꼴을 `shared/utils/`로 올리면 공용 폴더 전체가 `node:` 금지를 받아 슬라이스 안에 섰다. **관찰 049가 요구한 「지정자가 복사본에 실제로 있나」 검사는 이미 서 있었다** — 근무표 묶음이 세웠고 handoff가 그 줄을 안 지웠다.
+
+**승인된 축 둘이 한 파일에서 부딪힌다.** EAS 프로젝트 id는 `app.json`에 살아 `expo-constants`로만 읽히는데, AC-11은 `Constants` 읽기를 `config/`로 몰고 AC-08의 `nativeSdkSegment`는 `expo-*`를 `lib`·`ui`·`hooks`에만 둔다. **`config/`의 `expo-constants`를 면제해야 규칙 둘이 같이 선다.** 같은 자리에서 AC-10의 관찰 결과 문장도 코드와 안 맞는 것이 드러났다 — 「`consts/` 밖에 `export const <대문자_스네이크>`가 없다」가 거짓이고 그것이 의도다(질의 열 목록은 `api/`, SDK 손 묶음은 `lib/`). `constsSegment.mjs`가 면제 넷을 가져야 켜진다.
 
 **근태 묶음이 끝났다.** `hooks/` 하나가 `services/`로, DTO 넷이 `attendance.dto.ts`·`excuse.dto.ts`로, 상수 아홉이 `consts/` 둘로, 타입 열이 `.type.ts` 둘로 갔다. **낡은 정본 셋을 고쳤다** — `attendance.type.ts`에 **타입이 하나도 없고 상수 일곱뿐**이었는데, `runtime.md`의 「업무 상수」가 그 자리를 「ADR-015의 그 접미사가 「타입과 상수」를 담는다」로 적어 ADR의 옛 판본을 인용하고 있었고, `tests/lint/attendanceConstants.ts`와 그 짝 테스트 픽스처가 그 경로를 문자열로 들고 있었다. **중복 넷이 더 나왔다** — `DayAttendance`/`MonthAttendance`(몸이 글자까지 같아 `AttendanceRows`로 접었다), 질의 열 목록 둘의 사본, `nextMonthFirstDay`(`nextMonthStart`의 **다섯째** 사본), `CUSTOM_MAX_LENGTH`(판정 파일과 `.tsx`에 각자). **쓰기 셋에 Mutation이 없다** — `checkIn`·`submitExcuse`·`decideExcuse`가 `api/`에만 있고 `.tsx`가 저장소를 직접 부른다. AC-12 몫이다.
 
