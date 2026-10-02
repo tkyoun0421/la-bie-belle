@@ -12,6 +12,18 @@ import type { MemberRow } from "@/entities/member/api/member.dto";
 import { canSaveDisplayName } from "@/entities/profile/model/canSaveDisplayName.policy";
 import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
+import {
+  MEMBERS_COPY,
+  MEMBER_SHEET_COPY,
+  MORE_HIT_SLOP,
+  MORE_ICON_SIZE,
+  MORE_TEST_ID,
+  PHONE_ICON_SIZE,
+  RENAME_INPUT_TEST_ID,
+  SHEET_AVATAR_SIZE,
+} from "@/screens/members/consts/members.const";
+import type { MemberSheetFace } from "@/screens/members/model/members.type";
+import { spellLeftAt } from "@/screens/members/utils/spellLeftAt.utils";
 
 /**
  * 한 사람을 여는 시트다. 재직자와 퇴사한 사람이 같은 틀을 쓰고 다른 것이 셋이다 — 퇴사한
@@ -20,6 +32,10 @@ import { spellGender } from "@/entities/profile/utils/spellGender.utils";
  *
  * **얼굴이 둘인데 시트는 하나다.** 이름 고치기는 새 시트를 쌓지 않고 값이 서던 자리를 입력으로
  * 바꾼다. 사진과 이름은 그 자리에 남는다 — 고치는 대상이 같은 사람이라 화면이 바뀔 이유가 없다.
+ *
+ * **더보기 열림만 이 조각이 든다.** 사람이 열고 사람이 닫고 통신에 안 매여 있어 UI 상태다 —
+ * 얼굴과 적는 이름은 보낸 것의 결과에 매여 있어
+ * [`useMembersScreen`](../hooks/useMembersScreen.ts)이 든다.
  *
  * **1년이 지나 비워진 사람은 이름과 퇴사한 날뿐이다.** 연락처도 사진도 계정도 없어 되돌릴 길이
  * 없으니 더보기가 안 선다. 시트가 서는 것은 지난 근무표의 이름이 누구였는지 확인하는 자리라서다.
@@ -30,29 +46,6 @@ import { spellGender } from "@/entities/profile/utils/spellGender.utils";
  * 문장으로 편다 — 관리자가 전화하기 전에 무슨 말을 할지가 그 줄에 있다. 고치는 길은 없다 —
  * 관리자가 남의 알림을 켜주지 못한다([NTF-022](../../../../docs/2-design/modules/notification/README.md#ntf-022)).
  */
-
-const AVATAR_SIZE = 64;
-
-const MORE_ICON_SIZE = 20;
-
-const MORE_HIT_SLOP = 8;
-
-const PHONE_ICON_SIZE = 18;
-
-const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
-
-export const MORE_TEST_ID = "members-sheet-more";
-
-export const RENAME_INPUT_TEST_ID = "members-rename-input";
-
-/** 「2026년 6월 30일」 — 해를 넘긴 기록이 쌓이는 자리라 연도가 붙는다. */
-export function spellLeftAt(leftAt: string): string {
-  const kst = new Date(Date.parse(leftAt) + KST_OFFSET_MS);
-
-  return `${kst.getUTCFullYear()}년 ${kst.getUTCMonth() + 1}월 ${kst.getUTCDate()}일`;
-}
-
-export type MemberSheetFace = "detail" | "rename";
 
 export type MemberSheetProps = {
   member: MemberRow;
@@ -135,7 +128,7 @@ export function MemberSheet({
           <View className="relative">
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="더보기"
+              accessibilityLabel={MEMBER_SHEET_COPY.more}
               testID={MORE_TEST_ID}
               hitSlop={MORE_HIT_SLOP}
               onPress={() => setMenuOpen((open) => !open)}
@@ -144,7 +137,11 @@ export function MemberSheet({
             </Pressable>
             <MorePopover open={menuOpen}>
               <MorePopoverItem
-                label={left ? "퇴사 되돌리기" : "퇴사 처리"}
+                label={
+                  left
+                    ? MEMBER_SHEET_COPY.undoLeave
+                    : MEMBER_SHEET_COPY.markLeave
+                }
                 onPress={() => {
                   setMenuOpen(false);
                   if (left) {
@@ -159,42 +156,48 @@ export function MemberSheet({
         )}
       </View>
 
-      <Avatar name={name} photoUrl={member.photo_url} size={AVATAR_SIZE} />
+      <Avatar
+        name={name}
+        photoUrl={member.photo_url}
+        size={SHEET_AVATAR_SIZE}
+      />
       <View className="mt-4 flex-row items-center gap-2">
         <Text size="xl" weight="semibold">
           {name}
         </Text>
-        {admin ? <Badge variant="brand" label="관리자" /> : null}
+        {admin ? (
+          <Badge variant="brand" label={MEMBERS_COPY.adminBadge} />
+        ) : null}
       </View>
 
       {left && member.left_at ? (
         <Text size="sm" tone="subtle" numeric className="mt-1">
-          {`${spellLeftAt(member.left_at)}에 퇴사했어요`}
+          {`${spellLeftAt(member.left_at)}${MEMBER_SHEET_COPY.leftSuffix}`}
         </Text>
       ) : null}
       {erased ? (
         <Text size="xs" tone="subtle" className="mt-1">
-          1년이 지나 연락처와 사진은 지웠어요
+          {MEMBER_SHEET_COPY.erased}
         </Text>
       ) : null}
 
       {renaming ? (
         <>
           <Input
-            label="이름"
+            label={MEMBER_SHEET_COPY.nameLabel}
             value={draft}
             testID={RENAME_INPUT_TEST_ID}
             onChangeText={onDraft}
             className="mt-6"
           />
           <Text size="xs" tone="subtle" className="mt-2">
-            지난 근무표와 급여에 뜨는 이름도 같이 바뀌어요
+            {MEMBER_SHEET_COPY.renameNote}
           </Text>
         </>
       ) : erased ? null : (
         <View className="mt-6">
           <ValueRow
-            label="연락처"
+            label={MEMBER_SHEET_COPY.phoneLabel}
             numeric
             value={member.phone ?? ""}
             onPress={
@@ -203,9 +206,12 @@ export function MemberSheet({
                 : undefined
             }
           />
-          <ValueRow label="성별" value={spellGender(member.gender)} />
           <ValueRow
-            label="생년월일"
+            label={MEMBER_SHEET_COPY.genderLabel}
+            value={spellGender(member.gender)}
+          />
+          <ValueRow
+            label={MEMBER_SHEET_COPY.birthLabel}
             numeric
             value={
               member.birth_date ? formatBirthDate(member.birth_date, today) : ""
@@ -221,7 +227,7 @@ export function MemberSheet({
 
       {failed ? (
         <Text size="xs" tone="critical" className="mt-3">
-          보내지 못했어요. 다시 시도해주세요
+          {MEMBER_SHEET_COPY.sendFailed}
         </Text>
       ) : null}
 
@@ -232,7 +238,7 @@ export function MemberSheet({
             className="flex-1"
             onPress={() => onFace("detail")}
           >
-            뒤로
+            {MEMBER_SHEET_COPY.back}
           </Button>
           <Button
             variant="primary"
@@ -241,24 +247,24 @@ export function MemberSheet({
             disabled={!canSaveDisplayName(name, draft)}
             onPress={onSaveName}
           >
-            저장
+            {MEMBER_SHEET_COPY.save}
           </Button>
         </View>
       ) : left ? null : (
         <View className="mt-6 gap-3">
           <Button variant="secondary" onPress={() => onFace("rename")}>
-            이름 고치기
+            {MEMBER_SHEET_COPY.rename}
           </Button>
           <Button
             variant="secondary"
             disabled={admin && lastAdmin}
             onPress={onRole}
           >
-            {admin ? "관리자에서 내리기" : "관리자로 올리기"}
+            {admin ? MEMBER_SHEET_COPY.demote : MEMBER_SHEET_COPY.promote}
           </Button>
           {admin && lastAdmin ? (
             <Text size="xs" tone="subtle">
-              관리자가 한 명뿐이라 내릴 수 없어요
+              {MEMBER_SHEET_COPY.lastAdminNote}
             </Text>
           ) : null}
         </View>

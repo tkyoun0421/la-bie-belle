@@ -1,4 +1,6 @@
 import { Dialog } from "@/shared/ui/Dialog";
+import { MARK_LEAVE_CONFIRM_TEST_ID } from "@/screens/members/consts/members.const";
+import type { MemberDialogKind } from "@/screens/members/model/members.type";
 
 /**
  * 직원 화면이 묻고 막는 자리 여섯이다. 문안의 정본은
@@ -11,11 +13,6 @@ import { Dialog } from "@/shared/ui/Dialog";
  * **오른쪽 버튼이 destructive가 아니다.** 퇴사도 역할 바꾸기도 되돌릴 수 있는 자리라 손을
  * 브랜드로 끌 이유가 없다(members.md의 「색」).
  */
-
-export const MARK_LEAVE_CONFIRM_TEST_ID = "members-mark-leave-confirm";
-
-export type MemberDialogKind =
-  "promote" | "demote" | "leave" | "undo" | "blocked" | "last-admin";
 
 type DialogCopy = {
   title?: string;
