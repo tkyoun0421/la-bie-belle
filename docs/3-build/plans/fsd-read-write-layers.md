@@ -150,7 +150,7 @@ sources:
   - `ensureProfile` — 쓰기인데 `entities/profile/api/`에 **남는다.** 「없으면 만든다」가 진입 판정의 일부고 그 판정(`resolveEntryDestination`)은 프로필을 읽어 길을 고르는 조립이라 `features/auth`에 산다. 올리면 `features/auth`가 제 슬라이스 밖의 프로필 쓰기를 들게 되고, 지금 자리는 그 도메인의 통신이 그 도메인에 있는 꼴이다. 뮤테이션 훅이 없으니 「`entities`에 `useMutation` 금지」도 안 걸린다
   - `features/stats/api/useStatsQueries.ts` — 쿼리 훅 넷이 한 파일에 있고 셋은 제 도메인으로 내려가지만 `useAttendanceMonths`는 schedule과 attendance 둘을 함께 읽어 `entities` 어디에도 못 앉는다(`no-cross-slice-import`). 그래서 **파일을 가른다**
     - `useWorkMonths`·`useFirstScheduleMonth` → `entities/schedule/hooks/`, `usePayrollMonthsByMonth` → `entities/payroll/hooks/`
-    - `useAttendanceMonths`는 근태 열두 달을 읽는 `entities/attendance/hooks/useMonthsAttendanceQuery.ts`와, 그것을 `useWorkMonthsQuery`와 달마다 맞추는 `features/stats/hooks/useAttendanceMonths.ts`로 갈린다. 맞추는 쪽은 `useQuery`를 안 가져 AC-08의 「`features/`에서 `useQuery` 금지」가 선다
+    - `useAttendanceMonths`는 근태 열두 달을 읽는 `entities/attendance/services/useMonthsAttendanceQuery.ts`와, 그것을 `useWorkMonthsQuery`와 달마다 맞추는 `features/stats/hooks/useAttendanceMonths.ts`로 갈린다. 맞추는 쪽은 `useQuery`를 안 가져 AC-08의 「`features/`에서 `useQuery` 금지」가 선다
     - 넷이 나눠 쓰는 `MonthsResult`와 `combineMonths`는 `shared/api/monthsQuery.ts`로 — 두 `entities` 슬라이스가 같이 쓰므로 둘 중 한쪽에 둘 수 없다
     - **키 배열 리터럴 둘이 여기 남아 있다** — `[SCHEDULE_KEY, month]`·`[ATTENDANCE_KEY, month]`가 AC-03의 팩토리 전환에서 빠졌다. 파일을 가르는 이 걸음에서 `queryKeys.schedule.month`·`queryKeys.attendance.month`로 바꾼다
     - 이 가름만 커밋을 따로 쓴다 — 나머지 이동은 기계적이고 이것은 모양을 바꾼다
