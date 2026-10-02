@@ -16,27 +16,28 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
-import { useAllRehearsalsQuery } from "@/entities/rehearsal/hooks/useAllRehearsalsQuery";
-import { useMyRehearsalsQuery } from "@/entities/rehearsal/hooks/useMyRehearsalsQuery";
+import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
 import { canAddOn } from "@/entities/rehearsal/model/canAddOn.policy";
 import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
+import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
+import { useMyRehearsalsQuery } from "@/entities/rehearsal/services/useMyRehearsalsQuery";
 import {
   dayTotal,
   monthTotal,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { useAddRehearsalMutation } from "@/features/rehearsalEdit/hooks/useAddRehearsalMutation";
-import { useEditRehearsalMutation } from "@/features/rehearsalEdit/hooks/useEditRehearsalMutation";
-import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/hooks/useRemoveRehearsalMutation";
+import { useAddRehearsalMutation } from "@/features/rehearsalEdit/services/useAddRehearsalMutation";
+import { useEditRehearsalMutation } from "@/features/rehearsalEdit/services/useEditRehearsalMutation";
+import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
+import { CLOCK_LENGTH } from "@/screens/rehearsal/consts/rehearsal.const";
 import {
   addSheetActionFor,
   addSheetReducer,
   canSubmitForm,
   EMPTY_VALUES,
   type AddSheetState,
-} from "@/screens/rehearsal/model/addSheetState.policy";
+} from "@/screens/rehearsal/model/addSheetState.reducer";
 import { rehearsalDayCell } from "@/screens/rehearsal/model/rehearsalDayCell.policy";
 import { RehearsalDaySheet } from "@/screens/rehearsal/ui/RehearsalDaySheet";
 import { RehearsalFormSheet } from "@/screens/rehearsal/ui/RehearsalFormSheet";
@@ -74,8 +75,6 @@ const MONTH_CHEVRON_SIZE = 14;
 const LEGEND = "칸 아래 숫자는 그날 리허설 시간이에요";
 
 const READ_FAILED = "리허설을 불러오지 못했어요";
-
-const CLOCK_LENGTH = "14:00".length;
 
 const INITIAL_FORM: AddSheetState = {
   formKind: "time",

@@ -170,11 +170,11 @@ grep -rl "from(" src/entities/*/api src/features/*/api
 
 **store는 `use*`로 불려도 `stores/`에 접미사로 산다.** zustand의 `create`가 돌려주는 것이 훅이라 앞선 판은 「부르는 이름이 이긴다」로 `shared/hooks/useTheme.ts`를 뒀고, 훅으로 안 불리는 것만 `model/clock.store.ts`가 됐다. 자리가 둘로 갈린 것이 그 봉합의 값이었다. `stores/`가 서면 폴더가 성격을 말하니 둘이 같은 접미사를 받는다 — `shared/stores/theme.store.ts`고 쓰는 쪽은 그대로 `useTheme()`이다. 「`use*` export는 `hooks`·`services`·`stores`만」이 그 셋을 함께 허용한다.
 
-**열다섯 꼴에 안 맞는 파일은 접미사가 없다.** `shared/api/queryKeys.ts`처럼 통신 행위가 아니라 통신의 약속인 것, `shared/utils/`의 색 표처럼 도메인이 없는 것이 그렇다. 접미사는 성격이 섞이는 자리를 가르는 장치라, 섞일 것이 없으면 안 붙인다.
+**열여섯 꼴에 안 맞는 파일은 접미사가 없다.** `shared/api/queryKeys.ts`처럼 통신 행위가 아니라 통신의 약속인 것, `shared/utils/`의 색 표처럼 도메인이 없는 것이 그렇다. 접미사는 성격이 섞이는 자리를 가르는 장치라, 섞일 것이 없으면 안 붙인다.
 
 **`type`과 `schema`가 둘인 까닭은 사는 시간이 달라서다.** 타입은 컴파일 때 사라지고, 바깥에서 들어온 값은 런타임에 꼴을 확인해야 한다. 지금 `validateProfile`과 홀리데이 API 응답 파싱이 그 일을 손으로 하는데 둘이 다른 자리에 있다. 검증 라이브러리를 들이든 손으로 쓰든 자리는 `schema`다.
 
-**`reducer`는 `policy`의 이웃이다.** 둘 다 순수한데 묻는 것이 다르다 — `policy`는 「이것이 허용인가」에 답하고 `reducer`는 「다음 상태가 무엇인가」에 답한다. 지금 그 성격이 `.policy.ts` 이름으로 사는 자리가 있다(`screens/rehearsal/model/addSheetState.policy.ts`·`screens/scheduleAdmin/model/adjustChoiceState.policy.ts`). `useReducer`를 쓰게 되면 전이 함수와 action 유니언이 `.reducer.ts`로 가고 훅 호출은 controller나 `.tsx`에 남는다.
+**`reducer`는 `policy`의 이웃이다.** 둘 다 순수한데 묻는 것이 다르다 — `policy`는 「이것이 허용인가」에 답하고 `reducer`는 「다음 상태가 무엇인가」에 답한다. **가름은 `useReducer`를 타느냐다.** `screens/rehearsal/model/addSheetState.reducer.ts`가 그 꼴이고 `RehearsalScreen.tsx`가 그것을 `useReducer`에 건다 — 전이 함수와 action 유니언이 `.reducer.ts`에 살고 훅 호출은 controller나 `.tsx`에 남는다. `screens/scheduleAdmin/model/adjustChoiceState.policy.ts`는 상태 꼴과 전이를 들어도 `useReducer`를 안 타고 화면 둘이 함수로 부르므로 `.policy.ts`다.
 
 **Context는 `stores`다.** 하위트리에 상태를 나눠 주는 도구고 zustand와 역할이 같다. Context 객체와 그것을 읽는 훅이 `<도메인>.context.ts`에 살고 Provider 컴포넌트는 `.tsx`라 `ui/`에 남는다 — 지금 `shared/ui/DragAndDrop.tsx` 하나가 Context와 Provider와 훅 둘과 컴포넌트 둘을 삼백한 줄에 들고 export 다섯을 낸다.
 

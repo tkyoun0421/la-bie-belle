@@ -6,9 +6,13 @@
 
 ## 다음 작업
 
-**다음 첫 수는 `fsd-read-write-layers`의 리허설 이동 PR이다.** `rehearsal` + `rehearsalEdit` + `rehearsal` 화면이 품는 타입 다섯·상수 둘을 옮기고, DTO 둘과 매퍼 둘을 세우고, `hooks/` 열둘을 `services/`로 옮긴다. 매퍼 둘은 앞선 묶음 셋에서 전부 0이 됐으니 실물을 보고 센다. `RehearsalScreen`은 427줄에 훅 열넷이라 AC-12 몫으로 남는다. 그 뒤 순서는 통계 → 인증 → QR이고, **통계가 남은 중복 둘(`dayMinutes`·`attendanceSummaryLine`)을 접는다.**
+**다음 첫 수는 `fsd-read-write-layers`의 통계 이동 PR이다.** `features/stats` + `screens/stats`·`adminStats`·`adminHome`이 품는 타입 아홉을 옮기고 `hooks/` 둘을 `services/`로 옮긴다. **남은 중복 둘을 이 묶음이 접는다** — `dayMinutes`(급여와 통계)와 `attendanceSummaryLine`(근무표와 통계)이고 양쪽이 자리를 잡은 뒤라 이제 어느 쪽으로 접을지 보인다. `features/stats/hooks/useAttendanceMonths.ts`는 `services/useAttendanceMonthsQuery.ts`로 — 쿼리 둘을 조립하는 service인데 접미사를 못 받고 있다. `StatsScreen` 470줄·`AdminStatsScreen` 414줄·`workTotals.policy` export 다섯은 AC-12 몫이다. 그 뒤 순서는 인증 → QR이다.
 
 **묶음 열이 끝난 뒤 한 task가 필요해졌다.** 단위와 꼴을 내는 도구의 사본이 층층이다 — 요일 표 여섯·`MINUTES_PER_HOUR` 여섯·KST 날짜 꼴 셋·KST 시·분 꼴 넷이고, `?from=` 프로토콜이 여덞 자리에 글자로 흩어져 있다. 묶음 하나가 접을 크기가 아니라 plan AC-13에 적어 뒀다.
+
+**리허설 묶음이 끝났다.** `hooks/` 여섯이 두 슬라이스에서 통째로 `services/`로(열둘), 통신 꼴 둘이 `rehearsal.dto.ts`로, 도메인 타입 둘이 `rehearsal.type.ts`로, 상수 여섯이 `consts/` 둘로 갔다. **접미사 패스가 reducer 하나를 놓친 것이 드러났다** — `addSheetState.policy.ts`가 전이 함수와 action 유니언을 들고 화면이 그것을 `useReducer`에 거는데, ADR-015가 그 파일을 「조건이 차면 `.reducer.ts`로 간다」로 이미 적어 뒀고 조건이 이미 차 있었다. `fileNaming.ts`는 접미사와 세그먼트만 대조하고 파일 안을 안 봐서 검사로는 못 세운다. **같은 값 60이 한 파일에서 두 뜻으로 섰다** — 1건이 1시간인 업무 규칙과 한 시간이 60분인 단위다. 앞의 것만 `consts`로 보냈고 가름은 「바뀔 수 있나」다.
+
+**사본의 큰 묶음이 하나 더 보였다.** 초를 떼는 `slice(0, 5)`가 슬라이스 여섯에 열둘 있고 이름을 받은 것은 둘뿐이다. 요일 표·단위 환산·KST 꼴과 같은 자리고, 묶음 열이 끝난 뒤 한 task가 공용으로 모은다. **배정 갈래 `"regular"` 일곱 자리는 접을 길이 없다** — 리허설이 그중 하나인데 `entities`끼리 import가 `no-cross-slice-import`에 걸리고 `shared`에 두면 「`shared`는 도메인을 모른다」가 깨진다. `ExcuseStatusRow`와 같은 벽이다.
 
 **알림 묶음이 끝났다.** `hooks/` 다섯이 슬라이스 셋에서 통째로 `services/`로(열 + 짝), 통신 꼴 둘이 `notification.dto.ts`로, 상수 열여섯이 `consts/` 넷으로 갔다. `pushDeps`가 셋으로 갈렸다 — 손은 `lib/pushDeps.lib.ts`, 앱 설정 읽기는 `config/pushSwitch.config.ts`, 기기 설정 화면에 뜨는 채널 이름은 `consts/`다. `pushPermission`은 통째로 `lib`이다(주입받아 순수한데도 하는 일이 OS에 묻는 것이라 AC-09의 판정을 지켰다).
 
@@ -30,7 +34,7 @@
 
 **계층 셋과 역할 넷이 박혔다.** presentation(`ui`) · logic(`hooks`·`services`·`stores`·`model`·`utils`·`consts`·`config`·`lib`) · db(`api`)가 계층이고, presentation · controller · service · repository가 역할이다. 재 보니 **repository와 service는 이미 섰고 controller만 없었다** — 통신 백일흔둘이 전부 저장소에 한 번만 닿고, `hooks/` 예순다섯 중 예순둘이 Query·Mutation이다. `ui`가 `hooks`를 당기는 자리가 **셋**뿐인 것이 controller가 없다는 증거다.
 
-**세그먼트가 여덞에서 열로 열렸다.** `services`(Query·Mutation)와 `stores`(zustand·Context)가 더해졌다. 접미사는 열다섯(`.dto.ts`·`.mapper.ts`·`.reducer.ts`·`.context.ts`가 더해졌다), 검사는 열일곱이다.
+**세그먼트가 여덞에서 열로 열렸다.** `services`(Query·Mutation)와 `stores`(zustand·Context)가 더해졌다. 접미사는 열여섯(`.dto.ts`·`.mapper.ts`·`.reducer.ts`·`.context.ts`가 더해졌다), 검사는 열일곱이다.
 
 **남은 PR의 가름은 도메인 축이다.** 묶음 열(공용·근무표·급여·구성원·근태·알림·리허설·통계·인증·QR)이고 겹이 둘이다 — **이동 겹**(타입·DTO·매퍼·`lib`·`consts`·`config`·`services`·`stores`·중복)은 import 경로를 바꿔 **직렬**이고, **안쪽 겹**(controller 세우기, 큰 파일 쪼개기)은 그 화면 안에서만 보여 **병렬**이다. 도메인이 다른 도메인을 당기는 자리가 백쉰둘이라 이동 PR 둘이 같이 떠 있으면 서로의 치환을 밟는다. 이동 순서는 공용 → 근무표 → 급여 → 구성원 → 근태 → 알림 → 리허설 → 통계 → 인증 → QR이고, 안쪽 겹은 그 뒤 worktree 열을 떼어 같이 돈다.
 

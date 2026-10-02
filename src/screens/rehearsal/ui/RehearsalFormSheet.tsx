@@ -3,11 +3,12 @@ import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { NoticeBlock } from "@/shared/ui/NoticeBlock";
 import { Text } from "@/shared/ui/Text";
+import { COUNT_MAX_LENGTH } from "@/screens/rehearsal/consts/rehearsal.const";
 import {
   canSubmitForm,
   type AddSheetState,
   type AddSheetValues,
-} from "@/screens/rehearsal/model/addSheetState.policy";
+} from "@/screens/rehearsal/model/addSheetState.reducer";
 
 /**
  * 리허설을 넣고 고치는 시트다. 정본은
@@ -32,8 +33,6 @@ import {
 const TIME_GUIDE = "이 날은 근무가 없어서 시각으로 넣어요";
 
 const COUNT_GUIDE = "이 날은 근무가 있어서 건수로 넣어요 · 1건은 1시간이에요";
-
-const COUNT_MAX_LENGTH = 1;
 
 export type RehearsalFormSheetProps = {
   mode: "add" | "edit";

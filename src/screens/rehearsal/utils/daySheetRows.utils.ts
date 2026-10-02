@@ -3,6 +3,10 @@ import {
   rehearsalHours,
   type RehearsalRow,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
+import {
+  CLOCK_LENGTH,
+  MIN_ROWS_FOR_TOTAL,
+} from "@/screens/rehearsal/consts/rehearsal.const";
 import { spellMinutes } from "@/screens/rehearsal/utils/spellTotal.utils";
 
 /**
@@ -17,10 +21,6 @@ import { spellMinutes } from "@/screens/rehearsal/utils/spellTotal.utils";
  * **관리자는 이름이 앞에 붙는다.** 「님」을 안 붙이는 것은 이름이 나열되는 목록이라서다
  * (`docs/2-design/design-system/writing.md`의 「사람 이름」).
  */
-
-const CLOCK_LENGTH = 5;
-
-const MIN_ROWS_FOR_TOTAL = 2;
 
 export type DaySheetRow = RehearsalRow & {
   id: string;

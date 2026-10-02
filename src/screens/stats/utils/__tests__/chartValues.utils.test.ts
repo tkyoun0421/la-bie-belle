@@ -51,7 +51,7 @@
 // 선다"). 둘 다 아니면 Map에서 빠진다.
 
 import type { PayrollMonth } from "@/entities/payroll/api/payroll.dto";
-import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
+import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
 import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";

@@ -1,4 +1,4 @@
-import type { RehearsalKind } from "@/entities/rehearsal/model/kindForDate.policy";
+import type { RehearsalKind } from "@/entities/rehearsal/model/rehearsal.type";
 
 /**
  * 날 시트의 「리허설 넣기」가 서는지다. 건수 갈래인 날은 하루 한 줄로 묶여 있어

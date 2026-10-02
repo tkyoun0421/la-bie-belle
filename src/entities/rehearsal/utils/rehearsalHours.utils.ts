@@ -1,3 +1,6 @@
+import { MINUTES_PER_COUNT } from "@/entities/rehearsal/consts/rehearsal.const";
+import type { RehearsalTotal } from "@/entities/rehearsal/model/rehearsal.type";
+
 /**
  * 리허설을 시간으로 환산한다. **1건이 1시간이다**
  * (`docs/2-design/modules/schedule/README.md`의 SCH-023) — 건수로 넣은 것과 시각으로 넣은
@@ -5,13 +8,12 @@
  * (`docs/2-design/modules/payroll/README.md`의 PAY-028) 화면도 시간을 최종 단위로 삼는다.
  *
  * **표에 시간 열이 없다.** 건수에서 시간을 내는 것은 저장이 아니라 계산이라 여기 하나에만
- * 산다 — 달력 칸도 달 줄 합계도 날 시트도 같은 함수를 부른다.
+ * 산다 — 달력 칸도 달 줄 합계도 날 시트도 같은 함수를 부른다. 1건이 몇 분인지는 `consts`가
+ * 든다.
  *
  * 합계의 「건수」는 행마다 하나가 아니다. 건수 갈래 줄은 제 `count`만큼, 시각 갈래 줄은 한
  * 건으로 센다 — 「3건 · 5시간」의 3이 줄 수가 아니라 리허설 횟수다.
  */
-
-const MINUTES_PER_COUNT = 60;
 
 const MINUTES_PER_HOUR = 60;
 
@@ -19,11 +21,6 @@ export type RehearsalRow = {
   starts_at: string | null;
   ends_at: string | null;
   count: number | null;
-};
-
-export type RehearsalTotal = {
-  count: number;
-  minutes: number;
 };
 
 /** `"14:00"`도 `"14:00:00"`도 같은 분이다 — DB는 초까지 싣고 화면은 안 싣는다. */

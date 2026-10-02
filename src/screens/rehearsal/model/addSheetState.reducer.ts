@@ -1,5 +1,10 @@
 import { DomainError } from "@/shared/model/error.type";
-import type { RehearsalKind } from "@/entities/rehearsal/model/kindForDate.policy";
+import type { RehearsalKind } from "@/entities/rehearsal/model/rehearsal.type";
+import {
+  CLOCK_LENGTH,
+  MAX_COUNT,
+  MIN_COUNT,
+} from "@/screens/rehearsal/consts/rehearsal.const";
 
 /**
  * 넣는 시트와 고치는 시트가 같이 쓰는 상태다
@@ -65,16 +70,9 @@ export function addSheetActionFor(
     : { type: "transport_error" };
 }
 
-const MIN_COUNT = 1;
-
-const MAX_COUNT = 9;
-
-const CLOCK_LENGTH = "14:00".length;
-
 /**
- * 칸이 덜 차면 넣기가 안 눌린다. 건수 칸은 한 자리고 0을 넣으면 안 눌린다 — 시각과 건수의
- * 하한은 표의 check와 같은 값이라(`count between 1 and 9`) 화면이 먼저 막고 서버가 다시
- * 막는다.
+ * 칸이 덜 차면 넣기가 안 눌린다. 건수 칸은 한 자리고 0을 넣으면 안 눌린다 — 상·하한은
+ * `consts`가 들고 표의 check와 같은 값이라 화면이 먼저 막고 서버가 다시 막는다.
  */
 export function canSubmitForm({ formKind, values }: AddSheetState): boolean {
   if (formKind === "count") {

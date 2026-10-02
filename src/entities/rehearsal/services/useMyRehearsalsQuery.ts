@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import {
-  getMyRehearsals,
-  type Rehearsal,
-} from "@/entities/rehearsal/api/getMyRehearsals.api";
+import { getMyRehearsals } from "@/entities/rehearsal/api/getMyRehearsals.api";
+import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
 
 /**
  * 그 달 본인 리허설이다 — 키는 `['rehearsal', 'YYYY-MM']`

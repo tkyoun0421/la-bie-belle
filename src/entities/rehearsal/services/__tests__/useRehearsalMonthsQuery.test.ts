@@ -1,4 +1,4 @@
-// 구현 대상: src/entities/rehearsal/hooks/useRehearsalMonthsQuery.ts
+// 구현 대상: src/entities/rehearsal/services/useRehearsalMonthsQuery.ts
 //
 // useRehearsalMonthsQuery(client, months) — 여러 달 본인 리허설 키를 결합해 읽는 훅이다
 // (payroll-view AC-06 「연은 열두 키를 읽어 더한다」와 같은 다개월 계약을 리허설에도
@@ -23,7 +23,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useRehearsalMonthsQuery } =
-  await import("@/entities/rehearsal/hooks/useRehearsalMonthsQuery");
+  await import("@/entities/rehearsal/services/useRehearsalMonthsQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({
