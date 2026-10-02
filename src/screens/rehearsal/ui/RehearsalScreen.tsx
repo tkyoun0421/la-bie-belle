@@ -16,7 +16,7 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Text } from "@/shared/ui/Text";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import type { Rehearsal } from "@/entities/rehearsal/api/getMyRehearsals.api";
+import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
 import { canAddOn } from "@/entities/rehearsal/model/canAddOn.policy";
 import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
 import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
