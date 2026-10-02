@@ -41,11 +41,11 @@ import {
 import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 import { useUpdateContactMutation } from "@/features/profileEdit/services/useUpdateContactMutation";
 import { useUpdatePhotoMutation } from "@/features/profileEdit/services/useUpdatePhotoMutation";
-import { PUSH_DEPS } from "@/features/pushSwitch/model/pushDeps";
+import { PUSH_DEPS } from "@/features/pushSwitch/lib/pushDeps.lib";
 import {
   getPushPermission,
   requestPushPermission,
-} from "@/features/pushSwitch/model/pushPermission";
+} from "@/features/pushSwitch/lib/pushPermission.lib";
 import { useNotificationSwitchMutation } from "@/features/pushSwitch/services/useNotificationSwitchMutation";
 import { useSavePushTokenMutation } from "@/features/pushSwitch/services/useSavePushTokenMutation";
 import { THEME_LABEL } from "@/screens/profile/consts/profile.const";

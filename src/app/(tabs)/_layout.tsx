@@ -5,11 +5,11 @@ import { AppState } from "react-native";
 import { supabase } from "@/shared/api/supabase";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { PUSH_DEPS } from "@/features/pushSwitch/model/pushDeps";
+import { PUSH_DEPS } from "@/features/pushSwitch/lib/pushDeps.lib";
 import {
   getPushPermission,
   requestPushPermission,
-} from "@/features/pushSwitch/model/pushPermission";
+} from "@/features/pushSwitch/lib/pushPermission.lib";
 import { useSavePushTokenMutation } from "@/features/pushSwitch/services/useSavePushTokenMutation";
 
 /**
