@@ -25,12 +25,12 @@ import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
-import { useUnreadCountQuery } from "@/entities/notification/hooks/useUnreadCountQuery";
 import { getProfileNotificationRow } from "@/entities/notification/model/profileNotificationRow.policy";
 import {
   getReachState,
   type PushPermission,
 } from "@/entities/notification/model/reachState.policy";
+import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
 import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
 import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
@@ -41,13 +41,13 @@ import {
 import { googlePhotoOf } from "@/features/auth/utils/googlePhotoOf.utils";
 import { useUpdateContactMutation } from "@/features/profileEdit/services/useUpdateContactMutation";
 import { useUpdatePhotoMutation } from "@/features/profileEdit/services/useUpdatePhotoMutation";
-import { useNotificationSwitchMutation } from "@/features/pushSwitch/hooks/useNotificationSwitchMutation";
-import { useSavePushTokenMutation } from "@/features/pushSwitch/hooks/useSavePushTokenMutation";
-import { PUSH_DEPS } from "@/features/pushSwitch/model/pushDeps";
+import { PUSH_DEPS } from "@/features/pushSwitch/lib/pushDeps.lib";
 import {
   getPushPermission,
   requestPushPermission,
-} from "@/features/pushSwitch/model/pushPermission";
+} from "@/features/pushSwitch/lib/pushPermission.lib";
+import { useNotificationSwitchMutation } from "@/features/pushSwitch/services/useNotificationSwitchMutation";
+import { useSavePushTokenMutation } from "@/features/pushSwitch/services/useSavePushTokenMutation";
 import { THEME_LABEL } from "@/screens/profile/consts/profile.const";
 import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
 import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto.policy";

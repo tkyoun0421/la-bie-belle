@@ -19,7 +19,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useNotificationSwitchMutation } =
-  await import("@/features/pushSwitch/hooks/useNotificationSwitchMutation");
+  await import("@/features/pushSwitch/services/useNotificationSwitchMutation");
 
 function createWrapper() {
   const queryClient = new QueryClient({

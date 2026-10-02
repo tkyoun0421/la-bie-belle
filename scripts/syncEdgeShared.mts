@@ -44,6 +44,7 @@ const ENTRIES = [
 
 /** `src/`의 어느 자리가 복사본의 어느 자리로 가는지다. */
 const FOLDERS = [
+  { from: "src/entities/notification/consts", to: "notification" },
   { from: "src/entities/notification/model", to: "notification" },
   { from: "src/entities/notification/utils", to: "notification" },
   { from: "src/features/holiday/model", to: "holiday" },

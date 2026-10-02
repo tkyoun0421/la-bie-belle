@@ -10,7 +10,7 @@ jest.unstable_mockModule("@/features/pushSwitch/api/savePushToken.api", () => ({
 const { renderHook, act, waitFor } =
   await import("@testing-library/react-native");
 const { useSavePushTokenMutation } =
-  await import("@/features/pushSwitch/hooks/useSavePushTokenMutation");
+  await import("@/features/pushSwitch/services/useSavePushTokenMutation");
 
 const FAKE_CLIENT = {} as never;
 

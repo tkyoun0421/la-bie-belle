@@ -1,3 +1,4 @@
+import { PUSH_MESSAGES_PER_REQUEST } from "@/entities/notification/consts/notification.const";
 import { toNotificationDestination } from "@/entities/notification/model/destination.policy";
 import { toNotificationTitle } from "@/entities/notification/utils/title.utils";
 
@@ -20,8 +21,6 @@ import { toNotificationTitle } from "@/entities/notification/utils/title.utils";
  */
 
 /** 한 번에 한 요청에 묶는 한도다. 그보다 많으면 나눠 부친다(「푸시 보내기」). */
-export const PUSH_MESSAGES_PER_REQUEST = 100;
-
 /** `claim_notifications`가 돌려주는 행 하나. `tokens`가 그 사람의 기기 주소 전부다. */
 export type ClaimedPushNotification = {
   id: string;

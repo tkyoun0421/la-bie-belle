@@ -1,5 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
+import type { PushReachableRow } from "@/entities/notification/api/notification.dto";
 
 /**
  * 관리자가 사람마다 알림이 닿는지를 읽는 자리다. 정본은
@@ -19,11 +20,7 @@ import { toApiError } from "@/shared/api/errors";
  * 실제로는 안 빈다. 널로 온 행은 갈래를 못 정하니 안 담는다.
  */
 
-export type PushReachableRow = {
-  profile_id: string;
-  has_device: boolean;
-};
-
+/** 뷰가 선언한 꼴이다. 널을 떼기 전의 비계라 함수 밖으로 안 나가고 `notification.dto.ts`에도 안 든다. */
 type ViewRow = {
   profile_id: string | null;
   has_device: boolean | null;

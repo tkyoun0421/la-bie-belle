@@ -17,7 +17,7 @@ const { QueryClient, QueryClientProvider } =
   await import("@tanstack/react-query");
 const React = await import("react");
 const { useUnreadCountQuery } =
-  await import("@/entities/notification/hooks/useUnreadCountQuery");
+  await import("@/entities/notification/services/useUnreadCountQuery");
 
 function createWrapper() {
   const queryClient = new QueryClient({

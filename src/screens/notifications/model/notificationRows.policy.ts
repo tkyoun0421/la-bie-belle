@@ -1,5 +1,5 @@
 import { kstDateOf } from "@/shared/utils/kstDate";
-import { ADMIN_NOTICE } from "@/entities/notification/model/notification.type";
+import { ADMIN_NOTICE } from "@/entities/notification/consts/notification.const";
 
 /**
  * 알림 목록 화면이 그릴 것을 정하는 계산 셋이다. 정본은
