@@ -34,7 +34,7 @@
 
 **계층 셋과 역할 넷이 박혔다.** presentation(`ui`) · logic(`hooks`·`services`·`stores`·`model`·`utils`·`consts`·`config`·`lib`) · db(`api`)가 계층이고, presentation · controller · service · repository가 역할이다. 재 보니 **repository와 service는 이미 섰고 controller만 없었다** — 통신 백일흔둘이 전부 저장소에 한 번만 닿고, `hooks/` 예순다섯 중 예순둘이 Query·Mutation이다. `ui`가 `hooks`를 당기는 자리가 **셋**뿐인 것이 controller가 없다는 증거다.
 
-**세그먼트가 여덞에서 열로 열렸다.** `services`(Query·Mutation)와 `stores`(zustand·Context)가 더해졌다. 접미사는 열다섯(`.dto.ts`·`.mapper.ts`·`.reducer.ts`·`.context.ts`가 더해졌다), 검사는 열일곱이다.
+**세그먼트가 여덞에서 열로 열렸다.** `services`(Query·Mutation)와 `stores`(zustand·Context)가 더해졌다. 접미사는 열여섯(`.dto.ts`·`.mapper.ts`·`.reducer.ts`·`.context.ts`가 더해졌다), 검사는 열일곱이다.
 
 **남은 PR의 가름은 도메인 축이다.** 묶음 열(공용·근무표·급여·구성원·근태·알림·리허설·통계·인증·QR)이고 겹이 둘이다 — **이동 겹**(타입·DTO·매퍼·`lib`·`consts`·`config`·`services`·`stores`·중복)은 import 경로를 바꿔 **직렬**이고, **안쪽 겹**(controller 세우기, 큰 파일 쪼개기)은 그 화면 안에서만 보여 **병렬**이다. 도메인이 다른 도메인을 당기는 자리가 백쉰둘이라 이동 PR 둘이 같이 떠 있으면 서로의 치환을 밟는다. 이동 순서는 공용 → 근무표 → 급여 → 구성원 → 근태 → 알림 → 리허설 → 통계 → 인증 → QR이고, 안쪽 겹은 그 뒤 worktree 열을 떼어 같이 돈다.
 
