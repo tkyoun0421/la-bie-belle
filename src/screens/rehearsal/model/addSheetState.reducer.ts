@@ -51,6 +51,16 @@ export const EMPTY_VALUES: AddSheetValues = {
 };
 
 /**
+ * 시트를 아직 안 연 상태다. 갈래는 여는 순간 그날 배정이 정하니 여기서는 시각 쪽으로 둔다 —
+ * 이 값이 화면에 보일 일은 없다.
+ */
+export const INITIAL_SHEET: AddSheetState = {
+  formKind: "time",
+  values: EMPTY_VALUES,
+  notice: null,
+};
+
+/**
  * 저장이 거절당했을 때 시트가 받을 행동이다. `wrong_kind`는 그날 갈래가 뒤집혔다는 말이라
  * 반대 갈래로 넘긴다 — 두 갈래뿐이라 서버에 다시 묻지 않는다. 나머지는 통신 실패와 같은
  * 자리에서 말한다.
