@@ -1,14 +1,7 @@
-import * as ImageManipulator from "expo-image-manipulator";
-import * as ImagePicker from "expo-image-picker";
 import { usePathname, useRouter } from "expo-router";
 import { Pencil } from "lucide-react-native";
-import { useCallback, useEffect, useState } from "react";
-import { AppState, ScrollView, View } from "react-native";
-import { queryClient } from "@/shared/api/queryClient";
+import { ScrollView, View } from "react-native";
 import { supabase } from "@/shared/api/supabase";
-import { DomainError } from "@/shared/model/error.type";
-import type { Theme } from "@/shared/model/theme.type";
-import { useTheme } from "@/shared/stores/theme.store";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
 import { BellIcon } from "@/shared/ui/BellIcon";
@@ -24,33 +17,13 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { SkeletonLine } from "@/shared/ui/Skeleton";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
-import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
-import { getProfileNotificationRow } from "@/entities/notification/model/profileNotificationRow.policy";
 import {
-  getReachState,
-  type PushPermission,
-} from "@/entities/notification/model/reachState.policy";
-import { useUnreadCountQuery } from "@/entities/notification/services/useUnreadCountQuery";
-import { useMyProfileQuery } from "@/entities/profile/services/useMyProfileQuery";
-import { spellGender } from "@/entities/profile/utils/spellGender.utils";
-import { getCurrentUser } from "@/entities/session/api/getCurrentUser.api";
-import { googlePhotoOf } from "@/entities/session/utils/googlePhotoOf.utils";
-import {
-  DEVICE_CLEANUP_NOT_WIRED_YET,
-  signOut,
-} from "@/features/auth/lib/signOut.lib";
-import { useUpdateContactMutation } from "@/features/profileEdit/services/useUpdateContactMutation";
-import { useUpdatePhotoMutation } from "@/features/profileEdit/services/useUpdatePhotoMutation";
-import { PUSH_DEPS } from "@/features/pushSwitch/lib/pushDeps.lib";
-import {
-  getPushPermission,
-  requestPushPermission,
-} from "@/features/pushSwitch/lib/pushPermission.lib";
-import { useNotificationSwitchMutation } from "@/features/pushSwitch/services/useNotificationSwitchMutation";
-import { useSavePushTokenMutation } from "@/features/pushSwitch/services/useSavePushTokenMutation";
-import { THEME_LABEL } from "@/screens/profile/consts/profile.const";
-import { hasRehearsalGrant } from "@/screens/profile/model/hasRehearsalGrant.policy";
-import { shouldOfferGooglePhoto } from "@/screens/profile/model/shouldOfferGooglePhoto.policy";
+  AVATAR_SIZE,
+  PENCIL_HIT_SLOP,
+  PENCIL_ICON_SIZE,
+  PROFILE_COPY,
+} from "@/screens/profile/consts/profile.const";
+import { useProfileScreen } from "@/screens/profile/hooks/useProfileScreen";
 import { ContactSheet } from "@/screens/profile/ui/ContactSheet";
 import { PhotoSheet } from "@/screens/profile/ui/PhotoSheet";
 import { ThemeSheet } from "@/screens/profile/ui/ThemeSheet";
@@ -65,235 +38,27 @@ import { ThemeSheet } from "@/screens/profile/ui/ThemeSheet";
  * 고치는 줄이 첫 카드 안에서 가는 선으로 갈리고, 다른 화면으로 나가는 문은 둘째 카드에
  * 모인다 — 눌렀을 때 시트가 열리는지 화면이 바뀌는지를 눌러 봐야 아는 일이 없게.
  *
- * **시트는 한 번에 하나다.** 연락처·사진·화면 셋이 같은 겹을 쓴다.
- *
- * **알림 자리는 권한이 정한다.** 거부된 기기에는 스위치 대신 안내 두 줄이 서고, 그 갈림은
- * [`profile-notification-row`](../../../features/notification/model/profileNotificationRow.ts)가
- * 낸다. 이 기기에 주소가 섰는지는 「나」가 읽는 값이 아니라 권한이 허락일 때만 서는 것이라
- * 갈래를 물을 때 권한을 그 자리에 넣는다 — 켜진 스위치와 안 닿는 기기를 근무자에게 갈라
- * 말하지 않아서 둘이 같은 모습이다(profile.md 「알림」).
- *
- * **끄기 전에 한 번 묻는다.** 켜기는 바로 켜지고 끄기만 Dialog를 거친다 — 되돌리는 길은 같은
- * 스위치라 조르지 않는다.
+ * 값과 시트와 판정은 `useProfileScreen`이 든다. 여기 남은 것은 그림과 보낼 데다.
  */
 
-const AVATAR_SIZE = 88;
-
-const PENCIL_ICON_SIZE = 14;
-
-const PENCIL_HIT_SLOP = 8;
-
-const PHOTO_EDGE = 512;
-
-const PHOTO_QUALITY = 0.8;
-
+/**
+ * **같은 표가 저장소 열세 자리에 있다.** 묶음 여럿에 걸려 한 열이 못 접고 AC-13이 받는다.
+ */
 const SKELETON_ROWS = [0, 1, 2];
-
-const CONTACT_SAVED = "연락처를 바꿨어요";
-
-const PHOTO_SAVED = "사진을 바꿨어요";
-
-type SheetName = "contact" | "photo" | "theme" | null;
-
-type Me = { id: string; googlePhotoUrl: string | null };
-
-/** 「1990년 11월 5일」 — 나이는 안 적는다. 그 셈이 필요한 자리는 관리자 쪽이다. */
-function spellBirthDate(isoDate: string): string {
-  const [year, month, day] = isoDate.split("-");
-
-  return `${year}년 ${Number(month)}월 ${Number(day)}일`;
-}
-
-function digitsOnly(phone: string): string {
-  return phone.replace(/\D/g, "");
-}
-
-function hyphenate(digits: string): string {
-  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
-}
 
 export function ProfileScreen() {
   const router = useRouter();
   const pathname = usePathname();
-  const unreadCount = useUnreadCountQuery(supabase);
-
-  const [me, setMe] = useState<Me | null>(null);
-  const [sheet, setSheet] = useState<SheetName>(null);
-  const [toast, setToast] = useState<string | null>(null);
-  const [picking, setPicking] = useState(false);
-  const [pickFailed, setPickFailed] = useState(false);
-  const [permission, setPermission] = useState<PushPermission | null>(null);
-  const [pushToken, setPushToken] = useState<string | null>(null);
-  const [turningOff, setTurningOff] = useState(false);
-
-  useSavePushTokenMutation(supabase, pushToken, AppState);
-
-  const theme = useTheme((at) => at.theme);
-  const chooseTheme = useTheme((at) => at.choose);
-
-  const { data, isLoading } = useMyProfileQuery(supabase, me?.id ?? null);
-  const { data: grants } = useQualificationsQuery(supabase);
-
-  const {
-    mutate: saveContact,
-    isPending: savingContact,
-    isError: contactFailed,
-    error: contactError,
-    isSuccess: contactSaved,
-    reset: resetContact,
-  } = useUpdateContactMutation(supabase);
-
-  const {
-    mutate: savePhoto,
-    isPending: savingPhoto,
-    isError: photoFailed,
-    isSuccess: photoSaved,
-    reset: resetPhoto,
-  } = useUpdatePhotoMutation(supabase);
-
-  const askPushPermission = useCallback(async () => {
-    const asked = await requestPushPermission(PUSH_DEPS);
-
-    setPermission(asked.permission);
-
-    if (asked.permission === "granted" && asked.token !== null) {
-      setPushToken(asked.token);
-    }
-
-    return asked.permission === "granted";
-  }, []);
-
-  const notification = useNotificationSwitchMutation(
-    supabase,
-    data?.notifications_enabled ?? false,
-    askPushPermission,
-  );
-
-  useEffect(() => {
-    void getPushPermission(PUSH_DEPS.getPermissionsAsync)
-      .then(setPermission)
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    void getCurrentUser(supabase).then((user) =>
-      setMe(
-        user
-          ? { id: user.id, googlePhotoUrl: googlePhotoOf(user.user_metadata) }
-          : null,
-      ),
-    );
-  }, []);
-
-  useEffect(() => {
-    if (!contactSaved) {
-      return;
-    }
-
-    setSheet(null);
-    setToast(CONTACT_SAVED);
-    resetContact();
-  }, [contactSaved, resetContact]);
-
-  useEffect(() => {
-    if (!photoSaved) {
-      return;
-    }
-
-    setSheet(null);
-    setToast(PHOTO_SAVED);
-    resetPhoto();
-  }, [photoSaved, resetPhoto]);
-
-  const hideToast = useCallback(() => setToast(null), []);
-
-  const closeSheet = useCallback(() => {
-    setSheet(null);
-    setPickFailed(false);
-    resetContact();
-    resetPhoto();
-  }, [resetContact, resetPhoto]);
-
-  const onSignOut = useCallback(() => {
-    void signOut({
-      ...DEVICE_CLEANUP_NOT_WIRED_YET,
-      signOut: async () => {
-        await supabase.auth.signOut();
-      },
-      clearQueryClient: () => queryClient.clear(),
-    }).then(() => router.replace("/login"));
-  }, [router]);
-
-  const pickPhoto = useCallback(async () => {
-    const picked = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: "images",
-      allowsEditing: true,
-      aspect: [1, 1],
-    });
-
-    if (picked.canceled || !me) {
-      return;
-    }
-
-    setPicking(true);
-    setPickFailed(false);
-
-    try {
-      const shrunk = await ImageManipulator.manipulateAsync(
-        picked.assets[0].uri,
-        [{ resize: { width: PHOTO_EDGE, height: PHOTO_EDGE } }],
-        {
-          compress: PHOTO_QUALITY,
-          format: ImageManipulator.SaveFormat.JPEG,
-        },
-      );
-
-      savePhoto({
-        userId: me.id,
-        uri: shrunk.uri,
-        contentType: "image/jpeg",
-        extension: "jpg",
-      });
-    } catch {
-      setPickFailed(true);
-    } finally {
-      setPicking(false);
-    }
-  }, [me, savePhoto]);
-
-  const onChooseTheme = useCallback(
-    (chosen: Theme) => {
-      chooseTheme(chosen);
-      setSheet(null);
-    },
-    [chooseTheme],
-  );
-
-  const name = data?.display_name ?? "";
-  const admin = data?.role === "admin";
-  /** 관리자에게도 선다 — 전원의 리허설을 그 화면에서 본다(profile.md 「리허설」). */
-  const rehearsal = admin || hasRehearsalGrant(grants ?? [], data?.id ?? null);
-  const phone = data?.phone ?? "";
-  const contactRejected =
-    contactError instanceof DomainError &&
-    contactError.code === "invalid_phone";
-  const notificationRow = getProfileNotificationRow(
-    getReachState({
-      notificationsEnabled: data ? notification.enabled : null,
-      hasDevice: permission === null ? null : permission === "granted",
-      permission,
-    }),
-    notification.isPending,
-  );
+  const screen = useProfileScreen(supabase);
 
   return (
     <Screen>
       <AppBar
-        title="나"
+        title={PROFILE_COPY.appBarTitle}
         right={
           <BellIcon
             testID="bell-icon"
-            unread={(unreadCount.data ?? 0) > 0}
+            unread={screen.unread}
             onPress={() => router.push(`/notifications?from=${pathname}`)}
           />
         }
@@ -306,8 +71,8 @@ export function ProfileScreen() {
               <View className="relative">
                 <Avatar
                   testID="profile-avatar"
-                  name={name}
-                  photoUrl={data?.photo_url}
+                  name={screen.name}
+                  photoUrl={screen.photoUrl}
                   size={AVATAR_SIZE}
                 />
                 <Button
@@ -316,25 +81,25 @@ export function ProfileScreen() {
                   square
                   hitSlop={PENCIL_HIT_SLOP}
                   className="absolute right-0 bottom-0 h-7 w-7"
-                  accessibilityLabel="사진 고치기"
-                  onPress={() => setSheet("photo")}
+                  accessibilityLabel={PROFILE_COPY.editPhoto}
+                  onPress={screen.openPhoto}
                 >
                   <Icon icon={Pencil} size={PENCIL_ICON_SIZE} />
                 </Button>
               </View>
 
               <Text size="xl" weight="semibold" className="mt-3">
-                {name}
+                {screen.name}
               </Text>
               <Text size="sm" tone="muted" className="mt-1">
-                {admin ? "관리자" : "근무자"}
+                {screen.roleLabel}
               </Text>
               <Text size="xs" tone="subtle" className="mt-2">
-                이름·성별·생년월일은 관리자가 고쳐요
+                {PROFILE_COPY.lockedNote}
               </Text>
             </View>
 
-            {isLoading ? (
+            {screen.loading ? (
               <View className="mt-6">
                 {SKELETON_ROWS.map((at) => (
                   <SkeletonLine key={at} className="my-4 w-2/3" />
@@ -344,43 +109,41 @@ export function ProfileScreen() {
               <View className="mt-6">
                 <ListRow
                   testID="profile-gender-row"
-                  title="성별"
-                  value={spellGender(data?.gender ?? null)}
+                  title={PROFILE_COPY.genderLabel}
+                  value={screen.gender}
                 />
                 <ListRow
                   testID="profile-birthdate-row"
-                  title="생년월일"
+                  title={PROFILE_COPY.birthDateLabel}
                   divider
-                  value={
-                    data?.birth_date ? spellBirthDate(data.birth_date) : ""
-                  }
+                  value={screen.birthDate}
                 />
                 <ListRow
                   testID="profile-contact-row"
-                  title="연락처"
+                  title={PROFILE_COPY.contactLabel}
                   divider
-                  value={phone}
+                  value={screen.phone}
                   valueTone="answer"
                   chevron
-                  onPress={() => setSheet("contact")}
+                  onPress={screen.openContact}
                 />
               </View>
             )}
           </Card>
 
           <Card className="py-0">
-            {isLoading ? (
+            {screen.loading ? (
               <SkeletonLine className="my-4 w-2/3" />
-            ) : notificationRow.kind === "switch" ? (
+            ) : screen.notificationRow.kind === "switch" ? (
               <ListRow
-                title="알림"
+                title={PROFILE_COPY.notificationLabel}
                 right={
                   <Switch
                     testID="notification-switch"
-                    value={notification.enabled}
-                    disabled={notificationRow.state === "locked"}
+                    value={screen.notificationEnabled}
+                    disabled={screen.notificationRow.state === "locked"}
                     onValueChange={(next) =>
-                      next ? notification.turnOn() : setTurningOff(true)
+                      next ? screen.turnOnNotifications() : screen.askTurnOff()
                     }
                   />
                 }
@@ -389,38 +152,38 @@ export function ProfileScreen() {
               <PushNotice
                 className="my-4"
                 tone="denied"
-                title={notificationRow.title}
-                subline={notificationRow.subline}
+                title={screen.notificationRow.title}
+                subline={screen.notificationRow.subline}
               />
             )}
             <ListRow
               testID="profile-theme-row"
-              title="화면"
+              title={PROFILE_COPY.themeLabel}
               divider
-              value={THEME_LABEL[theme]}
+              value={screen.themeLabel}
               chevron
-              onPress={() => setSheet("theme")}
+              onPress={screen.openTheme}
             />
             <ListRow
               testID="profile-stats-row"
-              title="통계"
+              title={PROFILE_COPY.statsLabel}
               divider
               chevron
               onPress={() => router.push("/stats")}
             />
-            {rehearsal ? (
+            {screen.rehearsal ? (
               <ListRow
                 testID="profile-rehearsal-row"
-                title="리허설"
+                title={PROFILE_COPY.rehearsalLabel}
                 divider
                 chevron
                 onPress={() => router.push("/me/rehearsals")}
               />
             ) : null}
-            {admin ? (
+            {screen.admin ? (
               <ListRow
                 testID="profile-admin-row"
-                title="관리자 모드"
+                title={PROFILE_COPY.adminModeLabel}
                 divider
                 chevron
                 onPress={() => router.push("/admin")}
@@ -429,74 +192,65 @@ export function ProfileScreen() {
           </Card>
 
           <Card className="py-2">
-            <Button variant="ghost" onPress={onSignOut}>
-              로그아웃
+            <Button
+              variant="ghost"
+              loading={screen.signingOut}
+              onPress={() => screen.signOut(() => router.replace("/login"))}
+            >
+              {PROFILE_COPY.signOut}
             </Button>
           </Card>
         </View>
       </ScrollView>
 
-      {sheet === "contact" ? (
-        <SheetLayer onDismiss={closeSheet}>
+      {screen.sheet === "contact" ? (
+        <SheetLayer onDismiss={screen.closeSheet}>
           <ContactSheet
-            phone={digitsOnly(phone)}
-            saving={savingContact}
-            failed={contactFailed && !contactRejected}
-            rejected={contactRejected}
-            onClose={closeSheet}
-            onSave={(digits) =>
-              data
-                ? saveContact({
-                    profileId: data.id,
-                    phone: hyphenate(digits),
-                  })
-                : undefined
-            }
+            draft={screen.contactDraft}
+            saving={screen.contactSaving}
+            failed={screen.contactFailed}
+            invalid={screen.contactInvalid || screen.contactRejected}
+            canSave={screen.canSaveContact}
+            onWrite={screen.writeContact}
+            onClose={screen.closeSheet}
+            onSave={screen.saveContact}
           />
         </SheetLayer>
       ) : null}
 
-      {sheet === "photo" ? (
-        <SheetLayer onDismiss={closeSheet}>
+      {screen.sheet === "photo" ? (
+        <SheetLayer onDismiss={screen.closeSheet}>
           <PhotoSheet
-            offerGoogle={shouldOfferGooglePhoto(
-              data?.photo_url ?? null,
-              me?.googlePhotoUrl ?? null,
-            )}
-            uploading={picking || savingPhoto}
-            failed={pickFailed || photoFailed}
-            onPick={() => void pickPhoto()}
-            onUseGoogle={() =>
-              me?.googlePhotoUrl
-                ? savePhoto({ photoUrl: me.googlePhotoUrl })
-                : undefined
-            }
-            onClose={closeSheet}
+            offerGoogle={screen.offerGoogle}
+            uploading={screen.uploading}
+            failed={screen.photoFailed}
+            onPick={() => void screen.pickPhoto()}
+            onUseGoogle={screen.useGooglePhoto}
+            onClose={screen.closeSheet}
           />
         </SheetLayer>
       ) : null}
 
-      {sheet === "theme" ? (
-        <SheetLayer onDismiss={closeSheet}>
-          <ThemeSheet theme={theme} onChoose={onChooseTheme} />
+      {screen.sheet === "theme" ? (
+        <SheetLayer onDismiss={screen.closeSheet}>
+          <ThemeSheet theme={screen.theme} onChoose={screen.chooseTheme} />
         </SheetLayer>
       ) : null}
 
       <Dialog
-        visible={turningOff}
-        title="알림을 끌까요?"
-        closeLabel="닫기"
-        confirmLabel="알림 끄기"
-        onClose={() => setTurningOff(false)}
-        onConfirm={() => {
-          setTurningOff(false);
-          notification.turnOff();
-        }}
+        visible={screen.turningOff}
+        title={PROFILE_COPY.turnOffTitle}
+        closeLabel={PROFILE_COPY.turnOffClose}
+        confirmLabel={PROFILE_COPY.turnOffConfirm}
+        onClose={screen.cancelTurnOff}
+        onConfirm={screen.confirmTurnOff}
       >
-        근무표가 확정되거나 근무 요청이 와도 알림이 안 와요
+        {PROFILE_COPY.turnOffNote}
       </Dialog>
 
-      {toast ? <FloatingToast message={toast} onDone={hideToast} /> : null}
+      {screen.toast ? (
+        <FloatingToast message={screen.toast} onDone={screen.dismissToast} />
+      ) : null}
     </Screen>
   );
 }

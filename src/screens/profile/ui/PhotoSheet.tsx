@@ -1,6 +1,7 @@
 import { ActivityIndicator, View } from "react-native";
 import { ListRow } from "@/shared/ui/ListRow";
 import { Text } from "@/shared/ui/Text";
+import { PHOTO_SHEET_COPY } from "@/screens/profile/consts/profile.const";
 
 /**
  * 사진을 고치는 시트다. 정본은
@@ -35,7 +36,7 @@ export function PhotoSheet({
   return (
     <>
       <Text size="lg" weight="semibold">
-        사진
+        {PHOTO_SHEET_COPY.title}
       </Text>
 
       {uploading ? (
@@ -44,17 +45,21 @@ export function PhotoSheet({
         </View>
       ) : (
         <View className="mt-2">
-          <ListRow title="사진 고르기" onPress={onPick} />
+          <ListRow title={PHOTO_SHEET_COPY.pick} onPress={onPick} />
           {offerGoogle ? (
-            <ListRow title="구글 사진으로" divider onPress={onUseGoogle} />
+            <ListRow
+              title={PHOTO_SHEET_COPY.useGoogle}
+              divider
+              onPress={onUseGoogle}
+            />
           ) : null}
-          <ListRow title="닫기" divider onPress={onClose} />
+          <ListRow title={PHOTO_SHEET_COPY.close} divider onPress={onClose} />
         </View>
       )}
 
       {failed ? (
         <Text size="sm" tone="critical" className="mt-2">
-          사진을 올리지 못했어요. 다시 골라 주세요
+          {PHOTO_SHEET_COPY.failed}
         </Text>
       ) : null}
     </>

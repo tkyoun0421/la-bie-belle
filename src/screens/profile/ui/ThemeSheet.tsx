@@ -5,6 +5,7 @@ import { Text } from "@/shared/ui/Text";
 import {
   THEME_CHOICES,
   THEME_LABEL,
+  THEME_SHEET_TITLE,
 } from "@/screens/profile/consts/profile.const";
 
 /**
@@ -25,7 +26,7 @@ export function ThemeSheet({ theme, onChoose }: ThemeSheetProps) {
   return (
     <>
       <Text size="lg" weight="semibold">
-        화면
+        {THEME_SHEET_TITLE}
       </Text>
 
       <View className="mt-2">
