@@ -1,6 +1,7 @@
 import type { DB } from "@/shared/api/database";
 import { toApiError } from "@/shared/api/errors";
-import type { PushReachableRow } from "@/entities/notification/api/notification.dto";
+import type { PushReachable } from "@/entities/notification/model/notification.type";
+import { toPushReachable } from "@/entities/notification/utils/notification.mapper";
 
 type ViewRow = {
   profile_id: string | null;
@@ -9,10 +10,8 @@ type ViewRow = {
 
 const PAGE_SIZE = 500;
 
-export async function getPushReachable(
-  client: DB,
-): Promise<PushReachableRow[]> {
-  const rows: PushReachableRow[] = [];
+export async function getPushReachable(client: DB): Promise<PushReachable[]> {
+  const rows: PushReachable[] = [];
 
   for (let from = 0; ; from += PAGE_SIZE) {
     const { data, error } = await client
@@ -30,10 +29,12 @@ export async function getPushReachable(
 
     for (const row of page) {
       if (row.profile_id !== null && row.has_device !== null) {
-        rows.push({
-          profile_id: row.profile_id,
-          has_device: row.has_device,
-        });
+        rows.push(
+          toPushReachable({
+            profile_id: row.profile_id,
+            has_device: row.has_device,
+          }),
+        );
       }
     }
 

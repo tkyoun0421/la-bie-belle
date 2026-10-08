@@ -41,15 +41,15 @@ const FAKE_CLIENT = {} as never;
 function rowsOfLength(count: number, offset: number) {
   return Array.from({ length: count }, (_, index) => ({
     id: `notif-${offset + index}`,
-    profile_id: "profile-1",
+    profileId: "profile-1",
     kind: "signup_approved",
     payload: {},
-    subject_id: null,
-    created_at: "2025-09-13T10:00:00+09:00",
-    read_at: null,
-    claimed_at: null,
-    push_attempts: 0,
-    pushed_at: null,
+    subjectId: null,
+    createdAt: "2025-09-13T10:00:00+09:00",
+    readAt: null,
+    claimedAt: null,
+    pushAttempts: 0,
+    pushedAt: null,
   }));
 }
 

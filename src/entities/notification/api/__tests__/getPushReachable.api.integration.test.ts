@@ -1,3 +1,4 @@
+import type { PushReachable } from "@/entities/notification/model/notification.type";
 import {
   createAdminUser,
   createApprovedUser,
@@ -8,8 +9,6 @@ import {
 
 const { getPushReachable } =
   await import("@/entities/notification/api/getPushReachable.api");
-
-type ReachableRow = { profile_id: string; has_device: boolean };
 
 describe("관리자가 push_reachable을 읽는다", () => {
   let admin: AdminUser;
@@ -23,22 +22,22 @@ describe("관리자가 push_reachable을 읽는다", () => {
     seedPushToken(withDevice.profileId);
   });
 
-  it("기기가 있는 사람과 없는 사람의 has_device가 갈린다", async () => {
-    const rows: ReachableRow[] = await getPushReachable(admin.client);
-    const byId = new Map(rows.map((row) => [row.profile_id, row]));
+  it("기기가 있는 사람과 없는 사람의 hasDevice가 갈린다", async () => {
+    const rows: PushReachable[] = await getPushReachable(admin.client);
+    const byId = new Map(rows.map((row) => [row.profileId, row]));
 
-    expect(byId.get(withDevice.profileId)?.has_device).toBe(true);
-    expect(byId.get(noDevice.profileId)?.has_device).toBe(false);
+    expect(byId.get(withDevice.profileId)?.hasDevice).toBe(true);
+    expect(byId.get(noDevice.profileId)?.hasDevice).toBe(false);
   });
 
-  it("token은 안 온다 — profile_id와 has_device만 낸다", async () => {
-    const rows: ReachableRow[] = await getPushReachable(admin.client);
-    const row = rows.find((entry) => entry.profile_id === withDevice.profileId);
+  it("token은 안 온다 — profileId와 hasDevice만 낸다", async () => {
+    const rows: PushReachable[] = await getPushReachable(admin.client);
+    const row = rows.find((entry) => entry.profileId === withDevice.profileId);
 
     expect(row).toBeDefined();
-    expect(Object.keys(row as ReachableRow).sort()).toEqual([
-      "has_device",
-      "profile_id",
+    expect(Object.keys(row as PushReachable).sort()).toEqual([
+      "hasDevice",
+      "profileId",
     ]);
   });
 
