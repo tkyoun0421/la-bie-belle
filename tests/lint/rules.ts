@@ -7,9 +7,9 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 36;
+export const DOCUMENTED_LINT_RULE_COUNT = 38;
 
-export const ENFORCED_RULE_COUNT = 36;
+export const ENFORCED_RULE_COUNT = 38;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -293,5 +293,21 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/native-sdk-segment",
     enforcedBy: null,
     test: "eslint-rules/__tests__/nativeSdkSegment.test.ts",
+  },
+  {
+    no: 37,
+    name: "api 밖의 `.dto.ts` import",
+    mechanism: "house",
+    ruleId: "house/dto-segment",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/dtoSegment.test.ts",
+  },
+  {
+    no: 38,
+    name: "api 밖의 snake_case 필드 선언",
+    mechanism: "house",
+    ruleId: "house/no-snake-case-field",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/noSnakeCaseField.test.ts",
   },
 ];

@@ -209,6 +209,8 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 | 34 | consts 밖에서 내보내는 대문자 스네이크 이름 | house | `house/consts-segment` | `eslint-rules/__tests__/constsSegment.test.ts` |
 | 35 | config 밖의 환경값 읽기 | house | `house/env-in-config` | `eslint-rules/__tests__/envInConfig.test.ts` |
 | 36 | lib·ui·hooks·config 밖의 네이티브 SDK | house | `house/native-sdk-segment` | `eslint-rules/__tests__/nativeSdkSegment.test.ts` |
+| 37 | api 밖의 `.dto.ts` import | house | `house/dto-segment` | `eslint-rules/__tests__/dtoSegment.test.ts` |
+| 38 | api 밖의 snake_case 필드 선언 | house | `house/no-snake-case-field` | `eslint-rules/__tests__/noSnakeCaseField.test.ts` |
 
 **집행 갈래는 다섯이다.** `eslint`는 기성 규칙, `house`는 [`eslint-rules/`](../../eslint-rules/)의 직접 만든 규칙, `prettier`는 포맷터가 겸하는 것, `hook`은 [`.claude/hooks/`](#훅)의 편집 훅, `pre-commit`은 커밋 앞이다. 앞 셋은 `pnpm lint`나 `pnpm format:check`가 돌리고 뒤 둘은 파일을 쓰는 순간과 커밋하는 순간에 선다.
 
