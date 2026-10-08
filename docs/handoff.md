@@ -16,7 +16,7 @@
 
 - `features/auth`의 `decideEntry.policy.ts`는 세션을 읽으러 통신을 부르는데 이름이 `.policy.ts`다. 규칙 32가 `api/`를 **값으로** 당기는 것만 물어 지금은 통과한다
 - `useMyProfileRowQuery`의 이름이 거짓이 됐다 — `Profile`을 돌려주면서 `Row`를 든다. 당기는 자리가 여덟이고, `useMyProfileQuery`(연락처까지 합쳐 `MyProfile`을 낸다)와 가르는 축이 「한 행인가」가 아니라 「연락처가 붙었나」라 타입 이름 둘까지 같이 움직인다
-- 매퍼 열하나에 짝 테스트가 없다. ADR-015가 「순수해서 짝 테스트가 붙는다」고 적는데 매퍼는 필드를 옮기기만 해서 typecheck가 누락과 오타를 다 잡는다 — 그 위의 단언은 타입을 두 번 적는 것이 된다. TDD 훅이 `src/entities/`를 볼지와 함께 판정할 자리다
+- 매퍼 열하나 중 **중첩을 펴는 다섯**에 짝 테스트가 섰고 이름만 바꾸는 여섯은 비었다. 가름의 축은 「typecheck가 그 실수를 잡나」다 — 중첩에서는 `row.slots.days.starts_at`을 `endsAt`에 넣어도 둘 다 `string`이라 통과하고, 이름만 바꾸는 자리는 타입이 다 잡는다(`toMonthWindow`의 기존 테스트가 단언 셋을 다 타입으로 적은 증거다). ADR-015의 「순수해서 짝 테스트가 붙는다」를 그 축으로 좁힐지, TDD 훅이 `src/entities/`를 볼지가 남았다
 
 **새 관찰 둘이 섰다.** [060](observations/060-repo-wide-checks-count-agent-worktrees.md)은 저장소 전수를 보는 도구가 agent worktree를 센다는 것이고(전수 검사와 ESLint 둘 다 밟았다), [061](observations/061-untyped-mocks-let-typecheck-pass.md)은 **mock 서명이 아흔여덟 자리에서 `Promise<unknown>`이라 픽스처가 거짓이어도 통과한다**는 것이다 — 증거가 `check_ins` 테이블에 없는 열 이름을 든 픽스처고 아무 검사도 안 잡았다. 고치는 길(`jest.fn<typeof getMonthSchedule>()`)과 집행할 규칙까지 그 관찰이 든다.
 

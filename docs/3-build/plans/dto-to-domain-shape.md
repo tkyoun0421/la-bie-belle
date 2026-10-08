@@ -97,5 +97,5 @@
 
 - **DTO 파일 세우기** — [fsd-read-write-layers](fsd-read-write-layers.md)의 이동 PR 열이 한다. 이 계획은 그것이 다 끝난 뒤 시작한다
 - **DB 열 이름 바꾸기** — 마이그레이션은 안 건드린다. snake_case가 Postgres의 관례고 그것이 맞다
-- **매퍼의 짝 테스트** — ADR-015의 「파일 이름」이 `<이름>.mapper.ts`를 「순수해서 짝 테스트가 붙는다」로 적지만 매퍼 열하나에 테스트가 없다. 매퍼는 필드를 옮기기만 해서 `pnpm typecheck`가 누락과 오타를 다 잡고, 그 위에 단언을 쓰면 타입을 두 번 적는 것이 된다. TDD 훅이 `src/entities/`를 볼지와 함께 따로 판정한다
+- **이름만 바꾸는 매퍼 여섯의 짝 테스트** — 열하나 중 중첩을 펴는 다섯(`workRequest`·`schedule`·`member`·`rehearsal`·`availability`)에는 테스트가 섰다. 거기서는 `row.slots.days.starts_at`을 `endsAt`에 넣어도 둘 다 `string`이라 컴파일이 통과해, 같은 타입 필드를 바꿔치기한 실수를 잡는 눈이 테스트뿐이다. 남은 여섯은 이름만 바꿔 `pnpm typecheck`가 누락과 오타를 다 잡고 그 위의 단언은 타입을 두 번 적는 것이 된다 — `toMonthWindow`의 기존 테스트가 그 증거다. TDD 훅이 `src/entities/`를 볼지와 함께 판정할 자리다
 - **이름이 거짓이 된 service 고치기** — `useMyProfileRowQuery`가 `Profile`을 돌려주면서 이름에 `Row`를 든다. 당기는 자리가 아홉이라 따로 떼낸다
