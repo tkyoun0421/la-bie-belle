@@ -10,7 +10,7 @@ date: 2026-09-28
 
 `stats-admin` 구현자가 「시트에 손잡이가 없다」를 판정 요청으로 올렸다. 문서를 훑으니 손잡이를 그리라고 적은 자리가 넷이다 — [check-in.md](../2-design/modules/attendance/screens/check-in.md)는 색(`stroke.neutral-muted`)과 크기(`w-8` `h-1` `rounded-full`)까지, [excuse.md](../2-design/modules/attendance/screens/excuse.md)는 같은 토큰에 「손잡이와 시트의 네 모서리가 그 자리에 그대로 있어서」라는 이유까지, [stats.md](../2-design/system/screens/stats.md)와 [approvals.md](../2-design/system/screens/approvals.md)는 구성 목록과 닫는 길에 적어뒀다.
 
-조각은 반대로 간다. `DraggableSheet.tsx`가 `handleComponent={null}`이고 주석이 「손잡이도 지운다: 이 디렉터리가 시트 위에 손잡이를 두라고 한 적이 없다」다. 그 주석이 쓰인 시점에 페이지 문서 넷이 이미 손잡이를 적고 있었다 — 조각을 짓는 손이 `design-system/`만 보고 `screens/`와 `modules/*/screens/`를 안 봤다.
+조각은 반대로 간다. `DraggableSheet.tsx`가 `handleComponent={null}`이고, 그렇게 쓴 손이 까닭으로 든 것은 「이 디렉터리가 시트 위에 손잡이를 두라고 한 적이 없다」였다. 그때 페이지 문서 넷이 이미 손잡이를 적고 있었다 — 조각을 짓는 손이 `design-system/`만 보고 `screens/`와 `modules/*/screens/`를 안 봤다.
 
 한쪽만 고치면 나머지 셋과 어긋난다. `stats-admin`은 손잡이 없는 채로 두고 조각을 고치는 쪽을 task로 세운다.
 

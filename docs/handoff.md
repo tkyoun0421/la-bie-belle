@@ -20,7 +20,7 @@
 
 **주석 방침이 뒤집혔다 — 코드에 설명 주석을 안 쓴다.** `CLAUDE.md`의 「원칙」에 그 줄이 섰고 **저장소의 설명 주석이 0이다** — 오천사백 줄이 걷혔다(`src` 사백열여섯 파일·entities 백일흔·features 백예순하나·shared·`tests`·`eslint-rules`·`scripts`·Edge Function·루트 설정 파일). 남는 것은 도구가 읽는 것뿐이고(`eslint-disable`·`@ts-expect-error`·`prettier-ignore`·`/// <reference`) **검사 29가 그것을 지킨다**.
 
-**그러면서 역참조 백 몇 개가 끊겼다.** 주석이 **근거 저장소**로 쓰이고 있었다 — `src/entities`의 백 파일이 문서 마흔하나를, `src/features`가 스물 몇을, `shared`가 쉰하나를 가리켰고 업무 규칙 ID(`SCH-019`·`PAY-012` 꼴)도 거기 살았다. 그 방향은 버린다: 근거는 `docs/`가 들고 plan과 설계 문서가 이미 코드를 가리킨다. **아직 안 한 일이 하나 있다** — plan과 관찰 몇 줄이 「그 파일의 주석이 그 까닭을 적어 뒀다」로 주석을 가리켜서 지금 거짓이다. 그 문장들이 든 판정을 문서 본문으로 옮겨야 한다.
+**그러면서 역참조 백 몇 개가 끊겼다.** 주석이 **근거 저장소**로 쓰이고 있었다 — `src/entities`의 백 파일이 문서 마흔하나를, `src/features`가 스물 몇을, `shared`가 쉰하나를 가리켰고 업무 규칙 ID(`SCH-019`·`PAY-012` 꼴)도 거기 살았다. 그 방향은 버린다: 근거는 `docs/`가 들고 plan과 설계 문서가 이미 코드를 가리킨다. 전수로 훑으니 거짓이 된 자리는 하나였고(관찰 028이 `DraggableSheet.tsx`의 주석을 현재형으로 인용했다) 그 인용을 사실로 고쳤다. 나머지는 시안 `.html`의 맨 위 주석(허용된 자리)이거나 회차 로그와 끝난 plan의 기록이다.
 
 **주석이 홀로 들고 있던 판정 셋을 정본으로 옮겼다.** 걷으면서 드러난 것이다 — integration 시드가 RPC로 못 만드는 다섯 줄은 `docs/4-test/execution.md`로, TDD가 테스트를 먼저 쓰는 동안 짝 이름을 유예하는 판정은 ADR-015로 갔다. 셋째는 문서로 안 가고 **검사가 됐다** — Deno로 복사되는 폴더 목록을 `noNodeImportInEdgeShared.mjs`와 `syncEdgeShared.mts`가 각자 들고 있어서, 둘이 같은지를 `tests/lint/edgeSharedFolders.test.ts`가 센다. **주석에 적힌 것은 둘이 어긋나도 안 울린다.**
 
