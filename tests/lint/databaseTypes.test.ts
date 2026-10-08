@@ -50,7 +50,6 @@ create or replace function public.submit_profile(phone text) returns void as $$ 
     ]);
   });
 
-  /** 트리거 함수는 PostgREST가 못 부르는 함수라 생성 타입에 아예 안 선다. */
   it("`returns trigger` 함수는 안 센다", () => {
     const sql = `
 create function internal.call_send_push_on_insert()
@@ -67,7 +66,6 @@ as $$ begin end; $$;
     ]);
   });
 
-  /** 주석 안의 DDL을 세면 영영 안 사라지는 위반이 생긴다. */
   it("주석 줄은 안 센다", () => {
     const sql = `-- create table public.dropped (id uuid);`;
 
@@ -120,7 +118,6 @@ export type Database = {
     ]);
   });
 
-  /** 빈 칸은 이름이 아니다. */
   it("`[_ in never]: never`를 이름으로 안 읽는다", () => {
     expect(generatedObjects(types).map(({ name }) => name)).not.toContain("_");
   });
@@ -201,7 +198,6 @@ describe("생성 타입을 안 물린 클라이언트를 쓰는 파일", () => {
     ]);
   });
 
-  /** 별명을 내놓는 파일 자신은 그 이름을 써야 한다. */
   it(`${ALIAS_FILE}는 예외다`, () => {
     const files = [
       {
@@ -247,10 +243,6 @@ describe("위반을 사람이 읽는 문장으로 옮긴다", () => {
   });
 });
 
-/**
- * 표를 하나 더하고 `pnpm types`를 안 돌리면 여기가 빨개진다 — DB 없이 무는 검사다.
- * 로컬 DB에 붙어 diff가 0인지 보는 것은 CI가 따로 한다.
- */
 describe("저장소 실물 — 마이그레이션과 생성 타입이 맞고 맨 클라이언트가 없다", () => {
   it("위반이 없다", () => {
     expect(

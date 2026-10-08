@@ -2,18 +2,6 @@ import { errorsOf, violationsOf } from "@tests/lint/ruleCheck";
 
 const DUMB_UI = "house/dumb-ui";
 
-/**
- * 규칙이 평범한 더미 UI에 오탐하지 않는지 보는 픽스처다. 상태와 props와 클래스를
- * 쓰되 데이터에는 안 닿는다 — 규칙이 막으려는 것과 허용해야 하는 것의 경계가 여기다.
- *
- * 저장소의 실물을 베껴 두지 않는다. 사본은 소스를 안 따라가 썩고, 실제로 Next 시절
- * `layout.tsx`·`page.tsx`와 shadcn `button.tsx`를 베낀 픽스처 다섯이 그 파일들이
- * 없어진 뒤에도 남아 있었다. 실물이 규칙에 안 걸리는 것은 `pnpm lint`가 저장소
- * 전체에 같은 규칙을 돌려서 이미 본다.
- *
- * 클래스는 배치 유틸만 쓴다. 규칙19가 선 뒤로 화면 파일의 색·글자·모양 유틸은 그 자체로
- * 걸리는 것이라, 여기 두면 이 픽스처가 규칙9가 아니라 규칙19를 재게 된다.
- */
 const DUMB_COMPONENT = `import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -150,11 +138,6 @@ describe("규칙9 — .tsx는 더미 UI", () => {
     expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
   });
 
-  /**
-   * 규칙이 `src/app/providers.tsx` 하나를 이름으로 빼주고 있었다. Next 시절
-   * QueryClientProvider를 세우던 자리인데 그 파일이 없어진 뒤로는 아무 파일도
-   * 안 가리키는 빠져나갈 구멍이었다. 이름으로 주는 면제를 안 둔다.
-   */
   it("이름으로 면제받는 `.tsx` 경로가 없다", async () => {
     const code = `import { createClient } from "@supabase/supabase-js";\n\nexport function Providers() {\n  createClient("url", "key");\n  return null;\n}\n`;
 

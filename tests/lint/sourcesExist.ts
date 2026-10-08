@@ -9,11 +9,6 @@ export type SourcesViolation = {
   kind: "missing-file" | "missing-anchor";
 };
 
-/**
- * `sources` 한 줄이 가리키는 파일과 `#앵커`가 실존하는지 본다. 경로는 문서가 놓인
- * 자리 기준이라 `file`이 저장소 뿌리 기준이어야 한다. 규칙 ID 앵커(`#att-017`)도
- * 제목 슬러그라 같은 검사에 걸린다.
- */
 export function sourcesViolations(
   file: string,
   markdown: string,

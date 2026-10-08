@@ -14,7 +14,6 @@ const ROOT_DOCS = ["README.md", "CLAUDE.md"];
 const EXCLUDED_PREFIXES = [`${DOCS}/log/`];
 const ABSOLUTE_SCHEME = /^(https?|mailto):/i;
 
-/** globSync는 Node 22에서 experimental이라 실행마다 경고를 찍는다. */
 function docsMarkdownFiles(root: string): string[] {
   let entries: string[];
   try {
@@ -34,7 +33,6 @@ function docsMarkdownFiles(root: string): string[] {
     .sort();
 }
 
-/** 루트 README와 CLAUDE.md는 저장소의 첫 화면이라 docs/ 밖이어도 같이 본다. */
 function markdownFiles(root: string): string[] {
   const rootDocs = ROOT_DOCS.filter((doc) => existsSync(path.join(root, doc)));
 
@@ -49,16 +47,11 @@ function decode(part: string): string {
   }
 }
 
-/**
- * 링크는 GitHub이 푸는 대로 글이 놓인 자리 기준만 본다. 저장소 뿌리 기준으로 한 번 더
- * 찾아주면 실제로는 깨진 링크가 초록으로 지나간다.
- */
 function resolveTarget(from: string, target: string): string | null {
   const candidate = path.resolve(path.dirname(from), target);
   return existsSync(candidate) ? candidate : null;
 }
 
-/** 문서 하나가 주는 `#앵커` 집합. 제목 슬러그는 이미 소문자다. */
 export function anchorsOf(source: string): Set<string> {
   return new Set(parseMarkdown(source).headings.map((heading) => heading.slug));
 }

@@ -12,14 +12,12 @@ export type SpecGridViolation =
   | { type: "missing-verification-layer"; ac: string };
 
 export type SpecGridDoc = {
-  /** 저장소 뿌리 기준 경로. */
   file: string;
   violations: SpecGridViolation[];
 };
 
 const SPEC_DIR = "docs/2-design/spec";
 
-/** `docs/2-design/README.md#spec`이 드는 해피 패스 밖의 여덟 자리. 적는 순서는 안 따진다. */
 const GRID_HEADING = "상태 격자";
 const STATES = [
   "빈 상태",
@@ -45,7 +43,6 @@ type GridRow = {
   acs: string[];
 };
 
-/** 이유는 길이가 아니라 「해당 없음」을 덜어낸 자리에 글자가 남는지로 잰다. */
 function hasReason(shown: string): boolean {
   return WORD.test(shown.split(NOT_APPLICABLE).join(" "));
 }
@@ -101,7 +98,6 @@ function rowViolations(
       return [{ type: "bare-na", state }];
     }
 
-    /** 덮을 상태가 있는데 가리킬 AC가 없으면 AC가 모자란 것이다 — 「해당 없음」 줄만 면제다. */
     if (!notApplicable && row.acs.length === 0) {
       return [{ type: "missing-ac", state }];
     }
@@ -112,7 +108,6 @@ function rowViolations(
   });
 }
 
-/** 층을 못 고른 AC는 아직 관찰 가능한 결과를 안 가진 것이다. */
 function verificationLayerViolations(doc: MarkdownDoc): SpecGridViolation[] {
   return doc.headings
     .filter((heading) => AC_HEADING.test(heading.text))
@@ -145,7 +140,6 @@ export function specGridViolations(markdown: string): SpecGridViolation[] {
   return [...grid, ...verificationLayerViolations(doc)];
 }
 
-/** 파일 이름을 하드코딩하지 않는다 — spec은 계속 늘어난다. */
 function specFiles(root: string): string[] {
   let entries: string[];
 
@@ -161,14 +155,12 @@ function specFiles(root: string): string[] {
     .map((entry) => `${SPEC_DIR}/${entry}`);
 }
 
-/** `### AC-NN`으로 조건을 나눈 spec만 격자를 든다 — AC가 없는 옛 명세는 지금 틀로 다시 재지 않는다. */
 function hasAcHeadings(markdown: string): boolean {
   return parseMarkdown(markdown).headings.some((heading) =>
     AC_HEADING.test(heading.text),
   );
 }
 
-/** `status`로 안 가른다 — 승인된 spec도 격자가 낡으면 그대로 걸려야 한다. */
 export function repositorySpecGridDocs(
   root: string = process.cwd(),
 ): SpecGridDoc[] {

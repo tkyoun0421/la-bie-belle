@@ -41,7 +41,6 @@ describe("상용 2,350자 — EUC-KR 완성형 영역에서 표 없이 낸다", 
     expect(Math.max(...codes)).toBeLessThanOrEqual(0xd7a3);
   });
 
-  /** 상용 밖은 안 든다 — 그것이 9,256KB를 1,753KB로 줄이는 판단이다. */
   it("상용 밖 음절은 안 든다", () => {
     expect(syllables).not.toContain("뙇");
     expect(syllables).not.toContain("뷁");
@@ -69,10 +68,6 @@ describe("필요한 코드포인트 — ASCII·자모·상용 한글·기호", (
     }
   });
 
-  /**
-   * 원본 서체에 없는 글자를 요구하면 서브셋이 만들 수 없어 검사가 영영 빨갛다.
-   * 시안이 쓰는 「✕」가 그 경우다 — 원본에 없어서 지금도 시스템 서체로 떨어진다.
-   */
   it("원본에 없는 「✕」는 안 든다", () => {
     expect(required.has("✕".codePointAt(0) as number)).toBe(false);
     expect(required.has("×".codePointAt(0) as number)).toBe(true);
@@ -112,7 +107,6 @@ describe("서브셋 서체 대조 — 실제 파일을 읽는다", () => {
     expect(subset).toBeLessThan(origin / 2);
   });
 
-  /** 읽는 쪽이 고장 나면 위 단언이 조용히 통과할 수 있어서 따로 본다. */
   it.each(SUBSET_FONTS)("%s의 cmap을 실제로 읽어낸다", (file) => {
     const codepoints = fontCodepoints(read(path.join(SUBSET_DIR, file)));
 

@@ -59,10 +59,6 @@ export function backdateDeadline(scheduleId: string, pastDate: string): void {
   );
 }
 
-/**
- * 퇴사 시각을 과거로 민다. `createLeftUser`는 `left_at = now()`만 만들어 1년 경계를
- * 못 때린다 — `backdateDeadline`과 같은 손이다.
- */
 export function backdateLeftAt(userId: string, pastIso: string): void {
   execSql(
     "update public.profiles set left_at = :'left_at' where user_id = :'user_id';\n",
@@ -76,12 +72,6 @@ export type SeededWageRate = {
   followsDefault: boolean;
 };
 
-/**
- * 지난 날짜의 시급 행을 직접 꽂는다. `set_wage`는 오늘만 받아서(PAY-008) 이력이 여러 줄인
- * 사람을 함수로는 못 만든다 — `backdateDeadline`과 같은 손이다.
- *
- * 오늘 행은 여기서 안 만든다. 승인과 `set_wage`가 만드는 행이라 부르는 쪽이 함수로 세운다.
- */
 export function seedWageHistory(
   profileId: string,
   rows: readonly SeededWageRate[],
@@ -104,8 +94,6 @@ export function seedWageHistory(
 const MONTH_TAKEN = new Set(["already_exists", "already_open"]);
 const FRESH_MONTH_ATTEMPTS = 7;
 
-// 폭을 90000으로 묶는 것은 연도 네 자리를 지키려는 것이다. 다섯 자리 연도가 나오면
-// `kstInstant`가 만드는 `10278-09-01T22:00:00+09:00`을 Date가 못 읽어 NaN이 된다.
 function randomMonthOffset(): number {
   return 24 + Math.floor(Math.random() * 90000);
 }
@@ -189,12 +177,6 @@ export function queryColumn(
     .filter((line) => line.length > 0);
 }
 
-/**
- * 활성 관리자(재직 중·차단 안 됨)가 `adminProfileId` 하나뿐인 상태를 잠시 만든다.
- * DB에 이미 쌓인 다른 관리자들의 `left_at`을 잠시 `now()`로 밀어 셈에서 빼고, `fn`이
- * 끝나면(실패해도) 기억해둔 id로 되돌린다. `jest.integration.config.js`가
- * `maxWorkers: 1`이라 다른 테스트 파일과 겹치지 않는다.
- */
 export async function withOnlyAdmin<T>(
   adminProfileId: string,
   fn: () => Promise<T>,
@@ -258,7 +240,6 @@ let submittedUserSequence = 0;
 
 export type SubmittedUser = SignedInUser & { submittedAt: string };
 
-/** `submit_profile`을 실제로 불러 「제출됨」(승인·거절·차단 전) 상태를 만든다. */
 export async function createSubmittedUser(): Promise<SubmittedUser> {
   const user = await createSignedInUser();
   submittedUserSequence += 1;
@@ -361,10 +342,6 @@ export function kstMonthEnd(monthsFromNow: number): string {
   return toDateString(day);
 }
 
-/**
- * 정규 배정은 자리에 앉는다 — 표의 check가 `slot_id`를 요구하고 살아 있는 정규 배정은 자리
- * 하나에 하나다. 자리를 안 넘기면 여기서 새로 하나 세운다.
- */
 export function seedSlot(dayId: string): string {
   const id = randomUUID();
   execSql(
@@ -398,14 +375,6 @@ export function seedAssignment(
   return id;
 }
 
-/**
- * 지난 달의 근무표·날·자리를 직접 꽂는 셋이다. `create_schedule`도 `open_day`도 오늘보다 이른
- * 날짜를 거절해서(`date_past`) 급여 화면의 시드는 RPC로 못 만든다 — `backdateDeadline`과 같은
- * 손이다.
- *
- * 결근은 저장하는 배치가 없다. 「인증 창이 닫혔고 그 뒤로 48시간이 지났다」를 그때그때 계산하는
- * 값이라 진짜로 지나간 달력 날짜라야 결근한 날이 선다.
- */
 export function seedPastSchedule(monthStart: string, createdBy: string): void {
   execSql(
     "insert into public.schedules (month, created_by) values (:'month', :'created_by')\n" +
@@ -436,10 +405,6 @@ export function seedPastDay(
   );
 }
 
-/**
- * 그 날 제시간에 눌렀다는 사실이다. 지난 날은 인증 창이 이미 닫혀 이 행이 없으면 결근으로
- * 판정된다(attendance/README.md) — 지난 달에 일한 날을 심으려면 배정과 이 행이 한 짝이다.
- */
 export function seedCheckIn(
   dayId: string,
   profileId: string,
@@ -453,11 +418,6 @@ export function seedCheckIn(
   );
 }
 
-/**
- * 공휴일 한 줄을 직접 꽂는다. `api` 행을 넣는 길은 `internal.import_holidays` 하나인데 그
- * 함수가 `internal`이라 PostgREST로 못 부른다 — `seedWageHistory`·`backdateDeadline`과 같은
- * 손이다(payroll/design.md 「공휴일 넣기」).
- */
 export function seedHoliday(
   holidayDate: string,
   source: "api" | "manual",
@@ -471,7 +431,6 @@ export function seedHoliday(
   );
 }
 
-/** 포지션 하나짜리 자리다. 내역 줄이 그 포지션을 그대로 적어(payroll.md 「내역 목록」) 자리와 배정이 같은 이름을 들어야 한다. */
 export function seedSlotOfPosition(dayId: string, position: string): string {
   const id = randomUUID();
   execSql(
@@ -481,10 +440,6 @@ export function seedSlotOfPosition(dayId: string, position: string): string {
   return id;
 }
 
-/**
- * 포지션 둘을 합친 겸임 자리다. 앉는 사람은 하나고 앞 포지션(`positions[0]`)으로 센다
- * (`docs/2-design/system/screens/stats.md`의 「근무 포지션 구획」).
- */
 export function seedJointSlot(
   dayId: string,
   positions: [string, string],
@@ -497,13 +452,6 @@ export function seedJointSlot(
   return id;
 }
 
-/**
- * 사유 하나를 직접 꽂는다. `"approved"`면 출근 인정으로 잡힌다
- * (`entities/attendance/model/attendanceStatus.ts`의 `getAttendanceStatus`).
- *
- * `submit_excuse`·`decide_excuse` RPC로는 지난 날짜의 사유를 못 만든다 — `backdateDeadline`과
- * 같은 손이다.
- */
 export function seedExcuse(
   dayId: string,
   profileId: string,
@@ -550,11 +498,6 @@ export function seedWorkRequest(
   return id;
 }
 
-/**
- * 안 지난 pending 후보가 하나라도 있으면 그 요청은 닫힌 것이 아니다 — `expire_requests()`가
- * 그 조건으로만 닫는다. 씨를 뿌리는 사이 매 분 도는 cron이 그 사실을 깨므로, 후보를 넣은
- * 자리에서 그 불변을 되돌린다([관찰 055](../../docs/observations/055-cron-closes-the-row-the-test-is-seeding.md)).
- */
 function reopenRequest(requestId: string): void {
   execSql("update public.requests set closed_at = null where id = :'id';\n", {
     id: requestId,
@@ -565,16 +508,6 @@ function stillLive(expiresAt: string | null): boolean {
   return expiresAt === null || Date.parse(expiresAt) > Date.now();
 }
 
-/**
- * `requests`의 갈래 하나다 — `request_candidates`. `seedWorkRequest`가 만든 요청에 후보를
- * 더할 때 쓴다. `pending`이 아니면 `responded_at`도 같이 찍는다.
- *
- * **안 지난 pending을 넣으면 요청을 되돌린다.** 요청 행이 선 뒤 후보가 들어가기까지 그
- * 요청에는 안 지난 pending이 하나도 없고, 그 사이 cron이 돌면 닫아 버린다 — 사용자를 만드는
- * `await` 하나가 그 창을 초 단위로 벌린다. 되돌리는 자리를 여기 둔 것은 **부르는 쪽이 순서를
- * 신경 쓰지 않아도 되게** 하려는 것이다. 지난 후보를 넣을 때는 안 되돌린다 — 그때는 닫히는
- * 것이 맞는 모습이다.
- */
 export function seedRequestCandidate(
   requestId: string,
   profileId: string,
@@ -606,10 +539,6 @@ export function seedRequestCandidate(
   return id;
 }
 
-/**
- * 근무 취소 요청 한 행이다. 판정된 것을 시드할 때는 `decision`을 준다 — 그때만
- * `decided_at`·`decision_reason`을 같이 찍는다.
- */
 export function seedCancelRequest(
   assignmentId: string,
   profileId: string,
@@ -641,7 +570,6 @@ export function seedCancelRequest(
   return id;
 }
 
-/** 배정 하나를 끝난 것으로 만든다 — `stale` 판정을 시험할 때 쓴다. */
 export function endAssignment(assignmentId: string): void {
   execSql(
     "update public.assignments set ended_at = now(), ended_reason = 'ended_for_test' where id = :'id';\n",
@@ -649,11 +577,6 @@ export function endAssignment(assignmentId: string): void {
   );
 }
 
-/**
- * 알림 여러 건을 한 문장으로 심는다. `created_at`을 index만큼 과거로 밀어 순서를 고정한다 —
- * `ids[0]`이 가장 최근이고 `ids[count - 1]`이 가장 오래됐다. 여러 `execSql` 호출로 나누면 그
- * 사이 틈을 배경 작업이 볼 수 있어서(관찰 024) 한 INSERT에 값을 전부 담는다.
- */
 export function seedNotifications(
   profileId: string,
   count: number,

@@ -25,11 +25,6 @@ export function useAuthGate() {
 
 const PLAIN_SOURCE = `export const MINUTES = 5;\n`;
 
-/**
- * 어긋난 이름을 글자로 들고 있어야 검사가 무는 것을 확인할 수 있다. 이름을 바꾸는 일괄
- * 치환이 이 파일을 지나가면 픽스처가 정답으로 바뀌어 단언이 조용히 무의미해진다 —
- * 그래서 픽스처를 한자리에 모아 둔다.
- */
 const BAD = {
   camelWanted: "src/shared/api/database-types.ts",
   camelWantedTest: "tests/lint/database-types.test.ts",
@@ -66,36 +61,24 @@ describe("무엇이 들었는지가 갈래를 정한다", () => {
     ).toBe("camel");
   });
 
-  /** `tests/`의 픽스처가 잡히려고 훅 코드를 글자로 들고 있다. */
   it("`tests/` 안에서는 훅 판정을 안 한다", () => {
     expect(styleFor("tests/lint/unusedImports.test.ts", HOOK_SOURCE)).toBe(
       "camel",
     );
   });
 
-  /**
-   * zustand의 `create`가 돌려주는 것은 훅이라 store 파일은 「훅 파일은 그 훅 이름」과
-   * 부딪힌다. ADR-015가 `stores/` 폴더에 성격을 맡겨 그 자리에서는 접미사가 이긴다 —
-   * `theme.store.ts`가 `useTheme`을 내놓아도 이름을 안 바꾼다.
-   */
   it("`stores/`의 `.store.ts`는 훅을 내놓아도 접미사가 이름이다", () => {
     expect(styleFor("src/shared/stores/theme.store.ts", HOOK_SOURCE)).toBe(
       "camel",
     );
   });
 
-  /**
-   * Context를 읽는 손도 훅이라 같은 자리에 선다. ADR-015의 「파일 이름」 표가
-   * `[domain].context.ts`를 「React Context와 그것을 읽는 훅」으로 적어, 훅을 내놓는 것이
-   * 그 접미사의 정의다.
-   */
   it("`stores/`의 `.context.ts`도 훅을 내놓아도 접미사가 이름이다", () => {
     expect(styleFor("src/shared/stores/drag.context.ts", HOOK_SOURCE)).toBe(
       "camel",
     );
   });
 
-  /** 같은 폴더의 다른 파일은 면제 밖이다 — 훅을 내놓으면 훅 이름을 받는다. */
   it("`stores/`의 접미사 둘이 아닌 파일은 훅 판정을 받는다", () => {
     expect(styleFor("src/shared/stores/themeGate.ts", HOOK_SOURCE)).toBe(
       "hook",
@@ -201,10 +184,6 @@ describe("이름이 어긋난 파일", () => {
     ]);
   });
 
-  /**
-   * Expo Router가 파일 이름을 URL로 읽는다 — `check-in.tsx`가 `/check-in`이고 그 주소는
-   * 종이 QR에 실린다. 여기서 `.tsx`는 컴포넌트가 아니다.
-   */
   it("`src/app/`은 안 본다", () => {
     expect(
       styleViolations([{ file: "src/app/check-in.tsx", source: "" }]),
@@ -247,8 +226,6 @@ export function useMyProfile() {
   });
 
   it("대상이 아직 없어도 use로 시작하는 camelCase 짝 테스트는 훅 짝으로 읽는다", () => {
-    // TDD라 테스트가 훅보다 먼저 선다 — 그 사이에 camel을 요구하면 훅이 서는 순간 다시
-    // 이름을 바꿔야 한다. 세 task에서 같은 마찰이 났다.
     expect(
       styleViolations([
         {
@@ -345,7 +322,6 @@ describe("이름이 어긋난 폴더", () => {
     ]);
   });
 
-  /** 범위의 첫 조각은 저장소 맨 위 이름이라 이 규약의 대상이 아니다. */
   it("범위 이름 자체는 안 본다", async () => {
     const { folderViolations } = await import("@tests/lint/fileNaming");
 
@@ -362,7 +338,6 @@ describe("이름이 어긋난 폴더", () => {
     ).toEqual([]);
   });
 
-  /** Jest가 그 이름으로 짝 테스트 자리를 안다. */
   it("`__tests__`는 밖이다", async () => {
     const { folderViolations } = await import("@tests/lint/fileNaming");
 
@@ -450,7 +425,6 @@ describe("저장소 실물", () => {
     expect(SCOPES).toEqual(["src", "tests", "scripts", "eslint-rules"]);
   });
 
-  /** 범위가 비면 검사가 통째로 꺼진 것을 통과로 읽는다. */
   it("범위 안에서 코드 파일을 실제로 읽어낸다", () => {
     expect(repositoryCodeFiles().length).toBeGreaterThan(100);
   });
