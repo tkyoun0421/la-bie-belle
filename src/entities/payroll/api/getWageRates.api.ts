@@ -2,8 +2,12 @@ import type { DB } from "@/shared/api/database";
 import type {
   DefaultWageRateRow,
   MemberWageRateRow,
-  WageRates,
 } from "@/entities/payroll/api/payroll.dto";
+import type { WageRates } from "@/entities/payroll/model/payroll.type";
+import {
+  toMemberWageRate,
+  toWageRate,
+} from "@/entities/payroll/utils/payroll.mapper";
 
 const MEMBER_WAGE_COLUMNS = [
   "profile_id",
@@ -37,7 +41,8 @@ export async function getWageRates(client: DB): Promise<WageRates> {
   }
 
   return {
-    wageRates: wageRates.data ?? [],
-    defaultWageRate: defaultWageRate.data,
+    wageRates: (wageRates.data ?? []).map(toMemberWageRate),
+    defaultWageRate:
+      defaultWageRate.data === null ? null : toWageRate(defaultWageRate.data),
   };
 }

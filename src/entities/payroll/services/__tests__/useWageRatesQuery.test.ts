@@ -35,10 +35,10 @@ const FAKE_CLIENT = {} as never;
 const WAGE_RATES = {
   wageRates: [
     {
-      profile_id: "profile-1",
-      effective_date: "2026-01-01",
+      profileId: "profile-1",
+      effectiveDate: "2026-01-01",
       amount: 11000,
-      follows_default: true,
+      followsDefault: true,
     },
   ],
   defaultWage: 11000,

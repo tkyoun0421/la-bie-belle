@@ -5,8 +5,14 @@ import type {
   ExcuseStatusRow,
   HolidayRow,
   MemberWageRateRow,
-  PayrollMonth,
 } from "@/entities/payroll/api/payroll.dto";
+import type { PayrollMonth } from "@/entities/payroll/model/payroll.type";
+import {
+  toAdjustment,
+  toExcuseStatus,
+  toHoliday,
+  toMemberWageRate,
+} from "@/entities/payroll/utils/payroll.mapper";
 
 const WAGE_RATE_COLUMNS = [
   "profile_id",
@@ -92,9 +98,9 @@ export async function getPayrollMonth(
   }
 
   return {
-    wageRates: wageRates.data ?? [],
-    adjustments: adjustments.data ?? [],
-    excuseStatus: excuseStatus.data ?? [],
-    holidays: holidays.data ?? [],
+    wageRates: (wageRates.data ?? []).map(toMemberWageRate),
+    adjustments: (adjustments.data ?? []).map(toAdjustment),
+    excuseStatus: (excuseStatus.data ?? []).map(toExcuseStatus),
+    holidays: (holidays.data ?? []).map(toHoliday),
   };
 }

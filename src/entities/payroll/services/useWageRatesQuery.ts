@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { getWageRates } from "@/entities/payroll/api/getWageRates.api";
-import { type WageRates } from "@/entities/payroll/api/payroll.dto";
+import { type WageRates } from "@/entities/payroll/model/payroll.type";
 
 export type WageRatesResult = {
   data: WageRates | undefined;

@@ -10,11 +10,6 @@ export type DefaultWageRateRow = {
   amount: number;
 };
 
-export type WageRates = {
-  wageRates: MemberWageRateRow[];
-  defaultWageRate: DefaultWageRateRow | null;
-};
-
 export type AdjustmentRow = {
   id: string;
   day_id: string;
@@ -35,11 +30,4 @@ export type HolidayRow = {
   holiday_date: string;
   source: string;
   name: string | null;
-};
-
-export type PayrollMonth = {
-  wageRates: MemberWageRateRow[];
-  adjustments: AdjustmentRow[];
-  excuseStatus: ExcuseStatusRow[];
-  holidays: HolidayRow[];
 };

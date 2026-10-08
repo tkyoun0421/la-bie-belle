@@ -36,33 +36,33 @@ function monthPayload(month: string) {
   return {
     wageRates: [
       {
-        profile_id: "p1",
-        effective_date: `${month}-01`,
+        profileId: "p1",
+        effectiveDate: `${month}-01`,
         amount: 11000,
-        follows_default: true,
+        followsDefault: true,
       },
     ],
     adjustments: [
       {
         id: `adj-${month}`,
-        day_id: "d1",
-        profile_id: "p1",
+        dayId: "d1",
+        profileId: "p1",
         minutes: 30,
-        adjusted_at: `${month}-01T00:00:00.000Z`,
+        adjustedAt: `${month}-01T00:00:00.000Z`,
       },
     ],
     excuseStatus: [
       {
-        day_id: `d-${month}`,
-        profile_id: "p1",
-        submitted_at: `${month}-01T00:00:00.000Z`,
-        decided_at: null,
+        dayId: `d-${month}`,
+        profileId: "p1",
+        submittedAt: `${month}-01T00:00:00.000Z`,
+        decidedAt: null,
         decision: null,
       },
     ],
     holidays: [
       {
-        holiday_date: `${month}-25`,
+        holidayDate: `${month}-25`,
         source: "api",
         name: `${month} holiday`,
       },
@@ -178,7 +178,7 @@ describe("usePayrollMonthsQuery — 전부 오면 달치가 합쳐져 나온다"
 
     expect(
       result.current.data?.holidays.map(
-        (row: { holiday_date: string }) => row.holiday_date,
+        (row: { holidayDate: string }) => row.holidayDate,
       ),
     ).toEqual(["2026-09-25", "2026-10-25"]);
   });
@@ -202,7 +202,7 @@ describe("usePayrollMonthsQuery — 전부 오면 달치가 합쳐져 나온다"
 
     expect(
       result.current.data?.holidays.map(
-        (row: { holiday_date: string }) => row.holiday_date,
+        (row: { holidayDate: string }) => row.holidayDate,
       ),
     ).toEqual(["2026-10-25"]);
   });
