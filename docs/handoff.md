@@ -6,15 +6,19 @@
 
 ## 다음 작업
 
-**[dto-to-domain-shape](3-build/plans/dto-to-domain-shape.md)가 돌는 중이다 — 도메인 열하나 중 열이 끝났다.** 브랜치는 `feat/dto-to-domain-shape`고 PR은 아직 안 열렸다. 끝난 것은 `rehearsal`(본보기 `b8269b60`)·`availability`·`excuse`·`notification`·`hall`·`profile`·`attendance`·`payroll`·`workRequest`(중첩 두 겹을 편 본보기 `afaf803c`)다. **남은 둘이 `member`와 `schedule`**이고 둘이 각각 worktree agent로 돌고 있다 — `schedule`이 가장 크다(`ScheduleDay`가 `slots`·`assignments`·`check_ins` 셋을 품고 소비자가 스물둘이다).
+**[dto-to-domain-shape](3-build/plans/dto-to-domain-shape.md)가 PR [#510](https://github.com/tkyoun0421/la-bie-belle/pull/510)으로 섰다 — 도메인 열하나가 다 끝났다.** 브랜치는 `feat/dto-to-domain-shape`고 242 파일이다. 매퍼 열하나가 `entities/*/utils/*.mapper.ts`에 서고 **검사 둘이 켜졌다**(카탈로그 37 `dto-segment` · 38 `no-snake-case-field`, 수 → 38). 열일곱 중 안 섰던 「`.dto.ts`를 `api/` 밖에서 못 당긴다」가 그 37이다.
 
-**꼴은 넷이 한 묶음이다** — `api/<도메인>.dto.ts`가 `Row` 접미사로 snake_case를 들고, `model/<도메인>.type.ts`가 camelCase 도메인 타입을 세우고, `utils/<도메인>.mapper.ts`가 옮기고, `.api.ts`가 `.returns<XRow[]>()` 뒤에 `.map(toX)`를 붙인다. **중첩은 매퍼가 편다** — `slots.days.work_date`가 `workDate`로 올라오고 `profiles.display_name`은 조인으로 끌어온 남의 이름이면 `name`, 그 사람 자신의 행이면 `displayName`이다.
+**꼴은 넷이 한 묶음이다** — `api/<도메인>.dto.ts`가 `Row` 접미사로 snake_case를 들고, `model/<도메인>.type.ts`가 camelCase 도메인 타입을 세우고, `utils/<도메인>.mapper.ts`가 옮기고, `.api.ts`가 `.returns<XRow[]>()` 뒤에 `.map(toX)`를 붙인다. **중첩은 매퍼가 편다** — `slots.days.work_date`가 `workDate`로 올라오고 `profiles.display_name`은 조인으로 끌어온 남의 이름이면 `name`, 그 사람 자신의 행이면 `displayName`이다. 그 둘이 `useDayDetail.ts`의 한 줄에 나란히 선다.
 
-**이 task의 알짜는 「꼴을 베낀 자리」였다.** `.dto.ts`를 당기지 않으면서 같은 필드를 자기 타입으로 선언한 파일이 서른다섯이라 AC-03의 import 규칙이 그 자리를 못 본다. 그래서 AC-04와 `eslint-rules/noSnakeCaseField.mjs`가 생겼다 — **타입 선언만** 재고 읽기는 안 본다(타입이 camelCase면 읽는 자리는 typecheck가 잡고, 읽기까지 재면 DB가 든 **값**을 키로 쓰는 표가 같이 걸려 1716건 중 1643이 거짓이었다). 남은 자리를 세는 법은 그 규칙을 임시 ESLint 인스턴스에 꽂는 것이다 — plan의 AC-04가 들고, `pnpm lint`로는 아직 안 보인다(미등록).
+**이 task의 알짜는 「꼴을 베낀 자리」였다.** `.dto.ts`를 당기지 않으면서 같은 필드를 자기 타입으로 선언한 파일이 서른다섯이라 37의 import 규칙이 그 자리를 못 본다. 그래서 38이 생겼고 **타입 선언만** 재고 읽기는 안 본다 — 읽기까지 재니 DB가 든 **값**을 키로 쓰는 표(`Record<NotificationKind, X>`의 `signup_approved` 꼴)가 같이 걸려 1716건 중 1643이 거짓이었다. 타입이 camelCase면 그것을 snake로 읽는 자리는 `pnpm typecheck`가 잡는다. 면제 넷은 `api/`·`databaseTypes.ts`·`.mapper.ts`·`src/app/`이다.
 
-**규칙 둘이 커밋 전이다.** `eslint-rules/dtoSegment.mjs`와 `noSnakeCaseField.mjs`와 그 짝 테스트 넷이 작업 트리에 있고 빨갛다 — `tests/lint/ruleCheck.ts`의 `violationsOf`가 `eslint.config.mjs`를 읽어서 미등록 규칙은 「문다」 케이스가 조용히 통과한다. **저장소가 0건에 닿은 뒤** `eslint-rules/index.mjs`와 `eslint.config.mjs`에 등록하고 `tests/lint/rules.ts`와 `docs/4-test/execution.md`의 「집행되는 규칙」 표에 37·38로 올린다(수 → 38). 그때 테스트 넷이 초록이 된다.
+**받아 둘 꼬리가 셋이다.**
 
-**받아 둘 꼬리가 하나 남았다** — `features/auth`의 `decideEntry.policy.ts`는 세션을 읽으러 통신을 부르는데 이름이 `.policy.ts`다. 규칙 32가 `api/`를 **값으로** 당기는 것만 물어 지금은 통과하지만 이름과 하는 일이 어긋난 자리는 그대로다. 앞서 적어 둔 `ApplicationRow` 꼬리는 `availability` 묶음이 받아 접었다.
+- `features/auth`의 `decideEntry.policy.ts`는 세션을 읽으러 통신을 부르는데 이름이 `.policy.ts`다. 규칙 32가 `api/`를 **값으로** 당기는 것만 물어 지금은 통과한다
+- `useMyProfileRowQuery`의 이름이 거짓이 됐다 — `Profile`을 돌려주면서 `Row`를 든다. 당기는 자리가 여덟이고, `useMyProfileQuery`(연락처까지 합쳐 `MyProfile`을 낸다)와 가르는 축이 「한 행인가」가 아니라 「연락처가 붙었나」라 타입 이름 둘까지 같이 움직인다
+- 매퍼 열하나에 짝 테스트가 없다. ADR-015가 「순수해서 짝 테스트가 붙는다」고 적는데 매퍼는 필드를 옮기기만 해서 typecheck가 누락과 오타를 다 잡는다 — 그 위의 단언은 타입을 두 번 적는 것이 된다. TDD 훅이 `src/entities/`를 볼지와 함께 판정할 자리다
+
+**새 관찰 둘이 섰다.** [060](observations/060-repo-wide-checks-count-agent-worktrees.md)은 저장소 전수를 보는 도구가 agent worktree를 센다는 것이고(전수 검사와 ESLint 둘 다 밟았다), [061](observations/061-untyped-mocks-let-typecheck-pass.md)은 **mock 서명이 아흔여덟 자리에서 `Promise<unknown>`이라 픽스처가 거짓이어도 통과한다**는 것이다 — 증거가 `check_ins` 테이블에 없는 열 이름을 든 픽스처고 아무 검사도 안 잡았다. 고치는 길(`jest.fn<typeof getMonthSchedule>()`)과 집행할 규칙까지 그 관찰이 든다.
 
 **클라이언트를 쥐는 자리가 controller로 옮겨졌다 — AC-12가 끝났다.** controller가 `client: DB`를 **인자로 받고** `.tsx`가 실물을 넘기는 꼴로 서 있어서, 열 아홉이 다 돈 뒤에도 `.tsx`가 당기는 클라이언트가 스물다섯 그대로였다. 주입은 테스트에 가짜를 넣는 길이지만 쥐는 자리가 `.tsx`면 화면이 통신의 손잡이를 든 채 남는다. 이제 controller가 `supabase`를 직접 import하고 서명에서 그 인자가 빠졌다 — 짝 테스트는 `jest.unstable_mockModule("@/shared/api/supabase")`로 같은 가짜를 넣어 단언을 안 고치고 통과하고, service 훅의 서명(`client`를 받는다)은 그대로다. `src/app/` 다섯은 규칙 밖이다 — 라우트 파일이라 세그먼트가 없다. 게이트 둘(`blocked`·`left`)은 AC-12가 일부러 안 준 controller를 받았다: **클라이언트를 가두는 값이 「빈 훅이 선다」보다 크다**는 판정이고, 보낼 데는 여전히 `.tsx`가 쥔다.
 
