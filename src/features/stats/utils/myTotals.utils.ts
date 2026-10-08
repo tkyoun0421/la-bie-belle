@@ -11,7 +11,7 @@ export function computeMyWorkTotals(
   profileId: string,
 ): MyWorkTotals {
   const totals = computeWorkTotals(
-    assignments.filter((assignment) => assignment.profile_id === profileId),
+    assignments.filter((assignment) => assignment.profileId === profileId),
     days,
   );
 

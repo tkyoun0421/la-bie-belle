@@ -1,4 +1,5 @@
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 
 export type RosterSlot = {
   position: string;
@@ -82,30 +83,23 @@ export function canShowShiftActions({
   return isMyAssignment && today < workDate && !hasActiveCancelRequest;
 }
 
-export function rosterOfDay(day: {
-  slots: readonly { positions: string[]; ended_at: string | null }[];
-  assignments: readonly {
-    position: string;
-    kind: string;
-    profile_id: string;
-    ended_at: string | null;
-    profiles: { display_name: string | null } | null;
-  }[];
-}): RosterRow[] {
+export function rosterOfDay(
+  day: Pick<ScheduleDay, "slots" | "assignments">,
+): RosterRow[] {
   const seats = day.slots
-    .filter((slot) => slot.ended_at === null)
+    .filter((slot) => slot.endedAt === null)
     .map((slot) => ({ position: slot.positions[0] ?? "", capacity: 1 }));
 
   const taken = day.assignments
-    .filter((assignment) => assignment.ended_at === null)
+    .filter((assignment) => assignment.endedAt === null)
     .map((assignment) => ({
       position: assignment.position,
       kind:
         assignment.kind === "training"
           ? ("training" as const)
           : ("regular" as const),
-      profileId: assignment.profile_id,
-      displayName: assignment.profiles?.display_name ?? "",
+      profileId: assignment.profileId,
+      displayName: assignment.name ?? "",
     }));
 
   return buildRoster(seats, taken);

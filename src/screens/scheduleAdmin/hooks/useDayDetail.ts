@@ -115,7 +115,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
   const canChangeStructure = allowsStructureChange(gate);
 
   const dayHours = useMemo(
-    () => ({ starts_at: startsAt, ends_at: endsAt }),
+    () => ({ startsAt, endsAt }),
     [startsAt, endsAt],
   );
 
@@ -124,10 +124,10 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
       adjustSheetRows({
         day: dayHours,
         assignments: assignments.map((one) => ({
-          profile_id: one.profile_id,
-          name: one.profiles?.display_name ?? "",
+          profileId: one.profileId,
+          name: one.name ?? "",
           kind: one.kind,
-          ended_at: one.ended_at,
+          endedAt: one.endedAt,
         })),
         adjustments,
         rehearsals,
@@ -135,7 +135,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     [adjustments, assignments, dayHours, rehearsals],
   );
 
-  const chosenRow = adjustRows.find((row) => row.profile_id === chosen) ?? null;
+  const chosenRow = adjustRows.find((row) => row.profileId === chosen) ?? null;
 
   const chosenAdjustments: AdjustChoiceRow[] = adjustments.filter(
     (row) => row.profileId === chosen,
@@ -163,8 +163,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
 
   const nameOf = useCallback(
     (profileId: string) =>
-      assignments.find((one) => one.profile_id === profileId)?.profiles
-        ?.display_name ??
+      assignments.find((one) => one.profileId === profileId)?.name ??
       members.find((one) => one.id === profileId)?.display_name ??
       "",
     [assignments, members],
@@ -503,8 +502,8 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
                 slotId: openSlot.id,
                 replacing: {
                   assignmentId: openAssignment.id,
-                  outgoingProfileId: openAssignment.profile_id,
-                  outgoingName: nameOf(openAssignment.profile_id),
+                  outgoingProfileId: openAssignment.profileId,
+                  outgoingName: nameOf(openAssignment.profileId),
                 },
               });
               setExpanded(false);
@@ -518,8 +517,8 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
               commit({
                 kind: "remove",
                 assignmentId: openAssignment.id,
-                outgoingProfileId: openAssignment.profile_id,
-                outgoingName: nameOf(openAssignment.profile_id),
+                outgoingProfileId: openAssignment.profileId,
+                outgoingName: nameOf(openAssignment.profileId),
               }),
             close: () => setOpenSlotSheet(null),
           },

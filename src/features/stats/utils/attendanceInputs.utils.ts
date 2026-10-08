@@ -4,17 +4,20 @@ import type {
   ExcuseStatus,
   ExcuseStatusRecord,
 } from "@/entities/attendance/model/attendance.type";
+import type {
+  ScheduleAssignment,
+  ScheduleDay,
+} from "@/entities/schedule/model/schedule.type";
 
-export type AttendanceInputAssignment = {
-  profile_id: string;
-  ended_at: string | null;
-};
+export type AttendanceInputAssignment = Pick<
+  ScheduleAssignment,
+  "profileId" | "endedAt"
+>;
 
-export type AttendanceInputDay = {
-  id: string;
-  work_date: string;
-  starts_at: string;
-  ends_at: string;
+export type AttendanceInputDay = Pick<
+  ScheduleDay,
+  "id" | "workDate" | "startsAt" | "endsAt"
+> & {
   assignments: readonly AttendanceInputAssignment[];
 };
 
@@ -52,14 +55,14 @@ export function buildAttendanceInputs(
 
   return days.flatMap((day) =>
     day.assignments
-      .filter((assignment) => assignment.ended_at === null)
+      .filter((assignment) => assignment.endedAt === null)
       .map((assignment) => {
-        const key = pairKey(day.id, assignment.profile_id);
+        const key = pairKey(day.id, assignment.profileId);
 
         return {
-          workDate: day.work_date,
-          startsAt: day.starts_at,
-          endsAt: day.ends_at,
+          workDate: day.workDate,
+          startsAt: day.startsAt,
+          endsAt: day.endsAt,
           checkIn: checkInAt.get(key) ?? null,
           excuses: excusesAt.get(key) ?? [],
           now,
@@ -77,7 +80,7 @@ export function daysOfPerson(
     : days.map((day) => ({
         ...day,
         assignments: day.assignments.filter(
-          (assignment) => assignment.profile_id === profileId,
+          (assignment) => assignment.profileId === profileId,
         ),
       }));
 }

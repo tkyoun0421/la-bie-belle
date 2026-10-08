@@ -1,4 +1,4 @@
-import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 import type {
   PersonTotal,
@@ -18,19 +18,19 @@ export function workInputsOf(days: readonly ScheduleDay[]): WorkInputs {
     assignments: days.flatMap((day) =>
       day.assignments.map((assignment) => ({
         id: assignment.id,
-        day_id: day.id,
-        profile_id: assignment.profile_id,
-        display_name: assignment.profiles?.display_name ?? "",
+        dayId: day.id,
+        profileId: assignment.profileId,
+        displayName: assignment.name ?? "",
         position: assignment.position,
         kind: assignment.kind,
-        ended_at: assignment.ended_at,
+        endedAt: assignment.endedAt,
       })),
     ),
     days: days.map((day) => ({
       id: day.id,
-      work_date: day.work_date,
-      starts_at: day.starts_at,
-      ends_at: day.ends_at,
+      workDate: day.workDate,
+      startsAt: day.startsAt,
+      endsAt: day.endsAt,
     })),
   };
 }
@@ -42,11 +42,11 @@ export function hoursLabel(minutes: number): string {
 }
 
 export function isLiveAssignment(assignment: WorkAssignment): boolean {
-  return assignment.ended_at === null;
+  return assignment.endedAt === null;
 }
 
 export function shiftMinutes(day: WorkDay): number {
-  return minutesOfTime(day.ends_at) - minutesOfTime(day.starts_at);
+  return minutesOfTime(day.endsAt) - minutesOfTime(day.startsAt);
 }
 
 export function computeWorkTotals(
@@ -65,7 +65,7 @@ export function computeWorkTotals(
   let totalCount = 0;
 
   for (const assignment of assignments.filter(isLiveAssignment)) {
-    const minutes = minutesByDay.get(assignment.day_id);
+    const minutes = minutesByDay.get(assignment.dayId);
 
     if (minutes === undefined) {
       continue;
@@ -76,10 +76,10 @@ export function computeWorkTotals(
 
     add(
       people,
-      assignment.profile_id,
+      assignment.profileId,
       () => ({
-        profileId: assignment.profile_id,
-        displayName: assignment.display_name,
+        profileId: assignment.profileId,
+        displayName: assignment.displayName,
         minutes: 0,
         count: 0,
       }),

@@ -3,11 +3,9 @@ import {
   rehearsalHours,
   type RehearsalClock,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 
-export type WorkDayHours = {
-  starts_at: string;
-  ends_at: string;
-};
+export type WorkDayHours = Pick<ScheduleDay, "startsAt" | "endsAt">;
 
 export type TimedAdjustment = Pick<Adjustment, "minutes" | "adjustedAt">;
 
@@ -34,7 +32,7 @@ function assignedMinutes(input: PaidMinutesInput): number {
   }
 
   return (
-    minutesOfClock(input.day.ends_at) - minutesOfClock(input.day.starts_at)
+    minutesOfClock(input.day.endsAt) - minutesOfClock(input.day.startsAt)
   );
 }
 

@@ -143,12 +143,12 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
           },
   );
 
-  const todayDay = openDays.find((day) => day.work_date === today) ?? null;
+  const todayDay = openDays.find((day) => day.workDate === today) ?? null;
 
   const status = todayStatus({
     isConfirmed: confirmed,
     assignedCount: todayDay === null ? 0 : liveAssignmentCount(todayDay),
-    checkedInCount: todayDay?.check_ins.length ?? 0,
+    checkedInCount: todayDay?.checkIns.length ?? 0,
   });
 
   const cards = useMemo(
@@ -170,7 +170,7 @@ export function useAdminHomeScreen(): AdminHomeScreenController {
     () =>
       miniViewLoads(
         openDays.map((day) => ({
-          workDate: day.work_date,
+          workDate: day.workDate,
           assignedCount: liveAssignmentCount(day),
         })),
       ),

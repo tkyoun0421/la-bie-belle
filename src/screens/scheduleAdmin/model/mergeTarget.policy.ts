@@ -1,17 +1,15 @@
-export type MergeTargetSlot = {
-  id: string;
-  positions: string[];
-  ended_at: string | null;
-};
+import type {
+  ScheduleAssignment,
+  ScheduleSlot,
+} from "@/entities/schedule/model/schedule.type";
 
-export type MergeTargetAssignment = {
-  slot_id: string | null;
-  kind: string;
-  ended_at: string | null;
-};
+export type MergeTargetAssignment = Pick<
+  ScheduleAssignment,
+  "slotId" | "kind" | "endedAt"
+>;
 
 export type MergeTargetInput = {
-  slots: readonly MergeTargetSlot[];
+  slots: readonly ScheduleSlot[];
   assignments: readonly MergeTargetAssignment[];
   fromPosition: string;
   toPosition: string;
@@ -28,7 +26,7 @@ function hasEmptySlot(
 ): boolean {
   return input.slots.some(
     (slot) =>
-      slot.ended_at === null &&
+      slot.endedAt === null &&
       slot.positions[0] === position &&
       !taken.has(slot.id),
   );
@@ -45,9 +43,9 @@ export function mergeTargetValidity(
     input.assignments
       .filter(
         (assignment) =>
-          assignment.ended_at === null && assignment.kind === "regular",
+          assignment.endedAt === null && assignment.kind === "regular",
       )
-      .map((assignment) => assignment.slot_id),
+      .map((assignment) => assignment.slotId),
   );
 
   return hasEmptySlot(input, input.fromPosition, taken) &&

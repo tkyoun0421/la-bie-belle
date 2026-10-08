@@ -1,3 +1,4 @@
+import type { ScheduleAssignment } from "@/entities/schedule/model/schedule.type";
 import type { SlotRequestCandidate } from "@/entities/workRequest/model/workRequest.type";
 import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 
@@ -15,12 +16,10 @@ export type PickerMember = {
   displayName: string;
 };
 
-export type PickerDayAssignment = {
-  profile_id: string;
-  position: string;
-  kind: string;
-  ended_at: string | null;
-};
+export type PickerDayAssignment = Pick<
+  ScheduleAssignment,
+  "profileId" | "position" | "kind" | "endedAt"
+>;
 
 export type PickerRequestCandidate = SlotRequestCandidate;
 
@@ -55,9 +54,9 @@ function heldPosition(
   return (
     dayAssignments.find(
       (assignment) =>
-        assignment.profile_id === profileId &&
+        assignment.profileId === profileId &&
         assignment.kind === "regular" &&
-        assignment.ended_at === null,
+        assignment.endedAt === null,
     )?.position ?? null
   );
 }

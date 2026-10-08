@@ -5,7 +5,7 @@ import type {
 import type {
   ScheduleAssignment,
   ScheduleSlot,
-} from "@/entities/schedule/api/schedule.dto";
+} from "@/entities/schedule/model/schedule.type";
 import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import type { DayConfirmGate } from "@/screens/scheduleAdmin/model/confirmGate.policy";
@@ -20,7 +20,6 @@ import type {
   AdjustSheetRow,
 } from "@/screens/scheduleAdmin/utils/adjustSheetRows.utils";
 import type { ForceChangeCopyInput } from "@/screens/scheduleAdmin/utils/forceChangeCopy.utils";
-import type { PositionSlot } from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
 export type DayDetailInput = {
   dayId: string;
@@ -107,7 +106,7 @@ export type PendingChange =
 
 export type DayDetailPositionRow = {
   position: string;
-  slots: readonly PositionSlot[];
+  slots: readonly ScheduleSlot[];
   assignments: readonly ScheduleAssignment[];
   unlocked: boolean;
   canChangeStructure: boolean;

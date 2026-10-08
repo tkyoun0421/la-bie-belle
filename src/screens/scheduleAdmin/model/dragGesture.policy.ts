@@ -1,27 +1,22 @@
+import type {
+  ScheduleAssignment,
+  ScheduleSlot,
+} from "@/entities/schedule/model/schedule.type";
 import { DISCARD_DROP_ID } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import { discardSlotJudgement } from "@/screens/scheduleAdmin/model/discardSlot.policy";
 import { mergeTargetValidity } from "@/screens/scheduleAdmin/model/mergeTarget.policy";
 import { positionOf, slotOf } from "@/screens/scheduleAdmin/utils/dragId.utils";
 import { assignmentForSlot } from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
-export type DragGestureSlot = {
-  id: string;
-  positions: string[];
-  ended_at: string | null;
-};
-
-export type DragGestureAssignment = {
-  id: string;
-  slot_id: string | null;
-  kind: string;
-  ended_at: string | null;
-  profile_id: string;
-};
+export type DragGestureAssignment = Pick<
+  ScheduleAssignment,
+  "id" | "slotId" | "kind" | "endedAt" | "profileId"
+>;
 
 export type CanDropInput = {
   dragId: string;
   dropId: string;
-  slots: readonly DragGestureSlot[];
+  slots: readonly ScheduleSlot[];
   assignments: readonly DragGestureAssignment[];
   unlockedPositions: readonly string[];
 };
@@ -82,7 +77,7 @@ export function dropOutcome(input: DropOutcomeInput): DropOutcome {
     taken !== null &&
     discardSlotJudgement([taken]) === "needs_confirmation"
   ) {
-    return { kind: "confirm", slotId, profileId: taken.profile_id };
+    return { kind: "confirm", slotId, profileId: taken.profileId };
   }
 
   return { kind: "remove", slotId };
