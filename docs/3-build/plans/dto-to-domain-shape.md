@@ -56,7 +56,8 @@
 ### AC-04 — `api/` 밖에 snake_case 필드가 없다를 검사가 잰다
 
 - 전제: AC-03의 규칙은 **import만 본다.** DTO를 안 당기고 그 꼴을 베낀 파일이 서른다섯이라, 규칙을 켜도 그 자리는 그대로 남는다
-- 행동: `api/`와 `supabase/` 밖에서 snake_case 속성 이름을 선언하거나 읽는 것을 막는 검사를 세운다. 면제는 `databaseTypes.ts`(생성물)와 `supabase/functions/`(Deno가 DB에 직접 붙는다)다
+- 행동: `api/` 밖에서 snake_case 속성 이름을 **타입으로 선언하는 것**을 막는 검사를 세운다. 읽는 자리는 재지 않는다 — 타입이 camelCase면 그것을 snake로 읽는 자리를 `pnpm typecheck`가 잡고, 읽기까지 재면 DB가 **든 값**을 키로 쓰는 표(`Record<NotificationKind, X>`의 `signup_approved` 꼴)와 객체 리터럴의 키가 같이 걸려 거짓이 열 배가 된다
+- 면제 넷: `api/`(DB가 주는 꼴이 사는 자리) · `databaseTypes.ts`(생성물) · `<이름>.mapper.ts`(꼴을 바꾸는 유일한 손이라 양쪽을 다 본다) · `src/app/`(URL과 쿼리 파라미터의 이름은 밖에서 온다 — Supabase auth의 `access_token`이 그 자리다)
 - 관찰 결과: AC-02의 전수 검사가 기계의 눈이 된다. `pnpm lint`가 0건이다
 
 ## 구현 순서
@@ -76,6 +77,14 @@
 
 **되돌리기는 PR 단위다.** 도메인 하나씩 가른 PR이라 어느 지점에서 멈춰도 저장소가 선다 — 끝난 도메인의 필드는 camelCase, 안 끝난 도메인의 필드는 snake_case로 한 파일에 섞여 있어도 타입이 맞는다.
 
+**같은 꼴인데 못 접는 자리가 셋이다.** 도메인 축으로 돌면서 드러났다.
+
+- `payroll.dto.ts`와 `attendance.dto.ts`의 `ExcuseStatusRow`가 같은 `excuse_status` 뷰를 글자까지 같은 다섯 필드로 받는다. 접으려면 `entities` 하나가 다른 `entities`를 당겨야 하고 그 길은 `no-cross-slice-import`가 막는다. 같은 벽이 `session/model/resolveAuthDestination.policy.ts`의 `ProfileStanding`과 `profile` 도메인 사이에도 선다
+- `features/holiday/model/holiday.schema.ts`의 `HolidayRow`가 `payroll`의 것과 이름·필드가 겹치지만 베낀 대상이 다르다 — 외부 공휴일 API 응답을 DB에 **쓰는** 길이라 읽기 DTO와 축이 다르다
+- `features/hallDefaults/api/setHallDefaults.api.ts`의 `HallDefaultsInput`이 `HallDefaults`와 필드가 같아졌지만 그것이 베낀 것은 열 이름이 아니라 `set_hall_defaults` RPC의 인자 이름이다
+
+**열 이름이 아닌 snake_case가 둘 있다.** 알림 `payload`의 jsonb 키(`work_date`·`start_at`·`actor_name`)는 DB 트리거가 그 이름으로 쓰는 **내용**이고, `Record<NotificationKind, X>` 표의 키(`signup_approved` 꼴)는 DB가 든 **값**이다. 둘 다 마이그레이션 없이는 못 바꾸고 AC-04의 검사도 안 본다 — 타입 선언만 재기 때문이다.
+
 **전역 치환이 다른 도메인 필드를 먹는다.** `starts_at`·`ends_at`·`work_date`·`profile_id`는 도메인 여럿의 DTO에 같은 이름으로 산다. 본보기를 돌면서 그 사고가 났다 — 한 도메인을 고치려고 넓게 치환해 `ScheduleDay`에서 온 필드까지 바꿨고 되돌리는 데 더 걸렸다. 타입 이름으로 자리를 확인하고 좁혀서 고친다.
 
 ## 검증 방법
@@ -88,3 +97,5 @@
 
 - **DTO 파일 세우기** — [fsd-read-write-layers](fsd-read-write-layers.md)의 이동 PR 열이 한다. 이 계획은 그것이 다 끝난 뒤 시작한다
 - **DB 열 이름 바꾸기** — 마이그레이션은 안 건드린다. snake_case가 Postgres의 관례고 그것이 맞다
+- **매퍼의 짝 테스트** — ADR-015의 「파일 이름」이 `<이름>.mapper.ts`를 「순수해서 짝 테스트가 붙는다」로 적지만 매퍼 열하나에 테스트가 없다. 매퍼는 필드를 옮기기만 해서 `pnpm typecheck`가 누락과 오타를 다 잡고, 그 위에 단언을 쓰면 타입을 두 번 적는 것이 된다. TDD 훅이 `src/entities/`를 볼지와 함께 따로 판정한다
+- **이름이 거짓이 된 service 고치기** — `useMyProfileRowQuery`가 `Profile`을 돌려주면서 이름에 `Row`를 든다. 당기는 자리가 아홉이라 따로 떼낸다
