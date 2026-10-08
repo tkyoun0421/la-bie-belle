@@ -1,7 +1,6 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
 import type {
-  AttendanceRows,
   CheckInRow,
   ExcuseStatusRow,
 } from "@/entities/attendance/api/attendance.dto";
@@ -9,13 +8,18 @@ import {
   CHECK_IN_COLUMNS,
   EXCUSE_STATUS_COLUMNS,
 } from "@/entities/attendance/api/getDayAttendance.api";
+import type { Attendance } from "@/entities/attendance/model/attendance.type";
+import {
+  toCheckIn,
+  toExcuseStatus,
+} from "@/entities/attendance/utils/attendance.mapper";
 
-const EMPTY: AttendanceRows = { checkIns: [], excuseStatuses: [] };
+const EMPTY: Attendance = { checkIns: [], excuseStatuses: [] };
 
 export async function getMonthAttendance(
   client: DB,
   month: string,
-): Promise<AttendanceRows> {
+): Promise<Attendance> {
   const { data: days, error: daysError } = await client
     .from("days")
     .select("id")
@@ -54,7 +58,7 @@ export async function getMonthAttendance(
   }
 
   return {
-    checkIns: checkIns.data ?? [],
-    excuseStatuses: excuseStatuses.data ?? [],
+    checkIns: (checkIns.data ?? []).map(toCheckIn),
+    excuseStatuses: (excuseStatuses.data ?? []).map(toExcuseStatus),
   };
 }

@@ -90,10 +90,10 @@ describe("getDayAttendance — 그날 check_ins와 excuse_status를 같이 읽�
     const result = await getDayAttendance(checkedInWorker.client, workDate);
 
     expect(result.checkIns).toHaveLength(1);
-    expect(result.checkIns[0]?.profile_id).toBe(checkedInWorker.profileId);
+    expect(result.checkIns[0]?.profileId).toBe(checkedInWorker.profileId);
 
     expect(result.excuseStatuses).toHaveLength(1);
-    expect(result.excuseStatuses[0]?.profile_id).toBe(excusedWorker.profileId);
+    expect(result.excuseStatuses[0]?.profileId).toBe(excusedWorker.profileId);
     expect(result.excuseStatuses[0]?.decision).toBe("approved");
     expect(result.excuseStatuses[0]).not.toHaveProperty("body");
   });

@@ -2,12 +2,12 @@ import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { combineMonths, type MonthsResult } from "@/shared/api/monthsQuery";
 import { queryKeys } from "@/shared/api/queryKeys";
-import type { AttendanceRows } from "@/entities/attendance/api/attendance.dto";
 import { getMonthAttendance } from "@/entities/attendance/api/getMonthAttendance.api";
+import type { Attendance } from "@/entities/attendance/model/attendance.type";
 
 export type AttendanceByMonth = {
   month: string;
-  attendance: AttendanceRows;
+  attendance: Attendance;
 };
 
 export function useMonthsAttendanceQuery(
@@ -25,7 +25,7 @@ export function useMonthsAttendanceQuery(
         attendance: (results[at].data ?? {
           checkIns: [],
           excuseStatuses: [],
-        }) as AttendanceRows,
+        }) as Attendance,
       })),
   });
 }

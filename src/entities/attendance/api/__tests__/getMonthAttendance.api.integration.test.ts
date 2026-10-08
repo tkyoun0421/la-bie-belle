@@ -108,10 +108,10 @@ describe("getMonthAttendance — 그달치 check_ins와 excuse_status를 한 질
     const result = await getMonthAttendance(admin.client, month);
 
     expect(result.checkIns).toHaveLength(2);
-    expect(result.checkIns.map((row) => row.profile_id).sort()).toEqual(
+    expect(result.checkIns.map((row) => row.profileId).sort()).toEqual(
       [workerA.profileId, workerB.profileId].sort(),
     );
-    expect(new Set(result.checkIns.map((row) => row.day_id)).size).toBe(2);
+    expect(new Set(result.checkIns.map((row) => row.dayId)).size).toBe(2);
   });
 
   it("전달 마지막 날과 다음 달 첫날은 안 온다", async () => {
@@ -146,7 +146,7 @@ describe("getMonthAttendance — 그달치 check_ins와 excuse_status를 한 질
 
     const result = await getMonthAttendance(admin.client, month);
 
-    expect(result.checkIns.map((row) => row.day_id)).toEqual([targetDayId]);
+    expect(result.checkIns.map((row) => row.dayId)).toEqual([targetDayId]);
   });
 
   it("그달에 연 날이 하나도 없으면 두 배열이 다 빈다", async () => {
@@ -177,24 +177,24 @@ describe("getMonthAttendance — 그달치 check_ins와 excuse_status를 한 질
 
     expect(result.checkIns).toEqual([
       expect.objectContaining({
-        day_id: dayId,
-        profile_id: checkedInWorker.profileId,
-        checked_at: expect.any(String),
-        reported_at: expect.any(String),
-        received_at: expect.any(String),
+        dayId,
+        profileId: checkedInWorker.profileId,
+        checkedAt: expect.any(String),
+        reportedAt: expect.any(String),
+        receivedAt: expect.any(String),
         method: expect.any(String),
       }),
     ]);
     expect(
-      result.checkIns.some((row) => row.profile_id === excusedWorker.profileId),
+      result.checkIns.some((row) => row.profileId === excusedWorker.profileId),
     ).toBe(false);
 
     expect(result.excuseStatuses).toEqual([
       {
-        day_id: dayId,
-        profile_id: excusedWorker.profileId,
-        submitted_at: expect.any(String),
-        decided_at: expect.any(String),
+        dayId,
+        profileId: excusedWorker.profileId,
+        submittedAt: expect.any(String),
+        decidedAt: expect.any(String),
         decision: "approved",
       },
     ]);

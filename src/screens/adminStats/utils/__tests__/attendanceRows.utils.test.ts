@@ -180,34 +180,34 @@ const TAB_DAYS: ScheduleDay[] = [
 
 const TAB_CHECK_INS: AttendanceInputCheckIn[] = [
   {
-    day_id: "day-1",
-    profile_id: "p1",
-    checked_at: "2026-09-10T01:15:00.000Z",
-    reported_at: "2026-09-10T01:15:00.000Z",
-    received_at: "2026-09-10T01:15:00.000Z",
+    dayId: "day-1",
+    profileId: "p1",
+    checkedAt: "2026-09-10T01:15:00.000Z",
+    reportedAt: "2026-09-10T01:15:00.000Z",
+    receivedAt: "2026-09-10T01:15:00.000Z",
   },
   {
-    day_id: "day-1",
-    profile_id: "p5",
-    checked_at: "2026-09-10T01:05:00.000Z",
-    reported_at: "2026-09-10T01:05:00.000Z",
-    received_at: "2026-09-10T01:05:00.000Z",
+    dayId: "day-1",
+    profileId: "p5",
+    checkedAt: "2026-09-10T01:05:00.000Z",
+    reportedAt: "2026-09-10T01:05:00.000Z",
+    receivedAt: "2026-09-10T01:05:00.000Z",
   },
   {
-    day_id: "day-1",
-    profile_id: "p3",
-    checked_at: "2026-09-10T01:07:00.000Z",
-    reported_at: "2026-09-10T01:07:00.000Z",
-    received_at: "2026-09-10T01:07:00.000Z",
+    dayId: "day-1",
+    profileId: "p3",
+    checkedAt: "2026-09-10T01:07:00.000Z",
+    reportedAt: "2026-09-10T01:07:00.000Z",
+    receivedAt: "2026-09-10T01:07:00.000Z",
   },
 ];
 
 const TAB_EXCUSE_STATUSES: AttendanceInputExcuseStatus[] = [
   {
-    day_id: "day-2",
-    profile_id: "p4",
-    submitted_at: "2026-09-11T09:10:00.000Z",
-    decided_at: "2026-09-11T10:00:00.000Z",
+    dayId: "day-2",
+    profileId: "p4",
+    submittedAt: "2026-09-11T09:10:00.000Z",
+    decidedAt: "2026-09-11T10:00:00.000Z",
     decision: "approved",
   },
 ];
