@@ -39,6 +39,10 @@ import {
   ROTATING_LINES,
 } from "@/screens/pending/consts/pending.const";
 import {
+  EMPTY_PENDING_FORM,
+  PENDING_STEPS,
+} from "@/screens/pending/consts/pending.const";
+import {
   transitionNotificationPromptView,
   type NotificationPromptCopy,
   type NotificationPromptView,
@@ -47,12 +51,10 @@ import {
   firstOpenStep,
   stageOfProfile,
 } from "@/screens/pending/model/pendingForm.policy";
-import {
-  EMPTY_PENDING_FORM,
-  STEPS,
-  type PendingFormValues,
-  type PendingStage,
-  type Step,
+import type {
+  PendingFormValues,
+  PendingStage,
+  Step,
 } from "@/screens/pending/model/pendingForm.type";
 import { getNotificationPromptCopy } from "@/screens/pending/utils/notificationPromptCopy.utils";
 
@@ -159,7 +161,7 @@ export function usePendingScreen(): PendingScreenController {
       birthDate: digitsOfBirthDate(contact?.birth_date ?? null),
       phone: digitsOnly(contact?.phone ?? "", PENDING_PHONE_LENGTH),
     });
-    setFrozen(answered ? [...STEPS] : []);
+    setFrozen(answered ? [...PENDING_STEPS] : []);
     setEverSubmitted(answered);
     setSeeded(true);
   }, [seeded, loading, me, profile, privateQuery.data]);

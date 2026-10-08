@@ -24,3 +24,15 @@ export const REHEARSAL_COPY = {
 export const MONTH_TEST_ID = "rehearsal-month";
 
 export const REMOVE_CONFIRM_TEST_ID = "rehearsal-remove-confirm-button";
+
+export const EMPTY_ADD_SHEET_VALUES = {
+  startsAt: "",
+  endsAt: "",
+  count: "",
+} as const;
+
+export const INITIAL_ADD_SHEET = {
+  formKind: "time",
+  values: EMPTY_ADD_SHEET_VALUES,
+  notice: null,
+} as const;

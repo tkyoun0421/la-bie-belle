@@ -1,9 +1,9 @@
+import { DISCARD_DROP_ID } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import {
   canDropOnTarget,
   dropOutcome,
 } from "@/screens/scheduleAdmin/model/dragGesture.policy";
 import {
-  DISCARD_DROP_ID,
   positionDragId,
   slotDragId,
 } from "@/screens/scheduleAdmin/utils/dragId.utils";

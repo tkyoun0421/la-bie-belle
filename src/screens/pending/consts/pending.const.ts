@@ -1,8 +1,24 @@
+export const PENDING_STEPS = [
+  "photo",
+  "name",
+  "gender",
+  "birthDate",
+  "phone",
+] as const;
+
+export const EMPTY_PENDING_FORM: ProfileFormValues = {
+  name: "",
+  gender: null,
+  birthDate: "",
+  phone: "",
+};
+
 import {
   PUSH_DENIED_SUBLINE,
   PUSH_DENIED_TITLE,
 } from "@/entities/notification/consts/notification.const";
 import type { PushPermission } from "@/entities/notification/model/reachState.policy";
+import type { ProfileFormValues } from "@/entities/profile/model/profile.schema";
 import type {
   NotificationPromptCopy,
   NotificationPromptOutcome,

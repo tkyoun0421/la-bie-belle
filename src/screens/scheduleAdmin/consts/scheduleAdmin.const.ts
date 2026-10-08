@@ -40,3 +40,5 @@ export const ADJUSTMENT_REASON = {
   extra: "연장",
   revert: "원래대로",
 } as const;
+
+export const DISCARD_DROP_ID = "discard";

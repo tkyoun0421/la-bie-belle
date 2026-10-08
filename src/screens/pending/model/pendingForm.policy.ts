@@ -1,11 +1,11 @@
-import {
-  STEPS,
-  type PendingStage,
-  type Step,
+import { PENDING_STEPS } from "@/screens/pending/consts/pending.const";
+import type {
+  PendingStage,
+  Step,
 } from "@/screens/pending/model/pendingForm.type";
 
 export function firstOpenStep(frozen: readonly Step[]): Step | null {
-  return STEPS.find((step) => !frozen.includes(step)) ?? null;
+  return PENDING_STEPS.find((step) => !frozen.includes(step)) ?? null;
 }
 
 export type StageSource = {

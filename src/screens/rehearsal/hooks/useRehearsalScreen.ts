@@ -17,12 +17,14 @@ import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQ
 import { useAddRehearsalMutation } from "@/features/rehearsalEdit/services/useAddRehearsalMutation";
 import { useEditRehearsalMutation } from "@/features/rehearsalEdit/services/useEditRehearsalMutation";
 import { useRemoveRehearsalMutation } from "@/features/rehearsalEdit/services/useRemoveRehearsalMutation";
-import { CLOCK_LENGTH } from "@/screens/rehearsal/consts/rehearsal.const";
+import {
+  CLOCK_LENGTH,
+  INITIAL_ADD_SHEET,
+} from "@/screens/rehearsal/consts/rehearsal.const";
 import {
   addSheetActionFor,
   addSheetReducer,
   canSubmitForm,
-  INITIAL_SHEET,
   type AddSheetState,
   type AddSheetValues,
 } from "@/screens/rehearsal/model/addSheetState.reducer";
@@ -60,6 +62,10 @@ export type RehearsalScreenController = {
   openDay: (date: string) => void;
   closeDay: () => void;
   pickMonth: (month: string) => void;
+  pickerYear: number | null;
+  openPicker: () => void;
+  changePickerYear: (year: number) => void;
+  closePicker: () => void;
   openAdd: () => void;
   openEdit: ((id: string) => void) | undefined;
   closeForm: () => void;
@@ -78,9 +84,10 @@ export function useRehearsalScreen(
 
   const [month, setMonth] = useState(monthOf(monthParam ?? today));
   const [openDate, setOpenDate] = useState<string | null>(null);
+  const [pickerYear, setPickerYear] = useState<number | null>(null);
   const [form, setForm] = useState<RehearsalFormHandle | null>(null);
   const [removing, setRemoving] = useState(false);
-  const [sheet, dispatch] = useReducer(addSheetReducer, INITIAL_SHEET);
+  const [sheet, dispatch] = useReducer(addSheetReducer, INITIAL_ADD_SHEET);
 
   const { data: me } = useSessionUserQuery(supabase);
   const { data: profile } = useMyProfileRowQuery(supabase, me?.id ?? null);
@@ -307,6 +314,10 @@ export function useRehearsalScreen(
     openDay: setOpenDate,
     closeDay: () => setOpenDate(null),
     pickMonth,
+    pickerYear,
+    openPicker: () => setPickerYear(Number(month.slice(0, 4))),
+    changePickerYear: setPickerYear,
+    closePicker: () => setPickerYear(null),
     openAdd,
     openEdit: isAdmin ? undefined : openEdit,
     closeForm,

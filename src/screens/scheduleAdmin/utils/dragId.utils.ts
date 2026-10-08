@@ -2,8 +2,6 @@ const POSITION_PREFIX = "position:";
 
 const SLOT_PREFIX = "slot:";
 
-export const DISCARD_DROP_ID = "discard";
-
 export function positionDragId(position: string): string {
   return `${POSITION_PREFIX}${position}`;
 }

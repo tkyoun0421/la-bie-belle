@@ -10,6 +10,7 @@ import { SheetLayer } from "@/shared/ui/SheetLayer";
 import { Switch } from "@/shared/ui/Switch";
 import { Text } from "@/shared/ui/Text";
 import { SCHEDULE_ADMIN_COPY } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
+import { DISCARD_DROP_ID } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import { useDayDetail } from "@/screens/scheduleAdmin/hooks/useDayDetail";
 import type { DayDetailInput } from "@/screens/scheduleAdmin/model/dayDetail.type";
 import { AdjustChoiceSheet } from "@/screens/scheduleAdmin/ui/AdjustChoiceSheet";
@@ -21,7 +22,6 @@ import { PersonSheet } from "@/screens/scheduleAdmin/ui/PersonSheet";
 import { PositionRow } from "@/screens/scheduleAdmin/ui/PositionRow";
 import { QualificationSheet } from "@/screens/scheduleAdmin/ui/QualificationSheet";
 import { SlotSheet } from "@/screens/scheduleAdmin/ui/SlotSheet";
-import { DISCARD_DROP_ID } from "@/screens/scheduleAdmin/utils/dragId.utils";
 
 export const SCHEDULE_HOLIDAY_SWITCH_TEST_ID = "schedule-holiday-switch";
 

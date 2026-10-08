@@ -1,5 +1,5 @@
+import { DISCARD_DROP_ID } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 import {
-  DISCARD_DROP_ID,
   positionDragId,
   positionOf,
   slotDragId,

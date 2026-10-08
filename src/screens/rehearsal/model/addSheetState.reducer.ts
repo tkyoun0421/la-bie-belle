@@ -2,6 +2,7 @@ import { DomainError } from "@/shared/model/error.type";
 import type { RehearsalKind } from "@/entities/rehearsal/model/rehearsal.type";
 import {
   CLOCK_LENGTH,
+  EMPTY_ADD_SHEET_VALUES,
   MAX_COUNT,
   MIN_COUNT,
 } from "@/screens/rehearsal/consts/rehearsal.const";
@@ -29,18 +30,6 @@ export type AddSheetAction =
   | { type: "wrong_kind"; kind: RehearsalKind }
   | { type: "overlaps" }
   | { type: "transport_error" };
-
-export const EMPTY_VALUES: AddSheetValues = {
-  startsAt: "",
-  endsAt: "",
-  count: "",
-};
-
-export const INITIAL_SHEET: AddSheetState = {
-  formKind: "time",
-  values: EMPTY_VALUES,
-  notice: null,
-};
 
 export function addSheetActionFor(
   error: unknown,
@@ -83,7 +72,7 @@ export function addSheetReducer(
     case "open":
       return {
         formKind: action.kind,
-        values: { ...EMPTY_VALUES, ...action.values },
+        values: { ...EMPTY_ADD_SHEET_VALUES, ...action.values },
         notice: null,
       };
     case "change":
