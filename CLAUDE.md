@@ -36,6 +36,7 @@ FSD: `src/` 아래 `app` · `screens` · `features` · `entities` · `shared`. `
 - 화면 디자인 파이프라인: 페이지 문서 → `sian-writer` → `sian-auditor`. 문서를 고쳤으면 시안도 따라가야 하고, 따라갔는지는 감사자가 본다
 - 구조 설계 파이프라인: 인터뷰(`grill-me`, 한 라운드 한 질문) → 초안 → `architecture-advisor` 검토 → 총괄이 `system/`과 `modules/<영역>/design.md`에 씀. 조언자는 문서 하나씩 보고 결정하지 않는다
 - 같은 실패 세 번째면 `codex-rescue`(`--model gpt-5.6-sol`)로 넘긴다. 기준은 `implementer` 정의문
+- **주석은 부채다. 코드가 말한다.** `.ts`·`.tsx`에 설명 주석을 안 쓴다 — 이름과 구조와 테스트 이름이 의도를 든다. 남는 것은 도구가 읽는 것뿐이다(`eslint-disable`·`@ts-expect-error`·`prettier-ignore`·생성물 헤더). 왜 그 자리인지는 `docs/`가 들고 코드는 무엇을 하는지만 말한다 — 주석에 적힌 근거는 소스가 바뀔 때 같이 안 바뀌어 거짓이 된다
 - 대화에서 하는 설명은 `.claude/skills/explain-simply`의 원칙 넷을 항상 적용한다. 트리거를 기다리지 않는다 — 어렵다는 말이 나온 뒤엔 이미 한 번 어렵게 읽은 뒤다. 화면 문안은 여기가 아니라 `writing.md`가 정본이다
 
 ## 흐름
