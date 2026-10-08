@@ -14,20 +14,20 @@ const { useDayDetail } =
 type Input = Parameters<typeof useDayDetail>[0];
 
 const SLOTS = [
-  { id: "s1", positions: ["스캔"], ended_at: null },
-  { id: "s2", positions: ["스캔"], ended_at: null },
-  { id: "s3", positions: ["메인"], ended_at: null },
+  { id: "s1", positions: ["스캔"], endedAt: null },
+  { id: "s2", positions: ["스캔"], endedAt: null },
+  { id: "s3", positions: ["메인"], endedAt: null },
 ];
 
 const ASSIGNMENTS = [
   {
     id: "a1",
-    slot_id: "s1",
+    slotId: "s1",
     position: "스캔",
     kind: "regular",
-    profile_id: "p1",
-    ended_at: null,
-    profiles: { display_name: "이준호" },
+    profileId: "p1",
+    endedAt: null,
+    name: "이준호",
   },
 ];
 

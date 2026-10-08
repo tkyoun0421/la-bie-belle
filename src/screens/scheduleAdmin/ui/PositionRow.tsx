@@ -12,7 +12,10 @@ import { DropTarget } from "@/shared/ui/DropTarget";
 import { Icon } from "@/shared/ui/Icon";
 import { SlotCard } from "@/shared/ui/SlotCard";
 import { Text } from "@/shared/ui/Text";
-import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
+import type {
+  ScheduleAssignment,
+  ScheduleSlot,
+} from "@/entities/schedule/model/schedule.type";
 import {
   positionDragId,
   slotDragId,
@@ -20,7 +23,6 @@ import {
 import {
   assignmentForSlot,
   slotFillCount,
-  type PositionSlot,
 } from "@/screens/scheduleAdmin/utils/positionRows.utils";
 
 const LOCK_ICON_SIZE = 18;
@@ -29,7 +31,7 @@ const HANDLE_ICON_SIZE = 18;
 
 export type PositionRowProps = {
   position: string;
-  slots: readonly PositionSlot[];
+  slots: readonly ScheduleSlot[];
   assignments: readonly ScheduleAssignment[];
   unlocked: boolean;
   canChangeStructure: boolean;
@@ -58,7 +60,7 @@ export function PositionRow({
   const trainings = assignments.filter(
     (assignment) =>
       assignment.kind === "training" &&
-      assignment.ended_at === null &&
+      assignment.endedAt === null &&
       assignment.position === position,
   );
 
@@ -144,7 +146,7 @@ export function PositionRow({
               }
             >
               <Text size="sm" tone={taken === null ? "subtle" : "neutral"}>
-                {taken === null ? "비어 있어요" : nameOf(taken.profile_id)}
+                {taken === null ? "비어 있어요" : nameOf(taken.profileId)}
               </Text>
               {unlocked ? (
                 <Icon
@@ -171,7 +173,7 @@ export function PositionRow({
             className="flex-row items-center gap-2 px-4 py-1"
           >
             <Icon icon={GraduationCap} size={HANDLE_ICON_SIZE} tone="subtle" />
-            <Text size="sm">{nameOf(training.profile_id)}</Text>
+            <Text size="sm">{nameOf(training.profileId)}</Text>
             <Badge label="교육" variant="neutral" />
           </View>
         ))}

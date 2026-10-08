@@ -1,17 +1,13 @@
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
+import type {
+  ScheduleAssignment,
+  ScheduleSlot,
+} from "@/entities/schedule/model/schedule.type";
 
-export type PositionSlot = {
-  id: string;
-  positions: string[];
-  ended_at: string | null;
-};
-
-export type PositionAssignment = {
-  id: string;
-  slot_id: string | null;
-  kind: string;
-  ended_at: string | null;
-};
+export type PositionAssignment = Pick<
+  ScheduleAssignment,
+  "id" | "slotId" | "kind" | "endedAt"
+>;
 
 export type SlotFill = {
   filled: number;
@@ -19,17 +15,17 @@ export type SlotFill = {
 };
 
 function isLiveRegular(assignment: PositionAssignment): boolean {
-  return assignment.ended_at === null && assignment.kind === "regular";
+  return assignment.endedAt === null && assignment.kind === "regular";
 }
 
-function isLive(slot: PositionSlot): boolean {
-  return slot.ended_at === null;
+function isLive(slot: ScheduleSlot): boolean {
+  return slot.endedAt === null;
 }
 
 export function groupSlotsByPosition(
-  slots: readonly PositionSlot[],
-): Record<string, PositionSlot[]> {
-  const groups: Record<string, PositionSlot[]> = {};
+  slots: readonly ScheduleSlot[],
+): Record<string, ScheduleSlot[]> {
+  const groups: Record<string, ScheduleSlot[]> = {};
 
   for (const position of POSITION_ORDER) {
     groups[position] = [];
@@ -43,12 +39,12 @@ export function groupSlotsByPosition(
 }
 
 export function slotFillCount(
-  slots: readonly PositionSlot[],
+  slots: readonly ScheduleSlot[],
   assignments: readonly PositionAssignment[],
 ): SlotFill {
   const live = slots.filter(isLive);
   const taken = new Set(
-    assignments.filter(isLiveRegular).map((assignment) => assignment.slot_id),
+    assignments.filter(isLiveRegular).map((assignment) => assignment.slotId),
   );
 
   return {
@@ -63,8 +59,7 @@ export function assignmentForSlot<Assignment extends PositionAssignment>(
 ): Assignment | null {
   return (
     assignments.find(
-      (assignment) =>
-        isLiveRegular(assignment) && assignment.slot_id === slotId,
+      (assignment) => isLiveRegular(assignment) && assignment.slotId === slotId,
     ) ?? null
   );
 }

@@ -9,22 +9,22 @@ import {
 const DAYS = [
   {
     id: "day-1",
-    work_date: "2026-09-10",
-    starts_at: "10:00:00",
-    ends_at: "18:00:00",
+    workDate: "2026-09-10",
+    startsAt: "10:00:00",
+    endsAt: "18:00:00",
     assignments: [
-      { profile_id: "p1", ended_at: null },
-      { profile_id: "p5", ended_at: null },
-      { profile_id: "p2", ended_at: null },
-      { profile_id: "p3", ended_at: "2026-09-05T00:00:00.000Z" },
+      { profileId: "p1", endedAt: null },
+      { profileId: "p5", endedAt: null },
+      { profileId: "p2", endedAt: null },
+      { profileId: "p3", endedAt: "2026-09-05T00:00:00.000Z" },
     ],
   },
   {
     id: "day-2",
-    work_date: "2026-09-11",
-    starts_at: "09:00:00",
-    ends_at: "17:00:00",
-    assignments: [{ profile_id: "p4", ended_at: null }],
+    workDate: "2026-09-11",
+    startsAt: "09:00:00",
+    endsAt: "17:00:00",
+    assignments: [{ profileId: "p4", endedAt: null }],
   },
 ];
 
@@ -129,7 +129,7 @@ describe("daysOfPerson — 그 사람 배정만 남긴다", () => {
 
     expect(
       mine.flatMap((day) =>
-        day.assignments.map((assignment) => assignment.profile_id),
+        day.assignments.map((assignment) => assignment.profileId),
       ),
     ).toEqual(["p1"]);
   });

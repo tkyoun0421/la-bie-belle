@@ -2,10 +2,16 @@ import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
 import type {
   MonthWindowRow,
-  ScheduleDay,
+  ScheduleDayRow,
 } from "@/entities/schedule/api/schedule.dto";
-import type { MonthWindow } from "@/entities/schedule/model/schedule.type";
-import { toMonthWindow } from "@/entities/schedule/utils/monthWindow.mapper";
+import type {
+  MonthWindow,
+  ScheduleDay,
+} from "@/entities/schedule/model/schedule.type";
+import {
+  toMonthWindow,
+  toScheduleDay,
+} from "@/entities/schedule/utils/schedule.mapper";
 
 const DAY_COLUMNS = [
   "id",
@@ -29,13 +35,13 @@ export async function getMonthSchedule(
     .lt("work_date", nextMonthStart(month))
     .order("work_date")
     .order("created_at", { referencedTable: "slots" })
-    .returns<ScheduleDay[]>();
+    .returns<ScheduleDayRow[]>();
 
   if (error) {
     throw error;
   }
 
-  return data ?? [];
+  return (data ?? []).map(toScheduleDay);
 }
 
 export async function getMonthWindow(
@@ -56,6 +62,6 @@ export async function getMonthWindow(
 }
 
 export function liveAssignmentCount(day: ScheduleDay): number {
-  return day.assignments.filter((assignment) => assignment.ended_at === null)
+  return day.assignments.filter((assignment) => assignment.endedAt === null)
     .length;
 }

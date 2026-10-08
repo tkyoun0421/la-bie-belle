@@ -84,8 +84,8 @@ describe("getOpenSlots dal — 빈 자리를 open_slots 뷰로 읽는다(design.
 
     const slots = await getOpenSlots(admin.client, inMonth.month);
 
-    expect(slots.some((row) => row.day_id === inMonth.dayId)).toBe(true);
-    expect(slots.some((row) => row.day_id === otherMonth.dayId)).toBe(false);
+    expect(slots.some((row) => row.dayId === inMonth.dayId)).toBe(true);
+    expect(slots.some((row) => row.dayId === otherMonth.dayId)).toBe(false);
   });
 
   it("정규 배정이 있는 자리는 빠진다", async () => {
@@ -95,18 +95,18 @@ describe("getOpenSlots dal — 빈 자리를 open_slots 뷰로 읽는다(design.
 
     const slots = await getOpenSlots(admin.client, month);
 
-    expect(slots.some((row) => row.slot_id === slotId)).toBe(false);
-    expect(slots.filter((row) => row.day_id === dayId)).toHaveLength(10);
+    expect(slots.some((row) => row.slotId === slotId)).toBe(false);
+    expect(slots.filter((row) => row.dayId === dayId)).toHaveLength(10);
   });
 
-  it("ended_at이 찍힌 자리는 빠진다", async () => {
+  it("endedAt이 찍힌 자리는 빠진다", async () => {
     const { month, dayId } = await seedOpenDay(admin);
     const [slotId] = await slotIdsForDay(admin, dayId);
     closeSlot(slotId!);
 
     const slots = await getOpenSlots(admin.client, month);
 
-    expect(slots.some((row) => row.slot_id === slotId)).toBe(false);
-    expect(slots.filter((row) => row.day_id === dayId)).toHaveLength(10);
+    expect(slots.some((row) => row.slotId === slotId)).toBe(false);
+    expect(slots.filter((row) => row.dayId === dayId)).toHaveLength(10);
   });
 });

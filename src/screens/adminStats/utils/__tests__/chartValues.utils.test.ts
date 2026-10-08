@@ -1,4 +1,4 @@
-import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
 import type { AttendanceMonth } from "@/features/stats/services/useAttendanceMonthsQuery";
 import type { AttendanceTab } from "@/screens/adminStats/model/adminStats.type";
@@ -11,21 +11,21 @@ import {
 function workedDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
   return {
     id: "day-1",
-    work_date: "2026-08-01",
-    starts_at: "10:00:00",
-    ends_at: "18:00:00",
-    opened_at: "2026-08-01T00:00:00.000Z",
+    workDate: "2026-08-01",
+    startsAt: "10:00:00",
+    endsAt: "18:00:00",
+    openedAt: "2026-08-01T00:00:00.000Z",
     slots: [],
-    check_ins: [],
+    checkIns: [],
     assignments: [
       {
         id: "a1",
-        slot_id: null,
+        slotId: null,
         position: "메인",
         kind: "regular",
-        profile_id: "p1",
-        ended_at: null,
-        profiles: { display_name: "김지우" },
+        profileId: "p1",
+        endedAt: null,
+        name: "김지우",
       },
     ],
     ...overrides,

@@ -1,13 +1,7 @@
+import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { formatScheduleDate } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
 
 const LISTED_LIMIT = 4;
-
-export type OpenSlotRow = {
-  slot_id: string;
-  day_id: string;
-  work_date: string;
-  positions: string[];
-};
 
 export type OpenSlotItem = {
   workDate: string;
@@ -21,22 +15,20 @@ export type OpenSlotSummary = {
 };
 
 export function countOpenSlotsByDate(
-  rows: readonly OpenSlotRow[],
+  rows: readonly OpenSlot[],
 ): Record<string, number> {
   const counts: Record<string, number> = {};
 
   for (const row of rows) {
-    counts[row.work_date] = (counts[row.work_date] ?? 0) + 1;
+    counts[row.workDate] = (counts[row.workDate] ?? 0) + 1;
   }
 
   return counts;
 }
 
-export function summarizeOpenSlots(
-  rows: readonly OpenSlotRow[],
-): OpenSlotSummary {
+export function summarizeOpenSlots(rows: readonly OpenSlot[]): OpenSlotSummary {
   const items = rows.slice(0, LISTED_LIMIT).map((row) => ({
-    workDate: row.work_date,
+    workDate: row.workDate,
     position: row.positions.join("·"),
   }));
 

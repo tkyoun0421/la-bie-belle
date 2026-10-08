@@ -191,11 +191,11 @@ export function useRehearsalScreen(
     () =>
       (days ?? []).flatMap((day) =>
         day.assignments
-          .filter((assignment) => assignment.profile_id === myProfileId)
+          .filter((assignment) => assignment.profileId === myProfileId)
           .map((assignment) => ({
-            work_date: day.work_date,
+            workDate: day.workDate,
             kind: assignment.kind,
-            ended_at: assignment.ended_at,
+            endedAt: assignment.endedAt,
           })),
       ),
     [days, myProfileId],

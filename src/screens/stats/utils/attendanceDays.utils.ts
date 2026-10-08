@@ -1,7 +1,7 @@
 import { kstClockOf, spellDate } from "@/shared/utils/kstDate";
 import type { AttendanceStatus } from "@/entities/attendance/model/attendance.type";
 import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
-import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import {
   buildAttendanceInputs,
   type AttendanceInputCheckIn,
@@ -34,7 +34,7 @@ export function buildMyAttendanceDays(
 ): MyAttendanceDay[] {
   const mine = days.flatMap((day) => {
     const assignment = day.assignments.find(
-      (row) => row.profile_id === profileId && row.ended_at === null,
+      (row) => row.profileId === profileId && row.endedAt === null,
     );
 
     return assignment === undefined ? [] : [{ day, assignment }];
@@ -43,9 +43,9 @@ export function buildMyAttendanceDays(
   const inputs = buildAttendanceInputs(
     mine.map(({ day, assignment }) => ({
       id: day.id,
-      work_date: day.work_date,
-      starts_at: day.starts_at,
-      ends_at: day.ends_at,
+      workDate: day.workDate,
+      startsAt: day.startsAt,
+      endsAt: day.endsAt,
       assignments: [assignment],
     })),
     checkIns,
@@ -61,7 +61,7 @@ export function buildMyAttendanceDays(
         ? []
         : [
             {
-              workDate: day.work_date,
+              workDate: day.workDate,
               position: assignment.position,
               isEducation: assignment.kind === TRAINING_KIND,
               status,

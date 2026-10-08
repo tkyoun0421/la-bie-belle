@@ -13,7 +13,7 @@ const MEMBERS = [
 ];
 
 const DAY_ASSIGNMENTS = [
-  { profile_id: "p1", position: "스캔", kind: "regular", ended_at: null },
+  { profileId: "p1", position: "스캔", kind: "regular", endedAt: null },
 ];
 
 const QUALIFICATIONS = [

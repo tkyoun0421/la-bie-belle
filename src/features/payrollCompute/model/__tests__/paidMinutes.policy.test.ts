@@ -1,8 +1,8 @@
 import { paidMinutes } from "@/features/payrollCompute/model/paidMinutes.policy";
 
-const NINE_HOUR_DAY = { starts_at: "10:00:00", ends_at: "19:00:00" };
+const NINE_HOUR_DAY = { startsAt: "10:00:00", endsAt: "19:00:00" };
 
-describe("paidMinutes — 배정 시간은 day.starts_at~ends_at 그대로다(PAY-004)", () => {
+describe("paidMinutes — 배정 시간은 day.startsAt~endsAt 그대로다(PAY-004)", () => {
   it("휴게시간을 따로 빼지 않은 날 시간이 그대로 더해진다", () => {
     const minutes = paidMinutes({
       assignments: [{ id: "a1" }],

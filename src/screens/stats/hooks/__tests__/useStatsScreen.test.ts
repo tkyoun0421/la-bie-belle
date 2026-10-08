@@ -101,23 +101,23 @@ const EMPTY_ATTENDANCE = { checkIns: [], excuseStatuses: [] };
 function scheduleDay(workDate: string) {
   return {
     id: `day-${workDate}`,
-    work_date: workDate,
-    starts_at: "18:00:00",
-    ends_at: "23:00:00",
-    opened_at: `${workDate}T00:00:00.000Z`,
+    workDate,
+    startsAt: "18:00:00",
+    endsAt: "23:00:00",
+    openedAt: `${workDate}T00:00:00.000Z`,
     slots: [],
     assignments: [
       {
         id: `assign-${workDate}`,
-        slot_id: null,
+        slotId: null,
         position: "메인",
         kind: "regular",
-        profile_id: "me",
-        ended_at: null,
-        profiles: null,
+        profileId: "me",
+        endedAt: null,
+        name: null,
       },
     ],
-    check_ins: [],
+    checkIns: [],
   };
 }
 

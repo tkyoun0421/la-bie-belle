@@ -84,10 +84,10 @@ describe("classifyPickerRows — 그날 이미 배정된 사람은 「{포지션
       baseInput({
         dayAssignments: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             position: "팀장",
             kind: "regular",
-            ended_at: null,
+            endedAt: null,
           },
         ],
       }),
@@ -105,10 +105,10 @@ describe("classifyPickerRows — 그날 이미 배정된 사람은 「{포지션
         qualifiedProfileIds: [],
         dayAssignments: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             position: "팀장",
             kind: "regular",
-            ended_at: null,
+            endedAt: null,
           },
         ],
       }),
@@ -118,15 +118,15 @@ describe("classifyPickerRows — 그날 이미 배정된 사람은 「{포지션
     expect(row?.category).toBe("assigned");
   });
 
-  it("닫힌(ended_at 있는) 배정은 배정됨으로 안 친다", () => {
+  it("닫힌(endedAt 있는) 배정은 배정됨으로 안 친다", () => {
     const rows = classifyPickerRows(
       baseInput({
         dayAssignments: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             position: "팀장",
             kind: "regular",
-            ended_at: "2026-10-09T00:00:00Z",
+            endedAt: "2026-10-09T00:00:00Z",
           },
         ],
       }),
@@ -141,10 +141,10 @@ describe("classifyPickerRows — 그날 이미 배정된 사람은 「{포지션
       baseInput({
         dayAssignments: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             position: "팀장",
             kind: "training",
-            ended_at: null,
+            endedAt: null,
           },
         ],
       }),
@@ -277,10 +277,10 @@ describe("classifyPickerRows — 배정됨이 근무 요청 상태보다 우선�
         serverNowMs: SERVER_NOW_MS,
         dayAssignments: [
           {
-            profile_id: "profile-1",
+            profileId: "profile-1",
             position: "팀장",
             kind: "regular",
-            ended_at: null,
+            endedAt: null,
           },
         ],
       }),

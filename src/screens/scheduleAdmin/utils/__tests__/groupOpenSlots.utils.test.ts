@@ -1,14 +1,14 @@
+import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import {
   countOpenSlotsByDate,
   summarizeOpenSlots,
-  type OpenSlotRow,
 } from "@/screens/scheduleAdmin/utils/groupOpenSlots.utils";
 
-function row(workDate: string, positions: string[] = ["스캔"]): OpenSlotRow {
+function row(workDate: string, positions: string[] = ["스캔"]): OpenSlot {
   return {
-    slot_id: `slot-${workDate}-${positions.join("-")}-${Math.random()}`,
-    day_id: `day-${workDate}`,
-    work_date: workDate,
+    slotId: `slot-${workDate}-${positions.join("-")}-${Math.random()}`,
+    dayId: `day-${workDate}`,
+    workDate,
     positions,
   };
 }

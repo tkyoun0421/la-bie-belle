@@ -12,7 +12,7 @@ import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMon
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
 import { liveAssignmentCount } from "@/entities/schedule/api/getMonthSchedule.api";
-import type { OpenSlot } from "@/entities/schedule/api/schedule.dto";
+import type { OpenSlot } from "@/entities/schedule/model/schedule.type";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { useOpenSlotsQuery } from "@/entities/schedule/services/useOpenSlotsQuery";
@@ -294,7 +294,7 @@ export function useScheduleAdminScreen({
   const slotRows = openSlots ?? [];
   const applications = availabilities ?? [];
 
-  const dayOf = new Map(dayList.map((day) => [day.work_date, day]));
+  const dayOf = new Map(dayList.map((day) => [day.workDate, day]));
   const vacancyOf = countOpenSlotsByDate(slotRows);
 
   const applicationCountOf = new Map<string, number>();
@@ -332,8 +332,8 @@ export function useScheduleAdminScreen({
   const notifiedCount = new Set(
     dayList.flatMap((day) =>
       day.assignments
-        .filter((assignment) => assignment.ended_at === null)
-        .map((assignment) => assignment.profile_id),
+        .filter((assignment) => assignment.endedAt === null)
+        .map((assignment) => assignment.profileId),
     ),
   ).size;
 
@@ -459,7 +459,7 @@ export function useScheduleAdminScreen({
     if (sheetState?.kind === "close") {
       return {
         kind: "close",
-        workDate: day.work_date,
+        workDate: day.workDate,
         assignmentCount,
         closing: close.isPending,
       };
@@ -570,7 +570,7 @@ export function useScheduleAdminScreen({
     saveHours: () => {
       if (day !== null && sheetState?.kind === "hours") {
         setHours.mutate({
-          workDate: day.work_date,
+          workDate: day.workDate,
           starts: sheetState.starts,
           ends: sheetState.ends,
         });
@@ -578,7 +578,7 @@ export function useScheduleAdminScreen({
     },
     closeDay: () => {
       if (day !== null) {
-        close.mutate({ workDate: day.work_date });
+        close.mutate({ workDate: day.workDate });
       }
     },
     toast,
@@ -588,30 +588,30 @@ export function useScheduleAdminScreen({
         ? null
         : {
             dayId: day.id,
-            workDate: day.work_date,
-            startsAt: day.starts_at,
-            endsAt: day.ends_at,
+            workDate: day.workDate,
+            startsAt: day.startsAt,
+            endsAt: day.endsAt,
             slots: day.slots,
             assignments: day.assignments,
-            applicationNames: applicationNamesOf.get(day.work_date) ?? [],
-            appliedProfileIds: applicationIdsOf.get(day.work_date) ?? [],
+            applicationNames: applicationNamesOf.get(day.workDate) ?? [],
+            appliedProfileIds: applicationIdsOf.get(day.workDate) ?? [],
             members: activeMembers ?? [],
             qualifications: qualifications ?? [],
             slotRequests: (slotRequests ?? []).filter(
-              (request) => request.workDate === day.work_date,
+              (request) => request.workDate === day.workDate,
             ),
             holidays: (payroll?.holidays ?? []).filter(
-              (row) => row.holidayDate === day.work_date,
+              (row) => row.holidayDate === day.workDate,
             ),
             adjustments: (payroll?.adjustments ?? []).filter(
               (row) => row.dayId === day.id,
             ),
             rehearsals: (rehearsals ?? []).filter(
-              (row: Rehearsal) => row.workDate === day.work_date,
+              (row: Rehearsal) => row.workDate === day.workDate,
             ),
             serverNowMs: nowMs,
             gate: dayConfirmGate({
-              openedAt: day.opened_at,
+              openedAt: day.openedAt,
               confirmedAt: schedule?.confirmedAt ?? null,
             }),
             isConfirmed: confirmed,
@@ -627,12 +627,12 @@ export function useScheduleAdminScreen({
             onPressHours: () =>
               setSheetState({
                 kind: "hours",
-                starts: clockLabel(day.starts_at),
-                ends: clockLabel(day.ends_at),
+                starts: clockLabel(day.startsAt),
+                ends: clockLabel(day.endsAt),
               }),
             onCloseDay: () =>
               assignmentCount === 0
-                ? close.mutate({ workDate: day.work_date })
+                ? close.mutate({ workDate: day.workDate })
                 : setSheetState({ kind: "close" }),
             onAddSlot: (id, position) =>
               addSlot.mutate({ dayId: id, position }),
@@ -653,8 +653,7 @@ export function useScheduleAdminScreen({
               forceChange.mutate({ assignmentId, profileId }),
             onSendWorkRequest: (slotId, profileIds) =>
               sendWorkRequest.mutate({ slotId, profileIds }),
-            onSetHoliday: (on) =>
-              setHoliday.mutate({ date: day.work_date, on }),
+            onSetHoliday: (on) => setHoliday.mutate({ date: day.workDate, on }),
             onSetAdjustment: ({ profileId, minutes, reason }) =>
               setAdjustment.mutate({
                 dayId: day.id,

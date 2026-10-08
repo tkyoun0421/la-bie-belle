@@ -2,6 +2,7 @@ import {
   dayTotal,
   type RehearsalClock,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
+import type { ScheduleAssignment } from "@/entities/schedule/model/schedule.type";
 import {
   adjustedMinutes,
   paidMinutes,
@@ -14,11 +15,11 @@ const MINUTES_PER_HOUR = 60;
 
 const CLOCK_LENGTH = 5;
 
-export type AdjustSheetAssignment = {
-  profile_id: string;
+export type AdjustSheetAssignment = Pick<
+  ScheduleAssignment,
+  "profileId" | "kind" | "endedAt"
+> & {
   name: string;
-  kind: string;
-  ended_at: string | null;
 };
 
 export type AdjustSheetAdjustment = TimedAdjustment & { profileId: string };
@@ -28,7 +29,7 @@ export type AdjustSheetRehearsal = RehearsalClock & { profileId: string };
 export type AdjustmentKind = "결근" | "연장";
 
 export type AdjustSheetRow = {
-  profile_id: string;
+  profileId: string;
   name: string;
   finalMinutes: number;
   adjustmentKind: AdjustmentKind | null;
@@ -58,7 +59,7 @@ function clock(value: string): string {
 }
 
 export function adjustSheetHead(day: WorkDayHours): string {
-  return `${clock(day.starts_at)}–${clock(day.ends_at)} · ${spellHours(
+  return `${clock(day.startsAt)}–${clock(day.endsAt)} · ${spellHours(
     assignedMinutes(day),
   )}`;
 }
@@ -102,17 +103,17 @@ function rehearsalLineOf(rows: readonly RehearsalClock[]): string | null {
 
 export function adjustSheetRows(input: AdjustSheetInput): AdjustSheetRow[] {
   return input.assignments
-    .filter((assignment) => assignment.ended_at === null)
+    .filter((assignment) => assignment.endedAt === null)
     .map((assignment) => {
       const adjustments = input.adjustments.filter(
-        (row) => row.profileId === assignment.profile_id,
+        (row) => row.profileId === assignment.profileId,
       );
       const rehearsals = input.rehearsals.filter(
-        (row) => row.profileId === assignment.profile_id,
+        (row) => row.profileId === assignment.profileId,
       );
 
       return {
-        profile_id: assignment.profile_id,
+        profileId: assignment.profileId,
         name: assignment.name,
         finalMinutes: paidMinutes({
           assignments: [assignment],

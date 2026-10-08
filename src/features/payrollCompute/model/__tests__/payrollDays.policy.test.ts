@@ -7,7 +7,7 @@ const RATES = [{ effectiveDate: "2026-08-01", amount: 12000 }];
 
 const DAY_ID = "day-1";
 const WORK_DATE = "2026-09-10";
-const NINE_HOUR_SHIFT = { starts_at: "10:00:00", ends_at: "19:00:00" };
+const NINE_HOUR_SHIFT = { startsAt: "10:00:00", endsAt: "19:00:00" };
 
 function baseInput(overrides: Record<string, unknown> = {}) {
   return {
@@ -27,14 +27,14 @@ describe("payrollDays — 배정만 있는 날도 결과에 뜬다(날짜 합집
   it("배정·날이 있고 정상 출근이면 그 날짜가 배정 시간대로 결과에 선다", () => {
     const result = payrollDays(
       baseInput({
-        days: [{ id: DAY_ID, work_date: WORK_DATE, ...NINE_HOUR_SHIFT }],
-        assignments: [{ day_id: DAY_ID }],
+        days: [{ id: DAY_ID, workDate: WORK_DATE, ...NINE_HOUR_SHIFT }],
+        assignments: [{ dayId: DAY_ID }],
         checkIns: [
           {
-            day_id: DAY_ID,
-            checked_at: "2026-09-10T01:00:00.000Z",
-            reported_at: "2026-09-10T01:00:00.000Z",
-            received_at: "2026-09-10T01:00:00.000Z",
+            dayId: DAY_ID,
+            checkedAt: "2026-09-10T01:00:00.000Z",
+            reportedAt: "2026-09-10T01:00:00.000Z",
+            receivedAt: "2026-09-10T01:00:00.000Z",
           },
         ],
       }),
@@ -84,7 +84,7 @@ describe("payrollDays — 조정만 있는 날도 결과에 뜬다(날짜 합집
         days: [
           {
             id: adjustmentOnlyDayId,
-            work_date: adjustmentOnlyDate,
+            workDate: adjustmentOnlyDate,
             ...NINE_HOUR_SHIFT,
           },
         ],
@@ -111,14 +111,14 @@ describe("payrollDays — 조정만 있는 날도 결과에 뜬다(날짜 합집
 describe("payrollDays — 조정 없는 결근과 조정 음수로 0이 된 결근이 같은 결과다", () => {
   it("결근 판정이면 조정 유무와 무관하게 0원·absent다", () => {
     const noCheckInNoExcuse = baseInput({
-      days: [{ id: DAY_ID, work_date: WORK_DATE, ...NINE_HOUR_SHIFT }],
-      assignments: [{ day_id: DAY_ID }],
+      days: [{ id: DAY_ID, workDate: WORK_DATE, ...NINE_HOUR_SHIFT }],
+      assignments: [{ dayId: DAY_ID }],
       now: "2026-09-20T00:00:00.000Z",
     });
 
     const withCancellingAdjustment = baseInput({
-      days: [{ id: DAY_ID, work_date: WORK_DATE, ...NINE_HOUR_SHIFT }],
-      assignments: [{ day_id: DAY_ID }],
+      days: [{ id: DAY_ID, workDate: WORK_DATE, ...NINE_HOUR_SHIFT }],
+      assignments: [{ dayId: DAY_ID }],
       adjustments: [
         {
           dayId: DAY_ID,
@@ -150,14 +150,14 @@ describe("payrollDays — 지각은 급여를 안 건드린다(PAY-003)", () => 
   it("지각으로 판정돼도 배정 시간 그대로 센다", () => {
     const result = payrollDays(
       baseInput({
-        days: [{ id: DAY_ID, work_date: WORK_DATE, ...NINE_HOUR_SHIFT }],
-        assignments: [{ day_id: DAY_ID }],
+        days: [{ id: DAY_ID, workDate: WORK_DATE, ...NINE_HOUR_SHIFT }],
+        assignments: [{ dayId: DAY_ID }],
         checkIns: [
           {
-            day_id: DAY_ID,
-            checked_at: "2026-09-10T01:10:01.000Z",
-            reported_at: "2026-09-10T01:10:01.000Z",
-            received_at: "2026-09-10T01:10:01.000Z",
+            dayId: DAY_ID,
+            checkedAt: "2026-09-10T01:10:01.000Z",
+            reportedAt: "2026-09-10T01:10:01.000Z",
+            receivedAt: "2026-09-10T01:10:01.000Z",
           },
         ],
         now: "2026-09-10T01:10:01.000Z",
@@ -177,8 +177,8 @@ describe("payrollDays — 출근 인정도 배정 시간 그대로 센다(PAY-00
   it("사유가 승인되면 배정 시간대로 급여가 난다", () => {
     const result = payrollDays(
       baseInput({
-        days: [{ id: DAY_ID, work_date: WORK_DATE, ...NINE_HOUR_SHIFT }],
-        assignments: [{ day_id: DAY_ID }],
+        days: [{ id: DAY_ID, workDate: WORK_DATE, ...NINE_HOUR_SHIFT }],
+        assignments: [{ dayId: DAY_ID }],
         excuses: [
           {
             dayId: DAY_ID,
@@ -204,14 +204,14 @@ describe("payrollDays — 교육 배정도 같은 규칙으로 급여가 난다(
   it("배정 kind가 education이어도 정규 배정과 같은 시간·금액을 낸다", () => {
     const result = payrollDays(
       baseInput({
-        days: [{ id: DAY_ID, work_date: WORK_DATE, ...NINE_HOUR_SHIFT }],
-        assignments: [{ day_id: DAY_ID, kind: "education" }],
+        days: [{ id: DAY_ID, workDate: WORK_DATE, ...NINE_HOUR_SHIFT }],
+        assignments: [{ dayId: DAY_ID, kind: "education" }],
         checkIns: [
           {
-            day_id: DAY_ID,
-            checked_at: "2026-09-10T01:00:00.000Z",
-            reported_at: "2026-09-10T01:00:00.000Z",
-            received_at: "2026-09-10T01:00:00.000Z",
+            dayId: DAY_ID,
+            checkedAt: "2026-09-10T01:00:00.000Z",
+            reportedAt: "2026-09-10T01:00:00.000Z",
+            receivedAt: "2026-09-10T01:00:00.000Z",
           },
         ],
       }),
@@ -230,14 +230,14 @@ describe("payrollDays — 그날 시급이 없으면 'wage-pending'으로 선다
   it("첫 시급 행보다 이른 날은 분을 채운 채 금액 0원·kind='wage-pending'으로 뜬다", () => {
     const result = payrollDays(
       baseInput({
-        days: [{ id: DAY_ID, work_date: WORK_DATE, ...NINE_HOUR_SHIFT }],
-        assignments: [{ day_id: DAY_ID }],
+        days: [{ id: DAY_ID, workDate: WORK_DATE, ...NINE_HOUR_SHIFT }],
+        assignments: [{ dayId: DAY_ID }],
         checkIns: [
           {
-            day_id: DAY_ID,
-            checked_at: "2026-09-10T01:00:00.000Z",
-            reported_at: "2026-09-10T01:00:00.000Z",
-            received_at: "2026-09-10T01:00:00.000Z",
+            dayId: DAY_ID,
+            checkedAt: "2026-09-10T01:00:00.000Z",
+            reportedAt: "2026-09-10T01:00:00.000Z",
+            receivedAt: "2026-09-10T01:00:00.000Z",
           },
         ],
         rates: [{ effectiveDate: "2026-10-01", amount: 12000 }],
@@ -301,29 +301,29 @@ describe("payrollViewDays — 리허설이 비어도 배정만으로 죽지 않�
       days: [
         {
           id: dayId,
-          work_date: workDate,
-          starts_at: "10:00:00",
-          ends_at: "19:00:00",
-          opened_at: "2026-09-01T00:00:00.000Z",
+          workDate,
+          startsAt: "10:00:00",
+          endsAt: "19:00:00",
+          openedAt: "2026-09-01T00:00:00.000Z",
           slots: [],
           assignments: [
             {
               id: "assignment-1",
-              slot_id: null,
+              slotId: null,
               position: "hall",
               kind: "regular",
-              profile_id: "profile-1",
-              ended_at: null,
-              profiles: null,
+              profileId: "profile-1",
+              endedAt: null,
+              name: null,
             },
           ],
-          check_ins: [
+          checkIns: [
             {
               id: "check-in-1",
-              profile_id: "profile-1",
-              checked_at: "2026-09-10T01:00:00.000Z",
-              reported_at: "2026-09-10T01:00:00.000Z",
-              received_at: "2026-09-10T01:00:00.000Z",
+              profileId: "profile-1",
+              checkedAt: "2026-09-10T01:00:00.000Z",
+              reportedAt: "2026-09-10T01:00:00.000Z",
+              receivedAt: "2026-09-10T01:00:00.000Z",
             },
           ],
         },
@@ -363,29 +363,29 @@ describe("payrollViewDays — 시급(rates)이 비어도 안 죽고 wage-pending
       days: [
         {
           id: dayId,
-          work_date: workDate,
-          starts_at: "10:00:00",
-          ends_at: "19:00:00",
-          opened_at: "2026-09-01T00:00:00.000Z",
+          workDate,
+          startsAt: "10:00:00",
+          endsAt: "19:00:00",
+          openedAt: "2026-09-01T00:00:00.000Z",
           slots: [],
           assignments: [
             {
               id: "assignment-2",
-              slot_id: null,
+              slotId: null,
               position: "hall",
               kind: "regular",
-              profile_id: "profile-1",
-              ended_at: null,
-              profiles: null,
+              profileId: "profile-1",
+              endedAt: null,
+              name: null,
             },
           ],
-          check_ins: [
+          checkIns: [
             {
               id: "check-in-2",
-              profile_id: "profile-1",
-              checked_at: "2026-09-10T01:00:00.000Z",
-              reported_at: "2026-09-10T01:00:00.000Z",
-              received_at: "2026-09-10T01:00:00.000Z",
+              profileId: "profile-1",
+              checkedAt: "2026-09-10T01:00:00.000Z",
+              reportedAt: "2026-09-10T01:00:00.000Z",
+              receivedAt: "2026-09-10T01:00:00.000Z",
             },
           ],
         },
@@ -416,41 +416,41 @@ describe("payrollViewDays — 배정·조정·리허설 세 갈래의 날짜가 
       days: [
         {
           id: "day-assigned",
-          work_date: assignedDate,
-          starts_at: "10:00:00",
-          ends_at: "19:00:00",
-          opened_at: "2026-09-01T00:00:00.000Z",
+          workDate: assignedDate,
+          startsAt: "10:00:00",
+          endsAt: "19:00:00",
+          openedAt: "2026-09-01T00:00:00.000Z",
           slots: [],
           assignments: [
             {
               id: "assignment-3",
-              slot_id: null,
+              slotId: null,
               position: "hall",
               kind: "regular",
-              profile_id: "profile-1",
-              ended_at: null,
-              profiles: null,
+              profileId: "profile-1",
+              endedAt: null,
+              name: null,
             },
           ],
-          check_ins: [
+          checkIns: [
             {
               id: "check-in-3",
-              profile_id: "profile-1",
-              checked_at: "2026-09-10T01:00:00.000Z",
-              reported_at: "2026-09-10T01:00:00.000Z",
-              received_at: "2026-09-10T01:00:00.000Z",
+              profileId: "profile-1",
+              checkedAt: "2026-09-10T01:00:00.000Z",
+              reportedAt: "2026-09-10T01:00:00.000Z",
+              receivedAt: "2026-09-10T01:00:00.000Z",
             },
           ],
         },
         {
           id: "day-adjustment-only",
-          work_date: adjustmentOnlyDate,
-          starts_at: "10:00:00",
-          ends_at: "19:00:00",
-          opened_at: "2026-09-01T00:00:00.000Z",
+          workDate: adjustmentOnlyDate,
+          startsAt: "10:00:00",
+          endsAt: "19:00:00",
+          openedAt: "2026-09-01T00:00:00.000Z",
           slots: [],
           assignments: [],
-          check_ins: [],
+          checkIns: [],
         },
       ],
       rates: [
@@ -496,29 +496,29 @@ describe("payrollViewDays — 교육 배정(kind: 'training')은 isEducation이 
       days: [
         {
           id: dayId,
-          work_date: workDate,
-          starts_at: "10:00:00",
-          ends_at: "19:00:00",
-          opened_at: "2026-09-01T00:00:00.000Z",
+          workDate,
+          startsAt: "10:00:00",
+          endsAt: "19:00:00",
+          openedAt: "2026-09-01T00:00:00.000Z",
           slots: [],
           assignments: [
             {
               id: "assignment-education-1",
-              slot_id: null,
+              slotId: null,
               position: "hall",
               kind: "training",
-              profile_id: "profile-1",
-              ended_at: null,
-              profiles: null,
+              profileId: "profile-1",
+              endedAt: null,
+              name: null,
             },
           ],
-          check_ins: [
+          checkIns: [
             {
               id: "check-in-education-1",
-              profile_id: "profile-1",
-              checked_at: "2026-09-15T01:00:00.000Z",
-              reported_at: "2026-09-15T01:00:00.000Z",
-              received_at: "2026-09-15T01:00:00.000Z",
+              profileId: "profile-1",
+              checkedAt: "2026-09-15T01:00:00.000Z",
+              reportedAt: "2026-09-15T01:00:00.000Z",
+              receivedAt: "2026-09-15T01:00:00.000Z",
             },
           ],
         },
@@ -546,9 +546,9 @@ describe("payrollViewDays — payrollDays를 다시 짜지 않고 그대로 부�
     const workDate = "2026-09-10";
     const profileId = "profile-1";
     const checkIn = {
-      checked_at: "2026-09-10T01:00:00.000Z",
-      reported_at: "2026-09-10T01:00:00.000Z",
-      received_at: "2026-09-10T01:00:00.000Z",
+      checkedAt: "2026-09-10T01:00:00.000Z",
+      reportedAt: "2026-09-10T01:00:00.000Z",
+      receivedAt: "2026-09-10T01:00:00.000Z",
     };
     const now = "2026-09-10T01:00:00.000Z";
     const rate = { effectiveDate: "2026-08-01", amount: 12000 };
@@ -558,28 +558,26 @@ describe("payrollViewDays — payrollDays를 다시 짜지 않고 그대로 부�
       days: [
         {
           id: dayId,
-          work_date: workDate,
-          starts_at: "10:00:00",
-          ends_at: "19:00:00",
-          opened_at: "2026-09-01T00:00:00.000Z",
+          workDate,
+          startsAt: "10:00:00",
+          endsAt: "19:00:00",
+          openedAt: "2026-09-01T00:00:00.000Z",
           slots: [],
           assignments: [
             {
               id: "assignment-parity",
-              slot_id: null,
+              slotId: null,
               position: "hall",
               kind: "regular",
-              profile_id: profileId,
-              ended_at: null,
-              profiles: null,
+              profileId,
+              endedAt: null,
+              name: null,
             },
           ],
-          check_ins: [
-            { id: "check-in-parity", profile_id: profileId, ...checkIn },
-          ],
+          checkIns: [{ id: "check-in-parity", profileId, ...checkIn }],
         },
       ],
-      rates: [{ ...rate, profileId: profileId }],
+      rates: [{ ...rate, profileId }],
       adjustments: [],
       excuses: [],
       rehearsals: [],
@@ -595,14 +593,14 @@ describe("payrollViewDays — payrollDays를 다시 짜지 않고 그대로 부�
       days: [
         {
           id: dayId,
-          work_date: workDate,
-          starts_at: "10:00:00",
-          ends_at: "19:00:00",
+          workDate,
+          startsAt: "10:00:00",
+          endsAt: "19:00:00",
         },
       ],
-      assignments: [{ day_id: dayId }],
+      assignments: [{ dayId }],
       adjustments: [],
-      checkIns: [{ day_id: dayId, ...checkIn }],
+      checkIns: [{ dayId, ...checkIn }],
       excuses: [],
       rehearsals: [],
       rates: [rate],

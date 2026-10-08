@@ -1,6 +1,6 @@
 import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendance.type";
 import { tallyMonthlyAttendance } from "@/entities/attendance/utils/attendanceSummary.utils";
-import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import {
   buildAttendanceInputs,
   daysOfPerson,
@@ -54,11 +54,8 @@ export function buildAttendanceTab(
 
   for (const day of days) {
     for (const assignment of day.assignments) {
-      if (assignment.ended_at === null) {
-        names.set(
-          assignment.profile_id,
-          assignment.profiles?.display_name ?? "",
-        );
+      if (assignment.endedAt === null) {
+        names.set(assignment.profileId, assignment.name ?? "");
       }
     }
   }

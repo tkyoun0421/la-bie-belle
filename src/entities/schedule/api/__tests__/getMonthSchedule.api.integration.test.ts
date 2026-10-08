@@ -85,7 +85,7 @@ describe("getMonthSchedule — 근무표 한 달을 days·slots·assignments로 
     owner = await createApprovedUser();
   });
 
-  it("근무자 세션에서도 배정에 임베드된 profiles.display_name이 온다", async () => {
+  it("근무자 세션에서도 배정에 임베드된 이름이 온다", async () => {
     const { month, dayId } = await seedOpenDay(admin);
     setDisplayName(owner.profileId, "초록잎");
     seedAssignment(dayId, owner.profileId, "training");
@@ -96,9 +96,9 @@ describe("getMonthSchedule — 근무표 한 달을 days·slots·assignments로 
     expect(day).toBeDefined();
 
     const assignment = day?.assignments.find(
-      (row) => row.profile_id === owner.profileId,
+      (row) => row.profileId === owner.profileId,
     );
-    expect(assignment?.profiles?.display_name).toBe("초록잎");
+    expect(assignment?.name).toBe("초록잎");
   });
 
   it("그 달 밖의 날은 안 온다", async () => {
@@ -112,7 +112,7 @@ describe("getMonthSchedule — 근무표 한 달을 days·slots·assignments로 
   });
 });
 
-describe("getMonthSchedule — days에 check_ins가 임베딩된다(design.md 「행위 밖의 실행 동작」)", () => {
+describe("getMonthSchedule — days에 checkIns가 임베딩된다(design.md 「행위 밖의 실행 동작」)", () => {
   let admin: AdminUser;
   let worker: ApprovedUser;
   let owner: ApprovedUser;
@@ -123,37 +123,37 @@ describe("getMonthSchedule — days에 check_ins가 임베딩된다(design.md �
     owner = await createApprovedUser();
   });
 
-  it("관리자 세션에 check_ins 행이 함께 온다", async () => {
+  it("관리자 세션에 checkIns 행이 함께 온다", async () => {
     const { month, dayId } = await seedOpenDay(admin);
     const { id, checkedAt } = seedCheckIn(dayId, owner.profileId);
 
     const days = await getMonthSchedule(admin.client, month);
     const day = days.find((row) => row.id === dayId);
 
-    expect(day?.check_ins).toEqual([
+    expect(day?.checkIns).toEqual([
       expect.objectContaining({
         id,
-        profile_id: owner.profileId,
-        checked_at: expect.any(String),
+        profileId: owner.profileId,
+        checkedAt: expect.any(String),
       }),
     ]);
-    expect(new Date(day!.check_ins[0].checked_at).getTime()).toBe(
+    expect(new Date(day!.checkIns[0].checkedAt).getTime()).toBe(
       new Date(checkedAt).getTime(),
     );
   });
 
-  it("근무자 세션에도 check_ins 행이 함께 온다(RLS는 is_approved)", async () => {
+  it("근무자 세션에도 checkIns 행이 함께 온다(RLS는 is_approved)", async () => {
     const { month, dayId } = await seedOpenDay(admin);
     const { id } = seedCheckIn(dayId, owner.profileId);
 
     const days = await getMonthSchedule(worker.client, month);
     const day = days.find((row) => row.id === dayId);
 
-    expect(day?.check_ins?.map((row) => row.id)).toEqual([id]);
+    expect(day?.checkIns?.map((row) => row.id)).toEqual([id]);
   });
 });
 
-describe("getMonthSchedule — assignments에 id·slot_id·kind가 온다(schedule-assign)", () => {
+describe("getMonthSchedule — assignments에 id·slotId·kind가 온다(schedule-assign)", () => {
   let admin: AdminUser;
   let owner: ApprovedUser;
 
@@ -184,11 +184,11 @@ describe("getMonthSchedule — assignments에 id·slot_id·kind가 온다(schedu
     const day = days.find((row) => row.id === dayId);
     const assignment = day?.assignments.find((row) => row.id === assignmentId);
 
-    expect(assignment?.slot_id).toBe(slotId);
+    expect(assignment?.slotId).toBe(slotId);
     expect(assignment?.kind).toBe("regular");
   });
 
-  it("교육 배정은 slot_id가 null이다", async () => {
+  it("교육 배정은 slotId가 null이다", async () => {
     const { month, dayId } = await seedOpenDay(admin);
     const assignmentId = seedAssignment(dayId, owner.profileId, "training");
 
@@ -196,7 +196,7 @@ describe("getMonthSchedule — assignments에 id·slot_id·kind가 온다(schedu
     const day = days.find((row) => row.id === dayId);
     const assignment = day?.assignments.find((row) => row.id === assignmentId);
 
-    expect(assignment?.slot_id).toBeNull();
+    expect(assignment?.slotId).toBeNull();
     expect(assignment?.kind).toBe("training");
   });
 });

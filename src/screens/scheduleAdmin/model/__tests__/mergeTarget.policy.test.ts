@@ -1,20 +1,20 @@
+import type { ScheduleSlot } from "@/entities/schedule/model/schedule.type";
 import {
   mergeTargetValidity,
   type MergeTargetAssignment,
   type MergeTargetInput,
-  type MergeTargetSlot,
 } from "@/screens/scheduleAdmin/model/mergeTarget.policy";
 
 function slot(
   id: string,
   positions: string[],
   endedAt: string | null = null,
-): MergeTargetSlot {
-  return { id, positions, ended_at: endedAt };
+): ScheduleSlot {
+  return { id, positions, endedAt };
 }
 
 function liveRegularAssignment(slotId: string): MergeTargetAssignment {
-  return { slot_id: slotId, kind: "regular", ended_at: null };
+  return { slotId, kind: "regular", endedAt: null };
 }
 
 function baseInput(

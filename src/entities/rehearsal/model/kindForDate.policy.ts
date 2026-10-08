@@ -1,9 +1,9 @@
 import type { RehearsalKind } from "@/entities/rehearsal/model/rehearsal.type";
 
 export type KindAssignment = {
-  work_date: string;
+  workDate: string;
   kind: string;
-  ended_at: string | null;
+  endedAt: string | null;
 };
 
 export function kindForDate(
@@ -12,9 +12,9 @@ export function kindForDate(
 ): RehearsalKind {
   const working = assignments.some(
     (assignment) =>
-      assignment.work_date === date &&
+      assignment.workDate === date &&
       assignment.kind === "regular" &&
-      assignment.ended_at === null,
+      assignment.endedAt === null,
   );
 
   return working ? "count" : "time";

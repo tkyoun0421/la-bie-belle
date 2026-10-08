@@ -1,5 +1,5 @@
-import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import { ASSIGNMENTS, DAYS } from "@/features/stats/model/__tests__/fixtures";
 import type {
   WorkAssignment,
@@ -78,7 +78,7 @@ describe("computeWorkTotals — 교육 배정도 그 포지션의 시간으로 �
   });
 });
 
-describe("computeWorkTotals — ended_at이 찬 배정은 셈에서 빠진다", () => {
+describe("computeWorkTotals — endedAt이 찬 배정은 셈에서 빠진다", () => {
   it("정하늘(p3)의 취소된 배정은 byPerson에도 byPosition에도 안 든다", () => {
     const totals = computeWorkTotals(ASSIGNMENTS, DAYS);
 
@@ -152,30 +152,30 @@ describe("computeWorkTotals — 배정도 날도 없으면 전부 0이다", () =
 function scheduleDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
   return {
     id: "day-1",
-    work_date: "2026-09-01",
-    starts_at: "10:00:00",
-    ends_at: "18:00:00",
-    opened_at: "2026-09-01T00:00:00.000Z",
+    workDate: "2026-09-01",
+    startsAt: "10:00:00",
+    endsAt: "18:00:00",
+    openedAt: "2026-09-01T00:00:00.000Z",
     slots: [],
-    check_ins: [],
+    checkIns: [],
     assignments: [],
     ...overrides,
   };
 }
 
 describe("workInputsOf — get-month-schedule이 실어 온 이름을 사람별 구획이 다시 안 읽고 그대로 옮긴다", () => {
-  it("assignment.profiles.display_name이 있으면 그 이름을 display_name으로 낸다", () => {
+  it("assignment.name이 있으면 그 이름을 displayName으로 낸다", () => {
     const inputs = workInputsOf([
       scheduleDay({
         assignments: [
           {
             id: "a1",
-            slot_id: null,
+            slotId: null,
             position: "메인",
             kind: "regular",
-            profile_id: "p1",
-            ended_at: null,
-            profiles: { display_name: "김지우" },
+            profileId: "p1",
+            endedAt: null,
+            name: "김지우",
           },
         ],
       }),
@@ -184,49 +184,49 @@ describe("workInputsOf — get-month-schedule이 실어 온 이름을 사람별 
     expect(inputs.assignments).toEqual([
       {
         id: "a1",
-        day_id: "day-1",
-        profile_id: "p1",
-        display_name: "김지우",
+        dayId: "day-1",
+        profileId: "p1",
+        displayName: "김지우",
         position: "메인",
         kind: "regular",
-        ended_at: null,
+        endedAt: null,
       },
     ]);
   });
 
-  it("profiles가 null이면 display_name이 빈 문자열이다 — 프로필을 다시 읽으러 가지 않는다", () => {
+  it("name이 null이면 displayName이 빈 문자열이다 — 프로필을 다시 읽으러 가지 않는다", () => {
     const inputs = workInputsOf([
       scheduleDay({
         assignments: [
           {
             id: "a1",
-            slot_id: null,
+            slotId: null,
             position: "메인",
             kind: "regular",
-            profile_id: "p1",
-            ended_at: null,
-            profiles: null,
+            profileId: "p1",
+            endedAt: null,
+            name: null,
           },
         ],
       }),
     ]);
 
-    expect(inputs.assignments[0]?.display_name).toBe("");
+    expect(inputs.assignments[0]?.displayName).toBe("");
   });
 
-  it("days는 work-totals가 쓰는 시각 필드 넷만 남기고 slots·check_ins는 안 딸려 온다", () => {
+  it("days는 work-totals가 쓰는 시각 필드 넷만 남기고 slots·checkIns는 안 딸려 온다", () => {
     const inputs = workInputsOf([
       scheduleDay({
-        slots: [{ id: "slot-1", positions: ["메인"], ended_at: null }],
+        slots: [{ id: "slot-1", positions: ["메인"], endedAt: null }],
       }),
     ]);
 
     expect(inputs.days).toEqual([
       {
         id: "day-1",
-        work_date: "2026-09-01",
-        starts_at: "10:00:00",
-        ends_at: "18:00:00",
+        workDate: "2026-09-01",
+        startsAt: "10:00:00",
+        endsAt: "18:00:00",
       },
     ]);
   });
@@ -254,12 +254,12 @@ describe("hoursLabel — 30분 꼬리를 반올림해 지우면 사람별 합과
 
 const LIVE_ASSIGNMENT: WorkAssignment = {
   id: "a1",
-  day_id: "day-1",
-  profile_id: "p1",
-  display_name: "김지우",
+  dayId: "day-1",
+  profileId: "p1",
+  displayName: "김지우",
   position: "메인",
   kind: "regular",
-  ended_at: null,
+  endedAt: null,
 };
 
 describe("isLiveAssignment — 배정이 끝난 자국은 취소·교대로 넘어간 자리라 셈에서 빠질 대상이다", () => {
@@ -271,7 +271,7 @@ describe("isLiveAssignment — 배정이 끝난 자국은 취소·교대로 넘�
     expect(
       isLiveAssignment({
         ...LIVE_ASSIGNMENT,
-        ended_at: "2026-09-05T00:00:00.000Z",
+        endedAt: "2026-09-05T00:00:00.000Z",
       }),
     ).toBe(false);
   });
@@ -279,9 +279,9 @@ describe("isLiveAssignment — 배정이 끝난 자국은 취소·교대로 넘�
 
 const BASE_DAY: WorkDay = {
   id: "day-1",
-  work_date: "2026-09-01",
-  starts_at: "10:00:00",
-  ends_at: "18:00:00",
+  workDate: "2026-09-01",
+  startsAt: "10:00:00",
+  endsAt: "18:00:00",
 };
 
 describe("shiftMinutes — 그날 근무 시간은 마감에서 시작을 뺀 값이라 사람마다 다시 안 잰다", () => {
@@ -291,7 +291,7 @@ describe("shiftMinutes — 그날 근무 시간은 마감에서 시작을 뺀 �
 
   it("09:00:00~17:30:00처럼 30분 꼬리가 있으면 510분으로 그 꼬리가 그대로 남는다", () => {
     expect(
-      shiftMinutes({ ...BASE_DAY, starts_at: "09:00:00", ends_at: "17:30:00" }),
+      shiftMinutes({ ...BASE_DAY, startsAt: "09:00:00", endsAt: "17:30:00" }),
     ).toBe(510);
   });
 });
