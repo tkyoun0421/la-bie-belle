@@ -211,7 +211,33 @@ describe("useApplicationsScreen — 한 질의를 두 방향으로 접는다", (
     expect(result.current.sheet).toEqual({
       deadline: DEADLINE,
       today: "2026-10-03",
+      canSave: true,
     });
+  });
+
+  it("고치지 않은 동안은 칸이 서버가 든 마감일을 따라간다", async () => {
+    const { result } = await mounted("2026-10");
+
+    act(() => result.current.openDeadline());
+
+    expect(result.current.sheet?.deadline).toBe(DEADLINE);
+
+    act(() => result.current.changeDeadlineDraft("2026-10-12"));
+
+    expect(result.current.sheet?.deadline).toBe("2026-10-12");
+  });
+
+  it("오늘 이전을 적으면 보낼 수 없다", async () => {
+    const { result } = await mounted("2026-10");
+
+    act(() => result.current.openDeadline());
+    act(() => result.current.changeDeadlineDraft("2026-10-02"));
+
+    expect(result.current.sheet?.canSave).toBe(false);
+
+    act(() => result.current.changeDeadlineDraft("2026-10-03"));
+
+    expect(result.current.sheet?.canSave).toBe(true);
   });
 
   it("마감일이 없으면 시트가 오늘로 선다", async () => {
@@ -231,7 +257,8 @@ describe("useApplicationsScreen — 한 질의를 두 방향으로 접는다", (
     const { result } = await mounted("2026-10");
 
     act(() => result.current.openDeadline());
-    act(() => result.current.saveDeadline("2026-10-12"));
+    act(() => result.current.changeDeadlineDraft("2026-10-12"));
+    act(() => result.current.saveDeadline());
 
     await waitFor(() =>
       expect(setApplicationDeadlineMock).toHaveBeenCalledWith(
@@ -251,7 +278,8 @@ describe("useApplicationsScreen — 한 질의를 두 방향으로 접는다", (
     const { result } = await mounted("2026-10");
 
     act(() => result.current.openDeadline());
-    act(() => result.current.saveDeadline("2026-10-12"));
+    act(() => result.current.changeDeadlineDraft("2026-10-12"));
+    act(() => result.current.saveDeadline());
 
     await waitFor(() => expect(result.current.failed).toBe(true));
 
@@ -264,7 +292,8 @@ describe("useApplicationsScreen — 한 질의를 두 방향으로 접는다", (
     const { result } = await mounted("2026-10");
 
     act(() => result.current.openDeadline());
-    act(() => result.current.saveDeadline("2026-10-12"));
+    act(() => result.current.changeDeadlineDraft("2026-10-12"));
+    act(() => result.current.saveDeadline());
 
     await waitFor(() => expect(result.current.failed).toBe(true));
 

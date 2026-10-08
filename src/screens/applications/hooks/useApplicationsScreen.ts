@@ -40,6 +40,7 @@ export type ApplicationsPersonGroup = {
 export type ApplicationsDeadlineSheet = {
   deadline: string;
   today: string;
+  canSave: boolean;
 };
 
 export type ApplicationsScreenController = {
@@ -56,7 +57,8 @@ export type ApplicationsScreenController = {
   chooseTab: (value: string) => void;
   openDeadline: () => void;
   closeDeadline: () => void;
-  saveDeadline: (deadline: string) => void;
+  changeDeadlineDraft: (typed: string) => void;
+  saveDeadline: () => void;
 };
 
 function tabOf(value: string): ApplicationsTab {
@@ -68,6 +70,7 @@ export function useApplicationsScreen(
 ): ApplicationsScreenController {
   const [tab, setTab] = useState<ApplicationsTab>(APPLICATIONS_TABS[0]);
   const [asking, setAsking] = useState(false);
+  const [draft, setDraft] = useState<string | null>(null);
 
   const clockOffset = serverClockStore((at) => at.offset);
   const now = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
@@ -90,6 +93,7 @@ export function useApplicationsScreen(
 
   const close = useCallback(() => {
     setAsking(false);
+    setDraft(null);
     reset();
   }, [reset]);
 
@@ -101,6 +105,7 @@ export function useApplicationsScreen(
 
   const applications = rows ?? [];
   const deadline = schedule?.applicationDeadline ?? null;
+  const typed = draft ?? deadline ?? today;
 
   return {
     title: applicationsTitle(month),
@@ -129,12 +134,13 @@ export function useApplicationsScreen(
       displayName: group.displayName,
       dates: group.workDates.map(spellApplicationDate).join(", "),
     })),
-    sheet: asking ? { deadline: deadline ?? today, today } : null,
+    sheet: asking ? { deadline: typed, today, canSave: typed >= today } : null,
     saving,
     failed,
     chooseTab: (value) => setTab(tabOf(value)),
     openDeadline: () => setAsking(true),
     closeDeadline: close,
-    saveDeadline: (chosen) => sendDeadline({ month, deadline: chosen }),
+    changeDeadlineDraft: setDraft,
+    saveDeadline: () => sendDeadline({ month, deadline: typed }),
   };
 }

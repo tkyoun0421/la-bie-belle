@@ -87,7 +87,13 @@ export type ScheduleAdminSheet =
       saving: boolean;
       failed: boolean;
     }
-  | { kind: "deadline"; deadline: string; saving: boolean; failed: boolean }
+  | {
+      kind: "deadline";
+      deadline: string;
+      canSave: boolean;
+      saving: boolean;
+      failed: boolean;
+    }
   | {
       kind: "confirm";
       openSlots: readonly OpenSlot[];
@@ -154,7 +160,8 @@ export type ScheduleAdminScreenController = {
   closeSheet: () => void;
   writeCreateDeadline: (typed: string) => void;
   createSchedule: () => void;
-  saveDeadline: (deadline: string) => void;
+  changeDeadlineDraft: (typed: string) => void;
+  saveDeadline: () => void;
   confirmMonth: () => void;
   writeHoursStarts: (typed: string) => void;
   writeHoursEnds: (typed: string) => void;
@@ -168,7 +175,7 @@ export type ScheduleAdminScreenController = {
 
 type SheetState =
   | { kind: "create"; deadline: string }
-  | { kind: "deadline" }
+  | { kind: "deadline"; draft: string | null }
   | { kind: "confirm" }
   | { kind: "hours"; starts: string; ends: string }
   | { kind: "close" };
@@ -409,9 +416,12 @@ export function useScheduleAdminScreen({
     }
 
     if (sheetState?.kind === "deadline") {
+      const typed = sheetState.draft ?? deadline ?? today;
+
       return {
         kind: "deadline",
-        deadline: deadline ?? today,
+        deadline: typed,
+        canSave: typed >= today,
         saving: changeDeadline.isPending,
         failed: changeDeadline.isError,
       };
@@ -523,7 +533,7 @@ export function useScheduleAdminScreen({
         ? SCHEDULE_ADMIN_COPY.confirmLocked
         : `${monthName}${SCHEDULE_ADMIN_COPY.confirmSuffix}`,
     openCreateSheet: () => setSheetState({ kind: "create", deadline: "" }),
-    openDeadlineSheet: () => setSheetState({ kind: "deadline" }),
+    openDeadlineSheet: () => setSheetState({ kind: "deadline", draft: null }),
     openConfirmSheet: () => setSheetState({ kind: "confirm" }),
     sheet,
     closeSheet,
@@ -536,8 +546,18 @@ export function useScheduleAdminScreen({
         create.mutate({ month, deadline: sheetState.deadline });
       }
     },
-    saveDeadline: (chosen) =>
-      changeDeadline.mutate({ month, deadline: chosen }),
+    changeDeadlineDraft: (typed) =>
+      setSheetState((open) =>
+        open?.kind === "deadline" ? { ...open, draft: typed } : open,
+      ),
+    saveDeadline: () => {
+      if (sheetState?.kind === "deadline") {
+        changeDeadline.mutate({
+          month,
+          deadline: sheetState.draft ?? deadline ?? today,
+        });
+      }
+    },
     confirmMonth: () => confirm.mutate({ month }),
     writeHoursStarts: (typed) =>
       setSheetState((open) =>

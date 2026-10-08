@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { View } from "react-native";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
@@ -9,22 +8,24 @@ const SAVE_FAILED = "보내지 못했어요. 다시 시도해주세요";
 export type DeadlineSheetProps = {
   deadline: string;
   today: string;
+  canSave: boolean;
   saving: boolean;
   failed: boolean;
+  onChange: (typed: string) => void;
   onClose: () => void;
-  onSave: (deadline: string) => void;
+  onSave: () => void;
 };
 
 export function DeadlineSheet({
   deadline,
   today,
+  canSave,
   saving,
   failed,
+  onChange,
   onClose,
   onSave,
 }: DeadlineSheetProps) {
-  const [draft, setDraft] = useState(deadline);
-
   return (
     <>
       <Text size="lg" weight="bold">
@@ -36,8 +37,8 @@ export function DeadlineSheet({
         testID="schedule-deadline-input"
         placeholder={today}
         autoCapitalize="none"
-        value={draft}
-        onChangeText={setDraft}
+        value={deadline}
+        onChangeText={onChange}
       />
 
       <Text size="sm" tone="subtle" className="mt-2">
@@ -62,8 +63,8 @@ export function DeadlineSheet({
           variant="primary"
           className="flex-1"
           loading={saving}
-          disabled={draft < today}
-          onPress={() => onSave(draft)}
+          disabled={!canSave}
+          onPress={onSave}
         >
           바꾸기
         </Button>

@@ -453,7 +453,8 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
       expect.objectContaining({ kind: "deadline", deadline: "2026-10-10" }),
     );
 
-    act(() => result.current.saveDeadline("2026-10-06"));
+    act(() => result.current.changeDeadlineDraft("2026-10-06"));
+    act(() => result.current.saveDeadline());
 
     await waitFor(() =>
       expect(setApplicationDeadlineMock).toHaveBeenCalledWith(
@@ -464,6 +465,39 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     );
 
     await waitFor(() => expect(result.current.sheet).toBeNull());
+  });
+
+  it("고치지 않은 동안은 칸이 서버가 든 마감일을 따라간다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.openDeadlineSheet());
+
+    expect(result.current.sheet).toEqual(
+      expect.objectContaining({ deadline: "2026-10-10" }),
+    );
+
+    act(() => result.current.changeDeadlineDraft("2026-10-06"));
+
+    expect(result.current.sheet).toEqual(
+      expect.objectContaining({ deadline: "2026-10-06" }),
+    );
+  });
+
+  it("오늘 이전을 적으면 보낼 수 없다", async () => {
+    const { result } = await mounted();
+
+    act(() => result.current.openDeadlineSheet());
+    act(() => result.current.changeDeadlineDraft("2026-10-04"));
+
+    expect(result.current.sheet).toEqual(
+      expect.objectContaining({ canSave: false }),
+    );
+
+    act(() => result.current.changeDeadlineDraft("2026-10-05"));
+
+    expect(result.current.sheet).toEqual(
+      expect.objectContaining({ canSave: true }),
+    );
   });
 
   it("확정 시트는 끝난 것을 시트가 말하고 닫는 손이 따로다", async () => {

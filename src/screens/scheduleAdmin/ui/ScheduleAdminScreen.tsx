@@ -314,8 +314,10 @@ export function ScheduleAdminScreen({
           <DeadlineSheet
             deadline={screen.sheet.deadline}
             today={screen.today}
+            canSave={screen.sheet.canSave}
             saving={screen.sheet.saving}
             failed={screen.sheet.failed}
+            onChange={screen.changeDeadlineDraft}
             onClose={screen.closeSheet}
             onSave={screen.saveDeadline}
           />
