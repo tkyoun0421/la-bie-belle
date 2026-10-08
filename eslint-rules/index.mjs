@@ -1,4 +1,6 @@
 import dumbUi from "./dumbUi.mjs";
+import entitiesReadOnly from "./entitiesReadOnly.mjs";
+import featuresQueryComposes from "./featuresQueryComposes.mjs";
 import noApiImportInUi from "./noApiImportInUi.mjs";
 import noArbitraryClassValues from "./noArbitraryClassValues.mjs";
 import noColorLiterals from "./noColorLiterals.mjs";
@@ -16,6 +18,8 @@ const house = {
   meta: { name: "eslint-plugin-house" },
   rules: {
     "dumb-ui": dumbUi,
+    "entities-read-only": entitiesReadOnly,
+    "features-query-composes": featuresQueryComposes,
     "no-api-import-in-ui": noApiImportInUi,
     "no-arbitrary-class-values": noArbitraryClassValues,
     "no-color-literals": noColorLiterals,

@@ -14,3 +14,5 @@ export const QUERY_HOOKS = new Set([
   "useIsFetching",
   "useIsMutating",
 ]);
+
+export const MUTATION_HOOKS = new Set(["useMutation"]);

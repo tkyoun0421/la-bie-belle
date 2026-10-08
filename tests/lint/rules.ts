@@ -7,9 +7,9 @@ export type EnforcedRule = {
   test: string | null;
 };
 
-export const DOCUMENTED_LINT_RULE_COUNT = 26;
+export const DOCUMENTED_LINT_RULE_COUNT = 28;
 
-export const ENFORCED_RULE_COUNT = 26;
+export const ENFORCED_RULE_COUNT = 28;
 
 export const RULE_NUMBERS_NEVER_ASSIGNED = [6, 7, 8];
 
@@ -213,5 +213,21 @@ export const RULES: EnforcedRule[] = [
     ruleId: "house/no-supabase-instance-in-ui",
     enforcedBy: null,
     test: "eslint-rules/__tests__/noSupabaseInstanceInUi.test.ts",
+  },
+  {
+    no: 27,
+    name: "entities의 쓰기 훅",
+    mechanism: "house",
+    ruleId: "house/entities-read-only",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/entitiesReadOnly.test.ts",
+  },
+  {
+    no: 28,
+    name: "features의 읽기 service가 맞추는 도메인 수",
+    mechanism: "house",
+    ruleId: "house/features-query-composes",
+    enforcedBy: null,
+    test: "eslint-rules/__tests__/featuresQueryComposes.test.ts",
   },
 ];
