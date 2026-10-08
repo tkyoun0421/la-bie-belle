@@ -1,9 +1,9 @@
 import { canNotifyMember } from "@/screens/scheduleAdmin/model/notifyReach.policy";
 
 const MEMBERS = [
-  { id: "p1", notifications_enabled: true, has_device: true },
-  { id: "p2", notifications_enabled: false, has_device: true },
-  { id: "p3", notifications_enabled: true, has_device: false },
+  { id: "p1", notificationsEnabled: true, hasDevice: true },
+  { id: "p2", notificationsEnabled: false, hasDevice: true },
+  { id: "p3", notificationsEnabled: true, hasDevice: false },
 ];
 
 describe("canNotifyMember — 의사와 기기가 둘 다 서야 닿는다", () => {

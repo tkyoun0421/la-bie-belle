@@ -3,23 +3,23 @@ import { isLastAdmin } from "@/entities/member/model/isLastAdmin.policy";
 const ADMIN = (id: string, overrides: Partial<Row> = {}) => ({
   id,
   role: "admin",
-  left_at: null,
-  blocked_at: null,
+  leftAt: null,
+  blockedAt: null,
   ...overrides,
 });
 
 const WORKER = (id: string) => ({
   id,
   role: "worker",
-  left_at: null,
-  blocked_at: null,
+  leftAt: null,
+  blockedAt: null,
 });
 
 type Row = {
   id: string;
   role: string;
-  left_at: string | null;
-  blocked_at: string | null;
+  leftAt: string | null;
+  blockedAt: string | null;
 };
 
 describe("isLastAdmin — 재직 중이고 차단 안 된 관리자가 하나뿐인지를 본다", () => {
@@ -38,7 +38,7 @@ describe("isLastAdmin — 재직 중이고 차단 안 된 관리자가 하나뿐
   it("퇴사한 관리자는 셈에서 빠져 남은 활성 관리자가 하나면 참이다", () => {
     const rows = [
       ADMIN("1"),
-      ADMIN("2", { left_at: "2026-01-01T00:00:00.000Z" }),
+      ADMIN("2", { leftAt: "2026-01-01T00:00:00.000Z" }),
     ];
 
     expect(isLastAdmin(rows, "1")).toBe(true);
@@ -47,7 +47,7 @@ describe("isLastAdmin — 재직 중이고 차단 안 된 관리자가 하나뿐
   it("차단된 관리자는 셈에서 빠져 남은 활성 관리자가 하나면 참이다", () => {
     const rows = [
       ADMIN("1"),
-      ADMIN("2", { blocked_at: "2026-01-01T00:00:00.000Z" }),
+      ADMIN("2", { blockedAt: "2026-01-01T00:00:00.000Z" }),
     ];
 
     expect(isLastAdmin(rows, "1")).toBe(true);

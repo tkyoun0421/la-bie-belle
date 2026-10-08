@@ -55,15 +55,15 @@ function createWrapper() {
 const BLOCKED = [
   {
     id: "p1",
-    display_name: "최민재",
-    photo_url: null,
-    blocked_at: "2026-10-01T05:00:00.000Z",
+    displayName: "최민재",
+    photoUrl: null,
+    blockedAt: "2026-10-01T05:00:00.000Z",
   },
   {
     id: "p2",
-    display_name: "한지우",
-    photo_url: null,
-    blocked_at: null,
+    displayName: "한지우",
+    photoUrl: null,
+    blockedAt: null,
   },
 ];
 

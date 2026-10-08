@@ -1,14 +1,14 @@
+import type { ActiveMember } from "@/entities/member/model/member.type";
 import {
   PERMISSION_OF_OTHERS,
   REACHABLE,
 } from "@/entities/notification/consts/notification.const";
 import { getReachState } from "@/entities/notification/model/reachState.policy";
 
-export type NotifyCandidate = {
-  id: string;
-  notifications_enabled: boolean;
-  has_device: boolean;
-};
+export type NotifyCandidate = Pick<
+  ActiveMember,
+  "id" | "notificationsEnabled" | "hasDevice"
+>;
 
 export function canNotifyMember(
   members: readonly NotifyCandidate[],
@@ -19,8 +19,8 @@ export function canNotifyMember(
   return (
     found !== undefined &&
     getReachState({
-      notificationsEnabled: found.notifications_enabled,
-      hasDevice: found.has_device,
+      notificationsEnabled: found.notificationsEnabled,
+      hasDevice: found.hasDevice,
       permission: PERMISSION_OF_OTHERS,
     }) === REACHABLE
   );

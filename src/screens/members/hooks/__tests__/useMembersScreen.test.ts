@@ -68,42 +68,42 @@ function createWrapper() {
 function member(over: Record<string, unknown>) {
   return {
     id: "p1",
-    display_name: "이준호",
-    photo_url: null,
+    displayName: "이준호",
+    photoUrl: null,
     role: "member",
-    left_at: null,
-    blocked_at: null,
-    erased_at: null,
+    leftAt: null,
+    blockedAt: null,
+    erasedAt: null,
     phone: "010-0000-0001",
-    birth_date: "1998-03-04",
+    birthDate: "1998-03-04",
     gender: "male",
-    notifications_enabled: true,
-    has_device: true,
+    notificationsEnabled: true,
+    hasDevice: true,
     ...over,
   };
 }
 
 const ACTIVE = [
-  member({ id: "p1", display_name: "이준호" }),
-  member({ id: "p2", display_name: "박수진", role: "admin" }),
+  member({ id: "p1", displayName: "이준호" }),
+  member({ id: "p2", displayName: "박수진", role: "admin" }),
 ];
 
 const LEFT = [
   member({
     id: "p3",
-    display_name: "최민서",
-    left_at: "2026-09-20T00:00:00.000Z",
-    notifications_enabled: false,
-    has_device: false,
+    displayName: "최민서",
+    leftAt: "2026-09-20T00:00:00.000Z",
+    notificationsEnabled: false,
+    hasDevice: false,
   }),
   member({
     id: "p4",
-    display_name: "강하늘",
-    left_at: "2024-01-05T00:00:00.000Z",
-    erased_at: "2025-01-05T00:00:00.000Z",
+    displayName: "강하늘",
+    leftAt: "2024-01-05T00:00:00.000Z",
+    erasedAt: "2025-01-05T00:00:00.000Z",
     phone: null,
-    notifications_enabled: false,
-    has_device: false,
+    notificationsEnabled: false,
+    hasDevice: false,
   }),
 ];
 

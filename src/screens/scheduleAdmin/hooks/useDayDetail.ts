@@ -165,7 +165,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
     (profileId: string) =>
       assignments.find((one) => one.profile_id === profileId)?.profiles
         ?.display_name ??
-      members.find((one) => one.id === profileId)?.display_name ??
+      members.find((one) => one.id === profileId)?.displayName ??
       "",
     [assignments, members],
   );
@@ -475,9 +475,9 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
             gender: inspecting.gender,
             birthDate:
               members.find((one) => one.id === inspecting.profileId)
-                ?.birth_date ?? null,
+                ?.birthDate ?? null,
             qualifications: qualifications
-              .filter((one) => one.profile_id === inspecting.profileId)
+              .filter((one) => one.profileId === inspecting.profileId)
               .map((one) => one.position),
             close: () => setInspecting(null),
           },

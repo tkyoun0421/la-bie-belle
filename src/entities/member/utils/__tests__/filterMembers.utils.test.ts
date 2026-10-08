@@ -6,24 +6,24 @@ import {
 
 type TestRow = MemberFilterRow & {
   id: string;
-  display_name: string | null;
+  displayName: string | null;
 };
 
 function buildRow(overrides: Partial<TestRow> = {}): TestRow {
   return {
     id: "row-1",
-    display_name: "박서연",
-    submitted_at: null,
-    approved_at: null,
-    rejected_at: null,
-    blocked_at: null,
+    displayName: "박서연",
+    submittedAt: null,
+    approvedAt: null,
+    rejectedAt: null,
+    blockedAt: null,
     ...overrides,
   };
 }
 
 describe("filterPendingMembers — 제출됐고 아직 판정 안 된 사람만 남긴다", () => {
   it("프로필을 안 보낸 사람은 목록에서 빠진다", () => {
-    const rows = [buildRow({ id: "1", submitted_at: null })];
+    const rows = [buildRow({ id: "1", submittedAt: null })];
 
     expect(filterPendingMembers(rows)).toHaveLength(0);
   });
@@ -32,8 +32,8 @@ describe("filterPendingMembers — 제출됐고 아직 판정 안 된 사람만 
     const rows = [
       buildRow({
         id: "1",
-        submitted_at: "2026-09-20T00:00:00.000Z",
-        approved_at: "2026-09-21T00:00:00.000Z",
+        submittedAt: "2026-09-20T00:00:00.000Z",
+        approvedAt: "2026-09-21T00:00:00.000Z",
       }),
     ];
 
@@ -44,8 +44,8 @@ describe("filterPendingMembers — 제출됐고 아직 판정 안 된 사람만 
     const rows = [
       buildRow({
         id: "1",
-        submitted_at: "2026-09-20T00:00:00.000Z",
-        rejected_at: "2026-09-21T00:00:00.000Z",
+        submittedAt: "2026-09-20T00:00:00.000Z",
+        rejectedAt: "2026-09-21T00:00:00.000Z",
       }),
     ];
 
@@ -56,8 +56,8 @@ describe("filterPendingMembers — 제출됐고 아직 판정 안 된 사람만 
     const rows = [
       buildRow({
         id: "1",
-        submitted_at: "2026-09-20T00:00:00.000Z",
-        blocked_at: "2026-09-22T00:00:00.000Z",
+        submittedAt: "2026-09-20T00:00:00.000Z",
+        blockedAt: "2026-09-22T00:00:00.000Z",
       }),
     ];
 
@@ -68,13 +68,13 @@ describe("filterPendingMembers — 제출됐고 아직 판정 안 된 사람만 
     const rows = [
       buildRow({
         id: "나중",
-        display_name: "이도윤",
-        submitted_at: "2026-09-23T00:00:00.000Z",
+        displayName: "이도윤",
+        submittedAt: "2026-09-23T00:00:00.000Z",
       }),
       buildRow({
         id: "먼저",
-        display_name: "박서연",
-        submitted_at: "2026-09-20T00:00:00.000Z",
+        displayName: "박서연",
+        submittedAt: "2026-09-20T00:00:00.000Z",
       }),
     ];
 
@@ -91,7 +91,7 @@ describe("filterPendingMembers — 제출됐고 아직 판정 안 된 사람만 
 
 describe("filterBlockedMembers — 차단된 사람만 남긴다", () => {
   it("차단 안 된 사람은 목록에서 빠진다", () => {
-    const rows = [buildRow({ id: "1", blocked_at: null })];
+    const rows = [buildRow({ id: "1", blockedAt: null })];
 
     expect(filterBlockedMembers(rows)).toHaveLength(0);
   });
@@ -100,13 +100,13 @@ describe("filterBlockedMembers — 차단된 사람만 남긴다", () => {
     const rows = [
       buildRow({
         id: "오래됨",
-        display_name: "박서연",
-        blocked_at: "2026-09-01T00:00:00.000Z",
+        displayName: "박서연",
+        blockedAt: "2026-09-01T00:00:00.000Z",
       }),
       buildRow({
         id: "최근",
-        display_name: "이도윤",
-        blocked_at: "2026-09-20T00:00:00.000Z",
+        displayName: "이도윤",
+        blockedAt: "2026-09-20T00:00:00.000Z",
       }),
     ];
 
