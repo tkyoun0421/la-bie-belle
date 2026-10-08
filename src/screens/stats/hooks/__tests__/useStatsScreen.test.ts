@@ -135,8 +135,8 @@ beforeEach(() => {
   getMyProfileMock.mockResolvedValue({
     id: "me",
     role: "worker",
-    approved_at: "2026-01-02T00:00:00.000Z",
-    left_at: null,
+    approvedAt: "2026-01-02T00:00:00.000Z",
+    leftAt: null,
   });
   getProfilePrivateMock.mockResolvedValue({ phone: "010-0000-0001" });
   getMonthScheduleMock.mockResolvedValue([]);

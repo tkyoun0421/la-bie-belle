@@ -17,5 +17,3 @@ export type ProfilePrivateRow = {
   birth_date: string | null;
   gender: string | null;
 };
-
-export type MyProfile = MyProfileRow & ProfilePrivateRow;

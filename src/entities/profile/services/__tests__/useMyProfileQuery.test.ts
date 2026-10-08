@@ -38,22 +38,22 @@ function createWrapper() {
 
 const FAKE_CLIENT = {} as never;
 
-const PROFILE_ROW = {
+const PROFILE = {
   id: "profile-1",
-  display_name: "박서연",
-  photo_url: null,
+  displayName: "박서연",
+  photoUrl: null,
   role: "worker",
-  submitted_at: "2026-09-01T00:00:00.000Z",
-  approved_at: "2026-09-02T00:00:00.000Z",
-  rejected_at: null,
-  blocked_at: null,
-  left_at: null,
+  submittedAt: "2026-09-01T00:00:00.000Z",
+  approvedAt: "2026-09-02T00:00:00.000Z",
+  rejectedAt: null,
+  blockedAt: null,
+  leftAt: null,
 };
 
-const PRIVATE_ROW = {
+const PRIVATE_VALUES = {
   email: "person@example.com",
   phone: "010-0000-0001",
-  birth_date: "1993-04-21",
+  birthDate: "1993-04-21",
   gender: "female",
 };
 
@@ -79,8 +79,8 @@ describe("useMyProfileQuery — profile과 profile_private을 합쳐 하나로 �
   });
 
   it("둘 다 응답하면 값을 합쳐서 낸다", async () => {
-    getMyProfileMock.mockResolvedValue(PROFILE_ROW);
-    getProfilePrivateMock.mockResolvedValue(PRIVATE_ROW);
+    getMyProfileMock.mockResolvedValue(PROFILE);
+    getProfilePrivateMock.mockResolvedValue(PRIVATE_VALUES);
     const { wrapper } = createWrapper();
 
     const { result } = renderHook(
@@ -94,7 +94,7 @@ describe("useMyProfileQuery — profile과 profile_private을 합쳐 하나로 �
 
     expect(result.current.data).toEqual(
       expect.objectContaining({
-        display_name: "박서연",
+        displayName: "박서연",
         phone: "010-0000-0001",
         gender: "female",
       }),
@@ -102,7 +102,7 @@ describe("useMyProfileQuery — profile과 profile_private을 합쳐 하나로 �
   });
 
   it("private 읽기가 실패하면 error를 낸다", async () => {
-    getMyProfileMock.mockResolvedValue(PROFILE_ROW);
+    getMyProfileMock.mockResolvedValue(PROFILE);
     getProfilePrivateMock.mockRejectedValue(new Error("통신이 끊겼다"));
     const { wrapper } = createWrapper();
 

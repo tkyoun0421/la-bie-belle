@@ -5,7 +5,7 @@ import type { ToastKind } from "@/shared/ui/Toast";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
-import type { ProfilePrivateRow } from "@/entities/profile/api/profile.dto";
+import type { ProfilePrivate } from "@/entities/profile/model/profile.type";
 import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
 import { useApproveMemberMutation } from "@/features/memberAdmin/services/useApproveMemberMutation";
 import { useBlockMemberMutation } from "@/features/memberAdmin/services/useBlockMemberMutation";
@@ -29,7 +29,7 @@ export type PendingSheet = {
   name: string;
   photoUrl: string | null;
   sentAt: string;
-  values: ProfilePrivateRow | null;
+  values: ProfilePrivate | null;
 };
 
 export type PendingListState = "loading" | "empty" | "rows";

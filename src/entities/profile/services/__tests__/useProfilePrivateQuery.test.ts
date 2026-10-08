@@ -36,7 +36,7 @@ const FAKE_CLIENT = {} as never;
 const VALUES = {
   email: "someone@example.com",
   phone: "010-0000-0001",
-  birth_date: "1998-03-04",
+  birthDate: "1998-03-04",
   gender: "male",
 };
 

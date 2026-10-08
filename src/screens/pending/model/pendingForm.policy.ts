@@ -1,3 +1,4 @@
+import type { Profile } from "@/entities/profile/model/profile.type";
 import { PENDING_STEPS } from "@/screens/pending/consts/pending.const";
 import type {
   PendingStage,
@@ -8,15 +9,12 @@ export function firstOpenStep(frozen: readonly Step[]): Step | null {
   return PENDING_STEPS.find((step) => !frozen.includes(step)) ?? null;
 }
 
-export type StageSource = {
-  submitted_at: string | null;
-  rejected_at: string | null;
-};
+export type StageSource = Pick<Profile, "submittedAt" | "rejectedAt">;
 
 export function stageOfProfile(profile: StageSource | null): PendingStage {
-  if (profile?.rejected_at) {
+  if (profile?.rejectedAt) {
     return "rejected";
   }
 
-  return profile?.submitted_at ? "waiting" : "form";
+  return profile?.submittedAt ? "waiting" : "form";
 }

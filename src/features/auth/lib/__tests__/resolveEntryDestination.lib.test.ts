@@ -1,22 +1,22 @@
 import { jest } from "@jest/globals";
 import type { DB } from "@/shared/api/database";
-import type { MyProfileRow } from "@/entities/profile/api/profile.dto";
+import type { Profile } from "@/entities/profile/model/profile.type";
 import { resolveEntryDestination } from "@/features/auth/lib/resolveEntryDestination.lib";
 
 const fakeClient = {} as DB;
 
-function buildRow(overrides: Partial<MyProfileRow> = {}): MyProfileRow {
+function buildRow(overrides: Partial<Profile> = {}): Profile {
   return {
     id: "profile-1",
-    display_name: "가짜 이름",
-    photo_url: null,
+    displayName: "가짜 이름",
+    photoUrl: null,
     role: "worker",
-    submitted_at: "2026-09-01T00:00:00.000Z",
-    approved_at: "2026-09-01T00:00:00.000Z",
-    rejected_at: null,
-    blocked_at: null,
-    left_at: null,
-    notifications_enabled: true,
+    submittedAt: "2026-09-01T00:00:00.000Z",
+    approvedAt: "2026-09-01T00:00:00.000Z",
+    rejectedAt: null,
+    blockedAt: null,
+    leftAt: null,
+    notificationsEnabled: true,
     ...overrides,
   };
 }
@@ -69,7 +69,7 @@ describe("resolveEntryDestination — 세션 유무에 따라 프로필을 읽�
     const destination = await resolveEntryDestination("user-1", {
       client: fakeClient,
       ensureProfile: async () => {},
-      getMyProfile: async () => buildRow({ approved_at: null }),
+      getMyProfile: async () => buildRow({ approvedAt: null }),
     });
 
     expect(destination).toBe("/pending");
@@ -80,7 +80,7 @@ describe("resolveEntryDestination — 세션 유무에 따라 프로필을 읽�
       client: fakeClient,
       ensureProfile: async () => {},
       getMyProfile: async () =>
-        buildRow({ blocked_at: "2026-09-05T00:00:00.000Z" }),
+        buildRow({ blockedAt: "2026-09-05T00:00:00.000Z" }),
     });
 
     expect(destination).toBe("/blocked");
@@ -91,7 +91,7 @@ describe("resolveEntryDestination — 세션 유무에 따라 프로필을 읽�
       client: fakeClient,
       ensureProfile: async () => {},
       getMyProfile: async () =>
-        buildRow({ left_at: "2026-09-10T00:00:00.000Z" }),
+        buildRow({ leftAt: "2026-09-10T00:00:00.000Z" }),
     });
 
     expect(destination).toBe("/left");

@@ -1,5 +1,5 @@
 import type { DB } from "@/shared/api/database";
-import type { MyProfile } from "@/entities/profile/api/profile.dto";
+import type { MyProfile } from "@/entities/profile/model/profile.type";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
 import { useProfilePrivateQuery } from "@/entities/profile/services/useProfilePrivateQuery";
 

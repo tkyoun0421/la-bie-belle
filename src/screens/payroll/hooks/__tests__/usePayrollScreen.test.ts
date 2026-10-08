@@ -121,8 +121,8 @@ beforeEach(() => {
   getMyProfileMock.mockResolvedValue({
     id: "me",
     role: "worker",
-    approved_at: "2026-01-02T00:00:00.000Z",
-    left_at: null,
+    approvedAt: "2026-01-02T00:00:00.000Z",
+    leftAt: null,
   });
   getProfilePrivateMock.mockResolvedValue({ phone: "010-0000-0001" });
   getPayrollMonthMock.mockResolvedValue(EMPTY_PAYROLL);
@@ -179,8 +179,8 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
     getMyProfileMock.mockResolvedValue({
       id: "me",
       role: "worker",
-      approved_at: `${TODAY}T00:00:00.000Z`,
-      left_at: null,
+      approvedAt: `${TODAY}T00:00:00.000Z`,
+      leftAt: null,
     });
 
     const { result } = await mounted();
@@ -250,8 +250,8 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
     getMyProfileMock.mockResolvedValue({
       id: "me",
       role: "worker",
-      approved_at: "2026-01-02T00:00:00.000Z",
-      left_at: "2026-09-30T00:00:00.000Z",
+      approvedAt: "2026-01-02T00:00:00.000Z",
+      leftAt: "2026-09-30T00:00:00.000Z",
     });
 
     const { result } = await mounted();
@@ -272,8 +272,8 @@ describe("usePayrollScreen — 기간이 날짜 하나와 단위 둘로 산다",
     getMyProfileMock.mockResolvedValue({
       id: "me",
       role: "worker",
-      approved_at: "2026-01-02T00:00:00.000Z",
-      left_at: "2026-09-30T00:00:00.000Z",
+      approvedAt: "2026-01-02T00:00:00.000Z",
+      leftAt: "2026-09-30T00:00:00.000Z",
     });
 
     const { result } = await mounted();

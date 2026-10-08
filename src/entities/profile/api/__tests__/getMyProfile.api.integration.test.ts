@@ -12,14 +12,14 @@ describe("자기 프로필 행을 읽는다", () => {
 
     expect(profile).toMatchObject({
       id: user.profileId,
-      display_name: null,
-      photo_url: null,
+      displayName: null,
+      photoUrl: null,
       role: "member",
-      submitted_at: null,
-      approved_at: null,
-      rejected_at: null,
-      blocked_at: null,
-      left_at: null,
+      submittedAt: null,
+      approvedAt: null,
+      rejectedAt: null,
+      blockedAt: null,
+      leftAt: null,
     });
   });
 
