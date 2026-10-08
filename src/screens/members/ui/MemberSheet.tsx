@@ -8,7 +8,7 @@ import { Icon } from "@/shared/ui/Icon";
 import { Input } from "@/shared/ui/Input";
 import { MorePopover, MorePopoverItem } from "@/shared/ui/MorePopover";
 import { Text } from "@/shared/ui/Text";
-import type { MemberRow } from "@/entities/member/api/member.dto";
+import type { Member } from "@/entities/member/model/member.type";
 import { canSaveDisplayName } from "@/entities/profile/model/canSaveDisplayName.policy";
 import { formatBirthDate } from "@/entities/profile/utils/formatBirthDate.utils";
 import { spellGender } from "@/entities/profile/utils/spellGender.utils";
@@ -26,7 +26,7 @@ import type { MemberSheetFace } from "@/screens/members/model/members.type";
 import { spellLeftAt } from "@/screens/members/utils/spellLeftAt.utils";
 
 export type MemberSheetProps = {
-  member: MemberRow;
+  member: Member;
   today: string;
   lastAdmin: boolean;
   reachLine: string | null;
@@ -93,9 +93,9 @@ export function MemberSheet({
 }: MemberSheetProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const name = member.display_name ?? "";
-  const left = member.left_at !== null;
-  const erased = member.erased_at !== null;
+  const name = member.displayName ?? "";
+  const left = member.leftAt !== null;
+  const erased = member.erasedAt !== null;
   const admin = member.role === "admin";
   const renaming = face === "rename";
 
@@ -134,11 +134,7 @@ export function MemberSheet({
         )}
       </View>
 
-      <Avatar
-        name={name}
-        photoUrl={member.photo_url}
-        size={SHEET_AVATAR_SIZE}
-      />
+      <Avatar name={name} photoUrl={member.photoUrl} size={SHEET_AVATAR_SIZE} />
       <View className="mt-4 flex-row items-center gap-2">
         <Text size="xl" weight="semibold">
           {name}
@@ -148,9 +144,9 @@ export function MemberSheet({
         ) : null}
       </View>
 
-      {left && member.left_at ? (
+      {left && member.leftAt ? (
         <Text size="sm" tone="subtle" numeric className="mt-1">
-          {`${spellLeftAt(member.left_at)}${MEMBER_SHEET_COPY.leftSuffix}`}
+          {`${spellLeftAt(member.leftAt)}${MEMBER_SHEET_COPY.leftSuffix}`}
         </Text>
       ) : null}
       {erased ? (
@@ -192,7 +188,7 @@ export function MemberSheet({
             label={MEMBER_SHEET_COPY.birthLabel}
             numeric
             value={
-              member.birth_date ? formatBirthDate(member.birth_date, today) : ""
+              member.birthDate ? formatBirthDate(member.birthDate, today) : ""
             }
           />
           {reachLine ? (

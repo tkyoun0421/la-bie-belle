@@ -77,14 +77,14 @@ describe("getQualifications dal — qualifications 뷰 전체를 읽는다", () 
     await seedOpenDay(admin);
   });
 
-  it("자격 부여 행이 (profile_id, position) 꼴로 온다", async () => {
+  it("자격 부여 행이 (profileId, position) 꼴로 온다", async () => {
     const grantee = await createApprovedUser();
     seedGrant(grantee.profileId, "팀장", admin.profileId);
 
     const rows = await getQualifications(admin.client);
 
     expect(rows).toContainEqual({
-      profile_id: grantee.profileId,
+      profileId: grantee.profileId,
       position: "팀장",
     });
   });

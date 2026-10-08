@@ -8,18 +8,18 @@ import {
   listPendingMembers,
 } from "@/entities/member/api/listMembers.api";
 import type {
-  ActiveMemberRow,
-  MemberListRow,
-  MemberRow,
-} from "@/entities/member/api/member.dto";
+  ActiveMember,
+  Member,
+  MemberSummary,
+} from "@/entities/member/model/member.type";
 
 export type MemberKind = "active" | "left" | "pending" | "blocked";
 
 type RowOf = {
-  active: ActiveMemberRow;
-  left: MemberRow;
-  pending: MemberListRow;
-  blocked: MemberListRow;
+  active: ActiveMember;
+  left: Member;
+  pending: MemberSummary;
+  blocked: MemberSummary;
 };
 
 const LIST_OF: {

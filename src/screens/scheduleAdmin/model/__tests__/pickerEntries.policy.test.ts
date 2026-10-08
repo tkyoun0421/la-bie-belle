@@ -3,13 +3,13 @@ import { pickerEntries } from "@/screens/scheduleAdmin/model/pickerEntries.polic
 const MEMBERS = [
   {
     id: "p1",
-    display_name: "이준호",
-    photo_url: "https://example.test/p1.png",
+    displayName: "이준호",
+    photoUrl: "https://example.test/p1.png",
     gender: "male",
   },
-  { id: "p2", display_name: "박수진", photo_url: null, gender: "female" },
-  { id: "p3", display_name: "최민서", photo_url: null, gender: null },
-  { id: "p4", display_name: null, photo_url: null, gender: null },
+  { id: "p2", displayName: "박수진", photoUrl: null, gender: "female" },
+  { id: "p3", displayName: "최민서", photoUrl: null, gender: null },
+  { id: "p4", displayName: null, photoUrl: null, gender: null },
 ];
 
 const DAY_ASSIGNMENTS = [
@@ -17,8 +17,8 @@ const DAY_ASSIGNMENTS = [
 ];
 
 const QUALIFICATIONS = [
-  { profile_id: "p2", position: "스캔" },
-  { profile_id: "p3", position: "메인" },
+  { profileId: "p2", position: "스캔" },
+  { profileId: "p3", position: "메인" },
 ];
 
 const NOW_MS = Date.parse("2026-10-05T03:00:00.000Z");

@@ -71,7 +71,7 @@ export function useMembersBlockedScreen(): MembersBlockedController {
   );
 
   const open = blocked?.find((row) => row.id === openId) ?? null;
-  const openName = open?.display_name ?? "";
+  const openName = open?.displayName ?? "";
 
   useEffect(() => {
     if (unblocked) {
@@ -92,9 +92,9 @@ export function useMembersBlockedScreen(): MembersBlockedController {
 
   const rows: BlockedRow[] = (blocked ?? []).map((row) => ({
     id: row.id,
-    name: row.display_name ?? "",
-    photoUrl: row.photo_url,
-    detail: spellBlockedLine(row.blocked_at, now),
+    name: row.displayName ?? "",
+    photoUrl: row.photoUrl,
+    detail: spellBlockedLine(row.blockedAt, now),
     press: () => setOpenId(row.id),
   }));
 

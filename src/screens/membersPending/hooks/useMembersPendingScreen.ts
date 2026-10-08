@@ -106,7 +106,7 @@ export function useMembersPendingScreen(): MembersPendingController {
   );
 
   const open = pending?.find((row) => row.id === openId) ?? null;
-  const openName = open?.display_name ?? "";
+  const openName = open?.displayName ?? "";
 
   useEffect(() => {
     if (approved) {
@@ -150,9 +150,9 @@ export function useMembersPendingScreen(): MembersPendingController {
 
   const rows: PendingRow[] = (pending ?? []).map((row) => ({
     id: row.id,
-    name: row.display_name ?? "",
-    photoUrl: row.photo_url,
-    detail: spellSentLine(row.submitted_at, today),
+    name: row.displayName ?? "",
+    photoUrl: row.photoUrl,
+    detail: spellSentLine(row.submittedAt, today),
     press: () => {
       setOpenId(row.id);
       setFace("detail");
@@ -170,9 +170,9 @@ export function useMembersPendingScreen(): MembersPendingController {
       ? null
       : {
           name: openName,
-          photoUrl: open.photo_url,
+          photoUrl: open.photoUrl,
           sentAt:
-            open.submitted_at === null ? "" : formatSentAt(open.submitted_at),
+            open.submittedAt === null ? "" : formatSentAt(open.submittedAt),
           values: values ?? null,
         };
 

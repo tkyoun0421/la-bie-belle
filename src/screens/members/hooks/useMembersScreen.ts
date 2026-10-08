@@ -4,8 +4,8 @@ import { errorCodeOf } from "@/shared/model/errorCode.policy";
 import type { ToastKind } from "@/shared/ui/Toast";
 import { nowWithOffset } from "@/entities/clock/model/serverClock.policy";
 import { serverClockStore } from "@/entities/clock/stores/clock.store";
-import type { MemberRow } from "@/entities/member/api/member.dto";
 import { isLastAdmin } from "@/entities/member/model/isLastAdmin.policy";
+import type { Member } from "@/entities/member/model/member.type";
 import { isLeftOverAYear } from "@/entities/member/model/sortMembers.policy";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { searchMembers } from "@/entities/member/utils/searchMembers.utils";
@@ -48,7 +48,7 @@ export type MembersScreenController = {
   activeRows: MembersScreenRow[];
   leftRows: MembersScreenRow[];
   canExpand: boolean;
-  sheet: { name: string; member: MemberRow } | null;
+  sheet: { name: string; member: Member } | null;
   today: string;
   lastAdmin: boolean;
   reachLine: string | null;
@@ -181,8 +181,8 @@ export function useMembersScreen(): MembersScreenController {
 
     for (const row of active ?? []) {
       const state = getReachState({
-        notificationsEnabled: row.notifications_enabled,
-        hasDevice: row.has_device,
+        notificationsEnabled: row.notificationsEnabled,
+        hasDevice: row.hasDevice,
         permission: PERMISSION_OF_OTHERS,
       });
 
@@ -206,17 +206,17 @@ export function useMembersScreen(): MembersScreenController {
   const searched = searchMembers(active ?? [], left ?? [], query);
   const searching = query.trim() !== "";
   const folded = searched.left.filter(
-    (row) => row.left_at !== null && isLeftOverAYear(row.left_at, now),
+    (row) => row.leftAt !== null && isLeftOverAYear(row.leftAt, now),
   );
   const leftShown =
     searching || expanded
       ? searched.left
       : searched.left.filter((row) => !folded.includes(row));
 
-  const openSheet = (row: MemberRow) => {
+  const openSheet = (row: Member) => {
     setOpenId(row.id);
     setFace("detail");
-    setDraft(row.display_name ?? "");
+    setDraft(row.displayName ?? "");
     setAsked(null);
   };
 
@@ -226,8 +226,8 @@ export function useMembersScreen(): MembersScreenController {
     searchEmpty: searched.isEmpty,
     activeRows: searched.active.map((row) => ({
       key: row.id,
-      displayName: row.display_name ?? "",
-      photoUrl: row.photo_url,
+      displayName: row.displayName ?? "",
+      photoUrl: row.photoUrl,
       detail: [row.phone ?? "", reach.suffixes.get(row.id) ?? ""]
         .filter((part) => part !== "")
         .join(" "),
@@ -237,16 +237,16 @@ export function useMembersScreen(): MembersScreenController {
     })),
     leftRows: leftShown.map((row) => ({
       key: row.id,
-      displayName: row.display_name ?? "",
-      photoUrl: row.photo_url,
+      displayName: row.displayName ?? "",
+      photoUrl: row.photoUrl,
       detail: "",
-      value: row.left_at === null ? "" : spellLeftAt(row.left_at),
+      value: row.leftAt === null ? "" : spellLeftAt(row.leftAt),
       isAdmin: false,
       press: () => openSheet(row),
     })),
     canExpand: !searching && !expanded && folded.length > 0,
     sheet:
-      open === null ? null : { name: open.display_name ?? "", member: open },
+      open === null ? null : { name: open.displayName ?? "", member: open },
     today: now,
     lastAdmin: open === null ? false : isLastAdmin(active ?? [], open.id),
     reachLine: open === null ? null : (reach.lines.get(open.id) ?? null),
@@ -262,7 +262,7 @@ export function useMembersScreen(): MembersScreenController {
     expand: () => setExpanded(true),
     showFace: (next) => {
       if (next === "rename") {
-        setDraft(open?.display_name ?? "");
+        setDraft(open?.displayName ?? "");
       }
       setFace(next);
     },

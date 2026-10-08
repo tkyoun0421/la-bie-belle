@@ -2,7 +2,7 @@ import {
   listActiveMembers,
   listLeftMembers,
 } from "@/entities/member/api/listMembers.api";
-import type { MemberRow } from "@/entities/member/api/member.dto";
+import type { Member } from "@/entities/member/model/member.type";
 import {
   createAdminUser,
   createApprovedUser,
@@ -17,9 +17,9 @@ import {
 
 type PendingRow = { id: string; submitted_at: string | null };
 
-type MemberReachRow = MemberRow & {
-  notifications_enabled?: boolean;
-  has_device?: boolean;
+type MemberReach = Member & {
+  notificationsEnabled?: boolean;
+  hasDevice?: boolean;
 };
 
 function setSubmittedAt(userId: string, submittedAt: string): void {
@@ -129,22 +129,22 @@ describe("재직자 목록이 알림 갈래를 같이 낸다(AC-08)", () => {
 
     const rows = (await listActiveMembers(
       admin.client,
-    )) as unknown as MemberReachRow[];
+    )) as unknown as MemberReach[];
     const byId = new Map(rows.map((row) => [row.id, row]));
 
-    expect(byId.get(off.profileId)?.notifications_enabled).toBe(false);
-    expect(byId.get(off.profileId)?.has_device).toBe(false);
+    expect(byId.get(off.profileId)?.notificationsEnabled).toBe(false);
+    expect(byId.get(off.profileId)?.hasDevice).toBe(false);
 
-    expect(byId.get(onNoDevice.profileId)?.notifications_enabled).toBe(true);
-    expect(byId.get(onNoDevice.profileId)?.has_device).toBe(false);
+    expect(byId.get(onNoDevice.profileId)?.notificationsEnabled).toBe(true);
+    expect(byId.get(onNoDevice.profileId)?.hasDevice).toBe(false);
 
-    expect(byId.get(onWithDevice.profileId)?.notifications_enabled).toBe(true);
-    expect(byId.get(onWithDevice.profileId)?.has_device).toBe(true);
+    expect(byId.get(onWithDevice.profileId)?.notificationsEnabled).toBe(true);
+    expect(byId.get(onWithDevice.profileId)?.hasDevice).toBe(true);
   });
 });
 
 describe("퇴사 구획에는 알림 갈래가 안 붙는다(AC-08)", () => {
-  it("퇴사한 사람의 목록 행에 notifications_enabled·has_device가 없다", async () => {
+  it("퇴사한 사람의 목록 행에 notificationsEnabled·hasDevice가 없다", async () => {
     const admin: AdminUser = await createAdminUser();
 
     const left = await createLeftUser();
@@ -153,11 +153,11 @@ describe("퇴사 구획에는 알림 갈래가 안 붙는다(AC-08)", () => {
 
     const rows = (await listLeftMembers(
       admin.client,
-    )) as unknown as MemberReachRow[];
+    )) as unknown as MemberReach[];
     const row = rows.find((entry) => entry.id === left.profileId);
 
     expect(row).toBeDefined();
-    expect(row?.notifications_enabled).toBeUndefined();
-    expect(row?.has_device).toBeUndefined();
+    expect(row?.notificationsEnabled).toBeUndefined();
+    expect(row?.hasDevice).toBeUndefined();
   });
 });

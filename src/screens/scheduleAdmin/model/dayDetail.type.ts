@@ -1,7 +1,7 @@
 import type {
-  ActiveMemberRow,
+  ActiveMember,
   Qualification,
-} from "@/entities/member/api/member.dto";
+} from "@/entities/member/model/member.type";
 import type {
   ScheduleAssignment,
   ScheduleSlot,
@@ -31,7 +31,7 @@ export type DayDetailInput = {
   assignments: readonly ScheduleAssignment[];
   applicationNames: readonly string[];
   appliedProfileIds: readonly string[];
-  members: readonly ActiveMemberRow[];
+  members: readonly ActiveMember[];
   qualifications: readonly Qualification[];
   slotRequests: readonly SlotRequest[];
   holidays: readonly HolidayRow[];

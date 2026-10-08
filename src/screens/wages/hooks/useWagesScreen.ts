@@ -169,8 +169,8 @@ export function useWagesScreen(): WagesScreenController {
   const rows = buildWageRows(
     (members ?? []).map((member) => ({
       profileId: member.id,
-      displayName: member.display_name ?? "",
-      photoUrl: member.photo_url,
+      displayName: member.displayName ?? "",
+      photoUrl: member.photoUrl,
     })),
     wageRates,
   );
