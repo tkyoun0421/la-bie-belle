@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2.112.4";
 
+import { toHolidayImportEntry } from "../_shared/holiday/holiday.mapper.ts";
 import {
   type Holiday,
   parseHolidayApiResponse,
@@ -139,10 +140,7 @@ Deno.serve(async (request: Request): Promise<Response> => {
 
   const { error } = await admin.rpc("import_holidays", {
     p_year: year,
-    p_rows: holidays.map((holiday) => ({
-      holiday_date: holiday.date,
-      name: holiday.name,
-    })),
+    p_rows: holidays.map(toHolidayImportEntry),
   });
 
   if (error !== null) {
