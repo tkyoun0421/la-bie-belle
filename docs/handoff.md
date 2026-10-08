@@ -12,9 +12,8 @@
 
 **이 task의 알짜는 「꼴을 베낀 자리」였다.** `.dto.ts`를 당기지 않으면서 같은 필드를 자기 타입으로 선언한 파일이 서른다섯이라 37의 import 규칙이 그 자리를 못 본다. 그래서 38이 생겼고 **타입 선언만** 재고 읽기는 안 본다 — 읽기까지 재니 DB가 든 **값**을 키로 쓰는 표(`Record<NotificationKind, X>`의 `signup_approved` 꼴)가 같이 걸려 1716건 중 1643이 거짓이었다. 타입이 camelCase면 그것을 snake로 읽는 자리는 `pnpm typecheck`가 잡는다. 면제 넷은 `api/`·`databaseTypes.ts`·`.mapper.ts`·`src/app/`이다.
 
-**받아 둘 꼬리가 셋이다.**
+**받아 둘 꼬리가 둘이다.** 앞서 적어 둔 `decideEntry.policy.ts`는 `features/auth/lib/decideEntry.lib.ts`로 옮겨져 닫혔다 — `lib`이 「부작용을 내는 손」이라 통신을 부르는 것이 그 자리에서는 맞다.
 
-- `features/auth`의 `decideEntry.policy.ts`는 세션을 읽으러 통신을 부르는데 이름이 `.policy.ts`다. 규칙 32가 `api/`를 **값으로** 당기는 것만 물어 지금은 통과한다
 - `useMyProfileRowQuery`의 이름이 거짓이 됐다 — `Profile`을 돌려주면서 `Row`를 든다. 당기는 자리가 여덟이고, `useMyProfileQuery`(연락처까지 합쳐 `MyProfile`을 낸다)와 가르는 축이 「한 행인가」가 아니라 「연락처가 붙었나」라 타입 이름 둘까지 같이 움직인다
 - 매퍼 열하나 중 **중첩을 펴는 다섯**에 짝 테스트가 섰고 이름만 바꾸는 여섯은 비었다. 가름의 축은 「typecheck가 그 실수를 잡나」다 — 중첩에서는 `row.slots.days.starts_at`을 `endsAt`에 넣어도 둘 다 `string`이라 통과하고, 이름만 바꾸는 자리는 타입이 다 잡는다(`toMonthWindow`의 기존 테스트가 단언 셋을 다 타입으로 적은 증거다). ADR-015의 「순수해서 짝 테스트가 붙는다」를 그 축으로 좁힐지, TDD 훅이 `src/entities/`를 볼지가 남았다
 
