@@ -1,6 +1,8 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
 import type { AvailabilityRow } from "@/entities/availability/api/availability.dto";
+import type { Availability } from "@/entities/availability/model/availability.type";
+import { toAvailability } from "@/entities/availability/utils/availability.mapper";
 
 const AVAILABILITY_COLUMNS = [
   "profile_id",
@@ -11,7 +13,7 @@ const AVAILABILITY_COLUMNS = [
 export async function getMonthAvailabilities(
   client: DB,
   month: string,
-): Promise<AvailabilityRow[]> {
+): Promise<Availability[]> {
   const { data, error } = await client
     .from("availabilities")
     .select(AVAILABILITY_COLUMNS)
@@ -24,5 +26,5 @@ export async function getMonthAvailabilities(
     throw error;
   }
 
-  return data ?? [];
+  return (data ?? []).map(toAvailability);
 }

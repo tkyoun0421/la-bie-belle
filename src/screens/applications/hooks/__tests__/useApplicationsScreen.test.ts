@@ -59,21 +59,9 @@ const NOW_MS = Date.parse("2026-10-03T01:00:00.000Z");
 const DEADLINE = "2026-10-10";
 
 const APPLICATIONS = [
-  {
-    profile_id: "p1",
-    work_date: "2026-10-11",
-    profiles: { display_name: "최민재" },
-  },
-  {
-    profile_id: "p2",
-    work_date: "2026-10-10",
-    profiles: { display_name: "한지우" },
-  },
-  {
-    profile_id: "p1",
-    work_date: "2026-10-10",
-    profiles: { display_name: "최민재" },
-  },
+  { profileId: "p1", workDate: "2026-10-11", name: "최민재" },
+  { profileId: "p2", workDate: "2026-10-10", name: "한지우" },
+  { profileId: "p1", workDate: "2026-10-10", name: "최민재" },
 ];
 
 beforeEach(() => {

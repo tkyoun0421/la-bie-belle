@@ -695,11 +695,7 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
       { work_date: "2026-10-11", profile_id: "p1", minutes: 60 },
     ]);
     getMonthAvailabilitiesMock.mockResolvedValue([
-      {
-        work_date: "2026-10-10",
-        profile_id: "p1",
-        profiles: { display_name: "이준호" },
-      },
+      { workDate: "2026-10-10", profileId: "p1", name: "이준호" },
     ]);
 
     const { result } = await mounted({ date: "2026-10-10" });
@@ -714,11 +710,7 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
 
   it("달력 칸은 확정 전이면 신청 수를, 확정 뒤면 빈 자리 수를 낸다", async () => {
     getMonthAvailabilitiesMock.mockResolvedValue([
-      {
-        work_date: "2026-10-10",
-        profile_id: "p1",
-        profiles: { display_name: "이준호" },
-      },
+      { workDate: "2026-10-10", profileId: "p1", name: "이준호" },
     ]);
     getOpenSlotsMock.mockResolvedValue([
       {

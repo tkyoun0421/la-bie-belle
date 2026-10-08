@@ -303,19 +303,19 @@ export function useScheduleAdminScreen({
 
   for (const row of applications) {
     applicationCountOf.set(
-      row.work_date,
-      (applicationCountOf.get(row.work_date) ?? 0) + 1,
+      row.workDate,
+      (applicationCountOf.get(row.workDate) ?? 0) + 1,
     );
 
-    const names = applicationNamesOf.get(row.work_date) ?? [];
+    const names = applicationNamesOf.get(row.workDate) ?? [];
 
-    names.push(row.profiles?.display_name ?? "");
-    applicationNamesOf.set(row.work_date, names);
+    names.push(row.name ?? "");
+    applicationNamesOf.set(row.workDate, names);
 
-    const ids = applicationIdsOf.get(row.work_date) ?? [];
+    const ids = applicationIdsOf.get(row.workDate) ?? [];
 
-    ids.push(row.profile_id);
-    applicationIdsOf.set(row.work_date, ids);
+    ids.push(row.profileId);
+    applicationIdsOf.set(row.workDate, ids);
   }
 
   const confirmed = schedule?.confirmedAt != null;
