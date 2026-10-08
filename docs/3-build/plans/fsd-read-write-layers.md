@@ -91,7 +91,7 @@ sources:
 - `src/app/`은 안 건드린다 — Expo Router가 파일 이름을 URL로 읽고 `/check-in`은 종이 QR에 실려 나간다
 - 왜 먼저인가: 뒤 묶음이 파일을 만들고 옮긴다. 이름 규칙이 먼저 바뀌어야 그 파일들이 새 꼴로 선다
 - 돌면서 나온 것 — **ESLint 규칙 이름은 kebab으로 되돌렸다.** 일괄 치환이 `house/dumb-ui` 같은 규칙 ID까지 먹었는데 그것은 파일 이름이 아니라 생태계 식별자고 소스의 `eslint-disable` 주석이 그 이름을 쓴다. 규칙 파일은 camel, 등록 키는 kebab이다
-- 돌면서 나온 것 — **`fileNaming.test.ts`의 픽스처가 정답으로 뒤집혔다.** 그 파일 주석이 그 위험을 미리 적어뒀고(「일괄 치환이 이 파일을 지나가면 픽스처가 정답으로 바뀌어 단언이 조용히 무의미해진다」) 실제로 났다 — `kebabWanted`를 `camelWanted`로 뒤집었다
+- 돌면서 나온 것 — **`fileNaming.test.ts`의 픽스처가 정답으로 뒤집혔다.** 검사의 짝 테스트는 틀린 이름을 픽스처로 들어, 일괄 치환이 그 파일을 지나가면 픽스처가 정답으로 바뀌고 단언이 조용히 무의미해진다. `kebabWanted`를 `camelWanted`로 뒤집었다
 
 ### AC-02 — 폴더 이름이 camelCase가 된다 ✅
 
@@ -277,7 +277,7 @@ sources:
 - 돌면서 나온 것 — **관찰 결과가 글자 그대로 섰다.** `config/` 밖에 `process.env`도 `expo-constants` import도 0이다. 옮긴 것은 `readSupabaseEnv`·`readAppUrl`(`shared/config/`)과 `readPushProjectId`·`readIsExpoGo`·`readExpoHostUri`(슬라이스 둘)로 다섯이고, 전제가 든 넷에서 늘어난 것은 `authRedirect`가 읽던 값이 둘이었기 때문이다
 - 돌면서 나온 것 — **환경 읽기를 갈라도 꼴 짜는 함수가 순수해지지 않는다.** `makeAuthRedirectUri`는 `utils`에 남아 `expo-constants` import를 잃었지만 호출 시점에 `config`를 불러 환경을 읽는다. 「`utils`에 SDK import가 없다」는 섰고 「`utils`는 순수하다」는 안 섰다 — 인자로 받게 바꾸면 순수해지는데 부르는 쪽이 매번 환경을 캐 와야 하고, 그 축은 AC-09가 `pushPermission`에서 이미 「주입받아도 뜻이 `lib`이면 `lib`」으로 판정했다. 지금은 import 그물만 세우고 순수성은 검사로 안 세운다
 
-### AC-12 — controller가 선다
+### AC-12 — controller가 선다 ✅
 
 - 전제: `.tsx` 마흔넷이 상태·효과를 들고 호출이 **이백아흔둘**이다. 그중 스물여섯이 repository를 직접 당기고 아흔여섯이 service를 controller 없이 부른다. `ui`가 `hooks`를 당기는 자리는 **셋**뿐이다. `DayDetail.tsx` 하나가 서른셋을 든다
 - 행동
@@ -411,6 +411,9 @@ sources:
   - 이름이 camelCase인지 · 폴더 이름이 camelCase인지 — `fileNaming.ts`가 AC-01·AC-02에서 이미 본다
 - 관찰 결과: 각 규칙이 위반 픽스처에서 걸리고 정상 픽스처를 통과시킨다. 저장소 전체가 열일곱을 통과한다
 - 마지막 줄은 AC-12가 끝나야 켤 수 있다 — 지금 켜면 `.tsx` 마흔여섯이 빨개진다
+- **선 것이 다섯이다** — 카탈로그 번호 22~26이다. 세그먼트 둘이 서로를 못 보게 하는 축(`no-api-import-in-ui`·`no-services-import-in-ui`)과 통신을 가두는 축 셋(`supabase-package-in-api`·`query-hook-in-services`·`no-supabase-instance-in-ui`)이다. 남은 열둘은 `use*` export 자리, `entities`의 Mutation, `.policy.ts`의 통신·`Date.now`·`Math.random`, 캐시 키 리터럴, `consts/` 밖의 대문자 스네이크, `process.env`·`Constants`, `expo-*` SDK, `.dto.ts` 밖 import, `stores/` 밖의 `create()`·`createContext`다
+- 돌면서 나온 것 — **면제가 규칙 둘을 가르는 선이다.** `no-api-import-in-ui`가 `shared/api/supabase`를 일부러 통과시킨다 — 그 축을 `no-supabase-instance-in-ui`가 더 좁은 메시지로 물어 「`hooks/`로 가라」를 말하기 때문이다. 픽스처를 쓸 때 그 면제를 모르고 `@/shared/api/supabase`를 골랐다가 다른 규칙이 잡혀 빨개졌다 — **면제가 주석에만 살면 그 다음 사람이 같은 자리를 밟는다.** 지금은 카탈로그 표의 그 두 줄이 각각 무는 것을 적어 가른다
+- 돌면서 나온 것 — **`useQueryClient`는 Query·Mutation이 아니다.** `services/` 밖에서 쿼리 훅을 막는 규칙이 그것을 통과시킨다 — 통신을 여는 훅이 아니라 이미 열린 캐시를 만지는 손이고 controller 여럿이 다시 읽기를 걸려고 쓴다
 
 ## 변경 파일
 
