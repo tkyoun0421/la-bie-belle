@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import { View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Button } from "@/shared/ui/Button";
@@ -18,7 +17,6 @@ import { qrStartLine } from "@/screens/qr/utils/qrStartLine.utils";
 
 export function QrScreen() {
   const router = useRouter();
-  const [fullscreen, setFullscreen] = useState(false);
   const {
     qr,
     svg,
@@ -31,10 +29,13 @@ export function QrScreen() {
     cancelRotate,
     rotate,
     dismissToast,
+    fullscreen,
+    openFullscreen,
+    closeFullscreen,
   } = useQrScreen();
 
   if (fullscreen) {
-    return <QrFullscreen svg={svg} onClose={() => setFullscreen(false)} />;
+    return <QrFullscreen svg={svg} onClose={closeFullscreen} />;
   }
 
   return (
@@ -61,7 +62,7 @@ export function QrScreen() {
           >
             {QR_SCREEN_COPY.exportPaper}
           </Button>
-          <Button variant="secondary" onPress={() => setFullscreen(true)}>
+          <Button variant="secondary" onPress={openFullscreen}>
             {QR_SCREEN_COPY.fullscreen}
           </Button>
         </View>

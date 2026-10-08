@@ -24,6 +24,9 @@ export type QrScreenController = {
   cancelRotate: () => void;
   rotate: () => void;
   dismissToast: () => void;
+  fullscreen: boolean;
+  openFullscreen: () => void;
+  closeFullscreen: () => void;
 };
 
 export function useQrScreen(): QrScreenController {
@@ -31,6 +34,7 @@ export function useQrScreen(): QrScreenController {
   const [exporting, setExporting] = useState(false);
   const [asking, setAsking] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [fullscreen, setFullscreen] = useState(false);
 
   const { data: qr } = useQrCodeQuery(supabase);
   const {
@@ -118,5 +122,8 @@ export function useQrScreen(): QrScreenController {
     cancelRotate,
     rotate,
     dismissToast,
+    fullscreen,
+    openFullscreen: () => setFullscreen(true),
+    closeFullscreen: () => setFullscreen(false),
   };
 }

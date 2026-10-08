@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
 import { ChevronDown } from "lucide-react-native";
-import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useHardwareBack } from "@/shared/hooks/useHardwareBack";
 import { AppBar } from "@/shared/ui/AppBar";
@@ -31,8 +30,6 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
   const router = useRouter();
   const screen = useRehearsalScreen(monthParam);
 
-  const [pickerYear, setPickerYear] = useState<number | null>(null);
-
   useHardwareBack(screen.closeTop);
 
   return (
@@ -48,7 +45,7 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
             <Pressable
               accessibilityRole="button"
               testID={MONTH_TEST_ID}
-              onPress={() => setPickerYear(screen.monthYear)}
+              onPress={screen.openPicker}
               className="flex-row items-center gap-1"
             >
               <Text size="base" weight="medium">
@@ -120,16 +117,16 @@ export function RehearsalScreen({ month: monthParam }: RehearsalScreenProps) {
         </SheetLayer>
       )}
 
-      {pickerYear === null ? null : (
+      {screen.pickerYear === null ? null : (
         <MonthPickerSheet
-          year={pickerYear}
+          year={screen.pickerYear}
           selectedMonth={screen.month}
           onPick={(picked) => {
             screen.pickMonth(picked);
-            setPickerYear(null);
+            screen.closePicker();
           }}
-          onYearChange={setPickerYear}
-          onDismiss={() => setPickerYear(null)}
+          onYearChange={screen.changePickerYear}
+          onDismiss={screen.closePicker}
         />
       )}
 

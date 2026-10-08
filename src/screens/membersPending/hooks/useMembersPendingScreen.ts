@@ -48,12 +48,16 @@ export type MembersPendingController = {
   confirm: () => void;
   closeSheet: () => void;
   dismissToast: () => void;
+  menuOpen: boolean;
+  toggleMenu: () => void;
+  closeMenu: () => void;
 };
 
 export function useMembersPendingScreen(): MembersPendingController {
   const [openId, setOpenId] = useState<string | null>(null);
   const [face, setFace] = useState<SheetFace>("detail");
   const [toast, setToast] = useState<PendingToast | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const clockOffset = serverClockStore((at) => at.offset);
   const today = new Date(nowWithOffset(Date.now(), clockOffset)).toISOString();
@@ -200,5 +204,8 @@ export function useMembersPendingScreen(): MembersPendingController {
     confirm,
     closeSheet,
     dismissToast: () => setToast(null),
+    menuOpen,
+    toggleMenu: () => setMenuOpen((opened) => !opened),
+    closeMenu: () => setMenuOpen(false),
   };
 }

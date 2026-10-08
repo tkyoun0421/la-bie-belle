@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
 import { EllipsisVertical } from "lucide-react-native";
-import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { AppBar } from "@/shared/ui/AppBar";
 import { Avatar } from "@/shared/ui/Avatar";
@@ -26,7 +25,6 @@ const SKELETON_ROWS = [0, 1, 2];
 export function MembersPendingScreen() {
   const router = useRouter();
   const screen = useMembersPendingScreen();
-  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <Screen>
@@ -41,15 +39,15 @@ export function MembersPendingScreen() {
               accessibilityRole="button"
               accessibilityLabel={PENDING_COPY.more}
               hitSlop={MORE_HIT_SLOP}
-              onPress={() => setMenuOpen((opened) => !opened)}
+              onPress={screen.toggleMenu}
             >
               <Icon icon={EllipsisVertical} size={MORE_ICON_SIZE} />
             </Pressable>
-            <MorePopover open={menuOpen}>
+            <MorePopover open={screen.menuOpen}>
               <MorePopoverItem
                 label={PENDING_COPY.blockedMenu}
                 onPress={() => {
-                  setMenuOpen(false);
+                  screen.closeMenu();
                   router.push("/admin/members/blocked");
                 }}
               />
@@ -81,7 +79,7 @@ export function MembersPendingScreen() {
                   chevron
                   divider={at > 0}
                   onPress={() => {
-                    setMenuOpen(false);
+                    screen.closeMenu();
                     row.press();
                   }}
                 />

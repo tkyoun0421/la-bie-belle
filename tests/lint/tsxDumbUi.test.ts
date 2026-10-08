@@ -146,6 +146,121 @@ describe("규칙9 — .tsx는 더미 UI", () => {
     expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
   });
 
+  it("controller를 당긴 .tsx가 useState를 들면 걸린다", async () => {
+    const code = `import { useState } from "react";\nimport { useFixtureScreen } from "@/screens/home/hooks/useFixtureScreen";\n\nexport function Fixture() {\n  const { label } = useFixtureScreen();\n  const [open, setOpen] = useState(false);\n  return open ? null : setOpen(Boolean(label));\n}\n`;
+
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/Fixture.tsx",
+    );
+
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
+  });
+
+  it("service를 당긴 .tsx가 useEffect를 들면 걸린다", async () => {
+    const code = `import { useEffect } from "react";\nimport { useFixtureMutation } from "@/features/fixtureEdit/services/useFixtureMutation";\n\nexport function Fixture() {\n  const save = useFixtureMutation();\n  useEffect(() => save(), [save]);\n  return null;\n}\n`;
+
+    const violations = await violationsOf(
+      code,
+      "src/features/fixtureEdit/ui/Fixture.tsx",
+    );
+
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
+  });
+
+  it("api를 당긴 .tsx가 useReducer를 들면 걸린다", async () => {
+    const code = `import { useReducer } from "react";\nimport { readFixture } from "@/entities/fixture/api/readFixture.api";\n\nexport function Fixture() {\n  const [count, bump] = useReducer((value: number) => value + 1, 0);\n  return readFixture ? null : bump(count);\n}\n`;
+
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/Fixture.tsx",
+    );
+
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
+  });
+
+  it("이름을 바꿔 받은 useState도 걸린다", async () => {
+    const code = `import { useState as useLocalState } from "react";\nimport { useFixtureScreen } from "@/screens/home/hooks/useFixtureScreen";\n\nexport function Fixture() {\n  useFixtureScreen();\n  const [open, setOpen] = useLocalState(false);\n  return open ? null : setOpen(true);\n}\n`;
+
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/Fixture.tsx",
+    );
+
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
+  });
+
+  it("React 네임스페이스로 불러도 걸린다", async () => {
+    const code = `import * as React from "react";\nimport { useFixtureScreen } from "@/screens/home/hooks/useFixtureScreen";\n\nexport function Fixture() {\n  useFixtureScreen();\n  const [open, setOpen] = React.useState(false);\n  return open ? null : setOpen(true);\n}\n`;
+
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/Fixture.tsx",
+    );
+
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
+  });
+
+  it("controller를 재수출로 당겨도 상태가 걸린다", async () => {
+    const code = `import { useState } from "react";\n\nexport { useFixtureScreen } from "@/screens/home/hooks/useFixtureScreen";\n\nexport function Fixture() {\n  const [open, setOpen] = useState(false);\n  return open ? null : setOpen(true);\n}\n`;
+
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/Fixture.tsx",
+    );
+
+    expect(violations.map((violation) => violation.ruleId)).toContain(DUMB_UI);
+  });
+
+  it("controller를 당겨도 useMemo는 통과한다", async () => {
+    const code = `import { useMemo } from "react";\nimport { useFixtureScreen } from "@/screens/home/hooks/useFixtureScreen";\n\nexport function Fixture() {\n  const { label } = useFixtureScreen();\n  const face = useMemo(() => ({ label }), [label]);\n  return face.label ? null : null;\n}\n`;
+
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/Fixture.tsx",
+    );
+
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
+  });
+
+  it("api에서 타입만 당긴 .tsx의 useState는 통과한다", async () => {
+    const code = `import { useState } from "react";\n\nimport type { FixtureRow } from "@/entities/fixture/api/fixture.dto";\n\nexport function Fixture({ row }: { row: FixtureRow }) {\n  const [open, setOpen] = useState(false);\n  return open ? null : setOpen(Boolean(row));\n}\n`;
+
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/ui/Fixture.tsx",
+    );
+
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
+  });
+
+  it("아무것도 안 당기고 너비만 재는 shared/ui는 통과한다", async () => {
+    const code = `import { useState } from "react";\nimport { View } from "react-native";\n\nexport function Fixture() {\n  const [width, setWidth] = useState(0);\n  return (\n    <View onLayout={(event) => setWidth(event.nativeEvent.layout.width)}>\n      {width}\n    </View>\n  );\n}\n`;
+
+    const violations = await violationsOf(code, "src/shared/ui/Fixture.tsx");
+
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
+  });
+
+  it("controller를 당긴 .ts는 상태 축 밖이다", async () => {
+    const code = `import { useState } from "react";\nimport { useFixtureScreen } from "@/screens/home/hooks/useFixtureScreen";\n\nexport function useFixture() {\n  const { label } = useFixtureScreen();\n  return useState(label);\n}\n`;
+
+    const violations = await violationsOf(
+      code,
+      "src/screens/home/hooks/useFixture.ts",
+    );
+
+    expect(violations.map((violation) => violation.ruleId)).not.toContain(
+      DUMB_UI,
+    );
+  });
+
   it("상태·props·클래스만 쓰는 더미 UI는 어느 규칙도 안 걸린다", async () => {
     const errors = await errorsOf(
       DUMB_COMPONENT,
