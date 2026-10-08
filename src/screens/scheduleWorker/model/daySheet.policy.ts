@@ -1,7 +1,5 @@
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 
-export { POSITION_ORDER };
-
 export type RosterSlot = {
   position: string;
   capacity: number;

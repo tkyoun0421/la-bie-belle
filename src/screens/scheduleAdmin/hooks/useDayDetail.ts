@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import {
   ADJUSTMENT_REASON,
@@ -46,7 +47,6 @@ import {
 } from "@/screens/scheduleAdmin/utils/dayDetailRows.utils";
 import { formatScheduleDate } from "@/screens/scheduleAdmin/utils/formatScheduleDate.utils";
 import {
-  POSITION_ORDER,
   assignmentForSlot,
   groupSlotsByPosition,
   slotFillCount,

@@ -1,5 +1,5 @@
+import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
 import {
-  POSITION_ORDER,
   groupSlotsByPosition,
   slotFillCount,
   assignmentForSlot,

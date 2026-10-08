@@ -1,7 +1,4 @@
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
-import { type Position } from "@/entities/schedule/model/schedule.type";
-
-export { POSITION_ORDER, type Position };
 
 export type PositionSlot = {
   id: string;
