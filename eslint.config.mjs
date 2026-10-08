@@ -41,6 +41,7 @@ const eslintConfig = defineConfig([
     "nativewind-env.d.ts",
     "coverage/**",
     "supabase/functions/_shared/**",
+    ".claude/worktrees/**",
   ]),
 
   {
