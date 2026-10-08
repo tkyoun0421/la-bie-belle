@@ -1,4 +1,4 @@
-import type { MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
+import type { MemberWageRate } from "@/entities/payroll/model/payroll.type";
 
 export type WageRowMember = {
   profileId: string;
@@ -11,25 +11,25 @@ export type WageRow = WageRowMember & {
 };
 
 export function latestWageRate(
-  rows: readonly MemberWageRateRow[],
-): MemberWageRateRow | null {
-  return rows.reduce<MemberWageRateRow | null>(
+  rows: readonly MemberWageRate[],
+): MemberWageRate | null {
+  return rows.reduce<MemberWageRate | null>(
     (kept, row) =>
-      kept === null || row.effective_date > kept.effective_date ? row : kept,
+      kept === null || row.effectiveDate > kept.effectiveDate ? row : kept,
     null,
   );
 }
 
 export function wageRatesOf(
-  rows: readonly MemberWageRateRow[],
+  rows: readonly MemberWageRate[],
   profileId: string,
-): MemberWageRateRow[] {
-  return rows.filter((row) => row.profile_id === profileId);
+): MemberWageRate[] {
+  return rows.filter((row) => row.profileId === profileId);
 }
 
 export function buildWageRows(
   members: readonly WageRowMember[],
-  wageRates: readonly MemberWageRateRow[],
+  wageRates: readonly MemberWageRate[],
 ): WageRow[] {
   return members.map((member) => ({
     ...member,

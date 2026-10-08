@@ -3,7 +3,7 @@ import {
   payrollViewDays,
 } from "@/features/payrollCompute/model/payrollDays.policy";
 
-const RATES = [{ effective_date: "2026-08-01", amount: 12000 }];
+const RATES = [{ effectiveDate: "2026-08-01", amount: 12000 }];
 
 const DAY_ID = "day-1";
 const WORK_DATE = "2026-09-10";
@@ -90,9 +90,9 @@ describe("payrollDays — 조정만 있는 날도 결과에 뜬다(날짜 합집
         ],
         adjustments: [
           {
-            day_id: adjustmentOnlyDayId,
+            dayId: adjustmentOnlyDayId,
             minutes: 60,
-            adjusted_at: "2026-09-12T00:00:00.000Z",
+            adjustedAt: "2026-09-12T00:00:00.000Z",
           },
         ],
         now: "2026-09-12T00:00:00.000Z",
@@ -121,9 +121,9 @@ describe("payrollDays — 조정 없는 결근과 조정 음수로 0이 된 결�
       assignments: [{ day_id: DAY_ID }],
       adjustments: [
         {
-          day_id: DAY_ID,
+          dayId: DAY_ID,
           minutes: -540,
-          adjusted_at: "2026-09-11T00:00:00.000Z",
+          adjustedAt: "2026-09-11T00:00:00.000Z",
         },
       ],
       now: "2026-09-20T00:00:00.000Z",
@@ -181,9 +181,9 @@ describe("payrollDays — 출근 인정도 배정 시간 그대로 센다(PAY-00
         assignments: [{ day_id: DAY_ID }],
         excuses: [
           {
-            day_id: DAY_ID,
-            submitted_at: "2026-09-10T02:00:00.000Z",
-            decided_at: "2026-09-10T03:00:00.000Z",
+            dayId: DAY_ID,
+            submittedAt: "2026-09-10T02:00:00.000Z",
+            decidedAt: "2026-09-10T03:00:00.000Z",
             decision: "approved",
           },
         ],
@@ -240,7 +240,7 @@ describe("payrollDays — 그날 시급이 없으면 'wage-pending'으로 선다
             received_at: "2026-09-10T01:00:00.000Z",
           },
         ],
-        rates: [{ effective_date: "2026-10-01", amount: 12000 }],
+        rates: [{ effectiveDate: "2026-10-01", amount: 12000 }],
       }),
     );
 
@@ -330,9 +330,9 @@ describe("payrollViewDays — 리허설이 비어도 배정만으로 죽지 않�
       ],
       rates: [
         {
-          effective_date: "2026-08-01",
+          effectiveDate: "2026-08-01",
           amount: 12000,
-          profile_id: "profile-1",
+          profileId: "profile-1",
         },
       ],
       adjustments: [],
@@ -455,17 +455,17 @@ describe("payrollViewDays — 배정·조정·리허설 세 갈래의 날짜가 
       ],
       rates: [
         {
-          effective_date: "2026-08-01",
+          effectiveDate: "2026-08-01",
           amount: 12000,
-          profile_id: "profile-1",
+          profileId: "profile-1",
         },
       ],
       adjustments: [
         {
-          day_id: "day-adjustment-only",
+          dayId: "day-adjustment-only",
           minutes: 60,
-          adjusted_at: "2026-09-12T00:00:00.000Z",
-          profile_id: "profile-1",
+          adjustedAt: "2026-09-12T00:00:00.000Z",
+          profileId: "profile-1",
         },
       ],
       excuses: [],
@@ -525,9 +525,9 @@ describe("payrollViewDays — 교육 배정(kind: 'training')은 isEducation이 
       ],
       rates: [
         {
-          effective_date: "2026-08-01",
+          effectiveDate: "2026-08-01",
           amount: 12000,
-          profile_id: "profile-1",
+          profileId: "profile-1",
         },
       ],
       adjustments: [],
@@ -551,7 +551,7 @@ describe("payrollViewDays — payrollDays를 다시 짜지 않고 그대로 부�
       received_at: "2026-09-10T01:00:00.000Z",
     };
     const now = "2026-09-10T01:00:00.000Z";
-    const rate = { effective_date: "2026-08-01", amount: 12000 };
+    const rate = { effectiveDate: "2026-08-01", amount: 12000 };
 
     const viewResult = payrollViewDays({
       profileId,
@@ -579,7 +579,7 @@ describe("payrollViewDays — payrollDays를 다시 짜지 않고 그대로 부�
           ],
         },
       ],
-      rates: [{ ...rate, profile_id: profileId }],
+      rates: [{ ...rate, profileId: profileId }],
       adjustments: [],
       excuses: [],
       rehearsals: [],

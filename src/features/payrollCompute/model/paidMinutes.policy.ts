@@ -1,3 +1,4 @@
+import type { Adjustment } from "@/entities/payroll/model/payroll.type";
 import {
   rehearsalHours,
   type RehearsalRow,
@@ -8,17 +9,14 @@ export type WorkDayHours = {
   ends_at: string;
 };
 
-export type AdjustmentRow = {
-  minutes: number;
-  adjusted_at: string;
-};
+export type TimedAdjustment = Pick<Adjustment, "minutes" | "adjustedAt">;
 
 export type LiveAssignments = readonly unknown[];
 
 export type PaidMinutesInput = {
   assignments: LiveAssignments;
   day: WorkDayHours | null;
-  adjustments: readonly AdjustmentRow[];
+  adjustments: readonly TimedAdjustment[];
   rehearsals: readonly RehearsalRow[];
 };
 
@@ -40,10 +38,10 @@ function assignedMinutes(input: PaidMinutesInput): number {
   );
 }
 
-export function adjustedMinutes(rows: readonly AdjustmentRow[]): number {
-  const latest = rows.reduce<AdjustmentRow | null>(
+export function adjustedMinutes(rows: readonly TimedAdjustment[]): number {
+  const latest = rows.reduce<TimedAdjustment | null>(
     (kept, row) =>
-      kept === null || row.adjusted_at > kept.adjusted_at ? row : kept,
+      kept === null || row.adjustedAt > kept.adjustedAt ? row : kept,
     null,
   );
 

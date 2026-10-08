@@ -601,10 +601,10 @@ export function useScheduleAdminScreen({
               (request) => request.slots.days.work_date === day.work_date,
             ),
             holidays: (payroll?.holidays ?? []).filter(
-              (row) => row.holiday_date === day.work_date,
+              (row) => row.holidayDate === day.work_date,
             ),
             adjustments: (payroll?.adjustments ?? []).filter(
-              (row) => row.day_id === day.id,
+              (row) => row.dayId === day.id,
             ),
             rehearsals: (rehearsals ?? []).filter(
               (row: RehearsalWithName) => row.work_date === day.work_date,

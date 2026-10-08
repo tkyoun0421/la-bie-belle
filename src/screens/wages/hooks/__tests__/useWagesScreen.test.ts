@@ -82,10 +82,10 @@ function rate(
   effectiveDate = "2026-09-01",
 ) {
   return {
-    profile_id: profileId,
-    effective_date: effectiveDate,
+    profileId,
+    effectiveDate,
     amount,
-    follows_default: followsDefault,
+    followsDefault,
   };
 }
 

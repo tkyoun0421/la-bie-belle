@@ -1,4 +1,4 @@
-import { type MemberWageRateRow } from "@/entities/payroll/api/payroll.dto";
+import { type MemberWageRate } from "@/entities/payroll/model/payroll.type";
 import { WAGES_COPY } from "@/screens/wages/consts/wages.const";
 import {
   latestWageRate,
@@ -7,11 +7,11 @@ import {
 
 export function countFollowers(
   profileIds: readonly string[],
-  wageRates: readonly MemberWageRateRow[],
+  wageRates: readonly MemberWageRate[],
 ): number {
   return profileIds.filter(
     (profileId) =>
-      latestWageRate(wageRatesOf(wageRates, profileId))?.follows_default !==
+      latestWageRate(wageRatesOf(wageRates, profileId))?.followsDefault !==
       false,
   ).length;
 }
