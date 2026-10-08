@@ -1,5 +1,5 @@
 import type { PayrollMonth } from "@/entities/payroll/api/payroll.dto";
-import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
+import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";
@@ -276,11 +276,12 @@ describe("myPayrollValues — payrollViewDays를 그대로 불러 날마다 amou
 function rehearsal(overrides: Partial<Rehearsal> = {}): Rehearsal {
   return {
     id: "rehearsal-1",
-    profile_id: PROFILE_ID,
-    work_date: "2026-08-20",
-    starts_at: "14:00",
-    ends_at: "16:00",
+    profileId: PROFILE_ID,
+    workDate: "2026-08-20",
+    startsAt: "14:00",
+    endsAt: "16:00",
     count: null,
+    name: null,
     ...overrides,
   };
 }
@@ -359,7 +360,7 @@ describe("myPayrollValues — 리허설이 붙은 날은 그 몫만큼 그달 �
       loaded,
       PROFILE_ID,
       "2026-08-31T00:00:00.000Z",
-      [rehearsal({ work_date: "2026-08-10" })],
+      [rehearsal({ workDate: "2026-08-10" })],
     );
 
     expect(withoutRehearsal.get("2026-08")).toBe(96000);
@@ -453,8 +454,8 @@ describe("myPayrollDaysOfMonth — 다른 달 리허설이 그 달 결과에 안
       PROFILE_ID,
       "2026-08-31T00:00:00.000Z",
       [
-        rehearsal({ id: "r-aug", work_date: "2026-08-20" }),
-        rehearsal({ id: "r-sep", work_date: "2026-09-05" }),
+        rehearsal({ id: "r-aug", workDate: "2026-08-20" }),
+        rehearsal({ id: "r-sep", workDate: "2026-09-05" }),
       ],
     );
 

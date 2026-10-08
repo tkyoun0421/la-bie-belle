@@ -691,8 +691,8 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
       ],
     });
     getAllRehearsalsMock.mockResolvedValue([
-      { work_date: "2026-10-10", profile_id: "p1", minutes: 60 },
-      { work_date: "2026-10-11", profile_id: "p1", minutes: 60 },
+      { workDate: "2026-10-10", profileId: "p1", minutes: 60 },
+      { workDate: "2026-10-11", profileId: "p1", minutes: 60 },
     ]);
     getMonthAvailabilitiesMock.mockResolvedValue([
       {

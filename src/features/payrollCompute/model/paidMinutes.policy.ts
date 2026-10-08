@@ -1,6 +1,6 @@
 import {
   rehearsalHours,
-  type RehearsalRow,
+  type RehearsalClock,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
 
 export type WorkDayHours = {
@@ -19,7 +19,7 @@ export type PaidMinutesInput = {
   assignments: LiveAssignments;
   day: WorkDayHours | null;
   adjustments: readonly AdjustmentRow[];
-  rehearsals: readonly RehearsalRow[];
+  rehearsals: readonly RehearsalClock[];
 };
 
 const MINUTES_PER_HOUR = 60;
@@ -50,7 +50,7 @@ export function adjustedMinutes(rows: readonly AdjustmentRow[]): number {
   return latest?.minutes ?? 0;
 }
 
-function rehearsedMinutes(rows: readonly RehearsalRow[]): number {
+function rehearsedMinutes(rows: readonly RehearsalClock[]): number {
   return rows.reduce((sum, row) => sum + rehearsalHours(row), 0);
 }
 

@@ -135,9 +135,7 @@ describe("adjustSheetRows — 리허설만 있고 배정이 없는 사람은 목
       day: DAY,
       assignments: [],
       adjustments: [],
-      rehearsals: [
-        { profile_id: "p7", starts_at: null, ends_at: null, count: 2 },
-      ],
+      rehearsals: [{ profileId: "p7", startsAt: null, endsAt: null, count: 2 }],
     });
 
     expect(rows).toEqual([]);
@@ -165,9 +163,7 @@ describe("adjustSheetRows — 리허설 줄 문구, 건수 갈래", () => {
         { profile_id: "p8", name: "이하늘", kind: "regular", ended_at: null },
       ],
       adjustments: [],
-      rehearsals: [
-        { profile_id: "p8", starts_at: null, ends_at: null, count: 2 },
-      ],
+      rehearsals: [{ profileId: "p8", startsAt: null, endsAt: null, count: 2 }],
     });
 
     expect(rows[0]?.rehearsalLine).toBe("리허설 2건 · 2시간");
@@ -184,9 +180,9 @@ describe("adjustSheetRows — 리허설 줄 문구, 시각 갈래", () => {
       adjustments: [],
       rehearsals: [
         {
-          profile_id: "p9",
-          starts_at: "14:00:00",
-          ends_at: "16:00:00",
+          profileId: "p9",
+          startsAt: "14:00:00",
+          endsAt: "16:00:00",
           count: null,
         },
       ],

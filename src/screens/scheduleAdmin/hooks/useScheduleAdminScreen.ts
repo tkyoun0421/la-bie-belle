@@ -9,7 +9,7 @@ import { serverClockStore } from "@/entities/clock/stores/clock.store";
 import { useMembersQuery } from "@/entities/member/services/useMembersQuery";
 import { useQualificationsQuery } from "@/entities/member/services/useQualificationsQuery";
 import { usePayrollMonthsQuery } from "@/entities/payroll/services/usePayrollMonthsQuery";
-import type { RehearsalWithName } from "@/entities/rehearsal/api/rehearsal.dto";
+import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
 import { liveAssignmentCount } from "@/entities/schedule/api/getMonthSchedule.api";
 import type { OpenSlot } from "@/entities/schedule/api/schedule.dto";
@@ -607,7 +607,7 @@ export function useScheduleAdminScreen({
               (row) => row.day_id === day.id,
             ),
             rehearsals: (rehearsals ?? []).filter(
-              (row: RehearsalWithName) => row.work_date === day.work_date,
+              (row: Rehearsal) => row.workDate === day.work_date,
             ),
             serverNowMs: nowMs,
             gate: dayConfirmGate({

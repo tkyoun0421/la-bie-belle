@@ -56,9 +56,9 @@ describe("payrollDays — 리허설만 있는 날도 결과에 뜬다(날짜 합
       baseInput({
         rehearsals: [
           {
-            work_date: rehearsalOnlyDate,
-            starts_at: "14:00",
-            ends_at: "16:00",
+            workDate: rehearsalOnlyDate,
+            startsAt: "14:00",
+            endsAt: "16:00",
             count: null,
           },
         ],
@@ -264,9 +264,9 @@ describe("payrollViewDays — 근무표(days)가 비어도 리허설만으로 �
       excuses: [],
       rehearsals: [
         {
-          work_date: rehearsalDate,
-          starts_at: "14:00",
-          ends_at: "16:00",
+          workDate: rehearsalDate,
+          startsAt: "14:00",
+          endsAt: "16:00",
           count: null,
         },
       ],
@@ -471,9 +471,9 @@ describe("payrollViewDays — 배정·조정·리허설 세 갈래의 날짜가 
       excuses: [],
       rehearsals: [
         {
-          work_date: rehearsalOnlyDate,
-          starts_at: "14:00",
-          ends_at: "16:00",
+          workDate: rehearsalOnlyDate,
+          startsAt: "14:00",
+          endsAt: "16:00",
           count: null,
         },
       ],

@@ -14,7 +14,7 @@ import type { DayKind } from "@/entities/payroll/model/payroll.type";
 import { wageAt, type WageRate } from "@/entities/payroll/model/wageAt.policy";
 import {
   rehearsalHours,
-  type RehearsalRow,
+  type RehearsalClock,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import { paidMinutes } from "@/features/payrollCompute/model/paidMinutes.policy";
@@ -50,8 +50,8 @@ export type PayrollExcuse = {
   decision: string | null;
 };
 
-export type PayrollRehearsal = RehearsalRow & {
-  work_date: string;
+export type PayrollRehearsal = RehearsalClock & {
+  workDate: string;
 };
 
 export type PayrollDaysInput = {
@@ -140,7 +140,7 @@ function payrollDate(
       day === null
         ? []
         : input.adjustments.filter((row) => row.day_id === day.id),
-    rehearsals: input.rehearsals.filter((row) => row.work_date === date),
+    rehearsals: input.rehearsals.filter((row) => row.workDate === date),
   });
 
   const wage = wageAt(input.rates, date);
@@ -164,7 +164,7 @@ export function payrollDays(input: PayrollDaysInput): PayrollDay[] {
   }
 
   for (const rehearsal of input.rehearsals) {
-    dates.add(rehearsal.work_date);
+    dates.add(rehearsal.workDate);
   }
 
   return [...dates].sort().map((date) => payrollDate(input, dayByDate, date));
@@ -273,7 +273,7 @@ export function payrollViewDays(source: PayrollViewSource): PayrollViewDay[] {
       isEducation: assignment !== null && assignment.kind === EDUCATION_KIND,
       overtimeMinutes: Math.max(0, day.minutes - REGULAR_MINUTES),
       rehearsalMinutes: source.rehearsals
-        .filter((row) => row.work_date === day.date)
+        .filter((row) => row.workDate === day.date)
         .reduce((sum, row) => sum + rehearsalHours(row), 0),
       attendance:
         scheduled === null || assignment === null

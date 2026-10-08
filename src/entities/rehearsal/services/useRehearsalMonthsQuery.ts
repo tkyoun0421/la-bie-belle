@@ -2,7 +2,7 @@ import { useQueries } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { getMyRehearsals } from "@/entities/rehearsal/api/getMyRehearsals.api";
-import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
+import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 
 export type RehearsalMonthsResult = {
   data: Rehearsal[] | undefined;

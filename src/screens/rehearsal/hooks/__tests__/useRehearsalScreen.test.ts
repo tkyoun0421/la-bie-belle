@@ -95,11 +95,12 @@ function createWrapper() {
 function rehearsalAt(id: string, workDate: string) {
   return {
     id,
-    work_date: workDate,
-    starts_at: "14:00:00",
-    ends_at: "16:00:00",
+    workDate,
+    startsAt: "14:00:00",
+    endsAt: "16:00:00",
     count: null,
-    profile_id: "me",
+    profileId: "me",
+    name: null,
   };
 }
 

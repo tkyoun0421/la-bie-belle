@@ -39,8 +39,8 @@ describe("paidMinutes — 리허설은 시각 갈래와 건수 갈래를 모두 
       day: NINE_HOUR_DAY,
       adjustments: [],
       rehearsals: [
-        { starts_at: "20:00", ends_at: "22:00", count: null },
-        { starts_at: null, ends_at: null, count: 1 },
+        { startsAt: "20:00", endsAt: "22:00", count: null },
+        { startsAt: null, endsAt: null, count: 1 },
       ],
     });
 

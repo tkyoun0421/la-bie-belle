@@ -2,10 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { getAllRehearsals } from "@/entities/rehearsal/api/getAllRehearsals.api";
-import type { RehearsalWithName } from "@/entities/rehearsal/api/rehearsal.dto";
+import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 
 export type AllRehearsalsResult = {
-  data: RehearsalWithName[] | undefined;
+  data: Rehearsal[] | undefined;
   error: Error | null;
   isLoading: boolean;
   refetch: () => void;

@@ -1,7 +1,7 @@
+import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import {
   dayTotal,
   rehearsalHours,
-  type RehearsalRow,
 } from "@/entities/rehearsal/utils/rehearsalHours.utils";
 import {
   CLOCK_LENGTH,
@@ -9,10 +9,10 @@ import {
 } from "@/screens/rehearsal/consts/rehearsal.const";
 import { spellMinutes } from "@/screens/rehearsal/utils/spellTotal.utils";
 
-export type DaySheetRow = RehearsalRow & {
-  id: string;
-  profiles?: { display_name: string | null } | null;
-};
+export type DaySheetRow = Pick<
+  Rehearsal,
+  "id" | "startsAt" | "endsAt" | "count" | "name"
+>;
 
 export type DaySheetLine = {
   id: string;
@@ -34,11 +34,11 @@ function bodyOf(row: DaySheetRow): string {
     return `리허설 ${row.count}건 · ${hours}`;
   }
 
-  return `${clock(row.starts_at ?? "")}–${clock(row.ends_at ?? "")} · ${hours}`;
+  return `${clock(row.startsAt ?? "")}–${clock(row.endsAt ?? "")} · ${hours}`;
 }
 
 function textOf(row: DaySheetRow, isAdmin: boolean): string {
-  const name = isAdmin ? (row.profiles?.display_name ?? "") : "";
+  const name = isAdmin ? (row.name ?? "") : "";
 
   return name === "" ? bodyOf(row) : `${name} · ${bodyOf(row)}`;
 }

@@ -3,9 +3,10 @@ import { supabase } from "@/shared/api/supabase";
 import { kstToday } from "@/shared/lib/kstToday.lib";
 import { monthOf, spellDate, spellMonth } from "@/shared/utils/kstDate";
 import { useMyProfileRowQuery } from "@/entities/profile/services/useMyProfileRowQuery";
-import type { Rehearsal } from "@/entities/rehearsal/api/rehearsal.dto";
+
 import { canAddOn } from "@/entities/rehearsal/model/canAddOn.policy";
 import { kindForDate } from "@/entities/rehearsal/model/kindForDate.policy";
+import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import { useAllRehearsalsQuery } from "@/entities/rehearsal/services/useAllRehearsalsQuery";
 import { useMyRehearsalsQuery } from "@/entities/rehearsal/services/useMyRehearsalsQuery";
 import {
@@ -35,7 +36,7 @@ import {
 } from "@/screens/rehearsal/utils/daySheetRows.utils";
 import { spellTotal } from "@/screens/rehearsal/utils/spellTotal.utils";
 
-type Row = Rehearsal & { profiles?: { display_name: string | null } | null };
+type Row = Rehearsal;
 
 export type RehearsalFormHandle =
   { mode: "add" } | { mode: "edit"; id: string };
@@ -180,7 +181,7 @@ export function useRehearsalScreen(
     const byDate = new Map<string, Row[]>();
 
     for (const row of rows) {
-      byDate.set(row.work_date, [...(byDate.get(row.work_date) ?? []), row]);
+      byDate.set(row.workDate, [...(byDate.get(row.workDate) ?? []), row]);
     }
 
     return byDate;
@@ -232,8 +233,8 @@ export function useRehearsalScreen(
         type: "open",
         kind: row.count === null ? "time" : "count",
         values: {
-          startsAt: row.starts_at?.slice(0, CLOCK_LENGTH) ?? "",
-          endsAt: row.ends_at?.slice(0, CLOCK_LENGTH) ?? "",
+          startsAt: row.startsAt?.slice(0, CLOCK_LENGTH) ?? "",
+          endsAt: row.endsAt?.slice(0, CLOCK_LENGTH) ?? "",
           count: row.count === null ? "" : String(row.count),
         },
       });
