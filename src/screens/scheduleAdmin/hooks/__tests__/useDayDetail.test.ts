@@ -497,9 +497,9 @@ describe("useDayDetail — 확정 갈림과 자격 갈림이 한 손에서 난�
     const { result, input } = mounted({
       adjustments: [
         {
-          profile_id: "p1",
+          profileId: "p1",
           minutes: 30,
-          adjusted_at: "2026-10-10T09:00:00.000Z",
+          adjustedAt: "2026-10-10T09:00:00.000Z",
         },
       ],
     });

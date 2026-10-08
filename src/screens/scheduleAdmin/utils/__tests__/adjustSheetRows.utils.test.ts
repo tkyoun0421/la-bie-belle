@@ -34,9 +34,9 @@ describe("adjustSheetRows — 마지막 조정이 음수면 결근 앞머리가 
       ],
       adjustments: [
         {
-          profile_id: "p2",
+          profileId: "p2",
           minutes: -540,
-          adjusted_at: "2026-10-10T09:00:00Z",
+          adjustedAt: "2026-10-10T09:00:00Z",
         },
       ],
       rehearsals: [],
@@ -55,7 +55,7 @@ describe("adjustSheetRows — 마지막 조정이 양수면 연장 앞머리가 
         { profile_id: "p3", name: "이하늘", kind: "regular", ended_at: null },
       ],
       adjustments: [
-        { profile_id: "p3", minutes: 120, adjusted_at: "2026-10-10T09:00:00Z" },
+        { profileId: "p3", minutes: 120, adjustedAt: "2026-10-10T09:00:00Z" },
       ],
       rehearsals: [],
     });
@@ -74,11 +74,11 @@ describe("adjustSheetRows — 마지막 조정 행이 0분이면 앞머리가 �
       ],
       adjustments: [
         {
-          profile_id: "p4",
+          profileId: "p4",
           minutes: -540,
-          adjusted_at: "2026-10-10T09:00:00Z",
+          adjustedAt: "2026-10-10T09:00:00Z",
         },
-        { profile_id: "p4", minutes: 0, adjusted_at: "2026-10-10T10:00:00Z" },
+        { profileId: "p4", minutes: 0, adjustedAt: "2026-10-10T10:00:00Z" },
       ],
       rehearsals: [],
     });

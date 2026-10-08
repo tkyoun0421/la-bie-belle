@@ -15,15 +15,15 @@ describe("paidMinutes — 배정 시간은 day.starts_at~ends_at 그대로다(PA
   });
 });
 
-describe("paidMinutes — 조정이 여럿이면 adjusted_at이 가장 늦은 행만 쓴다", () => {
-  it("배열 순서가 아니라 adjusted_at 최신 행의 분을 쓴다", () => {
+describe("paidMinutes — 조정이 여럿이면 adjustedAt이 가장 늦은 행만 쓴다", () => {
+  it("배열 순서가 아니라 adjustedAt 최신 행의 분을 쓴다", () => {
     const minutes = paidMinutes({
       assignments: [{ id: "a1" }],
       day: NINE_HOUR_DAY,
       adjustments: [
-        { minutes: 30, adjusted_at: "2026-09-10T09:00:00.000Z" },
-        { minutes: -540, adjusted_at: "2026-09-10T11:00:00.000Z" },
-        { minutes: 60, adjusted_at: "2026-09-10T10:00:00.000Z" },
+        { minutes: 30, adjustedAt: "2026-09-10T09:00:00.000Z" },
+        { minutes: -540, adjustedAt: "2026-09-10T11:00:00.000Z" },
+        { minutes: 60, adjustedAt: "2026-09-10T10:00:00.000Z" },
       ],
       rehearsals: [],
     });

@@ -682,12 +682,12 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     getPayrollMonthMock.mockResolvedValue({
       ...EMPTY_PAYROLL,
       holidays: [
-        { holiday_date: "2026-10-10", source: "manual" },
-        { holiday_date: "2026-10-11", source: "manual" },
+        { holidayDate: "2026-10-10", source: "manual" },
+        { holidayDate: "2026-10-11", source: "manual" },
       ],
       adjustments: [
-        { day_id: "d1", profile_id: "p1", minutes: 30, reason: "연장" },
-        { day_id: "d2", profile_id: "p1", minutes: 30, reason: "연장" },
+        { dayId: "d1", profileId: "p1", minutes: 30, reason: "연장" },
+        { dayId: "d2", profileId: "p1", minutes: 30, reason: "연장" },
       ],
     });
     getAllRehearsalsMock.mockResolvedValue([

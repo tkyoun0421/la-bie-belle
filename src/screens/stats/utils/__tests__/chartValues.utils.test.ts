@@ -1,4 +1,4 @@
-import type { PayrollMonth } from "@/entities/payroll/api/payroll.dto";
+import type { PayrollMonth } from "@/entities/payroll/model/payroll.type";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import type { ScheduleAssignment } from "@/entities/schedule/api/schedule.dto";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
@@ -228,10 +228,10 @@ describe("myPayrollValues — payrollViewDays를 그대로 불러 날마다 amou
         payroll: emptyPayrollMonth({
           wageRates: [
             {
-              profile_id: PROFILE_ID,
-              effective_date: "2026-08-01",
+              profileId: PROFILE_ID,
+              effectiveDate: "2026-08-01",
               amount: 12000,
-              follows_default: false,
+              followsDefault: false,
             },
           ],
         }),
@@ -340,10 +340,10 @@ describe("myPayrollValues — 리허설이 붙은 날은 그 몫만큼 그달 �
         payroll: emptyPayrollMonth({
           wageRates: [
             {
-              profile_id: PROFILE_ID,
-              effective_date: "2026-08-01",
+              profileId: PROFILE_ID,
+              effectiveDate: "2026-08-01",
               amount: 12000,
-              follows_default: false,
+              followsDefault: false,
             },
           ],
         }),
@@ -438,10 +438,10 @@ describe("myPayrollDaysOfMonth — 다른 달 리허설이 그 달 결과에 안
         payroll: emptyPayrollMonth({
           wageRates: [
             {
-              profile_id: PROFILE_ID,
-              effective_date: "2026-08-01",
+              profileId: PROFILE_ID,
+              effectiveDate: "2026-08-01",
               amount: 12000,
-              follows_default: false,
+              followsDefault: false,
             },
           ],
         }),

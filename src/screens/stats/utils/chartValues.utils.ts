@@ -1,6 +1,6 @@
 import { monthIn } from "@/shared/utils/monthIn";
 import { attendanceRate } from "@/entities/attendance/utils/attendanceSummary.utils";
-import type { PayrollMonth } from "@/entities/payroll/api/payroll.dto";
+import type { PayrollMonth } from "@/entities/payroll/model/payroll.type";
 import type { Rehearsal } from "@/entities/rehearsal/model/rehearsal.type";
 import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import type { WorkMonth } from "@/entities/schedule/services/useWorkMonthsQuery";

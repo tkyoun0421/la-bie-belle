@@ -237,8 +237,8 @@ export function useWagesScreen(): WagesScreenController {
             photoUrl: openRow.photoUrl ?? null,
           },
     historyRows: history.rows.map((row) => ({
-      key: row.effective_date,
-      dateLabel: spellWageDate(row.effective_date),
+      key: row.effectiveDate,
+      dateLabel: spellWageDate(row.effectiveDate),
       amountLabel: spellWon(row.amount),
     })),
     historyHasMore: history.hasMore,

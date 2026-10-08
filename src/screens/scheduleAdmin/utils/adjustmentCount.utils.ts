@@ -1,10 +1,10 @@
+import type { Adjustment } from "@/entities/payroll/model/payroll.type";
 import { adjustedMinutes } from "@/features/payrollCompute/model/paidMinutes.policy";
 
-export type AdjustmentCountRow = {
-  profile_id: string;
-  minutes: number;
-  adjusted_at: string;
-};
+export type AdjustmentCountRow = Pick<
+  Adjustment,
+  "profileId" | "minutes" | "adjustedAt"
+>;
 
 function rowsByProfile(
   rows: readonly AdjustmentCountRow[],
@@ -12,10 +12,10 @@ function rowsByProfile(
   const grouped = new Map<string, AdjustmentCountRow[]>();
 
   for (const row of rows) {
-    const kept = grouped.get(row.profile_id) ?? [];
+    const kept = grouped.get(row.profileId) ?? [];
 
     kept.push(row);
-    grouped.set(row.profile_id, kept);
+    grouped.set(row.profileId, kept);
   }
 
   return grouped;

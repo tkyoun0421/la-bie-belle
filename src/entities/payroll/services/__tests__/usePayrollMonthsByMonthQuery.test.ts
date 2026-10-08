@@ -46,10 +46,10 @@ function emptyPayrollMonth1WageRate() {
     ...emptyPayrollMonth(),
     wageRates: [
       {
-        profile_id: "profile-1",
-        effective_date: "2026-08-01",
+        profileId: "profile-1",
+        effectiveDate: "2026-08-01",
         amount: 12000,
-        follows_default: false,
+        followsDefault: false,
       },
     ],
   };

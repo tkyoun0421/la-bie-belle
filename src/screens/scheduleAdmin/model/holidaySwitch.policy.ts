@@ -1,6 +1,6 @@
-export type HolidayRow = {
-  source: string;
-};
+import type { Holiday } from "@/entities/payroll/model/payroll.type";
+
+export type HolidayRow = Pick<Holiday, "source">;
 
 export type HolidaySwitchState = {
   checked: boolean;

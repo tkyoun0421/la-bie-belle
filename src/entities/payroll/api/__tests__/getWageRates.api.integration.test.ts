@@ -55,9 +55,9 @@ describe("getWageRates(plan payroll-wages AC-05) — 전원의 wage_rates 이력
 
     const result = await getWageRates(admin.client);
     const own = result.wageRates.filter(
-      (row) => row.profile_id === worker.profileId,
+      (row) => row.profileId === worker.profileId,
     );
-    const effectiveDates = own.map((row) => row.effective_date);
+    const effectiveDates = own.map((row) => row.effectiveDate);
 
     expect(effectiveDates).toEqual(
       expect.arrayContaining([veryOld, recent, future]),
@@ -72,7 +72,7 @@ describe("getWageRates(plan payroll-wages AC-05) — 전원의 wage_rates 이력
 
     const result = await getWageRates(admin.client);
     const own = result.wageRates.filter(
-      (row) => row.profile_id === workerWithoutHistory.profileId,
+      (row) => row.profileId === workerWithoutHistory.profileId,
     );
     expect(own).toHaveLength(0);
   });
@@ -95,7 +95,7 @@ describe("getWageRates(plan payroll-wages AC-05) — 전원의 wage_rates 이력
     const result = await getWageRates(admin.client);
 
     expect(result.defaultWageRate).toEqual({
-      effective_date: newer,
+      effectiveDate: newer,
       amount: 13000,
     });
   });

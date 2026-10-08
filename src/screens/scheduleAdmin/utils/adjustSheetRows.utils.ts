@@ -5,7 +5,7 @@ import {
 import {
   adjustedMinutes,
   paidMinutes,
-  type AdjustmentRow,
+  type TimedAdjustment,
   type WorkDayHours,
 } from "@/features/payrollCompute/model/paidMinutes.policy";
 import { assignedMinutes } from "@/screens/scheduleAdmin/utils/absenceMinutes.utils";
@@ -21,7 +21,7 @@ export type AdjustSheetAssignment = {
   ended_at: string | null;
 };
 
-export type AdjustSheetAdjustment = AdjustmentRow & { profile_id: string };
+export type AdjustSheetAdjustment = TimedAdjustment & { profileId: string };
 
 export type AdjustSheetRehearsal = RehearsalClock & { profileId: string };
 
@@ -105,7 +105,7 @@ export function adjustSheetRows(input: AdjustSheetInput): AdjustSheetRow[] {
     .filter((assignment) => assignment.ended_at === null)
     .map((assignment) => {
       const adjustments = input.adjustments.filter(
-        (row) => row.profile_id === assignment.profile_id,
+        (row) => row.profileId === assignment.profile_id,
       );
       const rehearsals = input.rehearsals.filter(
         (row) => row.profileId === assignment.profile_id,

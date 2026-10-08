@@ -138,7 +138,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
   const chosenRow = adjustRows.find((row) => row.profile_id === chosen) ?? null;
 
   const chosenAdjustments: AdjustChoiceRow[] = adjustments.filter(
-    (row) => row.profile_id === chosen,
+    (row) => row.profileId === chosen,
   );
 
   const failure =
