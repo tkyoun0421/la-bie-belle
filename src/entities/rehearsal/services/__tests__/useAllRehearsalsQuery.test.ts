@@ -40,12 +40,12 @@ const MONTH = "2026-10";
 const ROWS = [
   {
     id: "row-1",
-    profile_id: "profile-1",
-    work_date: "2026-10-10",
-    starts_at: null,
-    ends_at: null,
+    profileId: "profile-1",
+    workDate: "2026-10-10",
+    startsAt: null,
+    endsAt: null,
     count: 2,
-    profiles: { display_name: "박서연" },
+    name: "박서연",
   },
 ];
 
