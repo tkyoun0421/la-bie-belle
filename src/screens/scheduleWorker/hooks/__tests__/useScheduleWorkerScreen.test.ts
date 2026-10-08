@@ -152,42 +152,34 @@ const OTHER_DAY = {
 
 const REQUEST = {
   id: "r1",
-  slot_id: "s2",
-  closed_at: null,
-  expires_at: "2099-01-01T00:00:00.000Z",
-  request_candidates: [
+  slotId: "s2",
+  closedAt: null,
+  expiresAt: "2099-01-01T00:00:00.000Z",
+  candidates: [
     {
-      profile_id: "p1",
+      profileId: "p1",
       status: "pending",
-      expires_at: "2099-01-01T00:00:00.000Z",
+      expiresAt: "2099-01-01T00:00:00.000Z",
     },
   ],
-  slots: {
-    id: "s2",
-    positions: ["서빙"],
-    days: {
-      work_date: "2026-10-20",
-      starts_at: "10:00:00",
-      ends_at: "18:00:00",
-    },
-  },
+  positions: ["서빙"],
+  workDate: "2026-10-20",
+  startsAt: "10:00:00",
+  endsAt: "18:00:00",
 };
 
 const MY_CANCEL_REQUEST = {
   id: "ap1",
-  assignment_id: "a1",
+  assignmentId: "a1",
   reason: "몸이 아파요",
-  created_at: "2026-10-02T00:00:00.000Z",
-  assignments: {
-    day_id: "d1",
-    position: "안내",
-    days: {
-      work_date: "2026-10-17",
-      starts_at: "10:00:00",
-      ends_at: "18:00:00",
-    },
-  },
-  profiles: { display_name: "이준호", photo_url: null },
+  createdAt: "2026-10-02T00:00:00.000Z",
+  dayId: "d1",
+  position: "안내",
+  workDate: "2026-10-17",
+  startsAt: "10:00:00",
+  endsAt: "18:00:00",
+  name: "이준호",
+  photoUrl: null,
 };
 
 const CONFIRMED = {
@@ -422,7 +414,7 @@ describe("useScheduleWorkerScreen — 날짜 하나에 문이 둘이다", () => 
 
   it("만료된 요청은 끝난 것으로 선다", async () => {
     getSlotRequestsMock.mockResolvedValue([
-      { ...REQUEST, expires_at: "2020-01-01T00:00:00.000Z" },
+      { ...REQUEST, expiresAt: "2020-01-01T00:00:00.000Z" },
     ]);
 
     const { result } = await mounted();

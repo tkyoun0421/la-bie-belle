@@ -21,8 +21,8 @@ export type PickerQualification = {
 };
 
 export type PickerSlotRequest = {
-  slot_id: string | null;
-  request_candidates: readonly PickerRequestCandidate[];
+  slotId: string | null;
+  candidates: readonly PickerRequestCandidate[];
 };
 
 export type PickerEntriesInput = {
@@ -43,7 +43,7 @@ function requestFor(
     return null;
   }
 
-  return requests.filter((one) => one.slot_id === slotId).at(-1) ?? null;
+  return requests.filter((one) => one.slotId === slotId).at(-1) ?? null;
 }
 
 export function pickerEntries(input: PickerEntriesInput): PickerEntry[] {
@@ -62,7 +62,7 @@ export function pickerEntries(input: PickerEntriesInput): PickerEntry[] {
       .filter((one) => one.position === target.position)
       .map((one) => one.profile_id),
     dayAssignments: input.dayAssignments,
-    requestCandidates: request?.request_candidates ?? [],
+    requestCandidates: request?.candidates ?? [],
     serverNowMs: input.serverNowMs,
   });
 

@@ -1,3 +1,4 @@
+import type { SlotRequestCandidate } from "@/entities/workRequest/model/workRequest.type";
 import { RESTRICTED_POSITIONS } from "@/screens/scheduleAdmin/consts/scheduleAdmin.const";
 
 export type PickerCategory =
@@ -21,11 +22,7 @@ export type PickerDayAssignment = {
   ended_at: string | null;
 };
 
-export type PickerRequestCandidate = {
-  profile_id: string;
-  status: string;
-  expires_at: string;
-};
+export type PickerRequestCandidate = SlotRequestCandidate;
 
 export type PersonPickerRowsInput = {
   position: string;
@@ -70,7 +67,7 @@ function requestCategory(
   candidates: readonly PickerRequestCandidate[],
   serverNowMs: number,
 ): PickerCategory | null {
-  const candidate = candidates.find((one) => one.profile_id === profileId);
+  const candidate = candidates.find((one) => one.profileId === profileId);
 
   if (candidate === undefined) {
     return null;
@@ -84,7 +81,7 @@ function requestCategory(
     return null;
   }
 
-  return serverNowMs >= new Date(candidate.expires_at).getTime()
+  return serverNowMs >= new Date(candidate.expiresAt).getTime()
     ? "requested_expired"
     : "requested_pending";
 }

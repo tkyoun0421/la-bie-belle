@@ -59,19 +59,16 @@ function fakeRouter() {
 function approval(id: string, workDate: string, name: string) {
   return {
     id,
-    assignment_id: `assign-${id}`,
+    assignmentId: `assign-${id}`,
     reason: `${name}의 사정`,
-    created_at: "2026-10-01T03:00:00.000Z",
-    assignments: {
-      day_id: `day-${id}`,
-      position: "메인",
-      days: {
-        work_date: workDate,
-        starts_at: "18:00:00",
-        ends_at: "23:00:00",
-      },
-    },
-    profiles: { display_name: name, photo_url: null },
+    createdAt: "2026-10-01T03:00:00.000Z",
+    dayId: `day-${id}`,
+    position: "메인",
+    workDate,
+    startsAt: "18:00:00",
+    endsAt: "23:00:00",
+    name,
+    photoUrl: null,
   };
 }
 

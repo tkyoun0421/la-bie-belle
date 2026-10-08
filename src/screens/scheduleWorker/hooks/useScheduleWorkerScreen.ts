@@ -11,7 +11,7 @@ import type { ScheduleDay } from "@/entities/schedule/api/schedule.dto";
 import { useMonthScheduleQuery } from "@/entities/schedule/services/useMonthScheduleQuery";
 import { useMonthWindowQuery } from "@/entities/schedule/services/useMonthWindowQuery";
 import { useSessionUserQuery } from "@/entities/session/services/useSessionUserQuery";
-import type { SlotRequest } from "@/entities/workRequest/api/workRequest.dto";
+import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 import { usePendingApprovalsQuery } from "@/entities/workRequest/services/usePendingApprovalsQuery";
 import { useSlotRequestsQuery } from "@/entities/workRequest/services/useSlotRequestsQuery";
 import { useSubmitAvailabilityMutation } from "@/features/availabilitySubmit/services/useSubmitAvailabilityMutation";
@@ -262,7 +262,7 @@ export function useScheduleWorkerScreen({
     const byDate = new Map<string, SlotRequest[]>();
 
     for (const request of slotRequests ?? []) {
-      const date = request.slots.days.work_date;
+      const date = request.workDate;
 
       byDate.set(date, [...(byDate.get(date) ?? []), request]);
     }
@@ -285,9 +285,9 @@ export function useScheduleWorkerScreen({
     openDate === null || myProfileId === null
       ? null
       : ((requestsOf.get(openDate) ?? []).find((request) =>
-          request.request_candidates.some(
+          request.candidates.some(
             (candidate) =>
-              candidate.profile_id === myProfileId &&
+              candidate.profileId === myProfileId &&
               candidate.status === "pending",
           ),
         ) ?? null);
@@ -303,7 +303,7 @@ export function useScheduleWorkerScreen({
         ) ?? null);
 
   const cancelAsking = (myCancelRequests ?? []).some(
-    (request) => request.assignment_id === myShift?.id,
+    (request) => request.assignmentId === myShift?.id,
   );
 
   const agendaEntries: AgendaEntry[] = (days ?? [])
@@ -374,8 +374,8 @@ export function useScheduleWorkerScreen({
           kind: "request",
           subtitle: requestSubtitle(openRequest),
           state: requestSheetState({
-            closedAt: openRequest.closed_at,
-            expiresAt: openRequest.expires_at,
+            closedAt: openRequest.closedAt,
+            expiresAt: openRequest.expiresAt,
             serverNowMs,
           }),
           sending: sendingAnswer,

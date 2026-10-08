@@ -598,7 +598,7 @@ export function useScheduleAdminScreen({
             members: activeMembers ?? [],
             qualifications: qualifications ?? [],
             slotRequests: (slotRequests ?? []).filter(
-              (request) => request.slots.days.work_date === day.work_date,
+              (request) => request.workDate === day.work_date,
             ),
             holidays: (payroll?.holidays ?? []).filter(
               (row) => row.holiday_date === day.work_date,

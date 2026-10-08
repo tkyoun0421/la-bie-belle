@@ -7,10 +7,8 @@ describe("hasIncomingRequest — 내 pending 갈래가 있는 요청이면 참�
     const result = hasIncomingRequest(
       [
         {
-          closed_at: null,
-          request_candidates: [
-            { profile_id: MY_PROFILE_ID, status: "pending" },
-          ],
+          closedAt: null,
+          candidates: [{ profileId: MY_PROFILE_ID, status: "pending" }],
         },
       ],
       MY_PROFILE_ID,
@@ -25,8 +23,8 @@ describe("hasIncomingRequest — 내 갈래가 아니면 거짓이다", () => {
     const result = hasIncomingRequest(
       [
         {
-          closed_at: null,
-          request_candidates: [{ profile_id: "profile-2", status: "pending" }],
+          closedAt: null,
+          candidates: [{ profileId: "profile-2", status: "pending" }],
         },
       ],
       MY_PROFILE_ID,
@@ -41,10 +39,8 @@ describe("hasIncomingRequest — 내 갈래가 이미 답했으면 거짓이다"
     const result = hasIncomingRequest(
       [
         {
-          closed_at: null,
-          request_candidates: [
-            { profile_id: MY_PROFILE_ID, status: "declined" },
-          ],
+          closedAt: null,
+          candidates: [{ profileId: MY_PROFILE_ID, status: "declined" }],
         },
       ],
       MY_PROFILE_ID,
@@ -59,10 +55,8 @@ describe("hasIncomingRequest — 요청이 닫혔으면 내 갈래가 pending이
     const result = hasIncomingRequest(
       [
         {
-          closed_at: "2026-10-10T00:00:00Z",
-          request_candidates: [
-            { profile_id: MY_PROFILE_ID, status: "pending" },
-          ],
+          closedAt: "2026-10-10T00:00:00Z",
+          candidates: [{ profileId: MY_PROFILE_ID, status: "pending" }],
         },
       ],
       MY_PROFILE_ID,

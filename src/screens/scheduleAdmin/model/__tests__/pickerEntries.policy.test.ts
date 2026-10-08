@@ -119,12 +119,12 @@ describe("pickerEntries — 체크박스는 빈 자리 픽커에만 선다", () 
 
 describe("pickerEntries — 요청은 그 자리 것만 읽는다", () => {
   const REQUEST = {
-    slot_id: "s2",
-    request_candidates: [
+    slotId: "s2",
+    candidates: [
       {
-        profile_id: "p4",
+        profileId: "p4",
         status: "pending",
-        expires_at: "2026-10-06T00:00:00.000Z",
+        expiresAt: "2026-10-06T00:00:00.000Z",
       },
     ],
   };
@@ -138,7 +138,7 @@ describe("pickerEntries — 요청은 그 자리 것만 읽는다", () => {
 
   it("다른 자리의 요청은 안 읽는다", () => {
     const rows = pickerEntries(
-      input({ slotRequests: [{ ...REQUEST, slot_id: "s9" }] }),
+      input({ slotRequests: [{ ...REQUEST, slotId: "s9" }] }),
     );
 
     expect(rowOf(rows, "p4").category).toBe("not_applied");

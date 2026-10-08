@@ -6,7 +6,7 @@ import type {
   ScheduleAssignment,
   ScheduleSlot,
 } from "@/entities/schedule/api/schedule.dto";
-import type { SlotRequest } from "@/entities/workRequest/api/workRequest.dto";
+import type { SlotRequest } from "@/entities/workRequest/model/workRequest.type";
 import type { AddAssignmentInput } from "@/features/scheduleAssign/api/addAssignment.api";
 import type { DayConfirmGate } from "@/screens/scheduleAdmin/model/confirmGate.policy";
 import type {

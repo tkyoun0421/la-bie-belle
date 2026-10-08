@@ -1,26 +1,26 @@
 export type SlotRequestBadgeInput = {
-  closed_at: string | null;
+  closedAt: string | null;
   candidates: readonly { status: string }[];
 };
 
 export type SlotRequestBadgeRow = {
-  slot_id: string | null;
-  closed_at: string | null;
-  request_candidates: readonly { status: string }[];
+  slotId: string | null;
+  closedAt: string | null;
+  candidates: readonly { status: string }[];
 };
 
 export function slotRequestBadgeFor(
   slotId: string,
   requests: readonly SlotRequestBadgeRow[],
 ): string | null {
-  const request = requests.filter((one) => one.slot_id === slotId).at(-1);
+  const request = requests.filter((one) => one.slotId === slotId).at(-1);
 
   return slotRequestBadge(
     request === undefined
       ? null
       : {
-          closed_at: request.closed_at,
-          candidates: request.request_candidates,
+          closedAt: request.closedAt,
+          candidates: request.candidates,
         },
   );
 }
@@ -28,7 +28,7 @@ export function slotRequestBadgeFor(
 export function slotRequestBadge(
   request: SlotRequestBadgeInput | null,
 ): string | null {
-  if (request === null || request.closed_at !== null) {
+  if (request === null || request.closedAt !== null) {
     return null;
   }
 

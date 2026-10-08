@@ -1,15 +1,15 @@
-export type SlotRequestCandidate = {
+export type SlotRequestCandidateRow = {
   profile_id: string;
   status: string;
   expires_at: string;
 };
 
-export type SlotRequest = {
+export type SlotRequestRow = {
   id: string;
   slot_id: string | null;
   closed_at: string | null;
   expires_at: string;
-  request_candidates: SlotRequestCandidate[];
+  request_candidates: SlotRequestCandidateRow[];
   slots: {
     id: string;
     positions: string[];
@@ -17,7 +17,7 @@ export type SlotRequest = {
   };
 };
 
-export type PendingApproval = {
+export type PendingApprovalRow = {
   id: string;
   assignment_id: string;
   reason: string;
