@@ -38,13 +38,13 @@ describe("parseHolidayApiResponse — 항목이 하나면 item이 배열이 아�
     };
 
     expect(parseHolidayApiResponse(body)).toEqual([
-      { holiday_date: "2026-05-05", name: "어린이날" },
+      { date: "2026-05-05", name: "어린이날" },
     ]);
   });
 });
 
 describe("parseHolidayApiResponse — 여러 항목이 배열로 오면 전부 정확히 옮긴다", () => {
-  it("개천절과 한글날 둘 다 holiday_date·name 쌍으로 담긴다", () => {
+  it("개천절과 한글날 둘 다 date·name 쌍으로 담긴다", () => {
     const body = {
       response: {
         header: { resultCode: "00", resultMsg: "NORMAL SERVICE." },
@@ -75,8 +75,8 @@ describe("parseHolidayApiResponse — 여러 항목이 배열로 오면 전부 �
     };
 
     expect(parseHolidayApiResponse(body)).toEqual([
-      { holiday_date: "2026-10-03", name: "개천절" },
-      { holiday_date: "2026-10-09", name: "한글날" },
+      { date: "2026-10-03", name: "개천절" },
+      { date: "2026-10-09", name: "한글날" },
     ]);
   });
 });
@@ -126,7 +126,7 @@ describe("parseHolidayApiResponse — isHoliday가 N인 항목은 빠진다", ()
     };
 
     expect(parseHolidayApiResponse(body)).toEqual([
-      { holiday_date: "2026-03-01", name: "삼일절" },
+      { date: "2026-03-01", name: "삼일절" },
     ]);
   });
 });
@@ -154,7 +154,7 @@ describe("parseHolidayApiResponse — locdate가 문자열로 와도 숫자일 �
     };
 
     expect(parseHolidayApiResponse(body)).toEqual([
-      { holiday_date: "2026-10-03", name: "개천절" },
+      { date: "2026-10-03", name: "개천절" },
     ]);
   });
 });

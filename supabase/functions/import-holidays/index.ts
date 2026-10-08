@@ -1,7 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.112.4";
 
 import {
-  type HolidayRow,
+  type Holiday,
   parseHolidayApiResponse,
 } from "../_shared/holiday/holiday.schema.ts";
 
@@ -68,7 +68,7 @@ async function readYear(request: Request): Promise<number | null> {
     : null;
 }
 
-async function fetchMonth(year: number, month: number): Promise<HolidayRow[]> {
+async function fetchMonth(year: number, month: number): Promise<Holiday[]> {
   const query = new URLSearchParams({
     serviceKey: holidayApiKey,
     solYear: String(year),
@@ -86,12 +86,12 @@ async function fetchMonth(year: number, month: number): Promise<HolidayRow[]> {
   return parseHolidayApiResponse(await response.json());
 }
 
-async function fetchYear(year: number): Promise<HolidayRow[]> {
-  const byDate = new Map<string, HolidayRow>();
+async function fetchYear(year: number): Promise<Holiday[]> {
+  const byDate = new Map<string, Holiday>();
 
   for (let month = 1; month <= MONTHS; month += 1) {
-    for (const row of await fetchMonth(year, month)) {
-      byDate.set(row.holiday_date, row);
+    for (const holiday of await fetchMonth(year, month)) {
+      byDate.set(holiday.date, holiday);
     }
   }
 
@@ -118,17 +118,17 @@ Deno.serve(async (request: Request): Promise<Response> => {
     return respond(400, { error: "invalid_year" });
   }
 
-  let rows: HolidayRow[];
+  let holidays: Holiday[];
 
   try {
-    rows = await fetchYear(year);
+    holidays = await fetchYear(year);
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     console.error(`import-holidays: ${year}년 받아오기가 실패했다 — ${reason}`);
     return respond(502, { error: "fetch_failed" });
   }
 
-  if (rows.length === 0) {
+  if (holidays.length === 0) {
     console.error(`import-holidays: ${year}년이 0건이라 아무것도 안 넣었다`);
     return respond(200, { year, imported: 0 });
   }
@@ -139,17 +139,22 @@ Deno.serve(async (request: Request): Promise<Response> => {
 
   const { error } = await admin.rpc("import_holidays", {
     p_year: year,
-    p_rows: rows,
+    p_rows: holidays.map((holiday) => ({
+      holiday_date: holiday.date,
+      name: holiday.name,
+    })),
   });
 
   if (error !== null) {
     console.error(
-      `import-holidays: ${year}년 ${rows.length}건 넣기가 실패했다 — ${error.message}`,
+      `import-holidays: ${year}년 ${holidays.length}건 넣기가 실패했다 — ${error.message}`,
     );
     return respond(500, { error: error.message });
   }
 
-  console.log(`import-holidays: ${year}년 공휴일 ${rows.length}건을 넣었다`);
+  console.log(
+    `import-holidays: ${year}년 공휴일 ${holidays.length}건을 넣었다`,
+  );
 
-  return respond(200, { year, imported: rows.length });
+  return respond(200, { year, imported: holidays.length });
 });
