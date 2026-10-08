@@ -1,4 +1,4 @@
-export type ScheduleCheckIn = {
+export type ScheduleCheckInRow = {
   id: string;
   profile_id: string;
   checked_at: string;
@@ -6,7 +6,7 @@ export type ScheduleCheckIn = {
   received_at: string;
 };
 
-export type ScheduleAssignment = {
+export type ScheduleAssignmentRow = {
   id: string;
   slot_id: string | null;
   position: string;
@@ -16,28 +16,28 @@ export type ScheduleAssignment = {
   profiles: { display_name: string | null } | null;
 };
 
-export type ScheduleSlot = {
+export type ScheduleSlotRow = {
   id: string;
   positions: string[];
   ended_at: string | null;
 };
 
-export type ScheduleDay = {
+export type ScheduleDayRow = {
   id: string;
   work_date: string;
   starts_at: string;
   ends_at: string;
   opened_at: string;
-  slots: ScheduleSlot[];
-  assignments: ScheduleAssignment[];
-  check_ins: ScheduleCheckIn[];
+  slots: ScheduleSlotRow[];
+  assignments: ScheduleAssignmentRow[];
+  check_ins: ScheduleCheckInRow[];
 };
 
-export type OpenSlot = {
-  slot_id: string;
-  day_id: string;
-  work_date: string;
-  positions: string[];
+export type OpenSlotRow = {
+  slot_id: string | null;
+  day_id: string | null;
+  work_date: string | null;
+  positions: string[] | null;
 };
 
 export type MonthWindowRow = {
