@@ -39,11 +39,7 @@ const FAKE_CLIENT = {} as never;
 const MONTH = "2026-10";
 
 const ROWS = [
-  {
-    profile_id: "profile-1",
-    work_date: "2026-10-10",
-    profiles: { display_name: "박서연" },
-  },
+  { profileId: "profile-1", workDate: "2026-10-10", name: "박서연" },
 ];
 
 beforeEach(() => {

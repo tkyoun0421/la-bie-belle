@@ -88,8 +88,8 @@ function rowAt(id: string, createdAt: string, extra = {}) {
   return {
     id,
     kind: "shift_confirmed",
-    created_at: createdAt,
-    read_at: null,
+    createdAt,
+    readAt: null,
     payload: {},
     ...extra,
   };
@@ -144,7 +144,7 @@ describe("useNotificationsScreen — 쪽을 이어 붙여 날짜로 묶은 줄�
     getNotificationsMock.mockResolvedValue([
       rowAt("a", "2026-10-03T01:00:00.000Z"),
       rowAt("b", "2026-10-03T02:00:00.000Z", {
-        read_at: "2026-10-03T03:00:00.000Z",
+        readAt: "2026-10-03T03:00:00.000Z",
       }),
     ]);
     const { wrapper } = createWrapper();

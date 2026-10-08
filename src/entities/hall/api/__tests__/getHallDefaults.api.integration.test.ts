@@ -1,10 +1,9 @@
 import type { Database } from "@/shared/api/database";
 import { getHallDefaults } from "@/entities/hall/api/getHallDefaults.api";
+import type { HallSlot } from "@/entities/hall/model/hall.type";
 import { createAdminUser, type AdminUser } from "@tests/integration/postgres";
 
-type SlotDefault = { positions: string[]; count: number };
-
-const DEFAULT_SLOTS: SlotDefault[] = [
+const DEFAULT_SLOTS: HallSlot[] = [
   { positions: ["팀장"], count: 1 },
   { positions: ["스캔"], count: 1 },
   { positions: ["메인"], count: 1 },
@@ -18,7 +17,7 @@ const DEFAULT_SLOTS: SlotDefault[] = [
 const DEFAULT_STARTS = "10:00";
 const DEFAULT_ENDS = "22:00";
 
-function withManagerCount(count: number): SlotDefault[] {
+function withManagerCount(count: number): HallSlot[] {
   return DEFAULT_SLOTS.map((entry) =>
     entry.positions[0] === "매니저" ? { ...entry, count } : entry,
   );
@@ -37,10 +36,7 @@ async function rpcOrThrow<Name extends FunctionName>(
   }
 }
 
-function countByPosition(
-  slots: { positions: string[]; count: number }[],
-  position: string,
-): number {
+function countByPosition(slots: HallSlot[], position: string): number {
   return slots
     .filter(
       (slot) => slot.positions.length === 1 && slot.positions[0] === position,
@@ -72,10 +68,8 @@ describe("getHallDefaults dal — 자리·근무 시간 기본값을 읽는다",
 
     const defaults = await getHallDefaults(admin.client);
 
-    expect(defaults.default_starts).toMatch(/^09:00/);
-    expect(defaults.default_ends).toMatch(/^23:00/);
-    expect(
-      countByPosition(defaults.default_slots as SlotDefault[], "매니저"),
-    ).toBe(3);
+    expect(defaults.starts).toMatch(/^09:00/);
+    expect(defaults.ends).toMatch(/^23:00/);
+    expect(countByPosition(defaults.slots, "매니저")).toBe(3);
   });
 });

@@ -1,34 +1,27 @@
+import type {
+  Notification,
+  NotificationKind,
+  NotificationPayload,
+} from "@/entities/notification/model/notification.type";
+
 const { toNotificationDestination } =
   await import("@/entities/notification/model/destination.policy");
 
-type RawNotificationRow = {
-  id: string;
-  profile_id: string;
-  kind: string;
-  payload: Record<string, unknown>;
-  subject_id: string | null;
-  created_at: string;
-  read_at: string | null;
-  claimed_at: string | null;
-  push_attempts: number;
-  pushed_at: string | null;
-};
-
 function buildRow(
-  kind: string,
-  payload: Record<string, unknown>,
-): RawNotificationRow {
+  kind: NotificationKind,
+  payload: NotificationPayload,
+): Notification {
   return {
     id: "notif-1",
-    profile_id: "profile-1",
+    profileId: "profile-1",
     kind,
     payload,
-    subject_id: null,
-    created_at: "2025-09-13T10:00:00+09:00",
-    read_at: null,
-    claimed_at: null,
-    push_attempts: 0,
-    pushed_at: null,
+    subjectId: null,
+    createdAt: "2025-09-13T10:00:00+09:00",
+    readAt: null,
+    claimedAt: null,
+    pushAttempts: 0,
+    pushedAt: null,
   };
 }
 

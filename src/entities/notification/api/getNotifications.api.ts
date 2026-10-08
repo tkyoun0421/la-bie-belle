@@ -1,6 +1,8 @@
 import type { DB } from "@/shared/api/database";
 import type { NotificationRow } from "@/entities/notification/api/notification.dto";
 import { NOTIFICATION_PAGE_SIZE } from "@/entities/notification/consts/notification.const";
+import type { Notification } from "@/entities/notification/model/notification.type";
+import { toNotification } from "@/entities/notification/utils/notification.mapper";
 
 export const NOTIFICATION_COLUMNS =
   "id, profile_id, kind, payload, subject_id, created_at, read_at, claimed_at, push_attempts, pushed_at";
@@ -8,7 +10,7 @@ export const NOTIFICATION_COLUMNS =
 export async function getNotifications(
   client: DB,
   page: number,
-): Promise<NotificationRow[]> {
+): Promise<Notification[]> {
   const first = page * NOTIFICATION_PAGE_SIZE;
   const { data, error } = await client
     .from("notifications")
@@ -21,5 +23,5 @@ export async function getNotifications(
     throw error;
   }
 
-  return data ?? [];
+  return (data ?? []).map(toNotification);
 }

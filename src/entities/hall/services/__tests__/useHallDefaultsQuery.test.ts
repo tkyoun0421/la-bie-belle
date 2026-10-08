@@ -33,9 +33,9 @@ function createWrapper() {
 const FAKE_CLIENT = {} as never;
 
 const HALL_DEFAULTS = {
-  default_slots: [{ positions: ["팀장"], count: 1 }],
-  default_starts: "10:00",
-  default_ends: "19:00",
+  slots: [{ positions: ["팀장"], count: 1 }],
+  starts: "10:00",
+  ends: "19:00",
 };
 
 beforeEach(() => {

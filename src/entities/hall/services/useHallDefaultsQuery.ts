@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { getHallDefaults } from "@/entities/hall/api/getHallDefaults.api";
-import { type HallDefaults } from "@/entities/hall/api/hall.dto";
+import { type HallDefaults } from "@/entities/hall/model/hall.type";
 
 export type HallDefaultsResult = {
   data: HallDefaults | undefined;

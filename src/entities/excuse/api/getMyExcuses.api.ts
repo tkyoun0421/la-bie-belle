@@ -1,6 +1,8 @@
 import type { DB } from "@/shared/api/database";
 import { monthStart, nextMonthStart } from "@/shared/utils/monthRange";
 import type { ExcuseRow } from "@/entities/excuse/api/excuse.dto";
+import type { Excuse } from "@/entities/excuse/model/excuse.type";
+import { toExcuse } from "@/entities/excuse/utils/excuse.mapper";
 
 const COLUMNS = [
   "id",
@@ -16,7 +18,7 @@ const COLUMNS = [
 export async function getMyExcuses(
   client: DB,
   month: string,
-): Promise<ExcuseRow[]> {
+): Promise<Excuse[]> {
   const { data: days, error: daysError } = await client
     .from("days")
     .select("id")
@@ -44,5 +46,5 @@ export async function getMyExcuses(
     throw error;
   }
 
-  return data ?? [];
+  return (data ?? []).map(toExcuse);
 }

@@ -91,9 +91,9 @@ function createWrapper() {
 }
 
 const DEFAULTS = {
-  default_slots: 4,
-  default_starts: "10:00:00",
-  default_ends: "19:00:00",
+  slots: 4,
+  starts: "10:00:00",
+  ends: "19:00:00",
 };
 
 function todayDay() {

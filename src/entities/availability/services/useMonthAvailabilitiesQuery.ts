@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import type { DB } from "@/shared/api/database";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { type AvailabilityRow } from "@/entities/availability/api/availability.dto";
 import { getMonthAvailabilities } from "@/entities/availability/api/getMonthAvailabilities.api";
+import { type Availability } from "@/entities/availability/model/availability.type";
 
 export type MonthAvailabilitiesResult = {
-  data: AvailabilityRow[] | undefined;
+  data: Availability[] | undefined;
   error: Error | null;
   isLoading: boolean;
 };
