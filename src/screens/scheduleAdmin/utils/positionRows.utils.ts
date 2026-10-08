@@ -59,8 +59,7 @@ export function assignmentForSlot<Assignment extends PositionAssignment>(
 ): Assignment | null {
   return (
     assignments.find(
-      (assignment) =>
-        isLiveRegular(assignment) && assignment.slotId === slotId,
+      (assignment) => isLiveRegular(assignment) && assignment.slotId === slotId,
     ) ?? null
   );
 }

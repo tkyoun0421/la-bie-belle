@@ -40,9 +40,8 @@ jest.unstable_mockModule(
   () => ({
     getMonthSchedule: getMonthScheduleMock,
     getMonthWindow: getMonthWindowMock,
-    liveAssignmentCount: (day: {
-      assignments: { ended_at: string | null }[];
-    }) => day.assignments.filter((one) => one.ended_at === null).length,
+    liveAssignmentCount: (day: { assignments: { endedAt: string | null }[] }) =>
+      day.assignments.filter((one) => one.endedAt === null).length,
   }),
 );
 
@@ -164,13 +163,13 @@ const WINDOW_OPEN = {
 
 const DAY = {
   id: "d1",
-  work_date: "2026-10-10",
-  starts_at: "10:00:00",
-  ends_at: "18:00:00",
-  opened_at: "2026-09-20T00:00:00.000Z",
-  slots: [{ id: "s1", positions: ["스캔"], ended_at: null }],
+  workDate: "2026-10-10",
+  startsAt: "10:00:00",
+  endsAt: "18:00:00",
+  openedAt: "2026-09-20T00:00:00.000Z",
+  slots: [{ id: "s1", positions: ["스캔"], endedAt: null }],
   assignments: [],
-  check_ins: [],
+  checkIns: [],
 };
 
 const ASSIGNED_DAY = {
@@ -178,12 +177,12 @@ const ASSIGNED_DAY = {
   assignments: [
     {
       id: "a1",
-      slot_id: "s1",
+      slotId: "s1",
       position: "스캔",
       kind: "regular",
-      profile_id: "p1",
-      ended_at: null,
-      profiles: { display_name: "이준호" },
+      profileId: "p1",
+      endedAt: null,
+      name: "이준호",
     },
   ],
 };
@@ -503,9 +502,9 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
   it("확정 시트는 끝난 것을 시트가 말하고 닫는 손이 따로다", async () => {
     getOpenSlotsMock.mockResolvedValue([
       {
-        slot_id: "s9",
-        day_id: "d1",
-        work_date: "2026-10-10",
+        slotId: "s9",
+        dayId: "d1",
+        workDate: "2026-10-10",
         positions: ["스캔"],
       },
     ]);
@@ -714,9 +713,9 @@ describe("useScheduleAdminScreen — 달력과 날 상세가 한 자리다", () 
     ]);
     getOpenSlotsMock.mockResolvedValue([
       {
-        slot_id: "s9",
-        day_id: "d1",
-        work_date: "2026-10-10",
+        slotId: "s9",
+        dayId: "d1",
+        workDate: "2026-10-10",
         positions: ["스캔"],
       },
     ]);

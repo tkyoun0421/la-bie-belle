@@ -1,5 +1,5 @@
-import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import { POSITION_ORDER } from "@/entities/schedule/consts/schedule.const";
+import type { ScheduleDay } from "@/entities/schedule/model/schedule.type";
 import type {
   PersonTotal,
   PositionTotal,

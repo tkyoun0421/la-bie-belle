@@ -128,9 +128,7 @@ function payrollDate(
 ): PayrollDay {
   const day = dayByDate.get(date) ?? null;
   const assignments =
-    day === null
-      ? []
-      : input.assignments.filter((row) => row.dayId === day.id);
+    day === null ? [] : input.assignments.filter((row) => row.dayId === day.id);
 
   if (day !== null && isAbsent(input, day, assignments)) {
     return { date, ...ABSENT };

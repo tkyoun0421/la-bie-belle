@@ -121,32 +121,32 @@ function createWrapper() {
 
 const MY_DAY = {
   id: "d1",
-  work_date: "2026-10-17",
-  starts_at: "10:00:00",
-  ends_at: "18:00:00",
-  opened_at: "2026-09-01T00:00:00.000Z",
+  workDate: "2026-10-17",
+  startsAt: "10:00:00",
+  endsAt: "18:00:00",
+  openedAt: "2026-09-01T00:00:00.000Z",
   slots: [
-    { id: "s1", positions: ["안내"], ended_at: null },
-    { id: "s2", positions: ["서빙"], ended_at: null },
+    { id: "s1", positions: ["안내"], endedAt: null },
+    { id: "s2", positions: ["서빙"], endedAt: null },
   ],
   assignments: [
     {
       id: "a1",
-      slot_id: "s1",
+      slotId: "s1",
       position: "안내",
       kind: "regular",
-      profile_id: "p1",
-      ended_at: null,
-      profiles: { display_name: "이준호" },
+      profileId: "p1",
+      endedAt: null,
+      name: "이준호",
     },
   ],
-  check_ins: [],
+  checkIns: [],
 };
 
 const OTHER_DAY = {
   ...MY_DAY,
   id: "d2",
-  work_date: "2026-10-20",
+  workDate: "2026-10-20",
   assignments: [],
 };
 

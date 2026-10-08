@@ -31,9 +31,7 @@ function assignedMinutes(input: PaidMinutesInput): number {
     return 0;
   }
 
-  return (
-    minutesOfClock(input.day.endsAt) - minutesOfClock(input.day.startsAt)
-  );
+  return minutesOfClock(input.day.endsAt) - minutesOfClock(input.day.startsAt);
 }
 
 export function adjustedMinutes(rows: readonly TimedAdjustment[]): number {

@@ -1,7 +1,7 @@
 import type {
   ScheduleAssignment,
   ScheduleDay,
-} from "@/entities/schedule/api/schedule.dto";
+} from "@/entities/schedule/model/schedule.type";
 import type {
   AttendanceInputCheckIn,
   AttendanceInputExcuseStatus,
@@ -20,12 +20,12 @@ function assignment(
 ): ScheduleAssignment {
   return {
     id: `a-${profileId}`,
-    slot_id: null,
+    slotId: null,
     position: "메인",
     kind: "regular",
-    profile_id: profileId,
-    ended_at: null,
-    profiles: null,
+    profileId,
+    endedAt: null,
+    name: null,
     ...overrides,
   };
 }
@@ -33,12 +33,12 @@ function assignment(
 function scheduleDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
   return {
     id: "day-x",
-    work_date: "2026-09-10",
-    starts_at: "10:00:00",
-    ends_at: "19:00:00",
-    opened_at: "2026-09-01T00:00:00.000Z",
+    workDate: "2026-09-10",
+    startsAt: "10:00:00",
+    endsAt: "19:00:00",
+    openedAt: "2026-09-01T00:00:00.000Z",
     slots: [],
-    check_ins: [],
+    checkIns: [],
     assignments: [assignment(ME)],
     ...overrides,
   };
@@ -48,12 +48,12 @@ describe("myAttendanceTally — 내 배정만 남기고 좁힌 뒤 센다", () =
   it("남의 배정에 붙은 출근 인증은 내 tally에 안 든다", () => {
     const mine = scheduleDay({
       id: "day-mine",
-      work_date: "2026-09-10",
+      workDate: "2026-09-10",
       assignments: [assignment(ME)],
     });
     const others = scheduleDay({
       id: "day-other",
-      work_date: "2026-09-11",
+      workDate: "2026-09-11",
       assignments: [assignment(OTHER)],
     });
     const checkIns: AttendanceInputCheckIn[] = [
@@ -84,22 +84,22 @@ describe("myAttendanceTally — 좁힌 뒤에는 buildAttendanceInputs·tallyMon
     const days: ScheduleDay[] = [
       scheduleDay({
         id: "day-present",
-        work_date: "2026-09-10",
+        workDate: "2026-09-10",
         assignments: [assignment(ME)],
       }),
       scheduleDay({
         id: "day-late",
-        work_date: "2026-09-11",
+        workDate: "2026-09-11",
         assignments: [assignment(ME)],
       }),
       scheduleDay({
         id: "day-absent",
-        work_date: "2026-09-12",
+        workDate: "2026-09-12",
         assignments: [assignment(ME)],
       }),
       scheduleDay({
         id: "day-excused",
-        work_date: "2026-09-13",
+        workDate: "2026-09-13",
         assignments: [assignment(ME)],
       }),
     ];
@@ -140,12 +140,12 @@ describe("myAttendanceTally — 확인 중과 안 찍음은 넷 중 어디에도
     const days: ScheduleDay[] = [
       scheduleDay({
         id: "day-pending",
-        work_date: "2026-09-14",
+        workDate: "2026-09-14",
         assignments: [assignment(ME)],
       }),
       scheduleDay({
         id: "day-unmarked",
-        work_date: "2026-09-15",
+        workDate: "2026-09-15",
         assignments: [assignment(ME)],
       }),
     ];
@@ -170,7 +170,7 @@ describe("myAttendanceTally — 프로필을 아직 못 읽은 순간(profileId�
     const days: ScheduleDay[] = [
       scheduleDay({
         id: "day-present",
-        work_date: "2026-09-10",
+        workDate: "2026-09-10",
         assignments: [assignment(ME)],
       }),
     ];

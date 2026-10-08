@@ -114,10 +114,7 @@ export function useDayDetail(input: DayDetailInput): DayDetailController {
   const fill = slotFillCount(slots, assignments);
   const canChangeStructure = allowsStructureChange(gate);
 
-  const dayHours = useMemo(
-    () => ({ startsAt, endsAt }),
-    [startsAt, endsAt],
-  );
+  const dayHours = useMemo(() => ({ startsAt, endsAt }), [startsAt, endsAt]);
 
   const adjustRows = useMemo(
     () =>

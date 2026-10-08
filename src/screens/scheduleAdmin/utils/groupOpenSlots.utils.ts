@@ -26,9 +26,7 @@ export function countOpenSlotsByDate(
   return counts;
 }
 
-export function summarizeOpenSlots(
-  rows: readonly OpenSlot[],
-): OpenSlotSummary {
+export function summarizeOpenSlots(rows: readonly OpenSlot[]): OpenSlotSummary {
   const items = rows.slice(0, LISTED_LIMIT).map((row) => ({
     workDate: row.workDate,
     position: row.positions.join("·"),

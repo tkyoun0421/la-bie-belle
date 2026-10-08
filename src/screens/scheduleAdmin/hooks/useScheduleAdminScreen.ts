@@ -653,8 +653,7 @@ export function useScheduleAdminScreen({
               forceChange.mutate({ assignmentId, profileId }),
             onSendWorkRequest: (slotId, profileIds) =>
               sendWorkRequest.mutate({ slotId, profileIds }),
-            onSetHoliday: (on) =>
-              setHoliday.mutate({ date: day.workDate, on }),
+            onSetHoliday: (on) => setHoliday.mutate({ date: day.workDate, on }),
             onSetAdjustment: ({ profileId, minutes, reason }) =>
               setAdjustment.mutate({
                 dayId: day.id,
