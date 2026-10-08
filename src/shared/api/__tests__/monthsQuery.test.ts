@@ -1,13 +1,3 @@
-// 구현 대상: src/shared/api/monthsQuery.ts
-//
-// combineMonths(results, months, monthAt) — 달치 창을 읽는 훅들이 나눠 쓰는 접기다.
-// `features/stats/api/useStatsQueries.ts`에 사설로 있던 것을 `shared/api`로 올렸다 —
-// entities 세 슬라이스가 같이 쓰는데 같은 층끼리는 서로를 못 부른다(lint 규칙 3).
-//
-// 단언 둘이 이 함수의 값이다. ①달 수만큼의 칸이 나온다 — 빈 달도 칸을 차지해서
-// 「값이 없는 달」과 「0인 달」이 갈린다. ②하나라도 안 오면 data가 undefined다 —
-// 달 하나가 빠진 채 그리면 그 달만 「앱을 쓰기 전」으로 읽힌다.
-
 const { combineMonths } = await import("@/shared/api/monthsQuery");
 
 const MONTHS = ["2026-08", "2026-09", "2026-10"];

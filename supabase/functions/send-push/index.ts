@@ -1,13 +1,3 @@
-// 알림 행을 기기로 내보내는 한 걸음이다. `notifications`에 행이 들어오면 트리거가, 놓친
-// 것은 매분 도는 cron이 pg_net으로 이 함수를 쏜다 — Postgres 함수가 외부 HTTP를 못 부른다
-// (notification/design.md 「푸시 보내기」).
-//
-// **여기에는 HTTP와 순서만 산다.** 무엇을 부칠지와 어떤 실패가 무슨 갈래인지는 전부
-// `_shared/notification/`의 순수 함수가 정하고 unit 테스트가 지킨다. 그 복사본은
-// `pnpm edge:sync`가 만든다 — 정본은 `src/entities/notification/model/`이다.
-//
-// 서비스 키를 쥐는 자리 셋 중 하나라 호출자 검사가 이 파일의 첫 일이다. 게이트웨이의
-// `verify_jwt`는 유효한 토큰인지만 봐서 anon 키도 통과한다.
 import { createClient } from "npm:@supabase/supabase-js@2.112.4";
 
 import {
@@ -29,7 +19,6 @@ const EXPO_RECEIPTS = "https://exp.host/--/api/v2/push/getReceipts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-/** 부치는 접근 토큰이다. Edge Function secret이라 저장소에는 이름만 있다. */
 const expoAccessToken = Deno.env.get("EXPO_ACCESS_TOKEN") ?? "";
 
 type ClaimedRow = {
@@ -42,7 +31,6 @@ type ClaimedRow = {
 
 type ScrapeRow = { id: string; receipt_id: string; addresses: string[] };
 
-/** 앞 글자가 어디까지 맞았는지가 응답 시간으로 새지 않게 끝까지 본다. */
 function equalsWithoutTiming(left: string, right: string): boolean {
   if (left.length !== right.length) {
     return false;
@@ -67,10 +55,6 @@ function isServiceRole(request: Request): boolean {
   return equalsWithoutTiming(header.slice(BEARER.length), serviceRoleKey);
 }
 
-/**
- * 트리거는 방금 들어온 id 하나를 싣고 cron은 널을 싣는다. 널이면 조건에 맞는 행 전부다 —
- * 가르는 자리가 잡는 질의 하나라 여기는 본문을 그대로 넘긴다.
- */
 async function readIds(request: Request): Promise<string[] | null> {
   let body: unknown;
 
@@ -113,7 +97,6 @@ function toTicketBody(messages: readonly PushMessage[]): unknown {
   }));
 }
 
-/** 부친 답은 보낸 순서 그대로 온다. 비면 그 자리를 재시도 갈래로 읽게 만든다. */
 function ticketResponses(
   answer: unknown,
   count: number,
@@ -135,13 +118,6 @@ function warnNeedsReview(groups: ReturnType<typeof splitPushResults>): void {
   }
 }
 
-/**
- * 지난 접수증을 긁는다. **보낼 것이 없어도 언제나 첫 단계다** — 새 알림이 한동안 없어도
- * 앱을 지운 사람의 주소가 남지 않게(NTF-034) 이 자리가 매분 같이 돈다.
- *
- * **긁기가 실패해도 보내기는 돈다.** 접수증 서비스가 답을 안 줘도 그 회차의 발송이 막히면
- * 안 된다.
- */
 async function scrapeReceipts(
   admin: ReturnType<typeof createClient>,
 ): Promise<void> {
@@ -168,8 +144,6 @@ async function scrapeReceipts(
       (row) => byReceipt[row.receipt_id] !== undefined,
     );
 
-    // 기기가 둘인 행은 접수증이 어느 기기 것인지 못 가린다(design.md Q-01). 그 행에서
-    // 주소를 지우면 살아 있는 쪽이 같이 사라지니 폐기 후보에서 뺀다.
     const outcomes: PushOutcome[] = answered
       .filter((row) => row.addresses.length === 1)
       .map((row) => ({

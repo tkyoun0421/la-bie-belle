@@ -1,12 +1,3 @@
-// 추적 중인 spec·plan의 `sources`가 가리키는 문서를 바꾼 PR이 본문에 「영향 확인」
-// 절을 남겼는지 본다.
-//
-//   git diff --name-only <base>...HEAD \
-//     | node --experimental-strip-types scripts/checkSourcesImpact.mts
-//
-// 바뀐 파일 목록은 표준 입력에서 한 줄에 하나씩, PR 본문은 `PR_BODY` 환경 변수에서
-// 읽는다. 판정 규칙은 `tests/lint/sourcesImpact.ts`가 소유하고 여기는 입출력이다.
-
 import { readFileSync } from "node:fs";
 import {
   checkImpactSection,

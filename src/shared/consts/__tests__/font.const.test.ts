@@ -4,7 +4,6 @@ import { FONT_ASSETS } from "@/shared/consts/font.const";
 
 const GLOBALS_CSS_PATH = path.join(process.cwd(), "src/app/globals.css");
 
-/** 번들에 들어가는 것은 서브셋뿐이다 — 원본은 다시 만들 때만 쓴다. */
 const FONTS_DIR = path.join(process.cwd(), "assets/fonts/subset");
 
 const EXPECTED_FONT_KEYS = [

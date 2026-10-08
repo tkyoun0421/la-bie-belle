@@ -1,12 +1,3 @@
-/**
- * 키 문자열이 바뀌면 캐시 무효화가 조용히 어긋난다 — 쓰기가 낡게 하려던 키와 읽기가 쓰는
- * 키가 달라져도 타입이 안 막고 화면은 「옛 값이 그대로 떠 있다」로만 보인다. 그래서 이
- * 테스트는 **문자열을 글자로** 들고 있다. 팩토리를 고치면 여기가 같이 빨개져야 한다.
- *
- * 정본은 [runtime.md](../../../../docs/2-design/system/runtime.md#tanstack-query-규칙)의
- * 「키는 `[도메인, 범위]`」다.
- */
-
 import { queryKeys, staleTogether } from "@/shared/api/queryKeys";
 
 const MONTH = "2026-09";
@@ -35,7 +26,6 @@ describe("달을 받는 키", () => {
     expect(queryKeys.excuse.month(MONTH)).toEqual(["excuses", MONTH]);
   });
 
-  /** 날짜가 와도 달 키는 달이어야 한다 — 같은 달의 다른 날이 각자 캐시를 갖지 않는다. */
   it("급여와 출근의 달 키는 날짜를 달로 자른다", () => {
     expect(queryKeys.payroll.month("2026-09-20")).toEqual(["payroll", MONTH]);
     expect(queryKeys.attendance.month("2026-09-20")).toEqual([
@@ -97,12 +87,6 @@ describe("범위가 꼬리로 붙는 키", () => {
   });
 });
 
-/**
- * 모양이 다른 질의 둘이 `['availability', month]`를 나눠 써서 한쪽이 남의 데이터를 읽었다
- * ([관찰 045](../../../../docs/observations/045-two-queries-share-one-cache-key.md)).
- * 어느 쪽이 꼬리를 받는지는 [design.md](../../../../docs/2-design/modules/schedule/design.md#소유-데이터)가
- * 정해 뒀다 — 본인 신청이 맨 키고 관리자의 현황이 `'all'`이다. 리허설도 같은 꼴이다.
- */
 describe("전원 신청은 본인 신청과 키가 갈린다", () => {
   it("관리자 쪽이 꼬리를 받는다", () => {
     expect(queryKeys.availability.everyone(MONTH)).toEqual([
@@ -123,7 +107,6 @@ describe("전원 신청은 본인 신청과 키가 갈린다", () => {
     );
   });
 
-  /** 접두사가 겹쳐 신청을 보내면 둘이 같이 낡는다. */
   it("본인 키가 전원 키의 접두사다", () => {
     const everyone = queryKeys.availability.everyone(MONTH);
 
@@ -170,10 +153,6 @@ describe("같은 튜플을 두 범위가 안 쓴다", () => {
   });
 });
 
-/**
- * 쓰기 하나가 같이 낡게 하는 묶음이다. 「`['schedule']`을 무효화하는 함수는 `['payroll']`도
- * 무효화한다」가 runtime.md의 「무효화 표」에 적힌 규칙이고, 급여가 배정에서 계산되기 때문이다.
- */
 describe("같이 낡는 묶음", () => {
   it("근무표 쓰기는 근무표·급여·요청을 낡게 한다", () => {
     expect(staleTogether.scheduleWrite).toEqual([
@@ -187,7 +166,6 @@ describe("같이 낡는 묶음", () => {
     expect(staleTogether.rehearsalWrite).toEqual([["rehearsal"], ["payroll"]]);
   });
 
-  /** 근무표를 낡게 하는 묶음은 급여를 반드시 든다 — runtime.md의 규칙 하나다. */
   it("근무표를 드는 묶음은 급여도 든다", () => {
     for (const group of Object.values(staleTogether)) {
       const holds = (key: readonly string[]) =>

@@ -1,10 +1,3 @@
-// 구현 대상: src/shared/utils/monthPicker.ts
-//
-// 달 고르기 시트(MonthPickerSheet)의 순수 계산이다 — 연도 이동과 12칸 만들기
-// (docs/2-design/modules/schedule/screens/scheduleWorker.md 「달 고르기 시트 짜임」).
-// 연도 줄은 화살표로 해를 오가고, 월 12칸은 4열 3행으로 「1월」부터 「12월」까지 서며 지금
-// 보고 있는 달이 선택 상태다.
-
 import { buildYearMonths, shiftYear } from "@/shared/utils/monthPicker";
 
 describe("shiftYear — 연도 이동에 열람 제한이 없다", () => {

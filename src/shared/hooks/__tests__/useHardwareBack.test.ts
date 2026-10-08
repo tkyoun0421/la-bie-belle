@@ -1,15 +1,5 @@
 import { jest } from "@jest/globals";
 
-// 구현 대상: src/shared/hooks/useHardwareBack.ts
-//
-// 안드로이드 기기 뒤로를 가로채는 자리다. 화면 둘(리허설·근무표)이 같은 `useEffect`를
-// `.tsx`에 글자까지 같이 들고 있었다 — 시트가 열려 있으면 뒤로가 화면을 빼지 말고 시트만
-// 닫아야 한다.
-//
-// **무엇을 닫을지는 controller가 안다.** 이 자리는 그 손을 기기에 잇기만 하고, 닫을 것이
-// 없을 때는 `null`을 받아 아예 안 건다 — 손을 걸어둔 채 `false`를 돌려주면 뒤로가 두 번
-// 넘어가는 자리가 생긴다.
-
 const { renderHook } = await import("@testing-library/react-native");
 const { useHardwareBack } = await import("@/shared/hooks/useHardwareBack");
 

@@ -2,18 +2,6 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-// 시안을 아티팩트로 올릴 때 Wanted Sans를 파일 안에 심는다.
-//
-// 저장소의 시안은 tokens.md의 「서체 연결」대로 jsdelivr 스타일시트를 <link>로 건다.
-// 그런데 아티팩트는 외부 스타일시트를 fonts.googleapis.com에서만 받아서 그 <link>가
-// 조용히 차단되고 시스템 서체로 떨어진다. Wanted Sans는 Google Fonts에 없다.
-// 그래서 올릴 때만 그 <link>를 base64 @font-face로 바꾼 복사본을 만든다.
-// 저장소에는 폰트 파일이 들어가지 않는다 — foundation/typography.md의 「서체」가 정한 것이다.
-//
-//   pnpm sian:inline <시안 경로> [출력 경로]
-//
-// 출력 경로를 안 주면 시안 이름 그대로 .artifact/ 아래에 쓴다.
-
 const ROOT = path.resolve(fileURLToPath(import.meta.url), "../..");
 const SPLIT_CSS =
   "https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css";
@@ -46,7 +34,6 @@ function parseFaces(css: string): Face[] {
   return faces;
 }
 
-// 목업에 실제로 찍히는 글자만 센다. <style>과 <script> 안은 화면에 안 나온다.
 function visibleChars(html: string): Set<number> {
   const stripped = html
     .replace(/<style[\s\S]*?<\/style>/g, "")

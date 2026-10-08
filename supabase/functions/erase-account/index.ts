@@ -1,15 +1,7 @@
-// 퇴사 1년 뒤 비우기의 마지막 한 걸음이다. `internal.erase_profiles`가 개인정보를 비운 뒤
-// pg_net으로 이 함수를 쏘고, 여기가 service role로 `auth.users` 행을 지운다 — Admin API
-// 말고는 그 행을 지우는 길이 없다(account/design.md 「비우기」).
-//
-// 서비스 키를 쥐는 자리 둘 중 하나라 호출자 검사가 이 파일의 첫 일이다. 게이트웨이의
-// `verify_jwt`는 유효한 토큰인지만 봐서 anon 키도 통과한다 — 남의 계정이 사라지는 문이라
-// 그 한 겹으로는 모자란다.
 import { createClient } from "npm:@supabase/supabase-js@2.112.4";
 
 const BEARER = "Bearer ";
 
-/** 계정이 이미 없을 때 Admin API가 내는 상태다. 정상 경로라 성공으로 끝낸다. */
 const ALREADY_GONE = 404;
 
 const USER_ID =
@@ -18,7 +10,6 @@ const USER_ID =
 const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-/** 앞 글자가 어디까지 맞았는지가 응답 시간으로 새지 않게 끝까지 본다. */
 function equalsWithoutTiming(left: string, right: string): boolean {
   if (left.length !== right.length) {
     return false;
@@ -68,7 +59,6 @@ function respond(status: number, body: Record<string, string>): Response {
   });
 }
 
-// 사람이 안 보는 동작이라 로그가 유일한 창이다. 성공도 실패도 지운 id와 같이 남긴다.
 Deno.serve(async (request: Request): Promise<Response> => {
   if (!isServiceRole(request)) {
     console.error("erase-account: service role이 아닌 호출을 거절했다");

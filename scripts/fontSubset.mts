@@ -1,15 +1,3 @@
-/**
- * Wanted Sans 넷을 서브셋으로 줄여 `assets/fonts/subset/`에 낸다.
- *
- * 원본 넷은 한 장이 2.3MB고 넷이면 9.4MB가 설치 크기에 그대로 실린다. 남길 글자의 정본은
- * `docs/2-design/design-system/foundation/typography.md`의 「서브셋」 절이고, 실제 집합은
- * `tests/lint/fontSubset.ts`가 계산한다 — 그 파일을 테스트가 같이 물어서 집합이 바뀌면
- * 서체도 다시 만들어야 하는 것이 검사에 걸린다.
- *
- * 전제: `pyftsubset`(fonttools)이 PATH에 있어야 한다. 없으면 어떻게 깔지 알려주고 멈춘다.
- * 만든 결과는 커밋한다 — CI는 이 스크립트를 안 돌리고 `pnpm test`가 결과물만 대조한다.
- */
-
 import { execFileSync } from "node:child_process";
 import {
   existsSync,
@@ -90,9 +78,7 @@ for (const file of SUBSET_FONTS) {
       origin,
       `--unicodes-file=${UNICODES_PATH}`,
       `--output-file=${output}`,
-      // 이름표를 지우면 시스템이 서체를 못 알아본다.
       "--name-IDs=*",
-      // 한글 조합·커닝이 이 피처들에 산다.
       "--layout-features=*",
     ],
     { cwd: ROOT, stdio: "inherit" },
