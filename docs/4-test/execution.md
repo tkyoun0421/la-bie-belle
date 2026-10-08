@@ -204,7 +204,9 @@ PR에는 검증한 Git 기준점·미커밋 변경분, 명령과 결과 또는 �
 
 번호 하나에 줄이 둘인 자리가 있다 — 한 규칙을 규칙 ID 둘이 나눠 무는 경우다. 그래서 **줄 수와 마지막 번호가 다르다** — 번호는 1부터 26까지 이어지고 미배정 셋이 빠지며, 줄은 스물다섯이다.
 
-**규칙 19부터 26까지는 켜지는 자리와 무는 자리가 다르다.** `eslint.config.mjs`가 넓게 켜고 실제로 무는 자리는 규칙 자신이 든다. 19는 `src/**/*.tsx` 전체에 켜고 무는 것은 두 층(`src/screens/**`·`src/features/**`)이다 — `src/shared/ui/**`는 조각이 사는 자리라, `src/app/_catalog*`는 그 조각을 늘어놓는 자리라 밖이다. 20은 `supabase/functions/` 아래만, 21은 `pnpm edge:sync`가 Deno로 복사하는 폴더(`src/features/notification/model/`)만 문다. 22부터 26까지는 `src/**` 전체에 켜고 무는 자리를 세그먼트로 가른다 — 22는 `api` 밖, 23·24·26은 `ui`, 25는 `services` 밖이고 `src/app/`은 세그먼트가 없어 23·24·26의 밖이다. 층을 `files` 글롭으로 좁히면 이 표를 읽는 `ruleCatalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과 어긋난다.
+**규칙 19부터 26까지는 켜지는 자리와 무는 자리가 다르다.** `eslint.config.mjs`가 넓게 켜고 실제로 무는 자리는 규칙 자신이 든다. 19는 `src/**/*.tsx` 전체에 켜고 무는 것은 두 층(`src/screens/**`·`src/features/**`)이다 — `src/shared/ui/**`는 조각이 사는 자리라, `src/app/_catalog*`는 그 조각을 늘어놓는 자리라 밖이다. 20은 `supabase/functions/` 아래만, 21은 `pnpm edge:sync`가 Deno로 복사하는 폴더(`src/features/notification/model/`)만 문다. 22부터 26까지는 `src/**` 전체에 켜고 무는 자리를 세그먼트로 가른다 — 22는 `api` 밖, 23·24·26은 `ui`, 25는 `services` 밖이고 `src/app/`은 세그먼트가 없어 23·24·26의 밖이다.
+
+**23과 26이 면제로 이어진다.** 23은 `@/shared/api/supabase`를 일부러 통과시키고 그 축을 26이 더 좁은 메시지로 문다 — 「`api`를 당기지 마라」가 아니라 「`hooks/`로 가라」가 그 자리에서 할 말이다. 짝 테스트의 픽스처가 그 모듈을 고르면 23이 아니라 26이 잡혀 빨개진다. 24도 예외가 하나다 — `features/*/ui`만 **자기 슬라이스의** service를 부른다. 그 조각이 use case를 실행하는 자리라서고, 남의 슬라이스 service를 부르면 그 조각이 무슨 use case인지가 흐려진다. 25는 `useQueryClient`를 통과시킨다 — 통신을 여는 훅이 아니라 이미 열린 캐시를 만지는 손이고 controller 여럿이 다시 읽기를 걸려고 쓴다. 층을 `files` 글롭으로 좁히면 이 표를 읽는 `ruleCatalogue.test.ts`가 조각 파일 하나로 「켜져 있는가」를 재는 것과 어긋난다.
 
 ## `pnpm test`에 끼는 문서 검사
 
