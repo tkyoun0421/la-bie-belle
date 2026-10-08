@@ -58,18 +58,18 @@ describe("myAttendanceTally — 내 배정만 남기고 좁힌 뒤 센다", () =
     });
     const checkIns: AttendanceInputCheckIn[] = [
       {
-        day_id: "day-mine",
-        profile_id: ME,
-        checked_at: "2026-09-10T01:00:00.000Z",
-        reported_at: "2026-09-10T01:00:00.000Z",
-        received_at: "2026-09-10T01:00:00.000Z",
+        dayId: "day-mine",
+        profileId: ME,
+        checkedAt: "2026-09-10T01:00:00.000Z",
+        reportedAt: "2026-09-10T01:00:00.000Z",
+        receivedAt: "2026-09-10T01:00:00.000Z",
       },
       {
-        day_id: "day-other",
-        profile_id: OTHER,
-        checked_at: "2026-09-11T01:00:00.000Z",
-        reported_at: "2026-09-11T01:00:00.000Z",
-        received_at: "2026-09-11T01:00:00.000Z",
+        dayId: "day-other",
+        profileId: OTHER,
+        checkedAt: "2026-09-11T01:00:00.000Z",
+        reportedAt: "2026-09-11T01:00:00.000Z",
+        receivedAt: "2026-09-11T01:00:00.000Z",
       },
     ];
 
@@ -105,26 +105,26 @@ describe("myAttendanceTally — 좁힌 뒤에는 buildAttendanceInputs·tallyMon
     ];
     const checkIns: AttendanceInputCheckIn[] = [
       {
-        day_id: "day-present",
-        profile_id: ME,
-        checked_at: "2026-09-10T01:00:00.000Z",
-        reported_at: "2026-09-10T01:00:00.000Z",
-        received_at: "2026-09-10T01:00:00.000Z",
+        dayId: "day-present",
+        profileId: ME,
+        checkedAt: "2026-09-10T01:00:00.000Z",
+        reportedAt: "2026-09-10T01:00:00.000Z",
+        receivedAt: "2026-09-10T01:00:00.000Z",
       },
       {
-        day_id: "day-late",
-        profile_id: ME,
-        checked_at: "2026-09-11T01:20:00.000Z",
-        reported_at: "2026-09-11T01:20:00.000Z",
-        received_at: "2026-09-11T01:20:00.000Z",
+        dayId: "day-late",
+        profileId: ME,
+        checkedAt: "2026-09-11T01:20:00.000Z",
+        reportedAt: "2026-09-11T01:20:00.000Z",
+        receivedAt: "2026-09-11T01:20:00.000Z",
       },
     ];
     const excuseStatuses: AttendanceInputExcuseStatus[] = [
       {
-        day_id: "day-excused",
-        profile_id: ME,
-        submitted_at: "2026-09-13T10:00:00.000Z",
-        decided_at: "2026-09-13T12:00:00.000Z",
+        dayId: "day-excused",
+        profileId: ME,
+        submittedAt: "2026-09-13T10:00:00.000Z",
+        decidedAt: "2026-09-13T12:00:00.000Z",
         decision: "approved",
       },
     ];
@@ -151,10 +151,10 @@ describe("myAttendanceTally — 확인 중과 안 찍음은 넷 중 어디에도
     ];
     const excuseStatuses: AttendanceInputExcuseStatus[] = [
       {
-        day_id: "day-pending",
-        profile_id: ME,
-        submitted_at: "2026-09-14T10:00:00.000Z",
-        decided_at: null,
+        dayId: "day-pending",
+        profileId: ME,
+        submittedAt: "2026-09-14T10:00:00.000Z",
+        decidedAt: null,
         decision: null,
       },
     ];
@@ -176,11 +176,11 @@ describe("myAttendanceTally — 프로필을 아직 못 읽은 순간(profileId�
     ];
     const checkIns: AttendanceInputCheckIn[] = [
       {
-        day_id: "day-present",
-        profile_id: ME,
-        checked_at: "2026-09-10T01:00:00.000Z",
-        reported_at: "2026-09-10T01:00:00.000Z",
-        received_at: "2026-09-10T01:00:00.000Z",
+        dayId: "day-present",
+        profileId: ME,
+        checkedAt: "2026-09-10T01:00:00.000Z",
+        reportedAt: "2026-09-10T01:00:00.000Z",
+        receivedAt: "2026-09-10T01:00:00.000Z",
       },
     ];
 

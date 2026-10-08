@@ -1,7 +1,7 @@
-import { EXCUSE_DECISIONS } from "@/entities/attendance/consts/attendance.const";
 import type {
   AttendanceStatusInput,
-  ExcuseDecision,
+  CheckIn,
+  ExcuseStatus,
   ExcuseStatusRecord,
 } from "@/entities/attendance/model/attendance.type";
 
@@ -18,21 +18,15 @@ export type AttendanceInputDay = {
   assignments: readonly AttendanceInputAssignment[];
 };
 
-export type AttendanceInputCheckIn = {
-  day_id: string;
-  profile_id: string;
-  checked_at: string;
-  reported_at: string;
-  received_at: string;
-};
+export type AttendanceInputCheckIn = Pick<
+  CheckIn,
+  "dayId" | "profileId" | "checkedAt" | "reportedAt" | "receivedAt"
+>;
 
-export type AttendanceInputExcuseStatus = {
-  day_id: string;
-  profile_id: string;
-  submitted_at: string;
-  decided_at: string | null;
-  decision: string | null;
-};
+export type AttendanceInputExcuseStatus = Pick<
+  ExcuseStatus,
+  "dayId" | "profileId" | "submittedAt" | "decidedAt" | "decision"
+>;
 
 export function buildAttendanceInputs(
   days: readonly AttendanceInputDay[],
@@ -42,21 +36,17 @@ export function buildAttendanceInputs(
 ): AttendanceStatusInput[] {
   const checkInAt = new Map(
     checkIns.map((checkIn) => [
-      pairKey(checkIn.day_id, checkIn.profile_id),
+      pairKey(checkIn.dayId, checkIn.profileId),
       checkIn,
     ]),
   );
   const excusesAt = new Map<string, ExcuseStatusRecord[]>();
 
   for (const excuse of excuseStatuses) {
-    const key = pairKey(excuse.day_id, excuse.profile_id);
+    const key = pairKey(excuse.dayId, excuse.profileId);
     const here = excusesAt.get(key) ?? [];
 
-    here.push({
-      submittedAt: excuse.submitted_at,
-      decidedAt: excuse.decided_at,
-      decision: decisionOf(excuse.decision),
-    });
+    here.push(excuse);
     excusesAt.set(key, here);
   }
 
@@ -65,20 +55,12 @@ export function buildAttendanceInputs(
       .filter((assignment) => assignment.ended_at === null)
       .map((assignment) => {
         const key = pairKey(day.id, assignment.profile_id);
-        const checkIn = checkInAt.get(key);
 
         return {
           workDate: day.work_date,
           startsAt: day.starts_at,
           endsAt: day.ends_at,
-          checkIn:
-            checkIn === undefined
-              ? null
-              : {
-                  checkedAt: checkIn.checked_at,
-                  reportedAt: checkIn.reported_at,
-                  receivedAt: checkIn.received_at,
-                },
+          checkIn: checkInAt.get(key) ?? null,
           excuses: excusesAt.get(key) ?? [],
           now,
         };
@@ -102,11 +84,4 @@ export function daysOfPerson(
 
 function pairKey(dayId: string, profileId: string): string {
   return `${dayId} ${profileId}`;
-}
-
-function decisionOf(decision: string | null): ExcuseDecision | null {
-  return decision !== null &&
-    (EXCUSE_DECISIONS as readonly string[]).includes(decision)
-    ? (decision as ExcuseDecision)
-    : null;
 }

@@ -68,9 +68,8 @@ export function buildMyAttendanceDays(
               checkedAt:
                 checkIns.find(
                   (checkIn) =>
-                    checkIn.day_id === day.id &&
-                    checkIn.profile_id === profileId,
-                )?.checked_at ?? null,
+                    checkIn.dayId === day.id && checkIn.profileId === profileId,
+                )?.checkedAt ?? null,
             },
           ];
     })

@@ -100,34 +100,34 @@ const DAYS: ScheduleDay[] = [
 
 const CHECK_INS: AttendanceInputCheckIn[] = [
   {
-    day_id: "day-10",
-    profile_id: ME,
-    checked_at: "2026-09-10T01:00:00.000Z",
-    reported_at: "2026-09-10T01:00:00.000Z",
-    received_at: "2026-09-10T01:00:00.000Z",
+    dayId: "day-10",
+    profileId: ME,
+    checkedAt: "2026-09-10T01:00:00.000Z",
+    reportedAt: "2026-09-10T01:00:00.000Z",
+    receivedAt: "2026-09-10T01:00:00.000Z",
   },
   {
-    day_id: "day-11",
-    profile_id: ME,
-    checked_at: "2026-09-11T01:20:00.000Z",
-    reported_at: "2026-09-11T01:20:00.000Z",
-    received_at: "2026-09-11T01:20:00.000Z",
+    dayId: "day-11",
+    profileId: ME,
+    checkedAt: "2026-09-11T01:20:00.000Z",
+    reportedAt: "2026-09-11T01:20:00.000Z",
+    receivedAt: "2026-09-11T01:20:00.000Z",
   },
 ];
 
 const EXCUSE_STATUSES: AttendanceInputExcuseStatus[] = [
   {
-    day_id: "day-13",
-    profile_id: ME,
-    submitted_at: "2026-09-13T10:00:00.000Z",
-    decided_at: "2026-09-13T12:00:00.000Z",
+    dayId: "day-13",
+    profileId: ME,
+    submittedAt: "2026-09-13T10:00:00.000Z",
+    decidedAt: "2026-09-13T12:00:00.000Z",
     decision: "approved",
   },
   {
-    day_id: "day-14",
-    profile_id: ME,
-    submitted_at: "2026-09-14T10:00:00.000Z",
-    decided_at: null,
+    dayId: "day-14",
+    profileId: ME,
+    submittedAt: "2026-09-14T10:00:00.000Z",
+    decidedAt: null,
     decision: null,
   },
 ];
@@ -246,7 +246,7 @@ describe("buildMyAttendanceDays — 교육 배정은 isEducation이 true, 정규
 });
 
 describe("buildMyAttendanceDays — 찍은 시각을 체크인 그대로 낸다", () => {
-  it("9월 10일의 checkedAt이 체크인 행의 checked_at과 같다", () => {
+  it("9월 10일의 checkedAt이 그날 체크인 행이 든 값과 같다", () => {
     const result = buildMyAttendanceDays(
       ME,
       DAYS,

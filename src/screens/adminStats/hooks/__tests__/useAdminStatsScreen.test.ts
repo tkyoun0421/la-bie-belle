@@ -146,11 +146,11 @@ describe("useAdminStatsScreen — 고른 탭이 읽는 것을 바꾼다", () => 
       checkIns: [
         {
           id: "c1",
-          day_id: "day-2026-10-02",
-          profile_id: "p1",
-          checked_at: "2026-10-02T09:00:00.000Z",
-          reported_at: "2026-10-02T09:00:00.000Z",
-          received_at: "2026-10-02T09:00:00.000Z",
+          dayId: "day-2026-10-02",
+          profileId: "p1",
+          checkedAt: "2026-10-02T09:00:00.000Z",
+          reportedAt: "2026-10-02T09:00:00.000Z",
+          receivedAt: "2026-10-02T09:00:00.000Z",
           method: "qr",
         },
       ],
