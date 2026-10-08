@@ -387,7 +387,7 @@ sources:
   - 열 안에서만 사는 사본은 그 열이 접는다 — `ALREADY_DECIDED` 셋·`MORE_ICON_SIZE`·`MORE_HIT_SLOP`·`PHOTO_EDGE`·`PHOTO_QUALITY`(구성원), `GENDER_ICON_SIZE` 둘(근무표), `NO_FOLLOWER` 둘(급여)이다. `KST_OFFSET_MS` 둘과 `WEEKDAYS` 하나는 공용 함수가 이미 있어 그쪽으로 위임한다
 - 돌면서 나온 것 — **`ExcuseStatusRow`는 몸이 같아도 못 접는다.** `entities/attendance`와 `entities/payroll`에 각자 있고 다섯 열이 글자까지 같은데, 접으려면 `entities`끼리 import가 생겨 `no-cross-slice-import`에 걸린다. 올릴 자리도 없다 — `shared`에 두면 「`shared`는 도메인을 모른다」가 깨지고, `features`는 통신 계약을 소유할 층이 아니다. **사본 둘이 그 규칙의 값이다**
 
-### AC-08 — 검사 열일곱이 선다
+### AC-08 — 검사 열일곱이 선다 ✅ (열여섯 · `.dto.ts` 하나는 [dto-to-domain-shape](dto-to-domain-shape.md))
 
 **번호는 여덟인데 차례는 마지막이다.** AC-09~AC-13이 뒤에 생겨 문서 차례와 번호가 어긋났다 — 번호를 다시 매기면 merge된 PR 본문과 커밋 메시지가 가리키는 이름이 깨진다.
 
@@ -411,7 +411,13 @@ sources:
   - 이름이 camelCase인지 · 폴더 이름이 camelCase인지 — `fileNaming.ts`가 AC-01·AC-02에서 이미 본다
 - 관찰 결과: 각 규칙이 위반 픽스처에서 걸리고 정상 픽스처를 통과시킨다. 저장소 전체가 열일곱을 통과한다
 - 마지막 줄은 AC-12가 끝나야 켤 수 있다 — 지금 켜면 `.tsx` 마흔여섯이 빨개진다
-- **선 것이 다섯이다** — 카탈로그 번호 22~26이다. 세그먼트 둘이 서로를 못 보게 하는 축(`no-api-import-in-ui`·`no-services-import-in-ui`)과 통신을 가두는 축 셋(`supabase-package-in-api`·`query-hook-in-services`·`no-supabase-instance-in-ui`)이다. 남은 열둘은 `use*` export 자리, `entities`의 Mutation, `.policy.ts`의 통신·`Date.now`·`Math.random`, 캐시 키 리터럴, `consts/` 밖의 대문자 스네이크, `process.env`·`Constants`, `expo-*` SDK, `.dto.ts` 밖 import, `stores/` 밖의 `create()`·`createContext`다
+- **열여섯이 섰다** — 카탈로그 번호 22~28과 30~36, 그리고 `dumb-ui`의 상태 축과 `fileNaming.ts`의 이름 검사 셋이다. **안 선 것은 `.dto.ts`를 `api/` 밖에서 못 당기게 하는 하나**고 그것은 [dto-to-domain-shape](dto-to-domain-shape.md)의 AC-03이 받는다 — DTO의 꼴을 바꾸는 묶음이 그 경계를 세울 자리다
+- 돌면서 나온 것 — **주석 금지도 같은 자리에 섰다**(번호 29). 이 AC 밖에서 온 방침인데 집행 수단이 같다 — 설명 주석과 도구가 읽는 지시를 가르는 축이 글자에 있어 기계가 판정한다. 경위는 [관찰 058](../../observations/058-rule-lived-in-agent-definitions-only.md)이다
+- 돌면서 나온 것 — **검사를 켜니 고칠 자리가 일곱 나왔다.** 되내보내던 `POSITION_ORDER` 둘(관찰 051의 축 그대로)과 `model`·`utils`에 남은 정해진 값 다섯이다. 뒤의 다섯은 AC-10이 「AC-12가 받을 초기값 표」로 면제해 둔 꼴인데 **AC-12가 끝난 뒤에도 남아 있었다** — 면제는 그 조건이 사라지면 같이 사라져야 하고, 그것을 재는 것이 검사다
+- 돌면서 나온 것 — **`.type.ts`가 타입만 든다는 AC-10의 관찰이 거짓이었다.** `screens/pending/model/pendingForm.type.ts`가 상수 둘을 들었고 그중 하나는 바로 옆 타입의 바탕이었다. 세는 눈이 없으면 관찰 결과가 그 자리에서만 참이다
+- 돌면서 나온 것 — **같은 `menuOpen`이 셋인데 둘은 통과하고 하나가 걸렸다.** 통과한 둘은 조각이라 controller를 안 당기고 걸린 하나는 화면 파일이라 당긴다. 「사람이 열고 사람이 닫는다」는 그 상태의 **쓰임**이고 파일의 자리가 아니라, 세그먼트·층·import 어느 축으로도 가를 수 없었다 — 셋을 controller로 올렸다
+- 돌면서 나온 것 — **면제가 아무것도 안 막고 있던 자리가 하나.** 캐시 키 규칙이 팩토리 파일을 이름으로 면제했는데 그 파일의 배열들은 `queryKey:` 속성 자리에 안 서서 애초에 안 걸렸다. 빼도 0건이라 뺐다 — **이름으로 주는 면제는 그 파일이 없어진 뒤에도 구멍으로 남는다**(`dumbUi`가 `src/app/providers.tsx`를 그렇게 들고 있었다)
+- 돌면서 나온 것 — **규칙 둘이 같은 자리를 양쪽에서 받아야 서는 자리가 있다.** `config/`다. 「환경값은 `config/`에서만 읽는다」와 「네이티브 SDK는 `lib`·`ui`·`hooks`에만」이 부딪히는데, EAS 프로젝트 id는 `app.json`에만 살아 `process.env`로는 길이 없다 — 앞은 그 자리만 허용하고 뒤는 그 자리를 면제한다
 - 돌면서 나온 것 — **면제가 규칙 둘을 가르는 선이다.** `no-api-import-in-ui`가 `shared/api/supabase`를 일부러 통과시킨다 — 그 축을 `no-supabase-instance-in-ui`가 더 좁은 메시지로 물어 「`hooks/`로 가라」를 말하기 때문이다. 픽스처를 쓸 때 그 면제를 모르고 `@/shared/api/supabase`를 골랐다가 다른 규칙이 잡혀 빨개졌다 — **면제가 주석에만 살면 그 다음 사람이 같은 자리를 밟는다.** 지금은 카탈로그 표의 그 두 줄이 각각 무는 것을 적어 가른다
 - 돌면서 나온 것 — **`useQueryClient`는 Query·Mutation이 아니다.** `services/` 밖에서 쿼리 훅을 막는 규칙이 그것을 통과시킨다 — 통신을 여는 훅이 아니라 이미 열린 캐시를 만지는 손이고 controller 여럿이 다시 읽기를 걸려고 쓴다
 
