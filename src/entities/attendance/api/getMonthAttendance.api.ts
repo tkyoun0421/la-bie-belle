@@ -10,19 +10,6 @@ import {
   EXCUSE_STATUS_COLUMNS,
 } from "@/entities/attendance/api/getDayAttendance.api";
 
-/**
- * 그달치 인증과 사유다. 키가 `['attendance', 'YYYY-MM']`이고 날 키
- * ([`getDayAttendance.api.ts`](getDayAttendance.api.ts))와 같은 모양을 낸다 — 꼴도 질의할
- * 열 목록도 그쪽이 정본이다. **상태 계산을 여기서 다시 짜지 않는다.**
- *
- * **한 달을 날마다 읽지 않는다.** 서른 명 규모에서 한 달이면 수백 행이라 그것을 서른 번에
- * 나눠 묻는 것이 더 비싸다(`docs/2-design/system/runtime.md`의 「읽기 범위」). 그달에 연 날을
- * 먼저 집고 그 날들로 표 둘을 각각 한 번씩 읽는다.
- *
- * 달의 경계를 여기서 재는 것은 `entities/schedule`을 못 불러서다(lint 규칙 3) — 같은 계산이
- * `getMonthSchedule.ts`에도 있다.
- */
-
 const EMPTY: AttendanceRows = { checkIns: [], excuseStatuses: [] };
 
 export async function getMonthAttendance(

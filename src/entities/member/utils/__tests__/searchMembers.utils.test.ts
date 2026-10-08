@@ -1,9 +1,5 @@
 import { searchMembers } from "@/entities/member/utils/searchMembers.utils";
 
-// 직원 화면의 검색이다(`docs/2-design/modules/account/screens/members.md`의 「검색」).
-// 재직자와 퇴사 구획을 같은 글자로 동시에 거르고, 퇴사 구획은 1년이 지나 접힌 줄도 이름이
-// 맞으면 걸러 낸다. 둘 다 비면 화면이 빈 상태를 그린다 — 그 판정을 `isEmpty`로 낸다.
-
 const ACTIVE = [
   { id: "1", display_name: "김민준" },
   { id: "2", display_name: "박서연" },

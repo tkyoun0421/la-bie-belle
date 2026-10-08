@@ -1,10 +1,3 @@
-// 구현 대상: src/entities/payroll/services/usePayrollMonthsQuery.ts
-//
-// usePayrollMonthsQuery(client, months) — 여러 달 키를 결합해 읽는 훅이다(plan
-// payroll-view AC-06 「기간이 달을 걸치면 키를 둘 읽어 합친다」·「연은 열두 키를
-// 읽어 더한다」). 요청한 달 수만큼 getPayrollMonth를 부르고, 하나라도 pending이면
-// 로딩이고, 하나라도 error면 그 error가 표면에 뜨고, 전부 오면 달치를 합쳐 낸다.
-
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 

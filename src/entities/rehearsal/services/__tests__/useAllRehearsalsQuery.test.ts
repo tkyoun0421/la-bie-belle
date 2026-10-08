@@ -1,12 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/rehearsal/services/useAllRehearsalsQuery.ts
-//
-// 관리자가 보는 전원의 리허설이다(design.md 「소유 데이터」) — 키는
-// ['rehearsal', 'YYYY-MM', 'all']. 관리자만 부르고 profiles(display_name)를 임베딩한
-// 결과를 그대로 낸다 — 날 시트가 줄마다 이름을 붙인다.
-
 const getAllRehearsalsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 

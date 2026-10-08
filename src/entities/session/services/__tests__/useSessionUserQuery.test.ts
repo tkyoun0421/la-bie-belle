@@ -1,15 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/session/services/useSessionUserQuery.ts
-//
-// 「지금 누가 들어와 있나」를 읽는 자리 하나다. 지금은 화면 아홉과 라우트 셋이 저마다
-// `useEffect` 안에서 `getCurrentUser(supabase)`를 부르고 `useState`에 받는다 — 같은 답을
-// 열두 번 묻고, 받는 꼴도 셋으로 갈려 있다(`id`만 · `email`과 사진 · 둘 다).
-//
-// 이 훅이 그 열두 자리의 도구다. 꼴을 하나로 못 박고, 사진 주소를 꺼내는 일도 여기서 끝내
-// 화면이 `googlePhotoOf`를 안 부른다(ADR-001의 「`.tsx`에 로직 금지」).
-
 const getCurrentUserMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/entities/session/api/getCurrentUser.api", () => ({

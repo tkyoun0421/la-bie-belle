@@ -4,15 +4,6 @@ import type {
 } from "@/entities/attendance/model/attendance.type";
 import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";
 
-/**
- * 기준 근무일 — 2026-09-10(KST), 10:00 시작·19:00 끝.
- *
- * KST(UTC+9) 환산:
- *   인증 창 시작(시작 1시간 전, 09:00 KST)  = 2026-09-10T00:00:00.000Z
- *   지각 경계(시작+10분, 10:10 KST)         = 2026-09-10T01:10:00.000Z
- *   인증 창 닫힘(18:00 KST, 고정)            = 2026-09-10T09:00:00.000Z
- *   사유 마감(끝난 시각+48시간, 19:00+48h)   = 2026-09-12T10:00:00.000Z
- */
 const WORK_DATE = "2026-09-10";
 const STARTS_AT = "10:00:00";
 const ENDS_AT = "19:00:00";

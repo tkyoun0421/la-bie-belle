@@ -1,17 +1,3 @@
-// 구현 대상: src/entities/attendance/utils/attendanceSummary.utils.ts (아직 없다)
-//
-// tallyMonthlyAttendance는 지금 features/attendance/model/attendanceSummary.ts에
-// 산다. features/stats/model/__tests__/attendanceInputs.test.ts가 이것을 부르려고
-// house/no-cross-slice-import 억제 주석을 달고 features/stats에서 features/attendance를
-// 직접 불렀다(같은 층 다른 슬라이스, lint 규칙 3 위반).
-//
-// payroll-data plan이 attendanceStatus.ts·rehearsalHours.ts에 쓴 전례를 따라
-// 이 함수를 entities/attendance/model/로 내린다 — 결근 판정이 이미 이 자리
-// (attendanceStatus.ts)의 규칙이고, features/stats·screens/adminStats 양쪽 다
-// entities는 슬라이스 제한 없이 부를 수 있다. 옮기는 것은 자리뿐이고 함수와
-// 단언은 features/attendance/model/__tests__/attendanceSummary.test.ts의
-// tallyMonthlyAttendance 몫과 같다.
-
 import type { AttendanceStatusInput } from "@/entities/attendance/model/attendance.type";
 import type { MonthlyAttendanceTally } from "@/entities/attendance/model/attendance.type";
 import { getAttendanceStatus } from "@/entities/attendance/model/attendanceStatus.policy";

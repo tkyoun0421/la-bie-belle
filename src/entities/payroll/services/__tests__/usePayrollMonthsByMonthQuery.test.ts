@@ -1,16 +1,3 @@
-// 구현 대상: src/entities/payroll/services/usePayrollMonthsByMonthQuery.ts
-//
-// usePayrollMonthsByMonthQuery(client, months) — 급여 탭 그래프가 쓰는 달치 창이다.
-// `usePayrollMonthsQuery`가 이미 달치를 읽지만 그쪽은 mergeMonths가 flatMap으로 여러
-// 달을 하나로 뭉갠다 — 추이 그래프는 달마다 구분된 값이 필요해 그대로 못 쓴다.
-//
-// **키가 usePayrollMonthsQuery의 것과 같다.** `queryKeys.payroll.month`를 그대로 불러서
-// 급여 화면이 읽어둔 달은 캐시에서 오고, 조정이나 시급을 고쳐 `['payroll']`이 낡으면 이
-// 화면도 같이 따라간다.
-//
-// `features/stats/api/useStatsQueries.ts`에서 갈라져 나왔다 — 아래 단언은 그 파일의
-// 짝 테스트가 들고 있던 것과 같다(fsd-read-write-layers AC-05).
-
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 

@@ -4,11 +4,6 @@ import {
   spellBirthDate,
 } from "@/entities/profile/utils/birthDateDigits.utils";
 
-// 구현 대상: src/entities/profile/utils/birthDateDigits.utils.ts
-//
-// 생년월일이 사는 꼴이 셋이다 — DB의 `1993-04-21`, 칸의 `19930421`, 글의 「1993년 4월 21일」.
-// 화면 둘이 이 셋 사이를 각자 손으로 오가고 있었다(`ProfileScreen`·`PendingScreen`).
-
 describe("spellBirthDate — 여덟 자리를 말로 옮긴다", () => {
   it("앞자리 0을 안 읽는다", () => {
     expect(spellBirthDate("19930421")).toBe("1993년 4월 21일");

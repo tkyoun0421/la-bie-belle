@@ -1,14 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/member/services/useQualificationsQuery.ts
-//
-// `qualifications` 뷰 전체를 읽는다 — `position_grants ∪ 살아 있는 교육 배정`을
-// `(profile_id, position)`으로 낸 것이다(design.md 「자격」). `add_assignment`도 픽커도 이
-// 뷰를 보므로 TS와 SQL에 같은 규칙이 두 벌 서지 않는다. 픽커의 명단은 `useMembersQuery(client,
-// 'active')`가 따로 읽고 이 훅은 자격만 합쳐 쓴다. 캐시 키는 `['members', 'qualifications']`
-// 다 — `grant_position` 성공의 `['members']` 무효화가 접두사로 덮는다.
-
 const getQualificationsMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 

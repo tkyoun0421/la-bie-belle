@@ -3,11 +3,6 @@ import {
   hyphenatePhone,
 } from "@/entities/profile/utils/phoneDigits.utils";
 
-// 구현 대상: src/entities/profile/utils/phoneDigits.utils.ts
-//
-// 같은 손 둘이 화면 셋에 복제돼 있었다(`ProfileScreen`·`ContactSheet`·`PendingScreen`).
-// 칸은 숫자만 받고 하이픈은 앱이 넣는다 — 굳은 글과 서버가 보는 꼴이 같다.
-
 describe("digitsOnly — 숫자만 남기고 자리에서 끊는다", () => {
   it("숫자가 아닌 것을 버린다", () => {
     expect(digitsOnly("010-1234-5678", 11)).toBe("01012345678");

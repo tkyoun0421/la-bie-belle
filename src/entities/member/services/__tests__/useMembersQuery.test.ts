@@ -1,11 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 재직·퇴사·대기·차단 넷을 한 훅으로 읽는다. `docs/2-design/modules/account/screens/
-// members.md`와 `members-pending.md`가 원래 따로 `useEffect`로 읽던 것을 여기로 모은다
-// (관찰 020). `kind`가 가리키는 DAL 하나만 부르고, 캐시 키는 `['members', kind]`라
-// 네 목록이 서로를 안 밀어낸다.
-
 const listActiveMembersMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const listLeftMembersMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();

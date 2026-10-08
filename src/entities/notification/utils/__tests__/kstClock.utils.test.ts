@@ -1,9 +1,3 @@
-/**
- * 구현 대상: src/entities/notification/utils/kstClock.utils.ts
- *
- * 알림의 시각을 적는 두 자리(목록 줄과 푸시 아래줄)가 같은 꼴을 써야 해서 한 손이다.
- */
-
 const { spellKstClock } =
   await import("@/entities/notification/utils/kstClock.utils");
 

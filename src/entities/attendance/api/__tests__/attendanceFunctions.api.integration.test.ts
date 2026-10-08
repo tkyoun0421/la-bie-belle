@@ -178,8 +178,6 @@ function expectCloseTime(
   expect(diff).toBeLessThanOrEqual(toleranceMs);
 }
 
-// 정북(방위각 0)으로 distanceM 만큼 간 점이다. 방위각이 0이면 경도는 그대로고 위도만
-// 각거리 만큼 움직인다 — 그래야 haversine이 되돌려 재는 값이 distanceM 그대로다.
 function destinationPoint(
   lat: number,
   lng: number,
@@ -635,7 +633,6 @@ describe("출근 인증 함수", () => {
     it("p_profile_id를 받지 않는다 — 클라이언트가 남의 이름으로 못 찍는다", async () => {
       const { dayId } = await openDayWithAssignment(admin, worker.profileId);
 
-      // 없는 인자를 일부러 넘겨 시그니처 불일치를 확인하는 자리다 — 생성 타입이 막는 게 맞다.
       const { error } = await worker.client.rpc("check_in", {
         p_profile_id: worker.profileId,
         p_day_id: dayId,

@@ -170,8 +170,6 @@ describe("출근 인증 표 제약", () => {
         .single<{ id: string }>();
       const baseHallId = hall!.id;
 
-      // 다른 파일이 rotate_qr로 이미 세워둔 행이 있을 수 있다. 여기서 보려는 것은
-      // qr_code 겹침이라 기준 홀의 행은 덮어써서 값만 맞춘다.
       const sharedCode = randomUUID();
       execSql(
         "insert into public.hall_secrets (hall_id, qr_code) values (:'hall_id', :'qr_code') on conflict (hall_id) do update set qr_code = excluded.qr_code;\n",
@@ -191,8 +189,6 @@ describe("출근 인증 표 제약", () => {
         hall_id: baseHallId,
       });
 
-      // 20260927091507_hall_secrets_seed.sql 이 홀마다 행 하나를 심어 「빈 상태가 없다」를
-      // 보장한다. 지운 자리를 안 되돌리면 이 파일 뒤에 도는 스위트가 그 전제를 잃는다.
       execSql(
         "insert into public.hall_secrets (hall_id, qr_code) values (:'hall_id', :'qr_code');\n",
         { hall_id: baseHallId, qr_code: randomUUID() },

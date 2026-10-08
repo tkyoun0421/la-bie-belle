@@ -1,14 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/availability/services/useMonthAvailabilitiesQuery.ts
-//
-// 그 달 전원의 근무 신청을 프로필 이름과 같이 읽는다. 달력 칸의 신청 수, 날 상세의 근무
-// 신청 줄, 모아보기 화면이 같은 키 `['availability', month, 'all']`을 쓴다
-// (`docs/3-build/plans/schedule-admin.md` AC-01). 행 모양은
-// `get-month-availabilities.integration.test.ts`가 이미 확인한
-// `{ profile_id, work_date, profiles: { display_name } }`다.
-
 const getMonthAvailabilitiesMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
@@ -111,11 +103,6 @@ describe("useMonthAvailabilitiesQuery — getMonthAvailabilities를 그 달로 �
     await waitFor(() => expect(result.current.error).not.toBeNull());
   });
 
-  /**
-   * 본인 신청을 읽는 `useMyAvailabilityQuery`가 맨 키를 쥐고 이쪽이 꼬리를 받는다 — 어느 쪽이
-   * 받는지는 design.md의 키 목록이 정한다
-   * ([관찰 045](../../../../../docs/observations/045-two-queries-share-one-cache-key.md)).
-   */
   it("캐시 키는 ['availability', month, 'all']이고 본인 키와 안 겹친다", async () => {
     getMonthAvailabilitiesMock.mockResolvedValue(ROWS);
     const { wrapper, queryClient } = createWrapper();

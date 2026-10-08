@@ -1,11 +1,3 @@
-// 구현 대상: src/entities/schedule/services/useScheduleMonthsQuery.ts
-//
-// useScheduleMonthsQuery(client, months) — 여러 달 근무표 키를 결합해 읽는 훅이다
-// (payroll-view AC-06 「연은 열두 키를 읽어 더한다」와 같은 다개월 계약을 근무표에도
-// 적용한다). 요청한 달 수만큼 getMonthSchedule를 부르고, 하나라도 pending이면
-// 로딩이고, 하나라도 error면 그 error가 표면에 뜨고, 전부 오면 달치 날들을 하나로
-// 합쳐 낸다.
-
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 

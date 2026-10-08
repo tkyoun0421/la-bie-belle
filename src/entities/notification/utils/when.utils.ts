@@ -1,22 +1,6 @@
 import { kstDateOf, spellDate } from "@/shared/utils/kstDate";
 import { spellKstClock } from "@/entities/notification/utils/kstClock.utils";
 
-/**
- * 알림을 언제 받았는지를 적는 두 손이다. 정본은
- * `docs/2-design/modules/notification/screens/notifications.md`의 「날짜 머리」와 「알림 줄」,
- * 문안은 같은 문서의 문안 표다.
- *
- * **둘이 같은 날을 두 번 말한다.** 날짜 머리가 이미 날을 적는데 줄마다 받은 시각이 또 선다 —
- * 머리는 스크롤하면 화면 밖으로 나가고 줄만 남아서다.
- *
- * **기준 시각을 인자로 받는다.** 안에서 `new Date()`를 부르면 해를 넘기는 경계나 자정 직전을
- * 시험할 길이 없다.
- *
- * **날은 시간 차가 아니라 한국 달력일로 가른다.** 20분 전이어도 자정을 건넜으면 어제다 —
- * 「몇 시간 전」과 「어제」가 갈리는 자리가 경과 시간이 아니라 날짜 경계라서
- * (`docs/2-design/system/runtime.md`의 시각 규약과 같은 방향이다).
- */
-
 const MINUTE_MS = 60_000;
 
 const MINUTES_PER_HOUR = 60;

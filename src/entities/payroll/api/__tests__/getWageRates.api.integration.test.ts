@@ -33,11 +33,6 @@ function seedDefaultWageRate(effectiveDate: string, amount: number): void {
   );
 }
 
-/**
- * `default_wage_rates`는 `effective_date`가 전역이라 다른 테스트가 남긴 행이 「기본값이
- * 아예 없다」는 전제를 깬다. 그 전제가 필요한 케이스는 여기서 표를 비우고 시작한다
- * (`payroll-functions.integration.test.ts`의 `clearDefaultWageRates`와 같은 이유).
- */
 function clearDefaultWageRates(): void {
   execSql("delete from public.default_wage_rates;\n");
 }

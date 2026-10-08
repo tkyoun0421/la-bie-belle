@@ -1,13 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 구현 대상: src/entities/hall/services/useHallDefaultsQuery.ts
-//
-// 홀의 자리·근무 시간 기본값을 읽는다. 관리자 홈의 기본값 줄과 기본값 시트가 이 값을
-// 쓴다. `set_hall_defaults`가 무효화하는 키가 `['hall']`이므로(design.md 「홀
-// 기본값」) 이 훅의 캐시 키도 `['hall']`이다 — 달마다 갈리는 값이 아니라서 month를
-// 안 받는다.
-
 const getHallDefaultsMock = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule("@/entities/hall/api/getHallDefaults.api", () => ({

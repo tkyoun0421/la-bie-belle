@@ -31,11 +31,6 @@ function rpc(
 type QueryResult<T> = { data: T[] | null; error: { message: string } | null };
 type SingleResult<T> = { data: T | null; error: { message: string } | null };
 
-/**
- * 아직 생성 타입에 없는 표를 읽는 최소한의 체이닝 타입이다 — `wage_rates`·
- * `default_wage_rates`·`adjustments`·`holidays`는 이 task가 아직 마이그레이션을 안 낸
- * 표라 `DB`가 모른다. 실제 supabase-js 빌더처럼 체이닝도 되고 그대로 await도 된다.
- */
 type Query<T> = Promise<QueryResult<T>> & {
   eq: (column: string, value: string) => Query<T>;
   gte: (column: string, value: string) => Query<T>;
@@ -73,12 +68,6 @@ function freshPastDate(): string {
   return kstDate(-(24 + Math.floor(Math.random() * 90000)));
 }
 
-/**
- * `public.holidays`는 테스트마다 안 비워져서 연도로 자리를 가른다. **범위가
- * `fetchHolidays.integration.test.ts`와 겹치지 않아야 한다** — 둘이 같은 풀에서
- * 뽑던 판에서 그 파일의 「아무것도 안 들어간다」 단언이 이쪽 행을 세며 깨졌다.
- * 뽑은 연도가 이미 쓰였으면 다음 연도로 민다.
- */
 function freshHolidayYear(): number {
   for (
     let year = 2050 + Math.floor(Math.random() * 450);
@@ -124,10 +113,6 @@ function seedDefaultWageRate(effectiveDate: string, amount: number): void {
   );
 }
 
-/**
- * `default_wage_rates`는 `effective_date`가 전역이라 다른 테스트가 남긴 행이 「기본값이
- * 아예 없다」는 전제를 깬다. 그 전제가 필요한 케이스는 여기서 표를 비우고 시작한다.
- */
 function clearDefaultWageRates(): void {
   execSql("delete from public.default_wage_rates;\n");
 }

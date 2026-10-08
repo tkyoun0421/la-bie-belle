@@ -1,8 +1,3 @@
-// 구현 대상: src/entities/schedule/utils/monthWindow.mapper.ts
-//
-// 근무표 행의 DB 열 이름을 도메인 모양으로 옮긴다. 두 열이 각자 비는 꼴을 그대로 옮겨야
-// 「아직 안 열린 달」과 「접수는 끝났어도 확정 전」이 화면에서 갈린다.
-
 import { toMonthWindow } from "@/entities/schedule/utils/monthWindow.mapper";
 
 describe("toMonthWindow — 근무표 행을 도메인 모양으로 옮긴다", () => {

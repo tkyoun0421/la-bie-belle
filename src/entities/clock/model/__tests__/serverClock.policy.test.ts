@@ -1,11 +1,3 @@
-// 구현 대상: src/entities/clock/model/serverClock.policy.ts
-//
-// 서버 시각 오프셋과 만료 판정의 순수 계산이다(runtime.md 「서버 시각」, plan
-// schedule-requests.md 「총괄이 정한 것」 2·3). `serverOffset`이 앱이 뜰 때 한 번 잰
-// 차이고, `nowWithOffset`이 화면이 그리는 지금이며, `remainingMs`·`isExpired`가 요청
-// 카운트다운과 만료 잠금을 판정한다. 시각은 전부 인자로 받는다 — `Date.now()`를 직접
-// 안 부른다.
-
 import {
   isExpired,
   nowWithOffset,

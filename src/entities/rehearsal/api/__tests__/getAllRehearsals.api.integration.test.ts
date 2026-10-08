@@ -12,10 +12,6 @@ function freshMonth(): string {
   return kstMonthStart(24 + Math.floor(Math.random() * 90000));
 }
 
-/**
- * `createApprovedUser`는 열을 SQL로 채워 `display_name`이 빈 채로 선다 — 이름이 임베딩되는지
- * 보려면 이름이 있어야 해서 여기서 채운다(implementer가 더한 준비다).
- */
 function nameProfile(profileId: string, displayName: string): void {
   execSql(
     "update public.profiles set display_name = :'display_name' where id = :'profile_id';\n",

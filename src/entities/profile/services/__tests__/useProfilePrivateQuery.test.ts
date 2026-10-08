@@ -1,15 +1,6 @@
 import { jest } from "@jest/globals";
 import type { ReactNode } from "react";
 
-// 관리자가 가입 신청자의 개인정보 행을 읽는다
-// (`docs/2-design/modules/account/screens/membersPending.md`의 「상세 시트」).
-//
-// **내 것을 읽는 질의와 키의 꼬리가 다르다.** 묻는 것이 「이 사람 연락처」라 사람마다 캐시가
-// 갈려야 한다.
-//
-// **사람이 없으면 안 읽는다.** 시트가 닫혀 있을 때 질의가 나가면 안 되는데 그 가름을 부르는
-// 쪽이 `if`로 하면 훅 수가 렌더마다 달라진다.
-
 const getProfilePrivateMock =
   jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
