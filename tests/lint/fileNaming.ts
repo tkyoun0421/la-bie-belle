@@ -52,11 +52,12 @@ const HOOK_EXPORT =
   /^\s*export\s+(?:async\s+)?(?:function|const)\s+(use[A-Z]\w*)/m;
 
 /**
- * `stores/`의 `.store.ts`는 훅을 내놓아도 접미사가 이름이다. zustand의 `create`가 돌려주는
- * 것이 훅이라 「훅 파일은 그 훅 이름」과 부딪히는데, ADR-015가 그 자리를 폴더와 접미사에
- * 맡겼다 — `theme.store.ts`가 `useTheme`을 내놓는다. 같은 폴더의 다른 파일은 면제 밖이다.
+ * `stores/`의 접미사 둘은 훅을 내놓아도 접미사가 이름이다. zustand의 `create`가 돌려주는
+ * 것이 훅이고 Context를 읽는 손도 훅이라 「훅 파일은 그 훅 이름」과 부딪히는데, ADR-015가
+ * 그 자리를 폴더와 접미사에 맡겼다 — `theme.store.ts`가 `useTheme`을, `drag.context.ts`가
+ * `useDrag`을 내놓는다. 같은 폴더의 다른 파일은 면제 밖이다.
  */
-const STORE_FILE = /(?:^|\/)stores\/[^/]+\.store\.ts$/;
+const STORES_SEGMENT_FILE = /(?:^|\/)stores\/[^/]+\.(?:store|context)\.ts$/;
 
 /** 확장자 앞의 첫 조각. `check-in.integration.test.ts`면 `check-in`이다. */
 export function stemOf(base: string): string {
@@ -70,7 +71,7 @@ export function styleFor(file: string, source: string): NameStyle {
     return "pascal";
   }
 
-  if (STORE_FILE.test(file)) {
+  if (STORES_SEGMENT_FILE.test(file)) {
     return "camel";
   }
 

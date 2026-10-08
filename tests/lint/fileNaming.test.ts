@@ -84,8 +84,19 @@ describe("무엇이 들었는지가 갈래를 정한다", () => {
     );
   });
 
+  /**
+   * Context를 읽는 손도 훅이라 같은 자리에 선다. ADR-015의 「파일 이름」 표가
+   * `[domain].context.ts`를 「React Context와 그것을 읽는 훅」으로 적어, 훅을 내놓는 것이
+   * 그 접미사의 정의다.
+   */
+  it("`stores/`의 `.context.ts`도 훅을 내놓아도 접미사가 이름이다", () => {
+    expect(styleFor("src/shared/stores/drag.context.ts", HOOK_SOURCE)).toBe(
+      "camel",
+    );
+  });
+
   /** 같은 폴더의 다른 파일은 면제 밖이다 — 훅을 내놓으면 훅 이름을 받는다. */
-  it("`stores/`의 `.store.ts`가 아닌 파일은 훅 판정을 받는다", () => {
+  it("`stores/`의 접미사 둘이 아닌 파일은 훅 판정을 받는다", () => {
     expect(styleFor("src/shared/stores/themeGate.ts", HOOK_SOURCE)).toBe(
       "hook",
     );
